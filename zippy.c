@@ -744,6 +744,11 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
     base = atoi(sbase);
     increment = atoi(sincrement);
 
+	/* If icsAnalyzeEngine active 
+	   we don't accept automatic games */
+	if (appData.icsActive) 
+	    if (appData.icsEngineAnalyze) return;
+
     /* If desired, you can insert more code here to decline matches
        based on rated, variant, base, and increment, but it is
        easier to use the ICS formula feature instead. */

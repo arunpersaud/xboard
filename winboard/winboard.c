@@ -3650,6 +3650,8 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DisplayError(buf, 0);
 			/* secure check */
 			if (appData.icsEngineAnalyze) {
+				if (appData.debugMode) 
+					fprintf(debugFP, "Found unexpected active ICS engine analyze \n");
 				appData.icsEngineAnalyze = FALSE;
 				ExitAnalyzeMode();
 				ModeHighlight();
@@ -3665,6 +3667,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			appData.icsEngineAnalyze = TRUE;
+			if (appData.debugMode) fprintf(debugFP, "ICS engine analyze starting...\n");
 		}
 	} 
 	if (!appData.showThinking) ToggleShowThinking();
@@ -6243,13 +6246,16 @@ ModeHighlight()
   }
 
   prevChecked = nowChecked;
+
   /* icsEngineAnalyze - Do a sceure check too */
-  if (appData.icsEngineAnalyze) {
-	(void) CheckMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
-		MF_BYCOMMAND|MF_CHECKED);
-  } else {
-	(void) CheckMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
-		MF_BYCOMMAND|MF_UNCHECKED);
+  if (appData.icsActive) {
+	if (appData.icsEngineAnalyze) {
+		(void) CheckMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
+			MF_BYCOMMAND|MF_CHECKED);
+	} else {
+		(void) CheckMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
+			MF_BYCOMMAND|MF_UNCHECKED);
+	}
   }
 }
 

@@ -2620,8 +2620,8 @@ ParseBoard12(string)
      char *string;
 {
     GameMode newGameMode;
-    int gamenum, newGame, newMove, relation, basetime, increment, ics_flip = 0;
-    int j, k, n, moveNum, white_stren, black_stren, white_time, black_time;
+    int gamenum, newGame, newMove, relation, basetime, increment, ics_flip = 0, i;
+    int j, k, n, moveNum, white_stren, black_stren, white_time, black_time, takeback;
     int double_push, castle_ws, castle_wl, castle_bs, castle_bl, irrev_count;
     char to_play, board_chars[72];
     char move_str[500], str[500], elapsed_time[500];
@@ -2733,7 +2733,7 @@ ParseBoard12(string)
 
 	/* Forget the old game and get the history (if any) of the new one */
 	if (gameMode != BeginningOfGame) {
-	  Reset(FALSE, TRUE);
+       Reset(FALSE, TRUE);
 	}
 	newGame = TRUE;
 	if (appData.autoRaiseBoard) BoardToTop();
@@ -2855,6 +2855,16 @@ ParseBoard12(string)
 
     /* Update currentMove and known move number limits */
     newMove = newGame || moveNum > forwardMostMove;
+
+	/* If we found takebacks during icsEngineAnalyze 
+	   try send to engine */
+	if (!newGame && appData.icsEngineAnalyze && moveNum < forwardMostMove) {
+		takeback = forwardMostMove - moveNum;
+		for (i = 0; i < takeback; i++) {
+		    if (appData.debugMode) fprintf(debugFP, "take back move\n");
+		    SendToProgram("undo\n", &first);
+		 }
+	}
     if (newGame) {
 	forwardMostMove = backwardMostMove = currentMove = moveNum;
 	if (gameMode == IcsExamining && moveNum == 0) {
@@ -5334,8 +5344,8 @@ ResurrectChessProgram()
 	timeRemaining[1][currentMove] = blackTimeRemaining;
     }
 
-    if ((gameMode == AnalyzeMode || gameMode == AnalyzeFile) &&
-	first.analysisSupport) {
+    if ((gameMode == AnalyzeMode || gameMode == AnalyzeFile ||
+		 appData.icsEngineAnalyze) && first.analysisSupport) {
       SendToProgram("analyze\n", &first);
       first.analyzing = TRUE;
     }
@@ -7776,8 +7786,9 @@ EditPositionEvent()
 void
 ExitAnalyzeMode()
 {
-	/* icsEngineAnalyze - possible call of other functions */
-	if (appData.icsEngineAnalyze) appData.icsEngineAnalyze = FALSE;
+	/* icsEngineAnalyze - possible call from other functions */
+	if (appData.icsEngineAnalyze) 
+	    appData.icsEngineAnalyze = FALSE;
 
     if (first.analysisSupport && first.analyzing) {
       SendToProgram("exit\n", &first);

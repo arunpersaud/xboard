@@ -1,4 +1,6 @@
 ChangeLog for XBoard/WinBoard
+* 06/26/2004: added icsEngineAnalyze for winboard: Analyze observe games 
+with a chessprogram on a Internet Chess Server (ICS) 
 
 * 02/12/2004: Bugfix ICS interaction console crashed while chess
 engine starting and user type in some stuff. We are wait now to finish
