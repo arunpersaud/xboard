@@ -1463,6 +1463,11 @@ read_from_ics(isr, closure, data, count, error)
     int buf_len;
     int next_out;
     int tkind;
+#ifdef WIN32
+	/* For zippy color lines of winboard
+	 * cleanup for gcc compiler */
+	int backup;
+#endif
     char *p;
 
 #ifdef WIN32
@@ -1720,14 +1725,22 @@ read_from_ics(isr, closure, data, count, error)
 	    oldi = i;
 	    if (appData.zippyTalk || appData.zippyPlay) {
 #if ZIPPY
+	#ifdef WIN32
+		/* Backup adress for color zippy lines */
+		backup = i;
+		if (first.initDone && loggedOn == TRUE)
+			if (ZippyControl(buf, &backup) || ZippyConverse(buf, &backup) ||
+				(appData.zippyPlay && ZippyMatch(buf, &backup)));
+		#else
 		if (ZippyControl(buf, &i) ||
 		    ZippyConverse(buf, &i) ||
 		    (appData.zippyPlay && ZippyMatch(buf, &i))) {
 		    loggedOn = TRUE;
 		    continue;
 		}
+	#endif
 #endif
-	    } else {
+	    }
 		if (/* Don't color "message" or "messages" output */
 		    (tkind = 5, looking_at(buf, &i, "*. * (*:*): ")) ||
 		    looking_at(buf, &i, "*. * at *:*: ") ||
@@ -1883,7 +1896,6 @@ read_from_ics(isr, closure, data, count, error)
 			curColor = ColorSeek;
 		    }
 		    continue;
-		}
 	    }
 
 	    if (looking_at(buf, &i, "\\   ")) {
