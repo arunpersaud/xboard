@@ -3112,11 +3112,14 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	/* Mouse Wheel is being rolled forward 
 	 * Play moves forward
 	 */
-	if((short)HIWORD(wParam) > 0 ) ForwardEvent();
-	/* Mouse Wheel is being rolled backward 
-	 * Play moves backward
-	 */
-	if((short)HIWORD(wParam) < 0 ) BackwardEvent();
+	if ((short)HIWORD(wParam) > 0) 
+	   if (forwardMostMove > 0 && currentMove != forwardMostMove)
+		   ForwardEvent();
+	   /* Mouse Wheel is being rolled backward 
+	    * Play moves backward
+	    */
+	if ((short)HIWORD(wParam) < 0) 
+	   if (currentMove > 0) BackwardEvent();
 	break;
   case WM_MBUTTONDOWN:
   case WM_RBUTTONDOWN:
