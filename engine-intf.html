@@ -418,38 +418,6 @@ user input, you must turn off the prompt and output a newline when the
 "xboard" command comes in.
 <p>
 
-<dt><font color=blue><strong>gui GUI_NAME VERSION.SUBVERSION</strong></font>
-<dd><font color=blue>
-This is a new feature. The GUI sending after the "xboard" command and before
-"protover N" string the command "gui <GUI_NAME> <VERSION>.<SUBVERSION>"
-to the engine. The GUI_NAME is a string. VERSION and SUBVERSION is <i><strong>one</strong></i>
-character.<br>
-This command will be send always. You don't need to answer because its only
-a information for the engine. I recommend that the engine not response.
-The idea behind this command is that the engine now know which special feature
-support the named GUI.<br>
-To make the GUI string clear the known GUIs will be predefined:<br>
-<br>
-gui arena			= send by Arena<br>
-gui chessassistant 	= send by Chess Assistant<br>
-gui chessbase		= send by ChessBase<br>
-gui chessmaster		= send by ChessMaster<br>
-gui chesspartner	= send by ChessPartner GUI<br>
-gui wb2uci			= send by wb2uci adapter<br>
-gui xboard 			= send by Winboard/Xboard<br>
-<br>
-This list is not completely and will be extend in the future.<br>
-<br>
-Example:<br>
-Winboard / Xboard send:<br>
-xboard\n<br>
-gui xboard 4.2\n<br>
-protover 2\n<br>
-</font>
-<p>
-
-
-
 <dt><font color=red><strong>protover N</strong></font>
 <dd><font color=red>
 Beginning in protocol version 2 (in which N=2), this command will
