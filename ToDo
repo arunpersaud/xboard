@@ -1348,6 +1348,12 @@ HTML, at the cost of losing the index and search capability.
 a pain to create new dialogs by editing the text file.  The original
 ones were all created using the graphical dialog editor in MSVC 5.
 
+553. It would be nice for xboard's ICS Input box to have a history
+feature similar to WinBoard's ICS Interaction window.  Actually it
+would be nice for xboard to have its own ICS Interaction window with
+all the bells and whistles that WinBoard's has instead of limping
+along using an xterm for interaction.
+
 * * *
 
 Before each release:
