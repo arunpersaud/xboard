@@ -2855,7 +2855,7 @@ ParseBoard12(string)
     /* Update currentMove and known move number limits */
     newMove = newGame || moveNum > forwardMostMove;
 
-	/* If we found takebacks during icsEngineAnalyze 
+	/* If we found takebacks during icsEngineAnalyze
 	   try send to engine */
 	if (!newGame && appData.icsEngineAnalyze && moveNum < forwardMostMove) {
 		takeback = forwardMostMove - moveNum;
@@ -5007,7 +5007,7 @@ StartChessProgram(cps)
 
     cps->isr = AddInputSource(cps->pr, TRUE, ReceiveFromProgram, cps);
     if (cps->protocolVersion > 1) {
-      sprintf(buf, "xboard\nprotover %d\n", cps->protocolVersion);
+      sprintf(buf, "xboard\ngui xboard %s\nprotover %d\n", VERSION, cps->protocolVersion);
       SendToProgram(buf, cps);
     } else {
       SendToProgram("xboard\n", cps);
@@ -8921,12 +8921,12 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		cps->which, message);
     }
 	/* if icsEngineAnalyze is active we block all
-	   whisper and kibitz output, because nobody want 
-	   see this 
+	   whisper and kibitz output, because nobody want
+	   see this
 	 */
 	if (appData.icsEngineAnalyze) {
 		if (strstr(message, "whisper") != NULL ||
-		    strstr(message, "kibitz") != NULL || 
+		    strstr(message, "kibitz") != NULL ||
 			strstr(message, "tellics") != NULL) return;
 		HandleMachineMove(message, cps);
 	} else {
@@ -9271,7 +9271,7 @@ DisplayAnalysisText(text)
 {
     char buf[MSG_SIZ];
 
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
+    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile
 		|| appData.icsEngineAnalyze) {
 	sprintf(buf, "Analysis (%s)", first.tidy);
 	AnalysisPopUp(buf, text);

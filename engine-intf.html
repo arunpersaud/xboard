@@ -42,11 +42,11 @@ and WinBoard except where they are specifically contrasted.
 </p>
 
 <p>
-There are two reasons I can imagine someone wanting to do this: 
+There are two reasons I can imagine someone wanting to do this:
 </p>
 <ol>
 <li>You have, or are developing, a chess engine but you don't want to
-write your own graphical interface. 
+write your own graphical interface.
 <li>You have, or are developing,a chess engine, and you want to
 interface it to the Internet Chess Server.
 </ol>
@@ -96,7 +96,7 @@ implemented in Win32 and work fine.  You don't have to use DDE, COM,
 DLLs, BSOD, or any of the other infinite complexity that
 Microsoft has created just to talk between two programs.  A WinBoard
 chess engine is a Win32 console program that simply reads from its
-standard input and writes to its standard output.  See sections 
+standard input and writes to its standard output.  See sections
 <a href="#5">5</a> and <a href="#6">6</a> below for additional details.
 </p>
 
@@ -153,14 +153,14 @@ features to be slightly different from what GNU Chess 4 does.
 <font color=red>
 This release of the protocol specification is the first to carry a
 version number of its own -- version 2.  Previous releases simply
-carried a last-modified date and were loosely tied to specific 
+carried a last-modified date and were loosely tied to specific
 releases of xboard and WinBoard.  The version number "1" applies
 generally to all those older versions of the protocol.
 </font>
 
 <font color=red>
 <p>Protocol version 2 remains compatible with older engines but has
-several new capabilities.  In particular, it adds the 
+several new capabilities.  In particular, it adds the
 "feature" command, a new mechanism for making backward-compatible
 changes and extensions to the protocol.  Engines that do not support a
 particular new feature do not have to use it; new features are not
@@ -271,10 +271,10 @@ use for polling is different depending on whether the input device is
 a pipe, a console, or something else.  (More Microsoft brain damage
 here -- did they never hear of device independence?)  For pipes, you
 can use <tt>PeekNamedPipe</tt> to poll (even when the pipe is unnamed).
-For consoles, 
+For consoles,
 you can use <tt>GetNumberOfConsoleInputEvents</tt>.  For sockets only, you can
 use <tt>select()</tt>.  It might be possible to use
-<tt>WaitForSingleObject</tt> more 
+<tt>WaitForSingleObject</tt> more
 generally, but I have not tried it.  Some code to do these things can
 be found in Crafty's utility.c, but I don't guarantee that it's all
 correct or optimal.
@@ -298,7 +298,7 @@ A third way to fix the problem is to check whether there are
 characters in the buffer whenever you poll.  C I/O libraries generally
 do not provide any portable way to do this.  Under C++, you can use
 <tt>cin.rdbuf()-&gt;in_avail()</tt>.  This method has been reported to
-work with 
+work with
 EXchess.  Remember that if there are no characters in the buffer, you
 still have to poll the underlying file descriptor too, using the
 method described above.
@@ -358,7 +358,7 @@ command.</p>
 
 <p>
 Here are details for the curious.  If xboard needs to send a command
-when it is the chess engine's move (such as before the "?" command), 
+when it is the chess engine's move (such as before the "?" command),
 it sends a <tt>SIGINT</tt> first.  If xboard needs to send commands when it is
 not the chess engine's move, but the chess engine may be pondering
 (thinking on its opponent's time) or analyzing (analysis or analyze
@@ -366,7 +366,7 @@ file mode), xboard sends a <tt>SIGINT</tt> before the first such command only.
 Another <tt>SIGINT</tt> is not sent until another move is made, even if xboard
 issues more commands.  This behavior is necessary for GNU Chess 4.  The
 first <tt>SIGINT</tt> stops it from pondering until the next move, but on some
-systems, GNU Chess 4 will die if it receives a <tt>SIGINT</tt> when not 
+systems, GNU Chess 4 will die if it receives a <tt>SIGINT</tt> when not
 actually thinking or pondering.
 </p>
 
@@ -402,7 +402,7 @@ position.  It will later send the initString again to start a new
 game.  If your engine can't play multiple games, you can disable reuse
 <font color=red>
 either with the "feature" command (beginning in protocol version
-2; see below) or 
+2; see below) or
 </font>
 with xboard's -xreuse (or -xreuse2) command line
 option.  xboard will then ask the process to quit after each game and
@@ -417,6 +417,38 @@ mode" if that is needed.  If your engine prints a prompt to ask for
 user input, you must turn off the prompt and output a newline when the
 "xboard" command comes in.
 <p>
+
+<dt><font color=blue><strong>gui GUI_NAME VERSION.SUBVERSION</strong></font>
+<dd><font color=blue>
+This is a new feature. The GUI sending after the "xboard" command and before
+"protover N" string the command "gui <GUI_NAME> <VERSION>.<SUBVERSION>"
+to the engine. The GUI_NAME is a string. VERSION and SUBVERSION is <i><strong>one</strong></i>
+character.<br>
+This command will be send always. You don't need to answer because its only
+a information for the engine. I recommend that the engine not response.
+The idea behind this command is that the engine now know which special feature
+support the named GUI.<br>
+To make the GUI string clear the known GUIs will be predefined:<br>
+<br>
+gui arena			= send by Arena<br>
+gui chessassistant 	= send by Chess Assistant<br>
+gui chessbase		= send by ChessBase<br>
+gui chessmaster		= send by ChessMaster<br>
+gui chesspartner	= send by ChessPartner GUI<br>
+gui wb2uci			= send by wb2uci adapter<br>
+gui xboard 			= send by Winboard/Xboard<br>
+<br>
+This list is not completely and will be extend in the future.<br>
+<br>
+Example:<br>
+Winboard / Xboard send:<br>
+xboard\n<br>
+gui xboard 4.2\n<br>
+protover 2\n<br>
+</font>
+<p>
+
+
 
 <dt><font color=red><strong>protover N</strong></font>
 <dd><font color=red>
@@ -531,17 +563,17 @@ reply.
 <dd>
 <font color=red>
 (This command is obsolete as of protocol version 2, but is still
-sent in some situations to accommodate older engines unless you disable it 
+sent in some situations to accommodate older engines unless you disable it
 with the feature command.)
 </font>
 Set White on move.  Set the engine to play Black.  Stop clocks.
 <p>
-  
+
 <dt><strong>black</strong>
 <dd>
 <font color=red>
 (This command is obsolete as of protocol version 2, but is still
-sent in some situations to accommodate older engines unless you disable it 
+sent in some situations to accommodate older engines unless you disable it
 with the feature command.)
 </font>
 Set Black on move.  Set the engine to play White.  Stop clocks.
@@ -550,7 +582,7 @@ Set Black on move.  Set the engine to play White.  Stop clocks.
 <dt><strong>level MPS BASE INC</strong>
 <dd>Set time controls.  See the <a href="#11">Time Control</a> section below.
 <p>
-  
+
 <dt><strong>st TIME</strong>
 <dd>Set time controls.  See the <a href="#11">Time Control</a> section
 below. The commands "level" and "st" are not used together.
@@ -582,7 +614,7 @@ otim clock with the opposite color.
 <font color=red>
 Beginning in protocol version 2, if you can't handle the time and
 otim commands, you can use the "feature" command to disable them; see
-below.  
+below.
 </font>
 The following techniques from older protocol versions also
 work: You can ignore the time and otim commands (that is, treat them
@@ -681,7 +713,7 @@ allow several race conditions that could occur in previous versions of
 the protocol to be fixed, so it is highly recommended that you
 implement it.  It is especially important in simple engines that do
 not ponder and do not poll for input while thinking, but it is needed in all
-engines.  
+engines.
 </p>
 </font>
 
@@ -737,7 +769,7 @@ Notation, as defined in the PGN standard.
 be used to send an illegal position to the engine.  The user can
 create any position with xboard's Edit Position command (even, say,
 an empty board, or a board with 64 white kings and no black ones).
-If your engine receives a position that it considers illegal, 
+If your engine receives a position that it considers illegal,
 I suggest that you send the response "tellusererror Illegal position",
 and then respond to any attempted move with "Illegal move" until
 the next new, edit, or setboard command.</p>
@@ -779,7 +811,7 @@ black-on-move position, xboard uses the following command sequence:
 
 <p>
 This sequence is used to avoid the "black" command, which is now
-considered obsolete and which many engines never did implement as 
+considered obsolete and which many engines never did implement as
 specified in this document.
 </p>
 
@@ -831,23 +863,23 @@ your default is for pondering or whether "new" affects this setting.
 <dt><strong>easy</strong>
 <dd>Turn off pondering.
 <p>
-  
+
 <dt><strong>post</strong>
-<dd>Turn on thinking/pondering output.  
+<dd>Turn on thinking/pondering output.
 See <a href="#10">Thinking Output</a> section.
 <p>
 
 <dt><strong>nopost</strong>
 <dd>Turn off thinking/pondering output.
 <p>
-  
+
 <dt><strong>analyze</strong>
 <dd>Enter analyze mode.  See <a href="#12">Analyze Mode</a> section.
 <p>
 
 <dt><strong>name X</strong> <dd>This command informs the engine of its
 opponent's name.  When the engine is playing on a chess server, xboard
-obtains the opponent's name from the server. 
+obtains the opponent's name from the server.
 <font color=red>
 When the engine is
 playing locally against a human user, xboard obtains the user's login
@@ -867,7 +899,7 @@ feature command; see below.
 not appear on servers using outdated versions of the FICS code.)  In
 Zippy mode, it sends these ratings on to the chess engine using the
 "rating" command.  The chess engine's own rating comes first, and if
-either opponent is not rated, his rating is given as 0.  
+either opponent is not rated, his rating is given as 0.
 <font color=red>
 In the future this command may also be used in other modes, if ratings
 are known.
@@ -915,7 +947,7 @@ xboard now supports bughouse engines when in Zippy mode.  See
 >zippy.README</a> for information on Zippy mode and how to turn on the
 bughouse support.  The bughouse move format is given above.  xboard
 sends the following additional commands to the engine when in bughouse
-mode.  
+mode.
 Commands to inform your engine of the partner's game state may
 be added in the future.
 </p>
@@ -930,7 +962,7 @@ be added in the future.
 <p>
 
 <dt><strong>ptell &lt;text&gt;</strong>
-<dd>Your partner told you &lt;text&gt;, either with a ptell or an ordinary tell.  
+<dd>Your partner told you &lt;text&gt;, either with a ptell or an ordinary tell.
 <p>
 
 <dt><strong>holding [&lt;white&gt;] [&lt;black&gt;]</strong>
@@ -955,7 +987,7 @@ were previously not assigned a meaning.
 
 <dl>
 <dt><font color=red>
-<strong>feature FEATURE1=VALUE1 FEATURE2=VALUE2 ...</strong> 
+<strong>feature FEATURE1=VALUE1 FEATURE2=VALUE2 ...</strong>
 </font>
 
 <dd><font color=red>
@@ -1060,7 +1092,7 @@ when appropriate; if playother=0, it will not use the command.
 <dd><font color=red>
 If san=1, xboard will send moves to the engine in standard algebraic
 notation (SAN); for example, Nf3.  If san=0, xboard will send moves in
-coordinate notation; for example, g1f3.  See MOVE in 
+coordinate notation; for example, g1f3.  See MOVE in
 <a href="#8">section 8</a> above for more details of both kinds of notation.
 </font>
 
@@ -1111,7 +1143,7 @@ not.
 </font>
 
 <dt><font color=red>
-<strong>reuse</strong> (boolean, default 1, recommended 1) 
+<strong>reuse</strong> (boolean, default 1, recommended 1)
 </font>
 <dd><font color=red>
 If reuse=1, xboard may reuse your engine for multiple games.  If
@@ -1157,7 +1189,7 @@ engine does not support.
 </font>
 
 <dt><font color=red>
-<strong>colors</strong> (boolean, default 1, recommended 0) 
+<strong>colors</strong> (boolean, default 1, recommended 0)
 </font>
 <dd><font color=red>
 If colors=1, xboard uses the obsolete "white" and "black"
@@ -1221,8 +1253,8 @@ optional.  Examples:
   Illegal move (moving into check): e1g1
 </pre>
 <p>
-Generally, xboard will never send an ambiguous move, so it does not 
-matter whether you respond to such a move with an Illegal move message 
+Generally, xboard will never send an ambiguous move, so it does not
+matter whether you respond to such a move with an Illegal move message
 or an Error message.
 </p>
 
@@ -1321,7 +1353,7 @@ against an opponent on the ICS (Zippy mode), xboard sends "say
 MESSAGE\n" to the ICS.
 <p>
 
-<dt><strong>tellothers MESSAGE</strong> 
+<dt><strong>tellothers MESSAGE</strong>
 <dd>This command lets the engine give a message to people watching the
 game other than the engine's opponent.  MESSAGE consists of any
 characters, including whitespace, to the end of the line.  When the
@@ -1332,7 +1364,7 @@ ICS (Zippy mode), xboard sends "whisper MESSAGE\n" to the ICS.
 
 <dt><strong>tellall MESSAGE</strong>
 <dd>This command lets the engine give a message to its opponent and
-other people watching the game, 
+other people watching the game,
 independent of whether the opponent is a user on the local machine or
 a remote ICS user (Zippy mode).  MESSAGE consists of any characters,
 including whitespace, to the end of the line.  When the engine is
@@ -1416,7 +1448,7 @@ Example:
 Meaning:
 </p>
 
-9 ply, score=1.56, time = 10.84 seconds, nodes=48000, 
+9 ply, score=1.56, time = 10.84 seconds, nodes=48000,
 PV = "Nf3 Nc6 Nc3 Nf6"
 
 <p>
@@ -1450,30 +1482,30 @@ units.  Example:
 </p>
 
 <pre>
- 2.     14    0       38   d1d2  e8e7 
- 3+     78    0       65   d1d2  e8e7  d2d3 
- 3&     14    0       89   d1d2  e8e7  d2d3 
- 3&     76    0      191   d1e2  e8e7  e2e3 
- 3.     76    0      215   d1e2  e8e7  e2e3 
- 4&     15    0      366   d1e2  e8e7  e2e3  e7e6 
- 4.     15    0      515   d1e2  e8e7  e2e3  e7e6 
- 5+     74    0      702   d1e2  f7f5  e2e3  e8e7  e3f4 
- 5&     71    0     1085   d1e2  e8e7  e2e3  e7e6  e3f4 
- 5.     71    0     1669   d1e2  e8e7  e2e3  e7e6  e3f4 
- 6&     48    0     3035   d1e2  e8e7  e2e3  e7e6  e3e4  f7f5  e4d4 
- 6.     48    0     3720   d1e2  e8e7  e2e3  e7e6  e3e4  f7f5  e4d4 
- 7&     48    0     6381   d1e2  e8e7  e2e3  e7e6  e3e4  f7f5  e4d4 
- 7.     48    0    10056   d1e2  e8e7  e2e3  e7e6  e3e4  f7f5  e4d4 
- 8&     66    1    20536   d1e2  e8e7  e2e3  e7e6  e3d4  g7g5  a2a4  f7f5 
- 8.     66    1    24387   d1e2  e8e7  e2e3  e7e6  e3d4  g7g5  a2a4  f7f5 
- 9&     62    2    38886   d1e2  e8e7  e2e3  e7e6  e3d4  h7h5  a2a4  h5h4 
-                           d4e4 
- 9.     62    4    72578   d1e2  e8e7  e2e3  e7e6  e3d4  h7h5  a2a4  h5h4 
-                           d4e4 
-10&     34    7   135944   d1e2  e8e7  e2e3  e7e6  e3d4  h7h5  c2c4  h5h4 
-                           d4e4  f7f5  e4f4 
-10.     34    9   173474   d1e2  e8e7  e2e3  e7e6  e3d4  h7h5  c2c4  h5h4 
-                           d4e4  f7f5  e4f4 
+ 2.     14    0       38   d1d2  e8e7
+ 3+     78    0       65   d1d2  e8e7  d2d3
+ 3&     14    0       89   d1d2  e8e7  d2d3
+ 3&     76    0      191   d1e2  e8e7  e2e3
+ 3.     76    0      215   d1e2  e8e7  e2e3
+ 4&     15    0      366   d1e2  e8e7  e2e3  e7e6
+ 4.     15    0      515   d1e2  e8e7  e2e3  e7e6
+ 5+     74    0      702   d1e2  f7f5  e2e3  e8e7  e3f4
+ 5&     71    0     1085   d1e2  e8e7  e2e3  e7e6  e3f4
+ 5.     71    0     1669   d1e2  e8e7  e2e3  e7e6  e3f4
+ 6&     48    0     3035   d1e2  e8e7  e2e3  e7e6  e3e4  f7f5  e4d4
+ 6.     48    0     3720   d1e2  e8e7  e2e3  e7e6  e3e4  f7f5  e4d4
+ 7&     48    0     6381   d1e2  e8e7  e2e3  e7e6  e3e4  f7f5  e4d4
+ 7.     48    0    10056   d1e2  e8e7  e2e3  e7e6  e3e4  f7f5  e4d4
+ 8&     66    1    20536   d1e2  e8e7  e2e3  e7e6  e3d4  g7g5  a2a4  f7f5
+ 8.     66    1    24387   d1e2  e8e7  e2e3  e7e6  e3d4  g7g5  a2a4  f7f5
+ 9&     62    2    38886   d1e2  e8e7  e2e3  e7e6  e3d4  h7h5  a2a4  h5h4
+                           d4e4
+ 9.     62    4    72578   d1e2  e8e7  e2e3  e7e6  e3d4  h7h5  a2a4  h5h4
+                           d4e4
+10&     34    7   135944   d1e2  e8e7  e2e3  e7e6  e3d4  h7h5  c2c4  h5h4
+                           d4e4  f7f5  e4f4
+10.     34    9   173474   d1e2  e8e7  e2e3  e7e6  e3d4  h7h5  c2c4  h5h4
+                           d4e4  f7f5  e4f4
 </pre>
 
 <p>If your engine is pondering (thinking on its opponent's time) in post
@@ -1574,11 +1606,11 @@ on one move does not accumulate for use on later moves.
 <p>xboard supports analyzing fresh games, edited positions, and games
 from files.  However, all of these look the same from the chess
 engine's perspective. Basically, the engine just has to respond to the
-"analyze" command.  
+"analyze" command.
 <font color=red>
 Beginning in protocol version 2,
 if your engine does not support analyze mode, it should use
-the feature command to set analyze=0.  
+the feature command to set analyze=0.
 </font>
 The older method of
 printing the error message "Error (unknown command): analyze" in
@@ -1586,7 +1618,7 @@ response to the "analyze" command will also work, however.
 </p>
 
 <p>
-To enter analyze mode, xboard sends the command sequence "post", "analyze".  
+To enter analyze mode, xboard sends the command sequence "post", "analyze".
 Analyze mode in your engine should be
 similar to force mode, except that your engine thinks about what move
 it would make next if it were on move.  Your engine should accept the
@@ -1608,7 +1640,7 @@ if any; see above.</font>
 <strong>hint</strong>&nbsp;&nbsp; Show the predicted move from this
 position, if any; see above.</font>
 </ul>
-  
+
 <p>
 If the user selects "Periodic Updates", xboard will send the string
 ".\n" to the chess engine periodically during analyze mode, unless the
@@ -1672,7 +1704,7 @@ figure this out itself.
 
 <p>
 Some engines have variant interpretations of the force/go/white/black,
-time/otim, and hard/easy command sets.  
+time/otim, and hard/easy command sets.
 In order to accommodate these older engines, xboard uses these commands
 only according to the stylized patterns ("idioms") given in this section.
 The obsolete white and black commands
@@ -1693,7 +1725,7 @@ playing the opposite color.
 <dt><strong>go</strong>
 <dd>Sent when the engine is in force mode or playing Black but should
 switch to playing White.  This sequence is sent only when White is
-already on move.  
+already on move.
 <font color=red>
 If you set the feature colors=0, "white" is not sent.
 </font>
@@ -1703,7 +1735,7 @@ If you set the feature colors=0, "white" is not sent.
 <dt><strong>go</strong>
 <dd>Sent when the engine is in force mode or playing White but should
 switch to playing Black.  This sequence is sent only when Black is
-already on move.  
+already on move.
 <font color=red>
 If you set the feature colors=0, "black" is not sent.
 </font>
@@ -1716,9 +1748,9 @@ If you set the feature colors=0, "black" is not sent.
 <dt><strong>go</strong>
 <dd>Sent when Black is on move, the engine is in force mode or playing
 White, and the engine's clock needs to be updated before it starts
-playing.  
+playing.
 The initial "white" is a kludge to accommodate GNU Chess
-4's variant interpretation of these commands.  
+4's variant interpretation of these commands.
 <font color=red>
 If you set the feature colors=0, "white" and "black" are not sent.
 </font>
@@ -1731,9 +1763,9 @@ If you set the feature colors=0, "white" and "black" are not sent.
 <dt><strong>go</strong>
 <dd>Sent when White is on move, the engine is in force mode or playing
 Black, and the engine's clock needs to be updated before it starts
-playing.  See previous idiom.  
+playing.  See previous idiom.
 The initial "black" is a kludge to accommodate GNU Chess
-4's variant interpretation of these commands.  
+4's variant interpretation of these commands.
 <font color=red>
 If you set the feature colors=0, "black" and "white" are not sent.
 </font>
