@@ -1,10 +1,10 @@
 ChangeLog for XBoard/WinBoard
-* 12/02/2004: Bugfix ICS interaction console crashed while chess engine is starting 
+* 02/12/2004: Bugfix ICS interaction console crashed while chess engine starting 
 and user type in some stuff. We are wait now to finish the engine boot.
 
-* 11/02/2004: Winboard: Added color lines for the ics interaction console if zippy used
+* 02/11/2004: Winboard: Added color lines for the ics interaction console if zippy used
 
-* 09/02/2004: Added mousewheel support for winboard. Play moves backward 
+* 02/09/2004: Added mousewheel support for winboard. Play moves backward 
 and forward with the mousewheel.
 
 * 11/26/2003: In WinBoard, setting the -debug flag now logs ICS output
