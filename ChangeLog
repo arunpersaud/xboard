@@ -1,4 +1,6 @@
 ChangeLog for XBoard/WinBoard
+* 12/02/2004: Bugfix ICS interaction console crashed while chess engine is starting 
+and user type in some stuff. We are wait now to finish the engine boot.
 
 * 11/02/2004: Winboard: Added color lines for the ics interaction console if zippy used
 
