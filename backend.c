@@ -4383,6 +4383,9 @@ HandleMachineMove(message, cps)
 	    break;
 	  case AnalyzeMode:
 	  case AnalyzeFile:
+	  /* icsEngineAnalyze */
+	  case IcsObserving:
+		if (!appData.icsEngineAnalyze) ignore = TRUE;
 	    break;
 	  case TwoMachinesPlay:
 	    if ((cps->twoMachinesColor[0] == 'w') !=
@@ -4445,8 +4448,8 @@ HandleMachineMove(message, cps)
 			prefixHint ? lastHint : "",
 			prefixHint ? " " : "", buf1);
 
-		if (currentMove == forwardMostMove ||
-		    gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
+		if (currentMove == forwardMostMove || gameMode == AnalyzeMode
+			|| gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
 		    DisplayAnalysis();
 		}
@@ -4472,7 +4475,7 @@ HandleMachineMove(message, cps)
 		programStats.line_is_book = 1;
 
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode ||
-		    gameMode == AnalyzeFile) {
+		    gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
 		    DisplayAnalysis();
 		}
@@ -4517,7 +4520,7 @@ HandleMachineMove(message, cps)
 		strcat(programStats.movelist, " ");
 		strcat(programStats.movelist, p);
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode ||
-		    gameMode == AnalyzeFile) {
+		    gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
 		    DisplayAnalysis();
 		}
@@ -7295,8 +7298,10 @@ AnalyzeModeEvent()
       return;
 
     if (gameMode != AnalyzeFile) {
-	EditGameEvent();
-	if (gameMode != EditGame) return;
+		if (!appData.icsEngineAnalyze) {
+			EditGameEvent();
+	        if (gameMode != EditGame) return;
+		}
 	ResurrectChessProgram();
 	SendToProgram("analyze\n", &first);
 	first.analyzing = TRUE;
@@ -7305,7 +7310,7 @@ AnalyzeModeEvent()
 	AnalysisPopUp(_("Analysis"),
 		      _("Starting analysis mode...\nIf this message stays up, your chess program does not support analysis."));
     }
-    gameMode = AnalyzeMode;
+    if (!appData.icsEngineAnalyze) gameMode = AnalyzeMode;
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
@@ -7771,6 +7776,9 @@ EditPositionEvent()
 void
 ExitAnalyzeMode()
 {
+	/* icsEngineAnalyze - possible call of other functions */
+	if (appData.icsEngineAnalyze) appData.icsEngineAnalyze = FALSE;
+
     if (first.analysisSupport && first.analyzing) {
       SendToProgram("exit\n", &first);
       first.analyzing = FALSE;
@@ -9240,7 +9248,8 @@ DisplayAnalysisText(text)
 {
     char buf[MSG_SIZ];
 
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
+    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
+		|| appData.icsEngineAnalyze) {
 	sprintf(buf, "Analysis (%s)", first.tidy);
 	AnalysisPopUp(buf, text);
     }

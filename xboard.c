@@ -2466,6 +2466,9 @@ XBoard square size (hint): %d\n\
 		    args, 1);
     }
 
+	/* icsEngineAnalyze - Currently not yet implemented in XBoard */
+	appData.icsEngineAnalyze = FALSE;
+
     /*
      * Create an icon.
      */

@@ -407,6 +407,7 @@ typedef struct {
     int firstProtocolVersion;
     int secondProtocolVersion;
     Boolean showButtonBar;
+	Boolean icsEngineAnalyze; 
 #if ZIPPY
     char *zippyLines;
     char *zippyPinhead;

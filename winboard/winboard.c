@@ -1611,6 +1611,7 @@ InitAppData(LPSTR lpCmdLine)
   appData.reuseFirst = TRUE;
   appData.reuseSecond = TRUE;
   appData.blindfold = FALSE;
+  appData.icsEngineAnalyze = FALSE;
   dcb.DCBlength = sizeof(DCB);
   dcb.BaudRate = 9600;
   dcb.fBinary = TRUE;
@@ -1627,7 +1628,7 @@ InitAppData(LPSTR lpCmdLine)
   dcb.fAbortOnError = FALSE;
   /* Microsoft SDK >= Feb. 2003 (MS VS >= 2002) */
   #if (defined(_MSC_VER) && _MSC_VER <= 1200) 
-	dcb.wReserved = 0;
+	//dcb.wReserved = 0;
   #else
     dcb.wReserved = 0;
   #endif
@@ -3404,6 +3405,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   FILE *f;
   UINT number;
   char fileTitle[MSG_SIZ];
+  char buf[MSG_SIZ];
 
   switch (message) {
 
@@ -3638,15 +3640,37 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_AnalysisMode:
       if (!first.analysisSupport) {
-        char buf[MSG_SIZ];
         sprintf(buf, "%s does not support analysis", first.tidy);
         DisplayError(buf, 0);
       } else {
+	/* icsEngineAnlyze */
+	if (appData.icsActive) {
+		if (gameMode != IcsObserving) {
+			sprintf(buf, "You are not observing a game");
+			DisplayError(buf, 0);
+			/* secure check */
+			if (appData.icsEngineAnalyze) {
+				appData.icsEngineAnalyze = FALSE;
+				ExitAnalyzeMode();
+				ModeHighlight();
+				break;
+			}
+			break;
+		} else {
+			/* if enable, user want disable icsEngineAnalyze */
+			if (appData.icsEngineAnalyze) {
+				appData.icsEngineAnalyze = FALSE;
+				ExitAnalyzeMode();
+				ModeHighlight();
+				break;
+			}
+			appData.icsEngineAnalyze = TRUE;
+		}
+	} 
 	if (!appData.showThinking) ToggleShowThinking();
 	AnalyzeModeEvent();
       }
       break;
-
     case IDM_AnalyzeFile:
       if (!first.analysisSupport) {
         char buf[MSG_SIZ];
@@ -4019,8 +4043,8 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       AutoPlayGameLoop(); /* call into back end */
       break;
     case ANALYSIS_TIMER_ID:
-      if ((gameMode == AnalyzeMode || gameMode == AnalyzeFile) && 
-	  appData.periodicUpdates) {
+      if ((gameMode == AnalyzeMode || gameMode == AnalyzeFile
+		  || appData.icsEngineAnalyze) && appData.periodicUpdates) {
 	AnalysisPeriodicEvent(0);
       } else {
 	KillTimer(hwnd, analysisTimerEvent);
@@ -6219,6 +6243,14 @@ ModeHighlight()
   }
 
   prevChecked = nowChecked;
+  /* icsEngineAnalyze - Do a sceure check too */
+  if (appData.icsEngineAnalyze) {
+	(void) CheckMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
+		MF_BYCOMMAND|MF_CHECKED);
+  } else {
+	(void) CheckMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
+		MF_BYCOMMAND|MF_UNCHECKED);
+  }
 }
 
 VOID
@@ -6231,6 +6263,10 @@ SetICSMode()
 #ifdef ZIPPY
   if (appData.zippyPlay) {
     SetMenuEnables(hmenu, zippyEnables);
+	/* icsEngineAnalyze */
+    if (!appData.noChessProgram) 
+	  (void) EnableMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
+	   MF_BYCOMMAND|MF_ENABLED);
   }
 #endif
 }
