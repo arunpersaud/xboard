@@ -11,6 +11,9 @@ the Web through the page
 "http://www.tim-mann.org/chess.html"
 >http://www.tim-mann.org/chess.html</A>.
 
+<i>This FAQ is in need of revision.  Please contact us if you'd like
+to help update it.</i>
+
 <HR>
 <H2>Outline</H2>
 
@@ -191,12 +194,13 @@ not work on Windows CE (also known as Pocket PC), nor does it work on
 <H3><A NAME="[A.2]">[A.2] Where can I get chess information and chess 
 software?</A></H3>
 
-As a shortcut to most things mentioned in this FAQ, try my Chess Web page,
-<A HREF=
-"http://www.tim-mann.org/chess.html"
->http://www.tim-mann.org/chess.html</A>.
-My Web page is the best place to get the latest versions of XBoard and WinBoard
-and the most up-to-date version of this FAQ.
+As a shortcut to most things mentioned in this FAQ, try Tim Mann's
+Chess Web page, <A HREF= "http://www.tim-mann.org/chess.html"
+>http://www.tim-mann.org/chess.html</A>.  This page page is a good
+place to get the latest released versions of XBoard and WinBoard and
+the most up-to-date version of this FAQ.  Also see our Savannah
+project pages at <a href="https://savannah.gnu.org/projects/xboard/"
+>https://savannah.gnu.org/projects/xboard/</a>.
 
 <p>If you have other questions about XBoard/WinBoard that aren't answered
 in this FAQ, you can try Aaron Tay's WinBoard and Chess Engines FAQ, at
@@ -265,21 +269,27 @@ At this writing, the current version numbers are:
 <HR>
 <H3><A NAME="[A.4]">[A.4] Who is working on this project?</A></H3>
 
-Tim Mann maintains this FAQ and is the lead developer on XBoard and
-WinBoard, but he has little time to work on the project.  Many others
-occasionally contribute suggestions and snippets of code, for which we
-are grateful.
+Please see our Savannah project pages at <a
+href="https://savannah.gnu.org/projects/xboard/"
+>https://savannah.gnu.org/projects/xboard/</a> for a list of active
+developers.  Many others occasionally contribute suggestions and
+snippets of code, for which we are grateful.
 
 <HR>
 <H3><A NAME="[A.5]">[A.5] How do I report bugs, offer help, etc.?</A></H3>
 
-<P>At present, bug reports, suggestions, and offers to help on XBoard
-or WinBoard should be sent directly to 
-tim<a name="nospam">@</a>tim-mann.org (Tim Mann).
-Beginner questions and discussion about the program may get faster
+<P>Bug reports, suggestions, and offers to help on XBoard
+or WinBoard should be sent to
+bug-xboard<a name="nospam">@</a>gnu.org. <i>(Note: as of 4 Nov 2003,
+this mailing list is temporarily broken.  You can send mail to
+bug-xboard<a name="nospam">@</a>tim-mann.org instead until it is fixed.)</i>
+
+<p>Beginner questions and discussion about the program may get faster
 answers on the WinBoard Forum at <a
 href="http://f11.parsimony.net/forum16635/"
->http://f11.parsimony.net/forum16635/</a>.  If you are developing a
+>http://f11.parsimony.net/forum16635/</a>.  
+
+<p>If you are developing a
 chess engine that works with XBoard or WinBoard (or an alternative
 GUI that works with such engines), see the Chess Engines mailing
 list, hosted at
@@ -314,57 +324,50 @@ are very meaningful to us and essential for diagnosing problems.
 <h3><a name="[A.6]">[A.6] What are the future plans for XBoard and
   WinBoard?</a></h3>
 
-<p>There are no firm plans. As with most free software projects, the
-next release will happen when it happens -- or it may never happen.
-This has always been the policy for XBoard/WinBoard.  Releases have
-never been promised in specific time frames.
+<p>Our plans are always in flux.  As with most free software projects,
+the next release will happen when it happens -- or it may never
+happen.  This has always been the policy for XBoard/WinBoard.
+Releases have never been promised in specific time frames.
 
-<p>Currently, there are few developments in the pipeline, they have
-not gotten far, and they are moving along very slowly, if at all.
-This is mainly because I no longer enjoy working on the project.  I
-have many other things to do that are more important, more fun, or
-both, and they more than fill my waking hours.  If another qualified
-programmer would like to take over the project, I'd welcome that.
-Please contact me if you're interested.
+<p>Starting in November 2003, several new developers have joined the
+project, and work is now hosted at <a
+href="https://savannah.gnu.org/projects/xboard/"
+>https://savannah.gnu.org/projects/xboard/</a>.  Lots of work is just
+getting underway, but nothing is far along yet.
 
-<p>That said, here are some items that have a nonzero probability of
-happening in finite time.  Most of the probabilities are actually
-pretty small.
+<p>Here is a partial list of items that have a nonzero probability of
+happening in finite time.
 
 <ul>
-<li>Small bug fixes.  Occasionally someone sends me a fix, or reports
-a small bug very clearly so that I'm able to fix it in a few minutes
-work.  At this writing (May 26, 2003), all the bug fixes I've made
-in my sources are included in version 4.2.7.<p>
+<li>Small bug fixes.  Occasionally someone sends us a fix, or reports
+a small bug very clearly so that we're able to fix it in a few minutes
+work.<p>
 
 <li>Protocol version 3.  The members of the chess engine authors'
-mailing list and I discussed a set of proposed features for the next
-version of the XBoard/WinBoard chess engine communication protocol.
-This project has gotten only as far as that discussion took it: I've
-saved the proposal that I posted and all the comments on it, but I've
-done roughly nothing on revising the protocol spec to fold in the
-changes, and nothing on implementing any of them.  This is too bad;
-revising the engine protocol was the last part of the project that I
-really thought was important.  It is perhaps less important now with
-the increasing popularity of the UCI protocol, but it would still be
-nice to clean up some remaining deficiencies of the XBoard/WinBoard
-protocol.<p>
+mailing list discussed a set of proposed features for the next version
+of the XBoard/WinBoard chess engine communication protocol.
+Unfortunately, this project has gotten only as far as that discussion
+took it; no revisions of the protocol spec or coding have been done
+yet.  A few simple features are very clearly needed, though, and will
+probably appear in time.<p>
 
-<li>Contributed features.  Several people have mailed me code to
-add various features.  I've had some these contributions for over a
-year and haven't found time to even try them, much less integrate them
-into a release.  Recently I've put them all up on my Web site in case
-others would like to try them out.<p>
+<li>Contributed features.  Several people have mailed me code to add
+various features.  Most of this code is available on the
+XBoard/WinBoard extensions page at <a
+href="http://www.tim-mann.org/extensions.html"
+>http://www.tim-mann.org/extensions.html</a>, but it is not in any
+official releases yet.  We are in the process of getting folks to
+formally assign the copyrights on their contributions to the Free
+Software Foundation so that we can include it in official releases in
+the future.<p>
 
-<li>Code move into CVS on Savannah.  I've done nothing on this so far,
-but it would be nice in order to facilitate others working on the
-code.  It would also provide an easier way for people to get bug fixes
-that I haven't rolled into a release yet.  This wouldn't be terribly
-useful for most WinBoard users, though, since the average WinBoard
-user would have absolutely no idea how to download code from CVS and
-compile it.<p> </ul>
+<li>Internationalization.  Several people have expressed interest in
+internationalizing XBoard/WinBoard, and so hopefully this project will
+go forward.  Once the internationalization support is in, we will need
+more translators.  Watch for news on the xboard-devel mailing list on
+our Savannah pages.
 
-<p>There is nothing else in the works.
+</ul>
 
 <HR>
 <H2><A NAME="[B]">[B] XBoard and WinBoard</A></H2>
