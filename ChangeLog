@@ -1,5 +1,7 @@
 ChangeLog for XBoard/WinBoard
 
+* 11/02/2004: Add color lines for the ics interaction console if zippy used
+
 * 09/02/2004: Add mousewheel support for winboard. Play moves backward 
 and forward with the mousewheel.
 
