@@ -169,7 +169,7 @@ sub parse
     }
 
     if (/\@include (.*)/) {
-        open(my $INCL, $1) or open(my $INCL, "../$1") or die "$1: $!";
+        open(my $INCL, $1) or open($INCL, "../$1") or die "$1: $!";
         while (<$INCL>) {
             parse();
         }
