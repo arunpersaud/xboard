@@ -1,4 +1,3 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"> 
 <html>
 <head>
 <title>Chess Engine Communication Protocol</title>
@@ -9,7 +8,7 @@
 <h1>Chess Engine Communication Protocol</h1>
 <h2><a href="http://www.tim-mann.org/">Tim Mann</a></h2>
 <p>
-Last modified on Mon Feb  5 23:23:16 PST 2001 by mann<br>
+$Id$<br>
 Version 2; implemented in xboard/WinBoard 4.2.1 and later.<br>
 Changes since version 1 are indicated in <font color=red>red</font>.
 <hr noshade size="2">
@@ -21,7 +20,7 @@ Changes since version 1 are indicated in <font color=red>red</font>.
 <li><a href="#4">4. How it got this way</a>
 <li><a href="#5">5. WinBoard requires Win32 engines</a>
 <li><a href="#6">6. Hints on input/output</a>
-<li><a href="#7">7. Interrupts</a>
+<li><a href="#7">7. Signals</a>
 <li><a href="#8">8. Commands from xboard to the engine</a>
 <li><a href="#9">9. Commands from the engine to xboard</a>
 <li><a href="#10">10. Thinking Output</a>
@@ -69,10 +68,10 @@ statements, let me know.
 
 <p>
 I'd like to hear from everyone who is trying to interface their own
-chess engine to xboard/WinBoard.  Please email me, <a
-href="mailto:tim.mann@compaq.com">tim.mann@compaq.com</a>.  Also, please join
+chess engine to xboard/WinBoard.  Please email me,
+tim<a name="nospam">@</a>tim-mann.org.  Also, please join
 the mailing list for authors of xboard/WinBoard compatible chess
-engines.  The list is now hosted by egroups.com; you can join at <a
+engines.  The list is now hosted by Yahoo Groups; you can join at <a
 href="http://www.egroups.com/group/chess-engines"
 >http://www.egroups.com/group/chess-engines</a>, or you can read the
 list there without joining.  The list is filtered to prevent spam.
@@ -173,8 +172,8 @@ features can be selected by the feature command in version 2,
 including the "ping" command (recommended for all engines), the
 "setboard" command, and many optional parameters.  Additional features
 will probably be added in future versions.
-</font>
 </p>
+</font>
 
 <h2><a name="5">5. WinBoard requires Win32 engines</a></h2>
 
@@ -420,9 +419,9 @@ user input, you must turn off the prompt and output a newline when the
 "xboard" command comes in.
 <p>
 
-<font color=red>
-<dt><strong>protover N</strong> 
-<dd>Beginning in protocol version 2 (in which N=2), this command will
+<dt><font color=red><strong>protover N</strong></font>
+<dd><font color=red>
+Beginning in protocol version 2 (in which N=2), this command will
 be sent immediately after the "xboard" command.  If you receive some
 other command immediately after "xboard" (such as "new"), you can
 assume that protocol version 1 is in use.  The "protover" command is
@@ -443,10 +442,10 @@ options added in later protocol versions may be accepted.
 </font>
 <p>
 
-<font color=red>
-<dt><strong>accepted</strong> 
-<dt><strong>rejected</strong>
-<dd>These commands may be sent to your engine in reply to the "feature"
+<dt><font color=red><strong>accepted</strong></font>
+<dt><font color=red><strong>rejected</strong></font>
+<dd><font color=red>
+These commands may be sent to your engine in reply to the "feature"
 command; see its documentation below.
 </font>
 <p>
@@ -629,9 +628,9 @@ error message so that xboard can retract it and inform the user; see
 the section "<a href="#9">Commands from the engine to xboard</a>".
 </p>
 
-<font color=red>
-<dt><strong>usermove MOVE</strong>
-<dd>By default, moves are sent to the engine without a command name;
+<dt><font color=red><strong>usermove MOVE</strong></font>
+<dd><font color=red>
+By default, moves are sent to the engine without a command name;
 the notation is just sent as a line by itself.
 Beginning in protocol version 2, you can use the feature command
 to cause the command name "usermove" to be sent before the move.
@@ -656,9 +655,9 @@ or other commands
 while the engine is on move.
 </p>
 
-<font color=red>
-<dt><strong>ping N</strong>
+<dt><font color=red><strong>ping N</strong></font>
 <dd>
+<font color=red>
 In this command, N is a decimal number.  When you receive the command,
 reply by sending the string <strong>pong N</strong>, where N is the
 same number you received.  Important: You must not reply to a "ping"
@@ -728,9 +727,9 @@ particular, you won't get one in local chess engine mode when the user
 stops playing by selecting Reset, Edit Game, Exit or the like.
 </p>
 
-<font color=red>
-<dt><strong>setboard FEN</strong> 
-<dd>The setboard command is the new way to set up positions, beginning
+<dt><font color=red><strong>setboard FEN</strong></font>
+<dd><font color=red>
+The setboard command is the new way to set up positions, beginning
 in protocol version 2.  It is not used unless it has been selected
 with the feature command.  Here FEN is a position in Forsythe-Edwards
 Notation, as defined in the PGN standard.
@@ -877,9 +876,9 @@ are known.
 Example: <pre>rating 2600 1500</pre>
 <p>
 
-<font color=red>
-<dt><strong>ics HOSTNAME</strong> 
-<dd>If HOSTNAME is "-", the engine is playing against a local
+<dt><font color=red><strong>ics HOSTNAME</strong></font>
+<dd><font color=red>
+If HOSTNAME is "-", the engine is playing against a local
 opponent; otherwise, the engine is playing on an Internet Chess Server
 (ICS) with the given hostname.  This command is new in protocol
 version 2 and is not sent unless the engine has enabled it with
@@ -892,10 +891,9 @@ the "feature" command.  Example: "ics freechess.org"
 their playing style when they receive this command.
 <p>
 
-<font color=red>
-<dt><strong>pause</strong> 
-<dt><strong>resume</strong> 
-<dd>(These commands are new in protocol
+<dt><font color=red><strong>pause</strong></font>
+<dt><font color=red><strong>resume</strong></font>
+<dd><font color=red>(These commands are new in protocol
 version 2 and will not be sent unless feature pause=1 is set.  At
 this writing, xboard actually does not use the commands at all, but it
 or other interfaces may use them in the future.)
@@ -957,10 +955,12 @@ were previously not assigned a meaning.
 </p>
 
 <dl>
-<font color=red>
-<dt><strong>feature FEATURE1=VALUE1 FEATURE2=VALUE2 ...</strong> 
+<dt><font color=red>
+<strong>feature FEATURE1=VALUE1 FEATURE2=VALUE2 ...</strong> 
+</font>
 
-<dd>Beginning with version 2, the protocol includes the "feature"
+<dd><font color=red>
+Beginning with version 2, the protocol includes the "feature"
 command, which lets your engine control certain optional protocol
 features.  Feature settings are written as FEATURE=VALUE, where
 FEATURE is a name from the list below and VALUE is the value to be
@@ -1028,71 +1028,123 @@ depend on be rejected.
 <p>
 Here are the features that are currently defined.
 </p>
+</font>
 
 <dl>
-<dt><strong>ping</strong> (boolean, default 0, recommended 1)
-<dd>If ping=1, xboard may use the protocol's new "ping" command;
+<dt><font color=red>
+<strong>ping</strong> (boolean, default 0, recommended 1)
+</font>
+<dd><font color=red>
+If ping=1, xboard may use the protocol's new "ping" command;
 if ping=0, xboard will not use the command.
+</font>
 
-<dt><strong>setboard</strong> (boolean, default 0, recommended 1)
-<dd>If setboard=1, xboard will use the protocol's new "setboard" command
+<dt><font color=red>
+<strong>setboard</strong> (boolean, default 0, recommended 1)
+</font>
+<dd><font color=red>
+If setboard=1, xboard will use the protocol's new "setboard" command
 to set up positions; if setboard=0, it will use the older "edit" command.
+</font>
 
-<dt><strong>playother</strong> (boolean, default 0, recommended 1)
-<dd>If playother=1, xboard will use the protocol's new "playother" command
+<dt><font color=red>
+<strong>playother</strong> (boolean, default 0, recommended 1)
+</font>
+<dd><font color=red>
+If playother=1, xboard will use the protocol's new "playother" command
 when appropriate; if playother=0, it will not use the command.
+</font>
 
-<dt><strong>san</strong> (boolean, default 0)
-<dd>If san=1, xboard will send moves to the engine in standard algebraic
+<dt><font color=red>
+<strong>san</strong> (boolean, default 0)
+</font>
+<dd><font color=red>
+If san=1, xboard will send moves to the engine in standard algebraic
 notation (SAN); for example, Nf3.  If san=0, xboard will send moves in
 coordinate notation; for example, g1f3.  See MOVE in 
 <a href="#8">section 8</a> above for more details of both kinds of notation.
+</font>
 
-<dt><strong>usermove</strong> (boolean, default 0)
-<dd>If usermove=1, xboard will send moves to the engine with the
+<dt><font color=red>
+<strong>usermove</strong> (boolean, default 0)
+</font>
+<dd><font color=red>
+If usermove=1, xboard will send moves to the engine with the
 command "usermove MOVE"; if usermove=0, xboard will send just the move,
 with no command name.
+</font>
 
-<dt><strong>time</strong> (boolean, default 1, recommended 1)
-<dd>If time=1, xboard will send the "time" and "otim" commands to
+<dt><font color=red>
+<strong>time</strong> (boolean, default 1, recommended 1)
+</font>
+<dd><font color=red>
+If time=1, xboard will send the "time" and "otim" commands to
 update the engine's clocks; if time=0, it will not.
+</font>
 
-<dt><strong>draw</strong> (boolean, default 1, recommended 1)
-<dd>If draw=1, xboard will send the "draw" command if the engine's opponent
+<dt><font color=red>
+<strong>draw</strong> (boolean, default 1, recommended 1)
+</font>
+<dd><font color=red>
+If draw=1, xboard will send the "draw" command if the engine's opponent
 offers a draw; if draw=0, xboard will not inform the engine about
 draw offers.  Note that if draw=1, you may receive a draw offer while you
 are on move; if this will cause you to move immediately, you should set
 draw=0.
+</font>
 
-<dt><strong>sigint</strong> (boolean, default 1)
-<dd>If sigint=1, xboard may send SIGINT (the interrupt signal) to
+<dt><font color=red>
+<strong>sigint</strong> (boolean, default 1)
+</font>
+<dd><font color=red>
+If sigint=1, xboard may send SIGINT (the interrupt signal) to
 the engine as <a href="#7">section 7</a> above; if sigint=0, it will
 not.
+</font>
 
-<dt><strong>sigterm</strong> (boolean, default 1)
-<dd>If sigterm=1, xboard may send SIGTERM (the termination signal) to
+<dt><font color=red>
+<strong>sigterm</strong> (boolean, default 1)
+</font>
+<dd><font color=red>
+If sigterm=1, xboard may send SIGTERM (the termination signal) to
 the engine as <a href="#7">section 7</a> above; if sigterm=0, it will
 not.
+</font>
 
-<dt><strong>reuse</strong> (boolean, default 1, recommended 1) 
-<dd>If reuse=1, xboard may reuse your engine for multiple games.  If
+<dt><font color=red>
+<strong>reuse</strong> (boolean, default 1, recommended 1) 
+</font>
+<dd><font color=red>
+If reuse=1, xboard may reuse your engine for multiple games.  If
 reuse=0 (or if the user has set the -xreuse option on xboard's command
 line), xboard will kill the engine process after every game and start
 a fresh process for the next game.
+</font>
 
-<dt><strong>analyze</strong> (boolean, default 1, recommended 1)
-<dd>If analyze=0, xboard will not try to use the "analyze" command; it
+<dt><font color=red>
+<strong>analyze</strong> (boolean, default 1, recommended 1)
+</font>
+<dd><font color=red>
+If analyze=0, xboard will not try to use the "analyze" command; it
 will pop up an error message if the user asks for analysis mode.  If
 analyze=1, xboard will try to use the command if the user asks for
 analysis mode.
+</font>
 
-<dt><strong>myname</strong> (string, default determined from engine filename)
-<dd>This feature lets you set the name that xboard will use for your
+<dt><font color=red>
+<strong>myname</strong> (string, default determined from engine filename)
+</font>
+<dd><font color=red>
+This feature lets you set the name that xboard will use for your
 engine in window banners, in the PGN tags of saved game files, and when
 sending the "name" command to another engine.
+</font>
 
-<dt><strong>variants</strong> (string, see text below)
-<dd>This feature indicates which chess variants your engine accepts.
+<dt><font color=red>
+<strong>variants</strong> (string, see text below)
+</font>
+<dd><font color=red>
+This feature indicates which chess variants your engine accepts.
 It should be a comma-separated list of variant names.  See the table
 under the "variant" command in <a href="#8">section 8</a> above.  If
 you do not set this feature, xboard will assume by default that your
@@ -1103,37 +1155,57 @@ correct value for your engine (just "normal" in most cases) rather
 than leaving the default in place, so that the user will get an
 appropriate error message if he tries to play a variant that your
 engine does not support.
+</font>
 
-<dt><strong>colors</strong> (boolean, default 1, recommended 0) 
-<dd>If colors=1, xboard uses the obsolete "white" and "black"
+<dt><font color=red>
+<strong>colors</strong> (boolean, default 1, recommended 0) 
+</font>
+<dd><font color=red>
+If colors=1, xboard uses the obsolete "white" and "black"
 commands in a stylized way that works with most older chess engines
 that require the commands.  See the "<a href="#13">Idioms</a>" section
 below for details.  If colors=0, xboard does not use the "white" and
 "black" commands at all.
+</font>
 
-<dt><strong>ics</strong> (boolean, default 0)
-<dd>If ics=1, xboard will use the protocol's new "ics" command
+<dt><font color=red>
+<strong>ics</strong> (boolean, default 0)
+</font>
+<dd><font color=red>
+If ics=1, xboard will use the protocol's new "ics" command
 to inform the engine of whether or not it is playing on a chess server;
 if ics=0, it will not.
+</font>
 
-<dt><strong>name</strong> (boolean, see text below)
-<dd>If name=1, xboard will use the protocol's "name" command
+<dt><font color=red>
+<strong>name</strong> (boolean, see text below)
+</font>
+<dd><font color=red>
+If name=1, xboard will use the protocol's "name" command
 to inform the engine of the opponent's name; if name=0, it will not.
 By default, name=1 if the engine is playing on a chess server; name=0 if not.
+</font>
 
-<dt><strong>pause</strong> (boolean, default 0)
-<dd>If pause=1, xboard may use the protocol's new "pause" command;
+<dt><font color=red>
+<strong>pause</strong> (boolean, default 0)
+</font>
+<dd><font color=red>
+If pause=1, xboard may use the protocol's new "pause" command;
 if pause=0, xboard assumes that the engine does not support this command.
+</font>
 
-<dt><strong>done</strong> (integer, no default)
-<dd>If you set done=1 during the initial two-second timeout after
+<dt><font color=red>
+<strong>done</strong> (integer, no default)
+</font>
+<dd><font color=red>
+If you set done=1 during the initial two-second timeout after
 xboard sends you the "xboard" command, the
 timeout will end and xboard will not look for any more feature
 commands before starting normal operation.
 If you set done=0, the initial timeout is increased to one hour;
 in this case, you must set done=1 before xboard will enter normal operation.
-</dl>
 </font>
+</dl>
 <p>
 
 <dt><strong>Illegal move: MOVE</strong>
@@ -1238,9 +1310,9 @@ Machine Black, or Two Machines mode, the offer is considered valid
 until your engine has made two more moves.
 <p>
 
-<font color=red>
-<dt><strong>tellopponent MESSAGE</strong>
-<dd>This command lets the engine give a message to its opponent,
+<dt><font color=red><strong>tellopponent MESSAGE</strong></font>
+<dd><font color=red>
+This command lets the engine give a message to its opponent,
 independent of whether the opponent is a user on the local machine or
 a remote ICS user (Zippy mode).  MESSAGE consists of any characters,
 including whitespace, to the end of the line.  When the engine is
@@ -1297,9 +1369,9 @@ bar" to the engine.  The user can cancel the dialog and send nothing.
 of any characters, including whitespace, to the end of the line.
 <p>
 
-<font color=red>
-<dt><strong>tellicsnoalias MESSAGE</strong>
-<dd>In Zippy mode, xboard sends "xMESSAGE\n" to ICS, where "x" is a
+<dt><font color=red><strong>tellicsnoalias MESSAGE</strong></font>
+<dd><font color=red>
+In Zippy mode, xboard sends "xMESSAGE\n" to ICS, where "x" is a
 character that prevents the ICS from expanding command aliases, if
 xboard knows of such a character.  (On chessclub.com and chess.net,
 "/" is used; on freechess.org, "$" is used.)  MESSAGE consists of any
@@ -1526,15 +1598,14 @@ following commands while in analyze mode:
 <li>Any legal move, as in force mode
 <li><strong>undo</strong>&nbsp;&nbsp; Back up one move and analyze previous position.
 <li><strong>new</strong>&nbsp;&nbsp; Reset position to start of game but stay in analyze mode.
-<font color=red>
-<li><strong>setboard</strong> if you have set feature setboard=1; otherwise <strong>edit</strong>.  Exiting edit mode returns to analyze mode.
+<li><font color=red><strong>setboard</strong> if you have set feature setboard=1; otherwise <strong>edit</strong>.  Exiting edit mode returns to analyze mode.
 </font>
 <li><strong>exit</strong>&nbsp;&nbsp; Leave analyze mode.
 <li><strong>.</strong>&nbsp;&nbsp; Send a search status update (optional); see below.
-<font color=red><li>
+<li><font color=red>
 <strong>bk</strong>&nbsp;&nbsp; Show book moves from this position,
 if any; see above.</font>
-<font color=red><li>
+<li><font color=red>
 <strong>hint</strong>&nbsp;&nbsp; Show the predicted move from this
 position, if any; see above.</font>
 </ul>

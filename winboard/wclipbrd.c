@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <io.h>
 #include <sys/stat.h>
 
 #include "common.h"
@@ -72,13 +71,13 @@ CopyGameToClipboard()
   struct stat st;
 
   if (!copyTemp) {
-    copyTemp = tmpnam(NULL);
+    copyTemp = tempnam(NULL, "wbcp");
   }
   if (!copyTemp) {
       DisplayError("Cannot create temporary file name.",0);
       return;
   }
-  f = fopen(copyTemp, "w"); 
+  f = fopen(copyTemp, "w");
   if (!f) {
     DisplayError("Cannot open temporary file.", 0);
     return;
@@ -225,9 +224,9 @@ PasteGameFromClipboard()
     return;
   }
   if (!pasteTemp) {
-    pasteTemp = tmpnam(NULL);
+    pasteTemp = tempnam(NULL, "wbpt");
   }
-  f = fopen(pasteTemp, "wb+");
+  f = fopen(pasteTemp, "w");
   if (!f) {
     DisplayError("Unable to create temporary file.", 0);
     return;

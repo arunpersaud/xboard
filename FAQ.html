@@ -34,6 +34,8 @@ the Web through the page
   XBoard and WinBoard?</A></LI> 
 <LI><A HREF="#[A.4]">[A.4] Who is working on this project?</A></LI>
 <LI><A HREF="#[A.5]">[A.5] How do I report bugs, offer help, etc.?</A></LI>
+<LI><a href="#[A.6]">[A.6] What are the future plans for XBoard and
+  WinBoard?</A></LI>
 </UL>
 
 <LI><A NAME="[B0]" HREF="#[B]">[B] XBoard and WinBoard</A></LI>
@@ -85,6 +87,8 @@ the Web through the page
 <li><a href="#[B.24]">[B.24]
   The chess engines are too strong and always beat me.  How can I adjust
   the difficulty level to make them weaker?</a></li>
+<li><a href="#[B.25]">[B.25]
+  May I use the piece bitmaps from XBoard/WinBoard in my own program?</a></li>
 
 </UL>
 
@@ -140,7 +144,9 @@ the Web through the page
 <LI><A HREF="#[C.19]">[C.19] XBoard or WinBoard tells me
 "Error: first chess program (...) exited unexpectedly".</A></LI> 
 <li><a href="#[C.20]">[C.20]
-  XBoard tells me "Warning: Cannot allocate colormap entry".
+  XBoard tells me "Warning: Cannot allocate colormap entry", or
+  "too few colors available; trying monochrome mode", or
+  "XPM pieces cannot be used in monochrome mode".
 </a></li>
 <li><a href="#[C.21]">[C.21]
   When I log in to freechess.org, the Enter key doesn't work, and I 
@@ -194,8 +200,8 @@ and the most up-to-date version of this FAQ.
 
 <p>If you have other questions about XBoard/WinBoard that aren't answered
 in this FAQ, you can try Aaron Tay's WinBoard and Chess Engines FAQ, at
-<a href="http://www.chesskit.com/aarontay/Winboard/Winboard.html"
->http://www.chesskit.com/aarontay/Winboard/Winboard.html</a>.
+<a href="http://www.aarontay.per.sg/Winboard/"
+>http://www.aarontay.per.sg/Winboard/</a>.
 
 <P>For general news and information about chess, try the newsgroup hierarchy
 rec.games.chess.*, especially the groups rec.games.chess.misc and
@@ -238,9 +244,9 @@ are abbreviated, but all the commands you must type are included.
     200 Type set to I.
     ftp&gt; cd /pub/gnu/xboard
     ftp&gt; dir
-    -rw-r--r-- 1 14910 wheel  393119 May 20 00:25 xboard-4.2.6.tar.gz
-    ftp&gt; get xboard-4.2.6.tar.gz
-    150 BINARY connection for xboard-4.2.6.tar.gz (393119 bytes).
+    -rw-r--r-- 1 14910 wheel  1057625 May 20 00:25 xboard-4.2.7.tar.gz
+    ftp&gt; get xboard-4.2.7.tar.gz
+    150 BINARY connection for xboard-4.2.7.tar.gz (1057625 bytes).
     226 Transfer complete.
     ftp&gt; quit
 </PRE>
@@ -252,8 +258,8 @@ XBoard and WinBoard?</A></H3>
 At this writing, the current version numbers are:
 
 <UL>
-<LI>XBoard 4.2.6</LI>
-<LI>WinBoard 4.2.6</LI>
+<LI>XBoard 4.2.7</LI>
+<LI>WinBoard 4.2.7</LI>
 </UL>
 
 <HR>
@@ -268,7 +274,8 @@ are grateful.
 <H3><A NAME="[A.5]">[A.5] How do I report bugs, offer help, etc.?</A></H3>
 
 <P>At present, bug reports, suggestions, and offers to help on XBoard
-or WinBoard should be sent directly to tim@tim-mann.org (Tim Mann).
+or WinBoard should be sent directly to 
+tim<a name="nospam">@</a>tim-mann.org (Tim Mann).
 Beginner questions and discussion about the program may get faster
 answers on the WinBoard Forum at <a
 href="http://f11.parsimony.net/forum16635/"
@@ -302,6 +309,62 @@ lost.
 and the output you got, not just your recollection of approximately
 what they were.  The messages may seem meaningless to you, but they
 are very meaningful to us and essential for diagnosing problems.
+
+<hr>
+<h3><a name="[A.6]">[A.6] What are the future plans for XBoard and
+  WinBoard?</a></h3>
+
+<p>There are no firm plans. As with most free software projects, the
+next release will happen when it happens -- or it may never happen.
+This has always been the policy for XBoard/WinBoard.  Releases have
+never been promised in specific time frames.
+
+<p>Currently, there are few developments in the pipeline, they have
+not gotten far, and they are moving along very slowly, if at all.
+This is mainly because I no longer enjoy working on the project.  I
+have many other things to do that are more important, more fun, or
+both, and they more than fill my waking hours.  If another qualified
+programmer would like to take over the project, I'd welcome that.
+Please contact me if you're interested.
+
+<p>That said, here are some items that have a nonzero probability of
+happening in finite time.  Most of the probabilities are actually
+pretty small.
+
+<ul>
+<li>Small bug fixes.  Occasionally someone sends me a fix, or reports
+a small bug very clearly so that I'm able to fix it in a few minutes
+work.  At this writing (May 26, 2003), all the bug fixes I've made
+in my sources are included in version 4.2.7.<p>
+
+<li>Protocol version 3.  The members of the chess engine authors'
+mailing list and I discussed a set of proposed features for the next
+version of the XBoard/WinBoard chess engine communication protocol.
+This project has gotten only as far as that discussion took it: I've
+saved the proposal that I posted and all the comments on it, but I've
+done roughly nothing on revising the protocol spec to fold in the
+changes, and nothing on implementing any of them.  This is too bad;
+revising the engine protocol was the last part of the project that I
+really thought was important.  It is perhaps less important now with
+the increasing popularity of the UCI protocol, but it would still be
+nice to clean up some remaining deficiencies of the XBoard/WinBoard
+protocol.<p>
+
+<li>Contributed features.  Several people have mailed me code to
+add various features.  I've had some these contributions for over a
+year and haven't found time to even try them, much less integrate them
+into a release.  Recently I've put them all up on my Web site in case
+others would like to try them out.<p>
+
+<li>Code move into CVS on Savannah.  I've done nothing on this so far,
+but it would be nice in order to facilitate others working on the
+code.  It would also provide an easier way for people to get bug fixes
+that I haven't rolled into a release yet.  This wouldn't be terribly
+useful for most WinBoard users, though, since the average WinBoard
+user would have absolutely no idea how to download code from CVS and
+compile it.<p> </ul>
+
+<p>There is nothing else in the works.
 
 <HR>
 <H2><A NAME="[B]">[B] XBoard and WinBoard</A></H2>
@@ -403,11 +466,20 @@ Because MacOS X has a Unix base, XBoard will compile and run on it.
 You do need an X11 (X Window System) server and client libraries.
 These do not come with Mac OS, but both free and commercial versions
 are available.  Once you install the X11 package, XBoard is reported
-to compile and run without changes.
+to compile and run without changes.  I am not a Mac user and have not
+tried this myself, so I cannot answer questions about it.
+
+Version 4.2.6 and earlier of XBoard come with an old copy of the
+config.sub utility that does not recognize Mac OS X, so to build
+XBoard, you'll have to tell the configure program what OS you are
+running.  Follow the instructions in topic <A HREF="#[B.7]">[B.7]</A>
+of this FAQ, but add the argument <tt>--host=powerpc-apple-bsd</tt> to
+the end of the "configure" command line.
 
 There is no version of XBoard or WinBoard that runs with the native
 (non-X11) Mac graphical interface, and none that runs on MacOS 9 or
 earlier.
+
 
 <HR>
 <H3><A NAME="[B.5]">[B.5] Does XBoard run on VMS?</A></H3>
@@ -416,7 +488,8 @@ No.  This port would probably be a lot easier than the Win32 and Amiga
 ports were, because VMS has the X Window system (under the name
 DECwindows) and is now POSIX compliant.  However, I don't know enough
 about VMS to do the port myself, and I don't have time.  If you do,
-give it a try!  Send mail to me, tim@tim-mann.org (Tim Mann), if you're
+give it a try!  Send mail to me, 
+tim<a name="nospam2">@</a>tim-mann.org (Tim Mann), if you're
 working on this.
 
 <HR>
@@ -441,7 +514,7 @@ you do, type the following to install it there:
 <p><PRE>
     gzip -cd xboard-*.tar.gz | tar -xvf -
     cd xboard-*/
-    configure
+    ./configure
     make
     su
     make install
@@ -453,7 +526,7 @@ type this:
 <p><PRE>
     gzip -cd xboard-*.tar.gz | tar -xvf -
     cd xboard-*/
-    configure --prefix=$HOME
+    ./configure --prefix=$HOME
     make
     make install
 </PRE>
@@ -1020,6 +1093,21 @@ let you adjust various parameters, and if you choose bad settings, the
 engine will play more poorly.  Consult whatever documentation came with
 the engine you are using.
 
+<hr>
+<h3><a name="[B.25]">[B.25]
+  May I use the piece bitmaps from XBoard/WinBoard in my own program?</a></h3>
+
+<p>The piece bitmaps used in XBoard and WinBoard were designed by
+Elmar Bartel.  He released them under the <a
+href="http://www.gnu.org/copyleft/gpl.html">GNU General Public
+License</a>.  This means that if your program is also free software
+distributed under the GPL, you can use them freely.  If your program
+is distributed under some other license, including commercial,
+shareware, or non-GPL freeware, then you cannot use the bitmaps unless
+you obtain special permission from Elmar.  See the file README.bitmaps
+that comes with the XBoard and WinBoard source code for more
+information and an email address you can write to.
+
 <HR><H2><A NAME="[C]">[C] XBoard and WinBoard, bugs and problems</A></H2>
 
 <HR><H3><A NAME="[C.1]">[C.1] I can't build XBoard
@@ -1243,16 +1331,15 @@ When I exit from WinBoard after using it to play against a chess
 program on my machine, the chess program keeps running in the background.
 </A></H3>
 
-<p>If you are using Crafty, be certain to get the version compiled for
-Win32 (wcrafty.exe), not the version compiled for MS-DOS (crafty.exe).
-Also, be sure you have the current version of WinBoard.  WinBoard
-3.4.1 and earlier had a bug that caused this problem to occur with all
-chess engines.
+<p>Be sure you have the current versions of WinBoard and the chess
+engine you are using.  WinBoard 3.4.1 and earlier had a bug that
+caused this problem to occur with all chess engines.  A buggy chess
+engine that does not respond to the "quit" command will also cause
+this.
 
-<p>This problem is reported to still happen occasionally, for unknown
-reasons.  You can generally stop the rogue Crafty by pressing
-Ctrl+Alt+Del, selecting the Crafty process from the menu, and pressing
-the End Task button.
+<p>If you still see this problem, you can stop the rogue chess engine
+by pressing Ctrl+Alt+Del, selecting the chess engine process from the
+menu, and pressing the End Task button.
 
 <hr>
 <h3><a name="[C.12]">[C.12]
@@ -1420,7 +1507,9 @@ only if you run it from the GNU Chess "src" directory where you built
 it.
 
 <hr><h3><a name="[C.20]">[C.20]
-  XBoard tells me "Warning: Cannot allocate colormap entry".
+  XBoard tells me "Warning: Cannot allocate colormap entry", or
+  "too few colors available; trying monochrome mode", or
+  "XPM pieces cannot be used in monochrome mode".
 </a></h3>
 
 <p>You are running your X server with 8-bit color depth, and you are running
@@ -1431,16 +1520,26 @@ your colors.
 <p>If you have a modern machine, you probably have enough display
 memory to run your X server with 16-, 24-, or 32-bit color depth.  If
 you're using "startx" to start the X server, try giving the command as
-"<tt>startx -- -bpp 24</tt>" (or 16, or 32).  Further details on
+"<tt>startx -- -bpp 24</tt>" (or 16, or 32).  On newer X servers you
+may have to use -depth instead of -bpp.  Further details on
 configuring your X server are beyond the scope of this FAQ.
 
 <p>If you must run in 8-bit mode, try the following:
 Avoid background images that use up all your colors.  If you
 run Netscape, try starting it up with the <tt>-install</tt> command-line
 option; this gives Netscape its own private colormap that X will
-switch to when Netscape has the keyboard focus.  If all else fails,
-another option is to run xboard in monochrome (black and white) mode
-by giving it the <tt>-mono</tt> command-line option.
+switch to when Netscape has the keyboard focus.  
+
+<P>If all else fails, another possibility is to run xboard in
+monochrome (black and white) mode by giving it the <tt>-mono</tt>
+command-line option.  XBoard will try this by itself in some cases.
+Monochrome mode works only with bitmap pieces, not pixmap pieces, so
+trying to use it may give you the error "XPM pieces cannot be used in
+monochrome mode".  To get around this, either use the -bitmapDirectory
+command line option to point XBoard to the directory containing the
+bitmap pieces included with the XBoard source code, or rebuild XBoard
+with pixmap support disabled, using "./configure --disable-xpm ; make
+clean ; make".
 
 <hr><h3><a name="[C.21]">[C.21]
   When I log in to freechess.org, the Enter key doesn't work, and I 
@@ -1554,11 +1653,9 @@ both XBoard and Crafty.
 
 <p>First, you need to get Crafty and install it as a command-line
 application on your machine.  See topic <A HREF="#[D.3]">[D.3]</A>.
-You must use the version of Crafty compiled for Win32 (wcrafty*.exe),
-not the version compiled for MS-DOS (crafty*.exe), and it is best to
-use the latest version of Crafty with the latest version of WinBoard to
-make sure all features are compatible and function correctly.  You can
-install Crafty in any directory you like.
+It is best to use the latest version of Crafty with the latest version
+of WinBoard to make sure all features are compatible and function
+correctly.  You can install Crafty in any directory you like.
 
 <p>You also need to get WinBoard and install it in the normal way
 using its built-in installer.  You can do that either before or after

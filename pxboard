@@ -16,6 +16,6 @@
 # The script turns on -noChessProgram mode by default.  If you want a
 # chess program started, give the -xncp option.
 #
-tmp=/tmp/pxboard$$
-cat > $tmp
-(xboard -ncp -lgf $tmp $* ; rm $tmp) &
+tmp=`mktemp "${TMPDIR:-/tmp}/pxboard.$$.XXXXXX"` || exit 1
+cat > "$tmp"
+( xboard -ncp -lgf "$tmp" "$@" ; rm "$tmp" ) &

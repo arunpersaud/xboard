@@ -38,7 +38,7 @@ CFG=winboard - Win32 Release
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir ".\Release"
 # PROP Intermediate_Dir ".\Release"
-# PROP Cmd_Line "NMAKE"
+# PROP Cmd_Line "nmake /f msvc.mak"
 # PROP Rebuild_Opt "/a"
 # PROP Target_File "winboard.exe"
 # PROP Bsc_Name "winboard.bsc"
@@ -57,7 +57,7 @@ CFG=winboard - Win32 Release
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir ".\Debug"
 # PROP Intermediate_Dir ".\Debug"
-# PROP Cmd_Line "NMAKE"
+# PROP Cmd_Line "nmake /f msvc.mak"
 # PROP Rebuild_Opt "/a"
 # PROP Target_File "winboard.exe"
 # PROP Bsc_Name "winboard.bsc"

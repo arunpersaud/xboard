@@ -53,17 +53,18 @@
 
 #include <windows.h>
 #include <winuser.h>
+#include <winsock.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <io.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <math.h>
 #include <commdlg.h>
 #include <dlgs.h>
 #include <richedit.h>
+#include <mmsystem.h>
 
 #if __GNUC__
 #include <errno.h>
@@ -168,6 +169,7 @@ static BOOL paletteChanged = FALSE;
 static HICON iconWhite, iconBlack, iconCurrent;
 static int doingSizing = FALSE;
 static int lastSizing = 0;
+static int prevStderrPort;
 
 #if __GNUC__ && !defined(_winmajor)
 #define oldDialog 0 /* cygwin doesn't define _winmajor; mingw does */
@@ -343,8 +345,6 @@ CHARFORMAT consoleCF;
 COLORREF consoleBackgroundColor;
 
 char *programVersion;
-
-#include <winsock.h>
 
 #define CPReal 1
 #define CPComm 2
@@ -3246,7 +3246,8 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* Center the dialog over the application window */
     CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
     ShowWindow(GetDlgItem(hDlg, PB_King), 
-      (!appData.testLegality || gameInfo.variant == VariantSuicide) ?
+      (!appData.testLegality || gameInfo.variant == VariantSuicide ||
+       gameInfo.variant == VariantGiveaway) ?
 	       SW_SHOW : SW_HIDE);
     return TRUE;
 
@@ -4317,7 +4318,7 @@ OpenFileDialog(HWND hwnd, BOOL write, char *defName, char *defExt,
   if (write ? GetSaveFileName(&openFileName) : 
               GetOpenFileName(&openFileName)) {
     /* open the file */
-    f = fopen(openFileName.lpstrFile, write ? "a" : "r");
+    f = fopen(openFileName.lpstrFile, write ? "a" : "rb");
     if (f == NULL) {
       MessageBox(hwnd, "File open failed", NULL,
 		 MB_OK|MB_ICONEXCLAMATION);
@@ -4971,7 +4972,7 @@ ErrorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     switch (LOWORD(wParam)) {
     case IDOK:
     case IDCANCEL:
-      if (errorDialog = hDlg) errorDialog = NULL;
+      if (errorDialog == hDlg) errorDialog = NULL;
       DestroyWindow(hDlg);
       return TRUE;
 
@@ -7202,6 +7203,7 @@ OpenRcmd(char* host, char* user, char* cmd, ProcRef* pr)
   mysa.sin_family = AF_INET;
   mysa.sin_addr.s_addr = INADDR_ANY;
   for (fromPort = 1023;; fromPort--) {
+    if (fromPort == prevStderrPort) continue; // don't reuse port
     if (fromPort < 0) {
       (void) closesocket(s);
       WSACleanup();
@@ -7239,6 +7241,7 @@ OpenRcmd(char* host, char* user, char* cmd, ProcRef* pr)
     }
     break;
   }
+  prevStderrPort = fromPort; // remember port used
   sprintf(stderrPortStr, "%d", fromPort);
 
   if (send(s, stderrPortStr, strlen(stderrPortStr) + 1, 0) == SOCKET_ERROR) {

@@ -198,7 +198,7 @@
   "Slap", "Squeak", "Swish", "Thud", "Whipcrack", \
   "Alarm", "Challenge", "Channel", "Channel1", "Draw", "Kibitz", \
   "Lose", "Request", "Seek", "Shout", "SShout", "Tell", "Unfinished", \
-  "Win", NULL \
+  "Win", "Woodthunk", NULL \
 }
 
 #define SETTINGS_FILE         "winboard.ini"

@@ -50,7 +50,7 @@ DISTSOURCE = COPYING COPYRIGHT ChangeLog ChangeLog.2 FAQ FAQ.html \
 	pxboard xboard.c xboard.h xboard.man xedittags.c xedittags.h \
 	xgamelist.c xgamelist.h xhistory.c xhistory.h acconfig.h config.h.in \
 	xboard.texinfo.in xboard.texi gpl.texinfo zic2xpm.c zic2xpm.man \
-	pixmaps sounds xboard.ps
+	pixmaps sounds xboard.ps bitmaps.unused winboard
 
 ZIPPYSOURCE = zippy.README zippy.c zippy.h zippy.lines
 
@@ -99,6 +99,7 @@ clean:
 distclean: clean tidy
 	rm -f config.cache config.log config.status Makefile 
 	rm -f config.h stamp-h xboard.texinfo cmail comment.awk
+	cd winboard ; make -f cygwin.mak clean
 
 mostlyclean: clean
 
@@ -106,6 +107,7 @@ maintainer-clean: distclean
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 	rm -f parser.c xboard.info FAQ
+	cd winboard ; make -f cygwin.mak maintainer-clean
 
 TAGS:
 	etags *.c *.h

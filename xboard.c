@@ -192,14 +192,6 @@ extern char *getenv();
 #include "xhistory.h"
 #include "xedittags.h"
 
-#if !DEFINED_SYS_ERRLIST
-extern char *sys_errlist[];
-#endif
-
-#ifdef __CYGWIN__
-#define sys_errlist _sys_errlist
-#endif
-
 #ifdef __EMX__
 #ifndef HAVE_USLEEP
 #define HAVE_USLEEP
@@ -1893,6 +1885,7 @@ main(argc, argv)
     XtGetApplicationResources(shellWidget, (XtPointer) &appData,
 			      clientResources, XtNumber(clientResources),
 			      NULL, 0);
+
 #if !HIGHDRAG
     /* This feature does not work; animation needs a rewrite */
     appData.highlightDragging = FALSE;
@@ -5134,9 +5127,10 @@ void PromotionPopUp()
 		       (XtPointer) dialog);
     XawDialogAddButton(dialog, "Knight", PromotionCallback, 
 		       (XtPointer) dialog);
-    if (!appData.testLegality || gameInfo.variant == VariantSuicide) {
-	XawDialogAddButton(dialog, "King", PromotionCallback, 
-			   (XtPointer) dialog);
+    if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
+        gameInfo.variant == VariantGiveaway) {
+      XawDialogAddButton(dialog, "King", PromotionCallback, 
+			 (XtPointer) dialog);
     }
     XawDialogAddButton(dialog, "cancel", PromotionCallback, 
 		       (XtPointer) dialog);
@@ -5459,7 +5453,7 @@ void LoadGameProc(w, event, prms, nprms)
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp("Load game file name?", "", LoadGamePopUp, "r");
+    FileNamePopUp("Load game file name?", "", LoadGamePopUp, "rb");
 }
 
 void LoadNextGameProc(w, event, prms, nprms)
@@ -5525,7 +5519,7 @@ void LoadPositionProc(w, event, prms, nprms)
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp("Load position file name?", "", LoadPosition, "r");
+    FileNamePopUp("Load position file name?", "", LoadPosition, "rb");
 }
 
 void SaveGameProc(w, event, prms, nprms)
@@ -5723,7 +5717,7 @@ PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
   fwrite(value, 1, *len, f);
   fclose(f);
   XtFree(value);
-  LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, FALSE);
+  LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
 }
 
 /* called when Paste Game button is pressed,
@@ -5826,7 +5820,7 @@ void AnalyzeFileProc(w, event, prms, nprms)
       ShowThinkingProc(w,event,prms,nprms);
 
     AnalyzeFileEvent();
-    FileNamePopUp("File to analyze", "", LoadGamePopUp, "r");
+    FileNamePopUp("File to analyze", "", LoadGamePopUp, "rb");
     AnalysisPeriodicEvent(1);
 }
 
@@ -6772,9 +6766,9 @@ void DisplayError(message, error)
     } else {
 	if (appData.debugMode || appData.matchMode) {
 	    fprintf(stderr, "%s: %s: %s\n",
-		    programName, message, sys_errlist[error]);
+		    programName, message, strerror(error));
 	}
-	sprintf(buf, "%s: %s", message, sys_errlist[error]);
+	sprintf(buf, "%s: %s", message, strerror(error));
 	message = buf;
     }	
     ErrorPopUp("Error", message, FALSE);
@@ -6809,8 +6803,8 @@ void DisplayFatalError(message, error, status)
 	fprintf(stderr, "%s: %s\n", programName, message);
     } else {
 	fprintf(stderr, "%s: %s: %s\n",
-		programName, message, sys_errlist[error]);
-	sprintf(buf, "%s: %s", message, sys_errlist[error]);
+		programName, message, strerror(error));
+	sprintf(buf, "%s: %s", message, strerror(error));
 	message = buf;
     }
     if (appData.popupExitMessage && boardWidget && XtIsRealized(boardWidget)) {
@@ -7178,14 +7172,22 @@ char *HostName()
 
 XtIntervalId delayedEventTimerXID = 0;
 DelayedEventCallback delayedEventCallback = 0;
+
+void
+FireDelayedEvent()
+{
+    delayedEventTimerXID = 0;
+    delayedEventCallback();
+}
+
 void
 ScheduleDelayedEvent(cb, millisec)
      DelayedEventCallback cb; long millisec;
 {
     delayedEventCallback = cb;
     delayedEventTimerXID =
-      XtAppAddTimeOut(appContext, millisec, (XtTimerCallbackProc) cb,
-		      (XtPointer) 0);
+      XtAppAddTimeOut(appContext, millisec,
+		      (XtTimerCallbackProc) FireDelayedEvent, (XtPointer) 0);
 }
 
 DelayedEventCallback

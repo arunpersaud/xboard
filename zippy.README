@@ -348,6 +348,18 @@ obscure bugs are fixed in that version that affect starting a game in
 the middle (as with resuming from adjournments or switching opponents
 in a simul).
 
+As noted under -zippyPlay above, you should have -getMoveList on to
+ensure that the engine knows the game history after switching boards
+and thus handles draw by repetition and by the 50-move rule correctly.
+It should, however, also work to turn off this option to speed things
+up and reduce network bandwidth, if you don't mind the engine
+occasionally failing to see draw possibilities.  Unfortunately,
+though, with Crafty 18.3 (and probably other versions too) as the
+engine, users trying this have experienced Crafty crashes.  This looks
+to me like a Crafty bug, but I wasn't able to reproduce it, so it
+remains a mystery.
+
+
 ========
 EXAMPLES
 ========

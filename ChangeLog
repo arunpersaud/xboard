@@ -1,3 +1,101 @@
+xboard/WinBoard 4.2.7 -- ?
+Tim Mann <tim@tim-mann.org>
+
+* Modified xboard and winboard makefiles to be able to build the
+project in the new combined directory structure.
+
+* Added woodthunk.wav sound contributed by Robert Jurjevic.
+	
+* Applied a security fix to pxboard, from Martin Maeok.
+
+* Fixed a bug in the game list dialog.  The change in 4.2.6 to opening
+games in text mode (meant to avoid getting extra \r's into comments)
+caused a new bug in determining seek offsets when parsing a game file
+to form the game list.  Also, the change was incomplete; on some code
+paths games were still being opened in binary mode.  Thanks to Lenik
+Terenin for reporting the offset bug.  I've now gone back to always
+using binary mode when reading game files, and I've fixed the comment
+bug by adding code to remove \r's from parsed comments explicitly.  I
+still use text mode for writing game files so that games written by
+WinBoard will have Windows-style line endings.
+
+* Fix for minor bug in WinBoard installer.  If you chose a non-default
+destination directory, the default directory was still used for a
+couple of unimportant things, namely setting the App Paths registry
+keys (unused by WinBoard) and trying to copy the existing WinBoard.ini
+file to WinBoard.old.  I inherited this bug from the InstallShield 5
+sample template.  Thanks to "l.d." for noticing the incorrect keys.
+
+* Patch from Chris Priest: when two engines are being run through rsh,
+avoid reusing the same stderr port for both.  I'm not sure why this
+should be needed, but it's harmless, at least.
+
+* Bugfix: The kludge to deal with old engines that give an error
+message because they don't know the "st" command was too sloppy; it
+could hit on an "st" substring anywhere in an error message.  GNU
+Chess 4 is the only engine I know of where the kludge was needed, so I
+changed the kludge to match a longer, more GNU-specific string.
+
+* Changed the WinBoard self-extracting installer to choose a unique
+temporary subdirectory name within the Windows temp directory instead
+of always putting wb-setup directly in temp.  Besides being better
+practice, this avoids the need to deltree wb-setup first, which
+occasionally alarms someone who thinks that deltree is only used by
+trojans to delete all your files.  (Yes, I'm serious.)
+
+* Fixed a bug where FICS-style "wild/0" strings were not parsed as the
+proper wild type.  The "/" was not being skipped.
+
+* Fixed a WinBoard bug where temporary files created by game
+copy/paste were being created in the root directory of the current
+drive instead of the TMP directory and were not always deleted on exit.
+
+* Fixed a small bug in winboard.c's ErrorDialog() function.  Thanks to
+"Ron" (no last name given).  The bug might have caused a problem when
+pressing OK or Cancel in an error dialog when more than one error
+dialog was being displayed, but I'm not really sure.
+
+* Removed a hack that worked around a bug in very old versions of
+Crafty, where it would sometimes reply "illegal move" to a "."
+command.  The hack kept us from recognizing real illegal move messages
+in analyze mode from engines that don't respond to the "." command.
+Thanks to Fabien Letouzey for the report.
+
+* Fixed a bug in the xboard version of GetDelayedEvent.  It would
+return the most recently scheduled event even if it had already fired.
+This caused at least one visible error: in -ics -xreuse mode, starting
+the engine again and seeing another "feature done=1" would re-run the
+initialization code in InitBackEnd3, including the code that opens the
+connection to ICS.  The WinBoard version didn't have this bug.  Thanks
+to Bob Hyatt for the bug report.
+
+* The promotion popup for ICC wild 26 (giveaway) now includes King.
+Thanks to Fredrik Josefsson for the bug report.
+
+* The first game in a file (or being pasted from the clipboard) can
+now start with a bare move -- no PGN tags, no move number "1", etc.
+Suggested by Shane Harrelson.  One could imagine taking this farther
+and accepting something like "e4 e5 1/2-1/2 d4 d5" as two games, but
+I haven't done that.
+
+* Bug fix: xboard didn't really accept a paste of multiple games,
+contrary to what I wrote when adding the feature to WinBoard in
+4.2.4.  Now it works in both.
+
+* Fixed generic start/end of game messages to work on chess.net, where
+they put ratings in parens after the player names.
+
+* Updated config.sub and config.guess to newer versions from
+automake-1.4p5-2.  This makes configure work with MacOS X + X11.
+
+* Bugfix: when examining a game fragment on FICS where black plays
+first, don't show two "(0:00.000)" times on the initial "none" move.
+
+* If TestLegality is on and one of the engines makes an illegal move
+in TwoMachines mode, it forfeits immediately.  Formerly the game would
+get stuck at that point and the engine that made the illegal move
+would eventually lose on time.
+
 xboard/WinBoard 4.2.6 -- Fri Feb  1 22:26:31 PST 2002
 Tim Mann <tim@tim-mann.org>
 

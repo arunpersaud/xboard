@@ -14,7 +14,7 @@ AC_CONFIG_HEADER(config.h)
 
 PRODUCT=xboard
 VERSION=4.2
-PATCHLEVEL=6
+PATCHLEVEL=pre7
 
 if test -z "$CFLAGS" ; then
 dnl| Prevent the next macro from setting CFLAGS to -g
@@ -50,10 +50,6 @@ AC_CHECK_HEADERS(stropts.h sys/time.h string.h unistd.h sys/systeminfo.h)
 AC_CHECK_HEADERS(fcntl.h sys/fcntl.h, break)
 AC_CHECK_HEADERS(sys/socket.h lan/socket.h, break)
 AC_CHECK_HEADER(stddef.h, [], AC_DEFINE(X_WCHAR, 1))
-
-AC_EGREP_HEADER(sys_errlist, errno.h, AC_DEFINE(DEFINED_SYS_ERRLIST))
-AC_EGREP_HEADER(sys_errlist, stdio.h, AC_DEFINE(DEFINED_SYS_ERRLIST))
-AC_EGREP_HEADER(sys_errlist, stdlib.h, AC_DEFINE(DEFINED_SYS_ERRLIST))
 
 AC_CHECK_FUNCS(_getpty grantpt setitimer usleep)
 AC_CHECK_FUNCS(gettimeofday ftime, break)
@@ -293,12 +289,14 @@ fi])
 AC_DEFINE_UNQUOTED(USE_PTYS, $USE_PTYS)
 
 AC_ARG_ENABLE(zippy, 
-[  --enable-zippy          features for interfacing a chess program to ICS],
-[if test "$enableval" = yes; then
+[  --enable-zippy          support interfacing a chess program to ICS (default)
+  --disable-zippy         do not support interfacing a chess program to ICS],
+[enable_zippy="$enableval"], [enable_zippy="yes"])
+if test "$enable_zippy" = yes; then
   AC_DEFINE(ZIPPY, 1)
   ZIPPY_O=zippy.o
   ZIPPY_H=zippy.h
-fi])
+fi
 AC_SUBST(ZIPPY_O)  
 AC_SUBST(ZIPPY_H)  
 

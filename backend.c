@@ -1129,7 +1129,7 @@ StringToVariant(e)
       } else if ((i = 4, p = StrCaseStr(e, "wild")) ||
 		 (i = 1, p = StrCaseStr(e, "w"))) {
 	p += i;
-	while (*p && (isspace(*p) || *p == '(')) p++;
+	while (*p && (isspace(*p) || *p == '(' || *p == '/')) p++;
 	if (isdigit(*p)) {
 	  wnum = atoi(p);
 	} else {
@@ -2301,7 +2301,9 @@ read_from_ics(isr, closure, data, count, error)
 	    }
 	    
 	    /* Improved generic start/end-of-game messages */
-	    if (looking_at(buf, &i, "{Game * (* vs. *) *}*")) {
+	    if ((tkind=0, looking_at(buf, &i, "{Game * (* vs. *) *}*")) ||
+		(tkind=1, looking_at(buf, &i, "{Game * (*(*) vs. *(*)) *}*"))){
+	        /* If tkind == 0: */
 		/* star_match[0] is the game number */
 		/*           [1] is the white player's name */
 		/*           [2] is the black player's name */
@@ -2312,9 +2314,20 @@ read_from_ics(isr, closure, data, count, error)
 		/*           [3] begins with "Creating" or "Continuing" */
 		/*           [4] is " *" or empty (don't care). */
 		int gamenum = atoi(star_match[0]);
-		char *why = star_match[3];
-		char *endtoken = star_match[4];
+		char *whitename, *blackname, *why, *endtoken;
 		ChessMove endtype = (ChessMove) 0;
+
+		if (tkind == 0) {
+		  whitename = star_match[1];
+		  blackname = star_match[2];
+		  why = star_match[3];
+		  endtoken = star_match[4];
+		} else {
+		  whitename = star_match[1];
+		  blackname = star_match[3];
+		  why = star_match[5];
+		  endtoken = star_match[6];
+		}
 
                 /* Game start messages */
 		if (strncmp(why, "Creating ", 9) == 0 ||
@@ -2323,7 +2336,7 @@ read_from_ics(isr, closure, data, count, error)
 		    strcpy(gs_kind, strchr(why, ' ') + 1);
 #if ZIPPY
 		    if (appData.zippyPlay) {
-			ZippyGameStart(star_match[1], star_match[2]);
+			ZippyGameStart(whitename, blackname);
 		    }
 #endif /*ZIPPY*/
 		    continue;
@@ -3821,7 +3834,11 @@ HandleMachineMove(message, cps)
 	    /* Machine move could not be parsed; ignore it. */
 	    sprintf(buf1, "Illegal move \"%s\" from %s machine",
 		    machineMove, cps->which);
-	    /*!!if (appData.debugMode)*/ DisplayError(buf1, 0);
+	    DisplayError(buf1, 0);
+	    if (gameMode == TwoMachinesPlay) {
+	      GameEnds(machineWhite ? BlackWins : WhiteWins,
+		       "Forfeit due to illegal move", GE_XBOARD);
+	    }
 	    return;
 	}
 
@@ -4016,14 +4033,16 @@ HandleMachineMove(message, cps)
 	    DisplayError(buf2, 0);
 	    return;
 	}
-	if (StrStr(message, "st")) {
+	if (StrStr(message, "(no matching move)st")) {
+	  /* Special kludge for GNU Chess 4 only */
 	  cps->stKludge = TRUE;
 	  SendTimeControl(cps, movesPerSession, timeControl,
 			  timeIncrement, appData.searchDepth,
 			  searchTime);
 	  return;
 	}
-	if (StrStr(message, "sd")) {
+	if (StrStr(message, "(no matching move)sd")) {
+	  /* Special kludge for GNU Chess 4 only */
 	  cps->sdKludge = TRUE;
 	  SendTimeControl(cps, movesPerSession, timeControl,
 			  timeIncrement, appData.searchDepth,
@@ -4034,12 +4053,16 @@ HandleMachineMove(message, cps)
 	if (gameMode == BeginningOfGame || gameMode == EndOfGame ||
 	    gameMode == IcsIdle) return;
 	if (forwardMostMove <= backwardMostMove) return;
+#if 0
+	/* Following removed: it caused a bug where a real illegal move
+	   message in analyze mored would be ignored. */
 	if (cps == &first && programStats.ok_to_send == 0) {
 	    /* Bogus message from Crafty responding to "."  This filtering
 	       can miss some of the bad messages, but fortunately the bug 
 	       is fixed in current Crafty versions, so it doesn't matter. */
 	    return;
 	}
+#endif
 	if (pausing) PauseEvent();
 	if (gameMode == PlayFromGameFile) {
 	    /* Stop reading this game file */
@@ -4534,7 +4557,7 @@ ParseGameHistory(game)
 	    }
 	    return;
 	  case ElapsedTime:
-	    if (boardIndex > 0) {
+	    if (boardIndex > (blackPlaysFirst ? 1 : 0)) {
 		strcat(parseList[boardIndex-1], " ");
 		strcat(parseList[boardIndex-1], yy_text);
 	    }
@@ -5881,13 +5904,13 @@ LoadGame(f, gameNumber, title, useList)
      * A game that starts with one of the latter two patterns
      * will also have a move number 1, possibly
      * following a position diagram.
+     * 5-4-02: Let's try being more lenient and allowing a game to
+     * start with an unnumbered move.  Does that break anything?
      */
     cm = lastLoadGameStart = (ChessMove) 0;
-    yyskipmoves = TRUE;
     while (gn > 0) {
 	yyboardindex = forwardMostMove;
 	cm = (ChessMove) yylex();
-	yyskipmoves = FALSE;
 	switch (cm) {
 	  case (ChessMove) 0:
 	    if (cmailMsgLoaded) {
@@ -5896,7 +5919,6 @@ LoadGame(f, gameNumber, title, useList)
 		Reset(TRUE, TRUE);
 		DisplayError("Game not found in file", 0);
 	    }
-	    yyskipmoves = FALSE;
 	    return FALSE;
 
 	  case GNUChessGame:
@@ -5959,11 +5981,19 @@ LoadGame(f, gameNumber, title, useList)
 	    }
 	    break;
 
+	  case NormalMove:
+	    /* Only a NormalMove can be at the start of a game
+	     * without a position diagram. */
+	    if (lastLoadGameStart == (ChessMove) 0) {
+	      gn--;
+	      lastLoadGameStart = MoveNumberOne;
+	    }
+	    break;
+
 	  default:
 	    break;
 	}
     }
-    yyskipmoves = FALSE;
     
     if (appData.debugMode)
       fprintf(debugFP, "Parsed game start '%s' (%d)\n", yy_text, (int) cm);
@@ -6144,7 +6174,8 @@ LoadGame(f, gameNumber, title, useList)
 	cm = (ChessMove) yylex();
     }
 
-    if (cm == (ChessMove) 0 || cm == WhiteWins || cm == BlackWins ||
+    if ((cm == (ChessMove) 0 && lastLoadGameStart != (ChessMove) 0) ||
+	cm == WhiteWins || cm == BlackWins ||
 	cm == GameIsDrawn || cm == GameUnfinished) {
 	DisplayMessage("", "No moves in game");
 	if (cmailMsgLoaded) {
@@ -6322,6 +6353,7 @@ LoadPosition(f, positionNumber, title)
 	while (pn > 0) {
 	    /* skip postions before number pn */
 	    if (fgets(line, MSG_SIZ, f) == NULL) {
+	        Reset(TRUE, TRUE);
 		DisplayError("Position not found in file", 0);
 		return FALSE;
 	    }
@@ -6701,6 +6733,7 @@ void
 ReloadCmailMsgEvent(unregister)
      int unregister;
 {
+#if !WIN32
     static char *inFilename = NULL;
     static char *outFilename;
     int i;
@@ -6759,6 +6792,7 @@ ReloadCmailMsgEvent(unregister)
     /* Load first game in the file or popup game menu */
     LoadGameFromFile(inFilename, 0, appData.cmailGameName, TRUE);
 
+#endif // !WIN32
     return;
 }
 
@@ -6856,6 +6890,7 @@ RegisterMove()
 void
 MailMoveEvent()
 {
+#if !WIN32
     static char *partCommandString = "cmail -xv%s -remail -game %s 2>&1";
     FILE *commandOutput;
     char buffer[MSG_SIZ], msg[MSG_SIZ], string[MSG_SIZ];
@@ -6889,7 +6924,7 @@ MailMoveEvent()
 	|| (nCmailMovesRegistered + nCmailResults == nCmailGames)) {
 	sprintf(string, partCommandString,
 		appData.debugMode ? " -v" : "", appData.cmailGameName);
-	commandOutput = popen(string, "r");
+	commandOutput = popen(string, "rb");
 
 	if (commandOutput == NULL) {
 	    DisplayError("Failed to invoke cmail", 0);
@@ -6937,11 +6972,15 @@ MailMoveEvent()
     }
 
     return;
+#endif // !WIN32
 }
 
 char *
 CmailMsg()
 {
+#if WIN32
+    return NULL;
+#else
     int  prependComma = 0;
     char number[5];
     char string[MSG_SIZ];	/* Space for game-list */
@@ -7010,8 +7049,8 @@ CmailMsg()
 	    }
 	}
     }
-
     return cmailMsg;
+#endif // WIN32
 }
 
 void
@@ -8672,6 +8711,21 @@ ReplaceComment(index, text)
 }
 
 void
+CrushCRs(text)
+     char *text;
+{
+  char *p = text;
+  char *q = text;
+  char ch;
+
+  do {
+    ch = *p++;
+    if (ch == '\r') continue;
+    *q++ = ch;
+  } while (ch != '\0');
+}
+
+void
 AppendComment(index, text)
      int index;
      char *text;
@@ -8679,6 +8733,7 @@ AppendComment(index, text)
     int oldlen, len;
     char *old;
 
+    CrushCRs(text);
     while (*text == '\n') text++;
     len = strlen(text);
     while (len > 0 && text[len - 1] == '\n') len--;

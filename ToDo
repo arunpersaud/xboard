@@ -68,7 +68,7 @@ computer think really hard about certain positions." (Dino Dini)
 107. Changing time control during a game could be made to work.
 Current (WinBoard only) way of changing at start is suboptimal.
 
-108. Could add search depth and time per move to (WinBoard)
+**108. Could add search depth and time per move to (WinBoard)
 TimeControl dialog.
 
 140. LoadPosition needs better checking for invalid data.
@@ -296,11 +296,8 @@ disappears when Winboard is closed.  Eg.: Log in, highlight and copy a
 web page address, close, go to browser, paste *nothing*.  [How does
 one do this in Windows?]
 
-**227. Illegal moves from buggy engine should stop the game.  
-
-227a. In engine-engine matches, the buggy engine should lose.  An
-engine that crashes should lose and perhaps get restarted for the next
-game.
+227a. In engine-engine matches, an engine that crashes should lose and
+perhaps get restarted for the next game.
 
 227b. Maybe when an engine playing in Zippy mode exhibits a bug, we
 should do a little more too.  Perhaps "say Sorry, the engine seems to
@@ -390,7 +387,43 @@ when the engine is still on move.  (using ping/pong)
 **260. General mechanism where engine can declare engine properties that
 the user can frob and xboard/winboard will put up a simple dialog to
 allow user to view and set them.  See email message "special engine
-commands" from Steffen Jakob.
+commands" from Steffen Jakob:
+
+  From: "Steffen A. Jakob" <saj@xxx>
+  To: mann@xxx
+  Cc: chess-engines@xxx
+  Subject: special engine commands
+  Date: Fri, 26 Feb 1999 09:12:26 +0100
+
+  Hi Tim!
+
+  Here comes a summary of our ICC chat (I cc this mail to the
+  list... maybe other engine programmers can give some feedback if
+  they find this feature useful):
+
+  Please add a protocol command which enables the engine to tell
+  xboard its special commands. Maybe a set of (label, command string)
+  pairs would be useful. Then create a menu for these commands. It
+  could look like this (that's what I would like to see for Hossa):
+
+  engine->interface:
+  ------------------
+  command "Reset the log file" "reset log"
+  command "Save Diagram as PNG" "png dia.png"
+  command "Disable Book" "book off"
+  command "Show Evaluation details" "eval"
+  command "Show Search statistics" "stat"
+
+  etc.
+
+  While typing this list I realized that an additional parameter like
+  this would be needed/nice (of course you can think of many more
+  improvements):
+
+  command "Save Diagram as PNG" "png %s" 1
+
+  "1" tells xboard to ask for an additional parameter (here: filename)
+  which will replace the "%s" in the command string.
 
 261. Check that "quit" is sent to engine properly if ICS connection
 fails to open due to error from timestamp/timeseal.  "wzrdking" had a
@@ -640,6 +673,40 @@ buffer with no checking for overflow.  Generally we need a lot more
 care to avoid buffer overflows inside both xboard and WinBoard.
 [Note: changed the buffers to be 5120 bytes as a band-aid.]
 
+Guido Flohr expands on this bug:  
+
+  The problem is easy to reproduce, simply write a program/script that
+  spits out lines of more than 8192 bytes (INPUT_SOURCE_BUF_SIZE) and
+  connect it as a chess engine to xboard.  No surprise, xboard cannot
+  handle such long lines, but the resulting behavior is really weird:
+
+  The program enters DoInputCallback() in xboard.c, reads the first
+  8192 bytes, searches for a linefeed in vain, then closes its eyes,
+  sets the member "unused" of the InputSource to is->buf + 8192 and
+  waits for more input although the buffer is already full.
+
+  The next time it calls the same function, is->unused is exactly
+  these 8192 bytes away from is->buf, xboard computes the amount of
+  bytes to read in this round, which sums up to 0 nothing.  It then
+  calls read(2) with a bufsize argument of 0, and then assumes end
+  of file when the kernel call returns 0 (which is the documented
+  behavior).
+
+  For local engines, we now jump into backend.c, ReceiveFromProgram(),
+  and this function reports that the engine has exited unexpectedly.
+  In fact the engine is still very vivid, which is good, because in
+  spite of xboard's assumption that its child has died, it still
+  sends "force", "ping N", and "quit" to the false dead.  If the child
+  was really dead, the alert boxes "error writing to ... engine"
+  would hide the first alert box "... has exited unexpectedly".
+
+  From xboard's side, it is not exactly clean to call read(2) with
+  a zero bufsize argument.  In my opinion, a sane solution would be
+  to eat the INPUT_SOURCE_BUF_SIZE bytes, and when they contain no
+  linefeed, print the partial line to standard error (in debug mode)
+  and report something like »Maximum line size exceeded« (and then
+  kill the engine).
+
 **354. We currently let the user go directly from TwoMachines mode to
 various other modes like MachineWhite or MachineBlack.  This may
 confuse the engine that was on move, since we don't have a way to
@@ -656,8 +723,8 @@ cheater.
 :hi
 
 357. A few reports of WinBoard pieces being drawn incorrectly at
-certain sizes.  I haven't reproduced this.  [Maybe worked around
-in 4.2.0]
+certain sizes.  I haven't reproduced this.  [Maybe worked around in
+4.2.0.  Or is/was this the same as 194f?  I don't recall the details.]
 
 358. One report of WinBoard colorization not working, even after
 restart, until the computer was rebooted.  Weird.
@@ -750,8 +817,8 @@ it matches on help files a bit too often.  (e.g. FICS "help sr_info")
 396. xboard's -size defaulting code for bitmaps unfortunately always
 picks a size from the built-in list, even if you gave the
 -bitmapDirectory option.  It would be more user-friendly to have some
-extra code that lists the directory and considers only sizes that
-are found there, as the pixmap code does.
+extra code that lists the directory and considers exactly the sizes
+that are found there, as the pixmap code does.
 
 397. It would be nice to be able to configure xboard with bitmap
 pieces as the default without having to disable xpm support entirely.
@@ -836,13 +903,11 @@ being tail -f'ed.
 **441. Can I prevent an undo after new in the odd case where it can
 happen now?  See mail from Bob Hyatt.
 
-**448. add notes on non-xboard GUIs from Dieter Buerssner to document?
-
 450. Suggested: an option to let an engine keep pondering while an ICC
 game is adjourned.  This seems a bit difficult.
 
-451. Suggested: support SuperMamer messages on FICS.  See
-http://www.freechess.org/SuperMamer/parsing.html
+451. Suggested: support SuperMamer messages on FICS, aka qtells.  See
+http://www.freechess.org/SuperMamer/parsing.html.
 
 452. Suggested: a way to say "prompt for the password" in a login.ini file.
 See 510 instead.
@@ -875,10 +940,6 @@ maybe there is no point.  See discussion on chess-engines list.
 if the engine has given the feature variant command and did not
 include "normal" on the list.  Crafty 18.1 inadvertently relies on
 this bug, so it probably can't be fixed right away.
-
-**466. Check whether engine sometimes gets extra "quit" and restart
-when reuse is off.  See Bob Hyatt message of 3/13/2001 and 3/15/2001,
-also mentioned again 6/12/20001.
 
 **468. Need to look at Wilkin Ng's contributions!
 
@@ -969,6 +1030,8 @@ incorrect draw claim by an engine.
 requested a few times, and I received one partial implementation (not
 enough to be useful).  Needs to be on the options menu, etc.  Note
 conflict with 298 above.
+
+488a. Also option to suppress comment popups.
 
 489. Maybe have Zippy use xtell for tells to avoid redefining "." if
 the operator is also doing tells.  Do all ICSes support xtell, though?
@@ -1076,16 +1139,236 @@ count down until he moves.
 feature in winboard (other than the non-user-friendly login.ini file).
 Seems easy enough to add such a thing.
 
-511. It's been reported that WinBoard has a problem with command line
-parsing when built with Cygwin: If a Cygwin-compiled WinBoard is in
-C:\Program Files\WinBoard\WinBoard.exe, it prints an error message on
-startup about Files\WinBoard\WinBoard.exe being an invalid parameter.
-This sounds like a Cygwin bug (passing an incorrect parameter to
-WinMain), though maybe there is some workaround.
+512. Some users dislike the clocks counting in tenths when below 10
+seconds, as it's distracting, and would like this to be configurable.
+(From the Debian bug tracking system.)
+
+513. Perhaps have Alt+P and Alt+C as synonyms for Pause in WinBoard,
+since the P or C on the button makes it look like that should be the
+shortcut.  I suppose Alt+< and Alt+>, and the same with Shift for <<
+and >>, would also be a good idea.  Oops, but Alt+C is already
+CopyGame, so maybe this is a bad idea.
+
+514. Gian-Carlo Pascutto reports: "when pasting a FEN/EPD position
+into WinBoard, and selecting analysis mode, the engine analyses the
+starting position instead of the pasted one. Re-pasting fixes this."
+
+515. Troy Edwards suggests: "It would be nice to have the option to
+'wrap text' in the comment window."
+
+516. DAV says: "FICS now supports the setting and the making clocks
+tick using unpause/pause in examine mode. It seems either the clocks
+don't tick or are not present when using xboard. Is it possible to
+change the policy and base things upon the clock is paused flag in
+style 12?"
+
+517. Clarify in engine-intf.html that "sd" is an extra dumbing-down
+feature, not a time control.  Some text:
+
+In the protocol, the "sd" command isn't a time control.  It doesn't
+say that your engine has unlimited time but must search to exactly the
+given depth.  It says that you should pay attention to the time
+control as normal, but cut off the search at the specified depth even
+if you have time to search deeper.  If you don't have time to search
+to the specified depth, given your normal time management algorithm,
+then you will want to stop sooner than the given depth.
+
+The "new" command should set the search depth back to unlimited.  This
+is already stated in the spec.  The "level" command should not affect
+the search depth.  As it happens, xboard/WinBoard currently always
+sends sd (if needed) right after level, but that isn't part of the
+spec.
+
+518. Warn in doc that -initString is a dangerous feature.  Also move
+doc of dalogs for sending commands directly to the engine out of the
+protocol spec and into the man page and help file, but warn they are
+dangerous too.
+
+519. In engine-intf.html, change "st" description to not use the word
+"exact", which is misleading.  Make sure it says this is the maximum
+time per move (and does not accumulate).
+
+520. Check whether Alt+C (CopyGame) works in XP.  One user says it
+gives an error message.
+
+522. engine-intf.html should really be rewritten to describe the
+protocol as a state machine (on each end), with every command
+precisely defined as to what it does in each state (including perhaps
+being illegal).
+
+523. Figure out what, if anything, to do with the FICS "iset singleboard".
+I lean toward not bothering to set it, as it only disables functionality,
+but maybe I'm confused.
+
+524. theblob at Mon Mar 4, 23:23 PST 2002: it'd be nice in the xboard
+interaction window if control-w and control-u respectively erased the
+line and word, even in a Windows environment.  At least, I think it'd
+be nice.
+
+525. Support a 64-bit node counter in analysis mode when compiled with
+something that has 64-bit integer support.  Both gcc and msvc++ have
+this, though under different names.
+
+526. "-initialMode analysis -lgf -" doesn't get the engine into
+analysis mode properly.  "-initialMode analyzeFile" is a workaround,
+but bug should be fixed.
+
+527. Clarify ICS.ini more in the doc, if possible.  Some sample words:
+> You should create this file in
+> WinBoard's directory (usually C:\Program Files\WinBoard) using a plain
+> text editor such as Notepad.  Make sure that Notepad doesn't decide to
+> call the file ICS.ini.txt for you -- you may have to select "All
+> Files" instead of "Text Files" in the Notepad save dialog.
+>
+> The file is simply sent to the chess server, just as if you had typed it.
+> So if your username is foo and password is bar, the file would look
+> like what is between ==== below, without the ===='s:
+>
+> ====
+> foo
+> bar
+> iset movecase 1
+> ====
+
+528. Check on updates/revisions to PGN from Steven Edwards and others.
+Any support needed?
+
+529. Protover 3 needs a prefix character that says "this is debug
+output" and prevents the GUI from parsing that line (say ";").
+
+530. The undocumented (?) checking for rsh error messages tripped up
+one engine author who had a "not found" in a message.  Tighten this
+up.
+
+531. Do we always wait for pongs to catch up with pings before
+starting the engine's clock?  I suppose we should.
+
+532. On FICS the clock does not start until after the first move has
+been made.  So perhaps we don't need the "not ready, try again soon"
+response from Zippy there.  What if Zippy is black, does black's clock
+also not start until he makes his first move?
+
+533. theblob at Mon Jun 24, 20:05 PDT 2002: here's a suggestion for
+xboard -- give priority to fitting in amounts of material in the title
+bar, and truncate names instead, e.g., use "tyrionsAp...(50) vs. woden
+(51)" rather than "TyrionsApprentice (50) vs. woden..." -- it's much
+more important to see the material than the full names, especially
+when you're playing.
+
+534. Steffen Jakob reports: "I use xboard 4.2.6. Yesterday I played
+some bullet games at ICC. In one game I lost on time. In the last move
+I already clicked on my queen and wanted it to move to its destination
+square when I forfeited on time.  After that my mouse pointer was the
+queen piece. I couldnt drop it to any square."
+
+535. For protover 3, the "st" command in the protocol could be
+extended to allow for smaller units, not just seconds.
+
+536. Funny bug where tags show up as "?" on XP when they shouldn't.
+See a couple of emails.  [This may have been the gamelist offset bug
+that was fixed in 4.2.7.]
+
+537. Clarify in the protocol that "force" while searching means you
+should stop the search as soon as you can.  (Isn't this clear
+already?)
+
+538. Need a way for the user to adjust the clocks.  This is important
+for WCCC and other computer competitions, where xboard/winboard's
+clock is not the master.  I was going to do it in time for the July
+2002 WCCC.  Oops.
+
+***540. Pick up GNU Chess 5.07! (or whatever is newest)
+
+541. Related to #327, John Iverson says, "It would be nice to have the
+coordinates shown outside of the board along the edges, rather than in
+the squares where they are hard to see and give a cluttered
+appearance, especially on smaller board sizes.  (The coordinates can
+be handy in certain situations, such as posting a screenshot of xboard
+showing an email game in progress, with the view flipped.)"
+
+542. If you start xboard with the -geometry NxM option, it will
+dutifully make the window exactly that size, but it doesn't choose a
+-size option that fits into such a window size, so the board is cut
+off or has a lot of whitespace around it.  In fact, the layout is
+generally messed up because the code doesn't expect the window to be
+the wrong size for the layout.  We should at least ignore the size
+part of the -geometry option if we aren't going to do something
+sensible with it.  How is that done with Xt?
+
+543. See the patches and extensions on
+http://www.tim-mann.org/extensions.html#patches and integrate those
+that are worthwhile into the main code base.  (Some are also mentioned
+elsewhere in this ToDo list.)  They are pretty much all over 15 lines,
+so copyright assignment from their authors is needed.  Unfortunately
+some of the authors may be hard to reach.
+
+544. Possibly rework looking_at pattern matching to have a "match at
+beginning of line" character (perhaps ^).  It looks like this may
+actually be useful after all.  The historical cases where you could
+get a board or other output that needs parsing on the same line as a
+prompt *may* have been fixed.  Confirming this would need testing on
+all the ICSes that are in use.
+
+546. Odd bug reported by travelGirl.  The last line of a multi-line
+macro from the ICS context menu sometimes "sticks" at the bottom of
+the ICS interaction window.  New text gets inserted before instead of
+after it.  This started when she upgraded to win2k.  See mail.
+
+548. Guido Flohr reports:
+
+Another "not really a bug" problem: When xboard forks in order to
+start a second chess engine, it is only concerned about duplicating
+the descriptors for the standard channels in the child.  This is
+very interesting for the second chess engine, since it inherits the
+pipes to its opponent, and can use them for sending commands like
+"sd 2", "easy", or even for feeding a bogus FEN string into the
+first engine (exchanging the opponent's queen with a bishop looks
+really attractive to me).  A very interesting feature, but not exactly
+what you intended? ;-)
+
+Closing the other descriptors after the fork will not completely
+avoid the problem, since - at least under Solaris and Linux - it
+is still possible to peek and write into xboard's open descriptors via the
+/proc pseudo file system (unless you make xboard setuid root), but
+leaving them open, makes this cheat very obvious.
+
+549. "Ron" (no last name given) reports that when compiling WinBoard
+under VC++ 6.0, there are many warnings.  These ought to be looked at.
+
+551. "Miguel" (no last name given) reports "When you make a premove in
+Winboard 4.2.6, and then opponent move and premove is illegal, then
+and you try to make a legal move but you cannot, because piece are
+erased and you have to replace your move again, move twice... in
+lightining this is annoying."  I'm not really sure what that means or
+if it is the same bug as 497.
+
+552. Get rid of the need for proprietary tools to build WinBoard.
+It's already possible to compile winboard.exe using the Cygwin
+toolchain.  You can even compile it with -mno-cygwin to avoid the need
+for cygwin1.dll.  However:
+
+552a. The Help file needs Microsoft Word to edit the source file
+winboard.rtf and the Microsoft Help Compiler to compile it into
+winboard.hlp.  I tried using OpenOffice.org on the RTF file, but the
+result was missing some formatting that the help compiler needs.  The
+help compiler itself is a free-as-in-beer download, but it's still
+proprietary software.  Perhaps the help could be converted to vanilla
+HTML, at the cost of losing the index and search capability.
+
+552b. The WinBoard installer package is built with InstallShield.
+  Possible replacements:
+  Inno Setup (http://www.jrsoftware.org/isinfo.php) - looks best
+  NSIS (http://nsis.sourceforge.net/site/index.php)
+  Cygwin setup (http://www.cygwin.com) - a long shot
+
+552c. Although the cygwin resource compiler works on winboard.rc, it's
+a pain to create new dialogs by editing the text file.  The original
+ones were all created using the graphical dialog editor in MSVC 5.
+
+* * *
 
 Before each release:
-- make sure changes made in winboard are propagated to xboard
-- make sure changes made in xboard are propagated to winboard
+- make sure both xboard and winboard build and are up to date with each other
 - run zippy with new version as a shakedown
 - be sure gnu5 binary is up to date in winboard, and gnu5 patch (if needed)
   is included in both xboard and winboard kits 
@@ -1093,5 +1376,5 @@ Before each release:
 - make sure ChangeLog is complete
 - test changes
 
-*** up to date with mail received through 1 Feb 2001, except
-for "protover 3" discussion ***
+*** up to date with mail received through 25 Oct 2003, except
+for the "protover 3" discussions on the chess-engines mailing list ***

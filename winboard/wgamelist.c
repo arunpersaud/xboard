@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <io.h>
 #include <fcntl.h>
 #include <math.h>
 #include <commdlg.h>

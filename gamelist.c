@@ -157,9 +157,9 @@ int GameListBuild(f)
     gameNumber = 0;
 
     lastStart = (ChessMove) 0;
-    yyskipmoves = TRUE;
+    yyskipmoves = FALSE;
     do {
-	yyboardindex = 1;
+        yyboardindex = 0;
 	offset = yyoffset();
 	cm = (ChessMove) yylex();
 	switch (cm) {
@@ -221,6 +221,20 @@ int GameListBuild(f)
 		    ParsePGNTag(yy_text, &currentListGame->gameInfo);
 		}
 	    } while (cm == PGNTag || cm == Comment);
+	    break;
+	  case NormalMove:
+	    /* Allow the first game to start with an unnumbered move */
+	    yyskipmoves = TRUE;
+	    if (lastStart == (ChessMove) 0) {
+	      if ((error = GameListNewGame(&currentListGame))) {
+		rewind(f);
+		yyskipmoves = FALSE;
+		return(error);
+	      }
+	      currentListGame->number = ++gameNumber;
+	      currentListGame->offset = offset;
+	      lastStart = MoveNumberOne;
+	    }
 	    break;
 	  default:
 	    break;
