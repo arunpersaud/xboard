@@ -29,7 +29,7 @@ cflags = $(cflags)
 all: $(proj).exe
 
 clean:
-	rm -f *.obj *~ $(proj).exe $(proj).err $(proj).rbj $(proj).res \
+	del /f *.obj *~ $(proj).exe $(proj).err $(proj).rbj $(proj).res \
 	  $(proj).ini *.sbr *.bsc *.o *.plg *.opt *.ncb *.debug *.bak *.gid
 
 # Update the help file if necessary
@@ -103,6 +103,7 @@ $(proj).exe: $(allobj) $(proj).rbj $(proj).hlp $(proj).rc
 	advapi32.lib user32.lib gdi32.lib comdlg32.lib winspool.lib \
 	ws2_32.lib \
 	$(proj).rbj -out:$(proj).exe
+
 # I don't use the .sbr, but it can be reenabled.  Also turn /FR back on above.
 #	bscmake *.sbr
 
