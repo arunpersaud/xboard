@@ -178,15 +178,26 @@ int ics_type;
 
 /* unsigned int 64 for engine nodes work and display */
 #ifdef WIN32
-	/* I don't know the name for this type of other compilers 
-	 * If it not work just added here 
-	 * Thats for MS Visual Studio 
+	/* I don't know the name for this type of other compiler
+	 * If it not work, just modify here
+	 * This is for MS Visual Studio
 	 */
-	#define u64	unsigned __int64
-	#define u64Display  "%I64u"
+	#ifdef _MSC_VER
+		#define u64	unsigned __int64
+		#define s64 signed __int64
+		#define u64Display  "%I64u"
+	#else
+		/* place holder
+		 * or dummy types for other compiler
+		 */
+		#define u64	unsigned __int64
+		#define s64 signed __int64
+		#define u64Display  "%I64u"
+	#endif
 #else
 	/* GNU gcc */
 	#define u64	unsigned long long
+	#define s64 signed long long
 	#define u64Display  "%llu"
 #endif
 

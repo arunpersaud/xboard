@@ -212,10 +212,12 @@ void ParseFeatures P((char* args, ChessProgramState *cps));
 void InitBackEnd3 P((void));
 void FeatureDone P((ChessProgramState* cps, int val));
 void InitChessProgram P((ChessProgramState *cps));
+double u64ToDouble P((u64 value));
 
 #ifdef WIN32
 	extern void ConsoleCreate();
 #endif
+
 extern int tinyLayout, smallLayout;
 static ChessProgramStats programStats;
 
@@ -257,6 +259,26 @@ static ChessProgramStats programStats;
 #define TN_ECHO 0001
 #define TN_SGA  0003
 #define TN_PORT 23
+
+/* Some compiler can't cast u64 to double
+ * This function do the job for us:
+
+ * We use the highest bit for cast, this only
+ * works if the highest bit is not
+ * in use (This should not happen)
+ *
+ * We used this for all compiler
+ */
+double
+u64ToDouble(u64 value)
+{
+  double r;
+  u64 tmp = value & 0x7fffffffffffffff;
+  r = (double)(s64)tmp;
+  if (value & 0x8000000000000000)
+	r +=  9.2233720368547758080e18; /* 2^63 */
+ return r;
+}
 
 /* Fake up flags for now, as we aren't keeping track of castling
    availability yet */
@@ -9251,8 +9273,8 @@ DisplayAnalysis()
     if (programStats.got_only_move) {
 	strcpy(buf, programStats.movelist);
     } else {
-	nps = (((u64)programStats.nodes) /
-	       (((double)programStats.time)/100.0));
+	nps = (u64ToDouble(programStats.nodes) /
+	      ((double)programStats.time /100.0));
 
 	cs = programStats.time % 100;
 	s = programStats.time / 100;
