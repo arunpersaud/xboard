@@ -4375,7 +4375,7 @@ HandleMachineMove(message, cps)
 
 	if (!ignore) {
 	    buf1[0] = NULLCHAR;
-	    if (sscanf(message, "%d%c %d %d %I64u %[^\n]\n",
+	    if (sscanf(message, "%d%c %d %d" u64Display "%[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5) {
 
 		if (plyext != ' ' && plyext != '\t') {
@@ -4455,7 +4455,7 @@ HandleMachineMove(message, cps)
 		    DisplayAnalysis();
 		}
 		return;
-	    } else if (sscanf(message,"stat01: %d %lu %d %d %d %s",
+	    } else if (sscanf(message,"stat01: %d" u64Display "%d %d %d %s",
 			      &time, &nodes, &plylev, &mvleft,
 			      &mvtot, mvname) >= 5) {
 		/* The stat01: line is from Crafty (9.29+) in response
@@ -9263,7 +9263,7 @@ DisplayAnalysis()
 
 	if (programStats.moves_left > 0 && appData.periodicUpdates) {
 	  if (programStats.move_name[0] != NULLCHAR) {
-	    sprintf(buf, "depth=%d %d/%d(%s) %+.2f %s%s\nNodes: %I64u NPS: %d\nTime: %02d:%02d:%02d.%02d",
+	    sprintf(buf, "depth=%d %d/%d(%s) %+.2f %s%s\nNodes: "u64Display" NPS: %d\nTime: %02d:%02d:%02d.%02d",
 		    programStats.depth,
 		    programStats.nr_moves-programStats.moves_left,
 		    programStats.nr_moves, programStats.move_name,
@@ -9272,7 +9272,7 @@ DisplayAnalysis()
 		    xtra[programStats.got_fail] : "",
 		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
 	  } else {
-	    sprintf(buf, "depth=%d %d/%d %+.2f %s%s\nNodes: %I64u NPS: %d\nTime: %02d:%02d:%02d.%02d",
+	    sprintf(buf, "depth=%d %d/%d %+.2f %s%s\nNodes: "u64Display" NPS: %d\nTime: %02d:%02d:%02d.%02d",
 		    programStats.depth,
 		    programStats.nr_moves-programStats.moves_left,
 		    programStats.nr_moves, ((float)programStats.score)/100.0,
@@ -9282,7 +9282,7 @@ DisplayAnalysis()
 		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
 	  }
 	} else {
-	    sprintf(buf, "depth=%d %+.2f %s%s\nNodes: %I64u NPS: %d\nTime: %02d:%02d:%02d.%02d",
+	    sprintf(buf, "depth=%d %+.2f %s%s\nNodes: "u64Display" NPS: %d\nTime: %02d:%02d:%02d.%02d",
 		    programStats.depth,
 		    ((float)programStats.score)/100.0,
 		    programStats.movelist,
