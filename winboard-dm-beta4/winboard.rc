@@ -1,0 +1,1526 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+#include "dlgs.h"
+
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Englisch (USA) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+ABOUTBOX DIALOG DISCARDABLE  22, 17, 228, 73
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About WinBoard"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,185,52,32,14,WS_GROUP
+    ICON            "icon_white",-1,3,6,21,20
+    LTEXT           "Chessboard for Windows",400,25,15,121,8
+    LTEXT           "Copyright 1991-2002 Digital Equipment Corporation",201,
+                    6,34,149,8
+    LTEXT           "Enhancements Copyright 1992-2002   Free Software Foundation",
+                    OPT_TCtext1,6,44,121,17
+    CONTROL         "",OPT_TCTime,"Static",SS_BLACKRECT,4,28,219,1
+    LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,4,142,8
+END
+
+DLG_TimeControl DIALOG DISCARDABLE  6, 18, 147, 113
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Time Control"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Conventional chess clock",OPT_TCUseMoves,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,6,6,113,10
+    CONTROL         "Incremental clock",OPT_TCUseInc,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,6,42,107,10
+    EDITTEXT        OPT_TCMoves,14,20,22,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "moves in",OPT_TCtext1,40,22,30,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCTime,74,20,32,12,ES_AUTOHSCROLL
+    LTEXT           "minutes",OPT_TCtext2,111,22,26,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCTime2,14,56,32,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "minutes initially,",405,51,57,73,8,NOT WS_GROUP
+    LTEXT           "plus",406,19,74,15,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCInc,37,72,32,12,ES_AUTOHSCROLL
+    LTEXT           "seconds per move",408,74,74,67,8,NOT WS_GROUP
+    PUSHBUTTON      "OK",IDOK,32,95,40,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,88,95,40,14
+END
+
+DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 144, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Load Game Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Load games with automatic stepping",OPT_Autostep,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,136,10
+    EDITTEXT        OPT_ASTimeDelay,23,18,28,12,ES_AUTOHSCROLL
+    LTEXT           "seconds per move",OPT_AStext1,57,20,60,8,NOT WS_GROUP
+    PUSHBUTTON      "OK",IDOK,24,37,40,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,80,37,40,14
+END
+
+DLG_SaveOptions DIALOG DISCARDABLE  6, 17, 133, 119
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Save Game Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Save games automatically",OPT_Autosave,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,97,10
+    CONTROL         "Prompt for filename",OPT_AVPrompt,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,18,18,75,10
+    CONTROL         "To file:",OPT_AVToFile,"Button",BS_AUTORADIOBUTTON,18,
+                    31,36,10
+    EDITTEXT        OPT_AVFilename,18,44,97,12,ES_AUTOHSCROLL
+    GROUPBOX        "Save Style",801,4,63,125,28,WS_GROUP
+    CONTROL         "PGN",OPT_PGN,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,
+                    18,75,39,10
+    CONTROL         "Old",OPT_Old,"Button",BS_AUTORADIOBUTTON,73,75,39,10
+    PUSHBUTTON      "OK",IDOK,18,98,40,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,74,98,40,14
+    PUSHBUTTON      "Browse...",OPT_AVBrowse,76,31,39,14
+END
+
+1536 DIALOG DISCARDABLE  36, 24, 264, 134
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Open"
+FONT 8, "Helv"
+BEGIN
+    LTEXT           "File &Name:",1090,6,6,76,9
+    EDITTEXT        1152,6,16,90,12,ES_AUTOHSCROLL | ES_OEMCONVERT
+    LISTBOX         1120,6,32,90,68,LBS_SORT | LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_DISABLENOSCROLL | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "&Directories:",-1,110,6,92,9
+    LTEXT           "",1088,110,18,92,9,SS_NOPREFIX | NOT WS_GROUP
+    LISTBOX         1121,110,32,92,68,LBS_SORT | LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_DISABLENOSCROLL | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "List Files of &Type:",1089,6,104,90,9
+    COMBOBOX        1136,6,114,90,36,CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | 
+                    WS_BORDER | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Dri&ves:",1091,110,104,92,9
+    COMBOBOX        1137,110,114,92,68,CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | 
+                    CBS_AUTOHSCROLL | CBS_SORT | CBS_HASSTRINGS | WS_BORDER | 
+                    WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,208,6,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,208,24,50,14,WS_GROUP
+    PUSHBUTTON      "&Help",1038,208,46,50,14,NOT WS_VISIBLE | WS_GROUP
+    LTEXT           "&Index number:",-1,208,74,48,8
+    EDITTEXT        OPT_IndexNumberOld,208,84,50,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Net&work...",1037,208,113,50,14,WS_GROUP
+END
+
+DLG_CommPort DIALOG DISCARDABLE  25, 30, 159, 98
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Communication Port Settings"
+FONT 8, "Helv"
+BEGIN
+    RTEXT           "&Port:",-1,4,6,40,10
+    COMBOBOX        OPT_Port,49,4,55,60,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    RTEXT           "Data &Rate:",-1,4,21,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_DataRate,49,19,55,100,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    RTEXT           "Data &Bits:",-1,4,36,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_Bits,49,34,55,60,CBS_DROPDOWNLIST | CBS_HASSTRINGS | 
+                    WS_VSCROLL | WS_TABSTOP
+    RTEXT           "P&arity:",-1,4,51,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_Parity,49,49,55,60,CBS_DROPDOWNLIST | CBS_HASSTRINGS | 
+                    WS_VSCROLL | WS_TABSTOP
+    RTEXT           "&Stop Bits:",-1,4,66,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_StopBits,49,64,55,60,CBS_DROPDOWNLIST | 
+                    CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "F&low:",-1,4,81,40,10,NOT WS_GROUP
+    DEFPUSHBUTTON   "OK",IDOK,115,4,40,14
+    PUSHBUTTON      "Cancel",IDCANCEL,115,24,40,14
+    COMBOBOX        OPT_Flow,49,79,55,60,CBS_DROPDOWNLIST | CBS_HASSTRINGS | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Help",OPT_SerialHelp,115,80,40,14,NOT WS_VISIBLE
+END
+
+DLG_EditComment DIALOG DISCARDABLE  6, 18, 306, 104
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Edit Comment"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "OK",IDOK,61,86,40,14
+    PUSHBUTTON      "Cancel",OPT_CancelComment,109,86,40,14
+    PUSHBUTTON      "&Clear",OPT_ClearComment,157,86,40,14
+    PUSHBUTTON      "&Edit",OPT_EditComment,205,86,40,14
+    CONTROL         "",OPT_CommentText,"RICHEDIT",ES_MULTILINE | 
+                    ES_AUTOHSCROLL | ES_WANTRETURN | WS_BORDER | WS_VSCROLL | 
+                    WS_HSCROLL | WS_TABSTOP,4,4,298,78
+END
+
+DLG_PromotionKing DIALOG DISCARDABLE  98, 90, 183, 41
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Promotion"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "&Queen",PB_Queen,4,23,40,14,WS_GROUP
+    PUSHBUTTON      "&Rook",PB_Rook,49,23,40,14,NOT WS_TABSTOP
+    PUSHBUTTON      "&Bishop",PB_Bishop,94,23,40,14,NOT WS_TABSTOP
+    PUSHBUTTON      "K&night",PB_Knight,139,23,40,14,NOT WS_TABSTOP
+    PUSHBUTTON      "&King",PB_King,94,4,40,14,NOT WS_TABSTOP
+    PUSHBUTTON      "&Cancel",IDCANCEL,139,4,40,14,WS_GROUP
+    LTEXT           "Promote pawn to:",501,6,8,58,8
+END
+
+ABOUTBOX2 DIALOG DISCARDABLE  22, 17, 281, 198
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About WinBoard"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,244,180,32,14,WS_GROUP
+    RTEXT           "Chessboard for Windows",DLG_TimeControl,196,154,80,8
+    LTEXT           "Copyright 1991 Digital Equipment Corporation",201,4,167,
+                    151,8
+    LTEXT           "Enhancements Copyright 1992-2002   Free Software Foundation",
+                    OPT_TCtext1,4,177,126,17
+    CONTROL         "",OPT_TCTime,"Static",SS_BLACKRECT,4,164,272,1
+    LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,4,154,64,8
+    CONTROL         "galactic",IDC_STATIC,"Static",SS_BITMAP,4,4,15,13
+END
+
+DLG_GameList DIALOG DISCARDABLE  6, 18, 307, 159
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Game List"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LISTBOX         OPT_GameListText,4,4,299,130,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Load",OPT_GameListLoad,61,138,40,15
+    PUSHBUTTON      "&Prev",OPT_GameListPrev,109,138,40,15
+    PUSHBUTTON      "&Next",OPT_GameListNext,157,138,40,15
+    PUSHBUTTON      "&Close",OPT_GameListClose,205,138,40,15
+END
+
+DLG_EditTags DIALOG DISCARDABLE  6, 18, 160, 141
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Edit Tags"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "OK",IDOK,12,123,40,14
+    PUSHBUTTON      "Cancel",OPT_TagsCancel,60,123,40,14
+    PUSHBUTTON      "&Edit",OPT_EditTags,108,123,40,14
+    CONTROL         "",OPT_TagsText,"RICHEDIT",ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | ES_WANTRETURN | WS_BORDER | WS_VSCROLL | 
+                    WS_HSCROLL | WS_TABSTOP,4,4,152,115
+END
+
+WBCONSOLE DIALOG DISCARDABLE  0, 0, 335, 133
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+CAPTION "ICS Interaction"
+CLASS "WBConsole"
+FONT 8, "Courier New"
+BEGIN
+    CONTROL         "",OPT_ConsoleText,"RICHEDIT",ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_NOHIDESEL | ES_READONLY | ES_NUMBER | 
+                    WS_BORDER | WS_VSCROLL | WS_TABSTOP,0,0,335,119
+    CONTROL         "",OPT_ConsoleInput,"RICHEDIT",ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_NOHIDESEL | 
+                    ES_NUMBER | WS_BORDER | WS_TABSTOP,0,120,335,13,
+                    WS_EX_TRANSPARENT
+END
+
+DLG_Analysis DIALOGEX 330, 148, 338, 111
+STYLE DS_3DLOOK | DS_CENTERMOUSE | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | 
+    WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+FONT 8, "Arial", 0, 0, 0x1
+BEGIN
+    EDITTEXT        OPT_engineDepth,55,32,44,12,ES_CENTER | ES_READONLY | 
+                    NOT WS_BORDER,WS_EX_DLGMODALFRAME
+    EDITTEXT        OPT_engineScore,11,32,37,12,ES_CENTER | ES_READONLY | 
+                    NOT WS_BORDER,WS_EX_DLGMODALFRAME
+    EDITTEXT        OPT_engineNPS,105,32,43,12,ES_CENTER | ES_READONLY | NOT 
+                    WS_BORDER,WS_EX_DLGMODALFRAME
+    EDITTEXT        OPT_engineNodes,155,32,82,12,ES_CENTER | ES_READONLY | 
+                    NOT WS_BORDER,WS_EX_DLGMODALFRAME
+    GROUPBOX        "Engine Information",IDC_STATIC,0,4,338,49,BS_LEFT
+    CONTROL         "",OPT_engineName,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY,10,15,104,12,WS_EX_DLGMODALFRAME
+    EDITTEXT        OPT_engineMoveNr,121,15,50,12,ES_CENTER | ES_READONLY | 
+                    NOT WS_BORDER,WS_EX_DLGMODALFRAME
+    EDITTEXT        OPT_engineTime,178,15,42,12,ES_CENTER | ES_READONLY | 
+                    NOT WS_BORDER,WS_EX_DLGMODALFRAME
+    DEFPUSHBUTTON   "",OPT_engineStart,283,15,46,12,0,WS_EX_STATICEDGE
+    DEFPUSHBUTTON   "",OPT_engineMove,289,32,35,12,NOT WS_TABSTOP,
+                    WS_EX_STATICEDGE
+    CONTROL         "Disable send statistic question",OPT_engineStatLine,
+                    "Button",BS_AUTOCHECKBOX | BS_LEFT | BS_VCENTER | 
+                    BS_FLAT,0,55,118,8
+    CONTROL         "Enable Tourney Mode",OPT_engineTourneyMode,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFT | BS_VCENTER | BS_FLAT,242,55,
+                    84,8
+    EDITTEXT        OPT_engineHash,227,15,49,12,ES_CENTER | ES_READONLY | 
+                    NOT WS_BORDER,WS_EX_DLGMODALFRAME
+    EDITTEXT        OPT_egtb,244,32,39,12,ES_CENTER | ES_READONLY | NOT 
+                    WS_BORDER,WS_EX_DLGMODALFRAME
+    CONTROL         "Send engine output to ICS",OPT_SendToICS,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFT | BS_VCENTER | BS_FLAT,125,55,
+                    102,8
+    LISTBOX         OPT_AnalysisText,0,66,337,44,LBS_MULTIPLESEL | 
+                    LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | 
+                    LBS_DISABLENOSCROLL | WS_VSCROLL | WS_HSCROLL | 
+                    WS_TABSTOP,WS_EX_TRANSPARENT
+END
+
+DLG_Error DIALOG DISCARDABLE  0, 0, 183, 33
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Error"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,163,9,16,14
+    ICON            32515,IDC_STATIC,4,6,20,20
+    LTEXT           "Sorry Charlie",OPT_ErrorText,27,4,130,25
+END
+
+DLG_Colorize DIALOGEX 0, 0, 183, 52
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ICS Interaction Colors"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "&Choose Color...",OPT_ChooseColor,15,29,51,14,WS_GROUP
+    CONTROL         "&Bold",OPT_Bold,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
+                    WS_TABSTOP,93,4,30,10
+    CONTROL         "&Italic",OPT_Italic,"Button",BS_AUTOCHECKBOX,93,14,30,
+                    10
+    CONTROL         "&Underline",OPT_Underline,"Button",BS_AUTOCHECKBOX,93,
+                    24,45,10
+    CONTROL         "&Strikeout",OPT_Strikeout,"Button",BS_AUTOCHECKBOX,93,
+                    34,42,10
+    DEFPUSHBUTTON   "OK",IDOK,145,7,31,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,145,24,31,14
+    CONTROL         "",OPT_Sample,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_GROUP,4,9,75,15,WS_EX_CLIENTEDGE
+END
+
+DLG_Question DIALOG DISCARDABLE  0, 0, 187, 60
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Question"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        OPT_QuestionInput,4,44,179,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Enter",IDOK,133,4,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,133,24,50,14
+    LTEXT           "Enter a chess engine command or just type something stupid that will completely screw things up.",
+                    OPT_QuestionText,27,4,101,33
+    ICON            32514,IDC_STATIC,4,13,20,20
+END
+
+DLG_Startup DIALOG DISCARDABLE  0, 0, 276, 127
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "WinBoard Startup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Play against a chess engine or match two engines",
+                    OPT_ChessEngine,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
+                    WS_TABSTOP,8,17,193,10
+    COMBOBOX        OPT_ChessEngineName,15,29,194,129,CBS_DROPDOWN | 
+                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        OPT_SecondChessEngineName,15,45,194,129,CBS_DROPDOWN | 
+                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use an Internet Chess Server",OPT_ChessServer,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,62,195,10
+    COMBOBOX        OPT_ChessServerName,16,73,194,129,CBS_DROPDOWN | 
+                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Just view or edit game files",OPT_View,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,91,193,10
+    CONTROL         "Additional options",OPT_AnyAdditional,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,111,71,10
+    EDITTEXT        OPT_AdditionalOptions,85,110,187,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,222,4,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,222,21,50,14
+    PUSHBUTTON      "Help",IDM_HELPCONTENTS,222,38,50,14
+    GROUPBOX        "What would you like to do?",IDC_STATIC,4,4,211,101
+END
+
+DLG_IndexNumber DIALOG DISCARDABLE  0, 0, 236, 18
+STYLE DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Inde&x number:",IDC_STATIC,5,2,46,8
+    EDITTEXT        OPT_IndexNumber,54,0,155,13,ES_AUTOHSCROLL
+END
+
+DLG_TypeInMove DIALOG DISCARDABLE  0, 0, 186, 46
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Type in a move"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        OPT_Move,7,16,109,13,ES_AUTOHSCROLL
+END
+
+DLG_Sound DIALOG DISCARDABLE  0, 0, 257, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Sounds"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,199,6,47,14
+    PUSHBUTTON      "Cancel",IDCANCEL,199,23,47,14
+    PUSHBUTTON      "Defaults",OPT_DefaultSounds,199,40,47,14
+    COMBOBOX        CBO_Sounds,52,6,128,110,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
+    CONTROL         "No sound",OPT_NoSound,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,11,25,47,10
+    CONTROL         "Default beep",OPT_DefaultBeep,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,11,42,57,10
+    CONTROL         "Built-in sound:",OPT_BuiltInSound,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,11,59,60,10
+    COMBOBOX        OPT_BuiltInSoundName,78,58,103,109,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Play",OPT_PlaySound,200,57,47,14
+    CONTROL         "WAV file:",OPT_WavFile,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,11,76,45,10
+    EDITTEXT        OPT_WavFileName,78,75,103,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",OPT_BrowseSound,200,74,47,14
+    LTEXT           "Event:",IDC_STATIC,19,9,26,9
+END
+
+DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 271, 154
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "General Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,207,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,208,25,50,14
+    CONTROL         "Always on &Top",OPT_AlwaysOnTop,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,6,79,10
+    CONTROL         "Always &Queen",OPT_AlwaysQueen,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,16,20,79,10
+    CONTROL         "Animate &Dragging",OPT_AnimateDragging,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,34,79,10
+    CONTROL         "&Animate Moving",OPT_AnimateMoving,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,48,79,10
+    CONTROL         "Auto &Flag",OPT_AutoFlag,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,16,62,79,10
+    CONTROL         "Auto Flip &View",OPT_AutoFlipView,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,76,79,10
+    CONTROL         "Auto &Raise Board",OPT_AutoRaiseBoard,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,90,71,10
+    CONTROL         "&Blindfold",OPT_Blindfold,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,16,104,79,10
+    CONTROL         "&Highlight Dragging",OPT_HighlightDragging,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,118,79,10
+    CONTROL         "Highlight Last &Move",OPT_HighlightLastMove,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,6,79,10
+    CONTROL         "Periodic &Updates",OPT_PeriodicUpdates,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,20,79,10
+    CONTROL         "Ponder &Next Move",OPT_PonderNextMove,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,34,79,10
+    CONTROL         "&Popup Exit Message",OPT_PopupExitMessage,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,48,79,10
+    CONTROL         "Popup Move &Errors",OPT_PopupMoveErrors,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,62,79,10
+    CONTROL         "Show Butt&on Bar",OPT_ShowButtonBar,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,76,79,10
+    CONTROL         "Show &Coordinates",OPT_ShowCoordinates,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,90,79,10
+    CONTROL         "&Show Thinking",OPT_ShowThinking,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,104,79,10
+    CONTROL         "Test &Legality",OPT_TestLegality,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,118,79,10
+    CONTROL         "Winboard Engine Room",OPT_AnalysisWindow,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,132,91,10
+END
+
+DLG_IcsOptions DIALOGEX 0, 0, 310, 338
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ICS Options"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,101,316,48,15
+    PUSHBUTTON      "Cancel",IDCANCEL,165,316,48,15
+    CONTROL         "&Auto Comment",OPT_AutoComment,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,12,62,12
+    CONTROL         "Auto &Observe",OPT_AutoObserve,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,27,62,12
+    CONTROL         "&Get Move List",OPT_GetMoveList,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,42,62,12
+    CONTROL         "&Local Line Editing",OPT_LocalLineEditing,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,57,72,8
+    CONTROL         "&Quiet Play",OPT_QuietPlay,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,72,62,8
+    CONTROL         "&Premove",OPT_Premove,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,121,12,44,12
+    CONTROL         "&White first move",OPT_PremoveWhite,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,121,27,67,12
+    EDITTEXT        OPT_PremoveWhiteText,196,24,25,12,ES_AUTOHSCROLL
+    CONTROL         "&Black first move",OPT_PremoveBlack,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,121,42,66,12
+    EDITTEXT        OPT_PremoveBlackText,196,40,25,12,ES_AUTOHSCROLL
+    CONTROL         "&Sound alarm at",OPT_IcsAlarm,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,121,71,63,10
+    EDITTEXT        OPT_IcsAlarmTime,196,68,17,13
+    LTEXT           "seconds",IDC_STATIC,219,71,37,8
+    PUSHBUTTON      "Choose...",OPT_ChooseShoutColor,104,173,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseSShoutColor,104,195,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChannel1Color,104,213,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChannelColor,104,235,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseKibitzColor,104,253,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseTellColor,251,173,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChallengeColor,251,195,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseRequestColor,251,213,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseSeekColor,251,235,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseNormalColor,251,253,40,15
+    PUSHBUTTON      "&Choose Background Color...",OPT_ChooseBackgroundColor,
+                    18,276,131,16
+    PUSHBUTTON      "&Default ICS Colors",OPT_DefaultColors,165,276,131,16
+    CONTROL         "Do &not colorize messages",OPT_DontColorize,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,110,299,97,10
+    CONTROL         "",OPT_SampleShout,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_DISABLED | WS_GROUP,18,173,75,15,
+                    WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleSShout,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_DISABLED | WS_GROUP,18,195,75,15,
+                    WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleChannel1,"RICHEDIT",ES_CENTER | 
+                    ES_MULTILINE | ES_READONLY | WS_DISABLED | WS_GROUP,18,
+                    213,75,15,WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleChannel,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_DISABLED | WS_GROUP,18,235,75,15,
+                    WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleKibitz,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_GROUP,18,253,75,15,WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleTell,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_DISABLED | WS_GROUP,165,173,75,15,
+                    WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleChallenge,"RICHEDIT",ES_CENTER | 
+                    ES_MULTILINE | ES_READONLY | WS_DISABLED | WS_GROUP,165,
+                    195,75,15,WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleRequest,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_DISABLED | WS_GROUP,165,213,75,15,
+                    WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleSeek,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_DISABLED | WS_GROUP,165,235,75,15,
+                    WS_EX_CLIENTEDGE
+    CONTROL         "",OPT_SampleNormal,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
+                    ES_READONLY | WS_DISABLED | WS_GROUP,165,253,75,15,
+                    WS_EX_CLIENTEDGE
+    GROUPBOX        "Interaction Colors",IDC_STATIC,7,163,296,150
+    GROUPBOX        "Premove",IDC_STATIC,112,3,191,58
+    GROUPBOX        "Server",IDC_STATIC,7,3,101,83
+    GROUPBOX        "Alarm",IDC_STATIC,112,62,191,24
+    GROUPBOX        "Engine Analyse",IDC_STATIC,7,88,101,69
+    CONTROL         "Enable Engine",OPT_icsAnalyze,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,99,62,10
+    CONTROL         "Enable Window",OPT_icsAnalyzeWindow,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,117,89,10
+    CONTROL         "kill PV <",OPT_icsKillPV,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,196,140,40,10
+    EDITTEXT        OPT_icsKillPVs,238,139,13,12
+    CONTROL         "Whisper",OPT_icsWhisper,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,121,97,42,10
+    CONTROL         "Kibitz",OPT_icsKibitz,"Button",BS_AUTORADIOBUTTON,121,
+                    113,33,10
+    CONTROL         "Tell",OPT_icsTell,"Button",BS_AUTORADIOBUTTON,121,129,
+                    27,10
+    CONTROL         "None",OPT_icsNone,"Button",BS_AUTORADIOBUTTON,121,145,
+                    33,10
+    EDITTEXT        OPT_icsTells,151,128,34,13,ES_AUTOHSCROLL
+    LTEXT           "less then",IDC_STATIC,255,141,29,10
+    CONTROL         "Enable Smart Queue",OPT_smartQueue,"Button",
+                    BS_AUTOCHECKBOX,196,100,81,10
+    CONTROL         "Skip fail low/high  moves",OPT_dropMoves,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFT | BS_VCENTER,196,120,98,10
+    GROUPBOX        "Engine Analyse Broadcasting",IDC_STATIC,112,88,191,69
+    PUSHBUTTON      "Advanced / UCI...",OPT_ADV,18,136,70,15
+END
+
+DLG_BoardOptions DIALOG DISCARDABLE  0, 0, 262, 250
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Board Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,205,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,205,35,50,14
+    CONTROL         "&Tiny",OPT_SizeTiny,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,15,15,50,10
+    CONTROL         "T&eeny",OPT_SizeTeeny,"Button",BS_AUTORADIOBUTTON,15,25,
+                    50,10
+    CONTROL         "&Dinky",OPT_SizeDinky,"Button",BS_AUTORADIOBUTTON,15,35,
+                    50,10
+    CONTROL         "&Petite",OPT_SizePetite,"Button",BS_AUTORADIOBUTTON,15,
+                    45,50,10
+    CONTROL         "Sl&im",OPT_SizeSlim,"Button",BS_AUTORADIOBUTTON,15,55,
+                    50,10
+    CONTROL         "&Small",OPT_SizeSmall,"Button",BS_AUTORADIOBUTTON,15,65,
+                    50,10
+    CONTROL         "Medi&ocre",OPT_SizeMediocre,"Button",BS_AUTORADIOBUTTON,
+                    76,15,50,10
+    CONTROL         "&Middling",OPT_SizeMiddling,"Button",BS_AUTORADIOBUTTON,
+                    76,25,50,10
+    CONTROL         "&Average",OPT_SizeAverage,"Button",BS_AUTORADIOBUTTON,
+                    76,35,50,10
+    CONTROL         "Mode&rate",OPT_SizeModerate,"Button",BS_AUTORADIOBUTTON,
+                    76,45,50,10
+    CONTROL         "Medi&um",OPT_SizeMedium,"Button",BS_AUTORADIOBUTTON,76,
+                    55,50,10
+    CONTROL         "Bul&ky",OPT_SizeBulky,"Button",BS_AUTORADIOBUTTON,76,65,
+                    50,10
+    CONTROL         "&Large",OPT_SizeLarge,"Button",BS_AUTORADIOBUTTON,140,
+                    15,50,10
+    CONTROL         "&Big",OPT_SizeBig,"Button",BS_AUTORADIOBUTTON,140,25,50,
+                    10
+    CONTROL         "&Huge",OPT_SizeHuge,"Button",BS_AUTORADIOBUTTON,140,35,
+                    50,10
+    CONTROL         "&Giant",OPT_SizeGiant,"Button",BS_AUTORADIOBUTTON,140,
+                    45,50,10
+    CONTROL         "&Colossal",OPT_SizeColossal,"Button",BS_AUTORADIOBUTTON,
+                    140,55,50,10
+    CONTROL         "Tita&nic",OPT_SizeTitanic,"Button",BS_AUTORADIOBUTTON,
+                    140,65,50,10
+    PUSHBUTTON      "Choose...",OPT_ChooseLightSquareColor,144,100,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseDarkSquareColor,144,120,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseWhitePieceColor,144,140,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseBlackPieceColor,144,160,40,15
+    PUSHBUTTON      "Choose...",OPT_ChooseHighlightSquareColor,144,180,40,15
+    PUSHBUTTON      "Choose...",OPT_ChoosePremoveHighlightColor,144,200,40,
+                    15
+    PUSHBUTTON      "Defaults",OPT_DefaultBoardColors,118,225,65,15
+    EDITTEXT        OPT_DarkSquareColor,104,120,25,15,ES_READONLY | 
+                    WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+    EDITTEXT        OPT_LightSquareColor,104,100,25,15,ES_READONLY | 
+                    WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+    EDITTEXT        OPT_WhitePieceColor,104,140,25,15,ES_READONLY | 
+                    WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+    EDITTEXT        OPT_BlackPieceColor,104,160,25,15,ES_READONLY | 
+                    WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+    EDITTEXT        OPT_HighlightSquareColor,104,180,25,15,ES_READONLY | 
+                    WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+    GROUPBOX        "Colors",IDC_STATIC,10,90,185,155
+    EDITTEXT        OPT_PremoveHighlightColor,104,200,25,15,ES_READONLY | 
+                    WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+    LTEXT           "Light Squares",IDC_STATIC,25,105,60,10
+    LTEXT           "Dark Squares",IDC_STATIC,25,124,60,10
+    LTEXT           "White Pieces",IDC_STATIC,25,145,60,10
+    LTEXT           "Black Pieces",IDC_STATIC,25,165,60,10
+    LTEXT           "Square Highlights",IDC_STATIC,25,185,60,10
+    LTEXT           "Premove Highlights",IDC_STATIC,25,205,70,10
+    GROUPBOX        "Size",IDC_STATIC,10,5,185,75
+    CONTROL         "Monochrome",OPT_Monochrome,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,25,225,75,10
+    EDITTEXT        OPT_SampleLightSquare,205,110,39,36,ES_READONLY | 
+                    WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+    EDITTEXT        OPT_SampleDarkSquare,205,165,39,36,ES_READONLY | 
+                    WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+END
+
+DLG_Fonts DIALOG DISCARDABLE  0, 0, 280, 231
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Fonts"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,155,210,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,215,210,50,14
+    PUSHBUTTON      "Choose...",OPT_ChooseClockFont,221,17,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseMessageFont,221,47,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseCoordFont,221,77,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseTagFont,221,120,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseCommentsFont,221,150,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseConsoleFont,221,180,45,15
+    PUSHBUTTON      "&Revert to Defaults",OPT_DefaultFonts,15,210,80,15
+    CONTROL         "",OPT_SampleCoordFont,"RICHEDIT",ES_READONLY | 
+                    WS_DISABLED | WS_BORDER,70,72,140,20
+    CONTROL         "",OPT_SampleTagFont,"RICHEDIT",ES_READONLY | 
+                    WS_DISABLED | WS_BORDER,70,115,140,20
+    CONTROL         "",OPT_SampleCommentsFont,"RICHEDIT",ES_READONLY | 
+                    WS_DISABLED | WS_BORDER,70,145,140,20
+    CONTROL         "",OPT_SampleConsoleFont,"RICHEDIT",ES_READONLY | 
+                    WS_DISABLED | WS_BORDER,70,175,140,20
+    LTEXT           "Clocks",OPT_ClockFont,16,17,45,10,NOT WS_GROUP
+    LTEXT           "Messages",OPT_MessageFont,16,47,45,10,NOT WS_GROUP
+    LTEXT           "Coordinates",OPT_CoordFont,16,77,45,10,NOT WS_GROUP
+    LTEXT           "Tags",OPT_EditTagsFont,16,120,45,10,NOT WS_GROUP
+    LTEXT           "Comments",OPT_CommentsFont,16,150,45,10,NOT WS_GROUP
+    LTEXT           "ICS Interaction",OPT_MessageFont5,16,180,50,10,NOT 
+                    WS_GROUP
+    CONTROL         "",OPT_SampleClockFont,"RICHEDIT",ES_READONLY | 
+                    WS_DISABLED | WS_BORDER,70,12,140,20
+    CONTROL         "",OPT_SampleMessageFont,"RICHEDIT",ES_READONLY | 
+                    WS_DISABLED | WS_BORDER,70,42,140,20
+    GROUPBOX        "Current Board Size",IDC_STATIC,5,2,270,100
+    GROUPBOX        "All Board Sizes",IDC_STATIC,5,105,270,100
+END
+
+DLG_icsAnalyze DIALOG DISCARDABLE  0, 0, 233, 117
+STYLE DS_MODALFRAME | DS_NOIDLEMSG | DS_3DLOOK | DS_NOFAILCREATE | WS_POPUP | 
+    WS_CAPTION
+CAPTION "ICS Engine Analysis Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,75,99,35,14
+    PUSHBUTTON      "Cancel",IDCANCEL,115,99,35,14
+    GROUPBOX        "Options",IDC_STATIC,7,50,103,44
+    GROUPBOX        "UCI Settings",IDC_STATIC,115,50,111,44
+    CONTROL         "normal commands",OPT_icsWBprotoNorm,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,13,16,86,10
+    CONTROL         "agressive commands",OPT_icsWBprotoAgr,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,13,32,86,10
+    CONTROL         "Write Analysis Logfile",OPT_icsWriteLog,"Button",
+                    BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,13,79,86,10
+    CONTROL         "Show Book",OPT_icsShowBook,"Button",BS_AUTOCHECKBOX | 
+                    WS_DISABLED | WS_TABSTOP,13,62,86,10
+    GROUPBOX        "Engine Handling",IDC_STATIC,7,3,103,44
+    GROUPBOX        "Smart Queue",IDC_STATIC,115,3,111,44
+    CONTROL         "Tuning for Blitz games",OPT_icsSmartQueueBlitz,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,121,16,99,10
+    CONTROL         "Tuning for Standard games",OPT_icsSmartQueueStd,"Button",
+                    BS_AUTORADIOBUTTON,121,32,98,10
+END
+
+DLG_ZippyDraw DIALOG DISCARDABLE  0, 0, 219, 209
+STYLE DS_MODALFRAME | WS_CHILD | WS_CAPTION | WS_SYSMENU
+CAPTION "ICS Zippy Draw"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,107,187,48,15
+    CONTROL         "&Enable Zippy Draw",OPT_EnableZippyDraw,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,26,75,12
+    LTEXT           "(Only avaible if engine don't support WB2 draw feature)",
+                    IDC_STATIC,15,15,175,10
+    GROUPBOX        "General Options",IDC_STATIC,10,4,202,38
+    PUSHBUTTON      "Cancel",IDCANCEL,53,187,48,15
+    CONTROL         "&Offer Draw",OPT_OfferDraw,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,58,50,10
+    CONTROL         "&Accept Draw",OPT_AcceptDraw,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,68,57,57,10
+    CONTROL         "&Draw Factor add",OPT_DrawFactor,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,111,68,12
+    CONTROL         "Title players bonus",OPT_TitlePlayers,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,82,75,12
+    GROUPBOX        "Settings",IDC_STATIC,10,47,202,136
+    GROUPBOX        "Refer with",IDC_STATIC,16,71,190,107
+    CONTROL         "Opponent rating diff  less then",OPT_DrawFactor2,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,96,109,12
+    EDITTEXT        OPT_RatingPoints,131,94,25,12,ES_AUTOHSCROLL
+    EDITTEXT        OPT_RatingPoints2,39,124,21,12,ES_AUTOHSCROLL
+    LTEXT           "points to score (1 pawn=100)",IDC_STATIC,65,128,92,8
+    LTEXT           "ELO",IDC_STATIC,161,98,19,8
+    CONTROL         "&Dynamic Draw: Take score as draw from ",OPT_smartQueue,
+                    "Button",BS_AUTOCHECKBOX,41,142,143,10
+    EDITTEXT        OPT_RatingPoints3,53,153,21,12,ES_AUTOHSCROLL
+    LTEXT           "points to",IDC_STATIC,79,156,28,8
+    EDITTEXT        OPT_RatingPoints4,110,154,21,12,ES_AUTOHSCROLL
+    LTEXT           "points (1 Pawn=100)",IDC_STATIC,136,156,65,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    DLG_GeneralOptions, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 264
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 147
+    END
+
+    DLG_IcsOptions, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 303
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 335
+    END
+
+    DLG_BoardOptions, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 255
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 243
+    END
+
+    DLG_Fonts, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 273
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 224
+    END
+
+    DLG_icsAnalyze, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 226
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 113
+    END
+
+    DLG_ZippyDraw, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 212
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 202
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+ICON_BLACK              ICON    DISCARDABLE     "bitmaps\\icon_ob.ico"
+ICON_BOARD              ICON    DISCARDABLE     "bitmaps\\board.ico"
+ICON_WHITE              ICON    DISCARDABLE     "bitmaps\\icon_whi.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+WINBOARD MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "Reset &Game",                 IDM_NewGame
+        MENUITEM SEPARATOR
+        MENUITEM "&Load Game...",               IDM_LoadGame
+        MENUITEM "Load &Next Game\tAlt+PgDn",   IDM_LoadNextGame
+        MENUITEM "Load &Previous Game\tAlt+PgUp", IDM_LoadPrevGame
+        MENUITEM "&Reload Same Game",           IDM_ReloadGame
+        MENUITEM "&Save Game...",               IDM_SaveGame
+        MENUITEM SEPARATOR
+        MENUITEM "&Copy Game To Clipboard\tAlt+C", IDM_CopyGame
+        MENUITEM "Paste Game &From Clipboard\tAlt+V", IDM_PasteGame
+        MENUITEM SEPARATOR
+        MENUITEM "L&oad Position...",           IDM_LoadPosition
+        MENUITEM "Load N&ext Position\tAlt+Shift+PgDn", IDM_LoadNextPosition
+        MENUITEM "Load Pre&vious Position\tAlt+Shift+PgUp", 
+                                                IDM_LoadPrevPosition
+        MENUITEM "Reload Sa&me Position",       IDM_ReloadPosition
+        MENUITEM "S&ave Position...",           IDM_SavePosition
+        MENUITEM SEPARATOR
+        MENUITEM "Cop&y Position To Clipboard\tAlt+Shift+C", 
+                                                IDM_CopyPosition
+        MENUITEM "Pas&te Position From Clipboard\tAlt+Shift+V", 
+                                                IDM_PastePosition
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDM_Exit
+    END
+    POPUP "&Mode"
+    BEGIN
+        MENUITEM "Machine &White",              IDM_MachineWhite
+        MENUITEM "Machine &Black",              IDM_MachineBlack
+        MENUITEM "Two &Machines",               IDM_TwoMachines
+        MENUITEM "&Analysis Mode",              IDM_AnalysisMode
+        MENUITEM "Analyze &File",               IDM_AnalyzeFile
+        MENUITEM "&ICS Client",                 IDM_IcsClient
+        MENUITEM "Edit &Game",                  IDM_EditGame
+        MENUITEM "&Edit Position",              IDM_EditPosition
+        MENUITEM "Trai&ning",                   IDM_Training, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Show Game &List...",          IDM_ShowGameList
+        MENUITEM "Edit &Tags...",               IDM_EditTags
+        MENUITEM "Edit &Comment...",            IDM_EditComment
+        MENUITEM "&Pause\tPause",               IDM_Pause
+    END
+    POPUP "&Action"
+    BEGIN
+        MENUITEM "&Accept\tF3",                 IDM_Accept
+        MENUITEM "D&ecline\tF4",                IDM_Decline
+        MENUITEM "Re&match\tF12",               IDM_Rematch
+        MENUITEM SEPARATOR
+        MENUITEM "Call &Flag\tF5",              IDM_CallFlag
+        MENUITEM "&Draw\tF6",                   IDM_Draw
+        MENUITEM "Ad&journ\tF7",                IDM_Adjourn
+        MENUITEM "A&bort\tF8",                  IDM_Abort
+        MENUITEM "&Resign\tF9",                 IDM_Resign
+        MENUITEM SEPARATOR
+        MENUITEM "Stop &Observing\tF10",        IDM_StopObserving
+        MENUITEM "Stop E&xamining\tF11",        IDM_StopExamining
+    END
+    POPUP "&Step"
+    BEGIN
+        MENUITEM "T&ype In Move...",            IDM_TypeInMove
+        MENUITEM SEPARATOR
+        MENUITEM "&Backward\tAlt+Left",         IDM_Backward
+        MENUITEM "&Forward\tAlt+Right",         IDM_Forward
+        MENUITEM "Back to &Start\tAlt+Up",      IDM_ToStart
+        MENUITEM "Forward to &End\tAlt+Down",   IDM_ToEnd
+        MENUITEM "Re&vert\tAlt+Home",           IDM_Revert
+        MENUITEM "&Truncate Game\tAlt+End",     IDM_TruncateGame
+        MENUITEM SEPARATOR
+        MENUITEM "&Move Now\tAlt+Ins",          IDM_MoveNow
+        MENUITEM "&Retract Move\tAlt+Del",      IDM_RetractMove
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "Flip &View\tF2",              IDM_FlipView
+        MENUITEM SEPARATOR
+        MENUITEM "&General...",                 IDM_GeneralOptions
+        MENUITEM "&Board...",                   IDM_BoardOptions
+        POPUP "&ICS...", GRAYED
+        BEGIN
+            MENUITEM "ICS Options Gerneral",        IDM_IcsOptions
+            MENUITEM "ICS Zippy Draw",              IDM_ZippyDraw, GRAYED
+        END
+        MENUITEM "&Fonts...",                   IDM_Fonts
+        MENUITEM "Soun&ds...",                  IDM_Sounds
+        MENUITEM SEPARATOR
+        MENUITEM "Comm&unications...",          IDM_CommPort
+        MENUITEM "&Load Game...",               IDM_LoadOptions
+        MENUITEM "&Save Game...",               IDM_SaveOptions
+        MENUITEM "&Time Control...",            IDM_TimeControl
+        MENUITEM SEPARATOR
+        MENUITEM "Save Settings &Now",          IDM_SaveSettings
+        MENUITEM "Save Settings on E&xit",      IDM_SaveSettingsOnExit
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Help &Contents\tF1",          IDM_HELPCONTENTS
+        MENUITEM "Help &Index",                 IDM_HELPSEARCH
+        MENUITEM "How to &Use Help",            IDM_HELPHELP
+        MENUITEM SEPARATOR
+        MENUITEM "&Hint...",                    IDM_Hint
+        MENUITEM "&Book...",                    IDM_Book
+        MENUITEM SEPARATOR
+        MENUITEM "&About WinBoard",             IDM_ABOUT
+    END
+END
+
+PIECEMENU MENU DISCARDABLE 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "White",                       EP_White
+        MENUITEM SEPARATOR
+        MENUITEM "Pawn",                        EP_WhitePawn
+        MENUITEM "Knight",                      EP_WhiteKnight
+        MENUITEM "Bishop",                      EP_WhiteBishop
+        MENUITEM "Rook",                        EP_WhiteRook
+        MENUITEM "Queen",                       EP_WhiteQueen
+        MENUITEM "King",                        EP_WhiteKing
+        MENUITEM SEPARATOR
+        MENUITEM "Empty Square",                EP_EmptySquare
+        MENUITEM "Black",                       EP_Black, MENUBARBREAK
+        MENUITEM SEPARATOR
+        MENUITEM "Pawn",                        EP_BlackPawn
+        MENUITEM "Knight",                      EP_BlackKnight
+        MENUITEM "Bishop",                      EP_BlackBishop
+        MENUITEM "Rook",                        EP_BlackRook
+        MENUITEM "Queen",                       EP_BlackQueen
+        MENUITEM "King",                        EP_BlackKing
+        MENUITEM SEPARATOR
+        MENUITEM "Clear Board    ",             EP_ClearBoard
+    END
+END
+
+WHITEPIECEMENU MENU DISCARDABLE 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "White",                       EP_White
+        MENUITEM SEPARATOR
+        MENUITEM "Pawn",                        EP_WhitePawn
+        MENUITEM "Knight",                      EP_WhiteKnight
+        MENUITEM "Bishop",                      EP_WhiteBishop
+        MENUITEM "Rook",                        EP_WhiteRook
+        MENUITEM "Queen",                       EP_WhiteQueen
+        MENUITEM "King",                        EP_WhiteKing
+        MENUITEM SEPARATOR
+        MENUITEM "Empty Square",                EP_EmptySquare
+        MENUITEM "Clear Board",                 EP_ClearBoard
+    END
+END
+
+BLACKPIECEMENU MENU DISCARDABLE 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Black",                       EP_Black
+        MENUITEM SEPARATOR
+        MENUITEM "Pawn",                        EP_BlackPawn
+        MENUITEM "Knight",                      EP_BlackKnight
+        MENUITEM "Bishop",                      EP_BlackBishop
+        MENUITEM "Rook",                        EP_BlackRook
+        MENUITEM "Queen",                       EP_BlackQueen
+        MENUITEM "King",                        EP_BlackKing
+        MENUITEM SEPARATOR
+        MENUITEM "Empty Square",                EP_EmptySquare
+        MENUITEM "Clear Board",                 EP_ClearBoard
+    END
+END
+
+DROPPIECEMENU MENU DISCARDABLE 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Drop",                        0, INACTIVE
+        MENUITEM SEPARATOR
+        MENUITEM "Pawn",                        DP_Pawn
+        MENUITEM "Knight",                      DP_Knight
+        MENUITEM "Bishop",                      DP_Bishop
+        MENUITEM "Rook",                        DP_Rook
+        MENUITEM "Queen",                       DP_Queen
+    END
+END
+
+TEXTMENU MENU DISCARDABLE 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Cop&y and Paste",             IDM_QuickPaste
+        MENUITEM "&Copy",                       IDM_Copy
+        MENUITEM "&Paste",                      IDM_Paste
+    END
+END
+
+INPUTMENU MENU DISCARDABLE 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "&Undo",                       IDM_Undo
+        MENUITEM SEPARATOR
+        MENUITEM "Cu&t",                        IDM_Cut
+        MENUITEM "&Copy",                       IDM_Copy
+        MENUITEM "&Paste",                      IDM_Paste
+        MENUITEM SEPARATOR
+        MENUITEM "Select &All",                 IDM_SelectAll
+    END
+END
+
+ENGINEROOM MENU DISCARDABLE 
+BEGIN
+    POPUP "Engine Room"
+    BEGIN
+        MENUITEM "Select all and &copy",        IDM_SelPaste
+        MENUITEM "Select &all",                 IDM_SelectAll
+        MENUITEM "&Copy",                       IDM_Copy
+        MENUITEM SEPARATOR
+        MENUITEM "Move!",                       IDM_MoveNow
+        MENUITEM "Start/Stop Engine",           IDM_EnginesButton
+        MENUITEM SEPARATOR
+        MENUITEM "Switch &Analysis Mode",       IDM_AnalysisMode
+        MENUITEM "Switch &Machine White",       IDM_MachineWhite
+        MENUITEM "Switch &Machine Black",       IDM_MachineBlack
+        MENUITEM "Set/Change &Operator Time",   IDM_OperatorTime
+    END
+END
+
+ICSENGINEROOM MENU DISCARDABLE 
+BEGIN
+    POPUP "ICS Engine Room"
+    BEGIN
+        MENUITEM "Select all and &copy",        IDM_SelPaste
+        MENUITEM SEPARATOR
+        MENUITEM "Select &All",                 IDM_SelectAll
+        MENUITEM "&Copy",                       IDM_Copy
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+WINBOARD ACCELERATORS MOVEABLE PURE 
+BEGIN
+    "1",            IDM_DirectCommand1,     VIRTKEY, ALT, NOINVERT
+    "2",            IDM_DirectCommand2,     VIRTKEY, ALT, NOINVERT
+    "C",            IDM_CopyGame,           VIRTKEY, ALT, NOINVERT
+    "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, ALT, NOINVERT
+    "E",            IDM_focus_EngineRoom,   VIRTKEY, ALT, NOINVERT
+    "R",            IDM_focus_wb,           VIRTKEY, ALT, NOINVERT
+    "V",            IDM_PasteGame,          VIRTKEY, ALT, NOINVERT
+    "V",            IDM_PastePosition,      VIRTKEY, SHIFT, ALT, NOINVERT
+    VK_DELETE,      IDM_RetractMove,        VIRTKEY, ALT, NOINVERT
+    VK_DOWN,        IDM_ToEnd,              VIRTKEY, ALT, NOINVERT
+    VK_END,         IDM_TruncateGame,       VIRTKEY, ALT, NOINVERT
+    VK_F1,          IDM_HELPCONTENTS,       VIRTKEY, NOINVERT
+    VK_F10,         IDM_StopObserving,      VIRTKEY, NOINVERT
+    VK_F11,         IDM_StopExamining,      VIRTKEY, NOINVERT
+    VK_F12,         IDM_Rematch,            VIRTKEY, NOINVERT
+    VK_F12,         IDM_Debug,              VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_F2,          IDM_FlipView,           VIRTKEY, NOINVERT
+    VK_F3,          IDM_Accept,             VIRTKEY, NOINVERT
+    VK_F4,          IDM_Decline,            VIRTKEY, NOINVERT
+    VK_F4,          IDM_Minimize,           VIRTKEY, CONTROL, NOINVERT
+    VK_F5,          IDM_CallFlag,           VIRTKEY, NOINVERT
+    VK_F6,          IDM_Draw,               VIRTKEY, NOINVERT
+    VK_F7,          IDM_Adjourn,            VIRTKEY, NOINVERT
+    VK_F8,          IDM_Abort,              VIRTKEY, NOINVERT
+    VK_F9,          IDM_Resign,             VIRTKEY, NOINVERT
+    VK_HOME,        IDM_Revert,             VIRTKEY, ALT, NOINVERT
+    VK_INSERT,      IDM_MoveNow,            VIRTKEY, ALT, NOINVERT
+    VK_LBUTTON,     IDM_focus_EngineRoom,   VIRTKEY, CONTROL, NOINVERT
+    VK_LEFT,        IDM_Backward,           VIRTKEY, ALT, NOINVERT
+    VK_NEXT,        IDM_LoadNextGame,       VIRTKEY, ALT, NOINVERT
+    VK_NEXT,        IDM_LoadNextPosition,   VIRTKEY, SHIFT, ALT, NOINVERT
+    VK_PAUSE,       IDM_Pause,              VIRTKEY, NOINVERT
+    VK_PAUSE,       IDM_Pause,              VIRTKEY, ALT, NOINVERT
+    VK_PRIOR,       IDM_LoadPrevGame,       VIRTKEY, ALT, NOINVERT
+    VK_PRIOR,       IDM_LoadPrevPosition,   VIRTKEY, SHIFT, ALT, NOINVERT
+    VK_RIGHT,       IDM_Forward,            VIRTKEY, ALT, NOINVERT
+    VK_UP,          IDM_ToStart,            VIRTKEY, ALT, NOINVERT
+END
+
+NO_ALT ACCELERATORS MOVEABLE PURE 
+BEGIN
+    VK_DELETE,      IDM_RetractMove,        VIRTKEY, NOINVERT
+    VK_DOWN,        IDM_ToEnd,              VIRTKEY, NOINVERT
+    VK_END,         IDM_TruncateGame,       VIRTKEY, NOINVERT
+    VK_HOME,        IDM_Revert,             VIRTKEY, NOINVERT
+    VK_INSERT,      IDM_MoveNow,            VIRTKEY, NOINVERT
+    VK_LEFT,        IDM_Backward,           VIRTKEY, NOINVERT
+    VK_NEXT,        IDM_LoadNextGame,       VIRTKEY, NOINVERT
+    VK_NEXT,        IDM_LoadNextPosition,   VIRTKEY, SHIFT, NOINVERT
+    VK_PRIOR,       IDM_LoadPrevGame,       VIRTKEY, NOINVERT
+    VK_PRIOR,       IDM_LoadPrevPosition,   VIRTKEY, SHIFT, NOINVERT
+    VK_RIGHT,       IDM_Forward,            VIRTKEY, NOINVERT
+    VK_UP,          IDM_ToStart,            VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+P21O                    BITMAP  MOVEABLE PURE   "bitmaps\\P21o.bmp"
+N21O                    BITMAP  MOVEABLE PURE   "bitmaps\\N21o.bmp"
+B21O                    BITMAP  MOVEABLE PURE   "bitmaps\\B21o.bmp"
+R21O                    BITMAP  MOVEABLE PURE   "bitmaps\\R21o.bmp"
+K21O                    BITMAP  MOVEABLE PURE   "bitmaps\\K21o.bmp"
+Q21O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q21o.bmp"
+P21S                    BITMAP  MOVEABLE PURE   "bitmaps\\P21s.bmp"
+N21S                    BITMAP  MOVEABLE PURE   "bitmaps\\N21s.bmp"
+B21S                    BITMAP  MOVEABLE PURE   "bitmaps\\B21s.bmp"
+R21S                    BITMAP  MOVEABLE PURE   "bitmaps\\R21s.bmp"
+Q21S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q21s.bmp"
+K21S                    BITMAP  MOVEABLE PURE   "bitmaps\\K21s.bmp"
+P21W                    BITMAP  MOVEABLE PURE   "bitmaps\\P21w.bmp"
+N21W                    BITMAP  MOVEABLE PURE   "bitmaps\\N21w.bmp"
+B21W                    BITMAP  MOVEABLE PURE   "bitmaps\\B21w.bmp"
+R21W                    BITMAP  MOVEABLE PURE   "bitmaps\\R21w.bmp"
+Q21W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q21w.bmp"
+K21W                    BITMAP  MOVEABLE PURE   "bitmaps\\K21w.bmp"
+P25O                    BITMAP  MOVEABLE PURE   "bitmaps\\P25o.bmp"
+N25O                    BITMAP  MOVEABLE PURE   "bitmaps\\N25o.bmp"
+B25O                    BITMAP  MOVEABLE PURE   "bitmaps\\B25o.bmp"
+R25O                    BITMAP  MOVEABLE PURE   "bitmaps\\R25o.bmp"
+Q25O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q25o.bmp"
+K25O                    BITMAP  MOVEABLE PURE   "bitmaps\\K25o.bmp"
+P25S                    BITMAP  MOVEABLE PURE   "bitmaps\\P25s.bmp"
+N25S                    BITMAP  MOVEABLE PURE   "bitmaps\\N25s.bmp"
+B25S                    BITMAP  MOVEABLE PURE   "bitmaps\\B25s.bmp"
+R25S                    BITMAP  MOVEABLE PURE   "bitmaps\\R25s.bmp"
+Q25S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q25s.bmp"
+K25S                    BITMAP  MOVEABLE PURE   "bitmaps\\K25s.bmp"
+P25W                    BITMAP  MOVEABLE PURE   "bitmaps\\P25w.bmp"
+N25W                    BITMAP  MOVEABLE PURE   "bitmaps\\N25w.bmp"
+B25W                    BITMAP  MOVEABLE PURE   "bitmaps\\B25w.bmp"
+R25W                    BITMAP  MOVEABLE PURE   "bitmaps\\R25w.bmp"
+Q25W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q25w.bmp"
+K25W                    BITMAP  MOVEABLE PURE   "bitmaps\\K25w.bmp"
+P29O                    BITMAP  MOVEABLE PURE   "bitmaps\\P29o.bmp"
+N29O                    BITMAP  MOVEABLE PURE   "bitmaps\\N29o.bmp"
+B29O                    BITMAP  MOVEABLE PURE   "bitmaps\\B29o.bmp"
+R29O                    BITMAP  MOVEABLE PURE   "bitmaps\\R29o.bmp"
+Q29O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q29o.bmp"
+K29O                    BITMAP  MOVEABLE PURE   "bitmaps\\K29o.bmp"
+P29S                    BITMAP  MOVEABLE PURE   "bitmaps\\P29s.bmp"
+N29S                    BITMAP  MOVEABLE PURE   "bitmaps\\N29s.bmp"
+B29S                    BITMAP  MOVEABLE PURE   "bitmaps\\B29s.bmp"
+R29S                    BITMAP  MOVEABLE PURE   "bitmaps\\R29s.bmp"
+Q29S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q29s.bmp"
+K29S                    BITMAP  MOVEABLE PURE   "bitmaps\\K29s.bmp"
+P29W                    BITMAP  MOVEABLE PURE   "bitmaps\\P29w.bmp"
+N29W                    BITMAP  MOVEABLE PURE   "bitmaps\\N29w.bmp"
+B29W                    BITMAP  MOVEABLE PURE   "bitmaps\\B29w.bmp"
+R29W                    BITMAP  MOVEABLE PURE   "bitmaps\\R29w.bmp"
+Q29W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q29w.bmp"
+K29W                    BITMAP  MOVEABLE PURE   "bitmaps\\K29w.bmp"
+P33O                    BITMAP  MOVEABLE PURE   "bitmaps\\P33o.bmp"
+N33O                    BITMAP  MOVEABLE PURE   "bitmaps\\N33o.bmp"
+B33O                    BITMAP  MOVEABLE PURE   "bitmaps\\B33o.bmp"
+R33O                    BITMAP  MOVEABLE PURE   "bitmaps\\R33o.bmp"
+Q33O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q33o.bmp"
+K33O                    BITMAP  MOVEABLE PURE   "bitmaps\\K33o.bmp"
+P33S                    BITMAP  MOVEABLE PURE   "bitmaps\\P33s.bmp"
+N33S                    BITMAP  MOVEABLE PURE   "bitmaps\\N33s.bmp"
+B33S                    BITMAP  MOVEABLE PURE   "bitmaps\\B33s.bmp"
+R33S                    BITMAP  MOVEABLE PURE   "bitmaps\\R33s.bmp"
+Q33S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q33s.bmp"
+K33S                    BITMAP  MOVEABLE PURE   "bitmaps\\K33s.bmp"
+P33W                    BITMAP  MOVEABLE PURE   "bitmaps\\P33w.bmp"
+N33W                    BITMAP  MOVEABLE PURE   "bitmaps\\N33w.bmp"
+B33W                    BITMAP  MOVEABLE PURE   "bitmaps\\B33w.bmp"
+R33W                    BITMAP  MOVEABLE PURE   "bitmaps\\R33w.bmp"
+Q33W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q33w.bmp"
+K33W                    BITMAP  MOVEABLE PURE   "bitmaps\\K33w.bmp"
+P37O                    BITMAP  MOVEABLE PURE   "bitmaps\\P37o.bmp"
+N37O                    BITMAP  MOVEABLE PURE   "bitmaps\\N37o.bmp"
+B37O                    BITMAP  MOVEABLE PURE   "bitmaps\\B37o.bmp"
+R37O                    BITMAP  MOVEABLE PURE   "bitmaps\\R37o.bmp"
+Q37O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q37o.bmp"
+K37O                    BITMAP  MOVEABLE PURE   "bitmaps\\K37o.bmp"
+P37S                    BITMAP  MOVEABLE PURE   "bitmaps\\P37s.bmp"
+N37S                    BITMAP  MOVEABLE PURE   "bitmaps\\N37s.bmp"
+B37S                    BITMAP  MOVEABLE PURE   "bitmaps\\B37s.bmp"
+R37S                    BITMAP  MOVEABLE PURE   "bitmaps\\R37s.bmp"
+Q37S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q37s.bmp"
+K37S                    BITMAP  MOVEABLE PURE   "bitmaps\\K37s.bmp"
+P37W                    BITMAP  MOVEABLE PURE   "bitmaps\\P37w.bmp"
+N37W                    BITMAP  MOVEABLE PURE   "bitmaps\\N37w.bmp"
+B37W                    BITMAP  MOVEABLE PURE   "bitmaps\\B37w.bmp"
+R37W                    BITMAP  MOVEABLE PURE   "bitmaps\\R37w.bmp"
+Q37W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q37w.bmp"
+K37W                    BITMAP  MOVEABLE PURE   "bitmaps\\K37w.bmp"
+P40O                    BITMAP  MOVEABLE PURE   "bitmaps\\P40o.bmp"
+N40O                    BITMAP  MOVEABLE PURE   "bitmaps\\N40o.bmp"
+B40O                    BITMAP  MOVEABLE PURE   "bitmaps\\B40o.bmp"
+R40O                    BITMAP  MOVEABLE PURE   "bitmaps\\R40o.bmp"
+Q40O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q40o.bmp"
+K40O                    BITMAP  MOVEABLE PURE   "bitmaps\\K40o.bmp"
+P40S                    BITMAP  MOVEABLE PURE   "bitmaps\\P40s.bmp"
+N40S                    BITMAP  MOVEABLE PURE   "bitmaps\\N40s.bmp"
+B40S                    BITMAP  MOVEABLE PURE   "bitmaps\\B40s.bmp"
+R40S                    BITMAP  MOVEABLE PURE   "bitmaps\\R40s.bmp"
+Q40S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q40s.bmp"
+K40S                    BITMAP  MOVEABLE PURE   "bitmaps\\K40s.bmp"
+P40W                    BITMAP  MOVEABLE PURE   "bitmaps\\P40w.bmp"
+N40W                    BITMAP  MOVEABLE PURE   "bitmaps\\N40w.bmp"
+B40W                    BITMAP  MOVEABLE PURE   "bitmaps\\B40w.bmp"
+R40W                    BITMAP  MOVEABLE PURE   "bitmaps\\R40w.bmp"
+Q40W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q40w.bmp"
+K40W                    BITMAP  MOVEABLE PURE   "bitmaps\\K40w.bmp"
+P45O                    BITMAP  MOVEABLE PURE   "bitmaps\\P45o.bmp"
+N45O                    BITMAP  MOVEABLE PURE   "bitmaps\\N45o.bmp"
+B45O                    BITMAP  MOVEABLE PURE   "bitmaps\\B45o.bmp"
+R45O                    BITMAP  MOVEABLE PURE   "bitmaps\\R45o.bmp"
+Q45O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q45o.bmp"
+K45O                    BITMAP  MOVEABLE PURE   "bitmaps\\K45o.bmp"
+P45S                    BITMAP  MOVEABLE PURE   "bitmaps\\P45s.bmp"
+N45S                    BITMAP  MOVEABLE PURE   "bitmaps\\N45s.bmp"
+B45S                    BITMAP  MOVEABLE PURE   "bitmaps\\B45s.bmp"
+R45S                    BITMAP  MOVEABLE PURE   "bitmaps\\R45s.bmp"
+Q45S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q45s.bmp"
+K45S                    BITMAP  MOVEABLE PURE   "bitmaps\\K45s.bmp"
+P45W                    BITMAP  MOVEABLE PURE   "bitmaps\\P45w.bmp"
+N45W                    BITMAP  MOVEABLE PURE   "bitmaps\\N45w.bmp"
+B45W                    BITMAP  MOVEABLE PURE   "bitmaps\\B45w.bmp"
+R45W                    BITMAP  MOVEABLE PURE   "bitmaps\\R45w.bmp"
+Q45W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q45w.bmp"
+K45W                    BITMAP  MOVEABLE PURE   "bitmaps\\K45w.bmp"
+P49O                    BITMAP  MOVEABLE PURE   "bitmaps\\P49o.bmp"
+N49O                    BITMAP  MOVEABLE PURE   "bitmaps\\N49o.bmp"
+B49O                    BITMAP  MOVEABLE PURE   "bitmaps\\B49o.bmp"
+R49O                    BITMAP  MOVEABLE PURE   "bitmaps\\R49o.bmp"
+Q49O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q49o.bmp"
+K49O                    BITMAP  MOVEABLE PURE   "bitmaps\\K49o.bmp"
+P49S                    BITMAP  MOVEABLE PURE   "bitmaps\\P49s.bmp"
+N49S                    BITMAP  MOVEABLE PURE   "bitmaps\\N49s.bmp"
+B49S                    BITMAP  MOVEABLE PURE   "bitmaps\\B49s.bmp"
+R49S                    BITMAP  MOVEABLE PURE   "bitmaps\\R49s.bmp"
+Q49S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q49s.bmp"
+K49S                    BITMAP  MOVEABLE PURE   "bitmaps\\K49s.bmp"
+P49W                    BITMAP  MOVEABLE PURE   "bitmaps\\P49w.bmp"
+N49W                    BITMAP  MOVEABLE PURE   "bitmaps\\N49w.bmp"
+B49W                    BITMAP  MOVEABLE PURE   "bitmaps\\B49w.bmp"
+R49W                    BITMAP  MOVEABLE PURE   "bitmaps\\R49w.bmp"
+Q49W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q49w.bmp"
+K49W                    BITMAP  MOVEABLE PURE   "bitmaps\\K49w.bmp"
+P54O                    BITMAP  MOVEABLE PURE   "bitmaps\\P54o.bmp"
+N54O                    BITMAP  MOVEABLE PURE   "bitmaps\\N54o.bmp"
+B54O                    BITMAP  MOVEABLE PURE   "bitmaps\\B54o.bmp"
+R54O                    BITMAP  MOVEABLE PURE   "bitmaps\\R54o.bmp"
+Q54O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q54o.bmp"
+K54O                    BITMAP  MOVEABLE PURE   "bitmaps\\K54o.bmp"
+P54S                    BITMAP  MOVEABLE PURE   "bitmaps\\P54s.bmp"
+N54S                    BITMAP  MOVEABLE PURE   "bitmaps\\N54s.bmp"
+B54S                    BITMAP  MOVEABLE PURE   "bitmaps\\B54s.bmp"
+R54S                    BITMAP  MOVEABLE PURE   "bitmaps\\R54s.bmp"
+Q54S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q54s.bmp"
+K54S                    BITMAP  MOVEABLE PURE   "bitmaps\\K54s.bmp"
+P54W                    BITMAP  MOVEABLE PURE   "bitmaps\\P54w.bmp"
+N54W                    BITMAP  MOVEABLE PURE   "bitmaps\\N54w.bmp"
+B54W                    BITMAP  MOVEABLE PURE   "bitmaps\\B54w.bmp"
+R54W                    BITMAP  MOVEABLE PURE   "bitmaps\\R54w.bmp"
+Q54W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q54w.bmp"
+K54W                    BITMAP  MOVEABLE PURE   "bitmaps\\K54w.bmp"
+P58O                    BITMAP  MOVEABLE PURE   "bitmaps\\P58o.bmp"
+N58O                    BITMAP  MOVEABLE PURE   "bitmaps\\N58o.bmp"
+B58O                    BITMAP  MOVEABLE PURE   "bitmaps\\B58o.bmp"
+R58O                    BITMAP  MOVEABLE PURE   "bitmaps\\R58o.bmp"
+Q58O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q58o.bmp"
+K58O                    BITMAP  MOVEABLE PURE   "bitmaps\\K58o.bmp"
+P58S                    BITMAP  MOVEABLE PURE   "bitmaps\\P58s.bmp"
+N58S                    BITMAP  MOVEABLE PURE   "bitmaps\\N58s.bmp"
+B58S                    BITMAP  MOVEABLE PURE   "bitmaps\\B58s.bmp"
+R58S                    BITMAP  MOVEABLE PURE   "bitmaps\\R58s.bmp"
+Q58S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q58s.bmp"
+K58S                    BITMAP  MOVEABLE PURE   "bitmaps\\K58s.bmp"
+P58W                    BITMAP  MOVEABLE PURE   "bitmaps\\P58w.bmp"
+N58W                    BITMAP  MOVEABLE PURE   "bitmaps\\N58w.bmp"
+B58W                    BITMAP  MOVEABLE PURE   "bitmaps\\B58w.bmp"
+R58W                    BITMAP  MOVEABLE PURE   "bitmaps\\R58w.bmp"
+Q58W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q58w.bmp"
+K58W                    BITMAP  MOVEABLE PURE   "bitmaps\\K58w.bmp"
+P64O                    BITMAP  MOVEABLE PURE   "bitmaps\\P64o.bmp"
+N64O                    BITMAP  MOVEABLE PURE   "bitmaps\\N64o.bmp"
+B64O                    BITMAP  MOVEABLE PURE   "bitmaps\\B64o.bmp"
+R64O                    BITMAP  MOVEABLE PURE   "bitmaps\\R64o.bmp"
+Q64O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q64o.bmp"
+K64O                    BITMAP  MOVEABLE PURE   "bitmaps\\K64o.bmp"
+P64S                    BITMAP  MOVEABLE PURE   "bitmaps\\P64s.bmp"
+N64S                    BITMAP  MOVEABLE PURE   "bitmaps\\N64s.bmp"
+B64S                    BITMAP  MOVEABLE PURE   "bitmaps\\B64s.bmp"
+R64S                    BITMAP  MOVEABLE PURE   "bitmaps\\R64s.bmp"
+Q64S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q64s.bmp"
+K64S                    BITMAP  MOVEABLE PURE   "bitmaps\\K64s.bmp"
+P64W                    BITMAP  MOVEABLE PURE   "bitmaps\\P64w.bmp"
+N64W                    BITMAP  MOVEABLE PURE   "bitmaps\\N64w.bmp"
+B64W                    BITMAP  MOVEABLE PURE   "bitmaps\\B64w.bmp"
+R64W                    BITMAP  MOVEABLE PURE   "bitmaps\\R64w.bmp"
+Q64W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q64w.bmp"
+K64W                    BITMAP  MOVEABLE PURE   "bitmaps\\K64w.bmp"
+P72O                    BITMAP  MOVEABLE PURE   "bitmaps\\P72o.bmp"
+N72O                    BITMAP  MOVEABLE PURE   "bitmaps\\N72o.bmp"
+B72O                    BITMAP  MOVEABLE PURE   "bitmaps\\B72o.bmp"
+R72O                    BITMAP  MOVEABLE PURE   "bitmaps\\R72o.bmp"
+Q72O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q72o.bmp"
+K72O                    BITMAP  MOVEABLE PURE   "bitmaps\\K72o.bmp"
+P72S                    BITMAP  MOVEABLE PURE   "bitmaps\\P72s.bmp"
+N72S                    BITMAP  MOVEABLE PURE   "bitmaps\\N72s.bmp"
+B72S                    BITMAP  MOVEABLE PURE   "bitmaps\\B72s.bmp"
+R72S                    BITMAP  MOVEABLE PURE   "bitmaps\\R72s.bmp"
+Q72S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q72s.bmp"
+K72S                    BITMAP  MOVEABLE PURE   "bitmaps\\K72s.bmp"
+P72W                    BITMAP  MOVEABLE PURE   "bitmaps\\P72w.bmp"
+N72W                    BITMAP  MOVEABLE PURE   "bitmaps\\N72w.bmp"
+B72W                    BITMAP  MOVEABLE PURE   "bitmaps\\B72w.bmp"
+R72W                    BITMAP  MOVEABLE PURE   "bitmaps\\R72w.bmp"
+Q72W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q72w.bmp"
+K72W                    BITMAP  MOVEABLE PURE   "bitmaps\\K72w.bmp"
+P80O                    BITMAP  MOVEABLE PURE   "bitmaps\\P80o.bmp"
+N80O                    BITMAP  MOVEABLE PURE   "bitmaps\\N80o.bmp"
+B80O                    BITMAP  MOVEABLE PURE   "bitmaps\\B80o.bmp"
+R80O                    BITMAP  MOVEABLE PURE   "bitmaps\\R80o.bmp"
+Q80O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q80o.bmp"
+K80O                    BITMAP  MOVEABLE PURE   "bitmaps\\K80o.bmp"
+P80S                    BITMAP  MOVEABLE PURE   "bitmaps\\P80s.bmp"
+N80S                    BITMAP  MOVEABLE PURE   "bitmaps\\N80s.bmp"
+B80S                    BITMAP  MOVEABLE PURE   "bitmaps\\B80s.bmp"
+R80S                    BITMAP  MOVEABLE PURE   "bitmaps\\R80s.bmp"
+Q80S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q80s.bmp"
+K80S                    BITMAP  MOVEABLE PURE   "bitmaps\\K80s.bmp"
+P80W                    BITMAP  MOVEABLE PURE   "bitmaps\\P80w.bmp"
+N80W                    BITMAP  MOVEABLE PURE   "bitmaps\\N80w.bmp"
+B80W                    BITMAP  MOVEABLE PURE   "bitmaps\\B80w.bmp"
+R80W                    BITMAP  MOVEABLE PURE   "bitmaps\\R80w.bmp"
+Q80W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q80w.bmp"
+K80W                    BITMAP  MOVEABLE PURE   "bitmaps\\K80w.bmp"
+P87O                    BITMAP  MOVEABLE PURE   "bitmaps\\P87o.bmp"
+N87O                    BITMAP  MOVEABLE PURE   "bitmaps\\N87o.bmp"
+B87O                    BITMAP  MOVEABLE PURE   "bitmaps\\B87o.bmp"
+R87O                    BITMAP  MOVEABLE PURE   "bitmaps\\R87o.bmp"
+Q87O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q87o.bmp"
+K87O                    BITMAP  MOVEABLE PURE   "bitmaps\\K87o.bmp"
+P87S                    BITMAP  MOVEABLE PURE   "bitmaps\\P87s.bmp"
+N87S                    BITMAP  MOVEABLE PURE   "bitmaps\\N87s.bmp"
+B87S                    BITMAP  MOVEABLE PURE   "bitmaps\\B87s.bmp"
+R87S                    BITMAP  MOVEABLE PURE   "bitmaps\\R87s.bmp"
+Q87S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q87s.bmp"
+K87S                    BITMAP  MOVEABLE PURE   "bitmaps\\K87s.bmp"
+P87W                    BITMAP  MOVEABLE PURE   "bitmaps\\P87w.bmp"
+N87W                    BITMAP  MOVEABLE PURE   "bitmaps\\N87w.bmp"
+B87W                    BITMAP  MOVEABLE PURE   "bitmaps\\B87w.bmp"
+R87W                    BITMAP  MOVEABLE PURE   "bitmaps\\R87w.bmp"
+Q87W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q87w.bmp"
+K87W                    BITMAP  MOVEABLE PURE   "bitmaps\\K87w.bmp"
+P95O                    BITMAP  MOVEABLE PURE   "bitmaps\\P95o.bmp"
+N95O                    BITMAP  MOVEABLE PURE   "bitmaps\\N95o.bmp"
+B95O                    BITMAP  MOVEABLE PURE   "bitmaps\\B95o.bmp"
+R95O                    BITMAP  MOVEABLE PURE   "bitmaps\\R95o.bmp"
+Q95O                    BITMAP  MOVEABLE PURE   "bitmaps\\Q95o.bmp"
+K95O                    BITMAP  MOVEABLE PURE   "bitmaps\\K95o.bmp"
+P95S                    BITMAP  MOVEABLE PURE   "bitmaps\\P95s.bmp"
+N95S                    BITMAP  MOVEABLE PURE   "bitmaps\\N95s.bmp"
+B95S                    BITMAP  MOVEABLE PURE   "bitmaps\\B95s.bmp"
+R95S                    BITMAP  MOVEABLE PURE   "bitmaps\\R95s.bmp"
+Q95S                    BITMAP  MOVEABLE PURE   "bitmaps\\Q95s.bmp"
+K95S                    BITMAP  MOVEABLE PURE   "bitmaps\\K95s.bmp"
+P95W                    BITMAP  MOVEABLE PURE   "bitmaps\\P95w.bmp"
+N95W                    BITMAP  MOVEABLE PURE   "bitmaps\\N95w.bmp"
+B95W                    BITMAP  MOVEABLE PURE   "bitmaps\\B95w.bmp"
+R95W                    BITMAP  MOVEABLE PURE   "bitmaps\\R95w.bmp"
+Q95W                    BITMAP  MOVEABLE PURE   "bitmaps\\Q95w.bmp"
+K95W                    BITMAP  MOVEABLE PURE   "bitmaps\\K95w.bmp"
+P108O                   BITMAP  MOVEABLE PURE   "bitmaps\\P108o.bmp"
+N108O                   BITMAP  MOVEABLE PURE   "bitmaps\\N108o.bmp"
+B108O                   BITMAP  MOVEABLE PURE   "bitmaps\\B108o.bmp"
+R108O                   BITMAP  MOVEABLE PURE   "bitmaps\\R108o.bmp"
+Q108O                   BITMAP  MOVEABLE PURE   "bitmaps\\Q108o.bmp"
+K108O                   BITMAP  MOVEABLE PURE   "bitmaps\\K108o.bmp"
+P108S                   BITMAP  MOVEABLE PURE   "bitmaps\\P108s.bmp"
+N108S                   BITMAP  MOVEABLE PURE   "bitmaps\\N108s.bmp"
+B108S                   BITMAP  MOVEABLE PURE   "bitmaps\\B108s.bmp"
+R108S                   BITMAP  MOVEABLE PURE   "bitmaps\\R108s.bmp"
+Q108S                   BITMAP  MOVEABLE PURE   "bitmaps\\Q108s.bmp"
+K108S                   BITMAP  MOVEABLE PURE   "bitmaps\\K108s.bmp"
+P108W                   BITMAP  MOVEABLE PURE   "bitmaps\\P108w.bmp"
+N108W                   BITMAP  MOVEABLE PURE   "bitmaps\\N108w.bmp"
+B108W                   BITMAP  MOVEABLE PURE   "bitmaps\\B108w.bmp"
+R108W                   BITMAP  MOVEABLE PURE   "bitmaps\\R108w.bmp"
+Q108W                   BITMAP  MOVEABLE PURE   "bitmaps\\Q108w.bmp"
+K108W                   BITMAP  MOVEABLE PURE   "bitmaps\\K108w.bmp"
+P116O                   BITMAP  MOVEABLE PURE   "bitmaps\\P116o.bmp"
+N116O                   BITMAP  MOVEABLE PURE   "bitmaps\\N116o.bmp"
+B116O                   BITMAP  MOVEABLE PURE   "bitmaps\\B116o.bmp"
+R116O                   BITMAP  MOVEABLE PURE   "bitmaps\\R116o.bmp"
+Q116O                   BITMAP  MOVEABLE PURE   "bitmaps\\Q116o.bmp"
+K116O                   BITMAP  MOVEABLE PURE   "bitmaps\\K116o.bmp"
+P116S                   BITMAP  MOVEABLE PURE   "bitmaps\\P116s.bmp"
+N116S                   BITMAP  MOVEABLE PURE   "bitmaps\\N116s.bmp"
+B116S                   BITMAP  MOVEABLE PURE   "bitmaps\\B116s.bmp"
+R116S                   BITMAP  MOVEABLE PURE   "bitmaps\\R116s.bmp"
+Q116S                   BITMAP  MOVEABLE PURE   "bitmaps\\Q116s.bmp"
+K116S                   BITMAP  MOVEABLE PURE   "bitmaps\\K116s.bmp"
+P116W                   BITMAP  MOVEABLE PURE   "bitmaps\\P116w.bmp"
+N116W                   BITMAP  MOVEABLE PURE   "bitmaps\\N116w.bmp"
+B116W                   BITMAP  MOVEABLE PURE   "bitmaps\\B116w.bmp"
+R116W                   BITMAP  MOVEABLE PURE   "bitmaps\\R116w.bmp"
+Q116W                   BITMAP  MOVEABLE PURE   "bitmaps\\Q116w.bmp"
+K116W                   BITMAP  MOVEABLE PURE   "bitmaps\\K116w.bmp"
+P129O                   BITMAP  MOVEABLE PURE   "bitmaps\\P129o.bmp"
+N129O                   BITMAP  MOVEABLE PURE   "bitmaps\\N129o.bmp"
+B129O                   BITMAP  MOVEABLE PURE   "bitmaps\\B129o.bmp"
+R129O                   BITMAP  MOVEABLE PURE   "bitmaps\\R129o.bmp"
+Q129O                   BITMAP  MOVEABLE PURE   "bitmaps\\Q129o.bmp"
+K129O                   BITMAP  MOVEABLE PURE   "bitmaps\\K129o.bmp"
+P129S                   BITMAP  MOVEABLE PURE   "bitmaps\\P129s.bmp"
+N129S                   BITMAP  MOVEABLE PURE   "bitmaps\\N129s.bmp"
+B129S                   BITMAP  MOVEABLE PURE   "bitmaps\\B129s.bmp"
+R129S                   BITMAP  MOVEABLE PURE   "bitmaps\\R129s.bmp"
+Q129S                   BITMAP  MOVEABLE PURE   "bitmaps\\Q129s.bmp"
+K129S                   BITMAP  MOVEABLE PURE   "bitmaps\\K129s.bmp"
+P129W                   BITMAP  MOVEABLE PURE   "bitmaps\\P129w.bmp"
+N129W                   BITMAP  MOVEABLE PURE   "bitmaps\\N129w.bmp"
+B129W                   BITMAP  MOVEABLE PURE   "bitmaps\\B129w.bmp"
+R129W                   BITMAP  MOVEABLE PURE   "bitmaps\\R129w.bmp"
+Q129W                   BITMAP  MOVEABLE PURE   "bitmaps\\Q129w.bmp"
+K129W                   BITMAP  MOVEABLE PURE   "bitmaps\\K129w.bmp"
+GALACTIC                BITMAP  MOVEABLE PURE   "bitmaps\\galactic.bmp"
+TIM                     BITMAP  MOVEABLE PURE   "bitmaps\\tim.bmp"
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""dlgs.h""\r\n"
+    "\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// WAVE
+//
+
+DING                    WAVE    DISCARDABLE     "sounds\\ding1.wav"
+CHING                   WAVE    DISCARDABLE     "sounds\\ching.wav"
+CLICK                   WAVE    DISCARDABLE     "sounds\\click.wav"
+CYMBAL                  WAVE    DISCARDABLE     "sounds\\cymbal.wav"
+DRIP                    WAVE    DISCARDABLE     "sounds\\drip.wav"
+GONG                    WAVE    DISCARDABLE     "sounds\\gong.wav"
+BEEPBEEP                WAVE    DISCARDABLE     "sounds\\honkhonk.wav"
+LASER                   WAVE    DISCARDABLE     "sounds\\laser.wav"
+PENALTY                 WAVE    DISCARDABLE     "sounds\\penalty.wav"
+PHONE                   WAVE    DISCARDABLE     "sounds\\phone.wav"
+POP                     WAVE    DISCARDABLE     "sounds\\pop.wav"
+POP2                    WAVE    DISCARDABLE     "sounds\\pop2.wav"
+SLAP                    WAVE    DISCARDABLE     "sounds\\slap.wav"
+SQUEAK                  WAVE    DISCARDABLE     "sounds\\squeak.wav"
+SWISH                   WAVE    DISCARDABLE     "sounds\\swish.wav"
+THUD                    WAVE    DISCARDABLE     "sounds\\thud.wav"
+WHIPCRACK               WAVE    DISCARDABLE     "sounds\\whipcrak.wav"
+MOVE                    WAVE    DISCARDABLE     "sounds\\move.wav"
+ALARM                   WAVE    DISCARDABLE     "sounds\\alarm.wav"
+CHALLENGE               WAVE    DISCARDABLE     "sounds\\challenge.wav"
+CHANNEL                 WAVE    DISCARDABLE     "sounds\\channel.wav"
+CHANNEL1                WAVE    DISCARDABLE     "sounds\\channel1.wav"
+DRAW                    WAVE    DISCARDABLE     "sounds\\draw.wav"
+KIBITZ                  WAVE    DISCARDABLE     "sounds\\kibitz.wav"
+LOSE                    WAVE    DISCARDABLE     "sounds\\lose.wav"
+REQUEST                 WAVE    DISCARDABLE     "sounds\\request.wav"
+SEEK                    WAVE    DISCARDABLE     "sounds\\seek.wav"
+SHOUT                   WAVE    DISCARDABLE     "sounds\\shout.wav"
+SSHOUT                  WAVE    DISCARDABLE     "sounds\\sshout.wav"
+TELL                    WAVE    DISCARDABLE     "sounds\\tell.wav"
+UNFINISHED              WAVE    DISCARDABLE     "sounds\\unfinished.wav"
+WIN                     WAVE    DISCARDABLE     "sounds\\win.wav"
+#endif    // Englisch (USA) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
