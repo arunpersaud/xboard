@@ -587,7 +587,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
     InitDrawingSizes((BoardSize)ibs, 0);
     if (boardSize == (BoardSize)-1 &&
 	winHeight <= screenHeight && winWidth <= screenWidth) {
-      boardSize = (BoardSize)ibs;
+      boardSize = (BoardSize)ibs - 4 < 0 ? (BoardSize)0 : (BoardSize)ibs - 4;
     }
   }
   InitDrawingSizes(boardSize, 0);
@@ -5614,6 +5614,23 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     if (consoleX != CW_USEDEFAULT && consoleY != CW_USEDEFAULT &&
 	consoleW != CW_USEDEFAULT && consoleH != CW_USEDEFAULT) {
       WINDOWPLACEMENT wp;
+      EnsureOnScreen(&consoleX, &consoleY);
+      wp.length = sizeof(WINDOWPLACEMENT);
+      wp.flags = 0;
+      wp.showCmd = SW_SHOW;
+      wp.ptMaxPosition.x = wp.ptMaxPosition.y = 0;
+      wp.rcNormalPosition.left = consoleX;
+      wp.rcNormalPosition.right = consoleX + consoleW;
+      wp.rcNormalPosition.top = consoleY;
+      wp.rcNormalPosition.bottom = consoleY + consoleH;
+      SetWindowPlacement(hDlg, &wp);
+    }
+    else { /* Determine Defaults */
+      WINDOWPLACEMENT wp;
+      consoleX = winWidth + 1;
+      consoleY = boardY;
+      consoleW = screenWidth -  winWidth;
+      consoleH = winHeight;
       EnsureOnScreen(&consoleX, &consoleY);
       wp.length = sizeof(WINDOWPLACEMENT);
       wp.flags = 0;
