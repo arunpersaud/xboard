@@ -5007,7 +5007,7 @@ StartChessProgram(cps)
 
     cps->isr = AddInputSource(cps->pr, TRUE, ReceiveFromProgram, cps);
     if (cps->protocolVersion > 1) {
-      sprintf(buf, "xboard\nprotover %d\n", VERSION, cps->protocolVersion);
+      sprintf(buf, "xboard\nprotover %d\n", cps->protocolVersion);
       SendToProgram(buf, cps);
     } else {
       SendToProgram("xboard\n", cps);
