@@ -2445,6 +2445,11 @@ read_from_ics(isr, closure, data, count, error)
 		if (gameMode == IcsObserving &&
 		    atoi(star_match[0]) == ics_gamenum)
 		  {
+			  /* icsEngineAnalyze */
+			  if (appData.icsEngineAnalyze) {
+			     ExitAnalyzeMode();
+				 ModeHighlight();
+			  }
 		      StopClocks();
 		      gameMode = IcsIdle;
 		      ics_gamenum = -1;
@@ -7787,9 +7792,10 @@ void
 ExitAnalyzeMode()
 {
 	/* icsEngineAnalyze - possible call from other functions */
-	if (appData.icsEngineAnalyze) 
+	if (appData.icsEngineAnalyze) {
 	    appData.icsEngineAnalyze = FALSE;
-
+		DisplayMessage("","Close ICS engine analyze...");
+	}
     if (first.analysisSupport && first.analyzing) {
       SendToProgram("exit\n", &first);
       first.analyzing = FALSE;
