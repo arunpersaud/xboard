@@ -2468,7 +2468,7 @@ suggested.
 
 Report bugs and problems with @value{NAME} to
 @example
-xboard@@tim-mann.org.
+bug-xboard@@gnu.org
 @end example
 
 Please use the @file{script} program to start a typescript, run 
@@ -2485,7 +2485,7 @@ uname -a
 make
 ./xboard -debug
 exit
-mail xboard@@tim-mann.org
+mail bug-xboard@@gnu.org
 Subject: Your short description of the problem
 Your detailed description of the problem
 ~r typescript

@@ -48,7 +48,7 @@ Reporting problems
 ==================
 
 Report bugs and problems with XBoard and WinBoard to
-<xboard@tim-mann.org>.  With XBoard, please use the "script" program
+<bug-xboard@gnu.org>.  With XBoard, please use the "script" program
 to start a typescript, run XBoard with the -debug command line option,
 and include the typescript output in your message.  With WinBoard,
 please use the /debug command line option and include the contents of
@@ -65,7 +65,7 @@ Here is a sample of approximately what you should type (on Unix):
     make
     ./xboard -debug
     exit
-    mail xboard@tim-mann.org
+    mail bug-xboard@gnu.org
     Subject: Your short description of the problem
     Your detailed description of the problem
     ~r typescript

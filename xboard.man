@@ -2257,7 +2257,7 @@ possible bugs, limitations, and ideas for improvement that have been suggested.
 .SH REPORTING PROBLEMS
 .PP
 Report bugs and problems with xboard
-to <xboard@tim-mann.org>.
+to <bug-xboard@gnu.org>.
 Please use the 
 .BR script (1)
 program to start a typescript, run xboard
@@ -2273,7 +2273,7 @@ Here is a sample of approximately what you should type:
     make
     ./xboard -debug
     exit
-    mail xboard@tim-mann.org
+    mail bug-xboard@gnu.org
     Subject: Your short description of the problem
     Your detailed description of the problem
     ~r typescript

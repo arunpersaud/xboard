@@ -33,12 +33,12 @@ available through:
 BUGS AND IMPROVEMENTS
 
 Report bugs in WinBoard or XBoard by email to
-<xboard@tim-mann.org>.  Report bugs in GNU Chess to
+<bug-xboard@gnu.org>.  Report bugs in GNU Chess to
 <bug-gnu-chess@gnu.org>.  Give full details, including
 the program's version number and the exact text of any
 error messages.  If you improve WinBoard or XBoard,
 please send a message about your changes to
-<xboard@tim-mann.org>.  Remember that these programs
+<bug-xboard@gnu.org>.  Remember that these programs
 are released under the GPL, so source code is freely
 available, but if you distribute modified versions, you
 must distribute the source code modifications under the
