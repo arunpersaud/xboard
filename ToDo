@@ -457,9 +457,6 @@ windows explorer then crashed when he tried to close winboard.
 not words.  [Or maybe both?]  Also might be easier to select
 accurately from it if horizontally arranged, or in a 3x2 grid.
 
-280. Need a way to log raw ICS i/o in WinBoard.debug file, as xboard's
-debug mode does.  Would help in finding bugs at times.
-
 284. dxterm hangs when it receives the escape sequence that sets the
 title bar on xterm.  I think some other xterm substitutes do too.
 
@@ -1255,10 +1252,6 @@ queen piece. I couldnt drop it to any square."
 
 535. For protover 3, the "st" command in the protocol could be
 extended to allow for smaller units, not just seconds.
-
-536. Funny bug where tags show up as "?" on XP when they shouldn't.
-See a couple of emails.  [This may have been the gamelist offset bug
-that was fixed in 4.2.7.]
 
 537. Clarify in the protocol that "force" while searching means you
 should stop the search as soon as you can.  (Isn't this clear

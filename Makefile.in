@@ -91,14 +91,14 @@ uninstall:
 
 clean:
 	rm -f xboard zic2xpm *.o xboard.txt zic2xpm.txt $(LEX_OUTPUT_ROOT).c
-	rm -f xboard_*.html xboard.aux* xboard.cp* xboard.dvi xboard.fn*
+	rm -f xboard*.html xboard.aux* xboard.cp* xboard.dvi xboard.fn*
 	rm -f xboard.ky* xboard.log xboard.pg* xboard.toc xboard.tp*
 	rm -f xboard.vr* xboard.ps
 
 distclean: clean tidy
 	rm -f config.cache config.log config.status Makefile 
 	rm -f config.h stamp-h xboard.texinfo cmail
-	cd winboard ; make -f cygwin.mak clean
+	-cd winboard ; make -f cygwin.mak clean
 
 mostlyclean: clean
 
@@ -106,7 +106,7 @@ maintainer-clean: distclean
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 	rm -f $(PSEUDOSOURCE)
-	cd winboard ; make -f cygwin.mak maintainer-clean
+	-cd winboard ; make -f cygwin.mak maintainer-clean
 
 TAGS:
 	etags *.c *.h
@@ -126,9 +126,9 @@ dvi: xboard.dvi
 xboard.dvi: xboard.texinfo xboard.texi gpl.texinfo configure.in
 	TEXINPUTS=.:$(srcdir): texi2dvi xboard.texinfo
 
-html: xboard_toc.html
+html: xboard.html
 
-xboard_toc.html: xboard.texinfo xboard.texi gpl.texinfo configure.in
+xboard.html: xboard.texinfo xboard.texi gpl.texinfo configure.in
 	texi2html -split_chapter -I $(srcdir) xboard.texinfo
 
 FAQ: FAQ.html

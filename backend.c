@@ -1455,6 +1455,16 @@ read_from_ics(isr, closure, data, count, error)
     int tkind;
     char *p;
 
+#ifdef WIN32
+    if (appData.debugMode) {
+      if (!error) {
+	fprintf(debugFP, "<ICS: ");
+	show_bytes(debugFP, data, count);
+	fprintf(debugFP, "\n");
+      }
+    }
+#endif
+
     if (count > 0) {
 	/* If last read ended with a partial line that we couldn't parse,
 	   prepend it to the new read and try again. */

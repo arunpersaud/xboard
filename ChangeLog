@@ -1,5 +1,10 @@
 ChangeLog for XBoard/WinBoard
 
+* 11/26/2003: In WinBoard, setting the -debug flag now logs ICS output
+to WinBoard.debug too.  (This isn't needed in xboard because ICS
+output already goes to stdout, so it's easy to capture along with the
+debug output on stderr.)  This was issue #280 in the ToDo file.
+
 * 11/23/2003: Cleaned up some minor problems in cygwin.mak.  Thanks to
 Hans Werner Strube for the problem report.
 
