@@ -3108,7 +3108,16 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       dragInfo.lastpos = dragInfo.pos;
     }
     break;
-
+  case WM_MOUSEWHEEL:
+	/* Mouse Wheel is being rolled forward 
+	 * Play moves forward
+	 */
+	if((short)HIWORD(wParam) > 0 ) ForwardEvent();
+	/* Mouse Wheel is being rolled backward 
+	 * Play moves backward
+	 */
+	if((short)HIWORD(wParam) < 0 ) BackwardEvent();
+	break;
   case WM_MBUTTONDOWN:
   case WM_RBUTTONDOWN:
     ErrorPopDown();
@@ -3415,6 +3424,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_MBUTTONUP:
   case WM_RBUTTONUP:
   case WM_MOUSEMOVE:
+  case WM_MOUSEWHEEL:
     MouseEvent(hwnd, message, wParam, lParam);
     break;
 
