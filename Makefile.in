@@ -90,7 +90,7 @@ uninstall:
 		$(infodir)/xboard.info $(infodir)/dir
 
 clean:
-	rm -f xboard zic2xpm *.o *.txt $(LEX_OUTPUT_ROOT).c
+	rm -f xboard zic2xpm *.o xboard.txt zic2xpm.txt $(LEX_OUTPUT_ROOT).c
 	rm -f xboard_*.html xboard.aux* xboard.cp* xboard.dvi xboard.fn*
 	rm -f xboard.ky* xboard.log xboard.pg* xboard.toc xboard.tp*
 	rm -f xboard.vr* xboard.ps
