@@ -2466,8 +2466,8 @@ XBoard square size (hint): %d\n\
 		    args, 1);
     }
 
-	/* icsEngineAnalyze - Currently not yet implemented in XBoard */
-	appData.icsEngineAnalyze = FALSE;
+    /* icsEngineAnalyze - default init */
+    appData.icsEngineAnalyze = FALSE;
 
     /*
      * Create an icon.
@@ -2805,6 +2805,12 @@ Enables userThinkingEnables[] = {
 void SetICSMode()
 {
   SetMenuEnables(icsEnables);
+
+ #ifdef ZIPPY
+  /* icsEngineAnalyze */
+  if (appData.zippyPlay && !appData.noChessProgram) 
+     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
+ #endif
 }
 
 void
@@ -5475,7 +5481,6 @@ void ModeHighlight()
 		   gameMode == Training || gameMode == PlayFromGameFile);
 }
 
-
 /*
  * Button/menu procedures
  */
@@ -5856,15 +5861,43 @@ void AnalyzeModeProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+    char buf[MSG_SIZ];
+    
     if (!first.analysisSupport) {
-      char buf[MSG_SIZ];
       sprintf(buf, _("%s does not support analysis"), first.tidy);
       DisplayError(buf, 0);
       return;
     }
+    /* icsEngineAnalyze */
+    if (appData.icsActive) {
+      if (gameMode != IcsObserving) {
+        sprintf(buf,_("You are not observing a game"));
+	DisplayError(buf, 0);
+	/* secure check */
+	if (appData.icsEngineAnalyze) {
+	  if (appData.debugMode)
+	    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
+	    appData.icsEngineAnalyze = FALSE;
+	    ExitAnalyzeMode();
+	    ModeHighlight();
+	    return;
+	}
+	return;
+     } else {
+      	 /* if enable, use want disable icsEngineAnalyze */
+      	if (appData.icsEngineAnalyze) {
+           appData.icsEngineAnalyze = FALSE;
+	   ExitAnalyzeMode();
+	   ModeHighlight();
+ 	   return;
+        }
+        appData.icsEngineAnalyze = TRUE;
+        if (appData.debugMode)
+	   fprintf(debugFP, "ICS engine analyze starting... \n");
+      }
+   }   
     if (!appData.showThinking)
       ShowThinkingProc(w,event,prms,nprms);
-
     AnalyzeModeEvent();
 }
 
@@ -7326,7 +7359,8 @@ AnalysisClockCallback(arg, id)
      XtPointer arg;
      XtIntervalId *id;
 {
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
+    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
+         || appData.icsEngineAnalyze) {
 	AnalysisPeriodicEvent(0);
 	StartAnalysisClock();
     }
