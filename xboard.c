@@ -5029,6 +5029,8 @@ void AnalysisPopDown()
     XtPopdown(analysisShell);
     XSync(xDisplay, False);
     analysisUp = False;
+    /* icsEngineAnalyze */
+    if (appData.icsEngineAnalyze) ExitAnalyzeMode();
 }
 
 
@@ -5878,7 +5880,6 @@ void AnalyzeModeProc(w, event, prms, nprms)
 	if (appData.icsEngineAnalyze) {
 	  if (appData.debugMode)
 	    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
-	    appData.icsEngineAnalyze = FALSE;
 	    ExitAnalyzeMode();
 	    ModeHighlight();
 	    return;
@@ -5887,7 +5888,6 @@ void AnalyzeModeProc(w, event, prms, nprms)
      } else {
       	 /* if enable, use want disable icsEngineAnalyze */
       	if (appData.icsEngineAnalyze) {
-           appData.icsEngineAnalyze = FALSE;
 	   ExitAnalyzeMode();
 	   ModeHighlight();
  	   return;
