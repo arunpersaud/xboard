@@ -45,7 +45,7 @@ DISTSOURCE = acconfig.h AUTHORS backend.c backend.h backendz.h bitmaps \
   common.h config.guess config.h.in config.sub configure configure.in \
   COPYING COPYRIGHT engine-intf.html FAQ.html frontend.h gamelist.c \
   gpl.texinfo ics-parsing.txt INSTALL install-sh lists.c lists.h \
-  Makefile.in mkinstalldirs moves.c moves.h parser.h parser.l \
+  Makefile.in mkinstalldirs moves.c moves.h NEWS parser.h parser.l \
   pgntags.c pixmaps pxboard READ_ME shiphtml sounds ToDo winboard \
   xboard.c xboard.h xboard.texi xboard.texinfo.in \
   xedittags.c xedittags.h xgamelist.c xgamelist.h xhistory.c \
