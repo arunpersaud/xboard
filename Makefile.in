@@ -40,33 +40,29 @@ LIBS = @X_LIBS@ @XAW_LIBS@ @PRE_XMULIB@ -lXmu @POST_XMULIB@ -lXt -lXext \
 NROFF = @NROFF@
 NROFFFLAGS = @NROFFFLAGS@
 
-DISTSOURCE = acconfig.h AUTHORS backend.c backend.h backendz.h bitmaps \
-  ChangeLog ChangeLog.2 childio.c childio.h cmail.in \
-  common.h config.guess config.h.in config.sub configure configure.in \
-  COPYING COPYRIGHT engine-intf.html FAQ.html frontend.h gamelist.c \
-  gpl.texinfo ics-parsing.txt INSTALL install-sh lists.c lists.h \
-  Makefile.in mkinstalldirs moves.c moves.h NEWS parser.h parser.l \
-  pgntags.c pixmaps pxboard READ_ME shiphtml sounds ToDo winboard \
-  xboard.c xboard.h xboard.texi xboard.texinfo.in \
-  xedittags.c xedittags.h xgamelist.c xgamelist.h xhistory.c \
-  xhistory.h zic2xpm.c zic2xpm.man zippy.c zippy.h zippy.lines \
-  zippy.README
+DISTSOURCE = acconfig.h AUTHORS backend.c backend.h backendz.h bitmaps	\
+  ChangeLog ChangeLog.2 childio.c childio.h cmail.in common.h		\
+  config.guess config.h.in config.sub configure configure.in COPYING	\
+  COPYRIGHT copyright.texi engine-intf.html FAQ.html frontend.h		\
+  gamelist.c gpl.texinfo ics-parsing.txt INSTALL install-sh lists.c	\
+  lists.h Makefile.in mkinstalldirs moves.c moves.h NEWS parser.h	\
+  parser.l pgntags.c pixmaps pxboard READ_ME shiphtml sounds texi2man	\
+  ToDo winboard xboard.c xboard.h xboard.texi xboard.texinfo.in		\
+  xedittags.c xedittags.h xgamelist.c xgamelist.h xhistory.c xhistory.h	\
+  zic2xpm.c zic2xpm.man zippy.c zippy.h zippy.lines zippy.README
 
-PSEUDOSOURCE = parser.c xboard.man xboard.info FAQ
+PSEUDOSOURCE = parser.c xboard.man xboard.info xboard.txt zic2xpm.txt FAQ
 
 DISTDIR = @PRODUCT@-@VERSION@.@PATCHLEVEL@
 
 XBOARDOBJ = parser.o xboard.o backend.o moves.o childio.o gamelist.o \
 	lists.o pgntags.o xgamelist.o xedittags.o xhistory.o @ZIPPY_O@
 
-### Targets required by GNU standards #######################################
-
-default: xboard zic2xpm xboard.txt zic2xpm.txt
+default: xboard zic2xpm
 
 all: default pseudosource info FAQ html dvi ps
 
-install: installdirs xboard zic2xpm cmail pxboard xboard.man \
-		zic2xpm.man
+install: installdirs default
 	$(INSTALL_PROGRAM) -s xboard $(bindir)/xboard
 	$(INSTALL_PROGRAM) -s zic2xpm $(bindir)/zic2xpm
 	$(INSTALL_PROGRAM) cmail $(bindir)/cmail
@@ -137,18 +133,17 @@ FAQ: FAQ.html
 pseudosource: $(PSEUDOSOURCE)
 
 dist: distclean
-	((cd linux && make pseudosource && cp $(PSEUDOSOURCE) -a ..) || true)
 	if [ -f winboard/WINBOARD.HLP ] ; then mv winboard/WINBOARD.HLP winboard/winboard.hlp ; fi
 	rm -rf $(DISTDIR)
 	mkdir $(DISTDIR)
 	cp -a $(DISTSOURCE) $(DISTDIR)/
-	cp -a $(PSEUDOSOURCE) $(DISTDIR)/
+	(cd linux && make pseudosource && \
+                     cp $(PSEUDOSOURCE) -a ../$(DISTDIR)/) || \
+	    cp -a $(PSEUDOSOURCE) $(DISTDIR)/
 	tar cvf - $(DISTDIR) | gzip > $(DISTDIR).tar.gz
 	rm -rf $(DISTDIR)
 
 check: all
-
-### End targets required by GNU standards ###################################
 
 .SUFFIXES:
 .SUFFIXES: .c .o .man .txt

@@ -1282,7 +1282,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 PRODUCT=xboard
 VERSION=4.2
-PATCHLEVEL=pre7
+PATCHLEVEL=7
 
 if test -z "$CFLAGS" ; then
   CFLAGS=" "
