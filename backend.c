@@ -8919,7 +8919,18 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		SubtractTimeMarks(&now, &programStartTime),
 		cps->which, message);
     }
-    HandleMachineMove(message, cps);
+	/* if icsEngineAnalyze is active we block all
+	   whisper and kibitz output, because nobody want 
+	   see this 
+	 */
+	if (appData.icsEngineAnalyze) {
+		if (strstr(message, "whisper") != NULL ||
+		    strstr(message, "kibitz") != NULL || 
+			strstr(message, "tellics") != NULL) return;
+		HandleMachineMove(message, cps);
+	} else {
+		HandleMachineMove(message, cps);
+	}
 }
 
 
