@@ -14,7 +14,7 @@ AC_CONFIG_HEADER(config.h)
 
 PRODUCT=xboard
 VERSION=4.2
-PATCHLEVEL=7
+PATCHLEVEL=pre8
 
 if test -z "$CFLAGS" ; then
 dnl| Prevent the next macro from setting CFLAGS to -g

@@ -5029,7 +5029,7 @@ void FileNamePopUp(label, def, proc, openMode)
      char *openMode;
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit, b_ok, b_cancel;
+    Widget popup, layout, dialog, edit;
     Window root, child;
     int x, y, i;
     int win_x, win_y;
