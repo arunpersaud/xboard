@@ -2468,7 +2468,7 @@ suggested.
 
 Report bugs and problems with @value{NAME} to
 @example
-tim@@tim-mann.org.
+xboard@@tim-mann.org.
 @end example
 
 Please use the @file{script} program to start a typescript, run 
@@ -2485,7 +2485,7 @@ uname -a
 make
 ./xboard -debug
 exit
-mail tim@@tim-mann.org
+mail xboard@@tim-mann.org
 Subject: Your short description of the problem
 Your detailed description of the problem
 ~r typescript
@@ -2496,17 +2496,12 @@ If you improve @value{NAME}, please send a message about your changes,
 and we will get in touch with you about merging them in
 to the main line of development.
 
-Send CMail bug reports/suggestions to
-@example
-evan@@quadstone.co.uk
-@end example
-
 @node Contributors
 @chapter Authors and contributors to @value{NAME}
 @cindex Authors
 @cindex Contributors
 @table @asis
-@item Tim Mann (tim@@tim-mann.org)
+@item Tim Mann
 has been responsible for XBoard versions 1.3 and beyond, and for
 WinBoard, a port of XBoard to Microsoft Win32 (Windows NT and
 Windows 95)
@@ -2519,15 +2514,15 @@ auto raise, and blindfold.
 
 @item Ben Nye contributed X copy/paste code for XBoard.
 
-@item Hugh Fisher (Hugh.Fisher@@cs.anu.edu.au)
+@item Hugh Fisher
 added animated piece movement to XBoard, and
 Henrik Gram (henrikg@@funcom.com) added it to WinBoard.
 
-@item Frank McIngvale (frankm@@hiwaay.net)
+@item Frank McIngvale
 added click/click moving, the Analysis modes,
 piece flashing, ZIICS import, and ICS text colorization to XBoard.
 
-@item Jochen Wiedmann (wiedmann@@neckar-alb.de)
+@item Jochen Wiedmann
 ported XBoard to the Amiga, creating AmyBoard, and converted the
 documentation to texinfo.  He was responsible for AmyBoard versions through
 330.5 (based on xboard 3.3.pl0).
@@ -2535,7 +2530,7 @@ documentation to texinfo.  He was responsible for AmyBoard versions through
 @item Elmar Bartel
 contributed the new piece bitmaps introduced in version 3.2.
 
-@item Evan Welsh (Evan.Welsh@@msdw.com)
+@item Evan Welsh
 wrote @code{CMail}.
 
 @item Patrick Surry
@@ -2767,7 +2762,7 @@ interface GNU Chess to an ICS.
 @node Crafty
 @section Crafty
 
-Crafty is a chess engine written by Bob Hyatt (hyatt@@cis.uab.edu).
+Crafty is a chess engine written by Bob Hyatt.
 You can use XBoard to play a game against Crafty, hook Crafty up
 to an ICS, or use Crafty to interactively analyze games and positions
 for you.

@@ -1,5 +1,9 @@
-xboard/WinBoard 4.2.7 -- ?
-Tim Mann <tim@tim-mann.org>
+ChangeLog for XBoard/WinBoard
+
+* 11/1/2003: Removed email addresses from this file to reduce spam
+load, as it gets linked to from the Web.
+
+* 11/1/2003: Updated READ_ME and winboard/READ_ME.txt.
 
 * Modified xboard and winboard makefiles to be able to build the
 project in the new combined directory structure.
@@ -97,7 +101,7 @@ get stuck at that point and the engine that made the illegal move
 would eventually lose on time.
 
 xboard/WinBoard 4.2.6 -- Fri Feb  1 22:26:31 PST 2002
-Tim Mann <tim@tim-mann.org>
+Tim Mann
 
 Another small bugfix release.
 
@@ -132,7 +136,7 @@ autoconf, but the former is currently used in Red Hat Linux and
 probably elsewhere.
 
 xboard/WinBoard 4.2.5 -- Sat Dec 15 11:42:51 PST 2001
-Tim Mann <tim@tim-mann.org>
+Tim Mann
 
 * Changed the bundled GNU Chess 5.02 in the WinBoard package to
 include a much smaller book and to use much less hash table space by
@@ -185,7 +189,7 @@ reenter analyze mode.  One symptom was that Analyze File did not work.
 Thanks to Igor Syry for the bug report.
 
 xboard/WinBoard 4.2.4 -- Sun Dec  9 14:56:30 PST 2001
-Tim Mann <tim@tim-mann.org>
+Tim Mann
 	
 * WinBoard now includes GNU Chess 5.02 in place of GNU Chess 5.00.
 
@@ -373,7 +377,7 @@ an error message instead of doing "it foo".  We now leave out the
 alias-suppressing prefix for emotes.
 
 xboard/WinBoard 4.2.3 -- Mon Feb 19 19:55:05 PST 2001
-Tim Mann <tim.mann@compaq.com>
+Tim Mann
 
 * Bugfix: The error message "Variant X not supported by gnuchessx"
 formerly could pop up even in -ncp mode.
@@ -406,7 +410,7 @@ tags should change to say "edited game" if you actually make any
 changes, but that is harder to make work.
 
 xboard/WinBoard 4.2.2 -- Tue Feb  6 20:00:00 PST 2001
-Tim Mann <tim.mann@compaq.com>
+Tim Mann
 
 * Fixed a problem introduced in 4.2.1.  In -zippyPlay mode, 4.2.1
 started sending the initString immediately after the old game ended,
@@ -436,7 +440,7 @@ initialize.  See engine-intf.html for more discussion.
 * Bugfix: "feature done=0" did not work for the second engine; now it does.
 
 xboard/WinBoard 4.2.1 -- Sat Feb  3 19:52:26 PST 2001
-Tim Mann <tim.mann@compaq.com>
+Tim Mann
 
 * Bugfix: in Zippy mode with feature san=1, the elapsed time was being
 sent to the engine after the SAN move; for example, "e4 (0:01)" was
@@ -536,7 +540,7 @@ present in WinBoard.)
 * Bug fix: setting feature reuse=0 was not working.
 
 xboard/WinBoard 4.2.0beta -- Sat Dec 16 16:34:56 PST 2000
-Tim Mann <tim.mann@compaq.com>
+Tim Mann
 
 * Setting -searchTime no longer turns off -clockMode.  Note that when
 -searchTime is set, some engines may search for the lesser of
@@ -720,7 +724,7 @@ on top of the message widget.  I've reported the bug and have
 installed a kludge workaround into xboard.
 
 xboard/WinBoard 4.1.0 -- Sun Sep 17 17:30:14 PDT 2000
-Tim Mann <tim.mann@compaq.com>
+Tim Mann
 
 * Merged Winboard Plus 4.0.8 from Mark Williams into xboard
   source pool.  Status of Winboard Plus features in xboard:
@@ -784,7 +788,7 @@ by giving the -bitmapDirectory (or -xpmDirectory) option.  There is no
 way to compile in xim pieces.
 
 Winboard Plus 4.0.8 -- Sat Aug 5 15:51 PDT 2000 
-Mark Williams <markcpa@pacbell.net>
+Mark Williams
 
 * Bugfix release.
 
@@ -834,7 +838,7 @@ spotting the bug and suggesting a fix.
 * Bugfix: the initial "name(" of a kibitz wasn't being colorized.
 
 Winboard Plus 4.0.7 -- Thu May 12 17:57 PDT 2000 
-Mark Williams <markcpa@pacbell.net>
+Mark Williams
 
 * New white pieces with black borders.
 
@@ -858,12 +862,12 @@ Mark Williams <markcpa@pacbell.net>
 * In ICS mode, the board is automatically activated at the start of a
 new game.
 
-4.0.7 -- Sun Mar  5 17:17:49 PST 2000  Tim Mann <tim.mann@compaq.com>
+4.0.7 -- Sun Mar  5 17:17:49 PST 2000  Tim Mann
 
 * Fixed a nasty bug in parsing ICS game histories that was introduced
 in 4.0.6.
 	
-4.0.6 -- Fri Mar  3 16:20:11 PST 2000  Tim Mann <tim.mann@compaq.com>
+4.0.6 -- Fri Mar  3 16:20:11 PST 2000  Tim Mann
 
 * Fixed bugs in Zippy's code for responding to messages sent with the
 ICS "message" command.
@@ -958,7 +962,7 @@ criteria as colorization.
 * xboard fix: Enter key now closes error popups as in WinBoard.
 Especially nice for the "Exiting: Connection closed by ICS" popup.
 
-4.0.5 -- Tue Dec  7 10:30:40 PST 1999  Tim Mann <tim.mann@compaq.com>
+4.0.5 -- Tue Dec  7 10:30:40 PST 1999  Tim Mann
 
 * Added missing documentation of SIGTERM usage into engine-intf.html.
 
@@ -976,7 +980,7 @@ to Frank Quisinsky for the bug report.  Bug was introduced in 4.0.4.
 similarly for "...s-shouts:" and "...c-shouts:".  Thanks to David Lee
 for the bug report.
 
-4.0.4 -- Fri Dec  3 17:51:27 PST 1999  Tim Mann <tim.mann@compaq.com>
+4.0.4 -- Fri Dec  3 17:51:27 PST 1999  Tim Mann
 
 * Bug fix: formerly if you invoked SaveGame from EditPosition mode
 with black to play, the position was not saved properly.  As a quick
@@ -1058,7 +1062,7 @@ Thanks to Ben Dean-Kawamura.
 * WinBoard will now update the board immediately if a move is made
 while the window is being moved or resized.
 	
-4.0.3 -- Sun Aug 15 18:44:39 PDT 1999  Tim Mann <mann@pa.dec.com>
+4.0.3 -- Sun Aug 15 18:44:39 PDT 1999  Tim Mann
 
 * Bugfix: moved winboard wizard functions that send a command directly
 to the chess engine from Ctrl+Alt+1 and Ctrl+Alt+2 to Alt+1 and Alt+2.
@@ -1099,7 +1103,7 @@ Stefan Zipproth for the bug report.
 makes a move that we can parse but think is illegal.  Now the move is
 just passed on (which also may be the wrong thing to do).
 
-4.0.2 -- Thu Feb 25 19:55:32 PST 1999  Tim Mann <mann@pa.dec.com>
+4.0.2 -- Thu Feb 25 19:55:32 PST 1999  Tim Mann
 
 * Added one more built-in sound choice to WinBoard: move.wav from Pete
 Galati.
@@ -1165,7 +1169,7 @@ File menu.  Thanks to Andreas Stabel for the bug report.
 * The "computer" engine command added in 4.0.1 was not working; I had
 left out part of the code patch.  Oops.
 
-4.0.1 -- Fri Feb 12 21:24:15 PST 1999  Tim Mann <mann@pa.dec.com>
+4.0.1 -- Fri Feb 12 21:24:15 PST 1999  Tim Mann
 
 This is a minor bugfix release.  The first item listed below is the
 only interesting new feature.
@@ -1245,7 +1249,7 @@ not if some other Crafty is observing the game and kibitzes.
 * Fixed bugs in generating "partner" commands when Zippy is playing
 bughouse.
 
-4.0.0 -- Sat Jun 20 16:59:47 PDT 1998  Tim Mann <mann@pa.dec.com>
+4.0.0 -- Sat Jun 20 16:59:47 PDT 1998  Tim Mann
 
 * Fixed WinBoard resizing so that the edges you do not drag remain in
 place, even when the final size is different from what you dragged to.
@@ -1278,7 +1282,7 @@ saying that some bogus string (often "Hint:") is illegal.
 
 * Bugfix: LoadNextGame/LoadPreviousGame/ReloadSameGame were broken.
 
-3.6.12 -- Sat Jun 13 14:57:10 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.12 -- Sat Jun 13 14:57:10 PDT 1998  Tim Mann
 
 Beta test release of xboard and WinBoard.
 
@@ -1293,7 +1297,7 @@ previous version, so I revamped it again.  All fixed now, I hope.
 
 * Oops.  winboard-3_6_11beta.exe installed 3.6.10beta, not the new version.
 
-3.6.11 -- Fri Jun 12 20:00:48 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.11 -- Fri Jun 12 20:00:48 PDT 1998  Tim Mann
 
 Beta test release of xboard and WinBoard.
 
@@ -1371,7 +1375,7 @@ right after the tags.
 
 * Other minor fixes and code cleanup.
 
-3.6.10 -- Mon Jun  1 01:32:31 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.10 -- Mon Jun  1 01:32:31 PDT 1998  Tim Mann
 
 * Added ZIPPYNOPLAYCRAFTY feature; see zippy.README.
 
@@ -1432,7 +1436,7 @@ WinBoard.ini files are still accepted.
 
 * Misc. tiny fixes and cleanup.
 
-3.6.9 -- Sun May 24 20:53:08 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.9 -- Sun May 24 20:53:08 PDT 1998  Tim Mann
 
 xboard and WinBoard beta release.
 
@@ -1450,7 +1454,7 @@ piece on that square capture itself and vanish.
 * Fixed typo bug in zippy.c that would often cause winboard to crash
 right after starting a game in -zp mode.
 
-3.6.8 -- Sat May 23 22:23:19 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.8 -- Sat May 23 22:23:19 PDT 1998  Tim Mann
 
 xboard and WinBoard beta release.
 
@@ -1533,7 +1537,7 @@ the file in the dialog.  This is no loss in LoadGame, as you can pick your
 game from the game list dialog that follows, but it does remove some
 functionality from LoadPosition.
 
-3.6.7 -- Mon May 18 21:25:00 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.7 -- Mon May 18 21:25:00 PDT 1998  Tim Mann
 
 xboard and WinBoard beta test release.  I've been unable to reproduce some
 reported drawing bugs, so they may still not be fixed.
@@ -1580,7 +1584,7 @@ all such problems are now fixed.
 * WinBoard bugfix: board was not being drawn in color on 256-color
 displays.  This bug was introduced in 3.6.6.
 
-3.6.6 -- Tue May 12 17:43:43 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.6 -- Tue May 12 17:43:43 PDT 1998  Tim Mann
 
 xboard and WinBoard beta release.  Note: not all reported bugs are fixed.
 
@@ -1610,7 +1614,7 @@ code is not present in this release because I have not gotten it working
 properly yet; my first approach went down a blind alley and I had to
 remove most of the partially working code in preparation for a rewrite.
 
-3.6.5 -- Fri May  8 14:22:09 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.5 -- Fri May  8 14:22:09 PDT 1998  Tim Mann
 
 Not generally released.
 
@@ -1657,7 +1661,7 @@ that this uncovered.
 
 * The usual minor bug fixes.
 
-3.6.4 -- Thu Apr 30 23:14:43 PDT 1998  Tim Mann <mann@pa.dec.com>
+3.6.4 -- Thu Apr 30 23:14:43 PDT 1998  Tim Mann
 
 xboard and WinBoard beta test release.
 
@@ -1711,7 +1715,7 @@ size that fits in the new area.
 
 * Fixed some minor problems with error message wording.
 
-3.6.3 -- Mon Feb 23 19:08:57 PST 1998  Tim Mann <mann@pa.dec.com>
+3.6.3 -- Mon Feb 23 19:08:57 PST 1998  Tim Mann
 
 xboard beta test release only.  Man page is updated for the changes, but info
 file is not.
@@ -1769,7 +1773,7 @@ of illegal moves?
 White was left on move, the PGN outcome was "1-0 {Black mates}" instead
 of "0-1 {Black mates}"!  The bug occurred only for that specific string.
 
-3.6.2 -- Wed Jul 23 16:47:29 PDT 1997  Tim Mann <mann@pa.dec.com>
+3.6.2 -- Wed Jul 23 16:47:29 PDT 1997  Tim Mann
 
 * There was a bug in backing up from the end of a game against a chess
 engine, introduced when -reuse mode was added.  Fixed.
@@ -1823,7 +1827,7 @@ If fewer than 8 squares are given in a row, or fewer than 8 rows are
 given, the uncovered squares are empty.  Also, there can be a / after the
 8th row.
 
-3.6.1 -- Sat May 17 01:02:33 PDT 1997  Tim Mann <mann@pa.dec.com>
+3.6.1 -- Sat May 17 01:02:33 PDT 1997  Tim Mann
 
 * Bug fix: Hitting escape while entering a password on WinBoard no longer
 sets the font color back to black (which made further typing visible).
@@ -1862,7 +1866,7 @@ causes too many other problems.  Documented change in engine-intf.txt.
 have had bugs on systems with no "Creating:" message.  It should fail
 gracefully there, just not finding the ratings.
 
-3.6.0 -- Thu May  8 19:55:58 PDT 1997  Tim Mann <mann@pa.dec.com>
+3.6.0 -- Thu May  8 19:55:58 PDT 1997  Tim Mann
 
 * WinBoard now has right-button context menus in the ICS Interaction
 window.  Some of the items do immediate commands on the player name you
@@ -1913,7 +1917,7 @@ engine-intf.txt.
 when needed, and always undo an extra move generated by stopping the chess
 program while it is thinking.
 
-3.5.7 -- Sat May 03 22:37:44 PDT 1997  Tim Mann <mann@pa.dec.com>
+3.5.7 -- Sat May 03 22:37:44 PDT 1997  Tim Mann
 
 Beta release of both xboard and WinBoard.
 
@@ -1977,7 +1981,7 @@ fonts and com port settings.
 finish the move.  Formerly the move was accepted and your opponent's clock
 would start running again.
 
-3.5.4 -- Fri Apr 18 01:15:24 PDT 1997  Tim Mann <mann@pa.dec.com>
+3.5.4 -- Fri Apr 18 01:15:24 PDT 1997  Tim Mann
 
 Beta test release of WinBoard and xboard.  The documentation remains
 out of date.
@@ -1988,7 +1992,7 @@ out of date.
 program if ICS sends us another copy of the board image.  Hard to believe
 it took me until now to diagnose and fix this problem!
 
-3.5.3 -- Sat Apr 12 19:49:33 PDT 1997  Tim Mann <mann@pa.dec.com>
+3.5.3 -- Sat Apr 12 19:49:33 PDT 1997  Tim Mann
 
 Beta test release of WinBoard and xboard.
 
@@ -1998,7 +2002,7 @@ Beta test release of WinBoard and xboard.
 of "white" in initString; it didn't work well, and is unneeded
 with Crafty 11.21 and later.
 
-3.5.2 -- Sat Apr 12 15:40:01 PDT 1997  Tim Mann <mann@pa.dec.com>
+3.5.2 -- Sat Apr 12 15:40:01 PDT 1997  Tim Mann
 
 Beta test release of WinBoard.
 
@@ -2038,7 +2042,7 @@ problems with reusing Crafty even in version 11.20.
 * Now the second chess program stays around by default too, if it ever
 gets started.
 
-3.5.1 -- Sat Apr  5 16:47:48 PST 1997  Tim Mann <mann@pa.dec.com>
+3.5.1 -- Sat Apr  5 16:47:48 PST 1997  Tim Mann
 
 Beta test release.
 
@@ -2066,7 +2070,7 @@ for illegal moves.
 * Fixed an old bug in RegisterMove that was crashing cmail on some systems
 (notably linux).
 
-3.5.0 -- Thu Jan  2 16:59:49 PST 1997  Tim Mann <mann@pa.dec.com>
+3.5.0 -- Thu Jan  2 16:59:49 PST 1997  Tim Mann
 
 Thanks to Frank McIngvale for much of the work on versions 3.4.4 and above!
 
@@ -2081,7 +2085,7 @@ autoconf 2.12.  Hopefully this will fix problems on Pentium Pro machines.
 
 * Removed some Makefile gunk that was causing looping for one person.
 
-3.4.7 -- Thu Dec 19 14:22:41 PST 1996  Tim Mann <mann@pa.dec.com>
+3.4.7 -- Thu Dec 19 14:22:41 PST 1996  Tim Mann
 
 All changes from Frank:
 
@@ -2100,7 +2104,7 @@ names.
 
 * ZIPPYACCEPTONLY feature for testing.
 
-3.4, patchlevel 6 -- Sat Nov 23 16:58:50 PST 1996  Tim Mann <mann@pa.dec.com>
+3.4, patchlevel 6 -- Sat Nov 23 16:58:50 PST 1996  Tim Mann
 
 * Put recognition of "illegal move" messages from Crafty for
 illegal castling, etc., inside an #if that is currently turned off,
@@ -2115,13 +2119,13 @@ after some moves that are actually legal and accepted by Crafty.
 
 * Fixed a bug in detecting Xpm in the configure script.
 
-3.4, patchlevel 5 -- Mon Nov 18 16:22:53 PST 1996  Tim Mann <mann@pa.dec.com>
+3.4, patchlevel 5 -- Mon Nov 18 16:22:53 PST 1996  Tim Mann
 
 * Added zic2xpm to the kit; it had been omitted by mistake.
 
 * Added some default colors for -colorize
 
-3.4, patchlevel 4 -- Sat Nov 16 18:10:17 PST 1996  Tim Mann <mann@pa.dec.com>
+3.4, patchlevel 4 -- Sat Nov 16 18:10:17 PST 1996  Tim Mann
 
 This is meant to be a beta release in preparation for version 3.5.
 
@@ -2134,7 +2138,7 @@ This is meant to be a beta release in preparation for version 3.5.
 ICS text colorization, and the ICS input box.  Many thanks to Frank for
 supplying and documenting this code.
 
-3.4, patchlevel 3 -- Mon Nov 11 18:23:14 PST 1996  Tim Mann <mann@pa.dec.com>
+3.4, patchlevel 3 -- Mon Nov 11 18:23:14 PST 1996  Tim Mann
 
 Small set of changes made while Frank McIngvale was working on XbKit in
 parallel.  Unreleased in this form.
@@ -2157,7 +2161,7 @@ forward again.
 * Strip titles from people who are talking to us, so (for example) Zippy
 won't try things like "tell Darooha(*) hello".  Needed on FICS.
 
-3.4, patchlevel 2 -- Tue Jul  9 19:06:42 PDT 1996  Tim Mann <mann@pa.dec.com>
+3.4, patchlevel 2 -- Tue Jul  9 19:06:42 PDT 1996  Tim Mann
 
 This patchlevel is not planned to be an announced release.  It's in
 preparation for integrating Frank McIngvale's XbKit.  It mostly contains
@@ -2202,7 +2206,7 @@ holdings only in banner.
 
 * Minor fixes/cleanup to Makefile.in and configure.in.
 
-3.4, patchlevel 1 -- Mon Dec 11 13:43:12 PST 1995  Tim Mann <mann@pa.dec.com>
+3.4, patchlevel 1 -- Mon Dec 11 13:43:12 PST 1995  Tim Mann
 
 * This patchlevel updates WinBoard to match xboard, and includes a few
 fixes and minor improvements.  "-size tiny" and "-size n,n,n,n,n,n"
@@ -2260,7 +2264,7 @@ message, it will understand that the game is over, but will always
 display * as a result token instead of trying to guess the result by
 interpreting the text message.
 
-3.4, patchlevel 0 -- Tue Nov 21 01:02:50 PST 1995  Tim Mann <mann@pa.dec.com>
+3.4, patchlevel 0 -- Tue Nov 21 01:02:50 PST 1995  Tim Mann
 
 * This patchlevel was released for xboard only.
 
@@ -2273,7 +2277,7 @@ if the actual bitmaps are supplied by the user.
 
 * Updated bughouse support.
 
-3.3, patchlevel 4 -- Sat Nov 18 02:27:21 PST 1995  Tim Mann <mann@pa.dec.com>
+3.3, patchlevel 4 -- Sat Nov 18 02:27:21 PST 1995  Tim Mann
 
 * Unreleased beta that works with preliminary FICS bughouse code.  Will
 need changes before release to track FICS message changes.
@@ -2322,7 +2326,7 @@ fix; thanks to them both.
 * Removed restriction against using EditGame while playing, observing,
 or examining on ICS.  You still get a warning popup.
 
-3.3, patchlevel 3 -- Sat Sep 16 11:44:05 PDT 1995  Tim Mann <mann@pa.dec.com>
+3.3, patchlevel 3 -- Sat Sep 16 11:44:05 PDT 1995  Tim Mann
 
 * Bug fix: Going directly from MachineWhite to TwoMachines mode would kill
 off the second chess program after Black's first move.
@@ -2349,14 +2353,14 @@ defined to empty, when they are not set in configure.  Bug originated in
 no move to display in the move window.  E.g., if position was created by
 LoadPosition or EditPosition.
 
-3.3, patchlevel 2 -- Mon Aug 28 11:11:11 PDT 1995  Tim Mann <mann@pa.dec.com>
+3.3, patchlevel 2 -- Mon Aug 28 11:11:11 PDT 1995  Tim Mann
 
 * Zippy code was omitted from xboard-3.3.pl1 by mistake; now included.
 
 * For WinBoard, added hint to help file that you may need to turn off
 LocalLineEditing while typing dialing commands to your modem.
 
-3.3, patchlevel 1 -- Sat Aug 19 15:13:30 PDT 1995  Tim Mann <mann@pa.dec.com>
+3.3, patchlevel 1 -- Sat Aug 19 15:13:30 PDT 1995  Tim Mann
 
 * Zippy distribution is no longer separate from regular xboard distribution.
 
@@ -2377,7 +2381,7 @@ could not be continued.  Thanks to "Maximum Entropy" for the bug report.
 and "#" for checkmate, as called for in PGN standard.  Thanks to Kevin
 Maher for the suggestion.
 
-3.3, patchlevel 0 -- Thu Jul 27 22:21:07 PDT 1995  Tim Mann <mann@pa.dec.com>
+3.3, patchlevel 0 -- Thu Jul 27 22:21:07 PDT 1995  Tim Mann
 
 * Changed configuration to use a config.h file instead of passing zillions
 of -D options on the cc command line.
@@ -2385,7 +2389,7 @@ of -D options on the cc command line.
 * Merged a small fix and some updates to the texinfo file from Jochen
 Wiedmann.  The texinfo file still needs work.
 
-3.2, patchlevel 5 -- Tue Jul 18 20:29:39 PDT 1995  Tim Mann <mann@pa.dec.com>
+3.2, patchlevel 5 -- Tue Jul 18 20:29:39 PDT 1995  Tim Mann
 
 * Beta test release of xboard only.
 
@@ -2415,7 +2419,7 @@ according to whether the lexer on the current host makes yytext a pointer.
 But most people will be using a parser.c that was generated on another
 host and shipped with the package.
 
-3.2, patchlevel 4 -- Sun Jun 25 19:13:43 PDT 1995  Tim Mann <mann@pa.dec.com>
+3.2, patchlevel 4 -- Sun Jun 25 19:13:43 PDT 1995  Tim Mann
 
 * Beta test release of xboard only.  
 
@@ -2430,7 +2434,7 @@ him in AmyBoard.  xboard implementation is my own.
 
 * Fixed some missing or incorrect prototypes.
 
-3.2, patchlevel 3 -- Sat Jun  3 18:57:38 1995  Tim Mann  <mann@pa.dec.com>
+3.2, patchlevel 3 -- Sat Jun  3 18:57:38 1995  Tim Mann 
 
 * Beta test release of xboard only.  
 
@@ -2455,7 +2459,7 @@ CmailSigHandler.  Bug report from Josh Daynard.
 
 * backend.c wouldn't compile with a non-ANSI compiler.  Fixed.
 
-3.2, patchlevel 2 -- Tue Feb  7 14:50:30 1995  Tim Mann  <mann@pa.dec.com>
+3.2, patchlevel 2 -- Tue Feb  7 14:50:30 1995  Tim Mann 
 
 * Minor release of both xboard and WinBoard.
 
@@ -2483,7 +2487,7 @@ telnet negotiation characters aren't displayed (when possible).
 server with "-icsport 23" should work even without giving the -telnet
 option.  The telnet is in "old line-by-line mode".
 
-3.2, patchlevel 1 -- Sat Dec 10 13:50:46 1994  Tim Mann  (mann@pa.dec.com)
+3.2, patchlevel 1 -- Sat Dec 10 13:50:46 1994  Tim Mann 
 
 * This patchlevel released for WinBoard only.
 
@@ -2501,7 +2505,7 @@ from initString).  The problem seems to be that GenerateConsoleCtrlEvent
 is not doing anything.  On Windows 95 beta 2, we get error messages on
 both reading and writing to gnuchessx; I didn't investigate why.
 
-3.2, patchlevel 0 -- Wed Dec  7 13:23:36 1994  Tim Mann  (mann@pa.dec.com)
+3.2, patchlevel 0 -- Wed Dec  7 13:23:36 1994  Tim Mann 
 
 * Thanks to all the beta testers who gave me feedback: Josef Nelissen,
 Steve Booth, Evan Welsh, Dima Dakhnovsky, Chris Petroff, Peter Jansen,
@@ -2521,7 +2525,7 @@ echoing be done remotely, however; see below.
 
 * cmail bugfix from Evan Welsh (cmail 3.4).
 
-3.1, patchlevel 9 -- Fri Dec  2 23:54:56 1994  Tim Mann  (mann@pa.dec.com)
+3.1, patchlevel 9 -- Fri Dec  2 23:54:56 1994  Tim Mann 
 
 * Beta distribution only
 
@@ -2571,7 +2575,7 @@ have rsh at all.
 
 * Added -remoteUser option.
 
-3.1, patchlevel 8 -- Mon Nov 28 15:26:07 1994  Tim Mann  (mann@pa.dec.com)
+3.1, patchlevel 8 -- Mon Nov 28 15:26:07 1994  Tim Mann 
 
 * Beta distribution only
 
@@ -2615,7 +2619,7 @@ SendToProgram.
 * Added code to handle "refresh N" boards that come in from ICS properly,
 assuming ICS is changed to mark them with a new relation code (-3).
 
-3.1, patchlevel 7 -- Sun Nov 13 22:16:01 PST 1994 -- mann@pa.dec.com
+3.1, patchlevel 7 -- Sun Nov 13 22:16:01 PST 1994 -- Tim Mann
 
 * Beta distribution only
 
@@ -2627,7 +2631,7 @@ changes to cmail code in backend.c, from Evan Welsh.
 
 * Miscellaneous minor fixes.
 
-3.1, patchlevel 6 -- Fri Nov  4 12:53:53 PST 1994 -- mann@pa.dec.com
+3.1, patchlevel 6 -- Fri Nov  4 12:53:53 PST 1994 -- Tim Mann
 
 * This patchlevel was not actually released to anyone.
 
@@ -2641,7 +2645,7 @@ but I did my best.
 * Put in code to help trap "error gathering move list" problem reported by
 Michel van der List if it recurs.  I couldn't reproduce it.
 
-3.1, patchlevel 5 -- Mon Oct 31 21:12:00 PST 1994 -- mann@pa.dec.com
+3.1, patchlevel 5 -- Mon Oct 31 21:12:00 PST 1994 -- Tim Mann
 
 * Beta distribution only.
 
@@ -2655,7 +2659,7 @@ the bugs.
 
 * Imakefile was omitted from patchlevel 4.
 
-3.1, patchlevel 4 -- Mon Sep 19 18:19:46 PDT 1994 -- mann@src.dec.com
+3.1, patchlevel 4 -- Mon Sep 19 18:19:46 PDT 1994 -- Tim Mann
 
 * Beta distribution only.
 
@@ -2696,7 +2700,7 @@ game in ICS mode; was entering EndOfGame mode instead of IcsIdle.
 * Added patch to implement internetChessServerLogonScript flag, from Kevin
 O'Connor.  Thanks!
 
-3.1, patchlevel 3 -- Wed Sep  7 13:22:07 PDT 1994 -- mann@src.dec.com
+3.1, patchlevel 3 -- Wed Sep  7 13:22:07 PDT 1994 -- Tim Mann
 
 * Beta distribution only.
 
@@ -2739,7 +2743,7 @@ adjourned wild games.
 
 * Revamped window title and icon name selection.
 
-3.1, patchlevel 2 -- Sun Jun 12 17:16:28 PDT 1994 -- mann@src.dec.com
+3.1, patchlevel 2 -- Sun Jun 12 17:16:28 PDT 1994 -- Tim Mann
 
 * "Beta" distribution for Zippy users only.
 
@@ -2786,7 +2790,7 @@ for inspiring the idea.
 
 * Corrected test for gcc on HP in Imakefile; thanks to Richard Lloyd.
 
-3.1, patchlevel 1 -- Wed Jun  1 16:25:11 PDT 1994 -- mann@src.dec.com
+3.1, patchlevel 1 -- Wed Jun  1 16:25:11 PDT 1994 -- Tim Mann
 
 * Added parser.c.lex and parser.c.flex to the distribution.
 
@@ -2811,7 +2815,7 @@ portable way and has some minor bug fixes.
 * Bug fix: Saving a FEN position while in EditPosition mode with black to
 play was showing white to play in the saved position.
 
-3.1, patchlevel 0 -- Fri May 20 16:36:15 PDT 1994 -- mann@src.dec.com
+3.1, patchlevel 0 -- Fri May 20 16:36:15 PDT 1994 -- Tim Mann
 
 * This is the first general release since 3.0, patchlevel 9.  Releases
 since then have been limited-distribution or beta releases.
@@ -2834,7 +2838,7 @@ including some code he supplied in xboard itself.
 
 * Handle ICS automatic examine mode (set examine 1) after a game.
 
-3.0, patchlevel 14 -- Tue May 17 13:41:44 PDT 1994 -- mann@src.dec.com
+3.0, patchlevel 14 -- Tue May 17 13:41:44 PDT 1994 -- Tim Mann
 
 * Beta test release only.
 
@@ -2875,7 +2879,7 @@ because GameEnds still puts xboard in EndOfGame mode.  Sigh.
 
 * Larger %a and %o were needed for lex.
 
-3.0, patchlevel 13 -- Mon May 16 16:26:22 PDT 1994 -- mann@src.dec.com 
+3.0, patchlevel 13 -- Mon May 16 16:26:22 PDT 1994 -- Tim Mann
 
 * Beta test release only.
 
@@ -2903,7 +2907,7 @@ position is exactly one move past the end of the game you loaded.
 
 * Updates to INSTALL file
 
-3.0, patchlevel 12 -- Sat May  7 21:10:03 PDT 1994 -- mann@src.dec.com 
+3.0, patchlevel 12 -- Sat May  7 21:10:03 PDT 1994 -- Tim Mann 
 
 * Beta test release only.
 
@@ -2979,7 +2983,7 @@ mode).
 
 * Renamed ForceMoves to EditGame.
 
-3.0, patchlevel 11 -- Tue Sep 21 15:25:36 PDT 1993 -- mann@src.dec.com 
+3.0, patchlevel 11 -- Tue Sep 21 15:25:36 PDT 1993 -- Tim Mann 
 
 * The following changes were present in xboard 3.0, patchlevel 11, but the
 first group did not make it into WinBoard 3.0 until later.  xboard
@@ -3028,7 +3032,7 @@ port device, or with locking it properly.  But it's usable by wizards.
 
 * Suppress extra prompt after ICS sends us a board.
 
-3.0, patchlevel 10 -- Sat Sep 11 18:44:03 PDT 1993 -- mann@src.dec.com 
+3.0, patchlevel 10 -- Sat Sep 11 18:44:03 PDT 1993 -- Tim Mann 
 
 * Beta test release only.
 
@@ -3045,7 +3049,7 @@ call flag.  Suggested by venu on ICS.
 
 * More explicit instructions in INSTALL file.
 
-3.0, patchlevel 9 -- Tue Sep  7 14:02:00 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 9 -- Tue Sep  7 14:02:00 PDT 1993 -- Tim Mann
 
 * General release, minor update to 3.0.pl8.
 
@@ -3077,25 +3081,25 @@ Thanks to Ed Hanway, Arik Klingensmith, and others who responded.
 * Avoid using (void *) type with non-ANSI C compilers.  Thanks to
 James Altucher for the bug report.
 
-3.0, patchlevel 8 -- Thu Sep  2 12:23:01 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 8 -- Thu Sep  2 12:23:01 PDT 1993 -- Tim Mann
 
 * Note: Patchlevel 8 was the first non-beta release of xboard 3.0
 
 * Added cmail to distribution.  Contributed (and still maintained) by
-Evan Welsh, welsh@epcc.ed.ac.uk.
+Evan Welsh.
 
 * Bug fix: -queen option wasn't initializing menu check.  Reported by
 Pat Surry.
 
-3.0, patchlevel 7 -- Thu Aug 26 13:23:24 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 7 -- Thu Aug 26 13:23:24 PDT 1993 -- Tim Mann
 
-* Sent WinBoard 3.0.pl7 to doli@troi.cc.rochester.edu (Torre on ICS)
+* Sent WinBoard 3.0.pl7 to Torre on ICS
 
 * Added parser.h to hold the interface to parser.l
 
 * Upgraded COPYING file and copyright notices to GNU GPL version 2.
 
-3.0, patchlevel 6 -- Tue Aug 24 15:16:13 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 6 -- Tue Aug 24 15:16:13 PDT 1993 -- Tim Mann
 
 * We no longer display intermediate positions or intermediate comments
 while loading a game file with -timeDelay 0 or loading an opening to
@@ -3107,7 +3111,7 @@ found in file."
 
 * Added comment.awk to distribution.
 
-3.0, patchlevel 5 -- Tue Aug 17 16:45:54 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 5 -- Tue Aug 17 16:45:54 PDT 1993 -- Tim Mann
 
 * Bug fix:  xboard would crash if it couldn't get all its colors; now
 it switches to monoMode instead.  Also, xboard was trying to convert
@@ -3140,7 +3144,7 @@ LoadGame mode does not.
 generally needed more work.  Also simplified command line interface to
 matchMode.
 
-3.0, patchlevel 4 -- Thu Aug  5 14:17:18 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 4 -- Thu Aug  5 14:17:18 PDT 1993 -- Tim Mann
 
 * Thanks again to the beta testers listed for 3.0 patchlevel 3, and also
 Desnogues, Steve Cariglia, Niklas Engsner, Mark Silver, and Roger Rowe.
@@ -3178,7 +3182,7 @@ observing a game on ICS.
 the errorUp flag, so the next move would cause xboard to try to pop it
 down again, resulting in a wild memory reference and sometimes a crash.
 
-3.0, patchlevel 3 -- Tue Aug  3 17:40:27 1993  -- mann@src.dec.com
+3.0, patchlevel 3 -- Tue Aug  3 17:40:27 1993  -- Tim Mann
 
 * Thanks to my beta testers: Patrick Surry, Takuya Kojima, Robert J. Luoma,
 Chris L.  Petroff, Richard K. Lloyd, Michel van der List, Craig Metz,
@@ -3213,7 +3217,7 @@ clock.
 * Fixed minor bugs in -flipView option and documented exactly how xboard
 decides which way to flip the view.
 
-3.0, patchlevel 2 -- Fri Jul 30 22:20:23 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 2 -- Fri Jul 30 22:20:23 PDT 1993 -- Tim Mann
 
 * Added Autosave to Options menu.  Would be better to have Save
 Options dialog as in WinBoard, but this was quick to do and gives the
@@ -3221,7 +3225,7 @@ most-needed functionality.
 
 * Changed "Reload Game" on menu to "Reload Same Game".
 
-3.0, patchlevel 1 -- Thu Jul  8 21:22:59 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 1 -- Thu Jul  8 21:22:59 PDT 1993 -- Tim Mann
 
 * Sent a copy of patchlevel 1 to Patrick Surry to beta-test.
 
@@ -3248,7 +3252,7 @@ another move #1, and that technique gets too many false hits.
 * Fixed recently introduced bug in LoadGame when game starts with a
 position diagram.
 
-3.0, patchlevel 0 -- Fri Jun 25 14:17:17 PDT 1993 -- mann@src.dec.com
+3.0, patchlevel 0 -- Fri Jun 25 14:17:17 PDT 1993 -- Tim Mann
 
 * Changes in this patchlevel were too numerous to list.  Larger ones are
 listed below.
