@@ -4,9 +4,8 @@ What is XBoard?
 XBoard is a graphical chessboard for the X Window System.  It can
 serve as a user interface for chess engines such as GNU Chess, for the
 Internet Chess Server, or for electronic mail correspondence chess.
-XBoard can also be used by itself.  See the manual page xboard.man for
-further details; use the command "nroff -man xboard.man | more" to
-read it.
+XBoard can also be used by itself.  See the manual page xboard.txt for
+further details.
 
 XBoard is free software, copyrighted by the Free Software Foundation
 and released under the GNU General Public License (GPL).  See the file
