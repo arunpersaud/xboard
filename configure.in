@@ -315,7 +315,7 @@ AC_SUBST(PRODUCT)
 AC_SUBST(VERSION)
 AC_SUBST(PATCHLEVEL)
 
-AC_OUTPUT(Makefile comment.awk:comment.in cmail xboard.texinfo,
+AC_OUTPUT(Makefile cmail xboard.texinfo,
 [test -z "$CONFIG_HEADERS" || date > stamp-h
-chmod 755 comment.awk cmail
+chmod 755 cmail
 ])

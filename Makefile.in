@@ -43,7 +43,7 @@ NROFFFLAGS = @NROFFFLAGS@
 DISTSOURCE = COPYING COPYRIGHT ChangeLog ChangeLog.2 FAQ FAQ.html \
 	INSTALL Makefile.in READ_ME ToDo backend.c backend.h \
 	backendz.h bitmaps bitmaps.xchess childio.c childio.h cmail.in \
-	cmail.man comment.in common.h config.guess config.sub \
+	cmail.man common.h config.guess config.sub \
 	configure configure.in engine-intf.html frontend.h gamelist.c \
 	ics-parsing.txt install-sh kk13.pgn lists.c \
 	lists.h mkinstalldirs moves.c moves.h parser.h parser.l pgntags.c \
@@ -98,7 +98,7 @@ clean:
 
 distclean: clean tidy
 	rm -f config.cache config.log config.status Makefile 
-	rm -f config.h stamp-h xboard.texinfo cmail comment.awk
+	rm -f config.h stamp-h xboard.texinfo cmail
 	cd winboard ; make -f cygwin.mak clean
 
 mostlyclean: clean
