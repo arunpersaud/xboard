@@ -131,7 +131,7 @@ typedef struct {
   int nr_moves;           /* Total nr of root moves */
   int moves_left;         /* Moves remaining to be searched */
   char move_name[MOVE_LEN];  /* Current move being searched, if provided */
-  unsigned long nodes;    /* # of nodes searched */
+  u64 nodes;			  /* # of nodes searched */
   int time;               /* Search time (centiseconds) */
   int score;              /* Score (centipawns) */
   int got_only_move;      /* If last msg was "(only move)" */
@@ -4344,7 +4344,7 @@ HandleMachineMove(message, cps)
     if (appData.showThinking) {
 	int plylev, mvleft, mvtot, curscore, time;
 	char mvname[MOVE_LEN];
-	unsigned long nodes;
+	u64 nodes;
 	char plyext;
 	int ignore = FALSE;
 	int prefixHint = FALSE;
@@ -4375,7 +4375,7 @@ HandleMachineMove(message, cps)
 
 	if (!ignore) {
 	    buf1[0] = NULLCHAR;
-	    if (sscanf(message, "%d%c %d %d %lu %[^\n]\n",
+	    if (sscanf(message, "%d%c %d %d %I64u %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5) {
 
 		if (plyext != ' ' && plyext != '\t') {
@@ -9251,7 +9251,7 @@ DisplayAnalysis()
     if (programStats.got_only_move) {
 	strcpy(buf, programStats.movelist);
     } else {
-	nps = (((double)programStats.nodes) /
+	nps = (((u64)programStats.nodes) /
 	       (((double)programStats.time)/100.0));
 
 	cs = programStats.time % 100;
@@ -9263,32 +9263,32 @@ DisplayAnalysis()
 
 	if (programStats.moves_left > 0 && appData.periodicUpdates) {
 	  if (programStats.move_name[0] != NULLCHAR) {
-	    sprintf(buf, "depth=%d %d/%d(%s) %+.2f %s%s\nNodes: %lu NPS: %d\nTime: %02d:%02d:%02d.%02d",
+	    sprintf(buf, "depth=%d %d/%d(%s) %+.2f %s%s\nNodes: %I64u NPS: %d\nTime: %02d:%02d:%02d.%02d",
 		    programStats.depth,
 		    programStats.nr_moves-programStats.moves_left,
 		    programStats.nr_moves, programStats.move_name,
 		    ((float)programStats.score)/100.0, programStats.movelist,
 		    only_one_move(programStats.movelist)?
 		    xtra[programStats.got_fail] : "",
-		    programStats.nodes, (int)nps, h, m, s, cs);
+		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
 	  } else {
-	    sprintf(buf, "depth=%d %d/%d %+.2f %s%s\nNodes: %lu NPS: %d\nTime: %02d:%02d:%02d.%02d",
+	    sprintf(buf, "depth=%d %d/%d %+.2f %s%s\nNodes: %I64u NPS: %d\nTime: %02d:%02d:%02d.%02d",
 		    programStats.depth,
 		    programStats.nr_moves-programStats.moves_left,
 		    programStats.nr_moves, ((float)programStats.score)/100.0,
 		    programStats.movelist,
 		    only_one_move(programStats.movelist)?
 		    xtra[programStats.got_fail] : "",
-		    programStats.nodes, (int)nps, h, m, s, cs);
+		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
 	  }
 	} else {
-	    sprintf(buf, "depth=%d %+.2f %s%s\nNodes: %lu NPS: %d\nTime: %02d:%02d:%02d.%02d",
+	    sprintf(buf, "depth=%d %+.2f %s%s\nNodes: %I64u NPS: %d\nTime: %02d:%02d:%02d.%02d",
 		    programStats.depth,
 		    ((float)programStats.score)/100.0,
 		    programStats.movelist,
 		    only_one_move(programStats.movelist)?
 		    xtra[programStats.got_fail] : "",
-		    programStats.nodes, (int)nps, h, m, s, cs);
+		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
 	}
     }
     DisplayAnalysisText(buf);

@@ -176,6 +176,19 @@ extern GameInfo gameInfo;
 #define ICS_CHESSNET 3 /* not really supported */
 int ics_type;
 
+/* unsigned int 64 for engine nodes work and display */
+#define u64Display  "%I64u"
+#ifdef WIN32
+	/* I don't know the name for this type of other compilers 
+	 * If it not work just added here 
+	 * Thats for MS Visual Studio 
+	 */
+	#define u64	unsigned __int64
+#else
+	/* GNU gcc */
+	#define u64	unsigned long long
+#endif
+
 
 /* pgntags.c prototypes
  */
