@@ -305,7 +305,7 @@ Boolean alarmSounded;
 /* end premove variables */
 
 char *ics_prefix = "$";
-ics_type = ICS_GENERIC;
+int ics_type = ICS_GENERIC;
 
 int currentMove = 0, forwardMostMove = 0, backwardMostMove = 0;
 int pauseExamForwardMostMove = 0;
@@ -6975,7 +6975,7 @@ MailMoveEvent()
 	|| (nCmailMovesRegistered + nCmailResults == nCmailGames)) {
 	sprintf(string, partCommandString,
 		appData.debugMode ? " -v" : "", appData.cmailGameName);
-	commandOutput = popen(string, "rb");
+	commandOutput = popen(string, "r");
 
 	if (commandOutput == NULL) {
 	    DisplayError(_("Failed to invoke cmail"), 0);
