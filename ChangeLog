@@ -1,5 +1,8 @@
 ChangeLog for XBoard/WinBoard
 
+* 09/02/2004: Add mousewheel support for winboard. Play moves backward 
+and forward with the mousewheel.
+
 * 11/26/2003: In WinBoard, setting the -debug flag now logs ICS output
 to WinBoard.debug too.  (This isn't needed in xboard because ICS
 output already goes to stdout, so it's easy to capture along with the
