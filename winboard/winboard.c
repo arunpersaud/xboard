@@ -3652,7 +3652,6 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (appData.icsEngineAnalyze) {
 				if (appData.debugMode) 
 					fprintf(debugFP, "Found unexpected active ICS engine analyze \n");
-				appData.icsEngineAnalyze = FALSE;
 				ExitAnalyzeMode();
 				ModeHighlight();
 				break;
@@ -3661,7 +3660,6 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		} else {
 			/* if enable, user want disable icsEngineAnalyze */
 			if (appData.icsEngineAnalyze) {
-				appData.icsEngineAnalyze = FALSE;
 				ExitAnalyzeMode();
 				ModeHighlight();
 				break;
@@ -7614,6 +7612,12 @@ AnalysisDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND: /* message: received a command */
     switch (LOWORD(wParam)) {
     case IDCANCEL:
+	   /* icsEngineAnalyze */
+	   if (appData.icsActive && appData.icsEngineAnalyze) {
+		   ExitAnalyzeMode();
+		   ModeHighlight();
+		   return TRUE;
+	   }
       EditGameEvent();
       return TRUE;
     default:
