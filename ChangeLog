@@ -1,4 +1,6 @@
 ChangeLog for XBoard/WinBoard
+* 06/27/20ß4: added simple icsEngineAnalyze for xboard
+
 * 06/26/2004: added icsEngineAnalyze for winboard: Analyze observe games 
 with a chessprogram on a Internet Chess Server (ICS) 
 
