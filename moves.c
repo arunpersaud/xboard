@@ -516,7 +516,7 @@ int GenLegal(board, flags, epfile, callback, closure)
 	    board[7][0] == BlackRook &&
 	    (ignoreCheck ||
 	     (!CheckTest(board, flags, 7, ff, 7, ff - 1, FALSE) &&
-	      !CheckTest(board, flags, 7, ff, 7, ff - 1, FALSE)))) {
+	      !CheckTest(board, flags, 7, ff, 7, ff - 2, FALSE)))) {
 
 	    callback(board, flags,
 		     ff==4 ? BlackQueenSideCastle : BlackQueenSideCastleWild,
