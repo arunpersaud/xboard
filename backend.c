@@ -4361,7 +4361,8 @@ HandleMachineMove(message, cps)
 		    }
 		    strncpy(programStats.movelist, buf1,
 			    sizeof(programStats.movelist));
-		    buf1[sizeof(programStats.movelist) - 1] = NULLCHAR;
+		    programStats.movelist[sizeof(programStats.movelist) - 1]
+		      = NULLCHAR;
 		} else {
 		    sprintf(programStats.movelist, " no PV\n");
 		}
