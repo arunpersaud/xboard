@@ -71,7 +71,15 @@ extern char *getenv();
 #include "backend.h"
 #include "xboard.h"
 #include "xhistory.h"
+#include "gettext.h"
 
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
 
 #define _LL_ 100
 
@@ -142,8 +150,8 @@ void HistoryAlloc(int len){
     hist->black[0]=(String)malloc(hist->aNr*MOVE_LEN);
 
       sprintf(hist->Nr[0],"    ");
-      sprintf(hist->white[0],"White ");
-      sprintf(hist->black[0],"Black ");
+      sprintf(hist->white[0],_("White "));
+      sprintf(hist->black[0],_("Black "));
     for(i=1;i<hist->aNr;i++){
       hist->Nr[i]= hist->Nr[i-1]+6;
       hist->white[i]= hist->white[i-1]+MOVE_LEN;
@@ -333,11 +341,11 @@ Widget HistoryCreate()
     XtSetArg(args[j], XtNallowShellResize, True);  j++;   
 #if TOPLEVEL
     hist->sh =
-      XtCreatePopupShell("Move list", topLevelShellWidgetClass,
+      XtCreatePopupShell(_("Move list"), topLevelShellWidgetClass,
 			 shellWidget, args, j);
 #else
     hist->sh =
-      XtCreatePopupShell("Move list", transientShellWidgetClass,
+      XtCreatePopupShell(_("Move list"), transientShellWidgetClass,
 			 shellWidget, args, j);
 #endif        
     j = 0;
@@ -431,7 +439,7 @@ Widget HistoryCreate()
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
     XtSetArg(args[j], XtNfromVert, hist->viewport);  j++;
-    b_close= XtCreateManagedWidget("Close", commandWidgetClass,
+    b_close= XtCreateManagedWidget(_("Close"), commandWidgetClass,
 				   form, args, j);   
     XtAddCallback(b_close, XtNcallback, HistoryPopDown, (XtPointer) 0);
 

@@ -107,6 +107,16 @@ extern int gettimeofday(struct timeval *, struct timezone *);
 # include "zippy.h"
 #endif
 #include "backendz.h"
+#include "gettext.h"
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
+
 
 /* A point in time */
 typedef struct {
@@ -452,7 +462,7 @@ InitBackEnd1()
     if (!ParseTimeControl(appData.timeControl, appData.timeIncrement,
 			  appData.movesPerSession)) {
 	char buf[MSG_SIZ];
-	sprintf(buf, "bad timeControl option %s", appData.timeControl);
+	sprintf(buf, _("bad timeControl option %s"), appData.timeControl);
 	DisplayFatalError(buf, 0, 2);
     }
 
@@ -467,7 +477,7 @@ InitBackEnd1()
 	    searchTime = min * 60 + sec;
 	} else {
 	    char buf[MSG_SIZ];
-	    sprintf(buf, "bad searchTime option %s", appData.searchTime);
+	    sprintf(buf, _("bad searchTime option %s"), appData.searchTime);
 	    DisplayFatalError(buf, 0, 2);
 	}
     }
@@ -526,7 +536,7 @@ InitBackEnd1()
     if (appData.firstProtocolVersion > PROTOVER ||
 	appData.firstProtocolVersion < 1) {
       char buf[MSG_SIZ];
-      sprintf(buf, "protocol version %d not supported",
+      sprintf(buf, _("protocol version %d not supported"),
 	      appData.firstProtocolVersion);
       DisplayFatalError(buf, 0, 2);
     } else {
@@ -536,7 +546,7 @@ InitBackEnd1()
     if (appData.secondProtocolVersion > PROTOVER ||
 	appData.secondProtocolVersion < 1) {
       char buf[MSG_SIZ];
-      sprintf(buf, "protocol version %d not supported",
+      sprintf(buf, _("protocol version %d not supported"),
 	      appData.secondProtocolVersion);
       DisplayFatalError(buf, 0, 2);
     } else {
@@ -587,7 +597,7 @@ InitBackEnd1()
       case VariantBughouse:     /* need four players and two boards */
       case VariantKriegspiel:   /* need to hide pieces and move details */
       case VariantFischeRandom: /* castling doesn't work, shuffle not done */
-	sprintf(buf, "Variant %s supported only in ICS mode", appData.variant);
+	sprintf(buf, _("Variant %s supported only in ICS mode"), appData.variant);
 	DisplayFatalError(buf, 0, 2);
 	return;
 
@@ -602,7 +612,7 @@ InitBackEnd1()
       case Variant35:
       case Variant36:
       default:
-	sprintf(buf, "Unknown variant name %s", appData.variant);
+	sprintf(buf, _("Unknown variant name %s"), appData.variant);
 	DisplayFatalError(buf, 0, 2);
 	return;
 
@@ -689,10 +699,10 @@ InitBackEnd3 P((void))
 	err = establish();
 	if (err != 0) {
 	    if (*appData.icsCommPort != NULLCHAR) {
-		sprintf(buf, "Could not open comm port %s",  
+		sprintf(buf, _("Could not open comm port %s"),  
 			appData.icsCommPort);
 	    } else {
-		sprintf(buf, "Could not connect to host %s, port %s",  
+		sprintf(buf, _("Could not connect to host %s, port %s"),  
 			appData.icsHost, appData.icsPort);
 	    }
 	    DisplayFatalError(buf, err, 1);
@@ -737,7 +747,7 @@ InitBackEnd3 P((void))
     } else if (StrCaseCmp(appData.initialMode, "Training") == 0) {
       initialMode = Training;
     } else {
-      sprintf(buf, "Unknown initialMode %s", appData.initialMode);
+      sprintf(buf, _("Unknown initialMode %s"), appData.initialMode);
       DisplayFatalError(buf, 0, 2);
       return;
     }
@@ -745,7 +755,7 @@ InitBackEnd3 P((void))
     if (appData.matchMode) {
 	/* Set up machine vs. machine match */
 	if (appData.noChessProgram) {
-	    DisplayFatalError("Can't have a match with no chess programs",
+	    DisplayFatalError(_("Can't have a match with no chess programs"),
 			      0, 2);
 	    return;
 	}
@@ -755,14 +765,14 @@ InitBackEnd3 P((void))
 	    if (!LoadGameFromFile(appData.loadGameFile,
 				  appData.loadGameIndex,
 				  appData.loadGameFile, FALSE)) {
-		DisplayFatalError("Bad game file", 0, 1);
+		DisplayFatalError(_("Bad game file"), 0, 1);
 		return;
 	    }
 	} else if (*appData.loadPositionFile != NULLCHAR) {
 	    if (!LoadPositionFromFile(appData.loadPositionFile,
 				      appData.loadPositionIndex,
 				      appData.loadPositionFile)) {
-		DisplayFatalError("Bad position file", 0, 1);
+		DisplayFatalError(_("Bad position file"), 0, 1);
 		return;
 	    }
 	}
@@ -774,7 +784,7 @@ InitBackEnd3 P((void))
 	/* Set up other modes */
 	if (initialMode == AnalyzeFile) {
 	  if (*appData.loadGameFile == NULLCHAR) {
-	    DisplayFatalError("AnalyzeFile mode requires a game file", 0, 1);
+	    DisplayFatalError(_("AnalyzeFile mode requires a game file"), 0, 1);
 	    return;
 	  }
 	}
@@ -789,11 +799,11 @@ InitBackEnd3 P((void))
 	}
 	if (initialMode == AnalyzeMode) {
 	  if (appData.noChessProgram) {
-	    DisplayFatalError("Analysis mode requires a chess engine", 0, 2);
+	    DisplayFatalError(_("Analysis mode requires a chess engine"), 0, 2);
 	    return;
 	  }
 	  if (appData.icsActive) {
-	    DisplayFatalError("Analysis mode does not work with ICS mode",0,2);
+	    DisplayFatalError(_("Analysis mode does not work with ICS mode"),0,2);
 	    return;
 	  }
 	  AnalyzeModeEvent();
@@ -803,36 +813,36 @@ InitBackEnd3 P((void))
 	  AnalysisPeriodicEvent(1);
 	} else if (initialMode == MachinePlaysWhite) {
 	  if (appData.noChessProgram) {
-	    DisplayFatalError("MachineWhite mode requires a chess engine",
+	    DisplayFatalError(_("MachineWhite mode requires a chess engine"),
 			      0, 2);
 	    return;
 	  }
 	  if (appData.icsActive) {
-	    DisplayFatalError("MachineWhite mode does not work with ICS mode",
+	    DisplayFatalError(_("MachineWhite mode does not work with ICS mode"),
 			      0, 2);
 	    return;
 	  }
 	  MachineWhiteEvent();
 	} else if (initialMode == MachinePlaysBlack) {
 	  if (appData.noChessProgram) {
-	    DisplayFatalError("MachineBlack mode requires a chess engine",
+	    DisplayFatalError(_("MachineBlack mode requires a chess engine"),
 			      0, 2);
 	    return;
 	  }
 	  if (appData.icsActive) {
-	    DisplayFatalError("MachineBlack mode does not work with ICS mode",
+	    DisplayFatalError(_("MachineBlack mode does not work with ICS mode"),
 			      0, 2);
 	    return;
 	  }
 	  MachineBlackEvent();
 	} else if (initialMode == TwoMachinesPlay) {
 	  if (appData.noChessProgram) {
-	    DisplayFatalError("TwoMachines mode requires a chess engine",
+	    DisplayFatalError(_("TwoMachines mode requires a chess engine"),
 			      0, 2);
 	    return;
 	  }
 	  if (appData.icsActive) {
-	    DisplayFatalError("TwoMachines mode does not work with ICS mode",
+	    DisplayFatalError(_("TwoMachines mode does not work with ICS mode"),
 			      0, 2);
 	    return;
 	  }
@@ -843,7 +853,7 @@ InitBackEnd3 P((void))
 	  EditPositionEvent();
 	} else if (initialMode == Training) {
 	  if (*appData.loadGameFile == NULLCHAR) {
-	    DisplayFatalError("Training mode requires a game file", 0, 2);
+	    DisplayFatalError(_("Training mode requires a game file"), 0, 2);
 	    return;
 	  }
 	  TrainingEvent();
@@ -991,14 +1001,14 @@ read_from_player(isr, closure, message, count, error)
 	gotEof = 0;
 	outCount = OutputMaybeTelnet(icsPR, message, count, &outError);
 	if (outCount < count) {
-	    DisplayFatalError("Error writing to ICS", outError, 1);
+	    DisplayFatalError(_("Error writing to ICS"), outError, 1);
 	}
     } else if (count < 0) {
 	RemoveInputSource(isr);
-	DisplayFatalError("Error reading from keyboard", error, 1);
+	DisplayFatalError(_("Error reading from keyboard"), error, 1);
     } else if (gotEof++ > 0) {
 	RemoveInputSource(isr);
-	DisplayFatalError("Got end of file from keyboard", 0, 0);
+	DisplayFatalError(_("Got end of file from keyboard"), 0, 0);
     }
 }
 
@@ -1013,7 +1023,7 @@ SendToICS(s)
     count = strlen(s);
     outCount = OutputMaybeTelnet(icsPR, s, count, &outError);
     if (outCount < count) {
-	DisplayFatalError("Error writing to ICS", outError, 1);
+	DisplayFatalError(_("Error writing to ICS"), outError, 1);
     }
 }
 
@@ -1038,7 +1048,7 @@ SendToICSDelayed(s,msdelay)
     outCount = OutputToProcessDelayed(icsPR, s, count, &outError,
 				      msdelay);
     if (outCount < count) {
-	DisplayFatalError("Error writing to ICS", outError, 1);
+	DisplayFatalError(_("Error writing to ICS"), outError, 1);
     }
 }
 
@@ -1242,7 +1252,7 @@ StringToVariant(e)
       }
     }
     if (appData.debugMode) {
-      fprintf(debugFP, "recognized '%s' (%d) as variant %s\n",
+      fprintf(debugFP, _("recognized '%s' (%d) as variant %s\n"),
 	      e, wnum, VariantName(v));
     }
     return v;
@@ -1307,7 +1317,7 @@ SendToPlayer(data, length)
     int error, outCount;
     outCount = OutputToProcess(NoProc, data, length, &error);
     if (outCount < length) {
-	DisplayFatalError("Error writing to display", error, 1);
+	DisplayFatalError(_("Error writing to display"), error, 1);
     }
 }
 
@@ -1393,7 +1403,7 @@ TelnetRequest(ddww, option)
     msg[2] = option;
     outCount = OutputToProcess(icsPR, (char *)msg, 3, &outError);
     if (outCount < 3) {
-	DisplayFatalError("Error writing to ICS", outError, 1);
+	DisplayFatalError(_("Error writing to ICS"), outError, 1);
     }
 }
 
@@ -1984,7 +1994,7 @@ read_from_ics(isr, closure, data, count, error)
 		  case H_GOT_UNWANTED_HEADER:
 		  case H_GETTING_MOVES:
 		    /* Should not happen */
-		    DisplayError("Error gathering move list: two headers", 0);
+		    DisplayError(_("Error gathering move list: two headers"), 0);
 		    ics_getting_history = H_FALSE;
 		    break;
 		}
@@ -1998,7 +2008,7 @@ read_from_ics(isr, closure, data, count, error)
 		    gameInfo.whiteRating = string_to_rating(star_match[1]);
 		    gameInfo.blackRating = string_to_rating(star_match[3]);
 		    if (appData.debugMode)
-		      fprintf(debugFP, "Ratings from header: W %d, B %d\n", 
+		      fprintf(debugFP, _("Ratings from header: W %d, B %d\n"), 
 			      gameInfo.whiteRating, gameInfo.blackRating);
 		}
 		continue;
@@ -2031,7 +2041,7 @@ read_from_ics(isr, closure, data, count, error)
 		    break;
 		  case H_GETTING_MOVES:
 		    /* Should not happen */
-		    DisplayError("Error gathering move list: nested", 0);
+		    DisplayError(_("Error gathering move list: nested"), 0);
 		    ics_getting_history = H_FALSE;
 		    break;
 		  case H_GOT_REQ_HEADER:
@@ -2540,9 +2550,9 @@ read_from_ics(isr, closure, data, count, error)
 	
     } else if (count == 0) {
 	RemoveInputSource(isr);
-        DisplayFatalError("Connection closed by ICS", 0, 0);
+        DisplayFatalError(_("Connection closed by ICS"), 0, 0);
     } else {
-	DisplayFatalError("Error reading from ICS", error, 1);
+	DisplayFatalError(_("Error reading from ICS"), error, 1);
     }
 }
 
@@ -2590,7 +2600,7 @@ ParseBoard12(string)
     newGame = FALSE;
 
     if (appData.debugMode)
-      fprintf(debugFP, "Parsing board: %s\n", string);
+      fprintf(debugFP, _("Parsing board: %s\n"), string);
 
     move_str[0] = NULLCHAR;
     elapsed_time[0] = NULLCHAR;
@@ -2602,7 +2612,7 @@ ParseBoard12(string)
 	       &ticking);
 
     if (n < 22) {
-	sprintf(str, "Failed to parse board string:\n\"%s\"", string);
+	sprintf(str, _("Failed to parse board string:\n\"%s\""), string);
 	DisplayError(str, 0);
 	return;
     }
@@ -2611,7 +2621,7 @@ ParseBoard12(string)
     moveNum = (moveNum - 1) * 2;
     if (to_play == 'B') moveNum++;
     if (moveNum >= MAX_MOVES) {
-      DisplayFatalError("Game too long; increase MAX_MOVES and recompile",
+      DisplayFatalError(_("Game too long; increase MAX_MOVES and recompile"),
 			0, 1);
       return;
     }
@@ -2673,7 +2683,7 @@ ParseBoard12(string)
 	return;
       case H_GETTING_MOVES:
 	/* Should not happen */
-	DisplayError("Error gathering move list: extra board", 0);
+	DisplayError(_("Error gathering move list: extra board"), 0);
 	ics_getting_history = H_FALSE;
 	return;
     }
@@ -2920,7 +2930,7 @@ ParseBoard12(string)
 	    if ((gameMode == IcsPlayingWhite && WhiteOnMove(moveNum)) ||
 		(gameMode == IcsPlayingBlack && !WhiteOnMove(moveNum))) {
 		if (moveList[moveNum - 1][0] == NULLCHAR) {
-		    sprintf(str, "Couldn't parse move \"%s\" from ICS",
+		    sprintf(str, _("Couldn't parse move \"%s\" from ICS"),
 			    move_str);
 		    DisplayError(str, 0);
 		} else {
@@ -2942,7 +2952,7 @@ ParseBoard12(string)
 		}
 	    } else if (gameMode == IcsObserving || gameMode == IcsExamining) {
 	      if (moveList[moveNum - 1][0] == NULLCHAR) {
-		sprintf(str, "Couldn't parse move \"%s\" from ICS", move_str);
+		sprintf(str, _("Couldn't parse move \"%s\" from ICS"), move_str);
 		DisplayError(str, 0);
 	      } else {
 		SendMoveToProgram(moveNum - 1, &first);
@@ -3375,7 +3385,7 @@ OKToStartUserMove(x, y)
       case IcsPlayingBlack:
 	if (appData.zippyPlay) return FALSE;
 	if (white_piece) {
-	    DisplayMoveError("You are playing Black");
+	    DisplayMoveError(_("You are playing Black"));
 	    return FALSE;
 	}
 	break;
@@ -3384,18 +3394,18 @@ OKToStartUserMove(x, y)
       case IcsPlayingWhite:
 	if (appData.zippyPlay) return FALSE;
 	if (!white_piece) {
-	    DisplayMoveError("You are playing White");
+	    DisplayMoveError(_("You are playing White"));
 	    return FALSE;
 	}
 	break;
 
       case EditGame:
 	if (!white_piece && WhiteOnMove(currentMove)) {
-	    DisplayMoveError("It is White's turn");
+	    DisplayMoveError(_("It is White's turn"));
 	    return FALSE;
 	}	    
 	if (white_piece && !WhiteOnMove(currentMove)) {
-	    DisplayMoveError("It is Black's turn");
+	    DisplayMoveError(_("It is Black's turn"));
 	    return FALSE;
 	}	    
 	if (cmailMsgLoaded && (currentMove < cmailOldMove)) {
@@ -3415,7 +3425,7 @@ OKToStartUserMove(x, y)
 	if (appData.icsActive) return FALSE;
 	if (!appData.noChessProgram) {
 	    if (!white_piece) {
-		DisplayMoveError("You are playing White");
+		DisplayMoveError(_("You are playing White"));
 		return FALSE;
 	    }
 	}
@@ -3423,11 +3433,11 @@ OKToStartUserMove(x, y)
 	
       case Training:
 	if (!white_piece && WhiteOnMove(currentMove)) {
-	    DisplayMoveError("It is White's turn");
+	    DisplayMoveError(_("It is White's turn"));
 	    return FALSE;
 	}	    
 	if (white_piece && !WhiteOnMove(currentMove)) {
-	    DisplayMoveError("It is Black's turn");
+	    DisplayMoveError(_("It is Black's turn"));
 	    return FALSE;
 	}	    
 	break;
@@ -3438,7 +3448,7 @@ OKToStartUserMove(x, y)
     }
     if (currentMove != forwardMostMove && gameMode != AnalyzeMode
 	&& gameMode != AnalyzeFile && gameMode != Training) {
-	DisplayMoveError("Displayed position is not current");
+	DisplayMoveError(_("Displayed position is not current"));
 	return FALSE;
     }
     return TRUE;
@@ -3488,7 +3498,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
       case MachinePlaysWhite:
 	/* User is moving for Black */
 	if (WhiteOnMove(currentMove)) {
-	    DisplayMoveError("It is White's turn");
+	    DisplayMoveError(_("It is White's turn"));
 	    return;
 	}
 	break;
@@ -3496,7 +3506,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
       case MachinePlaysBlack:
 	/* User is moving for White */
 	if (!WhiteOnMove(currentMove)) {
-	    DisplayMoveError("It is Black's turn");
+	    DisplayMoveError(_("It is Black's turn"));
 	    return;
 	}
 	break;
@@ -3510,13 +3520,13 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	    (int) boards[currentMove][fromY][fromX] <= (int) BlackKing) {
 	    /* User is moving for Black */
 	    if (WhiteOnMove(currentMove)) {
-		DisplayMoveError("It is White's turn");
+		DisplayMoveError(_("It is White's turn"));
 		return;
 	    }
 	} else {
 	    /* User is moving for White */
 	    if (!WhiteOnMove(currentMove)) {
-		DisplayMoveError("It is Black's turn");
+		DisplayMoveError(_("It is Black's turn"));
 		return;
 	    }
 	}
@@ -3526,7 +3536,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	/* User is moving for Black */
 	if (WhiteOnMove(currentMove)) {
 	    if (!appData.premove) {
-		DisplayMoveError("It is White's turn");
+		DisplayMoveError(_("It is White's turn"));
 	    } else if (toX >= 0 && toY >= 0) {
 		premoveToX = toX;
 		premoveToY = toY;
@@ -3547,7 +3557,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	/* User is moving for White */
 	if (!WhiteOnMove(currentMove)) {
 	    if (!appData.premove) {
-		DisplayMoveError("It is Black's turn");
+		DisplayMoveError(_("It is Black's turn"));
 	    } else if (toX >= 0 && toY >= 0) {
 		premoveToX = toX;
 		premoveToY = toY;
@@ -3586,7 +3596,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
 				EP_UNKNOWN, fromY, fromX, toY, toX, promoChar);
 	if (moveType == IllegalMove || moveType == ImpossibleMove) {
-	    DisplayMoveError("Illegal move");
+	    DisplayMoveError(_("Illegal move"));
 	    return;
 	}
     } else {
@@ -3620,10 +3630,10 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	  gameMode = PlayFromGameFile;
 	  ModeHighlight();
 	  SetTrainingModeOff();
-	  DisplayInformation("End of game");
+	  DisplayInformation(_("End of game"));
 	}
       } else {
-	DisplayError("Incorrect move", 0);
+	DisplayError(_("Incorrect move"), 0);
       }
       return;
     }
@@ -3842,7 +3852,7 @@ HandleMachineMove(message, cps)
 	if (!ParseOneMove(machineMove, forwardMostMove, &moveType,
 			      &fromX, &fromY, &toX, &toY, &promoChar)) {
 	    /* Machine move could not be parsed; ignore it. */
-	    sprintf(buf1, "Illegal move \"%s\" from %s machine",
+	    sprintf(buf1, _("Illegal move \"%s\" from %s machine"),
 		    machineMove, cps->which);
 	    DisplayError(buf1, 0);
 	    if (gameMode == TwoMachinesPlay) {
@@ -4083,7 +4093,7 @@ HandleMachineMove(message, cps)
 	DisplayMove(currentMove-1); /* before DisplayMoveError */
 	SwitchClocks();
 	DisplayBothClocks();
-	sprintf(buf1, "Illegal move \"%s\" (rejected by %s chess program)",
+	sprintf(buf1, _("Illegal move \"%s\" (rejected by %s chess program)"),
 		parseList[currentMove], cps->which);
 	DisplayMoveError(buf1);
 	DrawPosition(FALSE, boards[currentMove]);
@@ -4108,7 +4118,7 @@ HandleMachineMove(message, cps)
 	|| (StrStr(message, "Permission denied") != NULL)) {
 
 	cps->maybeThinking = FALSE;
-	sprintf(buf1, "Failed to start %s chess program %s on %s: %s\n",
+	sprintf(buf1, _("Failed to start %s chess program %s on %s: %s\n"),
 		cps->which, cps->program, cps->host, message);
 	RemoveInputSource(cps->isr);
 	DisplayFatalError(buf1, 0, 1);
@@ -4131,7 +4141,7 @@ HandleMachineMove(message, cps)
 	    } else {
 		/* Hint move could not be parsed!? */
 		sprintf(buf2,
-			"Illegal hint move \"%s\"\nfrom %s chess program",
+			_("Illegal hint move \"%s\"\nfrom %s chess program"),
 			buf1, cps->which);
 		DisplayError(buf2, 0);
 	    }
@@ -4303,10 +4313,10 @@ HandleMachineMove(message, cps)
 	} else if (gameMode == MachinePlaysWhite ||
 		   gameMode == MachinePlaysBlack) {
 	  if (userOfferedDraw) {
-	    DisplayInformation("Machine accepts your draw offer");
+	    DisplayInformation(_("Machine accepts your draw offer"));
 	    GameEnds(GameIsDrawn, "Draw agreed", GE_XBOARD);
 	  } else {
-            DisplayInformation("Machine offers a draw\nSelect Action / Draw to agree");
+            DisplayInformation(_("Machine offers a draw\nSelect Action / Draw to agree"));
 	  }
 	}
     }
@@ -4562,18 +4572,18 @@ ParseGameHistory(game)
 	    break;
 	  case AmbiguousMove:
 	    /* bug? */
-	    sprintf(buf, "Ambiguous move in ICS output: \"%s\"", yy_text);
+	    sprintf(buf, _("Ambiguous move in ICS output: \"%s\""), yy_text);
 	    DisplayError(buf, 0);
 	    return;
 	  case ImpossibleMove:
 	    /* bug? */
-	    sprintf(buf, "Illegal move in ICS output: \"%s\"", yy_text);
+	    sprintf(buf, _("Illegal move in ICS output: \"%s\""), yy_text);
 	    DisplayError(buf, 0);
 	    return;
 	  case (ChessMove) 0:	/* end of file */
 	    if (boardIndex < backwardMostMove) {
 		/* Oops, gap.  How did that happen? */
-		DisplayError("Gap in move list", 0);
+		DisplayError(_("Gap in move list"), 0);
 		return;
 	    }
 	    backwardMostMove =  blackPlaysFirst ? 1 : 0;
@@ -4795,7 +4805,7 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
 {
     forwardMostMove++;
     if (forwardMostMove >= MAX_MOVES) {
-      DisplayFatalError("Game too long; increase MAX_MOVES and recompile",
+      DisplayFatalError(_("Game too long; increase MAX_MOVES and recompile"),
 			0, 1);
       return;
     }
@@ -4874,7 +4884,7 @@ InitChessProgram(cps)
 	gameInfo.variant != VariantLoadable) {
       char *v = VariantName(gameInfo.variant);
       if (StrStr(cps->variants, v) == NULL) {
-	sprintf(buf, "Variant %s not supported by %s", v, cps->tidy);
+	sprintf(buf, _("Variant %s not supported by %s"), v, cps->tidy);
 	DisplayFatalError(buf, 0, 1);
 	return;
       }
@@ -5226,7 +5236,7 @@ GameEnds(result, resultDetails, whosays)
 	} else {
 	    char buf[MSG_SIZ];
 	    gameMode = nextGameMode;
-	    sprintf(buf, "Match %s vs. %s: final score %d-%d-%d",
+	    sprintf(buf, _("Match %s vs. %s: final score %d-%d-%d"),
 		    first.tidy, second.tidy,
 		    first.matchWins, second.matchWins,
 		    appData.matchGames - (first.matchWins + second.matchWins));
@@ -5592,7 +5602,7 @@ LoadGameOneMove(readAhead)
 	if (appData.testLegality) {
 	    if (appData.debugMode)
 	      fprintf(debugFP, "Parsed IllegalMove: %s\n", yy_text);
-	    sprintf(move, "Illegal move: %d.%s%s",
+	    sprintf(move, _("Illegal move: %d.%s%s"),
 		    (forwardMostMove / 2) + 1,
 		    WhiteOnMove(forwardMostMove) ? " " : ".. ", yy_text);
 	    DisplayError(move, 0);
@@ -5612,7 +5622,7 @@ LoadGameOneMove(readAhead)
       case AmbiguousMove:
 	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed AmbiguousMove: %s\n", yy_text);
-	sprintf(move, "Ambiguous move: %d.%s%s",
+	sprintf(move, _("Ambiguous move: %d.%s%s"),
 		(forwardMostMove / 2) + 1,
 		WhiteOnMove(forwardMostMove) ? " " : ".. ", yy_text);
 	DisplayError(move, 0);
@@ -5623,7 +5633,7 @@ LoadGameOneMove(readAhead)
       case ImpossibleMove:
 	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed ImpossibleMove: %s\n", yy_text);
-	sprintf(move, "Illegal move: %d.%s%s",
+	sprintf(move, _("Illegal move: %d.%s%s"),
 		(forwardMostMove / 2) + 1,
 		WhiteOnMove(forwardMostMove) ? " " : ".. ", yy_text);
 	DisplayError(move, 0);
@@ -5671,7 +5681,7 @@ LoadGameFromFile(filename, n, title, useList)
     } else {
 	f = fopen(filename, "rb");
 	if (f == NULL) {
-	    sprintf(buf, "Can't open \"%s\"", filename);
+	    sprintf(buf, _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
 	    return FALSE;
 	}
@@ -5683,7 +5693,7 @@ LoadGameFromFile(filename, n, title, useList)
     if (useList && n == 0) {
 	int error = GameListBuild(f);
 	if (error) {
-	    DisplayError("Cannot build game list", error);
+	    DisplayError(_("Cannot build game list"), error);
 	} else if (!ListEmpty(&gameList) &&
 		   ((ListGame *) gameList.tailPred)->number > 1) {
 	    GameListPopUp(f, title);
@@ -5772,7 +5782,7 @@ CmailLoadGame(f, gameNumber, title, useList)
     int retVal;
 
     if (gameNumber > nCmailGames) {
-	DisplayError("No more games in this message", 0);
+	DisplayError(_("No more games in this message"), 0);
 	return FALSE;
     }
     if (f == lastLoadGameFP) {
@@ -5813,11 +5823,11 @@ ReloadGame(offset)
 {
     int gameNumber = lastLoadGameNumber + offset;
     if (lastLoadGameFP == NULL) {
-	DisplayError("No game has been loaded yet", 0);
+	DisplayError(_("No game has been loaded yet"), 0);
 	return FALSE;
     }
     if (gameNumber <= 0) {
-	DisplayError("Can't back up any further", 0);
+	DisplayError(_("Can't back up any further"), 0);
 	return FALSE;
     }
     if (cmailMsgLoaded) {
@@ -5872,7 +5882,7 @@ LoadGame(f, gameNumber, title, useList)
 	    gn = 1;
 	}
 	else {
-	    DisplayError("Game number out of range", 0);
+	    DisplayError(_("Game number out of range"), 0);
 	    return FALSE;
 	}
     } else {
@@ -5883,7 +5893,7 @@ LoadGame(f, gameNumber, title, useList)
 		gameNumber == 1) {
 		gn = 1;
 	    } else {
-		DisplayError("Can't seek on game file", 0);
+		DisplayError(_("Can't seek on game file"), 0);
 		return FALSE;
 	    }
 	}
@@ -5942,7 +5952,7 @@ LoadGame(f, gameNumber, title, useList)
 		nCmailGames = CMAIL_MAX_GAMES - gn;
 	    } else {
 		Reset(TRUE, TRUE);
-		DisplayError("Game not found in file", 0);
+		DisplayError(_("Game not found in file"), 0);
 	    }
 	    return FALSE;
 
@@ -6059,7 +6069,7 @@ LoadGame(f, gameNumber, title, useList)
 	  startedFromSetupPosition = TRUE;
 	  if (!ParseFEN(initial_position, &blackPlaysFirst, gameInfo.fen)) {
 	    Reset(TRUE, TRUE);
-	    DisplayError("Bad FEN position in file", 0);
+	    DisplayError(_("Bad FEN position in file"), 0);
 	    return FALSE;
 	  }
 	  CopyBoard(boards[0], initial_position);
@@ -6202,7 +6212,7 @@ LoadGame(f, gameNumber, title, useList)
     if ((cm == (ChessMove) 0 && lastLoadGameStart != (ChessMove) 0) ||
 	cm == WhiteWins || cm == BlackWins ||
 	cm == GameIsDrawn || cm == GameUnfinished) {
-	DisplayMessage("", "No moves in game");
+	DisplayMessage("", _("No moves in game"));
 	if (cmailMsgLoaded) {
 	    if (appData.debugMode)
 	      fprintf(debugFP, "Setting flipView to %d.\n", FALSE);
@@ -6272,11 +6282,11 @@ ReloadPosition(offset)
 {
     int positionNumber = lastLoadPositionNumber + offset;
     if (lastLoadPositionFP == NULL) {
-	DisplayError("No position has been loaded yet", 0);
+	DisplayError(_("No position has been loaded yet"), 0);
 	return FALSE;
     }
     if (positionNumber <= 0) {
-	DisplayError("Can't back up any further", 0);
+	DisplayError(_("Can't back up any further"), 0);
 	return FALSE;
     }
     return LoadPosition(lastLoadPositionFP, positionNumber,
@@ -6298,7 +6308,7 @@ LoadPositionFromFile(filename, n, title)
     } else {
 	f = fopen(filename, "rb");
 	if (f == NULL) {
-	    sprintf(buf, "Can't open \"%s\"", filename);
+	    sprintf(buf, _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
 	    return FALSE;
 	} else {
@@ -6339,7 +6349,7 @@ LoadPosition(f, positionNumber, title)
     if (positionNumber < 0) {
 	/* Negative position number means to seek to that byte offset */
 	if (fseek(f, -positionNumber, 0) == -1) {
-	    DisplayError("Can't seek on position file", 0);
+	    DisplayError(_("Can't seek on position file"), 0);
 	    return FALSE;
 	};
 	pn = 1;
@@ -6350,14 +6360,14 @@ LoadPosition(f, positionNumber, title)
 		positionNumber == 1) {
 		pn = 1;
 	    } else {
-		DisplayError("Can't seek on position file", 0);
+		DisplayError(_("Can't seek on position file"), 0);
 		return FALSE;
 	    }
 	}
     }
     /* See if this file is FEN or old-style xboard */
     if (fgets(line, MSG_SIZ, f) == NULL) {
-	DisplayError("Position not found in file", 0);
+	DisplayError(_("Position not found in file"), 0);
 	return FALSE;
     }
     switch (line[0]) {
@@ -6379,7 +6389,7 @@ LoadPosition(f, positionNumber, title)
 	    /* skip postions before number pn */
 	    if (fgets(line, MSG_SIZ, f) == NULL) {
 	        Reset(TRUE, TRUE);
-		DisplayError("Position not found in file", 0);
+		DisplayError(_("Position not found in file"), 0);
 		return FALSE;
 	    }
 	    if (fenMode || line[0] == '#') pn--;
@@ -6388,7 +6398,7 @@ LoadPosition(f, positionNumber, title)
 
     if (fenMode) {
 	if (!ParseFEN(initial_position, &blackPlaysFirst, line)) {
-	    DisplayError("Bad FEN position in file", 0);
+	    DisplayError(_("Bad FEN position in file"), 0);
 	    return FALSE;
 	}
     } else {
@@ -6420,10 +6430,10 @@ LoadPosition(f, positionNumber, title)
 	strcpy(moveList[0], "");
 	strcpy(parseList[0], "");
 	CopyBoard(boards[1], initial_position);
-	DisplayMessage("", "Black to play");
+	DisplayMessage("", _("Black to play"));
     } else {
 	currentMove = forwardMostMove = backwardMostMove = 0;
-	DisplayMessage("", "White to play");
+	DisplayMessage("", _("White to play"));
     }
     SendBoard(&first, forwardMostMove);
 
@@ -6491,7 +6501,7 @@ SaveGameToFile(filename, append)
     } else {
 	f = fopen(filename, append ? "a" : "w");
 	if (f == NULL) {
-	    sprintf(buf, "Can't open \"%s\"", filename);
+	    sprintf(buf, _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
 	    return FALSE;
 	} else {
@@ -6717,7 +6727,7 @@ SavePositionToFile(filename)
     } else {
 	f = fopen(filename, "a");
 	if (f == NULL) {
-	    sprintf(buf, "Can't open \"%s\"", filename);
+	    sprintf(buf, _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
 	    return FALSE;
 	} else {
@@ -6847,17 +6857,17 @@ RegisterMove()
     }
 
     if (cmailOldMove == -1) {
-	DisplayError("You have edited the game history.\nUse Reload Same Game and make your move again.", 0);
+	DisplayError(_("You have edited the game history.\nUse Reload Same Game and make your move again."), 0);
 	return FALSE;
     }
 
     if (currentMove > cmailOldMove + 1) {
-	DisplayError("You have entered too many moves.\nBack up to the correct position and try again.", 0);
+	DisplayError(_("You have entered too many moves.\nBack up to the correct position and try again."), 0);
 	return FALSE;
     }
 
     if (currentMove < cmailOldMove) {
-	DisplayError("Displayed position is not current.\nStep forward to the correct position and try again.", 0);
+	DisplayError(_("Displayed position is not current.\nStep forward to the correct position and try again."), 0);
 	return FALSE;
     }
 
@@ -6905,7 +6915,7 @@ RegisterMove()
 	cmailMoveRegistered[lastLoadGameNumber - 1] = TRUE;
 	nCmailMovesRegistered ++;
     } else if (nCmailGames == 1) {
-	DisplayError("You have not made a move yet", 0);
+	DisplayError(_("You have not made a move yet"), 0);
 	return FALSE;
     }
 
@@ -6926,18 +6936,18 @@ MailMoveEvent()
     char *arcDir;
 
     if (! cmailMsgLoaded) {
-	DisplayError("The cmail message is not loaded.\nUse Reload CMail Message and make your move again.", 0);
+	DisplayError(_("The cmail message is not loaded.\nUse Reload CMail Message and make your move again."), 0);
 	return;
     }
 
     if (nCmailGames == nCmailResults) {
-	DisplayError("No unfinished games", 0);
+	DisplayError(_("No unfinished games"), 0);
 	return;
     }
 
 #if CMAIL_PROHIBIT_REMAIL
     if (cmailMailedMove) {
-	sprintf(msg, "You have already mailed a move.\nWait until a move arrives from your opponent.\nTo resend the same move, type\n\"cmail -remail -game %s\"\non the command line.", appData.cmailGameName);
+	sprintf(msg, _("You have already mailed a move.\nWait until a move arrives from your opponent.\nTo resend the same move, type\n\"cmail -remail -game %s\"\non the command line."), appData.cmailGameName);
 	DisplayError(msg, 0);
 	return;
     }
@@ -6952,7 +6962,7 @@ MailMoveEvent()
 	commandOutput = popen(string, "rb");
 
 	if (commandOutput == NULL) {
-	    DisplayError("Failed to invoke cmail", 0);
+	    DisplayError(_("Failed to invoke cmail"), 0);
 	} else {
 	    for (nBuffers = 0; (! feof(commandOutput)); nBuffers ++) {
 		nBytes = fread(buffer, 1, MSG_SIZ - 1, commandOutput);
@@ -7014,7 +7024,7 @@ CmailMsg()
     if (!cmailMsgLoaded) return "";
 
     if (cmailMailedMove) {
-	sprintf(cmailMsg, "Waiting for reply from opponent\n");
+	sprintf(cmailMsg, _("Waiting for reply from opponent\n"));
     } else {
 	/* Create a list of games left */
 	sprintf(string, "[");
@@ -7037,17 +7047,17 @@ CmailMsg()
 	    switch (nCmailGames) {
 	      case 1:
 		sprintf(cmailMsg,
-			"Still need to make move for game\n");
+			_("Still need to make move for game\n"));
 		break;
 		
 	      case 2:
 		sprintf(cmailMsg,
-			"Still need to make moves for both games\n");
+			_("Still need to make moves for both games\n"));
 		break;
 		
 	      default:
 		sprintf(cmailMsg,
-			"Still need to make moves for all %d games\n",
+			_("Still need to make moves for all %d games\n"),
 			nCmailGames);
 		break;
 	    }
@@ -7055,21 +7065,21 @@ CmailMsg()
 	    switch (nCmailGames - nCmailMovesRegistered - nCmailResults) {
 	      case 1:
 		sprintf(cmailMsg,
-			"Still need to make a move for game %s\n",
+			_("Still need to make a move for game %s\n"),
 			string);
 		break;
 		
 	      case 0:
 		if (nCmailResults == nCmailGames) {
-		    sprintf(cmailMsg, "No unfinished games\n");
+		    sprintf(cmailMsg, _("No unfinished games\n"));
 		} else {
-		    sprintf(cmailMsg, "Ready to send mail\n");
+		    sprintf(cmailMsg, _("Ready to send mail\n"));
 		}
 		break;
 		
 	      default:
 		sprintf(cmailMsg,
-			"Still need to make moves for games %s\n",
+			_("Still need to make moves for games %s\n"),
 			string);
 	    }
 	}
@@ -7221,9 +7231,9 @@ EditCommentEvent()
     char title[MSG_SIZ];
 
     if (currentMove < 1 || parseList[currentMove - 1][0] == NULLCHAR) {
-	strcpy(title, "Edit comment");
+	strcpy(title, _("Edit comment"));
     } else {
-	sprintf(title, "Edit comment on %d.%s%s", (currentMove - 1) / 2 + 1,
+	sprintf(title, _("Edit comment on %d.%s%s"), (currentMove - 1) / 2 + 1,
 		WhiteOnMove(currentMove - 1) ? " " : ".. ",
 		parseList[currentMove - 1]);
     }
@@ -7254,8 +7264,8 @@ AnalyzeModeEvent()
 	first.analyzing = TRUE;
 	/*first.maybeThinking = TRUE;*/
 	first.maybeThinking = FALSE; /* avoid killing GNU Chess */
-	AnalysisPopUp("Analysis",
-		      "Starting analysis mode...\nIf this message stays up, your chess program does not support analysis.");
+	AnalysisPopUp(_("Analysis"),
+		      _("Starting analysis mode...\nIf this message stays up, your chess program does not support analysis."));
     }
     gameMode = AnalyzeMode;
     pausing = FALSE;
@@ -7281,8 +7291,8 @@ AnalyzeFileEvent()
 	first.analyzing = TRUE;
 	/*first.maybeThinking = TRUE;*/
 	first.maybeThinking = FALSE; /* avoid killing GNU Chess */
-	AnalysisPopUp("Analysis",
-		      "Starting analysis mode...\nIf this message stays up, your chess program does not support analysis.");
+	AnalysisPopUp(_("Analysis"),
+		      _("Starting analysis mode...\nIf this message stays up, your chess program does not support analysis."));
     }
     gameMode = AnalyzeFile;
     pausing = FALSE;
@@ -7314,7 +7324,7 @@ MachineWhiteEvent()
         EditPositionDone();
 
     if (!WhiteOnMove(currentMove)) {
-	DisplayError("It is not White's turn", 0);
+	DisplayError(_("It is not White's turn"), 0);
 	return;
     }
   
@@ -7377,7 +7387,7 @@ MachineBlackEvent()
         EditPositionDone();
 
     if (WhiteOnMove(currentMove)) {
-	DisplayError("It is not Black's turn", 0);
+	DisplayError(_("It is not Black's turn"), 0);
 	return;
     }
     
@@ -7458,7 +7468,7 @@ TwoMachinesEvent P((void))
       case MachinePlaysWhite:
       case MachinePlaysBlack:
 	if (WhiteOnMove(forwardMostMove) == (gameMode == MachinePlaysWhite)) {
-	    DisplayError("Wait until your turn,\nor select Move Now", 0);
+	    DisplayError(_("Wait until your turn,\nor select Move Now"), 0);
 	    return;
 	}
 	/* fall through */
@@ -7490,7 +7500,7 @@ TwoMachinesEvent P((void))
 	} else {
 	  /* kludge: allow timeout for initial "feature" command */
 	  FreezeUI();
-	  DisplayMessage("", "Starting second chess program");
+	  DisplayMessage("", _("Starting second chess program"));
 	  ScheduleDelayedEvent(TwoMachinesEventIfReady, FEATURE_TIMEOUT);
 	}
 	return;
@@ -7555,7 +7565,7 @@ TrainingEvent()
     if (gameMode == Training) {
       SetTrainingModeOff();
       gameMode = PlayFromGameFile;
-      DisplayMessage("", "Training mode off");
+      DisplayMessage("", _("Training mode off"));
     } else {
       gameMode = Training;
       animateTraining = appData.animate;
@@ -7563,10 +7573,10 @@ TrainingEvent()
       /* make sure we are not already at the end of the game */
       if (currentMove < forwardMostMove) {
 	SetTrainingModeOn();
-	DisplayMessage("", "Training mode on");
+	DisplayMessage("", _("Training mode on"));
       } else {
 	gameMode = PlayFromGameFile;
-	DisplayError("Already at end of game", 0);
+	DisplayError(_("Already at end of game"), 0);
       }
     }
     ModeHighlight();
@@ -7647,13 +7657,13 @@ EditGameEvent()
 	break;
       case IcsPlayingBlack:
       case IcsPlayingWhite:
-	DisplayError("Warning: You are still playing a game", 0);
+	DisplayError(_("Warning: You are still playing a game"), 0);
 	break;
       case IcsObserving:
-	DisplayError("Warning: You are still observing a game", 0);
+	DisplayError(_("Warning: You are still observing a game"), 0);
 	break;
       case IcsExamining:
-	DisplayError("Warning: You are still examining a game", 0);
+	DisplayError(_("Warning: You are still examining a game"), 0);
 	break;
       case IcsIdle:
 	break;
@@ -7901,7 +7911,7 @@ DropMenuEvent(selection, x, y)
       case IcsPlayingWhite:
       case MachinePlaysBlack:
 	if (!WhiteOnMove(currentMove)) {
-	    DisplayMoveError("It is Black's turn");
+	    DisplayMoveError(_("It is Black's turn"));
 	    return;
 	}
 	moveType = WhiteDrop;
@@ -7909,7 +7919,7 @@ DropMenuEvent(selection, x, y)
       case IcsPlayingBlack:
       case MachinePlaysWhite:
 	if (WhiteOnMove(currentMove)) {
-	    DisplayMoveError("It is White's turn");
+	    DisplayMoveError(_("It is White's turn"));
 	    return;
 	}
 	moveType = BlackDrop;
@@ -7926,7 +7936,7 @@ DropMenuEvent(selection, x, y)
 				 + (int) BlackPawn - (int) WhitePawn);
     }
     if (boards[currentMove][y][x] != EmptySquare) {
-	DisplayMoveError("That square is occupied");
+	DisplayMoveError(_("That square is occupied"));
 	return;
     }
 
@@ -7950,7 +7960,7 @@ AcceptEvent()
 	    GameEnds(GameIsDrawn, "Draw agreed", GE_PLAYER);
 	    cmailMoveType[lastLoadGameNumber - 1] = CMAIL_ACCEPT;
 	} else {
-	    DisplayError("There is no pending offer on this move", 0);
+	    DisplayError(_("There is no pending offer on this move"), 0);
 	    cmailMoveType[lastLoadGameNumber - 1] = CMAIL_MOVE;
 	}
     } else {
@@ -7976,7 +7986,7 @@ DeclineEvent()
 	    DisplayComment(cmailOldMove - 1, "Draw declined");
 #endif /*NOTDEF*/
 	} else {
-	    DisplayError("There is no pending offer on this move", 0);
+	    DisplayError(_("There is no pending offer on this move"), 0);
 	}
     } else {
 	/* Not used for offers from chess program */
@@ -8012,7 +8022,7 @@ CallFlagEvent()
 		else
 		  GameEnds(BlackWins, "Black wins on time", GE_PLAYER);
 	    } else {
-		DisplayError("Your opponent is not out of time", 0);
+		DisplayError(_("Your opponent is not out of time"), 0);
 	    }
 	    break;
 	  case MachinePlaysBlack:
@@ -8023,7 +8033,7 @@ CallFlagEvent()
 		else
 		  GameEnds(WhiteWins, "White wins on time", GE_PLAYER);
 	    } else {
-		DisplayError("Your opponent is not out of time", 0);
+		DisplayError(_("Your opponent is not out of time"), 0);
 	    }
 	    break;
 	}
@@ -8058,7 +8068,7 @@ DrawEvent()
 	    DisplayComment(currentMove - 1, offer);
 	    cmailMoveType[lastLoadGameNumber - 1] = CMAIL_DRAW;
 	} else {
-	    DisplayError("You must make your move before offering a draw", 0);
+	    DisplayError(_("You must make your move before offering a draw"), 0);
 	    cmailMoveType[lastLoadGameNumber - 1] = CMAIL_MOVE;
 	}
     } else if (first.offeredDraw) {
@@ -8371,11 +8381,11 @@ void
 RevertEvent()
 {
     if (gameMode != IcsExamining) {
-	DisplayError("You are not examining a game", 0);
+	DisplayError(_("You are not examining a game"), 0);
 	return;
     }
     if (pausing) {
-	DisplayError("You can't revert while pausing", 0);
+	DisplayError(_("You can't revert while pausing"), 0);
 	return;
     }
     SendToICS(ics_prefix);
@@ -8389,7 +8399,7 @@ RetractMoveEvent()
       case MachinePlaysWhite:
       case MachinePlaysBlack:
 	if (WhiteOnMove(forwardMostMove) == (gameMode == MachinePlaysWhite)) {
-	    DisplayError("Wait until your turn,\nor select Move Now", 0);
+	    DisplayError(_("Wait until your turn,\nor select Move Now"), 0);
 	    return;
 	}
 	if (forwardMostMove < 2) return;
@@ -8429,14 +8439,14 @@ MoveNowEvent()
     switch (gameMode) {
       case MachinePlaysWhite:
 	if (!WhiteOnMove(forwardMostMove)) {
-	    DisplayError("It is your turn", 0);
+	    DisplayError(_("It is your turn"), 0);
 	    return;
 	}
 	cps = &first;
 	break;
       case MachinePlaysBlack:
 	if (WhiteOnMove(forwardMostMove)) {
-	    DisplayError("It is your turn", 0);
+	    DisplayError(_("It is your turn"), 0);
 	    return;
 	}
 	cps = &first;
@@ -8486,19 +8496,19 @@ HintEvent()
     switch (gameMode) {
       case MachinePlaysWhite:
 	if (WhiteOnMove(forwardMostMove)) {
-	    DisplayError("Wait until your turn", 0);
+	    DisplayError(_("Wait until your turn"), 0);
 	    return;
 	}
 	break;
       case BeginningOfGame:
       case MachinePlaysBlack:
 	if (!WhiteOnMove(forwardMostMove)) {
-	    DisplayError("Wait until your turn", 0);
+	    DisplayError(_("Wait until your turn"), 0);
 	    return;
 	}
 	break;
       default:
-	DisplayError("No hint available", 0);
+	DisplayError(_("No hint available"), 0);
 	return;
     }
     SendToProgram("hint\n", &first);
@@ -8512,14 +8522,14 @@ BookEvent()
     switch (gameMode) {
       case MachinePlaysWhite:
 	if (WhiteOnMove(forwardMostMove)) {
-	    DisplayError("Wait until your turn", 0);
+	    DisplayError(_("Wait until your turn"), 0);
 	    return;
 	}
 	break;
       case BeginningOfGame:
       case MachinePlaysBlack:
 	if (!WhiteOnMove(forwardMostMove)) {
-	    DisplayError("Wait until your turn", 0);
+	    DisplayError(_("Wait until your turn"), 0);
 	    return;
 	}
 	break;
@@ -8804,7 +8814,7 @@ SendToProgram(message, cps)
     count = strlen(message);
     outCount = OutputToProcess(cps->pr, message, count, &error);
     if (outCount < count && !exiting) {
-	sprintf(buf, "Error writing to %s chess program", cps->which);
+	sprintf(buf, _("Error writing to %s chess program"), cps->which);
 	DisplayFatalError(buf, error, 1);
     }
 }
@@ -8825,13 +8835,13 @@ ReceiveFromProgram(isr, closure, message, count, error)
     if (count <= 0) {
 	if (count == 0) {
 	    sprintf(buf,
-		    "Error: %s chess program (%s) exited unexpectedly",
+		    _("Error: %s chess program (%s) exited unexpectedly"),
 		    cps->which, cps->program);
 	    RemoveInputSource(cps->isr);
 	    DisplayFatalError(buf, 0, 1);
 	} else {
 	    sprintf(buf,
-		    "Error reading from %s chess program (%s)",
+		    _("Error reading from %s chess program (%s)"),
 		    cps->which, cps->program);
 	    RemoveInputSource(cps->isr);
 	    DisplayFatalError(buf, error, 1);
@@ -9334,9 +9344,9 @@ CheckFlags()
 		}
 	    } else {
 		if (blackFlag) {
-		    DisplayTitle("Both flags fell");
+		    DisplayTitle(_("Both flags fell"));
 		} else {
-	 	    DisplayTitle("White's flag fell");
+	 	    DisplayTitle(_("White's flag fell"));
  		    if (appData.autoCallFlag) {
 			GameEnds(BlackWins, "Black wins on time", GE_XBOARD);
 			return TRUE;
@@ -9356,9 +9366,9 @@ CheckFlags()
 		}
 	    } else {
 		if (whiteFlag) {
-		    DisplayTitle("Both flags fell");
+		    DisplayTitle(_("Both flags fell"));
 		} else {
-		    DisplayTitle("Black's flag fell");
+		    DisplayTitle(_("Black's flag fell"));
 		    if (appData.autoCallFlag) {
 			GameEnds(WhiteWins, "White wins on time", GE_XBOARD);
 			return TRUE;
@@ -9956,7 +9966,7 @@ EditPositionPasteFEN(char *fen)
     Board initial_position;
 
     if (!ParseFEN(initial_position, &blackPlaysFirst, fen)) {
-      DisplayError("Bad FEN position in clipboard", 0);
+      DisplayError(_("Bad FEN position in clipboard"), 0);
       return ;
     } else {
       int savedBlackPlaysFirst = blackPlaysFirst;

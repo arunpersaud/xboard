@@ -85,6 +85,16 @@ extern char *getenv();
 #include "backend.h"
 #include "xboard.h"
 #include "xgamelist.h"
+#include "gettext.h"
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
+
 
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
@@ -177,7 +187,7 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNleft, XtChainLeft); j++;
     XtSetArg(args[j], XtNright, XtChainLeft); j++;
     b_load =
-      XtCreateManagedWidget("load", commandWidgetClass, form, args, j);
+      XtCreateManagedWidget(_("load"), commandWidgetClass, form, args, j);
     XtAddCallback(b_load, XtNcallback, callback, client_data);
 
     j = 0;
@@ -188,7 +198,7 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNleft, XtChainLeft); j++;
     XtSetArg(args[j], XtNright, XtChainLeft); j++;
     b_loadprev =
-      XtCreateManagedWidget("prev", commandWidgetClass, form, args, j);
+      XtCreateManagedWidget(_("prev"), commandWidgetClass, form, args, j);
     XtAddCallback(b_loadprev, XtNcallback, callback, client_data);
 
     j = 0;
@@ -199,7 +209,7 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNleft, XtChainLeft); j++;
     XtSetArg(args[j], XtNright, XtChainLeft); j++;
     b_loadnext =
-      XtCreateManagedWidget("next", commandWidgetClass, form, args, j);
+      XtCreateManagedWidget(_("next"), commandWidgetClass, form, args, j);
     XtAddCallback(b_loadnext, XtNcallback, callback, client_data);
 
     j = 0;
@@ -210,7 +220,7 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNleft, XtChainLeft); j++;
     XtSetArg(args[j], XtNright, XtChainLeft); j++;
     b_close =
-      XtCreateManagedWidget("close", commandWidgetClass, form, args, j);
+      XtCreateManagedWidget(_("close"), commandWidgetClass, form, args, j);
     XtAddCallback(b_close, XtNcallback, callback, client_data);
 
     if (glc->x == -1) {
@@ -276,29 +286,29 @@ GameListCallback(w, client_data, call_data)
     XtSetArg(args[j], XtNlabel, &name);  j++;
     XtGetValues(w, args, j);
 
-    if (strcmp(name, "close") == 0) {
+    if (strcmp(name, _("close")) == 0) {
 	GameListPopDown();
 	return;
     }
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
     rs = XawListShowCurrent(listwidg);
-    if (strcmp(name, "load") == 0) {
+    if (strcmp(name, _("load")) == 0) {
 	index = rs->list_index;
 	if (index < 0) {
-	    DisplayError("No game selected", 0);
+	    DisplayError(_("No game selected"), 0);
 	    return;
 	}
-    } else if (strcmp(name, "next") == 0) {
+    } else if (strcmp(name, _("next")) == 0) {
 	index = rs->list_index + 1;
 	if (index >= ((ListGame *) gameList.tailPred)->number) {
-	    DisplayError("Can't go forward any further", 0);
+	    DisplayError(_("Can't go forward any further"), 0);
 	    return;
 	}
 	XawListHighlight(listwidg, index);
-    } else if (strcmp(name, "prev") == 0) {
+    } else if (strcmp(name, _("prev")) == 0) {
 	index = rs->list_index - 1;
 	if (index < 0) {
-	    DisplayError("Can't back up any further", 0);
+	    DisplayError(_("Can't back up any further"), 0);
 	    return;
 	}
 	XawListHighlight(listwidg, index);
@@ -399,7 +409,7 @@ ShowGameListProc(w, event, prms, nprms)
     int j;
 
     if (glc == NULL) {
-	DisplayError("There is no game list", 0);
+	DisplayError(_("There is no game list"), 0);
 	return;
     }
     if (glc->up) {

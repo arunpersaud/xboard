@@ -191,12 +191,21 @@ extern char *getenv();
 #include "xgamelist.h"
 #include "xhistory.h"
 #include "xedittags.h"
+#include "gettext.h"
 
 #ifdef __EMX__
 #ifndef HAVE_USLEEP
 #define HAVE_USLEEP
 #endif
 #define usleep(t)   _sleep2(((t)+500)/1000)
+#endif
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
 #endif
 
 typedef struct {
@@ -499,137 +508,139 @@ static Pixmap xpmMask[BlackKing + 1];
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
 MenuItem fileMenu[] = {
-    {"Reset Game", ResetProc},
+    {N_("Reset Game"), ResetProc},
     {"----", NothingProc},
-    {"Load Game", LoadGameProc},
-    {"Load Next Game", LoadNextGameProc},
-    {"Load Previous Game", LoadPrevGameProc},
-    {"Reload Same Game", ReloadGameProc},
-    {"Save Game", SaveGameProc},
+    {N_("Load Game"), LoadGameProc},
+    {N_("Load Next Game"), LoadNextGameProc},
+    {N_("Load Previous Game"), LoadPrevGameProc},
+    {N_("Reload Same Game"), ReloadGameProc},
+    {N_("Save Game"), SaveGameProc},
     {"----", NothingProc},
-    {"Copy Game", CopyGameProc},
-    {"Paste Game", PasteGameProc},
+    {N_("Copy Game"), CopyGameProc},
+    {N_("Paste Game"), PasteGameProc},
     {"----", NothingProc},
-    {"Load Position", LoadPositionProc},
-    {"Load Next Position", LoadNextPositionProc},
-    {"Load Previous Position", LoadPrevPositionProc},
-    {"Reload Same Position", ReloadPositionProc},
-    {"Save Position", SavePositionProc},
+    {N_("Load Position"), LoadPositionProc},
+    {N_("Load Next Position"), LoadNextPositionProc},
+    {N_("Load Previous Position"), LoadPrevPositionProc},
+    {N_("Reload Same Position"), ReloadPositionProc},
+    {N_("Save Position"), SavePositionProc},
     {"----", NothingProc},
-    {"Copy Position", CopyPositionProc},
-    {"Paste Position", PastePositionProc},
+    {N_("Copy Position"), CopyPositionProc},
+    {N_("Paste Position"), PastePositionProc},
     {"----", NothingProc},
-    {"Mail Move", MailMoveProc},
-    {"Reload CMail Message", ReloadCmailMsgProc},
+    {N_("Mail Move"), MailMoveProc},
+    {N_("Reload CMail Message"), ReloadCmailMsgProc},
     {"----", NothingProc},
-    {"Exit", QuitProc},
+    {N_("Exit"), QuitProc},
     {NULL, NULL}
 };
 
 MenuItem modeMenu[] = {
-    {"Machine White", MachineWhiteProc},
-    {"Machine Black", MachineBlackProc},
-    {"Two Machines", TwoMachinesProc},
-    {"Analysis Mode", AnalyzeModeProc},
-    {"Analyze File", AnalyzeFileProc },
-    {"ICS Client", IcsClientProc},
-    {"Edit Game", EditGameProc},
-    {"Edit Position", EditPositionProc},
-    {"Training", TrainingProc},
+    {N_("Machine White"), MachineWhiteProc},
+    {N_("Machine Black"), MachineBlackProc},
+    {N_("Two Machines"), TwoMachinesProc},
+    {N_("Analysis Mode"), AnalyzeModeProc},
+    {N_("Analyze File"), AnalyzeFileProc },
+    {N_("ICS Client"), IcsClientProc},
+    {N_("Edit Game"), EditGameProc},
+    {N_("Edit Position"), EditPositionProc},
+    {N_("Training"), TrainingProc},
     {"----", NothingProc},
-    {"Show Game List", ShowGameListProc},
-    {"Show Move List", HistoryShowProc},
-    {"Edit Tags", EditTagsProc},
-    {"Edit Comment", EditCommentProc},
-    {"ICS Input Box", IcsInputBoxProc},
-    {"Pause", PauseProc},
+    {N_("Show Game List"), ShowGameListProc},
+    {N_("Show Move List"), HistoryShowProc},
+    {N_("Edit Tags"), EditTagsProc},
+    {N_("Edit Comment"), EditCommentProc},
+    {N_("ICS Input Box"), IcsInputBoxProc},
+    {N_("Pause"), PauseProc},
     {NULL, NULL}
 };
 
 MenuItem actionMenu[] = {
-    {"Accept", AcceptProc},
-    {"Decline", DeclineProc},
-    {"Rematch", RematchProc},
+    {N_("Accept"), AcceptProc},
+    {N_("Decline"), DeclineProc},
+    {N_("Rematch"), RematchProc},
     {"----", NothingProc},    
-    {"Call Flag", CallFlagProc},
-    {"Draw", DrawProc},
-    {"Adjourn", AdjournProc},
-    {"Abort", AbortProc},
-    {"Resign", ResignProc},
+    {N_("Call Flag"), CallFlagProc},
+    {N_("Draw"), DrawProc},
+    {N_("Adjourn"), AdjournProc},
+    {N_("Abort"), AbortProc},
+    {N_("Resign"), ResignProc},
     {"----", NothingProc},    
-    {"Stop Observing", StopObservingProc},
-    {"Stop Examining", StopExaminingProc},
+    {N_("Stop Observing"), StopObservingProc},
+    {N_("Stop Examining"), StopExaminingProc},
     {NULL, NULL}
 };
 
 MenuItem stepMenu[] = {
-    {"Backward", BackwardProc},
-    {"Forward", ForwardProc},
-    {"Back to Start", ToStartProc},
-    {"Forward to End", ToEndProc},
-    {"Revert", RevertProc},
-    {"Truncate Game", TruncateGameProc},
+    {N_("Backward"), BackwardProc},
+    {N_("Forward"), ForwardProc},
+    {N_("Back to Start"), ToStartProc},
+    {N_("Forward to End"), ToEndProc},
+    {N_("Revert"), RevertProc},
+    {N_("Truncate Game"), TruncateGameProc},
     {"----", NothingProc},    
-    {"Move Now", MoveNowProc},
-    {"Retract Move", RetractMoveProc},
+    {N_("Move Now"), MoveNowProc},
+    {N_("Retract Move"), RetractMoveProc},
     {NULL, NULL}
 };    
 
 MenuItem optionsMenu[] = {
-    {"Always Queen", AlwaysQueenProc},
-    {"Animate Dragging", AnimateDraggingProc},
-    {"Animate Moving", AnimateMovingProc},
-    {"Auto Comment", AutocommProc},
-    {"Auto Flag", AutoflagProc},
-    {"Auto Flip View", AutoflipProc},
-    {"Auto Observe", AutobsProc},
-    {"Auto Raise Board", AutoraiseProc},
-    {"Auto Save", AutosaveProc},
-    {"Blindfold", BlindfoldProc},
-    {"Flash Moves", FlashMovesProc},
-    {"Flip View", FlipViewProc},
-    {"Get Move List", GetMoveListProc},
+    {N_("Always Queen"), AlwaysQueenProc},
+    {N_("Animate Dragging"), AnimateDraggingProc},
+    {N_("Animate Moving"), AnimateMovingProc},
+    {N_("Auto Comment"), AutocommProc},
+    {N_("Auto Flag"), AutoflagProc},
+    {N_("Auto Flip View"), AutoflipProc},
+    {N_("Auto Observe"), AutobsProc},
+    {N_("Auto Raise Board"), AutoraiseProc},
+    {N_("Auto Save"), AutosaveProc},
+    {N_("Blindfold"), BlindfoldProc},
+    {N_("Flash Moves"), FlashMovesProc},
+    {N_("Flip View"), FlipViewProc},
+    {N_("Get Move List"), GetMoveListProc},
 #if HIGHDRAG
-    {"Highlight Dragging", HighlightDraggingProc},
+    {N_("Highlight Dragging"), HighlightDraggingProc},
 #endif
-    {"Highlight Last Move", HighlightLastMoveProc},
-    {"Move Sound", MoveSoundProc},
-    {"ICS Alarm", IcsAlarmProc},
-    {"Old Save Style", OldSaveStyleProc},
-    {"Periodic Updates", PeriodicUpdatesProc},	
-    {"Ponder Next Move", PonderNextMoveProc},
-    {"Popup Exit Message", PopupExitMessageProc},	
-    {"Popup Move Errors", PopupMoveErrorsProc},	
-    {"Premove", PremoveProc},
-    {"Quiet Play", QuietPlayProc},
-    {"Show Coords", ShowCoordsProc},
-    {"Show Thinking", ShowThinkingProc},
-    {"Test Legality", TestLegalityProc},
+    {N_("Highlight Last Move"), HighlightLastMoveProc},
+    {N_("Move Sound"), MoveSoundProc},
+    {N_("ICS Alarm"), IcsAlarmProc},
+    {N_("Old Save Style"), OldSaveStyleProc},
+    {N_("Periodic Updates"), PeriodicUpdatesProc},	
+    {N_("Ponder Next Move"), PonderNextMoveProc},
+    {N_("Popup Exit Message"), PopupExitMessageProc},	
+    {N_("Popup Move Errors"), PopupMoveErrorsProc},	
+    {N_("Premove"), PremoveProc},
+    {N_("Quiet Play"), QuietPlayProc},
+    {N_("Show Coords"), ShowCoordsProc},
+    {N_("Show Thinking"), ShowThinkingProc},
+    {N_("Test Legality"), TestLegalityProc},
     {NULL, NULL}
 };
 
 MenuItem helpMenu[] = {
-    {"Info XBoard", InfoProc},
-    {"Man XBoard", ManProc},
+    {N_("Info XBoard"), InfoProc},
+    {N_("Man XBoard"), ManProc},
     {"----", NothingProc},
-    {"Hint", HintProc},
-    {"Book", BookProc},
+    {N_("Hint"), HintProc},
+    {N_("Book"), BookProc},
     {"----", NothingProc},
-    {"About XBoard", AboutProc},
+    {N_("About XBoard"), AboutProc},
     {NULL, NULL}
 };
 
 Menu menuBar[] = {
-    {"File", fileMenu},
-    {"Mode", modeMenu},
-    {"Action", actionMenu},
-    {"Step", stepMenu},
-    {"Options", optionsMenu},
-    {"Help", helpMenu},
+    {N_("File"), fileMenu},
+    {N_("Mode"), modeMenu},
+    {N_("Action"), actionMenu},
+    {N_("Step"), stepMenu},
+    {N_("Options"), optionsMenu},
+    {N_("Help"), helpMenu},
     {NULL, NULL}
 };
 
-#define PAUSE_BUTTON "P"
+
+/* Label on pause button */
+#define PAUSE_BUTTON N_("P")
 MenuItem buttonBar[] = {
     {"<<", ToStartProc},
     {"<", BackwardProc},
@@ -641,10 +652,10 @@ MenuItem buttonBar[] = {
 
 #define PIECE_MENU_SIZE 11
 String pieceMenuStrings[2][PIECE_MENU_SIZE] = {
-    { "White", "----", "Pawn", "Knight", "Bishop", "Rook", "Queen", "King",
-      "----", "Empty square", "Clear board" },
-    { "Black", "----", "Pawn", "Knight", "Bishop", "Rook", "Queen", "King",
-      "----", "Empty square", "Clear board" },
+    { N_("White"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
+      N_("Queen"), N_("King"), "----", N_("Empty square"), N_("Clear board") },
+    { N_("Black"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
+      N_("Queen"), N_("King"), "----", N_("Empty square"), N_("Clear board") },
   };
 /* must be in same order as PieceMenuStrings! */
 ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
@@ -658,7 +669,7 @@ ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
 
 #define DROP_MENU_SIZE 6
 String dropMenuStrings[DROP_MENU_SIZE] = {
-    "----", "Pawn", "Knight", "Bishop", "Rook", "Queen"
+    "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"), N_("Queen")
   };
 /* must be in same order as PieceMenuStrings! */
 ChessSquare dropMenuTranslation[DROP_MENU_SIZE] = {
@@ -1649,7 +1660,7 @@ xpm_getavail(dirname, ext)
     dir = opendir(dirname);
     if (!dir)
       {
-	  fprintf(stderr, "%s: Can't access XPM directory %s\n", 
+	  fprintf(stderr, _("%s: Can't access XPM directory %s\n"), 
 		  programName, dirname);
 	  exit(1);
       }
@@ -1672,7 +1683,7 @@ xpm_print_avail(fp, ext)
 {
     int i;
 
-    fprintf(fp, "Available `%s' sizes:\n", ext);
+    fprintf(fp, _("Available `%s' sizes:\n"), ext);
     for (i=1; i<MAXSQSIZE; ++i) {
 	if (xpm_avail[i])
 	  printf("%d\n", i);
@@ -1708,7 +1719,7 @@ xpm_closest_to(dirname, size, ext)
     }
 
     if (!sm_index) {
-	fprintf(stderr, "Error: No `%s' files!\n", ext);
+	fprintf(stderr, _("Error: No `%s' files!\n"), ext);
 	exit(1);
     }
 
@@ -1724,10 +1735,11 @@ xpm_closest_to(dirname, size, ext)
      int size;
      char *ext;
 {
-    fprintf(stderr, "Warning: No DIR structure found on this system --\n");
-    fprintf(stderr, "         Unable to autosize for XPM/XIM pieces.\n");
-    fprintf(stderr, "   Please report this error to frankm@hiwaay.net.\n");
-    fprintf(stderr, "   Include system type & operating system in message.\n");
+    fprintf(stderr, _("\
+Warning: No DIR structure found on this system --\n\
+         Unable to autosize for XPM/XIM pieces.\n\
+   Please report this error to frankm@hiwaay.net.\n\
+   Include system type & operating system in message.\n"));
     return size;
 }
 #endif /* HAVE_DIR_STRUCT */
@@ -1784,7 +1796,7 @@ parse_color(str, which)
     }
     if (!StrCaseCmp(buf, "default")) return -1;
 
-    fprintf(stderr, "%s: unrecognized color %s\n", programName, buf);
+    fprintf(stderr, _("%s: unrecognized color %s\n"), programName, buf);
     return -2;
 }
 
@@ -1794,7 +1806,7 @@ parse_cpair(cc, str)
      char *str;
 {
     if ((textColors[(int)cc].fg=parse_color(str, 0)) == -2) {
-	fprintf(stderr, "%s: can't parse foreground color in `%s'\n",
+	fprintf(stderr, _("%s: can't parse foreground color in `%s'\n"),
 		programName, str);
 	return -1;
     }
@@ -1854,12 +1866,18 @@ main(argc, argv)
     else
       programName++;
 
+#ifdef ENABLE_NLS
+    XtSetLanguageProc(NULL, NULL, NULL);
+    bindtextdomain(PRODUCT, LOCALEDIR);
+    textdomain(PRODUCT);
+#endif
+
     shellWidget =
       XtAppInitialize(&appContext, "XBoard", shellOptions,
 		      XtNumber(shellOptions),
 		      &argc, argv, xboardResources, NULL, 0);
     if (argc > 1) {
-	fprintf(stderr, "%s: unrecognized argument %s\n",
+	fprintf(stderr, _("%s: unrecognized argument %s\n"),
 		programName, argv[1]);
 	exit(2);
     }
@@ -1868,7 +1886,7 @@ main(argc, argv)
 	chessDir = ".";
     } else {
 	if (chdir(chessDir) != 0) {
-	    fprintf(stderr, "%s: can't cd to CHESSDIR: ", programName);
+	    fprintf(stderr, _("%s: can't cd to CHESSDIR: "), programName);
 	    perror(chessDir);
 	    exit(1);
 	}
@@ -1904,7 +1922,7 @@ main(argc, argv)
 		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
 		   &fontPxlSize, &smallLayout, &tinyLayout);
         if (i == 0) {
-	    fprintf(stderr, "%s: bad boardSize syntax %s\n",
+	    fprintf(stderr, _("%s: bad boardSize syntax %s\n"),
 		    programName, appData.boardSize);
 	    exit(2);
 	}
@@ -1940,7 +1958,7 @@ main(argc, argv)
 	    while (szd->name != NULL &&
 		   StrCaseCmp(szd->name, appData.boardSize) != 0) szd++;
 	    if (szd->name == NULL) {
-		fprintf(stderr, "%s: unrecognized boardSize name %s\n",
+		fprintf(stderr, _("%s: unrecognized boardSize name %s\n"),
 			programName, appData.boardSize);
 		exit(2);
 	    }
@@ -1958,17 +1976,18 @@ main(argc, argv)
     if (strlen(appData.pixmapDirectory) > 0) {
 	p = ExpandPathName(appData.pixmapDirectory);
 	if (!p) {
-	    fprintf(stderr, "Error expanding path name \"%s\"\n",
+	    fprintf(stderr, _("Error expanding path name \"%s\"\n"),
 		   appData.pixmapDirectory);
 	    exit(1);
 	}
 	if (appData.debugMode) {
-	    fprintf(stderr, "XBoard square size (hint): %d\n", squareSize);
-	    fprintf(stderr, "%s fulldir:%s:\n", IMAGE_EXT, p);
+	    fprintf(stderr, _("\
+XBoard square size (hint): %d\n\
+%s fulldir:%s:\n"), squareSize, IMAGE_EXT, p);
 	}
 	squareSize = xpm_closest_to(p, squareSize, IMAGE_EXT);
 	if (appData.debugMode) {
-	    fprintf(stderr, "Closest %s size: %d\n", IMAGE_EXT, squareSize);
+	    fprintf(stderr, _("Closest %s size: %d\n"), IMAGE_EXT, squareSize);
 	}
     }
 		
@@ -2080,12 +2099,12 @@ main(argc, argv)
     }
 
     if (forceMono) {
-      fprintf(stderr, "%s: too few colors available; trying monochrome mode\n",
+      fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	      programName);
     }
 
     if (appData.monoMode && appData.debugMode) {
-	fprintf(stderr, "white pixel = 0x%lx, black pixel = 0x%lx\n",
+	fprintf(stderr, _("white pixel = 0x%lx, black pixel = 0x%lx\n"),
 		(unsigned long) XWhitePixel(xDisplay, xScreen),
 		(unsigned long) XBlackPixel(xDisplay, xScreen));
     }
@@ -2103,7 +2122,7 @@ main(argc, argv)
       {
 	  if (appData.colorize) {
 	      fprintf(stderr,
-		      "%s: can't parse color names; disabling colorization\n",
+		      _("%s: can't parse color names; disabling colorization\n"),
 		      programName);
 	  }
 	  appData.colorize = FALSE;
@@ -2283,7 +2302,7 @@ main(argc, argv)
 
     gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
     if (gres != XtGeometryYes && appData.debugMode) {
-      fprintf(stderr, "%s: messageWidget geometry error %d %d %d %d %d\n",
+      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
 	      programName, gres, w, h, wr, hr);
     }
     
@@ -2293,7 +2312,7 @@ main(argc, argv)
     w--;
     gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
     if (gres != XtGeometryYes && appData.debugMode) {
-      fprintf(stderr, "%s: messageWidget geometry error %d %d %d %d %d\n",
+      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
 	      programName, gres, w, h, wr, hr);
     }
     /* !! end hack */
@@ -2314,7 +2333,7 @@ main(argc, argv)
 	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
 	if (gres != XtGeometryYes && appData.debugMode) {
 	    fprintf(stderr,
-		    "%s: titleWidget geometry error %d %d %d %d %d\n",
+		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
 		    programName, gres, w, h, wr, hr);
 	}
     }
@@ -2864,12 +2883,40 @@ char *FindFont(pattern, targetPxlSize)
     char **fonts, *p, *best, *scalable, *scalableTail;
     int i, j, nfonts, minerr, err, pxlSize;
 
+#ifdef ENABLE_NLS
+    char **missing_list;
+    int missing_count;
+    char *def_string, *base_fnt_lst, strInt[3];
+    XFontSet fntSet;
+    XFontStruct **fnt_list;
+
+    base_fnt_lst = calloc(1, strlen(pattern) + 3);
+    sprintf(strInt, "%d", targetPxlSize);
+    p = strstr(pattern, "--");
+    strncpy(base_fnt_lst, pattern, p - pattern + 2);
+    strcat(base_fnt_lst, strInt);
+    strcat(base_fnt_lst, strchr(p + 2, '-'));
+
+    if ((fntSet = XCreateFontSet(xDisplay, 
+                                 base_fnt_lst, 
+                                 &missing_list, 
+                                 &missing_count, 
+                                 &def_string)) == NULL) {
+
+	fprintf(stderr, _("Unable to create font set.\n"));
+	exit (2);
+    }
+
+    nfonts = XFontsOfFontSet(fntSet, &fnt_list, &fonts);
+#else
     fonts = XListFonts(xDisplay, pattern, 999999, &nfonts);
     if (nfonts < 1) {
-	fprintf(stderr, "%s: no fonts match pattern %s\n",
+	fprintf(stderr, _("%s: no fonts match pattern %s\n"),
 		programName, pattern);
 	exit(2);
     }
+#endif
+
     best = fonts[0];
     scalable = NULL;
     minerr = 999999;
@@ -2907,10 +2954,16 @@ char *FindFont(pattern, targetPxlSize)
         strcpy(p, best);
     }
     if (appData.debugMode) {
-        fprintf(debugFP, "resolved %s at pixel size %d\n  to %s\n",
+        fprintf(debugFP, _("resolved %s at pixel size %d\n  to %s\n"),
 		pattern, targetPxlSize, p);
     }
+#ifdef ENABLE_NLS
+    if (missing_count > 0)
+	XFreeStringList(missing_list);
+    XFreeFontSet(xDisplay, fntSet);
+#else
     XFreeFontNames(fonts);
+#endif
     return p;
 }
 
@@ -3025,7 +3078,7 @@ void loadXIM(xim, xmask, filename, dest, mask)
 
     fp = fopen(filename, "rb");
     if (!fp) {
-	fprintf(stderr, "%s: error loading XIM!\n", programName);
+	fprintf(stderr, _("%s: error loading XIM!\n"), programName);
 	exit(1);
     }
 	  
@@ -3117,11 +3170,11 @@ void CreateXIMPieces()
     } else {
 	useImages = 1;
 	if (appData.monoMode) {
-	  DisplayFatalError("XIM pieces cannot be used in monochrome mode",
+	  DisplayFatalError(_("XIM pieces cannot be used in monochrome mode"),
 			    0, 2);
 	  ExitEvent(2);
 	}
-	fprintf(stderr, "\nLoading XIMs...\n");
+	fprintf(stderr, _("\nLoading XIMs...\n"));
 	/* Load pieces */
 	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
 	    fprintf(stderr, "%d", piece+1);
@@ -3135,7 +3188,7 @@ void CreateXIMPieces()
 		  XGetImage(xDisplay, DefaultRootWindow(xDisplay),
 			    0, 0, ss, ss, AllPlanes, XYPixmap);
 		if (appData.debugMode)
-		  fprintf(stderr, "(File:%s:) ", buf);
+		  fprintf(stderr, _("(File:%s:) "), buf);
 		loadXIM(ximPieceBitmap[kind][piece], 
 			ximtemp, buf,
 			&(xpmPieceBitmap[kind][piece]),
@@ -3151,26 +3204,26 @@ void CreateXIMPieces()
 	    useImageSqs = 0;
 	} else {
 	    useImageSqs = 1;
-	    fprintf(stderr, "light square ");
+	    fprintf(stderr, _("light square "));
 	    ximLightSquare= 
 	      XGetImage(xDisplay, DefaultRootWindow(xDisplay),
 			0, 0, ss, ss, AllPlanes, XYPixmap);
 	    if (appData.debugMode)
-	      fprintf(stderr, "(File:%s:) ", buf);
+	      fprintf(stderr, _("(File:%s:) "), buf);
 
 	    loadXIM(ximLightSquare, NULL, buf, &xpmLightSquare, NULL);
-	    fprintf(stderr, "dark square ");
+	    fprintf(stderr, _("dark square "));
 	    sprintf(buf, "%s/dsq%u.xim",
 		    ExpandPathName(appData.pixmapDirectory), ss);
 	    if (appData.debugMode)
-	      fprintf(stderr, "(File:%s:) ", buf);
+	      fprintf(stderr, _("(File:%s:) "), buf);
 	    ximDarkSquare= 
 	      XGetImage(xDisplay, DefaultRootWindow(xDisplay),
 			0, 0, ss, ss, AllPlanes, XYPixmap);
 	    loadXIM(ximDarkSquare, NULL, buf, &xpmDarkSquare, NULL);
 	    xpmJailSquare = xpmLightSquare;
 	}
-	fprintf(stderr, "Done.\n");
+	fprintf(stderr, _("Done.\n"));
     }
     XSynchronize(xDisplay, False); /* Work-around for xlib/xt buffering bug */
 }
@@ -3212,7 +3265,7 @@ void CreateXPMPieces()
     attr.numsymbols = 4;
 
     if (appData.monoMode) {
-      DisplayFatalError("XPM pieces cannot be used in monochrome mode",
+      DisplayFatalError(_("XPM pieces cannot be used in monochrome mode"),
 			0, 2);
       ExitEvent(2);
     }
@@ -3222,7 +3275,7 @@ void CreateXPMPieces()
 	/* Load pieces */
 	while (pieces->size != squareSize && pieces->size) pieces++;
 	if (!pieces->size) {
-	  fprintf(stderr, "No builtin XPM pieces of size %d\n", squareSize);
+	  fprintf(stderr, _("No builtin XPM pieces of size %d\n"), squareSize);
 	  exit(1);
 	}
 	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
@@ -3232,7 +3285,7 @@ void CreateXPMPieces()
 					       pieces->xpm[piece][kind],
 					       &(xpmPieceBitmap[kind][piece]),
 					       NULL, &attr)) != 0) {
-		  fprintf(stderr, "Error %d loading XPM image \"%s\"\n",
+		  fprintf(stderr, _("Error %d loading XPM image \"%s\"\n"),
 			  r, buf);
 		  exit(1); 
 		}	
@@ -3243,7 +3296,7 @@ void CreateXPMPieces()
     } else {
 	useImages = 1;
 	
-	fprintf(stderr, "\nLoading XPMs...\n");
+	fprintf(stderr, _("\nLoading XPMs...\n"));
 
 	/* Load pieces */
 	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
@@ -3254,12 +3307,12 @@ void CreateXPMPieces()
 			ToLower(PieceToChar((ChessSquare)piece)),
 			xpmkind[kind], ss);
 		if (appData.debugMode) {
-		    fprintf(stderr, "(File:%s:) ", buf);
+		    fprintf(stderr, _("(File:%s:) "), buf);
 		}
 		if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
 					   &(xpmPieceBitmap[kind][piece]),
 					   NULL, &attr)) != 0) {
-		    fprintf(stderr, "Error %d loading XPM file \"%s\"\n",
+		    fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"),
 			    r, buf);
 		    exit(1); 
 		}	
@@ -3268,34 +3321,34 @@ void CreateXPMPieces()
 	/* Load light and dark squares */
 	/* If the LSQ and DSQ pieces don't exist, we will 
 	   draw them with solid squares. */
-	fprintf(stderr, "light square ");
+	fprintf(stderr, _("light square "));
 	sprintf(buf, "%s/lsq%u.xpm", ExpandPathName(appData.pixmapDirectory), ss);
 	if (access(buf, 0) != 0) {
 	    useImageSqs = 0;
 	} else {
 	    useImageSqs = 1;
 	    if (appData.debugMode)
-	      fprintf(stderr, "(File:%s:) ", buf);
+	      fprintf(stderr, _("(File:%s:) "), buf);
 
 	    if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
 				       &xpmLightSquare, NULL, &attr)) != 0) {
-		fprintf(stderr, "Error %d loading XPM file \"%s\"\n", r, buf);
+		fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"), r, buf);
 		exit(1);
 	    }
-	    fprintf(stderr, "dark square ");
+	    fprintf(stderr, _("dark square "));
 	    sprintf(buf, "%s/dsq%u.xpm",
 		    ExpandPathName(appData.pixmapDirectory), ss);
 	    if (appData.debugMode) {
-		fprintf(stderr, "(File:%s:) ", buf);
+		fprintf(stderr, _("(File:%s:) "), buf);
 	    }
 	    if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
 				       &xpmDarkSquare, NULL, &attr)) != 0) {
-		fprintf(stderr, "Error %d loading XPM file \"%s\"\n", r, buf);
+		fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"), r, buf);
 		exit(1);
 	    }
 	}
 	xpmJailSquare = xpmLightSquare;
-	fprintf(stderr, "Done.\n");
+	fprintf(stderr, _("Done.\n"));
     }
     XSynchronize(xDisplay, False); /* Work-around for xlib/xt
 				      buffering bug */  
@@ -3372,32 +3425,32 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 	if (errcode != BitmapSuccess) {
 	    switch (errcode) {
 	      case BitmapOpenFailed:
-		sprintf(msg, "Can't open bitmap file %s", fullname);
+		sprintf(msg, _("Can't open bitmap file %s"), fullname);
 		break;
 	      case BitmapFileInvalid:
-		sprintf(msg, "Invalid bitmap in file %s", fullname);
+		sprintf(msg, _("Invalid bitmap in file %s"), fullname);
 		break;
 	      case BitmapNoMemory:
-		sprintf(msg, "Ran out of memory reading bitmap file %s",
+		sprintf(msg, _("Ran out of memory reading bitmap file %s"),
 			fullname);
 		break;
 	      default:
-		sprintf(msg, "Unknown XReadBitmapFile error %d on file %s",
+		sprintf(msg, _("Unknown XReadBitmapFile error %d on file %s"),
 			errcode, fullname);
 		break;
 	    }
-	    fprintf(stderr, "%s: %s...using built-in\n",
+	    fprintf(stderr, _("%s: %s...using built-in\n"),
 		    programName, msg);
 	} else if (w != wreq || h != hreq) {
 	    fprintf(stderr,
-		    "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n",
+		    _("%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"),
 		    programName, fullname, w, h, wreq, hreq);
 	} else {
 	    return;
 	}
     }
     if (bits == NULL) {
-	fprintf(stderr, "%s: No built-in bitmap for %s; giving up\n",
+	fprintf(stderr, _("%s: No built-in bitmap for %s; giving up\n"),
 		programName, name);
 	exit(1);
     } else {
@@ -3458,8 +3511,9 @@ void CreateMenuBarPopup(parent, name, mb)
 	    entry = XtCreateManagedWidget(mi->string, smeLineObjectClass,
 					  menu, args, j);
 	} else {
+	    XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string)));
 	    entry = XtCreateManagedWidget(mi->string, smeBSBObjectClass,
-					  menu, args, j);
+					  menu, args, j+1);
 	    XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) MenuBarSelect,
 			  (caddr_t) mi->proc);
@@ -3490,10 +3544,14 @@ Widget CreateMenuBar(mb)
 	XtSetArg(args[j], XtNmenuName, XtNewString(menuName));  j++;
 	if (tinyLayout) {
 	    char shortName[2];
-	    shortName[0] = mb->name[0];
+	    shortName[0] = _(mb->name)[0];
 	    shortName[1] = NULLCHAR;
 	    XtSetArg(args[j], XtNlabel, XtNewString(shortName)); j++;
 	}
+	else {
+	    XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
+	}
+
 	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
 	anchor = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
 				       menuBar, args, j);
@@ -3526,6 +3584,7 @@ Widget CreateButtonBar(mi)
 	    XtSetArg(args[j], XtNinternalWidth, 2); j++;
 	    XtSetArg(args[j], XtNborderWidth, 0); j++;
 	}
+	XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string))); j++;
 	button = XtCreateManagedWidget(mi->string, commandWidgetClass,
 				       buttonBar, args, j);
 	XtAddCallback(button, XtNcallback,
@@ -3556,8 +3615,9 @@ CreatePieceMenu(name, color)
 	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
 					  menu, NULL, 0);
 	} else {
+	    XtSetArg(args[0], XtNlabel, XtNewString(_(item))); 
 	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-					  menu, NULL, 0);
+					  menu, args, 1);
 	    selection = pieceMenuTranslation[color][i];
 	    XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) PieceMenuSelect,
@@ -3586,7 +3646,7 @@ CreatePieceMenus()
 			 (unsigned)(ButtonPressMask|ButtonReleaseMask),
 			 GrabModeAsync, GrabModeAsync);
 
-    XtSetArg(args[0], XtNlabel, "Drop");
+    XtSetArg(args[0], XtNlabel, _("Drop"));
     dropMenu = XtCreatePopupShell("menuD", simpleMenuWidgetClass,
 				  boardWidget, args, 1);
     for (i = 0; i < DROP_MENU_SIZE; i++) {
@@ -3596,8 +3656,9 @@ CreatePieceMenus()
 	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
 					  dropMenu, NULL, 0);
 	} else {
+	    XtSetArg(args[0], XtNlabel, XtNewString(_(item))); 
 	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-					  dropMenu, NULL, 0);
+					  dropMenu, args, 1);
 	    selection = dropMenuTranslation[i];
 	    XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) DropMenuSelect,
@@ -4506,7 +4567,7 @@ Widget CommentCreate(name, text, mutable, callback, lines)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_ok =
-	  XtCreateManagedWidget("ok", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("ok"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_ok, XtNcallback, callback, (XtPointer) 0);
 
 	j = 0;
@@ -4517,7 +4578,7 @@ Widget CommentCreate(name, text, mutable, callback, lines)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_cancel =
-	  XtCreateManagedWidget("cancel", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_cancel, XtNcallback, callback, (XtPointer) 0);
 
 	j = 0;
@@ -4528,7 +4589,7 @@ Widget CommentCreate(name, text, mutable, callback, lines)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_clear =
-	  XtCreateManagedWidget("clear", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("clear"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_clear, XtNcallback, callback, (XtPointer) 0);
     } else {
 	j = 0;
@@ -4538,7 +4599,7 @@ Widget CommentCreate(name, text, mutable, callback, lines)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_close =
-	  XtCreateManagedWidget("close", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("close"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_close, XtNcallback, callback, (XtPointer) 0);
 
 	j = 0;
@@ -4549,7 +4610,7 @@ Widget CommentCreate(name, text, mutable, callback, lines)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_edit =
-	  XtCreateManagedWidget("edit", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("edit"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_edit, XtNcallback, callback, (XtPointer) 0);
     }
 
@@ -4750,16 +4811,16 @@ void EditCommentCallback(w, client_data, call_data)
     XtSetArg(args[j], XtNlabel, &name);  j++;
     XtGetValues(w, args, j);
 
-    if (strcmp(name, "ok") == 0) {
+    if (strcmp(name, _("ok")) == 0) {
 	edit = XtNameToWidget(editShell, "*form.text");
 	j = 0;
 	XtSetArg(args[j], XtNstring, &val); j++;
 	XtGetValues(edit, args, j);
 	ReplaceComment(savedIndex, val);
 	EditCommentPopDown();
-    } else if (strcmp(name, "cancel") == 0) {
+    } else if (strcmp(name, _("cancel")) == 0) {
 	EditCommentPopDown();
-    } else if (strcmp(name, "clear") == 0) {
+    } else if (strcmp(name, _("clear")) == 0) {
 	edit = XtNameToWidget(editShell, "*form.text");
 	XtCallActionProc(edit, "select-all", NULL, NULL, 0);
 	XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
@@ -4791,7 +4852,7 @@ void ICSInputBoxPopUp()
     Widget edit;
     Arg args[16];
     int j;
-    char *title = "ICS Input";
+    char *title = _("ICS Input");
     XtTranslations tr;
 	
     if (ICSInputShell == NULL) {
@@ -4926,9 +4987,9 @@ void CommentCallback(w, client_data, call_data)
     XtSetArg(args[j], XtNlabel, &name);  j++;
     XtGetValues(w, args, j);
 
-    if (strcmp(name, "close") == 0) {
+    if (strcmp(name, _("close")) == 0) {
 	CommentPopDown();
-    } else if (strcmp(name, "edit") == 0) {
+    } else if (strcmp(name, _("edit")) == 0) {
 	CommentPopDown();
 	EditCommentEvent();
     }
@@ -4968,7 +5029,7 @@ void FileNamePopUp(label, def, proc, openMode)
      char *openMode;
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit;
+    Widget popup, layout, dialog, edit, b_ok, b_cancel;
     Window root, child;
     int x, y, i;
     int win_x, win_y;
@@ -4980,6 +5041,7 @@ void FileNamePopUp(label, def, proc, openMode)
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
     XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
+    XtSetArg(args[i], XtNtitle, XtNewString(_("File name prompt"))); i++;
     fileNameShell = popup =
       XtCreatePopupShell("File name prompt", transientShellWidgetClass,
 			 shellWidget, args, i);
@@ -4994,11 +5056,11 @@ void FileNamePopUp(label, def, proc, openMode)
     XtSetArg(args[i], XtNborderWidth, 0); i++;
     dialog = XtCreateManagedWidget("fileName", dialogWidgetClass,
 				   layout, args, i);
-    
-    XawDialogAddButton(dialog, "ok", FileNameCallback, (XtPointer) dialog);
-    XawDialogAddButton(dialog, "cancel", FileNameCallback,
-		       (XtPointer) dialog);
-    
+
+    XawDialogAddButton(dialog, _("ok"), FileNameCallback, (XtPointer) dialog);
+    XawDialogAddButton(dialog, _("cancel"), FileNameCallback,
+                       (XtPointer) dialog);
+
     XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "FileNamePopDown");
     
@@ -5035,7 +5097,7 @@ void FileNameCallback(w, client_data, call_data)
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
     
-    if (strcmp(name, "cancel") == 0) {
+    if (strcmp(name, _("cancel")) == 0) {
         FileNamePopDown();
         return;
     }
@@ -5072,12 +5134,12 @@ void FileNameAction(w, event, prms, nprms)
 	}
 	fullname = ExpandPathName(buf);
 	if (!fullname) {
-	    ErrorPopUp("Error", "Can't open file", FALSE);
+	    ErrorPopUp(_("Error"), _("Can't open file"), FALSE);
 	}
 	else {
 	    f = fopen(fullname, fileOpenMode);
 	    if (f == NULL) {
-		DisplayError("Failed to open file", errno);
+		DisplayError(_("Failed to open file"), errno);
 	    } else {
 		(void) (*fileProc)(f, index, buf);
 	    }
@@ -5106,6 +5168,7 @@ void PromotionPopUp()
     
     j = 0;
     XtSetArg(args[j], XtNresizable, True); j++;
+    XtSetArg(args[j], XtNtitle, XtNewString(_("Promotion"))); j++;
     promotionShell =
       XtCreatePopupShell("Promotion", transientShellWidgetClass,
 			 shellWidget, args, j);
@@ -5114,25 +5177,25 @@ void PromotionPopUp()
 			    layoutArgs, XtNumber(layoutArgs));
     
     j = 0;
-    XtSetArg(args[j], XtNlabel, "Promote pawn to what?"); j++;
+    XtSetArg(args[j], XtNlabel, _("Promote pawn to what?")); j++;
     XtSetArg(args[j], XtNborderWidth, 0); j++;
     dialog = XtCreateManagedWidget("promotion", dialogWidgetClass,
 				   layout, args, j);
     
-    XawDialogAddButton(dialog, "Queen", PromotionCallback, 
+    XawDialogAddButton(dialog, _("Queen"), PromotionCallback, 
 		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, "Rook", PromotionCallback, 
+    XawDialogAddButton(dialog, _("Rook"), PromotionCallback, 
 		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, "Bishop", PromotionCallback, 
+    XawDialogAddButton(dialog, _("Bishop"), PromotionCallback, 
 		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, "Knight", PromotionCallback, 
+    XawDialogAddButton(dialog, _("Knight"), PromotionCallback, 
 		       (XtPointer) dialog);
     if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
         gameInfo.variant == VariantGiveaway) {
-      XawDialogAddButton(dialog, "King", PromotionCallback, 
+      XawDialogAddButton(dialog, _("King"), PromotionCallback, 
 			 (XtPointer) dialog);
     }
-    XawDialogAddButton(dialog, "cancel", PromotionCallback, 
+    XawDialogAddButton(dialog, _("cancel"), PromotionCallback, 
 		       (XtPointer) dialog);
     
     XtRealizeWidget(promotionShell);
@@ -5180,11 +5243,11 @@ void PromotionCallback(w, client_data, call_data)
     
     if (fromX == -1) return;
     
-    if (strcmp(name, "cancel") == 0) {
+    if (strcmp(name, _("cancel")) == 0) {
 	fromX = fromY = -1;
 	ClearHighlights();
 	return;
-    } else if (strcmp(name, "Knight") == 0) {
+    } else if (strcmp(name, _("Knight")) == 0) {
 	promoChar = 'n';
     } else {
 	promoChar = ToLower(name[0]);
@@ -5247,7 +5310,7 @@ void ErrorPopUp(title, label, modal)
     dialog = XtCreateManagedWidget("dialog", dialogWidgetClass,
 				   layout, args, i);
     
-    XawDialogAddButton(dialog, "ok", ErrorCallback, (XtPointer) dialog);
+    XawDialogAddButton(dialog, _("ok"), ErrorCallback, (XtPointer) dialog);
     
     XtRealizeWidget(errorShell);
     CatchDeleteWindow(errorShell, "ErrorPopDown");
@@ -5432,7 +5495,7 @@ int LoadGamePopUp(f, gameNumber, title)
     if (gameNumber == 0) {
 	int error = GameListBuild(f);
 	if (error) {
-	    DisplayError("Cannot build game list", error);
+	    DisplayError(_("Cannot build game list"), error);
 	} else if (!ListEmpty(&gameList) &&
 		   ((ListGame *) gameList.tailPred)->number > 1) {
 	    GameListPopUp(f, title);
@@ -5453,7 +5516,7 @@ void LoadGameProc(w, event, prms, nprms)
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp("Load game file name?", "", LoadGamePopUp, "rb");
+    FileNamePopUp(_("Load game file name?"), "", LoadGamePopUp, "rb");
 }
 
 void LoadNextGameProc(w, event, prms, nprms)
@@ -5519,7 +5582,7 @@ void LoadPositionProc(w, event, prms, nprms)
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp("Load position file name?", "", LoadPosition, "rb");
+    FileNamePopUp(_("Load position file name?"), "", LoadPosition, "rb");
 }
 
 void SaveGameProc(w, event, prms, nprms)
@@ -5528,7 +5591,7 @@ void SaveGameProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    FileNamePopUp("Save game file name?",
+    FileNamePopUp(_("Save game file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
 		  SaveGame, "a");
 }
@@ -5539,7 +5602,7 @@ void SavePositionProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    FileNamePopUp("Save position file name?",
+    FileNamePopUp(_("Save position file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
 		  SavePosition, "a");
 }
@@ -5711,7 +5774,7 @@ PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
   }
   f = fopen(gamePasteFilename, "w");
   if (f == NULL) {
-    DisplayError("Can't open temp file", errno);
+    DisplayError(_("Can't open temp file"), errno);
     return;
   }
   fwrite(value, 1, *len, f);
@@ -5792,7 +5855,7 @@ void AnalyzeModeProc(w, event, prms, nprms)
 {
     if (!first.analysisSupport) {
       char buf[MSG_SIZ];
-      sprintf(buf, "%s does not support analysis", first.tidy);
+      sprintf(buf, _("%s does not support analysis"), first.tidy);
       DisplayError(buf, 0);
       return;
     }
@@ -5810,7 +5873,7 @@ void AnalyzeFileProc(w, event, prms, nprms)
 {
     if (!first.analysisSupport) {
       char buf[MSG_SIZ];
-      sprintf(buf, "%s does not support analysis", first.tidy);
+      sprintf(buf, _("%s does not support analysis"), first.tidy);
       DisplayError(buf, 0);
       return;
     }
@@ -5820,7 +5883,7 @@ void AnalyzeFileProc(w, event, prms, nprms)
       ShowThinkingProc(w,event,prms,nprms);
 
     AnalyzeFileEvent();
-    FileNamePopUp("File to analyze", "", LoadGamePopUp, "rb");
+    FileNamePopUp(_("File to analyze"), "", LoadGamePopUp, "rb");
     AnalysisPeriodicEvent(1);
 }
 
@@ -6653,7 +6716,7 @@ void AboutProc(w, event, prms, nprms)
 	    "Enhancements Copyright 1992-2001 Free Software Foundation",
 	    PRODUCT, " is free software and carries NO WARRANTY;",
 	    "see the file COPYING for more information.");
-    ErrorPopUp("About XBoard", buf, FALSE);
+    ErrorPopUp(_("About XBoard"), buf, FALSE);
 }
 
 void DebugProc(w, event, prms, nprms)
@@ -6771,7 +6834,7 @@ void DisplayError(message, error)
 	sprintf(buf, "%s: %s", message, strerror(error));
 	message = buf;
     }	
-    ErrorPopUp("Error", message, FALSE);
+    ErrorPopUp(_("Error"), message, FALSE);
 }
 
 
@@ -6785,7 +6848,7 @@ void DisplayMoveError(message)
 	fprintf(stderr, "%s: %s\n", programName, message);
     }
     if (appData.popupMoveErrors) {
-	ErrorPopUp("Error", message, FALSE);
+	ErrorPopUp(_("Error"), message, FALSE);
     } else {
 	DisplayMessage(message, "");
     }
@@ -6808,7 +6871,7 @@ void DisplayFatalError(message, error, status)
 	message = buf;
     }
     if (appData.popupExitMessage && boardWidget && XtIsRealized(boardWidget)) {
-      ErrorPopUp(status ? "Fatal Error" : "Exiting", message, TRUE);
+      ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
     } else {
       ExitEvent(status);
     }
@@ -6818,14 +6881,14 @@ void DisplayInformation(message)
      String message;
 {
     ErrorPopDown();
-    ErrorPopUp("Information", message, TRUE);
+    ErrorPopUp(_("Information"), message, TRUE);
 }
 
 void DisplayNote(message)
      String message;
 {
     ErrorPopDown();
-    ErrorPopUp("Note", message, FALSE);
+    ErrorPopUp(_("Note"), message, FALSE);
 }
 
 static int
@@ -6875,7 +6938,7 @@ void AskQuestionProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     if (*nprms != 4) {
-	fprintf(stderr, "AskQuestionProc needed 4 parameters, got %d\n",
+	fprintf(stderr, _("AskQuestionProc needed 4 parameters, got %d\n"),
 		*nprms);
 	return;
     }
@@ -6908,7 +6971,7 @@ void AskQuestionReplyAction(w, event, prms, nprms)
     OutputToProcess(pendingReplyPR, buf, strlen(buf), &err);
     AskQuestionPopDown();
 
-    if (err) DisplayFatalError("Error writing to chess program", err, 0);
+    if (err) DisplayFatalError(_("Error writing to chess program"), err, 0);
 }
 
 void AskQuestionCallback(w, client_data, call_data)
@@ -6921,7 +6984,7 @@ void AskQuestionCallback(w, client_data, call_data)
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
     
-    if (strcmp(name, "cancel") == 0) {
+    if (strcmp(name, _("cancel")) == 0) {
         AskQuestionPopDown();
     } else {
 	AskQuestionReplyAction(w, NULL, NULL, NULL);
@@ -6960,9 +7023,9 @@ void AskQuestion(title, question, replyPrefix, pr)
     dialog = XtCreateManagedWidget("question", dialogWidgetClass,
 				   layout, args, i);
     
-    XawDialogAddButton(dialog, "enter", AskQuestionCallback,
+    XawDialogAddButton(dialog, _("enter"), AskQuestionCallback,
 		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, "cancel", AskQuestionCallback,
+    XawDialogAddButton(dialog, _("cancel"), AskQuestionCallback,
 		       (XtPointer) dialog);
 
     XtRealizeWidget(popup);
@@ -7073,7 +7136,7 @@ Colorize(cc, continuation)
     count = strlen(buf);
     outCount = OutputToProcess(NoProc, buf, count, &error);
     if (outCount < count) {
-	DisplayFatalError("Error writing to display", error, 1);
+	DisplayFatalError(_("Error writing to display"), error, 1);
     }
 
     if (continuation) return;
@@ -7146,7 +7209,7 @@ static char *ExpandPathName(path)
 	    pwd = getpwnam(buf);
 	    if (!pwd)
 	      {
-		  fprintf(stderr, "ERROR: Unknown user %s (in path %s)\n",
+		  fprintf(stderr, _("ERROR: Unknown user %s (in path %s)\n"),
 			  buf, path);
 		  return NULL;
 	      }
@@ -7347,7 +7410,7 @@ DisplayWhiteClock(timeRemaining, highlight)
      int highlight;
 {
     Arg args[16];
-    DisplayTimerLabel(whiteTimerWidget, "White", timeRemaining, highlight);
+    DisplayTimerLabel(whiteTimerWidget, _("White"), timeRemaining, highlight);
     if (highlight && iconPixmap == bIconPixmap) {
 	iconPixmap = wIconPixmap;
 	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
@@ -7361,7 +7424,7 @@ DisplayBlackClock(timeRemaining, highlight)
      int highlight;
 {
     Arg args[16];
-    DisplayTimerLabel(blackTimerWidget, "Black", timeRemaining, highlight);
+    DisplayTimerLabel(blackTimerWidget, _("Black"), timeRemaining, highlight);
     if (highlight && iconPixmap == wIconPixmap) {
 	iconPixmap = bIconPixmap;
 	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
@@ -7501,7 +7564,7 @@ int OpenTCP(host, port, pr)
      ProcRef *pr;
 {
 #if OMIT_SOCKETS
-    DisplayFatalError("Socket support is not configured in", 0, 2);
+    DisplayFatalError(_("Socket support is not configured in"), 0, 2);
 #else  /* !OMIT_SOCKETS */
     int s;
     struct sockaddr_in sa;
@@ -7603,7 +7666,7 @@ int OpenRcmd(host, user, cmd, pr)
      char *host, *user, *cmd;
      ProcRef *pr;
 {
-    DisplayFatalError("internal rcmd not implemented for Unix", 0, 1);
+    DisplayFatalError(_("internal rcmd not implemented for Unix"), 0, 1);
     return -1;
 }    
 
@@ -8329,8 +8392,9 @@ AnimateMove(board, fromX, fromY, toX, toY)
 #endif
 
   if (appData.debugMode) {
-      printf("AnimateMove: piece %d %s from %d,%d to %d,%d \n",
-	     piece, hop ? "hops" : "slides", fromX, fromY, toX, toY);
+      printf(hop ? _("AnimateMove: piece %d hops from %d,%d to %d,%d \n") :
+                   _("AnimateMove: piece %d slides from %d,%d to %d,%d \n"),
+             piece, fromX, fromY, toX, toY);
   }
 
   ScreenSquare(fromX, fromY, &start, &startColor);

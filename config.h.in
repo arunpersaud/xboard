@@ -21,6 +21,10 @@
 /* Define if lex declares yytext as a char * by default, not a char[].  */
 #undef YYTEXT_POINTER
 
+/* Define to 1 if translation of program messages to the user's 
+   native language is desired */
+#undef ENABLE_NLS
+
 #define FIRST_PTY_LETTER 'p'
 
 #undef IBMRTAIX

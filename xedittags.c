@@ -85,6 +85,15 @@ extern char *getenv();
 #include "backend.h"
 #include "xboard.h"
 #include "xedittags.h"
+#include "gettext.h"
+
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
 
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
@@ -113,9 +122,9 @@ void TagsCallback(w, client_data, call_data)
     XtSetArg(args[j], XtNlabel, &name);  j++;
     XtGetValues(w, args, j);
 
-    if (strcmp(name, "close") == 0) {
+    if (strcmp(name, _("close")) == 0) {
 	TagsPopDown();
-    } else if (strcmp(name, "edit") == 0) {
+    } else if (strcmp(name, _("edit")) == 0) {
 	TagsPopDown();
 	EditTagsEvent();
     }
@@ -135,16 +144,16 @@ void EditTagsCallback(w, client_data, call_data)
     XtSetArg(args[j], XtNlabel, &name);  j++;
     XtGetValues(w, args, j);
 
-    if (strcmp(name, "ok") == 0) {
+    if (strcmp(name, _("ok")) == 0) {
 	textw = XtNameToWidget(editTagsShell, "*form.text");
 	j = 0;
 	XtSetArg(args[j], XtNstring, &val); j++;
 	XtGetValues(textw, args, j);
 	ReplaceTags(val, &gameInfo);
 	TagsPopDown();
-    } else if (strcmp(name, "cancel") == 0) {
+    } else if (strcmp(name, _("cancel")) == 0) {
 	TagsPopDown();
-    } else if (strcmp(name, "clear") == 0) {
+    } else if (strcmp(name, _("clear")) == 0) {
 	textw = XtNameToWidget(editTagsShell, "*form.text");
 	XtCallActionProc(textw, "select-all", NULL, NULL, 0);
 	XtCallActionProc(textw, "kill-selection", NULL, NULL, 0);
@@ -233,7 +242,7 @@ Widget TagsCreate(name, text, msg, mutable, callback)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_ok = b =
-	  XtCreateManagedWidget("ok", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("ok"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_ok, XtNcallback, callback, (XtPointer) 0);
 
 	j = 0;
@@ -244,7 +253,7 @@ Widget TagsCreate(name, text, msg, mutable, callback)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_cancel = b =
-	  XtCreateManagedWidget("cancel", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_cancel, XtNcallback, callback, (XtPointer) 0);
 
 #if 0
@@ -267,7 +276,7 @@ Widget TagsCreate(name, text, msg, mutable, callback)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_close = b =
-	  XtCreateManagedWidget("close", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("close"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_close, XtNcallback, callback, (XtPointer) 0);
 
 	j = 0;
@@ -278,7 +287,7 @@ Widget TagsCreate(name, text, msg, mutable, callback)
 	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	b_edit = b =
-	  XtCreateManagedWidget("edit", commandWidgetClass, form, args, j);
+	  XtCreateManagedWidget(_("edit"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_edit, XtNcallback, callback, (XtPointer) 0);
     }
 
@@ -331,7 +340,7 @@ void TagsPopUp(tags, msg)
     if (editTagsUp) TagsPopDown();
     if (tagsShell == NULL) {
 	tagsShell =
-	  TagsCreate("Tags", tags, msg, False, TagsCallback);
+	  TagsCreate(_("Tags"), tags, msg, False, TagsCallback);
     } else {
 	textw = XtNameToWidget(tagsShell, "*form.text");
 	j = 0;
@@ -339,7 +348,7 @@ void TagsPopUp(tags, msg)
 	XtSetValues(textw, args, j);
 	j = 0;
 	XtSetArg(args[j], XtNiconName, (XtArgVal) "Tags");  j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) "Tags");  j++;
+	XtSetArg(args[j], XtNtitle, (XtArgVal) _("Tags"));  j++;
 	XtSetValues(tagsShell, args, j);
 	msgw = XtNameToWidget(tagsShell, "*form.msg");
 	if (msgw) {
@@ -370,7 +379,7 @@ void EditTagsPopUp(tags)
     if (tagsUp) TagsPopDown();
     if (editTagsShell == NULL) {
 	editTagsShell =
-	  TagsCreate("Edit tags", tags, NULL, True, EditTagsCallback); 
+	  TagsCreate(_("Edit tags"), tags, NULL, True, EditTagsCallback); 
     } else {
 	textw = XtNameToWidget(editTagsShell, "*form.text");
 	j = 0;
@@ -378,7 +387,7 @@ void EditTagsPopUp(tags)
 	XtSetValues(textw, args, j);
 	j = 0;
 	XtSetArg(args[j], XtNiconName, (XtArgVal) "Edit Tags");  j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) "Edit Tags");  j++;
+	XtSetArg(args[j], XtNtitle, (XtArgVal) _("Edit Tags"));  j++;
 	XtSetValues(editTagsShell, args, j);
     }
 

@@ -15,6 +15,8 @@ VPATH = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
+datadir = @datadir@
+localedir = $(datadir)/locale
 mandir = @mandir@
 man6dir = $(mandir)/man6
 man6ext = .6
@@ -26,7 +28,7 @@ infodir = $(prefix)/share/info
 CC = @CC@
 CFLAGS = @CFLAGS@ @CPPFLAGS@ -DINFODIR=\"$(infodir)\"
 ALL_CFLAGS = -I. -I$(srcdir) @X_CFLAGS@ @CONF_CFLAGS@ $(CFLAGS)
-DEFINES = @DEFS@
+DEFINES = @DEFS@ -DLOCALEDIR=\"$(localedir)\"
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -36,7 +38,7 @@ LEX = @LEX@
 LEXFLAGS = 
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBS = @X_LIBS@ @XAW_LIBS@ @PRE_XMULIB@ -lXmu @POST_XMULIB@ -lXt -lXext \
-	@X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@ @LIBS@ -lm
+	@X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@ @LTLIBINTL@ @LIBS@ -lm
 NROFF = @NROFF@
 NROFFFLAGS = @NROFFFLAGS@
 
@@ -58,7 +60,7 @@ DISTDIR = @PRODUCT@-@VERSION@.@PATCHLEVEL@
 XBOARDOBJ = parser.o xboard.o backend.o moves.o childio.o gamelist.o \
 	lists.o pgntags.o xgamelist.o xedittags.o xhistory.o @ZIPPY_O@
 
-default: xboard zic2xpm
+default: xboard pot zic2xpm
 
 all: default pseudosource info FAQ html dvi ps
 
@@ -70,6 +72,7 @@ install: installdirs default
 	$(INSTALL_DATA) $(srcdir)/xboard.man $(man6dir)/xboard$(man6ext)
 	$(INSTALL_DATA) $(srcdir)/zic2xpm.man $(man6dir)/zic2xpm$(man6ext)
 	$(INSTALL_DATA) xboard.info $(infodir)/xboard.info
+	(cd po && $(MAKE) $@)
 	-PATH=$$PATH:/sbin:/usr/sbin install-info \
 		$(infodir)/xboard.info $(infodir)/dir
 
@@ -82,6 +85,7 @@ uninstall:
 	rm -f $(man6dir)/xboard$(man6ext) $(man6dir)/cmail$(man6ext)
 	rm -f $(man6dir)/zic2xpm$(man6ext)
 	rm -f $(infodir)/xboard.info
+	(cd po && $(MAKE) $@)
 	-PATH=$$PATH:/sbin:/usr/sbin install-info --delete \
 		$(infodir)/xboard.info $(infodir)/dir
 
@@ -92,6 +96,7 @@ clean:
 	rm -f xboard.vr* xboard.ps
 
 distclean: clean tidy
+	(cd po && $(MAKE) $@)
 	rm -f config.cache config.log config.status Makefile 
 	rm -f config.h stamp-h xboard.texinfo cmail
 	-cd winboard ; make -f cygwin.mak clean
@@ -157,6 +162,10 @@ check: all
 
 xboard: $(XBOARDOBJ)
 	$(CC) -o xboard $(ALL_LDFLAGS) $(XBOARDOBJ) $(LIBS)
+
+pot:
+	rm -f po/stamp-po
+	(cd po && $(MAKE))
 
 zic2xpm: zic2xpm.o
 	$(CC) -o zic2xpm zic2xpm.o
