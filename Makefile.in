@@ -137,7 +137,8 @@ FAQ: FAQ.html
 pseudosource: $(PSEUDOSOURCE)
 
 dist: distclean
-	(cd linux && make pseudosource && cp -a $(PSEUDOSOURCE) ..)
+	((cd linux && make pseudosource && cp $(PSEUDOSOURCE) -a ..) || true)
+	if [ -f winboard/WINBOARD.HLP ] ; then mv winboard/WINBOARD.HLP winboard/winboard.hlp ; fi
 	rm -rf $(DISTDIR)
 	mkdir $(DISTDIR)
 	cp -a $(DISTSOURCE) $(DISTDIR)/
@@ -185,7 +186,7 @@ backend.o: frontend.h
 backend.o: backend.h lists.h
 backend.o: parser.h
 backend.o: moves.h
-backend.o: @ZIPPY_H@
+backend.o: zippy.h
 childio.o: config.h
 childio.o: common.h
 childio.o: frontend.h
