@@ -463,21 +463,21 @@ AmyBoard is available in the Internet Chess Library (topic <A HREF="#[A.2]">[A.2
 <HR>
 <H3><A NAME="[B.4]">[B.4] Is there an XBoard for the Macintosh?</A></H3>
 
-Because MacOS X has a Unix base, XBoard will compile and run on it.
-You do need an X11 (X Window System) server and client libraries.
-These do not come with Mac OS, but both free and commercial versions
-are available.  Once you install the X11 package, XBoard is reported
-to compile and run without changes.  I am not a Mac user and have not
-tried this myself, so I cannot answer questions about it.
+Note: I am not a Mac user and have not tried this myself, so I cannot
+answer questions about it.
 
-Version 4.2.6 and earlier of XBoard come with an old copy of the
-config.sub utility that does not recognize Mac OS X, so to build
-XBoard, you'll have to tell the configure program what OS you are
-running.  Follow the instructions in topic <A HREF="#[B.7]">[B.7]</A>
-of this FAQ, but add the argument <tt>--host=powerpc-apple-bsd</tt> to
-the end of the "configure" command line.
+<p>Because MacOS X has a Unix base, XBoard will compile and run on it.
+You do need an X11 (X Window System) server and client libraries.  I'm
+told that these come standard with MacOS X 10.3 and later.  Once you
+install the X11 package, XBoard is reported to compile and run without
+changes.
 
-There is no version of XBoard or WinBoard that runs with the native
+<p>You can avoid having to compile XBoard (and GNU Chess) yourself by
+using the Fink sofware packaging system.  See
+http://fink.sourceforge.net/ and
+http://finkcommander.sourceforge.net/ for more info on Fink.
+
+<p>There is no version of XBoard or WinBoard that runs with the native
 (non-X11) Mac graphical interface, and none that runs on MacOS 9 or
 earlier.
 
