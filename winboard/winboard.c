@@ -4072,6 +4072,26 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
  *
 \*---------------------------------------------------------------------------*/
 
+/*
+ * Decent random number generator, at least not as bad as Windows
+ * standard rand, which returns a value in the range 0 to 0x7fff.
+ */
+unsigned int randstate;
+
+int
+myrandom(void)
+{
+  randstate = randstate * 1664525 + 1013904223;
+  return (int) randstate & 0x7fffffff;
+}
+
+void
+mysrandom(unsigned int seed)
+{
+  randstate = seed;
+}
+
+
 /* 
  * returns TRUE if user selects a different color, FALSE otherwise 
  */

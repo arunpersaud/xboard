@@ -209,9 +209,8 @@
 chessclub.com /icsport=5000 /icshelper=timestamp\n\
 freechess.org /icsport=5000 /icshelper=timeseal\n\
 global.chessparlor.com /icsport=6000 /icshelper=timeseal\n\
+chessanytime.com /icsport=5000\n\
 chess.net /icsport=5000\n\
-chess-square.com /icsport=5000\n\
-icchess.net /icsport=5000\n\
 zics.org /icsport=5000\n\
 jogo.cex.org.br /icsport=5000\n\
 ajedrez.cec.uchile.cl /icsport=5000\n\

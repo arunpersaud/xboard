@@ -1113,12 +1113,6 @@ to initialize and wants us to wait to send commands until it says
 done=1, we fail to wait.  However, we do send commands in the right
 order and use ping, so most engines should work fine.
 
-505. On Windows we use rand() for random numbers, which ranges only up
-to 0x7fff.  That means that on Windows, only zippy.lines sayings that
-start in the first 32767 bytes of the file can ever be used.  It looks
-like the only fix is to have our own 32-bit implementation of
-random().  Sigh.
-
 506. One user wants a board size even smaller than Tiny.
 
 507. Suggested: have the cursor change to a gripping hand while moving

@@ -1,5 +1,22 @@
 ChangeLog for XBoard/WinBoard
 
+* 11/23/2003: Cleaned up some minor problems in cygwin.mak.  Thanks to
+Hans Werner Strube for the problem report.
+
+* 11/23/2003: Updated the default list of chess servers in
+winboard/defaults.h.  Deleted two that appear to be dead and added a
+new one that is active.
+
+* 11/19/2003: Swapped icon_white.bm and icon_black.bm in XBoard.
+Hopefully this will get them the right way around by default on more X
+window managers.  I wish I understood this better.
+
+* 11/18/2003: Implemented a simple 32-bit random number generator for
+WinBoard, replacing the Windows rand(), which ranges only up to
+0x7fff.  Formerly on Windows, only zippy.lines sayings that started in
+the first 32767 bytes of the file could ever be used.  This was issue
+#505 from the ToDo file.
+
 * 11/16/2003: The xboard man page and info files are now built from a
 common set of texinfo source files, and the xboard man page now covers
 cmail as well.  Formerly, ever since the texinfo file was first
@@ -34,8 +51,6 @@ load, as it gets linked to from the Web.
 * Modified xboard and winboard makefiles to be able to build the
 project in the new combined directory structure.
 
-* Added woodthunk.wav sound contributed by Robert Jurjevic.
-	
 * Applied a small security fix to pxboard, from Martin Maeok.
 
 * Fixed a bug in the game list dialog.  The change in 4.2.6 to opening

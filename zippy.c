@@ -308,7 +308,8 @@ void Speak(how, whom)
 	if (now - lastShout < 1*60) return;
 	lastShout = now;
 	if (appData.zippyUseI) {
-	    how = swifties[random() % (sizeof(swifties)/sizeof(char *))];
+	    how = swifties[(unsigned) random() %
+			   (sizeof(swifties)/sizeof(char *))];
 	}
     }
 
@@ -322,7 +323,7 @@ void Speak(how, whom)
     }
 		
     for (;;) {
-	fseek(zipfile, random() % zipstat.st_size, 0);
+	fseek(zipfile, (unsigned) random() % zipstat.st_size, 0);
 	do {
 	  c = getc(zipfile);
 	} while (c != NULLCHAR && c != '^' && c != EOF);
@@ -528,7 +529,7 @@ int ZippyControl(buf, i)
 	    sprintf(reply, "%stell %s %s\n", ics_prefix,
 		    player, programVersion);
 	    SendToICS(reply);
-	} else if (appData.zippyTalk && ((random() % 10) < 9)) {
+	} else if (appData.zippyTalk && (((unsigned) random() % 10) < 9)) {
 	    if (strcmp(player, ics_handle) != 0) {
 		Speak("tell", player);
 	    }
@@ -571,7 +572,7 @@ int ZippyConverse(buf, i)
     }
 
     if (looking_at(buf, i, "* kibitzes: *")) {
-      if (appData.zippyTalk && (random() % 10) < 9) {
+      if (appData.zippyTalk && ((unsigned) random() % 10) < 9) {
 	char *player = StripHighlightAndTitle(star_match[0]);
 	if (strcmp(player, ics_handle) != 0) {
 	    Speak("kibitz", NULL);
@@ -581,7 +582,7 @@ int ZippyConverse(buf, i)
     }
 
     if (looking_at(buf, i, "* whispers: *")) {
-      if (appData.zippyTalk && (random() % 10) < 9) {
+      if (appData.zippyTalk && ((unsigned) random() % 10) < 9) {
 	char *player = StripHighlightAndTitle(star_match[0]);
 	if (strcmp(player, ics_handle) != 0) {
 	    Speak("whisper", NULL);
@@ -598,7 +599,7 @@ int ZippyConverse(buf, i)
 	char *player = StripHighlightAndTitle(star_match[0]);
 
 	if (strcmp(player, ics_handle) != 0) {
-	    if ((random() % 10) < 9)
+	    if (((unsigned) random() % 10) < 9)
 	      Speak("message", player);
 	    f = fopen("zippy.messagelog", "a");
 	    fprintf(f, "%s (%s:%s): %s\n", player,
@@ -632,7 +633,8 @@ int ZippyConverse(buf, i)
 	  channel[strlen(channel)-1] = NULLCHAR;
 #if 0
 	  /* Always tell to the channel (probability 90%) */
-	  if (strcmp(player, ics_handle) != 0 && (random() % 10) < 9) {
+	  if (strcmp(player, ics_handle) != 0 &&
+	      ((unsigned) random() % 10) < 9) {
 	    Speak("tell", channel);
 	  }
 #else
@@ -658,7 +660,7 @@ int ZippyConverse(buf, i)
     }
 
     if (looking_at(buf, i, "Notification: * has arrived")) {
-	if ((random() % 3) == 0) {
+	if (((unsigned) random() % 3) == 0) {
 	    char *player = StripHighlightAndTitle(star_match[0]);
 	    strcpy(lastgreet, player);
 	    sprintf(reply, "greet %s\n", player);
@@ -668,7 +670,7 @@ int ZippyConverse(buf, i)
     }	
 
     if (looking_at(buf, i, "Notification: * has departed")) {
-	if ((random() % 3) == 0) {
+	if (((unsigned) random() % 3) == 0) {
 	    char *player = StripHighlightAndTitle(star_match[0]);
 	    sprintf(reply, "farewell %s\n", player);
 	    SendToICS(reply);

@@ -865,23 +865,11 @@ Shows the current XBoard version number.
 @item Iconize
 Pressing the @kbd{i} or @kbd{c} key iconizes XBoard. The graphical
 icon displays a white knight if it is White's move, or a black knight
-if it is Black's move. If your X window manager displays only text icons,
-not graphical ones, check its documentation; there is probably a way to
-enable graphical icons. If you are running the Motif window manager
-@file{mwm}, add these lines to your @file{.Xdefaults} file and
-restart mwm:
-
-@example
-Mwm*iconDecoration: activelabel label image
-Mwm*XBoard*iconImageBackground: White
-Mwm*XBoard*iconImageForeground: Black
-@end example
-@noindent
-The first line above enables graphical icons in mwm; you don't need it
-if you already have them. The next two lines force the white knights to
-come out white and the black knights black. Unfortunately these resources
-can't be set from inside XBoard; you have to set them in your
-@file{.Xdefaults} file.
+if it is Black's move. If your X window manager displays only text
+icons, not graphical ones, check its documentation; there is probably
+a way to enable graphical icons.  If you get black and white reversed,
+we would like to hear about it; see @ref{Problems} below for
+instructions on how to report this problem.
 @end table
 
 You can add or remove shortcut keys using the X resources
