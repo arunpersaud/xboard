@@ -1492,7 +1492,6 @@ read_from_ics(isr, closure, data, count, error)
     int backup;
     char *p;
 
-#ifdef WIN32
     if (appData.debugMode) {
       if (!error) {
 	fprintf(debugFP, "<ICS: ");
@@ -1500,7 +1499,6 @@ read_from_ics(isr, closure, data, count, error)
 	fprintf(debugFP, "\n");
       }
     }
-#endif
 
     if (count > 0) {
 	/* If last read ended with a partial line that we couldn't parse,
@@ -1752,11 +1750,11 @@ read_from_ics(isr, closure, data, count, error)
 	#ifdef WIN32
 		if (loggedOn == TRUE)
 			if (ZippyControl(buf, &backup) || ZippyConverse(buf, &backup) ||
-				(appData.zippyPlay && ZippyMatch(buf, &backup)));
+			(appData.zippyPlay && ZippyMatch(buf, &backup)));
 		#else
-		if (ZippyControl(buf, &backup) ||
-		    ZippyConverse(buf, &backup) ||
-		    (appData.zippyPlay && ZippyMatch(buf, &backup))) {
+		if (ZippyControl(buf, &i) ||
+		    ZippyConverse(buf, &i) ||
+		    (appData.zippyPlay && ZippyMatch(buf, &i))) {
 		    loggedOn = TRUE;
 		    if (!appData.colorize) continue;
 		}
