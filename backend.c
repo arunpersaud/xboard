@@ -6792,7 +6792,7 @@ ReloadCmailMsgEvent(unregister)
     /* Load first game in the file or popup game menu */
     LoadGameFromFile(inFilename, 0, appData.cmailGameName, TRUE);
 
-#endif // !WIN32
+#endif /* !WIN32 */
     return;
 }
 
@@ -6972,7 +6972,7 @@ MailMoveEvent()
     }
 
     return;
-#endif // !WIN32
+#endif /* !WIN32 */
 }
 
 char *
@@ -7050,7 +7050,7 @@ CmailMsg()
 	}
     }
     return cmailMsg;
-#endif // WIN32
+#endif /* WIN32 */
 }
 
 void
