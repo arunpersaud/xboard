@@ -1489,11 +1489,7 @@ read_from_ics(isr, closure, data, count, error)
     int buf_len;
     int next_out;
     int tkind;
-#ifdef WIN32
-	/* For zippy color lines of winboard
-	 * cleanup for gcc compiler */
-	int backup;
-#endif
+    int backup;
     char *p;
 
 #ifdef WIN32
@@ -1750,19 +1746,19 @@ read_from_ics(isr, closure, data, count, error)
 
 	    oldi = i;
 	    if (appData.zippyTalk || appData.zippyPlay) {
+		 /* Backup address for color zippy lines */
+		 backup = i;
 #if ZIPPY
 	#ifdef WIN32
-		/* Backup address for color zippy lines */
-		backup = i;
 		if (loggedOn == TRUE)
 			if (ZippyControl(buf, &backup) || ZippyConverse(buf, &backup) ||
 				(appData.zippyPlay && ZippyMatch(buf, &backup)));
 		#else
-		if (ZippyControl(buf, &i) ||
-		    ZippyConverse(buf, &i) ||
-		    (appData.zippyPlay && ZippyMatch(buf, &i))) {
+		if (ZippyControl(buf, &backup) ||
+		    ZippyConverse(buf, &backup) ||
+		    (appData.zippyPlay && ZippyMatch(buf, &backup))) {
 		    loggedOn = TRUE;
-		    continue;
+		    if (!appData.colorize) continue;
 		}
 	#endif
 #endif
