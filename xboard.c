@@ -1907,7 +1907,15 @@ main(argc, argv)
     XtGetApplicationResources(shellWidget, (XtPointer) &appData,
 			      clientResources, XtNumber(clientResources),
 			      NULL, 0);
-
+			      
+    if (appData.debugMode) {
+       if ((debugFP = fopen("xboard.debug", "w")) == NULL)  {
+          printf(_("Failed to open file xboard.debug \n"));
+          exit(errno);
+       }
+        setbuf(debugFP, NULL);
+    }
+    
 #if !HIGHDRAG
     /* This feature does not work; animation needs a rewrite */
     appData.highlightDragging = FALSE;
@@ -2553,6 +2561,8 @@ XBoard square size (hint): %d\n\
     }
 
     XtAppMainLoop(appContext);
+    if (appData.debugMode) fclose(debugFP);
+    
     return 0;
 }
 
