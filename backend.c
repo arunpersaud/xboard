@@ -4398,6 +4398,7 @@ HandleMachineMove(message, cps)
 	    break;
 	  case AnalyzeMode:
 	  case AnalyzeFile:
+		break;
 	  /* icsEngineAnalyze */
 	  case IcsObserving:
 		if (!appData.icsEngineAnalyze) ignore = TRUE;
