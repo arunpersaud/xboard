@@ -16,19 +16,17 @@ project's Web site:
 
 GNU CHESS
 
-A version of GNU Chess is included in the WinBoard
+Two versions of GNU Chess are included in the WinBoard
 distribution.  GNU Chess is free software released
-under the GPL.  Source code for GNU Chess is available
-from the Free Software Foundation:
+under the GPL.
 
- http://www.gnu.org/
+Source code for GNU Chess 5 is available from:
 
-GNU Chess 5 was compiled with the Cygwin toolkit and
-linked against the Cygwin1.dll library.  Cygwin is free
-software released under the GPL; source code is
-available through:
+ http://savannah.gnu.org/projects/chess/
 
- http://www.cygwin.com/
+Source code for GNU Chess 4 is available from:
+
+ http://tim-mann.org/gnuchess.html
 
 BUGS AND IMPROVEMENTS
 
