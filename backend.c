@@ -273,9 +273,9 @@ double
 u64ToDouble(u64 value)
 {
   double r;
-  u64 tmp = value & 0x7fffffffffffffff;
+  u64 tmp = value & u64Const(0x7fffffffffffffff);
   r = (double)(s64)tmp;
-  if (value & 0x8000000000000000)
+  if (value & u64Const(0x8000000000000000))
 	r +=  9.2233720368547758080e18; /* 2^63 */
  return r;
 }
