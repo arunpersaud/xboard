@@ -594,11 +594,6 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   InitMenuChecks();
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
 
-  /* Make a console window if needed */
-  if (appData.icsActive) {
-    ConsoleCreate();
-  }
-
   InitBackEnd2();
 
   /* Make the window visible; update its client area; and return "success" */

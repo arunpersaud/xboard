@@ -137,7 +137,7 @@ void ZippyInit()
     if ( p != NULL ) {
       appData.zippyAcceptOnly = p;
     }
-    
+
     /* Should Zippy use "i" command? */
     /* Defaults to 1=true */
     p = getenv("ZIPPYUSEI");
@@ -200,7 +200,7 @@ void ZippyInit()
  */
 
 
-char *swifties[] = { 
+char *swifties[] = {
     "i acclaims:", "i admonishes:", "i advertises:", "i advises:",
     "i advocates:", "i affirms:", "i alleges:", "i anathematizes:",
     "i animadverts:", "i announces:", "i apostrophizes:",
@@ -241,7 +241,7 @@ char *swifties[] = {
     "i hosannas:", "i howls:", "i hums:", "i hypothecates:",
     "i hypothesizes:", "i imagines:", "i implies:", "i implores:",
     "i imprecates:", "i indicates:", "i infers:",
-    "i informs everyone:",  "i instructs:", "i interjects:", 
+    "i informs everyone:",  "i instructs:", "i interjects:",
     "i interposes:", "i intimates:", "i intones:", "i introspects:",
     "i inveighs:", "i jabbers:", "i japes:", "i jests:", "i jibes:",
     "i jives:", "i jokes:", "i joshes:", "i keens:", "i laments:",
@@ -294,7 +294,7 @@ char *swifties[] = {
 
 #define MAX_SPEECH 250
 
-void Speak(how, whom) 
+void Speak(how, whom)
      char *how, *whom;
 {
     static FILE *zipfile = NULL;
@@ -305,7 +305,7 @@ void Speak(how, whom)
     char  *p;
     int c, speechlen;
     Boolean done;
-		
+
     if (strcmp(how, "shout") == 0) {
 	now = time((time_t *) NULL);
 	if (now - lastShout < 1*60) return;
@@ -324,7 +324,7 @@ void Speak(how, whom)
 	}
 	fstat(fileno(zipfile), &zipstat);
     }
-		
+
     for (;;) {
 	fseek(zipfile, (unsigned) random() % zipstat.st_size, 0);
 	do {
@@ -409,7 +409,7 @@ int ZippyControl(buf, i)
 
     /* If this is a computer, save the name.  Then later, once the */
     /* game is really started, we will send the "computer" notice to */
-    /* the engine.  */ 
+    /* the engine.  */
     if (appData.zippyPlay &&
 	looking_at(buf, i, "* is in the computer list")) {
 	int i;
@@ -425,7 +425,7 @@ int ZippyControl(buf, i)
     }
 
     /* Tells and says */
-    if (appData.zippyPlay && 
+    if (appData.zippyPlay &&
 	(looking_at(buf, i, "* offers to be your bughouse partner") ||
 	 looking_at(buf, i, "* tells you: [automatic message] I chose you"))) {
 	player = StripHighlightAndTitle(star_match[0]);
@@ -670,7 +670,7 @@ int ZippyConverse(buf, i)
 	    SendToICS(reply);
 	    Speak("tell", player);
 	}
-    }	
+    }
 
     if (looking_at(buf, i, "Notification: * has departed")) {
 	if (((unsigned) random() % 3) == 0) {
@@ -678,7 +678,7 @@ int ZippyConverse(buf, i)
 	    sprintf(reply, "farewell %s\n", player);
 	    SendToICS(reply);
 	}
-    }	
+    }
 
     if (looking_at(buf, i, "Not sent -- * is censoring you")) {
 	char *player = StripHighlightAndTitle(star_match[0]);
@@ -686,7 +686,7 @@ int ZippyConverse(buf, i)
 	    sprintf(reply, "%s-notify %s\n", ics_prefix, player);
 	    SendToICS(reply);
 	}
-    }	
+    }
 
     if (looking_at(buf, i, "command is currently turned off")) {
 	appData.zippyUseI = 0;
@@ -770,7 +770,7 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
         /* Yes, and this isn't him.  Ignore challenge. */
 	return;
     }
-    
+
     /* Too many consecutive games with same opponent?  If so, make him
        wait until someone else has played or a timeout has elapsed. */
     if (appData.zippyMaxGames &&
@@ -871,12 +871,20 @@ int ZippyMatch(buf, i)
 	return TRUE;
     }
 
-    if (looking_at(buf, i, "offers you a draw")) {
-        if (first.sendDrawOffers && first.initDone) {
-	    SendToProgram("draw\n", &first);
+	if (ics_type == ICS_ICC) {
+		if (looking_at(buf, i, "Your opponent offers you a draw")) {
+			if (first.sendDrawOffers && first.initDone)
+				SendToProgram("draw\n", &first);
+			return TRUE;
+		}
+	} else {
+	    if (looking_at(buf, i, "offers you a draw")) {
+        	if (first.sendDrawOffers && first.initDone) {
+	    		SendToProgram("draw\n", &first);
+			}
+			return TRUE;
+    	}
 	}
-	return TRUE;
-    }
 
     if (looking_at(buf, i, "requests that the game be aborted") ||
         looking_at(buf, i, "would like to abort")) {
@@ -913,7 +921,7 @@ int ZippyMatch(buf, i)
     return FALSE;
 }
 
-/* Initialize chess program with data from the first board 
+/* Initialize chess program with data from the first board
  * of a new or resumed game.
  */
 void ZippyFirstBoard(moveNum, basetime, increment)
@@ -970,7 +978,7 @@ void ZippyFirstBoard(moveNum, basetime, increment)
        message from ICS." Send 0 in that case */
     w = (gameInfo.whiteRating >= 0) ? gameInfo.whiteRating : 0;
     b = (gameInfo.blackRating >= 0) ? gameInfo.blackRating : 0;
-    
+
     firstMove = FALSE;
     if (gameMode == IcsPlayingWhite) {
         if (first.sendName) {
@@ -1059,7 +1067,7 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 	} else {
 	    /* Position not sent above, move list might be sent later */
 	    /* Nothing needs to be done here */
-	}	
+	}
     }
 }
 

@@ -213,6 +213,9 @@ void InitBackEnd3 P((void));
 void FeatureDone P((ChessProgramState* cps, int val));
 void InitChessProgram P((ChessProgramState *cps));
 
+#ifdef WIN32
+	extern void ConsoleCreate();
+#endif
 extern int tinyLayout, smallLayout;
 static ChessProgramStats programStats;
 
@@ -301,12 +304,8 @@ int gotPremove = 0;
 Boolean alarmSounded;
 /* end premove variables */
 
-#define ICS_GENERIC 0
-#define ICS_ICC 1
-#define ICS_FICS 2
-#define ICS_CHESSNET 3 /* not really supported */
-int ics_type = ICS_GENERIC;
 char *ics_prefix = "$";
+ics_type = ICS_GENERIC;
 
 int currentMove = 0, forwardMostMove = 0, backwardMostMove = 0;
 int pauseExamForwardMostMove = 0;
@@ -441,7 +440,7 @@ InitBackEnd1()
     if (appData.icsActive) {
 	appData.matchMode = FALSE;
 	appData.matchGames = 0;
-#if ZIPPY	
+#if ZIPPY
 	appData.noChessProgram = !appData.zippyPlay;
 #else
 	appData.zippyPlay = FALSE;
@@ -481,7 +480,7 @@ InitBackEnd1()
 	    DisplayFatalError(buf, 0, 2);
 	}
     }
-    
+
     first.which = "first";
     second.which = "second";
     first.maybeThinking = second.maybeThinking = FALSE;
@@ -559,7 +558,7 @@ InitBackEnd1()
 	appData.clockMode = FALSE;
 	first.sendTime = second.sendTime = 0;
     }
-    
+
 #if ZIPPY
     /* Override some settings from environment variables, for backward
        compatibility.  Unfortunately it's not feasible to have the env
@@ -569,7 +568,7 @@ InitBackEnd1()
       ZippyInit();
     }
 #endif
-    
+
     if (appData.noChessProgram) {
 	programVersion = (char*) malloc(5 + strlen(PRODUCT) + strlen(VERSION)
 					+ strlen(PATCHLEVEL));
@@ -695,14 +694,19 @@ InitBackEnd3 P((void))
 
     InitChessProgram(&first);
 
+    #ifdef WIN32
+		/* Make a console window if needed */
+		if (appData.icsActive) ConsoleCreate();
+	#endif
+
     if (appData.icsActive) {
 	err = establish();
 	if (err != 0) {
 	    if (*appData.icsCommPort != NULLCHAR) {
-		sprintf(buf, _("Could not open comm port %s"),  
+		sprintf(buf, _("Could not open comm port %s"),
 			appData.icsCommPort);
 	    } else {
-		sprintf(buf, _("Could not connect to host %s, port %s"),  
+		sprintf(buf, _("Could not connect to host %s, port %s"),
 			appData.icsHost, appData.icsPort);
 	    }
 	    DisplayFatalError(buf, err, 1);
@@ -725,7 +729,7 @@ InitBackEnd3 P((void))
 	cmailISR =
 	  AddInputSource(cmailPR, FALSE, CmailSigHandlerCallBack, &cmailISR);
     }
-    
+
     ThawUI();
     DisplayMessage("", "");
     if (StrCaseCmp(appData.initialMode, "") == 0) {
@@ -733,7 +737,7 @@ InitBackEnd3 P((void))
     } else if (StrCaseCmp(appData.initialMode, "TwoMachines") == 0) {
       initialMode = TwoMachinesPlay;
     } else if (StrCaseCmp(appData.initialMode, "AnalyzeFile") == 0) {
-      initialMode = AnalyzeFile; 
+      initialMode = AnalyzeFile;
     } else if (StrCaseCmp(appData.initialMode, "Analysis") == 0) {
       initialMode = AnalyzeMode;
     } else if (StrCaseCmp(appData.initialMode, "MachineWhite") == 0) {
@@ -891,7 +895,7 @@ establish()
 			appData.icsHost, appData.icsPort);
 	    } else {
 		sprintf(buf, "%s %s -l %s %s %s %s",
-			appData.remoteShell, appData.gateway, 
+			appData.remoteShell, appData.gateway,
 			appData.remoteUser, appData.telnetProgram,
 			appData.icsHost, appData.icsPort);
 	    }
@@ -1054,7 +1058,7 @@ SendToICSDelayed(s,msdelay)
 
 
 /* Remove all highlighting escape sequences in s
-   Also deletes any suffix starting with '(' 
+   Also deletes any suffix starting with '('
    */
 char *
 StripHighlightAndTitle(s)
@@ -1123,7 +1127,7 @@ StringToVariant(e)
     char buf[MSG_SIZ];
 
     if (!e) return v;
-    
+
     for (i=0; i<sizeof(variantNames)/sizeof(char*); i++) {
       if (StrCaseStr(e, variantNames[i])) {
 	v = (VariantClass) i;
@@ -1211,7 +1215,7 @@ StringToVariant(e)
 	  v = VariantShatranj;
 	  break;
 
-	/* Temporary names for future ICC types.  The name *will* change in 
+	/* Temporary names for future ICC types.  The name *will* change in
 	   the next xboard/WinBoard release after ICC defines it. */
 	case 29:
 	  v = Variant29;
@@ -1277,7 +1281,7 @@ looking_at(buf, index, pattern)
     char *bufp = &buf[*index], *patternp = pattern;
     int star_count = 0;
     char *matchp = star_match[0];
-    
+
     for (;;) {
 	if (*patternp == NULLCHAR) {
 	    *index = leftover_start = bufp - buf;
@@ -1449,7 +1453,7 @@ read_from_ics(isr, closure, data, count, error)
 #define STARTED_CHATTER 5
 #define STARTED_COMMENT 6
 #define STARTED_MOVES_NOHIDE 7
-    
+
     static int started = STARTED_NONE;
     static char parse[20000];
     static int parse_pos = 0;
@@ -1498,7 +1502,7 @@ read_from_ics(isr, closure, data, count, error)
 	buf[buf_len] = NULLCHAR;
 	next_out = leftover_len;
 	leftover_start = 0;
-	
+
 	i = 0;
 	while (i < buf_len) {
 	    /* Deal with part of the TELNET option negotiation
@@ -1610,12 +1614,12 @@ read_from_ics(isr, closure, data, count, error)
 		  next_out = i;
 		continue;
 	    }
-		
+
 	    /* OK, this at least will *usually* work */
 	    if (!loggedOn && looking_at(buf, &i, "ics%")) {
 		loggedOn = TRUE;
 	    }
-	    
+
 	    if (loggedOn && !intfSet) {
 		if (ics_type == ICS_ICC) {
 		  sprintf(str,
@@ -1726,9 +1730,9 @@ read_from_ics(isr, closure, data, count, error)
 	    if (appData.zippyTalk || appData.zippyPlay) {
 #if ZIPPY
 	#ifdef WIN32
-		/* Backup adress for color zippy lines */
+		/* Backup address for color zippy lines */
 		backup = i;
-		if (first.initDone && loggedOn == TRUE)
+		if (loggedOn == TRUE)
 			if (ZippyControl(buf, &backup) || ZippyConverse(buf, &backup) ||
 				(appData.zippyPlay && ZippyMatch(buf, &backup)));
 		#else
@@ -1930,14 +1934,14 @@ read_from_ics(isr, closure, data, count, error)
     	        SendToICS("refresh\n");
 		continue;
 	    }
-	    
+
 	    if (!have_sent_ICS_logon && looking_at(buf, &i, "login:")) {
 		ICSInitScript();
 		have_sent_ICS_logon = 1;
 		continue;
 	    }
-	      
-	    if (ics_getting_history != H_GETTING_MOVES /*smpos kludge*/ && 
+
+	    if (ics_getting_history != H_GETTING_MOVES /*smpos kludge*/ &&
 		(looking_at(buf, &i, "\n<12> ") ||
 		 looking_at(buf, &i, "<12> "))) {
 		loggedOn = TRUE;
@@ -2020,7 +2024,7 @@ read_from_ics(isr, closure, data, count, error)
 		    gameInfo.whiteRating = string_to_rating(star_match[1]);
 		    gameInfo.blackRating = string_to_rating(star_match[3]);
 		    if (appData.debugMode)
-		      fprintf(debugFP, _("Ratings from header: W %d, B %d\n"), 
+		      fprintf(debugFP, _("Ratings from header: W %d, B %d\n"),
 			      gameInfo.whiteRating, gameInfo.blackRating);
 		}
 		continue;
@@ -2074,8 +2078,8 @@ read_from_ics(isr, closure, data, count, error)
 		    break;
 		}
 		continue;
-	    }				
-	    
+	    }
+
 	    if (looking_at(buf, &i, "% ") ||
 		((started == STARTED_MOVES || started == STARTED_MOVES_NOHIDE)
 		 && looking_at(buf, &i, "}*"))) {
@@ -2093,7 +2097,7 @@ read_from_ics(isr, closure, data, count, error)
 			    if (WhiteOnMove(forwardMostMove)) {
 				if (first.sendTime) {
 				  if (first.useColors) {
-				    SendToProgram("black\n", &first); 
+				    SendToProgram("black\n", &first);
 				  }
 				  SendTimeRemaining(&first, TRUE);
 				}
@@ -2139,7 +2143,7 @@ read_from_ics(isr, closure, data, count, error)
 				  firstMove = TRUE;
 				}
 			    }
-			}			
+			}
 		    }
 #endif
 		    if (gameMode == IcsObserving && ics_gamenum == -1) {
@@ -2181,14 +2185,14 @@ read_from_ics(isr, closure, data, count, error)
 		}
 		continue;
 	    }
-	    
+
 	    if ((started == STARTED_MOVES || started == STARTED_BOARD ||
 		 started == STARTED_HOLDINGS ||
 		 started == STARTED_MOVES_NOHIDE) && i >= leftover_len) {
 		/* Accumulate characters in move list or board */
 		parse[parse_pos++] = buf[i];
 	    }
-	    
+
 	    /* Start of game messages.  Mostly we detect start of game
 	       when the first board image arrives.  On some versions
 	       of the ICS, though, we need to do a "refresh" after starting
@@ -2221,7 +2225,7 @@ read_from_ics(isr, closure, data, count, error)
 		player2Rating = string_to_rating(star_match[3]);
 
 		if (appData.debugMode)
-		  fprintf(debugFP, 
+		  fprintf(debugFP,
 			  "Ratings from 'Game notification:' %s %d, %s %d\n",
 			  player1Name, player1Rating,
 			  player2Name, player2Rating);
@@ -2251,8 +2255,8 @@ read_from_ics(isr, closure, data, count, error)
 		    SendToICS("refresh\n");
 		}
 		continue;
-	    }    
-	    
+	    }
+
 	    /* Error messages */
 	    if (ics_user_moved) {
 		if (looking_at(buf, &i, "Illegal move") ||
@@ -2314,7 +2318,7 @@ read_from_ics(isr, closure, data, count, error)
 		   2	empty, white, or black (IGNORED)
 		   3	player 2 name (not necessarily black)
 		   4    player 2 rating
-		   
+
 		   The names/ratings are sorted out when the game
 		   actually starts (below).
 		*/
@@ -2324,14 +2328,14 @@ read_from_ics(isr, closure, data, count, error)
 		player2Rating = string_to_rating(star_match[4]);
 
 		if (appData.debugMode)
-		  fprintf(debugFP, 
+		  fprintf(debugFP,
 			  "Ratings from 'Creating:' %s %d, %s %d\n",
 			  player1Name, player1Rating,
 			  player2Name, player2Rating);
 
 		continue;
 	    }
-	    
+
 	    /* Improved generic start/end-of-game messages */
 	    if ((tkind=0, looking_at(buf, &i, "{Game * (* vs. *) *}*")) ||
 		(tkind=1, looking_at(buf, &i, "{Game * (*(*) vs. *(*)) *}*"))){
@@ -2480,8 +2484,8 @@ read_from_ics(isr, closure, data, count, error)
 			ClearPremoveHighlights();
 			if (appData.debugMode)
 			  fprintf(debugFP, "Sending premove:\n");
-			  UserMoveEvent(premoveFromX, premoveFromY, 
-				        premoveToX, premoveToY, 
+			  UserMoveEvent(premoveFromX, premoveFromY,
+				        premoveToX, premoveToY,
 				        premovePromoChar);
 		      }
 		    }
@@ -2549,17 +2553,17 @@ read_from_ics(isr, closure, data, count, error)
 
 	    i++;		/* skip unparsed character and loop back */
 	}
-	
+
 	if (started != STARTED_MOVES && started != STARTED_BOARD &&
 	    started != STARTED_HOLDINGS && i > next_out) {
 	    SendToPlayer(&buf[next_out], i - next_out);
 	    next_out = i;
 	}
-	
+
 	leftover_len = buf_len - leftover_start;
 	/* if buffer ends with something we couldn't parse,
 	   reparse it after appending the next read */
-	
+
     } else if (count == 0) {
 	RemoveInputSource(isr);
         DisplayFatalError(_("Connection closed by ICS"), 0, 0);
@@ -2570,13 +2574,13 @@ read_from_ics(isr, closure, data, count, error)
 
 
 /* Board style 12 looks like this:
-   
+
    <12> r-b---k- pp----pp ---bP--- ---p---- q------- ------P- P--Q--BP -----R-K W -1 0 0 0 0 0 0 paf MaxII 0 2 12 21 25 234 174 24 Q/d7-a4 (0:06) Qxa4 0 0
-   
+
  * The "<12> " is stripped before it gets to this routine.  The two
  * trailing 0's (flip state and clock ticking) are later addition, and
  * some chess servers may not have them, or may have only the first.
- * Additional trailing fields may be added in the future.  
+ * Additional trailing fields may be added in the future.
  */
 
 #define PATTERN "%72c%c%d%d%d%d%d%d%d%s%s%d%d%d%d%d%d%d%d%s%s%s%d%d"
@@ -2592,7 +2596,7 @@ read_from_ics(isr, closure, data, count, error)
 void
 ParseBoard12(string)
      char *string;
-{ 
+{
     GameMode newGameMode;
     int gamenum, newGame, newMove, relation, basetime, increment, ics_flip = 0;
     int j, k, n, moveNum, white_stren, black_stren, white_time, black_time;
@@ -2608,7 +2612,7 @@ ParseBoard12(string)
     char promoChar;
 
     fromX = fromY = toX = toY = -1;
-    
+
     newGame = FALSE;
 
     if (appData.debugMode)
@@ -2637,7 +2641,7 @@ ParseBoard12(string)
 			0, 1);
       return;
     }
-    
+
     switch (relation) {
       case RELATION_OBSERVING_PLAYED:
       case RELATION_OBSERVING_STATIC:
@@ -2659,14 +2663,14 @@ ParseBoard12(string)
       case RELATION_ISOLATED_BOARD:
       default:
 	/* Just display this board.  If user was doing something else,
-	   we will forget about it until the next board comes. */ 
+	   we will forget about it until the next board comes. */
 	newGameMode = IcsIdle;
 	break;
       case RELATION_STARTING_POSITION:
 	newGameMode = gameMode;
 	break;
     }
-    
+
     /* Modify behavior for initial board display on move listing
        of wild games.
        */
@@ -2699,12 +2703,12 @@ ParseBoard12(string)
 	ics_getting_history = H_FALSE;
 	return;
     }
-    
+
     /* Take action if this is the first board of a new game, or of a
        different game than is currently being displayed.  */
     if (gamenum != ics_gamenum || newGameMode != gameMode ||
 	relation == RELATION_ISOLATED_BOARD) {
-	
+
 	/* Forget the old game and get the history (if any) of the new one */
 	if (gameMode != BeginningOfGame) {
 	  Reset(FALSE, TRUE);
@@ -2721,14 +2725,14 @@ ParseBoard12(string)
 	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
 	    SendToICS(str);
 	}
-	
+
 	/* Initially flip the board to have black on the bottom if playing
 	   black or if the ICS flip flag is set, but let the user change
 	   it with the Flip View button. */
-	flipView = appData.autoFlipView ? 
+	flipView = appData.autoFlipView ?
 	  (newGameMode == IcsPlayingBlack) || ics_flip :
 	  appData.flipView;
-	
+
 	/* Done with values from previous mode; copy in new ones */
 	gameMode = newGameMode;
 	ModeHighlight();
@@ -2751,7 +2755,7 @@ ParseBoard12(string)
 	movesPerSession = 0;
 	gameInfo.timeControl = TimeControlTagValue();
 	gameInfo.variant = StringToVariant(gameInfo.event);
-	
+
 	/* Do we have the ratings? */
 	if (strcmp(player1Name, white) == 0 &&
 	    strcmp(player2Name, black) == 0) {
@@ -2777,7 +2781,7 @@ ParseBoard12(string)
 	    SendToICS("set shout 0\n");
 	}
     }
-    
+
     /* Deal with midgame name changes */
     if (!newGame) {
 	if (!gameInfo.white || strcmp(gameInfo.white, white) != 0) {
@@ -2789,7 +2793,7 @@ ParseBoard12(string)
 	    gameInfo.black = StrSave(black);
 	}
     }
-    
+
     /* Throw away game result if anything actually changes in examine mode */
     if (gameMode == IcsExamining && !newGame) {
 	gameInfo.result = GameUnfinished;
@@ -2798,7 +2802,7 @@ ParseBoard12(string)
 	    gameInfo.resultDetails = NULL;
 	}
     }
-    
+
     /* In pausing && IcsExamining mode, we ignore boards coming
        in if they are in a different variation than we are. */
     if (pauseExamInvalid) return;
@@ -2809,7 +2813,7 @@ ParseBoard12(string)
 	    return;
 	}
     }
-    
+
     /* Parse the board */
     for (k = 0; k < 8; k++)
       for (j = 0; j < 8; j++)
@@ -2819,14 +2823,14 @@ ParseBoard12(string)
 	startedFromSetupPosition =
 	  !CompareBoards(board, initialPosition);
     }
-    
+
     if (ics_getting_history == H_GOT_REQ_HEADER ||
 	ics_getting_history == H_GOT_UNREQ_HEADER) {
 	/* This was an initial position from a move list, not
 	   the current position */
 	return;
     }
-    
+
     /* Update currentMove and known move number limits */
     newMove = newGame || moveNum > forwardMostMove;
     if (newGame) {
@@ -2845,7 +2849,7 @@ ParseBoard12(string)
 	if (!pausing || currentMove > forwardMostMove)
 	  currentMove = forwardMostMove;
     } else {
-	/* New part of history that is not contiguous with old part */ 
+	/* New part of history that is not contiguous with old part */
 	if (pausing && gameMode == IcsExamining) {
 	    pauseExamInvalid = TRUE;
 	    forwardMostMove = pauseExamForwardMostMove;
@@ -2858,7 +2862,7 @@ ParseBoard12(string)
 	    SendToICS(str);
 	}
     }
-    
+
     /* Update the clocks */
     if (strchr(elapsed_time, '.')) {
       /* Time is in ms */
@@ -2869,7 +2873,7 @@ ParseBoard12(string)
       timeRemaining[0][moveNum] = whiteTimeRemaining = white_time * 1000;
       timeRemaining[1][moveNum] = blackTimeRemaining = black_time * 1000;
     }
-      
+
 
 #if ZIPPY
     if (appData.zippyPlay && newGame &&
@@ -2877,7 +2881,7 @@ ParseBoard12(string)
 	gameMode != IcsExamining)
       ZippyFirstBoard(moveNum, basetime, increment);
 #endif
-    
+
     /* Put the move on the move list, first converting
        to canonical algebraic form. */
     if (moveNum > 0) {
@@ -2936,7 +2940,7 @@ ParseBoard12(string)
 
 #if ZIPPY
 	/* Send move to chess program (BEFORE animating it). */
-	if (appData.zippyPlay && !newGame && newMove && 
+	if (appData.zippyPlay && !newGame && newMove &&
 	   (!appData.getMoveList || backwardMostMove == 0) && first.initDone) {
 
 	    if ((gameMode == IcsPlayingWhite && WhiteOnMove(moveNum)) ||
@@ -2984,7 +2988,7 @@ ParseBoard12(string)
 	    SetHighlights(fromX, fromY, toX, toY);
 	}
     }
-    
+
     /* Start the clocks */
     whiteFlag = blackFlag = FALSE;
     appData.clockMode = !(basetime == 0 && increment == 0);
@@ -3001,28 +3005,28 @@ ParseBoard12(string)
       DisplayBothClocks();
     else
       StartClocks();
-    
+
     /* Display opponents and material strengths */
     if (gameInfo.variant != VariantBughouse &&
 	gameInfo.variant != VariantCrazyhouse) {
 	if (tinyLayout || smallLayout) {
-	    sprintf(str, "%s(%d) %s(%d) {%d %d}", 
+	    sprintf(str, "%s(%d) %s(%d) {%d %d}",
 		    gameInfo.white, white_stren, gameInfo.black, black_stren,
 		    basetime, increment);
 	} else {
-	    sprintf(str, "%s (%d) vs. %s (%d) {%d %d}", 
+	    sprintf(str, "%s (%d) vs. %s (%d) {%d %d}",
 		    gameInfo.white, white_stren, gameInfo.black, black_stren,
 		    basetime, increment);
 	}
 	DisplayTitle(str);
     }
 
-   
+
     /* Display the board */
     if (!pausing) {
-      
+
       if (appData.premove)
-	  if (!gotPremove || 
+	  if (!gotPremove ||
 	     ((gameMode == IcsPlayingWhite) && (WhiteOnMove(currentMove))) ||
 	     ((gameMode == IcsPlayingBlack) && (!WhiteOnMove(currentMove))))
 	      ClearPremoveHighlights();
@@ -3188,7 +3192,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
      ChessMove *moveType;
      int *fromX, *fromY, *toX, *toY;
      char *promoChar;
-{       
+{
     *moveType = yylexstr(moveNum, move);
     switch (*moveType) {
       case WhitePromotionQueen:
@@ -3295,7 +3299,7 @@ SendBoard(cps, moveNum)
      int moveNum;
 {
     char message[MSG_SIZ];
-    
+
     if (cps->useSetboard) {
       char* fen = PositionToFEN(moveNum);
       sprintf(message, "setboard %s\n", fen);
@@ -3316,13 +3320,13 @@ SendBoard(cps, moveNum)
 	bp = &boards[moveNum][i][0];
 	for (j = 0; j < BOARD_SIZE; j++, bp++) {
 	  if ((int) *bp < (int) BlackPawn) {
-	    sprintf(message, "%c%c%c\n", PieceToChar(*bp), 
+	    sprintf(message, "%c%c%c\n", PieceToChar(*bp),
 		    'a' + j, '1' + i);
 	    SendToProgram(message, cps);
 	  }
 	}
       }
-    
+
       SendToProgram("c\n", cps);
       for (i = BOARD_SIZE - 1; i >= 0; i--) {
 	bp = &boards[moveNum][i][0];
@@ -3335,7 +3339,7 @@ SendBoard(cps, moveNum)
 	  }
 	}
       }
-    
+
       SendToProgram(".\n", cps);
     }
 }
@@ -3415,11 +3419,11 @@ OKToStartUserMove(x, y)
 	if (!white_piece && WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is White's turn"));
 	    return FALSE;
-	}	    
+	}
 	if (white_piece && !WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is Black's turn"));
 	    return FALSE;
-	}	    
+	}
 	if (cmailMsgLoaded && (currentMove < cmailOldMove)) {
 	    /* Editing correspondence game history */
 	    /* Could disallow this or prompt for confirmation */
@@ -3442,16 +3446,16 @@ OKToStartUserMove(x, y)
 	    }
 	}
 	break;
-	
+
       case Training:
 	if (!white_piece && WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is White's turn"));
 	    return FALSE;
-	}	    
+	}
 	if (white_piece && !WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is Black's turn"));
 	    return FALSE;
-	}	    
+	}
 	break;
 
       default:
@@ -3484,7 +3488,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
     if ((fromX == toX) && (fromY == toY)) {
 	return;
     }
-	
+
     /* Check if the user is playing in turn.  This is complicated because we
        let the user "pick up" a piece before it is his turn.  So the piece he
        tried to pick up may have been captured by the time he puts it down!
@@ -3556,7 +3560,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 		premoveFromY = fromY;
 		premovePromoChar = promoChar;
 		gotPremove = 1;
-		if (appData.debugMode) 
+		if (appData.debugMode)
 		    fprintf(debugFP, "Got premove: fromX %d,"
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
@@ -3577,7 +3581,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 		premoveFromY = fromY;
 		premovePromoChar = promoChar;
 		gotPremove = 1;
-		if (appData.debugMode) 
+		if (appData.debugMode)
 		    fprintf(debugFP, "Got premove: fromX %d,"
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
@@ -3603,7 +3607,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 
     if (toX < 0 || toY < 0) return;
     userOfferedDraw = FALSE;
-	
+
     if (appData.testLegality) {
 	moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
 				EP_UNKNOWN, fromY, fromX, toY, toX, promoChar);
@@ -3617,7 +3621,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 
     if (gameMode == Training) {
       /* compare the move played on the board to the next move in the
-       * game. If they match, display the move and the opponent's response. 
+       * game. If they match, display the move and the opponent's response.
        * If they don't match, display an error message.
        */
       int saveAnimate;
@@ -3738,7 +3742,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
       break;
     }
     break;
-    
+
   case MachinePlaysBlack:
   case MachinePlaysWhite:
     /* disable certain menu options while machine is thinking */
@@ -3893,9 +3897,9 @@ HandleMachineMove(message, cps)
 	strcpy(machineMove, currentMoveString);
 	strcat(machineMove, "\n");
 	strcpy(moveList[forwardMostMove], machineMove);
-    
+
 	MakeMove(fromX, fromY, toX, toY, promoChar);/*updates forwardMostMove*/
-    
+
 	if (gameMode == TwoMachinesPlay) {
 	    if (cps->other->sendTime) {
 		SendTimeRemaining(cps->other,
@@ -3916,7 +3920,7 @@ HandleMachineMove(message, cps)
 	if (!pausing && appData.ringBellAfterMoves) {
 	    RingBell();
 	}
-	/* 
+	/*
 	 * Reenable menu items that were disabled while
 	 * machine was thinking
 	 */
@@ -3988,8 +3992,8 @@ HandleMachineMove(message, cps)
 	AskQuestion(realname, buf2, buf1, cps->pr);
 	return;
     }
-    /* Commands from the engine directly to ICS.  We don't allow these to be 
-     *  sent until we are logged on. Crafty kibitzes have been known to 
+    /* Commands from the engine directly to ICS.  We don't allow these to be
+     *  sent until we are logged on. Crafty kibitzes have been known to
      *  interfere with the login process.
      */
     if (loggedOn) {
@@ -4026,7 +4030,7 @@ HandleMachineMove(message, cps)
      */
     if (strncmp(message + 1, "llegal move", 11) == 0 ||
 	strncmp(message, "Error", 5) == 0) {
-	if (StrStr(message, "name") || 
+	if (StrStr(message, "name") ||
 	    StrStr(message, "rating") || StrStr(message, "?") ||
 	    StrStr(message, "result") || StrStr(message, "board") ||
 	    StrStr(message, "bk") || StrStr(message, "computer") ||
@@ -4090,7 +4094,7 @@ HandleMachineMove(message, cps)
 	   message in analyze mored would be ignored. */
 	if (cps == &first && programStats.ok_to_send == 0) {
 	    /* Bogus message from Crafty responding to "."  This filtering
-	       can miss some of the bad messages, but fortunately the bug 
+	       can miss some of the bad messages, but fortunately the bug
 	       is fixed in current Crafty versions, so it doesn't matter. */
 	    return;
 	}
@@ -4117,7 +4121,7 @@ HandleMachineMove(message, cps)
 	   Don't use it. */
 	cps->sendTime = 0;
     }
-    
+
     /*
      * If chess program startup fails, exit with an error message.
      * Attempts to recover here are futile.
@@ -4136,8 +4140,8 @@ HandleMachineMove(message, cps)
 	DisplayFatalError(buf1, 0, 1);
 	return;
     }
-    
-    /* 
+
+    /*
      * Look for hint output
      */
     if (sscanf(message, "Hint: %s", buf1) == 1) {
@@ -4333,7 +4337,7 @@ HandleMachineMove(message, cps)
 	}
     }
 
-    
+
     /*
      * Look for thinking output
      */
@@ -4410,9 +4414,9 @@ HandleMachineMove(message, cps)
 		} else {
 		    programStats.line_is_book = 0;
 		}
-		  
+
 		sprintf(thinkOutput, "[%d]%c%+.2f %s%s%s",
-			plylev, 
+			plylev,
 			(gameMode == TwoMachinesPlay ?
 			 ToUpper(cps->twoMachinesColor[0]) : ' '),
 			((double) curscore) / 100.0,
@@ -4444,7 +4448,7 @@ HandleMachineMove(message, cps)
 		   mean "line isn't going to change" (Crafty
 		   isn't searching, so stats won't change) */
 		programStats.line_is_book = 1;
-		  
+
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode ||
 		    gameMode == AnalyzeFile) {
 		    DisplayMove(currentMove - 1);
@@ -4504,7 +4508,7 @@ HandleMachineMove(message, cps)
 
 /* Parse a game score from the character string "game", and
    record it as the history of the current game.  The game
-   score is NOT assumed to start from the standard position. 
+   score is NOT assumed to start from the standard position.
    The display is not updated in any way.
    */
 void
@@ -4930,7 +4934,7 @@ InitChessProgram(cps)
       SendToProgram(buf, cps);
     }
     cps->initDone = TRUE;
-}   
+}
 
 
 void
@@ -4957,7 +4961,7 @@ StartChessProgram(cps)
 	}
 	err = StartChildProcess(buf, "", &cps->pr);
     }
-    
+
     if (err != 0) {
 	sprintf(buf, "Startup failure on '%s'", cps->program);
 	DisplayFatalError(buf, err, 1);
@@ -4965,7 +4969,7 @@ StartChessProgram(cps)
 	cps->isr = NULL;
 	return;
     }
-    
+
     cps->isr = AddInputSource(cps->pr, TRUE, ReceiveFromProgram, cps);
     if (cps->protocolVersion > 1) {
       sprintf(buf, "xboard\nprotover %d\n", cps->protocolVersion);
@@ -5025,8 +5029,8 @@ GameEnds(result, resultDetails, whosays)
 
     if (appData.icsActive && whosays == GE_ENGINE) {
 	/* If we are playing on ICS, the server decides when the
-	   game is over, but the engine can offer to draw, claim 
-	   a draw, or resign. 
+	   game is over, but the engine can offer to draw, claim
+	   a draw, or resign.
 	 */
 #if ZIPPY
 	if (appData.zippyPlay && first.initDone) {
@@ -5054,17 +5058,17 @@ GameEnds(result, resultDetails, whosays)
 
     /* If this is an ICS game, only ICS can really say it's done;
        if not, anyone can. */
-    isIcsGame = (gameMode == IcsPlayingWhite || 
-	         gameMode == IcsPlayingBlack || 
-		 gameMode == IcsObserving    || 
+    isIcsGame = (gameMode == IcsPlayingWhite ||
+	         gameMode == IcsPlayingBlack ||
+		 gameMode == IcsObserving    ||
 		 gameMode == IcsExamining);
 
     if (!isIcsGame || whosays == GE_ICS) {
 	/* OK -- not an ICS game, or ICS said it was done */
 	StopClocks();
-	if (!isIcsGame && !appData.noChessProgram) 
+	if (!isIcsGame && !appData.noChessProgram)
 	  SetUserThinkingEnables();
-    
+
 	if (resultDetails != NULL) {
 	    gameInfo.result = result;
 	    gameInfo.resultDetails = StrSave(resultDetails);
@@ -5091,7 +5095,7 @@ GameEnds(result, resultDetails, whosays)
 	    /* display last move only if game was not loaded from file */
 	    if ((whosays != GE_FILE) && (currentMove == forwardMostMove))
 		DisplayMove(currentMove - 1);
-    
+
 	    if (forwardMostMove != 0) {
 		if (gameMode != PlayFromGameFile && gameMode != EditGame) {
 		    if (*appData.saveGameFile != NULLCHAR) {
@@ -5145,8 +5149,8 @@ GameEnds(result, resultDetails, whosays)
 		}
 	    }
 	} else if (gameMode == EditGame ||
-	           gameMode == PlayFromGameFile || 
-	           gameMode == AnalyzeMode || 
+	           gameMode == PlayFromGameFile ||
+	           gameMode == AnalyzeMode ||
 		   gameMode == AnalyzeFile) {
 	    nextGameMode = gameMode;
 	} else {
@@ -5185,7 +5189,7 @@ GameEnds(result, resultDetails, whosays)
 	if (first.isr != NULL)
 	  RemoveInputSource(first.isr);
 	first.isr = NULL;
-    
+
 	if (first.pr != NoProc) {
 	    ExitAnalyzeMode();
 	    SendToProgram("quit\n", &first);
@@ -5209,7 +5213,7 @@ GameEnds(result, resultDetails, whosays)
 	if (second.isr != NULL)
 	  RemoveInputSource(second.isr);
 	second.isr = NULL;
-    
+
 	if (second.pr != NoProc) {
 	    SendToProgram("quit\n", &second);
 	    DestroyChildProcess(second.pr, second.useSigterm);
@@ -5265,12 +5269,12 @@ GameEnds(result, resultDetails, whosays)
 /* Assumes program was just initialized (initString sent).
    Leaves program in force mode. */
 void
-FeedMovesToProgram(cps, upto) 
+FeedMovesToProgram(cps, upto)
      ChessProgramState *cps;
      int upto;
 {
     int i;
-    
+
     if (appData.debugMode)
       fprintf(debugFP, "Feeding %smoves %d through %d to %s chess program\n",
 	      startedFromSetupPosition ? "position and " : "",
@@ -5292,7 +5296,7 @@ ResurrectChessProgram()
 	If so, restart it and feed it all the moves made so far. */
 
     if (appData.noChessProgram || first.pr != NoProc) return;
-    
+
     StartChessProgram(&first);
     InitChessProgram(&first);
     FeedMovesToProgram(&first, currentMove);
@@ -5343,7 +5347,7 @@ Reset(redraw, init)
     ics_gamenum = -1;
     white_holding[0] = black_holding[0] = NULLCHAR;
     ClearProgramStats();
-    
+
     ResetFrontEnd();
     ClearHighlights();
     flipView = appData.flipView;
@@ -5407,7 +5411,7 @@ AutoPlayOneMove()
       ModeHighlight();
       return FALSE;
     }
-    
+
     toX = moveList[currentMove][2] - 'a';
     toY = moveList[currentMove][3] - '1';
 
@@ -5444,13 +5448,13 @@ LoadGameOneMove(readAhead)
     ChessMove moveType;
     char move[MSG_SIZ];
     char *p, *q;
-    
-    if (gameMode != PlayFromGameFile && gameMode != AnalyzeFile && 
+
+    if (gameMode != PlayFromGameFile && gameMode != AnalyzeFile &&
 	gameMode != AnalyzeMode && gameMode != Training) {
 	gameFileFP = NULL;
 	return FALSE;
     }
-    
+
     yyboardindex = forwardMostMove;
     if (readAhead != (ChessMove)0) {
       moveType = readAhead;
@@ -5459,11 +5463,11 @@ LoadGameOneMove(readAhead)
 	  return FALSE;
       moveType = (ChessMove) yylex();
     }
-    
+
     done = FALSE;
     switch (moveType) {
       case Comment:
-	if (appData.debugMode) 
+	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed Comment: %s\n", yy_text);
 	p = yy_text;
 	if (*p == '{' || *p == '[' || *p == '(') {
@@ -5668,7 +5672,7 @@ LoadGameOneMove(readAhead)
 	/* currentMoveString is set as a side-effect of yylex */
 	strcat(currentMoveString, "\n");
 	strcpy(moveList[forwardMostMove], currentMoveString);
-	
+
 	thinkOutput[0] = NULLCHAR;
 	MakeMove(fromX, fromY, toX, toY, promoChar);
 	currentMove = forwardMostMove;
@@ -5731,7 +5735,7 @@ MakeRegisteredMove()
 	    if (appData.debugMode)
 	      fprintf(debugFP, "Restoring %s for game %d\n",
 		      cmailMove[lastLoadGameNumber - 1], lastLoadGameNumber);
-    
+
 	    thinkOutput[0] = NULLCHAR;
 	    strcpy(moveList[currentMove], cmailMove[lastLoadGameNumber - 1]);
 	    fromX = cmailMove[lastLoadGameNumber - 1][0] - 'a';
@@ -5741,13 +5745,13 @@ MakeRegisteredMove()
 	    promoChar = cmailMove[lastLoadGameNumber - 1][4];
 	    MakeMove(fromX, fromY, toX, toY, promoChar);
 	    ShowMove(fromX, fromY, toX, toY);
-	      
+
 	    switch (MateTest(boards[currentMove], PosFlags(currentMove),
 			     EP_UNKNOWN)) {
 	      case MT_NONE:
 	      case MT_CHECK:
 		break;
-    		
+
 	      case MT_CHECKMATE:
 		if (WhiteOnMove(currentMove)) {
 		    GameEnds(BlackWins, "Black mates", GE_PLAYER);
@@ -5755,14 +5759,14 @@ MakeRegisteredMove()
 		    GameEnds(WhiteWins, "White mates", GE_PLAYER);
 		}
 		break;
-    		
+
 	      case MT_STALEMATE:
 		GameEnds(GameIsDrawn, "Stalemate", GE_PLAYER);
 		break;
 	    }
 
 	    break;
-	    
+
 	  case CMAIL_RESIGN:
 	    if (WhiteOnMove(currentMove)) {
 		GameEnds(BlackWins, "White resigns", GE_PLAYER);
@@ -5770,11 +5774,11 @@ MakeRegisteredMove()
 		GameEnds(WhiteWins, "Black resigns", GE_PLAYER);
 	    }
 	    break;
-	    
+
 	  case CMAIL_ACCEPT:
 	    GameEnds(GameIsDrawn, "Draw agreed", GE_PLAYER);
 	    break;
-	      
+
 	  default:
 	    break;
 	}
@@ -5869,7 +5873,7 @@ LoadGame(f, gameNumber, title, useList)
     int err;
     GameMode oldGameMode;
 
-    if (appData.debugMode) 
+    if (appData.debugMode)
 	fprintf(debugFP, "LoadGame(): on entry, gameMode %d\n", gameMode);
 
     if (gameMode == Training )
@@ -5887,7 +5891,7 @@ LoadGame(f, gameNumber, title, useList)
 
     if (useList) {
 	lg = (ListGame *) ListElem(&gameList, gameNumber-1);
-	
+
 	if (lg) {
 	    fseek(f, lg->offset, 0);
 	    GameListHighlight(gameNumber);
@@ -5942,12 +5946,12 @@ LoadGame(f, gameNumber, title, useList)
 
     /*
      * Skip the first gn-1 games in the file.
-     * Also skip over anything that precedes an identifiable 
-     * start of game marker, to avoid being confused by 
-     * garbage at the start of the file.  Currently 
+     * Also skip over anything that precedes an identifiable
+     * start of game marker, to avoid being confused by
+     * garbage at the start of the file.  Currently
      * recognized start of game markers are the move number "1",
      * the pattern "gnuchess .* game", the pattern
-     * "^[#;%] [^ ]* game file", and a PGN tag block.  
+     * "^[#;%] [^ ]* game file", and a PGN tag block.
      * A game that starts with one of the latter two patterns
      * will also have a move number 1, possibly
      * following a position diagram.
@@ -5973,7 +5977,7 @@ LoadGame(f, gameNumber, title, useList)
 	    gn--;
 	    lastLoadGameStart = cm;
 	    break;
-	    
+
 	  case MoveNumberOne:
 	    switch (lastLoadGameStart) {
 	      case GNUChessGame:
@@ -6041,7 +6045,7 @@ LoadGame(f, gameNumber, title, useList)
 	    break;
 	}
     }
-    
+
     if (appData.debugMode)
       fprintf(debugFP, "Parsed game start '%s' (%d)\n", yy_text, (int) cm);
 
@@ -6067,11 +6071,11 @@ LoadGame(f, gameNumber, title, useList)
 	    free(gameInfo.event);
 	}
 	gameInfo.event = StrSave(yy_text);
-    }	
+    }
 
     startedFromSetupPosition = FALSE;
     while (cm == PGNTag) {
-	if (appData.debugMode) 
+	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed PGNTag: %s\n", yy_text);
 	err = ParsePGNTag(yy_text, &gameInfo);
 	if (!err) numPGNTags++;
@@ -6110,7 +6114,7 @@ LoadGame(f, gameNumber, title, useList)
 	/* Handle comments interspersed among the tags */
 	while (cm == Comment) {
 	    char *p;
-	    if (appData.debugMode) 
+	    if (appData.debugMode)
 	      fprintf(debugFP, "Parsed Comment: %s\n", yy_text);
 	    p = yy_text;
 	    if (*p == '{' || *p == '[' || *p == '(') {
@@ -6169,13 +6173,13 @@ LoadGame(f, gameNumber, title, useList)
 		}
 	    while (*p == ' ' || *p == '\t' ||
 		   *p == '\n' || *p == '\r') p++;
-	
+
 	    if (strncmp(p, "black", strlen("black"))==0)
 	      blackPlaysFirst = TRUE;
 	    else
 	      blackPlaysFirst = FALSE;
 	    startedFromSetupPosition = TRUE;
-	
+
 	    CopyBoard(boards[0], initial_position);
 	    if (blackPlaysFirst) {
 		currentMove = forwardMostMove = backwardMostMove = 1;
@@ -6204,11 +6208,11 @@ LoadGame(f, gameNumber, title, useList)
     if (startedFromSetupPosition) {
 	SendBoard(&first, forwardMostMove);
 	DisplayBothClocks();
-    }      
+    }
 
     while (cm == Comment) {
 	char *p;
-	if (appData.debugMode) 
+	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed Comment: %s\n", yy_text);
 	p = yy_text;
 	if (*p == '{' || *p == '[' || *p == '(') {
@@ -6245,7 +6249,7 @@ LoadGame(f, gameNumber, title, useList)
 	DisplayComment(currentMove - 1, commentList[currentMove]);
       }
     }
-    if (!matchMode && appData.timeDelay != 0) 
+    if (!matchMode && appData.timeDelay != 0)
       DrawPosition(FALSE, boards[currentMove]);
 
     if (gameMode == AnalyzeFile || gameMode == AnalyzeMode) {
@@ -6253,7 +6257,7 @@ LoadGame(f, gameNumber, title, useList)
     }
 
     /* if the first token after the PGN tags is a move
-     * and not move number 1, retrieve it from the parser 
+     * and not move number 1, retrieve it from the parser
      */
     if (cm != MoveNumberOne)
 	LoadGameOneMove(cm);
@@ -6282,7 +6286,7 @@ LoadGame(f, gameNumber, title, useList)
       AutoPlayGameLoop();
     }
 
-    if (appData.debugMode) 
+    if (appData.debugMode)
 	fprintf(debugFP, "LoadGame(): on exit, gameMode %d\n", gameMode);
     return TRUE;
 }
@@ -6339,7 +6343,7 @@ LoadPosition(f, positionNumber, title)
     char *p, line[MSG_SIZ];
     Board initial_position;
     int i, j, fenMode, pn;
-    
+
     if (gameMode == Training )
 	SetTrainingModeOff();
 
@@ -6356,7 +6360,7 @@ LoadPosition(f, positionNumber, title)
     if (first.pr == NoProc) {
       StartChessProgram(&first);
       InitChessProgram(&first);
-    }    
+    }
     pn = positionNumber;
     if (positionNumber < 0) {
 	/* Negative position number means to seek to that byte offset */
@@ -6416,7 +6420,7 @@ LoadPosition(f, positionNumber, title)
     } else {
 	(void) fgets(line, MSG_SIZ, f);
 	(void) fgets(line, MSG_SIZ, f);
-    
+
 	for (i = BOARD_SIZE - 1; i >= 0; i--) {
 	    (void) fgets(line, MSG_SIZ, f);
 	    for (p = line, j = 0; j < BOARD_SIZE; p++) {
@@ -6425,7 +6429,7 @@ LoadPosition(f, positionNumber, title)
 		initial_position[i][j++] = CharToPiece(*p);
 	    }
 	}
-    
+
 	blackPlaysFirst = FALSE;
 	if (!feof(f)) {
 	    (void) fgets(line, MSG_SIZ, f);
@@ -6434,7 +6438,7 @@ LoadPosition(f, positionNumber, title)
 	}
     }
     startedFromSetupPosition = TRUE;
-    
+
     SendToProgram("force\n", &first);
     CopyBoard(boards[0], initial_position);
     if (blackPlaysFirst) {
@@ -6461,7 +6465,7 @@ LoadPosition(f, positionNumber, title)
     timeRemaining[0][1] = whiteTimeRemaining;
     timeRemaining[1][1] = blackTimeRemaining;
     DrawPosition(FALSE, boards[currentMove]);
-   
+
     return TRUE;
 }
 
@@ -6528,7 +6532,7 @@ SavePart(str)
 {
     static char buf[MSG_SIZ];
     char *p;
-    
+
     p = strchr(str, ' ');
     if (p == NULL) return str;
     strncpy(buf, str, p - str);
@@ -6548,11 +6552,11 @@ SaveGamePGN(f)
     char *movetext;
     char numtext[32];
     int movelen, numlen, blank;
-    
+
     tm = time((time_t *) NULL);
-    
+
     PrintPGNTags(f, &gameInfo);
-    
+
     if (backwardMostMove > 0 || startedFromSetupPosition) {
         char *fen = PositionToFEN(backwardMostMove);
         fprintf(f, "[FEN \"%s\"]\n[SetUp \"1\"]\n", fen);
@@ -6625,7 +6629,7 @@ SaveGamePGN(f)
 
 	i++;
     }
-    
+
     /* Start a new line */
     if (linelen > 0) fprintf(f, "\n");
 
@@ -6654,12 +6658,12 @@ SaveGameOldStyle(f)
 {
     int i, offset;
     time_t tm;
-    
+
     tm = time((time_t *) NULL);
-    
+
     fprintf(f, "# %s game file -- %s", programName, ctime(&tm));
     PrintOpponents(f);
-    
+
     if (backwardMostMove > 0 || startedFromSetupPosition) {
 	fprintf(f, "\n[--------------\n");
 	PrintPosition(f, backwardMostMove);
@@ -6694,7 +6698,7 @@ SaveGameOldStyle(f)
 	    i++;
 	}
     }
-    
+
     if (commentList[i] != NULL) {
 	fprintf(f, "[%s]\n", commentList[i]);
     }
@@ -6758,10 +6762,10 @@ SavePosition(f, dummy, dummy2)
 {
     time_t tm;
     char *fen;
-    
+
     if (appData.oldSaveStyle) {
 	tm = time((time_t *) NULL);
-    
+
 	fprintf(f, "# %s position file -- %s", programName, ctime(&tm));
 	PrintOpponents(f);
 	fprintf(f, "[--------------\n");
@@ -6786,7 +6790,7 @@ ReloadCmailMsgEvent(unregister)
     int i;
     struct stat inbuf, outbuf;
     int status;
-    
+
     /* Any registered moves are unregistered if unregister is set, */
     /* i.e. invoked by the signal handler */
     if (unregister) {
@@ -6814,7 +6818,7 @@ ReloadCmailMsgEvent(unregister)
 	outFilename = (char *) malloc(strlen(appData.cmailGameName) + 5);
 	sprintf(outFilename, "%s.out", appData.cmailGameName);
     }
-    
+
     status = stat(outFilename, &outbuf);
     if (status < 0) {
 	cmailMailedMove = FALSE;
@@ -6822,10 +6826,10 @@ ReloadCmailMsgEvent(unregister)
 	status = stat(inFilename, &inbuf);
 	cmailMailedMove = (inbuf.st_mtime < outbuf.st_mtime);
     }
-    
+
     /* LoadGameFromFile(CMAIL_MAX_GAMES) with cmailMsgLoaded == TRUE
        counts the games, notes how each one terminated, etc.
-       
+
        It would be nice to remove this kludge and instead gather all
        the information while building the game list.  (And to keep it
        in the game list nodes instead of having a bunch of fixed-size
@@ -6835,7 +6839,7 @@ ReloadCmailMsgEvent(unregister)
        */
     cmailMsgLoaded = TRUE;
     LoadGameFromFile(inFilename, CMAIL_MAX_GAMES, "", FALSE);
-    
+
     /* Load first game in the file or popup game menu */
     LoadGameFromFile(inFilename, 0, appData.cmailGameName, TRUE);
 
@@ -6861,7 +6865,7 @@ RegisterMove()
 	cmailMoveRegistered[lastLoadGameNumber - 1] = FALSE;
 	nCmailMovesRegistered --;
 
-	if (cmailCommentList[lastLoadGameNumber - 1] != NULL) 
+	if (cmailCommentList[lastLoadGameNumber - 1] != NULL)
 	  {
 	      free(cmailCommentList[lastLoadGameNumber - 1]);
 	      cmailCommentList[lastLoadGameNumber - 1] = NULL;
@@ -6908,11 +6912,11 @@ RegisterMove()
 
 	sprintf(string,
 		"%s.game.out.%d", appData.cmailGameName, lastLoadGameNumber);
-	
+
 	f = fopen(string, "w");
 	if (appData.oldSaveStyle) {
 	    SaveGameOldStyle(f); /* also closes the file */
-	    
+
 	    sprintf(string, "%s.pos.out", appData.cmailGameName);
 	    f = fopen(string, "w");
 	    SavePosition(f, 0, NULL); /* also closes the file */
@@ -6920,10 +6924,10 @@ RegisterMove()
 	    fprintf(f, "{--------------\n");
 	    PrintPosition(f, currentMove);
 	    fprintf(f, "--------------}\n\n");
-	    
+
 	    SaveGame(f, 0, NULL); /* also closes the file*/
 	}
-	
+
 	cmailMoveRegistered[lastLoadGameNumber - 1] = TRUE;
 	nCmailMovesRegistered ++;
     } else if (nCmailGames == 1) {
@@ -6966,7 +6970,7 @@ MailMoveEvent()
 #endif
 
     if (! (cmailMailedMove || RegisterMove())) return;
-    
+
     if (   cmailMailedMove
 	|| (nCmailMovesRegistered + nCmailResults == nCmailGames)) {
 	sprintf(string, partCommandString,
@@ -7032,7 +7036,7 @@ CmailMsg()
     char number[5];
     char string[MSG_SIZ];	/* Space for game-list */
     int  i;
-    
+
     if (!cmailMsgLoaded) return "";
 
     if (cmailMailedMove) {
@@ -7049,7 +7053,7 @@ CmailMsg()
 		    sprintf(number, "%d", i + 1);
 		    prependComma = 1;
 		}
-		
+
 		strcat(string, number);
 	    }
 	}
@@ -7061,12 +7065,12 @@ CmailMsg()
 		sprintf(cmailMsg,
 			_("Still need to make move for game\n"));
 		break;
-		
+
 	      case 2:
 		sprintf(cmailMsg,
 			_("Still need to make moves for both games\n"));
 		break;
-		
+
 	      default:
 		sprintf(cmailMsg,
 			_("Still need to make moves for all %d games\n"),
@@ -7080,7 +7084,7 @@ CmailMsg()
 			_("Still need to make a move for game %s\n"),
 			string);
 		break;
-		
+
 	      case 0:
 		if (nCmailResults == nCmailGames) {
 		    sprintf(cmailMsg, _("No unfinished games\n"));
@@ -7088,7 +7092,7 @@ CmailMsg()
 		    sprintf(cmailMsg, _("Ready to send mail\n"));
 		}
 		break;
-		
+
 	      default:
 		sprintf(cmailMsg,
 			_("Still need to make moves for games %s\n"),
@@ -7187,7 +7191,7 @@ PauseEvent()
 	    DisplayBothClocks();
 	}
 	if (gameMode == PlayFromGameFile) {
-	    if (appData.timeDelay >= 0) 
+	    if (appData.timeDelay >= 0)
 		AutoPlayGameLoop();
 	} else if (gameMode == IcsExamining && pauseExamInvalid) {
 	    Reset(FALSE, TRUE);
@@ -7325,25 +7329,25 @@ MachineWhiteEvent()
       return;
 
 
-    if (gameMode == PlayFromGameFile || 
-	gameMode == TwoMachinesPlay  || 
-	gameMode == Training         || 
-	gameMode == AnalyzeMode      || 
+    if (gameMode == PlayFromGameFile ||
+	gameMode == TwoMachinesPlay  ||
+	gameMode == Training         ||
+	gameMode == AnalyzeMode      ||
 	gameMode == EndOfGame)
 	EditGameEvent();
 
-    if (gameMode == EditPosition) 
+    if (gameMode == EditPosition)
         EditPositionDone();
 
     if (!WhiteOnMove(currentMove)) {
 	DisplayError(_("It is not White's turn"), 0);
 	return;
     }
-  
+
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile)
       ExitAnalyzeMode();
 
-    if (gameMode == EditGame || gameMode == AnalyzeMode || 
+    if (gameMode == EditGame || gameMode == AnalyzeMode ||
 	gameMode == AnalyzeFile)
 	TruncateGame();
 
@@ -7388,25 +7392,25 @@ MachineBlackEvent()
 	return;
 
 
-    if (gameMode == PlayFromGameFile || 
-	gameMode == TwoMachinesPlay  || 
-	gameMode == Training         || 
-	gameMode == AnalyzeMode      || 
+    if (gameMode == PlayFromGameFile ||
+	gameMode == TwoMachinesPlay  ||
+	gameMode == Training         ||
+	gameMode == AnalyzeMode      ||
 	gameMode == EndOfGame)
         EditGameEvent();
 
-    if (gameMode == EditPosition) 
+    if (gameMode == EditPosition)
         EditPositionDone();
 
     if (WhiteOnMove(currentMove)) {
 	DisplayError(_("It is not Black's turn"), 0);
 	return;
     }
-    
+
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile)
       ExitAnalyzeMode();
 
-    if (gameMode == EditGame || gameMode == AnalyzeMode || 
+    if (gameMode == EditGame || gameMode == AnalyzeMode ||
 	gameMode == AnalyzeFile)
 	TruncateGame();
 
@@ -7471,7 +7475,7 @@ TwoMachinesEvent P((void))
     int i;
     char buf[MSG_SIZ];
     ChessProgramState *onmove;
-    
+
     if (appData.noChessProgram) return;
 
     switch (gameMode) {
@@ -7618,7 +7622,7 @@ IcsClientEvent()
       case AnalyzeFile:
 	ExitAnalyzeMode();
 	break;
-	
+
       default:
 	EditGameEvent();
 	break;
@@ -7683,7 +7687,7 @@ EditGameEvent()
       default:
 	return;
     }
-    
+
     pausing = FALSE;
     StopClocks();
     first.offeredDraw = second.offeredDraw = 0;
@@ -7710,8 +7714,8 @@ EditGameEvent()
 	    whiteFlag = blackFlag = 0;
 	}
 	DisplayTitle("");
-    }		
-    
+    }
+
     gameMode = EditGame;
     ModeHighlight();
     SetGameInfo();
@@ -7725,16 +7729,16 @@ EditPositionEvent()
 	EditGameEvent();
 	return;
     }
-    
+
     EditGameEvent();
     if (gameMode != EditGame) return;
-    
+
     gameMode = EditPosition;
     ModeHighlight();
     SetGameInfo();
     if (currentMove > 0)
       CopyBoard(boards[0], boards[currentMove]);
-    
+
     blackPlaysFirst = !WhiteOnMove(currentMove);
     ResetClocks();
     currentMove = forwardMostMove = backwardMostMove = 0;
@@ -7801,7 +7805,7 @@ SendMultiLineToICS(buf)
     len = strlen(buf);
     if (len > MSG_SIZ)
       len = MSG_SIZ;
-  
+
     strncpy(temp, buf, len);
     temp[len] = 0;
 
@@ -7959,7 +7963,7 @@ void
 AcceptEvent()
 {
     /* Accept a pending offer of any kind from opponent */
-    
+
     if (appData.icsActive) {
         SendToICS(ics_prefix);
 	SendToICS("accept\n");
@@ -7984,7 +7988,7 @@ void
 DeclineEvent()
 {
     /* Decline a pending offer of any kind from opponent */
-    
+
     if (appData.icsActive) {
         SendToICS(ics_prefix);
 	SendToICS("decline\n");
@@ -8056,14 +8060,14 @@ void
 DrawEvent()
 {
     /* Offer draw or accept pending draw offer from opponent */
-    
+
     if (appData.icsActive) {
 	/* Note: tournament rules require draw offers to be
 	   made after you make your move but before you punch
 	   your clock.  Currently ICS doesn't let you do that;
 	   instead, you immediately punch your clock after making
 	   a move, but you can offer a draw at any time. */
-	
+
         SendToICS(ics_prefix);
 	SendToICS("draw\n");
     } else if (cmailMsgLoaded) {
@@ -8097,7 +8101,7 @@ void
 AdjournEvent()
 {
     /* Offer Adjourn or accept pending Adjourn offer from opponent */
-    
+
     if (appData.icsActive) {
         SendToICS(ics_prefix);
 	SendToICS("adjourn\n");
@@ -8111,7 +8115,7 @@ void
 AbortEvent()
 {
     /* Offer Abort or accept pending Abort offer from opponent */
-    
+
     if (appData.icsActive) {
         SendToICS(ics_prefix);
 	SendToICS("abort\n");
@@ -8124,7 +8128,7 @@ void
 ResignEvent()
 {
     /* Resign.  You can do this even if it's not your turn. */
-    
+
     if (appData.icsActive) {
         SendToICS(ics_prefix);
 	SendToICS("resign\n");
@@ -8185,12 +8189,12 @@ ForwardInner(target)
 
     if (gameMode == PlayFromGameFile && !pausing)
       PauseEvent();
-    
+
     if (gameMode == IcsExamining && pausing)
       limit = pauseExamForwardMostMove;
     else
       limit = forwardMostMove;
-    
+
     if (target > limit) target = limit;
 
     if (target > 0 && moveList[target - 1][0]) {
@@ -8212,8 +8216,8 @@ ForwardInner(target)
 	    }
 	}
     }
-    if (gameMode == EditGame || gameMode == AnalyzeMode || 
-	gameMode == Training || gameMode == PlayFromGameFile || 
+    if (gameMode == EditGame || gameMode == AnalyzeMode ||
+	gameMode == Training || gameMode == PlayFromGameFile ||
 	gameMode == AnalyzeFile) {
 	while (currentMove < target) {
 	    SendMoveToProgram(currentMove++, &first);
@@ -8221,7 +8225,7 @@ ForwardInner(target)
     } else {
 	currentMove = target;
     }
-    
+
     if (gameMode == EditGame || gameMode == EndOfGame) {
 	whiteTimeRemaining = timeRemaining[0][currentMove];
 	blackTimeRemaining = timeRemaining[1][currentMove];
@@ -8254,13 +8258,13 @@ ToEndEvent()
 	/* to optimze, we temporarily turn off analysis mode while we feed
 	 * the remaining moves to the engine. Otherwise we get analysis output
 	 * after each move.
-	 */ 
+	 */
         if (first.analysisSupport) {
 	  SendToProgram("exit\nforce\n", &first);
 	  first.analyzing = FALSE;
 	}
     }
-	
+
     if (gameMode == IcsExamining && !pausing) {
         SendToICS(ics_prefix);
 	SendToICS("forward 999999\n");
@@ -8293,7 +8297,7 @@ BackwardInner(target)
     }
     if (gameMode == PlayFromGameFile && !pausing)
       PauseEvent();
-    
+
     if (moveList[target][0]) {
 	int fromX, fromY, toX, toY;
 	toX = moveList[target][2] - 'a';
@@ -8322,7 +8326,7 @@ BackwardInner(target)
     } else {
 	currentMove = target;
     }
-    
+
     if (gameMode == EditGame || gameMode == EndOfGame) {
 	whiteTimeRemaining = timeRemaining[0][currentMove];
 	blackTimeRemaining = timeRemaining[1][currentMove];
@@ -8353,7 +8357,7 @@ ToStartEvent()
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	/* to optimze, we temporarily turn off analysis mode while we undo
 	 * all the moves. Otherwise we get analysis output after each undo.
-	 */ 
+	 */
         if (first.analysisSupport) {
 	  SendToProgram("exit\nforce\n", &first);
 	  first.analyzing = FALSE;
@@ -8574,7 +8578,7 @@ PrintPosition(fp, move)
      int move;
 {
     int i, j;
-    
+
     for (i = BOARD_SIZE - 1; i >= 0; i--) {
 	for (j = 0; j < BOARD_SIZE; j++) {
 	    char c = PieceToChar(boards[move][i][j]);
@@ -8814,15 +8818,15 @@ SendToProgram(message, cps)
 
     if (cps->pr == NULL) return;
     Attention(cps);
-    
+
     if (appData.debugMode) {
 	TimeMark now;
 	GetTimeMark(&now);
-	fprintf(debugFP, "%ld >%-6s: %s", 
+	fprintf(debugFP, "%ld >%-6s: %s",
 		SubtractTimeMarks(&now, &programStartTime),
 		cps->which, message);
     }
-    
+
     count = strlen(message);
     outCount = OutputToProcess(cps->pr, message, count, &error);
     if (outCount < count && !exiting) {
@@ -8861,16 +8865,16 @@ ReceiveFromProgram(isr, closure, message, count, error)
 	GameEnds((ChessMove) 0, NULL, GE_PLAYER);
 	return;
     }
-    
+
     if ((end_str = strchr(message, '\r')) != NULL)
       *end_str = NULLCHAR;
     if ((end_str = strchr(message, '\n')) != NULL)
       *end_str = NULLCHAR;
-    
+
     if (appData.debugMode) {
 	TimeMark now;
 	GetTimeMark(&now);
-	fprintf(debugFP, "%ld <%-6s: %s\n", 
+	fprintf(debugFP, "%ld <%-6s: %s\n",
 		SubtractTimeMarks(&now, &programStartTime),
 		cps->which, message);
     }
@@ -8947,7 +8951,7 @@ SendTimeRemaining(cps, machineWhite)
     }
     if (time <= 0) time = 1;
     if (otime <= 0) otime = 1;
-    
+
     sprintf(message, "time %ld\notim %ld\n", time, otime);
     SendToProgram(message, cps);
 }
@@ -9034,7 +9038,7 @@ FeatureDone(cps, val)
 void
 ParseFeatures(args, cps)
      char* args;
-     ChessProgramState *cps;  
+     ChessProgramState *cps;
 {
   char *p = args;
   char *q;
@@ -9046,10 +9050,10 @@ ParseFeatures(args, cps)
     if (*p == NULLCHAR) return;
 
     if (BoolFeature(&p, "setboard", &cps->useSetboard, cps)) continue;
-    if (BoolFeature(&p, "time", &cps->sendTime, cps)) continue;    
-    if (BoolFeature(&p, "draw", &cps->sendDrawOffers, cps)) continue;    
-    if (BoolFeature(&p, "sigint", &cps->useSigint, cps)) continue;    
-    if (BoolFeature(&p, "sigterm", &cps->useSigterm, cps)) continue;    
+    if (BoolFeature(&p, "time", &cps->sendTime, cps)) continue;
+    if (BoolFeature(&p, "draw", &cps->sendDrawOffers, cps)) continue;
+    if (BoolFeature(&p, "sigint", &cps->useSigint, cps)) continue;
+    if (BoolFeature(&p, "sigterm", &cps->useSigterm, cps)) continue;
     if (BoolFeature(&p, "reuse", &val, cps)) {
       /* Engine can disable reuse, but can't enable it if user said no */
       if (!val) cps->reuse = FALSE;
@@ -9176,7 +9180,7 @@ DisplayMove(moveNumber)
     char res[MSG_SIZ];
     char cpThinkOutput[MSG_SIZ];
 
-    if (moveNumber == forwardMostMove - 1 || 
+    if (moveNumber == forwardMostMove - 1 ||
 	gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 
 	strcpy(cpThinkOutput, thinkOutput);
@@ -9197,7 +9201,7 @@ DisplayMove(moveNumber)
     } else {
 	res[0] = NULLCHAR;
     }
-    
+
     if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
 	DisplayMessage(res, cpThinkOutput);
     } else {
@@ -9239,11 +9243,11 @@ DisplayAnalysis()
     double nps;
     static char *xtra[] = { "", " (--)", " (++)" };
     int h, m, s, cs;
-  
+
     if (programStats.time == 0) {
 	programStats.time = 1;
     }
-  
+
     if (programStats.got_only_move) {
 	strcpy(buf, programStats.movelist);
     } else {
@@ -9451,7 +9455,7 @@ GetTimeMark(tm)
     struct timezone timeZone;
 
     gettimeofday(&timeVal, &timeZone);
-    tm->sec = (long) timeVal.tv_sec; 
+    tm->sec = (long) timeVal.tv_sec;
     tm->ms = (int) (timeVal.tv_usec / 1000L);
 
 #else /*!HAVE_GETTIMEOFDAY*/
@@ -9490,7 +9494,7 @@ SubtractTimeMarks(tm2, tm1)
  * We give the human user a slight advantage if he is playing white---the
  * clocks don't run until he makes his first move, so it takes zero time.
  * Also, we don't account for network lag, so we could get out of sync
- * with GNU Chess's clock -- but then, referees are always right.  
+ * with GNU Chess's clock -- but then, referees are always right.
  */
 
 static TimeMark tickStartTM;
@@ -9514,7 +9518,7 @@ NextTickLength(timeRemaining)
 
 /* Stop clocks and reset to a fresh time control */
 void
-ResetClocks() 
+ResetClocks()
 {
     (void) StopClockTimer();
     if (appData.icsActive) {
@@ -9541,7 +9545,7 @@ DecrementClocks()
 
     if (!appData.clockMode) return;
     if (gameMode==AnalyzeMode || gameMode == AnalyzeFile) return;
-	
+
     GetTimeMark(&now);
 
     lastTickLength = SubtractTimeMarks(&now, &tickStartTM);
@@ -9561,7 +9565,7 @@ DecrementClocks()
     }
 
     if (CheckFlags()) return;
-	
+
     tickStartTM = now;
     intendedTickLength = NextTickLength(timeRemaining - fudge) + fudge;
     StartClockTimer(intendedTickLength);
@@ -9569,9 +9573,9 @@ DecrementClocks()
     /* if the time remaining has fallen below the alarm threshold, sound the
      * alarm. if the alarm has sounded and (due to a takeback or time control
      * with increment) the time remaining has increased to a level above the
-     * threshold, reset the alarm so it can sound again. 
+     * threshold, reset the alarm so it can sound again.
      */
-    
+
     if (appData.icsActive && appData.icsAlarm) {
 
 	/* make sure we are dealing with the user's clock */
@@ -9581,7 +9585,7 @@ DecrementClocks()
 
 	if (alarmSounded && (timeRemaining > appData.icsAlarmTime)) {
 	    alarmSounded = FALSE;
-	} else if (!alarmSounded && (timeRemaining <= appData.icsAlarmTime)) { 
+	} else if (!alarmSounded && (timeRemaining <= appData.icsAlarmTime)) {
 	    PlayAlarmSound();
 	    alarmSounded = TRUE;
 	}
@@ -9640,12 +9644,12 @@ SwitchClocks()
       whiteTimeRemaining : blackTimeRemaining);
     StartClockTimer(intendedTickLength);
 }
-	
+
 
 /* Stop both clocks */
 void
 StopClocks()
-{	
+{
     long lastTickLength;
     TimeMark now;
 
@@ -9664,7 +9668,7 @@ StopClocks()
     }
     CheckFlags();
 }
-	
+
 /* Start clock of player on move.  Time may have been reset, so
    if clock is already running, stop and restart it. */
 void
@@ -9690,7 +9694,7 @@ TimeString(ms)
     long second, minute, hour, day;
     char *sign = "";
     static char buf[32];
-    
+
     if (ms > 0 && ms <= 9900) {
       /* convert milliseconds to tenths, rounding up */
       double tenths = floor( ((double)(ms + 99L)) / 100.00 );
@@ -9708,14 +9712,14 @@ TimeString(ms)
 	sign = "-";
 	second = -second;
     }
-    
+
     day = second / (60 * 60 * 24);
     second = second % (60 * 60 * 24);
     hour = second / (60 * 60);
     second = second % (60 * 60);
     minute = second / 60;
     second = second % 60;
-    
+
     if (day > 0)
       sprintf(buf, " %s%ld:%02ld:%02ld:%02ld ",
 	      sign, day, hour, minute, second);
@@ -9723,7 +9727,7 @@ TimeString(ms)
       sprintf(buf, " %s%ld:%02ld:%02ld ", sign, hour, minute, second);
     else
       sprintf(buf, " %s%2ld:%02ld ", sign, minute, second);
-    
+
     return buf;
 }
 
@@ -9736,13 +9740,13 @@ StrStr(string, match)
      char *string, *match;
 {
     int i, length;
-    
+
     length = strlen(match);
-    
+
     for (i = strlen(string) - length; i >= 0; i--, string++)
       if (!strncmp(match, string, length))
 	return string;
-    
+
     return NULL;
 }
 
@@ -9751,9 +9755,9 @@ StrCaseStr(string, match)
      char *string, *match;
 {
     int i, j, length;
-    
+
     length = strlen(match);
-    
+
     for (i = strlen(string) - length; i >= 0; i--, string++) {
 	for (j = 0; j < length; j++) {
 	    if (ToLower(match[j]) != ToLower(string[j]))
@@ -9771,7 +9775,7 @@ StrCaseCmp(s1, s2)
      char *s1, *s2;
 {
     char c1, c2;
-    
+
     for (;;) {
 	c1 = ToLower(*s1++);
 	c2 = ToLower(*s2++);
@@ -9887,7 +9891,7 @@ PositionToFEN(move)
     if (boards[move][7][4] == BlackKing) {
 	if (boards[move][7][7] == BlackRook) *p++ = 'k';
 	if (boards[move][7][0] == BlackRook) *p++ = 'q';
-    }	    
+    }
     if (q == p) *p++ = '-';
     *p++ = ' ';
 
@@ -9917,7 +9921,7 @@ PositionToFEN(move)
 
     /* Fullmove number */
     sprintf(p, "%d", (move / 2) + 1);
-    
+
     return StrSave(buf);
 }
 
@@ -9961,7 +9965,7 @@ ParseFEN(board, blackPlaysFirst, fen)
       case 'w':
 	*blackPlaysFirst = FALSE;
 	break;
-      case 'b': 
+      case 'b':
 	*blackPlaysFirst = TRUE;
 	break;
       default:
@@ -9970,7 +9974,7 @@ ParseFEN(board, blackPlaysFirst, fen)
     /* !!We ignore the rest of the FEN notation */
     return TRUE;
 }
-      
+
 void
 EditPositionPasteFEN(char *fen)
 {
