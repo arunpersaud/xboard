@@ -1625,7 +1625,12 @@ InitAppData(LPSTR lpCmdLine)
   dcb.fNull = FALSE;
   dcb.fRtsControl = RTS_CONTROL_ENABLE;
   dcb.fAbortOnError = FALSE;
-  dcb.wReserved = 0;
+  /* Microsoft SDK >= Feb. 2003 (MS VS >= 2002) */
+  #if (defined(_MSC_VER) && _MSC_VER <= 1200) 
+	dcb.wReserved = 0;
+  #else
+    dcb.wReserved = 0;
+  #endif
   dcb.ByteSize = 7;
   dcb.Parity = SPACEPARITY;
   dcb.StopBits = ONESTOPBIT;
