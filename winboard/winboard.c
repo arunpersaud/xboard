@@ -6354,11 +6354,9 @@ DisplayMessage(char *str1, char *str2)
 VOID
 DisplayError(char *str, int error)
 {
-  FARPROC lpProc;
   char buf[MSG_SIZ*2], buf2[MSG_SIZ];
   int len;
-  char *p, *q;
-
+ 
   if (error == 0) {
     strcpy(buf, str);
   } else {

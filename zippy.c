@@ -93,6 +93,9 @@ static char zippyLastOpp[MSG_SIZ];
 static int zippyConsecGames;
 static time_t zippyLastGameEnd;
 
+extern void mysrandom(unsigned int seed);
+extern int myrandom(void);
+
 void ZippyInit()
 {
     char *p;
