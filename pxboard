@@ -1,0 +1,21 @@
+#! /bin/sh
+#
+# pxboard
+# Usage: cat game |pxboard [xboard-options]
+# or (in rn or xrn) save an article to: |pxboard [xboard-options]
+#
+# This script saves its standard input to a temporary file and invokes
+# "xboard -loadGameFile file &" on the file.  Although it is possible
+# to pipe games directly into xboard using "xboard -lgf -", this
+# script is nicer in two ways:  (1) xboard can seek on the temporary
+# file, so the popup game list, Load Previous Game, and Reload Same
+# Game all work.  (2) The script runs xboard in the background and
+# exits.  So if you save a news article by piping it into this script,
+# you immediately get back control of your news reader.
+#
+# The script turns on -noChessProgram mode by default.  If you want a
+# chess program started, give the -xncp option.
+#
+tmp=/tmp/pxboard$$
+cat > $tmp
+(xboard -ncp -lgf $tmp $* ; rm $tmp) &

@@ -1,0 +1,275 @@
+.\"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+.\"# File:        cmail.man
+.\"#
+.\"# Author:      Evan Welsh
+.\"#
+.\"# Email:       Evan.Welsh@msdw.com
+.\"#
+.\"# Modified:    $Date$
+.\"#              $Revision$
+.\"#
+.\"# Summary:     Man page for cmail
+.\"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+.\"
+.TH CMAIL 6
+.PD
+.ad b
+.SH NAME
+cmail \- an email chess helper
+.SH SYNOPSIS
+\fBcmail\fR
+[\|\fBoptions\fR\|]
+.SH DESCRIPTION
+.PP
+The \fIcmail\fP program will help you play chess by email with opponents of
+your choice using an X interface.  To use it, you will need to be able to
+run \fIxboard\fP with which \fIcmail\fP is distributed, available by
+anonymous FTP from numerous sites around the world. It has been tested with
+\fIxboard 3.2\fP; it may require modification for other versions.
+.SH OPTIONS
+You will usually run cmail without giving any options.  See the next
+section for instructions.
+.TP 8
+.B \-h
+Displays \fIcmail\fP usage information.
+.TP 8
+.B \-c
+Shows the conditions of the GNU General Public License.
+.TP 8
+.B \-w
+Shows the warranty notice of the GNU General Public License.
+.TP 8
+.B \-[\|x\|]v
+Provides or inhibits verbose output from \fIcmail\fP and \fIxboard\fP,
+useful for debugging. The
+.B \-xv
+form also inhibits the cmail introduction message.
+.TP 8
+.B \-[\|x\|]mail
+Invokes or inhibits the sending of a mail message containing the move.
+.TP 8
+.B \-[\|x\|]xboard
+Invokes or inhibits the running of \fIxboard\fP on the game file.
+.TP 8
+.B \-[\|x\|]reuse
+Invokes or inhibits the reuse of an existing \fIxboard\fP to display the
+current game.
+.TP 8
+.B \-remail
+Resends the last mail message for that game. This inhibits running
+\fIxboard\fP.
+.TP 8
+.B \-game \fIname\fP
+The name of the game to be processed.
+.TP 8
+.B \-(w|b|)games \fInumber\fP
+Number of games to start as White, as Black or in total. Default is 1 as
+white and none as black. If only one colour is specified then none of the
+other colour is assumed. If no colour is specified then equal numbers of
+White and Black games are started, with the extra game being as White if an
+odd number of total games is specified.
+.TP 8
+.B \-(me|opp) \fIshort name\fP
+A one-word alias for yourself or your opponent.
+.TP 8
+.B \-(w|b|my|opp)name \fIfull name\fP
+The full name of White, Black, yourself or your opponent.
+.TP 8
+.B \-(w|b|my|opp)na \fInet address\fP
+The email address of White, Black, yourself or your opponent.
+.TP 8
+.B \-dir \fIdirectory\fP
+The directory in which \fIcmail\fP keeps its files. This defaults to the
+environment variable $CMAIL_DIR or failing that, $CHESSDIR, $HOME/Chess or
+~/Chess. It will be created if it does not exist.
+.TP 8
+.B \-arcdir \fIdirectory\fP
+The directory in which \fIcmail\fP archives completed games. Defaults to
+the environment variable $CMAIL_ARCDIR or, in its absence, the same
+directory as cmail keeps its working files (above).
+.TP 8
+.B \-mailprog \fImail program\fP
+The program used by cmail to send email messages. This defaults to the
+environment variable $CMAIL_MAILPROG or failing that "/usr/ucb/Mail",
+"/usr/ucb/mail" or "Mail". You will need to set this variable if none of
+the above paths fit your system.
+.TP 8
+.B \-gamesFile \fIfile\fP
+A file containing a list of games with email addresses. This defaults to
+the environment variable $CMAIL_GAMES or failing that .cmailgames.
+.TP 8
+.B \-aliasesFile \fIfile\fP
+A file containing one or more aliases for a set of email addresses. This
+defaults to the environment variable $CMAIL_ALIASES or failing 
+that .cmailaliases.
+.TP 8
+.B \-logFile \fIfile\fP
+A file in which to dump verbose debugging messages that are invoked with
+the
+.B \-v
+option.
+.TP 8
+.B \-event \fIevent\fP
+The PGN Event tag (default "Email correspondence game").
+.TP 8
+.B \-site \fIsite\fP
+The PGN Site tag (default "NET").
+.TP 8
+.B \-round \fIround\fP
+The PGN Round tag (default "-", not applicable).
+.TP 8
+.B \-mode \fImode\fP
+The PGN Mode tag (default "EM", Electronic Mail).
+.PP
+.SH OTHER OPTIONS
+Any unrecognised flags will be passed to \fIxboard\fP. Those most relevant
+for use with \fIcmail\fP are:
+.TP 8
+.B \-timeDelay (or -td) \fIdelay\fP
+This sets the speed at which the moves are displayed on start-up. It
+defaults to the environment variable $CMAIL_TIME_DELAY if set, and 0
+otherwise.
+.TP 8
+.B \-noChessProgram (True | False), or -[x]ncp
+If this option is False,
+.IR xboard
+starts a chess program which can be used with \fIcmail\fP to suggest moves.
+Default: True.
+.TP 8
+.B \-searchTime (or -st) minutes[:seconds]
+Tells GNU Chess to spend at most the given amount of time searching
+for each of its moves.  Without this option, GNU Chess chooses
+its search time based on the number of moves and amount of time
+remaining until the next time control.
+.TP 8
+.B \-searchDepth (or -sd) number
+Tells GNU Chess to look ahead at most the given number of moves when
+searching for a move to make.  Without this option, GNU Chess chooses its
+search depth based on the number of moves and amount of time remaining
+until the next time control.
+.TP 8
+.B \-saveGameFile (or -sgf) file
+If this option is set, 
+.IR xboard 
+appends a record of the game played to the specified file on exit.
+.TP 8
+.B -autosave or -autoSaveGames
+If this option is True, at the end of every game
+.IR xboard
+prompts you for a filename and appends a record of the game to the file you
+specify.
+.TP 8
+.B \-savePositionFile (or -spf) file
+If this option is set, 
+.IR xboard 
+appends the final position reached to the specified file on exit.
+.TP 8
+.B \-boardSize (or -size) "(Large | Medium | Small)"
+Determines how large the board will be and what built-in piece bitmaps
+will be used.  On a large board (the default), 
+pieces are 80x80 pixels, on a medium board 64x64 pixels, and
+on a small board 40x40 pixels.
+.SH STARTING A GAME
+Type \fIcmail\fP from a shell to start a game as white.  After an opening
+message, you will be prompted for a game name, which is optional -- if you
+simply press return, the game name will take the form
+\fIyou\fP-VS-\fIopponent\fP.  You will next be prompted for the short name
+of your opponent.  If you haven't played this person before, you will also
+be prompted for his/her email address.  \fIcmail\fP will then invoke
+\fIxboard\fP in the background.  Make your first move and select \fIMail
+Move\fP from the \fIFile\fP menu.  If all is well, \fIcmail\fP will mail a
+copy of the move to your opponent. If you select \fIExit\fP without having
+selected \fIMail Move\fP then no move will be made.
+.SH ANSWERING A MOVE
+When you receive a message from an opponent containing a move in one of
+your games, simply pipe the message through \fIcmail\fP.  In some mailers
+this is as simple as typing "| cmail" when viewing the message, while in
+others you may have to save the message to a file and do "cmail < file" at
+the command line.  In either case \fIcmail\fP will display the game using
+\fIxboard\fP. If you didn't exit \fIxboard\fP when you made your first move
+then \fIcmail\fP will do its best to use the existing \fIxboard\fP instead
+of starting a new one. As before, simply make a move and select \fIMail
+Move\fP from the \fIFile\fP menu. \fIcmail\fP will try to use the
+\fIxboard\fP that was most recently used to display the current game. This
+means that many games can be in progress simultaneously, each with its own
+active \fIxboard\fP.
+.PP
+If you want to look at the history or explore a variation, go ahead, but
+you must return to the current position before \fIxboard\fP will allow you
+to mail a move. If you edit the game's history you must select \fIReload
+Same Game\fP from the \fIFile\fP menu to get back to the original position,
+then make the move you want and select \fIMail Move\fP.  As before, if you
+decide you aren't ready to make a move just yet you can either select
+\fIExit\fP without sending a move or just leave \fIxboard\fP running until
+you are ready.
+.SH COMPLETING A GAME
+Because \fIxboard\fP can now detect checkmate and stalemate, \fIcmail\fP
+now handles game termination sensibly. As well as resignation, the
+\fIAction\fP menu now allows draws to be offered and accepted for
+\fIcmail\fP games.
+.PP
+For multi-game messages, only unfinished and just-finished games will be
+included in email messages. When all the games are finished, they are
+archived in the user's archive directory, and similarly in the opponent's
+when he or she pipes the final message through \fIcmail\fP. The archive
+file name includes the date the game was started.
+.SH MULTI-GAME MESSAGES
+It's possible to have a \fIcmail\fP message carry more than one game. This
+feature was implemented to handle IECG (International Email Chess Group)
+matches, where a match consists of 1 game as white and 1 as black, with
+moves transmitted simultaneously. In case there are more general uses,
+\fIcmail\fP itself places no limit on the number of black/white games
+contained in a message; however, \fIxboard\fP does.
+.SH TROUBLE SHOOTING
+It's possible that a strange conjunction of conditions may occasionally
+mean that \fIcmail\fP has trouble reactivating an existing \fIxboard\fP. If
+this should happen, simply trying it again should work. If not, remove the
+file that stores the \fIxboard\fP's PID (<\fIgame\fP>.pid) or use the
+\fI-xreuse\fP option to force \fIcmail\fP to start a new \fIxboard\fP.
+.PP
+Versions of \fIcmail\fP after 2.16 no longer understand the old file format
+that \fIxboard\fP used to use and so cannot be used to correspond with
+anyone using an older version.
+.PP
+Versions of \fIcmail\fP older than 2.11 do not handle multi-game messages,
+so multi-game correspondence is not possible with opponents using an older
+version.
+.SH FILES
+"\fI.cmailgames\fP"
+contains a list of games with the email addresses of the opponents.
+.PP
+"\fI.cmailaliases\fP"
+contains one or more aliases for a set of email addresses.
+.SH BUGS
+No known bugs.
+.SH BUG REPORTS
+I make no promises but if you send bug reports/suggestions to
+Evan.Welsh@msdw.com I'll do my best to fix/implement them.
+.SH AUTHOR
+Copyright (C) 1993  Free Software Foundation, Inc.
+.PP
+\fIcmail\fP is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+.PP
+\fIcmail\fP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+.PP
+You should have received a copy of the GNU General Public License
+along with cmail; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
+.sp
+.ta 1.0i 3.0i
+.nf
+Author:	Evan Welsh <Evan.Welsh@msdw.com>
+.fi
+.SH CONTRIBUTORS
+.PP
+Patrick Surry helped with design, testing and documentation.
+.PP
+Tim Mann helped integrate \fIcmail\fP with \fIxboard\fP.
+.SH SEE ALSO
+\fIMail\fP(1), \fIperl\fP(1), \fIxboard\fP(1)

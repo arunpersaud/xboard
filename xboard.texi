@@ -1,0 +1,2846 @@
+@ifinfo
+
+This file documents version @value{VERSION} of @value{NAME}. 
+@value{NAME} 
+is a graphical chessboard that can serve as a
+user interface to the GNU Chess and Crafty chess engines, the
+Internet Chess Servers,
+electronic mail correspondence chess, or your own collection of saved games.
+
+Copyright (C) 1991 Digital Equipment Corporation, Maynard, Massachusetts.
+
+All Rights Reserved.
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Digital not be
+used in advertising or publicity pertaining to distribution of the
+software without specific, written prior permission.
+
+Digital disclaims all warranties with regard to this software, including
+all implied warranties of merchantability and fitness.  In no event shall
+Digital be liable for any special, indirect or consequential damages or
+any damages whatsoever resulting from loss of use, data or profits,
+whether in an action of contract, negligence or other tortious action,
+arising out of or in connection with the use or performance of this
+software.
+
+Enhancements copyright (C) 1992-2000 Free Software Foundation, Inc.
+
+Published by the Free Software Foundation
+59 Temple Place - Suite 330
+Boston, MA 02111-1307 USA
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through Tex and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled ``GNU General Public License,''
+is included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled ``GNU General Public License,''
+and this permission notice, may be included in translations approved by
+the Free Software Foundation instead of in the original English.
+@end ifinfo
+
+@titlepage
+@title @value{NAME}
+@author Tim Mann
+
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1991 Digital Equipment Corporation, Maynard, Massachusetts.
+
+All Rights Reserved
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Digital not be
+used in advertising or publicity pertaining to distribution of the
+software without specific, written prior permission.
+
+Digital disclaims all warranties with regard to this software, including
+all implied warranties of merchantability and fitness.  In no event shall
+Digital be liable for any special, indirect or consequential damages or
+any damages whatsoever resulting from loss of use, data or profits,
+whether in an action of contract, negligence or other tortious action,
+arising out of or in connection with the use or performance of this
+software.
+
+Enhancements copyright @copyright{} 1992-2000 Free Software Foundation, Inc.
+
+@format
+Published by the Free Software Foundation
+59 Temple Place - Suite 330
+Boston, MA 02111-1307 USA
+@end format
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through Tex and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled ``GNU General Public License,'' is
+included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled ``GNU General Public License,''
+and this permission notice, may be included in
+translations approved by the Free Software Foundation instead of in the
+original English.
+
+@end titlepage
+
+@node Top
+@top Introduction
+@cindex introduction
+
+This manual documents version @value{VERSION} of @value{NAME}.
+@value{NAME}
+is a graphical chessboard that can serve as a
+user interface to the GNU Chess and Crafty chess engines, the
+Internet Chess Servers,
+electronic mail correspondence chess, or your own collection of saved games.
+
+@menu
+* Installation::    How to configure, compile and install @value{NAME}.
+* Invocation::      Command options supported by @value{NAME}.
+* Menus::           Menus, Buttons and Keys.
+* ICS::             Using @value{NAME} with an Internet Chess Server (ICS).
+* Firewalls::       Connecting to the ICS through a firewall.
+* Environment::     Environment variables.
+* Limitations::     Known limitations and/or bugs.
+* Problems::        How and where to report any problems you run into.
+* Contributors::    People who have helped developing @value{NAME}.
+* CMail::           Using @value{NAME} for electronic correspondence chess.
+* Programs::        Other programs you can use with @value{NAME}.
+* Copying::         The GNU General Public License.
+
+* Index::           Index of concepts and symbol names.
+@end menu
+
+@ifset html
+@node What is it?
+@chapter What is it?
+@cindex What is it?
+@value{NAME}
+is a graphical chessboard that can serve as a
+user interface to the GNU Chess and Crafty chess engines, the
+Internet Chess Servers,
+electronic mail correspondence chess, or your own collection of saved games.
+These Web pages document version @value{VERSION} of @value{NAME}.
+@end ifset
+
+@node Installation
+@chapter How to configure, compile and install @value{NAME}
+@cindex Installation
+
+@value{NAME} is normally distributed as source, in a file with a name like
+@file{xboard-*.tar.gz}.  You need to unpack this file and compile the results
+with a C compiler.  
+
+First, decide where you want to install the xboard executable program and
+documentation.  The default is to put them under the @file{/usr/local}
+directory tree.  If you want to put them somewhere else, such as under your
+home directory, change the value in the @samp{--prefix} option below.
+
+Use the following commands:
+
+@example
+gzip -cd xboard-*.tar.gz | tar -xvf -
+cd xboard-*/
+configure --prefix=/usr/local
+make
+make install
+@end example
+
+If you have any problems with these steps,
+see the file @file{INSTALL} in the @value{NAME} distribution for
+detailed instructions on options you can give to @code{configure},
+and see the file @file{FAQ} for answers to frequently asked questions.
+
+If everything works, you can delete the whole @file{xboard-*} directory after
+@samp{make install} is done.
+
+@node Invocation
+@chapter Command options supported by @value{NAME}
+@cindex Invocation
+@cindex Options
+
+@value{NAME} always runs in one of four major modes:
+
+@table @asis
+@item @value{LCNAME} [options]
+runs @value{NAME} as an interface to a chess engine running
+on your machine, such as GNU Chess or Crafty. In this mode,
+@value{NAME} lets you play a game against the chess engine, set up
+arbitrary positions, force variations, or watch a game between two
+chess engines.
+@item @value{LCNAME} -ics -icshost hostname [options]
+runs @value{NAME} as an interface to the Internet Chess Server
+(ICS). You can play against other ICS users, observe games they are
+playing, or review games that have recently finished. @xref{ICS}.
+All the ``wild'' chess variants on ICS are supported, including bughouse.
+@item @value{LCNAME} -ncp [options]
+lets you use @value{NAME} as a simple chessboard to play through
+games. It will read and write game files and allow you to play
+through variations manually. You can use it to browse games off the
+net or review games you have saved.
+These features are also available in the other modes.
+If you want to pipe games into @value{NAME}, use the supplied
+shell script @file{pxboard}.  For example, from the news reader @file{xrn},
+find a message with one or more games in it,
+click the Save button, and type @samp{|pxboard} as the file name.
+@item cmail
+uses @value{NAME} as an interface to electronic mail
+correspondence chess.
+@xref{CMail}.
+@end table
+
+Most of the @value{NAME} options have both a long name and a short
+name. To turn a boolean option on or off from the command line,
+either give its long name followed by the value @code{true} or
+@code{false} (@samp{-longOptionName true}), or give just the short
+name to turn the option on (@samp{-opt}), or the short name
+preceded by @samp{x} to turn the option off (@samp{-xopt}). For
+options that take strings or numbers as values, you can use the
+long or short option names interchangeably.
+
+Each option corresponds to an X resource with the same name, so
+if you like, you can set options in your @file{.Xdefaults} file
+or in a file named @file{XBoard} in your home directory.
+For options that have two names, the longer one is the name of
+the corresponding X resource; the short name is not recognized.
+To turn a boolean option on or off as an
+X resource, give its long name followed by the value
+@code{true} or @code{false}:
+
+@example
+XBoard*longOptionName: true
+@end example
+
+@menu
+* Chess engine options::        Controlling the chess engine.
+* ICS options::                 Connecting to and using ICS.
+* I/O options::                 Load and Save options.
+* User interface options::      Look and Feel options.
+* Other options::               Miscellaneous.
+@end menu
+
+@node Chess engine options
+@section Controlling the chess engine
+@cindex options, Chess engine
+@cindex Chess engine options
+@table @asis
+@item -tc or -timeControl minutes[:seconds]
+@cindex tc, option
+@cindex timeControl, option
+Each player begins with his clock set to the @code{timeControl} period.
+Default: 5 minutes.
+The additional options @code{movesPerSession} and @code{timeIncrement}
+are mutually exclusive.  
+
+@item -mps or -movesPerSession moves
+@cindex mps, option
+@cindex movesPerSession, option
+When both players have made @code{movesPerSession} moves, a
+new @code{timeControl} period is added to both clocks.  Default: 40 moves.
+
+@item -inc or -timeIncrement seconds
+@cindex inc, option
+@cindex timeIncrement, option
+If this option is specified, @code{movesPerSession} is ignored.
+Instead, after each player's move, @code{timeIncrement} seconds are
+added to his clock.  
+Use @samp{-inc 0} if you want to require the entire
+game to be played in one @code{timeControl} period, with no increment.
+Default: -1, which specifies @code{movesPerSession} mode.
+
+@item -clock/-xclock or -clockMode True/False
+@cindex clock, option
+@cindex clockMode, option
+Determines whether or not to display the chess clocks. If clockMode is
+@samp{false}, the clocks are not shown, but the side that is to play next
+is still highlighted. Also, unless @code{searchTime}
+is set, the chess engine still keeps track of the clock time and uses it to
+determine how fast to make its moves.
+
+@item -st or -searchTime minutes[:seconds]
+@cindex st, option
+@cindex searchTime, option
+Tells the chess engine to spend at most the given amount of time
+searching for each of its moves. Without this option, the chess engine
+chooses its search time based on the number of moves and amount
+of time remaining until the next time control.
+Setting this option also sets clockMode to False.
+
+@item -depth or -searchDepth number
+@cindex sd, option
+@cindex searchDepth, option
+Tells the chess engine to look ahead at most the given number of moves
+when searching for a move to make. Without this option, the chess
+engine chooses its search depth based on the number of moves and
+amount of time remaining until the next time control.  With the option,
+the engine will cut off its search early if it reaches the specified depth.
+
+@item -thinking/-xthinking or -showThinking True/False
+@cindex thinking, option
+@cindex showThinking, option
+Sets the Show Thinking option. @xref{Options Menu}. Default: false.
+
+@item -ponder/-xponder or -ponderNextMove True/False
+@cindex ponder, option
+@cindex ponderNextMove, option
+Sets the Ponder Next Move menu option. @xref{Options Menu}. Default: True.
+
+@item -mg or -matchGames n
+@cindex mg, option
+@cindex matchGames, option
+Automatically runs an n-game match between two chess engines,
+with alternating colors.
+If the @code{loadGameFile} or @code{loadPositionFile} option is set,
+@value{NAME}
+starts each game with the given opening moves or the given position;
+otherwise, the games start with the standard initial chess position.
+If the @code{saveGameFile} option is set, a move record for the
+match is appended to the specified file. If the @code{savePositionFile}
+option is set, the final position reached in each game of the match is appended
+to the specified file. When the match is over, @value{NAME}
+displays the match score and exits. Default: 0 (do not run a match).
+
+@item -mm/-xmm or -matchMode True/False
+@cindex mm, option
+@cindex matchMode, option
+Abbreviation for -matchGames 1.
+
+@item -fcp or -firstChessProgram program
+@cindex fcp, option
+@cindex firstChessProgram, option
+Name of first chess engine.
+Default: @file{gnuchessx}.
+
+@item -scp or -secondChessProgram program
+@cindex scp, option
+@cindex secondChessProgram, option
+Name of second chess engine, if needed.
+A second chess engine is started only in Two Machines (match) mode.
+Default: @file{gnuchessx}.
+
+@item -fb/-xfb or -firstPlaysBlack True/False
+@cindex fb, option
+@cindex firstPlaysBlack, option
+In games between two chess engines, firstChessProgram normally
+plays white.  (This is a change from earlier versions of @value{NAME}.)
+If this option is True, firstChessProgram plays black.
+In a multi-game match, this option affects the colors only for
+the first game; they still alternate in subsequent games.
+
+@item -fh or -firstHost host
+@itemx -sh or -secondHost host
+@cindex fh, option
+@cindex firstHost, option
+@cindex sh, option
+@cindex secondHost, option
+Hosts on which the chess engines are to run. The default for
+each is @file{localhost}. If you specify another host, @value{NAME}
+uses @file{rsh} (1) to run the chess engine there. (You can substitute a
+different remote shell program for rsh using the @code{remoteShell}
+option described below.)
+
+@item -fd or -firstDirectory dir
+@itemx -sd or -secondDirectory dir
+@cindex fd, option
+@cindex firstDirectory, option
+@cindex sd, option
+@cindex secondDirectory, option
+Working directories in which the chess engines are to be run.
+The default is "", which means to run the chess engine
+in the same working directory as @value{NAME}
+itself.  (See the CHESSDIR environment variable.)
+This option is effective only when the chess engine is being run
+on the local host; it does not work if the engine is run remotely
+using the -fh or -sh option.
+
+@item -initString string
+@itemx -secondInitString string
+@cindex initString, option
+@cindex secondInitString, option
+The string that is sent to initialize each chess engine for a new game.
+Default:
+
+@example
+new
+random
+@end example
+@noindent
+Setting this option from the command line is tricky, because you must
+type in real newline characters, including one at the very end.
+In most shells you can do this by
+entering a @samp{\} character followed by a newline. It is easier to set
+the option from your @file{.Xdefaults} file; in that case you can
+include the character sequence @samp{\n} in the string, and it will
+be converted to a newline.
+
+If you change this option, don't remove the @samp{new} 
+command; it is required by all chess engines to
+start a new game.
+
+You can remove the @samp{random} command if you like;
+including it causes GNU Chess to randomize its move selection
+slightly so that it doesn't play the same moves in every game.
+Even without @samp{random}, GNU Chess randomizes its choice of moves
+from its opening book.  Crafty
+ignores this command; it randomizes by default.
+
+You can also try adding other
+commands to the initString; see the GNU Chess or Crafty documentation for
+details.
+
+@item -firstComputerString string
+@itemx -secondComputerString string
+@cindex firstComputerString, option
+@cindex secondComputerString, option
+The string that is sent to the chess engine if its opponent is another
+computer chess engine.  The default is @samp{computer\n}.  Probably the
+only useful alternative is the empty string (@samp{}), which keeps the
+engine from knowing that it is playing another computer.
+
+@item -reuse/-xreuse or -reuseFirst True/False
+@itemx -reuse2/-xreuse2 or -reuseSecond True/False
+@cindex reuse, option
+@cindex reuseFirst, option
+@cindex reuse2, option
+@cindex reuseSecond, option
+If the option is false,
+@value{NAME} kills off the chess engine after every game and starts
+it again for the next game.  
+If the option is true (the default), 
+@value{NAME} starts the chess engine only once
+and uses it repeatedly to play multiple games.
+Some chess engines may not work properly when
+reuse is turned on, such as versions of Crafty earlier than 12.0,
+but otherwise new games will start faster if it is left on.
+
+@item -firstProtocolVersion version-number
+@itemx -secondProtocolVersion version-number
+@cindex firstProtocolVersion, option
+@cindex secondProtocolVersion, option
+This option specifies which version of the chess engine communication
+protocol to use.  By default, version-number is 2.  In version 1, the
+"protover" command is not sent to the engine; since version 1 is a
+subset of version 2, nothing else changes.  Other values for
+version-number are not supported.
+@end table
+
+@node ICS options
+@section Connecting to and using ICS
+@cindex ICS options
+@cindex Options, ICS
+@table @asis
+@item -ics/-xics or -internetChessServerMode True/False
+@cindex ics, option
+@cindex internetChessServerMode, option
+Connect with an Internet Chess Server to play chess against its
+other users, observe games they are playing, or review games
+that have recently finished. Default: false.
+To use @value{NAME} in ICS mode, run it in the foreground, and use the
+terminal you started it from to type commands and receive text
+responses from the chess server.
+@xref{ICS}. @xref{File Menu}. @xref{Step Menu}.
+@xref{Mode Menu}.
+
+@item -icshost or -internetChessServerHost host
+@cindex icshost, option
+@cindex internetChessServerHost, option
+The Internet host name or address of the chess server to connect
+to when in ICS mode. Default: @code{chessclub.com}. See the file
+@file{ics-addresses} in the @value{NAME}
+distribution for a list of other addresses to try.
+If your site doesn't have a working Internet name server, try
+specifying the host address in numeric form. 
+You may also need
+to specify the numeric address when using the icshelper option
+with timestamp or timeseal (see below).
+At this writing
+@code{chessclub.com} is @samp{207.99.5.190} and
+@code{freechess.org} is @samp{164.58.253.13}.
+
+@item -icsport or -internetChessServerPort port-number
+@cindex icsport, option
+@cindex internetChessServerPort, option
+The port number to use when connecting to a chess server in ICS
+mode. Default: 5000.
+
+@item -icshelper or -internetChessServerHelper prog-name
+@cindex icshelper, option
+@cindex internetChessServerHelper, option
+An external helper program used to communicate with the chess server.
+You would set it to "timestamp" for ICC (chessclub.com) or
+"timeseal" for FICS (freechess.org, eics.daimi.aau.dk, etc.), after
+obtaining the correct version of timestamp or timeseal for your
+computer.  See "help timestamp" on ICC and "help timeseal" on FICS.
+This option is shorthand for @code{-useTelnet -telnetProgram program}.
+
+@item -telnet/-xtelnet or -useTelnet True/False
+@cindex telnet, option
+@cindex useTelnet, option
+This option is poorly named; it should be called useHelper.
+If set to true, it instructs @value{NAME} to run an external
+program to communicate with the Internet Chess Server. 
+The program to use is given by the telnetProgram option.
+If the option is
+false (the default), @value{NAME} opens a TCP socket and uses its own
+internal implementation of the telnet protocol to communicate with the
+ICS. @xref{Firewalls}.
+
+@item -telnetProgram prog-name
+@cindex telnetProgram, option
+This option is poorly named; it should be called helperProgram.
+It gives the name of the telnet program to be used with
+the @code{gateway} and @code{useTelnet} options.  The default is
+@file{telnet}. The telnet program is invoked with the value of
+@code{internetChessServerHost} as its first argument and the value
+of @code{internetChessServerPort} as its second argument.
+@xref{Firewalls}.
+
+@item -gateway host-name
+@cindex gateway, option
+If this option is set to a host name, @value{NAME} uses @file{rsh} (1) to run
+the @file{telnet} (1) program on the given host to communicate with the
+Internet Chess Server instead of using its own internal implementation
+of the telnet protocol. You can substitute a different remote shell
+program for @file{rsh} using the @code{remoteShell} option described below.
+@xref{Firewalls}.
+
+@item -internetChessServerCommPort or -icscomm dev-name
+@cindex internetChessServerCommPort, option
+@cindex icscomm, option
+If this option is set, @value{NAME} communicates with the ICS through
+the given character I/O device instead of opening a TCP connection.
+Use this option if your system does not have any kind of
+Internet connection itself (not even a SLIP or PPP connection),
+but you do have dialup access (or a hardwired terminal line) to
+an Internet service provider from which you can telnet to the
+ICS.
+
+The support for this option in @value{NAME} is minimal. You need to
+set all communication parameters and tty modes before you enter
+@value{NAME}.
+
+Use a script something like this:
+
+@example
+stty raw -echo 9600 > /dev/tty00
+@value{LCNAME} -ics -icscomm /dev/tty00
+@end example
+
+Here replace @samp{/dev/tty00} with the name of the device that your
+modem is connected to. You might have to add several more
+options to these stty commands. See the man pages for @file{stty} (1)
+and @code{tty} (4) if you run into problems. Also, on many systems stty
+works on its standard input instead of standard output, so you
+have to use @samp{<} instead of @samp{>}.
+
+If you are using linux, try starting with the script below.
+Change it as necessary for your installation.
+
+@example
+####################################################
+#!/bin/sh -f
+# configure modem and fire up @value{NAME}
+
+# configure modem
+(
+  stty 2400 ; stty raw ; stty hupcl ; stty -clocal
+  stty ignbrk ; stty ignpar ; stty ixon ; stty ixoff
+  stty -iexten ; stty -echo
+) < /dev/modem
+@value{LCNAME} -ics -icscomm /dev/modem
+####################################################
+@end example
+@noindent
+After you start @value{NAME} in this way, type whatever commands are
+necessary to dial out to your Internet provider and log in.
+Then telnet to ICS, using a command like
+
+@example
+telnet chessclub.com 5000
+@end example
+@noindent
+Important: See the paragraph below about extra echoes, 
+in @ref{Limitations}.
+
+@item -icslogon or -internetChessServerLogonScript file-name
+@cindex icslogon, option
+@cindex internetChessServerLogonScript, option
+@cindex .icsrc
+Whenever @value{NAME} connects to the Internet Chess Server,
+if it finds a file with the name given in this option, it feeds the
+file's contents to the ICS as commands. The default file name
+is @file{.icsrc}.
+Usually the first two lines of the file should be
+your ICS user name and password.
+The file can be either in $CHESSDIR, in @value{NAME}'s working
+directory if CHESSDIR is not set, or in your home directory.
+
+@item -msLoginDelay delay
+@cindex msLoginDelay, option
+If you experience trouble logging on to an ICS when using the
+@code{-icslogon} option, inserting some delay between characters
+of the logon script may help. This option adds @code{delay}
+milliseconds of delay between characters. Good values to try
+are 100 and 250.
+
+@item -icsinput/-xicsinput or -internetChessServerInputBox True/False
+@cindex icsinput, option
+@cindex internetChessServerInputBox, option
+Sets the ICS Input Box menu option. @xref{Mode Menu}. Default: false.
+
+@item -autocomm/-xautocomm or -autoComment True/False
+@cindex autocomm, option
+@cindex autoComment, option
+Sets the Auto Comment menu option. @xref{Options Menu}. Default: False.
+
+@item -autoflag/-xautoflag or -autoCallFlag True/False
+@cindex autoflag, option
+@cindex autoCallFlag, option
+Sets the Auto Flag menu option.  @xref{Options Menu}. Default: false.
+
+@item -autobs/-xautobs or -autoObserve True/False
+@cindex autobs, option
+@cindex autoObserve, option
+Sets the Auto Observe menu option.  @xref{Options Menu}. Default: false.
+
+@item -moves/-xmoves or -getMoveList True/False
+@cindex moves, option
+@cindex getMoveList, option
+Sets the Get Move List menu option.  @xref{Options Menu}.  Default: true.
+
+@item -alarm/-xalarm or -icsAlarm True/False
+@cindex alarm, option
+@cindex icsAlarm, option
+Sets the ICS Alarm menu option.  @xref{Options Menu}. Default: true.
+
+@item -icsAlarmTime ms
+@cindex icsAlarmTime, option
+Sets the time in milliseconds for the ICS Alarm menu option. 
+@xref{Options Menu}. Default: 5000.
+
+@item -pre/-xpre \fRor\fB -premove True/False
+@cindex pre, option
+@cindex premove, option
+Sets the Premove menu option. @xref{Options Menu}. Default: true.
+
+@item -quiet/-xquiet or -quietPlay True/False
+@cindex quiet, option
+@cindex quietPlay, option
+Sets the Quiet Play menu option.  @xref{Options Menu}.  Default: false.
+
+@item -colorizeMessages or -colorize
+@cindex Colors
+@cindex colorize, option
+Setting colorizeMessages
+to True tells XBoard to colorize the messages received from
+the ICS.  Colorization works only if your xterm 
+supports ISO 6429 escape sequences for changing text colors.
+
+@item -colorShout foreground,background,bold
+@itemx -colorSShout foreground,background,bold
+@itemx -colorChannel1 foreground,background,bold
+@itemx -colorChannel foreground,background,bold
+@itemx -colorKibitz foreground,background,bold
+@itemx -colorTell foreground,background,bold
+@itemx -colorChallege foreground,background,bold
+@itemx -colorRequest foreground,background,bold
+@itemx -colorSeek foreground,background,bold
+@itemx -colorNormal foreground,background,bold
+@cindex Colors
+@cindex colorShout, option
+@cindex colorSShout, option
+@cindex colorChannel1, option
+@cindex colorChannel, option
+@cindex colorKibitz, option
+@cindex colorTell, option
+@cindex colorChallenge, option
+@cindex colorRequest, option
+@cindex colorSeek, option
+@cindex colorNormal, option
+These options set the colors used when colorizing ICS messages.
+All ICS messages are grouped into one of these categories:
+shout, sshout, channel 1, other channel, kibitz, tell, challenge, 
+request (including abort, adjourn, draw, pause, and takeback), or
+normal (all other messages).  
+
+Each foreground or background argument can be one of the following:
+black, red, green, yellow, blue, magenta, cyan, white, or default.
+Here ``default'' means the default foreground or background color of
+your xterm.  Bold can be 1 or 0.  If background is omitted, ``default''
+is assumed; if bold is omitted, 0 is assumed.
+
+Here is an example of how to set the colors in your @file{.Xdefaults} file.
+The colors shown here are the default values; you will get
+them if you turn @code{-colorize} on without specifying your own colors.
+@example
+    xboard*colorizeMessages: true	
+    xboard*colorShout: green
+    xboard*colorSShout: green, black, 1
+    xboard*colorChannel1: cyan
+    xboard*colorChannel: cyan, black, 1
+    xboard*colorKibitz: magenta, black, 1
+    xboard*colorTell: yellow, black, 1
+    xboard*colorChallenge: red, black, 1
+    xboard*colorRequest: red
+    xboard*colorSeek: blue
+    xboard*colorNormal: default
+@end example
+
+@item -soundProgram progname
+@cindex soundProgram, option
+@cindex Sounds
+If this option is set to a sound-playing program that is installed and
+working on your system, @value{NAME} can play sound files when certain
+events occur, listed below.  The default program name is "play".  If
+any of the sound options is set to "$", the event rings the terminal
+bell by sending a ^G character to standard output, instead of playing
+a sound file.  If an option is set to the empty string "", no sound is
+played for that event.
+
+@item -soundShout filename
+@itemx -soundSShout filename
+@itemx -soundChannel filename
+@itemx -soundKibitz filename
+@itemx -soundTell filename
+@itemx -soundChallenge filename
+@itemx -soundRequest filename
+@itemx -soundSeek filename
+@cindex soundShout, option
+@cindex soundSShout, option
+@cindex soundChannel, option
+@cindex soundKibitz, option
+@cindex soundTell, option
+@cindex soundChallenge, option
+@cindex soundRequest, option
+@cindex soundSeek, option
+These sounds are triggered in the same way as the colorization events
+described above.  They all default to "", no sound.  They are played
+only if the colorizeMessages is on.
+
+@item -soundMove filename
+@cindex soundMove, option
+This sound is used by the Move Sound menu option.  Default: "$".
+
+@item -soundIcsAlarm filename
+@cindex soundIcsAlarm, option
+This sound is used by the ICS Alarm menu option.  Default: "$".
+
+@item -soundIcsWin filename
+@cindex soundIcsWin, option
+This sound is played when you win an ICS game.  Default: "" (no sound).
+
+@item -soundIcsLoss filename
+@cindex soundIcsLoss, option
+This sound is played when you lose an ICS game.  Default: "" (no sound).
+
+@item -soundIcsDraw filename
+@cindex soundIcsDraw, option
+This sound is played when you draw an ICS game.  Default: "" (no sound).
+
+@item -soundIcsUnfinished filename
+@cindex soundIcsUnfinished, option
+This sound is played when an ICS game that you are participating in is
+aborted, adjourned, or otherwise ends inconclusively.  Default: "" (no
+sound).
+
+Here is an example of how to set the sounds in your .Xdefaults file.
+@example
+    xboard*soundShout: shout.wav
+    xboard*soundSShout: sshout.wav
+    xboard*soundChannel1: channel1.wav
+    xboard*soundChannel: channel.wav
+    xboard*soundKibitz: kibitz.wav
+    xboard*soundTell: tell.wav
+    xboard*soundChallenge: challenge.wav
+    xboard*soundRequest: request.wav
+    xboard*soundSeek: seek.wav
+    xboard*soundMove: move.wav
+    xboard*soundIcsWin: win.wav
+    xboard*soundIcsLoss: lose.wav
+    xboard*soundIcsDraw: draw.wav
+    xboard*soundIcsUnfinished: unfinished.wav
+    xboard*soundIcsAlarm: alarm.wav
+@end example
+@end table
+
+@node I/O options
+@section Load and Save options
+@cindex Options, I/O
+@cindex I/O options
+@table @asis
+@item -lgf or -loadGameFile file
+@itemx -lgi or -loadGameIndex index
+@cindex lgf, option
+@cindex loadGameFile, option
+@cindex lgi, option
+@cindex loadGameIndex, option
+If the @code{loadGameFile} option is set, @value{NAME} loads the specified
+game file at startup. The file name @file{-} specifies the standard
+input. If there is more than one game in the file, @value{NAME}
+pops up a menu of the available games, with entries based on their PGN tags.
+If the @code{loadGameIndex} option is set to @samp{N}, the menu is suppressed
+and the N th game found in the file is loaded immediately.
+The menu is also suppressed if @code{matchMode} is enabled or if the game file
+is a pipe; in these cases the first game in the file is loaded immediately.
+@ifset XBOARD
+Use the @file{pxboard} shell script provided with @value{NAME} if you
+want to pipe in files containing multiple games and still see the menu.
+@end ifset
+
+@item -td or -timeDelay seconds
+@cindex td, option
+@cindex timeDelay, option
+Time delay between moves during @samp{Load Game}. Fractional seconds
+are allowed; try @samp{-td 0.4}. A time delay value of -1 tells
+@value{NAME} not to step through game files automatically. Default: 1
+second.
+
+@item -sgf or -saveGameFile file
+@cindex sgf, option
+@cindex saveGameFile, option
+If this option is set, @value{NAME} appends a record of every game
+played to the specified file. The file name @file{-} specifies the
+standard output.
+
+@item -autosave/-xautosave or -autoSaveGames True/False
+@cindex autosave, option
+@cindex autoSaveGames, option
+Sets the Auto Save menu option.  @xref{Options Menu}.  Default: false.
+Ignored if @code{saveGameFile} is set.
+
+@item -lpf or -loadPositionFile file
+@itemx -lpi or -loadPositionIndex index
+@cindex lpf, option
+@cindex loadPositionFile, option
+@cindex lpi, option
+@cindex loadPositionIndex, option
+If the @code{loadPositionFile} option is set, @value{NAME} loads the
+specified position file at startup. The file name @file{-} specifies the
+standard input. If the @code{loadPositionIndex} option is set to N,
+the Nth position found in the file is loaded; otherwise the
+first position is loaded.
+
+@item -spf or -savePositionFile file
+@cindex spf, option
+@cindex savePositionFile, option
+If this option is set, @value{NAME} appends the final position reached
+in every game played to the specified file. The file name @file{-}
+specifies the standard output.
+
+@item -oldsave/-xoldsave or -oldSaveStyle True/False
+@cindex oldsave, option
+@cindex oldSaveStyle, option
+Sets the Old Save Style menu option.  @xref{Options Menu}.  Default: false.
+@end table
+
+@node User interface options
+@section Look and Feel options
+@cindex User interface options
+@cindex Options, User interface
+@table @asis
+@item -display
+@itemx -geometry
+@itemx -iconic
+@cindex display, option
+@cindex geometry, option
+@cindex iconic, option
+These are just the standard Xt options accepted by @value{NAME}.
+
+@item -movesound/-xmovesound or -bell/-xbell or -ringBellAfterMoves True/False
+@cindex movesound, option
+@cindex bell, option
+@cindex ringBellAfterMoves, option
+Sets the Move Sound menu option.  @xref{Options Menu}.  Default: false.
+
+@item -exit/-xexit or -popupExitMessage True/False
+@cindex exit, option
+@cindex popupExitMessage, option
+Sets the Popup Exit Message menu option.  @xref{Options Menu}. Default: True.
+
+@item -popup/-xpopup or -popupMoveErrors True/False
+@cindex popup, option
+@cindex popupMoveErrors, option
+Sets the Popup Move Errors menu option.  @xref{Options Menu}. Default: False.
+
+@item -queen/-xqueen or -alwaysPromoteToQueen True/False
+@cindex queen, option
+@cindex alwaysPromoteToQueen, option
+Sets the Always Queen menu option.  @xref{Options Menu}.  Default: false.
+
+@item -legal/-xlegal or -testLegality True/False
+@cindex legal, option
+@cindex testLegality, option
+If this option is true (the default), 
+@value{NAME}
+tests whether moves you try to make with the mouse are legal, and
+refuses to let you make an illegal move.  Moves loaded from a file
+with @samp{Load Game} are also checked.
+If the option is false, all moves are accepted.
+If GNU Chess, Crafty, or the ICS is active,
+they will still reject illegal moves.  Turning off this option is
+useful if you are playing a chess variant with rules that 
+@value{NAME}
+does not understand.
+
+@item -size or -boardSize (sizeName | n1,n2,n3,n4,n5,n6,n7)
+@cindex size, option
+@cindex boardSize, option
+@cindex board size
+Determines how large the board will be, by selecting the pixel size
+of the pieces and setting a few related parameters.
+The sizeName can be one of: Titanic, giving 129x129 pixel pieces,
+Colossal 116x116, Giant 108x108, Huge 95x95, Big 87x87, Large 80x80, Bulky 72x72,
+Medium 64x64, Moderate 58x58, Average 54x54, Middling 49x49, Mediocre
+45x45, Small 40x40, Slim 37x37, Petite 33x33, Dinky 29x29, Teeny 25x25,
+or Tiny 21x21.
+Pieces of all these sizes are built into @value{NAME}.
+Other sizes can
+be used if you have them; see the pixmapDirectory and bitmapDirectory
+options.
+The default depends on the size of your screen; it is approximately the
+largest size that will fit without clipping.
+
+You can select other sizes or vary other layout parameters by providing
+a list of comma-separated values (with no spaces) as the argument.
+You do not need to provide all the values; for any you omit from the
+end of the list, defaults are taken from the nearest built-in size.
+The value @code{n1} gives the piece size, @code{n2} the width of the
+black border
+between squares, @code{n3} the desired size for the 
+clockFont, @code{n4} the desired size for the coordFont,
+@code{n5} the desired size for the default font,
+@code{n6} the smallLayout flag (0 or 1), 
+and @code{n7} the tinyLayout flag (0 or 1).  
+All dimensions are in pixels.
+If the border between squares is eliminated (0 width), the various
+highlight options will not work, as there is nowhere to draw the highlight.
+If smallLayout is 1 and @code{titleInWindow} is True, 
+the window layout is rearranged to make more room for the title.
+If tinyLayout is 1, the labels on the menu bar are abbreviated
+to one character each and the buttons in the button bar are made narrower.
+
+@item -coords/-xcoords or -showCoords True/False
+@cindex coords, option
+@cindex showCoords, option
+Sets the Show Coords menu option.  @xref{Options Menu}.  Default: false.
+The @code{coordFont} option specifies what font to use.
+
+@item -autoraise/-xautoraise or -autoRaiseBoard True/False
+@cindex autoraise, option
+@cindex autoRaiseBoard, option
+Sets the Auto Raise Board menu option.  Default: true.
+
+@item -autoflip/-xautoflip or -autoFlipView True/False
+@cindex autoflip, option
+@cindex autoFlipView, option
+Sets the Auto Flip View menu option.  Default: true.
+
+@item -flip/-xflip or -flipView True/False
+@cindex flip, option
+@cindex flipView, option
+If Auto Flip View is not set, or if you are observing but not participating
+in a game, then the positioning of the board at the start of each game
+depends on the flipView option.  If flipView is False (the default),
+the board is positioned so that the white pawns move from the bottom to the
+top; if True, the black pawns move from the bottom to the top.
+In any case, the Flip menu option can be used to flip the board after
+the game starts.
+
+@item -title/-xtitle or -titleInWindow True/False
+@cindex title, option
+@cindex titleInWindow, option
+If this option is true, @value{NAME} displays player names (for ICS
+games) and game file names (for @samp{Load Game}) inside its main
+window. If the option is false (the default), this information is
+displayed only in the window banner. You probably won't want to
+set this option unless the information is not showing up in the
+banner, as happens with a few X window managers.
+
+@item -mono/-xmono or -monoMode True/False
+@cindex mono, option
+@cindex monoMode, option
+Determines whether @value{NAME} displays its pieces and squares with
+two colors (true) or four (false). You shouldn't have to
+specify @code{monoMode}; @value{NAME} will determine if it is necessary.
+
+@item -flashCount count
+@itemx -flashRate rate
+@itemx -flash
+@itemx -xflash
+@cindex flashCount, option
+@cindex flashRate, option
+@cindex flash, option
+@cindex xflash, option
+These options enable flashing of pieces when they
+land on their destination square.
+@code{flashCount}
+tells XBoard how many times to flash a piece after it
+lands on its destination square.
+@code{flashRate}
+controls the rate of flashing (flashes/sec).
+Abbreviations:
+@code{flash}
+sets flashCount to 3.
+@code{xflash}
+sets flashCount to 0.
+Defaults:  flashCount=0 (no flashing), flashRate=5.
+
+@item -highlight/-xhighlight or -highlightLastMove True/False
+@cindex highlight, option
+@cindex highlightLastMove, option
+Sets the Highlight Last Move menu option. Default: false.
+
+@item -blind/-xblind or -blindfold True/False
+@cindex blind, option
+@cindex blindfold, option
+Sets the Blindfold menu option.  Default: false.
+
+@item -clockFont font
+@cindex clockFont, option
+@cindex Font, clock
+The font used for the clocks. If the option value is a pattern
+that does not specify the font size, @value{NAME} tries to choose an
+appropriate font for the board size being used.
+Default: -*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*.
+
+@item -coordFont font
+@cindex coordFont, option
+@cindex Font, coordinates
+The font used for rank and file coordinate labels if @code{showCoords}
+is true. If the option value is a pattern that does not specify
+the font size, @value{NAME} tries to choose an appropriate font for
+the board size being used.
+Default: -*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*.
+
+@item -font font
+@cindex font, option
+@cindex Font
+The font used for popup dialogs, menus, comments, etc.
+If the option value is a pattern that does not specify
+the font size, @value{NAME} tries to choose an appropriate font for
+the board size being used.
+Default: -*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*.
+
+@item -fontSizeTolerance tol
+@cindex fontSizeTolerance, option
+In the font selection algorithm, a nonscalable font will be preferred
+over a scalable font if the nonscalable font's size differs by tol pixels
+or less from the desired size.  A value of -1 will force
+a scalable font to always be used if available; a value of 0 will
+use a nonscalable font only if it is exactly the right size; 
+a large value (say 1000) will force a nonscalable font to always be
+used if available.  Default: 4.
+
+@item -bm or -bitmapDirectory dir
+@itemx -pixmap or -pixmapDirectory dir
+@cindex bm, option
+@cindex bitmapDirectory, option
+@cindex pixmap, option
+@cindex pixmapDirectory, option
+These options control what piece images xboard uses.  The @value{NAME}
+distribution includes one set of pixmap pieces in xpm format, in the
+directory @file{pixmaps}, and two sets of bitmap pieces in xbm format,
+in the directories @file{bitmaps} and @file{bitmaps.xchess}.  Pixmap
+pieces give a better appearance on the screen: the white pieces have
+dark borders, and the black pieces have opaque internal details.  With
+bitmaps, neither piece color has a border, and the internal details
+are transparent; you see the square color or other background color
+through them.
+
+If @value{NAME} is configured and compiled on a system that includes libXpm,
+the X pixmap library, the xpm pixmap pieces are compiled in as the
+default.  A different xpm piece set can be selected at runtime with
+the @code{pixmapDirectory} option, or a bitmap piece set can be selected
+with the @code{bitmapDirectory} option.
+
+If @value{NAME} is configured and compiled on a system that does not include
+libXpm (or the @code{--disable-xpm} option is given to the configure
+program), the bitmap pieces are compiled in as the default.  It is not
+possible to use xpm pieces in this case, but pixmap pieces in another
+format called "xim" can be used by giving the @code{pixmapDirectory} option.
+Or again, a different bitmap piece set can be selected with the
+@code{bitmapDirectory} option.
+
+Files in the @code{bitmapDirectory} must be named as follows:
+The first character of a piece bitmap name gives the piece it 
+represents (@samp{p}, @samp{n}, @samp{b}, @samp{r}, @samp{q}, or @samp{k}),
+the next characters give the size in pixels, the
+following character indicates whether the piece is
+solid or outline (@samp{s} or @samp{o}),
+and the extension is @samp{.bm}.
+For example, a solid 80x80 knight would be named @file{n80s.bm}.
+The outline bitmaps are used only in monochrome mode.
+If bitmap pieces are compiled in and the bitmapDirectory is missing
+some files, the compiled in pieces are used instead.
+
+If the bitmapDirectory option is given,
+it is also possible to replace xboard's icons and menu checkmark,
+by supplying files named @file{icon_white.bm}, @file{icon_black.bm}, and
+@file{checkmark.bm}.
+
+For more information about pixmap pieces and how to get additional
+sets, see @ref{zic2xpm}.
+
+@item -whitePieceColor color
+@itemx -blackPieceColor color
+@itemx -lightSquareColor color
+@itemx -darkSquareColor color
+@itemx -highlightSquareColor color
+@cindex Colors
+@cindex whitePieceColor, option
+@cindex blackPieceColor, option
+@cindex lightSquareColor, option
+@cindex darkSquareColor, option
+@cindex highlightSquareColor, option
+Colors to use for the pieces, squares, and square highlights.
+Defaults:
+@example
+-whitePieceColor       #FFFFCC
+-blackPieceColor       #202020
+-lightSquareColor      #C8C365
+-darkSquareColor       #77A26D
+-highlightSquareColor  #FFFF00
+-premoveHighlightColor #FF0000
+@end example
+
+On a grayscale monitor you might prefer:
+@example
+-whitePieceColor       gray100
+-blackPieceColor       gray0
+-lightSquareColor      gray80
+-darkSquareColor       gray60
+-highlightSquareColor  gray100
+-premoveHighlightColor gray70
+@end example
+
+@item -drag/-xdrag or -animateDragging True/False
+@cindex drag, option
+@cindex animateDragging, option
+Sets the Animate Dragging menu option. Default: True.
+
+@item -animate/-xanimate or -animateMoving True/False
+@cindex animate, option
+@cindex animateMoving, option
+Sets the Animate Moving menu option. Default: True.
+
+@item -animateSpeed n
+@cindex -animateSpeed, option
+Number of milliseconds delay between each animation frame when Animate
+Moves is on.
+@end table
+
+@node Other options
+@section Miscellaneous
+@cindex Options, miscellaneous
+@table @asis
+
+@item -ncp/-xncp or -noChessProgram True/False
+@cindex ncp, option
+@cindex noChessProgram, option
+If this option is true, @value{NAME} acts as a passive chessboard; it
+does not start a chess engine at all. Turning on this option
+also turns off clockMode. Default: false.
+
+@item -mode or -initialMode modename
+@cindex mode, option
+@cindex initalMode, option
+If this option is given, @value{NAME} selects the given modename
+from the Mode menu after starting and (if applicable) processing the
+loadGameFile or loadPositionFile option. Default: "" (no selection). 
+Other supported values are 
+MachineWhite, MachineBlack, TwoMachines, Analysis, 
+AnalyzeFile, EditGame, EditPosition, and Training.
+
+@item -variant varname
+@cindex variant, option
+
+Activates preliminary, partial support for playing chess variants
+against a local engine or editing variant games.  This flag is not
+needed in ICS mode.  Recognized variant names are:
+
+@example
+  normal        Normal chess
+  wildcastle    Shuffle chess, king can castle from d file
+  nocastle      Shuffle chess, no castling allowed
+  fischerandom  Fischer Random shuffle chess
+  bughouse      Bughouse, ICC/FICS rules
+  crazyhouse    Crazyhouse, ICC/FICS rules
+  losers        Lose all pieces or get mated (ICC wild 17)
+  suicide       Lose all pieces including king (FICS)
+  giveaway      Try to have no legal moves (ICC wild 26)
+  twokings      Weird ICC wild 9
+  kriegspiel    Opponent's pieces are invisible
+  atomic        Capturing piece explodes (ICC wild 27)
+  3check        Win by giving check 3 times (ICC wild 25)
+  shatranj      An ancient precursor of chess (ICC wild 28)
+  unknown       Catchall for other unknown variants
+@end example
+
+In the shuffle variants, xboard does not shuffle the pieces, but
+you can do it by hand using Edit Position.  Some variants are
+supported only in ICS mode, including fischerandom, bughouse, and
+kriegspiel.  The winning/drawing conditions in crazyhouse (offboard
+interposition on mate), losers, suicide, giveaway, atomic, and 3check
+are not fully understood.  In crazyhouse, xboard does not yet keep
+track of offboard pieces.  Shatranj is unsupported, but it may be
+usable if you turn off Test Legality.
+
+@item -debug/-xdebug or -debugMode True/False
+@cindex debug, option
+@cindex debugMode, option
+Turns on debugging printout.
+
+@item -rsh or -remoteShell shell-name
+@cindex rsh, option
+@cindex remoteShell, option
+Name of the command used to run programs remotely. The default
+is @file{rsh} or @file{remsh}, determined when @value{NAME} is
+configured and compiled.
+
+@item -ruser or -remoteUser user-name
+@cindex ruser, option
+@cindex remoteUser, option
+User name on the remote system when running programs with the
+@code{remoteShell}. The default is your local user name.
+@end table
+
+
+@node Menus
+@chapter Menus, buttons and keys
+@cindex Menus
+To move a piece, either drag it with the left mouse button,
+or click the left mouse button once on the piece, then once more on
+the destination square.
+To drop a new piece on a
+square (when applicable), press the 
+middle or right mouse button over the square
+and select from the popup menu.
+
+All other @value{NAME} commands are available from the menu bar. The most
+frequently used commands also have shortcut keys or on-screen buttons.
+
+@menu
+* File Menu::       Accessing external games and positions.
+* Mode Menu::       Selecting @value{NAME}'s mode.
+* Action Menu::     Talking to the chess engine or ICS opponents.
+* Step Menu::       Controlling the game.
+* Options Menu::    User preferences.
+* Help Menu::       Getting help.
+* Keys::            Other shortcut keys.
+@end menu
+
+@node File Menu
+@section Accessing external games and positions
+@cindex File Menu
+@cindex Menu, File
+@table @asis
+@item Reset
+@cindex Reset, Menuitem
+Resets @value{NAME} and the chess engine to the beginning of a new chess
+game. The @samp{r} key is a keyboard equivalent. In Internet Chess
+Server mode, clears the current state of @value{NAME}, then
+resynchronizes with ICS by sending a refresh command. If you want to
+stop playing, observing, or examining a game on ICS, use an
+appropriate command from the Action menu, not @samp{Reset}. @xref{Action
+Menu}.
+
+@item Load Game
+@cindex Load Game, Menuitem
+Plays a game from a record file. The @samp{g} key is a keyboard equivalent.
+A popup dialog prompts you for the file name. If the file contains more
+than one game, a second popup dialog
+displays a list of games (with information drawn from their PGN tags, if
+any), and you can select the one you want. Alternatively, you can load the
+Nth game in the file directly, by typing the number @samp{N} after the
+file name, separated by a space.
+
+The game file parser will accept PGN (portable game notation),
+or in fact almost any file that contains moves in algebraic
+notation. 
+Notation of the form @samp{P@@f7}
+is accepted for piece-drops in bughouse games;
+this is a nonstandard extension to PGN.
+If the file includes a PGN position (FEN tag), or an
+@value{NAME} position diagram bracketed by @samp{[--} and @samp{--]}
+before the first move, the game starts from that position. Text
+enclosed in parentheses, square brackets, or curly braces is assumed to
+be commentary and is displayed in a pop-up window. Any other
+text in the file is ignored. PGN variations (enclosed in
+parentheses) are treated as comments; @value{NAME} is not able to walk
+variation trees.
+The nonstandard PGN tag [Variant "varname"] functions similarly to
+the -variant command-line option (see below), allowing games in certain chess
+variants to be loaded.  There is also a heuristic to 
+recognize chess variants from the Event tag, by looking for the strings
+that the Internet Chess Servers put there when saving variant ("wild") games.
+
+@item Load Next Game
+@cindex Load Next Game, Menuitem
+Loads the next game from the last game record file you loaded.
+The shifted @samp{N} key is a keyboard equivalent.
+Not available if the last game was loaded from a pipe.
+
+@item Load Previous Game
+@cindex Load Previous Game, Menuitem
+Loads the previous game from the last game record file you
+loaded.  The shifted @samp{P} key is a keyboard equivalent.
+Not available if the last game was loaded from a pipe.
+
+@item Reload Same Game
+@cindex Reload Same Game, Menuitem
+Reloads the last game you loaded.
+
+@item Save Game
+@cindex Save Game, Menuitem
+Appends a record of the current game to a file.
+A popup dialog
+prompts you for the file name. If the game did not begin with
+the standard starting position, the game file includes the
+starting position used. Games are saved in the PGN (portable
+game notation) format, unless the oldSaveStyle option is true,
+in which case they are saved in an older format that is specific
+to @value{NAME}. Both formats are human-readable, and both can be
+read back by the @samp{Load Game} command.
+Notation of the form @samp{P@@f7}
+is accepted for piece-drops in bughouse games;
+this is a nonstandard extension to PGN.
+
+@item Copy Game
+@cindex Copy Game, Menuitem
+Copies a record of the current game to an internal clipboard in PGN
+format and sets the X selection to the game text.  The game can be
+pasted to another application (such as a text editor or another copy
+of @value{NAME}) using that application's paste command.  In many X
+applications, such as xterm and emacs, the middle mouse button can be
+used for pasting; in @value{NAME}, you must use the Paste Game command.
+
+@item Paste Game
+@cindex Paste Game, Menuitem
+Interprets the current X selection as a game record and loads it, as
+with Load Game.
+
+@item Load Position
+@cindex Load Position, Menuitem
+Sets up a position from a position file.  A popup dialog prompts
+you for the file name. If the file contains more than one saved
+position, and you want to load the Nth one, type the number N
+after the file name, separated by a space. Position files must
+be in FEN (Forsythe-Edwards notation), or in the format that the
+Save Position command writes when oldSaveStyle is turned on.
+
+@item Load Next Position
+@cindex Load Next Position, Menuitem
+Loads the next position from the last position file you loaded.
+Not available if the last position was loaded from a pipe.
+
+@item Load Previous Position
+@cindex Load Previous Position, Menuitem
+Loads the previous position from the last position file you
+loaded.  Not available if the last position was loaded from a pipe.
+
+@item Reload Same Position
+@cindex Reload Same Position, Menuitem
+Reloads the last position you loaded.
+
+@item Save Position
+@cindex Save Game, Menuitem
+Appends a diagram of the current position to a file.
+A popup dialog
+prompts you for the file name. Positions are saved in
+FEN (Forsythe-Edwards notation) format unless the @code{oldSaveStyle}
+option is true, in which case they are saved in an older,
+human-readable format that is specific to @value{NAME}. Both formats
+can be read back by the @samp{Load Position} command.
+
+@item Copy Position
+@cindex Copy Position, Menuitem
+Copies the current position to an internal clipboard in FEN format and
+sets the X selection to the position text.  The position can be pasted
+to another application (such as a text editor or another copy of
+@value{NAME}) using that application's paste command.  In many X
+applications, such as xterm and emacs, the middle mouse button can be
+used for pasting; in @value{NAME}, you must use the Paste Position command.
+
+@item Paste Position
+@cindex Paste Position, Menuitem
+Interprets the current X selection as a FEN position and loads it, as
+with Load Position.
+
+@item Mail Move
+@itemx Reload CMail Message
+@cindex Mail Move, Menuitem
+@cindex Reload CMail Message, Menuitem
+See @ref{CMail}.
+
+@item Exit
+@cindex Exit, Menuitem
+Exits from @value{NAME}. The shifted @samp{Q} key is a keyboard equivalent.
+@end table
+
+
+@node Mode Menu
+@section Selecting @value{NAME}'s mode
+@cindex Menu, Mode
+@cindex Mode Menu
+@table @asis
+@item Machine White
+@cindex Machine White, Menuitem
+Forces the chess engine to play White.
+
+@item Machine Black
+@cindex Machine Black, Menuitem
+Forces the chess engine to play Black.
+
+@item Two Machines
+@cindex Two Machines, Menuitem
+Plays a game between two chess engines.
+
+@item Analysis Mode
+@cindex Analysis Mode, Menuitem
+XBoard with Crafty only.
+For information on getting Crafty, see @ref{Crafty}.
+
+XBoard tells Crafty to start analyzing the current game/position
+and shows you the analysis as you move pieces around.
+
+To setup a position to analyze, you do the following:
+
+1. Select Edit Position from the Mode Menu
+
+2. Setup the position (use the right and middle buttons to
+bring up the Black/White piece menus).
+
+3. When you are finished, click on either the Black or White
+clock to tell XBoard which side moves first.
+
+4. Select Analysis Mode from the Mode Menu to start the analysis.
+
+@item Analyze File
+@cindex Analyze File, Menuitem
+XBoard with Crafty only.
+For information on getting Crafty, see @ref{Crafty}.
+
+This option lets you load a game from a file (PGN, XBoard format, etc.)
+and analyze it. When you select this menu item, a popup window appears
+and asks for a filename to load.
+If the file contains multiple games, another popup appears that lets
+you select which game you wish to analyze.
+After a game is loaded, use the XBoard arrow buttons to step
+forwards/backwards through the game and watch Crafty's analysis.
+
+@item ICS Client
+@cindex ICS Client, Menuitem
+ICS mode only. Takes @value{NAME} out of the Edit Game or
+Edit Position state.
+
+While you are examining a game on the ICS, you can issue the ICS
+position-editing commands with the mouse. Do this with @samp{ICS
+Client} selected on the Mode menu, not @samp{Edit Position}; the latter
+edits only your local copy of the position.
+
+To drop a new piece on a square, press mouse button 2 or 3 over
+the square. This brings up a menu of white pieces (button 2) or
+black pieces (button 3).
+Additional menu choices let you empty the square or clear the board.
+You cannot set the side to play or drag pieces to arbitrary squares
+while examining on ICS, however; the ICS permits only legal moves
+in this mode.
+
+If you are playing a bughouse game on the ICS, you can drop an offboard piece
+by pressing mouse button 2 or 3 over an empty square to bring up a piece menu.
+It makes no difference which button you use.  
+A list of the offboard pieces
+each player has available is shown in the window title after the player's name.
+
+@item Edit Game
+@cindex Edit Game, Menuitem
+Allows you to make moves for both Black and White, and to change
+moves after backing up with the @samp{Backward} command. The clocks do
+not run.
+
+In GNU Chess mode, the chess engine continues to check moves for legality
+but does not participate in the game. You can bring the chess engine
+into the game by selecting @samp{Machine White}, @samp{Machine Black},
+or @samp{Two Machines}.
+
+In ICS mode, the moves are not sent to the ICS: @samp{Edit Game} takes
+@value{NAME} out of ICS Client mode and lets you edit games locally.
+If you want to edit games on ICS in a way that other ICS users
+can see, use the ICS examine command or start an ICS match
+against yourself.
+
+@item Edit Position
+@cindex Edit Position, Menuitem
+Lets you set up an arbitrary board position.
+Use mouse button 1 to drag pieces to new squares, or to delete a piece
+by dragging it off the board or dragging an empty square on top of it.
+To drop a new piece on a square, press mouse button 2 or 3 over the
+square. This brings up a menu of white pieces (button 2) or
+black pieces (button 3). Additional menu choices let you empty the
+square or clear the board. You can set the side to play next by
+clicking on the White or Black indicator at the top of the screen.
+Selecting @samp{Edit Position} causes @value{NAME} to discard
+all remembered moves in the current game.
+
+In ICS mode, changes made to the position by @samp{Edit Position} are
+not sent to the ICS: @samp{Edit Position} takes @value{NAME} out of
+@samp{ICS Client} mode and lets you edit positions locally. If you want to
+edit positions on ICS in a way that other ICS users can see, use
+the @samp{ICS examine} command, or start an ICS match against yourself.
+(See also the ICS Client topic above.)
+
+@item Training
+@cindex Training, Menuitem
+Training mode lets you interactively guess the moves of a game for one
+of the players. You guess the next move of the game by playing the
+move on the board. If the move played matches the next move of the
+game, the move is accepted and the opponent's response is autoplayed.
+If the move played is incorrect, an error message is displayed.  You
+can select this mode only while loading a game (that is, after
+selecting Load Game from the File menu).  While @value{NAME} is in Training
+mode, the navigation buttons are disabled.
+
+@item Show Game List
+@cindex Show Game List, Menuitem
+Shows or hides the list of games generated by the last @samp{Load Game}
+command.
+
+@item Edit Tags
+@cindex Edit Tags, Menuitem
+Lets you edit the PGN (portable game notation)
+tags for the current game. After editing, the tags must still conform to
+the PGN tag syntax:
+
+@example
+<tag-section> ::= <tag-pair> <tag-section>
+                        <empty>
+<tag-pair> ::= [ <tag-name> <tag-value> ]
+<tag-name> ::= <identifier>
+<tag-value> ::= <string>
+@end example
+@noindent
+See the PGN Standard for full details. Here is an example:
+
+@example
+[Event "Portoroz Interzonal"]
+[Site "Portoroz, Yugoslavia"]
+[Date "1958.08.16"]
+[Round "8"]
+[White "Robert J. Fischer"]
+[Black "Bent Larsen"]
+[Result "1-0"]
+@end example
+@noindent
+Any characters that do not match this syntax are silently ignored. Note that
+the PGN standard requires all games to have at least the seven tags shown
+above. Any that you omit will be filled in by @value{NAME}
+with @samp{?} (unknown value), or @samp{-} (inapplicable value).
+
+@item Edit Comment
+@cindex Edit Comment, Menuitem
+Adds or modifies a comment on the current position. Comments are
+saved by @samp{Save Game} and are displayed by @samp{Load Game},
+@samp{Forward}, and @samp{Backward}.
+
+@item ICS Input Box
+@cindex ICS Input Box, Menuitem
+If this option is set in ICS mode,
+@value{NAME}
+creates an extra window that you can use for typing in ICS commands.
+The input box is especially useful if you want to type in something long or do
+some editing on your input, because output from ICS doesn't get mixed
+in with your typing as it would in the main terminal window.
+
+@item Pause
+@cindex Pause, Menuitem
+Pauses updates to the board, and if you are playing against a chess engine,
+also pauses your clock. To continue, select @samp{Pause} again, and the
+display will automatically update to the latest position.
+The @samp{P} button and keyboard @samp{p} key are equivalents.
+
+If you select Pause when you are playing against a chess engine and
+it is not your move, the chess engine's clock
+will continue to run and it will eventually make a move, at which point
+both clocks will stop. Since board updates are paused, however,
+you will not see the move until you exit from Pause mode (or select Forward).
+This behavior is meant to simulate adjournment with a sealed move.
+
+If you select Pause while you are in
+@code{examine} mode on ICS, you can step backward and forward in the
+current history of the examined game without affecting the other observers
+and examiners. Select Pause again to reconnect yourself to the current state
+of the game on ICS.
+
+If you select @samp{Pause} while you are loading a game, the game stops
+loading. You can load more moves manually by selecting @samp{Forward}, or
+resume automatic loading by selecting @samp{Pause} again.
+@end table
+
+
+@node Action Menu
+@section Talking to GNU chess or ICS opponents
+@cindex Menu, Action
+@cindex Action, Menu
+@table @asis
+@item Accept
+@cindex Accept, Menuitem
+Accepts a pending match offer. If there is more than one offer
+pending, you will have to type in a more specific command
+instead of using this menu choice. ICS mode only.
+
+@item Decline
+@cindex Decline, Menuitem
+Declines a pending offer (match, draw, adjourn, etc.). If there
+is more than one offer pending, you will have to type in a more
+specific command instead of using this menu choice. ICS mode only.
+
+@item Call Flag
+@cindex Call Flag, Menuitem
+Calls your opponent's flag, claiming a win on time, or claiming
+a draw if you are both out of time. You can also call your
+opponent's flag by clicking on his clock or by pressing the
+keyboard @samp{t} key.
+
+@item Draw
+@cindex Draw, Menuitem
+Offers a draw to your opponent, accepts a pending draw offer
+from your opponent, or claims a draw by repetition or the 50-move
+rule, as appropriate. The @samp{d} key is a keyboard equivalent.
+Not available in GNU Chess mode.
+
+@item Adjourn
+@cindex Adjourn, Menuitem
+Asks your opponent to agree to adjourning the current game, or
+agrees to a pending adjournment offer from your opponent. ICS
+mode only.
+
+@item Abort
+@cindex Abort, Menuitem
+Asks your opponent to agree to aborting the current game, or
+agrees to a pending abort offer from your opponent. An aborted
+game ends immediately without affecting either player's rating.
+
+@item Resign
+@cindex Resign, Menuitem
+Resigns the game to your opponent. The shifted @samp{R} key is a
+keyboard equivalent.
+
+@item Stop Observing
+@cindex Stop Observing, Menuitem
+Ends your participation in observing a game, by issuing the ICS
+observe command with no arguments. ICS mode only.
+
+@item Stop Examining
+@cindex Stop Examining, Menuitem
+Ends your participation in examining a game, by issuing the ICS
+unexamine command. ICS mode only.
+@end table
+
+
+@node Step Menu
+@section Controlling the game
+@cindex Step Menu
+@cindex Menu, Step
+@table @asis
+@item Backward
+@cindex Backward, Menuitem
+@cindex <, Button
+Steps backward through a series of remembered moves.
+The @samp{[<]} button and the @samp{b} key are equivalents.
+In addition, pressing the Control key steps back one move, and releasing
+it steps forward again.
+
+In most modes, @samp{Backward} only lets you look back at old positions;
+it does not retract moves. This is the case if you are playing against
+a chess engine, playing or observing a game on the ICS, or loading a game.
+If you select @samp{Backward} in any of these situations, you will not
+be allowed to make a different move. Use @samp{Retract Move} or
+@samp{Edit Game} if you want to change past moves.
+
+If you are examining a game on ICS, the behavior of @samp{Backward}
+depends on whether @value{NAME} is in Pause mode. If Pause mode is
+off, @samp{Backward} issues the ICS backward command, which backs up
+everyone's view of the game and allows you to make a different
+move. If Pause mode is on, @samp{Backward} only backs up your local
+view.
+
+@item Forward
+@cindex Forward, Menuitem
+@cindex >, Button
+Steps forward through a series of remembered moves (undoing the
+effect of @samp{Backward}) or forward through a game file. The
+@samp{[>]} button and the @samp{f} key are equivalents.
+
+If you are examining a game on ICS, the behavior of Forward
+depends on whether @value{NAME} is in Pause mode. If Pause mode is
+off, @samp{Forward} issues the ICS forward command, which moves
+everyone's view of the game forward along the current line. If
+Pause mode is on, @samp{Forward} only moves your local view forward,
+and it will not go past the position that the game was in when
+you paused.
+
+@item Back to Start
+@cindex Back to Start, Menuitem
+@cindex <<, Button
+Jumps backward to the first remembered position in the game.
+The @samp{[<<]} button and the shifted @samp{B} key are equivalents.
+
+In most modes, Back to Start only lets you look back at old
+positions; it does not retract moves. This is the case if you
+are playing against GNU chess, playing or observing a game on
+the ICS, or loading a game. If you select @samp{Back to Start} in any
+of these situations, you will not be allowed to make different
+moves. Use @samp{Retract Move} or @samp{Edit Game} if you want to change past
+moves; or use Reset to start a new game.
+
+If you are examining a game on ICS, the behavior of @samp{Back to
+Start} depends on whether @value{NAME} is in Pause mode. If Pause mode
+is off, @samp{Back to Start} issues the ICS @samp{backward 999999}
+command, which backs up everyone's view of the game to the start and
+allows you to make different moves. If Pause mode is on, @samp{Back
+to Start} only backs up your local view.
+
+@item Forward to End
+@cindex Forward to End, Menuitem
+@cindex >>, Button
+Jumps forward to the last remembered position in the game. The
+@samp{[>>]} button and the shifted @samp{F} key are equivalents.
+
+If you are examining a game on ICS, the behavior of @samp{Forward to
+End} depends on whether @value{NAME} is in Pause mode. If Pause mode
+is off, @samp{Forward to End} issues the ICS @samp{forward 999999}
+command, which moves everyone's view of the game forward to the end of
+the current line. If Pause mode is on, @samp{Forward to End} only moves
+your local view forward, and it will not go past the position
+that the game was in when you paused.
+
+@item Revert
+@cindex Revert, Menuitem
+If you are examining a game on ICS and Pause mode is off, issues
+the ICS command @samp{revert}.
+
+@item Truncate Game
+@cindex Truncate Game, Menuitem
+Discards all remembered moves of the game beyond the current
+position. Puts @value{NAME} into @samp{Edit Game} mode if it was not there
+already.
+
+@item Move Now
+@cindex Move Now, Menuitem
+Forces the chess engine to move immediately. GNU Chess mode only.
+
+@item Retract Move
+@cindex Retract Move, Menuitem
+Retracts your last move. In GNU Chess mode, you can do this only
+after the chess engine has replied to your move; if the chess engine is still
+thinking, use @samp{Move Now} first. In ICS mode, @samp{Retract Move}
+issues the command @samp{takeback 1} or @samp{takeback 2}
+depending on whether it is your opponent's move or yours.
+@end table
+
+
+@node Options Menu
+@section User Preferences
+@cindex Menu, Options
+@cindex Options Menu
+@table @asis
+@item Always Queen
+@cindex Always Queen, Menuitem
+If this option is off, @value{NAME} brings up a dialog
+box whenever you move a pawn to the last rank, asking what piece
+you want to promote it to. If the option is true, your pawns are
+always promoted to queens. Your opponent can still underpromote,
+however.
+@item Animate Dragging
+@cindex Animate Dragging, Menuitem
+If Animate Dragging is on, while you are dragging a piece with the
+mouse, an image of the piece follows the mouse cursor.
+If Animate Dragging is off, there is no visual feedback while you are
+dragging a piece, but if Animate Moving is on, the move will be
+animated when it is complete. 
+@item Animate Moving
+@cindex Animate Moving, Menuitem
+If Animate Moving is on, all piece moves are animated.  An image of the
+piece is shown moving from the old square to the new square when the
+move is completed (unless the move was already animated by Animate Dragging).
+If Animate Moving is off, a moved piece instantly disappears from its
+old square and reappears on its new square when the move is complete.
+@item Auto Comment
+@cindex Auto Comment, Menuitem
+If this option is on, any remarks made on ICS while you are observing or
+playing a game are recorded as a comment on the current move.  This includes
+remarks made with the ICS commands @kbd{say}, @kbd{tell}, @kbd{whisper},
+and @kbd{kibitz}.
+Limitation: remarks that you type yourself are not recognized;
+@value{NAME} scans only the output from ICS, not the input you type to it.
+@item Auto Flag
+@cindex Auto Flag, Menuitem
+If this option is on and one player runs out of time
+before the other,
+@value{NAME}
+will automatically call his flag, claiming a win on time.
+In ICS mode, Auto Flag will only call your opponent's flag, not yours,
+and the ICS may award you a draw instead of a win if you have
+insufficient mating material.  In local chess engine mode,
+@value{NAME}
+may call either player's flag and will not take material into account.
+@item Auto Flip View
+@cindex Auto Flip View, Menuitem
+If the Auto Flip View option is on when you start a game, the board
+will be automatically oriented so that your pawns move from the bottom
+of the window towards the top.
+@item Auto Observe
+@cindex Auto Observe, Menuitem
+If this option is on and you add a player to your @code{gnotify}
+list on ICS, @value{NAME} will automatically observe all of that
+player's games, unless you are doing something else (such as
+observing or playing a game of your own) when one starts.
+The games are displayed 
+from the point of view of the player on your gnotify list; that is, his
+pawns move from the bottom of the window towards the top.
+Exceptions:  If both players in a game are on your gnotify list, if
+your ICS 
+@code{highlight}
+variable is set to 0, or if the ICS you are using does not 
+properly support observing from Black's point of view,
+you will see the game from White's point of view.
+@item Auto Raise Board
+@cindex Auto Raise Board, Menuitem
+If this option is on, whenever a new game begins, the chessboard window
+is deiconized (if necessary) and raised to the top of the stack of windows.
+@item Auto Save
+@cindex Auto Save, Menuitem
+If this option is true, at the end of every game @value{NAME} prompts
+you for a file name and appends a record of the game to the file
+you specify. 
+Disabled if the @code{saveGameFile} command-line
+option is set, as in that case all games are saved to the specified file.
+@xref{I/O options}.
+@item Blindfold
+@cindex Blindfold, Menuitem
+If this option is on, @value{NAME} displays the board as usual but does
+not display pieces or move highlights.  You can still move in the
+usual way (with the mouse or by typing moves in ICS mode), even though
+the pieces are invisible.
+@item Flash Moves
+@cindex Flash Moves, Menuitem
+If this option is on, whenever a move is completed, the moved piece flashes.
+The number of times to flash is set by the flashCount command-line
+option; it defaults to 3 if Flash Moves is first turned on from the menu.
+
+@item Flip View
+@cindex Flip View, Menuitem
+Inverts your view of the chess board for the duration of the
+current game. Starting a new game returns the board to normal.
+The @samp{v} key is a keyboard equivalent.
+
+If you are playing a game on the ICS, the board is always
+oriented at the start of the game so that your pawns move from
+the bottom of the window towards the top. Otherwise, the starting
+orientation is determined by the @code{flipView} command line option;
+if it is false (the default), White's pawns move from bottom to top
+at the start of each game; if it is true, Black's pawns move from
+bottom to top. @xref{User interface options}.
+
+@item Highlight Last Move
+@cindex Highlight Last Move, Menuitem
+If Highlight Last Move is on, after a move is made, the starting and
+ending squares remain highlighted. In addition, after you use Backward
+or Back to Start, the starting and ending squares of the last move to
+be unmade are highlighted.
+
+@item Move Sound
+@cindex Move Sound, Menuitem
+If this option is on, @value{NAME} alerts you by playing a sound
+after each of your opponent's moves (or after every
+move if you are observing a game on the Internet Chess Server).
+The sound is not played after moves you make or moves read from a
+saved game file. By default, the
+sound is the terminal bell, but on some systems you can change it
+to a sound file using the soundMove option; see below.
+
+If you turn on this option when using @value{NAME} with the Internet
+Chess Server, you will probably want to give the
+
+@example
+set bell 0
+@end example
+@noindent
+command to the ICS, since otherwise the ICS will ring the terminal bell
+after every move (not just yours). (The @file{.icsrc} file
+is a good place for this, @pxref{ICS options})
+
+@item ICS Alarm
+@cindex ICS Alarm, Menuitem
+When this option is on, an alarm sound is played when your clock
+counts down to the icsAlarmTime (by default, 5 seconds) in an ICS
+game.  For games with time controls that include an increment, the
+alarm will sound each time the clock counts down to the icsAlarmTime.
+By default, the alarm sound is the terminal bell, but on some systems
+you can change it to a sound file using the soundIcsAlarm option; see
+below.
+
+@item Get Move List
+@cindex Get Move List, Menuitem
+If this option is on, whenever @value{NAME}
+receives the first board of a new game (or a different game from
+the one it is currently displaying), it
+retrieves the list of past moves from the ICS.
+You can then review the moves with the @samp{Forward} and @samp{Backward}
+commands
+or save them with @samp{Save Game}.  You might want to
+turn off this option if you are observing several blitz games at once,
+to keep from wasting time and network bandwidth fetching the move lists over
+and over.
+When you turn this option on from the menu, @value{NAME}
+immediately fetches the move list of the current game (if any).
+
+@item Old Save Style
+@cindex Old Save Style, Menuitem
+If this option is off, @value{NAME} saves games in PGN
+(portable game notation) and positions in FEN (Forsythe-Edwards
+notation).  If the option is on, a save style that is compatible
+with older versions of @value{NAME} is used instead.
+The old position style is more human-readable
+than FEN; the old game style has no particular advantages.
+
+@item Periodic Updates
+@cindex Periodic Updates, Menuitem
+If this option is off (or if
+you are using a chess engine that does not support periodic updates),
+the analysis window
+will only be updated when the analysis changes. If this option is
+on, the Analysis Window will be updated every two seconds.
+
+@item Ponder Next Move
+@cindex Ponder Next Move, Menuitem
+If this option is off, the chess engine will think only when it is on
+move.  If the option is on, the engine will also think while waiting
+for you to make your move.
+
+@item Popup Exit Message
+@cindex Popup Exit Message, Menuitem
+If this option is on, when @value{NAME} wants to display a message just
+before exiting, it brings up a modal dialog box and waits for you to
+click OK before exiting.  If the option is off, @value{NAME} prints the
+message to standard error (the terminal) and exits immediately.
+
+@item Popup Move Errors
+@cindex Popup Move Errors, Menuitem
+If this option is off, when you make an error in moving (such as
+attempting an illegal move or moving the wrong color piece), the
+error message is displayed in the message area.  If the option is
+on, move errors are displayed in small popup windows like other errors.
+You can dismiss an error popup either by clicking its OK button or by
+clicking anywhere on the board, including downclicking to start a move.
+
+@item Premove
+@cindex Premove, Menuitem
+If this option is on while playing a game on ICS, you can register
+your next planned move before it is your turn.  Move the piece with
+the mouse in the ordinary way, and the starting and ending squares
+will be highlighted with a special color (red by default).  When it is
+your turn, if your registered move is legal, xboard will send it to
+ICS immediately; if not, it will be ignored and you can make a
+different move.  If you change your mind about your premove, either
+make a different move, or double-click on any piece to cancel the move
+entirely.
+
+@item Quiet Play
+@cindex Quiet Play, Menuitem
+If this option is on, @value{NAME} will automatically issue an ICS
+
+@example
+set shout 0
+@end example
+@noindent
+command whenever you start a game and a
+
+@example
+set shout 1
+@end example
+@noindent
+command whenever you finish one.  Thus, you will not be distracted
+by shouts from other ICS users while playing.
+
+@item Show Coords
+@cindex Show Coords, Menuitem
+If this option is on, @value{NAME} displays algebraic coordinates
+along the board's left and bottom edges.
+
+@item Show Thinking
+@cindex Show Thinking, Menuitem
+If this option is set, the chess engine's notion of the score and best
+line of play from the current position is displayed as it is
+thinking. The score indicates how many pawns ahead (or if negative,
+behind) the chess engine thinks it is. In matches between two
+machines, the score is prefixed by @samp{W} or @samp{B} to indicate
+whether it is showing White's thinking or Black's.
+@end table
+
+@node Help Menu
+@section Getting help
+@cindex Menu, Help
+@cindex Help Menu
+@table @asis
+@item Info @value{NAME}
+@cindex Info @value{NAME}, Menuitem
+Displays this info file in a new window.  For this feature to work,
+you must have the GNU info program installed on your system,
+and the file @file{xboard.info} must either be present in the current 
+working directory, or have been installed by 
+the @samp{make install} command when you built @value{NAME}.
+@item Man @value{NAME}
+@cindex Man @value{NAME}, Menuitem
+Displays the @value{NAME} man page in a new window.  For this feature to work,
+the file @file{xboard.6} must have been installed by 
+the @samp{make install} command when you built @value{NAME}, and the
+directory it was placed in must be on the search path for your system's
+@samp{man} command.
+@item Hint
+@cindex Hint, Menuitem
+Displays a move hint from GNU Chess. GNU Chess mode only.
+@item Book
+@cindex Book, Menuitem
+Displays a list of possible moves from GNU Chess's opening book.
+The first column gives moves, the second column gives one possible
+response for each move, and the third column shows the
+number of lines in the book that include the move from the first
+column. If you select this option and nothing happens, GNU
+Chess is out of its book.  GNU Chess mode only.
+
+@item About @value{NAME}
+@cindex About @value{NAME}, Menuitem
+Shows the current @value{NAME} version number.
+@end table
+
+
+@node Keys
+@section Other shortcut keys
+@cindex Keys
+@cindex Shortcut keys
+@table @asis
+@item Iconize
+Pressing the @samp{i} or @samp{c} key iconizes @value{NAME}. The graphical
+icon displays a white knight if it is white's move, or a black knight,
+if it is Black's move. If your X window manager displays only text icons,
+not graphical ones, check its documentation; there is probably a way to
+enable graphical icons. If you are running the Motif window manager
+@file{mwm} (1), add these lines to your @file{.Xdefaults} file and
+restart mwm:
+
+@example
+Mwm*iconDecoration: activelabel label image
+Mwm*@value{NAME}*iconImageBackground: White
+Mwm*@value{NAME}*iconImageForeground: Black
+@end example
+@noindent
+The first line above enables graphical icons in mwm; you don't need it
+if you already have them. The next two lines force the white knights to
+come out white and the black knights black. Unfortunately these resources
+can't be set from inside @value{NAME}; you have to set them in your
+@file{.Xdefaults} file.
+@end table
+
+You can add or remove shortcut keys using the X resources
+@code{form.translations}. Here is an example of what would go in your
+@file{.Xdefaults} file:
+
+@example
+@value{NAME}*form.translations: Shift<Key>?: AboutGameProc() \n\
+<Key>y: AcceptProc() \n\
+<Key>n: DeclineProc() \n\
+<Key>i: NothingProc()
+@end example
+@noindent
+Binding a key to @code{NothingProc} makes it do nothing, thus removing
+it as a shortcut key. The @value{NAME} commands that can be bound to keys
+are:
+
+@example
+AbortProc, AboutGameProc, AboutProc, AcceptProc, AdjournProc,
+AlwaysQueenProc, AnalysisModeProc, AnalyzeFileProc, AnimateDraggingProc,
+AnimateMovingProc, AutobsProc, AutoflagProc, AutoflipProc,
+AutoraiseProc, AutosaveProc, BackwardProc, BlindfoldProc, BookProc,
+CallFlagProc, CopyGameProc, CopyPositionProc, DebugProc, DeclineProc,
+DrawProc, EditCommentProc, EditGameProc, EditPositionProc, EditTagsProc,
+EnterKeyProc, FlashMovesProc, FlipViewProc, ForwardProc,
+GetMoveListProc, HighlightLastMoveProc, HintProc, Iconify, IcsAlarmProc,
+IcsAlarmProc, IcsClientProc, IcsInputBoxProc, InfoProc, LoadGameProc,
+LoadNextGameProc, LoadNextPositionProc, LoadPositionProc,
+LoadPrevGameProc, LoadPrevPositionProc, LoadSelectedProc,
+MachineBlackProc, MachineWhiteProc, MailMoveProc, ManProc, MoveNowProc,
+MoveSoundProc, NothingProc, OldSaveStyleProc, PasteGameProc,
+PastePositionProc, PauseProc, PeriodicUpdatesProc, PonderNextMoveProc,
+PopupExitMessageProc, PopupMoveErrorsProc, PremoveProc, QuietPlayProc,
+QuitProc, ReloadCmailMsgProc, ReloadGameProc, ReloadPositionProc,
+RematchProc, ResetProc, ResignProc, RetractMoveProc, RevertProc,
+SaveGameProc, SavePositionProc, ShowCoordsProc, ShowGameListProc,
+ShowThinkingProc, StopExaminingProc, StopObservingProc,
+TestLegalityProc, ToEndProc, ToStartProc, TrainingProc,
+TruncateGameProc, and TwoMachinesProc.
+@end example
+
+@node ICS
+@chapter Using @value{NAME} with an Internet Chess Server (ICS)
+@cindex ICS
+@cindex ICS, addresses
+@cindex Internet Chess Server
+An @dfn{Internet Chess Server}, or @dfn{ICS}, is a place on the 
+Internet where people can get together to play chess,
+watch other people's games, or just chat.
+You can use either @code{telnet} or
+a client program like @value{NAME} to connect to the server.
+ICS is getting more and more important for chess players: 
+There are thousands of registered users on the different
+ICS hosts, and it is not unusual to meet 200 on both ICC and FICS.
+The number is increasing rapidly.
+
+Most people can just type
+
+@example
+@value{LCNAME} -ics
+@end example
+@noindent
+to start @value{NAME} as
+an ICS client.  Invoking @value{NAME} in this way connects you to
+the Internet Chess Club (ICC), a commercial ICS.  You can log in there as
+a guest even if you do not have a paid account.  To connect to
+the largest Free ICS (FICS), use the command
+
+@example
+@value{LCNAME} -ics -icshost freechess.org
+@end example
+@noindent
+instead, or substitute a different host name to connect to your
+favorite ICS.
+The @file{ics-addresses} in the 
+@value{NAME} distribution includes a list of ICS hosts.
+For a full description of command-line options that control 
+the connection to ICS and change the default values of ICS options, see
+@ref{ICS options}.  
+
+While you are running @value{NAME} as an ICS client,
+you use the terminal window that you started @value{NAME} from
+as a place to type in commands and read information that is
+not available on the chessboard.
+
+The first time you need to use the terminal is to enter your login name
+and password, if you are a registered player. (You don't need to do
+this manually; the @code{icsLogon} option can do it for you.
+@pxref{ICS options})  If you are not registered, enter any name.
+If someone has already registered under that name, you'll be
+asked for a password; just hit return and try again.
+Or on ICC, you can enter @samp{g} as your name, and ICC will pick a
+unique (but boring) name for you.
+
+Some useful ICS commands
+include
+@table @kbd
+@item help <topic>
+@cindex help, ICS command
+to get help on the given <topic>. To get a list of possible topics type
+@dfn{help} without topic.  Try the help command before you ask other
+people on the server for help.
+
+For example @kbd{help register} tells you how to become a registered
+ICS player.
+@item who <flags>
+@cindex who, ICS command
+to see a list of people who are logged on.  Administrators
+(people you should talk to if you have a problem) are marked
+with the character @samp{*}, an asterisk. The <flags> allow you to
+display only selected players: For example, @kbd{who of} shows a
+list of players who are interested in playing but do not have
+an opponent.
+@item games
+@cindex games, ICS command
+to see what games are being played
+@item match <player> [<mins>] [<inc>]
+to challenge another player to a game. Both opponents get <mins> minutes
+for the game, and <inc> seconds will be added after each move.
+If another player challenges you, the server asks if you want to
+accept the challenge; use the @kbd{accept} or @kbd{decline} commands
+to answer.
+@item accept
+@itemx decline
+@cindex accept, ICS command
+@cindex decline, ICS command
+to accept or decline another player's offer. 
+The offer may be to start a new game, or to agree to a 
+@kbd{draw}, @kbd{adjourn} or @kbd{abort} the current game. @xref{Action Menu}.
+
+If you have more than one pending offer (for example, if more than one player
+is challenging you, or if your opponent offers both a draw and to adjourn the
+game), you have to supply additional information, by typing something
+like @kbd{accept <player>}, @kbd{accept draw}, or @kbd{draw}.
+
+@item draw
+@itemx adjourn
+@itemx abort
+@cindex draw, ICS command
+@cindex adjourn, ICS command
+@cindex abort, ICS command
+asks your opponent to terminate a game by mutual agreement. Adjourned
+games can be continued later. 
+Your opponent can either @kbd{decline} your offer or accept it (by typing the
+same command or typing @kbd{accept}).  In some cases these commands work
+immediately, without asking your opponent to agree.  For example, you can
+abort the game unilaterally if your opponent is out of time, and you can claim
+a draw by repetition or the 50-move rule if available simply by typing 
+@kbd{draw}.
+@item finger <player>
+@cindex finger, ICS command
+to get informations about the given <player>. (Default: yourself.)
+@item vars
+@cindex vars, ICS command
+to get a list of personal settings
+@item set <var> <value>
+@cindex set, ICS command
+to modify these settings
+@item observe <player>
+@cindex observe, ICS command
+to observe an ongoing game of the given <player>.
+@item examine
+@itemx oldmoves
+@cindex examine, ICS command
+@cindex oldmoves, ICS command
+to review a recently completed game
+@end table
+
+Some special @value{NAME} features are activated when you are
+in examine mode on ICS.  See the descriptions of the menu commands
+@samp{Forward}, @samp{Backward}, @samp{Pause}, @samp{ICS Client}, 
+and @samp{Stop Examining} on the @ref{Step Menu}, @ref{Mode Menu}, and
+@ref{Options Menu}.
+
+@node Firewalls
+@chapter Connecting to the ICS through a firewall
+By default, @value{NAME} communicates with an Internet Chess Server
+by opening a TCP socket directly from the machine it is running on
+to the ICS. If there is a firewall between your machine and the ICS,
+this won't work. Here are some recipes for getting around common
+kinds of firewalls using special options to @value{NAME}.
+Important: See the paragraph in the below about extra echoes, in
+@ref{Limitations}.
+
+Suppose that you can't telnet directly to ICS, but you can telnet
+to a firewall host, log in, and then telnet from there to ICS.
+Let's say the firewall is called @samp{fire.wall.com}. Set
+command-line options as follows:
+
+@example
+xboard -ics -icshost fire.wall.com -icsport 23
+@end example
+@noindent
+Or in your @file{.Xdefaults} file:
+
+@example
+XBoard*internetChessServerHost: fire.wall.com
+XBoard*internetChessServerPort: 23
+@end example
+@noindent
+Then when you run @value{NAME} in ICS mode, you will be prompted
+to log in to the firewall host. (This works because port 23 is the
+standard telnet login service.) Do so, then telnet to ICS, using a
+command like @samp{telnet chessclub.com 5000}, or whatever command
+the firewall provides for telnetting to port 5000.
+
+If your firewall lets you telnet (or rlogin) to remote hosts, but
+doesn't let you telnet to port 5000, you will have to find some
+other host outside the firewall that does let you do this, and
+hop through it. For instance, suppose you have an account at
+@samp{foo.edu}. Follow the recipe above, but instead of typing
+@samp{telnet chessclub.com 5000} to the firewall, type
+@samp{telnet foo.edu} (or @samp{rlogin foo.edu}), log in there, and
+then type @samp{telnet chessclub.com 5000}.
+
+Exception: chessclub.com itself lets you connect to the chess server on the
+default telnet port (23), which is what you get if you don't specify a port
+to the telnet program. But the other chess servers don't allow this.
+
+Suppose that you can't telnet directly to ICS, but you can use rsh
+to run programs on a firewall host, and that host can telnet to ICS.
+Let's say the firewall is called @samp{rsh.wall.com}. Set
+command-line options as follows:
+
+@example
+xboard -ics -gateway rsh.wall.com -icshost chessclub.com
+@end example
+@noindent
+Or in your @file{.Xdefaults} file:
+
+@example
+XBoard*gateway: rsh.wall.com
+XBoard*internetChessServerHost: chessclub.com
+@end example
+Then when you run @value{NAME} in ICS mode, it will connect to
+the ICS by using @file{rsh} to run the command @samp{telnet
+chessclub.com 5000} on host @samp{rsh.wall.com}.
+
+Suppose that you can telnet anywhere you want, but you have to
+run a special program called @file{ptelnet} to do so.
+
+First, we'll consider the easy case, in which
+@samp{ptelnet chessclub.com 5000} gets you to the chess server.
+In this case set command line options as follows:
+
+@example
+xboard -ics -telnet -telnetProgram ptelnet
+@end example
+@noindent
+Or in your @file{.Xdefaults} file:
+
+@example
+XBoard*useTelnet: true
+XBoard*telnetProgram: ptelnet
+@end example
+@noindent
+Then when you run @value{NAME} in ICS mode, it will issue the
+command @samp{ptelnet chessclub.com 5000} to connect to the ICS.
+
+Next, suppose that @samp{ptelnet chessclub.com 5000} doesn't work;
+that is, your @file{ptelnet} program doesn't let you connect to
+alternative ports. In this case, you will have to find some other
+host outside the firewall that does let you do this, and hop
+through it. For instance, suppose you have an account at
+@samp{foo.edu}. Set command line options as follows:
+
+@example
+xboard -ics -telnet -telnetProgram ptelnet -icshost foo.edu -icsport ""
+@end example
+@noindent
+Or in your @file{.Xdefaults} file:
+
+@example
+XBoard*useTelnet: true
+XBoard*telnetProgram: ptelnet
+XBoard*internetChessServerHost: foo.edu
+XBoard*internetChessServerPort:
+@end example
+@noindent
+Then when you run @value{NAME} in ICS mode, it will issue the
+command @samp{ptelnet foo.edu} to connect to your account at
+@samp{foo.edu}. Log in there, then type @samp{telnet chessclub.com 5000}.
+
+ICC timestamp and FICS timeseal do not work through many
+firewalls.  You can use them only if your firewall gives a clean TCP
+connection with a full 8-bit wide path.  If your firewall allows you
+to get out only by running a special telnet program, you can't use
+timestamp or timeseal across it.  But if you have access to a
+computer just outside your firewall, and you have much lower netlag
+when talking to that computer than to the ICS, it might be worthwhile
+running timestamp there.  Follow the instructions above for hopping
+through a host outside the firewall (foo.edu in the example),
+but run timestamp or timeseal on that host instead of telnet.
+
+Suppose that you have a SOCKS firewall that requires you to go through
+some extra level of authentication, but after that will give you a
+clean 8-bit wide TCP connection to the chess server.  In that case,
+you could make a socksified version of 
+@value{NAME}
+and run that.  If you are using timestamp or timeseal,
+you will to socksify it, not
+@value{NAME};
+this may be difficult seeing that ICC and FICS do not
+provide source code for these programs.
+Socksification is beyond the scope of this document, but
+see the SOCKS Web site at http://www.socks.nec.com/how2socksify.html.
+
+@node Environment
+@chapter Environment variables
+@cindex Environment variables
+@cindex CHESSDIR
+Game and position files are found in a directory named by the
+@code{CHESSDIR} environment variable. If this variable is not set, the
+current working directory is used. If @code{CHESSDIR} is set,
+@value{NAME} actually changes its working directory to
+@code{$CHESSDIR}, so GNU Chess listing files will also be stored there
+as well.
+
+@node Limitations
+@chapter Known limitations and bugs
+@cindex Limitations
+@cindex Bugs
+There is no way for two people running copies of @value{NAME} to play
+each other without going through the @code{Internet Chess Server}.
+
+Under some circumstances, your ICS password may be echoed when you log on.
+
+If you are connecting to the ICS by running telnet on an Internet provider
+or firewall host, you may find that each line you type is echoed back an extra
+time after you hit Return. If your Internet provider is a Unix system, you can
+probably turn its echo off by typing
+
+@example
+stty -echo
+@end example
+@noindent
+after you log in, and/or typing @key{^E-Return} (@key{control-E} followed by
+the @key{Return} key) to the telnet program after you have logged into ICS.
+It is a good idea to do this if you can, because the extra echo can
+occasionally confuse @value{NAME}'s parsing routines.
+
+The game parser recognizes only algebraic notation.
+
+The internal move legality tester does not look at the game history,
+so in some cases it misses illegal castling or en passant captures.
+It permits castling with the king on the d file because this is possible in
+some "wild 1" games on ICS.  It does not check
+piece drops in bughouse and crazyhouse to see if you actually
+hold the piece you are trying to drop.
+However, if you attempt an illegal move when using
+GNU Chess (or the ICS), @value{NAME} will accept the error message
+that comes back, undo the move, and let you try another.
+
+Fischer Random castling is not understood.  You can probably play
+Fischer Random successfully on ICS by typing castling moves into the ICS
+Interaction window, but they will not be animated correctly, and saved
+games will not be loaded correctly if castling occurs.
+
+FEN positions saved by @value{NAME}
+never include correct information about whether castling is legal or
+how many half-moves have been made since the last irreversible move,
+and sometimes may not correctly indicate when en passant capture is available.
+
+The mate detector does not understand that non-contact mate is not
+really mate in bughouse and crazyhouse.  The only problem this causes
+while playing is minor: a @samp{#} (mate indicator) character will show
+up after a non-contact mating move in the move list; @value{NAME} will
+not assume the game is over at that point.  However, if you are editing
+a game, Edit Game mode will be terminated by a non-contact mate.
+
+Some @value{NAME} functions may not work with versions of GNU Chess earlier
+than 4.0, patchlevel 77,
+or with versions of Crafty earlier than 15.11.
+A few functions work with GNU Chess but not Crafty, or vice versa.
+
+The menus may not work if your keyboard is in Caps Lock or Num Lock mode.
+This seems to be a problem with the Athena menu widget,
+not an @value{NAME} bug.
+
+Also see the ToDo file included with the distribution for many other
+possible bugs, limitations, and ideas for improvement that have been
+suggested.
+@node Problems
+@chapter Reporting problems
+@cindex Bugs
+@cindex Bug reports
+@cindex Reporting bugs
+@cindex Problems
+@cindex Reporting problems
+
+Report bugs and problems with @value{NAME} to
+@example
+tim@@tim-mann.org.
+@end example
+
+Please use the @file{script} program to start a typescript, run 
+@value{NAME} with the @samp{-debug} option, and include the typescript
+output in your message.
+Also tell us what kind of machine and what operating system version
+you are using.  The command @samp{uname -a} will often tell you this.
+Here is a sample of approximately what you should type:
+
+@example
+script
+uname -a
+./configure
+make
+./xboard -debug
+exit
+mail tim@@tim-mann.org
+Subject: Your short description of the problem
+Your detailed description of the problem
+~r typescript
+.
+@end example
+
+If you improve @value{NAME}, please send a message about your changes,
+and we will get in touch with you about merging them in
+to the main line of development.
+
+Send CMail bug reports/suggestions to
+@example
+evan@@quadstone.co.uk
+@end example
+
+@node Contributors
+@chapter Authors and contributors to @value{NAME}
+@cindex Authors
+@cindex Contributors
+@table @asis
+@item Tim Mann (tim@@tim-mann.org)
+has been responsible for XBoard versions 1.3 and beyond, and for
+WinBoard, a port of XBoard to Microsoft Win32 (Windows NT and
+Windows 95)
+
+@item Mark Williams 
+contributed the initial (WinBoard-only) implementation
+of many new features added to both XBoard and WinBoard in version 4.1.0,
+including copy/paste, premove, icsAlarm, autoFlipView, training mode,
+auto raise, and blindfold.  
+
+@item Ben Nye contributed X copy/paste code for XBoard.
+
+@item Hugh Fisher (Hugh.Fisher@@cs.anu.edu.au)
+added animated piece movement to XBoard, and
+Henrik Gram (henrikg@@funcom.com) added it to WinBoard.
+
+@item Frank McIngvale (frankm@@hiwaay.net)
+added click/click moving, the Analysis modes,
+piece flashing, ZIICS import, and ICS text colorization to XBoard.
+
+@item Jochen Wiedmann (wiedmann@@neckar-alb.de)
+ported XBoard to the Amiga, creating AmyBoard, and converted the
+documentation to texinfo.  He was responsible for AmyBoard versions through
+330.5 (based on xboard 3.3.pl0).
+
+@item Elmar Bartel
+contributed the new piece bitmaps introduced in version 3.2.
+
+@item Evan Welsh (Evan.Welsh@@msdw.com)
+wrote @code{CMail}.
+
+@item Patrick Surry
+helped with design, testing and documenting CMail.
+
+@item John Chanak
+contributed the initial implementation of ICS mode.
+
+@item Wayne Christopher
+created @code{XChess}; the color scheme and the old 80x80 piece bitmaps
+were taken from it.
+
+@item Chris Sears and Dan Sears
+wrote the original XBoard.  They were responsible for versions 1.0
+through 1.2.
+@end table
+
+@node CMail
+@chapter Using @value{NAME} for electronic correspondence chess
+@cindex cmail
+The @file{cmail} program will help you play chess by email with opponents of
+your choice using @value{NAME} as an interface.
+
+You will usually run @file{cmail} without giving any options.
+
+@menu
+* CMail options::  Invoking CMail.
+* CMail game::     Starting a CMail game.
+* CMail answer::   Answering a move.
+* CMail trouble::  Known CMail problems.
+@end menu
+
+
+@node CMail options
+@section Invoking CMail.
+@table @asis
+@item -h
+Displays @file{cmail} usage information.
+@item -c
+Shows the conditions of the GNU General Public License.
+@xref{Copying}.
+@item -w
+Shows the warranty notice of the GNU General Public License.
+@xref{Copying}.
+@item -v
+@itemx -xv
+Provides or inhibits verbose output from @file{cmail} and @value{NAME},
+useful for debugging. The
+@code{-xv}
+form also inhibits the cmail introduction message.
+@item -mail
+@itemx -xmail
+Invokes or inhibits the sending of a mail message containing the move.
+@item -xboard
+@itemx -xxboard
+Invokes or inhibits the running of @value{NAME} on the game file.
+@item -reuse
+@itemx -xreuse
+Invokes or inhibits the reuse of an existing @value{NAME} to display the
+current game.
+@item -remail
+Resends the last mail message for that game. This inhibits running
+@value{NAME}.
+@item -game <name>
+The name of the game to be processed.
+@item -wgames <number>
+@itemx -bgames <number>
+@itemx -games <number>
+Number of games to start as White, as Black or in total. Default is 1 as
+white and none as black. If only one color is specified then none of the
+other color is assumed. If no color is specified then equal numbers of
+White and Black games are started, with the extra game being as White if an
+odd number of total games is specified.
+@item -me <short name>
+@itemx -opp <short name>
+A one-word alias for yourself or your opponent.
+@item -wname <full name>
+@itemx -bname <full name>
+@itemx -name <full name>
+@itemx -oppname <full name>
+The full name of White, Black, yourself or your opponent.
+@item -wna <net address>
+@itemx -bna <net address>
+@itemx -na <net address>
+@itemx -oppna <net address>
+The email address of White, Black, yourself or your opponent.
+@item -dir <directory>
+The directory in which @file{cmail} keeps its files. This defaults to the
+environment variable @code{$CMAIL_DIR} or failing that, @code{$CHESSDIR},
+@file{$HOME/Chess} or @file{~/Chess}. It will be created if it does not exist.
+@item -arcdir <directory>
+The directory in which @file{cmail} archives completed games. Defaults to
+the environment variable @code{$CMAIL_ARCDIR} or, in its absence, the same
+directory as cmail keeps its working files (above).
+@item -mailprog <mail program>
+The program used by cmail to send email messages. This defaults to the
+environment variable @code{$CMAIL_MAILPROG} or failing that
+@file{/usr/ucb/Mail}, @file{/usr/ucb/mail} or @file{Mail}. You will need
+to set this variable if none of the above paths fit your system.
+@item -gamesFile <file>
+@cindex .cmailgames
+A file containing a list of games with email addresses. This defaults to
+the environment variable @code{$CMAIL_GAMES} or failing that
+@file{.cmailgames}.
+@item -aliasesFile <file>
+@cindex .cmailaliases
+A file containing one or more aliases for a set of email addresses. This
+defaults to the environment variable @code{$CMAIL_ALIASES} or failing
+that @file{.cmailaliases}.
+@item -logFile <file>
+A file in which to dump verbose debugging messages that are invoked with
+the @samp{-v}
+option.
+@item -event <event>
+The PGN Event tag (default @samp{Email correspondence game}).
+@item -site <site>
+The PGN Site tag (default @samp{NET}).
+@item -round <round>
+The PGN Round tag (default @samp{-}, not applicable).
+@item -mode <mode>
+The PGN Mode tag (default @samp{EM}, Electronic Mail).
+@item OTHER OPTIONS
+Any unrecognized flags will be passed to @value{NAME}.
+Those most relevant for use with Icmail\fP are
+@samp{-timeDelay}, @samp{-noChessProgram}, @samp{-searchTime},
+@samp{-searchDepth}, @samp{-saveGameFile}, @samp{-autosave},
+@samp{-savePositionFile} and @samp{-boardSize}. @xref{Invocation}.
+@end table
+
+
+@node CMail game
+@section Starting a CMail game.
+Type @file{cmail} from a shell to start a game as white. After an opening
+message, you will be prompted for a game name, which is optional -- if you
+simply press return, the game name will take the form
+@samp{you-VS-opponent}. You will next be prompted for the short name
+of your opponent. If you haven't played this person before, you will also
+be prompted for his/her email address. @file{cmail} will then invoke
+@value{NAME} in the background. Make your first move and select
+@samp{Mail Move} from the @samp{File} menu. @xref{File Menu}. If all is well,
+@file{cmail} will mail a copy of the move to your opponent. If you select
+@samp{Exit} without having selected @samp{Mail Move} then no move will be
+made.
+
+
+@node CMail answer
+@section Answering a move.
+When you receive a message from an opponent containing a move in one of
+your games, simply pipe the message through @file{cmail}. In some mailers
+this is as simple as typing @kbd{| cmail} when viewing the message, while in
+others you may have to save the message to a file and do @kbd{cmail < file}
+at the command line. In either case @file{cmail} will display the game using
+@value{NAME}. If you didn't exit @value{NAME} when you made your first move
+then @file{cmail} will do its best to use the existing @value{NAME} instead
+of starting a new one. As before, simply make a move and select
+@samp{Mail Move} from the @samp{File} menu. @xref{File Menu}. @file{cmail}
+will try to use the
+@value{NAME} that was most recently used to display the current game. This
+means that many games can be in progress simultaneously, each with its own
+active @value{NAME}.
+
+If you want to look at the history or explore a variation, go ahead, but
+you must return to the current position before @value{NAME} will allow you
+to mail a move. If you edit the game's history you must select
+@samp{Reload Same Game} from the @samp{File} menu to get back to the original
+position, then make the move you want and select @samp{Mail Move}.
+As before, if you decide you aren't ready to make a move just yet you can
+either select @samp{Exit} without sending a move or just leave
+@value{NAME} running until you are ready.
+
+Because @value{NAME} can now detect checkmate and stalemate, @file{cmail}
+now handles game termination sensibly. As well as resignation, the
+@samp{Action} menu now allows draws to be offered and accepted for
+@file{cmail} games.
+
+For multi-game messages, only unfinished and just-finished games will be
+included in email messages. When all the games are finished, they are
+archived in the user's archive directory, and similarly in the opponent's
+when he or she pipes the final message through @file{cmail}. The archive
+file name includes the date the game was started.
+
+It's possible to have a @file{cmail} message carry more than one game.
+This feature was implemented to handle IECG (International Email Chess
+Group) matches, where a match consists of 1 game as white and 1 as black,
+with moves transmitted simultaneously. In case there are more general uses,
+@file{cmail} itself places no limit on the number of black/white games
+contained in a message; however, @value{NAME} does.
+
+
+@node CMail trouble
+@section Known CMail problems.
+It's possible that a strange conjunction of conditions may occasionally
+mean that @file{cmail} has trouble reactivating an existing
+@value{NAME}. If this should happen, simply trying it again should work.
+If not, remove the file that stores the @value{NAME}'s PID
+(@file{game.pid}) or use the @samp{-xreuse} option to force
+@file{cmail} to start a new @value{NAME}.
+
+Versions of @file{cmail} after 2.16 no longer understand the old file format
+that @value{NAME} used to use and so cannot be used to correspond with
+anyone using an older version.
+
+Versions of @file{cmail} older than 2.11 do not handle multi-game messages,
+so multi-game correspondence is not possible with opponents using an older
+version.
+
+@node Programs
+@chapter Other programs you can use with @value{NAME}
+@cindex Programs
+
+Here are some other programs you can use with @value{NAME}
+
+@menu
+* GNU Chess::        The GNU Chess engine
+* Crafty::           The Crafty chess engine
+* zic2xpm::          The program used to import chess sets from ZIICS
+@end menu
+
+@node GNU Chess
+@section GNU Chess
+
+The GNU Chess engine is available from:
+
+ftp://ftp.gnu.org/gnu/gnuchess/
+
+You can use XBoard to play a game against GNU Chess, or to
+interface GNU Chess to an ICS.
+
+@node Crafty
+@section Crafty
+
+Crafty is a chess engine written by Bob Hyatt (hyatt@@cis.uab.edu).
+You can use XBoard to play a game against Crafty, hook Crafty up
+to an ICS, or use Crafty to interactively analyze games and positions
+for you.
+
+Crafty is a strong, rapidly evolving chess program. This rapid
+pace of development is good, because it means Crafty is always
+getting better.  This can sometimes cause problems with
+backwards compatibility, but usually the latest version of Crafty
+will work well with the latest version of @value{NAME}.
+Crafty can be obtained from its author's FTP site:
+ftp://ftp.cis.uab.edu/hyatt/.
+
+To use Crafty with XBoard, give the -fcp and -fd options as follows, where
+<crafty's directory> is the directory in which you installed Crafty
+and placed its book and other support files.
+
+@node zic2xpm
+@section zic2xpm
+
+The ``zic2xpm'' program is used to import chess sets from the ZIICS(*)
+program into XBoard. ``zic2xpm'' is part of the XBoard distribution.
+ZIICS is available from:
+
+ftp://ftp.freechess.org/pub/chess/DOS/ziics131.exe
+
+
+To import ZIICS pieces, do this:
+
+@table @asis
+@item 1. Unzip ziics131.exe into a directory:
+
+@example
+unzip -L ziics131.exe -d ~/ziics
+@end example
+
+@item 2. Use zic2xpm to convert a set of pieces to XBoard format.
+
+For example, let's say you want to use the
+FRITZ4 set. These files are named ``fritz4.*'' in the ZIICS distribution.
+
+@example
+mkdir ~/fritz4
+cd ~/fritz4
+zic2xpm ~/ziics/fritz4.*
+@end example
+
+@item 3. Now, either give XBoard the ``-pixmap'' option when starting up, e.g.:
+
+@example
+xboard -pixmap ~/fritz4
+@end example
+
+Or, add this line to your .Xdefaults file:
+
+@example
+xboard*pixmapDirectory: ~/fritz4
+@end example
+@end table
+
+(*) ZIICS is a separate copyrighted work of Andy McFarland (Zek on ICS).
+The ``ZIICS pieces'' are copyrighted works of their respective
+creators. Files produced by ``zic2xpm'' are for PERSONAL USE ONLY
+and may NOT be redistributed without explicit permission from
+the original creator(s) of the pieces.
+
+@node Copying
+@unnumbered GNU GENERAL PUBLIC LICENSE
+@include gpl.texinfo
+
+@node Index
+@unnumbered Index
+
+
+@printindex cp
+@contents
+

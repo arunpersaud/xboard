@@ -1,0 +1,323 @@
+dnl| configure.in
+dnl|
+dnl| You can process this file with autoconf to produce a configure script.
+dnl| However, normally the supplied configure script will work fine.
+dnl|
+dnl| If you do need to change the configure script, instead of editing
+dnl| it directly, try to edit configure.in (in a way that will keep
+dnl| it portable to sites and systems other than your own), and run autoconf 
+dnl| to regenerate configure.  Then submit your changes to be folded into
+dnl| the standard version of xboard.
+
+AC_INIT(xboard.c)
+AC_CONFIG_HEADER(config.h)
+
+PRODUCT=xboard
+VERSION=4.2
+PATCHLEVEL=6
+
+if test -z "$CFLAGS" ; then
+dnl| Prevent the next macro from setting CFLAGS to -g
+  CFLAGS=" "
+fi
+AC_PROG_CC
+AC_PROG_CPP
+AC_ISC_POSIX
+AC_PROG_INSTALL
+AC_CHECK_PROGS(LEX, lex flex, lex_not_found)
+if test "$LEX" != lex_not_found ; then
+  AC_DECL_YYTEXT
+fi
+AC_CHECK_PROGS(RSH, remsh rsh, rsh)
+AC_DEFINE_UNQUOTED(REMOTE_SHELL, "$RSH")
+AC_CHECK_PROG(NROFF, nroff, [nroff -man], cat)
+AC_SUBST(NROFFFLAGS)
+AC_PATH_PROGS(AWKPATH, awk mawk gawk nawk)
+AC_PATH_PROGS(PERLPATH, perl)
+
+AC_ARG_WITH(Xaw3d, [  --with-Xaw3d            use Xaw3d instead of Xaw],
+  [AC_DEFINE(USE_XAW3D)
+   XAW_LIBS="-lXaw3d"],
+  XAW_LIBS="-lXaw")
+AC_SUBST(XAW_LIBS)
+
+AC_HEADER_STDC
+AC_HEADER_TIME
+AC_HEADER_SYS_WAIT
+AC_HEADER_DIRENT
+AC_TYPE_SIGNAL
+AC_CHECK_HEADERS(stropts.h sys/time.h string.h unistd.h sys/systeminfo.h)
+AC_CHECK_HEADERS(fcntl.h sys/fcntl.h, break)
+AC_CHECK_HEADERS(sys/socket.h lan/socket.h, break)
+AC_CHECK_HEADER(stddef.h, [], AC_DEFINE(X_WCHAR, 1))
+
+AC_EGREP_HEADER(sys_errlist, errno.h, AC_DEFINE(DEFINED_SYS_ERRLIST))
+AC_EGREP_HEADER(sys_errlist, stdio.h, AC_DEFINE(DEFINED_SYS_ERRLIST))
+AC_EGREP_HEADER(sys_errlist, stdlib.h, AC_DEFINE(DEFINED_SYS_ERRLIST))
+
+AC_CHECK_FUNCS(_getpty grantpt setitimer usleep)
+AC_CHECK_FUNCS(gettimeofday ftime, break)
+AC_CHECK_FUNCS(random rand48, break)
+AC_CHECK_FUNCS(gethostname sysinfo, break)
+AC_CHECK_FUNC(setlocale, [],
+  AC_CHECK_LIB(i, setlocale, [], AC_DEFINE(X_LOCALE, 1)))
+
+AC_CHECK_LIB(seq, getpseudotty)
+
+AC_PATH_XTRA
+if test -n "$no_x" ; then
+  echo $PRODUCT requires the X Window System header files and libraries!
+  echo They were not found on your system.  See FAQ topic C.2.
+  echo configure failed
+  exit 1
+fi
+
+AC_CANONICAL_HOST
+
+dnl| The following info is mostly gathered from GNU Emacs 19.24.  Basically,
+dnl| we are trying to find out whether this is a System-V derivative in
+dnl| which pipes don't work with select() and if so, whether there is anything
+dnl| strange about the way to open a pty.  Some of the work was done above
+dnl| by looking for _getpty, grantpt, and getpseudotty.  A few other strange
+dnl| properties of particular systems are also handled here.
+
+dnl| 4/6/97 I'm not sure there really are any systems where pipes
+dnl| don't work with select(), and ptys cause problems on many
+dnl| systems, so I'm changing the default to disable ptys in all
+dnl| cases.  I will change it back if I get bug reports that are fixed
+dnl| by doing a "configure --enable-ptys"
+
+USE_PTYS=0
+case "$host" in
+  *-*-hpux* )
+    AC_DEFINE(PTY_TTY_NAME_SPRINTF,
+	[sprintf (pty_name, "/dev/pty/tty%c%x", c, i);])
+    AC_DEFINE(PTY_NAME_SPRINTF,
+	[sprintf (pty_name, "/dev/ptym/pty%c%x", c, i);])
+dnl| USE_PTYS=1
+    if test "$GCC" = yes; then
+      CONF_CFLAGS="-fwritable-strings"
+    else
+
+dnl| Note: You might be able to build xboard even if your compiler does not
+dnl| support ANSI C (-Aa).  xboard itself does not require ANSI C.  I don't
+dnl| know whether the X header files on HP-UX require it.
+
+      CONF_CFLAGS="-Aa -D_HPUX_SOURCE"
+    fi
+
+dnl| HP doesn't supply a full set of X header files and libraries.  People
+dnl| often have some things installed in one place and some in another. 
+dnl| AC_PATH_XTRA will find only one place, so we try to add all the
+dnl| likely ones that might be missing here.  It might be better to
+dnl| change AC_PATH_XTRA to try to extract this information from imake,
+dnl| since folks who install the missing bits often configure their
+dnl| imake to find them, but I don't want to delve into autoconf and
+dnl| hack on its internals.
+
+    if test -d /opt/hppd/include/X11; then
+      X_CFLAGS="$X_CFLAGS -I/opt/hppd/include"
+      X_LIBS="$X_LIBS -L/opt/hppd/lib"
+    elif test -d /usr/contrib/X11R5/include; then
+      X_CFLAGS="$X_CFLAGS -I/usr/contrib/X11R5/include"
+      X_LIBS="$X_LIBS -L/usr/contrib/X11R5/lib"
+    elif test -d /usr/contrib/mitX11R5/include; then
+      X_CFLAGS="$X_CFLAGS -I/usr/contrib/mitX11R5/include"
+      X_LIBS="$X_LIBS -L/usr/contrib/mitX11R5/lib"
+    elif test -d /MIT/X11R5/include; then
+      X_CFLAGS="$X_CFLAGS -I/MIT/X11R5/include"
+      X_LIBS="$X_LIBS -L/MIT/X11R5/lib"
+    elif test -d /usr/local/include/X11R5; then
+      X_CFLAGS="$X_CFLAGS -I/usr/local/include/X11R5"
+      X_LIBS="$X_LIBS -L/usr/local/lib/X11R5"
+    fi
+    if test -d /usr/include/X11R5; then
+      X_CFLAGS="$X_CFLAGS -I/usr/include/X11R5"
+      X_LIBS="$X_LIBS -L/usr/lib/X11R5 -L/usr/lib/X11R4"
+    elif test -d /usr/include/X11R4; then
+      X_CFLAGS="$X_CFLAGS -I/usr/include/X11R4"
+      X_LIBS="$X_LIBS -L/usr/lib/X11R4"
+    fi
+  ;;
+
+  romp-ibm-aix* )
+    AC_DEFINE(IBMRTAIX, 1)
+dnl| USE_PTYS=1
+  ;;
+
+  i386-ibm-aix )
+dnl| USE_PTYS=1
+    if test "$GCC" = yes; then
+      CONF_CFLAGS="-fwritable-strings"
+    fi
+  ;;
+
+  *-*-aix3* | *-*-bosx* )
+    AC_DEFINE(PTY_ITERATION, [for (c = 0; !c; c++)])
+    AC_DEFINE(PTY_NAME_SPRINTF, [strcpy (pty_name, "/dev/ptc");])
+    AC_DEFINE(PTY_TTY_NAME_SPRINTF, [strcpy (pty_name, ttyname (fd));])
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-cxux* )
+    AC_DEFINE(FIRST_PTY_LETTER, 'A')
+    AC_DEFINE(LAST_PTY_LETTER, 'P')
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-uniplus* )
+    AC_DEFINE(UNIPLUS, 1)
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-rtu* )
+    AC_DEFINE(FIRST_PTY_LETTER, 'z')
+    AC_DEFINE(PTY_TTY_NAME_SPRINTF,
+        [sprintf (pty_name, "/dev/ttyp%x", i);])
+    AC_DEFINE(PTY_NAME_SPRINTF,
+	[sprintf (pty_name, "/dev/pty%x", i);])
+    AC_DEFINE(RTU, 1)
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-iris* | *-*-irix3* )
+    AC_DEFINE(PTY_ITERATION, [for (c = 0; !c; c++)])
+    AC_DEFINE(PTY_NAME_SPRINTF, [strcpy (pty_name, "/dev/ptc");])
+    AC_DEFINE(PTY_TTY_NAME_SPRINTF,
+	[sprintf (pty_name, "/dev/ttyq%d", minor(stb.st_rdev));])
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-irix* )
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-sunos4* | *-*-solaris1* )
+
+dnl| Work around a bug in the SunOS 4.x linker.  Not needed if you have patches
+dnl|  100512-02 and 100573-03 from Sun.  The X FAQ says that the following is
+dnl|  "overkill," but doesn't explain what should be done instead.
+
+    if test "$GCC" = yes; then
+      PRE_XMULIB="-static"
+      POST_XMULIB="-dynamic"
+    else
+      PRE_XMULIB="-Bstatic"
+      POST_XMULIB="-Bdynamic"
+    fi
+  ;;
+
+  *-*-sunos5* | *-*-solaris2* )
+dnl| USE_PTYS=1
+
+dnl| I'm not sure -lelf is needed, but it was in the old Imakefile.
+dnl| The other libraries should all be found by Ac_PATH_XTRA or other
+dnl| code above.
+
+    X_LIBS="$X_LIBS -lelf"
+  ;;
+
+  *-*-sco* )
+    AC_DEFINE(PTY_ITERATION, [for (i = 0; ; i++)])
+    AC_DEFINE(PTY_NAME_SPRINTF, [sprintf (pty_name, "/dev/ptyp%d", i);])
+    AC_DEFINE(PTY_TTY_NAME_SPRINTF, [sprintf (pty_name, "/dev/ttyp%d", i);])
+dnl| USE_PTYS=1
+  ;;
+	
+  *-*-dynix* | *-*-ptx* )
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-esix* )
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-usg5-4* | *-*-sysvr4* )
+dnl| USE_PTYS=1
+  ;;
+
+  *-*-usg* | *-*-sysv* | *-*-aix* )
+dnl| USE_PTYS=1
+  ;;
+
+  vax-*-ultrix )
+    if test "$GCC" = yes; then
+      CONF_CFLAGS="-fwritable-strings"
+    fi
+  ;;
+esac
+
+AC_ARG_ENABLE(xpm,
+[  --enable-xpm            libXpm will be used if found (default)
+  --disable-xpm           libXpm will not be used],
+[enable_xpm="$enableval"], [enable_xpm="yes"])
+
+if test "$enable_xpm" = "yes"; then
+  save_cflags="$CFLAGS"
+  CFLAGS="$CFLAGS $X_CFLAGS"
+  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+  AC_CHECK_HEADERS(X11/xpm.h)
+  CFLAGS="$save_cflags"
+  if test "$ac_cv_header_X11_xpm_h" = "yes"; then
+    save_ldflags="$LDFLAGS"
+    LDFLAGS="$LDFLAGS $X_LIBS"
+    AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
+                 [X_PRE_LIBS="-lXpm $X_PRE_LIBS"; AC_DEFINE(HAVE_LIBXPM)], [],
+                 [$X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+    LDFLAGS="$save_ldflags"
+  fi
+fi
+
+AC_SUBST(PRE_XMULIB)
+AC_SUBST(POST_XMULIB)
+AC_SUBST(CONF_CFLAGS)
+AC_SUBST(CONF_LDFLAGS)
+
+AC_MSG_CHECKING(whether ptys or pipes should be used)
+AC_ARG_ENABLE(ptys, 
+[  --enable-ptys           force use of pseudo-ttys with child processes
+  --disable-ptys          force use of pipes with child processes],
+[if test "$enableval" = yes; then
+  USE_PTYS=1
+  AC_MSG_RESULT([ptys (user override)])
+fi
+if test "$enableval" = no; then
+  USE_PTYS=0
+  AC_MSG_RESULT([pipes (user override)])
+fi],
+[if test "$USE_PTYS" = 1; then
+  AC_MSG_RESULT(ptys)
+else
+  AC_MSG_RESULT(pipes)
+fi])
+AC_DEFINE_UNQUOTED(USE_PTYS, $USE_PTYS)
+
+AC_ARG_ENABLE(zippy, 
+[  --enable-zippy          features for interfacing a chess program to ICS],
+[if test "$enableval" = yes; then
+  AC_DEFINE(ZIPPY, 1)
+  ZIPPY_O=zippy.o
+  ZIPPY_H=zippy.h
+fi])
+AC_SUBST(ZIPPY_O)  
+AC_SUBST(ZIPPY_H)  
+
+AC_ARG_ENABLE(sigint, 
+[  --enable-sigint         sending SIGINT (^C) wakes up GNU Chess (default)
+  --disable-sigint        typing a command wakes up GNU Chess],
+[if test "$enableval" = yes; then
+  AC_DEFINE(ATTENTION, 1)
+fi],
+[AC_DEFINE(ATTENTION, 1)])
+
+AC_DEFINE_UNQUOTED(PRODUCT, "$PRODUCT")
+AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
+AC_DEFINE_UNQUOTED(PATCHLEVEL, "$PATCHLEVEL")
+AC_SUBST(PRODUCT)
+AC_SUBST(VERSION)
+AC_SUBST(PATCHLEVEL)
+
+AC_OUTPUT(Makefile comment.awk:comment.in cmail xboard.texinfo,
+[test -z "$CONFIG_HEADERS" || date > stamp-h
+chmod 755 comment.awk cmail
+])

@@ -1,0 +1,1839 @@
+#! @PERLPATH@
+## (configure will change the top line to the location of perl on your system)
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## cmail $Revision$: a tool to aid playing chess by email
+## Copyright (C) 1993  Free Software Foundation, Inc.
+##
+## cmail is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## cmail is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with cmail; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
+##
+## Modified:  $Date$
+## Revision:  $Revision$
+## Email:     evan@quadstone.co.uk
+## Snailmail: Evan Welsh
+##            Quadstone Ltd
+##            16 Chester Street
+##            Edinburgh EH3 7RA
+##            Scotland
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Print verbose diagnostics for debugging
+sub debug {
+    if ($DEBUG) {
+	local ($old) = select ;	## Remember selected output
+	select (logfile) ;
+	$| = 1 ;		## Keep it flushed
+	print @_ ;		## Print arguments
+	select ($old) ;
+    }
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Create a directory for storing games in if it doesn't already exist
+sub need_chess_dir {
+    local ($old) ;
+
+    ## ################################################################# ##
+    ## Check for existence of the named chess directory
+    ## ################################################################# ##
+
+    if (! (-d "$CMAILDIR")) {
+
+	## ############################################################# ##
+	## Ask user for confirmation if attached to tty
+	## ############################################################# ##
+
+	if (-t) {
+	    $old = select ;	## Remember selected output
+	    select (stdout) ;	## Write to standard output
+	    $| = 1 ;		## Keep it flushed
+	    print (  "CMail directory \"$CMAILDIR\" does not exist."
+		   . " Create it? [y/q]: ") ;
+
+	    $_ = <tty> ;	## Read response from tty
+	    die "Bye!\n" if (/^[qQ].*/) ; ## Quit if q selected
+
+	    select ($old) ;	## Re-select the old output
+	}
+
+	## ############################################################# ##
+	## Create a cmail directory or die
+	## ############################################################# ##
+
+	die "cmail: Can't create CMail directory: \"$CMAILDIR\"\n"
+	    unless mkdir ("$CMAILDIR", 511) ;
+	print (  "Created cmail directory \"$CMAILDIR\".\n"
+	       . "You can move it but remember to set the CMAIL_DIR"
+	       . " environment variable.\n") ;
+    }
+
+    ## ################################################################# ##
+    ## Change to the $CMAILDIR directory whether newly created or not
+    ## ################################################################# ##
+
+    die "Couldn't changed directory to \"$CMAILDIR\"\n"
+	unless (chdir "$CMAILDIR") ;
+
+    ## ################################################################# ##
+    ## Check for existence of the named chess directory
+    ## ################################################################# ##
+
+    if (! (-d "$ARCDIR")) {
+
+	## ############################################################# ##
+	## Ask user for confirmation if attached to tty
+	## ############################################################# ##
+
+	if (-t) {
+	    $old = select ;	## Remember selected output
+	    select (stdout) ;	## Write to standard output
+	    $| = 1 ;		## Keep it flushed
+	    print (  "Archive directory \"$ARCDIR\" does not exist."
+		   . " Create it? [y/q]: ") ;
+
+	    $_ = <tty> ;	## Read response from tty
+	    die "Bye!\n" if (/^[qQ].*/) ; ## Quit if q selected
+
+	    select ($old) ;	## Re-select the old output
+	}
+
+	## ############################################################# ##
+	## Create a chess directory or die
+	## ############################################################# ##
+
+	die "cmail: Can't create archive directory: \"$ARCDIR\"\n"
+	    unless mkdir ("$ARCDIR", 511) ;
+	print (  "Created archive directory \"$ARCDIR\".\n"
+	       . "You can move it but remember to set the CMAIL_ARCDIR"
+	       . " environment variable.\n") ;
+    }
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Parse command-line arguments
+sub parse_flags {
+    ## ################################################################# ##
+    ## Set up defaults from the environment or from hard-wired constants
+    ## ################################################################# ##
+
+    $SHOWC       = 0 ;
+    $SHOWW       = 0 ;
+    $OUTPUT_POS  = $ENV{'CMAIL_OUTPUT_POS'} ;
+    $LOGFILE     = $ENV{'CMAIL_LOGFILE'} ;
+    $MAILPROG    = $ENV{'CMAIL_MAILPROG'} ;
+    $MAILPROG    = "/usr/sbin/sendmail" if (   (-x "/usr/sbin/sendmail")
+					    && (! $MAILPROG)) ;
+    $MAILPROG    = "/usr/lib/sendmail" if (   (-x "/usr/lib/sendmail")
+					   && (! $MAILPROG)) ;
+    $MAILPROG    = "/etc/sendmail" if (   (-x "/usr/lib/sendmail")
+					   && (! $MAILPROG)) ;
+    $MAILPROG    = "/usr/ucb/Mail" if (   (-x "/usr/ucb/Mail")
+				       && (! $MAILPROG)) ;
+    $MAILPROG    = "/usr/ucb/mail" if (   (-x "/usr/ucb/mail")
+				       && (! $MAILPROG)) ;
+    $MAILPROG    = "Mail" unless ($MAILPROG) ;
+    $HOMEDIR     = $ENV{'HOME'} ;
+    $CMAILDIR	 = $ENV{'CMAIL_DIR'} ;
+    $CMAILDIR	 = $ENV{'CHESSDIR'} unless ($CMAILDIR) ;
+    $CMAILDIR	 = "$HOMEDIR/Chess" unless ($CMAILDIR) ;
+    $CMAILDIR	 = "~/Chess"        unless ($HOMEDIR) ;
+    $NUM_GAMES	 = "?" ;
+    $NUM_WGAMES	 = "?" ;
+    $NUM_BGAMES	 = "?" ;
+    $TIME_DELAY	 = $ENV{'CMAIL_TIME_DELAY'} ;
+    $TIME_DELAY	 = 0 unless ($TIME_DELAY) ;
+    $PW_NAME     = &get_pw_name () ;
+    $MY_NNAME	 = $PW_NAME ;
+    $MY_NNAME	 = $ENV{'LOGNAME'} unless ($MY_NNAME) ;
+    $MY_NNAME	 = $ENV{'USER'} unless ($MY_NNAME) ;
+    $MY_NNAME	 = "?" unless ($MY_NNAME) ;
+    $PGN_EVENT   = "Email correspondence game" ;
+    $PGN_SITE	 = "NET";
+    $PGN_ROUND	 = "-";
+    $PGN_MODE    = "EM";
+    $SEND_MAIL   = 1 ;
+    $REMAIL      = 0 ;
+    $LOAD_XBOARD = 1 unless $ENV{'CMAIL_NO_XBOARD'} ;
+    $REUSE       = 1 ;
+    @TD_FLAGS    = ("-td", $TIME_DELAY) ;
+    @NCP_FLAGS   = ("-ncp") ;
+
+    ## ################################################################# ##
+    ## Define the usage string
+    ## ################################################################# ##
+
+    $USAGE = ("cmail
+        [-h] [-c] [-w] [-[x]v] [-[x]mail] [-[x]xboard] [-[x]reuse] [-remail] 
+        [-game <name>] [-(w|b|)games <number>] [-(me|opp) <short name>]
+        [-(w|b|my|opp)name <full name>] [-(w|b|my|opp)na <email>]
+        [-dir <directory>] [-arcdir <directory>] [-mailprog <mail program>]
+        [-logFile <file>] [-event <event>] [-site <site>] [-round <round>]
+	[-mode <mode>]") ;
+
+    ## ################################################################# ##
+    ## Overwrite defaults if specified on the command-line
+    ## ################################################################# ##
+
+    @UNREC_ARGS = () ;
+    while ($ARGV = shift) {
+	$UNREC = 0 if ($ARGV =~ /^-/) ;
+	if    ("$ARGV" eq "-h")		  {die ("Usage: $USAGE\n")     ;}
+	elsif ("$ARGV" eq "-c")		  {$SHOWC       = 1            ;}
+	elsif ("$ARGV" eq "-w")		  {$SHOWW       = 1            ;}
+	elsif ("$ARGV" eq "-v")		  {$DEBUG       = 1            ;
+				           @DEBUG_FLAGS = ("-debug")   ;}
+	elsif ("$ARGV" eq "-xv")	  {$DEBUG       = 0            ;
+				           $QUIET       = 1            ;}
+	elsif ("$ARGV" eq "-mail")	  {$SEND_MAIL   = 1            ;}
+	elsif ("$ARGV" eq "-xmail")	  {$SEND_MAIL   = 0            ;}
+	elsif ("$ARGV" eq "-xboard")	  {$LOAD_XBOARD = 1            ;}
+	elsif ("$ARGV" eq "-xxboard")	  {$LOAD_XBOARD = 0            ;}
+	elsif ("$ARGV" eq "-reuse")	  {$REUSE       = 1            ;}
+	elsif ("$ARGV" eq "-xreuse")	  {$REUSE       = 0            ;}
+	elsif ("$ARGV" eq "-remail")      {$LOAD_XBOARD = 0            ;
+					   $SEND_MAIL   = 1            ;
+					   $REMAIL      = 1            ;}
+	elsif ("$ARGV" eq "-game")	  {$PGN_GAME    = shift        ;}
+	elsif ("$ARGV" eq "-games")       {$NUM_GAMES   = shift        ;}
+	elsif ("$ARGV" eq "-wgames")      {$NUM_WGAMES  = shift        ;}
+	elsif ("$ARGV" eq "-bgames")      {$NUM_BGAMES  = shift        ;}
+	elsif ("$ARGV" eq "-me")	  {$MY_NNAME    = shift        ;}
+	elsif ("$ARGV" eq "-opp")	  {$OPP_NNAME   = shift        ;}
+	elsif ("$ARGV" eq "-myname")	  {$MY_FNAME    = shift        ;}
+	elsif ("$ARGV" eq "-oppname")	  {$OPP_FNAME   = shift        ;}
+	elsif ("$ARGV" eq "-wname")	  {$WHITE_FNAME	= shift	       ;}
+	elsif ("$ARGV" eq "-bname")	  {$BLACK_FNAME	= shift	       ;}
+	elsif ("$ARGV" eq "-myna")	  {$MY_ADDRESS  = shift        ;}
+	elsif ("$ARGV" eq "-oppna")	  {$OPP_ADDRESS = shift        ;}
+	elsif ("$ARGV" eq "-wna")	  {$WHITENA	= shift	       ;}
+	elsif ("$ARGV" eq "-bna")	  {$BLACKNA	= shift	       ;}
+	elsif ("$ARGV" eq "-dir")	  {$CMAILDIR    = shift        ;}
+	elsif ("$ARGV" eq "-arcdir")	  {$ARCDIR      = shift        ;}
+	elsif ("$ARGV" eq "-mailprog")	  {$MAILPROG    = shift        ;}
+	elsif ("$ARGV" eq "-logFile")     {$LOGFILE     = shift        ;}
+	elsif ("$ARGV" =~ /^-(td|timeDelay)$/)
+	                                  {@TD_FLAGS    = ($ARGV,
+							   shift)      ;}
+	elsif ("$ARGV" =~ /^-noChessComputer$/)
+	                                  {@NCP_FLAGS   = ($ARGV,
+							   shift)      ;}
+	elsif ("$ARGV" =~ /^-[x]?ncp$/)	  {@NCP_FLAGS	= ($ARGV)      ;}
+	elsif ("$ARGV" eq "-event")	  {$PGN_EVENT	= shift        ;}
+	elsif ("$ARGV" eq "-site")	  {$PGN_SITE	= shift        ;}
+	elsif ("$ARGV" eq "-round")	  {$PGN_ROUND	= shift        ;}
+	elsif ("$ARGV" eq "-mode")	  {$PGN_MODE	= shift        ;}
+	elsif ("$ARGV" =~ /^-/ || $UNREC) {
+	    push(@UNREC_ARGS, $ARGV) ;
+	    $UNREC = 1 ;
+	} else {
+	    die("cmail: Unrecognised flag \"$ARGV\"\nUsage: $USAGE\n") ;
+	}
+    }
+
+    ## ################################################################# ##
+    ## Assign a value to $ARCDIR if not specified on the command line
+    ## ################################################################# ##
+
+    $ARCDIR = $ENV{'CMAIL_ARCDIR'} unless ($ARCDIR) ;
+    $ARCDIR = $CMAILDIR unless ($ARCDIR) ;
+    $ENV{'CMAIL_ARCDIR'} = $ARCDIR ; ## Make sure this is set for xboard
+
+    ## ################################################################# ##
+    ## Propagate some CMAIL variables through xboard to the cmail
+    ## grandchild so that it uses the same important variables as this one
+    ## ################################################################# ##
+
+    $ENV{'CMAIL_MAILPROG'} = $MAILPROG ;
+    $ENV{'CMAIL_DIR'}      = $CMAILDIR ;
+    $ENV{'CHESSDIR'}       = $CMAILDIR ; ## Make xboard use $CMAILDIR
+    $ENV{'CMAIL_ARCDIR'}   = $ARCDIR ;
+    if ($LOGFILE) {
+	$ENV{'CMAIL_LOGFILE'}  = $LOGFILE ;
+    } else {
+	$LOGFILE = "&STDERR" ;
+    }
+
+    ## ################################################################# ##
+    ## Work out how many games of each colour will be played
+    ## ################################################################# ##
+
+    die "cmail: Illegal number of games: $NUM_GAMES\n"
+	if ($NUM_GAMES < 0) ;
+    die "cmail: Illegal number of white games: $NUM_WGAMES\n"
+	if ($NUM_WGAMES < 0) ;
+    die "cmail: Illegal number of black games: $NUM_BGAMES\n"
+	if ($NUM_BGAMES < 0) ;
+    if ("$NUM_GAMES" ne "?") {
+	if ("$NUM_WGAMES" eq "?") {
+	    if ("$NUM_BGAMES" eq "?") {
+		$NUM_BGAMES = int($NUM_GAMES / 2) ;
+	    }
+	    $NUM_WGAMES = $NUM_GAMES - $NUM_BGAMES ;
+	} elsif ("$NUM_BGAMES" eq "?") {
+	    $NUM_BGAMES = $NUM_GAMES - $NUM_WGAMES ;
+	}
+    } elsif ("$NUM_WGAMES" eq "?") {
+	if ("$NUM_BGAMES" eq "?") {
+	    $NUM_GAMES  = 1 ;
+	    $NUM_WGAMES = 1 ;
+	    $NUM_BGAMES = 0 ;
+	} else {
+	    $NUM_GAMES  = $NUM_BGAMES ;
+	    $NUM_WGAMES = 0 ;
+	}
+    } else {
+	if ("$NUM_BGAMES" eq "?") {
+	    $NUM_GAMES  = $NUM_WGAMES ;
+	    $NUM_BGAMES = 0 ;
+	} else {
+	    $NUM_GAMES  = $NUM_WGAMES + $NUM_BGAMES ;
+	}
+    }
+    die "cmail: Illegal number of games: $NUM_GAMES\n"
+	if ("$NUM_GAMES" eq "0") ;
+    die (  "cmail: Inconsistent numbers of games specified:"
+	 . " $NUM_WGAMES + $NUM_BGAMES != $NUM_GAMES\n")
+	unless ($NUM_GAMES == $NUM_WGAMES + $NUM_BGAMES) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Initialisation of variables and environment
+sub showGPL {
+    ## ################################################################# ##
+    ## Show copyright notice
+    ## ################################################################# ##
+
+    while (<DATA>) {
+	last if (/^{END OF GPL COPYRIGHT}$/) ;
+	s/\$Revision[:] (.*) \$/$1/ ;
+	print ;
+    }
+
+    ## ################################################################# ##
+    ## Show conditions if requested
+    ## ################################################################# ##
+
+    while (<DATA>) {
+	last if (/^{END OF GPL CONDITIONS}$/) ;
+	print if ($SHOWW) ;
+    }
+
+    ## ################################################################# ##
+    ## Show warranty if requested
+    ## ################################################################# ##
+
+    if ($SHOWC) {
+	print "\n" if ($SHOWW) ;
+	print while (<DATA>) ;
+    }
+
+    
+    exit 0 if ($SHOWC || $SHOWW) ; ## Abort if showed conditions or warranty
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Initialisation of variables and environment
+sub initialise {
+    local ($p) = "[.PRNBQKprnbqk]" ;
+    local ($l) = "$p $p $p $p $p $p $p $p\n" ;
+    local ($board) = "$l$l$l$l$l$l$l$l" ;
+    local ($tp) = ".* to play\n" ;
+    $posdiag = "\{--------------\n$board$tp--------------\}\n+" ;
+
+    &parse_flags (@ARGV) ;	## Parse command-line arguments
+
+    &showGPL unless $QUIET ;
+
+    open (tty, "< /dev/tty") ;	## Open tty for reading
+
+    &need_chess_dir () ;	## Check for the existence of CMAILDIR
+
+    open (logfile, ">$LOGFILE") if ($DEBUG) ; ## Default is STDERR
+
+    &debug ("Called <initialise>\n") ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Prompt for a game name, if <cr> use a default
+sub prompt_for_game_name {
+    &debug ("Called <prompt_for_game_name>\n") ;
+    local ($old) = select ;	## Remember the selected output
+    select (stdout);		## Prompt goes to stdout
+    $| = 1 ;			## Keep it flushed
+
+    print "Game name [<cr> to use default]: " ;
+    die "cmail: tty not open\n" unless (-t) ;
+    <tty> =~ /(.*)/ ;		## Read line from tty
+    $PGN_GAME = "$1" ;		## Assign to game name
+    
+    select ($old) ;		## Re-select the old output
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Prompt for opponent's address
+sub prompt_for_opp_address {
+    &debug ("Called <prompt_for_opp_address>\n") ;
+    local ($old) = select ;	## Remember the selected output
+    select (stdout);		## Prompt goes to stdout
+    $| = 1 ;			## Keep it flushed
+
+    ## ################################################################# ##
+    ## Prompt for opponent's email address
+    ## ################################################################# ##
+
+    print "Opponent's email address: " ;
+    die "cmail: tty not open\n" unless (-t) ;
+    <tty> =~ /(.*)/ ;
+    $OPP_ADDRESS = $1 ;
+
+    ## ################################################################# ##
+    ## Use name as default if still blank
+    ## ################################################################# ##
+
+    $OPP_ADDRESS = $OPP_NNAME if ("" eq $OPP_ADDRESS) ;
+    
+    select ($old) ;		## Re-select the old output
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Prompt for opponent's name
+sub prompt_for_opp_name {
+    &debug ("Called <prompt_for_opp_name>\n") ;
+    local ($old) = select ;	## Remember the selected output
+    select (stdout) ;		## Prompt goes to stdout
+    $| = 1 ;			## Keep it flushed
+    print "Opponent's name: " ;
+
+    die "cmail: tty not open\n" unless (-t) ; ## Check tty is open
+    <tty> =~ /(.*)/ ;		## Read line from tty
+    $OPP_NNAME = $1 ;		## Match!
+    die "cmail: Can't proceed without the opponent's name.\n"
+	unless ($OPP_NNAME) ;
+
+    select ($old) ;		## Re-select the old output
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Prompt for move
+sub prompt_for_move {
+    local ($prompt) = shift ;
+    local ($pattern) = shift ;
+    &debug ("Called <prompt_for_move>\n") ;
+
+    local ($move) = "" ;
+    local ($old) = select ;	## Remember the selected output
+    select (stdout) ;		## Write to stdout
+    $| = 1 ;			## Keep it flushed
+    die "cmail: tty not open\n" unless (-t) ; ## Check tty is open
+
+    do {
+	print $prompt ;
+	<STDIN> =~ /(.*)/ ;	## Read line from tty
+	$move = $1 ;		## Match!
+    } until ($move =~ /^$pattern$/) ;
+
+    select ($old) ;		## Re-select the old output
+    return ($move) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Load the game
+sub play_game {
+    &debug ("Called <play_game>\n") ;
+
+    $| = 1 ;			## Start flushing output buffer
+
+    ## ################################################################# ##
+    ## Load xboard unless inhibited by command-line arguments
+    ## ################################################################# ##
+
+    if (($STARTING_NEW_GAME) && ($NUM_WGAMES == 0)) {
+	print (  "Bypassing xboard and mailing $NUM_BGAMES empty"
+	       . " black games.\n") ;
+    } elsif ($LOAD_XBOARD) {
+	## ############################################################# ##
+	## Remove output file from previous run, but preserve
+	## $PGN_GAME.game.out.* because they will be empty black games
+	## ############################################################# ##
+
+	unlink "$PGN_GAME.out" ;
+
+	## ############################################################# ##
+	## Invoke xboard with loads of flags
+	## ############################################################# ##
+
+	if ($PGN_GAME) {
+	    if (@ARCHIVE) {
+		local ($date) = &get_date_from_games (@ARCHIVE) ;
+		$XBOARD_ARGS = join (' ', (("-lgf",
+					    "$ARCDIR/$PGN_GAME.$date.archive"),
+					   "-ncp",
+					   "-xics",
+					   @TD_FLAGS,
+					   @DEBUG_FLAGS,
+					   @UNREC_ARGS)) ;
+	    } else {
+		$XBOARD_ARGS = join (' ', (("-cmail", $PGN_GAME),
+					   @TD_FLAGS,
+					   @NCP_FLAGS,
+					   "-xics",
+					   @DEBUG_FLAGS,
+					   @UNREC_ARGS)) ;
+	    }
+	} else {
+	    $PGN_GAME = "unknown.cmail" ;
+	    $XBOARD_ARGS = join (' ', (("-lgf", $PGN_GAME),
+				       "-ncp",
+				       "-xics",
+				       @TD_FLAGS,
+				       @DEBUG_FLAGS,
+				       @UNREC_ARGS)) ;
+	    $REUSE = 0 ;
+	}
+
+	$LOG_FILE = "$PGN_GAME.log" ;
+	&debug ("Invoking xboard with args: $XBOARD_ARGS\n") ;
+	$PID_FILE = "$PGN_GAME.pid" ;
+	if (   (! $REUSE)
+	    || (! (   (-f $PID_FILE)
+		   && ($XBOARD_PID = `cat $PID_FILE`)
+		   && ("$XBOARD_PID" =~ /^\d+$/)
+		   && (kill "SIGUSR1", $XBOARD_PID)))) {
+	    print "Loading xboard for game \"$PGN_GAME\"..." ;
+#  	    system ("gdb xboard") ;
+	    system (  "{ ({ xboard $XBOARD_ARGS & } ;"
+		    . "   echo \$! > $PID_FILE ;"
+		    . "   wait ;"
+		    . "   rm $PID_FILE) & } >$LOG_FILE 2>&1") ;
+	    print (  "done.\n"
+		   . "If nothing happens look for an error message in\n"
+		   . "$CMAILDIR/$LOG_FILE\n") ;
+	} else {
+	    print ("Revived existing xboard for game \"$PGN_GAME\".\n"
+		   . "If nothing happens"
+		   . " remove $CMAILDIR/$PID_FILE and try again.\n") ;
+	}
+
+	return 1 ;
+    }
+    return 0 ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Enter moves on tty instead of xboard
+sub play_on_tty {
+    &debug ("Called <play_on_tty>\n") ;
+
+    local (@results) = @_ ;
+
+    local (@games, $game, $to_play) ;
+
+    ## ################################################################# ##
+    ## Check we have access to tty
+    ## ################################################################# ##
+
+    if (open(STDIN, '/dev/tty')) {
+	## ############################################################# ##
+	## Read in games
+	## ############################################################# ##
+	
+	local ($infile) = "$PGN_GAME.game.in" ;
+	if (-f $infile) {
+	    @games = &get_games_from_file($infile) ;
+	    &debug ("Read in games from \"$infile\"\n") ;
+
+	    if (@results) {
+		foreach $game (@games) {
+		    $result = shift (@results) ;
+		    if ($result && ($game =~ /\[Result\s+"[^*]+"\]/)) {
+			$game = "" ;
+		    }
+		}
+	    }
+
+	    ## ################################################################# ##
+	    ## Accept move on tty for each game in turn
+	    ## ################################################################# ##
+		
+	    local ($comment_orig, $comment, $comment_line,
+		   $pos, $move, $normal_move, $action, $result) ;
+
+	    foreach $game (@games) {
+		next unless $game ;
+
+		$game =~ s/[\s\n]*[*]?[\s\n]*$// ;
+		$pos = "" ;
+		$pos = $1 if ($game =~ s/($posdiag)//) ;
+		print $game, "\n\n", $pos ;
+
+		($number, $to_play) = &get_to_play ($game) ;
+
+		$comment_orig = "" ;
+		$game_nocomment = $game ;
+		if ($game_nocomment =~ s/\n?{\n?([^{]*)}$//) {
+		    $comment_orig = $1 ;
+		    $comment_orig =~ s/([^\n])$/$1\n/ ;
+#  		    &debug ("Comment is:\n{\n$comment_orig}\n") ;
+		}
+		if ($game =~ /\[Result\s+"[^*]+"\]/) {
+		    &prompt_for_move ("Game finished, press \"Return\" to continue: ", "") ;
+                    next ;
+		}
+
+		$tmpgame = $game_nocomment ;
+		$comment = $comment_orig ;
+
+	      outer:
+		while (1) {
+		    if ($game =~ /{\n?.* offers a draw\n?}$/) {
+			$move = &prompt_for_move ("Enter move [MOVE/(r)esign/(a)ccept/(c)omment/re(t)ry]: ",
+						  "([-a-h0-9PRNBQK][-a-h0-9PRNBQK]+|[ract])") ;
+		    } else {
+			$move = &prompt_for_move ("Enter move [MOVE/(r)esign/(c)omment/re(t)ry]: ",
+						  "([-a-h0-9PRNBQK][-a-h0-9PRNBQK]+|[rct])") ;
+		    }
+		    $normal_move = 0 ;
+		    $result = "" ;
+		    if ($move =~ /^\s*r\s*$/i) {
+			if ($to_play eq "White") {
+			    $result = "0-1" ;
+			} else {
+			    $result = "1-0" ;
+			}
+			$move = "\n{$to_play resigns} $result" ;
+		    } elsif ($move =~ /^\s*a\s*$/i) {
+			$move = "\n{Draw agreed} $result" ;
+		    } elsif ($move =~ /^\s*c\s*$/i) {
+                        while ($comment_line = &prompt_for_move ("Enter comment: ", ".*")) {
+			    $comment .= $comment_line . "\n" ;
+                        }
+			next ;
+		    } elsif ($move =~ /^\s*t\s*$/i) {
+			print $game, "\n\n", $pos ;
+			$tmpgame = $game_nocomment ;
+			$comment = $comment_orig ;
+			print "Try again.\n" ;
+			next ;
+		    } else {
+			$normal_move = 1 ;
+		    }
+
+		    $tmpgame .= "\n{\n" . $comment . "}" if ($comment) ;
+		    if (! $normal_move) {
+			$tmpgame .= "$move"  ;
+		    } elsif ($to_play eq "White") {
+			$tmpgame .= "\n$number. $move"  ;
+		    } elsif ($tmpgame =~ /}$/) {
+			$tmpgame .= "\n$number. ... $move"  ;
+		    } else {
+			$tmpgame .= " $move"  ;
+		    }
+
+		    $tmpgame =~ s/\[Result\s+"(.*)"\]/[Result "$result"]/ if ($result) ;
+		    $comment = "" ;
+		  middle:
+		    while (1) {
+			if ($normal_move) {
+			    $action = &prompt_for_move ("Enter action [(d)raw/(c)omment/(s)end/re(t)ry]: ",
+							"[dcst]") ;
+			} elsif ($result) {
+			    $action = &prompt_for_move ("Enter action [(s)end/re(t)ry]: ",
+							"[st]") ;
+			} else {
+			    $action = &prompt_for_move ("Enter action [(c)omment/(s)end/re(t)ry]: ",
+							"[cst]") ;
+			}
+			if ($action =~ /^\s*d\s*$/i) {
+			    if ($normal_move) {
+				$comment .= "$to_play offers a draw\n" ;
+
+				while (1) {
+				    $action = &prompt_for_move ("Enter action [(c)omment/(s)end/re(t)ry]: ",
+								"[cst]") ;
+				    if ($action =~ /^\s*c\s*$/i) {
+					while ($comment_line = &prompt_for_move ("Enter comment: ", ".*")) {
+					    $comment .= $comment_line . "\n" ;
+                        		}
+				        next ;
+				    } elsif ($action =~ /^\s*t\s*$/i) {
+					print $game, "\n\n", $pos ;
+					$tmpgame = $game_nocomment ;
+					$comment = $comment_orig ;
+					print "Try again.\n" ;
+					next outer;
+				    } elsif ($action =~ /^\s*s\s*$/i) {
+					$tmpgame .= "\n{\n" . $comment . "}" ;
+					last middle ;
+				    }
+				}
+			    } else {
+				print "You can't offer a draw at this point.\n" ;
+				next ;
+			    }
+			} elsif ($action =~ /^\s*c\s*$/i) {
+			    if ($result) {
+				print "You can't enter a comment after the game is finished.\n" ;
+			    } else {
+				while ($comment_line = &prompt_for_move ("Enter comment: ", ".*")) {
+				    $comment .= $comment_line . "\n" ;
+                        	}
+			    }
+			    next ;
+			} elsif ($action =~ /^\s*t\s*$/i) {
+			    print $game, $pos ;
+			    $tmpgame = $game_nocomment ;
+			    $comment = $comment_orig ;
+			    print "Try again.\n" ;
+			    next outer;
+			} elsif ($action =~ /^\s*s\s*$/i) {
+			    $tmpgame .= "\n{\n" . $comment . "}\n" if ($comment) ;
+			    last ;
+			}
+		    }
+
+		    last ;
+		}
+
+		$tmpgame .= "\n*" if ($normal_move) ;
+		$tmpgame .= "\n\n" ;
+		$game = $tmpgame ;
+	    }
+	} else {
+	    die "cmail: No games to be read\n" ;
+	}
+    } else {
+	die "cmail: Can't open tty" ;
+    }
+
+    return (@games) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Find the game the user wants by any means possible
+sub find_game {
+    &debug ("Called <find_game>\n") ;
+
+    ## ################################################################# ##
+    ## Ask user for a game name if not already known
+    ## ################################################################# ##
+
+    &prompt_for_game_name () if ("" eq "$PGN_GAME") ;
+
+    ## ################################################################# ##
+    ## Find out opponent's details
+    ## ################################################################# ##
+
+    if ("" eq "$PGN_GAME") {
+	## ############################################################# ##
+	## Failed to find the game name so construct a default from players
+	## ############################################################# ##
+	
+	&prompt_for_opp_name () if ("" eq "$OPP_NNAME") ; ## Ask user
+	die "cmail: Can't proceed without your opponent's short name (-opp)\n"
+	    if ("" eq "$OPP_NNAME") ;
+	die "cmail: Can't proceed without your own short name (-me)\n"
+	    if ("" eq "$MY_NNAME") ;
+	if ($NUM_WGAMES > 0) {
+	    $PGN_GAME = "$MY_NNAME-vs-$OPP_NNAME" ; ## Construct default
+	} else {
+	    $PGN_GAME = "$OPP_NNAME-vs-$MY_NNAME" ; ## Construct default
+	}
+    } elsif (("" eq "$OPP_ADDRESS") && ("" ne "$RETURN_ADDRESS")) {
+	$OPP_ADDRESS = $RETURN_ADDRESS ; ## Use return address instead
+	&debug (  "Using return address \"$OPP_ADDRESS\""
+		. " for opponent address\n") ;
+    }
+
+    ## ################################################################# ##
+    ## If no $PGN_GAME.game.in file, assume we're starting a new game
+    ## ################################################################# ##
+
+    &start_new_game () unless (-f "$PGN_GAME.game.in") ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Get the date
+sub get_date {
+    local ($the_time) = time ;
+    local ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) =
+	localtime ($the_time) ;
+    $mon ++ ;
+    $year += 1900 ;
+    if ($mon < 10) {
+	$mon = "0$mon" ;
+    }
+    if ($mday < 10) {
+        $mday = "0$mday" ;
+    }
+    "$year.$mon.$mday" ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Start a new game
+sub start_new_game {
+    print (  "Starting new game"
+	   . " -- $NUM_WGAMES as white, $NUM_BGAMES as black.\n") ;
+    local ($to_play) = "white" ;
+    $move_num = 0 ;
+    $STARTING_NEW_GAME = 1 ;
+
+    local (@game) ;
+
+    ## ################################################################# ##
+    ## Ask user for opponent's email address if unknown
+    ## ################################################################# ##
+
+    &prompt_for_opp_address () if ("" eq "$OPP_ADDRESS") ;
+
+    ## ################################################################# ##
+    ## Give up if we haven't got anywhere to send a move to
+    ## ################################################################# ##
+
+    die "cmail: Can't proceed without your opponent's email address.\n"
+	if ("" eq "$OPP_ADDRESS") ;
+
+    ## ################################################################# ##
+    ## Create an empty game file
+    ## ################################################################# ##
+
+    open (GAMEFILE, "> $PGN_GAME.game.in") ;
+    for ($j = 1; $j <= $NUM_GAMES; $j ++) {
+	$PW_GCOS      =  &get_pw_gcos () ;
+
+	$PGN_MYCOL    =  $MY_FNAME ;
+	$PGN_MYCOL    =  $PW_GCOS unless $PGN_MYCOL ;
+	$PGN_MYCOL    =  $MY_NNAME unless $PGN_MYCOL ;
+	$PGN_MYCOLNA  =  $MY_ADDRESS ;
+	$PGN_MYCOLNA  =  "?" unless ($PGN_MYCOLNA) ;
+				    
+	$PGN_OPPCOL   =  $OPP_FNAME ;
+	$PGN_OPPCOL   =  "?" unless ($PGN_OPPCOL) ;
+	$PGN_OPPCOLNA =  $OPP_ADDRESS ;
+	$PGN_OPPCOLNA =  "?" unless ($PGN_OPPCOLNA) ;
+	
+	if ($j > $NUM_WGAMES) {
+	    $PGN_WHITE   = $PGN_OPPCOL ;
+	    $PGN_BLACK   = $PGN_MYCOL ;
+	    $PGN_WHITENA = $PGN_OPPCOLNA ;
+	    $PGN_BLACKNA = $PGN_MYCOLNA ;
+	} else {
+	    $PGN_WHITE   = $PGN_MYCOL ;
+	    $PGN_BLACK   = $PGN_OPPCOL ;
+	    $PGN_WHITENA = $PGN_MYCOLNA ;
+	    $PGN_BLACKNA = $PGN_OPPCOLNA ;
+	}
+	
+    	## ######################################################### ##
+	## If we only have one colour of game then allow command-line 
+	## colour specs to override
+	## ######################################################### ##
+	
+	if (! ($NUM_WGAMES && $NUM_BGAMES)) {
+	    $PGN_WHITE   = $WHITE_FNAME if ($WHITE_FNAME) ;
+	    $PGN_BLACK   = $BLACK_FNAME if ($BLACK_FNAME) ;
+	    $PGN_WHITENA = $WHITENA     if ($WHITENA)     ;
+	    $PGN_BLACKNA = $BLACKNA     if ($BLACKNA)     ;
+	}
+	
+	$PGN_DATE = &get_date () ;
+	$PGN_DATE = "?" unless ($PGN_DATE) ;
+
+	if ($NUM_GAMES > 1) {
+	    $SUFFIX = ".$j" ;
+	} else {
+	    $SUFFIX = "" ;
+	}
+	@game = ("[Event \"$PGN_EVENT\"]\n",
+		 "[Site \"$PGN_SITE\"]\n",
+		 "[Date \"$PGN_DATE\"]\n",
+		 "[Round \"$PGN_ROUND\"]\n",
+		 "[White \"$PGN_WHITE\"]\n",
+		 "[Black \"$PGN_BLACK\"]\n",
+		 "[Result \"*\"]\n",
+		 "[WhiteNA \"$PGN_WHITENA\"]\n",
+		 "[BlackNA \"$PGN_BLACKNA\"]\n",
+		 "[Mode \"$PGN_MODE\"]\n",
+		 "[CmailGameName \"$PGN_GAME$SUFFIX\"]\n\n*\n") ;
+	if ($j > $NUM_WGAMES) {
+	    open (GAMEOUTFILE, "> $PGN_GAME.game.out.$j") ;
+	    print GAMEOUTFILE @game ;
+	    close (GAMEOUTFILE) ;
+	} else {
+	    print GAMEFILE @game ;
+	}
+    }
+    close (GAMEFILE) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Get the password file gcos (full name) entry
+sub get_pw_entry {
+    local ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) =
+	getpwuid ($<);
+    ($name, $gcos) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Get password file gcos (full name) entry
+sub get_pw_gcos {
+    local ($PW_GCOS) ;
+    if (! $PW_GCOS) {
+	($dummy, $PW_GCOS) = &get_pw_entry () ;
+	$PW_GCOS =~ s/^\s*([^,()]+[^ ,()])[ ]*[,()].*$/$1/;
+	if ($PW_GCOS =~ /^([^,()]+)\s+([^\s,()]+)$/) { ## Multi-word name
+	    $PW_GCOS = $2 . ", " . $1 ;
+	} elsif ($PW_GCOS !~ /^([^\s,()]+)/) { ## No sensible gcos entry 
+	    $PW_GCOS = "" ;
+	}			## Else leave it as one word
+	&debug ("PW full name is \"$PW_GCOS\"\n");
+    }
+    return $PW_GCOS ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Get password file user name entry
+sub get_pw_name {
+    local ($PW_NAME) ;
+    ($PW_NAME, $dummy) = &get_pw_entry () ;
+    &debug ("PW name is $PW_NAME\n");
+
+    return $PW_NAME ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Analyse the email message
+sub analyse_email_message {
+    local ($new_result, $delete_result, $unfinished, $finished)
+	= (0, 0, 0, 0) ;
+    local ($gamefile, @games) ;
+
+    ## ################################################################# ##
+    ## Slurp the mail message
+    ## ################################################################# ##
+
+    die "cmail: No games on standard input" 
+	unless (@games = &get_games_from_file ("STDIN")) ;
+
+    ## ################################################################# ##
+    ## Is the message a real cmail message or just a chess game? $PGN_GAME
+    ## will have been set by calling get_games_from_file if it's real
+    ## ################################################################# ##
+
+    print "Processing game message..." ;
+
+    if ($PGN_GAME) {
+	## ############################################################# ##
+	## Restore the results file from the archive if
+	## necessary. This is helpful if the user pipes in an old
+	## message for take-back purposes or whatever.
+	## ############################################################# ##
+
+	if (! -f "$PGN_GAME.res") {
+	    ## Find what date would have been used to create the archive
+	    foreach (@games) {
+		if (/\[Date\s"(.*)"\]/) {
+		    $date = $1 ;
+		    last ;	## Assume all dates are the same
+		}
+	    }
+	    ## Restore results file from archive directory if it exists
+	    if ($date && (-f "$ARCDIR/$PGN_GAME.$date.archive")) {
+		if (system ("cp",
+			    "$ARCDIR/$PGN_GAME.$date.archive",
+			    "$PGN_GAME.res")) {
+		    print stderr (  "\nWarning: couldn't restore results file"
+				  . " from archive\n") ;
+		} else {
+		    print "restored results file from archive..." ;
+		}
+	    }
+	}
+
+	## ############################################################# ##
+	## Find existing results, if any.
+	## ############################################################# ##
+
+	local (@results) = &get_games_from_file ("$PGN_GAME.res") ;
+
+	## ############################################################# ##
+	## Parse each game
+	## ############################################################# ##
+
+	foreach $game (@games) {
+	    next unless ($game) ;
+
+	    ($game_name, $game_num) = &get_game_name_and_number ($game) ;
+
+	    $result = 0 ;
+	    @game = split("\n", $game) ;
+	    foreach (@game) {
+		if (/^\[(Black|White)\s*"[?]"\]$/) {
+		    $colour = $1;
+		    $PW_GCOS = &get_pw_gcos () unless ($PW_GCOS) ;
+		    $PW_GCOS = "$MY_NNAME" unless ($PW_GCOS) ;
+		    s/".*"/"$PW_GCOS"/ ;
+		    &debug ("Changed $colour tag to be $_") ;
+		} elsif (/^\[((Black|White)NA)\s*"(.*)"\]$/) {
+		    $NA = $3 ;
+		    if ($NA eq "?") {
+			if ($RETURN_ADDRESS) {
+			    $NA = $RETURN_ADDRESS ;
+			} else {
+			    $NA = "??" ;
+			}
+			$_ = "[$1 \"$NA\"]" ;
+			&debug ("Changed $1 tag.\n") ;
+		    }
+		    if ($2 eq "White") {
+			$PGN_WHITENA = $NA ;
+			&debug ("WhiteNA tag is \"$PGN_WHITENA\"\n") ;
+		    } else {
+			$PGN_BLACKNA = $NA ;
+			&debug ("BlackNA tag is \"$PGN_BLACKNA\"\n") ;
+		    }
+		} elsif (/\[Result\s*"(.*)"\]$/) {
+		    if ($1 ne "*") {
+			$result = 1 ;
+			$finished ++ ;
+		    } else {
+			$unfinished ++ ;
+		    }
+		} elsif (/^(.*[^\d]+)?\d+[.]\s*([^\s*]*\s+)?[^\s.*]+(\s*\d+[.]\s*)?[\s*]*$/) {
+		    if ($2) {
+			$to_play = "white" ;
+		    } else {
+			$to_play = "black" ;
+		    }
+		    &debug ("$to_play to play\n") ;
+		}
+	    }
+
+	    ## ######################################################### ##
+	    ## Reconstruct possibly edited game
+	    ## ######################################################### ##
+
+	    $game = join ("\n", @game) . "\n\n" ;
+
+	    ## ######################################################### ##
+	    ## Build up results array
+	    ## ######################################################### ##
+
+	    if ($result) {
+		$results[$game_num] = $games[$game_num] ;
+		$new_result = 1 ;
+	    } elsif ($results[$game_num]) {
+		## Deleting a result does actually make sense if the user
+		## pipes in an old message for take-back purposes or whatever
+		$results[$game_num] = "" ;
+		$delete_result = 1 ;
+	    }
+
+	    ## ######################################################### ##
+	    ## Remove old .out files
+	    ## ######################################################### ##
+
+	    unlink <$PGN_GAME.game.out.*> ;
+
+	    ## ######################################################### ##
+	    ## Write ongoing games to game file and append new results
+	    ## ######################################################### ##
+
+	    die   "cmail: Can't open file for writing:"
+		. " \"$CMAILDIR/$PGN_GAME.game.in\"\n"
+		unless open (gamefile, ">$PGN_GAME.game.in") ;
+	    &debug (@games) ;
+	    print gamefile @games ;
+	    close (gamefile) ;
+	}
+
+	## ############################################################# ##
+	## Print how many finished/unfinished games were found
+	## ############################################################# ##
+
+	printf ("%d unfinished %s and %d finished %s...",
+		$unfinished, ($unfinished == 1) ? "game" : "games",
+		$finished, ($finished == 1) ? "game" : "games") ;
+
+	## ############################################################# ##
+	## Write results back to results file if there were any results
+	## in the input
+	## ############################################################# ##
+	
+	if ($new_result || $delete_result) {
+	    die (  "cmail: Can't open results file for writing:"
+		 . "\"$CMAILDIR/$PGN_GAME.res\"\n")
+		unless open (resfile, ">$PGN_GAME.res") ;
+	    print resfile @results ;
+	    close (resfile) ;
+	}
+
+	## ############################################################# ##
+	## Archive results if there are no unfinished games
+	## ############################################################# ##
+	
+	@ARCHIVE = @results unless ($unfinished) ;
+
+	## ############################################################# ##
+	## Figure out return address if not known
+	## ############################################################# ##
+
+	if (! $RETURN_ADDRESS) {
+	    if ($to_play eq "black") {
+		$RETURN_ADDRESS = $PGN_WHITENA unless ("$PGN_WHITENA" eq "?") ;
+	    } else {
+		$RETURN_ADDRESS = $PGN_BLACKNA unless ("$PGN_BLACKNA" eq "?") ;
+	    }
+	}
+
+	## ############################################################# ##
+	## Decide to include position diagrams in output if not already
+	## decided and a position diagram was found in the input
+	## ############################################################# ##
+
+	if ("$OUTPUT_POS" eq "") {
+	    if (grep (/$posdiag/, @games)) {
+		$OUTPUT_POS = "y" ; # Output position only if it was input
+	    } else {
+		$OUTPUT_POS = "n" ;
+	    }
+	}
+	$ENV{'CMAIL_OUTPUT_POS'} = $OUTPUT_POS ;
+
+	## ############################################################# ##
+	## Check that we have enough info about the players to continue
+	## ############################################################# ##
+
+	&find_game () ;
+    } else {
+	## ############################################################# ##
+	## Set up xboard for viewing non-cmail PGN file
+	## ############################################################# ##
+
+	local ($file) = "unknown.cmail" ;
+	print "done.\nDumping non-cmail file into $CMAILDIR/$file..." ;
+
+	die "cmail: Can't open file for writing: \"$CMAILDIR/$file\"\n"
+	    unless open (gamefile, ">$file") ;
+	print gamefile @games ;
+	close (gamefile) ;
+    }
+
+    print "done.\n" ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Sort two filenames by the numeric suffix
+sub sort_by_numeric_suffix {
+    $a =~ /[.](\d+)$/ ; local ($na) = $1 ;
+    $b =~ /[.](\d+)$/ ; local ($nb) = $1 ;
+
+    return ($na <=> $nb) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+sub get_game_name_and_number {
+    local ($game) = join ("\n", @_) ;
+
+    local ($game_name, $game_num) ;
+
+    die "CMailGameName tag missing\n"
+	unless ($game =~ /\[C[Mm]ailGameName\s+"(.*)"\]/) ;
+
+    ## ################################################################# ##
+    ## Set game name and number
+    ## ################################################################# ##
+
+    $game_name = $1 ;
+    if ($game_name =~ s/^(.*)[.](\d+)$/$1/) {
+	$game_num = $2 ;
+    } else {
+	$game_num = 1 ;
+    }
+
+    ## ################################################################# ##
+    ## Set $PGN_GAME as a side-effect or check validity
+    ## ################################################################# ##
+
+    if ($PGN_GAME) {
+	die (  "cmail: Mismatched game names in input message:\n"
+	     . "\"$PGN_GAME\", \"$game_name\"\n")
+	    if ("$PGN_GAME" ne "$game_name") ;
+    } else {
+	$PGN_GAME = $game_name ;
+	&debug ("PGN_GAME set to \"$PGN_GAME\"\n") ;
+    }
+
+    return ($game_name, $game_num) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Read in a file of games and split into separate games
+sub get_games_from_file {
+    local ($file) = shift ;
+
+    local (@file, $first_line) ; ## Slurp stdin
+    if ($file eq "STDIN") {
+	if ($first_line = <STDIN>) { ## Necessary to handle no input case
+	    @file = <STDIN> ; ## Slurp stdin
+	    @file = ($first_line, @file) ;
+
+	    foreach (@file) {
+		## Strip off leading quotation characters
+		s/^[^\s]*>// ;
+		s/^[ \t]+// ;
+		
+		## Find return address and set it as a side-effect
+		if (   /^From:?.*<([^>]+)>.*\n$/
+		    || /^From:? *([^ ]*).*\n$/) {
+		    $RETURN_ADDRESS = $1 ; ## Default for opp's email
+		    &debug ("Found opponent's email address",
+			    " \"$RETURN_ADDRESS\"\n") ;
+		} elsif (/\[C[Mm]ailGameName\s+"(.*)"\]/) {
+		    $PGN_GAME =  $1 ;
+		    $PGN_GAME =~ s/[.]\d+$// ;
+		}
+	    }
+
+	    return (@file) unless ($PGN_GAME) ;
+	    if (grep (/\{--------------|\[Event/, @file)) {
+		shift (@file) while ($file[0] !~ /\{--------------|\[Event/) ;
+	    }
+	} else {
+	    return () ;
+	}
+    } else {
+	return () unless (open (file, "<$file")) ;
+    
+	@file = <file> ; ## Slurp file
+	close (file) ;
+    }
+    
+    local (@games, $game_name, $game_num, $game, $tag) ;
+
+    ## ################################################################# ##
+    ## Remove headers and leading blanks
+    ## ################################################################# ##
+
+    local (@tgames) = split (/($posdiag\[Event|\[Event)/, join ('', @file)) ;
+    shift (@tgames) while (!$tgames[0]) ;
+
+    ## ################################################################# ##
+    ## Set up @games array with proper game numbers
+    ## ################################################################# ##
+
+    while (@tgames) {
+	$game = shift (@tgames) . shift (@tgames) ;
+
+	($game_name, $game_num) = &get_game_name_and_number ($game) ;
+	$games[$game_num] = $game ;
+    }
+
+    return (@games) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Analyse output files and send the move
+sub send_move {
+    &debug ("Called <send_move>\n") ;
+
+    ## ################################################################# ##
+    ## Cat the pos (if it exists), game and result (if it exists) files
+    ## into the .out file.
+    ## ################################################################# ##
+    
+    local ($unfinished, $finished) = (0, 0) ;
+    local (@results, $move, $move_msg, $to_play, $number) ;
+   
+    ## ################################################################# ##
+    ## Find any .game.out.* files
+    ## ################################################################# ##
+
+    local (@outfiles) = (<$PGN_GAME.game.out.*>) ;
+    @outfiles = grep (/[.]\d+$/, @outfiles) ; ## Ignore autosave files
+    @outfiles = sort sort_by_numeric_suffix @outfiles ; ## Sort
+
+    ## ################################################################# ##
+    ## Find .res file if it exists
+    ## ################################################################# ##
+
+    local ($resfile) = "$PGN_GAME.res" ;
+    if (-f $resfile) {
+	@results = &get_games_from_file($resfile) ;
+	&debug ("Read in results\n") ;
+    } else {
+	@results = () ;
+	&debug ("No results to read\n") ;
+    }
+
+    ## ################################################################# ##
+    ## Find .out file if it exists
+    ## ################################################################# ##
+
+    local ($outfile) = "$PGN_GAME.out" ;
+    if (! ($REMAIL || $LOAD_XBOARD)) {
+	@games = &play_on_tty (@results) ;
+    } elsif (@outfiles) {
+	foreach (@outfiles) {
+	    die "Can't open game file \"$_\" for reading"
+		unless (open (game, "<$_")) ;
+	    die "Empty game file \"$_\""
+		unless ($game = join ('', <game>)) ;
+	    close (game) ;
+	    &debug ("Read in game file \"$_\"\n") ;
+	    ## Remove position diagram if it wasn't in the input msg
+	    $game =~ s/($posdiag)// if ("$OUTPUT_POS" ne "y") ;
+	    ($game_name, $game_num) = &get_game_name_and_number ($game) ;
+	    $games[$game_num] = $game ;
+	}
+	&debug ("Read in games from output files\n") ;
+	$games[0] = "" ;
+    } else {
+	&debug ("No games to read from STDIN\n") ;
+	if (-f $outfile) {
+	    @games = &get_games_from_file($outfile) ;
+	} else {
+	    die "Can't find any game files\n" unless (@results) ;
+	}
+    }
+
+    ## ################################################################# ##
+    ## Process games
+    ## ################################################################# ##
+
+    if (@games) {
+	## ############################################################# ##
+	## Find opponent's email address in games
+	## ############################################################# ##
+	
+	$OPP_ADDRESS = &get_opp_address_from_games (@games)
+	    unless ($OPP_ADDRESS) ;
+
+	## ############################################################# ##
+	## Collect the .game.out.* files into the .out file, remembering
+	## the move number of the last line and whether result or not
+	## ############################################################# ##
+
+	$unfinished = 0 ;
+	$move_num = 0 ;
+	$move = blank ;
+
+	## Write games to output file
+	die "Can't open output file \"$PGN_GAME.out\" for writing\n"
+	    unless open (outfile, ">$PGN_GAME.out") ;
+	print outfile @games ;
+	close (outfile) ;
+		
+	$game_num = -1 ;
+	$num_games = 0 ;
+	foreach $game (@games) {
+	    $game_num ++ ;
+	    next unless ($game) ;
+
+	    $num_games ++ ;
+	    ## Determine last move and whether result or not
+	    $result = 0 ;
+	    foreach (split(/\n/, $game)) {
+		if (/^(.*[^\d]+|)(\d+)[.]+\s*[^\s.]*\s+(\S+)\s*$/) {
+		    $move_num = $2 ;
+		    $move    = $3 ;
+		} elsif (/^\[Result\s*"(.*)"\]$/) {
+		    if ($1 ne "*") {
+			$result = 1 ;
+			$finished ++ ;
+		    } else {
+			$unfinished ++ ;
+		    }
+		}
+	    }
+	    
+	    $results[$game_num] = $game if ($result) ;
+	}
+
+	## Write result files back to $PGN_GAME.res
+	if (@results) {
+	    die "Can't open results file $PGN_GAME.res for writing\n"
+		unless open (resfile, ">$PGN_GAME.res") ;
+	    print resfile @results ;
+	    close (results) ;
+	}
+
+	unlink <$PGN_GAME.game.out.*> ;
+
+	## ############################################################# ##
+	## Just say how many games are in the message
+	## ############################################################# ##
+	    
+	if ($num_games > 1) {
+	    $move_msg = "$num_games games" ;
+	} else {
+	    $move_msg = "1 game" ;
+	}
+
+	## ############################################################# ##
+	## Print how many finished/unfinished games were found
+	## ############################################################# ##
+
+	printf ("Sending %d unfinished %s and %d finished %s.\n",
+		$unfinished, ($unfinished == 1) ? "game" : "games",
+		$finished, ($finished == 1) ? "game" : "games") ;
+
+	## ############################################################# ##
+	## Send the mail message to opponent's address unless bypassed
+	## ############################################################# ##
+
+	if ($SEND_MAIL) {
+	    local ($subject) = "cmail $move_msg <$PGN_GAME>" ;
+	    if ($MAILPROG =~ /sendmail/) {
+		$opened = open (mail, "|$MAILPROG $OPP_ADDRESS") ;
+ 		print mail "To: $OPP_ADDRESS\n";
+ 		print mail "Subject: $subject\n";
+ 		print mail "Mime-Version: 1.0\n";
+ 		print mail "Content-Type: application/x-chess;name=$PGN_GAME.pgn\n\n";
+	    } else {
+		$opened = open (mail, "|$MAILPROG -s \"$subject\" $OPP_ADDRESS") ;
+	    }
+  	    if ($opened) {
+		print mail @games ;
+		close (mail) ;
+		print (  "Mailed cmail message to \"$OPP_ADDRESS\":\n"
+		       . "$move_msg <$PGN_GAME>\n") ;
+		@ARCHIVE = @results unless ($unfinished) ;
+	    } else {
+		die "Failed to mail cmail message.\n" ;
+	    }
+	} else {
+	    print (  "Email not sent (as requested).\n"
+		   . "Would have mailed cmail message to \"$OPP_ADDRESS\":\n"
+		   . "$NUM_GAMES games <$PGN_GAME>\n") ;
+	}
+    } else {
+	if (@results) {
+	    print "Email not sent (the game is over).\n" ;
+	} else {
+	    die "No games found\n" ;
+	}
+    }
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Get date from array of games
+sub get_date_from_games {
+    local (@games) = @_ ;
+
+    local ($date) = "nodate" ;
+
+    foreach (@games) {
+	if (/\[Date\s"(.*)"\]/) {
+	    $date = $1 ;
+	    last ;		## Assume all dates are the same
+	}
+    }
+
+    return ($date) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Determine which colour is to play and the move number
+sub get_to_play {
+    &debug ("Called <get_to_play>\n") ;
+    local ($game) = shift ;
+
+    local ($number, $to_play) = (1, "White") ;
+
+    $game =~ s/{[^}]*}//g ;
+    $game =~ s/[\s\n]*[*][\s\n]*$// ;
+
+    if ($game =~ /(\d+)[.][\n ]*([.]*)[\n ]*([^\n.]*)[\n\s]*[10-]*[\n\s]*$/) {
+	$number = $1 ;
+
+	if ($game =~ /\[Result "0-1"\]/) {
+	    $to_play = "Black" ;
+	} elsif ($game =~ /\[Result "1-0"\]/) {
+	    $to_play = "White" ;
+	} elsif (($2 ne "") || (($3 =~ / /) || ($3 eq ""))) {
+	    $to_play = "White" ;
+	    $number ++ ;
+	} else {
+	    $to_play = "Black" ;
+	}
+    }
+
+    &debug ("$to_play to play on move $number\n") ;
+
+    return ($number, $to_play) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Get opp address from array of games
+sub get_opp_address_from_games {
+    &debug ("Called <get_opp_address_from_games>\n") ;
+    local (@games) = @_ ;
+
+    local ($opp_address) = "" ;
+    local ($number, $to_play, $tag) ;
+
+    foreach (@games) {
+	next unless $_ ;
+	
+	($number, $to_play) = &get_to_play ($_) ;
+	$tag = (  ($to_play eq "White")
+		? "WhiteNA"
+		: "BlackNA") ;
+
+	if (/\[$tag\s"(.*)"\]/) {
+	    $opp_address = $1 ;
+	    die "cmail: Empty \"$tag\" tag\n" unless ($opp_address) ;
+	    &debug ("Found opponent's address \"$opp_address\" from games.\n") ;
+	    last ;		## Assume all opp addresses are the same
+	} else {
+	    die "cmail: Can't find \"$tag\" tag\n" ;
+	}
+    }
+
+    die "cmail: Can't find opponent's email address\n" unless ($opp_address) ;
+
+    return ($opp_address) ;
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Archive @ARCHIVE in the $ARCDIR directory
+sub archive {
+    return () unless (@ARCHIVE) ;
+
+    local ($date) = &get_date_from_games (@ARCHIVE) ;
+
+    local ($file) = "$ARCDIR/$PGN_GAME.$date.archive" ;
+    if (open (archive, ">$file")) {
+	print archive @ARCHIVE ;
+	close (archive) ;
+	print "Archived game in $file\n" ;
+	local (@remove) = <$PGN_GAME*> ;
+	@remove = grep ($_ ne "$PGN_GAME.$date.archive",
+			@remove) ; ## Don't delete archive
+	unlink (@remove) ;
+    } else {
+	print "Couldn't open \"$file\" to archive game\n" ;
+    }
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+## Main body
+sub main {
+    local (@games) = () ;
+
+    &initialise () ;		## Initialise variables etc.
+
+    if (-t || $REMAIL) { ## No input directed (invoked from a shell rather than a mailer)
+	&debug ("Interactive!\n") ;
+	&find_game () ;		## Get the necessary info about the game
+    } else {
+	&debug ("Piping!\n") ;
+	&analyse_email_message () ; ## Analyse the mail message
+    }
+    
+    if (! &play_game ()) {	## Load the game
+	&send_move () ;		## Analyse output and send moves
+    }
+
+    &archive () ;		## Archive games if all finished
+
+    close (tty) ;		## Tidy up
+    close (logfile) if ($DEBUG) ; ## Tidy up
+}
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+&main () ;
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+__END__
+cmail $Revision$, Copyright (C) 1993 Free Software Foundation, Inc.
+cmail comes with ABSOLUTELY NO WARRANTY; for details type `cmail -w'.
+cmail is free software, and you are welcome to redistribute it
+under certain conditions; type `cmail -c' for details.
+
+{END OF GPL COPYRIGHT}
+		    GNU GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License applies to any program or other work which contains
+a notice placed by the copyright holder saying it may be distributed
+under the terms of this General Public License.  The "Program", below,
+refers to any such program or work, and a "work based on the Program"
+means either the Program or any derivative work under copyright law:
+that is to say, a work containing the Program or a portion of it,
+either verbatim or with modifications and/or translated into another
+language.  (Hereinafter, translation is included without limitation in
+the term "modification".)  Each licensee is addressed as "you".
+
+Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope.  The act of
+running the Program is not restricted, and the output from the Program
+is covered only if its contents constitute a work based on the
+Program (independent of having been made by running the Program).
+Whether that is true depends on what the Program does.
+
+  1. You may copy and distribute verbatim copies of the Program's
+source code as you receive it, in any medium, provided that you
+conspicuously and appropriately publish on each copy an appropriate
+copyright notice and disclaimer of warranty; keep intact all the
+notices that refer to this License and to the absence of any warranty;
+and give any other recipients of the Program a copy of this License
+along with the Program.
+
+You may charge a fee for the physical act of transferring a copy, and
+you may at your option offer warranty protection in exchange for a fee.
+
+  2. You may modify your copy or copies of the Program or any portion
+of it, thus forming a work based on the Program, and copy and
+distribute such modifications or work under the terms of Section 1
+above, provided that you also meet all of these conditions:
+
+    a) You must cause the modified files to carry prominent notices
+    stating that you changed the files and the date of any change.
+
+    b) You must cause any work that you distribute or publish, that in
+    whole or in part contains or is derived from the Program or any
+    part thereof, to be licensed as a whole at no charge to all third
+    parties under the terms of this License.
+
+    c) If the modified program normally reads commands interactively
+    when run, you must cause it, when started running for such
+    interactive use in the most ordinary way, to print or display an
+    announcement including an appropriate copyright notice and a
+    notice that there is no warranty (or else, saying that you provide
+    a warranty) and that users may redistribute the program under
+    these conditions, and telling the user how to view a copy of this
+    License.  (Exception: if the Program itself is interactive but
+    does not normally print such an announcement, your work based on
+    the Program is not required to print an announcement.)
+
+These requirements apply to the modified work as a whole.  If
+identifiable sections of that work are not derived from the Program,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works.  But when you
+distribute the same sections as part of a whole which is a work based
+on the Program, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote it.
+
+Thus, it is not the intent of this section to claim rights or contest
+your rights to work written entirely by you; rather, the intent is to
+exercise the right to control the distribution of derivative or
+collective works based on the Program.
+
+In addition, mere aggregation of another work not based on the Program
+with the Program (or with a work based on the Program) on a volume of
+a storage or distribution medium does not bring the other work under
+the scope of this License.
+
+  3. You may copy and distribute the Program (or a work based on it,
+under Section 2) in object code or executable form under the terms of
+Sections 1 and 2 above provided that you also do one of the following:
+
+    a) Accompany it with the complete corresponding machine-readable
+    source code, which must be distributed under the terms of Sections
+    1 and 2 above on a medium customarily used for software interchange; or,
+
+    b) Accompany it with a written offer, valid for at least three
+    years, to give any third party, for a charge no more than your
+    cost of physically performing source distribution, a complete
+    machine-readable copy of the corresponding source code, to be
+    distributed under the terms of Sections 1 and 2 above on a medium
+    customarily used for software interchange; or,
+
+    c) Accompany it with the information you received as to the offer
+    to distribute corresponding source code.  (This alternative is
+    allowed only for noncommercial distribution and only if you
+    received the program in object code or executable form with such
+    an offer, in accord with Subsection b above.)
+
+The source code for a work means the preferred form of the work for
+making modifications to it.  For an executable work, complete source
+code means all the source code for all modules it contains, plus any
+associated interface definition files, plus the scripts used to
+control compilation and installation of the executable.  However, as a
+special exception, the source code distributed need not include
+anything that is normally distributed (in either source or binary
+form) with the major components (compiler, kernel, and so on) of the
+operating system on which the executable runs, unless that component
+itself accompanies the executable.
+
+If distribution of executable or object code is made by offering
+access to copy from a designated place, then offering equivalent
+access to copy the source code from the same place counts as
+distribution of the source code, even though third parties are not
+compelled to copy the source along with the object code.
+
+  4. You may not copy, modify, sublicense, or distribute the Program
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense or distribute the Program is
+void, and will automatically terminate your rights under this License.
+However, parties who have received copies, or rights, from you under
+this License will not have their licenses terminated so long as such
+parties remain in full compliance.
+
+  5. You are not required to accept this License, since you have not
+signed it.  However, nothing else grants you permission to modify or
+distribute the Program or its derivative works.  These actions are
+prohibited by law if you do not accept this License.  Therefore, by
+modifying or distributing the Program (or any work based on the
+Program), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying
+the Program or works based on it.
+
+  6. Each time you redistribute the Program (or any work based on the
+Program), the recipient automatically receives a license from the
+original licensor to copy, distribute or modify the Program subject to
+these terms and conditions.  You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties to
+this License.
+
+  7. If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Program at all.  For example, if a patent
+license would not permit royalty-free redistribution of the Program by
+all those who receive copies directly or indirectly through you, then
+the only way you could satisfy both it and this License would be to
+refrain entirely from distribution of the Program.
+
+If any portion of this section is held invalid or unenforceable under
+any particular circumstance, the balance of the section is intended to
+apply and the section as a whole is intended to apply in other
+circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system, which is
+implemented by public license practices.  Many people have made
+generous contributions to the wide range of software distributed
+through that system in reliance on consistent application of that
+system; it is up to the author/donor to decide if he or she is willing
+to distribute software through any other system and a licensee cannot
+impose that choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+  8. If the distribution and/or use of the Program is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Program under this License
+may add an explicit geographical distribution limitation excluding
+those countries, so that distribution is permitted only in or among
+countries not thus excluded.  In such case, this License incorporates
+the limitation as if written in the body of this License.
+
+  9. The Free Software Foundation may publish revised and/or new versions
+of the General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Program
+specifies a version number of this License which applies to it and "any
+later version", you have the option of following the terms and conditions
+either of that version or of any later version published by the Free
+Software Foundation.  If the Program does not specify a version number of
+this License, you may choose any version ever published by the Free Software
+Foundation.
+
+  10. If you wish to incorporate parts of the Program into other free
+programs whose distribution conditions are different, write to the author
+to ask for permission.  For software which is copyrighted by the Free
+Software Foundation, write to the Free Software Foundation; we sometimes
+make exceptions for this.  Our decision will be guided by the two goals
+of preserving the free status of all derivatives of our free software and
+of promoting the sharing and reuse of software generally.
+{END OF GPL CONDITIONS}
+		    GNU GENERAL PUBLIC LICENSE
+			    NO WARRANTY
+
+  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
+REPAIR OR CORRECTION.
+
+  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+

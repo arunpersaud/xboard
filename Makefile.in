@@ -1,0 +1,256 @@
+#
+# Run ./configure to generate a Makefile from Makefile.in
+# See INSTALL for more information
+# $Id$
+#
+
+PRODUCT = @PRODUCT@
+VERSION = @VERSION@
+PATCHLEVEL = @PATCHLEVEL@
+
+SHELL = /bin/sh
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+mandir = @mandir@
+man6dir = $(mandir)/man6
+man6ext = .6
+# Yuck; the autoconf generated configure script sets an infodir variable
+# and provides a command-line flag to change it, but the default is 
+# /usr/info instead of /usr/share/info.
+infodir = $(prefix)/share/info
+
+CC = @CC@
+CFLAGS = @CFLAGS@ @CPPFLAGS@ -DINFODIR=\"$(infodir)\"
+ALL_CFLAGS = -I. -I$(srcdir) @X_CFLAGS@ @CONF_CFLAGS@ $(CFLAGS)
+DEFINES = @DEFS@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+LDFLAGS = @LDFLAGS@
+ALL_LDFLAGS = @CONF_LDFLAGS@ $(LDFLAGS)
+LEX = @LEX@
+LEXFLAGS = 
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LIBS = @X_LIBS@ @XAW_LIBS@ @PRE_XMULIB@ -lXmu @POST_XMULIB@ -lXt -lXext \
+	@X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@ @LIBS@ -lm
+NROFF = @NROFF@
+NROFFFLAGS = @NROFFFLAGS@
+
+DISTSOURCE = COPYING COPYRIGHT ChangeLog ChangeLog.2 FAQ FAQ.html \
+	INSTALL Makefile.in READ_ME ToDo backend.c backend.h \
+	backendz.h bitmaps bitmaps.xchess childio.c childio.h cmail.in \
+	cmail.man comment.in common.h config.guess config.sub \
+	configure configure.in engine-intf.html frontend.h gamelist.c \
+	ics-parsing.txt install-sh kk13.pgn lists.c \
+	lists.h mkinstalldirs moves.c moves.h parser.h parser.l pgntags.c \
+	pxboard xboard.c xboard.h xboard.man xedittags.c xedittags.h \
+	xgamelist.c xgamelist.h xhistory.c xhistory.h acconfig.h config.h.in \
+	xboard.texinfo.in xboard.texi gpl.texinfo zic2xpm.c zic2xpm.man \
+	pixmaps sounds xboard.ps
+
+ZIPPYSOURCE = zippy.README zippy.c zippy.h zippy.lines
+
+DISTDIR = @PRODUCT@-@VERSION@.@PATCHLEVEL@
+
+XBOARDOBJ = parser.o xboard.o backend.o moves.o childio.o gamelist.o \
+	lists.o pgntags.o xgamelist.o xedittags.o xhistory.o @ZIPPY_O@
+
+### Targets required by GNU standards #######################################
+
+all: xboard zic2xpm xboard.doc cmail.doc zic2xpm.doc
+
+more: all pseudo-source info FAQ html dvi ps
+
+install: installdirs xboard zic2xpm cmail pxboard xboard.man cmail.man \
+		zic2xpm.man
+	$(INSTALL_PROGRAM) -s xboard $(bindir)/xboard
+	$(INSTALL_PROGRAM) -s zic2xpm $(bindir)/zic2xpm
+	$(INSTALL_PROGRAM) cmail $(bindir)/cmail
+	$(INSTALL_PROGRAM) $(srcdir)/pxboard $(bindir)/pxboard
+	$(INSTALL_DATA) $(srcdir)/xboard.man $(man6dir)/xboard$(man6ext)
+	$(INSTALL_DATA) $(srcdir)/cmail.man $(man6dir)/cmail$(man6ext)
+	$(INSTALL_DATA) $(srcdir)/zic2xpm.man $(man6dir)/zic2xpm$(man6ext)
+	$(INSTALL_DATA) xboard.info $(infodir)/xboard.info
+	-PATH=$$PATH:/sbin:/usr/sbin install-info \
+		$(infodir)/xboard.info $(infodir)/dir
+
+installdirs: mkinstalldirs
+	$(srcdir)/mkinstalldirs $(bindir) $(mandir) $(man6dir) $(infodir)
+
+uninstall:
+	rm -f $(bindir)/xboard $(bindir)/cmail $(bindir)/pxboard
+	rm -f $(bindir)/zic2xpm
+	rm -f $(man6dir)/xboard$(man6ext) $(man6dir)/cmail$(man6ext)
+	rm -f $(man6dir)/zic2xpm$(man6ext)
+	rm -f $(infodir)/xboard.info
+	-PATH=$$PATH:/sbin:/usr/sbin install-info --delete \
+		$(infodir)/xboard.info $(infodir)/dir
+
+clean:
+	rm -f xboard zic2xpm *.o *.doc $(LEX_OUTPUT_ROOT).c
+	rm -f xboard_*.html xboard.aux* xboard.cp* xboard.dvi xboard.fn*
+	rm -f xboard.ky* xboard.log xboard.pg* xboard.toc xboard.tp*
+	rm -f xboard.vr* xboard.ps
+
+distclean: clean tidy
+	rm -f config.cache config.log config.status Makefile 
+	rm -f config.h stamp-h xboard.texinfo cmail comment.awk
+
+mostlyclean: clean
+
+maintainer-clean: distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+	rm -f parser.c xboard.info FAQ
+
+TAGS:
+	etags *.c *.h
+
+info: xboard.info
+
+xboard.info: xboard.texinfo xboard.texi gpl.texinfo configure.in
+	makeinfo --no-split -I $(srcdir) xboard.texinfo
+
+ps: xboard.ps
+
+xboard.ps: xboard.dvi	
+	dvips -o xboard.ps xboard.dvi
+
+dvi: xboard.dvi
+
+xboard.dvi: xboard.texinfo xboard.texi gpl.texinfo configure.in
+	TEXINPUTS=.:$(srcdir): texi2dvi xboard.texinfo
+
+html: xboard_toc.html
+
+xboard_toc.html: xboard.texinfo xboard.texi gpl.texinfo configure.in
+	texi2html -split_chapter -I $(srcdir) xboard.texinfo
+
+FAQ: FAQ.html
+	lynx -dump -nolist $(srcdir)/FAQ.html > FAQ
+
+nothinglocked:
+	@echo -n Testing that no RCS files are locked...
+	@test `rlog -L -R RCS/*,v | tee .locked | wc -l` = 0 || \
+		( echo 'ERROR - the following are locked: ' 2>&1 ;\
+		  cat .locked 2>&1 ;\
+		  false )
+	@echo OK
+
+pseudo-source: parser.c xboard.info FAQ
+
+dist: nothinglocked
+	mkdir $(DISTDIR)
+	rlog -h RCS/*,v | egrep '^RCS file:|head:' > RCS/$(DISTDIR).rcs
+	cp -r $(DISTSOURCE) $(ZIPPYSOURCE) $(DISTDIR)/
+	if echo $(DISTDIR) | grep -i beta ; then \
+	    cp -r READ_ME_FIRST $(DISTDIR)/ ; \
+	fi
+	cp parser.c xboard.info FAQ $(DISTDIR)/
+	tar cvf - $(DISTDIR) | gzip > $(DISTDIR).tar.gz
+
+check: all
+
+### End targets required by GNU standards ###################################
+
+.SUFFIXES:
+.SUFFIXES: .c .o .man .doc
+
+.c.o:
+	$(CC) $(DEFINES) $(ALL_CFLAGS) -c $<
+
+.man.doc:
+	$(NROFF) $(NROFFFLAGS) $< > $*.doc
+
+xboard: $(XBOARDOBJ)
+	$(CC) -o xboard $(ALL_LDFLAGS) $(XBOARDOBJ) $(LIBS)
+
+zic2xpm: zic2xpm.o
+	$(CC) -o zic2xpm zic2xpm.o
+
+parser.c: parser.l
+	$(LEX) $(LEXFLAGS) $(srcdir)/parser.l
+	mv $(LEX_OUTPUT_ROOT).c parser.c
+
+parser.o: parser.c
+
+
+tidy:
+	rm -f ,* .,* .emacs_[0-9]* core a.out *~ *.BAK *.CKP .nfs*
+
+backend.o: backendz.h
+backend.o: config.h
+backend.o: common.h
+backend.o: frontend.h
+backend.o: backend.h lists.h
+backend.o: parser.h
+backend.o: moves.h
+backend.o: @ZIPPY_H@
+childio.o: config.h
+childio.o: common.h
+childio.o: frontend.h
+gamelist.o: config.h
+gamelist.o: common.h
+gamelist.o: frontend.h
+gamelist.o: backend.h lists.h
+gamelist.o: parser.h
+lists.o: config.h
+lists.o: common.h
+lists.o: lists.h
+moves.o: config.h
+moves.o: common.h
+moves.o: backend.h lists.h
+moves.o: moves.h
+moves.o: parser.h
+parser.o: config.h
+parser.o: common.h
+parser.o: backend.h
+parser.o: frontend.h
+parser.o: parser.h
+parser.o: moves.h
+pgntags.o: config.h
+pgntags.o: common.h
+pgntags.o: frontend.h
+pgntags.o: backend.h lists.h
+pgntags.o: parser.h
+xboard.o: config.h
+xboard.o: common.h
+xboard.o: frontend.h
+xboard.o: backend.h lists.h
+xboard.o: moves.h
+xboard.o: xboard.h
+xboard.o: childio.h
+xboard.o: $(srcdir)/bitmaps/bitmaps.h
+xboard.o: xgamelist.h
+xboard.o: xedittags.h
+xboard.o: xhistory.h
+xedittags.o: config.h
+xedittags.o: common.h
+xedittags.o: frontend.h
+xedittags.o: backend.h lists.h
+xedittags.o: xboard.h
+xedittags.o: xedittags.h
+xgamelist.o: config.h
+xgamelist.o: common.h
+xgamelist.o: frontend.h
+xgamelist.o: backend.h lists.h
+xgamelist.o: xboard.h
+xgamelist.o: xgamelist.h
+xhistory.o: config.h
+xhistory.o: common.h
+xhistory.o: frontend.h
+xhistory.o: backend.h
+xhistory.o: xboard.h
+xhistory.o: xhistory.h
+xhistory.o: lists.h
+zippy.o: backend.h
+zippy.o: backendz.h
+zippy.o: config.h
+zippy.o: common.h
+zippy.o: zippy.h
+zippy.o: frontend.h
+

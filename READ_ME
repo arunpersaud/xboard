@@ -1,0 +1,63 @@
+
+What is XBoard?
+===============
+XBoard is a graphical chessboard that can serve as a user interface
+for GNU Chess, for the Internet Chess Server, or for electronic mail
+correspondence chess.  XBoard can also be used by itself.  See the
+manual page xboard.man for further details; use the command "nroff
+-man xboard.man | more" to read it.
+
+Building XBoard
+===============
+Quick start:  You can build xboard on most systems with the commands
+
+	configure
+	make
+
+See the file INSTALL for more detailed instructions.
+
+See the file FAQ for answers to frequently asked questions.
+
+Reporting problems
+==================
+
+Report bugs and problems with XBoard to <tim@tim-mann.org>.  Please
+use the "script" program to start a typescript, run XBoard with the
+-debug option, and include the typescript output in your message.
+Also tell us what kind of machine and what operating system version
+you are using.  The command "uname -a" will often tell you this.
+
+Here is a sample of approximately what you should type:
+
+    script
+    uname -a
+    ./configure
+    make
+    ./xboard -debug
+    exit
+    mail tim@tim-mann.org
+    Subject: Your short description of the problem
+    Your detailed description of the problem
+    ~r typescript
+    .
+
+If you improve XBoard, please send a message about your changes, and
+we will get in touch with you about merging them in to the main line
+of development.
+
+Caveats
+=======
+XBoard depends on the Xt Intrinsics and Athena Widget Set of X11R4 or
+later.  In particular, X11R3 just won't do.
+
+XBoard works best with version 4.0 or 5.0 of GNU Chess.  Older
+versions may also work, but they are unsupported.  The GNU Chess
+project requests that you get a current copy of GNU Chess rather than
+using older, bug-ridden versions.  GNU Chess 4.0 must be compiled with
+the -DXBOARD flag for use with XBoard.  Use the "make gnuchessx"
+target in GNU Chess 4.0 to do this.
+
+The Free Software Foundation would prefer to be able to distribute an
+X chessboard program covered only by the GNU General Public License
+and unencumbered by any other copyright.  If you can help with this,
+please contact the FSF.

@@ -1,0 +1,26 @@
+\input texinfo	@c -*-texinfo-*-
+@c %**start of header
+@setfilename xboard.info
+@settitle XBoard
+@c %**end of header
+
+
+@set VERSION @VERSION@.@PATCHLEVEL@
+
+@set XBOARD
+@set NAME XBoard
+@set LCNAME xboard
+@clear WINBOARD
+@clear AMYBOARD
+
+@ifinfo
+@format
+INFO-DIR-SECTION Games
+START-INFO-DIR-ENTRY
+* xboard: (xboard).         An X Window System graphical chessboard.
+END-INFO-DIR-ENTRY
+@end format
+@end ifinfo
+
+@include xboard.texi
+@bye

@@ -1,0 +1,161 @@
+Parsing of ICS Output
+Updated to match xboard/WinBoard 4.0.2
+$Id$
+==============================================================================
+
+This document describes how xboard and WinBoard parse ICS output.  The
+general parsing method is to compare a list of patterns against the
+current line (whether partial or complete) each time new input is
+received from ICS.  The patterns are considered in a fixed order.  The
+pattern matching is not "anchored", so unmatched text at the beginning
+of a line (including the prompt, usually) is skipped.  Whenever a
+pattern is matched, the characters are "consumed" and matching begins
+again with the next unmatched character, starting at the top of the
+list.  The last pattern is "\n", causing characters up to a newline to
+be discarded if they have not matched any patterns.  The pattern
+language is very simple.  Every character but "*" must match
+literally.  "*" matches zero or more characters that don't include a
+newline and don't match the character immediately following the *, if
+any.  A "*" at the end of a pattern will not match until a complete
+line is received
+
+This method of pattern matching is rather fragile.  The patterns have
+to be chosen quite carefully to avoid unexpected results.  For
+example, at one time "* shouts: *" was used to match shouts, while
+"<12>" was used to match the start of a board.  If someone shouted
+"<12>", xboard would succeed in ignoring the <12> only if all the
+characters from the ">" to the next newline were received at one time,
+so that the shout pattern could match before the start-of-board
+pattern was considered.  (This usually happens on TCP connections, but
+is not guaranteed.)
+	
+The patterns intentionally allow text in finger notes to be parsed and
+colorized as tells, shouts, etc.  I did this because Zek once said
+that ZIICS users like this feature, even though he originally
+considered it a bug in ZIICS, and so he doesn't dare change it.  I may
+eventually change it anyway so that people stop reporting it as a bug.
+
+Here is the complete list of patterns that xboard looks for, in order.
+The list was obtained by grepping the source code for "looking_at", my
+procedure for pattern-matching.  Some of these are specific to FICS,
+some to ICC, and some may be outdated---that is, they may reflect
+messages that no ICS produces anymore.  Occasionally the same pattern
+appears more than once because earlier occurrences were inside
+if/then/else statements.  There may also be a couple of places where I
+do a test without calling looking_at.
+
+zippy.c (runs first if Zippy is active, otherwise skipped):
+"* kibitzes: Hello from Crafty"
+"* is in the computer list."
+"* * is a computer *"
+"* offers to be your bughouse partner"
+"* tells you: [automatic message] I chose you"
+"* agrees to be your partner"
+"are no longer *'s partner"
+"no longer have a bughouse partner"
+"partner has disconnected"
+"partner has just chosen a new partner"
+"* tells you: [automatic message] I'm no longer your"
+"* (your partner) tells you: *"
+"* tells you: *"
+"* says: *"
+"--> * *"
+"* shouts: *"
+"* kibitzes: *"
+"* whispers: *"
+"You have * message*."
+"* has left a message for you."
+"* just sent you a message."
+"--* (*:*): *"
+"*. * (*:*): *"
+"*. * at *:*: *"
+"*(*): *"
+"*(*)(*): *"
+"Notification: * has arrived"
+"Not sent -- * is censoring you"
+"command is currently turned off"
+"* * match * * requested with * (*)"
+"* * match * requested with * (*)"
+* has made an alternate proposal of * * match * *."
+"Challenge: * (*) *(*) * * * * Loaded from *"
+"Challenge: * (*) *(*) * * * * : * * Loaded from *"
+"Challenge: * (*) *(*) * * * * : * *"
+"Challenge: * (*) *(*) * * * * * *"
+"Challenge: * (*) *(*) * * * *"
+"offers you a draw"
+"requests that the game be aborted"
+"would like to abort"
+"requests adjournment"
+"would like to adjourn"
+
+backend.c:
+"ics%"			/* right after login only; nonessential */
+"chessclub.com"         /* before login; turns on ICC mode */
+"\"*\" is *a registered name"
+"Logging you in as \"*\""
+"Your name will be \"*\""
+"* s-shouts: "
+"* c-shouts: "
+"--->"			/* seen in FICS login, not a shout */
+"* shouts: "
+"--> "
+"* tells you: "
+"* (your partner) tells you: "
+"* says: "
+"* has left a message "
+"* just sent you a message:\n"
+"*. * (*:*): "
+"*. * at *:*: "
+"* whispers: "
+"* kibitzes: "
+"*)(*): *"		 /* channel tell or allobs or admin comment */
+"*(*): *"		 /* channel tell or allobs or admin comment */
+"*)(*)(*): *"		 /* channel tell */
+"Challenge:"
+"* offers you"
+"* offers to be"
+"* would like to"
+"* requests to"
+"Your opponent offers"
+"Your opponent requests"
+"\\   "                  /* continuation line */
+"Black Strength :"       /* need to issue "style 12; refresh" */
+"<<< style 10 board >>>" /* need to issue "style 12; refresh" */
+"<10>"                   /* need to issue "style 12; refresh" */
+"#@#"                    /* need to issue "style 12; refresh" */
+"login:"
+"\n<12> "
+"<12> "
+"\n<b1> "
+"<b1> "
+"* *vs. * *--- *"        /* move list coming */
+"* * match, initial time: * minute*, increment: * second"
+"Move  "                 /* move list is here */
+"% "			 /* end of prompt; nonessential */
+"}*"			 /* ends a move list */
+"Adding game * to observation list"
+"Game notification: * (*) vs. * (*)"
+"Entering examine mode for game *"
+"has made you an examiner of game *"
+"Illegal move"
+"Not a legal move"
+"Your king is in check"
+"It isn't your turn"
+"It is not your move"
+"still have time"
+"not out of time"
+"either player is out of time"
+"has timeseal; checking"
+"added * seconds to"
+"seconds were added to"
+"clock paused"
+"clock resumed"
+"Creating: * (*)* * (*)"
+"Creating: * (*) [*] * (*)"
+"{Game * (* vs. *) *}*"
+"Removing game * from observation"
+"no longer observing game *"
+"Game * (*) has no examiners"
+"no longer examining game *"
+"\n"
+"*% "			 /* end of prompt; nonessential */
