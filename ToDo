@@ -843,8 +843,6 @@ console window, or something.
 402. Internationalization.  It probably isn't practical to retrofit
 this into the current code base.
 
-****406. "telluser" needs to be made nonmodal in winboard.
-
 409. One user requested a way to put a time delay in the middle of
 sending zippyGameEnd commands.  This would (for example) let the
 computer do a seek only if its opponent doesn't accept a rematch
@@ -1277,8 +1275,6 @@ for WCCC and other computer competitions, where xboard/winboard's
 clock is not the master.  I was going to do it in time for the July
 2002 WCCC.  Oops.
 
-***540. Pick up GNU Chess 5.07! (or whatever is newest)
-
 541. Related to #327, John Iverson says, "It would be nice to have the
 coordinates shown outside of the board along the edges, rather than in
 the squares where they are hard to see and give a cluttered
@@ -1376,5 +1372,5 @@ Before each release:
 - make sure ChangeLog is complete
 - test changes
 
-*** up to date with mail received through 25 Oct 2003, except
+*** up to date with mail received through 5 Nov 2003, except
 for the "protover 3" discussions on the chess-engines mailing list ***

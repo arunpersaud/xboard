@@ -337,6 +337,7 @@ HWND analysisDialog = NULL;
 BOOLEAN analysisDialogUp = FALSE;
 static int analysisX, analysisY, analysisH, analysisW;
 
+char errorTitle[MSG_SIZ];
 char errorMessage[2*MSG_SIZ];
 HWND errorDialog = NULL;
 BOOLEAN moveErrorMessageUp = FALSE;
@@ -4942,6 +4943,45 @@ PopUpMoveDialog(char firstchar)
 \*---------------------------------------------------------------------------*/
 
 /* Nonmodal error box */
+LRESULT CALLBACK ErrorDialog(HWND hDlg, UINT message,
+			     WPARAM wParam, LPARAM lParam);
+
+VOID
+ErrorPopUp(char *title, char *content)
+{
+  FARPROC lpProc;
+  char *p, *q;
+  BOOLEAN modal = hwndMain == NULL;
+
+  p = content;
+  q = errorMessage;
+  while (*p) {
+    if (*p == '\n') {
+      if (modal) {
+	*q++ = ' ';
+	p++;
+      } else {
+	*q++ = '\r';
+	*q++ = *p++;
+      }
+    } else {
+      *q++ = *p++;
+    }
+  }
+  *q = NULLCHAR;
+  strncpy(errorTitle, title, sizeof(errorTitle));
+  errorTitle[sizeof(errorTitle) - 1] = '\0';
+  
+  if (modal) {
+    MessageBox(NULL, errorMessage, errorTitle, MB_OK|MB_ICONEXCLAMATION);
+  } else {
+    lpProc = MakeProcInstance((FARPROC)ErrorDialog, hInst);
+    CreateDialog(hInst, MAKEINTRESOURCE(DLG_Error),
+		 hwndMain, (DLGPROC)lpProc);
+    FreeProcInstance(lpProc);
+  }
+}
+
 VOID
 ErrorPopDown()
 {
@@ -4964,6 +5004,7 @@ ErrorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       rChild.top + boardRect.top - (rChild.bottom - rChild.top), 
       0, 0, SWP_NOZORDER|SWP_NOSIZE);
     errorDialog = hDlg;
+    SetWindowText(hDlg, errorTitle);
     hwndText = GetDlgItem(hDlg, OPT_ErrorText);
     SetDlgItemText(hDlg, OPT_ErrorText, errorMessage);
     return FALSE;
@@ -6316,31 +6357,8 @@ DisplayError(char *str, int error)
       }
     }
   }
-  p = buf;
-  q = errorMessage;
-  while (*p) {
-    if (*p == '\n') {
-      if (hwndMain != NULL /*!!?*/) {
-        *q++ = '\r';
-        *q++ = *p++;
-      } else {
-	*q++ = ' ';
-        p++;
-      }
-    } else {
-      *q++ = *p++;
-    }
-  }
-  *q = NULLCHAR;
   
-  if (hwndMain == NULL) {
-    MessageBox(NULL, errorMessage, "Error", MB_OK|MB_ICONEXCLAMATION);
-  } else {
-    lpProc = MakeProcInstance((FARPROC)ErrorDialog, hInst);
-    CreateDialog(hInst, MAKEINTRESOURCE(DLG_Error),
-      hwndMain, (DLGPROC)lpProc);
-    FreeProcInstance(lpProc);
-  }
+  ErrorPopUp("Error", buf);
 }
 
 
@@ -6351,7 +6369,7 @@ DisplayMoveError(char *str)
   ClearHighlights();
   DrawPosition(FALSE, NULL);
   if (appData.popupMoveErrors) {
-    DisplayError(str, 0);
+    ErrorPopUp("Error", str);
   } else {
     DisplayMessage(str, "");
     moveErrorMessageUp = TRUE;
@@ -6397,6 +6415,13 @@ VOID
 DisplayInformation(char *str)
 {
   (void) MessageBox(hwndMain, str, "Information", MB_OK|MB_ICONINFORMATION);
+}
+
+
+VOID
+DisplayNote(char *str)
+{
+  ErrorPopUp("Note", str);
 }
 
 

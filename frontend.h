@@ -73,6 +73,7 @@ void DisplayMoveError P((String message));
 void DisplayFatalError P((String message, int error, int status));
 
 void DisplayInformation P((String message));
+void DisplayNote P((String message));
 void AskQuestion P((String title, String question, String replyPrefix,
 		    ProcRef pr));
 void DisplayIcsInteractionTitle P((String title));

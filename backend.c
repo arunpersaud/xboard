@@ -3907,7 +3907,7 @@ HandleMachineMove(message, cps)
      * Look for communication commands
      */
     if (!strncmp(message, "telluser ", 9)) {
-	DisplayInformation(message + 9);
+	DisplayNote(message + 9);
 	return;
     }
     if (!strncmp(message, "tellusererror ", 14)) {
@@ -3921,7 +3921,7 @@ HandleMachineMove(message, cps)
 	  SendToICS(buf1);
 	}
       } else {
-	DisplayInformation(message + 13);
+	DisplayNote(message + 13);
       }
       return;
     }
@@ -3941,7 +3941,7 @@ HandleMachineMove(message, cps)
 	  SendToICS(buf1);
 	}
       } else {
-	DisplayInformation(message + 8);
+	DisplayNote(message + 8);
       }
       return;
     }

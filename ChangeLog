@@ -1,5 +1,13 @@
 ChangeLog for XBoard/WinBoard
 
+* 11/5/2003: When a chess engine sends a "telluser" command (including
+the cases where "tellall" or "tellopponent" acts like telluser), the
+information now goes into a nonmodel popup that is automatically
+dismissed when the user clicks anywhere on the board.  This fix is
+more significant on WinBoard, where formerly you got a fully modal
+dialog that had to be dismissed by clicking on OK before anything else
+could happen.  The bug was issue #406 in the ToDo file.
+
 * 11/1/2003: Removed email addresses from this file to reduce spam
 load, as it gets linked to from the Web.
 

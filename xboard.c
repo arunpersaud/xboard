@@ -6821,6 +6821,13 @@ void DisplayInformation(message)
     ErrorPopUp("Information", message, TRUE);
 }
 
+void DisplayNote(message)
+     String message;
+{
+    ErrorPopDown();
+    ErrorPopUp("Note", message, FALSE);
+}
+
 static int
 NullXErrorCheck(dpy, error_event)
      Display *dpy;
