@@ -40,19 +40,19 @@ LIBS = @X_LIBS@ @XAW_LIBS@ @PRE_XMULIB@ -lXmu @POST_XMULIB@ -lXt -lXext \
 NROFF = @NROFF@
 NROFFFLAGS = @NROFFFLAGS@
 
-DISTSOURCE = COPYING COPYRIGHT ChangeLog ChangeLog.2 FAQ FAQ.html \
-	INSTALL Makefile.in READ_ME ToDo backend.c backend.h \
-	backendz.h bitmaps bitmaps.xchess childio.c childio.h cmail.in \
-	cmail.man common.h config.guess config.sub \
-	configure configure.in engine-intf.html frontend.h gamelist.c \
-	ics-parsing.txt install-sh kk13.pgn lists.c \
-	lists.h mkinstalldirs moves.c moves.h parser.h parser.l pgntags.c \
-	pxboard xboard.c xboard.h xboard.man xedittags.c xedittags.h \
-	xgamelist.c xgamelist.h xhistory.c xhistory.h acconfig.h config.h.in \
-	xboard.texinfo.in xboard.texi gpl.texinfo zic2xpm.c zic2xpm.man \
-	pixmaps sounds xboard.ps bitmaps.unused winboard
+DISTSOURCE = acconfig.h AUTHORS backend.c backend.h backendz.h bitmaps \
+  ChangeLog ChangeLog.2 childio.c childio.h cmail.in \
+  common.h config.guess config.h.in config.sub configure configure.in \
+  COPYING COPYRIGHT engine-intf.html FAQ.html frontend.h gamelist.c \
+  gpl.texinfo ics-parsing.txt INSTALL install-sh lists.c lists.h \
+  Makefile.in mkinstalldirs moves.c moves.h parser.h parser.l \
+  pgntags.c pixmaps pxboard READ_ME shiphtml sounds ToDo winboard \
+  xboard.c xboard.h xboard.texi xboard.texinfo.in \
+  xedittags.c xedittags.h xgamelist.c xgamelist.h xhistory.c \
+  xhistory.h zic2xpm.c zic2xpm.man zippy.c zippy.h zippy.lines \
+  zippy.README
 
-ZIPPYSOURCE = zippy.README zippy.c zippy.h zippy.lines
+PSEUDOSOURCE = parser.c xboard.man xboard.info FAQ
 
 DISTDIR = @PRODUCT@-@VERSION@.@PATCHLEVEL@
 
@@ -61,18 +61,17 @@ XBOARDOBJ = parser.o xboard.o backend.o moves.o childio.o gamelist.o \
 
 ### Targets required by GNU standards #######################################
 
-all: xboard zic2xpm xboard.doc cmail.doc zic2xpm.doc
+default: xboard zic2xpm xboard.txt zic2xpm.txt
 
-more: all pseudo-source info FAQ html dvi ps
+all: default pseudosource info FAQ html dvi ps
 
-install: installdirs xboard zic2xpm cmail pxboard xboard.man cmail.man \
+install: installdirs xboard zic2xpm cmail pxboard xboard.man \
 		zic2xpm.man
 	$(INSTALL_PROGRAM) -s xboard $(bindir)/xboard
 	$(INSTALL_PROGRAM) -s zic2xpm $(bindir)/zic2xpm
 	$(INSTALL_PROGRAM) cmail $(bindir)/cmail
 	$(INSTALL_PROGRAM) $(srcdir)/pxboard $(bindir)/pxboard
 	$(INSTALL_DATA) $(srcdir)/xboard.man $(man6dir)/xboard$(man6ext)
-	$(INSTALL_DATA) $(srcdir)/cmail.man $(man6dir)/cmail$(man6ext)
 	$(INSTALL_DATA) $(srcdir)/zic2xpm.man $(man6dir)/zic2xpm$(man6ext)
 	$(INSTALL_DATA) xboard.info $(infodir)/xboard.info
 	-PATH=$$PATH:/sbin:/usr/sbin install-info \
@@ -91,7 +90,7 @@ uninstall:
 		$(infodir)/xboard.info $(infodir)/dir
 
 clean:
-	rm -f xboard zic2xpm *.o *.doc $(LEX_OUTPUT_ROOT).c
+	rm -f xboard zic2xpm *.o *.txt $(LEX_OUTPUT_ROOT).c
 	rm -f xboard_*.html xboard.aux* xboard.cp* xboard.dvi xboard.fn*
 	rm -f xboard.ky* xboard.log xboard.pg* xboard.toc xboard.tp*
 	rm -f xboard.vr* xboard.ps
@@ -106,7 +105,7 @@ mostlyclean: clean
 maintainer-clean: distclean
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
-	rm -f parser.c xboard.info FAQ
+	rm -f $(PSEUDOSOURCE)
 	cd winboard ; make -f cygwin.mak maintainer-clean
 
 TAGS:
@@ -135,38 +134,30 @@ xboard_toc.html: xboard.texinfo xboard.texi gpl.texinfo configure.in
 FAQ: FAQ.html
 	lynx -dump -nolist $(srcdir)/FAQ.html > FAQ
 
-nothinglocked:
-	@echo -n Testing that no RCS files are locked...
-	@test `rlog -L -R RCS/*,v | tee .locked | wc -l` = 0 || \
-		( echo 'ERROR - the following are locked: ' 2>&1 ;\
-		  cat .locked 2>&1 ;\
-		  false )
-	@echo OK
+pseudosource: $(PSEUDOSOURCE)
 
-pseudo-source: parser.c xboard.info FAQ
-
-dist: nothinglocked
+dist: distclean
+	(cd linux && make pseudosource && cp -a $(PSEUDOSOURCE) ..)
+	rm -rf $(DISTDIR)
 	mkdir $(DISTDIR)
-	rlog -h RCS/*,v | egrep '^RCS file:|head:' > RCS/$(DISTDIR).rcs
-	cp -r $(DISTSOURCE) $(ZIPPYSOURCE) $(DISTDIR)/
-	if echo $(DISTDIR) | grep -i beta ; then \
-	    cp -r READ_ME_FIRST $(DISTDIR)/ ; \
-	fi
-	cp parser.c xboard.info FAQ $(DISTDIR)/
+	cp -a $(DISTSOURCE) $(DISTDIR)/
+	cp -a $(PSEUDOSOURCE) $(DISTDIR)/
 	tar cvf - $(DISTDIR) | gzip > $(DISTDIR).tar.gz
+	rm -rf $(DISTDIR)
 
 check: all
 
 ### End targets required by GNU standards ###################################
 
 .SUFFIXES:
-.SUFFIXES: .c .o .man .doc
+.SUFFIXES: .c .o .man .txt
 
 .c.o:
 	$(CC) $(DEFINES) $(ALL_CFLAGS) -c $<
 
-.man.doc:
-	$(NROFF) $(NROFFFLAGS) $< > $*.doc
+.man.txt:
+	$(NROFF) $(NROFFFLAGS) $< | cat -s > $*.txt \
+		|| (rm -f $*.txt ; false)
 
 xboard: $(XBOARDOBJ)
 	$(CC) -o xboard $(ALL_LDFLAGS) $(XBOARDOBJ) $(LIBS)
@@ -180,6 +171,9 @@ parser.c: parser.l
 
 parser.o: parser.c
 
+xboard.man: xboard.texinfo xboard.texi copyright.texi gpl.texinfo
+	$(srcdir)/texi2man xboard.texinfo > xboard.man \
+		|| (rm -f xboard.man ; false)
 
 tidy:
 	rm -f ,* .,* .emacs_[0-9]* core a.out *~ *.BAK *.CKP .nfs*

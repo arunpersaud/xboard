@@ -1,0 +1,51 @@
+Copyright @copyright{} 1991 Digital Equipment Corporation, Maynard, Massachusetts.
+
+All Rights Reserved.
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Digital not be
+used in advertising or publicity pertaining to distribution of the
+software without specific, written prior permission.
+
+Digital disclaims all warranties with regard to this software, including
+all implied warranties of merchantability and fitness.  In no event shall
+Digital be liable for any special, indirect or consequential damages or
+any damages whatsoever resulting from loss of use, data or profits,
+whether in an action of contract, negligence or other tortious action,
+arising out of or in connection with the use or performance of this
+software.
+
+Enhancements copyright @copyright{} 1992-2003 Free Software Foundation, Inc.
+
+@format
+Published by the Free Software Foundation
+59 Temple Place - Suite 330
+Boston, MA 02111-1307 USA
+@end format
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through Tex and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled ``GNU General Public License,''
+is included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled ``GNU General Public License,''
+and this permission notice, may be included in translations approved by
+the Free Software Foundation instead of in the original English.

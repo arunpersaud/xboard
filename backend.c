@@ -116,7 +116,7 @@ typedef struct {
 
 /* Search stats from chessprogram */
 typedef struct {
-  char movelist[MSG_SIZ]; /* Last PV we were sent */
+  char movelist[2*MSG_SIZ]; /* Last PV we were sent */
   int depth;              /* Current search depth */
   int nr_moves;           /* Total nr of root moves */
   int moves_left;         /* Moves remaining to be searched */
@@ -4349,8 +4349,22 @@ HandleMachineMove(message, cps)
 		programStats.nodes = nodes;
 		programStats.time = time;
 		programStats.score = curscore;
-		strcpy(programStats.movelist, buf1);
 		programStats.got_only_move = 0;
+
+		/* Buffer overflow protection */
+		if (buf1[0] != NULLCHAR) {
+		    if (strlen(buf1) >= sizeof(programStats.movelist)
+			&& appData.debugMode) {
+			fprintf(debugFP,
+				"PV is too long; using the first %d bytes.\n",
+				sizeof(programStats.movelist) - 1);
+		    }
+		    strncpy(programStats.movelist, buf1,
+			    sizeof(programStats.movelist));
+		    buf1[sizeof(programStats.movelist) - 1] = NULLCHAR;
+		} else {
+		    sprintf(programStats.movelist, " no PV\n");
+		}
 
 		if (programStats.seen_stat) {
 		    programStats.ok_to_send = 1;

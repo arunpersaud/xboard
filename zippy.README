@@ -70,7 +70,7 @@ are at the bottom of this file.
 
 If you have problems building or running Zippy, see the rest of the
 xboard documentation: INSTALL documents the configure program, while
-READ_ME and xboard.man (or xboard.doc) document xboard itself, and
+READ_ME and xboard.man (or xboard.txt) document xboard itself, and
 WinBoard.hlp documents WinBoard.  FAQ answers some frequently asked
 questions.  The file engine-intf.html contains some information about
 the interface between xboard/WinBoard and GNU Chess (or other chess

@@ -1,5 +1,23 @@
 ChangeLog for XBoard/WinBoard
 
+* 11/16/2003: The xboard man page and info files are now built from a
+common set of texinfo source files, and the xboard man page now covers
+cmail as well.  Formerly, ever since the texinfo file was first
+contributed to the project, it was separate from the man page and the
+two files had to be updated in parallel, making for a maintenance
+nightmare.  To make combining the files possible, I took the Perl
+script "texi2man" from the GNU Units project and added support for a
+larger subset of the texinfo markup language.  I then carefully
+compared the old man page and old texinfo file to make sure the latest
+and clearest words survived into the new combined texinfo file.  It
+would be great to merge in WinBoard's help file too, but that's a
+larger project.  It would have to be heavily conditionalized to
+deal with differences in features between XBoard and WinBoard.
+
+* 11/15/2003: Cleaned up and applied a small patch from Daniel
+Mehrmann, to stop overly long PVs in thinking output from causing a
+buffer overflow crash in backend.c.
+	
 * 11/5/2003: When a chess engine sends a "telluser" command (including
 the cases where "tellall" or "tellopponent" acts like telluser), the
 information now goes into a nonmodel popup that is automatically
@@ -18,7 +36,7 @@ project in the new combined directory structure.
 
 * Added woodthunk.wav sound contributed by Robert Jurjevic.
 	
-* Applied a security fix to pxboard, from Martin Maeok.
+* Applied a small security fix to pxboard, from Martin Maeok.
 
 * Fixed a bug in the game list dialog.  The change in 4.2.6 to opening
 games in text mode (meant to avoid getting extra \r's into comments)
