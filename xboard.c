@@ -1147,6 +1147,10 @@ XtResource clientResources[] = {
     { "showButtonBar", "showButtonBar", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, showButtonBar),
 	XtRImmediate, (XtPointer) True },
+	/* icsEngineAnalyze */
+    {"icsEngineAnalyze", "icsEngineAnalyze", XtRBoolean,
+       sizeof(Boolean), XtOffset(AppDataPtr, icsEngineAnalyze),
+       XtRImmediate, (XtPointer) False },
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -2465,9 +2469,6 @@ XBoard square size (hint): %d\n\
 	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Test Legality"),
 		    args, 1);
     }
-
-    /* icsEngineAnalyze - default init */
-    appData.icsEngineAnalyze = FALSE;
 
     /*
      * Create an icon.
