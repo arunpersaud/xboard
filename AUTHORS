@@ -1,0 +1,122 @@
+Contributions of xboard and WinBoard authors by file
+$Id$
+
+0. Files covered
+
+The first group are included in the xboard distribution.  The second
+group are included in the WinBoard source distribution but not in the
+xboard distribution.  All are part of the joint xboard/WinBoard source
+base and are covered by the same copyrights and licensing terms.
+
+FAQ.html
+backend.c
+backend.h
+backendz.h
+bitmaps
+childio.c
+childio.h
+cmail.in
+cmail.man
+comment.in
+common.h
+config.h.in
+configure.in
+engine-intf.txt
+frontend.h
+gamelist.c
+ics-parsing.txt
+lists.c
+lists.h
+moves.c
+moves.h
+parser.h
+parser.l
+pgntags.c
+xboard.c
+xboard.h
+xboard.man
+xboard.texi
+xedittags.c
+xedittags.h
+xgamelist.c
+xgamelist.h
+zic2xpm.c
+zic2xpm.man
+zippy.README
+zippy.c
+zippy.h
+
+winboard.rtf (compiles to winboard.hlp)
+config.h
+defaults.h
+resource.h
+wedittags.c
+wedittags.h
+wgamelist.c
+wgamelist.h
+winboard.c
+winboard.h
+winboard.rc
+
+bitmaps/*
+bitmaps.xchess/*
+
+1. Wayne Christopher
+
+Wrote from scratch (I believe) bitmaps.xchess/*80*.bm.  Other bitmaps
+in the bitmaps.xchess directory were derived from these by shrinking
+and some hand-tuning.  By default these bitmaps are no longer used.
+Their copyright status is unclear.
+
+2. Chris Sears and Dan Sears
+
+Wrote from scratch parser.l, xboard.c, xboard.h, xboard.man.  Parts
+(sometimes small) of these files were later moved by Tim Mann to
+backend.c, backend.h, childio.c, common.h, frontend.h, and parser.h.
+
+Chris and Dan's original work is copyrighted by Digital Equipment
+Corporation with licensing terms similar to what the X Consortium uses
+(see the file COPYRIGHT).  All the work listed below is copyrighted by
+the Free Software Foundation and covered by the GPL (see the files
+COPYRIGHT and COPYING).
+
+3. Tim Mann <tim@tim-mann.org>
+
+Wrote from scratch FAQ.html, backendz.h, childio.h, comment.in,
+config.h.in, configure.in, engine-intf.txt, ics-parsing.txt, moves.c,
+moves.h, pgntags.c (split from backend.c by Jochen Wiedmann),
+xedittags.c, xedittags.h, xgamelist.c, xgamelist.h, zippy.README,
+zippy.c, zippy.h, winboard.rtf, config.h, defaults.h, resource.h,
+wedittags.c, wedittags.h, wgamelist.c, wgamelist.h, winboard.c,
+winboard.h, winboard.rc.
+
+Major additions and changes to nearly all other files listed in
+section 0.
+
+4. John Chanak
+
+Addition to xboard.c, mostly later moved into backend.c.
+
+5. Evan Welsh <Evan.Welsh@msdw.com>
+
+Wrote from scratch cmail.in and cmail.man.  Additions to backend.c and
+xboard.c.
+
+6. Elmar Bartel <bartel@informatik.tu-muenchen.de>
+
+Wrote from scratch the Metafont code from which bitmaps/* were
+generated.  The Metafont code itself is not included in the package.
+
+7. Jochen Wiedmann
+
+Wrote from scratch gamelist.c, lists.c, lists.h.  Wrote xboard.texi,
+mostly based on xboard.man and cmail.man.  Minor additions to backend.c.
+
+8. Frank McIngvale <frankm@hiwaay.net>
+
+Wrote from scratch zic2xpm.c and zic2xpm.man.  Additions to backend.c,
+xboard.c, and xboard.man.
+
+9. Hugh Fisher <Hugh.Fisher@cs.anu.edu.au>
+
+Additions to backend.c and xboard.c.
