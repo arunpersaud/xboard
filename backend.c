@@ -4456,7 +4456,7 @@ HandleMachineMove(message, cps)
 			 ToUpper(cps->twoMachinesColor[0]) : ' '),
 			((double) curscore) / 100.0,
 			prefixHint ? lastHint : "",
-			prefixHint ? " " : "", buf1);
+			prefixHint ? " " : "", programStats.movelist);
 
 		if (currentMove == forwardMostMove || gameMode == AnalyzeMode
 			|| gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
