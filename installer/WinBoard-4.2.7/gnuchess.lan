@@ -1,0 +1,690 @@
+001:eng:{ pnbrqk}
+001:ger:{ bsltdk}
+001:swe:{ bsltdk}
+002:eng:{ PNBRQK}
+002:ger:{ BSLTDK}
+002:swe:{ BSLTDK}
+003:eng:{abcdefgh}
+003:ger:{abcdefgh}
+003:swe:{abcdefgh}
+004:eng:{12345678}
+004:ger:{12345678}
+004:swe:{12345678}
+005:eng:{o-o}
+005:ger:{o-o}
+005:swe:{o-o}
+006:eng:{o-o-o}
+006:ger:{o-o-o}
+006:swe:{o-o-o}
+007:eng:{0-0}
+007:ger:{0-0}
+007:swe:{0-0}
+008:eng:{0-0-0}
+008:ger:{0-0-0}
+008:swe:{0-0-0}
+009:eng:{wWbB}
+009:ger:{wWsS}
+009:swe:{vVsS}
+010:eng:{       score  depth   nodes  time         }
+010:ger:{       Bewert Tiefe   Posit  Zeit         }
+010:swe:{       eval   djup    noder  tid         }
+011:eng:{       score  depth   nodes  time\n}
+011:ger:{       Bewert Tiefe   Posit  Zeit\n}
+011:swe:{       eval   djup    noder  tid\n}
+012:eng:{     }
+012:ger:{     }
+012:swe:{     }
+013:eng:{   }
+013:ger:{   }
+013:swe:{   }
+014:eng:{  %s\n}
+014:ger:{  %s\n}
+014:swe:{  %s\n}
+015:eng:{  a    b    c    d    e    f    g    h}
+015:ger:{  a    b    c    d    e    f    g    h}
+015:swe:{  a    b    c    d    e    f    g    h}
+016:eng:{  h    g    f    e    d    c    b    a}
+016:ger:{  h    g    f    e    d    c    b    a}
+016:swe:{  h    g    f    e    d    c    b    a}
+017:eng:{ -}
+017:ger:{ -}
+017:swe:{ -}
+018:eng:{nocache}
+018:ger:{nocache}
+018:swe:{nocache}
+019:eng:{nopost}
+019:ger:{nohaupt}
+019:swe:{novariant}
+020:eng:{nott}
+020:ger:{nott}
+020:swe:{nott}
+021:eng:{noft}
+021:ger:{noft}
+021:swe:{noft}
+022:eng:{bk}
+022:ger:{bk}
+022:swe:{bk}
+023:eng:{ }
+023:ger:{ }
+023:swe:{ }
+024:eng:{ }
+024:ger:{ }
+024:swe:{ }
+025:eng:{ }
+025:ger:{ }
+025:swe:{ }
+026:eng:{ }
+026:ger:{ }
+026:swe:{ }
+027:eng:{ }
+027:ger:{ }
+027:swe:{ }
+028:eng:{#   Clear board\n}
+028:ger:{#   Loesche Brett\n}
+028:swe:{#   Rensa braedet\n}
+029:eng:{.   Exit to main\n}
+029:ger:{.   Zurueck ins Spiel\n}
+029:swe:{.   Tillbaka till spelet\n}
+030:eng:{/usr/games/lib/gnuchess.book}
+030:ger:{/usr/games/lib/gnuchess.book}
+030:swe:{/usr/games/lib/gnuchess.book}
+031:eng:{Abort? }
+031:ger:{Abbruch? }
+031:swe:{Avbryta? }
+032:eng:{Ambiguous Move!}
+032:ger:{Zug nicht eindeutig!}
+032:swe:{Tvetydigt drag!}
+033:eng:{Awindow}
+033:ger:{Awindow}
+033:swe:{Awindow}
+034:eng:{BAwindow= }
+034:ger:{BAwindow= }
+034:swe:{BAwindow= }
+035:eng:{BBwindow= }
+035:ger:{BBwindow= }
+035:swe:{BBwindow= }
+036:eng:{Beep:     %-12s Transposition file: %s\n}
+036:ger:{Beep:     %-12s Transposition file: %s\n}
+036:swe:{Beep:     %-12s Transposition file: %s\n}
+037:eng:{Black %s White %s %d eps %d\n}
+037:ger:{Schwarz %s Weiss %s %d eps %d\n}
+037:swe:{Svart %s Vit %s %d\n}
+038:eng:{Bwindow: }
+038:ger:{Bwindow: }
+038:swe:{Bwindow: }
+039:eng:{Bwindow}
+039:ger:{Bwindow}
+039:swe:{Bwindow}
+040:eng:{CHESS command summary\n}
+040:ger:{CHESS Befehlsuebersicht\n}
+040:swe:{CHESS kommandon\n}
+041:eng:{CHESS}
+041:ger:{CHESS}
+041:swe:{CHESS}
+042:eng:{Castled White %s Black %s\n}
+042:ger:{Rochade Weiss %s Schwarz %s\n}
+042:swe:{Vit Rockad %s Svart %s\n}
+043:eng:{Chess\n}
+043:ger:{Schach\n}
+043:swe:{Schack\n}
+044:eng:{Computer mates!}
+044:ger:{Computer setzt matt!}
+044:swe:{Datorn mattar!}
+045:eng:{Computer will soon mate!}
+045:ger:{Computer setzt bald matt!}
+045:swe:{Datorn mattar snart!}
+046:eng:{Computer: %-12s Opponent:            %s\n}
+046:ger:{Computer: %-12s Gegner:            %s\n}
+046:swe:{Datorn: %-12s Motstaandare:            %s\n}
+047:eng:{Computer: %s}
+047:ger:{Computer: %s}
+047:swe:{Datorn: %s}
+048:eng:{Could not open file}
+048:ger:{Konnte File nicht oeffnen}
+048:swe:{Kunde inte oeppna filen}
+049:eng:{Counting transposition file entries, wait!\n}
+049:ger:{Zaehle transposition File Eintraege, warten!\n}
+049:swe:{Raeknar posterna i transpositionsfilen, vaenta!\n}
+050:eng:{Create failed for %s\n}
+050:ger:{Erzeugung misslang wegen %s\n}
+050:swe:{Skapa misslickades foer %s\n}
+051:eng:{Depth:    %-12d Response time:       %d sec\n}
+051:ger:{Tiefe:    %-12d Antwortzeit:         %d Sek\n}
+051:swe:{Djup:     %-12d Svarstid:            %d sek\n}
+052:eng:{Depth: %d}
+052:ger:{Tiefe: %d}
+052:swe:{Djup: %d}
+053:eng:{Depth= %d%c }
+053:ger:{Tiefe= %d%c }
+053:swe:{Djup= %d%c }
+054:eng:{Draw %s\n}
+054:ger:{Zug %s\n}
+054:swe:{Drag %s\n}
+055:eng:{DrawPiece:  color[sq] err}
+055:ger:{DrawPiece:  color[sq] err}
+055:swe:{DrawPiece:  color[sq] err}
+056:eng:{Drawn game! %s}
+056:ger:{Spiel unentschieden! %s}
+056:swe:{Remi! %s}
+057:eng:{Drawn game!\n}
+057:ger:{Spiel unentschieden!\n}
+057:swe:{Remi!\n}
+058:eng:{Drawn game!}
+058:ger:{Spiel unentschieden!}
+058:swe:{Remi!}
+059:eng:{Easy mode: %s}
+059:ger:{Leichter Mode: %s}
+059:swe:{Laett: %s}
+060:eng:{Editing: %s}
+060:ger:{Editieren: %s}
+060:swe:{Editering: %s}
+061:eng:{Enter [moves] minutes[:sec] [increment][+]: }
+061:ger:{Eingabe [Zuege] Minuten[:Sek] [Inkrement][+]: }
+061:swe:{Ange #drag #minuter: }
+062:eng:{Enter Level: }
+062:ger:{Eingabe Level: }
+062:swe:{Ange Nivaa: }
+063:eng:{Enter file name: }
+063:ger:{Eingabe Filename: }
+063:swe:{Ange Filnamn: }
+064:eng:{Enter piece & location: }
+064:ger:{Eingabe Figur & Ort: }
+064:swe:{Ange pjaes & ruta: }
+065:eng:{Enter piece: }
+065:ger:{Eingabe Figur: }
+065:swe:{Ange pjaes: }
+066:eng:{Filling transposition file, wait!\n}
+066:ger:{Erzeuge Transposition File, warten!\n}
+066:swe:{Fyller transpositionsfilen, vaenta!\n}
+067:eng:{GNU Chess display (MS-DOS, Mar 90)}
+067:ger:{GNU Schach display (MS-DOS, Mar 90)}
+067:swe:{GNU Schack display (MS-DOS, Mar 90)}
+068:eng:{GNU Chess display (Nov 89)}
+068:ger:{GNU Schach display (Nov 89)}
+068:swe:{GNU Schack display (Nov 89)}
+069:eng:{GNU Chess}
+069:ger:{GNU Schach}
+069:swe:{GNU Schack}
+070:eng:{Game saved}
+070:ger:{Spiel abgespeichert}
+070:swe:{Partiet sparat}
+071:eng:{Hin/Hout/Tcol/Coll/Fin/Fout = %ld/%ld/%ld/%ld/%ld/%ld\n}
+071:ger:{Hin/Hout/Tcol/Coll/Fin/Fout = %ld/%ld/%ld/%ld/%ld/%ld\n}
+071:swe:{Hin/Hout/Tcol/Coll/Fin/Fout = %ld/%ld/%ld/%ld/%ld/%ld\n}
+072:eng:{Hint: %s\n}
+072:ger:{Hinweis: %s\n}
+072:swe:{Foerslag: %s\n}
+073:eng:{Hit <RET> to return: }
+073:ger:{Druecke <RET> fuer weiter: }
+073:swe:{Tillbaks med <RET>: }
+074:eng:{Human}
+074:ger:{Mensch  }
+074:swe:{Maenniska  }
+075:eng:{Illegal move (no matching move)%s\n}
+075:ger:{ungueltiger Zug (kein passender Zug)%s\n}
+075:swe:{Felaktigt drag (inget matchande drag)%s\n}
+076:eng:{Illegal move (no matching move)}
+076:ger:{ungueltiger Zug (kein passender Zug)}
+076:swe:{Felaktigt drag (inget matchande drag)}
+077:eng:{Illegal move..(in check)}
+077:ger:{ungueltiger Zug..(wird geprueft)}
+077:swe:{Otillaatet drag..(i schack)}
+078:eng:{Illegal move\n}
+078:ger:{ungueltiger Zug\n}
+078:swe:{Otillaatet drag\n}
+079:eng:{Level: %ld}
+079:ger:{Level: %ld}
+079:swe:{Level: %ld}
+080:eng:{Max Moves}
+080:ger:{Max Zuege}
+080:swe:{Max Drag}
+081:eng:{Max Tree= %5d}
+081:ger:{Max Verzw= %5d}
+081:swe:{Max Traed= %5d}
+082:eng:{MoveLimit= }
+082:ger:{Zug Limit= }
+082:swe:{Draggraens= }
+083:eng:{My move is: %s\n}
+083:ger:{Mein Zug ist: %s\n}
+083:swe:{Mitt drag aer: %s\n}
+084:eng:{My move is: %s}
+084:ger:{Mein Zug ist: %s}
+084:swe:{Mitt drag aer: %s}
+085:eng:{Testing Eval Speed}
+085:ger:{Teste Auswert.geschw.}
+085:swe:{Testar Evalueringen}
+086:eng:{Nf3       move knight to f3       cache      turn %s\n}
+086:ger:{Lf3       ziehe Laeufer nach f3   cache      schalte %s\n}
+086:swe:{Lf3       dra loeparen till f3    pip       tur %s\n}
+087:eng:{No moves}
+087:ger:{keine Zuege}
+087:swe:{Inga drag}
+088:eng:{No pieces}
+088:ger:{keine Figur}
+088:swe:{Inga pjaeser}
+089:eng:{Gen %ld Node %ld Tree %d Eval %ld Rate %ld EC %d/%d RS hi %ld lo %ld \n}
+089:ger:{Zug %ld Posit %ld Verz %d Eval %ld Rate %ld EC %d/%d RS hi %ld lo %ld \n}
+089:swe:{Drag %ld Nod %ld Traed %d Eval %ld Rate %ld EC %d/%d RS hi %ld lo %ld \n}
+090:eng:{Nodes= %8ld, Nodes/Sec= %5ld}
+090:ger:{Posit= %8ld, Posit/Sek= %5ld}
+090:swe:{Noder= %8ld, Noder/Sek= %5ld}
+091:eng:{Nodes= %ld Nodes/sec= %ld\n}
+091:ger:{Posit= %ld Posit/Sek= %ld\n}
+091:swe:{Noder= %ld Noder/Sek= %ld\n}
+092:eng:{OFF}
+092:ger:{AUS}
+092:swe:{AV}
+093:eng:{ON}
+093:ger:{EIN}
+093:swe:{PAA}
+094:eng:{Operator time(hundredths)= }
+094:ger:{Operator Zeit(hunderdstel)= }
+094:swe:{Operatoertid(hundradelar)= }
+095:eng:{Opponent mates!}
+095:ger:{Gegner setzt matt!}
+095:swe:{Motstaandaren mattar!}
+096:eng:{Opponent will soon mate!}
+096:ger:{Gegner setzt bald matt!}
+096:swe:{Motstaandaren mattar snart!}
+097:eng:{Opponent: %s}
+097:ger:{Gegner: %s}
+097:swe:{Motstaandare: %s}
+098:eng:{Playing without hashfile}
+098:ger:{Spiel ohne Hashfile}
+098:swe:{Spelar utan hashfil}
+099:eng:{Random:   %-12s Easy mode:           %s\n}
+099:ger:{Random:   %-12s Leichter Mode:           %s\n}
+099:swe:{Random:   %-12s Laett Mode:           %s\n}
+100:eng:{Random: %s}
+100:ger:{Random: %s}
+100:swe:{Random: %s}
+101:eng:{Repetition}
+101:ger:{Wiederholung}
+101:swe:{Upprepning}
+102:eng:{Gnuchess version %s patchlevel %s\n}
+102:ger:{Gnuchess Version %s Revision %s\n}
+102:swe:{Gnuchess version %s revision %s\n}
+103:eng:{S%d m%d ps%d m%d ps%d}
+103:ger:{S%d m%d ps%d m%d ps%d}
+103:swe:{S%d m%d ps%d m%d ps%d}
+104:eng:{Score= %d}
+104:ger:{Bewertung= %d}
+104:swe:{Vaerdering= %d}
+105:eng:{Score}
+105:ger:{Bewertung}
+105:swe:{Vaerdering}
+106:eng:{Setup successful\n}
+106:ger:{Aufstellung erfolgreich\n}
+106:swe:{Upstaellning lyckad\n}
+107:eng:{Testing CaptureList Speed}
+107:ger:{Test    Schlagliste Geschw}
+107:swe:{Testar  Slaglistans Hastighet}
+108:eng:{Testing MoveList Speed}
+108:ger:{Test    Zugliste Geschw}
+108:swe:{Testar  Draglistans Hastighet}
+109:eng:{The file contains %d entries out of max %d\n}
+109:ger:{Das File enthaelt %d Eintraege von max. %d\n}
+109:swe:{Filen innehaaller %d poster av max. %d\n}
+110:eng:{Time Control %s %d moves in %d sec inc %d depth %d\n}
+110:ger:{Zeitkontrolle %s %d Zuege in %d Sek Inc %d Tiefe %d\n}
+110:swe:{Tidskontroll %s %d drag %d sek %d ink %d djup\n}
+111:eng:{TimeControl %d Operator Time %d\n}
+111:ger:{Zeitkontrolle %d Operator Zeit %d\n}
+111:swe:{Tidskontroll %d Operatoerstid %d\n}
+112:eng:{Transposition table: %s}
+112:ger:{Transposition Tabelle: %s}
+112:swe:{Transpositionstabell: %s}
+113:eng:{Usage: Gnuchess [-a] [-t] [-c size] [-s savefile][-l listfile] [-x xwndw]\n}
+113:ger:{Aufruf: Gnuchess [-a] [-t] [-c size] [-s savefile][-l listfile] [-x xwndw]\n}
+113:swe:{Anvaend: Gnuchess\n [-L <eng, ger, swe>]\n [<+,->a] Laett\n [-b <bokfil>]\n [-B <binaer bokfil>]\n [<+,->h] Hashtabell\n [-s <Sparfil>]\n [-l <Listfil>]\n [-S <bokstorleken>]\n [-P <max bokdjup (halvdrag)>]\n [-r <rehash>]\n [-T <antal poster i hashtabellen>]\n [-t] testa hashfilen\n [-c <antal poster> skapa hashfilen x=1..23 betyder 2**x]\n [-x <xwin>] paaverkar evalueringen\n [-v] vilken version\n}
+114:eng:{WAwindow= }
+114:ger:{WAwindow= }
+114:swe:{WAwindow= }
+115:eng:{WBwindow= }
+115:ger:{WBwindow= }
+115:swe:{WBwindow= }
+116:eng:{White %d:%02d  Black %d:%02d\n}
+116:ger:{Weiss %d:%02d  Schwarz %d:%02d\n}
+116:swe:{Vit %d:%02d  Svart %d:%02d\n}
+117:eng:{White Clock %ld Moves %ld\nBlack Clock %d Moves %d\n\n}
+117:ger:{Weiss Uhr %ld Zuege %ld\nSchwarz Uhr %d Zuege %d\n\n}
+117:swe:{Vit klocka %ld Drag %ld\nSvart klocka %d drag %d\n\n}
+118:eng:{White}
+118:ger:{Weiss}
+118:swe:{Vit}
+119:eng:{Black}
+119:ger:{Schwarz}
+119:swe:{Svart}
+120:eng:{Wwindow: }
+120:ger:{Wwindow: }
+120:swe:{Wwindow: }
+121:eng:{Your move is? }
+121:ger:{Ihr Zug ist? }
+121:swe:{Ditt drag? }
+122:eng:{\n                          }
+122:ger:{\n                          }
+122:swe:{\n                          }
+123:eng:{\nMove# %d    Target= %ld    Clock: %ld\n}
+123:ger:{\nZug# %d     Zeilzeit= %ld  Uhr: %ld\n}
+123:swe:{\nDrag# %d    Maal= %ld      Klocka: %ld\n}
+124:eng:{\nYour move is? }
+124:ger:{\nIhr Zug ist? }
+124:swe:{\nDitt drag? }
+125:eng:{\n\n}
+125:ger:{\n\n}
+125:swe:{\n\n}
+126:eng:{\nmove  score depth  nodes  time flags capture color\n}
+126:ger:{\nZug   BewertTiefe  Posit  Zeit flags capture Farbe\n}
+126:swe:{\ndrag  eval  djup   noder  tid  flags capture faerg\n}
+127:eng:{\n}
+127:ger:{\n}
+127:swe:{\n}
+128:eng:{a7a8q     promote pawn to queen   material  turn %s\n}
+128:ger:{a7a8d     wandle Bauer in Dame    material  schalte %s\n}
+128:swe:{a7a8d     pronoverar till dam     material  tur %s\n}
+129:eng:{alg}
+129:ger:{alg}
+129:swe:{alg}
+130:eng:{bd        redraw board            reverse   board display\n}
+130:ger:{br        zeichne Brett neu       drehe     drehe Brett\n}
+130:swe:{br        ritar om braedet        invertera braedesvisning\n}
+131:eng:{bd}
+131:ger:{br}
+131:swe:{br}
+132:eng:{beep}
+132:ger:{ton }
+132:swe:{pip }
+133:eng:{black}
+133:ger:{schwarz}
+133:swe:{svart}
+134:eng:{book}
+134:ger:{bibl}
+134:swe:{bok}
+135:eng:{both}
+135:ger:{beide}
+135:swe:{baada}
+136:eng:{c   Change sides\n}
+136:ger:{c   Wechsle Spieler\n}
+136:swe:{c   byt sida\n}
+137:eng:{chess.000}
+137:ger:{chess.000}
+137:swe:{chess.000}
+138:eng:{chess.lst.%d}
+138:ger:{chess.lst.%d}
+138:swe:{chess.lst.%d}
+139:eng:{computer mates!\n}
+139:ger:{Computer setzt matt!\n}
+139:swe:{datorn saetter matt!\n}
+140:eng:{computer will soon mate!\n}
+140:ger:{Computer setzt bald matt!\n}
+140:swe:{datorn saetter snart matt!\n}
+141:eng:{computer}
+141:ger:{Computer}
+141:swe:{datorn}
+142:eng:{contempt= }
+142:ger:{contempt= }
+142:swe:{contempt= }
+143:eng:{contempt}
+143:ger:{contempt}
+143:swe:{contempt}
+144:eng:{coords    show coords             rv        reverse video\n}
+144:ger:{Koord     bezeichne Felder        rv        Farbumkehr\n}
+144:swe:{koord     visa koordinater        rv        negativ bild\n}
+145:eng:{coords}
+145:ger:{Koord}
+145:swe:{koord}
+146:eng:{debuglevel= }
+146:ger:{debuglevel= }
+146:swe:{debuglevel= }
+147:eng:{debuglevel}
+147:ger:{debuglevel}
+147:swe:{debuglevel}
+148:eng:{debug}
+148:ger:{debug}
+148:swe:{debug}
+149:eng:{depth     set search depth        clock     set time control\n}
+149:ger:{tiefe     setze Suchtiefe         zeit      setze Zeitkontrolle\n}
+149:swe:{djup      saett soekdjup          tid       saett tidskontroll\n}
+150:eng:{depth= }
+150:ger:{Tiefe= }
+150:swe:{djup= }
+151:eng:{depth}
+151:ger:{tiefe}
+151:swe:{djup}
+152:eng:{easy}
+152:ger:{leicht}
+152:swe:{laett}
+153:eng:{edit      edit board              force     enter game moves\n}
+153:ger:{edit      editiere Brett          selbst    spiele .. beide Seiten\n} 
+153:swe:{edit      editera braedet         sjaelv    spela baada sidorna\n} 
+154:eng:{edit}
+154:ger:{edit}
+154:swe:{edit}
+155:eng:{enter piece & location: \n}
+155:ger:{Eingabe Figur & Position: \n}
+155:swe:{Ange pjaes & ruta: \n}
+156:eng:{first}
+156:ger:{first}
+156:swe:{first}
+157:eng:{force}
+157:ger:{selbst}
+157:swe:{sjaelv}
+158:eng:{g1f3      move from g1 to f3      quit      Exit Chess\n}
+158:ger:{g1f3      ziehe von g1 nach f3    ende      Verlasse Spiel\n}
+158:swe:{g1f3      flytta g1 till f3       sluta     Avsluta Chess\n}
+159:eng:{game file= }
+159:ger:{Spielfile= }
+159:swe:{sparfil= }
+160:eng:{get}
+160:ger:{hole}
+160:swe:{haemta}
+161:eng:{gnuchess 4p%s game\n}
+161:ger:{gnuchess 4p%s Spiel\n}
+161:swe:{gnuchess 4p%s parti\n}
+162:eng:{go}
+162:ger:{ziehe}
+162:swe:{dra}
+163:eng:{hashdepth= }
+163:ger:{Hashtiefe= }
+163:swe:{hashdjup= }
+164:eng:{hashdepth}
+164:ger:{Hashtiefe}
+164:swe:{hashdjup}
+165:eng:{hash}
+165:ger:{hash}
+165:swe:{hash}
+166:eng:{help}
+166:ger:{hilfe}
+166:swe:{hjaelp}
+167:eng:{hint      suggest a move         post      turn %s principle variation\n}
+167:ger:{hinw      schlage Zug vor        haupt     schalte Hauptvariante %s\n}
+167:swe:{tips      tipsa om drag          variant   visa huvudvariant %s\n}
+168:eng:{hint}
+168:ger:{hinw}
+168:swe:{tips}
+169:eng:{level}
+169:ger:{Level}
+169:swe:{level}
+170:eng:{list      game to chess.lst       book      turn %s used %d of %d\n}
+170:ger:{doku      mentiere in chess.lst   bibl      schalte %s benutzte %d von %d\n}
+170:swe:{lista     parti till chess.lst    bok       slaar %s anvaende %d av %d\n}
+171:eng:{list}
+171:ger:{doku}
+171:swe:{lista}
+172:eng:{new}
+172:ger:{neu}
+172:swe:{ny}
+173:eng:{o-o       castle king side        easy      turn %s\n}
+173:ger:{o-o       kurze Rochade           leicht    schalte %s\n}
+173:swe:{o-o       kort rockad             laett     saett %s\n}
+174:eng:{o-o-o     castle queen side       hash      turn %s\n}
+174:ger:{o-o-o     lange Rochade           hash      schalte %s\n}
+174:swe:{o-o-o     laang rockad            hash      slaar %s\n}
+175:eng:{opponent mates!\n}
+175:ger:{Gegner schlaegt Matt!\n}
+175:swe:{Motstaandaren saetter matt!\n}
+176:eng:{opponent will soon mate!\n}
+176:ger:{Gegner schlaegt bald Matt!\n}
+176:swe:{Motstaandaren mattar strax!\n}
+177:eng:{post      principle variation     hint      suggest a move\n}
+177:ger:{haupt     Hauptvariante           hinw      schlage Zug vor\n}
+177:swe:{variant   huvudvarianten          hinw      tipsa om ett drag\n}
+178:eng:{post}
+178:ger:{haupt}
+178:swe:{variant}
+179:eng:{p}
+179:ger:{p}
+179:swe:{p}
+180:eng:{quit}
+180:ger:{ende}
+180:swe:{sluta}
+181:eng:{random    randomize play          new       start new game\n}
+181:ger:{zufall    variableres Spiel       neu       Starte neues Spiel\n}
+181:swe:{slump     varierar spelet         ny        startar nytt spel\n}
+182:eng:{random}
+182:ger:{zufall}
+182:swe:{slump}
+183:eng:{rcptr}
+183:ger:{rcptr}
+183:swe:{rcptr}
+184:eng:{remove}
+184:ger:{zur}
+184:swe:{bort}
+185:eng:{reverse}
+185:ger:{drehe}
+185:swe:{invertera}
+186:eng:{rv}
+186:ger:{rv}
+186:swe:{rv}
+187:eng:{r}
+187:ger:{r}
+187:swe:{r}
+188:eng:{save      game to file            get       game from file\n}
+188:ger:{speich    Spiel in File           hole      Spiel aus File\n}
+188:swe:{spara     parti i fil             haemta    parti fraan fil\n}
+189:eng:{save}
+189:ger:{speich}
+189:swe:{spara}
+190:eng:{setup}
+190:ger:{setup}
+190:swe:{setup}
+191:eng:{set}
+191:ger:{set}
+191:swe:{set}
+192:eng:{shade     toggle shade black      stars     toggle stars\n}
+192:ger:{Schatt    aender Farbton schwarz  stern     Stern bei Schwarz\n}
+192:swe:{skugga    skuggning av svart      asterisk  Asterisker foer svart\n}
+193:eng:{stars}
+193:ger:{stern}
+193:swe:{stern}
+194:eng:{switch    sides with computer     both      computer match\n}
+194:ger:{wechs     ele Seite mit computer  beide     Computer spielt ..\n}
+194:swe:{byt       sida med datorn         baada     datorn spelar sjaelv\n}
+195:eng:{switch}
+195:ger:{wechs}
+195:swe:{byt}
+196:eng:{test}
+196:ger:{Test}
+196:swe:{test}
+197:eng:{time}
+197:ger:{zeit}
+197:swe:{tid}
+198:eng:{try }
+198:ger:{Versuch }
+198:swe:{proeva }
+199:eng:{ttable collision detected}
+199:ger:{ttable collision detected}
+199:swe:{ttable collision detected}
+200:eng:{undo      undo last ply           remove    take back a move\n}
+200:ger:{hzur      Halbzug zurueck         zur       nehme einen Zug zurueck\n}
+200:swe:{aengra    ta tillbaka halvdrag    tillbaka  ta tillbaka ett drag\n}
+201:eng:{undo}
+201:ger:{hzur}
+201:swe:{hzur}
+202:eng:{white     computer plays white    black     computer plays black\n}
+202:ger:{weiss     Computer nimmt Weiss    schwarz   Computer nimmt Schwarz\n}
+202:swe:{vit       datorn spelar vit       svart     datorn spelar svart\n}
+203:eng:{white}
+203:ger:{weiss}
+203:swe:{vit}
+204:eng:{w}
+204:ger:{w}
+204:swe:{w}
+205:eng:{xboard.position.read}
+205:ger:{xboard.position.read}
+205:swe:{xboard.position.read}
+206:eng:{xboard}
+206:ger:{xboard}
+206:swe:{xboard}
+207:eng:{xget}
+207:ger:{xget}
+207:swe:{xget}
+208:eng:{xwndw= }
+208:ger:{xwndw= }
+208:swe:{xwndw= }
+209:eng:{xwndw}
+209:ger:{xwndw}
+209:swe:{xwndw}
+210:eng:{yes}
+210:ger:{ja}
+210:swe:{ja}
+211:eng:{Illegal move in book %d %s %s}
+211:ger:{Unerlaubter Zug in Bibl. %d %s %s}
+211:swe:{Otillaatet drag i bok %d %s %s}
+212:eng:{Warning can't find book.}
+212:ger:{Warnung: kann Bibl. nicht finden.}
+212:swe:{Varning, kan inte hitta boken.}
+213:eng:{Book used %d of %d entries.}
+213:ger:{Bibl. benutzte %d von %d Eintraegen.}
+213:swe:{Boken anvaende %d av %d poster.}
+214:eng:{true}
+214:ger:{wahr}
+214:swe:{sant}
+215:eng:{false}
+215:ger:{falsch}
+215:swe:{falskt}
+216:eng:{exit}
+216:ger:{exit}
+216:swe:{exit}
+217:eng:{clock}
+217:ger:{Uhr}
+217:swe:{klocka}
+218:eng:{Computer}
+218:ger:{Computer}
+218:swe:{Computer}
+219:eng:{Open failure for file: %s}
+219:ger:{Fehler beim Oeffnen des files: %s}
+219:swe:{Fel vid filoeppning: %s}
+220:eng:{Time Control Error}
+220:ger:{Fehler Zeitkontrolle}
+220:swe:{Tidskontrollsfel}
+221:eng:{material}
+221:ger:{material}
+221:swe:{material}
+222:eng:{time %d %d\n}
+222:ger:{Zeit %d %d\n}
+222:swe:{tid %d %d}
+223:eng:{I have no idea\n}
+223:ger:{Ich habe keine Ahnung\n}
+223:swe:{Jag har inte en aning\n}
+224:eng:{Not Enough Material}
+224:ger:{Nicht genug Material}
+224:swe:{Inte nog med material}
+225:eng:{Illegal position}
+225:ger:{Unerlaubter position}
+225:swe:{otillaaten position}
+226:eng:{beep}
+226:ger:{beep}
+226:swe:{beep}
+227:eng:{gamein}
+227:ger:{gamein}
+227:swe:{gamein}
+228:eng:{otim}
+228:ger:{otim}
+228:swe:{otim}
+229:eng:{hard}
+229:ger:{hart}
+229:swe:{svaar}
+230:eng:{Time Control %s Game in %d sec inc %d sec depth %d\n}
+230:ger:{Zeitkontrolle %s Spiel in %d Sek Inc %d Sek Tiefe %d\n}
+230:swe:{Time Control %s Game in %d sec inc %d sec depth %d\n}

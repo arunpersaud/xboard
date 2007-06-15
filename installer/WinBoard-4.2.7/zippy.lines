@@ -1,0 +1,33 @@
+This is a sample zippy.lines file for xboard/WinBoard 4.0.4 or later.
+Text before the first caret, like this text, is a comment.
+^
+Here is the first saying.  Sayings are separated by caret characters,
+like the character that appears on the next line.
+^
+Here is the second saying.
+^
+Here is saying #3.  Note you don't need newlines before the caret characters.^
+Here is saying #4 -- note that it's okay for a saying
+to extend across more than one line.  The line breaks are ignored.
+^Saying #5: You don't need newlines after the caret characters either,
+but don't put two carets in a row.
+^
+Our sixth bit of wisdom is that you can use ASCII NUL characters
+(character code \000) instead of carets, but carets are easier to deal with
+in most text editors.  In version 4.0.3 and earlier, carets did not work;
+only NULs were allowed.
+^
+The seventh thing you should remember is that any saying more than 250
+characters long will not be used.  Therefore, because this saying is
+more than 250 characters long, it will never be used.  This is an
+extra sentence to make the saying more than 250 characters long so
+that the previous sentence will be true.
+^
+The eighth item to know is that when you are testing, you had better have 
+several valid sayings in your file; for various reasons, having too few 
+sayings can cause Zippy to get into an endless loop, or to be very slow.
+^
+As the ninth and final saying, let me add that you need a caret
+at the end of the file; any junk after the last caret is ignored.
+^
+

@@ -1,0 +1,348 @@
+gnuchess(6)                                                        gnuchess(6)
+
+
+
+NAME
+       gnuchess - Chess
+
+SYNOPSIS
+       gnuchess  [ [[-|+]a] [-A aging-rate] [-b bookfile] [-B binbookfile] [-C
+       cache-table-size] [-c] [[-|+]D ] [[-|+]E ]  [[-|+]e  ]  [[-|+]F  ]  [-H
+       hash-depth]  [[-|+]h  ]  [-L language] [-l listfile] [[-|+]N] [[-|+]p ]
+       [-P plys] [-r length] [-s savefile] [-S binbooksize] [-t] [-c hashfile-
+       size]  [-T  transition-table-size]  [[-|+]V] [-v] [-x] [-z search-fuzz]
+       arg1 arg2 ]
+
+DESCRIPTION
+       Gnuchess plays a game of chess against the user  or  it  plays  against
+       itself.
+
+       Gnuchess  is  an  updated version of the GNU chess playing program.  It
+       has a simple alpha-numeric board display, an IBM PC  compatible  inter-
+       face, or it can be compiled for use with the chesstool program on a SUN
+       workstation or with the xboard program under X-windows.  To invoke  the
+       program type:
+
+       gnuchess
+              - simple curses based version
+
+       gnuchessn
+              -  fancy  version using curses and inverse video on UNIX, or IBM
+              PC cursor controls and characters on MSDOS
+
+       gnuchessr
+              - ASCII based version
+
+       gnuchessc
+              - chesstool compatible version
+
+       gnuchessx
+              - xboard compatible version
+
+TIME CONTROLS
+       If one argument is given, it is the  search  time  per  move  in  [min-
+       utes:]seconds.  So gnuchess 30 will generate one move every 30 seconds,
+       while gnuchess 5:00 will generate one move every 5 minutes.
+
+       If two or more arguments are given, they will be used to set tournament
+       time  controls with the first argument of each pair being the number of
+       moves and the second being the total clock time  in  minutes[:seconds].
+       Thus,  entering  gnuchess  60  5 will set the clocks for 5 minutes (300
+       seconds) for the first 60 moves, and gnuchess 30 3:30 will allow 3 min-
+       utes and 30 seconds for 30 moves.
+
+       gnuchess  30 5 1 :30 will allow 5 minutes for the first 30 moves and 30
+       seconds for each move after that.  Up to 4 pairs  of  controls  may  be
+       specified.
+
+       If  no  argument is given the program will prompt the user for level of
+       play.
+
+       For use with chesstool or xboard, see the documentation on  those  pro-
+       grams.
+
+BOOK
+       At  startup  Gnuchess  reads the binbook file if it is present. It then
+       looks for a book file. If it is present it adds  its  contents  to  the
+       binbook  data.  If  the binbook file is writable a new combined binbook
+       file is written.
+
+       The book gnuchess.book consists of a sequence of openings.  An  opening
+       begins  with  a  line starting with a !  , the rest of the line is com-
+       ments.  Following this is a  series  of  moves  in  algebraic  notation
+       alternating white and black separated by white space. A move may have a
+       ?  after it indicating this move should never be made in this position.
+       Moves  are  stored  as position:move so transpositions between openings
+       can take place.
+
+HASHFILE
+       The hashfile if created should be  on  the  order  of  4  megabytes  or
+       gnuchess  -c  22.   This file contains positions and moves learned from
+       previous games.  If a hashfile is used the computer makes  use  of  the
+       experience it gained in past games. Tests run so far show that it plays
+       no worse with the hashfile than  without,  but  it  is  not  clear  yet
+       whether it provides a real advantage.
+
+LEGAL MOVES
+       Note:  Piece  letters  and legal castling notation is determined by the
+       language file.  What is specified here is the default English.
+
+       Once gnuchess is invoked, the program will display the board and prompt
+       the  user  for a move. To enter a move, use the notation e2e4 where the
+       first letter-number pair indicates the origination square and the  sec-
+       ond  letter-number  pair indicates the destination square.  An alterna-
+       tive is to use the notation nf3 where the first  letter  indicates  the
+       piece  type  (p,n,b,r,q,k).  To castle, type the origin and destination
+       squares of the king just as you would do for a regular move, or type o-
+       o  or  0-0  for kingside castling and o-o-o or 0-0-0 for queenside.  To
+       promote a pawn append the type of the new piece  to  the  move,  as  in
+       e7e8q or c7c8r.
+
+FUNCTION LETTERS
+       -L lang
+              Use  language  lang  from  the file gnuchess.lang.  If -L is not
+              specified it defaults to the language used in the first line  in
+              the file.  gnuchessr -L ger will use the german language.
+
+       -A aging-rate
+              Specify aging rate for hash table entries
+
+       [-]a   Do [do not] search on opponents time.
+
+       -b bookfile
+              Use bookfile for opening book.
+
+       -B binbookfile
+              Use binbookfile for binary opening book.
+
+       -C cache-size
+              Specify evaluation cache table size (in entries).
+
+       -D     Toggle DEEPNULL at runtime.
+
+       -E     Toggle flag.threat.
+
+       -e     Toggle flag.neweval to force evaluations instead of estimates
+
+       -F     Toggle flag.noscore
+
+       -H hash-depth
+              pecify depth in plys for hashing.
+
+       -S size
+              Size of binbookfile for memory based and GDX books. For creating
+              a binbookfile.
+
+       -P plylevels
+              Number of plys to include in the binbookfile. For  generating  a
+              binbookfile.
+
+       -p     Toggle flag.pvs
+
+       -c size
+              Create  a  new HASHFILE. File size is 2^size entries of approxi-
+              mately 65 bytes.
+
+       [-]h   Do [do not] use hashfile.
+
+       -l pathname
+              Pathname of the loadfile use with the get or xget.
+
+       -r length
+              Rehash length times in searching  entries for position in trans-
+              position table.
+
+       -s pathname
+              Pathname of the save file to use with the save command.
+
+       -t     Show statistics for HASHFILE
+
+       -T size
+              Set  the  transposition  table size to size entries. (minimum is
+              MINTTABLE)
+
+       -v     Show version and patchlevel.
+
+       -x value
+              Use value as the evaluation window xwndw.
+
+COMMANDS
+       In addition to legal moves, the following  commands  are  available  as
+       responses.  Note: command names are determined by the language file and
+       may vary with the implementation. This is default English.
+
+       alg -- allow algebraic input (not implemented)
+
+       Awindow -- change Alpha window (default score + 90)
+
+       Bwindow -- change Beta window (default score - 90)
+
+       beep -- causes the program to beep after each move.
+
+       bd -- updates the current board position on the display.
+
+       bk -- Print out all moves for this position  from  the  book  as:  move
+       response value
+
+       book -- turns off use of the opening library.
+
+       both -- causes the computer to play both sides of a chess game.
+
+       black -- causes the computer to take the black pieces.  If the computer
+       is to move first the go command must be given.
+
+       eco -- Print out opening information for this game - lists  ECO  #  and
+       variations
+
+       coords -- show coordinates on the display (visual only)
+
+       contempt -- allows the value of contempt to be modified.
+
+       debug  --   asks for a piece as color piece, as wb or bn, and shows its
+       calculated value on each square.
+
+       debuglevel --  sets level of debugging output if  compiled  with  debug
+       options.
+
+       depth  --  allows  the  user to change the search depth of the program.
+       The maximum depth is 29 ply.  Normally the depth is set to 29  and  the
+       computer terminates its search based on elapsed time rather than depth.
+       If depth is set to (say) 4 ply, the program will search until all moves
+       have  been examined to a depth of 4 ply (with extensions up to 11 addi-
+       tional ply for sequences of checks and captures).  If you set a maximum
+       time  per  move and also use the depth command, the search will stop at
+       the specified time or the specified depth, whichever comes first.
+
+       easy -- toggles easy mode (thinking on opponents time) on and off.  The
+       default  is  easy  mode  ON.  If easy mode is disabled, the keyboard is
+       polled for input every so often and when input is seen  the  search  is
+       terminated. It may also be terminated with a sigint.
+
+       edit -- allows the user to set up a board position.
+
+            # - command will clear the board.
+
+            c - toggle piece color.
+
+            .  - command will exit setup mode.
+
+       pb3 - place a pawn on b3
+
+       Pieces  are entered by typing a letter (p,n,b,r,q,k) for the piece fol-
+       lowed by the coordinate.
+
+       The usual warning about the language file applies.
+
+       exit -- exits gnuchess.
+
+       first -- tells the computer to move first.  Computer  begins  searching
+       for a move.  (same as "go").
+
+       force -- allows the user to enter moves for both sides. To get the pro-
+       gram to play after a sequence of moves has been entered use the 'white'
+       or 'black' command followed by 'go'.
+
+       gamein  --  toggles  game mode time control. Assumes the time specified
+       for time control is the time for a complete game. Input with the  level
+       command  should  be the game time and the expected number of moves in a
+       game.
+
+       get -- retrieves a game from disk.  The program will  prompt  the  user
+       for a file name.
+
+       go -- tells the computer to move first. Computer begins searching for a
+       move.  (same as "first").
+
+       hash -- use/don't use hashfile.
+
+       hard -- think on opponents time
+
+       hashdepth -- allows the user to change the minimum depth for using  the
+       hashfile  and  the number of moves from the begining of the game to use
+       it.
+
+       help -- displays a short description of the commands  and  the  current
+       status of options.
+
+       hint  -- causes the program to supply the user with its predicted move.
+
+       level -- allows the user to set time controls such as  60  moves  in  5
+       minutes  etc.   In  tournament  mode, the program will vary the time it
+       takes for each move depending on the situation.  If easy mode  is  dis-
+       abled  (using  the 'easy' command), the program will often respond with
+       its move immediately, saving time on its clock for use later on.
+
+       list -- writes the game moves and  some  statistics  on  search  depth,
+       nodes, and time to the file 'chess.lst'.
+
+       material  --  toggle material flag - draws on no pawns and both sides <
+       rook
+
+       Mwpawn, Mbpawn, Mwknight, Mbknight, Mwbishop,  Mbbishop  --  print  out
+       static position evaluation table
+
+       new -- starts a new game.
+
+       p  -- evaluates the board and shows the point score for each piece. The
+       total score for a position is the sum of these individual piece scores.
+
+       post  --  causes the program to display the principle variation and the
+       score during the search.  A score of 100 is  equivalent  to  a  1  pawn
+       advantage for the computer.
+
+       unpost -- turn off the post display.
+
+       quit -- exits the game.
+
+       random  -- causes the program to randomize its move selection slightly.
+
+       rcptr -- set recapture mode.
+
+       remove -- backout the last level for both sides. Equal to 2 undo's.
+
+       reverse -- causes the board display to be reversed.  That is, the white
+       pieces will now appear at the top of the board.
+
+       rv -- reverse board display.
+
+       setup  --  Compatibility  with  Unix chess and the nchesstool. Set up a
+       board position.  Eight lines of eight characters are used to setup  the
+       board.  a8-h8  is  the  first  line.  Black pieces are  represented  by
+       uppercase characters.
+
+       stars -- (gnuchessn only) add stars (*) to black pieces.
+
+       save -- saves a game to disk.  The program will prompt the user  for  a
+       file name.
+
+       switch  --  causes  the  program to switch places with the opponent and
+       begin searching.
+
+       test -- performs some speed tests for MoveList and CaptureList  genera-
+       tion, and ScorePosition position scoring for the current board.
+
+       time  otim  -- time set computers time remaining, intended for synchro-
+       nizing clocks among multiple  players.   --  otim  set  opponents  time
+       remaining, intended for synchronizing clocks among multiple players.
+
+       undo  --  undoes  the  last  move  whether it was the computer's or the
+       human's. You may also type "remove". This is equivalent to two "undo's"
+       (e.g. retract one move for each side).
+
+       white -- causes the computer to take the white pieces.  If the computer
+       is to move first the go command must be given.
+
+       xget -- read an xboard position file.
+
+       xwndw -- change X window. The window around alpha/beta used  to  deter-
+       mine whether the position should be scored or just estimated.
+
+BUGS
+SEE ALSO
+       chesstool(6)
+       xboard(6)
+
+
+
+
+                                                                   gnuchess(6)

@@ -1,0 +1,13 @@
+The gnuchess.exe and gnuchesr.exe included here are compiled from
+unmodified GNU Chess 4.0.80 sources, available on the Internet as
+http://tim-mann.org//gnuchess/gnuchess-4.0.pl80.tar.gz. To recompile,
+get the source and unpack it using GNU gzip and GNU tar, then
+recompile with Microsoft Visual C++ by typing the command "nmake /f
+Makefile.nt" to an MSDOS Prompt box on Windows 95 or Windows NT.  If
+you have a different compiler, you are on your own; sorry.
+Afterwards, rename gnuchesx.exe to gnuchess.exe.
+
+The gnuches5.exe included here is compiled from unmodified GNU Chess 5.07
+sources, available as ftp://ftp.gnu.org/gnu/chess/gnuchess-5.07.tar.gz.  
+To recompile, get the free Cygwin tools from www.cygwin.org and use
+them to unpack the source (gzip and tar) and compile.

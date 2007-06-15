@@ -1,0 +1,411 @@
+Zippy README file
+For version xboard/WinBoard 4.2.4 and later only
+$Id$
+-----------------------------------------------------
+
+Zippy is a program that lets GNU Chess act as a computer player on an
+Internet Chess Server.  It also works with Crafty.  Zippy is
+unsupported, experimental code.
+
+Zippy is based on XBoard, a graphical interface to GNU Chess and to
+the ICS for the X Window system on Unix.  Zippy consists of exactly
+the same code as XBoard, plus one extra module that ties together the
+otherwise-separate functions of talking to GNU Chess and talking to
+the ICS.  Zippy is included in the XBoard distribution.
+
+There is also a version of Zippy that is based on WinBoard, a port of
+XBoard to Win32 (Microsoft Windows NT and Windows 95).  WinBoard does
+*not* run on Windows 3.1 or 3.11, not even with Win32s.  In versions
+3.5 and later, the Zippy code is included in WinBoard.exe.
+
+If you use Zippy, I ask you to do the following:
+
+- Don't expect fast response if you send me mail about problems.  It
+might take weeks for me to get back to you, or I might answer right
+away.  Try to solve problems yourself before you mail me about them.
+Try asking someone who is actively running a Zippy-based player on ICC
+or FICS for help getting started.  Mail me only if you get stuck.
+
+- Be honest.  Tell the admins of whatever ICS you use that your player
+is a computer, so that it gets put onto the computer list, and follow
+the ICS computer policies.  On ICC these are in "help computer"; read
+this file and abide by what it says.
+
+- If you want to interface some other chess program to ICS, feel free
+to start with this code.  Some documentation is in the file
+engine-intf.html in the distribution.
+
+- Please do not use the -zt flag to have your program shout Zippy the
+Pinhead sayings (or other things that my Zippy shouts).  One pinhead
+per server is plenty, and I'd like to keep the franchise.  Feel free
+to use -zt to have your program shout some other kind of sayings if
+you like.  Some of the jokes that Zippy shouts on ICC came from
+ftp://ftp.cco.caltech.edu/pub/humor.  The poetry came from Project
+Gutenberg; try http://www.cs.cmu.edu/Web/booktitles.html as a starting
+point.  You might find other suitable material at these sites.  Prose
+tends to work poorly because it is dull when shouted in isolated
+250-character chunks.
+
+	--Tim Mann
+	  http://www.tim-mann.org/chess.html
+
+* * *
+
+Unix: To build the Zippy version of xboard, on most systems just do: 
+	configure --enable-zippy
+	make
+
+Windows: WinBoard.exe (versions 3.5 and later) includes the Zippy
+code.  There is no longer a distinct WinZippy.exe.
+
+In both xboard and WinBoard, the Zippy features are off by default.
+You can activate them with two new resources/command line options, and
+you can fine-tune them with some new environment variables, all
+described below.
+
+You will probably want to make a shell script or Windows .BAT file
+that sets the environment variables you want to use and invokes Zippy
+with the right command line options for your situation.  Some examples
+are at the bottom of this file.
+
+If you have problems building or running Zippy, see the rest of the
+xboard documentation: INSTALL documents the configure program, while
+READ_ME and xboard.man (or xboard.txt) document xboard itself, and
+WinBoard.hlp documents WinBoard.  FAQ answers some frequently asked
+questions.  The file engine-intf.html contains some information about
+the interface between xboard/WinBoard and GNU Chess (or other chess
+engines).
+
+===========
+NEW OPTIONS
+===========
+
+  -zippyPlay True/False or -zp/-xzp
+	If zippyPlay is set to True, when xboard is in -ics mode, it
+	will interface a chess engine to the ICS instead of letting you
+	play.  You must also set -ics when you use this mode.
+
+	In zippyPlay mode, xboard blindly issues an accept command for
+	every (well, almost every, see below) challenge it gets,
+	without remembering anything about the challenge afterwards.
+	This means that often it will get several challenges very
+	close together and try to accept them all!  ICS gives an error
+	message for every accept command after the one that actually
+	starts a match, but xboard just happily ignores the message.
+	xboard doesn't actually start the chess engine playing until
+	the first board image comes in from ICS.
+
+	The getMoveList option controls how adjourned games are
+	continued.  If it is True (the default), xboard fetches the
+	move list from ICS and feeds it into the chess program before
+	having the program start play.  If False, xboard feeds the
+	current position into the chess program and has it start from
+	there.  The latter option gets the program going sooner, but
+	can cause problems with detection of en passant legality,
+	castling legality (if a king or rook has moved and then
+	returned to its home square), draw by repetition, and draw by
+	the 50 move rule.
+
+	In zippyPlay mode, colorization in the ICS interaction window,
+	and the sounds corresponding to colors in that window, do not
+	work.  zippyPassword and related features (see below) capture
+	the tells, etc., before they can be matched by the color/sound
+	code.
+
+  -zippyTalk True/False or -zt/-xzt
+	If zippyTalk is set to True and xboard is in -ics mode:
+
+	(1) It will reply to anything said to it with a saying (if
+	there is a file of sayings in its working directory).  This
+	includes channel tells and shouts where its name is mentioned.
+	Some things it says to opponents in specific situations will
+	also be made Zippy-ish; you might want to change that.  See
+	zippyLines below for the file format.
+
+	(2) If a player XXX in your notify list logs on, xboard sends
+	the command "greet XXX" to ICS and tells XXX something from
+	its sayings file.  You can alias this to whatever you like.
+	If XXX is censoring you, he is automatically removed from your
+	notify list.
+	
+	(3) If a player XXX in your notify list logs off, xboard sends
+	the command "farewell XXX" to ICS.  You can alias this to 
+	whatever you like.  Note that the player is already gone, so
+	telling him something is futile.
+	
+	If zippyTalk is on, colorization in the ICS interaction
+	window, and the sounds corresponding to colors in that window,
+	do not work.  The reply feature captures the tells, etc.,
+	before they can be matched by the color/sound code.
+
+  In both -zp and -zt modes, if admin X spoofs Zippy, Zippy sends the
+  command "spoofedby X" to ICS.  You can alias this to something if you
+  want; otherwise it will produce a harmless error message.
+
+  -zippyPinhead string
+	In zippyTalk mode, if user XXX shouts anything containing
+	this string, xboard sends the command "insult XXX" to ICS.
+	You can alias "insult" to whatever you like.  This feature is
+	disabled if the option is not set.
+
+  -zippyPassword string
+	If someone does an ICS "tell" to xboard that begins with this
+	password, it will type the same string back as a command with
+	the password stripped off.  For example, if the password is
+	!%%! and xboard sees the string "Darooha tells you: !%%!shout
+	Hi there", it will type the command "shout Hi there" to the
+	ICS.  This feature is disabled if the option is not set.
+
+  -zippyPassword2 string
+	If someone does an ICS "tell" to xboard that begins with this
+	password, it will send the same string directly to the chess
+        engine with the password stripped off.  This feature is
+        disabled if the option is not set.  Use with caution.
+
+  -zippyWrongPassword string
+	This is a joke feature.  If player XXX does an ICS "tell" to
+        xboard that begins with this password, it will send the
+        command "wrong XXX" to ICS.  ICS does not define a "wrong"
+        command, but you can alias it to whatever you like.  The
+        feature is supposed to be used after you've changed the
+        zippyPassword, so that people who knew the old password get a
+        funny message.  Disabled if not set.
+
+  -zippyUseI True/False or -zui/-xzui
+	If this option is true, Zippy's shouts use the "i" command with
+	funny verbs; otherwise they use the "shout" command.  Default
+	is true.  The variable is automatically set to false if the "i"
+	command is disabled on ICS by the admins.
+
+  -zippyLines filename
+	Name of the file Zippy looks in for sayings when -zt is set.
+	Default: yow.lines.  File format: There must be a single ^
+	character or null character (control-@, ASCII code \000) after
+	each saying.  Sayings can have newlines in them; Zippy will
+	remove them.  Sayings can be at most about 250 characters;
+	longer ones will be ignored.  The first saying in the file is
+	never used; you should put a comment there.  If you have only
+	one or two sayings in your file, Zippy may get into a loop
+	trying to choose one.  Zippy chooses a saying by seeking to a
+	random character position in the file, skipping ahead to the
+	*next* null character, and printing the saying that starts
+	there.  If it hits end of file without finding a new saying,
+	it tries again.  Yes, this is a dumb algorithm.
+
+  -zippyAcceptOnly string
+        Normally, Zippy automatically accepts challenges from all
+	opponents.  If this option is set to an ICS login name, Zippy
+	will auto-accept challenges only from that opponent.  Set the
+	option to an invalid name like "0" if you don't want Zippy to
+	auto-accept any challenges.  You can still accept challenges
+	manually.  Setting this option also suppresses the
+	zippyGameEnd feature described below.  Default: not set.
+
+  -zippyNoplayCrafty True/False or -znc/-xznc
+	If this option is set to True, if Zippy's opponent kibitzes
+	"Hello from Crafty" within the first couple of moves, Zippy
+	will abort the game and add the opponent to his noplay list.
+        Default: False.
+
+  -zippyGameStart string
+	At the start of each game Zippy plays (including resuming from
+	adjournment), it sends this string to ICS, followed by a newline.
+	If the option is not set, nothing is sent.
+
+  -zippyGameEnd string
+	At the end of each game, Zippy sends this string to ICS,
+        followed by a newline.  If you do not set this option, the
+        string "gameend" is sent.  This is not a legal ICS command,
+        but you can alias it to whatever you like, or you can leave
+        it undefined, which will cause ICS to print a harmless error
+        message after each game.  If you want to send more than one
+        command at the end of the game, on ICC you can alias gameend
+        to a "multi" command (see the ICC help files), but on FICS that
+        does not work.  Instead, use the -zippyGameEnd option to have
+        a string of several commands sent, with newlines in between.
+        For example, you could give WinBoard the command line option
+          -zippyGameEnd='say thanks\nseek 5 0\nseek 2 12\n'
+        You could give xboard the command line option
+          -xrm '*zippyGameEnd: say thanks\nseek 5 0\nseek 2 12\n'
+
+  -zippyAdjourn True/False or -zadj/-xzadj
+	Zippy will allow its opponent to adjourn if this option is
+	set to true.  Default: False.
+
+  -zippyAbort True/False or -zab/-xzab
+	Zippy will allow its opponent to abort if this option is
+	set to true.  Default: False.
+
+  -zippyVariants string
+	Zippy will decline to play chess variants unless their names
+	(as given in engine-intf.html) are listed in this option.
+	Default: "normal".  Example: "suicide,losers,bughouse,normal".
+
+	Obviously, zippyVariants other than "normal" will work only
+	if your chess engine can play those variants.  GNU Chess
+	certainly cannot, but there are some suicide and bughouse
+	engines available.  While playing bughouse, Zippy passes
+	certain extra information on to the engine; see
+	engine-intf.html.
+
+  -zippyBughouse int
+        This option controls how Zippy handles bughouse partner
+        requests.  If zippyBughouse is set to 0, Zippy will decline
+        any offers of partnership and tell the offerer that it cannot
+        play bughouse.  If zippyBughouse is set to 1, Zippy will
+        decline offers, but you can make Zippy your partner by having
+        *it* offer *you* partnership (by using zippyPassword or typing
+        directly into its window).  If zippyBughouse is set to 2,
+        Zippy will accept all offers of partnership, even if it
+        already has a partner.  zippyBughouse must be at least 1 for
+        partner tells to be relayed to the engine with the ptell
+        command.
+
+  -zippyMaxGames int 
+  -zippyReplayTimeout
+        If zippyMaxGames > 0, Zippy will play at most the given number
+	of consecutive games against the same opponent.  Thereafter,
+	Zippy will decline all challenges from that opponent (with an
+	explanatory tell) until either someone else has played or
+	zippyReplayTimeout seconds have elapsed.  Defaults:
+	zippyMaxGames=0, zippyReplayTimeout=120.
+
+	Note: If you use these options and you have Zippy doing seeks,
+	be sure to include the "m" flag in the ICS seek command.  If
+	you use "seek m", when a player responds to the seek, the ICS
+	gives Zippy a challenge that it can either accept or decline.
+	If you use a seek without the "m" flag, the ICS immediately
+	starts a game between Zippy and the first opponent to respond,
+	giving Zippy no choice about whether to accept or decline.
+
+=====================
+ENVIRONMENT VARIABLES
+=====================
+
+  For backward compatibility with version 4.0.2 and earlier only, most
+  of the command line options listed above can also be set as
+  environment variables.  For boolean options, use 0 for false, 1 for
+  true in the corresponding environment variable.  The following
+  environment variables are supported.:
+
+    ZIPPYPINHEAD, ZIPPYPASSWORD, ZIPPYPASSWORD2, ZIPPYWRONGPASSWORD,
+    ZIPPYUSEI, ZIPPYLINES, ZIPPYACCEPTONLY, ZIPPYNOPLAYCRAFTY,
+    ZIPPYGAMESTART, ZIPPYGAMEEND, ZIPPYADJOURN, ZIPPYABORT,
+    ZIPPYVARIANTS, ZIPPYBUGHOUSE
+
+  Warnings: (1) If both the command line option and the corresponding
+  environment variable are set, the environment variable takes
+  precedence!  (2) Some of the environment variables have names that
+  are too long for Solaris 2.5's /bin/csh.  Use the command line
+  options instead.  (3) Newer options DO NOT have environment
+  variables.  If you don't see it in the list above, it doesn't exist.
+  (4) In the future the environment variables may go away entirely.
+  It would be a good idea to stop using them now and switch to the
+  command line options.
+
+You may also want to customize other things by editing zippy.c and
+recompiling the program.
+
+=====================
+ICS VARIABLE SETTINGS
+=====================
+
+You need to do the following settings on ICS:
+
+    set highlight 0  <-- I'm not sure this is still needed
+    set oldmatch 0
+    set examine 0
+
+If you want to use the zippyPassword remote-control feature, it's a
+good idea to do the following, so that commands you give Zippy won't
+be truncated because the ICS wrapped a "tell" to a new line:
+
+    set wrap 0       <-- on ICC, or
+    set width 255    <-- on FICS
+
+You will probably want to turn on server-side autoflagging too:
+
+    set autoflag 1
+
+======
+SIMULS
+======
+
+It has been discovered that Zippy can play simuls on ICC (but not on
+FICS).  If you arrange for Zippy to send the ICC command "simulize" in
+the -zippyGameStart string, it will accept additional games while
+playing.  Zippy will use the same engine for every game, so whenever
+it switches opponents, the engine's state will be reset with the "new"
+command.  This will of course weaken its play, so don't enable simuls
+if you want your engine to have the highest possible rating.
+
+Zippy was never designed to work with simuls; it just works by
+accident, and it hasn't been tested much.  So please report any bugs
+you notice, but don't expect them to be fixed rapidly.
+
+Be sure to use xboard/WinBoard 4.2.4 or later for simuls, because some
+obscure bugs are fixed in that version that affect starting a game in
+the middle (as with resuming from adjournments or switching opponents
+in a simul).
+
+As noted under -zippyPlay above, you should have -getMoveList on to
+ensure that the engine knows the game history after switching boards
+and thus handles draw by repetition and by the 50-move rule correctly.
+It should, however, also work to turn off this option to speed things
+up and reduce network bandwidth, if you don't mind the engine
+occasionally failing to see draw possibilities.  Unfortunately,
+though, with Crafty 18.3 (and probably other versions too) as the
+engine, users trying this have experienced Crafty crashes.  This looks
+to me like a Crafty bug, but I wasn't able to reproduce it, so it
+remains a mystery.
+
+
+========
+EXAMPLES
+========
+
+Here are some small example command lines.  You may want to use more
+options; see the man page, info file, or help file, and perhaps the
+FAQ file too.  You may want to put the command line into a Unix shell
+script or Windows .BAT file, which is simply a text file of commands.
+On Unix, turn on execute permission for the file (chmod a+x file); on
+Windows, give it the extension .BAT.  You can then run it just like an
+ordinary program.  Please do not ask me questions about how to make a
+shell script or .BAT file; these are not functions of xboard/WinBoard,
+but basic operating system features that you can learn about from
+introductory books, friends, teachers, or the online help for your
+system.  The examples below should be more than enough to get you
+started.
+
+Unix command lines:
+
+# xboard + GNU Chess on chessclub.com
+xboard -zp -ics -icshost chessclub.com -icshelper timestamp \
+    -zippyPassword beer
+
+# xboard + GNU Chess on freechess.org
+xboard -zp -ics -icshost freechess.org -icshelper timeseal \
+
+# xboard + Crafty on chessclub.com
+xboard -zp -ics -icshost chessclub.com \
+    -fd /home/crafty -fcp crafty -icshelper timestamp \
+    -zippyPassword beer
+
+# xboard + Crafty on freechess.org
+xboard -zp -ics -icshost freechess.org -autoflag \
+    -fd /home/crafty -fcp crafty -icshelper timeseal \
+    -zippyPassword beer
+
+Windows command lines:
+
+REM WinBoard + GNU Chess on chessclub.com
+WinBoard -zp -ics -icshost chessclub.com -fcp GNUChess -icshelper timestamp -zippyPassword beer
+
+REM WinBoard + GNU Chess on freechess.org
+WinBoard -zp -ics -icshost freechess.org -fcp GNUChess -icshelper timeseal -zippyPassword beer
+
+REM WinBoard + Crafty on chessclub.com
+WinBoard -zp -ics -icshost chessclub.com -fd C:\Crafty -fcp WCrafty -icshelper timestamp -zippyPassword beer
+
+REM WinBoard + Crafty on freechess.org
+WinBoard -zp -ics -icshost freechess.org -fd C:\Crafty -fcp WCrafty -icshelper timestamp -zippyPassword beer

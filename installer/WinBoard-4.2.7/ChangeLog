@@ -1,0 +1,3331 @@
+ChangeLog for XBoard/WinBoard
+
+* 11/26/2003: In WinBoard, setting the -debug flag now logs ICS output
+to WinBoard.debug too.  (This isn't needed in xboard because ICS
+output already goes to stdout, so it's easy to capture along with the
+debug output on stderr.)  This was issue #280 in the ToDo file.
+
+* 11/23/2003: Cleaned up some minor problems in cygwin.mak.  Thanks to
+Hans Werner Strube for the problem report.
+
+* 11/23/2003: Updated the default list of chess servers in
+winboard/defaults.h.  Deleted two that appear to be dead and added a
+new one that is active.
+
+* 11/19/2003: Swapped icon_white.bm and icon_black.bm in XBoard.
+Hopefully this will get them the right way around by default on more X
+window managers.  I wish I understood this better.
+
+* 11/18/2003: Implemented a simple 32-bit random number generator for
+WinBoard, replacing the Windows rand(), which ranges only up to
+0x7fff.  Formerly on Windows, only zippy.lines sayings that started in
+the first 32767 bytes of the file could ever be used.  This was issue
+#505 from the ToDo file.
+
+* 11/16/2003: The xboard man page and info files are now built from a
+common set of texinfo source files, and the xboard man page now covers
+cmail as well.  Formerly, ever since the texinfo file was first
+contributed to the project, it was separate from the man page and the
+two files had to be updated in parallel, making for a maintenance
+nightmare.  To make combining the files possible, I took the Perl
+script "texi2man" from the GNU Units project and added support for a
+larger subset of the texinfo markup language.  I then carefully
+compared the old man page and old texinfo file to make sure the latest
+and clearest words survived into the new combined texinfo file.  It
+would be great to merge in WinBoard's help file too, but that's a
+larger project.  It would have to be heavily conditionalized to
+deal with differences in features between XBoard and WinBoard.
+
+* 11/15/2003: Cleaned up and applied a small patch from Daniel
+Mehrmann, to stop overly long PVs in thinking output from causing a
+buffer overflow crash in backend.c.
+	
+* 11/5/2003: When a chess engine sends a "telluser" command (including
+the cases where "tellall" or "tellopponent" acts like telluser), the
+information now goes into a nonmodel popup that is automatically
+dismissed when the user clicks anywhere on the board.  This fix is
+more significant on WinBoard, where formerly you got a fully modal
+dialog that had to be dismissed by clicking on OK before anything else
+could happen.  The bug was issue #406 in the ToDo file.
+
+* 11/1/2003: Removed email addresses from this file to reduce spam
+load, as it gets linked to from the Web.
+
+* 11/1/2003: Updated READ_ME and winboard/READ_ME.txt.
+
+* Modified xboard and winboard makefiles to be able to build the
+project in the new combined directory structure.
+
+* Applied a small security fix to pxboard, from Martin Maeok.
+
+* Fixed a bug in the game list dialog.  The change in 4.2.6 to opening
+games in text mode (meant to avoid getting extra \r's into comments)
+caused a new bug in determining seek offsets when parsing a game file
+to form the game list.  Also, the change was incomplete; on some code
+paths games were still being opened in binary mode.  Thanks to Lenik
+Terenin for reporting the offset bug.  I've now gone back to always
+using binary mode when reading game files, and I've fixed the comment
+bug by adding code to remove \r's from parsed comments explicitly.  I
+still use text mode for writing game files so that games written by
+WinBoard will have Windows-style line endings.
+
+* Fix for minor bug in WinBoard installer.  If you chose a non-default
+destination directory, the default directory was still used for a
+couple of unimportant things, namely setting the App Paths registry
+keys (unused by WinBoard) and trying to copy the existing WinBoard.ini
+file to WinBoard.old.  I inherited this bug from the InstallShield 5
+sample template.  Thanks to "l.d." for noticing the incorrect keys.
+
+* Patch from Chris Priest: when two engines are being run through rsh,
+avoid reusing the same stderr port for both.  I'm not sure why this
+should be needed, but it's harmless, at least.
+
+* Bugfix: The kludge to deal with old engines that give an error
+message because they don't know the "st" command was too sloppy; it
+could hit on an "st" substring anywhere in an error message.  GNU
+Chess 4 is the only engine I know of where the kludge was needed, so I
+changed the kludge to match a longer, more GNU-specific string.
+
+* Changed the WinBoard self-extracting installer to choose a unique
+temporary subdirectory name within the Windows temp directory instead
+of always putting wb-setup directly in temp.  Besides being better
+practice, this avoids the need to deltree wb-setup first, which
+occasionally alarms someone who thinks that deltree is only used by
+trojans to delete all your files.  (Yes, I'm serious.)
+
+* Fixed a bug where FICS-style "wild/0" strings were not parsed as the
+proper wild type.  The "/" was not being skipped.
+
+* Fixed a WinBoard bug where temporary files created by game
+copy/paste were being created in the root directory of the current
+drive instead of the TMP directory and were not always deleted on exit.
+
+* Fixed a small bug in winboard.c's ErrorDialog() function.  Thanks to
+"Ron" (no last name given).  The bug might have caused a problem when
+pressing OK or Cancel in an error dialog when more than one error
+dialog was being displayed, but I'm not really sure.
+
+* Removed a hack that worked around a bug in very old versions of
+Crafty, where it would sometimes reply "illegal move" to a "."
+command.  The hack kept us from recognizing real illegal move messages
+in analyze mode from engines that don't respond to the "." command.
+Thanks to Fabien Letouzey for the report.
+
+* Fixed a bug in the xboard version of GetDelayedEvent.  It would
+return the most recently scheduled event even if it had already fired.
+This caused at least one visible error: in -ics -xreuse mode, starting
+the engine again and seeing another "feature done=1" would re-run the
+initialization code in InitBackEnd3, including the code that opens the
+connection to ICS.  The WinBoard version didn't have this bug.  Thanks
+to Bob Hyatt for the bug report.
+
+* The promotion popup for ICC wild 26 (giveaway) now includes King.
+Thanks to Fredrik Josefsson for the bug report.
+
+* The first game in a file (or being pasted from the clipboard) can
+now start with a bare move -- no PGN tags, no move number "1", etc.
+Suggested by Shane Harrelson.  One could imagine taking this farther
+and accepting something like "e4 e5 1/2-1/2 d4 d5" as two games, but
+I haven't done that.
+
+* Bug fix: xboard didn't really accept a paste of multiple games,
+contrary to what I wrote when adding the feature to WinBoard in
+4.2.4.  Now it works in both.
+
+* Fixed generic start/end of game messages to work on chess.net, where
+they put ratings in parens after the player names.
+
+* Updated config.sub and config.guess to newer versions from
+automake-1.4p5-2.  This makes configure work with MacOS X + X11.
+
+* Bugfix: when examining a game fragment on FICS where black plays
+first, don't show two "(0:00.000)" times on the initial "none" move.
+
+* If TestLegality is on and one of the engines makes an illegal move
+in TwoMachines mode, it forfeits immediately.  Formerly the game would
+get stuck at that point and the engine that made the illegal move
+would eventually lose on time.
+
+xboard/WinBoard 4.2.6 -- Fri Feb  1 22:26:31 PST 2002
+Tim Mann
+
+Another small bugfix release.
+
+* Put in a small change from Alexander Mai to allow xboard to build in
+an OS/2 EMX environment.
+
+* Fix WinBoard-only bug where editing a PGN file with comments would
+insert more \r characters before the \n after every Load/Save cycle.
+For some unknown reason we were reading the files in "rb" mode but
+writing them in "a" mode, so we kept the \r characters on reading and
+added an extra one on writing.  Fix: change the "rb" to "r".  Thanks
+to Joel (last name not given) for the bug report.
+
+* Put the arguments to rsh/remsh in the right order for better
+portability.  Thanks to Michael Kalisz.
+
+* FreezeUI is now implemented in WinBoard; it was previously only
+implemented in xboard.  This function prevents the user from entering
+moves or other commands while we are waiting for an engine to
+initialize itself.  Implementing it fixes a bug where the user could
+start a game (etc.) during feature negotiation.  One of the symptoms
+of this bug was that we could send "new" one or move moves *after* the
+first game started!
+
+* Fixed some handle leaks (WinBoard only), including a nasty one that
+leaked one handle per command sent to ICS.  Thanks to several folks
+who helped characterize the bug and tried to look for leaks.
+
+* We now install and look for the info file in ${prefix}/share/info
+instead of ${prefix}/info.  The latter is still the default in
+autoconf, but the former is currently used in Red Hat Linux and
+probably elsewhere.
+
+xboard/WinBoard 4.2.5 -- Sat Dec 15 11:42:51 PST 2001
+Tim Mann
+
+* Changed the bundled GNU Chess 5.02 in the WinBoard package to
+include a much smaller book and to use much less hash table space by
+default (8 MB transposition table, 0.5 MB pawn evaluation table).  The
+large book included with 4.2.4 made the WinBoard download too big for
+some people, and the default hash tables were larger than the
+available physical memory on some people's computers. I built the
+small book by running Crafty's "small.zip" book line collection
+through a Perl script that makes it look enough like real PGN games
+that the GNU Chess book builder will accept it.  The script and some
+minor patches to GNU Chess 5 are available in the WinBoard source
+distribution and at http://www.tim-mann.org/gnuchess.html.
+
+* Fixed a bug in the code that deals with engines that complain that
+"time" and "otim" are illegal moves.  This was a new bug in 4.2.4.
+
+* Revamped the implementation of ToStart in analysis mode.  Formerly
+there was some ill-conceived code that would try to get back to the
+start of the game by doing a "new" command (and all the followup
+commands that requires) while remaining in analysis mode.  This is
+problematic for engine authors to support, though it works with
+Crafty.  This code was trying to solve the problem of ToStart being
+slow because the engine would try to start an analysis after every
+"undo" command all the way back to the start.  But ToEnd already had a
+much better solution to this problem, and now ToStart does the same
+thing: we exit from analysis mode and enter force mode instead,
+make/unmake moves to get to the end/start of the game, and then
+reenter analysis mode.
+
+* Formerly, Zippy could try to start playing a game before the engine
+was initialized; that is, during the initial timeout for protover 1
+engines, or before "feature done=1" for protover 2 engines.  We now
+wait until the engine is initialized before connecting to ICS, which
+fixes this in the common case.  If you turn off engine reuse for
+multiple games (that is, if you give the -xreuse option), there could
+still be problems; see item 503 in the ToDo file.  Thanks to Dieter
+Buerssner for the bug report.
+
+* Bugfix: All WinBoard versions since the merge with WinBoard Plus
+(but not xboard) have had a bug in changing the PeriodicUpdates,
+PonderNextMove, and ShowThinking options from the menu.  The bug
+mostly just caused changing these options during a game to not take
+effect until after the next reset.  For TwoMachines games, though,
+changing PonderNextMove just before the game would take effect
+immediately for the second engine but not until the next game for the
+first engine.  Thanks to Koundinya Veluri for the bug report.
+
+* Bugfix: In 4.2.4, we sometimes got confused when trying to leave and
+reenter analyze mode.  One symptom was that Analyze File did not work.
+Thanks to Igor Syry for the bug report.
+
+xboard/WinBoard 4.2.4 -- Sun Dec  9 14:56:30 PST 2001
+Tim Mann
+	
+* WinBoard now includes GNU Chess 5.02 in place of GNU Chess 5.00.
+
+* WinBoard's PasteGameFromClipboard will now handle a paste with
+multiple games in it, popping up the game list dialog.  xboard
+already did this.  Suggested by Robert Gerstman.
+
+* We now use the "clearboard" command on ICC where appropriate.
+
+* Bugfix: don't generate a bogus "variant normal" command to an engine
+for the loadable ICC wild types that we internally flag as
+VariantLoadable.  Also clarified the message that Zippy sends when
+declining such wild games -- it can't deal with the possibility of
+loading an arbitrary position into the game.  Thanks to Dieter
+Buerssner for reporting the problem.  It would be nice to be able to
+actually play these wild types some day; presumably there would have
+to be an option to either send "loadgame" with a specified position,
+or to deal with an opponent sending it.
+
+* If we get a holdings message from ICS when we thought we were
+playing normal chess, we now try asking for a move list so that we can
+find out from the header what's really happening.  Formerly we guessed
+bughouse in this case.  Response to a comment from Gian-Carlo
+Pascutto.
+
+* Fixed two longstanding bugs in the clock code.  These affected only
+play between a user and a local engine, or between two local engines,
+not ICS play.  (1) The last fractional second used by a player before
+moving and virtually pushing his clock was being charged to his
+opponent instead of to him.  (2) The time and otim commands were being
+sent to an engine before the (buggy) fractional second update was
+done.  The second bug was pretty harmless in itself, but the first one
+was serious.  Many thanks to Peter Rosendahl for carefully diagnosing
+and reporting these bugs!
+
+* Changed WinBoard timestamp key.  Nothing is changed other than the
+key and a recompilation.  ICC may phase out the old key soon; if they
+do, you'll need to use the timestamp.exe from WinBoard 4.2.4 or later
+to connect to chessclub.com.
+
+* Fixed an xboard-only bug where most dialogs would not take keyboard
+input unless the mouse was actually over the dialog, even if the
+dialog window had focus.  Thanks to Jason Varsoke for the bug report.
+
+* Bugfix; Remember to send time and otim commands to engine before
+sending playother.  Thanks to Bob Hyatt for the bug report.  Also
+fixed a bug where time and otim were sometimes sent even with feature
+time=0.
+
+* Added small patches from Wilkin Ng that are meant to fix a crash in
+CopyGameToClipboard and a "can't unlock clipboard memory" error in
+PasteTextFromClipboard, under Windows 2000.
+
+* Changed cygwin.mak to not use -mno-cygwin.  In other words, it now
+uses cygwin1.dll instead of the mingw libraries.  This works around
+bugs in fileno() and stat() that I encountered in mingw.  (fileno
+seems to always return 0.  stat fails because the library routine uses
+a different definition of struct stat than the header files provide.)
+Thanks to Robert Gerstman for reporting the symptoms these bugs caused
+when WinBoard was compiled with Cygwin.
+
+* Added -showButtonBar option.  This lets you delete the << < P > >>
+buttons and thus widen the message widget a bit.
+
+* Added code to address a very obscure bug.  If an engine dies and
+needs to be restarted while in one of the analyze modes, it was not
+getting put back into analyze mode.  This bug should not really ever
+have gotten tickled unless reuse was turned off and the engine sends
+game end commands (such as 1-0) when a game ends by rule while in
+analyze mode.  The next version of the protocol spec will say that
+engines should not do that, but version 2 and earlier didn't address
+the issue.
+
+* We now use the FICS "iset ms 1" feature to get times in ms instead
+of seconds.  Thanks to DAV for email telling me about this feature.
+
+* Changed clock display to show tenths of seconds for 9.9 seconds and
+less, instead of 0.9 seconds and less as before.
+
+* It has been discovered that Zippy can play simuls on ICC (but not on
+FICS).  If you arrange for Zippy to send the ICC command "simulize" in
+the -zippyGameStart string, it will accept additional games while
+playing.  Zippy will use the same engine for every game, so whenever
+it switches opponents, the engine's state will be reset with the "new"
+command.  This will of course weaken its play, so don't enable simuls
+if you want your engine to have the highest possible rating.  Zippy
+was never designed to work with simuls; it just works by accident, and
+it hasn't been tested much.  So please report any bugs you notice, but
+don't expect them to be fixed rapidly.  Thanks to Paul McGuire for
+noticing that this works.
+	
+* Bugfix: Suppress the direct command to engine popup if there is no
+engine.  In WinBoard this case used to cause a crash.  Thanks to
+"Dargon" for the bug report.
+
+* Bugfix: formerly we did part of the engine initialization for the
+very first game too soon, before feature negotiation.  One result of
+this is that engines would never get the "ics" command for the first
+game.
+
+* Lengthened timeout to detect protocol version 1 chess engines to 10
+seconds.  This should reduce problems with protocol version 2 engines
+that are slow to initialize missing the timeout and not getting a
+chance to send their feature commands before the first game starts.
+
+* Klaus Friedel says that adding a short sleep to WinBoard after
+starting a new chess engine solves a problem that occurs under Windows
+2000, in which engines sometimes don't see the initial command(s) from
+WinBoard and hang.  I don't understand how that can happen, but the
+sleep is harmless, so I've put it in.  Others have also reported what
+may be the same problem, so hopefully this will fix it for them too.
+
+* Bugfix: editing the Result field in EditTags will no longer cause a
+later crash.  Thanks to DAV for a clear bug report that let me
+reproduce the problem.
+
+* ICC wild 28 is now recognized as shatranj, but it is not supported.
+You might be able to play it by turning off Test Legality.
+
+* Formerly we would always turn off "feature time" if the engine
+printed an error message with the string "time" or "otim" in it; now
+we do that only if the message comes before the engine makes its first
+move.  This change is useful because some engines spew a lot of bogus
+error messages about commands they don't fully parse, so something
+like "result 0-1 {White lost on time}" could generate such a message.
+Engines shouldn't do that, but if they do, mysteriously turning off
+"feature time" is not a good way to react.
+
+* Fixed an infrequently occurring Zippy bug: formerly, resuming from
+adjournment by position (that is, with GetMoveList turned off) or
+starting/resuming a wild game (nonstandard starting position) would
+try to set up the position without putting the engine into force mode
+first.  That was probably tolerated by most engines, but if the
+position was black-to-play and the engine hadn't set feature
+setboard=1, then the fake "a2a3" move (which we use as a kludge to get
+black to be on move before sending the edit command) would appear to
+be a real move, and the engine might reply to it!  This bug could also
+be seen when trying to use Zippy to play a simul -- something that
+Zippy was never designed to support, but which seems to mostly work
+anyway.  Thanks to Paul McGuire for sending a WinBoard.debug file that
+showed the bug occurring.  Some other cases of resuming adjournments
+or starting games from nonstandard positions may have been broken too;
+I think I've straightened out the problems.
+
+* Agreeing to a draw in the human vs. local engine case formerly did
+not work if the human offered first; now it does.  A human's
+unsolicited offer is considered valid until he makes another move.
+Thanks to Bruce Moreland for the bug report.
+
+* Bugfix: We used to look for just "fr" in Event tags or strings from
+ICSes to recognize Fischer Random games.  This caused a lot of false
+matches.  Now we look for "wild/fr" instead, which is what FICS uses.
+
+* Bugfix: Clicking on a move in the MoveList window only updated the
+displayed position; if a chess engine was active, its state was not
+updated.  Thanks to Alejandro Dubrovsky for the bug report.
+	
+* Bugfix: The "resign" command from engine to xboard formerly did not
+work in ICS (Zippy) mode.
+
+* Bugfix: Formerly we would register a garbage premove if the user
+clicked on a piece, then clicked on an edge or outside the board.  Now
+such an errant click is ignored.
+
+* Bugfix: GameEnds would send "exit" to an engine in analyze mode even
+if we did not actually want to leave analyze mode.
+
+* Bugfix: "feature pause" was being rejected.  We don't currently use
+it, but that is no reason to reject it.  Thanks to Gian-Carlo Pascutto
+for the bug report.
+
+* Bugfix: when "partner" needed to be sent both to ICS and the engine,
+Zippy was erroneously sending the ICS prefix character to the engine
+too.  Thanks to Gian-Carlo Pascutto for the bug report.
+
+* Zippy now declines challenges when the engine is not yet ready to
+play again, instead of ignoring them.  This is needed so that the
+server will let the opponent repeat the challenge.  It might be better
+to remember such challenges and accept them when the engine is ready,
+but that would be a bit more complicated to implement.
+
+* Bugfix: Zippy's emotes didn't work on FICS because there, "i" is a
+built-in alias for "it", not a real command.  So sending "$i foo" gave
+an error message instead of doing "it foo".  We now leave out the
+alias-suppressing prefix for emotes.
+
+xboard/WinBoard 4.2.3 -- Mon Feb 19 19:55:05 PST 2001
+Tim Mann
+
+* Bugfix: The error message "Variant X not supported by gnuchessx"
+formerly could pop up even in -ncp mode.
+
+* Fixed an xboard bug in premove highlighting.  If you had
+HighlightLastMove turned on, premoves got highlighted in
+highlightSquareColor (yellow) instead of premoveHighlightColor (red).
+
+* Modified premove again.  Now we are back to displaying the move
+locally immediately after sending it to the server, as in versions
+prior to 4.2.1.  This is good because it lets you register your next
+premove sooner.  As a better fix to the problem that the change in
+4.2.1 had been trying to address, we now suppress animating the
+opponent's move if you have a premove reply pending.  However, it's
+probably still a good idea for you to turn off AnimateMoves entirely
+if you are trying to play extremely fast games.
+	
+* Removed an erroneous patch that left zombie chess engines around
+when both sigterm and reuse were turned off.  (Bug was in xboard only,
+not winboard.)
+
+* Bugfix: loading a game with autostepping did not work for games with
+PGN result "*" (unfinished).  This bug was introduced in 4.1.0, caused
+by some outdated code that was supposed to leave you in EditGame mode
+after loading an unfinished game.  I fixed this, and also changed it
+to leave you in EditGame mode after loading *any* game, but without
+changing the tags to say it's an edited game.  It's not really clear
+whether that is the best thing is to do here -- ideally, perhaps, the
+tags should change to say "edited game" if you actually make any
+changes, but that is harder to make work.
+
+xboard/WinBoard 4.2.2 -- Tue Feb  6 20:00:00 PST 2001
+Tim Mann
+
+* Fixed a problem introduced in 4.2.1.  In -zippyPlay mode, 4.2.1
+started sending the initString immediately after the old game ended,
+but then when the next game started, it would still send "force" and
+another initString.  Another problem was that the first initString put
+the engine out of sync with the displayed board position, though that
+might not usually have been noticeable.  This is now changed to do a
+full Reset at the end of the previous game, and avoid doing a Reset at
+the start of a new game if we are still in BeginningOfGame mode.
+
+* Fixed some limitations in -zippyPlay mode.  The engine was not being
+fed the moves or history of games that were displayed but not being
+played, so it would get confused if you tried to do something like
+examine a game, then enter EditGame mode from somewhere in the middle
+of the game.
+
+* Made a small change so that cygwin can compile xboard for Windows
+(an X server is required to run it).  Thanks to Volker Zell.  Most
+people would probably prefer to run WinBoard on Windows, however; note
+that cygwin could already compile WinBoard.
+
+* Added some missing documentation to engine-intf.html: It is okay to
+send "feature done=0" even before you receive the xboard and protover
+commands, if this is needed to give your engine enough time to
+initialize.  See engine-intf.html for more discussion.
+
+* Bugfix: "feature done=0" did not work for the second engine; now it does.
+
+xboard/WinBoard 4.2.1 -- Sat Feb  3 19:52:26 PST 2001
+Tim Mann
+
+* Bugfix: in Zippy mode with feature san=1, the elapsed time was being
+sent to the engine after the SAN move; for example, "e4 (0:01)" was
+sent instead of just "e4".
+
+* It seems that scroll wheel mice with incompletely installed software
+(under Windows 95, at least) can send repeated middle button up events
+when the wheel is turned.  Moved QuickPaste from middle button up to
+middle button down to avoid problems with this.
+
+* A premove is now sent *before* the opponent's move that it replies
+to is animated.  The premove itself is no longer displayed (or
+animated) when sent; instead, it is displayed when the chess server
+echoes it back as a board update.
+
+* Bug fix: in -xreuse mode, xboard was only sending command line
+arguments to the engine the first time it was started.  (WinBoard
+didn't have this bug.)
+
+* In -zippyPlay mode, we now initialize the chess engine for a new
+game immediately after the old game ends.  (In -xreuse mode, this
+means starting a new engine process; in the default -reuse mode, it
+just means sending "new".)  If the engine supports ping, we don't
+accept challenges until the "new" has finished.  This should help
+avoid losing time (re)initializing the engine after the game starts.
+
+* We now handle the new FICS field in style 12 that says whether the
+clocks are ticking.
+
+* whiteFlag and blackFlag are now reset whenever an ICS board image
+arrives, giving autoflag a fresh chance to work.
+
+* Suppressed "geometry error" debug messages unless -debug flag is given.
+
+* Bugfix: avoid core dump on Solaris with -debug flag, caused by
+passing NULL to a %s format in GameEnds.
+
+* Added -firstProtocolVersion and -secondProtocolVersion.  This will
+allow use of extremely broken engines that hang or die when given the
+"protover 2" command.  It should be rarely if ever needed.
+
+* Zippy now strips highlights from player names in the Creating
+message; previously the ratings would not be extracted from this
+message properly if you had set the highlight variable.
+
+* Bug fix: Zippy with -zp but not -zt used to be fooled by false
+partner tells inside channel tells; e.g.: 
+Garf(24): Garf (your partner) tells you: sit
+
+* Bug fix: when an engine reported its name with the new "feature
+myname=" command, we had been putting just that name into the window
+title even when in TwoMachines mode.
+
+* By default, WinBoard no longer uses the new feature introduced in
+4.2.0beta of keeping the ICS menu, ICS server list, and lists of chess
+engine command lines in separate files; instead, the lists are back in
+the winboard.ini file.  This gets rid of some problems where the
+separate files could not be opened because the working directory was
+not set to WinBoard's installation directory.
+
+* WinBoard command lines and ini files now have another optional
+syntax for quoting an option value.  All characters within { } curly
+braces are interpreted literally except for '}' itself.  SaveSettings
+now uses this syntax for string values that contain a backslash or
+newline and do not contain a '}'.  This should address the problem
+that the separate .ini files had been meant to fix; engine command
+line lists can now be written without \-escapes.
+	
+* Fixed three bugs in relaying moves between engines in TwoMachines
+mode: an engine would be sent SAN if the *other* engine had set
+feature san=1, a relayed SAN move did not end with a newline, and
+feature usermove was not implemented for relayed moves.
+
+* Fixed several bugs in exiting: File/Exit would sometimes hang;
+timestamp/timeseal would not get killed off; an engine crash would
+cause error messages to be printed recursively until stack overflow.
+
+* Fixed a bug in the code to detect which ICS is in use and adapt to
+it; the chess.net case was broken.
+
+* Removed the leading alias-suppression character when sending a move
+to ICS, because it seemed to break accuclock on chess.net.
+
+* Fixed a bug where a FICS prompt like "10:01_fics%" would be matched
+as finger note number 10, causing a problem detecting when the user is
+logged in.
+
+* Added tellicsnoalias command to protocol.
+
+* Changed st command in protocol back to old behavior.
+
+* Added done=0 feature to protocol, to lengthen initial timeout.
+
+* Added missing -colorSeek command line option to xboard.  (Was
+present in WinBoard.)
+
+* Bug fix: setting feature reuse=0 was not working.
+
+xboard/WinBoard 4.2.0beta -- Sat Dec 16 16:34:56 PST 2000
+Tim Mann
+
+* Setting -searchTime no longer turns off -clockMode.  Note that when
+-searchTime is set, some engines may search for the lesser of
+searchTime and the amount of time their normal clock management would
+dictate, while others will disable their normal clock management and
+always search for exactly searchTime.
+
+* Fixed WinBoard bug where on Windows 2000 (and maybe Windows 98) the
+ICS Interaction window would scroll back to the top whenever it filled
+to capacity and WinBoard trimmed some text off the top.
+
+* Changed xboard dragging so that the center of the dragged piece is
+forced to be over the mouse cursor.  (WinBoard dragging already worked
+that way.)  This should avoid confusing cases when you start a drag
+with the mouse near the edge of a square -- formerly most or all of
+the piece could be over one square but the mouse cursor over another.
+Suggested by DAV.
+
+* Added move list window for xboard.  Code contributed by Manuel
+Hoelss and re-hacked a bit by me.  Performance of this window is poor,
+because the implementation regenerates the entire window contents
+whenever anything changes.  It's hard to avoid this when using the
+Athena List widget, though we could be a little smarter and notice
+when the current move number has changed but the move list has not.
+There are also several drawing problems caused by bugs in the Athena
+Form and List widgets.  The window should not really allow a
+horizontal scroll bar, but the bugs are much worse if I turn it off.
+In both Xaw and Xaw3d, the List widget tries to resize itself when
+XawListChange is called, even if you tell it not to; and what's worse,
+if the widget cannot resize itself to be large enough to avoid
+clipping any of the list item, it does not change the list!  Arrgh.
+On top of that, the Xaw Form widget is very buggy in XFree86 4.0.1
+(X11R6.4.3).
+
+* The OK button in the WinBoard startup dialog is now simply disabled
+if none of the radio buttons is selected, instead of bringing up an
+error dialog.  Suggested by Ted Milbaugh.
+	
+* Used ping to address the worst of the race conditions in the
+protocol.  Now if an engine supports ping, we ping it after sending
+the "new" command and after trying to place it in force mode at the
+end of a game.  When a ping has been sent and the corresponding pong
+has not yet come back, we (1) ignore or undo any moves the engine
+sends, (2) ignore game end messages (such as "offer draw", etc.) from
+the engine, (3) ignore thinking output from the engine, (4) delay
+starting the next game if in -matchGames mode, (5) in -zippyPlay mode,
+respond to challenges with a polite message to try again soon instead
+of accepting them.  There are a few more things that should be done
+(and item 5 might not be quite what we want), but it's hard to fit
+them all into the existing code.
+	
+* Patched the version of GNU Chess 5.00 included with WinBoard to
+support protover, feature, setboard, and ping, and to fix some minor
+bugs.  See gnu500+.patch.
+
+* Changed the GNU Chess 4 kludges for missing "st" and "sd" commands
+to be invoked only if the engine gives an error message for "st" or
+"sd", and to always use protocol commands instead of engine
+command-line options.  See "Idioms" in engine-intf.html.
+
+* Added new protocol command "protover 2" to tell the engine what
+version of the protocol is in use.  Version 2 is still compatible with
+old engines; see engine-intf.html.
+
+* Add new protocol command "feature ..."  The engine can send this in
+response to the protover command command, to say what extended
+protocol features it would like to enable, etc.  xboard responds
+"accepted F" or "rejected F" for each feature F that is set.  See
+engine-intf.html.
+
+* Added new protocol command "setboard <fen>".  This is an alternative
+to "edit", used only if the engine says "feature setboard=1".
+
+* Added new protocol command "ping <msg>".  The engine is supposed to
+respond "pong <msg>".  This gives us a tool to fix some race
+conditions in the protocol, but it is not used to the fullest yet.
+
+* Added new protocol command "tellopponent".  This will do a "say" if
+you're on a chess server in Zippy mode, or pop up an information
+dialog otherwise.
+
+* Added new protocol command "tellall".  This will do a "kibitz" if
+you're on a chess server in Zippy mode, or pop up an information
+dialog otherwise.
+
+* Added new protocol command "tellothers".  This will do a "whisper" if
+you're on a chess server in Zippy mode, or do nothing otherwise.
+
+* Changed the WinBoard /icsNames, /icsMenu, /firstChessProgramNames,
+and /secondChessProgramNames options to accept a filename preceded by
+"@", meaning to find the value in the file.  Changed the defaults to
+use this feature, with filenames icsnames.ini, icsmenu.ini, fcp.ini,
+and scp.ini.  This should make it easier for users to edit the values,
+since one less level of quoting is needed, and each value is in its
+own file, not mixed into winboard.ini.  Those who upgrade from an
+older winboard version and already have a winboard.ini file will not
+automatically have these values moved to a file; that has to be done
+by hand if desired.
+
+* We now strip .exe from engine names for "name" command, tags, etc.
+
+* Allowed WinBoard input widget to hold more than one line.  You can get
+a newline into the widget with copy/paste or with Ctrl+Enter.
+
+* Fixed an xboard bug where the [P] button would appear in the
+opposite highlight state from what it should be after being pressed.
+
+* We now use the "/" or "$" alias suppression feature on the chess
+servers, to avoid problems if the user inadvertently aliases a
+needed command to something else.
+
+* Changed the method used to deiconize xboard in AutoRaise and cmail.
+This may fix bugs under some window managers where after
+deiconization, the board window was mapped but nothing was drawn
+inside.
+
+* Preliminary, partial support for playing several chess variants
+against a local engine or editing variant games.  The -variant option
+must be given on the command line or WinBoard startup dialog; there is
+no menu.  The current variant is not displayed (except in the
+Tags/EditTags window).  Many variants will not work quite right even
+if the engine supports them; see item 326 in the ToDo file for
+details.
+
+* Added a workaround to detect the variant type when examining a
+scratch wild game on an ICS.
+
+* Fixed two cases where "variant" command should be sent to the engine
+when necessary but was not: loading a game from a file and restarting
+a dead engine.  Thanks to Gian-Carlo Pascutto.
+
+* Added missing support for FICS games that start from a bsetup position
+with Black moving first.
+
+* Fixed a bug in loading a file from the game list window while in
+Analysis or AnalyzeFile mode.  This now leaves us in AnalyzeFile
+mode, analyzing the new file.
+
+* Fixed a bug in loading games with a comment before the first move.
+
+* Fixed a bug in handling LoadGame (or -lgf) with -td 0.
+
+* Added a command line option to select an initial minor mode from the
+Mode menu.  This should satisfy requests from a couple of users with
+special applications.
+
+* Fixed a problem where some things in WinBoard's General Options
+dialog box were grayed out at the wrong time.
+
+* We look for a few messages from the chess engine pipe that are
+intended to catch problems starting an engine via rsh, such as "No
+such file".  Moved code so that these strings won't match until other
+protocol messages have been looked for, and documented the messages in
+engine-intf.html.
+
+* Fixed the WinBoard bug that sometimes made the console input box
+white-on-white even when not in password-entry mode.
+
+* Small changes to WinBoard to be compilable with the latest Cygwin
+net release (as of 10-16-2000).  Thanks to Mark Schoenberg.
+
+* Recompiled GNU Chess 5.0 for WinBoard with the latest Cygwin net
+release (as of 10-16-2000).  Also rebuilt the book just to be sure,
+since I had one bug report about it.  It came out identical and seems
+to work fine.
+
+* Added messages for some common InstallShield errors instead of just
+printing InstallShield's stupid error code numbers.
+
+* Added -firstComputerString and -secondComputerString, allowing you
+to suppress or change the command that is sent to a chess engine when
+its opponent is another computer.
+
+* Added "configure --with-Xaw3d" to allow use of Xaw3d widgets instead
+of Xaw widgets in xboard.  Thanks to Johnny C. Lam of the NetBSD
+project.  I've left Xaw as the default because Xaw3d is too ugly.
+	
+* The version of the Xaw Form widget released in XFree86 4.0.1
+(X11R6.4.3) has a bug that causes xboard to display the button bar
+on top of the message widget.  I've reported the bug and have
+installed a kludge workaround into xboard.
+
+xboard/WinBoard 4.1.0 -- Sun Sep 17 17:30:14 PDT 2000
+Tim Mann
+
+* Merged Winboard Plus 4.0.8 from Mark Williams into xboard
+  source pool.  Status of Winboard Plus features in xboard:
+
+  - White pieces now have borders, but the implementation is
+    completely different from WinBoard's; see below.
+
+  - Options menu not changed, probably won't be.
+
+  - Copy&paste support working, using Mark's changes to backend.c, Ben
+    Nye's changes to xboard.c for FEN positions, and some code of my
+    own in xboard.c for PGN games.
+
+  - Premove hooked up and working.  No pre-first-move, though.
+
+  - ICS Alarm hooked up and working.
+
+  - Auto-flip working.
+
+  - PGN Training mode hooked up and working.
+
+  - Improved menu item enable/disable working.
+
+  - Improved >> button working.
+
+  - Auto activate board working.  I changed this to be optional; you
+    might not always want it, especially in Zippy mode.
+
+  - Blindfold working.
+
+  - Documentation updated.
+
+* Fixed more colorization bugs.  Commands like "message foo tells you:
+xxx" and "tell 33 tells you: xxx" will no longer generate bogus
+colorization.
+
+* Added low-tech sound support to xboard, by invoking an external
+program on a filename for each sound to be played.
+	
+* ICC wild 27 is now recognized as VariantAtomic, and it sets the
+"ignore check" flag, but is not otherwise supported.
+
+* Converted the piece bitmaps from .bm to .xpm for use with xboard's
+xpm support.  (An .xim version was not created.)  Wrote a shell script
+using ImageMagick to do the conversion and to bucket fill from
+coordinate 0,0 with the background color.  Used xpaint by hand to
+clean up a few pieces where background color "leaked" into the inside
+or didn't flow all the way around the outside, then a sed script to
+fix up color names and bitmap names in the xpaint output.  If any more
+sizes are added later, they should be straightforward to convert with
+reference to the existing scripts.  With this conversion, not only do
+the white pieces now have dark borders, but (unlike with WinBoard) the
+light details on the black pieces are opaque.
+
+* If the XPM library is found when building xboard, the new xpm pieces
+are compiled in as the default.  External bitmap (or xpm) pieces can
+still be used by giving the -bitmapDirectory (or -xpmDirectory)
+option.  If the XPM library is not found, the old bitmap pieces are
+the default.  In this case external bitmap (or xim) pieces can be used
+by giving the -bitmapDirectory (or -xpmDirectory) option.  There is no
+way to compile in xim pieces.
+
+Winboard Plus 4.0.8 -- Sat Aug 5 15:51 PDT 2000 
+Mark Williams
+
+* Bugfix release.
+
+* Main menu now visible in Win NT.  Thanks to Microsoft for creating a 
+compiler which auto-mutilates the WinBoard.rc file so that the menu is
+displayed under Win 98 but not Win NT.  I fixed the problem by hand editing the
+.rc file.  Sigh.
+
+* "Reset game" now works properly when invoked from Analysis mode when two
+engines are present. Correction of bug introduced in Winboard Plus. Thanks to
+Mogens Larsen for reporting the bug.
+
+* Pasting a FEN position with Black to move now works in all modes.
+Thanks to Mogens Larsen for reporting the bug.
+
+* Added gnuchess.dat to the distribution and a couple of text files that were
+missing in 4.0.7.
+
+*** Merged in the following changes from Tim Mann:
+
+* Bugfix: Highlights would sometimes not be taken down, at least in
+xboard.  The problem is that SetHighlight works in chess coordinates,
+not view coordinates, so if flipView has been toggled since the
+highlight was put up, it gets taken down from the wrong square.  Fixed
+by being careful to call ClearHighlights before toggling flipView, not
+after.  Ugh.
+
+* Bugfix: HighlightLastMove would sometimes highlight square a1 after
+a FICS "tomove black" command.
+
+* Bugfix: a move list with initial position that has black to play was
+not being handled correctly.
+
+* Removed "decline abort" and "decline adjourn" commands from Zippy.
+The syntax is changing on FICS, and Zippy really doesn't have to
+explicitly decline the requests anyway; it's sufficient to not accept
+them.
+
+* ICC wild 26 is now recognized as VariantSuicide (the FICS name; ICC
+calls it "giveaway").
+
+* Bugfix: PGN games with black to move in the initial position weren't
+being legality checked correctly.  I think this was introduced in
+4.0.6 when I fixed a different PGN bug.  Thanks to Mark Williams for
+spotting the bug and suggesting a fix.
+	
+* Bugfix: the initial "name(" of a kibitz wasn't being colorized.
+
+Winboard Plus 4.0.7 -- Thu May 12 17:57 PDT 2000 
+Mark Williams
+
+* New white pieces with black borders.
+
+* Major overhaul to Options menu. New dialogs for setting General Options,
+  Board Options, ICS Options, Sounds, Fonts, Colors.
+
+* Clipboard support for PGN game scores and FEN positions.
+
+* Optional ICS Premove with user-specified first moves for White and Black.
+
+* New sound events: ICS Win, ICS Loss, ICS Draw, ICS Unfinished, ICS Alarm.
+
+* New auto-flip option when playing against a chess program.
+
+* Added PGN Training mode.
+
+* Certain menu options now disabled while program is thinking.
+
+* ">>" button now always goes to the end of the game.
+
+* In ICS mode, the board is automatically activated at the start of a
+new game.
+
+4.0.7 -- Sun Mar  5 17:17:49 PST 2000  Tim Mann
+
+* Fixed a nasty bug in parsing ICS game histories that was introduced
+in 4.0.6.
+	
+4.0.6 -- Fri Mar  3 16:20:11 PST 2000  Tim Mann
+
+* Fixed bugs in Zippy's code for responding to messages sent with the
+ICS "message" command.
+	
+* Fixed bugs where xboard could still create dialogs partially off the
+top of the screen.  Fixed unwanted interactions between initial sizes
+and positions of various unrelated xboard dialogs.  Deleted
+borderXoffset and borderYoffset resources.
+
+* Fixed restoring the xterm name on exit to work in more cases.
+	
+* Small fix to the WinBoard self-extracting installer: when it starts
+up, it now always deletes any old wb-setup directory left over from a
+previous installation.  Formerly this worked only on Windows 95/98, so
+on NT the self-extractor would sometimes stop and ask the user whether
+it was OK to overwrite the old wb-setup files.
+
+* Modified WinBoard to be compilable with the free Cygwin tools
+available from http://sourceware.cygnus.com/cygwin/.  Based on work by
+Mark Schoenberg.  (His mods were enough to get WinBoard through the
+compiler, but a few things were broken along the way, so I reworked them.)
+	
+* Merged changes from Don Fong to make WinBoard compilable with
+Borland C++ 4.5.  I do not have Borland C++ and am unable to test with
+it, but I did make sure the changes don't stop it working with MSVC++
+5.0 and Cygwin.
+
+* Forbade entering TwoMachines mode from MachineWhite or MachineBlack
+mode when machine is on move.  This used to confuse the engine and
+cause problems, because when we try to get the engine to stop, it
+might make a move first, and it might not do that immediately.
+	
+* Variant classification now deals with new ICC wild 25, classifying
+it as "3check".  Also, we are now conservative about new wild numbers
+we don't know about, classifying them as "unknown" instead of
+"normal".
+
+* Replaced bad GNU Chess 5.00 book in WinBoard distribution with a
+correct one.  1.e4 now no longer takes GNU Chess 5.00 out of book!
+Thanks to Pete Galati.
+
+* Made move parser accept and ignore nonstandard ep suffix on PGN moves,
+e.g., "exf6ep" or "exf6e.p."
+
+* Fixed bugs in parsing PGN files starting with no move number, or
+with a move number other than "1." (including "1...").  Thanks to
+Michael Soulier and Stefan Zipproth for example PGN files
+demonstrating the bugs.
+	
+* Changed InitComboStringsFromString to not modify the input string;
+this caused an exception when WinBoard was compiled with MSVC++ 6.
+Thanks to Bert Tuyt for the report.
+
+* In WinBoard, dragging a piece off the edge of the board without
+releasing the mouse button no longer instantly aborts the move.  You
+still must release the mouse button inside a square to complete a
+move, but you can now drag off the edge and come back inside.
+	
+* WinBoard bugfix: If you went into EditGame or EditPosition mode
+while observing or playing an ICS game, and a new move came in
+(snapping you back to ICSClient mode) while you were dragging a piece
+around, the drag state would not be reset, causing the piece you were
+dragging to remain on the board wherever you dropped it.  Thanks to
+David Brinegar for the bug report.
+
+* WinBoard bugfix: If you moved or resized the board while your
+opponent was moving, and you had AnimateMoving on, his move would not
+be displayed until after your next move.  Thanks to DAV for reporting
+the bug repeatedly until I finally understood it.
+
+* Added a Zippy "farewell" feature; see zippy.README.
+	
+* Fixed a bug (xboard only) in processing -zippyReplayTimeout on the
+command line.  Thanks to Steve Beer for the report and patch.
+
+* Send "computer" command to both sides in TwoMachines matches.
+	
+* Fixed a Y2K bug in Evan's cmail code!  Thanks to Brian Mays for the
+report and patch.
+	
+* Bugfix: Initialize variant field of GameInfo struct in gameinfo.c.
+This could cause crashes in LoadGame.  Thanks to Andrzej Nagorko.
+	
+* Fixed several pattern matching problems: Finger notes and formula
+vars no longer get replied to by zippyTalk or colorized.  Channel
+tells by players with many titles are now colorized fully, and
+zippyTalk handles channel tells by such players correctly.  The shout
+"--> foo(99): bar" no longer gets colorized as a channel tell.  Code
+is cleaned up a bit, and autocomment capture now uses the same
+criteria as colorization.
+
+* xboard fix: Enter key now closes error popups as in WinBoard.
+Especially nice for the "Exiting: Connection closed by ICS" popup.
+
+4.0.5 -- Tue Dec  7 10:30:40 PST 1999  Tim Mann
+
+* Added missing documentation of SIGTERM usage into engine-intf.html.
+
+* Bugfix: New -zippyReplayTimeout option was misspelled in WinBoard as
+-zippyReplyTimeout.  Thanks to Francesco Di Tolla.
+	
+* xboard -ics now restores the xterm's original title upon exit, at
+least if $WINDOWID is set.
+
+* Bugfix: -matchGames mode wasn't terminating properly.  Final score
+popup would come up twice and engines would not be killed off.  Thanks
+to Frank Quisinsky for the bug report.  Bug was introduced in 4.0.4.
+
+* Bugfix: "tell 50 foo shouts: bar" no longer gets colored as a shout;
+similarly for "...s-shouts:" and "...c-shouts:".  Thanks to David Lee
+for the bug report.
+
+4.0.4 -- Fri Dec  3 17:51:27 PST 1999  Tim Mann
+
+* Bug fix: formerly if you invoked SaveGame from EditPosition mode
+with black to play, the position was not saved properly.  As a quick
+fix, SaveGame now takes you out of EditPosition mode before saving.
+
+* Changed -matchGames to keep track of the score (won-lost-drawn) and
+display it in the banner.  The final score is displayed in a modal
+popup before the program exits.
+
+* Changed "Connection closed by ICS" to display in a model popup
+before the program exits.
+
+* Added -popupExitMessage option, default on.  Setting this to false
+suppresses the modal popups that you sometimes get just before
+xboard/winboard exits -- both the two new ones listed above and the
+existing Fatal Error popup.  This is useful when running Zippy
+unattended from a shell script (or .bat file) that loops and starts a
+new copy after a time delay when there is an error.
+
+* In xboard, added missing support for WM_DELETE_WINDOW to all
+windows.  This makes xboard a better citizen, and is much needed with
+the newer X window managers that put an [X] button on every window and
+bind it to "kill application" if the applicationd does not support
+"delete window".  We can't allow xboard to be thoughtlessly killed,
+since that leaves the chess engine running in the background.
+
+* We now avoid positioning tops of xboard dialog boxes offscreen.
+
+* zippy.lines can now use the caret ('^') character as an inter-saying
+separator. You no longer need to dig up a text editor that can put NUL
+('\000') characters in text files.
+
+* Bugfix: In traditional chess clock mode, White now gets time added
+to its clock as soon as it makes time control.  Previously both White
+and Black got their time added only when Black made time control,
+which would cause some engines to make their 41st move as White too
+quickly, thinking they were low on time.
+
+* The zippyAcceptOnly feature no longer sends a decline command or
+a tell.  Thus you can use it to put Zippy into a manual accept mode.
+
+* Bugfix: "tell 50 foo tells you: bar" no longer gets colored as a
+personal tell; similarly for "...whispers:" and "...kibitzes:".
+
+* WinBoard no longer blanks the message line when you start a new
+move, unless there was an error message there from the previous move.
+
+* WinBoard now never puts the white piece drop menu on the middle
+mouse button.  Both colors are always on the right button.  Windows
+users often don't think to look for a middle button menu, or don't
+really have a working middle button despite what Windows says.
+
+* Guest login handles on ICC are now parsed again; an ICC wording
+change had broken this feature.
+	
+* Autodetect when the engine does not support the "draw" command and
+don't relay the command to it in that case.  Needed because sending an
+unsupported command to GNU Chess makes it move immediately, so people
+could make Zippy move without thinking by continually offering a draw.
+Thanks to Frank Walker for the problem report.
+
+* Small changes based on code from Robert Jurjevic: The WinBoard
+analysis window can be minimized (though not to the taskbar).  The
+WinBoard ICS Interaction window will autoscroll if you drag the mouse
+above or below the window while selecting, and password entry mode
+leaves the entry line as the background color instead of using 75%
+gray.  Seeks are now colorized with a new color of their own.
+
+* Added -zippyMaxGames feature.
+	
+* -zippyNoplayCrafty command line option was missing in xboard; fixed.
+Thanks to John Perry.
+
+* Fixed bug in detecting when Zippy loses his bughouse partner.
+Thanks to Ben Dean-Kawamura.
+
+* allobs fix in 4.0.3 didn't work; corrected it.
+
+* WinBoard will now update the board immediately if a move is made
+while the window is being moved or resized.
+	
+4.0.3 -- Sun Aug 15 18:44:39 PDT 1999  Tim Mann
+
+* Bugfix: moved winboard wizard functions that send a command directly
+to the chess engine from Ctrl+Alt+1 and Ctrl+Alt+2 to Alt+1 and Alt+2.
+Ctrl+Alt is equivalent to the European AltGr key, so the old assignments
+conflicted with typing an @-sign on some keyboards.
+	
+* Bugfix: prevent "If this message stays up, your chess program does
+not support analysis" from appearing if AnalysisMode is selected when
+already in Analysis or AnalyzeFile mode.  Also, deleting analysis window
+in WinBoard now switches you to EditGame mode, to avoid the anomaly of
+being in an analysis mode with no analysis window present.
+	
+* Change all Zippy environment variables to work as command line
+options.  For now they still work as environment variables too, but
+the environment variables are deprecated.
+
+* Use unsigned long to hold node counts from engines.
+
+* Print error instead of crashing on attempts to use xpm or xim pieces
+in monochrome mode.  Thanks to Jim Torrance for the bug report.
+
+* Tightened pattern recognition for ICS messages sent to Zippy; should
+no longer match ICC allobs output.  Fixed recognition of when Zippy is
+sent a message; small change to FICS output had broken it.
+	
+* Zippy now exits if the engine dies unexpectedly.
+
+* Added Zippy "spoofedby" feature; see zippy.README.
+	
+* Narrowed the margins on some older WinBoard dialogs to make their
+style uniform with the newer ones.
+
+* Bugfix: Changing Ponder Next Move from the Options menu did not take
+effect until the next game.  This bug was in WinBoard only.  Thanks to
+Stefan Zipproth for the bug report.
+
+* Got rid of "Internal error: bad move type" message when the engine
+makes a move that we can parse but think is illegal.  Now the move is
+just passed on (which also may be the wrong thing to do).
+
+4.0.2 -- Thu Feb 25 19:55:32 PST 1999  Tim Mann
+
+* Added one more built-in sound choice to WinBoard: move.wav from Pete
+Galati.
+	
+* Added new larger piece sizes: big, huge, giant, colossal, titanic.
+	
+* Modified the xboard font searcher to be able to use scalable fonts.
+The new -fontSizeTolerance flag controls how closely a nonscalable
+font must match to be used in preference to a scalable font.
+	
+* Zippy environment variables ZIPPYABORT and ZIPPYADJOURN now control
+whether Zippy will accept abort and adjourn requests.
+
+* We now determine the variant type being played on ICS, send it as a
+command "variant VARTYPE" to the chess engine (if in Zippy mode), and
+put it in the PGN tags.  See engine-intf.txt for variant names.  See
+ZIPPYVARIANTS in zippy.README to control what variants Zippy will
+accept.  Note that this now applies to bughouse, too.
+
+* Zippy now won't do -zippyTalk in a channel unless his handle is
+mentioned there.
+
+* Zippy now ignores bughouse holdings if not actually playing, instead
+of stupidly trying to abort the game.  Let me know if other strange
+things happen when Zippy is observing a game.
+
+* Set ICS Interaction title bar to "user@server".  User name is
+determined by parsing message during the login sequence.  Zippy now
+uses this method to get its name too, so ZIPPYNAME is eliminated.
+Problem: with xboard, the title bar gets set to "xterm" upon exit,
+since we didn't know what it was to start with.
+
+* Fixed xboard-only bug in -colorChannel1 command line option.  Thanks
+to Fredrik Sandstrom for the bug report and fix.
+
+* Check for overflow of MAX_MOVES.  Still not sure this is checked for
+everywhere it needs to be.
+
+* Added .epd to suffixes recognized by WinBoard as position files.
+This is a bit of a kludge, as the .fen reading code was not written
+with .epd files in mind, but reading them with it is said to work.
+
+* Added ZIPPYGAMESTART feature, suggested by Jason Hoblit.  See
+zippy.README.
+
+* Restored the feature of soaking up the moves from a user-typed "moves",
+"oldmoves", or "smoves" ICS command when xboard/WinBoard is idle, but
+changed it so that the move list is also echoed to the screen.  Some folks
+still liked the old feature since it is faster than examine mode, and
+printing the moves to the screen should eliminate the confusion it caused
+for other people.
+
+* Bugfix: in WinBoard, starting a click-click move and then clicking on
+a black line would cause the source square to be forgotten without taking
+the highlight down.  Now the errant click is ignored.
+
+* Corrected shortcut key labels for LoadNext/PrevPosition in WinBoard's
+File menu.  Thanks to Andreas Stabel for the bug report.
+
+* Bugfix: if you had a completely full ICS context menu in WinBoard
+(90 items), the last one would do nothing if selected.
+
+* The "computer" engine command added in 4.0.1 was not working; I had
+left out part of the code patch.  Oops.
+
+4.0.1 -- Fri Feb 12 21:24:15 PST 1999  Tim Mann
+
+This is a minor bugfix release.  The first item listed below is the
+only interesting new feature.
+
+* You can now type in moves from the keyboard in WinBoard.  Either
+select TypeInMove from Step menu, or (if you are not in ICS mode),
+just start typing.  In ICS mode you can type moves into the ICS
+interaction window anyway, so I've retained the feature that typing
+switches you there.  Not implemented in xboard.
+
+* Removed the "noise 1000" command that used to be sent to the chess
+engine when entering analysis modes.
+
+* Deleted the feature where we soak up the output of a user-typed ICS
+"moves" or "oldmoves" command.  This ancient feature is not really
+useful anymore, now that "examine" exists, and it caused a lot of
+complaints.
+
+* Increased maximum size of ICS text menu to 90 entries and added
+overflow checking.
+
+* The command sent to ICS by Zippy at the end of each game can now be
+customized with the ZIPPYGAMEEND environment variable.
+
+* We treat xboard.info as a pseudo-source since most people don't have
+the tools to rebuild it.  But "make install" erroneously had a
+dependency on it, even though "make all" did not.  Fixed.
+
+* Miscellaneous minor updates and clarifications to engine-intf.txt.
+In particular, documented the st and sd commands (support for command
+line options -searchTime and -searchDepth), warts and all.
+
+* Added a small code patch from Bob Hyatt to detect when Zippy's ICS
+opponent is a computer and send the command "computer" to the engine.
+Added this command to engine-intf.txt.  Thanks, Bob.
+
+* Bugfix: configure was looking for usleep(), but config.h.in didn't
+have an entry for it, so HAVE_USLEEP was never defined.  Also, in the
+non-HAVE_USLEEP case, there was a possible race condition between the
+signal handler and the pause() call.  Thanks to Ben Dean-Kawamura for
+the bug reports.
+
+* Bugfix: a "1..." preceding Black's first move (usually present if
+there is a comment on White's first move) would cause the parser
+to think a new game started there and report "End of game" on the
+current game.  Thanks to Dell Garner for the bug report.
+
+* Changed the abbreviation for -searchDepth from -sd to -depth to fix
+a clash with -secondDirectory.
+
+* Changed -searchDepth to be orthogonal to the various timing options.
+Previously it would search for an unlimited time to the given depth;
+now the engine is allowed to choose its search time in the normal way,
+but is told to cut off the search early if it reaches the given depth.
+
+* Bugfix: SaveSettings in WinBoard was saving both the long form
+option highlightSquareColor and its abbreviation (hsc).
+
+* Fixed a redisplay bug in DisplayBothClocks that could cause White's
+clock to be highlighted in EditPosition mode when Black's should have been.
+
+* Fixed Zippy's feature of passing on draw offers from the ICS opponent.
+The colorization code was eating the offer before Zippy saw it, so I disabled
+colorization of offers while in -zp or -zt mode.  (Other types of
+colorization are already disabled in Zippy mode for similar reasons.)
+
+* Added some more commands to the default ICS context menu in WinBoard,
+and put "(name)" on the ones that insert a playername (or game number).
+
+* Added missing documentation to WinBoard help file: PonderNextMove, the
+-ponder/-xponder argument, and the up/down arrow history feature in the
+ICS Interaction window.
+
+* Fixed	ZIPPYNOPLAYCRAFTY feature to fire only if the opponent is Crafty,
+not if some other Crafty is observing the game and kibitzes.
+
+* Fixed bugs in generating "partner" commands when Zippy is playing
+bughouse.
+
+4.0.0 -- Sat Jun 20 16:59:47 PDT 1998  Tim Mann
+
+* Fixed WinBoard resizing so that the edges you do not drag remain in
+place, even when the final size is different from what you dragged to.
+(This doesn't work on NT 3.51 or earlier, if anyone cares.)
+
+* Fixed problems with resizing WinBoard on Windows NT: you no longer get
+whitespace around the board, a clipped board, or a lot of flashing during
+the drag.
+
+* Added customization for highlight-square color.
+
+* Bugfix: backend.c wrote to stderr in a few obscure places, which doesn't
+work in WinBoard.
+
+* Added Index Number field back to LoadGame/LoadPosition dialog boxes in
+WinBoard.  This required some extra code to work with both the
+Explorer-style dialog boxes and the old-style NT 3.51 dialog boxes.  Ugh.
+
+* WinBoard startup dialog now understands -zp mode.  The first chess
+engine selector is enabled and the value is used.
+
+* Bugfix: ResetGame would send "exit" to engine twice if it was in an
+analysis mode.
+
+* Bugfix: The response "Illegal move: bk" to the "bk" command, indicating
+that it is not implemented, would confuse xboard.
+
+* Bugfix: Ignore empty hints ("Hint:\n") instead of printing a message
+saying that some bogus string (often "Hint:") is illegal.
+
+* Bugfix: LoadNextGame/LoadPreviousGame/ReloadSameGame were broken.
+
+3.6.12 -- Sat Jun 13 14:57:10 PDT 1998  Tim Mann
+
+Beta test release of xboard and WinBoard.
+
+* Spruced up xboard man page a bit.
+
+* Added Highlight Last Move to xboard too.
+
+* The revamped xboard mouse click code had several more bugs than the
+previous version, so I revamped it again.  All fixed now, I hope.
+
+* xboard bugfix: crash in CreatePieceMenu.
+
+* Oops.  winboard-3_6_11beta.exe installed 3.6.10beta, not the new version.
+
+3.6.11 -- Fri Jun 12 20:00:48 PDT 1998  Tim Mann
+
+Beta test release of xboard and WinBoard.
+
+* Major reorganization to engine-intf.txt.  Some new features added,
+many existing features clarified and hints for engine programmers added.
+Support for new features added to program.
+
+* Changed defaults for -scp (etc.) back to being independent of -fcp, as
+in 3.6.2. That is, the default is no longer to copy the value from -fcp if
+-scp is not specified.  This will sometimes make command lines longer but
+will remove some confusing situations.
+
+* Split -reuseChessPrograms into two options: -reuseFirst and
+-reuseSecond.  Fixed obscure bugs when reuse is off.
+
+* Detect ICC and change some command usage slightly there: only ICC has
+set-quietly; only FICS has iset and bsetup clear.  With this feature, we
+can now safely use bsetup clear when appropriate instead of deleting each
+piece one by one.
+
+* Added indent to lines that are wrapped by WinBoard ICS Interaction
+window.  This seems to tickle a Microsoft bug in the RichEdit control:
+occasionally the start of the next line after the wrapped line is indented
+too.  I think the wrapped indent feature is useful enough that it's worth
+having in spite of the bug.
+
+* WinBoard bugfix: bounding box for the board was computed incorrectly by
+mouse code.  It would think you moved off the bottom of the board before
+you really did, so it was hard to drag pieces along the bottom rank on
+smaller board sizes.
+
+* Fixed obscure parser.l bug: ambiguity between capture using : instead of
+x and email header line.  Also removed or simplified a lot of complex
+patterns for English (as opposed to PGN) end-of-game indications while I
+was in there.
+
+* Added PonderNextMove option.
+
+* xboard EditPosition piece menus now let you set the side to play by
+selecting the "White" or "Black" label at the top of the menu, like
+WinBoard.  (Both xboard and WinBoard still let you set the side to play by
+clicking on the clock.)
+
+* Merged documentation of Crafty and GNU Chess thinking output in
+engine-intf.txt.  Corrected code in backend.c to match documentation; it
+used to require the PV to start in column 27 (!).
+
+* Fixed bug that caused crashes in "-reuseChessProgram false" mode.
+
+* Draw by agreement in Two Machines mode now works as it is supposed to.
+Other minor bugs in handling game end messages from machines are also
+fixed, and engine-intf.txt is revised in this area.
+
+* Revamped xboard code for handling mouse clicks on the board.  In
+particular, it had a bug if a click-click promotion move was made.
+
+* Fixed and reinstated optimization for << in analysis modes: send
+initString and re-send the board if needed.  Sending repeated undos
+is bad because Crafty prints some analysis after every one.
+
+* Don't go into a spin loop while pausing between xboard animation frames.
+This caused problems, especially when compiling with -O2 on HP-UX.
+
+* WinBoard Options/Colors/RevertToDefaults now also turns off Monochrome
+if it was on, and similarly for Options/ICSInteractionColors/RevertToDefaults.
+This seemed to confuse people before.
+
+* Bugfix: ICS Interaction context menu items with neither of the two
+optional flags set did not work.
+
+* Bugfix: PGN move numbers are optional, but we were insisting on "1"
+right after the tags.
+
+* Bugfix: only the first game of an -mg match was loading -lpf or -lgf.
+
+* Other minor fixes and code cleanup.
+
+3.6.10 -- Mon Jun  1 01:32:31 PDT 1998  Tim Mann
+
+* Added ZIPPYNOPLAYCRAFTY feature; see zippy.README.
+
+* Added timestamps for chess engine interaction to -debug output.
+
+* Now allow 10 seconds (was 5) between games in match mode for engines to
+respond to "force" command that ended previous game.
+
+* When a game is picked from the game list and the names of White and
+Black are known, display them in the window banner instead of the filename
+and game number.
+
+* Changed default for -scp and -sd to be the values of -fcp and -fd.
+
+* Added boxes for both engines to WinBoard startup dialog.  Changed to
+dropdown boxes whose content can be set from winboard.ini, similar to
+the box for ICS name.
+
+* Accept "offer draw" (or "*offer*draw*") from engine to offer a draw.
+
+* Accept "move mmmm" from engine as well as silly "1. ... mmmm" syntax.
+
+* Added support for bughouse engines (Zippy mode only).
+
+* Move bombproofing for engines sending illegal or out of turn moves.
+
+* Always send "xboard\n" to engine as first command.  Eliminates need
+to run crafty as "crafty xboard".
+
+* Rewrote xboard code for input from engines to fix longstanding bugs.
+Previously an engine that sent one line in two separate writes with 
+some time lapse in between (or perhaps that sent several lines in one
+write) could make xboard hang.  WinBoard did not have this bug.
+
+* Fixed minor bugs in dealing with illegal moves.
+
+* Added "iset startpos 1" for FICS.
+
+* Removed special support to put "GNU Chess" or "Crafty" in the window
+banner instead of the engine's base filename.  This gives a more level
+playing field for other engines.  Also fixed bugs in the code that finds the
+engine's base filename.
+
+* Bugfix: Abort or Resign at the very start of a game in chess engine mode
+would fail to send "force" to the engine.
+
+* Fixed some minor bugs in new "result" messages, and changed format to
+include a trailing PGN comment giving the reason the game ended.
+
+* Changed syntax of /font options in WinBoard; old syntax was assuming
+that a font name can't contain a digit, which is wrong.  Old font names in
+WinBoard.ini files are still accepted.
+
+* Serious further work on getting WinBoard to read/write files in the
+"right" directories and documenting exactly what it does.
+
+* Added LoadPreviousPosition, LoadNextPosition, ReloadSamePosition.
+
+* Misc. tiny fixes and cleanup.
+
+3.6.9 -- Sun May 24 20:53:08 PDT 1998  Tim Mann
+
+xboard and WinBoard beta release.
+
+* Tightened up illegal move handling.  Illegal or meaningless moves from a
+file or chess engine should no longer get translated into a1a1 and blindly
+applied.  Explicit moves to the same square (like a1a1) no longer make the
+piece on that square capture itself and vanish.
+
+* Added AlwaysOnTop feature to winboard.
+
+* Fixed bug in winboard "@" command line indirection operator.
+
+* Removed buggy "optimization" code for ToStart in analysis modes.
+
+* Fixed typo bug in zippy.c that would often cause winboard to crash
+right after starting a game in -zp mode.
+
+3.6.8 -- Sat May 23 22:23:19 PDT 1998  Tim Mann
+
+xboard and WinBoard beta release.
+
+* Added -firstDirectory and -secondDirectory so that chess engines can
+be started in a different directory from xboard/WinBoard itself.
+
+* Added -matchGames to allow more than one game in -matchMode.  The games
+are played with colors alternating between the two chess engines.  Had to
+add a time delay at the end of each game to catch up with game ending
+messages from both chess engines -- yuck.
+
+* Changed TwoMachines mode to have firstChessProgram play White by
+default.  Added -firstPlaysBlack to restore old behavior.
+
+* Major rework of code in backend.c for dealing with first and second
+chess engines.  Generalized the code and created a struct type with one
+instance for each engine.  Several small bugs fixed along the way. 
+
+* Fixed bugs in Abort in local chess engine mode.
+
+* Tightened pattern matching to recognize moves from machine.  Should cure
+bogus "Illegal move" errors while Crafty is pondering with Show Thinking
+on, among other things.
+
+* WinBoard keeps focus in board window after popping up a comment due to
+Forward/Backward/ToStart/ToEnd commands.
+
+* Finally got rid of warnings on compiling moves.c under Windows.
+
+* Fixed so WinBoard will compile on machines where WM_MOUSELEAVE is not
+defined.
+
+* Removed various bits of unused code.
+
+* Parse (and ignore) NAGs in PGN files.
+
+* Updated engine-intf.txt.
+
+* Send "result R" to the chess program at the end of each game, where
+R is the PGN result 1-0, 0-1, 1/2-1/2, or *.
+
+* Bugfix: suppress animation when loading a game with timeDelay=0.
+
+* Bug fix: pondering output from Crafty that contained "..." could be
+mistaken for a move, causing bogus error messages and general chaos.
+
+* xboard "make clean" bug fix: moved things created by configure to be
+removed only by "make distclean".
+
+* Fixed a remaining case where move was being animated before being
+relayed to opponent.
+
+* Backend was reversing time/otim commands to the chess program (new bug),
+and was often not sending them on the first move of a game or the first
+move after a mode change (old bug).  Fixing the latter required a kludge
+to work with both GNU Chess and Crafty, because Crafty swaps white and
+black clock times when it swaps sides, while GNU Chess does not.  The
+kludge is that we always make sure the chess engine thinks its opponent is
+on move before we set the clock.  This will sometimes result in sequences
+like "white\ntime xxx\notim yyy\nblack\ngo", or the same with white and
+black interchanged.
+
+* Removed last trace of old -whiteString and -blackString arguments.
+
+* Fixed so that you can type "bd" into the Direct Command dialog when
+debugging gnuchess, without having xboard parse the clock display
+(starting with "White") as "White wins" and end the game.
+
+* Changed moves.c to make a distinction between IllegalMove (where we
+could tell what move was intended, but it violates the chess rules) and
+MeaninglessMove (where we could not tell).  This is a step towards getting
+rid of cases where we translate meaningless moves into "a1a1", but some
+work is probably needed to track them all down.
+
+* Fixed bug in WinBoard monoMode dragging.
+
+* Changed WinBoard to new style file dialogs.  In the process, disabled
+the feature that let you enter the index number of a game or position within
+the file in the dialog.  This is no loss in LoadGame, as you can pick your
+game from the game list dialog that follows, but it does remove some
+functionality from LoadPosition.
+
+3.6.7 -- Mon May 18 21:25:00 PDT 1998  Tim Mann
+
+xboard and WinBoard beta test release.  I've been unable to reproduce some
+reported drawing bugs, so they may still not be fixed.
+
+* Changed PopUpErrors option to PopupMoveErrors, which is more useful, and
+changed default to off.  Errors other than move errors should always be in
+popups; they are often too big for the message area and too important to
+put where they can be easily missed.  But it seems good to get rid of the
+popups for move errors by default.
+
+* xboard analysis window no longer forces itself to top whenever there is
+new output.  Also, now uses built-in Xaw word wrapping instead of trying
+to do its own; works better.
+
+* Bugfix: Reset did not take Crafty out of analyze mode.
+
+* A chess engine no longer has to claim to be Crafty to be able to use
+AnalysisMode and AnalyzeFile; it just has to implement the analyze
+command as Crafty does.  Put in heuristics to generate more informative
+error messages if the engine does not support analyze, and checked that
+they work at least with GNU Chess.
+
+* Added click-click moving, HighlightLastMove, and HighlightDragging to
+WinBoard.  The highlight features are unlikely to go into xboard unless
+the xboard drawing code is cleaned up to do *all* drawing on the board
+from DrawPosition, as WinBoard does.  This is low priority for me.
+
+* Eliminated bogus "Error gathering move list: no header" popup.  You
+could get this by observing two fast games at once without turning off
+GetMoveList.
+
+* Disable WinBoard Sounds menu entirely in -ncp mode, since not even
+MoveSound is used in that mode.
+
+* WinBoard bugfix: Several problems were caused if the user changed 
+WinBoard's current directory in a Load, Save, or Browse dialog.  In
+particular, WinBoard.ini would get saved in the wrong directory, and
+sound .wav file names would not get saved with a full pathname.  I think
+all such problems are now fixed.
+
+* WinBoard bugfix: iconizing the board after an aborted mouse resize would
+(partially) resize it to Tiny.
+
+* WinBoard bugfix: board was not being drawn in color on 256-color
+displays.  This bug was introduced in 3.6.6.
+
+3.6.6 -- Tue May 12 17:43:43 PDT 1998  Tim Mann
+
+xboard and WinBoard beta release.  Note: not all reported bugs are fixed.
+
+* Move animation in WinBoard, programmed by Henrik Gram.  Great stuff!
+
+* Animate backward moves too.
+
+* xboard bugfix: -font (and friends) can now specify a font alias (such
+as "fixed"), not just a full X Consortium name pattern.  Previously this
+would give a resource conversion error message.
+
+* Some coding style cleanup in xboard.c.
+
+* Earlier error check for moving wrong color piece in EditGame mode.
+
+* Completed fix to pattern matching; see 3.6.5.
+
+* Fixed some software rot bugs in Zippy.
+
+* Split AnimateDragging as separate option from AnimateMoves.
+
+* Added FlashMoves to options menu and -flash/-xflash to command line
+options (xboard only).
+
+* Some preliminary work on visible bughouse holding support.  Most of the
+code is not present in this release because I have not gotten it working
+properly yet; my first approach went down a blind alley and I had to
+remove most of the partially working code in preparation for a rewrite.
+
+3.6.5 -- Fri May  8 14:22:09 PDT 1998  Tim Mann
+
+Not generally released.
+
+* Pack bughouse holdings display in banner more tightly when board is one
+of the smaller sizes (when smallLayout or tinyLayout is true, that is).
+An interim measure, but should help.
+
+* Completed fix to make move list parsing recognize the end condition and
+final comment.
+
+* Fixed pattern matching for chatter (tells, etc.) to be more reliable.
+This should reduce the incidence of colors starting in the wrong place and
+of incorrectly matching things that look like other patterns inside
+chatter, such as "shout <12>".  (These errors were already rare.)
+
+* WinBoard now lets you customize the list of ICS's in the startup dialog.
+For now, at least, requires editing WinBoard.ini with a text editor.
+
+* Bug fix: WinBoard window sizing and position setting save/restore did
+not work right when the taskbar was at the top (or left side) of the
+screen and not in autohide mode.
+
+* Merged xboard click/click mode and drag mode, and deleted
+ClickClickMoving option on menu.  Now if you click on a piece, it
+highlights and a further click on another square will move it.  (A second
+click on the same square takes down the highlight.)  Or if you press down
+on a piece and start to drag, you can drag it to a new square.
+
+* When making click/click style moves, if your second click is on a piece
+of the same color, instead of saying "Illegal move", we now cancel the first
+starting square, replace it with the second, and wait for another click to
+finish the move.
+
+* Separate -secondInitString.  Default: same as -initString.  Suggested by
+Remi Coulom.
+
+* Patch from Frank McIngvale to make animation work with XIMs.  Yay!
+
+* Changed move animation to happen after move is passed on to ICS or the
+chess engine, where applicable.  Fixed problems with updating moveList
+that this uncovered.
+
+* Changed game list to show PGN result token for each game.
+
+* The usual minor bug fixes.
+
+3.6.4 -- Thu Apr 30 23:14:43 PDT 1998  Tim Mann
+
+xboard and WinBoard beta test release.
+
+* xboard documentation updated, both man page and info file.  An attempt
+to generate both from the same source with LinuxDocSGML was abandoned, at
+least for now.  WinBoard doc updated too.
+
+* Merged updates to animation code from Hugh.  Fixed a couple of remaining
+bugs, mostly to do with handling Pause mode correctly.
+
+* Added SaveSettingsOnExit to WinBoard.
+
+* WinBoard now saves the last screen position of the Comment, Edit Tags,
+Game List, and Analysis windows (in addition to the board and ICS
+Interaction windows) in WinBoard.ini.
+
+* WinBoard now provides a way to customize the right-button context menu
+in the output area of the ICS Interaction window.  For now, requires
+editing WinBoard.ini with a text editor.  
+
+* Various minor fixes to ICS message recognition, most affecting only Zippy.
+
+* Colorize the notification when someone sends you a message while you are
+logged in, not the output of the "messages" command.
+
+* Fixed colorization to turn off at the right place more reliably.
+
+* Added a new color and WinBoard sound for "requests": abort, adjourn,
+draw, pause, and takeback.  The same color and sound are used for all of
+these.
+
+* Added GUI to change sounds in WinBoard.
+
+* Suppressed WinBoard error popup when a sound can't be played.  They were
+popping up when two separate WinBoards tried to play a sound at the same
+time (such as during a bughouse match).
+
+* Fixed WinBoard crash when a sound file didn't exist.
+
+* WinBoard ports of timestamp and timeseal now produce decent error
+messages if they fail to connect, and WinBoard captures the messages and
+puts them into a popup.  Previously WinBoard would exit with no message on
+such errors.
+
+* WinBoard resizing with mouse improved; now accurately picks the largest
+size that fits in the new area.
+
+* Added option to turn off error message popups.
+
+* Added sizes slim, dinky, and teeny.
+
+* Fixed some minor problems with error message wording.
+
+3.6.3 -- Mon Feb 23 19:08:57 PST 1998  Tim Mann
+
+xboard beta test release only.  Man page is updated for the changes, but info
+file is not.
+
+* Bug fix: LoadGame could not load a PGN game whose first move was
+castling (which is possible from setup positions).
+
+* Bug fix: we were ignoring illegal move messages from chess engines in
+modes where the engine is refereeing but not participating (EditGame,
+LoadGame, AnalyzeFile).  The problem was in a workaround for a Crafty bug,
+where Crafty generates a bogus illegal move message if a "." (used by
+the PeriodicUpdates feature) is sent in analysis mode when the current
+analysis reveals a forced mate.  Installed a different workaround (that
+works in most but not all cases) and reported the Crafty bug.  Bob Hyatt
+replied with a fix, so the Crafty bug should be gone in Crafty 14.12 or so.
+
+* WinBoard only: enabled resizing board with the mouse.  It snaps to the
+nearest (but not too much larger) predefined size.
+
+* The xboard default font is now sized according to piece size, just as
+clockFont and coordFont have always been.
+
+* Added more sizes: bulky, moderate, average, middling, mediocre, petite.
+	
+* xboard only: Added Animate Moves and Click-Click Moving to Options menu.  
+
+* xboard only: Added code to animate piece movement, from Hugh Fisher.
+
+* New feature: autoflag is implemented in MachineWhite, MachineBlack, and
+TwoMachines modes.  If it is on and either a chess program or the user
+oversteps his time, xboard will automatically call the flag and end the
+game.  This feature was requested by someone who runs matches between
+programs and wants to penalize GNU Chess for its habit of running slightly
+over at the end of a time control.  I personally think it's pointless.
+
+* Fixed a bug in Zippy's pattern matching; he can now reply to ICC
+messages again.
+
+* Generate prettier notation for illegal moves.  If a move is illegal only
+because it leaves the player in check, generate notation as if that were
+not illegal.  For instance, if two knights are a knight's move away from
+f3, one on g1 and one on e5 that is pinned, the notation would be Nf3 to
+move the g1 knight, Nef3 to move the e5 knight.  (Suggested by Philippe
+Schnoebelen.)  In addition, if a move is illegal because the type of piece
+moved cannot go that way, would be jumping over another piece, etc., we
+give fully disambiguated coordinate notation; for example, Ng1g3, Ke1xe8,
+d2xd8=Q, etc.  An alternative would be to still write Ng3 if there is only
+one knight on the board, or Ngg3 if the other knight is not on the g file,
+but life is too short to code up all this stuff, and perhaps the way I did
+it is better as it emphasizes that this move was really made despite being
+illegal.  I wonder if the new PGN standard revision will speak to notation
+of illegal moves?
+
+* Fixed gross bug from 3.6.2: if a chess program said "checkmate" and
+White was left on move, the PGN outcome was "1-0 {Black mates}" instead
+of "0-1 {Black mates}"!  The bug occurred only for that specific string.
+
+3.6.2 -- Wed Jul 23 16:47:29 PDT 1997  Tim Mann
+
+* There was a bug in backing up from the end of a game against a chess
+engine, introduced when -reuse mode was added.  Fixed.
+
+* Recognize "{" as terminating an ICS move list.  Previously we needed to
+see a prompt (containing %), but occasionally ICC can send more stuff
+right after a move list with no prompt in between.
+
+* In WinBoard, -mm now implies -cp, so you don't get the startup dialog.
+
+* WinBoard startup dialog no longer sets -scp.  People used to get
+confused because they would give the -fcp and -scp arguments, but omit
+-cp.  This would bring up the startup dialog, which would set both -fcp
+and -scp to the value in the engine name box.  Now you can change -scp
+only with the command-line argument.  That will confuse some people too,
+but hopefully fewer.  I think overall it's better than putting spaces for
+both -fcp and -scp in the dialog, which would puzzle newbies.
+
+* Bug fix: Analyze File mode now works in WinBoard.
+
+* Bug fix: WinBoard window no longer cuts off part of the bottom row if
+the menu bar wraps to a second line.
+
+* Accept game end messages of the form "PGN-result {comment}" from the
+chess engine, where PGN-result is 0-1, 1-0, or 1/2-1/2.  Accept "resign"
+or "computer resigns" from the chess engine as a synonym for "0-1 {White
+resigns}" or "1-0 {Black resigns}". Accept any message from the chess
+engine containing "game is a draw" as a synonym for "1/2-1/2 {Draw}".
+Accept "White resigns" or "Black resigns".
+
+* Enable "Action / Draw" menu item in chess engine mode.  It sends the
+command "draw" to the engine.  Accept any message from the chess engine
+containing "offers a draw" as a draw offer.  WARNING: Draw offers from the
+user and the engine (or from two engines) are not yet matched up by xboard
+in chess engine mode.  Two engines could get into a loop offering each
+other draws.
+
+* Bug fix: Game end messages from the chess engine are always ignored in
+Zippy mode.  Previously they could sometimes be processed, which was
+sometimes making Zippy hang at the start of a new game that followed
+quickly after an old one.
+
+* Zippy can now respond to titled players in channels.  Zippy will avoid
+talking to himself in a channel if he knows his own name.
+
+* Bug fix: in colorization arguments, the bold setting was being ignored
+if the background color was defaulted.  (xboard only.)
+
+* Extended ParseFEN to accept Crafty 12.2's interpretation of FEN.
+If fewer than 8 squares are given in a row, or fewer than 8 rows are
+given, the uncovered squares are empty.  Also, there can be a / after the
+8th row.
+
+3.6.1 -- Sat May 17 01:02:33 PDT 1997  Tim Mann
+
+* Bug fix: Hitting escape while entering a password on WinBoard no longer
+sets the font color back to black (which made further typing visible).
+
+* Bug fix: On Windows NT 4.0, WinBoard /ics /icshelper=timestamp would
+often hang if you tried to exit with the Exit menu item, the [X] button,
+etc.  The same fix may also have corrected the problem where running a
+chess program with /xreuse would sometimes crash Windows 95 (but not NT)
+when the chess program was killed and quickly restarted.
+
+* Bug fix: Periodic Updates would not work if turned on after having been
+off.  Also, the default was needlessly "off" in WinBoard.
+
+* Zippy bug fix: Continuing an adjourned game was totally broken.  The
+wrong moves, or no moves at all, were being fed to the chess program.
+
+* WinBoard change: Giving -ics without -icshost now pops up the startup
+dialog with "Use an Internet Chess Server" pre-selected, so that you get a
+menu of chess servers instead of going directly to ICC.
+
+* Bug fix: WinBoard's SaveSettings was saving -icshost, -icsport, and
+-icshelper in winboard.ini.  This causes a problem if you use a different
+icshost later that needs the default values for icsport (5000) and
+icshelper ("", meaning none).
+
+* Disabled complaints about unexpected "[Ii]llegal move" messages from
+the chess program; we still get them at times.
+
+* Greatly simplified the code for Move Now and SIGINT (ATTENTION).  Fixes
+the bug where Move Now did not work with GNU Chess in WinBoard, and
+several more obscure bugs as well.  Reintroduces a minor bug: GNU Chess might
+not think on your time after a Move Now command.  Trying to fix this
+causes too many other problems.  Documented change in engine-intf.txt.
+
+* Cleaned up code for obtaining ratings from ICS.  It was kludgey and may
+have had bugs on systems with no "Creating:" message.  It should fail
+gracefully there, just not finding the ratings.
+
+3.6.0 -- Thu May  8 19:55:58 PDT 1997  Tim Mann
+
+* WinBoard now has right-button context menus in the ICS Interaction
+window.  Some of the items do immediate commands on the player name you
+have selected or pointed to.  (Suggested by Paolo Casaschi.)  Also, the
+middle button or shift+right does a immediate Copy and Paste.
+
+* Fixed a bug in Zippy's wild rejection.  The bug was causing Zippy to
+reject all forms of wild.  Now it rejects only 1, 9, 16, 17, and 24, as
+was intended.  These variants have different rules, while the other
+variants defined so far only have different starting positions.
+(Actually, wild 2, 3, and 4 never allow castling, but may sometimes by
+chance have king and rook start on squares where castling appears legal.
+This could cause a problem later.)
+
+* Zippy now resumes adjourned games by feeding the chess program 
+the move list instead of the position.  Setting -getMoveList to False 
+restores the old behavior.  Feeding in the move list is better because 
+it enables the chess program to correctly handle en passant legality, 
+castling legality, draw by repetition, and draw by the 50 move rule. 
+
+* Added a WinBoard startup dialog for people who run WinBoard.exe without
+using the Start menu or reading the help file.  Instead of being dumped
+directly into GNU Chess mode, you now get a menu of choices.  You now have
+to give the new WinBoard -cp option to go directly into chess engine mode.
+I did not add this feature to xboard.
+
+* Handling of "illegal move" from Crafty is now back on.  (It was turned
+off in 3.4.6; see below.)  Crafty 12.0 doesn't seem to send bogus ones
+anymore.  I did have to suppress sending time and otim in analyze mode to
+make this work, but there is no harm in that.
+
+* Zippy now sends "gameend" to ICS at the end of each game.  You can alias
+this to "seek" or whatever you like.
+
+* Added Crafty support for Move Now, using the "?" command.  We test
+whether this command exists by trying it once at the start of the first
+game, before it really makes sense.  If we don't get a message like
+"Illegal move ... ?", we assume it's OK.  (We're careful about this
+because sending a "?" to GNU Chess on Move Now keeps it from pondering the
+next move as it should.)
+
+* Added support for a tellusererror command from the chess engine.  See
+engine-intf.txt.
+
+* Attempted to make engine-intf.txt complete.
+
+* Minor fixes/cleanup to GameEnds code, to be sure we always interrupt
+when needed, and always undo an extra move generated by stopping the chess
+program while it is thinking.
+
+3.5.7 -- Sat May 03 22:37:44 PDT 1997  Tim Mann
+
+Beta release of both xboard and WinBoard.
+
+* Updated xboard documentation.  I really wish the man page was built from
+the info file instead of being separate!  It's a pain to update them both.
+
+* Updated documentation of the interface between XBoard/WinBoard and chess
+programs, and renamed it to engine-intf.txt.
+
+* Added support for tellics, telluser, and askuser commands from the chess
+engine.  See engine-intf.txt.
+
+* Various bug fixes.  On WinBoard, 256 color displays are finally handled
+right; no more color flashing when you switch windows unless the colors
+really need to be updated.  Also, I think the problem of the console font
+failing to change or changing back by itself is finally fixed.
+
+3.5.6 -- Tue Apr 29 03:08:00 PDT 1997
+
+Beta release, WinBoard only.  ChangeLog was out of date in release,
+updated here.
+
+* Added ICC timestamp and FICS timeseal to WinBoard distribution.  These
+are my own ports to Win32, based on and used by permission of the owners
+of the proprietary source code (Daniel Sleator for timestamp, Henrik Gram
+for timeseal).  The owners permit these programs to be distributed only in
+binary form (to help prevent cheating), so to avoid running afoul of the
+GPL, I have kept them as separate programs, not linked into the WinBoard
+address space.  Updated Start menu icons to use them.
+
+* Miscellaneous smaller changes.
+
+3.5.5 -- Fri Apr 25 03:06:00 PDT 1997
+
+Beta release, WinBoard only.  ChangeLog was out of date in release;
+updated here.
+
+* Added simple sound support to WinBoard.
+
+* Updated WinBoard documentation.
+
+* Internal implementation of the telnet protocol is now more complete.
+You can now hop through a VMS host on the way to ICS.  For example, do
+"xboard -ics -icshost vms.host.edu -icsport 23", then log in.  Do not use
+the -telnet flag; that says to use an *external* telnet program.  To avoid
+double echoes, you need to force character mode in VMS telnet after
+connecting from VMS to ICS.  Do "^]^Mset mode char^M^M".
+
+* Display opponent names in the title bar for MachineWhite, MachineBlack,
+and TwoMachines modes.
+
+* WinBoard now has an installer, built with InstallShield.  The installer
+works with a binary-only distribution.  Sources are still freely
+available, but now separately.
+
+* Added SaveSettings to WinBoard, which saves current option settings to
+winboard.ini.  Made sure all options can be saved and loaded, including
+fonts and com port settings.
+
+* If the game ends while you are dragging a piece, we now don't let you
+finish the move.  Formerly the move was accepted and your opponent's clock
+would start running again.
+
+3.5.4 -- Fri Apr 18 01:15:24 PDT 1997  Tim Mann
+
+Beta test release of WinBoard and xboard.  The documentation remains
+out of date.
+
+* Many fixes and improvements to new WinBoard user interface code.
+
+* In Zippy mode, avoid sending another copy of the same move to the chess
+program if ICS sends us another copy of the board image.  Hard to believe
+it took me until now to diagnose and fix this problem!
+
+3.5.3 -- Sat Apr 12 19:49:33 PDT 1997  Tim Mann
+
+Beta test release of WinBoard and xboard.
+
+* Fixed fatal bug in WinBoard input handling.
+
+* Made code to stop chess program for reuse a bit smarter.  Removed kludge
+of "white" in initString; it didn't work well, and is unneeded
+with Crafty 11.21 and later.
+
+3.5.2 -- Sat Apr 12 15:40:01 PDT 1997  Tim Mann
+
+Beta test release of WinBoard.
+
+* Ignore check and permit promotion to King during suicide games; no need
+to turn off TestLegality.
+
+* Renamed CheckLegality to TestLegality to avoid confusion with the chess
+term "check".
+
+* Added Rematch to Action menu.
+
+* WinBoard now has a custom ICS interaction window with scrollback, a
+separate line for input, and colorization.  Accelerators that conflict
+with normal editing keys were changed (by requiring Alt+) so they can work
+in both the console and the main window.
+
+* WinBoard error popups are now non-modal and disappear when you make a
+new move, as in xboard.
+
+* Configure now defaults to --disable-ptys on all systems.  If anyone has
+an ancient SysV system where pipes don't work with select, they can still
+do "configure --enable-ptys" explicitly.  I would appreciate getting a bug
+report if this happens to anyone, with complete output from configure and
+"uname -a".
+
+* "make install" now makes the installation directories too.
+
+* Fixed a bug that would cause an "Illegal move" message for Black from
+GNU Chess to be incorrectly considered bogus.
+
+* Handle name changes during an ICS game (FICS bname and wname commands).
+
+* You can force both chess programs to be killed at the end of each game
+by turning off the reuseChessPrograms option.  There are still some
+problems with reusing Crafty even in version 11.20.
+
+* Now the second chess program stays around by default too, if it ever
+gets started.
+
+3.5.1 -- Sat Apr  5 16:47:48 PST 1997  Tim Mann
+
+Beta test release.
+
+* Don't kill off and restart the chess program for each game; keep the
+same one running, using the "new" command to start a new game.  This
+change works around the problem in Windows 95 that makes WinBoard crash it
+at times, and is generally desirable to make new games start faster.  The
+second chess program (for TwoMachines) is still killed at the end of the
+game, and unfortunately this can still crash Windows 95.  Temporarily
+added "white" to the initString to make this work with Crafty 11.20, which
+has a minor bug in "new".  Older versions of Crafty have worse bugs in
+"new"; they should not be used with this version of xboard.
+
+* Support for FICS suicide chess: Parse illegal moves (that leave King in
+check) in game history.  If CheckLegality is off, allow promotion to King
+and illegal moves in game files.  We still generate e2e4 style notation
+for illegal moves.
+
+* Handle FICS "has timeseal; checking" message.
+
+* Changed the coords from white back to black; this was a bug.
+
+* Fixed problems compiling with K&R compilers.
+
+* Fixed an old bug in RegisterMove that was crashing cmail on some systems
+(notably linux).
+
+3.5.0 -- Thu Jan  2 16:59:49 PST 1997  Tim Mann
+
+Thanks to Frank McIngvale for much of the work on versions 3.4.4 and above!
+
+* Fix Crafty resumed game time bug (frankm)
+
+* Word wrap text in Analysis window (frankm)
+
+* More debug info for XPM loading (frankm)
+
+* Replaced config.sub, config.guess, etc., with up-to-date versions from
+autoconf 2.12.  Hopefully this will fix problems on Pentium Pro machines.
+
+* Removed some Makefile gunk that was causing looping for one person.
+
+3.4.7 -- Thu Dec 19 14:22:41 PST 1996  Tim Mann
+
+All changes from Frank:
+
+* Retrieve ratings from ICC (and FICS, etc., when they add the Creating:
+message), save them in the PGN tags, and pass them to Crafty in Zippy mode.
+
+* Add settable time delay between characters in ICS login script.
+
+* Colorize messages like personal tells.  Fix false recognition of channel
+tells.
+
+* Pass "tells" from Crafty through to ICS (in Zippy mode).
+
+* Implement ~/ filename convention from C shell for game and position file
+names.
+
+* ZIPPYACCEPTONLY feature for testing.
+
+3.4, patchlevel 6 -- Sat Nov 23 16:58:50 PST 1996  Tim Mann
+
+* Put recognition of "illegal move" messages from Crafty for
+illegal castling, etc., inside an #if that is currently turned off,
+because of a bug in Crafty that generates bogus "illegal move" messages
+after some moves that are actually legal and accepted by Crafty.
+
+* Added -checkLegality option; previously this could not be turned off.
+
+* Fixed an old bug in finding default board size parameters.
+
+* Differentiated among channel tell, kibitz/whisper, and personal tell/say.
+
+* Fixed a bug in detecting Xpm in the configure script.
+
+3.4, patchlevel 5 -- Mon Nov 18 16:22:53 PST 1996  Tim Mann
+
+* Added zic2xpm to the kit; it had been omitted by mistake.
+
+* Added some default colors for -colorize
+
+3.4, patchlevel 4 -- Sat Nov 16 18:10:17 PST 1996  Tim Mann
+
+This is meant to be a beta release in preparation for version 3.5.
+
+* Added InfoXBoard and ManXBoard to the Help menu.
+
+* Made Frank's ICS input box optional, defaulting to off.
+
+* Merged in Frank McIngvale's XbKit.  Many new features, including
+-clickClick mode, the Analysis modes, piece flashing, ZIICS import,
+ICS text colorization, and the ICS input box.  Many thanks to Frank for
+supplying and documenting this code.
+
+3.4, patchlevel 3 -- Mon Nov 11 18:23:14 PST 1996  Tim Mann
+
+Small set of changes made while Frank McIngvale was working on XbKit in
+parallel.  Unreleased in this form.
+
+* Updated zippy.README.
+
+* Removed useless X event handler and removed strange code for copying
+form translation table to board that worked around the bug it caused.
+This makes changing bindings in .Xdefaults more straightforward.
+
+* Now pressing the Control key steps back one move, and releasing it steps
+forward again.
+
+* Moved quit from "q" to "Q" for greater safety.
+
+* Use "unobserve" instead of "observe" to stop observing; needed on FICS.
+
+* Support for interface variable.
+
+* Strip titles from people who are talking to us, so (for example) Zippy
+won't try things like "tell Darooha(*) hello".  Needed on FICS.
+
+3.4, patchlevel 2 -- Tue Jul  9 19:06:42 PDT 1996  Tim Mann
+
+This patchlevel is not planned to be an announced release.  It's in
+preparation for integrating Frank McIngvale's XbKit.  It mostly contains
+minor fixes I've accumulated since 3.4.pl1.
+
+* WinBoard /telnet option now fires up an external program, as
+with xboard, instead of trying to use a feature of NT 3.1 that does not
+exist in later versions of NT or in Windows 95.  ChangeLog for 3.4.pl1
+said this had been implemented there, but it really wasn't.
+
+* Indicating player to move by the icon color now works under Windows 95.
+
+* WinBoard now kills the chess program when you exit using the system menu
+or the [X] button.  Thanks to Michael Lowe.
+
+* Minor changes to Zippy, including: Now understands wild challenges on
+FICS; these used to crash it.  Removed limit on how fast a game will be
+accepted.  Use "set formula ..." on the chess server to limit this if you
+are using GNU Chess.  Now sends correct opponent name to Crafty.
+
+* Added some missing default values to documentation.  Thanks to Stuart
+Cracraft.
+
+* Bugfix: Trying to print "No fonts match pattern" error message would
+crash.  This can happen to Linux users who don't install Helvetica, for
+example. 
+
+* Bugfix: Defaulting feature in -size n,n,n,n,n,n would put us in an
+infinite loop.
+
+* Added more directories to search for Athena widgets on HPUX.
+
+* New cmail (3.12) from Evan Welsh; includes small fix from Kayvan Sylvan.
+
+* Recognize "illegal move" messages from Crafty for illegal castling, etc.
+
+* Bugfix: "name" command added to zippy.c for Crafty was producing error
+message if GNU Chess was in use.
+
+* In bughouse mode, suppress holding messages from console window; show
+holdings only in banner.
+
+* Minor fixes/cleanup to Makefile.in and configure.in.
+
+3.4, patchlevel 1 -- Mon Dec 11 13:43:12 PST 1995  Tim Mann
+
+* This patchlevel updates WinBoard to match xboard, and includes a few
+fixes and minor improvements.  "-size tiny" and "-size n,n,n,n,n,n"
+are still not implemented for WinBoard.
+
+* Installed support for Crafty based on code from Bob Hyatt.
+Currently the only documentation for this is in the FAQ, and a few
+things don't work with Crafty 8.23.  Please do not report these
+problems as bugs in either xboard or Crafty.  Bob and I know about
+them.  The worst ones (if not all of them) should be fixed in Crafty
+8.24.
+
+* Changed the kludge command we send when gnuchess wants to print
+something that doesn't end with a newline, from "help" to "bogus".
+This works because the error message gnuchess prints ends with a
+newline.  It also improves compatibility with Crafty, which doesn't
+need the kludge, but for which sending "help" causes a problem.
+
+* Don't draw grid at all if lineGap is 0; previously we drew the grid
+with X "0-width" lines (usually 1 pixel wide) and then overwrote it.
+
+* Makefile: Removed xboard.info from "all" target so we won't try to
+rebuild it, because this fails on hosts that don't have makeinfo
+installed.  Other minor fixes to "clean" targets, etc.
+
+* Fixes and cleanup to Auto Comment code that handles continuation
+lines and highlighting.
+
+* Auto Observe now tries to observe the game from the point of view of
+the player who was on your gnotify list.  Requested by rng.
+Limitations: We can't tell which player it was unless you have ICS
+highlighting turned on.  Also, currently "observe foo" works as
+required (observing from foo's point of view) only on ICC, but FICS
+will probably implement this soon.
+
+* "-size tiny" now makes the default font smaller automatically.  This
+was implemented by introducing an extra Form widget in the hierarchy
+for all xboard windows, named either normalLayout, smallLayout, or
+tinyLayout.  So you can have resource specifications that apply only
+to certain layouts; in particular, XBoard*tinyLayout*font.
+
+* Bug fix: EditGame or EditPosition while playing or examining still was
+not really being permitted.
+
+* WinBoard bug fix: On the EditPosition menu, King did not work.
+
+* Added text catalog of WinSock error messages to WinBoard, because
+Microsoft still has not put them in the system message catalog.
+
+* Removed support for older ICS game-ending messages that do not have
+a PGN result token (*, 0-1, 1-0, or 1/2-1/2) after the closing '}'.
+The code for older messages was sometimes firing on the newer
+messages, due to parsing ambiguity.  If the current code sees an old
+message, it will understand that the game is over, but will always
+display * as a result token instead of trying to guess the result by
+interpreting the text message.
+
+3.4, patchlevel 0 -- Tue Nov 21 01:02:50 PST 1995  Tim Mann
+
+* This patchlevel was released for xboard only.
+
+* Updated the info file.  It should now be as up-to-date as the man page,
+with good English except in the parts that pertain only to AmyBoard.
+
+* Added "-size tiny", requested by Bob Hyatt.  Also cleaned up bitmap
+support and added "-size n,n,n,n,n,n" to allow arbitrary-sized bitmaps,
+if the actual bitmaps are supplied by the user.
+
+* Updated bughouse support.
+
+3.3, patchlevel 4 -- Sat Nov 18 02:27:21 PST 1995  Tim Mann
+
+* Unreleased beta that works with preliminary FICS bughouse code.  Will
+need changes before release to track FICS message changes.
+
+* Removed use of .EX macro from man page.  It is not supported by some
+nroff -man macro packages, notably the one on Slackware Linux.  Switched
+to boldface for references to xboard and other commands within the man
+page, as this seems to be the modern way.
+
+* Bug fix: If ICS rejected a move, it was correctly undone on the board,
+but the message widget still displayed the bad move.  Reported by DAV.
+
+* Normally, xboard in ICS mode fetches the move list whenever the board
+display switches to a new game.  Doing this is now an option
+(getMoveList) that can be turned off, which is useful if you are watching
+multiple blitz games.  Requested by rng.
+
+* Move list fetching code is now smarter: it ignores a move list if it is
+not for the right game.
+
+* Added support for bughouse as implemented on FICS.  Holdings are shown
+in the window title in place of the strength numbers.  A menu on mouse
+buttons 2 and 3 (same on both) lets you drop pieces.  There is no checking
+as to whether you actually hold the piece you are trying to drop; we rely
+on ICS to check that.  Notation of the form P@f7 is generated and parsed.
+The mate detector does not understand that non-contact mate is not really
+mate in bughouse, but this does no real harm.  It results in a "#"
+suffix being displayed on the move notation, but xboard does not assume the
+game is over.
+
+* Bug fix: Promotion to a knight was not working with ICC!  Thanks to
+Wendigo for the report.
+
+* Bug fix: Special pty code for host types *-*-aix3* and *-*-irix3*
+(supplied from configure.in) had a bug that would cause childio.c to
+fail to compile, due to a "continue" that was not within a loop.
+
+* Bug fix: In pgntags.c, memory was being freed while still in use.  One
+symptom this caused was that on some machines, cmail would fail with a
+message that it could not find the BlackNA tag.  The error was in some
+submitted code that I included in version 3.2.pl3 without reading
+carefully enough.  Anders Forberg noticed the symptoms, and Evan Welsh
+(who had nothing to do with causing the bug) found the bug and submitted a
+fix; thanks to them both.
+
+* Removed restriction against using EditGame while playing, observing,
+or examining on ICS.  You still get a warning popup.
+
+3.3, patchlevel 3 -- Sat Sep 16 11:44:05 PDT 1995  Tim Mann
+
+* Bug fix: Going directly from MachineWhite to TwoMachines mode would kill
+off the second chess program after Black's first move.
+
+* Added -timeIncrement feature.  Thanks to Joel Rivat.
+
+* Deleted code that tries to keep you from observing more than one game,
+or observing while playing or examining.  There is actually no problem in
+doing this, except that every time an update comes in from a different
+game than is currently being displayed, xboard fetches the history of the
+new game, which may be time-consuming if you are on a slow link.
+
+* Fixed configure so as not to crash when neither lex nor flex is found.
+lex or flex is needed only if the user wants to rebuild parser.c.  Thanks
+to Phil Humpherys for reporting the crash.
+
+* Bug fix: config.h.in used #define instead of #undef for some macros used
+in the pty code in childio.c.  This causes the code to fail to compile on
+some architectures, because the symbols are supposed to be undefined, not
+defined to empty, when they are not set in configure.  Bug originated in
+3.3.pl0 when config.h was introduced.  Thanks to Phil Humpherys for report.
+
+* Bug fix: ShowThinking would not show anything when current position had
+no move to display in the move window.  E.g., if position was created by
+LoadPosition or EditPosition.
+
+3.3, patchlevel 2 -- Mon Aug 28 11:11:11 PDT 1995  Tim Mann
+
+* Zippy code was omitted from xboard-3.3.pl1 by mistake; now included.
+
+* For WinBoard, added hint to help file that you may need to turn off
+LocalLineEditing while typing dialing commands to your modem.
+
+3.3, patchlevel 1 -- Sat Aug 19 15:13:30 PDT 1995  Tim Mann
+
+* Zippy distribution is no longer separate from regular xboard distribution.
+
+* Deal properly with Show Thinking output from GNU Chess when it is
+thinking on its opponent's time.  In TwoMachines mode this output is
+suppressed to avoid interfering with the output from the machine that is
+on move; in other modes it is displayed (including the move that GNU Chess
+is predicting the user will make next).  GNU Chess produces this output
+only if it is built without -DQUIETBACKGROUND defined; this symbol is
+defined by default in patchlevels before pl75, but undefined by default in
+pl75.
+
+* Bug fix: Handling of initial board position in move list for wild games
+was broken, so wild games could not be observed and adjourned wild games
+could not be continued.  Thanks to "Maximum Entropy" for the bug report.
+
+* Added feature: algebraic notation now shows "+" indicator for check
+and "#" for checkmate, as called for in PGN standard.  Thanks to Kevin
+Maher for the suggestion.
+
+3.3, patchlevel 0 -- Thu Jul 27 22:21:07 PDT 1995  Tim Mann
+
+* Changed configuration to use a config.h file instead of passing zillions
+of -D options on the cc command line.
+
+* Merged a small fix and some updates to the texinfo file from Jochen
+Wiedmann.  The texinfo file still needs work.
+
+3.2, patchlevel 5 -- Tue Jul 18 20:29:39 PDT 1995  Tim Mann
+
+* Beta test release of xboard only.
+
+* Updated WinBoard code to include new xboard features.
+
+* Added texinfo file from Jochen Wiedmann to the release, but not as the
+primary documentation.  It needs updating, and the English needs work.
+I did make a few improvements, mostly to change incorrect uses of @var to
+either @samp or @code as appropriate.
+
+* Merged in code changes to 3.2.pl4beta from Jochen Wiedmann.
+
+* Fixed EditComment; did not pop up window in previous beta.
+
+* Added AutoComment feature.
+
+* Added GameListDestroy to disable the outdated game list popup in cases
+where we load a new game file without building a new popup.
+
+* Added yyskipmoves feature to parser.l to speed up building of gamelist.
+
+* gamelist.c wouldn't compile with a non-ANSI compiler.  Fixed.
+
+* Change to yy_text handling in patchlevel 3 still had problems.  Can't
+use AC_DECL_YYTEXT in configure.in, because that defines YYTEXT_POINTER
+according to whether the lexer on the current host makes yytext a pointer.
+But most people will be using a parser.c that was generated on another
+host and shipped with the package.
+
+3.2, patchlevel 4 -- Sun Jun 25 19:13:43 PDT 1995  Tim Mann
+
+* Beta test release of xboard only.  
+
+* Added FIREWALLS section to man page.
+
+* Changed -icsport to be a string.  Now with the -telnet option,
+specifying -icsport "" suppresses the second argument to telnet.
+
+* Added EditTags feature.  Removed AboutGame from menu, because EditTags
+subsumes it.  EditTags suggested by Jochen Wiedmann and first implemented by
+him in AmyBoard.  xboard implementation is my own.
+
+* Fixed some missing or incorrect prototypes.
+
+3.2, patchlevel 3 -- Sat Jun  3 18:57:38 1995  Tim Mann 
+
+* Beta test release of xboard only.  
+
+* New version of cmail from Evan Welsh, to fix compatibility problems with
+perl 5.0.
+
+* Added game list feature on Load Game, based on code from Jochen
+Wiedmann.  Integrated it with cmail.
+
+* Several bug fixes from Jochen Wiedmann, including one to my yy_text
+workaround for the difference in the type of yytext between lex and flex.
+
+* Handle clock pause on FICS.
+
+* Suppress clocks in untimed FICS games (time control 0 0).
+
+* Rebuilt configure script with autoconf 2.3.  This fixes a bug in
+configuring for X11R6, where -lSM -lICE would not be added when needed.
+
+* Fixed inconsistent type declarations on IntSigHandler and
+CmailSigHandler.  Bug report from Josh Daynard.
+
+* backend.c wouldn't compile with a non-ANSI compiler.  Fixed.
+
+3.2, patchlevel 2 -- Tue Feb  7 14:50:30 1995  Tim Mann 
+
+* Minor release of both xboard and WinBoard.
+
+* Added recognition of some FICS messages.  On the other hand FICS is also
+changing some of its messages to match what xboard already recognizes.
+
+* Temporarily went back to using "promote" command on ICS instead of
+"a7a8=Q", because FICS doesn't implement the latter yet.
+
+* We now avoid using overlapped I/O on pipes in WinBoard, to make Windows
+95 beta 2 happy.  This lets WinBoard work with GNU Chess on Windows 95!
+
+* Installed patches from Jochen Wiedmann to coordinate with Amiga XBoard.
+
+* Installed patch to cmail bug in LoadGame from Evan Welsh.
+
+* Bugfix: checkmate and stalemate moves entered with EditGame in ICS mode
+were not being handled correctly.  Bug was in GameEnds().
+
+* Implemented EchoOn and EchoOff for xboard, using system("stty echo\n").
+Now passwords won't be echoed when you connect directly to ICS.  Also,
+telnet negotiation characters aren't displayed (when possible).
+
+* Implemented more of the telnet protocol.  Now connecting to a telnet
+server with "-icsport 23" should work even without giving the -telnet
+option.  The telnet is in "old line-by-line mode".
+
+3.2, patchlevel 1 -- Sat Dec 10 13:50:46 1994  Tim Mann 
+
+* This patchlevel released for WinBoard only.
+
+* winboard.c: Fixed ConsoleInputThread().  Needed to change CRLF to LF,
+not to CR.  This was stopping normal /ics mode from working.  Thanks to
+Asher Kobin for the bug report.
+
+* winboard.c: Fixed Raw(), EchoOn(), EchoOff().  Now they take effect
+immediately, not on the next console read after the one in progress.
+
+* winboard.c: Attempted to make WinBoard work with gnuchessx running
+directly on Windows (not remotely via rsh).  It now works on NT, but only
+if gnuchess is told not to think on its opponent's time ("easy\n" removed
+from initString).  The problem seems to be that GenerateConsoleCtrlEvent
+is not doing anything.  On Windows 95 beta 2, we get error messages on
+both reading and writing to gnuchessx; I didn't investigate why.
+
+3.2, patchlevel 0 -- Wed Dec  7 13:23:36 1994  Tim Mann 
+
+* Thanks to all the beta testers who gave me feedback: Josef Nelissen,
+Steve Booth, Evan Welsh, Dima Dakhnovsky, Chris Petroff, Peter Jansen,
+Derek Terveer, Michel van der List, Richard Lloyd, Shelly Mistry, and Mike
+Lee.  Sorry if I forgot anyone.  Thanks to Virendra Kumar Mehta for
+information about DYNIX/ptx.
+
+* Don't exit on keyboard EOF unless we get two in a row.
+
+* WinBoard only: added -localLineEdit switch to allow turning off local
+line editing if you really want to.  It is still a bad idea to let the
+echoing be done remotely, however; see below.
+
+* Fixed some configure problems on HP-UX.  [Steve Booth]
+
+* Fixed (I hope) configure problem on SunOS 5.3/Solaris 2.3.  [Josef Nelissen]
+
+* cmail bugfix from Evan Welsh (cmail 3.4).
+
+3.1, patchlevel 9 -- Fri Dec  2 23:54:56 1994  Tim Mann 
+
+* Beta distribution only
+
+* Always do local echo/edit of user typing in ICS mode.  Doing the echo
+downstream may seem nicer in some modes, and it can be hard to turn that
+echo off, but the echoed characters can be interleaved with ICS output
+and make it impossible to parse correctly.  For xboard this involved only
+a change to recommendations in the man page, as Raw() isn't implemented.
+For WinBoard, removing Raw() made a real difference.  Added code in 
+WinBoard to change /r/n back into /r on keyboard input, as we get the 
+former when Raw() is not called.
+
+* Do not issue ICS "refresh" command after we start to observe a game
+unless we get to the next prompt without seeing a board image.  Newest
+version of ICS doesn't require this refresh, but old versions around still
+do.
+
+* cmail bugfix and small code cleanup in LoadGame, from Evan Welsh.
+
+* Added keyboard accelerators N/P for LoadNextGame/LoadPreviousGame.  Evan
+Welsh request.
+
+* Using "-" on the command line as a filename for loading (saving) games
+or positions specifies the standard input (standard output).  Alain Picard
+suggestion.
+
+* On WinBoard only, a command line option without a leading '-' or '/' is
+now taken as the value of -lgf.
+
+* Changed to not use stdin, stdout, stderr as initializers in backend.c;
+needed for GNU libc compatibility.  You also must build parser.c with flex
+(not lex) if you are using GNU libc, to avoid having the same problem
+there.
+
+* Changed WinBoard to avoid using "overlapped" input on the console.  It
+now seems to fully work on Windows 95 beta 2.
+
+* Improved comment popups on WinBoard.  Now newlines are handled properly,
+and the plain Comment popup window doesn't disappear and reappear when we
+step to a new move with a new comment.
+
+* Fixed bugs in detecting the absence of the time and otim commands.
+
+* Added built-in implementation of rcmd protocol to WinBoard.  Windows NT
+does not implement passing signals through rsh, and Windows 95 does not
+have rsh at all.
+
+* Added -remoteUser option.
+
+3.1, patchlevel 8 -- Mon Nov 28 15:26:07 1994  Tim Mann 
+
+* Beta distribution only
+
+* Rearranged ChangeLog file into reverse chronological order to be closer
+to GNU standards.
+
+* Integrated new cmail code from Evan Welsh (including cmail RCS rev 3.2).
+Includes a bug fix to TruncateGame.
+
+* Updated ICS address to be chess.lm.com.
+
+* Bug fixes to handling the aftermath of FatalError.  Thanks to Chris
+Petroff for the bug report.
+
+* Test for remsh before rsh, other fixes for HP-UX.  Thanks to Richard
+Lloyd.  I wasn't able to do all the things he suggested, so there may
+still be some rough edges in building on HP-UX.  See the FAQ file for hints.
+
+* Bug fix; added missing check for HAVE_SYS_SYSTEMINFO.  Thanks to Josef
+Nelissen for testing on Solaris 2.x.
+
+* Updated WinBoard to match xboard.  (WinBoard still has a few option
+dialogs that don't exist in xboard.)
+
+* Changed Hint output to a popup.
+
+* ShowThinking output and move output no longer overwrite each other.
+ShowThinking output won't appear if the displayed position is not current. 
+ShowThinking output in TwoMachines mode made clearer and documented.
+
+* Implemented --enable-ptys and --disable-ptys arguments to configure.
+
+* Fixed Book and Hint code to work over a pty with echo enabled and tabs
+expanded to spaces.  Thanks to Dima Dahknovsky for the bug report.
+
+* Moved Attention calls from all over xboard to one place, inside
+SendToProgram.
+
+* Added bulletproofing to ShowThinkingEvent.
+
+* Added code to handle "refresh N" boards that come in from ICS properly,
+assuming ICS is changed to mark them with a new relation code (-3).
+
+3.1, patchlevel 7 -- Sun Nov 13 22:16:01 PST 1994 -- Tim Mann
+
+* Beta distribution only
+
+* Changed ShowThinking to just show the current best line in the
+DisplayMessage area, instead of dumping everything to stdout.
+
+* Installed new cmail (RCS rev 3.1) and cmail.man (RCS rev 1.10), and
+changes to cmail code in backend.c, from Evan Welsh.
+
+* Miscellaneous minor fixes.
+
+3.1, patchlevel 6 -- Fri Nov  4 12:53:53 PST 1994 -- Tim Mann
+
+* This patchlevel was not actually released to anyone.
+
+* Updated the pty code to be based on GNU Emacs 19.24, and moved it to a
+separate file.  It was hard to split out just the pty configuration from
+all the stuff emacs does with its custom configure script and .h files,
+but I did my best.
+
+* Converted from imake to GNU autoconf.  This was a serious upheaval.  
+
+* Put in code to help trap "error gathering move list" problem reported by
+Michel van der List if it recurs.  I couldn't reproduce it.
+
+3.1, patchlevel 5 -- Mon Oct 31 21:12:00 PST 1994 -- Tim Mann
+
+* Beta distribution only.
+
+* We now test for checkmate or stalemate in EditGame mode after every user
+move, and in LoadGame mode whenever we hit the end of a game without
+seeing a PGN end marker.  cmail needs an update to deal with this
+correctly; Evan promises one.
+
+* Bugfixes in new move generator.  Thanks to Mike Lee for reporting one of
+the bugs.
+
+* Imakefile was omitted from patchlevel 4.
+
+3.1, patchlevel 4 -- Mon Sep 19 18:19:46 PDT 1994 -- Tim Mann
+
+* Beta distribution only.
+
+* The move generator includes a mate tester.  Initially this is used only
+by cmail, and even that usage needs further work.
+
+* Wrote a true move generator and used it to replace all the move
+disambiguation and legality checking code in parser.l.  The move generator
+is capable of dealing correctly with en passant and castling availability,
+but the rest of the program still does not keep track of this information.
+
+* Bug fix: xboard did not handle "foo has made you an examiner of game 23"
+message.  Thus you could not use examine features until the next board
+came in, showing your new relation to the game.  Thanks to POOKIEWOOKIE on ICS
+for the bug report.
+
+* Added AutoObserve feature.  Thanks to Chris Petroff for the idea.
+
+* Added Book feature to use new gnuchess "bk" command.  Mike McGann request.
+
+* Redid code to handle missing "time" command in gnuchess, because latest
+gnuchess no longer sends a response to this command.  
+
+* Eliminated need for -DFLEX.  Thanks to Michael Shields (Vladimir?) for
+the idea.
+
+* Added missing code to implement MoveNow in TwoMachines mode.
+
+* Added ShowThinking feature.  Thanks to Richard Lloyd for the idea.
+
+* Applied patches from Evan Welsh; some fixes and improvements to the
+cmail code.
+
+* Fixed bug in moving from EndOfGame mode to MachineWhite or MachineBlack,
+introduced in previous patchlevel.  Also fixed related bug in ending a
+game in ICS mode; was entering EndOfGame mode instead of IcsIdle.
+
+* Added patch to implement internetChessServerLogonScript flag, from Kevin
+O'Connor.  Thanks!
+
+3.1, patchlevel 3 -- Wed Sep  7 13:22:07 PDT 1994 -- Tim Mann
+
+* Beta distribution only.
+
+* Merged in new cmail code from Evan Welsh.  He added the ability to have
+more than one game per message, needed for official IECG matches.  I added
+the ability to resign or offer/accept/decline a draw in a cmail game.
+
+* Bugfix: invalid -tc option caused segmentation fault; DisplayFatalError
+was called too early in initialization.  Georges Honore reported this bug.
+
+* Decided to keep EndOfGame mode as an element of the user interface---it
+means that a gnuchess game or loaded game has ended, and the user must
+explicitly select EditGame to edit it, rather than just being able to
+enter more moves freely.  But internally there is no longer an invariant
+tying this mode to whether the chess program is running.
+
+* Zippy bugfix: Was saving only the final position in the -sgf file when
+the game ended by something other than resignation or flag.  Also fixed
+the longstanding bug that Zippy would think the final board of such a game
+was a new game and restart the chess program.
+
+* Now does a better job of faking castling availability in FEN.  We still
+don't really keep track of it, but now at least we don't say that castling
+is still available when the king or rook is not on its home square.
+
+* Bugfix: Initial board of game history for wild games was going through
+too much processing, causing us to forget the game length, which is now
+needed by ParseGameHistory.  This was causing problems with resuming
+adjourned wild games.
+
+* Updated ICS host to ics.onenet.net.
+
+* Zippy now accepts challenges where the opponent specified his color.
+
+* Added ZIPPYPASSWORD2 to let operator give commands directly to gnuchess.
+
+* Bitmap directory can include alternative icons now, too.
+
+* Handle "Game * (*) has no examiners" message from ICS.
+
+* Revamped window title and icon name selection.
+
+3.1, patchlevel 2 -- Sun Jun 12 17:16:28 PDT 1994 -- Tim Mann
+
+* "Beta" distribution for Zippy users only.
+
+* Bugfix: common.h was assuming that X11 type Boolean is char, which is
+not always true.  This might have caused all sorts of obscure bugs!
+
+* Installed new bitmaps from Elmar Bartel as the default.  Many thanks!
+The old bitmaps can be used by changing the "bitmaps" symbolic link before
+compiling xboard, or by using the -bitmapDirectory option at runtime.
+
+* Loading a game that ends with the PGN unfinished symbol ("*") now always
+leaves you in EditGame mode.
+
+* Added documentation of -icscomm to man page.  Thanks to Maarten Remkes
+for the linux script.
+
+* ^C now kills gnuchess as well as xboard.  Thanks to Dima Dakhnovsky for
+reminding me how to do this.
+
+* Bitmap icon color now indicates player to move.  Stuart Cracraft
+suggestion.
+
+* Changed piece bitmap flags to have just one flag, which points to a
+directory full of bitmaps, instead of a flag for each bitmap.  Also
+changed bitmap naming convention.
+
+* "Connection closed by ICS" is no longer a FatalError popup.  This was
+too annoying in the normal case where the user typed "quit".
+
+* Changed default font to 14 pixels instead of 10 points.  This seems to
+make it close to the size I want it to be on more displays.
+
+* Major mode (GNU Chess, etc.) appears in title bar.  Stuart Cracraft
+request.
+
+* Bug fix: EditGameEvent, MachineBlackEvent, MachineWhiteEvent, and
+TwoMachinesEvent were calling PauseEvent to get out of pause mode, which
+now has undesired side effects, such as advancing the display to the
+forwardMostMove.  It works fine to just set pausing = FALSE instead.
+
+* IcsExamining mode now lets you access ICS edit position commands using
+the same popup menus as xboard's EditPosition mode.  Thanks to DAV on ICS
+for inspiring the idea.
+
+* Corrected test for gcc on HP in Imakefile; thanks to Richard Lloyd.
+
+3.1, patchlevel 1 -- Wed Jun  1 16:25:11 PDT 1994 -- Tim Mann
+
+* Added parser.c.lex and parser.c.flex to the distribution.
+
+* Added HP gcc options to Imakefile, from Mats Nylen.
+
+* EndOfGame mode no longer highlights EditGame mode indicator, because the
+modes really do differ.  I would like to get rid of EndOfGame mode in the
+future, at least as far as users can see.
+
+* Larger %a in parser.l, needed for RS/6000 users.
+
+* Minor improvements to Mail Move error messages.
+
+* When -debug flag is given to xboard, -v is passed to cmail.
+
+* Old Save Style uses "1. ..." instead of "1..." when black moves after a
+comment; more like xboard 3.0's actual style.
+
+* New version of cmail from Evan Welsh.  Looks for UCB Mail in a more
+portable way and has some minor bug fixes.
+
+* Bug fix: Saving a FEN position while in EditPosition mode with black to
+play was showing white to play in the saved position.
+
+3.1, patchlevel 0 -- Fri May 20 16:36:15 PDT 1994 -- Tim Mann
+
+* This is the first general release since 3.0, patchlevel 9.  Releases
+since then have been limited-distribution or beta releases.
+
+* Thanks to my version 3.1 beta testers: Dmitry Dakhnovsky, Ed Hanway,
+Richard Lloyd, Mike McGann, Shelly Mistry, Josef Nelissen, Chris Petroff,
+Jack Robertson, Michel van der List, Ky Macpherson, Derek Terveer, and
+Evan Welsh.  Sorry if I've forgotten anyone who gave me feedback.
+
+* Updated man page.
+
+* Minor cleanup on menu sensitivity code.
+
+* Integrated another even better version of cmail from Evan Welsh,
+including some code he supplied in xboard itself.
+
+* A few more fixes to cmail support.
+
+* Automatically update clocks after an ICS "moretime" command.
+
+* Handle ICS automatic examine mode (set examine 1) after a game.
+
+3.0, patchlevel 14 -- Tue May 17 13:41:44 PDT 1994 -- Tim Mann
+
+* Beta test release only.
+
+* Don't suppress prompt on first board of game being examined; otherwise
+it looks like nothing happened at all (i.e., like you're lagged).
+
+* Added StopExamining and StopObserving (Chris Petroff suggestion).
+
+* Made Reset do a refresh on ICS.  John Chanak's original ICS code for
+xboard tried to do this; I finally decided it was a good idea after all.
+
+* Fixed bugs in handling updates that come in while you are pausing in
+examine mode.  This is pretty tricky to do right.
+
+* Made un-Pausing immediately pop you to the current position.  This is
+always necessary in examine mode, since the game may have changed under
+you; your remembered moves might no longer be right.  So I made it do the
+same in all modes.
+
+* Took Detach Examine mode back out...used Pause mode for this instead!
+
+* Put in a trap for the GNU Chess bug of printing an Illegal Move message
+when its own hint move is illegal.
+
+* Attempted to fix a Zippy bug; bogus "exited unexpectedly" messages after
+it checkmates its opponent.  This involved adding an argument to GameEnds
+to say who says it ended (ICS, GNU, etc.)  and taking different actions in
+different cases.  Unfortunately, this just restored an older Zippy bug, where
+Zippy restarts gnuchess when it gets the board with the final position,
+because GameEnds still puts xboard in EndOfGame mode.  Sigh.
+
+* We now capture elapsed time on last move when getting game history.
+(Josef Nelissen bug report)
+
+* Rewrote code to redisplay last file title so it really works.
+
+* Fixed bug in oldSaveStyle.
+
+* Larger %a and %o were needed for lex.
+
+3.0, patchlevel 13 -- Mon May 16 16:26:22 PDT 1994 -- Tim Mann
+
+* Beta test release only.
+
+* FatalError popups stay on the screen now.  If the error is really fatal,
+all functions are disabled, and the program exits when you press OK.
+
+* Redisplay last file title when using Load (Next/Previous/Same) Game.
+
+* Zippy understands new match challenge message format on ICS.
+
+* Added Revert command.
+
+* When examining a game on ICS, < > buttons do ICS backward/forward
+commands, unless you set the Detach Examine option.  Thanks to Dima
+Dakhnovsky for the idea.
+
+* Fixed various minor problems in cmail mode.
+
+* cmail generates the tags now.  New version of cmail from Evan Welsh.
+
+* cmail mode won't let you do MailMove unless the currently displayed
+position is exactly one move past the end of the game you loaded.
+
+* Fixed building of man pages in Imakefile
+
+* Updates to INSTALL file
+
+3.0, patchlevel 12 -- Sat May  7 21:10:03 PDT 1994 -- Tim Mann 
+
+* Beta test release only.
+
+* Brought man page up to date.
+
+* Added Shift+R to resign from keyboard.
+
+* Some items on Action menu available in GNU Chess mode now.
+
+* Revamped Action menu.
+
+* Reordered functions in backend.c as a small step toward reorganizing
+this whole mess.
+
+* Generate TimeControl PGN tag.
+
+* Get type of ICS game (e.g., rated blitz) and save in PGN tags.
+
+* Bug fix: Clocks were not redisplayed when entering EditGame mode.
+
+* Bug fix: Clocks were not being redisplayed after loading a game file
+with -td 0, so they could show the wrong color active.
+
+* Bug fix: Chess programs would be killed and match mode would exit
+prematurely when loading a PGN game fragment ending with "*".
+
+* ICS command "sposition" no longer confuses xboard.
+
+* Integrated new version of cmail (with support code in xboard) from Evan
+Welsh.
+
+* Added TruncateGame, MoveNow, RetractMove, and QuietPlay.
+
+* Bug fix: switching between MachineWhite and MachineBlack was not calling
+Attention().  Reported by Dino Dini.
+
+* More improvements to INSTALL and Imakefile.
+
+* Pack moves into 79 character lines in PGN output.  We don't generate
+check indications, and we always break the line before the result,
+so this is not quite PGN export format.
+
+* Use FEN tag in PGN.
+
+* Improved finding and counting of game starts in save files.
+
+* Negative position or game numbers in -lpi/-lgi mean to seek to that byte
+offset.  Hook for possible future features, not in man page.
+
+* Detect and handle absence of either "time" or "otim" commands in
+gnuchess.
+
+* Don't use "promote" command to ICS anymore.
+
+* Handle switching sides and taking back moves on FICS.
+
+* Handle flip state flag in style 12 board.
+
+* Handle examine mode on ICS.
+
+* Improved error popups for various kinds of illegal moves.
+
+* Suppress unasked-for hints from gnuchess (which it generates in post
+mode).
+
+* Load/save position functions use FEN.  Old style also supported.
+
+* Added detailed error messages if loading a bitmap file fails.
+
+* Small board has 2-pixel lines between squares instead of 3-pixel.
+
+* Added OldSaveStyle and AboutGame.
+
+* Renamed ForceMoves to EditGame.
+
+3.0, patchlevel 11 -- Tue Sep 21 15:25:36 PDT 1993 -- Tim Mann 
+
+* The following changes were present in xboard 3.0, patchlevel 11, but the
+first group did not make it into WinBoard 3.0 until later.  xboard
+3.0.pl11 was a limited-distribution release only, mostly to Zippy users.
+
+* Man page minor fixes.
+
+* Added a missing file close.
+
+* Removed automatic error popdown on Reset, which was destroying some
+error messages before they could be read.
+
+* Fixed char vs. unsigned char warnings on bitmaps.
+
+* Use ICS board style 12.  Some improvements to ICS parsing.
+
+* Comment window is now labelled with the move the comment is on, and
+comments don't pop down when you step to the next move.
+
+* Save files now in PGN format.
+
+* Support for loading PGN files.  PGN tags pop up when a PGN game file
+is loaded.
+
+* More info in INSTALL and Imakefile about building for Suns (and
+other systems).
+
+* WinBoard 3.0 patchlevel 11 split off from an early version of xboard
+3.0 patchlevel 11, so it does not have all the features of that
+patchlevel.  The following changes made it into both xboard and
+WinBoard:
+
+* Made Comment dialog non-modal in WinBoard.
+
+* EndOfGame mode is now more transparent.  It looks like ForceMoves
+mode except that there is no chess program running.
+
+* Small bug fixes in clock management.  Most noticeably, pausing when
+it is gnuchess's move now works as documented (again).
+
+* Add minimal support for -icscomm option.  Not documented yet because
+I haven't sorted out the issues with setting the tty modes on the comm
+port device, or with locking it properly.  But it's usable by wizards.
+
+* Don't restart the chess program upon Backward event from EndOfGame mode.
+
+* Suppress extra prompt after ICS sends us a board.
+
+3.0, patchlevel 10 -- Sat Sep 11 18:44:03 PDT 1993 -- Tim Mann 
+
+* Beta test release only.
+
+* Zippy now plays chess.  zippy.c and zippy.h are still not included
+in the standard distribution, but are available on request.
+
+* Switched to using style 12 on ICS.
+
+* Updated man page, and documented use of XBoard*form.translations to
+add more shortcut keys.
+
+* Added shortcut keys "d" to claim/offer/accept a draw, and "t" to
+call flag.  Suggested by venu on ICS.
+
+* More explicit instructions in INSTALL file.
+
+3.0, patchlevel 9 -- Tue Sep  7 14:02:00 PDT 1993 -- Tim Mann
+
+* General release, minor update to 3.0.pl8.
+
+* Loosened checking on whether it's okay to start a move, to satisfy
+ICS ultra-blitz players.  Now we don't check whether it's your turn
+until you let go of the piece.
+
+* Parser now recognizes "+-+" as meaning the game ended in a draw.
+
+* Got rid of S_NONE symbol, which seems to conflict with some symbol
+Sun defines.
+
+* Tweaked the man page.  Clarified that there is currently no way for
+two people running copies of xboard to play each other without going
+through the Internet Chess Server.
+
+* Fixed a bug in color name conversion.  Asking for two different
+colors whose names were the same in the first four characters would
+get you two copies of the first one.  Thanks to Volker Zink for the
+bug report.
+
+* Improved confusing Usage() message.
+
+* Added a bunch of Sun information to the Imakefile and INSTALL file.
+Thanks to Ed Hanway, Arik Klingensmith, and others who responded.
+
+* Test for defined(WIN32) instead of !defined(unix).
+
+* Avoid using (void *) type with non-ANSI C compilers.  Thanks to
+James Altucher for the bug report.
+
+3.0, patchlevel 8 -- Thu Sep  2 12:23:01 PDT 1993 -- Tim Mann
+
+* Note: Patchlevel 8 was the first non-beta release of xboard 3.0
+
+* Added cmail to distribution.  Contributed (and still maintained) by
+Evan Welsh.
+
+* Bug fix: -queen option wasn't initializing menu check.  Reported by
+Pat Surry.
+
+3.0, patchlevel 7 -- Thu Aug 26 13:23:24 PDT 1993 -- Tim Mann
+
+* Sent WinBoard 3.0.pl7 to Torre on ICS
+
+* Added parser.h to hold the interface to parser.l
+
+* Upgraded COPYING file and copyright notices to GNU GPL version 2.
+
+3.0, patchlevel 6 -- Tue Aug 24 15:16:13 PDT 1993 -- Tim Mann
+
+* We no longer display intermediate positions or intermediate comments
+while loading a game file with -timeDelay 0 or loading an opening to
+start up a -matchMode game.
+
+* Loading an empty game from an xboard save file now gives a status
+message "No moves in game" instead of an error popup saying "Game not
+found in file."
+
+* Added comment.awk to distribution.
+
+3.0, patchlevel 5 -- Tue Aug 17 16:45:54 PDT 1993 -- Tim Mann
+
+* Bug fix:  xboard would crash if it couldn't get all its colors; now
+it switches to monoMode instead.  Also, xboard was trying to convert
+color resources even when using a b/w display.  Reported by Larry
+Rogers.
+
+* Bug fix: Declared fields of TimeMark as signed so that we get signed
+instead of unsigned arithmetic.  SubtractTimeMarks was breaking on
+Alpha AXP (which has 64-bit longs) with old declarations.  Reported by
+Michel van der List.
+
+* Bug fixes:  Keyboard accelerators now work after EditComment window is
+popped down.  Iconize keyboard accelerator now works even if xboard
+was started with -iconic flag and later deiconized.
+
+* Bug fix:  The routine that tests whether a move is illegal because it
+would leave you in check was not handling e.p. captures properly.
+Reported by Patrick Surry.
+
+* Bug (?) fix:  Was adding time to clocks at time control even when
+loading a game file.  Actually it's not entirely clear how time
+controls should be dealt with when some moves are loaded from a file
+or clicked in with ForceMoves.  For now ForceMoves mode does add the
+time (because it can be used to change moves during a live game), but
+LoadGame mode does not.
+
+* Updated usage message.
+
+* Previous attempted fix to matchMode had broken TwoMachines mode and
+generally needed more work.  Also simplified command line interface to
+matchMode.
+
+3.0, patchlevel 4 -- Thu Aug  5 14:17:18 PDT 1993 -- Tim Mann
+
+* Thanks again to the beta testers listed for 3.0 patchlevel 3, and also
+Desnogues, Steve Cariglia, Niklas Engsner, Mark Silver, and Roger Rowe.
+
+* Reorganized man page, splitting OPTIONS into subsections.
+
+* matchMode was very broken; fixed.
+
+* Changed convention for turning off command line options from --opt
+to -xopt, to be less inconsistent with GNU standards.  Also changed
+the long command line options to take True/False arguments like
+resources; seems to make more sense this way.
+
+* Added AlwaysQueen option -- suppresses promotion dialog and always
+promotes to a queen if you move a pawn to the last rank.  Has no
+effect on gnuchess (or your ICS opponents!) -- they can still
+underpromote.
+
+* Subtracted an extra fudge term when determining how wide message and
+title widgets should be.  This fixes a problem some beta testers had.
+Wish I knew why it's needed.
+
+* Bugfix in parser; symptom was that you couldn't do LoadGame after
+observing a game on ICS.
+
+* Bugfix in Forward; didn't work after game ended while Pause was turned on.
+
+* Removed bogus execute bits on .h files.
+
+* Use REMOTE_SHELL and TELNET_PROGRAM definitions.
+
+* MachineWhite and MachineBlack now work from TwoMachines mode.
+
+* Popping down an error message with the [ok] button was not turning off
+the errorUp flag, so the next move would cause xboard to try to pop it
+down again, resulting in a wild memory reference and sometimes a crash.
+
+3.0, patchlevel 3 -- Tue Aug  3 17:40:27 1993  -- Tim Mann
+
+* Thanks to my beta testers: Patrick Surry, Takuya Kojima, Robert J. Luoma,
+Chris L.  Petroff, Richard K. Lloyd, Michel van der List, Craig Metz,
+Antoon Frehe, Simon Clift, Shelly, Eric Peterson, Christopher Mitchell,
+Martin Koch, Ed Hanway, Steve Booth, Udo, Ken Hobday, and Joseph Duhamel.
+
+* Improved error messages for trying to move the wrong color pieces or
+to move when it's not your turn.
+
+* Special code for monoMode on 1-bit displays now understands displays
+where 1=white and 0=black.
+
+* Declare getenv() if <stdlib.h> not included; avoids a compiler warning.
+
+* Documented borderXoffset and borderYoffset.
+
+* Added -titleInWindow option for use with X window managers that
+don't let us set the title in the window banner.
+
+* Fixed error message printing in WinBoard; system error messages no
+longer appear as numeric codes.
+
+* The error message popup is now non-modal; you don't have to press the
+[ok] button before you can do something else.  In addition, the popup is
+positioned so that it doesn't cover up the board (too much), and making a
+move or otherwise clicking on the board pops it down.  (Not implemented in
+WinBoard.)
+
+* You can now call your opponent's flag in ICS mode by clicking on his
+clock. 
+
+* Fixed minor bugs in -flipView option and documented exactly how xboard
+decides which way to flip the view.
+
+3.0, patchlevel 2 -- Fri Jul 30 22:20:23 PDT 1993 -- Tim Mann
+
+* Added Autosave to Options menu.  Would be better to have Save
+Options dialog as in WinBoard, but this was quick to do and gives the
+most-needed functionality.
+
+* Changed "Reload Game" on menu to "Reload Same Game".
+
+3.0, patchlevel 1 -- Thu Jul  8 21:22:59 PDT 1993 -- Tim Mann
+
+* Sent a copy of patchlevel 1 to Patrick Surry to beta-test.
+
+* Added -cmail option that sets appData.cmailMode.  Currently a no-op.
+In the future this may set special modes for use by the cmail script
+for playing chess by email.
+
+* Added LoadNextGame, LoadPreviousGame, and ReloadGame to File menu.
+ReloadGame suggested by Patrick Surry.
+
+* Added -flipView command-line option.  Suggested by Patrick Surry.
+
+* Fixed bugs in parser.l:  (1) Pattern for "# xboard game file ..."
+needed to match to end of line.  (2) Start of a new file was not matching
+the ^ start-of-line character.  The fix for this is a kludge.
+
+* Made game counting code in LoadGame more robust, and made LoadGame
+able to detect the end of a saved partial game (by noticing the start
+of the next game) in game files created by XBoard itself.  We don't
+try to find the start of the next game that way in other kinds of game
+files, because the only way I can think of to do that is to look for
+another move #1, and that technique gets too many false hits.
+
+* Fixed recently introduced bug in LoadGame when game starts with a
+position diagram.
+
+3.0, patchlevel 0 -- Fri Jun 25 14:17:17 PDT 1993 -- Tim Mann
+
+* Changes in this patchlevel were too numerous to list.  Larger ones are
+listed below.
+
+* Added a popup dialog to enter and edit comments.  Inspired by some
+code from Patrick Surry.  Changed the normal read-only comment popup
+to the same style.
+
+* Added ICS init script feature from Karl Schwamb.
+
+* Added some ESIX fixes and OMIT_SOCKETS ifdef option, from Kayvan Sylvan.
+
+* Revamped code to allow use of flex instead of lex on parser.l.
+Using flex requires adding -DFLEX to defines in Imakefile.
+
+* Source code is split into front end (xboard.c), which knows about X
+and Unix, and back end (backend.c), which knows about chess, gnuchess,
+and the ICS.  There is also a front end for Windows NT.
+
+* Boolean command line options now use "-foo" to turn on and "--foo"
+to turn off instead of "-foo true" and "-foo false".  [Later -xfoo;
+see above.] 
+
+* Added menu commands to control autoflag, bell, and coords options.
+
+* User interface has a new look: (1) Menu bar instead of array of
+buttons.  A few very commonly used features have small buttons in
+addition to being on the menus. (2) Large font for clock.  (3) Pop-up
+dialogs for errors.
+

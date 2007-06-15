@@ -1,0 +1,40 @@
+** Announcing the release of XBoard and WinBoard, version 4.2.7 **
+
+XBoard is a graphical chessboard for the X Window System that can
+serve as a user interface for GNU Chess, Crafty, and other chess
+engines, for the Internet Chess Servers, and for electronic mail
+correspondence chess.  XBoard can also be used by itself.  It can read
+and write game files in PGN (portable game notation).
+
+WinBoard is a similar program for 32-bit Microsoft Windows.  It
+includes all the major features of XBoard except email correspondence
+chess.
+
+A new release of both XBoard and WinBoard is now available.  Version
+4.2.7 corrects about two dozen bugs in the 4.2.6 release.  See the
+ChangeLog for a list.  In addition, WinBoard 4.2.7 comes bundled with
+GNU Chess 5.07 instead of the old 5.02+ version.  The XBoard and
+WinBoard source code trees have been merged, so the xboard download
+now contains the complete source for both.
+
+The various larger contributions that people have submitted since the
+4.2.6 release are not yet included in 4.2.7.  The source code for
+these contributions is now available, however (see
+http://www.tim-mann.org/extensions.html), and we plan to include most
+of them in a future release once the contributors complete necessary
+copyright assignment paperwork.
+
+You can get both XBoard and WinBoard from either our new Savannah
+project pages or their existing pages on Tim Mann's web site:
+
+- https://savannah.gnu.org/projects/xboard/
+- http://www.tim-mann.org/chess.html
+
+Most of the known bugs and deficiencies in previous versions have
+*not* been addressed in this release.  It is not necessary to report
+your favorite bug again if you have reported it before, unless the
+ChangeLog erroneously says it has been fixed.  Most known bugs,
+deficiencies, and suggestions received are now listed in the ToDo
+file.  If you find a bug not listed there, please report it in the bug
+tracker at https://savannah.gnu.org/projects/xboard/ or by email to 
+bug-xboard [AT] tim-mann.org.
