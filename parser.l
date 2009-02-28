@@ -77,6 +77,15 @@ char *yy_text = (char *) yytext;
 
 #ifdef FLEX_SCANNER
 /* This is flex */
+/* use prototypes in function declarations */
+#define YY_USE_PROTOS
+
+#ifdef YY_USE_PROTOS
+#define YY_PROTO(proto) proto
+#else
+#define YY_PROTO(proto) ()
+#endif
+
 #undef YY_INPUT
 #define YY_INPUT(buf, result, max_size) my_yy_input(buf, &result, max_size)
 #undef YY_DECL
@@ -855,9 +864,9 @@ static YY_BUFFER_STATE my_file_buffer = NULL;
 */
 int yyoffset()
 {
-    int pos = yy_c_buf_p - yy_current_buffer->yy_ch_buf;
+    int pos = yy_c_buf_p - YY_CURRENT_BUFFER->yy_ch_buf;
 
-    return(ftell(yy_current_buffer->yy_input_file) -
+    return(ftell(YY_CURRENT_BUFFER->yy_input_file) -
          yy_n_chars + pos);
 }
 
