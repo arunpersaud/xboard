@@ -120,3 +120,7 @@ xboard.c, and xboard.man.
 9. Hugh Fisher <Hugh.Fisher@cs.anu.edu.au>
 
 Additions to backend.c and xboard.c.
+
+10 Arun Persaud <arun@nubati.net>
+
+fix for parser.l
