@@ -1,7 +1,11 @@
 ChangeLog for XBoard/WinBoard
-* 02/28/2009 APersaud: fixed missing datarootdir in Makefile.in -> autoconf -> new configure script
+* 2009-02-28 anonymous <grainman.timp@gmail.com> (tiny change)
+	added DESTDIR support to Makefile.in; similar patch also provided by Ali Polatel <kawdjer>
+	patch #6182; bug #25672
 	
-* 02/28/2009 APersaud: fixed an error in the parser. This should fix bug #22812.
+* 2009-02-28 APersaud: fixed missing datarootdir in Makefile.in -> autoconf -> new configure script
+	
+* 2009-02-28 APersaud: fixed an error in the parser. This should fix bug #22812.
 	
 * 06/12/2005: bugfix some more possible buffer overflows.
 
