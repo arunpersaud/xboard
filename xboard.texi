@@ -874,7 +874,7 @@ instructions on how to report this problem.
 
 You can add or remove shortcut keys using the X resources
 @code{form.translations}. Here is an example of what would go in your
-@file{.Xdefaults} file:
+@file{.Xresources} file:
 
 @example
 XBoard*form.translations: \
@@ -920,7 +920,7 @@ ToStartProc, TrainingProc, TruncateGameProc, and TwoMachinesProc.
 This section documents the command-line options to XBoard.  You can
 set these options in two ways: by typing them on the shell command
 line you use to start XBoard, or by setting them as X resources
-(typically in your @file{.Xdefaults} file).  Many of the options
+(typically in your @file{.Xresources} file).  Many of the options
 cannot be changed while XBoard is running; others set the initial
 state of items that can be changed with the @ref{Options} menu.
 
@@ -934,7 +934,7 @@ numbers as values, you can use the long or short option names
 interchangeably.
 
 Each option corresponds to an X resource with the same name, so
-if you like, you can set options in your @file{.Xdefaults} file
+if you like, you can set options in your @file{.Xresources} file
 or in a file named @file{XBoard} in your home directory.
 For options that have two names, the longer one is the name of
 the corresponding X resource; the short name is not recognized.
@@ -1085,7 +1085,7 @@ Setting this option from the command line is tricky, because you must
 type in real newline characters, including one at the very end.
 In most shells you can do this by
 entering a @samp{\} character followed by a newline. It is easier to set
-the option from your @file{.Xdefaults} file; in that case you can
+the option from your @file{.Xresources} file; in that case you can
 include the character sequence @samp{\n} in the string, and it will
 be converted to a newline.
 
@@ -1345,7 +1345,7 @@ Here ``default'' means the default foreground or background color of
 your xterm.  Bold can be 1 or 0.  If background is omitted, ``default''
 is assumed; if bold is omitted, 0 is assumed.
 
-Here is an example of how to set the colors in your @file{.Xdefaults} file.
+Here is an example of how to set the colors in your @file{.Xresources} file.
 The colors shown here are the default values; you will get
 them if you turn @code{-colorize} on without specifying your own colors.
 
@@ -1412,7 +1412,7 @@ This sound is played when an ICS game that you are participating in is
 aborted, adjourned, or otherwise ends inconclusively.  Default: "" (no
 sound).
 
-Here is an example of how to set the sounds in your .Xdefaults file:
+Here is an example of how to set the sounds in your @file{.Xresources} file:
 
 @example
 xboard*soundShout: shout.wav
@@ -1971,7 +1971,7 @@ command-line options as follows:
 xboard -ics -icshost firewall.example.com -icsport 23
 @end example
 @noindent
-Or in your @file{.Xdefaults} file:
+Or in your @file{.Xresources} file:
 
 @example
 XBoard*internetChessServerHost: firewall.example.com
@@ -2009,7 +2009,7 @@ xboard -ics -gateway rsh.example.com -icshost chessclub.com
 @end example
 
 @noindent
-Or in your @file{.Xdefaults} file:
+Or in your @file{.Xresources} file:
 
 @example
 XBoard*gateway: rsh.example.com
@@ -2032,7 +2032,7 @@ xboard -ics -telnet -telnetProgram ptelnet
 @end example
 
 @noindent
-Or in your @file{.Xdefaults} file:
+Or in your @file{.Xresources} file:
 
 @example
 XBoard*useTelnet: true
@@ -2048,7 +2048,7 @@ that is, your @file{ptelnet} program doesn't let you connect to
 alternative ports. As noted above, your chess server may allow you to
 connect on port 23 instead.  In that case, just add the option
 @samp{-icsport ""} to the above command, or add
-@samp{XBoard*internetChessServerPort:} to your @file{.Xdefaults} file.
+@samp{XBoard*internetChessServerPort:} to your @file{.Xresources} file.
 But if your chess server doesn't let you connect on port 23, you will have
 to find some other host outside the firewall and hop through it. For
 instance, suppose you have a shell account at @samp{foo.edu}. Set
@@ -2059,7 +2059,7 @@ xboard -ics -telnet -telnetProgram ptelnet -icshost foo.edu -icsport ""
 @end example
 
 @noindent
-Or in your @file{.Xdefaults} file:
+Or in your @file{.Xresources} file:
 
 @example
 XBoard*useTelnet: true
@@ -2497,7 +2497,7 @@ zic2xpm ~/ziics/fritz4.*
 xboard -pixmap ~/fritz4
 @end example
 
-Alternatively, you can add this line to your .Xdefaults file:
+Alternatively, you can add this line to your @file{.Xresources} file:
 
 @example
 xboard*pixmapDirectory: ~/fritz4

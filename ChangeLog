@@ -1,4 +1,6 @@
 ChangeLog for XBoard/WinBoard
+* 2009-02-28 APersaud: fixed bug #22853: changed all .Xdefaults to .Xresources in xboard.texi 
+	
 * 2009-02-28 anonymous <grainman.timp@gmail.com> (tiny change)
 	added DESTDIR support to Makefile.in; similar patch also provided by Ali Polatel <kawdjer>
 	patch #6182; bug #25672
