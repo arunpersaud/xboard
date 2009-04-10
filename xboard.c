@@ -1873,6 +1873,7 @@ main(argc, argv)
 #ifdef ENABLE_NLS
     XtSetLanguageProc(NULL, NULL, NULL);
     bindtextdomain(PRODUCT, LOCALEDIR);
+    bind_textdomain_codeset(PRODUCT, "UTF-8");
     textdomain(PRODUCT);
 #endif
 

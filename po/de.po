@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: XBoard 4.2.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-12-01 20:00+0200\n"
-"PO-Revision-Date: 2009-03-04 21:17-0800\n"
+"PO-Revision-Date: 2009-04-09 21:17-0700\n"
 "Last-Translator: Arun Persaud <arun@nubati.net>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -520,7 +520,7 @@ msgstr "Nicht in der Lage Schriftsatz zu generieren.\n"
 #: xboard.c:2917
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
-msgstr ""
+msgstr "%s: keine Schriften stimmen mit Muster %s überein\n"
 
 #: xboard.c:2960
 #, c-format
@@ -574,7 +574,7 @@ msgstr "Keine XPM-Figuren der Größe %d vorhanden\n"
 #: xboard.c:3291
 #, c-format
 msgid "Error %d loading XPM image \"%s\"\n"
-msgstr ""
+msgstr "Fehler %d beim Laden von XPM-Bild »%s«\n"
 
 #: xboard.c:3302
 msgid ""
@@ -607,7 +607,7 @@ msgstr ""
 #: xboard.c:3441
 #, c-format
 msgid "Unknown XReadBitmapFile error %d on file %s"
-msgstr ""
+msgstr "Unbekannter XReadBitmapFile-Fehler %d bei Datei %s"
 
 #: xboard.c:3445
 #, c-format
