@@ -47,7 +47,7 @@ CopyFENToClipboard()
 {
   char *fen = NULL;
 
-  fen = PositionToFEN(currentMove);
+  fen = PositionToFEN(currentMove,1);
   if (!fen) {
     DisplayError("Unable to convert position to FEN.", 0);
     return;

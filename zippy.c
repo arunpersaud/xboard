@@ -1,6 +1,6 @@
 /*
  * zippy.c -- Implements Zippy the Pinhead chess player on ICS in XBoard
- * $Id$
+ * $Id: zippy.c,v 2.2 2003/11/25 05:25:20 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-2001 Free Software Foundation, Inc.

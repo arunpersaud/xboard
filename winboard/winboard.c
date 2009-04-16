@@ -415,6 +415,7 @@ VOID APIENTRY MenuPopup(HWND hwnd, POINT pt, HMENU hmenu, UINT def);
 void ParseIcsTextMenu(char *icsTextMenuString);
 VOID PopUpMoveDialog(char firstchar);
 VOID UpdateSampleText(HWND hDlg, int id, MyColorizeAttribs *mca);
+int NewGameFRC();
 
 /*
  * Setting "frozen" should disable all user input other than deleting
@@ -654,6 +655,12 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 
   SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
 	       0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+
+  /* [AS] Disable the FRC stuff if not playing the proper variant */
+  if( gameInfo.variant != VariantFischeRandom ) {
+      EnableMenuItem( GetMenu(hwndMain), IDM_NewGameFRC, MF_GRAYED );
+  }
+
   if (hwndConsole) {
 #if AOT_CONSOLE
     SetWindowPos(hwndConsole, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
@@ -1071,8 +1078,9 @@ ArgDescriptor argDescriptors[] = {
   { "delayBeforeQuit", ArgInt, (LPVOID) &appData.delayBeforeQuit, TRUE },
   { "delayAfterQuit", ArgInt, (LPVOID) &appData.delayAfterQuit, TRUE },
   { "nameOfDebugFile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE },
-  { "pgnEventHeader", ArgString, (LPVOID) &appData.pgnEventHeader, TRUE },
   { "debugfile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE },
+  { "pgnEventHeader", ArgString, (LPVOID) &appData.pgnEventHeader, TRUE },
+  { "defaultFrcPosition", ArgInt, (LPVOID) &appData.defaultFrcPosition, TRUE },
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
   { "zt", ArgTrue, (LPVOID) &appData.zippyTalk, FALSE },
@@ -1750,6 +1758,7 @@ InitAppData(LPSTR lpCmdLine)
   appData.delayAfterQuit = 0;
   appData.nameOfDebugFile = "winboard.debug";
   appData.pgnEventHeader = "Computer Chess Game";
+  appData.defaultFrcPosition = -1;
 
 #ifdef ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
@@ -4145,6 +4154,13 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       AnalysisPopDown();
       break;
 
+    case IDM_NewGameFRC:
+      if( NewGameFRC() == 0 ) {
+        ResetGameEvent();
+        AnalysisPopDown();
+      }
+      break;
+
     case IDM_LoadGame:
       LoadGameDialog(hwnd, "Load Game from File");
       break;
@@ -6465,6 +6481,15 @@ DoReadFile(HANDLE hFile, char *buf, int count, DWORD *outCount,
 {
   int ok, err;
 
+  /* [AS]  */
+  if( count <= 0 ) {
+    if (appData.debugMode) {
+      fprintf( debugFP, "DoReadFile: trying to read past end of buffer, overflow = %d\n", count );
+    }
+
+    return ERROR_INVALID_USER_BUFFER;
+  }
+
   ResetEvent(ovl->hEvent);
   ovl->Offset = ovl->OffsetHigh = 0;
   ok = ReadFile(hFile, buf, count, outCount, ovl);
@@ -6523,8 +6548,8 @@ void CheckForInputBufferFull( InputSource * is )
                 fprintf( debugFP, "Input line exceeded buffer size (source id=%u)\n", is->id );
             }
 
-            is->error = ERROR_BROKEN_PIPE; /* [AS] Just a non-successful code! */
-            is->count = (DWORD) -2;
+            is->error = ERROR_BROKEN_PIPE; /* [AS] Just any non-successful code! */
+            is->count = (DWORD) -1;
             is->next = is->buf;
         }
     }
@@ -6551,16 +6576,27 @@ InputThread(LPVOID arg)
 	is->count = 0;
       } else {
 	is->count = (DWORD) -1;
+        /* [AS] The (is->count <= 0) check below is not useful for unsigned values! */
+        break;
       }
     }
 
     CheckForInputBufferFull( is );
 
     SendMessage(hwndMain, WM_USER_Input, 0, (LPARAM) is);
+
+    if( is->count == ((DWORD) -1) ) break; /* [AS] */
+
     if (is->count <= 0) break;  /* Quit on EOF or error */
   }
+
   CloseHandle(ovl.hEvent);
   CloseHandle(is->hFile);
+
+  if (appData.debugMode) {
+    fprintf( debugFP, "Input thread terminated (id=%u, error=%d, count=%d)\n", is->id, is->error, is->count );
+  }
+
   return 0;
 }
 
@@ -6614,6 +6650,9 @@ NonOvlInputThread(LPVOID arg)
     CheckForInputBufferFull( is );
 
     SendMessage(hwndMain, WM_USER_Input, 0, (LPARAM) is);
+
+    if( is->count == ((DWORD) -1) ) break; /* [AS] */
+
     if (is->count < 0) break;  /* Quit on error */
   }
   CloseHandle(is->hFile);
@@ -6640,6 +6679,9 @@ SocketInputThread(LPVOID arg)
       }
     }
     SendMessage(hwndMain, WM_USER_Input, 0, (LPARAM) is);
+
+    if( is->count == ((DWORD) -1) ) break; /* [AS] */
+
     if (is->count <= 0) break;  /* Quit on EOF or error */
   }
   return 0;
@@ -7211,6 +7253,70 @@ AskQuestion(char* title, char *question, char *replyPrefix, ProcRef pr)
     DialogBoxParam(hInst, MAKEINTRESOURCE(DLG_Question),
       hwndMain, (DLGPROC)lpProc, (LPARAM)&qp);
     FreeProcInstance(lpProc);
+}
+
+/* [AS] Pick FRC position */
+LRESULT CALLBACK NewGameFRC_Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    static int * lpIndexFRC;
+    BOOL index_is_ok;
+    char buf[16];
+
+    switch( message )
+    {
+    case WM_INITDIALOG:
+        lpIndexFRC = (int *) lParam;
+
+        CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
+
+        SendDlgItemMessage( hDlg, IDC_NFG_Edit, EM_SETLIMITTEXT, sizeof(buf)-1, 0 );
+        SetDlgItemInt( hDlg, IDC_NFG_Edit, *lpIndexFRC, TRUE );
+        SendDlgItemMessage( hDlg, IDC_NFG_Edit, EM_SETSEL, 0, -1 );
+        SetFocus(GetDlgItem(hDlg, IDC_NFG_Edit));
+
+        break;
+
+    case WM_COMMAND:
+        switch( LOWORD(wParam) ) {
+        case IDOK:
+            *lpIndexFRC = GetDlgItemInt(hDlg, IDC_NFG_Edit, &index_is_ok, TRUE );
+            EndDialog( hDlg, 0 );
+            return TRUE;
+        case IDCANCEL:
+            EndDialog( hDlg, 1 );
+            return TRUE;
+        case IDC_NFG_Edit:
+            if( HIWORD(wParam) == EN_CHANGE ) {
+                GetDlgItemInt(hDlg, IDC_NFG_Edit, &index_is_ok, TRUE );
+
+                EnableWindow( GetDlgItem(hDlg, IDOK), index_is_ok );
+            }
+            return TRUE;
+        case IDC_NFG_Random:
+            sprintf( buf, "%d", myrandom() % 960 );
+            SetDlgItemText(hDlg, IDC_NFG_Edit, buf );
+            return TRUE;
+        }
+
+        break;
+    }
+
+    return FALSE;
+}
+
+int NewGameFRC()
+{
+    int result;
+    int index = appData.defaultFrcPosition;
+    FARPROC lpProc = MakeProcInstance( (FARPROC) NewGameFRC_Proc, hInst );
+
+    result = DialogBoxParam( hInst, MAKEINTRESOURCE(DLG_NewGameFRC), hwndMain, (DLGPROC)lpProc, (LPARAM)&index );
+
+    if( result == 0 ) {
+        appData.defaultFrcPosition = index;
+    }
+
+    return result;
 }
 
 
@@ -8089,7 +8195,7 @@ AddInputSource(ProcRef pr, int lineByLine,
     is->kind = cp->kind;
     /*
         [AS] Try to avoid a race condition if the thread is given control too early:
-        we create all threads suspended to that the is->hThread variable can be
+        we create all threads suspended so that the is->hThread variable can be
         safely assigned, then let the threads start with ResumeThread.
     */
     switch (cp->kind) {
@@ -8550,6 +8656,13 @@ void
 HistorySet(char movelist[][2*MOVE_LEN], int first, int last, int current)
 {
   /* Currently not implemented in WinBoard */
+#if 1
+    /* [AS] Let's see what this function is for... */
+    char buf[256];
+
+    sprintf( buf, "HistorySet: first=%d, last=%d, current=%d (%s)\n",
+        first, last, current, current >= 0 ? movelist[current] : "n/a" );
+
+    OutputDebugString( buf );
+#endif
 }
-
-

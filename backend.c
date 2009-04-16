@@ -597,6 +597,10 @@ InitBackEnd1()
     first.analyzing = second.analyzing = FALSE;
     first.initDone = second.initDone = FALSE;
 
+    /* New features added by Tord: */
+    first.useFEN960 = FALSE; second.useFEN960 = FALSE;
+    first.useOOCastle = TRUE; second.useOOCastle = TRUE;
+    /* End of new features added by Tord. */
     first.scoreIsAbsolute = appData.firstScoreIsAbsolute; /* [AS] */
     second.scoreIsAbsolute = appData.secondScoreIsAbsolute; /* [AS] */
 
@@ -663,7 +667,7 @@ InitBackEnd1()
       switch (variant) {
       case VariantBughouse:     /* need four players and two boards */
       case VariantKriegspiel:   /* need to hide pieces and move details */
-      case VariantFischeRandom: /* castling doesn't work, shuffle not done */
+      /* case VariantFischeRandom: (Fabien: moved below) */
 	sprintf(buf, "Variant %s supported only in ICS mode", appData.variant);
 	DisplayFatalError(buf, 0, 2);
 	return;
@@ -686,6 +690,7 @@ InitBackEnd1()
       case VariantNormal:     /* definitely works! */
       case VariantWildCastle: /* pieces not automatically shuffled */
       case VariantNoCastle:   /* pieces not automatically shuffled */
+      case VariantFischeRandom: /* Fabien: pieces not automatically shuffled */
       case VariantCrazyhouse: /* holdings not shown,
 			         offboard interposition not understood */
       case VariantLosers:     /* should work except for win condition,
@@ -3235,7 +3240,25 @@ SendMoveToProgram(moveNum, cps)
       }
       SendToProgram(buf, cps);
     } else {
-      SendToProgram(moveList[moveNum], cps);
+      /* Added by Tord: Send castle moves in "O-O" in FRC games if required by
+       * the engine. It would be nice to have a better way to identify castle
+       * moves here. */
+      if(gameInfo.variant == VariantFischeRandom && cps->useOOCastle) {
+	int fromX = moveList[moveNum][0] - 'a';
+	int fromY = moveList[moveNum][1] - '1';
+	int toX = moveList[moveNum][2] - 'a';
+	int toY = moveList[moveNum][3] - '1';
+	if((boards[currentMove][fromY][fromX] == WhiteKing
+	    && boards[currentMove][toY][toX] == WhiteRook)
+	   || (boards[currentMove][fromY][fromX] == BlackKing
+	       && boards[currentMove][toY][toX] == BlackRook)) {
+	  if(toX > fromX) SendToProgram("O-O\n", cps);
+	  else SendToProgram("O-O-O\n", cps);
+	}
+	else SendToProgram(moveList[moveNum], cps);
+      }
+      else SendToProgram(moveList[moveNum], cps);
+      /* End of additions by Tord */
     }
 }
 
@@ -3256,12 +3279,20 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY)
       case BlackKingSideCastle:
       case WhiteQueenSideCastleWild:
       case BlackQueenSideCastleWild:
+      /* PUSH Fabien */
+      case WhiteHSideCastleFR:
+      case BlackHSideCastleFR:
+      /* POP Fabien */
 	sprintf(user_move, "o-o\n");
 	break;
       case WhiteQueenSideCastle:
       case BlackQueenSideCastle:
       case WhiteKingSideCastleWild:
       case BlackKingSideCastleWild:
+      /* PUSH Fabien */
+      case WhiteASideCastleFR:
+      case BlackASideCastleFR:
+      /* POP Fabien */
 	sprintf(user_move, "o-o-o\n");
 	break;
       case WhitePromotionQueen:
@@ -3361,6 +3392,12 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
       case WhiteQueenSideCastleWild:
       case BlackKingSideCastleWild:
       case BlackQueenSideCastleWild:
+      /* Code added by Tord: */
+      case WhiteHSideCastleFR:
+      case WhiteASideCastleFR:
+      case BlackHSideCastleFR:
+      case BlackASideCastleFR:
+      /* End of code added by Tord */
       case IllegalMove:		/* bug or odd chess variant */
 	*fromX = currentMoveString[0] - 'a';
 	*fromY = currentMoveString[1] - '1';
@@ -3407,6 +3444,91 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
     }
 }
 
+/* [AS] FRC game initialization */
+static int FindEmptySquare( Board board, int n )
+{
+    int i = 0;
+
+    while( 1 ) {
+        while( board[0][i] != EmptySquare ) i++;
+        if( n == 0 )
+            break;
+        n--;
+        i++;
+    }
+
+    return i;
+}
+
+static void ShuffleFRC( Board board )
+{
+    int i;
+
+    srand( time(0) );
+
+    for( i=0; i<8; i++ ) {
+        board[0][i] = EmptySquare;
+    }
+
+    board[0][(rand() % 4)*2  ] = WhiteBishop; /* On dark square */
+    board[0][(rand() % 4)*2+1] = WhiteBishop; /* On lite square */
+    board[0][FindEmptySquare(board, rand() % 6)] = WhiteQueen;
+    board[0][FindEmptySquare(board, rand() % 5)] = WhiteKnight;
+    board[0][FindEmptySquare(board, rand() % 4)] = WhiteKnight;
+    board[0][FindEmptySquare(board, 0)] = WhiteRook;
+    board[0][FindEmptySquare(board, 0)] = WhiteKing;
+    board[0][FindEmptySquare(board, 0)] = WhiteRook;
+
+    for( i=0; i<8; i++ ) {
+        board[7][i] = board[0][i] + BlackPawn - WhitePawn;
+    }
+}
+
+static unsigned char FRC_KnightTable[10] = {
+    0x00, 0x01, 0x02, 0x03, 0x11, 0x12, 0x13, 0x22, 0x23, 0x33
+};
+
+static void SetupFRC( Board board, int pos_index )
+{
+    int i;
+    unsigned char knights;
+
+    /* Bring the position index into a safe range (just in case...) */
+    if( pos_index < 0 ) pos_index = 0;
+
+    pos_index %= 960;
+
+    /* Clear the board */
+    for( i=0; i<8; i++ ) {
+        board[0][i] = EmptySquare;
+    }
+
+    /* Place bishops and queen */
+    board[0][ (pos_index % 4)*2 + 1 ] = WhiteBishop; /* On lite square */
+    pos_index /= 4;
+
+    board[0][ (pos_index % 4)*2     ] = WhiteBishop; /* On dark square */
+    pos_index /= 4;
+
+    board[0][ FindEmptySquare(board, pos_index % 6) ] = WhiteQueen;
+    pos_index /= 6;
+
+    /* Place knigths */
+    knights = FRC_KnightTable[ pos_index ];
+
+    board[0][ FindEmptySquare(board, knights / 16) ] = WhiteKnight;
+    board[0][ FindEmptySquare(board, knights % 16) ] = WhiteKnight;
+
+    /* Place rooks and king */
+    board[0][ FindEmptySquare(board, 0) ] = WhiteRook;
+    board[0][ FindEmptySquare(board, 0) ] = WhiteKing;
+    board[0][ FindEmptySquare(board, 0) ] = WhiteRook;
+
+    /* Mirror piece placement for black */
+    for( i=0; i<8; i++ ) {
+        board[7][i] = board[0][i] + BlackPawn - WhitePawn;
+    }
+}
 
 void
 InitPosition(redraw)
@@ -3441,9 +3563,15 @@ InitPosition(redraw)
       break;
     case VariantFischeRandom:
       CopyBoard(boards[0], initialPosition);
-      /* !!shuffle according to FR rules */
+      if( appData.defaultFrcPosition < 0 ) {
+        ShuffleFRC( boards[0] );
+      }
+      else {
+        SetupFRC( boards[0], appData.defaultFrcPosition );
+      }
       break;
     }
+
     if (redraw)
       DrawPosition(FALSE, boards[currentMove]);
 }
@@ -3456,7 +3584,7 @@ SendBoard(cps, moveNum)
     char message[MSG_SIZ];
     
     if (cps->useSetboard) {
-      char* fen = PositionToFEN(moveNum);
+      char* fen = PositionToFEN(moveNum, cps->useFEN960);
       sprintf(message, "setboard %s\n", fen);
       SendToProgram(message, cps);
       free(fen);
@@ -4062,6 +4190,35 @@ HandleMachineMove(message, cps)
 
 	MakeMove(fromX, fromY, toX, toY, promoChar);/*updates forwardMostMove*/
     
+        /* [AS] Adjudicate game if needed (note: remember that forwardMostMove now points past the last move) */
+        if( gameMode == TwoMachinesPlay && adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
+            int count = 0;
+
+            while( count < adjudicateLossPlies ) {
+                int score = pvInfoList[ forwardMostMove - count - 1 ].score;
+
+                if( count & 1 ) {
+                    score = -score; /* Flip score for winning side */
+                }
+
+                if( score > adjudicateLossThreshold ) {
+                    break;
+                }
+
+                count++;
+            }
+
+            if( count >= adjudicateLossPlies ) {
+	        ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+
+                GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins,
+                    "Xboard adjudication",
+                    GE_XBOARD );
+
+                return;
+            }
+        }
+
 	if (gameMode == TwoMachinesPlay) {
 	    if (cps->other->sendTime) {
 		SendTimeRemaining(cps->other,
@@ -4090,32 +4247,6 @@ HandleMachineMove(message, cps)
 	 */
 	if (gameMode != TwoMachinesPlay)
 	    SetUserThinkingEnables();
-
-
-        /* [AS] Adjudicate game if needed (note: forwardMostMove now points past the last move */
-        if( gameMode == TwoMachinesPlay && adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
-            int count = 0;
-
-            while( count < adjudicateLossPlies ) {
-                int score = pvInfoList[ forwardMostMove - count - 1 ].score;
-
-                if( count & 1 ) {
-                    score = -score; /* Flip score for winning side */
-                }
-
-                if( score > adjudicateLossThreshold ) {
-                    break;
-                }
-
-                count++;
-            }
-
-            if( count >= adjudicateLossPlies ) {
-                GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins,
-                    "Xboard adjudication",
-                    GE_XBOARD );
-            }
-        }
 
 	return;
     }
@@ -4790,6 +4921,12 @@ ParseGameHistory(game)
 	  case WhiteQueenSideCastleWild:
 	  case BlackKingSideCastleWild:
 	  case BlackQueenSideCastleWild:
+          /* PUSH Fabien */
+          case WhiteHSideCastleFR:
+          case WhiteASideCastleFR:
+          case BlackHSideCastleFR:
+          case BlackASideCastleFR:
+          /* POP Fabien */
 	  case IllegalMove:		/* maybe suicide chess, etc. */
 	    fromX = currentMoveString[0] - 'a';
 	    fromY = currentMoveString[1] - '1';
@@ -4910,6 +5047,30 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 	board[toY][toX] = (ChessSquare) fromX;
     } else if (fromX == toX && fromY == toY) {
 	return;
+    }
+
+    /* Code added by Tord: */
+    /* FRC castling assumed when king captures friendly rook. */
+    else if (board[fromY][fromX] == WhiteKing &&
+	     board[toY][toX] == WhiteRook) {
+      board[fromY][fromX] = EmptySquare;
+      board[toY][toX] = EmptySquare;
+      if(toX > fromX) {
+	board[0][6] = WhiteKing; board[0][5] = WhiteRook;
+      } else {
+	board[0][2] = WhiteKing; board[0][3] = WhiteRook;
+      }
+    } else if (board[fromY][fromX] == BlackKing &&
+	       board[toY][toX] == BlackRook) {
+      board[fromY][fromX] = EmptySquare;
+      board[toY][toX] = EmptySquare;
+      if(toX > fromX) {
+	board[7][6] = BlackKing; board[7][5] = BlackRook;
+      } else {
+	board[7][2] = BlackKing; board[7][3] = BlackRook;
+      }
+    /* End of code added by Tord */
+
     } else if (fromY == 0 && fromX == 4
 	&& board[fromY][fromX] == WhiteKing
 	&& toY == 0 && toX == 6) {
@@ -5743,6 +5904,12 @@ LoadGameOneMove(readAhead)
       case WhiteQueenSideCastleWild:
       case BlackKingSideCastleWild:
       case BlackQueenSideCastleWild:
+      /* PUSH Fabien */
+      case WhiteHSideCastleFR:
+      case WhiteASideCastleFR:
+      case BlackHSideCastleFR:
+      case BlackASideCastleFR:
+      /* POP Fabien */
 	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed %s into %s\n", yy_text, currentMoveString);
 	fromX = currentMoveString[0] - 'a';
@@ -6801,7 +6968,7 @@ SaveGamePGN(f)
     PrintPGNTags(f, &gameInfo);
     
     if (backwardMostMove > 0 || startedFromSetupPosition) {
-        char *fen = PositionToFEN(backwardMostMove);
+        char *fen = PositionToFEN(backwardMostMove, 1);
         fprintf(f, "[FEN \"%s\"]\n[SetUp \"1\"]\n", fen);
 	fprintf(f, "\n{--------------\n");
 	PrintPosition(f, backwardMostMove);
@@ -6856,7 +7023,7 @@ SaveGamePGN(f)
 	movetext = SavePart(parseList[i]);
 
         /* [AS] Add PV info if present */
-        if( i > 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
+        if( i >= 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
             sprintf( move_buffer, "%s {%s%.2f/%d}",
                 movetext,
                 pvInfoList[i].score >= 0 ? "+" : "",
@@ -7026,7 +7193,7 @@ SavePosition(f, dummy, dummy2)
 	PrintPosition(f, currentMove);
 	fprintf(f, "--------------]\n");
     } else {
-	fen = PositionToFEN(currentMove);
+	fen = PositionToFEN(currentMove, 1);
 	fprintf(f, "%s\n", fen);
 	free(fen);
     }
@@ -7416,13 +7583,13 @@ ExitEvent(status)
         DoSleep( appData.delayBeforeQuit );
 	SendToProgram("quit\n", &first);
         DoSleep( appData.delayAfterQuit );
-	DestroyChildProcess(first.pr, first.useSigterm);
+	DestroyChildProcess(first.pr, 10 /* [AS] first.useSigterm */ );
     }
     if (second.pr != NoProc) {
         DoSleep( appData.delayBeforeQuit );
 	SendToProgram("quit\n", &second);
         DoSleep( appData.delayAfterQuit );
-	DestroyChildProcess(second.pr, second.useSigterm);
+	DestroyChildProcess(second.pr, 10 /* [AS] second.useSigterm */ );
     }
     if (first.isr != NULL) {
 	RemoveInputSource(first.isr);
@@ -8918,7 +9085,7 @@ SetGameInfo()
 
     switch (gameMode) {
       case MachinePlaysWhite:
-	gameInfo.event = StrSave("Computer chess game");
+	gameInfo.event = StrSave( appData.pgnEventHeader );
 	gameInfo.site = StrSave(HostName());
 	gameInfo.date = PGNDate();
 	gameInfo.round = StrSave("-");
@@ -8928,7 +9095,7 @@ SetGameInfo()
 	break;
 
       case MachinePlaysBlack:
-	gameInfo.event = StrSave("Computer chess game");
+	gameInfo.event = StrSave( appData.pgnEventHeader );
 	gameInfo.site = StrSave(HostName());
 	gameInfo.date = PGNDate();
 	gameInfo.round = StrSave("-");
@@ -8938,7 +9105,7 @@ SetGameInfo()
 	break;
 
       case TwoMachinesPlay:
-	gameInfo.event = StrSave("Computer chess game");
+	gameInfo.event = StrSave( appData.pgnEventHeader );
 	gameInfo.site = StrSave(HostName());
 	gameInfo.date = PGNDate();
 	if (matchGame > 0) {
@@ -9353,6 +9520,10 @@ ParseFeatures(args, cps)
       FeatureDone(cps, val);
       continue;
     }
+    /* Added by Tord: */
+    if (BoolFeature(&p, "fen960", &cps->useFEN960, cps)) continue;
+    if (BoolFeature(&p, "oocastle", &cps->useOOCastle, cps)) continue;
+    /* End of additions by Tord */
 
     /* unknown feature: complain and skip */
     q = p;
@@ -10135,8 +10306,9 @@ PGNDate()
 
 
 char *
-PositionToFEN(move)
+PositionToFEN(move, useFEN960)
      int move;
+     int useFEN960;
 {
     int i, j, fromX, fromY, toX, toY;
     int whiteToPlay;
@@ -10174,7 +10346,66 @@ PositionToFEN(move)
     *p++ = whiteToPlay ? 'w' : 'b';
     *p++ = ' ';
 
-    /* !!We don't keep track of castling availability, so fake it */
+    /* HACK: we don't keep track of castling availability, so fake it! */
+
+    /* PUSH Fabien & Tord */
+
+    /* Declare all potential FRC castling rights (conservative) */
+    /* outermost rook on each side of the king */
+
+    if( gameInfo.variant == VariantFischeRandom ) {
+       int fk, fr;
+
+       q = p;
+
+       /* White castling rights */
+
+       for (fk = 1; fk < 7; fk++) {
+
+          if (boards[move][0][fk] == WhiteKing) {
+
+             for (fr = 7; fr > fk; fr--) { /* H side */
+                if (boards[move][0][fr] == WhiteRook) {
+                   *p++ = useFEN960 ? 'A' + fr : 'K';
+                   break;
+                }
+             }
+
+             for (fr = 0; fr < fk; fr++) { /* A side */
+                if (boards[move][0][fr] == WhiteRook) {
+                   *p++ = useFEN960 ? 'A' + fr : 'Q';
+                   break;
+                }
+             }
+          }
+       }
+
+       /* Black castling rights */
+
+       for (fk = 1; fk < 7; fk++) {
+
+          if (boards[move][7][fk] == BlackKing) {
+
+             for (fr = 7; fr > fk; fr--) { /* H side */
+                if (boards[move][7][fr] == BlackRook) {
+                   *p++ = useFEN960 ? 'a' + fr : 'k';
+                   break;
+                }
+             }
+
+             for (fr = 0; fr < fk; fr++) { /* A side */
+                if (boards[move][7][fr] == BlackRook) {
+                   *p++ = useFEN960 ? 'a' + fr : 'q';
+                   break;
+                }
+             }
+          }
+       }
+
+       if (q == p) *p++ = '-'; /* No castling rights */
+       *p++ = ' ';
+    }
+    else {
     q = p;
     if (boards[move][0][4] == WhiteKing) {
 	if (boards[move][0][7] == WhiteRook) *p++ = 'K';
@@ -10186,6 +10417,9 @@ PositionToFEN(move)
     }	    
     if (q == p) *p++ = '-';
     *p++ = ' ';
+    }
+
+    /* POP Fabien & Tord */
 
     /* En passant target square */
     if (move > backwardMostMove) {
@@ -10207,7 +10441,7 @@ PositionToFEN(move)
 	*p++ = '-';
     }
 
-    /* !!We don't keep track of halfmove clock for 50-move rule */
+    /* We don't keep track of halfmove clock for 50-move rule */
     strcpy(p, " 0 ");
     p += 3;
 
@@ -10263,6 +10497,7 @@ ParseFEN(board, blackPlaysFirst, fen)
       default:
 	return FALSE;
     }
+
     /* !!We ignore the rest of the FEN notation */
     return TRUE;
 }

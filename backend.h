@@ -63,7 +63,8 @@ extern ProcRef firstProgramPR, secondProgramPR;
 extern Board boards[];
 
 char *CmailMsg P((void));
-char *PositionToFEN P((int move));
+/* Tord: Added the useFEN960 parameter in PositionToFEN() below */
+char *PositionToFEN P((int move, int useFEN960));
 void EditPositionPasteFEN P((char *fen));
 void TimeDelay P((long ms));
 void SendMultiLineToICS P(( char *text ));
@@ -237,6 +238,12 @@ typedef struct _CPS {
     int analyzing;
     int protocolVersion;
     int initDone;
+
+    /* Added by Tord: */
+    int useFEN960;   /* 0=use "KQkq" style FENs, 1=use "HAha" style FENs */
+    int useOOCastle; /* 0="O-O" notation for castling, 1="king capture rook"
+		      * notation */
+    /* End of additions by Tord */
     int scoreIsAbsolute; /* [AS] 0=don't know (standard), 1=score is always from white side */
 } ChessProgramState;
 

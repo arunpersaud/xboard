@@ -1,6 +1,6 @@
 /*
  * wgamelist.c -- Game list window for WinBoard
- * $Id$
+ * $Id: wgamelist.c,v 2.1 2003/10/27 19:21:02 mann Exp $
  *
  * Copyright 1995 Free Software Foundation, Inc.
  *
@@ -48,33 +48,184 @@ int gameListX, gameListY, gameListW, gameListH;
 extern HINSTANCE hInst;
 extern HWND hwndMain;
 
+struct GameListStats
+{
+    int white_wins;
+    int black_wins;
+    int drawn;
+    int unfinished;
+};
+
+/* [AS] Wildcard pattern matching */
+static BOOL HasPattern( const char * text, const char * pattern )
+{
+    while( *pattern != '\0' ) {
+        if( *pattern == '*' ) {
+            while( *pattern == '*' ) {
+                pattern++;
+            }
+
+            if( *pattern == '\0' ) {
+                return TRUE;
+            }
+
+            while( *text != '\0' ) {
+                if( HasPattern( text, pattern ) ) {
+                    return TRUE;
+                }
+                text++;
+            }
+        }
+        else if( (*pattern == *text) || ((*pattern == '?') && (*text != '\0')) ) {
+            pattern++;
+            text++;
+            continue;
+        }
+
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+static BOOL SearchPattern( const char * text, const char * pattern )
+{
+    BOOL result = TRUE;
+
+    if( pattern != NULL && *pattern != '\0' ) {
+        if( *pattern == '*' ) {
+            result = HasPattern( text, pattern );
+        }
+        else {
+            result = FALSE;
+
+            while( *text != '\0' ) {
+                if( HasPattern( text, pattern ) ) {
+                    result = TRUE;
+                    break;
+                }
+                text++;
+            }
+        }
+    }
+
+    return result;
+}
+
+/* [AS] Setup the game list according to the specified filter */
+static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct GameListStats * stats )
+{
+    ListGame * lg = (ListGame *) gameList.head;
+    int nItem;
+    BOOL hasFilter = FALSE;
+    int count = 0;
+    struct GameListStats dummy;
+
+    /* Initialize stats (use a dummy variable if caller not interested in them) */
+    if( stats == NULL ) {
+        stats = &dummy;
+    }
+
+    stats->white_wins = 0;
+    stats->black_wins = 0;
+    stats->drawn = 0;
+    stats->unfinished = 0;
+
+    if( boReset ) {
+        SendDlgItemMessage(hDlg, OPT_GameListText, LB_RESETCONTENT, 0, 0);
+    }
+
+    if( pszFilter != NULL ) {
+        if( strlen( pszFilter ) > 0 ) {
+            hasFilter = TRUE;
+        }
+    }
+
+    for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){
+        char * st = GameListLine(lg->number, &lg->gameInfo);
+        BOOL skip = FALSE;
+
+        if( hasFilter ) {
+            if( ! SearchPattern( st, pszFilter ) ) {
+                skip = TRUE;
+            }
+        }
+
+        if( ! skip ) {
+            SendDlgItemMessage(hDlg, OPT_GameListText, LB_ADDSTRING, 0, (LPARAM) st);
+            count++;
+
+            /* Update stats */
+            if( lg->gameInfo.result == WhiteWins )
+                stats->white_wins++;
+            else if( lg->gameInfo.result == BlackWins )
+                stats->black_wins++;
+            else if( lg->gameInfo.result == GameIsDrawn )
+                stats->drawn++;
+            else
+                stats->unfinished++;
+        }
+
+        free(st);
+        lg = (ListGame *) lg->node.succ;
+    }
+
+    SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, 0, 0);
+
+    return count;
+}
+
+/* [AS] Show number of visible (filtered) games and total on window caption */
+static int GameListUpdateTitle( HWND hDlg, char * pszTitle, int item_count, int item_total, struct GameListStats * stats )
+{
+    char buf[256];
+
+    sprintf( buf, "%s - %d/%d games", pszTitle, item_count, item_total );
+
+    if( stats != 0 ) {
+        sprintf( buf+strlen(buf), " (%d-%d-%d)", stats->white_wins, stats->black_wins, stats->drawn );
+    }
+
+    SetWindowText( hDlg, buf );
+
+    return 0;
+}
+
+#define MAX_FILTER_LENGTH   128
 
 LRESULT CALLBACK
 GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 {
+  static char szDlgTitle[64];
   static HANDLE hwndText;
   int nItem;
-  ListGame *lg;
   RECT rect;
   static int sizeX, sizeY;
   int newSizeX, newSizeY, flags;
   MINMAXINFO *mmi;
+  static BOOL filterHasFocus = FALSE;
+  int count;
+  struct GameListStats stats;
 
   switch (message) {
   case WM_INITDIALOG: 
+    GetWindowText( hDlg, szDlgTitle, sizeof(szDlgTitle) );
+    szDlgTitle[ sizeof(szDlgTitle)-1 ] = '\0';
+
     if (gameListDialog) {
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_RESETCONTENT, 0, 0);
     }
+
     /* Initialize the dialog items */
     hwndText = GetDlgItem(hDlg, OPT_TagsText);
-    lg = (ListGame *) gameList.head;
-    for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){
-      char *st = GameListLine(lg->number, &lg->gameInfo);
-      SendDlgItemMessage(hDlg, OPT_GameListText, LB_ADDSTRING, 0, (LPARAM) st);
-      free(st);
-      lg = (ListGame *) lg->node.succ;
-    }
-    SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, 0, 0);
+
+    count = GameListToListBox( hDlg, gameListDialog ? TRUE : FALSE, NULL, &stats );
+
+    SendDlgItemMessage( hDlg, IDC_GameListFilter, WM_SETTEXT, 0, (LPARAM) "" );
+    SendDlgItemMessage( hDlg, IDC_GameListFilter, EM_SETLIMITTEXT, MAX_FILTER_LENGTH, 0 );
+
+    filterHasFocus = FALSE;
+
     /* Size and position the dialog */
     if (!gameListDialog) {
       gameListDialog = hDlg;
@@ -104,6 +255,8 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 	sizeX = newSizeX;
 	sizeY = newSizeY;
       }
+
+      GameListUpdateTitle( hDlg, szDlgTitle, count, ((ListGame *) gameList.tailPred)->number, &stats );
     }
     return FALSE;
     
@@ -124,6 +277,27 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     break;
 
   case WM_COMMAND:
+      /*
+        [AS]
+        If <Enter> is pressed while editing the filter, it's better to apply
+        the filter rather than selecting the current game.
+      */
+      if( LOWORD(wParam) == IDC_GameListFilter ) {
+          switch( HIWORD(wParam) ) {
+          case EN_SETFOCUS:
+              filterHasFocus = TRUE;
+              break;
+          case EN_KILLFOCUS:
+              filterHasFocus = FALSE;
+              break;
+          }
+      }
+
+      if( filterHasFocus && (LOWORD(wParam) == IDOK) ) {
+          wParam = IDC_GameListDoFilter;
+      }
+      /* [AS] End command replacement */
+
     switch (LOWORD(wParam)) {
     case IDOK:
     case OPT_GameListLoad:
@@ -139,7 +313,8 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       nItem = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
       nItem++;
       if (nItem >= ((ListGame *) gameList.tailPred)->number) {
-	DisplayError("Can't go forward any further", 0);
+        /* [AS] Removed error message */
+	/* DisplayError("Can't go forward any further", 0); */
 	return TRUE;
       }
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, nItem, 0);
@@ -149,11 +324,27 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       nItem = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
       nItem--;
       if (nItem < 0) {
-	DisplayError("Can't back up any further", 0);
+        /* [AS] Removed error message, added return */
+	/* DisplayError("Can't back up any further", 0); */
+        return TRUE;
       }
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, nItem, 0);
       break; /* load the game*/
       
+    /* [AS] */
+    case IDC_GameListDoFilter:
+        {
+            char filter[MAX_FILTER_LENGTH+1];
+
+            if( GetDlgItemText( hDlg, IDC_GameListFilter, filter, sizeof(filter) ) >= 0 ) {
+                filter[ sizeof(filter)-1 ] = '\0';
+                count = GameListToListBox( hDlg, TRUE, filter, &stats );
+                GameListUpdateTitle( hDlg, szDlgTitle, count, ((ListGame *) gameList.tailPred)->number, &stats );
+            }
+        }
+        return FALSE;
+        break;
+
     case IDCANCEL:
     case OPT_GameListClose:
       GameListPopDown();
@@ -173,12 +364,43 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     default:
       return FALSE;
     }
+
     /* Load the game */
+    {
+        /* [AS] Get index from the item itself, because filtering makes original order unuseable. */
+        int index = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
+        char * text;
+        LRESULT res;
+
+        if( index < 0 ) {
+            return TRUE;
+        }
+
+        res = SendDlgItemMessage( hDlg, OPT_GameListText, LB_GETTEXTLEN, index, 0 );
+
+        if( res == LB_ERR ) {
+            return TRUE;
+        }
+
+        text = (char *) malloc( res+1 );
+
+        res = SendDlgItemMessage( hDlg, OPT_GameListText, LB_GETTEXT, index, (LPARAM)text );
+
+        index = atoi( text );
+
+        nItem = index - 1;
+
+        free( text );
+        /* [AS] End: nItem has been "patched" now! */
+
     if (cmailMsgLoaded) {
       CmailLoadGame(gameFile, nItem + 1, gameFileName, TRUE);
-    } else {
+        }
+        else {
       LoadGame(gameFile, nItem + 1, gameFileName, TRUE);
     }
+    }
+
     return TRUE;
 
   default:

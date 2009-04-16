@@ -428,6 +428,8 @@ typedef struct {
     int delayBeforeQuit;
     int delayAfterQuit;
     char * nameOfDebugFile;
+    char * pgnEventHeader;
+    int defaultFrcPosition;
 #if ZIPPY
     char *zippyLines;
     char *zippyPinhead;

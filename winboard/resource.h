@@ -86,6 +86,7 @@
 #define DLG_IcsOptions                  454
 #define DLG_BoardOptions                455
 #define DLG_Fonts                       456
+#define DLG_NewGameFRC                  457
 #define DLG_Promotion                   500
 #define PB_Queen                        502
 #define PB_Rook                         503
@@ -151,6 +152,8 @@
 #define DLG_ConsoleRich                 1022
 #define IDC_EDIT1                       1023
 #define OPT_DarkSquareColor             1023
+#define IDC_GameListFilter              1023
+#define IDC_NFG_Edit                    1023
 #define OPT_ConsoleText                 1024
 #define OPT_LightSquareColor            1024
 #define OPT_CommandInput                1025
@@ -217,6 +220,7 @@
 #define IDM_UserAdjudication_White      1302
 #define IDM_UserAdjudication_Black      1303
 #define IDM_UserAdjudication_Draw       1304
+#define IDM_NewGameFRC                  1305
 #define PB_King                         1307
 #define OPT_Bold                        1312
 #define OPT_Italic                      1313
@@ -345,6 +349,9 @@
 #define OPT_ShowButtonBar               1422
 #define OPT_SaveExtPGN                  1423
 #define OPT_HideThinkFromHuman          1424
+#define IDC_GameListDoFilter            1425
+#define IDC_NFG_Random                  1426
+#define IDC_NFG_Label                   1427
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -352,9 +359,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        457
-#define _APS_NEXT_COMMAND_VALUE         1305
-#define _APS_NEXT_CONTROL_VALUE         1425
+#define _APS_NEXT_RESOURCE_VALUE        458
+#define _APS_NEXT_COMMAND_VALUE         1306
+#define _APS_NEXT_CONTROL_VALUE         1428
 #define _APS_NEXT_SYMED_VALUE           1404
 #endif
 #endif

@@ -1,6 +1,6 @@
 /*
  * moves.c - Move generation and checking
- * $Id$
+ * $Id: moves.c,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
@@ -435,6 +435,12 @@ void GenLegalCallback(board, flags, kind, rf, ff, rt, ft, closure)
 }
 
 
+typedef struct {
+    int rf, ff, rt, ft;
+    ChessMove kind;
+} LegalityTestClosure;
+
+
 /* Like GenPseudoLegal, but (1) include castling moves, (2) unless
    F_IGNORE_CHECK is set in the flags, omit moves that would leave the
    king in check, and (3) if F_ATOMIC_CAPTURE is set in the flags, omit
@@ -450,7 +456,7 @@ int GenLegal(board, flags, epfile, callback, closure)
      VOIDSTAR closure;
 {
     GenLegalClosure cl;
-    int ff;
+    int ff, ft;
     int ignoreCheck = (flags & F_IGNORE_CHECK) != 0;
 
     cl.cb = callback;
@@ -523,6 +529,41 @@ int GenLegal(board, flags, epfile, callback, closure)
 		     7, ff, 7, ff - 2, closure);
 	}
     }
+
+    /* PUSH Fabien */
+
+    /* generate all potential FRC castling moves (KxR), ignoring flags */
+
+    if ((flags & F_WHITE_ON_MOVE) != 0) {
+
+       for (ff = 1; ff < 7; ff++) {
+          if (board[0][ff] == WhiteKing) {
+             for (ft = 0; ft < 8; ft++) {
+                if (board[0][ft] == WhiteRook) {
+                   callback(board, flags,
+                            (ft > ff) ? WhiteHSideCastleFR : WhiteASideCastleFR,
+                            0, ff, 0, ft, closure);
+                }
+             }
+          }
+       }
+
+    } else {
+
+       for (ff = 1; ff < 7; ff++) {
+          if (board[7][ff] == BlackKing) {
+             for (ft = 0; ft < 8; ft++) {
+                if (board[7][ft] == BlackRook) {
+                   callback(board, flags,
+                            (ft > ff) ? BlackHSideCastleFR : BlackASideCastleFR,
+                            7, ff, 7, ft, closure);
+                }
+             }
+          }
+       }
+    }
+
+    /* POP Fabien */
 
     return FALSE;
 }
@@ -608,11 +649,6 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
     return cl.check;
 }
 
-
-typedef struct {
-    int rf, ff, rt, ft;
-    ChessMove kind;
-} LegalityTestClosure;
 
 extern void LegalityTestCallback P((Board board, int flags, ChessMove kind,
 				    int rf, int ff, int rt, int ft,
@@ -872,9 +908,18 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 	
       case WhiteKing:
       case BlackKing:
+        /* Fabien moved code: FRC castling first (if KxR), wild castling second */
+	/* Code added by Tord:  FRC castling. */
+	if((piece == WhiteKing && board[rt][ft] == WhiteRook) ||
+	   (piece == BlackKing && board[rt][ft] == BlackRook)) {
+	  if(ft > ff) strcpy(out, "O-O"); else strcpy(out, "O-O-O");
+	    return LegalityTest(board, flags, epfile,
+				rf, ff, rt, ft, promoChar);
+	}
+	/* End of code added by Tord */
 	/* Test for castling or ICS wild castling */
 	/* Use style "O-O" (oh-oh) for PGN compatibility */
-	if (rf == rt &&
+	else if (rf == rt &&
 	    rf == ((piece == WhiteKing) ? 0 : 7) &&
 	    ((ff == 4 && (ft == 2 || ft == 6)) ||
 	     (ff == 3 && (ft == 1 || ft == 5)))) {
@@ -899,6 +944,7 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 	    return LegalityTest(board, flags, epfile,
 				rf, ff, rt, ft, promoChar);
 	}
+
 	/* else fall through */
 	
       default:

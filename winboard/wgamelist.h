@@ -1,6 +1,6 @@
 /*
  * wgamelist.h -- Game list window for WinBoard
- * $Id$
+ * $Id: wgamelist.h,v 2.1 2003/10/27 19:21:02 mann Exp $
  *
  * Copyright 1995 Free Software Foundation, Inc.
  *

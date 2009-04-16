@@ -1,6 +1,6 @@
 /*
  * backendz.h -- Internal interface exported by XBoard backend.c to zippy.c
- * $Id$
+ * $Id: backendz.h,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
