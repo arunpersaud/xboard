@@ -196,10 +196,10 @@ void ClearGameInfo P((GameInfo *));
 int GameListBuild P((FILE *));
 void GameListInitGameInfo P((GameInfo *));
 char *GameListLine P((int, GameInfo *));
+char * GameListLineFull P(( int, GameInfo *));
 
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
-
 
 typedef struct _CPS {
     char *which;
@@ -241,12 +241,21 @@ typedef struct _CPS {
 
     /* Added by Tord: */
     int useFEN960;   /* 0=use "KQkq" style FENs, 1=use "HAha" style FENs */
-    int useOOCastle; /* 0="O-O" notation for castling, 1="king capture rook"
-		      * notation */
+    int useOOCastle; /* 0="O-O" notation for castling, 1="king capture rook" notation */
     /* End of additions by Tord */
+
     int scoreIsAbsolute; /* [AS] 0=don't know (standard), 1=score is always from white side */
 } ChessProgramState;
 
 extern ChessProgramState first, second;
+
+/* [AS] Search stats from chessprogram, for the played move */
+typedef struct {
+    int score;  /* Centipawns */
+    int depth;  /* Plies */
+    int time;   /* Milliseconds */
+} ChessProgramStats_Move;
+
+extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
 
 #endif /* _BACKEND */

@@ -169,6 +169,8 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_TestLegality, appData.testLegality);
     CHECK_BOX(OPT_HideThinkFromHuman, appData.hideThinkingFromHuman);
     CHECK_BOX(OPT_SaveExtPGN, appData.saveExtendedInfoInPGN);
+    CHECK_BOX(OPT_ExtraInfoInMoveHistory, appData.showEvalInMoveHistory);
+    CHECK_BOX(OPT_HighlightMoveArrow, appData.highlightMoveWithArrow);
 
 #undef CHECK_BOX
 
@@ -212,6 +214,8 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.testLegality         = IS_CHECKED(OPT_TestLegality);
       appData.hideThinkingFromHuman= IS_CHECKED(OPT_HideThinkFromHuman);
       appData.saveExtendedInfoInPGN= IS_CHECKED(OPT_SaveExtPGN);
+      appData.showEvalInMoveHistory= IS_CHECKED(OPT_ExtraInfoInMoveHistory);
+      appData.highlightMoveWithArrow=IS_CHECKED(OPT_HighlightMoveArrow);
 
 #undef IS_CHECKED
 
@@ -2237,6 +2241,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     } else {
       CheckRadioButton(hDlg, OPT_PGN, OPT_Old, OPT_PGN);
     }
+    CheckDlgButton( hDlg, OPT_OutOfBookInfo, appData.saveOutOfBookInfo );
     SetSaveOptionEnables(hDlg);
     return TRUE;
 
@@ -2276,6 +2281,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	appData.saveGameFile = "";
       }
       appData.oldSaveStyle = IsDlgButtonChecked(hDlg, OPT_Old);
+      appData.saveOutOfBookInfo = IsDlgButtonChecked( hDlg, OPT_OutOfBookInfo );
       EndDialog(hDlg, TRUE);
       return TRUE;
 
@@ -2433,4 +2439,80 @@ TimeControlOptionsPopup(HWND hwnd)
   }
 }
 
+/*---------------------------------------------------------------------------*\
+ *
+ * Engine Options Dialog functions
+ *
+\*---------------------------------------------------------------------------*/
+#define CHECK_BOX(x,y) CheckDlgButton(hDlg, (x), (BOOL)(y))
+#define IS_CHECKED(x) (Boolean)IsDlgButtonChecked(hDlg, (x))
 
+#define INT_ABS( n )    ((n) >= 0 ? (n) : -(n))
+
+LRESULT CALLBACK EnginePlayOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  switch (message) {
+  case WM_INITDIALOG: /* message: initialize dialog box */
+
+    /* Center the dialog over the application window */
+    CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+
+    /* Initialize the dialog items */
+    CHECK_BOX(IDC_EpPeriodicUpdates, appData.periodicUpdates);
+    CHECK_BOX(IDC_EpPonder, appData.ponderNextMove);
+    CHECK_BOX(IDC_EpShowThinking, appData.showThinking);
+    CHECK_BOX(IDC_EpHideThinkingHuman, appData.hideThinkingFromHuman);
+
+    SetDlgItemInt( hDlg, IDC_EpDrawMoveCount, appData.adjudicateDrawMoves, TRUE );
+    SendDlgItemMessage( hDlg, IDC_EpDrawMoveCount, EM_SETSEL, 0, -1 );
+
+    SetDlgItemInt( hDlg, IDC_EpAdjudicationThreshold, INT_ABS(appData.adjudicateLossThreshold), TRUE );
+    SendDlgItemMessage( hDlg, IDC_EpAdjudicationThreshold, EM_SETSEL, 0, -1 );
+
+    return TRUE;
+
+  case WM_COMMAND: /* message: received a command */
+    switch (LOWORD(wParam)) {
+    case IDOK:
+      /* Read changed options from the dialog box */
+      PeriodicUpdatesEvent(          IS_CHECKED(IDC_EpPeriodicUpdates));
+      PonderNextMoveEvent(           IS_CHECKED(IDC_EpPonder));
+      ShowThinkingEvent(             IS_CHECKED(IDC_EpShowThinking));
+      appData.hideThinkingFromHuman= IS_CHECKED(IDC_EpHideThinkingHuman);
+
+      appData.adjudicateDrawMoves = GetDlgItemInt(hDlg, IDC_EpDrawMoveCount, NULL, FALSE );
+      appData.adjudicateLossThreshold = - (int) GetDlgItemInt(hDlg, IDC_EpAdjudicationThreshold, NULL, FALSE );
+
+      EndDialog(hDlg, TRUE);
+      return TRUE;
+
+    case IDCANCEL:
+      EndDialog(hDlg, FALSE);
+      return TRUE;
+
+    case IDC_EpDrawMoveCount:
+    case IDC_EpAdjudicationThreshold:
+        if( HIWORD(wParam) == EN_CHANGE ) {
+            int n1_ok;
+            int n2_ok;
+
+            GetDlgItemInt(hDlg, IDC_EpDrawMoveCount, &n1_ok, FALSE );
+            GetDlgItemInt(hDlg, IDC_EpAdjudicationThreshold, &n2_ok, FALSE );
+
+            EnableWindow( GetDlgItem(hDlg, IDOK), n1_ok && n2_ok ? TRUE : FALSE );
+        }
+        return TRUE;
+    }
+    break;
+  }
+  return FALSE;
+}
+
+VOID EnginePlayOptionsPopup(HWND hwnd)
+{
+  FARPROC lpProc;
+
+  lpProc = MakeProcInstance((FARPROC)EnginePlayOptionsDialog, hInst);
+  DialogBox(hInst, MAKEINTRESOURCE(DLG_EnginePlayOptions), hwnd, (DLGPROC) lpProc);
+  FreeProcInstance(lpProc);
+}

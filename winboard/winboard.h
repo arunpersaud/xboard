@@ -163,3 +163,18 @@ extern MyFont *font[NUM_SIZES][NUM_FONTS];
 
 #define COPY_TMP "wbcopy.tmp"
 #define PASTE_TMP "wbpaste.tmp"
+
+/* [AS] Layout management */
+typedef struct {
+    Boolean visible;
+    int x;
+    int y;
+    int width;
+    int height;
+} WindowPlacement;
+
+VOID InitWindowPlacement( WindowPlacement * wp );
+
+VOID RestoreWindowPlacement( HWND hWnd, WindowPlacement * wp );
+
+VOID ReattachAfterMove( LPRECT lprcOldPos, int new_x, int new_y, HWND hWndChild, WindowPlacement * pwpChild );

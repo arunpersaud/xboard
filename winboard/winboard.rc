@@ -30,20 +30,23 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-ABOUTBOX DIALOG DISCARDABLE  22, 17, 167, 67
+ABOUTBOX DIALOG DISCARDABLE  22, 17, 180, 113
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About WinBoard"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,131,47,32,14,WS_GROUP
-    ICON            "icon_white",-1,3,6,20,20
+    DEFPUSHBUTTON   "OK",IDOK,126,94,50,14,WS_GROUP
+    ICON            "icon_white",IDC_STATIC,3,6,20,20
     LTEXT           "Chessboard for Windows",400,25,15,121,8
     LTEXT           "Copyright 1991 Digital Equipment Corporation",201,6,34,
                     149,8
     LTEXT           "Enhancements Copyright 1992-2003   Free Software Foundation",
-                    OPT_TCtext1,6,44,121,17
+                    OPT_TCtext1,6,45,121,17
     CONTROL         "",OPT_TCTime,"Static",SS_BLACKRECT,4,28,159,1
-    LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,5,142,8
+    LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,5,61,8
+    LTEXT           "Enhancements Copyright 2005\r\nAlessandro Scotti",
+                    IDC_STATIC,6,65,170,24
+    LTEXT           "(unofficial version ""X"")",IDC_STATIC,88,4,71,8
 END
 
 DLG_TimeControl DIALOG DISCARDABLE  6, 18, 165, 114
@@ -68,20 +71,20 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,90,95,40,14
 END
 
-DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 144, 55
+DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 136, 55
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Load Game Options"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "Load games with automatic stepping",OPT_Autostep,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,136,10
-    EDITTEXT        OPT_ASTimeDelay,23,18,28,12,ES_AUTOHSCROLL
-    LTEXT           "seconds per move",OPT_AStext1,57,20,60,8,NOT WS_GROUP
-    PUSHBUTTON      "OK",IDOK,24,37,40,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,80,37,40,14
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,130,10
+    EDITTEXT        OPT_ASTimeDelay,16,16,28,14,ES_AUTOHSCROLL
+    LTEXT           "seconds per move",OPT_AStext1,46,20,60,8,NOT WS_GROUP
+    PUSHBUTTON      "OK",IDOK,26,36,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,82,36,50,14
 END
 
-DLG_SaveOptions DIALOG DISCARDABLE  6, 17, 133, 119
+DLG_SaveOptions DIALOG DISCARDABLE  6, 17, 178, 119
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Save Game Options"
 FONT 8, "MS Sans Serif"
@@ -89,17 +92,19 @@ BEGIN
     CONTROL         "Save games automatically",OPT_Autosave,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,97,10
     CONTROL         "Prompt for filename",OPT_AVPrompt,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,18,18,75,10
-    CONTROL         "To file:",OPT_AVToFile,"Button",BS_AUTORADIOBUTTON,18,
-                    31,36,10
-    EDITTEXT        OPT_AVFilename,18,44,97,12,ES_AUTOHSCROLL
-    GROUPBOX        "Save Style",801,4,63,125,28,WS_GROUP
-    CONTROL         "PGN",OPT_PGN,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,
-                    18,75,39,10
-    CONTROL         "Old",OPT_Old,"Button",BS_AUTORADIOBUTTON,73,75,39,10
-    PUSHBUTTON      "OK",IDOK,18,98,40,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,74,98,40,14
-    PUSHBUTTON      "Browse...",OPT_AVBrowse,76,31,39,14
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,18,75,10
+    CONTROL         "To file:",OPT_AVToFile,"Button",BS_AUTORADIOBUTTON,16,
+                    32,36,10
+    EDITTEXT        OPT_AVFilename,54,30,97,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",OPT_AVBrowse,156,30,18,14
+    GROUPBOX        "Save As: ",801,4,48,170,28,WS_GROUP
+    CONTROL         "PGN",OPT_PGN,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,8,
+                    60,39,10
+    CONTROL         "Old",OPT_Old,"Button",BS_AUTORADIOBUTTON,54,60,114,10
+    CONTROL         "Save out of book info in PGN",OPT_OutOfBookInfo,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,82,109,10
+    PUSHBUTTON      "OK",IDOK,68,100,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,124,100,50,14
 END
 
 1536 DIALOG DISCARDABLE  36, 24, 264, 134
@@ -132,32 +137,32 @@ BEGIN
     PUSHBUTTON      "Net&work...",1037,208,113,50,14,WS_GROUP
 END
 
-DLG_CommPort DIALOG DISCARDABLE  25, 30, 159, 98
+DLG_CommPort DIALOG DISCARDABLE  25, 30, 220, 79
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Communication Port Settings"
 FONT 8, "Helv"
 BEGIN
+    PUSHBUTTON      "OK",IDOK,106,60,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,164,60,50,14
     RTEXT           "&Port:",-1,4,6,40,10
     COMBOBOX        OPT_Port,49,4,55,60,CBS_DROPDOWN | WS_VSCROLL | 
                     WS_TABSTOP
-    RTEXT           "Data &Rate:",-1,4,21,40,10,NOT WS_GROUP
-    COMBOBOX        OPT_DataRate,49,19,55,100,CBS_DROPDOWN | WS_VSCROLL | 
+    RTEXT           "Data &Rate:",-1,114,6,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_DataRate,159,4,55,100,CBS_DROPDOWN | WS_VSCROLL |
                     WS_TABSTOP
-    RTEXT           "Data &Bits:",-1,4,36,40,10,NOT WS_GROUP
-    COMBOBOX        OPT_Bits,49,34,55,60,CBS_DROPDOWNLIST | CBS_HASSTRINGS | 
+    RTEXT           "Data &Bits:",-1,4,25,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_Bits,49,22,55,60,CBS_DROPDOWNLIST | CBS_HASSTRINGS |
                     WS_VSCROLL | WS_TABSTOP
-    RTEXT           "P&arity:",-1,4,51,40,10,NOT WS_GROUP
-    COMBOBOX        OPT_Parity,49,49,55,60,CBS_DROPDOWNLIST | CBS_HASSTRINGS | 
-                    WS_VSCROLL | WS_TABSTOP
-    RTEXT           "&Stop Bits:",-1,4,66,40,10,NOT WS_GROUP
-    COMBOBOX        OPT_StopBits,49,64,55,60,CBS_DROPDOWNLIST | 
+    RTEXT           "P&arity:",-1,114,24,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_Parity,159,22,55,60,CBS_DROPDOWNLIST |
                     CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
-    RTEXT           "F&low:",-1,4,81,40,10,NOT WS_GROUP
-    DEFPUSHBUTTON   "OK",IDOK,115,4,40,14
-    PUSHBUTTON      "Cancel",IDCANCEL,115,24,40,14
-    COMBOBOX        OPT_Flow,49,79,55,60,CBS_DROPDOWNLIST | CBS_HASSTRINGS | 
+    RTEXT           "&Stop Bits:",-1,4,42,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_StopBits,49,40,55,60,CBS_DROPDOWNLIST |
+                    CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "F&low:",-1,114,42,40,10,NOT WS_GROUP
+    COMBOBOX        OPT_Flow,159,40,55,60,CBS_DROPDOWNLIST | CBS_HASSTRINGS |
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "&Help",OPT_SerialHelp,115,80,40,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Help",OPT_SerialHelp,4,60,50,14,NOT WS_VISIBLE
 END
 
 DLG_EditComment DIALOG DISCARDABLE  6, 18, 306, 104
@@ -188,20 +193,23 @@ BEGIN
     LTEXT           "Promote pawn to:",501,6,8,58,8
 END
 
-ABOUTBOX2 DIALOG DISCARDABLE  22, 17, 281, 198
+ABOUTBOX2 DIALOG DISCARDABLE  22, 17, 281, 223
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About WinBoard"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,244,180,32,14,WS_GROUP
     RTEXT           "Chessboard for Windows",DLG_TimeControl,196,154,80,8
-    LTEXT           "Copyright 1991 Digital Equipment Corporation",201,4,167,
+    LTEXT           "Copyright 1991 Digital Equipment Corporation",201,4,168,
                     151,8
     LTEXT           "Enhancements Copyright 1992-2003   Free Software Foundation",
-                    OPT_TCtext1,4,177,126,17
+                    OPT_TCtext1,4,179,126,17
     CONTROL         "",OPT_TCTime,"Static",SS_BLACKRECT,4,164,272,1
     LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,4,154,64,8
     CONTROL         "galactic",IDC_STATIC,"Static",SS_BITMAP,4,4,15,13
+    DEFPUSHBUTTON   "OK",IDOK,226,204,50,14
+    LTEXT           "Enhancements Copyright 2005\r\nAlessandro Scotti",
+                    IDC_STATIC,4,199,183,20
+    LTEXT           "(unofficial version ""X"")",IDC_STATIC,68,154,71,8
 END
 
 DLG_GameList DIALOG DISCARDABLE  6, 18, 259, 153
@@ -269,37 +277,37 @@ BEGIN
     LTEXT           "Sorry Charlie",OPT_ErrorText,27,4,130,25
 END
 
-DLG_Colorize DIALOGEX 0, 0, 183, 52
+DLG_Colorize DIALOGEX 0, 0, 174, 61
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ICS Interaction Colors"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "&Choose Color...",OPT_ChooseColor,15,29,51,14,WS_GROUP
+    PUSHBUTTON      "&Color...",OPT_ChooseColor,119,4,51,14,WS_GROUP
     CONTROL         "&Bold",OPT_Bold,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
-                    WS_TABSTOP,93,4,30,10
-    CONTROL         "&Italic",OPT_Italic,"Button",BS_AUTOCHECKBOX,93,14,30,
+                    WS_TABSTOP,4,24,30,10
+    CONTROL         "&Italic",OPT_Italic,"Button",BS_AUTOCHECKBOX,40,24,30,
                     10
-    CONTROL         "&Underline",OPT_Underline,"Button",BS_AUTOCHECKBOX,93,
+    CONTROL         "&Underline",OPT_Underline,"Button",BS_AUTOCHECKBOX,76,
                     24,45,10
-    CONTROL         "&Strikeout",OPT_Strikeout,"Button",BS_AUTOCHECKBOX,93,
-                    34,42,10
-    DEFPUSHBUTTON   "OK",IDOK,145,7,31,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,145,24,31,14
+    CONTROL         "&Strikeout",OPT_Strikeout,"Button",BS_AUTOCHECKBOX,128,
+                    24,42,10
+    DEFPUSHBUTTON   "OK",IDOK,64,42,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,120,42,50,14
     CONTROL         "",OPT_Sample,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_GROUP,4,9,75,15,WS_EX_CLIENTEDGE
+                    ES_READONLY | WS_GROUP,4,4,106,15,WS_EX_CLIENTEDGE
 END
 
-DLG_Question DIALOG DISCARDABLE  0, 0, 187, 60
+DLG_Question DIALOG DISCARDABLE  0, 0, 187, 77
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Question"
 FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        OPT_QuestionInput,4,44,179,12,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "Enter",IDOK,133,4,50,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,133,24,50,14
+    EDITTEXT        OPT_QuestionInput,4,36,179,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,78,58,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,134,58,50,14
     LTEXT           "Enter a chess engine command or just type something stupid that will completely screw things up.",
-                    OPT_QuestionText,27,4,101,33
-    ICON            32514,IDC_STATIC,4,13,20,20
+                    OPT_QuestionText,30,2,153,28
+    ICON            32514,IDC_STATIC,4,4,21,20
 END
 
 DLG_Startup DIALOG DISCARDABLE  0, 0, 276, 127
@@ -337,14 +345,14 @@ BEGIN
     EDITTEXT        OPT_IndexNumber,54,0,155,13,ES_AUTOHSCROLL
 END
 
-DLG_TypeInMove DIALOG DISCARDABLE  0, 0, 186, 46
+DLG_TypeInMove DIALOG DISCARDABLE  0, 0, 206, 23
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Type in a move"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
-    EDITTEXT        OPT_Move,7,16,109,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,96,4,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,152,4,50,14
+    EDITTEXT        OPT_Move,4,4,86,13,ES_AUTOHSCROLL
 END
 
 DLG_Sound DIALOG DISCARDABLE  0, 0, 257, 95
@@ -373,7 +381,7 @@ BEGIN
     LTEXT           "Event:",IDC_STATIC,19,9,26,9
 END
 
-DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 271, 150
+DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 271, 162
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General Options"
 FONT 8, "MS Sans Serif"
@@ -381,25 +389,25 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,207,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,208,25,50,14
     CONTROL         "Always on &Top",OPT_AlwaysOnTop,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,6,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,6,79,10
     CONTROL         "Always &Queen",OPT_AlwaysQueen,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,16,20,79,10
+                    WS_TABSTOP,4,20,79,10
     CONTROL         "Animate &Dragging",OPT_AnimateDragging,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,34,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,34,79,10
     CONTROL         "&Animate Moving",OPT_AnimateMoving,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,48,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,48,79,10
     CONTROL         "Auto &Flag",OPT_AutoFlag,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,16,62,79,10
+                    WS_TABSTOP,4,62,79,10
     CONTROL         "Auto Flip &View",OPT_AutoFlipView,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,76,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,76,79,10
     CONTROL         "Auto &Raise Board",OPT_AutoRaiseBoard,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,90,71,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,90,71,10
     CONTROL         "&Blindfold",OPT_Blindfold,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,16,104,79,10
+                    WS_TABSTOP,4,104,79,10
     CONTROL         "&Highlight Dragging",OPT_HighlightDragging,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,118,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,118,79,10
     CONTROL         "Extended PGN Info",OPT_SaveExtPGN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,132,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,132,79,10
     CONTROL         "Highlight Last &Move",OPT_HighlightLastMove,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,109,6,79,10
     CONTROL         "Periodic &Updates",OPT_PeriodicUpdates,"Button",
@@ -418,165 +426,168 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,109,104,79,10
     CONTROL         "Test &Legality",OPT_TestLegality,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,109,118,79,10
-    CONTROL         "Hide Thinking From Human",OPT_HideThinkFromHuman,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,109,132,102,10
+    CONTROL         "Hide Thinking from Human",OPT_HideThinkFromHuman,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,132,100,10
+    CONTROL         "Extra Info in Move History",OPT_ExtraInfoInMoveHistory,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,146,97,10
+    CONTROL         "Highlight Move with Arrow",OPT_HighlightMoveArrow,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,109,145,111,9
 END
 
-DLG_IcsOptions DIALOGEX 0, 0, 318, 271
+DLG_IcsOptions DIALOGEX 0, 0, 302, 265
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ICS Options"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,88,250,60,15
-    PUSHBUTTON      "Cancel",IDCANCEL,168,250,60,15
+    DEFPUSHBUTTON   "OK",IDOK,194,246,50,15
+    PUSHBUTTON      "Cancel",IDCANCEL,248,246,50,15
     CONTROL         "&Auto Comment",OPT_AutoComment,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,20,12,63,8
+                    WS_TABSTOP,10,12,63,8
     CONTROL         "Auto &Observe",OPT_AutoObserve,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,20,27,63,8
+                    WS_TABSTOP,10,25,63,8
     CONTROL         "&Get Move List",OPT_GetMoveList,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,20,42,63,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,38,63,8
     CONTROL         "&Local Line Editing",OPT_LocalLineEditing,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,20,57,84,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,51,84,8
     CONTROL         "&Quiet Play",OPT_QuietPlay,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,20,72,63,8
+                    WS_TABSTOP,10,64,63,8
     CONTROL         "&Premove",OPT_Premove,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,171,12,46,10
+                    WS_TABSTOP,160,12,46,10
     CONTROL         "&White first move",OPT_PremoveWhite,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,171,27,67,10
-    EDITTEXT        OPT_PremoveWhiteText,252,23,25,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,26,67,10
+    EDITTEXT        OPT_PremoveWhiteText,236,22,25,14,ES_AUTOHSCROLL
     CONTROL         "&Black first move",OPT_PremoveBlack,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,171,42,66,10
-    EDITTEXT        OPT_PremoveBlackText,252,39,25,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,40,66,10
+    EDITTEXT        OPT_PremoveBlackText,236,38,25,14,ES_AUTOHSCROLL
     CONTROL         "&Sound alarm at",OPT_IcsAlarm,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,171,72,63,10
-    EDITTEXT        OPT_IcsAlarmTime,243,70,20,13,ES_AUTOHSCROLL
-    LTEXT           "seconds",IDC_STATIC,270,72,28,8
-    PUSHBUTTON      "Choose...",OPT_ChooseShoutColor,104,101,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseSShoutColor,104,121,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseChannel1Color,104,141,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseChannelColor,104,161,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseKibitzColor,104,181,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseTellColor,252,101,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseChallengeColor,252,121,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseRequestColor,252,141,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseSeekColor,252,161,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseNormalColor,252,181,45,15
+                    WS_TABSTOP,160,72,63,10
+    EDITTEXT        OPT_IcsAlarmTime,236,68,26,14,ES_AUTOHSCROLL
+    LTEXT           "seconds",IDC_STATIC,264,72,28,8
+    PUSHBUTTON      "Choose...",OPT_ChooseShoutColor,98,101,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseSShoutColor,98,121,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChannel1Color,98,141,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChannelColor,98,161,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseKibitzColor,98,181,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseTellColor,246,101,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChallengeColor,246,121,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseRequestColor,246,141,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseSeekColor,246,161,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseNormalColor,246,181,45,15
     PUSHBUTTON      "&Choose Background Color...",OPT_ChooseBackgroundColor,
-                    17,204,132,16
-    PUSHBUTTON      "&Default ICS Colors",OPT_DefaultColors,165,204,132,16
+                    11,204,132,16
+    PUSHBUTTON      "&Default ICS Colors",OPT_DefaultColors,159,204,132,16
     CONTROL         "Do &not colorize messages",OPT_DontColorize,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,110,225,97,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,104,225,97,10
     CONTROL         "",OPT_SampleShout,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,17,101,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,11,101,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleSShout,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,17,121,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,11,121,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleChannel1,"RICHEDIT",ES_CENTER | 
-                    ES_MULTILINE | ES_READONLY | WS_DISABLED | WS_GROUP,17,
+                    ES_MULTILINE | ES_READONLY | WS_DISABLED | WS_GROUP,11,
                     141,75,15,WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleChannel,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,17,161,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,11,161,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleKibitz,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_GROUP,17,181,75,15,WS_EX_CLIENTEDGE
+                    ES_READONLY | WS_GROUP,11,181,75,15,WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleTell,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,165,101,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,159,101,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleChallenge,"RICHEDIT",ES_CENTER | 
-                    ES_MULTILINE | ES_READONLY | WS_DISABLED | WS_GROUP,165,
+                    ES_MULTILINE | ES_READONLY | WS_DISABLED | WS_GROUP,159,
                     121,75,15,WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleRequest,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,165,141,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,159,141,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleSeek,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,165,161,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,159,161,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleNormal,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,165,181,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,159,181,75,15,
                     WS_EX_CLIENTEDGE
-    GROUPBOX        "Interaction Colors",IDC_STATIC,10,90,295,150
-    GROUPBOX        "Premove",IDC_STATIC,159,0,146,59
-    GROUPBOX        "",IDC_STATIC,10,0,146,89
-    GROUPBOX        "Alarm",IDC_STATIC,159,59,146,30
+    GROUPBOX        "Interaction Colors",IDC_STATIC,4,90,294,150
+    GROUPBOX        "Premove",IDC_STATIC,154,0,144,56
+    GROUPBOX        "",IDC_STATIC,4,0,146,88
+    GROUPBOX        "Alarm",IDC_STATIC,154,58,144,30
 END
 
-DLG_BoardOptions DIALOG DISCARDABLE  0, 0, 262, 250
+DLG_BoardOptions DIALOG DISCARDABLE  0, 0, 194, 250
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Board Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,205,10,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,205,35,50,14
+    DEFPUSHBUTTON   "OK",IDOK,84,232,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,140,232,50,14
     CONTROL         "&Tiny",OPT_SizeTiny,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,15,15,50,10
-    CONTROL         "T&eeny",OPT_SizeTeeny,"Button",BS_AUTORADIOBUTTON,15,25,
+                    WS_GROUP | WS_TABSTOP,9,14,50,10
+    CONTROL         "T&eeny",OPT_SizeTeeny,"Button",BS_AUTORADIOBUTTON,9,25,
                     50,10
-    CONTROL         "&Dinky",OPT_SizeDinky,"Button",BS_AUTORADIOBUTTON,15,35,
+    CONTROL         "&Dinky",OPT_SizeDinky,"Button",BS_AUTORADIOBUTTON,9,34,
                     50,10
-    CONTROL         "&Petite",OPT_SizePetite,"Button",BS_AUTORADIOBUTTON,15,
-                    45,50,10
-    CONTROL         "Sl&im",OPT_SizeSlim,"Button",BS_AUTORADIOBUTTON,15,55,
-                    50,10
-    CONTROL         "&Small",OPT_SizeSmall,"Button",BS_AUTORADIOBUTTON,15,65,
+    CONTROL         "&Petite",OPT_SizePetite,"Button",BS_AUTORADIOBUTTON,9,
+                    44,50,10
+    CONTROL         "Sl&im",OPT_SizeSlim,"Button",BS_AUTORADIOBUTTON,9,54,50,
+                    10
+    CONTROL         "&Small",OPT_SizeSmall,"Button",BS_AUTORADIOBUTTON,9,65,
                     50,10
     CONTROL         "Medi&ocre",OPT_SizeMediocre,"Button",BS_AUTORADIOBUTTON,
-                    76,15,50,10
+                    70,14,50,10
     CONTROL         "&Middling",OPT_SizeMiddling,"Button",BS_AUTORADIOBUTTON,
-                    76,25,50,10
+                    70,25,50,10
     CONTROL         "&Average",OPT_SizeAverage,"Button",BS_AUTORADIOBUTTON,
-                    76,35,50,10
+                    70,34,50,10
     CONTROL         "Mode&rate",OPT_SizeModerate,"Button",BS_AUTORADIOBUTTON,
-                    76,45,50,10
-    CONTROL         "Medi&um",OPT_SizeMedium,"Button",BS_AUTORADIOBUTTON,76,
-                    55,50,10
-    CONTROL         "Bul&ky",OPT_SizeBulky,"Button",BS_AUTORADIOBUTTON,76,65,
+                    70,44,50,10
+    CONTROL         "Medi&um",OPT_SizeMedium,"Button",BS_AUTORADIOBUTTON,70,
+                    54,50,10
+    CONTROL         "Bul&ky",OPT_SizeBulky,"Button",BS_AUTORADIOBUTTON,70,65,
                     50,10
-    CONTROL         "&Large",OPT_SizeLarge,"Button",BS_AUTORADIOBUTTON,140,
-                    15,50,10
-    CONTROL         "&Big",OPT_SizeBig,"Button",BS_AUTORADIOBUTTON,140,25,50,
+    CONTROL         "&Large",OPT_SizeLarge,"Button",BS_AUTORADIOBUTTON,134,
+                    14,50,10
+    CONTROL         "&Big",OPT_SizeBig,"Button",BS_AUTORADIOBUTTON,134,25,50,
                     10
-    CONTROL         "&Huge",OPT_SizeHuge,"Button",BS_AUTORADIOBUTTON,140,35,
+    CONTROL         "&Huge",OPT_SizeHuge,"Button",BS_AUTORADIOBUTTON,134,34,
                     50,10
-    CONTROL         "&Giant",OPT_SizeGiant,"Button",BS_AUTORADIOBUTTON,140,
-                    45,50,10
+    CONTROL         "&Giant",OPT_SizeGiant,"Button",BS_AUTORADIOBUTTON,134,
+                    44,50,10
     CONTROL         "&Colossal",OPT_SizeColossal,"Button",BS_AUTORADIOBUTTON,
-                    140,55,50,10
+                    134,54,50,10
     CONTROL         "Tita&nic",OPT_SizeTitanic,"Button",BS_AUTORADIOBUTTON,
-                    140,65,50,10
-    PUSHBUTTON      "Choose...",OPT_ChooseLightSquareColor,144,100,40,15
-    PUSHBUTTON      "Choose...",OPT_ChooseDarkSquareColor,144,120,40,15
-    PUSHBUTTON      "Choose...",OPT_ChooseWhitePieceColor,144,140,40,15
-    PUSHBUTTON      "Choose...",OPT_ChooseBlackPieceColor,144,160,40,15
-    PUSHBUTTON      "Choose...",OPT_ChooseHighlightSquareColor,144,180,40,15
-    PUSHBUTTON      "Choose...",OPT_ChoosePremoveHighlightColor,144,200,40,
-                    15
-    PUSHBUTTON      "Defaults",OPT_DefaultBoardColors,118,225,65,15
-    EDITTEXT        OPT_DarkSquareColor,104,120,25,15,ES_READONLY | 
+                    134,65,50,10
+    PUSHBUTTON      "...",OPT_ChooseLightSquareColor,110,94,20,15
+    PUSHBUTTON      "...",OPT_ChooseDarkSquareColor,110,112,20,15
+    PUSHBUTTON      "...",OPT_ChooseWhitePieceColor,110,130,20,15
+    PUSHBUTTON      "...",OPT_ChooseBlackPieceColor,110,148,20,15
+    PUSHBUTTON      "...",OPT_ChooseHighlightSquareColor,110,166,20,15
+    PUSHBUTTON      "...",OPT_ChoosePremoveHighlightColor,110,184,20,15
+    PUSHBUTTON      "Defaults",OPT_DefaultBoardColors,80,206,50,15
+    EDITTEXT        OPT_DarkSquareColor,80,112,25,15,ES_READONLY |
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    EDITTEXT        OPT_LightSquareColor,104,100,25,15,ES_READONLY | 
+    EDITTEXT        OPT_LightSquareColor,80,94,25,15,ES_READONLY |
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    EDITTEXT        OPT_WhitePieceColor,104,140,25,15,ES_READONLY | 
+    EDITTEXT        OPT_WhitePieceColor,80,130,25,15,ES_READONLY |
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    EDITTEXT        OPT_BlackPieceColor,104,160,25,15,ES_READONLY | 
+    EDITTEXT        OPT_BlackPieceColor,80,148,25,15,ES_READONLY |
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    EDITTEXT        OPT_HighlightSquareColor,104,180,25,15,ES_READONLY | 
+    EDITTEXT        OPT_HighlightSquareColor,80,166,25,15,ES_READONLY |
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    GROUPBOX        "Colors",IDC_STATIC,10,90,185,155
-    EDITTEXT        OPT_PremoveHighlightColor,104,200,25,15,ES_READONLY | 
+    GROUPBOX        "Colors",IDC_STATIC,4,84,185,142
+    EDITTEXT        OPT_PremoveHighlightColor,80,184,25,15,ES_READONLY |
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    LTEXT           "Light Squares",IDC_STATIC,25,105,60,10
-    LTEXT           "Dark Squares",IDC_STATIC,25,124,60,10
-    LTEXT           "White Pieces",IDC_STATIC,25,145,60,10
-    LTEXT           "Black Pieces",IDC_STATIC,25,165,60,10
-    LTEXT           "Square Highlights",IDC_STATIC,25,185,60,10
-    LTEXT           "Premove Highlights",IDC_STATIC,25,205,70,10
-    GROUPBOX        "Size",IDC_STATIC,10,5,185,75
+    LTEXT           "Light Squares",IDC_STATIC,10,98,60,10
+    LTEXT           "Dark Squares",IDC_STATIC,10,116,60,10
+    LTEXT           "White Pieces",IDC_STATIC,10,134,60,10
+    LTEXT           "Black Pieces",IDC_STATIC,10,152,60,10
+    LTEXT           "Square Highlights",IDC_STATIC,10,170,60,10
+    LTEXT           "Premove Highlights",IDC_STATIC,10,188,70,10
+    GROUPBOX        "Size",IDC_STATIC,4,4,185,75
     CONTROL         "Monochrome",OPT_Monochrome,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,25,225,75,10
-    EDITTEXT        OPT_SampleLightSquare,205,110,39,36,ES_READONLY | 
+                    WS_TABSTOP,10,210,64,10
+    EDITTEXT        OPT_SampleLightSquare,144,96,39,36,ES_READONLY |
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    EDITTEXT        OPT_SampleDarkSquare,205,165,39,36,ES_READONLY | 
+    EDITTEXT        OPT_SampleDarkSquare,144,138,39,36,ES_READONLY |
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
 END
 
@@ -585,15 +596,15 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Fonts"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,155,210,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,215,210,50,14
+    DEFPUSHBUTTON   "OK",IDOK,168,212,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,224,212,50,14
     PUSHBUTTON      "Choose...",OPT_ChooseClockFont,221,17,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseMessageFont,221,47,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseCoordFont,221,77,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseTagFont,221,120,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseCommentsFont,221,150,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseConsoleFont,221,180,45,15
-    PUSHBUTTON      "&Revert to Defaults",OPT_DefaultFonts,15,210,80,15
+    PUSHBUTTON      "&Revert to Defaults",OPT_DefaultFonts,6,210,80,15
     CONTROL         "",OPT_SampleCoordFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,70,72,140,20
     CONTROL         "",OPT_SampleTagFont,"RICHEDIT",ES_READONLY | 
@@ -625,8 +636,89 @@ BEGIN
     LTEXT           "&Start Position Number:",IDC_NFG_Label,4,7,71,8
     EDITTEXT        IDC_NFG_Edit,76,4,42,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Random",IDC_NFG_Random,122,4,50,14
-    DEFPUSHBUTTON   "OK",IDOK,34,28,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,92,28,50,14
+    DEFPUSHBUTTON   "OK",IDOK,64,28,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,122,28,50,14
+END
+
+DLG_GameListOptions DIALOG DISCARDABLE  0, 0, 206, 140
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Game List Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "PGN &Tags:",IDC_GLT,2,2,36,8
+    LISTBOX         IDC_GameListTags,2,12,158,102,LBS_USETABSTOPS |
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Up",IDC_GLT_Up,164,12,38,14
+    PUSHBUTTON      "&Down",IDC_GLT_Down,164,30,38,14
+    PUSHBUTTON      "Default",IDC_GLT_Restore,164,82,38,14
+    PUSHBUTTON      "Factory",IDC_GLT_Default,164,100,38,14
+    DEFPUSHBUTTON   "OK",IDOK,96,122,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,152,122,50,14
+    LTEXT           "Restore to:",IDC_GLT_RestoreTo,164,70,36,8
+END
+
+DLG_MoveHistory DIALOGEX 0, 0, 225, 130
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Move History"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_MoveHistory,"RICHEDIT",ES_MULTILINE | ES_READONLY |
+                    WS_BORDER | WS_VSCROLL | WS_TABSTOP,2,2,222,128
+END
+
+DLG_EvalGraph DIALOGEX 0, 0, 215, 75
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Evaluation Graph"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+END
+
+DLG_EngineOutput DIALOGEX 0, 0, 266, 167
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Engine output"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Engine #1",IDC_EngineLabel1,2,2,152,8
+    RTEXT           "",IDC_Engine1_NPS,194,2,69,8
+    CONTROL         "",IDC_EngineMemo1,"RICHEDIT",ES_MULTILINE |
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_BORDER | WS_VSCROLL |
+                    WS_HSCROLL | WS_TABSTOP,2,10,262,72
+    LTEXT           "Engine #2",IDC_EngineLabel2,2,84,152,8
+    RTEXT           "",IDC_Engine2_NPS,196,84,67,8
+    CONTROL         "",IDC_EngineMemo2,"RICHEDIT",ES_MULTILINE |
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_BORDER | WS_VSCROLL |
+                    WS_HSCROLL | WS_TABSTOP,2,92,262,74
+END
+
+DLG_EnginePlayOptions DIALOG DISCARDABLE  0, 0, 208, 129
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Engine Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Ponder Next Move",IDC_EpPonder,"Button",BS_AUTOCHECKBOX |
+                    WS_TABSTOP,4,4,75,10
+    CONTROL         "Enable and Show Thinking (recommended)",
+                    IDC_EpShowThinking,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    4,16,152,10
+    CONTROL         "Hide Thinking when Playing against Human",
+                    IDC_EpHideThinkingHuman,"Button",BS_AUTOCHECKBOX |
+                    WS_TABSTOP,4,28,153,10
+    CONTROL         "Periodic Updates (for Analysis Mode)",
+                    IDC_EpPeriodicUpdates,"Button",BS_AUTOCHECKBOX |
+                    WS_TABSTOP,4,40,131,10
+    GROUPBOX        "Engine-engine matches",IDC_STATIC,4,56,200,50
+    LTEXT           "Adjudicate draw after:",IDC_STATIC,10,72,70,8
+    EDITTEXT        IDC_EpDrawMoveCount,116,68,40,14,ES_AUTOHSCROLL
+    LTEXT           "moves",IDC_STATIC,158,72,22,8
+    LTEXT           "Win/loss adjudication threshold:",IDC_STATIC,10,90,102,
+                    8
+    EDITTEXT        IDC_EpAdjudicationThreshold,116,86,40,14,ES_AUTOHSCROLL
+    LTEXT           "centipawns",IDC_STATIC,158,90,37,8
+    DEFPUSHBUTTON   "OK",IDOK,98,112,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,154,112,50,14
 END
 
 
@@ -643,26 +735,31 @@ BEGIN
         RIGHTMARGIN, 258
     END
 
+    DLG_Colorize, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 32
+    END
+
     DLG_GeneralOptions, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 264
         TOPMARGIN, 7
-        BOTTOMMARGIN, 143
+        BOTTOMMARGIN, 155
     END
 
     DLG_IcsOptions, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 311
+        RIGHTMARGIN, 295
         TOPMARGIN, 7
-        BOTTOMMARGIN, 264
+        BOTTOMMARGIN, 258
     END
 
     DLG_BoardOptions, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 255
+        RIGHTMARGIN, 187
         TOPMARGIN, 7
         BOTTOMMARGIN, 243
     END
@@ -681,6 +778,46 @@ BEGIN
         RIGHTMARGIN, 169
         TOPMARGIN, 7
         BOTTOMMARGIN, 40
+    END
+
+    DLG_GameListOptions, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 199
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 133
+    END
+
+    DLG_MoveHistory, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 218
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 123
+    END
+
+    DLG_EvalGraph, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 208
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 68
+    END
+
+    DLG_EngineOutput, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 259
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 160
+    END
+
+    DLG_EnginePlayOptions, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 201
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -718,6 +855,8 @@ BEGIN
         MENUITEM "&Copy Game To Clipboard\tAlt+C", IDM_CopyGame
         MENUITEM "Paste Game &From Clipboard\tAlt+V", IDM_PasteGame
         MENUITEM SEPARATOR
+        MENUITEM "Copy Game List to Clipboard", IDM_CopyGameListToClipboard
+        MENUITEM SEPARATOR
         MENUITEM "L&oad Position...",           IDM_LoadPosition
         MENUITEM "Load N&ext Position\tAlt+Shift+PgDn", IDM_LoadNextPosition
         MENUITEM "Load Pre&vious Position\tAlt+Shift+PgUp", 
@@ -744,7 +883,11 @@ BEGIN
         MENUITEM "&Edit Position",              IDM_EditPosition
         MENUITEM "Trai&ning",                   IDM_Training, GRAYED
         MENUITEM SEPARATOR
-        MENUITEM "Show Game &List...",          IDM_ShowGameList
+        MENUITEM "Show Engine Output",          IDM_ShowEngineOutput
+        MENUITEM "Show Evaluation Graph",       IDM_ShowEvalGraph
+        MENUITEM "Show Game &List",             IDM_ShowGameList
+        MENUITEM "Show Move History",           IDM_ShowMoveHistory
+        MENUITEM SEPARATOR
         MENUITEM "Edit &Tags...",               IDM_EditTags
         MENUITEM "Edit &Comment...",            IDM_EditComment
         MENUITEM "&Pause\tPause",               IDM_Pause
@@ -788,9 +931,11 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions
+        MENUITEM "Engines...",                  IDM_EnginePlayOptions
         MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
         MENUITEM "&Fonts...",                   IDM_Fonts
         MENUITEM "Soun&ds...",                  IDM_Sounds
+        MENUITEM "Game List...",                IDM_GameListOptions
         MENUITEM SEPARATOR
         MENUITEM "Comm&unications...",          IDM_CommPort
         MENUITEM "&Load Game...",               IDM_LoadOptions
@@ -926,11 +1071,13 @@ BEGIN
     "2",            IDM_DirectCommand2,     VIRTKEY, ALT, NOINVERT
     "C",            IDM_CopyGame,           VIRTKEY, ALT, NOINVERT
     "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, ALT, NOINVERT
+    "M",            IDM_TypeInMove,         VIRTKEY, ALT, NOINVERT
     "N",            IDM_NewGame,            VIRTKEY, CONTROL, NOINVERT
     "O",            IDM_LoadGame,           VIRTKEY, CONTROL, NOINVERT
     "S",            IDM_SaveGame,           VIRTKEY, CONTROL, NOINVERT
-    "V",            IDM_Paste,              VIRTKEY, CONTROL, NOINVERT
     "V",            IDM_PasteGame,          VIRTKEY, ALT, NOINVERT
+    "V",            IDM_PasteAny,           VIRTKEY, SHIFT, CONTROL,
+                                                    NOINVERT
     "V",            IDM_PastePosition,      VIRTKEY, SHIFT, ALT, NOINVERT
     VK_DELETE,      IDM_RetractMove,        VIRTKEY, ALT, NOINVERT
     VK_DOWN,        IDM_ToEnd,              VIRTKEY, ALT, NOINVERT
@@ -976,6 +1123,12 @@ BEGIN
     VK_PRIOR,       IDM_LoadPrevPosition,   VIRTKEY, SHIFT, NOINVERT
     VK_RIGHT,       IDM_Forward,            VIRTKEY, NOINVERT
     VK_UP,          IDM_ToStart,            VIRTKEY, NOINVERT
+END
+
+NO_ICS ACCELERATORS DISCARDABLE
+BEGIN
+    "A",            IDM_AnalysisMode,       VIRTKEY, CONTROL, NOINVERT
+    "V",            IDM_PasteAny,           VIRTKEY, CONTROL, NOINVERT
 END
 
 

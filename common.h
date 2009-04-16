@@ -407,7 +407,7 @@ typedef struct {
     int firstProtocolVersion;
     int secondProtocolVersion;
     Boolean showButtonBar;
-    /* [AS] New properties */
+    /* [AS] New properties (down to the "ZIPPY" part) */
     Boolean firstScoreIsAbsolute;  /* If true, engine score is always from white side */
     Boolean secondScoreIsAbsolute; /* If true, engine score is always from white side */
     Boolean saveExtendedInfoInPGN; /* If true, saved PGN games contain extended info */
@@ -430,6 +430,17 @@ typedef struct {
     char * nameOfDebugFile;
     char * pgnEventHeader;
     int defaultFrcPosition;
+    char * gameListTags;
+    Boolean saveOutOfBookInfo;
+    Boolean showEvalInMoveHistory;
+    int evalHistColorWhite;
+    int evalHistColorBlack;
+    Boolean highlightMoveWithArrow;
+    int highlightArrowColor;
+    Boolean useStickyWindows;
+    int adjudicateDrawMoves;
+    Boolean autoDisplayComment;
+    Boolean autoDisplayTags;
 #if ZIPPY
     char *zippyLines;
     char *zippyPinhead;
@@ -450,6 +461,25 @@ typedef struct {
 #endif
 } AppData, *AppDataPtr;
 
+/* [AS] PGN tags (for showing in the game list) */
+#define GLT_EVENT           'e'
+#define GLT_SITE            's'
+#define GLT_DATE            'd'
+#define GLT_ROUND           'o'
+#define GLT_PLAYERS         'p'     /* I.e. white "-" black */
+#define GLT_RESULT          'r'
+#define GLT_WHITE_ELO       'w'
+#define GLT_BLACK_ELO       'b'
+#define GLT_TIME_CONTROL    't'
+#define GLT_VARIANT         'v'
+#define GLT_OUT_OF_BOOK     'a'
+
+#define GLT_DEFAULT_TAGS    "eprd"  /* Event, players, result, date */
+
+#define GLT_ALL_TAGS        "esdoprwbtva"
+
+#define PGN_OUT_OF_BOOK     "Annotator"
+
 extern AppData appData;
 
 typedef struct {
@@ -469,6 +499,7 @@ typedef struct {
     int whiteRating;    /* -1 if unknown */
     int blackRating;    /* -1 if unknown */
     VariantClass variant;
+    char *outOfBook;    /* [AS] Move and score when engine went out of book */
 } GameInfo;
 
 

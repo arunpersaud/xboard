@@ -114,6 +114,9 @@ int ParsePGNTag(tag, gameInfo)
         /* xboard-defined extension */
         gameInfo->variant = StringToVariant(value);
 	success = TRUE;
+    } else if (StrCaseCmp(name, PGN_OUT_OF_BOOK) == 0) {
+        /* [AS] Out of book annotation */
+        success = StrSavePtr(value, &gameInfo->outOfBook) != NULL;
     } else {
 	if (gameInfo->extraTags == NULL) {
 	    oldTags = "";

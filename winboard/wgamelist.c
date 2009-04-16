@@ -20,7 +20,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * ------------------------------------------------------------------------
  */
-
 #include "config.h"
 
 #include <windows.h> /* required for all Windows applications */
@@ -36,6 +35,8 @@
 #include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
+
+#include "wsnap.h"
 
 /* Module globals */
 HWND gameListDialog = NULL;
@@ -206,6 +207,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
   static BOOL filterHasFocus = FALSE;
   int count;
   struct GameListStats stats;
+  static SnapData sd;
 
   switch (message) {
   case WM_INITDIALOG: 
@@ -268,6 +270,18 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     sizeX = newSizeX;
     sizeY = newSizeY;
     break;
+
+  case WM_ENTERSIZEMOVE:
+    return OnEnterSizeMove( &sd, hDlg, wParam, lParam );
+
+  case WM_SIZING:
+    return OnSizing( &sd, hDlg, wParam, lParam );
+
+  case WM_MOVING:
+    return OnMoving( &sd, hDlg, wParam, lParam );
+
+  case WM_EXITSIZEMOVE:
+    return OnExitSizeMove( &sd, hDlg, wParam, lParam );
 
   case WM_GETMINMAXINFO:
     /* Prevent resizing window too small */
@@ -468,4 +482,57 @@ VOID ShowGameListProc()
       DisplayError("No game list", 0);
     }
   }
+}
+
+HGLOBAL ExportGameListAsText()
+{
+    HGLOBAL result = NULL;
+    LPVOID lpMem = NULL;
+    ListGame * lg = (ListGame *) gameList.head;
+    int nItem;
+    DWORD dwLen = 0;
+
+    if( ! gameFileName || ((ListGame *) gameList.tailPred)->number <= 0 ) {
+        DisplayError("Game list not loaded or empty", 0);
+        return NULL;
+    }
+
+    /* Get list size */
+    for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){
+        char * st = GameListLineFull(lg->number, &lg->gameInfo);
+
+        dwLen += strlen(st) + 2; /* Add extra characters for "\r\n" */
+
+        free(st);
+        lg = (ListGame *) lg->node.succ;
+    }
+
+    /* Allocate memory for the list */
+    result = GlobalAlloc(GHND, dwLen+1 );
+
+    if( result != NULL ) {
+        lpMem = GlobalLock(result);
+    }
+
+    /* Copy the list into the global memory block */
+    if( lpMem != NULL ) {
+        char * dst = (char *) lpMem;
+        size_t len;
+
+        lg = (ListGame *) gameList.head;
+
+        for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){
+            char * st = GameListLineFull(lg->number, &lg->gameInfo);
+
+            len = sprintf( dst, "%s\r\n", st );
+            dst += len;
+
+            free(st);
+            lg = (ListGame *) lg->node.succ;
+        }
+
+        GlobalUnlock( result );
+    }
+
+    return result;
 }

@@ -84,6 +84,8 @@
 #include "wsockerr.h"
 #include "defaults.h"
 
+#include "wsnap.h"
+
 int myrandom(void);
 void mysrandom(unsigned int seed);
 
@@ -144,7 +146,7 @@ char *icsNames;
 char *firstChessProgramNames;
 char *secondChessProgramNames;
 
-#define ARG_MAX 64*1024 /* [AS] For Roger Brown's very long list! */
+#define ARG_MAX 128*1024 /* [AS] For Roger Brown's very long list! */
 
 #define PALETTESIZE 256
 
@@ -415,7 +417,40 @@ VOID APIENTRY MenuPopup(HWND hwnd, POINT pt, HMENU hmenu, UINT def);
 void ParseIcsTextMenu(char *icsTextMenuString);
 VOID PopUpMoveDialog(char firstchar);
 VOID UpdateSampleText(HWND hDlg, int id, MyColorizeAttribs *mca);
+
+/* [AS] */
 int NewGameFRC();
+int GameListOptions();
+
+HWND moveHistoryDialog = NULL;
+BOOLEAN moveHistoryDialogUp = FALSE;
+
+WindowPlacement wpMoveHistory;
+
+HWND evalGraphDialog = NULL;
+BOOLEAN evalGraphDialogUp = FALSE;
+
+WindowPlacement wpEvalGraph;
+
+HWND engineOutputDialog = NULL;
+BOOLEAN engineOutputDialogUp = FALSE;
+
+WindowPlacement wpEngineOutput;
+
+VOID MoveHistoryPopUp();
+VOID MoveHistoryPopDown();
+VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo );
+BOOL MoveHistoryIsUp();
+
+VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
+VOID EvalGraphPopUp();
+VOID EvalGraphPopDown();
+BOOL EvalGraphIsUp();
+
+VOID EngineOutputPopUp();
+VOID EngineOutputPopDown();
+BOOL EngineOutputIsUp();
+VOID EngineOutputUpdate( int which, int depth, unsigned long nodes, int score, int time, char * pv );
 
 /*
  * Setting "frozen" should disable all user input other than deleting
@@ -463,7 +498,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
   MSG msg;
-  HANDLE hAccelMain, hAccelNoAlt;
+  HANDLE hAccelMain, hAccelNoAlt, hAccelNoICS;
 
   debugFP = stderr;
 
@@ -479,6 +514,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   hAccelMain = LoadAccelerators (hInstance, szAppName);
   hAccelNoAlt = LoadAccelerators (hInstance, "NO_ALT");
+  hAccelNoICS = LoadAccelerators( hInstance, "NO_ICS"); /* [AS] No Ctrl-V on ICS!!! */
 
   /* Acquire and dispatch messages until a WM_QUIT message is received. */
 
@@ -488,10 +524,14 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		    0))   /* highest message to examine */
     {
       if (!(commentDialog && IsDialogMessage(commentDialog, &msg)) &&
+          !(moveHistoryDialog && IsDialogMessage(moveHistoryDialog, &msg)) &&
+          !(evalGraphDialog && IsDialogMessage(evalGraphDialog, &msg)) &&
+          !(engineOutputDialog && IsDialogMessage(engineOutputDialog, &msg)) &&
 	  !(editTagsDialog && IsDialogMessage(editTagsDialog, &msg)) &&
 	  !(gameListDialog && IsDialogMessage(gameListDialog, &msg)) &&
 	  !(errorDialog && IsDialogMessage(errorDialog, &msg)) &&
 	  !(!frozen && TranslateAccelerator(hwndMain, hAccelMain, &msg)) &&
+          !(!hwndConsole && TranslateAccelerator(hwndMain, hAccelNoICS, &msg)) &&
 	  !(!hwndConsole && TranslateAccelerator(hwndMain, hAccelNoAlt, &msg))) {
 	TranslateMessage(&msg);	/* Translates virtual key codes */
 	DispatchMessage(&msg);	/* Dispatches message to window */
@@ -637,6 +677,19 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   /* Make a console window if needed */
   if (appData.icsActive) {
     ConsoleCreate();
+  }
+
+  /* [AS] Restore layout */
+  if( wpMoveHistory.visible ) {
+      MoveHistoryPopUp();
+  }
+
+  if( wpEvalGraph.visible ) {
+      EvalGraphPopUp();
+  }
+
+  if( wpEngineOutput.visible ) {
+      EngineOutputPopUp();
   }
 
   InitBackEnd2();
@@ -1058,8 +1111,8 @@ ArgDescriptor argDescriptors[] = {
   { "xbuttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE },
   { "-buttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE },
   /* [AS] New features */
-  { "firstScoreAbs", ArgBoolean, (LPVOID) &appData.firstScoreIsAbsolute, TRUE },
-  { "secondScoreAbs", ArgBoolean, (LPVOID) &appData.secondScoreIsAbsolute, TRUE },
+  { "firstScoreAbs", ArgBoolean, (LPVOID) &appData.firstScoreIsAbsolute, FALSE },
+  { "secondScoreAbs", ArgBoolean, (LPVOID) &appData.secondScoreIsAbsolute, FALSE },
   { "pgnExtendedInfo", ArgBoolean, (LPVOID) &appData.saveExtendedInfoInPGN, TRUE },
   { "hideThinkingFromHuman", ArgBoolean, (LPVOID) &appData.hideThinkingFromHuman, TRUE },
   { "liteBackTextureFile", ArgString, (LPVOID) &appData.liteBackTextureFile, TRUE },
@@ -1081,6 +1134,37 @@ ArgDescriptor argDescriptors[] = {
   { "debugfile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE },
   { "pgnEventHeader", ArgString, (LPVOID) &appData.pgnEventHeader, TRUE },
   { "defaultFrcPosition", ArgInt, (LPVOID) &appData.defaultFrcPosition, TRUE },
+  { "gameListTags", ArgString, (LPVOID) &appData.gameListTags, TRUE },
+  { "saveOutOfBookInfo", ArgBoolean, (LPVOID) &appData.saveOutOfBookInfo, TRUE },
+  { "showEvalInMoveHistory", ArgBoolean, (LPVOID) &appData.showEvalInMoveHistory, TRUE },
+  { "evalHistColorWhite", ArgColor, (LPVOID) &appData.evalHistColorWhite, TRUE },
+  { "evalHistColorBlack", ArgColor, (LPVOID) &appData.evalHistColorBlack, TRUE },
+  { "highlightMoveWithArrow", ArgBoolean, (LPVOID) &appData.highlightMoveWithArrow, TRUE },
+  { "highlightArrowColor", ArgColor, (LPVOID) &appData.highlightArrowColor, TRUE },
+  { "stickyWindows", ArgBoolean, (LPVOID) &appData.useStickyWindows, TRUE },
+  { "adjudicateDrawMoves", ArgInt, (LPVOID) &appData.adjudicateDrawMoves, TRUE },
+  { "autoDisplayComment", ArgBoolean, (LPVOID) &appData.autoDisplayComment, TRUE },
+  { "autoDisplayTags", ArgBoolean, (LPVOID) &appData.autoDisplayTags, TRUE },
+
+  /* [AS] Layout stuff */
+  { "moveHistoryUp", ArgBoolean, (LPVOID) &wpMoveHistory.visible, TRUE },
+  { "moveHistoryX", ArgInt, (LPVOID) &wpMoveHistory.x, TRUE },
+  { "moveHistoryY", ArgInt, (LPVOID) &wpMoveHistory.y, TRUE },
+  { "moveHistoryW", ArgInt, (LPVOID) &wpMoveHistory.width, TRUE },
+  { "moveHistoryH", ArgInt, (LPVOID) &wpMoveHistory.height, TRUE },
+
+  { "evalGraphUp", ArgBoolean, (LPVOID) &wpEvalGraph.visible, TRUE },
+  { "evalGraphX", ArgInt, (LPVOID) &wpEvalGraph.x, TRUE },
+  { "evalGraphY", ArgInt, (LPVOID) &wpEvalGraph.y, TRUE },
+  { "evalGraphW", ArgInt, (LPVOID) &wpEvalGraph.width, TRUE },
+  { "evalGraphH", ArgInt, (LPVOID) &wpEvalGraph.height, TRUE },
+
+  { "engineOutputUp", ArgBoolean, (LPVOID) &wpEngineOutput.visible, TRUE },
+  { "engineOutputX", ArgInt, (LPVOID) &wpEngineOutput.x, TRUE },
+  { "engineOutputY", ArgInt, (LPVOID) &wpEngineOutput.y, TRUE },
+  { "engineOutputW", ArgInt, (LPVOID) &wpEngineOutput.width, TRUE },
+  { "engineOutputH", ArgInt, (LPVOID) &wpEngineOutput.height, TRUE },
+
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
   { "zt", ArgTrue, (LPVOID) &appData.zippyTalk, FALSE },
@@ -1759,6 +1843,21 @@ InitAppData(LPSTR lpCmdLine)
   appData.nameOfDebugFile = "winboard.debug";
   appData.pgnEventHeader = "Computer Chess Game";
   appData.defaultFrcPosition = -1;
+  appData.gameListTags = GLT_DEFAULT_TAGS;
+  appData.saveOutOfBookInfo = TRUE;
+  appData.showEvalInMoveHistory = TRUE;
+  appData.evalHistColorWhite = ParseColorName( "#FFFFB0" );
+  appData.evalHistColorBlack = ParseColorName( "#AD5D3D" );
+  appData.highlightMoveWithArrow = FALSE;
+  appData.highlightArrowColor = ParseColorName( "#FFFF80" );
+  appData.useStickyWindows = TRUE;
+  appData.adjudicateDrawMoves = 0;
+  appData.autoDisplayComment = TRUE;
+  appData.autoDisplayTags = TRUE;
+
+  InitWindowPlacement( &wpMoveHistory );
+  InitWindowPlacement( &wpEvalGraph );
+  InitWindowPlacement( &wpEngineOutput );
 
 #ifdef ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
@@ -1946,6 +2045,39 @@ SaveSettings(char* name)
     gameListY = wp.rcNormalPosition.top;
     gameListW = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
     gameListH = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
+  }
+
+  /* [AS] Move history */
+  wpMoveHistory.visible = MoveHistoryIsUp();
+
+  if( moveHistoryDialog ) {
+    GetWindowPlacement(moveHistoryDialog, &wp);
+    wpMoveHistory.x = wp.rcNormalPosition.left;
+    wpMoveHistory.y = wp.rcNormalPosition.top;
+    wpMoveHistory.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
+    wpMoveHistory.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
+  }
+
+  /* [AS] Eval graph */
+  wpEvalGraph.visible = EvalGraphIsUp();
+
+  if( evalGraphDialog ) {
+    GetWindowPlacement(evalGraphDialog, &wp);
+    wpEvalGraph.x = wp.rcNormalPosition.left;
+    wpEvalGraph.y = wp.rcNormalPosition.top;
+    wpEvalGraph.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
+    wpEvalGraph.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
+  }
+
+  /* [AS] Engine output */
+  wpEngineOutput.visible = EngineOutputIsUp();
+
+  if( engineOutputDialog ) {
+    GetWindowPlacement(engineOutputDialog, &wp);
+    wpEngineOutput.x = wp.rcNormalPosition.left;
+    wpEngineOutput.y = wp.rcNormalPosition.top;
+    wpEngineOutput.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
+    wpEngineOutput.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
   }
 
   for (ad = argDescriptors; ad->argName != NULL; ad++) {
@@ -2334,6 +2466,10 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
 
     SelectObject( hdc, hbm_old );
 
+    if( hPieceFace[index] != NULL ) {
+        DeleteObject( hPieceFace[index] );
+    }
+
     hPieceFace[index] = hbm;
 }
 
@@ -2398,6 +2534,7 @@ void CreatePiecesFromFont()
         else {
             for( i=0; i<12; i++ ) {
                 hPieceMask[i] = NULL;
+                hPieceFace[i] = NULL;
             }
         }
 
@@ -2965,7 +3102,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
 
   /* [AS] Use font-based pieces if needed */
   if( fontBitmapSquareSize >= 0 && squareSize > 32 ) {
-    /* Create piece bitmaps, or do nothing if piece set is up to data */
+    /* Create piece bitmaps, or do nothing if piece set is up to date */
     CreatePiecesFromFont();
 
     if( fontBitmapSquareSize == squareSize ) {
@@ -3110,6 +3247,295 @@ VOID RebuildTextureSquareInfo()
     }
 }
 
+/* [AS] Arrow highlighting support */
+
+static int A_WIDTH = 5; /* Width of arrow body */
+
+#define A_HEIGHT_FACTOR 6   /* Length of arrow "point", relative to body width */
+#define A_WIDTH_FACTOR  3   /* Width of arrow "point", relative to body width */
+
+static double Sqr( double x )
+{
+    return x*x;
+}
+
+static int Round( double x )
+{
+    return (int) (x + 0.5);
+}
+
+/* Draw an arrow between two points using current settings */
+VOID DrawArrowBetweenPoints( HDC hdc, int s_x, int s_y, int d_x, int d_y )
+{
+    POINT arrow[7];
+    double dx, dy, j, k, x, y;
+
+    if( d_x == s_x ) {
+        int h = (d_y > s_y) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
+
+        arrow[0].x = s_x + A_WIDTH;
+        arrow[0].y = s_y;
+
+        arrow[1].x = s_x + A_WIDTH;
+        arrow[1].y = d_y - h;
+
+        arrow[2].x = s_x + A_WIDTH*A_WIDTH_FACTOR;
+        arrow[2].y = d_y - h;
+
+        arrow[3].x = d_x;
+        arrow[3].y = d_y;
+
+        arrow[4].x = s_x - A_WIDTH*A_WIDTH_FACTOR;
+        arrow[4].y = d_y - h;
+
+        arrow[5].x = s_x - A_WIDTH;
+        arrow[5].y = d_y - h;
+
+        arrow[6].x = s_x - A_WIDTH;
+        arrow[6].y = s_y;
+    }
+    else if( d_y == s_y ) {
+        int w = (d_x > s_x) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
+
+        arrow[0].x = s_x;
+        arrow[0].y = s_y + A_WIDTH;
+
+        arrow[1].x = d_x - w;
+        arrow[1].y = s_y + A_WIDTH;
+
+        arrow[2].x = d_x - w;
+        arrow[2].y = s_y + A_WIDTH*A_WIDTH_FACTOR;
+
+        arrow[3].x = d_x;
+        arrow[3].y = d_y;
+
+        arrow[4].x = d_x - w;
+        arrow[4].y = s_y - A_WIDTH*A_WIDTH_FACTOR;
+
+        arrow[5].x = d_x - w;
+        arrow[5].y = s_y - A_WIDTH;
+
+        arrow[6].x = s_x;
+        arrow[6].y = s_y - A_WIDTH;
+    }
+    else {
+        /* [AS] Needed a lot of paper for this! :-) */
+        dy = (double) (d_y - s_y) / (double) (d_x - s_x);
+        dx = (double) (s_x - d_x) / (double) (s_y - d_y);
+
+        j = sqrt( Sqr(A_WIDTH) / (1.0 + Sqr(dx)) );
+
+        k = sqrt( Sqr(A_WIDTH*A_HEIGHT_FACTOR) / (1.0 + Sqr(dy)) );
+
+        x = s_x;
+        y = s_y;
+
+        arrow[0].x = Round(x - j);
+        arrow[0].y = Round(y + j*dx);
+
+        arrow[1].x = Round(x + j);
+        arrow[1].y = Round(y - j*dx);
+
+        if( d_x > s_x ) {
+            x = (double) d_x - k;
+            y = (double) d_y - k*dy;
+        }
+        else {
+            x = (double) d_x + k;
+            y = (double) d_y + k*dy;
+        }
+
+        arrow[2].x = Round(x + j);
+        arrow[2].y = Round(y - j*dx);
+
+        arrow[3].x = Round(x + j*A_WIDTH_FACTOR);
+        arrow[3].y = Round(y - j*A_WIDTH_FACTOR*dx);
+
+        arrow[4].x = d_x;
+        arrow[4].y = d_y;
+
+        arrow[5].x = Round(x - j*A_WIDTH_FACTOR);
+        arrow[5].y = Round(y + j*A_WIDTH_FACTOR*dx);
+
+        arrow[6].x = Round(x - j);
+        arrow[6].y = Round(y + j*dx);
+    }
+
+    Polygon( hdc, arrow, 7 );
+}
+
+/* [AS] Draw an arrow between two squares */
+VOID DrawArrowBetweenSquares( HDC hdc, int s_col, int s_row, int d_col, int d_row )
+{
+    int s_x, s_y, d_x, d_y;
+    HPEN hpen;
+    HPEN holdpen;
+    HBRUSH hbrush;
+    HBRUSH holdbrush;
+    LOGBRUSH stLB;
+
+    if( s_col == d_col && s_row == d_row ) {
+        return;
+    }
+
+    /* Get source and destination points */
+    SquareToPos( s_row, s_col, &s_x, &s_y);
+    SquareToPos( d_row, d_col, &d_x, &d_y);
+
+    if( d_y > s_y ) {
+        d_y += squareSize / 4;
+    }
+    else if( d_y < s_y ) {
+        d_y += 3 * squareSize / 4;
+    }
+    else {
+        d_y += squareSize / 2;
+    }
+
+    if( d_x > s_x ) {
+        d_x += squareSize / 4;
+    }
+    else if( d_x < s_x ) {
+        d_x += 3 * squareSize / 4;
+    }
+    else {
+        d_x += squareSize / 2;
+    }
+
+    s_x += squareSize / 2;
+    s_y += squareSize / 2;
+
+    /* Adjust width */
+    A_WIDTH = squareSize / 14;
+
+    /* Draw */
+    stLB.lbStyle = BS_SOLID;
+    stLB.lbColor = appData.highlightArrowColor;
+    stLB.lbHatch = 0;
+
+    hpen = CreatePen( PS_SOLID, 2, RGB(0x00,0x00,0x00) );
+    holdpen = SelectObject( hdc, hpen );
+    hbrush = CreateBrushIndirect( &stLB );
+    holdbrush = SelectObject( hdc, hbrush );
+
+    DrawArrowBetweenPoints( hdc, s_x, s_y, d_x, d_y );
+
+    SelectObject( hdc, holdpen );
+    SelectObject( hdc, holdbrush );
+    DeleteObject( hpen );
+    DeleteObject( hbrush );
+}
+
+BOOL HasHighlightInfo()
+{
+    BOOL result = FALSE;
+
+    if( highlightInfo.sq[0].x >= 0 && highlightInfo.sq[0].y >= 0 &&
+        highlightInfo.sq[1].x >= 0 && highlightInfo.sq[1].y >= 0 )
+    {
+        result = TRUE;
+    }
+
+    return result;
+}
+
+BOOL IsDrawArrowEnabled()
+{
+    BOOL result = FALSE;
+
+    if( appData.highlightMoveWithArrow && squareSize >= 32 ) {
+        result = TRUE;
+    }
+
+    return result;
+}
+
+VOID DrawArrowHighlight( HDC hdc )
+{
+    if( IsDrawArrowEnabled() && HasHighlightInfo() ) {
+        DrawArrowBetweenSquares( hdc,
+            highlightInfo.sq[0].x, highlightInfo.sq[0].y,
+            highlightInfo.sq[1].x, highlightInfo.sq[1].y );
+    }
+}
+
+HRGN GetArrowHighlightClipRegion( HDC hdc )
+{
+    HRGN result = NULL;
+
+    if( HasHighlightInfo() ) {
+        int x1, y1, x2, y2;
+        int sx, sy, dx, dy;
+
+        SquareToPos(highlightInfo.sq[0].y, highlightInfo.sq[0].x, &x1, &y1 );
+        SquareToPos(highlightInfo.sq[1].y, highlightInfo.sq[1].x, &x2, &y2 );
+
+        sx = MIN( x1, x2 );
+        sy = MIN( y1, y2 );
+        dx = MAX( x1, x2 ) + squareSize;
+        dy = MAX( y1, y2 ) + squareSize;
+
+        result = CreateRectRgn( sx, sy, dx, dy );
+    }
+
+    return result;
+}
+
+/*
+    Warning: this function modifies the behavior of several other functions.
+
+    Basically, Winboard is optimized to avoid drawing the whole board if not strictly
+    needed. Unfortunately, the decision whether or not to perform a full or partial
+    repaint is scattered all over the place, which is not good for features such as
+    "arrow highlighting" that require a full repaint of the board.
+
+    So, I've tried to patch the code where I thought it made sense (e.g. after or during
+    user interaction, when speed is not so important) but especially to avoid errors
+    in the displayed graphics.
+
+    In such patched places, I always try refer to this function so there is a single
+    place to maintain knowledge.
+
+    To restore the original behavior, just return FALSE unconditionally.
+*/
+BOOL IsFullRepaintPreferrable()
+{
+    BOOL result = FALSE;
+
+    if( (appData.highlightLastMove || appData.highlightDragging) && IsDrawArrowEnabled() ) {
+        /* Arrow may appear on the board */
+        result = TRUE;
+    }
+
+    return result;
+}
+
+/*
+    This function is called by DrawPosition to know whether a full repaint must
+    be forced or not.
+
+    Only DrawPosition may directly call this function, which makes use of
+    some state information. Other function should call DrawPosition specifying
+    the repaint flag, and can use IsFullRepaintPreferrable if needed.
+*/
+BOOL DrawPositionNeedsFullRepaint()
+{
+    BOOL result = FALSE;
+
+    /*
+        Probably a slightly better policy would be to trigger a full repaint
+        when animInfo.piece changes state (i.e. empty -> non-empty and viceversa),
+        but animation is fast enough that it's difficult to notice.
+    */
+    if( animInfo.piece == EmptySquare ) {
+        if( (appData.highlightLastMove || appData.highlightDragging) && IsDrawArrowEnabled() && HasHighlightInfo() ) {
+            result = TRUE;
+        }
+    }
+
+    return result;
+}
+
 VOID
 DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
 {
@@ -3207,6 +3633,21 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
    * gamestart and similar)  --Hawk
    */
   Boolean fullrepaint = repaint;
+
+  if( DrawPositionNeedsFullRepaint() ) {
+      fullrepaint = TRUE;
+  }
+
+#if 0
+  if( fullrepaint ) {
+      static int repaint_count = 0;
+      char buf[128];
+
+      repaint_count++;
+      sprintf( buf, "FULL repaint: %d\n", repaint_count );
+      OutputDebugString( buf );
+  }
+#endif
 
   if (board == NULL) {
     if (!lastReqValid) {
@@ -3410,6 +3851,11 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   DrawGridOnDC(hdcmem);
   DrawHighlightsOnDC(hdcmem);
   DrawBoardOnDC(hdcmem, board, tmphdc);
+
+  if( appData.highlightMoveWithArrow ) {
+    DrawArrowHighlight(hdcmem);
+  }
+
   DrawCoordsOnDC(hdcmem);
 
   /* Put the dragged piece back into place and draw it */
@@ -3587,7 +4033,9 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   POINT pt;
   static int recursive = 0;
   HMENU hmenu;
+  BOOLEAN needsRedraw = FALSE;
   BOOLEAN saveAnimate;
+  BOOLEAN forceFullRepaint = IsFullRepaintPreferrable(); /* [AS] */
   static BOOLEAN sameAgain = FALSE;
 
   if (recursive) {
@@ -3636,7 +4084,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
       if (!appData.highlightLastMove) {
         ClearHighlights();
-	DrawPosition(FALSE, NULL);
+	DrawPosition(forceFullRepaint || FALSE, NULL);
       }
       fromX = fromY = -1;
       dragInfo.start.x = dragInfo.start.y = -1;
@@ -3647,7 +4095,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     } else if (fromX == x && fromY == y) {
       /* Downclick on same square again */
       ClearHighlights();
-      DrawPosition(FALSE, NULL);
+      DrawPosition(forceFullRepaint || FALSE, NULL);
       sameAgain = TRUE;  
     } else if (fromX != -1) {
       /* Downclick on different square */
@@ -3668,11 +4116,11 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	    UserMoveEvent(fromX, fromY, toX, toY, 'q');
 	    if (!appData.highlightLastMove) {
 	      ClearHighlights();
-	      DrawPosition(FALSE, NULL);
+	      DrawPosition(forceFullRepaint || FALSE, NULL);
 	    }
 	  } else {
 	    SetHighlights(fromX, fromY, toX, toY);
-	    DrawPosition(FALSE, NULL);
+	    DrawPosition(forceFullRepaint || FALSE, NULL);
 	    PromotionPopup(hwnd);
 	  }
 	} else {	/* not a promotion */
@@ -3684,7 +4132,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	  UserMoveEvent(fromX, fromY, toX, toY, NULLCHAR);
 	  if (appData.animate && !appData.highlightLastMove) {
 	    ClearHighlights();
-	    DrawPosition(FALSE, NULL);
+	    DrawPosition(forceFullRepaint || FALSE, NULL);
 	  }
 	}
 	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
@@ -3692,7 +4140,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
       }
       ClearHighlights();
-      DrawPosition(FALSE, NULL);
+      DrawPosition(forceFullRepaint || FALSE, NULL);
     }
     /* First downclick, or restart on a square with same color piece */
     if (!frozen && OKToStartUserMove(x, y)) {
@@ -3707,6 +4155,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       fromX = fromY = -1;
       dragInfo.start.x = dragInfo.start.y = -1;
       dragInfo.from = dragInfo.start;
+      DrawPosition(forceFullRepaint || FALSE, NULL); /* [AS] */
     }
     break;
 
@@ -3725,7 +4174,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	/* First square clicked: start click-click move */
 	SetHighlights(fromX, fromY, -1, -1);
       }
-      DrawPosition(FALSE, NULL);
+      DrawPosition(forceFullRepaint || FALSE, NULL);
     } else if (dragInfo.from.x < 0 || dragInfo.from.y < 0) {
       /* Errant click; ignore */
       break;
@@ -3740,7 +4189,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (appData.alwaysPromoteToQueen) {
 	  UserMoveEvent(fromX, fromY, toX, toY, 'q');
 	} else {
-	  DrawPosition(FALSE, NULL);
+	  DrawPosition(forceFullRepaint || FALSE, NULL);
 	  PromotionPopup(hwnd);
 	}
       } else {
@@ -3754,7 +4203,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
       if (appData.animate || appData.animateDragging ||
 	  appData.highlightDragging || gotPremove) {
-	DrawPosition(FALSE, NULL);
+	DrawPosition(forceFullRepaint || FALSE, NULL);
       }
     }
     dragInfo.start.x = dragInfo.start.y = -1; 
@@ -3764,14 +4213,22 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_MOUSEMOVE:
     if ((appData.animateDragging || appData.highlightDragging)
 	&& (wParam & MK_LBUTTON)
-	&& dragInfo.from.x >= 0) {
+	&& dragInfo.from.x >= 0)
+    {
+      BOOL full_repaint = FALSE;
+
       if (appData.animateDragging) {
 	dragInfo.pos = pt;
       }
       if (appData.highlightDragging) {
 	SetHighlights(fromX, fromY, x, y);
+        if( IsDrawArrowEnabled() && (x < 0 || x > 7 || y < 0 || y > y) ) {
+            full_repaint = TRUE;
       }
-      DrawPosition(FALSE, NULL);
+      }
+
+      DrawPosition( full_repaint, NULL);
+
       dragInfo.lastpos = dragInfo.pos;
     }
     break;
@@ -4059,6 +4516,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   FILE *f;
   UINT number;
   char fileTitle[MSG_SIZ];
+  static SnapData sd;
 
   switch (message) {
 
@@ -4233,10 +4691,44 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       PasteGameFromClipboard();
       break;
 
+    case IDM_CopyGameListToClipboard:
+      CopyGameListToClipboard();
+      break;
+
     /* [AS] Autodetect FEN or PGN data */
-    case IDM_Paste:
+    case IDM_PasteAny:
       PasteGameOrFENFromClipboard();
       break;
+
+    /* [AS] Move history */
+    case IDM_ShowMoveHistory:
+        if( MoveHistoryIsUp() ) {
+            MoveHistoryPopDown();
+        }
+        else {
+            MoveHistoryPopUp();
+        }
+        break;
+
+    /* [AS] Eval graph */
+    case IDM_ShowEvalGraph:
+        if( EvalGraphIsUp() ) {
+            EvalGraphPopDown();
+        }
+        else {
+            EvalGraphPopUp();
+        }
+        break;
+
+    /* [AS] Engine output */
+    case IDM_ShowEngineOutput:
+        if( EngineOutputIsUp() ) {
+            EngineOutputPopDown();
+        }
+        else {
+            EngineOutputPopUp();
+        }
+        break;
 
     /* [AS] User adjudication */
     case IDM_UserAdjudication_White:
@@ -4250,6 +4742,11 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_UserAdjudication_Draw:
         UserAdjudicationEvent( 0 );
         break;
+
+    /* [AS] Game list options dialog */
+    case IDM_GameListOptions:
+      GameListOptions();
+      break;
 
     case IDM_CopyPosition:
       CopyFENToClipboard();
@@ -4462,10 +4959,15 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_GeneralOptions:
       GeneralOptionsPopup(hwnd);
+      DrawPosition(TRUE, NULL);
       break;
 
     case IDM_BoardOptions:
       BoardOptionsPopup(hwnd);
+      break;
+
+    case IDM_EnginePlayOptions:
+      EnginePlayOptionsPopup(hwnd);
       break;
 
     case IDM_IcsOptions:
@@ -4718,11 +5220,31 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     InputEvent(hwnd, message, wParam, lParam);
     break;
 
+  /* [AS] Also move "attached" child windows */
+  case WM_WINDOWPOSCHANGING:
+    if( hwnd == hwndMain && appData.useStickyWindows ) {
+        LPWINDOWPOS lpwp = (LPWINDOWPOS) lParam;
+
+        if( ((lpwp->flags & SWP_NOMOVE) == 0) && ((lpwp->flags & SWP_NOSIZE) != 0) ) {
+            /* Window is moving */
+            RECT rcMain;
+
+            GetWindowRect( hwnd, &rcMain );
+
+            ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, moveHistoryDialog, &wpMoveHistory );
+            ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, evalGraphDialog, &wpEvalGraph );
+            ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, engineOutputDialog, &wpEngineOutput );
+        }
+    }
+    break;
+
+  /* [AS] Snapping */
   case WM_ENTERSIZEMOVE:
     if (hwnd == hwndMain) {
       doingSizing = TRUE;
       lastSizing = 0;
     }
+    return OnEnterSizeMove( &sd, hwnd, wParam, lParam );
     break;
 
   case WM_SIZING:
@@ -4730,6 +5252,9 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       lastSizing = wParam;
     }
     break;
+
+  case WM_MOVING:
+      return OnMoving( &sd, hwnd, wParam, lParam );
 
   case WM_EXITSIZEMOVE:
     if (hwnd == hwndMain) {
@@ -4740,6 +5265,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       ResizeBoard(client.right, client.bottom, lastSizing);
       lastSizing = 0;
     }
+    return OnExitSizeMove( &sd, hwnd, wParam, lParam );
     break;
 
   case WM_DESTROY: /* message: window being destroyed */
@@ -5132,8 +5658,7 @@ ResizeEditPlusButtons(HWND hDlg, HWND hText, int sizeX, int sizeY, int newSizeX,
   EndDeferWindowPos(cl.hdwp);
 }
 
-/* Center one window over another */
-BOOL CenterWindow (HWND hwndChild, HWND hwndParent)
+BOOL CenterWindowEx(HWND hwndChild, HWND hwndParent, int mode)
 {
     RECT    rChild, rParent;
     int     wChild, hChild, wParent, hParent;
@@ -5165,7 +5690,13 @@ BOOL CenterWindow (HWND hwndChild, HWND hwndParent)
     }
 
     /* Calculate new Y position, then adjust for screen */
+    if( mode == 0 ) {
     yNew = rParent.top  + ((hParent - hChild) /2);
+    }
+    else {
+        yNew = rParent.top + GetSystemMetrics( SM_CYCAPTION ) * 2 / 3;
+    }
+
     if (yNew < 0) {
 	yNew = 0;
     } else if ((yNew+hChild) > hScreen) {
@@ -5175,6 +5706,12 @@ BOOL CenterWindow (HWND hwndChild, HWND hwndParent)
     /* Set it, and return */
     return SetWindowPos (hwndChild, NULL,
 			 xNew, yNew, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+}
+
+/* Center one window over another */
+BOOL CenterWindow (HWND hwndChild, HWND hwndParent)
+{
+    return CenterWindowEx( hwndChild, hwndParent, 0 );
 }
 
 /*---------------------------------------------------------------------------*\
@@ -5597,7 +6134,7 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG:
     move[0] = (char) lParam;
     move[1] = NULLCHAR;
-    CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
+    CenterWindowEx(hDlg, GetWindow(hDlg, GW_OWNER), 1 );
     hInput = GetDlgItem(hDlg, OPT_Move);
     SetWindowText(hInput, move);
     SetFocus(hInput);
@@ -6244,6 +6781,7 @@ ConsoleInputSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK
 ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+  static SnapData sd;
   static HWND hText, hInput, hFocus;
   InputSource *is = consoleInputSource;
   RECT rect;
@@ -6330,7 +6868,21 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     mmi->ptMinTrackSize.x = 100;
     mmi->ptMinTrackSize.y = 100;
     break;
+
+  /* [AS] Snapping */
+  case WM_ENTERSIZEMOVE:
+    return OnEnterSizeMove( &sd, hDlg, wParam, lParam );
+
+  case WM_SIZING:
+    return OnSizing( &sd, hDlg, wParam, lParam );
+
+  case WM_MOVING:
+    return OnMoving( &sd, hDlg, wParam, lParam );
+
+  case WM_EXITSIZEMOVE:
+    return OnExitSizeMove( &sd, hDlg, wParam, lParam );
   }
+
   return DefWindowProc(hDlg, message, wParam, lParam);
 }
 
@@ -7314,6 +7866,207 @@ int NewGameFRC()
 
     if( result == 0 ) {
         appData.defaultFrcPosition = index;
+    }
+
+    return result;
+}
+
+/* [AS] Game list options */
+typedef struct {
+    char id;
+    char * name;
+} GLT_Item;
+
+static GLT_Item GLT_ItemInfo[] = {
+    { GLT_EVENT,      "Event" },
+    { GLT_SITE,       "Site" },
+    { GLT_DATE,       "Date" },
+    { GLT_ROUND,      "Round" },
+    { GLT_PLAYERS,    "Players" },
+    { GLT_RESULT,     "Result" },
+    { GLT_WHITE_ELO,  "White Rating" },
+    { GLT_BLACK_ELO,  "Black Rating" },
+    { GLT_TIME_CONTROL,"Time Control" },
+    { GLT_VARIANT,    "Variant" },
+    { GLT_OUT_OF_BOOK,PGN_OUT_OF_BOOK },
+    { 0, 0 }
+};
+
+const char * GLT_FindItem( char id )
+{
+    const char * result = 0;
+
+    GLT_Item * list = GLT_ItemInfo;
+
+    while( list->id != 0 ) {
+        if( list->id == id ) {
+            result = list->name;
+            break;
+        }
+
+        list++;
+    }
+
+    return result;
+}
+
+void GLT_AddToList( HWND hDlg, int iDlgItem, char id, int index )
+{
+    const char * name = GLT_FindItem( id );
+
+    if( name != 0 ) {
+        if( index >= 0 ) {
+            SendDlgItemMessage( hDlg, iDlgItem, LB_INSERTSTRING, index, (LPARAM) name );
+        }
+        else {
+            SendDlgItemMessage( hDlg, iDlgItem, LB_ADDSTRING, 0, (LPARAM) name );
+        }
+    }
+}
+
+void GLT_TagsToList( HWND hDlg, char * tags )
+{
+    char * pc = tags;
+
+    SendDlgItemMessage( hDlg, IDC_GameListTags, LB_RESETCONTENT, 0, 0 );
+
+    while( *pc ) {
+        GLT_AddToList( hDlg, IDC_GameListTags, *pc, -1 );
+        pc++;
+    }
+
+    SendDlgItemMessage( hDlg, IDC_GameListTags, LB_ADDSTRING, 0, (LPARAM) "\t --- Hidden tags ---" );
+
+    pc = GLT_ALL_TAGS;
+
+    while( *pc ) {
+        if( strchr( tags, *pc ) == 0 ) {
+            GLT_AddToList( hDlg, IDC_GameListTags, *pc, -1 );
+        }
+        pc++;
+    }
+
+    SendDlgItemMessage( hDlg, IDC_GameListTags, LB_SETCURSEL, 0, 0 );
+}
+
+char GLT_ListItemToTag( HWND hDlg, int index )
+{
+    char result = '\0';
+    char name[128];
+
+    GLT_Item * list = GLT_ItemInfo;
+
+    if( SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETTEXT, index, (LPARAM) name ) != LB_ERR ) {
+        while( list->id != 0 ) {
+            if( strcmp( list->name, name ) == 0 ) {
+                result = list->id;
+                break;
+            }
+
+            list++;
+        }
+    }
+
+    return result;
+}
+
+void GLT_MoveSelection( HWND hDlg, int delta )
+{
+    int idx1 = (int) SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETCURSEL, 0, 0 );
+    int idx2 = idx1 + delta;
+    int count = (int) SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETCOUNT, 0, 0 );
+
+    if( idx1 >=0 && idx1 < count && idx2 >= 0 && idx2 < count ) {
+        char buf[128];
+
+        SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETTEXT, idx1, (LPARAM) buf );
+        SendDlgItemMessage( hDlg, IDC_GameListTags, LB_DELETESTRING, idx1, 0 );
+        SendDlgItemMessage( hDlg, IDC_GameListTags, LB_INSERTSTRING, idx2, (LPARAM) buf );
+        SendDlgItemMessage( hDlg, IDC_GameListTags, LB_SETCURSEL, idx2, 0 );
+    }
+}
+
+LRESULT CALLBACK GameListOptions_Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    static char glt[64];
+    static char * lpUserGLT;
+
+    switch( message )
+    {
+    case WM_INITDIALOG:
+        lpUserGLT = (char *) lParam;
+
+        strcpy( glt, lpUserGLT );
+
+        CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
+
+        /* Initialize list */
+        GLT_TagsToList( hDlg, glt );
+
+        SetFocus( GetDlgItem(hDlg, IDC_GameListTags) );
+
+        break;
+
+    case WM_COMMAND:
+        switch( LOWORD(wParam) ) {
+        case IDOK:
+            {
+                char * pc = lpUserGLT;
+                int idx = 0;
+                int cnt = (int) SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETCOUNT, 0, 0 );
+                char id;
+
+                do {
+                    id = GLT_ListItemToTag( hDlg, idx );
+
+                    *pc++ = id;
+                    idx++;
+                } while( id != '\0' );
+            }
+            EndDialog( hDlg, 0 );
+            return TRUE;
+        case IDCANCEL:
+            EndDialog( hDlg, 1 );
+            return TRUE;
+
+        case IDC_GLT_Default:
+            strcpy( glt, GLT_DEFAULT_TAGS );
+            GLT_TagsToList( hDlg, glt );
+            return TRUE;
+
+        case IDC_GLT_Restore:
+            strcpy( glt, lpUserGLT );
+            GLT_TagsToList( hDlg, glt );
+            return TRUE;
+
+        case IDC_GLT_Up:
+            GLT_MoveSelection( hDlg, -1 );
+            return TRUE;
+
+        case IDC_GLT_Down:
+            GLT_MoveSelection( hDlg, +1 );
+            return TRUE;
+        }
+
+        break;
+    }
+
+    return FALSE;
+}
+
+int GameListOptions()
+{
+    char glt[64];
+    int result;
+    FARPROC lpProc = MakeProcInstance( (FARPROC) GameListOptions_Proc, hInst );
+
+    strcpy( glt, appData.gameListTags );
+
+    result = DialogBoxParam( hInst, MAKEINTRESOURCE(DLG_GameListOptions), hwndMain, (DLGPROC)lpProc, (LPARAM)glt );
+
+    if( result == 0 ) {
+        /* [AS] Memory leak here! */
+        appData.gameListTags = strdup( glt );
     }
 
     return result;
@@ -8441,6 +9194,10 @@ AnalysisPopUp(char* title, char* str)
   FARPROC lpProc;
   char *p, *q;
 
+  /* [AS] */
+  EngineOutputPopUp();
+  return;
+
   if (str == NULL) str = "";
   p = (char *) malloc(2 * strlen(str) + 2);
   q = p;
@@ -8653,11 +9410,9 @@ Tween(start, mid, finish, factor, frames, nFrames)
 }
 
 void
-HistorySet(char movelist[][2*MOVE_LEN], int first, int last, int current)
+HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
 {
-  /* Currently not implemented in WinBoard */
-#if 1
-    /* [AS] Let's see what this function is for... */
+#if 0
     char buf[256];
 
     sprintf( buf, "HistorySet: first=%d, last=%d, current=%d (%s)\n",
@@ -8665,4 +9420,22 @@ HistorySet(char movelist[][2*MOVE_LEN], int first, int last, int current)
 
     OutputDebugString( buf );
 #endif
+
+    MoveHistorySet( movelist, first, last, current, pvInfoList );
+
+    EvalGraphSet( first, last, current, pvInfoList );
+}
+
+void SetProgramStats( int which, int depth, unsigned long nodes, int score, int time, char * pv )
+{
+#if 0
+    char buf[1024];
+
+    sprintf( buf, "SetStats for %d: depth=%d, nodes=%lu, score=%5.2f, time=%5.2f, pv=%s\n",
+        which, depth, nodes, score / 100.0, time / 100.0, pv == 0 ? "n/a" : pv );
+
+    OutputDebugString( buf );
+#endif
+
+    EngineOutputUpdate( which, depth, nodes, score, time, pv );
 }

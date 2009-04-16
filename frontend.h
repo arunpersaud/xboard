@@ -164,10 +164,11 @@ void ClearPremoveHighlights P((void));
 void ShutDownFrontEnd P((void));
 void BoardToTop P((void));
 void AnimateMove P((Board board, int fromX, int fromY, int toX, int toY));
-void HistorySet P((char movelist[][2*MOVE_LEN],
-		   int first, int last, int current));
+void HistorySet P((char movelist[][2*MOVE_LEN], int first, int last, int current));
 void FreezeUI P((void));
 void ThawUI P((void));
 extern char *programName;
+
+void SetProgramStats P(( int which, int depth, unsigned long nodes, int score, int time, char * pv )); /* [AS] */
 
 #endif

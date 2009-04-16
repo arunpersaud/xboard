@@ -47,7 +47,7 @@
  *
  * See the file ChangeLog for a revision history.  */
 
-/* [AS] For debugging purposes */
+/* [AS] Also useful here for debugging */
 #ifdef WIN32
 #include <windows.h>
 
@@ -144,12 +144,6 @@ typedef struct {
   int seen_stat;          /* 1 if we've seen the stat01: line */
 } ChessProgramStats;
 
-/* [AS] Search stats from chessprogram, for the played move */
-typedef struct {
-    int score;
-    int depth;
-} ChessProgramStats_Move;
-
 int establish P((void));
 void read_from_player P((InputSourceRef isr, VOIDSTAR closure,
 			 char *buf, int count, int error));
@@ -221,6 +215,8 @@ void ParseFeatures P((char* args, ChessProgramState *cps));
 void InitBackEnd3 P((void));
 void FeatureDone P((ChessProgramState* cps, int val));
 void InitChessProgram P((ChessProgramState *cps));
+
+void GetInfoFromComment( int, char * );
 
 extern int tinyLayout, smallLayout;
 static ChessProgramStats programStats;
@@ -2905,6 +2901,7 @@ ParseBoard12(string)
 	movesPerSession = 0;
 	gameInfo.timeControl = TimeControlTagValue();
 	gameInfo.variant = StringToVariant(gameInfo.event);
+        gameInfo.outOfBook = NULL;
 	
 	/* Do we have the ratings? */
 	if (strcmp(player1Name, white) == 0 &&
@@ -3573,7 +3570,7 @@ InitPosition(redraw)
     }
 
     if (redraw)
-      DrawPosition(FALSE, boards[currentMove]);
+      DrawPosition(TRUE, boards[currentMove]);
 }
 
 void
@@ -4037,6 +4034,16 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   }
 }
 
+void SendProgramStatsToFrontend( ChessProgramState * cps )
+{
+    SetProgramStats( cps == &first ? 0 : 1,
+        programStats.depth,
+        programStats.nodes,
+        programStats.score,
+        programStats.time,
+        programStats.movelist );
+}
+
 void
 HandleMachineMove(message, cps)
      char *message;
@@ -4080,11 +4087,9 @@ HandleMachineMove(message, cps)
     /*
      * Look for machine move.
      */
-    if ((sscanf(message, "%s %s %s", buf1, buf2, machineMove) == 3 &&
-	 strcmp(buf2, "...") == 0) ||
-	(sscanf(message, "%s %s", buf1, machineMove) == 2 &&
-	 strcmp(buf1, "move") == 0)) {
-
+    if ((sscanf(message, "%s %s %s", buf1, buf2, machineMove) == 3 && strcmp(buf2, "...") == 0) ||
+	(sscanf(message, "%s %s", buf1, machineMove) == 2 && strcmp(buf1, "move") == 0))
+    {
         /* This method is only useful on engines that support ping */
         if (cps->lastPing != cps->lastPong) {
 	  if (gameMode == BeginningOfGame) {
@@ -4184,6 +4189,7 @@ HandleMachineMove(message, cps)
         /* [AS] Save move info and clear stats for next move */
         pvInfoList[ forwardMostMove ].score = programStats.score;
         pvInfoList[ forwardMostMove ].depth = programStats.depth;
+        pvInfoList[ forwardMostMove ].time = -1;
         ClearProgramStats();
         thinkOutput[0] = NULLCHAR;
         hiddenThinkOutputState = 0;
@@ -4217,6 +4223,14 @@ HandleMachineMove(message, cps)
 
                 return;
             }
+        }
+
+        if( appData.adjudicateDrawMoves > 0 && forwardMostMove > (2*appData.adjudicateDrawMoves) ) {
+	    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+
+            GameEnds( GameIsDrawn, "Xboard adjudication: long game", GE_XBOARD );
+
+            return;
         }
 
 	if (gameMode == TwoMachinesPlay) {
@@ -4702,18 +4716,20 @@ HandleMachineMove(message, cps)
 		if (plyext != ' ' && plyext != '\t') {
 		    time *= 100;
 		}
+
+                /* [AS] Negate score if machine is playing black and reporting absolute scores */
+                if( cps->scoreIsAbsolute &&
+                    ((gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) )
+                {
+                    curscore = -curscore;
+                }
+
+
 		programStats.depth = plylev;
 		programStats.nodes = nodes;
 		programStats.time = time;
 		programStats.score = curscore;
 		programStats.got_only_move = 0;
-
-                /* [AS] Negate score if machine is playing black and it's reporting absolute scores */
-                if( cps->scoreIsAbsolute &&
-                    ((gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) )
-                {
-                    programStats.score = -curscore;
-                }
 
 		/* Buffer overflow protection */
 		if (buf1[0] != NULLCHAR) {
@@ -4741,6 +4757,8 @@ HandleMachineMove(message, cps)
 		    programStats.line_is_book = 0;
 		}
 		  
+                SendProgramStatsToFrontend( cps );
+
                 /*
                     [AS] Protect the thinkOutput buffer from overflow... this
                     is only useful if buf1 hasn't overflowed first!
@@ -4791,6 +4809,8 @@ HandleMachineMove(message, cps)
 		   isn't searching, so stats won't change) */
 		programStats.line_is_book = 1;
 		  
+                SendProgramStatsToFrontend( cps );
+
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode || gameMode == AnalyzeFile) {
 		    DisplayMove(currentMove - 1);
 		    DisplayAnalysis();
@@ -4814,6 +4834,9 @@ HandleMachineMove(message, cps)
 		programStats.nr_moves = mvtot;
 		strcpy(programStats.move_name, mvname);
 		programStats.ok_to_send = 1;
+
+                SendProgramStatsToFrontend( cps );
+
 		DisplayAnalysis();
 		return;
 
@@ -5262,6 +5285,7 @@ ShowMove(fromX, fromY, toX, toY)
     }
 
     if (instant) return;
+
     DisplayMove(currentMove - 1);
     DrawPosition(FALSE, boards[currentMove]);
     DisplayBothClocks();
@@ -5812,6 +5836,10 @@ AutoPlayOneMove()
     if (currentMove >= forwardMostMove) {
       gameMode = EditGame;
       ModeHighlight();
+
+      /* [AS] Clear current move marker at the end of a game */
+      /* HistorySet(parseList, backwardMostMove, forwardMostMove, -1); */
+
       return FALSE;
     }
     
@@ -5825,6 +5853,9 @@ AutoPlayOneMove()
     } else {
 	fromX = moveList[currentMove][0] - 'a';
 	fromY = moveList[currentMove][1] - '1';
+
+        HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove); /* [AS] */
+
 	AnimateMove(boards[currentMove], fromX, fromY, toX, toY);
 
 	if (appData.highlightLastMove) {
@@ -6546,9 +6577,11 @@ LoadGame(f, gameNumber, title, useList)
 	  gameInfo.variant = StringToVariant(gameInfo.event);
 	}
 	if (!matchMode) {
+          if( appData.autoDisplayTags ) {
 	  tags = PGNTags(&gameInfo);
 	  TagsPopUp(tags, CmailMsg());
 	  free(tags);
+	}
 	}
     } else {
 	/* Make something up, but don't display it now */
@@ -6951,6 +6984,80 @@ SavePart(str)
 
 #define PGN_MAX_LINE 75
 
+#define PGN_SIDE_WHITE  0
+#define PGN_SIDE_BLACK  1
+
+static int FindFirstMoveOutOfBook( int side )
+{
+    int result = -1;
+
+    if( backwardMostMove == 0 && ! startedFromSetupPosition) {
+        int index = backwardMostMove;
+        int has_book_hit = 0;
+
+        if( (index % 2) != side ) {
+            index++;
+        }
+
+        while( index < forwardMostMove ) {
+            /* Check to see if engine is in book */
+            int depth = pvInfoList[index].depth;
+            int score = pvInfoList[index].score;
+            int in_book = 0;
+
+            if( depth == 0 ) {
+                in_book = 1; /* Yace */
+            }
+            if( score == 0 ) {
+                if( depth <= 1 || depth == 63 /* Zappa */ ) {
+                    in_book = 1;
+                }
+            }
+
+            has_book_hit += in_book;
+
+            if( ! in_book ) {
+                result = index;
+
+                break;
+            }
+
+            index += 2;
+        }
+    }
+
+    return result;
+}
+
+void GetOutOfBookInfo( char * buf )
+{
+    int oob[2];
+    int i;
+    int offset = backwardMostMove & (~1L); /* output move numbers start at 1 */
+
+    oob[0] = FindFirstMoveOutOfBook( PGN_SIDE_WHITE );
+    oob[1] = FindFirstMoveOutOfBook( PGN_SIDE_BLACK );
+
+    *buf = '\0';
+
+    if( oob[0] >= 0 || oob[1] >= 0 ) {
+        for( i=0; i<2; i++ ) {
+            int idx = oob[i];
+
+            if( idx >= 0 ) {
+                if( i > 0 && oob[0] >= 0 ) {
+                    strcat( buf, "   " );
+                }
+
+                sprintf( buf+strlen(buf), "%d%s. ", (idx - offset)/2 + 1, idx & 1 ? ".." : "" );
+                sprintf( buf+strlen(buf), "%s%.2f",
+                    pvInfoList[idx].score >= 0 ? "+" : "",
+                    pvInfoList[idx].score / 100.0 );
+            }
+        }
+    }
+}
+
 /* Save game in PGN style and close the file */
 int
 SaveGamePGN(f)
@@ -6963,6 +7070,8 @@ SaveGamePGN(f)
     int movelen, numlen, blank;
     char move_buffer[100]; /* [AS] Buffer for move+PV info */
     
+    offset = backwardMostMove & (~1L); /* output move numbers start at 1 */
+
     tm = time((time_t *) NULL);
     
     PrintPGNTags(f, &gameInfo);
@@ -6974,12 +7083,23 @@ SaveGamePGN(f)
 	PrintPosition(f, backwardMostMove);
 	fprintf(f, "--------------}\n");
         free(fen);
-    } else {
+    }
+    else {
+        /* [AS] Out of book annotation */
+        if( appData.saveOutOfBookInfo ) {
+            char buf[64];
+
+            GetOutOfBookInfo( buf );
+
+            if( buf[0] != '\0' ) {
+                fprintf( f, "[%s \"%s\"]\n", PGN_OUT_OF_BOOK, buf );
+            }
+        }
+
 	fprintf(f, "\n");
     }
 
     i = backwardMostMove;
-    offset = backwardMostMove & (~1L); /* output move numbers start at 1 */
     linelen = 0;
     newblock = TRUE;
 
@@ -8204,6 +8324,7 @@ EditPositionDone()
     gameMode = EditGame;
     ModeHighlight();
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
+    ClearHighlights(); /* [AS] */
 }
 
 /* Pause for `ms' milliseconds */
@@ -8711,6 +8832,8 @@ void
 BackwardInner(target)
      int target;
 {
+    int full_redraw = TRUE; /* [AS] Was FALSE, had to change it! */
+
     if (appData.debugMode)
 	fprintf(debugFP, "BackwardInner(%d), current %d, forward %d\n",
 		target, currentMove, forwardMostMove);
@@ -8718,7 +8841,7 @@ BackwardInner(target)
     if (gameMode == EditPosition) return;
     if (currentMove <= backwardMostMove) {
 	ClearHighlights();
-	DrawPosition(FALSE, boards[currentMove]);
+	DrawPosition(full_redraw, boards[currentMove]);
 	return;
     }
     if (gameMode == PlayFromGameFile && !pausing)
@@ -8759,7 +8882,7 @@ BackwardInner(target)
     }
     DisplayBothClocks();
     DisplayMove(currentMove - 1);
-    DrawPosition(FALSE, boards[currentMove]);
+    DrawPosition(full_redraw, boards[currentMove]);
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
     if (commentList[currentMove] != NULL) {
 	DisplayComment(currentMove - 1, commentList[currentMove]);
@@ -8851,7 +8974,7 @@ RetractMoveEvent()
 	DisplayBothClocks();
 	DisplayMove(currentMove - 1);
 	ClearHighlights();/*!! could figure this out*/
-	DrawPosition(FALSE, boards[currentMove]);
+	DrawPosition(TRUE, boards[currentMove]); /* [AS] Changed to full redraw! */
 	SendToProgram("remove\n", &first);
 	/*first.maybeThinking = TRUE;*/ /* GNU Chess does not ponder here */
 	break;
@@ -9210,6 +9333,8 @@ AppendComment(index, text)
     int oldlen, len;
     char *old;
 
+    GetInfoFromComment( index, text );
+
     CrushCRs(text);
     while (*text == '\n') text++;
     len = strlen(text);
@@ -9231,6 +9356,78 @@ AppendComment(index, text)
 	strncpy(commentList[index], text, len);
 	commentList[index][len] = '\n';
 	commentList[index][len + 1] = NULLCHAR;
+    }
+}
+
+static char * FindStr( char * text, char * sub_text )
+{
+    char * result = strstr( text, sub_text );
+
+    if( result != NULL ) {
+        result += strlen( sub_text );
+    }
+
+    return result;
+}
+
+/* [AS] Try to extract PV info from PGN comment */
+void GetInfoFromComment( int index, char * text )
+{
+    if( text != NULL && index > 0 ) {
+        int score = 0;
+        int depth = 0;
+        int time = -1;
+        char * s_eval = FindStr( text, "[%eval " );
+        char * s_emt = FindStr( text, "[%emt " );
+
+        if( s_eval != NULL || s_emt != NULL ) {
+            /* New style */
+            char delim;
+
+            if( s_eval != NULL ) {
+                if( sscanf( s_eval, "%d,%d%c", &score, &depth, &delim ) != 3 ) {
+                    return;
+                }
+
+                if( delim != ']' ) {
+                    return;
+                }
+            }
+
+            if( s_emt != NULL ) {
+            }
+        }
+        else {
+            /* We expect something like: [+|-]nnn.nn/dd */
+            char * sep = strchr( text, '/' );
+            int score_lo = 0;
+
+            if( sep == NULL || sep < (text+4) ) {
+                return;
+            }
+
+            if( sscanf( text, "%d.%d/%d", &score, &score_lo, &depth ) != 3 ) {
+                return;
+            }
+
+            if( score_lo < 0 || score_lo >= 100 ) {
+                return;
+            }
+
+            score = score >= 0 ? score*100 + score_lo : score*100 - score_lo;
+        }
+
+        if( depth <= 0 ) {
+            return;
+        }
+
+        if( time < 0 ) {
+            time = -1;
+        }
+
+        pvInfoList[index-1].depth = depth;
+        pvInfoList[index-1].score = score;
+        pvInfoList[index-1].time = time;
     }
 }
 
@@ -9763,6 +9960,7 @@ DisplayComment(moveNumber, text)
 {
     char title[MSG_SIZ];
 
+    if( appData.autoDisplayComment ) {
     if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
 	strcpy(title, "Comment");
     } else {
@@ -9772,6 +9970,7 @@ DisplayComment(moveNumber, text)
     }
 
     CommentPopUp(title, text);
+    }
 }
 
 /* This routine sends a ^C interrupt to gnuchess, to awaken it if it
