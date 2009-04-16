@@ -214,6 +214,9 @@
 #define IDM_GeneralOptions              1299
 #define IDM_BoardOptions                1300
 #define IDM_Fonts                       1301
+#define IDM_UserAdjudication_White      1302
+#define IDM_UserAdjudication_Black      1303
+#define IDM_UserAdjudication_Draw       1304
 #define PB_King                         1307
 #define OPT_Bold                        1312
 #define OPT_Italic                      1313
@@ -340,6 +343,8 @@
 #define OPT_DefaultFonts                1419
 #define OPT_AutoRaiseBoard              1421
 #define OPT_ShowButtonBar               1422
+#define OPT_SaveExtPGN                  1423
+#define OPT_HideThinkFromHuman          1424
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -348,8 +353,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        457
-#define _APS_NEXT_COMMAND_VALUE         1302
-#define _APS_NEXT_CONTROL_VALUE         1423
+#define _APS_NEXT_COMMAND_VALUE         1305
+#define _APS_NEXT_CONTROL_VALUE         1425
 #define _APS_NEXT_SYMED_VALUE           1404
 #endif
 #endif

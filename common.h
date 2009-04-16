@@ -1,6 +1,6 @@
 /*
  * common.h -- Common definitions for X and Windows NT versions of XBoard
- * $Id$
+ * $Id: common.h,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
@@ -407,6 +407,27 @@ typedef struct {
     int firstProtocolVersion;
     int secondProtocolVersion;
     Boolean showButtonBar;
+    /* [AS] New properties */
+    Boolean firstScoreIsAbsolute;  /* If true, engine score is always from white side */
+    Boolean secondScoreIsAbsolute; /* If true, engine score is always from white side */
+    Boolean saveExtendedInfoInPGN; /* If true, saved PGN games contain extended info */
+    Boolean hideThinkingFromHuman; /* If true, program thinking is generated but not displayed in human/computer matches */
+    char * liteBackTextureFile; /* Name of texture bitmap for lite squares */
+    char * darkBackTextureFile; /* Name of texture bitmap for dark squares */
+    int liteBackTextureMode;
+    int darkBackTextureMode;
+    char * renderPiecesWithFont; /* Name of font for rendering chess pieces */
+    char * fontToPieceTable; /* Map to translate font character to chess pieces */
+    int fontBackColorWhite;
+    int fontForeColorWhite;
+    int fontBackColorBlack;
+    int fontForeColorBlack;
+    int fontPieceSize; /* Size of font relative to square (percentage) */
+    int overrideLineGap; /* If >= 0 overrides the lineGap value of the board size properties */
+    int adjudicateLossThreshold; /* Adjudicate a two-machine game if both engines agree the score is below this for 6 plies */
+    int delayBeforeQuit;
+    int delayAfterQuit;
+    char * nameOfDebugFile;
 #if ZIPPY
     char *zippyLines;
     char *zippyPinhead;

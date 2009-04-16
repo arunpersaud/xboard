@@ -1,6 +1,6 @@
 /*
  * wclipbrd.c -- Clipboard routines for WinBoard
- * $Id$
+ * $Id: wclipbrd.c,v 2.1 2003/10/27 19:21:02 mann Exp $
  *
  * Copyright 2000 Free Software Foundation, Inc.
  *
@@ -194,6 +194,16 @@ CopyTextToClipboard(char *text)
   return TRUE;
 }
 
+/* [AS] Reworked paste functions so they can work with strings too */
+
+VOID PasteFENFromString( char * fen )
+{
+  if (appData.debugMode) {
+    fprintf(debugFP, "PasteFenFromString(): fen '%s'\n", fen);
+  }
+  EditPositionPasteFEN(fen); /* call into backend */
+  free(fen);
+}
 
 
 VOID
@@ -204,11 +214,31 @@ PasteFENFromClipboard()
       DisplayError("Unable to paste FEN from clipboard.", 0);
       return;
   }
-  if (appData.debugMode) {
-    fprintf(debugFP, "PasteFenFromClipboard(): fen '%s'\n", fen);
+  PasteFENFromString( fen );
+}
+
+VOID PasteGameFromString( char * buf )
+{
+  FILE *f;
+  size_t len;
+  if (!pasteTemp) {
+    pasteTemp = tempnam(NULL, "wbpt");
   }
-  EditPositionPasteFEN(fen); /* call into backend */
-  free(fen);
+  f = fopen(pasteTemp, "w");
+  if (!f) {
+    DisplayError("Unable to create temporary file.", 0);
+    free(buf); /* [AS] */
+    return;
+  }
+  len = fwrite(buf, sizeof(char), strlen(buf), f);
+  fclose(f);
+  if (len != strlen(buf)) {
+    DisplayError("Error writing to temporary file.", 0);
+    free(buf); /* [AS] */
+    return;
+  }
+  LoadGameFromFile(pasteTemp, 0, "Clipboard", TRUE);
+  free( buf ); /* [AS] */
 }
 
 
@@ -218,28 +248,34 @@ PasteGameFromClipboard()
   /* Write the clipboard to a temp file, then let LoadGameFromFile()
    * do all the work.  */
   char *buf;
-  FILE *f;
-  size_t len;
   if (!PasteTextFromClipboard(&buf)) {
     return;
   }
-  if (!pasteTemp) {
-    pasteTemp = tempnam(NULL, "wbpt");
-  }
-  f = fopen(pasteTemp, "w");
-  if (!f) {
-    DisplayError("Unable to create temporary file.", 0);
-    return;
-  }
-  len = fwrite(buf, sizeof(char), strlen(buf), f);
-  fclose(f);
-  if (len != strlen(buf)) {
-    DisplayError("Error writing to temporary file.", 0);
-    return;
-  }
-  LoadGameFromFile(pasteTemp, 0, "Clipboard", TRUE);
+  PasteGameFromString( buf );
 }
 
+/* [AS] Try to detect whether the clipboard contains FEN or PGN data */
+VOID PasteGameOrFENFromClipboard()
+{
+  char *buf;
+  char *tmp;
+
+  if (!PasteTextFromClipboard(&buf)) {
+    return;
+  }
+
+  tmp = buf;
+  while( *tmp == ' ' || *tmp == '\t' || *tmp == '\r' || *tmp == '\n' ) {
+      tmp++;
+  }
+
+  if( *tmp == '[' ) {
+      PasteGameFromString( buf );
+  }
+  else {
+      PasteFENFromString( buf );
+  }
+}
 
 int 
 PasteTextFromClipboard(char **text)

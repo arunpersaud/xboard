@@ -1,6 +1,6 @@
 /*
  * backend.c -- Common back end for X and Windows NT versions of
- * XBoard $Id$
+ * XBoard $Id: backend.c,v 2.6 2003/11/28 09:37:36 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-2001 Free Software Foundation, Inc.
@@ -47,8 +47,21 @@
  *
  * See the file ChangeLog for a revision history.  */
 
+/* [AS] For debugging purposes */
+#ifdef WIN32
+#include <windows.h>
+
+#define DoSleep( n ) if( (n) != 0 ) Sleep( (n) );
+
+#else
+
+#define DoSleep( n )
+
+#endif
+
 #include "config.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
@@ -130,6 +143,12 @@ typedef struct {
   int line_is_book;       /* 1 if movelist is book moves */
   int seen_stat;          /* 1 if we've seen the stat01: line */
 } ChessProgramStats;
+
+/* [AS] Search stats from chessprogram, for the played move */
+typedef struct {
+    int score;
+    int depth;
+} ChessProgramStats_Move;
 
 int establish P((void));
 void read_from_player P((InputSourceRef isr, VOIDSTAR closure,
@@ -245,6 +264,35 @@ static ChessProgramStats programStats;
 #define TN_SGA  0003
 #define TN_PORT 23
 
+/* [AS] */
+static char * safeStrCpy( char * dst, const char * src, size_t count )
+{
+    assert( dst != NULL );
+    assert( src != NULL );
+    assert( count > 0 );
+
+    strncpy( dst, src, count );
+    dst[ count-1 ] = '\0';
+    return dst;
+}
+
+static char * safeStrCat( char * dst, const char * src, size_t count )
+{
+    size_t  dst_len;
+
+    assert( dst != NULL );
+    assert( src != NULL );
+    assert( count > 0 );
+
+    dst_len = strlen(dst);
+
+    assert( count > dst_len ); /* Buffer size must be greater than current length */
+
+    safeStrCpy( dst + dst_len, src, count - dst_len );
+
+    return dst;
+}
+
 /* Fake up flags for now, as we aren't keeping track of castling
    availability yet */
 int
@@ -274,6 +322,15 @@ PosFlags(index)
 }
 
 FILE *gameFileFP, *debugFP;
+
+/*
+    [AS] Note: sometimes, the sscanf() function is used to parse the input
+    into a fixed-size buffer. Because of this, we must be prepared to
+    receive strings as long as the size of the input buffer, which is currently
+    set to 4K for Windows and 8K for the rest.
+    So, we must either allocate sufficiently large buffers here, or
+    reduce the size of the input buffer in the input reading part.
+*/
 
 char cmailMove[CMAIL_MAX_GAMES][MOVE_LEN], cmailMsg[MSG_SIZ];
 char bookOutput[MSG_SIZ*10], thinkOutput[MSG_SIZ*10], lastHint[MSG_SIZ];
@@ -317,12 +374,17 @@ InputSourceRef telnetISR = NULL, fromUserISR = NULL, cmailISR = NULL;
 GameMode gameMode = BeginningOfGame;
 char moveList[MAX_MOVES][MOVE_LEN], parseList[MAX_MOVES][MOVE_LEN * 2];
 char *commentList[MAX_MOVES], *cmailCommentList[CMAIL_MAX_GAMES];
+ChessProgramStats_Move pvInfoList[MAX_MOVES]; /* [AS] Info about engine thinking */
+int hiddenThinkOutputState = 0; /* [AS] */
+int adjudicateLossThreshold = 0; /* [AS] Automatic adjudication */
+int adjudicateLossPlies = 6;
 char white_holding[64], black_holding[64];
 TimeMark lastNodeCountTime;
 long lastNodeCount=0;
 int have_sent_ICS_logon = 0;
 int movesPerSession;
 long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement;
+long timeControl_2; /* [AS] Allow separate time controls */
 long timeRemaining[2][MAX_MOVES];
 int matchGame = 0;
 TimeMark programStartTime;
@@ -446,6 +508,15 @@ InitBackEnd1()
 	appData.zippyTalk = appData.zippyPlay = FALSE;
     }
 
+    /* [AS] Initialize pv info list */
+    {
+        int i;
+
+        for( i=0; i<MAX_MOVES; i++ ) {
+            pvInfoList[i].depth = 0;
+        }
+    }
+
     /*
      * Parse timeControl resource
      */
@@ -472,6 +543,9 @@ InitBackEnd1()
 	}
     }
     
+    /* [AS] Adjudication threshold */
+    adjudicateLossThreshold = appData.adjudicateLossThreshold;
+
     first.which = "first";
     second.which = "second";
     first.maybeThinking = second.maybeThinking = FALSE;
@@ -522,6 +596,9 @@ InitBackEnd1()
     first.analysisSupport = second.analysisSupport = 2; /* detect */
     first.analyzing = second.analyzing = FALSE;
     first.initDone = second.initDone = FALSE;
+
+    first.scoreIsAbsolute = appData.firstScoreIsAbsolute; /* [AS] */
+    second.scoreIsAbsolute = appData.secondScoreIsAbsolute; /* [AS] */
 
     if (appData.firstProtocolVersion > PROTOVER ||
 	appData.firstProtocolVersion < 1) {
@@ -626,12 +703,73 @@ InitBackEnd1()
     }
 }
 
+int NextIntegerFromString( char ** str, long * value )
+{
+    int result = -1;
+    char * s = *str;
+
+    while( *s == ' ' || *s == '\t' ) {
+        s++;
+    }
+
+    *value = 0;
+
+    if( *s >= '0' && *s <= '9' ) {
+        while( *s >= '0' && *s <= '9' ) {
+            *value = *value * 10 + (*s - '0');
+            s++;
+        }
+
+        result = 0;
+    }
+
+    *str = s;
+
+    return result;
+}
+
+int NextTimeControlFromString( char ** str, long * value )
+{
+    long temp;
+    int result = NextIntegerFromString( str, &temp );
+
+    if( result == 0 ) {
+        *value = temp * 60; /* Minutes */
+        if( **str == ':' ) {
+            (*str)++;
+            result = NextIntegerFromString( str, &temp );
+            *value += temp; /* Seconds */
+        }
+    }
+
+    return result;
+}
+
+int GetTimeControlForWhite()
+{
+    int result = timeControl;
+
+    return result;
+}
+
+int GetTimeControlForBlack()
+{
+    int result = timeControl;
+
+    if( timeControl_2 > 0 ) {
+        result = timeControl_2;
+    }
+
+    return result;
+}
+
 int
 ParseTimeControl(tc, ti, mps)
      char *tc;
      int ti;
      int mps;
 {
+#if 0
     int matched, min, sec;
 
     matched = sscanf(tc, "%d:%d", &min, &sec);
@@ -642,6 +780,38 @@ ParseTimeControl(tc, ti, mps)
     } else {
 	return FALSE;
     }
+#else
+    long tc1;
+    long tc2;
+
+    if( NextTimeControlFromString( &tc, &tc1 ) != 0 ) {
+        return FALSE;
+    }
+
+    if( *tc == '/' ) {
+        /* Parse second time control */
+        tc++;
+
+        if( NextTimeControlFromString( &tc, &tc2 ) != 0 ) {
+            return FALSE;
+        }
+
+        if( tc2 == 0 ) {
+            return FALSE;
+        }
+
+        timeControl_2 = tc2 * 1000;
+    }
+    else {
+        timeControl_2 = 0;
+    }
+
+    if( tc1 == 0 ) {
+        return FALSE;
+    }
+
+    timeControl = tc1 * 1000;
+#endif
 
     if (ti >= 0) {
 	timeIncrement = ti * 1000;  /* convert to ms */
@@ -2725,6 +2895,7 @@ ParseBoard12(string)
 	gameInfo.white = StrSave(white);
 	gameInfo.black = StrSave(black);
 	timeControl = basetime * 60 * 1000;
+        timeControl_2 = 0;
 	timeIncrement = increment * 1000;
 	movesPerSession = 0;
 	gameInfo.timeControl = TimeControlTagValue();
@@ -3242,6 +3413,16 @@ InitPosition(redraw)
      int redraw;
 {
     currentMove = forwardMostMove = backwardMostMove = 0;
+
+    /* [AS] Initialize pv info list */
+    {
+        int i;
+
+        for( i=0; i<MAX_MOVES; i++ ) {
+            pvInfoList[i].depth = 0;
+        }
+    }
+
     switch (gameInfo.variant) {
     default:
       CopyBoard(boards[0], initialPosition);
@@ -3872,6 +4053,13 @@ HandleMachineMove(message, cps)
 	strcat(machineMove, "\n");
 	strcpy(moveList[forwardMostMove], machineMove);
     
+        /* [AS] Save move info and clear stats for next move */
+        pvInfoList[ forwardMostMove ].score = programStats.score;
+        pvInfoList[ forwardMostMove ].depth = programStats.depth;
+        ClearProgramStats();
+        thinkOutput[0] = NULLCHAR;
+        hiddenThinkOutputState = 0;
+
 	MakeMove(fromX, fromY, toX, toY, promoChar);/*updates forwardMostMove*/
     
 	if (gameMode == TwoMachinesPlay) {
@@ -3891,15 +4079,44 @@ HandleMachineMove(message, cps)
 	}
 
 	ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+
 	if (!pausing && appData.ringBellAfterMoves) {
 	    RingBell();
 	}
+
 	/* 
 	 * Reenable menu items that were disabled while
 	 * machine was thinking
 	 */
 	if (gameMode != TwoMachinesPlay)
 	    SetUserThinkingEnables();
+
+
+        /* [AS] Adjudicate game if needed (note: forwardMostMove now points past the last move */
+        if( gameMode == TwoMachinesPlay && adjudicateLossThreshold != 0 && forwardMostMove >= adjudicateLossPlies ) {
+            int count = 0;
+
+            while( count < adjudicateLossPlies ) {
+                int score = pvInfoList[ forwardMostMove - count - 1 ].score;
+
+                if( count & 1 ) {
+                    score = -score; /* Flip score for winning side */
+                }
+
+                if( score > adjudicateLossThreshold ) {
+                    break;
+                }
+
+                count++;
+            }
+
+            if( count >= adjudicateLossPlies ) {
+                GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins,
+                    "Xboard adjudication",
+                    GE_XBOARD );
+            }
+        }
+
 	return;
     }
 
@@ -4315,7 +4532,7 @@ HandleMachineMove(message, cps)
     /*
      * Look for thinking output
      */
-    if (appData.showThinking) {
+    if ( appData.showThinking) {
 	int plylev, mvleft, mvtot, curscore, time;
 	char mvname[MOVE_LEN];
 	unsigned long nodes;
@@ -4337,8 +4554,7 @@ HandleMachineMove(message, cps)
 	  case AnalyzeFile:
 	    break;
 	  case TwoMachinesPlay:
-	    if ((cps->twoMachinesColor[0] == 'w') !=
-		WhiteOnMove(forwardMostMove)) {
+	    if ((cps->twoMachinesColor[0] == 'w') != WhiteOnMove(forwardMostMove)) {
 		ignore = TRUE;
 	    }
 	    break;
@@ -4361,6 +4577,13 @@ HandleMachineMove(message, cps)
 		programStats.score = curscore;
 		programStats.got_only_move = 0;
 
+                /* [AS] Negate score if machine is playing black and it's reporting absolute scores */
+                if( cps->scoreIsAbsolute &&
+                    ((gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) )
+                {
+                    programStats.score = -curscore;
+                }
+
 		/* Buffer overflow protection */
 		if (buf1[0] != NULLCHAR) {
 		    if (strlen(buf1) >= sizeof(programStats.movelist)
@@ -4369,10 +4592,8 @@ HandleMachineMove(message, cps)
 				"PV is too long; using the first %d bytes.\n",
 				sizeof(programStats.movelist) - 1);
 		    }
-		    strncpy(programStats.movelist, buf1,
-			    sizeof(programStats.movelist));
-		    programStats.movelist[sizeof(programStats.movelist) - 1]
-		      = NULLCHAR;
+
+                    safeStrCpy( programStats.movelist, buf1, sizeof(programStats.movelist) );
 		} else {
 		    sprintf(programStats.movelist, " no PV\n");
 		}
@@ -4389,16 +4610,32 @@ HandleMachineMove(message, cps)
 		    programStats.line_is_book = 0;
 		}
 		  
-		sprintf(thinkOutput, "[%d]%c%+.2f %s%s%s",
+                /*
+                    [AS] Protect the thinkOutput buffer from overflow... this
+                    is only useful if buf1 hasn't overflowed first!
+                */
+		sprintf(thinkOutput, "[%d]%c%+.2f %s%s",
 			plylev, 
 			(gameMode == TwoMachinesPlay ?
 			 ToUpper(cps->twoMachinesColor[0]) : ' '),
 			((double) curscore) / 100.0,
 			prefixHint ? lastHint : "",
-			prefixHint ? " " : "", buf1);
+			prefixHint ? " " : "" );
 
-		if (currentMove == forwardMostMove ||
-		    gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
+                if( buf1[0] != NULLCHAR ) {
+                    unsigned max_len = sizeof(thinkOutput) - strlen(thinkOutput) - 1;
+
+                    if( strlen(buf1) > max_len ) {
+			if( appData.debugMode) {
+			    fprintf(debugFP,"PV is too long for thinkOutput, truncating.\n");
+                        }
+                        buf1[max_len+1] = '\0';
+                    }
+
+                    strcat( thinkOutput, buf1 );
+                }
+
+		if (currentMove == forwardMostMove || gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 		    DisplayMove(currentMove - 1);
 		    DisplayAnalysis();
 		}
@@ -4423,8 +4660,7 @@ HandleMachineMove(message, cps)
 		   isn't searching, so stats won't change) */
 		programStats.line_is_book = 1;
 		  
-		if (currentMove == forwardMostMove || gameMode==AnalyzeMode ||
-		    gameMode == AnalyzeFile) {
+		if (currentMove == forwardMostMove || gameMode==AnalyzeMode || gameMode == AnalyzeFile) {
 		    DisplayMove(currentMove - 1);
 		    DisplayAnalysis();
 		}
@@ -4462,14 +4698,25 @@ HandleMachineMove(message, cps)
 
 	    } else if (thinkOutput[0] != NULLCHAR &&
 		       strncmp(message, "    ", 4) == 0) {
+                unsigned message_len;
+
 	        p = message;
 		while (*p && *p == ' ') p++;
+
+                message_len = strlen( p );
+
+                /* [AS] Avoid buffer overflow */
+                if( sizeof(thinkOutput) - strlen(thinkOutput) - 1 > message_len ) {
 		strcat(thinkOutput, " ");
 		strcat(thinkOutput, p);
+                }
+
+                if( sizeof(programStats.movelist) - strlen(programStats.movelist) - 1 > message_len ) {
 		strcat(programStats.movelist, " ");
 		strcat(programStats.movelist, p);
-		if (currentMove == forwardMostMove || gameMode==AnalyzeMode ||
-		    gameMode == AnalyzeFile) {
+                }
+
+		if (currentMove == forwardMostMove || gameMode==AnalyzeMode || gameMode == AnalyzeFile) {
 		    DisplayMove(currentMove - 1);
 		    DisplayAnalysis();
 		}
@@ -4987,6 +5234,23 @@ NextMatchGame P((void))
     TwoMachinesEventIfReady();
 }
 
+void UserAdjudicationEvent( int result )
+{
+    ChessMove gameResult = GameIsDrawn;
+
+    if( result > 0 ) {
+        gameResult = WhiteWins;
+    }
+    else if( result < 0 ) {
+        gameResult = BlackWins;
+    }
+
+    if( gameMode == TwoMachinesPlay ) {
+        GameEnds( gameResult, "User adjudication", GE_XBOARD );
+    }
+}
+
+
 void
 GameEnds(result, resultDetails, whosays)
      ChessMove result;
@@ -5166,7 +5430,9 @@ GameEnds(result, resultDetails, whosays)
     
 	if (first.pr != NoProc) {
 	    ExitAnalyzeMode();
+            DoSleep( appData.delayBeforeQuit );
 	    SendToProgram("quit\n", &first);
+            DoSleep( appData.delayAfterQuit );
 	    DestroyChildProcess(first.pr, first.useSigterm);
 	}
 	first.pr = NoProc;
@@ -5189,7 +5455,9 @@ GameEnds(result, resultDetails, whosays)
 	second.isr = NULL;
     
 	if (second.pr != NoProc) {
+            DoSleep( appData.delayBeforeQuit );
 	    SendToProgram("quit\n", &second);
+            DoSleep( appData.delayAfterQuit );
 	    DestroyChildProcess(second.pr, second.useSigterm);
 	}
 	second.pr = NoProc;
@@ -6526,6 +6794,7 @@ SaveGamePGN(f)
     char *movetext;
     char numtext[32];
     int movelen, numlen, blank;
+    char move_buffer[100]; /* [AS] Buffer for move+PV info */
     
     tm = time((time_t *) NULL);
     
@@ -6585,6 +6854,17 @@ SaveGamePGN(f)
 
 	/* Get move */
 	movetext = SavePart(parseList[i]);
+
+        /* [AS] Add PV info if present */
+        if( i > 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
+            sprintf( move_buffer, "%s {%s%.2f/%d}",
+                movetext,
+                pvInfoList[i].score >= 0 ? "+" : "",
+                pvInfoList[i].score / 100.0,
+                pvInfoList[i].depth );
+            movetext = move_buffer;
+        }
+
 	movelen = strlen(movetext);
 
 	/* Print move */
@@ -7132,11 +7412,16 @@ ExitEvent(status)
     /* Kill off chess programs */
     if (first.pr != NoProc) {
 	ExitAnalyzeMode();
+
+        DoSleep( appData.delayBeforeQuit );
 	SendToProgram("quit\n", &first);
+        DoSleep( appData.delayAfterQuit );
 	DestroyChildProcess(first.pr, first.useSigterm);
     }
     if (second.pr != NoProc) {
+        DoSleep( appData.delayBeforeQuit );
 	SendToProgram("quit\n", &second);
+        DoSleep( appData.delayAfterQuit );
 	DestroyChildProcess(second.pr, second.useSigterm);
     }
     if (first.isr != NULL) {
@@ -8834,6 +9119,13 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		    "Error reading from %s chess program (%s)",
 		    cps->which, cps->program);
 	    RemoveInputSource(cps->isr);
+
+            /* [AS] Program is misbehaving badly... kill it */
+            if( count == -2 ) {
+                DestroyChildProcess( cps->pr, 9 );
+                cps->pr = NoProc;
+            }
+
 	    DisplayFatalError(buf, error, 1);
 	}
 	GameEnds((ChessMove) 0, NULL, GE_PLAYER);
@@ -8864,6 +9156,12 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
 {
     char buf[MSG_SIZ];
     int seconds = (tc / 1000) % 60;
+
+    if( timeControl_2 > 0 ) {
+        if( (gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b') ) {
+            tc = timeControl_2;
+        }
+    }
 
     if (st > 0) {
       /* Set exact time per move, normally using st command */
@@ -9157,11 +9455,27 @@ DisplayMove(moveNumber)
     if (moveNumber == forwardMostMove - 1 || 
 	gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 
-	strcpy(cpThinkOutput, thinkOutput);
-	if (strchr(cpThinkOutput, '\n'))
+	safeStrCpy(cpThinkOutput, thinkOutput, sizeof(cpThinkOutput));
+
+        if (strchr(cpThinkOutput, '\n')) {
 	  *strchr(cpThinkOutput, '\n') = NULLCHAR;
+        }
     } else {
 	*cpThinkOutput = NULLCHAR;
+    }
+
+    /* [AS] Hide thinking from human user */
+    if( appData.hideThinkingFromHuman && gameMode != TwoMachinesPlay ) {
+        *cpThinkOutput = NULLCHAR;
+        if( thinkOutput[0] != NULLCHAR ) {
+            int i;
+
+            for( i=0; i<=hiddenThinkOutputState; i++ ) {
+                cpThinkOutput[i] = '.';
+            }
+            cpThinkOutput[i] = NULLCHAR;
+            hiddenThinkOutputState = (hiddenThinkOutputState + 1) % 3;
+        }
     }
 
     if (moveNumber == forwardMostMove - 1 &&
@@ -9214,6 +9528,7 @@ void
 DisplayAnalysis()
 {
     char buf[MSG_SIZ];
+    char lst[MSG_SIZ / 2];
     double nps;
     static char *xtra[] = { "", " (--)", " (++)" };
     int h, m, s, cs;
@@ -9223,8 +9538,10 @@ DisplayAnalysis()
     }
   
     if (programStats.got_only_move) {
-	strcpy(buf, programStats.movelist);
+	safeStrCpy(buf, programStats.movelist, sizeof(buf));
     } else {
+        safeStrCpy( lst, programStats.movelist, sizeof(lst));
+
 	nps = (((double)programStats.nodes) /
 	       (((double)programStats.time)/100.0));
 
@@ -9241,8 +9558,8 @@ DisplayAnalysis()
 		    programStats.depth,
 		    programStats.nr_moves-programStats.moves_left,
 		    programStats.nr_moves, programStats.move_name,
-		    ((float)programStats.score)/100.0, programStats.movelist,
-		    only_one_move(programStats.movelist)?
+		    ((float)programStats.score)/100.0, lst,
+		    only_one_move(lst)?
 		    xtra[programStats.got_fail] : "",
 		    programStats.nodes, (int)nps, h, m, s, cs);
 	  } else {
@@ -9250,8 +9567,8 @@ DisplayAnalysis()
 		    programStats.depth,
 		    programStats.nr_moves-programStats.moves_left,
 		    programStats.nr_moves, ((float)programStats.score)/100.0,
-		    programStats.movelist,
-		    only_one_move(programStats.movelist)?
+		    lst,
+		    only_one_move(lst)?
 		    xtra[programStats.got_fail] : "",
 		    programStats.nodes, (int)nps, h, m, s, cs);
 	  }
@@ -9259,8 +9576,8 @@ DisplayAnalysis()
 	    sprintf(buf, "depth=%d %+.2f %s%s\nNodes: %lu NPS: %d\nTime: %02d:%02d:%02d.%02d",
 		    programStats.depth,
 		    ((float)programStats.score)/100.0,
-		    programStats.movelist,
-		    only_one_move(programStats.movelist)?
+		    lst,
+		    only_one_move(lst)?
 		    xtra[programStats.got_fail] : "",
 		    programStats.nodes, (int)nps, h, m, s, cs);
 	}
@@ -9390,11 +9707,11 @@ CheckTimeControl()
       switch ((forwardMostMove + 1) % (movesPerSession * 2)) {
       case 0:
 	/* White made time control */
-	whiteTimeRemaining += timeControl;
+	whiteTimeRemaining += GetTimeControlForWhite();
 	break;
       case 1:
 	/* Black made time control */
-	blackTimeRemaining += timeControl;
+	blackTimeRemaining += GetTimeControlForBlack();
 	break;
       default:
 	break;
@@ -9498,7 +9815,8 @@ ResetClocks()
     if (appData.icsActive) {
 	whiteTimeRemaining = blackTimeRemaining = 0;
     } else {
-	whiteTimeRemaining = blackTimeRemaining = timeControl;
+	whiteTimeRemaining = GetTimeControlForWhite();
+        blackTimeRemaining = GetTimeControlForBlack();
     }
     if (whiteFlag || blackFlag) {
 	DisplayTitle("");

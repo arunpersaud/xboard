@@ -1,6 +1,6 @@
 /*
  * wclipbrd.c -- Clipboard routines for WinBoard
- * $Id$
+ * $Id: wclipbrd.h,v 2.1 2003/10/27 19:21:02 mann Exp $
  *
  * Copyright 2000 Free Software Foundation, Inc.
  *
@@ -30,3 +30,5 @@ VOID PasteGameFromClipboard();
 int PasteTextFromClipboard(char **text);
 
 VOID DeleteClipboardTempFiles();
+
+VOID PasteGameOrFENFromClipboard(); /* [AS] */

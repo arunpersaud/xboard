@@ -36,11 +36,7 @@ CAPTION "About WinBoard"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,131,47,32,14,WS_GROUP
-#if __GNUC__
-    ICON            icon_white,-1,3,6,20,20,0
-#else
-    ICON            "icon_white",-1,3,6,20,20,0
-#endif
+    ICON            "icon_white",-1,3,6,20,20
     LTEXT           "Chessboard for Windows",400,25,15,121,8
     LTEXT           "Copyright 1991 Digital Equipment Corporation",201,6,34,
                     149,8
@@ -50,7 +46,7 @@ BEGIN
     LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,5,142,8
 END
 
-DLG_TimeControl DIALOG DISCARDABLE  6, 18, 147, 113
+DLG_TimeControl DIALOG DISCARDABLE  6, 18, 165, 114
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Time Control"
 FONT 8, "MS Sans Serif"
@@ -61,15 +57,15 @@ BEGIN
                     BS_AUTORADIOBUTTON | WS_TABSTOP,6,42,107,10
     EDITTEXT        OPT_TCMoves,14,20,22,12,ES_AUTOHSCROLL | WS_GROUP
     LTEXT           "moves in",OPT_TCtext1,40,22,30,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCTime,74,20,32,12,ES_AUTOHSCROLL
-    LTEXT           "minutes",OPT_TCtext2,111,22,26,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCTime,74,20,50,12,ES_AUTOHSCROLL
+    LTEXT           "minutes",OPT_TCtext2,129,22,26,8,NOT WS_GROUP
     EDITTEXT        OPT_TCTime2,14,56,32,12,ES_AUTOHSCROLL | WS_GROUP
     LTEXT           "minutes initially,",405,51,57,73,8,NOT WS_GROUP
     LTEXT           "plus",406,19,74,15,8,NOT WS_GROUP
     EDITTEXT        OPT_TCInc,37,72,32,12,ES_AUTOHSCROLL
     LTEXT           "seconds per move",408,74,74,67,8,NOT WS_GROUP
-    PUSHBUTTON      "OK",IDOK,32,95,40,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,88,95,40,14
+    PUSHBUTTON      "OK",IDOK,34,95,40,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,90,95,40,14
 END
 
 DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 144, 55
@@ -238,20 +234,16 @@ WBCONSOLE DIALOG DISCARDABLE  0, 0, 335, 133
 STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | 
     WS_THICKFRAME
 CAPTION "ICS Interaction"
-#if __GNUC__
-CLASS WBConsole
-#else
 CLASS "WBConsole"
-#endif
 FONT 8, "Courier New"
 BEGIN
     CONTROL         "",OPT_ConsoleText,"RICHEDIT",ES_MULTILINE | 
                     ES_AUTOVSCROLL | ES_NOHIDESEL | ES_READONLY | ES_NUMBER | 
                     WS_BORDER | WS_VSCROLL | WS_TABSTOP,0,0,335,119
-    CONTROL         "",OPT_ConsoleInput,"RICHEDIT",ES_AUTOHSCROLL | 
-                    ES_AUTOVSCROLL | ES_MULTILINE | 
-                    ES_NOHIDESEL | ES_NUMBER | WS_BORDER | 
-                    WS_TABSTOP,0,120,335,13,WS_EX_TRANSPARENT
+    CONTROL         "",OPT_ConsoleInput,"RICHEDIT",ES_MULTILINE |
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_NOHIDESEL |
+                    ES_NUMBER | WS_BORDER | WS_TABSTOP,0,120,335,13,
+                    WS_EX_TRANSPARENT
 END
 
 DLG_Analysis DIALOG DISCARDABLE  0, 0, 294, 62
@@ -278,7 +270,7 @@ END
 DLG_Colorize DIALOGEX 0, 0, 183, 52
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ICS Interaction Colors"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     PUSHBUTTON      "&Choose Color...",OPT_ChooseColor,15,29,51,14,WS_GROUP
     CONTROL         "&Bold",OPT_Bold,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
@@ -336,12 +328,7 @@ BEGIN
 END
 
 DLG_IndexNumber DIALOG DISCARDABLE  0, 0, 236, 18
-#if __GNUC__
-STYLE DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS |
-	NOT WS_POPUP | NOT WS_BORDER | NOT WS_SYSMENU
-#else
 STYLE DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS
-#endif
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Inde&x number:",IDC_STATIC,5,2,46,8
@@ -384,7 +371,7 @@ BEGIN
     LTEXT           "Event:",IDC_STATIC,19,9,26,9
 END
 
-DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 271, 135
+DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 271, 150
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General Options"
 FONT 8, "MS Sans Serif"
@@ -409,6 +396,8 @@ BEGIN
                     WS_TABSTOP,16,104,79,10
     CONTROL         "&Highlight Dragging",OPT_HighlightDragging,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,118,79,10
+    CONTROL         "Extended PGN Info",OPT_SaveExtPGN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,132,79,10
     CONTROL         "Highlight Last &Move",OPT_HighlightLastMove,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,109,6,79,10
     CONTROL         "Periodic &Updates",OPT_PeriodicUpdates,"Button",
@@ -427,12 +416,14 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,109,104,79,10
     CONTROL         "Test &Legality",OPT_TestLegality,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,109,118,79,10
+    CONTROL         "Hide Thinking From Human",OPT_HideThinkFromHuman,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,109,132,102,10
 END
 
 DLG_IcsOptions DIALOGEX 0, 0, 318, 271
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ICS Options"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,88,250,60,15
     PUSHBUTTON      "Cancel",IDCANCEL,168,250,60,15
@@ -638,7 +629,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 264
         TOPMARGIN, 7
-        BOTTOMMARGIN, 128
+        BOTTOMMARGIN, 143
     END
 
     DLG_IcsOptions, DIALOG
@@ -744,6 +735,10 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Stop &Observing\tF10",        IDM_StopObserving
         MENUITEM "Stop E&xamining\tF11",        IDM_StopExamining
+        MENUITEM SEPARATOR
+        MENUITEM "Adjudicate to White",         IDM_UserAdjudication_White
+        MENUITEM "Adjudicate to Black",         IDM_UserAdjudication_Black
+        MENUITEM "Adjudicate Draw",             IDM_UserAdjudication_Draw
     END
     POPUP "&Step"
     BEGIN
@@ -902,11 +897,10 @@ BEGIN
     "1",            IDM_DirectCommand1,     VIRTKEY, ALT, NOINVERT
     "2",            IDM_DirectCommand2,     VIRTKEY, ALT, NOINVERT
     "C",            IDM_CopyGame,           VIRTKEY, ALT, NOINVERT
-    "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, ALT, 
-                                                    NOINVERT
+    "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, ALT, NOINVERT
+    "V",            IDM_Paste,              VIRTKEY, CONTROL, NOINVERT
     "V",            IDM_PasteGame,          VIRTKEY, ALT, NOINVERT
-    "V",            IDM_PastePosition,      VIRTKEY, SHIFT, ALT, 
-                                                    NOINVERT
+    "V",            IDM_PastePosition,      VIRTKEY, SHIFT, ALT, NOINVERT
     VK_DELETE,      IDM_RetractMove,        VIRTKEY, ALT, NOINVERT
     VK_DOWN,        IDM_ToEnd,              VIRTKEY, ALT, NOINVERT
     VK_END,         IDM_TruncateGame,       VIRTKEY, ALT, NOINVERT
@@ -1353,7 +1347,6 @@ SSHOUT			WAVE	DISCARDABLE	"..\\sounds\\sshout.wav"
 TELL			WAVE	DISCARDABLE	"..\\sounds\\tell.wav"
 UNFINISHED		WAVE	DISCARDABLE	"..\\sounds\\unfinished.wav"
 WIN			WAVE	DISCARDABLE	"..\\sounds\\win.wav"
-
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

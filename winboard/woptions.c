@@ -1,6 +1,6 @@
 /*
  * woptions.c -- Options dialog box routines for WinBoard
- * $Id$
+ * $Id: woptions.c,v 2.1 2003/10/27 19:21:02 mann Exp $
  *
  * Copyright 2000 Free Software Foundation, Inc.
  *
@@ -167,6 +167,8 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_ShowCoordinates, appData.showCoords);
     CHECK_BOX(OPT_ShowThinking, appData.showThinking);
     CHECK_BOX(OPT_TestLegality, appData.testLegality);
+    CHECK_BOX(OPT_HideThinkFromHuman, appData.hideThinkingFromHuman);
+    CHECK_BOX(OPT_SaveExtPGN, appData.saveExtendedInfoInPGN);
 
 #undef CHECK_BOX
 
@@ -208,6 +210,8 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.showCoords           = IS_CHECKED(OPT_ShowCoordinates);
       ShowThinkingEvent(             IS_CHECKED(OPT_ShowThinking));
       appData.testLegality         = IS_CHECKED(OPT_TestLegality);
+      appData.hideThinkingFromHuman= IS_CHECKED(OPT_HideThinkFromHuman);
+      appData.saveExtendedInfoInPGN= IS_CHECKED(OPT_SaveExtPGN);
 
 #undef IS_CHECKED
 

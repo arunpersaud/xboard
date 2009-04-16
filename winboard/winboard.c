@@ -1,6 +1,6 @@
 /* 
  * WinBoard.c -- Windows NT front end to XBoard
- * $Id$
+ * $Id: winboard.c,v 2.3 2003/11/25 05:25:20 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-2001 Free Software Foundation, Inc.
@@ -57,6 +57,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <malloc.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -82,6 +83,9 @@
 #include "woptions.h"
 #include "wsockerr.h"
 #include "defaults.h"
+
+int myrandom(void);
+void mysrandom(unsigned int seed);
 
 typedef struct {
   ChessSquare piece;  
@@ -140,7 +144,7 @@ char *icsNames;
 char *firstChessProgramNames;
 char *secondChessProgramNames;
 
-#define ARG_MAX 20000
+#define ARG_MAX 64*1024 /* [AS] For Roger Brown's very long list! */
 
 #define PALETTESIZE 256
 
@@ -170,6 +174,18 @@ static HICON iconWhite, iconBlack, iconCurrent;
 static int doingSizing = FALSE;
 static int lastSizing = 0;
 static int prevStderrPort;
+
+/* [AS] Support for background textures */
+#define BACK_TEXTURE_MODE_DISABLED      0
+#define BACK_TEXTURE_MODE_PLAIN         1
+#define BACK_TEXTURE_MODE_FULL_RANDOM   2
+
+static HBITMAP liteBackTexture = NULL;
+static HBITMAP darkBackTexture = NULL;
+static int liteBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
+static int darkBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
+static int backTextureSquareSize = 0;
+static struct { int x; int y; int mode; } backTextureSquareInfo[BOARD_SIZE][BOARD_SIZE];
 
 #if __GNUC__ && !defined(_winmajor)
 #define oldDialog 0 /* cygwin doesn't define _winmajor; mingw does */
@@ -557,7 +573,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
   InitAppData(lpCmdLine);      /* Get run-time parameters */
   if (appData.debugMode) {
-    debugFP = fopen("winboard.debug", "w");
+    debugFP = fopen(appData.nameOfDebugFile, "w");
     setbuf(debugFP, NULL);
   }
 
@@ -593,6 +609,29 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   InitDrawingSizes(boardSize, 0);
   InitMenuChecks();
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
+
+  /* [AS] Load textures if specified */
+  ZeroMemory( &backTextureSquareInfo, sizeof(backTextureSquareInfo) );
+
+  if( appData.liteBackTextureFile && appData.liteBackTextureFile[0] != NULLCHAR && appData.liteBackTextureFile[0] != '*' ) {
+      liteBackTexture = LoadImage( 0, appData.liteBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+      liteBackTextureMode = appData.liteBackTextureMode;
+
+      if (liteBackTexture == NULL && appData.debugMode) {
+          fprintf( debugFP, "Unable to load lite texture bitmap '%s'\n", appData.liteBackTextureFile );
+      }
+  }
+
+  if( appData.darkBackTextureFile && appData.darkBackTextureFile[0] != NULLCHAR && appData.darkBackTextureFile[0] != '*' ) {
+      darkBackTexture = LoadImage( 0, appData.darkBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+      darkBackTextureMode = appData.darkBackTextureMode;
+
+      if (darkBackTexture == NULL && appData.debugMode) {
+          fprintf( debugFP, "Unable to load dark texture bitmap '%s'\n", appData.darkBackTextureFile );
+      }
+  }
+
+  mysrandom( (unsigned) time(NULL) );
 
   /* Make a console window if needed */
   if (appData.icsActive) {
@@ -1005,14 +1044,35 @@ ArgDescriptor argDescriptors[] = {
   { "initialMode", ArgString, (LPVOID) &appData.initialMode, FALSE },
   { "mode", ArgString, (LPVOID) &appData.initialMode, FALSE },
   { "variant", ArgString, (LPVOID) &appData.variant, FALSE },
-  { "firstProtocolVersion", ArgInt, (LPVOID) &appData.firstProtocolVersion,
-    FALSE },
-  { "secondProtocolVersion", ArgInt, (LPVOID) &appData.secondProtocolVersion,
-    FALSE },
+  { "firstProtocolVersion", ArgInt, (LPVOID) &appData.firstProtocolVersion, FALSE },
+  { "secondProtocolVersion", ArgInt, (LPVOID) &appData.secondProtocolVersion,FALSE },
   { "showButtonBar", ArgBoolean, (LPVOID) &appData.showButtonBar, TRUE },
   { "buttons", ArgTrue, (LPVOID) &appData.showButtonBar, FALSE },
   { "xbuttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE },
   { "-buttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE },
+  /* [AS] New features */
+  { "firstScoreAbs", ArgBoolean, (LPVOID) &appData.firstScoreIsAbsolute, TRUE },
+  { "secondScoreAbs", ArgBoolean, (LPVOID) &appData.secondScoreIsAbsolute, TRUE },
+  { "pgnExtendedInfo", ArgBoolean, (LPVOID) &appData.saveExtendedInfoInPGN, TRUE },
+  { "hideThinkingFromHuman", ArgBoolean, (LPVOID) &appData.hideThinkingFromHuman, TRUE },
+  { "liteBackTextureFile", ArgString, (LPVOID) &appData.liteBackTextureFile, TRUE },
+  { "darkBackTextureFile", ArgString, (LPVOID) &appData.darkBackTextureFile, TRUE },
+  { "liteBackTextureMode", ArgInt, (LPVOID) &appData.liteBackTextureMode, TRUE },
+  { "darkBackTextureMode", ArgInt, (LPVOID) &appData.darkBackTextureMode, TRUE },
+  { "renderPiecesWithFont", ArgString, (LPVOID) &appData.renderPiecesWithFont, TRUE },
+  { "fontPieceToCharTable", ArgString, (LPVOID) &appData.fontToPieceTable, TRUE },
+  { "fontPieceBackColorWhite", ArgColor, (LPVOID) &appData.fontBackColorWhite, TRUE },
+  { "fontPieceForeColorWhite", ArgColor, (LPVOID) &appData.fontForeColorWhite, TRUE },
+  { "fontPieceBackColorBlack", ArgColor, (LPVOID) &appData.fontBackColorBlack, TRUE },
+  { "fontPieceForeColorBlack", ArgColor, (LPVOID) &appData.fontForeColorBlack, TRUE },
+  { "fontPieceSize", ArgInt, (LPVOID) &appData.fontPieceSize, TRUE },
+  { "overrideLineGap", ArgInt, (LPVOID) &appData.overrideLineGap, TRUE },
+  { "adjudicateLossThreshold", ArgInt, (LPVOID) &appData.adjudicateLossThreshold, TRUE },
+  { "delayBeforeQuit", ArgInt, (LPVOID) &appData.delayBeforeQuit, TRUE },
+  { "delayAfterQuit", ArgInt, (LPVOID) &appData.delayAfterQuit, TRUE },
+  { "nameOfDebugFile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE },
+  { "pgnEventHeader", ArgString, (LPVOID) &appData.pgnEventHeader, TRUE },
+  { "debugfile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE },
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
   { "zt", ArgTrue, (LPVOID) &appData.zippyTalk, FALSE },
@@ -1667,6 +1727,30 @@ InitAppData(LPSTR lpCmdLine)
   appData.firstProtocolVersion = PROTOVER;
   appData.secondProtocolVersion = PROTOVER;
   appData.showButtonBar = TRUE;
+
+   /* [AS] New properties (see comments in header file) */
+  appData.firstScoreIsAbsolute = FALSE;
+  appData.secondScoreIsAbsolute = FALSE;
+  appData.saveExtendedInfoInPGN = FALSE;
+  appData.hideThinkingFromHuman = FALSE;
+  appData.liteBackTextureFile = "";
+  appData.liteBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
+  appData.darkBackTextureFile = "";
+  appData.darkBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
+  appData.renderPiecesWithFont = "";
+  appData.fontToPieceTable = "";
+  appData.fontBackColorWhite = 0;
+  appData.fontForeColorWhite = 0;
+  appData.fontBackColorBlack = 0;
+  appData.fontForeColorBlack = 0;
+  appData.fontPieceSize = 80;
+  appData.overrideLineGap = 1;
+  appData.adjudicateLossThreshold = 0;
+  appData.delayBeforeQuit = 0;
+  appData.delayAfterQuit = 0;
+  appData.nameOfDebugFile = "winboard.debug";
+  appData.pgnEventHeader = "Computer Chess Game";
+
 #ifdef ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
   appData.zippyPlay = ZIPPY_PLAY;
@@ -1961,6 +2045,431 @@ SaveSettings(char* name)
  *
 \*---------------------------------------------------------------------------*/
 
+/* [AS] Draw square using background texture */
+static void DrawTile( int dx, int dy, int dw, int dh, HDC dst, HDC src, int mode, int sx, int sy )
+{
+    XFORM   x;
+
+    if( mode == 0 ) {
+        return; /* Should never happen! */
+    }
+
+    SetGraphicsMode( dst, GM_ADVANCED );
+
+    switch( mode ) {
+    case 1:
+        /* Identity */
+        break;
+    case 2:
+        /* X reflection */
+        x.eM11 = -1.0;
+        x.eM12 = 0;
+        x.eM21 = 0;
+        x.eM22 = 1.0;
+        x.eDx = (FLOAT) dw + dx - 1;
+        x.eDy = 0;
+        dx = 0;
+        SetWorldTransform( dst, &x );
+        break;
+    case 3:
+        /* Y reflection */
+        x.eM11 = 1.0;
+        x.eM12 = 0;
+        x.eM21 = 0;
+        x.eM22 = -1.0;
+        x.eDx = 0;
+        x.eDy = (FLOAT) dh + dy - 1;
+        dy = 0;
+        SetWorldTransform( dst, &x );
+        break;
+    case 4:
+        /* X/Y flip */
+        x.eM11 = 0;
+        x.eM12 = 1.0;
+        x.eM21 = 1.0;
+        x.eM22 = 0;
+        x.eDx = (FLOAT) dx;
+        x.eDy = (FLOAT) dy;
+        dx = 0;
+        dy = 0;
+        SetWorldTransform( dst, &x );
+        break;
+    }
+
+    BitBlt( dst, dx, dy, dw, dh, src, sx, sy, SRCCOPY );
+
+    x.eM11 = 1.0;
+    x.eM12 = 0;
+    x.eM21 = 0;
+    x.eM22 = 1.0;
+    x.eDx = 0;
+    x.eDy = 0;
+    SetWorldTransform( dst, &x );
+
+    ModifyWorldTransform( dst, 0, MWT_IDENTITY );
+}
+
+/* [AS] */
+enum {
+    PM_WP = 0,
+    PM_WN = 1,
+    PM_WB = 2,
+    PM_WR = 3,
+    PM_WQ = 4,
+    PM_WK = 5,
+    PM_BP = 6,
+    PM_BN = 7,
+    PM_BB = 8,
+    PM_BR = 9,
+    PM_BQ = 10,
+    PM_BK = 11
+};
+
+static HFONT hPieceFont = NULL;
+static HBITMAP hPieceMask[12];
+static HBITMAP hPieceFace[12];
+static int fontBitmapSquareSize = 0;
+static char pieceToFontChar[12] = { 'p', 'n', 'b', 'r', 'q', 'k', 'o', 'm', 'v', 't', 'w', 'l' };
+
+static BOOL SetPieceToFontCharTable( const char * map )
+{
+    BOOL result = FALSE;
+
+    if( map != NULL && strlen(map) == 12 ) {
+        int i;
+
+        for( i=0; i<12; i++ ) {
+            pieceToFontChar[i] = map[i];
+        }
+
+        result = TRUE;
+    }
+
+    return result;
+}
+
+static void SetPieceBackground( HDC hdc, COLORREF color, int mode )
+{
+    HBRUSH hbrush;
+    BYTE r1 = GetRValue( color );
+    BYTE g1 = GetGValue( color );
+    BYTE b1 = GetBValue( color );
+    BYTE r2 = r1 / 2;
+    BYTE g2 = g1 / 2;
+    BYTE b2 = b1 / 2;
+    RECT rc;
+
+    /* Create a uniform background first */
+    hbrush = CreateSolidBrush( color );
+    SetRect( &rc, 0, 0, squareSize, squareSize );
+    FillRect( hdc, &rc, hbrush );
+    DeleteObject( hbrush );
+
+    if( mode == 1 ) {
+        /* Vertical gradient, good for pawn, knight and rook, less for queen and king */
+        int steps = squareSize / 2;
+        int i;
+
+        for( i=0; i<steps; i++ ) {
+            BYTE r = r1 - (r1-r2) * i / steps;
+            BYTE g = g1 - (g1-g2) * i / steps;
+            BYTE b = b1 - (b1-b2) * i / steps;
+
+            hbrush = CreateSolidBrush( RGB(r,g,b) );
+            SetRect( &rc, i + squareSize - steps, 0, i + squareSize - steps + 1, squareSize );
+            FillRect( hdc, &rc, hbrush );
+            DeleteObject(hbrush);
+        }
+    }
+    else if( mode == 2 ) {
+        /* Diagonal gradient, good more or less for every piece */
+        POINT triangle[3];
+        HPEN hpen = SelectObject( hdc, GetStockObject(NULL_PEN) );
+        HBRUSH hbrush_old;
+        int steps = squareSize;
+        int i;
+
+        triangle[0].x = squareSize - steps;
+        triangle[0].y = squareSize;
+        triangle[1].x = squareSize;
+        triangle[1].y = squareSize;
+        triangle[2].x = squareSize;
+        triangle[2].y = squareSize - steps;
+
+        for( i=0; i<steps; i++ ) {
+            BYTE r = r1 - (r1-r2) * i / steps;
+            BYTE g = g1 - (g1-g2) * i / steps;
+            BYTE b = b1 - (b1-b2) * i / steps;
+
+            hbrush = CreateSolidBrush( RGB(r,g,b) );
+            hbrush_old = SelectObject( hdc, hbrush );
+            Polygon( hdc, triangle, 3 );
+            SelectObject( hdc, hbrush_old );
+            DeleteObject(hbrush);
+            triangle[0].x++;
+            triangle[2].y++;
+        }
+
+        SelectObject( hdc, hpen );
+    }
+}
+
+/*
+    [AS] The method I use to create the bitmaps it a bit tricky, but it
+    seems to work ok. The main problem here is to find the "inside" of a chess
+    piece: follow the steps as explained below.
+*/
+static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
+{
+    HBITMAP hbm;
+    HBITMAP hbm_old;
+    COLORREF chroma = RGB(0xFF,0x00,0xFF);
+    RECT rc;
+    SIZE sz;
+    POINT pt;
+    int backColor = whitePieceColor;
+    int foreColor = blackPieceColor;
+    int shapeIndex = index < 6 ? index+6 : index;
+
+    if( index < 6 && appData.fontBackColorWhite != appData.fontForeColorWhite ) {
+        backColor = appData.fontBackColorWhite;
+        foreColor = appData.fontForeColorWhite;
+    }
+    else if( index >= 6 && appData.fontBackColorBlack != appData.fontForeColorBlack ) {
+        backColor = appData.fontBackColorBlack;
+        foreColor = appData.fontForeColorBlack;
+    }
+
+    /* Mask */
+    hbm = CreateCompatibleBitmap( hdc_window, squareSize, squareSize );
+
+    hbm_old = SelectObject( hdc, hbm );
+
+    rc.left = 0;
+    rc.top = 0;
+    rc.right = squareSize;
+    rc.bottom = squareSize;
+
+    /* Step 1: background is now black */
+    FillRect( hdc, &rc, GetStockObject(BLACK_BRUSH) );
+
+    GetTextExtentPoint32( hdc, &pieceToFontChar[index], 1, &sz );
+
+    pt.x = (squareSize - sz.cx) / 2;
+    pt.y = (squareSize - sz.cy) / 2;
+
+    SetBkMode( hdc, TRANSPARENT );
+    SetTextColor( hdc, chroma );
+    /* Step 2: the piece has been drawn in purple, there are now black and purple in this bitmap */
+    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[index], 1 );
+
+    SelectObject( hdc, GetStockObject(WHITE_BRUSH) );
+    /* Step 3: the area outside the piece is filled with white */
+    FloodFill( hdc, 0, 0, chroma );
+    SelectObject( hdc, GetStockObject(BLACK_BRUSH) );
+    /*
+        Step 4: this is the tricky part, the area inside the piece is filled with black,
+        but if the start point is not inside the piece we're lost!
+        There should be a better way to do this... if we could create a region or path
+        from the fill operation we would be fine for example.
+    */
+    FloodFill( hdc, squareSize / 2, squareSize / 2, RGB(0xFF,0xFF,0xFF) );
+
+    SetTextColor( hdc, 0 );
+    /*
+        Step 5: some fonts have "disconnected" areas that are skipped by the fill:
+        draw the piece again in black for safety.
+    */
+    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[index], 1 );
+
+    SelectObject( hdc, hbm_old );
+
+    if( hPieceMask[index] != NULL ) {
+        DeleteObject( hPieceMask[index] );
+    }
+
+    hPieceMask[index] = hbm;
+
+    /* Face */
+    hbm = CreateCompatibleBitmap( hdc_window, squareSize, squareSize );
+
+    SelectObject( hdc, hbm );
+
+    {
+        HDC dc1 = CreateCompatibleDC( hdc_window );
+        HDC dc2 = CreateCompatibleDC( hdc_window );
+        HBITMAP bm2 = CreateCompatibleBitmap( hdc_window, squareSize, squareSize );
+
+        SelectObject( dc1, hPieceMask[index] );
+        SelectObject( dc2, bm2 );
+        FillRect( dc2, &rc, GetStockObject(WHITE_BRUSH) );
+        BitBlt( dc2, 0, 0, squareSize, squareSize, dc1, 0, 0, SRCINVERT );
+
+        /*
+            Now dc2 contains the inverse of the piece mask, i.e. a mask that preserves
+            the piece background and deletes (makes transparent) the rest.
+            Thanks to that mask, we are free to paint the background with the greates
+            freedom, as we'll be able to mask off the unwanted parts when finished.
+            We use this, to make gradients and give the pieces a "roundish" look.
+        */
+        SetPieceBackground( hdc, backColor, 2 );
+        BitBlt( hdc, 0, 0, squareSize, squareSize, dc2, 0, 0, SRCAND );
+
+        DeleteDC( dc2 );
+        DeleteDC( dc1 );
+        DeleteObject( bm2 );
+    }
+
+    SetTextColor( hdc, foreColor );
+    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[index], 1 );
+
+    SelectObject( hdc, hbm_old );
+
+    hPieceFace[index] = hbm;
+}
+
+static int TranslatePieceToFontPiece( int piece )
+{
+    switch( piece ) {
+    case BlackPawn:
+        return PM_BP;
+    case BlackKnight:
+        return PM_BN;
+    case BlackBishop:
+        return PM_BB;
+    case BlackRook:
+        return PM_BR;
+    case BlackQueen:
+        return PM_BQ;
+    case BlackKing:
+        return PM_BK;
+    case WhitePawn:
+        return PM_WP;
+    case WhiteKnight:
+        return PM_WN;
+    case WhiteBishop:
+        return PM_WB;
+    case WhiteRook:
+        return PM_WR;
+    case WhiteQueen:
+        return PM_WQ;
+    case WhiteKing:
+        return PM_WK;
+    }
+
+    return 0;
+}
+
+void CreatePiecesFromFont()
+{
+    LOGFONT lf;
+    HDC hdc_window = NULL;
+    HDC hdc = NULL;
+    HFONT hfont_old;
+    int fontHeight;
+    int i;
+
+    if( fontBitmapSquareSize < 0 ) {
+        /* Something went seriously wrong in the past: do not try to recreate fonts! */
+        return;
+    }
+
+    if( appData.renderPiecesWithFont == NULL || appData.renderPiecesWithFont[0] == NULLCHAR || appData.renderPiecesWithFont[0] == '*' ) {
+        fontBitmapSquareSize = -1;
+        return;
+    }
+
+    if( fontBitmapSquareSize != squareSize ) {
+        hdc_window = GetDC( hwndMain );
+        hdc = CreateCompatibleDC( hdc_window );
+
+        if( hPieceFont != NULL ) {
+            DeleteObject( hPieceFont );
+        }
+        else {
+            for( i=0; i<12; i++ ) {
+                hPieceMask[i] = NULL;
+            }
+        }
+
+        fontHeight = 75;
+
+        if( appData.fontPieceSize >= 50 && appData.fontPieceSize <= 150 ) {
+            fontHeight = appData.fontPieceSize;
+        }
+
+        fontHeight = (fontHeight * squareSize) / 100;
+
+        lf.lfHeight = -MulDiv( fontHeight, GetDeviceCaps(hdc, LOGPIXELSY), 72 );
+        lf.lfWidth = 0;
+        lf.lfEscapement = 0;
+        lf.lfOrientation = 0;
+        lf.lfWeight = FW_NORMAL;
+        lf.lfItalic = 0;
+        lf.lfUnderline = 0;
+        lf.lfStrikeOut = 0;
+        lf.lfCharSet = DEFAULT_CHARSET;
+        lf.lfOutPrecision = OUT_DEFAULT_PRECIS;
+        lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+        lf.lfQuality = PROOF_QUALITY;
+        lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+        strncpy( lf.lfFaceName, appData.renderPiecesWithFont, sizeof(lf.lfFaceName) );
+        lf.lfFaceName[ sizeof(lf.lfFaceName) - 1 ] = '\0';
+
+        hPieceFont = CreateFontIndirect( &lf );
+
+        if( hPieceFont == NULL ) {
+            fontBitmapSquareSize = -2;
+        }
+        else {
+            /* Setup font-to-piece character table */
+            if( ! SetPieceToFontCharTable(appData.fontToPieceTable) ) {
+                /* No (or wrong) global settings, try to detect the font */
+                if( strstr(lf.lfFaceName,"Alpha") != NULL ) {
+                    /* Alpha */
+                    SetPieceToFontCharTable("phbrqkojntwl");
+                }
+                else if( strstr(lf.lfFaceName,"DiagramTT") != NULL ) {
+                    /* DiagramTT* family */
+                    SetPieceToFontCharTable("PNLRQKpnlrqk");
+                }
+                else {
+                    /* Cases, Condal, Leipzig, Lucena, Marroquin, Merida, Usual */
+                    SetPieceToFontCharTable("pnbrqkomvtwl");
+                }
+            }
+
+            /* Create bitmaps */
+            hfont_old = SelectObject( hdc, hPieceFont );
+
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WP );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WN );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WB );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WR );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WQ );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WK );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BP );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BN );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BB );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BR );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BQ );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BK );
+
+            SelectObject( hdc, hfont_old );
+
+            fontBitmapSquareSize = squareSize;
+        }
+    }
+
+    if( hdc != NULL ) {
+        DeleteDC( hdc );
+    }
+
+    if( hdc_window != NULL ) {
+        ReleaseDC( hwndMain, hdc_window );
+    }
+}
+
 HBITMAP
 DoLoadBitmap(HINSTANCE hinst, char *piece, int squareSize, char *suffix)
 {
@@ -2032,13 +2541,24 @@ InitDrawingColors()
   whitePieceBrush = CreateSolidBrush(whitePieceColor);
   blackPieceBrush = CreateSolidBrush(blackPieceColor);
   iconBkgndBrush = CreateSolidBrush(GetSysColor(COLOR_BACKGROUND));
+
+  /* [AS] Force rendering of the font-based pieces */
+  if( fontBitmapSquareSize > 0 ) {
+    fontBitmapSquareSize = 0;
+  }
 }
 
 
 int
 BoardWidth(int boardSize)
 {
-  return (BOARD_SIZE + 1) * sizeInfo[boardSize].lineGap +
+  int lineGap = sizeInfo[boardSize].lineGap;
+
+  if( appData.overrideLineGap >= 0 && appData.overrideLineGap <= 5 ) {
+      lineGap = appData.overrideLineGap;
+  }
+
+  return (BOARD_SIZE + 1) * lineGap +
  	  BOARD_SIZE * sizeInfo[boardSize].squareSize;
 }
 
@@ -2083,6 +2603,10 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   smallLayout = sizeInfo[boardSize].smallLayout;
   squareSize = sizeInfo[boardSize].squareSize;
   lineGap = sizeInfo[boardSize].lineGap;
+
+  if( appData.overrideLineGap >= 0 && appData.overrideLineGap <= 5 ) {
+      lineGap = appData.overrideLineGap;
+  }
 
   if (tinyLayout != oldTinyLayout) {
     long style = GetWindowLong(hwndMain, GWL_STYLE);
@@ -2430,6 +2954,36 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
 
   if (appData.blindfold) return;
 
+  /* [AS] Use font-based pieces if needed */
+  if( fontBitmapSquareSize >= 0 && squareSize > 32 ) {
+    /* Create piece bitmaps, or do nothing if piece set is up to data */
+    CreatePiecesFromFont();
+
+    if( fontBitmapSquareSize == squareSize ) {
+        int index = TranslatePieceToFontPiece( piece );
+
+        SelectObject( tmphdc, hPieceMask[ index ] );
+
+        BitBlt( hdc,
+            x, y,
+            squareSize, squareSize,
+            tmphdc,
+            0, 0,
+            SRCAND );
+
+        SelectObject( tmphdc, hPieceFace[ index ] );
+
+        BitBlt( hdc,
+            x, y,
+            squareSize, squareSize,
+            tmphdc,
+            0, 0,
+            SRCPAINT );
+
+        return;
+    }
+  }
+
   if (appData.monoMode) {
     SelectObject(tmphdc, PieceBitmap(piece, 
       color == sqcolor ? OUTLINE_PIECE : SOLID_PIECE));
@@ -2477,12 +3031,93 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
   }
 }
 
+/* [AS] Compute a drawing mode for a square, based on specified settings (see DrawTile) */
+int GetBackTextureMode( int algo )
+{
+    int result = BACK_TEXTURE_MODE_DISABLED;
+
+    switch( algo )
+    {
+        case BACK_TEXTURE_MODE_PLAIN:
+            result = 1; /* Always use identity map */
+            break;
+        case BACK_TEXTURE_MODE_FULL_RANDOM:
+            result = 1 + (myrandom() % 3); /* Pick a transformation at random */
+            break;
+    }
+
+    return result;
+}
+
+/*
+    [AS] Compute and save texture drawing info, otherwise we may not be able
+    to handle redraws cleanly (as random numbers would always be different).
+*/
+VOID RebuildTextureSquareInfo()
+{
+    BITMAP bi;
+    int lite_w = 0;
+    int lite_h = 0;
+    int dark_w = 0;
+    int dark_h = 0;
+    int row;
+    int col;
+
+    ZeroMemory( &backTextureSquareInfo, sizeof(backTextureSquareInfo) );
+
+    if( liteBackTexture != NULL ) {
+        if( GetObject( liteBackTexture, sizeof(bi), &bi ) > 0 ) {
+            lite_w = bi.bmWidth;
+            lite_h = bi.bmHeight;
+        }
+    }
+
+    if( darkBackTexture != NULL ) {
+        if( GetObject( darkBackTexture, sizeof(bi), &bi ) > 0 ) {
+            dark_w = bi.bmWidth;
+            dark_h = bi.bmHeight;
+        }
+    }
+
+    for( row=0; row<BOARD_SIZE; row++ ) {
+        for( col=0; col<BOARD_SIZE; col++ ) {
+            if( (col + row) & 1 ) {
+                /* Lite square */
+                if( lite_w >= squareSize && lite_h >= squareSize ) {
+                    backTextureSquareInfo[row][col].x = col * (lite_w - squareSize) / BOARD_SIZE;
+                    backTextureSquareInfo[row][col].y = row * (lite_h - squareSize) / BOARD_SIZE;
+                    backTextureSquareInfo[row][col].mode = GetBackTextureMode(liteBackTextureMode);
+                }
+            }
+            else {
+                /* Dark square */
+                if( dark_w >= squareSize && dark_h >= squareSize ) {
+                    backTextureSquareInfo[row][col].x = col * (dark_w - squareSize) / BOARD_SIZE;
+                    backTextureSquareInfo[row][col].y = row * (dark_h - squareSize) / BOARD_SIZE;
+                    backTextureSquareInfo[row][col].mode = GetBackTextureMode(darkBackTextureMode);
+                }
+            }
+        }
+    }
+}
+
 VOID
 DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
 {
   int row, column, x, y, square_color, piece_color;
   ChessSquare piece;
   HBRUSH oldBrush;
+  HDC texture_hdc = NULL;
+
+  /* [AS] Initialize background textures if needed */
+  if( liteBackTexture != NULL || darkBackTexture != NULL ) {
+      if( backTextureSquareSize != squareSize ) {
+          backTextureSquareSize = squareSize;
+          RebuildTextureSquareInfo();
+      }
+
+      texture_hdc = CreateCompatibleDC( hdc );
+  }
 
   for (row = 0; row < BOARD_SIZE; row++) {
     for (column = 0; column < BOARD_SIZE; column++) {
@@ -2501,7 +3136,26 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
         } else {
           DrawPieceOnDC(hdc, piece, piece_color, square_color, x, y, tmphdc);
         }
-      } else {
+      }
+      else if( backTextureSquareInfo[row][column].mode > 0 ) {
+          /* [AS] Draw the square using a texture bitmap */
+          HBITMAP hbm = SelectObject( texture_hdc, square_color ? liteBackTexture : darkBackTexture );
+
+          DrawTile( x, y,
+              squareSize, squareSize,
+              hdc,
+              texture_hdc,
+              backTextureSquareInfo[row][column].mode,
+              backTextureSquareInfo[row][column].x,
+              backTextureSquareInfo[row][column].y );
+
+          SelectObject( texture_hdc, hbm );
+
+          if (piece != EmptySquare) {
+              DrawPieceOnDC(hdc, piece, piece_color, -1, x, y, tmphdc);
+          }
+      }
+      else {
         oldBrush = SelectObject(hdc, square_color ?
 				lightSquareBrush : darkSquareBrush);
         BitBlt(hdc, x, y, squareSize, squareSize, 0, 0, 0, PATCOPY);
@@ -2510,6 +3164,10 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
           DrawPieceOnDC(hdc, piece, piece_color, -1, x, y, tmphdc);
       }
     }
+  }
+
+  if( texture_hdc != NULL ) {
+    DeleteDC( texture_hdc );
   }
 }
 
@@ -3559,6 +4217,24 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       PasteGameFromClipboard();
       break;
 
+    /* [AS] Autodetect FEN or PGN data */
+    case IDM_Paste:
+      PasteGameOrFENFromClipboard();
+      break;
+
+    /* [AS] User adjudication */
+    case IDM_UserAdjudication_White:
+        UserAdjudicationEvent( +1 );
+        break;
+
+    case IDM_UserAdjudication_Black:
+        UserAdjudicationEvent( -1 );
+        break;
+
+    case IDM_UserAdjudication_Draw:
+        UserAdjudicationEvent( 0 );
+        break;
+
     case IDM_CopyPosition:
       CopyFENToClipboard();
       break;
@@ -3833,7 +4509,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	char dir[MSG_SIZ];
 	GetCurrentDirectory(MSG_SIZ, dir);
 	SetCurrentDirectory(installDir);
-	debugFP = fopen("WinBoard.debug", "w");
+	debugFP = fopen(appData.nameOfDebugFile, "w");
         SetCurrentDirectory(dir);
         setbuf(debugFP, NULL);
       } else {
@@ -4620,13 +5296,17 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SendMessage(hwndCombo, CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0);
       SendMessage(hwndCombo, WM_SETTEXT, (WPARAM) 0, (LPARAM) buf);
     }
-    if (chessProgram) {
-      CheckDlgButton(hDlg, OPT_ChessEngine, BST_CHECKED);
-    } else if (appData.icsActive) {
+
+    if (appData.icsActive) {
       CheckDlgButton(hDlg, OPT_ChessServer, BST_CHECKED);
-    } else if (appData.noChessProgram) {
+    }
+    else if (appData.noChessProgram) {
       CheckDlgButton(hDlg, OPT_View, BST_CHECKED);
     }
+    else {
+      CheckDlgButton(hDlg, OPT_ChessEngine, BST_CHECKED);
+    }
+
     SetStartupDialogEnables(hDlg);
     return TRUE;
 
@@ -5827,6 +6507,28 @@ DoWriteFile(HANDLE hFile, char *buf, int count, DWORD *outCount,
   return err;
 }
 
+/* [AS] If input is line by line and a line exceed the buffer size, force an error */
+void CheckForInputBufferFull( InputSource * is )
+{
+    if( is->lineByLine && (is->next - is->buf) >= INPUT_SOURCE_BUF_SIZE ) {
+        /* Look for end of line */
+        char * p = is->buf;
+
+        while( p < is->next && *p != '\n' ) {
+            p++;
+        }
+
+        if( p >= is->next ) {
+            if (appData.debugMode) {
+                fprintf( debugFP, "Input line exceeded buffer size (source id=%u)\n", is->id );
+            }
+
+            is->error = ERROR_BROKEN_PIPE; /* [AS] Just a non-successful code! */
+            is->count = (DWORD) -2;
+            is->next = is->buf;
+        }
+    }
+}
 
 DWORD
 InputThread(LPVOID arg)
@@ -5851,6 +6553,9 @@ InputThread(LPVOID arg)
 	is->count = (DWORD) -1;
       }
     }
+
+    CheckForInputBufferFull( is );
+
     SendMessage(hwndMain, WM_USER_Input, 0, (LPARAM) is);
     if (is->count <= 0) break;  /* Quit on EOF or error */
   }
@@ -5905,6 +6610,9 @@ NonOvlInputThread(LPVOID arg)
 	is->count = (DWORD) -1;
       }
     }
+
+    CheckForInputBufferFull( is );
+
     SendMessage(hwndMain, WM_USER_Input, 0, (LPARAM) is);
     if (is->count < 0) break;  /* Quit on error */
   }
@@ -5953,12 +6661,14 @@ InputEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	p = q;
       }
     }
+
     /* Move any partial line to the start of the buffer */
     q = is->buf;
     while (p < is->next) {
       *q++ = *p++;
     }
     is->next = q;
+
     if (is->error != NO_ERROR || is->count == 0) {
       /* Notify backend of the error.  Note: If there was a partial
 	 line at the end, it is not flushed through. */
@@ -6354,10 +7064,8 @@ DisplayMessage(char *str1, char *str2)
 VOID
 DisplayError(char *str, int error)
 {
-  FARPROC lpProc;
   char buf[MSG_SIZ*2], buf2[MSG_SIZ];
   int len;
-  char *p, *q;
 
   if (error == 0) {
     strcpy(buf, str);
@@ -6958,6 +7666,27 @@ DestroyChildProcess(ProcRef pr, int/*boolean*/ signal)
        we could arrange for this even though neither WinBoard
        nor the chess program uses a console for stdio? */
     /*!!if (signal) GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, cp->pid);*/
+
+    /* [AS] Special termination modes for misbehaving programs... */
+    if( signal == 9 ) {
+        if ( appData.debugMode) {
+            fprintf( debugFP, "Terminating process %u\n", cp->pid );
+        }
+
+        TerminateProcess( cp->hProcess, 0 );
+    }
+    else if( signal == 10 ) {
+        DWORD dw = WaitForSingleObject( cp->hProcess, 3*1000 ); // Wait 3 seconds at most
+
+        if( dw != WAIT_OBJECT_0 ) {
+            if ( appData.debugMode) {
+                fprintf( debugFP, "Process %u still alive after timeout, killing...\n", cp->pid );
+            }
+
+            TerminateProcess( cp->hProcess, 0 );
+        }
+    }
+
     CloseHandle(cp->hProcess);
     break;
 
@@ -7344,7 +8073,7 @@ InputSourceRef
 AddInputSource(ProcRef pr, int lineByLine,
 	       InputCallback func, VOIDSTAR closure)
 {
-  InputSource *is, *is2;
+  InputSource *is, *is2 = NULL;
   ChildProc *cp = (ChildProc *) pr;
 
   is = (InputSource *) calloc(1, sizeof(InputSource));
@@ -7358,13 +8087,18 @@ AddInputSource(ProcRef pr, int lineByLine,
     consoleInputSource = is;
   } else {
     is->kind = cp->kind;
+    /*
+        [AS] Try to avoid a race condition if the thread is given control too early:
+        we create all threads suspended to that the is->hThread variable can be
+        safely assigned, then let the threads start with ResumeThread.
+    */
     switch (cp->kind) {
     case CPReal:
       is->hFile = cp->hFrom;
       cp->hFrom = NULL; /* now owned by InputThread */
       is->hThread =
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) NonOvlInputThread,
-		     (LPVOID) is, 0, &is->id);
+		     (LPVOID) is, CREATE_SUSPENDED, &is->id);
       break;
 
     case CPComm:
@@ -7372,14 +8106,14 @@ AddInputSource(ProcRef pr, int lineByLine,
       cp->hFrom = NULL; /* now owned by InputThread */
       is->hThread =
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) InputThread,
-		     (LPVOID) is, 0, &is->id);
+		     (LPVOID) is, CREATE_SUSPENDED, &is->id);
       break;
 
     case CPSock:
       is->sock = cp->sock;
       is->hThread =
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) SocketInputThread,
-		     (LPVOID) is, 0, &is->id);
+		     (LPVOID) is, CREATE_SUSPENDED, &is->id);
       break;
 
     case CPRcmd:
@@ -7391,13 +8125,22 @@ AddInputSource(ProcRef pr, int lineByLine,
       is2->second = is2;
       is->hThread =
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) SocketInputThread,
-		     (LPVOID) is, 0, &is->id);
+		     (LPVOID) is, CREATE_SUSPENDED, &is->id);
       is2->hThread =
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) SocketInputThread,
-		     (LPVOID) is2, 0, &is2->id);
+		     (LPVOID) is2, CREATE_SUSPENDED, &is2->id);
       break;
     }
+
+    if( is->hThread != NULL ) {
+        ResumeThread( is->hThread );
   }
+
+    if( is2 != NULL && is2->hThread != NULL ) {
+        ResumeThread( is2->hThread );
+    }
+  }
+
   return (InputSourceRef) is;
 }
 
