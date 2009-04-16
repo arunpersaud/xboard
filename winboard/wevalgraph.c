@@ -1,7 +1,7 @@
 /*
  * Evaluation graph
  *
- * Author: Alessandro Scotti
+ * Author: Alessandro Scotti (Dec 2005)
  *
  * ------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify

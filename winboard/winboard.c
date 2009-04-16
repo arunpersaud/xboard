@@ -86,6 +86,8 @@
 
 #include "wsnap.h"
 
+void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
+
 int myrandom(void);
 void mysrandom(unsigned int seed);
 
@@ -450,7 +452,7 @@ BOOL EvalGraphIsUp();
 VOID EngineOutputPopUp();
 VOID EngineOutputPopDown();
 BOOL EngineOutputIsUp();
-VOID EngineOutputUpdate( int which, int depth, unsigned long nodes, int score, int time, char * pv );
+VOID EngineOutputUpdate( int which, int depth, unsigned long nodes, int score, int time, char * pv, char * hint );
 
 /*
  * Setting "frozen" should disable all user input other than deleting
@@ -619,6 +621,9 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
 
   InitBackEnd1();
+
+  InitEngineUCI( installDir, &first );
+  InitEngineUCI( installDir, &second );
 
   /* Create a main window for this application instance. */
   hwnd = CreateWindow(szAppName, szTitle,
@@ -1145,6 +1150,20 @@ ArgDescriptor argDescriptors[] = {
   { "adjudicateDrawMoves", ArgInt, (LPVOID) &appData.adjudicateDrawMoves, TRUE },
   { "autoDisplayComment", ArgBoolean, (LPVOID) &appData.autoDisplayComment, TRUE },
   { "autoDisplayTags", ArgBoolean, (LPVOID) &appData.autoDisplayTags, TRUE },
+  { "firstIsUCI", ArgBoolean, (LPVOID) &appData.firstIsUCI, FALSE },
+  { "fUCI", ArgTrue, (LPVOID) &appData.firstIsUCI, FALSE },
+  { "secondIsUCI", ArgBoolean, (LPVOID) &appData.secondIsUCI, FALSE },
+  { "sUCI", ArgTrue, (LPVOID) &appData.secondIsUCI, FALSE },
+  { "firstHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.firstHasOwnBookUCI, FALSE },
+  { "fNoOwnBookUCI", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE },
+  { "secondHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.secondHasOwnBookUCI, FALSE },
+  { "sNoOwnBookUCI", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE },
+  { "polyglotDir", ArgFilename, (LPVOID) &appData.polyglotDir, TRUE },
+  { "usePolyglotBook", ArgBoolean, (LPVOID) &appData.usePolyglotBook, TRUE },
+  { "polyglotBook", ArgFilename, (LPVOID) &appData.polyglotBook, TRUE },
+  { "defaultHashSize", ArgInt, (LPVOID) &appData.defaultHashSize, TRUE },
+  { "defaultCacheSizeEGTB", ArgInt, (LPVOID) &appData.defaultCacheSizeEGTB, TRUE },
+  { "defaultPathEGTB", ArgFilename, (LPVOID) &appData.defaultPathEGTB, TRUE },
 
   /* [AS] Layout stuff */
   { "moveHistoryUp", ArgBoolean, (LPVOID) &wpMoveHistory.visible, TRUE },
@@ -1854,6 +1873,16 @@ InitAppData(LPSTR lpCmdLine)
   appData.adjudicateDrawMoves = 0;
   appData.autoDisplayComment = TRUE;
   appData.autoDisplayTags = TRUE;
+  appData.firstIsUCI = FALSE;
+  appData.secondIsUCI = FALSE;
+  appData.firstHasOwnBookUCI = TRUE;
+  appData.secondHasOwnBookUCI = TRUE;
+  appData.polyglotDir = "";
+  appData.usePolyglotBook = FALSE;
+  appData.polyglotBook = "";
+  appData.defaultHashSize = 64;
+  appData.defaultCacheSizeEGTB = 4;
+  appData.defaultPathEGTB = "c:\\egtb";
 
   InitWindowPlacement( &wpMoveHistory );
   InitWindowPlacement( &wpEvalGraph );
@@ -4970,6 +4999,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       EnginePlayOptionsPopup(hwnd);
       break;
 
+    case IDM_OptionsUCI:
+      UciOptionsPopup(hwnd);
+      break;
+
     case IDM_IcsOptions:
       IcsOptionsPopup(hwnd);
       break;
@@ -6253,9 +6286,21 @@ ErrorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   switch (message) {
   case WM_INITDIALOG:
     GetWindowRect(hDlg, &rChild);
+
+    /*
     SetWindowPos(hDlg, NULL, rChild.left,
       rChild.top + boardRect.top - (rChild.bottom - rChild.top), 
       0, 0, SWP_NOZORDER|SWP_NOSIZE);
+    */
+
+    /*
+        [AS] It seems that the above code wants to move the dialog up in the "caption
+        area" of the main window, but it uses the dialog height as an hard-coded constant,
+        and it doesn't work when you resize the dialog.
+        For now, just give it a default position.
+    */
+    SetWindowPos(hDlg, NULL, boardRect.left+8, boardRect.top+8, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
+
     errorDialog = hDlg;
     SetWindowText(hDlg, errorTitle);
     hwndText = GetDlgItem(hDlg, OPT_ErrorText);
@@ -9426,7 +9471,7 @@ HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
     EvalGraphSet( first, last, current, pvInfoList );
 }
 
-void SetProgramStats( int which, int depth, unsigned long nodes, int score, int time, char * pv )
+void SetProgramStats( int which, int depth, unsigned long nodes, int score, int time, char * pv, char * hint )
 {
 #if 0
     char buf[1024];
@@ -9437,5 +9482,5 @@ void SetProgramStats( int which, int depth, unsigned long nodes, int score, int 
     OutputDebugString( buf );
 #endif
 
-    EngineOutputUpdate( which, depth, nodes, score, time, pv );
+    EngineOutputUpdate( which, depth, nodes, score, time, pv, hint );
 }

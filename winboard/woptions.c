@@ -26,6 +26,7 @@
 #include <windows.h>   /* required for all Windows applications */
 #include <stdio.h>
 #include <stdlib.h>
+#include <shlobj.h>    /* [AS] Requires NT 4.0 or Win95 */
 
 #include "common.h"
 #include "winboard.h"
@@ -2514,5 +2515,156 @@ VOID EnginePlayOptionsPopup(HWND hwnd)
 
   lpProc = MakeProcInstance((FARPROC)EnginePlayOptionsDialog, hInst);
   DialogBox(hInst, MAKEINTRESOURCE(DLG_EnginePlayOptions), hwnd, (DLGPROC) lpProc);
+  FreeProcInstance(lpProc);
+}
+
+/*---------------------------------------------------------------------------*\
+ *
+ * UCI Options Dialog functions
+ *
+\*---------------------------------------------------------------------------*/
+static BOOL BrowseForFolder( const char * title, char * path )
+{
+    BOOL result = FALSE;
+    BROWSEINFO bi;
+    LPITEMIDLIST pidl;
+
+    ZeroMemory( &bi, sizeof(bi) );
+
+    bi.lpszTitle = title == 0 ? "Choose Folder" : title;
+    bi.ulFlags = BIF_RETURNONLYFSDIRS;
+
+    pidl = SHBrowseForFolder( &bi );
+
+    if( pidl != 0 ) {
+        IMalloc * imalloc = 0;
+
+        if( SHGetPathFromIDList( pidl, path ) ) {
+            result = TRUE;
+        }
+
+        if( SUCCEEDED( SHGetMalloc ( &imalloc ) ) ) {
+            imalloc->lpVtbl->Free(imalloc,pidl);
+            imalloc->lpVtbl->Release(imalloc);
+        }
+    }
+
+    return result;
+}
+
+LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  char buf[MAX_PATH];
+
+  switch (message) {
+  case WM_INITDIALOG: /* message: initialize dialog box */
+
+    /* Center the dialog over the application window */
+    CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+
+    /* Initialize the dialog items */
+    SetDlgItemText( hDlg, IDC_PolyglotDir, appData.polyglotDir );
+    SetDlgItemInt( hDlg, IDC_HashSize, appData.defaultHashSize, TRUE );
+    SetDlgItemText( hDlg, IDC_PathToEGTB, appData.defaultPathEGTB );
+    SetDlgItemInt( hDlg, IDC_SizeOfEGTB, appData.defaultCacheSizeEGTB, TRUE );
+    CheckDlgButton( hDlg, IDC_UseBook, (BOOL) appData.usePolyglotBook );
+    SetDlgItemText( hDlg, IDC_BookFile, appData.polyglotBook );
+
+    SendDlgItemMessage( hDlg, IDC_PolyglotDir, EM_SETSEL, 0, -1 );
+
+    return TRUE;
+
+  case WM_COMMAND: /* message: received a command */
+    switch (LOWORD(wParam)) {
+    case IDOK:
+      GetDlgItemText( hDlg, IDC_PolyglotDir, buf, sizeof(buf) );
+      appData.polyglotDir = strdup(buf);
+      appData.defaultHashSize = GetDlgItemInt(hDlg, IDC_HashSize, NULL, FALSE );
+      appData.defaultCacheSizeEGTB = GetDlgItemInt(hDlg, IDC_SizeOfEGTB, NULL, FALSE );
+      GetDlgItemText( hDlg, IDC_PathToEGTB, buf, sizeof(buf) );
+      appData.defaultPathEGTB = strdup(buf);
+      GetDlgItemText( hDlg, IDC_BookFile, buf, sizeof(buf) );
+      appData.polyglotBook = strdup(buf);
+      appData.usePolyglotBook = (Boolean) IsDlgButtonChecked( hDlg, IDC_UseBook );
+
+      EndDialog(hDlg, TRUE);
+      return TRUE;
+
+    case IDCANCEL:
+      EndDialog(hDlg, FALSE);
+      return TRUE;
+
+    case IDC_BrowseForBook:
+      {
+          char filter[] = {
+              'A','l','l',' ','F','i','l','e','s', 0,
+              '*','.','*', 0,
+              'B','I','N',' ','F','i','l','e','s', 0,
+              '*','.','b','i','n', 0,
+              0 };
+
+          OPENFILENAME ofn;
+
+          strcpy( buf, "" );
+
+          ZeroMemory( &ofn, sizeof(ofn) );
+
+          ofn.lStructSize = sizeof(ofn);
+          ofn.hwndOwner = hDlg;
+          ofn.hInstance = hInst;
+          ofn.lpstrFilter = filter;
+          ofn.lpstrFile = buf;
+          ofn.nMaxFile = sizeof(buf);
+          ofn.lpstrTitle = "Choose Book";
+          ofn.Flags = OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
+
+          if( GetOpenFileName( &ofn ) ) {
+              SetDlgItemText( hDlg, IDC_BookFile, buf );
+          }
+      }
+      return TRUE;
+
+    case IDC_BrowseForPolyglotDir:
+      if( BrowseForFolder( "Choose Polyglot Directory", buf ) ) {
+        SetDlgItemText( hDlg, IDC_PolyglotDir, buf );
+
+        strcat( buf, "\\polyglot.exe" );
+
+        if( GetFileAttributes(buf) == 0xFFFFFFFF ) {
+            MessageBox( hDlg, "Polyglot was not found in the specified folder!", "Warning", MB_OK | MB_ICONWARNING );
+        }
+      }
+      return TRUE;
+
+    case IDC_BrowseForEGTB:
+      if( BrowseForFolder( "Choose EGTB Directory:", buf ) ) {
+        SetDlgItemText( hDlg, IDC_PathToEGTB, buf );
+      }
+      return TRUE;
+
+    case IDC_HashSize:
+    case IDC_SizeOfEGTB:
+        if( HIWORD(wParam) == EN_CHANGE ) {
+            int n1_ok;
+            int n2_ok;
+
+            GetDlgItemInt(hDlg, IDC_HashSize, &n1_ok, FALSE );
+            GetDlgItemInt(hDlg, IDC_SizeOfEGTB, &n2_ok, FALSE );
+
+            EnableWindow( GetDlgItem(hDlg, IDOK), n1_ok && n2_ok ? TRUE : FALSE );
+        }
+        return TRUE;
+    }
+    break;
+  }
+  return FALSE;
+}
+
+VOID UciOptionsPopup(HWND hwnd)
+{
+  FARPROC lpProc;
+
+  lpProc = MakeProcInstance((FARPROC)UciOptionsDialog, hInst);
+  DialogBox(hInst, MAKEINTRESOURCE(DLG_OptionsUCI), hwnd, (DLGPROC) lpProc);
   FreeProcInstance(lpProc);
 }

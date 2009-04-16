@@ -1,7 +1,7 @@
 /*
  * Move history for WinBoard
  *
- * Author: Alessandro Scotti
+ * Author: Alessandro Scotti (Dec 2005)
  *
  * ------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
@@ -59,6 +59,8 @@ typedef char MoveHistoryString[ MOVE_LEN*2 ];
 static int lastFirst = 0;
 static int lastLast = 0;
 static int lastCurrent = -1;
+
+static char lastLastMove[ MOVE_LEN ];
 
 static MoveHistoryString * currMovelist;
 static ChessProgramStats_Move * currPvInfo;
@@ -125,6 +127,13 @@ static BOOL OnlyCurrentPositionChanged()
         TRUE )
     {
         result = TRUE;
+
+        /* Special case: last move changed */
+        if( currCurrent == currLast-1 ) {
+            if( strcmp( currMovelist[currCurrent], lastLastMove ) != 0 ) {
+                result = FALSE;
+            }
+        }
     }
 
     return result;
@@ -214,7 +223,7 @@ static VOID AppendMoveToMemo( int index )
 
     /* PV info (if any) */
     if( appData.showEvalInMoveHistory && currPvInfo[index].depth > 0 ) {
-        sprintf( buf, "%{%s%.2f/%d} ",
+        sprintf( buf, "{%s%.2f/%d} ",
             currPvInfo[index].score >= 0 ? "+" : "",
             currPvInfo[index].score / 100.0,
             currPvInfo[index].depth );
@@ -245,6 +254,11 @@ static void MemoContentUpdated()
     lastFirst = currFirst;
     lastLast = currLast;
     lastCurrent = currCurrent;
+    lastLastMove[0] = '\0';
+
+    if( lastLast > 0 ) {
+        strcpy( lastLastMove, SavePart( currMovelist[lastLast-1] ) );
+    }
 
     /* Deselect any text, move caret to end of memo */
     if( currCurrent >= 0 ) {

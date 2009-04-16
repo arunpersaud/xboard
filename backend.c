@@ -597,8 +597,13 @@ InitBackEnd1()
     first.useFEN960 = FALSE; second.useFEN960 = FALSE;
     first.useOOCastle = TRUE; second.useOOCastle = TRUE;
     /* End of new features added by Tord. */
+
     first.scoreIsAbsolute = appData.firstScoreIsAbsolute; /* [AS] */
     second.scoreIsAbsolute = appData.secondScoreIsAbsolute; /* [AS] */
+    first.isUCI = appData.firstIsUCI; /* [AS] */
+    second.isUCI = appData.secondIsUCI; /* [AS] */
+    first.hasOwnBookUCI = appData.firstHasOwnBookUCI; /* [AS] */
+    second.hasOwnBookUCI = appData.secondHasOwnBookUCI; /* [AS] */
 
     if (appData.firstProtocolVersion > PROTOVER ||
 	appData.firstProtocolVersion < 1) {
@@ -1593,6 +1598,8 @@ static int player1Rating = -1;
 static int player2Rating = -1;
 /*----------------------------*/
 
+ColorClass curColor = ColorNormal;
+
 void
 read_from_ics(isr, closure, data, count, error)
      InputSourceRef isr;
@@ -1616,7 +1623,6 @@ read_from_ics(isr, closure, data, count, error)
     static int parse_pos = 0;
     static char buf[BUF_SIZE + 1];
     static int firstTime = TRUE, intfSet = FALSE;
-    static ColorClass curColor = ColorNormal;
     static ColorClass prevColor = ColorNormal;
     static int savingComment = FALSE;
     char str[500];
@@ -4041,7 +4047,8 @@ void SendProgramStatsToFrontend( ChessProgramState * cps )
         programStats.nodes,
         programStats.score,
         programStats.time,
-        programStats.movelist );
+        programStats.movelist,
+        lastHint );
 }
 
 void
@@ -4877,6 +4884,40 @@ HandleMachineMove(message, cps)
 		return;
 	    }
 	}
+        else {
+	    buf1[0] = NULLCHAR;
+
+	    if (sscanf(message, "%d%c %d %d %lu %[^\n]\n",
+		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5)
+            {
+		if (plyext != ' ' && plyext != '\t') {
+		    time *= 100;
+		}
+
+                /* [AS] Negate score if machine is playing black and reporting absolute scores */
+                if( cps->scoreIsAbsolute && ((gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) ) {
+                    curscore = -curscore;
+                }
+
+		programStats.depth = plylev;
+		programStats.nodes = nodes;
+		programStats.time = time;
+		programStats.score = curscore;
+		programStats.got_only_move = 0;
+                programStats.movelist[0] = '\0';
+
+		if (buf1[0] != NULLCHAR) {
+                    safeStrCpy( programStats.movelist, buf1, sizeof(programStats.movelist) );
+		}
+
+		programStats.ok_to_send = 0;
+		programStats.line_is_book = 0;
+		programStats.nr_moves = 0;
+		programStats.moves_left = 0;
+
+                SendProgramStatsToFrontend( cps );
+            }
+        }
     }
 }
 

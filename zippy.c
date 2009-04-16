@@ -377,6 +377,21 @@ int ZippyCalled(str)
 static char opp_name[128][32];
 static int num_opps=0;
 
+extern ColorClass curColor;
+
+static void SetCurColor( ColorClass color )
+{
+    curColor = color;
+}
+
+static void ColorizeEx( ColorClass color, int cont )
+{
+    if( appData.colorize ) {
+        Colorize( color, cont );
+        SetCurColor( color );
+    }
+}
+
 int ZippyControl(buf, i)
      char *buf;
      int *i;
@@ -390,7 +405,8 @@ int ZippyControl(buf, i)
 
     /* Possibly reject Crafty as opponent */
     if (appData.zippyPlay && appData.zippyNoplayCrafty && forwardMostMove < 4
-	&& looking_at(buf, i, "* kibitzes: Hello from Crafty")) {
+	&& looking_at(buf, i, "* kibitzes: Hello from Crafty"))
+    {
         player = StripHighlightAndTitle(star_match[0]);
 	if ((gameMode == IcsPlayingWhite &&
 	     StrCaseCmp(player, gameInfo.black) == 0) ||
@@ -491,7 +507,8 @@ int ZippyControl(buf, i)
     }
 
     if (looking_at(buf, i, "* tells you: *") ||
-	looking_at(buf, i, "* says: *")) {
+	looking_at(buf, i, "* says: *"))
+    {
 	player = StripHighlightAndTitle(star_match[0]);
 	if (appData.zippyPassword[0] != NULLCHAR &&
 	    strncmp(star_match[1], appData.zippyPassword,
@@ -534,7 +551,15 @@ int ZippyControl(buf, i)
 		Speak("tell", player);
 	    }
 	}
+
+        ColorizeEx( ColorTell, FALSE );
+
 	return TRUE;
+    }
+
+    if( appData.colorize && looking_at(buf, i, "* (*) seeking") ) {
+	ColorizeEx(ColorSeek, FALSE);
+        return FALSE;
     }
 
     if (looking_at(buf, i, "* spoofs you:")) {
@@ -542,6 +567,7 @@ int ZippyControl(buf, i)
         sprintf(reply, "spoofedby %s\n", player);
         SendToICS(reply);
     }
+
     return FALSE;
 }
 
@@ -555,7 +581,8 @@ int ZippyConverse(buf, i)
 
     /* Shouts and emotes */
     if (looking_at(buf, i, "--> * *") ||
-	looking_at(buf, i, "* shouts: *")) {
+	looking_at(buf, i, "* shouts: *"))
+    {
       if (appData.zippyTalk) {
 	char *player = StripHighlightAndTitle(star_match[0]);
 	if (strcmp(player, ics_handle) == 0) {
@@ -568,6 +595,9 @@ int ZippyConverse(buf, i)
 	    Speak("shout", NULL);
 	}
       }
+
+      ColorizeEx(ColorShout, FALSE);
+
       return TRUE;
     }
 
@@ -578,6 +608,9 @@ int ZippyConverse(buf, i)
 	    Speak("kibitz", NULL);
 	}
       }
+
+      ColorizeEx(ColorKibitz, FALSE);
+
       return TRUE;
     }
 
@@ -588,6 +621,9 @@ int ZippyConverse(buf, i)
 	    Speak("whisper", NULL);
 	}
       }
+
+      ColorizeEx(ColorKibitz, FALSE);
+
       return TRUE;
     }
 
@@ -643,6 +679,8 @@ int ZippyConverse(buf, i)
 	    Speak("tell", channel);
 	  }
 #endif
+
+          ColorizeEx( atoi(channel) == 1 ? ColorChannel1 : ColorChannel, FALSE );
 	}
 	return TRUE;
     }

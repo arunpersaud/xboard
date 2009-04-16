@@ -57,6 +57,38 @@ CopyFENToClipboard()
   free(fen);
 }
 
+/* [AS] */
+HGLOBAL ExportGameListAsText();
+
+VOID CopyGameListToClipboard()
+{
+    HGLOBAL hMem = ExportGameListAsText();
+
+    if( hMem != NULL ) {
+        /* Assign memory block to clipboard */
+        BOOL ok = OpenClipboard( hwndMain );
+
+        if( ok ) {
+            ok = EmptyClipboard();
+
+            if( ok ) {
+                if( hMem != SetClipboardData( CF_TEXT, hMem ) ) {
+                    ok = FALSE;
+                }
+            }
+
+            CloseClipboard();
+
+            if( ! ok ) {
+                GlobalFree( hMem );
+            }
+        }
+
+        if( ! ok ) {
+            DisplayError( "Cannot copy list to clipboard.", 0 );
+        }
+    }
+}
 
 VOID
 CopyGameToClipboard()

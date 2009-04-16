@@ -87,6 +87,19 @@
 #define DLG_BoardOptions                455
 #define DLG_Fonts                       456
 #define DLG_NewGameFRC                  457
+#define DLG_GameListOptions             458
+#define DLG_MoveHistory                 459
+#define DLG_EvalGraph                   461
+#define DLG_EngineOutput                463
+#define DLG_EnginePlayOptions           464
+#define IDI_WHITE_14                    466
+#define IDI_BLACK_14                    467
+#define DLG_OptionsUCI                  467
+#define IDI_PONDER_14                   468
+#define IDI_TRANS_14                    469
+#define IDI_CLOCK_14                    470
+#define IDI_UNKNOWN_14                  471
+#define IDI_BALOON_14                   472
 #define DLG_Promotion                   500
 #define PB_Queen                        502
 #define PB_Rook                         503
@@ -154,6 +167,8 @@
 #define OPT_DarkSquareColor             1023
 #define IDC_GameListFilter              1023
 #define IDC_NFG_Edit                    1023
+#define IDC_EpDrawMoveCount             1023
+#define IDC_PolyglotDir                 1023
 #define OPT_ConsoleText                 1024
 #define OPT_LightSquareColor            1024
 #define OPT_CommandInput                1025
@@ -170,6 +185,8 @@
 #define OPT_SampleDarkSquare            1030
 #define OPT_PremoveWhiteText            1031
 #define IDC_EDIT2                       1032
+#define IDC_EpAdjudicationThreshold     1032
+#define IDC_HashSize                    1032
 #define OPT_ConsoleInput                1033
 #define OPT_AdditionalOptions           1034
 #define OPT_PremoveBlackText            1035
@@ -221,10 +238,18 @@
 #define IDM_UserAdjudication_Black      1303
 #define IDM_UserAdjudication_Draw       1304
 #define IDM_NewGameFRC                  1305
+#define IDM_GameListOptions             1306
 #define PB_King                         1307
+#define IDM_ShowMoveHistory             1307
+#define IDM_PasteAny                    1309
+#define IDM_ShowEvalGraph               1310
+#define IDM_CopyGameListToClipboard     1311
 #define OPT_Bold                        1312
+#define IDM_ShowEngineOutput            1312
 #define OPT_Italic                      1313
+#define IDM_EnginePlayOptions           1313
 #define OPT_Underline                   1314
+#define IDM_OptionsUCI                  1314
 #define OPT_Strikeout                   1315
 #define OPT_ChooseColor                 1316
 #define OPT_Sample                      1318
@@ -352,6 +377,41 @@
 #define IDC_GameListDoFilter            1425
 #define IDC_NFG_Random                  1426
 #define IDC_NFG_Label                   1427
+#define IDC_GameListTags                1428
+#define IDC_GLT                         1429
+#define IDC_GLT_Up                      1430
+#define IDC_GLT_Down                    1431
+#define IDC_GLT_Restore                 1432
+#define IDC_GLT_Default                 1433
+#define IDC_GLT_RestoreTo               1434
+#define IDC_MoveHistory                 1435
+#define OPT_OutOfBookInfo               1436
+#define OPT_ExtraInfoInMoveHistory      1437
+#define OPT_HighlightMoveArrow          1438
+#define IDC_BUTTON1                     1440
+#define IDC_BrowseForPolyglotDir        1440
+#define IDC_BrowseForEGTB               1441
+#define IDC_BrowseForBook               1442
+#define IDC_EngineMemo1                 1443
+#define IDC_EngineMemo2                 1444
+#define IDC_EngineLabel1                1445
+#define IDC_EngineLabel2                1446
+#define IDC_EpShowThinking              1447
+#define IDC_EpHideThinkingHuman         1448
+#define IDC_EpPonder                    1449
+#define IDC_EpPeriodicUpdates           1450
+#define IDC_Engine1_NPS                 1451
+#define IDC_Engine2_NPS                 1452
+#define IDC_Color1                      1459
+#define IDC_Color2                      1460
+#define IDC_StateIcon1                  1461
+#define IDC_StateData1                  1462
+#define IDC_StateData2                  1463
+#define IDC_StateIcon2                  1464
+#define IDC_PathToEGTB                  1466
+#define IDC_SizeOfEGTB                  1467
+#define IDC_UseBook                     1469
+#define IDC_BookFile                    1470
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -359,9 +419,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        458
-#define _APS_NEXT_COMMAND_VALUE         1306
-#define _APS_NEXT_CONTROL_VALUE         1428
+#define _APS_NEXT_RESOURCE_VALUE        468
+#define _APS_NEXT_COMMAND_VALUE         1315
+#define _APS_NEXT_CONTROL_VALUE         1471
 #define _APS_NEXT_SYMED_VALUE           1404
 #endif
 #endif

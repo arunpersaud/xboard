@@ -23,6 +23,7 @@
 
 VOID CopyFENToClipboard();
 VOID CopyGameToClipboard();
+VOID CopyGameListToClipboard();
 int CopyTextToClipboard(char *text);
 
 VOID PasteFENFromClipboard();

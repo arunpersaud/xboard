@@ -407,6 +407,7 @@ typedef struct {
     int firstProtocolVersion;
     int secondProtocolVersion;
     Boolean showButtonBar;
+
     /* [AS] New properties (down to the "ZIPPY" part) */
     Boolean firstScoreIsAbsolute;  /* If true, engine score is always from white side */
     Boolean secondScoreIsAbsolute; /* If true, engine score is always from white side */
@@ -441,6 +442,17 @@ typedef struct {
     int adjudicateDrawMoves;
     Boolean autoDisplayComment;
     Boolean autoDisplayTags;
+    Boolean firstIsUCI;
+    Boolean secondIsUCI;
+    Boolean firstHasOwnBookUCI;
+    Boolean secondHasOwnBookUCI;
+    char * polyglotDir;
+    Boolean usePolyglotBook;
+    char * polyglotBook;
+    int defaultHashSize;
+    int defaultCacheSizeEGTB;
+    char * defaultPathEGTB;
+
 #if ZIPPY
     char *zippyLines;
     char *zippyPinhead;

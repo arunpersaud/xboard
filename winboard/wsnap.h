@@ -1,7 +1,7 @@
 /*
- * wsnap.h -- Smart "snapping" for window moving and sizing
+ * Smart "snapping" for window moving and sizing
  *
- * Author: Alessandro Scotti
+ * Author: Alessandro Scotti (Dec 2005)
  *
  * ------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify

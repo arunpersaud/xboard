@@ -1,7 +1,7 @@
 /*
- * wsnap.c -- Smart "snapping" for window moving and sizing
+ * Smart "snapping" for window moving and sizing
  *
- * Author: Alessandro Scotti
+ * Author: Alessandro Scotti (Dec 2005)
  *
  * ------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@ extern HINSTANCE hInst;
 extern HWND hwndMain;
 extern HWND moveHistoryDialog;
 extern HWND evalGraphDialog;
+extern HWND engineOutputDialog;
 extern HWND gameListDialog;
 
 static BOOL SnappingEnabled = TRUE;
@@ -107,6 +108,7 @@ LRESULT OnEnterSizeMove( SnapData * snapData, HWND hWnd, WPARAM wParam, LPARAM l
         AddSnapWindow( hWnd, snapData, hwndMain );
         AddSnapWindow( hWnd, snapData, moveHistoryDialog );
         AddSnapWindow( hWnd, snapData, evalGraphDialog );
+        AddSnapWindow( hWnd, snapData, engineOutputDialog );
         AddSnapWindow( hWnd, snapData, gameListDialog );
     }
 

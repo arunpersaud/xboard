@@ -169,6 +169,6 @@ void FreezeUI P((void));
 void ThawUI P((void));
 extern char *programName;
 
-void SetProgramStats P(( int which, int depth, unsigned long nodes, int score, int time, char * pv )); /* [AS] */
+void SetProgramStats P(( int which, int depth, unsigned long nodes, int score, int time, char * pv, char * hint )); /* [AS] */
 
 #endif

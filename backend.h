@@ -245,6 +245,8 @@ typedef struct _CPS {
     /* End of additions by Tord */
 
     int scoreIsAbsolute; /* [AS] 0=don't know (standard), 1=score is always from white side */
+    int isUCI;           /* [AS] 0=no (Winboard), 1=UCI (requires Polyglot) */
+    int hasOwnBookUCI;   /* [AS] 0=use GUI or Polyglot book, 1=has own book */
 } ChessProgramState;
 
 extern ChessProgramState first, second;

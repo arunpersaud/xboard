@@ -33,3 +33,4 @@ VOID LoadOptionsPopup(HWND hwnd);
 VOID SaveOptionsPopup(HWND hwnd);
 VOID TimeControlOptionsPopup(HWND hwnd);
 VOID EnginePlayOptionsPopup(HWND hwnd);
+VOID UciOptionsPopup(HWND hwnd);
