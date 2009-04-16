@@ -53,6 +53,8 @@ extern HWND hwndMain;
 
 extern WindowPlacement wpMoveHistory;
 
+extern BoardSize boardSize;
+
 /* Module globals */
 typedef char MoveHistoryString[ MOVE_LEN*2 ];
 
@@ -301,6 +303,9 @@ LRESULT CALLBACK HistoryDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPAR
             SendDlgItemMessage( moveHistoryDialog, IDC_MoveHistory, EM_SETTARGETDEVICE, 0, 0 );
 
             SendDlgItemMessage( moveHistoryDialog, IDC_MoveHistory, EM_SETEVENTMASK, 0, ENM_MOUSEEVENTS );
+
+            /* Set font */
+	    SendDlgItemMessage( moveHistoryDialog, IDC_MoveHistory, WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, MAKELPARAM(TRUE, 0 ));
 
             /* Restore window placement */
             RestoreWindowPlacement( hDlg, &wpMoveHistory );

@@ -4040,15 +4040,28 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   }
 }
 
-void SendProgramStatsToFrontend( ChessProgramState * cps )
+void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cpstats )
 {
-    SetProgramStats( cps == &first ? 0 : 1,
-        programStats.depth,
-        programStats.nodes,
-        programStats.score,
-        programStats.time,
-        programStats.movelist,
-        lastHint );
+    char * hint = lastHint;
+    FrontEndProgramStats stats;
+
+    stats.which = cps == &first ? 0 : 1;
+    stats.depth = cpstats->depth;
+    stats.nodes = cpstats->nodes;
+    stats.score = cpstats->score;
+    stats.time = cpstats->time;
+    stats.pv = cpstats->movelist;
+    stats.hint = lastHint;
+    stats.an_move_index = 0;
+    stats.an_move_count = 0;
+
+    if( gameMode == AnalyzeMode || gameMode == AnalyzeFile ) {
+        stats.hint = cpstats->move_name;
+        stats.an_move_index = cpstats->nr_moves - cpstats->moves_left;
+        stats.an_move_count = cpstats->nr_moves;
+    }
+
+    SetProgramStats( &stats );
 }
 
 void
@@ -4109,6 +4122,7 @@ HandleMachineMove(message, cps)
 		fprintf(debugFP, "Undoing extra move from %s, gameMode %d\n",
 			cps->which, gameMode);
 	    }
+
 	    SendToProgram("undo\n", cps);
 	  }
 	  return;
@@ -4764,7 +4778,7 @@ HandleMachineMove(message, cps)
 		    programStats.line_is_book = 0;
 		}
 		  
-                SendProgramStatsToFrontend( cps );
+                SendProgramStatsToFrontend( cps, &programStats );
 
                 /*
                     [AS] Protect the thinkOutput buffer from overflow... this
@@ -4816,7 +4830,7 @@ HandleMachineMove(message, cps)
 		   isn't searching, so stats won't change) */
 		programStats.line_is_book = 1;
 		  
-                SendProgramStatsToFrontend( cps );
+                SendProgramStatsToFrontend( cps, &programStats );
 
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode || gameMode == AnalyzeFile) {
 		    DisplayMove(currentMove - 1);
@@ -4841,8 +4855,9 @@ HandleMachineMove(message, cps)
 		programStats.nr_moves = mvtot;
 		strcpy(programStats.move_name, mvname);
 		programStats.ok_to_send = 1;
+                programStats.movelist[0] = '\0';
 
-                SendProgramStatsToFrontend( cps );
+                SendProgramStatsToFrontend( cps, &programStats );
 
 		DisplayAnalysis();
 		return;
@@ -4890,6 +4905,8 @@ HandleMachineMove(message, cps)
 	    if (sscanf(message, "%d%c %d %d %lu %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5)
             {
+                ChessProgramStats cpstats;
+
 		if (plyext != ' ' && plyext != '\t') {
 		    time *= 100;
 		}
@@ -4899,23 +4916,23 @@ HandleMachineMove(message, cps)
                     curscore = -curscore;
                 }
 
-		programStats.depth = plylev;
-		programStats.nodes = nodes;
-		programStats.time = time;
-		programStats.score = curscore;
-		programStats.got_only_move = 0;
-                programStats.movelist[0] = '\0';
+		cpstats.depth = plylev;
+		cpstats.nodes = nodes;
+		cpstats.time = time;
+		cpstats.score = curscore;
+		cpstats.got_only_move = 0;
+                cpstats.movelist[0] = '\0';
 
 		if (buf1[0] != NULLCHAR) {
-                    safeStrCpy( programStats.movelist, buf1, sizeof(programStats.movelist) );
+                    safeStrCpy( cpstats.movelist, buf1, sizeof(cpstats.movelist) );
 		}
 
-		programStats.ok_to_send = 0;
-		programStats.line_is_book = 0;
-		programStats.nr_moves = 0;
-		programStats.moves_left = 0;
+		cpstats.ok_to_send = 0;
+		cpstats.line_is_book = 0;
+		cpstats.nr_moves = 0;
+		cpstats.moves_left = 0;
 
-                SendProgramStatsToFrontend( cps );
+                SendProgramStatsToFrontend( cps, &cpstats );
             }
         }
     }
@@ -7028,6 +7045,7 @@ SavePart(str)
 #define PGN_SIDE_WHITE  0
 #define PGN_SIDE_BLACK  1
 
+/* [AS] */
 static int FindFirstMoveOutOfBook( int side )
 {
     int result = -1;
@@ -7046,13 +7064,14 @@ static int FindFirstMoveOutOfBook( int side )
             int score = pvInfoList[index].score;
             int in_book = 0;
 
-            if( depth == 0 ) {
-                in_book = 1; /* Yace */
-            }
-            if( score == 0 ) {
-                if( depth <= 1 || depth == 63 /* Zappa */ ) {
+            if( depth <= 2 ) {
                     in_book = 1;
                 }
+            else if( score == 0 && depth == 63 ) {
+                in_book = 1; /* Zappa */
+            }
+            else if( score == 2 && depth == 99 ) {
+                in_book = 1; /* Abrok */
             }
 
             has_book_hit += in_book;
@@ -7070,6 +7089,7 @@ static int FindFirstMoveOutOfBook( int side )
     return result;
 }
 
+/* [AS] */
 void GetOutOfBookInfo( char * buf )
 {
     int oob[2];
@@ -9629,7 +9649,10 @@ SendTimeRemaining(cps, machineWhite)
     if (time <= 0) time = 1;
     if (otime <= 0) otime = 1;
     
-    sprintf(message, "time %ld\notim %ld\n", time, otime);
+    sprintf(message, "time %ld\n", time);
+    SendToProgram(message, cps);
+
+    sprintf(message, "otim %ld\n", otime);
     SendToProgram(message, cps);
 }
 

@@ -169,6 +169,18 @@ void FreezeUI P((void));
 void ThawUI P((void));
 extern char *programName;
 
-void SetProgramStats P(( int which, int depth, unsigned long nodes, int score, int time, char * pv, char * hint )); /* [AS] */
+typedef struct FrontEndProgramStats_TAG {
+    int which;
+    int depth;
+    unsigned long nodes;
+    int score;
+    int time;
+    char * pv;
+    char * hint;
+    int an_move_index;
+    int an_move_count;
+} FrontEndProgramStats;
+
+void SetProgramStats P(( FrontEndProgramStats * stats )); /* [AS] */
 
 #endif

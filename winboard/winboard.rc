@@ -597,33 +597,38 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,156,208,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,212,208,50,14
     PUSHBUTTON      "Choose...",OPT_ChooseClockFont,212,15,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseMessageFont,212,45,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseCoordFont,212,75,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseTagFont,212,118,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseCommentsFont,212,148,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseConsoleFont,212,178,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseMessageFont,212,39,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseCoordFont,212,63,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseTagFont,212,101,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseCommentsFont,212,125,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseConsoleFont,212,149,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseMoveHistoryFont,212,174,45,15
     PUSHBUTTON      "&Defaults",OPT_DefaultFonts,3,208,50,15
     CONTROL         "",OPT_SampleCoordFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,71,140,20
+                    WS_DISABLED | WS_BORDER,67,59,140,20
     CONTROL         "",OPT_SampleTagFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,114,140,20
+                    WS_DISABLED | WS_BORDER,67,97,140,20
     CONTROL         "",OPT_SampleCommentsFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,144,140,20
+                    WS_DISABLED | WS_BORDER,67,121,140,20
     CONTROL         "",OPT_SampleConsoleFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,174,140,20
+                    WS_DISABLED | WS_BORDER,67,145,140,20
     LTEXT           "Clocks",OPT_ClockFont,13,16,45,10,NOT WS_GROUP
-    LTEXT           "Messages",OPT_MessageFont,13,46,45,10,NOT WS_GROUP
-    LTEXT           "Coordinates",OPT_CoordFont,13,76,45,10,NOT WS_GROUP
-    LTEXT           "Tags",OPT_EditTagsFont,13,119,45,10,NOT WS_GROUP
-    LTEXT           "Comments",OPT_CommentsFont,13,149,45,10,NOT WS_GROUP
-    LTEXT           "ICS Interaction",OPT_MessageFont5,13,179,50,10,NOT
+    LTEXT           "Messages",OPT_MessageFont,13,40,45,10,NOT WS_GROUP
+    LTEXT           "Coordinates",OPT_CoordFont,13,64,45,10,NOT WS_GROUP
+    LTEXT           "Tags",OPT_EditTagsFont,13,102,45,10,NOT WS_GROUP
+    LTEXT           "Comments",OPT_CommentsFont,13,126,45,10,NOT WS_GROUP
+    LTEXT           "ICS Interaction",OPT_MessageFont5,13,150,50,10,NOT
                     WS_GROUP
     CONTROL         "",OPT_SampleClockFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,67,11,140,20
     CONTROL         "",OPT_SampleMessageFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,41,140,20
-    GROUPBOX        "Current Board Size",IDC_STATIC,3,1,259,100
-    GROUPBOX        "All Board Sizes",IDC_STATIC,3,102,259,100
+                    WS_DISABLED | WS_BORDER,67,35,140,20
+    GROUPBOX        "Current Board Size",IDC_STATIC,3,1,259,83
+    GROUPBOX        "All Board Sizes",IDC_STATIC,3,87,259,109
+    CONTROL         "",OPT_SampleMoveHistoryFont,"RICHEDIT",ES_READONLY |
+                    WS_DISABLED | WS_BORDER,67,170,140,20
+    LTEXT           "Move History",OPT_MessageFont6,13,175,50,10,NOT
+                    WS_GROUP
 END
 
 DLG_NewGameFRC DIALOG DISCARDABLE  0, 0, 176, 47
@@ -679,7 +684,7 @@ EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "Engine output"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Engine #1",IDC_EngineLabel1,14,2,110,8
+    LTEXT           "Engine #1",IDC_EngineLabel1,14,2,84,8
     RTEXT           "NPS",IDC_Engine1_NPS,206,2,57,8
     CONTROL         "",IDC_EngineMemo1,"RICHEDIT",ES_MULTILINE |
                     ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_BORDER | WS_VSCROLL |
@@ -691,8 +696,8 @@ BEGIN
                     WS_HSCROLL | WS_TABSTOP,2,92,262,74
     ICON            IDI_UNKNOWN_14,IDC_Color1,2,4,20,20,SS_REALSIZEIMAGE
     ICON            IDI_UNKNOWN_14,IDC_Color2,4,84,20,20
-    LTEXT           "Static",IDC_StateData1,182,2,19,8
-    ICON            IDI_TRANS_14,IDC_StateIcon1,160,2,20,20
+    LTEXT           "Static",IDC_StateData1,120,2,83,8
+    ICON            IDI_TRANS_14,IDC_StateIcon1,98,0,21,20
     LTEXT           "Static",IDC_StateData2,186,84,19,8
     ICON            IDI_TRANS_14,IDC_StateIcon2,164,84,20,20
 END
@@ -725,7 +730,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,154,112,50,14
 END
 
-DLG_OptionsUCI DIALOG DISCARDABLE  0, 0, 228, 102
+DLG_OptionsUCI DIALOG DISCARDABLE  0, 0, 228, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "UCI Options"
 FONT 8, "MS Sans Serif"
@@ -740,8 +745,19 @@ BEGIN
     PUSHBUTTON      "...",IDC_BrowseForEGTB,206,40,17,14
     LTEXT           "EGTB Size (MB):",IDC_STATIC,2,62,54,8
     EDITTEXT        IDC_SizeOfEGTB,62,58,40,14,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,118,84,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,174,84,50,14
+    CONTROL         "Use Book:",IDC_UseBook,"Button",BS_AUTOCHECKBOX |
+                    WS_TABSTOP,2,80,49,10
+    EDITTEXT        IDC_BookFile,62,76,140,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BrowseForBook,206,76,17,14
+    DEFPUSHBUTTON   "OK",IDOK,118,106,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,174,106,50,14
+END
+
+DLG_Null DIALOG DISCARDABLE  0, 0, 186, 50
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Null"
+FONT 8, "MS Sans Serif"
+BEGIN
 END
 
 
@@ -848,7 +864,15 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 221
         TOPMARGIN, 7
-        BOTTOMMARGIN, 95
+        BOTTOMMARGIN, 117
+    END
+
+    DLG_Null, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -871,6 +895,8 @@ IDI_TRANS_14            ICON    DISCARDABLE     "bitmaps\\trans_14.ico"
 IDI_CLOCK_14            ICON    DISCARDABLE     "bitmaps\\clock_14.ico"
 IDI_UNKNOWN_14          ICON    DISCARDABLE     "bitmaps\\unknown_14.ico"
 IDI_BALOON_14           ICON    DISCARDABLE     "bitmaps\\baloon_14.ico"
+IDI_ANALYZE_14          ICON    DISCARDABLE     "bitmaps\\analyze_14.ico"
+IDI_ANALYZE2_14         ICON    DISCARDABLE     "bitmaps\\analyze2_14.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1108,9 +1134,10 @@ WINBOARD ACCELERATORS MOVEABLE PURE
 BEGIN
     "1",            IDM_DirectCommand1,     VIRTKEY, ALT, NOINVERT
     "2",            IDM_DirectCommand2,     VIRTKEY, ALT, NOINVERT
+    "B",            IDM_Book,               VIRTKEY, ALT, NOINVERT
     "C",            IDM_CopyGame,           VIRTKEY, ALT, NOINVERT
     "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, ALT, NOINVERT
-    "M",            IDM_TypeInMove,         VIRTKEY, ALT, NOINVERT
+    "I",            IDM_TypeInMove,         VIRTKEY, ALT, NOINVERT
     "N",            IDM_NewGame,            VIRTKEY, CONTROL, NOINVERT
     "O",            IDM_LoadGame,           VIRTKEY, CONTROL, NOINVERT
     "S",            IDM_SaveGame,           VIRTKEY, CONTROL, NOINVERT

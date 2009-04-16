@@ -66,6 +66,7 @@ extern WindowPlacement wpEngineOutput;
 #define STATE_THINKING   0
 #define STATE_IDLE       1
 #define STATE_PONDERING  2
+#define STATE_ANALYZING  3
 
 static int  windowMode = 1;
 
@@ -77,13 +78,13 @@ static HICON hiColorUnknown = NULL;
 static HICON hiClear = NULL;
 static HICON hiPondering = NULL;
 static HICON hiThinking = NULL;
+static HICON hiAnalyzing = NULL;
 
 static int  lastDepth[2] = { -1, -1 };
 static int  lastForwardMostMove[2] = { -1, -1 };
 static int  engineState[2] = { -1, -1 };
 
 typedef struct {
-    int which;
     HWND hColorIcon;
     HWND hLabel;
     HWND hStateIcon;
@@ -91,12 +92,15 @@ typedef struct {
     HWND hLabelNPS;
     HWND hMemo;
     char * name;
+    int which;
     int depth;
     unsigned long nodes;
     int score;
     int time;
     char * pv;
     char * hint;
+    int an_move_index;
+    int an_move_count;
 } EngineOutputData;
 
 static HICON LoadIconEx( int id )
@@ -113,6 +117,7 @@ static VOID InitializeEngineOutput()
         hiClear = LoadIconEx( IDI_TRANS_14 );
         hiPondering = LoadIconEx( IDI_PONDER_14 );
         hiThinking = LoadIconEx( IDI_CLOCK_14 );
+        hiAnalyzing = LoadIconEx( IDI_ANALYZE2_14 );
         needInit = FALSE;
     }
 }
@@ -216,6 +221,29 @@ char GetActiveEngineColor()
     return result;
 }
 
+static int IsEnginePondering( int which )
+{
+    int result = FALSE;
+
+    switch (gameMode) {
+    case MachinePlaysBlack:
+    case IcsPlayingBlack:
+        if( WhiteOnMove(forwardMostMove) ) result = TRUE;
+        break;
+    case MachinePlaysWhite:
+    case IcsPlayingWhite:
+        if( ! WhiteOnMove(forwardMostMove) ) result = TRUE;
+        break;
+    case TwoMachinesPlay:
+        if( GetActiveEngineColor() != ENGINE_COLOR_UNKNOWN ) {
+            if( GetEngineColor( which ) != GetActiveEngineColor() ) result = TRUE;
+        }
+        break;
+    }
+
+    return result;
+}
+
 static VOID PositionControlSet( HWND hDlg, int x, int y, int clientWidth, int memoHeight, int idColor, int idEngineLabel, int idNPS, int idMemo, int idStateIcon, int idStateData )
 {
     int label_x = x + ICON_SIZE + H_MARGIN;
@@ -230,7 +258,7 @@ static VOID PositionControlSet( HWND hDlg, int x, int y, int clientWidth, int me
     int memo_y = y + ICON_SIZE + LABEL_V_DISTANCE;
 
     SetControlPos( hDlg, idColor, x, y, ICON_SIZE, ICON_SIZE );
-    SetControlPos( hDlg, idEngineLabel, label_x, label_y, max_w / 2, label_h );
+    SetControlPos( hDlg, idEngineLabel, label_x, label_y, state_icon_x - label_x, label_h );
     SetControlPos( hDlg, idStateIcon, state_icon_x, y, ICON_SIZE, ICON_SIZE );
     SetControlPos( hDlg, idStateData, state_data_x, label_y, state_data_w, label_h );
     SetControlPos( hDlg, idNPS, nps_x, label_y, nps_w, label_h );
@@ -376,6 +404,9 @@ static SetEngineState( int which, int state, char * state_data )
         case STATE_PONDERING:
             SetIcon( hStateIcon, hiPondering );
             break;
+        case STATE_ANALYZING:
+            SetIcon( hStateIcon, hiAnalyzing );
+            break;
         default:
             SetIcon( hStateIcon, hiClear );
             break;
@@ -391,6 +422,8 @@ static SetEngineState( int which, int state, char * state_data )
 
 static VOID UpdateControls( EngineOutputData * ed )
 {
+    BOOL isPondering = FALSE;
+
     char s_label[MAX_NAME_LENGTH + 32];
 
     char * name = ed->name;
@@ -404,8 +437,7 @@ static VOID UpdateControls( EngineOutputData * ed )
     s_label[ MAX_NAME_LENGTH-1 ] = '\0';
 
 #ifdef SHOW_PONDERING
-    if( GetActiveEngineColor() != ENGINE_COLOR_UNKNOWN ) {
-        if( GetEngineColor(ed->which) != GetActiveEngineColor() ) {
+    if( IsEnginePondering( ed->which ) ) {
             char buf[8];
 
             buf[0] = '\0';
@@ -429,9 +461,26 @@ static VOID UpdateControls( EngineOutputData * ed )
 
             SetEngineState( ed->which, STATE_PONDERING, buf );
         }
-        else {
+    else if( gameMode == TwoMachinesPlay ) {
             SetEngineState( ed->which, STATE_THINKING, "" );
         }
+    else if( gameMode == AnalyzeMode || gameMode == AnalyzeFile ) {
+        char buf[64];
+        int time_secs = ed->time / 100;
+        int time_mins = time_secs / 60;
+
+        buf[0] = '\0';
+
+        if( ed->an_move_index != 0 && ed->an_move_count != 0 && *ed->hint != '\0' ) {
+            char mov[16];
+
+            strncpy( mov, ed->hint, sizeof(mov) );
+            mov[ sizeof(mov)-1 ] = '\0';
+
+            sprintf( buf, "%d/%d: %s [%02d:%02d:%02d]", ed->an_move_index, ed->an_move_count, mov, time_mins / 60, time_mins % 60, time_secs % 60 );
+        }
+
+        SetEngineState( ed->which, STATE_ANALYZING, buf );
     }
     else {
         SetEngineState( ed->which, STATE_IDLE, "" );
@@ -617,12 +666,23 @@ BOOL EngineOutputIsUp()
     return engineOutputDialogUp;
 }
 
-VOID EngineOutputUpdate( int which, int depth, unsigned long nodes, int score, int time, char * pv, char * hint )
+VOID EngineOutputUpdate( FrontEndProgramStats * stats )
 {
     EngineOutputData ed;
     BOOL clearMemo = FALSE;
+    int which;
+    int depth;
 
-    if( which < 0 || which > 1 || depth < 0 || time < 0 || pv == 0 || *pv == '\0' ) {
+    if( stats == 0 ) {
+        SetEngineState( 0, STATE_IDLE, "" );
+        SetEngineState( 1, STATE_IDLE, "" );
+        return;
+    }
+
+    which = stats->which;
+    depth = stats->depth;
+
+    if( which < 0 || which > 1 || depth < 0 || stats->time < 0 || stats->pv == 0 ) {
         return;
     }
 
@@ -634,11 +694,13 @@ VOID EngineOutputUpdate( int which, int depth, unsigned long nodes, int score, i
 
     ed.which = which;
     ed.depth = depth;
-    ed.nodes = nodes;
-    ed.score = score;
-    ed.time = time;
-    ed.pv = pv;
-    ed.hint = hint;
+    ed.nodes = stats->nodes;
+    ed.score = stats->score;
+    ed.time = stats->time;
+    ed.pv = stats->pv;
+    ed.hint = stats->hint;
+    ed.an_move_index = stats->an_move_index;
+    ed.an_move_count = stats->an_move_count;
 
     /* Get target control */
     if( which == 0 ) {
@@ -677,8 +739,8 @@ VOID EngineOutputUpdate( int which, int depth, unsigned long nodes, int score, i
     lastDepth[which] = depth;
     lastForwardMostMove[which] = forwardMostMove;
 
-    if( pv[0] == ' ' ) {
-        if( strncmp( pv, " no PV", 6 ) == 0 ) { /* Hack on hack! :-O */
+    if( ed.pv != 0 && ed.pv[0] == ' ' ) {
+        if( strncmp( ed.pv, " no PV", 6 ) == 0 ) { /* Hack on hack! :-O */
             ed.pv = "";
         }
     }

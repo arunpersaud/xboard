@@ -60,6 +60,7 @@ extern ColorClass currentColorClass;
 extern HWND hwndConsole;
 extern char *defaultTextAttribs[];
 extern HWND commentDialog;
+extern HWND moveHistoryDialog;
 extern char installDir[];
 extern HWND hCommPort;    /* currently open comm port */
 extern DCB dcb;
@@ -1320,6 +1321,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleTagFont, &workFont[EDITTAGS_FONT]);
       SetSampleFontText(hDlg, OPT_SampleCommentsFont, &workFont[COMMENT_FONT]);
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
       firstPaint = FALSE;
     }
     break;
@@ -1347,6 +1349,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	CopyFont(font[i][EDITTAGS_FONT], &workFont[EDITTAGS_FONT]);
 	CopyFont(font[i][CONSOLE_FONT],  &workFont[CONSOLE_FONT]);
 	CopyFont(font[i][COMMENT_FONT],  &workFont[COMMENT_FONT]);
+	CopyFont(font[i][MOVEHISTORY_FONT],  &workFont[MOVEHISTORY_FONT]);
       }
       /* end sad necessity */
 
@@ -1367,6 +1370,13 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  MAKELPARAM(TRUE, 0));
 	GetClientRect(GetDlgItem(editTagsDialog, OPT_TagsText), &rect);
 	InvalidateRect(editTagsDialog, &rect, TRUE);
+      }
+
+      if( moveHistoryDialog != NULL ) {
+	SendDlgItemMessage(moveHistoryDialog, IDC_MoveHistory,
+	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf,
+	  MAKELPARAM(TRUE, 0));
+	InvalidateRect(editTagsDialog, NULL, TRUE);
       }
 
       if (hwndConsole) {
@@ -1414,6 +1424,11 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
       break;
 
+    case OPT_ChooseMoveHistoryFont:
+      MyCreateFont(hDlg, &workFont[MOVEHISTORY_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
+      break;
+
     case OPT_DefaultFonts:
       for (i=0; i<NUM_FONTS; i++) {
 	DeleteObject(&workFont[i].hf);
@@ -1426,6 +1441,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleTagFont, &workFont[EDITTAGS_FONT]);
       SetSampleFontText(hDlg, OPT_SampleCommentsFont, &workFont[COMMENT_FONT]);
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
       break;
     }
   }

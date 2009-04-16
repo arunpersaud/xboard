@@ -100,6 +100,8 @@
 #define IDI_CLOCK_14                    470
 #define IDI_UNKNOWN_14                  471
 #define IDI_BALOON_14                   472
+#define IDI_ANALYZE_14                  473
+#define IDI_ANALYZE2_14                 474
 #define DLG_Promotion                   500
 #define PB_Queen                        502
 #define PB_Rook                         503
@@ -370,8 +372,11 @@
 #define OPT_ChooseCommentsFont          1417
 #define OPT_ChooseConsoleFont           1418
 #define OPT_DefaultFonts                1419
+#define OPT_ChooseMoveHistoryFont       1420
 #define OPT_AutoRaiseBoard              1421
+#define OPT_SampleMoveHistoryFont       1421
 #define OPT_ShowButtonBar               1422
+#define OPT_MessageFont6                1422
 #define OPT_SaveExtPGN                  1423
 #define OPT_HideThinkFromHuman          1424
 #define IDC_GameListDoFilter            1425
