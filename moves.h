@@ -50,6 +50,7 @@ extern ChessSquare PromoPiece P((ChessMove moveType));
 extern ChessMove PromoCharToMoveType P((int whiteOnMove, int promoChar));
 extern char PieceToChar P((ChessSquare p));
 extern ChessSquare CharToPiece P((int c));
+extern int PieceToNumber P((ChessSquare p));
 
 extern void CopyBoard P((Board to, Board from));
 extern int CompareBoards P((Board board1, Board board2));

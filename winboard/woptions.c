@@ -495,7 +495,7 @@ BoardOptionsWhichRadio(HWND hDlg)
 LRESULT CALLBACK
 BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  static Boolean  mono;
+  static Boolean  mono, white, flip;
   static BoardSize size;
   static COLORREF lsc, dsc, wpc, bpc, hsc, phc;
   static HBITMAP pieces[3];
@@ -564,6 +564,12 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     if (appData.monoMode)
       CheckDlgButton(hDlg, OPT_Monochrome, TRUE);
 
+    if (appData.allWhite)
+      CheckDlgButton(hDlg, OPT_AllWhite, TRUE);
+
+    if (appData.upsideDown)
+      CheckDlgButton(hDlg, OPT_UpsideDown, TRUE);
+
     pieces[0] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "s");
     pieces[1] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "w");
     pieces[2] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "o");
@@ -575,6 +581,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     hsc = highlightSquareColor;
     phc = premoveHighlightColor;
     mono = appData.monoMode;
+    white= appData.allWhite;
+    flip = appData.upsideDown;
     size = boardSize;
 
     SetBoardOptionEnables(hDlg);
@@ -619,6 +627,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  (wpc  != whitePieceColor) ||
 	  (bpc  != blackPieceColor) ||
 	  (hsc  != highlightSquareColor) ||
+          (flip != appData.upsideDown) ||
+          (white != appData.allWhite) ||
 	  (phc  != premoveHighlightColor)) {
 
 	  lightSquareColor = lsc;
@@ -628,6 +638,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  highlightSquareColor = hsc;
 	  premoveHighlightColor = phc;
 	  appData.monoMode = mono;
+          appData.allWhite = white;
+          appData.upsideDown = flip;
 
 	  InitDrawingColors();
 	  InitDrawingSizes(boardSize, 0);
@@ -711,6 +723,16 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     case OPT_Monochrome:
       mono = !mono;
+      SetBoardOptionEnables(hDlg);
+      break;
+
+    case OPT_AllWhite:
+      white = !white;
+      SetBoardOptionEnables(hDlg);
+      break;
+
+    case OPT_UpsideDown:
+      flip = !flip;
       SetBoardOptionEnables(hDlg);
       break;
     }

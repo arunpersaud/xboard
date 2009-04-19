@@ -185,29 +185,26 @@ typedef enum {
   } GameMode;
 
 typedef enum {
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
-#ifdef FAIRY
     /* [HGM] the order here is crucial for Crazyhouse & Shogi: */
     /* only the first N pieces can go into the holdings, and   */
-    /* promotions in those variants shift P-W to E-M           */
-    WhiteFerz, WhiteWazir, WhiteAlfil, WhiteNightrider, WhiteCardinal,
-    WhiteMarshall, WhiteGrasshopper, WhiteCannon, WhiteMan, WhiteUnicorn,
-#endif
-    WhiteKing, BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, 
-#ifdef FAIRY
-    BlackFerz, BlackWazir, BlackAlfil, BlackNightrider, BlackCardinal,
-    BlackMarshall, BlackGrasshopper, BlackCannon, BlackMan, BlackUnicorn,
-#endif
-    BlackKing,
+    /* promotions in those variants shift P-W to U-S           */
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
+    WhiteFerz, WhiteWazir, WhiteAlfil, WhiteMan, WhiteCannon, WhiteUnicorn,
+    WhiteNightrider, WhiteCardinal, WhiteMarshall, WhiteGrasshopper,
+    WhiteSilver, WhiteKing,
+    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
+    BlackFerz, BlackWazir, BlackAlfil, BlackMan, BlackCannon, BlackUnicorn,
+    BlackNightrider, BlackCardinal, BlackMarshall, BlackGrasshopper,
+    BlackSilver, BlackKing,
     EmptySquare, 
-    ClearBoard, WhitePlay, BlackPlay /*for use on EditPosition menus*/
+    ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
   } ChessSquare;
 
 /* [HGM] some macros that can be used as prefixes to convert piece types */
 #define WHITE_TO_BLACK (int)BlackPawn - (int)WhitePawn + (int)
 #define BLACK_TO_WHITE (int)WhitePawn - (int)BlackPawn + (int)
-#define PROMOTED       (int)WhiteAlfil - (int)WhitePawn + (int)
-#define DEMOTED        (int)WhitePawn - (int)WhiteAlfil + (int)
+#define PROMOTED       (int)WhiteUnicorn - (int)WhitePawn + (int)
+#define DEMOTED        (int)WhitePawn - (int)WhiteUnicorn + (int)
 #define SHOGI          (int)EmptySquare + (int)
 
 
@@ -222,14 +219,10 @@ typedef enum {
     BlackHSideCastleFR, BlackASideCastleFR, 
     WhitePromotionKnight, WhitePromotionBishop,
     WhitePromotionRook, WhitePromotionQueen, WhitePromotionKing,
-#ifdef FAIRY
     WhitePromotionChancellor, WhitePromotionArchbishop,
-#endif
     BlackPromotionKnight, BlackPromotionBishop,
     BlackPromotionRook, BlackPromotionQueen, BlackPromotionKing,
-#ifdef FAIRY
     BlackPromotionChancellor, BlackPromotionArchbishop,
-#endif
     WhiteCapturesEnPassant, BlackCapturesEnPassant,
     WhiteDrop, BlackDrop, 
     NormalMove, AmbiguousMove, IllegalMove, ImpossibleMove,
@@ -521,6 +514,9 @@ typedef struct {
     int NrRanks;
     int holdingsSize;
     int matchPause;
+    char * pieceToCharTable;
+    Boolean allWhite;
+    Boolean upsideDown;
     Boolean alphaRank;
     Boolean testClaims;
     Boolean checkMates;
@@ -528,7 +524,6 @@ typedef struct {
     Boolean trivialDraws;
     int ruleMoves;
     int drawRepeats;
-    char * pieceToCharTable;
 
 #if ZIPPY
     char *zippyLines;
@@ -599,6 +594,3 @@ typedef struct {
 
 #endif
 
-/* extern int holdingsWidth;  
-extern int holdingsHeight; 
-/*extern int holdings[(int) EmptySquare];*/

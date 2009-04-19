@@ -131,6 +131,7 @@ void UserMoveEvent P((int fromX, int fromY, int toX, int toY, int promoChar));
 void DecrementClocks P((void));
 char *TimeString P((long millisec));
 void AutoPlayGameLoop P((void));
+void AdjustClock P((Boolean which, int dir));
 void DisplayBothClocks P((void));
 void EditPositionMenuEvent P((ChessSquare selection, int x, int y));
 void DropMenuEvent P((ChessSquare selection, int x, int y));

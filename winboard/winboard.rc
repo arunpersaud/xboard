@@ -185,6 +185,8 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Promote to:"
 FONT 8, "MS Sans Serif"
 BEGIN
+    LTEXT           "YES ",IDC_STATIC,49,27,40,14
+    RTEXT           "NO ",IDC_STATIC,94,27,40,14
     PUSHBUTTON      "Chance&llor",PB_Chancellor,49,4,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&Archbishop",PB_Archbishop,94,4,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&Queen",PB_Queen,4,23,40,14,WS_GROUP
@@ -565,6 +567,10 @@ BEGIN
     PUSHBUTTON      "...",OPT_ChoosePremoveHighlightColor,110,184,20,15
     CONTROL         "Monochrome",OPT_Monochrome,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,210,64,10
+    CONTROL         "All White",OPT_AllWhite,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,140,180,53,10
+    CONTROL         "Flip Black",OPT_UpsideDown,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,140,192,53,10
     PUSHBUTTON      "Defaults",OPT_DefaultBoardColors,80,206,50,15
     EDITTEXT        OPT_DarkSquareColor,80,112,25,15,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
@@ -1061,6 +1067,7 @@ BEGIN
     POPUP "&Options"
     BEGIN
         MENUITEM "Flip &View\tF2",              IDM_FlipView
+        MENUITEM "Flip &Clocks",                IDM_FlipClock
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions
@@ -1098,12 +1105,57 @@ BEGIN
     BEGIN
         MENUITEM "White",                       EP_White
         MENUITEM SEPARATOR
+        MENUITEM "Promote",                     EP_Promote
+        MENUITEM SEPARATOR
         MENUITEM "Pawn",                        EP_WhitePawn
         MENUITEM "Knight",                      EP_WhiteKnight
         MENUITEM "Bishop",                      EP_WhiteBishop
         MENUITEM "Rook",                        EP_WhiteRook
         MENUITEM "Queen",                       EP_WhiteQueen
         MENUITEM "King",                        EP_WhiteKing
+        MENUITEM SEPARATOR
+        MENUITEM "Archbishop",                  EP_WhiteCardinal
+        MENUITEM "Chancellor",                  EP_WhiteMarshall
+        MENUITEM "Elephant",                    EP_WhiteAlfil
+        MENUITEM "Cannon",                      EP_WhiteCannon
+        MENUITEM SEPARATOR
+        MENUITEM "Empty Square",                EP_EmptySquare
+        MENUITEM "Black",                       EP_Black, MENUBARBREAK
+        MENUITEM SEPARATOR
+        MENUITEM "Demote",                      EP_Demote
+        MENUITEM SEPARATOR
+        MENUITEM "Pawn",                        EP_BlackPawn
+        MENUITEM "Knight",                      EP_BlackKnight
+        MENUITEM "Bishop",                      EP_BlackBishop
+        MENUITEM "Rook",                        EP_BlackRook
+        MENUITEM "Queen",                       EP_BlackQueen
+        MENUITEM "King",                        EP_BlackKing
+        MENUITEM SEPARATOR
+        MENUITEM "Archbishop",                  EP_BlackCardinal
+        MENUITEM "Chancellor",                  EP_BlackMarshall
+        MENUITEM "Elephant",                    EP_BlackAlfil
+        MENUITEM "Cannon",                      EP_BlackCannon
+        MENUITEM SEPARATOR
+        MENUITEM "Clear Board    ",             EP_ClearBoard
+    END
+END
+
+SHOGIPIECEMENU MENU DISCARDABLE 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "White",                       EP_White
+        MENUITEM SEPARATOR
+        MENUITEM "Pawn",                        EP_WhitePawn
+        MENUITEM "Knight",                      EP_WhiteKnight
+        MENUITEM "Bishop",                      EP_WhiteBishop
+        MENUITEM "Rook",                        EP_WhiteRook
+        MENUITEM "Lance",                       EP_WhiteQueen
+        MENUITEM "Silver",                      EP_WhiteFerz
+        MENUITEM "Gold",                        EP_WhiteWazir
+        MENUITEM "King",                        EP_WhiteKing
+        MENUITEM SEPARATOR
+        MENUITEM "Promote",                     EP_Promote
         MENUITEM SEPARATOR
         MENUITEM "Empty Square",                EP_EmptySquare
         MENUITEM "Black",                       EP_Black, MENUBARBREAK
@@ -1112,8 +1164,12 @@ BEGIN
         MENUITEM "Knight",                      EP_BlackKnight
         MENUITEM "Bishop",                      EP_BlackBishop
         MENUITEM "Rook",                        EP_BlackRook
-        MENUITEM "Queen",                       EP_BlackQueen
+        MENUITEM "Lance",                       EP_BlackQueen
+        MENUITEM "Silver",                      EP_BlackFerz
+        MENUITEM "Gold",                        EP_BlackWazir
         MENUITEM "King",                        EP_BlackKing
+        MENUITEM SEPARATOR
+        MENUITEM "Demote",                      EP_Demote
         MENUITEM SEPARATOR
         MENUITEM "Clear Board    ",             EP_ClearBoard
     END
@@ -1609,6 +1665,7 @@ O72O                    BITMAP  MOVEABLE PURE   "bitmaps\\o72o.bmp"
 U72O                    BITMAP  MOVEABLE PURE   "bitmaps\\u72o.bmp"
 H72O                    BITMAP  MOVEABLE PURE   "bitmaps\\h72o.bmp"
 G72O                    BITMAP  MOVEABLE PURE   "bitmaps\\g72o.bmp"
+L72O                    BITMAP  MOVEABLE PURE   "bitmaps\\l72o.bmp"
 DK72O                   BITMAP  MOVEABLE PURE   "bitmaps\\dk72o.bmp"
 WP72O                   BITMAP  MOVEABLE PURE   "bitmaps\\wp72o.bmp"
 WN72O                   BITMAP  MOVEABLE PURE   "bitmaps\\wn72o.bmp"
@@ -1624,6 +1681,7 @@ O72S                    BITMAP  MOVEABLE PURE   "bitmaps\\o72s.bmp"
 U72S                    BITMAP  MOVEABLE PURE   "bitmaps\\u72s.bmp"
 H72S                    BITMAP  MOVEABLE PURE   "bitmaps\\h72s.bmp"
 G72S                    BITMAP  MOVEABLE PURE   "bitmaps\\g72s.bmp"
+L72S                    BITMAP  MOVEABLE PURE   "bitmaps\\l72s.bmp"
 DK72S                   BITMAP  MOVEABLE PURE   "bitmaps\\dk72s.bmp"
 WP72S                   BITMAP  MOVEABLE PURE   "bitmaps\\wp72s.bmp"
 WN72S                   BITMAP  MOVEABLE PURE   "bitmaps\\wn72s.bmp"
@@ -1639,6 +1697,7 @@ O72W                    BITMAP  MOVEABLE PURE   "bitmaps\\o72w.bmp"
 U72W                    BITMAP  MOVEABLE PURE   "bitmaps\\u72w.bmp"
 H72W                    BITMAP  MOVEABLE PURE   "bitmaps\\h72w.bmp"
 G72W                    BITMAP  MOVEABLE PURE   "bitmaps\\g72w.bmp"
+L72W                    BITMAP  MOVEABLE PURE   "bitmaps\\l72w.bmp"
 DK72W                   BITMAP  MOVEABLE PURE   "bitmaps\\dk72w.bmp"
 E49O                    BITMAP  MOVEABLE PURE   "bitmaps\\e49o.bmp"
 A49O                    BITMAP  MOVEABLE PURE   "bitmaps\\a49o.bmp"
@@ -1650,6 +1709,7 @@ O49O                    BITMAP  MOVEABLE PURE   "bitmaps\\o49o.bmp"
 U49O                    BITMAP  MOVEABLE PURE   "bitmaps\\u49o.bmp"
 H49O                    BITMAP  MOVEABLE PURE   "bitmaps\\h49o.bmp"
 G49O                    BITMAP  MOVEABLE PURE   "bitmaps\\g49o.bmp"
+L49O                    BITMAP  MOVEABLE PURE   "bitmaps\\l49o.bmp"
 DK49O                   BITMAP  MOVEABLE PURE   "bitmaps\\dk49o.bmp"
 WP49O                   BITMAP  MOVEABLE PURE   "bitmaps\\wp49o.bmp"
 WN49O                   BITMAP  MOVEABLE PURE   "bitmaps\\wn49o.bmp"
@@ -1665,6 +1725,7 @@ O49S                    BITMAP  MOVEABLE PURE   "bitmaps\\o49s.bmp"
 U49S                    BITMAP  MOVEABLE PURE   "bitmaps\\u49s.bmp"
 H49S                    BITMAP  MOVEABLE PURE   "bitmaps\\h49s.bmp"
 G49S                    BITMAP  MOVEABLE PURE   "bitmaps\\g49s.bmp"
+L49S                    BITMAP  MOVEABLE PURE   "bitmaps\\l49s.bmp"
 DK49S                   BITMAP  MOVEABLE PURE   "bitmaps\\dk49s.bmp"
 WP49S                   BITMAP  MOVEABLE PURE   "bitmaps\\wp49s.bmp"
 WN49S                   BITMAP  MOVEABLE PURE   "bitmaps\\wn49s.bmp"
@@ -1680,6 +1741,7 @@ O49W                    BITMAP  MOVEABLE PURE   "bitmaps\\o49w.bmp"
 U49W                    BITMAP  MOVEABLE PURE   "bitmaps\\u49w.bmp"
 H49W                    BITMAP  MOVEABLE PURE   "bitmaps\\h49w.bmp"
 G49W                    BITMAP  MOVEABLE PURE   "bitmaps\\g49w.bmp"
+L49W                    BITMAP  MOVEABLE PURE   "bitmaps\\l49w.bmp"
 DK49W                   BITMAP  MOVEABLE PURE   "bitmaps\\dk49w.bmp"
 
 

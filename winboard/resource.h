@@ -131,6 +131,22 @@
 #define DP_Bishop                       618
 #define DP_Rook                         619
 #define DP_Queen                        620
+
+#define EP_WhiteCardinal                630
+#define EP_WhiteMarshall                631
+#define EP_WhiteAlfil                   632
+#define EP_WhiteCannon                  633
+#define EP_WhiteFerz                    634
+#define EP_WhiteWazir                   635
+#define EP_BlackCardinal                640
+#define EP_BlackMarshall                641
+#define EP_BlackAlfil                   642
+#define EP_BlackCannon                  643
+#define EP_BlackFerz                    644
+#define EP_BlackWazir                   645
+#define EP_Promote                      650
+#define EP_Demote                       651
+
 #define DLG_LoadOptions                 700
 #define DLG_SaveOptions                 800
 #define OPT_PGN                         802
@@ -445,6 +461,9 @@
 #define IDC_TrivialDraws                1603
 #define IDC_RuleMoves                   1604
 #define IDC_DrawRepeats                 1605
+#define IDM_FlipClock                   1700
+#define OPT_AllWhite                    1701
+#define OPT_UpsideDown                  1702
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
