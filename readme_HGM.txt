@@ -1,3 +1,98 @@
+Winboard_F.4.3.8 release notes
+
+This Winboard supports the following new options (shown here with their default values):
+
+/variant=normal 
+This (already existing) option has been expanded with several new variants, involving non-conventional pieces and deviating board sizes. The board size is automatically adapted to the selected variant, unless explicitly overruled (see below). The new variants are (with default board size, files x ranks, in parentheses): 
+
+variant name    Game           board     description
+knightmate    Knightmate        (8x8)  Variant where the King moves as a Knight, and vice versa 
+capablanca    Capablanca Chess (10x8)  Variant featuring Archbishop and Chancellor as new pieces 
+gothic        Gothic Chess     (10x8)  Same as Capablanca, with a more interesting opening position 
+courier       Courier Chess    (12x8)  a Medieval form that combines elements of Shatranj and modern Chess 
+shogi         Shogi             (9x9)  Japanese Chess 
+xiangqi       Xiangqi          (9x10)  Chinese Chess 
+fairy         Fairy Chess       (8x8)  Variant were you can use all pieces of other variants together 
+ 
+The variant can be set from the newly added "File -> New Variant..." sub-menu. 
+Extra board files are indicated by the letters i, j, k, l, ... For boards with more than 9 ranks, the counting starts at zero! Non-FIDE pieces will be referred to in FENs and PGN by letters that depend on the variant, and might collide with piece designators in other variants. E.g. in Xiangqi 'C' is a Cannon, in Capablanca Chess it is a Chancellor. Pieces that do not belong in a variant cannot be addressed in FEN and PGN either as long as that variant is selected, unless the letter assignment is overruled by the /pieceToCharTable option. The variant is not saved in the winboard.ini file; on start-up we always get variant "normal" unless we use the command-line opton, or have added the option to the winboard.ini file manually (in which case it will disappear when this file is overwritten). 
+WinBoard_F knows the movement of all pieces occurring in Capablanca Chess (of which FIDE Chess is a subset), Shatranj, Courier, Xiangqi and 9x9 Shogi, so that these games can be played with legality testing enabled. 
+
+/pieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk" 
+Each piece that WinBoard knows (in its legality test) has a letter associated with it, by which it will be referred to in FEN or PGN. The default assignment can be overruled with this option. The value has to be a string of even length, with at least 12 characters. The first half of the string designates the white pieces, the second half the black. 
+The last letter for each color will be assigned to the King. (This is the piece that moves as an orthodox King; note that Nightmate and Xiangqi have a different royal piece.) All letters before it will be assigned to the other pieces in the order: 
+
+P Pawn                 (move often depends on variant) 
+N Knight               (move subtly different in Xiangqi (where it is written as H) or Shogi) 
+B Bishop 
+R Rook 
+Q Queen                (Lance L in Shogi) 
+F Ferz/General         (Silver General S in Shogi) 
+W Wazir/GrandVizer     (Gold General G in Shogi, in Xiangqi it is royal and denoted by K) 
+E Alfil/Elephant       (Moves subtly different in Xiangqi vs Shatranj/Courier) 
+M Commoner/Man 
+O Cannon/Pao 
+U Unicorn              (representation of Royal Knight in Knightmate, used as promoted Pawn in Shogi) 
+H Nightrider           (Promoted Knight in Shogi and CrazyHouse) 
+A Archbishop/Cardinal  (Promoted Bishop in Shogi and CrazyHouse) 
+C Chancellor/Marshall  (Promoted Rook   in Shogi and CrazyHouse) 
+G Grasshopper          (Promoted Queen in Crazyhouse, promoted Lance in Shogi) 
+S                      (Promoted Silver in Shogi) 
+K King 
+ 
+Pieces that are not mentioned (because the argument has less than 34 characters) will remain disabled. Mentioned pieces can be disabled by assigning them a '.' (period). They are then not recognized in FEN or PGN input. It is not advisable to disable a piece that is present in the opening position of the selected variant, though. 
+Promoted pieces that need to be distinguished from original pieces of the same type (because of demotion on capture and transfer to the holdings) will be indicated by the letter for the unpromoted piece with a '+' in front of it (Shogi), or by the letter of the promoted piece with a '~' after it (Crazyhouse, Bughouse, in general everything with holdings that is not Shogi). 
+All the new pieces have a native biytmap representation in the board sizes 'bulky' and 'middling'. For all window sizes that do not support such fairy bitmaps, promoted NBRQ are represented as a 2-sizes-smaller normal piece symbol, so that Crazyhouse can be played at any size. People disliking the fairy representations might even prefer that. 
+There is an enhanced 'Edit Position' menu popup (right-clicking on the squares after selecting this mode in the main menu), featuring some common non-FIDE pieces, and 'promote' and 'demote' options to make those not directly in the menu. The promotion popup shows ArchBishop and Chancellor in Capablanca and Gothic, (or in fact in any game where this piece is not disabled), and leaves only the options YES / NO in Shogi. In Xiangqi there are no promotions.
+
+/fontPieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk" 
+This option is similar to /pieceToCharTable, but sets the font character that is used to display the piece on the screen (when font-based rendering is in use), rather than in the FEN or PGN. The default setting should work with the WinboardF font, which uses the 'intuitive' mapping of font characters to symbols. 
+Note that UHACGS are also used to represent the promoted versions of PNBRQF, in games like Crazyhouse and Shogi, where the promotion has to be undone on capture.
+
+/boardWidth=-1 /boardHeight=-1 
+Set a number of files and ranks of the playing board to a value that will override the defaults for the variant that is selected. A value of -1 means the variant default board size will be used for the corresponding parameter (and is itself the default value of these options). These parameters can be set in the "Files -> New Variant..." sub-menu, where they are reset to the default -1 is you OK the chosen variant without typing something to overrule it. These parameters are saved in the winboard.ini file. (But unless you saved while a variant with board-size override was selected, they will always be saved as -1.) 
+A variant with a non-standard board size will be communicated to the engine(s) with the board size prefixed to the variant name, e.g. "variant 12x8_capablanca". In protocol 2 the engine must first enable this feature by sending "boardsizeFxR" amongst the accepted variants, where F is the maximum number of files, and R the maximum number of ranks, as decimal numbers. 
+
+/holdingsSize=-1 
+Set the size of the holdings for dropable pieces to a value that will override the default for the variant that is selected. A value of -1 means the variant default holdings size will be used for that parameter (and is itself the default value of this options). This parameter can be set in the Files -> New Variant... sub-menu, where it is reset to the default -1 is you OK the chosen variant without typing something to overrule it. This parameters is saved in the winboard.ini file. 
+To disable holdings, set their size to 0. They will then not be displayed. For non-zero holding size N, the holdings are displayed left and right of the board, and piece drops can be effected by dragging pieces from the holdings to the drop square. In bughouse, the holdings will be filled by the ICS. In all other variants, captured pieces will go into the holdings (after reversing their color). Only the first N pieces of the /pieceToCharTable argument will go into the holdings. All other pieces will be converted to Pawns. (In Shogi, however they will be demoted in the regular way before determining if they fit.) Pieces that are disabled (per default and per /pieceToCharTable option) might not be counted when determining what are the first N pieces. 
+Non-standard holdingsize will be communicated to the engine by prefixing it (together with the board size, even if this is standard) to the variant name, e.g. "variant 7x7+5_shogi". In protocol 2 the engine should enable this feature by sending "holdingsH" amongst the variant names, where H is the maximum acceptable holdings size as a decimal number. 
+
+/alphaRank=FALSE 
+When this parameter is true, a-h are converted to 1-9, and vice versa, in all move output and input (to PGN files or SAN move display as well as in communication with the engine). This might be useful for Shogi, where conventionally one uses letters to designate ranks, and digits to designate files. Engines that want to use this option must make sure pieces are never represented by lower case! This option can be set from the Files -> New Variant... menu, where it defaults to FALSE unless you explicitly set it. It is not saved in the winboard.ini file. 
+This kludge does not seem to work for reading PGN files. Saving works fine. For now, using it is not recommended.
+Note that the PGN format in Shogi also leaves out the trailing '+' as check indicator: In Shogi such a trailing '+' means promotion, while a trailing '=' means defer promotion. Prefix '+' signs are used on moves with promoted pieces, disambiguation is done western SAN style.
+
+/allWhite=FALSE
+Causes the outline of the 'white' pieces to be superimposed onto the 'black' piece symbols as well (as a black outline) when native bitmaps are used (as opposed to font-based rendering). This is useful if we choose a very light color to represent the 'black' pieces. It might be particularly useful in Shogi, where the conventional representation of the 'black' pieces is as upside-down white pieces, so that both colors would be white. This option is saved in the winboard.ini file, and can be set in the "Options -> Board..." sub-menu. 
+
+/flipBlack=FALSE
+Setting this option will cause upside-down display of the native piece bitmaps used to represent the pieces of the side that plays black, as would be needed for a traditional representation of Shogi pieces. It can be set from the "Options -> Board..." sub-menu, and it is saved in the winboard.ini file. For now, traditional Shogi bitmaps are not included, though.
+
+/detectMate=TRUE 
+/testClaim=TRUE 
+/materialDraws=TRUE 
+/trivialDraws=FALSE 
+/ruleMoves=51 
+/repeatsToDraw=6 
+These are all options that only affect engine-engine play, and can be set from the "Options -> Engine..." sub-menu. They are all related to adjudication of games by the GUI. Legality checking must be switched on for them to work. 
+If /detectMate is TRUE, the GUI recognizes checkmate and stalemate (but not in games with holdings!), and ends the game accordingly before the engines can claim. This is convenient for play with engines that fail to claim, and just exit. 
+With /testClaim set, all result and illegal-move claims by engines that claim more than their own loss are scrutinized for validity, and false claims result in forfeit of the game. Useful with buggy engines. 
+The option /materialDraws=TRUE causes games with insufficient mating material to be adjudicated immediately as draws, in case the engines would not claim them. 
+The option /trivialDraws adjudicates KNNK, KBKB, KNKN, KBKN, KRKR and KQKQ to draws after 3 moves (to allow for a quick tactical win. Note that in KQKQ this might not be sound, but that problem would disappear once bitbase probing is added). 
+The /ruleMoves determine after how many reversible moves the game is adjudicated as a draw. Setting this to 0 turns this option off. Draw claims by the engine are still accepted (by /testClaim) after 50 reversible moves, even if /ruleMoves species a larger number. Note that it is perfectly legal according to FIDE rules to play on after 50 reversible moves, but in tournaments having two engines that want to play on forever is a nuisance in endings like KBNKR, where one of the engines thinks it is ahead and can avoids repeats virtually forever. 
+The option /repeatsToDraw makes the GUI adjudicate a game as draw after the same position has occurred the specified number of times. If it is set to a value > 3, engines can still claim the draw after 3-fold repeat. 
+All these options are saved in the winboard.ini file. 
+
+/matchPause=10000 
+Determines the number of milliseconds that is paused between two games of a match. Saved in the Winboard.ini.
+
+Clocks
+There is an "Options -> flip Clocks" command, that swaps the position of white and black clocks (convenient in over-the-board matches, where the screen is next to the board, and you want your own time to be displayed on your side of the screen). The clocks can be adjusted in "edit game" mode: right-clicking them adds one minute, left-clicking subtracts one minute. (Also for OTB matches, to keep them synchronized with the official match clock.) The flag-fell condition is now indicated as (!) behind the time.
+
+Other improvements / changes
+Castling rights and e.p. rights are now fully maintained, and considered in legality testing. They are imported from and written to FEN, as is the 50-move counter. The time (in sec, or min:sec) is now always stored together with the PV information to the PGN, if storing the latter was requested (through ticking 'extended PGN info' in "Options -> General..."). The saved time is the Winboard clock time (as opposed to the time reported by the engine).
+--------------------------------------------------------------------
 Winboard_F.4.3.7 release notes
 
 This Winboard supports the following new options (shown here with their default values):

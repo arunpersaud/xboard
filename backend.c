@@ -1367,9 +1367,8 @@ StringToVariant(e)
     if (!e) return v;
 
     /* [HGM] skip over optional board-size prefixes */
-    if( sscanf(e, "%dx%d+%d_", &i, &i, &i) == 3 ) {
-        while( *e++ != '_');
-    } else if( sscanf(e, "%dx%d_", &i, &i) == 2 ) {
+    if( sscanf(e, "%dx%d_", &i, &i) == 2 ||
+        sscanf(e, "%dx%d+%d_", &i, &i, &i) == 3 ) {
         while( *e++ != '_');
     }
 
@@ -1732,6 +1731,65 @@ CopyHoldings(Board board, char *holdings, ChessSquare lowestPiece)
         board[holdingsStartRow+j*direction][countsColumn]++;
     }
 
+}
+
+void
+VariantSwitch(Board board, VariantClass newVariant)
+{
+   int newHoldingsWidth, newWidth = 8, newHeight = 8, i, j;
+   if(gameInfo.variant == newVariant) return;
+
+   /* [HGM] This routine is called each time an assignment is made to
+    * gameInfo.variant during a game, to make sure the board sizes
+    * are set to match the new variant. If that means adding or deleting
+    * holdings, we shift the playing board accordingly
+    */
+
+  if (appData.debugMode) {
+    fprintf(debugFP, "Switch board from %s to %s\n",
+               VariantName(gameInfo.variant), VariantName(newVariant));
+    setbuf(debugFP, NULL);
+  }
+    gameInfo.holdingsSize = 5; /* [HGM] prepare holdings */
+         switch(newVariant) {
+            case VariantShogi:
+            case VariantShowgi:
+              newWidth = 9;  newHeight = 9;
+              gameInfo.holdingsSize = 7;
+            case VariantBughouse:
+            case VariantCrazyhouse:
+              newHoldingsWidth = 2; break;
+            default:
+              newHoldingsWidth = gameInfo.holdingsSize = 0;
+    }
+
+    if(newWidth  != gameInfo.boardWidth  ||
+       newHeight != gameInfo.boardHeight ||
+       newHoldingsWidth != gameInfo.holdingsWidth ) {
+
+        /* shift position to new playing area, if needed */
+        if(newHoldingsWidth > gameInfo.holdingsWidth) {
+           for(i=0; i<BOARD_HEIGHT; i++) 
+               for(j=BOARD_RGHT-1; j>=BOARD_LEFT; j--)
+                   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
+                                                     board[i][j];
+           for(i=0; i<newHeight; i++) {
+               board[i][0] = board[i][newWidth+2*newHoldingsWidth-1] = EmptySquare;
+               board[i][1] = board[i][newWidth+2*newHoldingsWidth-2] = (ChessSquare) 0;
+           }
+        } else if(newHoldingsWidth < gameInfo.holdingsWidth) {
+           for(i=0; i<BOARD_HEIGHT; i++)
+               for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
+                   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
+                                                 board[i][j];
+        }
+
+        gameInfo.boardWidth  = newWidth;
+        gameInfo.boardHeight = newHeight;
+        gameInfo.holdingsWidth = newHoldingsWidth;
+        gameInfo.variant = newVariant;
+        InitDrawingSizes(-2, 0);
+    } else gameInfo.variant = newVariant;
 }
 
 static int loggedOn = FALSE;
@@ -2332,12 +2390,11 @@ read_from_ics(isr, closure, data, count, error)
 	      "* * match, initial time: * minute*, increment: * second")) {
 		/* Header for a move list -- second line */
 		/* Initial board will follow if this is a wild game */
-
 		if (gameInfo.event != NULL) free(gameInfo.event);
 		sprintf(str, "ICS %s %s match", star_match[0], star_match[1]);
 		gameInfo.event = StrSave(str);
-		gameInfo.variant = StringToVariant(gameInfo.event);
-                Reset(TRUE,TRUE); /* [HGM] possibly change board or holdings size */
+                /* [HGM] we switched variant. Translate boards if needed. */
+                VariantSwitch(boards[currentMove], StringToVariant(gameInfo.event));
 		continue;
 	    }
 
@@ -2802,7 +2859,8 @@ read_from_ics(isr, closure, data, count, error)
 		    started = STARTED_NONE;
 		    parse[parse_pos] = NULLCHAR;
 		    if (appData.debugMode)
-		      fprintf(debugFP, "Parsing holdings: %s\n", parse);
+                      fprintf(debugFP, "Parsing holdings: %s, currentMove = %d\n",
+                                                        parse, currentMove);
 		    if (sscanf(parse, " game %d", &gamenum) == 1 &&
 			gamenum == ics_gamenum) {
 		        if (gameInfo.variant == VariantNormal) {
@@ -2811,22 +2869,7 @@ read_from_ics(isr, closure, data, count, error)
                            * to move the position two files to the right to
                            * create room for them!
                            */
-                          int i, j;
-                          if(gameInfo.holdingsWidth == 0) /* to be sure */
-                          for(i=0; i<BOARD_HEIGHT; i++)
-                            for(j=BOARD_RGHT-1; j>=0; j--)
-                              boards[currentMove][i][j+2] = boards[currentMove][i][j];
-
-  if (appData.debugMode) {
-    fprintf(debugFP, "Switch board to Crazy\n");
-    setbuf(debugFP, NULL);
-  }
-			  gameInfo.variant = VariantCrazyhouse; /*temp guess*/
-                          gameInfo.boardWidth  = 8;  /* [HGM] guess board size as well */
-                          gameInfo.boardHeight = 8;
-                          gameInfo.holdingsSize = 5;
-                          gameInfo.holdingsWidth = 2;
-                          InitDrawingSizes(-2, 0);
+                          VariantSwitch(boards[currentMove], VariantCrazyhouse); /* temp guess */
 			  /* Get a move list just to see the header, which
 			     will tell us whether this is really bug or zh */
 			  if (ics_getting_history == H_FALSE) {
@@ -2862,7 +2905,7 @@ read_from_ics(isr, closure, data, count, error)
 				    gameInfo.black, black_holding);
 			}
 
-			DrawPosition(FALSE, NULL);
+                        DrawPosition(FALSE, boards[currentMove]);
 			DisplayTitle(str);
 		    }
 		    /* Suppress following prompt */
@@ -3078,27 +3121,13 @@ ParseBoard12(string)
 	timeIncrement = increment * 1000;
 	movesPerSession = 0;
 	gameInfo.timeControl = TimeControlTagValue();
-	gameInfo.variant = StringToVariant(gameInfo.event);
+        VariantSwitch(board, StringToVariant(gameInfo.event) );
   if (appData.debugMode) {
     fprintf(debugFP, "ParseBoard says variant = '%s'\n", gameInfo.event);
     fprintf(debugFP, "recognized as %s\n", VariantName(gameInfo.variant));
     setbuf(debugFP, NULL);
   }
 
-        gameInfo.holdingsSize = 5; /* [HGM] prepare holdings */
-        gameInfo.boardWidth = gameInfo.boardHeight = 8;
-        switch(gameInfo.variant) {
-            case VariantShogi:
-            case VariantShowgi:
-              gameInfo.boardWidth = 9;  gameInfo.boardHeight = 9;
-              gameInfo.holdingsSize = 7;
-            case VariantBughouse:
-            case VariantCrazyhouse:
-              gameInfo.holdingsWidth = 2; break;
-            default:
-              gameInfo.holdingsWidth = gameInfo.holdingsSize = 0;
-        }
-        InitDrawingSizes(-2, 0);
         gameInfo.outOfBook = NULL;
 	
 	/* Do we have the ratings? */
@@ -3237,7 +3266,7 @@ ParseBoard12(string)
     if (moveNum > 0) {
   if (appData.debugMode) {
     fprintf(debugFP, "accepted move %s from ICS, parse it.\n", move_str);
-    fprintf(debugFP, "board = %d-d x%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT);
+    fprintf(debugFP, "board = %d-%d x %d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT);
     setbuf(debugFP, NULL);
   }
 	if (moveNum <= backwardMostMove) {
@@ -3592,8 +3621,8 @@ AlphaRank(char *move, int n)
     if( !appData.alphaRank ) return;
 
     while(c = *p) {
-        if(c>='0' && c<='9') *p += 'a'-'0'; else
-        if(c>='a' && c<='z') *p -= 'a'-'0';
+        if(c>='0' && c<='9') *p += AAA-ONE; else
+        if(c>='a' && c<'x') *p -= AAA-ONE;
         p++;
         if(--n < 1) break;
     }
@@ -5075,7 +5104,7 @@ HandleMachineMove(message, cps)
     if (!strncmp(message, "setboard ", 9)) {
         Board initial_position; int i;
 
-        GameEnds(GameIsDrawn, "Engine aborts game", GE_XBOARD);
+        GameEnds(GameUnfinished, "Engine aborts game", GE_XBOARD);
 
         if (!ParseFEN(initial_position, &blackPlaysFirst, message + 9)) {
             DisplayError("Bad FEN received from engine", 0);
@@ -11818,8 +11847,8 @@ PositionToFEN(move, useFEN960)
 	*p++ = '-';
     }
 
-    /* [HGM] print Crazyhouse holdings */
-    if( gameInfo.variant == VariantCrazyhouse ) {
+    /* [HGM] print Crazyhouse or Shogi holdings */
+    if( gameInfo.holdingsWidth ) {
         *p++ = ' '; q = p;
         for(i=0; i<gameInfo.holdingsSize; i++) { /* white holdings */
             piece = boards[move][i][BOARD_WIDTH-1];

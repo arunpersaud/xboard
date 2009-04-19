@@ -932,6 +932,17 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
     for (cl.fking = BOARD_LEFT+0; cl.fking < BOARD_RGHT; cl.fking++)
 	for (cl.rking = 0; cl.rking < BOARD_HEIGHT; cl.rking++) {
           if (board[cl.rking][cl.fking] == king) {
+              if(gameInfo.variant == VariantXiangqi) {
+                  /* [HGM] In Xiangqi opposing Kings means check as well */
+                  int i, dir;
+                  dir = (king >= BlackPawn) ? -1 : 1;
+                  for( i=cl.rking+dir; i>=0 && i<BOARD_HEIGHT &&
+                                board[i][cl.fking] == EmptySquare; i+=dir );
+                  if(i>=0 && i<BOARD_HEIGHT &&
+                      board[i][cl.fking] == (dir>0 ? BlackWazir : WhiteWazir) )
+                          cl.check++;
+              }
+
 	      GenPseudoLegal(board, flags ^ F_WHITE_ON_MOVE, -1,
 			     CheckTestCallback, (VOIDSTAR) &cl);
 	      goto undo_move;  /* 2-level break */

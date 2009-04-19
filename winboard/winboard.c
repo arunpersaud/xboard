@@ -3319,6 +3319,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
 {
   HBITMAP oldBitmap;
   HBRUSH oldBrush;
+  int tmpSize;
 
   if (appData.blindfold) return;
 
@@ -3358,6 +3359,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
     BitBlt(hdc, x, y, squareSize, squareSize, tmphdc, 0, 0,
 	   sqcolor ? SRCCOPY : NOTSRCCOPY);
   } else {
+    tmpSize = squareSize;
     if(minorSize &&
         (piece >= (int)WhiteNightrider && piece <= WhiteGrasshopper ||
          piece >= (int)BlackNightrider && piece <= BlackGrasshopper)  ) {
@@ -3365,24 +3367,31 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
       /* Bitmaps of smaller size are substituted, but we have to align them */
       x += (squareSize - minorSize)>>1;
       y += squareSize - minorSize - 2;
+      tmpSize = minorSize;
     }
     if (color || appData.allWhite ) {
       oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, WHITE_PIECE));
       if( color )
               oldBrush = SelectObject(hdc, whitePieceBrush);
       else    oldBrush = SelectObject(hdc, blackPieceBrush);
-      BitBlt(hdc, x, y, squareSize, squareSize, tmphdc, 0, 0, 0x00B8074A);
+      if(appData.upsideDown && !color)
+        StretchBlt(hdc, x, y+tmpSize, tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
+      else
+        BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
 #if 0
       /* Use black piece color for outline of white pieces */
       /* Not sure this looks really good (though xboard does it).
 	 Maybe better to have another selectable color, default black */
       SelectObject(hdc, blackPieceBrush); /* could have own brush */
       SelectObject(tmphdc, PieceBitmap(piece, OUTLINE_PIECE));
-      BitBlt(hdc, x, y, squareSize, squareSize, tmphdc, 0, 0, 0x00B8074A);
+      BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
 #else
       /* Use black for outline of white pieces */
       SelectObject(tmphdc, PieceBitmap(piece, OUTLINE_PIECE));
-      BitBlt(hdc, x, y, squareSize, squareSize, tmphdc, 0, 0, SRCAND);
+      if(appData.upsideDown && !color)
+        StretchBlt(hdc, x, y+tmpSize, tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, SRCAND);
+      else
+        BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, SRCAND);
 #endif
     } else {
 #if 0
@@ -3393,15 +3402,18 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
 	 Maybe better to have another selectable color, default medium gray? */
       oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, BLACK_PIECE));
       oldBrush = SelectObject(hdc, whitePieceBrush); /* could have own brush */
-      BitBlt(hdc, x, y, squareSize, squareSize, tmphdc, 0, 0, 0x00B8074A);
+      BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
       SelectObject(tmphdc, PieceBitmap(piece, SOLID_PIECE));
       SelectObject(hdc, blackPieceBrush);
-      BitBlt(hdc, x, y, squareSize, squareSize, tmphdc, 0, 0, 0x00B8074A);
+      BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
 #else
       /* Use square color for details of black pieces */
       oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, SOLID_PIECE));
       oldBrush = SelectObject(hdc, blackPieceBrush);
-      BitBlt(hdc, x, y, squareSize, squareSize, tmphdc, 0, 0, 0x00B8074A);
+      if(appData.upsideDown)
+        StretchBlt(hdc, x, y+tmpSize, tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
+      else
+        BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
 #endif
     }
     SelectObject(hdc, oldBrush);
@@ -4705,6 +4717,12 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	       SW_SHOW : SW_HIDE);
     ShowWindow(GetDlgItem(hDlg, PB_Bishop), 
        gameInfo.variant != VariantShogi ?
+	       SW_SHOW : SW_HIDE);
+    ShowWindow(GetDlgItem(hDlg, IDC_Yes), 
+       gameInfo.variant == VariantShogi ?
+	       SW_SHOW : SW_HIDE);
+    ShowWindow(GetDlgItem(hDlg, IDC_No), 
+       gameInfo.variant == VariantShogi ?
 	       SW_SHOW : SW_HIDE);
     return TRUE;
 

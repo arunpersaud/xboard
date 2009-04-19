@@ -185,8 +185,6 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Promote to:"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "YES ",IDC_STATIC,49,27,40,14
-    RTEXT           "NO ",IDC_STATIC,94,27,40,14
     PUSHBUTTON      "Chance&llor",PB_Chancellor,49,4,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&Archbishop",PB_Archbishop,94,4,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&Queen",PB_Queen,4,23,40,14,WS_GROUP
@@ -195,6 +193,8 @@ BEGIN
     PUSHBUTTON      "K&night",PB_Knight,139,23,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&King",PB_King,94,4,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&Cancel",IDCANCEL,139,4,40,14,WS_GROUP
+    LTEXT           "      YES",IDC_Yes,6,25,36,10
+    LTEXT           "       NO",IDC_No,141,25,36,10
 END
 
 ABOUTBOX2 DIALOG DISCARDABLE  22, 17, 281, 223

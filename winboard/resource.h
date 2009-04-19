@@ -110,6 +110,8 @@
 #define PB_Knight                       505
 #define PB_Chancellor                   506 /* [HGM] Capablanca pieces */
 #define PB_Archbishop                   507
+#define IDC_Yes                         520
+#define IDC_No                          521
 #define EP_White                        600
 #define EP_WhitePawn                    601
 #define EP_WhiteKnight                  602
