@@ -55,6 +55,7 @@
 #define IDM_PasteGame                   181
 #define IDM_CopyPosition                182
 #define IDM_PastePosition               183
+#define IDM_NewVariant                  184  
 #define OPT_TCtext1                     202
 #define OPT_TCTime                      203
 #define OPT_TCtext2                     204
@@ -419,6 +420,31 @@
 #define IDC_SizeOfEGTB                  1467
 #define IDC_UseBook                     1469
 #define IDC_BookFile                    1470
+#define DLG_NewVariant                  1500
+#define OPT_VariantGothic               1501
+#define OPT_VariantCrazyhouse           1502
+#define OPT_VariantBughouse             1503
+#define OPT_VariantCourier              1504
+#define OPT_VariantShatranj             1505
+#define OPT_VariantShogi                1506
+#define OPT_VariantXiangqi              1507
+#define OPT_VariantCapablanca           1508
+#define OPT_VariantTwoKings             1509
+#define OPT_VariantKnightmate           1510
+#define OPT_VariantLosers               1511
+#define OPT_VariantSuicide              1512
+#define OPT_VariantAtomic               1513
+#define OPT_VariantNormal               1514
+#define OPT_VariantFairy                1515
+#define IDC_Files                       1550
+#define IDC_Ranks                       1551
+#define IDC_Holdings                    1552
+#define IDC_TestClaims                  1600
+#define IDC_DetectMates                 1601
+#define IDC_MaterialDraws               1602
+#define IDC_TrivialDraws                1603
+#define IDC_RuleMoves                   1604
+#define IDC_DrawRepeats                 1605
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

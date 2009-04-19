@@ -65,6 +65,7 @@ extern Board boards[];
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */
 char *PositionToFEN P((int move, int useFEN960));
+void AlphaRank P((char *s, int n)); /* [HGM] Shogi move preprocessor */
 void EditPositionPasteFEN P((char *fen));
 void TimeDelay P((long ms));
 void SendMultiLineToICS P(( char *text ));
@@ -74,6 +75,7 @@ void SetBlackToPlayEvent P((void));
 void InitBackEnd1 P((void));
 void InitBackEnd2 P((void));
 int IsPromotion P((int fromX, int fromY, int toX, int toY));
+int InPalace P((int row, int column));
 int PieceForSquare P((int x, int y));
 int OKToStartUserMove P((int x, int y));
 void Reset P((int redraw, int init));
@@ -124,6 +126,7 @@ void BookEvent P((void));
 void AboutGameEvent P((void));
 void ExitEvent P((int status));
 char *DefaultFileName P((char *));
+ChessMove UserMoveTest P((int fromX, int fromY, int toX, int toY, int promoChar));
 void UserMoveEvent P((int fromX, int fromY, int toX, int toY, int promoChar));
 void DecrementClocks P((void));
 char *TimeString P((long millisec));

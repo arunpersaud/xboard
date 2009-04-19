@@ -592,6 +592,55 @@ BEGIN
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
 END
 
+DLG_NewVariant DIALOG DISCARDABLE  0, 0, 194, 250
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Variants"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,84,232,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,140,232,50,14
+    CONTROL         "&normal",OPT_VariantNormal,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,9,14,50,10
+    CONTROL         "&gothic",OPT_VariantGothic,"Button",BS_AUTORADIOBUTTON,9,24,
+                    50,10
+    CONTROL         "cra&zyhouse",OPT_VariantCrazyhouse,"Button",BS_AUTORADIOBUTTON,9,34,
+                    50,10
+    CONTROL         "&shogi",OPT_VariantShogi,"Button",BS_AUTORADIOBUTTON,9,
+                    44,50,10
+    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,9,54,50,
+                    10
+    CONTROL         "cou&rier",OPT_VariantCourier,"Button",BS_AUTORADIOBUTTON,9,64,
+                    50,10
+    CONTROL         "&knightmate",OPT_VariantKnightmate,"Button",BS_AUTORADIOBUTTON,
+                    70,14,50,10
+    CONTROL         "&atomic",OPT_VariantAtomic,"Button",BS_AUTORADIOBUTTON,
+                    70,24,50,10
+    CONTROL         "&losers",OPT_VariantLosers,"Button",BS_AUTORADIOBUTTON,
+                    70,34,50,10
+    CONTROL         "s&uicide",OPT_VariantSuicide,"Button",BS_AUTORADIOBUTTON,
+                    70,44,50,10
+    CONTROL         "&capablanca",OPT_VariantCapablanca,"Button",BS_AUTORADIOBUTTON,70,
+                    54,50,10
+    CONTROL         "&twokings",OPT_VariantTwoKings,"Button",BS_AUTORADIOBUTTON,70,64,
+                    50,10
+    CONTROL         "&fairy",OPT_VariantFairy,"Button",BS_AUTORADIOBUTTON,134,
+                    14,50,10
+    CONTROL         "&bughouse",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,134,24,50,
+                    10
+    CONTROL         "Shatran&j",OPT_VariantShatranj,"Button",BS_AUTORADIOBUTTON,134,
+                    34,50,10
+    GROUPBOX        "Variant",IDC_STATIC,4,4,185,75
+    LTEXT           "Board size:",IDC_STATIC,10,95,40,8
+    EDITTEXT        IDC_Ranks,60,91,14,14,ES_AUTOHSCROLL
+    LTEXT           "ranks",IDC_STATIC,77,95,22,8
+    EDITTEXT        IDC_Files,116,91,14,14,ES_AUTOHSCROLL
+    LTEXT           "files",IDC_STATIC,133,95,37,8
+    LTEXT           "Holdings with room for:",IDC_STATIC,10,113,90,8
+    EDITTEXT        IDC_Holdings,93,109,14,14,ES_AUTOHSCROLL
+    LTEXT           "pieces",IDC_STATIC,110,113,22,8
+    LTEXT           "('-1' means defaults for selected variant)",IDC_STATIC,10,131,150,8
+END
+
 DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 226
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Fonts"
@@ -705,12 +754,12 @@ BEGIN
     ICON            IDI_TRANS_14,IDC_StateIcon2,164,84,20,20
 END
 
-DLG_EnginePlayOptions DIALOG DISCARDABLE  0, 0, 208, 129
+DLG_EnginePlayOptions DIALOG DISCARDABLE  0, 0, 208, 177
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Engine Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Ponder Next Move",IDC_EpPonder,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "Ponder Next Move",IDC_EpPonder,"Button",BS_AUTOCHECKBOX |
                     WS_TABSTOP,4,4,75,10
     CONTROL         "Enable and Show Thinking (recommended)",
                     IDC_EpShowThinking,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
@@ -721,7 +770,7 @@ BEGIN
     CONTROL         "Periodic Updates (for Analysis Mode)",
                     IDC_EpPeriodicUpdates,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,4,40,131,10
-    GROUPBOX        "Engine-engine matches",IDC_STATIC,4,56,200,50
+    GROUPBOX        "Engine-engine matches",IDC_STATIC,4,56,200,98
     LTEXT           "Adjudicate draw after:",IDC_STATIC,10,72,70,8
     EDITTEXT        IDC_EpDrawMoveCount,116,68,40,14,ES_AUTOHSCROLL
     LTEXT           "moves",IDC_STATIC,158,72,22,8
@@ -729,8 +778,24 @@ BEGIN
                     8
     EDITTEXT        IDC_EpAdjudicationThreshold,116,86,40,14,ES_AUTOHSCROLL
     LTEXT           "centipawns",IDC_STATIC,158,90,37,8
-    DEFPUSHBUTTON   "OK",IDOK,98,112,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,154,112,50,14
+    CONTROL         "&Verify Engine Claims",IDC_TestClaims,"Button",BS_AUTOCHECKBOX |
+                    WS_TABSTOP,10,108,100,10
+    CONTROL         "Detect &Mates",
+                    IDC_DetectMates,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    10,118,100,10
+    CONTROL         "Draw if &Insufficient Material",
+                    IDC_MaterialDraws,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,128,100,10
+    CONTROL         "Adjudicate &Trivial Draws",
+                    IDC_TrivialDraws,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,138,100,10
+    GROUPBOX        "Apply",IDC_STATIC,115,102,81,47
+    EDITTEXT        IDC_RuleMoves,120,113,20,14,ES_AUTOHSCROLL
+    LTEXT           "-move rule",IDC_STATIC,142,117,35,8
+    EDITTEXT        IDC_DrawRepeats,120,130,20,14,ES_AUTOHSCROLL
+    LTEXT           "-fold repeats",IDC_STATIC,142,134,50,8
+    DEFPUSHBUTTON   "OK",IDOK,98,160,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,154,160,50,14
 END
 
 DLG_OptionsUCI DIALOG DISCARDABLE  0, 0, 228, 124
@@ -912,6 +977,7 @@ BEGIN
     BEGIN
         MENUITEM "New &Game\tCtrl-N",           IDM_NewGame
         MENUITEM "New FRC Game...",             IDM_NewGameFRC
+        MENUITEM "New Variant...",              IDM_NewVariant
         MENUITEM SEPARATOR
         MENUITEM "&Load Game...\tCtrl-O",       IDM_LoadGame
         MENUITEM "Load &Next Game\tAlt+PgDn",   IDM_LoadNextGame
@@ -1542,6 +1608,12 @@ W72O                    BITMAP  MOVEABLE PURE   "bitmaps\\w72o.bmp"
 O72O                    BITMAP  MOVEABLE PURE   "bitmaps\\o72o.bmp"
 U72O                    BITMAP  MOVEABLE PURE   "bitmaps\\u72o.bmp"
 H72O                    BITMAP  MOVEABLE PURE   "bitmaps\\h72o.bmp"
+G72O                    BITMAP  MOVEABLE PURE   "bitmaps\\g72o.bmp"
+DK72O                   BITMAP  MOVEABLE PURE   "bitmaps\\dk72o.bmp"
+WP72O                   BITMAP  MOVEABLE PURE   "bitmaps\\wp72o.bmp"
+WN72O                   BITMAP  MOVEABLE PURE   "bitmaps\\wn72o.bmp"
+WL72O                   BITMAP  MOVEABLE PURE   "bitmaps\\wl72o.bmp"
+WS72O                   BITMAP  MOVEABLE PURE   "bitmaps\\ws72o.bmp"
 E72S                    BITMAP  MOVEABLE PURE   "bitmaps\\e72s.bmp"
 A72S                    BITMAP  MOVEABLE PURE   "bitmaps\\a72s.bmp"
 C72S                    BITMAP  MOVEABLE PURE   "bitmaps\\c72s.bmp"
@@ -1551,6 +1623,12 @@ W72S                    BITMAP  MOVEABLE PURE   "bitmaps\\w72s.bmp"
 O72S                    BITMAP  MOVEABLE PURE   "bitmaps\\o72s.bmp"
 U72S                    BITMAP  MOVEABLE PURE   "bitmaps\\u72s.bmp"
 H72S                    BITMAP  MOVEABLE PURE   "bitmaps\\h72s.bmp"
+G72S                    BITMAP  MOVEABLE PURE   "bitmaps\\g72s.bmp"
+DK72S                   BITMAP  MOVEABLE PURE   "bitmaps\\dk72s.bmp"
+WP72S                   BITMAP  MOVEABLE PURE   "bitmaps\\wp72s.bmp"
+WN72S                   BITMAP  MOVEABLE PURE   "bitmaps\\wn72s.bmp"
+WL72S                   BITMAP  MOVEABLE PURE   "bitmaps\\wl72s.bmp"
+WS72S                   BITMAP  MOVEABLE PURE   "bitmaps\\ws72s.bmp"
 E72W                    BITMAP  MOVEABLE PURE   "bitmaps\\e72w.bmp"
 A72W                    BITMAP  MOVEABLE PURE   "bitmaps\\a72w.bmp"
 C72W                    BITMAP  MOVEABLE PURE   "bitmaps\\c72w.bmp"
@@ -1560,6 +1638,8 @@ W72W                    BITMAP  MOVEABLE PURE   "bitmaps\\w72w.bmp"
 O72W                    BITMAP  MOVEABLE PURE   "bitmaps\\o72w.bmp"
 U72W                    BITMAP  MOVEABLE PURE   "bitmaps\\u72w.bmp"
 H72W                    BITMAP  MOVEABLE PURE   "bitmaps\\h72w.bmp"
+G72W                    BITMAP  MOVEABLE PURE   "bitmaps\\g72w.bmp"
+DK72W                   BITMAP  MOVEABLE PURE   "bitmaps\\dk72w.bmp"
 E49O                    BITMAP  MOVEABLE PURE   "bitmaps\\e49o.bmp"
 A49O                    BITMAP  MOVEABLE PURE   "bitmaps\\a49o.bmp"
 C49O                    BITMAP  MOVEABLE PURE   "bitmaps\\c49o.bmp"
@@ -1569,6 +1649,12 @@ W49O                    BITMAP  MOVEABLE PURE   "bitmaps\\w49o.bmp"
 O49O                    BITMAP  MOVEABLE PURE   "bitmaps\\o49o.bmp"
 U49O                    BITMAP  MOVEABLE PURE   "bitmaps\\u49o.bmp"
 H49O                    BITMAP  MOVEABLE PURE   "bitmaps\\h49o.bmp"
+G49O                    BITMAP  MOVEABLE PURE   "bitmaps\\g49o.bmp"
+DK49O                   BITMAP  MOVEABLE PURE   "bitmaps\\dk49o.bmp"
+WP49O                   BITMAP  MOVEABLE PURE   "bitmaps\\wp49o.bmp"
+WN49O                   BITMAP  MOVEABLE PURE   "bitmaps\\wn49o.bmp"
+WL49O                   BITMAP  MOVEABLE PURE   "bitmaps\\wl49o.bmp"
+WS49O                   BITMAP  MOVEABLE PURE   "bitmaps\\ws49o.bmp"
 E49S                    BITMAP  MOVEABLE PURE   "bitmaps\\e49s.bmp"
 A49S                    BITMAP  MOVEABLE PURE   "bitmaps\\a49s.bmp"
 C49S                    BITMAP  MOVEABLE PURE   "bitmaps\\c49s.bmp"
@@ -1578,6 +1664,12 @@ W49S                    BITMAP  MOVEABLE PURE   "bitmaps\\w49s.bmp"
 O49S                    BITMAP  MOVEABLE PURE   "bitmaps\\o49s.bmp"
 U49S                    BITMAP  MOVEABLE PURE   "bitmaps\\u49s.bmp"
 H49S                    BITMAP  MOVEABLE PURE   "bitmaps\\h49s.bmp"
+G49S                    BITMAP  MOVEABLE PURE   "bitmaps\\g49s.bmp"
+DK49S                   BITMAP  MOVEABLE PURE   "bitmaps\\dk49s.bmp"
+WP49S                   BITMAP  MOVEABLE PURE   "bitmaps\\wp49s.bmp"
+WN49S                   BITMAP  MOVEABLE PURE   "bitmaps\\wn49s.bmp"
+WL49S                   BITMAP  MOVEABLE PURE   "bitmaps\\wl49s.bmp"
+WS49S                   BITMAP  MOVEABLE PURE   "bitmaps\\ws49s.bmp"
 E49W                    BITMAP  MOVEABLE PURE   "bitmaps\\e49w.bmp"
 A49W                    BITMAP  MOVEABLE PURE   "bitmaps\\a49w.bmp"
 C49W                    BITMAP  MOVEABLE PURE   "bitmaps\\c49w.bmp"
@@ -1587,6 +1679,8 @@ W49W                    BITMAP  MOVEABLE PURE   "bitmaps\\w49w.bmp"
 O49W                    BITMAP  MOVEABLE PURE   "bitmaps\\o49w.bmp"
 U49W                    BITMAP  MOVEABLE PURE   "bitmaps\\u49w.bmp"
 H49W                    BITMAP  MOVEABLE PURE   "bitmaps\\h49w.bmp"
+G49W                    BITMAP  MOVEABLE PURE   "bitmaps\\g49w.bmp"
+DK49W                   BITMAP  MOVEABLE PURE   "bitmaps\\dk49w.bmp"
 
 
 #ifdef APSTUDIO_INVOKED

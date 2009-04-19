@@ -100,10 +100,27 @@ int pclose(FILE *);
 
 #define PROTOVER                2       /* engine protocol version */
 
-#define BOARD_SIZE              12                     /* [HGM] for in declarations */
-#define BOARD_WIDTH             (appData.NrFiles)      /* [HGM] made user adjustable */
-#define BOARD_HEIGHT            (appData.NrRanks)
-#define ONE                     ('1'-(BOARD_HEIGHT>9)) /* [HGM] foremost board rank */
+/* [HGM] Some notes about board sizes:
+   In games that allow piece drops, the holdings are considered part of the
+   board, in the leftmost and rightmost two files. This way they are
+   automatically part of the game-history states, and enjoy all display
+   functions (including drag-drop and click-click moves to the regular part
+   of the board). The drawback of this is that the internal numbering of
+   files starts at 2 for the a-file if holdings are displayed. To ensure
+   consistency, this shifted numbering system is used _everywhere_ in the
+   code, and conversion to the 'normal' system only takes place when the
+   file number is converted to or from ASCII (by redefining the character
+   constant 'a'). This works because Winboard only communicates with the
+   outside world in ASCII. In a similar way, the different rank numbering
+   systems (starting at rank 0 or 1) are implemented by redefining '1'.
+*/
+#define BOARD_SIZE              16            /* [HGM] for in declarations */
+#define BOARD_HEIGHT (gameInfo.boardHeight)   // [HGM] made user adjustable 
+#define BOARD_WIDTH  (gameInfo.boardWidth + 2*gameInfo.holdingsWidth)   
+#define BOARD_LEFT   (gameInfo.holdingsWidth) // [HGM] play-board edges     
+#define BOARD_RGHT   (gameInfo.boardWidth + gameInfo.holdingsWidth)
+#define ONE          ('1'-(BOARD_HEIGHT>9))   // [HGM] foremost board rank  
+#define AAA          ('a'-BOARD_LEFT)         // [HGM] leftmost board file  
 #define DROP_RANK               -3
 #define MAX_MOVES		1000
 #define MSG_SIZ			512
@@ -168,23 +185,31 @@ typedef enum {
   } GameMode;
 
 typedef enum {
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, 
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
 #ifdef FAIRY
-    WhiteCardinal, WhiteMarshall, WhiteFairyPawn, WhiteFairyKnight,
-    WhiteFairyBishop, WhiteFairyRook, WhiteFairyCardinal, WhiteFairyMarshall,
-    WhiteFairyQueen, WhiteFairyKing,
+    /* [HGM] the order here is crucial for Crazyhouse & Shogi: */
+    /* only the first N pieces can go into the holdings, and   */
+    /* promotions in those variants shift P-W to E-M           */
+    WhiteFerz, WhiteWazir, WhiteAlfil, WhiteNightrider, WhiteCardinal,
+    WhiteMarshall, WhiteGrasshopper, WhiteCannon, WhiteMan, WhiteUnicorn,
 #endif
-    WhiteQueen, WhiteKing,
-    BlackPawn, BlackKnight, BlackBishop, BlackRook,
+    WhiteKing, BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, 
 #ifdef FAIRY
-    BlackCardinal, BlackMarshall, BlackFairyPawn, BlackFairyKnight,
-    BlackFairyBishop, BlackFairyRook, BlackFairyCardinal, BlackFairyMarshall,
-    BlackFairyQueen, BlackFairyKing,
+    BlackFerz, BlackWazir, BlackAlfil, BlackNightrider, BlackCardinal,
+    BlackMarshall, BlackGrasshopper, BlackCannon, BlackMan, BlackUnicorn,
 #endif
-    BlackQueen, BlackKing,
+    BlackKing,
     EmptySquare, 
     ClearBoard, WhitePlay, BlackPlay /*for use on EditPosition menus*/
   } ChessSquare;
+
+/* [HGM] some macros that can be used as prefixes to convert piece types */
+#define WHITE_TO_BLACK (int)BlackPawn - (int)WhitePawn + (int)
+#define BLACK_TO_WHITE (int)WhitePawn - (int)BlackPawn + (int)
+#define PROMOTED       (int)WhiteAlfil - (int)WhitePawn + (int)
+#define DEMOTED        (int)WhitePawn - (int)WhiteAlfil + (int)
+#define SHOGI          (int)EmptySquare + (int)
+
 
 typedef ChessSquare Board[BOARD_SIZE][BOARD_SIZE];
 
@@ -243,52 +268,23 @@ typedef enum {
     VariantShatranj,     /* Unsupported (ICC wild 28) */
     Variant29,           /* Temporary name for possible future ICC wild 29 */
     Variant30,           /* Temporary name for possible future ICC wild 30 */
-#ifdef FAIRY
-    VariantShogi,        /* [HGM] To be supported in next version */
+    Variant31,           /* Temporary name for possible future ICC wild 31 */
+    Variant32,           /* Temporary name for possible future ICC wild 32 */
+    Variant33,           /* Temporary name for possible future ICC wild 33 */
+    Variant34,           /* Temporary name for possible future ICC wild 34 */
+    Variant35,           /* Temporary name for possible future ICC wild 35 */
+    Variant36,           /* Temporary name for possible future ICC wild 36 */
+    VariantShogi,        /* [HGM] added variants */
     VariantXiangqi,
     VariantCourier,
     VariantGothic,
     VariantCapablanca,
-    VariantFairy,        /* [HGM] allow more piece types */
-#else
-    Variant31,           /* Temporary name for possible future ICC wild 31 */
-    Variant32,           /* Temporary name for possible future ICC wild 32 */
-    Variant33,
-    Variant34,           /* Temporary name for possible future ICC wild 34 */
-    Variant35,           /* Temporary name for possible future ICC wild 35 */
-    Variant36,           /* Temporary name for possible future ICC wild 36 */
-#endif
+    VariantKnightmate,
+    VariantFairy,        
+    VariantShowgi,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
-#ifdef FAIRY
-#define VARIANT_NAMES { \
-  "normal", \
-  "normal", \
-  "wildcastle", \
-  "nocastle", \
-  "fischerandom", \
-  "bughouse", \
-  "crazyhouse", \
-  "losers", \
-  "suicide", \
-  "giveaway", \
-  "twokings", \
-  "kriegspiel", \
-  "atomic", \
-  "3check", \
-  "shatranj", \
-  "wild29", \
-  "wild30", \
-  "shogi", \
-  "xiangqi", \
-  "courier", \
-  "gothic", \
-  "capablanca", \
-  "fairy", \
-  "unknown" \
-}
-#else
 #define VARIANT_NAMES { \
   "normal", \
   "normal", \
@@ -313,9 +309,16 @@ typedef enum {
   "wild34", \
   "wild35", \
   "wild36", \
+  "shogi", \
+  "xiangqi", \
+  "courier", \
+  "gothic", \
+  "capablanca", \
+  "knightmate", \
+  "fairy", \
+  "showgi", \
   "unknown" \
 }
-#endif
 
 typedef struct {
 #if !defined(_amigados)
@@ -516,10 +519,16 @@ typedef struct {
     /* [HGM] Board size */
     int NrFiles;
     int NrRanks;
+    int holdingsSize;
     int matchPause;
+    Boolean alphaRank;
     Boolean testClaims;
+    Boolean checkMates;
+    Boolean materialDraws;
+    Boolean trivialDraws;
     int ruleMoves;
     int drawRepeats;
+    char * pieceToCharTable;
 
 #if ZIPPY
     char *zippyLines;
@@ -580,7 +589,16 @@ typedef struct {
     int blackRating;    /* -1 if unknown */
     VariantClass variant;
     char *outOfBook;    /* [AS] Move and score when engine went out of book */
+    int boardWidth;     /* [HGM] adjustable board size */
+    int boardHeight;
+/* [HGM] For Shogi and Crazyhouse: */
+    int holdingsSize;  /* number of different piece types in holdings       */
+    int holdingsWidth; /* number of files left and right of board, 0 or 2   */
 } GameInfo;
 
 
 #endif
+
+/* extern int holdingsWidth;  
+extern int holdingsHeight; 
+/*extern int holdings[(int) EmptySquare];*/

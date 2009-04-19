@@ -93,6 +93,8 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
 
 extern int whiteFlag, blackFlag;
 
+void DisplayHoldingsCount(HDC hdc, int x, int y, int align, int copyNumber);
+
 typedef struct {
   ChessSquare piece;  
   POINT pos;      /* window coordinates of current pos */
@@ -168,6 +170,7 @@ HWND hCommPort = NULL;    /* currently open comm port */
 static HWND hwndPause;    /* pause button */
 static HBITMAP pieceBitmap[3][(int) BlackPawn]; /* [HGM] nr of bitmaps referred to bP in stead of wK */
 static HBRUSH lightSquareBrush, darkSquareBrush,
+  blackSquareBrush, /* [HGM] for band between board and holdings */
   whitePieceBrush, blackPieceBrush, iconBkgndBrush, outlineBrush;
 static POINT gridEndpoints[(BOARD_SIZE + 1) * 4];
 static DWORD gridVertexCounts[(BOARD_SIZE + 1) * 2];
@@ -584,6 +587,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   } else {
     GetCurrentDirectory(MSG_SIZ, installDir);
   }
+  gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] won't have open window otherwise
   InitAppData(lpCmdLine);      /* Get run-time parameters */
   if (appData.debugMode) {
     debugFP = fopen(appData.nameOfDebugFile, "w");
@@ -1163,11 +1167,16 @@ ArgDescriptor argDescriptors[] = {
   { "engineOutputW", ArgInt, (LPVOID) &wpEngineOutput.width, TRUE },
   { "engineOutputH", ArgInt, (LPVOID) &wpEngineOutput.height, TRUE },
 
-  /* [HGM] User-selectable board size */
+  /* [HGM] board-size, adjudication and misc. options */
   { "boardWidth", ArgInt, (LPVOID) &appData.NrFiles, TRUE },
   { "boardHeight", ArgInt, (LPVOID) &appData.NrRanks, TRUE },
+  { "holdingsSize", ArgInt, (LPVOID) &appData.holdingsSize, TRUE },
   { "matchPause", ArgInt, (LPVOID) &appData.matchPause, FALSE },
+  { "alphaRank", ArgBoolean, (LPVOID) &appData.alphaRank, TRUE },
   { "testClaims", ArgBoolean, (LPVOID) &appData.testClaims, TRUE },
+  { "checkMates", ArgBoolean, (LPVOID) &appData.checkMates, TRUE },
+  { "materialDraws", ArgBoolean, (LPVOID) &appData.materialDraws, TRUE },
+  { "trivialDraws", ArgBoolean, (LPVOID) &appData.trivialDraws, TRUE },
   { "ruleMoves", ArgInt, (LPVOID) &appData.ruleMoves, TRUE },
   { "repeatsToDraw", ArgInt, (LPVOID) &appData.drawRepeats, TRUE },
 
@@ -1875,13 +1884,18 @@ InitAppData(LPSTR lpCmdLine)
   InitWindowPlacement( &wpEvalGraph );
   InitWindowPlacement( &wpEngineOutput );
 
-  /* [HGM] User-selectable board size */
-  appData.NrFiles = 8;
-  appData.NrRanks = 8;
-  appData.matchPause  = 10000;
-  appData.testClaims  = FALSE;
-  appData.ruleMoves   = 51;
-  appData.drawRepeats = 6;
+  /* [HGM] User-selectable board size, adjudication control, miscellaneous */
+  appData.NrFiles      = -1;
+  appData.NrRanks      = -1;
+  appData.holdingsSize = -1;
+  appData.testClaims   = FALSE;
+  appData.checkMates   = FALSE;
+  appData.materialDraws= FALSE;
+  appData.trivialDraws = FALSE;
+  appData.ruleMoves    = 51;
+  appData.drawRepeats  = 6;
+  appData.matchPause   = 10000;
+  appData.alphaRank    = FALSE;
 
 #ifdef ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
@@ -2285,37 +2299,37 @@ enum {
     PM_WN = (int) WhiteKnight, 
     PM_WB = (int) WhiteBishop, 
     PM_WR = (int) WhiteRook, 
-#ifdef FAIRY
-    PM_WA  = (int) WhiteCardinal, 
-    PM_WC  = (int) WhiteMarshall, 
-    PM_WFP = (int) WhiteFairyPawn, 
-    PM_WFN = (int) WhiteFairyKnight, 
-    PM_WFB = (int) WhiteFairyBishop, 
-    PM_WFR = (int) WhiteFairyRook, 
-    PM_WFA = (int) WhiteFairyCardinal, 
-    PM_WFC = (int) WhiteFairyMarshall, 
-    PM_WFQ = (int) WhiteFairyQueen, 
-    PM_WFK = (int) WhiteFairyKing, 
-#endif
     PM_WQ = (int) WhiteQueen, 
+#ifdef FAIRY
+    PM_WF = (int) WhiteFerz, 
+    PM_WW = (int) WhiteWazir, 
+    PM_WE = (int) WhiteAlfil, 
+    PM_WH = (int) WhiteNightrider, 
+    PM_WA = (int) WhiteCardinal, 
+    PM_WC = (int) WhiteMarshall, 
+    PM_WG = (int) WhiteGrasshopper, 
+    PM_WO = (int) WhiteCannon, 
+    PM_WM = (int) WhiteMan, 
+    PM_WU = (int) WhiteUnicorn, 
+#endif
     PM_WK = (int) WhiteKing,
     PM_BP = (int) BlackPawn, 
     PM_BN = (int) BlackKnight, 
     PM_BB = (int) BlackBishop, 
     PM_BR = (int) BlackRook, 
-#ifdef FAIRY
-    PM_BA  = (int) BlackCardinal, 
-    PM_BC  = (int) BlackMarshall, 
-    PM_BFP = (int) BlackFairyPawn, 
-    PM_BFN = (int) BlackFairyKnight, 
-    PM_BFB = (int) BlackFairyBishop, 
-    PM_BFR = (int) BlackFairyRook, 
-    PM_BFA = (int) BlackFairyCardinal, 
-    PM_BFC = (int) BlackFairyMarshall, 
-    PM_BFQ = (int) BlackFairyQueen, 
-    PM_BFK = (int) BlackFairyKing,
-#endif
     PM_BQ = (int) BlackQueen, 
+#ifdef FAIRY
+    PM_BF = (int) BlackFerz, 
+    PM_BW = (int) BlackWazir, 
+    PM_BE = (int) BlackAlfil, 
+    PM_BH = (int) BlackNightrider, 
+    PM_BA = (int) BlackCardinal, 
+    PM_BC = (int) BlackMarshall, 
+    PM_BG = (int) BlackGrasshopper, 
+    PM_BO = (int) BlackCannon, 
+    PM_BM = (int) BlackMan,
+    PM_BU = (int) BlackUnicorn, 
+#endif
     PM_BK = (int) BlackKing
 };
 
@@ -2324,15 +2338,15 @@ static HBITMAP hPieceMask[(int) EmptySquare];
 static HBITMAP hPieceFace[(int) EmptySquare];
 static int fontBitmapSquareSize = 0;
 static char pieceToFontChar[(int) EmptySquare] =
-                              { 'p', 'n', 'b', 'r',
+                              { 'p', 'n', 'b', 'r', 'q', 
 #ifdef FAIRY
                       'n', 'b', 'p', 'n', 'b', 'r', 'b', 'r', 'q', 'k',
 #endif
-                      'q', 'k', 'o', 'm', 'v', 't', 
+                      'k', 'o', 'm', 'v', 't', 'w', 
 #ifdef FAIRY
                       'v', 't', 'o', 'm', 'v', 't', 'v', 't', 'w', 'l',
 #endif
-                                                              'w', 'l' };
+                                                              'l' };
 
 static BOOL SetPieceToFontCharTable( const char * map )
 {
@@ -2343,13 +2357,11 @@ static BOOL SetPieceToFontCharTable( const char * map )
         int i; /* [HGM] Accept even length from 12 to 32 */
 
         for( i=0; i<(int) EmptySquare; i++ ) pieceToFontChar[i] = 0;
-        for( i=0; i<NrPieces/2-2; i++ ) {
+        for( i=0; i<NrPieces/2-1; i++ ) {
             pieceToFontChar[i] = map[i];
             pieceToFontChar[i + (int)BlackPawn - (int) WhitePawn] = map[i+NrPieces/2];
         }
-        pieceToFontChar[(int) WhiteQueen] = map[NrPieces/2-2];
         pieceToFontChar[(int) WhiteKing]  = map[NrPieces/2-1];
-        pieceToFontChar[(int) BlackQueen] = map[NrPieces-2];
         pieceToFontChar[(int) BlackKing]  = map[NrPieces-1];
 
         result = TRUE;
@@ -2574,42 +2586,42 @@ static int TranslatePieceToFontPiece( int piece )
         return PM_BA;
     case BlackMarshall:
         return PM_BC;
-    case BlackFairyPawn:
-        return PM_BFP;
-    case BlackFairyKnight:
-        return PM_BFN;
-    case BlackFairyBishop:
-        return PM_BFB;
-    case BlackFairyRook:
-        return PM_BFR;
-    case BlackFairyCardinal:
-        return PM_BFA;
-    case BlackFairyMarshall:
-        return PM_BFC;
-    case BlackFairyQueen:
-        return PM_BFQ;
-    case BlackFairyKing:
-        return PM_BFK;
+    case BlackFerz:
+        return PM_BF;
+    case BlackNightrider:
+        return PM_BH;
+    case BlackAlfil:
+        return PM_BE;
+    case BlackWazir:
+        return PM_BW;
+    case BlackUnicorn:
+        return PM_BU;
+    case BlackCannon:
+        return PM_BO;
+    case BlackGrasshopper:
+        return PM_BG;
+    case BlackMan:
+        return PM_BM;
     case WhiteCardinal:
         return PM_WA;
     case WhiteMarshall:
         return PM_WC;
-    case WhiteFairyPawn:
-        return PM_WFP;
-    case WhiteFairyKnight:
-        return PM_WFN;
-    case WhiteFairyBishop:
-        return PM_WFB;
-    case WhiteFairyRook:
-        return PM_WFR;
-    case WhiteFairyCardinal:
-        return PM_WFA;
-    case WhiteFairyMarshall:
-        return PM_WFC;
-    case WhiteFairyQueen:
-        return PM_WFQ;
-    case WhiteFairyKing:
-        return PM_WFK;
+    case WhiteFerz:
+        return PM_WF;
+    case WhiteNightrider:
+        return PM_WH;
+    case WhiteAlfil:
+        return PM_WE;
+    case WhiteWazir:
+        return PM_WW;
+    case WhiteUnicorn:
+        return PM_WU;
+    case WhiteCannon:
+        return PM_WO;
+    case WhiteGrasshopper:
+        return PM_WG;
+    case WhiteMan:
+        return PM_WM;
 #endif
     }
 
@@ -2726,24 +2738,24 @@ void CreatePiecesFromFont()
 #ifdef FAIRY
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WA );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WC );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFP );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFN );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFB );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFR );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFA );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFC );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFQ );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFK );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WF );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WH );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WE );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WW );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WU );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WO );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WG );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WM );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BA );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BC );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFP );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFN );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFB );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFR );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFA );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFC );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFQ );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFK );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BF );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BH );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BE );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BW );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BU );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BO );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BG );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BM );
 #endif
 
             SelectObject( hdc, hfont_old );
@@ -2828,6 +2840,7 @@ InitDrawingColors()
   hPal = CreatePalette((LPLOGPALETTE) pLogPal);
 
   lightSquareBrush = CreateSolidBrush(lightSquareColor);
+  blackSquareBrush = CreateSolidBrush(blackPieceColor);
   darkSquareBrush = CreateSolidBrush(darkSquareColor);
   whitePieceBrush = CreateSolidBrush(whitePieceColor);
   blackPieceBrush = CreateSolidBrush(blackPieceColor);
@@ -2889,6 +2902,9 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   RECT crect, wrect;
   int offby;
   LOGBRUSH logbrush;
+
+  /* [HGM] call with -1 uses old size (for if nr of files, ranks changes) */
+  if(boardSize == (BoardSize)(-1) ) boardSize = oldBoardSize;
 
   tinyLayout = sizeInfo[boardSize].tinyLayout;
   smallLayout = sizeInfo[boardSize].smallLayout;
@@ -3103,36 +3119,65 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[2][WhiteKing] = DoLoadBitmap(hInst, "k", squareSize, "w");
 #ifdef FAIRY
   if(squareSize==72 || squareSize==49) { /* experiment with some home-made bitmaps */
+  pieceBitmap[0][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "s");
+  pieceBitmap[1][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "o");
+  pieceBitmap[2][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "w");
+  pieceBitmap[0][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "s");
+  pieceBitmap[1][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "o");
+  pieceBitmap[2][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "w");
+  if(!strcmp(appData.variant, "shogi")) { /* promoted Gold represemtations */
+  pieceBitmap[0][WhiteAlfil] = DoLoadBitmap(hInst, "wp", squareSize, "s");
+  pieceBitmap[1][WhiteAlfil] = DoLoadBitmap(hInst, "wp", squareSize, "o");
+  pieceBitmap[2][WhiteAlfil] = DoLoadBitmap(hInst, "w", squareSize, "w");
+  pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "wn", squareSize, "s");
+  pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "wn", squareSize, "o");
+  pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "w", squareSize, "w");
+  pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "wl", squareSize, "s");
+  pieceBitmap[1][WhiteCannon] = DoLoadBitmap(hInst, "wl", squareSize, "o");
+  pieceBitmap[2][WhiteCannon] = DoLoadBitmap(hInst, "w", squareSize, "w");
+  pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "ws", squareSize, "s");
+  pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "ws", squareSize, "o");
+  pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "w", squareSize, "w");
+  } else {
+  pieceBitmap[0][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "s");
+  pieceBitmap[1][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "o");
+  pieceBitmap[2][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "w");
+  pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "s");
+  pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "o");
+  pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "w");
   pieceBitmap[0][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "s");
-  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "s");
-  pieceBitmap[0][WhiteFairyPawn] = DoLoadBitmap(hInst, "f", squareSize, "s");
-  pieceBitmap[0][WhiteFairyKnight] = DoLoadBitmap(hInst, "h", squareSize, "s");
-  pieceBitmap[0][WhiteFairyBishop] = DoLoadBitmap(hInst, "e", squareSize, "s");
-  pieceBitmap[0][WhiteFairyRook] = DoLoadBitmap(hInst, "w", squareSize, "s");
-  pieceBitmap[0][WhiteFairyQueen] = DoLoadBitmap(hInst, "g", squareSize, "s");
-  pieceBitmap[0][WhiteFairyCardinal] = DoLoadBitmap(hInst, "u", squareSize, "s");
-  pieceBitmap[0][WhiteFairyMarshall] = DoLoadBitmap(hInst, "o", squareSize, "s");
-  pieceBitmap[0][WhiteFairyKing] = DoLoadBitmap(hInst, "m", squareSize, "s");
   pieceBitmap[1][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "o");
-  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "o");
-  pieceBitmap[1][WhiteFairyPawn] = DoLoadBitmap(hInst, "f", squareSize, "o");
-  pieceBitmap[1][WhiteFairyKnight] = DoLoadBitmap(hInst, "h", squareSize, "o");
-  pieceBitmap[1][WhiteFairyBishop] = DoLoadBitmap(hInst, "e", squareSize, "o");
-  pieceBitmap[1][WhiteFairyRook] = DoLoadBitmap(hInst, "w", squareSize, "o");
-  pieceBitmap[1][WhiteFairyQueen] = DoLoadBitmap(hInst, "g", squareSize, "o");
-  pieceBitmap[1][WhiteFairyCardinal] = DoLoadBitmap(hInst, "u", squareSize, "o");
-  pieceBitmap[1][WhiteFairyMarshall] = DoLoadBitmap(hInst, "o", squareSize, "o");
-  pieceBitmap[1][WhiteFairyKing] = DoLoadBitmap(hInst, "m", squareSize, "o");
   pieceBitmap[2][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "w");
+  pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "s");
+  pieceBitmap[1][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "o");
+  pieceBitmap[2][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "w");
+  pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "s");
+  pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "o");
+  pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "w");
+  }
+  pieceBitmap[0][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "s");
+  pieceBitmap[1][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "o");
+  pieceBitmap[2][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "w");
+  pieceBitmap[0][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "s");
+  pieceBitmap[1][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "o");
+  pieceBitmap[2][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "w");
+  if(strcmp(appData.variant, "crazyhouse") && strcmp(appData.variant, "shogi")) {
+  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "s");
+  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "o");
   pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "w");
-  pieceBitmap[2][WhiteFairyPawn] = DoLoadBitmap(hInst, "f", squareSize, "w");
-  pieceBitmap[2][WhiteFairyKnight] = DoLoadBitmap(hInst, "h", squareSize, "w");
-  pieceBitmap[2][WhiteFairyBishop] = DoLoadBitmap(hInst, "e", squareSize, "w");
-  pieceBitmap[2][WhiteFairyRook] = DoLoadBitmap(hInst, "w", squareSize, "w");
-  pieceBitmap[2][WhiteFairyQueen] = DoLoadBitmap(hInst, "g", squareSize, "w");
-  pieceBitmap[2][WhiteFairyCardinal] = DoLoadBitmap(hInst, "u", squareSize, "w");
-  pieceBitmap[2][WhiteFairyMarshall] = DoLoadBitmap(hInst, "o", squareSize, "w");
-  pieceBitmap[2][WhiteFairyKing] = DoLoadBitmap(hInst, "m", squareSize, "w");
+  } else {
+  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "dk", squareSize, "s");
+  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "dk", squareSize, "o");
+  pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "dk", squareSize, "w");
+  }
+  if(!strcmp(appData.variant, "xiangqi") || !strcmp(appData.variant, "shogi")) {
+      for(i=0; i<2; i++)
+      if (pieceBitmap[i][WhiteQueen] != NULL)
+        DeleteObject(pieceBitmap[i][WhiteQueen]);
+  pieceBitmap[0][WhiteQueen] = DoLoadBitmap(hInst, "o", squareSize, "s");
+  pieceBitmap[1][WhiteQueen] = DoLoadBitmap(hInst, "o", squareSize, "o");
+  pieceBitmap[2][WhiteQueen] = DoLoadBitmap(hInst, "o", squareSize, "w");
+  }
   }
 #endif
 
@@ -3750,13 +3795,37 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
 
       square_color = ((column + row) % 2) == 1;
       if(!strcmp(appData.variant, "xiangqi") ) {
-          square_color = 1;
-          if( (row < 3 || row > BOARD_HEIGHT-4) &&
-              column < (BOARD_WIDTH + 4)/2 &&
-              column > (BOARD_WIDTH - 5)/2 ) square_color = 0;
+          square_color = !InPalace(row, column);
+          if(BOARD_HEIGHT&1) { if(row==BOARD_HEIGHT/2) square_color ^= 1; }
+          else if(row < BOARD_HEIGHT/2) square_color ^= 1;
       }
       piece_color = (int) piece < (int) BlackPawn;
 
+
+#ifdef FAIRY
+      /* [HGM] holdings file: light square or black */
+      if(column == BOARD_LEFT-2) {
+            if( row > BOARD_HEIGHT - gameInfo.holdingsSize - 1 )
+                square_color = 1;
+            else {
+                DisplayHoldingsCount(hdc, x, y, 0, 0); /* black out */
+                continue;
+            }
+      } else
+      if(column == BOARD_RGHT + 1 ) {
+            if( row < gameInfo.holdingsSize )
+                square_color = 1;
+            else {
+                DisplayHoldingsCount(hdc, x, y, 0, 0); 
+                continue;
+            }
+      }
+      if(column == BOARD_LEFT-1 ) /* left align */
+            DisplayHoldingsCount(hdc, x, y, 0, (int) board[row][column]);
+      else if( column == BOARD_RGHT) /* right align */
+            DisplayHoldingsCount(hdc, x, y, 1, (int) board[row][column]);
+      else
+#endif
       if (appData.monoMode) {
         if (piece == EmptySquare) {
           BitBlt(hdc, x, y, squareSize, squareSize, 0, 0, 0,
@@ -3784,8 +3853,9 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
           }
       }
       else {
-        oldBrush = SelectObject(hdc, square_color ?
-				lightSquareBrush : darkSquareBrush);
+        HBRUSH brush = square_color ? lightSquareBrush : darkSquareBrush;
+
+        oldBrush = SelectObject(hdc, brush );
         BitBlt(hdc, x, y, squareSize, squareSize, 0, 0, 0, PATCOPY);
         SelectObject(hdc, oldBrush);
         if (piece != EmptySquare)
@@ -3904,6 +3974,22 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   hdcmem = CreateCompatibleDC(hdc);
   tmphdc = CreateCompatibleDC(hdc);
 
+  /* If dragging is in progress, we temporarely remove the piece */
+  /* [HGM] or temporarily decrease count if stacked              */
+  /*       !! Moved to before board compare !!                   */
+  if (dragInfo.from.x >= 0 && dragInfo.pos.x >= 0) {
+    dragged_piece = board[dragInfo.from.y][dragInfo.from.x];
+    if(dragInfo.from.x == BOARD_LEFT-2 ) {
+            if(--board[dragInfo.from.y][dragInfo.from.x+1] == 0 )
+        board[dragInfo.from.y][dragInfo.from.x] = EmptySquare;
+    } else 
+    if(dragInfo.from.x == BOARD_RGHT+1) {
+            if(--board[dragInfo.from.y][dragInfo.from.x-1] == 0 )
+        board[dragInfo.from.y][dragInfo.from.x] = EmptySquare;
+    } else 
+        board[dragInfo.from.y][dragInfo.from.x] = EmptySquare;
+  }
+
   /* Figure out which squares need updating by comparing the 
    * newest board with the last drawn board and checking if
    * flipping has changed.
@@ -3997,12 +4083,6 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
     }
   }
 
-  /* If dragging is in progress, we temporarely remove the piece */
-  if (dragInfo.from.x >= 0 && dragInfo.pos.x >= 0) {
-    dragged_piece = board[dragInfo.from.y][dragInfo.from.x];
-    board[dragInfo.from.y][dragInfo.from.x] = EmptySquare;
-  }
-
   /* Are we animating a move?  
    * If so, 
    *   - remove the piece from the board (temporarely)
@@ -4051,8 +4131,17 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 
   DrawCoordsOnDC(hdcmem);
 
-  /* Put the dragged piece back into place and draw it */
-  if (dragged_piece != EmptySquare) {
+  CopyBoard(lastDrawn, board); /* [HGM] Moved to here from end of routine, */
+                 /* to make sure lastDrawn contains what is actually drawn */
+
+  /* Put the dragged piece back into place and draw it (out of place!) */
+    if (dragged_piece != EmptySquare) {
+    /* [HGM] or restack */
+    if(dragInfo.from.x == BOARD_LEFT-2 )
+                 board[dragInfo.from.y][dragInfo.from.x+1]++;
+    else
+    if(dragInfo.from.x == BOARD_RGHT+1 )
+                 board[dragInfo.from.y][dragInfo.from.x-1]++;
     board[dragInfo.from.y][dragInfo.from.x] = dragged_piece;
     x = dragInfo.pos.x - squareSize / 2;
     y = dragInfo.pos.y - squareSize / 2;
@@ -4113,7 +4202,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
       CheckMenuItem(GetMenu(hwndMain),IDM_FlipView, MF_BYCOMMAND|MF_UNCHECKED);
   }
 
-  CopyBoard(lastDrawn, board);
+/*  CopyBoard(lastDrawn, board);*/
   lastDrawnHighlight = highlightInfo;
   lastDrawnPremove   = premoveHighlightInfo;
   lastDrawnFlipView = flipView;
@@ -4230,6 +4319,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   BOOLEAN saveAnimate;
   BOOLEAN forceFullRepaint = IsFullRepaintPreferrable(); /* [AS] */
   static BOOLEAN sameAgain = FALSE;
+  ChessMove moveType;
 
   if (recursive) {
     if (message == WM_MBUTTONUP) {
@@ -4283,15 +4373,24 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       dragInfo.start.x = dragInfo.start.y = -1;
       dragInfo.from = dragInfo.start;
       break;
-    } else if (x < 0 || y < 0) {
+    } else if (x < 0 || y < 0
+      /* [HGM] block clicks between board and holdings */
+              || x == BOARD_LEFT-1 || x == BOARD_RGHT
+              || x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize
+              || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize
+                               ) {
       break;
     } else if (fromX == x && fromY == y) {
       /* Downclick on same square again */
       ClearHighlights();
       DrawPosition(forceFullRepaint || FALSE, NULL);
       sameAgain = TRUE;  
-    } else if (fromX != -1) {
-      /* Downclick on different square */
+    } else if (fromX != -1 &&
+               x != BOARD_LEFT-2 && x != BOARD_RGHT+1 
+                                                                        ) {
+      /* Downclick on different square. */
+      /* [HGM] if on holdings file, should count as new first click ! */
+       
       ChessSquare pdown, pup;
       pdown = boards[currentMove][fromY][fromX];
       pup = boards[currentMove][y][x];
@@ -4304,30 +4403,37 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	   click-click move is possible */
 	toX = x;
 	toY = y;
-	if (IsPromotion(fromX, fromY, toX, toY)) {
-	  if (appData.alwaysPromoteToQueen) {
-	    UserMoveEvent(fromX, fromY, toX, toY, 'q');
-	    if (!appData.highlightLastMove) {
-	      ClearHighlights();
-	      DrawPosition(forceFullRepaint || FALSE, NULL);
-	    }
-	  } else {
-	    SetHighlights(fromX, fromY, toX, toY);
-	    DrawPosition(forceFullRepaint || FALSE, NULL);
-	    PromotionPopup(hwnd);
-	  }
-	} else {	/* not a promotion */
-	  if (appData.animate || appData.highlightLastMove) {
-	    SetHighlights(fromX, fromY, toX, toY);
-	  } else {
-	    ClearHighlights();
-	  }
-	  UserMoveEvent(fromX, fromY, toX, toY, NULLCHAR);
-	  if (appData.animate && !appData.highlightLastMove) {
-	    ClearHighlights();
-	    DrawPosition(forceFullRepaint || FALSE, NULL);
-	  }
-	}
+        moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR);
+        if(moveType != ImpossibleMove) {
+          if (IsPromotion(fromX, fromY, toX, toY)) {
+             /* [HGM] <popupFix> UserMoveEvent requires two calls now,
+                to make sure move is legal before showing promotion popup */
+             if (appData.alwaysPromoteToQueen) {
+                  FinishMove(moveType, fromX, fromY, toX, toY, 'q');
+                  if (!appData.highlightLastMove) {
+                      ClearHighlights();
+                      DrawPosition(forceFullRepaint || FALSE, NULL);
+                  }
+             } else {
+                  SetHighlights(fromX, fromY, toX, toY);
+                  DrawPosition(forceFullRepaint || FALSE, NULL);
+                  /* [HGM] <popupFix> Popup calls FinishMove now.
+                     If promotion to Q is legal, all are legal! */
+                  PromotionPopup(hwnd);
+             }
+          } else {       /* not a promotion */
+             if (appData.animate || appData.highlightLastMove) {
+                 SetHighlights(fromX, fromY, toX, toY);
+             } else {
+                 ClearHighlights();
+             }
+             FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
+             if (appData.animate && !appData.highlightLastMove) {
+                  ClearHighlights();
+                  DrawPosition(forceFullRepaint || FALSE, NULL);
+             }
+          }
+        }
 	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
 	fromX = fromY = -1;
 	break;
@@ -4356,7 +4462,6 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     ReleaseCapture();
     if (fromX == -1) break;
     if (x == fromX && y == fromY) {
-      dragInfo.from.x = dragInfo.from.y = -1;
       /* Upclick on same square */
       if (sameAgain) {
 	/* Clicked same square twice: abort click-click move */
@@ -4367,26 +4472,31 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	/* First square clicked: start click-click move */
 	SetHighlights(fromX, fromY, -1, -1);
       }
+      dragInfo.from.x = dragInfo.from.y = -1;
       DrawPosition(forceFullRepaint || FALSE, NULL);
     } else if (dragInfo.from.x < 0 || dragInfo.from.y < 0) {
       /* Errant click; ignore */
       break;
     } else {
-      /* Finish drag move */
+      /* Finish drag move. */
+    if (appData.debugMode) {
+        fprintf(debugFP, "release\n");
+    }
       dragInfo.from.x = dragInfo.from.y = -1;
       toX = x;
       toY = y;
       saveAnimate = appData.animate; /* sorry, Hawk :) */
       appData.animate = appData.animate && !appData.animateDragging;
-      if (IsPromotion(fromX, fromY, toX, toY)) {
-	if (appData.alwaysPromoteToQueen) {
-	  UserMoveEvent(fromX, fromY, toX, toY, 'q');
-	} else {
-	  DrawPosition(forceFullRepaint || FALSE, NULL);
-	  PromotionPopup(hwnd);
-	}
-      } else {
-	UserMoveEvent(fromX, fromY, toX, toY, NULLCHAR);
+      moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR);
+      if(moveType != ImpossibleMove) {
+        if (IsPromotion(fromX, fromY, toX, toY)) {
+          if (appData.alwaysPromoteToQueen)
+                  FinishMove(moveType, fromX, fromY, toX, toY, 'q');
+          else {
+            DrawPosition(forceFullRepaint || FALSE, NULL);
+            PromotionPopup(hwnd); /* [HGM] Popup now calls FinishMove */
+          }
+        } else FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
       }
       if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
       appData.animate = saveAnimate;
@@ -4410,12 +4520,13 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
       BOOL full_repaint = FALSE;
 
+      sameAgain = FALSE; /* [HGM] if we drag something around, do keep square selected */
       if (appData.animateDragging) {
 	dragInfo.pos = pt;
       }
       if (appData.highlightDragging) {
 	SetHighlights(fromX, fromY, x, y);
-        if( IsDrawArrowEnabled() && (x < 0 || x >= BOARD_WIDTH || y < 0 || y > BOARD_WIDTH) ) {
+        if( IsDrawArrowEnabled() && (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) ) {
             full_repaint = TRUE;
         }
       }
@@ -4614,7 +4725,11 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       return FALSE;
     }
     EndDialog(hDlg, TRUE); /* Exit the dialog */
-    UserMoveEvent(fromX, fromY, toX, toY, promoChar);
+    /* [HGM] <popupFix> Call FinishMove rather than UserMoveEvent, as we
+       only show the popup when we are already sure the move is valid or
+       legal. We pass a faulty move type, but the kludge is that FinishMove
+       will figure out it is a promotion from the promoChar. */
+    FinishMove(NormalMove, fromX, fromY, toX, toY, promoChar);
     if (!appData.highlightLastMove) {
       ClearHighlights();
       DrawPosition(FALSE, NULL);
@@ -4829,6 +4944,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         ResetGameEvent();
         AnalysisPopDown();
       }
+      break;
+
+    case IDM_NewVariant:
+      NewVariantPopup(hwnd);
       break;
 
     case IDM_LoadGame:
@@ -7276,6 +7395,37 @@ ConsoleOutput(char* data, int length, int forceVisible)
 
 /*---------*/
 
+
+void
+DisplayHoldingsCount(HDC hdc, int x, int y, int rightAlign, int copyNumber)
+{
+  char buf[100];
+  char *str;
+  COLORREF oldFg, oldBg;
+  HFONT oldFont;
+  RECT rect;
+
+  if(copyNumber > 1) sprintf(buf, "%d", copyNumber); else buf[0] = 0;
+
+  oldFg = SetTextColor(hdc, RGB(255, 255, 255)); /* white */
+  oldBg = SetBkColor(hdc, RGB(0, 0, 0)); /* black */
+  oldFont = SelectObject(hdc, font[boardSize][CLOCK_FONT]->hf);
+
+  rect.left = x;
+  rect.right = x + squareSize;
+  rect.top  = y;
+  rect.bottom = y + squareSize;
+  str = buf;
+
+  ExtTextOut(hdc, x + MESSAGE_LINE_LEFTMARGIN
+                    + (rightAlign ? (squareSize*2)/3 : 0),
+             y, ETO_CLIPPED|ETO_OPAQUE,
+             &rect, str, strlen(str), NULL);
+
+  (void) SetTextColor(hdc, oldFg);
+  (void) SetBkColor(hdc, oldBg);
+  (void) SelectObject(hdc, oldFont);
+}
 
 void
 DisplayAClock(HDC hdc, int timeRemaining, int highlight,

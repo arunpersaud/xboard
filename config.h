@@ -47,7 +47,7 @@
 
 #define LAST_PTY_LETTER 'q'
 
-#define PATCHLEVEL "2"
+#define PATCHLEVEL "4"
 
 #define PRODUCT "WinBoard"
 
