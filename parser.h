@@ -57,3 +57,4 @@ extern int yyskipmoves;  /* If TRUE, all moves are reported as AmbiguousMove
 extern char *yy_text;  /* Needed because yytext can be either a char[]
 			  or a (non-constant) char* */
 extern int yyoffset P((void));
+extern char initialRights[BOARD_SIZE];

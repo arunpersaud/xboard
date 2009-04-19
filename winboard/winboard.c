@@ -1,4 +1,4 @@
-/* 
+/*
  * WinBoard.c -- Windows NT front end to XBoard
  * $Id: winboard.c,v 2.3 2003/11/25 05:25:20 mann Exp $
  *
@@ -88,8 +88,10 @@
 
 void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
 
-int myrandom(void);
-void mysrandom(unsigned int seed);
+  int myrandom(void);
+  void mysrandom(unsigned int seed);
+
+extern int whiteFlag, blackFlag;
 
 typedef struct {
   ChessSquare piece;  
@@ -164,7 +166,7 @@ ColorClass currentColorClass;
 
 HWND hCommPort = NULL;    /* currently open comm port */
 static HWND hwndPause;    /* pause button */
-static HBITMAP pieceBitmap[3][(int) WhiteKing + 1];
+static HBITMAP pieceBitmap[3][(int) BlackPawn]; /* [HGM] nr of bitmaps referred to bP in stead of wK */
 static HBRUSH lightSquareBrush, darkSquareBrush,
   whitePieceBrush, blackPieceBrush, iconBkgndBrush, outlineBrush;
 static POINT gridEndpoints[(BOARD_SIZE + 1) * 4];
@@ -418,6 +420,7 @@ VOID EngineOutputPopDown();
 BOOL EngineOutputIsUp();
 VOID EngineOutputUpdate( FrontEndProgramStats * stats );
 
+VOID GothicPopUp(char *title);
 /*
  * Setting "frozen" should disable all user input other than deleting
  * the window.  We do this while engines are initializing themselves.
@@ -558,9 +561,12 @@ int screenHeight, screenWidth;
 void
 EnsureOnScreen(int *x, int *y)
 {
+  int gap = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION);
   /* Be sure window at (x,y) is not off screen (or even mostly off screen) */
   if (*x > screenWidth - 32) *x = 0;
   if (*y > screenHeight - 32) *y = 0;
+  if (*x < 10) *x = 10;
+  if (*y < gap) *y = gap;
 }
 
 BOOL
@@ -612,7 +618,9 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
        size that fits on this screen as the default. */
     InitDrawingSizes((BoardSize)ibs, 0);
     if (boardSize == (BoardSize)-1 &&
-	winHeight <= screenHeight && winWidth <= screenWidth) {
+        winHeight <= screenHeight
+           - GetSystemMetrics(SM_CYFRAME) - GetSystemMetrics(SM_CYCAPTION) - 10
+        && winWidth <= screenWidth) {
       boardSize = (BoardSize)ibs;
     }
   }
@@ -622,7 +630,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 
   /* [AS] Load textures if specified */
   ZeroMemory( &backTextureSquareInfo, sizeof(backTextureSquareInfo) );
-
+  
   if( appData.liteBackTextureFile && appData.liteBackTextureFile[0] != NULLCHAR && appData.liteBackTextureFile[0] != '*' ) {
       liteBackTexture = LoadImage( 0, appData.liteBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
       liteBackTextureMode = appData.liteBackTextureMode;
@@ -631,7 +639,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
           fprintf( debugFP, "Unable to load lite texture bitmap '%s'\n", appData.liteBackTextureFile );
       }
   }
-
+  
   if( appData.darkBackTextureFile && appData.darkBackTextureFile[0] != NULLCHAR && appData.darkBackTextureFile[0] != '*' ) {
       darkBackTexture = LoadImage( 0, appData.darkBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
       darkBackTextureMode = appData.darkBackTextureMode;
@@ -676,13 +684,19 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   SetWindowPlacement(hwndMain, &wp);
 
   SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
-	       0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+               0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 
   /* [AS] Disable the FRC stuff if not playing the proper variant */
   if( gameInfo.variant != VariantFischeRandom ) {
       EnableMenuItem( GetMenu(hwndMain), IDM_NewGameFRC, MF_GRAYED );
   }
-
+#ifdef FAIRY
+#ifdef GOTHIC
+  /* [HGM] Gothic licensing requirement */
+  if(gameInfo.variant == VariantGothic)
+      GothicPopUp(GOTHIC);
+#endif // GOTHIC
+#endif // FAIRY
   if (hwndConsole) {
 #if AOT_CONSOLE
     SetWindowPos(hwndConsole, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
@@ -1126,7 +1140,7 @@ ArgDescriptor argDescriptors[] = {
   { "polyglotDir", ArgFilename, (LPVOID) &appData.polyglotDir, TRUE },
   { "usePolyglotBook", ArgBoolean, (LPVOID) &appData.usePolyglotBook, TRUE },
   { "polyglotBook", ArgFilename, (LPVOID) &appData.polyglotBook, TRUE },
-  { "defaultHashSize", ArgInt, (LPVOID) &appData.defaultHashSize, TRUE },
+  { "defaultHashSize", ArgInt, (LPVOID) &appData.defaultHashSize, TRUE }, 
   { "defaultCacheSizeEGTB", ArgInt, (LPVOID) &appData.defaultCacheSizeEGTB, TRUE },
   { "defaultPathEGTB", ArgFilename, (LPVOID) &appData.defaultPathEGTB, TRUE },
 
@@ -1148,6 +1162,14 @@ ArgDescriptor argDescriptors[] = {
   { "engineOutputY", ArgInt, (LPVOID) &wpEngineOutput.y, TRUE },
   { "engineOutputW", ArgInt, (LPVOID) &wpEngineOutput.width, TRUE },
   { "engineOutputH", ArgInt, (LPVOID) &wpEngineOutput.height, TRUE },
+
+  /* [HGM] User-selectable board size */
+  { "boardWidth", ArgInt, (LPVOID) &appData.NrFiles, TRUE },
+  { "boardHeight", ArgInt, (LPVOID) &appData.NrRanks, TRUE },
+  { "matchPause", ArgInt, (LPVOID) &appData.matchPause, FALSE },
+  { "testClaims", ArgBoolean, (LPVOID) &appData.testClaims, TRUE },
+  { "ruleMoves", ArgInt, (LPVOID) &appData.ruleMoves, TRUE },
+  { "repeatsToDraw", ArgInt, (LPVOID) &appData.drawRepeats, TRUE },
 
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
@@ -1853,6 +1875,14 @@ InitAppData(LPSTR lpCmdLine)
   InitWindowPlacement( &wpEvalGraph );
   InitWindowPlacement( &wpEngineOutput );
 
+  /* [HGM] User-selectable board size */
+  appData.NrFiles = 8;
+  appData.NrRanks = 8;
+  appData.matchPause  = 10000;
+  appData.testClaims  = FALSE;
+  appData.ruleMoves   = 51;
+  appData.drawRepeats = 6;
+
 #ifdef ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
   appData.zippyPlay = ZIPPY_PLAY;
@@ -1890,6 +1920,11 @@ InitAppData(LPSTR lpCmdLine)
 
   /* Parse command line */
   ParseArgs(StringGet, &lpCmdLine);
+
+  /* [HGM] make sure board size is acceptable */
+  if(appData.NrFiles > BOARD_SIZE ||
+     appData.NrRanks > BOARD_SIZE   )
+      DisplayFatalError("Recompile with BOARD_SIZE > 12, to support this size", 0, 2);
 
   /* Propagate options that affect others */
   if (appData.matchMode || appData.matchGames) chessProgram = TRUE;
@@ -2043,7 +2078,7 @@ SaveSettings(char* name)
 
   /* [AS] Move history */
   wpMoveHistory.visible = MoveHistoryIsUp();
-
+  
   if( moveHistoryDialog ) {
     GetWindowPlacement(moveHistoryDialog, &wp);
     wpMoveHistory.x = wp.rcNormalPosition.left;
@@ -2244,38 +2279,78 @@ static void DrawTile( int dx, int dy, int dw, int dh, HDC dst, HDC src, int mode
     ModifyWorldTransform( dst, 0, MWT_IDENTITY );
 }
 
-/* [AS] */
+/* [AS] [HGM] Make room for more piece types, so all pieces can be different */
 enum {
-    PM_WP = 0,
-    PM_WN = 1,
-    PM_WB = 2,
-    PM_WR = 3,
-    PM_WQ = 4,
-    PM_WK = 5,
-    PM_BP = 6,
-    PM_BN = 7,
-    PM_BB = 8,
-    PM_BR = 9,
-    PM_BQ = 10,
-    PM_BK = 11
+    PM_WP = (int) WhitePawn, 
+    PM_WN = (int) WhiteKnight, 
+    PM_WB = (int) WhiteBishop, 
+    PM_WR = (int) WhiteRook, 
+#ifdef FAIRY
+    PM_WA  = (int) WhiteCardinal, 
+    PM_WC  = (int) WhiteMarshall, 
+    PM_WFP = (int) WhiteFairyPawn, 
+    PM_WFN = (int) WhiteFairyKnight, 
+    PM_WFB = (int) WhiteFairyBishop, 
+    PM_WFR = (int) WhiteFairyRook, 
+    PM_WFA = (int) WhiteFairyCardinal, 
+    PM_WFC = (int) WhiteFairyMarshall, 
+    PM_WFQ = (int) WhiteFairyQueen, 
+    PM_WFK = (int) WhiteFairyKing, 
+#endif
+    PM_WQ = (int) WhiteQueen, 
+    PM_WK = (int) WhiteKing,
+    PM_BP = (int) BlackPawn, 
+    PM_BN = (int) BlackKnight, 
+    PM_BB = (int) BlackBishop, 
+    PM_BR = (int) BlackRook, 
+#ifdef FAIRY
+    PM_BA  = (int) BlackCardinal, 
+    PM_BC  = (int) BlackMarshall, 
+    PM_BFP = (int) BlackFairyPawn, 
+    PM_BFN = (int) BlackFairyKnight, 
+    PM_BFB = (int) BlackFairyBishop, 
+    PM_BFR = (int) BlackFairyRook, 
+    PM_BFA = (int) BlackFairyCardinal, 
+    PM_BFC = (int) BlackFairyMarshall, 
+    PM_BFQ = (int) BlackFairyQueen, 
+    PM_BFK = (int) BlackFairyKing,
+#endif
+    PM_BQ = (int) BlackQueen, 
+    PM_BK = (int) BlackKing
 };
 
 static HFONT hPieceFont = NULL;
-static HBITMAP hPieceMask[12];
-static HBITMAP hPieceFace[12];
+static HBITMAP hPieceMask[(int) EmptySquare];
+static HBITMAP hPieceFace[(int) EmptySquare];
 static int fontBitmapSquareSize = 0;
-static char pieceToFontChar[12] = { 'p', 'n', 'b', 'r', 'q', 'k', 'o', 'm', 'v', 't', 'w', 'l' };
+static char pieceToFontChar[(int) EmptySquare] =
+                              { 'p', 'n', 'b', 'r',
+#ifdef FAIRY
+                      'n', 'b', 'p', 'n', 'b', 'r', 'b', 'r', 'q', 'k',
+#endif
+                      'q', 'k', 'o', 'm', 'v', 't', 
+#ifdef FAIRY
+                      'v', 't', 'o', 'm', 'v', 't', 'v', 't', 'w', 'l',
+#endif
+                                                              'w', 'l' };
 
 static BOOL SetPieceToFontCharTable( const char * map )
 {
-    BOOL result = FALSE;
+    BOOL result = FALSE; int NrPieces;
 
-    if( map != NULL && strlen(map) == 12 ) {
-        int i;
+    if( map != NULL && (NrPieces=strlen(map)) <= (int) EmptySquare 
+                    && NrPieces >= 12 && !(NrPieces&1)) {
+        int i; /* [HGM] Accept even length from 12 to 32 */
 
-        for( i=0; i<12; i++ ) {
+        for( i=0; i<(int) EmptySquare; i++ ) pieceToFontChar[i] = 0;
+        for( i=0; i<NrPieces/2-2; i++ ) {
             pieceToFontChar[i] = map[i];
+            pieceToFontChar[i + (int)BlackPawn - (int) WhitePawn] = map[i+NrPieces/2];
         }
+        pieceToFontChar[(int) WhiteQueen] = map[NrPieces/2-2];
+        pieceToFontChar[(int) WhiteKing]  = map[NrPieces/2-1];
+        pieceToFontChar[(int) BlackQueen] = map[NrPieces-2];
+        pieceToFontChar[(int) BlackKing]  = map[NrPieces-1];
 
         result = TRUE;
     }
@@ -2299,7 +2374,7 @@ static void SetPieceBackground( HDC hdc, COLORREF color, int mode )
     SetRect( &rc, 0, 0, squareSize, squareSize );
     FillRect( hdc, &rc, hbrush );
     DeleteObject( hbrush );
-
+    
     if( mode == 1 ) {
         /* Vertical gradient, good for pawn, knight and rook, less for queen and king */
         int steps = squareSize / 2;
@@ -2362,10 +2437,10 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
     RECT rc;
     SIZE sz;
     POINT pt;
-    int backColor = whitePieceColor;
+    int backColor = whitePieceColor; 
     int foreColor = blackPieceColor;
     int shapeIndex = index < 6 ? index+6 : index;
-
+    
     if( index < 6 && appData.fontBackColorWhite != appData.fontForeColorWhite ) {
         backColor = appData.fontBackColorWhite;
         foreColor = appData.fontForeColorWhite;
@@ -2402,7 +2477,7 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
     /* Step 3: the area outside the piece is filled with white */
     FloodFill( hdc, 0, 0, chroma );
     SelectObject( hdc, GetStockObject(BLACK_BRUSH) );
-    /*
+    /* 
         Step 4: this is the tricky part, the area inside the piece is filled with black,
         but if the start point is not inside the piece we're lost!
         There should be a better way to do this... if we could create a region or path
@@ -2411,7 +2486,7 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
     FloodFill( hdc, squareSize / 2, squareSize / 2, RGB(0xFF,0xFF,0xFF) );
 
     SetTextColor( hdc, 0 );
-    /*
+    /* 
         Step 5: some fonts have "disconnected" areas that are skipped by the fill:
         draw the piece again in black for safety.
     */
@@ -2439,8 +2514,8 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
         SelectObject( dc2, bm2 );
         FillRect( dc2, &rc, GetStockObject(WHITE_BRUSH) );
         BitBlt( dc2, 0, 0, squareSize, squareSize, dc1, 0, 0, SRCINVERT );
-
-        /*
+        
+        /* 
             Now dc2 contains the inverse of the piece mask, i.e. a mask that preserves
             the piece background and deletes (makes transparent) the rest.
             Thanks to that mask, we are free to paint the background with the greates
@@ -2494,6 +2569,48 @@ static int TranslatePieceToFontPiece( int piece )
         return PM_WQ;
     case WhiteKing:
         return PM_WK;
+#ifdef FAIRY
+    case BlackCardinal:
+        return PM_BA;
+    case BlackMarshall:
+        return PM_BC;
+    case BlackFairyPawn:
+        return PM_BFP;
+    case BlackFairyKnight:
+        return PM_BFN;
+    case BlackFairyBishop:
+        return PM_BFB;
+    case BlackFairyRook:
+        return PM_BFR;
+    case BlackFairyCardinal:
+        return PM_BFA;
+    case BlackFairyMarshall:
+        return PM_BFC;
+    case BlackFairyQueen:
+        return PM_BFQ;
+    case BlackFairyKing:
+        return PM_BFK;
+    case WhiteCardinal:
+        return PM_WA;
+    case WhiteMarshall:
+        return PM_WC;
+    case WhiteFairyPawn:
+        return PM_WFP;
+    case WhiteFairyKnight:
+        return PM_WFN;
+    case WhiteFairyBishop:
+        return PM_WFB;
+    case WhiteFairyRook:
+        return PM_WFR;
+    case WhiteFairyCardinal:
+        return PM_WFA;
+    case WhiteFairyMarshall:
+        return PM_WFC;
+    case WhiteFairyQueen:
+        return PM_WFQ;
+    case WhiteFairyKing:
+        return PM_WFK;
+#endif
     }
 
     return 0;
@@ -2573,6 +2690,18 @@ void CreatePiecesFromFont()
                     /* DiagramTT* family */
                     SetPieceToFontCharTable("PNLRQKpnlrqk");
                 }
+#ifdef FAIRY
+                else if( strstr(lf.lfFaceName,"WinboardF") != NULL ) {
+                    /* Fairy symbols */
+                        SetPieceToFontCharTable("PNBRACFHEWUOGMQKpnbracfewuogmqk");
+                }
+#endif
+                else if( strstr(lf.lfFaceName,"GC2004D") != NULL ) {
+                    /* Good Companion (Some characters get warped as literal :-( */
+                    char s[] = "1cmWG0ñueOS¯®oYI23wgQU";
+                    s[0]=0xB9; s[1]=0xA9; s[6]=0xB1; s[11]=0xBB; s[12]=0xAB; s[17]=0xB3;
+                    SetPieceToFontCharTable(s);
+                }
                 else {
                     /* Cases, Condal, Leipzig, Lucena, Marroquin, Merida, Usual */
                     SetPieceToFontCharTable("pnbrqkomvtwl");
@@ -2594,6 +2723,28 @@ void CreatePiecesFromFont()
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BR );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BQ );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BK );
+#ifdef FAIRY
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WA );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WC );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFP );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFN );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFB );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFR );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFA );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFC );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFQ );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WFK );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BA );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BC );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFP );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFN );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFB );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFR );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFA );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFC );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFQ );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BFK );
+#endif
 
             SelectObject( hdc, hfont_old );
 
@@ -2690,16 +2841,16 @@ InitDrawingColors()
 
 
 int
-BoardWidth(int boardSize)
-{
+BoardWidth(int boardSize, int n)
+{ /* [HGM] argument n added to allow different width and height */
   int lineGap = sizeInfo[boardSize].lineGap;
 
   if( appData.overrideLineGap >= 0 && appData.overrideLineGap <= 5 ) {
       lineGap = appData.overrideLineGap;
   }
 
-  return (BOARD_SIZE + 1) * lineGap +
- 	  BOARD_SIZE * sizeInfo[boardSize].squareSize;
+  return (n + 1) * lineGap +
+          n * sizeInfo[boardSize].squareSize;
 }
 
 /* Respond to board resize by dragging edge */
@@ -2726,7 +2877,7 @@ ResizeBoard(int newSizeX, int newSizeY, int flags)
 VOID
 InitDrawingSizes(BoardSize boardSize, int flags)
 {
-  int i, boardWidth;
+  int i, boardWidth, boardHeight; /* [HGM] height treated separately */
   ChessSquare piece;
   static int oldBoardSize = -1, oldTinyLayout = 0;
   HDC hdc;
@@ -2767,7 +2918,8 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     DrawMenuBar(hwndMain);
   }
 
-  boardWidth = BoardWidth(boardSize);
+  boardWidth  = BoardWidth(boardSize, BOARD_WIDTH);
+  boardHeight = BoardWidth(boardSize, BOARD_HEIGHT);
 
   /* Get text area sizes */
   hdc = GetDC(hwndMain);
@@ -2808,7 +2960,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   boardRect.left = whiteRect.left;
   boardRect.right = boardRect.left + boardWidth;
   boardRect.top = messageRect.bottom + INNER_MARGIN;
-  boardRect.bottom = boardRect.top + boardWidth;
+  boardRect.bottom = boardRect.top + boardHeight;
 
   sizeInfo[boardSize].cliWidth = boardRect.right + OUTER_MARGIN;
   sizeInfo[boardSize].cliHeight = boardRect.bottom + OUTER_MARGIN;
@@ -2896,18 +3048,23 @@ InitDrawingSizes(BoardSize boardSize, int flags)
       ExtCreatePen(PS_GEOMETRIC|PS_SOLID|PS_ENDCAP_FLAT|PS_JOIN_MITER,
                    lineGap, &logbrush, 0, NULL);
 
-    for (i = 0; i < BOARD_SIZE + 1; i++) {
+    /* [HGM] Loop had to be split in part for vert. and hor. lines */
+    for (i = 0; i < BOARD_HEIGHT + 1; i++) {
       gridEndpoints[i*2].x = boardRect.left + lineGap / 2;
-      gridEndpoints[i*2 + BOARD_SIZE*2 + 2].y = boardRect.top + lineGap / 2;
       gridEndpoints[i*2].y = gridEndpoints[i*2 + 1].y =
 	boardRect.top + lineGap / 2 + (i * (squareSize + lineGap));
       gridEndpoints[i*2 + 1].x = boardRect.left + lineGap / 2 +
-	BOARD_SIZE * (squareSize + lineGap);
-      gridEndpoints[i*2 + BOARD_SIZE*2 + 2].x =
-	gridEndpoints[i*2 + 1 + BOARD_SIZE*2 + 2].x = boardRect.left +
+        BOARD_WIDTH * (squareSize + lineGap);
 	lineGap / 2 + (i * (squareSize + lineGap));
-      gridEndpoints[i*2 + 1 + BOARD_SIZE*2 + 2].y =
-	boardRect.top + BOARD_SIZE * (squareSize + lineGap);
+      gridVertexCounts[i*2] = gridVertexCounts[i*2 + 1] = 2;
+    }
+    for (i = 0; i < BOARD_WIDTH + 1; i++) {
+      gridEndpoints[i*2 + BOARD_HEIGHT*2 + 2].y = boardRect.top + lineGap / 2;
+      gridEndpoints[i*2 + BOARD_HEIGHT*2 + 2].x =
+        gridEndpoints[i*2 + 1 + BOARD_HEIGHT*2 + 2].x = boardRect.left +
+	lineGap / 2 + (i * (squareSize + lineGap));
+      gridEndpoints[i*2 + 1 + BOARD_HEIGHT*2 + 2].y =
+        boardRect.top + BOARD_HEIGHT * (squareSize + lineGap);
       gridVertexCounts[i*2] = gridVertexCounts[i*2 + 1] = 2;
     }
   }
@@ -2919,7 +3076,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   /* Load piece bitmaps for this board size */
   for (i=0; i<=2; i++) {
     for (piece = WhitePawn;
-	 (int) piece <= (int) WhiteKing;
+         (int) piece < (int) BlackPawn;
 	 piece = (ChessSquare) ((int) piece + 1)) {
       if (pieceBitmap[i][piece] != NULL)
 	DeleteObject(pieceBitmap[i][piece]);
@@ -2944,6 +3101,40 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[2][WhiteRook] = DoLoadBitmap(hInst, "r", squareSize, "w");
   pieceBitmap[2][WhiteQueen] = DoLoadBitmap(hInst, "q", squareSize, "w");
   pieceBitmap[2][WhiteKing] = DoLoadBitmap(hInst, "k", squareSize, "w");
+#ifdef FAIRY
+  if(squareSize==72 || squareSize==49) { /* experiment with some home-made bitmaps */
+  pieceBitmap[0][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "s");
+  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "s");
+  pieceBitmap[0][WhiteFairyPawn] = DoLoadBitmap(hInst, "f", squareSize, "s");
+  pieceBitmap[0][WhiteFairyKnight] = DoLoadBitmap(hInst, "h", squareSize, "s");
+  pieceBitmap[0][WhiteFairyBishop] = DoLoadBitmap(hInst, "e", squareSize, "s");
+  pieceBitmap[0][WhiteFairyRook] = DoLoadBitmap(hInst, "w", squareSize, "s");
+  pieceBitmap[0][WhiteFairyQueen] = DoLoadBitmap(hInst, "g", squareSize, "s");
+  pieceBitmap[0][WhiteFairyCardinal] = DoLoadBitmap(hInst, "u", squareSize, "s");
+  pieceBitmap[0][WhiteFairyMarshall] = DoLoadBitmap(hInst, "o", squareSize, "s");
+  pieceBitmap[0][WhiteFairyKing] = DoLoadBitmap(hInst, "m", squareSize, "s");
+  pieceBitmap[1][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "o");
+  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "o");
+  pieceBitmap[1][WhiteFairyPawn] = DoLoadBitmap(hInst, "f", squareSize, "o");
+  pieceBitmap[1][WhiteFairyKnight] = DoLoadBitmap(hInst, "h", squareSize, "o");
+  pieceBitmap[1][WhiteFairyBishop] = DoLoadBitmap(hInst, "e", squareSize, "o");
+  pieceBitmap[1][WhiteFairyRook] = DoLoadBitmap(hInst, "w", squareSize, "o");
+  pieceBitmap[1][WhiteFairyQueen] = DoLoadBitmap(hInst, "g", squareSize, "o");
+  pieceBitmap[1][WhiteFairyCardinal] = DoLoadBitmap(hInst, "u", squareSize, "o");
+  pieceBitmap[1][WhiteFairyMarshall] = DoLoadBitmap(hInst, "o", squareSize, "o");
+  pieceBitmap[1][WhiteFairyKing] = DoLoadBitmap(hInst, "m", squareSize, "o");
+  pieceBitmap[2][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "w");
+  pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "w");
+  pieceBitmap[2][WhiteFairyPawn] = DoLoadBitmap(hInst, "f", squareSize, "w");
+  pieceBitmap[2][WhiteFairyKnight] = DoLoadBitmap(hInst, "h", squareSize, "w");
+  pieceBitmap[2][WhiteFairyBishop] = DoLoadBitmap(hInst, "e", squareSize, "w");
+  pieceBitmap[2][WhiteFairyRook] = DoLoadBitmap(hInst, "w", squareSize, "w");
+  pieceBitmap[2][WhiteFairyQueen] = DoLoadBitmap(hInst, "g", squareSize, "w");
+  pieceBitmap[2][WhiteFairyCardinal] = DoLoadBitmap(hInst, "u", squareSize, "w");
+  pieceBitmap[2][WhiteFairyMarshall] = DoLoadBitmap(hInst, "o", squareSize, "w");
+  pieceBitmap[2][WhiteFairyKing] = DoLoadBitmap(hInst, "m", squareSize, "w");
+  }
+#endif
 
 }
 
@@ -2969,19 +3160,19 @@ VOID
 SquareToPos(int row, int column, int * x, int * y)
 {
   if (flipView) {
-    *x = boardRect.left + lineGap + ((BOARD_SIZE-1)-column) * (squareSize + lineGap);
+    *x = boardRect.left + lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
     *y = boardRect.top + lineGap + row * (squareSize + lineGap);
   } else {
     *x = boardRect.left + lineGap + column * (squareSize + lineGap);
-    *y = boardRect.top + lineGap + ((BOARD_SIZE-1)-row) * (squareSize + lineGap);
+    *y = boardRect.top + lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap);
   }
 }
 
 VOID
 DrawCoordsOnDC(HDC hdc)
 {
-  static char files[16] = {'1','2','3','4','5','6','7','8','8','7','6','5','4','3','2','1'};
-  static char ranks[16] = {'h','g','f','e','d','c','b','a','a','b','c','d','e','f','g','h'};
+  static char files[24] = {'0', '1','2','3','4','5','6','7','8','9','0','1','1','0','9','8','7','6','5','4','3','2','1','0'};
+  static char ranks[24] = {'l', 'k','j','i','h','g','f','e','d','c','b','a','a','b','c','d','e','f','g','h','i','j','k','l'};
   char str[2] = { NULLCHAR, NULLCHAR };
   int oldMode, oldAlign, x, y, start, i;
   HFONT oldFont;
@@ -2990,7 +3181,7 @@ DrawCoordsOnDC(HDC hdc)
   if (!appData.showCoords)
     return;
 
-  start = flipView ? 0 : 8;
+  start = flipView ? 1-(ONE!='1') : 23+(ONE!='1')-BOARD_HEIGHT;
 
   oldBrush = SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   oldMode = SetBkMode(hdc, (appData.monoMode ? OPAQUE : TRANSPARENT));
@@ -3001,14 +3192,16 @@ DrawCoordsOnDC(HDC hdc)
   x = boardRect.left + lineGap;
 
   SetTextAlign(hdc, TA_LEFT|TA_TOP);
-  for (i = 0; i < 8; i++) {
+  for (i = 0; i < BOARD_HEIGHT; i++) {
     str[0] = files[start + i];
     ExtTextOut(hdc, x + 2, y + 1, 0, NULL, str, 1, NULL);
     y += squareSize + lineGap;
   }
 
+  start = flipView ? 12-BOARD_WIDTH : 12;
+
   SetTextAlign(hdc, TA_RIGHT|TA_BOTTOM);
-  for (i = 0; i < 8; i++) {
+  for (i = 0; i < BOARD_WIDTH; i++) {
     str[0] = ranks[start + i];
     ExtTextOut(hdc, x + squareSize - 2, y - 1, 0, NULL, str, 1, NULL);
     x += squareSize + lineGap;
@@ -3027,7 +3220,7 @@ DrawGridOnDC(HDC hdc)
  
   if (lineGap != 0) {
     oldPen = SelectObject(hdc, gridPen);
-    PolyPolyline(hdc, gridEndpoints, gridVertexCounts, BOARD_SIZE*2 + 2);
+    PolyPolyline(hdc, gridEndpoints, gridVertexCounts, BOARD_WIDTH+BOARD_HEIGHT + 2);
     SelectObject(hdc, oldPen);
   }
 }
@@ -3043,14 +3236,14 @@ DrawHighlightOnDC(HDC hdc, BOOLEAN on, int x, int y, int pen)
   if (lineGap == 0) return;
   if (flipView) {
     x1 = boardRect.left +
-      lineGap/2 + ((BOARD_SIZE-1)-x) * (squareSize + lineGap);
+      lineGap/2 + ((BOARD_WIDTH-1)-x) * (squareSize + lineGap);
     y1 = boardRect.top +
       lineGap/2 + y * (squareSize + lineGap);
   } else {
     x1 = boardRect.left +
       lineGap/2 + x * (squareSize + lineGap);
     y1 = boardRect.top +
-      lineGap/2 + ((BOARD_SIZE-1)-y) * (squareSize + lineGap);
+      lineGap/2 + ((BOARD_HEIGHT-1)-y) * (squareSize + lineGap);
   }
   hPen = pen ? premovePen : highlightPen;
   oldPen = SelectObject(hdc, on ? hPen : gridPen);
@@ -3176,7 +3369,7 @@ int GetBackTextureMode( int algo )
 {
     int result = BACK_TEXTURE_MODE_DISABLED;
 
-    switch( algo )
+    switch( algo ) 
     {
         case BACK_TEXTURE_MODE_PLAIN:
             result = 1; /* Always use identity map */
@@ -3189,7 +3382,7 @@ int GetBackTextureMode( int algo )
     return result;
 }
 
-/*
+/* 
     [AS] Compute and save texture drawing info, otherwise we may not be able
     to handle redraws cleanly (as random numbers would always be different).
 */
@@ -3219,21 +3412,21 @@ VOID RebuildTextureSquareInfo()
         }
     }
 
-    for( row=0; row<BOARD_SIZE; row++ ) {
-        for( col=0; col<BOARD_SIZE; col++ ) {
+    for( row=0; row<BOARD_HEIGHT; row++ ) {
+        for( col=0; col<BOARD_WIDTH; col++ ) {
             if( (col + row) & 1 ) {
                 /* Lite square */
                 if( lite_w >= squareSize && lite_h >= squareSize ) {
-                    backTextureSquareInfo[row][col].x = col * (lite_w - squareSize) / BOARD_SIZE;
-                    backTextureSquareInfo[row][col].y = row * (lite_h - squareSize) / BOARD_SIZE;
+                    backTextureSquareInfo[row][col].x = col * (lite_w - squareSize) / BOARD_WIDTH;
+                    backTextureSquareInfo[row][col].y = row * (lite_h - squareSize) / BOARD_HEIGHT;
                     backTextureSquareInfo[row][col].mode = GetBackTextureMode(liteBackTextureMode);
                 }
             }
             else {
                 /* Dark square */
                 if( dark_w >= squareSize && dark_h >= squareSize ) {
-                    backTextureSquareInfo[row][col].x = col * (dark_w - squareSize) / BOARD_SIZE;
-                    backTextureSquareInfo[row][col].y = row * (dark_h - squareSize) / BOARD_SIZE;
+                    backTextureSquareInfo[row][col].x = col * (dark_w - squareSize) / BOARD_WIDTH;
+                    backTextureSquareInfo[row][col].y = row * (dark_h - squareSize) / BOARD_HEIGHT;
                     backTextureSquareInfo[row][col].mode = GetBackTextureMode(darkBackTextureMode);
                 }
             }
@@ -3316,7 +3509,7 @@ VOID DrawArrowBetweenPoints( HDC hdc, int s_x, int s_y, int d_x, int d_y )
         /* [AS] Needed a lot of paper for this! :-) */
         dy = (double) (d_y - s_y) / (double) (d_x - s_x);
         dx = (double) (s_x - d_x) / (double) (s_y - d_y);
-
+  
         j = sqrt( Sqr(A_WIDTH) / (1.0 + Sqr(dx)) );
 
         k = sqrt( Sqr(A_WIDTH*A_HEIGHT_FACTOR) / (1.0 + Sqr(dy)) );
@@ -3476,8 +3669,8 @@ HRGN GetArrowHighlightClipRegion( HDC hdc )
 }
 
 /*
-    Warning: this function modifies the behavior of several other functions.
-
+    Warning: this function modifies the behavior of several other functions. 
+    
     Basically, Winboard is optimized to avoid drawing the whole board if not strictly
     needed. Unfortunately, the decision whether or not to perform a full or partial
     repaint is scattered all over the place, which is not good for features such as
@@ -3489,7 +3682,7 @@ HRGN GetArrowHighlightClipRegion( HDC hdc )
 
     In such patched places, I always try refer to this function so there is a single
     place to maintain knowledge.
-
+    
     To restore the original behavior, just return FALSE unconditionally.
 */
 BOOL IsFullRepaintPreferrable()
@@ -3504,19 +3697,19 @@ BOOL IsFullRepaintPreferrable()
     return result;
 }
 
-/*
+/* 
     This function is called by DrawPosition to know whether a full repaint must
     be forced or not.
 
-    Only DrawPosition may directly call this function, which makes use of
-    some state information. Other function should call DrawPosition specifying
+    Only DrawPosition may directly call this function, which makes use of 
+    some state information. Other function should call DrawPosition specifying 
     the repaint flag, and can use IsFullRepaintPreferrable if needed.
 */
 BOOL DrawPositionNeedsFullRepaint()
 {
     BOOL result = FALSE;
 
-    /*
+    /* 
         Probably a slightly better policy would be to trigger a full repaint
         when animInfo.piece changes state (i.e. empty -> non-empty and viceversa),
         but animation is fast enough that it's difficult to notice.
@@ -3548,14 +3741,20 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
       texture_hdc = CreateCompatibleDC( hdc );
   }
 
-  for (row = 0; row < BOARD_SIZE; row++) {
-    for (column = 0; column < BOARD_SIZE; column++) {
+  for (row = 0; row < BOARD_HEIGHT; row++) {
+    for (column = 0; column < BOARD_WIDTH; column++) {
   
       SquareToPos(row, column, &x, &y);
 
       piece = board[row][column];
 
       square_color = ((column + row) % 2) == 1;
+      if(!strcmp(appData.variant, "xiangqi") ) {
+          square_color = 1;
+          if( (row < 3 || row > BOARD_HEIGHT-4) &&
+              column < (BOARD_WIDTH + 4)/2 &&
+              column > (BOARD_WIDTH - 5)/2 ) square_color = 0;
+      }
       piece_color = (int) piece < (int) BlackPawn;
 
       if (appData.monoMode) {
@@ -3565,14 +3764,14 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
         } else {
           DrawPieceOnDC(hdc, piece, piece_color, square_color, x, y, tmphdc);
         }
-      }
+      } 
       else if( backTextureSquareInfo[row][column].mode > 0 ) {
           /* [AS] Draw the square using a texture bitmap */
           HBITMAP hbm = SelectObject( texture_hdc, square_color ? liteBackTexture : darkBackTexture );
 
-          DrawTile( x, y,
-              squareSize, squareSize,
-              hdc,
+          DrawTile( x, y, 
+              squareSize, squareSize, 
+              hdc, 
               texture_hdc,
               backTextureSquareInfo[row][column].mode,
               backTextureSquareInfo[row][column].x,
@@ -3685,15 +3884,15 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
                     dragInfo.pos.x, dragInfo.pos.y,
                     dragInfo.lastpos.x, dragInfo.lastpos.y);
   fprintf(debugFP, "prev:  ");
-  for (row = 0; row < 8; row++) {
-    for (column = 0; column < 8; column++) {
+  for (row = 0; row < BOARD_HEIGHT; row++) {
+    for (column = 0; column < BOARD_WIDTH; column++) {
       fprintf(debugFP, "%d ", lastDrawn[row][column]);
     }
   }
   fprintf(debugFP, "\n");
   fprintf(debugFP, "board: ");
-  for (row = 0; row < 8; row++) {
-    for (column = 0; column < 8; column++) {
+  for (row = 0; row < BOARD_HEIGHT; row++) {
+    for (column = 0; column < BOARD_WIDTH; column++) {
       fprintf(debugFP, "%d ", board[row][column]);
     }
   }
@@ -3710,8 +3909,8 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
    * flipping has changed.
    */
   if (!fullrepaint && lastDrawnValid && lastDrawnFlipView == flipView) {
-    for (row = 0; row < 8; row++) {
-      for (column = 0; column < 8; column++) {
+    for (row = 0; row < BOARD_HEIGHT; row++) { /* [HGM] true size, not 8 */
+      for (column = 0; column < BOARD_WIDTH; column++) {
 	if (lastDrawn[row][column] != board[row][column]) {
 	  SquareToPos(row, column, &x, &y);
 	  clips[num_clips++] =
@@ -4049,10 +4248,10 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   x = EventToSquare(pt.x - boardRect.left);
   y = EventToSquare(pt.y - boardRect.top);
   if (!flipView && y >= 0) {
-    y = BOARD_SIZE - 1 - y;
+    y = BOARD_HEIGHT - 1 - y;
   }
   if (flipView && x >= 0) {
-    x = BOARD_SIZE - 1 - x;
+    x = BOARD_WIDTH - 1 - x;
   }
 
   switch (message) {
@@ -4096,11 +4295,11 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       ChessSquare pdown, pup;
       pdown = boards[currentMove][fromY][fromX];
       pup = boards[currentMove][y][x];
-      if (gameMode == EditPosition ||
-	  !((WhitePawn <= pdown && pdown <= WhiteKing &&
-	     WhitePawn <= pup && pup <= WhiteKing) ||
-	    (BlackPawn <= pdown && pdown <= BlackKing &&
-	     BlackPawn <= pup && pup <= BlackKing))) {
+      if (gameMode == EditPosition || /* [HGM] max piece > King! */
+          !((WhitePawn <= pdown && pdown < BlackPawn &&
+             WhitePawn <= pup && pup < BlackPawn) ||
+            (BlackPawn <= pdown && pdown < EmptySquare &&
+             BlackPawn <= pup && pup < EmptySquare))) {
 	/* EditPosition, empty square, or different color piece;
 	   click-click move is possible */
 	toX = x;
@@ -4207,7 +4406,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_MOUSEMOVE:
     if ((appData.animateDragging || appData.highlightDragging)
 	&& (wParam & MK_LBUTTON)
-	&& dragInfo.from.x >= 0)
+	&& dragInfo.from.x >= 0) 
     {
       BOOL full_repaint = FALSE;
 
@@ -4216,13 +4415,13 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
       if (appData.highlightDragging) {
 	SetHighlights(fromX, fromY, x, y);
-        if( IsDrawArrowEnabled() && (x < 0 || x > 7 || y < 0 || y > y) ) {
+        if( IsDrawArrowEnabled() && (x < 0 || x >= BOARD_WIDTH || y < 0 || y > BOARD_WIDTH) ) {
             full_repaint = TRUE;
+        }
       }
-      }
-
+      
       DrawPosition( full_repaint, NULL);
-
+      
       dragInfo.lastpos = dragInfo.pos;
     }
     break;
@@ -4368,6 +4567,17 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       (!appData.testLegality || gameInfo.variant == VariantSuicide ||
        gameInfo.variant == VariantGiveaway) ?
 	       SW_SHOW : SW_HIDE);
+#ifdef FAIRY
+    /* [HGM] Only allow C & A promotions in Capablanca Chess */
+    ShowWindow(GetDlgItem(hDlg, PB_Archbishop),
+      (gameInfo.variant == VariantCapablanca || 
+       gameInfo.variant == VariantGothic) ?
+	       SW_SHOW : SW_HIDE);
+    ShowWindow(GetDlgItem(hDlg, PB_Chancellor), 
+      (gameInfo.variant == VariantCapablanca || 
+       gameInfo.variant == VariantGothic) ?
+	       SW_SHOW : SW_HIDE);
+#endif
     return TRUE;
 
   case WM_COMMAND: /* message: received a command */
@@ -4389,6 +4599,14 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case PB_Bishop:
       promoChar = 'b';
       break;
+#ifdef FAIRY
+    case PB_Chancellor:
+      promoChar = 'c';
+      break;
+    case PB_Archbishop:
+      promoChar = 'a';
+      break;
+#endif
     case PB_Knight:
       promoChar = 'n';
       break;
@@ -5228,7 +5446,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             RECT rcMain;
 
             GetWindowRect( hwnd, &rcMain );
-
+            
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, moveHistoryDialog, &wpMoveHistory );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, evalGraphDialog, &wpEvalGraph );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, engineOutputDialog, &wpEngineOutput );
@@ -5689,7 +5907,7 @@ BOOL CenterWindowEx(HWND hwndChild, HWND hwndParent, int mode)
 
     /* Calculate new Y position, then adjust for screen */
     if( mode == 0 ) {
-    yNew = rParent.top  + ((hParent - hChild) /2);
+        yNew = rParent.top  + ((hParent - hChild) /2);
     }
     else {
         yNew = rParent.top + GetSystemMetrics( SM_CYCAPTION ) * 2 / 3;
@@ -6258,7 +6476,7 @@ ErrorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       0, 0, SWP_NOZORDER|SWP_NOSIZE);
     */
 
-    /*
+    /* 
         [AS] It seems that the above code wants to move the dialog up in the "caption
         area" of the main window, but it uses the dialog height as an hard-coded constant,
         and it doesn't work when you resize the dialog.
@@ -6287,6 +6505,66 @@ ErrorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   }
   return FALSE;
 }
+
+#ifdef GOTHIC
+LRESULT CALLBACK
+GothicDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  HANDLE hwndText;
+  RECT rChild;
+  int height = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
+
+  switch (message) {
+  case WM_INITDIALOG:
+    GetWindowRect(hDlg, &rChild);
+
+    SetWindowPos(hDlg, NULL, boardX, boardY-height, winWidth, height,
+                                                             SWP_NOZORDER);
+
+    /* 
+        [AS] It seems that the above code wants to move the dialog up in the "caption
+        area" of the main window, but it uses the dialog height as an hard-coded constant,
+        and it doesn't work when you resize the dialog.
+        For now, just give it a default position.
+    */
+
+    SetWindowText(hDlg, errorTitle);
+    hwndText = GetDlgItem(hDlg, OPT_ErrorText);
+    SetDlgItemText(hDlg, OPT_ErrorText, errorMessage);
+    return FALSE;
+
+  case WM_COMMAND:
+    switch (LOWORD(wParam)) {
+    case IDOK:
+    case IDCANCEL:
+      if (errorDialog == hDlg) errorDialog = NULL;
+      DestroyWindow(hDlg);
+      return TRUE;
+
+    default:
+      break;
+    }
+    break;
+  }
+  return FALSE;
+}
+
+VOID
+GothicPopUp(char *title)
+{
+  FARPROC lpProc;
+  char *p, *q;
+  BOOLEAN modal = hwndMain == NULL;
+
+  strncpy(errorTitle, title, sizeof(errorTitle));
+  errorTitle[sizeof(errorTitle) - 1] = '\0';
+  
+    lpProc = MakeProcInstance((FARPROC)GothicDialog, hInst);
+    CreateDialog(hInst, MAKEINTRESOURCE(DLG_Error),
+		 hwndMain, (DLGPROC)lpProc);
+    FreeProcInstance(lpProc);
+}
+#endif
 
 /*---------------------------------------------------------------------------*\
  *
@@ -7001,7 +7279,7 @@ ConsoleOutput(char* data, int length, int forceVisible)
 
 void
 DisplayAClock(HDC hdc, int timeRemaining, int highlight,
-	      RECT *rect, char *color)
+              RECT *rect, char *color, char *flagFell)
 {
   char buf[100];
   char *str;
@@ -7010,9 +7288,9 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
 
   if (appData.clockMode) {
     if (tinyLayout)
-      sprintf(buf, "%c %s", color[0], TimeString(timeRemaining));
+      sprintf(buf, "%c %s %s %s", color[0], TimeString(timeRemaining), flagFell);
     else
-      sprintf(buf, "%s: %s", color, TimeString(timeRemaining));
+      sprintf(buf, "%s: %s %s", color, TimeString(timeRemaining), flagFell);
     str = buf;
   } else {
     str = color;
@@ -7100,7 +7378,7 @@ void CheckForInputBufferFull( InputSource * is )
     if( is->lineByLine && (is->next - is->buf) >= INPUT_SOURCE_BUF_SIZE ) {
         /* Look for end of line */
         char * p = is->buf;
-
+        
         while( p < is->next && *p != '\n' ) {
             p++;
         }
@@ -7139,7 +7417,7 @@ InputThread(LPVOID arg)
       } else {
 	is->count = (DWORD) -1;
         /* [AS] The (is->count <= 0) check below is not useful for unsigned values! */
-        break;
+        break; 
       }
     }
 
@@ -7265,7 +7543,7 @@ InputEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	p = q;
       }
     }
-
+    
     /* Move any partial line to the start of the buffer */
     q = is->buf;
     while (p < is->next) {
@@ -7845,7 +8123,7 @@ LRESULT CALLBACK NewGameFRC_Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
             EndDialog( hDlg, 0 );
             return TRUE;
         case IDCANCEL:
-            EndDialog( hDlg, 1 );
+            EndDialog( hDlg, 1 );   
             return TRUE;
         case IDC_NFG_Edit:
             if( HIWORD(wParam) == EN_CHANGE ) {
@@ -8005,7 +8283,7 @@ LRESULT CALLBACK GameListOptions_Proc(HWND hDlg, UINT message, WPARAM wParam, LP
     {
     case WM_INITDIALOG:
         lpUserGLT = (char *) lParam;
-
+        
         strcpy( glt, lpUserGLT );
 
         CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
@@ -8076,7 +8354,7 @@ int GameListOptions()
 
     if( result == 0 ) {
         /* [AS] Memory leak here! */
-        appData.gameListTags = strdup( glt );
+        appData.gameListTags = strdup( glt ); 
     }
 
     return result;
@@ -8263,8 +8541,10 @@ DisplayWhiteClock(long timeRemaining, int highlight)
 {
   HDC hdc;
   hdc = GetDC(hwndMain);
+  char *flag = whiteFlag && gameMode == TwoMachinesPlay ? "(!)" : "";
+
   if (!IsIconic(hwndMain)) {
-    DisplayAClock(hdc, timeRemaining, highlight, &whiteRect, "White");
+    DisplayAClock(hdc, timeRemaining, highlight, &whiteRect, "White", flag);
   }
   if (highlight && iconCurrent == iconBlack) {
     iconCurrent = iconWhite;
@@ -8282,9 +8562,11 @@ void
 DisplayBlackClock(long timeRemaining, int highlight)
 {
   HDC hdc;
+  char *flag = blackFlag && gameMode == TwoMachinesPlay ? "(!)" : "";
+
   hdc = GetDC(hwndMain);
   if (!IsIconic(hwndMain)) {
-    DisplayAClock(hdc, timeRemaining, highlight, &blackRect, "Black");
+    DisplayAClock(hdc, timeRemaining, highlight, &blackRect, "Black", flag);
   }
   if (highlight && iconCurrent == iconWhite) {
     iconCurrent = iconBlack;
@@ -8956,7 +9238,7 @@ AddInputSource(ProcRef pr, int lineByLine,
     consoleInputSource = is;
   } else {
     is->kind = cp->kind;
-    /*
+    /* 
         [AS] Try to avoid a race condition if the thread is given control too early:
         we create all threads suspended so that the is->hThread variable can be
         safely assigned, then let the threads start with ResumeThread.
@@ -9003,7 +9285,7 @@ AddInputSource(ProcRef pr, int lineByLine,
 
     if( is->hThread != NULL ) {
         ResumeThread( is->hThread );
-  }
+    }
 
     if( is2 != NULL && is2->hThread != NULL ) {
         ResumeThread( is2->hThread );
@@ -9368,11 +9650,11 @@ ScreenSquare(column, row, pt)
      int column; int row; POINT * pt;
 {
   if (flipView) {
-    pt->x = lineGap + ((BOARD_SIZE-1)-column) * (squareSize + lineGap);
+    pt->x = lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
     pt->y = lineGap + row * (squareSize + lineGap);
   } else {
     pt->x = lineGap + column * (squareSize + lineGap);
-    pt->y = lineGap + ((BOARD_SIZE-1)-row) * (squareSize + lineGap);
+    pt->y = lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap);
   }
 }
 

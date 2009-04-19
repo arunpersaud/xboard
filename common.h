@@ -49,6 +49,7 @@
 #ifndef _COMMON
 #define _COMMON
 
+
 /* Begin compatibility grunge  */
 
 #if defined(__STDC__) || defined(WIN32) || defined(_amigados)
@@ -99,7 +100,10 @@ int pclose(FILE *);
 
 #define PROTOVER                2       /* engine protocol version */
 
-#define BOARD_SIZE		8
+#define BOARD_SIZE              12                     /* [HGM] for in declarations */
+#define BOARD_WIDTH             (appData.NrFiles)      /* [HGM] made user adjustable */
+#define BOARD_HEIGHT            (appData.NrRanks)
+#define ONE                     ('1'-(BOARD_HEIGHT>9)) /* [HGM] foremost board rank */
 #define DROP_RANK               -3
 #define MAX_MOVES		1000
 #define MSG_SIZ			512
@@ -164,8 +168,20 @@ typedef enum {
   } GameMode;
 
 typedef enum {
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing,
-    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing,
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, 
+#ifdef FAIRY
+    WhiteCardinal, WhiteMarshall, WhiteFairyPawn, WhiteFairyKnight,
+    WhiteFairyBishop, WhiteFairyRook, WhiteFairyCardinal, WhiteFairyMarshall,
+    WhiteFairyQueen, WhiteFairyKing,
+#endif
+    WhiteQueen, WhiteKing,
+    BlackPawn, BlackKnight, BlackBishop, BlackRook,
+#ifdef FAIRY
+    BlackCardinal, BlackMarshall, BlackFairyPawn, BlackFairyKnight,
+    BlackFairyBishop, BlackFairyRook, BlackFairyCardinal, BlackFairyMarshall,
+    BlackFairyQueen, BlackFairyKing,
+#endif
+    BlackQueen, BlackKing,
     EmptySquare, 
     ClearBoard, WhitePlay, BlackPlay /*for use on EditPosition menus*/
   } ChessSquare;
@@ -181,8 +197,14 @@ typedef enum {
     BlackHSideCastleFR, BlackASideCastleFR, 
     WhitePromotionKnight, WhitePromotionBishop,
     WhitePromotionRook, WhitePromotionQueen, WhitePromotionKing,
+#ifdef FAIRY
+    WhitePromotionChancellor, WhitePromotionArchbishop,
+#endif
     BlackPromotionKnight, BlackPromotionBishop,
     BlackPromotionRook, BlackPromotionQueen, BlackPromotionKing,
+#ifdef FAIRY
+    BlackPromotionChancellor, BlackPromotionArchbishop,
+#endif
     WhiteCapturesEnPassant, BlackCapturesEnPassant,
     WhiteDrop, BlackDrop, 
     NormalMove, AmbiguousMove, IllegalMove, ImpossibleMove,
@@ -221,15 +243,52 @@ typedef enum {
     VariantShatranj,     /* Unsupported (ICC wild 28) */
     Variant29,           /* Temporary name for possible future ICC wild 29 */
     Variant30,           /* Temporary name for possible future ICC wild 30 */
+#ifdef FAIRY
+    VariantShogi,        /* [HGM] To be supported in next version */
+    VariantXiangqi,
+    VariantCourier,
+    VariantGothic,
+    VariantCapablanca,
+    VariantFairy,        /* [HGM] allow more piece types */
+#else
     Variant31,           /* Temporary name for possible future ICC wild 31 */
     Variant32,           /* Temporary name for possible future ICC wild 32 */
-    Variant33,           /* Temporary name for possible future ICC wild 33 */
+    Variant33,
     Variant34,           /* Temporary name for possible future ICC wild 34 */
     Variant35,           /* Temporary name for possible future ICC wild 35 */
     Variant36,           /* Temporary name for possible future ICC wild 36 */
+#endif
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
+#ifdef FAIRY
+#define VARIANT_NAMES { \
+  "normal", \
+  "normal", \
+  "wildcastle", \
+  "nocastle", \
+  "fischerandom", \
+  "bughouse", \
+  "crazyhouse", \
+  "losers", \
+  "suicide", \
+  "giveaway", \
+  "twokings", \
+  "kriegspiel", \
+  "atomic", \
+  "3check", \
+  "shatranj", \
+  "wild29", \
+  "wild30", \
+  "shogi", \
+  "xiangqi", \
+  "courier", \
+  "gothic", \
+  "capablanca", \
+  "fairy", \
+  "unknown" \
+}
+#else
 #define VARIANT_NAMES { \
   "normal", \
   "normal", \
@@ -256,6 +315,7 @@ typedef enum {
   "wild36", \
   "unknown" \
 }
+#endif
 
 typedef struct {
 #if !defined(_amigados)
@@ -452,6 +512,14 @@ typedef struct {
     int defaultHashSize;
     int defaultCacheSizeEGTB;
     char * defaultPathEGTB;
+
+    /* [HGM] Board size */
+    int NrFiles;
+    int NrRanks;
+    int matchPause;
+    Boolean testClaims;
+    int ruleMoves;
+    int drawRepeats;
 
 #if ZIPPY
     char *zippyLines;

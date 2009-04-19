@@ -72,9 +72,15 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 				   and all non-pawns on adjacent squares; 
 				   destroying your own king is illegal */
 
-/* Special epfile values */
-#define EP_NONE -1
-#define EP_UNKNOWN -2
+/* Special epfile values. [HGM] positive values are non-reversible moves! */
+#define EP_NONE (-4)           /* [HGM] Tricky! order matters:            */
+#define EP_UNKNOWN (-1)        /*       >= EP_UNKNOWN spils rep-draw      */
+#define EP_CAPTURE (-2)        /*       <= EP_NONE is reversible move     */
+#define EP_PAWN_MOVE (-3)
+#define EP_REP_DRAW   (-15)
+#define EP_RULE_DRAW  (-14)
+#define EP_INSUF_DRAW  (-13)
+#define EP_DRAWS (-10)
 
 /* Call callback once for each pseudo-legal move in the given
    position, except castling moves.  A move is pseudo-legal if it is
@@ -94,6 +100,7 @@ extern void GenPseudoLegal P((Board board, int flags, int epfile,
    on move is currently in check and F_IGNORE_CHECK is not set.
 */
 extern int GenLegal P((Board board, int flags, int epfile,
+                        char castlingRights[], /* [HGM] */
 			MoveCallback callback, VOIDSTAR closure));
 
 /* If the player on move were to move from (rf, ff) to (rt, ft), would
@@ -110,6 +117,7 @@ extern int CheckTest P((Board board, int flags,
    flags say is on move?  Other arguments as in GenPseudoLegal.
    Returns the type of move made, taking promoChar into account. */
 extern ChessMove LegalityTest P((Board board, int flags, int epfile,
+                                 char castlingRights[], /* [HGM] */
 				 int rf, int ff, int rt, int ft,
 				 int promoChar));
 
@@ -119,7 +127,8 @@ extern ChessMove LegalityTest P((Board board, int flags, int epfile,
 #define MT_STALEMATE 3
 
 /* Return MT_NONE, MT_CHECK, MT_CHECKMATE, or MT_STALEMATE */
-extern int MateTest P((Board board, int flags, int epfile));
+extern int MateTest P((Board board, int flags, int epfile,
+                                        char castlingRights[])); /* [HGM] */
 
 typedef struct {
     /* Input data */

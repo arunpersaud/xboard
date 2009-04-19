@@ -7,7 +7,7 @@
 %{
 /*
  * parser.l -- lex parser of algebraic chess moves for XBoard
- * $Id$
+ * $Id: parser.l,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
@@ -155,9 +155,12 @@ extern void CopyBoard P((Board to, Board from));
 %}
 %%
 
-[RrBbNnQqKkPp][/]?[a-h][1-8][xX:-]?[a-h][1-8](=?\(?[RrBbNnQqKk]\)?)? {
+[RrBbNnQqKkPpACDEFGHMWO][/]?[a-l][0-9][xX:-]?[a-l][0-9](=?\(?[RrBbNnQqKkAaCc]\)?)? {
     /*
      * Fully-qualified algebraic move, possibly with promotion
+     * [HGM] Bigger-than-8x8 boards must rely on long algebraic formats
+     *       where I allowed piece types A & C (also as promotions)
+     *       files a-l and ranks 0-9
      */
     int skip1 = 0, skip2 = 0;
     ChessSquare piece;
@@ -187,16 +190,24 @@ extern void CopyBoard P((Board to, Board from));
 	currentMoveString[5] = NULLCHAR;
     }
 
+    /* [HGM] do not allow values beyond board size */
+    if(currentMoveString[1] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[0] - 'a' >= BOARD_WIDTH  ||
+       currentMoveString[3] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[2] - 'a' >= BOARD_WIDTH     )
+      return 0;
+
     piece = boards[yyboardindex]
-      [currentMoveString[1] - '1'][currentMoveString[0] - 'a'];
+      [currentMoveString[1] - ONE][currentMoveString[0] - 'a'];
     if (ToLower(yytext[0]) != ToLower(PieceToChar(piece)))
       return (int) IllegalMove;
 
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex), EP_UNKNOWN,
-			  currentMoveString[1] - '1',
+                          initialRights, /* [HGM] assume all castlings allowed */
+                          currentMoveString[1] - ONE,
 			  currentMoveString[0] - 'a',
-			  currentMoveString[3] - '1',
+                          currentMoveString[3] - ONE,
 			  currentMoveString[2] - 'a',
 			  currentMoveString[4]);
 
@@ -209,9 +220,12 @@ extern void CopyBoard P((Board to, Board from));
     return (int) result;
 }
 
-[a-h][1-8][xX:-]?[a-h][1-8](=?\(?[RrBbNnQqKk]\)?)?	{
+[a-l][0-9][xX:-]?[a-l][0-9](=?\(?[RrBbNnQqKkAaCc]\)?)?      {
     /*
      * Simple algebraic move, possibly with promotion
+     * [HGM] Bigger-than-8x8 boards must rely on this format
+     *       where I allowed piece types A & C (also as promotions)
+     *       files a-l and ranks 0-9
      */
     int skip = 0;
     ChessMove result;
@@ -237,11 +251,19 @@ extern void CopyBoard P((Board to, Board from));
 	currentMoveString[5] = NULLCHAR;
     }
 
+    /* [HGM] do not allow values beyond board size */
+    if(currentMoveString[1] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[0] - 'a' >= BOARD_WIDTH  ||
+       currentMoveString[3] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[2] - 'a' >= BOARD_WIDTH     )
+      return 0;
+
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex), EP_UNKNOWN,
-			  currentMoveString[1] - '1',
+                          initialRights, /* [HGM] assume all castlings allowed */
+                          currentMoveString[1] - ONE,
 			  currentMoveString[0] - 'a',
-			  currentMoveString[3] - '1',
+                          currentMoveString[3] - ONE,
 			  currentMoveString[2] - 'a',
 			  currentMoveString[4]);
 
@@ -254,7 +276,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) result;
 }
 
-[a-h][1-8](=?\(?[RrBbNnQqKk]\)?)?	{
+[a-l][0-9](=?\(?[RrBbNnQqKkAaCc]\)?)?       {
     /*
      * Pawn move, possibly with promotion
      */
@@ -270,16 +292,24 @@ extern void CopyBoard P((Board to, Board from));
     cl.pieceIn = WhiteOnMove(yyboardindex) ? WhitePawn : BlackPawn;
     cl.rfIn = -1;
     cl.ffIn = yytext[0] - 'a';
-    cl.rtIn = yytext[1] - '1';
+    cl.rtIn = yytext[1] - ONE;
     cl.ftIn = yytext[0] - 'a';
     cl.promoCharIn = yytext[2+skip];
+
+    /* [HGM] do not allow values beyond board size */
+    if(cl.rtIn >= BOARD_HEIGHT ||
+       cl.ffIn >= BOARD_WIDTH  ||
+       cl.ftIn >= BOARD_WIDTH     )
+      return 0;
+
+
     Disambiguate(boards[yyboardindex],
 		 PosFlags(yyboardindex), EP_UNKNOWN, &cl);
 
     currentMoveString[0] = cl.ff + 'a';
-    currentMoveString[1] = cl.rf + '1';
+    currentMoveString[1] = cl.rf + ONE;
     currentMoveString[2] = cl.ft + 'a';
-    currentMoveString[3] = cl.rt + '1';
+    currentMoveString[3] = cl.rt + ONE;
     currentMoveString[4] = cl.promoChar;
     currentMoveString[5] = NULLCHAR;
 
@@ -287,7 +317,7 @@ extern void CopyBoard P((Board to, Board from));
 }
 
 
-(ab|bc|cd|de|ef|fg|gh|hg|gf|fe|ed|dc|cb|ba|([a-h][xX:-][a-h]))(=?\(?[RrBbNnQqKk]\)?)?(ep|"e.p.")? {
+(ab|bc|cd|de|ef|fg|gh|hi|ij|jk|kl|lk|kj|ji|ih|hg|gf|fe|ed|dc|cb|ba|aa|bb|cc|dd|ee|ff|gg|hh|ii|jj|kk|ll|([a-l][xX:-][a-l]))(=?\(?[RrBbNnQqKkAaCc]\)?)?(ep|"e.p.")? {
     /*
      * Pawn capture, possibly with promotion, possibly ambiguous
      */
@@ -317,20 +347,26 @@ extern void CopyBoard P((Board to, Board from));
     cl.rtIn = -1;
     cl.ftIn = yytext[1+skip1] - 'a';
     cl.promoCharIn = yytext[2+skip1+skip2];
+
+    /* [HGM] do not allow values beyond board size */
+    if(cl.ffIn >= BOARD_WIDTH  ||
+       cl.ftIn >= BOARD_WIDTH     )
+      return 0;
+
     Disambiguate(boards[yyboardindex],
 		 PosFlags(yyboardindex), EP_UNKNOWN, &cl);
 
     currentMoveString[0] = cl.ff + 'a';
-    currentMoveString[1] = cl.rf + '1';
+    currentMoveString[1] = cl.rf + ONE;
     currentMoveString[2] = cl.ft + 'a';
-    currentMoveString[3] = cl.rt + '1';
+    currentMoveString[3] = cl.rt + ONE;
     currentMoveString[4] = cl.promoChar;
     currentMoveString[5] = NULLCHAR;
 
     return (int) cl.kind;
 }
 
-[a-h][xX:]?[a-h][1-8](=?\(?[RrBbNnQqKk]\)?)?(ep|"e.p.")? {
+[a-l][xX:]?[a-l][0-9](=?\(?[RrBbNnQqKkAaCc]\)?)?(ep|"e.p.")? {
     /*
      * unambiguously abbreviated Pawn capture, possibly with promotion
      */
@@ -355,12 +391,24 @@ extern void CopyBoard P((Board to, Board from));
     currentMoveString[0] = yytext[0];
     currentMoveString[2] = yytext[1+skip];
     currentMoveString[3] = yytext[2+skip];
+
+    /* [HGM] do not allow values beyond board size */
+    if(currentMoveString[0] - 'a' >= BOARD_WIDTH  ||
+       currentMoveString[3] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[2] - 'a' >= BOARD_WIDTH     )
+      return 0;
+
+    if (gameInfo.variant == VariantXiangqi && /* [HGM] In Xiangqi rank stays same */
+         currentMoveString[0] != currentMoveString[2] ) {
+        if (yytext[2+skip] == ONE) return (int) ImpossibleMove;
+        currentMoveString[1] = yytext[2+skip];
+    } else 
     if (WhiteOnMove(yyboardindex)) {
-	if (yytext[2+skip] == '1') return (int) ImpossibleMove;
+        if (yytext[2+skip] == ONE) return (int) ImpossibleMove;
 	currentMoveString[1] = yytext[2+skip] - 1;
     } else {
-	if (yytext[2+skip] == '8') return (int) ImpossibleMove;
-	currentMoveString[1] = yytext[2+skip] + 1;
+        currentMoveString[1] = currentMoveString[3] + 1;
+        if (currentMoveString[3] == ONE+BOARD_HEIGHT-1) return (int) ImpossibleMove;
     }
     if (yyleng-skip > 3) {
 	if (yytext[yyleng-1] == ')')
@@ -374,9 +422,10 @@ extern void CopyBoard P((Board to, Board from));
 
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex), EP_UNKNOWN,
-			  currentMoveString[1] - '1',
+                          initialRights, /* [HGM] assume all castlings allowed */
+                          currentMoveString[1] - ONE,
 			  currentMoveString[0] - 'a',
-			  currentMoveString[3] - '1',
+                          currentMoveString[3] - ONE,
 			  currentMoveString[2] - 'a',
 			  currentMoveString[4]);
 
@@ -407,9 +456,10 @@ extern void CopyBoard P((Board to, Board from));
 
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex), EP_UNKNOWN,
-			  currentMoveString[1] - '1',
+                          initialRights, /* [HGM] assume all castlings allowed */
+                          currentMoveString[1] - ONE,
 			  currentMoveString[0] - 'a',
-			  currentMoveString[3] - '1',
+                          currentMoveString[3] - ONE,
 			  currentMoveString[2] - 'a',
 			  currentMoveString[4]);
 
@@ -419,7 +469,7 @@ extern void CopyBoard P((Board to, Board from));
       return (int) IllegalMove;
 }
 
-[RrBbNnQqKk][xX:-]?[a-h][1-8]  {
+[RrBbNnQqKkACDEFGHMWO][xX:-]?[a-l][0-9]  {
     /*
      * piece move, possibly ambiguous
      */
@@ -439,23 +489,29 @@ extern void CopyBoard P((Board to, Board from));
     }
     cl.rfIn = -1;
     cl.ffIn = -1;
-    cl.rtIn = yytext[2+skip] - '1';
+    cl.rtIn = yytext[2+skip] - ONE;
     cl.ftIn = yytext[1+skip] - 'a';
     cl.promoCharIn = NULLCHAR;
+
+    /* [HGM] but do not allow values beyond board size */
+    if(cl.rtIn >= BOARD_HEIGHT ||
+       cl.ftIn >= BOARD_WIDTH     )
+      return 0;
+
     Disambiguate(boards[yyboardindex],
 		 PosFlags(yyboardindex), EP_UNKNOWN, &cl);
 
     currentMoveString[0] = cl.ff + 'a';
-    currentMoveString[1] = cl.rf + '1';
+    currentMoveString[1] = cl.rf + ONE;
     currentMoveString[2] = cl.ft + 'a';
-    currentMoveString[3] = cl.rt + '1';
+    currentMoveString[3] = cl.rt + ONE;
     currentMoveString[4] = cl.promoChar;
     currentMoveString[5] = NULLCHAR;
 
     return (int) cl.kind;
 }
 
-[RrBbNnQqKk][a-h1-8][xX:-]?[a-h][1-8]	{
+[RrBbNnQqKkACDEFGHMWO][a-l0-9][xX:-]?[a-l][0-9]   {
     /*
      * piece move with rank or file disambiguator
      */
@@ -477,19 +533,27 @@ extern void CopyBoard P((Board to, Board from));
 	cl.rfIn = -1;
 	cl.ffIn = yytext[1] - 'a';
     } else {
-	cl.rfIn = yytext[1] - '1';
+        cl.rfIn = yytext[1] - ONE;
 	cl.ffIn = -1;
     }
-    cl.rtIn = yytext[3+skip] - '1';
+    cl.rtIn = yytext[3+skip] - ONE;
     cl.ftIn = yytext[2+skip] - 'a';
     cl.promoCharIn = NULLCHAR;
+
+    /* [HGM] do not allow values beyond board size */
+    if(cl.rtIn >= BOARD_HEIGHT ||
+       cl.rfIn >= BOARD_HEIGHT ||
+       cl.ffIn >= BOARD_WIDTH  ||
+       cl.ftIn >= BOARD_WIDTH     )
+      return 0;
+
     Disambiguate(boards[yyboardindex],
 		 PosFlags(yyboardindex), EP_UNKNOWN, &cl);
 
     currentMoveString[0] = cl.ff + 'a';
-    currentMoveString[1] = cl.rf + '1';
+    currentMoveString[1] = cl.rf + ONE;
     currentMoveString[2] = cl.ft + 'a';
-    currentMoveString[3] = cl.rt + '1';
+    currentMoveString[3] = cl.rt + ONE;
     currentMoveString[4] = cl.promoChar;
     currentMoveString[5] = NULLCHAR;
 
@@ -501,39 +565,41 @@ extern void CopyBoard P((Board to, Board from));
 
     if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
 
+    /* [HGM] all squares referenced to board edges in stead of absolute */
     if (WhiteOnMove(yyboardindex)) {
-	if (boards[yyboardindex][0][3] == WhiteKing) {
+        if (boards[yyboardindex][0][(BOARD_WIDTH-1)>>1] == WhiteKing) {
 	    /* ICS wild castling */
-	    strcpy(currentMoveString, "d1f1");
 	    rf = 0;
-	    ff = 3;
+            ff = (BOARD_WIDTH-1)>>1;
 	    rt = 0;
-	    ft = 5;
+            ft = BOARD_WIDTH-3;
+            sprintf(currentMoveString, "%c%c%c%c",ff+'a',rf+ONE,ft+'a',rt+ONE);
 	} else {
-	    strcpy(currentMoveString, "e1c1");
 	    rf = 0;
-	    ff = 4;
+            ff = BOARD_WIDTH>>1;
 	    rt = 0;
 	    ft = 2;
+            sprintf(currentMoveString, "%c%c%c%c",ff+'a',rf+ONE,ft+'a',rt+ONE);
 	}
     } else{ 
-	if (boards[yyboardindex][7][3] == BlackKing) {
+        if (boards[yyboardindex][BOARD_HEIGHT-1][3] == BlackKing) {
 	    /* ICS wild castling */
-	    strcpy(currentMoveString, "d8f8");
-	    rf = 7;
-	    ff = 3;
-	    rt = 7;
-	    ft = 5;
+            rf = BOARD_HEIGHT-1;
+            ff = (BOARD_WIDTH-1)>>1;
+            rt = BOARD_HEIGHT-1;
+            ft = BOARD_WIDTH-3;
+            sprintf(currentMoveString, "%c%c%c%c",ff+'a',rf+ONE,ft+'a',rt+ONE);
 	} else {
-	    strcpy(currentMoveString, "e8c8");
-	    rf = 7;
-	    ff = 4;
-	    rt = 7;
+            rf = BOARD_HEIGHT-1;
+            ff = BOARD_WIDTH>>1;
+            rt = BOARD_HEIGHT-1;
 	    ft = 2;
+            sprintf(currentMoveString, "%c%c%c%c",ff+'a',rf+ONE,ft+'a',rt+ONE);
 	}
     }
     return (int) LegalityTest(boards[yyboardindex],
 			      PosFlags(yyboardindex), EP_UNKNOWN,
+                              initialRights, /* [HGM] assume all castlings allowed */
 			      rf, ff, rt, ft, NULLCHAR);
 }
 
@@ -543,47 +609,56 @@ extern void CopyBoard P((Board to, Board from));
     if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
 
     if (WhiteOnMove(yyboardindex)) {
-	if (boards[yyboardindex][0][3] == WhiteKing) {
+        if (boards[yyboardindex][0][(BOARD_WIDTH-1)>>1] == WhiteKing) {
 	    /* ICS wild castling */
-	    strcpy(currentMoveString, "d1b1");
 	    rf = 0;
-	    ff = 3;
+            ff = (BOARD_WIDTH-1)>>1;
 	    rt = 0;
 	    ft = 1;
+            sprintf(currentMoveString, "%c%c%c%c",ff+'a',rf+ONE,ft+'a',rt+ONE);
 	} else {
-	    strcpy(currentMoveString, "e1g1");
 	    rf = 0;
-	    ff = 4;
+            ff = BOARD_WIDTH>>1;
 	    rt = 0;
-	    ft = 6;
+            ft = BOARD_WIDTH-2;
+            sprintf(currentMoveString, "%c%c%c%c",ff+'a',rf+ONE,ft+'a',rt+ONE);
 	}
     } else {
-	if (boards[yyboardindex][7][3] == BlackKing) {
+        if (boards[yyboardindex][BOARD_HEIGHT-1][(BOARD_WIDTH-1)>>1] == BlackKing) {
 	    /* ICS wild castling */
-	    strcpy(currentMoveString, "d8b8");
-	    rf = 7;
-	    ff = 3;
-	    rt = 7;
+            rf = BOARD_HEIGHT-1;
+            ff = (BOARD_WIDTH-1)>>1;
+            rt = BOARD_HEIGHT-1;
 	    ft = 1;
+            sprintf(currentMoveString, "%c%c%c%c",ff+'a',rf+ONE,ft+'a',rt+ONE);
 	} else {
-	    strcpy(currentMoveString, "e8g8");
-	    rf = 7;
-	    ff = 4;
-	    rt = 7;
-	    ft = 6;
+            rf = BOARD_HEIGHT-1;
+            ff = BOARD_WIDTH>>1;
+            rt = BOARD_HEIGHT-1;
+            ft = BOARD_WIDTH-2;
+            sprintf(currentMoveString, "%c%c%c%c",ff+'a',rf+ONE,ft+'a',rt+ONE);
 	}
     }
     return (int) LegalityTest(boards[yyboardindex],
 			      PosFlags(yyboardindex), EP_UNKNOWN,
+                              initialRights, /* [HGM] assume all castlings allowed */
 			      rf, ff, rt, ft, NULLCHAR);
 }
 
-[PpNnBbRrQq]@[a-h][1-8] {
+[PpNnBbRrQqAaCc]@[a-l][0-9] {
     /* Bughouse piece drop.  No legality checking for now. */
     currentMoveString[1] = '@';
     currentMoveString[2] = yytext[2];
     currentMoveString[3] = yytext[3];
     currentMoveString[4] = NULLCHAR;
+
+    /* [HGM] do not allow values beyond board size */
+    if(currentMoveString[1] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[0] - 'a' >= BOARD_WIDTH  ||
+       currentMoveString[3] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[2] - 'a' >= BOARD_WIDTH     )
+      return 0;
+
     if (WhiteOnMove(yyboardindex)) {
 	currentMoveString[0] = ToUpper(yytext[0]);
 	return (int) WhiteDrop;
@@ -662,7 +737,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) GameUnfinished;
 }
 
-[1-9][0-9]*/"."?[ \t\n]*[a-hNnPpRrBQqKkOo]    {
+[1-9][0-9]*/"."?[ \t\n]*[a-lNnPpRrBQqKACFEWDGHOo]    {
     /* move numbers */
     if ((yyleng == 1) && (yytext[0] == '1'))
       return (int) MoveNumberOne;
