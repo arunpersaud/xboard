@@ -1168,7 +1168,7 @@ ArgDescriptor argDescriptors[] = {
   { "holdingsSize", ArgInt, (LPVOID) &appData.holdingsSize, TRUE },
   { "matchPause", ArgInt, (LPVOID) &appData.matchPause, TRUE },
   { "pieceToCharTable", ArgString, (LPVOID) &appData.pieceToCharTable, FALSE },
-  { "flipBlack", ArgBoolean, (LPVOID) &appData.allWhite, TRUE },
+  { "flipBlack", ArgBoolean, (LPVOID) &appData.upsideDown, TRUE },
   { "allWhite", ArgBoolean, (LPVOID) &appData.allWhite, TRUE },
   { "alphaRank", ArgBoolean, (LPVOID) &appData.alphaRank, FALSE },
   { "testClaims", ArgBoolean, (LPVOID) &appData.testClaims, TRUE },
@@ -3171,6 +3171,60 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "q", minorSize, "o");
   pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "q", minorSize, "w");
   }
+  if(gameInfo.variant == VariantShogi && squareSize == 58)
+  /* special Shogi support in this size */
+  { for (i=0; i<=2; i++) { /* replace all bitmaps */
+      for (piece = WhitePawn;
+           (int) piece < (int) BlackPawn;
+           piece = (ChessSquare) ((int) piece + 1)) {
+        if (pieceBitmap[i][piece] != NULL)
+          DeleteObject(pieceBitmap[i][piece]);
+      }
+    }
+  pieceBitmap[0][WhitePawn] = DoLoadBitmap(hInst, "sp", squareSize, "o");
+  pieceBitmap[0][WhiteKnight] = DoLoadBitmap(hInst, "sn", squareSize, "o");
+  pieceBitmap[0][WhiteBishop] = DoLoadBitmap(hInst, "sb", squareSize, "o");
+  pieceBitmap[0][WhiteRook] = DoLoadBitmap(hInst, "sr", squareSize, "o");
+  pieceBitmap[0][WhiteQueen] = DoLoadBitmap(hInst, "sl", squareSize, "o");
+  pieceBitmap[0][WhiteKing] = DoLoadBitmap(hInst, "sk", squareSize, "o");
+  pieceBitmap[0][WhiteFerz] = DoLoadBitmap(hInst, "sf", squareSize, "o");
+  pieceBitmap[0][WhiteWazir] = DoLoadBitmap(hInst, "sw", squareSize, "o");
+  pieceBitmap[0][WhiteUnicorn] = DoLoadBitmap(hInst, "su", squareSize, "o");
+  pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "sh", squareSize, "o");
+  pieceBitmap[0][WhiteCardinal] = DoLoadBitmap(hInst, "sa", squareSize, "o");
+  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "sc", squareSize, "o");
+  pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "sg", squareSize, "o");
+  pieceBitmap[0][WhiteSilver] = DoLoadBitmap(hInst, "ss", squareSize, "o");
+  pieceBitmap[1][WhitePawn] = DoLoadBitmap(hInst, "sp", squareSize, "o");
+  pieceBitmap[1][WhiteKnight] = DoLoadBitmap(hInst, "sn", squareSize, "o");
+  pieceBitmap[1][WhiteBishop] = DoLoadBitmap(hInst, "sb", squareSize, "o");
+  pieceBitmap[1][WhiteRook] = DoLoadBitmap(hInst, "sr", squareSize, "o");
+  pieceBitmap[1][WhiteQueen] = DoLoadBitmap(hInst, "sl", squareSize, "o");
+  pieceBitmap[1][WhiteKing] = DoLoadBitmap(hInst, "sk", squareSize, "o");
+  pieceBitmap[1][WhiteFerz] = DoLoadBitmap(hInst, "sf", squareSize, "o");
+  pieceBitmap[1][WhiteWazir] = DoLoadBitmap(hInst, "sw", squareSize, "o");
+  pieceBitmap[1][WhiteUnicorn] = DoLoadBitmap(hInst, "su", squareSize, "o");
+  pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "sh", squareSize, "o");
+  pieceBitmap[1][WhiteCardinal] = DoLoadBitmap(hInst, "sa", squareSize, "o");
+  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "sc", squareSize, "o");
+  pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "sg", squareSize, "o");
+  pieceBitmap[1][WhiteSilver] = DoLoadBitmap(hInst, "ss", squareSize, "o");
+  pieceBitmap[2][WhitePawn] = DoLoadBitmap(hInst, "sp", squareSize, "w");
+  pieceBitmap[2][WhiteKnight] = DoLoadBitmap(hInst, "sn", squareSize, "w");
+  pieceBitmap[2][WhiteBishop] = DoLoadBitmap(hInst, "sr", squareSize, "w");
+  pieceBitmap[2][WhiteRook] = DoLoadBitmap(hInst, "sr", squareSize, "w");
+  pieceBitmap[2][WhiteQueen] = DoLoadBitmap(hInst, "sl", squareSize, "w");
+  pieceBitmap[2][WhiteKing] = DoLoadBitmap(hInst, "sk", squareSize, "w");
+  pieceBitmap[2][WhiteFerz] = DoLoadBitmap(hInst, "sw", squareSize, "w");
+  pieceBitmap[2][WhiteWazir] = DoLoadBitmap(hInst, "sw", squareSize, "w");
+  pieceBitmap[2][WhiteUnicorn] = DoLoadBitmap(hInst, "sp", squareSize, "w");
+  pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "sn", squareSize, "w");
+  pieceBitmap[2][WhiteCardinal] = DoLoadBitmap(hInst, "sr", squareSize, "w");
+  pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "sr", squareSize, "w");
+  pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "sl", squareSize, "w");
+  pieceBitmap[2][WhiteSilver] = DoLoadBitmap(hInst, "sw", squareSize, "w");
+  minorSize = 0;
+  }
 }
 
 HBITMAP
@@ -3224,7 +3278,7 @@ DrawCoordsOnDC(HDC hdc)
   oldFont = SelectObject(hdc, font[boardSize][COORD_FONT]->hf);
 
   y = boardRect.top + lineGap;
-  x = boardRect.left + lineGap;
+  x = boardRect.left + lineGap + gameInfo.holdingsWidth*(squareSize + lineGap);
 
   SetTextAlign(hdc, TA_LEFT|TA_TOP);
   for (i = 0; i < BOARD_HEIGHT; i++) {
@@ -3236,7 +3290,7 @@ DrawCoordsOnDC(HDC hdc)
   start = flipView ? 12-BOARD_WIDTH : 12;
 
   SetTextAlign(hdc, TA_RIGHT|TA_BOTTOM);
-  for (i = 0; i < BOARD_WIDTH; i++) {
+  for (i = 0; i < BOARD_RGHT - BOARD_LEFT; i++) {
     str[0] = ranks[start + i];
     ExtTextOut(hdc, x + squareSize - 2, y - 1, 0, NULL, str, 1, NULL);
     x += squareSize + lineGap;
@@ -3375,7 +3429,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
               oldBrush = SelectObject(hdc, whitePieceBrush);
       else    oldBrush = SelectObject(hdc, blackPieceBrush);
       if(appData.upsideDown && !color)
-        StretchBlt(hdc, x, y+tmpSize, tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
+        StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
 #if 0
@@ -3389,7 +3443,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
       /* Use black for outline of white pieces */
       SelectObject(tmphdc, PieceBitmap(piece, OUTLINE_PIECE));
       if(appData.upsideDown && !color)
-        StretchBlt(hdc, x, y+tmpSize, tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, SRCAND);
+        StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, SRCAND);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, SRCAND);
 #endif
@@ -3411,7 +3465,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
       oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, SOLID_PIECE));
       oldBrush = SelectObject(hdc, blackPieceBrush);
       if(appData.upsideDown)
-        StretchBlt(hdc, x, y+tmpSize, tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
+        StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
 #endif
@@ -4443,10 +4497,14 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                   DrawPosition(forceFullRepaint || FALSE, NULL);
              }
           }
+          break;
         }
-	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
-	fromX = fromY = -1;
-	break;
+        if (gotPremove) {
+            /* [HGM] it seemed that braces were missing here */
+            SetPremoveHighlights(fromX, fromY, toX, toY);
+            fromX = fromY = -1;
+            break;
+        }
       }
       ClearHighlights();
       DrawPosition(forceFullRepaint || FALSE, NULL);
@@ -4472,6 +4530,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     ReleaseCapture();
     if (fromX == -1) break;
     if (x == fromX && y == fromY) {
+      dragInfo.from.x = dragInfo.from.y = -1;
       /* Upclick on same square */
       if (sameAgain) {
 	/* Clicked same square twice: abort click-click move */
@@ -4482,7 +4541,6 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	/* First square clicked: start click-click move */
 	SetHighlights(fromX, fromY, -1, -1);
       }
-      dragInfo.from.x = dragInfo.from.y = -1;
       DrawPosition(forceFullRepaint || FALSE, NULL);
     } else if (dragInfo.from.x < 0 || dragInfo.from.y < 0) {
       /* Errant click; ignore */
@@ -4704,12 +4762,16 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Only allow C & A promotions if these pieces are defined */
     ShowWindow(GetDlgItem(hDlg, PB_Archbishop),
-       (PieceToChar(WhiteCardinal) != '.' ||
-        PieceToChar(BlackCardinal) != '.'   ) ?
+       (PieceToChar(WhiteCardinal) >= 'A' &&
+        PieceToChar(WhiteCardinal) != '~' ||
+        PieceToChar(BlackCardinal) >= 'A' &&
+        PieceToChar(BlackCardinal) != '~'   ) ?
 	       SW_SHOW : SW_HIDE);
     ShowWindow(GetDlgItem(hDlg, PB_Chancellor), 
-       (PieceToChar(WhiteMarshall) != '.' ||
-        PieceToChar(BlackMarshall) != '.'   ) ?
+       (PieceToChar(WhiteMarshall) >= 'A' &&
+        PieceToChar(WhiteMarshall) != '~' ||
+        PieceToChar(BlackMarshall) >= 'A' &&
+        PieceToChar(BlackMarshall) != '~'   ) ?
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Hide B & R button in Shogi, use Q as promote, N as defer */
     ShowWindow(GetDlgItem(hDlg, PB_Rook),

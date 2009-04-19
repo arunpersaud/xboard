@@ -707,7 +707,11 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       hsc = ParseColorName(HIGHLIGHT_SQUARE_COLOR);
       phc = ParseColorName(PREMOVE_HIGHLIGHT_COLOR);
       mono = FALSE;
+      white= FALSE;
+      flip = FALSE;
       CheckDlgButton(hDlg, OPT_Monochrome, FALSE);
+      CheckDlgButton(hDlg, OPT_AllWhite,   FALSE);
+      CheckDlgButton(hDlg, OPT_UpsideDown, FALSE);
       PaintColorBlock(hDlg, OPT_LightSquareColor, lsc);
       PaintColorBlock(hDlg, OPT_DarkSquareColor,  dsc);
       PaintColorBlock(hDlg, OPT_WhitePieceColor,  wpc);

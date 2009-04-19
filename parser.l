@@ -172,6 +172,7 @@ extern void CopyBoard P((Board to, Board from));
     int skip1 = 0, skip2 = 0, skip3 = 0, promoted = 0;
     ChessSquare piece;
     ChessMove result;
+    char c;
     
     if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
 
@@ -218,7 +219,9 @@ extern void CopyBoard P((Board to, Board from));
     piece = boards[yyboardindex]
       [currentMoveString[1] - ONE][currentMoveString[0] - AAA];
     if(promoted) piece = (ChessSquare) (DEMOTED piece);
-    if (ToLower(yytext[skip3]) != ToLower(PieceToChar(piece)))
+    c = PieceToChar(piece);
+    if(c == '~') c = PieceToChar((ChessSquare) (DEMOTED piece));
+    if (ToLower(yytext[skip3]) != ToLower(c))
       return (int) IllegalMove;
 
     result = LegalityTest(boards[yyboardindex],
@@ -240,9 +243,10 @@ extern void CopyBoard P((Board to, Board from));
     return (int) result;
 }
 
-[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|=)?      {
+[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Za-z]\)?)|=)?      {
     /*
      * Simple algebraic move, possibly with promotion
+     * [HGM] Engine moves are received in this format, with lower-case promoChar!
      */
     int skip = 0;
     ChessMove result;

@@ -1789,6 +1789,9 @@ VariantSwitch(Board board, VariantClass newVariant)
         gameInfo.holdingsWidth = newHoldingsWidth;
         gameInfo.variant = newVariant;
         InitDrawingSizes(-2, 0);
+
+        if(board != boards[0]) InitPosition(FALSE);
+
     } else gameInfo.variant = newVariant;
 }
 
@@ -3311,6 +3314,10 @@ ParseBoard12(string)
  	    fromX = fromY = toX = toY = -1;
 	} else {
 	    /* Move from ICS was illegal!?  Punt. */
+  if (appData.debugMode) {
+    fprintf(debugFP, "Illegal move from ICS '%s'\n", move_str);
+    fprintf(debugFP, "board L=%d, R=%d, H=%d, holdings=%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT, gameInfo.holdingsWidth);
+  }
 #if 0
 	    if (appData.testLegality && appData.debugMode) {
 		sprintf(str, "Illegal move \"%s\" from ICS", move_str);
@@ -3478,11 +3485,6 @@ SendMoveToProgram(moveNum, cps)
       } else {
 	sprintf(buf, "%s\n", parseList[moveNum]);
       }
-      /* [HGM] decrement all digits to code ranks starting from 0 */
-      if(BOARD_HEIGHT>9) {
-          char *p = buf;
-          while(*p) { if(*p < 'A') (*p)--; p++; }
-      }
       SendToProgram(buf, cps);
     } else {
       /* Added by Tord: Send castle moves in "O-O" in FRC games if required by
@@ -3616,15 +3618,62 @@ ProcessICSInitScript(f)
 void
 AlphaRank(char *move, int n)
 {
-    char *p = move, c;
+    char *p = move, c; int x, y;
 
     if( !appData.alphaRank ) return;
 
-    while(c = *p) {
-        if(c>='0' && c<='9') *p += AAA-ONE; else
-        if(c>='a' && c<'x') *p -= AAA-ONE;
-        p++;
-        if(--n < 1) break;
+    if (appData.debugMode) {
+        fprintf(debugFP, "alphaRank(%s,%d)\n", move, n);
+    }
+
+    if(move[1]=='*' && 
+       move[2]>='0' && move[2]<='9' &&
+       move[3]>='a' && move[3]<='x'    ) {
+        move[2] = (move[2]-'1')+BOARD_LEFT + AAA;
+        move[3] = (move[3]-'a') + ONE;
+    } else
+    if(move[0]>='0' && move[0]<='9' &&
+       move[1]>='a' && move[1]<='x' &&
+       move[2]>='0' && move[2]<='9' &&
+       move[3]>='a' && move[3]<='x'    ) {
+        /* input move, Shogi -> normal */
+/*
+        move[0] = BOARD_RGHT  -1-(move[0]-'1') + AAA;
+        move[1] = BOARD_HEIGHT-1-(move[1]-'a') + ONE;
+        move[2] = BOARD_RGHT  -1-(move[2]-'1') + AAA;
+        move[3] = BOARD_HEIGHT-1-(move[3]-'a') + ONE;
+*/
+        move[0] = (move[0]-'1')+BOARD_LEFT + AAA;
+        move[1] = (move[1]-'a') + ONE;
+        move[2] = (move[2]-'1')+BOARD_LEFT + AAA;
+        move[3] = (move[3]-'a') + ONE;
+    } else
+    if(move[1]=='@' &&
+       move[3]>='0' && move[3]<='9' &&
+       move[2]>='a' && move[2]<='x'    ) {
+        move[1] = '*';
+        move[2] = (move[2]-AAA)-BOARD_LEFT + '1';
+        move[3] = (move[3]-ONE) + 'a';
+    } else
+    if(
+       move[0]>='a' && move[0]<='x' &&
+       move[3]>='0' && move[3]<='9' &&
+       move[2]>='a' && move[2]<='x'    ) {
+         /* output move, normal -> Shogi */
+/*
+        move[0] = BOARD_RGHT  -1-(move[0]-AAA) + '1';
+        move[1] = BOARD_HEIGHT-1-(move[1]-ONE) + 'a';
+        move[2] = BOARD_RGHT  -1-(move[2]-AAA) + '1';
+        move[3] = BOARD_HEIGHT-1-(move[3]-ONE) + 'a';
+*/
+        move[0] = (move[0]-AAA)-BOARD_LEFT + '1';
+        move[1] = (move[1]-ONE) + 'a';
+        move[2] = (move[2]-AAA)-BOARD_LEFT + '1';
+        move[3] = (move[3]-ONE) + 'a';
+        if(move[4] == PieceToChar(BlackQueen)) move[4] = '+';
+    }
+    if (appData.debugMode) {
+        fprintf(debugFP, "   out = '%s'\n", move);
     }
 }
 
@@ -3640,16 +3689,13 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
     if (appData.debugMode) {
         fprintf(debugFP, "move to parse: %s\n", move);
     }
-    AlphaRank(move, 10);
     *moveType = yylexstr(moveNum, move);
 
     switch (*moveType) {
-#ifdef FAIRY
       case WhitePromotionChancellor:
       case BlackPromotionChancellor:
       case WhitePromotionArchbishop:
       case BlackPromotionArchbishop:
-#endif
       case WhitePromotionQueen:
       case BlackPromotionQueen:
       case WhitePromotionRook:
@@ -3685,6 +3731,9 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
 	*promoChar = currentMoveString[4];
         if (*fromX < BOARD_LEFT || *fromX >= BOARD_RGHT || *fromY < 0 || *fromY >= BOARD_HEIGHT ||
             *toX < BOARD_LEFT || *toX >= BOARD_RGHT || *toY < 0 || *toY >= BOARD_HEIGHT) {
+    if (appData.debugMode) {
+        fprintf(debugFP, "Off-board move (%d,%d)-(%d,%d)%c, type = %d\n", *fromX, *fromY, *toX, *toY, *promoChar, *moveType);
+    }
 	    *fromX = *fromY = *toX = *toY = 0;
 	    return FALSE;
 	}
@@ -3716,6 +3765,9 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
       case BlackWins:
       case GameIsDrawn:
       default:
+    if (appData.debugMode) {
+        fprintf(debugFP, "Impossible move %s, type = %d\n", currentMoveString, *moveType);
+    }
 	/* bug? */
 	*fromX = *fromY = *toX = *toY = 0;
 	*promoChar = NULLCHAR;
@@ -3855,6 +3907,9 @@ InitPosition(redraw)
         }
 
         initialRulePlies = 0; /* 50-move counter start */
+
+        castlingRank[0] = castlingRank[1] = castlingRank[2] = 0;
+        castlingRank[3] = castlingRank[4] = castlingRank[5] = BOARD_HEIGHT-1;
     }
 
     
@@ -3887,7 +3942,7 @@ InitPosition(redraw)
       castlingRights[0][6] = initialRights[2] = 5;
       castlingRights[0][7] = initialRights[5] = 5;
       castlingRank[6] = 0;
-      castlingRank[6] = BOARD_HEIGHT-1;
+      castlingRank[7] = BOARD_HEIGHT-1;
       startedFromSetupPosition = TRUE;
       break;
     case VariantCapablanca:
@@ -3913,7 +3968,7 @@ InitPosition(redraw)
       gameInfo.boardHeight = 9;
       gameInfo.holdingsSize = 7;
       nrCastlingRights = 0;
-      SetCharTable(pieceToChar, "PNBRLSG.........Kpnbrlsg.........k"); 
+      SetCharTable(pieceToChar, "PNBRLSG...++++++Kpnbrlsg...++++++k"); 
       break;
     case VariantShowgi:
       pieces = ShogiArray;
@@ -3933,7 +3988,7 @@ InitPosition(redraw)
       break;
     case VariantKnightmate:
       pieces = KnightmateArray;
-      strcpy(pieceToChar, "P.BRQ...M.K......p.brq...m.k......"); 
+      SetCharTable(pieceToChar, "P.BRQ...M.K......p.brq...m.k......"); 
       break;
     case VariantFairy:
       pieces = fairyArray;
@@ -3943,6 +3998,7 @@ InitPosition(redraw)
     case VariantCrazyhouse:
     case VariantBughouse:
       pieces = FIDEArray;
+      SetCharTable(pieceToChar, "PNBRQ......~~~~.Kpnbrq......~~~~.k"); 
       gameInfo.holdingsSize = 5;
       break;
     case VariantWildCastle:
@@ -4027,9 +4083,6 @@ InitPosition(redraw)
         castlingRights[0][3] = initialRights[3] = BOARD_RGHT-1;
         castlingRights[0][4] = initialRights[4] = BOARD_LEFT;
         castlingRights[0][5] = initialRights[5] = BOARD_WIDTH>>1;
-
-        castlingRank[0] = castlingRank[1] = castlingRank[2] = 0;
-        castlingRank[3] = castlingRank[4] = castlingRank[5] = BOARD_HEIGHT-1;
      }
 
     if(gameInfo.variant == VariantFischeRandom) {
@@ -4283,6 +4336,21 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
         return ImpossibleMove;
     }
 
+    /* [HGM] suppress all moves into holdings area and guard band */
+    if( toX < BOARD_LEFT || toX >= BOARD_RGHT || toY < 0 )
+            return ImpossibleMove;
+
+    /* [HGM] <sameColor> moved to here from winboard.c */
+    /* note: this code seems to exist for filtering out some obviously illegal premoves */
+    pdown = boards[currentMove][fromY][fromX];
+    pup = boards[currentMove][toY][toX];
+    if (    gameMode != EditPosition &&
+            (WhitePawn <= pdown && pdown < BlackPawn &&
+             WhitePawn <= pup && pup < BlackPawn  ||
+             BlackPawn <= pdown && pdown < EmptySquare &&
+             BlackPawn <= pup && pup < EmptySquare)      )
+         return ImpossibleMove;
+
     /* Check if the user is playing in turn.  This is complicated because we
        let the user "pick up" a piece before it is his turn.  So the piece he
        tried to pick up may have been captured by the time he puts it down!
@@ -4400,21 +4468,6 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
 	}
         return ImpossibleMove;
     }
-
-    /* [HGM] suppress all moves into holdings area and guard band */
-    if( toX < BOARD_LEFT || toX >= BOARD_RGHT || toY < 0 )
-            return ImpossibleMove;
-
-    /* [HGM] <sameColor> moved to here from winboard.c */
-    /* note: EditPosition already filtered out and performed! */
-    pdown = boards[currentMove][fromY][fromX];
-    pup = boards[currentMove][toY][toX];
-    if ( 
-            (WhitePawn <= pdown && pdown < BlackPawn &&
-             WhitePawn <= pup && pup < BlackPawn) ||
-            (BlackPawn <= pdown && pdown < EmptySquare &&
-             BlackPawn <= pup && pup < EmptySquare)      )
-         return ImpossibleMove;
 
     /* [HGM] If move started in holdings, it means a drop */
     if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) { 
@@ -4758,6 +4811,7 @@ HandleMachineMove(message, cps)
 	    return;
 	}
 
+        AlphaRank(machineMove, 4);
         if (!ParseOneMove(machineMove, forwardMostMove, &moveType,
                               &fromX, &fromY, &toX, &toY, &promoChar)) {
 	    /* Machine move could not be parsed; ignore it. */
@@ -4979,7 +5033,8 @@ HandleMachineMove(message, cps)
                 count = 0;
                 for(k = forwardMostMove-2;
                     k>=backwardMostMove && k>=forwardMostMove-100 &&
-                        epStatus[k] <= EP_NONE && epStatus[k+1] <= EP_NONE;
+                        epStatus[k] < EP_UNKNOWN &&
+                        epStatus[k+2] <= EP_NONE && epStatus[k+1] <= EP_NONE;
                     k-=2)
                 {   int rights=0;
     if (appData.debugMode) {
@@ -5418,6 +5473,10 @@ HandleMachineMove(message, cps)
     } else if (strncmp(message, "Black resign", 12) == 0) {
         GameEnds(WhiteWins, "Black resigns", GE_ENGINE1 + (cps != &first));
 	return;
+    } else if (strncmp(message, "White matches", 13) == 0 ||
+               strncmp(message, "Black matches", 13) == 0   ) {
+        /* [HGM] ignore GNUShogi noises */
+        return;
     } else if (strncmp(message, "White", 5) == 0 &&
 	       message[5] != '(' &&
 	       StrStr(message, "Black") == NULL) {
@@ -5818,12 +5877,16 @@ ParseGameHistory(game)
 	yyboardindex = boardIndex;
 	moveType = (ChessMove) yylex();
 	switch (moveType) {
-#ifdef FAIRY
+	  case IllegalMove:		/* maybe suicide chess, etc. */
+  if (appData.debugMode) {
+    fprintf(debugFP, "Illegal move from ICS: '%s'\n", yy_text);
+    fprintf(debugFP, "board L=%d, R=%d, H=%d, holdings=%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT, gameInfo.holdingsWidth);
+    setbuf(debugFP, NULL);
+  }
           case WhitePromotionChancellor:
           case BlackPromotionChancellor:
           case WhitePromotionArchbishop:
           case BlackPromotionArchbishop:
-#endif
 	  case WhitePromotionQueen:
 	  case BlackPromotionQueen:
 	  case WhitePromotionRook:
@@ -5851,7 +5914,6 @@ ParseGameHistory(game)
           case BlackHSideCastleFR:
           case BlackASideCastleFR:
           /* POP Fabien */
-	  case IllegalMove:		/* maybe suicide chess, etc. */
             fromX = currentMoveString[0] - AAA;
             fromY = currentMoveString[1] - ONE;
             toX = currentMoveString[2] - AAA;
@@ -5871,11 +5933,21 @@ ParseGameHistory(game)
 	  case AmbiguousMove:
 	    /* bug? */
 	    sprintf(buf, "Ambiguous move in ICS output: \"%s\"", yy_text);
+  if (appData.debugMode) {
+    fprintf(debugFP, "Ambiguous move from ICS: '%s'\n", yy_text);
+    fprintf(debugFP, "board L=%d, R=%d, H=%d, holdings=%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT, gameInfo.holdingsWidth);
+    setbuf(debugFP, NULL);
+  }
 	    DisplayError(buf, 0);
 	    return;
 	  case ImpossibleMove:
 	    /* bug? */
 	    sprintf(buf, "Illegal move in ICS output: \"%s\"", yy_text);
+  if (appData.debugMode) {
+    fprintf(debugFP, "Impossible move from ICS: '%s'\n", yy_text);
+    fprintf(debugFP, "board L=%d, R=%d, H=%d, holdings=%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT, gameInfo.holdingsWidth);
+    setbuf(debugFP, NULL);
+  }
 	    DisplayError(buf, 0);
 	    return;
 	  case (ChessMove) 0:	/* end of file */
@@ -6215,14 +6287,14 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
       if( boards[forwardMostMove][fromY][fromX] == WhitePawn ) {
            epStatus[forwardMostMove] = EP_PAWN_MOVE; 
            if( toY-fromY==2 &&
-               (toX>BOARD_LEFT+1 && boards[forwardMostMove][toY][toX-1] == BlackPawn ||
+               (toX>BOARD_LEFT   && boards[forwardMostMove][toY][toX-1] == BlackPawn ||
                 toX<BOARD_RGHT-1 && boards[forwardMostMove][toY][toX+1] == BlackPawn ) )
               epStatus[forwardMostMove] = toX;
       } else 
       if( boards[forwardMostMove][fromY][fromX] == BlackPawn ) {
            epStatus[forwardMostMove] = EP_PAWN_MOVE; 
            if( toY-fromY== -2 &&
-               (toX>BOARD_LEFT+1 && boards[forwardMostMove][toY][toX-1] == WhitePawn ||
+               (toX>BOARD_LEFT   && boards[forwardMostMove][toY][toX-1] == WhitePawn ||
                 toX<BOARD_RGHT-1 && boards[forwardMostMove][toY][toX+1] == WhitePawn ) )
               epStatus[forwardMostMove] = toX;
        }
@@ -6232,6 +6304,8 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
            if(castlingRights[forwardMostMove][i] == fromX && castlingRank[i] == fromY ||
               castlingRights[forwardMostMove][i] == toX   && castlingRank[i] == toY   
              ) castlingRights[forwardMostMove][i] = -1; // revoke for moved or captured piece
+
+
 
        }
 
@@ -6543,8 +6617,9 @@ GameEnds(result, resultDetails, whosays)
                 claimer = whosays == GE_ENGINE1 ?      /* color of claimer */
                                             first.twoMachinesColor[0] :
                                             second.twoMachinesColor[0] ;
-                if( result == WhiteWins && claimer == 'w' ||
-                    result == BlackWins && claimer == 'b' ) {
+                if( gameInfo.holdingsWidth == 0 &&
+                    (result == WhiteWins && claimer == 'w' ||
+                     result == BlackWins && claimer == 'b'   ) ) {
                       /* Xboard immediately adjudicates all mates, so win claims must be false */
                       sprintf(buf, "False win claim: '%s'", resultDetails);
                       result = claimer == 'w' ? BlackWins : WhiteWins;
@@ -11703,22 +11778,16 @@ PositionToFEN(move, useFEN960)
                     else { *p++ = '0' + emptycount/10; *p++ = '0' + emptycount%10; }
 		    emptycount = 0;
 		}
-                if(gameInfo.variant == VariantShogi) {
-                    /* [HGM] write Shogi promoted pieces as +<unpromoted> */
-                    if( (int)piece > (int) WhiteCannon && (int)piece < (int) WhiteKing ||
-                        (int)piece > (int) BlackCannon && (int)piece < (int) BlackKing ) {
-                        *p++ = '+';
-                        piece = (ChessSquare)(DEMOTED piece);
-                    }
+                if(PieceToChar(piece) == '+') {
+                    /* [HGM] write promoted pieces as '+<unpromoted>' (Shogi) */
+                    *p++ = '+';
+                    piece = (ChessSquare)(DEMOTED piece);
                 } 
                 *p++ = PieceToChar(piece);
-                if(gameInfo.variant == VariantCrazyhouse || gameInfo.variant == VariantBughouse) {
-                    /* [HGM] flag Crazyhouse promoted pieces */
-                    if( (int)piece > (int) WhiteQueen && (int)piece < (int) WhiteKing ||
-                        (int)piece > (int) BlackQueen && (int)piece < (int) BlackKing ) {
-                        p[-1] = PieceToChar((ChessSquare)(DEMOTED piece));
-                        *p++ = '~';
-                    }
+                if(p[-1] == '~') {
+                    /* [HGM] flag promoted pieces as '<promoted>~' (Crazyhouse) */
+                    p[-1] = PieceToChar((ChessSquare)(DEMOTED piece));
+                    *p++ = '~';
                 }
 	    }
 	}
@@ -11736,6 +11805,7 @@ PositionToFEN(move, useFEN960)
     *p++ = whiteToPlay ? 'w' : 'b';
     *p++ = ' ';
 
+  if(nrCastlingRights) {
     /* HACK: we don't keep track of castling availability, so fake it! */
     /* Tord! please fix with the aid of castlingRights[move][...] */
 
@@ -11826,7 +11896,10 @@ PositionToFEN(move, useFEN960)
     }
 
     /* POP Fabien & Tord */
+  }
 
+  if(gameInfo.variant != VariantShogi    && gameInfo.variant != VariantXiangqi &&
+     gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier ) { 
     /* En passant target square */
     if (move > backwardMostMove) {
         fromX = moveList[move - 1][0] - AAA;
@@ -11846,10 +11919,12 @@ PositionToFEN(move, useFEN960)
     } else {
 	*p++ = '-';
     }
+    *p++ = ' ';
+  }
 
     /* [HGM] print Crazyhouse or Shogi holdings */
     if( gameInfo.holdingsWidth ) {
-        *p++ = ' '; q = p;
+        q = p;
         for(i=0; i<gameInfo.holdingsSize; i++) { /* white holdings */
             piece = boards[move][i][BOARD_WIDTH-1];
             if( piece != EmptySquare )
@@ -11870,20 +11945,20 @@ PositionToFEN(move, useFEN960)
     /* [HGM] find reversible plies */
     {   int i = 0, j=move;
 
-    if (appData.debugMode) { int k;
-        fprintf(debugFP, "write FEN 50-move: %d %d %d\n", initialRulePlies, forwardMostMove, backwardMostMove);
-        for(k=backwardMostMove; k<=forwardMostMove; k++)
-            fprintf(debugFP, "e%d. p=%d\n", k, epStatus[k]);
+        if (appData.debugMode) { int k;
+            fprintf(debugFP, "write FEN 50-move: %d %d %d\n", initialRulePlies, forwardMostMove, backwardMostMove);
+            for(k=backwardMostMove; k<=forwardMostMove; k++)
+                fprintf(debugFP, "e%d. p=%d\n", k, epStatus[k]);
 
-    }
+        }
 
         while(j > backwardMostMove && epStatus[j] <= EP_NONE) j--,i++;
         if( j == backwardMostMove ) i += initialRulePlies;
-        sprintf(p, " %d", i);
-      p += i>=100 ? 4 : i >= 10 ? 3 : 2;
+        sprintf(p, "%d ", i);
+        p += i>=100 ? 4 : i >= 10 ? 3 : 2;
     }
     /* Fullmove number */
-    sprintf(p, " %d", (move / 2) + 1);
+    sprintf(p, "%d", (move / 2) + 1);
     
     return StrSave(buf);
 }
@@ -11902,14 +11977,14 @@ ParseFEN(board, blackPlaysFirst, fen)
     p = fen;
 
     /* [HGM] by default clear Crazyhouse holdings, if present */
-   if(gameInfo.holdingsWidth) {
+    if(gameInfo.holdingsWidth) {
        for(i=0; i<BOARD_HEIGHT; i++) {
            board[i][0]             = EmptySquare; /* black holdings */
            board[i][BOARD_WIDTH-1] = EmptySquare; /* white holdings */
            board[i][1]             = (ChessSquare) 0; /* black counts */
            board[i][BOARD_WIDTH-2] = (ChessSquare) 0; /* white counts */
        }
-   }
+    }
 
     /* Piece placement data */
     for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
@@ -11936,10 +12011,17 @@ ParseFEN(board, blackPlaysFirst, fen)
                         board[i][(j++)+gameInfo.holdingsWidth] = EmptySquare;
             } else if (*p == '+' || isalpha(*p)) {
                 if (j >= gameInfo.boardWidth) return FALSE;
-                if(*p=='+') { piece = (ChessSquare) (PROMOTED CharToPiece(*++p) ); p++; }
-                else piece = CharToPiece(*p++);
+                if(*p=='+') {
+                    piece = CharToPiece(*++p);
+                    if(piece == EmptySquare) return FALSE; /* unknown piece */
+                    piece = (ChessSquare) (PROMOTED piece ); p++;
+                    if(PieceToChar(piece) != '+') return FALSE; /* unpromotable piece */
+                } else piece = CharToPiece(*p++);
+
+                if(piece==EmptySquare) return FALSE; /* unknown piece */
                 if(*p == '~') { /* [HGM] make it a promoted piece for Crazyhouse */
                     piece = (ChessSquare) (PROMOTED piece);
+                    if(PieceToChar(piece) != '~') return FALSE; /* cannot be a promoted piece */
                     p++;
                 }
                 board[i][(j++)+gameInfo.holdingsWidth] = piece;
@@ -11964,7 +12046,7 @@ ParseFEN(board, blackPlaysFirst, fen)
 
     /* [HGM] We NO LONGER ignore the rest of the FEN notation */
     /* return the extra info in global variiables             */
-  {
+
     /* set defaults in case FEN is incomplete */
     FENepStatus = EP_UNKNOWN;
     for(i=0; i<nrCastlingRights; i++ ) {
@@ -11979,14 +12061,14 @@ ParseFEN(board, blackPlaysFirst, fen)
     FENrulePlies = 0;
 
     while(*p==' ') p++;
-
-    if(*p=='K' || *p=='Q' || *p=='k' || *p=='q' || *p=='-') {
-              /* castling indicator present, so default is no castlings */
-              for(i=0; i<nrCastlingRights; i++ ) {
-                     FENcastlingRights[i] = -1;
-              }
-    }
-    while(*p=='K' || *p=='Q' || *p=='k' || *p=='q' || *p=='-') {
+    if(nrCastlingRights) {
+      if(*p=='K' || *p=='Q' || *p=='k' || *p=='q' || *p=='-') {
+          /* castling indicator present, so default becomes no castlings */
+          for(i=0; i<nrCastlingRights; i++ ) {
+                 FENcastlingRights[i] = -1;
+          }
+      }
+      while(*p=='K' || *p=='Q' || *p=='k' || *p=='q' || *p=='-') {
         switch(*p++) {
           case'K':
               FENcastlingRights[0] = BOARD_RGHT-1;
@@ -12006,24 +12088,28 @@ ParseFEN(board, blackPlaysFirst, fen)
               break;
           /* Tord! FRC! */
         }
+      }
+
+      while(*p==' ') p++;
     }
 
-    while(*p==' ') p++;
-
-
-    if(*p=='-') {
+    /* read e.p. field in games that know e.p. capture */
+    if(gameInfo.variant != VariantShogi    && gameInfo.variant != VariantXiangqi &&
+       gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier ) { 
+      if(*p=='-') {
         p++; FENepStatus = EP_NONE;
-    } else {
-       char c = *p++ - AAA;
+      } else {
+         char c = *p++ - AAA;
 
-       if(c < BOARD_LEFT || c >= BOARD_RGHT) return TRUE;
-       if(*p >= '0' && *p <='9') *p++;
-       FENepStatus = c;
+         if(c < BOARD_LEFT || c >= BOARD_RGHT) return TRUE;
+         if(*p >= '0' && *p <='9') *p++;
+         FENepStatus = c;
+      }
     }
 
     /* [HGM] look for Crazyhouse holdings here */
     while(*p==' ') p++;
-    if( !isdigit(*p) ) {
+    if( gameInfo.holdingsWidth ) {
         if(*p == '-' ) *p++; /* empty holdings */ else {
             if( !gameInfo.holdingsWidth ) return FALSE; /* no room to put holdings! */
             /* if we would allow FEN reading to set board size, we would   */
@@ -12046,12 +12132,11 @@ ParseFEN(board, blackPlaysFirst, fen)
     }
 
 
-
     if(sscanf(p, "%d", &i) == 1) {
         FENrulePlies = i; /* 50-move ply counter */
         /* (The move number is still ignored)    */
     }
- }
+
     return TRUE;
 }
       

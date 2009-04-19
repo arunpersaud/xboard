@@ -1067,7 +1067,7 @@ BEGIN
     POPUP "&Options"
     BEGIN
         MENUITEM "Flip &View\tF2",              IDM_FlipView
-        MENUITEM "Flip &Clocks",                IDM_FlipClock
+        MENUITEM "Swap &Clocks",                IDM_FlipClock
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions
@@ -1743,6 +1743,27 @@ H49W                    BITMAP  MOVEABLE PURE   "bitmaps\\h49w.bmp"
 G49W                    BITMAP  MOVEABLE PURE   "bitmaps\\g49w.bmp"
 L49W                    BITMAP  MOVEABLE PURE   "bitmaps\\l49w.bmp"
 DK49W                   BITMAP  MOVEABLE PURE   "bitmaps\\dk49w.bmp"
+
+SP58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sp58o.bmp"
+SN58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sn58o.bmp"
+SB58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sb58o.bmp"
+SR58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sr58o.bmp"
+SL58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sl58o.bmp"
+SK58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sk58o.bmp"
+SF58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sf58o.bmp"
+SW58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sw58o.bmp"
+SU58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\su58o.bmp"
+SH58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sh58o.bmp"
+SA58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sa58o.bmp"
+SC58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sc58o.bmp"
+SG58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sg58o.bmp"
+SS58O                   BITMAP  MOVEABLE PURE   "shogibitmaps\\ss58o.bmp"
+SP58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sp58w.bmp"
+SN58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sn58w.bmp"
+SR58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sr58w.bmp"
+SL58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sl58w.bmp"
+SK58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sk58w.bmp"
+SW58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sw58w.bmp"
 
 
 #ifdef APSTUDIO_INVOKED

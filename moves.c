@@ -281,9 +281,7 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
 	      if (!BlackPiece(board[rf][ff])) continue;
 	  }
           m = 0; piece = board[rf][ff];
-          if(gameInfo.variant == VariantCrazyhouse &&
-              ( (int) piece > (int) WhiteQueen && (int) piece < (int) WhiteKing
-             || (int) piece > (int) BlackQueen && (int) piece < (int) BlackKing ))
+          if(PieceToChar(piece) == '~') 
                  piece = (ChessSquare) ( DEMOTED piece );
           if(gameInfo.variant == VariantShogi)
                  piece = (ChessSquare) ( SHOGI piece );
@@ -294,7 +292,7 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
 	      /* can't happen ([HGM] except for faries...) */
 	      break;
 
-	    case WhitePawn:
+             case WhitePawn:
               if(gameInfo.variant == VariantXiangqi) {
                   /* [HGM] capture and move straight ahead in Xiangqi */
                   if (rf < BOARD_HEIGHT-1 &&
@@ -1099,7 +1097,10 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
 {
     register DisambiguateClosure *cl = (DisambiguateClosure *) closure;
 
-    if ((cl->pieceIn == EmptySquare || cl->pieceIn == board[rf][ff]) &&
+    if ((cl->pieceIn == EmptySquare || cl->pieceIn == board[rf][ff]
+         || PieceToChar(board[rf][ff]) == '~'
+              && cl->pieceIn == (ChessSquare)(DEMOTED board[rf][ff])
+                                                                      ) &&
 	(cl->rfIn == -1 || cl->rfIn == rf) &&
 	(cl->ffIn == -1 || cl->ffIn == ff) &&
 	(cl->rtIn == -1 || cl->rtIn == rt) &&
@@ -1245,7 +1246,10 @@ void CoordsToAlgebraicCallback(board, flags, kind, rf, ff, rt, ft, closure)
       (CoordsToAlgebraicClosure *) closure;
 
     if (rt == cl->rt && ft == cl->ft &&
-	board[rf][ff] == cl->piece) {
+        (board[rf][ff] == cl->piece
+         || PieceToChar(board[rf][ff]) == '~' &&
+            (ChessSquare) (DEMOTED board[rf][ff]) == cl->piece)
+                                     ) {
 	if (rf == cl->rf) {
 	    if (ff == cl->ff) {
 		cl->kind = kind; /* this is the move we want */
@@ -1275,7 +1279,7 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 {
     ChessSquare piece;
     ChessMove kind;
-    char *outp = out;
+    char *outp = out, c;
     CoordsToAlgebraicClosure cl;
     
     if (rf == DROP_RANK) {
@@ -1287,20 +1291,18 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
            *outp++ = rt + ONE;
         else { *outp++ = (rt+ONE-'0')/10 + '0';*outp++ = (rt+ONE-'0')%10 + '0'; }
 	*outp = NULLCHAR;
-        AlphaRank(out, 5);
 	return (flags & F_WHITE_ON_MOVE) ? WhiteDrop : BlackDrop;
     }
 
     if (promoChar == 'x') promoChar = NULLCHAR;
     piece = board[rf][ff];
+    if(PieceToChar(piece)=='~') piece = (ChessSquare)(DEMOTED piece);
 
   if (appData.debugMode)
           fprintf(debugFP, "CoordsToAlgebraic, piece=%d\n", (int)piece);
     switch (piece) {
       case WhitePawn:
       case BlackPawn:
-  if (appData.debugMode)
-          fprintf(debugFP, "CoordsToAlgebraic, Pawn\n");
         kind = LegalityTest(board, flags, epfile, initialRights, rf, ff, rt, ft, promoChar);
 	if (kind == IllegalMove && !(flags&F_IGNORE_CHECK)) {
 	    /* Keep short notation if move is illegal only because it
@@ -1338,7 +1340,6 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
             }
             *outp = NULLCHAR;
 	}
-        AlphaRank(out, 10);
         return kind;
 
 	
@@ -1404,13 +1405,14 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 	   else "N1f3" or "N5xf7",
 	   else "Ng1f3" or "Ng5xf7".
 	*/
-        if(PieceToChar(piece) == '.') {
+        c = PieceToChar(piece) ;
+        if( c == '~' || c == '+') {
            /* [HGM] print nonexistent piece as its demoted version */
            piece = (ChessSquare) (DEMOTED piece);
-           if( gameInfo.variant == VariantShogi )
-                *outp++ = '+';
         }
+        if(c=='+') *outp++ = c;
         *outp++ = ToUpper(PieceToChar(piece));
+
 	if (cl.file || (cl.either && !cl.rank)) {
             *outp++ = ff + AAA;
 	}
@@ -1465,7 +1467,6 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
                 }
             }
         }
-        AlphaRank(out, 10);
         return cl.kind;
 	
       /* [HGM] Always long notation for fairies we don't know */
@@ -1506,7 +1507,6 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
     }
     *outp = NULLCHAR;
 
-    AlphaRank(out, 0);
     return IllegalMove;
 }
 
