@@ -172,7 +172,7 @@ int pclose(FILE *);
 #define ZIPPY_GAME_START ""
 #define ZIPPY_ADJOURN FALSE
 #define ZIPPY_ABORT FALSE
-#define ZIPPY_VARIANTS "normal"
+#define ZIPPY_VARIANTS "normal,fischerandom,crazyhouse,losers,suicide,3checks,twokings,bughouse,shatranj"
 #define ZIPPY_MAX_GAMES 0
 #define ZIPPY_REPLAY_TIMEOUT 120
 
@@ -189,13 +189,13 @@ typedef enum {
     /* only the first N pieces can go into the holdings, and   */
     /* promotions in those variants shift P-W to U-S           */
     WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
-    WhiteFerz, WhiteWazir, WhiteAlfil, WhiteMan, WhiteCannon, WhiteUnicorn,
-    WhiteNightrider, WhiteCardinal, WhiteMarshall, WhiteGrasshopper,
-    WhiteSilver, WhiteKing,
+    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan, 
+    WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
+    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
     BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
-    BlackFerz, BlackWazir, BlackAlfil, BlackMan, BlackCannon, BlackUnicorn,
-    BlackNightrider, BlackCardinal, BlackMarshall, BlackGrasshopper,
-    BlackSilver, BlackKing,
+    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan, 
+    BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
+    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
     EmptySquare, 
     ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
   } ChessSquare;
@@ -203,8 +203,8 @@ typedef enum {
 /* [HGM] some macros that can be used as prefixes to convert piece types */
 #define WHITE_TO_BLACK (int)BlackPawn - (int)WhitePawn + (int)
 #define BLACK_TO_WHITE (int)WhitePawn - (int)BlackPawn + (int)
-#define PROMOTED       (int)WhiteUnicorn - (int)WhitePawn + (int)
-#define DEMOTED        (int)WhitePawn - (int)WhiteUnicorn + (int)
+#define PROMOTED       (int)WhiteDragon - (int)WhiteRook + (int)
+#define DEMOTED        (int)WhiteRook - (int)WhiteDragon + (int)
 #define SHOGI          (int)EmptySquare + (int)
 
 
@@ -274,7 +274,8 @@ typedef enum {
     VariantCapablanca,
     VariantKnightmate,
     VariantFairy,        
-    VariantShowgi,
+    VariantCylinder,
+    VariantFalcon,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
@@ -309,7 +310,8 @@ typedef enum {
   "capablanca", \
   "knightmate", \
   "fairy", \
-  "showgi", \
+  "cylinder", \
+  "falcon",\
   "unknown" \
 }
 
@@ -543,6 +545,15 @@ typedef struct {
     int zippyMaxGames;
     int zippyReplayTimeout; /*seconds*/
 #endif
+
+    char *serverMovesName;
+    Boolean suppressLoadMoves;
+    int serverPause;
+    int firstTimeOdds;
+    int secondTimeOdds;
+    int timeOddsMode;
+    int firstAccumulateTC;
+    int secondAccumulateTC;
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

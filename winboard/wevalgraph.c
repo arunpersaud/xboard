@@ -165,7 +165,7 @@ static VOID DrawAxisSegmentHoriz( int value, BOOL drawValue )
 static VOID DrawAxis()
 {
     int cy = nHeightPB / 2;
-
+    
     SelectObject( hdcPB, GetStockObject(NULL_BRUSH) );
 
     SetBkMode( hdcPB, TRANSPARENT );
@@ -502,7 +502,7 @@ LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
     case WM_GETMINMAXINFO:
         {
             MINMAXINFO * mmi = (MINMAXINFO *) lParam;
-
+        
             mmi->ptMinTrackSize.x = 100;
             mmi->ptMinTrackSize.y = 100;
         }
@@ -564,7 +564,7 @@ LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 VOID EvalGraphPopUp()
 {
   FARPROC lpProc;
-
+  
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowEvalGraph, MF_CHECKED);
 
   if( evalGraphDialog ) {

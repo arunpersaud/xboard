@@ -135,7 +135,8 @@ VOID ExitArgError(char *msg, char *badArg);
 #define CONSOLE_FONT 3
 #define COMMENT_FONT 4
 #define EDITTAGS_FONT 5
-#define NUM_FONTS 6
+#define MOVEHISTORY_FONT 6
+#define NUM_FONTS 7
 
 /* Positions of some menu items.  Origin is zero and separator lines count. */
 /* It's gross that these are needed. */

@@ -191,6 +191,11 @@ extern void CopyBoard P((Board to, Board from));
     currentMoveString[3] = yytext[4+skip1+skip2];
     currentMoveString[4] = NULLCHAR;
     
+    if (appData.debugMode) {
+        fprintf(debugFP, "Parser Qa1b2: yyleng=%d\n",
+        yyleng);
+    }
+
     if (yyleng-skip1-skip2 > 5) { char c;
         if (yytext[yyleng-1] == ')') {
             c = currentMoveString[4] = ToLower(yytext[yyleng-2]);
@@ -297,7 +302,10 @@ extern void CopyBoard P((Board to, Board from));
     if (currentMoveString[4] == NULLCHAR &&
         (result == WhitePromotionKnight || result == BlackPromotionKnight ||
          result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
-        currentMoveString[4] = PieceToChar(BlackQueen);
+        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier)
+            currentMoveString[4] = PieceToChar(BlackFerz);
+        else
+            currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
     }
 
@@ -543,6 +551,12 @@ extern void CopyBoard P((Board to, Board from));
     if(yyleng-skip > 3) /* [HGM] can have Shogi-style promotion */
         cl.promoCharIn = yytext[yyleng-1];
 
+    if (appData.debugMode) {
+        fprintf(debugFP, "Parser Qa1: yyleng=%d,  %d(%d,%d)-(%d,%d) = %d (%c)\n",
+        yyleng,
+        cl.pieceIn,cl.ffIn,cl.rfIn,cl.ftIn,cl.rtIn,cl.promoCharIn,cl.promoCharIn?cl.promoCharIn:' ');
+    }
+
     /* [HGM] but do not allow values beyond board size */
     if(cl.rtIn >= BOARD_HEIGHT ||
        cl.rtIn <  0            ||
@@ -557,7 +571,7 @@ extern void CopyBoard P((Board to, Board from));
     currentMoveString[1] = cl.rf + ONE;
     currentMoveString[2] = cl.ft + AAA;
     currentMoveString[3] = cl.rt + ONE;
-    currentMoveS tring[4] = cl.promoChar;
+    currentMoveString[4] = cl.promoChar;
     currentMoveString[5] = NULLCHAR;
 
     return (int) cl.kind;
@@ -637,33 +651,44 @@ extern void CopyBoard P((Board to, Board from));
             ff = (BOARD_WIDTH-1)>>1;
 	    rt = 0;
             ft = BOARD_RGHT-3;
-            sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
 	} else {
 	    rf = 0;
             ff = BOARD_WIDTH>>1;
 	    rt = 0;
             ft = BOARD_LEFT+2;
-            sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
 	}
     } else{ 
-        if (boards[yyboardindex][BOARD_HEIGHT-1][3] == BlackKing) {
+        if (boards[yyboardindex][BOARD_HEIGHT-1][(BOARD_WIDTH-1)>>1] == BlackKing) {
 	    /* ICS wild castling */
             rf = BOARD_HEIGHT-1;
             ff = (BOARD_WIDTH-1)>>1;
             rt = BOARD_HEIGHT-1;
             ft = BOARD_RGHT-3;
-            sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
 	} else {
             rf = BOARD_HEIGHT-1;
             ff = BOARD_WIDTH>>1;
             rt = BOARD_HEIGHT-1;
             ft = BOARD_LEFT+2;
-            sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
 	}
+    }
+    if(gameInfo.variant == VariantFischeRandom) {
+        if (WhiteOnMove(yyboardindex)) {
+            ff = initialRights[2];
+            ft = initialRights[1];
+        } else {
+            ff = initialRights[5];
+            ft = initialRights[4];
+        }
+        fprintf(debugFP, "Parser FRC long %d %d\n", ff, ft);
+        if(ff < 0 || ft < 0) return 0;
+    }
+    sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
+    if (appData.debugMode) {
+        fprintf(debugFP, "long castling %d %d\n", ff, ft);
     }
     return (int) LegalityTest(boards[yyboardindex],
 			      PosFlags(yyboardindex), EP_UNKNOWN,
-                              initialRights, /* [HGM] assume all castlings allowed */
+                              castlingRights[yyboardindex], /* [HGM] use true castling rights */
 			      rf, ff, rt, ft, NULLCHAR);
 }
 
@@ -679,13 +704,11 @@ extern void CopyBoard P((Board to, Board from));
             ff = (BOARD_WIDTH-1)>>1;
 	    rt = 0;
             ft = BOARD_LEFT+1;
-            sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
 	} else {
 	    rf = 0;
             ff = BOARD_WIDTH>>1;
 	    rt = 0;
             ft = BOARD_RGHT-2;
-            sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
 	}
     } else {
         if (boards[yyboardindex][BOARD_HEIGHT-1][(BOARD_WIDTH-1)>>1] == BlackKing) {
@@ -694,18 +717,34 @@ extern void CopyBoard P((Board to, Board from));
             ff = (BOARD_WIDTH-1)>>1;
             rt = BOARD_HEIGHT-1;
             ft = BOARD_LEFT+1;
-            sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
 	} else {
             rf = BOARD_HEIGHT-1;
             ff = BOARD_WIDTH>>1;
             rt = BOARD_HEIGHT-1;
             ft = BOARD_RGHT-2;
-            sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
 	}
     }
+    if(gameInfo.variant == VariantFischeRandom) {
+        if (WhiteOnMove(yyboardindex)) {
+            ff = initialRights[2];
+            ft = initialRights[0];
+        } else {
+            ff = initialRights[5];
+            ft = initialRights[3];
+        }
+    if (appData.debugMode) {
+        fprintf(debugFP, "Parser FRC short %d %d\n", ff, ft);
+    }
+        if(ff < 0 || ft < 0) return 0;
+    }
+    sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
+    if (appData.debugMode) {
+        fprintf(debugFP, "short castling %d %d\n", ff, ft);
+    }
+
     return (int) LegalityTest(boards[yyboardindex],
-			      PosFlags(yyboardindex), EP_UNKNOWN,
-                              initialRights, /* [HGM] assume all castlings allowed */
+                              PosFlags(yyboardindex), EP_UNKNOWN,
+                              castlingRights[yyboardindex], /* [HGM] use true castling rights */
 			      rf, ff, rt, ft, NULLCHAR);
 }
 

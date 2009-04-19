@@ -123,7 +123,7 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
     struct GameListStats dummy;
 
     /* Initialize stats (use a dummy variable if caller not interested in them) */
-    if( stats == NULL ) {
+    if( stats == NULL ) { 
         stats = &dummy;
     }
 
@@ -282,7 +282,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 
   case WM_EXITSIZEMOVE:
     return OnExitSizeMove( &sd, hDlg, wParam, lParam );
-
+  
   case WM_GETMINMAXINFO:
     /* Prevent resizing window too small */
     mmi = (MINMAXINFO *) lParam;
@@ -291,7 +291,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     break;
 
   case WM_COMMAND:
-      /*
+      /* 
         [AS]
         If <Enter> is pressed while editing the filter, it's better to apply
         the filter rather than selecting the current game.
@@ -344,12 +344,12 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       }
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, nItem, 0);
       break; /* load the game*/
-      
+
     /* [AS] */
     case IDC_GameListDoFilter:
         {
             char filter[MAX_FILTER_LENGTH+1];
-
+            
             if( GetDlgItemText( hDlg, IDC_GameListFilter, filter, sizeof(filter) ) >= 0 ) {
                 filter[ sizeof(filter)-1 ] = '\0';
                 count = GameListToListBox( hDlg, TRUE, filter, &stats );
@@ -374,7 +374,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 	return FALSE;
       }
       break;
-      
+
     default:
       return FALSE;
     }
@@ -407,12 +407,12 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
         free( text );
         /* [AS] End: nItem has been "patched" now! */
 
-    if (cmailMsgLoaded) {
-      CmailLoadGame(gameFile, nItem + 1, gameFileName, TRUE);
+        if (cmailMsgLoaded) {
+            CmailLoadGame(gameFile, nItem + 1, gameFileName, TRUE);
         }
         else {
-      LoadGame(gameFile, nItem + 1, gameFileName, TRUE);
-    }
+            LoadGame(gameFile, nItem + 1, gameFileName, TRUE);
+        }
     }
 
     return TRUE;

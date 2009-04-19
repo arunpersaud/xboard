@@ -6,9 +6,8 @@
 /* [HGM] Defining FAIRY allows different K- & Q-side piece symbols */
 #define FAIRY
 
-#ifdef FAIRY
 #define GOTHIC "Gothic Chess (see www.GothicChess.com) is licensed under U.S. Patent #6,481,716 by Ed Trice"
-#endif
+#define FALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
 
 /* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
 /*#undef HAVE_SYS_WAIT_H*/
@@ -47,7 +46,7 @@
 
 #define LAST_PTY_LETTER 'q'
 
-#define PATCHLEVEL "12"
+#define PATCHLEVEL "13c"
 
 #define PRODUCT "WinBoard"
 

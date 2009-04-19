@@ -73,6 +73,7 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 #define F_ATOMIC_CAPTURE 128    /* capturing piece explodes, destroying itself
 				   and all non-pawns on adjacent squares; 
 				   destroying your own king is illegal */
+#define F_FRC_TYPE_CASTLING 256 /* generate castlings as captures of own Rook */
 
 /* Special epfile values. [HGM] positive values are non-reversible moves! */
 #define EP_NONE (-4)           /* [HGM] Tricky! order matters:            */

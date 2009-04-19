@@ -424,7 +424,7 @@ VOID EngineOutputPopDown();
 BOOL EngineOutputIsUp();
 VOID EngineOutputUpdate( FrontEndProgramStats * stats );
 
-VOID GothicPopUp(char *title, char up);
+VOID GothicPopUp(char *title, VariantClass variant);
 /*
  * Setting "frozen" should disable all user input other than deleting
  * the window.  We do this while engines are initializing themselves.
@@ -691,11 +691,12 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
                0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 
+#if 0
   /* [AS] Disable the FRC stuff if not playing the proper variant */
   if( gameInfo.variant != VariantFischeRandom ) {
       EnableMenuItem( GetMenu(hwndMain), IDM_NewGameFRC, MF_GRAYED );
   }
-
+#endif
   if (hwndConsole) {
 #if AOT_CONSOLE
     SetWindowPos(hwndConsole, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
@@ -1220,6 +1221,15 @@ ArgDescriptor argDescriptors[] = {
   /* Kludge to allow winboard.ini files from buggy 4.0.4 to be read: */
   { "zippyReplyTimeout", ArgInt, (LPVOID)&junk, FALSE },
 #endif
+  /* [HGM] options for broadcasting and time odds */
+  { "serverMoves", ArgString, (LPVOID) &appData.serverMovesName, FALSE },
+  { "suppressLoadMoves", ArgBoolean, (LPVOID) &appData.suppressLoadMoves, FALSE },
+  { "serverPause", ArgInt, (LPVOID) &appData.serverPause, FALSE },
+  { "firstTimeOdds", ArgInt, (LPVOID) &appData.firstTimeOdds, FALSE },
+  { "secondTimeOdds", ArgInt, (LPVOID) &appData.secondTimeOdds, FALSE },
+  { "timeOddsMode", ArgInt, (LPVOID) &appData.timeOddsMode, TRUE },
+  { "firstAccumulateTC", ArgInt, (LPVOID) &appData.firstAccumulateTC, FALSE },
+  { "secondAccumulateTC", ArgInt, (LPVOID) &appData.secondAccumulateTC, FALSE },
   { NULL, ArgNone, NULL, FALSE }
 };
 
@@ -1896,6 +1906,13 @@ InitAppData(LPSTR lpCmdLine)
   appData.alphaRank    = FALSE;
   appData.allWhite     = FALSE;
   appData.upsideDown   = FALSE;
+  appData.serverPause  = 15;
+  appData.serverMovesName   = NULL;
+  appData.suppressLoadMoves = FALSE;
+  appData.firstTimeOdds  = 1;
+  appData.secondTimeOdds = 1;
+  appData.firstAccumulateTC  = 1; // combine previous and current sessions
+  appData.secondAccumulateTC = 1;
 
 #ifdef ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
@@ -1939,6 +1956,35 @@ InitAppData(LPSTR lpCmdLine)
   if(appData.NrFiles > BOARD_SIZE ||
      appData.NrRanks > BOARD_SIZE   )
       DisplayFatalError("Recompile with BOARD_SIZE > 12, to support this size", 0, 2);
+
+  /* [HGM] After parsing the options from the .ini file, and overruling them
+   * with options from the command line, we now make an even higher priority
+   * overrule by WB options attached to the engine command line. This so that
+   * tournament managers can use WB options (such as /timeOdds) that follow
+   * the engines.
+   */
+  if(appData.firstChessProgram != NULL) {
+      char *p = StrStr(appData.firstChessProgram, "WBopt");
+      static char *f = "first";
+      char buf[MSG_SIZ], *q = buf;
+      if(p != NULL) { // engine command line contains WinBoard options
+          sprintf(buf, p+6, f, f, f, f, f, f, f, f, f, f); // replace %s in them by "first"
+          ParseArgs(StringGet, &q);
+          p[-1] = 0; // cut them offengine command line
+      }
+  }
+  // now do same for second chess program
+  if(appData.secondChessProgram != NULL) {
+      char *p = StrStr(appData.secondChessProgram, "WBopt");
+      static char *s = "second";
+      char buf[MSG_SIZ], *q = buf;
+      if(p != NULL) { // engine command line contains WinBoard options
+          sprintf(buf, p+6, s, s, s, s, s, s, s, s, s, s); // replace %s in them by "first"
+          ParseArgs(StringGet, &q);
+          p[-1] = 0; // cut them offengine command line
+      }
+  }
+
 
   /* Propagate options that affect others */
   if (appData.matchMode || appData.matchGames) chessProgram = TRUE;
@@ -2307,7 +2353,7 @@ enum {
     PM_WO = (int) WhiteCannon, 
     PM_WU = (int) WhiteUnicorn, 
     PM_WH = (int) WhiteNightrider, 
-    PM_WA = (int) WhiteCardinal, 
+    PM_WA = (int) WhiteAngel, 
     PM_WC = (int) WhiteMarshall, 
     PM_WG = (int) WhiteGrasshopper, 
     PM_WK = (int) WhiteKing,
@@ -2323,7 +2369,7 @@ enum {
     PM_BO = (int) BlackCannon, 
     PM_BU = (int) BlackUnicorn, 
     PM_BH = (int) BlackNightrider, 
-    PM_BA = (int) BlackCardinal, 
+    PM_BA = (int) BlackAngel, 
     PM_BC = (int) BlackMarshall, 
     PM_BG = (int) BlackGrasshopper, 
     PM_BK = (int) BlackKing
@@ -2554,8 +2600,7 @@ static int TranslatePieceToFontPiece( int piece )
         return PM_WQ;
     case WhiteKing:
         return PM_WK;
-#ifdef FAIRY
-    case BlackCardinal:
+    case BlackAngel:
         return PM_BA;
     case BlackMarshall:
         return PM_BC;
@@ -2575,7 +2620,7 @@ static int TranslatePieceToFontPiece( int piece )
         return PM_BG;
     case BlackMan:
         return PM_BM;
-    case WhiteCardinal:
+    case WhiteAngel:
         return PM_WA;
     case WhiteMarshall:
         return PM_WC;
@@ -2595,7 +2640,6 @@ static int TranslatePieceToFontPiece( int piece )
         return PM_WG;
     case WhiteMan:
         return PM_WM;
-#endif
     }
 
     return 0;
@@ -2677,7 +2721,7 @@ void CreatePiecesFromFont()
                 }
                 else if( strstr(lf.lfFaceName,"WinboardF") != NULL ) {
                     /* Fairy symbols */
-                     SetCharTable(pieceToFontChar, "PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk");
+                     SetCharTable(pieceToFontChar, "PNBRQFEACWMOHIJGDVSLUKpnbrqfeacwmohijgdvsluk");
                 }
                 else if( strstr(lf.lfFaceName,"GC2004D") != NULL ) {
                     /* Good Companion (Some characters get warped as literal :-( */
@@ -3057,10 +3101,15 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     }
   }
 
+  /* [HGM] Licensing requirement */
 #ifdef GOTHIC
-  /* [HGM] Gothic licensing requirement */
-  GothicPopUp( GOTHIC, gameInfo.variant == VariantGothic );
+  if(gameInfo.variant == VariantGothic) GothicPopUp( GOTHIC, VariantGothic); else
 #endif
+#ifdef FALCON
+  if(gameInfo.variant == VariantFalcon) GothicPopUp( FALCON, VariantFalcon); else
+#endif
+  GothicPopUp( "", VariantNormal);
+
 
 /*  if (boardSize == oldBoardSize) return; [HGM] variant might have changed */
   oldBoardSize = boardSize;
@@ -3076,6 +3125,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     }
   }
 
+  // Orthodox Chess pieces
   pieceBitmap[0][WhitePawn] = DoLoadBitmap(hInst, "p", squareSize, "s");
   pieceBitmap[0][WhiteKnight] = DoLoadBitmap(hInst, "n", squareSize, "s");
   pieceBitmap[0][WhiteBishop] = DoLoadBitmap(hInst, "b", squareSize, "s");
@@ -3092,85 +3142,126 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[2][WhiteRook] = DoLoadBitmap(hInst, "r", squareSize, "w");
   pieceBitmap[2][WhiteKing] = DoLoadBitmap(hInst, "k", squareSize, "w");
   if( !strcmp(appData.variant, "shogi") && (squareSize==72 || squareSize==49)) {
-  pieceBitmap[0][WhiteQueen] = DoLoadBitmap(hInst, "l", squareSize, "s");
-  pieceBitmap[1][WhiteQueen] = DoLoadBitmap(hInst, "l", squareSize, "o");
-  pieceBitmap[2][WhiteQueen] = DoLoadBitmap(hInst, "l", squareSize, "w");
+    // in Shogi, Hijack the unused Queen for Lance
+    pieceBitmap[0][WhiteQueen] = DoLoadBitmap(hInst, "l", squareSize, "s");
+    pieceBitmap[1][WhiteQueen] = DoLoadBitmap(hInst, "l", squareSize, "o");
+    pieceBitmap[2][WhiteQueen] = DoLoadBitmap(hInst, "l", squareSize, "w");
   } else {
-  pieceBitmap[0][WhiteQueen] = DoLoadBitmap(hInst, "q", squareSize, "s");
-  pieceBitmap[1][WhiteQueen] = DoLoadBitmap(hInst, "q", squareSize, "o");
-  pieceBitmap[2][WhiteQueen] = DoLoadBitmap(hInst, "q", squareSize, "w");
+    pieceBitmap[0][WhiteQueen] = DoLoadBitmap(hInst, "q", squareSize, "s");
+    pieceBitmap[1][WhiteQueen] = DoLoadBitmap(hInst, "q", squareSize, "o");
+    pieceBitmap[2][WhiteQueen] = DoLoadBitmap(hInst, "q", squareSize, "w");
   }
-  if(squareSize==72 || squareSize==49) { /* experiment with some home-made bitmaps */
-  pieceBitmap[0][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "s");
-  pieceBitmap[1][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "o");
-  pieceBitmap[2][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "w");
-  pieceBitmap[0][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "s");
-  pieceBitmap[1][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "o");
-  pieceBitmap[2][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "w");
-  pieceBitmap[0][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "s");
-  pieceBitmap[1][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "o");
-  pieceBitmap[2][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "w");
-  pieceBitmap[0][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "s");
-  pieceBitmap[1][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "o");
-  pieceBitmap[2][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "w");
-  pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "s");
-  pieceBitmap[1][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "o");
-  pieceBitmap[2][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "w");
-  pieceBitmap[0][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "s");
-  pieceBitmap[1][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "o");
-  pieceBitmap[2][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "w");
-  if(gameInfo.variant == VariantShogi) { /* promoted Gold represemtations */
-  pieceBitmap[0][WhiteUnicorn] = DoLoadBitmap(hInst, "wp", squareSize, "s");
-  pieceBitmap[1][WhiteUnicorn] = DoLoadBitmap(hInst, "wp", squareSize, "o");
-  pieceBitmap[2][WhiteUnicorn] = DoLoadBitmap(hInst, "w", squareSize, "w");
-  pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "wn", squareSize, "s");
-  pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "wn", squareSize, "o");
-  pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "w", squareSize, "w");
-  pieceBitmap[0][WhiteSilver] = DoLoadBitmap(hInst, "ws", squareSize, "s");
-  pieceBitmap[1][WhiteSilver] = DoLoadBitmap(hInst, "ws", squareSize, "o");
-  pieceBitmap[2][WhiteSilver] = DoLoadBitmap(hInst, "w", squareSize, "w");
-  pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "wl", squareSize, "s");
-  pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "wl", squareSize, "o");
-  pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "w", squareSize, "w");
-  } else {
-  pieceBitmap[0][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "s");
-  pieceBitmap[1][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "o");
-  pieceBitmap[2][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "w");
-  pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "s");
-  pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "o");
-  pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "w");
-  pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "s");
-  pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "o");
-  pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "w");
-  pieceBitmap[0][WhiteSilver] = DoLoadBitmap(hInst, "l", squareSize, "s");
-  pieceBitmap[1][WhiteSilver] = DoLoadBitmap(hInst, "l", squareSize, "o");
-  pieceBitmap[2][WhiteSilver] = DoLoadBitmap(hInst, "l", squareSize, "w");
+
+  if(squareSize <= 72 && squareSize >= 33) { 
+    /* A & C are available in most sizes now */
+    if(squareSize != 49 && squareSize != 72 && squareSize != 33) { // Vortex-like
+      pieceBitmap[0][WhiteAngel] = DoLoadBitmap(hInst, "a", squareSize, "s");
+      pieceBitmap[1][WhiteAngel] = DoLoadBitmap(hInst, "a", squareSize, "o");
+      pieceBitmap[2][WhiteAngel] = DoLoadBitmap(hInst, "a", squareSize, "w");
+      pieceBitmap[0][WhiteSilver] = DoLoadBitmap(hInst, "cv", squareSize, "s");
+      pieceBitmap[1][WhiteSilver] = DoLoadBitmap(hInst, "cv", squareSize, "o");
+      pieceBitmap[2][WhiteSilver] = DoLoadBitmap(hInst, "cv", squareSize, "w");
+      pieceBitmap[0][WhiteCobra] = DoLoadBitmap(hInst, "cv", squareSize, "s");
+      pieceBitmap[1][WhiteCobra] = DoLoadBitmap(hInst, "cv", squareSize, "o");
+      pieceBitmap[2][WhiteCobra] = DoLoadBitmap(hInst, "cv", squareSize, "w");
+      pieceBitmap[0][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "s");
+      pieceBitmap[1][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "o");
+      pieceBitmap[2][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "w");
+    } else { // Smirf-like
+      pieceBitmap[0][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "s");
+      pieceBitmap[1][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "o");
+      pieceBitmap[2][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "w");
+    }
+    if(gameInfo.variant == VariantGothic) { // Vortex-like
+      pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "cv", squareSize, "s");
+      pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "cv", squareSize, "o");
+      pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "cv", squareSize, "w");
+    } else { // WinBoard standard
+      pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "s");
+      pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "o");
+      pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "w");
+    }
   }
-  if(gameInfo.variant != VariantCrazyhouse && gameInfo.variant != VariantShogi) {
-  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "s");
-  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "o");
-  pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "w");
-  } else {
-  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "dk", squareSize, "s");
-  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "dk", squareSize, "o");
-  pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "dk", squareSize, "w");
-  }
+
+
+  if(squareSize==72 || squareSize==49 || squareSize==33) { /* experiment with some home-made bitmaps */
+    pieceBitmap[0][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "s");
+    pieceBitmap[1][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "o");
+    pieceBitmap[2][WhiteFerz] = DoLoadBitmap(hInst, "f", squareSize, "w");
+    pieceBitmap[0][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "s");
+    pieceBitmap[1][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "o");
+    pieceBitmap[2][WhiteWazir] = DoLoadBitmap(hInst, "w", squareSize, "w");
+    pieceBitmap[0][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "s");
+    pieceBitmap[1][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "o");
+    pieceBitmap[2][WhiteAlfil] = DoLoadBitmap(hInst, "e", squareSize, "w");
+    pieceBitmap[0][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "s");
+    pieceBitmap[1][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "o");
+    pieceBitmap[2][WhiteMan] = DoLoadBitmap(hInst, "m", squareSize, "w");
+    pieceBitmap[0][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "s");
+    pieceBitmap[1][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "o");
+    pieceBitmap[2][WhiteCardinal] = DoLoadBitmap(hInst, "a", squareSize, "w");
+    pieceBitmap[0][WhiteDragon] = DoLoadBitmap(hInst, "dk", squareSize, "s");
+    pieceBitmap[1][WhiteDragon] = DoLoadBitmap(hInst, "dk", squareSize, "o");
+    pieceBitmap[2][WhiteDragon] = DoLoadBitmap(hInst, "dk", squareSize, "w");
+    pieceBitmap[0][WhiteFalcon] = DoLoadBitmap(hInst, "v", squareSize, "s");
+    pieceBitmap[1][WhiteFalcon] = DoLoadBitmap(hInst, "v", squareSize, "o");
+    pieceBitmap[2][WhiteFalcon] = DoLoadBitmap(hInst, "v", squareSize, "w");
+    pieceBitmap[0][WhiteCobra] = DoLoadBitmap(hInst, "s", squareSize, "s");
+    pieceBitmap[1][WhiteCobra] = DoLoadBitmap(hInst, "s", squareSize, "o");
+    pieceBitmap[2][WhiteCobra] = DoLoadBitmap(hInst, "s", squareSize, "w");
+    pieceBitmap[0][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "s");
+    pieceBitmap[1][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "o");
+    pieceBitmap[2][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "w");
+    pieceBitmap[0][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "s");
+    pieceBitmap[1][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "o");
+    pieceBitmap[2][WhiteUnicorn] = DoLoadBitmap(hInst, "u", squareSize, "w");
+
+    if(gameInfo.variant == VariantShogi) { /* promoted Gold represemtations */
+      pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "wp", squareSize, "s");
+      pieceBitmap[1][WhiteCannon] = DoLoadBitmap(hInst, "wp", squareSize, "o");
+      pieceBitmap[2][WhiteCannon] = DoLoadBitmap(hInst, "w", squareSize, "w");
+      pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "wn", squareSize, "s");
+      pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "wn", squareSize, "o");
+      pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "w", squareSize, "w");
+      pieceBitmap[0][WhiteSilver] = DoLoadBitmap(hInst, "ws", squareSize, "s");
+      pieceBitmap[1][WhiteSilver] = DoLoadBitmap(hInst, "ws", squareSize, "o");
+      pieceBitmap[2][WhiteSilver] = DoLoadBitmap(hInst, "w", squareSize, "w");
+      pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "wl", squareSize, "s");
+      pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "wl", squareSize, "o");
+      pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "w", squareSize, "w");
+    } else {
+      pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "s");
+      pieceBitmap[1][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "o");
+      pieceBitmap[2][WhiteCannon] = DoLoadBitmap(hInst, "o", squareSize, "w");
+      pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "s");
+      pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "o");
+      pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "h", squareSize, "w");
+      pieceBitmap[0][WhiteSilver] = DoLoadBitmap(hInst, "cv", squareSize, "s");
+      pieceBitmap[1][WhiteSilver] = DoLoadBitmap(hInst, "cv", squareSize, "o");
+      pieceBitmap[2][WhiteSilver] = DoLoadBitmap(hInst, "cv", squareSize, "w");
+      pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "s");
+      pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "o");
+      pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "g", squareSize, "w");
+    }
+
   } else { /* other size, no special bitmaps available. Use smaller symbols */
-      if((int)boardSize < 2) minorSize = sizeInfo[0].squareSize;
-      else  minorSize = sizeInfo[(int)boardSize - 2].squareSize;
-  pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "n", minorSize, "s");
-  pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "n", minorSize, "o");
-  pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "n", minorSize, "w");
-  pieceBitmap[0][WhiteCardinal] = DoLoadBitmap(hInst, "b", minorSize, "s");
-  pieceBitmap[1][WhiteCardinal] = DoLoadBitmap(hInst, "b", minorSize, "o");
-  pieceBitmap[2][WhiteCardinal] = DoLoadBitmap(hInst, "b", minorSize, "w");
-  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "r", minorSize, "s");
-  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "r", minorSize, "o");
-  pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "r", minorSize, "w");
-  pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "q", minorSize, "s");
-  pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "q", minorSize, "o");
-  pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "q", minorSize, "w");
+    if((int)boardSize < 2) minorSize = sizeInfo[0].squareSize;
+    else  minorSize = sizeInfo[(int)boardSize - 2].squareSize;
+    pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "n", minorSize, "s");
+    pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "n", minorSize, "o");
+    pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "n", minorSize, "w");
+    pieceBitmap[0][WhiteCardinal]   = DoLoadBitmap(hInst, "b", minorSize, "s");
+    pieceBitmap[1][WhiteCardinal]   = DoLoadBitmap(hInst, "b", minorSize, "o");
+    pieceBitmap[2][WhiteCardinal]   = DoLoadBitmap(hInst, "b", minorSize, "w");
+    pieceBitmap[0][WhiteDragon]   = DoLoadBitmap(hInst, "r", minorSize, "s");
+    pieceBitmap[1][WhiteDragon]   = DoLoadBitmap(hInst, "r", minorSize, "o");
+    pieceBitmap[2][WhiteDragon]   = DoLoadBitmap(hInst, "r", minorSize, "w");
+    pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "q", minorSize, "s");
+    pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "q", minorSize, "o");
+    pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "q", minorSize, "w");
   }
+
+
   if(gameInfo.variant == VariantShogi && squareSize == 58)
   /* special Shogi support in this size */
   { for (i=0; i<=2; i++) { /* replace all bitmaps */
@@ -3189,10 +3280,10 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[0][WhiteKing] = DoLoadBitmap(hInst, "sk", squareSize, "o");
   pieceBitmap[0][WhiteFerz] = DoLoadBitmap(hInst, "sf", squareSize, "o");
   pieceBitmap[0][WhiteWazir] = DoLoadBitmap(hInst, "sw", squareSize, "o");
-  pieceBitmap[0][WhiteUnicorn] = DoLoadBitmap(hInst, "su", squareSize, "o");
+  pieceBitmap[0][WhiteCannon] = DoLoadBitmap(hInst, "su", squareSize, "o");
   pieceBitmap[0][WhiteNightrider] = DoLoadBitmap(hInst, "sh", squareSize, "o");
   pieceBitmap[0][WhiteCardinal] = DoLoadBitmap(hInst, "sa", squareSize, "o");
-  pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "sc", squareSize, "o");
+  pieceBitmap[0][WhiteDragon] = DoLoadBitmap(hInst, "sc", squareSize, "o");
   pieceBitmap[0][WhiteGrasshopper] = DoLoadBitmap(hInst, "sg", squareSize, "o");
   pieceBitmap[0][WhiteSilver] = DoLoadBitmap(hInst, "ss", squareSize, "o");
   pieceBitmap[1][WhitePawn] = DoLoadBitmap(hInst, "sp", squareSize, "o");
@@ -3203,10 +3294,10 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[1][WhiteKing] = DoLoadBitmap(hInst, "sk", squareSize, "o");
   pieceBitmap[1][WhiteFerz] = DoLoadBitmap(hInst, "sf", squareSize, "o");
   pieceBitmap[1][WhiteWazir] = DoLoadBitmap(hInst, "sw", squareSize, "o");
-  pieceBitmap[1][WhiteUnicorn] = DoLoadBitmap(hInst, "su", squareSize, "o");
+  pieceBitmap[1][WhiteCannon] = DoLoadBitmap(hInst, "su", squareSize, "o");
   pieceBitmap[1][WhiteNightrider] = DoLoadBitmap(hInst, "sh", squareSize, "o");
   pieceBitmap[1][WhiteCardinal] = DoLoadBitmap(hInst, "sa", squareSize, "o");
-  pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "sc", squareSize, "o");
+  pieceBitmap[1][WhiteDragon] = DoLoadBitmap(hInst, "sc", squareSize, "o");
   pieceBitmap[1][WhiteGrasshopper] = DoLoadBitmap(hInst, "sg", squareSize, "o");
   pieceBitmap[1][WhiteSilver] = DoLoadBitmap(hInst, "ss", squareSize, "o");
   pieceBitmap[2][WhitePawn] = DoLoadBitmap(hInst, "sp", squareSize, "w");
@@ -3217,10 +3308,10 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[2][WhiteKing] = DoLoadBitmap(hInst, "sk", squareSize, "w");
   pieceBitmap[2][WhiteFerz] = DoLoadBitmap(hInst, "sw", squareSize, "w");
   pieceBitmap[2][WhiteWazir] = DoLoadBitmap(hInst, "sw", squareSize, "w");
-  pieceBitmap[2][WhiteUnicorn] = DoLoadBitmap(hInst, "sp", squareSize, "w");
+  pieceBitmap[2][WhiteCannon] = DoLoadBitmap(hInst, "sp", squareSize, "w");
   pieceBitmap[2][WhiteNightrider] = DoLoadBitmap(hInst, "sn", squareSize, "w");
   pieceBitmap[2][WhiteCardinal] = DoLoadBitmap(hInst, "sr", squareSize, "w");
-  pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "sr", squareSize, "w");
+  pieceBitmap[2][WhiteDragon] = DoLoadBitmap(hInst, "sr", squareSize, "w");
   pieceBitmap[2][WhiteGrasshopper] = DoLoadBitmap(hInst, "sl", squareSize, "w");
   pieceBitmap[2][WhiteSilver] = DoLoadBitmap(hInst, "sw", squareSize, "w");
   minorSize = 0;
@@ -3428,7 +3519,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
       if( color )
               oldBrush = SelectObject(hdc, whitePieceBrush);
       else    oldBrush = SelectObject(hdc, blackPieceBrush);
-      if(appData.upsideDown && !color)
+      if(appData.upsideDown && color==flipView)
         StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
@@ -3442,7 +3533,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
 #else
       /* Use black for outline of white pieces */
       SelectObject(tmphdc, PieceBitmap(piece, OUTLINE_PIECE));
-      if(appData.upsideDown && !color)
+      if(appData.upsideDown && color==flipView)
         StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, SRCAND);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, SRCAND);
@@ -3464,7 +3555,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
       /* Use square color for details of black pieces */
       oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, SOLID_PIECE));
       oldBrush = SelectObject(hdc, blackPieceBrush);
-      if(appData.upsideDown)
+      if(appData.upsideDown && !flipView)
         StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
@@ -5558,7 +5649,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case EP_WhiteCardinal:
-      EditPositionMenuEvent(WhiteCardinal, fromX, fromY);
+      EditPositionMenuEvent(WhiteAngel, fromX, fromY);
       fromX = fromY = -1;
       break;
 
@@ -5618,7 +5709,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case EP_BlackCardinal:
-      EditPositionMenuEvent(BlackCardinal, fromX, fromY);
+      EditPositionMenuEvent(BlackAngel, fromX, fromY);
       fromX = fromY = -1;
       break;
 
@@ -6841,23 +6932,26 @@ GothicDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 VOID
-GothicPopUp(char *title, char up)
+GothicPopUp(char *title, VariantClass variant)
 {
   FARPROC lpProc;
   char *p, *q;
   BOOLEAN modal = hwndMain == NULL;
+  static char *lastTitle;
 
   strncpy(errorTitle, title, sizeof(errorTitle));
   errorTitle[sizeof(errorTitle) - 1] = '\0';
 
-  if(up && gothicDialog == NULL) {
+  if(lastTitle != title && gothicDialog != NULL) {
+    DestroyWindow(gothicDialog);
+    gothicDialog = NULL;
+  }
+  if(variant != VariantNormal && gothicDialog == NULL) {
+    title = lastTitle;
     lpProc = MakeProcInstance((FARPROC)GothicDialog, hInst);
     CreateDialog(hInst, MAKEINTRESOURCE(DLG_Error),
 		 hwndMain, (DLGPROC)lpProc);
     FreeProcInstance(lpProc);
-  } else if(!up && gothicDialog != NULL) {
-    DestroyWindow(gothicDialog);
-    gothicDialog = NULL;
   }
 }
 #endif
@@ -9129,7 +9223,7 @@ StartChildProcess(char *cmdLine, char *dir, ProcRef *pr)
 void
 DestroyChildProcess(ProcRef pr, int/*boolean*/ signal)
 {
-  ChildProc *cp;
+  ChildProc *cp; int result;
 
   cp = (ChildProc *) pr;
   if (cp == NULL) return;
@@ -9146,22 +9240,23 @@ DestroyChildProcess(ProcRef pr, int/*boolean*/ signal)
     /*!!if (signal) GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, cp->pid);*/
 
     /* [AS] Special termination modes for misbehaving programs... */
-    if( signal == 9 ) {
-        if ( appData.debugMode) {
-            fprintf( debugFP, "Terminating process %u\n", cp->pid );
-        }
+    if( signal == 9 ) { 
+        result = TerminateProcess( cp->hProcess, 0 );
 
-        TerminateProcess( cp->hProcess, 0 );
+        if ( appData.debugMode) {
+            fprintf( debugFP, "Terminating process %u, result=%d\n", cp->pid, result );
+        }
     }
     else if( signal == 10 ) {
         DWORD dw = WaitForSingleObject( cp->hProcess, 3*1000 ); // Wait 3 seconds at most
 
         if( dw != WAIT_OBJECT_0 ) {
+            result = TerminateProcess( cp->hProcess, 0 );
+
             if ( appData.debugMode) {
-                fprintf( debugFP, "Process %u still alive after timeout, killing...\n", cp->pid );
+                fprintf( debugFP, "Process %u still alive after timeout, killing... result=%d\n", cp->pid, result );
             }
 
-            TerminateProcess( cp->hProcess, 0 );
         }
     }
 

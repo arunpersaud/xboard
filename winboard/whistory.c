@@ -92,9 +92,9 @@ static VOID HighlightMove( int index, BOOL highlight )
         CHARFORMAT cf;
         HWND hMemo = GetDlgItem( moveHistoryDialog, IDC_MoveHistory );
 
-        SendMessage( hMemo,
-            EM_SETSEL,
-            histMoves[index].memoOffset,
+        SendMessage( hMemo, 
+            EM_SETSEL, 
+            histMoves[index].memoOffset, 
             histMoves[index].memoOffset + histMoves[index].memoLength );
 
 
@@ -122,7 +122,7 @@ static BOOL OnlyCurrentPositionChanged()
 
     if( lastFirst >= 0 &&
         lastLast >= lastFirst &&
-        lastCurrent >= lastFirst &&
+        lastCurrent >= lastFirst && 
         currFirst == lastFirst &&
         currLast == lastLast &&
         currCurrent >= 0 &&
@@ -225,12 +225,12 @@ static VOID AppendMoveToMemo( int index )
 
     /* PV info (if any) */
     if( appData.showEvalInMoveHistory && currPvInfo[index].depth > 0 ) {
-        sprintf( buf, "{%s%.2f/%d} ",
+        sprintf( buf, "{%s%.2f/%d} ", 
             currPvInfo[index].score >= 0 ? "+" : "",
             currPvInfo[index].score / 100.0,
             currPvInfo[index].depth );
 
-        AppendToMemo( buf, flags,
+        AppendToMemo( buf, flags, 
             color == DEFAULT_COLOR ? GetSysColor(COLOR_GRAYTEXT) : color );
     }
 }
@@ -389,7 +389,7 @@ LRESULT CALLBACK HistoryDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPAR
     case WM_GETMINMAXINFO:
         {
             MINMAXINFO * mmi = (MINMAXINFO *) lParam;
-
+        
             mmi->ptMinTrackSize.x = 100;
             mmi->ptMinTrackSize.y = 100;
         }
@@ -418,7 +418,7 @@ LRESULT CALLBACK HistoryDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPAR
 VOID MoveHistoryPopUp()
 {
   FARPROC lpProc;
-
+  
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowMoveHistory, MF_CHECKED);
 
   if( moveHistoryDialog ) {

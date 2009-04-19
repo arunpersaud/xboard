@@ -454,6 +454,10 @@
 #define OPT_VariantAtomic               1513
 #define OPT_VariantNormal               1514
 #define OPT_VariantFairy                1515
+#define OPT_VariantFRC                  1516
+#define OPT_VariantCylinder             1517
+#define OPT_VariantFalcon               1518
+#define OPT_VariantCRC                  1519
 #define IDC_Files                       1550
 #define IDC_Ranks                       1551
 #define IDC_Holdings                    1552

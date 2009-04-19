@@ -251,6 +251,12 @@ typedef struct _CPS {
     int scoreIsAbsolute; /* [AS] 0=don't know (standard), 1=score is always from white side */
     int isUCI;           /* [AS] 0=no (Winboard), 1=UCI (requires Polyglot) */
     int hasOwnBookUCI;   /* [AS] 0=use GUI or Polyglot book, 1=has own book */
+
+    /* [HGM] time odds */
+    int timeOdds;   /* factor through which we divide time for this engine  */
+    int debug;      /* [HGM] ignore engine debug lines starting with '#'    */
+    int maxNrOfSessions; /* [HGM] secondary TC: max args in 'level' command */
+    int accumulateTC; /* [HGM] secondary TC: how to handle extra sessions   */
 } ChessProgramState;
 
 extern ChessProgramState first, second;

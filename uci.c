@@ -60,7 +60,7 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
         else {
             strcpy( polyglotIniFile, iniDir );
         }
-
+        
         strcat( polyglotIniFile, "\\" );
         strcat( polyglotIniFile, iniFileName );
 
@@ -80,7 +80,7 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
 
             fprintf( f, "Book = %s\n", appData.usePolyglotBook ? "true" : "false" );
             fprintf( f, "BookFile = %s\n", appData.polyglotBook );
-
+        
             fprintf( f, "[Engine]\n" );
             fprintf( f, "Hash = %d\n", appData.defaultHashSize );
 

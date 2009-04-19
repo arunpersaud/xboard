@@ -65,6 +65,7 @@ extern char installDir[];
 extern HWND hCommPort;    /* currently open comm port */
 extern DCB dcb;
 extern BOOLEAN chessProgram;
+extern startedFromPositionFile; /* [HGM] loadPos */
 
 /* types */
 
@@ -773,7 +774,10 @@ VariantWhichRadio(HWND hDlg)
          (IsDlgButtonChecked(hDlg, OPT_VariantSuicide) ? VariantSuicide :
          (IsDlgButtonChecked(hDlg, OPT_VariantAtomic) ? VariantAtomic :
          (IsDlgButtonChecked(hDlg, OPT_VariantShatranj) ? VariantShatranj :
-          VariantNormal )))))))))))))));
+         (IsDlgButtonChecked(hDlg, OPT_VariantFRC) ? VariantFischeRandom :
+         (IsDlgButtonChecked(hDlg, OPT_VariantCylinder) ? VariantCylinder :
+         (IsDlgButtonChecked(hDlg, OPT_VariantFalcon) ? VariantFalcon :
+          VariantNormal ))))))))))))))))));
 }
 
 LRESULT CALLBACK
@@ -836,6 +840,9 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case VariantShatranj:
       CheckDlgButton(hDlg, OPT_VariantShatranj, TRUE);
       break;
+    case VariantFischeRandom:
+      CheckDlgButton(hDlg, OPT_VariantFRC, TRUE);
+      break;
     }
 
     SetDlgItemInt( hDlg, IDC_Files, -1, TRUE );
@@ -874,6 +881,8 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if(!n2_ok) appData.NrRanks = -1;
       if(!n3_ok) appData.holdingsSize = -1;
 
+      startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
+      appData.pieceToCharTable = NULL;
       Reset(TRUE, TRUE);
 
       return TRUE;

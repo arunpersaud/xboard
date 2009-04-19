@@ -33,9 +33,9 @@
 
 VOID RestoreWindowPlacement( HWND hWnd, WindowPlacement * wp )
 {
-    if( wp->x != CW_USEDEFAULT ||
+    if( wp->x != CW_USEDEFAULT || 
         wp->y != CW_USEDEFAULT ||
-        wp->width != CW_USEDEFAULT ||
+        wp->width != CW_USEDEFAULT || 
         wp->height != CW_USEDEFAULT )
     {
 	WINDOWPLACEMENT stWP;

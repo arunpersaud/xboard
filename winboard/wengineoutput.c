@@ -139,12 +139,12 @@ static VOID HideControl( HWND hDlg, int id )
 
     GetWindowRect( hControl, &rc );
 
-    /*
+    /* 
         Avoid hiding an already hidden control, because that causes many
         unnecessary WM_ERASEBKGND messages!
     */
     if( rc.left != HIDDEN_X || rc.top != HIDDEN_Y ) {
-    SetControlPos( hDlg, id, 20000, 20000, 100, 100 );
+        SetControlPos( hDlg, id, 20000, 20000, 100, 100 );
     }
 }
 
@@ -290,8 +290,8 @@ static VOID ResizeWindowControls( HWND hDlg, int mode )
     /* Resize controls */
     if( mode == 0 ) {
         /* One engine */
-        PositionControlSet( hDlg, H_MARGIN, V_MARGIN,
-            clientWidth,
+        PositionControlSet( hDlg, H_MARGIN, V_MARGIN, 
+            clientWidth, 
             clientHeight - V_MARGIN - LABEL_V_DISTANCE - headerHeight- V_MARGIN,
             IDC_Color1, IDC_EngineLabel1, IDC_Engine1_NPS, IDC_EngineMemo1, IDC_StateIcon1, IDC_StateData1 );
 
@@ -425,7 +425,7 @@ static VOID UpdateControls( EngineOutputData * ed )
     BOOL isPondering = FALSE;
 
     char s_label[MAX_NAME_LENGTH + 32];
-
+    
     char * name = ed->name;
 
     /* Label */
@@ -438,32 +438,32 @@ static VOID UpdateControls( EngineOutputData * ed )
 
 #ifdef SHOW_PONDERING
     if( IsEnginePondering( ed->which ) ) {
-            char buf[8];
+        char buf[8];
 
-            buf[0] = '\0';
+        buf[0] = '\0';
 
-            if( ed->hint != 0 && *ed->hint != '\0' ) {
-                strncpy( buf, ed->hint, sizeof(buf) );
-                buf[sizeof(buf)-1] = '\0';
-            }
-            else if( ed->pv != 0 && *ed->pv != '\0' ) {
-                char * sep = strchr( ed->pv, ' ' );
-                int buflen = sizeof(buf);
-
-                if( sep != NULL ) {
-                    buflen = sep - ed->pv + 1;
-                    if( buflen > sizeof(buf) ) buflen = sizeof(buf);
-                }
-
-                strncpy( buf, ed->pv, buflen );
-                buf[ buflen-1 ] = '\0';
-            }
-
-            SetEngineState( ed->which, STATE_PONDERING, buf );
+        if( ed->hint != 0 && *ed->hint != '\0' ) {
+            strncpy( buf, ed->hint, sizeof(buf) );
+            buf[sizeof(buf)-1] = '\0';
         }
+        else if( ed->pv != 0 && *ed->pv != '\0' ) {
+            char * sep = strchr( ed->pv, ' ' );
+            int buflen = sizeof(buf);
+
+            if( sep != NULL ) {
+                buflen = sep - ed->pv + 1;
+                if( buflen > sizeof(buf) ) buflen = sizeof(buf);
+            }
+
+            strncpy( buf, ed->pv, buflen );
+            buf[ buflen-1 ] = '\0';
+        }
+
+        SetEngineState( ed->which, STATE_PONDERING, buf );
+    }
     else if( gameMode == TwoMachinesPlay ) {
-            SetEngineState( ed->which, STATE_THINKING, "" );
-        }
+        SetEngineState( ed->which, STATE_THINKING, "" );
+    }
     else if( gameMode == AnalyzeMode || gameMode == AnalyzeFile ) {
         char buf[64];
         int time_secs = ed->time / 100;
@@ -591,7 +591,7 @@ LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
     case WM_GETMINMAXINFO:
         {
             MINMAXINFO * mmi = (MINMAXINFO *) lParam;
-
+        
             mmi->ptMinTrackSize.x = 100;
             mmi->ptMinTrackSize.y = 160;
         }
@@ -628,7 +628,7 @@ VOID EngineOutputPopUp()
   if( needInit ) {
       InitializeEngineOutput();
   }
-
+  
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowEngineOutput, MF_CHECKED);
 
   if( engineOutputDialog ) {

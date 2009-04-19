@@ -196,12 +196,11 @@ ChessMove PromoCharToMoveType(whiteOnMove, promoChar)
 }
 
 char pieceToChar[] = {
-                        'P', 'N', 'B', 'R', 'Q', 'F', 
-    'W', 'E', 'M', 'O', 'U', 'H', 'A', 'C', 'G', 'S',
-    'K',                'p', 'n', 'b', 'r', 'q', 'f', 
-    'w', 'e', 'm', 'o', 'u', 'h', 'a', 'c', 'g', 's',
-    'k', 'x'
-  };
+                        'P', 'N', 'B', 'R', 'Q', 'F', 'E', 'A', 'C', 'W', 'M', 
+                        'O', 'H', 'I', 'J', 'G', 'D', 'V', 'S', 'L', 'U', 'K',
+                        'p', 'n', 'b', 'r', 'q', 'f', 'e', 'a', 'c', 'w', 'm', 
+                        'o', 'h', 'i', 'j', 'g', 'd', 'v', 's', 'l', 'u', 'k', 
+                        'x' };
 
 char PieceToChar(p)
      ChessSquare p;
@@ -210,7 +209,7 @@ char PieceToChar(p)
     return pieceToChar[(int) p];
 }
 
-int PieceToNumber(p)
+int PieceToNumber(p)  /* [HGM] holdings: count piece type, ignoring non-participating piece types */
      ChessSquare p;
 {
     int i=0;
@@ -519,8 +518,8 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
               m++;
 
             /* Capablanca Archbishop continues as Knight                  */
-            case WhiteCardinal:
-            case BlackCardinal:
+            case WhiteAngel:
+            case BlackAngel:
               m++;
 
             /* Shogi Bishops are ordinary Bishops */
@@ -570,8 +569,8 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
               break;
 
             /* Shogi Dragon King has to continue as Ferz after Rook moves */
-            case SHOGI WhiteMarshall:
-            case SHOGI BlackMarshall:
+            case SHOGI WhiteDragon:
+            case SHOGI BlackDragon:
               m++;
 
             /* Capablanca Chancellor sets flag to continue as Knight      */
@@ -643,7 +642,7 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
                   for (fs = -1; fs <= 1; fs += 2) {
                       rt = rf + rs;
                       ft = ff + fs;
-                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
+                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
                       if (!SameColor(board[rf][ff], board[rt][ft]) &&
                           (gameInfo.variant != VariantXiangqi || InPalace(rt, ft) ) )
                                callback(board, flags, NormalMove,
@@ -669,6 +668,24 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
 			     rf, ff, rt, ft, closure);
 		}
 	      break;
+
+	    case WhiteNightrider:
+	    case BlackNightrider:
+	      for (i = -1; i <= 1; i += 2)
+		for (j = -1; j <= 1; j += 2)
+		  for (s = 1; s <= 2; s++) {  int k;
+                    for(k=1;; k++) {
+		      rt = rf + k*i*s;
+		      ft = ff + k*j*(3-s);
+                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
+		      if (SameColor(board[rf][ff], board[rt][ft])) break;
+		      callback(board, flags, NormalMove,
+			       rf, ff, rt, ft, closure);
+		      if (board[rt][ft] != EmptySquare) break;
+                    }
+		  }
+	      break;
+
 	  }
       }
 }
@@ -736,8 +753,9 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
      VOIDSTAR closure;
 {
     GenLegalClosure cl;
-    int ff, ft;
+    int ff, ft, k, left, right;
     int ignoreCheck = (flags & F_IGNORE_CHECK) != 0;
+    ChessSquare wKing = WhiteKing, bKing = BlackKing;
 
     cl.cb = callback;
     cl.cl = closure;
@@ -747,10 +765,14 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
 	CheckTest(board, flags, -1, -1, -1, -1, FALSE)) return TRUE;
 
     /* Generate castling moves */
+    if(gameInfo.variant == VariantKnightmate) { /* [HGM] Knightmate */
+        wKing = WhiteUnicorn; bKing = BlackUnicorn;
+    }
+
     for (ff = BOARD_WIDTH>>1; ff >= (BOARD_WIDTH-1)>>1; ff-- /*ics wild 1*/) {
 	if ((flags & F_WHITE_ON_MOVE) &&
 	    (flags & F_WHITE_KCASTLE_OK) &&
-            board[0][ff] == WhiteKing &&
+            board[0][ff] == wKing &&
             board[0][ff + 1] == EmptySquare &&
             board[0][ff + 2] == EmptySquare &&
             board[0][BOARD_RGHT-3] == EmptySquare &&
@@ -769,7 +791,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
 	}
 	if ((flags & F_WHITE_ON_MOVE) &&
 	    (flags & F_WHITE_QCASTLE_OK) &&
-	    board[0][ff] == WhiteKing &&
+            board[0][ff] == wKing &&
 	    board[0][ff - 1] == EmptySquare &&
 	    board[0][ff - 2] == EmptySquare &&
             board[0][BOARD_LEFT+2] == EmptySquare &&
@@ -788,7 +810,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
 	}
 	if (!(flags & F_WHITE_ON_MOVE) &&
 	    (flags & F_BLACK_KCASTLE_OK) &&
-	    board[BOARD_HEIGHT-1][ff] == BlackKing &&
+            board[BOARD_HEIGHT-1][ff] == bKing &&
 	    board[BOARD_HEIGHT-1][ff + 1] == EmptySquare &&
 	    board[BOARD_HEIGHT-1][ff + 2] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_RGHT-3] == EmptySquare &&
@@ -807,7 +829,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
 	}
 	if (!(flags & F_WHITE_ON_MOVE) &&
 	    (flags & F_BLACK_QCASTLE_OK) &&
-	    board[BOARD_HEIGHT-1][ff] == BlackKing &&
+            board[BOARD_HEIGHT-1][ff] == bKing &&
 	    board[BOARD_HEIGHT-1][ff - 1] == EmptySquare &&
 	    board[BOARD_HEIGHT-1][ff - 2] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_LEFT+2] == EmptySquare &&
@@ -818,7 +840,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
 	    (ignoreCheck ||
 	     (!CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ff - 1, FALSE) &&
               !CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, BOARD_LEFT+3,      FALSE) &&
-	      !CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ff - 1, FALSE)))) {
+              !CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ff - 2, FALSE)))) {
 
 	    callback(board, flags,
 		     ff==BOARD_WIDTH>>1 ? BlackQueenSideCastle : BlackQueenSideCastleWild,
@@ -826,41 +848,73 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
 	}
     }
 
-    /* PUSH Fabien */
+  if(gameInfo.variant == VariantFischeRandom) {
 
     /* generate all potential FRC castling moves (KxR), ignoring flags */
-    /* [HGM] Tord! Help requested! */
+    /* [HGM] test if the Rooks we find have castling rights */
+
 
     if ((flags & F_WHITE_ON_MOVE) != 0) {
+        ff = castlingRights[2]; /* King file if we have any rights */
+        if(ff > 0) {
+    if (appData.debugMode) {
+        fprintf(debugFP, "FRC castling, %d %d %d %d %d %d\n",
+                castlingRights[0],castlingRights[1],ff,castlingRights[3],castlingRights[4],castlingRights[5]);
+    }
+            ft = castlingRights[0]; /* Rook file if we have H-side rights */
+            left  = ff+1;
+            right = BOARD_RGHT-2;
+            if(ff == BOARD_RGHT-2) left = right = ff-1;    /* special case */
+            for(k=left; k<=right && ft >= 0; k++) /* first test if blocked */
+                if(k != ft && board[0][k] != EmptySquare) ft = -1;
+            for(k=left; k<right && ft >= 0; k++) /* then if not checked */
+                if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = -1;
+            if(ft >= 0)
+                callback(board, flags, WhiteHSideCastleFR, 0, ff, 0, ft, closure);
 
-       for (ff = BOARD_LEFT+1; ff < BOARD_RGHT-1; ff++) {
-          if (board[0][ff] == WhiteKing) {
-             for (ft = BOARD_LEFT+0; ft < BOARD_RGHT; ft++) {
-                if (board[0][ft] == WhiteRook) {
-                   callback(board, flags, 
-                            (ft > ff) ? WhiteHSideCastleFR : WhiteASideCastleFR,
-                            0, ff, 0, ft, closure);
-                }
-             }
-          }
-       }
+            ft = castlingRights[1]; /* Rook file if we have A-side rights */
+            left  = BOARD_LEFT+2;
+            right = ff-1;
+            if(ff <= BOARD_LEFT+2) { left = ff+1; right = BOARD_LEFT+3; }
+            for(k=left; k<=right && ft >= 0; k++) /* first test if blocked */
+                if(k != ft && board[0][k] != EmptySquare) ft = -1;
+            if(ff > BOARD_LEFT+2) 
+            for(k=left+1; k<=right && ft >= 0; k++) /* then if not checked */
+                if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = -1;
 
+            if(ft >= 0)
+                callback(board, flags, WhiteASideCastleFR, 0, ff, 0, ft, closure);
+        }
     } else {
+        ff = castlingRights[5]; /* King file if we have any rights */
+        if(ff > 0) {
+            ft = castlingRights[3]; /* Rook file if we have H-side rights */
+            left  = ff+1;
+            right = BOARD_RGHT-2;
+            if(ff == BOARD_RGHT-2) left = right = ff-1;    /* special case */
+            for(k=left; k<=right && ft >= 0; k++) /* first test if blocked */
+                if(k != ft && board[BOARD_HEIGHT-1][k] != EmptySquare) ft = -1;
+            for(k=left; k<right && ft >= 0; k++) /* then if not checked */
+                if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = -1;
+            if(ft >= 0)
+                callback(board, flags, BlackHSideCastleFR, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
 
-       for (ff = BOARD_LEFT+1; ff < BOARD_RGHT-1; ff++) {
-          if (board[BOARD_HEIGHT-1][ff] == BlackKing) {
-             for (ft = BOARD_LEFT+0; ft < BOARD_RGHT; ft++) {
-                if (board[BOARD_HEIGHT-1][ft] == BlackRook) {
-                   callback(board, flags, 
-                            (ft > ff) ? BlackHSideCastleFR : BlackASideCastleFR,
-                            BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
-                }
-             }
-          }
-       }
+            ft = castlingRights[4]; /* Rook file if we have A-side rights */
+            left  = BOARD_LEFT+2;
+            right = ff-1;
+            if(ff <= BOARD_LEFT+2) { left = ff+1; right = BOARD_LEFT+3; }
+            for(k=left; k<=right && ft >= 0; k++) /* first test if blocked */
+                if(k != ft && board[BOARD_HEIGHT-1][k] != EmptySquare) ft = -1;
+            if(ff > BOARD_LEFT+2) 
+            for(k=left+1; k<=right && ft >= 0; k++) /* then if not checked */
+                if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = -1;
+
+            if(ft >= 0)
+                callback(board, flags, BlackASideCastleFR, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
+        }
     }
 
-    /* POP Fabien */
+  }
 
     return FALSE;
 }
@@ -976,9 +1030,9 @@ void LegalityTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
 {
     register LegalityTestClosure *cl = (LegalityTestClosure *) closure;
 
-    if (appData.debugMode) {
-        fprintf(debugFP, "Legality test: %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
-    }
+//    if (appData.debugMode) {
+//        fprintf(debugFP, "Legality test: %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
+//    }
     if (rf == cl->rf && ff == cl->ff && rt == cl->rt && ft == cl->ft)
       cl->kind = kind;
 }
@@ -989,8 +1043,20 @@ ChessMove LegalityTest(board, flags, epfile, castlingRights, rf, ff, rt, ft, pro
      int rf, ff, rt, ft, promoChar;
      char castlingRights[];
 {
-    LegalityTestClosure cl;
+    LegalityTestClosure cl; ChessSquare piece = board[rf][ff];
     
+    if (appData.debugMode) {
+        int i;
+        for(i=0; i<6; i++) fprintf(debugFP, "%d ", castlingRights[i]);
+        fprintf(debugFP, "Legality test? %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
+    }
+    /* [HGM] Lance, Cobra and Falcon are wildcard pieces; consider all their moves legal */
+    /* (perhaps we should disallow moves that obviously leave us in check?)              */
+    if(piece == WhiteFalcon || piece == BlackFalcon ||
+       piece == WhiteCobra  || piece == BlackCobra  ||
+       piece == WhiteLance  || piece == BlackLance)
+        return NormalMove;
+
     cl.rf = rf;
     cl.ff = ff;
     cl.rt = rt;
@@ -1139,25 +1205,31 @@ void Disambiguate(board, flags, epfile, closure)
 
     if (appData.debugMode) {
         fprintf(debugFP, "Disambiguate in:  %d(%d,%d)-(%d,%d) = %d (%c)\n",
-        closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,closure->promoCharIn,closure->promoCharIn);
+                             closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
+                             closure->promoCharIn,closure->promoCharIn);
     }
     if(gameInfo.variant == VariantShogi) {
         /* [HGM] Shogi promotions. '=' means defer */
         if(closure->rfIn != DROP_RANK && closure->kind == NormalMove) {
             ChessSquare piece = closure->piece;
-
+#if 0
     if (appData.debugMode) {
         fprintf(debugFP, "Disambiguate A:   %d(%d,%d)-(%d,%d) = %d (%c)\n",
-        closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,closure->promoCharIn,closure->promoCharIn);
+                          closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
+                          closure->promoCharIn,closure->promoCharIn);
     }
+#endif
             if(c != NULLCHAR && c != 'x' && c != '+' && c != '=' &&
                ToUpper(PieceToChar(PROMOTED piece)) != ToUpper(c) ) 
                     closure->kind = IllegalMove;
             else if(flags & F_WHITE_ON_MOVE) {
+#if 0
     if (appData.debugMode) {
         fprintf(debugFP, "Disambiguate B:   %d(%d,%d)-(%d,%d) = %d (%c)\n",
-        closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,closure->promoCharIn,closure->promoCharIn);
+                          closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
+                          closure->promoCharIn,closure->promoCharIn);
     }
+#endif
                 if( (int) piece < (int) WhiteWazir &&
                      (closure->rf > BOARD_HEIGHT-4 || closure->rt > BOARD_HEIGHT-4) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && closure->rt > BOARD_HEIGHT-2 ||
@@ -1191,10 +1263,13 @@ void Disambiguate(board, flags, epfile, closure)
 	    closure->kind = IllegalMove;
 	}
     }
+#if 0
     if (appData.debugMode) {
         fprintf(debugFP, "Disambiguate C:   %d(%d,%d)-(%d,%d) = %d (%c)\n",
-        closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,closure->promoCharIn,closure->promoCharIn);
+                          closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
+                          closure->promoCharIn,closure->promoCharIn);
     }
+#endif
     /* [HGM] returns 'q' for optional promotion, 'n' for mandatory */
     if(closure->promoCharIn != '=')
         closure->promoChar = ToLower(PieceToChar(PromoPiece(closure->kind)));
@@ -1299,7 +1374,7 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
     if(PieceToChar(piece)=='~') piece = (ChessSquare)(DEMOTED piece);
 
   if (appData.debugMode)
-          fprintf(debugFP, "CoordsToAlgebraic, piece=%d\n", (int)piece);
+          fprintf(debugFP, "CoordsToAlgebraic, piece=%d (%d,%d)-(%d,%d) %c\n", (int)piece,ff,rf,ft,rt,promoChar );
     switch (piece) {
       case WhitePawn:
       case BlackPawn:
@@ -1330,6 +1405,8 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 	}
 	/* Use promotion suffix style "=Q" */
 	*outp = NULLCHAR;
+  if (appData.debugMode)
+          fprintf(debugFP, "movetype=%d, promochar=%d=%c\n", (int)kind, promoChar, promoChar);
         if (promoChar != NULLCHAR) {
             if(gameInfo.variant == VariantShogi) {
                 /* [HGM] ... but not in Shogi! */
@@ -1470,8 +1547,12 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
         return cl.kind;
 	
       /* [HGM] Always long notation for fairies we don't know */
-      case WhiteNightrider:
-      case BlackNightrider:
+      case WhiteFalcon:
+      case BlackFalcon:
+      case WhiteSilver:
+      case BlackSilver:
+      case WhiteLance:
+      case BlackLance:
       case WhiteGrasshopper:
       case BlackGrasshopper:
       case EmptySquare:

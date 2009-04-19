@@ -405,7 +405,7 @@ int ZippyControl(buf, i)
 
     /* Possibly reject Crafty as opponent */
     if (appData.zippyPlay && appData.zippyNoplayCrafty && forwardMostMove < 4
-	&& looking_at(buf, i, "* kibitzes: Hello from Crafty"))
+	&& looking_at(buf, i, "* kibitzes: Hello from Crafty")) 
     {
         player = StripHighlightAndTitle(star_match[0]);
 	if ((gameMode == IcsPlayingWhite &&
@@ -507,7 +507,7 @@ int ZippyControl(buf, i)
     }
 
     if (looking_at(buf, i, "* tells you: *") ||
-	looking_at(buf, i, "* says: *"))
+	looking_at(buf, i, "* says: *")) 
     {
 	player = StripHighlightAndTitle(star_match[0]);
 	if (appData.zippyPassword[0] != NULLCHAR &&
@@ -581,7 +581,7 @@ int ZippyConverse(buf, i)
 
     /* Shouts and emotes */
     if (looking_at(buf, i, "--> * *") ||
-	looking_at(buf, i, "* shouts: *"))
+	looking_at(buf, i, "* shouts: *")) 
     {
       if (appData.zippyTalk) {
 	char *player = StripHighlightAndTitle(star_match[0]);
@@ -768,7 +768,7 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
      char *srated, *swild, *sbase, *sincrement, *opponent;
 {
     char buf[MSG_SIZ];
-    int base, increment;
+    int base, increment, i=0;
     char rated;
     VariantClass variant;
     char *varname;
@@ -790,10 +790,13 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
 	SendToICS(buf);
 	return;
     }
-    if (StrStr(appData.zippyVariants, varname) == NULL) {
+    if (StrStr(appData.zippyVariants, varname) == NULL ||
+                (i=first.protocolVersion) != 1 && StrStr(first.variants, varname) == NULL /* [HGM] zippyvar */
+                                                          ) {
         sprintf(buf,
 	 "%stell %s This computer can't play %s [%s], only %s\n%sdecline %s\n",
-		ics_prefix, opponent, swild, varname, appData.zippyVariants,
+		ics_prefix, opponent, swild, varname, 
+                i ? first.variants : appData.zippyVariants,                               /* [HGM] zippyvar */
 		ics_prefix, opponent);
 	SendToICS(buf);
 	return;

@@ -63,7 +63,7 @@ HGLOBAL ExportGameListAsText();
 VOID CopyGameListToClipboard()
 {
     HGLOBAL hMem = ExportGameListAsText();
-
+    
     if( hMem != NULL ) {
         /* Assign memory block to clipboard */
         BOOL ok = OpenClipboard( hwndMain );

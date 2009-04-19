@@ -330,7 +330,7 @@ char * GameListLine( int number, GameInfo * gameInfo )
     char buffer[1024];
     char * buf = buffer;
     char * glt = appData.gameListTags;
-
+    
     buf += sprintf( buffer, "%d.", number );
 
     while( *glt != '\0' ) {
@@ -408,7 +408,7 @@ char * GameListLineFull( int number, GameInfo * gameInfo )
     char * round = gameInfo->round ? gameInfo->round : "?";
     char * date = gameInfo->date ? gameInfo->date : "?";
     char * oob = gameInfo->outOfBook ? gameInfo->outOfBook : "";
-
+    
     int len = 64 + strlen(event) + strlen(site) + strlen(white) + strlen(black) + strlen(date) + strlen(oob);
 
     char *ret = (char *) malloc(len);
