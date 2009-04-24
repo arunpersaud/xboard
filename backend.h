@@ -193,12 +193,12 @@ int ics_type;
 		/* place holder
 		 * or dummy types for other compiler
 		 */
-		#define u64 unsigned __int64
-		#define s64 signed __int64
+		#define u64 unsigned long long
+		#define s64 signed long long
 		#define u64Display "%I64u"
 		#define s64Display "%I64d"
-		#define u64Const(c) (c ## UI64)
-		#define s64Const(c) (c ## I64)
+		#define u64Const(c) (c ## ull)
+		#define s64Const(c) (c ## ll)
 	#endif
 #else
 	/* GNU gcc */
