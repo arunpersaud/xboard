@@ -9,17 +9,46 @@ dnl| it portable to sites and systems other than your own), and run autoconf
 dnl| to regenerate configure.  Then submit your changes to be folded into
 dnl| the standard version of xboard.
 
-AC_INIT([xboard],[4.3])
-AM_INIT_AUTOMAKE
-AC_PROG_CC
-AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([
-Makefile
-])
-AC_OUTPUT
 PRODUCT=xboard
-#VERSION=4.4  # version is already defined
+VERSION=4.4  
 PATCHLEVEL=0e
+
+AC_INIT([PRODUCT],[VERSION-PATCHLEVEL])
+AM_INIT_AUTOMAKE
+
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile cmail xboard.texinfo],
+[test -z "$CONFIG_HEADERS" || date > stamp-h 
+chmod 755 cmail
+])
+
+dnl | a bunch of templates for defines used below
+AH_TEMPLATE([FIRST_PTY_LETTER],[template])
+AH_TEMPLATE([HAVE_FCNTL_H],[template])
+AH_TEMPLATE([HAVE_GETHOSTNAME],[template])
+AH_TEMPLATE([HAVE_GETTIMEOFDAY],[template])
+AH_TEMPLATE([HAVE_RANDOM],[template])
+AH_TEMPLATE([HAVE_SYS_SOCKET_H],[template])
+AH_TEMPLATE([IBMRTAIX],[template])
+AH_TEMPLATE([LAST_PTY_LETTER],[template])
+AH_TEMPLATE([PATCHLEVEL],[template])
+AH_TEMPLATE([PRODUCT],[template])
+AH_TEMPLATE([PTY_ITERATION],[template])
+AH_TEMPLATE([PTY_NAME_SPRINTF],[template])
+AH_TEMPLATE([PTY_OPEN],[template])
+AH_TEMPLATE([PTY_TTY_NAME_SPRINTF],[template])
+AH_TEMPLATE([REMOTE_SHELL],[template])
+AH_TEMPLATE([RTU],[template])
+AH_TEMPLATE([UNIPLUS],[template])
+AH_TEMPLATE([USE_PTYS],[template])
+AH_TEMPLATE([VERSION],[template])
+AH_TEMPLATE([X_WCHAR],[template])
+AH_TEMPLATE([ATTENTION],[template])
+AH_TEMPLATE([DEFINED_SYS_ERRLIST],[template])
+AH_TEMPLATE([HAVE_LIBXPM],[template])
+AH_TEMPLATE([USE_XAW3D],[template])
+AH_TEMPLATE([X_LOCALE],[template])
+
 
 
 if test -z "$CFLAGS" ; then
@@ -45,9 +74,6 @@ AC_CHECK_PROG(NROFF, nroff, [nroff -man], cat)
 AC_SUBST(NROFFFLAGS)
 AC_PATH_PROGS(AWKPATH, awk mawk gawk nawk)
 AC_PATH_PROGS(PERLPATH, perl)
-
-
-
 
 AC_HEADER_STDC
 AC_HEADER_TIME
@@ -117,8 +143,6 @@ if test "$xaw_headers" == "no" ; then
    exit 1
 
 fi
-
-
 
 
 AC_CANONICAL_HOST
@@ -341,12 +365,15 @@ else
 fi])
 AC_DEFINE_UNQUOTED(USE_PTYS, $USE_PTYS)
 
+
+dnl | define not to build zippy as a default, so that autoheader is happy
+AC_DEFINE(ZIPPY, 0,[should zippy be enabled])
 AC_ARG_ENABLE(zippy, 
 [  --enable-zippy          support interfacing a chess program to ICS (default)
   --disable-zippy         do not support interfacing a chess program to ICS],
 [enable_zippy="$enableval"], [enable_zippy="yes"])
 if test "$enable_zippy" = yes; then
-  AC_DEFINE(ZIPPY, 1)
+  AC_DEFINE(ZIPPY, 1,[should zippy be enabled])
   ZIPPY_O=zippy.o
   ZIPPY_H=zippy.h
 fi
@@ -368,7 +395,4 @@ AC_SUBST(PRODUCT)
 AC_SUBST(VERSION)
 AC_SUBST(PATCHLEVEL)
 
-AC_OUTPUT(cmail xboard.texinfo,
-[test -z "$CONFIG_HEADERS" || date > stamp-h
-chmod 755 cmail
-])
+AC_OUTPUT
