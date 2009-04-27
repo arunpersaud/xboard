@@ -9,18 +9,15 @@ dnl| it portable to sites and systems other than your own), and run autoconf
 dnl| to regenerate configure.  Then submit your changes to be folded into
 dnl| the standard version of xboard.
 
+dnl| need to change these here and in AC_INIT
 PRODUCT=xboard
 VERSION=4.4  
 PATCHLEVEL=0e
 
-AC_INIT([PRODUCT],[VERSION-PATCHLEVEL])
+AC_INIT([xboard],[4.4.0e],[bug-xboard@gnu.org])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile cmail xboard.texinfo],
-[test -z "$CONFIG_HEADERS" || date > stamp-h 
-chmod 755 cmail
-])
 
 dnl | a bunch of templates for defines used below
 AH_TEMPLATE([FIRST_PTY_LETTER],[template])
@@ -59,10 +56,15 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_ISC_POSIX
 AC_PROG_INSTALL
-AC_CHECK_PROGS(LEX, lex flex, lex_not_found)
-if test "$LEX" != lex_not_found ; then
-  AC_DECL_YYTEXT
+
+AC_PROG_LEX
+if test "$LEX" != flex; then
+  LEX="$SHELL $missing_dir/missing flex"
+  AC_SUBST([LEX_OUTPUT_ROOT], [lex.yy])
+  AC_SUBST([LEXLIB], [''])
 fi
+
+
 AC_CHECK_PROGS(RSH, remsh rsh, rsh)
 AC_CHECK_PROGS(MINFO, makeinfo, makeinfo_not_found)
 if test "$MINFO" == makeinfo_not_found ; then
@@ -395,4 +397,7 @@ AC_SUBST(PRODUCT)
 AC_SUBST(VERSION)
 AC_SUBST(PATCHLEVEL)
 
+AC_CONFIG_FILES([Makefile cmail xboard.texinfo])
+AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])
+AC_CONFIG_COMMANDS([chmod-cmail],[chmod 755 cmail])
 AC_OUTPUT
