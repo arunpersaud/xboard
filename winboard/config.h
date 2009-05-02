@@ -27,9 +27,7 @@
 #define HAVE_GETTIMEOFDAY 0
 
 /* Use our own random() defined in winboard.c. */
-#define HAVE_RANDOM 1
-#define random myrandom
-#define srandom mysrandom
+#define HAVE_RANDOM 0
 
 #define HAVE_SYS_SOCKET_H 0
 
@@ -130,4 +128,3 @@
 #define SCF_DEFAULT 0x0000
 #define SCF_ALL 0x0004
 #endif
-

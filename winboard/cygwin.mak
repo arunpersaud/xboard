@@ -27,7 +27,7 @@ INCLUDES= -I. -I..
 CVARS= $(INCLUDES) $(cygwin)
 CC = gcc $(CVARS)
 WCC = $(CC) -mwindows $(linkdebug)
-HC="/c/program files/help workshop/hcrtf.exe" -xn
+HC="c:/program files/help workshop/hcrtf.exe" -xn
 
 all: $(proj).exe
 
