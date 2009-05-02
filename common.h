@@ -1,6 +1,6 @@
 /*
  * common.h -- Common definitions for X and Windows NT versions of XBoard
- * $Id$
+ * $Id: common.h,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
@@ -49,6 +49,7 @@
 #ifndef _COMMON
 #define _COMMON
 
+
 /* Begin compatibility grunge  */
 
 #if defined(__STDC__) || defined(WIN32) || defined(_amigados)
@@ -85,6 +86,8 @@ int pclose(FILE *);
 #define FALSE 0
 #endif
 
+#define UNKNOWN -1 /* [HGM] nps */
+
 #if !HAVE_RANDOM
 # if HAVE_RAND48
 #  define srandom srand48
@@ -99,7 +102,31 @@ int pclose(FILE *);
 
 #define PROTOVER                2       /* engine protocol version */
 
-#define BOARD_SIZE		8
+// [HGM] license: Messages that engines must print to satisfy their license requirements for patented variants
+#define GOTHIC "Gothic Chess (see www.GothicChess.com) is licensed under U.S. Patent #6,481,716 by Ed Trice"
+#define NOFALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
+
+/* [HGM] Some notes about board sizes:
+   In games that allow piece drops, the holdings are considered part of the
+   board, in the leftmost and rightmost two files. This way they are
+   automatically part of the game-history states, and enjoy all display
+   functions (including drag-drop and click-click moves to the regular part
+   of the board). The drawback of this is that the internal numbering of
+   files starts at 2 for the a-file if holdings are displayed. To ensure
+   consistency, this shifted numbering system is used _everywhere_ in the
+   code, and conversion to the 'normal' system only takes place when the
+   file number is converted to or from ASCII (by redefining the character
+   constant 'a'). This works because Winboard only communicates with the
+   outside world in ASCII. In a similar way, the different rank numbering
+   systems (starting at rank 0 or 1) are implemented by redefining '1'.
+*/
+#define BOARD_SIZE              16            /* [HGM] for in declarations */
+#define BOARD_HEIGHT (gameInfo.boardHeight)   // [HGM] made user adjustable 
+#define BOARD_WIDTH  (gameInfo.boardWidth + 2*gameInfo.holdingsWidth)   
+#define BOARD_LEFT   (gameInfo.holdingsWidth) // [HGM] play-board edges     
+#define BOARD_RGHT   (gameInfo.boardWidth + gameInfo.holdingsWidth)
+#define ONE          ('1'-(BOARD_HEIGHT>9))   // [HGM] foremost board rank  
+#define AAA          ('a'-BOARD_LEFT)         // [HGM] leftmost board file  
 #define DROP_RANK               -3
 #define MAX_MOVES		1000
 #define MSG_SIZ			512
@@ -151,7 +178,7 @@ int pclose(FILE *);
 #define ZIPPY_GAME_START ""
 #define ZIPPY_ADJOURN FALSE
 #define ZIPPY_ABORT FALSE
-#define ZIPPY_VARIANTS "normal"
+#define ZIPPY_VARIANTS "normal,fischerandom,crazyhouse,losers,suicide,3checks,twokings,bughouse,shatranj"
 #define ZIPPY_MAX_GAMES 0
 #define ZIPPY_REPLAY_TIMEOUT 120
 
@@ -164,11 +191,28 @@ typedef enum {
   } GameMode;
 
 typedef enum {
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing,
-    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing,
+    /* [HGM] the order here is crucial for Crazyhouse & Shogi: */
+    /* only the first N pieces can go into the holdings, and   */
+    /* promotions in those variants shift P-W to U-S           */
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
+    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan, 
+    WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
+    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
+    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
+    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan, 
+    BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
+    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
     EmptySquare, 
-    ClearBoard, WhitePlay, BlackPlay /*for use on EditPosition menus*/
+    ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
   } ChessSquare;
+
+/* [HGM] some macros that can be used as prefixes to convert piece types */
+#define WHITE_TO_BLACK (int)BlackPawn - (int)WhitePawn + (int)
+#define BLACK_TO_WHITE (int)WhitePawn - (int)BlackPawn + (int)
+#define PROMOTED       (int)WhiteDragon - (int)WhiteRook + (int)
+#define DEMOTED        (int)WhiteRook - (int)WhiteDragon + (int)
+#define SHOGI          (int)EmptySquare + (int)
+
 
 typedef ChessSquare Board[BOARD_SIZE][BOARD_SIZE];
 
@@ -181,8 +225,10 @@ typedef enum {
     BlackHSideCastleFR, BlackASideCastleFR, 
     WhitePromotionKnight, WhitePromotionBishop,
     WhitePromotionRook, WhitePromotionQueen, WhitePromotionKing,
+    WhitePromotionChancellor, WhitePromotionArchbishop, WhitePromotionCentaur,
     BlackPromotionKnight, BlackPromotionBishop,
     BlackPromotionRook, BlackPromotionQueen, BlackPromotionKing,
+    BlackPromotionChancellor, BlackPromotionArchbishop, BlackPromotionCentaur,
     WhiteCapturesEnPassant, BlackCapturesEnPassant,
     WhiteDrop, BlackDrop, 
     NormalMove, AmbiguousMove, IllegalMove, ImpossibleMove,
@@ -227,6 +273,20 @@ typedef enum {
     Variant34,           /* Temporary name for possible future ICC wild 34 */
     Variant35,           /* Temporary name for possible future ICC wild 35 */
     Variant36,           /* Temporary name for possible future ICC wild 36 */
+    VariantShogi,        /* [HGM] added variants */
+    VariantXiangqi,
+    VariantCourier,
+    VariantGothic,
+    VariantCapablanca,
+    VariantKnightmate,
+    VariantFairy,        
+    VariantCylinder,
+    VariantFalcon,
+    VariantCapaRandom,
+    VariantBerolina,
+    VariantJanus,
+    VariantSuper,
+    VariantGreat,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
@@ -254,6 +314,20 @@ typedef enum {
   "wild34", \
   "wild35", \
   "wild36", \
+  "shogi", \
+  "xiangqi", \
+  "courier", \
+  "gothic", \
+  "capablanca", \
+  "knightmate", \
+  "fairy", \
+  "cylinder", \
+  "falcon",\
+  "caparandom",\
+  "berolina",\
+  "janus",\
+  "super",\
+  "great",\
   "unknown" \
 }
 
@@ -407,7 +481,69 @@ typedef struct {
     int firstProtocolVersion;
     int secondProtocolVersion;
     Boolean showButtonBar;
-	Boolean icsEngineAnalyze; 
+    Boolean icsEngineAnalyze; 
+
+    /* [AS] New properties (down to the "ZIPPY" part) */
+    Boolean firstScoreIsAbsolute;  /* If true, engine score is always from white side */
+    Boolean secondScoreIsAbsolute; /* If true, engine score is always from white side */
+    Boolean saveExtendedInfoInPGN; /* If true, saved PGN games contain extended info */
+    Boolean hideThinkingFromHuman; /* If true, program thinking is generated but not displayed in human/computer matches */
+    char * liteBackTextureFile; /* Name of texture bitmap for lite squares */
+    char * darkBackTextureFile; /* Name of texture bitmap for dark squares */
+    int liteBackTextureMode;
+    int darkBackTextureMode;
+    char * renderPiecesWithFont; /* Name of font for rendering chess pieces */
+    char * fontToPieceTable; /* Map to translate font character to chess pieces */
+    int fontBackColorWhite;
+    int fontForeColorWhite;
+    int fontBackColorBlack;
+    int fontForeColorBlack;
+    int fontPieceSize; /* Size of font relative to square (percentage) */
+    int overrideLineGap; /* If >= 0 overrides the lineGap value of the board size properties */
+    int adjudicateLossThreshold; /* Adjudicate a two-machine game if both engines agree the score is below this for 6 plies */
+    int delayBeforeQuit;
+    int delayAfterQuit;
+    char * nameOfDebugFile;
+    char * pgnEventHeader;
+    int defaultFrcPosition;
+    char * gameListTags;
+    Boolean saveOutOfBookInfo;
+    Boolean showEvalInMoveHistory;
+    int evalHistColorWhite;
+    int evalHistColorBlack;
+    Boolean highlightMoveWithArrow;
+    int highlightArrowColor;
+    Boolean useStickyWindows;
+    int adjudicateDrawMoves;
+    Boolean autoDisplayComment;
+    Boolean autoDisplayTags;
+    Boolean firstIsUCI;
+    Boolean secondIsUCI;
+    Boolean firstHasOwnBookUCI;
+    Boolean secondHasOwnBookUCI;
+    char * polyglotDir;
+    Boolean usePolyglotBook;
+    char * polyglotBook;
+    int defaultHashSize;
+    int defaultCacheSizeEGTB;
+    char * defaultPathEGTB;
+
+    /* [HGM] Board size */
+    int NrFiles;
+    int NrRanks;
+    int holdingsSize;
+    int matchPause;
+    char * pieceToCharTable;
+    Boolean allWhite;
+    Boolean upsideDown;
+    Boolean alphaRank;
+    Boolean testClaims;
+    Boolean checkMates;
+    Boolean materialDraws;
+    Boolean trivialDraws;
+    int ruleMoves;
+    int drawRepeats;
+
 #if ZIPPY
     char *zippyLines;
     char *zippyPinhead;
@@ -426,7 +562,49 @@ typedef struct {
     int zippyMaxGames;
     int zippyReplayTimeout; /*seconds*/
 #endif
+
+    char *serverMovesName;
+    Boolean suppressLoadMoves;
+    int serverPause;
+    int firstTimeOdds;
+    int secondTimeOdds;
+    int timeOddsMode;
+    int firstAccumulateTC;
+    int secondAccumulateTC;
+    int firstNPS;
+    int secondNPS;
+    Boolean autoKibitz;
+    int engineComments;
+    char *userName;
+    int rewindIndex;    /* [HGM] autoinc   */
+    int sameColorGames; /* [HGM] alternate */
+    int smpCores;       /* [HGM] SMP       */
+    char *egtFormats;
+    int niceEngines;    /* [HGM] nice      */
+    char *firstLogo;    /* [HGM] logo      */
+    char *secondLogo;
+    Boolean autoLogo;
+    Boolean noGUI;      /* [HGM] fast: suppress all display updates */
 } AppData, *AppDataPtr;
+
+/* [AS] PGN tags (for showing in the game list) */
+#define GLT_EVENT           'e'
+#define GLT_SITE            's'
+#define GLT_DATE            'd'
+#define GLT_ROUND           'o'
+#define GLT_PLAYERS         'p'     /* I.e. white "-" black */
+#define GLT_RESULT          'r'
+#define GLT_WHITE_ELO       'w'
+#define GLT_BLACK_ELO       'b'
+#define GLT_TIME_CONTROL    't'
+#define GLT_VARIANT         'v'
+#define GLT_OUT_OF_BOOK     'a'
+
+#define GLT_DEFAULT_TAGS    "eprd"  /* Event, players, result, date */
+
+#define GLT_ALL_TAGS        "esdoprwbtva"
+
+#define PGN_OUT_OF_BOOK     "Annotator"
 
 extern AppData appData;
 
@@ -447,7 +625,14 @@ typedef struct {
     int whiteRating;    /* -1 if unknown */
     int blackRating;    /* -1 if unknown */
     VariantClass variant;
+    char *outOfBook;    /* [AS] Move and score when engine went out of book */
+    int boardWidth;     /* [HGM] adjustable board size */
+    int boardHeight;
+/* [HGM] For Shogi and Crazyhouse: */
+    int holdingsSize;  /* number of different piece types in holdings       */
+    int holdingsWidth; /* number of files left and right of board, 0 or 2   */
 } GameInfo;
 
 
 #endif
+

@@ -52,3 +52,6 @@
 #define HAVE_USLEEP 0
 
 #undef USE_XAW3D
+
+#define X_LOCALE
+

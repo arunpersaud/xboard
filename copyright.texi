@@ -1,3 +1,5 @@
+@setfilename copyright.info
+
 Copyright @copyright{} 1991 Digital Equipment Corporation, Maynard, Massachusetts.
 
 All Rights Reserved.

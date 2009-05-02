@@ -9,12 +9,18 @@ dnl| it portable to sites and systems other than your own), and run autoconf
 dnl| to regenerate configure.  Then submit your changes to be folded into
 dnl| the standard version of xboard.
 
-AC_INIT(xboard.c)
-AC_CONFIG_HEADER(config.h)
-
+AC_INIT([xboard],[4.3])
+AM_INIT_AUTOMAKE
+AC_PROG_CC
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([
+Makefile
+])
+AC_OUTPUT
 PRODUCT=xboard
-VERSION=4.2
-PATCHLEVEL=pre8
+#VERSION=4.4  # version is already defined
+PATCHLEVEL=0e
+
 
 if test -z "$CFLAGS" ; then
 dnl| Prevent the next macro from setting CFLAGS to -g
@@ -29,17 +35,19 @@ if test "$LEX" != lex_not_found ; then
   AC_DECL_YYTEXT
 fi
 AC_CHECK_PROGS(RSH, remsh rsh, rsh)
+AC_CHECK_PROGS(MINFO, makeinfo, makeinfo_not_found)
+if test "$MINFO" == makeinfo_not_found ; then
+   echo Please install \"makeinfo\"
+   exit 1
+fi
 AC_DEFINE_UNQUOTED(REMOTE_SHELL, "$RSH")
 AC_CHECK_PROG(NROFF, nroff, [nroff -man], cat)
 AC_SUBST(NROFFFLAGS)
 AC_PATH_PROGS(AWKPATH, awk mawk gawk nawk)
 AC_PATH_PROGS(PERLPATH, perl)
 
-AC_ARG_WITH(Xaw3d, [  --with-Xaw3d            use Xaw3d instead of Xaw],
-  [AC_DEFINE(USE_XAW3D)
-   XAW_LIBS="-lXaw3d"],
-  XAW_LIBS="-lXaw")
-AC_SUBST(XAW_LIBS)
+
+
 
 AC_HEADER_STDC
 AC_HEADER_TIME
@@ -68,9 +76,52 @@ if test -n "$no_x" ; then
   exit 1
 fi
 
-AC_CANONICAL_HOST
+AC_CHECK_HEADER(X11/Intrinsic.h,xt="yes",xt="no")
 
-AM_GNU_GETTEXT([external])
+if test "$xt" == "no" ; then
+   echo Xt headers not found
+   exit 1
+fi
+
+AC_ARG_WITH(Xaw3d, [  --with-Xaw3d            use Xaw3d instead of Xaw],
+  with_xaw3d="yes", with_xaw3d="no")
+
+
+xaw_headers="no"
+if test "$with_xaw3d" == "yes" ; then
+   XAW_LIBS="-lXaw3d"
+   AC_CHECK_LIB([Xaw3d], [XawTextReplace], xaw3d_lib="yes", xaw3d_lib="no")
+   if test "$xaw3d_lib" == "no" ; then
+      echo Xaw3d libraries not found
+      exit 1
+   else
+      AC_CHECK_HEADER(X11/Xaw3d/Dialog.h,xaw3d_headers="yes",xaw3d_headers="no")	
+      if test "$xaw3d_headers" == "yes" ; then
+        AC_DEFINE(USE_XAW3D)
+        xaw_headers="yes"
+      else
+      	AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes")	
+      fi
+   fi
+else
+   XAW_LIBS="-lXaw"
+   AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes")
+fi
+
+AC_SUBST(XAW_LIBS)
+
+
+
+if test "$xaw_headers" == "no" ; then
+   echo Xaw headers not found 
+   exit 1
+
+fi
+
+
+
+
+AC_CANONICAL_HOST
 
 dnl| The following info is mostly gathered from GNU Emacs 19.24.  Basically,
 dnl| we are trying to find out whether this is a System-V derivative in
@@ -317,7 +368,7 @@ AC_SUBST(PRODUCT)
 AC_SUBST(VERSION)
 AC_SUBST(PATCHLEVEL)
 
-AC_OUTPUT(Makefile cmail xboard.texinfo po/Makefile.in ,
+AC_OUTPUT(cmail xboard.texinfo,
 [test -z "$CONFIG_HEADERS" || date > stamp-h
 chmod 755 cmail
 ])

@@ -1,7 +1,7 @@
 #! @PERLPATH@
 ## (configure will change the top line to the location of perl on your system)
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
-## cmail $Revision$: a tool to aid playing chess by email
+## cmail $Revision: 2.1 $: a tool to aid playing chess by email
 ## Copyright (C) 1993  Free Software Foundation, Inc.
 ##
 ## cmail is free software; you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 ## along with cmail; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 ##
-## Modified:  $Date$
-## Revision:  $Revision$
+## Modified:  $Date: 2003/10/27 19:21:00 $
+## Revision:  $Revision: 2.1 $
 ## Email:     evan@quadstone.co.uk
 ## Snailmail: Evan Welsh
 ##            Quadstone Ltd
@@ -1609,7 +1609,7 @@ sub main {
 &main () ;
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 __END__
-cmail $Revision$, Copyright (C) 1993 Free Software Foundation, Inc.
+cmail $Revision: 2.1 $, Copyright (C) 1993 Free Software Foundation, Inc.
 cmail comes with ABSOLUTELY NO WARRANTY; for details type `cmail -w'.
 cmail is free software, and you are welcome to redistribute it
 under certain conditions; type `cmail -c' for details.

@@ -92,3 +92,10 @@ On Red Hat with tetex-0.9-6, mag=1.0 was needed instead.
 
 * * *
 
+I added a large number of bitmaps for non-orthodox pieces, mainly in
+size middling and bulky (and to a lesser extent in petite). A few pieces
+(Archbishop, Chancellor and Lance) are available in all sizes from petite to bulky.
+The bitmaps were created as WinBoard .bmp monochrome bitmaps with MS Paint, and 
+converted to .bm C-source files semi-automatically, to be used as built-ins for xboard.
+
+ 4 Aug 2008 H.G. Muller

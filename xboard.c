@@ -1,6 +1,6 @@
 /*
  * xboard.c -- X front end for XBoard
- * $Id$
+ * $Id: xboard.c,v 2.2 2003/11/06 07:22:14 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-2001 Free Software Foundation, Inc.
@@ -169,6 +169,9 @@ extern char *getenv();
 #include <X11/Xaw/AsciiText.h>
 #endif
 
+// [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
+#include "common.h"
+
 #if HAVE_LIBXPM
 #include <X11/xpm.h>
 #include "pixmaps/pixmaps.h"
@@ -182,7 +185,6 @@ extern char *getenv();
 #include "bitmaps/icon_black.bm"
 #include "bitmaps/checkmark.bm"
 
-#include "common.h"
 #include "frontend.h"
 #include "backend.h"
 #include "moves.h"
@@ -192,6 +194,14 @@ extern char *getenv();
 #include "xhistory.h"
 #include "xedittags.h"
 #include "gettext.h"
+
+// must be moved to xengineoutput.h
+
+void EngineOutputProc P((Widget w, XEvent *event,
+ String *prms, Cardinal *nprms));
+
+void EngineOutputPopDown();
+
 
 #ifdef __EMX__
 #ifndef HAVE_USLEEP
@@ -392,6 +402,8 @@ void ShowCoordsProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
 void ShowThinkingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
+void HideThinkingProc P((Widget w, XEvent *event, String *prms,
+			 Cardinal *nprms));
 void TestLegalityProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
 void InfoProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -416,7 +428,20 @@ static void DragPieceMove P((int x, int y));
 static void DragPieceEnd P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
-
+void EngineOutputUpdate( FrontEndProgramStats * stats );
+void ShuffleMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void EngineMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void UciMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void ShufflePopDown P(());
+void EnginePopDown P(());
+void UciPopDown P(());
+void TimeControlPopDown P(());
+void NewVariantPopDown P(());
+void SettingsPopDown P(());
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -429,7 +454,7 @@ Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   jailSquareColor, highlightSquareColor, premoveHighlightColor;
 GC lightSquareGC, darkSquareGC, jailSquareGC, lineGC, wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
-  wjPieceGC, bjPieceGC, prelineGC;
+  wjPieceGC, bjPieceGC, prelineGC, countGC;
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget, 
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16], 
@@ -438,19 +463,21 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   ICSInputShell, fileNameShell, askQuestionShell;
 XSegment gridSegments[(BOARD_SIZE + 1) * 2];
 XSegment jailGridSegments[(BOARD_SIZE + 3) * 2];
-Font clockFontID, coordFontID;
-XFontStruct *clockFontStruct, *coordFontStruct;
+Font clockFontID, coordFontID, countFontID;
+XFontStruct *clockFontStruct, *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
 char *layoutName;
 char *oldICSInteractionTitle;
 
 FileProc fileProc;
 char *fileOpenMode;
+char installDir[] = "."; // [HGM] UCI: needed for UCI; probably needs run-time initializtion
 
 Position commentX = -1, commentY = -1;
 Dimension commentW, commentH;
 
 int squareSize, smallLayout = 0, tinyLayout = 0,
+  marginW, marginH, // [HGM] for run-time resizing
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
   ICSInputBoxUp = False, askQuestionUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
@@ -462,17 +489,17 @@ char *chessDir, *programName, *programVersion,
 
 #define SOLID 0
 #define OUTLINE 1
-Pixmap pieceBitmap[2][6];
-Pixmap xpmPieceBitmap[4][6];	/* LL, LD, DL, DD */
+Pixmap pieceBitmap[2][(int)BlackPawn];
+Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD */
 Pixmap xpmLightSquare, xpmDarkSquare, xpmJailSquare;
 int useImages, useImageSqs;
-XImage *ximPieceBitmap[4][6];	/* LL, LD, DL, DD */
-Pixmap ximMaskPm[6];            /* clipmasks, used for XIM pieces */
+XImage *ximPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD */
+Pixmap ximMaskPm[(int)BlackPawn];            /* clipmasks, used for XIM pieces */
 XImage *ximLightSquare, *ximDarkSquare;
 XImage *xim_Cross;
 
-#define pieceToSolid(piece) &pieceBitmap[SOLID][((int)(piece)) % 6]
-#define pieceToOutline(piece) &pieceBitmap[OUTLINE][((int)(piece)) % 6]
+#define pieceToSolid(piece) &pieceBitmap[SOLID][((int)(piece)) % (int)BlackPawn]
+#define pieceToOutline(piece) &pieceBitmap[OUTLINE][((int)(piece)) % (int)BlackPawn]
 
 #define White(piece) ((int)(piece) < (int)BlackPawn)
 
@@ -508,7 +535,9 @@ static Pixmap xpmMask[BlackKing + 1];
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
 MenuItem fileMenu[] = {
-    {N_("Reset Game"), ResetProc},
+    {N_("New Game"), ResetProc},
+    {N_("New Shuffle Game ..."), ShuffleMenuProc},
+    {N_("New Variant ..."), NewVariantProc},      // [HGM] variant: not functional yet
     {"----", NothingProc},
     {N_("Load Game"), LoadGameProc},
     {N_("Load Next Game"), LoadNextGameProc},
@@ -546,8 +575,11 @@ MenuItem modeMenu[] = {
     {N_("Edit Position"), EditPositionProc},
     {N_("Training"), TrainingProc},
     {"----", NothingProc},
+    {N_("Show Engine Output"), EngineOutputProc},
+    {N_("Show Evaluation Graph"), NothingProc}, // [HGM] evalgr: not functional yet
     {N_("Show Game List"), ShowGameListProc},
-    {N_("Show Move List"), HistoryShowProc},
+    {"Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
+    {"----", NothingProc},
     {N_("Edit Tags"), EditTagsProc},
     {N_("Edit Comment"), EditCommentProc},
     {N_("ICS Input Box"), IcsInputBoxProc},
@@ -585,6 +617,14 @@ MenuItem stepMenu[] = {
 };    
 
 MenuItem optionsMenu[] = {
+    {N_("Flip View"), FlipViewProc},
+    {"----", NothingProc},    
+    {N_("Adjudications ..."), EngineMenuProc},    
+    {N_("General Settings ..."), UciMenuProc},    
+    {N_("Engine #1 Settings ..."), FirstSettingsProc},    
+    {N_("Engine #2 Settings ..."), SecondSettingsProc},    
+    {N_("Time Control ..."), TimeControlProc},    
+    {"----", NothingProc},    
     {N_("Always Queen"), AlwaysQueenProc},
     {N_("Animate Dragging"), AnimateDraggingProc},
     {N_("Animate Moving"), AnimateMovingProc},
@@ -596,7 +636,6 @@ MenuItem optionsMenu[] = {
     {N_("Auto Save"), AutosaveProc},
     {N_("Blindfold"), BlindfoldProc},
     {N_("Flash Moves"), FlashMovesProc},
-    {N_("Flip View"), FlipViewProc},
     {N_("Get Move List"), GetMoveListProc},
 #if HIGHDRAG
     {N_("Highlight Dragging"), HighlightDraggingProc},
@@ -612,7 +651,7 @@ MenuItem optionsMenu[] = {
     {N_("Premove"), PremoveProc},
     {N_("Quiet Play"), QuietPlayProc},
     {N_("Show Coords"), ShowCoordsProc},
-    {N_("Show Thinking"), ShowThinkingProc},
+    {N_("Hide Thinking"), HideThinkingProc},
     {N_("Test Legality"), TestLegalityProc},
     {NULL, NULL}
 };
@@ -638,8 +677,6 @@ Menu menuBar[] = {
     {NULL, NULL}
 };
 
-
-/* Label on pause button */
 #define PAUSE_BUTTON N_("P")
 MenuItem buttonBar[] = {
     {"<<", ToStartProc},
@@ -655,8 +692,8 @@ String pieceMenuStrings[2][PIECE_MENU_SIZE] = {
     { N_("White"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
       N_("Queen"), N_("King"), "----", N_("Empty square"), N_("Clear board") },
     { N_("Black"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Empty square"), N_("Clear board") },
-  };
+      N_("Queen"), N_("King"), "----", N_("Empty square"), N_("Clear board") },  
+};
 /* must be in same order as PieceMenuStrings! */
 ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
     { WhitePlay, (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
@@ -786,9 +823,9 @@ XtResource clientResources[] = {
     { "secondHost", "secondHost", XtRString, sizeof(String),
 	XtOffset(AppDataPtr, secondHost), XtRString, SECOND_HOST },
     { "firstDirectory", "firstDirectory", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, firstDirectory), XtRString, "" },
+	XtOffset(AppDataPtr, firstDirectory), XtRString, "." },
     { "secondDirectory", "secondDirectory", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, secondDirectory), XtRString, "" },
+	XtOffset(AppDataPtr, secondDirectory), XtRString, "." },
     { "bitmapDirectory", "bitmapDirectory", XtRString,
 	sizeof(String), XtOffset(AppDataPtr, bitmapDirectory),
 	XtRString, "" },
@@ -901,7 +938,7 @@ XtResource clientResources[] = {
 	(XtPointer) 0 },
     { "showThinking", "showThinking", XtRBoolean, sizeof(Boolean),
 	XtOffset(AppDataPtr, showThinking), XtRImmediate,
-	(XtPointer) False },
+	(XtPointer) True },
     { "ponderNextMove", "ponderNextMove", XtRBoolean, sizeof(Boolean),
 	XtOffset(AppDataPtr, ponderNextMove), XtRImmediate,
 	(XtPointer) True },
@@ -1147,10 +1184,175 @@ XtResource clientResources[] = {
     { "showButtonBar", "showButtonBar", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, showButtonBar),
 	XtRImmediate, (XtPointer) True },
-	/* icsEngineAnalyze */
-    {"icsEngineAnalyze", "icsEngineAnalyze", XtRBoolean,
-       sizeof(Boolean), XtOffset(AppDataPtr, icsEngineAnalyze),
-       XtRImmediate, (XtPointer) False },
+    {"icsEngineAnalyze", "icsEngineAnalyze", XtRBoolean,        /* [DM] icsEngineAnalyze */
+        sizeof(Boolean), XtOffset(AppDataPtr, icsEngineAnalyze),
+        XtRImmediate, (XtPointer) False },
+    { "firstScoreAbs", "firstScoreAbs", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, firstScoreIsAbsolute),
+	XtRImmediate, (XtPointer) False },
+    { "secondScoreAbs", "secondScoreAbs", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, secondScoreIsAbsolute),
+	XtRImmediate, (XtPointer) False },
+    { "pgnExtendedInfo", "pgnExtendedInfo", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, saveExtendedInfoInPGN),
+	XtRImmediate, (XtPointer) False },
+    { "hideThinkingFromHuman", "hideThinkingFromHuman", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, hideThinkingFromHuman),
+	XtRImmediate, (XtPointer) True },
+    { "adjudicateLossThreshold", "adjudicateLossThreshold", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, adjudicateLossThreshold),
+	XtRImmediate, (XtPointer) 0},
+    { "pgnEventHeader", "pgnEventHeader", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, pgnEventHeader),
+	XtRImmediate, (XtPointer) "Computer Chess Game" },    
+    { "defaultFrcPosition", "defaultFrcPositon", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, defaultFrcPosition),
+	XtRImmediate, (XtPointer) -1},
+
+    // [HGM] 4.3.xx options
+    { "boardWidth", "boardWidth", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, NrFiles),
+	XtRImmediate, (XtPointer) -1},
+    { "boardHeight", "boardHeight", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, NrRanks),
+	XtRImmediate, (XtPointer) -1},
+    { "matchPause", "matchPause", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, matchPause),
+	XtRImmediate, (XtPointer) 10000},
+    { "holdingsSize", "holdingsSize", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, holdingsSize),
+	XtRImmediate, (XtPointer) -1},
+    { "flipBlack", "flipBlack", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, upsideDown),
+	XtRImmediate, (XtPointer) False},
+    { "allWhite", "allWhite", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, allWhite),
+	XtRImmediate, (XtPointer) False},
+    { "pieceToCharTable", "pieceToCharTable", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, pieceToCharTable),
+	XtRImmediate, (XtPointer) 0},
+    { "alphaRank", "alphaRank", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, alphaRank),
+	XtRImmediate, (XtPointer) False},
+    { "testClaims", "testClaims", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, testClaims),
+	XtRImmediate, (XtPointer) True},
+    { "checkMates", "checkMates", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, checkMates),
+	XtRImmediate, (XtPointer) True},
+    { "materialDraws", "materialDraws", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, materialDraws),
+	XtRImmediate, (XtPointer) True},
+    { "trivialDraws", "trivialDraws", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, trivialDraws),
+	XtRImmediate, (XtPointer) False},
+    { "ruleMoves", "ruleMoves", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, ruleMoves),
+	XtRImmediate, (XtPointer) 51},
+    { "repeatsToDraw", "repeatsToDraw", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, drawRepeats),
+	XtRImmediate, (XtPointer) 6},
+    { "engineDebugOutput", "engineDebugOutput", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, engineComments),
+	XtRImmediate, (XtPointer) 1},
+    { "userName", "userName", XtRString,
+	sizeof(int), XtOffset(AppDataPtr, userName),
+	XtRImmediate, (XtPointer) 0},
+    { "autoKibitz", "autoKibitz", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, autoKibitz),
+	XtRImmediate, (XtPointer) False},
+    { "firstTimeOdds", "firstTimeOdds", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, firstTimeOdds),
+	XtRImmediate, (XtPointer) 1},
+    { "secondTimeOdds", "secondTimeOdds", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, secondTimeOdds),
+	XtRImmediate, (XtPointer) 1},
+    { "timeOddsMode", "timeOddsMode", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, timeOddsMode),
+	XtRImmediate, (XtPointer) 0},
+    { "firstAccumulateTC", "firstAccumulateTC", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, firstAccumulateTC),
+	XtRImmediate, (XtPointer) 1},
+    { "secondAccumulateTC", "secondAccumulateTC", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, secondAccumulateTC),
+	XtRImmediate, (XtPointer) 1},
+    { "firstNPS", "firstNPS", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, firstNPS),
+	XtRImmediate, (XtPointer) -1},
+    { "secondNPS", "secondNPS", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, secondNPS),
+	XtRImmediate, (XtPointer) -1},
+    { "serverMoves", "serverMoves", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, serverMovesName),
+	XtRImmediate, (XtPointer) 0},
+    { "serverPause", "serverPause", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, serverPause),
+	XtRImmediate, (XtPointer) 0},
+    { "suppressLoadMoves", "suppressLoadMoves", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, suppressLoadMoves),
+	XtRImmediate, (XtPointer) False},
+    { "userName", "userName", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, userName),
+	XtRImmediate, (XtPointer) 0},
+    { "egtFormats", "egtFormats", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, egtFormats),
+	XtRImmediate, (XtPointer) 0},
+    { "rewindIndex", "rewindIndex", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, rewindIndex),
+	XtRImmediate, (XtPointer) 0},
+    { "sameColorGames", "sameColorGames", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, sameColorGames),
+	XtRImmediate, (XtPointer) 0},
+    { "smpCores", "smpCores", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, smpCores),
+	XtRImmediate, (XtPointer) 1},
+    { "niceEngines", "niceEngines", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, niceEngines),
+	XtRImmediate, (XtPointer) 0},
+
+    // [HGM] Winboard_x UCI options
+    { "firstIsUCI", "firstIsUCI", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, firstIsUCI),
+	XtRImmediate, (XtPointer) False},
+    { "secondIsUCI", "secondIsUCI", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, secondIsUCI),
+	XtRImmediate, (XtPointer) False},
+    { "firstHasOwnBookUCI", "firstHasOwnBookUCI", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, firstHasOwnBookUCI),
+	XtRImmediate, (XtPointer) True},
+    { "secondHasOwnBookUCI", "secondHasOwnBookUCI", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, secondHasOwnBookUCI),
+	XtRImmediate, (XtPointer) True},
+    { "usePolyglotBook", "usePolyglotBook", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, usePolyglotBook),
+	XtRImmediate, (XtPointer) False},
+    { "defaultHashSize", "defaultHashSize", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, defaultHashSize),
+	XtRImmediate, (XtPointer) 64},
+    { "defaultCacheSizeEGTB", "defaultCacheSizeEGTB", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, defaultCacheSizeEGTB),
+	XtRImmediate, (XtPointer) 4},
+    { "polyglotDir", "polyglotDir", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, polyglotDir),
+	XtRImmediate, (XtPointer) "." },
+    { "polyglotBook", "polyglotBook", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, polyglotBook),
+	XtRImmediate, (XtPointer) "" },    
+    { "defaultPathEGTB", "defaultPathEGTB", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, defaultPathEGTB),
+	XtRImmediate, (XtPointer) "/usr/local/share/egtb"},
+    { "delayBeforeQuit", "delayBeforeQuit", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, delayBeforeQuit),
+	XtRImmediate, (XtPointer) 0},
+    { "delayAfterQuit", "delayAfterQuit", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, delayAfterQuit),
+	XtRImmediate, (XtPointer) 0},
+    { "nameOfDebugFile", "nameOfDebugFile", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, nameOfDebugFile),
+	XtRImmediate, (XtPointer) "xboard.debug"},
+    { "noGUI", "noGUI", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, noGUI),
+	XtRImmediate, (XtPointer) 0},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1441,6 +1643,70 @@ XrmOptionDescRec shellOptions[] = {
     { "-showButtonBar", "showButtonBar", XrmoptionSepArg, NULL },
     { "-buttons", "showButtonBar", XrmoptionNoArg, "True" },
     { "-xbuttons", "showButtonBar", XrmoptionNoArg, "False" },
+    /* [AS,HR] New features */
+    { "-firstScoreAbs", "firstScoreAbs", XrmoptionSepArg, NULL },
+    { "-secondScoreAbs", "secondScoreAbs", XrmoptionSepArg, NULL },
+    { "-pgnExtendedInfo", "pgnExtendedInfo", XrmoptionSepArg, NULL },
+    { "-hideThinkingFromHuman", "hideThinkingFromHuman", XrmoptionSepArg, NULL },
+    { "-adjudicateLossThreshold", "adjudicateLossThreshold", XrmoptionSepArg, NULL },
+    { "-pgnEventHeader", "pgnEventHeader", XrmoptionSepArg, NULL },
+    { "-firstIsUCI", "firstIsUCI", XrmoptionSepArg, NULL },
+    { "-secondIsUCI", "secondIsUCI", XrmoptionSepArg, NULL },
+    { "-fUCI", "firstIsUCI", XrmoptionNoArg, "True" },
+    { "-sUCI", "secondIsUCI", XrmoptionNoArg, "True" },
+    { "-firstHasOwnBookUCI", "firstHasOwnBookUCI", XrmoptionSepArg, NULL },
+    { "-secondHasOwnBookUCI", "secondHasOwnBookUCI", XrmoptionSepArg, NULL },
+    { "-fNoOwnBookUCI", "firstHasOwnBookUCI", XrmoptionNoArg, "False" },
+    { "-sNoOwnBookUCI", "secondHasOwnBookUCI", XrmoptionNoArg, "False" },
+    { "-polyglotDir", "polyglotDir", XrmoptionSepArg, NULL },
+    { "-usePolyglotBook", "usePolyglotBook", XrmoptionSepArg, NULL },
+    { "-polyglotBook", "polyglotBook", XrmoptionSepArg, NULL },
+    { "-defaultHashSize", "defaultHashSize", XrmoptionSepArg, NULL },
+    { "-defaultCacheSizeEGTB", "defaultCacheSizeEGTB", XrmoptionSepArg, NULL },
+    { "-defaultPathEGTB", "defaultPathEGTB", XrmoptionSepArg, NULL },
+    { "-defaultFrcPosition", "defaultFrcPosition", XrmoptionSepArg, NULL },
+    // [HGM] I am sure AS added many more options, but we have to fish them out, from the list in winboard.c
+
+    /* [HGM,HR] User-selectable board size */
+    { "-boardWidth", "boardWidth", XrmoptionSepArg, NULL }, 
+    { "-boardHeight", "boardHeight", XrmoptionSepArg, NULL }, 
+    { "-matchPause", "matchPause", XrmoptionSepArg, NULL }, 
+
+    /* [HGM] new arguments of 4.3.xx. All except first three are back-end options, which should work immediately */
+    { "-holdingsSize", "holdingsSize", XrmoptionSepArg, NULL }, // requires extensive front-end changes to work
+    { "-flipBlack", "flipBlack", XrmoptionSepArg, NULL },       // requires front-end changes to work
+    { "-allWhite", "allWhite", XrmoptionSepArg, NULL },         // requires front-end changes to work
+    { "-pieceToCharTable", "pieceToCharTable", XrmoptionSepArg, NULL }, 
+    { "-alphaRank", "alphaRank", XrmoptionSepArg, NULL }, 
+    { "-testClaims", "testClaims", XrmoptionSepArg, NULL }, 
+    { "-checkMates", "checkMates", XrmoptionSepArg, NULL }, 
+    { "-materialDraws", "materialDraws", XrmoptionSepArg, NULL }, 
+    { "-trivialDraws", "trivialDraws", XrmoptionSepArg, NULL }, 
+    { "-ruleMoves", "ruleMoves", XrmoptionSepArg, NULL }, 
+    { "-repeatsToDraw", "repeatsToDraw", XrmoptionSepArg, NULL },
+    { "-engineDebugOutput", "engineDebugOutput", XrmoptionSepArg, NULL }, 
+    { "-userName", "userName", XrmoptionSepArg, NULL }, 
+    { "-autoKibitz", "autoKibitz", XrmoptionNoArg, "True" }, 
+    { "-firstTimeOdds", "firstTimeOdds", XrmoptionSepArg, NULL }, 
+    { "-secondTimeOdds", "secondTimeOdds", XrmoptionSepArg, NULL }, 
+    { "-timeOddsMode", "timeOddsMode", XrmoptionSepArg, NULL }, 
+    { "-firstAccumulateTC", "firstAccumulateTC", XrmoptionSepArg, NULL }, 
+    { "-secondAccumulateTC", "secondAccumulateTC", XrmoptionSepArg, NULL }, 
+    { "-firstNPS", "firstNPS", XrmoptionSepArg, NULL }, 
+    { "-secondNPS", "secondNPS", XrmoptionSepArg, NULL }, 
+    { "-serverMoves", "serverMoves", XrmoptionSepArg, NULL }, 
+    { "-serverPause", "serverPause", XrmoptionSepArg, NULL }, 
+    { "-suppressLoadMoves", "suppressLoadMoves", XrmoptionSepArg, NULL }, 
+    { "-egtFormats", "egtFormats", XrmoptionSepArg, NULL }, 
+    { "-userName", "userName", XrmoptionSepArg, NULL }, 
+    { "-smpCores", "smpCores", XrmoptionSepArg, NULL }, 
+    { "-sameColorGames", "sameColorGames", XrmoptionSepArg, NULL }, 
+    { "-rewindIndex", "rewindIndex", XrmoptionSepArg, NULL }, 
+    { "-niceEngines", "niceEngines", XrmoptionSepArg, NULL }, 
+    { "-delayBeforeQuit", "delayBeforeQuit", XrmoptionSepArg, NULL }, 
+    { "-delayAfterQuit", "delayAfterQuit", XrmoptionSepArg, NULL }, 
+    { "-nameOfDebugFile", "nameOfDebugFile", XrmoptionSepArg, NULL }, 
+    { "-noGUI", "noGUI", XrmoptionNoArg, "True" }, 
 };
 
 
@@ -1483,6 +1749,7 @@ XtActionsRec boardActions[] = {
     { "EditGameProc", EditGameProc },
     { "EditPositionProc", EditPositionProc },
     { "TrainingProc", EditPositionProc },
+    { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
     { "ShowGameListProc", ShowGameListProc },
     { "ShowMoveListProc", HistoryShowProc},
     { "EditTagsProc", EditCommentProc },
@@ -1536,6 +1803,7 @@ XtActionsRec boardActions[] = {
     { "QuietPlayProc", QuietPlayProc },
     { "ShowCoordsProc", ShowCoordsProc },
     { "ShowThinkingProc", ShowThinkingProc },
+    { "HideThinkingProc", HideThinkingProc },
     { "TestLegalityProc", TestLegalityProc },
     { "InfoProc", InfoProc },
     { "ManProc", ManProc },
@@ -1556,6 +1824,13 @@ XtActionsRec boardActions[] = {
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "HistoryPopDown", (XtActionProc) HistoryPopDown },
+    { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
+    { "ShufflePopDown", (XtActionProc) ShufflePopDown },
+    { "EnginePopDown", (XtActionProc) EnginePopDown },
+    { "UciPopDown", (XtActionProc) UciPopDown },
+    { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
+    { "NewVariantPopDown", (XtActionProc) NewVariantPopDown },
+    { "SettingsPopDown", (XtActionProc) SettingsPopDown },
 };
      
 char globalTranslations[] =
@@ -1845,6 +2120,82 @@ BoardToTop()
   XtPopup(shellWidget, XtGrabNone); /* Raise if lowered  */
 }
 
+#ifdef IDSIZES
+  // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
+#else
+#define BoardSize int
+void InitDrawingSizes(BoardSize boardSize, int flags)
+{   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
+    Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
+    Arg args[16];
+    XtGeometryResult gres;
+    int i;
+
+    if(!formWidget) return;
+
+    /*
+     * Enable shell resizing.
+     */
+    shellArgs[0].value = (XtArgVal) &w;
+    shellArgs[1].value = (XtArgVal) &h;
+    XtGetValues(shellWidget, shellArgs, 2);
+
+    shellArgs[4].value = 2*w; shellArgs[2].value = 10;
+    shellArgs[5].value = 2*h; shellArgs[3].value = 10;
+    XtSetValues(shellWidget, &shellArgs[2], 4);
+
+    XtSetArg(args[0], XtNdefaultDistance, &sep);
+    XtGetValues(formWidget, args, 1);
+
+    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+    CreateGrid();
+
+    XtSetArg(args[0], XtNwidth, boardWidth);
+    XtSetArg(args[1], XtNheight, boardHeight);
+    XtSetValues(boardWidget, args, 2);
+
+    timerWidth = (boardWidth - sep) / 2;
+    XtSetArg(args[0], XtNwidth, timerWidth);
+    XtSetValues(whiteTimerWidget, args, 1);
+    XtSetValues(blackTimerWidget, args, 1);
+
+    XawFormDoLayout(formWidget, False);
+
+    if (appData.titleInWindow) {
+	i = 0;
+	XtSetArg(args[i], XtNborderWidth, &bor); i++;
+	XtSetArg(args[i], XtNheight, &h);  i++;
+	XtGetValues(titleWidget, args, i);
+	if (smallLayout) {
+	    w = boardWidth - 2*bor;
+	} else {
+	    XtSetArg(args[0], XtNwidth, &w);
+	    XtGetValues(menuBarWidget, args, 1);
+	    w = boardWidth - w - sep - 2*bor - 2; // WIDTH_FUDGE
+	}
+
+	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
+	if (gres != XtGeometryYes && appData.debugMode) {
+	    fprintf(stderr,
+		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
+		    programName, gres, w, h, wr, hr);
+	}
+    }
+
+    XawFormDoLayout(formWidget, True);
+
+    /*
+     * Inhibit shell resizing.
+     */
+    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW;
+    shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
+    shellArgs[4].value = shellArgs[2].value = w;
+    shellArgs[5].value = shellArgs[3].value = h;
+    XtSetValues(shellWidget, &shellArgs[0], 6);
+}
+#endif
+
 int
 main(argc, argv)
      int argc;
@@ -1853,12 +2204,56 @@ main(argc, argv)
     int i, j, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
     XSetWindowAttributes window_attributes;
     Arg args[16];
-    Dimension timerWidth, boardWidth, w, h, sep, bor, wr, hr;
+    Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
     XrmValue vFrom, vTo;
     XtGeometryResult gres;
     char *p;
     XrmDatabase xdb;
     int forceMono = False;
+#define INDIRECTION
+#ifdef INDIRECTION
+    // [HGM] before anything else, expand any indirection files amongst options
+    char *argvCopy[1000]; // 1000 seems enough
+    char newArgs[10000];  // holds actual characters
+    int k = 0;
+
+    srandom(time(0)); // [HGM] book: make random truly random
+
+    j = 0;
+    for(i=0; i<argc; i++) {
+	if(j >= 1000-2) { printf(_("too many arguments\n")); exit(-1); }
+//fprintf(stderr, "arg %s\n", argv[i]);
+	if(argv[i][0] != '@') argvCopy[j++] = argv[i]; else {
+	    char c;
+	    FILE *f = fopen(argv[i]+1, "rb");
+	    if(f == NULL) { fprintf(stderr, _("ignore %s\n"), argv[i]); continue; } // do not expand non-existing
+	    argvCopy[j++] = newArgs + k; // get ready for first argument from file
+	    while((c = fgetc(f)) != EOF) { // each line of file inserts 1 argument in the list
+		if(c == '\n') {
+		    if(j >= 1000-2) { printf(_("too many arguments\n")); exit(-1); }
+		    newArgs[k++] = 0;  // terminate current arg
+		    if(k >= 10000-1) { printf(_("too long arguments\n")); exit(-1); }
+		    argvCopy[j++] = newArgs + k; // get ready for next
+		} else {
+		    if(k >= 10000-1) { printf(_("too long arguments\n")); exit(-1); }
+		    newArgs[k++] = c;
+		}
+	    }
+	    newArgs[k] = 0;
+	    j--;
+	    fclose(f);
+	}
+    }
+    argvCopy[j] = NULL;
+    argv = argvCopy;
+    argc = j;
+#if 0
+    if(appData.debugMode,1) { // OK, appData is not initialized here yet...
+	for(i=0; i<argc; i++) fprintf(stderr, "argv[%2d] = '%s'\n", i, argv[i]);
+    }
+#endif
+#endif
+
 
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
@@ -1908,15 +2303,21 @@ main(argc, argv)
     XtGetApplicationResources(shellWidget, (XtPointer) &appData,
 			      clientResources, XtNumber(clientResources),
 			      NULL, 0);
-			      
-    if (appData.debugMode) {
-       if ((debugFP = fopen("xboard.debug", "w")) == NULL)  {
-          printf(_("Failed to open file xboard.debug \n"));
-          exit(errno);
-       }
+
+    if (appData.debugMode && appData.nameOfDebugFile && strcmp(appData.nameOfDebugFile, "stderr")) {
+	/* [DM] debug info to file [HGM] make the filename a command-line option, and allow it to remain stderr */
+        if ((debugFP = fopen(appData.nameOfDebugFile, "w")) == NULL)  {
+           printf(_("Failed to open file '%s'\n"), appData.nameOfDebugFile);
+           exit(errno);
+        }
         setbuf(debugFP, NULL);
     }
     
+    /* [HGM,HR] make sure board size is acceptable */
+    if(appData.NrFiles > BOARD_SIZE ||
+       appData.NrRanks > BOARD_SIZE   )
+	 DisplayFatalError(_("Recompile with BOARD_SIZE > 12, to support this size"), 0, 2);
+
 #if !HIGHDRAG
     /* This feature does not work; animation needs a rewrite */
     appData.highlightDragging = FALSE;
@@ -1927,9 +2328,25 @@ main(argc, argv)
     xScreen = DefaultScreen(xDisplay);
     wm_delete_window = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
 
+	gameInfo.variant = StringToVariant(appData.variant);
+	InitPosition(FALSE);
+#if 0
     /*
      * Determine boardSize
      */
+    gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] boardsize: make sure we start as 8x8
+
+//#ifndef IDSIZE
+    // [HGM] as long as we have not created the possibility to change size while running, start with requested size
+    gameInfo.boardWidth    = appData.NrFiles > 0 ? appData.NrFiles : 8; 
+    gameInfo.boardHeight   = appData.NrRanks > 0 ? appData.NrRanks : 8;
+    gameInfo.holdingsWidth = appData.holdingsSize > 0 ? 2 : 0;
+#endif
+
+
+#ifdef IDSIZE
+    InitDrawingSizes(-1, 0); // [HGM] initsize: make this into a subroutine
+#else
     if (isdigit(appData.boardSize[0])) {
         i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
 		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
@@ -1994,7 +2411,7 @@ main(argc, argv)
 	    exit(1);
 	}
 	if (appData.debugMode) {
-	    fprintf(stderr, _("\
+          fprintf(stderr, _("\
 XBoard square size (hint): %d\n\
 %s fulldir:%s:\n"), squareSize, IMAGE_EXT, p);
 	}
@@ -2004,21 +2421,23 @@ XBoard square size (hint): %d\n\
 	}
     }
 		
-    boardWidth = lineGap + BOARD_SIZE * (squareSize + lineGap);
+    /* [HR] height treated separately (hacked) */
+    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
     if (appData.showJail == 1) {
 	/* Jail on top and bottom */
 	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
 	XtSetArg(boardArgs[2], XtNheight,
-		 boardWidth + 2*(lineGap + squareSize));
+		 boardHeight + 2*(lineGap + squareSize));
     } else if (appData.showJail == 2) {
 	/* Jail on sides */
 	XtSetArg(boardArgs[1], XtNwidth,
 		 boardWidth + 2*(lineGap + squareSize));
-	XtSetArg(boardArgs[2], XtNheight, boardWidth);
+	XtSetArg(boardArgs[2], XtNheight, boardHeight);
     } else {
 	/* No jail */
 	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
-	XtSetArg(boardArgs[2], XtNheight, boardWidth);
+	XtSetArg(boardArgs[2], XtNheight, boardHeight);
     }
 
     /*
@@ -2031,6 +2450,9 @@ XBoard square size (hint): %d\n\
     coordFontID = XLoadFont(xDisplay, appData.coordFont);
     coordFontStruct = XQueryFont(xDisplay, coordFontID);
     appData.font = FindFont(appData.font, fontPxlSize);
+    countFontID = XLoadFont(xDisplay, appData.coordFont); // [HGM] holdings
+    countFontStruct = XQueryFont(xDisplay, countFontID);
+//    appData.font = FindFont(appData.font, fontPxlSize);
 
     xdb = XtDatabase(xDisplay);
     XrmPutStringResource(&xdb, "*font", appData.font);
@@ -2165,36 +2587,54 @@ XBoard square size (hint): %d\n\
 			    formArgs, XtNumber(formArgs));
     XtSetArg(args[0], XtNdefaultDistance, &sep);
     XtGetValues(formWidget, args, 1);
-    
+
     j = 0;
     widgetList[j++] = menuBarWidget = CreateMenuBar(menuBar);
+    XtSetArg(args[0], XtNtop,    XtChainTop);
+    XtSetArg(args[1], XtNbottom, XtChainTop);
+    XtSetValues(menuBarWidget, args, 2);
 
     widgetList[j++] = whiteTimerWidget =
       XtCreateWidget("whiteTime", labelWidgetClass,
 		     formWidget, timerArgs, XtNumber(timerArgs));
     XtSetArg(args[0], XtNfont, clockFontStruct);
-    XtSetValues(whiteTimerWidget, args, 1);
+    XtSetArg(args[1], XtNtop,    XtChainTop);
+    XtSetArg(args[2], XtNbottom, XtChainTop);
+    XtSetValues(whiteTimerWidget, args, 3);
     
     widgetList[j++] = blackTimerWidget =
       XtCreateWidget("blackTime", labelWidgetClass,
 		     formWidget, timerArgs, XtNumber(timerArgs));
     XtSetArg(args[0], XtNfont, clockFontStruct);
-    XtSetValues(blackTimerWidget, args, 1);
+    XtSetArg(args[1], XtNtop,    XtChainTop);
+    XtSetArg(args[2], XtNbottom, XtChainTop);
+    XtSetValues(blackTimerWidget, args, 3);
     
     if (appData.titleInWindow) {
 	widgetList[j++] = titleWidget = 
 	  XtCreateWidget("title", labelWidgetClass, formWidget,
 			 titleArgs, XtNumber(titleArgs));
+	XtSetArg(args[0], XtNtop,    XtChainTop);
+	XtSetArg(args[1], XtNbottom, XtChainTop);
+	XtSetValues(titleWidget, args, 2);
     }
 
     if (appData.showButtonBar) {
       widgetList[j++] = buttonBarWidget = CreateButtonBar(buttonBar);
+      XtSetArg(args[0], XtNleft,  XtChainRight); // [HGM] glue to right window edge
+      XtSetArg(args[1], XtNright, XtChainRight); //       for good run-time sizing
+      XtSetArg(args[2], XtNtop,    XtChainTop);
+      XtSetArg(args[3], XtNbottom, XtChainTop);
+      XtSetValues(buttonBarWidget, args, 4);
     }
 
     widgetList[j++] = messageWidget =
       XtCreateWidget("message", labelWidgetClass, formWidget,
 		     messageArgs, XtNumber(messageArgs));
-    
+    XtSetArg(args[0], XtNtop,    XtChainTop);
+    XtSetArg(args[1], XtNbottom, XtChainTop);
+    XtSetValues(messageWidget, args, 2);
+
     widgetList[j++] = boardWidget =
       XtCreateWidget("board", widgetClass, formWidget, boardArgs,
 		     XtNumber(boardArgs));
@@ -2289,7 +2729,11 @@ XBoard square size (hint): %d\n\
     }
     i = 0;
     XtSetArg(args[0], XtNfromVert, messageWidget);
-    XtSetValues(boardWidget, args, 1);
+    XtSetArg(args[1], XtNtop,    XtChainTop);
+    XtSetArg(args[2], XtNbottom, XtChainBottom);
+    XtSetArg(args[3], XtNleft,   XtChainLeft);
+    XtSetArg(args[4], XtNright,  XtChainRight);
+    XtSetValues(boardWidget, args, 5);
 
     XtRealizeWidget(shellWidget);
 
@@ -2299,6 +2743,7 @@ XBoard square size (hint): %d\n\
      * The value "2" is probably larger than needed.
      */
     XawFormDoLayout(formWidget, False);
+
 #define WIDTH_FUDGE 2
     i = 0;
     XtSetArg(args[i], XtNborderWidth, &bor);  i++;
@@ -2329,6 +2774,9 @@ XBoard square size (hint): %d\n\
 	      programName, gres, w, h, wr, hr);
     }
     /* !! end hack */
+    XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
+    XtSetArg(args[1], XtNright, XtChainRight);
+    XtSetValues(messageWidget, args, 2);
 
     if (appData.titleInWindow) {
 	i = 0;
@@ -2353,7 +2801,11 @@ XBoard square size (hint): %d\n\
     XawFormDoLayout(formWidget, True);
 
     xBoardWindow = XtWindow(boardWidget);
-    
+
+    // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
+    //       not need to go into InitDrawingSizes().
+#endif    
+
     /* 
      * Create X checkmark bitmap and initialize option menu checks.
      */
@@ -2470,8 +2922,8 @@ XBoard square size (hint): %d\n\
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
 		    args, 1);
     }
-    if (appData.showThinking) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Thinking"),
+    if (appData.hideThinkingFromHuman) {
+	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
 		    args, 1);
     }
     if (appData.testLegality) {
@@ -2507,7 +2959,9 @@ XBoard square size (hint): %d\n\
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
     XtSetValues(shellWidget, &shellArgs[2], 4);
-    
+    marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
+    marginH =  h - boardHeight;
+
     CatchDeleteWindow(shellWidget, "QuitProc");
 
     CreateGCs();
@@ -2560,10 +3014,10 @@ XBoard square size (hint): %d\n\
 	    signal(SIGUSR1, CmailSigHandler);
 	}
     }
+	InitPosition(TRUE);
 
     XtAppMainLoop(appContext);
-    if (appData.debugMode) fclose(debugFP);
-    
+    if (appData.debugMode) fclose(debugFP); // [DM] debug
     return 0;
 }
 
@@ -2678,7 +3132,7 @@ Enables icsEnables[] = {
     { "menuHelp.Book", False },
     { "menuStep.Move Now", False },
     { "menuOptions.Periodic Updates", False },	
-    { "menuOptions.Show Thinking", False },
+    { "menuOptions.Hide Thinking", False },
     { "menuOptions.Ponder Next Move", False },
 #endif
     { NULL, False }
@@ -2707,7 +3161,7 @@ Enables ncpEnables[] = {
     { "menuOptions.ICS Alarm", False },
     { "menuOptions.Move Sound", False },
     { "menuOptions.Quiet Play", False },
-    { "menuOptions.Show Thinking", False },
+    { "menuOptions.Hide Thinking", False },
     { "menuOptions.Periodic Updates", False },	
     { "menuOptions.Ponder Next Move", False },
     { "menuHelp.Hint", False },
@@ -2818,11 +3272,10 @@ void SetICSMode()
 {
   SetMenuEnables(icsEnables);
 
- #ifdef ZIPPY
-  /* icsEngineAnalyze */
-  if (appData.zippyPlay && !appData.noChessProgram) 
+#ifdef ZIPPY
+  if (appData.zippyPlay && !appData.noChessProgram)   /* [DM] icsEngineAnalyze */
      XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
- #endif
+#endif
 }
 
 void
@@ -2924,8 +3377,8 @@ char *FindFont(pattern, targetPxlSize)
                                  &missing_count, 
                                  &def_string)) == NULL) {
 
-	fprintf(stderr, _("Unable to create font set.\n"));
-	exit (2);
+       fprintf(stderr, _("Unable to create font set.\n"));
+       exit (2);
     }
 
     nfonts = XFontsOfFontSet(fntSet, &fnt_list, &fonts);
@@ -2980,10 +3433,10 @@ char *FindFont(pattern, targetPxlSize)
     }
 #ifdef ENABLE_NLS
     if (missing_count > 0)
-	XFreeStringList(missing_list);
+       XFreeStringList(missing_list);
     XFreeFontSet(xDisplay, fntSet);
 #else
-    XFreeFontNames(fonts);
+     XFreeFontNames(fonts);
 #endif
     return p;
 }
@@ -3008,6 +3461,12 @@ void CreateGCs()
     gc_values.background = XWhitePixel(xDisplay, xScreen);
     coordGC = XtGetGC(shellWidget, value_mask, &gc_values);
     XSetFont(xDisplay, coordGC, coordFontID);
+    
+    // [HGM] make font for holdings counts (white on black0
+    gc_values.foreground = XWhitePixel(xDisplay, xScreen);
+    gc_values.background = XBlackPixel(xDisplay, xScreen);
+    countGC = XtGetGC(shellWidget, value_mask, &gc_values);
+    XSetFont(xDisplay, countGC, countFontID);
     
     if (appData.monoMode) {
 	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
@@ -3213,7 +3672,7 @@ void CreateXIMPieces()
 		loadXIM(ximPieceBitmap[kind][piece], 
 			ximtemp, buf,
 			&(xpmPieceBitmap[kind][piece]),
-			&(ximMaskPm[piece%6]));
+			&(ximMaskPm[piece%(int)BlackPawn]));
 	    }
 	    fprintf(stderr," ");
 	}
@@ -3471,9 +3930,12 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 	}
     }
     if (bits == NULL) {
+#if 0
 	fprintf(stderr, _("%s: No built-in bitmap for %s; giving up\n"),
 		programName, name);
 	exit(1);
+#endif
+	; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
     } else {
 	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
 				    wreq, hreq);
@@ -3482,22 +3944,26 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 
 void CreateGrid()
 {
-    int i;
+    int i, j;
     
     if (lineGap == 0) return;
-    for (i = 0; i < BOARD_SIZE + 1; i++) {
-	gridSegments[i].x1 = 0;
-	gridSegments[i].x2 =
-	  lineGap + BOARD_SIZE * (squareSize + lineGap);
-	gridSegments[i].y1 = gridSegments[i].y2
-	  = lineGap / 2 + (i * (squareSize + lineGap));
 
-	gridSegments[i + BOARD_SIZE + 1].y1 = 0;
-	gridSegments[i + BOARD_SIZE + 1].y2 =
-	  BOARD_SIZE * (squareSize + lineGap);
-	gridSegments[i + BOARD_SIZE + 1].x1 =
-	  gridSegments[i + BOARD_SIZE + 1].x2
-	    = lineGap / 2 + (i * (squareSize + lineGap));
+    /* [HR] Split this into 2 loops for non-square boards. */
+
+    for (i = 0; i < BOARD_HEIGHT + 1; i++) {
+        gridSegments[i].x1 = 0;
+        gridSegments[i].x2 =
+          lineGap + BOARD_WIDTH * (squareSize + lineGap);
+        gridSegments[i].y1 = gridSegments[i].y2
+          = lineGap / 2 + (i * (squareSize + lineGap));
+    }
+
+    for (j = 0; j < BOARD_WIDTH + 1; j++) {
+        gridSegments[j + i].y1 = 0;
+        gridSegments[j + i].y2 =
+          lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+        gridSegments[j + i].x1 = gridSegments[j + i].x2
+          = lineGap / 2 + (j * (squareSize + lineGap));
     }
 }
 
@@ -3532,7 +3998,7 @@ void CreateMenuBarPopup(parent, name, mb)
 	    entry = XtCreateManagedWidget(mi->string, smeLineObjectClass,
 					  menu, args, j);
 	} else {
-	    XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string)));
+          XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string)));
 	    entry = XtCreateManagedWidget(mi->string, smeBSBObjectClass,
 					  menu, args, j+1);
 	    XtAddCallback(entry, XtNcallback,
@@ -3565,13 +4031,13 @@ Widget CreateMenuBar(mb)
 	XtSetArg(args[j], XtNmenuName, XtNewString(menuName));  j++;
 	if (tinyLayout) {
 	    char shortName[2];
-	    shortName[0] = _(mb->name)[0];
+            shortName[0] = _(mb->name)[0];
 	    shortName[1] = NULLCHAR;
 	    XtSetArg(args[j], XtNlabel, XtNewString(shortName)); j++;
 	}
-	else {
-	    XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
-	}
+      else {
+          XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
+      }
 
 	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
 	anchor = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
@@ -3605,7 +4071,7 @@ Widget CreateButtonBar(mi)
 	    XtSetArg(args[j], XtNinternalWidth, 2); j++;
 	    XtSetArg(args[j], XtNborderWidth, 0); j++;
 	}
-	XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string))); j++;
+      XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string))); j++;
 	button = XtCreateManagedWidget(mi->string, commandWidgetClass,
 				       buttonBar, args, j);
 	XtAddCallback(button, XtNcallback,
@@ -3636,9 +4102,9 @@ CreatePieceMenu(name, color)
 	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
 					  menu, NULL, 0);
 	} else {
-	    XtSetArg(args[0], XtNlabel, XtNewString(_(item))); 
+          XtSetArg(args[0], XtNlabel, XtNewString(_(item))); 
 	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-					  menu, args, 1);
+                                menu, args, 1);
 	    selection = pieceMenuTranslation[color][i];
 	    XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) PieceMenuSelect,
@@ -3677,9 +4143,9 @@ CreatePieceMenus()
 	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
 					  dropMenu, NULL, 0);
 	} else {
-	    XtSetArg(args[0], XtNlabel, XtNewString(_(item))); 
+          XtSetArg(args[0], XtNlabel, XtNewString(_(item))); 
 	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-					  dropMenu, args, 1);
+                                dropMenu, args, 1);
 	    selection = dropMenuTranslation[i];
 	    XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) DropMenuSelect,
@@ -3741,15 +4207,15 @@ void PieceMenuPopup(w, event, params, num_params)
 	return;
     }
     
-    if (((pmFromX = EventToSquare(event->xbutton.x, BOARD_SIZE)) < 0) ||
-	((pmFromY = EventToSquare(event->xbutton.y, BOARD_SIZE)) < 0)) {
+    if (((pmFromX = EventToSquare(event->xbutton.x, BOARD_WIDTH)) < 0) ||
+	((pmFromY = EventToSquare(event->xbutton.y, BOARD_HEIGHT)) < 0)) {
 	pmFromX = pmFromY = -1;
 	return;
     }
     if (flipView)
-      pmFromX = BOARD_SIZE - 1 - pmFromX;
+      pmFromX = BOARD_WIDTH - 1 - pmFromX;
     else
-      pmFromY = BOARD_SIZE - 1 - pmFromY;
+      pmFromY = BOARD_HEIGHT - 1 - pmFromY;
     
     XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
 }
@@ -3834,12 +4300,12 @@ static void drawHighlight(file, rank, gc)
     if (lineGap == 0 || appData.blindfold) return;
     
     if (flipView) {
-	x = lineGap/2 + ((BOARD_SIZE-1)-file) * 
+	x = lineGap/2 + ((BOARD_WIDTH-1)-file) * 
 	  (squareSize + lineGap);
 	y = lineGap/2 + rank * (squareSize + lineGap);
     } else {
 	x = lineGap/2 + file * (squareSize + lineGap);
-	y = lineGap/2 + ((BOARD_SIZE-1)-rank) * 
+	y = lineGap/2 + ((BOARD_HEIGHT-1)-rank) * 
 	  (squareSize + lineGap);
     }
     
@@ -4014,6 +4480,7 @@ static void colorDrawPiece(piece, square_color, x, y, dest)
      int square_color, x, y;
      Drawable dest;
 {
+    if(pieceToSolid(piece) == NULL) return; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
     switch (square_color) {
       case 1: /* light */
 	XCopyPlane(xDisplay, *pieceToSolid(piece),
@@ -4087,6 +4554,32 @@ DrawFunc ChooseDrawFunc()
     }
 }
 
+/* [HR] determine square color depending on chess variant. */
+static int SquareColor(row, column)
+     int row, column;
+{
+    int square_color;
+
+    if (gameInfo.variant == VariantXiangqi) {
+        if (column >= 3 && column <= 5 && row >= 0 && row <= 2) {
+            square_color = 1;
+        } else if (column >= 3 && column <= 5 && row >= 7 && row <= 9) {
+            square_color = 0;
+        } else if (row <= 4) {
+            square_color = 0;
+        } else {
+            square_color = 1;
+        }
+    } else {
+        square_color = ((column + row) % 2) == 1;
+    }
+
+    /* [hgm] holdings: next line makes all holdings squares light */
+    if(column < BOARD_LEFT || column >= BOARD_RGHT) square_color = 1;
+ 
+    return square_color;
+}
+
 void DrawSquare(row, column, piece, do_flash)
      int row, column, do_flash;
      ChessSquare piece;
@@ -4098,43 +4591,91 @@ void DrawSquare(row, column, piece, do_flash)
     DrawFunc drawfunc;
     int flash_delay;
 
+    if(gameInfo.variant == VariantShogi) { // [HGM] shogi: in shogi Q is used for Lance
+	if(piece == WhiteQueen) piece = WhiteLance; else
+	if(piece == BlackQueen) piece = BlackLance;
+    }
+#ifdef GOTHIC
+    else if(gameInfo.variant == VariantGothic) { // [HGM] shogi: in Gothic Chancelor has alternative look
+	if(piece == WhiteMarshall) piece = WhiteSilver; else
+	if(piece == BlackMarshall) piece = BlackSilver;
+    }
+#endif
+
     /* Calculate delay in milliseconds (2-delays per complete flash) */
     flash_delay = 500 / appData.flashRate;
 	
     if (flipView) {
-	x = lineGap + ((BOARD_SIZE-1)-column) * 
+	x = lineGap + ((BOARD_WIDTH-1)-column) * 
 	  (squareSize + lineGap);
 	y = lineGap + row * (squareSize + lineGap);
     } else {
 	x = lineGap + column * (squareSize + lineGap);
-	y = lineGap + ((BOARD_SIZE-1)-row) * 
+	y = lineGap + ((BOARD_HEIGHT-1)-row) * 
 	  (squareSize + lineGap);
     }
+  
+    square_color = SquareColor(row, column);
     
-    square_color = ((column + row) % 2) == 1;
-    
-    if (piece == EmptySquare || appData.blindfold) {
-	BlankSquare(x, y, square_color, piece, xBoardWindow);
+    if ( // [HGM] holdings: blank out area between board and holdings
+                 column == BOARD_LEFT-1 ||  column == BOARD_RGHT
+              || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
+	          || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
+			BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
+
+			// [HGM] print piece counts next to holdings
+			string[1] = NULLCHAR;
+			if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
+			    string[0] = '0' + piece;
+			    XTextExtents(countFontStruct, string, 1, &direction, 
+				 &font_ascent, &font_descent, &overall);
+			    if (appData.monoMode) {
+				XDrawImageString(xDisplay, xBoardWindow, countGC,
+						 x + squareSize - overall.width - 2, 
+						 y + font_ascent + 1, string, 1);
+			    } else {
+				XDrawString(xDisplay, xBoardWindow, countGC,
+					    x + squareSize - overall.width - 2, 
+					    y + font_ascent + 1, string, 1);
+			    }
+			}
+			if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
+			    string[0] = '0' + piece;
+			    XTextExtents(countFontStruct, string, 1, &direction, 
+					 &font_ascent, &font_descent, &overall);
+			    if (appData.monoMode) {
+				XDrawImageString(xDisplay, xBoardWindow, countGC,
+						 x + 2, y + font_ascent + 1, string, 1);
+			    } else {
+				XDrawString(xDisplay, xBoardWindow, countGC,
+					    x + 2, y + font_ascent + 1, string, 1);
+			    }	    
+			}   
     } else {
-	drawfunc = ChooseDrawFunc();
-	if (do_flash && appData.flashCount > 0) {
-	    for (i=0; i<appData.flashCount; ++i) {
+	    if (piece == EmptySquare || appData.blindfold) {
+			BlankSquare(x, y, square_color, piece, xBoardWindow);
+	    } else {
+			drawfunc = ChooseDrawFunc();
+			if (do_flash && appData.flashCount > 0) {
+			    for (i=0; i<appData.flashCount; ++i) {
 
-		drawfunc(piece, square_color, x, y, xBoardWindow);
-		XSync(xDisplay, False);
-		do_flash_delay(flash_delay);
+					drawfunc(piece, square_color, x, y, xBoardWindow);
+					XSync(xDisplay, False);
+					do_flash_delay(flash_delay);
 
-		BlankSquare(x, y, square_color, piece, xBoardWindow);
-		XSync(xDisplay, False);
-		do_flash_delay(flash_delay);
-	    }
+					BlankSquare(x, y, square_color, piece, xBoardWindow);
+					XSync(xDisplay, False);
+					do_flash_delay(flash_delay);
+			    }
+			}
+			drawfunc(piece, square_color, x, y, xBoardWindow);
+    	}
 	}
-	drawfunc(piece, square_color, x, y, xBoardWindow);
-    }
 	
     string[1] = NULLCHAR;
-    if (appData.showCoords && row == (flipView ? 7 : 0)) {
-	string[0] = 'a' + column;
+    if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
+		&& column >= BOARD_LEFT && column < BOARD_RGHT) {
+	string[0] = 'a' + column - BOARD_LEFT;
 	XTextExtents(coordFontStruct, string, 1, &direction, 
 		     &font_ascent, &font_descent, &overall);
 	if (appData.monoMode) {
@@ -4147,8 +4688,8 @@ void DrawSquare(row, column, piece, do_flash)
 			y + squareSize - font_descent - 1, string, 1);
 	}
     }
-    if (appData.showCoords && column == (flipView ? 7 : 0)) {
-	string[0] = '1' + row;
+    if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT)) {
+	string[0] = ONE + row;
 	XTextExtents(coordFontStruct, string, 1, &direction, 
 		     &font_ascent, &font_descent, &overall);
 	if (appData.monoMode) {
@@ -4197,8 +4738,8 @@ static int too_many_diffs(b1, b2)
     int i, j;
     int c = 0;
   
-    for (i=0; i<BOARD_SIZE; ++i) {
-	for (j=0; j<BOARD_SIZE; ++j) {
+    for (i=0; i<BOARD_HEIGHT; ++i) {
+	for (j=0; j<BOARD_WIDTH; ++j) {
 	    if (b1[i][j] != b2[i][j]) {
 		if (++c > 4)	/* Castling causes 4 diffs */
 		  return 1;
@@ -4307,8 +4848,8 @@ void XDrawPosition(w, repaint, board)
 	/* First pass -- Draw (newly) empty squares and repair damage. 
 	   This prevents you from having a piece show up twice while it 
 	   is flashing on its new square */
-	for (i = 0; i < BOARD_SIZE; i++)
-	  for (j = 0; j < BOARD_SIZE; j++)
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++)
 	    if ((board[i][j] != lastBoard[i][j] && board[i][j] == EmptySquare)
 		|| damage[i][j]) {
 		DrawSquare(i, j, board[i][j], 0);
@@ -4316,18 +4857,18 @@ void XDrawPosition(w, repaint, board)
 	    }
 
 	/* Second pass -- Draw piece(s) in new position and flash them */
-	for (i = 0; i < BOARD_SIZE; i++)
-	  for (j = 0; j < BOARD_SIZE; j++)
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++)
 	    if (board[i][j] != lastBoard[i][j]) {
 		DrawSquare(i, j, board[i][j], do_flash);	  
 	    }
     } else {
 	if (lineGap > 0)
 	  XDrawSegments(xDisplay, xBoardWindow, lineGC,
-			gridSegments, (BOARD_SIZE + 1) * 2);
+			gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
 	
-	for (i = 0; i < BOARD_SIZE; i++)
-	  for (j = 0; j < BOARD_SIZE; j++) {
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++) {
 	      DrawSquare(i, j, board[i][j], 0);
 	      damage[i][j] = False;
 	  }
@@ -4374,6 +4915,13 @@ void DrawPositionProc(w, event, prms, nprms)
 /*
  * event handler for parsing user moves
  */
+// [HGM] This routine will need quite some reworking. Although the backend still supports the old
+//       way of doing things, by calling UserMoveEvent() to test the legality of the move and then perform
+//       it at the end, and doing all kind of preliminary tests here (e.g. to weed out self-captures), it
+//       should be made to use the new way, of calling UserMoveTest early  to determine the legality of the
+//       move, (which will weed out the illegal selfcaptures and moves into the holdings, and flag promotions),
+//       and at the end FinishMove() to perform the move after optional promotion popups.
+//       For now I patched it to allow self-capture with King, and suppress clicks between board and holdings.
 void HandleUserMove(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -4400,14 +4948,21 @@ void HandleUserMove(w, event, prms, nprms)
 	}
     }
     
-    x = EventToSquare(event->xbutton.x, BOARD_SIZE);
-    y = EventToSquare(event->xbutton.y, BOARD_SIZE);
+    x = EventToSquare(event->xbutton.x, BOARD_WIDTH);
+    y = EventToSquare(event->xbutton.y, BOARD_HEIGHT);
     if (!flipView && y >= 0) {
-	y = BOARD_SIZE - 1 - y;
+	y = BOARD_HEIGHT - 1 - y;
     }
     if (flipView && x >= 0) {
-	x = BOARD_SIZE - 1 - x;
+	x = BOARD_WIDTH - 1 - x;
     }
+
+    /* [HGM] holdings: next 5 lines: ignore all clicks between board and holdings */
+    if(event->type == ButtonPress
+            && ( x == BOARD_LEFT-1 || x == BOARD_RGHT
+              || x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize
+              || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
+	return;
 
     if (fromX == -1) {
 	if (event->type == ButtonPress) {
@@ -4430,12 +4985,13 @@ void HandleUserMove(w, event, prms, nprms)
 	x >= 0 && y >= 0) {
 	ChessSquare fromP;
 	ChessSquare toP;
+
 	/* Check if clicking again on the same color piece */
 	fromP = boards[currentMove][fromY][fromX];
 	toP = boards[currentMove][y][x];
-	if ((WhitePawn <= fromP && fromP <= WhiteKing &&
-	     WhitePawn <= toP && toP <= WhiteKing) ||
-	    (BlackPawn <= fromP && fromP <= BlackKing &&
+	if ((WhitePawn <= fromP && fromP < WhiteKing && // [HGM] this test should go, as UserMoveTest now does it.
+	     WhitePawn <= toP && toP <= WhiteKing) ||   //       For now I made it less critical by exempting King
+	    (BlackPawn <= fromP && fromP < BlackKing && //       moves, to not interfere with FRC castlings.
 	     BlackPawn <= toP && toP <= BlackKing)) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
@@ -5040,8 +5596,7 @@ void AnalysisPopDown()
     XtPopdown(analysisShell);
     XSync(xDisplay, False);
     analysisUp = False;
-    /* icsEngineAnalyze */
-    if (appData.icsEngineAnalyze) ExitAnalyzeMode();
+    if (appData.icsEngineAnalyze) ExitAnalyzeMode();    /* [DM] icsEngineAnalyze */
 }
 
 
@@ -5079,11 +5634,11 @@ void FileNamePopUp(label, def, proc, openMode)
     XtSetArg(args[i], XtNborderWidth, 0); i++;
     dialog = XtCreateManagedWidget("fileName", dialogWidgetClass,
 				   layout, args, i);
-
+    
     XawDialogAddButton(dialog, _("ok"), FileNameCallback, (XtPointer) dialog);
     XawDialogAddButton(dialog, _("cancel"), FileNameCallback,
-                       (XtPointer) dialog);
-
+		       (XtPointer) dialog);
+    
     XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "FileNamePopDown");
     
@@ -5230,7 +5785,7 @@ void PromotionPopUp()
     
     XtTranslateCoords(boardWidget, (bw_width - pw_width) / 2,
 		      lineGap + squareSize/3 +
-		      ((toY == 7) ^ (flipView) ?
+		      ((toY == BOARD_HEIGHT-1) ^ (flipView) ?
 		       0 : 6*(squareSize + lineGap)), &x, &y);
     
     j = 0;
@@ -5495,6 +6050,7 @@ void ModeHighlight()
 		   gameMode == Training || gameMode == PlayFromGameFile);
 }
 
+
 /*
  * Button/menu procedures
  */
@@ -5687,7 +6243,7 @@ void CopyPositionProc(w, event, prms, nprms)
     int ret;
 
     if (selected_fen_position) free(selected_fen_position);
-    selected_fen_position = (char *)PositionToFEN(currentMove);
+    selected_fen_position = (char *)PositionToFEN(currentMove,1);
     if (!selected_fen_position) return;
     ret = XtOwnSelection(menuBarWidget, XA_PRIMARY,
 			 CurrentTime,
@@ -5882,34 +6438,33 @@ void AnalyzeModeProc(w, event, prms, nprms)
       DisplayError(buf, 0);
       return;
     }
-    /* icsEngineAnalyze */
+    /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
     if (appData.icsActive) {
-      if (gameMode != IcsObserving) {
-        sprintf(buf,_("You are not observing a game"));
-	DisplayError(buf, 0);
-	/* secure check */
-	if (appData.icsEngineAnalyze) {
-	  if (appData.debugMode)
-	    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
-	    ExitAnalyzeMode();
-	    ModeHighlight();
-	    return;
-	}
-	return;
-     } else {
-      	 /* if enable, use want disable icsEngineAnalyze */
-      	if (appData.icsEngineAnalyze) {
-	   ExitAnalyzeMode();
-	   ModeHighlight();
- 	   return;
+        if (gameMode != IcsObserving) {
+            sprintf(buf,_("You are not observing a game"));
+            DisplayError(buf, 0);
+            /* secure check */
+            if (appData.icsEngineAnalyze) {
+                if (appData.debugMode)
+                    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
+                ExitAnalyzeMode();
+                ModeHighlight();
+            }
+            return;
+        }
+        /* if enable, use want disable icsEngineAnalyze */
+        if (appData.icsEngineAnalyze) {
+                ExitAnalyzeMode();
+                ModeHighlight();
+                return;
         }
         appData.icsEngineAnalyze = TRUE;
         if (appData.debugMode)
-	   fprintf(debugFP, "ICS engine analyze starting... \n");
-      }
-   }   
+            fprintf(debugFP, _("ICS engine analyze starting... \n"));
+    }   
     if (!appData.showThinking)
       ShowThinkingProc(w,event,prms,nprms);
+
     AnalyzeModeEvent();
 }
 
@@ -6689,14 +7244,37 @@ void ShowThinkingProc(w, event, prms, nprms)
 {
     Arg args[16];
 
-    ShowThinkingEvent(!appData.showThinking);
-
+    appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
+    ShowThinkingEvent();
+#if 0
+    // [HGM] thinking: currently no suc menu item; replaced by Hide Thinking (From Human)
     if (appData.showThinking) {
 	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Thinking"),
+		args, 1);
+#endif
+}
+
+void HideThinkingProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    Arg args[16];
+
+    appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: tken out of ShowThinkingEvent
+    ShowThinkingEvent();
+
+    if (appData.hideThinkingFromHuman) {
+	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+    } else {
+	XtSetArg(args[0], XtNleftBitmap, None);
+    }
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
 		args, 1);
 }
 
@@ -6758,10 +7336,12 @@ void AboutProc(w, event, prms, nprms)
 #else
     char *zippy = "";
 #endif
-    sprintf(buf, "%s%s\n\n%s\n%s\n\n%s%s\n%s",
+    sprintf(buf, "%s%s\n\n%s\n%s\n%s\n%s\n\n%s%s\n%s",
 	    programVersion, zippy,
 	    "Copyright 1991 Digital Equipment Corporation",
 	    "Enhancements Copyright 1992-2001 Free Software Foundation",
+	    "Enhancements Copyright 2005 Alessandro Scotti",
+	    "Enhancements Copyright 2007-2008 H.G.Muller",
 	    PRODUCT, " is free software and carries NO WARRANTY;",
 	    "see the file COPYING for more information.");
     ErrorPopUp(_("About XBoard"), buf, FALSE);
@@ -6850,6 +7430,17 @@ void DisplayTitle(text)
     } else if (appData.cmailGameName[0] != NULLCHAR) {
 	sprintf(icon, "%s", "CMail");
 	sprintf(title, "%s: %s", programName, "CMail");
+#ifdef GOTHIC
+    // [HGM] license: This stuff should really be done in back-end, but WinBoard already had a pop-up for it
+    } else if (gameInfo.variant == VariantGothic) {
+	strcpy(icon, programName);
+	strcpy(title, GOTHIC);
+#endif
+#ifdef FALCON
+    } else if (gameInfo.variant == VariantFalcon) {
+	strcpy(icon, programName);
+	strcpy(title, FALCON);
+#endif
     } else if (appData.noChessProgram) {
 	strcpy(icon, programName);
 	strcpy(title, programName);
@@ -7372,7 +7963,7 @@ AnalysisClockCallback(arg, id)
      XtIntervalId *id;
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
-         || appData.icsEngineAnalyze) {
+         || appData.icsEngineAnalyze) { // [DM]
 	AnalysisPeriodicEvent(0);
 	StartAnalysisClock();
     }
@@ -7459,6 +8050,8 @@ DisplayWhiteClock(timeRemaining, highlight)
      int highlight;
 {
     Arg args[16];
+
+    if(appData.noGUI) return;
     DisplayTimerLabel(whiteTimerWidget, _("White"), timeRemaining, highlight);
     if (highlight && iconPixmap == bIconPixmap) {
 	iconPixmap = wIconPixmap;
@@ -7473,6 +8066,8 @@ DisplayBlackClock(timeRemaining, highlight)
      int highlight;
 {
     Arg args[16];
+
+    if(appData.noGUI) return;
     DisplayTimerLabel(blackTimerWidget, _("Black"), timeRemaining, highlight);
     if (highlight && iconPixmap == wIconPixmap) {
 	iconPixmap = bIconPixmap;
@@ -7529,18 +8124,22 @@ int StartChildProcess(cmdLine, dir, pr)
 
     if ((pid = fork()) == 0) {
 	/* Child process */
-	dup2(to_prog[0], 0);
-	dup2(from_prog[1], 1);
-	close(to_prog[0]);
-	close(to_prog[1]);
+	// [HGM] PSWBTM: made order resistant against case where fd of created pipe was 0 or 1
+	close(to_prog[1]);     // first close the unused pipe ends
 	close(from_prog[0]);
-	close(from_prog[1]);
-	dup2(1, fileno(stderr)); /* force stderr to the pipe */
+	dup2(to_prog[0], 0);   // to_prog was created first, nd is the only one to use 0 or 1
+	dup2(from_prog[1], 1);
+	if(to_prog[0] >= 2) close(to_prog[0]); // if 0 or 1, the dup2 already cosed the original
+	close(from_prog[1]);                   // and closing again loses one of the pipes!
+	if(fileno(stderr) >= 2) // better safe than sorry...
+		dup2(1, fileno(stderr)); /* force stderr to the pipe */
 
 	if (dir[0] != NULLCHAR && chdir(dir) != 0) {
 	    perror(dir);
 	    exit(1);
 	}
+
+	nice(appData.niceEngines); // [HGM] nice: adjust priority of engine proc
 
         execvp(argv[0], argv);
 	
@@ -7562,22 +8161,37 @@ int StartChildProcess(cmdLine, dir, pr)
     return 0;
 }
 
+// [HGM] kill: implement the 'hard killing' of AS's Winboard_x
+static RETSIGTYPE AlarmCallBack(int n)
+{
+    return;
+}
+
 void
-DestroyChildProcess(pr, signal)
+DestroyChildProcess(pr, signalType)
      ProcRef pr;
-     int signal;
+     int signalType;
 {
     ChildProc *cp = (ChildProc *) pr;
 
     if (cp->kind != CPReal) return;
     cp->kind = CPNone;
-    if (signal) {
-      kill(cp->pid, SIGTERM);
+    if (signalType == 10) { // [HGM] kill: if it does not terminate in 3 sec, kill
+	signal(SIGALRM, AlarmCallBack);
+	alarm(3);
+	if(wait((int *) 0) == -1) { // process does not terminate on its own accord
+	    kill(cp->pid, SIGKILL); // kill it forcefully
+	    wait((int *) 0);        // and wait again
+	}
+    } else {
+	if (signalType) {
+	    kill(cp->pid, signalType == 9 ? SIGKILL : SIGTERM); // [HGM] kill: use hard kill if so requested
+	}
+	/* Process is exiting either because of the kill or because of
+	   a quit command sent by the backend; either way, wait for it to die.
+	*/
+	wait((int *) 0);
     }
-    /* Process is exiting either because of the kill or because of
-       a quit command sent by the backend; either way, wait for it to die.
-    */
-    wait((int *) 0);
     close(cp->fdFrom);
     close(cp->fdTo);
 }
@@ -7928,7 +8542,7 @@ CreateAnimMasks (pieceDepth)
     else
       kind = 2;
     XSetFunction(xDisplay, bufGC, GXcopy);
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % 6],
+    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
 	      buf, bufGC,
 	      0, 0, squareSize, squareSize, 0, 0);
 	      
@@ -8074,13 +8688,13 @@ ScreenSquare(column, row, pt, color)
      int column; int row; XPoint * pt; int * color;
 {
   if (flipView) {
-    pt->x = lineGap + ((BOARD_SIZE-1)-column) * (squareSize + lineGap);
+    pt->x = lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
     pt->y = lineGap + row * (squareSize + lineGap);
   } else {
     pt->x = lineGap + column * (squareSize + lineGap);
-    pt->y = lineGap + ((BOARD_SIZE-1)-row) * (squareSize + lineGap);
+    pt->y = lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap);
   }
-  *color = ((column + row) % 2) == 1;
+  *color = SquareColor(row, column);
 }
 
 /*	Convert window coords to square			*/
@@ -8089,12 +8703,12 @@ static void
 BoardSquare(x, y, column, row)
      int x; int y; int * column; int * row;
 {
-  *column = EventToSquare(x, BOARD_SIZE);
+  *column = EventToSquare(x, BOARD_WIDTH);
   if (flipView && *column >= 0)
-    *column = BOARD_SIZE - 1 - *column;
-  *row = EventToSquare(y, BOARD_SIZE);
+    *column = BOARD_WIDTH - 1 - *column;
+  *row = EventToSquare(y, BOARD_HEIGHT);
   if (!flipView && *row >= 0)
-    *row = BOARD_SIZE - 1 - *row;
+    *row = BOARD_HEIGHT - 1 - *row;
 }
 
 /*   Utilities	*/
@@ -8237,7 +8851,7 @@ SelectGCMask(piece, clip, outline, mask)
 #if HAVE_LIBXPM
       *mask = xpmMask[piece];
 #else
-      *mask = ximMaskPm[piece%6];
+      *mask = ximMaskPm[piece%(int)BlackPawn];
 #endif
   } else {
       *mask = *pieceToSolid(piece);
@@ -8286,7 +8900,7 @@ OverlayPiece(piece, clip, outline,  dest)
       kind = 0;
     else
       kind = 2;
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % 6],
+    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
 	      dest, clip,
 	      0, 0, squareSize, squareSize,
 	      0, 0);		
@@ -8441,10 +9055,9 @@ AnimateMove(board, fromX, fromY, toX, toY)
 #endif
 
   if (appData.debugMode) {
-      printf(hop ? _("AnimateMove: piece %d hops from %d,%d to %d,%d \n") :
-                   _("AnimateMove: piece %d slides from %d,%d to %d,%d \n"),
-             piece, fromX, fromY, toX, toY);
-  }
+      fprintf(debugFP, hop ? _("AnimateMove: piece %d hops from %d,%d to %d,%d \n") :
+                             _("AnimateMove: piece %d slides from %d,%d to %d,%d \n"),
+             piece, fromX, fromY, toX, toY);  }
 
   ScreenSquare(fromX, fromY, &start, &startColor);
   ScreenSquare(toX, toY, &finish, &endColor);
@@ -8595,3 +9208,10 @@ DrawDragPiece ()
   damage[player.startBoardY][player.startBoardX] = TRUE;
 }
 
+void
+SetProgramStats( FrontEndProgramStats * stats )
+{
+  // [HR] TODO
+  // [HGM] done, but perhaps backend should call this directly?
+    EngineOutputUpdate( stats );
+}

@@ -1,6 +1,6 @@
 /*
  * frontend.h -- Interface exported by all XBoard front ends
- * $Id$
+ * $Id: frontend.h,v 2.2 2003/11/06 07:22:14 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
@@ -164,10 +164,23 @@ void ClearPremoveHighlights P((void));
 void ShutDownFrontEnd P((void));
 void BoardToTop P((void));
 void AnimateMove P((Board board, int fromX, int fromY, int toX, int toY));
-void HistorySet P((char movelist[][2*MOVE_LEN],
-		   int first, int last, int current));
+void HistorySet P((char movelist[][2*MOVE_LEN], int first, int last, int current));
 void FreezeUI P((void));
 void ThawUI P((void));
 extern char *programName;
+
+typedef struct FrontEndProgramStats_TAG {
+    int which;
+    int depth;
+    unsigned long nodes;
+    int score;
+    int time;
+    char * pv;
+    char * hint;
+    int an_move_index;
+    int an_move_count;
+} FrontEndProgramStats;
+
+void SetProgramStats P(( FrontEndProgramStats * stats )); /* [AS] */
 
 #endif

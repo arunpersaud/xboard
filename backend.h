@@ -1,6 +1,6 @@
 /*
  * backend.h -- Interface exported by XBoard back end
- * $Id$
+ * $Id: backend.h,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
@@ -48,6 +48,40 @@
 #ifndef _BACKEND
 #define _BACKEND
 
+/* unsigned int 64 for engine nodes work and display */
+#ifdef WIN32
+       /* I don't know the name for this type of other compiler
+        * If it not work, just modify here
+        * This is for MS Visual Studio
+        */
+       #ifdef _MSC_VER
+               #define u64 unsigned __int64
+               #define s64 signed __int64
+               #define u64Display "%I64u"
+               #define s64Display "%I64d"
+               #define u64Const(c) (c ## UI64)
+               #define s64Const(c) (c ## I64)
+       #else
+               /* place holder
+                * or dummy types for other compiler
+                */
+               #define u64 unsigned long long
+               #define s64 signed long long
+               #define u64Display "%llu"
+               #define s64Display "%lld"
+               #define u64Const(c) (c ## ULL)
+               #define s64Const(c) (c ## LL)
+       #endif
+#else
+       /* GNU gcc */
+       #define u64 unsigned long long
+       #define s64 signed long long
+       #define u64Display "%llu"
+       #define s64Display "%lld"
+       #define u64Const(c) (c ## ull)
+       #define s64Const(c) (c ## ll)
+#endif
+
 #include "lists.h"
 #include "frontend.h"
 
@@ -63,7 +97,9 @@ extern ProcRef firstProgramPR, secondProgramPR;
 extern Board boards[];
 
 char *CmailMsg P((void));
-char *PositionToFEN P((int move));
+/* Tord: Added the useFEN960 parameter in PositionToFEN() below */
+char *PositionToFEN P((int move, int useFEN960));
+void AlphaRank P((char *s, int n)); /* [HGM] Shogi move preprocessor */
 void EditPositionPasteFEN P((char *fen));
 void TimeDelay P((long ms));
 void SendMultiLineToICS P(( char *text ));
@@ -73,6 +109,7 @@ void SetBlackToPlayEvent P((void));
 void InitBackEnd1 P((void));
 void InitBackEnd2 P((void));
 int IsPromotion P((int fromX, int fromY, int toX, int toY));
+int InPalace P((int row, int column));
 int PieceForSquare P((int x, int y));
 int OKToStartUserMove P((int x, int y));
 void Reset P((int redraw, int init));
@@ -112,20 +149,24 @@ void DrawEvent P((void));
 void AbortEvent P((void));
 void AdjournEvent P((void));
 void ResignEvent P((void));
+void UserAdjudicationEvent P((int result));
 void StopObservingEvent P((void));
 void StopExaminingEvent P((void));
 void PonderNextMoveEvent P((int newState));
-void ShowThinkingEvent P((int newState));
+void NewSettingeEvent P((int option, char *command, int value));
+void ShowThinkingEvent P(());
 void PeriodicUpdatesEvent P((int newState));
 void HintEvent P((void));
 void BookEvent P((void));
 void AboutGameEvent P((void));
 void ExitEvent P((int status));
 char *DefaultFileName P((char *));
+ChessMove UserMoveTest P((int fromX, int fromY, int toX, int toY, int promoChar));
 void UserMoveEvent P((int fromX, int fromY, int toX, int toY, int promoChar));
 void DecrementClocks P((void));
 char *TimeString P((long millisec));
 void AutoPlayGameLoop P((void));
+void AdjustClock P((Boolean which, int dir));
 void DisplayBothClocks P((void));
 void EditPositionMenuEvent P((ChessSquare selection, int x, int y));
 void DropMenuEvent P((ChessSquare selection, int x, int y));
@@ -152,6 +193,7 @@ Boolean ParseOneMove P((char *move, int moveNum,
 			int *toX, int *toY, char *promoChar));
 char *VariantName P((VariantClass v));
 VariantClass StringToVariant P((char *e));
+double u64ToDouble P((u64 value));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));
@@ -176,40 +218,7 @@ extern GameInfo gameInfo;
 #define ICS_CHESSNET 3 /* not really supported */
 int ics_type;
 
-/* unsigned int 64 for engine nodes work and display */
-#ifdef WIN32
-	/* I don't know the name for this type of other compiler
-	 * If it not work, just modify here
-	 * This is for MS Visual Studio
-	 */
-	#ifdef _MSC_VER
-		#define u64 unsigned __int64
-		#define s64 signed __int64
-		#define u64Display "%I64u"
-		#define s64Display "%I64d"
-		#define u64Const(c) (c ## UI64)
-		#define s64Const(c) (c ## I64)
-	#else
-		/* place holder
-		 * or dummy types for other compiler
-		 */
-		#define u64 unsigned long long
-		#define s64 signed long long
-		#define u64Display "%I64u"
-		#define s64Display "%I64d"
-		#define u64Const(c) (c ## ull)
-		#define s64Const(c) (c ## ll)
-	#endif
-#else
-	/* GNU gcc */
-	#define u64 unsigned long long
-	#define s64 signed long long
-	#define u64Display "%llu"
-	#define s64Display "%lld"
-	#define u64Const(c) (c ## ull)
-	#define s64Const(c) (c ## ll)
-#endif
-
+ 
 
 /* pgntags.c prototypes
  */
@@ -229,16 +238,29 @@ typedef struct _ListGame {
     unsigned long offset;   /*  Byte offset of game within file.     */
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;
-
+ 
 extern List gameList;
 void ClearGameInfo P((GameInfo *));
 int GameListBuild P((FILE *));
 void GameListInitGameInfo P((GameInfo *));
 char *GameListLine P((int, GameInfo *));
+char * GameListLineFull P(( int, GameInfo *));
 
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
 
+typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, SaveButton } Control;
+
+typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
+    int value;          // current setting, starts as default
+    int min;
+    int max;
+    void *handle;       // for use by front end
+    char *textValue;    // points to beginning of text value in name field
+    char **choice;      // points to array of combo choices in cps->combo
+    Control type;
+    char name[MSG_SIZ]; // holds both option name and text value
+} Option;
 
 typedef struct _CPS {
     char *which;
@@ -277,8 +299,64 @@ typedef struct _CPS {
     int analyzing;
     int protocolVersion;
     int initDone;
+
+    /* Added by Tord: */
+    int useFEN960;   /* 0=use "KQkq" style FENs, 1=use "HAha" style FENs */
+    int useOOCastle; /* 0="O-O" notation for castling, 1="king capture rook" notation */
+    /* End of additions by Tord */
+
+    int scoreIsAbsolute; /* [AS] 0=don't know (standard), 1=score is always from white side */
+    int isUCI;           /* [AS] 0=no (Winboard), 1=UCI (requires Polyglot) */
+    int hasOwnBookUCI;   /* [AS] 0=use GUI or Polyglot book, 1=has own book */
+
+    /* [HGM] time odds */
+    int timeOdds;   /* factor through which we divide time for this engine  */
+    int debug;      /* [HGM] ignore engine debug lines starting with '#'    */
+    int maxNrOfSessions; /* [HGM] secondary TC: max args in 'level' command */
+    int accumulateTC; /* [HGM] secondary TC: how to handle extra sessions   */
+    int nps;          /* [HGM] nps: factor for node count to replace time   */
+    int supportsNPS;
+    int alphaRank;    /* [HGM] shogi: engine uses shogi-type coordinates    */
+    int maxCores;     /* [HGM] SMP: engine understands cores command        */
+    int memSize;      /* [HGM] memsize: engine understands memory command   */
+    char egtFormats[MSG_SIZ];     /* [HGM] EGT: supported tablebase formats */
+    int bookSuspend;  /* [HGM] book: go was deferred because of book hit    */
+    int nrOptions;    /* [HGM] options: remembered option="..." features    */
+#define MAX_OPTIONS 50
+    Option option[MAX_OPTIONS];
+    int comboCnt;
+    char *comboList[10*MAX_OPTIONS];
+    void *programLogo; /* [HGM] logo: bitmap of the logo                    */
 } ChessProgramState;
 
 extern ChessProgramState first, second;
+
+/* [AS] Search stats from chessprogram, for the played move */
+typedef struct {
+    int score;  /* Centipawns */
+    int depth;  /* Plies */
+    int time;   /* Milliseconds */
+} ChessProgramStats_Move;
+
+/* Search stats from chessprogram */
+typedef struct {
+  char movelist[2*MSG_SIZ]; /* Last PV we were sent */
+  int depth;              /* Current search depth */
+  int nr_moves;           /* Total nr of root moves */
+  int moves_left;         /* Moves remaining to be searched */
+  char move_name[MOVE_LEN];  /* Current move being searched, if provided */
+  u64 nodes;    /* # of nodes searched */
+  int time;               /* Search time (centiseconds) */
+  int score;              /* Score (centipawns) */
+  int got_only_move;      /* If last msg was "(only move)" */
+  int got_fail;           /* 0 - nothing, 1 - got "--", 2 - got "++" */
+  int ok_to_send;         /* handshaking between send & recv */
+  int line_is_book;       /* 1 if movelist is book moves */
+  int seen_stat;          /* 1 if we've seen the stat01: line */
+} ChessProgramStats;
+
+extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
+extern shuffleOpenings;
+extern ChessProgramStats programStats;
 
 #endif /* _BACKEND */

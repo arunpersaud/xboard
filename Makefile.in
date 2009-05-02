@@ -1,7 +1,7 @@
 #
 # Run ./configure to generate a Makefile from Makefile.in
 # See INSTALL for more information
-# $Id$
+# $Id: Makefile.in,v 2.7 2003/11/28 18:26:06 mann Exp $
 #
 
 PRODUCT = @PRODUCT@
@@ -15,9 +15,6 @@ VPATH = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
-datarootdir = @datarootdir@
-datadir = @datadir@
-localedir = $(datadir)/locale
 mandir = @mandir@
 man6dir = $(mandir)/man6
 man6ext = .6
@@ -29,7 +26,7 @@ infodir = $(prefix)/share/info
 CC = @CC@
 CFLAGS = @CFLAGS@ @CPPFLAGS@ -DINFODIR=\"$(infodir)\"
 ALL_CFLAGS = -I. -I$(srcdir) @X_CFLAGS@ @CONF_CFLAGS@ $(CFLAGS)
-DEFINES = @DEFS@ -DLOCALEDIR=\"$(localedir)\"
+DEFINES = @DEFS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -39,7 +36,7 @@ LEX = @LEX@
 LEXFLAGS = 
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBS = @X_LIBS@ @XAW_LIBS@ @PRE_XMULIB@ -lXmu @POST_XMULIB@ -lXt -lXext \
-	@X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@ @LTLIBINTL@ @LIBS@ -lm
+	@X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@ @LIBS@ -lm
 NROFF = @NROFF@
 NROFFFLAGS = @NROFFFLAGS@
 
@@ -52,55 +49,42 @@ DISTSOURCE = acconfig.h AUTHORS backend.c backend.h backendz.h bitmaps	\
   parser.l pgntags.c pixmaps pxboard READ_ME shiphtml sounds texi2man	\
   ToDo winboard xboard.c xboard.h xboard.texi xboard.texinfo.in		\
   xedittags.c xedittags.h xgamelist.c xgamelist.h xhistory.c xhistory.h	\
-  zic2xpm.c zic2xpm.man zippy.c zippy.h zippy.lines zippy.README
+  zic2xpm.c zic2xpm.man zippy.c zippy.h zippy.lines zippy.README book.c
 
 PSEUDOSOURCE = parser.c xboard.man xboard.info xboard.txt zic2xpm.txt FAQ
 
 DISTDIR = @PRODUCT@-@VERSION@.@PATCHLEVEL@
 
 XBOARDOBJ = parser.o xboard.o backend.o moves.o childio.o gamelist.o \
-	lists.o pgntags.o xgamelist.o xedittags.o xhistory.o @ZIPPY_O@
+	lists.o pgntags.o xgamelist.o xedittags.o xhistory.o uci.o \
+	xengineoutput.o xoptions.o book.o @ZIPPY_O@
 
-default: xboard pot zic2xpm
+default: xboard zic2xpm
 
 all: default pseudosource info FAQ html dvi ps
 
 install: installdirs default
-	$(INSTALL_PROGRAM) -s xboard $(DESTDIR)$(bindir)/xboard
-	$(INSTALL_PROGRAM) -s zic2xpm $(DESTDIR)$(bindir)/zic2xpm
-	$(INSTALL_PROGRAM) cmail $(DESTDIR)$(bindir)/cmail
-	$(INSTALL_PROGRAM) $(srcdir)/pxboard $(DESTDIR)$(bindir)/pxboard
-	$(INSTALL_DATA) $(srcdir)/xboard.man $(DESTDIR)$(man6dir)/xboard$(man6ext)
-	$(INSTALL_DATA) $(srcdir)/zic2xpm.man $(DESTDIR)$(man6dir)/zic2xpm$(man6ext)
-	$(INSTALL_DATA) xboard.info $(DESTDIR)$(infodir)/xboard.info
-	(cd po && $(MAKE) $@)
+	$(INSTALL_PROGRAM) -s xboard $(bindir)/xboard
+	$(INSTALL_PROGRAM) -s zic2xpm $(bindir)/zic2xpm
+	$(INSTALL_PROGRAM) cmail $(bindir)/cmail
+	$(INSTALL_PROGRAM) $(srcdir)/pxboard $(bindir)/pxboard
+	$(INSTALL_DATA) $(srcdir)/xboard.man $(man6dir)/xboard$(man6ext)
+	$(INSTALL_DATA) $(srcdir)/zic2xpm.man $(man6dir)/zic2xpm$(man6ext)
+	$(INSTALL_DATA) xboard.info $(infodir)/xboard.info
 	-PATH=$$PATH:/sbin:/usr/sbin install-info \
-		$(DESTDIR)$(infodir)/xboard.info $(DESTDIR)$(infodir)/dir
+		$(infodir)/xboard.info $(infodir)/dir
 
 installdirs: mkinstalldirs
-	if [ -n "$(DESTDIR)" ] ; then \
-		if [ 0 == `echo $(DESTDIR) | grep -c "^/"` ] ; then \
-			echo "DESTDIR must be an absolute path name"; \
-			exit 1 ; \
-		fi ; \
-	fi ;
-	$(srcdir)/mkinstalldirs $(DESTDIR)$(bindir) $(DESTDIR)$(mandir) $(DESTDIR)$(man6dir) $(DESTDIR)$(infodir)
+	$(srcdir)/mkinstalldirs $(bindir) $(mandir) $(man6dir) $(infodir)
 
 uninstall:
-	if [ -n "$(DESTDIR)" ] ; then \
-		if [ 0 == `echo $(DESTDIR) | grep -c "^/"` ] ; then \
-			echo "DESTDIR must be an absolute path name"; \
-			exit 1 ; \
-		fi ; \
-	fi ;
-	rm -f $(DESTDIR)$(bindir)/xboard $(DESTDIR)$(bindir)/cmail $(DESTDIR)$(bindir)/pxboard
-	rm -f $(DESTDIR)$(bindir)/zic2xpm
-	rm -f $(DESTDIR)$(man6dir)/xboard$(man6ext) $(DESTDIR)$(man6dir)/cmail$(man6ext)
-	rm -f $(DESTDIR)$(man6dir)/zic2xpm$(man6ext)
-	rm -f $(DESTDIR)$(infodir)/xboard.info
-	(cd po && $(MAKE) $@)
+	rm -f $(bindir)/xboard $(bindir)/cmail $(bindir)/pxboard
+	rm -f $(bindir)/zic2xpm
+	rm -f $(man6dir)/xboard$(man6ext) $(man6dir)/cmail$(man6ext)
+	rm -f $(man6dir)/zic2xpm$(man6ext)
+	rm -f $(infodir)/xboard.info
 	-PATH=$$PATH:/sbin:/usr/sbin install-info --delete \
-		$(DESTDIR)$(infodir)/xboard.info $(DESTDIR)$(infodir)/dir
+		$(infodir)/xboard.info $(infodir)/dir
 
 clean:
 	rm -f xboard zic2xpm *.o xboard.txt zic2xpm.txt $(LEX_OUTPUT_ROOT).c
@@ -109,7 +93,6 @@ clean:
 	rm -f xboard.vr* xboard.ps
 
 distclean: clean tidy
-	(cd po && $(MAKE) $@)
 	rm -f config.cache config.log config.status Makefile 
 	rm -f config.h stamp-h xboard.texinfo cmail
 	-cd winboard ; make -f cygwin.mak clean
@@ -176,10 +159,6 @@ check: all
 xboard: $(XBOARDOBJ)
 	$(CC) -o xboard $(ALL_LDFLAGS) $(XBOARDOBJ) $(LIBS)
 
-pot:
-	rm -f po/stamp-po
-	(cd po && $(MAKE))
-
 zic2xpm: zic2xpm.o
 	$(CC) -o zic2xpm zic2xpm.o
 
@@ -204,6 +183,8 @@ backend.o: backend.h lists.h
 backend.o: parser.h
 backend.o: moves.h
 backend.o: zippy.h
+book.o: common.h
+book.o: backend.h
 childio.o: config.h
 childio.o: common.h
 childio.o: frontend.h
@@ -261,6 +242,15 @@ xhistory.o: backend.h
 xhistory.o: xboard.h
 xhistory.o: xhistory.h
 xhistory.o: lists.h
+xengineoutput.o: common.h
+xengineoutput.o: frontend.h
+xengineoutput.o: backend.h
+xengineoutput.o: xboard.h
+xoptions.o: common.h
+xoptions.o: backend.h
+xoptions.o: xboard.h
+uci.o: common.h
+uci.o: backend.h
 zippy.o: backend.h
 zippy.o: backendz.h
 zippy.o: config.h

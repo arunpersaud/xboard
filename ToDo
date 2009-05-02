@@ -84,23 +84,24 @@ allowing dragging from the icons to drop a piece).  Actually, moving
 the clocks would be beneficial too, so that it's easier to visually
 associate the right clock with the right player when looking at two
 boards during a bughouse match (with two copies of xboard running).
-Maybe multiple window layouts should be user-selectable.
+Maybe multiple window layouts should be user-selectable. [4.3 supports
+drag-drops from holdings]
 
 150. Keep track of castling availability, en-passant availability, and
 FEN half-move clock (for 50-move rule), pass the availability
 information to the move generator through the existing interface, and
-load/save it in the FEN code.
+load/save it in the FEN code. [Fixed in 4.3]
 
 150a. Note that not keeping track of ep creates a bug in mate
 detection.  In certain positions, moving a pawn from the 3rd to 4th
 rank gives mate, but it is not detected because if the pawn had moved
 to the same position from the 2nd rank, ep capture would have been
-legal and there would be no mate.
+legal and there would be no mate. [problem disappeared in 4.3]
 
 150b. Note that although we try to put in e.p. availability when
 writing FEN, this works only if we have the move that got us to this
 position in the moveList. If we load a position from FEN, the
-e.p. availability field of the FEN is lost.
+e.p. availability field of the FEN is lost. [disappeared in 4.3]
 
 152. Generate the info file, man page, perhaps html, and perhaps even
 the WinBoard help file from the same sources.  Right now,
@@ -122,7 +123,8 @@ engine don't "have the same console"; indeed, neither has a console.
 162. Supply a non-X Zippy for Unix.  Perhaps use the code from Klaus
 Knopper.
 
-167. Alternative bitmaps loaded at runtime for WinBoard.
+167. Alternative bitmaps loaded at runtime for WinBoard. [font-based
+piece rendering provides this functionality since WinBoard_x]
 
 169. Upload Game on file menu?  This would upload the current game
 moves into a scratch examined game on ICS.  Could do Upload Position
@@ -136,10 +138,11 @@ turn on at any time, not just in LoadGame.  What should GUI be?
 171. Displaying thinking in a separate window should be an option
 available at all times when Show Thinking makes sense, not just in
 analysis mode.  It should perhaps be orthogonal to analysis mode.
+[added in WinBoard_x]
 
 172. Should analysis window scroll instead of showing only the last
 line?  There could be an extra checkbox to show all chess engine
-output in it.
+output in it. [fixed in WinBoard_x]
 
 178. Need reliable kill for chess engine on Win32.  See also 161.
 
@@ -272,7 +275,7 @@ automatically based on the info sent from mamer.  [I would need to
 play in some tournaments before I could evaluate this idea or fill in
 the details.]
 
-222. Could support time handicaps.
+222. Could support time handicaps. [Added in 4.3]
 
 223. Bug: very long comments cause buffer overflow.  Need to revamp
 the way comments are parsed and returned from parser.l to fix this.
@@ -280,7 +283,7 @@ the way comments are parsed and returned from parser.l to fix this.
 224. Larry Parrish requests: In an automated multi-games match I would
 like to load the n-th game from the file for the n-th game of the
 match.  [That is, when -mg and -lgf or -lpf are used together without
--lgi or -lpi.]
+-lgi or -lpi.] [4.3.15 provides auto-increment og game and pos index]
 
 225. From pulp: another bug (maybe with the Microsoft RichEdit
 control) I've observed is when you flood the edit control it loses the
@@ -297,7 +300,8 @@ web page address, close, go to browser, paste *nothing*.  [How does
 one do this in Windows?]
 
 227a. In engine-engine matches, an engine that crashes should lose and
-perhaps get restarted for the next game.
+perhaps get restarted for the next game. [In 4.3 a crashing engine 
+forfeits the game, but still terminates a match.]
 
 227b. Maybe when an engine playing in Zippy mode exhibits a bug, we
 should do a little more too.  Perhaps "say Sorry, the engine seems to
@@ -308,7 +312,7 @@ next game.
 claims, rejecting a legal move, or (maybe) missed claims of mate or
 draw.  Note that draw claims require checking for repetition, 50 move
 rule, and insufficient material as well as stalemate, so this is
-nontrivial.
+nontrivial. [Added in 4.3]
 
 228. RichEdit bug: sometimes a line gets indented as if it were
 wrapped when it should be flush left.
@@ -424,6 +428,8 @@ commands" from Steffen Jakob:
 
   "1" tells xboard to ask for an additional parameter (here: filename)
   which will replace the "%s" in the command string.
+[XBoard 4.3.16 has an experimental implementation of this ide through
+the 'feature option="..."' command.]
 
 261. Check that "quit" is sent to engine properly if ICS connection
 fails to open due to error from timestamp/timeseal.  "wzrdking" had a
@@ -438,7 +444,8 @@ poor idea.)
 274. Command to go to move number N, with entry box for N.
 
 276. Make grid optional in winboard?  Note that the highlight options
-don't work without it.
+don't work without it. [The Winboard_x -overrideLineGap option provides
+this.]
 
 276a. Make color of grid an option, instead of always black.
 
@@ -456,6 +463,7 @@ windows explorer then crashed when he tried to close winboard.
 279. Idea from an anonymous ICSer: piece drop menu could have images,
 not words.  [Or maybe both?]  Also might be easier to select
 accurately from it if horizontally arranged, or in a 3x2 grid.
+[Now 4.3 has drag & drop, piece-drop menu should be deprecated]
 
 284. dxterm hangs when it receives the escape sequence that sets the
 title bar on xterm.  I think some other xterm substitutes do too.
@@ -550,14 +558,16 @@ it too.  As yet I haven't.
 326. Full support for variants and variant-capable engines in all
 modes, not just ICS mode.  Here are some items still needed.  Some if
 not all should probably wait for a rewrite, not be added to the
-current code base.
+current code base. [4.3 supports many variants, even those not supported
+by ICS. Not bughouse, though]
 
 326a. Menu to let you see and change the current variant type, not
-just a command-line argument as at present.
+just a command-line argument as at present. [Added in 4.3]
 
 326b. crazyhouse: Keep track of holdings and display them, keep track
 of what onboard pieces are promoted so they will revert if captured,
-understand offboard interposition to stop mate.  
+understand offboard interposition to stop mate.  [Added in 4.3, (not
+sure about the interposition)]
 
 326bb. One user asked for a Czech variant of crazyhouse where pawns are
 given to the opponent when they reach the 8th rank (after capturing, if
@@ -568,7 +578,8 @@ of a bughouse game, and getting mate indication right even in ICS mode.
 In the longer term, could understand BPGN, support editing two-board games.
 
 326d. wildcastle: Allow wildcastle castling only when playing this variant!
-Maybe support automatic shuffling for local play.
+Maybe support automatic shuffling for local play. [4.3 adds shuffling
+for any variant played locally]
 
 326e. nocastle: Maybe support automatic shuffling for local play.
 Note that several types of ICS shuffle chess fall under this variant.
@@ -589,7 +600,7 @@ violates a deeply ingrained assumption in the implementation.  It also
 breaks the GUI -- you need more than just dragging the king two
 squares to indicate castling.  (Note: In FR notation, O-O is h-side
 castling, O-O-O is a-side.  See "help fr_rules" and "help fr" on FICS
-for rules.)
+for rules.) [All fixed in 4.3]
 
 326g. kriegspiel: Could give some thought to how to support a
 kriegspiel engine.  I doubt anyone will ever write one, though.
@@ -621,7 +632,8 @@ server-side autoflag on/off by sending an appropriate set command.
 **332. Bug: Autoflag for local engine/engine or engine/human matches
 does not recognize that having your flag fall when your opponent has
 insufficient mating material is a draw.  It counts the flag fall as a
-loss.
+loss. [Partly fixed in 4.3, which corrects any kind of losses against 
+a bare King to draws.]
 
 336. Of course lots of people ask for a graphical seek window.
 
@@ -742,7 +754,7 @@ customizing the positions with X resources.
 366. Feature to let an engine observe an ICS game and run analysis
 mode on the moves, perhaps whispering or channel-telling the results.
 It's a little too easy to cheat with this feature or I might have
-added it long ago.
+added it long ago. [Added in 4.2.8 and 4.4]
 
 369. Optionally send a periodic keepalive command to ICS.  Can be
 used to defeat autologout, so should probably not be on by default.
@@ -799,6 +811,8 @@ black pre-first-move is needed.
 **387. Have winboard draw opaque details on black pieces too.
 Hmm, this should probably be optional, and the detail colors should
 be selectable instead of hardwired to the opposite piece color.
+[The 4.3 -allWhite option goes in this direction. Details always
+in black, though.]
 
 **387a. Add "no piece border" option to WinBoard.  See code from
 Robert Jurjevic sent 4/9/2001.
@@ -838,7 +852,8 @@ as at present.
 console window, or something.
 
 402. Internationalization.  It probably isn't practical to retrofit
-this into the current code base.
+this into the current code base. [4.2.8 and 4.4 have international-
+ization of xboard.]
 
 409. One user requested a way to put a time delay in the middle of
 sending zippyGameEnd commands.  This would (for example) let the
@@ -849,6 +864,7 @@ ScheduleDelayedEvent is OK, but I think it may already be in use in
 this situation, and it only supports one event at a time.
 
 411. Add zippyKibitzThinking and zippyWhisperThinking features?
+[4.3 has an -autoKibitz option]
 
 412. Maybe optimize setting the move list in the case where only the
 current move number changes; avoid slow XawListChange.
@@ -859,7 +875,8 @@ patch that I believe includes this; need to integrate and test it.
 **415. It was suggested that a few common options that many chess
 engines need be promoted to xboard/WinBoard options so that the user
 can set them from the GUI in a uniform way.  In particular: hash size,
-directory name for endgame tables.
+directory name for endgame tables. [4.3 has extended WB protocol
+with a memory, egtpath and cores command.]
 
 **416. Can we avoid dying when xboard is in 8-bit mode, pixmap pieces
 are chosen (by default), and we can't get enough colors?  Ugh.
@@ -912,6 +929,7 @@ be needed for draw by repetition (creating the 3rd repetition with the
 move) and by the 50 move rule (the move is the 50th).  Add to
 protocol, and implement using the individual methods on FICS and ICC.
 Need to be sure it's really a FICS that has the feature (somehow).
+[Fixed in 4.3 by usng 'offer draw' for this purpose]
 
 455. Suggested: Add the epdkit commands such as epdpfga to the
 protocol, since Crafty and "many" (which?) other engines include the
@@ -930,6 +948,8 @@ with the EPD spec.  Maybe a feature command should indicate that the
 engine matches this part of the spec, but then again, it's not clear
 what we can do about it if the engine doesn't give that command, so
 maybe there is no point.  See discussion on chess-engines list.
+[Winboard_x adds an argument to tell WinBoard an egine uses absolute
+scores]
 
 458. Bug: xboard will try to use an engine to play normal chess even
 if the engine has given the feature variant command and did not
@@ -962,11 +982,13 @@ timeseal issue and nothing to do with WinBoard itself.
 476. For some reason (I guess some GUI supports them), most WinBoard
 engines now have a graphical logo, 100x50 pixels in Windows .bmp
 format.  It's been requested that WinBoard have a place to show the
-logo.
+logo. [4.3.16 supports logos]
 
 477. Implement the "book engine" idea I proposed in the protover 3
 discussions.  Some folks have offered to write them (e.g., Bruce
-Morland).
+Morland). [4.3.15 supports a GUI book, which is another way to
+acheive the same, as the only thing that would distinguish book
+engines is their book, not what they do.]
 
 478. Recognize URLs in the WinBoard ics interaction window and make
 them work as hyperlinks (firing up your browser).
@@ -991,7 +1013,8 @@ just trying to win a single game."
 examine mode while -zp is active, and the engine supports analyze,
 then put it into analyze mode and let it work on the examined game.  I
 guess this could work for observed games too.  Should it be optional
-or always done?
+or always done? [4.2.8 and 4.4 support analysis in zippy mode, but
+as yet only while observing games.]
 
 483.  It would be nice if the KingShine 3D board could be integrated
 as an alternative xboard GUI rendering.
@@ -1001,25 +1024,33 @@ us those feature commands.  Useful kludge for certain buggy engines.
 
 485. Add "reset" to protover 3.  (Clear the hash tables and other such
 info; used to put the engine into a known state before running a
-test/benchmark position.)
+test/benchmark position.) [the WB 'memory' command could be defined
+to have this side effect? Normally we would have to clear the hash
+table when changing its size.]
 
 486. Other protover 3 features listed in my 6/21/2001 message to
 chess-engines list.  Write a full protover 3 draft for comment.
+[Note that 4.3 already uses protocol extensions that differ from
+the v3 specs.]
 
 487. Adjudicate non-ICS games as a draw when there is insufficient
 mating material on both sides, especially engine/engine games.  Well,
 maybe.  I argued against this in a 6/26/2001 message to chess-engines.
+[Added in 4.3]
 
 487a. Probably also adjudicate when we detect checkmate or stalemate,
-before bothering to notice whether the engine detected this.
+before bothering to notice whether the engine detected this. [Added
+in 4.3]
 
 487b. Note: Do not adjudicate 50 move rule or 3x repetition since those
 must be claimed by a player -- at least not by default.  It would be
 OK to have a flag to do this someday when we are smart enough to
 notice it.  Would definitely be good to be smart enough to notice an
-incorrect draw claim by an engine.
+incorrect draw claim by an engine. [In 4.3 you can set the number of 
+moves or repeats after which draw is adjudicated]
 
 487c. Another request: allow the operator to adjudicate engine/engine games.
+[Winboard_x provided menu items for this.]
 
 488. Option to suppress tags popup on game load?  This has been
 requested a few times, and I received one partial implementation (not
@@ -1039,7 +1070,9 @@ kibitzing from the engine dynamically.  I had thought it would be
 better to make the GUI able to relay thinking output as kibitzing on
 its own (and be able to turn this on/off dynamically), but Bruce
 points out that what engine authors want to send as kibitzing output
-usually includes more than the PV thinking output.
+usually includes more than the PV thinking output. [Note that engines
+can put whatever info they want in the PV field of the thinking 
+output].
 
 492.  One user reports that GNU Chess 5 crashes if you start a game,
 play far enough to get GNU Chess out of book, select Reset, and play
@@ -1056,7 +1089,7 @@ Ugh, but I suppose it would be helpful sometimes.
 they were doing) partial conversions of WinBoard to German or Spanish
 by manually translating the messages.  I think it would be much better
 (but a big job) to use GNU gettext.  I haven't looked into the details
-of that at all.
+of that at all. [4.2.8 and 4.4 have gettext support.]
 
 495. JamesBaud points out that FEN is not sufficient to correctly
 represent a crazyhouse position (or bughouse, for that matter),
@@ -1066,10 +1099,12 @@ information.  I really don't know what I could do about this -- take
 the lead in proposing an extension to FEN and to style 12 with new
 piece letters, I suppose.  I don't really have time or motivation for
 that.  If you always use PGN, not FEN, to save Crazyhouse, that works
-around the problem.
+around the problem. [4.3 uses bFENs which fix this, but not in ICS
+mode]
 
 **496. DAV sent some code to save a screen shot in xboard.  Look at
-merging this in.
+merging this in. [4.3 has an option to save the board display (but
+not the entire window) as bitmap.]
 
 **497. Igor Eged reports: I make a move on opponents time using
 premove. Right in the time I am holding another piece in case of
@@ -1166,7 +1201,7 @@ The "new" command should set the search depth back to unlimited.  This
 is already stated in the spec.  The "level" command should not affect
 the search depth.  As it happens, xboard/WinBoard currently always
 sends sd (if needed) right after level, but that isn't part of the
-spec.
+spec. [Added to the specs that go with 4.4]
 
 518. Warn in doc that -initString is a dangerous feature.  Also move
 doc of dalogs for sending commands directly to the engine out of the
@@ -1196,7 +1231,7 @@ be nice.
 
 525. Support a 64-bit node counter in analysis mode when compiled with
 something that has 64-bit integer support.  Both gcc and msvc++ have
-this, though under different names.
+this, though under different names. [Done in 4.2.8 and 4.4]
 
 526. "-initialMode analysis -lgf -" doesn't get the engine into
 analysis mode properly.  "-initialMode analyzeFile" is a workaround,
@@ -1224,6 +1259,7 @@ Any support needed?
 
 529. Protover 3 needs a prefix character that says "this is debug
 output" and prevents the GUI from parsing that line (say ";").
+[4.3 uses '#' for this purpose, when the engine sets feature debug=1]
 
 530. The undocumented (?) checking for rsh error messages tripped up
 one engine author who had a "not found" in a message.  Tighten this
@@ -1260,7 +1296,8 @@ already?)
 538. Need a way for the user to adjust the clocks.  This is important
 for WCCC and other computer competitions, where xboard/winboard's
 clock is not the master.  I was going to do it in time for the July
-2002 WCCC.  Oops.
+2002 WCCC.  Oops. [4.3 allows adjusting the clocks by clicking them
+in 'edit game' mode, in steps of 1 minute]
 
 541. Related to #327, John Iverson says, "It would be nice to have the
 coordinates shown outside of the board along the edges, rather than in
@@ -1348,11 +1385,24 @@ HTML, at the cost of losing the index and search capability.
 a pain to create new dialogs by editing the text file.  The original
 ones were all created using the graphical dialog editor in MSVC 5.
 
-553. It would be nice for xboard's ICS Input box to have a history
-feature similar to WinBoard's ICS Interaction window.  Actually it
-would be nice for xboard to have its own ICS Interaction window with
-all the bells and whistles that WinBoard's has instead of limping
-along using an xterm for interaction.
+553. It would be nice for xboard's ICS Input box to have a history 
+feature similar to WinBoard's ICS Interaction window. Actually it 
+would be nice for xboard to have its own ICS Interaction window with 
+all the bells and whistles that WinBoard's has instead of limping 
+along using an xterm for interaction. 
+
+**554. Port evaluation-graph window to XBoard.
+
+555. Split x/wengineoutput.c in a front-end and common backend file.
+
+556. Fix -stickyWindows option under XP and Vista, and port to XBoard.
+
+557. Port display of engine logos to XBoard.
+
+558. Device a smart way for -autoLogo to select logos in other modes
+than Two Machines.
+
+
 
 * * *
 

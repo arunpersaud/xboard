@@ -1,33 +1,33 @@
 ChangeLog for XBoard/WinBoard
-* 2009-03-17 APersaud: added initial german language support (130 of 301 strings translated).
 
-* 2009-02-28 APersaud: fixed bug #22853: changed all .Xdefaults to .Xresources in xboard.texi 
-	
-* 2009-02-28 anonymous <grainman.timp@gmail.com> (tiny change)
-	added DESTDIR support to Makefile.in; similar patch also provided by Ali Polatel <kawdjer>
-	patch #6182; bug #25672
-	
-* 2009-02-28 APersaud: fixed missing datarootdir in Makefile.in -> autoconf -> new configure script
-	
-* 2009-02-28 APersaud: fixed an error in the parser. This should fix bug #22812.
-	
-* 06/12/2005: bugfix some more possible buffer overflows.
+* 04/15/2009: Updated the winboard.rtf of 4.3.15 with the 4.3.16
+additions, and a more fitting description of ICS-analysis mode.
 
+* 04/15/2009: Added internationalization to xengineoutput.c and
+xoptions.c. Fixed missing */ in xboard.c.
+
+* 04/13/2009: transferred all changes since 4.2.7 to 4.3.pre16, to make 
+4.4.pre1, which should lead to a full merger of the 4.2 and 4.3 line
+
+* 02/28/2009: fixed an error in the parser. This should fix bug #22812. 
+ 
+* 06/12/2005: bugfix some more possible buffer overflows. 
+ 
 * 06/27/2004: added simple icsEngineAnalyze for xboard
 
 * 06/26/2004: added icsEngineAnalyze for winboard: Analyze observe games 
 with a chessprogram on a Internet Chess Server (ICS) 
 
-* 02/12/2004: Bugfix ICS interaction console crashed while chess
-engine starting and user type in some stuff. We are wait now to finish
+* 02/12/2004: Bugfix ICS interaction console crashed while chess 
+engine starting and user type in some stuff. We wait now to finish 
 the engine boot.
 
-* 02/11/2004: Winboard: Added color lines for the ics interaction
-console if zippy used
-
-* 02/09/2004: Added mousewheel support for winboard. Play moves
-backward and forward with the mousewheel.
-
+* 02/11/2004: Winboard: Added color lines for the ics interaction 
+console if zippy used 
+ 
+* 02/09/2004: Added mousewheel support for winboard. Play moves 
+backward and forward with the mousewheel. 
+ 
 xboard/WinBoard 4.2.7 -- Fri Nov 28 13:36:00 PST 2003 -- Tim Mann
 
 * 11/26/2003: In WinBoard, setting the -debug flag now logs ICS output

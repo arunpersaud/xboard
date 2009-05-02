@@ -1,6 +1,6 @@
 /*
  * gamelist.c -- Functions to manage a gamelist
- * XBoard $Id$
+ * XBoard $Id: gamelist.c,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1995 Free Software Foundation, Inc.
  *
@@ -70,6 +70,7 @@ static void GameListDeleteGame(listGame)
 	if (listGame->gameInfo.resultDetails) free(listGame->gameInfo.resultDetails);
 	if (listGame->gameInfo.timeControl) free(listGame->gameInfo.timeControl);
 	if (listGame->gameInfo.extraTags) free(listGame->gameInfo.extraTags);
+        if (listGame->gameInfo.outOfBook) free(listGame->gameInfo.outOfBook);
 	ListNodeFree((ListNode *) listGame);
     }
 }
@@ -107,6 +108,7 @@ void GameListInitGameInfo(gameInfo)
     gameInfo->whiteRating = -1; /* unknown */
     gameInfo->blackRating = -1; /* unknown */
     gameInfo->variant = VariantNormal;
+    gameInfo->outOfBook = NULL;
 }
 
 
@@ -295,12 +297,16 @@ void ClearGameInfo(gameInfo)
     if (gameInfo->extraTags != NULL) {
 	free(gameInfo->extraTags);
     }
+    if (gameInfo->outOfBook != NULL) {
+        free(gameInfo->outOfBook);
+    }
 
     GameListInitGameInfo(gameInfo);
 }
 
+/* [AS] Replaced by "dynamic" tag selection below */
 char *
-GameListLine(number, gameInfo)
+GameListLineOld(number, gameInfo)
      int number;
      GameInfo *gameInfo;
 {
@@ -317,3 +323,97 @@ GameListLine(number, gameInfo)
     return ret;
 }
 
+#define MAX_FIELD_LEN   64  /* To avoid overflowing the buffer */
+
+char * GameListLine( int number, GameInfo * gameInfo )
+{
+    char buffer[1024];
+    char * buf = buffer;
+    char * glt = appData.gameListTags;
+    
+    buf += sprintf( buffer, "%d.", number );
+
+    while( *glt != '\0' ) {
+        *buf++ = ' ';
+
+        switch( *glt ) {
+        case GLT_EVENT:
+            strncpy( buf, gameInfo->event ? gameInfo->event : "?", MAX_FIELD_LEN );
+            break;
+        case GLT_SITE:
+            strncpy( buf, gameInfo->site ? gameInfo->site : "?", MAX_FIELD_LEN );
+            break;
+        case GLT_DATE:
+            strncpy( buf, gameInfo->date ? gameInfo->date : "?", MAX_FIELD_LEN );
+            break;
+        case GLT_ROUND:
+            strncpy( buf, gameInfo->round ? gameInfo->round : "?", MAX_FIELD_LEN );
+            break;
+        case GLT_PLAYERS:
+            strncpy( buf, gameInfo->white ? gameInfo->white : "?", MAX_FIELD_LEN );
+            buf[ MAX_FIELD_LEN-1 ] = '\0';
+            buf += strlen( buf );
+            *buf++ = '-';
+            strncpy( buf, gameInfo->black ? gameInfo->black : "?", MAX_FIELD_LEN );
+            break;
+        case GLT_RESULT:
+            strcpy( buf, PGNResult(gameInfo->result) );
+            break;
+        case GLT_WHITE_ELO:
+            if( gameInfo->whiteRating > 0 )
+                sprintf( buf, "%d", gameInfo->whiteRating );
+            else
+                strcpy( buf, "?" );
+            break;
+        case GLT_BLACK_ELO:
+            if( gameInfo->blackRating > 0 )
+                sprintf( buf, "%d", gameInfo->blackRating );
+            else
+                strcpy( buf, "?" );
+            break;
+        case GLT_TIME_CONTROL:
+            strncpy( buf, gameInfo->timeControl ? gameInfo->timeControl : "?", MAX_FIELD_LEN );
+            break;
+        case GLT_VARIANT:
+            break;
+        case GLT_OUT_OF_BOOK:
+            strncpy( buf, gameInfo->outOfBook ? gameInfo->outOfBook : "?", MAX_FIELD_LEN );
+            break;
+        default:
+            break;
+        }
+
+        buf[MAX_FIELD_LEN-1] = '\0';
+
+        buf += strlen( buf );
+
+        glt++;
+
+        if( *glt != '\0' ) {
+            *buf++ = ',';
+        }
+    }
+
+    *buf = '\0';
+
+    return strdup( buffer );
+}
+
+char * GameListLineFull( int number, GameInfo * gameInfo )
+{
+    char * event = gameInfo->event ? gameInfo->event : "?";
+    char * site = gameInfo->site ? gameInfo->site : "?";
+    char * white = gameInfo->white ? gameInfo->white : "?";
+    char * black = gameInfo->black ? gameInfo->black : "?";
+    char * round = gameInfo->round ? gameInfo->round : "?";
+    char * date = gameInfo->date ? gameInfo->date : "?";
+    char * oob = gameInfo->outOfBook ? gameInfo->outOfBook : "";
+    
+    int len = 64 + strlen(event) + strlen(site) + strlen(white) + strlen(black) + strlen(date) + strlen(oob);
+
+    char *ret = (char *) malloc(len);
+
+    sprintf(ret, "%d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"", number, event, site, round, white, black, PGNResult(gameInfo->result), date, oob );
+
+    return ret;
+}

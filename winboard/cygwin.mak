@@ -10,11 +10,15 @@ linkdebug= -g
 proj=winboard
 allobj=  winboard.o backend.o parser.o moves.o lists.o \
 	 gamelist.o pgntags.o wedittags.o wgamelist.o zippy.o \
-         wsockerr.o wbres.o wclipbrd.o woptions.o
+	 wsockerr.o wbres.o wclipbrd.o woptions.o uci.o \
+	 wengineo.o wevalgraph.o whistory.o wlayout.o \
+	 wplugin.o wsnap.o book.o
 
 dotc=   winboard.c backend.c parser.c moves.c lists.c \
-	 gamelist.c pgntags.c wedittags.c wgamelist.c zippy.c \
-         wsockerr.c winboard.rc wclipbrd.c woptions.c
+	gamelist.c pgntags.c wedittags.c wgamelist.c zippy.c \
+	wsockerr.c winboard.rc wclipbrd.c woptions.c uci.c \
+	wengineo.c wevalgraph.c whistory.c wlayout.c \
+	wplugin.c wsnap.c book.c
 
 # Currently WinBoard will build either with or without -mno-cygwin
 # however, a Cygwin bug in forming the command line to WinMain() is
@@ -27,7 +31,7 @@ INCLUDES= -I. -I..
 CVARS= $(INCLUDES) $(cygwin)
 CC = gcc $(CVARS)
 WCC = $(CC) -mwindows $(linkdebug)
-HC="c:/program files/help workshop/hcrtf.exe" -xn
+HC="/c/program files/help workshop/hcrtf.exe" -xn
 
 all: $(proj).exe
 
@@ -43,9 +47,9 @@ maintainer-clean: clean
 	rm -f parser.c *.hlp *.HLP
 
 # Update the help file if necessary
-$(proj).hlp : $(proj).rtf
-	$(HC) $(proj).hpj
-	cat $(proj).err
+#$(proj).hlp : $(proj).rtf
+#	$(HC) $(proj).hpj
+#	cat $(proj).err
 
 # Update the resource if necessary
 wbres.o: $(proj).rc $(proj).h resource.h
@@ -89,3 +93,4 @@ wclipbrd.o: config.h ../common.h winboard.h resource.h ../frontend.h
 wclipbrd.o: ../backend.h ../lists.h wclipbrd.h
 woptions.o: config.h ../common.h winboard.h resource.h ../backend.h
 woptions.o: ../lists.h ../frontend.h woptions.h defaults.h wedittags.h
+book.o: ../common.h ../backend.h

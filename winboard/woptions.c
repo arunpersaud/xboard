@@ -1,6 +1,6 @@
 /*
  * woptions.c -- Options dialog box routines for WinBoard
- * $Id$
+ * $Id: woptions.c,v 2.1 2003/10/27 19:21:02 mann Exp $
  *
  * Copyright 2000 Free Software Foundation, Inc.
  *
@@ -26,6 +26,7 @@
 #include <windows.h>   /* required for all Windows applications */
 #include <stdio.h>
 #include <stdlib.h>
+#include <shlobj.h>    /* [AS] Requires NT 4.0 or Win95 */
 
 #include "common.h"
 #include "winboard.h"
@@ -59,10 +60,12 @@ extern ColorClass currentColorClass;
 extern HWND hwndConsole;
 extern char *defaultTextAttribs[];
 extern HWND commentDialog;
+extern HWND moveHistoryDialog;
 extern char installDir[];
 extern HWND hCommPort;    /* currently open comm port */
 extern DCB dcb;
 extern BOOLEAN chessProgram;
+extern startedFromPositionFile; /* [HGM] loadPos */
 
 /* types */
 
@@ -80,6 +83,7 @@ typedef struct {
 
 LRESULT CALLBACK GeneralOptions(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK BoardOptions(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK NewVariant(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK IcsOptions(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK FontOptions(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK CommPortOptions(HWND, UINT, WPARAM, LPARAM);
@@ -167,6 +171,10 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_ShowCoordinates, appData.showCoords);
     CHECK_BOX(OPT_ShowThinking, appData.showThinking);
     CHECK_BOX(OPT_TestLegality, appData.testLegality);
+    CHECK_BOX(OPT_HideThinkFromHuman, appData.hideThinkingFromHuman);
+    CHECK_BOX(OPT_SaveExtPGN, appData.saveExtendedInfoInPGN);
+    CHECK_BOX(OPT_ExtraInfoInMoveHistory, appData.showEvalInMoveHistory);
+    CHECK_BOX(OPT_HighlightMoveArrow, appData.highlightMoveWithArrow);
 
 #undef CHECK_BOX
 
@@ -206,8 +214,18 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.popupMoveErrors      = IS_CHECKED(OPT_PopupMoveErrors);
       appData.showButtonBar        = IS_CHECKED(OPT_ShowButtonBar);
       appData.showCoords           = IS_CHECKED(OPT_ShowCoordinates);
+      // [HGM] thinking: next three moved up
+      appData.saveExtendedInfoInPGN= IS_CHECKED(OPT_SaveExtPGN);
+      appData.hideThinkingFromHuman= IS_CHECKED(OPT_HideThinkFromHuman);
+      appData.showEvalInMoveHistory= IS_CHECKED(OPT_ExtraInfoInMoveHistory);
+#if 0
       ShowThinkingEvent(             IS_CHECKED(OPT_ShowThinking));
+#else
+      appData.showThinking         = IS_CHECKED(OPT_ShowThinking);
+      ShowThinkingEvent(); // [HGM] thinking: tests four options
+#endif
       appData.testLegality         = IS_CHECKED(OPT_TestLegality);
+      appData.highlightMoveWithArrow=IS_CHECKED(OPT_HighlightMoveArrow);
 
 #undef IS_CHECKED
 
@@ -484,7 +502,7 @@ BoardOptionsWhichRadio(HWND hDlg)
 LRESULT CALLBACK
 BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  static Boolean  mono;
+  static Boolean  mono, white, flip;
   static BoardSize size;
   static COLORREF lsc, dsc, wpc, bpc, hsc, phc;
   static HBITMAP pieces[3];
@@ -553,6 +571,12 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     if (appData.monoMode)
       CheckDlgButton(hDlg, OPT_Monochrome, TRUE);
 
+    if (appData.allWhite)
+      CheckDlgButton(hDlg, OPT_AllWhite, TRUE);
+
+    if (appData.upsideDown)
+      CheckDlgButton(hDlg, OPT_UpsideDown, TRUE);
+
     pieces[0] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "s");
     pieces[1] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "w");
     pieces[2] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "o");
@@ -564,6 +588,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     hsc = highlightSquareColor;
     phc = premoveHighlightColor;
     mono = appData.monoMode;
+    white= appData.allWhite;
+    flip = appData.upsideDown;
     size = boardSize;
 
     SetBoardOptionEnables(hDlg);
@@ -608,6 +634,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  (wpc  != whitePieceColor) ||
 	  (bpc  != blackPieceColor) ||
 	  (hsc  != highlightSquareColor) ||
+          (flip != appData.upsideDown) ||
+          (white != appData.allWhite) ||
 	  (phc  != premoveHighlightColor)) {
 
 	  lightSquareColor = lsc;
@@ -617,6 +645,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  highlightSquareColor = hsc;
 	  premoveHighlightColor = phc;
 	  appData.monoMode = mono;
+          appData.allWhite = white;
+          appData.upsideDown = flip;
 
 	  InitDrawingColors();
 	  InitDrawingSizes(boardSize, 0);
@@ -684,7 +714,11 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       hsc = ParseColorName(HIGHLIGHT_SQUARE_COLOR);
       phc = ParseColorName(PREMOVE_HIGHLIGHT_COLOR);
       mono = FALSE;
+      white= FALSE;
+      flip = FALSE;
       CheckDlgButton(hDlg, OPT_Monochrome, FALSE);
+      CheckDlgButton(hDlg, OPT_AllWhite,   FALSE);
+      CheckDlgButton(hDlg, OPT_UpsideDown, FALSE);
       PaintColorBlock(hDlg, OPT_LightSquareColor, lsc);
       PaintColorBlock(hDlg, OPT_DarkSquareColor,  dsc);
       PaintColorBlock(hDlg, OPT_WhitePieceColor,  wpc);
@@ -702,6 +736,16 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       mono = !mono;
       SetBoardOptionEnables(hDlg);
       break;
+
+    case OPT_AllWhite:
+      white = !white;
+      SetBoardOptionEnables(hDlg);
+      break;
+
+    case OPT_UpsideDown:
+      flip = !flip;
+      SetBoardOptionEnables(hDlg);
+      break;
     }
     break;
   }
@@ -714,6 +758,213 @@ BoardOptionsPopup(HWND hwnd)
 {
   FARPROC lpProc = MakeProcInstance((FARPROC)BoardOptionsDialog, hInst);
   DialogBox(hInst, MAKEINTRESOURCE(DLG_BoardOptions), hwnd,
+	  (DLGPROC) lpProc);
+  FreeProcInstance(lpProc);
+}
+
+VariantClass
+VariantWhichRadio(HWND hDlg)
+{
+  return (IsDlgButtonChecked(hDlg, OPT_VariantFairy) ? VariantFairy :
+         (IsDlgButtonChecked(hDlg, OPT_VariantGothic) ? VariantGothic :
+         (IsDlgButtonChecked(hDlg, OPT_VariantCrazyhouse) ? VariantCrazyhouse :
+         (IsDlgButtonChecked(hDlg, OPT_VariantBughouse) ? VariantBughouse :
+         (IsDlgButtonChecked(hDlg, OPT_VariantCourier) ? VariantCourier :
+         (IsDlgButtonChecked(hDlg, OPT_VariantShatranj) ? VariantShatranj :
+         (IsDlgButtonChecked(hDlg, OPT_VariantShogi) ? VariantShogi :
+         (IsDlgButtonChecked(hDlg, OPT_VariantXiangqi) ? VariantXiangqi :
+         (IsDlgButtonChecked(hDlg, OPT_VariantCapablanca) ? VariantCapablanca :
+         (IsDlgButtonChecked(hDlg, OPT_VariantTwoKings) ? VariantTwoKings :
+         (IsDlgButtonChecked(hDlg, OPT_VariantKnightmate) ? VariantKnightmate :
+         (IsDlgButtonChecked(hDlg, OPT_VariantLosers) ? VariantLosers :
+         (IsDlgButtonChecked(hDlg, OPT_VariantSuicide) ? VariantSuicide :
+         (IsDlgButtonChecked(hDlg, OPT_VariantAtomic) ? VariantAtomic :
+         (IsDlgButtonChecked(hDlg, OPT_VariantShatranj) ? VariantShatranj :
+         (IsDlgButtonChecked(hDlg, OPT_VariantFRC) ? VariantFischeRandom :
+         (IsDlgButtonChecked(hDlg, OPT_VariantCylinder) ? VariantCylinder :
+         (IsDlgButtonChecked(hDlg, OPT_VariantFalcon) ? VariantFalcon :
+         (IsDlgButtonChecked(hDlg, OPT_VariantCRC) ? VariantCapaRandom :
+         (IsDlgButtonChecked(hDlg, OPT_VariantSuper) ? VariantSuper :
+         (IsDlgButtonChecked(hDlg, OPT_VariantBerolina) ? VariantBerolina :
+         (IsDlgButtonChecked(hDlg, OPT_VariantJanus) ? VariantJanus :
+         (IsDlgButtonChecked(hDlg, OPT_VariantWildcastle) ? VariantWildCastle :
+         (IsDlgButtonChecked(hDlg, OPT_VariantNocastle) ? VariantNoCastle :
+          VariantNormal ))))))))))))))))))))))));
+}
+
+LRESULT CALLBACK
+NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  static Boolean  mono;
+  static VariantClass v;
+  static COLORREF lsc, dsc, wpc, bpc, hsc, phc;
+  static HBITMAP pieces[3];
+  static int n1_ok, n2_ok, n3_ok;
+
+  switch (message) {
+  case WM_INITDIALOG: /* message: initialize dialog box */
+    /* Center the dialog over the application window */
+    CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    /* Initialize the dialog items */
+    switch (gameInfo.variant) {
+    case VariantNormal:
+      CheckDlgButton(hDlg, OPT_VariantNormal, TRUE);
+      break;
+    case VariantCrazyhouse:
+      CheckDlgButton(hDlg, OPT_VariantCrazyhouse, TRUE);
+      break;
+    case VariantBughouse:
+      CheckDlgButton(hDlg, OPT_VariantBughouse, TRUE);
+      break;
+    case VariantShogi:
+      CheckDlgButton(hDlg, OPT_VariantShogi, TRUE);
+      break;
+    case VariantXiangqi:
+      CheckDlgButton(hDlg, OPT_VariantXiangqi, TRUE);
+      break;
+    case VariantCapablanca:
+      CheckDlgButton(hDlg, OPT_VariantCapablanca, TRUE);
+      break;
+    case VariantGothic:
+      CheckDlgButton(hDlg, OPT_VariantGothic, TRUE);
+      break;
+    case VariantCourier:
+      CheckDlgButton(hDlg, OPT_VariantCourier, TRUE);
+      break;
+    case VariantKnightmate:
+      CheckDlgButton(hDlg, OPT_VariantKnightmate, TRUE);
+      break;
+    case VariantTwoKings:
+      CheckDlgButton(hDlg, OPT_VariantTwoKings, TRUE);
+      break;
+    case VariantFairy:
+      CheckDlgButton(hDlg, OPT_VariantFairy, TRUE);
+      break;
+    case VariantAtomic:
+      CheckDlgButton(hDlg, OPT_VariantAtomic, TRUE);
+      break;
+    case VariantSuicide:
+      CheckDlgButton(hDlg, OPT_VariantSuicide, TRUE);
+      break;
+    case VariantLosers:
+      CheckDlgButton(hDlg, OPT_VariantLosers, TRUE);
+      break;
+    case VariantShatranj:
+      CheckDlgButton(hDlg, OPT_VariantShatranj, TRUE);
+      break;
+    case VariantFischeRandom:
+      CheckDlgButton(hDlg, OPT_VariantFRC, TRUE);
+      break;
+    case VariantCapaRandom:
+      CheckDlgButton(hDlg, OPT_VariantCRC, TRUE);
+      break;
+    case VariantFalcon:
+      CheckDlgButton(hDlg, OPT_VariantFalcon, TRUE);
+      break;
+    case VariantCylinder:
+      CheckDlgButton(hDlg, OPT_VariantCylinder, TRUE);
+      break;
+    case Variant3Check:
+    case VariantSuper:
+      CheckDlgButton(hDlg, OPT_VariantSuper, TRUE);
+      break;
+    case VariantBerolina:
+      CheckDlgButton(hDlg, OPT_VariantBerolina, TRUE);
+      break;
+    case VariantJanus:
+      CheckDlgButton(hDlg, OPT_VariantJanus, TRUE);
+      break;
+    case VariantWildCastle:
+      CheckDlgButton(hDlg, OPT_VariantWildcastle, TRUE);
+      break;
+    case VariantNoCastle:
+      CheckDlgButton(hDlg, OPT_VariantNocastle, TRUE);
+      break;
+    }
+
+    SetDlgItemInt( hDlg, IDC_Files, -1, TRUE );
+    SendDlgItemMessage( hDlg, IDC_Files, EM_SETSEL, 0, -1 );
+
+    SetDlgItemInt( hDlg, IDC_Ranks, -1, TRUE );
+    SendDlgItemMessage( hDlg, IDC_Ranks, EM_SETSEL, 0, -1 );
+
+    SetDlgItemInt( hDlg, IDC_Holdings, -1, TRUE );
+    SendDlgItemMessage( hDlg, IDC_Ranks, EM_SETSEL, 0, -1 );
+
+    n1_ok = n2_ok = n3_ok = FALSE;
+
+    return TRUE;
+
+  case WM_COMMAND: /* message: received a command */
+    switch (LOWORD(wParam)) {
+    case IDOK:
+      /* 
+       * if we call EndDialog() after the call to ChangeBoardSize(),
+       * then ChangeBoardSize() does not take effect, although the new
+       * boardSize is saved. Go figure...
+       */
+      EndDialog(hDlg, TRUE);
+
+      v = VariantWhichRadio(hDlg);
+      if(!appData.noChessProgram) { char *name = VariantName(v), buf[MSG_SIZ];
+	if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
+	    /* [HGM] in protocol 2 we check if variant is suported by engine */
+	    sprintf(buf, "Variant %s not supported by %s", name, first.tidy);
+	    DisplayError(buf, 0);
+	    return TRUE; /* treat as "Cancel" if first engine does not support it */
+	} else
+	if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
+	    sprintf(buf, "Warning: second engine (%s) does not support this!", second.tidy);
+	    DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
+	}
+      }
+
+      gameInfo.variant = v;
+      appData.variant = VariantName(v);
+
+      appData.NrFiles = (int) GetDlgItemInt(hDlg, IDC_Files, NULL, FALSE );
+      appData.NrRanks = (int) GetDlgItemInt(hDlg, IDC_Ranks, NULL, FALSE );
+      appData.holdingsSize = (int) GetDlgItemInt(hDlg, IDC_Holdings, NULL, FALSE );
+
+      if(!n1_ok) appData.NrFiles = -1;
+      if(!n2_ok) appData.NrRanks = -1;
+      if(!n3_ok) appData.holdingsSize = -1;
+
+      shuffleOpenings = FALSE; /* [HGM] shuffle: possible shuffle reset when we switch */
+      startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
+      appData.pieceToCharTable = NULL;
+      Reset(TRUE, TRUE);
+
+      return TRUE;
+
+    case IDCANCEL:
+      EndDialog(hDlg, FALSE);
+      return TRUE;
+
+    case IDC_Ranks:
+    case IDC_Files:
+    case IDC_Holdings:
+        if( HIWORD(wParam) == EN_CHANGE ) {
+
+            GetDlgItemInt(hDlg, IDC_Files, &n1_ok, FALSE );
+            GetDlgItemInt(hDlg, IDC_Ranks, &n2_ok, FALSE );
+            GetDlgItemInt(hDlg, IDC_Holdings, &n3_ok, FALSE );
+
+            /*EnableWindow( GetDlgItem(hDlg, IDOK), n1_ok && n2_ok && n3_ok ? TRUE : FALSE );*/
+        }
+        return TRUE;
+    }
+    break;
+  }
+  return FALSE;
+}
+
+
+VOID
+NewVariantPopup(HWND hwnd)
+{
+  FARPROC lpProc = MakeProcInstance((FARPROC)NewVariantDialog, hInst);
+  DialogBox(hInst, MAKEINTRESOURCE(DLG_NewVariant), hwnd,
 	  (DLGPROC) lpProc);
   FreeProcInstance(lpProc);
 }
@@ -1311,6 +1562,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleTagFont, &workFont[EDITTAGS_FONT]);
       SetSampleFontText(hDlg, OPT_SampleCommentsFont, &workFont[COMMENT_FONT]);
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
       firstPaint = FALSE;
     }
     break;
@@ -1338,6 +1590,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	CopyFont(font[i][EDITTAGS_FONT], &workFont[EDITTAGS_FONT]);
 	CopyFont(font[i][CONSOLE_FONT],  &workFont[CONSOLE_FONT]);
 	CopyFont(font[i][COMMENT_FONT],  &workFont[COMMENT_FONT]);
+	CopyFont(font[i][MOVEHISTORY_FONT],  &workFont[MOVEHISTORY_FONT]);
       }
       /* end sad necessity */
 
@@ -1358,6 +1611,13 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  MAKELPARAM(TRUE, 0));
 	GetClientRect(GetDlgItem(editTagsDialog, OPT_TagsText), &rect);
 	InvalidateRect(editTagsDialog, &rect, TRUE);
+      }
+
+      if( moveHistoryDialog != NULL ) {
+	SendDlgItemMessage(moveHistoryDialog, IDC_MoveHistory,
+  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, 
+	  MAKELPARAM(TRUE, 0));
+	InvalidateRect(editTagsDialog, NULL, TRUE);
       }
 
       if (hwndConsole) {
@@ -1405,6 +1665,11 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
       break;
 
+    case OPT_ChooseMoveHistoryFont:
+      MyCreateFont(hDlg, &workFont[MOVEHISTORY_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
+      break;
+
     case OPT_DefaultFonts:
       for (i=0; i<NUM_FONTS; i++) {
 	DeleteObject(&workFont[i].hf);
@@ -1417,6 +1682,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleTagFont, &workFont[EDITTAGS_FONT]);
       SetSampleFontText(hDlg, OPT_SampleCommentsFont, &workFont[COMMENT_FONT]);
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
       break;
     }
   }
@@ -1738,7 +2004,7 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       return TRUE;
 
     case OPT_BrowseSound:
-      f = OpenFileDialog(hDlg, FALSE, NULL, "wav", SOUND_FILT,
+      f = OpenFileDialog(hDlg, "rb", NULL, "wav", SOUND_FILT,
 	"Browse for Sound File", NULL, NULL, buf);
       if (f != NULL) {
 	fclose(f);
@@ -2233,6 +2499,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     } else {
       CheckRadioButton(hDlg, OPT_PGN, OPT_Old, OPT_PGN);
     }
+    CheckDlgButton( hDlg, OPT_OutOfBookInfo, appData.saveOutOfBookInfo );
     SetSaveOptionEnables(hDlg);
     return TRUE;
 
@@ -2272,6 +2539,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	appData.saveGameFile = "";
       }
       appData.oldSaveStyle = IsDlgButtonChecked(hDlg, OPT_Old);
+      appData.saveOutOfBookInfo = IsDlgButtonChecked( hDlg, OPT_OutOfBookInfo );
       EndDialog(hDlg, TRUE);
       return TRUE;
 
@@ -2280,7 +2548,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       return TRUE;
 
     case OPT_AVBrowse:
-      f = OpenFileDialog(hDlg, TRUE, NULL, 
+      f = OpenFileDialog(hDlg, "a", NULL, 
 	                 appData.oldSaveStyle ? "gam" : "pgn", 
    	                 GAME_FILT, "Browse for Auto Save File", 
 			 NULL, NULL, buf);
@@ -2335,8 +2603,8 @@ LRESULT CALLBACK
 TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   char buf[MSG_SIZ];
-  int mps, increment;
-  BOOL ok;
+  int mps, increment, odds1, odds2;
+  BOOL ok, ok2;
 
   switch (message) {
   case WM_INITDIALOG: /* message: initialize dialog box */
@@ -2360,6 +2628,8 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	SetDlgItemText(hDlg, OPT_TCTime2, appData.timeControl);
 	SetDlgItemInt(hDlg, OPT_TCInc, appData.timeIncrement, FALSE);
       }
+      SetDlgItemInt(hDlg, OPT_TCOdds1, 1, FALSE);
+      SetDlgItemInt(hDlg, OPT_TCOdds2, 1, FALSE);
       SetTimeControlEnables(hDlg);
     }
     return TRUE;
@@ -2397,9 +2667,18 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  return FALSE;
 	}
       }
+      odds1 = GetDlgItemInt(hDlg, OPT_TCOdds1, &ok, FALSE);
+      odds2 = GetDlgItemInt(hDlg, OPT_TCOdds2, &ok2, FALSE);
+      if (!ok || !ok2 || odds1 <= 0 || odds2 <= 0) {
+	  MessageBox(hDlg, "Invalid time-odds factor",
+		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  return FALSE;
+      }
       appData.timeControl = strdup(buf);
       appData.movesPerSession = mps;
       appData.timeIncrement = increment;
+      appData.firstTimeOdds  = first.timeOdds  = odds1;
+      appData.secondTimeOdds = second.timeOdds = odds2;
       Reset(TRUE, TRUE);
       EndDialog(hDlg, TRUE);
       return TRUE;
@@ -2429,4 +2708,279 @@ TimeControlOptionsPopup(HWND hwnd)
   }
 }
 
+/*---------------------------------------------------------------------------*\
+ *
+ * Engine Options Dialog functions
+ *
+\*---------------------------------------------------------------------------*/
+#define CHECK_BOX(x,y) CheckDlgButton(hDlg, (x), (BOOL)(y))
+#define IS_CHECKED(x) (Boolean)IsDlgButtonChecked(hDlg, (x))
 
+#define INT_ABS( n )    ((n) >= 0 ? (n) : -(n))
+
+LRESULT CALLBACK EnginePlayOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  switch (message) {
+  case WM_INITDIALOG: /* message: initialize dialog box */
+
+    /* Center the dialog over the application window */
+    CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+
+    /* Initialize the dialog items */
+    CHECK_BOX(IDC_EpPeriodicUpdates, appData.periodicUpdates);
+    CHECK_BOX(IDC_EpPonder, appData.ponderNextMove);
+    CHECK_BOX(IDC_EpShowThinking, appData.showThinking);
+    CHECK_BOX(IDC_EpHideThinkingHuman, appData.hideThinkingFromHuman);
+
+    CHECK_BOX(IDC_TestClaims, appData.testClaims);
+    CHECK_BOX(IDC_DetectMates, appData.checkMates);
+    CHECK_BOX(IDC_MaterialDraws, appData.materialDraws);
+    CHECK_BOX(IDC_TrivialDraws, appData.trivialDraws);
+
+    CHECK_BOX(IDC_ScoreAbs1, appData.firstScoreIsAbsolute);
+    CHECK_BOX(IDC_ScoreAbs2, appData.secondScoreIsAbsolute);
+
+    SetDlgItemInt( hDlg, IDC_EpDrawMoveCount, appData.adjudicateDrawMoves, TRUE );
+    SendDlgItemMessage( hDlg, IDC_EpDrawMoveCount, EM_SETSEL, 0, -1 );
+
+    SetDlgItemInt( hDlg, IDC_EpAdjudicationThreshold, INT_ABS(appData.adjudicateLossThreshold), TRUE );
+    SendDlgItemMessage( hDlg, IDC_EpAdjudicationThreshold, EM_SETSEL, 0, -1 );
+
+    SetDlgItemInt( hDlg, IDC_RuleMoves, appData.ruleMoves, TRUE );
+    SendDlgItemMessage( hDlg, IDC_RuleMoves, EM_SETSEL, 0, -1 );
+
+    SetDlgItemInt( hDlg, IDC_DrawRepeats, INT_ABS(appData.drawRepeats), TRUE );
+    SendDlgItemMessage( hDlg, IDC_DrawRepeats, EM_SETSEL, 0, -1 );
+
+    return TRUE;
+
+  case WM_COMMAND: /* message: received a command */
+    switch (LOWORD(wParam)) {
+    case IDOK:
+      /* Read changed options from the dialog box */
+      PeriodicUpdatesEvent(          IS_CHECKED(IDC_EpPeriodicUpdates));
+      PonderNextMoveEvent(           IS_CHECKED(IDC_EpPonder));
+      appData.hideThinkingFromHuman= IS_CHECKED(IDC_EpHideThinkingHuman); // [HGM] thinking: moved up
+#if 0
+      ShowThinkingEvent(             IS_CHECKED(IDC_EpShowThinking));
+#else
+      appData.showThinking   = IS_CHECKED(IDC_EpShowThinking);
+      ShowThinkingEvent(); // [HGM] thinking: tests all options that need thinking output
+#endif
+      appData.testClaims    = IS_CHECKED(IDC_TestClaims);
+      appData.checkMates    = IS_CHECKED(IDC_DetectMates);
+      appData.materialDraws = IS_CHECKED(IDC_MaterialDraws);
+      appData.trivialDraws  = IS_CHECKED(IDC_TrivialDraws);
+
+      appData.adjudicateDrawMoves = GetDlgItemInt(hDlg, IDC_EpDrawMoveCount, NULL, FALSE );
+      appData.adjudicateLossThreshold = - (int) GetDlgItemInt(hDlg, IDC_EpAdjudicationThreshold, NULL, FALSE );
+      appData.ruleMoves = GetDlgItemInt(hDlg, IDC_RuleMoves, NULL, FALSE );
+      appData.drawRepeats = (int) GetDlgItemInt(hDlg, IDC_DrawRepeats, NULL, FALSE );
+
+      appData.firstScoreIsAbsolute  = IS_CHECKED(IDC_ScoreAbs1);
+      appData.secondScoreIsAbsolute = IS_CHECKED(IDC_ScoreAbs2);
+
+      EndDialog(hDlg, TRUE);
+      return TRUE;
+
+    case IDCANCEL:
+      EndDialog(hDlg, FALSE);
+      return TRUE;
+
+    case IDC_EpDrawMoveCount:
+    case IDC_EpAdjudicationThreshold:
+    case IDC_DrawRepeats:
+    case IDC_RuleMoves:
+        if( HIWORD(wParam) == EN_CHANGE ) {
+            int n1_ok;
+            int n2_ok;
+            int n3_ok;
+            int n4_ok;
+
+            GetDlgItemInt(hDlg, IDC_EpDrawMoveCount, &n1_ok, FALSE );
+            GetDlgItemInt(hDlg, IDC_EpAdjudicationThreshold, &n2_ok, FALSE );
+            GetDlgItemInt(hDlg, IDC_RuleMoves, &n3_ok, FALSE );
+            GetDlgItemInt(hDlg, IDC_DrawRepeats, &n4_ok, FALSE );
+
+            EnableWindow( GetDlgItem(hDlg, IDOK), n1_ok && n2_ok && n3_ok && n4_ok ? TRUE : FALSE );
+        }
+        return TRUE;
+    }
+    break;
+  }
+  return FALSE;
+}
+
+VOID EnginePlayOptionsPopup(HWND hwnd)
+{
+  FARPROC lpProc;
+
+  lpProc = MakeProcInstance((FARPROC)EnginePlayOptionsDialog, hInst);
+  DialogBox(hInst, MAKEINTRESOURCE(DLG_EnginePlayOptions), hwnd, (DLGPROC) lpProc);
+  FreeProcInstance(lpProc);
+}
+
+/*---------------------------------------------------------------------------*\
+ *
+ * UCI Options Dialog functions
+ *
+\*---------------------------------------------------------------------------*/
+static BOOL BrowseForFolder( const char * title, char * path )
+{
+    BOOL result = FALSE;
+    BROWSEINFO bi;
+    LPITEMIDLIST pidl;
+
+    ZeroMemory( &bi, sizeof(bi) );
+
+    bi.lpszTitle = title == 0 ? "Choose Folder" : title;
+    bi.ulFlags = BIF_RETURNONLYFSDIRS;
+
+    pidl = SHBrowseForFolder( &bi );
+
+    if( pidl != 0 ) {
+        IMalloc * imalloc = 0;
+
+        if( SHGetPathFromIDList( pidl, path ) ) {
+            result = TRUE;
+        }
+
+        if( SUCCEEDED( SHGetMalloc ( &imalloc ) ) ) {
+            imalloc->lpVtbl->Free(imalloc,pidl);
+            imalloc->lpVtbl->Release(imalloc);
+        }
+    }
+
+    return result;
+}
+
+LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  char buf[MAX_PATH];
+  int oldCores;
+
+  switch (message) {
+  case WM_INITDIALOG: /* message: initialize dialog box */
+
+    /* Center the dialog over the application window */
+    CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+
+    /* Initialize the dialog items */
+    SetDlgItemText( hDlg, IDC_PolyglotDir, appData.polyglotDir );
+    SetDlgItemInt( hDlg, IDC_HashSize, appData.defaultHashSize, TRUE );
+    SetDlgItemText( hDlg, IDC_PathToEGTB, appData.defaultPathEGTB );
+    SetDlgItemInt( hDlg, IDC_SizeOfEGTB, appData.defaultCacheSizeEGTB, TRUE );
+    CheckDlgButton( hDlg, IDC_UseBook, (BOOL) appData.usePolyglotBook );
+    SetDlgItemText( hDlg, IDC_BookFile, appData.polyglotBook );
+    // [HGM] smp: input field for nr of cores:
+    SetDlgItemInt( hDlg, IDC_Cores, appData.smpCores, TRUE );
+    // [HGM] book: tick boxes for own book use
+    CheckDlgButton( hDlg, IDC_OwnBook1, (BOOL) appData.firstHasOwnBookUCI );
+    CheckDlgButton( hDlg, IDC_OwnBook2, (BOOL) appData.secondHasOwnBookUCI );
+
+    SendDlgItemMessage( hDlg, IDC_PolyglotDir, EM_SETSEL, 0, -1 );
+
+    return TRUE;
+
+  case WM_COMMAND: /* message: received a command */
+    switch (LOWORD(wParam)) {
+    case IDOK:
+      GetDlgItemText( hDlg, IDC_PolyglotDir, buf, sizeof(buf) );
+      appData.polyglotDir = strdup(buf);
+      appData.defaultHashSize = GetDlgItemInt(hDlg, IDC_HashSize, NULL, FALSE );
+      appData.defaultCacheSizeEGTB = GetDlgItemInt(hDlg, IDC_SizeOfEGTB, NULL, FALSE );
+      GetDlgItemText( hDlg, IDC_PathToEGTB, buf, sizeof(buf) );
+      appData.defaultPathEGTB = strdup(buf);
+      GetDlgItemText( hDlg, IDC_BookFile, buf, sizeof(buf) );
+      appData.polyglotBook = strdup(buf);
+      appData.usePolyglotBook = (Boolean) IsDlgButtonChecked( hDlg, IDC_UseBook );
+      // [HGM] smp: get nr of cores:
+      oldCores = appData.smpCores;
+      appData.smpCores = GetDlgItemInt(hDlg, IDC_Cores, NULL, FALSE );
+      if(appData.smpCores != oldCores) NewSettingEvent(FALSE, "cores", appData.smpCores);
+      // [HGM] book: read tick boxes for own book use
+      appData.firstHasOwnBookUCI  = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook1 );
+      appData.secondHasOwnBookUCI = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook2 );
+
+      if(gameMode == BeginningOfGame) Reset(TRUE, TRUE);
+      EndDialog(hDlg, TRUE);
+      return TRUE;
+
+    case IDCANCEL:
+      EndDialog(hDlg, FALSE);
+      return TRUE;
+
+    case IDC_BrowseForBook:
+      {
+          char filter[] = { 
+              'A','l','l',' ','F','i','l','e','s', 0,
+              '*','.','*', 0,
+              'B','I','N',' ','F','i','l','e','s', 0,
+              '*','.','b','i','n', 0,
+              0 };
+
+          OPENFILENAME ofn;
+
+          strcpy( buf, "" );
+
+          ZeroMemory( &ofn, sizeof(ofn) );
+
+          ofn.lStructSize = sizeof(ofn);
+          ofn.hwndOwner = hDlg;
+          ofn.hInstance = hInst;
+          ofn.lpstrFilter = filter;
+          ofn.lpstrFile = buf;
+          ofn.nMaxFile = sizeof(buf);
+          ofn.lpstrTitle = "Choose Book";
+          ofn.Flags = OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
+
+          if( GetOpenFileName( &ofn ) ) {
+              SetDlgItemText( hDlg, IDC_BookFile, buf );
+          }
+      }
+      return TRUE;
+
+    case IDC_BrowseForPolyglotDir:
+      if( BrowseForFolder( "Choose Polyglot Directory", buf ) ) {
+        SetDlgItemText( hDlg, IDC_PolyglotDir, buf );
+
+        strcat( buf, "\\polyglot.exe" );
+
+        if( GetFileAttributes(buf) == 0xFFFFFFFF ) {
+            MessageBox( hDlg, "Polyglot was not found in the specified folder!", "Warning", MB_OK | MB_ICONWARNING );
+        }
+      }
+      return TRUE;
+
+    case IDC_BrowseForEGTB:
+      if( BrowseForFolder( "Choose EGTB Directory:", buf ) ) {
+        SetDlgItemText( hDlg, IDC_PathToEGTB, buf );
+      }
+      return TRUE;
+
+    case IDC_HashSize:
+    case IDC_SizeOfEGTB:
+        if( HIWORD(wParam) == EN_CHANGE ) {
+            int n1_ok;
+            int n2_ok;
+
+            GetDlgItemInt(hDlg, IDC_HashSize, &n1_ok, FALSE );
+            GetDlgItemInt(hDlg, IDC_SizeOfEGTB, &n2_ok, FALSE );
+
+            EnableWindow( GetDlgItem(hDlg, IDOK), n1_ok && n2_ok ? TRUE : FALSE );
+        }
+        return TRUE;
+    }
+    break;
+  }
+  return FALSE;
+}
+
+VOID UciOptionsPopup(HWND hwnd)
+{
+  FARPROC lpProc;
+
+  lpProc = MakeProcInstance((FARPROC)UciOptionsDialog, hInst);
+  DialogBox(hInst, MAKEINTRESOURCE(DLG_OptionsUCI), hwnd, (DLGPROC) lpProc);
+  FreeProcInstance(lpProc);
+}

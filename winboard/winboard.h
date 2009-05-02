@@ -101,7 +101,7 @@ VOID ICSInitScript(VOID);
 BOOL CenterWindow(HWND hwndChild, HWND hwndParent);
 VOID ResizeEditPlusButtons(HWND hDlg, HWND hText, int sizeX, int sizeY, int newSizeX, int newSizeY);
 VOID PromotionPopup(HWND hwnd);
-FILE *OpenFileDialog(HWND hWnd, BOOL write, char *defName, char *defExt, 
+FILE *OpenFileDialog(HWND hWnd, char *write, char *defName, char *defExt, 
 		     char *nameFilt, char *dlgTitle, UINT *number,
 		     char fileTitle[MSG_SIZ], char fileName[MSG_SIZ]);
 VOID InputEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -135,7 +135,8 @@ VOID ExitArgError(char *msg, char *badArg);
 #define CONSOLE_FONT 3
 #define COMMENT_FONT 4
 #define EDITTAGS_FONT 5
-#define NUM_FONTS 6
+#define MOVEHISTORY_FONT 6
+#define NUM_FONTS 7
 
 /* Positions of some menu items.  Origin is zero and separator lines count. */
 /* It's gross that these are needed. */
@@ -163,3 +164,18 @@ extern MyFont *font[NUM_SIZES][NUM_FONTS];
 
 #define COPY_TMP "wbcopy.tmp"
 #define PASTE_TMP "wbpaste.tmp"
+
+/* [AS] Layout management */
+typedef struct {
+    Boolean visible;
+    int x;
+    int y;
+    int width;
+    int height;
+} WindowPlacement;
+
+VOID InitWindowPlacement( WindowPlacement * wp );
+
+VOID RestoreWindowPlacement( HWND hWnd, WindowPlacement * wp );
+
+VOID ReattachAfterMove( LPRECT lprcOldPos, int new_x, int new_y, HWND hWndChild, WindowPlacement * pwpChild );

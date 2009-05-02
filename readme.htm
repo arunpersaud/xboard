@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+</head>
+<body>
+<big><span style="font-weight: bold;">Tinkering with Winboard<br>
+by Alessandro Scotti<br>
+</span></big><br>
+Last update: March 22, 2005.<br>
+<br>
+This readme is about some modifications I made to Winboard 4.2.7. Some
+will work in Xboard too, while others are for Winboard only.
+Regardless, everything here is absolutely experimental and has been
+tested very little... so no warranties ok?<br>
+<br>
+All modified sources are included in this archive, the rest can be
+downloaded from <a href="http://www.tim-mann.org/xboard.html">Tim
+Mann's Xboard page</a>. Please feel free to take my changes and use
+them as you like, they are released under the GPL.<br>
+<br>
+<big><span style="font-weight: bold;">Game adjudication</span></big><br>
+<br>
+User can adjudicate a game between two machines, using the "Action"
+menu. Note that this only works if two machines are playing.<br>
+<br>
+Also, it is possible to adjudicate a game automatically with this
+parameter:<br>
+<br>
+<div style="margin-left: 40px;">/adjudicateLossThreshold=-700<br>
+</div>
+<br>
+if set to a negative value, Winboard will adjudicate a game if a engine
+can't get a score above the specified threshold for 3 full moves (6
+plies). Note that both engines must agree on the score value, and also
+the game is only adjudicated after the last move from the losing engine.<br>
+<br>
+Adjudication is still under test!<br>
+<br>
+<big><span style="font-weight: bold;">Background textures</span></big><br>
+<br>
+Add the following to winboard.ini:<br>
+<br>
+<div style="margin-left: 40px;">/liteBackTextureFile="sandstone_w.bmp"<br>
+/darkBackTextureFile="sandstone_b.bmp"<br>
+/liteBackTextureMode=1<br>
+/darkBackTextureMode=1<br>
+</div>
+<br>
+Of course you can choose any file you like for texturing the light and
+dark squares, as long as it's a valid BMP (Windows bitmap) file. <br>
+<br>
+Valid texture modes are 1 (default) and 2. In mode 1 the squares are
+taken from portions of the texture bitmap and copied without further
+processing. In mode 2, squares can also be rotated, mirrored and so on
+in order to provide a little more variety to the texture. The
+operations are selected at random so the board will look slightly
+different every time the program is run.<br>
+<br>
+Note: to "comment out" a filename, put an asterisk in front of it, i.e.
+"*sandstone.bmp" will be skipped.<br>
+<br>
+Additionally it is possible to override the size of the "gap" between
+the squares, which is otherwise selected automatically. Add this to
+winboard.ini:<br>
+<br>
+<div style="margin-left: 40px;">/overrideLineGap=2<br>
+</div>
+<br>
+I have added this because textures usually look better with a smaller
+or no gap. Any negative value will ignore the override and use the
+standard value from Winboard.<br>
+<br>
+The combination of these parameters can produce very interesting
+effects, see for example <a
+ href="http://usuarios.lycos.es/alexwbtm/Test/">Alex Guerrero's page</a>.<br>
+<br>
+<big><span style="font-weight: bold;">Font-based rendering of chess
+pieces</span></big><br>
+<br>
+It is possible to use chess fonts to draw pieces, in place of the usual
+bitmaps. You have to specify the font name by adding the following to
+winboard.ini:<br>
+<br>
+<div style="margin-left: 40px;">/renderPiecesWithFont="Chess Leipzig"<br>
+</div>
+<br>
+Chances are the program will automatically recognize the font and
+select the proper mapping, i.e. the correspondence between a chess
+piece and the corresponding font character. So if the board looks good
+you're set and there's nothing else to do, otherwise you'll have to
+find the proper mapping and tell it to the program with&nbsp; this
+setting:<br>
+<br>
+<div style="margin-left: 40px;">/fontPieceToCharTable="phbrqkojntwl"<br>
+</div>
+<br>
+The piece are in order: white pawn, knight, bishop, rook, queen, king
+and black pawn, knight, bishop, rook, queen, king. So the example above
+tells the program to use the letter "p" for a white pawn, the letter
+"h" for a white knight, the letter "t" for a black rook and so on.<br>
+<br>
+Note: to "comment out" a font name, put an asterisk in front of it,
+i.e. "*Chess Merida" will be skipped because of the asterisk.<br>
+<br>
+It is possible to customize the font foreground and background color,
+with these settings:<br>
+<br>
+<div style="margin-left: 40px;">/fontPieceBackColorWhite=#ffffcc<br>
+/fontPieceForeColorWhite=#402010<br>
+/fontPieceBackColorBlack=#ffffcc<br>
+/fontPieceForeColorBlack=#301008<br>
+</div>
+<br>
+Colors are expressed in RGB notation. If you are not familiar with the
+RGB notation&nbsp; I would suggest to leave them alone until I manage
+to update the GUI. In this case, the program will take the board
+settings as for the usual piece set.<br>
+<br>
+It is also possible to control the size of the piece with respect to
+the square, for example this entry:<br>
+<br>
+<div style="margin-left: 40px;">/fontPieceSize=80<br>
+</div>
+<br>
+tells the program to make the pieces about 20% smaller than a square
+(i.e. the piece size is 80%). Note that different fonts may require
+different values for this parameter. Usually values in the 70-80 range
+provide the best values, however the program accepts anything from 50
+to 150.<br>
+<br>
+Font-based pieces are automatically given a "roundish" look. For now,
+this option is not mapped to a user-definable setting.<br>
+<br>
+<big><span style="font-weight: bold;">Fast clipboard pasting</span></big><br>
+<br>
+Press Ctrl-V to paste a PGN game or a FEN position from the clipboard,
+the program will try to autodetect the proper type.<br>
+<br>
+<big><span style="font-weight: bold;">Thread initialization bug</span></big><br>
+<br>
+I've tried to fix a bug reported (and fixed) by Anastasios Milikas (of
+AICE), where a thread could try to access a not yet initialized
+variable. I've used a different approach here, where threads are
+started in a "suspended" state and then released only when the variable
+has been initialized (this has the advantage of putting all the
+required fix code in one place, and the disadvantage of not having been
+tested by Anastasios).<br>
+<br>
+<big><span style="font-weight: bold;">Protection from some buffer
+overflows</span></big><br>
+<br>
+In just a few cases, I've tried to put some guard against buffer
+overflows. These are just quick attempts... a lot more work would be
+needed to provide some measurable benefits. I hope that bug **353 is
+finally fixed now. The buffer overflows were propagated across several
+functions so as soon as one was fixed another would crash!<br>
+<br>
+<big><span style="font-weight: bold;">Absolute scores can be converted
+to relative</span></big><br>
+<br>
+Some engines (e.g. Crafty, Delphi) always report scores from the white
+side (i.e. absolute), rather than the engine side (i.e. relative). This
+leads to confusion and breaks features such as automatic adjudication.
+In order to convert the scores to relative add the following to
+winboard.ini:<br>
+<br>
+<div style="margin-left: 40px;">/firstScoreAbs=false<br>
+</div>
+<br>
+If true, the score of the first program is absolute and will be negated
+when playing black. And similarly:<br>
+<br>
+<div style="margin-left: 40px;">/secondScoreAbs=false<br>
+</div>
+<br>
+if true, the score of the second program is absolute and will be
+negated when playing black.<br>
+<br>
+<big><span style="font-weight: bold;">Engine search info can be saved
+in a PGN file</span></big><br>
+<br>
+Add the following to winboard.ini:<br>
+<br>
+<div style="margin-left: 40px;">/pgnExtendedInfo=true<br>
+</div>
+<br>
+If true, and the PGN save game option is enabled, each move will be
+followed by a comment&nbsp; containing the engine score and thinking
+depth (when available).<br>
+<br>
+Note: can also be set from the General options dialog.<br>
+<br>
+<big><span style="font-weight: bold;">Engine search info can be hidden
+in human-computer games</span></big><br>
+<br>
+When "show thinking" is disabled, engine thinking is not generated at
+all, rather than simply hidden. It is now possible to generate the
+think lines (e.g. for logging or saving in the PGN) yet hide them when
+the engine is playing against a human player. Add the following to
+winboard.ini:<br>
+<br>
+<div style="margin-left: 40px;">/hideThinkingFromHuman=true<br>
+</div>
+<br>
+Note: can also be set from the General options dialog.<br>
+<br>
+<big><span style="font-weight: bold;">Asymmetric time controls</span></big><br>
+<br>
+Very experimental! You can enter two time controls in the usual dialog,
+separated by "/". If so, white will be assigned the first time and
+black the second. So for example "0:30/2:00" will give 30 seconds to
+white and 2 minutes to black.<br>
+<br>
+Note: for now these times stay with black and white, rather than the
+corresponding player.<br>
+<br>
+<big><span style="font-weight: bold;">User interface</span></big><br>
+<br>
+Options to "hide thinking from human" and "save extended info in PGN"
+now appears in the "General" options dialog.<br>
+<br>
+</body>
+</html>

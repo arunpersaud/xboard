@@ -1,6 +1,6 @@
 /*
  * pgntags.c -- Functions to manage PGN tags
- * XBoard $Id$
+ * XBoard $Id: pgntags.c,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1995 Free Software Foundation, Inc.
  *
@@ -114,6 +114,9 @@ int ParsePGNTag(tag, gameInfo)
         /* xboard-defined extension */
         gameInfo->variant = StringToVariant(value);
 	success = TRUE;
+    } else if (StrCaseCmp(name, PGN_OUT_OF_BOOK) == 0) {
+        /* [AS] Out of book annotation */
+        success = StrSavePtr(value, &gameInfo->outOfBook) != NULL;
     } else {
 	if (gameInfo->extraTags == NULL) {
 	    oldTags = "";

@@ -98,6 +98,7 @@ struct History{
 
 struct History *hist=0;
 String dots=" ... ";
+Position gameHistoryX, gameHistoryY;
 
 void
 HistoryPopDown(w, client_data, call_data)
@@ -106,11 +107,16 @@ HistoryPopDown(w, client_data, call_data)
 {
   Arg args[16];
   int j;
-  if(hist)
+  if(hist) {
+    // [HGM] remember old position
+    j = 0;
+    XtSetArg(args[j], XtNx, &gameHistoryX);  j++;
+    XtSetArg(args[j], XtNy, &gameHistoryY);  j++;
+    XtGetValues(hist->sh, args, j);
 
-  XtPopdown(hist->sh);
-  hist->Up=False;
-
+    XtPopdown(hist->sh);
+    hist->Up=False;
+  }
   j=0;
   XtSetArg(args[j], XtNleftBitmap, None); j++;
   XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Move List"),
@@ -464,6 +470,13 @@ HistoryPopUp()
 
   if(!hist) HistoryCreate();
   XtPopup(hist->sh, XtGrabNone);
+
+  // [HGM] restore old position
+  j = 0;
+  XtSetArg(args[j], XtNx, gameHistoryX);  j++;
+  XtSetArg(args[j], XtNy, gameHistoryY);  j++;
+  XtSetValues(hist->sh, args, j);
+
   j=0;
   XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
   XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Move List"),

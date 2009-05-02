@@ -1,5 +1,6 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
 
+
 /* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
 /*#undef HAVE_SYS_WAIT_H*/
 
@@ -35,7 +36,7 @@
 
 #define LAST_PTY_LETTER 'q'
 
-#define PATCHLEVEL "8pre"
+#define PATCHLEVEL "0e"
 
 #define PRODUCT "WinBoard"
 
@@ -53,7 +54,7 @@
 
 #define USE_PTYS 0
 
-#define VERSION "4.2"
+#define VERSION "4.4"
 
 /*#undef X_WCHAR*/
 
@@ -128,3 +129,4 @@
 #define SCF_DEFAULT 0x0000
 #define SCF_ALL 0x0004
 #endif
+

@@ -48,6 +48,7 @@
 /* Static */
 #define POSITION_FILT "Position files (*.fen,*.epd,*.pos)\0*.fen;*.epd;*.pos\0All files (*.*)\0*.*\0"
 #define GAME_FILT     "Game files (*.pgn,*.gam)\0*.pgn;*.gam\0All files (*.*)\0*.*\0"
+#define DIAGRAM_FILT  "bitmap files (*.bmp)\0*.bmp\0All files (*.*)\0*.*\0"
 #define SOUND_FILT    "Wave files (*.wav)\0*.wav\0All files (*.*)\0*.*\0"
 #define OUTER_MARGIN (tinyLayout ? 0 : 4)
 #define INNER_MARGIN (tinyLayout ? 0 : 2)
@@ -177,6 +178,8 @@
 #define EDITTAGS_FONT_COLOSSAL "Courier New:8.0"
 #define EDITTAGS_FONT_TITANIC  "Courier New:8.0"
 
+#define MOVEHISTORY_FONT_ALL    "MS Sans Serif:8.0"
+
 #define COLOR_SHOUT            "#209000"
 #define COLOR_SSHOUT         "b #289808"
 #define COLOR_CHANNEL1         "#2020E0"
@@ -239,11 +242,13 @@ Pl&ay (name),play,1,1\n\
 "
 
 #define FCP_NAMES "\
+fmax /fd=Fairy-Max\n\
 GNUChess\n\
 \"GNUChes5 xboard\"\n\
 "
 
 #define SCP_NAMES "\
+fmax /sd=Fairy-Max\n\
 GNUChess\n\
 \"GNUChes5 xboard\"\n\
 "

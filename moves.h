@@ -1,6 +1,6 @@
 /*
  * moves.h - Move generation and checking
- * $Id$
+ * $Id: moves.h,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
@@ -50,9 +50,11 @@ extern ChessSquare PromoPiece P((ChessMove moveType));
 extern ChessMove PromoCharToMoveType P((int whiteOnMove, int promoChar));
 extern char PieceToChar P((ChessSquare p));
 extern ChessSquare CharToPiece P((int c));
+extern int PieceToNumber P((ChessSquare p));
 
 extern void CopyBoard P((Board to, Board from));
 extern int CompareBoards P((Board board1, Board board2));
+extern char pieceToChar[(int)EmptySquare+1];
 
 typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
@@ -71,10 +73,20 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 #define F_ATOMIC_CAPTURE 128    /* capturing piece explodes, destroying itself
 				   and all non-pawns on adjacent squares; 
 				   destroying your own king is illegal */
+#define F_FRC_TYPE_CASTLING 256 /* generate castlings as captures of own Rook */
 
-/* Special epfile values */
-#define EP_NONE -1
-#define EP_UNKNOWN -2
+/* Special epfile values. [HGM] positive values are non-reversible moves! */
+#define EP_NONE (-4)           /* [HGM] Tricky! order matters:            */
+#define EP_UNKNOWN (-1)        /*       >= EP_UNKNOWN spils rep-draw      */
+#define EP_CAPTURE (-2)        /*       <= EP_NONE is reversible move     */
+#define EP_PAWN_MOVE (-3)
+#define EP_REP_DRAW   (-15)
+#define EP_RULE_DRAW  (-14)
+#define EP_INSUF_DRAW  (-13)
+#define EP_DRAWS (-10)
+#define EP_BEROLIN_A 16        /* [HGM] berolina: add to file if pawn to be taken of a-side of e.p.file */
+#define EP_CHECKMATE 100       /* [HGM] verify: record mates in epStatus for easy claim verification    */
+#define EP_STALEMATE -16
 
 /* Call callback once for each pseudo-legal move in the given
    position, except castling moves.  A move is pseudo-legal if it is
@@ -94,6 +106,7 @@ extern void GenPseudoLegal P((Board board, int flags, int epfile,
    on move is currently in check and F_IGNORE_CHECK is not set.
 */
 extern int GenLegal P((Board board, int flags, int epfile,
+                        char castlingRights[], /* [HGM] */
 			MoveCallback callback, VOIDSTAR closure));
 
 /* If the player on move were to move from (rf, ff) to (rt, ft), would
@@ -110,6 +123,7 @@ extern int CheckTest P((Board board, int flags,
    flags say is on move?  Other arguments as in GenPseudoLegal.
    Returns the type of move made, taking promoChar into account. */
 extern ChessMove LegalityTest P((Board board, int flags, int epfile,
+                                 char castlingRights[], /* [HGM] */
 				 int rf, int ff, int rt, int ft,
 				 int promoChar));
 
@@ -119,7 +133,8 @@ extern ChessMove LegalityTest P((Board board, int flags, int epfile,
 #define MT_STALEMATE 3
 
 /* Return MT_NONE, MT_CHECK, MT_CHECKMATE, or MT_STALEMATE */
-extern int MateTest P((Board board, int flags, int epfile));
+extern int MateTest P((Board board, int flags, int epfile,
+                                        char castlingRights[])); /* [HGM] */
 
 typedef struct {
     /* Input data */
