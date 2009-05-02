@@ -1,6 +1,6 @@
 /*
  * xboard.c -- X front end for XBoard
- * $Id$
+ * $Id: xboard.c,v 2.2 2003/11/06 07:22:14 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-2001 Free Software Foundation, Inc.
@@ -169,6 +169,9 @@ extern char *getenv();
 #include <X11/Xaw/AsciiText.h>
 #endif
 
+// [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
+#include "common.h"
+
 #if HAVE_LIBXPM
 #include <X11/xpm.h>
 #include "pixmaps/pixmaps.h"
@@ -182,7 +185,6 @@ extern char *getenv();
 #include "bitmaps/icon_black.bm"
 #include "bitmaps/checkmark.bm"
 
-#include "common.h"
 #include "frontend.h"
 #include "backend.h"
 #include "moves.h"
@@ -453,17 +455,17 @@ char *chessDir, *programName, *programVersion,
 
 #define SOLID 0
 #define OUTLINE 1
-Pixmap pieceBitmap[2][6];
-Pixmap xpmPieceBitmap[4][6];	/* LL, LD, DL, DD */
+Pixmap pieceBitmap[2][(int)BlackPawn];
+Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD */
 Pixmap xpmLightSquare, xpmDarkSquare, xpmJailSquare;
 int useImages, useImageSqs;
-XImage *ximPieceBitmap[4][6];	/* LL, LD, DL, DD */
-Pixmap ximMaskPm[6];            /* clipmasks, used for XIM pieces */
+XImage *ximPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD */
+Pixmap ximMaskPm[(int)BlackPawn];            /* clipmasks, used for XIM pieces */
 XImage *ximLightSquare, *ximDarkSquare;
 XImage *xim_Cross;
 
-#define pieceToSolid(piece) &pieceBitmap[SOLID][((int)(piece)) % 6]
-#define pieceToOutline(piece) &pieceBitmap[OUTLINE][((int)(piece)) % 6]
+#define pieceToSolid(piece) &pieceBitmap[SOLID][((int)(piece)) % (int)BlackPawn]
+#define pieceToOutline(piece) &pieceBitmap[OUTLINE][((int)(piece)) % (int)BlackPawn]
 
 #define White(piece) ((int)(piece) < (int)BlackPawn)
 
@@ -775,9 +777,9 @@ XtResource clientResources[] = {
     { "secondHost", "secondHost", XtRString, sizeof(String),
 	XtOffset(AppDataPtr, secondHost), XtRString, SECOND_HOST },
     { "firstDirectory", "firstDirectory", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, firstDirectory), XtRString, "" },
+	XtOffset(AppDataPtr, firstDirectory), XtRString, FIRST_DIRECTORY },
     { "secondDirectory", "secondDirectory", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, secondDirectory), XtRString, "" },
+	XtOffset(AppDataPtr, secondDirectory), XtRString, SECOND_DIRECTORY },
     { "bitmapDirectory", "bitmapDirectory", XtRString,
 	sizeof(String), XtOffset(AppDataPtr, bitmapDirectory),
 	XtRString, "" },
@@ -1136,6 +1138,110 @@ XtResource clientResources[] = {
     { "showButtonBar", "showButtonBar", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, showButtonBar),
 	XtRImmediate, (XtPointer) True },
+    { "firstScoreAbs", "firstScoreAbs", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, firstScoreIsAbsolute),
+	XtRImmediate, (XtPointer) False },
+    { "secondScoreAbs", "secondScoreAbs", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, secondScoreIsAbsolute),
+	XtRImmediate, (XtPointer) False },
+    { "pgnExtendedInfo", "pgnExtendedInfo", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, saveExtendedInfoInPGN),
+	XtRImmediate, (XtPointer) False },
+    { "hideThinkingFromHuman", "hideThinkingFromHuman", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, hideThinkingFromHuman),
+	XtRImmediate, (XtPointer) False },
+    { "adjudicateLossThreshold", "adjudicateLossThreshold", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, adjudicateLossThreshold),
+	XtRImmediate, (XtPointer) 0},
+    { "pgnEventHeader", "pgnEventHeader", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, pgnEventHeader),
+	XtRImmediate, (XtPointer) "Computer Chess Game" },    
+    { "defaultFrcPosition", "defaultFrcPosition", XtRInt,
+        sizeof(int), XtOffset(AppDataPtr, defaultFrcPosition),
+	XtRImmediate, (XtPointer) -1 },    
+
+    // [HGM] 4.3.xx options
+    { "boardWidth", "boardWidth", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, NrFiles),
+	XtRImmediate, (XtPointer) -1},
+    { "boardHeight", "boardHeight", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, NrRanks),
+	XtRImmediate, (XtPointer) -1},
+    { "matchPause", "matchPause", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, matchPause),
+	XtRImmediate, (XtPointer) 10000},
+    { "holdingsSize", "holdingsSize", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, holdingsSize),
+	XtRImmediate, (XtPointer) -1},
+    { "flipBlack", "flipBlack", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, upsideDown),
+	XtRImmediate, (XtPointer) False},
+    { "allWhite", "allWhite", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, allWhite),
+	XtRImmediate, (XtPointer) False},
+    { "pieceToCharTable", "pieceToCharTable", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, pieceToCharTable),
+	XtRImmediate, (XtPointer) 0},
+    { "alphaRank", "alphaRank", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, alphaRank),
+	XtRImmediate, (XtPointer) False},
+    { "testClaims", "testClaims", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, testClaims),
+	XtRImmediate, (XtPointer) False},
+    { "checkMates", "checkMates", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, checkMates),
+	XtRImmediate, (XtPointer) False},
+    { "materialDraws", "materialDraws", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, materialDraws),
+	XtRImmediate, (XtPointer) False},
+    { "trivialDraws", "trivialDraws", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, trivialDraws),
+	XtRImmediate, (XtPointer) False},
+    { "ruleMoves", "ruleMoves", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, ruleMoves),
+	XtRImmediate, (XtPointer) 51},
+    { "repeatsToDraw", "repeatsToDraw", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, drawRepeats),
+	XtRImmediate, (XtPointer) 6},
+    { "engineDebugOutput", "engineDebugOutput", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, engineComments),
+	XtRImmediate, (XtPointer) 1},
+    { "userName", "userName", XtRString,
+	sizeof(int), XtOffset(AppDataPtr, userName),
+	XtRImmediate, (XtPointer) 0},
+    { "autoKibitz", "autoKibitz", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, autoKibitz),
+	XtRImmediate, (XtPointer) False},
+    { "firstTimeOdds", "firstTimeOdds", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, firstTimeOdds),
+	XtRImmediate, (XtPointer) 1},
+    { "secondTimeOdds", "secondTimeOdds", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, secondTimeOdds),
+	XtRImmediate, (XtPointer) 1},
+    { "timeOddsMode", "timeOddsMode", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, timeOddsMode),
+	XtRImmediate, (XtPointer) 0},
+    { "firstAccumulateTC", "firstAccumulateTC", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, firstAccumulateTC),
+	XtRImmediate, (XtPointer) 1},
+    { "secondAccumulateTC", "secondAccumulateTC", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, secondAccumulateTC),
+	XtRImmediate, (XtPointer) 1},
+    { "firstNPS", "firstNPS", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, firstNPS),
+	XtRImmediate, (XtPointer) -1},
+    { "secondNPS", "secondNPS", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, secondNPS),
+	XtRImmediate, (XtPointer) -1},
+    { "serverMoves", "serverMoves", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, serverMovesName),
+	XtRImmediate, (XtPointer) 0},
+    { "serverPause", "serverPause", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, serverPause),
+	XtRImmediate, (XtPointer) 0},
+    { "suppressLoadMoves", "suppressLoadMoves", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, suppressLoadMoves),
+	XtRImmediate, (XtPointer) False},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1426,6 +1532,46 @@ XrmOptionDescRec shellOptions[] = {
     { "-showButtonBar", "showButtonBar", XrmoptionSepArg, NULL },
     { "-buttons", "showButtonBar", XrmoptionNoArg, "True" },
     { "-xbuttons", "showButtonBar", XrmoptionNoArg, "False" },
+    /* [AS,HR] New features */
+    { "-firstScoreAbs", "firstScoreAbs", XrmoptionSepArg, NULL },
+    { "-secondScoreAbs", "secondScoreAbs", XrmoptionSepArg, NULL },
+    { "-pgnExtendedInfo", "pgnExtendedInfo", XrmoptionSepArg, NULL },
+    { "-hideThinkingFromHuman", "hideThinkingFromHuman", XrmoptionSepArg, NULL },
+    { "-adjudicateLossThreshold", "adjudicateLossThreshold", XrmoptionSepArg, NULL },
+    { "-pgnEventHeader", "pgnEventHeader", XrmoptionSepArg, NULL },
+    { "-defaultFrcPosition", "defaultFrcPosition", XrmoptionSepArg, NULL },
+    // [HGM] I am sure AS added many more options, but we have to fish them out, from the list in winboard.c
+
+    /* [HGM,HR] User-selectable board size */
+    { "-boardWidth", "boardWidth", XrmoptionSepArg, NULL }, 
+    { "-boardHeight", "boardHeight", XrmoptionSepArg, NULL }, 
+    { "-matchPause", "matchPause", XrmoptionSepArg, NULL }, 
+
+    /* [HGM] new arguments of 4.3.xx. All except first three are back-end options, which should work immediately */
+    { "-holdingsSize", "holdingsSize", XrmoptionSepArg, NULL }, // requires extensive front-end changes to work
+    { "-flipBlack", "flipBlack", XrmoptionSepArg, NULL },       // requires front-end changes to work
+    { "-allWhite", "allWhite", XrmoptionSepArg, NULL },         // requires front-end changes to work
+    { "-pieceToCharTable", "pieceToCharTable", XrmoptionSepArg, NULL }, 
+    { "-alphaRank", "alphaRank", XrmoptionSepArg, NULL }, 
+    { "-testClaims", "testClaims", XrmoptionSepArg, NULL }, 
+    { "-checkMates", "checkMates", XrmoptionSepArg, NULL }, 
+    { "-materialDraws", "materialDraws", XrmoptionSepArg, NULL }, 
+    { "-trivialDraws", "trivialDraws", XrmoptionSepArg, NULL }, 
+    { "-ruleMoves", "ruleMoves", XrmoptionSepArg, NULL }, 
+    { "-repeatsToDraw", "repeatsToDraw", XrmoptionSepArg, NULL },
+    { "-engineDebugOutput", "engineDebugOutput", XrmoptionSepArg, NULL }, 
+    { "-userName", "userName", XrmoptionSepArg, NULL }, 
+    { "-autoKibitz", "autoKibitz", XrmoptionNoArg, "True" }, 
+    { "-firstTimeOdds", "firstTimeOdds", XrmoptionSepArg, NULL }, 
+    { "-secondTimeOdds", "secondTimeOdds", XrmoptionSepArg, NULL }, 
+    { "-timeOddsMode", "timeOddsMode", XrmoptionSepArg, NULL }, 
+    { "-firstAccumulateTC", "firstAccumulateTC", XrmoptionSepArg, NULL }, 
+    { "-secondAccumulateTC", "secondAccumulateTC", XrmoptionSepArg, NULL }, 
+    { "-firstNPS", "firstNPS", XrmoptionSepArg, NULL }, 
+    { "-secondNPS", "secondNPS", XrmoptionSepArg, NULL }, 
+    { "-serverMoves", "serverMoves", XrmoptionSepArg, NULL }, 
+    { "-serverPause", "serverPause", XrmoptionSepArg, NULL }, 
+    { "-suppressLoadMoves", "suppressLoadMoves", XrmoptionSepArg, NULL }, 
 };
 
 
@@ -1829,6 +1975,15 @@ BoardToTop()
   XtPopup(shellWidget, XtGrabNone); /* Raise if lowered  */
 }
 
+#ifdef IDSIZES
+  // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
+#else
+void InitDrawingSizes(BoardSize boardSize, int flags)
+{ // [HGM] Dummy routine to be able to link with backend files from 4.3.xx, which call it
+  ;
+}
+#endif
+
 int
 main(argc, argv)
      int argc;
@@ -1837,7 +1992,7 @@ main(argc, argv)
     int i, j, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
     XSetWindowAttributes window_attributes;
     Arg args[16];
-    Dimension timerWidth, boardWidth, w, h, sep, bor, wr, hr;
+    Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
     XrmValue vFrom, vTo;
     XtGeometryResult gres;
     char *p;
@@ -1886,6 +2041,14 @@ main(argc, argv)
 			      clientResources, XtNumber(clientResources),
 			      NULL, 0);
 
+    /* [HGM,HR] make sure board size is acceptable */
+    if(appData.NrFiles > BOARD_SIZE ||
+       appData.NrRanks > BOARD_SIZE   )
+	 DisplayFatalError("Recompile with BOARD_SIZE > 12, to support this size", 0, 2);
+
+    /* [HGM] The following line must be moved to the "New Shuffle Game" menu as soon as there is one! */
+    if(appData.defaultFrcPosition != -1) shuffleOpenings = TRUE;
+
 #if !HIGHDRAG
     /* This feature does not work; animation needs a rewrite */
     appData.highlightDragging = FALSE;
@@ -1896,9 +2059,25 @@ main(argc, argv)
     xScreen = DefaultScreen(xDisplay);
     wm_delete_window = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
 
+	gameInfo.variant = StringToVariant(appData.variant);
+	InitPosition(FALSE);
+#if 0
     /*
      * Determine boardSize
      */
+    gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] boardsize: make sure we start as 8x8
+
+//#ifndef IDSIZE
+    // [HGM] as long as we have not created the possibility to change size while running, start with requested size
+    gameInfo.boardWidth    = appData.NrFiles > 0 ? appData.NrFiles : 8; 
+    gameInfo.boardHeight   = appData.NrRanks > 0 ? appData.NrRanks : 8;
+    gameInfo.holdingsWidth = appData.holdingsSize > 0 ? 2 : 0;
+#endif
+
+
+#ifdef IDSIZE
+    InitDrawingSizes(-1, 0); // [HGM] initsize: make this into a subroutine
+#else
     if (isdigit(appData.boardSize[0])) {
         i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
 		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
@@ -1972,21 +2151,23 @@ main(argc, argv)
 	}
     }
 		
-    boardWidth = lineGap + BOARD_SIZE * (squareSize + lineGap);
+    /* [HR] height treated separately (hacked) */
+    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
     if (appData.showJail == 1) {
 	/* Jail on top and bottom */
 	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
 	XtSetArg(boardArgs[2], XtNheight,
-		 boardWidth + 2*(lineGap + squareSize));
+		 boardHeight + 2*(lineGap + squareSize));
     } else if (appData.showJail == 2) {
 	/* Jail on sides */
 	XtSetArg(boardArgs[1], XtNwidth,
 		 boardWidth + 2*(lineGap + squareSize));
-	XtSetArg(boardArgs[2], XtNheight, boardWidth);
+	XtSetArg(boardArgs[2], XtNheight, boardHeight);
     } else {
 	/* No jail */
 	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
-	XtSetArg(boardArgs[2], XtNheight, boardWidth);
+	XtSetArg(boardArgs[2], XtNheight, boardHeight);
     }
 
     /*
@@ -2321,7 +2502,11 @@ main(argc, argv)
     XawFormDoLayout(formWidget, True);
 
     xBoardWindow = XtWindow(boardWidget);
-    
+
+    // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
+    //       not need to go into InitDrawingSizes().
+#endif    
+
     /* 
      * Create X checkmark bitmap and initialize option menu checks.
      */
@@ -2528,6 +2713,7 @@ main(argc, argv)
 	    signal(SIGUSR1, CmailSigHandler);
 	}
     }
+	InitPosition(TRUE);
 
     XtAppMainLoop(appContext);
     return 0;
@@ -3139,7 +3325,7 @@ void CreateXIMPieces()
 		loadXIM(ximPieceBitmap[kind][piece], 
 			ximtemp, buf,
 			&(xpmPieceBitmap[kind][piece]),
-			&(ximMaskPm[piece%6]));
+			&(ximMaskPm[piece%(int)BlackPawn]));
 	    }
 	    fprintf(stderr," ");
 	}
@@ -3397,9 +3583,12 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 	}
     }
     if (bits == NULL) {
+#if 0
 	fprintf(stderr, "%s: No built-in bitmap for %s; giving up\n",
 		programName, name);
 	exit(1);
+#endif
+	; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
     } else {
 	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
 				    wreq, hreq);
@@ -3408,22 +3597,26 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 
 void CreateGrid()
 {
-    int i;
+    int i, j;
     
     if (lineGap == 0) return;
-    for (i = 0; i < BOARD_SIZE + 1; i++) {
-	gridSegments[i].x1 = 0;
-	gridSegments[i].x2 =
-	  lineGap + BOARD_SIZE * (squareSize + lineGap);
-	gridSegments[i].y1 = gridSegments[i].y2
-	  = lineGap / 2 + (i * (squareSize + lineGap));
 
-	gridSegments[i + BOARD_SIZE + 1].y1 = 0;
-	gridSegments[i + BOARD_SIZE + 1].y2 =
-	  BOARD_SIZE * (squareSize + lineGap);
-	gridSegments[i + BOARD_SIZE + 1].x1 =
-	  gridSegments[i + BOARD_SIZE + 1].x2
-	    = lineGap / 2 + (i * (squareSize + lineGap));
+    /* [HR] Split this into 2 loops for non-square boards. */
+
+    for (i = 0; i < BOARD_HEIGHT + 1; i++) {
+        gridSegments[i].x1 = 0;
+        gridSegments[i].x2 =
+          lineGap + BOARD_WIDTH * (squareSize + lineGap);
+        gridSegments[i].y1 = gridSegments[i].y2
+          = lineGap / 2 + (i * (squareSize + lineGap));
+    }
+
+    for (j = 0; j < BOARD_WIDTH + 1; j++) {
+        gridSegments[j + i].y1 = 0;
+        gridSegments[j + i].y2 =
+          lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+        gridSegments[j + i].x1 = gridSegments[j + i].x2
+          = lineGap / 2 + (j * (squareSize + lineGap));
     }
 }
 
@@ -3659,15 +3852,15 @@ void PieceMenuPopup(w, event, params, num_params)
 	return;
     }
     
-    if (((pmFromX = EventToSquare(event->xbutton.x, BOARD_SIZE)) < 0) ||
-	((pmFromY = EventToSquare(event->xbutton.y, BOARD_SIZE)) < 0)) {
+    if (((pmFromX = EventToSquare(event->xbutton.x, BOARD_WIDTH)) < 0) ||
+	((pmFromY = EventToSquare(event->xbutton.y, BOARD_HEIGHT)) < 0)) {
 	pmFromX = pmFromY = -1;
 	return;
     }
     if (flipView)
-      pmFromX = BOARD_SIZE - 1 - pmFromX;
+      pmFromX = BOARD_WIDTH - 1 - pmFromX;
     else
-      pmFromY = BOARD_SIZE - 1 - pmFromY;
+      pmFromY = BOARD_HEIGHT - 1 - pmFromY;
     
     XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
 }
@@ -3752,12 +3945,12 @@ static void drawHighlight(file, rank, gc)
     if (lineGap == 0 || appData.blindfold) return;
     
     if (flipView) {
-	x = lineGap/2 + ((BOARD_SIZE-1)-file) * 
+	x = lineGap/2 + ((BOARD_WIDTH-1)-file) * 
 	  (squareSize + lineGap);
 	y = lineGap/2 + rank * (squareSize + lineGap);
     } else {
 	x = lineGap/2 + file * (squareSize + lineGap);
-	y = lineGap/2 + ((BOARD_SIZE-1)-rank) * 
+	y = lineGap/2 + ((BOARD_HEIGHT-1)-rank) * 
 	  (squareSize + lineGap);
     }
     
@@ -3932,6 +4125,7 @@ static void colorDrawPiece(piece, square_color, x, y, dest)
      int square_color, x, y;
      Drawable dest;
 {
+    if(pieceToSolid(piece) == NULL) return; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
     switch (square_color) {
       case 1: /* light */
 	XCopyPlane(xDisplay, *pieceToSolid(piece),
@@ -4005,6 +4199,32 @@ DrawFunc ChooseDrawFunc()
     }
 }
 
+/* [HR] determine square color depending on chess variant. */
+static int SquareColor(row, column)
+     int row, column;
+{
+    int square_color;
+
+    if (gameInfo.variant == VariantXiangqi) {
+        if (column >= 3 && column <= 5 && row >= 0 && row <= 2) {
+            square_color = 0;
+        } else if (column >= 3 && column <= 5 && row >= 7 && row <= 9) {
+            square_color = 1;
+        } else if (row <= 4) {
+            square_color = 1;
+        } else {
+            square_color = 0;
+        }
+    } else {
+        square_color = ((column + row) % 2) == 1;
+    }
+
+    /* [hgm] holdings: next line makes all holdings squares light */
+    if(column < BOARD_LEFT || column >= BOARD_RGHT) square_color = 0;
+ 
+    return square_color;
+}
+
 void DrawSquare(row, column, piece, do_flash)
      int row, column, do_flash;
      ChessSquare piece;
@@ -4020,38 +4240,45 @@ void DrawSquare(row, column, piece, do_flash)
     flash_delay = 500 / appData.flashRate;
 	
     if (flipView) {
-	x = lineGap + ((BOARD_SIZE-1)-column) * 
+	x = lineGap + ((BOARD_WIDTH-1)-column) * 
 	  (squareSize + lineGap);
 	y = lineGap + row * (squareSize + lineGap);
     } else {
 	x = lineGap + column * (squareSize + lineGap);
-	y = lineGap + ((BOARD_SIZE-1)-row) * 
+	y = lineGap + ((BOARD_HEIGHT-1)-row) * 
 	  (squareSize + lineGap);
     }
+  
+    square_color = SquareColor(row, column);
     
-    square_color = ((column + row) % 2) == 1;
-    
-    if (piece == EmptySquare || appData.blindfold) {
-	BlankSquare(x, y, square_color, piece, xBoardWindow);
+    if ( // [HGM] holdings: next 5 lines blank out area between board and holdings
+                 column == BOARD_LEFT-1 ||  column == BOARD_RGHT
+              || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
+	          || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
+			BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
     } else {
-	drawfunc = ChooseDrawFunc();
-	if (do_flash && appData.flashCount > 0) {
-	    for (i=0; i<appData.flashCount; ++i) {
+	    if (piece == EmptySquare || appData.blindfold) {
+			BlankSquare(x, y, square_color, piece, xBoardWindow);
+	    } else {
+			drawfunc = ChooseDrawFunc();
+			if (do_flash && appData.flashCount > 0) {
+			    for (i=0; i<appData.flashCount; ++i) {
 
-		drawfunc(piece, square_color, x, y, xBoardWindow);
-		XSync(xDisplay, False);
-		do_flash_delay(flash_delay);
+					drawfunc(piece, square_color, x, y, xBoardWindow);
+					XSync(xDisplay, False);
+					do_flash_delay(flash_delay);
 
-		BlankSquare(x, y, square_color, piece, xBoardWindow);
-		XSync(xDisplay, False);
-		do_flash_delay(flash_delay);
-	    }
+					BlankSquare(x, y, square_color, piece, xBoardWindow);
+					XSync(xDisplay, False);
+					do_flash_delay(flash_delay);
+			    }
+			}
+			drawfunc(piece, square_color, x, y, xBoardWindow);
+    	}
 	}
-	drawfunc(piece, square_color, x, y, xBoardWindow);
-    }
 	
     string[1] = NULLCHAR;
-    if (appData.showCoords && row == (flipView ? 7 : 0)) {
+    if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)) {
 	string[0] = 'a' + column;
 	XTextExtents(coordFontStruct, string, 1, &direction, 
 		     &font_ascent, &font_descent, &overall);
@@ -4065,8 +4292,8 @@ void DrawSquare(row, column, piece, do_flash)
 			y + squareSize - font_descent - 1, string, 1);
 	}
     }
-    if (appData.showCoords && column == (flipView ? 7 : 0)) {
-	string[0] = '1' + row;
+    if (appData.showCoords && column == (flipView ? BOARD_WIDTH-1 : 0)) {
+	string[0] = ONE + row;
 	XTextExtents(coordFontStruct, string, 1, &direction, 
 		     &font_ascent, &font_descent, &overall);
 	if (appData.monoMode) {
@@ -4115,8 +4342,8 @@ static int too_many_diffs(b1, b2)
     int i, j;
     int c = 0;
   
-    for (i=0; i<BOARD_SIZE; ++i) {
-	for (j=0; j<BOARD_SIZE; ++j) {
+    for (i=0; i<BOARD_HEIGHT; ++i) {
+	for (j=0; j<BOARD_WIDTH; ++j) {
 	    if (b1[i][j] != b2[i][j]) {
 		if (++c > 4)	/* Castling causes 4 diffs */
 		  return 1;
@@ -4225,8 +4452,8 @@ void XDrawPosition(w, repaint, board)
 	/* First pass -- Draw (newly) empty squares and repair damage. 
 	   This prevents you from having a piece show up twice while it 
 	   is flashing on its new square */
-	for (i = 0; i < BOARD_SIZE; i++)
-	  for (j = 0; j < BOARD_SIZE; j++)
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++)
 	    if ((board[i][j] != lastBoard[i][j] && board[i][j] == EmptySquare)
 		|| damage[i][j]) {
 		DrawSquare(i, j, board[i][j], 0);
@@ -4234,8 +4461,8 @@ void XDrawPosition(w, repaint, board)
 	    }
 
 	/* Second pass -- Draw piece(s) in new position and flash them */
-	for (i = 0; i < BOARD_SIZE; i++)
-	  for (j = 0; j < BOARD_SIZE; j++)
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++)
 	    if (board[i][j] != lastBoard[i][j]) {
 		DrawSquare(i, j, board[i][j], do_flash);	  
 	    }
@@ -4244,8 +4471,8 @@ void XDrawPosition(w, repaint, board)
 	  XDrawSegments(xDisplay, xBoardWindow, lineGC,
 			gridSegments, (BOARD_SIZE + 1) * 2);
 	
-	for (i = 0; i < BOARD_SIZE; i++)
-	  for (j = 0; j < BOARD_SIZE; j++) {
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++) {
 	      DrawSquare(i, j, board[i][j], 0);
 	      damage[i][j] = False;
 	  }
@@ -4292,6 +4519,13 @@ void DrawPositionProc(w, event, prms, nprms)
 /*
  * event handler for parsing user moves
  */
+// [HGM] This routine will need quite some reworking. Although the backend still supports the old
+//       way of doing things, by calling UserMoveEvent() to test the legality of the move and then perform
+//       it at the end, and doing all kind of preliminary tests here (e.g. to weed out self-captures), it
+//       should be made to use the new way, of calling UserMoveTest early  to determine the legality of the
+//       move, (which will weed out the illegal selfcaptures and moves into the holdings, and flag promotions),
+//       and at the end FinishMove() to perform the move after optional promotion popups.
+//       For now I patched it to allow self-capture with King, and suppress clicks between board and holdings.
 void HandleUserMove(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -4318,14 +4552,21 @@ void HandleUserMove(w, event, prms, nprms)
 	}
     }
     
-    x = EventToSquare(event->xbutton.x, BOARD_SIZE);
-    y = EventToSquare(event->xbutton.y, BOARD_SIZE);
+    x = EventToSquare(event->xbutton.x, BOARD_WIDTH);
+    y = EventToSquare(event->xbutton.y, BOARD_HEIGHT);
     if (!flipView && y >= 0) {
-	y = BOARD_SIZE - 1 - y;
+	y = BOARD_HEIGHT - 1 - y;
     }
     if (flipView && x >= 0) {
-	x = BOARD_SIZE - 1 - x;
+	x = BOARD_WIDTH - 1 - x;
     }
+
+    /* [HGM] holdings: next 5 lines: ignore all clicks between board and holdings */
+    if(event->type == ButtonPress
+            && ( x == BOARD_LEFT-1 || x == BOARD_RGHT
+              || x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize
+              || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
+	return;
 
     if (fromX == -1) {
 	if (event->type == ButtonPress) {
@@ -4348,12 +4589,13 @@ void HandleUserMove(w, event, prms, nprms)
 	x >= 0 && y >= 0) {
 	ChessSquare fromP;
 	ChessSquare toP;
+
 	/* Check if clicking again on the same color piece */
 	fromP = boards[currentMove][fromY][fromX];
 	toP = boards[currentMove][y][x];
-	if ((WhitePawn <= fromP && fromP <= WhiteKing &&
-	     WhitePawn <= toP && toP <= WhiteKing) ||
-	    (BlackPawn <= fromP && fromP <= BlackKing &&
+	if ((WhitePawn <= fromP && fromP < WhiteKing && // [HGM] this test should go, as UserMoveTest now does it.
+	     WhitePawn <= toP && toP <= WhiteKing) ||   //       For now I made it less critical by exempting King
+	    (BlackPawn <= fromP && fromP < BlackKing && //       moves, to not interfere with FRC castlings.
 	     BlackPawn <= toP && toP <= BlackKing)) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
@@ -5144,7 +5386,7 @@ void PromotionPopUp()
     
     XtTranslateCoords(boardWidget, (bw_width - pw_width) / 2,
 		      lineGap + squareSize/3 +
-		      ((toY == 7) ^ (flipView) ?
+		      ((toY == BOARD_HEIGHT-1) ^ (flipView) ?
 		       0 : 6*(squareSize + lineGap)), &x, &y);
     
     j = 0;
@@ -5602,7 +5844,7 @@ void CopyPositionProc(w, event, prms, nprms)
     int ret;
 
     if (selected_fen_position) free(selected_fen_position);
-    selected_fen_position = (char *)PositionToFEN(currentMove);
+    selected_fen_position = (char *)PositionToFEN(currentMove,1);
     if (!selected_fen_position) return;
     ret = XtOwnSelection(menuBarWidget, XA_PRIMARY,
 			 CurrentTime,
@@ -7816,7 +8058,7 @@ CreateAnimMasks (pieceDepth)
     else
       kind = 2;
     XSetFunction(xDisplay, bufGC, GXcopy);
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % 6],
+    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
 	      buf, bufGC,
 	      0, 0, squareSize, squareSize, 0, 0);
 	      
@@ -7962,13 +8204,13 @@ ScreenSquare(column, row, pt, color)
      int column; int row; XPoint * pt; int * color;
 {
   if (flipView) {
-    pt->x = lineGap + ((BOARD_SIZE-1)-column) * (squareSize + lineGap);
+    pt->x = lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
     pt->y = lineGap + row * (squareSize + lineGap);
   } else {
     pt->x = lineGap + column * (squareSize + lineGap);
-    pt->y = lineGap + ((BOARD_SIZE-1)-row) * (squareSize + lineGap);
+    pt->y = lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap);
   }
-  *color = ((column + row) % 2) == 1;
+  *color = SquareColor(row, column);
 }
 
 /*	Convert window coords to square			*/
@@ -7977,12 +8219,12 @@ static void
 BoardSquare(x, y, column, row)
      int x; int y; int * column; int * row;
 {
-  *column = EventToSquare(x, BOARD_SIZE);
+  *column = EventToSquare(x, BOARD_WIDTH);
   if (flipView && *column >= 0)
-    *column = BOARD_SIZE - 1 - *column;
-  *row = EventToSquare(y, BOARD_SIZE);
+    *column = BOARD_WIDTH - 1 - *column;
+  *row = EventToSquare(y, BOARD_HEIGHT);
   if (!flipView && *row >= 0)
-    *row = BOARD_SIZE - 1 - *row;
+    *row = BOARD_HEIGHT - 1 - *row;
 }
 
 /*   Utilities	*/
@@ -8125,7 +8367,7 @@ SelectGCMask(piece, clip, outline, mask)
 #if HAVE_LIBXPM
       *mask = xpmMask[piece];
 #else
-      *mask = ximMaskPm[piece%6];
+      *mask = ximMaskPm[piece%(int)BlackPawn];
 #endif
   } else {
       *mask = *pieceToSolid(piece);
@@ -8174,7 +8416,7 @@ OverlayPiece(piece, clip, outline,  dest)
       kind = 0;
     else
       kind = 2;
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % 6],
+    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
 	      dest, clip,
 	      0, 0, squareSize, squareSize,
 	      0, 0);		
@@ -8482,3 +8724,8 @@ DrawDragPiece ()
   damage[player.startBoardY][player.startBoardX] = TRUE;
 }
 
+void
+SetProgramStats( FrontEndProgramStats * stats )
+{
+  // [HR] TODO
+}

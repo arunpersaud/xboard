@@ -1,6 +1,6 @@
 /*
  * xedittags.c -- Tags edit window, part of X front end for XBoard
- * $Id$
+ * $Id: xedittags.c,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1995 Free Software Foundation, Inc.
  *

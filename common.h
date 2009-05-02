@@ -86,6 +86,8 @@ int pclose(FILE *);
 #define FALSE 0
 #endif
 
+#define UNKNOWN -1 /* [HGM] nps */
+
 #if !HAVE_RANDOM
 # if HAVE_RAND48
 #  define srandom srand48
@@ -242,6 +244,13 @@ typedef enum {
     SoundIcsDraw, SoundIcsUnfinished, NSoundClasses
 } SoundClass;
 
+typedef enum { 
+  SizeTiny, SizeTeeny, SizeDinky, SizePetite, SizeSlim, SizeSmall,
+  SizeMediocre, SizeMiddling, SizeAverage, SizeModerate, SizeMedium,
+  SizeBulky, SizeLarge, SizeBig, SizeHuge, SizeGiant, SizeColossal,
+  SizeTitanic, NUM_SIZES 
+} BoardSize;
+
 /* Names for chess variants, not necessarily supported */
 typedef enum {
     VariantNormal,       /* Normal chess */
@@ -276,6 +285,9 @@ typedef enum {
     VariantFairy,        
     VariantCylinder,
     VariantFalcon,
+    VariantCapaRandom,
+    VariantBerolina,
+    VariantJanus,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
@@ -312,6 +324,8 @@ typedef enum {
   "fairy", \
   "cylinder", \
   "falcon",\
+  "caparandom",\
+  "berolina",\
   "unknown" \
 }
 
@@ -554,6 +568,11 @@ typedef struct {
     int timeOddsMode;
     int firstAccumulateTC;
     int secondAccumulateTC;
+    int firstNPS;
+    int secondNPS;
+    Boolean autoKibitz;
+    int engineComments;
+    char *userName;
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

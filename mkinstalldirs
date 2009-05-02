@@ -4,7 +4,7 @@
 # Created: 1993-05-16
 # Public domain
 
-# $Id$
+# $Id: mkinstalldirs,v 2.1 2003/10/27 19:21:00 mann Exp $
 
 errstatus=0
 

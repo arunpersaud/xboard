@@ -1,5 +1,5 @@
 Contributions of xboard and WinBoard authors by file
-$Id$
+$Id: AUTHORS,v 1.1 2003/11/02 04:42:06 mann Exp $
 
 0. Files covered
 
@@ -120,3 +120,19 @@ xboard.c, and xboard.man.
 9. Hugh Fisher <Hugh.Fisher@cs.anu.edu.au>
 
 Additions to backend.c and xboard.c.
+
+10. Allessandro Scotti
+
+Made many additions to the WinBoard user interface and graphics 
+capabilities, such as new windows for engine output, board textures 
+and font-based piece rendering. These changes became collectively known
+as Winboard_x.
+
+11. H.G. Muller <h.g.muller AT hccnet DOT nl>
+
+Heaviliy modified winboard.c, backend.c, moves.c and parser.l, to
+allow board sizes other than 8x8, and many non-orthodox Chess pieces,
+so that WinBoard is now capable of playing variants like Shogi and Xiangqi.
+Also implemented displaying of the Crazyhouse holdings, and many adjudication
+and other backend options. This version of WinBoard, (4.3.xx) containing all 
+of the WinBoard_x options, became known as WinBoard_F.

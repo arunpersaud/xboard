@@ -388,6 +388,7 @@ LRESULT CALLBACK
 VOID APIENTRY MenuPopup(HWND hwnd, POINT pt, HMENU hmenu, UINT def);
 void ParseIcsTextMenu(char *icsTextMenuString);
 VOID PopUpMoveDialog(char firstchar);
+VOID PopUpNameDialog(char firstchar);
 VOID UpdateSampleText(HWND hDlg, int id, MyColorizeAttribs *mca);
 
 /* [AS] */
@@ -1178,6 +1179,9 @@ ArgDescriptor argDescriptors[] = {
   { "trivialDraws", ArgBoolean, (LPVOID) &appData.trivialDraws, TRUE },
   { "ruleMoves", ArgInt, (LPVOID) &appData.ruleMoves, TRUE },
   { "repeatsToDraw", ArgInt, (LPVOID) &appData.drawRepeats, TRUE },
+  { "autoKibitz", ArgTrue, (LPVOID) &appData.autoKibitz, FALSE },
+  { "engineDebugOutput", ArgInt, (LPVOID) &appData.engineComments, FALSE },
+  { "userName", ArgString, (LPVOID) &appData.userName, FALSE },
 
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
@@ -1230,6 +1234,8 @@ ArgDescriptor argDescriptors[] = {
   { "timeOddsMode", ArgInt, (LPVOID) &appData.timeOddsMode, TRUE },
   { "firstAccumulateTC", ArgInt, (LPVOID) &appData.firstAccumulateTC, FALSE },
   { "secondAccumulateTC", ArgInt, (LPVOID) &appData.secondAccumulateTC, FALSE },
+  { "firstNPS", ArgInt, (LPVOID) &appData.firstNPS, FALSE },
+  { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE },
   { NULL, ArgNone, NULL, FALSE }
 };
 
@@ -1913,6 +1919,10 @@ InitAppData(LPSTR lpCmdLine)
   appData.secondTimeOdds = 1;
   appData.firstAccumulateTC  = 1; // combine previous and current sessions
   appData.secondAccumulateTC = 1;
+  appData.firstNPS  = -1; // [HGM] nps: use wall-clock time
+  appData.secondNPS = -1;
+  appData.engineComments = 1;
+
 
 #ifdef ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
@@ -3378,7 +3388,7 @@ DrawCoordsOnDC(HDC hdc)
     y += squareSize + lineGap;
   }
 
-  start = flipView ? 12-BOARD_WIDTH : 12;
+  start = flipView ? 12-(BOARD_RGHT-BOARD_LEFT) : 12;
 
   SetTextAlign(hdc, TA_RIGHT|TA_BOTTOM);
   for (i = 0; i < BOARD_RGHT - BOARD_LEFT; i++) {
@@ -3959,7 +3969,6 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
       piece_color = (int) piece < (int) BlackPawn;
 
 
-#ifdef FAIRY
       /* [HGM] holdings file: light square or black */
       if(column == BOARD_LEFT-2) {
             if( row > BOARD_HEIGHT - gameInfo.holdingsSize - 1 )
@@ -3982,7 +3991,6 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
       else if( column == BOARD_RGHT) /* right align */
             DisplayHoldingsCount(hdc, x, y, 1, (int) board[row][column]);
       else
-#endif
       if (appData.monoMode) {
         if (piece == EmptySquare) {
           BitBlt(hdc, x, y, squareSize, squareSize, 0, 0, 0,
@@ -4024,6 +4032,15 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
   if( texture_hdc != NULL ) {
     DeleteDC( texture_hdc );
   }
+}
+
+int saveDiagFlag = 0; FILE *diagFile; // [HGM] diag
+void fputDW(FILE *f, int x)
+{
+	fputc(x     & 255, f);
+	fputc(x>>8  & 255, f);
+	fputc(x>>16 & 255, f);
+	fputc(x>>24 & 255, f);
 }
 
 #define MAX_CLIPS 200   /* more than enough */
@@ -4340,6 +4357,81 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	 boardRect.right - boardRect.left,
 	 boardRect.bottom - boardRect.top,
 	 tmphdc, boardRect.left, boardRect.top, SRCCOPY);
+
+  if(saveDiagFlag) { 
+    BITMAP b; int i, j, m, w, wb, fac=0; char pData[1000000]; 
+    BITMAPINFOHEADER bih; int color[16], nrColors=0;
+
+    GetObject(bufferBitmap, sizeof(b), &b);
+    if(b.bmWidthBytes*b.bmHeight <= 990000) {
+	bih.biSize = sizeof(BITMAPINFOHEADER);
+	bih.biWidth = b.bmWidth;
+	bih.biHeight = b.bmHeight;
+	bih.biPlanes = 1;
+	bih.biBitCount = b.bmBitsPixel;
+	bih.biCompression = 0;
+	bih.biSizeImage = b.bmWidthBytes*b.bmHeight;
+	bih.biXPelsPerMeter = 0;
+	bih.biYPelsPerMeter = 0;
+	bih.biClrUsed = 0;
+	bih.biClrImportant = 0;
+//	fprintf(diagFile, "t=%d\nw=%d\nh=%d\nB=%d\nP=%d\nX=%d\n", 
+//		b.bmType,  b.bmWidth,  b.bmHeight, b.bmWidthBytes,  b.bmPlanes,  b.bmBitsPixel);
+	GetDIBits(tmphdc,bufferBitmap,0,b.bmHeight,pData,(BITMAPINFO*)&bih,DIB_RGB_COLORS);
+//	fprintf(diagFile, "%8x\n", (int) pData);
+
+#if 1
+	wb = b.bmWidthBytes;
+	// count colors
+	for(i=0; i<wb*(b.bmHeight - boardRect.top + OUTER_MARGIN)>>2; i++) {
+		int k = ((int*) pData)[i];
+		for(j=0; j<nrColors; j++) if(color[j] == k) break;
+		if(j >= 16) break;
+		color[j] = k;
+		if(j >= nrColors) nrColors = j+1;
+	}
+	if(j<16) { // 16 colors is enough. Compress to 4 bits per pixel
+		INT p = 0;
+		for(i=0; i<b.bmHeight - boardRect.top + OUTER_MARGIN; i++) {
+		    for(w=0; w<(wb>>2); w+=2) {
+			int k = ((int*) pData)[(wb*i>>2) + w];
+			for(j=0; j<nrColors; j++) if(color[j] == k) break;
+			k = ((int*) pData)[(wb*i>>2) + w + 1];
+			for(m=0; m<nrColors; m++) if(color[m] == k) break;
+			pData[p++] = m | j<<4;
+		    }
+		    while(p&3) pData[p++] = 0;
+		}
+		fac = 3;
+		wb = (wb+31>>5)<<2;
+	}
+	// write BITMAPFILEHEADER
+	fprintf(diagFile, "BM");
+        fputDW(diagFile, wb*(b.bmHeight - boardRect.top + OUTER_MARGIN)+0x36 + (fac?64:0));
+        fputDW(diagFile, 0);
+        fputDW(diagFile, 0x36 + (fac?64:0));
+	// write BITMAPINFOHEADER
+        fputDW(diagFile, 40);
+        fputDW(diagFile, b.bmWidth);
+        fputDW(diagFile, b.bmHeight - boardRect.top + OUTER_MARGIN);
+	if(fac) fputDW(diagFile, 0x040001);   // planes and bits/pixel
+        else    fputDW(diagFile, 0x200001);   // planes and bits/pixel
+        fputDW(diagFile, 0);
+        fputDW(diagFile, 0);
+        fputDW(diagFile, 0);
+        fputDW(diagFile, 0);
+        fputDW(diagFile, 0);
+        fputDW(diagFile, 0);
+	// write color table
+	if(fac)
+	for(i=0; i<16; i++) fputDW(diagFile, color[i]);
+	// write bitmap data
+	for(i=0; i<wb*(b.bmHeight - boardRect.top + OUTER_MARGIN); i++) 
+		fputc(pData[i], diagFile);
+#endif
+     }
+  }
+
   SelectObject(tmphdc, oldBitmap);
 
   /* Massive cleanup */
@@ -4364,6 +4456,25 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   lastDrawnPremove   = premoveHighlightInfo;
   lastDrawnFlipView = flipView;
   lastDrawnValid = 1;
+}
+
+/* [HGM] diag: Save the current board display to the given open file and close the file */
+int
+SaveDiagram(f)
+     FILE *f;
+{
+    time_t tm;
+    char *fen;
+
+    saveDiagFlag = 1; diagFile = f;
+    HDCDrawPosition(NULL, TRUE, NULL);
+
+    saveDiagFlag = 0;
+
+//    if(f != NULL) fprintf(f, "Sorry, but this feature is still in preparation\n");
+    
+    fclose(f);
+    return TRUE;
 }
 
 
@@ -4853,10 +4964,10 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Only allow C & A promotions if these pieces are defined */
     ShowWindow(GetDlgItem(hDlg, PB_Archbishop),
-       (PieceToChar(WhiteCardinal) >= 'A' &&
-        PieceToChar(WhiteCardinal) != '~' ||
-        PieceToChar(BlackCardinal) >= 'A' &&
-        PieceToChar(BlackCardinal) != '~'   ) ?
+       (PieceToChar(WhiteAngel) >= 'A' &&
+        PieceToChar(WhiteAngel) != '~' ||
+        PieceToChar(BlackAngel) >= 'A' &&
+        PieceToChar(BlackAngel) != '~'   ) ?
 	       SW_SHOW : SW_HIDE);
     ShowWindow(GetDlgItem(hDlg, PB_Chancellor), 
        (PieceToChar(WhiteMarshall) >= 'A' &&
@@ -4902,7 +5013,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       promoChar = PieceToChar(BlackMarshall);
       break;
     case PB_Archbishop:
-      promoChar = PieceToChar(BlackCardinal);
+      promoChar = PieceToChar(BlackAngel);
       break;
     case PB_Knight:
       promoChar = gameInfo.variant == VariantShogi ? '=' : PieceToChar(BlackKnight);
@@ -4950,7 +5061,7 @@ LoadGameDialog(HWND hwnd, char* title)
   UINT number = 0;
   FILE *f;
   char fileTitle[MSG_SIZ];
-  f = OpenFileDialog(hwnd, FALSE, "",
+  f = OpenFileDialog(hwnd, "rb", "",
  	             appData.oldSaveStyle ? "gam" : "pgn",
 		     GAME_FILT,
 		     title, &number, fileTitle, NULL);
@@ -5157,7 +5268,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         Reset(FALSE, TRUE);
       }
       number = 1;
-      f = OpenFileDialog(hwnd, FALSE, "",
+      f = OpenFileDialog(hwnd, "rb", "",
 			 appData.oldSaveStyle ? "pos" : "fen",
 			 POSITION_FILT,
 			 "Load Position from File", &number, fileTitle, NULL);
@@ -5180,7 +5291,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_SaveGame:
       defName = DefaultFileName(appData.oldSaveStyle ? "gam" : "pgn");
-      f = OpenFileDialog(hwnd, TRUE, defName,
+      f = OpenFileDialog(hwnd, "a", defName,
 			 appData.oldSaveStyle ? "gam" : "pgn",
 			 GAME_FILT,
 			 "Save Game to File", NULL, fileTitle, NULL);
@@ -5191,12 +5302,23 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_SavePosition:
       defName = DefaultFileName(appData.oldSaveStyle ? "pos" : "fen");
-      f = OpenFileDialog(hwnd, TRUE, defName,
+      f = OpenFileDialog(hwnd, "a", defName,
 			 appData.oldSaveStyle ? "pos" : "fen",
 			 POSITION_FILT,
 			 "Save Position to File", NULL, fileTitle, NULL);
       if (f != NULL) {
 	SavePosition(f, 0, "");
+      }
+      break;
+
+    case IDM_SaveDiagram:
+      defName = "diagram";
+      f = OpenFileDialog(hwnd, "wb", defName,
+			 "bmp",
+			 DIAGRAM_FILT,
+			 "Save Diagram to File", NULL, fileTitle, NULL);
+      if (f != NULL) {
+	SaveDiagram(f);
       }
       break;
 
@@ -5431,6 +5553,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_TypeInMove:
       PopUpMoveDialog('\000');
+      break;
+
+    case IDM_TypeInName:
+      PopUpNameDialog('\000');
       break;
 
     case IDM_Backward:
@@ -6107,7 +6233,7 @@ OpenFileHook(HWND hdlg, UINT uiMsg, WPARAM wParam, LPARAM lParam)
 
 
 FILE *
-OpenFileDialog(HWND hwnd, BOOL write, char *defName, char *defExt,
+OpenFileDialog(HWND hwnd, char *write, char *defName, char *defExt, // [HGM] diag: type of 'write' now string
 	       char *nameFilt, char *dlgTitle, UINT *number,
 	       char fileTitle[MSG_SIZ], char fileName[MSG_SIZ])
 {
@@ -6139,7 +6265,7 @@ OpenFileDialog(HWND hwnd, BOOL write, char *defName, char *defExt,
   openFileName.lpstrInitialDir   = NULL;
   openFileName.lpstrTitle        = dlgTitle;
   openFileName.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY 
-    | (write ? 0 : OFN_FILEMUSTEXIST) 
+    | (write[0] != 'r' ? 0 : OFN_FILEMUSTEXIST) 
     | (number ? OFN_ENABLETEMPLATE | OFN_ENABLEHOOK: 0)
     | (oldDialog ? 0 : OFN_EXPLORER);
   openFileName.nFileOffset       = 0;
@@ -6150,10 +6276,10 @@ OpenFileDialog(HWND hwnd, BOOL write, char *defName, char *defExt,
     (LPOFNHOOKPROC) OldOpenFileHook : (LPOFNHOOKPROC) OpenFileHook;
   openFileName.lpTemplateName    = (LPSTR)(oldDialog ? 1536 : DLG_IndexNumber);
 
-  if (write ? GetSaveFileName(&openFileName) : 
-              GetOpenFileName(&openFileName)) {
+  if (write[0] != 'r' ? GetSaveFileName(&openFileName) : 
+                        GetOpenFileName(&openFileName)) {
     /* open the file */
-    f = fopen(openFileName.lpstrFile, write ? "a" : "rb");
+    f = fopen(openFileName.lpstrFile, write);
     if (f == NULL) {
       MessageBox(hwnd, "File open failed", NULL,
 		 MB_OK|MB_ICONEXCLAMATION);
@@ -6783,6 +6909,59 @@ PopUpMoveDialog(char firstchar)
 	hwndMain, (DLGPROC)lpProc, (LPARAM)firstchar);
       FreeProcInstance(lpProc);
     }
+}
+
+/*---------------------------------------------------------------------------*\
+ *
+ * Type-in name dialog functions
+ * 
+\*---------------------------------------------------------------------------*/
+
+LRESULT CALLBACK
+TypeInNameDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  char move[MSG_SIZ];
+  HWND hInput;
+
+  switch (message) {
+  case WM_INITDIALOG:
+    move[0] = (char) lParam;
+    move[1] = NULLCHAR;
+    CenterWindowEx(hDlg, GetWindow(hDlg, GW_OWNER), 1 );
+    hInput = GetDlgItem(hDlg, OPT_Name);
+    SetWindowText(hInput, move);
+    SetFocus(hInput);
+    SendMessage(hInput, EM_SETSEL, (WPARAM)9999, (LPARAM)9999);
+    return FALSE;
+
+  case WM_COMMAND:
+    switch (LOWORD(wParam)) {
+    case IDOK:
+      GetDlgItemText(hDlg, OPT_Name, move, sizeof(move));
+      appData.userName = strdup(move);
+
+      EndDialog(hDlg, TRUE);
+      return TRUE;
+    case IDCANCEL:
+      EndDialog(hDlg, FALSE);
+      return TRUE;
+    default:
+      break;
+    }
+    break;
+  }
+  return FALSE;
+}
+
+VOID
+PopUpNameDialog(char firstchar)
+{
+    FARPROC lpProc;
+    
+      lpProc = MakeProcInstance((FARPROC)TypeInNameDialog, hInst);
+      DialogBoxParam(hInst, MAKEINTRESOURCE(DLG_TypeInName),
+	hwndMain, (DLGPROC)lpProc, (LPARAM)firstchar);
+      FreeProcInstance(lpProc);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -7709,7 +7888,7 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
 
   if (appData.clockMode) {
     if (tinyLayout)
-      sprintf(buf, "%c %s %s %s", color[0], TimeString(timeRemaining), flagFell);
+      sprintf(buf, "%c %s %s", color[0], TimeString(timeRemaining), flagFell);
     else
       sprintf(buf, "%s: %s %s", color, TimeString(timeRemaining), flagFell);
     str = buf;
@@ -8542,6 +8721,7 @@ LRESULT CALLBACK NewGameFRC_Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
         case IDOK:
             *lpIndexFRC = GetDlgItemInt(hDlg, IDC_NFG_Edit, &index_is_ok, TRUE );
             EndDialog( hDlg, 0 );
+	    shuffleOpenings = TRUE; /* [HGM] shuffle: switch shuffling on for as long as we stay in current variant */
             return TRUE;
         case IDCANCEL:
             EndDialog( hDlg, 1 );   
@@ -8554,7 +8734,7 @@ LRESULT CALLBACK NewGameFRC_Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
             }
             return TRUE;
         case IDC_NFG_Random:
-            sprintf( buf, "%d", myrandom() % 960 );
+            sprintf( buf, "%d", myrandom() ); /* [HGM] shuffle: no longer limit to 960 */
             SetDlgItemText(hDlg, IDC_NFG_Edit, buf );
             return TRUE;
         }
@@ -8914,6 +9094,9 @@ UserName()
   static char buf[MSG_SIZ];
   DWORD bufsiz = MSG_SIZ;
 
+  if(appData.userName != NULL && appData.userName[0] != 0) { 
+	return appData.userName; /* [HGM] username: prefer name selected by user over his system login */
+  }
   if (!GetUserName(buf, &bufsiz)) {
     /*DisplayError("Error getting user name", GetLastError());*/
     strcpy(buf, "User");
@@ -9032,7 +9215,7 @@ AutoSaveGame()
   char fileTitle[MSG_SIZ];
 
   defName = DefaultFileName(appData.oldSaveStyle ? "gam" : "pgn");
-  f = OpenFileDialog(hwndMain, TRUE, defName,
+  f = OpenFileDialog(hwndMain, "a", defName,
 		     appData.oldSaveStyle ? "gam" : "pgn",
 		     GAME_FILT, 
 		     "Save Game to File", NULL, fileTitle, NULL);

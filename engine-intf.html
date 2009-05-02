@@ -6,11 +6,13 @@
 <body>
 <hr noshade size="2">
 <h1>Chess Engine Communication Protocol</h1>
-<h2><a href="http://www.tim-mann.org/">Tim Mann</a></h2>
+<h1><font color=green>Discussion Proposal</font></h1>
+<h2><a href="http://www.tim-mann.org/">Tim Mann</a> &amp; <a href="http://home.hccnet.nl/h.g.muller/winboardF.html">H.G.Muller</a></h2>
 <p>
-$Id$<br>
+$Id: engine-intf.html,v 2.1 2003/10/27 19:21:00 mann Exp $<br>
 Version 2; implemented in xboard/WinBoard 4.2.1 and later.<br>
-Changes since version 1 are indicated in <font color=red>red</font>.
+Changes since version 1 are indicated in <font color=red>red</font>.<br>
+Changes for WinBoard 4.3.xx are indicated in <font color=green>green</font>.
 <hr noshade size="2">
 
 <ul>
@@ -75,6 +77,15 @@ engines.  The list is now hosted by Yahoo Groups; you can join at <a
 href="http://www.egroups.com/group/chess-engines"
 >http://www.egroups.com/group/chess-engines</a>, or you can read the
 list there without joining.  The list is filtered to prevent spam.
+</p>
+<p>
+<font color=green>
+Note that the WinBoard 4.3.xx line is developed independently of the
+original GNU project, by H.G.Muller.
+If you have questions about WinBoard 4.3.xx, or want to report bugs in it,
+report them in the appropriate section of the 
+<a href="http://www.open-aurec.com/wbforum/">WinBoard forum</a>.
+</font>
 </p>
 
 <h2><a name="2">2. Connection</a></h2>
@@ -173,6 +184,25 @@ including the "ping" command (recommended for all engines), the
 "setboard" command, and many optional parameters.  Additional features
 will probably be added in future versions.
 </p>
+
+<p>
+<font color=green>
+If it is necessary to have a separate name, 
+it would be best to refer to the protocol including the green additions as version 2f.
+I really don't think it is a different protocol from version 2, though.
+I just tried to clarify some ambiguities in the original definition,
+now that the WinBoard 4.3.xx line has implemented them in a specific way.
+The hand-shaking protocol for features as defined in protocol 2 perfectly
+allows addition of an occasional new features without any need for stepping up the protocol version number,
+and I think refraining from the latter would enormously lower the barrier for actual
+implementation of these features in engines.
+<br>
+The two really new things are the engine debug comments, and the "nps" command.
+The former merely tries to regulate an extremely common existing pactice 
+of having engines dump debug messages on WinBoard in an unprotected way, 
+as usually you get away with that.
+</font>
+
 </font>
 
 <h2><a name="5">5. WinBoard requires Win32 engines</a></h2>
@@ -455,6 +485,7 @@ command; see its documentation below.
 White on move.  Leave force mode and set the engine to play Black.
 Associate the engine's clock with Black and the opponent's clock with
 White.  Reset clocks and time controls to the start of a new game.
+Use wall clock for time measurement.
 Stop clocks.  Do not ponder on this move, even if pondering is on.
 Remove any search depth limit previously set by the sd command.
 <p>
@@ -467,7 +498,7 @@ defined variant names are:
 <table>
 <tr align="left"><th>wildcastle<td>Shuffle chess where king can castle from d file
 <tr align="left"><th>nocastle<td>Shuffle chess with no castling at all
-<tr align="left"><th>fischerandom<td>Fischer Random (not supported yet)
+<tr align="left"><th>fischerandom<td>Fischer Random
 <tr align="left"><th>bughouse<td>Bughouse, ICC/FICS rules
 <tr align="left"><th>crazyhouse<td>Crazyhouse, ICC/FICS rules
 <tr align="left"><th>losers<td>Win by losing all pieces or getting mated (ICC)
@@ -480,6 +511,30 @@ or by having no legal moves (ICC)</font>
 <tr align="left"><th>kriegspiel<td>Kriegspiel (engines not supported)
 <tr align="left"><th>atomic<td>Atomic
 <tr align="left"><th>3check<td>Win by giving check 3 times
+<tr align="left"><th><font color=green>xiangqi</font>
+<td><font color=green>Chinese Chess (9x10 board)</font>
+<tr align="left"><th><font color=green>shogi</font>
+<td><font color=green>Japanese Chess (9x9 bord)</font>
+<tr align="left"><th><font color=green>capablanca</font>
+<td><font color=green>Capablanca Chess (10x8 board, with Archbishop and Chancellor)</font>
+<tr align="left"><th><font color=green>gothic</font>
+<td><font color=green>Gothic Chess (10x8 board, same with better opening setup)</font>
+<tr align="left"><th><font color=green>falcon</font>
+<td><font color=green>Falcon Chess (10x8 board, with two Falcon pieces)</font>
+<tr align="left"><th><font color=green>shatranj</font>
+<td><font color=green>ancient Arabic Chess, with Elephants and General in stead of B and Q</font>
+<tr align="left"><th><font color=green>courier</font>
+<td><font color=green>Courier Chess (12x8 board, a medieval precursor of modern Chess</font>
+<tr align="left"><th><font color=green>knightmate</font>
+<td><font color=green>King moves as Knight and vice versa</font>
+<tr align="left"><th><font color=green>berolina</font><td>
+<font color=green>Pawns capture straight ahead, and move diagonally</font>
+<tr align="left"><th><font color=green>janus</font><td>
+<font color=green>Janus Chess (10x8, with two Archbishops)</font>
+<tr align="left"><th><font color=green>caparandom</font>
+<td><font color=green>shuffle variant like FRC (10x8 board)</font>
+<tr align="left"><th><font color=green>cylinder</font>
+<td><font color=green>Pieces wrap around between side edges, like board is a cylinder</font>
 <tr align="left"><th>unknown<td>Unknown variant (not supported)
 </table>
 <p>
@@ -554,11 +609,28 @@ Set Black on move.  Set the engine to play White.  Stop clocks.
   
 <dt><strong>st TIME</strong>
 <dd>Set time controls.  See the <a href="#11">Time Control</a> section
-below. The commands "level" and "st" are not used together.
+below. 
 <p>
 
 <dt><strong>sd DEPTH</strong>
 <dd>The engine should limit its thinking to DEPTH ply.
+<font color=green>The commands "level" or "st" and "sd" can be used together in an orthogonal way.
+If both are issued, the engine should observe both limitations.</font>
+<p>
+
+<dt><font color=green><strong>nps NODE_RATE</strong></font>
+<dd><font color=green>The engine should not use wall-clock time to make its timing decisions,
+but an own internal time measure based on the number of nodes it has searched
+(and will report as "thinking output", see <a href="#10">section 10</a>),
+converted to seconds through dividing by the given NODE_RATE.
+Example: after receiving the commands "st 8" and "nps 10000",
+the engine should never use more that 80,000 nodes in the search for any move.
+In this mode, the engine should report user CPU time used (in its thinking output), 
+rather than wall-clock time.
+This even holds if NODE_RATE is given as 0,
+but in that case it should also use the user CPU time for its timing decisions.
+The effect of an "nps" command should persist until the next "new" command.
+</font>
 <p>
 
 <dt><strong>time N</strong>
@@ -578,7 +650,15 @@ engine is not participating in the game) the time clock should be
 associated with the last color that the engine was set to play, the
 otim clock with the opposite color.
 </p>
-
+<p>
+<font color=green>This business of "clocks remaining with the engine" is apparently so ambiguous
+that many engines implement it wrong.
+The clocks in fact always remain with the color.
+Which clock reading is relayed with "time", and which by "otim", is determined by which side the engine plays.
+Not that the way the clocks operate and receive extra time (in accordance with the selected time control)
+is not affected in any way by which moves are made by the engine, which by the opponent, and which were forced.
+</font>
+</p>
 <p>
 <font color=red>
 Beginning in protocol version 2, if you can't handle the time and
@@ -610,6 +690,11 @@ algebraic notation.  Examples:
 <tr align="left"><td>FischerRandom castling:<td>O-O, O-O-O (oh, not zero)
 </table>
 
+<p>
+<font color=green>
+Note that on boards with more than 9 ranks, counting of the ranks starts at 0.
+</font>
+</p>
 <p>
 <font color=red>
 Beginning in protocol version 2, you can use the feature command
@@ -732,7 +817,11 @@ stops playing by selecting Reset, Edit Game, Exit or the like.
 The setboard command is the new way to set up positions, beginning
 in protocol version 2.  It is not used unless it has been selected
 with the feature command.  Here FEN is a position in Forsythe-Edwards
-Notation, as defined in the PGN standard.
+Notation, as defined in the PGN standard.</font>
+<font color=green>In FRC or CRC, WinBoard will use Shredder-FEN or X-FEN standard,
+i.e. it can use the rook-file indicator letter to represent a castling right (like HAha)
+whenever it wants, but if it uses KQkq, this will always refer to the outermost rook on the given side</font>
+<font color=red>
 
 <p><i>Illegal positions:</i> Note that either setboard or edit can
 be used to send an illegal position to the engine.  The user can
@@ -791,6 +880,15 @@ capture is assumed to be illegal on the current move regardless of the
 positions of the pawns.  The clock for the 50 move rule starts at
 zero, and for purposes of the draw by repetition rule, no prior
 positions are deemed to have occurred.
+<font color=green>
+In FRC or CRC, any rook and king put on the back rank should be considered to
+have castling rights, even if it later becomes apparent that they cannot be both in the
+initial position, because the position just set up is asymmetric.
+It is upto WinBoard to find work-around in cases where this is not desired,
+similar to the "black kludge" shown above, by setting up an earlier position,
+and then do a move to destroy castling rights or create e.p. rights.
+(Don't bet your life on it...)
+</font>
 </p>
 
 <dt><strong>hint</strong>
@@ -1155,6 +1253,15 @@ correct value for your engine (just "normal" in most cases) rather
 than leaving the default in place, so that the user will get an
 appropriate error message if he tries to play a variant that your
 engine does not support.
+<br>
+If your engine can play variants on a deviating board size,
+like capablanca on an 8x8 board, or capablanca crazyhouse,
+it can list them amongst the variants with a prefix spcifying board size plus
+holdings size, like 8x8+0_capablanca or 10x8+7_capablanca.
+If it is capable of playing any variant with an arbitrary board size,
+it should list "boardsize" as one of the variants.
+If there is a maximum to the board size, this can be prefixed,
+e.g. "12x10+0_boardsize".
 </font>
 
 <dt><font color=red>
@@ -1192,6 +1299,33 @@ By default, name=1 if the engine is playing on a chess server; name=0 if not.
 <dd><font color=red>
 If pause=1, xboard may use the protocol's new "pause" command;
 if pause=0, xboard assumes that the engine does not support this command.
+</font>
+
+<dt><font color=green>
+<strong>nps</strong> (boolean, default ?)
+</font>
+<dd><font color=green>
+If nps=1, it means the engine supports the nps command.
+If nps=0, it means the engine does not support it, and WinBoard should refrain from sending it.
+Default is that WinBoard sends it, in an attempt to try out if the engine understand it.
+The engine should properly respond with "Error (unkown command): nps" if it does not implement it,
+(as any protocol version pre-scribes),
+or WinBoard might assume that the engine did understand the command. 
+In that case the use of different time standards that ensues could lead to time forfeits for the engine.
+</font>
+
+<dt><font color=green>
+<strong>debug</strong> (boolean, default 0)
+</font>
+<dd><font color=green>
+If debug=1, it means the engine wants to send debug output prefixed by '#',
+which WinBoard should ignore, except for including it in the winboard.debug file.
+As this feature is added to protocol 2 ony late,
+so that not all protocol-2 supporting versions of WinBoard might implement it,
+it is important that engines check if WinBoard accepts the feature.
+If the feature is rejected,
+engines must refrain from sending the debug output,
+or do so at their own risk.
 </font>
 
 <dt><font color=red>
@@ -1291,6 +1425,13 @@ Examples:
 <p>
 xboard relays the result to the user, the ICS, the other engine in Two
 Machines mode, and the PGN save file as required.
+<font color=green>Note that "definitey over" above means that sending this command 
+will be taken by WinBoard as an unconditional refusal of the engine to play on,
+which might cause you to forfeit if the game was in fact not over.
+This command should thus not be used to offer draws, accept draws,
+or make draw-by-rule claims that might not be valid 
+(because it is not your move, and the opponent already moved without you knowing it yet).
+For offering and claiming draws, "offer draw" should be used.</font>
 </p>
 
 <dt><strong>resign</strong>
@@ -1308,6 +1449,16 @@ xboard relays the offer to the user, the ICS, the other engine in Two
 Machines mode, and the PGN save file as required.  In Machine White,
 Machine Black, or Two Machines mode, the offer is considered valid
 until your engine has made two more moves.
+<font color=green>This command must also be used to accept a draw offer.
+Do not use the 1/2-1/2 command for that, as the offer might be no longer valid,
+in which case a refusal to play on implied by the RESULT command would make you forfeit the game.
+"offer draw" should also be used to claim 50-move and 3-fold-repetition draws
+that will occur <em>after</em> your move, by sending it <em>before</em> making the move.
+WinBoard will grant draw offers without the opponent having any say in
+it in situations where draws can be claimed.
+Only if the draw cannot be claimed, the offer will be passed to your opponent after you make your next move,
+just before WinBoard relays this move to the opponent.
+</font>
 <p>
 
 <dt><font color=red><strong>tellopponent MESSAGE</strong></font>
@@ -1376,6 +1527,16 @@ character that prevents the ICS from expanding command aliases, if
 xboard knows of such a character.  (On chessclub.com and chess.net,
 "/" is used; on freechess.org, "$" is used.)  MESSAGE consists of any
 characters, including whitespace, to the end of the line.
+</font>
+<p>
+
+<dt><font color=green><strong># COMMENT</strong></font>
+<dd><font color=green>
+The engine can send any string of printable characters, terminated by a newline,
+for inclusion in the winboard.debug file, provided the line starts with a '#' character.
+If the engine has set feature debug=1,
+it is guaranteed that WinBoard (and any future version of it) will completely ignore
+these lines in any other respect.
 </font>
 </dl>
 <p>
@@ -1518,6 +1679,24 @@ conventional clock mode.
 </p>
 
 <p>
+<font color=green>
+Note that the time parameter in this command is not a pure numeric argument,
+but in general is a character string, in order to pass the number of seconds.
+Engines are encouraged to ignore any unexpected characters at the end of this string,
+i.e. following the MIN or MIN:SEC specification.
+Future protocol versions might (under control of an appropriate feature)
+append such extra characters to this argument,
+in order to inform the engine in advance of the time control it can expect after the current session completes.
+E.g. "level 40 25+5 0" could mean that the engine has to play 40 moves in 25 minutes,
+but should expect to get only 5 minutes for the entire remainder of the game after that,
+rather than another 25 minutes for the next 40 moves.
+When the time comes, (i.e. after the 40 moves), 
+it will be informed of the time-control change by receiving a new "level 0 5 0" command,
+but engines with advanced time management might want to plan for this in advance.
+</font>
+</p>
+
+<p>
 The command to set an incremental time control looks like this:
 </p>
 
@@ -1539,6 +1718,27 @@ clock.  A player's clock counts down while it is his turn.  Your flag
 can be called whenever your clock is zero or negative.  (Your clock
 can go negative and then become positive again because of the
 increment.)
+</p>
+
+<p>
+The number of moves given in the level command (when non-zero) should 
+be taken as the number of moves still to do before the specified time
+will be added to the clock, if the "level" command is received after
+some moves have already been played.
+The time given should be interpreted as the time left on its clock
+(including any time left over from the previous sessions),
+and not necessarily the time that will be added to the clock
+after the specified number of moves has been played.
+This is only relevant in WinBoard 4.3.xx, which might send the engine
+"level" commands during a game,
+just before the engine has to start thinking about the first move of 
+a new time-control session.
+Example: if at the start of the game "level 40 60 0" was given 
+(40 moves per hour),
+and the engine receives "level 20 22 0" just before move 41,
+it should understand that it should do the next 20 moves in 22 minutes
+(pehaps because the secondary session was 20 moves per 15 minutes,
+and it had 7 minutes left on its clock after the first 40 moves).
 </p>
 
 <p>

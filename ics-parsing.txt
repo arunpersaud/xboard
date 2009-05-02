@@ -1,6 +1,6 @@
 Parsing of ICS Output
 Updated to match xboard/WinBoard 4.0.2
-$Id$
+$Id: ics-parsing.txt,v 2.1 2003/10/27 19:21:00 mann Exp $
 ==============================================================================
 
 This document describes how xboard and WinBoard parse ICS output.  The

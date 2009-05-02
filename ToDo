@@ -84,23 +84,24 @@ allowing dragging from the icons to drop a piece).  Actually, moving
 the clocks would be beneficial too, so that it's easier to visually
 associate the right clock with the right player when looking at two
 boards during a bughouse match (with two copies of xboard running).
-Maybe multiple window layouts should be user-selectable.
+Maybe multiple window layouts should be user-selectable. [4.3 supports
+drag-drops from holdings]
 
 150. Keep track of castling availability, en-passant availability, and
 FEN half-move clock (for 50-move rule), pass the availability
 information to the move generator through the existing interface, and
-load/save it in the FEN code.
+load/save it in the FEN code. [Fixed in 4.3]
 
 150a. Note that not keeping track of ep creates a bug in mate
 detection.  In certain positions, moving a pawn from the 3rd to 4th
 rank gives mate, but it is not detected because if the pawn had moved
 to the same position from the 2nd rank, ep capture would have been
-legal and there would be no mate.
+legal and there would be no mate. [problem disappeared in 4.3]
 
 150b. Note that although we try to put in e.p. availability when
 writing FEN, this works only if we have the move that got us to this
 position in the moveList. If we load a position from FEN, the
-e.p. availability field of the FEN is lost.
+e.p. availability field of the FEN is lost. [disappeared in 4.3]
 
 152. Generate the info file, man page, perhaps html, and perhaps even
 the WinBoard help file from the same sources.  Right now,
@@ -122,7 +123,8 @@ engine don't "have the same console"; indeed, neither has a console.
 162. Supply a non-X Zippy for Unix.  Perhaps use the code from Klaus
 Knopper.
 
-167. Alternative bitmaps loaded at runtime for WinBoard.
+167. Alternative bitmaps loaded at runtime for WinBoard. [font-based
+piece rendering provides this functionality since WinBoard_x]
 
 169. Upload Game on file menu?  This would upload the current game
 moves into a scratch examined game on ICS.  Could do Upload Position
@@ -136,10 +138,11 @@ turn on at any time, not just in LoadGame.  What should GUI be?
 171. Displaying thinking in a separate window should be an option
 available at all times when Show Thinking makes sense, not just in
 analysis mode.  It should perhaps be orthogonal to analysis mode.
+[added in WinBoard_x]
 
 172. Should analysis window scroll instead of showing only the last
 line?  There could be an extra checkbox to show all chess engine
-output in it.
+output in it. [fixed in WinBoard_x]
 
 178. Need reliable kill for chess engine on Win32.  See also 161.
 
@@ -272,7 +275,7 @@ automatically based on the info sent from mamer.  [I would need to
 play in some tournaments before I could evaluate this idea or fill in
 the details.]
 
-222. Could support time handicaps.
+222. Could support time handicaps. [Added in 4.3]
 
 223. Bug: very long comments cause buffer overflow.  Need to revamp
 the way comments are parsed and returned from parser.l to fix this.
@@ -297,7 +300,7 @@ web page address, close, go to browser, paste *nothing*.  [How does
 one do this in Windows?]
 
 227a. In engine-engine matches, an engine that crashes should lose and
-perhaps get restarted for the next game.
+perhaps get restarted for the next game. [Added in 4.3]
 
 227b. Maybe when an engine playing in Zippy mode exhibits a bug, we
 should do a little more too.  Perhaps "say Sorry, the engine seems to
@@ -308,7 +311,7 @@ next game.
 claims, rejecting a legal move, or (maybe) missed claims of mate or
 draw.  Note that draw claims require checking for repetition, 50 move
 rule, and insufficient material as well as stalemate, so this is
-nontrivial.
+nontrivial. [Added in 4.3]
 
 228. RichEdit bug: sometimes a line gets indented as if it were
 wrapped when it should be flush left.
@@ -456,6 +459,7 @@ windows explorer then crashed when he tried to close winboard.
 279. Idea from an anonymous ICSer: piece drop menu could have images,
 not words.  [Or maybe both?]  Also might be easier to select
 accurately from it if horizontally arranged, or in a 3x2 grid.
+[Now 4.3 has drag & drop, piece-drop menu should be deprecated]
 
 284. dxterm hangs when it receives the escape sequence that sets the
 title bar on xterm.  I think some other xterm substitutes do too.
@@ -550,14 +554,16 @@ it too.  As yet I haven't.
 326. Full support for variants and variant-capable engines in all
 modes, not just ICS mode.  Here are some items still needed.  Some if
 not all should probably wait for a rewrite, not be added to the
-current code base.
+current code base. [4.3 supports many variants, even those not supported
+by ICS. Not bughouse, though]
 
 326a. Menu to let you see and change the current variant type, not
-just a command-line argument as at present.
+just a command-line argument as at present. [Added in 4.3 WinBoard]
 
 326b. crazyhouse: Keep track of holdings and display them, keep track
 of what onboard pieces are promoted so they will revert if captured,
-understand offboard interposition to stop mate.  
+understand offboard interposition to stop mate.  [Added in 4.3, (not
+sure about the interposition)]
 
 326bb. One user asked for a Czech variant of crazyhouse where pawns are
 given to the opponent when they reach the 8th rank (after capturing, if
@@ -568,7 +574,8 @@ of a bughouse game, and getting mate indication right even in ICS mode.
 In the longer term, could understand BPGN, support editing two-board games.
 
 326d. wildcastle: Allow wildcastle castling only when playing this variant!
-Maybe support automatic shuffling for local play.
+Maybe support automatic shuffling for local play. [4.3 adds shuffling
+for any variant played locally]
 
 326e. nocastle: Maybe support automatic shuffling for local play.
 Note that several types of ICS shuffle chess fall under this variant.
@@ -589,7 +596,7 @@ violates a deeply ingrained assumption in the implementation.  It also
 breaks the GUI -- you need more than just dragging the king two
 squares to indicate castling.  (Note: In FR notation, O-O is h-side
 castling, O-O-O is a-side.  See "help fr_rules" and "help fr" on FICS
-for rules.)
+for rules.) [All fixed in 4.3]
 
 326g. kriegspiel: Could give some thought to how to support a
 kriegspiel engine.  I doubt anyone will ever write one, though.
@@ -849,6 +856,7 @@ ScheduleDelayedEvent is OK, but I think it may already be in use in
 this situation, and it only supports one event at a time.
 
 411. Add zippyKibitzThinking and zippyWhisperThinking features?
+[4.3 has an -autoKibitz option]
 
 412. Maybe optimize setting the move list in the case where only the
 current move number changes; avoid slow XawListChange.
@@ -912,6 +920,7 @@ be needed for draw by repetition (creating the 3rd repetition with the
 move) and by the 50 move rule (the move is the 50th).  Add to
 protocol, and implement using the individual methods on FICS and ICC.
 Need to be sure it's really a FICS that has the feature (somehow).
+[Fixed in 4.3 by usng 'offer draw' for this purpose]
 
 455. Suggested: Add the epdkit commands such as epdpfga to the
 protocol, since Crafty and "many" (which?) other engines include the
@@ -930,6 +939,8 @@ with the EPD spec.  Maybe a feature command should indicate that the
 engine matches this part of the spec, but then again, it's not clear
 what we can do about it if the engine doesn't give that command, so
 maybe there is no point.  See discussion on chess-engines list.
+[WinBoard_x adds an argument to tell WInBoard an egine uses absolute
+scores]
 
 458. Bug: xboard will try to use an engine to play normal chess even
 if the engine has given the feature variant command and did not
@@ -1009,15 +1020,18 @@ chess-engines list.  Write a full protover 3 draft for comment.
 487. Adjudicate non-ICS games as a draw when there is insufficient
 mating material on both sides, especially engine/engine games.  Well,
 maybe.  I argued against this in a 6/26/2001 message to chess-engines.
+[Added in 4.3]
 
 487a. Probably also adjudicate when we detect checkmate or stalemate,
-before bothering to notice whether the engine detected this.
+before bothering to notice whether the engine detected this. [Added
+in 4.3]
 
 487b. Note: Do not adjudicate 50 move rule or 3x repetition since those
 must be claimed by a player -- at least not by default.  It would be
 OK to have a flag to do this someday when we are smart enough to
 notice it.  Would definitely be good to be smart enough to notice an
-incorrect draw claim by an engine.
+incorrect draw claim by an engine. [In 4.3 you can set the number of 
+moves or repeats after which draw is adjudicated]
 
 487c. Another request: allow the operator to adjudicate engine/engine games.
 
@@ -1066,7 +1080,7 @@ information.  I really don't know what I could do about this -- take
 the lead in proposing an extension to FEN and to style 12 with new
 piece letters, I suppose.  I don't really have time or motivation for
 that.  If you always use PGN, not FEN, to save Crazyhouse, that works
-around the problem.
+around the problem. [4.3 uses bFENs which fix this]
 
 **496. DAV sent some code to save a screen shot in xboard.  Look at
 merging this in.

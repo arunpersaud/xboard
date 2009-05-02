@@ -61,13 +61,6 @@ typedef struct {
   HFONT hf;
 } MyFont;
 
-typedef enum { 
-  SizeTiny, SizeTeeny, SizeDinky, SizePetite, SizeSlim, SizeSmall,
-  SizeMediocre, SizeMiddling, SizeAverage, SizeModerate, SizeMedium,
-  SizeBulky, SizeLarge, SizeBig, SizeHuge, SizeGiant, SizeColossal,
-  SizeTitanic, NUM_SIZES 
-} BoardSize;
-
 typedef struct {
     COLORREF color;
     int effects;
@@ -101,7 +94,7 @@ VOID ICSInitScript(VOID);
 BOOL CenterWindow(HWND hwndChild, HWND hwndParent);
 VOID ResizeEditPlusButtons(HWND hDlg, HWND hText, int sizeX, int sizeY, int newSizeX, int newSizeY);
 VOID PromotionPopup(HWND hwnd);
-FILE *OpenFileDialog(HWND hWnd, BOOL write, char *defName, char *defExt, 
+FILE *OpenFileDialog(HWND hWnd, char *write, char *defName, char *defExt, 
 		     char *nameFilt, char *dlgTitle, UINT *number,
 		     char fileTitle[MSG_SIZ], char fileName[MSG_SIZ]);
 VOID InputEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

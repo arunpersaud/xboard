@@ -1,5 +1,14 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
 
+/* [HGM] Defining ADJUDICATE switches on rep-draw and insuf-material draws */
+#define ADJUDICATE
+
+/* [HGM] Defining FAIRY allows different K- & Q-side piece symbols */
+#define FAIRY
+
+#define GOTHIC "Gothic Chess (see www.GothicChess.com) is licensed under U.S. Patent #6,481,716 by Ed Trice"
+#define FALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
+
 /* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
 /*#undef HAVE_SYS_WAIT_H*/
 
@@ -37,7 +46,7 @@
 
 #define LAST_PTY_LETTER 'q'
 
-#define PATCHLEVEL "7"
+#define PATCHLEVEL "14k"
 
 #define PRODUCT "WinBoard"
 
@@ -55,7 +64,7 @@
 
 #define USE_PTYS 0
 
-#define VERSION "4.2"
+#define VERSION "4.3"
 
 /*#undef X_WCHAR*/
 

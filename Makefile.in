@@ -1,7 +1,7 @@
 #
 # Run ./configure to generate a Makefile from Makefile.in
 # See INSTALL for more information
-# $Id$
+# $Id: Makefile.in,v 2.7 2003/11/28 18:26:06 mann Exp $
 #
 
 PRODUCT = @PRODUCT@

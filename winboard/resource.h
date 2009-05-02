@@ -21,6 +21,7 @@
 #define IDM_Pause                       116
 #define IDM_CallFlag                    117
 #define IDM_Draw                        118
+#define IDM_SaveDiagram                 119
 #define IDM_Abort                       120
 #define IDM_Adjourn                     122
 #define IDM_Resign                      124
@@ -56,6 +57,8 @@
 #define IDM_CopyPosition                182
 #define IDM_PastePosition               183
 #define IDM_NewVariant                  184  
+#define IDM_TypeInName                  185  
+#define IDM_MachineBoth                 186  
 #define OPT_TCtext1                     202
 #define OPT_TCTime                      203
 #define OPT_TCtext2                     204
@@ -215,6 +218,7 @@
 #define OPT_PremoveBlackText            1035
 #define OPT_ErrorText                   1036
 #define OPT_IcsAlarmTime                1037
+#define OPT_Name                        1038
 #define DLG_Console                     1100
 #define DLG_PromotionKing               1102
 #define DLG_Colorize                    1106
@@ -224,6 +228,7 @@
 #define DLG_Sound                       1127
 #define DLG_IndexNumber                 1149
 #define DLG_TypeInMove                  1151
+#define DLG_TypeInName                  1152
 #define OPT_IndexNumberOld              1155
 #define IDM_Rematch                     1203
 #define IDA_PAGEUP                      1216
@@ -458,6 +463,12 @@
 #define OPT_VariantCylinder             1517
 #define OPT_VariantFalcon               1518
 #define OPT_VariantCRC                  1519
+#define OPT_VariantBerolina             1520
+#define OPT_Variant3Checks              1521
+#define OPT_VariantJanus                1522
+#define OPT_VariantWildcastle           1523
+#define OPT_VariantNocastle             1524
+#define OPT_VariantGiveaway             1525
 #define IDC_Files                       1550
 #define IDC_Ranks                       1551
 #define IDC_Holdings                    1552

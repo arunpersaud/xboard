@@ -257,6 +257,8 @@ typedef struct _CPS {
     int debug;      /* [HGM] ignore engine debug lines starting with '#'    */
     int maxNrOfSessions; /* [HGM] secondary TC: max args in 'level' command */
     int accumulateTC; /* [HGM] secondary TC: how to handle extra sessions   */
+    int nps;          /* [HGM] nps: factor for node count to replace time   */
+    int supportsNPS;
 } ChessProgramState;
 
 extern ChessProgramState first, second;
@@ -269,5 +271,6 @@ typedef struct {
 } ChessProgramStats_Move;
 
 extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
+extern shuffleOpenings;
 
 #endif /* _BACKEND */

@@ -1,0 +1,25 @@
+#!/bin/csh
+# Usage: shiphtml version
+# E.g., shiphtml 3.4.pl0
+# To be sure everything is in sync, do this right after making a distribution.
+#  Otherwise the documentation and/or FAQ might reflect work in progress.
+
+set v=$1
+set w=`echo $v | tr . _`
+set r=$HOME/tim-mann/httpdocs
+
+(cd linux ; make all more)
+#rm -f ${r}/xboard/*
+cp -f FAQ.html ../xboard.distrib/xboard-${v}.tar.gz linux/*.html zippy.README \
+    engine-intf.html ics-parsing.txt ChangeLog linux/xboard.ps \
+    ${r}/xboard/
+cp -f ../xboard.distrib/relmsg/${v} \
+    ${r}/xboard/xboard-${v}.README
+
+#rm -f ${r}/winboard/*
+cp -f ../xboard.distrib/winboard{-${w}.exe,-${w}-src.{zip,tar.gz}} ChangeLog \
+    ${r}/winboard/
+cp -f ../xboard.distrib/winboard-${w}/winboard.hlp \
+    ${r}/winboard/
+cp -f ../xboard.distrib/relmsg/${v} \
+    ${r}/winboard/winboard-${w}.README

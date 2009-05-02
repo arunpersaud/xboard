@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: texi2man,v 1.2 2003/11/28 21:22:16 mann Exp $
 # Written by Adrian Mariano, additional features by Eric Backus,
 # yet more features by Tim Mann.
 

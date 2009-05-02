@@ -777,7 +777,13 @@ VariantWhichRadio(HWND hDlg)
          (IsDlgButtonChecked(hDlg, OPT_VariantFRC) ? VariantFischeRandom :
          (IsDlgButtonChecked(hDlg, OPT_VariantCylinder) ? VariantCylinder :
          (IsDlgButtonChecked(hDlg, OPT_VariantFalcon) ? VariantFalcon :
-          VariantNormal ))))))))))))))))));
+         (IsDlgButtonChecked(hDlg, OPT_VariantCRC) ? VariantCapaRandom :
+         (IsDlgButtonChecked(hDlg, OPT_Variant3Checks) ? Variant3Check :
+         (IsDlgButtonChecked(hDlg, OPT_VariantBerolina) ? VariantBerolina :
+         (IsDlgButtonChecked(hDlg, OPT_VariantJanus) ? VariantJanus :
+         (IsDlgButtonChecked(hDlg, OPT_VariantWildcastle) ? VariantWildCastle :
+         (IsDlgButtonChecked(hDlg, OPT_VariantNocastle) ? VariantNoCastle :
+          VariantNormal ))))))))))))))))))))))));
 }
 
 LRESULT CALLBACK
@@ -843,6 +849,30 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case VariantFischeRandom:
       CheckDlgButton(hDlg, OPT_VariantFRC, TRUE);
       break;
+    case VariantCapaRandom:
+      CheckDlgButton(hDlg, OPT_VariantCRC, TRUE);
+      break;
+    case VariantFalcon:
+      CheckDlgButton(hDlg, OPT_VariantFalcon, TRUE);
+      break;
+    case VariantCylinder:
+      CheckDlgButton(hDlg, OPT_VariantCylinder, TRUE);
+      break;
+    case Variant3Check:
+      CheckDlgButton(hDlg, OPT_Variant3Checks, TRUE);
+      break;
+    case VariantBerolina:
+      CheckDlgButton(hDlg, OPT_VariantBerolina, TRUE);
+      break;
+    case VariantJanus:
+      CheckDlgButton(hDlg, OPT_VariantJanus, TRUE);
+      break;
+    case VariantWildCastle:
+      CheckDlgButton(hDlg, OPT_VariantWildcastle, TRUE);
+      break;
+    case VariantNoCastle:
+      CheckDlgButton(hDlg, OPT_VariantNocastle, TRUE);
+      break;
     }
 
     SetDlgItemInt( hDlg, IDC_Files, -1, TRUE );
@@ -881,6 +911,7 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if(!n2_ok) appData.NrRanks = -1;
       if(!n3_ok) appData.holdingsSize = -1;
 
+      shuffleOpenings = FALSE; /* [HGM] shuffle: possible shuffle reset when we switch */
       startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
       appData.pieceToCharTable = NULL;
       Reset(TRUE, TRUE);
@@ -1954,7 +1985,7 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       return TRUE;
 
     case OPT_BrowseSound:
-      f = OpenFileDialog(hDlg, FALSE, NULL, "wav", SOUND_FILT,
+      f = OpenFileDialog(hDlg, "rb", NULL, "wav", SOUND_FILT,
 	"Browse for Sound File", NULL, NULL, buf);
       if (f != NULL) {
 	fclose(f);
@@ -2498,7 +2529,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       return TRUE;
 
     case OPT_AVBrowse:
-      f = OpenFileDialog(hDlg, TRUE, NULL, 
+      f = OpenFileDialog(hDlg, "a", NULL, 
 	                 appData.oldSaveStyle ? "gam" : "pgn", 
    	                 GAME_FILT, "Browse for Auto Save File", 
 			 NULL, NULL, buf);

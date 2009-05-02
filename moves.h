@@ -84,6 +84,7 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 #define EP_RULE_DRAW  (-14)
 #define EP_INSUF_DRAW  (-13)
 #define EP_DRAWS (-10)
+#define EP_BEROLIN_A 16        /* [HGM] berolina: add to file if pawn to be taken of a-side of e.p.file */
 
 /* Call callback once for each pseudo-legal move in the given
    position, except castling moves.  A move is pseudo-legal if it is

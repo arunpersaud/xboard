@@ -48,7 +48,7 @@ BEGIN
                     IDC_STATIC,6,65,120,24
     LTEXT           "Enhancements Copyright 2007\r\nH.G. Muller",
                     IDC_STATIC,6,85,120,24
-    LTEXT           "(unofficial version ""F"")",IDC_STATIC,88,4,71,8
+    LTEXT           "(""WinBoard_F"")",IDC_STATIC,88,4,71,8
 END
 
 DLG_TimeControl DIALOG DISCARDABLE  6, 18, 174, 98
@@ -359,6 +359,16 @@ BEGIN
     EDITTEXT        OPT_Move,4,4,86,13,ES_AUTOHSCROLL
 END
 
+DLG_TypeInName DIALOG DISCARDABLE  0, 0, 206, 23
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Type in your name"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,96,4,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,152,4,50,14
+    EDITTEXT        OPT_Name,4,4,86,13,ES_AUTOHSCROLL
+END
+
 DLG_Sound DIALOG DISCARDABLE  0, 0, 242, 105
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Sounds"
@@ -617,6 +627,10 @@ BEGIN
                     10
     CONTROL         "cou&rier",OPT_VariantCourier,"Button",BS_AUTORADIOBUTTON,9,64,
                     50,10
+    CONTROL         "&Berolina",OPT_VariantBerolina,"Button",BS_AUTORADIOBUTTON,9,74,
+                    50,10
+    CONTROL         "&Janus",OPT_VariantJanus,"Button",BS_AUTORADIOBUTTON,9,84,
+                    50,10
     CONTROL         "&knightmate",OPT_VariantKnightmate,"Button",BS_AUTORADIOBUTTON,
                     70,14,50,10
     CONTROL         "&atomic",OPT_VariantAtomic,"Button",BS_AUTORADIOBUTTON,
@@ -629,11 +643,15 @@ BEGIN
                     54,50,10
     CONTROL         "&twokings",OPT_VariantTwoKings,"Button",BS_AUTORADIOBUTTON,70,64,
                     50,10
+    CONTROL         "&CRC",OPT_VariantCRC,"Button",BS_AUTORADIOBUTTON,70,74,
+                    50,10
+    CONTROL         "&wildcastle",OPT_VariantWildcastle,"Button",BS_AUTORADIOBUTTON,70,84,
+                    50,10
     CONTROL         "&fairy",OPT_VariantFairy,"Button",BS_AUTORADIOBUTTON,134,
                     14,50,10
     CONTROL         "&bughouse",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,134,24,50,
                     10
-    CONTROL         "Shatran&j",OPT_VariantShatranj,"Button",BS_AUTORADIOBUTTON,134,
+    CONTROL         "&Shatranj",OPT_VariantShatranj,"Button",BS_AUTORADIOBUTTON,134,
                     34,50,10
     CONTROL         "&FRC",OPT_VariantFRC,"Button",BS_AUTORADIOBUTTON,134,
                     44,50,10
@@ -641,16 +659,20 @@ BEGIN
                     54,50,10
     CONTROL         "&Falcon",OPT_VariantFalcon,"Button",BS_AUTORADIOBUTTON,134,
                     64,50,10
-    GROUPBOX        "Variant",IDC_STATIC,4,4,185,75
-    LTEXT           "Board size:",IDC_STATIC,10,95,40,8
-    EDITTEXT        IDC_Ranks,60,91,14,14,ES_AUTOHSCROLL
-    LTEXT           "ranks",IDC_STATIC,77,95,22,8
-    EDITTEXT        IDC_Files,116,91,14,14,ES_AUTOHSCROLL
-    LTEXT           "files",IDC_STATIC,133,95,37,8
-    LTEXT           "Holdings with room for:",IDC_STATIC,10,113,90,8
-    EDITTEXT        IDC_Holdings,93,109,14,14,ES_AUTOHSCROLL
-    LTEXT           "pieces",IDC_STATIC,110,113,22,8
-    LTEXT           "('-1' means defaults for selected variant)",IDC_STATIC,10,131,150,8
+    CONTROL         "&3checks",OPT_Variant3Checks,"Button",BS_AUTORADIOBUTTON,134,
+                    74,50,10
+    CONTROL         "&nocastle",OPT_VariantNocastle,"Button",BS_AUTORADIOBUTTON,134,
+                    84,50,10
+    GROUPBOX        "Variant",IDC_STATIC,4,4,185,95
+    LTEXT           "Board size:",IDC_STATIC,10,115,40,8
+    EDITTEXT        IDC_Ranks,60,111,14,14,ES_AUTOHSCROLL
+    LTEXT           "ranks",IDC_STATIC,77,115,22,8
+    EDITTEXT        IDC_Files,116,111,14,14,ES_AUTOHSCROLL
+    LTEXT           "files",IDC_STATIC,133,115,37,8
+    LTEXT           "Holdings with room for:",IDC_STATIC,10,133,90,8
+    EDITTEXT        IDC_Holdings,93,129,14,14,ES_AUTOHSCROLL
+    LTEXT           "pieces",IDC_STATIC,110,133,22,8
+    LTEXT           "('-1' means defaults for selected variant)",IDC_STATIC,10,151,150,8
 END
 
 DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 226
@@ -697,7 +719,7 @@ END
 
 DLG_NewGameFRC DIALOG DISCARDABLE  0, 0, 176, 47
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "New FRC (Chess960) Game"
+CAPTION "New Shuffle Game"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "&Start Position Number:",IDC_NFG_Label,4,7,71,8
@@ -988,7 +1010,7 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "New &Game\tCtrl-N",           IDM_NewGame
-        MENUITEM "New FRC Game...",             IDM_NewGameFRC
+        MENUITEM "New Shuffle Game...",         IDM_NewGameFRC
         MENUITEM "New Variant...",              IDM_NewVariant
         MENUITEM SEPARATOR
         MENUITEM "&Load Game...\tCtrl-O",       IDM_LoadGame
@@ -1008,6 +1030,7 @@ BEGIN
                                                 IDM_LoadPrevPosition
         MENUITEM "Reload Sa&me Position",       IDM_ReloadPosition
         MENUITEM "S&ave Position...",           IDM_SavePosition
+        MENUITEM "Save &Diagram...",            IDM_SaveDiagram
         MENUITEM SEPARATOR
         MENUITEM "Cop&y Position To Clipboard\tAlt+Shift+C", 
                                                 IDM_CopyPosition
@@ -1021,6 +1044,7 @@ BEGIN
         MENUITEM "Machine &White",              IDM_MachineWhite
         MENUITEM "Machine &Black",              IDM_MachineBlack
         MENUITEM "Two &Machines",               IDM_TwoMachines
+        MENUITEM "Machine Bot&h",               IDM_MachineBoth
         MENUITEM "&Analysis Mode",              IDM_AnalysisMode
         MENUITEM "Analyze &File",               IDM_AnalyzeFile
         MENUITEM "&ICS Client",                 IDM_IcsClient
@@ -1028,13 +1052,14 @@ BEGIN
         MENUITEM "&Edit Position",              IDM_EditPosition
         MENUITEM "Trai&ning",                   IDM_Training, GRAYED
         MENUITEM SEPARATOR
-        MENUITEM "Show Engine Output",          IDM_ShowEngineOutput
+        MENUITEM "Show Engine &Output",         IDM_ShowEngineOutput
         MENUITEM "Show Evaluation Graph",       IDM_ShowEvalGraph
         MENUITEM "Show Game &List",             IDM_ShowGameList
         MENUITEM "Show Move History",           IDM_ShowMoveHistory
         MENUITEM SEPARATOR
         MENUITEM "Edit &Tags...",               IDM_EditTags
         MENUITEM "Edit &Comment...",            IDM_EditComment
+        MENUITEM "Enter &Username...",          IDM_TypeInName
         MENUITEM "&Pause\tPause",               IDM_Pause
     END
     POPUP "&Action"

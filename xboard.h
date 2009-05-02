@@ -1,6 +1,6 @@
 /*
  * xboard.h -- Parameter definitions for X front end
- * $Id$
+ * $Id: xboard.h,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
  * Enhancements Copyright 1992-95 Free Software Foundation, Inc.
@@ -100,8 +100,10 @@ typedef struct {
 
 #define BORDER_X_OFFSET 3
 #define BORDER_Y_OFFSET 27
-#define FIRST_CHESS_PROGRAM	"gnuchessx"
-#define SECOND_CHESS_PROGRAM	"gnuchessx"
+#define FIRST_CHESS_PROGRAM	"./fmax"
+#define SECOND_CHESS_PROGRAM	"./fmax"
+#define FIRST_DIRECTORY		"./Fairy-Max"
+#define SECOND_DIRECTORY	"./Fairy-Max"
 
 /* Default to no flashing (the "usual" XBoard behavior) */
 #define FLASH_COUNT	0		/* Number of times to flash */

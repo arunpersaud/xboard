@@ -48,6 +48,7 @@
 /* Static */
 #define POSITION_FILT "Position files (*.fen,*.epd,*.pos)\0*.fen;*.epd;*.pos\0All files (*.*)\0*.*\0"
 #define GAME_FILT     "Game files (*.pgn,*.gam)\0*.pgn;*.gam\0All files (*.*)\0*.*\0"
+#define DIAGRAM_FILT  "bitmap files (*.bmp)\0*.bmp\0All files (*.*)\0*.*\0"
 #define SOUND_FILT    "Wave files (*.wav)\0*.wav\0All files (*.*)\0*.*\0"
 #define OUTER_MARGIN (tinyLayout ? 0 : 4)
 #define INNER_MARGIN (tinyLayout ? 0 : 2)
