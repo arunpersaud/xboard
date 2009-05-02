@@ -397,7 +397,7 @@ AC_SUBST(PRODUCT)
 AC_SUBST(VERSION)
 AC_SUBST(PATCHLEVEL)
 
-AC_CONFIG_FILES([Makefile cmail xboard.texinfo])
+AC_CONFIG_FILES([Makefile cmail])
 AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])
 AC_CONFIG_COMMANDS([chmod-cmail],[chmod 755 cmail])
 AC_OUTPUT

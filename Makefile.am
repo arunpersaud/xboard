@@ -7,6 +7,5 @@ AM_LDFLAGS=-lXt -lm @XAW_LIBS@
 info_TEXINFOS = copyright.texi xboard.texi
 man6_MANS = xboard.man 
 
-xboard.man: xboard.texinfo xboard.texi copyright.texi gpl.texinfo
-	$(srcdir)/texi2man xboard.texinfo > xboard.man || (rm -f xboard.man ; false)
-
+xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
+	$(srcdir)/texi2man xboard.texi > xboard.man || (rm -f xboard.man ; false)

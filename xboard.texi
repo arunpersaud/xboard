@@ -1,4 +1,10 @@
+\input texinfo	@c -*-texinfo-*-
+@c %**start of header
 @setfilename xboard.info
+@settitle XBoard
+@c %**end of header
+
+@include version.texi
 
 @ifinfo
 @format
@@ -662,7 +668,6 @@ For the latter adjudication to work, XBoard should be able to properly understan
 the engine's scores. To faclitate the latter, you can inform xboard here if
 the engines report scores from the viewpoint of white, or from that of their own color.
 @item Engine Settings
-@citem Engine Settings, Menu Item
 Pops up a sub-menu where you can set some engine parameters common to most engines,
 such as hash-table size, tablebase cache size, maximum number of processors
 that SMP engines can use, and where to find the Polyglot adapter needed
@@ -1020,11 +1025,11 @@ true or false (@samp{XBoard*longOptionName: true}).
 
 @menu
 * Chess engine options::        Controlling the chess engine.
-* WB + UCI Engine Settings::    Setting some very common engine parameters
+* UCI + WB Engine Settings::    Setting some very common engine parameters
 * ICS options::                 Connecting to and using ICS.
 * Load and Save options::       Input/output options.
 * User interface options::      Look and feel options.
-* Adjudication options::        Control adjudcation of engine-engine games.
+* Adjudication Options::        Control adjudcation of engine-engine games.
 * Other options::               Miscellaneous.
 @end menu
 
@@ -1127,7 +1132,6 @@ it makes the engine send it despite the setting of this option.)
 @cindex ponderNextMove, option
 Sets the Ponder Next Move menu option. @xref{Options Menu}. Default: true.
 @item -smpCores number
-@citem smpCores, option
 Specifies the maxmum nmber of CPUs an SMP engine is allowed to use.
 Only works for engines that support the WinBoard-protocol cores feature.
 @item -mg or -matchGames n
@@ -1150,7 +1154,7 @@ displays the match score and exits. Default: 0 (do not run a match).
 Setting @code{matchMode} to true is equivalent to setting
 @code{matchGames} to 1.
 @item -sameColorGames n
-@cinex sameColorGames, option
+@cindex sameColorGames, option
 Automatically runs an n-game match between two chess engines,
 without alternating colors.
 Otherwise the same applies as for the @samp{-matchGames} option,
@@ -1271,9 +1275,8 @@ that in favor of white, even when the engine plays black.
 Important when XBoard uses the score for adjudications, or in PGN reporting. 
 @end table
 
-
-
 @node UCI + WB Engine Settings
+@section UCI + WB Engine Settings
 @cindex Engine Settings
 @cindex Settings, Engine
 @table @asis
@@ -1339,7 +1342,7 @@ Default: "".
 @end table
 
 @node ICS options
-@section Internet Chess Server Options
+@section ICS options
 @cindex ICS options
 @cindex Options, ICS
 @table @asis
@@ -1643,7 +1646,7 @@ xboard*soundIcsAlarm: alarm.wav
 @end table
 
 @node Load and Save options
-@section Load and Save Options
+@section Load and Save options
 @cindex Options, Load and Save
 @cindex Load and Save options
 @table @asis
@@ -1673,7 +1676,6 @@ in the file is used twice (with reversed colors).
 The @code{rewindIndex} option causes the index to be reset to the
 first game of the file when it has reached a specified value.
 @item -rewindIndex n
-@citem rewindIndex, option
 Causes a position file or game file to be rewound to its beginning after n
 positions or games in auto-increment @code{matchMode}. 
 See @code{loadPositionIndex} and @code{loadGameIndex}.
@@ -1739,7 +1741,7 @@ Sets the Old Save Style menu option.  @xref{Options Menu}.  Default: false.
 @end table
 
 @node User interface options
-@section User Interface Options
+@section User interface options
 @cindex User interface options
 @cindex Options, User interface
 @table @asis
@@ -2068,7 +2070,7 @@ as repeats, XBoard is fully e.p. and castling aware!
 @end table
 
 @node Other options
-@section Other Options
+@section Other options
 @cindex Options, miscellaneous
 @table @asis
 @item -ncp/-xncp or -noChessProgram true/false
@@ -2822,6 +2824,8 @@ Here are some other programs you can use with XBoard
 
 @menu
 * GNU Chess::        The GNU Chess engine.
+* Fairy-Max::        The Fairy-Max chess engine.
+* HoiChess::         The HoiChess chess engine.
 * Crafty::           The Crafty chess engine.
 * zic2xpm::          The program used to import chess sets from ZIICS.
 @end menu
@@ -2942,3 +2946,5 @@ the original creator(s) of the pieces.
 @printindex cp
 @contents
 @c end noman
+
+@bye
