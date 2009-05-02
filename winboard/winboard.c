@@ -86,7 +86,7 @@
 
 #include "wsnap.h"
 
-void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
+//void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
 
   int myrandom(void);
   void mysrandom(unsigned int seed);
@@ -598,8 +598,8 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 
   InitBackEnd1();
 
-  InitEngineUCI( installDir, &first );
-  InitEngineUCI( installDir, &second );
+//  InitEngineUCI( installDir, &first ); // [HGM] incorporated in InitBackEnd1()
+//  InitEngineUCI( installDir, &second );
 
   /* Create a main window for this application instance. */
   hwnd = CreateWindow(szAppName, szTitle,
@@ -1173,6 +1173,8 @@ ArgDescriptor argDescriptors[] = {
   { "flipBlack", ArgBoolean, (LPVOID) &appData.upsideDown, TRUE },
   { "allWhite", ArgBoolean, (LPVOID) &appData.allWhite, TRUE },
   { "alphaRank", ArgBoolean, (LPVOID) &appData.alphaRank, FALSE },
+  { "firstAlphaRank", ArgBoolean, (LPVOID) &first.alphaRank, FALSE },
+  { "secondAlphaRank", ArgBoolean, (LPVOID) &second.alphaRank, FALSE },
   { "testClaims", ArgBoolean, (LPVOID) &appData.testClaims, TRUE },
   { "checkMates", ArgBoolean, (LPVOID) &appData.checkMates, TRUE },
   { "materialDraws", ArgBoolean, (LPVOID) &appData.materialDraws, TRUE },
@@ -1182,6 +1184,10 @@ ArgDescriptor argDescriptors[] = {
   { "autoKibitz", ArgTrue, (LPVOID) &appData.autoKibitz, FALSE },
   { "engineDebugOutput", ArgInt, (LPVOID) &appData.engineComments, FALSE },
   { "userName", ArgString, (LPVOID) &appData.userName, FALSE },
+  { "rewindIndex", ArgInt, (LPVOID) &appData.rewindIndex, FALSE },
+  { "sameColorGames", ArgInt, (LPVOID) &appData.sameColorGames, FALSE },
+  { "smpCores", ArgInt, (LPVOID) &appData.smpCores, TRUE },
+  { "egtFormats", ArgString, (LPVOID) &appData.egtFormats, TRUE },
 
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
@@ -1922,7 +1928,8 @@ InitAppData(LPSTR lpCmdLine)
   appData.firstNPS  = -1; // [HGM] nps: use wall-clock time
   appData.secondNPS = -1;
   appData.engineComments = 1;
-
+  appData.smpCores = 1; // [HGM] SMP: max nr of cores
+  appData.egtFormats = "";
 
 #ifdef ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
@@ -2365,6 +2372,12 @@ enum {
     PM_WH = (int) WhiteNightrider, 
     PM_WA = (int) WhiteAngel, 
     PM_WC = (int) WhiteMarshall, 
+    PM_WAB = (int) WhiteCardinal, 
+    PM_WD = (int) WhiteDragon, 
+    PM_WL = (int) WhiteLance, 
+    PM_WS = (int) WhiteCobra, 
+    PM_WV = (int) WhiteFalcon, 
+    PM_WSG = (int) WhiteSilver, 
     PM_WG = (int) WhiteGrasshopper, 
     PM_WK = (int) WhiteKing,
     PM_BP = (int) BlackPawn, 
@@ -2382,6 +2395,12 @@ enum {
     PM_BA = (int) BlackAngel, 
     PM_BC = (int) BlackMarshall, 
     PM_BG = (int) BlackGrasshopper, 
+    PM_BAB = (int) BlackCardinal,
+    PM_BD = (int) BlackDragon,
+    PM_BL = (int) BlackLance,
+    PM_BS = (int) BlackCobra,
+    PM_BV = (int) BlackFalcon,
+    PM_BSG = (int) BlackSilver,
     PM_BK = (int) BlackKing
 };
 
@@ -2480,13 +2499,12 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
     POINT pt;
     int backColor = whitePieceColor; 
     int foreColor = blackPieceColor;
-    int shapeIndex = index < 6 ? index+6 : index;
     
-    if( index < 6 && appData.fontBackColorWhite != appData.fontForeColorWhite ) {
+    if( index < (int)BlackPawn && appData.fontBackColorWhite != appData.fontForeColorWhite ) {
         backColor = appData.fontBackColorWhite;
         foreColor = appData.fontForeColorWhite;
     }
-    else if( index >= 6 && appData.fontBackColorBlack != appData.fontForeColorBlack ) {
+    else if( index >= (int)BlackPawn && appData.fontBackColorBlack != appData.fontForeColorBlack ) {
         backColor = appData.fontBackColorBlack;
         foreColor = appData.fontForeColorBlack;
     }
@@ -2516,7 +2534,11 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
 
     SelectObject( hdc, GetStockObject(WHITE_BRUSH) );
     /* Step 3: the area outside the piece is filled with white */
-    FloodFill( hdc, 0, 0, chroma );
+//    FloodFill( hdc, 0, 0, chroma );
+    ExtFloodFill( hdc, 0, 0, 0, FLOODFILLSURFACE );
+    ExtFloodFill( hdc, 0, squareSize-1, 0, FLOODFILLSURFACE ); // [HGM] fill from all 4 corners, for if piece too big
+    ExtFloodFill( hdc, squareSize-1, 0, 0, FLOODFILLSURFACE );
+    ExtFloodFill( hdc, squareSize-1, squareSize-1, 0, FLOODFILLSURFACE );
     SelectObject( hdc, GetStockObject(BLACK_BRUSH) );
     /* 
         Step 4: this is the tricky part, the area inside the piece is filled with black,
@@ -2524,7 +2546,23 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
         There should be a better way to do this... if we could create a region or path
         from the fill operation we would be fine for example.
     */
-    FloodFill( hdc, squareSize / 2, squareSize / 2, RGB(0xFF,0xFF,0xFF) );
+//    FloodFill( hdc, squareSize / 2, squareSize / 2, RGB(0xFF,0xFF,0xFF) );
+    ExtFloodFill( hdc, squareSize / 2, squareSize / 2, RGB(0xFF,0xFF,0xFF), FLOODFILLBORDER );
+
+    {   /* [HGM] shave off edges of mask, in an attempt to correct for the fact that FloodFill does not work correctly under Win XP */
+        HDC dc2 = CreateCompatibleDC( hdc_window );
+        HBITMAP bm2 = CreateCompatibleBitmap( hdc_window, squareSize, squareSize );
+
+        SelectObject( dc2, bm2 );
+        BitBlt( dc2, 0, 0, squareSize, squareSize, hdc, 0, 0, SRCCOPY ); // make copy
+        BitBlt( hdc, 0, 1, squareSize-2, squareSize-2, dc2, 1, 1, SRCPAINT );
+        BitBlt( hdc, 2, 1, squareSize-2, squareSize-2, dc2, 1, 1, SRCPAINT );
+        BitBlt( hdc, 1, 0, squareSize-2, squareSize-2, dc2, 1, 1, SRCPAINT );
+        BitBlt( hdc, 1, 2, squareSize-2, squareSize-2, dc2, 1, 1, SRCPAINT );
+
+        DeleteDC( dc2 );
+        DeleteObject( bm2 );
+    }
 
     SetTextColor( hdc, 0 );
     /* 
@@ -2610,6 +2648,7 @@ static int TranslatePieceToFontPiece( int piece )
         return PM_WQ;
     case WhiteKing:
         return PM_WK;
+
     case BlackAngel:
         return PM_BA;
     case BlackMarshall:
@@ -2630,6 +2669,19 @@ static int TranslatePieceToFontPiece( int piece )
         return PM_BG;
     case BlackMan:
         return PM_BM;
+    case BlackSilver:
+        return PM_BSG;
+    case BlackLance:
+        return PM_BL;
+    case BlackFalcon:
+        return PM_BV;
+    case BlackCobra:
+        return PM_BS;
+    case BlackCardinal:
+        return PM_BAB;
+    case BlackDragon:
+        return PM_BD;
+
     case WhiteAngel:
         return PM_WA;
     case WhiteMarshall:
@@ -2650,6 +2702,18 @@ static int TranslatePieceToFontPiece( int piece )
         return PM_WG;
     case WhiteMan:
         return PM_WM;
+    case WhiteSilver:
+        return PM_WSG;
+    case WhiteLance:
+        return PM_WL;
+    case WhiteFalcon:
+        return PM_WV;
+    case WhiteCobra:
+        return PM_WS;
+    case WhiteCardinal:
+        return PM_WAB;
+    case WhiteDragon:
+        return PM_WD;
     }
 
     return 0;
@@ -2682,7 +2746,7 @@ void CreatePiecesFromFont()
             DeleteObject( hPieceFont );
         }
         else {
-            for( i=0; i<12; i++ ) {
+            for( i=0; i<=(int)BlackKing; i++ ) {
                 hPieceMask[i] = NULL;
                 hPieceFace[i] = NULL;
             }
@@ -2747,7 +2811,7 @@ void CreatePiecesFromFont()
 
             /* Create bitmaps */
             hfont_old = SelectObject( hdc, hPieceFont );
-
+#if 0
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WP );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WN );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WB );
@@ -2760,7 +2824,7 @@ void CreatePiecesFromFont()
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BR );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BQ );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BK );
-#ifdef FAIRY
+
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WA );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WC );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WF );
@@ -2771,6 +2835,12 @@ void CreatePiecesFromFont()
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WO );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WG );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_WM );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WSG );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WV );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WAB );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WD );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WL );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_WS );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BA );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BC );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BF );
@@ -2781,8 +2851,17 @@ void CreatePiecesFromFont()
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BO );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BG );
             CreatePieceMaskFromFont( hdc_window, hdc, PM_BM );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BSG );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BV );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BAB );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BD );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BL );
+            CreatePieceMaskFromFont( hdc_window, hdc, PM_BS );
+#else
+	    for(i=(int)WhitePawn; i<(int)EmptySquare; i++) /* [HGM] made a loop for this */
+		if(PieceToChar((ChessSquare)i) != '.')     /* skip unused pieces         */
+		    CreatePieceMaskFromFont( hdc_window, hdc, i );
 #endif
-
             SelectObject( hdc, hfont_old );
 
             fontBitmapSquareSize = squareSize;
@@ -2900,9 +2979,10 @@ ResizeBoard(int newSizeX, int newSizeY, int flags)
   if (IsIconic(hwndMain)) return;
   if (recurse > 0) return;
   recurse++;
-  while (newSize > 0 &&
-	 (newSizeX < sizeInfo[newSize].cliWidth ||
-	  newSizeY < sizeInfo[newSize].cliHeight)) {
+  while (newSize > 0) {
+	InitDrawingSizes(newSize, 0);
+	if(newSizeX >= sizeInfo[newSize].cliWidth ||
+	   newSizeY >= sizeInfo[newSize].cliHeight) break;
     newSize--;
   } 
   boardSize = newSize;
@@ -3135,6 +3215,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     }
   }
 
+  fontBitmapSquareSize = 0; /* [HGM] render: make sure pieces will be recreated, as we might need others now */
   // Orthodox Chess pieces
   pieceBitmap[0][WhitePawn] = DoLoadBitmap(hInst, "p", squareSize, "s");
   pieceBitmap[0][WhiteKnight] = DoLoadBitmap(hInst, "n", squareSize, "s");
@@ -3945,7 +4026,10 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
 
   /* [AS] Initialize background textures if needed */
   if( liteBackTexture != NULL || darkBackTexture != NULL ) {
-      if( backTextureSquareSize != squareSize ) {
+      static int backTextureBoardSize; /* [HGM] boardsize: also new texture if board format changed */
+      if( backTextureSquareSize != squareSize 
+       || backTextureBoardSize != BOARD_WIDTH+BOARD_SIZE*BOARD_HEIGHT) {
+	  backTextureBoardSize = BOARD_WIDTH+BOARD_SIZE*BOARD_HEIGHT;
           backTextureSquareSize = squareSize;
           RebuildTextureSquareInfo();
       }
@@ -3987,9 +4071,9 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
             }
       }
       if(column == BOARD_LEFT-1 ) /* left align */
-            DisplayHoldingsCount(hdc, x, y, 0, (int) board[row][column]);
+            DisplayHoldingsCount(hdc, x, y, flipView, (int) board[row][column]);
       else if( column == BOARD_RGHT) /* right align */
-            DisplayHoldingsCount(hdc, x, y, 1, (int) board[row][column]);
+            DisplayHoldingsCount(hdc, x, y, !flipView, (int) board[row][column]);
       else
       if (appData.monoMode) {
         if (piece == EmptySquare) {
@@ -4357,7 +4441,6 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	 boardRect.right - boardRect.left,
 	 boardRect.bottom - boardRect.top,
 	 tmphdc, boardRect.left, boardRect.top, SRCCOPY);
-
   if(saveDiagFlag) { 
     BITMAP b; int i, j, m, w, wb, fac=0; char pData[1000000]; 
     BITMAPINFOHEADER bih; int color[16], nrColors=0;
@@ -4586,7 +4669,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   BOOLEAN needsRedraw = FALSE;
   BOOLEAN saveAnimate;
   BOOLEAN forceFullRepaint = IsFullRepaintPreferrable(); /* [AS] */
-  static BOOLEAN sameAgain = FALSE;
+  static BOOLEAN sameAgain = FALSE, promotionChoice = FALSE;
   ChessMove moveType;
 
   if (recursive) {
@@ -4614,6 +4697,25 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   switch (message) {
   case WM_LBUTTONDOWN:
+    if(promotionChoice) { // we are waiting for a click to indicate promotion piece
+	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
+	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
+	if(gameInfo.holdingsWidth && 
+		(WhiteOnMove(currentMove) 
+			? x == BOARD_WIDTH-1 && y < gameInfo.holdingsSize && y > 0
+			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1) ) {
+	    // click in right holdings, for determining promotion piece
+	    ChessSquare p = boards[currentMove][y][x];
+	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
+	    if(p != EmptySquare) {
+		FinishMove(WhitePromotionQueen, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
+		fromX = fromY = -1;
+		break;
+	    }
+	}
+	DrawPosition(FALSE, boards[currentMove]);
+	break;
+    }
     ErrorPopDown();
     sameAgain = FALSE;
     if (y == -2) {
@@ -4670,6 +4772,12 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         /* [HGM] <popupFix> UserMoveEvent requires two calls now,
            to make sure move is legal before showing promotion popup */
         moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR);
+	if(moveType == AmbiguousMove) { /* [HGM] Edit-Position move executed */
+		fromX = fromY = -1; 
+		ClearHighlights();
+		DrawPosition(FALSE, boards[currentMove]);
+		break; 
+	} else 
         if(moveType != ImpossibleMove) {
           /* [HGM] We use PromotionToKnight in Shogi to indicate frorced promotion */
           if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
@@ -4686,6 +4794,16 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                   DrawPosition(forceFullRepaint || FALSE, NULL);
                   /* [HGM] <popupFix> Popup calls FinishMove now.
                      If promotion to Q is legal, all are legal! */
+		  if(gameInfo.variant == VariantSuper)
+		  { ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
+		    // kludge to temporarily execute move on display, wthout promotng yet
+		    promotionChoice = TRUE;
+		    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
+		    boards[currentMove][toY][toX] = p;
+		    DrawPosition(FALSE, boards[currentMove]);
+		    boards[currentMove][fromY][fromX] = p; // take back, but display stays
+		    boards[currentMove][toY][toX] = q;
+		  } else
                   PromotionPopup(hwnd);
           } else {       /* not a promotion */
              if (appData.animate || appData.highlightLastMove) {
@@ -4694,6 +4812,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                  ClearHighlights();
              }
              FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
+	     fromX = fromY = -1;
              if (appData.animate && !appData.highlightLastMove) {
                   ClearHighlights();
                   DrawPosition(forceFullRepaint || FALSE, NULL);
@@ -4758,6 +4877,12 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       saveAnimate = appData.animate; /* sorry, Hawk :) */
       appData.animate = appData.animate && !appData.animateDragging;
       moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR);
+      if(moveType == AmbiguousMove) { /* [HGM] Edit-Position move executed */
+		fromX = fromY = -1; 
+		ClearHighlights();
+		DrawPosition(FALSE, boards[currentMove]);
+		break; 
+      } else 
       if(moveType != ImpossibleMove) {
           /* [HGM] use move type to determine if move is promotion.
              Knight is Shogi kludge for mandatory promotion, Queen means choice */
@@ -4768,6 +4893,17 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
           else 
           if (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen ) {
                DrawPosition(forceFullRepaint || FALSE, NULL);
+		  if(gameInfo.variant == VariantSuper)
+		  { ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
+		    // kludge to temporarily execute move on display, wthout promotng yet
+		    promotionChoice = TRUE;
+		    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
+		    boards[currentMove][toY][toX] = p;
+		    DrawPosition(FALSE, boards[currentMove]);
+		    boards[currentMove][fromY][fromX] = p; // take back, but display stays
+		    boards[currentMove][toY][toX] = q;
+		    break;
+		  } else
                PromotionPopup(hwnd); /* [HGM] Popup now calls FinishMove */
         } else FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
       }
@@ -4960,7 +5096,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
     ShowWindow(GetDlgItem(hDlg, PB_King), 
       (!appData.testLegality || gameInfo.variant == VariantSuicide ||
-       gameInfo.variant == VariantGiveaway) ?
+       gameInfo.variant == VariantGiveaway || gameInfo.variant == VariantSuper ) ?
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Only allow C & A promotions if these pieces are defined */
     ShowWindow(GetDlgItem(hDlg, PB_Archbishop),
@@ -4988,6 +5124,9 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     ShowWindow(GetDlgItem(hDlg, IDC_No), 
        gameInfo.variant == VariantShogi ?
 	       SW_SHOW : SW_HIDE);
+    ShowWindow(GetDlgItem(hDlg, IDC_Centaur), 
+       gameInfo.variant == VariantSuper ?
+	       SW_SHOW : SW_HIDE);
     return TRUE;
 
   case WM_COMMAND: /* message: received a command */
@@ -4998,7 +5137,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       DrawPosition(FALSE, NULL);
       return TRUE;
     case PB_King:
-      promoChar = PieceToChar(BlackKing);
+      promoChar = gameInfo.variant == VariantSuper ? PieceToChar(BlackSilver) : PieceToChar(BlackKing);
       break;
     case PB_Queen:
       promoChar = gameInfo.variant == VariantShogi ? '+' : PieceToChar(BlackQueen);
@@ -5052,7 +5191,8 @@ PromotionPopup(HWND hwnd)
 VOID
 ToggleShowThinking()
 {
-  ShowThinkingEvent(!appData.showThinking);
+  appData.showThinking = !appData.showThinking;
+  ShowThinkingEvent();
 }
 
 VOID
@@ -5962,6 +6102,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   /* [AS] Snapping */
   case WM_ENTERSIZEMOVE:
+    if(appData.debugMode) { fprintf(debugFP, "size-move\n"); }
     if (hwnd == hwndMain) {
       doingSizing = TRUE;
       lastSizing = 0;
@@ -5970,15 +6111,18 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
 
   case WM_SIZING:
+    if(appData.debugMode) { fprintf(debugFP, "sizing\n"); }
     if (hwnd == hwndMain) {
       lastSizing = wParam;
     }
     break;
 
   case WM_MOVING:
+    if(appData.debugMode) { fprintf(debugFP, "moving\n"); }
       return OnMoving( &sd, hwnd, wParam, lParam );
 
   case WM_EXITSIZEMOVE:
+    if(appData.debugMode) { fprintf(debugFP, "exit size-move, size = %d\n", squareSize); }
     if (hwnd == hwndMain) {
       RECT client;
       doingSizing = FALSE;
@@ -5986,6 +6130,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       GetClientRect(hwnd, &client);
       ResizeBoard(client.right, client.bottom, lastSizing);
       lastSizing = 0;
+      if(appData.debugMode) { fprintf(debugFP, "square size = %d\n", squareSize); }
     }
     return OnExitSizeMove( &sd, hwnd, wParam, lParam );
     break;

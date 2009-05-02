@@ -85,6 +85,8 @@
 #define OPT_TCInc                       407
 #define OPT_TCitext3                    408
 #define OPT_TCTime2                     409
+#define OPT_TCOdds1                     410
+#define OPT_TCOdds2                     411
 #define DLG_PremoveOptions              450
 #define DLG_GeneralOptions              453
 #define DLG_IcsOptions                  454
@@ -115,6 +117,7 @@
 #define PB_Archbishop                   507
 #define IDC_Yes                         520
 #define IDC_No                          521
+#define IDC_Centaur                     522
 #define EP_White                        600
 #define EP_WhitePawn                    601
 #define EP_WhiteKnight                  602
@@ -441,8 +444,11 @@
 #define IDC_StateIcon2                  1464
 #define IDC_PathToEGTB                  1466
 #define IDC_SizeOfEGTB                  1467
-#define IDC_UseBook                     1469
-#define IDC_BookFile                    1470
+#define IDC_BookFile                    1469
+#define IDC_UseBook                     1470
+#define IDC_OwnBook1                    1471
+#define IDC_OwnBook2                    1472
+#define IDC_Cores                       1473
 #define DLG_NewVariant                  1500
 #define OPT_VariantGothic               1501
 #define OPT_VariantCrazyhouse           1502
@@ -464,7 +470,7 @@
 #define OPT_VariantFalcon               1518
 #define OPT_VariantCRC                  1519
 #define OPT_VariantBerolina             1520
-#define OPT_Variant3Checks              1521
+#define OPT_VariantSuper                1521
 #define OPT_VariantJanus                1522
 #define OPT_VariantWildcastle           1523
 #define OPT_VariantNocastle             1524
@@ -478,6 +484,8 @@
 #define IDC_TrivialDraws                1603
 #define IDC_RuleMoves                   1604
 #define IDC_DrawRepeats                 1605
+#define IDC_ScoreAbs1                   1606
+#define IDC_ScoreAbs2                   1607
 #define IDM_FlipClock                   1700
 #define OPT_AllWhite                    1701
 #define OPT_UpsideDown                  1702

@@ -102,6 +102,10 @@ int pclose(FILE *);
 
 #define PROTOVER                2       /* engine protocol version */
 
+// [HGM] license: Messages that engines must print to satisfy their license requirements for patented variants
+#define GOTHIC "Gothic Chess (see www.GothicChess.com) is licensed under U.S. Patent #6,481,716 by Ed Trice"
+#define NOFALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
+
 /* [HGM] Some notes about board sizes:
    In games that allow piece drops, the holdings are considered part of the
    board, in the leftmost and rightmost two files. This way they are
@@ -221,10 +225,10 @@ typedef enum {
     BlackHSideCastleFR, BlackASideCastleFR, 
     WhitePromotionKnight, WhitePromotionBishop,
     WhitePromotionRook, WhitePromotionQueen, WhitePromotionKing,
-    WhitePromotionChancellor, WhitePromotionArchbishop,
+    WhitePromotionChancellor, WhitePromotionArchbishop, WhitePromotionCentaur,
     BlackPromotionKnight, BlackPromotionBishop,
     BlackPromotionRook, BlackPromotionQueen, BlackPromotionKing,
-    BlackPromotionChancellor, BlackPromotionArchbishop,
+    BlackPromotionChancellor, BlackPromotionArchbishop, BlackPromotionCentaur,
     WhiteCapturesEnPassant, BlackCapturesEnPassant,
     WhiteDrop, BlackDrop, 
     NormalMove, AmbiguousMove, IllegalMove, ImpossibleMove,
@@ -243,13 +247,6 @@ typedef enum {
     SoundMove, SoundBell, SoundAlarm, SoundIcsWin, SoundIcsLoss,
     SoundIcsDraw, SoundIcsUnfinished, NSoundClasses
 } SoundClass;
-
-typedef enum { 
-  SizeTiny, SizeTeeny, SizeDinky, SizePetite, SizeSlim, SizeSmall,
-  SizeMediocre, SizeMiddling, SizeAverage, SizeModerate, SizeMedium,
-  SizeBulky, SizeLarge, SizeBig, SizeHuge, SizeGiant, SizeColossal,
-  SizeTitanic, NUM_SIZES 
-} BoardSize;
 
 /* Names for chess variants, not necessarily supported */
 typedef enum {
@@ -288,6 +285,7 @@ typedef enum {
     VariantCapaRandom,
     VariantBerolina,
     VariantJanus,
+    VariantSuper,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
@@ -326,6 +324,8 @@ typedef enum {
   "falcon",\
   "caparandom",\
   "berolina",\
+  "janus",\
+  "super",\
   "unknown" \
 }
 
@@ -573,6 +573,10 @@ typedef struct {
     Boolean autoKibitz;
     int engineComments;
     char *userName;
+    int rewindIndex;    /* [HGM] autoinc   */
+    int sameColorGames; /* [HGM] alternate */
+    int smpCores;
+    char *egtFormats;
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

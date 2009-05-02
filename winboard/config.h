@@ -1,13 +1,5 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
 
-/* [HGM] Defining ADJUDICATE switches on rep-draw and insuf-material draws */
-#define ADJUDICATE
-
-/* [HGM] Defining FAIRY allows different K- & Q-side piece symbols */
-#define FAIRY
-
-#define GOTHIC "Gothic Chess (see www.GothicChess.com) is licensed under U.S. Patent #6,481,716 by Ed Trice"
-#define FALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
 
 /* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
 /*#undef HAVE_SYS_WAIT_H*/
@@ -36,9 +28,7 @@
 #define HAVE_GETTIMEOFDAY 0
 
 /* Use our own random() defined in winboard.c. */
-#define HAVE_RANDOM 1
-#define random myrandom
-#define srandom mysrandom
+#define HAVE_RANDOM 0
 
 #define HAVE_SYS_SOCKET_H 0
 
@@ -46,7 +36,7 @@
 
 #define LAST_PTY_LETTER 'q'
 
-#define PATCHLEVEL "14k"
+#define PATCHLEVEL "15m"
 
 #define PRODUCT "WinBoard"
 

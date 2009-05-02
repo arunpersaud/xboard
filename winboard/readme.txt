@@ -1,3 +1,34 @@
+                             WinBoard 4.3.15m RELEASE NOTES
+
+Compared to version 4.3.14k described below, this version features
+
+New command-line options
+/rewindIndex=N (for the new auto-increment mode of the loadGameIndex or loadPositionIndex in match mode
+/sameColorGames=N (for playing a match where the same player has white all the time)
+/egtFormats="..." (for specifying where various end-game tables are installed on the computer)
+
+New menu items
++ Time-odds factors can be set in the time-control dialog
++ Nr of CPUs for SMP engines can be set in the Options -> UCI dialog
++ Own-Book options can be switched from the Options -> UCI dialog
++ The ScoreIsAbs options can be set from the Options -> Engine dialog
++ New-Variant menu adds Superchess
+
+General Enhancements:
+* WinBoard engines can now also use the Polyglot opening book (implemented as general GUI book)
+* New WB-protocol commands memory, cores and egtpath make interactive setting of these parameters 
+  possible on WB engines
+* New Polyglot is available that relays the interactive setting of these parameters to UCI engines
+* Match mode suports an auto-increment mode, so that all games or positions from a file can be played
+* Draw claims with Kings and an arbitrary number of like Bishops (e.g. KBBKB) are accepted
+
+The source tree in original XBoard 4.2.7 format can now be compiled under Cygwin with the aid
+of the cygwin.mak file in the ~/winboard/ subdirectory of the source release. Makefiles for 
+other compilers are not updated since 4.2.7, as I do not have those compilers.
+
+Note that this release is a bug-fix for the 4.3.15k release, which had a bug in human-ICS play mode.
+
+
                              WinBoard 4.3.14k RELEASE NOTES
 
 Compared to version 4.3.13 described below, this version features
@@ -21,7 +52,7 @@ Bugfixes:
 * In ICS observing mode game history is now fully accessible 
 * Moves are not fed to engine in zippy mode, when observing a game from a variant unknown to the engine 
 * a problem with loading PGN of FRC games with move disambiguation and initial castling rights was fixed.
-* A bug in the clock display that mad previous versions of WinBoard crash for tiny displays is fixed
+* A bug in the clock display that made previous versions of WinBoard crash for tiny displays is fixed
 
 General enhancements: 
 * variant name displayed in title bar in ICS mode, when not 'normal' 

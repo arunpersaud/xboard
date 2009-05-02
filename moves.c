@@ -117,89 +117,26 @@ ChessSquare PromoPiece(moveType)
 	return WhiteKing;
       case BlackPromotionKing:
 	return BlackKing;
-#ifdef FAIRY
       case WhitePromotionChancellor:
         return WhiteMarshall;
       case BlackPromotionChancellor:
         return BlackMarshall;
       case WhitePromotionArchbishop:
-        return WhiteCardinal;
+        return WhiteAngel;
       case BlackPromotionArchbishop:
-        return BlackCardinal;
-#endif
-    }
-}
-
-ChessMove PromoCharToMoveType(whiteOnMove, promoChar)
-     int whiteOnMove;
-     int promoChar;
-{
-    if (whiteOnMove) {
-	switch (promoChar) {
-	  case 'n':
-	  case 'N':
-	    return WhitePromotionKnight;
-	  case 'b':
-	  case 'B':
-	    return WhitePromotionBishop;
-	  case 'r':
-	  case 'R':
-	    return WhitePromotionRook;
-#ifdef FAIRY
-          case 'a':
-          case 'A':
-            return WhitePromotionArchbishop;
-          case 'c':
-          case 'C':
-            return WhitePromotionChancellor;
-#endif
-	  case 'q':
-	  case 'Q':
-	    return WhitePromotionQueen;
-	  case 'k':
-	  case 'K':
-	    return WhitePromotionKing;
-	  case NULLCHAR:
-	  default:
-	    return NormalMove;
-	}
-    } else {
-	switch (promoChar) {
-	  case 'n':
-	  case 'N':
-	    return BlackPromotionKnight;
-	  case 'b':
-	  case 'B':
-	    return BlackPromotionBishop;
-	  case 'r':
-	  case 'R':
-	    return BlackPromotionRook;
-#ifdef FAIRY
-          case 'a':
-          case 'A':
-            return BlackPromotionArchbishop;
-          case 'c':
-          case 'C':
-            return BlackPromotionChancellor;
-#endif
-	  case 'q':
-	  case 'Q':
-	    return BlackPromotionQueen;
-	  case 'k':
-	  case 'K':
-	    return BlackPromotionKing;
-	  case NULLCHAR:
-	  default:
-	    return NormalMove;
-	}
+        return BlackAngel;
+      case WhitePromotionCentaur:
+        return WhiteSilver;
+      case BlackPromotionCentaur:
+        return BlackSilver;
     }
 }
 
 char pieceToChar[] = {
                         'P', 'N', 'B', 'R', 'Q', 'F', 'E', 'A', 'C', 'W', 'M', 
-                        'O', 'H', 'I', 'J', 'G', 'D', 'V', 'S', 'L', 'U', 'K',
+                        'O', 'H', 'I', 'J', 'G', 'D', 'V', 'L', 's', 'U', 'K',
                         'p', 'n', 'b', 'r', 'q', 'f', 'e', 'a', 'c', 'w', 'm', 
-                        'o', 'h', 'i', 'j', 'g', 'd', 'v', 's', 'l', 'u', 'k', 
+                        'o', 'h', 'i', 'j', 'g', 'd', 'v', 'l', 's', 'u', 'k', 
                         'x' };
 
 char PieceToChar(p)
@@ -226,6 +163,51 @@ ChessSquare CharToPiece(c)
      for(i=0; i< (int) EmptySquare; i++)
           if(pieceToChar[i] == c) return (ChessSquare) i;
      return EmptySquare;
+}
+
+ChessMove PromoCharToMoveType(whiteOnMove, promoChar)
+     int whiteOnMove;
+     int promoChar;
+{	/* [HGM] made dependent on CharToPiece to alow alternate piece letters */
+	ChessSquare piece = CharToPiece(whiteOnMove ? ToUpper(promoChar) : ToLower(promoChar) );
+
+	switch(piece) {
+		case WhiteQueen:
+			return WhitePromotionQueen;
+		case WhiteRook:
+			return WhitePromotionRook;
+		case WhiteBishop:
+			return WhitePromotionBishop;
+		case WhiteKnight:
+			return WhitePromotionKnight;
+		case WhiteKing:
+			return WhitePromotionKing;
+		case WhiteAngel:
+			return WhitePromotionArchbishop;
+		case WhiteMarshall:
+			return WhitePromotionChancellor;
+		case WhiteSilver:
+			return WhitePromotionCentaur;
+		case BlackQueen:
+			return BlackPromotionQueen;
+		case BlackRook:
+			return BlackPromotionRook;
+		case BlackBishop:
+			return BlackPromotionBishop;
+		case BlackKnight:
+			return BlackPromotionKnight;
+		case BlackKing:
+			return BlackPromotionKing;
+		case BlackAngel:
+			return BlackPromotionArchbishop;
+		case BlackMarshall:
+			return BlackPromotionChancellor;
+		case BlackSilver:
+			return BlackPromotionCentaur;
+		default:
+			// not all promotion implemented yet! Take Queen for those we don't know.
+			return (whiteOnMove ? WhitePromotionQueen : BlackPromotionQueen);
+	}
 }
 
 void CopyBoard(to, from)
@@ -650,6 +632,9 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
 		  }
                 break;
 
+	    case WhiteSilver:
+	    case BlackSilver:
+		m++; // [HGM] superchess: use for Centaur
             case WhiteMan:
             case BlackMan:
             case SHOGI WhiteKing:
@@ -667,6 +652,7 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
 		    callback(board, flags, NormalMove,
 			     rf, ff, rt, ft, closure);
 		}
+		if(m==1) goto mounted;
 	      break;
 
 	    case WhiteNightrider:
@@ -1557,8 +1543,6 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
       /* [HGM] Always long notation for fairies we don't know */
       case WhiteFalcon:
       case BlackFalcon:
-      case WhiteSilver:
-      case BlackSilver:
       case WhiteLance:
       case BlackLance:
       case WhiteGrasshopper:

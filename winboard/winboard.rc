@@ -51,7 +51,7 @@ BEGIN
     LTEXT           "(""WinBoard_F"")",IDC_STATIC,88,4,71,8
 END
 
-DLG_TimeControl DIALOG DISCARDABLE  6, 18, 174, 98
+DLG_TimeControl DIALOG DISCARDABLE  6, 18, 174, 134
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Time Control"
 FONT 8, "MS Sans Serif"
@@ -68,8 +68,13 @@ BEGIN
     LTEXT           "minutes +",405,44,58,34,8,NOT WS_GROUP
     EDITTEXT        OPT_TCInc,78,56,26,12,ES_AUTOHSCROLL
     LTEXT           "seconds per move",408,108,58,62,8,NOT WS_GROUP
-    PUSHBUTTON      "OK",IDOK,64,80,50,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,120,80,50,14
+    LTEXT           "Time-Odds Factors:",IDC_STATIC,6,78,150,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds1,47,92,26,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Engine #1:",IDC_STATIC,6,94,41,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds2,124,92,26,12,ES_AUTOHSCROLL
+    LTEXT           "Engine #2:",IDC_STATIC,83,94,41,8,NOT WS_GROUP
+    PUSHBUTTON      "OK",IDOK,64,116,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,120,116,50,14
 END
 
 DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 136, 55
@@ -191,10 +196,11 @@ BEGIN
     PUSHBUTTON      "&Rook",PB_Rook,49,23,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&Bishop",PB_Bishop,94,23,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "K&night",PB_Knight,139,23,40,14,NOT WS_TABSTOP
-    PUSHBUTTON      "&King",PB_King,94,4,40,14,NOT WS_TABSTOP
+    PUSHBUTTON      "&King",PB_King,4,4,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&Cancel",IDCANCEL,139,4,40,14,WS_GROUP
     LTEXT           "      YES",IDC_Yes,6,25,36,10
     LTEXT           "       NO",IDC_No,141,25,36,10
+    LTEXT           "C&entaur",IDC_Centaur,12,6,25,10
 END
 
 ABOUTBOX2 DIALOG DISCARDABLE  22, 17, 281, 223
@@ -659,7 +665,7 @@ BEGIN
                     54,50,10
     CONTROL         "&Falcon",OPT_VariantFalcon,"Button",BS_AUTORADIOBUTTON,134,
                     64,50,10
-    CONTROL         "&3checks",OPT_Variant3Checks,"Button",BS_AUTORADIOBUTTON,134,
+    CONTROL         "su&per",OPT_VariantSuper,"Button",BS_AUTORADIOBUTTON,134,
                     74,50,10
     CONTROL         "&nocastle",OPT_VariantNocastle,"Button",BS_AUTORADIOBUTTON,134,
                     84,50,10
@@ -788,7 +794,7 @@ BEGIN
     ICON            IDI_TRANS_14,IDC_StateIcon2,164,84,20,20
 END
 
-DLG_EnginePlayOptions DIALOG DISCARDABLE  0, 0, 208, 177
+DLG_EnginePlayOptions DIALOG DISCARDABLE  0, 0, 208, 202
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Engine Options"
 FONT 8, "MS Sans Serif"
@@ -828,8 +834,14 @@ BEGIN
     LTEXT           "-move rule",IDC_STATIC,142,117,35,8
     EDITTEXT        IDC_DrawRepeats,120,130,20,14,ES_AUTOHSCROLL
     LTEXT           "-fold repeats",IDC_STATIC,142,134,50,8
-    DEFPUSHBUTTON   "OK",IDOK,98,160,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,154,160,50,14
+    CONTROL         "Engine #1 Score is Absolute",
+                    IDC_ScoreAbs1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,156,120,10
+    CONTROL         "Engine #2 Score is Absolute",
+                    IDC_ScoreAbs2,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,168,120,10
+    DEFPUSHBUTTON   "OK",IDOK,98,185,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,154,185,50,14
 END
 
 DLG_OptionsUCI DIALOG DISCARDABLE  0, 0, 228, 124
@@ -851,6 +863,12 @@ BEGIN
                     WS_TABSTOP,2,80,49,10
     EDITTEXT        IDC_BookFile,62,76,140,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BrowseForBook,206,76,17,14
+    LTEXT           "Max nr of CPUs:",IDC_STATIC,106,26,52,8
+    EDITTEXT        IDC_Cores,162,22,40,14,ES_AUTOHSCROLL
+    CONTROL         "First has Own Book",IDC_OwnBook1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,2,94,100,10
+    CONTROL         "Second has Own Book",IDC_OwnBook2,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,2,107,100,10
     DEFPUSHBUTTON   "OK",IDOK,118,106,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,174,106,50,14
 END
@@ -1938,6 +1956,8 @@ SL58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sl58w.bmp"
 SK58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sk58w.bmp"
 SW58W                   BITMAP  MOVEABLE PURE   "shogibitmaps\\sw58w.bmp"
 
+KING45C                 BITMAP  MOVEABLE PURE   "shogibitmaps\\king.bmp"
+AMAZON50C               BITMAP  MOVEABLE PURE   "shogibitmaps\\bamazon.bmp"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

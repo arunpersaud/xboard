@@ -61,6 +61,13 @@ typedef struct {
   HFONT hf;
 } MyFont;
 
+typedef enum { 
+  SizeTiny, SizeTeeny, SizeDinky, SizePetite, SizeSlim, SizeSmall,
+  SizeMediocre, SizeMiddling, SizeAverage, SizeModerate, SizeMedium,
+  SizeBulky, SizeLarge, SizeBig, SizeHuge, SizeGiant, SizeColossal,
+  SizeTitanic, NUM_SIZES 
+} BoardSize;
+
 typedef struct {
     COLORREF color;
     int effects;

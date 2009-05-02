@@ -214,11 +214,17 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.popupMoveErrors      = IS_CHECKED(OPT_PopupMoveErrors);
       appData.showButtonBar        = IS_CHECKED(OPT_ShowButtonBar);
       appData.showCoords           = IS_CHECKED(OPT_ShowCoordinates);
-      ShowThinkingEvent(             IS_CHECKED(OPT_ShowThinking));
-      appData.testLegality         = IS_CHECKED(OPT_TestLegality);
-      appData.hideThinkingFromHuman= IS_CHECKED(OPT_HideThinkFromHuman);
+      // [HGM] thinking: next three moved up
       appData.saveExtendedInfoInPGN= IS_CHECKED(OPT_SaveExtPGN);
+      appData.hideThinkingFromHuman= IS_CHECKED(OPT_HideThinkFromHuman);
       appData.showEvalInMoveHistory= IS_CHECKED(OPT_ExtraInfoInMoveHistory);
+#if 0
+      ShowThinkingEvent(             IS_CHECKED(OPT_ShowThinking));
+#else
+      appData.showThinking         = IS_CHECKED(OPT_ShowThinking);
+      ShowThinkingEvent(); // [HGM] thinking: tests four options
+#endif
+      appData.testLegality         = IS_CHECKED(OPT_TestLegality);
       appData.highlightMoveWithArrow=IS_CHECKED(OPT_HighlightMoveArrow);
 
 #undef IS_CHECKED
@@ -778,7 +784,7 @@ VariantWhichRadio(HWND hDlg)
          (IsDlgButtonChecked(hDlg, OPT_VariantCylinder) ? VariantCylinder :
          (IsDlgButtonChecked(hDlg, OPT_VariantFalcon) ? VariantFalcon :
          (IsDlgButtonChecked(hDlg, OPT_VariantCRC) ? VariantCapaRandom :
-         (IsDlgButtonChecked(hDlg, OPT_Variant3Checks) ? Variant3Check :
+         (IsDlgButtonChecked(hDlg, OPT_VariantSuper) ? VariantSuper :
          (IsDlgButtonChecked(hDlg, OPT_VariantBerolina) ? VariantBerolina :
          (IsDlgButtonChecked(hDlg, OPT_VariantJanus) ? VariantJanus :
          (IsDlgButtonChecked(hDlg, OPT_VariantWildcastle) ? VariantWildCastle :
@@ -859,7 +865,8 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       CheckDlgButton(hDlg, OPT_VariantCylinder, TRUE);
       break;
     case Variant3Check:
-      CheckDlgButton(hDlg, OPT_Variant3Checks, TRUE);
+    case VariantSuper:
+      CheckDlgButton(hDlg, OPT_VariantSuper, TRUE);
       break;
     case VariantBerolina:
       CheckDlgButton(hDlg, OPT_VariantBerolina, TRUE);
@@ -899,6 +906,18 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       EndDialog(hDlg, TRUE);
 
       v = VariantWhichRadio(hDlg);
+      if(!appData.noChessProgram) { char *name = VariantName(v), buf[MSG_SIZ];
+	if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
+	    /* [HGM] in protocol 2 we check if variant is suported by engine */
+	    sprintf(buf, "Variant %s not supported by %s", name, first.tidy);
+	    DisplayError(buf, 0);
+	    return TRUE; /* treat as "Cancel" if first engine does not support it */
+	} else
+	if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
+	    sprintf(buf, "Warning: second engine (%s) does not support this!", second.tidy);
+	    DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
+	}
+      }
 
       gameInfo.variant = v;
       appData.variant = VariantName(v);
@@ -2584,8 +2603,8 @@ LRESULT CALLBACK
 TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   char buf[MSG_SIZ];
-  int mps, increment;
-  BOOL ok;
+  int mps, increment, odds1, odds2;
+  BOOL ok, ok2;
 
   switch (message) {
   case WM_INITDIALOG: /* message: initialize dialog box */
@@ -2609,6 +2628,8 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	SetDlgItemText(hDlg, OPT_TCTime2, appData.timeControl);
 	SetDlgItemInt(hDlg, OPT_TCInc, appData.timeIncrement, FALSE);
       }
+      SetDlgItemInt(hDlg, OPT_TCOdds1, 1, FALSE);
+      SetDlgItemInt(hDlg, OPT_TCOdds2, 1, FALSE);
       SetTimeControlEnables(hDlg);
     }
     return TRUE;
@@ -2646,9 +2667,18 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  return FALSE;
 	}
       }
+      odds1 = GetDlgItemInt(hDlg, OPT_TCOdds1, &ok, FALSE);
+      odds2 = GetDlgItemInt(hDlg, OPT_TCOdds2, &ok2, FALSE);
+      if (!ok || !ok2 || odds1 <= 0 || odds2 <= 0) {
+	  MessageBox(hDlg, "Invalid time-odds factor",
+		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  return FALSE;
+      }
       appData.timeControl = strdup(buf);
       appData.movesPerSession = mps;
       appData.timeIncrement = increment;
+      appData.firstTimeOdds  = first.timeOdds  = odds1;
+      appData.secondTimeOdds = second.timeOdds = odds2;
       Reset(TRUE, TRUE);
       EndDialog(hDlg, TRUE);
       return TRUE;
@@ -2707,6 +2737,9 @@ LRESULT CALLBACK EnginePlayOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,
     CHECK_BOX(IDC_MaterialDraws, appData.materialDraws);
     CHECK_BOX(IDC_TrivialDraws, appData.trivialDraws);
 
+    CHECK_BOX(IDC_ScoreAbs1, appData.firstScoreIsAbsolute);
+    CHECK_BOX(IDC_ScoreAbs2, appData.secondScoreIsAbsolute);
+
     SetDlgItemInt( hDlg, IDC_EpDrawMoveCount, appData.adjudicateDrawMoves, TRUE );
     SendDlgItemMessage( hDlg, IDC_EpDrawMoveCount, EM_SETSEL, 0, -1 );
 
@@ -2727,8 +2760,13 @@ LRESULT CALLBACK EnginePlayOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,
       /* Read changed options from the dialog box */
       PeriodicUpdatesEvent(          IS_CHECKED(IDC_EpPeriodicUpdates));
       PonderNextMoveEvent(           IS_CHECKED(IDC_EpPonder));
+      appData.hideThinkingFromHuman= IS_CHECKED(IDC_EpHideThinkingHuman); // [HGM] thinking: moved up
+#if 0
       ShowThinkingEvent(             IS_CHECKED(IDC_EpShowThinking));
-      appData.hideThinkingFromHuman= IS_CHECKED(IDC_EpHideThinkingHuman);
+#else
+      appData.showThinking   = IS_CHECKED(IDC_EpShowThinking);
+      ShowThinkingEvent(); // [HGM] thinking: tests all options that need thinking output
+#endif
       appData.testClaims    = IS_CHECKED(IDC_TestClaims);
       appData.checkMates    = IS_CHECKED(IDC_DetectMates);
       appData.materialDraws = IS_CHECKED(IDC_MaterialDraws);
@@ -2738,6 +2776,9 @@ LRESULT CALLBACK EnginePlayOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,
       appData.adjudicateLossThreshold = - (int) GetDlgItemInt(hDlg, IDC_EpAdjudicationThreshold, NULL, FALSE );
       appData.ruleMoves = GetDlgItemInt(hDlg, IDC_RuleMoves, NULL, FALSE );
       appData.drawRepeats = (int) GetDlgItemInt(hDlg, IDC_DrawRepeats, NULL, FALSE );
+
+      appData.firstScoreIsAbsolute  = IS_CHECKED(IDC_ScoreAbs1);
+      appData.secondScoreIsAbsolute = IS_CHECKED(IDC_ScoreAbs2);
 
       EndDialog(hDlg, TRUE);
       return TRUE;
@@ -2816,6 +2857,7 @@ static BOOL BrowseForFolder( const char * title, char * path )
 LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   char buf[MAX_PATH];
+  int oldCores;
 
   switch (message) {
   case WM_INITDIALOG: /* message: initialize dialog box */
@@ -2830,6 +2872,11 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
     SetDlgItemInt( hDlg, IDC_SizeOfEGTB, appData.defaultCacheSizeEGTB, TRUE );
     CheckDlgButton( hDlg, IDC_UseBook, (BOOL) appData.usePolyglotBook );
     SetDlgItemText( hDlg, IDC_BookFile, appData.polyglotBook );
+    // [HGM] smp: input field for nr of cores:
+    SetDlgItemInt( hDlg, IDC_Cores, appData.smpCores, TRUE );
+    // [HGM] book: tick boxes for own book use
+    CheckDlgButton( hDlg, IDC_OwnBook1, (BOOL) appData.firstHasOwnBookUCI );
+    CheckDlgButton( hDlg, IDC_OwnBook2, (BOOL) appData.secondHasOwnBookUCI );
 
     SendDlgItemMessage( hDlg, IDC_PolyglotDir, EM_SETSEL, 0, -1 );
 
@@ -2847,7 +2894,15 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
       GetDlgItemText( hDlg, IDC_BookFile, buf, sizeof(buf) );
       appData.polyglotBook = strdup(buf);
       appData.usePolyglotBook = (Boolean) IsDlgButtonChecked( hDlg, IDC_UseBook );
+      // [HGM] smp: get nr of cores:
+      oldCores = appData.smpCores;
+      appData.smpCores = GetDlgItemInt(hDlg, IDC_Cores, NULL, FALSE );
+      if(appData.smpCores != oldCores) NewSettingEvent(FALSE, "cores", appData.smpCores);
+      // [HGM] book: read tick boxes for own book use
+      appData.firstHasOwnBookUCI  = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook1 );
+      appData.secondHasOwnBookUCI = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook2 );
 
+      if(gameMode == BeginningOfGame) Reset(TRUE, TRUE);
       EndDialog(hDlg, TRUE);
       return TRUE;
 

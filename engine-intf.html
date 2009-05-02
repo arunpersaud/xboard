@@ -12,7 +12,8 @@
 $Id: engine-intf.html,v 2.1 2003/10/27 19:21:00 mann Exp $<br>
 Version 2; implemented in xboard/WinBoard 4.2.1 and later.<br>
 Changes since version 1 are indicated in <font color=red>red</font>.<br>
-Changes for WinBoard 4.3.xx are indicated in <font color=green>green</font>.
+Changes for WinBoard 4.3.xx are indicated in <font color=green>green</font>.<br>
+Proposed changes, implemented only in alpha versions are indicated in <font color=blue>blue</font>.
 <hr noshade size="2">
 
 <ul>
@@ -535,6 +536,8 @@ or by having no legal moves (ICC)</font>
 <td><font color=green>shuffle variant like FRC (10x8 board)</font>
 <tr align="left"><th><font color=green>cylinder</font>
 <td><font color=green>Pieces wrap around between side edges, like board is a cylinder</font>
+<tr align="left"><th><font color=blue>super</font>
+<td><font color=blue>Superchess: a shuffle variant with 4 fairy pieces on 8x8 board</font>
 <tr align="left"><th>unknown<td>Unknown variant (not supported)
 </table>
 <p>
@@ -655,7 +658,7 @@ otim clock with the opposite color.
 that many engines implement it wrong.
 The clocks in fact always remain with the color.
 Which clock reading is relayed with "time", and which by "otim", is determined by which side the engine plays.
-Not that the way the clocks operate and receive extra time (in accordance with the selected time control)
+Note that the way the clocks operate and receive extra time (in accordance with the selected time control)
 is not affected in any way by which moves are made by the engine, which by the opponent, and which were forced.
 </font>
 </p>
@@ -1004,6 +1007,52 @@ paused thinking or pondering (if any) resumes from exactly where it
 left off, and the clock of the player on move resumes running from
 where it stopped.
 </font>
+<p>
+
+<dt><font color=blue><strong>memory N</strong></font>
+<dd><font color=blue>
+This command informs the engine on how much memory it is allowed to use maximally, in MegaBytes.
+On receipt of this command, the engine should adapt the size of its hash tables accordingly.
+This command does only fix the total memory use,
+the engine has to decide for itself 
+(or be configured by the user by other means) 
+how to divide up the available memory between the various tables it wants to use 
+(e.g. main hash, pawn hash, tablebase cache, bitbases).
+This command will only be sent to engines that have requested it through the memory feature,
+and only at the beginning of a game
+(before any moves have been done).
+</font>
+<p>
+
+<dt><font color=blue><strong>cores N</strong></font>
+<dd><font color=blue>
+This command informs the engine on how many CPU cores it is allowed to use maximally.
+This could be interpreted as the number of search threads for SMP engines. 
+(Threads that do not consume significant amounts of CPU time, like I/O threads, need not be included in the count.)
+This command will only be sent to engines that have requested it through the smp feature.
+The engine should be able to respond to the "cores" command any time during a game,
+but it is allowed to finish a search in progress before procesing the command.
+(Reaction during ponder time should be immediate, though.)
+</font>
+<p>
+
+<dt><font color=blue><strong>egtpath TYPE PATH</strong></font>
+<dd><font color=blue>
+This command informs the engine in which directory (given by the PATH argument)
+it can find end-game tables of the specified TYPE.
+The TYPE argument can be any character string which does not contain spaces.
+Currently <strong>nalimov</strong> and <strong>scorpio</strong> are defined types, 
+for Nalimov tablebases and Scorpio bitbases, respectively,
+but future developers of other formats are free to define their own format names.
+The GUI simply matches the TYPE names the engine says it supports 
+with those that the user supplied when configuring xboard.
+For every match, it sends a separate "y" command.
+The PATH argument would normally (for Nalimov) be the pathname of the directory the EGT files are in,
+but could also be the name of a file, or in fact anything the particular EGT type requires.
+It is upto the developer of the EGT format to specify the syntax of this parameter.
+This command will only be sent to engines that have told the GUI they support EGTs of the given TYPE
+through the egt feature.
+</font>
 </dl>
 
 <h3>Bughouse commands:</h3>
@@ -1252,9 +1301,9 @@ Zippy mode.)  It is recommended that you set this feature to the
 correct value for your engine (just "normal" in most cases) rather
 than leaving the default in place, so that the user will get an
 appropriate error message if he tries to play a variant that your
-engine does not support.
+engine does not support.</font>
 <br>
-If your engine can play variants on a deviating board size,
+<font color=green>If your engine can play variants on a deviating board size,
 like capablanca on an 8x8 board, or capablanca crazyhouse,
 it can list them amongst the variants with a prefix spcifying board size plus
 holdings size, like 8x8+0_capablanca or 10x8+7_capablanca.
@@ -1326,6 +1375,33 @@ it is important that engines check if WinBoard accepts the feature.
 If the feature is rejected,
 engines must refrain from sending the debug output,
 or do so at their own risk.
+</font>
+
+<dt><font color=blue>
+<strong>memory</strong> (boolean, default 0)
+</font>
+<dd><font color=blue>
+If memory=1, the size of the total amount of memory available for the memory-consuming tables of the engine 
+(e.g. hash, EGTB cache)
+will be set by the GUI through the "memory" command.
+</font>
+
+<dt><font color=blue>
+<strong>smp</strong> (boolean, default 0)
+</font>
+<dd><font color=blue>
+If smp=1, the GUI will send the "cores" command to the engine to inform it how many CPU cores it can use.
+</font>
+
+<dt><font color=blue>
+<strong>egt</strong> (string, see text below)
+</font>
+<dd><font color=blue>
+This feature indicates which end-game table formats the engine supports.
+It should be a comma-separated list of format names.
+See under the "egtpath" command in <a href="#8">section 8</a> above.
+If you do not set this feature, xboard will assume the engine does not support end-game tables,
+and will not send any "egtpath" commands to inform the engine about their whereabouts.
 </font>
 
 <dt><font color=red>
@@ -1720,7 +1796,7 @@ can go negative and then become positive again because of the
 increment.)
 </p>
 
-<p>
+<p><font color=blue>
 The number of moves given in the level command (when non-zero) should 
 be taken as the number of moves still to do before the specified time
 will be added to the clock, if the "level" command is received after
@@ -1739,7 +1815,7 @@ and the engine receives "level 20 22 0" just before move 41,
 it should understand that it should do the next 20 moves in 22 minutes
 (pehaps because the secondary session was 20 moves per 15 minutes,
 and it had 7 minutes left on its clock after the first 40 moves).
-</p>
+</font></p>
 
 <p>
 A special rule on some ICS implementations: if you ask for a game with

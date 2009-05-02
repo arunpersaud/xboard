@@ -19,23 +19,28 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * ------------------------------------------------------------------------
  */
-#include "config.h"
-
-#include <windows.h> /* required for all Windows applications */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
 
+#ifdef WIN32
+// [HGM] this was probably a Windows-specific constant. Needs to be defined here now I
+//       threw out the Windows-specific includes (winboard.h etc.). 100 seems enough.
+#include <windows.h>
+#define SLASH_CHAR "\\"
+#else
+#define MAX_PATH 100
+#define SLASH_CHAR "/"
+#endif
+
 #include "common.h"
-#include "winboard.h"
-#include "frontend.h"
 #include "backend.h"
 
 #define INIFILE_PREFIX      "polyglot_"
 #define INIFILE_SUFFIX_1ST  "1st"
 #define INIFILE_SUFFIX_2ND  "2nd"
 #define INIFILE_EXT         ".ini"
+
 
 static const char * GetIniFilename( ChessProgramState * cps )
 {
@@ -52,16 +57,21 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
         /* Build name of initialization file */
         if( strchr( iniDir, ' ' ) != NULL ) {
             char iniDirShort[ MAX_PATH ];
-
+#ifdef WIN32
             GetShortPathName( iniDir, iniDirShort, sizeof(iniDirShort) );
 
             strcpy( polyglotIniFile, iniDirShort );
+#else
+	    // [HGM] UCI: not sure if this works, but GetShortPathName seems Windows pecific
+	    // and names with spaces in it do not work in xboard in many places, so ignore
+            strcpy( polyglotIniFile, iniDir );
+#endif
         }
         else {
             strcpy( polyglotIniFile, iniDir );
         }
         
-        strcat( polyglotIniFile, "\\" );
+        strcat( polyglotIniFile, SLASH_CHAR );
         strcat( polyglotIniFile, iniFileName );
 
         /* Create initialization file */

@@ -873,7 +873,11 @@ int ZippyMatch(buf, i)
     if (looking_at(buf, i, "Challenge: * (*) *(*) * * * * Loaded from *")) {
 	/* note: star_match[2] can include "[white] " or "[black] "
 	   before our own name. */
-	ZippyHandleChallenge(star_match[4], star_match[8],
+	if(star_match[8] == NULL || star_match[8][0] == 0) // [HGM] chessd: open-source ICS has file on next line
+	     ZippyHandleChallenge(star_match[4], star_match[5],
+			     star_match[6], star_match[7],
+			     StripHighlightAndTitle(star_match[0]));
+	else ZippyHandleChallenge(star_match[4], star_match[8],
 			     star_match[6], star_match[7],
 			     StripHighlightAndTitle(star_match[0]));
 	return TRUE;

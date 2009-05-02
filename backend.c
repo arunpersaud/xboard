@@ -56,7 +56,6 @@
 #else
 
 #define DoSleep( n )
-typedef int BOOL;
 
 #endif
 
@@ -165,7 +164,7 @@ void ApplyMove P((int fromX, int fromY, int toX, int toY, int promoChar,
 		  Board board));
 void MakeMove P((int fromX, int fromY, int toX, int toY, int promoChar));
 void ShowMove P((int fromX, int fromY, int toX, int toY));
-void FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
+int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 		   /*char*/int promoChar));
 void BackwardInner P((int target));
 void ForwardInner P((int target));
@@ -216,8 +215,13 @@ void ParseFeatures P((char* args, ChessProgramState *cps));
 void InitBackEnd3 P((void));
 void FeatureDone P((ChessProgramState* cps, int val));
 void InitChessProgram P((ChessProgramState *cps, int setup));
+ChessProgramState *WhitePlayer();
 
 char *GetInfoFromComment( int, char * ); // [HGM] PV time: returns stripped comment
+void InitEngineUCI( const char * iniDir, ChessProgramState * cps ); // [HGM] moved here from winboard.c
+char *ProbeBook P((int moveNr, char *book)); // [HGM] book: returns a book move
+char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [HGM] book
+extern char installDir[MSG_SIZ];
 
 extern int tinyLayout, smallLayout;
 static ChessProgramStats programStats;
@@ -228,6 +232,7 @@ int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos 
 char endingGame = 0;    /* [HGM] crash: flag to prevent recursion of GameEnds() */
 int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     */
 VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
+int lastIndex = 0;      /* [HGM] autoinc: last game/position used in match mode */
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -575,6 +580,8 @@ InitBackEnd1()
 {
     int matched, min, sec;
 
+    ShowThinkingEvent(); // [HGM] thinking: make sure post/nopost state is set according to options
+
     GetTimeMark(&programStartTime);
 
     ClearProgramStats();
@@ -776,15 +783,22 @@ InitBackEnd1()
 					+ strlen(PATCHLEVEL));
 	sprintf(programVersion, "%s %s.%s", PRODUCT, VERSION, PATCHLEVEL);
     } else {
+#if 0
 	char *p, *q;
 	q = first.program;
 	while (*q != ' ' && *q != NULLCHAR) q++;
 	p = q;
-	while (p > first.program && *(p-1) != '/') p--;
+	while (p > first.program && *(p-1) != '/' && *(p-1) != '\\') p--; /* [HGM] bckslash added */
 	programVersion = (char*) malloc(8 + strlen(PRODUCT) + strlen(VERSION)
 					+ strlen(PATCHLEVEL) + (q - p));
 	sprintf(programVersion, "%s %s.%s + ", PRODUCT, VERSION, PATCHLEVEL);
 	strncat(programVersion, p, q - p);
+#else
+	/* [HGM] tidy: use tidy name, in stead of full pathname (which was probably a bug due to / vs \ ) */
+	programVersion = (char*) malloc(8 + strlen(PRODUCT) + strlen(VERSION)
+					+ strlen(PATCHLEVEL) + strlen(first.tidy));
+	sprintf(programVersion, "%s %s.%s + %s", PRODUCT, VERSION, PATCHLEVEL, first.tidy);
+#endif
     }
 
     if (!appData.icsActive) {
@@ -844,9 +858,14 @@ InitBackEnd1()
       case VariantShatranj:   /* should work except for all win conditions */
       case VariantBerolina:   /* might work if TestLegality is off */
       case VariantCapaRandom: /* should work */
+      case VariantJanus:      /* should work */
+      case VariantSuper:      /* experimental */
 	break;
       }
     }
+
+    InitEngineUCI( installDir, &first );  // [HGM] moved here from winboard.c, to make available in xboard
+    InitEngineUCI( installDir, &second );
 }
 
 int NextIntegerFromString( char ** str, long * value )
@@ -1023,6 +1042,12 @@ InitBackEnd2()
     } else if (appData.matchMode) {
 	appData.matchGames = 1;
     }
+    if(appData.matchMode && appData.sameColorGames > 0) /* [HGM] alternate: overrule matchGames */
+	appData.matchGames = appData.sameColorGames;
+    if(appData.rewindIndex > 1) { /* [HGM] autoinc: rewind implies auto-increment and overrules given index */
+	if(appData.loadPositionIndex >= 0) appData.loadPositionIndex = -1;
+	if(appData.loadGameIndex >= 0) appData.loadGameIndex = -1;
+    }
     Reset(TRUE, FALSE);
     if (appData.noChessProgram || first.protocolVersion == 1) {
       InitBackEnd3();
@@ -1110,15 +1135,19 @@ InitBackEnd3 P((void))
 	matchMode = TRUE;
 	matchGame = 1;
 	if (*appData.loadGameFile != NULLCHAR) {
+	    int index = appData.loadGameIndex; // [HGM] autoinc
+	    if(index<0) lastIndex = index = 1;
 	    if (!LoadGameFromFile(appData.loadGameFile,
-				  appData.loadGameIndex,
+				  index,
 				  appData.loadGameFile, FALSE)) {
 		DisplayFatalError("Bad game file", 0, 1);
 		return;
 	    }
 	} else if (*appData.loadPositionFile != NULLCHAR) {
+	    int index = appData.loadPositionIndex; // [HGM] autoinc
+	    if(index<0) lastIndex = index = 1;
 	    if (!LoadPositionFromFile(appData.loadPositionFile,
-				      appData.loadPositionIndex,
+				      index,
 				      appData.loadPositionFile)) {
 		DisplayFatalError("Bad position file", 0, 1);
 		return;
@@ -1169,7 +1198,8 @@ InitBackEnd3 P((void))
 	  }
 	  AnalyzeModeEvent();
 	} else if (initialMode == AnalyzeFile) {
-	  ShowThinkingEvent(TRUE);
+	  appData.showThinking = TRUE; // [HGM] thinking: moved out of ShowThinkingEvent
+	  ShowThinkingEvent();
 	  AnalyzeFileEvent();
 	  AnalysisPeriodicEvent(1);
 	} else if (initialMode == MachinePlaysWhite) {
@@ -1640,6 +1670,9 @@ StringToVariant(e)
         case 48:
           v = VariantJanus;
 	  break;
+        case 49:
+          v = VariantSuper;
+	  break;
 	case -1:
 	  /* Found "wild" or "w" in the string but no number;
 	     must assume it's normal chess. */
@@ -2023,6 +2056,9 @@ read_from_ics(isr, closure, data, count, error)
 	for (i = 0; i < count; i++) {
 	    if (data[i] != NULLCHAR && data[i] != '\r')
 	      buf[buf_len++] = data[i];
+	    if(buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
+                               buf[buf_len-3]==' '  && buf[buf_len-2]==' '  && buf[buf_len-1]==' ') 
+		buf_len -= 5; // [HGM] ICS: join continuation line of Lasker 2.2.3 server with previous
 	}
 
 	buf[buf_len] = NULLCHAR;
@@ -3113,7 +3149,7 @@ read_from_ics(isr, closure, data, count, error)
  * Additional trailing fields may be added in the future.  
  */
 
-#define PATTERN "%72c%c%d%d%d%d%d%d%d%s%s%d%d%d%d%d%d%d%d%s%s%s%d%d"
+#define PATTERN "%c%d%d%d%d%d%d%d%s%s%d%d%d%d%d%d%d%d%s%s%s%d%d"
 
 #define RELATION_OBSERVING_PLAYED    0
 #define RELATION_OBSERVING_STATIC   -2   /* examined, oldmoves, or smoves */
@@ -3131,7 +3167,7 @@ ParseBoard12(string)
     int gamenum, newGame, newMove, relation, basetime, increment, ics_flip = 0;
     int j, k, n, moveNum, white_stren, black_stren, white_time, black_time;
     int double_push, castle_ws, castle_wl, castle_bs, castle_bl, irrev_count;
-    char to_play, board_chars[72];
+    char to_play, board_chars[200];
     char move_str[500], str[500], elapsed_time[500];
     char black[32], white[32];
     Board board;
@@ -3140,6 +3176,8 @@ ParseBoard12(string)
     ChessMove moveType;
     int fromX, fromY, toX, toY;
     char promoChar;
+    int ranks=1, files=0; /* [HGM] ICS80: allow variable board size */
+    char *bookHit = NULL; // [HGM] book
 
     fromX = fromY = toX = toY = -1;
     
@@ -3150,14 +3188,25 @@ ParseBoard12(string)
 
     move_str[0] = NULLCHAR;
     elapsed_time[0] = NULLCHAR;
-    n = sscanf(string, PATTERN, board_chars, &to_play, &double_push,
+    {   /* [HGM] figure out how many ranks and files the board has, for ICS extension used by Capablanca server */
+        int  i = 0, j;
+        while(i < 199 && (string[i] != ' ' || string[i+2] != ' ')) {
+	    if(string[i] == ' ') { ranks++; files = 0; }
+            else files++;
+	    i++;
+	}
+	for(j = 0; j <i; j++) board_chars[j] = string[j];
+        board_chars[i] = '\0';
+	string += i + 1;
+    }
+    n = sscanf(string, PATTERN, &to_play, &double_push,
 	       &castle_ws, &castle_wl, &castle_bs, &castle_bl, &irrev_count,
 	       &gamenum, white, black, &relation, &basetime, &increment,
 	       &white_stren, &black_stren, &white_time, &black_time,
 	       &moveNum, str, elapsed_time, move_str, &ics_flip,
 	       &ticking);
 
-    if (n < 22) {
+    if (n < 21) {
 	sprintf(str, "Failed to parse board string:\n\"%s\"", string);
 	DisplayError(str, 0);
 	return;
@@ -3352,10 +3401,13 @@ ParseBoard12(string)
 	}
     }
     
+  if (appData.debugMode) {
+    fprintf(debugFP, "load %dx%d board\n", files, ranks);
+  }
     /* Parse the board */
-    for (k = 0; k < 8; k++) {
-      for (j = 0; j < 8; j++)
-        board[k][j+gameInfo.holdingsWidth] = CharToPiece(board_chars[(7-k)*9 + j]);
+    for (k = 0; k < ranks; k++) {
+      for (j = 0; j < files; j++)
+        board[k][j+gameInfo.holdingsWidth] = CharToPiece(board_chars[(ranks-1-k)*(files+1) + j]);
       if(gameInfo.holdingsWidth > 1) {
            board[k][0] = board[k][BOARD_WIDTH-1] = EmptySquare;
            board[k][1] = board[k][BOARD_WIDTH-2] = (ChessSquare) 0;;
@@ -3380,7 +3432,7 @@ ParseBoard12(string)
        but in ICS mode that is not its job anyway.
     */
     if(moveNum == 0 || gameInfo.variant != VariantFischeRandom)
-    { int i, j;
+    { int i, j; ChessSquare wKing = WhiteKing, bKing = BlackKing;
 
         for(i=BOARD_LEFT, j= -1; i<BOARD_RGHT; i++)
             if(board[0][i] == WhiteRook) j = i;
@@ -3395,10 +3447,11 @@ ParseBoard12(string)
             if(board[BOARD_HEIGHT-1][i] == BlackRook) j = i;
         initialRights[4] = castlingRights[moveNum][4] = (castle_bl == 0 && gameInfo.variant != VariantFischeRandom ? -1 : j);
 
+	if(gameInfo.variant == VariantKnightmate) { wKing = WhiteUnicorn; bKing = BlackUnicorn; }
         for(k=BOARD_LEFT; k<BOARD_RGHT; k++)
-            if(board[0][k] == WhiteKing) initialRights[2] = castlingRights[moveNum][2] = k;
+            if(board[0][k] == wKing) initialRights[2] = castlingRights[moveNum][2] = k;
         for(k=BOARD_LEFT; k<BOARD_RGHT; k++)
-            if(board[BOARD_HEIGHT-1][k] == BlackKing)
+            if(board[BOARD_HEIGHT-1][k] == bKing)
                 initialRights[5] = castlingRights[moveNum][5] = k;
     } else { int r;
         r = castlingRights[moveNum][0] = initialRights[0];
@@ -3566,8 +3619,8 @@ ParseBoard12(string)
 		    if (first.sendTime) {
 			SendTimeRemaining(&first, gameMode == IcsPlayingWhite);
 		    }
-		    SendMoveToProgram(moveNum - 1, &first);
-		    if (firstMove) {
+		    bookHit = SendMoveToBookUser(moveNum - 1, &first, FALSE); // [HGM] book
+		    if (firstMove && !bookHit) {
 			firstMove = FALSE;
 			if (first.useColors) {
 			  SendToProgram(gameMode == IcsPlayingWhite ?
@@ -3665,6 +3718,19 @@ ParseBoard12(string)
     }
 
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
+#if ZIPPY
+    if(bookHit) { // [HGM] book: simulate book reply
+	static char bookMove[MSG_SIZ]; // a bit generous?
+
+	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.score = programStats.got_only_move = 0;
+	sprintf(programStats.movelist, "%s (xbook)", bookMove);
+
+	strcpy(bookMove, "move ");
+	strcat(bookMove, bookHit);
+	HandleMachineMove(bookMove, &first);
+    }
+#endif
 }
 
 void
@@ -3718,14 +3784,16 @@ SendMoveToProgram(moveNum, cps)
       }
       SendToProgram(buf, cps);
     } else {
+      if(cps->alphaRank) { /* [HGM] shogi: temporarily convert to shogi coordinates before sending */
+	AlphaRank(moveList[moveNum], 4);
+	SendToProgram(moveList[moveNum], cps);
+	AlphaRank(moveList[moveNum], 4); // and back
+      } else
       /* Added by Tord: Send castle moves in "O-O" in FRC games if required by
        * the engine. It would be nice to have a better way to identify castle 
        * moves here. */
       if((gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom)
 									 && cps->useOOCastle) {
-  if (appData.debugMode) {
-    fprintf(debugFP, "Tord's FRC castling code\n");
-  }
         int fromX = moveList[moveNum][0] - AAA; 
         int fromY = moveList[moveNum][1] - ONE;
         int toX = moveList[moveNum][2] - AAA; 
@@ -3850,7 +3918,6 @@ CoordsToComputerAlgebraic(rf, ff, rt, ft, promoChar, move)
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt, promoChar);
 	}
     }
-    AlphaRank(move, 4);
 }
 
 void
@@ -3873,8 +3940,6 @@ AlphaRank(char *move, int n)
 {
     char *p = move, c; int x, y;
 
-    if( !appData.alphaRank ) return;
-
     if (appData.debugMode) {
         fprintf(debugFP, "alphaRank(%s,%d)\n", move, n);
     }
@@ -3882,6 +3947,7 @@ AlphaRank(char *move, int n)
     if(move[1]=='*' && 
        move[2]>='0' && move[2]<='9' &&
        move[3]>='a' && move[3]<='x'    ) {
+        move[1] = '@';
         move[2] = BOARD_RGHT  -1 - (move[2]-'1') + AAA;
         move[3] = BOARD_HEIGHT-1 - (move[3]-'a') + ONE;
     } else
@@ -4126,6 +4192,19 @@ int squaresLeft[4];
 int piecesLeft[(int)BlackPawn];
 long long int seed, nrOfShuffles;
 
+void GetPositionNumber()
+{	// sets global variable seed
+	int i;
+
+	seed = appData.defaultFrcPosition;
+	if(seed < 0) { // randomize based on time for negative FRC position numbers
+		srandom(time(0)); 
+		for(i=0; i<50; i++) seed += random();
+		seed = random() ^ random() >> 8 ^ random() << 8;
+		if(seed<0) seed = -seed;
+	}
+}
+
 int put(Board board, int pieceType, int rank, int n, int shade)
 // put the piece on the (n-1)-th empty squares of the given shade
 {
@@ -4174,12 +4253,7 @@ void SetUpShuffle(Board board, int number)
 {
 	int i, p, first=1;
 
-	seed = number, nrOfShuffles = 1;
-	if(number < 0) { 
-		srand(time(0)); 
-		for(i=0; i<50; i++) seed += rand();
-		seed = rand() ^ rand()<<16; 
-	}
+	GetPositionNumber(); nrOfShuffles = 1;
 
 	squaresLeft[DARK] = (BOARD_RGHT - BOARD_LEFT + 1)/2;
 	squaresLeft[ANY]  = BOARD_RGHT - BOARD_LEFT;
@@ -4265,11 +4339,11 @@ void SetUpShuffle(Board board, int number)
 
 #endif
 
-BOOL SetCharTable( char *table, const char * map )
+int SetCharTable( char *table, const char * map )
 /* [HGM] moved here from winboard.c because of its general usefulness */
 /*       Basically a safe strcpy that uses the last character as King */
 {
-    BOOL result = FALSE; int NrPieces;
+    int result = FALSE; int NrPieces;
 
     if( map != NULL && (NrPieces=strlen(map)) <= (int) EmptySquare 
                     && NrPieces >= 12 && !(NrPieces&1)) {
@@ -4287,6 +4361,42 @@ BOOL SetCharTable( char *table, const char * map )
     }
 
     return result;
+}
+
+void Prelude(Board board)
+{	// [HGM] superchess: random selection of exo-pieces
+	int i, j, k; ChessSquare p; 
+	static ChessSquare exoPieces[4] = { WhiteAngel, WhiteMarshall, WhiteSilver, WhiteLance };
+
+	GetPositionNumber(); // use FRC position number
+
+	if(appData.pieceToCharTable != NULL) { // select pieces to participate from given char table
+	    SetCharTable(pieceToChar, appData.pieceToCharTable);
+	    for(i=(int)WhiteQueen+1, j=0; i<(int)WhiteKing && j<4; i++) 
+		if(PieceToChar((ChessSquare)i) != '.') exoPieces[j++] = (ChessSquare) i;
+	}
+
+	j = seed%4;		    seed /= 4; 
+	p = board[0][BOARD_LEFT+j];   board[0][BOARD_LEFT+j] = EmptySquare; k = PieceToNumber(p);
+	board[k][BOARD_WIDTH-1] = p;  board[k][BOARD_WIDTH-2]++;
+	board[BOARD_HEIGHT-1-k][0] = WHITE_TO_BLACK p;  board[BOARD_HEIGHT-1-k][1]++;
+	j = seed%3 + (seed%3 >= j); seed /= 3; 
+	p = board[0][BOARD_LEFT+j];   board[0][BOARD_LEFT+j] = EmptySquare; k = PieceToNumber(p);
+	board[k][BOARD_WIDTH-1] = p;  board[k][BOARD_WIDTH-2]++;
+	board[BOARD_HEIGHT-1-k][0] = WHITE_TO_BLACK p;  board[BOARD_HEIGHT-1-k][1]++;
+	j = seed%3;		    seed /= 3; 
+	p = board[0][BOARD_LEFT+j+5]; board[0][BOARD_LEFT+j+5] = EmptySquare; k = PieceToNumber(p);
+	board[k][BOARD_WIDTH-1] = p;  board[k][BOARD_WIDTH-2]++;
+	board[BOARD_HEIGHT-1-k][0] = WHITE_TO_BLACK p;  board[BOARD_HEIGHT-1-k][1]++;
+	j = seed%2 + (seed%2 >= j); seed /= 2; 
+	p = board[0][BOARD_LEFT+j+5]; board[0][BOARD_LEFT+j+5] = EmptySquare; k = PieceToNumber(p);
+	board[k][BOARD_WIDTH-1] = p;  board[k][BOARD_WIDTH-2]++;
+	board[BOARD_HEIGHT-1-k][0] = WHITE_TO_BLACK p;  board[BOARD_HEIGHT-1-k][1]++;
+	j = seed%4; seed /= 4; put(board, exoPieces[3],    0, j, ANY);
+	j = seed%3; seed /= 3; put(board, exoPieces[2],   0, j, ANY);
+	j = seed%2; seed /= 2; put(board, exoPieces[1], 0, j, ANY);
+	put(board, exoPieces[0],    0, 0, ANY);
+	for(i=BOARD_LEFT; i<BOARD_RGHT; i++) board[BOARD_HEIGHT-1][i] = WHITE_TO_BLACK board[0][i];
 }
 
 void
@@ -4411,6 +4521,12 @@ InitPosition(redraw)
       pieces = fairyArray;
       SetCharTable(pieceToChar, "PNBRQFEACWMOHIJGDVSLUKpnbrqfeacwmohijgdvsluk"); 
       break;
+    case VariantSuper:
+      pieces = FIDEArray;
+      SetCharTable(pieceToChar, "PNBRQ..SE.......V.AKpnbrq..se.......v.ak");
+      gameInfo.holdingsSize = 8;
+      startedFromSetupPosition = TRUE;
+      break;
     case VariantCrazyhouse:
     case VariantBughouse:
       pieces = FIDEArray;
@@ -4502,6 +4618,7 @@ InitPosition(redraw)
         castlingRights[0][5] = initialRights[5] = BOARD_WIDTH>>1;
      }
 
+     if(gameInfo.variant == VariantSuper) Prelude(initialPosition);
 #if 0
     if(gameInfo.variant == VariantFischeRandom) {
       if( appData.defaultFrcPosition < 0 ) {
@@ -4583,7 +4700,7 @@ SendBoard(cps, moveNum)
                         PieceToChar((ChessSquare)(DEMOTED *bp)),
                         AAA + j, ONE + i);
             }
-            if(appData.alphaRank) {
+            if(cps->alphaRank) { /* [HGM] shogi: translate coords */
                 message[1] = BOARD_RGHT   - 1 - j + '1';
                 message[2] = BOARD_HEIGHT - 1 - i + 'a';
             }
@@ -4605,7 +4722,7 @@ SendBoard(cps, moveNum)
                         PieceToChar((ChessSquare)(DEMOTED *bp)),
                         AAA + j, ONE + i);
             }
-            if(appData.alphaRank) {
+            if(cps->alphaRank) { /* [HGM] shogi: translate coords */
                 message[1] = BOARD_RGHT   - 1 - j + '1';
                 message[2] = BOARD_HEIGHT - 1 - i + 'a';
             }
@@ -4922,11 +5039,11 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
 	   click-click move is possible */
 	if (toX == -2 || toY == -2) {
 	    boards[0][fromY][fromX] = EmptySquare;
-	    DrawPosition(FALSE, boards[currentMove]);
+	    return AmbiguousMove;
 	} else if (toX >= 0 && toY >= 0) {
 	    boards[0][toY][toX] = boards[0][fromY][fromX];
 	    boards[0][fromY][fromX] = EmptySquare;
-	    DrawPosition(FALSE, boards[currentMove]);
+	    return AmbiguousMove;
 	}
         return ImpossibleMove;
     }
@@ -4972,15 +5089,27 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
 }
 
 /* Common tail of UserMoveEvent and DropMenuEvent */
-void
+int
 FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
      ChessMove moveType;
      int fromX, fromY, toX, toY;
      /*char*/int promoChar;
 {
-    /* [HGM] <popupFix> kludge to avoid having know the exact promotion
+    char *bookHit = 0;
+
+    if(gameInfo.variant == VariantSuper && promoChar != NULLCHAR) { 
+	// [HGM] superchess: suppress promotions to non-available piece
+	int k = PieceToNumber(CharToPiece(ToUpper(promoChar)));
+	if(WhiteOnMove(currentMove)) {
+	    if(!boards[currentMove][k][BOARD_WIDTH-2]) return 0;
+	} else {
+	    if(!boards[currentMove][BOARD_HEIGHT-1-k][1]) return 0;
+	}
+    }
+
+    /* [HGM] <popupFix> kludge to avoid having to know the exact promotion
        move type in caller when we know the move is a legal promotion */
-    if(moveType == NormalMove)
+    if(moveType == NormalMove && promoChar)
         moveType = PromoCharToMoveType(WhiteOnMove(currentMove), promoChar);
 
     /* [HGM] convert drag-and-drop piece drops to standard form */
@@ -5026,7 +5155,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
       } else {
 	DisplayError("Incorrect move", 0);
       }
-      return;
+      return 1;
     }
 
   /* Ok, now we know that the move is good, so we can kill
@@ -5046,6 +5175,18 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 
   MakeMove(fromX, fromY, toX, toY, promoChar); /*updates forwardMostMove*/
 
+    if(gameInfo.variant == VariantSuper && promoChar != NULLCHAR && gameInfo.holdingsSize) { 
+	// [HGM] superchess: take promotion piece out of holdings
+	int k = PieceToNumber(CharToPiece(ToUpper(promoChar)));
+	if(WhiteOnMove(forwardMostMove-1)) {
+	    if(!--boards[forwardMostMove][k][BOARD_WIDTH-2])
+		boards[forwardMostMove][k][BOARD_WIDTH-1] = EmptySquare;
+	} else {
+	    if(!--boards[forwardMostMove][BOARD_HEIGHT-1-k][1])
+		boards[forwardMostMove][BOARD_HEIGHT-1-k][0] = EmptySquare;
+	}
+    }
+
   if (gameMode == BeginningOfGame) {
     if (appData.noChessProgram) {
       gameMode = EditGame;
@@ -5053,6 +5194,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
     } else {
       char buf[MSG_SIZ];
       gameMode = MachinePlaysBlack;
+      StartClocks();
       SetGameInfo();
       sprintf(buf, "%s vs. %s", gameInfo.white, gameInfo.black);
       DisplayTitle(buf);
@@ -5078,10 +5220,11 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 			   gameMode == MachinePlaysBlack)) {
       SendTimeRemaining(&first, gameMode != MachinePlaysBlack);
     }
-    SendMoveToProgram(forwardMostMove-1, &first);
     if (gameMode != EditGame && gameMode != PlayFromGameFile) {
-      first.maybeThinking = TRUE;
-    }
+	 // [HGM] book: if program might be playing, let it use book
+	bookHit = SendMoveToBookUser(forwardMostMove-1, &first, FALSE);
+	first.maybeThinking = TRUE;
+    } else SendMoveToProgram(forwardMostMove-1, &first);
     if (currentMove == cmailOldMove + 1) {
       cmailMoveType[lastLoadGameNumber - 1] = CMAIL_MOVE;
     }
@@ -5118,6 +5261,19 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   default:
     break;
   }
+
+  if(bookHit) { // [HGM] book: simulate book reply
+	static char bookMove[MSG_SIZ]; // a bit generous?
+
+	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.score = programStats.got_only_move = 0;
+	sprintf(programStats.movelist, "%s (xbook)", bookMove);
+
+	strcpy(bookMove, "move ");
+	strcat(bookMove, bookHit);
+	HandleMachineMove(bookMove, &first);
+  }
+  return 1;
 }
 
 void
@@ -5164,6 +5320,50 @@ void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cp
     SetProgramStats( &stats );
 }
 
+char *SendMoveToBookUser(int moveNr, ChessProgramState *cps, int initial)
+{   // [HGM] book: this routine intercepts moves to simulate book replies
+    char *bookHit = NULL;
+
+    //first determine if the incoming move brings opponent into his book
+    if(appData.usePolyglotBook && (cps == &first ? !appData.firstHasOwnBookUCI : !appData.secondHasOwnBookUCI))
+	bookHit = ProbeBook(moveNr+1, appData.polyglotBook); // returns move
+    if(appData.debugMode && bookHit) fprintf(debugFP, "book hit = %s\n", bookHit);
+    if(bookHit != NULL && !cps->bookSuspend) {
+	// make sure opponent is not going to reply after receiving move to book position
+	SendToProgram("force\n", cps);
+	cps->bookSuspend = TRUE; // flag indicating it has to be restarted
+    }
+    if(!initial) SendMoveToProgram(moveNr, cps); // with hit on initial position there is no move
+    // now arrange restart after book miss
+    if(bookHit) {
+	// after a book hit we never send 'go', and the code after the call to this routine
+	// has '&& !bookHit' added to suppress potential sending there (based on 'firstMove').
+	char buf[MSG_SIZ];
+	if (cps->useUsermove) sprintf(buf, "usermove "); // sorry, no SAN yet :(
+	sprintf(buf, "%s\n", bookHit); // force book move into program supposed to play it
+	SendToProgram(buf, cps);
+	if(!initial) firstMove = FALSE; // normally we would clear the firstMove condition after return & sending 'go'
+    } else if(initial) { // 'go' was needed irrespective of firstMove, and it has to be done in this routine
+	SendToProgram("go\n", cps);
+	cps->bookSuspend = FALSE; // after a 'go' we are never suspended
+    } else { // 'go' might be sent based on 'firstMove' after this routine returns
+	if(cps->bookSuspend && !firstMove) // 'go' needed, and it will not be done after we return
+	    SendToProgram("go\n", cps); 
+	cps->bookSuspend = FALSE; // anyhow, we will not be suspended after a miss
+    }
+    return bookHit; // notify caller of hit, so it can take action to send move to opponent
+}
+
+char *savedMessage;
+ChessProgramState *savedState;
+void DeferredBookMove(void)
+{
+	if(savedState->lastPing != savedState->lastPong)
+		    ScheduleDelayedEvent(DeferredBookMove, 10);
+	else
+	HandleMachineMove(savedMessage, savedState);
+}
+
 void
 HandleMachineMove(message, cps)
      char *message;
@@ -5176,7 +5376,9 @@ HandleMachineMove(message, cps)
     char promoChar;
     char *p;
     int machineWhite;
+    char *bookHit;
 
+FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book hit
     /*
      * Kludge to ignore BEL characters
      */
@@ -5283,7 +5485,7 @@ HandleMachineMove(message, cps)
         fprintf(debugFP, "machine move %d, castling = %d %d %d %d %d %d\n", f,
                 castlingRights[f][0],castlingRights[f][1],castlingRights[f][2],castlingRights[f][3],castlingRights[f][4],castlingRights[f][5]);
     }
-        AlphaRank(machineMove, 4);
+        if(cps->alphaRank) AlphaRank(machineMove, 4);
         if (!ParseOneMove(machineMove, forwardMostMove, &moveType,
                               &fromX, &fromY, &toX, &toY, &promoChar)) {
 	    /* Machine move could not be parsed; ignore it. */
@@ -5409,12 +5611,12 @@ HandleMachineMove(message, cps)
             }
         }
 
-#ifdef ADJUDICATE // [HGM] some adjudications useful with buggy engines
+	if( gameMode == TwoMachinesPlay ) {
+	  // [HGM] some adjudications useful with buggy engines
+            int k, count = 0, epFile = epStatus[forwardMostMove]; static int bare = 1;
+	  if(gameInfo.holdingsSize == 0 || gameInfo.variant == VariantSuper) {
 
-        if( gameMode == TwoMachinesPlay && gameInfo.holdingsSize == 0) {
-            int count = 0, epFile = epStatus[forwardMostMove];
-
-            if(appData.testLegality && appData.checkMates) 
+            if(appData.testLegality)
             // don't wait for engine to announce game end if we can judge ourselves
             switch (MateTest(boards[forwardMostMove],
                                  PosFlags(forwardMostMove), epFile,
@@ -5424,32 +5626,38 @@ HandleMachineMove(message, cps)
 	      default:
 		break;
 	      case MT_STALEMATE:
-                ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                GameEnds( GameIsDrawn, "Xboard adjudication: Stalemate",
-                    GE_XBOARD );
+		epStatus[forwardMostMove] = EP_STALEMATE;
+                if(appData.checkMates) {
+		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+		    GameEnds( GameIsDrawn, "Xboard adjudication: Stalemate",
+                	GE_XBOARD );
+		}
 		break;
 	      case MT_CHECKMATE:
-                ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                GameEnds( WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins, 
-                    "Xboard adjudication: Checkmate", 
-                    GE_XBOARD );
+		epStatus[forwardMostMove] = EP_CHECKMATE;
+                if(appData.checkMates) {
+		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+		    GameEnds( WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins, 
+		    "Xboard adjudication: Checkmate", 
+		    GE_XBOARD );
+		}
 		break;
 	    }
 
-            if( appData.testLegality )
-            {   /* [HGM] Some more adjudications for obstinate engines */
-                int NrWN=0, NrBN=0, NrWB=0, NrBB=0, NrWR=0, NrBR=0,
-                    NrWQ=0, NrBQ=0, bishopsColor = 0,
+	    if( appData.testLegality )
+	    {   /* [HGM] Some more adjudications for obstinate engines */
+		int NrWN=0, NrBN=0, NrWB=0, NrBB=0, NrWR=0, NrBR=0,
+                    NrWQ=0, NrBQ=0, NrW=0, bishopsColor = 0,
                     NrPieces=0, NrPawns=0, PawnAdvance=0, i, j, k;
-                static int moveCount;
+		static int moveCount = 6;
 
                 /* First absolutely insufficient mating material. Count what is on board. */
-                for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
-                {   ChessSquare p = boards[forwardMostMove][i][j];
-                    int m=i;
+		for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
+		{   ChessSquare p = boards[forwardMostMove][i][j];
+		    int m=i;
 
-                    switch((int) p)
-                    {   /* count B,N,R and other of each side */
+		    switch((int) p)
+		    {   /* count B,N,R and other of each side */
                         case WhiteKnight:
                              NrWN++; break;
                         case WhiteBishop:
@@ -5476,10 +5684,11 @@ HandleMachineMove(message, cps)
                              PawnAdvance += m; NrPawns++;
                     }
                     NrPieces += (p != EmptySquare);
+                    NrW += ((int)p < (int)BlackPawn);
                 }
 
                 if( NrPieces == 3 && NrWN+NrBN+NrWB+NrBB == 1 || NrPieces == 2
-                 || NrPieces == 4 && NrBB+NrWB==2 && bishopsColor != 3)
+                 || NrPieces == 4 && NrBB+NrWB == NrPieces-2 && bishopsColor != 3)
                 {    /* KBK, KNK, KK of KBKB with like Bishops */
 
                      /* always flag draws, for judging claims */
@@ -5500,7 +5709,7 @@ HandleMachineMove(message, cps)
                      if(--bare < 0 && appData.checkMates) {
                          /* but only adjudicate them if adjudication enabled */
                          ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                         GameEnds( NrW > 1 ? WhiteWins : NrPiece - NrW > 1 ? BlackWins : GameIsDrawn, 
+                         GameEnds( NrW > 1 ? WhiteWins : NrPieces - NrW > 1 ? BlackWins : GameIsDrawn, 
 							"Xboard adjudication: Bare king", GE_XBOARD );
                          return;
                      }
@@ -5520,7 +5729,9 @@ HandleMachineMove(message, cps)
                           return;
                      }
                 } else moveCount = 6;
-#if 0
+	    }
+	  }
+#if 1
     if (appData.debugMode) { int i;
       fprintf(debugFP, "repeat test fmm=%d bmm=%d ep=%d, reps=%d\n",
               forwardMostMove, backwardMostMove, epStatus[backwardMostMove],
@@ -5626,11 +5837,9 @@ HandleMachineMove(message, cps)
                          }
                 }
 
-            }
-
 
         }
-#endif
+
         if( appData.adjudicateDrawMoves > 0 && forwardMostMove > (2*appData.adjudicateDrawMoves) ) {
 	    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
 
@@ -5639,6 +5848,7 @@ HandleMachineMove(message, cps)
             return;
         }
 
+	bookHit = NULL;
 	if (gameMode == TwoMachinesPlay) {
             /* [HGM] relaying draw offers moved to after reception of move */
             /* and interpreting offer as claim if it brings draw condition */
@@ -5649,8 +5859,8 @@ HandleMachineMove(message, cps)
 		SendTimeRemaining(cps->other,
 				  cps->other->twoMachinesColor[0] == 'w');
 	    }
-	    SendMoveToProgram(forwardMostMove-1, cps->other);
-	    if (firstMove) {
+	    bookHit = SendMoveToBookUser(forwardMostMove-1, cps->other, FALSE);
+	    if (firstMove && !bookHit) {
 		firstMove = FALSE;
 		if (cps->other->useColors) {
 		  SendToProgram(cps->other->twoMachinesColor, cps->other);
@@ -5672,6 +5882,29 @@ HandleMachineMove(message, cps)
 	 */
 	if (gameMode != TwoMachinesPlay)
 	    SetUserThinkingEnables();
+
+	// [HGM] book: after book hit opponent has received move and is now in force mode
+	// force the book reply into it, and then fake that it outputted this move by jumping
+	// back to the beginning of HandleMachineMove, with cps toggled and message set to this move
+	if(bookHit) {
+		static char bookMove[MSG_SIZ]; // a bit generous?
+
+		strcpy(bookMove, "move ");
+		strcat(bookMove, bookHit);
+		message = bookMove;
+		cps = cps->other;
+		programStats.depth = programStats.nodes = programStats.time = 
+		programStats.score = programStats.got_only_move = 0;
+		sprintf(programStats.movelist, "%s (xbook)", bookMove);
+
+		if(cps->lastPing != cps->lastPong) {
+		    savedMessage = message; // args for deferred call
+		    savedState = cps;
+		    ScheduleDelayedEvent(DeferredBookMove, 10);
+		    return;
+		}
+		goto FakeBookMove;
+	}
 
 	return;
     }
@@ -6132,7 +6365,9 @@ HandleMachineMove(message, cps)
     /*
      * Look for thinking output
      */
-    if ( appData.showThinking) {
+    if ( appData.showThinking // [HGM] thinking: test all options that cause this output
+	  || !appData.hideThinkingFromHuman || appData.adjudicateLossThreshold != 0 || EngineOutputIsUp()
+				) {
 	int plylev, mvleft, mvtot, curscore, time;
 	char mvname[MOVE_LEN];
 	unsigned long nodes;
@@ -6815,7 +7050,11 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
       }
       if (captured != EmptySquare && gameInfo.holdingsSize > 0
           && gameInfo.variant != VariantBughouse        ) {
-        /* Add to holdings, if holdings exist */
+        /* [HGM] holdings: Add to holdings, if holdings exist */
+	if(gameInfo.variant == VariantSuper) { 
+		// [HGM] superchess: suppress flipping color of captured pieces by reverse pre-flip
+		captured = (int) captured >= (int) BlackPawn ? BLACK_TO_WHITE captured : WHITE_TO_BLACK captured;
+	}
         p = (int) captured;
         if (p >= (int) BlackPawn) {
           p -= (int)BlackPawn;
@@ -6827,8 +7066,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
           p = PieceToNumber((ChessSquare)p);
           if(p >= gameInfo.holdingsSize) { p = 0; captured = BlackPawn; }
           board[p][BOARD_WIDTH-2]++;
-          board[p][BOARD_WIDTH-1] =
-                                   BLACK_TO_WHITE captured;
+          board[p][BOARD_WIDTH-1] = BLACK_TO_WHITE captured;
 	} else {
           p -= (int)WhitePawn;
           if(gameInfo.variant == VariantShogi && DEMOTED p >= 0) {
@@ -6838,8 +7076,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
           p = PieceToNumber((ChessSquare)p);
           if(p >= gameInfo.holdingsSize) { p = 0; captured = WhitePawn; }
           board[BOARD_HEIGHT-1-p][1]++;
-          board[BOARD_HEIGHT-1-p][0] =
-                                  WHITE_TO_BLACK captured;
+          board[BOARD_HEIGHT-1-p][0] = WHITE_TO_BLACK captured;
 	}
       }
 
@@ -6987,6 +7224,38 @@ ShowMove(fromX, fromY, toX, toY)
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
 }
 
+void SendEgtPath(ChessProgramState *cps)
+{       /* [HGM] EGT: match formats given in feature with those given by user, and send info for each match */
+	char buf[MSG_SIZ], name[MSG_SIZ], *p;
+
+	if((p = cps->egtFormats) == NULL || appData.egtFormats == NULL) return;
+
+	while(*p) {
+	    char c, *q = name+1, *r, *s;
+
+	    name[0] = ','; // extract next format name from feature and copy with prefixed ','
+	    while(*p && *p != ',') *q++ = *p++;
+	    *q++ = ':'; *q = 0;
+	    if( appData.defaultPathEGTB && appData.defaultPathEGTB[0] && 
+		strcmp(name, ",nalimov:") == 0 ) {
+		// take nalimov path from the menu-changeable option first, if it is defined
+		sprintf(buf, "egtpath nalimov %s\n", appData.defaultPathEGTB);
+		SendToProgram(buf,cps);     // send egtbpath command for nalimov
+	    } else
+	    if( (s = StrStr(appData.egtFormats, name+1)) == appData.egtFormats ||
+		(s = StrStr(appData.egtFormats, name)) != NULL) {
+		// format name occurs amongst user-supplied formats, at beginning or immediately after comma
+		s = r = StrStr(s, ":") + 1; // beginning of path info
+		while(*r && *r != ',') r++; // path info is everything upto next ';' or end of string
+		c = *r; *r = 0;             // temporarily null-terminate path info
+		    *--q = 0;               // strip of trailig ':' from name
+		    sprintf(buf, "egtbpath %s %s\n", name+1, s);
+		*r = c;
+		SendToProgram(buf,cps);     // send egtbpath command for this format
+	    }
+	    if(*p == ',') p++; // read away comma to position for next format name
+	}
+}
 
 void
 InitChessProgram(cps, setup)
@@ -6997,6 +7266,19 @@ InitChessProgram(cps, setup)
     if (appData.noChessProgram) return;
     hintRequested = FALSE;
     bookRequested = FALSE;
+
+    /* [HGM] some new WB protocol commands to configure engine are sent now, if engine supports them */
+    /*       moved to before sending initstring in 4.3.15, so Polyglot can delay UCI 'isready' to recepton of 'new' */
+    if(cps->memSize) { /* [HGM] memory */
+	sprintf(buf, "memory %d\n", appData.defaultHashSize + appData.defaultCacheSizeEGTB);
+	SendToProgram(buf, cps);
+    }
+    SendEgtPath(cps); /* [HGM] EGT */
+    if(cps->maxCores) { /* [HGM] SMP: (protocol specified must be last settings command before new!) */
+	sprintf(buf, "cores %d\n", appData.smpCores);
+	SendToProgram(buf, cps);
+    }
+
     SendToProgram(cps->initString, cps);
     if (gameInfo.variant != VariantNormal &&
 	gameInfo.variant != VariantLoadable
@@ -7024,6 +7306,8 @@ InitChessProgram(cps, setup)
            overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
       if( gameInfo.variant == VariantCourier )
            overruled = gameInfo.boardWidth != 12 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
+      if( gameInfo.variant == VariantSuper )
+           overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 8;
 
       if(overruled) {
            sprintf(b, "%dx%d+%d_%s", gameInfo.boardWidth, gameInfo.boardHeight, 
@@ -7066,7 +7350,10 @@ InitChessProgram(cps, setup)
 			timeIncrement, appData.searchDepth,
 			searchTime);
     }
-    if (appData.showThinking) {
+    if (appData.showThinking 
+	// [HGM] thinking: four options require thinking output to be sent
+	|| !appData.hideThinkingFromHuman || appData.adjudicateLossThreshold != 0 || EngineOutputIsUp()
+				) {
 	SendToProgram("post\n", cps);
     }
     SendToProgram("hard\n", cps);
@@ -7148,14 +7435,25 @@ TwoMachinesEventIfReady P((void))
 void
 NextMatchGame P((void))
 {
+    int index; /* [HGM] autoinc: step lod index during match */
     Reset(FALSE, TRUE);
     if (*appData.loadGameFile != NULLCHAR) {
+	index = appData.loadGameIndex;
+	if(index < 0) { // [HGM] autoinc
+	    lastIndex = index = (index == -2 && first.twoMachinesColor[0] == 'b') ? lastIndex : lastIndex+1;
+	    if(appData.rewindIndex > 0 && index > appData.rewindIndex) lastIndex = index = 1;
+	} 
 	LoadGameFromFile(appData.loadGameFile,
-			 appData.loadGameIndex,
+			 index,
 			 appData.loadGameFile, FALSE);
     } else if (*appData.loadPositionFile != NULLCHAR) {
+	index = appData.loadPositionIndex;
+	if(index < 0) { // [HGM] autoinc
+	    lastIndex = index = (index == -2 && first.twoMachinesColor[0] == 'b') ? lastIndex : lastIndex+1;
+	    if(appData.rewindIndex > 0 && index > appData.rewindIndex) lastIndex = index = 1;
+	} 
 	LoadPositionFromFile(appData.loadPositionFile,
-			     appData.loadPositionIndex,
+			     index,
 			     appData.loadPositionFile);
     }
     TwoMachinesEventIfReady();
@@ -7236,45 +7534,63 @@ GameEnds(result, resultDetails, whosays)
     if (!isIcsGame || whosays == GE_ICS) {
 	/* OK -- not an ICS game, or ICS said it was done */
 	StopClocks();
-    if (appData.debugMode) {
-      fprintf(debugFP, "GameEnds(%d, %s, %d) clock stopped\n",
-	      result, resultDetails ? resultDetails : "(null)", whosays);
-    }
 	if (!isIcsGame && !appData.noChessProgram) 
 	  SetUserThinkingEnables();
     
         /* [HGM] if a machine claims the game end we verify this claim */
-        if( appData.testLegality && gameMode == TwoMachinesPlay &&
-            appData.testClaims && whosays >= GE_ENGINE1 ) {
+        if(gameMode == TwoMachinesPlay && appData.testClaims) {
+	    if(appData.testLegality && whosays >= GE_ENGINE1 ) {
                 char claimer;
 
-    if (appData.debugMode) {
-      fprintf(debugFP, "GameEnds(%d, %s, %d) test claims\n",
-	      result, resultDetails ? resultDetails : "(null)", whosays);
-    }
                 claimer = whosays == GE_ENGINE1 ?      /* color of claimer */
                                             first.twoMachinesColor[0] :
                                             second.twoMachinesColor[0] ;
-                if( gameInfo.holdingsWidth == 0 &&
+                if( (gameInfo.holdingsWidth == 0 || gameInfo.variant == VariantSuper) &&
                     (result == WhiteWins && claimer == 'w' ||
                      result == BlackWins && claimer == 'b'   ) ) {
-                      /* Xboard immediately adjudicates all mates, so win claims must be false */
-                      sprintf(buf, "False win claim: '%s'", resultDetails);
-                      result = claimer == 'w' ? BlackWins : WhiteWins;
-                      resultDetails = buf;
+		if (appData.debugMode) {
+	 	     fprintf(debugFP, "result=%d sp=%d move=%d\n",
+		 	result, epStatus[forwardMostMove], forwardMostMove);
+		}
+                      /* [HGM] verify: engine mate claims accepted if they were flagged */
+		      if(epStatus[forwardMostMove] != EP_CHECKMATE &&
+			 result != (WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins)) {
+	                      sprintf(buf, "False win claim: '%s'", resultDetails);
+	                      result = claimer == 'w' ? BlackWins : WhiteWins;
+	                      resultDetails = buf;
+		      }
                 } else
                 if( result == GameIsDrawn && epStatus[forwardMostMove] > EP_DRAWS
                     && (forwardMostMove <= backwardMostMove ||
                         epStatus[forwardMostMove-1] > EP_DRAWS ||
                         (claimer=='b')==(forwardMostMove&1))
                                                                                   ) {
-                      /* Draw that was not flagged by Xboard is false */
+                      /* [HGM] verify: draws that were not flagged are false claims */
                       sprintf(buf, "False draw claim: '%s'", resultDetails);
                       result = claimer == 'w' ? BlackWins : WhiteWins;
                       resultDetails = buf;
                 }
                 /* (Claiming a loss is accepted no questions asked!) */
+	    }
+	    /* [HGM] bare: don't allow bare King to win */
+	    if((gameInfo.holdingsWidth == 0 || gameInfo.variant == VariantSuper) && result != GameIsDrawn)
+	    {   int i, j, k=0, color = (result==WhiteWins ? (int)WhitePawn : (int)BlackPawn);
+		for(j=BOARD_LEFT; j<BOARD_RGHT; j++) for(i=0; i<BOARD_HEIGHT; i++) {
+			int p = (int)boards[forwardMostMove][i][j] - color;
+			if(p >= 0 && p <= (int)WhiteKing) k++;
+		}
+		if (appData.debugMode) {
+	 	     fprintf(debugFP, "GE(%d, %s, %d) bare king k=%d color=%d\n",
+		 	result, resultDetails ? resultDetails : "(null)", whosays, k, color);
+		}
+		if(k <= 1) {
+			result = GameIsDrawn;
+			sprintf(buf, "%s but bare king", resultDetails);
+			resultDetails = buf;
+		}
+	    }
         }
+
 
         if(serverMoves != NULL && !loadFlag) { char c = '=';
             if(result==WhiteWins) c = '+';
@@ -7282,11 +7598,7 @@ GameEnds(result, resultDetails, whosays)
             if(resultDetails != NULL)
                 fprintf(serverMoves, ";%c;%s\n", c, resultDetails);
         }
-    if (appData.debugMode) {
-      fprintf(debugFP, "GameEnds(%d, %s, %d) after test\n",
-	      result, resultDetails ? resultDetails : "(null)", whosays);
-    }
-	if (resultDetails != NULL) {
+ 	if (resultDetails != NULL) {
 	    gameInfo.result = result;
 	    gameInfo.resultDetails = StrSave(resultDetails);
 
@@ -7470,9 +7782,11 @@ GameEnds(result, resultDetails, whosays)
 	}
 	if (matchGame < appData.matchGames) {
 	    char *tmp;
-	    tmp = first.twoMachinesColor;
-	    first.twoMachinesColor = second.twoMachinesColor;
-	    second.twoMachinesColor = tmp;
+	    if(appData.sameColorGames <= 1) { /* [HGM] alternate: suppress color swap */
+		tmp = first.twoMachinesColor;
+		first.twoMachinesColor = second.twoMachinesColor;
+		second.twoMachinesColor = tmp;
+	    }
 	    gameMode = nextGameMode;
 	    matchGame++;
             if(appData.matchPause>10000 || appData.matchPause<10)
@@ -7580,6 +7894,8 @@ Reset(redraw, init)
     hintRequested = bookRequested = FALSE;
     first.maybeThinking = FALSE;
     second.maybeThinking = FALSE;
+    first.bookSuspend = FALSE; // [HGM] book
+    second.bookSuspend = FALSE;
     thinkOutput[0] = NULLCHAR;
     lastHint[0] = NULLCHAR;
     ClearGameInfo(&gameInfo);
@@ -7750,6 +8066,8 @@ LoadGameOneMove(readAhead)
       case BlackPromotionChancellor:
       case WhitePromotionArchbishop:
       case BlackPromotionArchbishop:
+      case WhitePromotionCentaur:
+      case BlackPromotionCentaur:
       case WhitePromotionQueen:
       case BlackPromotionQueen:
       case WhitePromotionRook:
@@ -7922,7 +8240,7 @@ LoadGameOneMove(readAhead)
       default:
       case ImpossibleMove:
 	if (appData.debugMode)
-	  fprintf(debugFP, "Parsed ImpossibleMove: %s\n", yy_text);
+	  fprintf(debugFP, "Parsed ImpossibleMove (type = %d): %s\n", moveType, yy_text);
 	sprintf(move, "Illegal move: %d.%s%s",
 		(forwardMostMove / 2) + 1,
 		WhiteOnMove(forwardMostMove) ? " " : ".. ", yy_text);
@@ -8373,13 +8691,6 @@ LoadGame(f, gameNumber, title, useList)
 	    return FALSE;
 	  }
 	  CopyBoard(boards[0], initial_position);
-          /* [HGM] copy FEN attributes as well */
-          {   int i;
-              initialRulePlies = FENrulePlies;
-              epStatus[0] = FENepStatus;
-              for( i=0; i< nrCastlingRights; i++ )
-                  initialRights[i] = castlingRights[0][i] = FENcastlingRights[i];
-          }
 	  if (blackPlaysFirst) {
 	    currentMove = forwardMostMove = backwardMostMove = 1;
 	    CopyBoard(boards[1], initial_position);
@@ -8394,6 +8705,13 @@ LoadGame(f, gameNumber, title, useList)
 	  } else {
 	    currentMove = forwardMostMove = backwardMostMove = 0;
 	  }
+          /* [HGM] copy FEN attributes as well. Bugfix 4.3.14m and 4.3.15e: moved to after 'blackPlaysFirst' */
+          {   int i;
+              initialRulePlies = FENrulePlies;
+              epStatus[forwardMostMove] = FENepStatus;
+              for( i=0; i< nrCastlingRights; i++ )
+                  initialRights[i] = castlingRights[forwardMostMove][i] = FENcastlingRights[i];
+          }
 	  yyboardindex = forwardMostMove;
 	  free(gameInfo.fen);
 	  gameInfo.fen = NULL;
@@ -8710,7 +9028,7 @@ LoadPosition(f, positionNumber, title)
     if (pn >= 2) {
 	if (fenMode || line[0] == '#') pn--;
 	while (pn > 0) {
-	    /* skip postions before number pn */
+	    /* skip positions before number pn */
 	    if (fgets(line, MSG_SIZ, f) == NULL) {
 	        Reset(TRUE, TRUE);
 		DisplayError("Position not found in file", 0);
@@ -8749,13 +9067,6 @@ LoadPosition(f, positionNumber, title)
     
     SendToProgram("force\n", &first);
     CopyBoard(boards[0], initial_position);
-          /* [HGM] copy FEN attributes as well */
-          {   int i;
-              initialRulePlies = FENrulePlies;
-              epStatus[0] = FENepStatus;
-              for( i=0; i< nrCastlingRights; i++ )
-                  castlingRights[0][i] = FENcastlingRights[i];
-          }
     if (blackPlaysFirst) {
 	currentMove = forwardMostMove = backwardMostMove = 1;
 	strcpy(moveList[0], "");
@@ -8766,8 +9077,18 @@ LoadPosition(f, positionNumber, title)
 	currentMove = forwardMostMove = backwardMostMove = 0;
 	DisplayMessage("", "White to play");
     }
+          /* [HGM] copy FEN attributes as well */
+          {   int i;
+              initialRulePlies = FENrulePlies;
+              epStatus[forwardMostMove] = FENepStatus;
+              for( i=0; i< nrCastlingRights; i++ )
+                  castlingRights[forwardMostMove][i] = FENcastlingRights[i];
+          }
     SendBoard(&first, forwardMostMove);
     if (appData.debugMode) {
+int i, j;
+  for(i=0;i<2;i++){for(j=0;j<6;j++)fprintf(debugFP, " %d", castlingRights[i][j]);fprintf(debugFP,"\n");}
+  for(j=0;j<6;j++)fprintf(debugFP, " %d", initialRights[j]);fprintf(debugFP,"\n");
         fprintf(debugFP, "Load Position\n");
     }
 
@@ -9019,44 +9340,7 @@ SaveGamePGN(f)
 	linelen += numlen;
 
 	/* Get move */
-	movetext = SavePart(parseList[i]);
-
-        /* [AS] Add PV info if present */
-        if( i >= 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
-            /* [HGM] add time */
-            char buf[MSG_SIZ]; int seconds = 0;
-
-#if 0
-            if(i >= backwardMostMove) {
-                /* take the time that changed */
-                seconds = timeRemaining[0][i] - timeRemaining[0][i+1];
-              if(seconds <= 0)
-                    seconds = timeRemaining[1][i] - timeRemaining[1][i+1];
-            }
-            seconds /= 1000;
-#endif
-            seconds = pvInfoList[i].time/100; // [HGM] PVtime: use engine time
-    if (appData.debugMode) {
-        fprintf(debugFP, "times = %d %d %d %d, seconds=%d\n",
-                timeRemaining[0][i+1], timeRemaining[0][i],
-                     timeRemaining[1][i+1], timeRemaining[1][i], seconds
-        );
-    }
-
-            if( seconds < 0 ) buf[0] = 0; else
-            if( seconds < 60 ) sprintf(buf, " %d%c", seconds, 0);
-            else    sprintf(buf, " %d:%02d%c", seconds/60, seconds%60, 0);
-
-            sprintf( move_buffer, "%s {%s%.2f/%d%s}", 
-                movetext, 
-                pvInfoList[i].score >= 0 ? "+" : "",
-                pvInfoList[i].score / 100.0,
-                pvInfoList[i].depth,
-                buf );
-            movetext = move_buffer;
-        }
-
-	movelen = strlen(movetext);
+	movelen = strlen(parseList[i]); /* [HGM] pgn: line-break point before move */
 
 	/* Print move */
 	blank = linelen > 0 && movelen > 0;
@@ -9069,8 +9353,63 @@ SaveGamePGN(f)
 	    fprintf(f, " ");
 	    linelen++;
 	}
-	fprintf(f, movetext);
+	fprintf(f, parseList[i]);
 	linelen += movelen;
+
+        /* [AS] Add PV info if present */
+        if( i >= 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
+            /* [HGM] add time */
+            char buf[MSG_SIZ]; int seconds = 0;
+
+#if 0
+            if(i >= backwardMostMove) {
+		if(WhiteOnMove(i))
+			seconds = timeRemaining[0][i] - timeRemaining[0][i+1]
+				  + GetTimeQuota(i/2) / WhitePlayer()->timeOdds;
+		else
+			seconds = timeRemaining[1][i] - timeRemaining[1][i+1]
+                                  + GetTimeQuota(i/2) / WhitePlayer()->other->timeOdds;
+            }
+            seconds = (seconds+50)/100; // deci-seconds, rounded to nearest
+#else
+            seconds = (pvInfoList[i].time + 5)/10; // [HGM] PVtime: use engine time
+#endif
+    if (appData.debugMode,0) {
+        fprintf(debugFP, "times = %d %d %d %d, seconds=%d\n",
+                timeRemaining[0][i+1], timeRemaining[0][i],
+                     timeRemaining[1][i+1], timeRemaining[1][i], seconds
+        );
+    }
+
+            if( seconds <= 0) buf[0] = 0; else
+            if( seconds < 30 ) sprintf(buf, " %3.1f%c", seconds/10., 0); else {
+		seconds = (seconds + 4)/10; // round to full seconds
+	        if( seconds < 60 ) sprintf(buf, " %d%c", seconds, 0); else
+				   sprintf(buf, " %d:%02d%c", seconds/60, seconds%60, 0);
+	    }
+
+            sprintf( move_buffer, "{%s%.2f/%d%s}", 
+                pvInfoList[i].score >= 0 ? "+" : "",
+                pvInfoList[i].score / 100.0,
+                pvInfoList[i].depth,
+		buf );
+
+	    movelen = strlen(move_buffer); /* [HGM] pgn: line-break point after move */
+
+	    /* Print score/depth */
+	    blank = linelen > 0 && movelen > 0;
+	    if (linelen + (blank ? 1 : 0) + movelen > PGN_MAX_LINE) {
+		fprintf(f, "\n");
+		linelen = 0;
+		blank = 0;
+	    }
+	    if (blank) {
+		fprintf(f, " ");
+		linelen++;
+	    }
+	    fprintf(f, move_buffer);
+	    linelen += movelen;
+        }
 
 	i++;
     }
@@ -9601,7 +9940,7 @@ ExitEvent(status)
     GameEnds((ChessMove) 0, NULL, GE_PLAYER);
 #else
     /* [HGM] crash: leave writing PGN and position entirely to GameEnds() */
-    GameEnds(gameInfo.result, gameInfo.resultDetails==NULL ? "aborted" : gameInfo.resultDetails, GE_PLAYER);
+    GameEnds(gameInfo.result, gameInfo.resultDetails==NULL ? "xboard exit" : gameInfo.resultDetails, GE_PLAYER);
 #endif
     /* [HGM] crash: the above GameEnds() is a dud if another one was running */
     /* make sure this other one finishes before killing it!                  */
@@ -9785,6 +10124,7 @@ void
 MachineWhiteEvent()
 {
     char buf[MSG_SIZ];
+    char *bookHit = NULL;
 
     if (appData.noChessProgram || (gameMode == MachinePlaysWhite))
       return;
@@ -9813,6 +10153,10 @@ MachineWhiteEvent()
 	TruncateGame();
 
     ResurrectChessProgram();	/* in case it isn't running */
+    if(gameMode == BeginningOfGame) { /* [HGM] time odds: to get right odds in human mode */
+	gameMode = MachinePlaysWhite;
+	ResetClocks();
+    } else
     gameMode = MachinePlaysWhite;
     pausing = FALSE;
     ModeHighlight();
@@ -9830,10 +10174,9 @@ MachineWhiteEvent()
       SendTimeRemaining(&first, TRUE);
     }
     if (first.useColors) {
-      SendToProgram("white\ngo\n", &first);
-    } else {
-      SendToProgram("go\n", &first);
+      SendToProgram("white\n", &first); // [HGM] book: send 'go' separately
     }
+    bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
     SetMachineThinkingEnables();
     first.maybeThinking = TRUE;
     StartClocks();
@@ -9842,12 +10185,25 @@ MachineWhiteEvent()
       flipView = !flipView;
       DrawPosition(FALSE, NULL);
     }
+
+    if(bookHit) { // [HGM] book: simulate book reply
+	static char bookMove[MSG_SIZ]; // a bit generous?
+
+	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.score = programStats.got_only_move = 0;
+	sprintf(programStats.movelist, "%s (xbook)", bookMove);
+
+	strcpy(bookMove, "move ");
+	strcat(bookMove, bookHit);
+	HandleMachineMove(bookMove, &first);
+    }
 }
 
 void
 MachineBlackEvent()
 {
     char buf[MSG_SIZ];
+   char *bookHit = NULL;
 
     if (appData.noChessProgram || (gameMode == MachinePlaysBlack))
 	return;
@@ -9893,10 +10249,9 @@ MachineBlackEvent()
       SendTimeRemaining(&first, FALSE);
     }
     if (first.useColors) {
-      SendToProgram("black\ngo\n", &first);
-    } else {
-      SendToProgram("go\n", &first);
+      SendToProgram("black\n", &first); // [HGM] book: 'go' sent separately
     }
+    bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
     SetMachineThinkingEnables();
     first.maybeThinking = TRUE;
     StartClocks();
@@ -9904,6 +10259,17 @@ MachineBlackEvent()
     if (appData.autoFlipView && flipView) {
       flipView = !flipView;
       DrawPosition(FALSE, NULL);
+    }
+    if(bookHit) { // [HGM] book: simulate book reply
+	static char bookMove[MSG_SIZ]; // a bit generous?
+
+	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.score = programStats.got_only_move = 0;
+	sprintf(programStats.movelist, "%s (xbook)", bookMove);
+
+	strcpy(bookMove, "move ");
+	strcat(bookMove, bookHit);
+	HandleMachineMove(bookMove, &first);
     }
 }
 
@@ -9936,6 +10302,7 @@ TwoMachinesEvent P((void))
     int i;
     char buf[MSG_SIZ];
     ChessProgramState *onmove;
+    char *bookHit = NULL;
     
     if (appData.noChessProgram) return;
 
@@ -10018,8 +10385,8 @@ TwoMachinesEvent P((void))
       SendToProgram(buf, &second);
     }
 
+    ResetClocks();
     if (!first.sendTime || !second.sendTime) {
-	ResetClocks();
 	timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
 	timeRemaining[1][forwardMostMove] = blackTimeRemaining;
     }
@@ -10032,11 +10399,24 @@ TwoMachinesEvent P((void))
     if (onmove->useColors) {
       SendToProgram(onmove->twoMachinesColor, onmove);
     }
-    SendToProgram("go\n", onmove);
+    bookHit = SendMoveToBookUser(forwardMostMove-1, onmove, TRUE); // [HGM] book: send go or retrieve book move
+//    SendToProgram("go\n", onmove);
     onmove->maybeThinking = TRUE;
     SetMachineThinkingEnables();
 
     StartClocks();
+
+    if(bookHit) { // [HGM] book: simulate book reply
+	static char bookMove[MSG_SIZ]; // a bit generous?
+
+	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.score = programStats.got_only_move = 0;
+	sprintf(programStats.movelist, "%s (xbook)", bookMove);
+
+	strcpy(bookMove, "move ");
+	strcat(bookMove, bookHit);
+	HandleMachineMove(bookMove, &first);
+    }
 }
 
 void
@@ -10232,6 +10612,11 @@ EditPositionDone()
 	strcpy(parseList[0], "");
 	currentMove = forwardMostMove = backwardMostMove = 1;
 	CopyBoard(boards[1], boards[0]);
+	/* [HGM] copy rights as well, as this code is also used after pasting a FEN */
+	{ int i;
+	  epStatus[1] = epStatus[0];
+	  for(i=0; i<nrCastlingRights; i++) castlingRights[1][i] = castlingRights[0][i];
+	}
     } else {
 	currentMove = forwardMostMove = backwardMostMove = 0;
     }
@@ -10334,7 +10719,8 @@ EditPositionMenuEvent(selection, x, y)
 	    SendToICS(ics_prefix);
 	    SendToICS("clearboard\n");
 	} else {
-            for (x = 0; x < BOARD_WIDTH; x++) {
+            for (x = 0; x < BOARD_WIDTH; x++) { ChessSquare p = EmptySquare;
+		if(x == BOARD_LEFT-1 || x == BOARD_RGHT) p = (ChessSquare) 0; /* [HGM] holdings */
                 for (y = 0; y < BOARD_HEIGHT; y++) {
 		    if (gameMode == IcsExamining) {
 			if (boards[currentMove][y][x] != EmptySquare) {
@@ -10343,7 +10729,7 @@ EditPositionMenuEvent(selection, x, y)
 			    SendToICS(buf);
 			}
 		    } else {
-			boards[0][y][x] = EmptySquare;
+			boards[0][y][x] = p;
 		    }
 		}
 	    }
@@ -11332,7 +11718,7 @@ char *GetInfoFromComment( int index, char * text )
     if( text != NULL && index > 0 ) {
         int score = 0;
         int depth = 0;
-        int time = -1, sec = 0;
+        int time = -1, sec = 0, deci;
         char * s_eval = FindStr( text, "[%eval " );
         char * s_emt = FindStr( text, "[%emt " );
 
@@ -11362,8 +11748,9 @@ char *GetInfoFromComment( int index, char * text )
                 return text;
             }
 
-            time = -1; sec = -1;
+            time = -1; sec = -1; deci = -1;
             if( sscanf( text, "%d.%d/%d %d:%d", &score, &score_lo, &depth, &time, &sec ) != 5 &&
+		sscanf( text, "%d.%d/%d %d.%d", &score, &score_lo, &depth, &time, &deci ) != 5 &&
                 sscanf( text, "%d.%d/%d %d", &score, &score_lo, &depth, &time ) != 4 &&
                 sscanf( text, "%d.%d/%d", &score, &score_lo, &depth ) != 3   ) {
                 return text;
@@ -11373,7 +11760,9 @@ char *GetInfoFromComment( int index, char * text )
                 return text;
             }
 
-            if(sec >= 0) time = 60*time + sec;
+            if(sec >= 0) time = 600*time + 10*sec; else
+            if(deci >= 0) time = 10*time + deci; else time *= 10; // deci-sec
+
             score = score >= 0 ? score*100 + score_lo : score*100 - score_lo;
 
             /* [HGM] PV time: now locate end of PV info */
@@ -11382,6 +11771,8 @@ char *GetInfoFromComment( int index, char * text )
             while( *++sep >= '0' && *sep <= '9'); // strip time
             if(sec >= 0)
             while( *++sep >= '0' && *sep <= '9'); // strip seconds
+            if(deci >= 0)
+            while( *++sep >= '0' && *sep <= '9'); // strip fractional seconds
             while(*sep == ' ') sep++;
         }
 
@@ -11395,7 +11786,7 @@ char *GetInfoFromComment( int index, char * text )
 
         pvInfoList[index-1].depth = depth;
         pvInfoList[index-1].score = score;
-        pvInfoList[index-1].time  = time;
+        pvInfoList[index-1].time  = 10*time; // centi-sec
     }
     return sep;
 }
@@ -11500,8 +11891,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		   sscanf(message, "resign%c", &c)!=1 && sscanf(message, "feature %c", &c)!=1 &&
 		   sscanf(message, "error %c", &c)!=1 && sscanf(message, "illegal %c", &c)!=1 &&
 		   sscanf(message, "tell%c", &c)!=1   && sscanf(message, "0-1 %c", &c)!=1 &&
-		   sscanf(message, "askuser%c", &c)!=1 && sscanf(message, "1-0 %c", &c)!=1 && 
-		   sscanf(message, "1/2-1/2 %c", &c)!=1 && start != '#')
+		   sscanf(message, "1-0 %c", &c)!=1   && sscanf(message, "1/2-1/2 %c", &c)!=1 && start != '#')
 			{ quote = "# "; print = (appData.engineComments == 2); }
 		message[0] = start; // restore original message
 	}
@@ -11587,7 +11977,8 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
 ChessProgramState *WhitePlayer()
 /* [HGM] return pointer to 'first' or 'second', depending on who plays white */
 {
-    if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'b')
+    if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'b' || 
+       gameMode == BeginningOfGame || gameMode == MachinePlaysBlack)
         return &second;
     return &first;
 }
@@ -11748,9 +12139,6 @@ ParseFeatures(args, cps)
     if (BoolFeature(&p, "ics", &cps->sendICS, cps)) continue;
     if (BoolFeature(&p, "name", &cps->sendName, cps)) continue;
     if (BoolFeature(&p, "pause", &val, cps)) continue; /* unused at present */
-    if (BoolFeature(&p, "debug", &cps->debug, cps)) continue;
-    if (BoolFeature(&p, "nps", &cps->supportsNPS, cps)) continue;
-    if (IntFeature(&p, "level", &cps->maxNrOfSessions, cps)) continue;
     if (IntFeature(&p, "done", &val, cps)) {
       FeatureDone(cps, val);
       continue;
@@ -11759,6 +12147,15 @@ ParseFeatures(args, cps)
     if (BoolFeature(&p, "fen960", &cps->useFEN960, cps)) continue;
     if (BoolFeature(&p, "oocastle", &cps->useOOCastle, cps)) continue;
     /* End of additions by Tord */
+
+    /* [HGM] added features: */
+    if (BoolFeature(&p, "debug", &cps->debug, cps)) continue;
+    if (BoolFeature(&p, "nps", &cps->supportsNPS, cps)) continue;
+    if (IntFeature(&p, "level", &cps->maxNrOfSessions, cps)) continue;
+    if (BoolFeature(&p, "memory", &cps->memSize, cps)) continue;
+    if (BoolFeature(&p, "smp", &cps->maxCores, cps)) continue;
+    if (StringFeature(&p, "egt", &cps->egtFormats, cps)) continue;
+    /* End of additions by HGM */
 
     /* unknown feature: complain and skip */
     q = p;
@@ -11821,12 +12218,33 @@ PonderNextMoveEvent(newState)
 }
 
 void
-ShowThinkingEvent(newState)
-     int newState;
+NewSettingEvent(option, command, value)
+     char *command;
+     int option, value;
 {
-    if (newState == appData.showThinking) return;
+    char buf[MSG_SIZ];
+
     if (gameMode == EditPosition) EditPositionDone();
-    if (newState) {
+    sprintf(buf, "%s%s %d\n", (option ? "option ": ""), command, value);
+    SendToProgram(buf, &first);
+    if (gameMode == TwoMachinesPlay) {
+	SendToProgram(buf, &second);
+    }
+}
+
+void
+ShowThinkingEvent()
+// [HGM] thinking: this routine is now also called from "Options -> Engine..." popup
+{
+    static int oldState = 2; // kludge alert! Neither true nor fals, so first time oldState is always updated
+    int newState = appData.showThinking
+	// [HGM] thinking: other features now need thinking output as well
+	|| !appData.hideThinkingFromHuman || appData.adjudicateLossThreshold != 0 || EngineOutputIsUp();
+    
+    if (oldState == newState) return;
+    oldState = newState;
+    if (gameMode == EditPosition) EditPositionDone();
+    if (oldState) {
 	SendToProgram("post\n", &first);
 	if (gameMode == TwoMachinesPlay) {
 	    SendToProgram("post\n", &second);
@@ -11838,7 +12256,7 @@ ShowThinkingEvent(newState)
 	    SendToProgram("nopost\n", &second);
 	}
     }
-    appData.showThinking = newState;
+//    appData.showThinking = newState; // [HGM] thinking: responsible option should already have be changed when calling this routine!
 }
 
 void
@@ -12015,7 +12433,7 @@ DisplayComment(moveNumber, text)
         if(text == NULL) text = "";                                           
         score = pvInfoList[moveNumber].score;
         sprintf(buf, "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
-                              depth, pvInfoList[moveNumber].time, text);
+                              depth, (pvInfoList[moveNumber].time+50)/100, text);
         CommentPopUp(title, buf);
     } else
     if (text != NULL)
@@ -12113,7 +12531,7 @@ CheckTimeControl()
 	gameMode == PlayFromGameFile || forwardMostMove == 0) return;
 
     /*
-     * add time to clocks when time control is achieved ([HGM] now also used fot increment)
+     * add time to clocks when time control is achieved ([HGM] now also used for increment)
      */
     if ( !WhiteOnMove(forwardMostMove) )
 	/* White made time control */
@@ -12326,14 +12744,14 @@ SwitchClocks()
 	    if(blackNPS >= 0) lastTickLength = 0;
 	    blackTimeRemaining -= lastTickLength;
            /* [HGM] PGNtime: save time for PGN file if engine did not give it */
-            if(pvInfoList[forwardMostMove-1].time == -1)
-                 pvInfoList[forwardMostMove-1].time = 
+//         if(pvInfoList[forwardMostMove-1].time == -1)
+                 pvInfoList[forwardMostMove-1].time =               // use GUI time
                       (timeRemaining[1][forwardMostMove-1] - blackTimeRemaining)/10;
 	} else {
 	   if(whiteNPS >= 0) lastTickLength = 0;
 	   whiteTimeRemaining -= lastTickLength;
            /* [HGM] PGNtime: save time for PGN file if engine did not give it */
-            if(pvInfoList[forwardMostMove-1].time == -1)
+//         if(pvInfoList[forwardMostMove-1].time == -1)
                  pvInfoList[forwardMostMove-1].time = 
                       (timeRemaining[0][forwardMostMove-1] - whiteTimeRemaining)/10;
 	}
@@ -12817,12 +13235,14 @@ ParseFEN(board, blackPlaysFirst, fen)
                 *p++;
                 if((int) piece >= (int) BlackPawn ) {
                     i = (int)piece - (int)BlackPawn;
-                    if( i >= BOARD_HEIGHT ) return FALSE;
+		    i = PieceToNumber((ChessSquare)i);
+                    if( i >= gameInfo.holdingsSize ) return FALSE;
                     board[BOARD_HEIGHT-1-i][0] = piece; /* black holdings */
                     board[BOARD_HEIGHT-1-i][1]++;       /* black counts   */
                 } else {
                     i = (int)piece - (int)WhitePawn;
-                    if( i >= BOARD_HEIGHT ) return FALSE;
+		    i = PieceToNumber((ChessSquare)i);
+                    if( i >= gameInfo.holdingsSize ) return FALSE;
                     board[i][BOARD_WIDTH-1] = piece;    /* white holdings */
                     board[i][BOARD_WIDTH-2]++;          /* black holdings */
                 }

@@ -829,10 +829,10 @@ XpmPieces builtInXpms[] = {\
     { kll129, kld129, kdl129, kdd129, },\
     { kll129, kld129, kdl129, kdd129, },\
     { kll129, kld129, kdl129, kdd129, },\
-    { kll129, kld129, kdl129, kdd129, },\
-    { kll129, kld129, kdl129, kdd129, },\
-    { kll129, kld129, kdl129, kdd129, },\
-    { kll129, kld129, kdl129, kdd129, },\
+    { nll129, nld129, ndl129, ndd129, },\
+    { bll129, bld129, bdl129, bdd129, },\
+    { rll129, rld129, rdl129, rdd129, },\
+    { qll129, qld129, qdl129, qdd129, },\
     { kll129, kld129, kdl129, kdd129, },\
     { kll129, kld129, kdl129, kdd129, },\
     { kll129, kld129, kdl129, kdd129, },\
@@ -853,10 +853,10 @@ XpmPieces builtInXpms[] = {\
     { kll116, kld116, kdl116, kdd116, },\
     { kll116, kld116, kdl116, kdd116, },\
     { kll116, kld116, kdl116, kdd116, },\
-    { kll116, kld116, kdl116, kdd116, },\
-    { kll116, kld116, kdl116, kdd116, },\
-    { kll116, kld116, kdl116, kdd116, },\
-    { kll116, kld116, kdl116, kdd116, },\
+    { nll116, nld116, ndl116, ndd116, },\
+    { bll116, bld116, bdl116, bdd116, },\
+    { rll116, rld116, rdl116, rdd116, },\
+    { qll116, qld116, qdl116, qdd116, },\
     { kll116, kld116, kdl116, kdd116, },\
     { kll116, kld116, kdl116, kdd116, },\
     { kll116, kld116, kdl116, kdd116, },\
@@ -877,10 +877,10 @@ XpmPieces builtInXpms[] = {\
     { kll108, kld108, kdl108, kdd108, },\
     { kll108, kld108, kdl108, kdd108, },\
     { kll108, kld108, kdl108, kdd108, },\
-    { kll108, kld108, kdl108, kdd108, },\
-    { kll108, kld108, kdl108, kdd108, },\
-    { kll108, kld108, kdl108, kdd108, },\
-    { kll108, kld108, kdl108, kdd108, },\
+    { nll108, nld108, ndl108, ndd108, },\
+    { bll108, bld108, bdl108, bdd108, },\
+    { rll108, rld108, rdl108, rdd108, },\
+    { qll108, qld108, qdl108, qdd108, },\
     { kll108, kld108, kdl108, kdd108, },\
     { kll108, kld108, kdl108, kdd108, },\
     { kll108, kld108, kdl108, kdd108, },\
@@ -901,10 +901,10 @@ XpmPieces builtInXpms[] = {\
     { kll95, kld95, kdl95, kdd95, },\
     { kll95, kld95, kdl95, kdd95, },\
     { kll95, kld95, kdl95, kdd95, },\
-    { kll95, kld95, kdl95, kdd95, },\
-    { kll95, kld95, kdl95, kdd95, },\
-    { kll95, kld95, kdl95, kdd95, },\
-    { kll95, kld95, kdl95, kdd95, },\
+    { nll95, nld95, ndl95, ndd95, },\
+    { bll95, bld95, bdl95, bdd95, },\
+    { rll95, rld95, rdl95, rdd95, },\
+    { qll95, qld95, qdl95, qdd95, },\
     { kll95, kld95, kdl95, kdd95, },\
     { kll95, kld95, kdl95, kdd95, },\
     { kll95, kld95, kdl95, kdd95, },\
@@ -925,10 +925,10 @@ XpmPieces builtInXpms[] = {\
     { kll87, kld87, kdl87, kdd87, },\
     { kll87, kld87, kdl87, kdd87, },\
     { kll87, kld87, kdl87, kdd87, },\
-    { kll87, kld87, kdl87, kdd87, },\
-    { kll87, kld87, kdl87, kdd87, },\
-    { kll87, kld87, kdl87, kdd87, },\
-    { kll87, kld87, kdl87, kdd87, },\
+    { nll87, nld87, ndl87, ndd87, },\
+    { bll87, bld87, bdl87, bdd87, },\
+    { rll87, rld87, rdl87, rdd87, },\
+    { qll87, qld87, qdl87, qdd87, },\
     { kll87, kld87, kdl87, kdd87, },\
     { kll87, kld87, kdl87, kdd87, },\
     { kll87, kld87, kdl87, kdd87, },\
@@ -949,10 +949,10 @@ XpmPieces builtInXpms[] = {\
     { kll80, kld80, kdl80, kdd80, },\
     { kll80, kld80, kdl80, kdd80, },\
     { kll80, kld80, kdl80, kdd80, },\
-    { kll80, kld80, kdl80, kdd80, },\
-    { kll80, kld80, kdl80, kdd80, },\
-    { kll80, kld80, kdl80, kdd80, },\
-    { kll80, kld80, kdl80, kdd80, },\
+    { nll80, nld80, ndl80, ndd80, },\
+    { bll80, bld80, bdl80, bdd80, },\
+    { rll80, rld80, rdl80, rdd80, },\
+    { qll80, qld80, qdl80, qdd80, },\
     { kll80, kld80, kdl80, kdd80, },\
     { kll80, kld80, kdl80, kdd80, },\
     { kll80, kld80, kdl80, kdd80, },\
@@ -997,10 +997,10 @@ XpmPieces builtInXpms[] = {\
     { lll64, lld64, ldl64, ldd64, },\
     { lll64, lld64, ldl64, ldd64, },\
     { lll64, lld64, ldl64, ldd64, },\
-    { lll64, lld64, ldl64, ldd64, },\
-    { lll64, lld64, ldl64, ldd64, },\
-    { lll64, lld64, ldl64, ldd64, },\
-    { lll64, lld64, ldl64, ldd64, },\
+    { nll64, nld64, ndl64, ndd64, },\
+    { bll64, bld64, bdl64, bdd64, },\
+    { rll64, rld64, rdl64, rdd64, },\
+    { qll64, qld64, qdl64, qdd64, },\
     { cvll64, cvld64, cvdl64, cvdd64, },\
     { lll64, lld64, ldl64, ldd64, },\
     { lll64, lld64, ldl64, ldd64, },\
@@ -1021,10 +1021,10 @@ XpmPieces builtInXpms[] = {\
     { lll58, lld58, ldl58, ldd58, },\
     { lll58, lld58, ldl58, ldd58, },\
     { lll58, lld58, ldl58, ldd58, },\
-    { lll58, lld58, ldl58, ldd58, },\
-    { lll58, lld58, ldl58, ldd58, },\
-    { lll58, lld58, ldl58, ldd58, },\
-    { lll58, lld58, ldl58, ldd58, },\
+    { nll58, nld58, ndl58, ndd58, },\
+    { bll58, bld58, bdl58, bdd58, },\
+    { rll58, rld58, rdl58, rdd58, },\
+    { qll58, qld58, qdl58, qdd58, },\
     { cvll58, cvld58, cvdl58, cvdd58, },\
     { lll58, lld58, ldl58, ldd58, },\
     { lll58, lld58, ldl58, ldd58, },\
@@ -1045,10 +1045,10 @@ XpmPieces builtInXpms[] = {\
     { lll54, lld54, ldl54, ldd54, },\
     { lll54, lld54, ldl54, ldd54, },\
     { lll54, lld54, ldl54, ldd54, },\
-    { lll54, lld54, ldl54, ldd54, },\
-    { lll54, lld54, ldl54, ldd54, },\
-    { lll54, lld54, ldl54, ldd54, },\
-    { lll54, lld54, ldl54, ldd54, },\
+    { nll54, nld54, ndl54, ndd54, },\
+    { bll54, bld54, bdl54, bdd54, },\
+    { rll54, rld54, rdl54, rdd54, },\
+    { qll54, qld54, qdl54, qdd54, },\
     { cvll54, cvld54, cvdl54, cvdd54, },\
     { lll54, lld54, ldl54, ldd54, },\
     { lll54, lld54, ldl54, ldd54, },\
@@ -1093,10 +1093,10 @@ XpmPieces builtInXpms[] = {\
     { lll45, lld45, ldl45, ldd45, },\
     { lll45, lld45, ldl45, ldd45, },\
     { lll45, lld45, ldl45, ldd45, },\
-    { lll45, lld45, ldl45, ldd45, },\
-    { lll45, lld45, ldl45, ldd45, },\
-    { lll45, lld45, ldl45, ldd45, },\
-    { lll45, lld45, ldl45, ldd45, },\
+    { nll45, nld45, ndl45, ndd45, },\
+    { bll45, bld45, bdl45, bdd45, },\
+    { rll45, rld45, rdl45, rdd45, },\
+    { qll45, qld45, qdl45, qdd45, },\
     { cvll45, cvld45, cvdl45, cvdd45, },\
     { lll45, lld45, ldl45, ldd45, },\
     { lll45, lld45, ldl45, ldd45, },\
@@ -1117,10 +1117,10 @@ XpmPieces builtInXpms[] = {\
     { lll40, lld40, ldl40, ldd40, },\
     { lll40, lld40, ldl40, ldd40, },\
     { lll40, lld40, ldl40, ldd40, },\
-    { lll40, lld40, ldl40, ldd40, },\
-    { lll40, lld40, ldl40, ldd40, },\
-    { lll40, lld40, ldl40, ldd40, },\
-    { lll40, lld40, ldl40, ldd40, },\
+    { nll40, nld40, ndl40, ndd40, },\
+    { bll40, bld40, bdl40, bdd40, },\
+    { rll40, rld40, rdl40, rdd40, },\
+    { qll40, qld40, qdl40, qdd40, },\
     { cvll40, cvld40, cvdl40, cvdd40, },\
     { lll40, lld40, ldl40, ldd40, },\
     { lll40, lld40, ldl40, ldd40, },\
@@ -1141,10 +1141,10 @@ XpmPieces builtInXpms[] = {\
     { lll37, lld37, ldl37, ldd37, },\
     { lll37, lld37, ldl37, ldd37, },\
     { lll37, lld37, ldl37, ldd37, },\
-    { lll37, lld37, ldl37, ldd37, },\
-    { lll37, lld37, ldl37, ldd37, },\
-    { lll37, lld37, ldl37, ldd37, },\
-    { lll37, lld37, ldl37, ldd37, },\
+    { nll37, nld37, ndl37, ndd37, },\
+    { bll37, bld37, bdl37, bdd37, },\
+    { rll37, rld37, rdl37, rdd37, },\
+    { qll37, qld37, qdl37, qdd37, },\
     { cvll37, cvld37, cvdl37, cvdd37, },\
     { lll37, lld37, ldl37, ldd37, },\
     { lll37, lld37, ldl37, ldd37, },\
@@ -1189,10 +1189,10 @@ XpmPieces builtInXpms[] = {\
     { kll29, kld29, kdl29, kdd29, },\
     { kll29, kld29, kdl29, kdd29, },\
     { kll29, kld29, kdl29, kdd29, },\
-    { kll29, kld29, kdl29, kdd29, },\
-    { kll29, kld29, kdl29, kdd29, },\
-    { kll29, kld29, kdl29, kdd29, },\
-    { kll29, kld29, kdl29, kdd29, },\
+    { nll29, nld29, ndl29, ndd29, },\
+    { bll29, bld29, bdl29, bdd29, },\
+    { rll29, rld29, rdl29, rdd29, },\
+    { qll29, qld29, qdl29, qdd29, },\
     { kll29, kld29, kdl29, kdd29, },\
     { kll29, kld29, kdl29, kdd29, },\
     { kll29, kld29, kdl29, kdd29, },\
@@ -1213,10 +1213,10 @@ XpmPieces builtInXpms[] = {\
     { kll25, kld25, kdl25, kdd25, },\
     { kll25, kld25, kdl25, kdd25, },\
     { kll25, kld25, kdl25, kdd25, },\
-    { kll25, kld25, kdl25, kdd25, },\
-    { kll25, kld25, kdl25, kdd25, },\
-    { kll25, kld25, kdl25, kdd25, },\
-    { kll25, kld25, kdl25, kdd25, },\
+    { nll25, nld25, ndl25, ndd25, },\
+    { bll25, bld25, bdl25, bdd25, },\
+    { rll25, rld25, rdl25, rdd25, },\
+    { qll25, qld25, qdl25, qdd25, },\
     { kll25, kld25, kdl25, kdd25, },\
     { kll25, kld25, kdl25, kdd25, },\
     { kll25, kld25, kdl25, kdd25, },\
@@ -1237,10 +1237,10 @@ XpmPieces builtInXpms[] = {\
     { kll21, kld21, kdl21, kdd21, },\
     { kll21, kld21, kdl21, kdd21, },\
     { kll21, kld21, kdl21, kdd21, },\
-    { kll21, kld21, kdl21, kdd21, },\
-    { kll21, kld21, kdl21, kdd21, },\
-    { kll21, kld21, kdl21, kdd21, },\
-    { kll21, kld21, kdl21, kdd21, },\
+    { nll21, nld21, ndl21, ndd21, },\
+    { bll21, bld21, bdl21, bdd21, },\
+    { rll21, rld21, rdl21, rdd21, },\
+    { qll21, qld21, qdl21, qdd21, },\
     { kll21, kld21, kdl21, kdd21, },\
     { kll21, kld21, kdl21, kdd21, },\
     { kll21, kld21, kdl21, kdd21, },\

@@ -119,7 +119,8 @@ void UserAdjudicationEvent P((int result));
 void StopObservingEvent P((void));
 void StopExaminingEvent P((void));
 void PonderNextMoveEvent P((int newState));
-void ShowThinkingEvent P((int newState));
+void NewSettingeEvent P((int option, char *command, int value));
+void ShowThinkingEvent P(());
 void PeriodicUpdatesEvent P((int newState));
 void HintEvent P((void));
 void BookEvent P((void));
@@ -259,6 +260,11 @@ typedef struct _CPS {
     int accumulateTC; /* [HGM] secondary TC: how to handle extra sessions   */
     int nps;          /* [HGM] nps: factor for node count to replace time   */
     int supportsNPS;
+    int alphaRank;    /* [HGM] shogi: engine uses shogi-type coordinates    */
+    int maxCores;     /* [HGM] SMP: engine understands cores command        */
+    int memSize;      /* [HGM] memsize: engine understands memory command   */
+    char egtFormats[MSG_SIZ];     /* [HGM] EGT: supported tablebase formats */
+    int bookSuspend;  /* HGM book: go was deferred bcause of book hit       */
 } ChessProgramState;
 
 extern ChessProgramState first, second;
