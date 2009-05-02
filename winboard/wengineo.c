@@ -36,18 +36,40 @@
 
 #include "wsnap.h"
 
-VOID EngineOutputPopUp();
-VOID EngineOutputPopDown();
-BOOL EngineOutputIsUp();
+// [HGM] define numbers to indicate icons, for referring to them in platform-independent way
+#define nColorBlack   1
+#define nColorWhite   2
+#define nColorUnknown 3
+#define nClear        4
+#define nPondering    5
+#define nThinking     6
+#define nAnalyzing    7
+
+HICON icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
+
+// [HGM] same for output fields (note that there are two of each type, one per color)
+#define nColorIcon 1
+#define nStateIcon 2
+#define nLabel     3
+#define nStateData 4
+#define nLabelNPS  5
+#define nMemo      6
+
+HWND outputField[2][7]; // [HGM] front-end array to translate output field to window handle
+
+void EngineOutputPopUp();
+void EngineOutputPopDown();
+int  EngineOutputIsUp();
 
 #define SHOW_PONDERING
 
 /* Imports from backend.c */
 char * SavePart(char *str);
+extern int opponentKibitzes;
 
 /* Imports from winboard.c */
 extern HWND engineOutputDialog;
-extern BOOLEAN engineOutputDialogUp;
+extern int     engineOutputDialogUp;
 
 extern HINSTANCE hInst;
 extern HWND hwndMain;
@@ -70,27 +92,19 @@ extern WindowPlacement wpEngineOutput;
 
 static int  windowMode = 1;
 
-static BOOL needInit = TRUE;
-
-static HICON hiColorBlack = NULL;
-static HICON hiColorWhite = NULL;
-static HICON hiColorUnknown = NULL;
-static HICON hiClear = NULL;
-static HICON hiPondering = NULL;
-static HICON hiThinking = NULL;
-static HICON hiAnalyzing = NULL;
+static int  needInit = TRUE;
 
 static int  lastDepth[2] = { -1, -1 };
 static int  lastForwardMostMove[2] = { -1, -1 };
 static int  engineState[2] = { -1, -1 };
 
 typedef struct {
-    HWND hColorIcon;
-    HWND hLabel;
-    HWND hStateIcon;
-    HWND hStateData;
-    HWND hLabelNPS;
-    HWND hMemo;
+//    HWND hColorIcon; // [HGM] the output-control handles are no loger passed,
+//    HWND hLabel;     //       to give better front-end / back-end separation
+//    HWND hStateIcon; //       the front-end routines now get them from a (front-end)
+//    HWND hStateData; //       table, indexed by output-field indicators.
+//    HWND hLabelNPS;
+//    HWND hMemo;
     char * name;
     int which;
     int depth;
@@ -103,26 +117,52 @@ typedef struct {
     int an_move_count;
 } EngineOutputData;
 
+static VerifyDisplayMode();
+static void UpdateControls( EngineOutputData * ed );
+static SetEngineState( int which, int state, char * state_data );
+
+// front end
 static HICON LoadIconEx( int id )
 {
     return LoadImage( hInst, MAKEINTRESOURCE(id), IMAGE_ICON, ICON_SIZE, ICON_SIZE, 0 );
 }
 
-static VOID InitializeEngineOutput()
+// [HGM] the platform-dependent way of indicating where output should go is now all
+// concentrated here, where a table of platform-dependent handles are initialized.
+// This cleanses most other routines of front-end stuff, so they can go into the back end.
+static void InitializeEngineOutput()
 {
-    if( needInit ) {
-        hiColorBlack = LoadIconEx( IDI_BLACK_14 );
-        hiColorWhite = LoadIconEx( IDI_WHITE_14 );
-        hiColorUnknown = LoadIconEx( IDI_UNKNOWN_14 );
-        hiClear = LoadIconEx( IDI_TRANS_14 );
-        hiPondering = LoadIconEx( IDI_PONDER_14 );
-        hiThinking = LoadIconEx( IDI_CLOCK_14 );
-        hiAnalyzing = LoadIconEx( IDI_ANALYZE2_14 );
-        needInit = FALSE;
-    }
+ //   if( needInit ) { // needInit was already tested before call
+	// [HGM] made this into a table, rather than separate global variables
+        icons[nColorBlack]   = LoadIconEx( IDI_BLACK_14 );
+        icons[nColorWhite]   = LoadIconEx( IDI_WHITE_14 );
+        icons[nColorUnknown] = LoadIconEx( IDI_UNKNOWN_14 );
+        icons[nClear]        = LoadIconEx( IDI_TRANS_14 );
+        icons[nPondering]    = LoadIconEx( IDI_PONDER_14 );
+        icons[nThinking]     = LoadIconEx( IDI_CLOCK_14 );
+        icons[nAnalyzing]    = LoadIconEx( IDI_ANALYZE2_14 );
+
+	// [HGM] also make a table of handles to output controls
+	// Note that engineOutputDialog must be defined first!
+        outputField[0][nColorIcon] = GetDlgItem( engineOutputDialog, IDC_Color1 );
+        outputField[0][nLabel]     = GetDlgItem( engineOutputDialog, IDC_EngineLabel1 );
+        outputField[0][nStateIcon] = GetDlgItem( engineOutputDialog, IDC_StateIcon1 );
+        outputField[0][nStateData] = GetDlgItem( engineOutputDialog, IDC_StateData1 );
+        outputField[0][nLabelNPS]  = GetDlgItem( engineOutputDialog, IDC_Engine1_NPS );
+        outputField[0][nMemo]      = GetDlgItem( engineOutputDialog, IDC_EngineMemo1 );
+
+        outputField[1][nColorIcon] = GetDlgItem( engineOutputDialog, IDC_Color2 );
+        outputField[1][nLabel]     = GetDlgItem( engineOutputDialog, IDC_EngineLabel2 );
+        outputField[1][nStateIcon] = GetDlgItem( engineOutputDialog, IDC_StateIcon2 );
+        outputField[1][nStateData] = GetDlgItem( engineOutputDialog, IDC_StateData2 );
+        outputField[1][nLabelNPS]  = GetDlgItem( engineOutputDialog, IDC_Engine2_NPS );
+        outputField[1][nMemo]      = GetDlgItem( engineOutputDialog, IDC_EngineMemo2 );
+//        needInit = FALSE;
+//    }
 }
 
-static VOID SetControlPos( HWND hDlg, int id, int x, int y, int width, int height )
+// front end
+static void SetControlPos( HWND hDlg, int id, int x, int y, int width, int height )
 {
     HWND hControl = GetDlgItem( hDlg, id );
 
@@ -132,7 +172,8 @@ static VOID SetControlPos( HWND hDlg, int id, int x, int y, int width, int heigh
 #define HIDDEN_X    20000
 #define HIDDEN_Y    20000
 
-static VOID HideControl( HWND hDlg, int id )
+// front end
+static void HideControl( HWND hDlg, int id )
 {
     HWND hControl = GetDlgItem( hDlg, id );
     RECT rc;
@@ -148,6 +189,7 @@ static VOID HideControl( HWND hDlg, int id )
     }
 }
 
+// front end, although we might make GetWindowRect front end instead
 static int GetControlWidth( HWND hDlg, int id )
 {
     RECT rc;
@@ -157,6 +199,7 @@ static int GetControlWidth( HWND hDlg, int id )
     return rc.right - rc.left;
 }
 
+// front end?
 static int GetControlHeight( HWND hDlg, int id )
 {
     RECT rc;
@@ -175,76 +218,9 @@ static int GetHeaderHeight()
     return result;
 }
 
-#define ENGINE_COLOR_WHITE      'w'
-#define ENGINE_COLOR_BLACK      'b'
-#define ENGINE_COLOR_UNKNOWN    ' '
-
-char GetEngineColor( int which )
-{
-    char result = ENGINE_COLOR_UNKNOWN;
-
-    if( which == 0 || which == 1 ) {
-        ChessProgramState * cps;
-
-        switch (gameMode) {
-        case MachinePlaysBlack:
-        case IcsPlayingBlack:
-            result = ENGINE_COLOR_BLACK;
-            break;
-        case MachinePlaysWhite:
-        case IcsPlayingWhite:
-            result = ENGINE_COLOR_WHITE;
-            break;
-        case AnalyzeMode:
-        case AnalyzeFile:
-            result = WhiteOnMove(forwardMostMove) ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
-            break;
-        case TwoMachinesPlay:
-            cps = (which == 0) ? &first : &second;
-            result = cps->twoMachinesColor[0];
-            result = result == 'w' ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
-            break;
-        }
-    }
-
-    return result;
-}
-
-char GetActiveEngineColor()
-{
-    char result = ENGINE_COLOR_UNKNOWN;
-
-    if( gameMode == TwoMachinesPlay ) {
-        result = WhiteOnMove(forwardMostMove) ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
-    }
-
-    return result;
-}
-
-static int IsEnginePondering( int which )
-{
-    int result = FALSE;
-
-    switch (gameMode) {
-    case MachinePlaysBlack:
-    case IcsPlayingBlack:
-        if( WhiteOnMove(forwardMostMove) ) result = TRUE;
-        break;
-    case MachinePlaysWhite:
-    case IcsPlayingWhite:
-        if( ! WhiteOnMove(forwardMostMove) ) result = TRUE;
-        break;
-    case TwoMachinesPlay:
-        if( GetActiveEngineColor() != ENGINE_COLOR_UNKNOWN ) {
-            if( GetEngineColor( which ) != GetActiveEngineColor() ) result = TRUE;
-        }
-        break;
-    }
-
-    return result;
-}
-
-static VOID PositionControlSet( HWND hDlg, int x, int y, int clientWidth, int memoHeight, int idColor, int idEngineLabel, int idNPS, int idMemo, int idStateIcon, int idStateData )
+// The size calculations should be backend? If setControlPos is a platform-dependent way of doing things,
+// a platform-independent wrapper for it should be supplied.
+static void PositionControlSet( HWND hDlg, int x, int y, int clientWidth, int memoHeight, int idColor, int idEngineLabel, int idNPS, int idMemo, int idStateIcon, int idStateData )
 {
     int label_x = x + ICON_SIZE + H_MARGIN;
     int label_h = GetControlHeight( hDlg, IDC_EngineLabel1 );
@@ -265,7 +241,8 @@ static VOID PositionControlSet( HWND hDlg, int x, int y, int clientWidth, int me
     SetControlPos( hDlg, idMemo, x, memo_y, max_w, memoHeight );
 }
 
-static VOID ResizeWindowControls( HWND hDlg, int mode )
+// Also here some of the size calculations should go to the back end, and their actual application to a front-end routine
+static void ResizeWindowControls( HWND hDlg, int mode )
 {
     RECT rc;
     int headerHeight = GetHeaderHeight();
@@ -322,237 +299,31 @@ static VOID ResizeWindowControls( HWND hDlg, int mode )
     InvalidateRect( GetDlgItem(hDlg,IDC_EngineMemo2), NULL, FALSE );
 }
 
-static VOID SetDisplayMode( int mode )
+// front end. Actual printing of PV lines into the output field
+static void InsertIntoMemo( int which, char * text )
 {
-    if( windowMode != mode ) {
-        windowMode = mode;
+    SendMessage( outputField[which][nMemo], EM_SETSEL, 0, 0 );
 
-        ResizeWindowControls( engineOutputDialog, mode );
+    SendMessage( outputField[which][nMemo], EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) text );
+}
+
+// front end. Associates an icon with an output field ("control" in Windows jargon).
+// [HGM] let it find out the output field from the 'which' number by itself
+static void SetIcon( int which, int field, int nIcon )
+{
+
+    if( nIcon != 0 ) {
+        SendMessage( outputField[which][field], STM_SETICON, (WPARAM) icons[nIcon], 0 );
     }
 }
 
-static VOID VerifyDisplayMode()
+// front end wrapper for SetWindowText, taking control number in stead of handle
+void DoSetWindowText(int which, int field, char *s_label)
 {
-    int mode;
-
-    /* Get proper mode for current game */
-    switch( gameMode ) {
-    case AnalyzeMode:
-    case AnalyzeFile:
-    case MachinePlaysWhite:
-    case MachinePlaysBlack:
-    case IcsPlayingWhite:
-    case IcsPlayingBlack:
-        mode = 0;
-        break;
-    case TwoMachinesPlay:
-        mode = 1;
-        break;
-    default:
-        /* Do not change */
-        return;
-    }
-
-    SetDisplayMode( mode );
+    SetWindowText( outputField[which][field], s_label );
 }
 
-static VOID InsertIntoMemo( HWND hMemo, char * text )
-{
-    SendMessage( hMemo, EM_SETSEL, 0, 0 );
-
-    SendMessage( hMemo, EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) text );
-}
-
-static VOID SetIcon( HWND hControl, HICON hIcon )
-{
-    if( hIcon != NULL ) {
-        SendMessage( hControl, STM_SETICON, (WPARAM) hIcon, 0 );
-    }
-}
-
-static VOID SetEngineColorIcon( HWND hControl, int which )
-{
-    char color = GetEngineColor(which);
-    HICON hicon = NULL;
-
-    if( color == ENGINE_COLOR_BLACK )
-        hicon = hiColorBlack;
-    else if( color == ENGINE_COLOR_WHITE )
-        hicon = hiColorWhite;
-    else
-        hicon = hiColorUnknown;
-
-    SetIcon( hControl, hicon );
-}
-
-static SetEngineState( int which, int state, char * state_data )
-{
-    int x_which = 1 - which;
-    HWND hStateIcon = GetDlgItem( engineOutputDialog, which == 0 ? IDC_StateIcon1 : IDC_StateIcon2 );
-    HWND hStateData = GetDlgItem( engineOutputDialog, which == 0 ? IDC_StateData1 : IDC_StateData2 );
-
-    if( engineState[ which ] != state ) {
-        engineState[ which ] = state;
-
-        switch( state ) {
-        case STATE_THINKING:
-            SetIcon( hStateIcon, hiThinking );
-            if( engineState[ x_which ] == STATE_THINKING ) {
-                SetEngineState( x_which, STATE_IDLE, "" );
-            }
-            break;
-        case STATE_PONDERING:
-            SetIcon( hStateIcon, hiPondering );
-            break;
-        case STATE_ANALYZING:
-            SetIcon( hStateIcon, hiAnalyzing );
-            break;
-        default:
-            SetIcon( hStateIcon, hiClear );
-            break;
-        }
-    }
-
-    if( state_data != 0 ) {
-        SetWindowText( hStateData, state_data );
-    }
-}
-
-#define MAX_NAME_LENGTH 32
-
-static VOID UpdateControls( EngineOutputData * ed )
-{
-    BOOL isPondering = FALSE;
-
-    char s_label[MAX_NAME_LENGTH + 32];
-    
-    char * name = ed->name;
-
-    /* Label */
-    if( name == 0 || *name == '\0' ) {
-        name = "?";
-    }
-
-    strncpy( s_label, name, MAX_NAME_LENGTH );
-    s_label[ MAX_NAME_LENGTH-1 ] = '\0';
-
-#ifdef SHOW_PONDERING
-    if( IsEnginePondering( ed->which ) ) {
-        char buf[8];
-
-        buf[0] = '\0';
-
-        if( ed->hint != 0 && *ed->hint != '\0' ) {
-            strncpy( buf, ed->hint, sizeof(buf) );
-            buf[sizeof(buf)-1] = '\0';
-        }
-        else if( ed->pv != 0 && *ed->pv != '\0' ) {
-            char * sep = strchr( ed->pv, ' ' );
-            int buflen = sizeof(buf);
-
-            if( sep != NULL ) {
-                buflen = sep - ed->pv + 1;
-                if( buflen > sizeof(buf) ) buflen = sizeof(buf);
-            }
-
-            strncpy( buf, ed->pv, buflen );
-            buf[ buflen-1 ] = '\0';
-        }
-
-        SetEngineState( ed->which, STATE_PONDERING, buf );
-    }
-    else if( gameMode == TwoMachinesPlay ) {
-        SetEngineState( ed->which, STATE_THINKING, "" );
-    }
-    else if( gameMode == AnalyzeMode || gameMode == AnalyzeFile ) {
-        char buf[64];
-        int time_secs = ed->time / 100;
-        int time_mins = time_secs / 60;
-
-        buf[0] = '\0';
-
-        if( ed->an_move_index != 0 && ed->an_move_count != 0 && *ed->hint != '\0' ) {
-            char mov[16];
-
-            strncpy( mov, ed->hint, sizeof(mov) );
-            mov[ sizeof(mov)-1 ] = '\0';
-
-            sprintf( buf, "%d/%d: %s [%02d:%02d:%02d]", ed->an_move_index, ed->an_move_count, mov, time_mins / 60, time_mins % 60, time_secs % 60 );
-        }
-
-        SetEngineState( ed->which, STATE_ANALYZING, buf );
-    }
-    else {
-        SetEngineState( ed->which, STATE_IDLE, "" );
-    }
-#endif
-
-    SetWindowText( ed->hLabel, s_label );
-
-    s_label[0] = '\0';
-
-    if( ed->time > 0 && ed->nodes > 0 ) {
-        unsigned long nps_100 = ed->nodes / ed->time;
-
-        if( nps_100 < 100000 ) {
-            sprintf( s_label, "NPS: %lu", nps_100 * 100 );
-        }
-        else {
-            sprintf( s_label, "NPS: %.1fk", nps_100 / 10.0 );
-        }
-    }
-
-    SetWindowText( ed->hLabelNPS, s_label );
-
-    /* Memo */
-    if( ed->pv != 0 && *ed->pv != '\0' ) {
-        char s_nodes[24];
-        char s_score[16];
-        char s_time[24];
-        char buf[256];
-        int buflen;
-        int time_secs = ed->time / 100;
-        int time_cent = ed->time % 100;
-
-        /* Nodes */
-        if( ed->nodes < 1000000 ) {
-            sprintf( s_nodes, "%lu", ed->nodes );
-        }
-        else {
-            sprintf( s_nodes, "%.1fM", ed->nodes / 1000000.0 );
-        }
-
-        /* Score */
-        if( ed->score > 0 ) {
-            sprintf( s_score, "+%.2f", ed->score / 100.0 );
-        }
-        else {
-            sprintf( s_score, "%.2f", ed->score / 100.0 );
-        }
-
-        /* Time */
-        sprintf( s_time, "%d:%02d.%02d", time_secs / 60, time_secs % 60, time_cent );
-
-        /* Put all together... */
-        sprintf( buf, "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
-
-        /* Add PV */
-        buflen = strlen(buf);
-
-        strncpy( buf + buflen, ed->pv, sizeof(buf) - buflen );
-
-        buf[ sizeof(buf) - 3 ] = '\0';
-
-        strcat( buf + buflen, "\r\n" );
-
-        /* Update memo */
-        InsertIntoMemo( ed->hMemo, buf );
-    }
-
-    /* Colors */
-    SetEngineColorIcon( ed->hColorIcon, ed->which );
-}
-
+// This seems pure front end
 LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static SnapData sd;
@@ -621,13 +392,10 @@ LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
     return FALSE;
 }
 
-VOID EngineOutputPopUp()
+// front end
+void EngineOutputPopUp()
 {
   FARPROC lpProc;
-
-  if( needInit ) {
-      InitializeEngineOutput();
-  }
   
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowEngineOutput, MF_CHECKED);
 
@@ -647,11 +415,17 @@ VOID EngineOutputPopUp()
     FreeProcInstance(lpProc);
   }
 
+  // [HGM] displaced to after creation of dialog, to allow initialization of output fields
+  if( needInit ) {
+      InitializeEngineOutput();
+      needInit = FALSE;
+  }
+
   engineOutputDialogUp = TRUE;
-  ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
 }
 
-VOID EngineOutputPopDown()
+// front end
+void EngineOutputPopDown()
 {
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowEngineOutput, MF_UNCHECKED);
 
@@ -660,18 +434,54 @@ VOID EngineOutputPopDown()
   }
 
   engineOutputDialogUp = FALSE;
-  ShowThinkingEvent(); // [HGM] thinking: might need to shut off thinking output
 }
 
-BOOL EngineOutputIsUp()
+// front end. [HGM] Takes handle of output control from table, so only number is passed
+void DoClearMemo(int which)
 {
-    return engineOutputDialogUp;
+        SendMessage( outputField[which][nMemo], WM_SETTEXT, 0, (LPARAM) "" );
 }
 
-VOID EngineOutputUpdate( FrontEndProgramStats * stats )
+//------------------------ pure back-end routines -------------------------------
+
+
+// back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
+static SetEngineState( int which, int state, char * state_data )
+{
+    int x_which = 1 - which;
+
+    if( engineState[ which ] != state ) {
+        engineState[ which ] = state;
+
+        switch( state ) {
+        case STATE_THINKING:
+            SetIcon( which, nStateIcon, nThinking );
+            if( engineState[ x_which ] == STATE_THINKING ) {
+                SetEngineState( x_which, STATE_IDLE, "" );
+            }
+            break;
+        case STATE_PONDERING:
+            SetIcon( which, nStateIcon, nPondering );
+            break;
+        case STATE_ANALYZING:
+            SetIcon( which, nStateIcon, nAnalyzing );
+            break;
+        default:
+            SetIcon( which, nStateIcon, nClear );
+            break;
+        }
+    }
+
+    if( state_data != 0 ) {
+        DoSetWindowText( which, nStateData, state_data );
+    }
+}
+
+// back end, now the front-end wrapper ClearMemo is used, and ed no longer contains handles.
+void EngineOutputUpdate( FrontEndProgramStats * stats )
 {
     EngineOutputData ed;
-    BOOL clearMemo = FALSE;
+    int clearMemo = FALSE;
     int which;
     int depth;
 
@@ -680,6 +490,8 @@ VOID EngineOutputUpdate( FrontEndProgramStats * stats )
         SetEngineState( 1, STATE_IDLE, "" );
         return;
     }
+
+    if(gameMode == IcsObserving) return; // [HGM] kibitz: shut up engine if we are observing an ICS game
 
     which = stats->which;
     depth = stats->depth;
@@ -704,23 +516,11 @@ VOID EngineOutputUpdate( FrontEndProgramStats * stats )
     ed.an_move_index = stats->an_move_index;
     ed.an_move_count = stats->an_move_count;
 
-    /* Get target control */
+    /* Get target control. [HGM] this is moved to front end, which get them from a table */
     if( which == 0 ) {
-        ed.hColorIcon = GetDlgItem( engineOutputDialog, IDC_Color1 );
-        ed.hLabel = GetDlgItem( engineOutputDialog, IDC_EngineLabel1 );
-        ed.hStateIcon = GetDlgItem( engineOutputDialog, IDC_StateIcon1 );
-        ed.hStateData = GetDlgItem( engineOutputDialog, IDC_StateData1 );
-        ed.hLabelNPS = GetDlgItem( engineOutputDialog, IDC_Engine1_NPS );
-        ed.hMemo  = GetDlgItem( engineOutputDialog, IDC_EngineMemo1 );
         ed.name = first.tidy;
     }
     else {
-        ed.hColorIcon = GetDlgItem( engineOutputDialog, IDC_Color2 );
-        ed.hLabel = GetDlgItem( engineOutputDialog, IDC_EngineLabel2 );
-        ed.hStateIcon = GetDlgItem( engineOutputDialog, IDC_StateIcon2 );
-        ed.hStateData = GetDlgItem( engineOutputDialog, IDC_StateData2 );
-        ed.hLabelNPS = GetDlgItem( engineOutputDialog, IDC_Engine2_NPS );
-        ed.hMemo  = GetDlgItem( engineOutputDialog, IDC_EngineMemo2 );
         ed.name = second.tidy;
     }
 
@@ -733,9 +533,7 @@ VOID EngineOutputUpdate( FrontEndProgramStats * stats )
         clearMemo = TRUE;
     }
 
-    if( clearMemo ) {
-        SendMessage( ed.hMemo, WM_SETTEXT, 0, (LPARAM) "" );
-    }
+    if( clearMemo ) DoClearMemo(which);
 
     /* Update */
     lastDepth[which] = depth;
@@ -749,3 +547,293 @@ VOID EngineOutputUpdate( FrontEndProgramStats * stats )
 
     UpdateControls( &ed );
 }
+
+#define ENGINE_COLOR_WHITE      'w'
+#define ENGINE_COLOR_BLACK      'b'
+#define ENGINE_COLOR_UNKNOWN    ' '
+
+// pure back end
+char GetEngineColor( int which )
+{
+    char result = ENGINE_COLOR_UNKNOWN;
+
+    if( which == 0 || which == 1 ) {
+        ChessProgramState * cps;
+
+        switch (gameMode) {
+        case MachinePlaysBlack:
+        case IcsPlayingBlack:
+            result = ENGINE_COLOR_BLACK;
+            break;
+        case MachinePlaysWhite:
+        case IcsPlayingWhite:
+            result = ENGINE_COLOR_WHITE;
+            break;
+        case AnalyzeMode:
+        case AnalyzeFile:
+            result = WhiteOnMove(forwardMostMove) ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
+            break;
+        case TwoMachinesPlay:
+            cps = (which == 0) ? &first : &second;
+            result = cps->twoMachinesColor[0];
+            result = result == 'w' ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
+            break;
+        }
+    }
+
+    return result;
+}
+
+// pure back end
+char GetActiveEngineColor()
+{
+    char result = ENGINE_COLOR_UNKNOWN;
+
+    if( gameMode == TwoMachinesPlay ) {
+        result = WhiteOnMove(forwardMostMove) ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
+    }
+
+    return result;
+}
+
+// pure back end
+static int IsEnginePondering( int which )
+{
+    int result = FALSE;
+
+    switch (gameMode) {
+    case MachinePlaysBlack:
+    case IcsPlayingBlack:
+        if( WhiteOnMove(forwardMostMove) ) result = TRUE;
+        break;
+    case MachinePlaysWhite:
+    case IcsPlayingWhite:
+        if( ! WhiteOnMove(forwardMostMove) ) result = TRUE;
+        break;
+    case TwoMachinesPlay:
+        if( GetActiveEngineColor() != ENGINE_COLOR_UNKNOWN ) {
+            if( GetEngineColor( which ) != GetActiveEngineColor() ) result = TRUE;
+        }
+        break;
+    }
+
+    return result;
+}
+
+// back end
+static void SetDisplayMode( int mode )
+{
+    if( windowMode != mode ) {
+        windowMode = mode;
+
+        ResizeWindowControls( engineOutputDialog, mode );
+    }
+}
+
+// pure back end
+static VerifyDisplayMode()
+{
+    int mode;
+
+    /* Get proper mode for current game */
+    switch( gameMode ) {
+    case AnalyzeMode:
+    case AnalyzeFile:
+    case MachinePlaysWhite:
+    case MachinePlaysBlack:
+        mode = 0;
+        break;
+    case IcsPlayingWhite:
+    case IcsPlayingBlack:
+        mode = appData.zippyPlay && opponentKibitzes; // [HGM] kibitz
+        break;
+    case TwoMachinesPlay:
+        mode = 1;
+        break;
+    default:
+        /* Do not change */
+        return;
+    }
+
+    SetDisplayMode( mode );
+}
+
+// back end. Determine what icon to se in the color-icon field, and print it
+static void SetEngineColorIcon( int which )
+{
+    char color = GetEngineColor(which);
+    int nicon = 0;
+
+    if( color == ENGINE_COLOR_BLACK )
+        nicon = nColorBlack;
+    else if( color == ENGINE_COLOR_WHITE )
+        nicon = nColorWhite;
+    else
+        nicon = nColorUnknown;
+
+    SetIcon( which, nColorIcon, nicon );
+}
+
+#define MAX_NAME_LENGTH 32
+
+// pure back end, now SetWindowText is called via wrapper DoSetWindowText
+static void UpdateControls( EngineOutputData * ed )
+{
+    int isPondering = FALSE;
+
+    char s_label[MAX_NAME_LENGTH + 32];
+    
+    char * name = ed->name;
+
+    /* Label */
+    if( name == 0 || *name == '\0' ) {
+        name = "?";
+    }
+
+    strncpy( s_label, name, MAX_NAME_LENGTH );
+    s_label[ MAX_NAME_LENGTH-1 ] = '\0';
+
+#ifdef SHOW_PONDERING
+    if( IsEnginePondering( ed->which ) ) {
+        char buf[8];
+
+        buf[0] = '\0';
+
+        if( ed->hint != 0 && *ed->hint != '\0' ) {
+            strncpy( buf, ed->hint, sizeof(buf) );
+            buf[sizeof(buf)-1] = '\0';
+        }
+        else if( ed->pv != 0 && *ed->pv != '\0' ) {
+            char * sep = strchr( ed->pv, ' ' );
+            int buflen = sizeof(buf);
+
+            if( sep != NULL ) {
+                buflen = sep - ed->pv + 1;
+                if( buflen > sizeof(buf) ) buflen = sizeof(buf);
+            }
+
+            strncpy( buf, ed->pv, buflen );
+            buf[ buflen-1 ] = '\0';
+        }
+
+        SetEngineState( ed->which, STATE_PONDERING, buf );
+    }
+    else if( gameMode == TwoMachinesPlay ) {
+        SetEngineState( ed->which, STATE_THINKING, "" );
+    }
+    else if( gameMode == AnalyzeMode || gameMode == AnalyzeFile ) {
+        char buf[64];
+        int time_secs = ed->time / 100;
+        int time_mins = time_secs / 60;
+
+        buf[0] = '\0';
+
+        if( ed->an_move_index != 0 && ed->an_move_count != 0 && *ed->hint != '\0' ) {
+            char mov[16];
+
+            strncpy( mov, ed->hint, sizeof(mov) );
+            mov[ sizeof(mov)-1 ] = '\0';
+
+            sprintf( buf, "%d/%d: %s [%02d:%02d:%02d]", ed->an_move_index, ed->an_move_count, mov, time_mins / 60, time_mins % 60, time_secs % 60 );
+        }
+
+        SetEngineState( ed->which, STATE_ANALYZING, buf );
+    }
+    else {
+        SetEngineState( ed->which, STATE_IDLE, "" );
+    }
+#endif
+
+    DoSetWindowText( ed->which, nLabel, s_label );
+
+    s_label[0] = '\0';
+
+    if( ed->time > 0 && ed->nodes > 0 ) {
+        unsigned long nps_100 = ed->nodes / ed->time;
+
+        if( nps_100 < 100000 ) {
+            sprintf( s_label, "NPS: %lu", nps_100 * 100 );
+        }
+        else {
+            sprintf( s_label, "NPS: %.1fk", nps_100 / 10.0 );
+        }
+    }
+
+    DoSetWindowText( ed->which, nLabelNPS, s_label );
+
+    /* Memo */
+    if( ed->pv != 0 && *ed->pv != '\0' ) {
+        char s_nodes[24];
+        char s_score[16];
+        char s_time[24];
+        char buf[256];
+        int buflen;
+        int time_secs = ed->time / 100;
+        int time_cent = ed->time % 100;
+
+        /* Nodes */
+        if( ed->nodes < 1000000 ) {
+            sprintf( s_nodes, "%lu", ed->nodes );
+        }
+        else {
+            sprintf( s_nodes, "%.1fM", ed->nodes / 1000000.0 );
+        }
+
+        /* Score */
+        if( ed->score > 0 ) {
+            sprintf( s_score, "+%.2f", ed->score / 100.0 );
+        }
+        else {
+            sprintf( s_score, "%.2f", ed->score / 100.0 );
+        }
+
+        /* Time */
+        sprintf( s_time, "%d:%02d.%02d", time_secs / 60, time_secs % 60, time_cent );
+
+        /* Put all together... */
+        sprintf( buf, "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
+
+        /* Add PV */
+        buflen = strlen(buf);
+
+        strncpy( buf + buflen, ed->pv, sizeof(buf) - buflen );
+
+        buf[ sizeof(buf) - 3 ] = '\0';
+
+        strcat( buf + buflen, "\r\n" );
+
+        /* Update memo */
+        InsertIntoMemo( ed->which, buf );
+    }
+
+    /* Colors */
+    SetEngineColorIcon( ed->which );
+}
+
+// back end
+int EngineOutputIsUp()
+{
+    return engineOutputDialogUp;
+}
+
+// [HGM] kibitz: write kibitz line; split window for it if necessary
+void OutputKibitz(int window, char *text)
+{
+	if(!EngineOutputIsUp()) return;
+	if(!opponentKibitzes) { // on first kibitz of game, clear memos
+	    DoClearMemo(1);
+	    if(gameMode == IcsObserving) DoClearMemo(0);
+	}
+	opponentKibitzes = TRUE; // this causes split window DisplayMode in ICS modes.
+	VerifyDisplayMode();
+	if(gameMode == IcsObserving) {
+	    DoSetWindowText(0, nLabel, gameInfo.white);
+	    SetIcon( 0, nColorIcon,  nColorWhite);
+	    SetIcon( 0, nStateIcon,  nClear);
+	}
+	DoSetWindowText(1, nLabel, gameMode == IcsPlayingBlack ? gameInfo.white : gameInfo.black); // opponent name
+	SetIcon( 1, nColorIcon,  gameMode == IcsPlayingBlack ? nColorWhite : nColorBlack);
+	SetIcon( 1, nStateIcon,  nClear);
+	InsertIntoMemo(window-1, text);
+}
+

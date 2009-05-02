@@ -648,6 +648,7 @@ VOID EngineOutputPopUp()
   }
 
   engineOutputDialogUp = TRUE;
+  ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
 }
 
 VOID EngineOutputPopDown()
@@ -659,6 +660,7 @@ VOID EngineOutputPopDown()
   }
 
   engineOutputDialogUp = FALSE;
+  ShowThinkingEvent(); // [HGM] thinking: might need to shut off thinking output
 }
 
 BOOL EngineOutputIsUp()

@@ -1019,8 +1019,8 @@ the engine has to decide for itself
 how to divide up the available memory between the various tables it wants to use 
 (e.g. main hash, pawn hash, tablebase cache, bitbases).
 This command will only be sent to engines that have requested it through the memory feature,
-and only at the beginning of a game
-(before any moves have been done).
+and only at the start of a game,
+as the first of the commands to relay engine option settings just before each "new" command.
 </font>
 <p>
 
@@ -1032,7 +1032,9 @@ This could be interpreted as the number of search threads for SMP engines.
 This command will only be sent to engines that have requested it through the smp feature.
 The engine should be able to respond to the "cores" command any time during a game,
 but it is allowed to finish a search in progress before procesing the command.
-(Reaction during ponder time should be immediate, though.)
+(Obeying the command should take priority over finishing a ponder search, though.)
+In any case it will be sent at the start of every game
+as the last command to relay engine option settings before the "new" command.
 </font>
 <p>
 
@@ -1052,6 +1054,7 @@ but could also be the name of a file, or in fact anything the particular EGT typ
 It is upto the developer of the EGT format to specify the syntax of this parameter.
 This command will only be sent to engines that have told the GUI they support EGTs of the given TYPE
 through the egt feature.
+It will be sent at the start of each game, before the "new" command.
 </font>
 </dl>
 
@@ -1391,6 +1394,8 @@ will be set by the GUI through the "memory" command.
 </font>
 <dd><font color=blue>
 If smp=1, the GUI will send the "cores" command to the engine to inform it how many CPU cores it can use.
+Note that sending smp=1 does not imply the engine can use more than one CPU;
+just that it wants to receive the "cores" command.
 </font>
 
 <dt><font color=blue>

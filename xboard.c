@@ -423,11 +423,14 @@ void EngineMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UciMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ShufflePopDown P(());
 void EnginePopDown P(());
 void UciPopDown P(());
 void TimeControlPopDown P(());
 void NewVariantPopDown P(());
+void SettingsPopDown P(());
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -606,7 +609,9 @@ MenuItem optionsMenu[] = {
     {"Flip View", FlipViewProc},
     {"----", NothingProc},    
     {"Adjudications ...", EngineMenuProc},    
-    {"Engine Settings ...", UciMenuProc},    
+    {"General Settings ...", UciMenuProc},    
+    {"Engine #1 Settings ...", FirstSettingsProc},    
+    {"Engine #2 Settings ...", SecondSettingsProc},    
     {"Time Control ...", TimeControlProc},    
     {"----", NothingProc},    
     {"Always Queen", AlwaysQueenProc},
@@ -1287,6 +1292,9 @@ XtResource clientResources[] = {
     { "smpCores", "smpCores", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, smpCores),
 	XtRImmediate, (XtPointer) 1},
+    { "niceEngines", "niceEngines", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, niceEngines),
+	XtRImmediate, (XtPointer) 0},
 
     // [HGM] Winboard_x UCI options
     { "firstIsUCI", "firstIsUCI", XtRBoolean,
@@ -1319,6 +1327,12 @@ XtResource clientResources[] = {
     { "defaultPathEGTB", "defaultPathEGTB", XtRString,
 	sizeof(String), XtOffset(AppDataPtr, defaultPathEGTB),
 	XtRImmediate, (XtPointer) "/usr/local/share/egtb"},
+    { "delayBeforeQuit", "delayBeforeQuit", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, delayBeforeQuit),
+	XtRImmediate, (XtPointer) 0},
+    { "delayAfterQuit", "delayAfterQuit", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, delayAfterQuit),
+	XtRImmediate, (XtPointer) 0},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1668,6 +1682,9 @@ XrmOptionDescRec shellOptions[] = {
     { "-smpCores", "smpCores", XrmoptionSepArg, NULL }, 
     { "-sameColorGames", "sameColorGames", XrmoptionSepArg, NULL }, 
     { "-rewindIndex", "rewindIndex", XrmoptionSepArg, NULL }, 
+    { "-niceEngines", "niceEngines", XrmoptionSepArg, NULL }, 
+    { "-delayBeforeQuit", "delayBeforeQuit", XrmoptionSepArg, NULL }, 
+    { "-delayAfterQuit", "delayAfterQuit", XrmoptionSepArg, NULL }, 
 };
 
 
@@ -1791,6 +1808,7 @@ XtActionsRec boardActions[] = {
     { "UciPopDown", (XtActionProc) UciPopDown },
     { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
     { "NewVariantPopDown", (XtActionProc) NewVariantPopDown },
+    { "SettingsPopDown", (XtActionProc) SettingsPopDown },
 };
      
 char globalTranslations[] =
@@ -7999,6 +8017,8 @@ int StartChildProcess(cmdLine, dir, pr)
 	    exit(1);
 	}
 
+	nice(appData.niceEngines); // [HGM] nice: adjust priority of engine proc
+
         execvp(argv[0], argv);
 	
 	/* If we get here, exec failed */
@@ -8019,22 +8039,37 @@ int StartChildProcess(cmdLine, dir, pr)
     return 0;
 }
 
+// [HGM] kill: implement the 'hard killing' of AS's Winboard_x
+static RETSIGTYPE AlarmCallBack(int n)
+{
+    return;
+}
+
 void
-DestroyChildProcess(pr, signal)
+DestroyChildProcess(pr, signalType)
      ProcRef pr;
-     int signal;
+     int signalType;
 {
     ChildProc *cp = (ChildProc *) pr;
 
     if (cp->kind != CPReal) return;
     cp->kind = CPNone;
-    if (signal) {
-      kill(cp->pid, SIGTERM);
+    if (signalType == 10) { // [HGM] kill: if it does not terminate in 3 sec, kill
+	signal(SIGALRM, AlarmCallBack);
+	alarm(3);
+	if(wait((int *) 0) == -1) { // process does not terminate on its own accord
+	    kill(cp->pid, SIGKILL); // kill it forcefully
+	    wait((int *) 0);        // and wait again
+	}
+    } else {
+	if (signalType) {
+	    kill(cp->pid, signalType == 9 ? SIGKILL : SIGTERM); // [HGM] kill: use hard kill if so requested
+	}
+	/* Process is exiting either because of the kill or because of
+	   a quit command sent by the backend; either way, wait for it to die.
+	*/
+	wait((int *) 0);
     }
-    /* Process is exiting either because of the kill or because of
-       a quit command sent by the backend; either way, wait for it to die.
-    */
-    wait((int *) 0);
     close(cp->fdFrom);
     close(cp->fdTo);
 }

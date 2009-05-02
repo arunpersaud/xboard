@@ -88,6 +88,8 @@ extern char *getenv();
 #include "backend.h"
 #include "backendz.h"
 
+char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [HGM] book
+
 static char zippyPartner[MSG_SIZ];
 static char zippyLastOpp[MSG_SIZ];
 static int zippyConsecGames;
@@ -965,6 +967,7 @@ void ZippyFirstBoard(moveNum, basetime, increment)
     int w, b;
     char *opp = (gameMode==IcsPlayingWhite ? gameInfo.black : gameInfo.white);
     Boolean sentPos = FALSE;
+    char *bookHit = NULL; // [HGM] book
 
     if (!first.initDone) {
       /* Game is starting prematurely.  We can't deal with this */
@@ -1035,7 +1038,7 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 		  SendTimeRemaining(&first, TRUE);
 		}
 	      }
-	      SendToProgram("go\n", &first);
+	      bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
 	    } else {
 	        /* Engine's opponent is on move now */
 	        if (first.usePlayother) {
@@ -1061,7 +1064,8 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 		  SendTimeRemaining(&first, TRUE);
 		}
 	      }
-	      SendToProgram("go\n", &first);
+//	      SendToProgram("go\n", &first);
+	      bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
 	    }
 	}
     } else if (gameMode == IcsPlayingBlack) {
@@ -1085,7 +1089,8 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 		  SendTimeRemaining(&first, FALSE);
 		}
 	      }
-	      SendToProgram("go\n", &first);
+//	      SendToProgram("go\n", &first);
+	      bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
 	    } else {
 	        /* Engine's opponent is on move now */
 	        if (first.usePlayother) {
@@ -1102,6 +1107,18 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 	    /* Position not sent above, move list might be sent later */
 	    /* Nothing needs to be done here */
 	}	
+    }
+
+    if(bookHit) { // [HGM] book: simulate book reply
+	static char bookMove[MSG_SIZ]; // a bit generous?
+
+	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.score = programStats.got_only_move = 0;
+	sprintf(programStats.movelist, "%s (xbook)", bookHit);
+
+	strcpy(bookMove, "move ");
+	strcat(bookMove, bookHit);
+	HandleMachineMove(bookMove, &first);
     }
 }
 

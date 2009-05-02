@@ -125,6 +125,7 @@ static void SetEngineColorIcon( int which );
 
 /* Imports from backend.c */
 char * SavePart(char *str);
+extern int opponentKibitzes;
 
 /* Imports from winboard.c */
 //extern HWND engineOutputDialog;
@@ -172,7 +173,7 @@ typedef struct {
     int an_move_count;
 } EngineOutputData;
 
-static VerifyDisplayMode();
+static int VerifyDisplayMode();
 static void UpdateControls( EngineOutputData * ed );
 static SetEngineState( int which, int state, char * state_data );
 
@@ -844,6 +845,7 @@ void EngineOutputPopDown()
     int j;
 
     if (!engineOutputDialogUp) return;
+    DoClearMemo(1);
     j = 0;
     XtSetArg(args[j], XtNx, &engineOutputX); j++;
     XtSetArg(args[j], XtNy, &engineOutputY); j++;
@@ -929,6 +931,8 @@ void EngineOutputUpdate( FrontEndProgramStats * stats )
         SetEngineState( 1, STATE_IDLE, "" );
         return;
     }
+
+    if(gameMode == IcsObserving) return; // [HGM] kibitz: shut up engine if we are observing an ICS game
 
     which = stats->which;
     depth = stats->depth;
@@ -1068,7 +1072,7 @@ static void SetDisplayMode( int mode )
 }
 
 // pure back end
-static VerifyDisplayMode()
+int VerifyDisplayMode()
 {
     int mode;
 
@@ -1078,9 +1082,11 @@ static VerifyDisplayMode()
     case AnalyzeFile:
     case MachinePlaysWhite:
     case MachinePlaysBlack:
+        mode = 0;
+        break;
     case IcsPlayingWhite:
     case IcsPlayingBlack:
-        mode = 0;
+        mode = appData.zippyPlay && opponentKibitzes; // [HGM] kibitz
         break;
     case TwoMachinesPlay:
         mode = 1;
@@ -1262,5 +1268,26 @@ EngineOutputProc(w, event, prms, nprms)
     EngineOutputPopUp("engine output","This feature is experimental");
   }
 //  ToNrEvent(currentMove);
+}
+
+// [HGM] kibitz: write kibitz line; split window for it if necessary
+void OutputKibitz(int window, char *text)
+{
+	if(!EngineOutputIsUp()) return;
+	if(!opponentKibitzes) { // on first kibitz of game, clear memos
+	    DoClearMemo(1);
+	    if(gameMode == IcsObserving) DoClearMemo(0);
+	}
+	opponentKibitzes = TRUE; // this causes split window DisplayMode in ICS modes.
+	VerifyDisplayMode();
+	if(gameMode == IcsObserving) {
+	    DoSetWindowText(0, nLabel, gameInfo.white);
+	    SetIcon( 0, nColorIcon,  nColorWhite);
+	    SetIcon( 0, nStateIcon,  nClear);
+	}
+	DoSetWindowText(1, nLabel, gameMode == IcsPlayingBlack ? gameInfo.white : gameInfo.black); // opponent name
+	SetIcon( 1, nColorIcon,  gameMode == IcsPlayingBlack ? nColorWhite : nColorBlack);
+	SetIcon( 1, nStateIcon,  nClear);
+	InsertIntoMemo(window-1, text);
 }
 

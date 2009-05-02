@@ -60,8 +60,7 @@ wbres.o: $(proj).rc $(proj).h resource.h
 parser.c: parser.l
 	flex -oparser.c -L $<
 
-#$(proj).exe: $(allobj) $(proj).hlp $(proj).rc
-$(proj).exe: $(allobj) $(proj).rc
+$(proj).exe: $(allobj) $(proj).hlp $(proj).rc
 	$(WCC) $(guiflags) $(allobj) \
 	-lwsock32 -lwinmm \
 	-o $(proj).exe

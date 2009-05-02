@@ -140,7 +140,8 @@ BOOLEAN chessProgram;
 static int boardX, boardY, consoleX, consoleY, consoleW, consoleH;
 static int squareSize, lineGap, minorSize;
 static int winWidth, winHeight;
-static RECT messageRect, whiteRect, blackRect;
+static RECT messageRect, whiteRect, blackRect, leftLogoRect, rightLogoRect; // [HGM] logo
+static int logoHeight = 0;
 static char messageText[MESSAGE_TEXT_MAX];
 static int clockTimerEvent = 0;
 static int loadGameTimerEvent = 0;
@@ -613,6 +614,35 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
     return (FALSE);
   }
 
+  /* [HGM] logo: Load logos if specified (must be done before InitDrawingSizes) */
+  if( appData.firstLogo && appData.firstLogo[0] != NULLCHAR) {
+      first.programLogo = LoadImage( 0, appData.firstLogo, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+
+      if (first.programLogo == NULL && appData.debugMode) {
+          fprintf( debugFP, "Unable to load logo bitmap '%s'\n", appData.firstLogo );
+      }
+  } else if(appData.autoLogo) {
+      if(appData.firstDirectory && appData.firstDirectory[0]) {
+	char buf[MSG_SIZ];
+	sprintf(buf, "%s/logo.bmp", appData.firstDirectory);
+	first.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
+      }
+  }
+
+  if( appData.secondLogo && appData.secondLogo[0] != NULLCHAR) {
+      second.programLogo = LoadImage( 0, appData.secondLogo, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+
+      if (second.programLogo == NULL && appData.debugMode) {
+          fprintf( debugFP, "Unable to load logo bitmap '%s'\n", appData.secondLogo );
+      }
+  } else if(appData.autoLogo) {
+      if(appData.secondDirectory && appData.secondDirectory[0]) {
+	char buf[MSG_SIZ];
+	sprintf(buf, "%s\\logo.bmp", appData.secondDirectory);
+	second.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
+      }
+  }
+
   iconWhite = LoadIcon(hInstance, "icon_white");
   iconBlack = LoadIcon(hInstance, "icon_black");
   iconCurrent = iconWhite;
@@ -630,6 +660,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
       boardSize = (BoardSize)ibs;
     }
   }
+
   InitDrawingSizes(boardSize, 0);
   InitMenuChecks();
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
@@ -1188,6 +1219,10 @@ ArgDescriptor argDescriptors[] = {
   { "sameColorGames", ArgInt, (LPVOID) &appData.sameColorGames, FALSE },
   { "smpCores", ArgInt, (LPVOID) &appData.smpCores, TRUE },
   { "egtFormats", ArgString, (LPVOID) &appData.egtFormats, TRUE },
+  { "niceEngines", ArgInt, (LPVOID) &appData.niceEngines, TRUE },
+  { "firstLogo", ArgFilename, (LPVOID) &appData.firstLogo, FALSE },
+  { "secondLogo", ArgFilename, (LPVOID) &appData.secondLogo, FALSE },
+  { "autoLogo", ArgBoolean, (LPVOID) &appData.autoLogo, TRUE },
 
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
@@ -2530,7 +2565,7 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
     SetBkMode( hdc, TRANSPARENT );
     SetTextColor( hdc, chroma );
     /* Step 2: the piece has been drawn in purple, there are now black and purple in this bitmap */
-    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[index], 1 );
+    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[appData.allWhite && index >= (int)BlackPawn ? index - (int)BlackPawn : index], 1 );
 
     SelectObject( hdc, GetStockObject(WHITE_BRUSH) );
     /* Step 3: the area outside the piece is filled with white */
@@ -2569,7 +2604,7 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
         Step 5: some fonts have "disconnected" areas that are skipped by the fill:
         draw the piece again in black for safety.
     */
-    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[index], 1 );
+    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[appData.allWhite && index >= (int)BlackPawn ? index - (int)BlackPawn : index], 1 );
 
     SelectObject( hdc, hbm_old );
 
@@ -2610,7 +2645,7 @@ static void CreatePieceMaskFromFont( HDC hdc_window, HDC hdc, int index )
     }
 
     SetTextColor( hdc, foreColor );
-    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[index], 1 );
+    TextOut( hdc, pt.x, pt.y, &pieceToFontChar[appData.allWhite && index >= (int)BlackPawn ? index - (int)BlackPawn : index], 1 );
 
     SelectObject( hdc, hbm_old );
 
@@ -3059,27 +3094,52 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   ReleaseDC(hwndMain, hdc);
 
   /* Compute where everything goes */
-  whiteRect.left = OUTER_MARGIN;
-  whiteRect.right = whiteRect.left + boardWidth/2 - INNER_MARGIN/2;
-  whiteRect.top = OUTER_MARGIN;
-  whiteRect.bottom = whiteRect.top + clockSize.cy;
+  if(first.programLogo || second.programLogo) {
+        /* [HGM] logo: if either logo is on, reserve space for it */
+	logoHeight =  2*clockSize.cy;
+	leftLogoRect.left   = OUTER_MARGIN;
+	leftLogoRect.right  = leftLogoRect.left + 4*clockSize.cy;
+	leftLogoRect.top    = OUTER_MARGIN;
+	leftLogoRect.bottom = OUTER_MARGIN + logoHeight;
 
-  blackRect.left = whiteRect.right + INNER_MARGIN;
-  blackRect.right = blackRect.left + boardWidth/2 - 1;
-  blackRect.top = whiteRect.top;
-  blackRect.bottom = whiteRect.bottom;
+	rightLogoRect.right  = OUTER_MARGIN + boardWidth;
+	rightLogoRect.left   = rightLogoRect.right - 4*clockSize.cy;
+	rightLogoRect.top    = OUTER_MARGIN;
+	rightLogoRect.bottom = OUTER_MARGIN + logoHeight;
 
-  messageRect.left = whiteRect.left + MESSAGE_LINE_LEFTMARGIN;
+
+    blackRect.left = leftLogoRect.right;
+    blackRect.right = rightLogoRect.left;
+    blackRect.top = OUTER_MARGIN;
+    blackRect.bottom = blackRect.top + clockSize.cy;
+
+    whiteRect.left = blackRect.left ;
+    whiteRect.right = blackRect.right;
+    whiteRect.top = blackRect.bottom;
+    whiteRect.bottom = leftLogoRect.bottom;
+  } else {
+    whiteRect.left = OUTER_MARGIN;
+    whiteRect.right = whiteRect.left + boardWidth/2 - INNER_MARGIN/2;
+    whiteRect.top = OUTER_MARGIN + logoHeight;
+    whiteRect.bottom = whiteRect.top + clockSize.cy;
+
+    blackRect.left = whiteRect.right + INNER_MARGIN;
+    blackRect.right = blackRect.left + boardWidth/2 - 1;
+    blackRect.top = whiteRect.top;
+    blackRect.bottom = whiteRect.bottom;
+  }
+
+  messageRect.left = OUTER_MARGIN + MESSAGE_LINE_LEFTMARGIN;
   if (appData.showButtonBar) {
-    messageRect.right = blackRect.right
+    messageRect.right = OUTER_MARGIN + boardWidth         // [HGM] logo: expressed independent of clock placement
       - N_BUTTONS*BUTTON_WIDTH - MESSAGE_LINE_LEFTMARGIN;
   } else {
-    messageRect.right = blackRect.right;
+    messageRect.right = OUTER_MARGIN + boardWidth;
   }
   messageRect.top = whiteRect.bottom + INNER_MARGIN;
   messageRect.bottom = messageRect.top + messageSize.cy;
 
-  boardRect.left = whiteRect.left;
+  boardRect.left = OUTER_MARGIN;
   boardRect.right = boardRect.left + boardWidth;
   boardRect.top = messageRect.bottom + INNER_MARGIN;
   boardRect.bottom = boardRect.top + boardHeight;
@@ -3565,7 +3625,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
     CreatePiecesFromFont();
 
     if( fontBitmapSquareSize == squareSize ) {
-        int index = TranslatePieceToFontPiece( piece );
+        int index = TranslatePieceToFontPiece(piece);
 
         SelectObject( tmphdc, hPieceMask[ index ] );
 
@@ -3710,16 +3770,16 @@ VOID RebuildTextureSquareInfo()
             if( (col + row) & 1 ) {
                 /* Lite square */
                 if( lite_w >= squareSize && lite_h >= squareSize ) {
-                    backTextureSquareInfo[row][col].x = col * (lite_w - squareSize) / BOARD_WIDTH;
-                    backTextureSquareInfo[row][col].y = row * (lite_h - squareSize) / BOARD_HEIGHT;
+                    backTextureSquareInfo[row][col].x = col * (lite_w - squareSize) / (BOARD_WIDTH-1);  /* [HGM] divide by size-1 in stead of size! */
+                    backTextureSquareInfo[row][col].y = (BOARD_HEIGHT-1-row) * (lite_h - squareSize) / (BOARD_HEIGHT-1);
                     backTextureSquareInfo[row][col].mode = GetBackTextureMode(liteBackTextureMode);
                 }
             }
             else {
                 /* Dark square */
                 if( dark_w >= squareSize && dark_h >= squareSize ) {
-                    backTextureSquareInfo[row][col].x = col * (dark_w - squareSize) / BOARD_WIDTH;
-                    backTextureSquareInfo[row][col].y = row * (dark_h - squareSize) / BOARD_HEIGHT;
+                    backTextureSquareInfo[row][col].x = col * (dark_w - squareSize) / (BOARD_WIDTH-1);
+                    backTextureSquareInfo[row][col].y = (BOARD_HEIGHT-1-row) * (dark_h - squareSize) / (BOARD_HEIGHT-1);
                     backTextureSquareInfo[row][col].mode = GetBackTextureMode(darkBackTextureMode);
                 }
             }
@@ -4045,7 +4105,7 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
       piece = board[row][column];
 
       square_color = ((column + row) % 2) == 1;
-      if(!strcmp(appData.variant, "xiangqi") ) {
+      if( gameInfo.variant == VariantXiangqi ) {
           square_color = !InPalace(row, column);
           if(BOARD_HEIGHT&1) { if(row==BOARD_HEIGHT/2) square_color ^= 1; }
           else if(row < BOARD_HEIGHT/2) square_color ^= 1;
@@ -4086,14 +4146,16 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
       else if( backTextureSquareInfo[row][column].mode > 0 ) {
           /* [AS] Draw the square using a texture bitmap */
           HBITMAP hbm = SelectObject( texture_hdc, square_color ? liteBackTexture : darkBackTexture );
+	  int r = row, c = column; // [HGM] do not flip board in flipView
+	  if(flipView) { r = BOARD_HEIGHT-1 - r; c = BOARD_WIDTH-1 - c; }
 
           DrawTile( x, y, 
               squareSize, squareSize, 
               hdc, 
               texture_hdc,
-              backTextureSquareInfo[row][column].mode,
-              backTextureSquareInfo[row][column].x,
-              backTextureSquareInfo[row][column].y );
+              backTextureSquareInfo[r][c].mode,
+              backTextureSquareInfo[r][c].x,
+              backTextureSquareInfo[r][c].y );
 
           SelectObject( texture_hdc, hbm );
 
@@ -4128,6 +4190,32 @@ void fputDW(FILE *f, int x)
 }
 
 #define MAX_CLIPS 200   /* more than enough */
+
+VOID
+DrawLogoOnDC(HDC hdc, RECT logoRect, ChessProgramState *cps)
+{
+  HBITMAP bufferBitmap;
+  BITMAP bi;
+  RECT Rect;
+  HDC tmphdc;
+  HBITMAP hbm;
+  int w = 100, h = 50;
+
+  if(cps->programLogo == NULL) return;
+//  GetClientRect(hwndMain, &Rect);
+//  bufferBitmap = CreateCompatibleBitmap(hdc, Rect.right-Rect.left+1,
+//					Rect.bottom-Rect.top+1);
+  tmphdc = CreateCompatibleDC(hdc);
+  hbm = SelectObject(tmphdc, (HBITMAP) cps->programLogo);
+  if( GetObject( cps->programLogo, sizeof(bi), &bi ) > 0 ) {
+            w = bi.bmWidth;
+            h = bi.bmHeight;
+  }
+  StretchBlt(hdc, logoRect.left, logoRect.top, logoRect.right - logoRect.left, 
+                  logoRect.bottom - logoRect.top, tmphdc, 0, 0, w, h, SRCCOPY);
+  SelectObject(tmphdc, hbm);
+  DeleteDC(tmphdc);
+}
 
 VOID
 HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
@@ -4382,6 +4470,11 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   DrawGridOnDC(hdcmem);
   DrawHighlightsOnDC(hdcmem);
   DrawBoardOnDC(hdcmem, board, tmphdc);
+
+  if(logoHeight) {
+	DrawLogoOnDC(hdc, leftLogoRect, flipClock ? &second : &first);
+	DrawLogoOnDC(hdc, rightLogoRect, flipClock ? &first : &second);
+  }
 
   if( appData.highlightMoveWithArrow ) {
     DrawArrowHighlight(hdcmem);
@@ -4727,7 +4820,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		   gameMode == MachinePlaysWhite) {
 	  CallFlagEvent();
         } else if (gameMode == EditGame) {
-          AdjustClock(flipClock, -1);
+          AdjustClock((logoHeight > 0 ? flipView: flipClock), -1);
         }
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
 	if (gameMode == EditPosition) {
@@ -4736,7 +4829,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		   gameMode == MachinePlaysBlack) {
 	  CallFlagEvent();
         } else if (gameMode == EditGame) {
-          AdjustClock(!flipClock, -1);
+          AdjustClock(!(logoHeight > 0 ? flipView: flipClock), -1);
 	}
       }
       if (!appData.highlightLastMove) {
@@ -4794,7 +4887,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                   DrawPosition(forceFullRepaint || FALSE, NULL);
                   /* [HGM] <popupFix> Popup calls FinishMove now.
                      If promotion to Q is legal, all are legal! */
-		  if(gameInfo.variant == VariantSuper)
+		  if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat)
 		  { ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
 		    // kludge to temporarily execute move on display, wthout promotng yet
 		    promotionChoice = TRUE;
@@ -4893,7 +4986,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
           else 
           if (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen ) {
                DrawPosition(forceFullRepaint || FALSE, NULL);
-		  if(gameInfo.variant == VariantSuper)
+		  if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat)
 		  { ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
 		    // kludge to temporarily execute move on display, wthout promotng yet
 		    promotionChoice = TRUE;
@@ -4961,9 +5054,9 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     if(y == -2) {
       /* [HGM] right mouse button in clock area edit-game mode ups clock */
       if (PtInRect((LPRECT) &whiteRect, pt)) {
-          if (gameMode == EditGame) AdjustClock(flipClock, 1);
+          if (gameMode == EditGame) AdjustClock((logoHeight > 0 ? flipView: flipClock), 1);
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
-          if (gameMode == EditGame) AdjustClock(!flipClock, 1);
+          if (gameMode == EditGame) AdjustClock(!(logoHeight > 0 ? flipView: flipClock), 1);
       }
     }
     DrawPosition(TRUE, NULL);
@@ -9293,7 +9386,8 @@ DisplayWhiteClock(long timeRemaining, int highlight)
   char *flag = whiteFlag && gameMode == TwoMachinesPlay ? "(!)" : "";
 
   if (!IsIconic(hwndMain)) {
-    DisplayAClock(hdc, timeRemaining, highlight, flipClock ? &blackRect : &whiteRect, "White", flag);
+    DisplayAClock(hdc, timeRemaining, highlight, 
+			(logoHeight > 0 ? flipView: flipClock) ? &blackRect : &whiteRect, "White", flag);
   }
   if (highlight && iconCurrent == iconBlack) {
     iconCurrent = iconWhite;
@@ -9315,7 +9409,8 @@ DisplayBlackClock(long timeRemaining, int highlight)
 
   hdc = GetDC(hwndMain);
   if (!IsIconic(hwndMain)) {
-    DisplayAClock(hdc, timeRemaining, highlight, flipClock ? &whiteRect : &blackRect, "Black", flag);
+    DisplayAClock(hdc, timeRemaining, highlight, 
+			(logoHeight > 0 ? flipView: flipClock) ? &whiteRect : &blackRect, "Black", flag);
   }
   if (highlight && iconCurrent == iconWhite) {
     iconCurrent = iconBlack;
@@ -9404,6 +9499,23 @@ CancelDelayedEvent()
     KillTimer(hwndMain, delayedTimerEvent);
     delayedTimerEvent = 0;
   }
+}
+
+DWORD GetWin32Priority(int nice)
+{ // [HGM] nice: translate Unix nice() value to indows priority class. (Code stolen from Polyglot 1.4w11)
+/*
+REALTIME_PRIORITY_CLASS     0x00000100
+HIGH_PRIORITY_CLASS         0x00000080
+ABOVE_NORMAL_PRIORITY_CLASS 0x00008000
+NORMAL_PRIORITY_CLASS       0x00000020
+BELOW_NORMAL_PRIORITY_CLASS 0x00004000
+IDLE_PRIORITY_CLASS         0x00000040
+*/
+        if (nice < -15) return 0x00000080;
+        if (nice < 0)   return 0x00008000;
+        if (nice == 0)  return 0x00000020;
+        if (nice < 15)  return 0x00004000;
+        return 0x00000040;
 }
 
 /* Start a child process running the given program.
@@ -9519,6 +9631,11 @@ StartChildProcess(char *cmdLine, char *dir, ProcRef *pr)
   SetCurrentDirectory(buf); /* return to prev directory */
   if (! fSuccess) {
     return err;
+  }
+
+  if (appData.niceEngines){ // [HGM] nice: adjust engine proc priority
+    if(appData.debugMode) fprintf(debugFP, "nice engine proc to %d\n", appData.niceEngines);
+    SetPriorityClass(piProcInfo.hProcess, GetWin32Priority(appData.niceEngines));
   }
 
   /* Close the handles we don't need in the parent */

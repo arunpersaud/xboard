@@ -206,6 +206,19 @@ char * GameListLineFull P(( int, GameInfo *));
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
 
+typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, SaveButton } Control;
+
+typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
+    int value;          // current setting, starts as default
+    int min;
+    int max;
+    void *handle;       // for use by front end
+    char *textValue;    // points to beginning of text value in name field
+    char **choice;      // points to array of combo choices in cps->combo
+    Control type;
+    char name[MSG_SIZ]; // holds both option name and text value
+} Option;
+
 typedef struct _CPS {
     char *which;
     int maybeThinking;
@@ -264,7 +277,13 @@ typedef struct _CPS {
     int maxCores;     /* [HGM] SMP: engine understands cores command        */
     int memSize;      /* [HGM] memsize: engine understands memory command   */
     char egtFormats[MSG_SIZ];     /* [HGM] EGT: supported tablebase formats */
-    int bookSuspend;  /* HGM book: go was deferred bcause of book hit       */
+    int bookSuspend;  /* [HGM] book: go was deferred because of book hit    */
+    int nrOptions;    /* [HGM] options: remembered option="..." features    */
+#define MAX_OPTIONS 50
+    Option option[MAX_OPTIONS];
+    int comboCnt;
+    char *comboList[10*MAX_OPTIONS];
+    void *programLogo; /* [HGM] logo: bitmap of the logo                    */
 } ChessProgramState;
 
 extern ChessProgramState first, second;
@@ -276,7 +295,25 @@ typedef struct {
     int time;   /* Milliseconds */
 } ChessProgramStats_Move;
 
+/* Search stats from chessprogram */
+typedef struct {
+  char movelist[2*MSG_SIZ]; /* Last PV we were sent */
+  int depth;              /* Current search depth */
+  int nr_moves;           /* Total nr of root moves */
+  int moves_left;         /* Moves remaining to be searched */
+  char move_name[MOVE_LEN];  /* Current move being searched, if provided */
+  unsigned long nodes;    /* # of nodes searched */
+  int time;               /* Search time (centiseconds) */
+  int score;              /* Score (centipawns) */
+  int got_only_move;      /* If last msg was "(only move)" */
+  int got_fail;           /* 0 - nothing, 1 - got "--", 2 - got "++" */
+  int ok_to_send;         /* handshaking between send & recv */
+  int line_is_book;       /* 1 if movelist is book moves */
+  int seen_stat;          /* 1 if we've seen the stat01: line */
+} ChessProgramStats;
+
 extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
 extern shuffleOpenings;
+extern ChessProgramStats programStats;
 
 #endif /* _BACKEND */

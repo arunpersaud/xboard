@@ -170,6 +170,7 @@ ChessMove PromoCharToMoveType(whiteOnMove, promoChar)
      int promoChar;
 {	/* [HGM] made dependent on CharToPiece to alow alternate piece letters */
 	ChessSquare piece = CharToPiece(whiteOnMove ? ToUpper(promoChar) : ToLower(promoChar) );
+	if(promoChar == NULLCHAR) return NormalMove;
 
 	switch(piece) {
 		case WhiteQueen:
@@ -577,7 +578,7 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
 		      if (board[rt][ft] != EmptySquare) break;
 		  }
                 if(m==1) goto mounted;
-                if(m==2) goto walking;
+                if(m==2) goto finishGold;
 	      break;
 
 	    case WhiteQueen:
@@ -1265,7 +1266,7 @@ void Disambiguate(board, flags, epfile, closure)
 #endif
     /* [HGM] returns 'q' for optional promotion, 'n' for mandatory */
     if(closure->promoCharIn != '=')
-        closure->promoChar = ToLower(PieceToChar(PromoPiece(closure->kind)));
+        closure->promoChar = ToLower(closure->promoCharIn);
     else closure->promoChar = '=';
     if (closure->promoChar == 'x') closure->promoChar = NULLCHAR;
     if (closure->count > 1) {
@@ -1280,7 +1281,7 @@ void Disambiguate(board, flags, epfile, closure)
     }
     if(closure->kind == IllegalMove)
     /* [HGM] might be a variant we don't understand, pass on promotion info */
-        closure->promoChar = closure->promoCharIn;
+        closure->promoChar = ToLower(closure->promoCharIn);
     if (appData.debugMode) {
         fprintf(debugFP, "Disambiguate out: %d(%d,%d)-(%d,%d) = %d (%c)\n",
         closure->piece,closure->ff,closure->rf,closure->ft,closure->rt,closure->promoChar,

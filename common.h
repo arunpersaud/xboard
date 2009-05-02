@@ -286,6 +286,7 @@ typedef enum {
     VariantBerolina,
     VariantJanus,
     VariantSuper,
+    VariantGreat,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
@@ -326,6 +327,7 @@ typedef enum {
   "berolina",\
   "janus",\
   "super",\
+  "great",\
   "unknown" \
 }
 
@@ -575,8 +577,12 @@ typedef struct {
     char *userName;
     int rewindIndex;    /* [HGM] autoinc   */
     int sameColorGames; /* [HGM] alternate */
-    int smpCores;
+    int smpCores;       /* [HGM] SMP       */
     char *egtFormats;
+    int niceEngines;    /* [HGM] nice      */
+    char *firstLogo;    /* [HGM] logo      */
+    char *secondLogo;
+    Boolean autoLogo;
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

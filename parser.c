@@ -2278,6 +2278,8 @@ YY_RULE_SETUP
          result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier)
             currentMoveString[4] = PieceToChar(BlackFerz);
+        else if(gameInfo.variant == VariantGreat)
+            currentMoveString[4] = PieceToChar(BlackMan);
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
@@ -2427,7 +2429,6 @@ YY_RULE_SETUP
 
     if (gameInfo.variant == VariantXiangqi && /* [HGM] In Xiangqi rank stays same */
          currentMoveString[0] != currentMoveString[2] ) {
-        if (yytext[2+skip] == ONE) return (int) ImpossibleMove;
         currentMoveString[1] = yytext[2+skip];
     } else 
     if (WhiteOnMove(yyboardindex)) {
@@ -2462,6 +2463,11 @@ YY_RULE_SETUP
         (result == WhitePromotionQueen  || result == BlackPromotionQueen ||
          result == WhitePromotionKnight || result == BlackPromotionKnight)) {
         currentMoveString[4] = PieceToChar(BlackQueen);
+	// [HGM] shatranj: take care of variants without Queen
+	if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier)
+            currentMoveString[4] = PieceToChar(BlackFerz);
+	if(gameInfo.variant == VariantGreat)
+            currentMoveString[4] = PieceToChar(BlackMan);
 	currentMoveString[5] = NULLCHAR;
     }
 

@@ -1294,6 +1294,328 @@ void UciMenuProc(w, event, prms, nprms)
    UciPopUp();
 }
 
+//--------------------------- Engine-specific options menu ----------------------------------
+
+int SettingsUp;
+Widget SettingsShell;
+int values[MAX_OPTIONS];
+ChessProgramState *currentCps;
+
+void SettingsPopDown()
+{
+    if (!SettingsUp) return;
+    XtPopdown(SettingsShell);
+    XtDestroyWidget(SettingsShell);
+    SettingsUp = False;
+    ModeHighlight();
+}
+
+void SpinCallback(w, client_data, call_data)
+     Widget w;
+     XtPointer client_data, call_data;
+{
+    String name, val;
+    Widget w2;
+    Arg args[16];
+    char buf[MSG_SIZ];
+    int i, j;
+    
+    XtSetArg(args[0], XtNlabel, &name);
+    XtGetValues(w, args, 1);
+    
+    j = 0;
+    XtSetArg(args[0], XtNstring, &val);
+    XtGetValues(currentCps->option[(int)client_data].handle, args, 1);
+    sscanf(val, "%d", &j);
+    if (strcmp(name, "+") == 0) {
+	if(++j > currentCps->option[(int)client_data].max) return;
+    } else
+    if (strcmp(name, "-") == 0) {
+	if(--j < currentCps->option[(int)client_data].min) return;
+    } else return;
+    sprintf(buf, "%d", j);
+    XtSetArg(args[0], XtNstring, buf);
+    XtSetValues(currentCps->option[(int)client_data].handle, args, 1);
+}
+
+void SettingsCallback(w, client_data, call_data)
+     Widget w;
+     XtPointer client_data, call_data;
+{
+    String name, val;
+    Widget w2;
+    Arg args[16];
+    char buf[MSG_SIZ];
+    int i, j;
+    
+    XtSetArg(args[0], XtNlabel, &name);
+    XtGetValues(w, args, 1);
+    
+    if (strcmp(name, "cancel") == 0) {
+        SettingsPopDown();
+        return;
+    }
+    if (strcmp(name, "OK") == 0 || (int)client_data) { // save buttons imply OK
+	int nr;
+
+	for(i=0; i<currentCps->nrOptions; i++) { // send all options that had to be OK-ed to engine
+	    switch(currentCps->option[i].type) {
+		case TextBox:
+		    XtSetArg(args[0], XtNstring, &val);
+		    XtGetValues(currentCps->option[i].handle, args, 1);
+		    if(strcmp(currentCps->option[i].textValue, val)) {
+			strcpy(currentCps->option[i].textValue, val);
+			sprintf(buf, "option %s %s\n", currentCps->option[i].name, val);
+			SendToProgram(buf, currentCps);
+		    }
+		    break;
+		case Spin:
+		    XtSetArg(args[0], XtNstring, &val);
+		    XtGetValues(currentCps->option[i].handle, args, 1);
+		    sscanf(val, "%d", &j);
+		    if(j > currentCps->option[i].max) j = currentCps->option[i].max;
+		    if(j < currentCps->option[i].min) j = currentCps->option[i].min;
+		    if(currentCps->option[i].value != j) {
+			currentCps->option[i].value = j;
+			sprintf(buf, "option %s %d\n", currentCps->option[i].name, j);
+			SendToProgram(buf, currentCps);
+		    }
+		    break;
+		case CheckBox:
+		    j = 0;
+		    XtSetArg(args[0], XtNstate, &j);
+		    XtGetValues(currentCps->option[i].handle, args, 1);
+		    if(currentCps->option[i].value != j) {
+			currentCps->option[i].value = j;
+			sprintf(buf, "option %s %d\n", currentCps->option[i].name, j);
+			SendToProgram(buf, currentCps);
+		    }
+		    break;
+		case ComboBox:
+		    if(currentCps->option[i].value != values[i]) {
+			currentCps->option[i].value = values[i];
+			sprintf(buf, "option %s %s\n", currentCps->option[i].name, 
+				((char**)currentCps->option[i].textValue)[values[i]]);
+			SendToProgram(buf, currentCps);
+		    }
+		    break;
+	    }
+	}
+	if((int)client_data) { // send save-button command to engine
+	    sprintf(buf, "option %s\n", name);
+	    SendToProgram(buf, currentCps);
+	}
+        SettingsPopDown();
+        return;
+    }
+    sprintf(buf, "option %s\n", name);
+    SendToProgram(buf, currentCps);
+}
+
+void ComboSelect(w, addr, index) // callback for all combo items
+     Widget w;
+     caddr_t addr;
+     caddr_t index;
+{
+    Arg args[16];
+    int i = ((int)addr)>>8;
+    int j = 255 & (int) addr;
+
+    values[i] = j; // store in temporary, for transfer at OK
+    XtSetArg(args[0], XtNlabel, ((char**)currentCps->option[i].textValue)[j]);
+    XtSetValues(currentCps->option[i].handle, args, 1);
+}
+
+void CreateComboPopup(parent, name, n, mb)
+     Widget parent;
+     String name;
+     int n;
+     char *mb[];
+{
+    int i=0, j;
+    Widget menu, entry;
+    Arg args[16];
+
+    menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
+			      parent, NULL, 0);
+    j = 0;
+    XtSetArg(args[j], XtNwidth, 100);  j++;
+//    XtSetArg(args[j], XtNright, XtChainRight);  j++;
+    while (mb[i] != NULL) {
+	    entry = XtCreateManagedWidget(mb[i], smeBSBObjectClass,
+					  menu, args, j);
+	    XtAddCallback(entry, XtNcallback,
+			  (XtCallbackProc) ComboSelect,
+			  (caddr_t) (256*n+i));
+	i++;
+    }
+}	
+
+void SettingsPopUp(ChessProgramState *cps)
+{
+    Arg args[16];
+    Widget popup, layout, dialog, edit, form, oldform, last, b_ok, b_cancel;
+    Window root, child;
+    int x, y, i, j;
+    int win_x, win_y;
+    unsigned int mask;
+    char def[80], *p, *q;
+
+    // to do: start up second engine if needed
+    if(!cps->initDone || !cps->nrOptions) return; // nothing to be done
+    currentCps = cps;
+
+    i = 0;
+    XtSetArg(args[i], XtNresizable, True); i++;
+    SettingsShell = popup =
+      XtCreatePopupShell("Settings Menu", transientShellWidgetClass,
+			 shellWidget, args, i);
+    
+    layout =
+      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
+			    layoutArgs, XtNumber(layoutArgs));
+  
+    form =
+      XtCreateManagedWidget(layoutName, formWidgetClass, layout,
+			    formArgs, XtNumber(formArgs));
+  
+    last = NULL;
+    for(i=0; i<cps->nrOptions; i++) {
+	Widget box;
+	switch(cps->option[i].type) {
+	  case Spin:
+	    sprintf(def, "%d", cps->option[i].value);
+	  case TextBox:
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
+	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+	    dialog = XtCreateManagedWidget(cps->option[i].name, labelWidgetClass, form, args, j);   
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
+	    XtSetArg(args[j], XtNborderWidth, 1); j++;
+	    XtSetArg(args[j], XtNwidth, cps->option[i].type == Spin ? 40 : 100); j++;
+	    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
+	    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
+	    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
+	    XtSetArg(args[j], XtNright, XtChainRight);  j++;
+	    XtSetArg(args[j], XtNresizable, True);  j++;
+	    XtSetArg(args[j], XtNstring, cps->option[i].type==Spin ? def : cps->option[i].textValue);  j++;
+	    edit = last;
+	    cps->option[i].handle = (void*)
+		(last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));   
+	    XtAddEventHandler(box, ButtonPressMask, False, SetFocus, (XtPointer) popup);
+	    if(cps->option[i].type == TextBox) break;
+	    // add increment and decrement controls for spin
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, edit);  j++;
+	    XtSetArg(args[j], XtNfromHoriz, box);  j++;
+	    XtSetArg(args[j], XtNheight, 10);  j++;
+	    XtSetArg(args[j], XtNwidth, 20);  j++;
+	    edit = XtCreateManagedWidget("+", commandWidgetClass, form, args, j);
+	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer) i);
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, edit);  j++;
+	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
+	    XtSetArg(args[j], XtNheight, 10);  j++;
+	    XtSetArg(args[j], XtNwidth, 20);  j++;
+	    last = XtCreateManagedWidget("-", commandWidgetClass, form, args, j);
+	    XtAddCallback(last, XtNcallback, SpinCallback, (XtPointer) i);
+	    break;
+	  case CheckBox:
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNwidth, 10);  j++;
+	    XtSetArg(args[j], XtNheight, 10);  j++;
+	    XtSetArg(args[j], XtNstate, cps->option[i].value);  j++;
+	    cps->option[i].handle = (void*) 
+		(dialog = XtCreateManagedWidget(" ", toggleWidgetClass, form, args, j));   
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
+	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
+	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+	    last = XtCreateManagedWidget(cps->option[i].name, labelWidgetClass, form, args, j);
+	    break;
+	  case SaveButton:
+	  case Button:
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNstate, cps->option[i].value);  j++;
+	    cps->option[i].handle = (void*) 
+		(last = XtCreateManagedWidget(cps->option[i].name, commandWidgetClass, form, args, j));   
+	    XtAddCallback(last, XtNcallback, SettingsCallback, (XtPointer) (cps->option[i].type == SaveButton));
+	    break;
+	  case ComboBox:
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
+	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+	    dialog = XtCreateManagedWidget(cps->option[i].name, labelWidgetClass, form, args, j);
+
+	    j=0;
+	    XtSetArg(args[j], XtNfromVert, last);  j++;
+	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
+	    XtSetArg(args[j], XtNwidth, 100);  j++;
+	    XtSetArg(args[j], XtNmenuName, XtNewString(cps->option[i].name));  j++;
+	    XtSetArg(args[j], XtNlabel, ((char**)cps->option[i].textValue)[cps->option[i].value]);  j++;
+	    cps->option[i].handle = (void*) 
+		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));   
+	    CreateComboPopup(last, cps->option[i].name, i, (char **) cps->option[i].textValue);
+	    values[i] = cps->option[i].value;
+	    break;
+	}
+    }
+
+    j=0;
+    XtSetArg(args[j], XtNfromVert, last);  j++;
+    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
+    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
+    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
+    b_ok = XtCreateManagedWidget("OK", commandWidgetClass, form, args, j);   
+    XtAddCallback(b_ok, XtNcallback, SettingsCallback, (XtPointer) 0);
+
+    XtSetArg(args[j], XtNfromHoriz, b_ok);  j++;
+    b_cancel = XtCreateManagedWidget("cancel", commandWidgetClass, form, args, j);   
+    XtAddCallback(b_cancel, XtNcallback, SettingsPopDown, (XtPointer) 0);
+
+    XtRealizeWidget(popup);
+    CatchDeleteWindow(popup, "SettingsPopDown");
+    
+    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+		  &x, &y, &win_x, &win_y, &mask);
+    
+    XtSetArg(args[0], XtNx, x - 10);
+    XtSetArg(args[1], XtNy, y - 30);
+    XtSetValues(popup, args, 2);
+    
+    XtPopup(popup, XtGrabExclusive);
+    SettingsUp = True;
+
+    previous = NULL;
+    SetFocus(edit, popup, (XEvent*) NULL, False);
+}
+
+void FirstSettingsProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   SettingsPopUp(&first);
+}
+
+void SecondSettingsProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   SettingsPopUp(&second);
+}
+
 //--------------------------- General Popup for Cloning ----------------------------------
 #if 0
 int XXXUp;

@@ -4673,7 +4673,7 @@ fi
 
 PRODUCT=xboard
 #VERSION=4.3  # version is already defined
-PATCHLEVEL=15
+PATCHLEVEL=16
 
 
 if test -z "$CFLAGS" ; then
