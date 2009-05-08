@@ -1,5 +1,5 @@
 /*
- * book.c -- code for probing P0lyglot opening books
+ * book.c -- code for probing Polyglot opening books
  *
  * This code was first released in the public domain by Michel Van den Bergh.
  * The array Random64 is taken from the Polyglot source code. 
@@ -61,7 +61,7 @@ entry_t entry_none = {
     0, 0, 0, 0
 };
 
-char *promote_pieces=" nbrq";
+char *promote_pieces=" nbrqac=";
 extern char castlingRights[][BOARD_SIZE];
 extern char epStatus[];
 
@@ -273,22 +273,43 @@ uint64 *RandomTurn      =Random64+780;
 uint64 hash(int moveNr)
 {
     char c;
-    int p, r, f, i, p_enc;
-    uint64 key=0;
+    int p, r, f, i, p_enc, squareNr, pieceGroup;
+    uint64 key=0, Zobrist;
 
     for(f=BOARD_LEFT; f<BOARD_RGHT; f++){
         for(r=0; r<BOARD_HEIGHT;r++){
             ChessSquare p = boards[moveNr][r][f];
             if(p != EmptySquare){
-		int j = (int)p;
-		j -= (j >= (int)BlackPawn) ? (int)BlackPawn :(int)WhitePawn;
-		p_enc = 2*j + ((int)p < (int)BlackPawn);
-		if(p_enc >= 2*(int)WhiteKing) // king code is not contiguous!
-			p_enc += 2*((int)WhiteQueen - (int)WhiteKing + 1);
-                key ^= RandomPiece[64*p_enc+8*r+f];
+		    int j = (int)p;
+		    j -= (j >= (int)BlackPawn) ? (int)BlackPawn :(int)WhitePawn;
+		    if(j > (int)WhiteQueen) j++;  // make space for King
+		    if(j > (int) WhiteKing) j = (int)WhiteQueen + 1;
+		    p_enc = 2*j + ((int)p < (int)BlackPawn);
+		    squareNr = (BOARD_RGHT - BOARD_LEFT)*r + (f - BOARD_LEFT);
+		    // note that in normal Chess squareNr < 64 and p_enc < 12. The following code
+		    // maps other pieces and squares in this range, and then modify the corresponding
+		    // Zobrist random by rotating its bitpattern according to what the piece really was.
+		    pieceGroup = p_enc / 12;
+		    p_enc      = p_enc % 12;
+		    Zobrist = RandomPiece[64*p_enc + (squareNr & 63)];
+		    switch(pieceGroup) {
+			case 1: // pieces 5-10 (FEACWM)
+				Zobrist = (Zobrist << 16) ^ (Zobrist >> 48);
+				break;
+			case 2: // pieces 11-16 (OHIJGD)
+				Zobrist = (Zobrist << 32) ^ (Zobrist >> 32);
+				break;
+			case 3: // pieces 17-20 (VLSU)
+				Zobrist = (Zobrist << 48) ^ (Zobrist >> 16);
+				break;
+		    }
+		    if(squareNr >= 64) Zobrist = (Zobrist << 8) ^ (Zobrist >> 56);
+                key ^= Zobrist;
             }
         }
     }
+    // Holdings not implemented yet!
+
     if(castlingRights[moveNr][2] >= 0) {
 	if(castlingRights[moveNr][0] >= 0) key^=RandomCastle[0];
 	if(castlingRights[moveNr][1] >= 0) key^=RandomCastle[1];
@@ -388,23 +409,40 @@ int find_key(FILE *f, uint64 key, entry_t *entry)
 void move_to_string(char move_s[6], uint16 move)
 {
     int f,fr,ff,t,tr,tf,p;
-    f=(move>>6)&077;
-    fr=(f>>3)&0x7;
-    ff=f&0x7;
-    t=move&077;
-    tr=(t>>3)&0x7;
-    tf=t&0x7;
-    p=(move>>12)&0x7;
-    move_s[0]=ff+'a';
-    move_s[1]=fr+'1';
-    move_s[2]=tf+'a';
-    move_s[3]=tr+'1';
-    if(p){
-        move_s[4]=promote_pieces[p];
-        move_s[5]='\0';
-    }else{
-        move_s[4]='\0';
+    int width = BOARD_RGHT - BOARD_LEFT, size; // allow for alternative board formats
+
+    size = width * BOARD_HEIGHT;
+    f  = move / size;
+    fr = f / width;
+    ff = f % width;
+    t  = move % size;
+    tr = t / width;
+    tf = t % width;
+    p = move / (size*size);
+    move_s[0] = ff + 'a';
+    move_s[1] = fr + '1' - (BOARD_HEIGHT > 9);
+    move_s[2] = tf + 'a';
+    move_s[3] = tr + '1' - (BOARD_HEIGHT > 9);
+
+    // kludge: encode drops as special promotion code
+    if(gameInfo.holdingsSize && p == 8) {
+	move_s[0] = f + '@'; // from square encodes piece type
+	move_s[1] = '@';     // drop symbol
+	p = 0;
     }
+
+    // add promotion piece, if any
+    if(p){
+        move_s[4] = promote_pieces[p];
+        move_s[5] = '\0';
+    }else{
+        move_s[4] = '\0';
+    }
+
+    if(gameInfo.variant != VariantNormal) return;
+
+    // correct FRC-style castlings in variant normal. 
+    // [HGM] This is buggy code! e1h1 could very well be a normal R or Q move.
     if(!strcmp(move_s,"e1h1")){
         strcpy(move_s,"e1g1");
     }else  if(!strcmp(move_s,"e1a1")){
@@ -429,7 +467,7 @@ char *ProbeBook(int moveNr, char *book)
     int total_weight;
 
     if(book == NULL) return NULL; 
-    if(gameInfo.variant != VariantNormal) return NULL; // Zobrist scheme only works for normal Chess, so far
+//    if(gameInfo.variant != VariantNormal) return NULL; // Zobrist scheme only works for normal Chess, so far
     f=fopen(book,"rb");
     if(!f){
         DisplayError("Polyglot book not valid", 0);
@@ -438,6 +476,7 @@ char *ProbeBook(int moveNr, char *book)
     }
 
     key = hash(moveNr);
+    if(appData.debugMode) fprintf(debugFP, "book key = %08x%08x\n", (unsigned int)(key>>32), (unsigned int)key);
 
     offset=find_key(f, key, &entry);
     if(entry.key != key) return NULL;
@@ -459,6 +498,7 @@ char *ProbeBook(int moveNr, char *book)
     for(i=0; i<count; i++){
         total_weight += entries[i].weight;
     }
+    srandom( time(0) );
     j = (random() & 0x7FFF) * total_weight >> 15; // create random < total_weight
     total_weight = 0;
     for(i=0; i<count; i++){
@@ -467,6 +507,7 @@ char *ProbeBook(int moveNr, char *book)
     }
     if(i >= count) DisplayFatalError("Book Fault", 0, 1); // safety catch, cannot happen
     move_to_string(move_s, entries[i].move);
+    if(appData.debugMode) fprintf(debugFP, "book move field = %d\n", entries[i].move);
 
     return move_s;
 }
