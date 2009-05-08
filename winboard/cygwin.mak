@@ -31,7 +31,7 @@ INCLUDES= -I. -I..
 CVARS= $(INCLUDES) $(cygwin)
 CC = gcc $(CVARS)
 WCC = $(CC) -mwindows $(linkdebug)
-HC="/c/program files/help workshop/hcrtf.exe" -xn
+HC="c:/program files/help workshop/hcrtf.exe" -xn
 
 all: $(proj).exe
 
@@ -47,9 +47,9 @@ maintainer-clean: clean
 	rm -f parser.c *.hlp *.HLP
 
 # Update the help file if necessary
-#$(proj).hlp : $(proj).rtf
-#	$(HC) $(proj).hpj
-#	cat $(proj).err
+$(proj).hlp : $(proj).rtf
+	$(HC) $(proj).hpj
+	cat $(proj).err
 
 # Update the resource if necessary
 wbres.o: $(proj).rc $(proj).h resource.h
