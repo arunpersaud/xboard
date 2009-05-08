@@ -326,6 +326,7 @@ typedef struct _CPS {
     Option option[MAX_OPTIONS];
     int comboCnt;
     char *comboList[10*MAX_OPTIONS];
+    char *optionSettings;
     void *programLogo; /* [HGM] logo: bitmap of the logo                    */
 } ChessProgramState;
 

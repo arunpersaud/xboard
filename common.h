@@ -585,6 +585,8 @@ typedef struct {
     char *secondLogo;
     Boolean autoLogo;
     Boolean noGUI;      /* [HGM] fast: suppress all display updates */
+    char *firstOptions; /* [HGM] options   */
+    char *secondOptions;
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

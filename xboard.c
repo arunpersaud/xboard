@@ -1309,6 +1309,18 @@ XtResource clientResources[] = {
     { "niceEngines", "niceEngines", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, niceEngines),
 	XtRImmediate, (XtPointer) 0},
+    { "nameOfDebugFile", "nameOfDebugFile", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, nameOfDebugFile),
+	XtRImmediate, (XtPointer) "xboard.debug"},
+    { "noGUI", "noGUI", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, noGUI),
+	XtRImmediate, (XtPointer) 0},
+    { "firstOptions", "firstOptions", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, firstOptions),
+	XtRImmediate, (XtPointer) "" },
+    { "secondOptions", "secondOptions", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, secondOptions),
+	XtRImmediate, (XtPointer) "" },
 
     // [HGM] Winboard_x UCI options
     { "firstIsUCI", "firstIsUCI", XtRBoolean,
@@ -1346,12 +1358,6 @@ XtResource clientResources[] = {
 	XtRImmediate, (XtPointer) 0},
     { "delayAfterQuit", "delayAfterQuit", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, delayAfterQuit),
-	XtRImmediate, (XtPointer) 0},
-    { "nameOfDebugFile", "nameOfDebugFile", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, nameOfDebugFile),
-	XtRImmediate, (XtPointer) "xboard.debug"},
-    { "noGUI", "noGUI", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, noGUI),
 	XtRImmediate, (XtPointer) 0},
 };
 
@@ -1658,6 +1664,8 @@ XrmOptionDescRec shellOptions[] = {
     { "-secondHasOwnBookUCI", "secondHasOwnBookUCI", XrmoptionSepArg, NULL },
     { "-fNoOwnBookUCI", "firstHasOwnBookUCI", XrmoptionNoArg, "False" },
     { "-sNoOwnBookUCI", "secondHasOwnBookUCI", XrmoptionNoArg, "False" },
+    { "-firstXBook", "firstHasOwnBookUCI", XrmoptionNoArg, "False" },
+    { "-secondXBook", "secondHasOwnBookUCI", XrmoptionNoArg, "False" },
     { "-polyglotDir", "polyglotDir", XrmoptionSepArg, NULL },
     { "-usePolyglotBook", "usePolyglotBook", XrmoptionSepArg, NULL },
     { "-polyglotBook", "polyglotBook", XrmoptionSepArg, NULL },
@@ -1707,6 +1715,8 @@ XrmOptionDescRec shellOptions[] = {
     { "-delayAfterQuit", "delayAfterQuit", XrmoptionSepArg, NULL }, 
     { "-nameOfDebugFile", "nameOfDebugFile", XrmoptionSepArg, NULL }, 
     { "-noGUI", "noGUI", XrmoptionNoArg, "True" }, 
+    { "-firstOptions", "firstOptions", XrmoptionSepArg, NULL }, 
+    { "-secondOptions", "secondOptions", XrmoptionSepArg, NULL }, 
 };
 
 
@@ -2268,7 +2278,6 @@ main(argc, argv)
 #ifdef ENABLE_NLS
     XtSetLanguageProc(NULL, NULL, NULL);
     bindtextdomain(PRODUCT, LOCALEDIR);
-    bind_textdomain_codeset(PRODUCT, "UTF-8");
     textdomain(PRODUCT);
 #endif
 

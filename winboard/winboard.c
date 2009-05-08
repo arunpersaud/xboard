@@ -1162,8 +1162,10 @@ ArgDescriptor argDescriptors[] = {
   { "sUCI", ArgTrue, (LPVOID) &appData.secondIsUCI, FALSE },
   { "firstHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.firstHasOwnBookUCI, FALSE },
   { "fNoOwnBookUCI", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE },
+  { "firstXBook", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE },
   { "secondHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.secondHasOwnBookUCI, FALSE },
   { "sNoOwnBookUCI", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE },
+  { "secondXBook", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE },
   { "polyglotDir", ArgFilename, (LPVOID) &appData.polyglotDir, TRUE },
   { "usePolyglotBook", ArgBoolean, (LPVOID) &appData.usePolyglotBook, TRUE },
   { "polyglotBook", ArgFilename, (LPVOID) &appData.polyglotBook, TRUE },
@@ -1218,6 +1220,8 @@ ArgDescriptor argDescriptors[] = {
   { "firstLogo", ArgFilename, (LPVOID) &appData.firstLogo, FALSE },
   { "secondLogo", ArgFilename, (LPVOID) &appData.secondLogo, FALSE },
   { "autoLogo", ArgBoolean, (LPVOID) &appData.autoLogo, TRUE },
+  { "firstOptions", ArgString, (LPVOID) &appData.firstOptions, FALSE },
+  { "secondOptions", ArgString, (LPVOID) &appData.secondOptions, FALSE },
 
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
@@ -1936,6 +1940,8 @@ InitAppData(LPSTR lpCmdLine)
   appData.defaultHashSize = 64;
   appData.defaultCacheSizeEGTB = 4;
   appData.defaultPathEGTB = "c:\\egtb";
+  appData.firstOptions = "";
+  appData.secondOptions = "";
 
   InitWindowPlacement( &wpMoveHistory );
   InitWindowPlacement( &wpEvalGraph );

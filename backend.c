@@ -759,6 +759,10 @@ InitBackEnd1()
     first.debug = second.debug = FALSE;
     first.supportsNPS = second.supportsNPS = UNKNOWN;
 
+    /* [HGM] options */
+    first.optionSettings  = appData.firstOptions;
+    second.optionSettings = appData.secondOptions;
+
     first.scoreIsAbsolute = appData.firstScoreIsAbsolute; /* [AS] */
     second.scoreIsAbsolute = appData.secondScoreIsAbsolute; /* [AS] */
     first.isUCI = appData.firstIsUCI; /* [AS] */
@@ -7331,15 +7335,15 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
      int fromX, fromY, toX, toY;
      int promoChar;
 {
-    forwardMostMove++;
+//    forwardMostMove++; // [HGM] bare: moved downstream
 
-    if(serverMoves != NULL) { /* [HGM] write moves on file for broadcasting */
+    if(serverMoves != NULL) { /* [HGM] write moves on file for broadcasting (should be separate routine, really) */
         int timeLeft; static int lastLoadFlag=0; int king, piece;
-        piece = boards[forwardMostMove-1][fromY][fromX];
+        piece = boards[forwardMostMove][fromY][fromX];
         king = piece < (int) BlackPawn ? WhiteKing : BlackKing;
         if(gameInfo.variant == VariantKnightmate)
             king += (int) WhiteUnicorn - (int) WhiteKing;
-        if(forwardMostMove == 1) {
+        if(forwardMostMove == 0) {
             if(blackPlaysFirst) 
                 fprintf(serverMoves, "%s;", second.tidy);
             fprintf(serverMoves, "%s;", first.tidy);
@@ -7357,9 +7361,9 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
                 fprintf(serverMoves, ":%c%c:%c%c", AAA+BOARD_LEFT, ONE+fromY, AAA+toX+1,ONE+toY);
         }
         // e.p. suffix
-        if( (boards[forwardMostMove-1][fromY][fromX] == WhitePawn ||
-             boards[forwardMostMove-1][fromY][fromX] == BlackPawn   ) &&
-             boards[forwardMostMove-1][toY][toX] == EmptySquare
+        if( (boards[forwardMostMove][fromY][fromX] == WhitePawn ||
+             boards[forwardMostMove][fromY][fromX] == BlackPawn   ) &&
+             boards[forwardMostMove][toY][toX] == EmptySquare
              && fromX != toX )
                 fprintf(serverMoves, ":%c%c:%c%c", AAA+fromX, ONE+fromY, AAA+toX, ONE+fromY);
         // promotion suffix
@@ -7367,28 +7371,29 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
                 fprintf(serverMoves, ":%c:%c%c", promoChar, AAA+toX, ONE+toY);
         if(!loadFlag) {
             fprintf(serverMoves, "/%d/%d",
-               pvInfoList[forwardMostMove-1].depth, pvInfoList[forwardMostMove-1].score);
-            if(forwardMostMove & 1) timeLeft = whiteTimeRemaining/1000;
-            else                    timeLeft = blackTimeRemaining/1000;
+               pvInfoList[forwardMostMove].depth, pvInfoList[forwardMostMove].score);
+            if(forwardMostMove+1 & 1) timeLeft = whiteTimeRemaining/1000;
+            else                      timeLeft = blackTimeRemaining/1000;
             fprintf(serverMoves, "/%d", timeLeft);
         }
         fflush(serverMoves);
     }
 
-    if (forwardMostMove >= MAX_MOVES) {
+    if (forwardMostMove+1 >= MAX_MOVES) {
       DisplayFatalError(_("Game too long; increase MAX_MOVES and recompile"),
 			0, 1);
       return;
     }
     SwitchClocks();
-    timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
-    timeRemaining[1][forwardMostMove] = blackTimeRemaining;
-    if (commentList[forwardMostMove] != NULL) {
-	free(commentList[forwardMostMove]);
-	commentList[forwardMostMove] = NULL;
+    timeRemaining[0][forwardMostMove+1] = whiteTimeRemaining;
+    timeRemaining[1][forwardMostMove+1] = blackTimeRemaining;
+    if (commentList[forwardMostMove+1] != NULL) {
+	free(commentList[forwardMostMove+1]);
+	commentList[forwardMostMove+1] = NULL;
     }
-    CopyBoard(boards[forwardMostMove], boards[forwardMostMove - 1]);
-    ApplyMove(fromX, fromY, toX, toY, promoChar, boards[forwardMostMove]);
+    CopyBoard(boards[forwardMostMove+1], boards[forwardMostMove]);
+    ApplyMove(fromX, fromY, toX, toY, promoChar, boards[forwardMostMove+1]);
+    forwardMostMove++; // [HGM] bare: moved to after ApplyMove, to make sure clock interrupt finds complete board
     gameInfo.result = GameUnfinished;
     if (gameInfo.resultDetails != NULL) {
 	free(gameInfo.resultDetails);
@@ -12377,6 +12382,14 @@ ParseOption(Option *opt, ChessProgramState *cps)
 	    opt->type = SaveButton;
 	} else return FALSE;
 	*p = 0; // terminate option name
+	// now look if the command-line options define a setting for this engine option.
+	p = strstr(cps->optionSettings, opt->name);
+	if(p == cps->optionSettings || p[-1] == ',') {
+		sprintf(buf, "option %s", p);
+		if(p = strstr(buf, ",")) *p = 0;
+		strcat(buf, "\n");
+		SendToProgram(buf, cps);
+	}
 	return TRUE;
 }
 
@@ -12584,6 +12597,8 @@ DisplayMove(moveNumber)
     char res[MSG_SIZ];
     char cpThinkOutput[MSG_SIZ];
 
+    if(appData.noGUI) return; // [HGM] fast: suppress display of moves
+    
     if (moveNumber == forwardMostMove - 1 || 
 	gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 
@@ -12621,7 +12636,7 @@ DisplayMove(moveNumber)
     } else {
 	res[0] = NULLCHAR;
     }
-    
+
     if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
 	DisplayMessage(res, cpThinkOutput);
     } else {
