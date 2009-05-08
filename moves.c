@@ -170,6 +170,8 @@ ChessMove PromoCharToMoveType(whiteOnMove, promoChar)
      int promoChar;
 {	/* [HGM] made dependent on CharToPiece to alow alternate piece letters */
 	ChessSquare piece = CharToPiece(whiteOnMove ? ToUpper(promoChar) : ToLower(promoChar) );
+
+
 	if(promoChar == NULLCHAR) return NormalMove;
 
 	switch(piece) {
@@ -1086,6 +1088,7 @@ ChessMove LegalityTest(board, flags, epfile, castlingRights, rf, ff, rt, ft, pro
         }
     } else
     if (promoChar != NULLCHAR && promoChar != 'x') {
+	if(promoChar == '=') cl.kind = IllegalMove; else // [HGM] shogi: no deferred promotion outside Shogi
 	if (cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen) {
 	    cl.kind = 
 	      PromoCharToMoveType((flags & F_WHITE_ON_MOVE) != 0, promoChar);
