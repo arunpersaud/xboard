@@ -1580,6 +1580,12 @@ This command should thus not be used to offer draws, accept draws,
 or make draw-by-rule claims that might not be valid 
 (because it is not your move, and the opponent already moved without you knowing it yet).
 For offering and claiming draws, "offer draw" should be used.</font>
+<p>
+Note to GUI programmers: RESULT commands that the engine sends immediately after its move
+might be detected by the GUI only after the opponent has moved, because of communication
+and scheduling delays, no matter how fast the engine sent it.
+Any judgement of the validity of RESULT claims based on te "current" board position
+will have to account for this uncertainty.
 </p>
 
 <dt><strong>resign</strong>
