@@ -12,7 +12,7 @@ dnl| the standard version of xboard.
 dnl| need to change these here and in AC_INIT
 PRODUCT=xboard
 VERSION=4.4  
-PATCHLEVEL=0e
+PATCHLEVEL=0g
 
 AC_INIT([xboard],[4.4.0e],[bug-xboard@gnu.org])
 AM_INIT_AUTOMAKE

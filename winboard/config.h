@@ -36,7 +36,7 @@
 
 #define LAST_PTY_LETTER 'q'
 
-#define PATCHLEVEL "0e"
+#define PATCHLEVEL "0g"
 
 #define PRODUCT "WinBoard"
 
@@ -129,4 +129,3 @@
 #define SCF_DEFAULT 0x0000
 #define SCF_ALL 0x0004
 #endif
-
