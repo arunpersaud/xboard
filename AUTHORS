@@ -140,3 +140,4 @@ of the WinBoard_x options, became known as WinBoard_F.
 12. Arun Persaud <arun AT nubati DOT net> 
  
 fix for parser.l
+updated autotools files
