@@ -332,6 +332,10 @@ bring up the white and black piece menus.
 clock to tell XBoard which side moves first.
 
 4. Select Analysis Mode from the Mode Menu to start the analysis.
+
+The analysis function can also be used when observing games on an ICS
+with an engine loaded (zippy mode); the engine then will analyse
+the positions as they occur in the observed game.
 @item Analyze File
 @cindex Analyze File, Menu Item
 This option lets you load a game from a file (PGN, XBoard format, etc.)
@@ -551,7 +555,8 @@ unexamine command. ICS mode only.
 @cindex Backward, Menu Item
 @cindex <, Button
 Steps backward through a series of remembered moves.
-The @samp{[<]} button and the @kbd{b} key are equivalents.
+The @samp{[<]} button and the @kbd{b} key are equivalents,
+as is turning the mouse wheel towards you.
 In addition, pressing the Control key steps back one move, and releasing
 it steps forward again.
 
@@ -573,7 +578,8 @@ view.
 @cindex >, Button
 Steps forward through a series of remembered moves (undoing the
 effect of @samp{Backward}) or forward through a game file. The
-@samp{[>]} button and the @kbd{f} key are equivalents.
+@samp{[>]} button and the @kbd{f} key are equivalents,
+as is turning the mouse wheel away from you.
 
 If you are examining an ICS game, the behavior of Forward
 depends on whether XBoard is in Pause mode. If Pause mode is
@@ -1273,6 +1279,23 @@ version-number are not supported.
 If this option is set, the score reported by the engine is taken to be 
 that in favor of white, even when the engine plays black. 
 Important when XBoard uses the score for adjudications, or in PGN reporting. 
+@item -niceEngines priority
+@cindex niceEngines, option
+This option allows you to lower the priority of the engine processes, 
+so that the generally insatiable hunger for CPU time of chess engines does not interfere so much 
+with smooth operation of WinBoard (or the rest of your system). 
+Negative values could increase the engine priority, which is not recommended.
+@item -firstOptions string
+@itemx -secondOptions string
+@cindex firstOptions option
+@cindex secondOptions, option
+The given string is a comma-separated list of (option name, option value) pairs, 
+like the following example: “style Karpov, blunder rate 0”. 
+If the options announced by the engine at startup through the feature commands of WinBoard protocol 
+matches one of the option names (i.e. “style” or “blunder rate”), 
+it would be set to the given value (i.e. “Karpov” or 0) 
+through a corresponding option command to the engine. 
+This provided that the type of the value (text or numeric) matches as well.
 @end table
 
 @node UCI + WB Engine Settings
@@ -1306,12 +1329,14 @@ and the option @code{firstHasOwnBookUCI} or @code{secondHasOwnBookUCI} applying 
 is set to false.
 The engine will be kept in force mode as long as the current position is in book, 
 and XBoard will select the book moves for it. Default "".
-@item -fNoOwnBookUCI or -firstHasOwnBookUCI true/false
-@itemx -sNoOwnBookUCI or -secondHasOwnBookUCI true/false
+@item -fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false
+@itemx -sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false
 @cindex fNoOwnBookUCI, option
 @cindex sNoOwnBookUCI, option
 @cindex firstHasOwnBookUCI, option
 @cindex secondHasOwnBookUCI, option
+@cindex firstXBook, option
+@cindex secondXBook, option
 Indicates if the mentioned engine has its own opening book it should play from,
 rather than using the external book through XBoard. Default: false.
 @item -defaultHashSize n
@@ -1492,11 +1517,13 @@ Sets the Auto Flag menu option.  @xref{Options Menu}. Default: false.
 @cindex autoObserve, option
 Sets the Auto Observe menu option.  @xref{Options Menu}. Default: false.
 @item -autoKibitz
-@cindex autoKibitz, option`
+@cindex autoKibitz, option
 Enables kibitzing of the engines last thinking output (depth, score, time, speed, PV) 
 before it moved
 to the ICS, in zippy mode. The option @code{showThinking} must be switched on for 
 this option to work.
+Also diverts similar kibitz information of an opponent engine that is playing you 
+through the ICS to the engine-output window, as if the engine was playing locally.
 @item -moves/-xmoves or -getMoveList true/false
 @cindex moves, option
 @cindex getMoveList, option
@@ -1734,7 +1761,7 @@ Sets the name used in the PGN event tag to string.
 Default: "Computer Chess Game".
 @item -saveOutOfBookInfo true/false
 @cindex saveOutOfBookInfo, option`
-Include the information on how the engine(s) game out of its opening book in a special ‘annotator’ tag with the PGN file.@item -oldsave/-xoldsave or -oldSaveStyle true/false
+Include the information on how the engine(s) game out of its opening book in a special 'annotator' tag with the PGN file.@item -oldsave/-xoldsave or -oldSaveStyle true/false
 @cindex oldsave, option
 @cindex oldSaveStyle, option
 Sets the Old Save Style menu option.  @xref{Options Menu}.  Default: false.
@@ -1752,6 +1779,12 @@ Sets the Old Save Style menu option.  @xref{Options Menu}.  Default: false.
 @cindex geometry, option
 @cindex iconic, option
 These and most other standard Xt options are accepted.
+@item -noGUI
+@cindex noGUI, option
+Suppresses all GUI functions of XBoard 
+(to speed up automated ultra-fast engine-engine games, which you don’t want to watch). 
+There will be no board or clock updates, no printing of moves, 
+and no update of the icon on the task bar in this mode.
 @item -movesound/-xmovesound or -ringBellAfterMoves true/false
 @cindex movesound, option
 @cindex bell, option
@@ -2190,6 +2223,23 @@ Default: ""
 @cindex debug, option
 @cindex debugMode, option
 Turns on debugging printout.
+@item -debugFile filename or -nameOfDebugFile filename
+@cindex debugFile, option
+@cindex nameOfDebugFile, option
+Sets the name of the file to which WinBoard saves debug information 
+(including all communication to and from the engines).
+@item -engineDebugOutput number
+@cindex engineDebugOutput, option
+Specifies how WinBoard should handle unsolicited output from the engine, 
+with respect to saving it in the debug file. 
+The output is further (hopefully) ignored. 
+If number=0, WinBoard refrains from writing such spurious output to the debug file. 
+If number=1, all engine output is written faithfully to the debug file. 
+If number=2, any protocol-violating line is prefixed with a ‘#’ character, 
+as the engine itself should have done if it wanted to submit info for inclusion in the debug file.
+This option is provided for the benefit of applications that use the debug file 
+as a source of information, such as the broadcaster of live games TLCV / TLCS. 
+Such applications can be protected from spurious engine output that might otherwise confuse them.
 @item -rsh or -remoteShell shell-name
 @cindex rsh, option
 @cindex remoteShell, option
@@ -2205,6 +2255,12 @@ User name on the remote system when running programs with the
 @cindex userName, option
 Name under which the Human player will be listed in the PGN file. 
 Default is the login name on your local computer.
+@item -delayBeforeQuit number
+@itemx -delayAfterQuit number
+@cindex delayBeforeQuit, option
+@cindex delayAfterQuit, option
+These options specify how long WinBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the ‘quit’ command. The second one determines the pause after killing the engine, to make sure it dies.
+
 @end table
 
 @node Chess Servers
@@ -2620,6 +2676,10 @@ Most of the options that initially wre WinBoard only have now been back-ported t
 
 Michel van den Bergh provided the code for reading Polyglot opening books.
 
+Arun Persaud worked with H.G. Muller to combine all the features of the never-released WinBoard 4.2.8 
+of the Savannah project (mainly by Daniel Mehrmann), 
+and the never-released 4.3.16 into a unified WinBoard 4.4, 
+which is now available both from the Savannah web site and the WinBoard forum.
 @node CMail
 @chapter CMail
 @cindex cmail
