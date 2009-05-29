@@ -1590,4 +1590,221 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
     return IllegalMove;
 }
 
+// [HGM] XQ: the following code serves to detect perpetual chasing (Asian rules)
 
+typedef struct {
+    /* Input */
+    int rf, ff, rt, ft;
+    /* Output */
+    int recaptures;
+} ChaseClosure;
+
+// I guess the following variables logically belong in the closure too, but I was too lazy and used globals
+
+int preyStackPointer, chaseStackPointer;
+
+struct {
+char rf, ff, rt, ft;
+} chaseStack[100];
+
+struct {
+char rank, file;
+} preyStack[100];
+
+
+
+
+// there are three new callbacks for use with GenLegal: for adding captures, deleting them, and finding a recapture
+
+extern void AtacksCallback P((Board board, int flags, ChessMove kind,
+				int rf, int ff, int rt, int ft,
+				VOIDSTAR closure));
+
+void AttacksCallback(board, flags, kind, rf, ff, rt, ft, closure)
+     Board board;
+     int flags;
+     ChessMove kind;
+     int rf, ff, rt, ft;
+     VOIDSTAR closure;
+{   // For adding captures that can lead to chase indictment to the chaseStack
+    if(board[rt][ft] == EmptySquare) return;                               // non-capture
+    if(board[rt][ft] == WhitePawn && rt <  BOARD_HEIGHT/2) return;         // Pawn before river can be chased
+    if(board[rt][ft] == BlackPawn && rt >= BOARD_HEIGHT/2) return;         // Pawn before river can be chased
+    if(board[rf][ff] == WhitePawn  || board[rf][ff] == BlackPawn)  return; // Pawns are allowed to chase
+    if(board[rf][ff] == WhiteWazir || board[rf][ff] == BlackWazir) return; // King is allowed to chase
+    // move cannot be excluded from being a chase trivially (based on attacker and victim); save it on chaseStack
+    chaseStack[chaseStackPointer].rf = rf;
+    chaseStack[chaseStackPointer].ff = ff;
+    chaseStack[chaseStackPointer].rt = rt;
+    chaseStack[chaseStackPointer].ft = ft;
+    chaseStackPointer++;
+}
+
+extern void ExistingAtacksCallback P((Board board, int flags, ChessMove kind,
+				int rf, int ff, int rt, int ft,
+				VOIDSTAR closure));
+
+void ExistingAttacksCallback(board, flags, kind, rf, ff, rt, ft, closure)
+     Board board;
+     int flags;
+     ChessMove kind;
+     int rf, ff, rt, ft;
+     VOIDSTAR closure;
+{   // for removing pre-exsting captures from the chaseStack, to be left with newly created ones
+    int i;
+    register ChaseClosure *cl = (ChaseClosure *) closure; //closure tells us the move played in the repeat loop
+
+    if(board[rt][ft] == EmptySquare) return; // no capture
+    if(rf == cl->rf && ff == cl->ff) { // attacks with same piece from new position are not considered new
+	rf = cl->rt; ff = cl->ft;      // doctor their fromSquare so they will be recognized in chaseStack
+    }
+    // search move in chaseStack, and delete it if it occurred there (as we know now it is not a new capture)
+    for(i=0; i<chaseStackPointer; i++) {
+	if(chaseStack[i].rf == rf && chaseStack[i].ff == ff && 
+	   chaseStack[i].rt == rt && chaseStack[i].ft == ft   ) { 
+	    // move found on chaseStack, delete it by overwriting with move popped from top of chaseStack
+	    chaseStack[i] = chaseStack[--chaseStackPointer];
+	    break;
+	}
+    }
+}
+
+extern void ProtectedCallback P((Board board, int flags, ChessMove kind,
+				int rf, int ff, int rt, int ft,
+				VOIDSTAR closure));
+
+void ProtectedCallback(board, flags, kind, rf, ff, rt, ft, closure)
+     Board board;
+     int flags;
+     ChessMove kind;
+     int rf, ff, rt, ft;
+     VOIDSTAR closure;
+{   // for determining if a piece (given through the closure) is protected
+  register ChaseClosure *cl = (ChaseClosure *) closure; // closure tells us where to recapture
+  
+  if(rt == cl->rt && ft == cl->ft) cl->recaptures++;    // count legal recaptures to this square
+  if(appData.debugMode && board[rt][ft] != EmptySquare)
+    fprintf(debugFP, "try %c%c%c%c=%d\n", ff+AAA, rf+ONE,ft+AAA, rt+ONE, cl->recaptures);
+}
+
+extern char moveList[MAX_MOVES][MOVE_LEN];
+
+int PerpetualChase(int first, int last)
+{   // this routine detects if the side to move in the 'first' position is perpetually chasing (when not checking)
+    int i, j, k, tail;
+    ChaseClosure cl;
+    ChessSquare captured;
+
+    preyStackPointer = 0;        // clear stack of chased pieces
+    for(i=first; i<last; i+=2) { // for all positions with same side to move
+        if(appData.debugMode) fprintf(debugFP, "judge position %i\n", i);
+	chaseStackPointer = 0;   // clear stack that is going to hold possible chases
+	// determine all captures possible after the move, and put them on chaseStack
+	GenLegal(boards[i+1], PosFlags(i), EP_NONE, initialRights, AttacksCallback, &cl);
+	if(appData.debugMode) { int n; 
+	    for(n=0; n<chaseStackPointer; n++) 
+                fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE, 
+                                              chaseStack[n].ft+AAA, chaseStack[n].rt+ONE);
+            fprintf(debugFP, ": all capts\n");
+	}
+	// determine all captures possible before the move, and delete them from chaseStack
+	cl.rf = moveList[i][1]-ONE; // prepare closure to pass move that led from i to i+1
+	cl.ff = moveList[i][0]-AAA+BOARD_LEFT;
+	cl.rt = moveList[i][3]-ONE;
+	cl.ft = moveList[i][2]-AAA+BOARD_LEFT;
+	GenLegal(boards[i],   PosFlags(i), EP_NONE, initialRights, ExistingAttacksCallback, &cl);
+	if(appData.debugMode) { int n; 
+	    for(n=0; n<chaseStackPointer; n++) 
+                fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE, 
+                                              chaseStack[n].ft+AAA, chaseStack[n].rt+ONE);
+            fprintf(debugFP, ": new capts after %c%c%c%c\n", cl.ff+AAA, cl.rf+ONE, cl.ft+AAA, cl.rt+ONE);
+	}
+	// chaseSack now contains all captures made possible by the move
+	for(j=0; j<chaseStackPointer; j++) { // run through chaseStack to identify true chases
+            int attacker = (int)boards[i+1][chaseStack[j].rf][chaseStack[j].ff];
+            int victim   = (int)boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
+
+	    if(attacker >= (int) BlackPawn) attacker = BLACK_TO_WHITE attacker; // convert to white, as piecee type
+	    if(victim   >= (int) BlackPawn) victim   = BLACK_TO_WHITE victim;
+
+	    if((attacker == WhiteKnight || attacker == WhiteCannon) && victim == WhiteRook) 
+		continue; // C or H attack on R is always chase; leave on chaseStack
+
+	    if(attacker == victim) {
+                if(LegalityTest(boards[i+1], PosFlags(i+1), EP_NONE, initialRights, chaseStack[j].rt, 
+                   chaseStack[j].ft, chaseStack[j].rf, chaseStack[j].ff, NULLCHAR) == NormalMove) {
+			// we can capture back with equal piece, so this is no chase but a sacrifice
+                        chaseStack[j] = chaseStack[--chaseStackPointer]; // delete the capture from the chaseStack
+			j--; /* ! */ continue;
+		}
+
+	    }
+
+	    // the attack is on a lower piece, or on a pinned or blocked equal one
+            // test if the victim is protected by a true protector. First make the capture.
+	    captured = boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
+	    boards[i+1][chaseStack[j].rt][chaseStack[j].ft] = boards[i+1][chaseStack[j].rf][chaseStack[j].ff];
+	    boards[i+1][chaseStack[j].rf][chaseStack[j].ff] = EmptySquare;
+	    // Then test if the opponent can recapture
+	    cl.recaptures = 0;         // prepare closure to pass recapture square and count moves to it
+	    cl.rt = chaseStack[j].rt;
+	    cl.ft = chaseStack[j].ft;
+	    if(appData.debugMode) { int n; 
+            	fprintf(debugFP, "test if we can recapture %c%c\n", cl.ft+AAA, cl.rt+ONE);
+	    }
+            GenLegal(boards[i+1], PosFlags(i+1), EP_NONE, initialRights, ProtectedCallback, &cl); // try all moves
+	    // unmake the capture
+	    boards[i+1][chaseStack[j].rf][chaseStack[j].ff] = boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
+            boards[i+1][chaseStack[j].rt][chaseStack[j].ft] = captured;
+	    // if a recapture was found, piece is protected, and we are not chasing it.
+	    if(cl.recaptures) { // attacked piece was defended by true protector, no chase
+		chaseStack[j] = chaseStack[--chaseStackPointer]; // so delete from chaseStack
+		j--; /* ! */ 
+	    }
+	}
+	// chaseStack now contains all moves that chased
+	if(appData.debugMode) { int n; 
+	    for(n=0; n<chaseStackPointer; n++) 
+                fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE, 
+                                              chaseStack[n].ft+AAA, chaseStack[n].rt+ONE);
+            fprintf(debugFP, ": chases\n");
+	}
+        if(i == first) { // copy all people chased by first move of repeat cycle to preyStack
+	    for(j=0; j<chaseStackPointer; j++) {
+                preyStack[j].rank = chaseStack[j].rt;
+                preyStack[j].file = chaseStack[j].ft;
+	    }
+	    preyStackPointer = chaseStackPointer;
+	}
+	tail = 0;
+        for(j=0; j<chaseStackPointer; j++) {
+	    for(k=0; k<preyStackPointer; k++) {
+		// search the victim of each chase move on the preyStack (first occurrence)
+		if(chaseStack[j].ft == preyStack[k].file && chaseStack[j].rt == preyStack[k].rank ) {
+		    if(k < tail) break; // piece was already identified as still being chased
+		    preyStack[preyStackPointer] = preyStack[tail]; // move chased piece to bottom part of preyStack
+		    preyStack[tail] = preyStack[k];                // by swapping
+		    preyStack[k] = preyStack[preyStackPointer];
+		    tail++;
+		    break;
+		}
+	    }
+	}
+        preyStackPointer = tail; // keep bottom part of preyStack, popping pieces unchased on move i.
+	if(appData.debugMode) { int n; 
+            for(n=0; n<preyStackPointer; n++) 
+                fprintf(debugFP, "%c%c ", preyStack[n].file+AAA, preyStack[n].rank+ONE);
+            fprintf(debugFP, "always chased upto ply %d\n", i);
+	}
+        // now adjust the location of the chased pieces according to opponent move
+        for(j=0; j<preyStackPointer; j++) {
+            if(preyStack[j].rank == moveList[i+1][1]-ONE &&
+               preyStack[j].file == moveList[i+1][0]-AAA+BOARD_LEFT) {
+                preyStack[j].rank = moveList[i+1][3]-ONE;
+                preyStack[j].file = moveList[i+1][2]-AAA+BOARD_LEFT;
+                break;
+            }
+        }
+    }
+    return preyStackPointer; // if any piece was left on preyStack, it has been perpetually chased
+}

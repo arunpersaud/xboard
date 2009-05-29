@@ -5996,6 +5996,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 							EP_NONE, castlingRights[m-1]) != MT_CHECK)
 					hisPerpetual = 0; // the opponent did not always check
 				}
+				if(appData.debugMode) fprintf(debugFP, "XQ perpetual test, our=%d, his=%d\n",
+									ourPerpetual, hisPerpetual);
 				if(ourPerpetual && !hisPerpetual) { // we are actively checking him: forfeit
 				    GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
 		 			   "Xboard adjudication: perpetual checking", GE_XBOARD );
@@ -6003,8 +6005,19 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 				}
 				if(hisPerpetual && !ourPerpetual)   // he is checking us, but did not repeat yet
 				    break; // (or we would have caught him before). Abort repetition-checking loop.
-				// if neither of us is checking all the time, or both are, it is draw
-				// (illegal-chase forfeits not implemented yet!)
+				// Now check for perpetual chases
+				if(!ourPerpetual && !hisPerpetual) { // no perpetual check, test for chase
+				    hisPerpetual = PerpetualChase(k, forwardMostMove);
+				    ourPerpetual = PerpetualChase(k+1, forwardMostMove);
+				    if(ourPerpetual && !hisPerpetual) { // we are actively checking him: forfeit
+					GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
+		 				      "Xboard adjudication: perpetual chasing", GE_XBOARD );
+					return;
+				    }
+				    if(hisPerpetual && !ourPerpetual)   // he is chasing us, but did not repeat yet
+					break; // Abort repetition-checking loop.
+				}
+				// if neither of us is checking or chasing all the time, or both are, it is draw
 			     }
                              GameEnds( GameIsDrawn, "Xboard adjudication: repetition draw", GE_XBOARD );
                              return;
