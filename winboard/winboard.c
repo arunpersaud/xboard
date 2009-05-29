@@ -7,6 +7,9 @@
  * 1992-2001,2002,2003,2004,2005,2006,2007,2008,2009 Free Software
  * Foundation, Inc.
  *
+ * XBoard borrows its colors and the bitmaps.xchess bitmap set from XChess,
+ * which was written and is copyrighted by Wayne Christopher.
+ *
  * The following terms apply to Digital Equipment Corporation's copyright
  * interest in XBoard:
  * ------------------------------------------------------------------------
@@ -567,12 +570,14 @@ int screenHeight, screenWidth;
 void
 EnsureOnScreen(int *x, int *y)
 {
-  int gap = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION);
+//  int gap = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION);
   /* Be sure window at (x,y) is not off screen (or even mostly off screen) */
   if (*x > screenWidth - 32) *x = 0;
   if (*y > screenHeight - 32) *y = 0;
-  if (*x < 10) *x = 10;
-  if (*y < gap) *y = gap;
+  if (*x < 0) *x = 0;
+  if (*y < 0) *y = 0;
+//  if (*x < 10) *x = 10;
+//  if (*y < gap) *y = gap;
 }
 
 BOOL
@@ -3023,8 +3028,8 @@ ResizeBoard(int newSizeX, int newSizeY, int flags)
   if (recurse > 0) return;
   recurse++;
   while (newSize > 0) {
-	InitDrawingSizes(newSize, 0);
-	if(newSizeX >= sizeInfo[newSize].cliWidth ||
+	InitDrawingSizes(newSize+1000, 0); // [HGM] kludge to update sizeInfo without visible effects
+	if(newSizeX >= sizeInfo[newSize].cliWidth &&
 	   newSizeY >= sizeInfo[newSize].cliHeight) break;
     newSize--;
   } 
@@ -3051,7 +3056,10 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   int offby;
   LOGBRUSH logbrush;
 
-  /* [HGM] call with -1 uses old size (for if nr of files, ranks changes) */
+  int suppressVisibleEffects = 0; // [HGM] kludge to request updating sizeInfo only
+  if((int)boardSize >= 1000 ) { boardSize -= 1000; suppressVisibleEffects = 1; }
+
+  /* [HGM] call with -2 uses old size (for if nr of files, ranks changes) */
   if(boardSize == (BoardSize)(-2) ) boardSize = oldBoardSize;
 
   tinyLayout = sizeInfo[boardSize].tinyLayout;
@@ -3154,6 +3162,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
   sizeInfo[boardSize].cliWidth = boardRect.right + OUTER_MARGIN;
   sizeInfo[boardSize].cliHeight = boardRect.bottom + OUTER_MARGIN;
+  if(suppressVisibleEffects) return; // [HGM] when called for filling sizeInfo only
   winWidth = 2 * GetSystemMetrics(SM_CXFRAME) + boardRect.right + OUTER_MARGIN;
   winHeight = 2 * GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYMENU) +
     GetSystemMetrics(SM_CYCAPTION) + boardRect.bottom + OUTER_MARGIN;
@@ -5048,15 +5057,19 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
 
   case WM_MOUSEWHEEL: // [DM]
+    {  static int lastDir = 0; // [HGM] build in some hysteresis to avoid spurious events
        /* Mouse Wheel is being rolled forward
         * Play moves forward
         */
-       if((short)HIWORD(wParam) > 0 && currentMove < forwardMostMove) ForwardEvent();
+       if((short)HIWORD(wParam) > 0 && currentMove < forwardMostMove) 
+		if(lastDir == 1) ForwardEvent(); else lastDir = 1; // [HGM] suppress first event in each direction
        /* Mouse Wheel is being rolled backward
         * Play moves backward
         */
-       if((short)HIWORD(wParam) < 0 && currentMove > backwardMostMove) BackwardEvent();
-       break;
+       if((short)HIWORD(wParam) < 0 && currentMove > backwardMostMove) 
+		if(lastDir == -1) BackwardEvent(); else lastDir = -1;
+    }
+    break;
 
   case WM_MBUTTONDOWN:
   case WM_RBUTTONDOWN:
