@@ -30,9 +30,9 @@ dnl| the standard version of xboard.
 dnl| need to change these here and in AC_INIT
 PRODUCT=xboard
 VERSION=4.4  
-PATCHLEVEL=0g
+PATCHLEVEL=0i
 
-AC_INIT([xboard],[4.4.0e],[bug-xboard@gnu.org])
+AC_INIT([xboard],[4.4.0i],[bug-xboard@gnu.org])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_HEADERS([config.h])
