@@ -9143,6 +9143,11 @@ DragPieceBegin(x, y)
 	/* Mark this square as needing to be redrawn. Note that
 	   we don't remove the piece though, since logically (ie
 	   as seen by opponent) the move hasn't been made yet. */
+           if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
+              boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
+           XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
+	             corner.x, corner.y, squareSize, squareSize,
+	             0, 0); // [HGM] xh: unstack in stead of grab
 	damage[boardY][boardX] = True;
     } else {
 	player.dragActive = False;
