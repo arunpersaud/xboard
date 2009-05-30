@@ -346,6 +346,9 @@ void DrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AbortProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjournProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ResignProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void AdjuWhiteProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void AdjuBlackProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void AdjuDrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void StopObservingProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
@@ -601,6 +604,10 @@ MenuItem actionMenu[] = {
     {"----", NothingProc},
     {N_("Stop Observing"), StopObservingProc},
     {N_("Stop Examining"), StopExaminingProc},
+    {"----", NothingProc},
+    {N_("Adjudicate to White"), AdjuWhiteProc},
+    {N_("Adjudicate to Black"), AdjuBlackProc},
+    {N_("Adjudicate Draw"), AdjuDrawProc},
     {NULL, NULL}
 };
 
@@ -1781,6 +1788,9 @@ XtActionsRec boardActions[] = {
     { "AdjournProc", AdjournProc },
     { "AbortProc", AbortProc },
     { "ResignProc", ResignProc },
+    { "AdjuWhiteProc", AdjuWhiteProc },
+    { "AdjuBlackProc", AdjuBlackProc },
+    { "AdjuDrawProc", AdjuDrawProc },
     { "EnterKeyProc", EnterKeyProc },
     { "StopObservingProc", StopObservingProc },
     { "StopExaminingProc", StopExaminingProc },
@@ -6646,6 +6656,33 @@ void ResignProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     ResignEvent();
+}
+
+void AdjuWhiteProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    UserAdjudicationEvent(+1);
+}
+
+void AdjuBlackProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    UserAdjudicationEvent(-1);
+}
+
+void AdjuDrawProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    UserAdjudicationEvent(0);
 }
 
 void EnterKeyProc(w, event, prms, nprms)
