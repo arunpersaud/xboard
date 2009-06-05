@@ -119,9 +119,9 @@ typedef struct {
     int an_move_count;
 } EngineOutputData;
 
-static VerifyDisplayMode();
+static void VerifyDisplayMode();
 static void UpdateControls( EngineOutputData * ed );
-static SetEngineState( int which, int state, char * state_data );
+static void SetEngineState( int which, int state, char * state_data );
 
 // front end
 static HICON LoadIconEx( int id )
@@ -248,9 +248,9 @@ static void ResizeWindowControls( HWND hDlg, int mode )
 {
     RECT rc;
     int headerHeight = GetHeaderHeight();
-    int labelHeight = GetControlHeight( hDlg, IDC_EngineLabel1 );
-    int labelOffset = H_MARGIN + ICON_SIZE + H_MARGIN;
-    int labelDeltaY = ICON_SIZE - labelHeight;
+//    int labelHeight = GetControlHeight( hDlg, IDC_EngineLabel1 );
+//    int labelOffset = H_MARGIN + ICON_SIZE + H_MARGIN;
+//    int labelDeltaY = ICON_SIZE - labelHeight;
     int clientWidth;
     int clientHeight;
     int maxControlWidth;
@@ -448,7 +448,7 @@ void DoClearMemo(int which)
 
 
 // back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
-static SetEngineState( int which, int state, char * state_data )
+static void SetEngineState( int which, int state, char * state_data )
 {
     int x_which = 1 - which;
 
@@ -581,6 +581,7 @@ char GetEngineColor( int which )
             result = cps->twoMachinesColor[0];
             result = result == 'w' ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
             break;
+        default: ; // does not happen, but suppresses pedantic warnings
         }
     }
 
@@ -618,6 +619,7 @@ static int IsEnginePondering( int which )
             if( GetEngineColor( which ) != GetActiveEngineColor() ) result = TRUE;
         }
         break;
+    default: ; // does not happen, but suppresses pedantic warnings
     }
 
     return result;
@@ -634,7 +636,7 @@ static void SetDisplayMode( int mode )
 }
 
 // pure back end
-static VerifyDisplayMode()
+static void VerifyDisplayMode()
 {
     int mode;
 
@@ -684,7 +686,7 @@ static void SetEngineColorIcon( int which )
 // pure back end, now SetWindowText is called via wrapper DoSetWindowText
 static void UpdateControls( EngineOutputData * ed )
 {
-    int isPondering = FALSE;
+//    int isPondering = FALSE;
 
     char s_label[MAX_NAME_LENGTH + 32];
     
@@ -727,7 +729,7 @@ static void UpdateControls( EngineOutputData * ed )
         SetEngineState( ed->which, STATE_THINKING, "" );
     }
     else if( gameMode == AnalyzeMode || gameMode == AnalyzeFile
-	  || gameMode == IcsObserving && appData.icsEngineAnalyze) { // [HGM] ICS-analyze
+	  || (gameMode == IcsObserving && appData.icsEngineAnalyze)) { // [HGM] ICS-analyze
         char buf[64];
         int time_secs = ed->time / 100;
         int time_mins = time_secs / 60;

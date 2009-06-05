@@ -9184,7 +9184,7 @@ DragPieceBegin(x, y)
               boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
            XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
 	             corner.x, corner.y, squareSize, squareSize,
-	             0, 0); // [HGM] xh: unstack in stead of grab
+	             0, 0); // [HGM] zh: unstack in stead of grab
 	damage[boardY][boardX] = True;
     } else {
 	player.dragActive = False;

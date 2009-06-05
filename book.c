@@ -30,6 +30,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <stdlib.h>
 
 #include "common.h"
 #include "backend.h"
@@ -273,8 +275,7 @@ uint64 *RandomTurn      =Random64+780;
 
 uint64 hash(int moveNr)
 {
-    char c;
-    int p, r, f, i, p_enc, squareNr, pieceGroup;
+    int r, f, p_enc, squareNr, pieceGroup;
     uint64 key=0, Zobrist;
 
     for(f=BOARD_LEFT; f<BOARD_RGHT; f++){

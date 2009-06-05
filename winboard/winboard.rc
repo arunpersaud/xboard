@@ -33,12 +33,12 @@ MANIFEST_RESOURCE_ID    24      MOVEABLE PURE   "res\\winboard.exe.manifest"
 // Dialog
 //
 
-ABOUTBOX DIALOG DISCARDABLE  22, 17, 180, 108
+ABOUTBOX DIALOG DISCARDABLE  22, 17, 180, 88
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About WinBoard"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,126,89,50,14,WS_GROUP
+    DEFPUSHBUTTON   "OK",IDOK,126,69,50,14,WS_GROUP
     ICON            "icon_white",IDC_STATIC,3,6,20,20
     LTEXT           "Chessboard for Windows",400,25,15,121,8
     LTEXT           "Copyright 1991 Digital Equipment Corporation",201,6,34,
@@ -49,9 +49,6 @@ BEGIN
     LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,5,61,8
     LTEXT           "Enhancements Copyright 2005\r\nAlessandro Scotti",
                     IDC_STATIC,6,65,120,24
-    LTEXT           "Enhancements Copyright 2007\r\nH.G. Muller",
-                    IDC_STATIC,6,85,120,24
-    LTEXT           "(""WinBoard_F"")",IDC_STATIC,88,4,71,8
 END
 
 DLG_TimeControl DIALOG DISCARDABLE  6, 18, 174, 134

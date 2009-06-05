@@ -70,6 +70,7 @@
 #include <dlgs.h>
 #include <richedit.h>
 #include <mmsystem.h>
+#include <ctype.h>
 
 #if __GNUC__
 #include <errno.h>
@@ -99,6 +100,9 @@ extern int whiteFlag, blackFlag;
 Boolean flipClock = FALSE;
 
 void DisplayHoldingsCount(HDC hdc, int x, int y, int align, int copyNumber);
+VOID NewVariantPopup(HWND hwnd);
+int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
+		   /*char*/int promoChar));
 
 typedef struct {
   ChessSquare piece;  
@@ -177,7 +181,7 @@ static HWND hwndPause;    /* pause button */
 static HBITMAP pieceBitmap[3][(int) BlackPawn]; /* [HGM] nr of bitmaps referred to bP in stead of wK */
 static HBRUSH lightSquareBrush, darkSquareBrush,
   blackSquareBrush, /* [HGM] for band between board and holdings */
-  whitePieceBrush, blackPieceBrush, iconBkgndBrush, outlineBrush;
+  whitePieceBrush, blackPieceBrush, iconBkgndBrush /*, outlineBrush*/;
 static POINT gridEndpoints[(BOARD_SIZE + 1) * 4];
 static DWORD gridVertexCounts[(BOARD_SIZE + 1) * 2];
 static HPEN gridPen = NULL;
@@ -247,7 +251,7 @@ SizeInfo sizeInfo[] =
   { NULL, 0, 0, 0, 0, 0, 0 }
 };
 
-#define MF(x) {x, {0, }, {0, }, 0}
+#define MF(x) {x, {{0,}, 0. }, {0, }, 0}
 MyFont fontRec[NUM_SIZES][NUM_FONTS] =
 {
   { MF(CLOCK_FONT_TINY), MF(MESSAGE_FONT_TINY), MF(COORD_FONT_TINY), MF(CONSOLE_FONT_TINY), MF(COMMENT_FONT_TINY), MF(EDITTAGS_FONT_TINY), MF(MOVEHISTORY_FONT_ALL) },
@@ -478,6 +482,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
   MSG msg;
   HANDLE hAccelMain, hAccelNoAlt, hAccelNoICS;
+//  INITCOMMONCONTROLSEX ex;
 
   debugFP = stderr;
 
@@ -490,6 +495,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   if (!InitInstance(hInstance, nCmdShow, lpCmdLine)) {
     return (FALSE);
   }
+//  InitCommonControlsEx(&ex);
+  InitCommonControls();
 
   hAccelMain = LoadAccelerators (hInstance, szAppName);
   hAccelNoAlt = LoadAccelerators (hInstance, "NO_ALT");
@@ -1407,6 +1414,7 @@ FileGet(void *getClosure)
   FILE* f = (FILE*) getClosure;
 
   c = getc(f);
+  if (c == '\r') c = getc(f); // work around DOS format files by bypassing the '\r' completely
   if (c == EOF)
     return NULLCHAR;
   else
@@ -1862,12 +1870,6 @@ InitAppData(LPSTR lpCmdLine)
   dcb.fNull = FALSE;
   dcb.fRtsControl = RTS_CONTROL_ENABLE;
   dcb.fAbortOnError = FALSE;
-  /* Microsoft SDK >= Feb. 2003 (MS VS >= 2002) */
-  #if (defined(_MSC_VER) && _MSC_VER <= 1200) 
-	//dcb.wReserved = 0;
-  #else
-    dcb.wReserved = 0;
-  #endif
   dcb.ByteSize = 7;
   dcb.Parity = SPACEPARITY;
   dcb.StopBits = ONESTOPBIT;
@@ -2286,14 +2288,14 @@ SaveSettings(char* name)
     case ArgColor:
       {
 	COLORREF color = *(COLORREF *)ad->argLoc;
-	fprintf(f, "/%s=#%02x%02x%02x\n", ad->argName, 
+	fprintf(f, "/%s=#%02lx%02lx%02lx\n", ad->argName, 
 	  color&0xff, (color>>8)&0xff, (color>>16)&0xff);
       }
       break;
     case ArgAttribs:
       {
 	MyTextAttribs* ta = &textAttribs[(ColorClass)ad->argLoc];
-	fprintf(f, "/%s=\"%s%s%s%s%s#%02x%02x%02x\"\n", ad->argName,
+	fprintf(f, "/%s=\"%s%s%s%s%s#%02lx%02lx%02lx\"\n", ad->argName,
           (ta->effects & CFE_BOLD) ? "b" : "",
           (ta->effects & CFE_ITALIC) ? "i" : "",
           (ta->effects & CFE_UNDERLINE) ? "u" : "",
@@ -2331,6 +2333,8 @@ SaveSettings(char* name)
       break;
     case ArgCommSettings:
       PrintCommSettings(f, ad->argName, (DCB *)ad->argLoc);
+    case ArgNone:
+    case ArgSettingsFilename: ;
     }
   }
   fclose(f);
@@ -3258,7 +3262,6 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 	boardRect.top + lineGap / 2 + (i * (squareSize + lineGap));
       gridEndpoints[i*2 + 1].x = boardRect.left + lineGap / 2 +
         BOARD_WIDTH * (squareSize + lineGap);
-	lineGap / 2 + (i * (squareSize + lineGap));
       gridVertexCounts[i*2] = gridVertexCounts[i*2 + 1] = 2;
     }
     for (i = 0; i < BOARD_WIDTH + 1; i++) {
@@ -3678,8 +3681,8 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
   } else {
     tmpSize = squareSize;
     if(minorSize &&
-        (piece >= (int)WhiteNightrider && piece <= WhiteGrasshopper ||
-         piece >= (int)BlackNightrider && piece <= BlackGrasshopper)  ) {
+        ((piece >= (int)WhiteNightrider && piece <= WhiteGrasshopper) ||
+         (piece >= (int)BlackNightrider && piece <= BlackGrasshopper))  ) {
       /* [HGM] no bitmap available for promoted pieces in Crazyhouse        */
       /* Bitmaps of smaller size are substituted, but we have to align them */
       x += (squareSize - minorSize)>>1;
@@ -4215,9 +4218,9 @@ void fputDW(FILE *f, int x)
 VOID
 DrawLogoOnDC(HDC hdc, RECT logoRect, ChessProgramState *cps)
 {
-  HBITMAP bufferBitmap;
+//  HBITMAP bufferBitmap;
   BITMAP bi;
-  RECT Rect;
+//  RECT Rect;
   HDC tmphdc;
   HBITMAP hbm;
   int w = 100, h = 50;
@@ -4556,7 +4559,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	 boardRect.bottom - boardRect.top,
 	 tmphdc, boardRect.left, boardRect.top, SRCCOPY);
   if(saveDiagFlag) { 
-    BITMAP b; int i, j, m, w, wb, fac=0; char pData[1000000]; 
+    BITMAP b; int i, j=0, m, w, wb, fac=0; char pData[1000000]; 
     BITMAPINFOHEADER bih; int color[16], nrColors=0;
 
     GetObject(bufferBitmap, sizeof(b), &b);
@@ -4600,7 +4603,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 		    while(p&3) pData[p++] = 0;
 		}
 		fac = 3;
-		wb = (wb+31>>5)<<2;
+		wb = ((wb+31)>>5)<<2;
 	}
 	// write BITMAPFILEHEADER
 	fprintf(diagFile, "BM");
@@ -4660,9 +4663,6 @@ int
 SaveDiagram(f)
      FILE *f;
 {
-    time_t tm;
-    char *fen;
-
     saveDiagFlag = 1; diagFile = f;
     HDCDrawPosition(NULL, TRUE, NULL);
 
@@ -4687,7 +4687,7 @@ PaintProc(HWND hwnd)
   PAINTSTRUCT ps;
   HFONT       oldFont;
 
-  if(hdc = BeginPaint(hwnd, &ps)) {
+  if((hdc = BeginPaint(hwnd, &ps))) {
     if (IsIconic(hwnd)) {
       DrawIcon(hdc, 2, 2, iconCurrent);
     } else {
@@ -4780,7 +4780,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   POINT pt;
   static int recursive = 0;
   HMENU hmenu;
-  BOOLEAN needsRedraw = FALSE;
+//  BOOLEAN needsRedraw = FALSE;
   BOOLEAN saveAnimate;
   BOOLEAN forceFullRepaint = IsFullRepaintPreferrable(); /* [AS] */
   static BOOLEAN sameAgain = FALSE, promotionChoice = FALSE;
@@ -4855,7 +4855,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
       if (!appData.highlightLastMove) {
         ClearHighlights();
-	DrawPosition(forceFullRepaint || FALSE, NULL);
+	DrawPosition((int) (forceFullRepaint || FALSE), NULL);
       }
       fromX = fromY = -1;
       dragInfo.start.x = dragInfo.start.y = -1;
@@ -4864,8 +4864,8 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     } else if (x < 0 || y < 0
       /* [HGM] block clicks between board and holdings */
               || x == BOARD_LEFT-1 || x == BOARD_RGHT
-              || x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize
-              || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize
+              || (x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize)
+              || (x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize)
 	/* EditPosition, empty square, or different color piece;
 	   click-click move is possible */
                                ) {
@@ -4895,8 +4895,8 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         if(moveType != ImpossibleMove) {
           /* [HGM] We use PromotionToKnight in Shogi to indicate frorced promotion */
           if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
-             (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
-              appData.alwaysPromoteToQueen) {
+            ((moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
+              appData.alwaysPromoteToQueen)) {
                   FinishMove(moveType, fromX, fromY, toX, toY, 'q');
                   if (!appData.highlightLastMove) {
                       ClearHighlights();
@@ -5001,8 +5001,8 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
           /* [HGM] use move type to determine if move is promotion.
              Knight is Shogi kludge for mandatory promotion, Queen means choice */
           if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
-             (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
-              appData.alwaysPromoteToQueen) 
+            ((moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
+              appData.alwaysPromoteToQueen)) 
                FinishMove(moveType, fromX, fromY, toX, toY, 'q');
           else 
           if (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen ) {
@@ -5066,12 +5066,12 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         * Play moves forward
         */
        if((short)HIWORD(wParam) > 0 && currentMove < forwardMostMove) 
-		if(lastDir == 1) ForwardEvent(); else lastDir = 1; // [HGM] suppress first event in each direction
+		{ if(lastDir == 1) ForwardEvent(); else lastDir = 1; } // [HGM] suppress first event in direction
        /* Mouse Wheel is being rolled backward
         * Play moves backward
         */
        if((short)HIWORD(wParam) < 0 && currentMove > backwardMostMove) 
-		if(lastDir == -1) BackwardEvent(); else lastDir = -1;
+		{ if(lastDir == -1) BackwardEvent(); else lastDir = -1; }
     }
     break;
 
@@ -5229,16 +5229,16 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Only allow C & A promotions if these pieces are defined */
     ShowWindow(GetDlgItem(hDlg, PB_Archbishop),
-       (PieceToChar(WhiteAngel) >= 'A' &&
-        PieceToChar(WhiteAngel) != '~' ||
-        PieceToChar(BlackAngel) >= 'A' &&
-        PieceToChar(BlackAngel) != '~'   ) ?
+       ((PieceToChar(WhiteAngel) >= 'A' &&
+         PieceToChar(WhiteAngel) != '~') ||
+        (PieceToChar(BlackAngel) >= 'A' &&
+         PieceToChar(BlackAngel) != '~')   ) ?
 	       SW_SHOW : SW_HIDE);
     ShowWindow(GetDlgItem(hDlg, PB_Chancellor), 
-       (PieceToChar(WhiteMarshall) >= 'A' &&
-        PieceToChar(WhiteMarshall) != '~' ||
-        PieceToChar(BlackMarshall) >= 'A' &&
-        PieceToChar(BlackMarshall) != '~'   ) ?
+       ((PieceToChar(WhiteMarshall) >= 'A' &&
+         PieceToChar(WhiteMarshall) != '~') ||
+        (PieceToChar(BlackMarshall) >= 'A' &&
+         PieceToChar(BlackMarshall) != '~')   ) ?
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Hide B & R button in Shogi, use Q as promote, N as defer */
     ShowWindow(GetDlgItem(hDlg, PB_Rook),
@@ -6788,7 +6788,7 @@ SetStartupDialogEnables(HWND hDlg)
 {
   EnableWindow(GetDlgItem(hDlg, OPT_ChessEngineName),
     IsDlgButtonChecked(hDlg, OPT_ChessEngine) ||
-    appData.zippyPlay && IsDlgButtonChecked(hDlg, OPT_ChessServer));
+    (appData.zippyPlay && IsDlgButtonChecked(hDlg, OPT_ChessServer)));
   EnableWindow(GetDlgItem(hDlg, OPT_SecondChessEngineName),
     IsDlgButtonChecked(hDlg, OPT_ChessEngine));
   EnableWindow(GetDlgItem(hDlg, OPT_ChessServerName),
@@ -7414,8 +7414,6 @@ VOID
 GothicPopUp(char *title, VariantClass variant)
 {
   FARPROC lpProc;
-  char *p, *q;
-  BOOLEAN modal = hwndMain == NULL;
   static char *lastTitle;
 
   strncpy(errorTitle, title, sizeof(errorTitle));
@@ -7496,7 +7494,7 @@ IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
 void
 ParseIcsTextMenu(char *icsTextMenuString)
 {
-  int flags = 0;
+//  int flags = 0;
   IcsTextMenuEntry *e = icsTextMenuEntry;
   char *p = icsTextMenuString;
   while (e->item != NULL && e < icsTextMenuEntry + ICS_TEXT_MENU_SIZE) {
@@ -7939,8 +7937,8 @@ LRESULT CALLBACK
 ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   static SnapData sd;
-  static HWND hText, hInput, hFocus;
-  InputSource *is = consoleInputSource;
+  static HWND hText, hInput /*, hFocus*/;
+//  InputSource *is = consoleInputSource;
   RECT rect;
   static int sizeX, sizeY;
   int newSizeX, newSizeY;
@@ -8305,7 +8303,7 @@ void CheckForInputBufferFull( InputSource * is )
 
         if( p >= is->next ) {
             if (appData.debugMode) {
-                fprintf( debugFP, "Input line exceeded buffer size (source id=%u)\n", is->id );
+                fprintf( debugFP, "Input line exceeded buffer size (source id=%lu)\n", is->id );
             }
 
             is->error = ERROR_BROKEN_PIPE; /* [AS] Just any non-successful code! */
@@ -8354,7 +8352,7 @@ InputThread(LPVOID arg)
   CloseHandle(is->hFile);
 
   if (appData.debugMode) {
-    fprintf( debugFP, "Input thread terminated (id=%u, error=%d, count=%d)\n", is->id, is->error, is->count );
+    fprintf( debugFP, "Input thread terminated (id=%lu, error=%d, count=%ld)\n", is->id, is->error, is->count );
   }
 
   return 0;
@@ -9236,7 +9234,7 @@ LRESULT CALLBACK GameListOptions_Proc(HWND hDlg, UINT message, WPARAM wParam, LP
             {
                 char * pc = lpUserGLT;
                 int idx = 0;
-                int cnt = (int) SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETCOUNT, 0, 0 );
+//                int cnt = (int) SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETCOUNT, 0, 0 );
                 char id;
 
                 do {
@@ -9787,7 +9785,7 @@ DestroyChildProcess(ProcRef pr, int/*boolean*/ signal)
         result = TerminateProcess( cp->hProcess, 0 );
 
         if ( appData.debugMode) {
-            fprintf( debugFP, "Terminating process %u, result=%d\n", cp->pid, result );
+            fprintf( debugFP, "Terminating process %lu, result=%d\n", cp->pid, result );
         }
     }
     else if( signal == 10 ) {
@@ -9797,7 +9795,7 @@ DestroyChildProcess(ProcRef pr, int/*boolean*/ signal)
             result = TerminateProcess( cp->hProcess, 0 );
 
             if ( appData.debugMode) {
-                fprintf( debugFP, "Process %u still alive after timeout, killing... result=%d\n", cp->pid, result );
+                fprintf( debugFP, "Process %lu still alive after timeout, killing... result=%d\n", cp->pid, result );
             }
 
         }
@@ -10701,4 +10699,3 @@ void SetProgramStats( FrontEndProgramStats * stats )
 
     EngineOutputUpdate( stats );
 }
-///

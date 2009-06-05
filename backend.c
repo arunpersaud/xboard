@@ -70,6 +70,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <math.h>
+#include <ctype.h>
 
 #if STDC_HEADERS
 # include <stdlib.h>
@@ -210,6 +211,10 @@ void ParseFeatures P((char* args, ChessProgramState *cps));
 void InitBackEnd3 P((void));
 void FeatureDone P((ChessProgramState* cps, int val));
 void InitChessProgram P((ChessProgramState *cps, int setup));
+void OutputKibitz(int window, char *text);
+int PerpetualChase(int first, int last);
+int EngineOutputIsUp();
+void InitDrawingSizes(int x, int y);
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -228,8 +233,7 @@ extern char installDir[MSG_SIZ];
 extern int tinyLayout, smallLayout;
 ChessProgramStats programStats;
 static int exiting = 0; /* [HGM] moved to top */
-static int setboardSpoiledMachineBlack = 0, errorExitFlag = 0;
-extern int startedFromPositionFile;
+static int setboardSpoiledMachineBlack = 0 /*, errorExitFlag = 0*/;
 int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos */
 char endingGame = 0;    /* [HGM] crash: flag to prevent recursion of GameEnds() */
 int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     */
@@ -290,6 +294,8 @@ static char * safeStrCpy( char * dst, const char * src, size_t count )
     return dst;
 }
 
+#if 0
+//[HGM] for future use? Conditioned out for now to suppress warning.
 static char * safeStrCat( char * dst, const char * src, size_t count )
 {
     size_t  dst_len;
@@ -306,6 +312,7 @@ static char * safeStrCat( char * dst, const char * src, size_t count )
 
     return dst;
 }
+#endif
 
 /* Some compiler can't cast u64 to double
  * This function do the job for us:
@@ -1943,7 +1950,7 @@ VariantSwitch(Board board, VariantClass newVariant)
 {
    int newHoldingsWidth, newWidth = 8, newHeight = 8, i, j;
    int oldCurrentMove = currentMove, oldForwardMostMove = forwardMostMove, oldBackwardMostMove = backwardMostMove;
-   Board tempBoard; int saveCastling[BOARD_SIZE], saveEP;
+//   Board tempBoard; int saveCastling[BOARD_SIZE], saveEP;
 
    startedFromPositionFile = FALSE;
    if(gameInfo.variant == newVariant) return;
@@ -2359,10 +2366,10 @@ read_from_ics(isr, closure, data, count, error)
 		   (StrStr(star_match[0], gameInfo.white) == star_match[0] || 
 		    StrStr(star_match[0], gameInfo.black) == star_match[0]   )) { // kibitz of self or opponent
 		    	suppressKibitz = TRUE;
-			if((StrStr(star_match[0], gameInfo.white) == star_match[0])
-				&& (gameMode == IcsPlayingWhite) ||
-			   (StrStr(star_match[0], gameInfo.black) == star_match[0])
-				&& (gameMode == IcsPlayingBlack)   ) // opponent kibitz
+			if((StrStr(star_match[0], gameInfo.white) == star_match[0]
+				&& (gameMode == IcsPlayingWhite)) ||
+			   (StrStr(star_match[0], gameInfo.black) == star_match[0]
+				&& (gameMode == IcsPlayingBlack))   ) // opponent kibitz
 			    started = STARTED_CHATTER; // own kibitz we simply discard
 			else {
 			    started = STARTED_COMMENT; // make sure it will be collected in parse[]
@@ -2852,7 +2859,7 @@ read_from_ics(isr, closure, data, count, error)
 		if(bookHit) { // [HGM] book: simulate book reply
 		    static char bookMove[MSG_SIZ]; // a bit generous?
 
-		    programStats.depth = programStats.nodes = programStats.time = 
+		    programStats.nodes = programStats.depth = programStats.time = 
 		    programStats.score = programStats.got_only_move = 0;
 		    sprintf(programStats.movelist, "%s (xbook)", bookHit);
 
@@ -3882,7 +3889,7 @@ ParseBoard12(string)
     if(bookHit) { // [HGM] book: simulate book reply
 	static char bookMove[MSG_SIZ]; // a bit generous?
 
-	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.nodes = programStats.depth = programStats.time = 
 	programStats.score = programStats.got_only_move = 0;
 	sprintf(programStats.movelist, "%s (xbook)", bookHit);
 
@@ -4102,7 +4109,7 @@ ProcessICSInitScript(f)
 void
 AlphaRank(char *move, int n)
 {
-    char *p = move, c; int x, y;
+//    char *p = move, c; int x, y;
 
     if (appData.debugMode) {
         fprintf(debugFP, "alphaRank(%s,%d)\n", move, n);
@@ -4246,6 +4253,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
     }
 }
 
+#if 0
 /* [AS] FRC game initialization */
 static int FindEmptySquare( Board board, int n )
 {
@@ -4262,7 +4270,6 @@ static int FindEmptySquare( Board board, int n )
     return i;
 }
 
-#if 0
 static void ShuffleFRC( Board board )
 {
     int i;
@@ -4354,7 +4361,7 @@ static void SetupFRC( Board board, int pos_index )
 
 int squaresLeft[4];
 int piecesLeft[(int)BlackPawn];
-long long int seed, nrOfShuffles;
+u64 seed, nrOfShuffles;
 
 void GetPositionNumber()
 {	// sets global variable seed
@@ -4375,9 +4382,9 @@ int put(Board board, int pieceType, int rank, int n, int shade)
 	int i;
 
 	for(i=BOARD_LEFT; i<BOARD_RGHT; i++) {
-		if( ((i-BOARD_LEFT)&1)+1 & shade && board[rank][i] == EmptySquare && n-- == 0) {
+		if( (((i-BOARD_LEFT)&1)+1) & shade && board[rank][i] == EmptySquare && n-- == 0) {
 			board[rank][i] = (ChessSquare) pieceType;
-			squaresLeft[(i-BOARD_LEFT&1) + 1]--;
+			squaresLeft[((i-BOARD_LEFT)&1) + 1]--;
 			squaresLeft[ANY]--;
 			piecesLeft[pieceType]--; 
 			return i;
@@ -4444,7 +4451,7 @@ void SetUpShuffle(Board board, int number)
 	    // in variants with super-numerary Kings and Rooks, we leave these for the shuffle
 	}
 
-	if((BOARD_RGHT-BOARD_LEFT & 1) == 0)
+	if(((BOARD_RGHT-BOARD_LEFT) & 1) == 0)
 	    // only for even boards make effort to put pairs of colorbound pieces on opposite colors
 	    for(p = (int) WhiteKing; p > (int) WhitePawn; p--) {
 		if(p != (int) WhiteBishop && p != (int) WhiteFerz && p != (int) WhiteAlfil) continue;
@@ -4645,10 +4652,10 @@ InitPosition(redraw)
       nrCastlingRights = 6;
         castlingRights[0][0] = initialRights[0] = BOARD_RGHT-1;
         castlingRights[0][1] = initialRights[1] = BOARD_LEFT;
-        castlingRights[0][2] = initialRights[2] = BOARD_WIDTH-1>>1;
+        castlingRights[0][2] = initialRights[2] =(BOARD_WIDTH-1)>>1;
         castlingRights[0][3] = initialRights[3] = BOARD_RGHT-1;
         castlingRights[0][4] = initialRights[4] = BOARD_LEFT;
-        castlingRights[0][5] = initialRights[5] = BOARD_WIDTH-1>>1;
+        castlingRights[0][5] = initialRights[5] =(BOARD_WIDTH-1)>>1;
       break;
     case VariantFalcon:
       pieces = FalconArray;
@@ -5442,7 +5449,7 @@ if(appData.debugMode) fprintf(debugFP, "moveType 2 = %d, promochar = %x\n", move
   if(bookHit) { // [HGM] book: simulate book reply
 	static char bookMove[MSG_SIZ]; // a bit generous?
 
-	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.nodes = programStats.depth = programStats.time = 
 	programStats.score = programStats.got_only_move = 0;
 	sprintf(programStats.movelist, "%s (xbook)", bookHit);
 
@@ -5475,7 +5482,7 @@ if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", move
 
 void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cpstats )
 {
-    char * hint = lastHint;
+//    char * hint = lastHint;
     FrontEndProgramStats stats;
 
     stats.which = cps == &first ? 0 : 1;
@@ -5669,8 +5676,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
             sprintf(buf1, _("Illegal move \"%s\" from %s machine"),
 		    machineMove, cps->which);
 	    DisplayError(buf1, 0);
-            sprintf(buf1, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d%c",
-                    machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, 0);
+            sprintf(buf1, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d",
+                    machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, moveType);
 	    if (gameMode == TwoMachinesPlay) {
 	      GameEnds(machineWhite ? BlackWins : WhiteWins,
                        buf1, GE_XBOARD);
@@ -5715,6 +5722,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                toX--;
                currentMoveString[2]--;
                break;
+	     default: ; // nothing to do, but suppresses warning of pedantic compilers
            }
         }
 	hintRequested = FALSE;
@@ -5737,8 +5745,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 			programStats.depth,
 			programStats.score / 100.,
 			programStats.time / 100.,
-			(double) programStats.nodes,
-			programStats.nodes / (10*abs(programStats.time) + 1.),
+			u64ToDouble(programStats.nodes),
+			u64ToDouble(programStats.nodes) / (10*abs(programStats.time) + 1.),
 			programStats.movelist);
 		SendToICS(buf);
 	  }
@@ -5827,7 +5835,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    {   /* [HGM] Some more adjudications for obstinate engines */
 		int NrWN=0, NrBN=0, NrWB=0, NrBB=0, NrWR=0, NrBR=0,
                     NrWQ=0, NrBQ=0, NrW=0, bishopsColor = 0,
-                    NrPieces=0, NrPawns=0, PawnAdvance=0, i, j, k;
+                    NrPieces=0, NrPawns=0, PawnAdvance=0, i, j;
 		static int moveCount = 6;
 
                 /* First absolutely insufficient mating material. Count what is on board. */
@@ -6126,7 +6134,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 		strcat(bookMove, bookHit);
 		message = bookMove;
 		cps = cps->other;
-		programStats.depth = programStats.nodes = programStats.time = 
+		programStats.nodes = programStats.depth = programStats.time = 
 		programStats.score = programStats.got_only_move = 0;
 		sprintf(programStats.movelist, "%s (xbook)", bookHit);
 
@@ -6660,8 +6668,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 		if(cps->nps >= 0) { /* [HGM] nps: use engine nodes or time to decrement clock */
 			int ticklen;
 
-			if(cps->nps == 0) ticklen = 10*time;       // use engine reported time
-			else ticklen = (1000. * nodes) / cps->nps; // convert node count to time
+			if(cps->nps == 0) ticklen = 10*time;                    // use engine reported time
+			else ticklen = (1000. * u64ToDouble(nodes)) / cps->nps; // convert node count to time
 			if(WhiteOnMove(forwardMostMove)) 
 			     whiteTimeRemaining = timeRemaining[0][forwardMostMove] - ticklen;
 			else blackTimeRemaining = timeRemaining[1][forwardMostMove] - ticklen;
@@ -6820,7 +6828,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         else {
 	    buf1[0] = NULLCHAR;
 
-	    if (sscanf(message, "%d%c %d %d %lu %[^\n]\n",
+	    if (sscanf(message, "%d%c %d %d " u64Display " %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5) 
             {
                 ChessProgramStats cpstats;
@@ -7065,7 +7073,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
     /* [HGM] compute & store e.p. status and castling rights for new position */
     /* if we are updating a board for which those exist (i.e. in boards[])    */
     if((p = ((int)board - (int)boards[0])/((int)boards[1]-(int)boards[0])) < MAX_MOVES && p > 0)
-    { int i, j;
+    { int i;
 
       if(gameInfo.variant == VariantBerolina) berolina = EP_BEROLIN_A;
       oldEP = epStatus[p-1];
@@ -9516,7 +9524,7 @@ SaveGamePGN(f)
 {
     int i, offset, linelen, newblock;
     time_t tm;
-    char *movetext;
+//    char *movetext;
     char numtext[32];
     int movelen, numlen, blank;
     char move_buffer[100]; /* [AS] Buffer for move+PV info */
@@ -9625,12 +9633,6 @@ SaveGamePGN(f)
 #else
             seconds = (pvInfoList[i].time + 5)/10; // [HGM] PVtime: use engine time
 #endif
-    if (appData.debugMode,0) {
-        fprintf(debugFP, "times = %d %d %d %d, seconds=%d\n",
-                timeRemaining[0][i+1], timeRemaining[0][i],
-                     timeRemaining[1][i+1], timeRemaining[1][i], seconds
-        );
-    }
 
             if( seconds <= 0) buf[0] = 0; else
             if( seconds < 30 ) sprintf(buf, " %3.1f%c", seconds/10., 0); else {
@@ -10443,7 +10445,7 @@ MachineWhiteEvent()
     if(bookHit) { // [HGM] book: simulate book reply
 	static char bookMove[MSG_SIZ]; // a bit generous?
 
-	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.nodes = programStats.depth = programStats.time = 
 	programStats.score = programStats.got_only_move = 0;
 	sprintf(programStats.movelist, "%s (xbook)", bookHit);
 
@@ -10518,7 +10520,7 @@ MachineBlackEvent()
     if(bookHit) { // [HGM] book: simulate book reply
 	static char bookMove[MSG_SIZ]; // a bit generous?
 
-	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.nodes = programStats.depth = programStats.time = 
 	programStats.score = programStats.got_only_move = 0;
 	sprintf(programStats.movelist, "%s (xbook)", bookHit);
 
@@ -10664,7 +10666,7 @@ TwoMachinesEvent P((void))
     if(bookHit) { // [HGM] book: simulate book reply
 	static char bookMove[MSG_SIZ]; // a bit generous?
 
-	programStats.depth = programStats.nodes = programStats.time = 
+	programStats.nodes = programStats.depth = programStats.time = 
 	programStats.score = programStats.got_only_move = 0;
 	sprintf(programStats.movelist, "%s (xbook)", bookHit);
 
@@ -12921,7 +12923,7 @@ GetTimeMark(tm)
 #else /*!HAVE_GETTIMEOFDAY*/
 #if HAVE_FTIME
 
-#include <sys/timeb.h>
+// include <sys/timeb.h> / moved to just above start of function
     struct timeb timeB;
 
     ftime(&timeB);

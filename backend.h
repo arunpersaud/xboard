@@ -361,7 +361,7 @@ typedef struct {
 } ChessProgramStats;
 
 extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
-extern shuffleOpenings;
+extern int shuffleOpenings;
 extern ChessProgramStats programStats;
 
 #endif /* _BACKEND */

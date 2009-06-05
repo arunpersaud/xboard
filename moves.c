@@ -65,6 +65,7 @@
 int WhitePiece P((ChessSquare));
 int BlackPiece P((ChessSquare));
 int SameColor P((ChessSquare, ChessSquare));
+int PosFlags(int index);
 
 extern char initialRights[BOARD_SIZE]; /* [HGM] all rights enabled, set in InitPosition */
 
@@ -647,7 +648,7 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
             case SHOGI BlackKing:
 	    case WhiteKing:
 	    case BlackKing:
-            walking:
+//            walking:
 	      for (i = -1; i <= 1; i++)
 		for (j = -1; j <= 1; j++) {
 		    if (i == 0 && j == 0) continue;
@@ -1680,11 +1681,11 @@ void ProtectedCallback(board, flags, kind, rf, ff, rt, ft, closure)
      int rf, ff, rt, ft;
      VOIDSTAR closure;
 {   // for determining if a piece (given through the closure) is protected
-  register ChaseClosure *cl = (ChaseClosure *) closure; // closure tells us where to recapture
-  
-  if(rt == cl->rt && ft == cl->ft) cl->recaptures++;    // count legal recaptures to this square
-  if(appData.debugMode && board[rt][ft] != EmptySquare)
-    fprintf(debugFP, "try %c%c%c%c=%d\n", ff+AAA, rf+ONE,ft+AAA, rt+ONE, cl->recaptures);
+    register ChaseClosure *cl = (ChaseClosure *) closure; // closure tells us where to recapture
+
+    if(rt == cl->rt && ft == cl->ft) cl->recaptures++;    // count legal recaptures to this square
+    if(appData.debugMode && board[rt][ft] != EmptySquare)
+	fprintf(debugFP, "try %c%c%c%c=%d\n", ff+AAA, rf+ONE,ft+AAA, rt+ONE, cl->recaptures);
 }
 
 extern char moveList[MAX_MOVES][MOVE_LEN];
@@ -1749,7 +1750,7 @@ int PerpetualChase(int first, int last)
 	    cl.recaptures = 0;         // prepare closure to pass recapture square and count moves to it
 	    cl.rt = chaseStack[j].rt;
 	    cl.ft = chaseStack[j].ft;
-	    if(appData.debugMode) { int n; 
+	    if(appData.debugMode) {
             	fprintf(debugFP, "test if we can recapture %c%c\n", cl.ft+AAA, cl.rt+ONE);
 	    }
             GenLegal(boards[i+1], PosFlags(i+1), EP_NONE, initialRights, ProtectedCallback, &cl); // try all moves

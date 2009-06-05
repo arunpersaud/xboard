@@ -152,9 +152,7 @@ static VOID DrawAxisSegmentHoriz( int value, BOOL drawValue )
 	sprintf(b, "%d", value);
 
         cbBuf = strlen( buf );
-
         GetTextExtentPoint32( hdcPB, buf, cbBuf, &stSize );
-
         TextOut( hdcPB, MarginX - stSize.cx - 2, y - stSize.cy / 2, buf, cbBuf );
     }
 }

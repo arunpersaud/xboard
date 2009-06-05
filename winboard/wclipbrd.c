@@ -198,7 +198,7 @@ CopyTextToClipboard(char *text)
     locked = !((err == NO_ERROR) || (err == ERROR_NOT_LOCKED));
     if (appData.debugMode) {
       fprintf(debugFP, 
-	      "CopyTextToClipboard(): err %d locked %d\n", err, locked);
+	      "CopyTextToClipboard(): err %d locked %d\n", (int)err, locked);
     }
   }
   if (locked) {
@@ -368,7 +368,7 @@ PasteTextFromClipboard(char **text)
     locked = !((err == NO_ERROR) || (err == ERROR_NOT_LOCKED));
     if (appData.debugMode) {
       fprintf(debugFP, 
-	      "PasteTextFromClipboard(): err %d locked %d\n", err, locked);
+	      "PasteTextFromClipboard(): err %d locked %d\n", (int)err, locked);
     }
   }
   if (locked) 

@@ -92,6 +92,7 @@ extern char *getenv();
 #include "backendz.h"
 
 char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [HGM] book
+void HandleMachineMove P((char *message, ChessProgramState *cps));
 
 static char zippyPartner[MSG_SIZ];
 static char zippyLastOpp[MSG_SIZ];
@@ -803,7 +804,7 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
 	return;
     }
     if (StrStr(appData.zippyVariants, varname) == NULL ||
-                (i=first.protocolVersion) != 1 && StrStr(first.variants, varname) == NULL /* [HGM] zippyvar */
+              ((i=first.protocolVersion) != 1 && StrStr(first.variants, varname) == NULL) /* [HGM] zippyvar */
                                                           ) {
         sprintf(buf,
 	 "%stell %s This computer can't play %s [%s], only %s\n%sdecline %s\n",

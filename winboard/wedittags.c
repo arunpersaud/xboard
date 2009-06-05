@@ -37,6 +37,7 @@
 #include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
+#include "wedittags.h"
 
 /* Module globals */
 static char *editTagsText;

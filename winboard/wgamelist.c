@@ -39,6 +39,7 @@
 #include "backend.h"
 
 #include "wsnap.h"
+#include "wgamelist.h"
 
 /* Module globals */
 HWND gameListDialog = NULL;

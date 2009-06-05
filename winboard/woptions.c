@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <shlobj.h>    /* [AS] Requires NT 4.0 or Win95 */
+#include <ctype.h>
 
 #include "common.h"
 #include "winboard.h"
@@ -66,7 +67,7 @@ extern char installDir[];
 extern HWND hCommPort;    /* currently open comm port */
 extern DCB dcb;
 extern BOOLEAN chessProgram;
-extern startedFromPositionFile; /* [HGM] loadPos */
+extern int startedFromPositionFile; /* [HGM] loadPos */
 
 /* types */
 
@@ -127,6 +128,7 @@ void SelectComboValue(HANDLE hwndCombo, ComboData *cd, unsigned value);
 VOID SetLoadOptionEnables(HWND hDlg);
 VOID SetSaveOptionEnables(HWND hDlg);
 VOID SetTimeControlEnables(HWND hDlg);
+void NewSettingEvent(int option, char *command, int value);
 
 /*---------------------------------------------------------------------------*\
  *
@@ -311,7 +313,7 @@ PaintSampleSquare(
   HBRUSH  brushSquareOutline;
   HBRUSH  brushPiece;
   HBRUSH  brushPieceDetail;
-  HBRUSH  oldBrushPiece;
+  HBRUSH  oldBrushPiece = NULL;
   HBRUSH  oldBrushSquare;
   HBITMAP oldBitmapMem;
   HBITMAP oldBitmapTemp;
@@ -567,6 +569,7 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case SizeTitanic:
       CheckDlgButton(hDlg, OPT_SizeTitanic, TRUE);
+    default: ; // should not happen, but suppresses warning on pedantic compilers
     }
 
     if (appData.monoMode)
@@ -796,10 +799,7 @@ VariantWhichRadio(HWND hDlg)
 LRESULT CALLBACK
 NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  static Boolean  mono;
   static VariantClass v;
-  static COLORREF lsc, dsc, wpc, bpc, hsc, phc;
-  static HBITMAP pieces[3];
   static int n1_ok, n2_ok, n3_ok;
 
   switch (message) {
@@ -881,6 +881,10 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case VariantNoCastle:
       CheckDlgButton(hDlg, OPT_VariantNocastle, TRUE);
       break;
+//    case VariantGreat: // Note to self: must still make this button (and GiveAway too).
+//      CheckDlgButton(hDlg, OPT_VariantGreat, TRUE);
+//      break;
+    default: ;
     }
 
     SetDlgItemInt( hDlg, IDC_Files, -1, TRUE );
@@ -1771,7 +1775,7 @@ InitSoundCombo(HWND hwndCombo, SoundComboData *scd)
     err = SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) scd->label);
     if (err != cnt++) {
       sprintf(buf, "InitSoundCombo(): err '%d', cnt '%d'\n",
-	  err, cnt);
+	  (int)err, (int)cnt);
       MessageBox(NULL, buf, NULL, MB_OK);
     }
     scd++;
@@ -2166,7 +2170,7 @@ VOID PrintCommSettings(FILE *f, char *name, DCB *dcb)
     flow = cdFlow[FLOW_NONE].label;
   }
   fprintf(f, "/%s=%d,%d,%s,%s,%s\n", name,
-    dcb->BaudRate, dcb->ByteSize, parity, stopBits, flow);
+    (int)dcb->BaudRate, dcb->ByteSize, parity, stopBits, flow);
 }
 
 
@@ -2228,7 +2232,7 @@ CommPortOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,	LPARAM lParam)
 
     hwndCombo = GetDlgItem(hDlg, OPT_DataRate);
     InitCombo(hwndCombo, cdDataRate);
-    sprintf(buf, "%u", dcb.BaudRate);
+    sprintf(buf, "%u", (int)dcb.BaudRate);
     if (SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) -1, (LPARAM) buf) == CB_ERR) {
       SendMessage(hwndCombo, CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0);
       SendMessage(hwndCombo, WM_SETTEXT, (WPARAM) 0, (LPARAM) buf);
