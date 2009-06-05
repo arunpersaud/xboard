@@ -1,14 +1,4 @@
-** Announcing the release of XBoard and WinBoard, version 4.4.0 **
-
-XBoard is a graphical chessboard for the X Window System that can
-serve as a user interface for GNU Chess, Crafty, and other chess
-engines, for the Internet Chess Servers, and for electronic mail
-correspondence chess.  XBoard can also be used by itself.  It can read
-and write game files in PGN (portable game notation).
-
-WinBoard is a similar program for 32-bit Microsoft Windows.  It
-includes all the major features of XBoard except email correspondence
-chess.
+** Version 4.4.0 **
 
 A new release of both XBoard and WinBoard is now available.  Version
 4.4.0 includes many changes. It is the first major release of
@@ -27,3 +17,172 @@ https://savannah.gnu.org/projects/xboard/
 If you find a bug, please report it in the bug tracker at
 https://savannah.gnu.org/projects/xboard/ or by email to bug-xboard
 (AT) gnu.org.
+
+
+** Version 4.3.16 **
+
+New command-line options
+/niceEngines=N       for adjusting the priority of engine processes so they don't soak up all your system resources
+/firstOptions="..."   Allows the setting of options that engines define through the feature option="..." commands
+/secondOptions="..."
+/firstLogo=filename.bmp  Displays the mentioned bitmap next to the clock (with H:W =1:2 aspect ratio) (WB only)
+/secondLogo=filename.bmp
+/autoLogo=false          get logo files automatically from engineDirectory\logo.bmp
+
+General enhancements:
+* New WB-protocol command: 'feature option="NAME -TYPE VALUE OTHER"', which engines can use to define options
+* New WB-protocol command: 'option NAME VALUE' used to set value of engine-defned options.
+* implements /delayAfterQuit and /delayBeforeQuit in XBoard, and uses SIGKILL to terminate rogue engine processes
+
+
+** Version 4.3.15 **
+
+New command-line options
+/rewindIndex=N (for the new auto-increment mode of the loadGameIndex or loadPositionIndex in match mode)
+/sameColorGames=N (for playing a match where the same player has white all the time)
+/egtFormats="..." (for specifying where various end-game tables are installed on the computer)
+
+New menu items
++ Time-odds factors can be set in the time-control dialog
++ Nr of CPUs for SMP engines can be set in the Options -> UCI dialog
++ Own-Book options can be switched from the Options -> UCI dialog
++ The ScoreIsAbs options can be set from the Options -> Engine dialog
++ New-Variant menu adds Superchess
+
+General Enhancements:
+* WinBoard engines can now also use the Polyglot opening book (implemented as general GUI book)
+* New WB-protocol commands memory, cores and egtpath make interactive setting of these parameters 
+  possible on WB engines
+* New Polyglot is available that relays the interactive setting of these parameters to UCI engines
+* Match mode suports an auto-increment mode, so that all games or positions from a file can be played
+* Draw claims with Kings and an arbitrary number of like Bishops (e.g. KBBKB) are accepted
+
+The source tree in original xboard 4.2.7 format can now be compiled under Cygwin with the aid
+of the cygwin.mak file in the ~/winboard/ subdirectory of the source releasy, after you put
+the hep-file from an executabl distribution there. Maefiles for other compilers are not updated
+since 4.2.7, as I do not have those compilers.
+
+
+** Version 4.3.14k **
+
+Compared to version 4.3.13 described below, this version features
+
+New command-line options: 
+/autoKibitz (for relaying the PV info of the engine to the ICS) 
+/userName="..." (for setting the name of the Human player, also as menu) 
+/engineDebugOutput=N (controlling the writing of engine output to debug file) 
+/firstNPS=N (for time management by node count or CPU time) 
+/secondNPS=N (likewise for the other engine) 
+
+New Menu items 
++ Enter Username (same as /userName command-line option) 
++ Save Diagram (for saving the Chessboard display as bitmap file) 
++ Machine Both (not implemented yet, but menu item already provided) 
++ New-Variant menu adds CRC, Janus and Berolina (the latter only with legality testing off!) 
++ Any variant can be played from a shuffled opening setup 
+
+Bugfixes: 
+* Problems with switching the variant in ICS zippy mode solved 
+* In ICS observing mode game history is now fully accessible 
+* Moves are not fed to engine in zippy mode, when observing a game from a variant unknown to the engine 
+* a problem with loading PGN of FRC games with move disambiguation and initial castling rights was fixed.
+* A bug in the clock display that made previous versions of WinBoard crash for tiny displays is fixed
+
+General enhancements: 
+* variant name displayed in title bar in ICS mode, when not 'normal' 
+* when receiving a challenge in ICS zippy mode, it is checked if the engine supports the variant (/zippyVariants="..." can still be used to limit the allowed variants, and for protocol-1 engines is still the only thing to go on) 
+* when loading a game from a PGN file, WB automatically switches to the variant specified in the PGN tags 
+* when starting from a loaded position (using /loadPositionFile), this position will be used on subsequent 'New Game' commands as well (until we switch variant)
+
+New is also that the source tree is now brought back in the original WinBoard 4.2.7 format, including
+xboard source files. Note, however, that the xboard sources are from an older date, and I did not test
+if they still compile together with the much newer backend sources. I did add code in xboard.c to recognize
+the new command-line options I added since then, and in so far they are back-end options that should be enough 
+to make them work. This is completely untested, though; I did not even try to compile it. Last time anyone
+built a working xboard.exe from this was at a stage where WinBoard did have adjustable board size, allowing
+it to play Xiangqi. But no crazyhouse holdings yet.
+
+
+** Version 4.3.13a **
+
+This version of WinBoard_F fixes several bugs in 4.3.12, and also addse a few new features.
+The new features include:
+- some more fairy pieces, so that each side now has 22 piece types in stead of 17,
+making most fairy pieces available in board size "petite" (next to "bulky" and "middling"),
+making the ArchBishop and Chancellor, as well as one wildcard piece (the Lance) available in all 
+sizes from "petite" to "bulky".
+- The FRC support is fully fixed, both in local and ICS mode.
+- A mechanism is provided for safe draw claiming in cases where a 3-fold repetition woud occur only
+  after your own move. In this case a draw will be awarded by WinBoard if the engine sends "offer draw"
+  before making its move.
+- Genuine draw offers are not passed on immediately to the opponent but held up to when the offerer announces
+  its move.
+- Variants FRC, Cylinder and Falcon are added to the "New Variant..." menu.
+- Support for playing time-odds games is added. (Options /firstTimeOdds, /secondTimeOdds, /timeOddsMode)
+- A mechanism is provided for attaching WinBoard options to the engine command, to create options that
+follow the engine (e.g. time odds) in a tournament run under a tournament manager.
+Bugfixes include:
+- Shatranj in ICS mode (did not work at all before)
+- Some draw adjudications (QRKR was mistaken for KRKR, and KBKB with like Bishops is now recognized)
+- time info in the PGN is now correct
+
+
+
+** Version 4.3.14 **
+
+This relaese was not made by the GNU xboard team, but by H.G.Muller.
+It mainly contains developments on WinBoard. Nevertheless, an attempt
+has been started to back-port the enormous number of improvements that
+have been made to WinBoard since the Linux and Windows developments branched
+to xboard. This is reflected by the source tree now having the same format
+as that of xboard 4.2.7, including all the xboard sources. 
+
+An enormous amount of work still has to be done to make the xboard version
+fully equivalent to WinBoard, especially on user-interface side. As a modest
+beginning, the xboard source files have been patched to allow their compilation
+with the newer back-end files from WinBoard. To this end, the number of piece
+types in xboard has been increased from 6 to 22, and the WinBoard bitmaps
+have been converted to xboard source format (.bm) and are included in the
+xboard bitmaps directory. Other quick patches include the coloring of the
+board squares (for xiangqi and holdings), and some code in the user-move
+handling to suppress all moves into or out of the area between board and
+holdings in crazyhouse, and the treatment of king-captures-own-piece
+as a possibly valid move (for FRC castling). This should make it possible 
+to run xboard with the new back-end files without too much inconvenience.
+
+New xboard command-line options have been added to make the added back-end 
+features available. The include the new variants (as argument of the old
+-variant option), -boardWidth, -boardHeight and -holdingsSize. Be sure
+to call xboard with "-boardSize middling" or "-boardSize bulky" if you
+want to play with fairy pieces, or xboard might crash due to unavailability
+of bitmaps. Other added xboard options are:
+
+ADJUDICATION OPTIONS:
+-checkMates
+-testClaims
+-materialDraws
+-trivialDraws
+-ruleMoves
+-repeatsToDraw
+-adjudicateLossThreshold
+-firstScoreAbsolute
+-secondScoreAbsolute
+
+TIME-CONTROL OPTIONS
+-firstTimeOdds
+-secondTimeOdds
+-timeOddsMode
+-firstNPS
+-secondNPS
+
+GENERAL OPTIONS
+-matchPause
+-engineDebugOutput
+-userName
+-pgnExtendedInfo
+-pgnEventHeader
+-hideThinkingFromHuman
+
+This is all completely untested, but as the options merely switch on well-tested
+code in the back-end, there should not be too many problems with them.
+Bugs can be reported in the WinBoard forum.

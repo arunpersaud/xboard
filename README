@@ -1,4 +1,3 @@
-
 What is XBoard?
 ===============
 XBoard is a graphical chessboard for the X Window System.  It can
@@ -74,62 +73,3 @@ If you improve XBoard, please send a message about your changes, and
 we will get in touch with you about merging them in to the main line
 of development.
 
-Version 4.3.14
-==============
-
-This relaese was not made by the GNU xboard team, but by H.G.Muller.
-It mainly contains developments on WinBoard. Nevertheless, an attempt
-has been started to back-port the enormous number of improvements that
-have been made to WinBoard since the Linux and Windows developments branched
-to xboard. This is reflected by the source tree now having the same format
-as that of xboard 4.2.7, including all the xboard sources. 
-
-An enormous amount of work still has to be done to make the xboard version
-fully equivalent to WinBoard, especially on user-interface side. As a modest
-beginning, the xboard source files have been patched to allow their compilation
-with the newer back-end files from WinBoard. To this end, the number of piece
-types in xboard has been increased from 6 to 22, and the WinBoard bitmaps
-have been converted to xboard source format (.bm) and are included in the
-xboard bitmaps directory. Other quick patches include the coloring of the
-board squares (for xiangqi and holdings), and some code in the user-move
-handling to suppress all moves into or out of the area between board and
-holdings in crazyhouse, and the treatment of king-captures-own-piece
-as a possibly valid move (for FRC castling). This should make it possible 
-to run xboard with the new back-end files without too much inconvenience.
-
-New xboard command-line options have been added to make the added back-end 
-features available. The include the new variants (as argument of the old
--variant option), -boardWidth, -boardHeight and -holdingsSize. Be sure
-to call xboard with "-boardSize middling" or "-boardSize bulky" if you
-want to play with fairy pieces, or xboard might crash due to unavailability
-of bitmaps. Other added xboard options are:
-
-ADJUDICATION OPTIONS:
--checkMates
--testClaims
--materialDraws
--trivialDraws
--ruleMoves
--repeatsToDraw
--adjudicateLossThreshold
--firstScoreAbsolute
--secondScoreAbsolute
-
-TIME-CONTROL OPTIONS
--firstTimeOdds
--secondTimeOdds
--timeOddsMode
--firstNPS
--secondNPS
-
-GENERAL OPTIONS
--matchPause
--engineDebugOutput
--userName
--pgnExtendedInfo
--pgnEventHeader
--hideThinkingFromHuman
-
-This is all completely untested, but as the options merely switch on well-tested
-code in the back-end, there should not be too many problems with them.
-Bugs can be reported in the WinBoard forum.
