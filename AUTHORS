@@ -141,3 +141,9 @@ of the WinBoard_x options, became known as WinBoard_F.
  
 fix for parser.l
 updated autotools files
+
+13. Eric Mullins <emwine AT earthlink DOT net>
+
+Makefiles for different compilers for windows, several changes for those compilers
+
+backend.c, winboard/Winboard.dev, winboard/makefile.gcc, winboard/makefile.ms, winboard/res/winboard.exe.manifest, winboard/resource.h, winboard/wevalgraph.c, winboard/winboard.c, winboard/winboard.dsp, winboard/winboard.dsw, winboard/winboard.h, winboard/winboard.rc, winboard/woptions.c                

@@ -2,6 +2,7 @@
 // Microsoft Developer Studio generated include file.
 // Used by winboard.rc
 //
+#define MANIFEST_RESOURCE_ID              1
 #define IDM_NewGame                     100
 #define IDM_LoadGame                    101
 #define IDM_SaveGame                    102

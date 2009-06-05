@@ -145,16 +145,11 @@ static VOID DrawAxisSegmentHoriz( int value, BOOL drawValue )
 
     if( drawValue ) {
         SIZE stSize;
-        char buf[8];
+        char buf[MSG_SIZ], *b = buf;
         int cbBuf;
 
-        if( value > 0 ) {
-            buf[0] = '+';
-            itoa( value, buf+1, 10 );
-        }
-        else {
-            itoa( value, buf, 10 );
-        }
+        if( value > 0 ) *b++ = '+';
+	sprintf(b, "%d", value);
 
         cbBuf = strlen( buf );
 

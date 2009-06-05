@@ -57,6 +57,7 @@
 #include <windows.h>
 #include <winuser.h>
 #include <winsock.h>
+#include <commctrl.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1671,6 +1672,8 @@ ParseArgs(GetFunc get, void *cl)
     case ArgNone:
       ExitArgError("Unrecognized argument", argValue);
       break;
+    case ArgTrue:
+    case ArgFalse: ;
     }
   }
 }
@@ -1844,6 +1847,7 @@ InitAppData(LPSTR lpCmdLine)
   appData.reuseSecond = TRUE;
   appData.blindfold = FALSE;
   appData.icsEngineAnalyze = FALSE;
+  memset(&dcb, 0, sizeof(DCB)); // required by VS 2002 +
   dcb.DCBlength = sizeof(DCB);
   dcb.BaudRate = 9600;
   dcb.fBinary = TRUE;
@@ -8864,7 +8868,7 @@ DisplayMessage(char *str1, char *str2)
   }
   messageText[MESSAGE_TEXT_MAX - 1] = NULLCHAR;
 
-  if (IsIconic(hwndMain)) return;
+  if (hwndMain == NULL || IsIconic(hwndMain)) return;
   hdc = GetDC(hwndMain);
   oldFont = SelectObject(hdc, font[boardSize][MESSAGE_FONT]->hf);
   ExtTextOut(hdc, messageRect.left, messageRect.top, ETO_CLIPPED|ETO_OPAQUE,
@@ -10697,3 +10701,4 @@ void SetProgramStats( FrontEndProgramStats * stats )
 
     EngineOutputUpdate( stats );
 }
+///

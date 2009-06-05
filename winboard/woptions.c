@@ -2000,7 +2000,7 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       tmp.data = NULL;
       MyLoadSound(&tmp);
       MyPlaySound(&tmp);
-      if (tmp.data  != NULL) free(tmp.data);
+      if (tmp.data  != NULL) FreeResource(tmp.data); // technically obsolete fn, but tmp.data is NOT malloc'd mem
       if (tmp.name != NULL) free(tmp.name);
       return TRUE;
 

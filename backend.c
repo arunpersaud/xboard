@@ -12899,6 +12899,11 @@ DisplayBothClocks()
    you have neither ftime nor gettimeofday.
 */
 
+/* VS 2008 requires the #include outside of the function */
+#if !HAVE_GETTIMEOFDAY && HAVE_FTIME
+#include <sys/timeb.h>
+#endif
+
 /* Get the current time as a TimeMark */
 void
 GetTimeMark(tm)
