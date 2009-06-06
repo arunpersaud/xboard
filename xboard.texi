@@ -640,6 +640,16 @@ after the chess engine has replied to your move; if the chess engine is still
 thinking, use @samp{Move Now} first. In ICS mode, @samp{Retract Move}
 issues the command @samp{takeback 1} or @samp{takeback 2}
 depending on whether it is your opponent's move or yours.
+@item Adjudicate to White
+@itemx Adjudicate to Black
+@itemx Adjudicate Draw
+@cindex Adjudicate to White, Menu Item
+@cindex Adjudicate to Black, Menu Item
+@cindex Adjudicate Draw, Menu Item
+Terminate an ongoing game in Two-Machines mode (including match mode),
+with as result a win for white, for black, or a draw, repsectively.
+The PGN file of the game will accompany the result string
+by the comment "{user adjudication}".
 @end table
 
 @node Options Menu

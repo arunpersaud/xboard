@@ -205,7 +205,7 @@ project pages at <a href="https://savannah.gnu.org/projects/xboard/"
 <p>If you have other questions about XBoard/WinBoard that aren't answered
 in this FAQ, you can try Aaron Tay's WinBoard and Chess Engines FAQ, at
 <a href="http://www.aarontay.per.sg/Winboard/"
->http://www.aarontay.per.sg/Winboard/</a>.
+>defunct URL</a>.
 
 <P>For general news and information about chess, try the newsgroup hierarchy
 rec.games.chess.*, especially the groups rec.games.chess.misc and
@@ -213,7 +213,7 @@ rec.games.chess.computer.  Both of the latter groups have very informative
 FAQs maintained by Steve Pribut; look for them on the newsgroups or at
 <A HREF=
 "http://www.clark.net/pub/pribut/chess.html"
->http://www.clark.net/pub/pribut/chess.html</A>.
+>defunct URL</A>.
 
 <P>Like other GNU software, you can get XBoard, and
 WinBoard by anonymous FTP from 
@@ -285,7 +285,10 @@ bug-xboard<a name="nospam">&#x40;</a>gnu.org.
 <p>Beginner questions and discussion about the program may get faster
 answers on the WinBoard Forum at <a
 href="http://f11.parsimony.net/forum16635/"
->http://f11.parsimony.net/forum16635/</a>.  
+>http://www.open-aurec.com/wbforum/</a>.
+This forum also constains a section dedicated to propose and discuss
+new features for WinBoard / XBoard or WinBoard protocol,
+and reposrt bugs.
 
 <p>If you are developing a
 chess engine that works with XBoard or WinBoard (or an alternative
@@ -293,6 +296,9 @@ GUI that works with such engines), see the Chess Engines mailing
 list, hosted at
 <a href="http://groups.yahoo.com/group/chess-engines"
 >http://groups.yahoo.com/group/chess-engines</a>.
+For better response, join the above-mentioned WinBoard forum,
+or the <a href="http://www.talkchess.com/forum">CCC forum</a>.
+
 
 <P>Any time you want to report a possible bug in XBoard or WinBoard,
 we need to know exactly what you did, and exactly what error (or
@@ -344,10 +350,12 @@ work.<p>
 <li>Protocol version 3.  The members of the chess engine authors'
 mailing list discussed a set of proposed features for the next version
 of the XBoard/WinBoard chess engine communication protocol.
-Unfortunately, this project has gotten only as far as that discussion
-took it; no revisions of the protocol spec or coding have been done
-yet.  A few simple features are very clearly needed, though, and will
-probably appear in time.<p>
+The WinBoard 4.3 fork has taken the protocol in a different direction,
+though, extending version 2 with new features as they were needed,
+rather than upgrading to a new protocol in a single sweep.
+It does not seem likely that there will be a v3 protocol in the
+foreseeable future.
+<p>
 
 <li>Contributed features.  Several people have mailed me code to add
 various features.  Most of this code is available on the
@@ -360,10 +368,15 @@ Software Foundation so that we can include it in official releases in
 the future.<p>
 
 <li>Internationalization.  Several people have expressed interest in
-internationalizing XBoard/WinBoard, and so hopefully this project will
-go forward.  Once the internationalization support is in, we will need
-more translators.  Watch for news on the xboard-devel mailing list on
-our Savannah pages.
+internationalizing XBoard/WinBoard. Version 4.4 implements 
+internationalization in its XBoard branch,
+and includes (partial) Turkish and German translations.
+For WinBoard a suitable way o internationalization still has to be found,
+as all menu strings there are not in the C code, but in a Windows resource
+file. In any case, we will need more translators, to update the existing
+translations (for version 4.3.7) to the current version, and to provide
+translaions for oter languages.  Watch for news on the xboard-devel mailing 
+list on our Savannah pages.
 
 </ul>
 
@@ -409,10 +422,7 @@ as Windows 95, 98, NT, 2000, ME, and XP.  It uses the same back end
 chess code as XBoard, but the front end graphics code is a complete
 rewrite.  WinBoard is free software.
 
-<P>The WinBoard distribution includes a port of GNU Chess to Win32.
-The GNU Chess port is distributed in executable form, with instructions for
-rebuilding it from the standard GNU Chess sources (available separately).  You
-should have at least 16 to 24 MB of memory to run GNU Chess with WinBoard.
+<P>The WinBoard distribution includes a sample Chess engine.
 
 <P>The WinBoard distribution also includes the ICC timestamp and FICS
 timeseal programs (topic <A HREF="#[B.12]">[B.12]</A>).
@@ -707,10 +717,12 @@ files on ICC and FICS.
 <H3><A NAME="[B.14]">[B.14] How do I play bughouse with XBoard or WinBoard?
 </A></H3>
 
-XBoard and WinBoard have simple but effective bughouse support.
-Offboard piece holdings are shown in the board window's banner, and
-you drop offboard pieces using the right mouse button.  Press it over
-the destination square to pop up a menu of pieces.
+XBoard and WinBoard have full bughouse support.
+Offboard piece holdings are shown next to the board, and
+you drop offboard pieces by dragging them with the mouse 
+(holding the left button down) to their drop square,
+or left-click the piece and the drop square, just like when you enter
+any ordinary move.
 
 <P>XBoard and WinBoard can display only one board at a time, but you
 can observe your partner's game by running a second copy of the
@@ -1070,11 +1082,19 @@ pid=$$
   The chess engines are too strong and always beat me.  How can I adjust
   the difficulty level to make them weaker?</a></h3>
 
-<p>The simplest way to get that effect is to make sure the
-XBoard/WinBoard Auto Flag option is off, set a very fast time control
-so that the chess engine can't think for long, but take as much time
-over your own moves as you want. Also feel free to use Retract Move if
-you make a blunder.  
+<p>The best way is to get a weaker chess engine.
+On the <a href="http://www.open-aurec.com/chesswar">ChessWar</a> website
+you will find a rating list of virtually all engines that are able to
+play under XBoard/WinBoard, from super-humanly strong to ridculously weak.
+Most of them can be downloaded for free from the internet.</p>
+
+<p>A way to get that effect is to limit the time the engine can use for
+deciding on its move. The time-odds options or menu items in the 
+time-control dialog) can be used to this end. This is only of limited 
+help, as engines do not weeken that much at faster time-control,
+and there is a practical limit to how fast you can order the engine
+to go. Also feel free to use Retract Move if
+you make a blunder. </p>
 
 <p>Many chess coaches will let you switch sides after
 they get a stronger position so that you can get experience playing
