@@ -5881,7 +5881,8 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 		    }
                 }
 
-                if( NrPieces == 2 || gameInfo.variant != VariantXiangqi &&
+                if( NrPieces == 2 || gameInfo.variant != VariantXiangqi && 
+				     gameInfo.variant != VariantShatranj && // [HGM] baring will remain possible
 			(NrPieces == 3 && NrWN+NrBN+NrWB+NrBB == 1 ||
 			 NrPieces == NrBB+NrWB+2 && bishopsColor != 3)) // [HGM] all Bishops (Ferz!) same color
                 {    /* KBK, KNK, KK of KBKB with like Bishops */
