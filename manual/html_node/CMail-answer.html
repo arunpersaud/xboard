@@ -1,0 +1,61 @@
+<html lang="en">
+<head>
+<title>CMail answer - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="CMail.html#CMail" title="CMail">
+<link rel="prev" href="CMail-game.html#CMail-game" title="CMail game">
+<link rel="next" href="CMail-multi.html#CMail-multi" title="CMail multi">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="CMail-answer"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="CMail-multi.html#CMail-multi">CMail multi</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="CMail-game.html#CMail-game">CMail game</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="CMail.html#CMail">CMail</a>
+<hr>
+</div>
+
+<h3 class="section">10.3 Answering a Move</h3>
+
+<p>When you receive a message from an opponent containing a move in one of
+your games, simply pipe the message through <samp><span class="file">cmail</span></samp>. In some mailers
+this is as simple as typing <kbd>| cmail</kbd> when viewing the message, while in
+others you may have to save the message to a file and do <kbd>cmail &lt; file</kbd>
+at the command line. In either case <samp><span class="file">cmail</span></samp> will display the game using
+XBoard. If you didn't exit XBoard when you made your first move
+then <samp><span class="file">cmail</span></samp> will do its best to use the existing XBoard instead
+of starting a new one. As before, simply make a move and select
+&lsquo;<samp><span class="samp">Mail Move</span></samp>&rsquo; from the &lsquo;<samp><span class="samp">File</span></samp>&rsquo; menu. See <a href="File-Menu.html#File-Menu">File Menu</a>. <samp><span class="file">cmail</span></samp>
+will try to use the
+XBoard that was most recently used to display the current game. This
+means that many games can be in progress simultaneously, each with its own
+active XBoard.
+
+   <p>If you want to look at the history or explore a variation, go ahead, but
+you must return to the current position before XBoard will allow you
+to mail a move. If you edit the game's history you must select
+&lsquo;<samp><span class="samp">Reload Same Game</span></samp>&rsquo; from the &lsquo;<samp><span class="samp">File</span></samp>&rsquo; menu to get back to the original
+position, then make the move you want and select &lsquo;<samp><span class="samp">Mail Move</span></samp>&rsquo;. 
+As before, if you decide you aren't ready to make a move just yet you can
+either select &lsquo;<samp><span class="samp">Exit</span></samp>&rsquo; without sending a move or just leave
+XBoard running until you are ready.
+
+   </body></html>
+

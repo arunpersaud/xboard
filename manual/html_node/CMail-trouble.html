@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+<title>CMail trouble - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="CMail.html#CMail" title="CMail">
+<link rel="prev" href="CMail-completion.html#CMail-completion" title="CMail completion">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="CMail-trouble"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="CMail-completion.html#CMail-completion">CMail completion</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="CMail.html#CMail">CMail</a>
+<hr>
+</div>
+
+<h3 class="section">10.6 Known CMail Problems</h3>
+
+<p>It's possible that a strange conjunction of conditions may occasionally
+mean that <samp><span class="file">cmail</span></samp> has trouble reactivating an existing
+XBoard. If this should happen, simply trying it again should work. 
+If not, remove the file that stores the XBoard's PID
+(<samp><span class="file">game.pid</span></samp>) or use the &lsquo;<samp><span class="samp">-xreuse</span></samp>&rsquo; option to force
+<samp><span class="file">cmail</span></samp> to start a new XBoard.
+
+   <p>Versions of <samp><span class="file">cmail</span></samp> after 2.16 no longer understand the old file format
+that XBoard used to use and so cannot be used to correspond with
+anyone using an older version.
+
+   <p>Versions of <samp><span class="file">cmail</span></samp> older than 2.11 do not handle multi-game messages,
+so multi-game correspondence is not possible with opponents using an older
+version.
+
+   </body></html>
+

@@ -1,0 +1,70 @@
+<html lang="en">
+<head>
+<title>zic2xpm - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Other-programs.html#Other-programs" title="Other programs">
+<link rel="prev" href="Crafty.html#Crafty" title="Crafty">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="zic2xpm"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Crafty.html#Crafty">Crafty</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Other-programs.html#Other-programs">Other programs</a>
+<hr>
+</div>
+
+<h3 class="section">11.5 zic2xpm</h3>
+
+<p>The &ldquo;zic2xpm&rdquo; program is used to import chess sets from the ZIICS(*)
+program into XBoard. &ldquo;zic2xpm&rdquo; is part of the XBoard distribution. 
+ZIICS is available from:
+
+   <p>ftp://ftp.freechess.org/pub/chess/DOS/ziics131.exe
+
+   <p>To import ZIICS pieces, do this:
+     <dl>
+<dt>1. Unzip ziics131.exe into a directory:<dd>
+     <pre class="example">          unzip -L ziics131.exe -d ~/ziics
+</pre>
+     <br><dt>2. Use zic2xpm to convert a set of pieces to XBoard format.<dd>
+For example, let's say you want to use the
+FRITZ4 set. These files are named &ldquo;fritz4.*&rdquo; in the ZIICS distribution.
+
+     <pre class="example">          mkdir ~/fritz4
+          cd ~/fritz4
+          zic2xpm ~/ziics/fritz4.*
+</pre>
+     <br><dt>3. Give XBoard the &ldquo;-pixmap&rdquo; option when starting up, e.g.:<dd>
+     <pre class="example">          xboard -pixmap ~/fritz4
+</pre>
+     <p>Alternatively, you can add this line to your <samp><span class="file">.Xresources</span></samp> file:
+
+     <pre class="example">          xboard*pixmapDirectory: ~/fritz4
+</pre>
+     </dl>
+
+   <p>(*) ZIICS is a separate copyrighted work of Andy McFarland. 
+The &ldquo;ZIICS pieces&rdquo; are copyrighted works of their respective
+creators. Files produced by &ldquo;zic2xpm&rdquo; are for PERSONAL USE ONLY
+and may NOT be redistributed without explicit permission from
+the original creator(s) of the pieces.
+
+   </body></html>
+

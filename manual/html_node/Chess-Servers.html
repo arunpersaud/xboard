@@ -1,0 +1,117 @@
+<html lang="en">
+<head>
+<title>Chess Servers - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Options.html#Options" title="Options">
+<link rel="next" href="Firewalls.html#Firewalls" title="Firewalls">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Chess-Servers"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Firewalls.html#Firewalls">Firewalls</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Options.html#Options">Options</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">4 Chess Servers</h2>
+
+<p><a name="index-ICS-374"></a><a name="index-ICS_002c-addresses-375"></a><a name="index-Internet-Chess-Server-376"></a>An <dfn>Internet Chess Server</dfn>, or <dfn>ICS</dfn>, is a place on the
+Internet where people can get together to play chess, watch other
+people's games, or just chat.  You can use either <code>telnet</code> or a
+client program like XBoard to connect to the server.  There are
+thousands of registered users on the different ICS hosts, and it is
+not unusual to meet 200 on both chessclub.com and freechess.org.
+
+   <p>Most people can just type <kbd>xboard -ics</kbd> to start XBoard as an ICS
+client.  Invoking XBoard in this way connects you to the Internet
+Chess Club (ICC), a commercial ICS.  You can log in there as a guest
+even if you do not have a paid account.  To connect to the largest
+Free ICS (FICS), use the command <kbd>xboard -ics -icshost freechess.org</kbd>
+instead, or substitute a different host name to connect to your
+favorite ICS. 
+For a full description of command-line options that control
+the connection to ICS and change the default values of ICS options, see
+<a href="ICS-options.html#ICS-options">ICS options</a>.
+
+   <p>While you are running XBoard as an ICS client,
+you use the terminal window that you started XBoard from
+as a place to type in commands and read information that is
+not available on the chessboard.
+
+   <p>The first time you need to use the terminal is to enter your login name
+and password, if you are a registered player. (You don't need to do
+this manually; the <code>icsLogon</code> option can do it for you. 
+see <a href="ICS-options.html#ICS-options">ICS options</a>.)  If you are not registered,
+enter <kbd>g</kbd> as your name, and the server will pick a
+unique guest name for you.
+
+   <p>Some useful ICS commands
+include
+     <dl>
+<dt><kbd>help &lt;topic&gt;</kbd><dd><a name="index-help_002c-ICS-command-377"></a>to get help on the given &lt;topic&gt;. To get a list of possible topics type
+<dfn>help</dfn> without topic.  Try the help command before you ask other
+people on the server for help.
+
+     <p>For example <kbd>help register</kbd> tells you how to become a registered
+ICS player. 
+<br><dt><kbd>who &lt;flags&gt;</kbd><dd><a name="index-who_002c-ICS-command-378"></a>to see a list of people who are logged on.  Administrators
+(people you should talk to if you have a problem) are marked
+with the character &lsquo;<samp><span class="samp">*</span></samp>&rsquo;, an asterisk. The &lt;flags&gt; allow you to
+display only selected players: For example, <kbd>who of</kbd> shows a
+list of players who are interested in playing but do not have
+an opponent. 
+<br><dt><kbd>games</kbd><dd><a name="index-games_002c-ICS-command-379"></a>to see what games are being played
+<br><dt><kbd>match &lt;player&gt; [&lt;mins&gt;] [&lt;inc&gt;]</kbd><dd>to challenge another player to a game. Both opponents get &lt;mins&gt; minutes
+for the game, and &lt;inc&gt; seconds will be added after each move. 
+If another player challenges you, the server asks if you want to
+accept the challenge; use the <kbd>accept</kbd> or <kbd>decline</kbd> commands
+to answer. 
+<br><dt><kbd>accept</kbd><dt><kbd>decline</kbd><dd><a name="index-accept_002c-ICS-command-380"></a><a name="index-decline_002c-ICS-command-381"></a>to accept or decline another player's offer. 
+The offer may be to start a new game, or to agree to a
+<kbd>draw</kbd>, <kbd>adjourn</kbd> or <kbd>abort</kbd> the current game. See <a href="Action-Menu.html#Action-Menu">Action Menu</a>.
+
+     <p>If you have more than one pending offer (for example, if more than one player
+is challenging you, or if your opponent offers both a draw and to adjourn the
+game), you have to supply additional information, by typing something
+like <kbd>accept &lt;player&gt;</kbd>, <kbd>accept draw</kbd>, or <kbd>draw</kbd>. 
+<br><dt><kbd>draw</kbd><dt><kbd>adjourn</kbd><dt><kbd>abort</kbd><dd><a name="index-draw_002c-ICS-command-382"></a><a name="index-adjourn_002c-ICS-command-383"></a><a name="index-abort_002c-ICS-command-384"></a>asks your opponent to terminate a game by mutual agreement. Adjourned
+games can be continued later. 
+Your opponent can either <kbd>decline</kbd> your offer or accept it (by typing the
+same command or typing <kbd>accept</kbd>).  In some cases these commands work
+immediately, without asking your opponent to agree.  For example, you can
+abort the game unilaterally if your opponent is out of time, and you can claim
+a draw by repetition or the 50-move rule if available simply by typing
+<kbd>draw</kbd>. 
+<br><dt><kbd>finger &lt;player&gt;</kbd><dd><a name="index-finger_002c-ICS-command-385"></a>to get information about the given &lt;player&gt;. (Default: yourself.) 
+<br><dt><kbd>vars</kbd><dd><a name="index-vars_002c-ICS-command-386"></a>to get a list of personal settings
+<br><dt><kbd>set &lt;var&gt; &lt;value&gt;</kbd><dd><a name="index-set_002c-ICS-command-387"></a>to modify these settings
+<br><dt><kbd>observe &lt;player&gt;</kbd><dd><a name="index-observe_002c-ICS-command-388"></a>to observe an ongoing game of the given &lt;player&gt;. 
+<br><dt><kbd>examine</kbd><dt><kbd>oldmoves</kbd><dd><a name="index-examine_002c-ICS-command-389"></a><a name="index-oldmoves_002c-ICS-command-390"></a>to review a recently completed game
+</dl>
+
+   <p>Some special XBoard features are activated when you are
+in examine mode on ICS.  See the descriptions of the menu commands
+&lsquo;<samp><span class="samp">Forward</span></samp>&rsquo;, &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo;, &lsquo;<samp><span class="samp">Pause</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ICS Client</span></samp>&rsquo;,
+and &lsquo;<samp><span class="samp">Stop Examining</span></samp>&rsquo; on the <a href="Step-Menu.html#Step-Menu">Step Menu</a>, <a href="Mode-Menu.html#Mode-Menu">Mode Menu</a>, and
+<a href="Options-Menu.html#Options-Menu">Options Menu</a>.
+
+   </body></html>
+

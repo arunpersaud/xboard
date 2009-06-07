@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+<title>Options - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Menus.html#Menus" title="Menus">
+<link rel="next" href="Chess-Servers.html#Chess-Servers" title="Chess Servers">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Options"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Chess-Servers.html#Chess-Servers">Chess Servers</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Menus.html#Menus">Menus</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">3 Options</h2>
+
+<p><a name="index-Options-111"></a><a name="index-Options-112"></a>
+This section documents the command-line options to XBoard.  You can
+set these options in two ways: by typing them on the shell command
+line you use to start XBoard, or by setting them as X resources
+(typically in your <samp><span class="file">.Xresources</span></samp> file).  Many of the options
+cannot be changed while XBoard is running; others set the initial
+state of items that can be changed with the <a href="Options.html#Options">Options</a> menu.
+
+   <p>Most of the options have both a long name and a short name. To turn a
+boolean option on or off from the command line, either give its long
+name followed by the value true or false
+(&lsquo;<samp><span class="samp">-longOptionName true</span></samp>&rsquo;), or give just the short name to turn the
+option on (&lsquo;<samp><span class="samp">-opt</span></samp>&rsquo;), or the short name preceded by &lsquo;<samp><span class="samp">x</span></samp>&rsquo; to
+turn the option off (&lsquo;<samp><span class="samp">-xopt</span></samp>&rsquo;). For options that take strings or
+numbers as values, you can use the long or short option names
+interchangeably.
+
+   <p>Each option corresponds to an X resource with the same name, so
+if you like, you can set options in your <samp><span class="file">.Xresources</span></samp> file
+or in a file named <samp><span class="file">XBoard</span></samp> in your home directory. 
+For options that have two names, the longer one is the name of
+the corresponding X resource; the short name is not recognized. 
+To turn a boolean option on or off as an
+X resource, give its long name followed by the value
+true or false (&lsquo;<samp><span class="samp">XBoard*longOptionName: true</span></samp>&rsquo;).
+
+<ul class="menu">
+<li><a accesskey="1" href="Chess-engine-options.html#Chess-engine-options">Chess engine options</a>:         Controlling the chess engine. 
+<li><a accesskey="2" href="UCI-_002b-WB-Engine-Settings.html#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a>:     Setting some very common engine parameters
+<li><a accesskey="3" href="ICS-options.html#ICS-options">ICS options</a>:                  Connecting to and using ICS. 
+<li><a accesskey="4" href="Load-and-Save-options.html#Load-and-Save-options">Load and Save options</a>:        Input/output options. 
+<li><a accesskey="5" href="User-interface-options.html#User-interface-options">User interface options</a>:       Look and feel options. 
+<li><a accesskey="6" href="Adjudication-Options.html#Adjudication-Options">Adjudication Options</a>:         Control adjudcation of engine-engine games. 
+<li><a accesskey="7" href="Other-options.html#Other-options">Other options</a>:                Miscellaneous. 
+</ul>
+
+   </body></html>
+

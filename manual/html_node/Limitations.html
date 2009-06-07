@@ -1,0 +1,92 @@
+<html lang="en">
+<head>
+<title>Limitations - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Environment.html#Environment" title="Environment">
+<link rel="next" href="Problems.html#Problems" title="Problems">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Limitations"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Problems.html#Problems">Problems</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Environment.html#Environment">Environment</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">7 Limitations and known bugs</h2>
+
+<p><a name="index-Limitations-393"></a><a name="index-Bugs-394"></a>There is no way for two people running copies of XBoard to play
+each other without going through an Internet Chess Server.
+
+   <p>Under some circumstances, your ICS password may be echoed when you log on.
+
+   <p>If you are connecting to the ICS by running telnet on an Internet
+provider or firewall host, you may find that each line you type is
+echoed back an extra time after you hit &lt;Enter&gt;. If your Internet
+provider is a Unix system, you can probably turn its echo off by
+typing <kbd>stty -echo</kbd> after you log in, and/or typing
+&lt;^E&gt;&lt;Enter&gt; (Ctrl+E followed by the Enter key) to the telnet
+program after you have logged into ICS.  It is a good idea to do this
+if you can, because the extra echo can occasionally confuse XBoard's
+parsing routines.
+
+   <p>The game parser recognizes only algebraic notation.
+
+   <p>Many of the following points used to be limitations in XBoard 4.2.7 and earlier,
+but are now fixed:
+The internal move legality tester in XBoard 4.3.xx does look at the game history,
+and is fully aware of castling or en-passant-capture rights. It permits castling with
+the king on the d file because this is possible in some "wild 1" games on ICS. 
+The piece-drop menu does not check piece drops in bughouse to see if you actually hold
+the piece you are trying to drop. But this way of dropping pieces should be considered
+an obsolete feature, now that pieces can be dropped by dragging them from the holdings
+to the board. Anyway, if you would attempt an illegal move when using a chess engine or the ICS,
+WinBoard will accept the error message that comes back, undo the move, and let you try another. 
+FEN positions saved by XBoard do include correct information about whether castling or
+en passant are legal, and also handle the 50-move counter. 
+The mate detector does not understand that non-contact mate is not really mate in bughouse. 
+The only problem this causes while playing is minor: a "#" (mate indicator) character will
+show up after a non-contact mating move in the move list. XBoard will not assume the game
+is over at that point, not even when the option Detect Mates is on. 
+Edit Game mode always uses the rules of the selected variant,
+which can be a variant that uses piece drops. 
+You can load and edit games that contain piece drops. 
+The (obsolete) piece menus are not active,
+but you can perform piece drops by dragging pieces from the holdings. 
+Edit Position mode does not allow you to edit the crazyhouse holdings properly. 
+You cannot drag pieces to the holding, and using the popup menu to put pieces
+there does not adapt the holding counts and leads to an inconsistent state. 
+Set up crazyhouse positions by loading / pasting a bFEN, from there you can set the holdings. 
+Fischer Random castling is fully understood. 
+You can enter castlings by dragging the King on top of your Rook. 
+You can probably also play Fischer Random successfully on ICS by typing
+castling moves into the ICS Interaction window.
+
+   <p>The menus may not work if your keyboard is in Caps Lock or Num Lock mode. 
+This seems to be a problem with the Athena menu widget,
+not an XBoard bug.
+
+   <p>Also see the ToDo file included with the distribution for many other
+possible bugs, limitations, and ideas for improvement that have been
+suggested.
+
+   </body></html>
+

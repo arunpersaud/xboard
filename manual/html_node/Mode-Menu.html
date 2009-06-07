@@ -1,0 +1,195 @@
+<html lang="en">
+<head>
+<title>Mode Menu - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Menus.html#Menus" title="Menus">
+<link rel="prev" href="File-Menu.html#File-Menu" title="File Menu">
+<link rel="next" href="Action-Menu.html#Action-Menu" title="Action Menu">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Mode-Menu"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Action-Menu.html#Action-Menu">Action Menu</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="File-Menu.html#File-Menu">File Menu</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Menus.html#Menus">Menus</a>
+<hr>
+</div>
+
+<h3 class="section">2.2 Mode Menu</h3>
+
+<p><a name="index-Menu_002c-Mode-26"></a><a name="index-Mode-Menu-27"></a>
+     <dl>
+<dt>Machine White<dd><a name="index-Machine-White_002c-Menu-Item-28"></a>Tells the chess engine to play White. 
+<br><dt>Machine Black<dd><a name="index-Machine-Black_002c-Menu-Item-29"></a>Tells the chess engine to play Black. 
+<br><dt>Two Machines<dd><a name="index-Two-Machines_002c-Menu-Item-30"></a>Plays a game between two chess engines. 
+<br><dt>Analysis Mode<dd><a name="index-Analysis-Mode_002c-Menu-Item-31"></a>XBoard tells the chess engine to start analyzing the current game/position
+and shows you the analysis as you move pieces around. 
+Note: Some chess engines do not support Analysis mode.
+
+     <p>To set up a position to analyze, you do the following:
+
+     <p>1. Select Edit Position from the Mode Menu
+
+     <p>2. Set up the position.  Use the middle and right buttons to
+bring up the white and black piece menus.
+
+     <p>3. When you are finished, click on either the Black or White
+clock to tell XBoard which side moves first.
+
+     <p>4. Select Analysis Mode from the Mode Menu to start the analysis.
+
+     <p>The analysis function can also be used when observing games on an ICS
+with an engine loaded (zippy mode); the engine then will analyse
+the positions as they occur in the observed game. 
+<br><dt>Analyze File<dd><a name="index-Analyze-File_002c-Menu-Item-32"></a>This option lets you load a game from a file (PGN, XBoard format, etc.) 
+and analyze it. When you select this menu item, a popup window appears
+and asks for a filename to load. 
+If the file contains multiple games, another popup appears that lets
+you select which game you wish to analyze. 
+After a game is loaded, use the XBoard arrow buttons to step
+forwards/backwards through the game and watch the analysis. 
+Note: Some chess engines do not support Analysis mode. 
+<br><dt>ICS Client<dd><a name="index-ICS-Client_002c-Menu-Item-33"></a>This is the normal mode when XBoard
+is connected to a chess server.  If you have moved into
+Edit Game or Edit Position mode, you can select this option to get out.
+
+     <p>To use xboard in ICS mode, run it in the foreground with the -ics
+option, and use the terminal you started it from to type commands and
+receive text responses from the chess server.  See
+<a href="Chess-Servers.html#Chess-Servers">Chess Servers</a> below for more information.
+
+     <p>XBoard activates some special position/game editing features when you
+use the <kbd>examine</kbd> or <kbd>bsetup</kbd> commands on ICS and you have
+&lsquo;<samp><span class="samp">ICS Client</span></samp>&rsquo; selected on the Mode menu.  First, you can issue the
+ICS position-editing commands with the mouse.  Move pieces by dragging
+with mouse button 1.  To drop a new piece on a square, press mouse
+button 2 or 3 over the square.  This brings up a menu of white pieces
+(button 2) or black pieces (button 3).  Additional menu choices let
+you empty the square or clear the board.  Click on the White or Black
+clock to set the side to play.  You cannot set the side to play or
+drag pieces to arbitrary squares while examining on ICC, but you can
+do so in <kbd>bsetup</kbd> mode on FICS.  In addition, the menu commands
+&lsquo;<samp><span class="samp">Forward</span></samp>&rsquo;, &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo;, &lsquo;<samp><span class="samp">Pause</span></samp>&rsquo;, and &lsquo;<samp><span class="samp">Stop Examining</span></samp>&rsquo;
+have special functions in this mode; see below. 
+<br><dt>Edit Game<dd><a name="index-Edit-Game_002c-Menu-Item-34"></a>Allows you to make moves for both Black and White, and to change
+moves after backing up with the &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo; command. The clocks do
+not run.
+
+     <p>In chess engine mode, the chess engine continues to check moves for legality
+but does not participate in the game. You can bring the chess engine
+into the game by selecting &lsquo;<samp><span class="samp">Machine White</span></samp>&rsquo;, &lsquo;<samp><span class="samp">Machine Black</span></samp>&rsquo;,
+or &lsquo;<samp><span class="samp">Two Machines</span></samp>&rsquo;.
+
+     <p>In ICS mode, the moves are not sent to the ICS: &lsquo;<samp><span class="samp">Edit Game</span></samp>&rsquo; takes
+XBoard out of ICS Client mode and lets you edit games locally. 
+If you want to edit games on ICS in a way that other ICS users
+can see, use the ICS <kbd>examine</kbd> command or start an ICS match
+against yourself. 
+<br><dt>Edit Position<dd><a name="index-Edit-Position_002c-Menu-Item-35"></a>Lets you set up an arbitrary board position. 
+Use mouse button 1 to drag pieces to new squares, or to delete a piece
+by dragging it off the board or dragging an empty square on top of it. 
+To drop a new piece on a square, press mouse button 2 or 3 over the
+square. This brings up a menu of white pieces (button 2) or
+black pieces (button 3). Additional menu choices let you empty the
+square or clear the board. You can set the side to play next by
+clicking on the word White or Black at the top of the screen. 
+Selecting &lsquo;<samp><span class="samp">Edit Position</span></samp>&rsquo; causes XBoard to discard
+all remembered moves in the current game.
+
+     <p>In ICS mode, changes made to the position by &lsquo;<samp><span class="samp">Edit Position</span></samp>&rsquo; are
+not sent to the ICS: &lsquo;<samp><span class="samp">Edit Position</span></samp>&rsquo; takes XBoard out of
+&lsquo;<samp><span class="samp">ICS Client</span></samp>&rsquo; mode and lets you edit positions locally. If you want to
+edit positions on ICS in a way that other ICS users can see, use
+the ICS <kbd>examine</kbd> command, or start an ICS match against yourself. 
+(See also the ICS Client topic above.) 
+<br><dt>Training<dd><a name="index-Training_002c-Menu-Item-36"></a>Training mode lets you interactively guess the moves of a game for one
+of the players. You guess the next move of the game by playing the
+move on the board. If the move played matches the next move of the
+game, the move is accepted and the opponent's response is autoplayed. 
+If the move played is incorrect, an error message is displayed.  You
+can select this mode only while loading a game (that is, after
+selecting &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; from the File menu).  While XBoard is in
+&lsquo;<samp><span class="samp">Training</span></samp>&rsquo; mode, the navigation buttons are disabled. 
+<br><dt>Show Game List<dd><a name="index-Show-Game-List_002c-Menu-Item-37"></a>Shows or hides the list of games generated by the last &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo;
+command. 
+<br><dt>Show Move History<dd><a name="index-Show-Move-History_002c-Menu-Item-38"></a>Shows or hides a list of moves of the current game. 
+This list allows you to move the display to any earlier position in the game
+by clicking on the corresponding move. 
+<br><dt>Show Engine Output<dd><a name="index-Show-Engine-Output_002c-Menu-Item-39"></a>Shows or hides a window in which the thinking output of any loaded engines
+is displayed. 
+<br><dt>Edit Tags<dd><a name="index-Edit-Tags_002c-Menu-Item-40"></a>Lets you edit the PGN (portable game notation)
+tags for the current game. After editing, the tags must still conform to
+the PGN tag syntax:
+
+     <pre class="example">          &lt;tag-section&gt; ::= &lt;tag-pair&gt; &lt;tag-section&gt;
+                                  &lt;empty&gt;
+          &lt;tag-pair&gt; ::= [ &lt;tag-name&gt; &lt;tag-value&gt; ]
+          &lt;tag-name&gt; ::= &lt;identifier&gt;
+          &lt;tag-value&gt; ::= &lt;string&gt;
+</pre>
+     <p class="noindent">See the PGN Standard for full details. Here is an example:
+
+     <pre class="example">          [Event "Portoroz Interzonal"]
+          [Site "Portoroz, Yugoslavia"]
+          [Date "1958.08.16"]
+          [Round "8"]
+          [White "Robert J. Fischer"]
+          [Black "Bent Larsen"]
+          [Result "1-0"]
+</pre>
+     <p class="noindent">Any characters that do not match this syntax are silently ignored. Note that
+the PGN standard requires all games to have at least the seven tags shown
+above. Any that you omit will be filled in by XBoard
+with &lsquo;<samp><span class="samp">?</span></samp>&rsquo; (unknown value), or &lsquo;<samp><span class="samp">-</span></samp>&rsquo; (inapplicable value). 
+<br><dt>Edit Comment<dd><a name="index-Edit-Comment_002c-Menu-Item-41"></a>Adds or modifies a comment on the current position. Comments are
+saved by &lsquo;<samp><span class="samp">Save Game</span></samp>&rsquo; and are displayed by &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">Forward</span></samp>&rsquo;, and &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo;. 
+<br><dt>ICS Input Box<dd><a name="index-ICS-Input-Box_002c-Menu-Item-42"></a>If this option is set in ICS mode,
+XBoard
+creates an extra window that you can use for typing in ICS commands. 
+The input box is especially useful if you want to type in something long or do
+some editing on your input, because output from ICS doesn't get mixed
+in with your typing as it would in the main terminal window. 
+<br><dt>Pause<dd><a name="index-Pause_002c-Menu-Item-43"></a>Pauses updates to the board, and if you are playing against a chess engine,
+also pauses your clock. To continue, select &lsquo;<samp><span class="samp">Pause</span></samp>&rsquo; again, and the
+display will automatically update to the latest position. 
+The &lsquo;<samp><span class="samp">P</span></samp>&rsquo; button and keyboard <kbd>p</kbd> key are equivalents.
+
+     <p>If you select Pause when you are playing against a chess engine and
+it is not your move, the chess engine's clock
+will continue to run and it will eventually make a move, at which point
+both clocks will stop. Since board updates are paused, however,
+you will not see the move until you exit from Pause mode (or select Forward). 
+This behavior is meant to simulate adjournment with a sealed move.
+
+     <p>If you select Pause while you are observing or examining a game on a
+chess server, you can step backward and forward in the current history
+of the examined game without affecting the other observers and
+examiners, and without having your display jump forward to the latest
+position each time a move is made. Select Pause again to reconnect
+yourself to the current state of the game on ICS.
+
+     <p>If you select &lsquo;<samp><span class="samp">Pause</span></samp>&rsquo; while you are loading a game, the game stops
+loading. You can load more moves manually by selecting &lsquo;<samp><span class="samp">Forward</span></samp>&rsquo;, or
+resume automatic loading by selecting &lsquo;<samp><span class="samp">Pause</span></samp>&rsquo; again. 
+</dl>
+
+   </body></html>
+

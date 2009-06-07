@@ -1,0 +1,244 @@
+<html lang="en">
+<head>
+<title>Options Menu - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Menus.html#Menus" title="Menus">
+<link rel="prev" href="Step-Menu.html#Step-Menu" title="Step Menu">
+<link rel="next" href="Help-Menu.html#Help-Menu" title="Help Menu">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Options-Menu"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Help-Menu.html#Help-Menu">Help Menu</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Step-Menu.html#Step-Menu">Step Menu</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Menus.html#Menus">Menus</a>
+<hr>
+</div>
+
+<h3 class="section">2.5 Options Menu</h3>
+
+<p><a name="index-Menu_002c-Options-72"></a><a name="index-Options-Menu-73"></a>
+     <dl>
+<dt>Flip View<dd><a name="index-Flip-View_002c-Menu-Item-74"></a>Inverts your view of the chess board for the duration of the
+current game. Starting a new game returns the board to normal. 
+The <kbd>v</kbd> key is a keyboard equivalent. 
+<br><dt>Adjudications<dd><a name="index-Adjudications_002c-Menu-Item-75"></a>Pops up a sub-menu where you can enable or disable various adjudications
+that XBoard can perform in engine-engine games. 
+You can instruct XBoard to detect and terminate the game on checkmate
+or stalemate, even if the engines would not do so, to verify engine
+result claims (forfeiting engines that make false claims), rather than
+naively following the engine, to declare draw on posititions
+which can never be won for lack of mating material, (e.g. KBK),
+or which are impossble to win unless the opponent seeks its own demise
+(e.g. KBKN). 
+For these adjudications to work, &lsquo;<samp><span class="samp">Test Legality</span></samp>&rsquo; should be switched on. 
+It is also possible to insruct XBoard to enforce a 50-move or 3-fold-repeat
+rule and automtically declare draw (after a user-adjustable number of moves
+or repeats) even if the engines are prepared to go on. 
+It is also possible to have XBoard declare draw on games that seem to drag on
+forever, or adjudicate a loss if both engines agree (for 3 cosecutive moves) that one
+of them is behind more than a user-adjustable score threshold. 
+For the latter adjudication to work, XBoard should be able to properly understand
+the engine's scores. To faclitate the latter, you can inform xboard here if
+the engines report scores from the viewpoint of white, or from that of their own color. 
+<br><dt>Engine Settings<dd>Pops up a sub-menu where you can set some engine parameters common to most engines,
+such as hash-table size, tablebase cache size, maximum number of processors
+that SMP engines can use, and where to find the Polyglot adapter needed
+to run UCI engines under XBoard. The feature tht allows setting of these parameters on
+engines is new since XBoard 4.3.15, so not many WinBoard engines respond
+to it yet, but UCI engines should. 
+It is also possible to specify a GUI opening book here, i.e. an opening
+book that XBoard consults for any position a playing engine gets in. 
+It then forces the engine to play the book move, rather than to think up its own,
+if that position is found in the book. 
+The book can switched on and off independently for either engine. 
+<br><dt>Time Control<dd><a name="index-Time-Control_002c-Menu-Item-76"></a>Pops up a sub-menu where you can set the time-control parameters interactively. 
+Allows you to select classical or incremental time controls,
+set the moves per session, session duration, and time increment. 
+Also allows specification of time-odds factors for one or both engines. 
+If an engine is given a time-odds factor N, all time quota it gets,
+be it at the beginning of a session or through the time increment or
+fixed time per move, will be divided by N. 
+<br><dt>Always Queen<dd><a name="index-Always-Queen_002c-Menu-Item-77"></a>If this option is off, XBoard brings up a dialog
+box whenever you move a pawn to the last rank, asking what piece
+you want to promote it to. If the option is true, your pawns are
+always promoted to queens. Your opponent can still underpromote. 
+<br><dt>Animate Dragging<dd><a name="index-Animate-Dragging_002c-Menu-Item-78"></a>If Animate Dragging is on, while you are dragging a piece with the
+mouse, an image of the piece follows the mouse cursor. 
+If Animate Dragging is off, there is no visual feedback while you are
+dragging a piece, but if Animate Moving is on, the move will be
+animated when it is complete. 
+<br><dt>Animate Moving<dd><a name="index-Animate-Moving_002c-Menu-Item-79"></a>If Animate Moving is on, all piece moves are animated.  An image of the
+piece is shown moving from the old square to the new square when the
+move is completed (unless the move was already animated by Animate Dragging). 
+If Animate Moving is off, a moved piece instantly disappears from its
+old square and reappears on its new square when the move is complete. 
+<br><dt>Auto Comment<dd><a name="index-Auto-Comment_002c-Menu-Item-80"></a>If this option is on, any remarks made on ICS while you are observing or
+playing a game are recorded as a comment on the current move.  This includes
+remarks made with the ICS commands <kbd>say</kbd>, <kbd>tell</kbd>, <kbd>whisper</kbd>,
+and <kbd>kibitz</kbd>. 
+Limitation: remarks that you type yourself are not recognized;
+XBoard scans only the output from ICS, not the input you type to it. 
+<br><dt>Auto Flag<dd><a name="index-Auto-Flag_002c-Menu-Item-81"></a>If this option is on and one player runs out of time
+before the other,
+XBoard
+will automatically call his flag, claiming a win on time. 
+In ICS mode, Auto Flag will only call your opponent's flag, not yours,
+and the ICS may award you a draw instead of a win if you have
+insufficient mating material.  In local chess engine mode,
+XBoard
+may call either player's flag and will not take material into account. 
+<br><dt>Auto Flip View<dd><a name="index-Auto-Flip-View_002c-Menu-Item-82"></a>If the Auto Flip View option is on when you start a game, the board
+will be automatically oriented so that your pawns move from the bottom
+of the window towards the top. 
+<br><dt>Auto Observe<dd><a name="index-Auto-Observe_002c-Menu-Item-83"></a>If this option is on and you add a player to your <code>gnotify</code>
+list on ICS, XBoard will automatically observe all of that
+player's games, unless you are doing something else (such as
+observing or playing a game of your own) when one starts. 
+The games are displayed
+from the point of view of the player on your gnotify list; that is, his
+pawns move from the bottom of the window towards the top. 
+Exceptions:  If both players in a game are on your gnotify list, if
+your ICS
+<code>highlight</code>
+variable is set to 0, or if the ICS you are using does not
+properly support observing from Black's point of view,
+you will see the game from White's point of view. 
+<br><dt>Auto Raise Board<dd><a name="index-Auto-Raise-Board_002c-Menu-Item-84"></a>If this option is on, whenever a new game begins, the chessboard window
+is deiconized (if necessary) and raised to the top of the stack of windows. 
+<br><dt>Auto Save<dd><a name="index-Auto-Save_002c-Menu-Item-85"></a>If this option is true, at the end of every game XBoard prompts
+you for a file name and appends a record of the game to the file
+you specify. 
+Disabled if the <code>saveGameFile</code> command-line
+option is set, as in that case all games are saved to the specified file. 
+See <a href="Load-and-Save-options.html#Load-and-Save-options">Load and Save options</a>. 
+<br><dt>Blindfold<dd><a name="index-Blindfold_002c-Menu-Item-86"></a>If this option is on, XBoard displays the board as usual but does
+not display pieces or move highlights.  You can still move in the
+usual way (with the mouse or by typing moves in ICS mode), even though
+the pieces are invisible. 
+<br><dt>Flash Moves<dd><a name="index-Flash-Moves_002c-Menu-Item-87"></a>If this option is on, whenever a move is completed, the moved piece flashes. 
+The number of times to flash is set by the flashCount command-line
+option; it defaults to 3 if Flash Moves is first turned on from the menu.
+
+     <p>If you are playing a game on an ICS, the board is always
+oriented at the start of the game so that your pawns move from
+the bottom of the window towards the top. Otherwise, the starting
+orientation is determined by the <code>flipView</code> command line option;
+if it is false (the default), White's pawns move from bottom to top
+at the start of each game; if it is true, Black's pawns move from
+bottom to top. See <a href="User-interface-options.html#User-interface-options">User interface options</a>. 
+<br><dt>Get Move List<dd><a name="index-Get-Move-List_002c-Menu-Item-88"></a>If this option is on, whenever XBoard
+receives the first board of a new ICS game (or a different game from
+the one it is currently displaying), it
+retrieves the list of past moves from the ICS. 
+You can then review the moves with the &lsquo;<samp><span class="samp">Forward</span></samp>&rsquo; and &lsquo;<samp><span class="samp">Backward</span></samp>&rsquo;
+commands
+or save them with &lsquo;<samp><span class="samp">Save Game</span></samp>&rsquo;.  You might want to
+turn off this option if you are observing several blitz games at once,
+to keep from wasting time and network bandwidth fetching the move lists over
+and over. 
+When you turn this option on from the menu, XBoard
+immediately fetches the move list of the current game (if any). 
+<br><dt>Highlight Last Move<dd><a name="index-Highlight-Last-Move_002c-Menu-Item-89"></a>If Highlight Last Move is on, after a move is made, the starting and
+ending squares remain highlighted. In addition, after you use Backward
+or Back to Start, the starting and ending squares of the last move to
+be unmade are highlighted. 
+<br><dt>Move Sound<dd><a name="index-Move-Sound_002c-Menu-Item-90"></a>If this option is on, XBoard alerts you by playing a sound
+after each of your opponent's moves (or after every
+move if you are observing a game on the Internet Chess Server). 
+The sound is not played after moves you make or moves read from a
+saved game file. By default, the
+sound is the terminal bell, but on some systems you can change it
+to a sound file using the soundMove option; see below.
+
+     <p>If you turn on this option when using XBoard with the Internet
+Chess Server, you will probably want to give the
+<kbd>set bell 0</kbd>
+command to the ICS, since otherwise the ICS will ring the terminal bell
+after every move (not just yours). (The <samp><span class="file">.icsrc</span></samp> file
+is a good place for this; see <a href="ICS-options.html#ICS-options">ICS options</a>.) 
+<br><dt>ICS Alarm<dd><a name="index-ICS-Alarm_002c-Menu-Item-91"></a>When this option is on, an alarm sound is played when your clock
+counts down to the icsAlarmTime (by default, 5 seconds) in an ICS
+game.  For games with time controls that include an increment, the
+alarm will sound each time the clock counts down to the icsAlarmTime. 
+By default, the alarm sound is the terminal bell, but on some systems
+you can change it to a sound file using the soundIcsAlarm option; see
+below. 
+<br><dt>Old Save Style<dd><a name="index-Old-Save-Style_002c-Menu-Item-92"></a>If this option is off, XBoard saves games in PGN
+(portable game notation) and positions in FEN (Forsythe-Edwards
+notation).  If the option is on, a save style that is compatible
+with older versions of XBoard is used instead. 
+The old position style is more human-readable
+than FEN; the old game style has no particular advantages. 
+<br><dt>Periodic Updates<dd><a name="index-Periodic-Updates_002c-Menu-Item-93"></a>If this option is off (or if
+you are using a chess engine that does not support periodic updates),
+the analysis window
+will only be updated when the analysis changes. If this option is
+on, the Analysis Window will be updated every two seconds. 
+<br><dt>Ponder Next Move<dd><a name="index-Ponder-Next-Move_002c-Menu-Item-94"></a>If this option is off, the chess engine will think only when it is on
+move.  If the option is on, the engine will also think while waiting
+for you to make your move. 
+<br><dt>Popup Exit Message<dd><a name="index-Popup-Exit-Message_002c-Menu-Item-95"></a>If this option is on, when XBoard wants to display a message just
+before exiting, it brings up a modal dialog box and waits for you to
+click OK before exiting.  If the option is off, XBoard prints the
+message to standard error (the terminal) and exits immediately. 
+<br><dt>Popup Move Errors<dd><a name="index-Popup-Move-Errors_002c-Menu-Item-96"></a>If this option is off, when you make an error in moving (such as
+attempting an illegal move or moving the wrong color piece), the
+error message is displayed in the message area.  If the option is
+on, move errors are displayed in small popup windows like other errors. 
+You can dismiss an error popup either by clicking its OK button or by
+clicking anywhere on the board, including downclicking to start a move. 
+<br><dt>Premove<dd><a name="index-Premove_002c-Menu-Item-97"></a>If this option is on while playing a game on an ICS, you can register
+your next planned move before it is your turn.  Move the piece with
+the mouse in the ordinary way, and the starting and ending squares
+will be highlighted with a special color (red by default).  When it is
+your turn, if your registered move is legal, XBoard will send it to
+ICS immediately; if not, it will be ignored and you can make a
+different move.  If you change your mind about your premove, either
+make a different move, or double-click on any piece to cancel the move
+entirely. 
+<br><dt>Quiet Play<dd><a name="index-Quiet-Play_002c-Menu-Item-98"></a>If this option is on, XBoard will automatically issue an ICS
+<kbd>set shout 0</kbd>
+command whenever you start a game and a
+<kbd>set shout 1</kbd>
+command whenever you finish one.  Thus, you will not be distracted
+by shouts from other ICS users while playing. 
+<br><dt>Show Coords<dd><a name="index-Show-Coords_002c-Menu-Item-99"></a>If this option is on, XBoard displays algebraic coordinates
+along the board's left and bottom edges. 
+<br><dt>Hide Thinking<dd><a name="index-Hide-Thinking_002c-Menu-Item-100"></a>If this option is off, the chess engine's notion of the score and best
+line of play from the current position is displayed as it is
+thinking. The score indicates how many pawns ahead (or if negative,
+behind) the chess engine thinks it is. In matches between two
+machines, the score is prefixed by &lsquo;<samp><span class="samp">W</span></samp>&rsquo; or &lsquo;<samp><span class="samp">B</span></samp>&rsquo; to indicate
+whether it is showing White's thinking or Black's, and only the thinking
+of the engine that is on move is shown. 
+<br><dt>Test Legality<dd><a name="index-Test-Legality_002c-Menu-Item-101"></a>If this option is on, XBoard tests whether the moves you try to make
+with the mouse are legal and refuses to let you make an illegal move. 
+Moves loaded from a file with &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; are also checked.  If
+the option is off, all moves are accepted, but if a local chess engine
+or the ICS is active, they will still reject illegal moves.  Turning
+off this option is useful if you are playing a chess variant with
+rules that XBoard does not understand.  (Bughouse, suicide, and wild
+variants where the king may castle after starting on the d file are
+generally supported with Test Legality on.) 
+</dl>
+
+   </body></html>
+

@@ -1,0 +1,95 @@
+<html lang="en">
+<head>
+<title>CMail options - XBoard</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="XBoard">
+<meta name="generator" content="makeinfo 4.12">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="CMail.html#CMail" title="CMail">
+<link rel="next" href="CMail-game.html#CMail-game" title="CMail game">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="CMail-options"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="CMail-game.html#CMail-game">CMail game</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="CMail.html#CMail">CMail</a>
+<hr>
+</div>
+
+<h3 class="section">10.1 CMail options</h3>
+
+     <dl>
+<dt>-h<dd>Displays <samp><span class="file">cmail</span></samp> usage information. 
+<br><dt>-c<dd>Shows the conditions of the GNU General Public License. 
+See <a href="Copying.html#Copying">Copying</a>. 
+<br><dt>-w<dd>Shows the warranty notice of the GNU General Public License. 
+See <a href="Copying.html#Copying">Copying</a>. 
+<br><dt>-v<dt>-xv<dd>Provides or inhibits verbose output from <samp><span class="file">cmail</span></samp> and XBoard,
+useful for debugging. The
+<code>-xv</code>
+form also inhibits the cmail introduction message. 
+<br><dt>-mail<dt>-xmail<dd>Invokes or inhibits the sending of a mail message containing the move. 
+<br><dt>-xboard<dt>-xxboard<dd>Invokes or inhibits the running of XBoard on the game file. 
+<br><dt>-reuse<dt>-xreuse<dd>Invokes or inhibits the reuse of an existing XBoard to display the
+current game. 
+<br><dt>-remail<dd>Resends the last mail message for that game. This inhibits running
+XBoard. 
+<br><dt>-game &lt;name&gt;<dd>The name of the game to be processed. 
+<br><dt>-wgames &lt;number&gt;<dt>-bgames &lt;number&gt;<dt>-games &lt;number&gt;<dd>Number of games to start as White, as Black or in total. Default is 1 as
+white and none as black. If only one color is specified then none of the
+other color is assumed. If no color is specified then equal numbers of
+White and Black games are started, with the extra game being as White if an
+odd number of total games is specified. 
+<br><dt>-me &lt;short name&gt;<dt>-opp &lt;short name&gt;<dd>A one-word alias for yourself or your opponent. 
+<br><dt>-wname &lt;full name&gt;<dt>-bname &lt;full name&gt;<dt>-name &lt;full name&gt;<dt>-oppname &lt;full name&gt;<dd>The full name of White, Black, yourself or your opponent. 
+<br><dt>-wna &lt;net address&gt;<dt>-bna &lt;net address&gt;<dt>-na &lt;net address&gt;<dt>-oppna &lt;net address&gt;<dd>The email address of White, Black, yourself or your opponent. 
+<br><dt>-dir &lt;directory&gt;<dd>The directory in which <samp><span class="file">cmail</span></samp> keeps its files. This defaults to the
+environment variable <code>$CMAIL_DIR</code> or failing that, <code>$CHESSDIR</code>,
+<samp><span class="file">$HOME/Chess</span></samp> or <samp><span class="file">~/Chess</span></samp>. It will be created if it does not exist. 
+<br><dt>-arcdir &lt;directory&gt;<dd>The directory in which <samp><span class="file">cmail</span></samp> archives completed games. Defaults to
+the environment variable <code>$CMAIL_ARCDIR</code> or, in its absence, the same
+directory as cmail keeps its working files (above). 
+<br><dt>-mailprog &lt;mail program&gt;<dd>The program used by cmail to send email messages. This defaults to the
+environment variable <code>$CMAIL_MAILPROG</code> or failing that
+<samp><span class="file">/usr/ucb/Mail</span></samp>, <samp><span class="file">/usr/ucb/mail</span></samp> or <samp><span class="file">Mail</span></samp>. You will need
+to set this variable if none of the above paths fit your system. 
+<br><dt>-gamesFile &lt;file&gt;<dd><a name="index-g_t_002ecmailgames-403"></a>A file containing a list of games with email addresses. This defaults to
+the environment variable <code>$CMAIL_GAMES</code> or failing that
+<samp><span class="file">.cmailgames</span></samp>. 
+<br><dt>-aliasesFile &lt;file&gt;<dd><a name="index-g_t_002ecmailaliases-404"></a>A file containing one or more aliases for a set of email addresses. This
+defaults to the environment variable <code>$CMAIL_ALIASES</code> or failing
+that <samp><span class="file">.cmailaliases</span></samp>. 
+<br><dt>-logFile &lt;file&gt;<dd>A file in which to dump verbose debugging messages that are invoked with
+the &lsquo;<samp><span class="samp">-v</span></samp>&rsquo;
+option. 
+<br><dt>-event &lt;event&gt;<dd>The PGN Event tag (default &lsquo;<samp><span class="samp">Email correspondence game</span></samp>&rsquo;). 
+<br><dt>-site &lt;site&gt;<dd>The PGN Site tag (default &lsquo;<samp><span class="samp">NET</span></samp>&rsquo;). 
+<br><dt>-round &lt;round&gt;<dd>The PGN Round tag (default &lsquo;<samp><span class="samp">-</span></samp>&rsquo;, not applicable). 
+<br><dt>-mode &lt;mode&gt;<dd>The PGN Mode tag (default &lsquo;<samp><span class="samp">EM</span></samp>&rsquo;, Electronic Mail). 
+<br><dt>Other options<dd>Any option flags not listed above are passed through to XBoard. 
+Invoking XBoard through CMail changes the default values of two XBoard
+options: The default value for &lsquo;<samp><span class="samp">-noChessProgram</span></samp>&rsquo; is changed to
+true; that is, by default no chess engine is started.  The default
+value for &lsquo;<samp><span class="samp">-timeDelay</span></samp>&rsquo; is changed to 0; that is, by default
+XBoard immediately goes to the end of the game as played so far,
+rather than stepping through the moves one by one.  You can still set
+these options to whatever values you prefer by supplying them on
+CMail's command line.  See <a href="Options.html#Options">Options</a>. 
+</dl>
+
+   </body></html>
+

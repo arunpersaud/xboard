@@ -1,0 +1,3881 @@
+INFO-DIR-SECTION Games
+START-INFO-DIR-ENTRY
+* xboard: (xboard).         An X Window System graphical chessboard.
+END-INFO-DIR-ENTRY
+
+Introduction
+************
+
+XBoard is a graphical chessboard that can serve as a user interface to
+chess engines (such as GNU Chess), the Internet Chess Servers,
+electronic mail correspondence chess, or your own collection of saved
+games.
+
+   This manual documents version 4.4.0j of XBoard.
+
+1 Major modes
+*************
+
+XBoard always runs in one of four major modes.  You select the major
+mode from the command line when you start up XBoard.
+
+xboard [options]
+     As an interface to GNU Chess or another chess engine running on
+     your machine, XBoard lets you play a game against the machine, set
+     up arbitrary positions, force variations, watch a game between two
+     chess engines, interactively analyze your stored games or set up
+     and analyze arbitrary positions.  (Note: Not all chess engines
+     support analysis.)
+
+xboard -ics -icshost hostname [options]
+     As Internet Chess Server (ICS) interface, XBoard lets you play
+     against other ICS users, observe games they are playing, or review
+     games that have recently finished.  Most of the ICS "wild" chess
+     variants are supported, including bughouse.
+
+xboard -ncp [options]
+     XBoard can also be used simply as an electronic chessboard to play
+     through games. It will read and write game files and allow you to
+     play through variations manually. You can use it to browse games
+     off the net or review games you have saved.  These features are
+     also available in the other modes.
+
+|pxboard
+     If you want to pipe games into XBoard, use the supplied shell
+     script `pxboard'.  For example, from the news reader `xrn', find a
+     message with one or more games in it, click the Save button, and
+     type `|pxboard' as the file name.
+
+cmail [options]
+     As an interface to electronic mail correspondence chess, XBoard
+     works with the cmail program. See *note CMail:: below for
+     instructions.
+
+2 Menus, buttons, and keys
+**************************
+
+To move a piece, you can drag it with the left mouse button, or you can
+click the left mouse button once on the piece, then once more on the
+destination square.  To drop a new piece on a square (when applicable),
+press the middle or the right mouse button over the square and select
+from the popup menu.  In cases where you can drop either a white or
+black piece, use the middle button (or shift+right) for white and the
+right button (or shift+middle) for black.  When you are playing a
+bughouse game on an Internet Chess Server, a list of the offboard
+pieces that each player has available is shown in the window title
+after the player's name; in addition, the piece menus show the number
+of pieces available of each type. From version 4.3.14 on, it is also
+possible in crazyhouse, bughouse or shogi to dag and drop pieces to the
+board from the holdings squares displayed next to the board.
+
+   All other XBoard commands are available from the menu bar. The most
+frequently used commands also have shortcut keys or on-screen buttons.
+
+   When XBoard is iconized, its graphical icon is a white knight if it
+is White's turn to move, a black knight if it is Black's turn.  See
+Iconize in *note Keys:: below if you have problems getting this feature
+to work.
+
+2.1 File Menu
+=============
+
+New Game
+     Resets XBoard and the chess engine to the beginning of a new chess
+     game. The `r' key is a keyboard equivalent. In Internet Chess
+     Server mode, clears the current state of XBoard, then
+     resynchronizes with the ICS by sending a refresh command. If you
+     want to stop playing, observing, or examining an ICS game, use an
+     appropriate command from the Action menu, not `New Game'.  *Note
+     Action Menu::.
+
+New Shuffle Game
+     Similar to `New Game', but allows you to specify a particular
+     initial position (according to a standardized numbering system) in
+     chess variants which use randomized opening positions (e.g.
+     Chess960).  The selected opening position will persistently be
+     chosen on any following New Game command until you use this menu
+     to select another. Selecting position number -1 will produce a
+     newly randomized position on any new game.  Using this menu item
+     in variants that normally do not shuffle their opening position
+     does cause these variants to become shuffle variants until you use
+     the `New Shuffle Game' menu to explicitly switch the randomization
+     off, or select a new variant.
+
+New Variant
+     Allows you to select a new chess variant in non-ICS mode.  (In ICS
+     play, the ICS is responsible for deciding which variant will be
+     played, and XBoard adapts autmatically.) If you play with an
+     engine, the engine must be able to play the selected variant, or
+     the command will be ignored.  XBoard supports all major variants,
+     such as xiangqi, shogi, chess, chess960, Capablanca Chess,
+     shatranj, crazyhous, bughouse.
+
+Load Game
+     Plays a game from a record file. The `g' key is a keyboard
+     equivalent.  A popup dialog prompts you for the file name. If the
+     file contains more than one game, a second popup dialog displays a
+     list of games (with information drawn from their PGN tags, if
+     any), and you can select the one you want. Alternatively, you can
+     load the Nth game in the file directly, by typing the number `N'
+     after the file name, separated by a space.
+
+     The game file parser will accept PGN (portable game notation), or
+     in fact almost any file that contains moves in algebraic notation.
+     Notation of the form `P@f7' is accepted for piece-drops in
+     bughouse games; this is a nonstandard extension to PGN.  If the
+     file includes a PGN position (FEN tag), or an old-style XBoard
+     position diagram bracketed by `[--' and `--]' before the first
+     move, the game starts from that position. Text enclosed in
+     parentheses, square brackets, or curly braces is assumed to be
+     commentary and is displayed in a pop-up window. Any other text in
+     the file is ignored. PGN variations (enclosed in parentheses) are
+     treated as comments; XBoard is not able to walk variation trees.
+     The nonstandard PGN tag [Variant "varname"] functions similarly to
+     the -variant command-line option (see below), allowing games in
+     certain chess variants to be loaded.  There is also a heuristic to
+     recognize chess variants from the Event tag, by looking for the
+     strings that the Internet Chess Servers put there when saving
+     variant ("wild") games.
+
+Load Next Game
+     Loads the next game from the last game record file you loaded.
+     The shifted `N' key is a keyboard equivalent.
+
+Load Previous Game
+     Loads the previous game from the last game record file you loaded.
+     The shifted `P' key is a keyboard equivalent.  Not available if
+     the last game was loaded from a pipe.
+
+Reload Same Game
+     Reloads the last game you loaded.  Not available if the last game
+     was loaded from a pipe.
+
+Save Game
+     Appends a record of the current game to a file.  A popup dialog
+     prompts you for the file name. If the game did not begin with the
+     standard starting position, the game file includes the starting
+     position used. Games are saved in the PGN (portable game notation)
+     format, unless the oldSaveStyle option is true, in which case they
+     are saved in an older format that is specific to XBoard. Both
+     formats are human-readable, and both can be read back by the `Load
+     Game' command.  Notation of the form `P@f7' is accepted for
+     piece-drops in bughouse games; this is a nonstandard extension to
+     PGN.
+
+Copy Game
+     Copies a record of the current game to an internal clipboard in PGN
+     format and sets the X selection to the game text.  The game can be
+     pasted to another application (such as a text editor or another
+     copy of XBoard) using that application's paste command.  In many X
+     applications, such as xterm and emacs, the middle mouse button can
+     be used for pasting; in XBoard, you must use the Paste Game
+     command.
+
+Paste Game
+     Interprets the current X selection as a game record and loads it,
+     as with Load Game.
+
+Load Position
+     Sets up a position from a position file.  A popup dialog prompts
+     you for the file name. If the file contains more than one saved
+     position, and you want to load the Nth one, type the number N
+     after the file name, separated by a space. Position files must be
+     in FEN (Forsythe-Edwards notation), or in the format that the Save
+     Position command writes when oldSaveStyle is turned on.
+
+Load Next Position
+     Loads the next position from the last position file you loaded.
+
+Load Previous Position
+     Loads the previous position from the last position file you
+     loaded.  Not available if the last position was loaded from a pipe.
+
+Reload Same Position
+     Reloads the last position you loaded.  Not available if the last
+     position was loaded from a pipe.
+
+Save Position
+     Appends a diagram of the current position to a file.  A popup
+     dialog prompts you for the file name. Positions are saved in FEN
+     (Forsythe-Edwards notation) format unless the `oldSaveStyle'
+     option is true, in which case they are saved in an older,
+     human-readable format that is specific to XBoard. Both formats can
+     be read back by the `Load Position' command.
+
+Copy Position
+     Copies the current position to an internal clipboard in FEN format
+     and sets the X selection to the position text.  The position can
+     be pasted to another application (such as a text editor or another
+     copy of XBoard) using that application's paste command.  In many X
+     applications, such as xterm and emacs, the middle mouse button can
+     be used for pasting; in XBoard, you must use the Paste Position
+     command.
+
+Paste Position
+     Interprets the current X selection as a FEN position and loads it,
+     as with Load Position.
+
+Mail Move
+Reload CMail Message
+     See *note CMail::.
+
+Exit
+     Exits from XBoard. The shifted `Q' key is a keyboard equivalent.
+
+2.2 Mode Menu
+=============
+
+Machine White
+     Tells the chess engine to play White.
+
+Machine Black
+     Tells the chess engine to play Black.
+
+Two Machines
+     Plays a game between two chess engines.
+
+Analysis Mode
+     XBoard tells the chess engine to start analyzing the current
+     game/position and shows you the analysis as you move pieces around.
+     Note: Some chess engines do not support Analysis mode.
+
+     To set up a position to analyze, you do the following:
+
+     1. Select Edit Position from the Mode Menu
+
+     2. Set up the position.  Use the middle and right buttons to bring
+     up the white and black piece menus.
+
+     3. When you are finished, click on either the Black or White clock
+     to tell XBoard which side moves first.
+
+     4. Select Analysis Mode from the Mode Menu to start the analysis.
+
+     The analysis function can also be used when observing games on an
+     ICS with an engine loaded (zippy mode); the engine then will
+     analyse the positions as they occur in the observed game.
+
+Analyze File
+     This option lets you load a game from a file (PGN, XBoard format,
+     etc.)  and analyze it. When you select this menu item, a popup
+     window appears and asks for a filename to load.  If the file
+     contains multiple games, another popup appears that lets you
+     select which game you wish to analyze.  After a game is loaded,
+     use the XBoard arrow buttons to step forwards/backwards through
+     the game and watch the analysis.  Note: Some chess engines do not
+     support Analysis mode.
+
+ICS Client
+     This is the normal mode when XBoard is connected to a chess
+     server.  If you have moved into Edit Game or Edit Position mode,
+     you can select this option to get out.
+
+     To use xboard in ICS mode, run it in the foreground with the -ics
+     option, and use the terminal you started it from to type commands
+     and receive text responses from the chess server.  See *note Chess
+     Servers:: below for more information.
+
+     XBoard activates some special position/game editing features when
+     you use the `examine' or `bsetup' commands on ICS and you have
+     `ICS Client' selected on the Mode menu.  First, you can issue the
+     ICS position-editing commands with the mouse.  Move pieces by
+     dragging with mouse button 1.  To drop a new piece on a square,
+     press mouse button 2 or 3 over the square.  This brings up a menu
+     of white pieces (button 2) or black pieces (button 3).  Additional
+     menu choices let you empty the square or clear the board.  Click
+     on the White or Black clock to set the side to play.  You cannot
+     set the side to play or drag pieces to arbitrary squares while
+     examining on ICC, but you can do so in `bsetup' mode on FICS.  In
+     addition, the menu commands `Forward', `Backward', `Pause', and
+     `Stop Examining' have special functions in this mode; see below.
+
+Edit Game
+     Allows you to make moves for both Black and White, and to change
+     moves after backing up with the `Backward' command. The clocks do
+     not run.
+
+     In chess engine mode, the chess engine continues to check moves
+     for legality but does not participate in the game. You can bring
+     the chess engine into the game by selecting `Machine White',
+     `Machine Black', or `Two Machines'.
+
+     In ICS mode, the moves are not sent to the ICS: `Edit Game' takes
+     XBoard out of ICS Client mode and lets you edit games locally.  If
+     you want to edit games on ICS in a way that other ICS users can
+     see, use the ICS `examine' command or start an ICS match against
+     yourself.
+
+Edit Position
+     Lets you set up an arbitrary board position.  Use mouse button 1
+     to drag pieces to new squares, or to delete a piece by dragging it
+     off the board or dragging an empty square on top of it.  To drop a
+     new piece on a square, press mouse button 2 or 3 over the square.
+     This brings up a menu of white pieces (button 2) or black pieces
+     (button 3). Additional menu choices let you empty the square or
+     clear the board. You can set the side to play next by clicking on
+     the word White or Black at the top of the screen.  Selecting `Edit
+     Position' causes XBoard to discard all remembered moves in the
+     current game.
+
+     In ICS mode, changes made to the position by `Edit Position' are
+     not sent to the ICS: `Edit Position' takes XBoard out of `ICS
+     Client' mode and lets you edit positions locally. If you want to
+     edit positions on ICS in a way that other ICS users can see, use
+     the ICS `examine' command, or start an ICS match against yourself.
+     (See also the ICS Client topic above.)
+
+Training
+     Training mode lets you interactively guess the moves of a game for
+     one of the players. You guess the next move of the game by playing
+     the move on the board. If the move played matches the next move of
+     the game, the move is accepted and the opponent's response is
+     autoplayed.  If the move played is incorrect, an error message is
+     displayed.  You can select this mode only while loading a game
+     (that is, after selecting `Load Game' from the File menu).  While
+     XBoard is in `Training' mode, the navigation buttons are disabled.
+
+Show Game List
+     Shows or hides the list of games generated by the last `Load Game'
+     command.
+
+Show Move History
+     Shows or hides a list of moves of the current game.  This list
+     allows you to move the display to any earlier position in the game
+     by clicking on the corresponding move.
+
+Show Engine Output
+     Shows or hides a window in which the thinking output of any loaded
+     engines is displayed.
+
+Edit Tags
+     Lets you edit the PGN (portable game notation) tags for the
+     current game. After editing, the tags must still conform to the
+     PGN tag syntax:
+
+          <tag-section> ::= <tag-pair> <tag-section>
+                                  <empty>
+          <tag-pair> ::= [ <tag-name> <tag-value> ]
+          <tag-name> ::= <identifier>
+          <tag-value> ::= <string>
+     See the PGN Standard for full details. Here is an example:
+
+          [Event "Portoroz Interzonal"]
+          [Site "Portoroz, Yugoslavia"]
+          [Date "1958.08.16"]
+          [Round "8"]
+          [White "Robert J. Fischer"]
+          [Black "Bent Larsen"]
+          [Result "1-0"]
+     Any characters that do not match this syntax are silently ignored.
+     Note that the PGN standard requires all games to have at least the
+     seven tags shown above. Any that you omit will be filled in by
+     XBoard with `?' (unknown value), or `-' (inapplicable value).
+
+Edit Comment
+     Adds or modifies a comment on the current position. Comments are
+     saved by `Save Game' and are displayed by `Load Game', `Forward',
+     and `Backward'.
+
+ICS Input Box
+     If this option is set in ICS mode, XBoard creates an extra window
+     that you can use for typing in ICS commands.  The input box is
+     especially useful if you want to type in something long or do some
+     editing on your input, because output from ICS doesn't get mixed
+     in with your typing as it would in the main terminal window.
+
+Pause
+     Pauses updates to the board, and if you are playing against a
+     chess engine, also pauses your clock. To continue, select `Pause'
+     again, and the display will automatically update to the latest
+     position.  The `P' button and keyboard `p' key are equivalents.
+
+     If you select Pause when you are playing against a chess engine and
+     it is not your move, the chess engine's clock will continue to run
+     and it will eventually make a move, at which point both clocks
+     will stop. Since board updates are paused, however, you will not
+     see the move until you exit from Pause mode (or select Forward).
+     This behavior is meant to simulate adjournment with a sealed move.
+
+     If you select Pause while you are observing or examining a game on
+     a chess server, you can step backward and forward in the current
+     history of the examined game without affecting the other observers
+     and examiners, and without having your display jump forward to the
+     latest position each time a move is made. Select Pause again to
+     reconnect yourself to the current state of the game on ICS.
+
+     If you select `Pause' while you are loading a game, the game stops
+     loading. You can load more moves manually by selecting `Forward',
+     or resume automatic loading by selecting `Pause' again.
+
+2.3 Action Menu
+===============
+
+Accept
+     Accepts a pending match offer. If there is more than one offer
+     pending, you will have to type in a more specific command instead
+     of using this menu choice.
+
+Decline
+     Declines a pending offer (match, draw, adjourn, etc.). If there is
+     more than one offer pending, you will have to type in a more
+     specific command instead of using this menu choice.
+
+Call Flag
+     Calls your opponent's flag, claiming a win on time, or claiming a
+     draw if you are both out of time. You can also call your
+     opponent's flag by clicking on his clock or by pressing the
+     keyboard `t' key.
+
+Draw
+     Offers a draw to your opponent, accepts a pending draw offer from
+     your opponent, or claims a draw by repetition or the 50-move rule,
+     as appropriate. The `d' key is a keyboard equivalent.
+
+Adjourn
+     Asks your opponent to agree to adjourning the current game, or
+     agrees to a pending adjournment offer from your opponent.
+
+Abort
+     Asks your opponent to agree to aborting the current game, or
+     agrees to a pending abort offer from your opponent. An aborted
+     game ends immediately without affecting either player's rating.
+
+Resign
+     Resigns the game to your opponent. The shifted `R' key is a
+     keyboard equivalent.
+
+Stop Observing
+     Ends your participation in observing a game, by issuing the ICS
+     observe command with no arguments. ICS mode only.
+
+Stop Examining
+     Ends your participation in examining a game, by issuing the ICS
+     unexamine command. ICS mode only.
+
+2.4 Step Menu
+=============
+
+Backward
+     Steps backward through a series of remembered moves.  The `[<]'
+     button and the `b' key are equivalents, as is turning the mouse
+     wheel towards you.  In addition, pressing the Control key steps
+     back one move, and releasing it steps forward again.
+
+     In most modes, `Backward' only lets you look back at old positions;
+     it does not retract moves. This is the case if you are playing
+     against a chess engine, playing or observing a game on an ICS, or
+     loading a game.  If you select `Backward' in any of these
+     situations, you will not be allowed to make a different move. Use
+     `Retract Move' or `Edit Game' if you want to change past moves.
+
+     If you are examining an ICS game, the behavior of `Backward'
+     depends on whether XBoard is in Pause mode. If Pause mode is off,
+     `Backward' issues the ICS backward command, which backs up
+     everyone's view of the game and allows you to make a different
+     move. If Pause mode is on, `Backward' only backs up your local
+     view.
+
+Forward
+     Steps forward through a series of remembered moves (undoing the
+     effect of `Backward') or forward through a game file. The `[>]'
+     button and the `f' key are equivalents, as is turning the mouse
+     wheel away from you.
+
+     If you are examining an ICS game, the behavior of Forward depends
+     on whether XBoard is in Pause mode. If Pause mode is off,
+     `Forward' issues the ICS forward command, which moves everyone's
+     view of the game forward along the current line. If Pause mode is
+     on, `Forward' only moves your local view forward, and it will not
+     go past the position that the game was in when you paused.
+
+Back to Start
+     Jumps backward to the first remembered position in the game.  The
+     `[<<]' button and the shifted `B' key are equivalents.
+
+     In most modes, Back to Start only lets you look back at old
+     positions; it does not retract moves. This is the case if you are
+     playing against a local chess engine, playing or observing a game
+     on a chess server, or loading a game. If you select `Back to
+     Start' in any of these situations, you will not be allowed to make
+     different moves. Use `Retract Move' or `Edit Game' if you want to
+     change past moves; or use Reset to start a new game.
+
+     If you are examining an ICS game, the behavior of `Back to Start'
+     depends on whether XBoard is in Pause mode. If Pause mode is off,
+     `Back to Start' issues the ICS `backward 999999' command, which
+     backs up everyone's view of the game to the start and allows you
+     to make different moves. If Pause mode is on, `Back to Start' only
+     backs up your local view.
+
+Forward to End
+     Jumps forward to the last remembered position in the game. The
+     `[>>]' button and the shifted `F' key are equivalents.
+
+     If you are examining an ICS game, the behavior of `Forward to End'
+     depends on whether XBoard is in Pause mode. If Pause mode is off,
+     `Forward to End' issues the ICS `forward 999999' command, which
+     moves everyone's view of the game forward to the end of the
+     current line. If Pause mode is on, `Forward to End' only moves
+     your local view forward, and it will not go past the position that
+     the game was in when you paused.
+
+Revert
+     If you are examining an ICS game and Pause mode is off, issues the
+     ICS command `revert'.
+
+Truncate Game
+     Discards all remembered moves of the game beyond the current
+     position. Puts XBoard into `Edit Game' mode if it was not there
+     already.
+
+Move Now
+     Forces the chess engine to move immediately. Chess engine mode
+     only.
+
+Retract Move
+     Retracts your last move. In chess engine mode, you can do this only
+     after the chess engine has replied to your move; if the chess
+     engine is still thinking, use `Move Now' first. In ICS mode,
+     `Retract Move' issues the command `takeback 1' or `takeback 2'
+     depending on whether it is your opponent's move or yours.
+
+Adjudicate to White
+Adjudicate to Black
+Adjudicate Draw
+     Terminate an ongoing game in Two-Machines mode (including match
+     mode), with as result a win for white, for black, or a draw,
+     repsectively.  The PGN file of the game will accompany the result
+     string by the comment "user adjudication".
+
+2.5 Options Menu
+================
+
+Flip View
+     Inverts your view of the chess board for the duration of the
+     current game. Starting a new game returns the board to normal.
+     The `v' key is a keyboard equivalent.
+
+Adjudications
+     Pops up a sub-menu where you can enable or disable various
+     adjudications that XBoard can perform in engine-engine games.  You
+     can instruct XBoard to detect and terminate the game on checkmate
+     or stalemate, even if the engines would not do so, to verify engine
+     result claims (forfeiting engines that make false claims), rather
+     than naively following the engine, to declare draw on posititions
+     which can never be won for lack of mating material, (e.g. KBK), or
+     which are impossble to win unless the opponent seeks its own demise
+     (e.g. KBKN).  For these adjudications to work, `Test Legality'
+     should be switched on.  It is also possible to insruct XBoard to
+     enforce a 50-move or 3-fold-repeat rule and automtically declare
+     draw (after a user-adjustable number of moves or repeats) even if
+     the engines are prepared to go on.  It is also possible to have
+     XBoard declare draw on games that seem to drag on forever, or
+     adjudicate a loss if both engines agree (for 3 cosecutive moves)
+     that one of them is behind more than a user-adjustable score
+     threshold.  For the latter adjudication to work, XBoard should be
+     able to properly understand the engine's scores. To faclitate the
+     latter, you can inform xboard here if the engines report scores
+     from the viewpoint of white, or from that of their own color.
+
+Engine Settings
+     Pops up a sub-menu where you can set some engine parameters common
+     to most engines, such as hash-table size, tablebase cache size,
+     maximum number of processors that SMP engines can use, and where
+     to find the Polyglot adapter needed to run UCI engines under
+     XBoard. The feature tht allows setting of these parameters on
+     engines is new since XBoard 4.3.15, so not many WinBoard engines
+     respond to it yet, but UCI engines should.  It is also possible to
+     specify a GUI opening book here, i.e. an opening book that XBoard
+     consults for any position a playing engine gets in.  It then
+     forces the engine to play the book move, rather than to think up
+     its own, if that position is found in the book.  The book can
+     switched on and off independently for either engine.
+
+Time Control
+     Pops up a sub-menu where you can set the time-control parameters
+     interactively.  Allows you to select classical or incremental time
+     controls, set the moves per session, session duration, and time
+     increment.  Also allows specification of time-odds factors for one
+     or both engines.  If an engine is given a time-odds factor N, all
+     time quota it gets, be it at the beginning of a session or through
+     the time increment or fixed time per move, will be divided by N.
+
+Always Queen
+     If this option is off, XBoard brings up a dialog box whenever you
+     move a pawn to the last rank, asking what piece you want to
+     promote it to. If the option is true, your pawns are always
+     promoted to queens. Your opponent can still underpromote.
+
+Animate Dragging
+     If Animate Dragging is on, while you are dragging a piece with the
+     mouse, an image of the piece follows the mouse cursor.  If Animate
+     Dragging is off, there is no visual feedback while you are
+     dragging a piece, but if Animate Moving is on, the move will be
+     animated when it is complete.
+
+Animate Moving
+     If Animate Moving is on, all piece moves are animated.  An image
+     of the piece is shown moving from the old square to the new square
+     when the move is completed (unless the move was already animated
+     by Animate Dragging).  If Animate Moving is off, a moved piece
+     instantly disappears from its old square and reappears on its new
+     square when the move is complete.
+
+Auto Comment
+     If this option is on, any remarks made on ICS while you are
+     observing or playing a game are recorded as a comment on the
+     current move.  This includes remarks made with the ICS commands
+     `say', `tell', `whisper', and `kibitz'.  Limitation: remarks that
+     you type yourself are not recognized; XBoard scans only the output
+     from ICS, not the input you type to it.
+
+Auto Flag
+     If this option is on and one player runs out of time before the
+     other, XBoard will automatically call his flag, claiming a win on
+     time.  In ICS mode, Auto Flag will only call your opponent's flag,
+     not yours, and the ICS may award you a draw instead of a win if
+     you have insufficient mating material.  In local chess engine mode,
+     XBoard may call either player's flag and will not take material
+     into account.
+
+Auto Flip View
+     If the Auto Flip View option is on when you start a game, the board
+     will be automatically oriented so that your pawns move from the
+     bottom of the window towards the top.
+
+Auto Observe
+     If this option is on and you add a player to your `gnotify' list
+     on ICS, XBoard will automatically observe all of that player's
+     games, unless you are doing something else (such as observing or
+     playing a game of your own) when one starts.  The games are
+     displayed from the point of view of the player on your gnotify
+     list; that is, his pawns move from the bottom of the window
+     towards the top.  Exceptions:  If both players in a game are on
+     your gnotify list, if your ICS `highlight' variable is set to 0,
+     or if the ICS you are using does not properly support observing
+     from Black's point of view, you will see the game from White's
+     point of view.
+
+Auto Raise Board
+     If this option is on, whenever a new game begins, the chessboard
+     window is deiconized (if necessary) and raised to the top of the
+     stack of windows.
+
+Auto Save
+     If this option is true, at the end of every game XBoard prompts
+     you for a file name and appends a record of the game to the file
+     you specify.  Disabled if the `saveGameFile' command-line option
+     is set, as in that case all games are saved to the specified file.
+     *Note Load and Save options::.
+
+Blindfold
+     If this option is on, XBoard displays the board as usual but does
+     not display pieces or move highlights.  You can still move in the
+     usual way (with the mouse or by typing moves in ICS mode), even
+     though the pieces are invisible.
+
+Flash Moves
+     If this option is on, whenever a move is completed, the moved
+     piece flashes.  The number of times to flash is set by the
+     flashCount command-line option; it defaults to 3 if Flash Moves is
+     first turned on from the menu.
+
+     If you are playing a game on an ICS, the board is always oriented
+     at the start of the game so that your pawns move from the bottom
+     of the window towards the top. Otherwise, the starting orientation
+     is determined by the `flipView' command line option; if it is
+     false (the default), White's pawns move from bottom to top at the
+     start of each game; if it is true, Black's pawns move from bottom
+     to top. *Note User interface options::.
+
+Get Move List
+     If this option is on, whenever XBoard receives the first board of
+     a new ICS game (or a different game from the one it is currently
+     displaying), it retrieves the list of past moves from the ICS.
+     You can then review the moves with the `Forward' and `Backward'
+     commands or save them with `Save Game'.  You might want to turn
+     off this option if you are observing several blitz games at once,
+     to keep from wasting time and network bandwidth fetching the move
+     lists over and over.  When you turn this option on from the menu,
+     XBoard immediately fetches the move list of the current game (if
+     any).
+
+Highlight Last Move
+     If Highlight Last Move is on, after a move is made, the starting
+     and ending squares remain highlighted. In addition, after you use
+     Backward or Back to Start, the starting and ending squares of the
+     last move to be unmade are highlighted.
+
+Move Sound
+     If this option is on, XBoard alerts you by playing a sound after
+     each of your opponent's moves (or after every move if you are
+     observing a game on the Internet Chess Server).  The sound is not
+     played after moves you make or moves read from a saved game file.
+     By default, the sound is the terminal bell, but on some systems
+     you can change it to a sound file using the soundMove option; see
+     below.
+
+     If you turn on this option when using XBoard with the Internet
+     Chess Server, you will probably want to give the `set bell 0'
+     command to the ICS, since otherwise the ICS will ring the terminal
+     bell after every move (not just yours). (The `.icsrc' file is a
+     good place for this; see *note ICS options::.)
+
+ICS Alarm
+     When this option is on, an alarm sound is played when your clock
+     counts down to the icsAlarmTime (by default, 5 seconds) in an ICS
+     game.  For games with time controls that include an increment, the
+     alarm will sound each time the clock counts down to the
+     icsAlarmTime.  By default, the alarm sound is the terminal bell,
+     but on some systems you can change it to a sound file using the
+     soundIcsAlarm option; see below.
+
+Old Save Style
+     If this option is off, XBoard saves games in PGN (portable game
+     notation) and positions in FEN (Forsythe-Edwards notation).  If
+     the option is on, a save style that is compatible with older
+     versions of XBoard is used instead.  The old position style is
+     more human-readable than FEN; the old game style has no particular
+     advantages.
+
+Periodic Updates
+     If this option is off (or if you are using a chess engine that
+     does not support periodic updates), the analysis window will only
+     be updated when the analysis changes. If this option is on, the
+     Analysis Window will be updated every two seconds.
+
+Ponder Next Move
+     If this option is off, the chess engine will think only when it is
+     on move.  If the option is on, the engine will also think while
+     waiting for you to make your move.
+
+Popup Exit Message
+     If this option is on, when XBoard wants to display a message just
+     before exiting, it brings up a modal dialog box and waits for you
+     to click OK before exiting.  If the option is off, XBoard prints
+     the message to standard error (the terminal) and exits immediately.
+
+Popup Move Errors
+     If this option is off, when you make an error in moving (such as
+     attempting an illegal move or moving the wrong color piece), the
+     error message is displayed in the message area.  If the option is
+     on, move errors are displayed in small popup windows like other
+     errors.  You can dismiss an error popup either by clicking its OK
+     button or by clicking anywhere on the board, including
+     downclicking to start a move.
+
+Premove
+     If this option is on while playing a game on an ICS, you can
+     register your next planned move before it is your turn.  Move the
+     piece with the mouse in the ordinary way, and the starting and
+     ending squares will be highlighted with a special color (red by
+     default).  When it is your turn, if your registered move is legal,
+     XBoard will send it to ICS immediately; if not, it will be ignored
+     and you can make a different move.  If you change your mind about
+     your premove, either make a different move, or double-click on any
+     piece to cancel the move entirely.
+
+Quiet Play
+     If this option is on, XBoard will automatically issue an ICS `set
+     shout 0' command whenever you start a game and a `set shout 1'
+     command whenever you finish one.  Thus, you will not be distracted
+     by shouts from other ICS users while playing.
+
+Show Coords
+     If this option is on, XBoard displays algebraic coordinates along
+     the board's left and bottom edges.
+
+Hide Thinking
+     If this option is off, the chess engine's notion of the score and
+     best line of play from the current position is displayed as it is
+     thinking. The score indicates how many pawns ahead (or if negative,
+     behind) the chess engine thinks it is. In matches between two
+     machines, the score is prefixed by `W' or `B' to indicate whether
+     it is showing White's thinking or Black's, and only the thinking
+     of the engine that is on move is shown.
+
+Test Legality
+     If this option is on, XBoard tests whether the moves you try to
+     make with the mouse are legal and refuses to let you make an
+     illegal move.  Moves loaded from a file with `Load Game' are also
+     checked.  If the option is off, all moves are accepted, but if a
+     local chess engine or the ICS is active, they will still reject
+     illegal moves.  Turning off this option is useful if you are
+     playing a chess variant with rules that XBoard does not
+     understand.  (Bughouse, suicide, and wild variants where the king
+     may castle after starting on the d file are generally supported
+     with Test Legality on.)
+
+2.6 Help Menu
+=============
+
+Info XBoard
+     Displays the XBoard documentation in info format.  For this
+     feature to work, you must have the GNU info program installed on
+     your system, and the file `xboard.info' must either be present in
+     the current working directory, or have been installed by the `make
+     install' command when you built XBoard.
+
+Man XBoard
+     Displays the XBoard documentation in man page format.  For this
+     feature to work, the file `xboard.6' must have been installed by
+     the `make install' command when you built XBoard, and the
+     directory it was placed in must be on the search path for your
+     system's `man' command.
+
+Hint
+     Displays a move hint from the chess engine.
+
+Book
+     Displays a list of possible moves from the chess engine's opening
+     book.  The exact format depends on what chess engine you are using.
+     With GNU Chess 4, the first column gives moves, the second column
+     gives one possible response for each move, and the third column
+     shows the number of lines in the book that include the move from
+     the first column. If you select this option and nothing happens,
+     the chess engine is out of its book or does not support this
+     feature.
+
+About XBoard
+     Shows the current XBoard version number.
+
+2.7 Other Shortcut Keys
+=======================
+
+Iconize
+     Pressing the `i' or `c' key iconizes XBoard. The graphical icon
+     displays a white knight if it is White's move, or a black knight
+     if it is Black's move. If your X window manager displays only text
+     icons, not graphical ones, check its documentation; there is
+     probably a way to enable graphical icons.  If you get black and
+     white reversed, we would like to hear about it; see *note
+     Problems:: below for instructions on how to report this problem.
+
+   You can add or remove shortcut keys using the X resources
+`form.translations'. Here is an example of what would go in your
+`.Xresources' file:
+
+     XBoard*form.translations: \
+       Shift<Key>?: AboutGameProc() \n\
+       <Key>y: AcceptProc() \n\
+       <Key>n: DeclineProc() \n\
+       <Key>i: NothingProc()
+   Binding a key to `NothingProc' makes it do nothing, thus removing it
+as a shortcut key. The XBoard commands that can be bound to keys are:
+
+     AbortProc, AboutGameProc, AboutProc, AcceptProc, AdjournProc,
+     AlwaysQueenProc, AnalysisModeProc, AnalyzeFileProc,
+     AnimateDraggingProc, AnimateMovingProc, AutobsProc, AutoflagProc,
+     AutoflipProc, AutoraiseProc, AutosaveProc, BackwardProc,
+     BlindfoldProc, BookProc, CallFlagProc, CopyGameProc, CopyPositionProc,
+     DebugProc, DeclineProc, DrawProc, EditCommentProc, EditGameProc,
+     EditPositionProc, EditTagsProc, EnterKeyProc, FlashMovesProc,
+     FlipViewProc, ForwardProc, GetMoveListProc, HighlightLastMoveProc,
+     HintProc, Iconify, IcsAlarmProc, IcsClientProc, IcsInputBoxProc,
+     InfoProc, LoadGameProc, LoadNextGameProc, LoadNextPositionProc,
+     LoadPositionProc, LoadPrevGameProc, LoadPrevPositionProc,
+     LoadSelectedProc, MachineBlackProc, MachineWhiteProc, MailMoveProc,
+     ManProc, MoveNowProc, MoveSoundProc, NothingProc, OldSaveStyleProc,
+     PasteGameProc, PastePositionProc, PauseProc, PeriodicUpdatesProc,
+     PonderNextMoveProc, PopupExitMessageProc, PopupMoveErrorsProc,
+     PremoveProc, QuietPlayProc, QuitProc, ReloadCmailMsgProc,
+     ReloadGameProc, ReloadPositionProc, RematchProc, ResetProc,
+     ResignProc, RetractMoveProc, RevertProc, SaveGameProc,
+     SavePositionProc, ShowCoordsProc, ShowGameListProc, ShowThinkingProc,
+     StopExaminingProc, StopObservingProc, TestLegalityProc, ToEndProc,
+     ToStartProc, TrainingProc, TruncateGameProc, and TwoMachinesProc.
+
+3 Options
+*********
+
+This section documents the command-line options to XBoard.  You can set
+these options in two ways: by typing them on the shell command line you
+use to start XBoard, or by setting them as X resources (typically in
+your `.Xresources' file).  Many of the options cannot be changed while
+XBoard is running; others set the initial state of items that can be
+changed with the *note Options:: menu.
+
+   Most of the options have both a long name and a short name. To turn a
+boolean option on or off from the command line, either give its long
+name followed by the value true or false (`-longOptionName true'), or
+give just the short name to turn the option on (`-opt'), or the short
+name preceded by `x' to turn the option off (`-xopt'). For options that
+take strings or numbers as values, you can use the long or short option
+names interchangeably.
+
+   Each option corresponds to an X resource with the same name, so if
+you like, you can set options in your `.Xresources' file or in a file
+named `XBoard' in your home directory.  For options that have two
+names, the longer one is the name of the corresponding X resource; the
+short name is not recognized.  To turn a boolean option on or off as an
+X resource, give its long name followed by the value true or false
+(`XBoard*longOptionName: true').
+
+3.1 Chess Engine Options
+========================
+
+-tc or -timeControl minutes[:seconds]
+     Each player begins with his clock set to the `timeControl' period.
+     Default: 5 minutes.  The additional options `movesPerSession' and
+     `timeIncrement' are mutually exclusive.
+
+-mps or -movesPerSession moves
+     When both players have made `movesPerSession' moves, a new
+     `timeControl' period is added to both clocks.  Default: 40 moves.
+
+-inc or -timeIncrement seconds
+     If this option is specified, `movesPerSession' is ignored.
+     Instead, after each player's move, `timeIncrement' seconds are
+     added to his clock.  Use `-inc 0' if you want to require the entire
+     game to be played in one `timeControl' period, with no increment.
+     Default: -1, which specifies `movesPerSession' mode.
+
+-clock/-xclock or -clockMode true/false
+     Determines whether or not to display the chess clocks. If
+     clockMode is false, the clocks are not shown, but the side that is
+     to play next is still highlighted. Also, unless `searchTime' is
+     set, the chess engine still keeps track of the clock time and uses
+     it to determine how fast to make its moves.
+
+-st or -searchTime minutes[:seconds]
+     Tells the chess engine to spend at most the given amount of time
+     searching for each of its moves. Without this option, the chess
+     engine chooses its search time based on the number of moves and
+     amount of time remaining until the next time control.  Setting
+     this option also sets clockMode to false.
+
+-depth or -searchDepth number
+     Tells the chess engine to look ahead at most the given number of
+     moves when searching for a move to make. Without this option, the
+     chess engine chooses its search depth based on the number of moves
+     and amount of time remaining until the next time control.  With
+     the option, the engine will cut off its search early if it reaches
+     the specified depth.
+
+-firstNPS number
+-secondNPS number
+     Tells the chess engine to use an internal time standard based on
+     its node count, rather then wall-clock time, to make its timing
+     decisions.  The time in virtual seconds should be obtained by
+     dividing the node count through the given number, like the number
+     was a rate in nodes per second.  Xboard will manage the clocks in
+     accordance with this, relying on the number of nodes reported by
+     the engine in its thinking output. If the given number equals zero,
+     it can obviously not be used to convert nodes to seconds, and the
+     time reported by the engine is used to decrement the XBoard clock
+     in stead. The engine is supposed to report in CPU time it uses,
+     rather than wall-clock time, in this mode. This option can provide
+     fairer conditions for engine-engine matches on heavily loaded
+     machines, or with very fast games (where the wall clock is too
+     inaccurate).  `showThinking' must be on for this option to work.
+     Default: -1 (off).  Not many engines might support this yet!
+
+-firstTimeOdds factor
+-secondTimeOdds factor
+     Reduces the time given to the mentioned engine by the given factor.
+     If pondering is off, the effect is indistinguishable from what
+     would happen if the engine was running on an n-times slower
+     machine. Default: 1.
+
+-timeOddsMode mode
+     This option determines how the case is handled where both engines
+     have a time-odds handicap.  If mode=1, the engine that gets the
+     most time will always get the nominal time, as specified by the
+     time-control options, and its opponent's time is renormalized
+     accordingly.  If mode=0, both play with reduced time. Default: 0.
+
+-hideThinkingFromHuman true/false
+     Controls the Hide Thinking option. *Note Options Menu::. Default:
+     true.  (Relaces the Show-Thinking option of older xboard versions.)
+
+-thinking/-xthinking or -showThinking true/false
+     Forces the engine to send thinking output to xboard.  Used to be
+     the only way to control if thinking output was displayed in older
+     xboard versions, but as the thinking output in xboard 4.3 is also
+     used for several other purposes (adjudication, storing in PGN
+     file) the display of it is now controlled by the new option Hide
+     Thinking. *Note Options Menu::. Default: false.  (But if xboard
+     needs the thinking output for some purpose, it makes the engine
+     send it despite the setting of this option.)
+
+-ponder/-xponder or -ponderNextMove true/false
+     Sets the Ponder Next Move menu option. *Note Options Menu::.
+     Default: true.
+
+-smpCores number
+     Specifies the maxmum nmber of CPUs an SMP engine is allowed to use.
+     Only works for engines that support the WinBoard-protocol cores
+     feature.
+
+-mg or -matchGames n
+     Automatically runs an n-game match between two chess engines, with
+     alternating colors.  If the `loadGameFile' or `loadPositionFile'
+     option is set, XBoard starts each game with the given opening
+     moves or the given position; otherwise, the games start with the
+     standard initial chess position.  If the `saveGameFile' option is
+     set, a move record for the match is appended to the specified
+     file. If the `savePositionFile' option is set, the final position
+     reached in each game of the match is appended to the specified
+     file. When the match is over, XBoard displays the match score and
+     exits. Default: 0 (do not run a match).
+
+-mm/-xmm or -matchMode true/false
+     Setting `matchMode' to true is equivalent to setting `matchGames'
+     to 1.
+
+-sameColorGames n
+     Automatically runs an n-game match between two chess engines,
+     without alternating colors.  Otherwise the same applies as for the
+     `-matchGames' option, over which it takes precedence if both are
+     specified. (See there.)  Default: 0 (do not run a match).
+
+-fcp or -firstChessProgram program
+     Name of first chess engine.  Default: `Fairy-Max'.
+
+-scp or -secondChessProgram program
+     Name of second chess engine, if needed.  A second chess engine is
+     started only in Two Machines (match) mode.  Default: `Fairy-Max'.
+
+-fb/-xfb or -firstPlaysBlack true/false
+     In games between two chess engines, firstChessProgram normally
+     plays white.  If this option is true, firstChessProgram plays
+     black.  In a multi-game match, this option affects the colors only
+     for the first game; they still alternate in subsequent games.
+
+-fh or -firstHost host
+-sh or -secondHost host
+     Hosts on which the chess engines are to run. The default for each
+     is `localhost'. If you specify another host, XBoard uses `rsh' to
+     run the chess engine there. (You can substitute a different remote
+     shell program for rsh using the `remoteShell' option described
+     below.)
+
+-fd or -firstDirectory dir
+-sd or -secondDirectory dir
+     Working directories in which the chess engines are to be run.  The
+     default is "", which means to run the chess engine in the same
+     working directory as XBoard itself.  (See the CHESSDIR environment
+     variable.)  This option is effective only when the chess engine is
+     being run on the local host; it does not work if the engine is run
+     remotely using the -fh or -sh option.
+
+-initString string
+-secondInitString string
+     The string that is sent to initialize each chess engine for a new
+     game.  Default:
+
+          new
+          random
+     Setting this option from the command line is tricky, because you
+     must type in real newline characters, including one at the very
+     end.  In most shells you can do this by entering a `\' character
+     followed by a newline. It is easier to set the option from your
+     `.Xresources' file; in that case you can include the character
+     sequence `\n' in the string, and it will be converted to a newline.
+
+     If you change this option, don't remove the `new' command; it is
+     required by all chess engines to start a new game.
+
+     You can remove the `random' command if you like; including it
+     causes GNU Chess 4 to randomize its move selection slightly so
+     that it doesn't play the same moves in every game.  Even without
+     `random', GNU Chess 4 randomizes its choice of moves from its
+     opening book.  Many other chess engines ignore this command
+     entirely and always (or never) randomize.
+
+     You can also try adding other commands to the initString; see the
+     documentation of the chess engine you are using for details.
+
+-firstComputerString string
+-secondComputerString string
+     The string that is sent to the chess engine if its opponent is
+     another computer chess engine.  The default is `computer\n'.
+     Probably the only useful alternative is the empty string (`'),
+     which keeps the engine from knowing that it is playing another
+     computer.
+
+-reuse/-xreuse or -reuseFirst true/false
+-reuse2/-xreuse2 or -reuseSecond true/false
+     If the option is false, XBoard kills off the chess engine after
+     every game and starts it again for the next game.  If the option
+     is true (the default), XBoard starts the chess engine only once
+     and uses it repeatedly to play multiple games.  Some old chess
+     engines may not work properly when reuse is turned on, but
+     otherwise games will start faster if it is left on.
+
+-firstProtocolVersion version-number
+-secondProtocolVersion version-number
+     This option specifies which version of the chess engine
+     communication protocol to use.  By default, version-number is 2.
+     In version 1, the "protover" command is not sent to the engine;
+     since version 1 is a subset of version 2, nothing else changes.
+     Other values for version-number are not supported.
+
+-firstScoreAbs true/false
+-secondScoreAbs true/false
+     If this option is set, the score reported by the engine is taken
+     to be that in favor of white, even when the engine plays black.
+     Important when XBoard uses the score for adjudications, or in PGN
+     reporting.
+
+-niceEngines priority
+     This option allows you to lower the priority of the engine
+     processes, so that the generally insatiable hunger for CPU time of
+     chess engines does not interfere so much with smooth operation of
+     WinBoard (or the rest of your system).  Negative values could
+     increase the engine priority, which is not recommended.
+
+-firstOptions string
+-secondOptions string
+     The given string is a comma-separated list of (option name, option
+     value) pairs, like the following example: “style Karpov, blunder
+     rate 0”.  If the options announced by the engine at startup
+     through the feature commands of WinBoard protocol matches one of
+     the option names (i.e. “style” or “blunder rate”), it would be set
+     to the given value (i.e. “Karpov” or 0) through a corresponding
+     option command to the engine.  This provided that the type of the
+     value (text or numeric) matches as well.
+
+3.2 UCI + WB Engine Settings
+============================
+
+-fUCI or -firstIsUCI true/false
+-sUCI or -secondIsUCI true/false
+     Indicates if the mentioned engine executable file is an UCI engine,
+     and should be run with the aid of the Polyglot adapter rather than
+     directly.  Xboard will then pass the other UCI options and engine
+     name to Polyglot through a .ini temporary file ceated for the
+     purpose.
+
+-PolyglotDir filename
+     Gives the name of the directory in which the Polyglot adapter for
+     UCI engines expects its files.  Default:
+     "/usr/local/share/polyglot".
+
+-usePolyglotBook true/false
+     Specifies if the Polygot book should be used.
+
+-PolyglotBook filename
+     Gives the filename of the opening book that Polyglot should use.
+     From XBoard 4.3.15 on, native WinBoard engines will also use the
+     opening book specified here, provided the `usePolyglotBook' option
+     is set to true, and the option `firstHasOwnBookUCI' or
+     `secondHasOwnBookUCI' applying to the engine is set to false.  The
+     engine will be kept in force mode as long as the current position
+     is in book, and XBoard will select the book moves for it. Default
+     "".
+
+-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false
+-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false
+     Indicates if the mentioned engine has its own opening book it
+     should play from, rather than using the external book through
+     XBoard. Default: false.
+
+-defaultHashSize n
+     Sets the size of the hash table to n MegaBytes. Together with the
+     EGTB cache size this number is also used to calculate the memory
+     setting of WinBoard engines, for those that support the memory
+     feature of WinBoard protocol. Default: 64.
+
+-defaultCacheSizeEGTB n
+     Sets the size of the EGTB cache to n MegaBytes. Together with the
+     hash-table size this number is also used to calculate the memory
+     setting of WinBoard engines, for those that support the memory
+     feature of WinBoard protocol. Default: 4.
+
+-defaultPathEGTB filename
+     Gives the name of the directory where the end-game tablebases are
+     installed, for UCI engines.  Default: "/usr/local/share/egtb".
+
+-egtFormats string
+     Specifies which end-game tables are installed on the computer, and
+     where.  The argument is a comma-separated list of format
+     specifications, each specification consisting of a format name, a
+     colon, and a directory path name, e.g.
+     "nalimov:/usr/local/share/egtb".  If the name part matches that of
+     a format that the engine requests through a feature command,
+     xboard will relay the path name for this format to the engine
+     through an egtpath command.  One egtpath command for each matching
+     format will be sent.  Popular formats are "nalimov" DTM tablebases
+     and "scorpio" bitbases.  Default: "".
+
+3.3 ICS options
+===============
+
+-ics/-xics or -internetChessServerMode true/false
+     Connect with an Internet Chess Server to play chess against its
+     other users, observe games they are playing, or review games that
+     have recently finished. Default: false.
+
+-icshost or -internetChessServerHost host
+     The Internet host name or address of the chess server to connect
+     to when in ICS mode. Default: `chessclub.com'.  Another popular
+     chess server to try is `freechess.org'.  If your site doesn't have
+     a working Internet name server, try specifying the host address in
+     numeric form.  You may also need to specify the numeric address
+     when using the icshelper option with timestamp or timeseal (see
+     below).
+
+-icsport or -internetChessServerPort port-number
+     The port number to use when connecting to a chess server in ICS
+     mode. Default: 5000.
+
+-icshelper or -internetChessServerHelper prog-name
+     An external helper program used to communicate with the chess
+     server.  You would set it to "timestamp" for ICC (chessclub.com) or
+     "timeseal" for FICS (freechess.org), after obtaining the correct
+     version of timestamp or timeseal for your computer.  See "help
+     timestamp" on ICC and "help timeseal" on FICS.  This option is
+     shorthand for `-useTelnet -telnetProgram program'.
+
+-telnet/-xtelnet or -useTelnet true/false
+     This option is poorly named; it should be called useHelper.  If
+     set to true, it instructs XBoard to run an external program to
+     communicate with the Internet Chess Server.  The program to use is
+     given by the telnetProgram option.  If the option is false (the
+     default), XBoard opens a TCP socket and uses its own internal
+     implementation of the telnet protocol to communicate with the ICS.
+     *Note Firewalls::.
+
+-telnetProgram prog-name
+     This option is poorly named; it should be called helperProgram.
+     It gives the name of the telnet program to be used with the
+     `gateway' and `useTelnet' options.  The default is `telnet'. The
+     telnet program is invoked with the value of
+     `internetChessServerHost' as its first argument and the value of
+     `internetChessServerPort' as its second argument.  *Note
+     Firewalls::.
+
+-gateway host-name
+     If this option is set to a host name, XBoard communicates with the
+     Internet Chess Server by using `rsh' to run the `telnetProgram' on
+     the given host, instead of using its own internal implementation
+     of the telnet protocol. You can substitute a different remote shell
+     program for `rsh' using the `remoteShell' option described below.
+     *Note Firewalls::.
+
+-internetChessServerCommPort or -icscomm dev-name
+     If this option is set, XBoard communicates with the ICS through
+     the given character I/O device instead of opening a TCP connection.
+     Use this option if your system does not have any kind of Internet
+     connection itself (not even a SLIP or PPP connection), but you do
+     have dialup access (or a hardwired terminal line) to an Internet
+     service provider from which you can telnet to the ICS.
+
+     The support for this option in XBoard is minimal. You need to set
+     all communication parameters and tty modes before you enter XBoard.
+
+     Use a script something like this:
+
+          stty raw -echo 9600 > /dev/tty00
+          xboard -ics -icscomm /dev/tty00
+
+     Here replace `/dev/tty00' with the name of the device that your
+     modem is connected to. You might have to add several more options
+     to these stty commands. See the man pages for `stty' and `tty' if
+     you run into problems. Also, on many systems stty works on its
+     standard input instead of standard output, so you have to use `<'
+     instead of `>'.
+
+     If you are using linux, try starting with the script below.
+     Change it as necessary for your installation.
+
+          #!/bin/sh -f
+          # configure modem and fire up XBoard
+
+          # configure modem
+          (
+            stty 2400 ; stty raw ; stty hupcl ; stty -clocal
+            stty ignbrk ; stty ignpar ; stty ixon ; stty ixoff
+            stty -iexten ; stty -echo
+          ) < /dev/modem
+          xboard -ics -icscomm /dev/modem
+     After you start XBoard in this way, type whatever commands are
+     necessary to dial out to your Internet provider and log in.  Then
+     telnet to ICS, using a command like `telnet chessclub.com 5000'.
+     Important: See the paragraph below about extra echoes, in *note
+     Limitations::.
+
+-icslogon or -internetChessServerLogonScript file-name
+     Whenever XBoard connects to the Internet Chess Server, if it finds
+     a file with the name given in this option, it feeds the file's
+     contents to the ICS as commands. The default file name is `.icsrc'.
+     Usually the first two lines of the file should be your ICS user
+     name and password.  The file can be either in $CHESSDIR, in
+     XBoard's working directory if CHESSDIR is not set, or in your home
+     directory.
+
+-msLoginDelay delay
+     If you experience trouble logging on to an ICS when using the
+     `-icslogon' option, inserting some delay between characters of the
+     logon script may help. This option adds `delay' milliseconds of
+     delay between characters. Good values to try are 100 and 250.
+
+-icsinput/-xicsinput or -internetChessServerInputBox true/false
+     Sets the ICS Input Box menu option. *Note Mode Menu::. Default:
+     false.
+
+-autocomm/-xautocomm or -autoComment true/false
+     Sets the Auto Comment menu option. *Note Options Menu::. Default:
+     false.
+
+-autoflag/-xautoflag or -autoCallFlag true/false
+     Sets the Auto Flag menu option.  *Note Options Menu::. Default:
+     false.
+
+-autobs/-xautobs or -autoObserve true/false
+     Sets the Auto Observe menu option.  *Note Options Menu::. Default:
+     false.
+
+-autoKibitz
+     Enables kibitzing of the engines last thinking output (depth,
+     score, time, speed, PV) before it moved to the ICS, in zippy mode.
+     The option `showThinking' must be switched on for this option to
+     work.  Also diverts similar kibitz information of an opponent
+     engine that is playing you through the ICS to the engine-output
+     window, as if the engine was playing locally.
+
+-moves/-xmoves or -getMoveList true/false
+     Sets the Get Move List menu option.  *Note Options Menu::.
+     Default: true.
+
+-alarm/-xalarm or -icsAlarm true/false
+     Sets the ICS Alarm menu option.  *Note Options Menu::. Default:
+     true.
+
+-icsAlarmTime ms
+     Sets the time in milliseconds for the ICS Alarm menu option.
+     *Note Options Menu::. Default: 5000.
+
+-pre/-xpre \fRor\fB -premove true/false
+     Sets the Premove menu option. *Note Options Menu::. Default: true.
+
+-quiet/-xquiet or -quietPlay true/false
+     Sets the Quiet Play menu option.  *Note Options Menu::.  Default:
+     false.
+
+-colorizeMessages or -colorize
+     Setting colorizeMessages to true tells XBoard to colorize the
+     messages received from the ICS.  Colorization works only if your
+     xterm supports ISO 6429 escape sequences for changing text colors.
+
+-colorShout foreground,background,bold
+-colorSShout foreground,background,bold
+-colorChannel1 foreground,background,bold
+-colorChannel foreground,background,bold
+-colorKibitz foreground,background,bold
+-colorTell foreground,background,bold
+-colorChallege foreground,background,bold
+-colorRequest foreground,background,bold
+-colorSeek foreground,background,bold
+-colorNormal foreground,background,bold
+     These options set the colors used when colorizing ICS messages.
+     All ICS messages are grouped into one of these categories: shout,
+     sshout, channel 1, other channel, kibitz, tell, challenge, request
+     (including abort, adjourn, draw, pause, and takeback), or normal
+     (all other messages).
+
+     Each foreground or background argument can be one of the following:
+     black, red, green, yellow, blue, magenta, cyan, white, or default.
+     Here "default" means the default foreground or background color of
+     your xterm.  Bold can be 1 or 0.  If background is omitted,
+     "default" is assumed; if bold is omitted, 0 is assumed.
+
+     Here is an example of how to set the colors in your `.Xresources'
+     file.  The colors shown here are the default values; you will get
+     them if you turn `-colorize' on without specifying your own colors.
+
+          xboard*colorizeMessages: true
+          xboard*colorShout: green
+          xboard*colorSShout: green, black, 1
+          xboard*colorChannel1: cyan
+          xboard*colorChannel: cyan, black, 1
+          xboard*colorKibitz: magenta, black, 1
+          xboard*colorTell: yellow, black, 1
+          xboard*colorChallenge: red, black, 1
+          xboard*colorRequest: red
+          xboard*colorSeek: blue
+          xboard*colorNormal: default
+
+-soundProgram progname
+     If this option is set to a sound-playing program that is installed
+     and working on your system, XBoard can play sound files when
+     certain events occur, listed below.  The default program name is
+     "play".  If any of the sound options is set to "$", the event
+     rings the terminal bell by sending a ^G character to standard
+     output, instead of playing a sound file.  If an option is set to
+     the empty string "", no sound is played for that event.
+
+-soundShout filename
+-soundSShout filename
+-soundChannel filename
+-soundKibitz filename
+-soundTell filename
+-soundChallenge filename
+-soundRequest filename
+-soundSeek filename
+     These sounds are triggered in the same way as the colorization
+     events described above.  They all default to "", no sound.  They
+     are played only if the colorizeMessages is on.
+
+-soundMove filename
+     This sound is used by the Move Sound menu option.  Default: "$".
+
+-soundIcsAlarm filename
+     This sound is used by the ICS Alarm menu option.  Default: "$".
+
+-soundIcsWin filename
+     This sound is played when you win an ICS game.  Default: "" (no
+     sound).
+
+-soundIcsLoss filename
+     This sound is played when you lose an ICS game.  Default: "" (no
+     sound).
+
+-soundIcsDraw filename
+     This sound is played when you draw an ICS game.  Default: "" (no
+     sound).
+
+-soundIcsUnfinished filename
+     This sound is played when an ICS game that you are participating
+     in is aborted, adjourned, or otherwise ends inconclusively.
+     Default: "" (no sound).
+
+     Here is an example of how to set the sounds in your `.Xresources'
+     file:
+
+          xboard*soundShout: shout.wav
+          xboard*soundSShout: sshout.wav
+          xboard*soundChannel1: channel1.wav
+          xboard*soundChannel: channel.wav
+          xboard*soundKibitz: kibitz.wav
+          xboard*soundTell: tell.wav
+          xboard*soundChallenge: challenge.wav
+          xboard*soundRequest: request.wav
+          xboard*soundSeek: seek.wav
+          xboard*soundMove: move.wav
+          xboard*soundIcsWin: win.wav
+          xboard*soundIcsLoss: lose.wav
+          xboard*soundIcsDraw: draw.wav
+          xboard*soundIcsUnfinished: unfinished.wav
+          xboard*soundIcsAlarm: alarm.wav
+
+3.4 Load and Save options
+=========================
+
+-lgf or -loadGameFile file
+-lgi or -loadGameIndex index
+     If the `loadGameFile' option is set, XBoard loads the specified
+     game file at startup. The file name `-' specifies the standard
+     input. If there is more than one game in the file, XBoard pops up
+     a menu of the available games, with entries based on their PGN
+     (Portable Game Notation) tags.  If the `loadGameIndex' option is
+     set to `N', the menu is suppressed and the N th game found in the
+     file is loaded immediately.  The menu is also suppressed if
+     `matchMode' is enabled or if the game file is a pipe; in these
+     cases the first game in the file is loaded immediately.  Use the
+     `pxboard' shell script provided with XBoard if you want to pipe in
+     files containing multiple games and still see the menu.  If the
+     loadGameIndex specifies an index -1, this triggers auto-increment
+     of the index in `matchMode', which means that after every game the
+     index is incremented by one, causing each game of the match to be
+     played from the next game in the file. Similarly, specifying an
+     index value of -2 causes the index to be incremented every two
+     games, so that each game in the file is used twice (with reversed
+     colors).  The `rewindIndex' option causes the index to be reset to
+     the first game of the file when it has reached a specified value.
+
+-rewindIndex n
+     Causes a position file or game file to be rewound to its beginning
+     after n positions or games in auto-increment `matchMode'.  See
+     `loadPositionIndex' and `loadGameIndex'.  default: 0 (no rewind).
+
+-td or -timeDelay seconds
+     Time delay between moves during `Load Game'. Fractional seconds
+     are allowed; try `-td 0.4'. A time delay value of -1 tells XBoard
+     not to step through game files automatically. Default: 1 second.
+
+-sgf or -saveGameFile file
+     If this option is set, XBoard appends a record of every game
+     played to the specified file. The file name `-' specifies the
+     standard output.
+
+-autosave/-xautosave or -autoSaveGames true/false
+     Sets the Auto Save menu option.  *Note Options Menu::.  Default:
+     false.  Ignored if `saveGameFile' is set.
+
+-lpf or -loadPositionFile file
+-lpi or -loadPositionIndex index
+     If the `loadPositionFile' option is set, XBoard loads the
+     specified position file at startup. The file name `-' specifies the
+     standard input. If the `loadPositionIndex' option is set to N, the
+     Nth position found in the file is loaded; otherwise the first
+     position is loaded.  If the loadPositionIndex specifies an index
+     -1, this triggers auto-increment of the index in `matchMode',
+     which means that after every game the index is incremented by one,
+     causing each game of the match to be played from the next position
+     in the file. Similarly, specifying an index value of -2 causes the
+     index to be incremented every two games, so that each position in
+     the file is used twice (with the engines playing opposite colors).
+     The `rewindIndex' option causes the index to be reset to the first
+     position of the file when it has reached a specified value.
+
+-spf or -savePositionFile file
+     If this option is set, XBoard appends the final position reached
+     in every game played to the specified file. The file name `-'
+     specifies the standard output.
+
+-pgnExtendedInfo true/false
+     If this option is set, WinBoard saves depth, score and time used
+     for each move that the engine found as a comment in the PGN file.
+     Default: false.
+
+-pgnEventHeader string
+     Sets the name used in the PGN event tag to string.  Default:
+     "Computer Chess Game".
+
+-saveOutOfBookInfo true/false
+     Include the information on how the engine(s) game out of its
+     opening book in a special 'annotator' tag with the PGN file.
+
+-oldsave/-xoldsave or -oldSaveStyle true/false
+     Sets the Old Save Style menu option.  *Note Options Menu::.
+     Default: false.
+
+3.5 User interface options
+==========================
+
+-display
+-geometry
+-iconic
+     These and most other standard Xt options are accepted.
+
+-noGUI
+     Suppresses all GUI functions of XBoard (to speed up automated
+     ultra-fast engine-engine games, which you don’t want to watch).
+     There will be no board or clock updates, no printing of moves, and
+     no update of the icon on the task bar in this mode.
+
+-movesound/-xmovesound or -ringBellAfterMoves true/false
+     Sets the Move Sound menu option.  *Note Options Menu::.  Default:
+     false.  For compatibility with old XBoard versions, -bell/-xbell
+     are also accepted as abbreviations for this option.
+
+-exit/-xexit or -popupExitMessage true/false
+     Sets the Popup Exit Message menu option.  *Note Options Menu::.
+     Default: true.
+
+-popup/-xpopup or -popupMoveErrors true/false
+     Sets the Popup Move Errors menu option.  *Note Options Menu::.
+     Default: false.
+
+-queen/-xqueen or -alwaysPromoteToQueen true/false
+     Sets the Always Queen menu option.  *Note Options Menu::.
+     Default: false.
+
+-legal/-xlegal or -testLegality true/false
+     Sets the Test Legality menu option.  *Note Options Menu::.
+     Default: true.
+
+-size or -boardSize (sizeName | n1,n2,n3,n4,n5,n6,n7)
+     Determines how large the board will be, by selecting the pixel size
+     of the pieces and setting a few related parameters.  The sizeName
+     can be one of: Titanic, giving 129x129 pixel pieces, Colossal
+     116x116, Giant 108x108, Huge 95x95, Big 87x87, Large 80x80, Bulky
+     72x72, Medium 64x64, Moderate 58x58, Average 54x54, Middling
+     49x49, Mediocre 45x45, Small 40x40, Slim 37x37, Petite 33x33,
+     Dinky 29x29, Teeny 25x25, or Tiny 21x21.  Pieces of all these
+     sizes are built into XBoard.  Other sizes can be used if you have
+     them; see the pixmapDirectory and bitmapDirectory options.  The
+     default depends on the size of your screen; it is approximately the
+     largest size that will fit without clipping.
+
+     You can select other sizes or vary other layout parameters by
+     providing a list of comma-separated values (with no spaces) as the
+     argument.  You do not need to provide all the values; for any you
+     omit from the end of the list, defaults are taken from the nearest
+     built-in size.  The value `n1' gives the piece size, `n2' the
+     width of the black border between squares, `n3' the desired size
+     for the clockFont, `n4' the desired size for the coordFont, `n5'
+     the desired size for the default font, `n6' the smallLayout flag
+     (0 or 1), and `n7' the tinyLayout flag (0 or 1).  All dimensions
+     are in pixels.  If the border between squares is eliminated (0
+     width), the various highlight options will not work, as there is
+     nowhere to draw the highlight.  If smallLayout is 1 and
+     `titleInWindow' is true, the window layout is rearranged to make
+     more room for the title.  If tinyLayout is 1, the labels on the
+     menu bar are abbreviated to one character each and the buttons in
+     the button bar are made narrower.
+
+-coords/-xcoords or -showCoords true/false
+     Sets the Show Coords menu option.  *Note Options Menu::.  Default:
+     false.  The `coordFont' option specifies what font to use.
+
+-autoraise/-xautoraise or -autoRaiseBoard true/false
+     Sets the Auto Raise Board menu option.  *Note Options Menu::.
+     Default: true.
+
+-autoflip/-xautoflip or -autoFlipView true/false
+     Sets the Auto Flip View menu option.  *Note Options Menu::.
+     Default: true.
+
+-flip/-xflip or -flipView true/false
+     If Auto Flip View is not set, or if you are observing but not
+     participating in a game, then the positioning of the board at the
+     start of each game depends on the flipView option.  If flipView is
+     false (the default), the board is positioned so that the white
+     pawns move from the bottom to the top; if true, the black pawns
+     move from the bottom to the top.  In any case, the Flip menu
+     option (see *note Options Menu::) can be used to flip the board
+     after the game starts.
+
+-title/-xtitle or -titleInWindow true/false
+     If this option is true, XBoard displays player names (for ICS
+     games) and game file names (for `Load Game') inside its main
+     window. If the option is false (the default), this information is
+     displayed only in the window banner. You probably won't want to
+     set this option unless the information is not showing up in the
+     banner, as happens with a few X window managers.
+
+-buttons/-xbuttons or -showButtonBar True/False
+     If this option is False, xboard omits the [<<] [<] [P] [>] [>>]
+     button bar from the window, allowing the message line to be wider.
+     You can still get the functions of these buttons using the menus
+     or their keyboard shortcuts.  Default: true.
+
+-mono/-xmono or -monoMode true/false
+     Determines whether XBoard displays its pieces and squares with two
+     colors (true) or four (false). You shouldn't have to specify
+     `monoMode'; XBoard will determine if it is necessary.
+
+-flashCount count
+-flashRate rate
+-flash/-xflash
+     These options enable flashing of pieces when they land on their
+     destination square.  `flashCount' tells XBoard how many times to
+     flash a piece after it lands on its destination square.
+     `flashRate' controls the rate of flashing (flashes/sec).
+     Abbreviations: `flash' sets flashCount to 3.  `xflash' sets
+     flashCount to 0.  Defaults:  flashCount=0 (no flashing),
+     flashRate=5.
+
+-highlight/-xhighlight or -highlightLastMove true/false
+     Sets the Highlight Last Move menu option. *Note Options Menu::.
+     Default: false.
+
+-blind/-xblind or -blindfold true/false
+     Sets the Blindfold menu option.  *Note Options Menu::.  Default:
+     false.
+
+-clockFont font
+     The font used for the clocks. If the option value is a pattern
+     that does not specify the font size, XBoard tries to choose an
+     appropriate font for the board size being used.  Default:
+     -*-helvetica-bold-r-normal-*-*-*-*-*-*-*-*.
+
+-coordFont font
+     The font used for rank and file coordinate labels if `showCoords'
+     is true. If the option value is a pattern that does not specify
+     the font size, XBoard tries to choose an appropriate font for the
+     board size being used.  Default:
+     -*-helvetica-bold-r-normal-*-*-*-*-*-*-*-*.
+
+-font font
+     The font used for popup dialogs, menus, comments, etc.  If the
+     option value is a pattern that does not specify the font size,
+     XBoard tries to choose an appropriate font for the board size
+     being used.  Default: -*-helvetica-medium-r-normal-*-*-*-*-*-*-*-*.
+
+-fontSizeTolerance tol
+     In the font selection algorithm, a nonscalable font will be
+     preferred over a scalable font if the nonscalable font's size
+     differs by `tol' pixels or less from the desired size.  A value of
+     -1 will force a scalable font to always be used if available; a
+     value of 0 will use a nonscalable font only if it is exactly the
+     right size; a large value (say 1000) will force a nonscalable font
+     to always be used if available.  Default: 4.
+
+-bm or -bitmapDirectory dir
+-pixmap or -pixmapDirectory dir
+     These options control what piece images xboard uses.  The XBoard
+     distribution includes one set of pixmap pieces in xpm format, in
+     the directory `pixmaps', and one set of bitmap pieces in xbm
+     format, in the directory `bitmaps'.  Pixmap pieces give a better
+     appearance on the screen: the white pieces have dark borders, and
+     the black pieces have opaque internal details.  With bitmaps,
+     neither piece color has a border, and the internal details are
+     transparent; you see the square color or other background color
+     through them.
+
+     If XBoard is configured and compiled on a system that includes
+     libXpm, the X pixmap library, the xpm pixmap pieces are compiled
+     in as the default.  A different xpm piece set can be selected at
+     runtime with the `pixmapDirectory' option, or a bitmap piece set
+     can be selected with the `bitmapDirectory' option.
+
+     If XBoard is configured and compiled on a system that does not
+     include libXpm (or the `--disable-xpm' option is given to the
+     configure program), the bitmap pieces are compiled in as the
+     default.  It is not possible to use xpm pieces in this case, but
+     pixmap pieces in another format called "xim" can be used by giving
+     the `pixmapDirectory' option.  Or again, a different bitmap piece
+     set can be selected with the `bitmapDirectory' option.
+
+     Files in the `bitmapDirectory' must be named as follows: The first
+     character of a piece bitmap name gives the piece it represents
+     (`p', `n', `b', `r', `q', or `k'), the next characters give the
+     size in pixels, the following character indicates whether the
+     piece is solid or outline (`s' or `o'), and the extension is `.bm'.
+     For example, a solid 80x80 knight would be named `n80s.bm'.  The
+     outline bitmaps are used only in monochrome mode.  If bitmap
+     pieces are compiled in and the bitmapDirectory is missing some
+     files, the compiled in pieces are used instead.
+
+     If the bitmapDirectory option is given, it is also possible to
+     replace xboard's icons and menu checkmark, by supplying files
+     named `icon_white.bm', `icon_black.bm', and `checkmark.bm'.
+
+     For more information about pixmap pieces and how to get additional
+     sets, see *note zic2xpm:: below.
+
+-whitePieceColor color
+-blackPieceColor color
+-lightSquareColor color
+-darkSquareColor color
+-highlightSquareColor color
+     Colors to use for the pieces, squares, and square highlights.
+     Defaults:
+
+          -whitePieceColor       #FFFFCC
+          -blackPieceColor       #202020
+          -lightSquareColor      #C8C365
+          -darkSquareColor       #77A26D
+          -highlightSquareColor  #FFFF00
+          -premoveHighlightColor #FF0000
+
+     On a grayscale monitor you might prefer:
+
+          -whitePieceColor       gray100
+          -blackPieceColor       gray0
+          -lightSquareColor      gray80
+          -darkSquareColor       gray60
+          -highlightSquareColor  gray100
+          -premoveHighlightColor gray70
+
+-drag/-xdrag or -animateDragging true/false
+     Sets the Animate Dragging menu option. *Note Options Menu::.
+     Default: true.
+
+-animate/-xanimate or -animateMoving true/false
+     Sets the Animate Moving menu option. *Note Options Menu::.
+     Default: true.
+
+-animateSpeed n
+     Number of milliseconds delay between each animation frame when
+     Animate Moves is on.
+
+3.6 Adjudication Options
+========================
+
+-adjudicateLossThreshold n
+     If the given value is non-zero, XBoard adjudicates the game as a
+     loss if both engines agree for a duration of 6 consecutive ply
+     that the score is below the given score threshold for that engine.
+     Make sure the score is interpreted properly by XBoard, using
+     `-firstScoreAbs' and `-secondScoreAbs' if needed.  Default: 0 (no
+     adjudiction)
+
+-adjudicateDrawMoves n
+     If the given value is non-zero, XBoard adjudicates the game as a
+     draw if after the given number of moves it was not yet decided.
+     Defaut: 0 (no adjudication)
+
+-checkMates true/false
+     If this option is set, XBoard detects all checkmates and
+     stalemates, and ends the game as soon as they occur.
+     Legality-testing must be switched on for this option to work.
+     Default: true
+
+-testClaims true/false
+     If this option is set, XBoard verifies all result claims made by
+     engines, and those who send false claims will forfeit the game
+     because of it.  Legality-testing must be switched on for this
+     option to work. Default: true
+
+-materialDraws true/false
+     If this option is set, XBoard adjudicates games as draws when
+     there is no sufficient material left to inflict a checkmate.  This
+     applies to KBKB with like bishops (any number, actually), and to
+     KBK, KNK and KK.  Legality-testing must be switched on for this
+     option to work. Default: true
+
+-trivialDraws true/false
+     If this option is set, XBoard adjudicates games as draws that
+     cannot be usually won without opponent cooperation. This applies
+     to KBKB with unlike bishops, and to KBKN, KNKN, KNNK, KRKR and
+     KQKQ. The draw is called after 6 ply into these end-games, to
+     allow quick mates that can occur in some exceptional positions to
+     be found by the engines.  KQKQ does not really belong in this
+     category, and might be taken out in the future.  (When
+     bitbase-based adjudications are implemented.)  Legality-testing
+     must be on for this option to work. Default: false
+
+-ruleMoves n
+     If the given value is non-zero, XBoard adjudicates the game as a
+     draw after the given number of consecutive reversible moves.
+     Engine draw claims are always accepted after 50 moves,
+     irrespective of the given value of n.
+
+-repeatsToDraw n
+     If the given value is non-zero, xboard adjudicates the game as a
+     draw if a position is repeated the given number of times. Engines
+     draw claims are always accepted after 3 repeats, (on the 3rd
+     occurrence, actually), irrespective of the value of n.  Beware
+     that positions that have different castling or en-passant rights
+     do not count as repeats, XBoard is fully e.p. and castling aware!
+
+3.7 Other options
+=================
+
+-ncp/-xncp or -noChessProgram true/false
+     If this option is true, XBoard acts as a passive chessboard; it
+     does not start a chess engine at all. Turning on this option also
+     turns off clockMode. Default: false.
+
+-mode or -initialMode modename
+     If this option is given, XBoard selects the given modename from
+     the Mode menu after starting and (if applicable) processing the
+     loadGameFile or loadPositionFile option. Default: "" (no
+     selection).  Other supported values are MachineWhite,
+     MachineBlack, TwoMachines, Analysis, AnalyzeFile, EditGame,
+     EditPosition, and Training.
+
+-variant varname
+     Activates preliminary, partial support for playing chess variants
+     against a local engine or editing variant games.  This flag is not
+     needed in ICS mode.  Recognized variant names are:
+
+          normal        Normal chess
+          wildcastle    Shuffle chess, king can castle from d file
+          nocastle      Shuffle chess, no castling allowed
+          fischerandom  Fischer Random shuffle chess
+          bughouse      Bughouse, ICC/FICS rules
+          crazyhouse    Crazyhouse, ICC/FICS rules
+          losers        Lose all pieces or get mated (ICC wild 17)
+          suicide       Lose all pieces including king (FICS)
+          giveaway      Try to have no legal moves (ICC wild 26)
+          twokings      Weird ICC wild 9
+          kriegspiel    Opponent's pieces are invisible
+          atomic        Capturing piece explodes (ICC wild 27)
+          3check        Win by giving check 3 times (ICC wild 25)
+          shatranj      An ancient precursor of chess (ICC wild 28)
+          xiangqi       Chinese Chess (on a 9x10 board)
+          shogi         Japanese Chess (on a 9x9 board & piece drops)
+          capablanca    Capablanca Chess (10x8 board, with Archbishop
+                        and Chancellor pieces)
+          gothic        similar, with a better initial position
+          caparandom    An FRC-like version of Capablanca Chess (10x8)
+          janus         A game with two Archbishops (10x8 board)
+          courier       Medieval intermedite between shatranj and
+                        modern Chess (on 12x8 board)
+          falcon        Patented 10x8 variant with two Falcon pieces
+          berolina      Pawns capture straight ahead, and move diagonal
+          cylinder      Pieces wrap around the board edge
+          knightmate    King moves as Knight, and vice versa
+          super         Superchess (shuffle variant with 4 exo-pieces)
+          fairy         A catchall variant in which all piece types
+                        known to XBoard can participate (8x8)
+          unknown       Catchall for other unknown variants
+
+     In the shuffle variants, XBoard now does shuffle the pieces,
+     although you can still do it by hand using Edit Position.  Some
+     variants are supported only in ICS mode, including bughouse, and
+     kriegspiel.  The winning/drawing conditions in crazyhouse (offboard
+     interposition on mate), losers, suicide, giveaway, atomic, and
+     3check are not fully understood.  Berolina and cylinder chess can
+     only be played with legality testing off.  In crazyhouse, XBoard
+     now does keep track of offboard pieces.  In shatranj it does
+     implement the baring rule when mate detection is switched on.
+
+-boardHeight N
+     Allows you to set a non-standard number of board ranks in any
+     variant.  If the height is given as -1, the default height for the
+     variant is used.  Default: -1
+
+-boardWidth N
+     Allows you to set a non-standard number of board files in any
+     variant.  If the width is given as -1, the default width for the
+     variant is used.  With a non-standard width, the initial position
+     will always be an empty board, as the usual opening array will not
+     fit.  Default: -1
+
+-holdingsSize N
+     Allows you to set a non-standard size for the holdings in any
+     variant.  If the size is given as -1, the default holdings size
+     for the variant is used.  The first N piece types will go into the
+     holdings on capture, and you will be able to drop them on the
+     board in stead of making a normal move. If size equals 0, there
+     will be no holdings.  Default: -1
+
+-defaultFrcPosition N
+     Specifies the number of the opening position in shuffle games like
+     Chess960.  A value of -1 means the position is randomly generated
+     by XBoard at the beginning of every game.  Default: -1
+
+-pieceToSquareTable string
+     The characters that are used to represent the piece types XBoard
+     knows in FEN diagrams and SAN moves. The string argument has to
+     have an even length (or it will be ignored), as white and black
+     pieces have to be given separately (in that order). The last
+     letter for each color will be the King.  The letters before that
+     will be PNBRQ and then a whole host of fairy pieces in an order
+     that has not fully crystallized yet (currently FEACWMOHIJGDVSLU,
+     F=Ferz, Elephant, A=Archbishop, C=Chancellor, W=Wazir, M=Commoner,
+     O=Cannon, H=Nightrider). You should list at least all pieces that
+     occur in the variant you are playing. If you have less than 44
+     characters in the string, the pieces not mentioned will get
+     assigned a period, and you will not be able to distinguish them in
+     FENs. You can also explicitly assign pieces a period, in which
+     case they will not be counted in deciding which captured pieces
+     can go into the holdings.  A tilde '~' as a piece name does mean
+     this piece is used to represent a promoted Pawn in crazyhouse-like
+     games, i.e. on capture it turns back onto a Pawn.  A '+' similarly
+     indicates the piece is a shogi-style promoted piece, that should
+     revert to its non-promoted version on capture (rather than to a
+     Pawn).  Note that promoted pieces are represented by pieces 11
+     further in the list.  You should not have to use this option
+     often: each variant has its own default setting for the piece
+     representation in FEN, which should be sufficient in normal use.
+     Default: ""
+
+-debug/-xdebug or -debugMode true/false
+     Turns on debugging printout.
+
+-debugFile filename or -nameOfDebugFile filename
+     Sets the name of the file to which WinBoard saves debug information
+     (including all communication to and from the engines).
+
+-engineDebugOutput number
+     Specifies how WinBoard should handle unsolicited output from the
+     engine, with respect to saving it in the debug file.  The output
+     is further (hopefully) ignored.  If number=0, WinBoard refrains
+     from writing such spurious output to the debug file.  If number=1,
+     all engine output is written faithfully to the debug file.  If
+     number=2, any protocol-violating line is prefixed with a ‘#’
+     character, as the engine itself should have done if it wanted to
+     submit info for inclusion in the debug file.  This option is
+     provided for the benefit of applications that use the debug file
+     as a source of information, such as the broadcaster of live games
+     TLCV / TLCS.  Such applications can be protected from spurious
+     engine output that might otherwise confuse them.
+
+-rsh or -remoteShell shell-name
+     Name of the command used to run programs remotely. The default is
+     `rsh' or `remsh', determined when XBoard is configured and
+     compiled.
+
+-ruser or -remoteUser user-name
+     User name on the remote system when running programs with the
+     `remoteShell'. The default is your local user name.
+
+-userName username
+     Name under which the Human player will be listed in the PGN file.
+     Default is the login name on your local computer.
+
+-delayBeforeQuit number
+-delayAfterQuit number
+     These options specify how long WinBoard has to wait before sending
+     a termination signal to rogue engine processes, that do not want
+     to react to the ‘quit’ command. The second one determines the
+     pause after killing the engine, to make sure it dies.
+
+
+4 Chess Servers
+***************
+
+An "Internet Chess Server", or "ICS", is a place on the Internet where
+people can get together to play chess, watch other people's games, or
+just chat.  You can use either `telnet' or a client program like XBoard
+to connect to the server.  There are thousands of registered users on
+the different ICS hosts, and it is not unusual to meet 200 on both
+chessclub.com and freechess.org.
+
+   Most people can just type `xboard -ics' to start XBoard as an ICS
+client.  Invoking XBoard in this way connects you to the Internet Chess
+Club (ICC), a commercial ICS.  You can log in there as a guest even if
+you do not have a paid account.  To connect to the largest Free ICS
+(FICS), use the command `xboard -ics -icshost freechess.org' instead,
+or substitute a different host name to connect to your favorite ICS.
+For a full description of command-line options that control the
+connection to ICS and change the default values of ICS options, see
+*note ICS options::.
+
+   While you are running XBoard as an ICS client, you use the terminal
+window that you started XBoard from as a place to type in commands and
+read information that is not available on the chessboard.
+
+   The first time you need to use the terminal is to enter your login
+name and password, if you are a registered player. (You don't need to do
+this manually; the `icsLogon' option can do it for you.  *note ICS
+options::.)  If you are not registered, enter `g' as your name, and the
+server will pick a unique guest name for you.
+
+   Some useful ICS commands include
+`help <topic>'
+     to get help on the given <topic>. To get a list of possible topics
+     type "help" without topic.  Try the help command before you ask
+     other people on the server for help.
+
+     For example `help register' tells you how to become a registered
+     ICS player.
+
+`who <flags>'
+     to see a list of people who are logged on.  Administrators (people
+     you should talk to if you have a problem) are marked with the
+     character `*', an asterisk. The <flags> allow you to display only
+     selected players: For example, `who of' shows a list of players
+     who are interested in playing but do not have an opponent.
+
+`games'
+     to see what games are being played
+
+`match <player> [<mins>] [<inc>]'
+     to challenge another player to a game. Both opponents get <mins>
+     minutes for the game, and <inc> seconds will be added after each
+     move.  If another player challenges you, the server asks if you
+     want to accept the challenge; use the `accept' or `decline'
+     commands to answer.
+
+`accept'
+`decline'
+     to accept or decline another player's offer.  The offer may be to
+     start a new game, or to agree to a `draw', `adjourn' or `abort'
+     the current game. *Note Action Menu::.
+
+     If you have more than one pending offer (for example, if more than
+     one player is challenging you, or if your opponent offers both a
+     draw and to adjourn the game), you have to supply additional
+     information, by typing something like `accept <player>', `accept
+     draw', or `draw'.
+
+`draw'
+`adjourn'
+`abort'
+     asks your opponent to terminate a game by mutual agreement.
+     Adjourned games can be continued later.  Your opponent can either
+     `decline' your offer or accept it (by typing the same command or
+     typing `accept').  In some cases these commands work immediately,
+     without asking your opponent to agree.  For example, you can abort
+     the game unilaterally if your opponent is out of time, and you can
+     claim a draw by repetition or the 50-move rule if available simply
+     by typing `draw'.
+
+`finger <player>'
+     to get information about the given <player>. (Default: yourself.)
+
+`vars'
+     to get a list of personal settings
+
+`set <var> <value>'
+     to modify these settings
+
+`observe <player>'
+     to observe an ongoing game of the given <player>.
+
+`examine'
+`oldmoves'
+     to review a recently completed game
+
+   Some special XBoard features are activated when you are in examine
+mode on ICS.  See the descriptions of the menu commands `Forward',
+`Backward', `Pause', `ICS Client', and `Stop Examining' on the *note
+Step Menu::, *note Mode Menu::, and *note Options Menu::.
+
+5 Firewalls
+***********
+
+By default, XBoard communicates with an Internet Chess Server by
+opening a TCP socket directly from the machine it is running on to the
+ICS. If there is a firewall between your machine and the ICS, this
+won't work. Here are some recipes for getting around common kinds of
+firewalls using special options to XBoard.  Important: See the
+paragraph in the below about extra echoes, in *note Limitations::.
+
+   Suppose that you can't telnet directly to ICS, but you can telnet to
+a firewall host, log in, and then telnet from there to ICS.  Let's say
+the firewall is called `firewall.example.com'. Set command-line options
+as follows:
+
+     xboard -ics -icshost firewall.example.com -icsport 23
+   Or in your `.Xresources' file:
+
+     XBoard*internetChessServerHost: firewall.example.com
+     XBoard*internetChessServerPort: 23
+   Then when you run XBoard in ICS mode, you will be prompted to log in
+to the firewall host. This works because port 23 is the standard telnet
+login service. Do so, then telnet to ICS, using a command like `telnet
+chessclub.com 5000', or whatever command the firewall provides for
+telnetting to port 5000.
+
+   If your firewall lets you telnet (or rlogin) to remote hosts but
+doesn't let you telnet to port 5000, you may be able to connect to the
+chess server on port 23 instead, which is the port the telnet program
+uses by default.  Some chess servers support this (including
+chessclub.com and freechess.org), while some do not.
+
+   If your chess server does not allow connections on port 23 and your
+firewall does not allow you to connect to other ports, you may be able
+to connect by hopping through another host outside the firewall that
+you have an account on.  For instance, suppose you have a shell account
+at `foo.edu'. Follow the recipe above, but instead of typing `telnet
+chessclub.com 5000' to the firewall, type `telnet foo.edu' (or `rlogin
+foo.edu'), log in there, and then type `telnet chessclub.com 5000'.
+
+   Suppose that you can't telnet directly to ICS, but you can use rsh
+to run programs on a firewall host, and that host can telnet to ICS.
+Let's say the firewall is called `rsh.example.com'. Set command-line
+options as follows:
+
+     xboard -ics -gateway rsh.example.com -icshost chessclub.com
+
+Or in your `.Xresources' file:
+
+     XBoard*gateway: rsh.example.com
+     XBoard*internetChessServerHost: chessclub.com
+
+   Then when you run XBoard in ICS mode, it will connect to the ICS by
+using `rsh' to run the command `telnet chessclub.com 5000' on host
+`rsh.example.com'.
+
+   Suppose that you can telnet anywhere you want, but you have to run a
+special program called `ptelnet' to do so.
+
+   First, we'll consider the easy case, in which `ptelnet chessclub.com
+5000' gets you to the chess server.  In this case set command line
+options as follows:
+
+     xboard -ics -telnet -telnetProgram ptelnet
+
+Or in your `.Xresources' file:
+
+     XBoard*useTelnet: true
+     XBoard*telnetProgram: ptelnet
+
+Then when you run XBoard in ICS mode, it will issue the command
+`ptelnet chessclub.com 5000' to connect to the ICS.
+
+   Next, suppose that `ptelnet chessclub.com 5000' doesn't work; that
+is, your `ptelnet' program doesn't let you connect to alternative
+ports. As noted above, your chess server may allow you to connect on
+port 23 instead.  In that case, just add the option `-icsport ""' to
+the above command, or add `XBoard*internetChessServerPort:' to your
+`.Xresources' file.  But if your chess server doesn't let you connect
+on port 23, you will have to find some other host outside the firewall
+and hop through it. For instance, suppose you have a shell account at
+`foo.edu'. Set command line options as follows:
+
+     xboard -ics -telnet -telnetProgram ptelnet -icshost foo.edu -icsport ""
+
+Or in your `.Xresources' file:
+
+     XBoard*useTelnet: true
+     XBoard*telnetProgram: ptelnet
+     XBoard*internetChessServerHost: foo.edu
+     XBoard*internetChessServerPort:
+
+Then when you run XBoard in ICS mode, it will issue the command
+`ptelnet foo.edu' to connect to your account at `foo.edu'. Log in
+there, then type `telnet chessclub.com 5000'.
+
+   ICC timestamp and FICS timeseal do not work through some firewalls.
+You can use them only if your firewall gives a clean TCP connection
+with a full 8-bit wide path.  If your firewall allows you to get out
+only by running a special telnet program, you can't use timestamp or
+timeseal across it.  But if you have access to a computer just outside
+your firewall, and you have much lower netlag when talking to that
+computer than to the ICS, it might be worthwhile running timestamp
+there.  Follow the instructions above for hopping through a host
+outside the firewall (foo.edu in the example), but run timestamp or
+timeseal on that host instead of telnet.
+
+   Suppose that you have a SOCKS firewall that will give you a clean
+8-bit wide TCP connection to the chess server, but only after you
+authenticate yourself via the SOCKS protocol.  In that case, you could
+make a socksified version of XBoard and run that.  If you are using
+timestamp or timeseal, you will to socksify it, not XBoard; this may be
+difficult seeing that ICC and FICS do not provide source code for these
+programs.  Socksification is beyond the scope of this document, but see
+the SOCKS Web site at http://www.socks.permeo.com/.  If you are missing
+SOCKS, try http://www.funbureau.com/.
+
+6 Environment variables
+***********************
+
+Game and position files are found in a directory named by the
+`CHESSDIR' environment variable. If this variable is not set, the
+current working directory is used. If `CHESSDIR' is set, XBoard
+actually changes its working directory to `$CHESSDIR', so any files
+written by the chess engine will be placed there too.
+
+7 Limitations and known bugs
+****************************
+
+There is no way for two people running copies of XBoard to play each
+other without going through an Internet Chess Server.
+
+   Under some circumstances, your ICS password may be echoed when you
+log on.
+
+   If you are connecting to the ICS by running telnet on an Internet
+provider or firewall host, you may find that each line you type is
+echoed back an extra time after you hit <Enter>. If your Internet
+provider is a Unix system, you can probably turn its echo off by typing
+`stty -echo' after you log in, and/or typing <^E><Enter> (Ctrl+E
+followed by the Enter key) to the telnet program after you have logged
+into ICS.  It is a good idea to do this if you can, because the extra
+echo can occasionally confuse XBoard's parsing routines.
+
+   The game parser recognizes only algebraic notation.
+
+   Many of the following points used to be limitations in XBoard 4.2.7
+and earlier, but are now fixed: The internal move legality tester in
+XBoard 4.3.xx does look at the game history, and is fully aware of
+castling or en-passant-capture rights. It permits castling with the
+king on the d file because this is possible in some "wild 1" games on
+ICS.  The piece-drop menu does not check piece drops in bughouse to see
+if you actually hold the piece you are trying to drop. But this way of
+dropping pieces should be considered an obsolete feature, now that
+pieces can be dropped by dragging them from the holdings to the board.
+Anyway, if you would attempt an illegal move when using a chess engine
+or the ICS, WinBoard will accept the error message that comes back,
+undo the move, and let you try another.  FEN positions saved by XBoard
+do include correct information about whether castling or en passant are
+legal, and also handle the 50-move counter.  The mate detector does not
+understand that non-contact mate is not really mate in bughouse.  The
+only problem this causes while playing is minor: a "#" (mate indicator)
+character will show up after a non-contact mating move in the move
+list. XBoard will not assume the game is over at that point, not even
+when the option Detect Mates is on.  Edit Game mode always uses the
+rules of the selected variant, which can be a variant that uses piece
+drops.  You can load and edit games that contain piece drops.  The
+(obsolete) piece menus are not active, but you can perform piece drops
+by dragging pieces from the holdings.  Edit Position mode does not
+allow you to edit the crazyhouse holdings properly.  You cannot drag
+pieces to the holding, and using the popup menu to put pieces there
+does not adapt the holding counts and leads to an inconsistent state.
+Set up crazyhouse positions by loading / pasting a bFEN, from there you
+can set the holdings.  Fischer Random castling is fully understood.
+You can enter castlings by dragging the King on top of your Rook.  You
+can probably also play Fischer Random successfully on ICS by typing
+castling moves into the ICS Interaction window.
+
+   The menus may not work if your keyboard is in Caps Lock or Num Lock
+mode.  This seems to be a problem with the Athena menu widget, not an
+XBoard bug.
+
+   Also see the ToDo file included with the distribution for many other
+possible bugs, limitations, and ideas for improvement that have been
+suggested.
+
+8 Reporting problems
+********************
+
+Report bugs and problems with XBoard to `<bug-xboard@gnu.org>'.
+
+   Please use the `script' program to start a typescript, run XBoard
+with the `-debug' option, and include the typescript output in your
+message.  Also tell us what kind of machine and what operating system
+version you are using.  The command `uname -a' will often tell you this.
+Here is a sample of approximately what you should type:
+
+     script
+     uname -a
+     ./configure
+     make
+     ./xboard -debug
+     exit
+     mail bug-xboard@gnu.org
+     Subject: Your short description of the problem
+     Your detailed description of the problem
+     ~r typescript
+     .
+
+   The WinBoard / XBoard 4.3 line is being developed by H.G. Muller
+independently of the GNU Savannah xboard project.  Bug reports on this
+version, and suggestions for improvements and additions, are best
+posted in the WinBoard forum, WinBoard-development section
+(http://www.open-aurec.com/wbforum).
+
+   If you improve XBoard, please send a message about your changes, and
+we will get in touch with you about merging them in to the main line of
+development.  Also see our Web site at
+http://savannah.gnu.org/projects/xboard/.
+
+9 Authors and contributors
+**************************
+
+Tim Mann has been responsible for XBoard versions 1.3 and beyond, and
+for WinBoard, a port of XBoard to Microsoft Win32 (Windows NT and
+Windows 95). H.G.Muller is responsible for version 4.3.
+
+   Mark Williams contributed the initial (WinBoard-only) implementation
+of many new features added to both XBoard and WinBoard in version
+4.1.0, including copy/paste, premove, icsAlarm, autoFlipView, training
+mode, auto raise, and blindfold.  Ben Nye contributed X copy/paste code
+for XBoard.
+
+   Hugh Fisher added animated piece movement to XBoard, and Henrik Gram
+(henrikg@funcom.com) added it to WinBoard.  Frank McIngvale added
+click/click moving, the Analysis modes, piece flashing, ZIICS import,
+and ICS text colorization to XBoard.  Jochen Wiedmann ported XBoard to
+the Amiga, creating AmyBoard, and converted the documentation to
+texinfo.  Elmar Bartel contributed the new piece bitmaps introduced in
+version 3.2.  John Chanak contributed the initial implementation of ICS
+mode.  The color scheme and the old 80x80 piece bitmaps were taken from
+Wayne Christopher's `XChess' program.
+
+   Chris Sears and Dan Sears wrote the original XBoard.  They were
+responsible for versions 1.0 through 1.2.
+
+   Evan Welsh wrote `CMail'.  Patrick Surry helped in designing,
+testing, and documenting CMail.
+
+   Allessandro Scotti added many elements to the user interface of
+WinBoard, including the board textures and font-based rendering, the
+evaluation-graph, move-history and engine-output window.  He was also
+responsible for adding the UCI support.
+
+   H.G. Muller made WinBoard castling- and e.p.-aware, added variant
+support with adjustable board sizes, the crazyhouse holdings, and the
+fairy pieces.  In addition he added most of the adjudication options,
+made WinBoard more robust in dealing with buggy and crashing engines,
+and extended time control with a time-odds and node-count-based modes.
+Most of the options that initially wre WinBoard only have now been
+back-ported to XBoard.
+
+   Michel van den Bergh provided the code for reading Polyglot opening
+books.
+
+   Arun Persaud worked with H.G. Muller to combine all the features of
+the never-released WinBoard 4.2.8 of the Savannah project (mainly by
+Daniel Mehrmann), and the never-released 4.3.16 into a unified WinBoard
+4.4, which is now available both from the Savannah web site and the
+WinBoard forum.
+
+10 CMail
+********
+
+The `cmail' program can help you play chess by email with opponents of
+your choice using XBoard as an interface.
+
+   You will usually run `cmail' without giving any options.
+
+10.1 CMail options
+==================
+
+-h
+     Displays `cmail' usage information.
+
+-c
+     Shows the conditions of the GNU General Public License.  *Note
+     Copying::.
+
+-w
+     Shows the warranty notice of the GNU General Public License.
+     *Note Copying::.
+
+-v
+-xv
+     Provides or inhibits verbose output from `cmail' and XBoard,
+     useful for debugging. The `-xv' form also inhibits the cmail
+     introduction message.
+
+-mail
+-xmail
+     Invokes or inhibits the sending of a mail message containing the
+     move.
+
+-xboard
+-xxboard
+     Invokes or inhibits the running of XBoard on the game file.
+
+-reuse
+-xreuse
+     Invokes or inhibits the reuse of an existing XBoard to display the
+     current game.
+
+-remail
+     Resends the last mail message for that game. This inhibits running
+     XBoard.
+
+-game <name>
+     The name of the game to be processed.
+
+-wgames <number>
+-bgames <number>
+-games <number>
+     Number of games to start as White, as Black or in total. Default
+     is 1 as white and none as black. If only one color is specified
+     then none of the other color is assumed. If no color is specified
+     then equal numbers of White and Black games are started, with the
+     extra game being as White if an odd number of total games is
+     specified.
+
+-me <short name>
+-opp <short name>
+     A one-word alias for yourself or your opponent.
+
+-wname <full name>
+-bname <full name>
+-name <full name>
+-oppname <full name>
+     The full name of White, Black, yourself or your opponent.
+
+-wna <net address>
+-bna <net address>
+-na <net address>
+-oppna <net address>
+     The email address of White, Black, yourself or your opponent.
+
+-dir <directory>
+     The directory in which `cmail' keeps its files. This defaults to
+     the environment variable `$CMAIL_DIR' or failing that, `$CHESSDIR',
+     `$HOME/Chess' or `~/Chess'. It will be created if it does not
+     exist.
+
+-arcdir <directory>
+     The directory in which `cmail' archives completed games. Defaults
+     to the environment variable `$CMAIL_ARCDIR' or, in its absence,
+     the same directory as cmail keeps its working files (above).
+
+-mailprog <mail program>
+     The program used by cmail to send email messages. This defaults to
+     the environment variable `$CMAIL_MAILPROG' or failing that
+     `/usr/ucb/Mail', `/usr/ucb/mail' or `Mail'. You will need to set
+     this variable if none of the above paths fit your system.
+
+-gamesFile <file>
+     A file containing a list of games with email addresses. This
+     defaults to the environment variable `$CMAIL_GAMES' or failing that
+     `.cmailgames'.
+
+-aliasesFile <file>
+     A file containing one or more aliases for a set of email
+     addresses. This defaults to the environment variable
+     `$CMAIL_ALIASES' or failing that `.cmailaliases'.
+
+-logFile <file>
+     A file in which to dump verbose debugging messages that are
+     invoked with the `-v' option.
+
+-event <event>
+     The PGN Event tag (default `Email correspondence game').
+
+-site <site>
+     The PGN Site tag (default `NET').
+
+-round <round>
+     The PGN Round tag (default `-', not applicable).
+
+-mode <mode>
+     The PGN Mode tag (default `EM', Electronic Mail).
+
+Other options
+     Any option flags not listed above are passed through to XBoard.
+     Invoking XBoard through CMail changes the default values of two
+     XBoard options: The default value for `-noChessProgram' is changed
+     to true; that is, by default no chess engine is started.  The
+     default value for `-timeDelay' is changed to 0; that is, by default
+     XBoard immediately goes to the end of the game as played so far,
+     rather than stepping through the moves one by one.  You can still
+     set these options to whatever values you prefer by supplying them
+     on CMail's command line.  *Note Options::.
+
+10.2 Starting a CMail Game
+==========================
+
+Type `cmail' from a shell to start a game as white. After an opening
+message, you will be prompted for a game name, which is optional--if you
+simply press <Enter>, the game name will take the form
+`you-VS-opponent'. You will next be prompted for the short name of your
+opponent. If you haven't played this person before, you will also be
+prompted for his/her email address. `cmail' will then invoke XBoard in
+the background. Make your first move and select `Mail Move' from the
+`File' menu. *Note File Menu::. If all is well, `cmail' will mail a
+copy of the move to your opponent. If you select `Exit' without having
+selected `Mail Move' then no move will be made.
+
+10.3 Answering a Move
+=====================
+
+When you receive a message from an opponent containing a move in one of
+your games, simply pipe the message through `cmail'. In some mailers
+this is as simple as typing `| cmail' when viewing the message, while in
+others you may have to save the message to a file and do `cmail < file'
+at the command line. In either case `cmail' will display the game using
+XBoard. If you didn't exit XBoard when you made your first move then
+`cmail' will do its best to use the existing XBoard instead of starting
+a new one. As before, simply make a move and select `Mail Move' from
+the `File' menu. *Note File Menu::. `cmail' will try to use the XBoard
+that was most recently used to display the current game. This means
+that many games can be in progress simultaneously, each with its own
+active XBoard.
+
+   If you want to look at the history or explore a variation, go ahead,
+but you must return to the current position before XBoard will allow you
+to mail a move. If you edit the game's history you must select `Reload
+Same Game' from the `File' menu to get back to the original position,
+then make the move you want and select `Mail Move'.  As before, if you
+decide you aren't ready to make a move just yet you can either select
+`Exit' without sending a move or just leave XBoard running until you
+are ready.
+
+10.4 Multi-Game Messages
+========================
+
+It is possible to have a `cmail' message carry more than one game.
+This feature was implemented to handle IECG (International Email Chess
+Group) matches, where a match consists of one game as white and one as
+black, with moves transmitted simultaneously. In case there are more
+general uses, `cmail' itself places no limit on the number of
+black/white games contained in a message; however, XBoard does.
+
+10.5 Completing a Game
+======================
+
+Because XBoard can detect checkmate and stalemate, `cmail' handles game
+termination sensibly. As well as resignation, the `Action' menu allows
+draws to be offered and accepted for `cmail' games.
+
+   For multi-game messages, only unfinished and just-finished games
+will be included in email messages. When all the games are finished,
+they are archived in the user's archive directory, and similarly in the
+opponent's when he or she pipes the final message through `cmail'. The
+archive file name includes the date the game was started.
+
+10.6 Known CMail Problems
+=========================
+
+It's possible that a strange conjunction of conditions may occasionally
+mean that `cmail' has trouble reactivating an existing XBoard. If this
+should happen, simply trying it again should work.  If not, remove the
+file that stores the XBoard's PID (`game.pid') or use the `-xreuse'
+option to force `cmail' to start a new XBoard.
+
+   Versions of `cmail' after 2.16 no longer understand the old file
+format that XBoard used to use and so cannot be used to correspond with
+anyone using an older version.
+
+   Versions of `cmail' older than 2.11 do not handle multi-game
+messages, so multi-game correspondence is not possible with opponents
+using an older version.
+
+11 Other programs you can use with XBoard
+*****************************************
+
+Here are some other programs you can use with XBoard
+
+11.1 GNU Chess
+==============
+
+The GNU Chess engine is available from:
+
+   ftp://ftp.gnu.org/gnu/gnuchess/
+
+   You can use XBoard to play a game against GNU Chess, or to interface
+GNU Chess to an ICS.
+
+11.2 Fairy-Max
+==============
+
+Fairy-Max is a derivative from the World's smallest Chess program
+micro-Max, which measures only about 100 lines of source code.  The
+main difference with micro-Max is that Fairy-Max loads its
+move-generator tables from a file, so that the rules for piece movement
+can be easily configured to implement unorthodox pieces.  Fairy-Max can
+therefore play a lage number of variants, normal Chess being one of
+those.  In addition it plas Knightmate, Capablanca and Gothic Chess,
+Shatranj, Courier Chess, Cylinder chess, Berolina Chess, while the user
+can easily define new variants.  It can be obtained from:
+
+   http://home.hccnet.nl/h.g.muller/dwnldpage.html
+
+11.3 HoiChess
+=============
+
+HoiChess is a not-so-very-strong Chess engine, which comes with a
+derivative HoiXiangqi, able to play Chinese Chess. It can be obtained
+from the standard Linux repositories through:
+
+   sudo apt-get install hoichess
+
+11.4 Crafty
+===========
+
+Crafty is a chess engine written by Bob Hyatt.  You can use XBoard to
+play a game against Crafty, hook Crafty up to an ICS, or use Crafty to
+interactively analyze games and positions for you.
+
+   Crafty is a strong, rapidly evolving chess program. This rapid pace
+of development is good, because it means Crafty is always getting
+better.  This can sometimes cause problems with backwards
+compatibility, but usually the latest version of Crafty will work well
+with the latest version of XBoard.  Crafty can be obtained from its
+author's FTP site: ftp://ftp.cis.uab.edu/hyatt/.
+
+   To use Crafty with XBoard, give the -fcp and -fd options as follows,
+where <crafty's directory> is the directory in which you installed
+Crafty and placed its book and other support files.
+
+11.5 zic2xpm
+============
+
+The "zic2xpm" program is used to import chess sets from the ZIICS(*)
+program into XBoard. "zic2xpm" is part of the XBoard distribution.
+ZIICS is available from:
+
+   ftp://ftp.freechess.org/pub/chess/DOS/ziics131.exe
+
+   To import ZIICS pieces, do this:
+1. Unzip ziics131.exe into a directory:
+          unzip -L ziics131.exe -d ~/ziics
+
+2. Use zic2xpm to convert a set of pieces to XBoard format.
+     For example, let's say you want to use the FRITZ4 set. These files
+     are named "fritz4.*" in the ZIICS distribution.
+
+          mkdir ~/fritz4
+          cd ~/fritz4
+          zic2xpm ~/ziics/fritz4.*
+
+3. Give XBoard the "-pixmap" option when starting up, e.g.:
+          xboard -pixmap ~/fritz4
+
+     Alternatively, you can add this line to your `.Xresources' file:
+
+          xboard*pixmapDirectory: ~/fritz4
+
+   (*) ZIICS is a separate copyrighted work of Andy McFarland.  The
+"ZIICS pieces" are copyrighted works of their respective creators.
+Files produced by "zic2xpm" are for PERSONAL USE ONLY and may NOT be
+redistributed without explicit permission from the original creator(s)
+of the pieces.
+
+Copyright
+*********
+
+Copyright (C) 1991 Digital Equipment Corporation, Maynard,
+Massachusetts.
+
+   All Rights Reserved.
+
+   Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Digital not be used in
+advertising or publicity pertaining to distribution of the software
+without specific, written prior permission.
+
+   Digital disclaims all warranties with regard to this software,
+including all implied warranties of merchantability and fitness.  In no
+event shall Digital be liable for any special, indirect or
+consequential damages or any damages whatsoever resulting from loss of
+use, data or profits, whether in an action of contract, negligence or
+other tortious action, arising out of or in connection with the use or
+performance of this software.
+
+   Enhancements copyright (C) 1992-2003,2004,2005,2006,2007,2008,2009
+Free Software Foundation, Inc.
+
+Published by the Free Software Foundation
+59 Temple Place - Suite 330
+Boston, MA 02111-1307 USA
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the section entitled "GNU General Public License," is included
+exactly as in the original, and provided that the entire resulting
+derived work is distributed under the terms of a permission notice
+identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that the section entitled "GNU General Public License,"
+and this permission notice, may be included in translations approved by
+the Free Software Foundation instead of in the original English.
+
+GNU GENERAL PUBLIC LICENSE
+**************************
+
+                        Version 3, 29 June 2007
+
+     Copyright (C) 2007 Free Software Foundation, Inc. `http://fsf.org/'
+
+     Everyone is permitted to copy and distribute verbatim copies of this
+     license document, but changing it is not allowed.
+
+Preamble
+========
+
+The GNU General Public License is a free, copyleft license for software
+and other kinds of works.
+
+   The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+the GNU General Public License is intended to guarantee your freedom to
+share and change all versions of a program--to make sure it remains
+free software for all its users.  We, the Free Software Foundation, use
+the GNU General Public License for most of our software; it applies
+also to any other work released this way by its authors.  You can apply
+it to your programs, too.
+
+   When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+them if you wish), that you receive source code or can get it if you
+want it, that you can change the software or use pieces of it in new
+free programs, and that you know you can do these things.
+
+   To protect your rights, we need to prevent others from denying you
+these rights or asking you to surrender the rights.  Therefore, you
+have certain responsibilities if you distribute copies of the software,
+or if you modify it: responsibilities to respect the freedom of others.
+
+   For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must pass on to the recipients the same
+freedoms that you received.  You must make sure that they, too, receive
+or can get the source code.  And you must show them these terms so they
+know their rights.
+
+   Developers that use the GNU GPL protect your rights with two steps:
+(1) assert copyright on the software, and (2) offer you this License
+giving you legal permission to copy, distribute and/or modify it.
+
+   For the developers' and authors' protection, the GPL clearly explains
+that there is no warranty for this free software.  For both users' and
+authors' sake, the GPL requires that modified versions be marked as
+changed, so that their problems will not be attributed erroneously to
+authors of previous versions.
+
+   Some devices are designed to deny users access to install or run
+modified versions of the software inside them, although the
+manufacturer can do so.  This is fundamentally incompatible with the
+aim of protecting users' freedom to change the software.  The
+systematic pattern of such abuse occurs in the area of products for
+individuals to use, which is precisely where it is most unacceptable.
+Therefore, we have designed this version of the GPL to prohibit the
+practice for those products.  If such problems arise substantially in
+other domains, we stand ready to extend this provision to those domains
+in future versions of the GPL, as needed to protect the freedom of
+users.
+
+   Finally, every program is threatened constantly by software patents.
+States should not allow patents to restrict development and use of
+software on general-purpose computers, but in those that do, we wish to
+avoid the special danger that patents applied to a free program could
+make it effectively proprietary.  To prevent this, the GPL assures that
+patents cannot be used to render the program non-free.
+
+   The precise terms and conditions for copying, distribution and
+modification follow.
+
+TERMS AND CONDITIONS
+====================
+
+  0. Definitions.
+
+     "This License" refers to version 3 of the GNU General Public
+     License.
+
+     "Copyright" also means copyright-like laws that apply to other
+     kinds of works, such as semiconductor masks.
+
+     "The Program" refers to any copyrightable work licensed under this
+     License.  Each licensee is addressed as "you".  "Licensees" and
+     "recipients" may be individuals or organizations.
+
+     To "modify" a work means to copy from or adapt all or part of the
+     work in a fashion requiring copyright permission, other than the
+     making of an exact copy.  The resulting work is called a "modified
+     version" of the earlier work or a work "based on" the earlier work.
+
+     A "covered work" means either the unmodified Program or a work
+     based on the Program.
+
+     To "propagate" a work means to do anything with it that, without
+     permission, would make you directly or secondarily liable for
+     infringement under applicable copyright law, except executing it
+     on a computer or modifying a private copy.  Propagation includes
+     copying, distribution (with or without modification), making
+     available to the public, and in some countries other activities as
+     well.
+
+     To "convey" a work means any kind of propagation that enables other
+     parties to make or receive copies.  Mere interaction with a user
+     through a computer network, with no transfer of a copy, is not
+     conveying.
+
+     An interactive user interface displays "Appropriate Legal Notices"
+     to the extent that it includes a convenient and prominently visible
+     feature that (1) displays an appropriate copyright notice, and (2)
+     tells the user that there is no warranty for the work (except to
+     the extent that warranties are provided), that licensees may
+     convey the work under this License, and how to view a copy of this
+     License.  If the interface presents a list of user commands or
+     options, such as a menu, a prominent item in the list meets this
+     criterion.
+
+  1. Source Code.
+
+     The "source code" for a work means the preferred form of the work
+     for making modifications to it.  "Object code" means any
+     non-source form of a work.
+
+     A "Standard Interface" means an interface that either is an
+     official standard defined by a recognized standards body, or, in
+     the case of interfaces specified for a particular programming
+     language, one that is widely used among developers working in that
+     language.
+
+     The "System Libraries" of an executable work include anything,
+     other than the work as a whole, that (a) is included in the normal
+     form of packaging a Major Component, but which is not part of that
+     Major Component, and (b) serves only to enable use of the work
+     with that Major Component, or to implement a Standard Interface
+     for which an implementation is available to the public in source
+     code form.  A "Major Component", in this context, means a major
+     essential component (kernel, window system, and so on) of the
+     specific operating system (if any) on which the executable work
+     runs, or a compiler used to produce the work, or an object code
+     interpreter used to run it.
+
+     The "Corresponding Source" for a work in object code form means all
+     the source code needed to generate, install, and (for an executable
+     work) run the object code and to modify the work, including
+     scripts to control those activities.  However, it does not include
+     the work's System Libraries, or general-purpose tools or generally
+     available free programs which are used unmodified in performing
+     those activities but which are not part of the work.  For example,
+     Corresponding Source includes interface definition files
+     associated with source files for the work, and the source code for
+     shared libraries and dynamically linked subprograms that the work
+     is specifically designed to require, such as by intimate data
+     communication or control flow between those subprograms and other
+     parts of the work.
+
+     The Corresponding Source need not include anything that users can
+     regenerate automatically from other parts of the Corresponding
+     Source.
+
+     The Corresponding Source for a work in source code form is that
+     same work.
+
+  2. Basic Permissions.
+
+     All rights granted under this License are granted for the term of
+     copyright on the Program, and are irrevocable provided the stated
+     conditions are met.  This License explicitly affirms your unlimited
+     permission to run the unmodified Program.  The output from running
+     a covered work is covered by this License only if the output,
+     given its content, constitutes a covered work.  This License
+     acknowledges your rights of fair use or other equivalent, as
+     provided by copyright law.
+
+     You may make, run and propagate covered works that you do not
+     convey, without conditions so long as your license otherwise
+     remains in force.  You may convey covered works to others for the
+     sole purpose of having them make modifications exclusively for
+     you, or provide you with facilities for running those works,
+     provided that you comply with the terms of this License in
+     conveying all material for which you do not control copyright.
+     Those thus making or running the covered works for you must do so
+     exclusively on your behalf, under your direction and control, on
+     terms that prohibit them from making any copies of your
+     copyrighted material outside their relationship with you.
+
+     Conveying under any other circumstances is permitted solely under
+     the conditions stated below.  Sublicensing is not allowed; section
+     10 makes it unnecessary.
+
+  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+
+     No covered work shall be deemed part of an effective technological
+     measure under any applicable law fulfilling obligations under
+     article 11 of the WIPO copyright treaty adopted on 20 December
+     1996, or similar laws prohibiting or restricting circumvention of
+     such measures.
+
+     When you convey a covered work, you waive any legal power to forbid
+     circumvention of technological measures to the extent such
+     circumvention is effected by exercising rights under this License
+     with respect to the covered work, and you disclaim any intention
+     to limit operation or modification of the work as a means of
+     enforcing, against the work's users, your or third parties' legal
+     rights to forbid circumvention of technological measures.
+
+  4. Conveying Verbatim Copies.
+
+     You may convey verbatim copies of the Program's source code as you
+     receive it, in any medium, provided that you conspicuously and
+     appropriately publish on each copy an appropriate copyright notice;
+     keep intact all notices stating that this License and any
+     non-permissive terms added in accord with section 7 apply to the
+     code; keep intact all notices of the absence of any warranty; and
+     give all recipients a copy of this License along with the Program.
+
+     You may charge any price or no price for each copy that you convey,
+     and you may offer support or warranty protection for a fee.
+
+  5. Conveying Modified Source Versions.
+
+     You may convey a work based on the Program, or the modifications to
+     produce it from the Program, in the form of source code under the
+     terms of section 4, provided that you also meet all of these
+     conditions:
+
+       a. The work must carry prominent notices stating that you
+          modified it, and giving a relevant date.
+
+       b. The work must carry prominent notices stating that it is
+          released under this License and any conditions added under
+          section 7.  This requirement modifies the requirement in
+          section 4 to "keep intact all notices".
+
+       c. You must license the entire work, as a whole, under this
+          License to anyone who comes into possession of a copy.  This
+          License will therefore apply, along with any applicable
+          section 7 additional terms, to the whole of the work, and all
+          its parts, regardless of how they are packaged.  This License
+          gives no permission to license the work in any other way, but
+          it does not invalidate such permission if you have separately
+          received it.
+
+       d. If the work has interactive user interfaces, each must display
+          Appropriate Legal Notices; however, if the Program has
+          interactive interfaces that do not display Appropriate Legal
+          Notices, your work need not make them do so.
+
+     A compilation of a covered work with other separate and independent
+     works, which are not by their nature extensions of the covered
+     work, and which are not combined with it such as to form a larger
+     program, in or on a volume of a storage or distribution medium, is
+     called an "aggregate" if the compilation and its resulting
+     copyright are not used to limit the access or legal rights of the
+     compilation's users beyond what the individual works permit.
+     Inclusion of a covered work in an aggregate does not cause this
+     License to apply to the other parts of the aggregate.
+
+  6. Conveying Non-Source Forms.
+
+     You may convey a covered work in object code form under the terms
+     of sections 4 and 5, provided that you also convey the
+     machine-readable Corresponding Source under the terms of this
+     License, in one of these ways:
+
+       a. Convey the object code in, or embodied in, a physical product
+          (including a physical distribution medium), accompanied by the
+          Corresponding Source fixed on a durable physical medium
+          customarily used for software interchange.
+
+       b. Convey the object code in, or embodied in, a physical product
+          (including a physical distribution medium), accompanied by a
+          written offer, valid for at least three years and valid for
+          as long as you offer spare parts or customer support for that
+          product model, to give anyone who possesses the object code
+          either (1) a copy of the Corresponding Source for all the
+          software in the product that is covered by this License, on a
+          durable physical medium customarily used for software
+          interchange, for a price no more than your reasonable cost of
+          physically performing this conveying of source, or (2) access
+          to copy the Corresponding Source from a network server at no
+          charge.
+
+       c. Convey individual copies of the object code with a copy of
+          the written offer to provide the Corresponding Source.  This
+          alternative is allowed only occasionally and noncommercially,
+          and only if you received the object code with such an offer,
+          in accord with subsection 6b.
+
+       d. Convey the object code by offering access from a designated
+          place (gratis or for a charge), and offer equivalent access
+          to the Corresponding Source in the same way through the same
+          place at no further charge.  You need not require recipients
+          to copy the Corresponding Source along with the object code.
+          If the place to copy the object code is a network server, the
+          Corresponding Source may be on a different server (operated
+          by you or a third party) that supports equivalent copying
+          facilities, provided you maintain clear directions next to
+          the object code saying where to find the Corresponding Source.
+          Regardless of what server hosts the Corresponding Source, you
+          remain obligated to ensure that it is available for as long
+          as needed to satisfy these requirements.
+
+       e. Convey the object code using peer-to-peer transmission,
+          provided you inform other peers where the object code and
+          Corresponding Source of the work are being offered to the
+          general public at no charge under subsection 6d.
+
+
+     A separable portion of the object code, whose source code is
+     excluded from the Corresponding Source as a System Library, need
+     not be included in conveying the object code work.
+
+     A "User Product" is either (1) a "consumer product", which means
+     any tangible personal property which is normally used for personal,
+     family, or household purposes, or (2) anything designed or sold for
+     incorporation into a dwelling.  In determining whether a product
+     is a consumer product, doubtful cases shall be resolved in favor of
+     coverage.  For a particular product received by a particular user,
+     "normally used" refers to a typical or common use of that class of
+     product, regardless of the status of the particular user or of the
+     way in which the particular user actually uses, or expects or is
+     expected to use, the product.  A product is a consumer product
+     regardless of whether the product has substantial commercial,
+     industrial or non-consumer uses, unless such uses represent the
+     only significant mode of use of the product.
+
+     "Installation Information" for a User Product means any methods,
+     procedures, authorization keys, or other information required to
+     install and execute modified versions of a covered work in that
+     User Product from a modified version of its Corresponding Source.
+     The information must suffice to ensure that the continued
+     functioning of the modified object code is in no case prevented or
+     interfered with solely because modification has been made.
+
+     If you convey an object code work under this section in, or with,
+     or specifically for use in, a User Product, and the conveying
+     occurs as part of a transaction in which the right of possession
+     and use of the User Product is transferred to the recipient in
+     perpetuity or for a fixed term (regardless of how the transaction
+     is characterized), the Corresponding Source conveyed under this
+     section must be accompanied by the Installation Information.  But
+     this requirement does not apply if neither you nor any third party
+     retains the ability to install modified object code on the User
+     Product (for example, the work has been installed in ROM).
+
+     The requirement to provide Installation Information does not
+     include a requirement to continue to provide support service,
+     warranty, or updates for a work that has been modified or
+     installed by the recipient, or for the User Product in which it
+     has been modified or installed.  Access to a network may be denied
+     when the modification itself materially and adversely affects the
+     operation of the network or violates the rules and protocols for
+     communication across the network.
+
+     Corresponding Source conveyed, and Installation Information
+     provided, in accord with this section must be in a format that is
+     publicly documented (and with an implementation available to the
+     public in source code form), and must require no special password
+     or key for unpacking, reading or copying.
+
+  7. Additional Terms.
+
+     "Additional permissions" are terms that supplement the terms of
+     this License by making exceptions from one or more of its
+     conditions.  Additional permissions that are applicable to the
+     entire Program shall be treated as though they were included in
+     this License, to the extent that they are valid under applicable
+     law.  If additional permissions apply only to part of the Program,
+     that part may be used separately under those permissions, but the
+     entire Program remains governed by this License without regard to
+     the additional permissions.
+
+     When you convey a copy of a covered work, you may at your option
+     remove any additional permissions from that copy, or from any part
+     of it.  (Additional permissions may be written to require their own
+     removal in certain cases when you modify the work.)  You may place
+     additional permissions on material, added by you to a covered work,
+     for which you have or can give appropriate copyright permission.
+
+     Notwithstanding any other provision of this License, for material
+     you add to a covered work, you may (if authorized by the copyright
+     holders of that material) supplement the terms of this License
+     with terms:
+
+       a. Disclaiming warranty or limiting liability differently from
+          the terms of sections 15 and 16 of this License; or
+
+       b. Requiring preservation of specified reasonable legal notices
+          or author attributions in that material or in the Appropriate
+          Legal Notices displayed by works containing it; or
+
+       c. Prohibiting misrepresentation of the origin of that material,
+          or requiring that modified versions of such material be
+          marked in reasonable ways as different from the original
+          version; or
+
+       d. Limiting the use for publicity purposes of names of licensors
+          or authors of the material; or
+
+       e. Declining to grant rights under trademark law for use of some
+          trade names, trademarks, or service marks; or
+
+       f. Requiring indemnification of licensors and authors of that
+          material by anyone who conveys the material (or modified
+          versions of it) with contractual assumptions of liability to
+          the recipient, for any liability that these contractual
+          assumptions directly impose on those licensors and authors.
+
+     All other non-permissive additional terms are considered "further
+     restrictions" within the meaning of section 10.  If the Program as
+     you received it, or any part of it, contains a notice stating that
+     it is governed by this License along with a term that is a further
+     restriction, you may remove that term.  If a license document
+     contains a further restriction but permits relicensing or
+     conveying under this License, you may add to a covered work
+     material governed by the terms of that license document, provided
+     that the further restriction does not survive such relicensing or
+     conveying.
+
+     If you add terms to a covered work in accord with this section, you
+     must place, in the relevant source files, a statement of the
+     additional terms that apply to those files, or a notice indicating
+     where to find the applicable terms.
+
+     Additional terms, permissive or non-permissive, may be stated in
+     the form of a separately written license, or stated as exceptions;
+     the above requirements apply either way.
+
+  8. Termination.
+
+     You may not propagate or modify a covered work except as expressly
+     provided under this License.  Any attempt otherwise to propagate or
+     modify it is void, and will automatically terminate your rights
+     under this License (including any patent licenses granted under
+     the third paragraph of section 11).
+
+     However, if you cease all violation of this License, then your
+     license from a particular copyright holder is reinstated (a)
+     provisionally, unless and until the copyright holder explicitly
+     and finally terminates your license, and (b) permanently, if the
+     copyright holder fails to notify you of the violation by some
+     reasonable means prior to 60 days after the cessation.
+
+     Moreover, your license from a particular copyright holder is
+     reinstated permanently if the copyright holder notifies you of the
+     violation by some reasonable means, this is the first time you have
+     received notice of violation of this License (for any work) from
+     that copyright holder, and you cure the violation prior to 30 days
+     after your receipt of the notice.
+
+     Termination of your rights under this section does not terminate
+     the licenses of parties who have received copies or rights from
+     you under this License.  If your rights have been terminated and
+     not permanently reinstated, you do not qualify to receive new
+     licenses for the same material under section 10.
+
+  9. Acceptance Not Required for Having Copies.
+
+     You are not required to accept this License in order to receive or
+     run a copy of the Program.  Ancillary propagation of a covered work
+     occurring solely as a consequence of using peer-to-peer
+     transmission to receive a copy likewise does not require
+     acceptance.  However, nothing other than this License grants you
+     permission to propagate or modify any covered work.  These actions
+     infringe copyright if you do not accept this License.  Therefore,
+     by modifying or propagating a covered work, you indicate your
+     acceptance of this License to do so.
+
+ 10. Automatic Licensing of Downstream Recipients.
+
+     Each time you convey a covered work, the recipient automatically
+     receives a license from the original licensors, to run, modify and
+     propagate that work, subject to this License.  You are not
+     responsible for enforcing compliance by third parties with this
+     License.
+
+     An "entity transaction" is a transaction transferring control of an
+     organization, or substantially all assets of one, or subdividing an
+     organization, or merging organizations.  If propagation of a
+     covered work results from an entity transaction, each party to that
+     transaction who receives a copy of the work also receives whatever
+     licenses to the work the party's predecessor in interest had or
+     could give under the previous paragraph, plus a right to
+     possession of the Corresponding Source of the work from the
+     predecessor in interest, if the predecessor has it or can get it
+     with reasonable efforts.
+
+     You may not impose any further restrictions on the exercise of the
+     rights granted or affirmed under this License.  For example, you
+     may not impose a license fee, royalty, or other charge for
+     exercise of rights granted under this License, and you may not
+     initiate litigation (including a cross-claim or counterclaim in a
+     lawsuit) alleging that any patent claim is infringed by making,
+     using, selling, offering for sale, or importing the Program or any
+     portion of it.
+
+ 11. Patents.
+
+     A "contributor" is a copyright holder who authorizes use under this
+     License of the Program or a work on which the Program is based.
+     The work thus licensed is called the contributor's "contributor
+     version".
+
+     A contributor's "essential patent claims" are all patent claims
+     owned or controlled by the contributor, whether already acquired or
+     hereafter acquired, that would be infringed by some manner,
+     permitted by this License, of making, using, or selling its
+     contributor version, but do not include claims that would be
+     infringed only as a consequence of further modification of the
+     contributor version.  For purposes of this definition, "control"
+     includes the right to grant patent sublicenses in a manner
+     consistent with the requirements of this License.
+
+     Each contributor grants you a non-exclusive, worldwide,
+     royalty-free patent license under the contributor's essential
+     patent claims, to make, use, sell, offer for sale, import and
+     otherwise run, modify and propagate the contents of its
+     contributor version.
+
+     In the following three paragraphs, a "patent license" is any
+     express agreement or commitment, however denominated, not to
+     enforce a patent (such as an express permission to practice a
+     patent or covenant not to sue for patent infringement).  To
+     "grant" such a patent license to a party means to make such an
+     agreement or commitment not to enforce a patent against the party.
+
+     If you convey a covered work, knowingly relying on a patent
+     license, and the Corresponding Source of the work is not available
+     for anyone to copy, free of charge and under the terms of this
+     License, through a publicly available network server or other
+     readily accessible means, then you must either (1) cause the
+     Corresponding Source to be so available, or (2) arrange to deprive
+     yourself of the benefit of the patent license for this particular
+     work, or (3) arrange, in a manner consistent with the requirements
+     of this License, to extend the patent license to downstream
+     recipients.  "Knowingly relying" means you have actual knowledge
+     that, but for the patent license, your conveying the covered work
+     in a country, or your recipient's use of the covered work in a
+     country, would infringe one or more identifiable patents in that
+     country that you have reason to believe are valid.
+
+     If, pursuant to or in connection with a single transaction or
+     arrangement, you convey, or propagate by procuring conveyance of, a
+     covered work, and grant a patent license to some of the parties
+     receiving the covered work authorizing them to use, propagate,
+     modify or convey a specific copy of the covered work, then the
+     patent license you grant is automatically extended to all
+     recipients of the covered work and works based on it.
+
+     A patent license is "discriminatory" if it does not include within
+     the scope of its coverage, prohibits the exercise of, or is
+     conditioned on the non-exercise of one or more of the rights that
+     are specifically granted under this License.  You may not convey a
+     covered work if you are a party to an arrangement with a third
+     party that is in the business of distributing software, under
+     which you make payment to the third party based on the extent of
+     your activity of conveying the work, and under which the third
+     party grants, to any of the parties who would receive the covered
+     work from you, a discriminatory patent license (a) in connection
+     with copies of the covered work conveyed by you (or copies made
+     from those copies), or (b) primarily for and in connection with
+     specific products or compilations that contain the covered work,
+     unless you entered into that arrangement, or that patent license
+     was granted, prior to 28 March 2007.
+
+     Nothing in this License shall be construed as excluding or limiting
+     any implied license or other defenses to infringement that may
+     otherwise be available to you under applicable patent law.
+
+ 12. No Surrender of Others' Freedom.
+
+     If conditions are imposed on you (whether by court order,
+     agreement or otherwise) that contradict the conditions of this
+     License, they do not excuse you from the conditions of this
+     License.  If you cannot convey a covered work so as to satisfy
+     simultaneously your obligations under this License and any other
+     pertinent obligations, then as a consequence you may not convey it
+     at all.  For example, if you agree to terms that obligate you to
+     collect a royalty for further conveying from those to whom you
+     convey the Program, the only way you could satisfy both those
+     terms and this License would be to refrain entirely from conveying
+     the Program.
+
+ 13. Use with the GNU Affero General Public License.
+
+     Notwithstanding any other provision of this License, you have
+     permission to link or combine any covered work with a work licensed
+     under version 3 of the GNU Affero General Public License into a
+     single combined work, and to convey the resulting work.  The terms
+     of this License will continue to apply to the part which is the
+     covered work, but the special requirements of the GNU Affero
+     General Public License, section 13, concerning interaction through
+     a network will apply to the combination as such.
+
+ 14. Revised Versions of this License.
+
+     The Free Software Foundation may publish revised and/or new
+     versions of the GNU General Public License from time to time.
+     Such new versions will be similar in spirit to the present
+     version, but may differ in detail to address new problems or
+     concerns.
+
+     Each version is given a distinguishing version number.  If the
+     Program specifies that a certain numbered version of the GNU
+     General Public License "or any later version" applies to it, you
+     have the option of following the terms and conditions either of
+     that numbered version or of any later version published by the
+     Free Software Foundation.  If the Program does not specify a
+     version number of the GNU General Public License, you may choose
+     any version ever published by the Free Software Foundation.
+
+     If the Program specifies that a proxy can decide which future
+     versions of the GNU General Public License can be used, that
+     proxy's public statement of acceptance of a version permanently
+     authorizes you to choose that version for the Program.
+
+     Later license versions may give you additional or different
+     permissions.  However, no additional obligations are imposed on any
+     author or copyright holder as a result of your choosing to follow a
+     later version.
+
+ 15. Disclaimer of Warranty.
+
+     THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+     APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE
+     COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
+     WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
+     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE
+     RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.
+     SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+     NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+ 16. Limitation of Liability.
+
+     IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN
+     WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES
+     AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU
+     FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR
+     CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
+     THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA
+     BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
+     PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+     PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF
+     THE POSSIBILITY OF SUCH DAMAGES.
+
+ 17. Interpretation of Sections 15 and 16.
+
+     If the disclaimer of warranty and limitation of liability provided
+     above cannot be given local legal effect according to their terms,
+     reviewing courts shall apply local law that most closely
+     approximates an absolute waiver of all civil liability in
+     connection with the Program, unless a warranty or assumption of
+     liability accompanies a copy of the Program in return for a fee.
+
+
+END OF TERMS AND CONDITIONS
+===========================
+
+How to Apply These Terms to Your New Programs
+=============================================
+
+If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these
+terms.
+
+   To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+state the exclusion of warranty; and each file should have at least the
+"copyright" line and a pointer to where the full notice is found.
+
+     ONE LINE TO GIVE THE PROGRAM'S NAME AND A BRIEF IDEA OF WHAT IT DOES.
+     Copyright (C) YEAR NAME OF AUTHOR
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or (at
+     your option) any later version.
+
+     This program is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+     General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see `http://www.gnu.org/licenses/'.
+
+   Also add information on how to contact you by electronic and paper
+mail.
+
+   If the program does terminal interaction, make it output a short
+notice like this when it starts in an interactive mode:
+
+     PROGRAM Copyright (C) YEAR NAME OF AUTHOR
+     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+     This is free software, and you are welcome to redistribute it
+     under certain conditions; type `show c' for details.
+
+   The hypothetical commands `show w' and `show c' should show the
+appropriate parts of the General Public License.  Of course, your
+program's commands might be different; for a GUI interface, you would
+use an "about box".
+
+   You should also get your employer (if you work as a programmer) or
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  For more information on this, and how to apply and follow
+the GNU GPL, see `http://www.gnu.org/licenses/'.
+
+   The GNU General Public License does not permit incorporating your
+program into proprietary programs.  If your program is a subroutine
+library, you may consider it more useful to permit linking proprietary
+applications with the library.  If this is what you want to do, use the
+GNU Lesser General Public License instead of this License.  But first,
+please read `http://www.gnu.org/philosophy/why-not-lgpl.html'.
+
+Index
+*****
+
+-animateSpeed, option:                         See 3.5.      (line 1774)
+.cmailaliases:                                 See 10.1.     (line 2463)
+.cmailgames:                                   See 10.1.     (line 2458)
+.icsrc:                                        See 3.3.      (line 1300)
+<, Button:                                     See 2.4.      (line  459)
+<<, Button:                                    See 2.4.      (line  492)
+>, Button:                                     See 2.4.      (line  479)
+>>, Button:                                    See 2.4.      (line  511)
+abort, ICS command:                            See 4.        (line 2064)
+Abort, Menu Item:                              See 2.3.      (line  439)
+About XBoard, Menu Item:                       See 2.6.      (line  840)
+accept, ICS command:                           See 4.        (line 2051)
+Accept, Menu Item:                             See 2.3.      (line  414)
+Action, Menu:                                  See 2.3.      (line  413)
+adjourn, ICS command:                          See 4.        (line 2064)
+Adjourn, Menu Item:                            See 2.3.      (line  435)
+Adjudicate Draw, Menu Item:                    See 2.4.      (line  545)
+Adjudicate to Black, Menu Item:                See 2.4.      (line  545)
+Adjudicate to White, Menu Item:                See 2.4.      (line  545)
+adjudicateDrawMoves, option:                   See 3.6.      (line 1789)
+adjudicateLossThreshold, option:               See 3.6.      (line 1781)
+Adjudications, Menu Item:                      See 2.5.      (line  559)
+alarm, option:                                 See 3.3.      (line 1343)
+Always Queen, Menu Item:                       See 2.5.      (line  604)
+alwaysPromoteToQueen, option:                  See 3.5.      (line 1573)
+Analysis Mode, Menu Item:                      See 2.2.      (line  238)
+Analyze File, Menu Item:                       See 2.2.      (line  259)
+Animate Dragging, Menu Item:                   See 2.5.      (line  610)
+Animate Moving, Menu Item:                     See 2.5.      (line  617)
+animate, option:                               See 3.5.      (line 1770)
+animateDragging, option:                       See 3.5.      (line 1766)
+animateMoving, option:                         See 3.5.      (line 1770)
+Authors:                                       See 9.        (line 2317)
+Auto Comment, Menu Item:                       See 2.5.      (line  625)
+Auto Flag, Menu Item:                          See 2.5.      (line  633)
+Auto Flip View, Menu Item:                     See 2.5.      (line  642)
+Auto Observe, Menu Item:                       See 2.5.      (line  647)
+Auto Raise Board, Menu Item:                   See 2.5.      (line  660)
+Auto Save, Menu Item:                          See 2.5.      (line  665)
+autobs, option:                                See 3.3.      (line 1327)
+autoCallFlag, option:                          See 3.3.      (line 1323)
+autocomm, option:                              See 3.3.      (line 1319)
+autoComment, option:                           See 3.3.      (line 1319)
+autoflag, option:                              See 3.3.      (line 1323)
+autoflip, option:                              See 3.5.      (line 1619)
+autoFlipView, option:                          See 3.5.      (line 1619)
+autoKibitz, option:                            See 3.3.      (line 1331)
+autoObserve, option:                           See 3.3.      (line 1327)
+autoraise, option:                             See 3.5.      (line 1615)
+autoRaiseBoard, option:                        See 3.5.      (line 1615)
+autosave, option:                              See 3.4.      (line 1504)
+autoSaveGames, option:                         See 3.4.      (line 1504)
+Back to Start, Menu Item:                      See 2.4.      (line  492)
+Backward, Menu Item:                           See 2.4.      (line  459)
+bell, option:                                  See 3.5.      (line 1560)
+bitmapDirectory, option:                       See 3.5.      (line 1700)
+blackPieceColor, option:                       See 3.5.      (line 1746)
+blind, option:                                 See 3.5.      (line 1667)
+Blindfold, Menu Item:                          See 2.5.      (line  672)
+blindfold, option:                             See 3.5.      (line 1667)
+bm, option:                                    See 3.5.      (line 1700)
+board size:                                    See 3.5.      (line 1581)
+boardHeight, option:                           See 3.7.      (line 1901)
+boardSize, option:                             See 3.5.      (line 1581)
+boardWidth, option:                            See 3.7.      (line 1906)
+Book, Menu Item:                               See 2.6.      (line  830)
+Bug reports:                                   See 8.        (line 2283)
+Bugs <1>:                                      See 8.        (line 2283)
+Bugs:                                          See 7.        (line 2223)
+buttons, option:                               See 3.5.      (line 1641)
+Call Flag, Menu Item:                          See 2.3.      (line  424)
+checkMates, option:                            See 3.6.      (line 1794)
+Chess engine options:                          See 3.1.      (line  917)
+CHESSDIR:                                      See 6.        (line 2214)
+clock, option:                                 See 3.1.      (line  934)
+clockFont, option:                             See 3.5.      (line 1671)
+clockMode, option:                             See 3.1.      (line  934)
+cmail:                                         See 10.       (line 2368)
+colorChallenge, option:                        See 3.3.      (line 1372)
+colorChannel, option:                          See 3.3.      (line 1372)
+colorChannel1, option:                         See 3.3.      (line 1372)
+colorize, option:                              See 3.3.      (line 1358)
+colorKibitz, option:                           See 3.3.      (line 1372)
+colorNormal, option:                           See 3.3.      (line 1372)
+colorRequest, option:                          See 3.3.      (line 1372)
+Colors <1>:                                    See 3.5.      (line 1746)
+Colors:                                        See 3.3.      (line 1358)
+colorSeek, option:                             See 3.3.      (line 1372)
+colorShout, option:                            See 3.3.      (line 1372)
+colorSShout, option:                           See 3.3.      (line 1372)
+colorTell, option:                             See 3.3.      (line 1372)
+Contributors:                                  See 9.        (line 2317)
+coordFont, option:                             See 3.5.      (line 1677)
+coords, option:                                See 3.5.      (line 1611)
+Copy Game, Menu Item:                          See 2.1.      (line  166)
+Copy Position, Menu Item:                      See 2.1.      (line  206)
+darkSquareColor, option:                       See 3.5.      (line 1746)
+debug, option:                                 See 3.7.      (line 1952)
+debugFile, option:                             See 3.7.      (line 1955)
+debugMode, option:                             See 3.7.      (line 1952)
+decline, ICS command:                          See 4.        (line 2051)
+Decline, Menu Item:                            See 2.3.      (line  419)
+defaultCacheSizeEGTB, option:                  See 3.2.      (line 1181)
+defaultFrcPosition, option:                    See 3.7.      (line 1921)
+defaultHashSize, option:                       See 3.2.      (line 1175)
+defaultPathEGTB, option:                       See 3.2.      (line 1187)
+delayAfterQuit, option:                        See 3.7.      (line 1987)
+delayBeforeQuit, option:                       See 3.7.      (line 1987)
+display, option:                               See 3.5.      (line 1551)
+drag, option:                                  See 3.5.      (line 1766)
+draw, ICS command:                             See 4.        (line 2064)
+Draw, Menu Item:                               See 2.3.      (line  430)
+Edit Comment, Menu Item:                       See 2.2.      (line  375)
+Edit Game, Menu Item:                          See 2.2.      (line  293)
+Edit Position, Menu Item:                      See 2.2.      (line  309)
+Edit Tags, Menu Item:                          See 2.2.      (line  351)
+egtFormats, option:                            See 3.2.      (line 1191)
+Engine Settings:                               See 3.2.      (line 1142)
+engineDebugOutput, option:                     See 3.7.      (line 1959)
+Environment variables:                         See 6.        (line 2214)
+examine, ICS command:                          See 4.        (line 2087)
+Exit, Menu Item:                               See 2.1.      (line  223)
+exit, option:                                  See 3.5.      (line 1565)
+fb, option:                                    See 3.1.      (line 1040)
+fcp, option:                                   See 3.1.      (line 1033)
+fd, option:                                    See 3.1.      (line 1055)
+fh, option:                                    See 3.1.      (line 1047)
+File Menu:                                     See 2.1.      (line   82)
+finger, ICS command:                           See 4.        (line 2074)
+firstChessProgram, option:                     See 3.1.      (line 1033)
+firstComputerString, option:                   See 3.1.      (line 1091)
+firstDirectory, option:                        See 3.1.      (line 1055)
+firstHasOwnBookUCI, option:                    See 3.2.      (line 1170)
+firstHost, option:                             See 3.1.      (line 1047)
+firstIsUCI, option:                            See 3.2.      (line 1144)
+firstNPS, option:                              See 3.1.      (line  957)
+firstOptions option:                           See 3.1.      (line 1130)
+firstPlaysBlack, option:                       See 3.1.      (line 1040)
+firstProtocolVersion, option:                  See 3.1.      (line 1108)
+firstScoreAbs, option:                         See 3.1.      (line 1116)
+firstTimeOdds, option:                         See 3.1.      (line  975)
+firstXBook, option:                            See 3.2.      (line 1170)
+Flash Moves, Menu Item:                        See 2.5.      (line  678)
+flash, option:                                 See 3.5.      (line 1654)
+flashCount, option:                            See 3.5.      (line 1654)
+flashRate, option:                             See 3.5.      (line 1654)
+Flip View, Menu Item:                          See 2.5.      (line  554)
+flip, option:                                  See 3.5.      (line 1623)
+flipView, option:                              See 3.5.      (line 1623)
+fNoOwnBookUCI, option:                         See 3.2.      (line 1170)
+Font:                                          See 3.5.      (line 1684)
+Font, clock:                                   See 3.5.      (line 1671)
+Font, coordinates:                             See 3.5.      (line 1677)
+font, option:                                  See 3.5.      (line 1684)
+fontSizeTolerance, option:                     See 3.5.      (line 1690)
+Forward to End, Menu Item:                     See 2.4.      (line  511)
+Forward, Menu Item:                            See 2.4.      (line  479)
+fUCI, option:                                  See 3.2.      (line 1144)
+games, ICS command:                            See 4.        (line 2040)
+gateway, option:                               See 3.3.      (line 1250)
+geometry, option:                              See 3.5.      (line 1551)
+Get Move List, Menu Item:                      See 2.5.      (line  692)
+getMoveList, option:                           See 3.3.      (line 1339)
+Help Menu:                                     See 2.6.      (line  812)
+help, ICS command:                             See 4.        (line 2025)
+Hide Thinking, Menu Item:                      See 2.5.      (line  789)
+Highlight Last Move, Menu Item:                See 2.5.      (line  704)
+highlight, option:                             See 3.5.      (line 1663)
+highlightLastMove, option:                     See 3.5.      (line 1663)
+highlightSquareColor, option:                  See 3.5.      (line 1746)
+Hint, Menu Item:                               See 2.6.      (line  827)
+holdingsSize, option:                          See 3.7.      (line 1913)
+iconic, option:                                See 3.5.      (line 1551)
+ICS:                                           See 4.        (line 1996)
+ICS Alarm, Menu Item:                          See 2.5.      (line  725)
+ICS Client, Menu Item:                         See 2.2.      (line  269)
+ICS Input Box, Menu Item:                      See 2.2.      (line  380)
+ICS options:                                   See 3.3.      (line 1205)
+ICS, addresses:                                See 4.        (line 1996)
+ics, option:                                   See 3.3.      (line 1206)
+icsAlarm, option:                              See 3.3.      (line 1343)
+icsAlarmTime, option:                          See 3.3.      (line 1347)
+icscomm, option:                               See 3.3.      (line 1258)
+icshelper, option:                             See 3.3.      (line 1224)
+icshost, option:                               See 3.3.      (line 1211)
+icsinput, option:                              See 3.3.      (line 1315)
+icslogon, option:                              See 3.3.      (line 1300)
+icsport, option:                               See 3.3.      (line 1220)
+inc, option:                                   See 3.1.      (line  927)
+Info XBoard, Menu Item:                        See 2.6.      (line  813)
+initalMode, option:                            See 3.7.      (line 1846)
+initString, option:                            See 3.1.      (line 1064)
+Internet Chess Server:                         See 4.        (line 1996)
+internetChessServerCommPort, option:           See 3.3.      (line 1258)
+internetChessServerHelper, option:             See 3.3.      (line 1224)
+internetChessServerHost, option:               See 3.3.      (line 1211)
+internetChessServerInputBox, option:           See 3.3.      (line 1315)
+internetChessServerLogonScript, option:        See 3.3.      (line 1300)
+internetChessServerMode, option:               See 3.3.      (line 1206)
+internetChessServerPort, option:               See 3.3.      (line 1220)
+introduction:
+          See ``Introduction''.                              (line    9)
+Keys:                                          See 2.7.      (line  845)
+legal, option:                                 See 3.5.      (line 1577)
+lgf, option:                                   See 3.4.      (line 1468)
+lgi, option:                                   See 3.4.      (line 1468)
+lightSquareColor, option:                      See 3.5.      (line 1746)
+Limitations:                                   See 7.        (line 2223)
+Load and Save options:                         See 3.4.      (line 1466)
+Load Game, Menu Item:                          See 2.1.      (line  114)
+Load Next Game, Menu Item:                     See 2.1.      (line  141)
+Load Next Position, Menu Item:                 See 2.1.      (line  187)
+Load Position, Menu Item:                      See 2.1.      (line  179)
+Load Previous Game, Menu Item:                 See 2.1.      (line  145)
+Load Previous Position, Menu Item:             See 2.1.      (line  190)
+loadGameFile, option:                          See 3.4.      (line 1468)
+loadGameIndex, option:                         See 3.4.      (line 1468)
+loadPositionFile, option:                      See 3.4.      (line 1509)
+loadPositionIndex, option:                     See 3.4.      (line 1509)
+lpf, option:                                   See 3.4.      (line 1509)
+lpi, option:                                   See 3.4.      (line 1509)
+Machine Black, Menu Item:                      See 2.2.      (line  232)
+Machine White, Menu Item:                      See 2.2.      (line  229)
+Mail Move, Menu Item:                          See 2.1.      (line  220)
+Major modes:                                   See 1.        (line   19)
+Man XBoard, Menu Item:                         See 2.6.      (line  820)
+matchGames, option:                            See 3.1.      (line 1011)
+matchMode, option:                             See 3.1.      (line 1023)
+materialDraws, option:                         See 3.6.      (line 1806)
+Menu, Action:                                  See 2.3.      (line  413)
+Menu, File:                                    See 2.1.      (line   82)
+Menu, Help:                                    See 2.6.      (line  812)
+Menu, Mode:                                    See 2.2.      (line  228)
+Menu, Options:                                 See 2.5.      (line  553)
+Menu, Step:                                    See 2.4.      (line  458)
+Menus:                                         See 2.        (line   57)
+mg, option:                                    See 3.1.      (line 1011)
+mm, option:                                    See 3.1.      (line 1023)
+Mode Menu:                                     See 2.2.      (line  228)
+mode, option:                                  See 3.7.      (line 1846)
+mono, option:                                  See 3.5.      (line 1647)
+monoMode, option:                              See 3.5.      (line 1647)
+Move Now, Menu Item:                           See 2.4.      (line  532)
+Move Sound, Menu Item:                         See 2.5.      (line  710)
+moves, option:                                 See 3.3.      (line 1339)
+movesound, option:                             See 3.5.      (line 1560)
+movesPerSession, option:                       See 3.1.      (line  923)
+mps, option:                                   See 3.1.      (line  923)
+msLoginDelay, option:                          See 3.3.      (line 1309)
+nameOfDebugFile, option:                       See 3.7.      (line 1955)
+ncp, option:                                   See 3.7.      (line 1841)
+New Game, Menu Item:                           See 2.1.      (line   83)
+New Shuffle Game, Menu Item:                   See 2.1.      (line   92)
+New variant, Menu Item:                        See 2.1.      (line  105)
+niceEngines, option:                           See 3.1.      (line 1122)
+noChessProgram, option:                        See 3.7.      (line 1841)
+noGUI, option:                                 See 3.5.      (line 1554)
+observe, ICS command:                          See 4.        (line 2083)
+Old Save Style, Menu Item:                     See 2.5.      (line  734)
+oldmoves, ICS command:                         See 4.        (line 2087)
+oldsave, option:                               See 3.4.      (line 1542)
+oldSaveStyle, option:                          See 3.4.      (line 1542)
+Options:                                       See 3.        (line  891)
+Options Menu:                                  See 2.5.      (line  553)
+Options, adjudication:                         See 3.6.      (line 1780)
+options, Chess engine:                         See 3.1.      (line  917)
+Options, ICS:                                  See 3.3.      (line 1205)
+Options, Load and Save:                        See 3.4.      (line 1466)
+Options, miscellaneous:                        See 3.7.      (line 1840)
+Options, User interface:                       See 3.5.      (line 1548)
+Other programs:                                See 11.       (line 2576)
+Paste Game, Menu Item:                         See 2.1.      (line  175)
+Paste Position, Menu Item:                     See 2.1.      (line  215)
+Pause, Menu Item:                              See 2.2.      (line  387)
+Periodic Updates, Menu Item:                   See 2.5.      (line  742)
+pgnEventHeader, option`:                       See 3.4.      (line 1534)
+pgnExtendedInfo, option`:                      See 3.4.      (line 1529)
+pieceToSquareTable, option:                    See 3.7.      (line 1926)
+pixmap, option:                                See 3.5.      (line 1700)
+pixmapDirectory, option:                       See 3.5.      (line 1700)
+PolyglotBook, option:                          See 3.2.      (line 1159)
+PolyglotDir, option:                           See 3.2.      (line 1151)
+Ponder Next Move, Menu Item:                   See 2.5.      (line  748)
+ponder, option:                                See 3.1.      (line 1002)
+ponderNextMove, option:                        See 3.1.      (line 1002)
+Popup Exit Message, Menu Item:                 See 2.5.      (line  753)
+Popup Move Errors, Menu Item:                  See 2.5.      (line  759)
+popup, option:                                 See 3.5.      (line 1569)
+popupExitMessage, option:                      See 3.5.      (line 1565)
+popupMoveErrors, option:                       See 3.5.      (line 1569)
+pre, option:                                   See 3.3.      (line 1351)
+Premove, Menu Item:                            See 2.5.      (line  768)
+premove, option:                               See 3.3.      (line 1351)
+Problems:                                      See 8.        (line 2283)
+queen, option:                                 See 3.5.      (line 1573)
+Quiet Play, Menu Item:                         See 2.5.      (line  779)
+quiet, option:                                 See 3.3.      (line 1354)
+quietPlay, option:                             See 3.3.      (line 1354)
+Reload CMail Message, Menu Item:               See 2.1.      (line  220)
+Reload Same Game, Menu Item:                   See 2.1.      (line  150)
+Reload Same Position, Menu Item:               See 2.1.      (line  194)
+remoteShell, option:                           See 3.7.      (line 1973)
+remoteUser, option:                            See 3.7.      (line 1978)
+Reporting bugs:                                See 8.        (line 2283)
+Reporting problems:                            See 8.        (line 2283)
+Resign, Menu Item:                             See 2.3.      (line  444)
+Retract Move, Menu Item:                       See 2.4.      (line  536)
+reuse, option:                                 See 3.1.      (line 1099)
+reuse2, option:                                See 3.1.      (line 1099)
+reuseFirst, option:                            See 3.1.      (line 1099)
+reuseSecond, option:                           See 3.1.      (line 1099)
+Revert, Menu Item:                             See 2.4.      (line  523)
+ringBellAfterMoves, option:                    See 3.5.      (line 1560)
+rsh, option:                                   See 3.7.      (line 1973)
+ruleMoves, option:                             See 3.6.      (line 1824)
+ruser, option:                                 See 3.7.      (line 1978)
+sameColorGames, option:                        See 3.1.      (line 1027)
+Save Game, Menu Item:                          See 2.1.      (line  154)
+saveGameFile, option:                          See 3.4.      (line 1499)
+saveOutOfBookInfo, option`:                    See 3.4.      (line 1538)
+savePositionFile, option:                      See 3.4.      (line 1524)
+scp, option:                                   See 3.1.      (line 1036)
+sd, option:                                    See 3.1.      (line  948)
+searchDepth, option:                           See 3.1.      (line  948)
+searchTime, option:                            See 3.1.      (line  941)
+secondChessProgram, option:                    See 3.1.      (line 1036)
+secondComputerString, option:                  See 3.1.      (line 1091)
+secondDirectory, option:                       See 3.1.      (line 1055)
+secondHasOwnBookUCI, option:                   See 3.2.      (line 1170)
+secondHost, option:                            See 3.1.      (line 1047)
+secondInitString, option:                      See 3.1.      (line 1064)
+secondIsUCI, option:                           See 3.2.      (line 1144)
+secondNPS, option:                             See 3.1.      (line  957)
+secondOptions, option:                         See 3.1.      (line 1130)
+secondProtocolVersion, option:                 See 3.1.      (line 1108)
+secondScoreAbs, option:                        See 3.1.      (line 1116)
+secondTimeOdds, option:                        See 3.1.      (line  975)
+secondXBook, option:                           See 3.2.      (line 1170)
+set, ICS command:                              See 4.        (line 2080)
+Settings, Engine:                              See 3.2.      (line 1142)
+sgf, option:                                   See 3.4.      (line 1499)
+sh, option:                                    See 3.1.      (line 1047)
+Shortcut keys:                                 See 2.7.      (line  845)
+Show Coords, Menu Item:                        See 2.5.      (line  785)
+Show Engine Output, Menu Item:                 See 2.2.      (line  347)
+Show Game List, Menu Item:                     See 2.2.      (line  338)
+Show Move History, Menu Item:                  See 2.2.      (line  342)
+showButtonBar, option:                         See 3.5.      (line 1641)
+showCoords, option:                            See 3.5.      (line 1611)
+showThinking, option:                          See 3.1.      (line  992)
+size, option:                                  See 3.5.      (line 1581)
+sNoOwnBookUCI, option:                         See 3.2.      (line 1170)
+soundChallenge, option:                        See 3.3.      (line 1417)
+soundChannel, option:                          See 3.3.      (line 1417)
+soundIcsAlarm, option:                         See 3.3.      (line 1425)
+soundIcsDraw, option:                          See 3.3.      (line 1436)
+soundIcsLoss, option:                          See 3.3.      (line 1432)
+soundIcsUnfinished, option:                    See 3.3.      (line 1440)
+soundIcsWin, option:                           See 3.3.      (line 1428)
+soundKibitz, option:                           See 3.3.      (line 1417)
+soundMove, option:                             See 3.3.      (line 1422)
+soundProgram, option:                          See 3.3.      (line 1401)
+soundRequest, option:                          See 3.3.      (line 1417)
+Sounds:                                        See 3.3.      (line 1401)
+soundSeek, option:                             See 3.3.      (line 1417)
+soundShout, option:                            See 3.3.      (line 1417)
+soundSShout, option:                           See 3.3.      (line 1417)
+soundTell, option:                             See 3.3.      (line 1417)
+spf, option:                                   See 3.4.      (line 1524)
+st, option:                                    See 3.1.      (line  941)
+Step Menu:                                     See 2.4.      (line  458)
+Stop Examining, Menu Item:                     See 2.3.      (line  452)
+Stop Observing, Menu Item:                     See 2.3.      (line  448)
+sUCI, option:                                  See 3.2.      (line 1144)
+tc, option:                                    See 3.1.      (line  918)
+td, option:                                    See 3.4.      (line 1494)
+telnet, option:                                See 3.3.      (line 1232)
+telnetProgram, option:                         See 3.3.      (line 1241)
+Test Legality, Menu Item:                      See 2.5.      (line  798)
+testClaims, option:                            See 3.6.      (line 1800)
+testLegality, option:                          See 3.5.      (line 1577)
+thinking, option:                              See 3.1.      (line  992)
+Time Control, Menu Item:                       See 2.5.      (line  595)
+timeControl, option:                           See 3.1.      (line  918)
+timeDelay, option:                             See 3.4.      (line 1494)
+timeIncrement, option:                         See 3.1.      (line  927)
+timeOddsMode, option:                          See 3.1.      (line  981)
+title, option:                                 See 3.5.      (line 1633)
+titleInWindow, option:                         See 3.5.      (line 1633)
+Training, Menu Item:                           See 2.2.      (line  328)
+trivialDraws, option:                          See 3.6.      (line 1813)
+Truncate Game, Menu Item:                      See 2.4.      (line  527)
+Two Machines, Menu Item:                       See 2.2.      (line  235)
+usePolyglotBook, option:                       See 3.2.      (line 1156)
+User interface options:                        See 3.5.      (line 1548)
+userName, option:                              See 3.7.      (line 1982)
+useTelnet, option:                             See 3.3.      (line 1232)
+variant, option:                               See 3.7.      (line 1854)
+vars, ICS command:                             See 4.        (line 2077)
+whitePieceColor, option:                       See 3.5.      (line 1746)
+who, ICS command:                              See 4.        (line 2033)
+xflash, option:                                See 3.5.      (line 1654)
+Table of Contents
+*****************
+
+Introduction
+1 Major modes
+2 Menus, buttons, and keys
+  2.1 File Menu
+  2.2 Mode Menu
+  2.3 Action Menu
+  2.4 Step Menu
+  2.5 Options Menu
+  2.6 Help Menu
+  2.7 Other Shortcut Keys
+3 Options
+  3.1 Chess Engine Options
+  3.2 UCI + WB Engine Settings
+  3.3 ICS options
+  3.4 Load and Save options
+  3.5 User interface options
+  3.6 Adjudication Options
+  3.7 Other options
+4 Chess Servers
+5 Firewalls
+6 Environment variables
+7 Limitations and known bugs
+8 Reporting problems
+9 Authors and contributors
+10 CMail
+  10.1 CMail options
+  10.2 Starting a CMail Game
+  10.3 Answering a Move
+  10.4 Multi-Game Messages
+  10.5 Completing a Game
+  10.6 Known CMail Problems
+11 Other programs you can use with XBoard
+  11.1 GNU Chess
+  11.2 Fairy-Max
+  11.3 HoiChess
+  11.4 Crafty
+  11.5 zic2xpm
+Copyright
+GNU GENERAL PUBLIC LICENSE
+Index
+
+
