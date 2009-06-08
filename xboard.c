@@ -1216,6 +1216,9 @@ XtResource clientResources[] = {
     { "defaultFrcPosition", "defaultFrcPositon", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, defaultFrcPosition),
 	XtRImmediate, (XtPointer) -1},
+    { "gameListTags", "gameListTags", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, gameListTags),
+	XtRImmediate, (XtPointer) GLT_DEFAULT_TAGS },
 
     // [HGM] 4.3.xx options
     { "boardWidth", "boardWidth", XtRInt,
@@ -1684,6 +1687,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-defaultCacheSizeEGTB", "defaultCacheSizeEGTB", XrmoptionSepArg, NULL },
     { "-defaultPathEGTB", "defaultPathEGTB", XrmoptionSepArg, NULL },
     { "-defaultFrcPosition", "defaultFrcPosition", XrmoptionSepArg, NULL },
+    { "-gameListTags", "gameListTags", XrmoptionSepArg, NULL },
     // [HGM] I am sure AS added many more options, but we have to fish them out, from the list in winboard.c
 
     /* [HGM,HR] User-selectable board size */

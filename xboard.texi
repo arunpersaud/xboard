@@ -1771,10 +1771,18 @@ Sets the name used in the PGN event tag to string.
 Default: "Computer Chess Game".
 @item -saveOutOfBookInfo true/false
 @cindex saveOutOfBookInfo, option`
-Include the information on how the engine(s) game out of its opening book in a special 'annotator' tag with the PGN file.@item -oldsave/-xoldsave or -oldSaveStyle true/false
+Include the information on how the engine(s) game out of its opening book in a special 'annotator' tag with the PGN file.
+@item -oldsave/-xoldsave or -oldSaveStyle true/false
 @cindex oldsave, option
 @cindex oldSaveStyle, option
 Sets the Old Save Style menu option.  @xref{Options Menu}.  Default: false.
+@item -gameListTags string
+@cindex gameListTags, option
+The character string lists the PGN tags that should be printed in the
+Game List, and their order. The meaning of the codes is e=event,
+s=site, d=date, o=round, p=players, r=result, w=white Elo, b=black Elo,
+t=time control, v=variant, a=out-of-book info.
+Default: "eprd"
 @end table
 
 @node User interface options
