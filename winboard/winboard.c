@@ -495,6 +495,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   if (!InitInstance(hInstance, nCmdShow, lpCmdLine)) {
     return (FALSE);
   }
+
 //  InitCommonControlsEx(&ex);
   InitCommonControls();
 
@@ -1428,8 +1429,14 @@ ParseSettingsFile(char *name, char fullname[MSG_SIZ])
 {
   char *dummy;
   FILE *f;
+  int ok; char buf[MSG_SIZ];
 
-  if (SearchPath(installDir, name, NULL, MSG_SIZ, fullname, &dummy)) {
+  ok = SearchPath(installDir, name, NULL, MSG_SIZ, fullname, &dummy);
+  if(!ok && strchr(name, '.') == NULL) { // [HGM] append default file-name extension '.ini' when needed
+    sprintf(buf, "%s.ini", name);
+    ok = SearchPath(installDir, buf, NULL, MSG_SIZ, fullname, &dummy);
+  }
+  if (ok) {
     f = fopen(fullname, "r");
     if (f != NULL) {
       ParseArgs(FileGet, f);

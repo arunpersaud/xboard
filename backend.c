@@ -12401,8 +12401,9 @@ ParseOption(Option *opt, ChessProgramState *cps)
 	} else return FALSE;
 	*p = 0; // terminate option name
 	// now look if the command-line options define a setting for this engine option.
-	p = strstr(cps->optionSettings, opt->name);
-	if(p == cps->optionSettings || p[-1] == ',') {
+	if(cps->optionSettings && cps->optionSettings[0])
+	    p = strstr(cps->optionSettings, opt->name); else p = NULL;
+	if(p && (p == cps->optionSettings || p[-1] == ',')) {
 		sprintf(buf, "option %s", p);
 		if(p = strstr(buf, ",")) *p = 0;
 		strcat(buf, "\n");
