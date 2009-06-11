@@ -476,6 +476,8 @@
 #define OPT_VariantWildcastle           1523
 #define OPT_VariantNocastle             1524
 #define OPT_VariantGiveaway             1525
+#define OPT_Variant3Check               1526
+#define OPT_VariantGreat                1527
 #define IDC_Files                       1550
 #define IDC_Ranks                       1551
 #define IDC_Holdings                    1552
