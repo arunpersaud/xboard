@@ -1370,7 +1370,7 @@ void SettingsCallback(w, client_data, call_data)
 		    XtGetValues(currentCps->option[i].handle, args, 1);
 		    if(strcmp(currentCps->option[i].textValue, val)) {
 			strcpy(currentCps->option[i].textValue, val);
-			sprintf(buf, _("option %s %s\n"), currentCps->option[i].name, val);
+			sprintf(buf, "option %s=%s\n", currentCps->option[i].name, val);
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
@@ -1382,7 +1382,7 @@ void SettingsCallback(w, client_data, call_data)
 		    if(j < currentCps->option[i].min) j = currentCps->option[i].min;
 		    if(currentCps->option[i].value != j) {
 			currentCps->option[i].value = j;
-			sprintf(buf, _("option %s %d\n"), currentCps->option[i].name, j);
+			sprintf(buf, "option %s=%d\n", currentCps->option[i].name, j);
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
@@ -1392,14 +1392,14 @@ void SettingsCallback(w, client_data, call_data)
 		    XtGetValues(currentCps->option[i].handle, args, 1);
 		    if(currentCps->option[i].value != j) {
 			currentCps->option[i].value = j;
-			sprintf(buf, _("option %s %d\n"), currentCps->option[i].name, j);
+			sprintf(buf, "option %s=%d\n", currentCps->option[i].name, j);
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
 		case ComboBox:
 		    if(currentCps->option[i].value != values[i]) {
 			currentCps->option[i].value = values[i];
-			sprintf(buf, _("option %s %s\n"), currentCps->option[i].name, 
+			sprintf(buf, "option %s=%s\n", currentCps->option[i].name, 
 				((char**)currentCps->option[i].textValue)[values[i]]);
 			SendToProgram(buf, currentCps);
 		    }
@@ -1407,13 +1407,13 @@ void SettingsCallback(w, client_data, call_data)
 	    }
 	}
 	if((int)client_data) { // send save-button command to engine
-	    sprintf(buf, _("option %s\n"), name);
+	    sprintf(buf, "option %s\n", name);
 	    SendToProgram(buf, currentCps);
 	}
         SettingsPopDown();
         return;
     }
-    sprintf(buf, _("option %s\n"), name);
+    sprintf(buf, "option %s\n", name);
     SendToProgram(buf, currentCps);
 }
 

@@ -1300,7 +1300,7 @@ Negative values could increase the engine priority, which is not recommended.
 @cindex firstOptions option
 @cindex secondOptions, option
 The given string is a comma-separated list of (option name, option value) pairs, 
-like the following example: “style Karpov, blunder rate 0”. 
+like the following example: “style=Karpov,blunder rate=0”. 
 If the options announced by the engine at startup through the feature commands of WinBoard protocol 
 matches one of the option names (i.e. “style” or “blunder rate”), 
 it would be set to the given value (i.e. “Karpov” or 0) 
