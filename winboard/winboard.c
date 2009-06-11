@@ -103,6 +103,7 @@ void DisplayHoldingsCount(HDC hdc, int x, int y, int align, int copyNumber);
 VOID NewVariantPopup(HWND hwnd);
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 		   /*char*/int promoChar));
+void AnimateAtomicCapture(int toX, int toY, int nFrames);
 
 typedef struct {
   ChessSquare piece;  
@@ -129,6 +130,12 @@ typedef struct {
 
 static HighlightInfo highlightInfo        = { {{-1, -1}, {-1, -1}} };
 static HighlightInfo premoveHighlightInfo = { {{-1, -1}, {-1, -1}} };
+
+typedef struct { // [HGM] atomic
+  int x, y, radius;
+} ExplodeInfo;
+
+static ExplodeInfo explodeInfo = {0, 0, 0};
 
 /* Window class names */
 char szAppName[] = "WinBoard";
@@ -181,6 +188,7 @@ static HWND hwndPause;    /* pause button */
 static HBITMAP pieceBitmap[3][(int) BlackPawn]; /* [HGM] nr of bitmaps referred to bP in stead of wK */
 static HBRUSH lightSquareBrush, darkSquareBrush,
   blackSquareBrush, /* [HGM] for band between board and holdings */
+  explodeBrush,     /* [HGM] atomic */
   whitePieceBrush, blackPieceBrush, iconBkgndBrush /*, outlineBrush*/;
 static POINT gridEndpoints[(BOARD_SIZE + 1) * 4];
 static DWORD gridVertexCounts[(BOARD_SIZE + 1) * 2];
@@ -3012,7 +3020,7 @@ InitDrawingColors()
   whitePieceBrush = CreateSolidBrush(whitePieceColor);
   blackPieceBrush = CreateSolidBrush(blackPieceColor);
   iconBkgndBrush = CreateSolidBrush(GetSysColor(COLOR_BACKGROUND));
-
+  explodeBrush = CreateSolidBrush(highlightSquareColor); // [HGM] atomic
   /* [AS] Force rendering of the font-based pieces */
   if( fontBitmapSquareSize > 0 ) {
     fontBitmapSquareSize = 0;
@@ -4473,14 +4481,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
       x2 = boardRect.left + animInfo.pos.x;
       y2 = boardRect.top + animInfo.pos.y;
       clips[num_clips++] = CreateRectRgn(MIN(x,x2), MIN(y,y2), MAX(x,x2)+squareSize, MAX(y,y2)+squareSize);
-      /* Slight kludge.  The real problem is that after AnimateMove is
-	 done, the position on the screen does not match lastDrawn.
-	 This currently causes trouble only on e.p. captures in
-	 atomic, where the piece moves to an empty square and then
-	 explodes.  The old and new positions both had an empty square
-	 at the destination, but animation has drawn a piece there and
-	 we have to remember to erase it. */
-      lastDrawn[animInfo.to.y][animInfo.to.x] = animInfo.piece;
+      /* [HGM] old location of "slight kludge" below */
     }
   }
 
@@ -4498,10 +4499,27 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   }
 
   /* Do all the drawing to the memory DC */
-  DrawGridOnDC(hdcmem);
-  DrawHighlightsOnDC(hdcmem);
-  DrawBoardOnDC(hdcmem, board, tmphdc);
-
+  if(explodeInfo.radius) { // [HGM] atomic
+	HBRUSH oldBrush;
+	int x, y, r=(explodeInfo.radius * squareSize)/100;
+	SquareToPos(explodeInfo.y, explodeInfo.x, &x, &y);
+	x += squareSize/2;
+	y += squareSize/2;
+        if(!fullrepaint) {
+	  clips[num_clips] = CreateRectRgn(x-r, y-r, x+r, y+r);
+	  ExtSelectClipRgn(hdcmem, clips[num_clips++], RGN_OR);
+	}
+	DrawGridOnDC(hdcmem);
+	DrawHighlightsOnDC(hdcmem);
+	DrawBoardOnDC(hdcmem, board, tmphdc);
+	oldBrush = SelectObject(hdcmem, explodeBrush);
+	Ellipse(hdcmem, x-r, y-r, x+r, y+r);
+	SelectObject(hdcmem, oldBrush);
+  } else {
+    DrawGridOnDC(hdcmem);
+    DrawHighlightsOnDC(hdcmem);
+    DrawBoardOnDC(hdcmem, board, tmphdc);
+  }
   if(logoHeight) {
 	DrawLogoOnDC(hdc, leftLogoRect, flipClock ? &second : &first);
 	DrawLogoOnDC(hdc, rightLogoRect, flipClock ? &first : &second);
@@ -4540,6 +4558,14 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
     DrawPieceOnDC(hdcmem, animInfo.piece,
 		  ((int) animInfo.piece < (int) BlackPawn),
                   (animInfo.from.y + animInfo.from.x) % 2, x, y, tmphdc);
+      /* Slight kludge.  The real problem is that after AnimateMove is
+	 done, the position on the screen does not match lastDrawn.
+	 This currently causes trouble only on e.p. captures in
+	 atomic, where the piece moves to an empty square and then
+	 explodes.  The old and new positions both had an empty square
+	 at the destination, but animation has drawn a piece there and
+	 we have to remember to erase it. [HGM] moved until after setting lastDrawn */
+      lastDrawn[animInfo.to.y][animInfo.to.x] = animInfo.piece;
   }
 
   /* Release the bufferBitmap by selecting in the old bitmap 
@@ -5026,7 +5052,11 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		    break;
 		  } else
                PromotionPopup(hwnd); /* [HGM] Popup now calls FinishMove */
-        } else FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
+          } else {
+	    if(saveAnimate /* ^$!%@#$!$ */  && gameInfo.variant == VariantAtomic 
+			&& boards[currentMove][toY][toX] != EmptySquare) AnimateAtomicCapture(toX, toY, 20);
+	    FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
+	  }
       }
       if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
       appData.animate = saveAnimate;
@@ -10556,6 +10586,22 @@ static void Tween( POINT * start, POINT * mid, POINT * finish, int factor,
      POINT frames[], int * nFrames);
 
 
+void
+AnimateAtomicCapture(int toX, int toY, int nFrames)
+{	// [HGM] atomic: animate blast wave
+	int i;
+if(appData.debugMode) fprintf(debugFP, "exploding (%d,%d)\n", toX, toY);
+	explodeInfo.x = toX;
+	explodeInfo.y = toY;
+	for(i=0; i<nFrames; i++) {
+	    explodeInfo.radius = (i*180)/(nFrames-1);
+	    DrawPosition(FALSE, NULL);
+	    Sleep(appData.animSpeed);
+	}
+	explodeInfo.radius = 0;
+	DrawPosition(TRUE, NULL);
+}
+
 #define kFactor 4
 
 void
@@ -10616,6 +10662,8 @@ AnimateMove(board, fromX, fromY, toX, toY)
   animInfo.pos = finish;
   DrawPosition(FALSE, NULL);
   animInfo.piece = EmptySquare;
+  if(gameInfo.variant == VariantAtomic && board[toY][toX] != EmptySquare)
+    AnimateAtomicCapture(toX, toY, 2*nFrames);
 }
 
 /*      Convert board position to corner of screen rect and color       */
