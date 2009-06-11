@@ -7832,7 +7832,9 @@ GameEnds(result, resultDetails, whosays)
 	    }
 	    /* [HGM] bare: don't allow bare King to win */
 	    if((gameInfo.holdingsWidth == 0 || gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat)
-			 && result != GameIsDrawn)
+	       && gameInfo.variant != VariantLosers && gameInfo.variant != VariantGiveaway 
+	       && gameInfo.variant != VariantSuicide // [HGM] losers: except in losers, of course...
+	       && result != GameIsDrawn)
 	    {   int i, j, k=0, color = (result==WhiteWins ? (int)WhitePawn : (int)BlackPawn);
 		for(j=BOARD_LEFT; j<BOARD_RGHT; j++) for(i=0; i<BOARD_HEIGHT; i++) {
 			int p = (int)boards[forwardMostMove][i][j] - color;
