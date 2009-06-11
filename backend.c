@@ -4627,11 +4627,6 @@ InitPosition(redraw)
       break;
     case VariantTwoKings:
       pieces = twoKingsArray;
-      nrCastlingRights = 8;                 /* add rights for second King */
-      castlingRights[0][6] = initialRights[2] = 5;
-      castlingRights[0][7] = initialRights[5] = 5;
-      castlingRank[6] = 0;
-      castlingRank[7] = BOARD_HEIGHT-1;
       break;
     case VariantCapaRandom:
       shuffleOpenings = TRUE;
