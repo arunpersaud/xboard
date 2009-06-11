@@ -39,25 +39,25 @@ game. The <kbd>r</kbd> key is a keyboard equivalent. In Internet Chess
 Server mode, clears the current state of XBoard, then
 resynchronizes with the ICS by sending a refresh command. If you want to
 stop playing, observing, or examining an ICS game, use an
-appropriate command from the Action menu, not &lsquo;<samp><span class="samp">New Game</span></samp>&rsquo;. 
-See <a href="Action-Menu.html#Action-Menu">Action Menu</a>. 
-<br><dt>New Shuffle Game<dd><a name="index-New-Shuffle-Game_002c-Menu-Item-7"></a>Similar to &lsquo;<samp><span class="samp">New Game</span></samp>&rsquo;, but allows you to specify a particular initial position
+appropriate command from the Action menu, not &lsquo;<samp><span class="samp">New Game</span></samp>&rsquo;.
+See <a href="Action-Menu.html#Action-Menu">Action Menu</a>.
+<br><dt>New Shuffle Game<dd><a name="index-New-Shuffle-Game_002c-Menu-Item-7"></a>Similar to &lsquo;<samp><span class="samp">New Game</span></samp>&rsquo;, but allows you to specify a particular initial position 
 (according to a standardized numbering system)
-in chess variants which use randomized opening positions (e.g. Chess960). 
+in chess variants which use randomized opening positions (e.g. Chess960).
 The selected opening position will persistently be chosen on any following
 New Game command until you use this menu to select another. Selecting
-position number -1 will produce a newly randomized position on any new game. 
+position number -1 will produce a newly randomized position on any new game.
 Using this menu item in variants that normally do not shuffle their opening position
 does cause these variants to become shuffle variants until you use the
 &lsquo;<samp><span class="samp">New Shuffle Game</span></samp>&rsquo; menu to explicitly switch the randomization off,
-or select a new variant. 
+or select a new variant.
 <br><dt>New Variant<dd><a name="index-New-variant_002c-Menu-Item-8"></a>Allows you to select a new chess variant in non-ICS mode. 
 (In ICS play, the ICS is responsible for deciding which variant will be played,
 and XBoard adapts autmatically.) If you play with an engine, the engine must
-be able to play the selected variant, or the command will be ignored. 
+be able to play the selected variant, or the command will be ignored.
 XBoard supports all major variants, such as xiangqi, shogi, chess, chess960,
-Capablanca Chess, shatranj, crazyhous, bughouse. 
-<br><dt>Load Game<dd><a name="index-Load-Game_002c-Menu-Item-9"></a>Plays a game from a record file. The <kbd>g</kbd> key is a keyboard equivalent. 
+Capablanca Chess, shatranj, crazyhous, bughouse.
+<br><dt>Load Game<dd><a name="index-Load-Game_002c-Menu-Item-9"></a>Plays a game from a record file. The <kbd>g</kbd> key is a keyboard equivalent.
 A popup dialog prompts you for the file name. If the file contains more
 than one game, a second popup dialog
 displays a list of games (with information drawn from their PGN tags, if
@@ -65,12 +65,12 @@ any), and you can select the one you want. Alternatively, you can load the
 Nth game in the file directly, by typing the number <kbd>N</kbd> after the
 file name, separated by a space.
 
-     <p>The game file parser will accept PGN (portable game notation),
+The game file parser will accept PGN (portable game notation),
 or in fact almost any file that contains moves in algebraic
 notation. 
 Notation of the form &lsquo;<samp><span class="samp">P@f7</span></samp>&rsquo;
 is accepted for piece-drops in bughouse games;
-this is a nonstandard extension to PGN. 
+this is a nonstandard extension to PGN.
 If the file includes a PGN position (FEN tag), or an old-style
 XBoard position diagram bracketed by &lsquo;<samp><span class="samp">[--</span></samp>&rsquo; and &lsquo;<samp><span class="samp">--]</span></samp>&rsquo;
 before the first move, the game starts from that position. Text
@@ -78,20 +78,20 @@ enclosed in parentheses, square brackets, or curly braces is assumed to
 be commentary and is displayed in a pop-up window. Any other
 text in the file is ignored. PGN variations (enclosed in
 parentheses) are treated as comments; XBoard is not able to walk
-variation trees. 
+variation trees.
 The nonstandard PGN tag [Variant "varname"] functions similarly to
 the -variant command-line option (see below), allowing games in certain chess
-variants to be loaded.  There is also a heuristic to
+variants to be loaded.  There is also a heuristic to 
 recognize chess variants from the Event tag, by looking for the strings
-that the Internet Chess Servers put there when saving variant ("wild") games. 
-<br><dt>Load Next Game<dd><a name="index-Load-Next-Game_002c-Menu-Item-10"></a>Loads the next game from the last game record file you loaded. 
-The shifted <kbd>N</kbd> key is a keyboard equivalent. 
+that the Internet Chess Servers put there when saving variant ("wild") games.
+<br><dt>Load Next Game<dd><a name="index-Load-Next-Game_002c-Menu-Item-10"></a>Loads the next game from the last game record file you loaded.
+The shifted <kbd>N</kbd> key is a keyboard equivalent.
 <br><dt>Load Previous Game<dd><a name="index-Load-Previous-Game_002c-Menu-Item-11"></a>Loads the previous game from the last game record file you
-loaded.  The shifted <kbd>P</kbd> key is a keyboard equivalent. 
-Not available if the last game was loaded from a pipe. 
-<br><dt>Reload Same Game<dd><a name="index-Reload-Same-Game_002c-Menu-Item-12"></a>Reloads the last game you loaded. 
-Not available if the last game was loaded from a pipe. 
-<br><dt>Save Game<dd><a name="index-Save-Game_002c-Menu-Item-13"></a>Appends a record of the current game to a file. 
+loaded.  The shifted <kbd>P</kbd> key is a keyboard equivalent.
+Not available if the last game was loaded from a pipe.
+<br><dt>Reload Same Game<dd><a name="index-Reload-Same-Game_002c-Menu-Item-12"></a>Reloads the last game you loaded.
+Not available if the last game was loaded from a pipe.
+<br><dt>Save Game<dd><a name="index-Save-Game_002c-Menu-Item-13"></a>Appends a record of the current game to a file.
 A popup dialog
 prompts you for the file name. If the game did not begin with
 the standard starting position, the game file includes the
@@ -99,47 +99,48 @@ starting position used. Games are saved in the PGN (portable
 game notation) format, unless the oldSaveStyle option is true,
 in which case they are saved in an older format that is specific
 to XBoard. Both formats are human-readable, and both can be
-read back by the &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; command. 
+read back by the &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; command.
 Notation of the form &lsquo;<samp><span class="samp">P@f7</span></samp>&rsquo;
 is accepted for piece-drops in bughouse games;
-this is a nonstandard extension to PGN. 
+this is a nonstandard extension to PGN.
 <br><dt>Copy Game<dd><a name="index-Copy-Game_002c-Menu-Item-14"></a>Copies a record of the current game to an internal clipboard in PGN
 format and sets the X selection to the game text.  The game can be
 pasted to another application (such as a text editor or another copy
 of XBoard) using that application's paste command.  In many X
 applications, such as xterm and emacs, the middle mouse button can be
-used for pasting; in XBoard, you must use the Paste Game command. 
+used for pasting; in XBoard, you must use the Paste Game command.
 <br><dt>Paste Game<dd><a name="index-Paste-Game_002c-Menu-Item-15"></a>Interprets the current X selection as a game record and loads it, as
-with Load Game. 
+with Load Game.
 <br><dt>Load Position<dd><a name="index-Load-Position_002c-Menu-Item-16"></a>Sets up a position from a position file.  A popup dialog prompts
 you for the file name. If the file contains more than one saved
 position, and you want to load the Nth one, type the number N
 after the file name, separated by a space. Position files must
 be in FEN (Forsythe-Edwards notation), or in the format that the
-Save Position command writes when oldSaveStyle is turned on. 
-<br><dt>Load Next Position<dd><a name="index-Load-Next-Position_002c-Menu-Item-17"></a>Loads the next position from the last position file you loaded. 
+Save Position command writes when oldSaveStyle is turned on.
+<br><dt>Load Next Position<dd><a name="index-Load-Next-Position_002c-Menu-Item-17"></a>Loads the next position from the last position file you loaded.
 <br><dt>Load Previous Position<dd><a name="index-Load-Previous-Position_002c-Menu-Item-18"></a>Loads the previous position from the last position file you
-loaded.  Not available if the last position was loaded from a pipe. 
-<br><dt>Reload Same Position<dd><a name="index-Reload-Same-Position_002c-Menu-Item-19"></a>Reloads the last position you loaded. 
-Not available if the last position was loaded from a pipe. 
-<br><dt>Save Position<dd><a name="index-Save-Game_002c-Menu-Item-20"></a>Appends a diagram of the current position to a file. 
+loaded.  Not available if the last position was loaded from a pipe.
+<br><dt>Reload Same Position<dd><a name="index-Reload-Same-Position_002c-Menu-Item-19"></a>Reloads the last position you loaded.
+Not available if the last position was loaded from a pipe.
+<br><dt>Save Position<dd><a name="index-Save-Game_002c-Menu-Item-20"></a>Appends a diagram of the current position to a file.
 A popup dialog
 prompts you for the file name. Positions are saved in
 FEN (Forsythe-Edwards notation) format unless the <code>oldSaveStyle</code>
 option is true, in which case they are saved in an older,
 human-readable format that is specific to XBoard. Both formats
-can be read back by the &lsquo;<samp><span class="samp">Load Position</span></samp>&rsquo; command. 
+can be read back by the &lsquo;<samp><span class="samp">Load Position</span></samp>&rsquo; command.
 <br><dt>Copy Position<dd><a name="index-Copy-Position_002c-Menu-Item-21"></a>Copies the current position to an internal clipboard in FEN format and
 sets the X selection to the position text.  The position can be pasted
 to another application (such as a text editor or another copy of
 XBoard) using that application's paste command.  In many X
 applications, such as xterm and emacs, the middle mouse button can be
-used for pasting; in XBoard, you must use the Paste Position command. 
+used for pasting; in XBoard, you must use the Paste Position command.
 <br><dt>Paste Position<dd><a name="index-Paste-Position_002c-Menu-Item-22"></a>Interprets the current X selection as a FEN position and loads it, as
-with Load Position. 
-<br><dt>Mail Move<dt>Reload CMail Message<dd><a name="index-Mail-Move_002c-Menu-Item-23"></a><a name="index-Reload-CMail-Message_002c-Menu-Item-24"></a>See <a href="CMail.html#CMail">CMail</a>. 
-<br><dt>Exit<dd><a name="index-Exit_002c-Menu-Item-25"></a>Exits from XBoard. The shifted <kbd>Q</kbd> key is a keyboard equivalent. 
+with Load Position.
+<br><dt>Mail Move<dt>Reload CMail Message<dd><a name="index-Mail-Move_002c-Menu-Item-23"></a><a name="index-Reload-CMail-Message_002c-Menu-Item-24"></a>See <a href="CMail.html#CMail">CMail</a>.
+<br><dt>Exit<dd><a name="index-Exit_002c-Menu-Item-25"></a>Exits from XBoard. The shifted <kbd>Q</kbd> key is a keyboard equivalent.
 </dl>
+   
 
    </body></html>
 

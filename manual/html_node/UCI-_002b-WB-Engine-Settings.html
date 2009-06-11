@@ -37,40 +37,41 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <p><a name="index-Engine-Settings-170"></a><a name="index-Settings_002c-Engine-171"></a>
      <dl>
-<dt>-fUCI or -firstIsUCI true/false<dt>-sUCI or -secondIsUCI true/false<dd><a name="index-fUCI_002c-option-172"></a><a name="index-sUCI_002c-option-173"></a><a name="index-firstIsUCI_002c-option-174"></a><a name="index-secondIsUCI_002c-option-175"></a>Indicates if the mentioned engine executable file is an UCI engine,
+<dt>-fUCI or -firstIsUCI true/false<dt>-sUCI or -secondIsUCI true/false<dd><a name="index-fUCI_002c-option-172"></a><a name="index-sUCI_002c-option-173"></a><a name="index-firstIsUCI_002c-option-174"></a><a name="index-secondIsUCI_002c-option-175"></a>Indicates if the mentioned engine executable file is an UCI engine, 
 and should be run with the aid of the Polyglot adapter rather than directly. 
-Xboard will then pass the other UCI options and engine name to Polyglot
-through a .ini temporary file ceated for the purpose. 
-<br><dt>-PolyglotDir filename<dd><a name="index-PolyglotDir_002c-option-176"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines expects its files. 
-Default: "/usr/local/share/polyglot". 
-<br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-177"></a>Specifies if the Polygot book should be used. 
+Xboard will then pass the other UCI options and engine name to Polyglot 
+through a .ini temporary file ceated for the purpose.
+<br><dt>-PolyglotDir filename<dd><a name="index-PolyglotDir_002c-option-176"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines expects its files.
+Default: "/usr/local/share/polyglot".
+<br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-177"></a>Specifies if the Polygot book should be used.
 <br><dt>-PolyglotBook filename<dd><a name="index-PolyglotBook_002c-option-178"></a>Gives the filename of the opening book that Polyglot should use. 
-From XBoard 4.3.15 on, native WinBoard engines will also use the opening book specified here,
+From XBoard 4.3.15 on, native WinBoard engines will also use the opening book specified here, 
 provided the <code>usePolyglotBook</code> option is set to true,
 and the option <code>firstHasOwnBookUCI</code> or <code>secondHasOwnBookUCI</code> applying to the engine
-is set to false. 
-The engine will be kept in force mode as long as the current position is in book,
-and XBoard will select the book moves for it. Default "". 
+is set to false.
+The engine will be kept in force mode as long as the current position is in book, 
+and XBoard will select the book moves for it. Default "".
 <br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-179"></a><a name="index-sNoOwnBookUCI_002c-option-180"></a><a name="index-firstHasOwnBookUCI_002c-option-181"></a><a name="index-secondHasOwnBookUCI_002c-option-182"></a><a name="index-firstXBook_002c-option-183"></a><a name="index-secondXBook_002c-option-184"></a>Indicates if the mentioned engine has its own opening book it should play from,
-rather than using the external book through XBoard. Default: false. 
-<br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-185"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
-this number is also used to calculate the memory setting of WinBoard engines,
-for those that support the memory feature of WinBoard protocol. Default: 64. 
-<br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-186"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
-this number is also used to calculate the memory setting of WinBoard engines,
-for those that support the memory feature of WinBoard protocol. Default: 4. 
-<br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-187"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
-Default: "/usr/local/share/egtb". 
+rather than using the external book through XBoard. Default: false.
+<br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-185"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size 
+this number is also used to calculate the memory setting of WinBoard engines, 
+for those that support the memory feature of WinBoard protocol. Default: 64.
+<br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-186"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size 
+this number is also used to calculate the memory setting of WinBoard engines, 
+for those that support the memory feature of WinBoard protocol. Default: 4.
+<br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-187"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines.
+Default: "/usr/local/share/egtb".
 <br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-188"></a>Specifies which end-game tables are installed on the computer, and where. 
-The argument is a comma-separated list of format specifications,
-each specification consisting of a format name, a colon, and a directory path name,
+The argument is a comma-separated list of format specifications, 
+each specification consisting of a format name, a colon, and a directory path name, 
 e.g. "nalimov:/usr/local/share/egtb". 
-If the name part matches that of a format that the engine requests through a feature command,
+If the name part matches that of a format that the engine requests through a feature command, 
 xboard will relay the path name for this format to the engine through an egtpath command. 
 One egtpath command for each matching format will be sent. 
-Popular formats are "nalimov" DTM tablebases and "scorpio" bitbases. 
-Default: "". 
+Popular formats are "nalimov" DTM tablebases and "scorpio" bitbases.
+Default: "".
 </dl>
+   
 
    </body></html>
 

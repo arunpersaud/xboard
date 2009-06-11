@@ -37,12 +37,12 @@ Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
 by opening a TCP socket directly from the machine it is running on
 to the ICS. If there is a firewall between your machine and the ICS,
 this won't work. Here are some recipes for getting around common
-kinds of firewalls using special options to XBoard. 
+kinds of firewalls using special options to XBoard.
 Important: See the paragraph in the below about extra echoes, in
 <a href="Limitations.html#Limitations">Limitations</a>.
 
-   <p>Suppose that you can't telnet directly to ICS, but you can telnet
-to a firewall host, log in, and then telnet from there to ICS. 
+Suppose that you can't telnet directly to ICS, but you can telnet
+to a firewall host, log in, and then telnet from there to ICS.
 Let's say the firewall is called &lsquo;<samp><span class="samp">firewall.example.com</span></samp>&rsquo;. Set
 command-line options as follows:
 
@@ -59,13 +59,13 @@ standard telnet login service. Do so, then telnet to ICS, using a
 command like &lsquo;<samp><span class="samp">telnet chessclub.com 5000</span></samp>&rsquo;, or whatever command
 the firewall provides for telnetting to port 5000.
 
-   <p>If your firewall lets you telnet (or rlogin) to remote hosts but
+If your firewall lets you telnet (or rlogin) to remote hosts but
 doesn't let you telnet to port 5000, you may be able to connect to the
 chess server on port 23 instead, which is the port the telnet program
 uses by default.  Some chess servers support this (including
 chessclub.com and freechess.org), while some do not.
 
-   <p>If your chess server does not allow connections on port 23 and your
+If your chess server does not allow connections on port 23 and your
 firewall does not allow you to connect to other ports, you may be able
 to connect by hopping through another host outside the firewall that
 you have an account on.  For instance, suppose you have a shell
@@ -74,45 +74,49 @@ typing &lsquo;<samp><span class="samp">telnet chessclub.com 5000</span></samp>&r
 &lsquo;<samp><span class="samp">telnet foo.edu</span></samp>&rsquo; (or &lsquo;<samp><span class="samp">rlogin foo.edu</span></samp>&rsquo;), log in there, and
 then type &lsquo;<samp><span class="samp">telnet chessclub.com 5000</span></samp>&rsquo;.
 
-   <p>Suppose that you can't telnet directly to ICS, but you can use rsh
-to run programs on a firewall host, and that host can telnet to ICS. 
+Suppose that you can't telnet directly to ICS, but you can use rsh
+to run programs on a firewall host, and that host can telnet to ICS.
 Let's say the firewall is called &lsquo;<samp><span class="samp">rsh.example.com</span></samp>&rsquo;. Set
 command-line options as follows:
 
 <pre class="example">     xboard -ics -gateway rsh.example.com -icshost chessclub.com
 </pre>
-   <p class="noindent">Or in your <samp><span class="file">.Xresources</span></samp> file:
+   <p>
+Or in your <samp><span class="file">.Xresources</span></samp> file:
 
 <pre class="example">     XBoard*gateway: rsh.example.com
      XBoard*internetChessServerHost: chessclub.com
 </pre>
-   <p>Then when you run XBoard in ICS mode, it will connect to
+   <p>
+Then when you run XBoard in ICS mode, it will connect to
 the ICS by using <samp><span class="file">rsh</span></samp> to run the command
 &lsquo;<samp><span class="samp">telnet chessclub.com 5000</span></samp>&rsquo; on host &lsquo;<samp><span class="samp">rsh.example.com</span></samp>&rsquo;.
 
-   <p>Suppose that you can telnet anywhere you want, but you have to
+Suppose that you can telnet anywhere you want, but you have to
 run a special program called <samp><span class="file">ptelnet</span></samp> to do so.
 
-   <p>First, we'll consider the easy case, in which
-&lsquo;<samp><span class="samp">ptelnet chessclub.com 5000</span></samp>&rsquo; gets you to the chess server. 
+First, we'll consider the easy case, in which
+&lsquo;<samp><span class="samp">ptelnet chessclub.com 5000</span></samp>&rsquo; gets you to the chess server.
 In this case set command line options as follows:
 
 <pre class="example">     xboard -ics -telnet -telnetProgram ptelnet
 </pre>
-   <p class="noindent">Or in your <samp><span class="file">.Xresources</span></samp> file:
+   <p>
+Or in your <samp><span class="file">.Xresources</span></samp> file:
 
 <pre class="example">     XBoard*useTelnet: true
      XBoard*telnetProgram: ptelnet
 </pre>
-   <p class="noindent">Then when you run XBoard in ICS mode, it will issue the
+   <p>
+Then when you run XBoard in ICS mode, it will issue the
 command &lsquo;<samp><span class="samp">ptelnet chessclub.com 5000</span></samp>&rsquo; to connect to the ICS.
 
-   <p>Next, suppose that &lsquo;<samp><span class="samp">ptelnet chessclub.com 5000</span></samp>&rsquo; doesn't work;
+Next, suppose that &lsquo;<samp><span class="samp">ptelnet chessclub.com 5000</span></samp>&rsquo; doesn't work;
 that is, your <samp><span class="file">ptelnet</span></samp> program doesn't let you connect to
 alternative ports. As noted above, your chess server may allow you to
 connect on port 23 instead.  In that case, just add the option
 &lsquo;<samp><span class="samp">-icsport ""</span></samp>&rsquo; to the above command, or add
-&lsquo;<samp><span class="samp">XBoard*internetChessServerPort:</span></samp>&rsquo; to your <samp><span class="file">.Xresources</span></samp> file. 
+&lsquo;<samp><span class="samp">XBoard*internetChessServerPort:</span></samp>&rsquo; to your <samp><span class="file">.Xresources</span></samp> file.
 But if your chess server doesn't let you connect on port 23, you will have
 to find some other host outside the firewall and hop through it. For
 instance, suppose you have a shell account at &lsquo;<samp><span class="samp">foo.edu</span></samp>&rsquo;. Set
@@ -120,18 +124,20 @@ command line options as follows:
 
 <pre class="example">     xboard -ics -telnet -telnetProgram ptelnet -icshost foo.edu -icsport ""
 </pre>
-   <p class="noindent">Or in your <samp><span class="file">.Xresources</span></samp> file:
+   <p>
+Or in your <samp><span class="file">.Xresources</span></samp> file:
 
 <pre class="example">     XBoard*useTelnet: true
      XBoard*telnetProgram: ptelnet
      XBoard*internetChessServerHost: foo.edu
      XBoard*internetChessServerPort:
 </pre>
-   <p class="noindent">Then when you run XBoard in ICS mode, it will issue the
+   <p>
+Then when you run XBoard in ICS mode, it will issue the
 command &lsquo;<samp><span class="samp">ptelnet foo.edu</span></samp>&rsquo; to connect to your account at
 &lsquo;<samp><span class="samp">foo.edu</span></samp>&rsquo;. Log in there, then type &lsquo;<samp><span class="samp">telnet chessclub.com 5000</span></samp>&rsquo;.
 
-   <p>ICC timestamp and FICS timeseal do not work through some
+ICC timestamp and FICS timeseal do not work through some
 firewalls.  You can use them only if your firewall gives a clean TCP
 connection with a full 8-bit wide path.  If your firewall allows you
 to get out only by running a special telnet program, you can't use
@@ -142,15 +148,16 @@ running timestamp there.  Follow the instructions above for hopping
 through a host outside the firewall (foo.edu in the example),
 but run timestamp or timeseal on that host instead of telnet.
 
-   <p>Suppose that you have a SOCKS firewall that will give you a clean
+Suppose that you have a SOCKS firewall that will give you a clean
 8-bit wide TCP connection to the chess server, but only after you
 authenticate yourself via the SOCKS protocol.  In that case, you could
 make a socksified version of XBoard and run that.  If you are using
 timestamp or timeseal, you will to socksify it, not XBoard; this may
 be difficult seeing that ICC and FICS do not provide source code for
 these programs.  Socksification is beyond the scope of this document,
-but see the SOCKS Web site at http://www.socks.permeo.com/. 
+but see the SOCKS Web site at http://www.socks.permeo.com/.
 If you are missing SOCKS, try http://www.funbureau.com/.
+
 
    </body></html>
 
