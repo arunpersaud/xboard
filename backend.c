@@ -5606,6 +5606,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                         machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, 0);
                 GameEnds(machineWhite ? BlackWins : WhiteWins,
                            buf1, GE_XBOARD);
+		return;
            } else if(gameInfo.variant != VariantFischeRandom && gameInfo.variant != VariantCapaRandom)
            /* [HGM] Kludge to handle engines that send FRC-style castling
               when they shouldn't (like TSCP-Gothic) */
@@ -5699,42 +5700,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
             int k, count = 0, epFile = epStatus[forwardMostMove]; static int bare = 1;
 	  if(gameInfo.holdingsSize == 0 || gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
 
-            if(appData.testLegality)
-            // don't wait for engine to announce game end if we can judge ourselves
-            switch (MateTest(boards[forwardMostMove],
-                                 PosFlags(forwardMostMove), epFile,
-                                       castlingRights[forwardMostMove]) ) {
-	      case MT_NONE:
-	      case MT_CHECK:
-	      default:
-		break;
-	      case MT_STALEMATE:
-		epStatus[forwardMostMove] = EP_STALEMATE;
-                if(appData.checkMates) {
-		    SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-		    if(gameInfo.variant == VariantLosers || gameInfo.variant == VariantSuicide
-							 || gameInfo.variant == VariantGiveaway) // [HGM] losers:
-			GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, // stalemated side wins!
-				"Xboard adjudication: Stalemate", GE_XBOARD );
-		    else
-			GameEnds( GameIsDrawn, "Xboard adjudication: Stalemate", GE_XBOARD );
-		    return;
-		}
-		break;
-	      case MT_CHECKMATE:
-		epStatus[forwardMostMove] = EP_CHECKMATE;
-                if(appData.checkMates) {
-		    SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-		    GameEnds( WhiteOnMove(forwardMostMove) != (gameInfo.variant == VariantLosers) // [HGM] losers:
-			     ? BlackWins : WhiteWins,            // reverse the result ( A!=1 is !A for a boolean)
-			     "Xboard adjudication: Checkmate", GE_XBOARD );
-		    return;
-		}
-		break;
-	    }
-
 	    if( appData.testLegality )
 	    {   /* [HGM] Some more adjudications for obstinate engines */
 		int NrWN=0, NrBN=0, NrWB=0, NrBB=0, NrWR=0, NrBR=0,
@@ -5742,7 +5707,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                     NrPieces=0, NrPawns=0, PawnAdvance=0, i, j;
 		static int moveCount = 6;
 
-                /* First absolutely insufficient mating material. Count what is on board. */
+                /* Count what is on board. */
 		for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
 		{   ChessSquare p = boards[forwardMostMove][i][j];
 		    int m=i;
@@ -5788,6 +5753,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 		    }
                 }
 
+		/* Some material-based adjudications that have to be made before stalemate test */
 		if(gameInfo.variant == VariantAtomic && NrK < 2) {
 		    // [HGM] atomic: stm must have lost his King on previous move, as destroying own K is illegal
 		     epStatus[forwardMostMove] = EP_CHECKMATE; // make claimable as if stm is checkmated
@@ -5827,6 +5793,43 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                 } else bare = 1;
 
 
+            // don't wait for engine to announce game end if we can judge ourselves
+            switch (MateTest(boards[forwardMostMove],
+                                 PosFlags(forwardMostMove), epFile,
+                                       castlingRights[forwardMostMove]) ) {
+	      case MT_NONE:
+	      case MT_CHECK:
+	      default:
+		break;
+	      case MT_STALEMATE:
+		if(epStatus[forwardMostMove] != EP_CHECKMATE) // [HGM] spare win through baring or K-capt
+		    epStatus[forwardMostMove] = EP_STALEMATE;
+                if(appData.checkMates) {
+		    SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
+		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+		    if(gameInfo.variant == VariantLosers || gameInfo.variant == VariantSuicide
+							 || gameInfo.variant == VariantGiveaway) // [HGM] losers:
+			GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, // stalemated side wins!
+				"Xboard adjudication: Stalemate", GE_XBOARD );
+		    else
+			GameEnds( GameIsDrawn, "Xboard adjudication: Stalemate", GE_XBOARD );
+		    return;
+		}
+		break;
+	      case MT_CHECKMATE:
+		epStatus[forwardMostMove] = EP_CHECKMATE;
+                if(appData.checkMates) {
+		    SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
+		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+		    GameEnds( WhiteOnMove(forwardMostMove) != (gameInfo.variant == VariantLosers) // [HGM] losers:
+			     ? BlackWins : WhiteWins,            // reverse the result ( A!=1 is !A for a boolean)
+			     "Xboard adjudication: Checkmate", GE_XBOARD );
+		    return;
+		}
+		break;
+	    }
+
+                /* Next absolutely insufficient mating material. */
                 if( NrPieces == 2 || gameInfo.variant != VariantXiangqi && 
 				     gameInfo.variant != VariantShatranj && // [HGM] baring will remain possible
 			(NrPieces == 3 && NrWN+NrBN+NrWB+NrBB == 1 ||
