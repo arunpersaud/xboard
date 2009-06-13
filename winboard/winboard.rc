@@ -623,66 +623,70 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,140,232,50,14
     CONTROL         "&normal",OPT_VariantNormal,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,9,14,50,10
-    CONTROL         "&gothic",OPT_VariantGothic,"Button",BS_AUTORADIOBUTTON,9,24,
+    CONTROL         "&FRC",OPT_VariantFRC,"Button",BS_AUTORADIOBUTTON,9,
+                    24,50,10
+    CONTROL         "&wildcastle",OPT_VariantWildcastle,"Button",BS_AUTORADIOBUTTON,9,34,
                     50,10
-    CONTROL         "cra&zyhouse",OPT_VariantCrazyhouse,"Button",BS_AUTORADIOBUTTON,9,34,
-                    50,10
-    CONTROL         "&shogi",OPT_VariantShogi,"Button",BS_AUTORADIOBUTTON,9,
+    CONTROL         "&nocastle",OPT_VariantNocastle,"Button",BS_AUTORADIOBUTTON,9,
                     44,50,10
-    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,9,54,50,
-                    10
-    CONTROL         "cou&rier",OPT_VariantCourier,"Button",BS_AUTORADIOBUTTON,9,64,
-                    50,10
-    CONTROL         "&Berolina",OPT_VariantBerolina,"Button",BS_AUTORADIOBUTTON,9,74,
-                    50,10
-    CONTROL         "&Janus",OPT_VariantJanus,"Button",BS_AUTORADIOBUTTON,9,84,
-                    50,10
-    CONTROL         "&3Check",OPT_Variant3Check,"Button",BS_AUTORADIOBUTTON,9,94,
-                    50,10
-    CONTROL         "&knightmate",OPT_VariantKnightmate,"Button",BS_AUTORADIOBUTTON,
-                    70,14,50,10
-    CONTROL         "&atomic",OPT_VariantAtomic,"Button",BS_AUTORADIOBUTTON,
-                    70,24,50,10
     CONTROL         "&losers",OPT_VariantLosers,"Button",BS_AUTORADIOBUTTON,
-                    70,34,50,10
+                    9,54,50,10
+    CONTROL         "&giveaway",OPT_VariantGiveaway,"Button",BS_AUTORADIOBUTTON,
+                    9,64,50,10
     CONTROL         "s&uicide",OPT_VariantSuicide,"Button",BS_AUTORADIOBUTTON,
-                    70,44,50,10
-    CONTROL         "&capablanca",OPT_VariantCapablanca,"Button",BS_AUTORADIOBUTTON,70,
-                    54,50,10
-    CONTROL         "&twokings",OPT_VariantTwoKings,"Button",BS_AUTORADIOBUTTON,70,64,
+                    9,74,50,10
+    CONTROL         "&3Check",OPT_Variant3Check,"Button",BS_AUTORADIOBUTTON,9,84,
                     50,10
-    CONTROL         "&CRC",OPT_VariantCRC,"Button",BS_AUTORADIOBUTTON,70,74,
+    CONTROL         "&twokings",OPT_VariantTwoKings,"Button",BS_AUTORADIOBUTTON,9,94,
                     50,10
-    CONTROL         "&wildcastle",OPT_VariantWildcastle,"Button",BS_AUTORADIOBUTTON,70,84,
+    CONTROL         "&atomic",OPT_VariantAtomic,"Button",BS_AUTORADIOBUTTON,
+                    9,104,50,10
+    CONTROL         "cra&zyhouse",OPT_VariantCrazyhouse,"Button",BS_AUTORADIOBUTTON,70,14,
                     50,10
-    CONTROL         "&great",OPT_VariantGreat,"Button",BS_AUTORADIOBUTTON,70,94,
-                    50,10
-    CONTROL         "&fairy",OPT_VariantFairy,"Button",BS_AUTORADIOBUTTON,134,
-                    14,50,10
-    CONTROL         "&bughouse",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,134,24,50,
+    CONTROL         "&bughouse",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,70,24,50,
                     10
-    CONTROL         "&Shatranj",OPT_VariantShatranj,"Button",BS_AUTORADIOBUTTON,134,
-                    34,50,10
-    CONTROL         "&FRC",OPT_VariantFRC,"Button",BS_AUTORADIOBUTTON,134,
+    CONTROL         "&Twilight",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,70,34,50,
+                    10
+    CONTROL         "&shogi",OPT_VariantShogi,"Button",BS_AUTORADIOBUTTON,70,
                     44,50,10
-    CONTROL         "c&ylinder",OPT_VariantCylinder,"Button",BS_AUTORADIOBUTTON,134,
+    CONTROL         "su&per",OPT_VariantSuper,"Button",BS_AUTORADIOBUTTON,70,
                     54,50,10
-    CONTROL         "&Falcon",OPT_VariantFalcon,"Button",BS_AUTORADIOBUTTON,134,
-                    64,50,10
-    CONTROL         "su&per",OPT_VariantSuper,"Button",BS_AUTORADIOBUTTON,134,
-                    74,50,10
-    CONTROL         "&nocastle",OPT_VariantNocastle,"Button",BS_AUTORADIOBUTTON,134,
+    CONTROL         "&knightmate",OPT_VariantKnightmate,"Button",BS_AUTORADIOBUTTON,
+                    70,64,50,10
+    CONTROL         "&Berolina",OPT_VariantBerolina,"Button",BS_AUTORADIOBUTTON,70,74,
+                    50,10
+    CONTROL         "c&ylinder",OPT_VariantCylinder,"Button",BS_AUTORADIOBUTTON,70,
                     84,50,10
-    GROUPBOX        "Variant",IDC_STATIC,4,4,185,105
-    LTEXT           "Board size:",IDC_STATIC,10,125,40,8
-    EDITTEXT        IDC_Ranks,60,121,14,14,ES_AUTOHSCROLL
-    LTEXT           "ranks",IDC_STATIC,77,125,22,8
-    EDITTEXT        IDC_Files,116,121,14,14,ES_AUTOHSCROLL
-    LTEXT           "files",IDC_STATIC,133,125,37,8
-    LTEXT           "Holdings with room for:",IDC_STATIC,10,143,90,8
-    EDITTEXT        IDC_Holdings,93,139,14,14,ES_AUTOHSCROLL
-    LTEXT           "pieces",IDC_STATIC,110,143,22,8
-    LTEXT           "('-1' means defaults for selected variant)",IDC_STATIC,10,161,150,8
+    CONTROL         "&fairy",OPT_VariantFairy,"Button",BS_AUTORADIOBUTTON,70,
+                    94,50,10
+    CONTROL         "&gothic",OPT_VariantGothic,"Button",BS_AUTORADIOBUTTON,134,14,
+                    50,10
+    CONTROL         "&capablanca",OPT_VariantCapablanca,"Button",BS_AUTORADIOBUTTON,134,
+                    24,50,10
+    CONTROL         "&Janus",OPT_VariantJanus,"Button",BS_AUTORADIOBUTTON,134,34,
+                    50,10
+    CONTROL         "&CRC",OPT_VariantCRC,"Button",BS_AUTORADIOBUTTON,134,44,
+                    50,10
+    CONTROL         "&Falcon",OPT_VariantFalcon,"Button",BS_AUTORADIOBUTTON,134,
+                    54,50,10
+    CONTROL         "cou&rier",OPT_VariantCourier,"Button",BS_AUTORADIOBUTTON,134,64,
+                    50,10
+    CONTROL         "&Great",OPT_VariantGreat,"Button",BS_AUTORADIOBUTTON,134,74,
+                    50,10
+    CONTROL         "&Shatranj",OPT_VariantShatranj,"Button",BS_AUTORADIOBUTTON,134,
+                    84,50,10
+    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,134,94,50,
+                    10
+    GROUPBOX        "Variant",IDC_STATIC,4,4,185,115
+    LTEXT           "Board size:",IDC_STATIC,10,135,40,8
+    EDITTEXT        IDC_Ranks,60,131,14,14,ES_AUTOHSCROLL
+    LTEXT           "ranks",IDC_STATIC,77,135,22,8
+    EDITTEXT        IDC_Files,116,131,14,14,ES_AUTOHSCROLL
+    LTEXT           "files",IDC_STATIC,133,135,37,8
+    LTEXT           "Holdings with room for:",IDC_STATIC,10,153,90,8
+    EDITTEXT        IDC_Holdings,93,149,14,14,ES_AUTOHSCROLL
+    LTEXT           "pieces",IDC_STATIC,110,153,22,8
+    LTEXT           "('-1' means defaults for selected variant)",IDC_STATIC,10,171,150,8
 END
 
 DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 226
@@ -800,7 +804,7 @@ END
 
 DLG_EnginePlayOptions DIALOG DISCARDABLE  0, 0, 208, 202
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Engine Options"
+CAPTION "Adjudications"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "Ponder Next Move",IDC_EpPonder,"Button",BS_AUTOCHECKBOX |
@@ -850,7 +854,7 @@ END
 
 DLG_OptionsUCI DIALOG DISCARDABLE  0, 0, 228, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "UCI Options"
+CAPTION "Engine Settings"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Polyglot Directory:",IDC_STATIC,2,8,58,8
@@ -1124,8 +1128,8 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions
-        MENUITEM "Engines...",                  IDM_EnginePlayOptions
-        MENUITEM "UCI...",                      IDM_OptionsUCI
+        MENUITEM "Adjudications...",            IDM_EnginePlayOptions
+        MENUITEM "Engine Settings...",          IDM_OptionsUCI
         MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
         MENUITEM "&Fonts...",                   IDM_Fonts
         MENUITEM "Soun&ds...",                  IDM_Sounds
