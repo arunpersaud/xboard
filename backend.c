@@ -351,6 +351,8 @@ PosFlags(index)
     flags &= ~F_ALL_CASTLE_OK;
   case VariantGiveaway:		// [HGM] moved this case label one down: seems Giveaway does have castling on ICC!
     flags |= F_IGNORE_CHECK;
+  case VariantLosers:
+    flags |= F_MANDATORY_CAPTURE; //[HGM] losers: sets flag so TestLegality rejects non-capts if capts exist
     break;
   case VariantAtomic:
     flags |= F_IGNORE_CHECK | F_ATOMIC_CAPTURE;
@@ -4792,8 +4794,8 @@ InitPosition(redraw)
 
      if(gameInfo.variant == VariantSuper) Prelude(initialPosition);
      if(gameInfo.variant == VariantGreat) { // promotion commoners
-	initialPosition[PieceToNumber(WhiteMan)][BOARD_RGHT-1] = WhiteMan;
-	initialPosition[PieceToNumber(WhiteMan)][BOARD_RGHT-2] = 9;
+	initialPosition[PieceToNumber(WhiteMan)][BOARD_WIDTH-1] = WhiteMan;
+	initialPosition[PieceToNumber(WhiteMan)][BOARD_WIDTH-2] = 9;
 	initialPosition[BOARD_HEIGHT-1-PieceToNumber(WhiteMan)][0] = BlackMan;
 	initialPosition[BOARD_HEIGHT-1-PieceToNumber(WhiteMan)][1] = 9;
      }
@@ -5810,8 +5812,13 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                 if(appData.checkMates) {
 		    SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
 		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-		    GameEnds( GameIsDrawn, "Xboard adjudication: Stalemate",
-                	GE_XBOARD );
+		    if(gameInfo.variant == VariantLosers || gameInfo.variant == VariantSuicide
+							 || gameInfo.variant == VariantGiveaway) // [HGM] losers:
+			GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, // stalemated side wins!
+				"Xboard adjudication: Stalemate", GE_XBOARD );
+		    else
+			GameEnds( GameIsDrawn, "Xboard adjudication: Stalemate", GE_XBOARD );
+		    return;
 		}
 		break;
 	      case MT_CHECKMATE:
@@ -5819,9 +5826,10 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                 if(appData.checkMates) {
 		    SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
 		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-		    GameEnds( WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins, 
-		    "Xboard adjudication: Checkmate", 
-		    GE_XBOARD );
+		    GameEnds( WhiteOnMove(forwardMostMove) != (gameInfo.variant == VariantLosers) // [HGM] losers:
+			     ? BlackWins : WhiteWins,            // reverse the result ( A!=1 is !A for a boolean)
+			     "Xboard adjudication: Checkmate", GE_XBOARD );
+		    return;
 		}
 		break;
 	    }
@@ -5829,7 +5837,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    if( appData.testLegality )
 	    {   /* [HGM] Some more adjudications for obstinate engines */
 		int NrWN=0, NrBN=0, NrWB=0, NrBB=0, NrWR=0, NrBR=0,
-                    NrWQ=0, NrBQ=0, NrW=0, bishopsColor = 0,
+                    NrWQ=0, NrBQ=0, NrW=0, NrK=0, bishopsColor = 0,
                     NrPieces=0, NrPawns=0, PawnAdvance=0, i, j;
 		static int moveCount = 6;
 
@@ -5840,6 +5848,9 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 
 		    switch((int) p)
 		    {   /* count B,N,R and other of each side */
+                        case WhiteKing:
+                        case BlackKing:
+			     NrK++; break; // [HGM] atomic: count Kings
                         case WhiteKnight:
                              NrWN++; break;
                         case WhiteBishop:
@@ -5876,6 +5887,45 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 		    }
                 }
 
+		if(gameInfo.variant == VariantAtomic && NrK < 2) {
+		    // [HGM] atomic: stm must have lost his King on previous move, as destroying own K is illegal
+		     epStatus[forwardMostMove] = EP_CHECKMATE; // make claimable as if stm is checkmated
+		     if(appData.checkMates) {
+			 SendMoveToProgram(forwardMostMove-1, cps->other); // make sure opponent gets move
+                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                         GameEnds( WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins, 
+							"Xboard adjudication: King destroyed", GE_XBOARD );
+                         return;
+		     }
+		}
+
+		/* Bare King in Shatranj (loses) or Losers (wins) */
+                if( NrW == 1 || NrPieces - NrW == 1) {
+                  if( gameInfo.variant == VariantLosers) { // [HGM] losers: bare King wins (stm must have it first)
+		     epStatus[forwardMostMove] = EP_STALEMATE; // kludge to make position claimable as win
+		     if(appData.checkMates) {
+			 SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
+                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                         GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
+							"Xboard adjudication: Bare king", GE_XBOARD );
+                         return;
+		     }
+		  } else
+                  if( gameInfo.variant == VariantShatranj && --bare < 0)
+                  {    /* bare King */
+			epStatus[forwardMostMove] = EP_CHECKMATE; // make claimable as win for stm
+			if(appData.checkMates) {
+			    /* but only adjudicate if adjudication enabled */
+			    SendMoveToProgram(forwardMostMove-1, cps->other); // make sure opponent gets move
+			    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+			    GameEnds( NrW > 1 ? WhiteWins : NrPieces - NrW > 1 ? BlackWins : GameIsDrawn, 
+							"Xboard adjudication: Bare king", GE_XBOARD );
+			    return;
+			}
+		  }
+                } else bare = 1;
+
+
                 if( NrPieces == 2 || gameInfo.variant != VariantXiangqi && 
 				     gameInfo.variant != VariantShatranj && // [HGM] baring will remain possible
 			(NrPieces == 3 && NrWN+NrBN+NrWB+NrBB == 1 ||
@@ -5894,20 +5944,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                          return;
                      }
                 }
-
-		/* Shatranj baring rule */
-                if( gameInfo.variant == VariantShatranj && (NrW == 1 || NrPieces - NrW == 1) )
-                {    /* bare King */
-
-                     if(--bare < 0 && appData.checkMates) {
-                         /* but only adjudicate them if adjudication enabled */
-			 SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                         GameEnds( NrW > 1 ? WhiteWins : NrPieces - NrW > 1 ? BlackWins : GameIsDrawn, 
-							"Xboard adjudication: Bare king", GE_XBOARD );
-                         return;
-                     }
-                } else bare = 1;
 
                 /* Then some trivial draws (only adjudicate, cannot be claimed) */
                 if(NrPieces == 4 && 
@@ -7794,20 +7830,35 @@ GameEnds(result, resultDetails, whosays)
         if(gameMode == TwoMachinesPlay && appData.testClaims) {
 	    if(appData.testLegality && whosays >= GE_ENGINE1 ) {
                 char claimer;
+		ChessMove trueResult = (ChessMove) -1;
 
                 claimer = whosays == GE_ENGINE1 ?      /* color of claimer */
                                             first.twoMachinesColor[0] :
                                             second.twoMachinesColor[0] ;
-                if( (gameInfo.holdingsWidth == 0 || gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) &&
-                    (result == WhiteWins && claimer == 'w' ||
-                     result == BlackWins && claimer == 'b'   ) ) {
-		if (appData.debugMode) {
-	 	     fprintf(debugFP, "result=%d sp=%d move=%d\n",
-		 	result, epStatus[forwardMostMove], forwardMostMove);
+
+		// [HGM] losers: because the logic is becoming a bit hairy, determine true result first
+		if(epStatus[forwardMostMove] == EP_CHECKMATE) {
+		    /* [HGM] verify: engine mate claims accepted if they were flagged */
+		    trueResult = WhiteOnMove(forwardMostMove) != (gameInfo.variant == VariantLosers)
+			? BlackWins : WhiteWins; // [HGM] losers: reverse the result in VariantLosers!
+		} else
+		if(epStatus[forwardMostMove] == EP_STALEMATE) {
+		    trueResult = GameIsDrawn; // default; in variants where stalemate loses, Status is CHECKMATE
+		    if(gameInfo.variant == VariantGiveaway || gameInfo.variant == VariantSuicide || 
+		       gameInfo.variant == VariantLosers)  // [HGM] losers: in giveaway variants stalemate wins
+			trueResult = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins;
 		}
-                      /* [HGM] verify: engine mate claims accepted if they were flagged */
-		      if(epStatus[forwardMostMove] != EP_CHECKMATE &&
-			 result != (WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins)) {
+
+		// now verify win claims, but not in drop games, as we don't understand those yet
+                if( (gameInfo.holdingsWidth == 0 || gameInfo.variant == VariantSuper
+						 || gameInfo.variant == VariantGreat) &&
+                    (result == WhiteWins && claimer == 'w' ||
+                     result == BlackWins && claimer == 'b'   ) ) { // case to verify: engine claims own win
+		      if (appData.debugMode) {
+	 		fprintf(debugFP, "result=%d sp=%d move=%d\n",
+		 		result, epStatus[forwardMostMove], forwardMostMove);
+		      }
+		      if(result != trueResult) {
 	                      sprintf(buf, "False win claim: '%s'", resultDetails);
 	                      result = claimer == 'w' ? BlackWins : WhiteWins;
 	                      resultDetails = buf;
