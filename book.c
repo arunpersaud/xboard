@@ -500,7 +500,6 @@ char *ProbeBook(int moveNr, char *book)
     for(i=0; i<count; i++){
         total_weight += entries[i].weight;
     }
-    srandom( time(0) );
     j = (random() & 0x7FFF) * total_weight >> 15; // create random < total_weight
     total_weight = 0;
     for(i=0; i<count; i++){

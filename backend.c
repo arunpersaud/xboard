@@ -619,6 +619,7 @@ InitBackEnd1()
     ShowThinkingEvent(); // [HGM] thinking: make sure post/nopost state is set according to options
 
     GetTimeMark(&programStartTime);
+    srand(programStartTime.ms); // [HGM] book: makes sure random is unpredictabe to msec level
 
     ClearProgramStats();
     programStats.ok_to_send = 1;
@@ -4255,106 +4256,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
     }
 }
 
-#if 0
-/* [AS] FRC game initialization */
-static int FindEmptySquare( Board board, int n )
-{
-    int i = 0;
-
-    while( 1 ) {
-        while( board[0][i] != EmptySquare ) i++;
-        if( n == 0 )
-            break;
-        n--;
-        i++;
-    }
-
-    return i;
-}
-
-static void ShuffleFRC( Board board )
-{
-    int i;
-
-    srand( time(0) );
-    
-    for( i=0; i<8; i++ ) {
-        board[0][i] = EmptySquare;
-    }
-
-    board[0][(rand() % 4)*2  ] = WhiteBishop; /* On dark square */
-    board[0][(rand() % 4)*2+1] = WhiteBishop; /* On lite square */
-    board[0][FindEmptySquare(board, rand() % 6)] = WhiteQueen;
-    board[0][FindEmptySquare(board, rand() % 5)] = WhiteKnight;
-    board[0][FindEmptySquare(board, rand() % 4)] = WhiteKnight;
-    board[0][ i=FindEmptySquare(board, 0) ] = WhiteRook;
-    initialRights[1]  = initialRights[4]  =
-    castlingRights[0][1] = castlingRights[0][4] = i;
-    board[0][ i=FindEmptySquare(board, 0) ] = WhiteKing;
-    initialRights[2]  = initialRights[5]  =
-    castlingRights[0][2] = castlingRights[0][5] = i;
-    board[0][ i=FindEmptySquare(board, 0) ] = WhiteRook;
-    initialRights[0]  = initialRights[3]  =
-    castlingRights[0][0] = castlingRights[0][3] = i;
-
-    for( i=BOARD_LEFT; i<BOARD_RGHT; i++ ) {
-        board[BOARD_HEIGHT-1][i] = board[0][i] + BlackPawn - WhitePawn;
-    }
-}
-
-static unsigned char FRC_KnightTable[10] = {
-    0x00, 0x01, 0x02, 0x03, 0x11, 0x12, 0x13, 0x22, 0x23, 0x33
-};
-
-static void SetupFRC( Board board, int pos_index )
-{
-    int i;
-    unsigned char knights;
-
-    /* Bring the position index into a safe range (just in case...) */
-    if( pos_index < 0 ) pos_index = 0;
-
-    pos_index %= 960;
-
-    /* Clear the board */
-    for( i=0; i<8; i++ ) {
-        board[0][i] = EmptySquare;
-    }
-
-    /* Place bishops and queen */
-    board[0][ (pos_index % 4)*2 + 1 ] = WhiteBishop; /* On lite square */
-    pos_index /= 4;
-    
-    board[0][ (pos_index % 4)*2     ] = WhiteBishop; /* On dark square */
-    pos_index /= 4;
-
-    board[0][ FindEmptySquare(board, pos_index % 6) ] = WhiteQueen;
-    pos_index /= 6;
-
-    /* Place knigths */
-    knights = FRC_KnightTable[ pos_index ];
-
-    board[0][ FindEmptySquare(board, knights / 16) ] = WhiteKnight;
-    board[0][ FindEmptySquare(board, knights % 16) ] = WhiteKnight;
-
-    /* Place rooks and king */
-    board[0][ i=FindEmptySquare(board, 0) ] = WhiteRook;
-    initialRights[1]  = initialRights[4]  =
-    castlingRights[0][1] = castlingRights[0][4] = i;
-    board[0][ i=FindEmptySquare(board, 0) ] = WhiteKing;
-    initialRights[2]  = initialRights[5]  =
-    castlingRights[0][2] = castlingRights[0][5] = i;
-    board[0][ i=FindEmptySquare(board, 0) ] = WhiteRook;
-    initialRights[0]  = initialRights[3]  =
-    castlingRights[0][0] = castlingRights[0][3] = i;
-
-    /* Mirror piece placement for black */
-    for( i=BOARD_LEFT; i<BOARD_RGHT; i++ ) {
-        board[BOARD_HEIGHT-1][i] = board[0][i] + BlackPawn - WhitePawn;
-    }
-}
-#else
-// [HGM] shuffle: a more general way to suffle opening setups, applicable to arbitrry variants.
+// [HGM] shuffle: a general way to suffle opening setups, applicable to arbitrary variants.
 // All positions will have equal probability, but the current method will not provide a unique
 // numbering scheme for arrays that contain 3 or more pieces of the same kind.
 #define DARK 1
@@ -4363,7 +4265,7 @@ static void SetupFRC( Board board, int pos_index )
 
 int squaresLeft[4];
 int piecesLeft[(int)BlackPawn];
-u64 seed, nrOfShuffles;
+int seed, nrOfShuffles;
 
 void GetPositionNumber()
 {	// sets global variable seed
@@ -4371,7 +4273,6 @@ void GetPositionNumber()
 
 	seed = appData.defaultFrcPosition;
 	if(seed < 0) { // randomize based on time for negative FRC position numbers
-		srandom(time(0)); 
 		for(i=0; i<50; i++) seed += random();
 		seed = random() ^ random() >> 8 ^ random() << 8;
 		if(seed<0) seed = -seed;
@@ -4509,8 +4410,6 @@ void SetUpShuffle(Board board, int number)
 
 	if(number >= 0) appData.defaultFrcPosition %= nrOfShuffles; // normalize
 }
-
-#endif
 
 int SetCharTable( char *table, const char * map )
 /* [HGM] moved here from winboard.c because of its general usefulness */
