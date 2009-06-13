@@ -727,6 +727,7 @@ void GenLegalCallback(board, flags, kind, rf, ff, rt, ft, closure)
 typedef struct {
     int rf, ff, rt, ft;
     ChessMove kind;
+    int captures; // [HGM] losers
 } LegalityTestClosure;
 
 
@@ -1026,6 +1027,8 @@ void LegalityTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
 //    if (appData.debugMode) {
 //        fprintf(debugFP, "Legality test: %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
 //    }
+    if(board[rt][ft] != EmptySquare || kind==WhiteCapturesEnPassant || kind==BlackCapturesEnPassant)
+	cl->captures++; // [HGM] losers: count legal captures
     if (rf == cl->rf && ff == cl->ff && rt == cl->rt && ft == cl->ft)
       cl->kind = kind;
 }
@@ -1055,7 +1058,11 @@ ChessMove LegalityTest(board, flags, epfile, castlingRights, rf, ff, rt, ft, pro
     cl.rt = rt;
     cl.ft = ft;
     cl.kind = IllegalMove;
+    cl.captures = 0; // [HGM] losers: prepare to count legal captures.
     GenLegal(board, flags, epfile, castlingRights, LegalityTestCallback, (VOIDSTAR) &cl);
+    if((flags & F_MANDATORY_CAPTURE) && cl.captures && board[rt][ft] == EmptySquare
+		&& cl.kind != WhiteCapturesEnPassant && cl.kind != BlackCapturesEnPassant)
+	return(IllegalMove); // [HGM] losers: if there are legal captures, non-capts are illegal
 
     if(gameInfo.variant == VariantShogi) {
         /* [HGM] Shogi promotions. '=' means defer */

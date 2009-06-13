@@ -77,6 +77,7 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 				   and all non-pawns on adjacent squares; 
 				   destroying your own king is illegal */
 #define F_FRC_TYPE_CASTLING 256 /* generate castlings as captures of own Rook */
+#define F_MANDATORY_CAPTURE 0x100
 
 /* Special epfile values. [HGM] positive values are non-reversible moves! */
 #define EP_NONE (-4)           /* [HGM] Tricky! order matters:            */

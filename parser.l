@@ -243,7 +243,8 @@ extern void CopyBoard P((Board to, Board from));
       return (int) IllegalMove;
 
     result = LegalityTest(boards[yyboardindex],
-			  PosFlags(yyboardindex), EP_UNKNOWN,
+			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
+			  EP_UNKNOWN,
                           initialRights, /* [HGM] assume all castlings allowed */
                           currentMoveString[1] - ONE,
                           currentMoveString[0] - AAA,
@@ -304,7 +305,8 @@ extern void CopyBoard P((Board to, Board from));
       return 0;
 
     result = LegalityTest(boards[yyboardindex],
-			  PosFlags(yyboardindex), EP_UNKNOWN,
+			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
+			  EP_UNKNOWN,
                           initialRights, /* [HGM] assume all castlings allowed */
                           currentMoveString[1] - ONE,
                           currentMoveString[0] - AAA,
@@ -485,7 +487,8 @@ extern void CopyBoard P((Board to, Board from));
     }
 
     result = LegalityTest(boards[yyboardindex],
-			  PosFlags(yyboardindex), EP_UNKNOWN,
+			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
+			  EP_UNKNOWN,
                           initialRights, /* [HGM] assume all castlings allowed */
                           currentMoveString[1] - ONE,
                           currentMoveString[0] - AAA,
@@ -525,7 +528,8 @@ extern void CopyBoard P((Board to, Board from));
     }
 
     result = LegalityTest(boards[yyboardindex],
-			  PosFlags(yyboardindex), EP_UNKNOWN,
+			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
+			  EP_UNKNOWN,
                           initialRights, /* [HGM] assume all castlings allowed */
                           currentMoveString[1] - ONE,
                           currentMoveString[0] - AAA,
@@ -706,7 +710,8 @@ extern void CopyBoard P((Board to, Board from));
         fprintf(debugFP, "long castling %d %d\n", ff, ft);
     }
     return (int) LegalityTest(boards[yyboardindex],
-			      PosFlags(yyboardindex), EP_UNKNOWN,
+			      PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: e.p.!
+			      EP_UNKNOWN,
                               castlingRights[yyboardindex], /* [HGM] use true castling rights */
 			      rf, ff, rt, ft, NULLCHAR);
 }
@@ -762,7 +767,8 @@ extern void CopyBoard P((Board to, Board from));
     }
 
     return (int) LegalityTest(boards[yyboardindex],
-                              PosFlags(yyboardindex), EP_UNKNOWN,
+			      PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: e.p.!
+			      EP_UNKNOWN,
                               castlingRights[yyboardindex], /* [HGM] use true castling rights */
 			      rf, ff, rt, ft, NULLCHAR);
 }
