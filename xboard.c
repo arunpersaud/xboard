@@ -7395,9 +7395,8 @@ void AboutProc(w, event, prms, nprms)
     sprintf(buf, "%s%s\n\n%s\n%s\n%s\n%s\n\n%s%s\n%s",
 	    programVersion, zippy,
 	    "Copyright 1991 Digital Equipment Corporation",
-	    "Enhancements Copyright 1992-2001 Free Software Foundation",
+	    "Enhancements Copyright 1992-2009 Free Software Foundation",
 	    "Enhancements Copyright 2005 Alessandro Scotti",
-	    "Enhancements Copyright 2007-2008 H.G.Muller",
 	    PRODUCT, " is free software and carries NO WARRANTY;",
 	    "see the file COPYING for more information.");
     ErrorPopUp(_("About XBoard"), buf, FALSE);
