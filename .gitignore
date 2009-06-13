@@ -15,7 +15,7 @@ config.h.in
 depcomp
 mdate-sh
 missing
-parser.c
+./parser.c
 stamp-h
 stamp-h1
 stamp-vti
