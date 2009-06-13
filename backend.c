@@ -749,6 +749,8 @@ InitBackEnd1()
     first.useFEN960 = FALSE; second.useFEN960 = FALSE;
     first.useOOCastle = TRUE; second.useOOCastle = TRUE;
     /* End of new features added by Tord. */
+    first.fenOverride  = appData.fenOverride1;
+    second.fenOverride = appData.fenOverride2;
 
     /* [HGM] time odds: set factor for each machine */
     first.timeOdds  = appData.firstTimeOdds;
@@ -4753,7 +4755,7 @@ SendBoard(cps, moveNum)
     char message[MSG_SIZ];
     
     if (cps->useSetboard) {
-      char* fen = PositionToFEN(moveNum, cps->useFEN960);
+      char* fen = PositionToFEN(moveNum, cps->fenOverride);
       sprintf(message, "setboard %s\n", fen);
       SendToProgram(message, cps);
       free(fen);
@@ -9484,7 +9486,7 @@ SaveGamePGN(f)
     PrintPGNTags(f, &gameInfo);
     
     if (backwardMostMove > 0 || startedFromSetupPosition) {
-        char *fen = PositionToFEN(backwardMostMove, 1);
+        char *fen = PositionToFEN(backwardMostMove, NULL);
         fprintf(f, "[FEN \"%s\"]\n[SetUp \"1\"]\n", fen);
 	fprintf(f, "\n{--------------\n");
 	PrintPosition(f, backwardMostMove);
@@ -9757,7 +9759,7 @@ SavePosition(f, dummy, dummy2)
 	PrintPosition(f, currentMove);
 	fprintf(f, "--------------]\n");
     } else {
-	fen = PositionToFEN(currentMove, 1);
+	fen = PositionToFEN(currentMove, NULL);
 	fprintf(f, "%s\n", fen);
 	free(fen);
     }
@@ -13293,9 +13295,9 @@ PGNDate()
 
 
 char *
-PositionToFEN(move, useFEN960)
+PositionToFEN(move, overrideCastling)
      int move;
-     int useFEN960;
+     char *overrideCastling;
 {
     int i, j, fromX, fromY, toX, toY;
     int whiteToPlay;
@@ -13370,6 +13372,9 @@ PositionToFEN(move, useFEN960)
     *p++ = whiteToPlay ? 'w' : 'b';
     *p++ = ' ';
 
+  if(q = overrideCastling) { // [HGM] FRC: override castling & e.p fields for non-compliant engines
+    while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' ';
+  } else {
   if(nrCastlingRights) {
      q = p;
      if(gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom) {
@@ -13426,6 +13431,7 @@ PositionToFEN(move, useFEN960)
 	*p++ = '-';
     }
     *p++ = ' ';
+  }
   }
 
     /* [HGM] find reversible plies */

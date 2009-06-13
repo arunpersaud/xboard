@@ -1244,6 +1244,8 @@ ArgDescriptor argDescriptors[] = {
   { "autoLogo", ArgBoolean, (LPVOID) &appData.autoLogo, TRUE },
   { "firstOptions", ArgString, (LPVOID) &appData.firstOptions, FALSE },
   { "secondOptions", ArgString, (LPVOID) &appData.secondOptions, FALSE },
+  { "firstNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride1, FALSE },
+  { "secondNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride2, FALSE },
 
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },

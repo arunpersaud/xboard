@@ -1335,6 +1335,12 @@ XtResource clientResources[] = {
     { "secondOptions", "secondOptions", XtRString,
         sizeof(String), XtOffset(AppDataPtr, secondOptions),
 	XtRImmediate, (XtPointer) "" },
+    { "firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, fenOverride1),
+	XtRImmediate, (XtPointer) 0 },
+    { "secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XtRString,
+        sizeof(String), XtOffset(AppDataPtr, fenOverride2),
+	XtRImmediate, (XtPointer) 0 },
 
     // [HGM] Winboard_x UCI options
     { "firstIsUCI", "firstIsUCI", XtRBoolean,
@@ -1734,6 +1740,8 @@ XrmOptionDescRec shellOptions[] = {
     { "-noGUI", "noGUI", XrmoptionNoArg, "True" },
     { "-firstOptions", "firstOptions", XrmoptionSepArg, NULL },
     { "-secondOptions", "secondOptions", XrmoptionSepArg, NULL },
+    { "-firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
+    { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
 };
 
 
@@ -6272,7 +6280,7 @@ void CopyPositionProc(w, event, prms, nprms)
     int ret;
 
     if (selected_fen_position) free(selected_fen_position);
-    selected_fen_position = (char *)PositionToFEN(currentMove,1);
+    selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
     if (!selected_fen_position) return;
     ret = XtOwnSelection(menuBarWidget, XA_PRIMARY,
 			 CurrentTime,
@@ -7392,7 +7400,7 @@ void AboutProc(w, event, prms, nprms)
 #else
     char *zippy = "";
 #endif
-    sprintf(buf, "%s%s\n\n%s\n%s\n%s\n%s\n\n%s%s\n%s",
+    sprintf(buf, "%s%s\n\n%s\n%s\n%s\n\n%s%s\n%s",
 	    programVersion, zippy,
 	    "Copyright 1991 Digital Equipment Corporation",
 	    "Enhancements Copyright 1992-2009 Free Software Foundation",

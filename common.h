@@ -592,6 +592,8 @@ typedef struct {
     Boolean noGUI;      /* [HGM] fast: suppress all display updates */
     char *firstOptions; /* [HGM] options   */
     char *secondOptions;
+    char *fenOverride1;
+    char *fenOverride2;
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

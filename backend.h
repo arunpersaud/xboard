@@ -102,7 +102,7 @@ extern Board boards[];
 
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */
-char *PositionToFEN P((int move, int useFEN960));
+char *PositionToFEN P((int move, char* useFEN960));
 void AlphaRank P((char *s, int n)); /* [HGM] Shogi move preprocessor */
 void EditPositionPasteFEN P((char *fen));
 void TimeDelay P((long ms));
@@ -332,6 +332,7 @@ typedef struct _CPS {
     char *comboList[10*MAX_OPTIONS];
     char *optionSettings;
     void *programLogo; /* [HGM] logo: bitmap of the logo                    */
+    char *fenOverride; /* [HGM} FRC: force FEN casling & ep fields by hand  */
 } ChessProgramState;
 
 extern ChessProgramState first, second;
