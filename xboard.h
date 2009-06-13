@@ -103,8 +103,8 @@ typedef struct {
 
 #define BORDER_X_OFFSET 3
 #define BORDER_Y_OFFSET 27
-#define FIRST_CHESS_PROGRAM	"./fmax"
-#define SECOND_CHESS_PROGRAM	"./fmax"
+#define FIRST_CHESS_PROGRAM	"fairymax"
+#define SECOND_CHESS_PROGRAM	"fairymax"
 
 /* Default to no flashing (the "usual" XBoard behavior) */
 #define FLASH_COUNT	0		/* Number of times to flash */
