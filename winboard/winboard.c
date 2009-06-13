@@ -4481,7 +4481,14 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
       x2 = boardRect.left + animInfo.pos.x;
       y2 = boardRect.top + animInfo.pos.y;
       clips[num_clips++] = CreateRectRgn(MIN(x,x2), MIN(y,y2), MAX(x,x2)+squareSize, MAX(y,y2)+squareSize);
-      /* [HGM] old location of "slight kludge" below */
+      /* Slight kludge.  The real problem is that after AnimateMove is
+	 done, the position on the screen does not match lastDrawn.
+	 This currently causes trouble only on e.p. captures in
+	 atomic, where the piece moves to an empty square and then
+	 explodes.  The old and new positions both had an empty square
+	 at the destination, but animation has drawn a piece there and
+	 we have to remember to erase it. [HGM] moved until after setting lastDrawn */
+      lastDrawn[animInfo.to.y][animInfo.to.x] = animInfo.piece;
     }
   }
 
@@ -4558,14 +4565,6 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
     DrawPieceOnDC(hdcmem, animInfo.piece,
 		  ((int) animInfo.piece < (int) BlackPawn),
                   (animInfo.from.y + animInfo.from.x) % 2, x, y, tmphdc);
-      /* Slight kludge.  The real problem is that after AnimateMove is
-	 done, the position on the screen does not match lastDrawn.
-	 This currently causes trouble only on e.p. captures in
-	 atomic, where the piece moves to an empty square and then
-	 explodes.  The old and new positions both had an empty square
-	 at the destination, but animation has drawn a piece there and
-	 we have to remember to erase it. [HGM] moved until after setting lastDrawn */
-      lastDrawn[animInfo.to.y][animInfo.to.x] = animInfo.piece;
   }
 
   /* Release the bufferBitmap by selecting in the old bitmap 
