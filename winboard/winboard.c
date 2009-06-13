@@ -6275,6 +6275,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   /* [AS] Also move "attached" child windows */
   case WM_WINDOWPOSCHANGING:
+
     if( hwnd == hwndMain && appData.useStickyWindows ) {
         LPWINDOWPOS lpwp = (LPWINDOWPOS) lParam;
 
@@ -6282,11 +6283,17 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             /* Window is moving */
             RECT rcMain;
 
-            GetWindowRect( hwnd, &rcMain );
+//            GetWindowRect( hwnd, &rcMain ); //[HGM] sticky: in XP this returned new position, not old
+	    rcMain.left   = boardX;           //              replace by these 4 lines to reconstruct old rect
+	    rcMain.right  = boardX + winWidth;
+	    rcMain.top    = boardY;
+	    rcMain.bottom = boardY + winHeight;
             
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, moveHistoryDialog, &wpMoveHistory );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, evalGraphDialog, &wpEvalGraph );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, engineOutputDialog, &wpEngineOutput );
+	    boardX = lpwp->x;
+            boardY = lpwp->y;
         }
     }
     break;
