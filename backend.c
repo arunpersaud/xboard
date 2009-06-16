@@ -2276,6 +2276,12 @@ read_from_ics(isr, closure, data, count, error)
 			    nrAlph  += (parse[i] >= 'A' && parse[i] <= 'Z');
 			}
 			if(nrAlph < 9*nrDigit) { // if more than 10% digit we assume search info
+			    int depth=0; float score;
+			    if(sscanf(parse, "%f/%d", &score, &depth) == 2 && depth>0) {
+				// [HGM] kibitz: save kibitzed opponent info for PGN and eval graph
+				pvInfoList[forwardMostMove-1].depth = depth;
+				pvInfoList[forwardMostMove-1].score = 100*score;
+			    }
 			    OutputKibitz(suppressKibitz, parse);
 			} else {
 			    char tmp[MSG_SIZ];
@@ -5640,9 +5646,9 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  if(appData.autoKibitz && !appData.icsEngineAnalyze ) { /* [HGM] kibitz: send most-recent PV info to ICS */
 		char buf[3*MSG_SIZ];
 
-		sprintf(buf, "kibitz %d/%+.2f (%.2f sec, %.0f nodes, %1.0f knps) PV = %s\n",
-			programStats.depth,
+		sprintf(buf, "kibitz %+.2f/%d (%.2f sec, %.0f nodes, %1.0f knps) PV=%s\n",
 			programStats.score / 100.,
+			programStats.depth,
 			programStats.time / 100.,
 			u64ToDouble(programStats.nodes),
 			u64ToDouble(programStats.nodes) / (10*abs(programStats.time) + 1.),
@@ -5699,6 +5705,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  // [HGM] some adjudications useful with buggy engines
             int k, count = 0, epFile = epStatus[forwardMostMove]; static int bare = 1;
 	  if(gameInfo.holdingsSize == 0 || gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
+
 
 	    if( appData.testLegality )
 	    {   /* [HGM] Some more adjudications for obstinate engines */
@@ -9552,7 +9559,16 @@ SaveGamePGN(f)
 	linelen += numlen;
 
 	/* Get move */
-	movelen = strlen(parseList[i]); /* [HGM] pgn: line-break point before move */
+	strcpy(move_buffer, parseList[i]); // [HGM] pgn: print move via buffer, so it can be edited
+	movelen = strlen(move_buffer); /* [HGM] pgn: line-break point before move */
+        if( i >= 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
+		int p = movelen - 1;
+		if(move_buffer[p] == ' ') p--;
+		if(move_buffer[p] == ')') { // [HGM] pgn: strip off ICS time if we have extended info
+		    while(p && move_buffer[--p] != '(');
+		    if(p && move_buffer[p-1] == ' ') move_buffer[movelen=p-1] = 0;
+		}
+        }
 
 	/* Print move */
 	blank = linelen > 0 && movelen > 0;
@@ -9565,7 +9581,7 @@ SaveGamePGN(f)
 	    fprintf(f, " ");
 	    linelen++;
 	}
-	fprintf(f, parseList[i]);
+	fprintf(f, move_buffer);
 	linelen += movelen;
 
         /* [AS] Add PV info if present */
@@ -9573,14 +9589,14 @@ SaveGamePGN(f)
             /* [HGM] add time */
             char buf[MSG_SIZ]; int seconds = 0;
 
-#if 0
+#if 1
             if(i >= backwardMostMove) {
 		if(WhiteOnMove(i))
 			seconds = timeRemaining[0][i] - timeRemaining[0][i+1]
-				  + GetTimeQuota(i/2) / WhitePlayer()->timeOdds;
+				  + GetTimeQuota(i/2) / (1000*WhitePlayer()->timeOdds);
 		else
 			seconds = timeRemaining[1][i] - timeRemaining[1][i+1]
-                                  + GetTimeQuota(i/2) / WhitePlayer()->other->timeOdds;
+                                  + GetTimeQuota(i/2) / (1000*WhitePlayer()->other->timeOdds);
             }
             seconds = (seconds+50)/100; // deci-seconds, rounded to nearest
 #else

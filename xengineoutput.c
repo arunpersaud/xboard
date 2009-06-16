@@ -954,13 +954,22 @@ EngineOutputProc(w, event, prms, nprms)
 }
 
 // [HGM] kibitz: write kibitz line; split window for it if necessary
-void OutputKibitz(char *text)
+void OutputKibitz(int window, char *text)
 {
 	if(!EngineOutputIsUp()) return;
-	if(!opponentKibitzes) DoClearMemo(1);
-	opponentKibitzes = TRUE; // thas causes split window DisplayMode in ICS modes.
+	if(!opponentKibitzes) { // on first kibitz of game, clear memos
+	    DoClearMemo(1);
+	    if(gameMode == IcsObserving) DoClearMemo(0);
+	}
+	opponentKibitzes = TRUE; // this causes split window DisplayMode in ICS modes.
 	VerifyDisplayMode();
-	DoSetWindowText(1, nLabel, gameMode == IcsPlayingWhite ? gameInfo.black : gameInfo.white); // opponent name
-	SetIcon( 1, nColorIcon,  gameMode == IcsPlayingWhite ? nColorBlack : nColorWhite);
-	InsertIntoMemo(1, text);
+	if(gameMode == IcsObserving) {
+	    DoSetWindowText(0, nLabel, gameInfo.white);
+	    SetIcon( 0, nColorIcon,  nColorWhite);
+	    SetIcon( 0, nStateIcon,  nClear);
+	}
+	DoSetWindowText(1, nLabel, gameMode == IcsPlayingBlack ? gameInfo.white : gameInfo.black); // opponent name
+	SetIcon( 1, nColorIcon,  gameMode == IcsPlayingBlack ? nColorWhite : nColorBlack);
+	SetIcon( 1, nStateIcon,  nClear);
+	InsertIntoMemo(window-1, text);
 }
