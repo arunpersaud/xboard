@@ -1059,6 +1059,9 @@ XtResource clientResources[] = {
     { "zippyReplayTimeout", "zippyReplayTimeout", XtRInt, sizeof(int),
 	XtOffset(AppDataPtr, zippyReplayTimeout), XtRImmediate,
         (XtPointer) ZIPPY_REPLAY_TIMEOUT },
+    { "zippyShortGame", "zippyShortGame", XtRInt, sizeof(int),
+	XtOffset(AppDataPtr, zippyShortGame), XtRImmediate,
+        (XtPointer) 0 },
 #endif
     { "flashCount", "flashCount", XtRInt, sizeof(int),
 	XtOffset(AppDataPtr, flashCount), XtRImmediate,
@@ -1601,6 +1604,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-zippyVariants", "zippyVariants", XrmoptionSepArg, NULL },
     { "-zippyMaxGames", "zippyMaxGames", XrmoptionSepArg, NULL },
     { "-zippyReplayTimeout", "zippyReplayTimeout", XrmoptionSepArg, NULL },
+    { "-zippyShortGame", "zippyShortGame", XrmoptionSepArg, NULL },
 #endif
     { "-flashCount", "flashCount", XrmoptionSepArg, NULL },
     { "-flash", "flashCount", XrmoptionNoArg, "3" },

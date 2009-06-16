@@ -96,6 +96,7 @@ void HandleMachineMove P((char *message, ChessProgramState *cps));
 
 static char zippyPartner[MSG_SIZ];
 static char zippyLastOpp[MSG_SIZ];
+static char zippyOffender[MSG_SIZ]; // [HGM] aborter
 static int zippyConsecGames;
 static time_t zippyLastGameEnd;
 
@@ -768,6 +769,8 @@ void ZippyGameEnd(result, resultDetails)
       SendToICS("\n");
     }
     zippyLastGameEnd = time(0);
+    if(forwardMostMove < appData.zippyShortGame) 
+	strcpy(zippyOffender, zippyLastOpp); else zippyOffender[0] = 0; // [HGM] aborter
 }
 
 /*
@@ -830,6 +833,17 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
 	difftime(time(0), zippyLastGameEnd) < appData.zippyReplayTimeout) {
       sprintf(buf, "%stell %s Sorry, you have just played %d consecutive games against %s.  To give others a chance, please wait %d seconds or until someone else has played.\n%sdecline %s\n",
 	      ics_prefix, opponent, zippyConsecGames, ics_handle,
+	      appData.zippyReplayTimeout, ics_prefix, opponent);
+      SendToICS(buf);
+      return;
+    }
+
+    /* [HGM] aborter: opponent is cheater that aborts games he doesn't like on first move. Make him wait */
+    if (strcmp(opponent, zippyOffender) == 0 &&
+	difftime(time(0), zippyLastGameEnd) < appData.zippyReplayTimeout) {
+      sprintf(buf, "%stell %s Sorry, your previous game against %s was rather short. "
+		   " It will wait %d seconds to see if a tougher opponent comes along.\n%sdecline %s\n",
+	      ics_prefix, opponent, ics_handle,
 	      appData.zippyReplayTimeout, ics_prefix, opponent);
       SendToICS(buf);
       return;

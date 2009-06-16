@@ -1286,6 +1286,7 @@ ArgDescriptor argDescriptors[] = {
   { "zippyVariants", ArgString, (LPVOID) &appData.zippyVariants, FALSE },
   { "zippyMaxGames", ArgInt, (LPVOID)&appData.zippyMaxGames, FALSE },
   { "zippyReplayTimeout", ArgInt, (LPVOID)&appData.zippyReplayTimeout, FALSE },
+  { "zippyShortGame", ArgInt, (LPVOID)&appData.zippyShortGame, FALSE },
   /* Kludge to allow winboard.ini files from buggy 4.0.4 to be read: */
   { "zippyReplyTimeout", ArgInt, (LPVOID)&junk, FALSE },
 #endif

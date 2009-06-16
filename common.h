@@ -566,6 +566,7 @@ typedef struct {
     char *zippyVariants;
     int zippyMaxGames;
     int zippyReplayTimeout; /*seconds*/
+    int zippyShortGame; /* [HGM] aborter   */
 #endif
 
     char *serverMovesName;

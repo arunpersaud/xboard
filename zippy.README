@@ -278,6 +278,15 @@ NEW OPTIONS
 	starts a game between Zippy and the first opponent to respond,
 	giving Zippy no choice about whether to accept or decline.
 
+  -zippyShortGame int 
+        If zippyShortGame > 0, Zippy will decline all challenges 
+	from an opponent that terminated a game before the given number
+	of ply (with an explanatory tell) until either someone else has
+	played or zippyReplayTimeout seconds have elapsed. Do not set
+	the number of moves to large; the number of ply during which
+	opponents can abort a game without rating change would be a
+	good setting. Default: zippyShortGame=0.
+
 =====================
 ENVIRONMENT VARIABLES
 =====================
