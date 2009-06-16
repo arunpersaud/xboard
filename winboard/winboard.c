@@ -103,7 +103,7 @@ void DisplayHoldingsCount(HDC hdc, int x, int y, int align, int copyNumber);
 VOID NewVariantPopup(HWND hwnd);
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 		   /*char*/int promoChar));
-void AnimateAtomicCapture(int toX, int toY, int nFrames);
+void AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames);
 
 typedef struct {
   ChessSquare piece;  
@@ -132,10 +132,10 @@ static HighlightInfo highlightInfo        = { {{-1, -1}, {-1, -1}} };
 static HighlightInfo premoveHighlightInfo = { {{-1, -1}, {-1, -1}} };
 
 typedef struct { // [HGM] atomic
-  int x, y, radius;
+  int fromX, fromY, toX, toY, radius;
 } ExplodeInfo;
 
-static ExplodeInfo explodeInfo = {0, 0, 0};
+static ExplodeInfo explodeInfo;
 
 /* Window class names */
 char szAppName[] = "WinBoard";
@@ -4511,7 +4511,8 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   if(explodeInfo.radius) { // [HGM] atomic
 	HBRUSH oldBrush;
 	int x, y, r=(explodeInfo.radius * squareSize)/100;
-	SquareToPos(explodeInfo.y, explodeInfo.x, &x, &y);
+        board[explodeInfo.fromY][explodeInfo.fromX] = EmptySquare; // suppress display of capturer
+	SquareToPos(explodeInfo.toY, explodeInfo.toX, &x, &y);
 	x += squareSize/2;
 	y += squareSize/2;
         if(!fullrepaint) {
@@ -5055,7 +5056,10 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                PromotionPopup(hwnd); /* [HGM] Popup now calls FinishMove */
           } else {
 	    if(saveAnimate /* ^$!%@#$!$ */  && gameInfo.variant == VariantAtomic 
-			&& boards[currentMove][toY][toX] != EmptySquare) AnimateAtomicCapture(toX, toY, 20);
+			  && (boards[currentMove][toY][toX] != EmptySquare || 
+					moveType == WhiteCapturesEnPassant || 
+					moveType == BlackCapturesEnPassant   ) )
+		AnimateAtomicCapture(fromX, fromY, toX, toY, 20);
 	    FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
 	  }
       }
@@ -10595,13 +10599,15 @@ static void Tween( POINT * start, POINT * mid, POINT * finish, int factor,
 
 
 void
-AnimateAtomicCapture(int toX, int toY, int nFrames)
+AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames)
 {	// [HGM] atomic: animate blast wave
 	int i;
 if(appData.debugMode) fprintf(debugFP, "exploding (%d,%d)\n", toX, toY);
-	explodeInfo.x = toX;
-	explodeInfo.y = toY;
-	for(i=0; i<nFrames; i++) {
+	explodeInfo.fromX = fromX;
+	explodeInfo.fromY = fromY;
+	explodeInfo.toX = toX;
+	explodeInfo.toY = toY;
+	for(i=1; i<nFrames; i++) {
 	    explodeInfo.radius = (i*180)/(nFrames-1);
 	    DrawPosition(FALSE, NULL);
 	    Sleep(appData.animSpeed);
@@ -10670,8 +10676,9 @@ AnimateMove(board, fromX, fromY, toX, toY)
   animInfo.pos = finish;
   DrawPosition(FALSE, NULL);
   animInfo.piece = EmptySquare;
-  if(gameInfo.variant == VariantAtomic && board[toY][toX] != EmptySquare)
-    AnimateAtomicCapture(toX, toY, 2*nFrames);
+  if(gameInfo.variant == VariantAtomic && 
+     (board[toY][toX] != EmptySquare || fromX != toX && (piece == WhitePawn || piece == BlackPawn) ) )
+	AnimateAtomicCapture(fromX, fromY, toX, toY, 2*nFrames);
 }
 
 /*      Convert board position to corner of screen rect and color       */
