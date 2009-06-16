@@ -3136,7 +3136,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   ReleaseDC(hwndMain, hdc);
 
   /* Compute where everything goes */
-  if(first.programLogo || second.programLogo) {
+  if((first.programLogo || second.programLogo) && !tinyLayout) {
         /* [HGM] logo: if either logo is on, reserve space for it */
 	logoHeight =  2*clockSize.cy;
 	leftLogoRect.left   = OUTER_MARGIN;
@@ -3150,19 +3150,19 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 	rightLogoRect.bottom = OUTER_MARGIN + logoHeight;
 
 
-    blackRect.left = leftLogoRect.right;
-    blackRect.right = rightLogoRect.left;
-    blackRect.top = OUTER_MARGIN;
-    blackRect.bottom = blackRect.top + clockSize.cy;
+    whiteRect.left = leftLogoRect.right;
+    whiteRect.right = OUTER_MARGIN + boardWidth/2 - INNER_MARGIN/2;
+    whiteRect.top = OUTER_MARGIN;
+    whiteRect.bottom = whiteRect.top + logoHeight;
 
-    whiteRect.left = blackRect.left ;
-    whiteRect.right = blackRect.right;
-    whiteRect.top = blackRect.bottom;
-    whiteRect.bottom = leftLogoRect.bottom;
+    blackRect.right = rightLogoRect.left;
+    blackRect.left = whiteRect.right + INNER_MARGIN;
+    blackRect.top = whiteRect.top;
+    blackRect.bottom = whiteRect.bottom;
   } else {
     whiteRect.left = OUTER_MARGIN;
     whiteRect.right = whiteRect.left + boardWidth/2 - INNER_MARGIN/2;
-    whiteRect.top = OUTER_MARGIN + logoHeight;
+    whiteRect.top = OUTER_MARGIN;
     whiteRect.bottom = whiteRect.top + clockSize.cy;
 
     blackRect.left = whiteRect.right + INNER_MARGIN;
@@ -4877,7 +4877,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		   gameMode == MachinePlaysWhite) {
 	  CallFlagEvent();
         } else if (gameMode == EditGame) {
-          AdjustClock((logoHeight > 0 ? flipView: flipClock), -1);
+          AdjustClock(flipClock, -1);
         }
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
 	if (gameMode == EditPosition) {
@@ -4886,7 +4886,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		   gameMode == MachinePlaysBlack) {
 	  CallFlagEvent();
         } else if (gameMode == EditGame) {
-          AdjustClock(!(logoHeight > 0 ? flipView: flipClock), -1);
+          AdjustClock(!flipClock, -1);
 	}
       }
       if (!appData.highlightLastMove) {
@@ -5133,9 +5133,9 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     if(y == -2) {
       /* [HGM] right mouse button in clock area edit-game mode ups clock */
       if (PtInRect((LPRECT) &whiteRect, pt)) {
-          if (gameMode == EditGame) AdjustClock((logoHeight > 0 ? flipView: flipClock), 1);
+          if (gameMode == EditGame) AdjustClock(flipClock, 1);
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
-          if (gameMode == EditGame) AdjustClock(!(logoHeight > 0 ? flipView: flipClock), 1);
+          if (gameMode == EditGame) AdjustClock(!flipClock, 1);
       }
     }
     DrawPosition(TRUE, NULL);
@@ -5941,6 +5941,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_FlipClock:
       flipClock = !flipClock;
       DisplayBothClocks();
+      DrawPosition(FALSE, NULL);
       break;
 
     case IDM_GeneralOptions:
@@ -8258,7 +8259,7 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
     if (tinyLayout)
       sprintf(buf, "%c %s %s", color[0], TimeString(timeRemaining), flagFell);
     else
-      sprintf(buf, "%s: %s %s", color, TimeString(timeRemaining), flagFell);
+      sprintf(buf, "%s:%c%s %s", color, (logoHeight>0 ? 0 : ' '), TimeString(timeRemaining), flagFell);
     str = buf;
   } else {
     str = color;
@@ -8276,7 +8277,17 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
   ExtTextOut(hdc, rect->left + MESSAGE_LINE_LEFTMARGIN,
 	     rect->top, ETO_CLIPPED|ETO_OPAQUE,
 	     rect, str, strlen(str), NULL);
-
+  if(logoHeight > 0 && appData.clockMode) {
+      RECT r;
+      sprintf(buf, "%s %s", TimeString(timeRemaining), flagFell);
+      r.top = rect->top + logoHeight/2;
+      r.left = rect->left;
+      r.right = rect->right;
+      r.bottom = rect->bottom;
+      ExtTextOut(hdc, rect->left + MESSAGE_LINE_LEFTMARGIN,
+	         r.top, ETO_CLIPPED|ETO_OPAQUE,
+	         &r, str, strlen(str), NULL);
+  }
   (void) SetTextColor(hdc, oldFg);
   (void) SetBkColor(hdc, oldBg);
   (void) SelectObject(hdc, oldFont);
@@ -9532,7 +9543,7 @@ DisplayWhiteClock(long timeRemaining, int highlight)
   hdc = GetDC(hwndMain);
   if (!IsIconic(hwndMain)) {
     DisplayAClock(hdc, timeRemaining, highlight, 
-			(logoHeight > 0 ? flipView: flipClock) ? &blackRect : &whiteRect, "White", flag);
+			flipClock ? &blackRect : &whiteRect, "White", flag);
   }
   if (highlight && iconCurrent == iconBlack) {
     iconCurrent = iconWhite;
@@ -9556,7 +9567,7 @@ DisplayBlackClock(long timeRemaining, int highlight)
   hdc = GetDC(hwndMain);
   if (!IsIconic(hwndMain)) {
     DisplayAClock(hdc, timeRemaining, highlight, 
-			(logoHeight > 0 ? flipView: flipClock) ? &whiteRect : &blackRect, "Black", flag);
+			flipClock ? &whiteRect : &blackRect, "Black", flag);
   }
   if (highlight && iconCurrent == iconWhite) {
     iconCurrent = iconBlack;
