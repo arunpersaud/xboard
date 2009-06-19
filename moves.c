@@ -1145,8 +1145,9 @@ int MateTest(board, flags, epfile, castlingRights)
     if (cl.count > 0) {
 	return inCheck ? MT_CHECK : MT_NONE;
     } else {
-        return inCheck || gameInfo.variant == VariantXiangqi || gameInfo.variant == VariantShatranj ?
-                         MT_CHECKMATE : MT_STALEMATE;
+        return inCheck ? MT_CHECKMATE 
+		       : (gameInfo.variant == VariantXiangqi || gameInfo.variant == VariantShatranj) ? 
+			  MT_STAINMATE : MT_STALEMATE;
     }
 }
 

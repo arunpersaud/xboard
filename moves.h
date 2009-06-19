@@ -88,6 +88,7 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 #define EP_RULE_DRAW  (-14)
 #define EP_INSUF_DRAW  (-13)
 #define EP_DRAWS (-10)
+#define EP_WINS (-9)
 #define EP_BEROLIN_A 16        /* [HGM] berolina: add to file if pawn to be taken of a-side of e.p.file */
 #define EP_CHECKMATE 100       /* [HGM] verify: record mates in epStatus for easy claim verification    */
 #define EP_STALEMATE -16
@@ -135,6 +136,7 @@ extern ChessMove LegalityTest P((Board board, int flags, int epfile,
 #define MT_CHECK 1
 #define MT_CHECKMATE 2
 #define MT_STALEMATE 3
+#define MT_STAINMATE 4 /* [HGM] xq: for games where being stalemate counts as a loss */
 
 /* Return MT_NONE, MT_CHECK, MT_CHECKMATE, or MT_STALEMATE */
 extern int MateTest P((Board board, int flags, int epfile,
