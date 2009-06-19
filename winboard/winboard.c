@@ -201,6 +201,7 @@ static HICON iconWhite, iconBlack, iconCurrent;
 static int doingSizing = FALSE;
 static int lastSizing = 0;
 static int prevStderrPort;
+static HBITMAP userLogo;
 
 /* [AS] Support for background textures */
 #define BACK_TEXTURE_MODE_DISABLED      0
@@ -543,6 +544,21 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
  *
 \*---------------------------------------------------------------------------*/
 
+void
+SetUserLogo()
+{   // update user logo if necessary
+    static char oldUserName[MSG_SIZ], *curName;
+
+    if(appData.autoLogo) {
+	  curName = UserName();
+	  if(strcmp(curName, oldUserName)) {
+		sprintf(oldUserName, "logos\\%s.bmp", curName);
+		userLogo = LoadImage( 0, oldUserName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
+		strcpy(oldUserName, curName);
+	  }
+    }
+}
+
 BOOL
 InitApplication(HINSTANCE hInstance)
 {
@@ -658,12 +674,18 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
           fprintf( debugFP, "Unable to load logo bitmap '%s'\n", appData.secondLogo );
       }
   } else if(appData.autoLogo) {
+      char buf[MSG_SIZ];
+      if(appData.icsActive) { // [HGM] logo: in ICS mode second can be used for ICS
+	sprintf(buf, "logos\\%s.bmp", appData.icsHost);
+	second.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+      } else
       if(appData.secondDirectory && appData.secondDirectory[0]) {
-	char buf[MSG_SIZ];
 	sprintf(buf, "%s\\logo.bmp", appData.secondDirectory);
 	second.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
       }
   }
+
+  SetUserLogo();
 
   iconWhite = LoadIcon(hInstance, "icon_white");
   iconBlack = LoadIcon(hInstance, "icon_black");
@@ -4234,7 +4256,7 @@ void fputDW(FILE *f, int x)
 #define MAX_CLIPS 200   /* more than enough */
 
 VOID
-DrawLogoOnDC(HDC hdc, RECT logoRect, ChessProgramState *cps)
+DrawLogoOnDC(HDC hdc, RECT logoRect, HBITMAP logo)
 {
 //  HBITMAP bufferBitmap;
   BITMAP bi;
@@ -4243,13 +4265,13 @@ DrawLogoOnDC(HDC hdc, RECT logoRect, ChessProgramState *cps)
   HBITMAP hbm;
   int w = 100, h = 50;
 
-  if(cps->programLogo == NULL) return;
+  if(logo == NULL) return;
 //  GetClientRect(hwndMain, &Rect);
 //  bufferBitmap = CreateCompatibleBitmap(hdc, Rect.right-Rect.left+1,
 //					Rect.bottom-Rect.top+1);
   tmphdc = CreateCompatibleDC(hdc);
-  hbm = SelectObject(tmphdc, (HBITMAP) cps->programLogo);
-  if( GetObject( cps->programLogo, sizeof(bi), &bi ) > 0 ) {
+  hbm = SelectObject(tmphdc, logo);
+  if( GetObject( logo, sizeof(bi), &bi ) > 0 ) {
             w = bi.bmWidth;
             h = bi.bmHeight;
   }
@@ -4532,8 +4554,39 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
     DrawBoardOnDC(hdcmem, board, tmphdc);
   }
   if(logoHeight) {
-	DrawLogoOnDC(hdc, leftLogoRect, flipClock ? &second : &first);
-	DrawLogoOnDC(hdc, rightLogoRect, flipClock ? &first : &second);
+	HBITMAP whiteLogo = (HBITMAP) first.programLogo, blackLogo = (HBITMAP) second.programLogo;
+	if(appData.autoLogo) {
+	  
+	  switch(gameMode) { // pick logos based on game mode
+	    case IcsObserving:
+		whiteLogo = second.programLogo; // ICS logo
+		blackLogo = second.programLogo;
+	    default:
+		break;
+	    case IcsPlayingWhite:
+		if(!appData.zippyPlay) whiteLogo = userLogo;
+		blackLogo = second.programLogo; // ICS logo
+		break;
+	    case IcsPlayingBlack:
+		whiteLogo = second.programLogo; // ICS logo
+		blackLogo = appData.zippyPlay ? first.programLogo : userLogo;
+		break;
+	    case TwoMachinesPlay:
+	        if(first.twoMachinesColor[0] == 'b') {
+		    whiteLogo = second.programLogo;
+		    blackLogo = first.programLogo;
+		}
+		break;
+	    case MachinePlaysWhite:
+		blackLogo = userLogo;
+		break;
+	    case MachinePlaysBlack:
+		whiteLogo = userLogo;
+		blackLogo = first.programLogo;
+	  }
+	}
+	DrawLogoOnDC(hdc, leftLogoRect, flipClock ? blackLogo : whiteLogo);
+	DrawLogoOnDC(hdc, rightLogoRect, flipClock ? whiteLogo : blackLogo);
   }
 
   if( appData.highlightMoveWithArrow ) {
@@ -7290,6 +7343,7 @@ TypeInNameDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case IDOK:
       GetDlgItemText(hDlg, OPT_Name, move, sizeof(move));
       appData.userName = strdup(move);
+      SetUserLogo();
 
       EndDialog(hDlg, TRUE);
       return TRUE;
