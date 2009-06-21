@@ -157,7 +157,7 @@ int LoadGameFromFile P((char *filename, int n, char *title, int useList));
 int LoadPositionFromFile P((char *filename, int n, char *title));
 int SavePositionToFile P((char *filename));
 void ApplyMove P((int fromX, int fromY, int toX, int toY, int promoChar,
-		  Board board));
+		  Board board, char *castle, char *ep));
 void MakeMove P((int fromX, int fromY, int toX, int toY, int promoChar));
 void ShowMove P((int fromX, int fromY, int toX, int toY));
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
@@ -3724,7 +3724,7 @@ ParseBoard12(string)
 	  else  strcpy(buf, str); // might be castling
 	  if((prom = strstr(move_str, "=")) && !strstr(buf, "=")) 
 		strcat(buf, prom); // long move lacks promo specification!
-	  if(!appData.testLegality) {
+	  if(!appData.testLegality && move_str[1] != '@') { // drops never ambiguous (parser chokes on long form!)
 		if(appData.debugMode) 
 			fprintf(debugFP, "replaced ICS move '%s' by '%s'\n", move_str, buf);
 		strcpy(move_str, buf);
@@ -5217,9 +5217,9 @@ if(appData.debugMode) fprintf(debugFP, "moveType 1 = %d, promochar = %x\n", move
        * If they don't match, display an error message.
        */
       int saveAnimate;
-      Board testBoard;
+      Board testBoard; char testRights[BOARD_SIZE]; char testStatus;
       CopyBoard(testBoard, boards[currentMove]);
-      ApplyMove(fromX, fromY, toX, toY, promoChar, testBoard);
+      ApplyMove(fromX, fromY, toX, toY, promoChar, testBoard, testRights, &testStatus);
 
       if (CompareBoards(testBoard, boards[currentMove+1])) {
 	ForwardInner(currentMove+1);
@@ -5262,19 +5262,6 @@ if(appData.debugMode) fprintf(debugFP, "moveType 1 = %d, promochar = %x\n", move
   thinkOutput[0] = NULLCHAR;
 
   MakeMove(fromX, fromY, toX, toY, promoChar); /*updates forwardMostMove*/
-
-    if((gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) 
-		&& promoChar != NULLCHAR && gameInfo.holdingsSize) { 
-	// [HGM] superchess: take promotion piece out of holdings
-	int k = PieceToNumber(CharToPiece(ToUpper(promoChar)));
-	if(WhiteOnMove(forwardMostMove-1)) {
-	    if(!--boards[forwardMostMove][k][BOARD_WIDTH-2])
-		boards[forwardMostMove][k][BOARD_WIDTH-1] = EmptySquare;
-	} else {
-	    if(!--boards[forwardMostMove][BOARD_HEIGHT-1-k][1])
-		boards[forwardMostMove][BOARD_HEIGHT-1-k][0] = EmptySquare;
-	}
-    }
 
   if (gameMode == BeginningOfGame) {
     if (appData.noChessProgram) {
@@ -6994,11 +6981,13 @@ ParseGameHistory(game)
 				 EP_UNKNOWN, fromY, fromX, toY, toX, promoChar,
 				 parseList[boardIndex]);
 	CopyBoard(boards[boardIndex + 1], boards[boardIndex]);
+        {int i; for(i=0; i<BOARD_SIZE; i++) castlingRights[boardIndex+1][i] = castlingRights[boardIndex][i];}
 	/* currentMoveString is set as a side-effect of yylex */
 	strcpy(moveList[boardIndex], currentMoveString);
 	strcat(moveList[boardIndex], "\n");
 	boardIndex++;
-	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[boardIndex]);
+	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[boardIndex], 
+					castlingRights[boardIndex], &epStatus[boardIndex]);
         switch (MateTest(boards[boardIndex], PosFlags(boardIndex),
                                  EP_UNKNOWN, castlingRights[boardIndex]) ) {
 	  case MT_NONE:
@@ -7020,55 +7009,55 @@ ParseGameHistory(game)
 
 /* Apply a move to the given board  */
 void
-ApplyMove(fromX, fromY, toX, toY, promoChar, board)
+ApplyMove(fromX, fromY, toX, toY, promoChar, board, castling, ep)
      int fromX, fromY, toX, toY;
      int promoChar;
      Board board;
+     char *castling;
+     char *ep;
 {
   ChessSquare captured = board[toY][toX], piece, king; int p, oldEP = EP_NONE, berolina = 0;
 
     /* [HGM] compute & store e.p. status and castling rights for new position */
-    /* if we are updating a board for which those exist (i.e. in boards[])    */
-    if((p = ((int)board - (int)boards[0])/((int)boards[1]-(int)boards[0])) < MAX_MOVES && p > 0)
+    /* we can always do that 'in place', now pointers to these rights are passed to ApplyMove */
     { int i;
 
       if(gameInfo.variant == VariantBerolina) berolina = EP_BEROLIN_A;
-      oldEP = epStatus[p-1];
-      epStatus[p] = EP_NONE;
+      oldEP = *ep;
+      *ep = EP_NONE;
 
       if( board[toY][toX] != EmptySquare ) 
-           epStatus[p] = EP_CAPTURE;  
+           *ep = EP_CAPTURE;  
 
       if( board[fromY][fromX] == WhitePawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
-	       epStatus[p] = EP_PAWN_MOVE;
+	       *ep = EP_PAWN_MOVE;
            if( toY-fromY==2) {
                if(toX>BOARD_LEFT   && board[toY][toX-1] == BlackPawn &&
 			gameInfo.variant != VariantBerolina || toX < fromX)
-	              epStatus[p] = toX | berolina;
+	              *ep = toX | berolina;
                if(toX<BOARD_RGHT-1 && board[toY][toX+1] == BlackPawn &&
 			gameInfo.variant != VariantBerolina || toX > fromX) 
-	              epStatus[p] = toX;
+	              *ep = toX;
 	   }
       } else 
       if( board[fromY][fromX] == BlackPawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
-	       epStatus[p] = EP_PAWN_MOVE; 
+	       *ep = EP_PAWN_MOVE; 
            if( toY-fromY== -2) {
                if(toX>BOARD_LEFT   && board[toY][toX-1] == WhitePawn &&
 			gameInfo.variant != VariantBerolina || toX < fromX)
-	              epStatus[p] = toX | berolina;
+	              *ep = toX | berolina;
                if(toX<BOARD_RGHT-1 && board[toY][toX+1] == WhitePawn &&
 			gameInfo.variant != VariantBerolina || toX > fromX) 
-	              epStatus[p] = toX;
+	              *ep = toX;
 	   }
        }
 
        for(i=0; i<nrCastlingRights; i++) {
-           castlingRights[p][i] = castlingRights[p-1][i];
-           if(castlingRights[p][i] == fromX && castlingRank[i] == fromY ||
-              castlingRights[p][i] == toX   && castlingRank[i] == toY   
-             ) castlingRights[p][i] = -1; // revoke for moved or captured piece
+           if(castling[i] == fromX && castlingRank[i] == fromY ||
+              castling[i] == toX   && castlingRank[i] == toY   
+             ) castling[i] = -1; // revoke for moved or captured piece
        }
 
     }
@@ -7307,6 +7296,19 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
         board[toY][toX] = (ChessSquare) (PROMOTED piece);
     }
 
+    if((gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) 
+		&& promoChar != NULLCHAR && gameInfo.holdingsSize) { 
+	// [HGM] superchess: take promotion piece out of holdings
+	int k = PieceToNumber(CharToPiece(ToUpper(promoChar)));
+	if((int)piece < (int)BlackPawn) { // determine stm from piece color
+	    if(!--board[k][BOARD_WIDTH-2])
+		board[k][BOARD_WIDTH-1] = EmptySquare;
+	} else {
+	    if(!--board[BOARD_HEIGHT-1-k][1])
+		board[BOARD_HEIGHT-1-k][0] = EmptySquare;
+	}
+    }
+
 }
 
 /* Updates forwardMostMove */
@@ -7372,7 +7374,9 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
 	commentList[forwardMostMove+1] = NULL;
     }
     CopyBoard(boards[forwardMostMove+1], boards[forwardMostMove]);
-    ApplyMove(fromX, fromY, toX, toY, promoChar, boards[forwardMostMove+1]);
+    {int i; for(i=0; i<BOARD_SIZE; i++) castlingRights[forwardMostMove+1][i] = castlingRights[forwardMostMove][i];}
+    ApplyMove(fromX, fromY, toX, toY, promoChar, boards[forwardMostMove+1], 
+				castlingRights[forwardMostMove+1], &epStatus[forwardMostMove+1]);
     forwardMostMove++; // [HGM] bare: moved to after ApplyMove, to make sure clock interrupt finds complete board
     gameInfo.result = GameUnfinished;
     if (gameInfo.resultDetails != NULL) {
@@ -12755,16 +12759,16 @@ DisplayComment(moveNumber, text)
 		    WhiteOnMove(moveNumber) ? " " : ".. ",
 		    parseList[moveNumber]);
         }
+	// [HGM] PV info: display PV info together with (or as) comment
+	if(moveNumber >= 0 && (depth = pvInfoList[moveNumber].depth) > 0) {
+	    if(text == NULL) text = "";                                           
+	    score = pvInfoList[moveNumber].score;
+	    sprintf(buf, "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
+                              depth, (pvInfoList[moveNumber].time+50)/100, text);
+	    text = buf;
+	}
     } else title[0] = 0;
 
-    // [HGM] PV info: display PV info together with (or as) comment
-    if(moveNumber >= 0 && (depth = pvInfoList[moveNumber].depth) > 0) {
-        if(text == NULL) text = "";                                           
-        score = pvInfoList[moveNumber].score;
-        sprintf(buf, "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
-                              depth, (pvInfoList[moveNumber].time+50)/100, text);
-        CommentPopUp(title, buf);
-    } else
     if (text != NULL)
         CommentPopUp(title, text);
 }
