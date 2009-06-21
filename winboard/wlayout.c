@@ -44,7 +44,7 @@ VOID RestoreWindowPlacement( HWND hWnd, WindowPlacement * wp )
 
         ZeroMemory( &stWP, sizeof(stWP) );
 
-	EnsureOnScreen( &wp->x, &wp->y);
+	EnsureOnScreen( &wp->x, &wp->y, 0, 0);
 
 	stWP.length = sizeof(stWP);
 	stWP.flags = 0;
@@ -152,6 +152,37 @@ VOID ReattachAfterMove( LPRECT lprcOldPos, int new_x, int new_y, HWND hWndChild,
                     pwpChild->x, pwpChild->y,
                     0, 0,
                     SWP_NOZORDER | SWP_NOSIZE );
+            }
+        }
+    }
+}
+
+extern FILE *debugFP;
+VOID ReattachAfterSize( LPRECT lprcOldPos, int new_w, int new_h, HWND hWndChild, WindowPlacement * pwpChild )
+{
+    if( ! IsDefaultPlacement( pwpChild ) ) {
+        GetActualPlacement( hWndChild, pwpChild );
+
+if(appData.debugMode) fprintf(debugFP, "resize, old=(%d,%d,%d,%d), new=(%d,%d)\n",
+lprcOldPos->left,lprcOldPos->top,lprcOldPos->right,lprcOldPos->bottom,new_w,new_h);
+        if( IsAttachedByWindowPlacement( lprcOldPos, pwpChild ) ) {
+            /* Get delta of lower right corner */
+            int delta_x = new_w - (lprcOldPos->right  - lprcOldPos->left);
+            int delta_y = new_h - (lprcOldPos->bottom - lprcOldPos->top);
+
+            /* Adjust size & placement */
+            if(pwpChild->x + pwpChild->width  >= lprcOldPos->right  )
+		pwpChild->width += delta_x;
+            if(pwpChild->y + pwpChild->height >= lprcOldPos->bottom )
+		pwpChild->height += delta_y;
+            if(pwpChild->x >= lprcOldPos->right)  pwpChild->width  -= delta_x, pwpChild->x += delta_x;
+            if(pwpChild->y >= lprcOldPos->bottom) pwpChild->height -= delta_y, pwpChild->y += delta_y;
+            /* Move window */
+            if( hWndChild != NULL ) {
+                SetWindowPos( hWndChild, HWND_TOP,
+                    pwpChild->x, pwpChild->y,
+                    pwpChild->width, pwpChild->height,
+                    SWP_NOZORDER );
             }
         }
     }

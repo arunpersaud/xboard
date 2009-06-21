@@ -46,11 +46,11 @@ HWND gameListDialog = NULL;
 BOOLEAN gameListUp = FALSE;
 FILE* gameFile;
 char* gameFileName = NULL;
-int gameListX, gameListY, gameListW, gameListH;
 
 /* Imports from winboard.c */
 extern HINSTANCE hInst;
 extern HWND hwndMain;
+extern WindowPlacement wpGameList;
 
 struct GameListStats
 {
@@ -238,18 +238,18 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       GetClientRect(hDlg, &rect);
       sizeX = rect.right;
       sizeY = rect.bottom;
-      if (gameListX != CW_USEDEFAULT && gameListY != CW_USEDEFAULT &&
-	  gameListW != CW_USEDEFAULT && gameListH != CW_USEDEFAULT) {
+      if (wpGameList.x != CW_USEDEFAULT && wpGameList.y != CW_USEDEFAULT &&
+	  wpGameList.width != CW_USEDEFAULT && wpGameList.height != CW_USEDEFAULT) {
 	WINDOWPLACEMENT wp;
-	EnsureOnScreen(&gameListX, &gameListY);
+	EnsureOnScreen(&wpGameList.x, &wpGameList.y, 0, 0);
 	wp.length = sizeof(WINDOWPLACEMENT);
 	wp.flags = 0;
 	wp.showCmd = SW_SHOW;
 	wp.ptMaxPosition.x = wp.ptMaxPosition.y = 0;
-	wp.rcNormalPosition.left = gameListX;
-	wp.rcNormalPosition.right = gameListX + gameListW;
-	wp.rcNormalPosition.top = gameListY;
-	wp.rcNormalPosition.bottom = gameListY + gameListH;
+	wp.rcNormalPosition.left = wpGameList.x;
+	wp.rcNormalPosition.right = wpGameList.x + wpGameList.width;
+	wp.rcNormalPosition.top = wpGameList.y;
+	wp.rcNormalPosition.bottom = wpGameList.y + wpGameList.height;
 	SetWindowPlacement(hDlg, &wp);
 
 	GetClientRect(hDlg, &rect);

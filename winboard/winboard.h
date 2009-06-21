@@ -116,7 +116,7 @@ BOOL ChangeColor(HWND hwnd, COLORREF *which);
 VOID ChangeBoardSize(BoardSize newSize);
 BOOL APIENTRY MyCreateFont(HWND hwnd, MyFont *font);
 VOID ErrorPopDown(VOID);
-VOID EnsureOnScreen(int *x, int *y);
+VOID EnsureOnScreen(int *x, int *y, int minX, int minY);
 typedef char GetFunc(void *getClosure);
 VOID ParseArgs(GetFunc get, void *cl);
 HBITMAP 
@@ -192,3 +192,5 @@ VOID InitWindowPlacement( WindowPlacement * wp );
 VOID RestoreWindowPlacement( HWND hWnd, WindowPlacement * wp );
 
 VOID ReattachAfterMove( LPRECT lprcOldPos, int new_x, int new_y, HWND hWndChild, WindowPlacement * pwpChild );
+
+VOID ReattachAfterSize( LPRECT lprcOldPos, int new_w, int new_h, HWND hWndChild, WindowPlacement * pwpChild );

@@ -152,7 +152,8 @@ char installDir[MSG_SIZ];
 
 BoardSize boardSize;
 BOOLEAN chessProgram;
-static int boardX, boardY, consoleX, consoleY, consoleW, consoleH;
+static int boardX, boardY;
+int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 static int squareSize, lineGap, minorSize;
 static int winWidth, winHeight;
 static RECT messageRect, whiteRect, blackRect, leftLogoRect, rightLogoRect; // [HGM] logo
@@ -427,6 +428,8 @@ HWND engineOutputDialog = NULL;
 BOOLEAN engineOutputDialogUp = FALSE;
 
 WindowPlacement wpEngineOutput;
+WindowPlacement wpGameList;
+WindowPlacement wpConsole;
 
 VOID MoveHistoryPopUp();
 VOID MoveHistoryPopDown();
@@ -601,16 +604,14 @@ InitApplication(HINSTANCE hInstance)
 int screenHeight, screenWidth;
 
 void
-EnsureOnScreen(int *x, int *y)
+EnsureOnScreen(int *x, int *y, int minX, int minY)
 {
 //  int gap = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION);
   /* Be sure window at (x,y) is not off screen (or even mostly off screen) */
   if (*x > screenWidth - 32) *x = 0;
   if (*y > screenHeight - 32) *y = 0;
-  if (*x < 0) *x = 0;
-  if (*y < 0) *y = 0;
-//  if (*x < 10) *x = 10;
-//  if (*y < gap) *y = gap;
+  if (*x < minX) *x = minX;
+  if (*y < minY) *y = minY;
 }
 
 BOOL
@@ -629,6 +630,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
     GetCurrentDirectory(MSG_SIZ, installDir);
   }
   gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] won't have open window otherwise
+  screenWidth = screenHeight = 1000; // [HGM] placement: kludge to allow calling EnsureOnScreen from InitAppData
   InitAppData(lpCmdLine);      /* Get run-time parameters */
   if (appData.debugMode) {
     debugFP = fopen(appData.nameOfDebugFile, "w");
@@ -696,7 +698,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   for (ibs = (int) NUM_SIZES - 1; ibs >= 0; ibs--) {
     /* Compute window size for each board size, and use the largest
        size that fits on this screen as the default. */
-    InitDrawingSizes((BoardSize)ibs, 0);
+    InitDrawingSizes((BoardSize)(ibs+1000), 0);
     if (boardSize == (BoardSize)-1 &&
         winHeight <= screenHeight
            - GetSystemMetrics(SM_CYFRAME) - GetSystemMetrics(SM_CYCAPTION) - 10
@@ -748,7 +750,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   InitBackEnd2();
 
   /* Make the window visible; update its client area; and return "success" */
-  EnsureOnScreen(&boardX, &boardY);
+  EnsureOnScreen(&boardX, &boardY, minX, minY);
   wp.length = sizeof(WINDOWPLACEMENT);
   wp.flags = 0;
   wp.showCmd = nCmdShow;
@@ -762,12 +764,6 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
                0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 
-#if 0
-  /* [AS] Disable the FRC stuff if not playing the proper variant */
-  if( gameInfo.variant != VariantFischeRandom ) {
-      EnableMenuItem( GetMenu(hwndMain), IDM_NewGameFRC, MF_GRAYED );
-  }
-#endif
   if (hwndConsole) {
 #if AOT_CONSOLE
     SetWindowPos(hwndConsole, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
@@ -785,7 +781,8 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 typedef enum {
   ArgString, ArgInt, ArgFloat, ArgBoolean, ArgTrue, ArgFalse, ArgNone, 
   ArgColor, ArgAttribs, ArgFilename, ArgBoardSize, ArgFont, ArgCommSettings,
-  ArgSettingsFilename
+  ArgSettingsFilename,
+  ArgX, ArgY, ArgZ // [HGM] placement: for window-placement options stored relative to main window
 } ArgType;
 
 typedef struct {
@@ -1121,28 +1118,6 @@ ArgDescriptor argDescriptors[] = {
   { "xreuse2", ArgFalse, (LPVOID) &appData.reuseSecond, FALSE },
   { "-reuse2", ArgFalse, (LPVOID) &appData.reuseSecond, FALSE },
   { "comPortSettings", ArgCommSettings, (LPVOID) &dcb, TRUE },
-  { "x", ArgInt, (LPVOID) &boardX, TRUE },
-  { "y", ArgInt, (LPVOID) &boardY, TRUE },
-  { "icsX", ArgInt, (LPVOID) &consoleX, TRUE },
-  { "icsY", ArgInt, (LPVOID) &consoleY, TRUE },
-  { "icsW", ArgInt, (LPVOID) &consoleW, TRUE },
-  { "icsH", ArgInt, (LPVOID) &consoleH, TRUE },
-  { "analysisX", ArgInt, (LPVOID) &analysisX, TRUE },
-  { "analysisY", ArgInt, (LPVOID) &analysisY, TRUE },
-  { "analysisW", ArgInt, (LPVOID) &analysisW, TRUE },
-  { "analysisH", ArgInt, (LPVOID) &analysisH, TRUE },
-  { "commentX", ArgInt, (LPVOID) &commentX, TRUE },
-  { "commentY", ArgInt, (LPVOID) &commentY, TRUE },
-  { "commentW", ArgInt, (LPVOID) &commentW, TRUE },
-  { "commentH", ArgInt, (LPVOID) &commentH, TRUE },
-  { "tagsX", ArgInt, (LPVOID) &editTagsX, TRUE },
-  { "tagsY", ArgInt, (LPVOID) &editTagsY, TRUE },
-  { "tagsW", ArgInt, (LPVOID) &editTagsW, TRUE },
-  { "tagsH", ArgInt, (LPVOID) &editTagsH, TRUE },
-  { "gameListX", ArgInt, (LPVOID) &gameListX, TRUE },
-  { "gameListY", ArgInt, (LPVOID) &gameListY, TRUE },
-  { "gameListW", ArgInt, (LPVOID) &gameListW, TRUE },
-  { "gameListH", ArgInt, (LPVOID) &gameListH, TRUE },
   { "settingsFile", ArgSettingsFilename, (LPVOID) &settingsFileName, FALSE },
   { "ini", ArgSettingsFilename, (LPVOID) &settingsFileName, FALSE },
   { "saveSettingsOnExit", ArgBoolean, (LPVOID) &saveSettingsOnExit, TRUE },
@@ -1216,25 +1191,6 @@ ArgDescriptor argDescriptors[] = {
   { "defaultHashSize", ArgInt, (LPVOID) &appData.defaultHashSize, TRUE }, 
   { "defaultCacheSizeEGTB", ArgInt, (LPVOID) &appData.defaultCacheSizeEGTB, TRUE },
   { "defaultPathEGTB", ArgFilename, (LPVOID) &appData.defaultPathEGTB, TRUE },
-
-  /* [AS] Layout stuff */
-  { "moveHistoryUp", ArgBoolean, (LPVOID) &wpMoveHistory.visible, TRUE },
-  { "moveHistoryX", ArgInt, (LPVOID) &wpMoveHistory.x, TRUE },
-  { "moveHistoryY", ArgInt, (LPVOID) &wpMoveHistory.y, TRUE },
-  { "moveHistoryW", ArgInt, (LPVOID) &wpMoveHistory.width, TRUE },
-  { "moveHistoryH", ArgInt, (LPVOID) &wpMoveHistory.height, TRUE },
-
-  { "evalGraphUp", ArgBoolean, (LPVOID) &wpEvalGraph.visible, TRUE },
-  { "evalGraphX", ArgInt, (LPVOID) &wpEvalGraph.x, TRUE },
-  { "evalGraphY", ArgInt, (LPVOID) &wpEvalGraph.y, TRUE },
-  { "evalGraphW", ArgInt, (LPVOID) &wpEvalGraph.width, TRUE },
-  { "evalGraphH", ArgInt, (LPVOID) &wpEvalGraph.height, TRUE },
-
-  { "engineOutputUp", ArgBoolean, (LPVOID) &wpEngineOutput.visible, TRUE },
-  { "engineOutputX", ArgInt, (LPVOID) &wpEngineOutput.x, TRUE },
-  { "engineOutputY", ArgInt, (LPVOID) &wpEngineOutput.y, TRUE },
-  { "engineOutputW", ArgInt, (LPVOID) &wpEngineOutput.width, TRUE },
-  { "engineOutputH", ArgInt, (LPVOID) &wpEngineOutput.height, TRUE },
 
   /* [HGM] board-size, adjudication and misc. options */
   { "boardWidth", ArgInt, (LPVOID) &appData.NrFiles, TRUE },
@@ -1324,6 +1280,53 @@ ArgDescriptor argDescriptors[] = {
   { "firstNPS", ArgInt, (LPVOID) &appData.firstNPS, FALSE },
   { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE },
   { "noGUI", ArgTrue, (LPVOID) &appData.noGUI, FALSE },
+
+  // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
+  { "minX", ArgZ, (LPVOID) &minX, FALSE }, // [HGM] placement: to make suer auxialary windows can be placed
+  { "minY", ArgZ, (LPVOID) &minY, FALSE },
+  { "winWidth",  ArgInt, (LPVOID) &winWidth,  TRUE }, // [HGM] placement: dummies to remember right & bottom
+  { "winHeight", ArgInt, (LPVOID) &winHeight, TRUE }, //       for attaching auxiliary windows to them
+  { "x", ArgInt, (LPVOID) &boardX, TRUE },
+  { "y", ArgInt, (LPVOID) &boardY, TRUE },
+  { "icsX", ArgX,   (LPVOID) &wpConsole.x, TRUE },
+  { "icsY", ArgY,   (LPVOID) &wpConsole.y, TRUE },
+  { "icsW", ArgInt, (LPVOID) &wpConsole.width, TRUE },
+  { "icsH", ArgInt, (LPVOID) &wpConsole.height, TRUE },
+  { "analysisX", ArgX,   (LPVOID) &analysisX, FALSE }, // [HGM] placement: analysis window no longer exists
+  { "analysisY", ArgY,   (LPVOID) &analysisY, FALSE }, //       provided for compatibility with old ini files
+  { "analysisW", ArgInt, (LPVOID) &analysisW, FALSE },
+  { "analysisH", ArgInt, (LPVOID) &analysisH, FALSE },
+  { "commentX", ArgX,   (LPVOID) &commentX, TRUE },
+  { "commentY", ArgY,   (LPVOID) &commentY, TRUE },
+  { "commentW", ArgInt, (LPVOID) &commentW, TRUE },
+  { "commentH", ArgInt, (LPVOID) &commentH, TRUE },
+  { "tagsX", ArgX,   (LPVOID) &editTagsX, TRUE },
+  { "tagsY", ArgY,   (LPVOID) &editTagsY, TRUE },
+  { "tagsW", ArgInt, (LPVOID) &editTagsW, TRUE },
+  { "tagsH", ArgInt, (LPVOID) &editTagsH, TRUE },
+  { "gameListX", ArgX,   (LPVOID) &wpGameList.x, TRUE },
+  { "gameListY", ArgY,   (LPVOID) &wpGameList.y, TRUE },
+  { "gameListW", ArgInt, (LPVOID) &wpGameList.width, TRUE },
+  { "gameListH", ArgInt, (LPVOID) &wpGameList.height, TRUE },
+  /* [AS] Layout stuff */
+  { "moveHistoryUp", ArgBoolean, (LPVOID) &wpMoveHistory.visible, TRUE },
+  { "moveHistoryX", ArgX,   (LPVOID) &wpMoveHistory.x, TRUE },
+  { "moveHistoryY", ArgY,   (LPVOID) &wpMoveHistory.y, TRUE },
+  { "moveHistoryW", ArgInt, (LPVOID) &wpMoveHistory.width, TRUE },
+  { "moveHistoryH", ArgInt, (LPVOID) &wpMoveHistory.height, TRUE },
+
+  { "evalGraphUp", ArgBoolean, (LPVOID) &wpEvalGraph.visible, TRUE },
+  { "evalGraphX", ArgX,   (LPVOID) &wpEvalGraph.x, TRUE },
+  { "evalGraphY", ArgY,   (LPVOID) &wpEvalGraph.y, TRUE },
+  { "evalGraphW", ArgInt, (LPVOID) &wpEvalGraph.width, TRUE },
+  { "evalGraphH", ArgInt, (LPVOID) &wpEvalGraph.height, TRUE },
+
+  { "engineOutputUp", ArgBoolean, (LPVOID) &wpEngineOutput.visible, TRUE },
+  { "engineOutputX", ArgX,   (LPVOID) &wpEngineOutput.x, TRUE },
+  { "engineOutputY", ArgY,   (LPVOID) &wpEngineOutput.y, TRUE },
+  { "engineOutputW", ArgInt, (LPVOID) &wpEngineOutput.width, TRUE },
+  { "engineOutputH", ArgInt, (LPVOID) &wpEngineOutput.height, TRUE },
+
   { NULL, ArgNone, NULL, FALSE }
 };
 
@@ -1654,6 +1657,19 @@ ParseArgs(GetFunc get, void *cl)
       *(int *) ad->argLoc = atoi(argValue);
       break;
 
+    case ArgX:
+      *(int *) ad->argLoc = atoi(argValue) + boardX; // [HGM] placement: translate stored relative to absolute 
+      break;
+
+    case ArgY:
+      *(int *) ad->argLoc = atoi(argValue) + boardY; // (this is really kludgey, it should be done where used...)
+      break;
+
+    case ArgZ:
+      *(int *) ad->argLoc = atoi(argValue);
+      EnsureOnScreen(&boardX, &boardY, minX, minY); 
+      break;
+
     case ArgFloat:
       *(float *) ad->argLoc = (float) atof(argValue);
       break;
@@ -1917,10 +1933,6 @@ InitAppData(LPSTR lpCmdLine)
   saveSettingsOnExit = TRUE;
   boardX = CW_USEDEFAULT;
   boardY = CW_USEDEFAULT;
-  consoleX = CW_USEDEFAULT; 
-  consoleY = CW_USEDEFAULT; 
-  consoleW = CW_USEDEFAULT;
-  consoleH = CW_USEDEFAULT;
   analysisX = CW_USEDEFAULT; 
   analysisY = CW_USEDEFAULT; 
   analysisW = CW_USEDEFAULT;
@@ -1933,10 +1945,6 @@ InitAppData(LPSTR lpCmdLine)
   editTagsY = CW_USEDEFAULT; 
   editTagsW = CW_USEDEFAULT;
   editTagsH = CW_USEDEFAULT;
-  gameListX = CW_USEDEFAULT; 
-  gameListY = CW_USEDEFAULT; 
-  gameListW = CW_USEDEFAULT;
-  gameListH = CW_USEDEFAULT;
   icsTextMenuString = ICS_TEXT_MENU_DEFAULT;
   icsNames = ICS_NAMES;
   firstChessProgramNames = FCP_NAMES;
@@ -1994,9 +2002,11 @@ InitAppData(LPSTR lpCmdLine)
   appData.firstOptions = "";
   appData.secondOptions = "";
 
+  InitWindowPlacement( &wpGameList );
   InitWindowPlacement( &wpMoveHistory );
   InitWindowPlacement( &wpEvalGraph );
   InitWindowPlacement( &wpEngineOutput );
+  InitWindowPlacement( &wpConsole );
 
   /* [HGM] User-selectable board size, adjudication control, miscellaneous */
   appData.NrFiles      = -1;
@@ -2209,10 +2219,10 @@ SaveSettings(char* name)
 
   if (hwndConsole) {
     GetWindowPlacement(hwndConsole, &wp);
-    consoleX = wp.rcNormalPosition.left;
-    consoleY = wp.rcNormalPosition.top;
-    consoleW = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    consoleH = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
+    wpConsole.x = wp.rcNormalPosition.left;
+    wpConsole.y = wp.rcNormalPosition.top;
+    wpConsole.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
+    wpConsole.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
   }
 
   if (analysisDialog) {
@@ -2241,10 +2251,10 @@ SaveSettings(char* name)
 
   if (gameListDialog) {
     GetWindowPlacement(gameListDialog, &wp);
-    gameListX = wp.rcNormalPosition.left;
-    gameListY = wp.rcNormalPosition.top;
-    gameListW = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    gameListH = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
+    wpGameList.x = wp.rcNormalPosition.left;
+    wpGameList.y = wp.rcNormalPosition.top;
+    wpGameList.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
+    wpGameList.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
   }
 
   /* [AS] Move history */
@@ -2310,7 +2320,14 @@ SaveSettings(char* name)
       }
       break;
     case ArgInt:
+    case ArgZ:
       fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc);
+      break;
+    case ArgX:
+      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - boardX); // [HGM] placement: stor relative value
+      break;
+    case ArgY:
+      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - boardY);
       break;
     case ArgFloat:
       fprintf(f, "/%s=%g\n", ad->argName, *(float *)ad->argLoc);
@@ -3100,7 +3117,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   char buf[MSG_SIZ];
   char *str;
   HMENU hmenu = GetMenu(hwndMain);
-  RECT crect, wrect;
+  RECT crect, wrect, oldRect;
   int offby;
   LOGBRUSH logbrush;
 
@@ -3109,6 +3126,11 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
   /* [HGM] call with -2 uses old size (for if nr of files, ranks changes) */
   if(boardSize == (BoardSize)(-2) ) boardSize = oldBoardSize;
+
+  oldRect.left = boardX; //[HGM] placement: remember previous window params
+  oldRect.top = boardY;
+  oldRect.right = boardX + winWidth;
+  oldRect.bottom = boardY + winHeight;
 
   tinyLayout = sizeInfo[boardSize].tinyLayout;
   smallLayout = sizeInfo[boardSize].smallLayout;
@@ -3210,6 +3232,8 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
   sizeInfo[boardSize].cliWidth = boardRect.right + OUTER_MARGIN;
   sizeInfo[boardSize].cliHeight = boardRect.bottom + OUTER_MARGIN;
+  oldBoardSize = boardSize;
+  oldTinyLayout = tinyLayout;
   if(suppressVisibleEffects) return; // [HGM] when called for filling sizeInfo only
   winWidth = 2 * GetSystemMetrics(SM_CXFRAME) + boardRect.right + OUTER_MARGIN;
   winHeight = 2 * GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYMENU) +
@@ -3217,6 +3241,14 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   GetWindowRect(hwndMain, &wrect);
   SetWindowPos(hwndMain, NULL, 0, 0, winWidth, winHeight,
 	       SWP_NOCOPYBITS|SWP_NOZORDER|SWP_NOMOVE);
+
+  // [HGM] placement: let attached windows follow size change.
+  ReattachAfterSize( &oldRect, winWidth, winHeight, moveHistoryDialog, &wpMoveHistory );
+  ReattachAfterSize( &oldRect, winWidth, winHeight, evalGraphDialog, &wpEvalGraph );
+  ReattachAfterSize( &oldRect, winWidth, winHeight, engineOutputDialog, &wpEngineOutput );
+  ReattachAfterSize( &oldRect, winWidth, winHeight, gameListDialog, &wpGameList );
+  ReattachAfterSize( &oldRect, winWidth, winHeight, hwndConsole, &wpConsole );
+
   /* compensate if menu bar wrapped */
   GetClientRect(hwndMain, &crect);
   offby = boardRect.bottom + OUTER_MARGIN - crect.bottom;
@@ -3326,8 +3358,6 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
 
 /*  if (boardSize == oldBoardSize) return; [HGM] variant might have changed */
-  oldBoardSize = boardSize;
-  oldTinyLayout = tinyLayout;
 
   /* Load piece bitmaps for this board size */
   for (i=0; i<=2; i++) {
@@ -6353,6 +6383,8 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, moveHistoryDialog, &wpMoveHistory );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, evalGraphDialog, &wpEvalGraph );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, engineOutputDialog, &wpEngineOutput );
+            ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, gameListDialog, &wpGameList );
+            ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, hwndConsole, &wpConsole );
 	    boardX = lpwp->x;
             boardY = lpwp->y;
         }
@@ -7123,7 +7155,7 @@ CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if (commentX != CW_USEDEFAULT && commentY != CW_USEDEFAULT &&
 	  commentW != CW_USEDEFAULT && commentH != CW_USEDEFAULT) {
 	WINDOWPLACEMENT wp;
-	EnsureOnScreen(&commentX, &commentY);
+	EnsureOnScreen(&commentX, &commentY, 0, 0);
 	wp.length = sizeof(WINDOWPLACEMENT);
 	wp.flags = 0;
 	wp.showCmd = SW_SHOW;
@@ -8067,37 +8099,37 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     GetClientRect(hDlg, &rect);
     sizeX = rect.right;
     sizeY = rect.bottom;
-    if (consoleX != CW_USEDEFAULT && consoleY != CW_USEDEFAULT &&
-	consoleW != CW_USEDEFAULT && consoleH != CW_USEDEFAULT) {
+    if (wpConsole.x != CW_USEDEFAULT && wpConsole.y != CW_USEDEFAULT &&
+	wpConsole.width != CW_USEDEFAULT && wpConsole.height != CW_USEDEFAULT) {
       WINDOWPLACEMENT wp;
-      EnsureOnScreen(&consoleX, &consoleY);
+      EnsureOnScreen(&wpConsole.x, &wpConsole.y, 0, 0);
       wp.length = sizeof(WINDOWPLACEMENT);
       wp.flags = 0;
       wp.showCmd = SW_SHOW;
       wp.ptMaxPosition.x = wp.ptMaxPosition.y = 0;
-      wp.rcNormalPosition.left = consoleX;
-      wp.rcNormalPosition.right = consoleX + consoleW;
-      wp.rcNormalPosition.top = consoleY;
-      wp.rcNormalPosition.bottom = consoleY + consoleH;
+      wp.rcNormalPosition.left = wpConsole.x;
+      wp.rcNormalPosition.right = wpConsole.x + wpConsole.width;
+      wp.rcNormalPosition.top = wpConsole.y;
+      wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
       SetWindowPlacement(hDlg, &wp);
     }
 #if 0 
    // [HGM] Chessknight's change 2004-07-13
    else { /* Determine Defaults */
        WINDOWPLACEMENT wp;
-       consoleX = winWidth + 1;
-       consoleY = boardY;
-       consoleW = screenWidth -  winWidth;
-       consoleH = winHeight;
-       EnsureOnScreen(&consoleX, &consoleY);
+       wpConsole.x = winWidth + 1;
+       wpConsole.y = boardY;
+       wpConsoleW = screenWidth -  winWidth;
+       wpConsoleH = winHeight;
+       EnsureOnScreen(&wpConsole.x, &wpConsole.y, 0, 0);
        wp.length = sizeof(WINDOWPLACEMENT);
        wp.flags = 0;
        wp.showCmd = SW_SHOW;
        wp.ptMaxPosition.x = wp.ptMaxPosition.y = 0;
-       wp.rcNormalPosition.left = consoleX;
-       wp.rcNormalPosition.right = consoleX + consoleW;
-       wp.rcNormalPosition.top = consoleY;
-       wp.rcNormalPosition.bottom = consoleY + consoleH;
+       wp.rcNormalPosition.left = wpConsole.x;
+       wp.rcNormalPosition.right = wpConsole.x + wpConsole.width;
+       wp.rcNormalPosition.top = wpConsole.y;
+       wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
        SetWindowPlacement(hDlg, &wp);
     }
 #endif
@@ -10508,7 +10540,7 @@ AnalysisDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if (analysisX != CW_USEDEFAULT && analysisY != CW_USEDEFAULT &&
 	  analysisW != CW_USEDEFAULT && analysisH != CW_USEDEFAULT) {
 	WINDOWPLACEMENT wp;
-	EnsureOnScreen(&analysisX, &analysisY);
+	EnsureOnScreen(&analysisX, &analysisY, 0, 0);
 	wp.length = sizeof(WINDOWPLACEMENT);
 	wp.flags = 0;
 	wp.showCmd = SW_SHOW;
