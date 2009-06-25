@@ -496,14 +496,14 @@ sub play_game {
 	    if (@ARCHIVE) {
 		local ($date) = &get_date_from_games (@ARCHIVE) ;
 		$XBOARD_ARGS = join (' ', (("-lgf",
-					    "$ARCDIR/$PGN_GAME.$date.archive"),
-					   "-ncp",
+					    "'$ARCDIR/$PGN_GAME.$date.archive'"),
+					   @NCP_FLAGS,
 					   "-xics",
 					   @TD_FLAGS,
 					   @DEBUG_FLAGS,
 					   @UNREC_ARGS)) ;
 	    } else {
-		$XBOARD_ARGS = join (' ', (("-cmail", $PGN_GAME),
+		$XBOARD_ARGS = join (' ', (("-cmail", "'$PGN_GAME'"),
 					   @TD_FLAGS,
 					   @NCP_FLAGS,
 					   "-xics",
@@ -512,8 +512,8 @@ sub play_game {
 	    }
 	} else {
 	    $PGN_GAME = "unknown.cmail" ;
-	    $XBOARD_ARGS = join (' ', (("-lgf", $PGN_GAME),
-				       "-ncp",
+	    $XBOARD_ARGS = join (' ', (("-lgf", "'$PGN_GAME'"),
+				       @NCP_FLAGS,
 				       "-xics",
 				       @TD_FLAGS,
 				       @DEBUG_FLAGS,
@@ -526,15 +526,15 @@ sub play_game {
 	$PID_FILE = "$PGN_GAME.pid" ;
 	if (   (! $REUSE)
 	    || (! (   (-f $PID_FILE)
-		   && ($XBOARD_PID = `cat $PID_FILE`)
+		   && ($XBOARD_PID = `cat '$PID_FILE'`)
 		   && ("$XBOARD_PID" =~ /^\d+$/)
 		   && (kill "SIGUSR1", $XBOARD_PID)))) {
 	    print "Loading xboard for game \"$PGN_GAME\"..." ;
 #  	    system ("gdb xboard") ;
 	    system (  "{ ({ xboard $XBOARD_ARGS & } ;"
-		    . "   echo \$! > $PID_FILE ;"
+		    . "   echo \$! > '$PID_FILE' ;"
 		    . "   wait ;"
-		    . "   rm $PID_FILE) & } >$LOG_FILE 2>&1") ;
+		    . "   rm '$PID_FILE') & } >'$LOG_FILE' 2>&1") ;
 	    print (  "done.\n"
 		   . "If nothing happens look for an error message in\n"
 		   . "$CMAILDIR/$LOG_FILE\n") ;
