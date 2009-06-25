@@ -2148,7 +2148,7 @@ CatchDeleteWindow(Widget w, String procname)
 {
   char buf[MSG_SIZ];
   XSetWMProtocols(xDisplay, XtWindow(w), &wm_delete_window, 1);
-  sprintf(buf, "<Message>WM_PROTOCOLS: %s() \n", procname);
+  snprintf(buf, sizeof(buf), "<Message>WM_PROTOCOLS: %s() \n", procname);
   XtAugmentTranslations(w, XtParseTranslationTable(buf));
 }
 
@@ -2338,8 +2338,8 @@ main(argc, argv)
     i = strlen(p) + strlen("/.xboardXXXXXx.pgn") + 1;
     gameCopyFilename = (char*) malloc(i);
     gamePasteFilename = (char*) malloc(i);
-    sprintf(gameCopyFilename, "%s/.xboard%05uc.pgn", p, getpid());
-    sprintf(gamePasteFilename, "%s/.xboard%05up.pgn", p, getpid());
+    snprintf(gameCopyFilename,i, "%s/.xboard%05uc.pgn", p, getpid());
+    snprintf(gamePasteFilename,i, "%s/.xboard%05up.pgn", p, getpid());
 
     XtGetApplicationResources(shellWidget, (XtPointer) &appData,
 			      clientResources, XtNumber(clientResources),
@@ -3701,7 +3701,7 @@ void CreateXIMPieces()
 	    fprintf(stderr, "%d", piece+1);
 	    for (kind=0; kind<4; kind++) {
 		fprintf(stderr, ".");
-		sprintf(buf, "%s/%c%s%u.xim",
+		snprintf(buf, sizeof(buf), "%s/%c%s%u.xim",
 			ExpandPathName(appData.pixmapDirectory),
 			ToLower(PieceToChar((ChessSquare)piece)),
 			ximkind[kind], ss);
@@ -3720,7 +3720,7 @@ void CreateXIMPieces()
 	/* Load light and dark squares */
 	/* If the LSQ and DSQ pieces don't exist, we will
 	   draw them with solid squares. */
-	sprintf(buf, "%s/lsq%u.xim", ExpandPathName(appData.pixmapDirectory), ss);
+	snprintf(buf,sizeof(buf), "%s/lsq%u.xim", ExpandPathName(appData.pixmapDirectory), ss);
 	if (access(buf, 0) != 0) {
 	    useImageSqs = 0;
 	} else {
@@ -3734,7 +3734,7 @@ void CreateXIMPieces()
 
 	    loadXIM(ximLightSquare, NULL, buf, &xpmLightSquare, NULL);
 	    fprintf(stderr, _("dark square "));
-	    sprintf(buf, "%s/dsq%u.xim",
+	    snprintf(buf,sizeof(buf), "%s/dsq%u.xim",
 		    ExpandPathName(appData.pixmapDirectory), ss);
 	    if (appData.debugMode)
 	      fprintf(stderr, _("(File:%s:) "), buf);
@@ -3823,7 +3823,7 @@ void CreateXPMPieces()
 	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
 	    fprintf(stderr, "%d ", piece+1);
 	    for (kind=0; kind<4; kind++) {
-		sprintf(buf, "%s/%c%s%u.xpm",
+	      snprintf(buf, sizeof(buf), "%s/%c%s%u.xpm",
 			ExpandPathName(appData.pixmapDirectory),
 			ToLower(PieceToChar((ChessSquare)piece)),
 			xpmkind[kind], ss);
@@ -3843,7 +3843,7 @@ void CreateXPMPieces()
 	/* If the LSQ and DSQ pieces don't exist, we will
 	   draw them with solid squares. */
 	fprintf(stderr, _("light square "));
-	sprintf(buf, "%s/lsq%u.xpm", ExpandPathName(appData.pixmapDirectory), ss);
+	snprintf(buf, sizeof(buf), "%s/lsq%u.xpm", ExpandPathName(appData.pixmapDirectory), ss);
 	if (access(buf, 0) != 0) {
 	    useImageSqs = 0;
 	} else {
@@ -3857,7 +3857,7 @@ void CreateXPMPieces()
 		exit(1);
 	    }
 	    fprintf(stderr, _("dark square "));
-	    sprintf(buf, "%s/dsq%u.xpm",
+	    snprintf(buf, sizeof(buf), "%s/dsq%u.xpm",
 		    ExpandPathName(appData.pixmapDirectory), ss);
 	    if (appData.debugMode) {
 		fprintf(stderr, _("(File:%s:) "), buf);
@@ -3946,17 +3946,17 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 	if (errcode != BitmapSuccess) {
 	    switch (errcode) {
 	      case BitmapOpenFailed:
-		sprintf(msg, _("Can't open bitmap file %s"), fullname);
+		snprintf(msg, sizeof(msg), _("Can't open bitmap file %s"), fullname);
 		break;
 	      case BitmapFileInvalid:
-		sprintf(msg, _("Invalid bitmap in file %s"), fullname);
+		snprintf(msg, sizeof(msg), _("Invalid bitmap in file %s"), fullname);
 		break;
 	      case BitmapNoMemory:
-		sprintf(msg, _("Ran out of memory reading bitmap file %s"),
+		snprintf(msg, sizeof(msg), _("Ran out of memory reading bitmap file %s"),
 			fullname);
 		break;
 	      default:
-		sprintf(msg, _("Unknown XReadBitmapFile error %d on file %s"),
+		snprintf(msg, sizeof(msg), _("Unknown XReadBitmapFile error %d on file %s"),
 			errcode, fullname);
 		break;
 	    }
@@ -4212,7 +4212,7 @@ void SetupDropMenu()
 				       && !appData.icsActive));
 	count = 0;
 	while (p && *p++ == dmEnables[i].piece) count++;
-	sprintf(label, "%s  %d", dmEnables[i].widget, count);
+	snprintf(label, sizeof(label), "%s  %d", dmEnables[i].widget, count);
 	j = 0;
 	XtSetArg(args[j], XtNlabel, label); j++;
 	XtSetValues(entry, args, j);
@@ -6475,7 +6475,7 @@ void AnalyzeModeProc(w, event, prms, nprms)
     char buf[MSG_SIZ];
 
     if (!first.analysisSupport) {
-      sprintf(buf, _("%s does not support analysis"), first.tidy);
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
       DisplayError(buf, 0);
       return;
     }
@@ -6517,7 +6517,7 @@ void AnalyzeFileProc(w, event, prms, nprms)
 {
     if (!first.analysisSupport) {
       char buf[MSG_SIZ];
-      sprintf(buf, _("%s does not support analysis"), first.tidy);
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
       DisplayError(buf, 0);
       return;
     }
@@ -7353,7 +7353,7 @@ void InfoProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     char buf[MSG_SIZ];
-    sprintf(buf, "xterm -e info --directory %s --directory . -f %s &",
+    snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
 	    INFODIR, INFOFILE);
     system(buf);
 }
@@ -7370,7 +7370,7 @@ void ManProc(w, event, prms, nprms)
       name = prms[0];
     else
       name = "xboard";
-    sprintf(buf, "xterm -e man %s &", name);
+    snprintf(buf, sizeof(buf), "xterm -e man %s &", name);
     system(buf);
 }
 
@@ -7404,7 +7404,7 @@ void AboutProc(w, event, prms, nprms)
 #else
     char *zippy = "";
 #endif
-    sprintf(buf, "%s%s\n\n%s\n%s\n%s\n\n%s%s\n%s",
+    snprintf(buf, sizeof(buf), "%s%s\n\n%s\n%s\n%s\n\n%s%s\n%s",
 	    programVersion, zippy,
 	    "Copyright 1991 Digital Equipment Corporation",
 	    "Enhancements Copyright 1992-2009 Free Software Foundation",
@@ -7462,7 +7462,7 @@ void DisplayMessage(message, extMessage)
 
     if (extMessage) {
 	if (*message) {
-	    sprintf(buf, "%s  %s", message, extMessage);
+	    snprintf(buf, sizeof(buf), "%s  %s", message, extMessage);
 	    message = buf;
 	} else {
 	    message = extMessage;
@@ -7492,11 +7492,11 @@ void DisplayTitle(text)
 	strcpy(icon, text);
 	strcpy(title, text);
     } else if (appData.icsActive) {
-	sprintf(icon, "%s", appData.icsHost);
-	sprintf(title, "%s: %s", programName, appData.icsHost);
+        snprintf(icon, sizeof(icon), "%s", appData.icsHost);
+	snprintf(title, sizeof(title),"%s: %s", programName, appData.icsHost);
     } else if (appData.cmailGameName[0] != NULLCHAR) {
-	sprintf(icon, "%s", "CMail");
-	sprintf(title, "%s: %s", programName, "CMail");
+        snprintf(icon, sizeof(icon), "%s", "CMail");
+	snprintf(title,sizeof(title), "%s: %s", programName, "CMail");
 #ifdef GOTHIC
     // [HGM] license: This stuff should really be done in back-end, but WinBoard already had a pop-up for it
     } else if (gameInfo.variant == VariantGothic) {
@@ -7513,7 +7513,7 @@ void DisplayTitle(text)
 	strcpy(title, programName);
     } else {
 	strcpy(icon, first.tidy);
-	sprintf(title, "%s: %s", programName, first.tidy);
+	snprintf(title,sizeof(title), "%s: %s", programName, first.tidy);
     }
     i = 0;
     XtSetArg(args[i], XtNiconName, (XtArgVal) icon);    i++;
@@ -7537,7 +7537,7 @@ void DisplayError(message, error)
 	    fprintf(stderr, "%s: %s: %s\n",
 		    programName, message, strerror(error));
 	}
-	sprintf(buf, "%s: %s", message, strerror(error));
+	snprintf(buf,sizeof(buf), "%s: %s", message, strerror(error));
 	message = buf;
     }
     ErrorPopUp(_("Error"), message, FALSE);
@@ -7573,7 +7573,7 @@ void DisplayFatalError(message, error, status)
     } else {
 	fprintf(stderr, "%s: %s: %s\n",
 		programName, message, strerror(error));
-	sprintf(buf, "%s: %s", message, strerror(error));
+	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
 	message = buf;
     }
     if (appData.popupExitMessage && boardWidget && XtIsRealized(boardWidget)) {
@@ -7762,7 +7762,7 @@ PlaySound(name)
     putc(BELLCHAR, stderr);
   } else {
     char buf[2048];
-    sprintf(buf, "%s '%s' &", appData.soundProgram, name);
+    snprintf(buf, sizeof(buf), "%s '%s' &", appData.soundProgram, name);
     system(buf);
   }
 }
@@ -8281,9 +8281,9 @@ int OpenTelnet(host, port, pr)
     char cmdLine[MSG_SIZ];
 
     if (port[0] == NULLCHAR) {
-	sprintf(cmdLine, "%s %s", appData.telnetProgram, host);
+      snprintf(cmdLine, sizeof(cmdLine), "%s %s", appData.telnetProgram, host);
     } else {
-	sprintf(cmdLine, "%s %s %s", appData.telnetProgram, host, port);
+      snprintf(cmdLine,sizeof(cmdLine), "%s %s %s", appData.telnetProgram, host, port);
     }
     return StartChildProcess(cmdLine, "", pr);
 }

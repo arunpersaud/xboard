@@ -669,7 +669,7 @@ InitBackEnd1()
     if (!ParseTimeControl(appData.timeControl, appData.timeIncrement,
 			  appData.movesPerSession)) {
 	char buf[MSG_SIZ];
-	sprintf(buf, _("bad timeControl option %s"), appData.timeControl);
+	snprintf(buf, sizeof(buf), _("bad timeControl option %s"), appData.timeControl);
 	DisplayFatalError(buf, 0, 2);
     }
 
@@ -684,7 +684,7 @@ InitBackEnd1()
 	    searchTime = min * 60 + sec;
 	} else {
 	    char buf[MSG_SIZ];
-	    sprintf(buf, _("bad searchTime option %s"), appData.searchTime);
+	    snprintf(buf, sizeof(buf), _("bad searchTime option %s"), appData.searchTime);
 	    DisplayFatalError(buf, 0, 2);
 	}
     }
@@ -1124,7 +1124,7 @@ InitBackEnd3 P((void))
 		sprintf(buf, _("Could not open comm port %s"),  
 			appData.icsCommPort);
 	    } else {
-		sprintf(buf, _("Could not connect to host %s, port %s"),  
+		snprintf(buf, sizeof(buf), _("Could not connect to host %s, port %s"),  
 			appData.icsHost, appData.icsPort);
 	    }
 	    DisplayFatalError(buf, err, 1);
@@ -1319,18 +1319,18 @@ establish()
     } else if (*appData.gateway != NULLCHAR) {
 	if (*appData.remoteShell == NULLCHAR) {
 	    /* Use the rcmd protocol to run telnet program on a gateway host */
-	    sprintf(buf, "%s %s %s",
+	    snprintf(buf, sizeof(buf), "%s %s %s",
 		    appData.telnetProgram, appData.icsHost, appData.icsPort);
 	    return OpenRcmd(appData.gateway, appData.remoteUser, buf, &icsPR);
 
 	} else {
 	    /* Use the rsh program to run telnet program on a gateway host */
 	    if (*appData.remoteUser == NULLCHAR) {
-		sprintf(buf, "%s %s %s %s %s", appData.remoteShell,
+		snprintf(buf, sizeof(buf), "%s %s %s %s %s", appData.remoteShell,
 			appData.gateway, appData.telnetProgram,
 			appData.icsHost, appData.icsPort);
 	    } else {
-		sprintf(buf, "%s %s -l %s %s %s %s",
+		snprintf(buf, sizeof(buf), "%s %s -l %s %s %s %s",
 			appData.remoteShell, appData.gateway, 
 			appData.remoteUser, appData.telnetProgram,
 			appData.icsHost, appData.icsPort);
@@ -2345,7 +2345,7 @@ read_from_ics(isr, closure, data, count, error)
 
 	    if (loggedOn && !have_set_title && ics_handle[0] != NULLCHAR) {
 	      char buf[MSG_SIZ];
-	      sprintf(buf, "%s@%s", ics_handle, appData.icsHost);
+	      snprintf(buf, sizeof(buf), "%s@%s", ics_handle, appData.icsHost);
 	      DisplayIcsInteractionTitle(buf);
 	      have_set_title = TRUE;
 	    }
@@ -3353,7 +3353,7 @@ ParseBoard12(string)
 	       &ticking);
 
     if (n < 21) {
-	sprintf(str, _("Failed to parse board string:\n\"%s\""), string);
+        snprintf(str, sizeof(str), _("Failed to parse board string:\n\"%s\""), string);
 	DisplayError(str, 0);
 	return;
     }
@@ -6154,7 +6154,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     if (!strncmp(message, "tellopponent ", 13)) {
       if (appData.icsActive) {
 	if (loggedOn) {
-	  sprintf(buf1, "%ssay %s\n", ics_prefix, message + 13);
+	  snprintf(buf1, sizeof(buf1), "%ssay %s\n", ics_prefix, message + 13);
 	  SendToICS(buf1);
 	}
       } else {
@@ -6165,7 +6165,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     if (!strncmp(message, "tellothers ", 11)) {
       if (appData.icsActive) {
 	if (loggedOn) {
-	  sprintf(buf1, "%swhisper %s\n", ics_prefix, message + 11);
+	  snprintf(buf1, sizeof(buf1), "%swhisper %s\n", ics_prefix, message + 11);
 	  SendToICS(buf1);
 	}
       }
@@ -6174,7 +6174,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
     if (!strncmp(message, "tellall ", 8)) {
       if (appData.icsActive) {
 	if (loggedOn) {
-	  sprintf(buf1, "%skibitz %s\n", ics_prefix, message + 8);
+	  snprintf(buf1, sizeof(buf1), "%skibitz %s\n", ics_prefix, message + 8);
 	  SendToICS(buf1);
 	}
       } else {
@@ -6344,7 +6344,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	|| (StrStr(message, "Permission denied") != NULL)) {
 
 	cps->maybeThinking = FALSE;
-	sprintf(buf1, _("Failed to start %s chess program %s on %s: %s\n"),
+	snprintf(buf1, sizeof(buf1), _("Failed to start %s chess program %s on %s: %s\n"),
 		cps->which, cps->program, cps->host, message);
 	RemoveInputSource(cps->isr);
 	DisplayFatalError(buf1, 0, 1);
@@ -6362,11 +6362,11 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 		(void) CoordsToAlgebraic(boards[forwardMostMove],
 				    PosFlags(forwardMostMove), EP_UNKNOWN,
 				    fromY, fromX, toY, toX, promoChar, buf1);
-		sprintf(buf2, _("Hint: %s"), buf1);
+		snprintf(buf2, sizeof(buf2), _("Hint: %s"), buf1);
 		DisplayInformation(buf2);
 	    } else {
 		/* Hint move could not be parsed!? */
-		sprintf(buf2,
+	      snprintf(buf2, sizeof(buf2),
 			_("Illegal hint move \"%s\"\nfrom %s chess program"),
 			buf1, cps->which);
 		DisplayError(buf2, 0);
@@ -7569,7 +7569,7 @@ InitChessProgram(cps, setup)
     }
 
     if (cps->sendICS) {
-      sprintf(buf, "ics %s\n", appData.icsActive ? appData.icsHost : "-");
+      snprintf(buf, sizeof(buf), "ics %s\n", appData.icsActive ? appData.icsHost : "-");
       SendToProgram(buf, cps);
     }
     cps->maybeThinking = FALSE;
@@ -7617,10 +7617,10 @@ StartChessProgram(cps)
 	err = OpenRcmd(cps->host, appData.remoteUser, cps->program, &cps->pr);
     } else {
 	if (*appData.remoteUser == NULLCHAR) {
-	    sprintf(buf, "%s %s %s", appData.remoteShell, cps->host,
+	  snprintf(buf, sizeof(buf), "%s %s %s", appData.remoteShell, cps->host,
 		    cps->program);
 	} else {
-	    sprintf(buf, "%s %s -l %s %s", appData.remoteShell,
+	  snprintf(buf, sizeof(buf), "%s %s -l %s %s", appData.remoteShell,
 		    cps->host, appData.remoteUser, cps->program);
 	}
 	err = StartChildProcess(buf, "", &cps->pr);
@@ -8541,7 +8541,7 @@ LoadGameFromFile(filename, n, title, useList)
     } else {
 	f = fopen(filename, "rb");
 	if (f == NULL) {
-	    sprintf(buf, _("Can't open \"%s\""), filename);
+	  snprintf(buf, sizeof(buf),  _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
 	    return FALSE;
 	}
@@ -8768,7 +8768,7 @@ LoadGame(f, gameNumber, title, useList)
     yynewfile(f);
 
     if (lg && lg->gameInfo.white && lg->gameInfo.black) {
-	sprintf(buf, "%s vs. %s", lg->gameInfo.white,
+      snprintf(buf, sizeof(buf), "%s vs. %s", lg->gameInfo.white,
 		lg->gameInfo.black);
 	    DisplayTitle(buf);
     } else if (*title != NULLCHAR) {
@@ -9195,7 +9195,7 @@ LoadPositionFromFile(filename, n, title)
     } else {
 	f = fopen(filename, "rb");
 	if (f == NULL) {
-	    sprintf(buf, _("Can't open \"%s\""), filename);
+            snprintf(buf, sizeof(buf), _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
 	    return FALSE;
 	} else {
@@ -9409,7 +9409,7 @@ SaveGameToFile(filename, append)
     } else {
 	f = fopen(filename, append ? "a" : "w");
 	if (f == NULL) {
-	    sprintf(buf, _("Can't open \"%s\""), filename);
+	    snprintf(buf, sizeof(buf), _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
 	    return FALSE;
 	} else {
@@ -9783,7 +9783,7 @@ SavePositionToFile(filename)
     } else {
 	f = fopen(filename, "a");
 	if (f == NULL) {
-	    sprintf(buf, _("Can't open \"%s\""), filename);
+	    snprintf(buf, sizeof(buf), _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
 	    return FALSE;
 	} else {
