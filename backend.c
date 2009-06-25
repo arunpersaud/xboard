@@ -831,7 +831,7 @@ InitBackEnd1()
 	q = first.program;
 	while (*q != ' ' && *q != NULLCHAR) q++;
 	p = q;
-	while (p > first.program && *(p-1) != '/' && *(p-1) != '\\') p--; /* [HGM] bckslash added */
+	while (p > first.program && *(p-1) != '/' && *(p-1) != '\\') p--; /* [HGM] backslash added */
 	programVersion = (char*) malloc(8 + strlen(PRODUCT) + strlen(VERSION)
 					+ strlen(PATCHLEVEL) + (q - p));
 	sprintf(programVersion, "%s %s.%s + ", PRODUCT, VERSION, PATCHLEVEL);
@@ -5794,8 +5794,20 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
             // don't wait for engine to announce game end if we can judge ourselves
             switch (MateTest(boards[forwardMostMove], PosFlags(forwardMostMove), epFile,
                                        castlingRights[forwardMostMove]) ) {
-	      case MT_NONE:
 	      case MT_CHECK:
+		if(gameInfo.variant == Variant3Check) { // [HGM] 3check: when in check, test if 3rd time
+		    int i, checkCnt = 0;    // (should really be done by making nr of checks part of game state)
+		    for(i=forwardMostMove-2; i>=backwardMostMove; i-=2) {
+			if(MateTest(boards[i], PosFlags(i), epStatus[i], castlingRights[i]) == MT_CHECK)
+			    checkCnt++;
+			if(checkCnt >= 2) {
+			    reason = "Xboard adjudication: 3rd check";
+			    epStatus[forwardMostMove] = EP_CHECKMATE;
+			    break;
+			}
+		    }
+		}
+	      case MT_NONE:
 	      default:
 		break;
 	      case MT_STALEMATE:
