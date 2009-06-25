@@ -8115,14 +8115,12 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
       SetWindowPlacement(hDlg, &wp);
     }
-#if 0 
-   // [HGM] Chessknight's change 2004-07-13
    else { /* Determine Defaults */
        WINDOWPLACEMENT wp;
        wpConsole.x = winWidth + 1;
        wpConsole.y = boardY;
-       wpConsoleW = screenWidth -  winWidth;
-       wpConsoleH = winHeight;
+       wpConsole.width = screenWidth -  winWidth;
+       wpConsole.height = winHeight;
        EnsureOnScreen(&wpConsole.x, &wpConsole.y, 0, 0);
        wp.length = sizeof(WINDOWPLACEMENT);
        wp.flags = 0;
@@ -8134,7 +8132,6 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
        wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
        SetWindowPlacement(hDlg, &wp);
     }
-#endif
     return FALSE;
 
   case WM_SETFOCUS:
