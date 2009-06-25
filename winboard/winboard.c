@@ -155,7 +155,7 @@ BOOLEAN chessProgram;
 static int boardX, boardY;
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 static int squareSize, lineGap, minorSize;
-static int winWidth, winHeight;
+static int winWidth, winHeight, winW, winH;
 static RECT messageRect, whiteRect, blackRect, leftLogoRect, rightLogoRect; // [HGM] logo
 static int logoHeight = 0;
 static char messageText[MESSAGE_TEXT_MAX];
@@ -700,9 +700,9 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
        size that fits on this screen as the default. */
     InitDrawingSizes((BoardSize)(ibs+1000), 0);
     if (boardSize == (BoardSize)-1 &&
-        winHeight <= screenHeight
+        winH <= screenHeight
            - GetSystemMetrics(SM_CYFRAME) - GetSystemMetrics(SM_CYCAPTION) - 10
-        && winWidth <= screenWidth) {
+        && winW <= screenWidth) {
       boardSize = (BoardSize)ibs;
     }
   }
@@ -3234,10 +3234,12 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   sizeInfo[boardSize].cliHeight = boardRect.bottom + OUTER_MARGIN;
   oldBoardSize = boardSize;
   oldTinyLayout = tinyLayout;
-  if(suppressVisibleEffects) return; // [HGM] when called for filling sizeInfo only
-  winWidth = 2 * GetSystemMetrics(SM_CXFRAME) + boardRect.right + OUTER_MARGIN;
-  winHeight = 2 * GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYMENU) +
+  winW = 2 * GetSystemMetrics(SM_CXFRAME) + boardRect.right + OUTER_MARGIN;
+  winH = 2 * GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYMENU) +
     GetSystemMetrics(SM_CYCAPTION) + boardRect.bottom + OUTER_MARGIN;
+  if(suppressVisibleEffects) return; // [HGM] when called for filling sizeInfo only
+  winWidth = winW;  // [HGM] placement: set through temporary which can used by initial sizing choice
+  winHeight = winH; //       without disturbing window attachments
   GetWindowRect(hwndMain, &wrect);
   SetWindowPos(hwndMain, NULL, 0, 0, winWidth, winHeight,
 	       SWP_NOCOPYBITS|SWP_NOZORDER|SWP_NOMOVE);
