@@ -3161,7 +3161,8 @@ XBoard square size (hint): %d\n\
 	    signal(SIGUSR1, CmailSigHandler);
 	}
     }
-	InitPosition(TRUE);
+    gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
+    InitPosition(TRUE);
 
     XtAppMainLoop(appContext);
     if (appData.debugMode) fclose(debugFP); // [DM] debug

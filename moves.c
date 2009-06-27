@@ -138,7 +138,7 @@ ChessSquare PromoPiece(moveType)
 
 char pieceToChar[] = {
                         'P', 'N', 'B', 'R', 'Q', 'F', 'E', 'A', 'C', 'W', 'M', 
-                        'O', 'H', 'I', 'J', 'G', 'D', 'V', 'L', 's', 'U', 'K',
+                        'O', 'H', 'I', 'J', 'G', 'D', 'V', 'L', 'S', 'U', 'K',
                         'p', 'n', 'b', 'r', 'q', 'f', 'e', 'a', 'c', 'w', 'm', 
                         'o', 'h', 'i', 'j', 'g', 'd', 'v', 'l', 's', 'u', 'k', 
                         'x' };
@@ -584,7 +584,7 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
 		      if (board[rt][ft] != EmptySquare) break;
 		  }
                 if(m==1) goto mounted;
-                if(m==2) goto finishGold;
+                if(m==2) goto finishSilver;
 	      break;
 
 	    case WhiteQueen:
@@ -1007,7 +1007,7 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
 	}
     }
 
-    return cl.check;
+    return cl.fking < BOARD_RGHT ? cl.check : 1000; // [HGM] atomic: return 1000 if we have no king
 }
 
 
@@ -1138,13 +1138,42 @@ int MateTest(board, flags, epfile, castlingRights)
      char castlingRights[];
 {
     MateTestClosure cl;
-    int inCheck;
+    int inCheck, r, f, myPieces=0, hisPieces=0, nrKing=0;
+    ChessSquare king = flags & F_WHITE_ON_MOVE ? WhiteKing : BlackKing;
 
+    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) { 
+        // [HGM] losers: Count pieces and kings, to detect other unorthodox winning conditions
+	nrKing += (board[r][f] == king);   // stm has king
+        if( board[r][f] != EmptySquare ) {
+	    if((int)board[r][f] <= (int)king && (int)board[r][f] >= (int)king - (int)WhiteKing + (int)WhitePawn)
+		 myPieces++;
+	    else hisPieces++;
+	}
+    }
+    if(appData.debugMode) fprintf(debugFP, "MateTest: K=%d, my=%d, his=%d\n", nrKing, myPieces, hisPieces);
+    switch(gameInfo.variant) { // [HGM] losers: extinction wins
+	case VariantShatranj:
+		if(hisPieces == 1) return myPieces > 1 ? MT_BARE : MT_DRAW;
+	default:
+		break;
+	case VariantAtomic:
+		if(nrKing == 0) return MT_NOKING;
+		break;
+	case VariantLosers:
+		if(myPieces == 1) return MT_BARE;
+    }
     cl.count = 0;
     inCheck = GenLegal(board, flags, epfile, castlingRights, MateTestCallback, (VOIDSTAR) &cl);
+    // [HGM] 3check: yet to do!
     if (cl.count > 0) {
 	return inCheck ? MT_CHECK : MT_NONE;
     } else {
+	if(gameInfo.variant == VariantSuicide) // [HGM] losers: always stalemate, since no check, but result varies
+		return myPieces == hisPieces ? MT_STALEMATE :
+					myPieces > hisPieces ? MT_STAINMATE : MT_STEALMATE;
+	else if(gameInfo.variant == VariantLosers) return inCheck ? MT_TRICKMATE : MT_STEALMATE;
+	else if(gameInfo.variant == VariantGiveaway) return MT_STEALMATE; // no check exists, stalemated = win
+					    
         return inCheck ? MT_CHECKMATE 
 		       : (gameInfo.variant == VariantXiangqi || gameInfo.variant == VariantShatranj) ? 
 			  MT_STAINMATE : MT_STALEMATE;

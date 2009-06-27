@@ -136,7 +136,12 @@ extern ChessMove LegalityTest P((Board board, int flags, int epfile,
 #define MT_CHECK 1
 #define MT_CHECKMATE 2
 #define MT_STALEMATE 3
-#define MT_STAINMATE 4 /* [HGM] xq: for games where being stalemate counts as a loss */
+#define MT_STAINMATE 4 /* [HGM] xq: for games where being stalemated counts as a loss    */
+#define MT_STEALMATE 5 /* [HGM] losers: for games where being stalemated counts as a win */
+#define MT_TRICKMATE 6 /* [HGM] losers: for games where being checkmated counts as a win */
+#define MT_BARE      7 /* [HGM] shatranj: for games where having bare king loses         */
+#define MT_DRAW      8 /* [HGM] shatranj: other draws                                    */
+#define MT_NOKING    9 /* [HGM] atomic: for games lost through king capture              */
 
 /* Return MT_NONE, MT_CHECK, MT_CHECKMATE, or MT_STALEMATE */
 extern int MateTest P((Board board, int flags, int epfile,
