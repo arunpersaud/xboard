@@ -2600,6 +2600,10 @@ XBoard square size (hint): %d\n\
     if (forceMono) {
       fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	      programName);
+      
+      if (appData.bitmapDirectory == NULL ||
+	      appData.bitmapDirectory[0] == NULLCHAR)
+	    appData.bitmapDirectory = DEF_BITMAP_DIR;
     }
 
     if (appData.lowTimeWarning && !appData.monoMode) {

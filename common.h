@@ -148,6 +148,7 @@ int pclose(FILE *);
 #define FIRST_HOST		"localhost"
 #define SECOND_HOST		"localhost"
 #define TELNET_PROGRAM          "telnet"
+#define DEF_BITMAP_DIR          "/usr/share/games/xboard/bitmaps.xchess" /* AP: shouldn't be hardcoded directory, but better than nothing at the moment */
 #define MATCH_MODE		"False"
 #define INIT_STRING		"new\nrandom\n"
 #define WHITE_STRING		"white\ngo\n"
