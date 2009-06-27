@@ -8225,12 +8225,12 @@ DisplayTimerLabel(w, color, timer, highlight)
     char buf[MSG_SIZ];
     Arg args[16];
 
+    /* check for low time warning */
     Pixel foregroundOrWarningColor = timerForegroundPixel;
 
-    if (timer > 0
-	&& appData.lowTimeWarning
-	&& (timer / 1000) < appData.icsAlarmTime)
-
+    if (timer > 0 &&
+        appData.lowTimeWarning && 
+        (timer / 1000) < appData.icsAlarmTime)
       foregroundOrWarningColor = lowTimeWarningColor;
 
     if (appData.clockMode) {
