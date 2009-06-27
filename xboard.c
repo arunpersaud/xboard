@@ -696,21 +696,27 @@ MenuItem buttonBar[] = {
     {NULL, NULL}
 };
 
-#define PIECE_MENU_SIZE 11
+#define PIECE_MENU_SIZE 18
 String pieceMenuStrings[2][PIECE_MENU_SIZE] = {
     { N_("White"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Empty square"), N_("Clear board") },
+      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"), 
+      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"), 
+      N_("Empty square"), N_("Clear board") },
     { N_("Black"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Empty square"), N_("Clear board") },
+      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"), 
+      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"), 
+      N_("Empty square"), N_("Clear board") }
 };
 /* must be in same order as PieceMenuStrings! */
 ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
     { WhitePlay, (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
-	WhiteRook, WhiteQueen, WhiteKing,
-	(ChessSquare) 0, EmptySquare, ClearBoard },
+	WhiteRook, WhiteQueen, WhiteKing, (ChessSquare) 0, WhiteAlfil,
+	WhiteCannon, WhiteAngel, WhiteMarshall, (ChessSquare) 0, 
+	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
     { BlackPlay, (ChessSquare) 0, BlackPawn, BlackKnight, BlackBishop,
-	BlackRook, BlackQueen, BlackKing,
-	(ChessSquare) 0, EmptySquare, ClearBoard },
+	BlackRook, BlackQueen, BlackKing, (ChessSquare) 0, BlackAlfil,
+	BlackCannon, BlackAngel, BlackMarshall, (ChessSquare) 0, 
+	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
 };
 
 #define DROP_MENU_SIZE 6
@@ -5836,11 +5842,12 @@ void PromotionPopUp()
 			    layoutArgs, XtNumber(layoutArgs));
 
     j = 0;
-    XtSetArg(args[j], XtNlabel, _("Promote pawn to what?")); j++;
+    XtSetArg(args[j], XtNlabel, _("Promote to what?")); j++;
     XtSetArg(args[j], XtNborderWidth, 0); j++;
     dialog = XtCreateManagedWidget("promotion", dialogWidgetClass,
 				   layout, args, j);
 
+  if(gameInfo.variant != VariantShogi) {
     XawDialogAddButton(dialog, _("Queen"), PromotionCallback,
 		       (XtPointer) dialog);
     XawDialogAddButton(dialog, _("Rook"), PromotionCallback,
@@ -5854,6 +5861,21 @@ void PromotionPopUp()
       XawDialogAddButton(dialog, _("King"), PromotionCallback,
 			 (XtPointer) dialog);
     }
+    if(gameInfo.variant == VariantCapablanca || 
+       gameInfo.variant == VariantGothic || 
+       gameInfo.variant == VariantCapaRandom) {
+      XawDialogAddButton(dialog, _("Archbishop"), PromotionCallback,
+			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("Chancellor"), PromotionCallback,
+			 (XtPointer) dialog);
+    }
+  } else // [HGM] shogi
+  {
+      XawDialogAddButton(dialog, _("Promote"), PromotionCallback,
+			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("Defer"), PromotionCallback,
+			 (XtPointer) dialog);
+  }
     XawDialogAddButton(dialog, _("cancel"), PromotionCallback,
 		       (XtPointer) dialog);
 
@@ -5908,6 +5930,10 @@ void PromotionCallback(w, client_data, call_data)
 	return;
     } else if (strcmp(name, _("Knight")) == 0) {
 	promoChar = 'n';
+    } else if (strcmp(name, _("Promote")) == 0) {
+	promoChar = '+';
+    } else if (strcmp(name, _("Defer")) == 0) {
+	promoChar = '=';
     } else {
 	promoChar = ToLower(name[0]);
     }
@@ -7533,7 +7559,7 @@ void DisplayTitle(text)
 	strcpy(title, text);
     } else if (appData.icsActive) {
         snprintf(icon, sizeof(icon), "%s", appData.icsHost);
-	snprintf(title, sizeof(title),"%s: %s", programName, appData.icsHost);
+	snprintf(title, sizeof(title), "%s: %s", programName, appData.icsHost);
     } else if (appData.cmailGameName[0] != NULLCHAR) {
         snprintf(icon, sizeof(icon), "%s", "CMail");
 	snprintf(title,sizeof(title), "%s: %s", programName, "CMail");
