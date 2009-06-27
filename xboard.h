@@ -67,6 +67,7 @@
 #define COLOR_REQUEST           "red"
 #define COLOR_SEEK              "blue"
 #define COLOR_NORMAL            "default"
+#define COLOR_LOWTIMEWARNING    "red"
 
 typedef struct {
     char *name;

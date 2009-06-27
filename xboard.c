@@ -456,6 +456,7 @@ Display *xDisplay;
 Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   jailSquareColor, highlightSquareColor, premoveHighlightColor;
+Pixel lowTimeWarningColor;
 GC lightSquareGC, darkSquareGC, jailSquareGC, lineGC, wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
   wjPieceGC, bjPieceGC, prelineGC, countGC;
@@ -1195,6 +1196,12 @@ XtResource clientResources[] = {
     { "showButtonBar", "showButtonBar", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, showButtonBar),
 	XtRImmediate, (XtPointer) True },
+    { "lowTimeWarningColor", "lowTimeWarningColor", XtRString,
+      sizeof(String), XtOffset(AppDataPtr, lowTimeWarningColor),
+      XtRString, COLOR_LOWTIMEWARNING },
+    { "lowTimeWarning", "lowTimeWarning", XtRBoolean,
+      sizeof(Boolean), XtOffset(AppDataPtr, lowTimeWarning),
+      XtRImmediate, (XtPointer) False },
     {"icsEngineAnalyze", "icsEngineAnalyze", XtRBoolean,        /* [DM] icsEngineAnalyze */
         sizeof(Boolean), XtOffset(AppDataPtr, icsEngineAnalyze),
         XtRImmediate, (XtPointer) False },
@@ -1673,6 +1680,8 @@ XrmOptionDescRec shellOptions[] = {
     { "-showButtonBar", "showButtonBar", XrmoptionSepArg, NULL },
     { "-buttons", "showButtonBar", XrmoptionNoArg, "True" },
     { "-xbuttons", "showButtonBar", XrmoptionNoArg, "False" },
+    { "-lowTimeWarningColor", "lowTimeWarningColor", XrmoptionSepArg, NULL },
+    { "-lowTimeWarning", "lowTimeWarning", XrmoptionSepArg, NULL },
     /* [AS,HR] New features */
     { "-firstScoreAbs", "firstScoreAbs", XrmoptionSepArg, NULL },
     { "-secondScoreAbs", "secondScoreAbs", XrmoptionSepArg, NULL },
@@ -2577,6 +2586,16 @@ XBoard square size (hint): %d\n\
     if (forceMono) {
       fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	      programName);
+    }
+
+    if (appData.lowTimeWarning && !appData.monoMode) {
+      vFrom.addr = (caddr_t) appData.lowTimeWarningColor;
+      vFrom.size = strlen(appData.lowTimeWarningColor);
+      XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+      if (vTo.addr == NULL) 
+		appData.monoMode = True;
+      else
+		lowTimeWarningColor = *(Pixel *) vTo.addr;
     }
 
     if (appData.monoMode && appData.debugMode) {
@@ -8092,6 +8111,14 @@ DisplayTimerLabel(w, color, timer, highlight)
     char buf[MSG_SIZ];
     Arg args[16];
 
+    Pixel foregroundOrWarningColor = timerForegroundPixel;
+
+    if (timer > 0
+	&& appData.lowTimeWarning
+	&& (timer / 1000) < appData.icsAlarmTime)
+
+      foregroundOrWarningColor = lowTimeWarningColor;
+
     if (appData.clockMode) {
 	sprintf(buf, "%s: %s", color, TimeString(timer));
 	XtSetArg(args[0], XtNlabel, buf);
@@ -8101,11 +8128,12 @@ DisplayTimerLabel(w, color, timer, highlight)
     }
 
     if (highlight) {
-	XtSetArg(args[1], XtNbackground, timerForegroundPixel);
+
+	XtSetArg(args[1], XtNbackground, foregroundOrWarningColor);
 	XtSetArg(args[2], XtNforeground, timerBackgroundPixel);
     } else {
 	XtSetArg(args[1], XtNbackground, timerBackgroundPixel);
-	XtSetArg(args[2], XtNforeground, timerForegroundPixel);
+	XtSetArg(args[2], XtNforeground, foregroundOrWarningColor);
     }
 
     XtSetValues(w, args, 3);

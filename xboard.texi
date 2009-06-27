@@ -1558,8 +1558,12 @@ Sets the Get Move List menu option.  @xref{Options Menu}.  Default: true.
 Sets the ICS Alarm menu option.  @xref{Options Menu}. Default: true.
 @item -icsAlarmTime ms
 @cindex icsAlarmTime, option
-Sets the time in milliseconds for the ICS Alarm menu option. 
+Sets the time in milliseconds for the ICS Alarm menu option.
 @xref{Options Menu}. Default: 5000.
+@item lowTimeWarning true/false
+@cindex lowTimeWarning, option
+Controls a color change of the board as a warning your time is running out.
+@xref{Options Menu}. Default: false.
 @item -pre/-xpre \fRor\fB -premove true/false
 @cindex pre, option
 @cindex premove, option
@@ -2037,12 +2041,14 @@ sets, see @ref{zic2xpm} below.
 @itemx -lightSquareColor color
 @itemx -darkSquareColor color
 @itemx -highlightSquareColor color
+@itemx -lowTimeWarningColor color
 @cindex Colors
 @cindex whitePieceColor, option
 @cindex blackPieceColor, option
 @cindex lightSquareColor, option
 @cindex darkSquareColor, option
 @cindex highlightSquareColor, option
+@cindex lowTimeWarningColor, option
 Colors to use for the pieces, squares, and square highlights.
 Defaults:
 
@@ -2053,6 +2059,7 @@ Defaults:
 -darkSquareColor       #77A26D
 -highlightSquareColor  #FFFF00
 -premoveHighlightColor #FF0000
+-lowTimeWarningColor   #FF0000
 @end example
 
 On a grayscale monitor you might prefer:
@@ -2064,6 +2071,7 @@ On a grayscale monitor you might prefer:
 -darkSquareColor       gray60
 -highlightSquareColor  gray100
 -premoveHighlightColor gray70
+-lowTimeWarningColor   gray70
 @end example
 @item -drag/-xdrag or -animateDragging true/false
 @cindex drag, option
