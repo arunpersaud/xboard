@@ -3786,6 +3786,8 @@ void CreateXIMPieces()
     XSynchronize(xDisplay, False); /* Work-around for xlib/xt buffering bug */
 }
 
+char pieceBitmapNames[] = "pnbrqfeacwmohijgdvlsuk";
+
 #if HAVE_LIBXPM
 void CreateXPMPieces()
 {
@@ -3862,7 +3864,7 @@ void CreateXPMPieces()
 	    for (kind=0; kind<4; kind++) {
 	      snprintf(buf, sizeof(buf), "%s/%c%s%u.xpm",
 			ExpandPathName(appData.pixmapDirectory),
-			ToLower(PieceToChar((ChessSquare)piece)),
+			pieceBitmapNames[piece],
 			xpmkind[kind], ss);
 		if (appData.debugMode) {
 		    fprintf(stderr, _("(File:%s:) "), buf);
@@ -3926,7 +3928,7 @@ void CreatePieces()
 
     for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
 	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
-	    sprintf(buf, "%c%u%c.bm", ToLower(PieceToChar((ChessSquare)piece)),
+	    sprintf(buf, "%c%u%c.bm", pieceBitmapNames[piece],
 		    ss, kind == SOLID ? 's' : 'o');
 	    ReadBitmap(&pieceBitmap[kind][piece], buf, NULL, ss, ss);
 	}
@@ -3951,7 +3953,7 @@ void CreatePieces()
 
     for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
 	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
-	    sprintf(buf, "%c%u%c.bm", ToLower(PieceToChar((ChessSquare)piece)),
+	    sprintf(buf, "%c%u%c.bm", pieceBitmapNames[piece],
 		    ss, kind == SOLID ? 's' : 'o');
 	    ReadBitmap(&pieceBitmap[kind][piece], buf,
 		       bib->bits[kind][piece], ss, ss);
@@ -3980,6 +3982,7 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 	strcat(fullname, name);
 	errcode = XReadBitmapFile(xDisplay, xBoardWindow, fullname,
 				  &w, &h, pm, &x_hot, &y_hot);
+    fprintf(stderr, "load %s\n", name);
 	if (errcode != BitmapSuccess) {
 	    switch (errcode) {
 	      case BitmapOpenFailed:
@@ -7574,7 +7577,7 @@ void DisplayError(message, error)
 	    fprintf(stderr, "%s: %s: %s\n",
 		    programName, message, strerror(error));
 	}
-	snprintf(buf,sizeof(buf), "%s: %s", message, strerror(error));
+	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
 	message = buf;
     }
     ErrorPopUp(_("Error"), message, FALSE);
