@@ -495,16 +495,19 @@ char *chessDir, *programName, *programVersion,
 #define SOLID 0
 #define OUTLINE 1
 Pixmap pieceBitmap[2][(int)BlackPawn];
-Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD */
+Pixmap pieceBitmap2[2][(int)BlackPawn+4];       /* [HGM] pieces */
+Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD actually used*/
+Pixmap xpmPieceBitmap2[4][(int)BlackPawn+4];	/* LL, LD, DL, DD set to select from */
 Pixmap xpmLightSquare, xpmDarkSquare, xpmJailSquare;
 int useImages, useImageSqs;
-XImage *ximPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD */
-Pixmap ximMaskPm[(int)BlackPawn];            /* clipmasks, used for XIM pieces */
+XImage *ximPieceBitmap[4][(int)BlackPawn+4];	/* LL, LD, DL, DD */
+Pixmap ximMaskPm[(int)BlackPawn];               /* clipmasks, used for XIM pieces */
+Pixmap ximMaskPm2[(int)BlackPawn+4];            /* clipmasks, used for XIM pieces */
 XImage *ximLightSquare, *ximDarkSquare;
 XImage *xim_Cross;
 
-#define pieceToSolid(piece) &pieceBitmap[SOLID][((int)(piece)) % (int)BlackPawn]
-#define pieceToOutline(piece) &pieceBitmap[OUTLINE][((int)(piece)) % (int)BlackPawn]
+#define pieceToSolid(piece) &pieceBitmap[SOLID][(piece) % (int)BlackPawn]
+#define pieceToOutline(piece) &pieceBitmap[OUTLINE][(piece) % (int)BlackPawn]
 
 #define White(piece) ((int)(piece) < (int)BlackPawn)
 
@@ -2250,6 +2253,66 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
     XtSetValues(shellWidget, &shellArgs[0], 6);
+
+    // [HGM] pieces: tailor piece bitmaps to needs of specific variant
+    // (only for xpm)
+    if(useImages) {
+      for(i=0; i<4; i++) {
+	int p;
+	for(p=0; p<=(int)WhiteKing; p++)
+	   xpmPieceBitmap[i][p] = xpmPieceBitmap2[i][p]; // defaults
+	if(gameInfo.variant == VariantShogi) {
+	   xpmPieceBitmap[i][(int)WhiteCannon] = xpmPieceBitmap2[i][(int)WhiteKing+1];
+	   xpmPieceBitmap[i][(int)WhiteNightrider] = xpmPieceBitmap2[i][(int)WhiteKing+2];
+	   xpmPieceBitmap[i][(int)WhiteSilver] = xpmPieceBitmap2[i][(int)WhiteKing+3];
+	   xpmPieceBitmap[i][(int)WhiteGrasshopper] = xpmPieceBitmap2[i][(int)WhiteKing+4];
+	   xpmPieceBitmap[i][(int)WhiteQueen] = xpmPieceBitmap2[i][(int)WhiteLance];
+	}
+#ifdef GOTHIC
+	if(gameInfo.variant == VariantGothic) {
+	   xpmPieceBitmap[i][(int)WhiteMarshall] = xpmPieceBitmap2[i][(int)WhiteSilver];
+	}
+#endif
+#if !HAVE_LIBXPM
+	// [HGM] why are thee ximMasks used at all? the ximPieceBitmaps seem to be never used!
+	for(p=0; p<=(int)WhiteKing; p++)
+	   ximMaskPm[p] = ximMaskPm2[p]; // defaults
+	if(gameInfo.variant == VariantShogi) {
+	   ximMaskPm[(int)WhiteCannon] = ximMaskPm2[(int)WhiteKing+1];
+	   ximMaskPm[(int)WhiteNightrider] = ximMaskPm2[(int)WhiteKing+2];
+	   ximMaskPm[(int)WhiteSilver] = ximMaskPm2[(int)WhiteKing+3];
+	   ximMaskPm[(int)WhiteGrasshopper] = ximMaskPm2[(int)WhiteKing+4];
+	   ximMaskPm[(int)WhiteQueen] = ximMaskPm2[(int)WhiteLance];
+	}
+#ifdef GOTHIC
+	if(gameInfo.variant == VariantGothic) {
+           ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[i][(int)WhiteSilver];
+	}
+#endif
+#endif
+      }
+    } else {
+      for(i=0; i<2; i++) {
+	int p;
+	for(p=0; p<=(int)WhiteKing; p++)
+	   pieceBitmap[i][p] = pieceBitmap2[i][p]; // defaults
+	if(gameInfo.variant == VariantShogi) {
+	   pieceBitmap[i][(int)WhiteCannon] = pieceBitmap2[i][(int)WhiteKing+1];
+	   pieceBitmap[i][(int)WhiteNightrider] = pieceBitmap2[i][(int)WhiteKing+2];
+	   pieceBitmap[i][(int)WhiteSilver] = pieceBitmap2[i][(int)WhiteKing+3];
+	   pieceBitmap[i][(int)WhiteGrasshopper] = pieceBitmap2[i][(int)WhiteKing+4];
+	   pieceBitmap[i][(int)WhiteQueen] = pieceBitmap2[i][(int)WhiteLance];
+	}
+#ifdef GOTHIC
+	if(gameInfo.variant == VariantGothic) {
+	   pieceBitmap[i][(int)WhiteMarshall] = pieceBitmap2[i][(int)WhiteSilver];
+	}
+#endif
+      }
+    }
+#if HAVE_LIBXPM
+    CreateAnimVars();
+#endif
 }
 #endif
 
@@ -3710,6 +3773,9 @@ void loadXIM(xim, xmask, filename, dest, mask)
     }
 }
 
+
+char pieceBitmapNames[] = "pnbrqfeacwmohijgdvlsukpnsl";
+
 void CreateXIMPieces()
 {
     int piece, kind;
@@ -3740,13 +3806,14 @@ void CreateXIMPieces()
 	}
 	fprintf(stderr, _("\nLoading XIMs...\n"));
 	/* Load pieces */
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
+	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
 	    fprintf(stderr, "%d", piece+1);
 	    for (kind=0; kind<4; kind++) {
 		fprintf(stderr, ".");
-		snprintf(buf, sizeof(buf), "%s/%c%s%u.xim",
+		snprintf(buf, sizeof(buf), "%s/%s%c%s%u.xim",
 			ExpandPathName(appData.pixmapDirectory),
-			ToLower(PieceToChar((ChessSquare)piece)),
+			piece <= (int) WhiteKing ? "" : "w",
+			pieceBitmapNames[piece],
 			ximkind[kind], ss);
 		ximPieceBitmap[kind][piece] =
 		  XGetImage(xDisplay, DefaultRootWindow(xDisplay),
@@ -3755,8 +3822,10 @@ void CreateXIMPieces()
 		  fprintf(stderr, _("(File:%s:) "), buf);
 		loadXIM(ximPieceBitmap[kind][piece],
 			ximtemp, buf,
-			&(xpmPieceBitmap[kind][piece]),
-			&(ximMaskPm[piece%(int)BlackPawn]));
+			&(xpmPieceBitmap2[kind][piece]),
+			&(ximMaskPm2[piece]));
+		if(piece <= (int)WhiteKing)
+		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
 	    }
 	    fprintf(stderr," ");
 	}
@@ -3791,8 +3860,6 @@ void CreateXIMPieces()
     }
     XSynchronize(xDisplay, False); /* Work-around for xlib/xt buffering bug */
 }
-
-char pieceBitmapNames[] = "pnbrqfeacwmohijgdvlsuk";
 
 #if HAVE_LIBXPM
 void CreateXPMPieces()
@@ -3844,17 +3911,19 @@ void CreateXPMPieces()
 	  fprintf(stderr, _("No builtin XPM pieces of size %d\n"), squareSize);
 	  exit(1);
 	}
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
+	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
 	    for (kind=0; kind<4; kind++) {
 
 		if ((r=XpmCreatePixmapFromData(xDisplay, xBoardWindow,
 					       pieces->xpm[piece][kind],
-					       &(xpmPieceBitmap[kind][piece]),
+					       &(xpmPieceBitmap2[kind][piece]),
 					       NULL, &attr)) != 0) {
 		  fprintf(stderr, _("Error %d loading XPM image \"%s\"\n"),
 			  r, buf);
 		  exit(1);
 		}
+		if(piece <= (int) WhiteKing)
+		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
 	    }
 	}
 	useImageSqs = 0;
@@ -3865,23 +3934,26 @@ void CreateXPMPieces()
 	fprintf(stderr, _("\nLoading XPMs...\n"));
 
 	/* Load pieces */
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
+	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
 	    fprintf(stderr, "%d ", piece+1);
 	    for (kind=0; kind<4; kind++) {
-	      snprintf(buf, sizeof(buf), "%s/%c%s%u.xpm",
+	      snprintf(buf, sizeof(buf), "%s/%s%c%s%u.xpm",
 			ExpandPathName(appData.pixmapDirectory),
+			piece > (int) WhiteKing ? "w" : "",
 			pieceBitmapNames[piece],
 			xpmkind[kind], ss);
 		if (appData.debugMode) {
 		    fprintf(stderr, _("(File:%s:) "), buf);
 		}
 		if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
-					   &(xpmPieceBitmap[kind][piece]),
+					   &(xpmPieceBitmap2[kind][piece]),
 					   NULL, &attr)) != 0) {
 		    fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"),
 			    r, buf);
 		    exit(1);
 		}
+		if(piece <= (int) WhiteKing) 
+		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
 	    }
 	}
 	/* Load light and dark squares */
@@ -3933,10 +4005,13 @@ void CreatePieces()
 				     buffering bug */
 
     for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
-	    sprintf(buf, "%c%u%c.bm", pieceBitmapNames[piece],
+	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
+	    sprintf(buf, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
+		    pieceBitmapNames[piece],
 		    ss, kind == SOLID ? 's' : 'o');
-	    ReadBitmap(&pieceBitmap[kind][piece], buf, NULL, ss, ss);
+	    ReadBitmap(&pieceBitmap2[kind][piece], buf, NULL, ss, ss);
+	    if(piece <= (int)WhiteKing)
+		pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
 	}
     }
 
@@ -3958,11 +4033,14 @@ void CreatePieces()
     while (bib->squareSize != ss && bib->squareSize != 0) bib++;
 
     for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing; piece++) {
-	    sprintf(buf, "%c%u%c.bm", pieceBitmapNames[piece],
+	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
+	    sprintf(buf, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
+		    pieceBitmapNames[piece],
 		    ss, kind == SOLID ? 's' : 'o');
-	    ReadBitmap(&pieceBitmap[kind][piece], buf,
+	    ReadBitmap(&pieceBitmap2[kind][piece], buf,
 		       bib->bits[kind][piece], ss, ss);
+	    if(piece <= (int)WhiteKing)
+		pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
 	}
     }
 
@@ -4677,17 +4755,6 @@ void DrawSquare(row, column, piece, do_flash)
     XCharStruct overall;
     DrawFunc drawfunc;
     int flash_delay;
-
-    if(gameInfo.variant == VariantShogi) { // [HGM] shogi: in shogi Q is used for Lance
-	if(piece == WhiteQueen) piece = WhiteLance; else
-	if(piece == BlackQueen) piece = BlackLance;
-    }
-#ifdef GOTHIC
-    else if(gameInfo.variant == VariantGothic) { // [HGM] shogi: in Gothic Chancelor has alternative look
-	if(piece == WhiteMarshall) piece = WhiteSilver; else
-	if(piece == BlackMarshall) piece = BlackSilver;
-    }
-#endif
 
     /* Calculate delay in milliseconds (2-delays per complete flash) */
     flash_delay = 500 / appData.flashRate;
@@ -8358,7 +8425,7 @@ int OpenTelnet(host, port, pr)
     if (port[0] == NULLCHAR) {
       snprintf(cmdLine, sizeof(cmdLine), "%s %s", appData.telnetProgram, host);
     } else {
-      snprintf(cmdLine,sizeof(cmdLine), "%s %s %s", appData.telnetProgram, host, port);
+      snprintf(cmdLine, sizeof(cmdLine), "%s %s %s", appData.telnetProgram, host, port);
     }
     return StartChildProcess(cmdLine, "", pr);
 }
@@ -8642,6 +8709,8 @@ int OutputToProcessDelayed(pr, message, count, outError, msdelay)
 	and dark squares, and all pieces must use the same
 	background square colors/images.		*/
 
+static int xpmDone = 0;
+
 static void
 CreateAnimMasks (pieceDepth)
      int pieceDepth;
@@ -8672,6 +8741,7 @@ CreateAnimMasks (pieceDepth)
 
   for (piece = WhitePawn; piece <= BlackKing; piece++) {
     /* Begin with empty mask */
+    if(!xpmDone) // [HGM] pieces: keep using existing
     xpmMask[piece] = XCreatePixmap(xDisplay, xBoardWindow,
 				 squareSize, squareSize, 1);
     XSetFunction(xDisplay, maskGC, GXclear);
@@ -8755,11 +8825,11 @@ InitAnimState (anim, info)
 static void
 CreateAnimVars ()
 {
-  static int done = 0;
+  static VariantClass old = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
   XWindowAttributes info;
 
-  if (done) return;
-  done = 1;
+  if (xpmDone && gameInfo.variant == old) return;
+  if(xpmDone) old = gameInfo.variant; // first time pieces might not be created yet
   XGetWindowAttributes(xDisplay, xBoardWindow, &info);
 
   InitAnimState(&game, &info);
@@ -8768,6 +8838,7 @@ CreateAnimVars ()
   /* For XPM pieces, we need bitmaps to use as masks. */
   if (useImages)
     CreateAnimMasks(info.depth);
+   xpmDone = 1;
 }
 
 #ifndef HAVE_USLEEP
@@ -8993,7 +9064,7 @@ SelectGCMask(piece, clip, outline, mask)
 #if HAVE_LIBXPM
       *mask = xpmMask[piece];
 #else
-      *mask = ximMaskPm[piece%(int)BlackPawn];
+      *mask = ximMaskPm[piece];
 #endif
   } else {
       *mask = *pieceToSolid(piece);
@@ -9042,7 +9113,7 @@ OverlayPiece(piece, clip, outline,  dest)
       kind = 0;
     else
       kind = 2;
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
+    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
 	      dest, clip,
 	      0, 0, squareSize, squareSize,
 	      0, 0);

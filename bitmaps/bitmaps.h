@@ -465,64 +465,64 @@
 
 typedef struct {
     int squareSize;
-    unsigned char *bits[2][(int)BlackPawn];
+    unsigned char *bits[2][(int)BlackPawn+4];
 } BuiltInBits;
 
 BuiltInBits builtInBits[] = {\
 { 129,\
-  { { p129s_bits, n129s_bits, b129s_bits, r129s_bits, q129s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k129s_bits },\
-    { p129o_bits, n129o_bits, b129o_bits, r129o_bits, q129o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k129o_bits } } },\
+  { { p129s_bits, n129s_bits, b129s_bits, r129s_bits, q129s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k129s_bits, NULL, NULL, NULL, NULL },\
+    { p129o_bits, n129o_bits, b129o_bits, r129o_bits, q129o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k129o_bits, NULL, NULL, NULL, NULL } } },\
 { 116,\
-  { { p116s_bits, n116s_bits, b116s_bits, r116s_bits, q116s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k116s_bits },\
-    { p116o_bits, n116o_bits, b116o_bits, r116o_bits, q116o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k116o_bits } } },\
+  { { p116s_bits, n116s_bits, b116s_bits, r116s_bits, q116s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k116s_bits, NULL, NULL, NULL, NULL },\
+    { p116o_bits, n116o_bits, b116o_bits, r116o_bits, q116o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k116o_bits, NULL, NULL, NULL, NULL } } },\
 { 108,\
-  { { p108s_bits, n108s_bits, b108s_bits, r108s_bits, q108s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k108s_bits },\
-    { p108o_bits, n108o_bits, b108o_bits, r108o_bits, q108o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k108o_bits } } },\
+  { { p108s_bits, n108s_bits, b108s_bits, r108s_bits, q108s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k108s_bits, NULL, NULL, NULL, NULL },\
+    { p108o_bits, n108o_bits, b108o_bits, r108o_bits, q108o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k108o_bits, NULL, NULL, NULL, NULL } } },\
 { 95,\
-  { { p95s_bits, n95s_bits, b95s_bits, r95s_bits, q95s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k95s_bits },\
-    { p95o_bits, n95o_bits, b95o_bits, r95o_bits, q95o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k95o_bits } } },\
+  { { p95s_bits, n95s_bits, b95s_bits, r95s_bits, q95s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k95s_bits, NULL, NULL, NULL, NULL },\
+    { p95o_bits, n95o_bits, b95o_bits, r95o_bits, q95o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k95o_bits, NULL, NULL, NULL, NULL } } },\
 { 87,\
-  { { p87s_bits, n87s_bits, b87s_bits, r87s_bits, q87s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k87s_bits },\
-    { p87o_bits, n87o_bits, b87o_bits, r87o_bits, q87o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k87o_bits } } },\
+  { { p87s_bits, n87s_bits, b87s_bits, r87s_bits, q87s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k87s_bits, NULL, NULL, NULL, NULL },\
+    { p87o_bits, n87o_bits, b87o_bits, r87o_bits, q87o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k87o_bits, NULL, NULL, NULL, NULL } } },\
 { 80,\
-  { { p80s_bits, n80s_bits, b80s_bits, r80s_bits, q80s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k80s_bits },\
-    { p80o_bits, n80o_bits, b80o_bits, r80o_bits, q80o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k80o_bits } } },\
+  { { p80s_bits, n80s_bits, b80s_bits, r80s_bits, q80s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k80s_bits, NULL, NULL, NULL, NULL },\
+    { p80o_bits, n80o_bits, b80o_bits, r80o_bits, q80o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k80o_bits }, NULL, NULL, NULL, NULL } },\
 { 72,\
-  { { p72s_bits, n72s_bits, b72s_bits, r72s_bits, q72s_bits, f72s_bits, e72s_bits, a72s_bits, c72s_bits, w72s_bits, m72s_bits, o72s_bits, h72s_bits, i72s_bits, j72s_bits, g72s_bits, d72s_bits, v72s_bits, l72s_bits, s72s_bits, u72s_bits, k72s_bits },\
-    { p72o_bits, n72o_bits, b72o_bits, r72o_bits, q72o_bits, f72o_bits, e72o_bits, a72o_bits, c72o_bits, w72o_bits, m72o_bits, o72o_bits, h72o_bits, i72o_bits, j72o_bits, g72o_bits, d72o_bits, v72o_bits, l72o_bits, s72o_bits, u72o_bits, k72o_bits } } },\
+  { { p72s_bits, n72s_bits, b72s_bits, r72s_bits, q72s_bits, f72s_bits, e72s_bits, a72s_bits, c72s_bits, w72s_bits, m72s_bits, o72s_bits, h72s_bits, i72s_bits, j72s_bits, g72s_bits, d72s_bits, v72s_bits, l72s_bits, s72s_bits, u72s_bits, k72s_bits, wp_72s_bits, wn_72s_bits, ws_72s_bits, wl_72s_bits },\
+    { p72o_bits, n72o_bits, b72o_bits, r72o_bits, q72o_bits, f72o_bits, e72o_bits, a72o_bits, c72o_bits, w72o_bits, m72o_bits, o72o_bits, h72o_bits, i72o_bits, j72o_bits, g72o_bits, d72o_bits, v72o_bits, l72o_bits, s72o_bits, u72o_bits, k72o_bits, wp_72o_bits, wn_72o_bits, ws_72o_bits, wl_72o_bits } } },\
 { 64,\
-  { { p64s_bits, n64s_bits, b64s_bits, r64s_bits, q64s_bits, l64s_bits, l64s_bits, a64s_bits, c64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, d64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, k64s_bits },\
-    { p64o_bits, n64o_bits, b64o_bits, r64o_bits, q64o_bits, l64o_bits, l64o_bits, a64o_bits, c64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, d64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, k64o_bits } } },\
+  { { p64s_bits, n64s_bits, b64s_bits, r64s_bits, q64s_bits, l64s_bits, l64s_bits, a64s_bits, c64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, d64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, k64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits },\
+    { p64o_bits, n64o_bits, b64o_bits, r64o_bits, q64o_bits, l64o_bits, l64o_bits, a64o_bits, c64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, d64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, k64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits } } },\
 { 58,\
-  { { p58s_bits, n58s_bits, b58s_bits, r58s_bits, q58s_bits, l58s_bits, l58s_bits, a58s_bits, c58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, d58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, k58s_bits },\
-    { p58o_bits, n58o_bits, b58o_bits, r58o_bits, q58o_bits, l58o_bits, l58o_bits, a58o_bits, c58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, d58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, k58o_bits } } },\
+  { { p58s_bits, n58s_bits, b58s_bits, r58s_bits, q58s_bits, l58s_bits, l58s_bits, a58s_bits, c58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, d58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, k58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits },\
+    { p58o_bits, n58o_bits, b58o_bits, r58o_bits, q58o_bits, l58o_bits, l58o_bits, a58o_bits, c58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, d58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, k58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits } } },\
 { 54,\
-  { { p54s_bits, n54s_bits, b54s_bits, r54s_bits, q54s_bits, l54s_bits, l54s_bits, a54s_bits, c54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, d54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, k54s_bits },\
-    { p54o_bits, n54o_bits, b54o_bits, r54o_bits, q54o_bits, l54o_bits, l54o_bits, a54o_bits, c54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, d54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, k54o_bits } } },\
+  { { p54s_bits, n54s_bits, b54s_bits, r54s_bits, q54s_bits, l54s_bits, l54s_bits, a54s_bits, c54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, d54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, k54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits },\
+    { p54o_bits, n54o_bits, b54o_bits, r54o_bits, q54o_bits, l54o_bits, l54o_bits, a54o_bits, c54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, d54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, k54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits } } },\
 { 49,\
-  { { p49s_bits, n49s_bits, b49s_bits, r49s_bits, q49s_bits, f49s_bits, e49s_bits, a49s_bits, c49s_bits, w49s_bits, m49s_bits, o49s_bits, h49s_bits, i49s_bits, j49s_bits, g49s_bits, d49s_bits, v49s_bits, l49s_bits, s49s_bits, u49s_bits, k49s_bits },\
-    { p49o_bits, n49o_bits, b49o_bits, r49o_bits, q49o_bits, f49o_bits, e49o_bits, a49o_bits, c49o_bits, w49o_bits, m49o_bits, o49o_bits, h49o_bits, i49s_bits, j49o_bits, g49o_bits, d49o_bits, v49o_bits, l49o_bits, s49o_bits, u49o_bits, k49o_bits } } },\
+  { { p49s_bits, n49s_bits, b49s_bits, r49s_bits, q49s_bits, f49s_bits, e49s_bits, a49s_bits, c49s_bits, w49s_bits, m49s_bits, o49s_bits, h49s_bits, i49s_bits, j49s_bits, g49s_bits, d49s_bits, v49s_bits, l49s_bits, s49s_bits, u49s_bits, k49s_bits, wp49s_bits, wn49s_bits, ws49s_bits, wl49s_bits },\
+    { p49o_bits, n49o_bits, b49o_bits, r49o_bits, q49o_bits, f49o_bits, e49o_bits, a49o_bits, c49o_bits, w49o_bits, m49o_bits, o49o_bits, h49o_bits, i49s_bits, j49o_bits, g49o_bits, d49o_bits, v49o_bits, l49o_bits, s49o_bits, u49o_bits, k49o_bits, wp49o_bits, wn49o_bits, ws49o_bits, wl49o_bits } } },\
 { 45,\
-  { { p45s_bits, n45s_bits, b45s_bits, r45s_bits, q45s_bits, l45s_bits, l45s_bits, a45s_bits, c45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, d45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, k45s_bits },\
-    { p45o_bits, n45o_bits, b45o_bits, r45o_bits, q45o_bits, l45o_bits, l45o_bits, a45o_bits, c45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, d45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, k45o_bits } } },\
+  { { p45s_bits, n45s_bits, b45s_bits, r45s_bits, q45s_bits, l45s_bits, l45s_bits, a45s_bits, c45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, d45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, k45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits },\
+    { p45o_bits, n45o_bits, b45o_bits, r45o_bits, q45o_bits, l45o_bits, l45o_bits, a45o_bits, c45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, d45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, k45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits } } },\
 { 40,\
-  { { p40s_bits, n40s_bits, b40s_bits, r40s_bits, q40s_bits, l40s_bits, l40s_bits, a40s_bits, c40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, d40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, k40s_bits },\
-    { p40o_bits, n40o_bits, b40o_bits, r40o_bits, q40o_bits, l40o_bits, l40o_bits, a40o_bits, c40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, d40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, k40o_bits } } },\
+  { { p40s_bits, n40s_bits, b40s_bits, r40s_bits, q40s_bits, l40s_bits, l40s_bits, a40s_bits, c40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, d40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, k40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits },\
+    { p40o_bits, n40o_bits, b40o_bits, r40o_bits, q40o_bits, l40o_bits, l40o_bits, a40o_bits, c40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, d40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, k40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits } } },\
 { 37,\
-  { { p37s_bits, n37s_bits, b37s_bits, r37s_bits, q37s_bits, l37s_bits, l37s_bits, a37s_bits, c37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, d37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, k37s_bits },\
-    { p37o_bits, n37o_bits, b37o_bits, r37o_bits, q37o_bits, l37o_bits, l37o_bits, a37o_bits, c37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, d37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, k37o_bits } } },\
+  { { p37s_bits, n37s_bits, b37s_bits, r37s_bits, q37s_bits, l37s_bits, l37s_bits, a37s_bits, c37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, d37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, k37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits },\
+    { p37o_bits, n37o_bits, b37o_bits, r37o_bits, q37o_bits, l37o_bits, l37o_bits, a37o_bits, c37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, d37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, k37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits } } },\
 { 33,\
-  { { p33s_bits, n33s_bits, b33s_bits, r33s_bits, q33s_bits, f33s_bits, e33s_bits, a33s_bits, c33s_bits, w33s_bits, m33s_bits, o33s_bits, h33s_bits, a33s_bits, j33s_bits, g33s_bits, d33s_bits, l33s_bits, d33s_bits, l33s_bits, l33s_bits, k33s_bits },\
-    { p33o_bits, n33o_bits, b33o_bits, r33o_bits, q33o_bits, f33o_bits, e33o_bits, a33o_bits, c33o_bits, w33o_bits, m33o_bits, o33o_bits, h33o_bits, a33o_bits, j33o_bits, g33o_bits, d33o_bits, l33o_bits, d33o_bits, l33o_bits, l33o_bits, k33o_bits } } },\
+  { { p33s_bits, n33s_bits, b33s_bits, r33s_bits, q33s_bits, f33s_bits, e33s_bits, a33s_bits, c33s_bits, w33s_bits, m33s_bits, o33s_bits, h33s_bits, a33s_bits, j33s_bits, g33s_bits, d33s_bits, l33s_bits, d33s_bits, l33s_bits, l33s_bits, k33s_bits, l33s_bits, l33s_bits, l33s_bits, l33s_bits },\
+    { p33o_bits, n33o_bits, b33o_bits, r33o_bits, q33o_bits, f33o_bits, e33o_bits, a33o_bits, c33o_bits, w33o_bits, m33o_bits, o33o_bits, h33o_bits, a33o_bits, j33o_bits, g33o_bits, d33o_bits, l33o_bits, d33o_bits, l33o_bits, l33o_bits, k33o_bits, l33o_bits, l33o_bits, l33o_bits, l33o_bits } } },\
 { 29,\
-  { { p29s_bits, n29s_bits, b29s_bits, r29s_bits, q29s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k29s_bits },\
-    { p29o_bits, n29o_bits, b29o_bits, r29o_bits, q29o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k29o_bits } } },\
+  { { p29s_bits, n29s_bits, b29s_bits, r29s_bits, q29s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k29s_bits, NULL, NULL, NULL, NULL },\
+    { p29o_bits, n29o_bits, b29o_bits, r29o_bits, q29o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k29o_bits, NULL, NULL, NULL, NULL } } },\
 { 25,\
-  { { p25s_bits, n25s_bits, b25s_bits, r25s_bits, q25s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k25s_bits },\
-    { p25o_bits, n25o_bits, b25o_bits, r25o_bits, q25o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k25o_bits } } },\
+  { { p25s_bits, n25s_bits, b25s_bits, r25s_bits, q25s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k25s_bits, NULL, NULL, NULL, NULL },\
+    { p25o_bits, n25o_bits, b25o_bits, r25o_bits, q25o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k25o_bits, NULL, NULL, NULL, NULL } } },\
 { 21,\
-  { { p21s_bits, n21s_bits, b21s_bits, r21s_bits, q21s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k21s_bits },\
-    { p21o_bits, n21o_bits, b21o_bits, r21o_bits, q21o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k21o_bits } } },\
+  { { p21s_bits, n21s_bits, b21s_bits, r21s_bits, q21s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k21s_bits, NULL, NULL, NULL, NULL },\
+    { p21o_bits, n21o_bits, b21o_bits, r21o_bits, q21o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k21o_bits, NULL, NULL, NULL, NULL } } },\
 { 0,\
   { { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },\
     { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL } } }\

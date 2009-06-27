@@ -813,7 +813,7 @@
 
 typedef struct {
   int size;
-  char **xpm[(int)BlackPawn][4];
+  char **xpm[(int)BlackPawn+4][4];
 } XpmPieces;
 
 XpmPieces builtInXpms[] = {\
@@ -840,6 +840,10 @@ XpmPieces builtInXpms[] = {\
     { kll129, kld129, kdl129, kdd129, },\
     { kll129, kld129, kdl129, kdd129, },\
     { kll129, kld129, kdl129, kdd129, },\
+    { qll129, qld129, qdl129, qdd129, },\
+    { qll129, qld129, qdl129, qdd129, },\
+    { qll129, qld129, qdl129, qdd129, },\
+    { qll129, qld129, qdl129, qdd129, },\
   } },\
   { 116, {\
     { pll116, pld116, pdl116, pdd116, },\
@@ -864,6 +868,10 @@ XpmPieces builtInXpms[] = {\
     { kll116, kld116, kdl116, kdd116, },\
     { kll116, kld116, kdl116, kdd116, },\
     { kll116, kld116, kdl116, kdd116, },\
+    { qll116, qld116, qdl116, qdd116, },\
+    { qll116, qld116, qdl116, qdd116, },\
+    { qll116, qld116, qdl116, qdd116, },\
+    { qll116, qld116, qdl116, qdd116, },\
   } },\
   { 108, {\
     { pll108, pld108, pdl108, pdd108, },\
@@ -888,6 +896,10 @@ XpmPieces builtInXpms[] = {\
     { kll108, kld108, kdl108, kdd108, },\
     { kll108, kld108, kdl108, kdd108, },\
     { kll108, kld108, kdl108, kdd108, },\
+    { qll108, qld108, qdl108, qdd108, },\
+    { qll108, qld108, qdl108, qdd108, },\
+    { qll108, qld108, qdl108, qdd108, },\
+    { qll108, qld108, qdl108, qdd108, },\
   } },\
   { 95, {\
     { pll95, pld95, pdl95, pdd95, },\
@@ -912,6 +924,10 @@ XpmPieces builtInXpms[] = {\
     { kll95, kld95, kdl95, kdd95, },\
     { kll95, kld95, kdl95, kdd95, },\
     { kll95, kld95, kdl95, kdd95, },\
+    { qll95, qld95, qdl95, qdd95, },\
+    { qll95, qld95, qdl95, qdd95, },\
+    { qll95, qld95, qdl95, qdd95, },\
+    { qll95, qld95, qdl95, qdd95, },\
   } },\
   { 87, {\
     { pll87, pld87, pdl87, pdd87, },\
@@ -936,6 +952,10 @@ XpmPieces builtInXpms[] = {\
     { kll87, kld87, kdl87, kdd87, },\
     { kll87, kld87, kdl87, kdd87, },\
     { kll87, kld87, kdl87, kdd87, },\
+    { qll87, qld87, qdl87, qdd87, },\
+    { qll87, qld87, qdl87, qdd87, },\
+    { qll87, qld87, qdl87, qdd87, },\
+    { qll87, qld87, qdl87, qdd87, },\
   } },\
   { 80, {\
     { pll80, pld80, pdl80, pdd80, },\
@@ -960,6 +980,10 @@ XpmPieces builtInXpms[] = {\
     { kll80, kld80, kdl80, kdd80, },\
     { kll80, kld80, kdl80, kdd80, },\
     { kll80, kld80, kdl80, kdd80, },\
+    { qll80, qld80, qdl80, qdd80, },\
+    { qll80, qld80, qdl80, qdd80, },\
+    { qll80, qld80, qdl80, qdd80, },\
+    { qll80, qld80, qdl80, qdd80, },\
   } },\
   { 72, {\
     { pll72, pld72, pdl72, pdd72, },\
@@ -984,6 +1008,10 @@ XpmPieces builtInXpms[] = {\
     { sll72, sld72, sdl72, sdd72, },\
     { ull72, uld72, udl72, udd72, },\
     { kll72, kld72, kdl72, kdd72, },\
+    { wpll72, wpld72, wpdl72, wpdd72, },\
+    { wnll72, wnld72, wndl72, wndd72, },\
+    { wsll72, wsld72, wsdl72, wsdd72, },\
+    { wlll72, wlld72, wldl72, wldd72, },\
   } },\
   { 64, {\
     { pll64, pld64, pdl64, pdd64, },\
@@ -1008,6 +1036,10 @@ XpmPieces builtInXpms[] = {\
     { lll64, lld64, ldl64, ldd64, },\
     { lll64, lld64, ldl64, ldd64, },\
     { kll64, kld64, kdl64, kdd64, },\
+    { qll64, qld64, qdl64, qdd64, },\
+    { qll64, qld64, qdl64, qdd64, },\
+    { qll64, qld64, qdl64, qdd64, },\
+    { qll64, qld64, qdl64, qdd64, },\
   } },\
   { 58, {\
     { pll58, pld58, pdl58, pdd58, },\
@@ -1032,6 +1064,10 @@ XpmPieces builtInXpms[] = {\
     { lll58, lld58, ldl58, ldd58, },\
     { lll58, lld58, ldl58, ldd58, },\
     { kll58, kld58, kdl58, kdd58, },\
+    { qll58, qld58, qdl58, qdd58, },\
+    { qll58, qld58, qdl58, qdd58, },\
+    { qll58, qld58, qdl58, qdd58, },\
+    { qll58, qld58, qdl58, qdd58, },\
   } },\
   { 54, {\
     { pll54, pld54, pdl54, pdd54, },\
@@ -1056,6 +1092,10 @@ XpmPieces builtInXpms[] = {\
     { lll54, lld54, ldl54, ldd54, },\
     { lll54, lld54, ldl54, ldd54, },\
     { kll54, kld54, kdl54, kdd54, },\
+    { qll54, qld54, qdl54, qdd54, },\
+    { qll54, qld54, qdl54, qdd54, },\
+    { qll54, qld54, qdl54, qdd54, },\
+    { qll54, qld54, qdl54, qdd54, },\
   } },\
   { 49, {\
     { pll49, pld49, pdl49, pdd49, },\
@@ -1080,6 +1120,10 @@ XpmPieces builtInXpms[] = {\
     { sll49, sld49, sdl49, sdd49, },\
     { ull49, uld49, udl49, udd49, },\
     { kll49, kld49, kdl49, kdd49, },\
+    { wpll49, wpld49, wpdl49, wpdd49, },\
+    { wnll49, wnld49, wndl49, wndd49, },\
+    { wsll49, wsld49, wsdl49, wsdd49, },\
+    { wlll49, wlld49, wldl49, wldd49, },\
   } },\
   { 45, {\
     { pll45, pld45, pdl45, pdd45, },\
@@ -1104,6 +1148,10 @@ XpmPieces builtInXpms[] = {\
     { lll45, lld45, ldl45, ldd45, },\
     { lll45, lld45, ldl45, ldd45, },\
     { kll45, kld45, kdl45, kdd45, },\
+    { qll45, qld45, qdl45, qdd45, },\
+    { qll45, qld45, qdl45, qdd45, },\
+    { qll45, qld45, qdl45, qdd45, },\
+    { qll45, qld45, qdl45, qdd45, },\
   } },\
   { 40, {\
     { pll40, pld40, pdl40, pdd40, },\
@@ -1128,6 +1176,10 @@ XpmPieces builtInXpms[] = {\
     { lll40, lld40, ldl40, ldd40, },\
     { lll40, lld40, ldl40, ldd40, },\
     { kll40, kld40, kdl40, kdd40, },\
+    { qll40, qld40, qdl40, qdd40, },\
+    { qll40, qld40, qdl40, qdd40, },\
+    { qll40, qld40, qdl40, qdd40, },\
+    { qll40, qld40, qdl40, qdd40, },\
   } },\
   { 37, {\
     { pll37, pld37, pdl37, pdd37, },\
@@ -1152,6 +1204,10 @@ XpmPieces builtInXpms[] = {\
     { lll37, lld37, ldl37, ldd37, },\
     { lll37, lld37, ldl37, ldd37, },\
     { kll37, kld37, kdl37, kdd37, },\
+    { qll37, qld37, qdl37, qdd37, },\
+    { qll37, qld37, qdl37, qdd37, },\
+    { qll37, qld37, qdl37, qdd37, },\
+    { qll37, qld37, qdl37, qdd37, },\
   } },\
   { 33, {\
     { pll33, pld33, pdl33, pdd33, },\
@@ -1176,6 +1232,10 @@ XpmPieces builtInXpms[] = {\
     { lll33, lld33, ldl33, ldd33, },\
     { lll33, lld33, ldl33, ldd33, },\
     { kll33, kld33, kdl33, kdd33, },\
+    { qll33, qld33, qdl33, qdd33, },\
+    { qll33, qld33, qdl33, qdd33, },\
+    { qll33, qld33, qdl33, qdd33, },\
+    { qll33, qld33, qdl33, qdd33, },\
   } },\
   { 29, {\
     { pll29, pld29, pdl29, pdd29, },\
@@ -1200,6 +1260,10 @@ XpmPieces builtInXpms[] = {\
     { kll29, kld29, kdl29, kdd29, },\
     { kll29, kld29, kdl29, kdd29, },\
     { kll29, kld29, kdl29, kdd29, },\
+    { qll29, qld29, qdl29, qdd29, },\
+    { qll29, qld29, qdl29, qdd29, },\
+    { qll29, qld29, qdl29, qdd29, },\
+    { qll29, qld29, qdl29, qdd29, },\
   } },\
   { 25, {\
     { pll25, pld25, pdl25, pdd25, },\
@@ -1224,6 +1288,10 @@ XpmPieces builtInXpms[] = {\
     { kll25, kld25, kdl25, kdd25, },\
     { kll25, kld25, kdl25, kdd25, },\
     { kll25, kld25, kdl25, kdd25, },\
+    { qll25, qld25, qdl25, qdd25, },\
+    { qll25, qld25, qdl25, qdd25, },\
+    { qll25, qld25, qdl25, qdd25, },\
+    { qll25, qld25, qdl25, qdd25, },\
   } },\
   { 21, {\
     { pll21, pld21, pdl21, pdd21, },\
@@ -1248,6 +1316,10 @@ XpmPieces builtInXpms[] = {\
     { kll21, kld21, kdl21, kdd21, },\
     { kll21, kld21, kdl21, kdd21, },\
     { kll21, kld21, kdl21, kdd21, },\
+    { qll21, qld21, qdl21, qdd21, },\
+    { qll21, qld21, qdl21, qdd21, },\
+    { qll21, qld21, qdl21, qdd21, },\
+    { qll21, qld21, qdl21, qdd21, },\
   } },\
   { 0, {\
     { NULL, NULL, NULL, NULL, },\
