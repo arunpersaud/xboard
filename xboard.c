@@ -2329,6 +2329,20 @@ main(argc, argv)
     if (argc > 1) {
 	fprintf(stderr, _("%s: unrecognized argument %s\n"),
 		programName, argv[1]);
+	fprintf(stderr, "Recognized options:\n");
+	for(i = 0; i < XtNumber(shellOptions); i++) {
+	    j = fprintf(stderr, "  %s%s", shellOptions[i].option,
+		        (shellOptions[i].argKind == XrmoptionSepArg
+			 ? " ARG" : ""));
+	    if (i++ < XtNumber(shellOptions)) {
+		fprintf(stderr, "%*c%s%s\n", 40 - j, ' ',
+			shellOptions[i].option,
+			(shellOptions[i].argKind == XrmoptionSepArg
+			 ? " ARG" : ""));
+	    } else {
+		fprintf(stderr, "\n");
+	    }
+	}
 	exit(2);
     }
 
