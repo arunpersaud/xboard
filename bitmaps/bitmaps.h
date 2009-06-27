@@ -154,8 +154,10 @@
 #include "m72s.bm"
 #include "o72s.bm"
 #include "h72s.bm"
-#include "dk72s.bm"
+#include "i72s.bm"
+#include "j72s.bm"
 #include "g72s.bm"
+#include "d72s.bm"
 #include "v72s.bm"
 #include "l72s.bm"
 #include "s72s.bm"
@@ -165,9 +167,6 @@
 #include "wl72s.bm"
 #include "wn72s.bm"
 #include "ws72s.bm"
-#include "as72s.bm"
-#include "cv72s.bm"
-#include "d72s.bm"
 
 #include "p72o.bm"
 #include "n72o.bm"
@@ -182,8 +181,10 @@
 #include "m72o.bm"
 #include "o72o.bm"
 #include "h72o.bm"
-#include "dk72o.bm"
+#include "i72o.bm"
+#include "j72o.bm"
 #include "g72o.bm"
+#include "d72o.bm"
 #include "v72o.bm"
 #include "l72o.bm"
 #include "s72o.bm"
@@ -193,9 +194,6 @@
 #include "wl72o.bm"
 #include "wn72o.bm"
 #include "ws72o.bm"
-#include "as72o.bm"
-#include "cv72o.bm"
-#include "d72o.bm"
 
 #include "p64s.bm"
 #include "n64s.bm"
@@ -204,7 +202,7 @@
 #include "q64s.bm"
 #include "a64s.bm"
 #include "c64s.bm"
-#include "cv64s.bm"
+#include "d64s.bm"
 #include "l64s.bm"
 #include "k64s.bm"
 
@@ -215,7 +213,7 @@
 #include "q64o.bm"
 #include "a64o.bm"
 #include "c64o.bm"
-#include "cv64o.bm"
+#include "d64o.bm"
 #include "l64o.bm"
 #include "k64o.bm"
 
@@ -226,7 +224,7 @@
 #include "q58s.bm"
 #include "a58s.bm"
 #include "c58s.bm"
-#include "cv58s.bm"
+#include "d58s.bm"
 #include "l58s.bm"
 #include "k58s.bm"
 
@@ -237,7 +235,7 @@
 #include "q58o.bm"
 #include "a58o.bm"
 #include "c58o.bm"
-#include "cv58o.bm"
+#include "d58o.bm"
 #include "l58o.bm"
 #include "k58o.bm"
 
@@ -248,7 +246,7 @@
 #include "q54s.bm"
 #include "a54s.bm"
 #include "c54s.bm"
-#include "cv54s.bm"
+#include "d54s.bm"
 #include "l54s.bm"
 #include "k54s.bm"
 
@@ -259,7 +257,7 @@
 #include "q54o.bm"
 #include "a54o.bm"
 #include "c54o.bm"
-#include "cv54o.bm"
+#include "d54o.bm"
 #include "l54o.bm"
 #include "k54o.bm"
 
@@ -276,8 +274,10 @@
 #include "m49s.bm"
 #include "o49s.bm"
 #include "h49s.bm"
-#include "dk49s.bm"
+#include "i49s.bm"
+#include "j49s.bm"
 #include "g49s.bm"
+#include "d49s.bm"
 #include "v49s.bm"
 #include "l49s.bm"
 #include "s49s.bm"
@@ -287,9 +287,6 @@
 #include "wl49s.bm"
 #include "wn49s.bm"
 #include "ws49s.bm"
-#include "as49s.bm"
-#include "cv49s.bm"
-#include "d49s.bm"
 
 #include "p49o.bm"
 #include "n49o.bm"
@@ -304,8 +301,10 @@
 #include "m49o.bm"
 #include "o49o.bm"
 #include "h49o.bm"
-#include "dk49o.bm"
+#include "i49o.bm"
+#include "j49o.bm"
 #include "g49o.bm"
+#include "d49o.bm"
 #include "v49o.bm"
 #include "l49o.bm"
 #include "s49o.bm"
@@ -315,9 +314,6 @@
 #include "wl49o.bm"
 #include "wn49o.bm"
 #include "ws49o.bm"
-#include "as49o.bm"
-#include "cv49o.bm"
-#include "d49o.bm"
 
 #include "p45s.bm"
 #include "n45s.bm"
@@ -326,7 +322,7 @@
 #include "q45s.bm"
 #include "a45s.bm"
 #include "c45s.bm"
-#include "cv45s.bm"
+#include "d45s.bm"
 #include "l45s.bm"
 #include "k45s.bm"
 
@@ -337,7 +333,7 @@
 #include "q45o.bm"
 #include "a45o.bm"
 #include "c45o.bm"
-#include "cv45o.bm"
+#include "d45o.bm"
 #include "l45o.bm"
 #include "k45o.bm"
 
@@ -348,7 +344,7 @@
 #include "q40s.bm"
 #include "a40s.bm"
 #include "c40s.bm"
-#include "cv40s.bm"
+#include "d40s.bm"
 #include "l40s.bm"
 #include "k40s.bm"
 
@@ -359,7 +355,7 @@
 #include "q40o.bm"
 #include "a40o.bm"
 #include "c40o.bm"
-#include "cv40o.bm"
+#include "d40o.bm"
 #include "l40o.bm"
 #include "k40o.bm"
 
@@ -370,7 +366,7 @@
 #include "q37s.bm"
 #include "a37s.bm"
 #include "c37s.bm"
-#include "cv37s.bm"
+#include "d37s.bm"
 #include "l37s.bm"
 #include "k37s.bm"
 
@@ -381,7 +377,7 @@
 #include "q37o.bm"
 #include "a37o.bm"
 #include "c37o.bm"
-#include "cv37o.bm"
+#include "d37o.bm"
 #include "l37o.bm"
 #include "k37o.bm"
 
@@ -398,12 +394,12 @@
 #include "m33s.bm"
 #include "o33s.bm"
 #include "h33s.bm"
-#include "dk33s.bm"
+#include "i33s.bm"
+#include "j33s.bm"
 #include "g33s.bm"
-#include "cv33s.bm"
+#include "d33s.bm"
 #include "l33s.bm"
 #include "k33s.bm"
-#include "as33s.bm"
 
 #include "p33o.bm"
 #include "n33o.bm"
@@ -418,12 +414,12 @@
 #include "m33o.bm"
 #include "o33o.bm"
 #include "h33o.bm"
-#include "dk33o.bm"
+#include "i33o.bm"
+#include "j33o.bm"
 #include "g33o.bm"
-#include "cv33o.bm"
+#include "d33o.bm"
 #include "l33o.bm"
 #include "k33o.bm"
-#include "as33o.bm"
 
 #include "p29s.bm"
 #include "n29s.bm"
@@ -492,32 +488,32 @@ BuiltInBits builtInBits[] = {\
   { { p80s_bits, n80s_bits, b80s_bits, r80s_bits, q80s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k80s_bits },\
     { p80o_bits, n80o_bits, b80o_bits, r80o_bits, q80o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k80o_bits } } },\
 { 72,\
-  { { p72s_bits, n72s_bits, b72s_bits, r72s_bits, q72s_bits, f72s_bits, e72s_bits, as72s_bits, c72s_bits, w72s_bits, m72s_bits, o72s_bits, h72s_bits, a72s_bits, dk72s_bits, g72s_bits, cv72s_bits, v72s_bits, l72s_bits, s72s_bits, u72s_bits, k72s_bits },\
-    { p72o_bits, n72o_bits, b72o_bits, r72o_bits, q72o_bits, f72o_bits, e72o_bits, as72o_bits, c72o_bits, w72o_bits, m72o_bits, o72o_bits, h72o_bits, a72o_bits, dk72o_bits, g72o_bits, cv72o_bits, v72o_bits, l72o_bits, s72o_bits, u72o_bits, k72o_bits } } },\
+  { { p72s_bits, n72s_bits, b72s_bits, r72s_bits, q72s_bits, f72s_bits, e72s_bits, a72s_bits, c72s_bits, w72s_bits, m72s_bits, o72s_bits, h72s_bits, i72s_bits, j72s_bits, g72s_bits, d72s_bits, v72s_bits, l72s_bits, s72s_bits, u72s_bits, k72s_bits },\
+    { p72o_bits, n72o_bits, b72o_bits, r72o_bits, q72o_bits, f72o_bits, e72o_bits, a72o_bits, c72o_bits, w72o_bits, m72o_bits, o72o_bits, h72o_bits, i72o_bits, j72o_bits, g72o_bits, d72o_bits, v72o_bits, l72o_bits, s72o_bits, u72o_bits, k72o_bits } } },\
 { 64,\
-  { { p64s_bits, n64s_bits, b64s_bits, r64s_bits, q64s_bits, l64s_bits, l64s_bits, a64s_bits, c64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, cv64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, k64s_bits },\
-    { p64o_bits, n64o_bits, b64o_bits, r64o_bits, q64o_bits, l64o_bits, l64o_bits, a64o_bits, c64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, cv64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, k64o_bits } } },\
+  { { p64s_bits, n64s_bits, b64s_bits, r64s_bits, q64s_bits, l64s_bits, l64s_bits, a64s_bits, c64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, d64s_bits, l64s_bits, l64s_bits, l64s_bits, l64s_bits, k64s_bits },\
+    { p64o_bits, n64o_bits, b64o_bits, r64o_bits, q64o_bits, l64o_bits, l64o_bits, a64o_bits, c64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, d64o_bits, l64o_bits, l64o_bits, l64o_bits, l64o_bits, k64o_bits } } },\
 { 58,\
-  { { p58s_bits, n58s_bits, b58s_bits, r58s_bits, q58s_bits, l58s_bits, l58s_bits, a58s_bits, c58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, cv58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, k58s_bits },\
-    { p58o_bits, n58o_bits, b58o_bits, r58o_bits, q58o_bits, l58o_bits, l58o_bits, a58o_bits, c58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, cv58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, k58o_bits } } },\
+  { { p58s_bits, n58s_bits, b58s_bits, r58s_bits, q58s_bits, l58s_bits, l58s_bits, a58s_bits, c58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, d58s_bits, l58s_bits, l58s_bits, l58s_bits, l58s_bits, k58s_bits },\
+    { p58o_bits, n58o_bits, b58o_bits, r58o_bits, q58o_bits, l58o_bits, l58o_bits, a58o_bits, c58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, d58o_bits, l58o_bits, l58o_bits, l58o_bits, l58o_bits, k58o_bits } } },\
 { 54,\
-  { { p54s_bits, n54s_bits, b54s_bits, r54s_bits, q54s_bits, l54s_bits, l54s_bits, a54s_bits, c54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, cv54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, k54s_bits },\
-    { p54o_bits, n54o_bits, b54o_bits, r54o_bits, q54o_bits, l54o_bits, l54o_bits, a54o_bits, c54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, cv54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, k54o_bits } } },\
+  { { p54s_bits, n54s_bits, b54s_bits, r54s_bits, q54s_bits, l54s_bits, l54s_bits, a54s_bits, c54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, d54s_bits, l54s_bits, l54s_bits, l54s_bits, l54s_bits, k54s_bits },\
+    { p54o_bits, n54o_bits, b54o_bits, r54o_bits, q54o_bits, l54o_bits, l54o_bits, a54o_bits, c54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, d54o_bits, l54o_bits, l54o_bits, l54o_bits, l54o_bits, k54o_bits } } },\
 { 49,\
-  { { p49s_bits, n49s_bits, b49s_bits, r49s_bits, q49s_bits, f49s_bits, e49s_bits, as49s_bits, c49s_bits, w49s_bits, m49s_bits, o49s_bits, h49s_bits, a49s_bits, dk49s_bits, g49s_bits, cv49s_bits, v49s_bits, l49s_bits, s49s_bits, u49s_bits, k49s_bits },\
-    { p49o_bits, n49o_bits, b49o_bits, r49o_bits, q49o_bits, f49o_bits, e49o_bits, as49o_bits, c49o_bits, w49o_bits, m49o_bits, o49o_bits, h49o_bits, a49s_bits, dk49o_bits, g49o_bits, cv49o_bits, v49o_bits, l49o_bits, s49o_bits, u49o_bits, k49o_bits } } },\
+  { { p49s_bits, n49s_bits, b49s_bits, r49s_bits, q49s_bits, f49s_bits, e49s_bits, a49s_bits, c49s_bits, w49s_bits, m49s_bits, o49s_bits, h49s_bits, i49s_bits, j49s_bits, g49s_bits, d49s_bits, v49s_bits, l49s_bits, s49s_bits, u49s_bits, k49s_bits },\
+    { p49o_bits, n49o_bits, b49o_bits, r49o_bits, q49o_bits, f49o_bits, e49o_bits, a49o_bits, c49o_bits, w49o_bits, m49o_bits, o49o_bits, h49o_bits, i49s_bits, j49o_bits, g49o_bits, d49o_bits, v49o_bits, l49o_bits, s49o_bits, u49o_bits, k49o_bits } } },\
 { 45,\
-  { { p45s_bits, n45s_bits, b45s_bits, r45s_bits, q45s_bits, l45s_bits, l45s_bits, a45s_bits, c45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, cv45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, k45s_bits },\
-    { p45o_bits, n45o_bits, b45o_bits, r45o_bits, q45o_bits, l45o_bits, l45o_bits, a45o_bits, c45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, cv45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, k45o_bits } } },\
+  { { p45s_bits, n45s_bits, b45s_bits, r45s_bits, q45s_bits, l45s_bits, l45s_bits, a45s_bits, c45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, d45s_bits, l45s_bits, l45s_bits, l45s_bits, l45s_bits, k45s_bits },\
+    { p45o_bits, n45o_bits, b45o_bits, r45o_bits, q45o_bits, l45o_bits, l45o_bits, a45o_bits, c45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, d45o_bits, l45o_bits, l45o_bits, l45o_bits, l45o_bits, k45o_bits } } },\
 { 40,\
-  { { p40s_bits, n40s_bits, b40s_bits, r40s_bits, q40s_bits, l40s_bits, l40s_bits, a40s_bits, c40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, cv40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, k40s_bits },\
-    { p40o_bits, n40o_bits, b40o_bits, r40o_bits, q40o_bits, l40o_bits, l40o_bits, a40o_bits, c40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, cv40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, k40o_bits } } },\
+  { { p40s_bits, n40s_bits, b40s_bits, r40s_bits, q40s_bits, l40s_bits, l40s_bits, a40s_bits, c40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, d40s_bits, l40s_bits, l40s_bits, l40s_bits, l40s_bits, k40s_bits },\
+    { p40o_bits, n40o_bits, b40o_bits, r40o_bits, q40o_bits, l40o_bits, l40o_bits, a40o_bits, c40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, d40o_bits, l40o_bits, l40o_bits, l40o_bits, l40o_bits, k40o_bits } } },\
 { 37,\
-  { { p37s_bits, n37s_bits, b37s_bits, r37s_bits, q37s_bits, l37s_bits, l37s_bits, a37s_bits, c37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, cv37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, k37s_bits },\
-    { p37o_bits, n37o_bits, b37o_bits, r37o_bits, q37o_bits, l37o_bits, l37o_bits, a37o_bits, c37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, cv37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, k37o_bits } } },\
+  { { p37s_bits, n37s_bits, b37s_bits, r37s_bits, q37s_bits, l37s_bits, l37s_bits, a37s_bits, c37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, d37s_bits, l37s_bits, l37s_bits, l37s_bits, l37s_bits, k37s_bits },\
+    { p37o_bits, n37o_bits, b37o_bits, r37o_bits, q37o_bits, l37o_bits, l37o_bits, a37o_bits, c37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, d37o_bits, l37o_bits, l37o_bits, l37o_bits, l37o_bits, k37o_bits } } },\
 { 33,\
-  { { p33s_bits, n33s_bits, b33s_bits, r33s_bits, q33s_bits, f33s_bits, e33s_bits, as33s_bits, c33s_bits, w33s_bits, m33s_bits, o33s_bits, h33s_bits, a33s_bits, dk33s_bits, g33s_bits, cv33s_bits, l33s_bits, cv33s_bits, l33s_bits, l33s_bits, k33s_bits },\
-    { p33o_bits, n33o_bits, b33o_bits, r33o_bits, q33o_bits, f33o_bits, e33o_bits, as33o_bits, c33o_bits, w33o_bits, m33o_bits, o33o_bits, h33o_bits, a33o_bits, dk33o_bits, g33o_bits, cv33o_bits, l33o_bits, cv33o_bits, l33o_bits, l33o_bits, k33o_bits } } },\
+  { { p33s_bits, n33s_bits, b33s_bits, r33s_bits, q33s_bits, f33s_bits, e33s_bits, a33s_bits, c33s_bits, w33s_bits, m33s_bits, o33s_bits, h33s_bits, a33s_bits, j33s_bits, g33s_bits, d33s_bits, l33s_bits, d33s_bits, l33s_bits, l33s_bits, k33s_bits },\
+    { p33o_bits, n33o_bits, b33o_bits, r33o_bits, q33o_bits, f33o_bits, e33o_bits, a33o_bits, c33o_bits, w33o_bits, m33o_bits, o33o_bits, h33o_bits, a33o_bits, j33o_bits, g33o_bits, d33o_bits, l33o_bits, d33o_bits, l33o_bits, l33o_bits, k33o_bits } } },\
 { 29,\
   { { p29s_bits, n29s_bits, b29s_bits, r29s_bits, q29s_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k29s_bits },\
     { p29o_bits, n29o_bits, b29o_bits, r29o_bits, q29o_bits, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, k29o_bits } } },\
