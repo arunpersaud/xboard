@@ -63,6 +63,7 @@ extern HWND hwndConsole;
 extern char *defaultTextAttribs[];
 extern HWND commentDialog;
 extern HWND moveHistoryDialog;
+extern HWND engineOutputDialog;
 extern char installDir[];
 extern HWND hCommPort;    /* currently open comm port */
 extern DCB dcb;
@@ -1634,7 +1635,17 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	SendDlgItemMessage(moveHistoryDialog, IDC_MoveHistory,
   	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, 
 	  MAKELPARAM(TRUE, 0));
-	InvalidateRect(editTagsDialog, NULL, TRUE);
+        SendMessage( moveHistoryDialog, WM_INITDIALOG, 0, 0 );
+//	InvalidateRect(editTagsDialog, NULL, TRUE); // [HGM] this ws improperly cloned?
+      }
+
+      if( engineOutputDialog != NULL ) {
+	SendDlgItemMessage(engineOutputDialog, IDC_EngineMemo1,
+  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, 
+	  MAKELPARAM(TRUE, 0));
+	SendDlgItemMessage(engineOutputDialog, IDC_EngineMemo2,
+  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, 
+	  MAKELPARAM(TRUE, 0));
       }
 
       if (hwndConsole) {

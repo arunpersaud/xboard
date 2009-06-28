@@ -78,6 +78,8 @@ extern HWND hwndMain;
 
 extern WindowPlacement wpEngineOutput;
 
+extern BoardSize boardSize;
+
 /* Module variables */
 #define H_MARGIN            2
 #define V_MARGIN            2
@@ -338,6 +340,10 @@ LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
             RestoreWindowPlacement( hDlg, &wpEngineOutput ); /* Restore window placement */
 
             ResizeWindowControls( hDlg, windowMode );
+
+	    /* Set font */
+	    SendDlgItemMessage( engineOutputDialog, IDC_EngineMemo1, WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, MAKELPARAM(TRUE, 0 ));
+	    SendDlgItemMessage( engineOutputDialog, IDC_EngineMemo2, WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, MAKELPARAM(TRUE, 0 ));
 
             SetEngineState( 0, STATE_IDLE, "" );
             SetEngineState( 1, STATE_IDLE, "" );

@@ -727,7 +727,7 @@ BEGIN
     GROUPBOX        "All Board Sizes",IDC_STATIC,3,87,259,109
     CONTROL         "",OPT_SampleMoveHistoryFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,67,170,140,20
-    LTEXT           "Move History",OPT_MessageFont6,13,175,50,10,NOT 
+    LTEXT           "Move History, Engine Output",OPT_MessageFont6,13,171,50,20,NOT 
                     WS_GROUP
 END
 
