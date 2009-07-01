@@ -58,10 +58,10 @@ To move a piece, you can drag it with the left mouse button, or you can
 click the left mouse button once on the piece, then once more on the
 destination square.  To drop a new piece on a square (when applicable),
 press the middle or the right mouse button over the square and select
-from the popup menu.  In cases where you can drop either a white or
+from the pop-up menu.  In cases where you can drop either a white or
 black piece, use the middle button (or shift+right) for white and the
 right button (or shift+middle) for black.  When you are playing a
-bughouse game on an Internet Chess Server, a list of the offboard
+bughouse game on an Internet Chess Server, a list of the off-board
 pieces that each player has available is shown in the window title
 after the player's name; in addition, the piece menus show the number
 of pieces available of each type. From version 4.3.14 on, it is also
@@ -104,17 +104,17 @@ New Shuffle Game
 New Variant
      Allows you to select a new chess variant in non-ICS mode.  (In ICS
      play, the ICS is responsible for deciding which variant will be
-     played, and XBoard adapts autmatically.) If you play with an
+     played, and XBoard adapts automatically.) If you play with an
      engine, the engine must be able to play the selected variant, or
      the command will be ignored.  XBoard supports all major variants,
      such as xiangqi, shogi, chess, chess960, Capablanca Chess,
-     shatranj, crazyhous, bughouse.
+     shatranj, crazyhouse, bughouse.
 
 Load Game
      Plays a game from a record file. The `g' key is a keyboard
-     equivalent.  A popup dialog prompts you for the file name. If the
-     file contains more than one game, a second popup dialog displays a
-     list of games (with information drawn from their PGN tags, if
+     equivalent.  A pop-up dialog prompts you for the file name. If the
+     file contains more than one game, a second pop-up dialog displays
+     a list of games (with information drawn from their PGN tags, if
      any), and you can select the one you want. Alternatively, you can
      load the Nth game in the file directly, by typing the number `N'
      after the file name, separated by a space.
@@ -151,7 +151,7 @@ Reload Same Game
      was loaded from a pipe.
 
 Save Game
-     Appends a record of the current game to a file.  A popup dialog
+     Appends a record of the current game to a file.  A pop-up dialog
      prompts you for the file name. If the game did not begin with the
      standard starting position, the game file includes the starting
      position used. Games are saved in the PGN (portable game notation)
@@ -176,7 +176,7 @@ Paste Game
      as with Load Game.
 
 Load Position
-     Sets up a position from a position file.  A popup dialog prompts
+     Sets up a position from a position file.  A pop-up dialog prompts
      you for the file name. If the file contains more than one saved
      position, and you want to load the Nth one, type the number N
      after the file name, separated by a space. Position files must be
@@ -195,7 +195,7 @@ Reload Same Position
      position was loaded from a pipe.
 
 Save Position
-     Appends a diagram of the current position to a file.  A popup
+     Appends a diagram of the current position to a file.  A pop-up
      dialog prompts you for the file name. Positions are saved in FEN
      (Forsythe-Edwards notation) format unless the `oldSaveStyle'
      option is true, in which case they are saved in an older,
@@ -257,9 +257,9 @@ Analysis Mode
 
 Analyze File
      This option lets you load a game from a file (PGN, XBoard format,
-     etc.)  and analyze it. When you select this menu item, a popup
-     window appears and asks for a filename to load.  If the file
-     contains multiple games, another popup appears that lets you
+     etc.)  and analyze it. When you select this menu item, a pop-up
+     window appears and asks for a file name to load.  If the file
+     contains multiple games, another pop up appears that lets you
      select which game you wish to analyze.  After a game is loaded,
      use the XBoard arrow buttons to step forwards/backwards through
      the game and watch the analysis.  Note: Some chess engines do not
@@ -329,7 +329,7 @@ Training
      one of the players. You guess the next move of the game by playing
      the move on the board. If the move played matches the next move of
      the game, the move is accepted and the opponent's response is
-     autoplayed.  If the move played is incorrect, an error message is
+     auto-played.  If the move played is incorrect, an error message is
      displayed.  You can select this mode only while loading a game
      (that is, after selecting `Load Game' from the File menu).  While
      XBoard is in `Training' mode, the navigation buttons are disabled.
@@ -452,6 +452,14 @@ Stop Examining
      Ends your participation in examining a game, by issuing the ICS
      unexamine command. ICS mode only.
 
+Adjudicate to White
+Adjudicate to Black
+Adjudicate Draw
+     Terminate an ongoing game in Two-Machines mode (including match
+     mode), with as result a win for white, for black, or a draw,
+     respectively.  The PGN file of the game will accompany the result
+     string by the comment "user adjudication".
+
 2.4 Step Menu
 =============
 
@@ -539,14 +547,6 @@ Retract Move
      `Retract Move' issues the command `takeback 1' or `takeback 2'
      depending on whether it is your opponent's move or yours.
 
-Adjudicate to White
-Adjudicate to Black
-Adjudicate Draw
-     Terminate an ongoing game in Two-Machines mode (including match
-     mode), with as result a win for white, for black, or a draw,
-     repsectively.  The PGN file of the game will accompany the result
-     string by the comment "user adjudication".
-
 2.5 Options Menu
 ================
 
@@ -561,28 +561,29 @@ Adjudications
      can instruct XBoard to detect and terminate the game on checkmate
      or stalemate, even if the engines would not do so, to verify engine
      result claims (forfeiting engines that make false claims), rather
-     than naively following the engine, to declare draw on posititions
+     than naively following the engine, to declare draw on positions
      which can never be won for lack of mating material, (e.g. KBK), or
-     which are impossble to win unless the opponent seeks its own demise
-     (e.g. KBKN).  For these adjudications to work, `Test Legality'
-     should be switched on.  It is also possible to insruct XBoard to
-     enforce a 50-move or 3-fold-repeat rule and automtically declare
-     draw (after a user-adjustable number of moves or repeats) even if
-     the engines are prepared to go on.  It is also possible to have
-     XBoard declare draw on games that seem to drag on forever, or
-     adjudicate a loss if both engines agree (for 3 cosecutive moves)
-     that one of them is behind more than a user-adjustable score
-     threshold.  For the latter adjudication to work, XBoard should be
-     able to properly understand the engine's scores. To faclitate the
-     latter, you can inform xboard here if the engines report scores
-     from the viewpoint of white, or from that of their own color.
+     which are impossible to win unless the opponent seeks its own
+     demise (e.g. KBKN).  For these adjudications to work, `Test
+     Legality' should be switched on.  It is also possible to instruct
+     XBoard to enforce a 50-move or 3-fold-repeat rule and
+     automatically declare draw (after a user-adjustable number of moves
+     or repeats) even if the engines are prepared to go on.  It is also
+     possible to have XBoard declare draw on games that seem to drag on
+     forever, or adjudicate a loss if both engines agree (for 3
+     consecutive moves) that one of them is behind more than a
+     user-adjustable score threshold.  For the latter adjudication to
+     work, XBoard should be able to properly understand the engine's
+     scores. To facilitate the latter, you can inform xboard here if
+     the engines report scores from the viewpoint of white, or from
+     that of their own color.
 
 Engine Settings
      Pops up a sub-menu where you can set some engine parameters common
      to most engines, such as hash-table size, tablebase cache size,
      maximum number of processors that SMP engines can use, and where
      to find the Polyglot adapter needed to run UCI engines under
-     XBoard. The feature tht allows setting of these parameters on
+     XBoard. The feature that allows setting of these parameters on
      engines is new since XBoard 4.3.15, so not many WinBoard engines
      respond to it yet, but UCI engines should.  It is also possible to
      specify a GUI opening book here, i.e. an opening book that XBoard
@@ -604,7 +605,7 @@ Always Queen
      If this option is off, XBoard brings up a dialog box whenever you
      move a pawn to the last rank, asking what piece you want to
      promote it to. If the option is true, your pawns are always
-     promoted to queens. Your opponent can still underpromote.
+     promoted to queens. Your opponent can still under-promote.
 
 Animate Dragging
      If Animate Dragging is on, while you are dragging a piece with the
@@ -759,10 +760,10 @@ Popup Move Errors
      If this option is off, when you make an error in moving (such as
      attempting an illegal move or moving the wrong color piece), the
      error message is displayed in the message area.  If the option is
-     on, move errors are displayed in small popup windows like other
-     errors.  You can dismiss an error popup either by clicking its OK
+     on, move errors are displayed in small pop-up windows like other
+     errors.  You can dismiss an error pop-up either by clicking its OK
      button or by clicking anywhere on the board, including
-     downclicking to start a move.
+     down-clicking to start a move.
 
 Premove
      If this option is on while playing a game on an ICS, you can
@@ -986,7 +987,8 @@ X resource, give its long name followed by the value true or false
 
 -hideThinkingFromHuman true/false
      Controls the Hide Thinking option. *Note Options Menu::. Default:
-     true.  (Relaces the Show-Thinking option of older xboard versions.)
+     true.  (Replaces the Show-Thinking option of older xboard
+     versions.)
 
 -thinking/-xthinking or -showThinking true/false
      Forces the engine to send thinking output to xboard.  Used to be
@@ -1003,9 +1005,9 @@ X resource, give its long name followed by the value true or false
      Default: true.
 
 -smpCores number
-     Specifies the maxmum nmber of CPUs an SMP engine is allowed to use.
-     Only works for engines that support the WinBoard-protocol cores
-     feature.
+     Specifies the maximum number of CPUs an SMP engine is allowed to
+     use.  Only works for engines that support the WinBoard-protocol
+     cores feature.
 
 -mg or -matchGames n
      Automatically runs an n-game match between two chess engines, with
@@ -1159,7 +1161,7 @@ X resource, give its long name followed by the value true or false
      Indicates if the mentioned engine executable file is an UCI engine,
      and should be run with the aid of the Polyglot adapter rather than
      directly.  Xboard will then pass the other UCI options and engine
-     name to Polyglot through a .ini temporary file ceated for the
+     name to Polyglot through a .ini temporary file created for the
      purpose.
 
 -PolyglotDir filename
@@ -1168,7 +1170,7 @@ X resource, give its long name followed by the value true or false
      "/usr/local/share/polyglot".
 
 -usePolyglotBook true/false
-     Specifies if the Polygot book should be used.
+     Specifies if the Polyglot book should be used.
 
 -PolyglotBook filename
      Gives the filename of the opening book that Polyglot should use.
@@ -1274,7 +1276,7 @@ X resource, give its long name followed by the value true or false
      the given character I/O device instead of opening a TCP connection.
      Use this option if your system does not have any kind of Internet
      connection itself (not even a SLIP or PPP connection), but you do
-     have dialup access (or a hardwired terminal line) to an Internet
+     have dial-up access (or a hardwired terminal line) to an Internet
      service provider from which you can telnet to the ICS.
 
      The support for this option in XBoard is minimal. You need to set
@@ -1812,12 +1814,12 @@ lowTimeWarning true/false
      that the score is below the given score threshold for that engine.
      Make sure the score is interpreted properly by XBoard, using
      `-firstScoreAbs' and `-secondScoreAbs' if needed.  Default: 0 (no
-     adjudiction)
+     adjudication)
 
 -adjudicateDrawMoves n
      If the given value is non-zero, XBoard adjudicates the game as a
      draw if after the given number of moves it was not yet decided.
-     Defaut: 0 (no adjudication)
+     Default: 0 (no adjudication)
 
 -checkMates true/false
      If this option is set, XBoard detects all checkmates and
@@ -1905,7 +1907,7 @@ lowTimeWarning true/false
           gothic        similar, with a better initial position
           caparandom    An FRC-like version of Capablanca Chess (10x8)
           janus         A game with two Archbishops (10x8 board)
-          courier       Medieval intermedite between shatranj and
+          courier       Medieval intermediate between shatranj and
                         modern Chess (on 12x8 board)
           falcon        Patented 10x8 variant with two Falcon pieces
           berolina      Pawns capture straight ahead, and move diagonal
@@ -1919,12 +1921,13 @@ lowTimeWarning true/false
      In the shuffle variants, XBoard now does shuffle the pieces,
      although you can still do it by hand using Edit Position.  Some
      variants are supported only in ICS mode, including bughouse, and
-     kriegspiel.  The winning/drawing conditions in crazyhouse (offboard
-     interposition on mate), losers, suicide, giveaway, atomic, and
-     3check are not fully understood.  Berolina and cylinder chess can
-     only be played with legality testing off.  In crazyhouse, XBoard
-     now does keep track of offboard pieces.  In shatranj it does
-     implement the baring rule when mate detection is switched on.
+     kriegspiel.  The winning/drawing conditions in crazyhouse
+     (off-board interposition on mate), losers, suicide, giveaway,
+     atomic, and 3check are not fully understood.  Berolina and
+     cylinder chess can only be played with legality testing off.  In
+     crazyhouse, XBoard now does keep track of off-board pieces.  In
+     shatranj it does implement the baring rule when mate detection is
+     switched on.
 
 -boardHeight N
      Allows you to set a non-standard number of board ranks in any
@@ -1990,7 +1993,7 @@ lowTimeWarning true/false
      is further (hopefully) ignored.  If number=0, WinBoard refrains
      from writing such spurious output to the debug file.  If number=1,
      all engine output is written faithfully to the debug file.  If
-     number=2, any protocol-violating line is prefixed with a ‘#’
+     number=2, any protocol-violating line is prefixed with a '#'
      character, as the engine itself should have done if it wanted to
      submit info for inclusion in the debug file.  This option is
      provided for the benefit of applications that use the debug file
@@ -2015,7 +2018,7 @@ lowTimeWarning true/false
 -delayAfterQuit number
      These options specify how long WinBoard has to wait before sending
      a termination signal to rogue engine processes, that do not want
-     to react to the ‘quit’ command. The second one determines the
+     to react to the 'quit' command. The second one determines the
      pause after killing the engine, to make sure it dies.
 
 
@@ -2369,7 +2372,7 @@ responsible for versions 1.0 through 1.2.
    Evan Welsh wrote `CMail'.  Patrick Surry helped in designing,
 testing, and documenting CMail.
 
-   Allessandro Scotti added many elements to the user interface of
+   Alessandro Scotti added many elements to the user interface of
 WinBoard, including the board textures and font-based rendering, the
 evaluation-graph, move-history and engine-output window.  He was also
 responsible for adding the UCI support.
@@ -2379,7 +2382,7 @@ support with adjustable board sizes, the crazyhouse holdings, and the
 fairy pieces.  In addition he added most of the adjudication options,
 made WinBoard more robust in dealing with buggy and crashing engines,
 and extended time control with a time-odds and node-count-based modes.
-Most of the options that initially wre WinBoard only have now been
+Most of the options that initially were WinBoard only have now been
 back-ported to XBoard.
 
    Michel van den Bergh provided the code for reading Polyglot opening
@@ -2617,13 +2620,13 @@ GNU Chess to an ICS.
 11.2 Fairy-Max
 ==============
 
-Fairy-Max is a derivative from the World's smallest Chess program
+Fairy-Max is a derivative from the once World's smallest Chess program
 micro-Max, which measures only about 100 lines of source code.  The
 main difference with micro-Max is that Fairy-Max loads its
 move-generator tables from a file, so that the rules for piece movement
 can be easily configured to implement unorthodox pieces.  Fairy-Max can
-therefore play a lage number of variants, normal Chess being one of
-those.  In addition it plas Knightmate, Capablanca and Gothic Chess,
+therefore play a large number of variants, normal Chess being one of
+those.  In addition it plays Knightmate, Capablanca and Gothic Chess,
 Shatranj, Courier Chess, Cylinder chess, Berolina Chess, while the user
 can easily define new variants.  It can be obtained from:
 
@@ -3461,413 +3464,413 @@ please read `http://www.gnu.org/philosophy/why-not-lgpl.html'.
 Index
 *****
 
--animateSpeed, option:                         See 3.5.      (line 1803)
-.cmailaliases:                                 See 10.1.     (line 2492)
-.cmailgames:                                   See 10.1.     (line 2487)
-.icsrc:                                        See 3.3.      (line 1315)
-<, Button:                                     See 2.4.      (line  459)
-<<, Button:                                    See 2.4.      (line  492)
->, Button:                                     See 2.4.      (line  479)
->>, Button:                                    See 2.4.      (line  511)
-abort, ICS command:                            See 4.        (line 2093)
+-animateSpeed, option:                         See 3.5.      (line 1805)
+.cmailaliases:                                 See 10.1.     (line 2495)
+.cmailgames:                                   See 10.1.     (line 2490)
+.icsrc:                                        See 3.3.      (line 1317)
+<, Button:                                     See 2.4.      (line  467)
+<<, Button:                                    See 2.4.      (line  500)
+>, Button:                                     See 2.4.      (line  487)
+>>, Button:                                    See 2.4.      (line  519)
+abort, ICS command:                            See 4.        (line 2096)
 Abort, Menu Item:                              See 2.3.      (line  439)
-About XBoard, Menu Item:                       See 2.6.      (line  840)
-accept, ICS command:                           See 4.        (line 2080)
+About XBoard, Menu Item:                       See 2.6.      (line  841)
+accept, ICS command:                           See 4.        (line 2083)
 Accept, Menu Item:                             See 2.3.      (line  414)
 Action, Menu:                                  See 2.3.      (line  413)
-adjourn, ICS command:                          See 4.        (line 2093)
+adjourn, ICS command:                          See 4.        (line 2096)
 Adjourn, Menu Item:                            See 2.3.      (line  435)
-Adjudicate Draw, Menu Item:                    See 2.4.      (line  545)
-Adjudicate to Black, Menu Item:                See 2.4.      (line  545)
-Adjudicate to White, Menu Item:                See 2.4.      (line  545)
-adjudicateDrawMoves, option:                   See 3.6.      (line 1818)
-adjudicateLossThreshold, option:               See 3.6.      (line 1810)
+Adjudicate Draw, Menu Item:                    See 2.3.      (line  458)
+Adjudicate to Black, Menu Item:                See 2.3.      (line  458)
+Adjudicate to White, Menu Item:                See 2.3.      (line  458)
+adjudicateDrawMoves, option:                   See 3.6.      (line 1820)
+adjudicateLossThreshold, option:               See 3.6.      (line 1812)
 Adjudications, Menu Item:                      See 2.5.      (line  559)
-alarm, option:                                 See 3.3.      (line 1358)
-Always Queen, Menu Item:                       See 2.5.      (line  604)
-alwaysPromoteToQueen, option:                  See 3.5.      (line 1599)
+alarm, option:                                 See 3.3.      (line 1360)
+Always Queen, Menu Item:                       See 2.5.      (line  605)
+alwaysPromoteToQueen, option:                  See 3.5.      (line 1601)
 Analysis Mode, Menu Item:                      See 2.2.      (line  238)
 Analyze File, Menu Item:                       See 2.2.      (line  259)
-Animate Dragging, Menu Item:                   See 2.5.      (line  610)
-Animate Moving, Menu Item:                     See 2.5.      (line  617)
-animate, option:                               See 3.5.      (line 1799)
-animateDragging, option:                       See 3.5.      (line 1795)
-animateMoving, option:                         See 3.5.      (line 1799)
-Authors:                                       See 9.        (line 2346)
-Auto Comment, Menu Item:                       See 2.5.      (line  625)
-Auto Flag, Menu Item:                          See 2.5.      (line  633)
-Auto Flip View, Menu Item:                     See 2.5.      (line  642)
-Auto Observe, Menu Item:                       See 2.5.      (line  647)
-Auto Raise Board, Menu Item:                   See 2.5.      (line  660)
-Auto Save, Menu Item:                          See 2.5.      (line  665)
-autobs, option:                                See 3.3.      (line 1342)
-autoCallFlag, option:                          See 3.3.      (line 1338)
-autocomm, option:                              See 3.3.      (line 1334)
-autoComment, option:                           See 3.3.      (line 1334)
-autoflag, option:                              See 3.3.      (line 1338)
-autoflip, option:                              See 3.5.      (line 1645)
-autoFlipView, option:                          See 3.5.      (line 1645)
-autoKibitz, option:                            See 3.3.      (line 1346)
-autoObserve, option:                           See 3.3.      (line 1342)
-autoraise, option:                             See 3.5.      (line 1641)
-autoRaiseBoard, option:                        See 3.5.      (line 1641)
-autosave, option:                              See 3.4.      (line 1523)
-autoSaveGames, option:                         See 3.4.      (line 1523)
-Back to Start, Menu Item:                      See 2.4.      (line  492)
-Backward, Menu Item:                           See 2.4.      (line  459)
-bell, option:                                  See 3.5.      (line 1586)
-bitmapDirectory, option:                       See 3.5.      (line 1726)
-blackPieceColor, option:                       See 3.5.      (line 1773)
-blind, option:                                 See 3.5.      (line 1693)
-Blindfold, Menu Item:                          See 2.5.      (line  672)
-blindfold, option:                             See 3.5.      (line 1693)
-bm, option:                                    See 3.5.      (line 1726)
-board size:                                    See 3.5.      (line 1607)
-boardHeight, option:                           See 3.7.      (line 1930)
-boardSize, option:                             See 3.5.      (line 1607)
-boardWidth, option:                            See 3.7.      (line 1935)
-Book, Menu Item:                               See 2.6.      (line  830)
-Bug reports:                                   See 8.        (line 2312)
-Bugs <1>:                                      See 8.        (line 2312)
-Bugs:                                          See 7.        (line 2252)
-buttons, option:                               See 3.5.      (line 1667)
+Animate Dragging, Menu Item:                   See 2.5.      (line  611)
+Animate Moving, Menu Item:                     See 2.5.      (line  618)
+animate, option:                               See 3.5.      (line 1801)
+animateDragging, option:                       See 3.5.      (line 1797)
+animateMoving, option:                         See 3.5.      (line 1801)
+Authors:                                       See 9.        (line 2349)
+Auto Comment, Menu Item:                       See 2.5.      (line  626)
+Auto Flag, Menu Item:                          See 2.5.      (line  634)
+Auto Flip View, Menu Item:                     See 2.5.      (line  643)
+Auto Observe, Menu Item:                       See 2.5.      (line  648)
+Auto Raise Board, Menu Item:                   See 2.5.      (line  661)
+Auto Save, Menu Item:                          See 2.5.      (line  666)
+autobs, option:                                See 3.3.      (line 1344)
+autoCallFlag, option:                          See 3.3.      (line 1340)
+autocomm, option:                              See 3.3.      (line 1336)
+autoComment, option:                           See 3.3.      (line 1336)
+autoflag, option:                              See 3.3.      (line 1340)
+autoflip, option:                              See 3.5.      (line 1647)
+autoFlipView, option:                          See 3.5.      (line 1647)
+autoKibitz, option:                            See 3.3.      (line 1348)
+autoObserve, option:                           See 3.3.      (line 1344)
+autoraise, option:                             See 3.5.      (line 1643)
+autoRaiseBoard, option:                        See 3.5.      (line 1643)
+autosave, option:                              See 3.4.      (line 1525)
+autoSaveGames, option:                         See 3.4.      (line 1525)
+Back to Start, Menu Item:                      See 2.4.      (line  500)
+Backward, Menu Item:                           See 2.4.      (line  467)
+bell, option:                                  See 3.5.      (line 1588)
+bitmapDirectory, option:                       See 3.5.      (line 1728)
+blackPieceColor, option:                       See 3.5.      (line 1775)
+blind, option:                                 See 3.5.      (line 1695)
+Blindfold, Menu Item:                          See 2.5.      (line  673)
+blindfold, option:                             See 3.5.      (line 1695)
+bm, option:                                    See 3.5.      (line 1728)
+board size:                                    See 3.5.      (line 1609)
+boardHeight, option:                           See 3.7.      (line 1933)
+boardSize, option:                             See 3.5.      (line 1609)
+boardWidth, option:                            See 3.7.      (line 1938)
+Book, Menu Item:                               See 2.6.      (line  831)
+Bug reports:                                   See 8.        (line 2315)
+Bugs <1>:                                      See 8.        (line 2315)
+Bugs:                                          See 7.        (line 2255)
+buttons, option:                               See 3.5.      (line 1669)
 Call Flag, Menu Item:                          See 2.3.      (line  424)
-checkMates, option:                            See 3.6.      (line 1823)
-Chess engine options:                          See 3.1.      (line  917)
-CHESSDIR:                                      See 6.        (line 2243)
-clock, option:                                 See 3.1.      (line  934)
-clockFont, option:                             See 3.5.      (line 1697)
-clockMode, option:                             See 3.1.      (line  934)
-cmail:                                         See 10.       (line 2397)
-colorChallenge, option:                        See 3.3.      (line 1391)
-colorChannel, option:                          See 3.3.      (line 1391)
-colorChannel1, option:                         See 3.3.      (line 1391)
-colorize, option:                              See 3.3.      (line 1377)
-colorKibitz, option:                           See 3.3.      (line 1391)
-colorNormal, option:                           See 3.3.      (line 1391)
-colorRequest, option:                          See 3.3.      (line 1391)
-Colors <1>:                                    See 3.5.      (line 1773)
-Colors:                                        See 3.3.      (line 1377)
-colorSeek, option:                             See 3.3.      (line 1391)
-colorShout, option:                            See 3.3.      (line 1391)
-colorSShout, option:                           See 3.3.      (line 1391)
-colorTell, option:                             See 3.3.      (line 1391)
-Contributors:                                  See 9.        (line 2346)
-coordFont, option:                             See 3.5.      (line 1703)
-coords, option:                                See 3.5.      (line 1637)
+checkMates, option:                            See 3.6.      (line 1825)
+Chess engine options:                          See 3.1.      (line  918)
+CHESSDIR:                                      See 6.        (line 2246)
+clock, option:                                 See 3.1.      (line  935)
+clockFont, option:                             See 3.5.      (line 1699)
+clockMode, option:                             See 3.1.      (line  935)
+cmail:                                         See 10.       (line 2400)
+colorChallenge, option:                        See 3.3.      (line 1393)
+colorChannel, option:                          See 3.3.      (line 1393)
+colorChannel1, option:                         See 3.3.      (line 1393)
+colorize, option:                              See 3.3.      (line 1379)
+colorKibitz, option:                           See 3.3.      (line 1393)
+colorNormal, option:                           See 3.3.      (line 1393)
+colorRequest, option:                          See 3.3.      (line 1393)
+Colors <1>:                                    See 3.5.      (line 1775)
+Colors:                                        See 3.3.      (line 1379)
+colorSeek, option:                             See 3.3.      (line 1393)
+colorShout, option:                            See 3.3.      (line 1393)
+colorSShout, option:                           See 3.3.      (line 1393)
+colorTell, option:                             See 3.3.      (line 1393)
+Contributors:                                  See 9.        (line 2349)
+coordFont, option:                             See 3.5.      (line 1705)
+coords, option:                                See 3.5.      (line 1639)
 Copy Game, Menu Item:                          See 2.1.      (line  166)
 Copy Position, Menu Item:                      See 2.1.      (line  206)
-darkSquareColor, option:                       See 3.5.      (line 1773)
-debug, option:                                 See 3.7.      (line 1981)
-debugFile, option:                             See 3.7.      (line 1984)
-debugMode, option:                             See 3.7.      (line 1981)
-decline, ICS command:                          See 4.        (line 2080)
+darkSquareColor, option:                       See 3.5.      (line 1775)
+debug, option:                                 See 3.7.      (line 1984)
+debugFile, option:                             See 3.7.      (line 1987)
+debugMode, option:                             See 3.7.      (line 1984)
+decline, ICS command:                          See 4.        (line 2083)
 Decline, Menu Item:                            See 2.3.      (line  419)
-defaultCacheSizeEGTB, option:                  See 3.2.      (line 1196)
-defaultFrcPosition, option:                    See 3.7.      (line 1950)
-defaultHashSize, option:                       See 3.2.      (line 1190)
-defaultPathEGTB, option:                       See 3.2.      (line 1202)
-delayAfterQuit, option:                        See 3.7.      (line 2016)
-delayBeforeQuit, option:                       See 3.7.      (line 2016)
-display, option:                               See 3.5.      (line 1577)
-drag, option:                                  See 3.5.      (line 1795)
-draw, ICS command:                             See 4.        (line 2093)
+defaultCacheSizeEGTB, option:                  See 3.2.      (line 1198)
+defaultFrcPosition, option:                    See 3.7.      (line 1953)
+defaultHashSize, option:                       See 3.2.      (line 1192)
+defaultPathEGTB, option:                       See 3.2.      (line 1204)
+delayAfterQuit, option:                        See 3.7.      (line 2019)
+delayBeforeQuit, option:                       See 3.7.      (line 2019)
+display, option:                               See 3.5.      (line 1579)
+drag, option:                                  See 3.5.      (line 1797)
+draw, ICS command:                             See 4.        (line 2096)
 Draw, Menu Item:                               See 2.3.      (line  430)
 Edit Comment, Menu Item:                       See 2.2.      (line  375)
 Edit Game, Menu Item:                          See 2.2.      (line  293)
 Edit Position, Menu Item:                      See 2.2.      (line  309)
 Edit Tags, Menu Item:                          See 2.2.      (line  351)
-egtFormats, option:                            See 3.2.      (line 1206)
-Engine Settings:                               See 3.2.      (line 1157)
-engineDebugOutput, option:                     See 3.7.      (line 1988)
-Environment variables:                         See 6.        (line 2243)
-examine, ICS command:                          See 4.        (line 2116)
+egtFormats, option:                            See 3.2.      (line 1208)
+Engine Settings:                               See 3.2.      (line 1159)
+engineDebugOutput, option:                     See 3.7.      (line 1991)
+Environment variables:                         See 6.        (line 2246)
+examine, ICS command:                          See 4.        (line 2119)
 Exit, Menu Item:                               See 2.1.      (line  223)
-exit, option:                                  See 3.5.      (line 1591)
-fb, option:                                    See 3.1.      (line 1040)
-fcp, option:                                   See 3.1.      (line 1033)
-fd, option:                                    See 3.1.      (line 1055)
-fh, option:                                    See 3.1.      (line 1047)
+exit, option:                                  See 3.5.      (line 1593)
+fb, option:                                    See 3.1.      (line 1042)
+fcp, option:                                   See 3.1.      (line 1035)
+fd, option:                                    See 3.1.      (line 1057)
+fh, option:                                    See 3.1.      (line 1049)
 File Menu:                                     See 2.1.      (line   82)
-finger, ICS command:                           See 4.        (line 2103)
-firstChessProgram, option:                     See 3.1.      (line 1033)
-firstComputerString, option:                   See 3.1.      (line 1091)
-firstDirectory, option:                        See 3.1.      (line 1055)
-firstHasOwnBookUCI, option:                    See 3.2.      (line 1185)
-firstHost, option:                             See 3.1.      (line 1047)
-firstIsUCI, option:                            See 3.2.      (line 1159)
-firstNeedsNoncompliantFEN, option:             See 3.1.      (line 1141)
-firstNPS, option:                              See 3.1.      (line  957)
-firstOptions, option:                          See 3.1.      (line 1130)
-firstPlaysBlack, option:                       See 3.1.      (line 1040)
-firstProtocolVersion, option:                  See 3.1.      (line 1108)
-firstScoreAbs, option:                         See 3.1.      (line 1116)
-firstTimeOdds, option:                         See 3.1.      (line  975)
-firstXBook, option:                            See 3.2.      (line 1185)
-Flash Moves, Menu Item:                        See 2.5.      (line  678)
-flash, option:                                 See 3.5.      (line 1680)
-flashCount, option:                            See 3.5.      (line 1680)
-flashRate, option:                             See 3.5.      (line 1680)
+finger, ICS command:                           See 4.        (line 2106)
+firstChessProgram, option:                     See 3.1.      (line 1035)
+firstComputerString, option:                   See 3.1.      (line 1093)
+firstDirectory, option:                        See 3.1.      (line 1057)
+firstHasOwnBookUCI, option:                    See 3.2.      (line 1187)
+firstHost, option:                             See 3.1.      (line 1049)
+firstIsUCI, option:                            See 3.2.      (line 1161)
+firstNeedsNoncompliantFEN, option:             See 3.1.      (line 1143)
+firstNPS, option:                              See 3.1.      (line  958)
+firstOptions, option:                          See 3.1.      (line 1132)
+firstPlaysBlack, option:                       See 3.1.      (line 1042)
+firstProtocolVersion, option:                  See 3.1.      (line 1110)
+firstScoreAbs, option:                         See 3.1.      (line 1118)
+firstTimeOdds, option:                         See 3.1.      (line  976)
+firstXBook, option:                            See 3.2.      (line 1187)
+Flash Moves, Menu Item:                        See 2.5.      (line  679)
+flash, option:                                 See 3.5.      (line 1682)
+flashCount, option:                            See 3.5.      (line 1682)
+flashRate, option:                             See 3.5.      (line 1682)
 Flip View, Menu Item:                          See 2.5.      (line  554)
-flip, option:                                  See 3.5.      (line 1649)
-flipView, option:                              See 3.5.      (line 1649)
-fNoOwnBookUCI, option:                         See 3.2.      (line 1185)
-Font:                                          See 3.5.      (line 1710)
-Font, clock:                                   See 3.5.      (line 1697)
-Font, coordinates:                             See 3.5.      (line 1703)
-font, option:                                  See 3.5.      (line 1710)
-fontSizeTolerance, option:                     See 3.5.      (line 1716)
-Forward to End, Menu Item:                     See 2.4.      (line  511)
-Forward, Menu Item:                            See 2.4.      (line  479)
-fUCI, option:                                  See 3.2.      (line 1159)
-gameListTags, option:                          See 3.4.      (line 1565)
-games, ICS command:                            See 4.        (line 2069)
-gateway, option:                               See 3.3.      (line 1265)
-geometry, option:                              See 3.5.      (line 1577)
-Get Move List, Menu Item:                      See 2.5.      (line  692)
-getMoveList, option:                           See 3.3.      (line 1354)
-Help Menu:                                     See 2.6.      (line  812)
-help, ICS command:                             See 4.        (line 2054)
-Hide Thinking, Menu Item:                      See 2.5.      (line  789)
-Highlight Last Move, Menu Item:                See 2.5.      (line  704)
-highlight, option:                             See 3.5.      (line 1689)
-highlightLastMove, option:                     See 3.5.      (line 1689)
-highlightSquareColor, option:                  See 3.5.      (line 1773)
-Hint, Menu Item:                               See 2.6.      (line  827)
-holdingsSize, option:                          See 3.7.      (line 1942)
-iconic, option:                                See 3.5.      (line 1577)
-ICS:                                           See 4.        (line 2025)
-ICS Alarm, Menu Item:                          See 2.5.      (line  725)
+flip, option:                                  See 3.5.      (line 1651)
+flipView, option:                              See 3.5.      (line 1651)
+fNoOwnBookUCI, option:                         See 3.2.      (line 1187)
+Font:                                          See 3.5.      (line 1712)
+Font, clock:                                   See 3.5.      (line 1699)
+Font, coordinates:                             See 3.5.      (line 1705)
+font, option:                                  See 3.5.      (line 1712)
+fontSizeTolerance, option:                     See 3.5.      (line 1718)
+Forward to End, Menu Item:                     See 2.4.      (line  519)
+Forward, Menu Item:                            See 2.4.      (line  487)
+fUCI, option:                                  See 3.2.      (line 1161)
+gameListTags, option:                          See 3.4.      (line 1567)
+games, ICS command:                            See 4.        (line 2072)
+gateway, option:                               See 3.3.      (line 1267)
+geometry, option:                              See 3.5.      (line 1579)
+Get Move List, Menu Item:                      See 2.5.      (line  693)
+getMoveList, option:                           See 3.3.      (line 1356)
+Help Menu:                                     See 2.6.      (line  813)
+help, ICS command:                             See 4.        (line 2057)
+Hide Thinking, Menu Item:                      See 2.5.      (line  790)
+Highlight Last Move, Menu Item:                See 2.5.      (line  705)
+highlight, option:                             See 3.5.      (line 1691)
+highlightLastMove, option:                     See 3.5.      (line 1691)
+highlightSquareColor, option:                  See 3.5.      (line 1775)
+Hint, Menu Item:                               See 2.6.      (line  828)
+holdingsSize, option:                          See 3.7.      (line 1945)
+iconic, option:                                See 3.5.      (line 1579)
+ICS:                                           See 4.        (line 2028)
+ICS Alarm, Menu Item:                          See 2.5.      (line  726)
 ICS Client, Menu Item:                         See 2.2.      (line  269)
 ICS Input Box, Menu Item:                      See 2.2.      (line  380)
-ICS options:                                   See 3.3.      (line 1220)
-ICS, addresses:                                See 4.        (line 2025)
-ics, option:                                   See 3.3.      (line 1221)
-icsAlarm, option:                              See 3.3.      (line 1358)
-icsAlarmTime, option:                          See 3.3.      (line 1362)
-icscomm, option:                               See 3.3.      (line 1273)
-icshelper, option:                             See 3.3.      (line 1239)
-icshost, option:                               See 3.3.      (line 1226)
-icsinput, option:                              See 3.3.      (line 1330)
-icslogon, option:                              See 3.3.      (line 1315)
-icsport, option:                               See 3.3.      (line 1235)
-inc, option:                                   See 3.1.      (line  927)
-Info XBoard, Menu Item:                        See 2.6.      (line  813)
-initalMode, option:                            See 3.7.      (line 1875)
-initString, option:                            See 3.1.      (line 1064)
-Internet Chess Server:                         See 4.        (line 2025)
-internetChessServerCommPort, option:           See 3.3.      (line 1273)
-internetChessServerHelper, option:             See 3.3.      (line 1239)
-internetChessServerHost, option:               See 3.3.      (line 1226)
-internetChessServerInputBox, option:           See 3.3.      (line 1330)
-internetChessServerLogonScript, option:        See 3.3.      (line 1315)
-internetChessServerMode, option:               See 3.3.      (line 1221)
-internetChessServerPort, option:               See 3.3.      (line 1235)
+ICS options:                                   See 3.3.      (line 1222)
+ICS, addresses:                                See 4.        (line 2028)
+ics, option:                                   See 3.3.      (line 1223)
+icsAlarm, option:                              See 3.3.      (line 1360)
+icsAlarmTime, option:                          See 3.3.      (line 1364)
+icscomm, option:                               See 3.3.      (line 1275)
+icshelper, option:                             See 3.3.      (line 1241)
+icshost, option:                               See 3.3.      (line 1228)
+icsinput, option:                              See 3.3.      (line 1332)
+icslogon, option:                              See 3.3.      (line 1317)
+icsport, option:                               See 3.3.      (line 1237)
+inc, option:                                   See 3.1.      (line  928)
+Info XBoard, Menu Item:                        See 2.6.      (line  814)
+initalMode, option:                            See 3.7.      (line 1877)
+initString, option:                            See 3.1.      (line 1066)
+Internet Chess Server:                         See 4.        (line 2028)
+internetChessServerCommPort, option:           See 3.3.      (line 1275)
+internetChessServerHelper, option:             See 3.3.      (line 1241)
+internetChessServerHost, option:               See 3.3.      (line 1228)
+internetChessServerInputBox, option:           See 3.3.      (line 1332)
+internetChessServerLogonScript, option:        See 3.3.      (line 1317)
+internetChessServerMode, option:               See 3.3.      (line 1223)
+internetChessServerPort, option:               See 3.3.      (line 1237)
 introduction:
           See ``Introduction''.                              (line    9)
-Keys:                                          See 2.7.      (line  845)
-legal, option:                                 See 3.5.      (line 1603)
-lgf, option:                                   See 3.4.      (line 1487)
-lgi, option:                                   See 3.4.      (line 1487)
-lightSquareColor, option:                      See 3.5.      (line 1773)
-Limitations:                                   See 7.        (line 2252)
-Load and Save options:                         See 3.4.      (line 1485)
+Keys:                                          See 2.7.      (line  846)
+legal, option:                                 See 3.5.      (line 1605)
+lgf, option:                                   See 3.4.      (line 1489)
+lgi, option:                                   See 3.4.      (line 1489)
+lightSquareColor, option:                      See 3.5.      (line 1775)
+Limitations:                                   See 7.        (line 2255)
+Load and Save options:                         See 3.4.      (line 1487)
 Load Game, Menu Item:                          See 2.1.      (line  114)
 Load Next Game, Menu Item:                     See 2.1.      (line  141)
 Load Next Position, Menu Item:                 See 2.1.      (line  187)
 Load Position, Menu Item:                      See 2.1.      (line  179)
 Load Previous Game, Menu Item:                 See 2.1.      (line  145)
 Load Previous Position, Menu Item:             See 2.1.      (line  190)
-loadGameFile, option:                          See 3.4.      (line 1487)
-loadGameIndex, option:                         See 3.4.      (line 1487)
-loadPositionFile, option:                      See 3.4.      (line 1528)
-loadPositionIndex, option:                     See 3.4.      (line 1528)
-lowTimeWarning, option:                        See 3.3.      (line 1366)
-lowTimeWarningColor, option:                   See 3.5.      (line 1773)
-lpf, option:                                   See 3.4.      (line 1528)
-lpi, option:                                   See 3.4.      (line 1528)
+loadGameFile, option:                          See 3.4.      (line 1489)
+loadGameIndex, option:                         See 3.4.      (line 1489)
+loadPositionFile, option:                      See 3.4.      (line 1530)
+loadPositionIndex, option:                     See 3.4.      (line 1530)
+lowTimeWarning, option:                        See 3.3.      (line 1368)
+lowTimeWarningColor, option:                   See 3.5.      (line 1775)
+lpf, option:                                   See 3.4.      (line 1530)
+lpi, option:                                   See 3.4.      (line 1530)
 Machine Black, Menu Item:                      See 2.2.      (line  232)
 Machine White, Menu Item:                      See 2.2.      (line  229)
 Mail Move, Menu Item:                          See 2.1.      (line  220)
 Major modes:                                   See 1.        (line   19)
-Man XBoard, Menu Item:                         See 2.6.      (line  820)
-matchGames, option:                            See 3.1.      (line 1011)
-matchMode, option:                             See 3.1.      (line 1023)
-materialDraws, option:                         See 3.6.      (line 1835)
+Man XBoard, Menu Item:                         See 2.6.      (line  821)
+matchGames, option:                            See 3.1.      (line 1013)
+matchMode, option:                             See 3.1.      (line 1025)
+materialDraws, option:                         See 3.6.      (line 1837)
 Menu, Action:                                  See 2.3.      (line  413)
 Menu, File:                                    See 2.1.      (line   82)
-Menu, Help:                                    See 2.6.      (line  812)
+Menu, Help:                                    See 2.6.      (line  813)
 Menu, Mode:                                    See 2.2.      (line  228)
 Menu, Options:                                 See 2.5.      (line  553)
-Menu, Step:                                    See 2.4.      (line  458)
+Menu, Step:                                    See 2.4.      (line  466)
 Menus:                                         See 2.        (line   57)
-mg, option:                                    See 3.1.      (line 1011)
-mm, option:                                    See 3.1.      (line 1023)
+mg, option:                                    See 3.1.      (line 1013)
+mm, option:                                    See 3.1.      (line 1025)
 Mode Menu:                                     See 2.2.      (line  228)
-mode, option:                                  See 3.7.      (line 1875)
-mono, option:                                  See 3.5.      (line 1673)
-monoMode, option:                              See 3.5.      (line 1673)
-Move Now, Menu Item:                           See 2.4.      (line  532)
-Move Sound, Menu Item:                         See 2.5.      (line  710)
-moves, option:                                 See 3.3.      (line 1354)
-movesound, option:                             See 3.5.      (line 1586)
-movesPerSession, option:                       See 3.1.      (line  923)
-mps, option:                                   See 3.1.      (line  923)
-msLoginDelay, option:                          See 3.3.      (line 1324)
-nameOfDebugFile, option:                       See 3.7.      (line 1984)
-ncp, option:                                   See 3.7.      (line 1870)
+mode, option:                                  See 3.7.      (line 1877)
+mono, option:                                  See 3.5.      (line 1675)
+monoMode, option:                              See 3.5.      (line 1675)
+Move Now, Menu Item:                           See 2.4.      (line  540)
+Move Sound, Menu Item:                         See 2.5.      (line  711)
+moves, option:                                 See 3.3.      (line 1356)
+movesound, option:                             See 3.5.      (line 1588)
+movesPerSession, option:                       See 3.1.      (line  924)
+mps, option:                                   See 3.1.      (line  924)
+msLoginDelay, option:                          See 3.3.      (line 1326)
+nameOfDebugFile, option:                       See 3.7.      (line 1987)
+ncp, option:                                   See 3.7.      (line 1872)
 New Game, Menu Item:                           See 2.1.      (line   83)
 New Shuffle Game, Menu Item:                   See 2.1.      (line   92)
 New variant, Menu Item:                        See 2.1.      (line  105)
-niceEngines, option:                           See 3.1.      (line 1122)
-noChessProgram, option:                        See 3.7.      (line 1870)
-noGUI, option:                                 See 3.5.      (line 1580)
-observe, ICS command:                          See 4.        (line 2112)
-Old Save Style, Menu Item:                     See 2.5.      (line  734)
-oldmoves, ICS command:                         See 4.        (line 2116)
-oldsave, option:                               See 3.4.      (line 1561)
-oldSaveStyle, option:                          See 3.4.      (line 1561)
-Options:                                       See 3.        (line  891)
+niceEngines, option:                           See 3.1.      (line 1124)
+noChessProgram, option:                        See 3.7.      (line 1872)
+noGUI, option:                                 See 3.5.      (line 1582)
+observe, ICS command:                          See 4.        (line 2115)
+Old Save Style, Menu Item:                     See 2.5.      (line  735)
+oldmoves, ICS command:                         See 4.        (line 2119)
+oldsave, option:                               See 3.4.      (line 1563)
+oldSaveStyle, option:                          See 3.4.      (line 1563)
+Options:                                       See 3.        (line  892)
 Options Menu:                                  See 2.5.      (line  553)
-Options, adjudication:                         See 3.6.      (line 1809)
-options, Chess engine:                         See 3.1.      (line  917)
-Options, ICS:                                  See 3.3.      (line 1220)
-Options, Load and Save:                        See 3.4.      (line 1485)
-Options, miscellaneous:                        See 3.7.      (line 1869)
-Options, User interface:                       See 3.5.      (line 1574)
-Other programs:                                See 11.       (line 2605)
+Options, adjudication:                         See 3.6.      (line 1811)
+options, Chess engine:                         See 3.1.      (line  918)
+Options, ICS:                                  See 3.3.      (line 1222)
+Options, Load and Save:                        See 3.4.      (line 1487)
+Options, miscellaneous:                        See 3.7.      (line 1871)
+Options, User interface:                       See 3.5.      (line 1576)
+Other programs:                                See 11.       (line 2608)
 Paste Game, Menu Item:                         See 2.1.      (line  175)
 Paste Position, Menu Item:                     See 2.1.      (line  215)
 Pause, Menu Item:                              See 2.2.      (line  387)
-Periodic Updates, Menu Item:                   See 2.5.      (line  742)
-pgnEventHeader, option`:                       See 3.4.      (line 1553)
-pgnExtendedInfo, option`:                      See 3.4.      (line 1548)
-pieceToSquareTable, option:                    See 3.7.      (line 1955)
-pixmap, option:                                See 3.5.      (line 1726)
-pixmapDirectory, option:                       See 3.5.      (line 1726)
-PolyglotBook, option:                          See 3.2.      (line 1174)
-PolyglotDir, option:                           See 3.2.      (line 1166)
-Ponder Next Move, Menu Item:                   See 2.5.      (line  748)
-ponder, option:                                See 3.1.      (line 1002)
-ponderNextMove, option:                        See 3.1.      (line 1002)
-Popup Exit Message, Menu Item:                 See 2.5.      (line  753)
-Popup Move Errors, Menu Item:                  See 2.5.      (line  759)
-popup, option:                                 See 3.5.      (line 1595)
-popupExitMessage, option:                      See 3.5.      (line 1591)
-popupMoveErrors, option:                       See 3.5.      (line 1595)
-pre, option:                                   See 3.3.      (line 1370)
-Premove, Menu Item:                            See 2.5.      (line  768)
-premove, option:                               See 3.3.      (line 1370)
-Problems:                                      See 8.        (line 2312)
-queen, option:                                 See 3.5.      (line 1599)
-Quiet Play, Menu Item:                         See 2.5.      (line  779)
-quiet, option:                                 See 3.3.      (line 1373)
-quietPlay, option:                             See 3.3.      (line 1373)
+Periodic Updates, Menu Item:                   See 2.5.      (line  743)
+pgnEventHeader, option`:                       See 3.4.      (line 1555)
+pgnExtendedInfo, option`:                      See 3.4.      (line 1550)
+pieceToSquareTable, option:                    See 3.7.      (line 1958)
+pixmap, option:                                See 3.5.      (line 1728)
+pixmapDirectory, option:                       See 3.5.      (line 1728)
+PolyglotBook, option:                          See 3.2.      (line 1176)
+PolyglotDir, option:                           See 3.2.      (line 1168)
+Ponder Next Move, Menu Item:                   See 2.5.      (line  749)
+ponder, option:                                See 3.1.      (line 1004)
+ponderNextMove, option:                        See 3.1.      (line 1004)
+Popup Exit Message, Menu Item:                 See 2.5.      (line  754)
+Popup Move Errors, Menu Item:                  See 2.5.      (line  760)
+popup, option:                                 See 3.5.      (line 1597)
+popupExitMessage, option:                      See 3.5.      (line 1593)
+popupMoveErrors, option:                       See 3.5.      (line 1597)
+pre, option:                                   See 3.3.      (line 1372)
+Premove, Menu Item:                            See 2.5.      (line  769)
+premove, option:                               See 3.3.      (line 1372)
+Problems:                                      See 8.        (line 2315)
+queen, option:                                 See 3.5.      (line 1601)
+Quiet Play, Menu Item:                         See 2.5.      (line  780)
+quiet, option:                                 See 3.3.      (line 1375)
+quietPlay, option:                             See 3.3.      (line 1375)
 Reload CMail Message, Menu Item:               See 2.1.      (line  220)
 Reload Same Game, Menu Item:                   See 2.1.      (line  150)
 Reload Same Position, Menu Item:               See 2.1.      (line  194)
-remoteShell, option:                           See 3.7.      (line 2002)
-remoteUser, option:                            See 3.7.      (line 2007)
-Reporting bugs:                                See 8.        (line 2312)
-Reporting problems:                            See 8.        (line 2312)
+remoteShell, option:                           See 3.7.      (line 2005)
+remoteUser, option:                            See 3.7.      (line 2010)
+Reporting bugs:                                See 8.        (line 2315)
+Reporting problems:                            See 8.        (line 2315)
 Resign, Menu Item:                             See 2.3.      (line  444)
-Retract Move, Menu Item:                       See 2.4.      (line  536)
-reuse, option:                                 See 3.1.      (line 1099)
-reuse2, option:                                See 3.1.      (line 1099)
-reuseFirst, option:                            See 3.1.      (line 1099)
-reuseSecond, option:                           See 3.1.      (line 1099)
-Revert, Menu Item:                             See 2.4.      (line  523)
-ringBellAfterMoves, option:                    See 3.5.      (line 1586)
-rsh, option:                                   See 3.7.      (line 2002)
-ruleMoves, option:                             See 3.6.      (line 1853)
-ruser, option:                                 See 3.7.      (line 2007)
-sameColorGames, option:                        See 3.1.      (line 1027)
+Retract Move, Menu Item:                       See 2.4.      (line  544)
+reuse, option:                                 See 3.1.      (line 1101)
+reuse2, option:                                See 3.1.      (line 1101)
+reuseFirst, option:                            See 3.1.      (line 1101)
+reuseSecond, option:                           See 3.1.      (line 1101)
+Revert, Menu Item:                             See 2.4.      (line  531)
+ringBellAfterMoves, option:                    See 3.5.      (line 1588)
+rsh, option:                                   See 3.7.      (line 2005)
+ruleMoves, option:                             See 3.6.      (line 1855)
+ruser, option:                                 See 3.7.      (line 2010)
+sameColorGames, option:                        See 3.1.      (line 1029)
 Save Game, Menu Item:                          See 2.1.      (line  154)
-saveGameFile, option:                          See 3.4.      (line 1518)
-saveOutOfBookInfo, option`:                    See 3.4.      (line 1557)
-savePositionFile, option:                      See 3.4.      (line 1543)
-scp, option:                                   See 3.1.      (line 1036)
-sd, option:                                    See 3.1.      (line  948)
-searchDepth, option:                           See 3.1.      (line  948)
-searchTime, option:                            See 3.1.      (line  941)
-secondChessProgram, option:                    See 3.1.      (line 1036)
-secondComputerString, option:                  See 3.1.      (line 1091)
-secondDirectory, option:                       See 3.1.      (line 1055)
-secondHasOwnBookUCI, option:                   See 3.2.      (line 1185)
-secondHost, option:                            See 3.1.      (line 1047)
-secondInitString, option:                      See 3.1.      (line 1064)
-secondIsUCI, option:                           See 3.2.      (line 1159)
-secondNeedsNoncompliantFEN, option:            See 3.1.      (line 1141)
-secondNPS, option:                             See 3.1.      (line  957)
-secondOptions, option:                         See 3.1.      (line 1130)
-secondProtocolVersion, option:                 See 3.1.      (line 1108)
-secondScoreAbs, option:                        See 3.1.      (line 1116)
-secondTimeOdds, option:                        See 3.1.      (line  975)
-secondXBook, option:                           See 3.2.      (line 1185)
-set, ICS command:                              See 4.        (line 2109)
-Settings, Engine:                              See 3.2.      (line 1157)
-sgf, option:                                   See 3.4.      (line 1518)
-sh, option:                                    See 3.1.      (line 1047)
-Shortcut keys:                                 See 2.7.      (line  845)
-Show Coords, Menu Item:                        See 2.5.      (line  785)
+saveGameFile, option:                          See 3.4.      (line 1520)
+saveOutOfBookInfo, option`:                    See 3.4.      (line 1559)
+savePositionFile, option:                      See 3.4.      (line 1545)
+scp, option:                                   See 3.1.      (line 1038)
+sd, option:                                    See 3.1.      (line  949)
+searchDepth, option:                           See 3.1.      (line  949)
+searchTime, option:                            See 3.1.      (line  942)
+secondChessProgram, option:                    See 3.1.      (line 1038)
+secondComputerString, option:                  See 3.1.      (line 1093)
+secondDirectory, option:                       See 3.1.      (line 1057)
+secondHasOwnBookUCI, option:                   See 3.2.      (line 1187)
+secondHost, option:                            See 3.1.      (line 1049)
+secondInitString, option:                      See 3.1.      (line 1066)
+secondIsUCI, option:                           See 3.2.      (line 1161)
+secondNeedsNoncompliantFEN, option:            See 3.1.      (line 1143)
+secondNPS, option:                             See 3.1.      (line  958)
+secondOptions, option:                         See 3.1.      (line 1132)
+secondProtocolVersion, option:                 See 3.1.      (line 1110)
+secondScoreAbs, option:                        See 3.1.      (line 1118)
+secondTimeOdds, option:                        See 3.1.      (line  976)
+secondXBook, option:                           See 3.2.      (line 1187)
+set, ICS command:                              See 4.        (line 2112)
+Settings, Engine:                              See 3.2.      (line 1159)
+sgf, option:                                   See 3.4.      (line 1520)
+sh, option:                                    See 3.1.      (line 1049)
+Shortcut keys:                                 See 2.7.      (line  846)
+Show Coords, Menu Item:                        See 2.5.      (line  786)
 Show Engine Output, Menu Item:                 See 2.2.      (line  347)
 Show Game List, Menu Item:                     See 2.2.      (line  338)
 Show Move History, Menu Item:                  See 2.2.      (line  342)
-showButtonBar, option:                         See 3.5.      (line 1667)
-showCoords, option:                            See 3.5.      (line 1637)
-showThinking, option:                          See 3.1.      (line  992)
-size, option:                                  See 3.5.      (line 1607)
-sNoOwnBookUCI, option:                         See 3.2.      (line 1185)
-soundChallenge, option:                        See 3.3.      (line 1436)
-soundChannel, option:                          See 3.3.      (line 1436)
-soundIcsAlarm, option:                         See 3.3.      (line 1444)
-soundIcsDraw, option:                          See 3.3.      (line 1455)
-soundIcsLoss, option:                          See 3.3.      (line 1451)
-soundIcsUnfinished, option:                    See 3.3.      (line 1459)
-soundIcsWin, option:                           See 3.3.      (line 1447)
-soundKibitz, option:                           See 3.3.      (line 1436)
-soundMove, option:                             See 3.3.      (line 1441)
-soundProgram, option:                          See 3.3.      (line 1420)
-soundRequest, option:                          See 3.3.      (line 1436)
-Sounds:                                        See 3.3.      (line 1420)
-soundSeek, option:                             See 3.3.      (line 1436)
-soundShout, option:                            See 3.3.      (line 1436)
-soundSShout, option:                           See 3.3.      (line 1436)
-soundTell, option:                             See 3.3.      (line 1436)
-spf, option:                                   See 3.4.      (line 1543)
-st, option:                                    See 3.1.      (line  941)
-Step Menu:                                     See 2.4.      (line  458)
+showButtonBar, option:                         See 3.5.      (line 1669)
+showCoords, option:                            See 3.5.      (line 1639)
+showThinking, option:                          See 3.1.      (line  994)
+size, option:                                  See 3.5.      (line 1609)
+sNoOwnBookUCI, option:                         See 3.2.      (line 1187)
+soundChallenge, option:                        See 3.3.      (line 1438)
+soundChannel, option:                          See 3.3.      (line 1438)
+soundIcsAlarm, option:                         See 3.3.      (line 1446)
+soundIcsDraw, option:                          See 3.3.      (line 1457)
+soundIcsLoss, option:                          See 3.3.      (line 1453)
+soundIcsUnfinished, option:                    See 3.3.      (line 1461)
+soundIcsWin, option:                           See 3.3.      (line 1449)
+soundKibitz, option:                           See 3.3.      (line 1438)
+soundMove, option:                             See 3.3.      (line 1443)
+soundProgram, option:                          See 3.3.      (line 1422)
+soundRequest, option:                          See 3.3.      (line 1438)
+Sounds:                                        See 3.3.      (line 1422)
+soundSeek, option:                             See 3.3.      (line 1438)
+soundShout, option:                            See 3.3.      (line 1438)
+soundSShout, option:                           See 3.3.      (line 1438)
+soundTell, option:                             See 3.3.      (line 1438)
+spf, option:                                   See 3.4.      (line 1545)
+st, option:                                    See 3.1.      (line  942)
+Step Menu:                                     See 2.4.      (line  466)
 Stop Examining, Menu Item:                     See 2.3.      (line  452)
 Stop Observing, Menu Item:                     See 2.3.      (line  448)
-sUCI, option:                                  See 3.2.      (line 1159)
-tc, option:                                    See 3.1.      (line  918)
-td, option:                                    See 3.4.      (line 1513)
-telnet, option:                                See 3.3.      (line 1247)
-telnetProgram, option:                         See 3.3.      (line 1256)
-Test Legality, Menu Item:                      See 2.5.      (line  798)
-testClaims, option:                            See 3.6.      (line 1829)
-testLegality, option:                          See 3.5.      (line 1603)
-thinking, option:                              See 3.1.      (line  992)
-Time Control, Menu Item:                       See 2.5.      (line  595)
-timeControl, option:                           See 3.1.      (line  918)
-timeDelay, option:                             See 3.4.      (line 1513)
-timeIncrement, option:                         See 3.1.      (line  927)
-timeOddsMode, option:                          See 3.1.      (line  981)
-title, option:                                 See 3.5.      (line 1659)
-titleInWindow, option:                         See 3.5.      (line 1659)
+sUCI, option:                                  See 3.2.      (line 1161)
+tc, option:                                    See 3.1.      (line  919)
+td, option:                                    See 3.4.      (line 1515)
+telnet, option:                                See 3.3.      (line 1249)
+telnetProgram, option:                         See 3.3.      (line 1258)
+Test Legality, Menu Item:                      See 2.5.      (line  799)
+testClaims, option:                            See 3.6.      (line 1831)
+testLegality, option:                          See 3.5.      (line 1605)
+thinking, option:                              See 3.1.      (line  994)
+Time Control, Menu Item:                       See 2.5.      (line  596)
+timeControl, option:                           See 3.1.      (line  919)
+timeDelay, option:                             See 3.4.      (line 1515)
+timeIncrement, option:                         See 3.1.      (line  928)
+timeOddsMode, option:                          See 3.1.      (line  982)
+title, option:                                 See 3.5.      (line 1661)
+titleInWindow, option:                         See 3.5.      (line 1661)
 Training, Menu Item:                           See 2.2.      (line  328)
-trivialDraws, option:                          See 3.6.      (line 1842)
-Truncate Game, Menu Item:                      See 2.4.      (line  527)
+trivialDraws, option:                          See 3.6.      (line 1844)
+Truncate Game, Menu Item:                      See 2.4.      (line  535)
 Two Machines, Menu Item:                       See 2.2.      (line  235)
-usePolyglotBook, option:                       See 3.2.      (line 1171)
-User interface options:                        See 3.5.      (line 1574)
-userName, option:                              See 3.7.      (line 2011)
-useTelnet, option:                             See 3.3.      (line 1247)
-variant, option:                               See 3.7.      (line 1883)
-vars, ICS command:                             See 4.        (line 2106)
-whitePieceColor, option:                       See 3.5.      (line 1773)
-who, ICS command:                              See 4.        (line 2062)
-xflash, option:                                See 3.5.      (line 1680)
+usePolyglotBook, option:                       See 3.2.      (line 1173)
+User interface options:                        See 3.5.      (line 1576)
+userName, option:                              See 3.7.      (line 2014)
+useTelnet, option:                             See 3.3.      (line 1249)
+variant, option:                               See 3.7.      (line 1885)
+vars, ICS command:                             See 4.        (line 2109)
+whitePieceColor, option:                       See 3.5.      (line 1775)
+who, ICS command:                              See 4.        (line 2065)
+xflash, option:                                See 3.5.      (line 1682)
 Table of Contents
 *****************
 

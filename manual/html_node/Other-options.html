@@ -68,7 +68,7 @@ needed in ICS mode.  Recognized variant names are:
           gothic        similar, with a better initial position
           caparandom    An FRC-like version of Capablanca Chess (10x8)
           janus         A game with two Archbishops (10x8 board)
-          courier       Medieval intermedite between shatranj and
+          courier       Medieval intermediate between shatranj and
                         modern Chess (on 12x8 board)
           falcon        Patented 10x8 variant with two Falcon pieces
           berolina      Pawns capture straight ahead, and move diagonal
@@ -82,12 +82,12 @@ needed in ICS mode.  Recognized variant names are:
      <p>In the shuffle variants, XBoard now does shuffle the pieces, although
 you can still do it by hand using Edit Position.  Some variants are
 supported only in ICS mode, including bughouse, and
-kriegspiel.  The winning/drawing conditions in crazyhouse (offboard
+kriegspiel.  The winning/drawing conditions in crazyhouse (off-board
 interposition on mate), losers, suicide, giveaway, atomic, and 3check
 are not fully understood. 
 Berolina and cylinder chess can only be played with legality testing off. 
 In crazyhouse, XBoard now does keep
-track of offboard pieces.  In shatranj it does implement the baring
+track of off-board pieces.  In shatranj it does implement the baring
 rule when mate detection is switched on. 
 <br><dt>-boardHeight N<dd><a name="index-boardHeight_002c-option-362"></a>Allows you to set a non-standard number of board ranks in any variant. 
 If the height is given as -1, the default height for the variant is used. 
@@ -135,7 +135,7 @@ with respect to saving it in the debug file.
 The output is further (hopefully) ignored. 
 If number=0, WinBoard refrains from writing such spurious output to the debug file. 
 If number=1, all engine output is written faithfully to the debug file. 
-If number=2, any protocol-violating line is prefixed with a ‘#’ character,
+If number=2, any protocol-violating line is prefixed with a '#' character,
 as the engine itself should have done if it wanted to submit info for inclusion in the debug file. 
 This option is provided for the benefit of applications that use the debug file
 as a source of information, such as the broadcaster of live games TLCV / TLCS. 
@@ -147,7 +147,7 @@ configured and compiled.
 <code>remoteShell</code>. The default is your local user name. 
 <br><dt>-userName username<dd><a name="index-userName_002c-option-376"></a>Name under which the Human player will be listed in the PGN file. 
 Default is the login name on your local computer. 
-<br><dt>-delayBeforeQuit number<dt>-delayAfterQuit number<dd><a name="index-delayBeforeQuit_002c-option-377"></a><a name="index-delayAfterQuit_002c-option-378"></a>These options specify how long WinBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the ‘quit’ command. The second one determines the pause after killing the engine, to make sure it dies.
+<br><dt>-delayBeforeQuit number<dt>-delayAfterQuit number<dd><a name="index-delayBeforeQuit_002c-option-377"></a><a name="index-delayAfterQuit_002c-option-378"></a>These options specify how long WinBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies.
 
    </dl>
 

@@ -44,24 +44,24 @@ that XBoard can perform in engine-engine games.
 You can instruct XBoard to detect and terminate the game on checkmate
 or stalemate, even if the engines would not do so, to verify engine
 result claims (forfeiting engines that make false claims), rather than
-naively following the engine, to declare draw on posititions
+naively following the engine, to declare draw on positions
 which can never be won for lack of mating material, (e.g. KBK),
-or which are impossble to win unless the opponent seeks its own demise
+or which are impossible to win unless the opponent seeks its own demise
 (e.g. KBKN). 
 For these adjudications to work, &lsquo;<samp><span class="samp">Test Legality</span></samp>&rsquo; should be switched on. 
-It is also possible to insruct XBoard to enforce a 50-move or 3-fold-repeat
-rule and automtically declare draw (after a user-adjustable number of moves
+It is also possible to instruct XBoard to enforce a 50-move or 3-fold-repeat
+rule and automatically declare draw (after a user-adjustable number of moves
 or repeats) even if the engines are prepared to go on. 
 It is also possible to have XBoard declare draw on games that seem to drag on
-forever, or adjudicate a loss if both engines agree (for 3 cosecutive moves) that one
+forever, or adjudicate a loss if both engines agree (for 3 consecutive moves) that one
 of them is behind more than a user-adjustable score threshold. 
 For the latter adjudication to work, XBoard should be able to properly understand
-the engine's scores. To faclitate the latter, you can inform xboard here if
+the engine's scores. To facilitate the latter, you can inform xboard here if
 the engines report scores from the viewpoint of white, or from that of their own color. 
 <br><dt>Engine Settings<dd>Pops up a sub-menu where you can set some engine parameters common to most engines,
 such as hash-table size, tablebase cache size, maximum number of processors
 that SMP engines can use, and where to find the Polyglot adapter needed
-to run UCI engines under XBoard. The feature tht allows setting of these parameters on
+to run UCI engines under XBoard. The feature that allows setting of these parameters on
 engines is new since XBoard 4.3.15, so not many WinBoard engines respond
 to it yet, but UCI engines should. 
 It is also possible to specify a GUI opening book here, i.e. an opening
@@ -79,7 +79,7 @@ fixed time per move, will be divided by N.
 <br><dt>Always Queen<dd><a name="index-Always-Queen_002c-Menu-Item-77"></a>If this option is off, XBoard brings up a dialog
 box whenever you move a pawn to the last rank, asking what piece
 you want to promote it to. If the option is true, your pawns are
-always promoted to queens. Your opponent can still underpromote. 
+always promoted to queens. Your opponent can still under-promote. 
 <br><dt>Animate Dragging<dd><a name="index-Animate-Dragging_002c-Menu-Item-78"></a>If Animate Dragging is on, while you are dragging a piece with the
 mouse, an image of the piece follows the mouse cursor. 
 If Animate Dragging is off, there is no visual feedback while you are
@@ -202,9 +202,9 @@ message to standard error (the terminal) and exits immediately.
 <br><dt>Popup Move Errors<dd><a name="index-Popup-Move-Errors_002c-Menu-Item-96"></a>If this option is off, when you make an error in moving (such as
 attempting an illegal move or moving the wrong color piece), the
 error message is displayed in the message area.  If the option is
-on, move errors are displayed in small popup windows like other errors. 
-You can dismiss an error popup either by clicking its OK button or by
-clicking anywhere on the board, including downclicking to start a move. 
+on, move errors are displayed in small pop-up windows like other errors. 
+You can dismiss an error pop-up either by clicking its OK button or by
+clicking anywhere on the board, including down-clicking to start a move. 
 <br><dt>Premove<dd><a name="index-Premove_002c-Menu-Item-97"></a>If this option is on while playing a game on an ICS, you can register
 your next planned move before it is your turn.  Move the piece with
 the mouse in the ordinary way, and the starting and ending squares
