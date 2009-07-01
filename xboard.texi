@@ -121,11 +121,11 @@ To move a piece, you can drag it with the left mouse button, or you
 can click the left mouse button once on the piece, then once more on
 the destination square.  To drop a new piece on a square (when
 applicable), press the middle or the right mouse button over the
-square and select from the popup menu.  In cases where you can drop
+square and select from the pop-up menu.  In cases where you can drop
 either a white or black piece, use the middle button (or shift+right)
 for white and the right button (or shift+middle) for black.  When you
 are playing a bughouse game on an Internet Chess Server, a list of the
-offboard pieces that each player has available is shown in the window
+off-board pieces that each player has available is shown in the window
 title after the player's name; in addition, the piece menus show the
 number of pieces available of each type. From version 4.3.14 on, it is
 also possible in crazyhouse, bughouse or shogi to dag and drop pieces
@@ -179,15 +179,15 @@ or select a new variant.
 @cindex New variant, Menu Item
 Allows you to select a new chess variant in non-ICS mode. 
 (In ICS play, the ICS is responsible for deciding which variant will be played,
-and XBoard adapts autmatically.) If you play with an engine, the engine must
+and XBoard adapts automatically.) If you play with an engine, the engine must
 be able to play the selected variant, or the command will be ignored.
 XBoard supports all major variants, such as xiangqi, shogi, chess, chess960,
-Capablanca Chess, shatranj, crazyhous, bughouse.
+Capablanca Chess, shatranj, crazyhouse, bughouse.
 @item Load Game
 @cindex Load Game, Menu Item
 Plays a game from a record file. The @kbd{g} key is a keyboard equivalent.
-A popup dialog prompts you for the file name. If the file contains more
-than one game, a second popup dialog
+A pop-up dialog prompts you for the file name. If the file contains more
+than one game, a second pop-up dialog
 displays a list of games (with information drawn from their PGN tags, if
 any), and you can select the one you want. Alternatively, you can load the
 Nth game in the file directly, by typing the number @kbd{N} after the
@@ -228,7 +228,7 @@ Not available if the last game was loaded from a pipe.
 @item Save Game
 @cindex Save Game, Menu Item
 Appends a record of the current game to a file.
-A popup dialog
+A pop-up dialog
 prompts you for the file name. If the game did not begin with
 the standard starting position, the game file includes the
 starting position used. Games are saved in the PGN (portable
@@ -253,7 +253,7 @@ Interprets the current X selection as a game record and loads it, as
 with Load Game.
 @item Load Position
 @cindex Load Position, Menu Item
-Sets up a position from a position file.  A popup dialog prompts
+Sets up a position from a position file.  A pop-up dialog prompts
 you for the file name. If the file contains more than one saved
 position, and you want to load the Nth one, type the number N
 after the file name, separated by a space. Position files must
@@ -273,7 +273,7 @@ Not available if the last position was loaded from a pipe.
 @item Save Position
 @cindex Save Game, Menu Item
 Appends a diagram of the current position to a file.
-A popup dialog
+A pop-up dialog
 prompts you for the file name. Positions are saved in
 FEN (Forsythe-Edwards notation) format unless the @code{oldSaveStyle}
 option is true, in which case they are saved in an older,
@@ -339,9 +339,9 @@ the positions as they occur in the observed game.
 @item Analyze File
 @cindex Analyze File, Menu Item
 This option lets you load a game from a file (PGN, XBoard format, etc.)
-and analyze it. When you select this menu item, a popup window appears
-and asks for a filename to load.
-If the file contains multiple games, another popup appears that lets
+and analyze it. When you select this menu item, a pop-up window appears
+and asks for a file name to load.
+If the file contains multiple games, another pop up appears that lets
 you select which game you wish to analyze.
 After a game is loaded, use the XBoard arrow buttons to step
 forwards/backwards through the game and watch the analysis.
@@ -410,7 +410,7 @@ the ICS @kbd{examine} command, or start an ICS match against yourself.
 Training mode lets you interactively guess the moves of a game for one
 of the players. You guess the next move of the game by playing the
 move on the board. If the move played matches the next move of the
-game, the move is accepted and the opponent's response is autoplayed.
+game, the move is accepted and the opponent's response is auto-played.
 If the move played is incorrect, an error message is displayed.  You
 can select this mode only while loading a game (that is, after
 selecting @samp{Load Game} from the File menu).  While XBoard is in 
@@ -544,6 +544,16 @@ observe command with no arguments. ICS mode only.
 @cindex Stop Examining, Menu Item
 Ends your participation in examining a game, by issuing the ICS
 unexamine command. ICS mode only.
+@item Adjudicate to White
+@itemx Adjudicate to Black
+@itemx Adjudicate Draw
+@cindex Adjudicate to White, Menu Item
+@cindex Adjudicate to Black, Menu Item
+@cindex Adjudicate Draw, Menu Item
+Terminate an ongoing game in Two-Machines mode (including match mode),
+with as result a win for white, for black, or a draw, respectively.
+The PGN file of the game will accompany the result string
+by the comment "user adjudication".
 @end table
 
 @node Step Menu
@@ -640,16 +650,6 @@ after the chess engine has replied to your move; if the chess engine is still
 thinking, use @samp{Move Now} first. In ICS mode, @samp{Retract Move}
 issues the command @samp{takeback 1} or @samp{takeback 2}
 depending on whether it is your opponent's move or yours.
-@item Adjudicate to White
-@itemx Adjudicate to Black
-@itemx Adjudicate Draw
-@cindex Adjudicate to White, Menu Item
-@cindex Adjudicate to Black, Menu Item
-@cindex Adjudicate Draw, Menu Item
-Terminate an ongoing game in Two-Machines mode (including match mode),
-with as result a win for white, for black, or a draw, repsectively.
-The PGN file of the game will accompany the result string
-by the comment "user adjudication".
 @end table
 
 @node Options Menu
@@ -669,25 +669,25 @@ that XBoard can perform in engine-engine games.
 You can instruct XBoard to detect and terminate the game on checkmate
 or stalemate, even if the engines would not do so, to verify engine
 result claims (forfeiting engines that make false claims), rather than
-naively following the engine, to declare draw on posititions
+naively following the engine, to declare draw on positions
 which can never be won for lack of mating material, (e.g. KBK),
-or which are impossble to win unless the opponent seeks its own demise 
+or which are impossible to win unless the opponent seeks its own demise 
 (e.g. KBKN).
 For these adjudications to work, @samp{Test Legality} should be switched on.
-It is also possible to insruct XBoard to enforce a 50-move or 3-fold-repeat
-rule and automtically declare draw (after a user-adjustable number of moves
+It is also possible to instruct XBoard to enforce a 50-move or 3-fold-repeat
+rule and automatically declare draw (after a user-adjustable number of moves
 or repeats) even if the engines are prepared to go on.
 It is also possible to have XBoard declare draw on games that seem to drag on 
-forever, or adjudicate a loss if both engines agree (for 3 cosecutive moves) that one
+forever, or adjudicate a loss if both engines agree (for 3 consecutive moves) that one
 of them is behind more than a user-adjustable score threshold.
 For the latter adjudication to work, XBoard should be able to properly understand
-the engine's scores. To faclitate the latter, you can inform xboard here if
+the engine's scores. To facilitate the latter, you can inform xboard here if
 the engines report scores from the viewpoint of white, or from that of their own color.
 @item Engine Settings
 Pops up a sub-menu where you can set some engine parameters common to most engines,
 such as hash-table size, tablebase cache size, maximum number of processors
 that SMP engines can use, and where to find the Polyglot adapter needed
-to run UCI engines under XBoard. The feature tht allows setting of these parameters on
+to run UCI engines under XBoard. The feature that allows setting of these parameters on
 engines is new since XBoard 4.3.15, so not many WinBoard engines respond
 to it yet, but UCI engines should.
 It is also possible to specify a GUI opening book here, i.e. an opening
@@ -709,7 +709,7 @@ fixed time per move, will be divided by N.
 If this option is off, XBoard brings up a dialog
 box whenever you move a pawn to the last rank, asking what piece
 you want to promote it to. If the option is true, your pawns are
-always promoted to queens. Your opponent can still underpromote.
+always promoted to queens. Your opponent can still under-promote.
 @item Animate Dragging
 @cindex Animate Dragging, Menu Item
 If Animate Dragging is on, while you are dragging a piece with the
@@ -870,9 +870,9 @@ message to standard error (the terminal) and exits immediately.
 If this option is off, when you make an error in moving (such as
 attempting an illegal move or moving the wrong color piece), the
 error message is displayed in the message area.  If the option is
-on, move errors are displayed in small popup windows like other errors.
-You can dismiss an error popup either by clicking its OK button or by
-clicking anywhere on the board, including downclicking to start a move.
+on, move errors are displayed in small pop-up windows like other errors.
+You can dismiss an error pop-up either by clicking its OK button or by
+clicking anywhere on the board, including down-clicking to start a move.
 @item Premove
 @cindex Premove, Menu Item
 If this option is on while playing a game on an ICS, you can register
@@ -1045,7 +1045,7 @@ true or false (@samp{XBoard*longOptionName: true}).
 * ICS options::                 Connecting to and using ICS.
 * Load and Save options::       Input/output options.
 * User interface options::      Look and feel options.
-* Adjudication Options::        Control adjudcation of engine-engine games.
+* Adjudication Options::        Control adjudication of engine-engine games.
 * Other options::               Miscellaneous.
 @end menu
 
@@ -1131,7 +1131,7 @@ as specified by the time-control options, and its opponent's time is renormalize
 If mode=0, both play with reduced time. Default: 0.
 @item -hideThinkingFromHuman true/false
 Controls the Hide Thinking option. @xref{Options Menu}. Default: true.
-(Relaces the Show-Thinking option of older xboard versions.)
+(Replaces the Show-Thinking option of older xboard versions.)
 @item -thinking/-xthinking or -showThinking true/false
 @cindex thinking, option
 @cindex showThinking, option
@@ -1148,7 +1148,7 @@ it makes the engine send it despite the setting of this option.)
 @cindex ponderNextMove, option
 Sets the Ponder Next Move menu option. @xref{Options Menu}. Default: true.
 @item -smpCores number
-Specifies the maxmum nmber of CPUs an SMP engine is allowed to use.
+Specifies the maximum number of CPUs an SMP engine is allowed to use.
 Only works for engines that support the WinBoard-protocol cores feature.
 @item -mg or -matchGames n
 @cindex mg, option
@@ -1336,14 +1336,14 @@ castling and e.p. fields in variants that do not have castling or e.p.
 Indicates if the mentioned engine executable file is an UCI engine, 
 and should be run with the aid of the Polyglot adapter rather than directly. 
 Xboard will then pass the other UCI options and engine name to Polyglot 
-through a .ini temporary file ceated for the purpose.
+through a .ini temporary file created for the purpose.
 @item -PolyglotDir filename
 @cindex PolyglotDir, option
 Gives the name of the directory in which the Polyglot adapter for UCI engines expects its files.
 Default: "/usr/local/share/polyglot".
 @item -usePolyglotBook true/false
 @cindex usePolyglotBook, option
-Specifies if the Polygot book should be used.
+Specifies if the Polyglot book should be used.
 @item -PolyglotBook filename
 @cindex PolyglotBook, option
 Gives the filename of the opening book that Polyglot should use. 
@@ -1462,7 +1462,7 @@ If this option is set, XBoard communicates with the ICS through
 the given character I/O device instead of opening a TCP connection.
 Use this option if your system does not have any kind of
 Internet connection itself (not even a SLIP or PPP connection),
-but you do have dialup access (or a hardwired terminal line) to
+but you do have dial-up access (or a hardwired terminal line) to
 an Internet service provider from which you can telnet to the ICS.
 
 The support for this option in XBoard is minimal. You need to
@@ -2098,11 +2098,11 @@ if both engines agree for a duration of 6 consecutive ply that the score
 is below the given score threshold for that engine. Make sure the score 
 is interpreted properly by XBoard, 
 using @code{-firstScoreAbs} and @code{-secondScoreAbs} if needed. 
-Default: 0 (no adjudiction)
+Default: 0 (no adjudication)
 @item -adjudicateDrawMoves n
 @cindex adjudicateDrawMoves, option
 If the given value is non-zero, XBoard adjudicates the game as a draw 
-if after the given number of moves it was not yet decided. Defaut: 0 (no adjudication)
+if after the given number of moves it was not yet decided. Default: 0 (no adjudication)
 @item -checkMates true/false
 @cindex checkMates, option
 If this option is set, XBoard detects all checkmates and stalemates, 
@@ -2189,7 +2189,7 @@ capablanca    Capablanca Chess (10x8 board, with Archbishop
 gothic        similar, with a better initial position
 caparandom    An FRC-like version of Capablanca Chess (10x8) 
 janus         A game with two Archbishops (10x8 board)
-courier       Medieval intermedite between shatranj and 
+courier       Medieval intermediate between shatranj and 
               modern Chess (on 12x8 board) 
 falcon        Patented 10x8 variant with two Falcon pieces
 berolina      Pawns capture straight ahead, and move diagonal 
@@ -2204,12 +2204,12 @@ unknown       Catchall for other unknown variants
 In the shuffle variants, XBoard now does shuffle the pieces, although
 you can still do it by hand using Edit Position.  Some variants are
 supported only in ICS mode, including bughouse, and
-kriegspiel.  The winning/drawing conditions in crazyhouse (offboard
+kriegspiel.  The winning/drawing conditions in crazyhouse (off-board
 interposition on mate), losers, suicide, giveaway, atomic, and 3check
 are not fully understood.  
 Berolina and cylinder chess can only be played with legality testing off.
 In crazyhouse, XBoard now does keep
-track of offboard pieces.  In shatranj it does implement the baring
+track of off-board pieces.  In shatranj it does implement the baring
 rule when mate detection is switched on.
 @item -boardHeight N
 @cindex boardHeight, option
@@ -2275,7 +2275,7 @@ with respect to saving it in the debug file.
 The output is further (hopefully) ignored. 
 If number=0, WinBoard refrains from writing such spurious output to the debug file. 
 If number=1, all engine output is written faithfully to the debug file. 
-If number=2, any protocol-violating line is prefixed with a ‘#’ character, 
+If number=2, any protocol-violating line is prefixed with a '#' character, 
 as the engine itself should have done if it wanted to submit info for inclusion in the debug file.
 This option is provided for the benefit of applications that use the debug file 
 as a source of information, such as the broadcaster of live games TLCV / TLCS. 
@@ -2299,7 +2299,7 @@ Default is the login name on your local computer.
 @itemx -delayAfterQuit number
 @cindex delayBeforeQuit, option
 @cindex delayAfterQuit, option
-These options specify how long WinBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the ‘quit’ command. The second one determines the pause after killing the engine, to make sure it dies.
+These options specify how long WinBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies.
 
 @end table
 
@@ -2701,7 +2701,7 @@ responsible for versions 1.0 through 1.2.
 Evan Welsh wrote @code{CMail}.  Patrick Surry helped in designing,
 testing, and documenting CMail.
 
-Allessandro Scotti added many elements to the user interface of WinBoard, 
+Alessandro Scotti added many elements to the user interface of WinBoard, 
 including the board textures and font-based rendering, the evaluation-graph, 
 move-history and engine-output window. 
 He was also responsible for adding the UCI support. 
@@ -2712,7 +2712,7 @@ the crazyhouse holdings, and the fairy pieces.
 In addition he added most of the adjudication options, 
 made WinBoard more robust in dealing with buggy and crashing engines, 
 and extended time control with a time-odds and node-count-based modes.
-Most of the options that initially wre WinBoard only have now been back-ported to XBoard.
+Most of the options that initially were WinBoard only have now been back-ported to XBoard.
 
 Michel van den Bergh provided the code for reading Polyglot opening books.
 
@@ -2943,13 +2943,13 @@ interface GNU Chess to an ICS.
 @node Fairy-Max
 @section Fairy-Max
 
-Fairy-Max is a derivative from the World's smallest Chess program micro-Max,
+Fairy-Max is a derivative from the once World's smallest Chess program micro-Max,
 which measures only about 100 lines of source code.
 The main difference with micro-Max is that Fairy-Max loads its move-generator
 tables from a file, so that the rules for piece movement can be easily configured
 to implement unorthodox pieces.
-Fairy-Max can therefore play a lage number of variants, normal Chess being one of those.
-In addition it plas Knightmate, Capablanca and Gothic Chess, Shatranj, Courier Chess,
+Fairy-Max can therefore play a large number of variants, normal Chess being one of those.
+In addition it plays Knightmate, Capablanca and Gothic Chess, Shatranj, Courier Chess,
 Cylinder chess, Berolina Chess, while the user can easily define new variants.
 It can be obtained from:
 
