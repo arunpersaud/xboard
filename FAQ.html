@@ -104,7 +104,7 @@ to help update it.</i></p>
       <li><a href="#tag-C.19">[C.19] XBoard or WinBoard tells me "Error: first chess program (...) exited unexpectedly".</a></li> 
       <li><a href="#tag-C.20">[C.20] XBoard tells me "Warning: Cannot allocate colormap entry", or "too few colors available; trying monochrome mode", or "XPM pieces cannot be used in monochrome mode".</a></li>
       <li><a href="#tag-C.21">[C.21] When I log in to freechess.org, the Enter key doesn't work, and I  have to use Ctrl+J instead.  But when I use WinBoard, Ctrl+J doesn't work either, so I'm stuck.</a></li>
-      <li><a href="#tag-C.22">[C.22] XBoard says, "Failed to start first chess program gnuchessx on localhost: gnuchessx: No such file or directory."</a></li>
+      <li><a href="#tag-C.22">[C.22] XBoard says, "Failed to start first chess program fairymax on localhost: fairymax: No such file or directory."</a></li>
   </ul></li>
   
   <li><a name="tag-D0" href="#tag-D">[D] Crafty and other topics</a>
@@ -114,7 +114,11 @@ to help update it.</i></p>
       <li><a href="#tag-D.3">[D.3] What is Crafty?</a></li>
       <li><a href="#tag-D.4">[D.4] How do I use Crafty with XBoard?</a></li>
       <li><a href="#tag-D.5">[D.5] How do I use Crafty with WinBoard?</a></li>
-      <li><a href="#tag-D.6">[D.6] How do I use GNU Chess 5 with XBoard?</a></li>
+      <li><a href="#tag-D.6">[D.6] How do I use GNU Chess with XBoard?</a></li>
+      <li><a href="#tag-D.7">[D.7] How do I use GNU Chess with WinBoard?</a></li>
+      <li><a href="#tag-D.8">[D.8] What is Fairy-Max?</a></li>
+      <li><a href="#tag-D.9">[D.9] What is UCI? What is Polyglot?</a></li>
+      <li><a href="#tag-D.10">[D.10] How do I use an UCI engine with XBoard / WinBoard?</a></li>
   </ul></li>
 </ul>
 
@@ -128,7 +132,7 @@ to help update it.</i></p>
   XBoard runs with the X Window System on Unix systems (including
   GNU/Linux); see topic <a href="#tag-B.1">[B.1]</a>.  WinBoard runs
   on true 32-bit Microsoft Windows operating systems, such as Windows
-  95, 98, NT, 2000, ME, XP, and should continue to work on future
+  95, 98, NT, 2000, ME, XP, Vista, and should continue to work on future
   32-bit Windows systems.  It does not work on Windows CE (also known
   as Pocket PC), nor does it work on 16-bit Windows systems such as
   Windows 3.1.  See topic <a href="#tag-B.2">[B.2]</a>.</p>
@@ -139,9 +143,13 @@ to help update it.</i></p>
 
 <p>As a shortcut to most things mentioned in this FAQ, try Tim Mann's
   Chess Web page, <a href= "http://www.tim-mann.org/chess.html"
-  >http://www.tim-mann.org/chess.html</a>.  This page page is a good
-  place to get the latest released versions of XBoard and WinBoard and
-  the most up-to-date version of this FAQ.  Also see our Savannah
+  >http://www.tim-mann.org/chess.html</a>.
+  This page page is currently a very bad place to get the latest released 
+  versions of XBoard and WinBoard and the most up-to-date version of this 
+  FAQ, though.   A better place is the 
+  <a href=
+  "http://www.open-aurec.com/wbforum">WinBoard forum</a>.
+  Also see our Savannah
   project pages at <a href="https://savannah.gnu.org/projects/xboard/"
   >https://savannah.gnu.org/projects/xboard/</a>.</p>
 
@@ -151,7 +159,12 @@ to help update it.</i></p>
   at<a href="http://www.aarontay.per.sg/Winboard/">defunct
   URL</a>.</p>
 
-<p>For general news and information about chess, try the newsgroup hierarchy
+<p>For general news and information about chess, try the 
+<a href="http://www.talkchess.com/forum">CCC forum</a>
+or the 
+  <a href=
+  "http://www.open-aurec.com/wbforum">WinBoard forum</a>.
+Anothe possibility is the newsgroup hierarchy
 rec.games.chess.*, especially the groups rec.games.chess.misc and
 rec.games.chess.computer.  Both of the latter groups have very informative
 FAQs maintained by Steve Pribut; look for them on the newsgroups or at
@@ -199,8 +212,8 @@ XBoard and WinBoard?</a></h3>
 <p>At this writing, the current version numbers are:</p>
 
 <ul>
-<li>XBoard 4.2.7</li>
-<li>WinBoard 4.2.7</li>
+<li>XBoard 4.4.0</li>
+<li>WinBoard 4.4.0</li>
 </ul>
 
 <hr />
@@ -219,11 +232,14 @@ or WinBoard should be sent to bug-xboard<a name="nospam01">&#x40;</a>gnu.org.</p
 
 <p>Beginner questions and discussion about the program may get faster
 answers on the WinBoard Forum at <a
-href="http://f11.parsimony.net/forum16635/"
+href="http://www.open-aurec.com/wbforum/"
 >http://www.open-aurec.com/wbforum/</a>.
 This forum also constains a section dedicated to propose and discuss
 new features for WinBoard / XBoard or WinBoard protocol,
-and reposrt bugs.</p>
+and reposrt bugs,
+and offers downloads of pre-installed packages of WinBoard
+bundled with other software,
+useful for conducting computer-computer tournaments.</p>
 
 <p>If you are developing a
 chess engine that works with XBoard or WinBoard (or an alternative
@@ -295,7 +311,8 @@ foreseeable future.
 <li>Contributed features.  Several people have mailed me code to add
 various features.  Most of this code is available on the
 XBoard/WinBoard extensions page
-at <a href="http://www.tim-mann.org/extensions.html">http://www.tim-mann.org/extensions.html</a>,
+at <a href="http://www.tim-mann.org/extensions.html">
+http://www.tim-mann.org/extensions.html</a>,
 but it is not in any official releases yet.  We are in the process of
 getting folks to formally assign the copyrights on their contributions
 to the Free Software Foundation so that we can include it in official
@@ -304,11 +321,11 @@ releases in the future.</li>
 <li>Internationalization.  Several people have expressed interest in
 internationalizing XBoard/WinBoard. Version 4.4 implements
 internationalization in its XBoard branch, and includes (partial)
-Turkish and German translations.  For WinBoard a suitable way o
+Turkish and German translations.  For WinBoard a suitable way for
 internationalization still has to be found, as all menu strings there
 are not in the C code, but in a Windows resource file. In any case, we
 will need more translators, to update the existing translations (for
-version 4.3.7) to the current version, and to provide translaions for
+version 4.2.7) to the current version, and to provide translaions for
 oter languages.  Watch for news on the xboard-devel mailing list on
 our Savannah pages.</li>
 
@@ -534,8 +551,11 @@ difficult and messy, and no one is going to do it.</p>
 known as Pocket PC).  I don't know what would be required to port it.</p>
 
 <p>WinBoard does run well on full 32-bit versions of Windows, such as
-Windows 95, 98, NT, 2000, ME, and XP, and should continue to work
-on future 32-bit Windows systems.</p>
+Windows 95, 98, NT, 2000, ME, XP, and Vista, and should continue to work
+on future 32-bit Windows systems.
+To use the help files in Vista, you will need to install the WinHlp32.exe
+from MicroSoft on your Vista system.
+</p>
 
 <hr />
 <h3><a name="tag-B.10">[B.10] How do I use XBoard or WinBoard as an external viewer for PGN files
@@ -599,9 +619,9 @@ just the command "xboard -ics" or "xboard -ics -icshost freechess.org",
 change that command to one of the following:</p>
 
 <pre>
-    xboard -ics -icshost 204.178.125.65 -icshelper timestamp
+    xboard -ics -icshost chessclub.com -icshelper timestamp
 
-    xboard -ics -icshost 164.58.253.13 -icshelper timeseal
+    xboard -ics -icshost freechess.org -icshelper timeseal
 </pre>
 
 <p>If you have a firewall between your machine and the ICS, see topic
@@ -714,11 +734,16 @@ the interface as newer versions of XBoard and WinBoard come out,
 however.</p>
 
 <p>For documentation, see the file engine-intf.html, included in both
-distributions or available from my chess Web page, <a href=
+distributions or available from Tim Mann's chess Web page, <a href=
 "http://www.tim-mann.org/chess.html"
 >http://www.tim-mann.org/chess.html</a>.
-The version of engine-intf.html on my Web page is often more up-to-date
-than those in the XBoard/WinBoard distributions.</p>
+The version of engine-intf.html on Tim's Web page might totally obsolete,
+though.
+To know how the current WinBoard or XBoard version communicate with their
+engines, use the documentation in the XBoard/WinBoard distributions,
+or on the <a href=
+"http://www.open-aurec.com/wbforum/WinBoard/engine-intf.html"
+>WinBoard forum</a>.</p>
 
 <hr />
 <h3><a name="tag-B.18">[B.18] How can I recompile WinBoard from source?</a></h3>
@@ -728,15 +753,18 @@ than those in the XBoard/WinBoard distributions.</p>
 "http://www.tim-mann.org/chess.html"
 >http://www.tim-mann.org/chess.html</a>.</p>
 
-<p>WinBoard is currently developed using Microsoft Visual C++ 5.0.
-You can build the program from the MSVC++ GUI by opening the project
+<p>WinBoard is currently developed using gcc under Cygwin.
+To build WinBoard with the free Cygwin tools, available from <a
+href= "http://www.cygwin.com/" >http://www.cygwin.com/</a>), use the
+command "make -f makefile.gcc" from the winboard directory of the
+source distribution.</p>
+<p>You can build the program from the MSVC++ GUI by opening the project
 file (winboard.dsp) and telling MSVC++ to build the project.  You can
 also build it from the the command line by using the nmake program
-supplied with MSVC++.</p>
+supplied with MSVC++.
+The makefile for MSVC is makefile.ms in the winboard directory.</p>
 
-<p>To build WinBoard with the free Cygwin tools, available from <a
-href= "http://www.cygwin.com/" >http://www.cygwin.com/</a>), use the
-command "make -f cygwin.mak".  WinBoard 4.2.5 was successfully
+<p>WinBoard 4.2.5 was successfully
 compiled with the net release of Cygwin as downloaded on 20-March-2001
 (cygwin1.dll 1.1.8, gcc 2.95.2-6, binutils 20001221-1, flex 2.5.4-1),
 but exhibits a command-line parsing bug; see item 511 in the ToDo file
@@ -945,6 +973,10 @@ standard Windows application Paintbrush, select Paste, and print from there.
 If you want to print a list of moves, save your game as a PGN file,
 then open the PGN file with Notepad or any other plain text editor and
 print it from there.</p>
+
+<p>WinBoard 4.4 has a menu item "Save Diagram..." in the file menu,
+which saves the board part of the display as a Windows .bmp file,
+but only if the board size is not too big.</p>
 
 <hr />
 <h3><a name="tag-B.23">[B.23]
@@ -1531,14 +1563,15 @@ names of keys.</p>
 </pre>
 
 <hr /><h3><a name="tag-C.22">[C.22]
-  XBoard says, "Failed to start first chess program gnuchessx
-  on localhost: gnuchessx: No such file or directory."
+  XBoard says, "Failed to start first chess program fairymax
+  on localhost: fairymax: No such file or directory."
 </a></h3>
 
-<p>XBoard is looking for GNU Chess 4.0.  If you didn't want to use
-XBoard with GNU Chess, please see topic <a href="#tag-C.6">[C.6]</a>.
-If you did want to use GNU Chess 4.0, be sure you have it installed and
-that it is on your $PATH.  If you wanted to use GNU Chess 5 instead,
+<p>XBoard is looking for the Fairy-Max chess engine.  
+If you didn't want to use XBoard with Fairy-Max, please see topic 
+<a href="#tag-C.6">[C.6]</a>.
+If you did want to use Fairy-Max, be sure you have it installed and
+that it is on your $PATH.  If you wanted to use GNU Chess instead,
 see topic <a href="#tag-D.6">[D.6]</a>.</p>
 
 <hr />
@@ -1635,25 +1668,174 @@ WinBoard to play on the chess server yourself, without having Crafty
 connected to it.  You have to crawl before you can walk!</p>
 
 <hr />
-<h3><a name="tag-D.6">[D.6] How do I use GNU Chess 5 with XBoard?</a></h3>
+<h3><a name="tag-D.6">[D.6] How do I use GNU Chess with XBoard?</a></h3>
 
-<p>By default, XBoard still tries to use GNU Chess 4 by running the
-command "gnuchessx".  That's why if you don't have GNU Chess 4, you
-get the error message "Failed to start first chess program gnuchessx
-on localhost: gnuchessx: No such file or directory."</p>
+<p>By default, XBoard tries to use Fairy-Max by running the
+command "fairymax".  That's why if you don't have Fairy-Max, you
+get the error message "Failed to start first chess program fairymax
+on localhost: fairymax: No such file or directory."</p>
 
 <p>If you have GNU Chess 5, the command should be "gnuchess xboard"
 instead.  To make XBoard use this command, give the -fcp parameter
 like this:</p>
 
 <pre>
+    xboard -fcp "gnuchess xboard" 
+</pre>
+
+If you instaled GNU Chess as a package, the operating system usually 
+knows where to find it, and GNU Chess knwos where to find its data
+files, such as the opening book.
+If GNU Chess is installed in a non-compliant way, e.g. together
+with its book file in a user directory, you must use:
+
+<pre>
     xboard -fd <I>gnuchess_directory</I> -fcp "./gnuchess xboard" 
 </pre>
 
 <p>Here <I>gnuchess_directory</I> is the directory where you installed
-GNU Chess 5 and its book.  You can add more xboard options at the
-end of the command line.</p>
+GNU Chess 5 and its book. 
+In all cases you can add more xboard options at the end of the command 
+line.</p>
 
+<p>If you want to use GNU Chess 4, the command should be "gnuchessx"
+instead.  To make XBoard use this command, give the -fcp parameter
+like this:</p>
+
+<pre>
+    xboard -fcp "gnuchessx" 
+</pre>
+
+<p>The same applies for non-compliant installs as for GNU Chess 5:
+the install directory has to be given with the -fd argument. </p>
+
+<hr />
+<h3><a name="tag-D.7">[D.7] How do I use GNU Chess with WinBoard?</a></h3>
+
+<p>Well, why would you want to? If you want a strong free engine,
+use Crafty, Glaurung, Fruit or Toga.
+If you wnt an engine that plays many variants, use Fairy-Max,
+Pulsar or Sjeng.
+But the procedure to install and run those is not any different than
+for GNU Chess.
+</p>
+<p>If you want to use a WinBoard-compatible chess engine that is not
+automatically installed with the download,
+you will have to download it yourself.
+Most chess engines are downloaded as a compressed archive (e.g. a .zip file),
+and on downloadig it, the decompression software on your Windows system
+is automatically invoked when you seected "Open" in the download dialog.
+You can then click "extract all files", and you are prompted for a place
+to put the unpacked stuff.
+The place it proposes is usually no good, so browse to the folder
+in which you installed the winBoard download
+(where you see the Fairy-Max and WinBoard folders).
+</p><p>
+When the archiv contained a single folder, (with files in it), 
+unpack it there.
+If the archive contained a lot of small files, first create a folder,
+and browse there, before you unpack.
+(To get all the files in a single place, not mixed with others,
+so you can easily delete it again.)
+Say you unpacked in a folder named "NewEngine", which now sits
+next to your "WinBoard" folder amongst the chess files on your system.
+Say there is a file "Engine.exe" in this "NewEngine" folder.
+</p><p>
+Then to run the engine with WinBoard,
+you have to enter the command:
+</p>
+<pre>
+        winboard /fcp="Engine.exe" /fd="..\NewEngine"
+</pre>
+<p>
+Sometimes engines need parameters on their command line,
+e.g. to set the hash-table size, or tell them they have to
+deal with WinBoard.
+These should then go within the quotes around the Engine.exe file name, 
+directly behind it, and separated from it (and each other) by spaces.
+See any README files that come with the engine to learn how
+exactly the engine has to be invoked.
+</p>
+<hr />
+<h3><a name="tag-D.8">[D.8] What is Fairy-Max?</a></h3>
+
+<p>Fairy-Max is a chess engine that plays chess at a level where
+you don't need to be a super GM to still have a chance to beat it.
+Apart from normal chess it plays many variants as well,
+such as Capablanca or Gothic Chess, Knightmate, etc.
+Dedicated versions of it are available to play Shatranj and Xiangqi
+(Chinese Chess).
+</p>
+
+<hr />
+<h3><a name="tag-D.9">[D.9] What is UCI? What is Polyglot?</a></h3>
+
+<p>UCI, or Universal Chess Interface, is a standard for communication
+between chess engines and its Graphical User Interface, that was
+created as an alternative to the way XBoard / WinBoard does it.
+(The latter way having become known as 
+"<a href="#tag-B.17">WinBoard protocol</a>").
+XBoard / WinBoard do not understand a word of UCI,
+so UCI engines cannnot be run directly as engine under them.
+</p><p>
+Polyglot is an adapter that translates WB protocol to UCI.
+It bhaves like it is a WB engine, but, without XBoard / WinBoard
+knowing about this, it consults an UCI engine for getting the moves.
+With the aid of Polyglot, any UCI engine can be run under WinBoard.
+Polyglot is available as a Debian package for Linux, and is included
+in the WinBoard installation.
+Polyglot is open source software released under the GPL.
+</p>
+
+<hr />
+<h3><a name="tag-D.10">[D.10] How can I run a UCI engine under XBoard / WinBoard?</a></h3>
+
+<p>First you have to download and install the UCI engine.
+This is similar to installing WinBoard engines, 
+see <a href="#tag-D.7">D.7</a>.
+Furthermore, you have to make sure that 
+<a href="#tag-D.9">Polyglot</a> is nstalled on
+your system, in a place where XBoard / WinBoard can find it.
+There are then two ways to run the UCI engine:
+</p><p>
+In the first method, the only thing you have to do is add an extra
+option to the command that invokes XBoard / WinBoard,
+to tell it that the engine is UCI:
+</p>
+<pre>
+        xboard -fcp "fruit" -fUCI
+
+        winboard /fcp="Fruit_21.exe" /fd="..\Fruit" /fUCI
+</pre>
+<p>
+The second method is more complicated, but also more versatile.
+UCI engines accept many settings from their GUI than XBoard / WinBoard
+usually send to a WB engine.
+Polyglot can provide such settings from a file dedicated to that engine,
+usully referred to as a "polyglot.ini" file (although the actual name
+can be different.)
+If the engine you downloaded comes with a polyglot.ini file for it,
+you can force Polyglot to use this file with engine settings
+by invoking it explicitly from XBoard / WinBoard:
+</p>
+<pre>
+        xboard -fcp "polyglot INIFILE"
+
+        winboard /fcp="polyglot INIFILE" /fd="POLYGLOTDIR"
+</pre>
+<p>
+INIFILE is the name of the polyglot.ini file (possibly a path name,
+such as "PG\fruit.ini", while POLYGLOTDIR should be the directory
+(path) name were the Polyglot executable is located.
+The directory and name of the actual engine are described in the
+polygot.ini file, and XBoard / WinBoard need not be aware of them.
+</p><p>
+If you don't have a polyglot.ini file for the engine, you would
+have to make one.
+How to do that is beyond the scope of this FAQ.
+Refer to the Polyglot documentation for this,
+or use method 1.
+</p>
 <hr />
 ** End of XBoard/WinBoard FAQ **
 </body></html>
