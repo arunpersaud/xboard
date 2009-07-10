@@ -88,7 +88,7 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if (editTagsX != CW_USEDEFAULT && editTagsY != CW_USEDEFAULT &&
 	  editTagsW != CW_USEDEFAULT && editTagsH != CW_USEDEFAULT) {
 	WINDOWPLACEMENT wp;
-	EnsureOnScreen(&editTagsX, &editTagsY);
+	EnsureOnScreen(&editTagsX, &editTagsY, 0, 0);
 	wp.length = sizeof(WINDOWPLACEMENT);
 	wp.flags = 0;
 	wp.showCmd = SW_SHOW;
