@@ -41,6 +41,8 @@
 #include "wsnap.h"
 #include "wgamelist.h"
 
+extern BoardSize boardSize;
+
 /* Module globals */
 HWND gameListDialog = NULL;
 BOOLEAN gameListUp = FALSE;
@@ -223,6 +225,9 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 
     /* Initialize the dialog items */
     hwndText = GetDlgItem(hDlg, OPT_TagsText);
+
+    /* Set font */
+    SendDlgItemMessage( hDlg, OPT_GameListText, WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, MAKELPARAM(TRUE, 0 ));
 
     count = GameListToListBox( hDlg, gameListDialog ? TRUE : FALSE, NULL, &stats );
 
