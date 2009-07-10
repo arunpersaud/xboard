@@ -2953,22 +2953,23 @@ read_from_ics(isr, closure, data, count, error)
 	    }    
 	    
 	    /* Error messages */
-	    if (ics_user_moved) {
+//	    if (ics_user_moved) {
+	    if (1) { // [HGM] old way ignored error after move type in; ics_user_moved is not set then!
 		if (looking_at(buf, &i, "Illegal move") ||
 		    looking_at(buf, &i, "Not a legal move") ||
 		    looking_at(buf, &i, "Your king is in check") ||
 		    looking_at(buf, &i, "It isn't your turn") ||
 		    looking_at(buf, &i, "It is not your move")) {
 		    /* Illegal move */
-		    ics_user_moved = 0;
-		    if (forwardMostMove > backwardMostMove) {
+		    if (ics_user_moved && forwardMostMove > backwardMostMove) { // only backup if we already moved
 			currentMove = --forwardMostMove;
 			DisplayMove(currentMove - 1); /* before DMError */
-			DisplayMoveError(_("Illegal move (rejected by ICS)"));
 			DrawPosition(FALSE, boards[currentMove]);
 			SwitchClocks();
 			DisplayBothClocks();
 		    }
+		    DisplayMoveError(_("Illegal move (rejected by ICS)")); // [HGM] but always relay error msg
+		    ics_user_moved = 0;
 		    continue;
 		}
 	    }
@@ -3892,8 +3893,11 @@ ParseBoard12(string)
 
       DrawPosition(FALSE, boards[currentMove]);
       DisplayMove(moveNum - 1);
-      if (appData.ringBellAfterMoves && !ics_user_moved)
-	RingBell();
+      if (appData.ringBellAfterMoves && /*!ics_user_moved*/ // [HGM] use absolute method to recognize own move
+	    !((gameMode == IcsPlayingWhite) && (!WhiteOnMove(moveNum)) ||
+	      (gameMode == IcsPlayingBlack) &&  (WhiteOnMove(moveNum))   ) ) {
+	if(newMove) RingBell(); else PlayIcsUnfinishedSound();
+      }
     }
 
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
