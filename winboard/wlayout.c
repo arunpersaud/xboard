@@ -163,8 +163,6 @@ VOID ReattachAfterSize( LPRECT lprcOldPos, int new_w, int new_h, HWND hWndChild,
     if( ! IsDefaultPlacement( pwpChild ) ) {
         GetActualPlacement( hWndChild, pwpChild );
 
-if(appData.debugMode) fprintf(debugFP, "resize, old=(%d,%d,%d,%d), new=(%d,%d)\n",
-lprcOldPos->left,lprcOldPos->top,lprcOldPos->right,lprcOldPos->bottom,new_w,new_h);
         if( IsAttachedByWindowPlacement( lprcOldPos, pwpChild ) ) {
             /* Get delta of lower right corner */
             int delta_x = new_w - (lprcOldPos->right  - lprcOldPos->left);
