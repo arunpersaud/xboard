@@ -104,6 +104,9 @@ VOID NewVariantPopup(HWND hwnd);
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 		   /*char*/int promoChar));
 void AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames);
+void DisplayMove P((int moveNumber));
+Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
+HWND WINAPI HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD_PTR data );
 
 typedef struct {
   ChessSquare piece;  
@@ -143,7 +146,7 @@ char szConsoleName[] = "WBConsole";
 
 /* Title bar text */
 char szTitle[] = "WinBoard";
-char szConsoleTitle[] = "ICS Interaction";
+char szConsoleTitle[] = "I C S Interaction";
 
 char *programName;
 char *settingsFileName;
@@ -482,6 +485,23 @@ void ThawUI()
   DrawMenuBar(hwndMain);
 }
 
+static int fromX = -1, fromY = -1, toX, toY; // [HGM] moved upstream, so JAWS can use them
+
+/* JAWS preparation patch (WinBoard for the sight impaired). Define required insertions as empty */
+#ifdef JAWS
+#include "jaws.c"
+#else
+#define JAWS_INIT
+#define JAWS_ALT_INTERCEPT
+#define JAWS_KB_NAVIGATION
+#define JAWS_MENU_ITEMS
+#define JAWS_SILENCE
+#define JAWS_REPLAY
+#define JAWS_DELETE(X) X
+#define SAYMACHINEMOVE()
+#define SAY(X)
+#endif
+
 /*---------------------------------------------------------------------------*\
  *
  * WinMain
@@ -508,6 +528,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     return (FALSE);
   }
 
+  JAWS_INIT
+
 //  InitCommonControlsEx(&ex);
   InitCommonControls();
 
@@ -522,6 +544,77 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		    0,    /* lowest message to examine */
 		    0))   /* highest message to examine */
     {
+
+      if(msg.message == WM_CHAR && msg.wParam == '\t') {
+	// [HGM] navigate: switch between all windows with tab
+	HWND e1 = NULL, e2 = NULL, mh = NULL, hInput = NULL, hText = NULL;
+	int i, currentElement = 0;
+
+	// first determine what element of the chain we come from (if any)
+	if(appData.icsActive) {
+	    hInput = GetDlgItem(hwndConsole, OPT_ConsoleInput);
+	    hText  = GetDlgItem(hwndConsole, OPT_ConsoleText);
+	}
+	if(engineOutputDialog && EngineOutputIsUp()) {
+	    e1 = GetDlgItem(engineOutputDialog, IDC_EngineMemo1);
+	    e2 = GetDlgItem(engineOutputDialog, IDC_EngineMemo2);
+	}
+	if(moveHistoryDialog && MoveHistoryIsUp()) {
+	    mh = GetDlgItem(moveHistoryDialog, IDC_MoveHistory);
+	}
+	if(msg.hwnd == hwndMain) currentElement = 7 ; else
+	if(msg.hwnd == engineOutputDialog) currentElement = 2; else
+	if(msg.hwnd == e1)                 currentElement = 2; else
+	if(msg.hwnd == e2)                 currentElement = 3; else
+	if(msg.hwnd == moveHistoryDialog) currentElement = 4; else
+	if(msg.hwnd == mh)                currentElement = 4; else
+	if(msg.hwnd == evalGraphDialog)    currentElement = 7; else
+	if(msg.hwnd == hText)  currentElement = 5; else
+	if(msg.hwnd == hInput) currentElement = 6; else
+	for (i = 0; i < N_BUTTONS; i++) {
+	    if (buttonDesc[i].hwnd == msg.hwnd) { currentElement = 1; break; }
+	}
+
+	// determine where to go to
+	if(currentElement) { HWND h = NULL; int direction = GetKeyState(VK_SHIFT) < 0 ? -1 : 1;
+	  do {
+	    currentElement = (currentElement + direction) % 7;
+	    switch(currentElement) {
+		case 0:
+		  h = hwndMain; break; // passing this case always makes the loop exit
+		case 1:
+		  h = buttonDesc[0].hwnd; break; // could be NULL
+		case 2:
+		  if(!EngineOutputIsUp()) continue; // skip closed auxiliary windows
+		  h = e1; break;
+		case 3:
+		  if(!EngineOutputIsUp()) continue;
+		  h = e2; break;
+		case 4:
+		  if(!MoveHistoryIsUp()) continue;
+		  h = mh; break;
+//		case 5: // input to eval graph does not seem to get here!
+//		  if(!EvalGraphIsUp()) continue;
+//		  h = evalGraphDialog; break;
+		case 5:
+		  if(!appData.icsActive) continue;
+		  SAY("display");
+		  h = hText; break;
+		case 6:
+		  if(!appData.icsActive) continue;
+		  SAY("input");
+		  h = hInput; break;
+	    }
+	  } while(h == 0);
+
+	  if(currentElement > 4 && IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
+	  if(currentElement < 5 && IsIconic(hwndMain))    ShowWindow(hwndMain, SW_RESTORE); // all open together
+	  SetFocus(h);
+
+	  continue; // this message now has been processed
+	}
+      }
+
       if (!(commentDialog && IsDialogMessage(commentDialog, &msg)) &&
           !(moveHistoryDialog && IsDialogMessage(moveHistoryDialog, &msg)) &&
           !(evalGraphDialog && IsDialogMessage(evalGraphDialog, &msg)) &&
@@ -4891,8 +4984,6 @@ SetupDropMenu(HMENU hmenu)
   }
 }
 
-static int fromX = -1, fromY = -1, toX, toY;
-
 /* Event handler for mouse messages */
 VOID
 MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -5116,6 +5207,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		fromX = fromY = -1; 
 		ClearHighlights();
 		DrawPosition(FALSE, boards[currentMove]);
+		appData.animate = saveAnimate;
 		break; 
       } else 
       if(moveType != ImpossibleMove) {
@@ -5137,6 +5229,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		    DrawPosition(FALSE, boards[currentMove]);
 		    boards[currentMove][fromY][fromX] = p; // take back, but display stays
 		    boards[currentMove][toY][toX] = q;
+		    appData.animate = saveAnimate;
 		    break;
 		  } else
                PromotionPopup(hwnd); /* [HGM] Popup now calls FinishMove */
@@ -5308,24 +5401,9 @@ ButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case '\r':
       SendMessage(hwndMain, WM_COMMAND, MAKEWPARAM(buttonDesc[i].id, 0), 0);
       return TRUE;
-    case '\t':
-      if (appData.icsActive) {
-	if (GetKeyState(VK_SHIFT) < 0) {
-	  /* shifted */
-	  HWND h = GetDlgItem(hwndConsole, OPT_ConsoleInput);
-	  if (IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
-	  SetFocus(h);
-	} else {
-	  /* unshifted */
-	  HWND h = GetDlgItem(hwndConsole, OPT_ConsoleText);
-	  if (IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
-	  SetFocus(h);
-	}
-	return TRUE;
-      }
-      break;
     default:
-      if (appData.icsActive) {
+      if (appData.icsActive && (isalpha((char)wParam) || wParam == '0')) {
+	// [HGM] movenum: only letters or leading zero should go to ICS input
         HWND h = GetDlgItem(hwndConsole, OPT_ConsoleInput);
 	if (IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
 	SetFocus(h);
@@ -5566,30 +5644,24 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     MouseEvent(hwnd, message, wParam, lParam);
     break;
 
+  JAWS_KB_NAVIGATION
+
   case WM_CHAR:
     
-    if (appData.icsActive) {
-      if (wParam == '\t') {
-	if (GetKeyState(VK_SHIFT) < 0) {
-	  /* shifted */
-	  HWND h = GetDlgItem(hwndConsole, OPT_ConsoleInput);
-	  if (IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
-	  SetFocus(h);
-	} else {
-	  /* unshifted */
-	  HWND h = GetDlgItem(hwndConsole, OPT_ConsoleText);
-	  if (IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
-	  SetFocus(h);
-	}
-      } else {
+    JAWS_ALT_INTERCEPT
+
+    if (appData.icsActive && (isalpha((char)wParam) || wParam == '0')) { 
+	// [HGM] movenum: for non-zero digits we always do type-in dialog
 	HWND h = GetDlgItem(hwndConsole, OPT_ConsoleInput);
 	if (IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
 	SetFocus(h);
 	SendMessage(h, message, wParam, lParam);
-      }
-    } else if (isalpha((char)wParam) || isdigit((char)wParam)) {
-      PopUpMoveDialog((char)wParam);
+    } else if(lParam != KF_REPEAT) {
+	if (isalpha((char)wParam) || isdigit((char)wParam)) {
+		PopUpMoveDialog((char)wParam);
+	}
     }
+
     break;
 
   case WM_PALETTECHANGED:
@@ -5633,6 +5705,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_NewGame:
       ResetGameEvent();
       AnalysisPopDown();
+      SAY("new game enter a move to play against the computer with white");
       break;
 
     case IDM_NewGameFRC:
@@ -5755,6 +5828,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         else {
             EvalGraphPopUp();
+	    SetFocus(hwndMain);
         }
         break;
 
@@ -5822,6 +5896,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	  TagsPopUp(tags, CmailMsg());
 	  free(tags);
       }
+      SAY("computer starts playing white");
       break;
 
     case IDM_MachineBlack:
@@ -5835,6 +5910,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	  TagsPopUp(tags, CmailMsg());
 	  free(tags);
       }
+      SAY("computer starts playing black");
       break;
 
     case IDM_TwoMachines:
@@ -5848,6 +5924,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	  TagsPopUp(tags, CmailMsg());
 	  free(tags);
       }
+      SAY("programs start playing each other");
       break;
 
     case IDM_AnalysisMode:
@@ -5855,6 +5932,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         sprintf(buf, "%s does not support analysis", first.tidy);
         DisplayError(buf, 0);
       } else {
+	SAY("analyzing current position");
         /* [DM] icsEngineAnlyze [HGM] Why is this front-end??? */
         if (appData.icsActive) {
                if (gameMode != IcsObserving) {
@@ -5904,10 +5982,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_EditGame:
       EditGameEvent();
+      SAY("edit game");
       break;
 
     case IDM_EditPosition:
       EditPositionEvent();
+      SAY("to set up a position type a FEN");
       break;
 
     case IDM_Training:
@@ -5986,6 +6066,8 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       BackwardEvent();
       SetFocus(hwndMain);
       break;
+
+    JAWS_MENU_ITEMS
 
     case IDM_Forward:
       ForwardEvent();
@@ -6113,15 +6195,17 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_HELPCONTENTS:
-      if (!WinHelp (hwnd, "winboard.hlp", HELP_KEY,(DWORD)(LPSTR)"CONTENTS")) {
-	MessageBox (GetFocus(),
+      if (!MyHelp (hwnd, "winboard.hlp", HELP_KEY,(DWORD)(LPSTR)"CONTENTS") &&
+	  !HtmlHelp(hwnd, "winboard.chm", 0, NULL)	) {
+	  MessageBox (GetFocus(),
 		    "Unable to activate help",
 		    szAppName, MB_SYSTEMMODAL|MB_OK|MB_ICONHAND);
       }
       break;
 
     case IDM_HELPSEARCH:
-      if (!WinHelp(hwnd, "winboard.hlp", HELP_PARTIALKEY, (DWORD)(LPSTR)"")) {
+        if (!MyHelp (hwnd, "winboard.hlp", HELP_PARTIALKEY, (DWORD)(LPSTR)"") &&
+	    !HtmlHelp(hwnd, "winboard.chm", 0, NULL)	) {
 	MessageBox (GetFocus(),
 		    "Unable to activate help",
 		    szAppName, MB_SYSTEMMODAL|MB_OK|MB_ICONHAND);
@@ -6577,8 +6661,10 @@ BOOLEAN
 MyPlaySound(MySound *ms)
 {
   BOOLEAN ok = FALSE;
+	if(appData.debugMode) fprintf(debugFP, "make sound %s %x %d\n", ms->name, ms, ms->name[0]);
   switch (ms->name[0]) {
   case NULLCHAR:
+	if(appData.debugMode) fprintf(debugFP, "silence\n");
     /* Silence */
     ok = TRUE;
     break;
@@ -7304,12 +7390,35 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND:
     switch (LOWORD(wParam)) {
     case IDOK:
+      GetDlgItemText(hDlg, OPT_Move, move, sizeof(move));
+      { int n; Board board;
+	// [HGM] FENedit
+	if(gameMode == EditPosition && ParseFEN(board, &n, move) ) {
+		EditPositionPasteFEN(move);
+		EndDialog(hDlg, TRUE);
+		return TRUE;
+	}
+	// [HGM] movenum: allow move number to be typed in any mode
+	if(sscanf(move, "%d", &n) == 1 && n != 0 ) {
+	  currentMove = 2*n-1;
+	  if(currentMove > forwardMostMove)  currentMove = forwardMostMove;
+	  if(currentMove < backwardMostMove) currentMove = backwardMostMove;
+	  EndDialog(hDlg, TRUE);
+	  DrawPosition(TRUE, boards[currentMove]);
+	  if(currentMove > backwardMostMove) DisplayMove(currentMove - 1);
+	  else DisplayMessage("", "");
+	  return TRUE;
+	}
+      }
       if (gameMode != EditGame && currentMove != forwardMostMove && 
 	gameMode != Training) {
 	DisplayMoveError("Displayed move is not current");
       } else {
-	GetDlgItemText(hDlg, OPT_Move, move, sizeof(move));
-	if (ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
+//	GetDlgItemText(hDlg, OPT_Move, move, sizeof(move)); // moved upstream
+	int ok = ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
+	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
+	if(!ok && move[0] >= 'a') { move[0] += 'A' - 'a'; ok = 2; } // [HGM] try also capitalized
+	if (ok==1 || ok && ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
 	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar)) {
 	  if (gameMode != Training)
 	      forwardMostMove = currentMove;
@@ -7341,6 +7450,9 @@ PopUpMoveDialog(char firstchar)
 	gameMode == AnalyzeMode || gameMode == EditGame || 
 	gameMode == EditPosition || gameMode == IcsExamining ||
 	gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
+	isdigit(firstchar) && // [HGM] movenum: allow typing in of move nr in 'passive' modes
+		( gameMode == AnalyzeFile || gameMode == PlayFromGameFile ||
+		  gameMode == IcsObserving || gameMode == TwoMachinesPlay    ) ||
 	gameMode == Training) {
       lpProc = MakeProcInstance((FARPROC)TypeInMoveDialog, hInst);
       DialogBoxParam(hInst, MAKEINTRESOURCE(DLG_TypeInMove),
@@ -7806,6 +7918,7 @@ ConsoleTextSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
   case WM_CHAR:
+   if(wParam != '\022') {
     if (wParam == '\t') {
       if (GetKeyState(VK_SHIFT) < 0) {
 	/* shifted */
@@ -7821,8 +7934,29 @@ ConsoleTextSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
     } else {
       hInput = GetDlgItem(hwndConsole, OPT_ConsoleInput);
-      SetFocus(hInput);
+      JAWS_DELETE( SetFocus(hInput); )
       SendMessage(hInput, message, wParam, lParam);
+    }
+    return 0;
+   } // [HGM] navigate: for Ctrl+R, flow into nex case (moved up here) to summon up menu
+  case WM_RBUTTONUP:
+    if (GetKeyState(VK_SHIFT) & ~1) {
+      SendDlgItemMessage(hwndConsole, OPT_ConsoleText, 
+        WM_COMMAND, MAKEWPARAM(IDM_QuickPaste, 0), 0);
+    } else {
+      POINT pt;
+      HMENU hmenu = LoadIcsTextMenu(icsTextMenuEntry);
+      SendMessage(hwnd, EM_EXGETSEL, 0, (LPARAM)&sel);
+      if (sel.cpMin == sel.cpMax) {
+        EnableMenuItem(hmenu, IDM_Copy, MF_BYCOMMAND|MF_GRAYED);
+        EnableMenuItem(hmenu, IDM_QuickPaste, MF_BYCOMMAND|MF_GRAYED);
+      }
+      if (!IsClipboardFormatAvailable(CF_TEXT)) {
+        EnableMenuItem(hmenu, IDM_Paste, MF_BYCOMMAND|MF_GRAYED);
+      }
+      pt.x = LOWORD(lParam);
+      pt.y = HIWORD(lParam);
+      MenuPopup(hwnd, pt, hmenu, -1);
     }
     return 0;
   case WM_PASTE:
@@ -7844,26 +7978,6 @@ ConsoleTextSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	SendMessage(hwnd, EM_EXSETSEL, 0, (LPARAM)&sel);
       }
       SendMessage(hwnd, EM_HIDESELECTION, FALSE, FALSE);
-    }
-    return 0;
-  case WM_RBUTTONUP:
-    if (GetKeyState(VK_SHIFT) & ~1) {
-      SendDlgItemMessage(hwndConsole, OPT_ConsoleText, 
-        WM_COMMAND, MAKEWPARAM(IDM_QuickPaste, 0), 0);
-    } else {
-      POINT pt;
-      HMENU hmenu = LoadIcsTextMenu(icsTextMenuEntry);
-      SendMessage(hwnd, EM_EXGETSEL, 0, (LPARAM)&sel);
-      if (sel.cpMin == sel.cpMax) {
-        EnableMenuItem(hmenu, IDM_Copy, MF_BYCOMMAND|MF_GRAYED);
-        EnableMenuItem(hmenu, IDM_QuickPaste, MF_BYCOMMAND|MF_GRAYED);
-      }
-      if (!IsClipboardFormatAvailable(CF_TEXT)) {
-        EnableMenuItem(hmenu, IDM_Paste, MF_BYCOMMAND|MF_GRAYED);
-      }
-      pt.x = LOWORD(lParam);
-      pt.y = HIWORD(lParam);
-      MenuPopup(hwnd, pt, hmenu, -1);
     }
     return 0;
   case WM_COMMAND:
@@ -7982,6 +8096,7 @@ ConsoleInputSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case '\021': /* Ctrl+Q */
       quoteNextChar = TRUE;
       return 0;
+    JAWS_REPLAY
     default:
       break;
     }
@@ -8115,6 +8230,8 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
       SetWindowPlacement(hDlg, &wp);
     }
+#if 1
+   // [HGM] Chessknight's change 2004-07-13
    else { /* Determine Defaults */
        WINDOWPLACEMENT wp;
        wpConsole.x = winWidth + 1;
@@ -8132,6 +8249,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
        wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
        SetWindowPlacement(hDlg, &wp);
     }
+#endif
     return FALSE;
 
   case WM_SETFOCUS:
@@ -8359,12 +8477,14 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
   }
   oldFont = SelectObject(hdc, font[boardSize][CLOCK_FONT]->hf);
 
+  JAWS_SILENCE
+
   ExtTextOut(hdc, rect->left + MESSAGE_LINE_LEFTMARGIN,
 	     rect->top, ETO_CLIPPED|ETO_OPAQUE,
 	     rect, str, strlen(str), NULL);
   if(logoHeight > 0 && appData.clockMode) {
       RECT r;
-      sprintf(buf, "%s %s", TimeString(timeRemaining), flagFell);
+      sprintf(buf, "%s %s", buf+7, flagFell);
       r.top = rect->top + logoHeight/2;
       r.left = rect->left;
       r.right = rect->right;
@@ -9013,6 +9133,9 @@ DisplayMessage(char *str1, char *str2)
   messageText[MESSAGE_TEXT_MAX - 1] = NULLCHAR;
 
   if (hwndMain == NULL || IsIconic(hwndMain)) return;
+
+  SAYMACHINEMOVE();
+
   hdc = GetDC(hwndMain);
   oldFont = SelectObject(hdc, font[boardSize][MESSAGE_FONT]->hf);
   ExtTextOut(hdc, messageRect.left, messageRect.top, ETO_CLIPPED|ETO_OPAQUE,
