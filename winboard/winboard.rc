@@ -645,7 +645,7 @@ BEGIN
                     50,10
     CONTROL         "&bughouse",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,70,24,50,
                     10
-    CONTROL         "&Twilight",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,70,34,50,
+    CONTROL         "&Twilight",OPT_VariantTwilight,"Button",BS_AUTORADIOBUTTON,70,34,50,
                     10
     CONTROL         "&shogi",OPT_VariantShogi,"Button",BS_AUTORADIOBUTTON,70,
                     44,50,10

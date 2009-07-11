@@ -27,8 +27,8 @@
 
 FILE *debugFP;
 
-HWND WINAPI
-HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD_PTR data )
+int
+HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD data )
 {
 	PROCESS_INFORMATION helpProcInfo;
 	STARTUPINFO siStartInfo;
@@ -36,13 +36,13 @@ HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD_PTR data )
 	static int status = 0;
 	FILE *f;
 
-	if(status < 0) return NULL;
+	if(status < 0) return 0;
 
 	if(!status) {
 		f = fopen(helpFile, "r");
 		if(f == NULL) {
 			status = -1;
-			return NULL;
+			return 0;
 		}
 		status = 1;
 		fclose(f);
@@ -76,18 +76,18 @@ HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD_PTR data )
 
 //HWND WINAPI
 int
-MyHelp(HWND hwnd, LPSTR helpFile, UINT action, DWORD_PTR data)
+MyHelp(HWND hwnd, LPSTR helpFile, UINT action, DWORD data)
 {
 	static int status = 0;
 	FILE *f;
 
-	if(status < 0) return NULL;
+	if(status < 0) return 0;
 
 	if(!status) {
 		f = fopen(helpFile, "r");
 		if(f == NULL) {
 			status = -1;
-			return NULL;
+			return 0;
 		}
 		status = 1;
 		fclose(f);

@@ -9,7 +9,7 @@ PROJ = winboard
 
 OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj zippy.obj\
  parser.obj wclipbrd.obj wedittags.obj wengineo.obj wevalgraph.obj wgamelist.obj\
- whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj wsockerr.obj
+ whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj wsockerr.obj help.obj
 
 
 # Debugging?

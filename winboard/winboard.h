@@ -166,15 +166,6 @@ extern MyFont *font[NUM_SIZES][NUM_FONTS];
 #define OUTLINE_PIECE         1
 #define WHITE_PIECE           2
 
-/* Some definitions required by MSVC 4.1 */ 
-#ifndef WM_MOUSEWHEEL 
-#define WM_MOUSEWHEEL 0x020A 
-#endif 
-#ifndef SCF_DEFAULT 
-#define SCF_DEFAULT 0x0000 
-#define SCF_ALL 0x0004 
-#endif 
-
 #define COPY_TMP "wbcopy.tmp"
 #define PASTE_TMP "wbpaste.tmp"
 

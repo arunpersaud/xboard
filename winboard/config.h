@@ -126,6 +126,17 @@
 #define _strdup(x) strdup(x)
 #define STRICT
 #define _winmajor 3  /* windows 95 */
-#define SCF_DEFAULT 0x0000
-#define SCF_ALL 0x0004
+#endif
+
+/* Some definitions required by MSVC 4.1 */ 
+#ifndef WM_MOUSEWHEEL 
+#define WM_MOUSEWHEEL 0x020A 
+#endif 
+#ifndef SCF_DEFAULT 
+#define SCF_DEFAULT 0x0000 
+#define SCF_ALL 0x0004 
+#endif 
+
+#ifdef _MSC_VER
+#define snprintf _snprintf
 #endif

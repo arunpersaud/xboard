@@ -7,7 +7,7 @@ PROJ=winboard
 OBJS=backend.o book.o gamelist.o lists.o moves.o pgntags.o uci.o zippy.o\
  parser.o wbres.o wclipbrd.o wedittags.o wengineo.o wevalgraph.o\
  wgamelist.o whistory.o winboard.o wlayout.o woptions.o wsnap.o\
- wsockerr.o
+ wsockerr.o help.o
 
 
 # make compiling less spammy
