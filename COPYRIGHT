@@ -4,9 +4,13 @@ Original authors:  Dan Sears and Chris Sears
 Enhancements (Version 2.0 and later):  Tim Mann
 
 Copyright 1991 by Digital Equipment Corporation, Maynard,
-Massachusetts.  Enhancements Copyright
-1992-2001,2002,2003,2004,2005,2006,2007,2008,2009 Free Software
-Foundation, Inc.
+Massachusetts.  
+
+Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006, 2007,
+2008, 2009 Free Software Foundation, Inc.
+
+Enhancements Copyright 2005 Alessandro Scotti
+
 
 XBoard's alternative piece bitmaps (bitmaps.xchess) are derived from the
 bitmaps in the XChess program, which was written and is copyrighted by
