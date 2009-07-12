@@ -7,55 +7,87 @@ group are included in the WinBoard source distribution but not in the
 xboard distribution.  All are part of the joint xboard/WinBoard source
 base and are covered by the same copyrights and licensing terms.
 
-FAQ.html
 backend.c
 backend.h
 backendz.h
-bitmaps
+bitmaps/*
+book.c
 childio.c
 childio.h
 cmail.in
 cmail.man
-comment.in
 common.h
 config.h.in
-configure.in
+configure.ac
 engine-intf.txt
+FAQ.html
 frontend.h
 gamelist.c
+gettext.h
 ics-parsing.txt
 lists.c
 lists.h
+Makefile.am
 moves.c
 moves.h
 parser.h
 parser.l
 pgntags.c
+pixmaps/*
+po/*
+README
+shogibitmaps/*
+sounds/*
+ToDo
+uci.c
 xboard.c
 xboard.h
-xboard.man
 xboard.texi
 xedittags.c
 xedittags.h
+xengineoutput.c
 xgamelist.c
 xgamelist.h
+xhistory.c
+xhistory.h
+xoptions.c
+xoptions.h
 zic2xpm.c
 zic2xpm.man
-zippy.README
 zippy.c
 zippy.h
+zippy.README
 
-winboard.rtf (compiles to winboard.hlp)
-config.h
-defaults.h
-resource.h
-wedittags.c
-wedittags.h
-wgamelist.c
-wgamelist.h
-winboard.c
-winboard.h
-winboard.rc
+winboard/bitmaps/*
+winboard/config.h
+winboard/help.c
+winboard/help.h
+winboard/jaws.c
+winboard/jaws.h
+winboard/jaws.rc
+winboard/parser.c
+winboard/resource.h
+winboard/wclipbrd.c
+winboard/wclipbrd.h
+winboard/wedittags.c
+winboard/wedittags.h
+winboard/wengineo.c
+winboard/wevalgraph.c
+winboard/wgamelist.c
+winboard/wgamelist.h
+winboard/whistory.c
+winboard/winboard.c
+winboard/winboard.h
+winboard/winboard.rc
+winboard/winboard.rtf (compiles to winboard.hlp)
+winboard/wlayout.c
+winboard/woptions.c
+winboard/woptions.h
+winboard/wsnap.c
+winboard/wsnap.h
+winboard/wsockerr.c
+winboard/wsockerr.h
+
 
 bitmaps/*
 bitmaps.xchess/*
@@ -127,6 +159,22 @@ capabilities, such as new windows for engine output, board textures
 and font-based piece rendering. These changes became collectively known
 as Winboard_x.
 
+change to: backend.c, backend.h, backendz.h, bitmaps/analyze_14.ico,
+bitmaps/analyze2_14.ico, bitmaps/baloon_14.ico, bitmaps/black_14.ico,
+bitmaps/clock_14.ico, bitmaps/ponder_14.ico, bitmaps/trans_14.ico,
+bitmaps/unknown_14.ico, bitmaps/white_14.ico, common.h, config.h,
+frontend.h, gamelist.c, lists.c, lists.h, moves.c, moves.h, parser.c,
+parser.h, pgntags.c, readme.htm, uci.c, winboard/defaults.h,
+winboard/resource.h, winboard/wclipbrd.c, winboard/wclipbrd.h,
+winboard/wedittags.c, winboard/wedittags.h, winboard/wengineoutput.c,
+winboard/wevalgraph.c, winboard/wgamelist.c, winboard/wgamelist.h,
+winboard/whistory.c, winboard/winboard.c, winboard/winboard.h,
+winboard/winboard.ini, winboard/winboard.rc, winboard/wlayout.c,
+winboard/woptions.c, winboard/woptions.h, winboard/wplugin.c,
+winboard/wplugin.h, winboard/wsnap.c, winboard/wsnap.h, zippy.c,
+zippy.h
+
+
 11. H.G. Muller <h.g.muller AT hccnet DOT nl>
 
 Heaviliy modified winboard.c, backend.c, moves.c and parser.l, to
@@ -136,13 +184,67 @@ Also implemented displaying of the Crazyhouse holdings, and many adjudication
 and other backend options. This version of WinBoard, (4.3.xx) containing all 
 of the WinBoard_x options, became known as WinBoard_F.
 
+changes to: acconfig.h, aclocal.m4, AUTHORS, backend.c, backend.h,
+backendz.h, bitmaps/*, book.c, childio.h, cmail.in, common.h,
+config.guess, config.h, config.h.in, config.sub, configure,
+configure.ac, configure.in, copyright.texi, engine-intf.html,
+FAQ.html, frontend.h, gamelist.c, ics-parsing.txt, install-sh,
+lists.c, lists.h, Makefile.am, Makefile.in, manual.html,
+mkinstalldirs, moves.c, moves.h, parser.c, parser.h, parser.l,
+pg_key.c, pgntags.c, pg_show.c, pixmaps/*, pxboard, README, READ_ME,
+readme_HGM.txt, shiphtml, shogibitmaps/*, texi2man, ToDo, uci.c,
+winboard/bitmaps/*, winboard/config.h, winboard/cygwin.mak,
+winboard/defaults.h, winboard/help.c, winboard/jaws.c,
+winboard/jaws.h, winboard/jaws.rc, winboard/parser.c,
+winboard/readme.txt, winboard/resource.h, winboard/shogibitmaps/*,
+winboard/wclipbrd.c, winboard/wclipbrd.h, winboard/wedittags.c,
+winboard/wedittags.h, winboard/wengineo.c, winboard/wengineoutput.c,
+winboard/wevalgraph.c, winboard/wgamelist.c, winboard/wgamelist.h,
+winboard/whistory.c, winboard/winboard.c, winboard/winboard.h,
+winboard/winboard.htm, winboard/winboard.ini, winboard/winboard.rc,
+winboard/winboard.rtf, winboard/wlayout.c, winboard/woptions.c,
+winboard/woptions.h, winboard/wplugin.c, winboard/wplugin.h,
+winboard/wsnap.c, winboard/wsnap.h, xboard.c, xboard.h, xboard.texi,
+xedittags.c, xedittags.h, xengineoutput.c, xgamelist.c, xgamelist.h,
+xhistory.c, xhistory.h, xoptions.c, zippy.c, zippy.h, zippy.README
+
+
 12. Arun Persaud <arun AT nubati DOT net> 
  
-fix for parser.l
-updated autotools files
+changes to: acconfig.h, aclocal.m4, AUTHORS, autogen.sh, backend.c,
+backend.h, backendz.h, bitmaps/*, book.c, ChangeLog, childio.c,
+childio.h, cmail.in, common.h, config.guess, config.h.in, configure,
+configure.ac, COPYING, COPYRIGHT, copyright.texi, engine-intf.html,
+FAQ.html, frontend.h, gamelist.c, gettext.h, .gitignore,
+ics-parsing.txt, INSTALL, lists.c, lists.h, Makefile.am, manual.html,
+mkinstalldirs, moves.c, moves.h, NEWS, parser.c, parser.h, parser.l,
+pg_key.c, pgntags.c, pg_show.c, pixmaps/pixmaps.h, po/de.po,
+po/LINGUAS, po/Makefile.in.in, README, READ_ME, shogibitmaps/README,
+texi2man, ToDo, uci.c, uci/uci_protocol.txt,
+winboard/bitmaps/bitmaps.h, winboard/config.h, winboard/defaults.h,
+winboard/jaws.c, winboard/mingw32.mak, winboard/parser.c,
+winboard/readme.txt, winboard/READ_ME.txt,
+winboard/shogibitmaps/README, winboard/wclipbrd.c,
+winboard/wclipbrd.h, winboard/wedittags.c, winboard/wedittags.h,
+winboard/wengineo.c, winboard/wengineoutput.c, winboard/wevalgraph.c,
+winboard/wgamelist.c, winboard/wgamelist.h, winboard/whistory.c,
+winboard/winboard.c, winboard/winboard.h, winboard/WINBOARD.HLP,
+winboard/winboard.htm, winboard/winboard.rc, winboard/wlayout.c,
+winboard/woptions.c, winboard/woptions.h, winboard/wplugin.c,
+winboard/wplugin.h, winboard/wsnap.c, winboard/wsnap.h,
+winboard/wsockerr.c, winboard/wsockerr.h, xboard.c, xboard.h,
+xboard.texi, xboard.texinfo.in, xedittags.c, xedittags.h,
+xengineoutput.c, xgamelist.c, xgamelist.h, xhistory.c, xhistory.h,
+xoptions.c, zic2xpm.c, zic2xpm.man, zippy.c, zippy.h, zippy.README
 
 13. Eric Mullins <emwine AT earthlink DOT net>
 
-Makefiles for different compilers for windows, several changes for those compilers
+Makefiles for different compilers for windows, several changes for
+those compilers
 
-backend.c, winboard/Winboard.dev, winboard/makefile.gcc, winboard/makefile.ms, winboard/res/winboard.exe.manifest, winboard/resource.h, winboard/wevalgraph.c, winboard/winboard.c, winboard/winboard.dsp, winboard/winboard.dsw, winboard/winboard.h, winboard/winboard.rc, winboard/woptions.c                
+change to: AUTHORS, backend.c, winboard/config.h, winboard/help.c,
+winboard/help.h, winboard/makefile.gcc, winboard/makefile.ms,
+winboard/resource.h, winboard/res/winboard.exe.manifest,
+winboard/wevalgraph.c, winboard/winboard.c, winboard/Winboard.dev,
+winboard/winboard.dsp, winboard/winboard.dsw, winboard/winboard.h,
+winboard/winboard.ini, winboard/winboard.rc, winboard/woptions.c
