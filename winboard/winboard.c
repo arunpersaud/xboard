@@ -88,7 +88,7 @@
 #include "woptions.h"
 #include "wsockerr.h"
 #include "defaults.h"
-
+#include "help.h"
 #include "wsnap.h"
 
 //void InitEngineUCI( const char * iniDir, ChessProgramState * cps );
@@ -106,12 +106,6 @@ int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 void AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames);
 void DisplayMove P((int moveNumber));
 Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
-#ifdef VISTA
-#include "htmlhelp.h"
-#else
-HWND WINAPI HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD_PTR data );
-#endif
-
 typedef struct {
   ChessSquare piece;  
   POINT pos;      /* window coordinates of current pos */
