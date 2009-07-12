@@ -1,6 +1,5 @@
 /*
  * bitmaps.h - Include bitmap files for pieces and icons
- * $Id: bitmaps.h,v 2.1 2003/10/27 19:21:01 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
  * Massachusetts.  Enhancements Copyright

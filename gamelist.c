@@ -1,6 +1,5 @@
 /*
  * gamelist.c -- Functions to manage a gamelist
- * XBoard $Id: gamelist.c,v 2.1 2003/10/27 19:21:00 mann Exp $
  *
  * Copyright 1995,2009 Free Software Foundation, Inc.
  *

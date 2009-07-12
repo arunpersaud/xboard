@@ -1,6 +1,5 @@
 /*
  * wedittags.c -- EditTags window for WinBoard
- * $Id: wedittags.c,v 2.1 2003/10/27 19:21:02 mann Exp $
  *
  * Copyright 1995,2009 Free Software Foundation, Inc.
  *

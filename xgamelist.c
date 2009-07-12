@@ -1,6 +1,5 @@
 /*
  * xgamelist.c -- Game list window, part of X front end for XBoard
- * $Id$
  *
  * Copyright 1995,2009 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------

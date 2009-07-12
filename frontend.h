@@ -1,6 +1,5 @@
 /*
  * frontend.h -- Interface exported by all XBoard front ends
- * $Id: frontend.h,v 2.2 2003/11/06 07:22:14 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
  * Massachusetts.  Enhancements Copyright

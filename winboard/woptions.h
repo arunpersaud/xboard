@@ -1,6 +1,5 @@
 /*
  * woptions.h -- Options dialog box routines for WinBoard
- * $Id: 
  *
  * Copyright 2000,2009 Free Software Foundation, Inc.
  *

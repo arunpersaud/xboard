@@ -1,6 +1,5 @@
 /*
  * xhistory.c -- Move list window, part of X front end for XBoard
- * $Id$
  *
  * Copyright 2000,2009 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------

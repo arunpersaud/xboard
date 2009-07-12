@@ -1,6 +1,5 @@
 /*
  * WinBoard.c -- Windows NT front end to XBoard
- * $Id: winboard.c,v 2.3 2003/11/25 05:25:20 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
  * Massachusetts.  Enhancements Copyright

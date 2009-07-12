@@ -1,6 +1,5 @@
 /*
  * JAWS.c -- Code for Windows front end to XBoard to use it with JAWS
- * $Id: winboard.c,v 2.3 2003/11/25 05:25:20 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
  * Massachusetts.  Enhancements Copyright

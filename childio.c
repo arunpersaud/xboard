@@ -1,6 +1,5 @@
 /*
- * childio.c -- set up communication with child processes $Id:
- * childio.c,v 1.2 1994/11/12 19:31:41 mann Exp mann $
+ * childio.c -- set up communication with child processes 
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
  * Massachusetts.  Enhancements Copyright

@@ -1,6 +1,5 @@
 /*
  * backend.c -- Common back end for X and Windows NT versions of
- * XBoard $Id: backend.c,v 2.6 2003/11/28 09:37:36 mann Exp $
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
  * Massachusetts.  Enhancements Copyright

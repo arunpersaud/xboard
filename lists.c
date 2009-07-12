@@ -1,6 +1,5 @@
 /*
- * lists.c -- Functions to implement a double linked list
- * XBoard $Id: lists.c,v 2.1 2003/10/27 19:21:00 mann Exp $
+ * lists.c -- Functions to implement a double linked list XBoard
  *
  * Copyright 1995,2009 Free Software Foundation, Inc.
  *
