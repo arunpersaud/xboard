@@ -122,34 +122,31 @@ if test "$xt" == "no" ; then
    exit 1
 fi
 
-AC_ARG_WITH(Xaw3d, [  --with-Xaw3d            use Xaw3d instead of Xaw],
-  with_xaw3d="yes", with_xaw3d="no")
+dnl | test if user wants ot use Xaw3d headers
+AC_ARG_WITH([Xaw3d],
+            [AS_HELP_STRING([--with-Xaw3d],
+                            [use Xaw3d instead of Xaw])],
+            [with_xaw3d=yes],
+            [with_xaw3d=no])
 
-
-xaw_headers="no"
-if test "$with_xaw3d" == "yes" ; then
-   XAW_LIBS="-lXaw3d"
-   AC_CHECK_LIB([Xaw3d], [XawTextReplace], xaw3d_lib="yes", xaw3d_lib="no")
-   if test "$xaw3d_lib" == "no" ; then
-      echo Xaw3d libraries not found
-      exit 1
-   else
-      AC_CHECK_HEADER(X11/Xaw3d/Dialog.h,xaw3d_headers="yes",xaw3d_headers="no")	
-      if test "$xaw3d_headers" == "yes" ; then
-        AC_DEFINE(USE_XAW3D)
-        xaw_headers="yes"
-      else
-      	AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes")	
-      fi
-   fi
-else
+XAW_LIBS=
+AS_IF([test "x$with_xaw3d" != xno],
+      [AC_CHECK_LIB([Xaw3d], 
+                    [XawTextReplace],
+                    [AC_SUBST([XAW_LIBS], 
+                              ["-lXaw3d"])
+                     AC_DEFINE([USE_XAW3D], [1],
+                               [Define if you want to use Xaw3d])],
+                    [AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes")
+		     AC_MSG_FAILURE(
+      		               [--with-Xaw3d was given, but test for Xaw3d failed])],
+			       [-lXaw])])
+if test "$with_xaw3d" == "no" ; then
    XAW_LIBS="-lXaw"
-   AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes")
 fi
-
 AC_SUBST(XAW_LIBS)
 
-
+dnl | end Xaw3d test
 
 if test "$xaw_headers" == "no" ; then
    echo Xaw headers not found 
