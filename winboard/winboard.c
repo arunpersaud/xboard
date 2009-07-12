@@ -5663,7 +5663,8 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     } else if(lParam != KF_REPEAT) {
 	if (isalpha((char)wParam) || isdigit((char)wParam)) {
 		PopUpMoveDialog((char)wParam);
-	}
+	} else if((char)wParam == 003) CopyGameToClipboard();
+	 else if((char)wParam == 026) PasteGameOrFENFromClipboard();
     }
 
     break;
