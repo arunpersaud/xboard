@@ -38,6 +38,7 @@
 
 /* Imports from winboard.c */
 extern HWND hwndMain;
+Boolean ParseFEN(Board b, int *stm, char *FEN);
 
 /* File globals */
 static char *copyTemp;
@@ -291,18 +292,24 @@ PasteGameFromClipboard()
 VOID PasteGameOrFENFromClipboard()
 {
   char *buf;
-  char *tmp;
+//  char *tmp;
+  Board dummyBoard; int dummy; // [HGM] paste any
 
   if (!PasteTextFromClipboard(&buf)) {
     return;
   }
 
+#if 0
   tmp = buf;
   while( *tmp == ' ' || *tmp == '\t' || *tmp == '\r' || *tmp == '\n' ) {
       tmp++;
   }
 
   if( *tmp == '[' ) {
+#else
+  // [HGM] paste any: make still smarter, to allow pasting of games without tags, recognize FEN in stead
+  if(!ParseFEN(dummyBoard, &dummy, buf) ) {
+#endif
       PasteGameFromString( buf );
   }
   else {
