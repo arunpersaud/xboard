@@ -18,6 +18,10 @@ compile = @echo "$1"; $(CC) $(CFLAGS) $1
 USE_DEBUG=0
 
 
+# JAWS support?
+JAWS=0
+
+
 # set this to 1 unless you don't mind linking with cygwin1.dll
 USE_MINGW=1
 
@@ -27,7 +31,6 @@ ifeq ($(USE_MINGW),1)
 CFCYG = -mno-cygwin
 LFCYG = -mno-cygwin -lmsvcrt
 endif
-
 
 CC = gcc
 FLEX = "flex.exe" # we need version 2.5.4 or later, cygwin's is 2.5.35
@@ -45,6 +48,13 @@ endif
 CF = -c $(WARN) -pipe $(CFDEBUG) $(DEFS) -I. -I..
 CFLAGS = $(CF) $(ARCH) $(OPTS) $(CFCYG)
 LFLAGS = $(LFCYG) $(CFDEBUG) -fpic -s -mwindows -lwsock32 -lwinmm -lcomctl32
+
+# set up for JAWS
+RESDEPS = $(PROJ).rc $(PROJ).h resource.h
+ifeq ($(JAWS),1)
+  RESDEPS = jaws.rc resource.h jaws.h
+  DEFS += -DJAWS
+endif
 
 
 all: $(PROJ).exe
@@ -65,8 +75,8 @@ $(PROJ).hlp : $(PROJ).rtf
 
 
 # Update the resource if necessary
-wbres.o: $(PROJ).rc $(PROJ).h resource.h
-	windres --use-temp-file --include-dir .. $< -O coff -o $@
+wbres.o: $(RESDEPS)
+	windres $(DEFS) --use-temp-file --include-dir .. $< -O coff -o $@
 
 
 # note: cygwin flex needs m4 package.  cygwin-setup forgets this dependency
