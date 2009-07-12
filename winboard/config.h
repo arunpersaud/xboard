@@ -46,13 +46,13 @@
 #define PACKAGE_NAME "WinBoard"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "WinBoard 4.4.0j"
+#define PACKAGE_STRING "WinBoard 4.4.0k"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "winboard"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.4.0j"
+#define PACKAGE_VERSION "4.4.0k"
 
 #define PTY_ITERATION
 
@@ -67,8 +67,6 @@
 /*#undef UNIPLUS*/
 
 #define USE_PTYS 0
-
-#define VERSION "4.4"
 
 /*#undef X_WCHAR*/
 
