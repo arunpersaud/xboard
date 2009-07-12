@@ -106,7 +106,11 @@ int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 void AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames);
 void DisplayMove P((int moveNumber));
 Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
-int HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD data );
+#ifdef VISTA
+#include "htmlhelp.h"
+#else
+HWND WINAPI HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD_PTR data );
+#endif
 
 typedef struct {
   ChessSquare piece;  
@@ -6196,7 +6200,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_HELPCONTENTS:
       if (!MyHelp (hwnd, "winboard.hlp", HELP_KEY,(DWORD)(LPSTR)"CONTENTS") &&
-	  !HtmlHelp(hwnd, "winboard.chm", 0, 0)) {
+	  !HtmlHelp(hwnd, "winboard.chm", 0, 0)	) {
 	  MessageBox (GetFocus(),
 		    "Unable to activate help",
 		    szAppName, MB_SYSTEMMODAL|MB_OK|MB_ICONHAND);

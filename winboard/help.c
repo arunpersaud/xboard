@@ -27,8 +27,8 @@
 
 FILE *debugFP;
 
-int
-HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD data )
+HWND WINAPI
+HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD_PTR data )
 {
 	PROCESS_INFORMATION helpProcInfo;
 	STARTUPINFO siStartInfo;
@@ -36,13 +36,13 @@ HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD data )
 	static int status = 0;
 	FILE *f;
 
-	if(status < 0) return 0;
+	if(status < 0) return NULL;
 
 	if(!status) {
 		f = fopen(helpFile, "r");
 		if(f == NULL) {
 			status = -1;
-			return 0;
+			return NULL;
 		}
 		status = 1;
 		fclose(f);
@@ -62,7 +62,7 @@ HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD data )
 	sprintf(buf, "Hh.exe %s", helpFile);
 
 	// ignore the other parameters; just start the viewer with the help file
-	return CreateProcess(NULL,
+	if(  CreateProcess(NULL,
 			   buf,		   /* command line */
 			   NULL,	   /* process security attributes */
 			   NULL,	   /* primary thread security attrs */
@@ -71,12 +71,13 @@ HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD data )
 			   NULL,	   /* use parent's environment */
 			   NULL,
 			   &siStartInfo,   /* STARTUPINFO pointer */
-			   &helpProcInfo); /* receives PROCESS_INFORMATION */
+			   &helpProcInfo)  /* receives PROCESS_INFORMATION */
+		) return hwnd; else return NULL;
 }
 
 //HWND WINAPI
 int
-MyHelp(HWND hwnd, LPSTR helpFile, UINT action, DWORD data)
+MyHelp(HWND hwnd, LPSTR helpFile, UINT action, DWORD_PTR data)
 {
 	static int status = 0;
 	FILE *f;
