@@ -470,9 +470,13 @@ extern void CopyBoard P((Board to, Board from));
     if (WhiteOnMove(yyboardindex)) {
         if (yytext[2+skip] == ONE) return (int) ImpossibleMove;
 	currentMoveString[1] = yytext[2+skip] - 1;
+	if(boards[yyboardindex][currentMoveString[1]-ONE][currentMoveString[0]-AAA] != WhitePawn) 
+		return ImpossibleMove;
     } else {
         currentMoveString[1] = currentMoveString[3] + 1;
         if (currentMoveString[3] == ONE+BOARD_HEIGHT-1) return (int) ImpossibleMove;
+	if(boards[yyboardindex][currentMoveString[1]-ONE][currentMoveString[0]-AAA] != BlackPawn) 
+		return ImpossibleMove;
     }
     if (yyleng-skip > 3) {
 	if (yytext[yyleng-1] == ')')
