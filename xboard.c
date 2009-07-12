@@ -9258,6 +9258,10 @@ AnimateMove(board, fromX, fromY, toX, toY)
   if (!appData.animate || appData.blindfold)
     return;
 
+  if(board[toY][toX] == WhiteRook && board[fromY][fromX] == WhiteKing || 
+     board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing) 
+	return; // [HGM] FRC: no animtion of FRC castlings, as to-square is not true to-square
+
   if (fromY < 0 || fromX < 0 || toX < 0 || toY < 0) return;
   piece = board[fromY][fromX];
   if (piece >= EmptySquare) return;
