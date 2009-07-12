@@ -1,15 +1,428 @@
-ChangeLog for XBoard/WinBoard
+ChangeLog for XBoard/WinBoard 
+-----------------------------
 
-* 04/15/2009: Updated the winboard.rtf of 4.3.15 with the 4.3.16
-additions, and a more fitting description of ICS-analysis mode.
+(latest entries created by git log --no-merges --pretty="* %ai: %s%n %b" vnew vold)
+	
+* 2009-07-12 11:34:28 -0700: cleaned up some more copyright notices
+ 
+* 2009-07-12 11:22:30 -0700: updated copyright to reflect A. Scotte as copyright holder
+ need to mention him, since the paperwork won't be finished before the next release
 
-* 04/15/2009: Added internationalization to xengineoutput.c and
-xoptions.c. Fixed missing */ in xboard.c.
+* 2009-07-12 10:56:29 -0700: updated patchlevel to "k"
+ 
+* 2009-07-12 10:53:50 -0700: fixed autoconf problem with VERSION/PATCHLEVEL variables
+ xboard used it's own version of PRODUCT, VERSION and PATCHLEVEL variables. Switched to PACKAGE_STRING provided by autoconf
 
-* 04/13/2009: transferred all changes since 4.2.7 to 4.3.pre16, to make 
-4.4.pre1, which should lead to a full merger of the 4.2 and 4.3 line
+* 2009-07-12 10:29:46 -0700: cleaned up old CVS left overs
+ removed $Id tags from all files
 
-* 02/28/2009: fixed an error in the parser. This should fix bug #22812. 
+* 2009-07-12 10:10:17 -0700: converted xhistory via dos2unix
+ 
+* 2009-07-12 10:09:24 -0700: fixed crash in history window
+ someone discovered that opening the move-history window in XBoard leads to
+an immediate crash. Turns out that renaming the menu item broke it! (The
+name of the item was apprently used elsewhere in the code to access it,
+for putting a check mark there.)
+
+* 2009-07-12 10:04:30 -0700: fix for Animation of castling moves in Chess960
+ Animation of castling moves in Chess960 turned out to sometimes make the
+king disappear from the display. For the time being I patched this in
+xboard.c to suppress animation of FRC castling moves altogether. As FRC
+castlings internally are represented as KxR, the to-square does not make
+sense anyway, which made the animation look very weird even when it led
+not to a king disappearance act. And the Rook move of a castling is never
+animated.
+
+* 2009-07-11 22:44:53 -0600: Update GCC makefile to remove .obj targets.
+ Dunno how they got in there, but they should be .o
+
+* 2009-07-11 22:42:41 -0600: Update makefile dependencies on help.c and help.h.
+ 
+* 2009-07-11 22:36:59 -0600: Allow compiling with MSVC6.0 and 4.1
+ Move prototypes into help.h, after making sure that DWORD_PTR is
+defined.  Include help.h from winboard.c and help.c so both files
+benefit from the definition.
+
+* 2009-07-11 18:26:16 -0700:  lists these accelerator keys in the menus for JAWS
+ 
+* 2009-07-11 18:24:19 -0700: added shortcuts
+ This patch allows the use of Ctrl+C and Ctrl+V for Copy Game and Paste even in I C S mode when the board has focus.
+
+* 2009-07-11 18:22:17 -0700: better handling of pasting a game without PGN tags
+ patch in wclipbrd.h to make it smarter to decide between pasting a game or a position so it can handle games without PGN tags. If it doesn't parse as a FEN it is assumed to be a game.
+
+* 2009-07-11 18:20:56 -0700: fixed parser error for knight move
+ The parser had a strange quirk: it recognized bd2 as a valid Knight move
+(Nb1-d2) while this SAN format should be reserved for Pawn moves only.
+
+* 2009-07-11 18:19:30 -0700:  fixed a few warnings in connection with the help patch (now warning free)
+ 
+* 2009-07-11 18:13:50 -0700: some major re-assignment of accelerator keys in the JAWS
+ 
+* 2009-07-11 16:54:53 -0600: several small fixes
+ uptracked winboard.ini
+
+Cleanup: moved "Some definitions required..." from winboard.c to config.h,
+and combined some definitions from borland w/ MS.
+
+Changed internal HtmlHelp return type and 4th argument to facilitate various
+compilers.  These changes, while not strictly adhering to HtmlHelp() conventions,
+won't impact anything since the function modified is internal only.
+
+Modified HtmlHelp return values to integer to silence warnings.
+
+Added help.c to the project in makefile.gcc & makefile.ms.
+
+Fixed duplicate resource in winboard.rc.
+
+* 2009-07-09 22:08:15 -0700: added JAWS support; help files for Vista; bugfixes for winboard.c
+ * JAWS support
+* help files should now work under Vista (the user has to have either a program to view old windows help files or to view html-files installed)
+* I fixed the tabbing between all windows that were added according to Tim's sugestions.
+* I added typing in of a move number in the move type-in dialog as a shortcut to going to that position by use of the < and > buttons. Mainly intended to ease life for the blind, but I think it can be generally useful. (Although the move-history dialog provides that functionality too, this is quicker if you don't happen to have it open.)
+* I added typing of a FEN in the move type-in dialog in Edit Position mode. (Which could not be used without mouse at all, and is defective in crazyhouse even with mouse, as there was no way to populate holdings.)
+
+* 2009-07-09 22:03:00 -0700: some bugfixes: ICS error handling
+ * play a different sound for takebacks in ICS mode
+* pop up error messages for illegal moves for typed-in moves
+
+* 2009-07-09 21:50:41 -0700: removed no longer needed debug message
+ 
+* 2009-07-09 21:48:23 -0700: fixed compile error from a previous change
+ 
+* 2009-07-09 21:44:54 -0700: user selectable font in game list
+ This makes the game list use the same (user selectable) font as the the move-history window.
+
+* 2009-06-30 21:27:34 -0700: fixed typos in xboard.texi documentation.
+ 
+* 2009-06-30 21:16:59 -0700: updated the FAQ
+ 
+* 2009-06-27 17:06:26 -0700: changed font in engine output window
+ The engine-output window now uses the same font as the move-history window
+(which was selectable in the "Options  -> Fonts..." menu, while the other
+wasn't).
+
+* 2009-06-27 17:03:19 -0700: fixed some characters in xboard.texi
+ It seems that copying manual sections from the RTF to th texi file did
+somehow mess up the double-quote characters, and changed them into some
+strange (unicode?) symbols.
+
+* 2009-06-27 16:56:36 -0700: two shogi related bugfixes
+ I discovered a bug in the move generator for the Shogi Dragon King. I
+guess it went unnoticed so far because this is a promoted version of the
+Rook, which hardly occurs in games. (moves.c)
+
+There was also a problem with the piecesfix I sent you before; Shogi
+chosen as initial variant did use wrong piece symbols. (I had tested this
+on gothic, but there it happened to work for a different reason, unique to
+gothic.) This affects xboard.c.
+
+* 2009-06-27 16:54:04 -0700: small cleanup
+ 
+* 2009-06-27 16:51:02 -0700: adds bitmaps for shogi promotions, and selects the bitmaps or pixmaps for the more rarely used piece types on a per-variant basis.
+ 
+* 2009-06-27 16:44:36 -0700: adds new piece types in the promotion dialog and edit-position piece menu
+ 
+* 2009-06-27 16:13:15 -0700: updated bitmaps files
+ files for fairy pieces where missing, others had names that didn't work with autoloading.
+
+* 2009-06-27 16:06:35 -0700: fixed a bug concerning bitmaps
+ 
+* 2009-06-27 15:53:45 -0700: give a default directory for bitmaps files (tiny change)
+ this is also one of the debian patches, should be rewritten to use the correct install directory. No Author was given.
+
+* 2009-06-27 15:47:52 -0700: verbose_error_message_about_recognized_options (tiny change from Debian patches)
+ 
+* 2009-06-27 15:45:14 -0700: add a visual low time warning (tiny change from Debian patches)
+ 
+* 2009-06-24 23:31:52 -0700: dos 2 unix conversion of backend.c
+ 
+* 2009-06-24 23:30:07 -0700: exchanged some sprintf with snprintf
+ found in a patch for the debian system, extended it a bit to other sprintf's
+original patch included only 11 lines by Florian Ernst <florian@debian.org>
+
+* 2009-06-24 23:07:23 -0700: enabled a patch for default settings in winboard
+ 
+* 2009-06-24 22:53:11 -0700: updated copyright notice
+ 
+* 2009-06-24 22:52:20 -0700: patches a bug in chosing the initial board size on a virgin startup I introduced recently
+ 
+* 2009-06-24 22:49:33 -0700: I put in testing for the winning condition in 3checks
+ on a check it just goes through the entire game to subject every position on a check test, to see if there were two more.
+
+* 2009-06-24 22:47:01 -0700: updated copyright notice in docs
+ 
+* 2009-06-24 22:41:40 -0700: added small patch from debian (tiny change)
+ according to the debian patch tracker, this patch is by Florian Ernst <florian@debian.org>.
+It fixes whitespace issues in filename called from cmail.
+
+* 2009-06-24 22:33:13 -0700: converted dos2unix format for xboard.texi
+ 
+* 2009-06-24 22:31:57 -0700: deleted two more files that don't need to be in git
+ these files can be generated by autogen.sh
+
+* 2009-06-21 12:10:31 -0700: major overhaul of the -stickyWindows feature
+ I did a major overhaul of the -stickyWindows feature. The game-list and ICS-interaction windows are now also sticky. I also added a form of stickiness when the main window is resized; edges of auxiliary windows sticking to the right or bottom side of the main window stay attached when the window resizes (due to nr of board squares or their size). The way the window coordinates are saved in the .ini file is now relative to the main window, and some dummy options are added to be able to recognize right- and bottom-edge sticking, and reconstruct that when WB starts up with another board size. Also added are volatile options to ensure there will be space for auxiliary windows above and left of the main window.
+
+* 2009-06-21 12:07:01 -0700: fixed long-algebraic form of drops
+ The WB parser turned out not to understand the long-algebraic form of drops send by an ICS. (like B/@@-e4), so even with legality testing off I now use the SAN move for drops.
+
+* 2009-06-18 18:35:31 -0700: Refined stalemate adjudication in Suicide, some cleanup
+ Refined stalemate adjudication in Suicide, which seems to be not always won
+for the stalemated side, but for the side with the smallest number of pieces.
+Cleaned up the adjudication code in the process. (backend.c moves.c, moves.h)
+Also includes a tiny change in the -autoKibitz format, as requested on
+Talkchess.
+
+* 2009-06-18 18:32:57 -0700: Enhancement of the way -autoLogo decides which logos to display
+ 
+* 2009-06-16 00:06:59 -0700: bugfix and enhancement in autoKibitz mode
+ changed the format of the autoKibitz: score/depth in stead of depth/score, as in PGN. I also supress the ICS time for the move now in the PGN if extended info is available.
+
+When enhancing the functionality of the autoKibitz command (using the
+opponent engine kibitz for the saved PGN) I discovered that the xengineoutput.c
+in our tree was obsolete, and contained a routine of which the arguments
+were no
+longer compatble with the call from backend.c, and caused segfaulting. I
+copied in
+the  corresponding routine in wengineo.c, which was compatible. That the
+compiler
+did not flag this is a sign of badly organized code, I suppose...
+
+The enhancement itself affected backend.c.
+
+* 2009-06-16 00:04:13 -0700: modified clock layout
+ I altered the display of the clocks in the presence of engine logos; I used to
+stack them, but some inquiry on Talkchess sowed that people disliked the
+stacking. So now I display them next to each other again, but as 2-line-high
+fields to make room for te logos.
+
+* 2009-06-15 23:59:32 -0700: new zippy option zippyShortGame
+ On request of Mike Adams I added a new zippy option, -zippyShortGame, to make life more difficult for abusers of abort and disconnect for cheating.
+
+* 2009-06-15 23:56:40 -0700: fixed some bugs in the animation of atomic captures
+ 
+* 2009-06-13 15:27:26 -0700: some small bugfixes
+ I had overlooked one place from which the FEN writer (of whicf I changed the argument types), which made WB crash if you copied a FEN (or PGN that cotained FEN) to the clipboard. I must have overlooked a warning during compile, or some depedency is not correct in the makefile. Anyway, wclipboard.c had to be changed.
+
+I also moved adjudication of some losing conditions to before tetsing for stalemate, (e.g. in atomic, if your king get destroyd you lose, even if you have no moves after that because it was your only piece.). this affects backend.c.
+
+I had used the same bits in the frule-modifier flags for indicating mandatory capture as was already used for indicating FRC-style castling. This led to frequent illegal move calls in FRC... (moves.h)
+
+* 2009-06-13 10:45:17 -0700: cleaned up HTML in FAQ.html -- still need to work on content
+ 
+* 2009-06-13 09:36:26 -0700: added option for work-around for some FRC engines in regards to FRCFENs
+ It suddenly occurred to me that I had promised on CCC to include an option to provide a work-around for the problem that some FRC engines do not understand FRC FENs (and thus do not play at all under WinBoard, as FRC always has to begin with sending the initial position).
+
+So I added the options -firstNeedsNoncompliantFEN, -secondNeedsNoncompliantFEN. This affects winboard.c and xboard.c, (for defining the option), common.h, backend.h, backend.c, (for implementing it), xboard.texi and winboard.rtf (decribing it). This option provides users with a means to always force the FEN castling field to KQkq (but can be used for many other work-arounds as well).
+
+* 2009-06-13 09:30:31 -0700: fixed bug with random calls
+ There also seemed to be a bug with the shuffling of opening positions; I had changed the declaration of the position number from long long int to u64 to comply with MSVC, but this suppressed shuffling completely. I now changed it to int. I recently noted a problem with true randomizing anyway: this was based on srand(time()), but time() apparently did not change fast enough, so that starting several games in rapid succession (because the book line contained a 3-fold repetition) produced identical games. So I now seed the random once and for all during startup, based on the msec of the time mark, and removed the other calls to srand().
+
+* 2009-06-13 09:26:14 -0700: changed name for fairymax program in xboard.h
+ 
+* 2009-06-13 09:25:07 -0700: removed my name from copyright message in help->about menu
+ 
+* 2009-06-13 09:22:02 -0700: fixed -stickyWindows option
+ I figured out why -stickyWindows was not working in XP and Vista
+(while it always worked under Win2K), and I think I found a fix for
+it that works under all Windows versions. (I tried XP and Win2K.)
+
+* 2009-06-13 09:20:38 -0700: Updated docs for Engine-Settings menu
+ 
+* 2009-06-13 09:19:05 -0700: Awareness of winning conditions for atomic and giveaway variants; two bugfixes
+ fixed bug in claim verification
+Bugfix on initial position of Great Shatranj
+
+* 2009-06-13 09:16:47 -0700: Legality testing (mandatory capture) in giveaway variants
+ 
+* 2009-06-13 09:16:17 -0700: don't ignore winboard/parser.c
+ 
+* 2009-06-13 09:12:15 -0700: Added new variant Twilight Chess
+ 
+* 2009-06-13 09:08:57 -0700: some renaming and restructuring of WB menu items, to conform more to XBoard
+ 
+* 2009-06-13 09:07:07 -0700: Fixed bug in atomic patch that interfered with non-atomic variants
+ 
+* 2009-06-10 21:46:11 -0700: fixed different use of engine option compared to Polyglot
+ it turns out the new Polyglot uses a sightly different version of the GUI->engine option command than the one I proposed (and implemented in XBoard; Michel sneaked in an '=' sign between the NAME and VALUE of the option, to allow for more unambiguous parsing.
+
+I guess in principle this is a good idea, so I adapted XBoard to Polyglot rather than the other way around. The result is that there are canges in xboard.c, and the documentation.
+
+I noticed that I unjustly had internationalized the option strings to be send to the engine in xoptions.c; this was of course nonsense, as this was WB protocol. So I undid that too.
+
+* 2009-06-10 21:37:47 -0700: add the already supported variants 3check and great (=Great Shatranj) to the New Variant... menu.
+ 
+* 2009-06-10 21:32:22 -0700: animate explosions in variant atomic (if animate moves is on).
+ 
+* 2009-06-10 21:30:19 -0700: fixed castling bug in variant twokings.
+ 
+* 2009-06-10 21:22:36 -0700: fixed forteitary wins for special game variations
+ feature that corrects forfeitary wins (e.g. on time) of a bare King to draws of course breaks proper operation in losers, suicide and giveaway
+
+* 2009-06-09 21:02:51 -0700: automatically test ini file extension for files from commandline option @filename
+ The winboard.c is a patch that automatically tries indirection files on the
+command line (@filename type arguments) also with an extension .ini if the name itself
+did not match any existing file and contained no period. This saves the user typing the
+.ini all the time (which I started to find pretty annoying while working on the installer
+package).
+
+* 2009-06-08 15:23:58 -0700: added gamelisttag option to xboard
+ also updated documentation.
+
+* 2009-06-08 15:20:00 -0700: updated RTF file for winboard
+ 
+* 2009-06-06 09:12:48 -0700: fixed syntax error in texi file
+ 
+* 2009-06-06 08:57:52 -0700: updated to patchlevel "j"
+ 
+* 2009-06-06 09:00:25 -0700: fixed adjudicating probelm in Shantranj
+ Refrain from adjudicating a draw based on insufficient mating material
+(except bare King vs bare King) in Shatranj (where in this case you can
+still win by baring the opponent's King).
+
+* 2009-06-06 08:55:17 -0700: updated documentation and FAQ
+ 
+* 2009-06-04 22:52:31 -0700: source clean up. Fix compiler warning, removed unused variables, etc.
+ 
+* 2009-06-04 20:43:29 -0700: adding support for different windows compiler
+ Eric kindly provided us with some makefiles for different windows compiler and also fixed some issues that came up while using those compilers.
+
+* 2009-06-04 18:27:26 -0700: cleanup: got rid of a lot of files that are not needed for a new release
+ lots of documentation was available in several places, old unused source files and not used graphics file were floating around in the tree. This should clean up most of it. No need to keep these files around, especially since we are using version control.
+
+* 2009-05-29 18:56:06 -0700: added the Action-menu items that allow the user to adjudicate ongoing games in Two-Machines mode.
+ This was an already existing backend function from Winboard_x; I only had to create a menu item for it to be called. Due to an oversight I had forgotten to do that so far. (Logically, I should have done it in the 4.3.5 release, where I updated the XBoard menus to conform to the WinBoard menus.)
+
+I tested them, and they seem to work. (As expected.)
+
+* 2009-05-28 22:23:00 -0700: updated patchlevel to "i"
+ 
+* 2009-05-28 22:19:08 -0700: small change to mousewheel support; two changes in window behaviour
+ * Visible effects during resizing suppressed, bug in chosing new size fixed.
+* No longer reserves left and top margins next to main window on first popup.
+* built in some hysteresis into mousewheel support, ignorng the first event in any new
+direction to suppress effects from accidential mouse movement.
+
+* 2009-05-28 22:11:11 -0700: corrected 'animate dragging'
+ I finally figured out how the 'animate dragging' works in XBoard,
+so that I could add code to do the unstacking of multiple pieces
+in the holdings, rather than always leaving an empty square while
+you drag them. (And then suddenly re-growing the remaining pieces
+as you make the drop.)  It does not look as fancy as in WinBoard
+yet, because the counts still only decrease when you release the
+piece, rather than when you lift it. But this is not nearly as
+disturbing as leaving empty holdings (if only temporarily) when
+you still have pieces there.
+
+* 2009-05-28 22:06:15 -0700: Added comand-line options -debugFile (as synonym for -nameOfDebugFile, as WinBoard also has these synonyms), and -engineDebugOutput (wich already existed in the backend).
+ 
+* 2009-05-28 21:57:53 -0700: updated documentation for new release
+ 
+* 2009-05-28 21:55:51 -0700: added Xiangqi perpetual-chase detection
+ 
+* 2009-05-28 00:06:53 -0700: Updated all files to GPL version 3.
+ 
+* 2009-05-28 00:03:32 -0700: converted two files from dos to unix format
+ 
+* 2009-05-27 23:12:24 -0700: updated INSTALL, NEWS and other files for new release
+ cleaned up a bit and updated some information in the text files.
+
+* 2009-05-07 21:48:23 -0700: winboard/config.h shouldn't be in .gitignore, only ./config.h
+ 
+* 2009-05-07 21:47:37 -0700: bumped patchlevel to 0g
+ 
+* 2009-05-07 21:46:02 -0700: corrected path in makefile
+ 
+* 2009-05-07 21:45:48 -0700: updated rtf
+ 
+* 2009-05-07 21:45:25 -0700: added firstOptions, secondOptions, noGUI, firstXBook, secondXBook
+ 
+* 2009-05-07 21:44:03 -0700: handle promotion case for Shogi
+ 
+* 2009-05-07 21:43:34 -0700: add note about RESULT command for GUI programmers
+ 
+* 2009-05-07 21:42:37 -0700: small changes to book.c
+  added code for different board sizes
+ added some debuginfo
+ handle promotion of pieces
+
+* 2009-05-05 23:07:18 -0700: added a .gitignore file
+ 
+* 2009-05-03 12:41:06 -0700: wrong line ending for Unix... ran dos2unix on both files
+ 
+* 2009-05-02 13:51:50 -0700: fixed texinfo files, added windows help file, removed config.h from git
+ texinfo.in is not needed anymore, since it only provided a version string, but this can be created automatically using autotools
+
+deleted config.h from version control, since it is automatically created.
+added winboard.hlp file (not sure if needed)
+
+* 2009-04-26 23:34:34 -0700: updated autoconf init file
+ * renamed autoconf init file from configure.in to configure.ac
+ * added bug-report email address to ac_init
+ * replaced ac_output(...) with ac_config_files, ac_config_commands and ac_output
+ * 2009-04-26 14:49:03 -0700: parser.c is generated by lex, so it shouldn't be tracked and also parcer.c shouldn't be in Makefile.am 
+ * 2009-04-26 14:44:51 -0700: added book.c to Makefile.am 
+ * 2009-04-26 13:49:15 -0700: use autoheader to create config.h.in
+ no need to track this in git anymore
+
+* 2009-04-26 11:13:26 -0700: fixed autoheader warings, remove depreciated acconfig.h
+ 
+* 2009-04-26 10:30:23 -0700: added a autogen.sh
+ 
+* 2009-05-02 10:55:39 -0700: changes from H.G. Muller; version 4.3.16
+ 
+* 2009-05-02 10:50:10 -0700: changes from H.G. Muller; version 4.3.15
+ 
+* 2009-05-02 10:38:39 -0700: changes from H.G. Muller; version 4.3.14
+ 
+* 2009-05-02 10:13:41 -0700: HGM fixed cygwin compile for winboard
+ 
+* 2009-04-24 16:11:57 -0700: cross compilier working
+ 
+* 2009-04-19 10:00:52 -0700: changes from H.G. Muller; version 4.3.13
+ 
+* 2009-04-19 09:52:47 -0700: changes from H.G. Muller; version 4.3.12
+ 
+* 2009-04-19 09:48:59 -0700: changes from H.G. Muller; version 4.3.8
+ 
+* 2009-04-19 09:44:15 -0700: changes from H.G. Muller; version 4.3.7
+ 
+* 2009-04-19 09:39:19 -0700: changes by H.G. Muller; version 4.3.4
+ 
+* 2009-04-19 09:34:31 -0700: changes from H.G. Muller; version 4.3.2
+ 
+* 2009-04-19 10:26:24 -0700: changes from H.G. Muller
+ 
+* 2009-04-16 23:06:13 -0700: cleaned up the directory a bit. Removed winboard-dm-beta, merged the two Changelogs together
+ 
+* 2009-04-16 14:12:48 -0700: changes from Alessandro Scotti from 20060129
+ 
+* 2009-04-16 14:09:33 -0700: changes from Alessandro Scotti from 20060112
+ 
+* 2009-04-16 14:04:02 -0700: changes from Alessandro Scotti from 20051231
+ 
+* 2009-04-16 13:59:12 -0700: changes from Alessandro Scotti from 20051129
+ 
+* 2009-04-16 13:53:41 -0700: changes from Alessandro Scotti from 20050322
+ 
+* 2009-04-10 04:18:59 +0000: translated a handfull of strings and set the codeset to UTF-8 for the translations.
+ 
+* 2009-03-18 03:20:50 +0000: Translation: added German po file (roughly 50% translated)
+ 
+* 2009-03-01 04:23:54 +0000: fixed bug #22853: changed all .Xdefaults to .Xresources in xboard.texi
+ 
+* 2009-03-01 02:43:43 +0000: fixed bug #25672, patch #6182 by adding DESTDIR support to Makefile.in
+ 
+* 2009-03-01 02:33:26 +0000: fixed a warning message in the configure script
+ 
+* 2009-02-28 22:58:57 +0000: fixed parser.l. Should fix bug #22812
+ 
+* 2009-02-28 22:58:14 +0000: fixed parser.l. Should fix bug #22812
+ 
+* 2009-02-28 22:55:30 +0000: added myself to the AUTHOR file
+ 
+* 2007-06-15 04:26:57 +0000: Initial check-in of NSIS Winboard installer files.
  
 * 06/12/2005: bugfix some more possible buffer overflows. 
  
