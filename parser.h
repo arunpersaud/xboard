@@ -2,9 +2,12 @@
  * parser.h -- Interface to XBoard move parser
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts.  Enhancements Copyright
- * 1992-2001,2002,2003,2004,2005,2006,2007,2008,2009 Free Software
- * Foundation, Inc.
+ * Massachusetts.
+ *
+ * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
+ * 2007, 2008, 2009 Free Software Foundation, Inc.
+ *
+ * Enhancements Copyright 2005 Alessandro Scotti
  *
  * The following terms apply to Digital Equipment Corporation's copyright
  * interest in XBoard:

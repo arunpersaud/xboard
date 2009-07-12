@@ -3,6 +3,8 @@
  *
  * Copyright 1995,2009 Free Software Foundation, Inc.
  *
+ * Enhancements Copyright 2005 Alessandro Scotti
+ *
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify

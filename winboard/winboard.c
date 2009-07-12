@@ -2,9 +2,12 @@
  * WinBoard.c -- Windows NT front end to XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts.  Enhancements Copyright
- * 1992-2001,2002,2003,2004,2005,2006,2007,2008,2009 Free Software
- * Foundation, Inc.
+ * Massachusetts. 
+ *
+ * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
+ * 2007, 2008, 2009 Free Software Foundation, Inc.
+ *
+ * Enhancements Copyright 2005 Alessandro Scotti
  *
  * XBoard borrows its colors and the bitmaps.xchess bitmap set from XChess,
  * which was written and is copyrighted by Wayne Christopher.

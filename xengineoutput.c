@@ -3,6 +3,10 @@
  *
  * Author: Alessandro Scotti (Dec 2005)
  *
+ * Copyright 2005 Alessandro Scotti
+ *
+ * Enhancements Copyright 2009 Free Software Foundation, Inc.
+ *
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
