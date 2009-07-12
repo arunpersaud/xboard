@@ -104,6 +104,10 @@ SOURCE=..\gamelist.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\help.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\lists.c
 # End Source File
 # Begin Source File
@@ -153,19 +157,8 @@ SOURCE=.\winboard.c
 # Begin Source File
 
 SOURCE=.\winboard.rc
-
-!IF  "$(CFG)" == "winboard - Win32 Release"
-
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409
-
-!ELSEIF  "$(CFG)" == "winboard - Win32 Debug"
-
-# ADD BASE RSC /l 0x409
-# ADD RSC /l 0x409
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 

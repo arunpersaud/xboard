@@ -1,7 +1,7 @@
 [Project]
 FileName=Winboard.dev
 Name=Winboard
-UnitCount=21
+UnitCount=22
 Type=0
 Ver=1
 ObjFiles=
@@ -232,22 +232,32 @@ BuildCmd=
 Major=4
 Minor=4
 Release=0
-Build=1
+Build=11
 LanguageID=1033
 CharsetID=1252
 CompanyName=
-FileVersion=4.4.0j
+FileVersion=4.4.0k
 FileDescription=Developed using the Dev-C++ IDE
 InternalName=winboard.exe
-LegalCopyright=GPLv2
+LegalCopyright=GPLv3
 LegalTrademarks=
 OriginalFilename=winboard.exe
 ProductName=Winboard
-ProductVersion=4.4.0j
+ProductVersion=4.4.0k
 AutoIncBuildNr=0
 
 [Unit21]
 FileName=..\zippy.c
+CompileCpp=0
+Folder=Winboard
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit22]
+FileName=help.c
 CompileCpp=0
 Folder=Winboard
 Compile=1
