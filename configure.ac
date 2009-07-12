@@ -27,11 +27,7 @@ dnl| it portable to sites and systems other than your own), and run autoconf
 dnl| to regenerate configure.  Then submit your changes to be folded into
 dnl| the standard version of xboard.
 
-dnl| need to change these here and in AC_INIT
-PRODUCT=xboard
-VERSION=4.4  
-PATCHLEVEL=0j
-
+dnl| define second argument as VERSION.PATCHLEVEL. e.g. 4.4.0j
 AC_INIT([xboard],[4.4.0j],[bug-xboard@gnu.org])
 AM_INIT_AUTOMAKE
 
@@ -46,8 +42,6 @@ AH_TEMPLATE([HAVE_RANDOM],[template])
 AH_TEMPLATE([HAVE_SYS_SOCKET_H],[template])
 AH_TEMPLATE([IBMRTAIX],[template])
 AH_TEMPLATE([LAST_PTY_LETTER],[template])
-AH_TEMPLATE([PATCHLEVEL],[template])
-AH_TEMPLATE([PRODUCT],[template])
 AH_TEMPLATE([PTY_ITERATION],[template])
 AH_TEMPLATE([PTY_NAME_SPRINTF],[template])
 AH_TEMPLATE([PTY_OPEN],[template])
@@ -56,7 +50,6 @@ AH_TEMPLATE([REMOTE_SHELL],[template])
 AH_TEMPLATE([RTU],[template])
 AH_TEMPLATE([UNIPLUS],[template])
 AH_TEMPLATE([USE_PTYS],[template])
-AH_TEMPLATE([VERSION],[template])
 AH_TEMPLATE([X_WCHAR],[template])
 AH_TEMPLATE([ATTENTION],[template])
 AH_TEMPLATE([DEFINED_SYS_ERRLIST],[template])
@@ -116,7 +109,7 @@ AC_CHECK_LIB(seq, getpseudotty)
 
 AC_PATH_XTRA
 if test -n "$no_x" ; then
-  echo $PRODUCT requires the X Window System header files and libraries!
+  echo $PACKAGE requires the X Window System header files and libraries!
   echo They were not found on your system.  See FAQ topic C.2.
   echo configure failed
   exit 1
@@ -407,13 +400,6 @@ AC_ARG_ENABLE(sigint,
   AC_DEFINE(ATTENTION, 1)
 fi],
 [AC_DEFINE(ATTENTION, 1)])
-
-AC_DEFINE_UNQUOTED(PRODUCT, "$PRODUCT")
-AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
-AC_DEFINE_UNQUOTED(PATCHLEVEL, "$PATCHLEVEL")
-AC_SUBST(PRODUCT)
-AC_SUBST(VERSION)
-AC_SUBST(PATCHLEVEL)
 
 AC_CONFIG_FILES([Makefile cmail])
 AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])

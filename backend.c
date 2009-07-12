@@ -821,9 +821,8 @@ InitBackEnd1()
 #endif
     
     if (appData.noChessProgram) {
-	programVersion = (char*) malloc(5 + strlen(PRODUCT) + strlen(VERSION)
-					+ strlen(PATCHLEVEL));
-	sprintf(programVersion, "%s %s.%s", PRODUCT, VERSION, PATCHLEVEL);
+	programVersion = (char*) malloc(5 + strlen(PACKAGE_STRING));
+	sprintf(programVersion, "%s", PACKAGE_STRING);
     } else {
 #if 0
 	char *p, *q;
@@ -831,15 +830,13 @@ InitBackEnd1()
 	while (*q != ' ' && *q != NULLCHAR) q++;
 	p = q;
 	while (p > first.program && *(p-1) != '/' && *(p-1) != '\\') p--; /* [HGM] backslash added */
-	programVersion = (char*) malloc(8 + strlen(PRODUCT) + strlen(VERSION)
-					+ strlen(PATCHLEVEL) + (q - p));
-	sprintf(programVersion, "%s %s.%s + ", PRODUCT, VERSION, PATCHLEVEL);
+	programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING + (q - p));
+	sprintf(programVersion, "%s + ", PACKAGE_STRING);
 	strncat(programVersion, p, q - p);
 #else
 	/* [HGM] tidy: use tidy name, in stead of full pathname (which was probably a bug due to / vs \ ) */
-	programVersion = (char*) malloc(8 + strlen(PRODUCT) + strlen(VERSION)
-					+ strlen(PATCHLEVEL) + strlen(first.tidy));
-	sprintf(programVersion, "%s %s.%s + %s", PRODUCT, VERSION, PATCHLEVEL, first.tidy);
+	programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
+	sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
 #endif
     }
 

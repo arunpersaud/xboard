@@ -2386,8 +2386,8 @@ main(argc, argv)
 
 #ifdef ENABLE_NLS
     XtSetLanguageProc(NULL, NULL, NULL);
-    bindtextdomain(PRODUCT, LOCALEDIR);
-    textdomain(PRODUCT);
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
 #endif
 
     shellWidget =
@@ -7542,7 +7542,7 @@ void AboutProc(w, event, prms, nprms)
 	    "Copyright 1991 Digital Equipment Corporation",
 	    "Enhancements Copyright 1992-2009 Free Software Foundation",
 	    "Enhancements Copyright 2005 Alessandro Scotti",
-	    PRODUCT, " is free software and carries NO WARRANTY;",
+	    PACKAGE, " is free software and carries NO WARRANTY;",
 	    "see the file COPYING for more information.");
     ErrorPopUp(_("About XBoard"), buf, FALSE);
 }

@@ -36,9 +36,23 @@
 
 #define LAST_PTY_LETTER 'q'
 
-#define PATCHLEVEL "0j"
+/* Name of package */
+#define PACKAGE "WinBoard"
 
-#define PRODUCT "WinBoard"
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT "bug-xboard@gnu.org"
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "WinBoard"
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING "WinBoard 4.4.0j"
+
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME "winboard"
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "4.4.0j"
 
 #define PTY_ITERATION
 

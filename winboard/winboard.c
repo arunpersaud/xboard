@@ -2295,7 +2295,7 @@ SaveSettings(char* name)
     return;
   }
   fprintf(f, ";\n");
-  fprintf(f, "; %s %s.%s Save Settings file\n", PRODUCT, VERSION, PATCHLEVEL);
+  fprintf(f, "; %s Save Settings file\n", PACKAGE_STRING);
   fprintf(f, ";\n");
   fprintf(f, "; You can edit the values of options that are already set in this file,\n");
   fprintf(f, "; but if you add other options, the next Save Settings will not save them.\n");
