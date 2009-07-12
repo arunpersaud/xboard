@@ -1058,12 +1058,12 @@ BEGIN
         MENUITEM "&Reload Same Game",           IDM_ReloadGame
         MENUITEM "&Save Game...\tCtrl-S",       IDM_SaveGame
         MENUITEM SEPARATOR
-        MENUITEM "&Copy Game To Clipboard\tAlt+C", IDM_CopyGame
-        MENUITEM "Paste Game &From Clipboard\tAlt+V", IDM_PasteGame
+        MENUITEM "&Copy Game To Clipboard\tCtrl+C", IDM_CopyGame
+        MENUITEM "Paste Game &From Clipboard\tCtrl+V", IDM_PasteGame
         MENUITEM SEPARATOR
         MENUITEM "Copy Game List to Clipboard", IDM_CopyGameListToClipboard
         MENUITEM SEPARATOR
-        MENUITEM "L&oad Position...",           IDM_LoadPosition
+        MENUITEM "L&oad Position...\tCtrl+Shift+O", IDM_LoadPosition
         MENUITEM "Load N&ext Position\tAlt+Shift+PgDn", IDM_LoadNextPosition
         MENUITEM "Load Pre&vious Position\tAlt+Shift+PgUp", 
                                                 IDM_LoadPrevPosition
@@ -1071,9 +1071,9 @@ BEGIN
         MENUITEM "S&ave Position...\tCtrl+Shift+S",IDM_SavePosition
         MENUITEM "Save &Diagram...",            IDM_SaveDiagram
         MENUITEM SEPARATOR
-        MENUITEM "Cop&y Position To Clipboard\tAlt+Shift+C", 
+        MENUITEM "Cop&y Position To Clipboard\tCtrl+Shift+C", 
                                                 IDM_CopyPosition
-        MENUITEM "Pas&te Position From Clipboard\tControl+Shift+V", 
+        MENUITEM "Pas&te Position From Clipboard\tCtrl+Shift+V", 
                                                 IDM_PasteAny
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_Exit
@@ -1091,10 +1091,10 @@ BEGIN
         MENUITEM "&Edit Position\tShift+Ctrl+E",IDM_EditPosition
         MENUITEM "Trai&ning",                   IDM_Training, GRAYED
         MENUITEM SEPARATOR
-        MENUITEM "Show Engine &Output\tAlt+Shift+O",IDM_ShowEngineOutput
+        MENUITEM "Show Engine &Output\tAlt+Shift+O",  IDM_ShowEngineOutput
         MENUITEM "Show Evaluation Graph\tAlt+Shift+E",IDM_ShowEvalGraph
-        MENUITEM "Show Game &List\tAlt+Shift+G",  IDM_ShowGameList
-        MENUITEM "Show Move History\tAlt+Shift+H",IDM_ShowMoveHistory
+        MENUITEM "Show Game &List\tAlt+Shift+G",      IDM_ShowGameList
+        MENUITEM "Show Move History\tAlt+Shift+H",    IDM_ShowMoveHistory
         MENUITEM SEPARATOR
         MENUITEM "Edit &Tags...",               IDM_EditTags
         MENUITEM "Edit &Comment...",            IDM_EditComment
@@ -1349,17 +1349,14 @@ WINBOARD ACCELERATORS MOVEABLE PURE
 BEGIN
     "1",            IDM_DirectCommand1,     VIRTKEY, ALT, NOINVERT
     "2",            IDM_DirectCommand2,     VIRTKEY, ALT, NOINVERT
-    "B",            IDM_Book,               VIRTKEY, CONTROL, NOINVERT
-    "C",            IDM_CopyGame,           VIRTKEY, ALT, NOINVERT
-    "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, ALT, NOINVERT
     "I",            IDM_TypeInMove,         VIRTKEY, ALT, NOINVERT
     "N",            IDM_NewGame,            VIRTKEY, CONTROL, NOINVERT
     "O",            IDM_LoadGame,           VIRTKEY, CONTROL, NOINVERT
-    "O",            IDM_LoadPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
     "S",            IDM_SaveGame,           VIRTKEY, CONTROL, NOINVERT
+    "O",            IDM_LoadPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
     "S",            IDM_SavePosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "V",            IDM_PasteGame,          VIRTKEY, ALT, NOINVERT
-    "V",            IDM_PastePosition,      VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "V",            IDM_PasteAny,           VIRTKEY, SHIFT, CONTROL, NOINVERT
     "A",            IDM_PossibleAttackMove, VIRTKEY, ALT, NOINVERT
     "D",            IDM_PossibleAttacked,   VIRTKEY, ALT, NOINVERT
     "P",            IDM_SayAllBoard,        VIRTKEY, ALT, NOINVERT
