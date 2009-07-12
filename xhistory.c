@@ -87,7 +87,7 @@ extern char *layoutName;
 
 struct History{
   String *Nr,*white,*black;
-  int     aNr;  /* space actually alocated */  
+  int     aNr;  /* space actually alocated */
   Widget mvn,mvw,mvb,vbox,viewport,sh;
   char Up;
 };
@@ -115,7 +115,7 @@ HistoryPopDown(w, client_data, call_data)
   }
   j=0;
   XtSetArg(args[j], XtNleftBitmap, None); j++;
-  XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Move List"),
+  XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Move History"),
 		args, j);
 }
 
@@ -140,13 +140,13 @@ void HistoryAlloc(int len){
     free(hist->Nr);free(hist->white);free(hist->black);
   }
   else{
-    hist=(struct History*)malloc(sizeof(struct History)); 
+    hist=(struct History*)malloc(sizeof(struct History));
   }
     hist->aNr=len;
     hist->Nr=(String*)malloc(hist->aNr*sizeof(String*));
     hist->white=(String*)malloc(hist->aNr*sizeof(String*));
     hist->black=(String*)malloc(hist->aNr*sizeof(String*));
-    
+
     hist->Nr[0]=(String)malloc(hist->aNr*6);
     hist->white[0]=(String)malloc(hist->aNr*MOVE_LEN);
     hist->black[0]=(String)malloc(hist->aNr*MOVE_LEN);
@@ -197,7 +197,7 @@ HistoryFill()
   } else {
     extra = extra/2;
   }
- 
+
   j = 0;
   XtSetArg(args[j], XtNwidth, &w);  j++;
   XtGetValues(hist->mvw, args, j);
@@ -272,7 +272,7 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
   if(hist){
     if(last >= hist->aNr) HistoryAlloc(last+_LL_);
     for(i=0;i<last;i++) {
-      if((i%2)==0) { 
+      if((i%2)==0) {
 	if(movelist[i][0]) {
 	  char* p = strchr(movelist[i], ' ');
 	  if (p) {
@@ -280,7 +280,7 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
 	    hist->white[i/2+1][p-movelist[i]] = NULLCHAR;
 	  } else {
 	    strcpy(hist->white[i/2+1],movelist[i]);
-	  }	    
+	  }
 	} else {
 	  strcpy(hist->white[i/2+1],dots);
       	}
@@ -292,7 +292,7 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
 	    hist->black[i/2+1][p-movelist[i]] = NULLCHAR;
 	  } else {
 	    strcpy(hist->black[i/2+1],movelist[i]);
-	  }	    
+	  }
 	} else {
 	  strcpy(hist->black[i/2+1],"");
       	}
@@ -336,11 +336,11 @@ Widget HistoryCreate()
              <Key>Right: ForwardProc() \n";
     /*--- allocate memory for move-strings ---*/
     HistoryAlloc(_LL_);
-   
+
     /*-------- create the widgets ---------------*/
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNallowShellResize, True);  j++;   
+    XtSetArg(args[j], XtNallowShellResize, True);  j++;
 #if TOPLEVEL
     hist->sh =
       XtCreatePopupShell(_("Move list"), topLevelShellWidgetClass,
@@ -349,18 +349,18 @@ Widget HistoryCreate()
     hist->sh =
       XtCreatePopupShell(_("Move list"), transientShellWidgetClass,
 			 shellWidget, args, j);
-#endif        
+#endif
     j = 0;
     XtSetArg(args[j], XtNborderWidth, 0); j++;
     XtSetArg(args[j], XtNdefaultDistance, 0);  j++;
       layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, hist->sh,
 			    args, j);
-    
+
     j = 0;
     XtSetArg(args[j], XtNborderWidth, 0); j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
-  
+
     form =
       XtCreateManagedWidget("form", formWidgetClass, layout, args, j);
      j=0;
@@ -386,13 +386,13 @@ Widget HistoryCreate()
     XtSetArg(args[j], XtNorientation,XtorientHorizontal);j++;
     hist->vbox =
       XtCreateManagedWidget("vbox", formWidgetClass, hist->viewport, args, j);
-    
+
     j=0;
     XtSetArg(args[j], XtNtop, XtChainTop);  j++;
     XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;    
-     
+    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
+
     XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
     XtSetArg(args[j], XtNforceColumns, True);  j++;
     XtSetArg(args[j], XtNverticalList, True);  j++;
@@ -407,8 +407,8 @@ Widget HistoryCreate()
     XtSetArg(args[j], XtNtop, XtChainTop);  j++;
     XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtRubber);  j++;    
-    
+    XtSetArg(args[j], XtNright, XtRubber);  j++;
+
     XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
     XtSetArg(args[j], XtNforceColumns, True);  j++;
     XtSetArg(args[j], XtNverticalList, True);  j++;
@@ -424,7 +424,7 @@ Widget HistoryCreate()
     XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
     XtSetArg(args[j], XtNleft, XtRubber);  j++;
     XtSetArg(args[j], XtNright,  XtRubber);  j++;
-    
+
     XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
     XtSetArg(args[j], XtNforceColumns, True);  j++;
     XtSetArg(args[j], XtNverticalList, True);  j++;
@@ -442,10 +442,10 @@ Widget HistoryCreate()
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
     XtSetArg(args[j], XtNfromVert, hist->viewport);  j++;
     b_close= XtCreateManagedWidget(_("Close"), commandWidgetClass,
-				   form, args, j);   
+				   form, args, j);
     XtAddCallback(b_close, XtNcallback, HistoryPopDown, (XtPointer) 0);
 
-    XtAugmentTranslations(hist->sh,XtParseTranslationTable (trstr)); 
+    XtAugmentTranslations(hist->sh,XtParseTranslationTable (trstr));
 
     XtRealizeWidget(hist->sh);
     CatchDeleteWindow(hist->sh, "HistoryPopDown");
@@ -454,7 +454,7 @@ Widget HistoryCreate()
       strcpy(hist->white[i],dots);
       strcpy(hist->black[i],"");
      }
-   
+
     return hist->sh;
 }
 
@@ -465,6 +465,7 @@ HistoryPopUp()
   int j;
 
   if(!hist) HistoryCreate();
+
   XtPopup(hist->sh, XtGrabNone);
 
   // [HGM] restore old position
@@ -475,12 +476,12 @@ HistoryPopUp()
 
   j=0;
   XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-  XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Move List"),
+  XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Move History"),
 		args, j);
   hist->Up=True;
 }
 
- 
+
 void
 HistoryShowProc(w, event, prms, nprms)
      Widget w;
@@ -498,4 +499,4 @@ HistoryShowProc(w, event, prms, nprms)
   }
   ToNrEvent(currentMove);
 }
- 
+
