@@ -76,7 +76,7 @@ parser.c: ../parser.l
 
 winboard.obj: winboard.c config.h winboard.h ../common.h ../frontend.h \
         ../backend.h ../moves.h wgamelist.h defaults.h resource.h wclipbrd.h \
-        wedittags.h wsockerr.h woptions.h wsnap.h ../lists.h
+        wedittags.h wsockerr.h woptions.h wsnap.h ../lists.h help.h
         $(CC) $(CFLAGS) winboard.c
 
 backend.obj: ../backend.c config.h ../common.h ../frontend.h ../backend.h \
@@ -134,6 +134,9 @@ wlayout.obj: wlayout.c config.h ../common.h winboard.h resource.h
 
 wsockerr.obj: wsockerr.c wsockerr.h
         $(CC) $(CFLAGS) wsockerr.c
+
+help.obj: help.c help.h
+        $(CC) $(CFLAGS) help.c
 
 wsnap.obj: wsnap.c wsnap.h
         $(CC) $(CFLAGS) wsnap.c

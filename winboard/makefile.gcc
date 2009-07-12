@@ -82,7 +82,7 @@ $(PROJ).exe: $(OBJS) $(PROJ).hlp
 
 winboard.o: winboard.c config.h winboard.h ../common.h ../frontend.h ../backend.h \
 	../moves.h wgamelist.h defaults.h resource.h wclipbrd.h \
-	wedittags.h wsockerr.h woptions.h wsnap.h ../lists.h
+	wedittags.h wsockerr.h woptions.h wsnap.h ../lists.h help.h
 	$(call compile, $<)
 
 backend.o: ../backend.c config.h ../common.h ../frontend.h ../backend.h \
@@ -136,6 +136,9 @@ wlayout.obj: wlayout.c config.h ../common.h winboard.h resource.h
 	$(call compile, $<)
 
 wsockerr.obj: wsockerr.c wsockerr.h
+	$(call compile, $<)
+
+help.o: help.c help.h
 	$(call compile, $<)
 
 wsnap.obj: wsnap.c wsnap.h
