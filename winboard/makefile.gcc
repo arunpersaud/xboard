@@ -104,44 +104,44 @@ gamelist.o: ../gamelist.c config.h ../lists.h ../common.h ../frontend.h \
 	../backend.h ../parser.h
 	$(call compile, $<)
 
-wclipbrd.obj: wclipbrd.c config.h ../common.h ../frontend.h ../backend.h \
+wclipbrd.o: wclipbrd.c config.h ../common.h ../frontend.h ../backend.h \
 	winboard.h resource.h wclipbrd.h ../lists.h
 	$(call compile, $<)
 
-wedittags.obj: wedittags.c config.h ../common.h winboard.h resource.h ../frontend.h \
+wedittags.o: wedittags.c config.h ../common.h winboard.h resource.h ../frontend.h \
 	../backend.h ../lists.h wedittags.h
 	$(call compile, $<)
 
-wgamelist.obj: wgamelist.c config.h. ../common.h winboard.h resource.h ../frontend.h \
+wgamelist.o: wgamelist.c config.h. ../common.h winboard.h resource.h ../frontend.h \
 	../backend.h wgamelist.h ../lists.h
 	$(call compile, $<)
 
-woptions.obj: woptions.c config.h ../common.h ../frontend.h ../backend.h ../lists.h \
+woptions.o: woptions.c config.h ../common.h ../frontend.h ../backend.h ../lists.h \
 	defaults.h winboard.h resource.h
 	$(call compile, $<)
 
-wengineo.obj: wengineo.c config.h ../common.h ../frontend.h ../backend.h \
+wengineo.o: wengineo.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
 	$(call compile, $<)
 
-whistory.obj: whistory.c config.h ../common.h ../frontend.h ../backend.h \
+whistory.o: whistory.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
 	$(call compile, $<)
 
-wevalgraph.obj: wevalgraph.c config.h ../common.h ../frontend.h ../backend.h \
+wevalgraph.o: wevalgraph.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
 	$(call compile, $<)
 
-wlayout.obj: wlayout.c config.h ../common.h winboard.h resource.h
+wlayout.o: wlayout.c config.h ../common.h winboard.h resource.h
 	$(call compile, $<)
 
-wsockerr.obj: wsockerr.c wsockerr.h
+wsockerr.o: wsockerr.c wsockerr.h
 	$(call compile, $<)
 
 help.o: help.c help.h
 	$(call compile, $<)
 
-wsnap.obj: wsnap.c wsnap.h
+wsnap.o: wsnap.c wsnap.h
 	$(call compile, $<)
 
 pgntags.o: ../pgntags.c config.h ../common.h ../frontend.h ../backend.h \
