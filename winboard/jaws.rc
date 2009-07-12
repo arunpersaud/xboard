@@ -1050,7 +1050,7 @@ BEGIN
     BEGIN
         MENUITEM "New &Game\tCtrl-N",           IDM_NewGame
         MENUITEM "New Shuffle Game...",         IDM_NewGameFRC
-        MENUITEM "New Variant...\tAlt+Ctrl+V",  IDM_NewVariant
+        MENUITEM "New Variant...\tAlt+Shift+V",  IDM_NewVariant
         MENUITEM SEPARATOR
         MENUITEM "&Load Game...\tCtrl-O",       IDM_LoadGame
         MENUITEM "Load &Next Game\tAlt+PgDn",   IDM_LoadNextGame
@@ -1073,7 +1073,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Cop&y Position To Clipboard\tAlt+Shift+C", 
                                                 IDM_CopyPosition
-        MENUITEM "Pas&te Position From Clipboard\tAlt+Shift+V", 
+        MENUITEM "Pas&te Position From Clipboard\tControl+Shift+V", 
                                                 IDM_PasteAny
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_Exit
@@ -1091,10 +1091,10 @@ BEGIN
         MENUITEM "&Edit Position\tShift+Ctrl+E",IDM_EditPosition
         MENUITEM "Trai&ning",                   IDM_Training, GRAYED
         MENUITEM SEPARATOR
-        MENUITEM "Show Engine &Output\tAlt+Ctrl+O",IDM_ShowEngineOutput
-        MENUITEM "Show Evaluation Graph\tAlt+Ctrl+E",IDM_ShowEvalGraph
-        MENUITEM "Show Game &List\tAlt+Ctrl+G",  IDM_ShowGameList
-        MENUITEM "Show Move History\tAlt+Ctrl+H",IDM_ShowMoveHistory
+        MENUITEM "Show Engine &Output\tAlt+Shift+O",IDM_ShowEngineOutput
+        MENUITEM "Show Evaluation Graph\tAlt+Shift+E",IDM_ShowEvalGraph
+        MENUITEM "Show Game &List\tAlt+Shift+G",  IDM_ShowGameList
+        MENUITEM "Show Move History\tAlt+Shift+H",IDM_ShowMoveHistory
         MENUITEM SEPARATOR
         MENUITEM "Edit &Tags...",               IDM_EditTags
         MENUITEM "Edit &Comment...",            IDM_EditComment
@@ -1141,17 +1141,17 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions
-        MENUITEM "Adjudications...\tAlt+Ctrl+J",IDM_EnginePlayOptions
-        MENUITEM "Engine Settings...\tAlt+Ctrl+U",IDM_OptionsUCI
+        MENUITEM "Adjudications...\tAlt+Shift+J",IDM_EnginePlayOptions
+        MENUITEM "Engine Settings...\tAlt+Shift+U",IDM_OptionsUCI
         MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
         MENUITEM "&Fonts...",                   IDM_Fonts
         MENUITEM "Soun&ds...",                  IDM_Sounds
-        MENUITEM "Game List...\tAlt+Ctrl+G",    IDM_GameListOptions
+        MENUITEM "Game List...\tAlt+Shift+G",   IDM_GameListOptions
         MENUITEM SEPARATOR
         MENUITEM "Comm&unications...",          IDM_CommPort
-        MENUITEM "&Load Game...\tAlt+Ctrl+L",   IDM_LoadOptions
-        MENUITEM "&Save Game...\tAlt+Ctrl+S",   IDM_SaveOptions
-        MENUITEM "&Time Control...\tAlt+Ctrl+T",IDM_TimeControl
+        MENUITEM "&Load Game...\tAlt+Shift+L",  IDM_LoadOptions
+        MENUITEM "&Save Game...\tAlt+Shift+S",  IDM_SaveOptions
+        MENUITEM "&Time Control...\tAlt+Shift+T",IDM_TimeControl
         MENUITEM SEPARATOR
         MENUITEM "Save Settings &Now",          IDM_SaveSettings
         MENUITEM "Save Settings on E&xit",      IDM_SaveSettingsOnExit
@@ -1359,7 +1359,7 @@ BEGIN
     "S",            IDM_SaveGame,           VIRTKEY, CONTROL, NOINVERT
     "S",            IDM_SavePosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
     "V",            IDM_PasteGame,          VIRTKEY, ALT, NOINVERT
-    "V",            IDM_PastePosition,      VIRTKEY, SHIFT, ALT, NOINVERT
+    "V",            IDM_PastePosition,      VIRTKEY, SHIFT, CONTROL, NOINVERT
     "A",            IDM_PossibleAttackMove, VIRTKEY, ALT, NOINVERT
     "D",            IDM_PossibleAttacked,   VIRTKEY, ALT, NOINVERT
     "P",            IDM_SayAllBoard,        VIRTKEY, ALT, NOINVERT
@@ -1374,17 +1374,17 @@ BEGIN
     "X",            IDM_SayWhosTurn,        VIRTKEY, ALT, NOINVERT
     "M",            IDM_SayMachineMove,     VIRTKEY, ALT, NOINVERT
     "F",            IDM_ReadColumn,         VIRTKEY, ALT, NOINVERT
-    "O",            IDM_ShowEngineOutput,   VIRTKEY, ALT, CONTROL, NOINVERT
-    "H",            IDM_ShowMoveHistory,    VIRTKEY, ALT, CONTROL, NOINVERT
-    "E",            IDM_ShowEvalGraph,      VIRTKEY, ALT, CONTROL, NOINVERT
-    "G",            IDM_ShowGameList,       VIRTKEY, ALT, CONTROL, NOINVERT
-    "B",            IDM_BoardOptions,       VIRTKEY, ALT, CONTROL, NOINVERT
-    "T",            IDM_TimeControl,        VIRTKEY, ALT, CONTROL, NOINVERT
-    "L",            IDM_LoadOptions,        VIRTKEY, ALT, CONTROL, NOINVERT
-    "S",            IDM_SaveOptions,        VIRTKEY, ALT, CONTROL, NOINVERT
-    "J",            IDM_EnginePlayOptions,  VIRTKEY, ALT, CONTROL, NOINVERT
-    "U",            IDM_OptionsUCI,         VIRTKEY, ALT, CONTROL, NOINVERT
-    "V",            IDM_NewVariant,         VIRTKEY, ALT, CONTROL, NOINVERT
+    "O",            IDM_ShowEngineOutput,   VIRTKEY, ALT, SHIFT, NOINVERT
+    "H",            IDM_ShowMoveHistory,    VIRTKEY, ALT, SHIFT, NOINVERT
+    "E",            IDM_ShowEvalGraph,      VIRTKEY, ALT, SHIFT, NOINVERT
+    "G",            IDM_ShowGameList,       VIRTKEY, ALT, SHIFT, NOINVERT
+    "B",            IDM_BoardOptions,       VIRTKEY, ALT, SHIFT, NOINVERT
+    "T",            IDM_TimeControl,        VIRTKEY, ALT, SHIFT, NOINVERT
+    "L",            IDM_LoadOptions,        VIRTKEY, ALT, SHIFT, NOINVERT
+    "S",            IDM_SaveOptions,        VIRTKEY, ALT, SHIFT, NOINVERT
+    "J",            IDM_EnginePlayOptions,  VIRTKEY, ALT, SHIFT, NOINVERT
+    "U",            IDM_OptionsUCI,         VIRTKEY, ALT, SHIFT, NOINVERT
+    "V",            IDM_NewVariant,         VIRTKEY, ALT, SHIFT, NOINVERT
     "P",            OPT_PonderNextMove,     VIRTKEY, SHIFT, CONTROL, NOINVERT
     "X",            OPT_SaveExtPGN,         VIRTKEY, SHIFT, CONTROL, NOINVERT
     "L",            OPT_TestLegality,       VIRTKEY, SHIFT, CONTROL, NOINVERT

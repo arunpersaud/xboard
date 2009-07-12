@@ -153,6 +153,7 @@ VOID SayString(char *mess, BOOL flag)
 static int oldFromX, oldFromY;
 static int timeflag;
 static int suppressClocks = 0;
+static int suppressOneKey = 0;
 
 BOOL
 InitJAWS()
@@ -1086,23 +1087,17 @@ NiceTime(int x)
 	return (x%3000 == 0);
 }
 
+#if 0
+	    if(isalpha((char)wParam)) {
+		/* capitals of any ind are intercepted and distinguished by left and right shift */
+		int mine = GetKeyState(VK_RSHIFT) < 0;
+		if(mine || GetKeyState(VK_LSHIFT) < 0) {
+#endif
+
 #define JAWS_ALT_INTERCEPT \
-	    if(isalpha((char)wParam)) {\
-		/* capitals of any ind are intercepted and distinguished by left and right shift */\
-		int mine = GetKeyState(VK_RSHIFT) < 0;\
-		if(mine || GetKeyState(VK_LSHIFT) < 0) {\
-\
-		    if(gameMode == IcsPlayingWhite || gameMode == MachinePlaysBlack) mine = !mine;\
-\
-		    if(ToLower((char)wParam) == 'x') {\
-			SayPieces(mine ? WhitePlay : BlackPlay);\
-			break;\
-		    } else\
-		    if(CharToPiece((char)wParam) != EmptySquare) {\
-			SayPieces(CharToPiece(mine ? ToUpper((char)wParam) : ToLower((char)wParam)));\
-			break;\
-		    }\
-		}\
+	    if(suppressOneKey) {\
+		suppressOneKey = 0;\
+		if(GetKeyState(VK_MENU) < 0 && GetKeyState(VK_CONTROL) < 0) break;\
 	    }\
 	    if ((char)wParam == 022 && gameMode == EditPosition) { /* <Ctl R>. Pop up piece menu */\
 		POINT pt; int x, y;\
@@ -1126,6 +1121,30 @@ NiceTime(int x)
 #define JAWS_KB_NAVIGATION \
 \
 	case WM_KEYDOWN:\
+\
+		if(GetKeyState(VK_MENU) < 0 && GetKeyState(VK_CONTROL) < 0) {\
+		    /* Control + Alt + letter used for speaking piece positions */\
+		    static int lastTime; static char lastChar;\
+		    int mine = 0, time = GetTickCount(); char c;\
+\
+		    if((char)wParam == lastChar && time-lastTime < 250) mine = 1;\
+		    lastChar = wParam; lastTime = time;\
+		    c = wParam;\
+\
+		    if(gameMode == IcsPlayingWhite || gameMode == MachinePlaysBlack) mine = !mine;\
+\
+		    if(ToLower(c) == 'x') {\
+			SayPieces(mine ? WhitePlay : BlackPlay);\
+			suppressOneKey = 1;\
+			break;\
+		    } else\
+		    if(CharToPiece(c) != EmptySquare) {\
+			SayPieces(CharToPiece(mine ? ToUpper(c) : ToLower(c)));\
+			suppressOneKey = 1;\
+			break;\
+		    }\
+		}\
+\
 		switch (wParam) {\
 		case VK_LEFT:\
 		case VK_RIGHT:\
