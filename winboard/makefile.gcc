@@ -12,6 +12,7 @@ OBJS=backend.o book.o gamelist.o lists.o moves.o pgntags.o uci.o zippy.o\
 
 # make compiling less spammy
 compile = @echo "$1"; $(CC) $(CFLAGS) $1
+compile = $(CC) $(CFLAGS) $1
 
 
 # Debugging?
@@ -37,6 +38,9 @@ FLEX = "flex.exe" # we need version 2.5.4 or later, cygwin's is 2.5.35
 #      "c:/mingw/mingw32/bin/flex.exe"
 HC="C:/Program Files/Help Workshop/hcrtf" -xn
 DEFS = -D_WIN32_IE=0x0300 -DWIN32
+ifeq ($(JAWS),1)
+  DEFS += -DJAWS
+endif
 WARN = -Wall -Wno-char-subscripts -Wno-parentheses
 ARCH =
 ifeq ($(USE_DEBUG),0)
@@ -48,14 +52,6 @@ endif
 CF = -c $(WARN) -pipe $(CFDEBUG) $(DEFS) -I. -I..
 CFLAGS = $(CF) $(ARCH) $(OPTS) $(CFCYG)
 LFLAGS = $(LFCYG) $(CFDEBUG) -fpic -s -mwindows -lwsock32 -lwinmm -lcomctl32
-
-# set up for JAWS
-RESDEPS = $(PROJ).rc $(PROJ).h resource.h
-ifeq ($(JAWS),1)
-  RESDEPS = jaws.rc resource.h jaws.h
-  DEFS += -DJAWS
-endif
-
 
 all: $(PROJ).exe
 
@@ -75,7 +71,8 @@ $(PROJ).hlp : $(PROJ).rtf
 
 
 # Update the resource if necessary
-wbres.o: $(RESDEPS)
+#wbres.o: $(RESDEPS)
+wbres.o: $(PROJ).rc $(PROJ).h resource.h
 	windres $(DEFS) --use-temp-file --include-dir .. $< -O coff -o $@
 
 

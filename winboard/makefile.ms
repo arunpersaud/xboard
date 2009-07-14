@@ -16,12 +16,19 @@ OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj z
 USE_DEBUG=0
 
 
+# JAWS support?
+JAWS=0
+
+
 CC = @cl
 RC = @rc
 LINK = link
 HC="c:\program files\help workshop\hcrtf.exe" -xn
 FLEX = "c:/mingw/mingw32/bin/flex.exe"
-DEFS = -D_WIN32_IE=0x300 -DWIN32 -DWINVER=0x400 -D_WIN32_WINDOWS=0x500
+DEFS = -D_WIN32_IE=0x300 -DWIN32 -DWINVER=0x0500 -D_WIN32_WINDOWS=0x500
+!if $(JAWS) == 1
+DEFS = -DJAWS $(DEFS)
+!endif
 #WARN = -W3
 ARCH =
 
