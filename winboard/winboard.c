@@ -309,7 +309,7 @@ MyButtonDesc buttonDesc[N_BUTTONS] =
 };
 
 int tinyLayout = 0, smallLayout = 0;
-#define MENU_BAR_ITEMS 6
+#define MENU_BAR_ITEMS 7
 char *menuBarText[2][MENU_BAR_ITEMS+1] = {
   { "&File", "&Mode", "&Action", "&Step", "&Options", "&Help", NULL },
   { "&F", "&M", "&A", "&S", "&O", "&H", NULL },

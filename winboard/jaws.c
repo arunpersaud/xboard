@@ -234,6 +234,7 @@ AdaptMenu()
 	}
 	InsertMenu(menuMain, 5, MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING, 
 		(UINT_PTR) menuJAWS, "&JAWS");
+	oldMenuItemState[6] = oldMenuItemState[5];
 	DrawMenuBar(hwndMain);
 }
 
