@@ -147,8 +147,8 @@ char* SquareToNum(y)
 
 
 // from winboard.c: all new routines
-
-#include "jfwapi.h"
+#define JFWAPI __declspec(dllimport)
+JFWAPI BOOL WINAPI JFWSayString (LPCTSTR lpszStrinToSpeak, BOOL bInterrupt);
 
 typedef JFWAPI BOOL (WINAPI *PSAYSTRING)(LPCTSTR lpszStrinToSpeak, BOOL bInterrupt);
 
