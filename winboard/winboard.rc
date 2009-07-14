@@ -33,12 +33,12 @@ MANIFEST_RESOURCE_ID    24      MOVEABLE PURE   "res\\winboard.exe.manifest"
 // Dialog
 //
 
-ABOUTBOX DIALOG DISCARDABLE  22, 17, 180, 88
+ABOUTBOX DIALOG DISCARDABLE  22, 17, 180, 108
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About WinBoard"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,126,69,50,14,WS_GROUP
+    DEFPUSHBUTTON   "OK",IDOK,126,89,50,14,WS_GROUP
     ICON            "icon_white",IDC_STATIC,3,6,20,20
     LTEXT           "Chessboard for Windows",400,25,15,121,8
     LTEXT           "Copyright 1991 Digital Equipment Corporation",201,6,34,
@@ -49,32 +49,40 @@ BEGIN
     LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,5,160,8
     LTEXT           "Enhancements Copyright 2005\r\nAlessandro Scotti",
                     IDC_STATIC,6,65,120,24
+    LTEXT           "",
+                    OPT_MESS,6,85,120,16
 END
 
-DLG_TimeControl DIALOG DISCARDABLE  6, 18, 174, 134
+DLG_TimeControl DIALOG DISCARDABLE  6, 18, 263, 172
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Time Control"
 FONT 8, "MS Sans Serif"
 BEGIN
+    LTEXT           "Use arrow keys to specify which clock setting type, then press tab to alter values.",
+                    IDC_STATIC,9,9,231,20
     CONTROL         "Conventional chess clock",OPT_TCUseMoves,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,6,6,113,10
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,7,36,113,10
     CONTROL         "Incremental clock",OPT_TCUseInc,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,6,42,107,10
-    EDITTEXT        OPT_TCMoves,14,20,26,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "moves in",OPT_TCtext1,44,22,30,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCTime,78,20,26,12,ES_AUTOHSCROLL
-    LTEXT           "minutes",OPT_TCtext2,108,22,26,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCTime2,14,56,26,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "minutes +",405,44,58,34,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCInc,78,56,26,12,ES_AUTOHSCROLL
-    LTEXT           "seconds per move",408,108,58,62,8,NOT WS_GROUP
-    LTEXT           "Time-Odds Factors:",IDC_STATIC,6,78,150,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCOdds1,47,92,26,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "Engine #1:",IDC_STATIC,6,94,41,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCOdds2,124,92,26,12,ES_AUTOHSCROLL
-    LTEXT           "Engine #2:",IDC_STATIC,83,94,41,8,NOT WS_GROUP
-    PUSHBUTTON      "OK",IDOK,64,116,50,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,120,116,50,14
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,7,73,107,10
+    LTEXT           "Number of moves:",OPT_TCtext1,15,52,58,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCMoves,77,52,22,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Within number of minutes:",OPT_TCtext2,113,54,81,8,NOT 
+                    WS_GROUP
+    EDITTEXT        OPT_TCTime,197,52,32,12,ES_AUTOHSCROLL
+    LTEXT           "Initial number of minutes:",405,15,89,106,8,NOT 
+                    WS_GROUP
+    EDITTEXT        OPT_TCTime2,127,87,32,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Plus number of seconds per move:",406,15,105,109,8,NOT 
+                    WS_GROUP
+    EDITTEXT        OPT_TCInc,127,103,32,12,ES_AUTOHSCROLL
+    LTEXT           "",408,185,108,67,8,NOT WS_GROUP
+    LTEXT           "Time-Odds Factors:",IDC_STATIC,6,118,150,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds1,47,131,26,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Engine #1:",IDC_STATIC,6,133,41,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds2,124,131,26,12,ES_AUTOHSCROLL
+    LTEXT           "Engine #2:",IDC_STATIC,83,133,41,8,NOT WS_GROUP
+    PUSHBUTTON      "OK",IDOK,29,150,40,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,85,150,40,14
 END
 
 DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 136, 55
@@ -253,7 +261,7 @@ END
 WBCONSOLE DIALOG DISCARDABLE  0, 0, 335, 133
 STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | 
     WS_THICKFRAME
-CAPTION "ICS Interaction"
+CAPTION "I C S"
 CLASS "WBConsole"
 FONT 8, "Courier New"
 BEGIN
@@ -289,7 +297,7 @@ END
 
 DLG_Colorize DIALOGEX 0, 0, 174, 61
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "ICS Interaction Colors"
+CAPTION "I C S Interaction Colors"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,64,42,50,14,WS_GROUP
@@ -320,31 +328,35 @@ BEGIN
     ICON            32514,IDC_STATIC,4,4,20,20
 END
 
-DLG_Startup DIALOG DISCARDABLE  0, 0, 276, 127
+DLG_Startup DIALOG DISCARDABLE  0, 0, 276, 159
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "WinBoard Startup"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Play against a chess engine or match two engines",
+    GROUPBOX        "What would you like to do?",IDC_STATIC,4,4,211,56
+    CONTROL         "&Play against a chess engine or match two engines",
                     OPT_ChessEngine,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
                     WS_TABSTOP,8,17,193,10
-    COMBOBOX        OPT_ChessEngineName,15,29,194,129,CBS_DROPDOWN | 
+    CONTROL         "&Use an Internet Chess Server",OPT_ChessServer,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,30,193,10
+    CONTROL         "Just &view or edit game files",OPT_View,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,43,193,10
+    LTEXT           "Specify Chess &Engines:",IDC_SPECIFY_ENG_STATIC,11,63,
+                    102,10
+    COMBOBOX        OPT_ChessEngineName,17,74,194,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        OPT_SecondChessEngineName,15,45,194,129,CBS_DROPDOWN | 
+    COMBOBOX        OPT_SecondChessEngineName,17,92,194,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Use an Internet Chess Server",OPT_ChessServer,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,62,195,10
-    COMBOBOX        OPT_ChessServerName,16,73,194,129,CBS_DROPDOWN | 
+    LTEXT           "Specify Chess &Server:",IDC_SPECIFY_SERVER_STATIC,11,
+                    108,102,10
+    COMBOBOX        OPT_ChessServerName,17,122,194,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Just view or edit game files",OPT_View,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,91,193,10
-    CONTROL         "Additional options",OPT_AnyAdditional,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,8,111,71,10
-    EDITTEXT        OPT_AdditionalOptions,85,110,187,13,ES_AUTOHSCROLL
+    CONTROL         "&Additional options",OPT_AnyAdditional,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,11,142,71,10
+    EDITTEXT        OPT_AdditionalOptions,85,142,187,13,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,222,4,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,222,21,50,14
-    PUSHBUTTON      "Help",IDM_HELPCONTENTS,222,38,50,14
-    GROUPBOX        "What would you like to do?",IDC_STATIC,4,4,211,101
+    PUSHBUTTON      "&Help",IDM_HELPCONTENTS,222,38,50,14
 END
 
 DLG_IndexNumber DIALOG DISCARDABLE  0, 0, 236, 18
@@ -401,7 +413,7 @@ BEGIN
     PUSHBUTTON      "Defaults",OPT_DefaultSounds,6,86,50,14
 END
 
-DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 220, 183
+DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 250, 183
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General Options"
 FONT 8, "MS Sans Serif"
@@ -409,49 +421,49 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,110,164,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,166,164,50,14
     CONTROL         "Always on &Top",OPT_AlwaysOnTop,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,6,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,6,126,10
     CONTROL         "Highlight Last &Move",OPT_HighlightLastMove,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,6,79,10
-    CONTROL         "Always &Queen",OPT_AlwaysQueen,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,4,20,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,6,126,10
+    CONTROL         "Always &Queen            Ctrl+Shift+Q",OPT_AlwaysQueen,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,4,20,126,10
     CONTROL         "Periodic &Updates",OPT_PeriodicUpdates,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,20,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,20,126,10
     CONTROL         "Animate &Dragging",OPT_AnimateDragging,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,34,79,10
-    CONTROL         "Ponder &Next Move",OPT_PonderNextMove,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,34,79,10
-    CONTROL         "&Animate Moving",OPT_AnimateMoving,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,48,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,34,126,10
+    CONTROL         "Ponder &Next Move  Ctrl+Shift+P",OPT_PonderNextMove,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,34,126,10
+    CONTROL         "&Animate Moving         Ctrl+Shift+A",OPT_AnimateMoving,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,48,126,10
     CONTROL         "&Popup Exit Message",OPT_PopupExitMessage,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,48,79,10
-    CONTROL         "Auto &Flag",OPT_AutoFlag,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,4,62,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,48,126,10
+    CONTROL         "Auto &Flag                   Ctrl+Shift+F",OPT_AutoFlag,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,4,62,126,10
     CONTROL         "Popup Move &Errors",OPT_PopupMoveErrors,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,62,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,62,126,10
     CONTROL         "Auto Flip &View",OPT_AutoFlipView,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,76,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,76,126,10
     CONTROL         "Show Butt&on Bar",OPT_ShowButtonBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,76,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,76,126,10
     CONTROL         "Auto &Raise Board",OPT_AutoRaiseBoard,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,4,90,71,10
     CONTROL         "Show &Coordinates",OPT_ShowCoordinates,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,90,79,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,90,126,10
     CONTROL         "&Blindfold",OPT_Blindfold,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,4,104,79,10
-    CONTROL         "&Show Thinking",OPT_ShowThinking,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,104,79,10
-    CONTROL         "&Highlight Dragging",OPT_HighlightDragging,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,118,79,10
-    CONTROL         "Test &Legality",OPT_TestLegality,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,118,79,10
-    CONTROL         "Extended PGN Info",OPT_SaveExtPGN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,132,79,10
-    CONTROL         "Hide Thinking from Human",OPT_HideThinkFromHuman,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,116,132,100,10
-    CONTROL         "Extra Info in Move History",OPT_ExtraInfoInMoveHistory,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,146,97,10
-    CONTROL         "Highlight Move with Arrow",OPT_HighlightMoveArrow,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,116,145,100,9
+                    WS_TABSTOP,4,104,126,10
+    CONTROL         "&Send Engine Think",OPT_ShowThinking,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,104,126,10
+    CONTROL         "Highlight Dra&gging",OPT_HighlightDragging,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,118,126,10
+    CONTROL         "Test &Legality            Ctrl+Shift+L",OPT_TestLegality,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,118,126,10
+    CONTROL         "E&xtended PGN Info    Ctrl+Shift+X",OPT_SaveExtPGN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,132,126,10
+    CONTROL         "&Hide Thinking          Ctrl+Shift+H",OPT_HideThinkFromHuman,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,132,126,10
+    CONTROL         "&Info in Move History   Ctrl+Shift+I",OPT_ExtraInfoInMoveHistory,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,146,126,10
+    CONTROL         "Highlight with Arro&w",OPT_HighlightMoveArrow,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,145,126,10
 END
 
 DLG_IcsOptions DIALOGEX 0, 0, 302, 255
@@ -645,7 +657,7 @@ BEGIN
                     50,10
     CONTROL         "&bughouse",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,70,24,50,
                     10
-    CONTROL         "&Twilight",OPT_VariantTwilight,"Button",BS_AUTORADIOBUTTON,70,34,50,
+    CONTROL         "&Twilight",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,70,34,50,
                     10
     CONTROL         "&shogi",OPT_VariantShogi,"Button",BS_AUTORADIOBUTTON,70,
                     44,50,10
@@ -717,7 +729,7 @@ BEGIN
     LTEXT           "Coordinates",OPT_CoordFont,13,64,45,10,NOT WS_GROUP
     LTEXT           "Tags",OPT_EditTagsFont,13,102,45,10,NOT WS_GROUP
     LTEXT           "Comments",OPT_CommentsFont,13,126,45,10,NOT WS_GROUP
-    LTEXT           "ICS Interaction",OPT_MessageFont5,13,150,50,10,NOT 
+    LTEXT           "I C S Interaction",OPT_MessageFont5,13,150,50,10,NOT 
                     WS_GROUP
     CONTROL         "",OPT_SampleClockFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,67,11,140,20
@@ -773,7 +785,7 @@ END
 DLG_EvalGraph DIALOGEX 0, 0, 216, 75
 STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_TOOLWINDOW
-CAPTION "Evaluation Diagram"
+CAPTION "Evaluation Graph"
 FONT 8, "MS Sans Serif"
 BEGIN
 END
@@ -1037,7 +1049,7 @@ BEGIN
     BEGIN
         MENUITEM "New &Game\tCtrl-N",           IDM_NewGame
         MENUITEM "New Shuffle Game...",         IDM_NewGameFRC
-        MENUITEM "New Variant...",              IDM_NewVariant
+        MENUITEM "New Variant...\tAlt+Shift+V",  IDM_NewVariant
         MENUITEM SEPARATOR
         MENUITEM "&Load Game...\tCtrl-O",       IDM_LoadGame
         MENUITEM "Load &Next Game\tAlt+PgDn",   IDM_LoadNextGame
@@ -1045,43 +1057,43 @@ BEGIN
         MENUITEM "&Reload Same Game",           IDM_ReloadGame
         MENUITEM "&Save Game...\tCtrl-S",       IDM_SaveGame
         MENUITEM SEPARATOR
-        MENUITEM "&Copy Game To Clipboard\tAlt+C", IDM_CopyGame
-        MENUITEM "Paste Game &From Clipboard\tAlt+V", IDM_PasteGame
+        MENUITEM "&Copy Game To Clipboard\tCtrl+C", IDM_CopyGame
+        MENUITEM "Paste Game &From Clipboard\tCtrl+V", IDM_PasteGame
         MENUITEM SEPARATOR
         MENUITEM "Copy Game List to Clipboard", IDM_CopyGameListToClipboard
         MENUITEM SEPARATOR
-        MENUITEM "L&oad Position...",           IDM_LoadPosition
+        MENUITEM "L&oad Position...\tCtrl+Shift+O", IDM_LoadPosition
         MENUITEM "Load N&ext Position\tAlt+Shift+PgDn", IDM_LoadNextPosition
         MENUITEM "Load Pre&vious Position\tAlt+Shift+PgUp", 
                                                 IDM_LoadPrevPosition
         MENUITEM "Reload Sa&me Position",       IDM_ReloadPosition
-        MENUITEM "S&ave Position...",           IDM_SavePosition
+        MENUITEM "S&ave Position...\tCtrl+Shift+S",IDM_SavePosition
         MENUITEM "Save &Diagram...",            IDM_SaveDiagram
         MENUITEM SEPARATOR
-        MENUITEM "Cop&y Position To Clipboard\tAlt+Shift+C", 
+        MENUITEM "Cop&y Position To Clipboard\tCtrl+Shift+C", 
                                                 IDM_CopyPosition
-        MENUITEM "Pas&te Position From Clipboard\tAlt+Shift+V", 
-                                                IDM_PastePosition
+        MENUITEM "Pas&te Position From Clipboard\tCtrl+Shift+V", 
+                                                IDM_PasteAny
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_Exit
     END
     POPUP "&Mode"
     BEGIN
-        MENUITEM "Machine &White",              IDM_MachineWhite
-        MENUITEM "Machine &Black",              IDM_MachineBlack
-        MENUITEM "Two &Machines",               IDM_TwoMachines
+        MENUITEM "Machine &White\tCtrl+W",      IDM_MachineWhite
+        MENUITEM "Machine &Black\tCtrl+B",      IDM_MachineBlack
+        MENUITEM "Two &Machines\tCtrl+T",       IDM_TwoMachines
         MENUITEM "Machine Bot&h",               IDM_MachineBoth
-        MENUITEM "&Analysis Mode",              IDM_AnalysisMode
-        MENUITEM "Analyze &File",               IDM_AnalyzeFile
+        MENUITEM "&Analysis Mode\tCtrl+A",      IDM_AnalysisMode
+        MENUITEM "Analyze &File\tCtrl+F",       IDM_AnalyzeFile
         MENUITEM "&ICS Client",                 IDM_IcsClient
-        MENUITEM "Edit &Game",                  IDM_EditGame
-        MENUITEM "&Edit Position",              IDM_EditPosition
+        MENUITEM "Edit &Game\tCtrl+E",          IDM_EditGame
+        MENUITEM "&Edit Position\tShift+Ctrl+E",IDM_EditPosition
         MENUITEM "Trai&ning",                   IDM_Training, GRAYED
         MENUITEM SEPARATOR
-        MENUITEM "Show Engine &Output",         IDM_ShowEngineOutput
-        MENUITEM "Show Evaluation Graph",       IDM_ShowEvalGraph
-        MENUITEM "Show Game &List",             IDM_ShowGameList
-        MENUITEM "Show Move History",           IDM_ShowMoveHistory
+        MENUITEM "Show Engine &Output\tAlt+Shift+O",  IDM_ShowEngineOutput
+        MENUITEM "Show Evaluation Graph\tAlt+Shift+E",IDM_ShowEvalGraph
+        MENUITEM "Show Game &List\tAlt+Shift+G",      IDM_ShowGameList
+        MENUITEM "Show Move History\tAlt+Shift+H",    IDM_ShowMoveHistory
         MENUITEM SEPARATOR
         MENUITEM "Edit &Tags...",               IDM_EditTags
         MENUITEM "Edit &Comment...",            IDM_EditComment
@@ -1103,23 +1115,23 @@ BEGIN
         MENUITEM "Stop &Observing\tF10",        IDM_StopObserving
         MENUITEM "Stop E&xamining\tF11",        IDM_StopExamining
         MENUITEM SEPARATOR
-        MENUITEM "Adjudicate to White",         IDM_UserAdjudication_White
-        MENUITEM "Adjudicate to Black",         IDM_UserAdjudication_Black
-        MENUITEM "Adjudicate Draw",             IDM_UserAdjudication_Draw
+        MENUITEM "Adjudicate to &White",        IDM_UserAdjudication_White
+        MENUITEM "Adjudicate to &Black",        IDM_UserAdjudication_Black
+        MENUITEM "Adjudicate &Draw",            IDM_UserAdjudication_Draw
     END
     POPUP "&Step"
     BEGIN
-        MENUITEM "T&ype In Move...",            IDM_TypeInMove
+        MENUITEM "T&ype In Move...\tAlt+I",     IDM_TypeInMove
         MENUITEM SEPARATOR
         MENUITEM "&Backward\tAlt+Left",         IDM_Backward
         MENUITEM "&Forward\tAlt+Right",         IDM_Forward
-        MENUITEM "Back to &Start\tAlt+Up",      IDM_ToStart
-        MENUITEM "Forward to &End\tAlt+Down",   IDM_ToEnd
-        MENUITEM "Re&vert\tAlt+Home",           IDM_Revert
-        MENUITEM "&Truncate Game\tAlt+End",     IDM_TruncateGame
+        MENUITEM "Back to &Start\tAlt+Home",    IDM_ToStart
+        MENUITEM "Forward to &End\tAlt+End",    IDM_ToEnd
+        MENUITEM "Re&vert",                     IDM_Revert
+        MENUITEM "&Truncate Game",              IDM_TruncateGame
         MENUITEM SEPARATOR
-        MENUITEM "&Move Now\tAlt+Ins",          IDM_MoveNow
-        MENUITEM "&Retract Move\tAlt+Del",      IDM_RetractMove
+        MENUITEM "&Move Now\tCtrl+M",           IDM_MoveNow
+        MENUITEM "&Retract Move\tCtrl+X",       IDM_RetractMove
     END
     POPUP "&Options"
     BEGIN
@@ -1128,17 +1140,17 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions
-        MENUITEM "Adjudications...",            IDM_EnginePlayOptions
-        MENUITEM "Engine Settings...",          IDM_OptionsUCI
+        MENUITEM "Adjudications...\tAlt+Shift+J",IDM_EnginePlayOptions
+        MENUITEM "Engine Settings...\tAlt+Shift+U",IDM_OptionsUCI
         MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
         MENUITEM "&Fonts...",                   IDM_Fonts
         MENUITEM "Soun&ds...",                  IDM_Sounds
-        MENUITEM "Game List...",                IDM_GameListOptions
+        MENUITEM "Game List...\tAlt+Shift+G",   IDM_GameListOptions
         MENUITEM SEPARATOR
         MENUITEM "Comm&unications...",          IDM_CommPort
-        MENUITEM "&Load Game...",               IDM_LoadOptions
-        MENUITEM "&Save Game...",               IDM_SaveOptions
-        MENUITEM "&Time Control...",            IDM_TimeControl
+        MENUITEM "&Load Game...\tAlt+Shift+L",  IDM_LoadOptions
+        MENUITEM "&Save Game...\tAlt+Shift+S",  IDM_SaveOptions
+        MENUITEM "&Time Control...\tAlt+Shift+T",IDM_TimeControl
         MENUITEM SEPARATOR
         MENUITEM "Save Settings &Now",          IDM_SaveSettings
         MENUITEM "Save Settings on E&xit",      IDM_SaveSettingsOnExit
@@ -1316,20 +1328,43 @@ WINBOARD ACCELERATORS MOVEABLE PURE
 BEGIN
     "1",            IDM_DirectCommand1,     VIRTKEY, ALT, NOINVERT
     "2",            IDM_DirectCommand2,     VIRTKEY, ALT, NOINVERT
-    "B",            IDM_Book,               VIRTKEY, ALT, NOINVERT
-    "C",            IDM_CopyGame,           VIRTKEY, ALT, NOINVERT
-    "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, ALT, NOINVERT
     "I",            IDM_TypeInMove,         VIRTKEY, ALT, NOINVERT
     "N",            IDM_NewGame,            VIRTKEY, CONTROL, NOINVERT
     "O",            IDM_LoadGame,           VIRTKEY, CONTROL, NOINVERT
     "S",            IDM_SaveGame,           VIRTKEY, CONTROL, NOINVERT
-    "V",            IDM_PasteGame,          VIRTKEY, ALT, NOINVERT
-    "V",            IDM_PasteAny,           VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
-    "V",            IDM_PastePosition,      VIRTKEY, SHIFT, ALT, NOINVERT
-    VK_DELETE,      IDM_RetractMove,        VIRTKEY, ALT, NOINVERT
+    "O",            IDM_LoadPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "S",            IDM_SavePosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "C",            IDM_CopyPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "V",            IDM_PasteAny,           VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "O",            IDM_ShowEngineOutput,   VIRTKEY, ALT, SHIFT, NOINVERT
+    "H",            IDM_ShowMoveHistory,    VIRTKEY, ALT, SHIFT, NOINVERT
+    "E",            IDM_ShowEvalGraph,      VIRTKEY, ALT, SHIFT, NOINVERT
+    "G",            IDM_ShowGameList,       VIRTKEY, ALT, SHIFT, NOINVERT
+    "B",            IDM_BoardOptions,       VIRTKEY, ALT, SHIFT, NOINVERT
+    "T",            IDM_TimeControl,        VIRTKEY, ALT, SHIFT, NOINVERT
+    "L",            IDM_LoadOptions,        VIRTKEY, ALT, SHIFT, NOINVERT
+    "S",            IDM_SaveOptions,        VIRTKEY, ALT, SHIFT, NOINVERT
+    "J",            IDM_EnginePlayOptions,  VIRTKEY, ALT, SHIFT, NOINVERT
+    "U",            IDM_OptionsUCI,         VIRTKEY, ALT, SHIFT, NOINVERT
+    "V",            IDM_NewVariant,         VIRTKEY, ALT, SHIFT, NOINVERT
+    "P",            OPT_PonderNextMove,     VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "X",            OPT_SaveExtPGN,         VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "L",            OPT_TestLegality,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "A",            OPT_AnimateMoving,      VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "Q",            OPT_AlwaysQueen,        VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "F",            OPT_AutoFlag,           VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "H",            OPT_HideThinkFromHuman, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "I",            OPT_ExtraInfoInMoveHistory, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "W",            IDM_MachineWhite,       VIRTKEY, CONTROL, NOINVERT
+    "B",            IDM_MachineBlack,       VIRTKEY, CONTROL, NOINVERT
+    "T",            IDM_TwoMachines,        VIRTKEY, CONTROL, NOINVERT
+    "E",            IDM_EditGame,           VIRTKEY, CONTROL, NOINVERT
+    "E",            IDM_EditPosition,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "F",            IDM_AnalyzeFile,        VIRTKEY, CONTROL, NOINVERT
+    "M",            IDM_MoveNow,            VIRTKEY, CONTROL, NOINVERT
+    "X",            IDM_RetractMove,        VIRTKEY, CONTROL, NOINVERT
     VK_DOWN,        IDM_ToEnd,              VIRTKEY, ALT, NOINVERT
-    VK_END,         IDM_TruncateGame,       VIRTKEY, ALT, NOINVERT
+    VK_END,         IDM_ToEnd,              VIRTKEY, ALT, NOINVERT
     VK_F1,          IDM_HELPCONTENTS,       VIRTKEY, NOINVERT
     VK_F10,         IDM_StopObserving,      VIRTKEY, NOINVERT
     VK_F11,         IDM_StopExamining,      VIRTKEY, NOINVERT
@@ -1344,33 +1379,28 @@ BEGIN
     VK_F7,          IDM_Adjourn,            VIRTKEY, NOINVERT
     VK_F8,          IDM_Abort,              VIRTKEY, NOINVERT
     VK_F9,          IDM_Resign,             VIRTKEY, NOINVERT
-    VK_HOME,        IDM_Revert,             VIRTKEY, ALT, NOINVERT
+    VK_HOME,        IDM_ToStart,            VIRTKEY, ALT, NOINVERT
     VK_INSERT,      IDM_MoveNow,            VIRTKEY, ALT, NOINVERT
-    VK_LEFT,        IDM_Backward,           VIRTKEY, ALT, NOINVERT
     VK_NEXT,        IDM_LoadNextGame,       VIRTKEY, ALT, NOINVERT
     VK_NEXT,        IDM_LoadNextPosition,   VIRTKEY, SHIFT, ALT, NOINVERT
     VK_PAUSE,       IDM_Pause,              VIRTKEY, NOINVERT
     VK_PAUSE,       IDM_Pause,              VIRTKEY, ALT, NOINVERT
     VK_PRIOR,       IDM_LoadPrevGame,       VIRTKEY, ALT, NOINVERT
     VK_PRIOR,       IDM_LoadPrevPosition,   VIRTKEY, SHIFT, ALT, NOINVERT
+    VK_LEFT,        IDM_Backward,           VIRTKEY, ALT, NOINVERT
     VK_RIGHT,       IDM_Forward,            VIRTKEY, ALT, NOINVERT
-    VK_UP,          IDM_ToStart,            VIRTKEY, ALT, NOINVERT
 END
 
 NO_ALT ACCELERATORS MOVEABLE PURE 
 BEGIN
     VK_DELETE,      IDM_RetractMove,        VIRTKEY, NOINVERT
-    VK_DOWN,        IDM_ToEnd,              VIRTKEY, NOINVERT
     VK_END,         IDM_TruncateGame,       VIRTKEY, NOINVERT
     VK_HOME,        IDM_Revert,             VIRTKEY, NOINVERT
     VK_INSERT,      IDM_MoveNow,            VIRTKEY, NOINVERT
-    VK_LEFT,        IDM_Backward,           VIRTKEY, NOINVERT
     VK_NEXT,        IDM_LoadNextGame,       VIRTKEY, NOINVERT
     VK_NEXT,        IDM_LoadNextPosition,   VIRTKEY, SHIFT, NOINVERT
     VK_PRIOR,       IDM_LoadPrevGame,       VIRTKEY, NOINVERT
     VK_PRIOR,       IDM_LoadPrevPosition,   VIRTKEY, SHIFT, NOINVERT
-    VK_RIGHT,       IDM_Forward,            VIRTKEY, NOINVERT
-    VK_UP,          IDM_ToStart,            VIRTKEY, NOINVERT
 END
 
 NO_ICS ACCELERATORS DISCARDABLE 

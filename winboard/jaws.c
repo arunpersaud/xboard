@@ -60,6 +60,25 @@
 // BOARD_LEFT as 0, BOARD_RGHT and BOARD_HEIGHT as 8, and set holdingssizes to 0.
 // You will need to build with jaws.rc in stead of winboard.rc.
 
+// from resource.h
+
+#define IDM_PossibleAttackMove          1800
+#define IDM_PossibleAttacked            1801
+#define IDM_SayMachineMove              1802
+#define IDM_ReadRow                     1803
+#define IDM_ReadColumn                  1804
+#define IDM_SayCurrentPos               1805
+#define IDM_SayAllBoard                 1806
+#define IDM_SayUpperDiagnols            1807
+#define IDM_SayLowerDiagnols            1808
+#define IDM_SayClockTime                1810
+#define IDM_SayWhosTurn                 1811
+#define IDM_SayKnightMoves              1812
+#define ID_SHITTY_HI                    1813
+#define IDM_SayWhitePieces              1816
+#define IDM_SayBlackPieces              1817
+
+
 // from common.h, but 'extern' added to it, so the actual declaraton can remain in backend.c
 
 extern long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement;
@@ -130,7 +149,6 @@ char* SquareToNum(y)
 // from winboard.c: all new routines
 
 #include "jfwapi.h"
-#include "jaws.h"
 
 typedef JFWAPI BOOL (WINAPI *PSAYSTRING)(LPCTSTR lpszStrinToSpeak, BOOL bInterrupt);
 
@@ -154,6 +172,70 @@ static int oldFromX, oldFromY;
 static int timeflag;
 static int suppressClocks = 0;
 static int suppressOneKey = 0;
+static HANDLE hAccelJAWS;
+
+typedef struct { char *name; int code; } MenuItemDesc;
+
+MenuItemDesc menuItemJAWS[] = {
+{"Say Clock &Time\tAlt+T",      IDM_SayClockTime },
+{"-", 0 },
+{"Say Last &Move\tAlt+M",       IDM_SayMachineMove },
+{"Say W&ho's Turn\tAlt+X",      IDM_SayWhosTurn },
+{"-", 0 },
+{"Say Complete &Position\tAlt+P",IDM_SayAllBoard },
+{"Say &White Pieces\tAlt+W",    IDM_SayWhitePieces },
+{"Say &Black Pieces\tAlt+B",    IDM_SayBlackPieces },
+{"Say Board &Rank\tAlt+R",      IDM_ReadRow },
+{"Say Board &File\tAlt+F",      IDM_ReadColumn },
+{"-", 0 },
+{"Say &Upper Diagnols\tAlt+U",  IDM_SayUpperDiagnols },
+{"Say &Lower Diagnols\tAlt+L",  IDM_SayLowerDiagnols },
+{"Say K&night Moves\tAlt+N",    IDM_SayKnightMoves },
+{"Say Current &Square\tAlt+S",  IDM_SayCurrentPos },
+{"Say &Attacks\tAlt+A",         IDM_PossibleAttackMove },
+{"Say Attacke&d\tAlt+D",        IDM_PossibleAttacked },
+{NULL, 0}
+};
+
+ACCEL acceleratorsJAWS[] = {
+{FVIRTKEY|FALT, 'T', IDM_SayClockTime },
+{FVIRTKEY|FALT, 'M', IDM_SayMachineMove },
+{FVIRTKEY|FALT, 'X', IDM_SayWhosTurn },
+{FVIRTKEY|FALT, 'P', IDM_SayAllBoard },
+{FVIRTKEY|FALT, 'W', IDM_SayWhitePieces },
+{FVIRTKEY|FALT, 'B', IDM_SayBlackPieces },
+{FVIRTKEY|FALT, 'R', IDM_ReadRow },
+{FVIRTKEY|FALT, 'F', IDM_ReadColumn },
+{FVIRTKEY|FALT, 'U', IDM_SayUpperDiagnols },
+{FVIRTKEY|FALT, 'L', IDM_SayLowerDiagnols },
+{FVIRTKEY|FALT, 'N', IDM_SayKnightMoves },
+{FVIRTKEY|FALT, 'S', IDM_SayCurrentPos },
+{FVIRTKEY|FALT, 'A', IDM_PossibleAttackMove },
+{FVIRTKEY|FALT, 'D', IDM_PossibleAttacked }
+};
+
+void
+AdaptMenu()
+{
+	HMENU menuMain, menuJAWS;
+	MENUBARINFO helpMenuInfo;
+	int e, i;
+
+	helpMenuInfo.cbSize = sizeof(helpMenuInfo);
+	menuMain = GetMenu(hwndMain);
+	if(appData.debugMode) fprintf(debugFP, "hwndMain: %8x %8x\n", hwndMain, menuMain);
+	menuJAWS = CreatePopupMenu();
+	
+	for(i=0; menuItemJAWS[i].name; i++) {
+	    if(menuItemJAWS[i].name[0] == '-') 
+		 AppendMenu(menuJAWS, MF_SEPARATOR, (UINT_PTR) 0, NULL);
+	    else AppendMenu(menuJAWS, MF_ENABLED|MF_STRING, 
+			(UINT_PTR) menuItemJAWS[i].code, (LPCTSTR) menuItemJAWS[i].name);
+	}
+	InsertMenu(menuMain, 5, MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING, 
+		(UINT_PTR) menuJAWS, "&JAWS");
+	DrawMenuBar(hwndMain);
+}
 
 BOOL
 InitJAWS()
@@ -171,19 +253,16 @@ InitJAWS()
 	}
 
 	{
-		// [HGM] kludge to reduce need for modification of winboard.c: mak tinyLayout menu identical
+		// [HGM] kludge to reduce need for modification of winboard.c: make tinyLayout menu identical
 		// to standard layout, so that code for switching between them does not have to be deleted
-		HMENU hmenu = GetMenu(hwndMain);
 		int i;
 
+		AdaptMenu();
 		menuBarText[0][5] = "&JAWS";
 		for(i=0; i<7; i++) menuBarText[1][i] = menuBarText[0][i];
-		for (i=0; menuBarText[tinyLayout][i]; i++) {
-			ModifyMenu(hmenu, i, MF_STRING|MF_BYPOSITION|MF_POPUP, 
-					(UINT)GetSubMenu(hmenu, i), menuBarText[tinyLayout][i]);
-		}
-		DrawMenuBar(hwndMain);
 	}
+
+	hAccelJAWS = CreateAcceleratorTable(acceleratorsJAWS, 14);
 
 	/* initialize cursor position */
 	fromX = fromY = 0;
@@ -720,10 +799,10 @@ SayCurrentPos()
 	SayString(xchar, FALSE);
 	SayString(ynum, FALSE);
 	SayString(piece, FALSE);
-	if((fromX-BOARD_LEFT) ^ fromY)
-		SayString("on a dark square",FALSE);
-	else 
+	if(((fromX-BOARD_LEFT) ^ fromY)&1)
 		SayString("on a light square",FALSE);
+	else 
+		SayString("on a dark square",FALSE);
 
 	PossibleAttacked();
 	return;
@@ -1258,11 +1337,17 @@ NiceTime(int x)
 \
 
 
+#define JAWS_ACCEL \
+	!(!frozen && TranslateAccelerator(hwndMain, hAccelJAWS, &msg)) &&
+
 #define JAWS_INIT if (!InitJAWS()) return (FALSE);
 
 #define JAWS_DELETE(X)
 
 #define JAWS_SILENCE if(suppressClocks) return;
+
+#define JAWS_COPYRIGHT \
+	SetDlgItemText(hDlg, OPT_MESS, "Auditory/Keyboard Enhancements  By:  Ed Rodriguez (sort of)");
 
 #define SAY(S) SayString((S), FALSE)
 
@@ -1270,11 +1355,3 @@ NiceTime(int x)
 
 // After inclusion of this file somewhere early in winboard.c, the remaining part of the patch
 // is scattered over winboard.c for actually calling the routines.
-//
-// * move fromX, fromY declaration to front, before incusion of this file. (Can be permanent change in winboard.c.)
-// * call InitJAWS(), after calling InitIntance(). (Using JAWS_INIT macro)
-// * add keyboard cases in main switch of WndProc, though JAWS_KB_NAVIGATION above, e.g. before WM_CHAR case.
-// * change the WM_CHAR case of same switch from "if(appData.icsActive)" to "if(appData.icsActive JAWS_IF_TAB)"
-// * add new menu cases in WM_COMMAND case of WndProc, e.g. before IDM_Forward. (throug macro defined above)
-// * add SAYMACHINEMOVE(); at the end of DisplayMessage();
-// * add SAY("board"); in WM_CHAR case of ConsoleTextSubclass, just before "SetFocus(buttondesc..."

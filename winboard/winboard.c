@@ -497,6 +497,8 @@ static int fromX = -1, fromY = -1, toX, toY; // [HGM] moved upstream, so JAWS ca
 #define JAWS_MENU_ITEMS
 #define JAWS_SILENCE
 #define JAWS_REPLAY
+#define JAWS_ACCEL
+#define JAWS_COPYRIGHT
 #define JAWS_DELETE(X) X
 #define SAYMACHINEMOVE()
 #define SAY(X)
@@ -622,7 +624,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	  !(editTagsDialog && IsDialogMessage(editTagsDialog, &msg)) &&
 	  !(gameListDialog && IsDialogMessage(gameListDialog, &msg)) &&
 	  !(errorDialog && IsDialogMessage(errorDialog, &msg)) &&
-	  !(!frozen && TranslateAccelerator(hwndMain, hAccelMain, &msg)) &&
+	  !(!frozen && TranslateAccelerator(hwndMain, hAccelMain, &msg)) && JAWS_ACCEL
           !(!hwndConsole && TranslateAccelerator(hwndMain, hAccelNoICS, &msg)) &&
 	  !(!hwndConsole && TranslateAccelerator(hwndMain, hAccelNoAlt, &msg))) {
 	TranslateMessage(&msg);	/* Translates virtual key codes */
@@ -6662,7 +6664,7 @@ BOOLEAN
 MyPlaySound(MySound *ms)
 {
   BOOLEAN ok = FALSE;
-	if(appData.debugMode) fprintf(debugFP, "make sound %s %x %d\n", ms->name, ms, ms->name[0]);
+
   switch (ms->name[0]) {
   case NULLCHAR:
 	if(appData.debugMode) fprintf(debugFP, "silence\n");
@@ -7187,6 +7189,7 @@ About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
     SetDlgItemText(hDlg, ABOUTBOX_Version, programVersion);
+    JAWS_COPYRIGHT
     return (TRUE);
 
   case WM_COMMAND: /* message: received a command */

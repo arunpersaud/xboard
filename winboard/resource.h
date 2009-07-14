@@ -493,6 +493,9 @@
 #define IDM_FlipClock                   1700
 #define OPT_AllWhite                    1701
 #define OPT_UpsideDown                  1702
+#define IDC_SPECIFY_ENG_STATIC          1814
+#define IDC_SPECIFY_SERVER_STATIC       1815
+#define OPT_MESS                        1818
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
