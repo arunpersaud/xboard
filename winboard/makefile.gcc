@@ -12,7 +12,6 @@ OBJS=backend.o book.o gamelist.o lists.o moves.o pgntags.o uci.o zippy.o\
 
 # make compiling less spammy
 compile = @echo "$1"; $(CC) $(CFLAGS) $1
-compile = $(CC) $(CFLAGS) $1
 
 
 # Debugging?
