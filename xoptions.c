@@ -1483,10 +1483,8 @@ void SettingsPopUp(ChessProgramState *cps)
     form =
       XtCreateManagedWidget(layoutName, formWidgetClass, layout,
 			    formArgs, XtNumber(formArgs));
-  
     last = NULL;
     for(i=0; i<cps->nrOptions; i++) {
-	Widget box;
 	switch(cps->option[i].type) {
 	  case Spin:
 	    sprintf(def, "%d", cps->option[i].value);
@@ -1510,16 +1508,18 @@ void SettingsPopUp(ChessProgramState *cps)
 	    edit = last;
 	    cps->option[i].handle = (void*)
 		(last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));   
-	    XtAddEventHandler(box, ButtonPressMask, False, SetFocus, (XtPointer) popup);
+	    XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup);
 	    if(cps->option[i].type == TextBox) break;
+
 	    // add increment and decrement controls for spin
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, edit);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, box);  j++;
+	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
 	    XtSetArg(args[j], XtNheight, 10);  j++;
 	    XtSetArg(args[j], XtNwidth, 20);  j++;
 	    edit = XtCreateManagedWidget("+", commandWidgetClass, form, args, j);
 	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer) i);
+
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, edit);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
