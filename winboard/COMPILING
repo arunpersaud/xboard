@@ -1,0 +1,46 @@
+Compiling with an Integrated Development Envrionment
+
+    Microsoft Visual C++
+    --
+    For MSVC 6.0 IDE, all you need to do is 'File|Open Workspace...' and select
+    'winboard.dsw'.  Then to build, choose 'Build|Batch Build...' and select
+    the targets you want to build.  This method has full support for Debug and
+    Release builds either with or without JAWS support.
+
+    For later versions of Visual C++, open the same workspace and convert when
+    prompted.  Then compile as above.
+
+
+    DevCpp
+    --
+    For DevCpp, you need to 'File|Open Project or File...' and select either
+    'winboard.dev' or 'WB4Jaws.dev'.  After parsing the project, you can 'Execute|
+    Compile' to build.  This IDE has no facility for defines in the resource
+    compiler, so the version information resource will not indicate JAWS support
+    even if it actually has that support.  These projects are not set up for
+    debugging, but you can do so by adjusting the 'Compiler' and 'Parameters'
+    options in the 'Project|Project Options' dialog.
+
+
+
+Compiling from the Command Line
+
+    GCC -- this includes cygwin, mingw, djgpp and others.
+
+        make -f makefile.gcc
+
+        You can modify certain settings in the makefile such as JAWS support,
+        debugging support.  If using cygwin, you can select whether or not to
+        link with cygwin1.dll instead of the msvcrt runtime.
+
+
+    CL -- this includes MSVC and recent Intel compilers.
+
+        nmake -f makefile.ms        Note: NMAKE, not MAKE
+
+        For Visual Studio 2005 and later, set VCVER to 8, otherwise set it to 6.
+        You can select JAWS support or debugging just like the GCC makefile.  For
+        MSVC 6.0 and earlier, you are going to need the latest SDK from Microsoft.
+        After you install it, set the SDK_INC variable appropriately.  It defaults
+        to the standard location, but you still need to uncomment the line.
+

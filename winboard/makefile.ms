@@ -3,13 +3,19 @@
 # For MSVC 8 (aka 2005) set VCVER=8.  Beyond that try 8 first.
 VCVER=6
 
+# If using MSVC 6.0 or earlier, you will need the latest platform SDK supported.
+# Set SDK_INC to the include directory after you install it.
+# See: http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdk-full.htm
+#SDK_INC="C:\Program Files\Microsoft SDK\include"
+
 
 PROJ = winboard
 
 
-OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj zippy.obj\
- parser.obj wclipbrd.obj wedittags.obj wengineo.obj wevalgraph.obj wgamelist.obj\
- whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj wsockerr.obj help.obj
+OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj\
+ zippy.obj parser.obj wclipbrd.obj wedittags.obj wengineo.obj wevalgraph.obj\
+ wgamelist.obj whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj\
+ wsockerr.obj help.obj
 
 
 # Debugging?
@@ -54,6 +60,9 @@ OPTS = -Od -Zi -Fd$(PROJ).pdb $(LIBF)d
 LFDEBUG = -DEBUG -PDB:$(PROJ).pdb -MAP:$(PROJ).map $(CLIB)d.lib
 !endif
 CF = $(CFDEBUG) $(DEFS) $(DEPRECATE) -I. -I..
+!if DEFINED(SDK_INC)
+CF = $(CF) -I$(SDK_INC)
+!endif
 CFLAGS = -c -nologo $(WARN) $(CF) $(ARCH) $(OPTS)
 LFLAGS = -nologo $(LFDEBUG)
 

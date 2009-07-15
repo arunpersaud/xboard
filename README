@@ -29,17 +29,14 @@ You can build WinBoard using the free Cygwin toolchain from
 www.cygnus.com with the following commands.
 
 	cd winboard
-	make -f cygwin.mak
+	make -f makefile.gcc
 
 You can build WinBoard using Microsoft Visual C with the following
 commands, or by opening the project in Visual Studio and clicking the
 build button.
 
 	cd winboard
-	nmake -f msvc.mak
-
-There is also a contributed .mak file for Borland C.  It's not
-maintained and thus may need updating if you want to use it.
+	nmake -f makefile.ms
 
 
 Reporting problems
