@@ -1,6 +1,7 @@
 //Microsoft Developer Studio generated resource script.
 //
 #include "resource.h"
+#include "config.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -2061,6 +2062,41 @@ SSHOUT                  WAVE    DISCARDABLE     "sounds/sshout.wav"
 TELL                    WAVE    DISCARDABLE     "sounds/tell.wav"
 UNFINISHED              WAVE    DISCARDABLE     "sounds/unfinished.wav"
 WIN                     WAVE    DISCARDABLE     "sounds/win.wav"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+1 VERSIONINFO
+FILEVERSION 4,4,0,0
+PRODUCTVERSION 4,4,0,0
+FILETYPE VFT_APP
+{
+  BLOCK "StringFileInfo"
+	 {
+		 BLOCK "040904b0"
+		 {
+#ifdef JAWS
+			 VALUE "Comments", "Includes support for JAWS screen reader"
+#endif
+			 VALUE "CompanyName", "GNU Project"
+			 VALUE "FileVersion", PACKAGE_VERSION
+			 VALUE "FileDescription", "Winboard 32-bit GUI for chess"
+			 VALUE "InternalName", "Winboard"
+			 VALUE "LegalCopyright", "GPLv3 Copyright © 2009"
+			 VALUE "OriginalFilename", "winboard.exe"
+			 VALUE "ProductName", "Winboard"
+			 VALUE "ProductVersion", PACKAGE_VERSION
+#ifdef JAWS
+			 VALUE "SpecialBuild", "JAWS (Job Access With Speech) accessiblity build\0"
+#endif
+		 }
+	 }
+  BLOCK "VarFileInfo"
+	 {
+		 VALUE "Translation", 0x0409, 1252
+	 }
+}
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
