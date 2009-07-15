@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=winboard - Win32 Debug
+CFG=winboard - Win32 Jaws Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,14 @@ CFG=winboard - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "winboard.mak" CFG="winboard - Win32 Debug"
+!MESSAGE NMAKE /f "winboard.mak" CFG="winboard - Win32 Jaws Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "winboard - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "winboard - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "winboard - Win32 Jaws Debug" (based on "Win32 (x86) Application")
+!MESSAGE "winboard - Win32 Jaws Release" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -81,12 +83,68 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 wsock32.lib comctl32.lib winmm.lib shell32.lib oldnames.lib kernel32.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib msvcrtd.lib /nologo /subsystem:windows /map /debug /machine:I386 /pdbtype:sept
 
+!ELSEIF  "$(CFG)" == "winboard - Win32 Jaws Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "winboard___Win32_Jaws_Debug"
+# PROP BASE Intermediate_Dir "winboard___Win32_Jaws_Debug"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Jaws-Debug"
+# PROP Intermediate_Dir "Jaws-Debug"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /D "JAWS" /YX /FD /GZ /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /i ".." /d "_DEBUG"
+# ADD RSC /l 0x409 /i ".." /d "_DEBUG" /d "JAWS"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 wsock32.lib comctl32.lib winmm.lib shell32.lib oldnames.lib kernel32.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib msvcrtd.lib /nologo /subsystem:windows /map /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 wsock32.lib comctl32.lib winmm.lib shell32.lib oldnames.lib kernel32.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib msvcrtd.lib /nologo /subsystem:windows /map /debug /machine:I386 /pdbtype:sept
+
+!ELSEIF  "$(CFG)" == "winboard - Win32 Jaws Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "winboard___Win32_Jaws_Release"
+# PROP BASE Intermediate_Dir "winboard___Win32_Jaws_Release"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Jaws-Release"
+# PROP Intermediate_Dir "Jaws-Release"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GX /Og /Os /Oy /Gf /I "." /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /YX /Zl /FD /Gs /GA /c
+# ADD CPP /nologo /MD /W3 /GX /Og /Os /Oy /Gf /I "." /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /D "JAWS" /YX /Zl /FD /Gs /GA /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /i ".." /d "NDEBUG"
+# ADD RSC /l 0x409 /i ".." /d "NDEBUG" /d "JAWS"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 wsock32.lib comctl32.lib winmm.lib shell32.lib oldnames.lib kernel32.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib msvcrt.lib /nologo /subsystem:windows /pdb:none /machine:I386
+# ADD LINK32 wsock32.lib comctl32.lib winmm.lib shell32.lib oldnames.lib kernel32.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib msvcrt.lib /nologo /subsystem:windows /pdb:none /machine:I386
+
 !ENDIF 
 
 # Begin Target
 
 # Name "winboard - Win32 Release"
 # Name "winboard - Win32 Debug"
+# Name "winboard - Win32 Jaws Debug"
+# Name "winboard - Win32 Jaws Release"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -153,6 +211,23 @@ SOURCE=.\whistory.c
 # Begin Source File
 
 SOURCE=.\winboard.c
+
+!IF  "$(CFG)" == "winboard - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "winboard - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "winboard - Win32 Jaws Debug"
+
+# ADD CPP /D WINVER=0x500
+# SUBTRACT CPP /D WINVER=0x400
+
+!ELSEIF  "$(CFG)" == "winboard - Win32 Jaws Release"
+
+# ADD CPP /D WINVER=0x500
+# SUBTRACT CPP /D WINVER=0x400
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
