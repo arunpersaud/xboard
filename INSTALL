@@ -21,6 +21,8 @@ the autotools to generate the `configure' script if it is missing.
 
 The simplest way to compile this package is:
 
+  0. If the configure script is missing, run ./autogen.sh in the source directory
+
   1. `cd' to the directory containing the package's source code and type
      `./configure' to configure the package for your system.  If you're
      using `csh' on an old version of System V, you might need to type
