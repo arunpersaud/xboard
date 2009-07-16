@@ -328,10 +328,10 @@ typedef struct _CPS {
     char egtFormats[MSG_SIZ];     /* [HGM] EGT: supported tablebase formats */
     int bookSuspend;  /* [HGM] book: go was deferred because of book hit    */
     int nrOptions;    /* [HGM] options: remembered option="..." features    */
-#define MAX_OPTIONS 50
+#define MAX_OPTIONS 100
     Option option[MAX_OPTIONS];
     int comboCnt;
-    char *comboList[10*MAX_OPTIONS];
+    char *comboList[20*MAX_OPTIONS];
     char *optionSettings;
     void *programLogo; /* [HGM] logo: bitmap of the logo                    */
     char *fenOverride; /* [HGM} FRC: force FEN casling & ep fields by hand  */
