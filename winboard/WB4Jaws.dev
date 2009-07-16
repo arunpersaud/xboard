@@ -236,14 +236,14 @@ Build=0
 LanguageID=1033
 CharsetID=1252
 CompanyName=GNU Project
-FileVersion=4.4.0k
+FileVersion=4.4.0.beta1
 FileDescription=Winboard 32-bit GUI for chess (Includes support for JAWS screen reader)
 InternalName=winboard.exe
 LegalCopyright=GPLv3 Copyright © 2009
 LegalTrademarks=
 OriginalFilename=winboard.exe
 ProductName=Winboard
-ProductVersion=4.4.0k
+ProductVersion=4.4.0.beta1
 AutoIncBuildNr=0
 
 [Unit21]
