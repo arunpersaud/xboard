@@ -228,24 +228,6 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[VersionInfo]
-Major=4
-Minor=4
-Release=0
-Build=0
-LanguageID=1033
-CharsetID=1252
-CompanyName=GNU Project
-FileVersion=4.4.0.beta1
-FileDescription=Winboard 32-bit GUI for chess (Includes support for JAWS screen reader)
-InternalName=winboard.exe
-LegalCopyright=GPLv3 Copyright © 2009
-LegalTrademarks=
-OriginalFilename=winboard.exe
-ProductName=Winboard
-ProductVersion=4.4.0.beta1
-AutoIncBuildNr=0
-
 [Unit21]
 FileName=..\zippy.c
 CompileCpp=0
