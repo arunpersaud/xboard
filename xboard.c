@@ -182,6 +182,10 @@ extern char *getenv();
 #include "bitmaps/bitmaps.h"
 #endif
 
+#include <gtk/gtk.h>
+#include <gdk/gdk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
+
 #include "bitmaps/icon_white.bm"
 #include "bitmaps/icon_black.bm"
 #include "bitmaps/checkmark.bm"
@@ -195,6 +199,8 @@ extern char *getenv();
 #include "xhistory.h"
 #include "xedittags.h"
 #include "gettext.h"
+#include "callback.h"
+#include "interface.h"
 
 // must be moved to xengineoutput.h
 
@@ -244,12 +250,9 @@ void PieceMenuPopup P((Widget w, XEvent *event,
 		       String *params, Cardinal *num_params));
 static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
-void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
-		   u_int wreq, u_int hreq));
 void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
-void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((Widget w, XEvent * event,
@@ -260,8 +263,6 @@ void BlackClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void DrawPositionProc P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
-void XDrawPosition P((Widget w, /*Boolean*/int repaint,
-		     Board board));
 void CommentPopUp P((char *title, char *label));
 void CommentPopDown P((void));
 void CommentCallback P((Widget w, XtPointer client_data,
@@ -288,14 +289,6 @@ void EditCommentPopDown P((void));
 void EditCommentCallback P((Widget w, XtPointer client_data,
 			    XtPointer call_data));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
-void ResetProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void LoadGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void LoadNextGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void LoadPrevGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void ReloadGameProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
 void LoadPositionProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void LoadNextPositionProc P((Widget w, XEvent *event, String *prms,
@@ -316,8 +309,6 @@ void SavePositionProc P((Widget w, XEvent *event,
 void MailMoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
 			    Cardinal *nprms));
-void QuitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PauseProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void MachineBlackProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void MachineWhiteProc P((Widget w, XEvent *event,
@@ -402,8 +393,6 @@ void PopupExitMessageProc P((Widget w, XEvent *event, String *prms,
 			     Cardinal *nprms));
 void PremoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void QuietPlayProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ShowCoordsProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
 void ShowThinkingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void HideThinkingProc P((Widget w, XEvent *event, String *prms,
@@ -415,7 +404,6 @@ void ManProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void HintProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AboutProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void Iconify P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -427,9 +415,9 @@ void ErrorPopUp P((char *title, char *text, int modal));
 void ErrorPopDown P((void));
 static char *ExpandPathName P((char *path));
 static void CreateAnimVars P((void));
-static void DragPieceBegin P((int x, int y));
+void DragPieceBegin P((int x, int y));
 static void DragPieceMove P((int x, int y));
-static void DragPieceEnd P((int x, int y));
+void DragPieceEnd P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
 void EngineOutputUpdate( FrontEndProgramStats * stats );
@@ -466,7 +454,7 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
-XSegment gridSegments[(BOARD_SIZE + 1) * 2];
+GdkSegment gridSegments[(BOARD_SIZE + 1) * 2];
 XSegment jailGridSegments[(BOARD_SIZE + 3) * 2];
 Font clockFontID, coordFontID, countFontID;
 XFontStruct *clockFontStruct, *coordFontStruct, *countFontStruct;
@@ -543,14 +531,9 @@ static Pixmap xpmMask[BlackKing + 1];
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
 MenuItem fileMenu[] = {
-    {N_("New Game"), ResetProc},
     {N_("New Shuffle Game ..."), ShuffleMenuProc},
     {N_("New Variant ..."), NewVariantProc},      // [HGM] variant: not functional yet
     {"----", NothingProc},
-    {N_("Load Game"), LoadGameProc},
-    {N_("Load Next Game"), LoadNextGameProc},
-    {N_("Load Previous Game"), LoadPrevGameProc},
-    {N_("Reload Same Game"), ReloadGameProc},
     {N_("Save Game"), SaveGameProc},
     {"----", NothingProc},
     {N_("Copy Game"), CopyGameProc},
@@ -568,7 +551,6 @@ MenuItem fileMenu[] = {
     {N_("Mail Move"), MailMoveProc},
     {N_("Reload CMail Message"), ReloadCmailMsgProc},
     {"----", NothingProc},
-    {N_("Exit"), QuitProc},
     {NULL, NULL}
 };
 
@@ -591,7 +573,6 @@ MenuItem modeMenu[] = {
     {N_("Edit Tags"), EditTagsProc},
     {N_("Edit Comment"), EditCommentProc},
     {N_("ICS Input Box"), IcsInputBoxProc},
-    {N_("Pause"), PauseProc},
     {NULL, NULL}
 };
 
@@ -662,7 +643,6 @@ MenuItem optionsMenu[] = {
     {N_("Popup Move Errors"), PopupMoveErrorsProc},
     {N_("Premove"), PremoveProc},
     {N_("Quiet Play"), QuietPlayProc},
-    {N_("Show Coords"), ShowCoordsProc},
     {N_("Hide Thinking"), HideThinkingProc},
     {N_("Test Legality"), TestLegalityProc},
     {NULL, NULL}
@@ -675,7 +655,6 @@ MenuItem helpMenu[] = {
     {N_("Hint"), HintProc},
     {N_("Book"), BookProc},
     {"----", NothingProc},
-    {N_("About XBoard"), AboutProc},
     {NULL, NULL}
 };
 
@@ -693,7 +672,7 @@ Menu menuBar[] = {
 MenuItem buttonBar[] = {
     {"<<", ToStartProc},
     {"<", BackwardProc},
-    {PAUSE_BUTTON, PauseProc},
+    //    {PAUSE_BUTTON, PauseProc},
     {">", ForwardProc},
     {">>", ToEndProc},
     {NULL, NULL}
@@ -1778,12 +1757,7 @@ XtActionsRec boardActions[] = {
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
     { "Iconify", Iconify },
-    { "ResetProc", ResetProc },
-    { "LoadGameProc", LoadGameProc },
-    { "LoadNextGameProc", LoadNextGameProc },
-    { "LoadPrevGameProc", LoadPrevGameProc },
     { "LoadSelectedProc", LoadSelectedProc },
-    { "ReloadGameProc", ReloadGameProc },
     { "LoadPositionProc", LoadPositionProc },
     { "LoadNextPositionProc", LoadNextPositionProc },
     { "LoadPrevPositionProc", LoadPrevPositionProc },
@@ -1796,7 +1770,6 @@ XtActionsRec boardActions[] = {
     { "SavePositionProc", SavePositionProc },
     { "MailMoveProc", MailMoveProc },
     { "ReloadCmailMsgProc", ReloadCmailMsgProc },
-    { "QuitProc", QuitProc },
     { "MachineWhiteProc", MachineWhiteProc },
     { "MachineBlackProc", MachineBlackProc },
     { "AnalysisModeProc", AnalyzeModeProc },
@@ -1813,7 +1786,6 @@ XtActionsRec boardActions[] = {
     { "EditCommentProc", EditCommentProc },
     { "IcsAlarmProc", IcsAlarmProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
-    { "PauseProc", PauseProc },
     { "AcceptProc", AcceptProc },
     { "DeclineProc", DeclineProc },
     { "RematchProc", RematchProc },
@@ -1861,7 +1833,6 @@ XtActionsRec boardActions[] = {
     { "PopupMoveErrorsProc", PopupMoveErrorsProc },
     { "PremoveProc", PremoveProc },
     { "QuietPlayProc", QuietPlayProc },
-    { "ShowCoordsProc", ShowCoordsProc },
     { "ShowThinkingProc", ShowThinkingProc },
     { "HideThinkingProc", HideThinkingProc },
     { "TestLegalityProc", TestLegalityProc },
@@ -1870,7 +1841,6 @@ XtActionsRec boardActions[] = {
     { "HintProc", HintProc },
     { "BookProc", BookProc },
     { "AboutGameProc", AboutGameProc },
-    { "AboutProc", AboutProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
     { "CommentPopDown", (XtActionProc) CommentPopDown },
@@ -1895,16 +1865,10 @@ XtActionsRec boardActions[] = {
 
 char globalTranslations[] =
   ":<Key>R: ResignProc() \n \
-   :<Key>r: ResetProc() \n \
-   :<Key>g: LoadGameProc() \n \
-   :<Key>N: LoadNextGameProc() \n \
-   :<Key>P: LoadPrevGameProc() \n \
-   :<Key>Q: QuitProc() \n \
    :<Key>F: ToEndProc() \n \
    :<Key>f: ForwardProc() \n \
    :<Key>B: ToStartProc() \n \
    :<Key>b: BackwardProc() \n \
-   :<Key>p: PauseProc() \n \
    :<Key>d: DrawProc() \n \
    :<Key>t: CallFlagProc() \n \
    :<Key>i: Iconify() \n \
@@ -2196,54 +2160,54 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     /*
      * Enable shell resizing.
      */
-    shellArgs[0].value = (XtArgVal) &w;
-    shellArgs[1].value = (XtArgVal) &h;
-    XtGetValues(shellWidget, shellArgs, 2);
-
-    shellArgs[4].value = 2*w; shellArgs[2].value = 10;
-    shellArgs[5].value = 2*h; shellArgs[3].value = 10;
-    XtSetValues(shellWidget, &shellArgs[2], 4);
-
-    XtSetArg(args[0], XtNdefaultDistance, &sep);
-    XtGetValues(formWidget, args, 1);
+//    shellArgs[0].value = (XtArgVal) &w;
+//    shellArgs[1].value = (XtArgVal) &h;
+//    XtGetValues(shellWidget, shellArgs, 2);
+//
+//    shellArgs[4].value = 2*w; shellArgs[2].value = 10;
+//    shellArgs[5].value = 2*h; shellArgs[3].value = 10;
+//    XtSetValues(shellWidget, &shellArgs[2], 4);
+//
+//    XtSetArg(args[0], XtNdefaultDistance, &sep);
+//    XtGetValues(formWidget, args, 1);
 
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
     CreateGrid();
 
-    XtSetArg(args[0], XtNwidth, boardWidth);
-    XtSetArg(args[1], XtNheight, boardHeight);
-    XtSetValues(boardWidget, args, 2);
+//    XtSetArg(args[0], XtNwidth, boardWidth);
+//    XtSetArg(args[1], XtNheight, boardHeight);
+//    XtSetValues(boardWidget, args, 2);
 
     timerWidth = (boardWidth - sep) / 2;
-    XtSetArg(args[0], XtNwidth, timerWidth);
-    XtSetValues(whiteTimerWidget, args, 1);
-    XtSetValues(blackTimerWidget, args, 1);
-
-    XawFormDoLayout(formWidget, False);
+//    XtSetArg(args[0], XtNwidth, timerWidth);
+//    XtSetValues(whiteTimerWidget, args, 1);
+//    XtSetValues(blackTimerWidget, args, 1);
+//
+//    XawFormDoLayout(formWidget, False);
 
     if (appData.titleInWindow) {
 	i = 0;
-	XtSetArg(args[i], XtNborderWidth, &bor); i++;
-	XtSetArg(args[i], XtNheight, &h);  i++;
-	XtGetValues(titleWidget, args, i);
+//	XtSetArg(args[i], XtNborderWidth, &bor); i++;
+//	XtSetArg(args[i], XtNheight, &h);  i++;
+//	XtGetValues(titleWidget, args, i);
 	if (smallLayout) {
 	    w = boardWidth - 2*bor;
 	} else {
-	    XtSetArg(args[0], XtNwidth, &w);
-	    XtGetValues(menuBarWidget, args, 1);
+//	    XtSetArg(args[0], XtNwidth, &w);
+//	    XtGetValues(menuBarWidget, args, 1);
 	    w = boardWidth - w - sep - 2*bor - 2; // WIDTH_FUDGE
 	}
 
-	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
-	if (gres != XtGeometryYes && appData.debugMode) {
-	    fprintf(stderr,
-		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
-		    programName, gres, w, h, wr, hr);
-	}
+//	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
+//	if (gres != XtGeometryYes && appData.debugMode) {
+//	    fprintf(stderr,
+//		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
+//		    programName, gres, w, h, wr, hr);
+//	}
     }
 
-    XawFormDoLayout(formWidget, True);
+    //    XawFormDoLayout(formWidget, True);
 
     /*
      * Inhibit shell resizing.
@@ -2252,7 +2216,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
-    XtSetValues(shellWidget, &shellArgs[0], 6);
+    //    XtSetValues(shellWidget, &shellArgs[0], 6);
 
     // [HGM] pieces: tailor piece bitmaps to needs of specific variant
     // (only for xpm)
@@ -2395,6 +2359,30 @@ main(argc, argv)
       XtAppInitialize(&appContext, "XBoard", shellOptions,
 		      XtNumber(shellOptions),
 		      &argc, argv, xboardResources, NULL, 0);
+
+    gtk_init (&argc, &argv);
+
+    /* parse glade file */
+
+    builder = gtk_builder_new ();
+    gtk_builder_add_from_file (builder, "gtk-interface.xml", NULL);
+
+    GUI_Window = GTK_WIDGET (gtk_builder_get_object (builder, "MainWindow"));
+    if(!GUI_Window) printf("Error: gtk_builder didn't work!\n");
+    GUI_Board  = GTK_WIDGET (gtk_builder_get_object (builder, "Board"));
+    if(!GUI_Board) printf("Error: gtk_builder didn't work!\n");
+    GUI_Whiteclock  = GTK_WIDGET (gtk_builder_get_object (builder, "WhiteClock"));
+    if(!GUI_Whiteclock) printf("Error: gtk_builder didn't work!\n");
+    GUI_Blackclock  = GTK_WIDGET (gtk_builder_get_object (builder, "BlackClock"));
+    if(!GUI_Blackclock) printf("Error: gtk_builder didn't work!\n");
+
+    gtk_builder_connect_signals (builder, NULL);
+    // don't unref the builder, since we use it to get references to widgets
+    //    g_object_unref (G_OBJECT (builder));
+
+    printf("DEBUG:finished building gtk\n");
+    /* end parse glade file */
+
     if (argc > 1) {
 	fprintf(stderr, _("%s: unrecognized argument %s\n"),
 		programName, argv[1]);
@@ -2712,7 +2700,9 @@ XBoard square size (hint): %d\n\
     textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
     textColors[ColorNone].attr = 0;
 
-    XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
+    printf("DEBUG: I'm here 0\n");
+
+    //    XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
 
     /*
      * widget hierarchy
@@ -2756,6 +2746,7 @@ XBoard square size (hint): %d\n\
     XtSetArg(args[1], XtNtop,    XtChainTop);
     XtSetArg(args[2], XtNbottom, XtChainTop);
     XtSetValues(blackTimerWidget, args, 3);
+    printf("DEBUG: I'm here 1\n");
 
     if (appData.titleInWindow) {
 	widgetList[j++] = titleWidget =
@@ -2775,137 +2766,156 @@ XBoard square size (hint): %d\n\
       XtSetValues(buttonBarWidget, args, 4);
     }
 
-    widgetList[j++] = messageWidget =
-      XtCreateWidget("message", labelWidgetClass, formWidget,
-		     messageArgs, XtNumber(messageArgs));
-    XtSetArg(args[0], XtNtop,    XtChainTop);
-    XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetValues(messageWidget, args, 2);
+//    widgetList[j++] = messageWidget =
+//      XtCreateWidget("message", labelWidgetClass, formWidget,
+//		     messageArgs, XtNumber(messageArgs));
+//    XtSetArg(args[0], XtNtop,    XtChainTop);
+//    XtSetArg(args[1], XtNbottom, XtChainTop);
+//    XtSetValues(messageWidget, args, 2);
+//
+//    widgetList[j++] = boardWidget =
+//      XtCreateWidget("board", widgetClass, formWidget, boardArgs,
+//		     XtNumber(boardArgs));
+//
+//    XtManageChildren(widgetList, j);
+//
+//    timerWidth = (boardWidth - sep) / 2;
+//    XtSetArg(args[0], XtNwidth, timerWidth);
+//    XtSetValues(whiteTimerWidget, args, 1);
+//    XtSetValues(blackTimerWidget, args, 1);
+//
+//    XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
+//    XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
+//    XtGetValues(whiteTimerWidget, args, 2);
+//
+//    if (appData.showButtonBar) {
+//      XtSetArg(args[0], XtNbackground, &buttonBackgroundPixel);
+//      XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
+//      XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
+//    }
+//
 
-    widgetList[j++] = boardWidget =
-      XtCreateWidget("board", widgetClass, formWidget, boardArgs,
-		     XtNumber(boardArgs));
+    /*
+     *  gtk set properties of widgets
+     */
 
-    XtManageChildren(widgetList, j);
+    /* set board size */
+    gtk_widget_set_size_request(GTK_WIDGET(GUI_Board),
+				boardWidth,boardHeight);
 
-    timerWidth = (boardWidth - sep) / 2;
-    XtSetArg(args[0], XtNwidth, timerWidth);
-    XtSetValues(whiteTimerWidget, args, 1);
-    XtSetValues(blackTimerWidget, args, 1);
+    /* end gtk set properties of widgets */
 
-    XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
-    XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
-    XtGetValues(whiteTimerWidget, args, 2);
-
-    if (appData.showButtonBar) {
-      XtSetArg(args[0], XtNbackground, &buttonBackgroundPixel);
-      XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
-      XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
-    }
+    printf("DEBUG: made it.\n");
 
     /*
      * formWidget uses these constraints but they are stored
      * in the children.
      */
-    i = 0;
-    XtSetArg(args[i], XtNfromHoriz, 0); i++;
-    XtSetValues(menuBarWidget, args, i);
-    if (appData.titleInWindow) {
-	if (smallLayout) {
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	    XtSetValues(whiteTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	    XtSetValues(blackTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-            XtSetArg(args[i], XtNjustify, XtJustifyLeft); i++;
-	    XtSetValues(titleWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	    XtSetValues(messageWidget, args, i);
-	    if (appData.showButtonBar) {
-	      i = 0;
-	      XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	      XtSetValues(buttonBarWidget, args, i);
-	    }
-	} else {
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetValues(whiteTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	    XtSetValues(blackTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromHoriz, menuBarWidget); i++;
-	    XtSetValues(titleWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	    XtSetValues(messageWidget, args, i);
-	    if (appData.showButtonBar) {
-	      i = 0;
-	      XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	      XtSetValues(buttonBarWidget, args, i);
-	    }
-	}
-    } else {
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	XtSetValues(whiteTimerWidget, args, i);
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	XtSetValues(blackTimerWidget, args, i);
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	XtSetValues(messageWidget, args, i);
-	if (appData.showButtonBar) {
-	  i = 0;
-	  XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	  XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	  XtSetValues(buttonBarWidget, args, i);
-	}
-    }
-    i = 0;
-    XtSetArg(args[0], XtNfromVert, messageWidget);
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainBottom);
-    XtSetArg(args[3], XtNleft,   XtChainLeft);
-    XtSetArg(args[4], XtNright,  XtChainRight);
-    XtSetValues(boardWidget, args, 5);
-
-    XtRealizeWidget(shellWidget);
+//    i = 0;
+//    XtSetArg(args[i], XtNfromHoriz, 0); i++;
+//    XtSetValues(menuBarWidget, args, i);
+//    if (appData.titleInWindow) {
+//	if (smallLayout) {
+//    printf("DEBUG: made it a.\n");
+//	    i = 0;
+//	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
+//	    XtSetValues(whiteTimerWidget, args, i);
+//	    i = 0;
+//	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
+//	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
+//	    XtSetValues(blackTimerWidget, args, i);
+//	    i = 0;
+//	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+//            XtSetArg(args[i], XtNjustify, XtJustifyLeft); i++;
+//	    XtSetValues(titleWidget, args, i);
+//	    i = 0;
+//	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
+//	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
+//	    XtSetValues(messageWidget, args, i);
+//	    if (appData.showButtonBar) {
+//	      i = 0;
+//	      XtSetArg(args[i], XtNfromVert, titleWidget); i++;
+//	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
+//	      XtSetValues(buttonBarWidget, args, i);
+//	    }
+//	} else {
+//    printf("DEBUG: made it b.\n");
+//	    i = 0;
+//	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
+//	    XtSetValues(whiteTimerWidget, args, i);
+//	    i = 0;
+//	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
+//	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
+//	    XtSetValues(blackTimerWidget, args, i);
+//	    i = 0;
+//	    XtSetArg(args[i], XtNfromHoriz, menuBarWidget); i++;
+//	    XtSetValues(titleWidget, args, i);
+//	    i = 0;
+//	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+//	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
+//	    XtSetValues(messageWidget, args, i);
+//	    if (appData.showButtonBar) {
+//	      i = 0;
+//	      XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+//	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
+//	      XtSetValues(buttonBarWidget, args, i);
+//	    }
+//	}
+//    } else {    printf("DEBUG: made it c.\n");
+//
+//	i = 0;
+//	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
+//	XtSetValues(whiteTimerWidget, args, i);
+//	i = 0;
+//	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
+//	XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
+//	XtSetValues(blackTimerWidget, args, i);
+//	i = 0;
+//	XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+//	XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
+//	XtSetValues(messageWidget, args, i);
+//	if (appData.showButtonBar) {
+//	  i = 0;
+//	  XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+//	  XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
+//	  XtSetValues(buttonBarWidget, args, i);
+//	}
+//    }
+//    printf("DEBUG: made it 1.\n");
+//    i = 0;
+//    XtSetArg(args[0], XtNfromVert, messageWidget);
+//    XtSetArg(args[1], XtNtop,    XtChainTop);
+//    XtSetArg(args[2], XtNbottom, XtChainBottom);
+//    XtSetArg(args[3], XtNleft,   XtChainLeft);
+//    XtSetArg(args[4], XtNright,  XtChainRight);
+//    XtSetValues(boardWidget, args, 5);
+//
+//    XtRealizeWidget(shellWidget);
+//
+    printf("DEBUG: made it 2.\n");
 
     /*
      * Correct the width of the message and title widgets.
      * It is not known why some systems need the extra fudge term.
      * The value "2" is probably larger than needed.
      */
-    XawFormDoLayout(formWidget, False);
+    //    XawFormDoLayout(formWidget, False);
 
 #define WIDTH_FUDGE 2
-    i = 0;
-    XtSetArg(args[i], XtNborderWidth, &bor);  i++;
-    XtSetArg(args[i], XtNheight, &h);  i++;
-    XtGetValues(messageWidget, args, i);
+//    i = 0;
+//    XtSetArg(args[i], XtNborderWidth, &bor);  i++;
+//    XtSetArg(args[i], XtNheight, &h);  i++;
+//    XtGetValues(messageWidget, args, i);
     if (appData.showButtonBar) {
-      i = 0;
-      XtSetArg(args[i], XtNwidth, &w);  i++;
-      XtGetValues(buttonBarWidget, args, i);
-      w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
+//      i = 0;
+//      XtSetArg(args[i], XtNwidth, &w);  i++;
+//      XtGetValues(buttonBarWidget, args, i);
+//      w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
     } else {
-      w = boardWidth - 2*bor + 1; /*!! +1 compensates for kludge below */
+//      w = boardWidth - 2*bor + 1; /*!! +1 compensates for kludge below */
     }
-
-    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
+//
+//    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
     if (gres != XtGeometryYes && appData.debugMode) {
       fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
 	      programName, gres, w, h, wr, hr);
@@ -2915,237 +2925,192 @@ XBoard square size (hint): %d\n\
     /* The size used for the child widget in layout lags one resize behind
        its true size, so we resize a second time, 1 pixel smaller.  Yeech! */
     w--;
-    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
+//    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
     if (gres != XtGeometryYes && appData.debugMode) {
       fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
 	      programName, gres, w, h, wr, hr);
     }
     /* !! end hack */
-    XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
-    XtSetArg(args[1], XtNright, XtChainRight);
-    XtSetValues(messageWidget, args, 2);
-
+//    XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
+//    XtSetArg(args[1], XtNright, XtChainRight);
+//    XtSetValues(messageWidget, args, 2);
+//
     if (appData.titleInWindow) {
 	i = 0;
-	XtSetArg(args[i], XtNborderWidth, &bor); i++;
-	XtSetArg(args[i], XtNheight, &h);  i++;
-	XtGetValues(titleWidget, args, i);
+//	XtSetArg(args[i], XtNborderWidth, &bor); i++;
+//	XtSetArg(args[i], XtNheight, &h);  i++;
+//	XtGetValues(titleWidget, args, i);
 	if (smallLayout) {
 	    w = boardWidth - 2*bor;
 	} else {
-	    XtSetArg(args[0], XtNwidth, &w);
-	    XtGetValues(menuBarWidget, args, 1);
-	    w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
+//	    XtSetArg(args[0], XtNwidth, &w);
+//	    XtGetValues(menuBarWidget, args, 1);
+//	    w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
 	}
 
-	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
+//	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
 	if (gres != XtGeometryYes && appData.debugMode) {
 	    fprintf(stderr,
 		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
 		    programName, gres, w, h, wr, hr);
 	}
     }
-    XawFormDoLayout(formWidget, True);
-
-    xBoardWindow = XtWindow(boardWidget);
-
+//    XawFormDoLayout(formWidget, True);
+//
+//    xBoardWindow = XtWindow(boardWidget);
+//
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
     //       not need to go into InitDrawingSizes().
 #endif
 
-    /*
-     * Create X checkmark bitmap and initialize option menu checks.
-     */
-    ReadBitmap(&xMarkPixmap, "checkmark.bm",
-	       checkmark_bits, checkmark_width, checkmark_height);
-    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     if (appData.alwaysPromoteToQueen) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Always Queen")),TRUE);
     }
     if (appData.animateDragging) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Animate Dragging"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Dragging")),TRUE);
     }
     if (appData.animate) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Moving")),TRUE);
     }
     if (appData.autoComment) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Comment"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Comment")),TRUE);
     }
     if (appData.autoCallFlag) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Flag")),TRUE);
     }
     if (appData.autoFlipView) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Auto Flip View"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Flip View")),TRUE);
     }
     if (appData.autoObserve) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Observe"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Observe")),TRUE);
     }
     if (appData.autoRaiseBoard) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Auto Raise Board"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Raise Board")),TRUE);
     }
     if (appData.autoSaveGames) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Save"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Save")),TRUE);
     }
     if (appData.saveGameFile[0] != NULLCHAR) {
-	/* Can't turn this off from menu */
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Save"),
-		    args, 1);
-	XtSetSensitive(XtNameToWidget(menuBarWidget, "menuOptions.Auto Save"),
-		       False);
-
+      /* Can't turn this off from menu */
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Save")),TRUE);
+      gtk_action_set_sensitive(GTK_ACTION (gtk_builder_get_object (builder, "menuOptions.Auto Save")),FALSE);
     }
     if (appData.blindfold) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Blindfold"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Blindfold")),TRUE);
     }
     if (appData.flashCount > 0) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Flash Moves"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Flash Moves")),TRUE);
     }
     if (appData.getMoveList) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Get Move List"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Get Move List")),TRUE);
     }
 #if HIGHDRAG
     if (appData.highlightDragging) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Highlight Dragging"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Highlight Dragging")),TRUE);
     }
 #endif
     if (appData.highlightLastMove) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Highlight Last Move"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Highlight Last Move")),TRUE);
     }
     if (appData.icsAlarm) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.ICS Alarm"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.ICS Alarm")),TRUE);
     }
     if (appData.ringBellAfterMoves) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Move Sound")),TRUE);
     }
     if (appData.oldSaveStyle) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Old Save Style"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Old Save Style")),TRUE);
     }
     if (appData.periodicUpdates) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Periodic Updates"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Periodic Updates")),TRUE);
     }
     if (appData.ponderNextMove) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Ponder Next Move"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Ponder Next Move")),TRUE);
     }
     if (appData.popupExitMessage) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Popup Exit Message"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Popup Exit Message")),TRUE);
     }
     if (appData.popupMoveErrors) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Popup Move Errors"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Popup Move Errors")),TRUE);
     }
     if (appData.premove) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Premove"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Premove")),TRUE);
     }
     if (appData.quietPlay) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Quiet Play"), args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Quit Play")),TRUE);
     }
     if (appData.showCoords) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Coords")),TRUE);
     }
-    if (appData.hideThinkingFromHuman) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
-		    args, 1);
+    if (appData.showThinking) {
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Thinking")),TRUE);
     }
     if (appData.testLegality) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Test Legality"),
-		    args, 1);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Test Legality")),TRUE);
     }
 
     /*
      * Create an icon.
      */
-    ReadBitmap(&wIconPixmap, "icon_white.bm",
-	       icon_white_bits, icon_white_width, icon_white_height);
-    ReadBitmap(&bIconPixmap, "icon_black.bm",
-	       icon_black_bits, icon_black_width, icon_black_height);
-    iconPixmap = wIconPixmap;
-    i = 0;
-    XtSetArg(args[i], XtNiconPixmap, iconPixmap);  i++;
-    XtSetValues(shellWidget, args, i);
+//    ReadBitmap(&wIconPixmap, "icon_white.bm",
+//	       icon_white_bits, icon_white_width, icon_white_height);
+//    ReadBitmap(&bIconPixmap, "icon_black.bm",
+//	       icon_black_bits, icon_black_width, icon_black_height);
+//    iconPixmap = wIconPixmap;
+//    i = 0;
+//    XtSetArg(args[i], XtNiconPixmap, iconPixmap);  i++;
+//    XtSetValues(shellWidget, args, i);
+//
 
-    /*
-     * Create a cursor for the board widget.
-     */
-    window_attributes.cursor = XCreateFontCursor(xDisplay, XC_hand2);
-    XChangeWindowAttributes(xDisplay, xBoardWindow,
-			    CWCursor, &window_attributes);
+    printf("DEBUG: creating svgs.\n");
 
-    /*
-     * Inhibit shell resizing.
-     */
-    shellArgs[0].value = (XtArgVal) &w;
-    shellArgs[1].value = (XtArgVal) &h;
-    XtGetValues(shellWidget, shellArgs, 2);
-    shellArgs[4].value = shellArgs[2].value = w;
-    shellArgs[5].value = shellArgs[3].value = h;
-    XtSetValues(shellWidget, &shellArgs[2], 4);
-    marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
-    marginH =  h - boardHeight;
+    /* load square colors */
+    SVGLightSquare   = load_pixbuf("svg/LightSquare.svg");
+    SVGDarkSquare    = load_pixbuf("svg/DarkSquare.svg");
+    SVGNeutralSquare = load_pixbuf("svg/NeutralSquare.svg");
 
-    CatchDeleteWindow(shellWidget, "QuitProc");
+    /* use two icons to indicate if it is white's or black's turn */
+    WhiteIcon  = load_pixbuf("svg/icon_white.svg");
+    BlackIcon  = load_pixbuf("svg/icon_black.svg");
+    WindowIcon = WhiteIcon;
+    gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
+
+    /* do resizing to a fixed aspect ratio */
+    GdkGeometry hints;
+    hints.min_aspect = 0.8;
+    hints.max_aspect = 0.8;
+    gtk_window_set_geometry_hints (GTK_WINDOW (GUI_Window),
+				   GTK_WIDGET (GUI_Window),
+				   &hints,
+				   GDK_HINT_ASPECT);
+
+    /* realize window */
+    gtk_widget_show (GUI_Window);
 
     CreateGCs();
     CreateGrid();
-#if HAVE_LIBXPM
-    if (appData.bitmapDirectory[0] != NULLCHAR) {
-      CreatePieces();
-    } else {
-      CreateXPMPieces();
-    }
-#else
-    CreateXIMPieces();
-    /* Create regular pieces */
-    if (!useImages) CreatePieces();
-#endif
+    CreatePieces();
 
     CreatePieceMenus();
 
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
-    XtAugmentTranslations(formWidget,
-			  XtParseTranslationTable(globalTranslations));
-    XtAugmentTranslations(boardWidget,
-			  XtParseTranslationTable(boardTranslations));
-    XtAugmentTranslations(whiteTimerWidget,
-			  XtParseTranslationTable(whiteTranslations));
-    XtAugmentTranslations(blackTimerWidget,
-			  XtParseTranslationTable(blackTranslations));
+    printf("DEBUG: created stuff.\n");
 
-    /* Why is the following needed on some versions of X instead
-     * of a translation? */
-    XtAddEventHandler(boardWidget, ExposureMask, False,
-		      (XtEventHandler) EventProc, NULL);
-    /* end why */
 
+//    XtAugmentTranslations(formWidget,
+//			  XtParseTranslationTable(globalTranslations));
+//    XtAugmentTranslations(boardWidget,
+//			  XtParseTranslationTable(boardTranslations));
+//    XtAugmentTranslations(whiteTimerWidget,
+//			  XtParseTranslationTable(whiteTranslations));
+//    XtAugmentTranslations(blackTimerWidget,
+//			  XtParseTranslationTable(blackTranslations));
+//
     InitBackEnd2();
+
+    printf("DEBUG: back end initiated.\n");
 
     if (errorExitStatus == -1) {
 	if (appData.icsActive) {
@@ -3164,7 +3129,20 @@ XBoard square size (hint): %d\n\
     gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
     InitPosition(TRUE);
 
-    XtAppMainLoop(appContext);
+    /*
+     * Create a cursor for the board widget.
+     * (This needs to be called after the window has been created to have access to board-window)
+     */
+
+    BoardCursor = gdk_cursor_new(GDK_HAND2);
+    gdk_window_set_cursor(GUI_Board->window, BoardCursor);
+    gdk_cursor_destroy(BoardCursor);
+
+    /* end cursor */
+    printf("DEBUG: going into main.\n");
+
+    gtk_main ();
+
     if (appData.debugMode) fclose(debugFP); // [DM] debug
     return 0;
 }
@@ -3247,22 +3225,27 @@ ResetFrontEnd()
 
 typedef struct {
     char *name;
-    Boolean value;
+    gboolean value;
 } Enables;
 
 void
 SetMenuEnables(enab)
      Enables *enab;
 {
-  Widget w;
-  if (!menuBarWidget) return;
+  GObject *o;
+
+  if (!builder) return;
   while (enab->name != NULL) {
-    w = XtNameToWidget(menuBarWidget, enab->name);
-    if (w == NULL) {
-      DisplayError(enab->name, 0);
-    } else {
-      XtSetSensitive(w, enab->value);
-    }
+    o = gtk_builder_get_object(builder, enab->name);
+    if(GTK_IS_WIDGET(o))
+      gtk_widget_set_sensitive(GTK_WIDGET (o),enab->value);
+    else
+      {
+	if(GTK_IS_ACTION(o))
+	  gtk_action_set_sensitive(GTK_ACTION (o),enab->value);
+	else
+	  DisplayError(enab->name, 0);
+      }
     enab++;
   }
 }
@@ -3691,422 +3674,30 @@ void CreateGCs()
     }
 }
 
-void loadXIM(xim, xmask, filename, dest, mask)
-     XImage *xim;
-     XImage *xmask;
-     char *filename;
-     Pixmap *dest;
-     Pixmap *mask;
-{
-    int x, y, w, h, p;
-    FILE *fp;
-    Pixmap temp;
-    XGCValues	values;
-    GC maskGC;
-
-    fp = fopen(filename, "rb");
-    if (!fp) {
-	fprintf(stderr, _("%s: error loading XIM!\n"), programName);
-	exit(1);
-    }
-
-    w = fgetc(fp);
-    h = fgetc(fp);
-
-    for (y=0; y<h; ++y) {
-	for (x=0; x<h; ++x) {
-	    p = fgetc(fp);
-
-	    switch (p) {
-	      case 0:
-		XPutPixel(xim, x, y, blackPieceColor);
-		if (xmask)
-		  XPutPixel(xmask, x, y, WhitePixel(xDisplay,xScreen));
-		break;
-	      case 1:
-		XPutPixel(xim, x, y, darkSquareColor);
-		if (xmask)
-		  XPutPixel(xmask, x, y, BlackPixel(xDisplay,xScreen));
-		break;
-	      case 2:
-		XPutPixel(xim, x, y, whitePieceColor);
-		if (xmask)
-		  XPutPixel(xmask, x, y, WhitePixel(xDisplay,xScreen));
-		break;
-	      case 3:
-		XPutPixel(xim, x, y, lightSquareColor);
-		if (xmask)
-		  XPutPixel(xmask, x, y, BlackPixel(xDisplay,xScreen));
-		break;
-	    }
-	}
-    }
-
-    /* create Pixmap of piece */
-    *dest = XCreatePixmap(xDisplay, DefaultRootWindow(xDisplay),
-			  w, h, xim->depth);
-    XPutImage(xDisplay, *dest, lightSquareGC, xim,
-	      0, 0, 0, 0, w, h);
-
-    /* create Pixmap of clipmask
-       Note: We assume the white/black pieces have the same
-             outline, so we make only 6 masks. This is okay
-             since the XPM clipmask routines do the same. */
-    if (xmask) {
-      temp = XCreatePixmap(xDisplay, DefaultRootWindow(xDisplay),
-			    w, h, xim->depth);
-      XPutImage(xDisplay, temp, lightSquareGC, xmask,
-	      0, 0, 0, 0, w, h);
-
-      /* now create the 1-bit version */
-      *mask = XCreatePixmap(xDisplay, DefaultRootWindow(xDisplay),
-			  w, h, 1);
-
-      values.foreground = 1;
-      values.background = 0;
-
-      /* Don't use XtGetGC, not read only */
-      maskGC = XCreateGC(xDisplay, *mask,
-		    GCForeground | GCBackground, &values);
-      XCopyPlane(xDisplay, temp, *mask, maskGC,
-		  0, 0, squareSize, squareSize, 0, 0, 1);
-      XFreePixmap(xDisplay, temp);
-    }
-}
-
-
-char pieceBitmapNames[] = "pnbrqfeacwmohijgdvlsukpnsl";
-
-void CreateXIMPieces()
-{
-    int piece, kind;
-    char buf[MSG_SIZ];
-    u_int ss;
-    static char *ximkind[] = { "ll", "ld", "dl", "dd" };
-    XImage *ximtemp;
-
-    ss = squareSize;
-
-    /* The XSynchronize calls were copied from CreatePieces.
-       Not sure if needed, but can't hurt */
-    XSynchronize(xDisplay, True); /* Work-around for xlib/xt
-				     buffering bug */
-
-    /* temp needed by loadXIM() */
-    ximtemp = XGetImage(xDisplay, DefaultRootWindow(xDisplay),
-		 0, 0, ss, ss, AllPlanes, XYPixmap);
-
-    if (strlen(appData.pixmapDirectory) == 0) {
-      useImages = 0;
-    } else {
-	useImages = 1;
-	if (appData.monoMode) {
-	  DisplayFatalError(_("XIM pieces cannot be used in monochrome mode"),
-			    0, 2);
-	  ExitEvent(2);
-	}
-	fprintf(stderr, _("\nLoading XIMs...\n"));
-	/* Load pieces */
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    fprintf(stderr, "%d", piece+1);
-	    for (kind=0; kind<4; kind++) {
-		fprintf(stderr, ".");
-		snprintf(buf, sizeof(buf), "%s/%s%c%s%u.xim",
-			ExpandPathName(appData.pixmapDirectory),
-			piece <= (int) WhiteKing ? "" : "w",
-			pieceBitmapNames[piece],
-			ximkind[kind], ss);
-		ximPieceBitmap[kind][piece] =
-		  XGetImage(xDisplay, DefaultRootWindow(xDisplay),
-			    0, 0, ss, ss, AllPlanes, XYPixmap);
-		if (appData.debugMode)
-		  fprintf(stderr, _("(File:%s:) "), buf);
-		loadXIM(ximPieceBitmap[kind][piece],
-			ximtemp, buf,
-			&(xpmPieceBitmap2[kind][piece]),
-			&(ximMaskPm2[piece]));
-		if(piece <= (int)WhiteKing)
-		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
-	    }
-	    fprintf(stderr," ");
-	}
-	/* Load light and dark squares */
-	/* If the LSQ and DSQ pieces don't exist, we will
-	   draw them with solid squares. */
-	snprintf(buf,sizeof(buf), "%s/lsq%u.xim", ExpandPathName(appData.pixmapDirectory), ss);
-	if (access(buf, 0) != 0) {
-	    useImageSqs = 0;
-	} else {
-	    useImageSqs = 1;
-	    fprintf(stderr, _("light square "));
-	    ximLightSquare=
-	      XGetImage(xDisplay, DefaultRootWindow(xDisplay),
-			0, 0, ss, ss, AllPlanes, XYPixmap);
-	    if (appData.debugMode)
-	      fprintf(stderr, _("(File:%s:) "), buf);
-
-	    loadXIM(ximLightSquare, NULL, buf, &xpmLightSquare, NULL);
-	    fprintf(stderr, _("dark square "));
-	    snprintf(buf,sizeof(buf), "%s/dsq%u.xim",
-		    ExpandPathName(appData.pixmapDirectory), ss);
-	    if (appData.debugMode)
-	      fprintf(stderr, _("(File:%s:) "), buf);
-	    ximDarkSquare=
-	      XGetImage(xDisplay, DefaultRootWindow(xDisplay),
-			0, 0, ss, ss, AllPlanes, XYPixmap);
-	    loadXIM(ximDarkSquare, NULL, buf, &xpmDarkSquare, NULL);
-	    xpmJailSquare = xpmLightSquare;
-	}
-	fprintf(stderr, _("Done.\n"));
-    }
-    XSynchronize(xDisplay, False); /* Work-around for xlib/xt buffering bug */
-}
-
-#if HAVE_LIBXPM
-void CreateXPMPieces()
-{
-    int piece, kind, r;
-    char buf[MSG_SIZ];
-    u_int ss = squareSize;
-    XpmAttributes attr;
-    static char *xpmkind[] = { "ll", "ld", "dl", "dd" };
-    XpmColorSymbol symbols[4];
-
-#if 0
-    /* Apparently some versions of Xpm don't define XpmFormat at all --tpm */
-    if (appData.debugMode) {
-	fprintf(stderr, "XPM Library Version: %d.%d%c\n",
-		XpmFormat, XpmVersion, (char)('a' + XpmRevision - 1));
-    }
-#endif
-
-    /* The XSynchronize calls were copied from CreatePieces.
-       Not sure if needed, but can't hurt */
-    XSynchronize(xDisplay, True); /* Work-around for xlib/xt buffering bug */
-
-    /* Setup translations so piece colors match square colors */
-    symbols[0].name = "light_piece";
-    symbols[0].value = appData.whitePieceColor;
-    symbols[1].name = "dark_piece";
-    symbols[1].value = appData.blackPieceColor;
-    symbols[2].name = "light_square";
-    symbols[2].value = appData.lightSquareColor;
-    symbols[3].name = "dark_square";
-    symbols[3].value = appData.darkSquareColor;
-
-    attr.valuemask = XpmColorSymbols;
-    attr.colorsymbols = symbols;
-    attr.numsymbols = 4;
-
-    if (appData.monoMode) {
-      DisplayFatalError(_("XPM pieces cannot be used in monochrome mode"),
-			0, 2);
-      ExitEvent(2);
-    }
-    if (strlen(appData.pixmapDirectory) == 0) {
-	XpmPieces* pieces = builtInXpms;
-	useImages = 1;
-	/* Load pieces */
-	while (pieces->size != squareSize && pieces->size) pieces++;
-	if (!pieces->size) {
-	  fprintf(stderr, _("No builtin XPM pieces of size %d\n"), squareSize);
-	  exit(1);
-	}
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    for (kind=0; kind<4; kind++) {
-
-		if ((r=XpmCreatePixmapFromData(xDisplay, xBoardWindow,
-					       pieces->xpm[piece][kind],
-					       &(xpmPieceBitmap2[kind][piece]),
-					       NULL, &attr)) != 0) {
-		  fprintf(stderr, _("Error %d loading XPM image \"%s\"\n"),
-			  r, buf);
-		  exit(1);
-		}
-		if(piece <= (int) WhiteKing)
-		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
-	    }
-	}
-	useImageSqs = 0;
-	xpmJailSquare = xpmLightSquare;
-    } else {
-	useImages = 1;
-
-	fprintf(stderr, _("\nLoading XPMs...\n"));
-
-	/* Load pieces */
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    fprintf(stderr, "%d ", piece+1);
-	    for (kind=0; kind<4; kind++) {
-	      snprintf(buf, sizeof(buf), "%s/%s%c%s%u.xpm",
-			ExpandPathName(appData.pixmapDirectory),
-			piece > (int) WhiteKing ? "w" : "",
-			pieceBitmapNames[piece],
-			xpmkind[kind], ss);
-		if (appData.debugMode) {
-		    fprintf(stderr, _("(File:%s:) "), buf);
-		}
-		if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
-					   &(xpmPieceBitmap2[kind][piece]),
-					   NULL, &attr)) != 0) {
-		    fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"),
-			    r, buf);
-		    exit(1);
-		}
-		if(piece <= (int) WhiteKing) 
-		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
-	    }
-	}
-	/* Load light and dark squares */
-	/* If the LSQ and DSQ pieces don't exist, we will
-	   draw them with solid squares. */
-	fprintf(stderr, _("light square "));
-	snprintf(buf, sizeof(buf), "%s/lsq%u.xpm", ExpandPathName(appData.pixmapDirectory), ss);
-	if (access(buf, 0) != 0) {
-	    useImageSqs = 0;
-	} else {
-	    useImageSqs = 1;
-	    if (appData.debugMode)
-	      fprintf(stderr, _("(File:%s:) "), buf);
-
-	    if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
-				       &xpmLightSquare, NULL, &attr)) != 0) {
-		fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"), r, buf);
-		exit(1);
-	    }
-	    fprintf(stderr, _("dark square "));
-	    snprintf(buf, sizeof(buf), "%s/dsq%u.xpm",
-		    ExpandPathName(appData.pixmapDirectory), ss);
-	    if (appData.debugMode) {
-		fprintf(stderr, _("(File:%s:) "), buf);
-	    }
-	    if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
-				       &xpmDarkSquare, NULL, &attr)) != 0) {
-		fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"), r, buf);
-		exit(1);
-	    }
-	}
-	xpmJailSquare = xpmLightSquare;
-	fprintf(stderr, _("Done.\n"));
-    }
-    XSynchronize(xDisplay, False); /* Work-around for xlib/xt
-				      buffering bug */
-}
-#endif /* HAVE_LIBXPM */
-
-#if HAVE_LIBXPM
-/* No built-in bitmaps */
 void CreatePieces()
 {
-    int piece, kind;
-    char buf[MSG_SIZ];
-    u_int ss = squareSize;
+  /* order of pieces
+  WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing,
+  BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing,
+  */
 
-    XSynchronize(xDisplay, True); /* Work-around for xlib/xt
-				     buffering bug */
+  SVGpieces[WhitePawn]   = load_pixbuf("svg/WhitePawn.svg");
+  SVGpieces[WhiteKnight] = load_pixbuf("svg/WhiteKnight.svg");
+  SVGpieces[WhiteBishop] = load_pixbuf("svg/WhiteBishop.svg");
+  SVGpieces[WhiteRook]   = load_pixbuf("svg/WhiteRook.svg");
+  SVGpieces[WhiteQueen]  = load_pixbuf("svg/WhiteQueen.svg");
+  SVGpieces[WhiteKing]   = load_pixbuf("svg/WhiteKing.svg");
 
-    for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    sprintf(buf, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
-		    pieceBitmapNames[piece],
-		    ss, kind == SOLID ? 's' : 'o');
-	    ReadBitmap(&pieceBitmap2[kind][piece], buf, NULL, ss, ss);
-	    if(piece <= (int)WhiteKing)
-		pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
-	}
-    }
+  SVGpieces[BlackPawn]   = load_pixbuf("svg/BlackPawn.svg");
+  SVGpieces[BlackKnight] = load_pixbuf("svg/BlackKnight.svg");
+  SVGpieces[BlackBishop] = load_pixbuf("svg/BlackBishop.svg");
+  SVGpieces[BlackRook]   = load_pixbuf("svg/BlackRook.svg");
+  SVGpieces[BlackQueen]  = load_pixbuf("svg/BlackQueen.svg");
+  SVGpieces[BlackKing]   = load_pixbuf("svg/BlackKing.svg");
 
-    XSynchronize(xDisplay, False); /* Work-around for xlib/xt
-				      buffering bug */
+  return;
 }
-#else
-/* With built-in bitmaps */
-void CreatePieces()
-{
-    BuiltInBits* bib = builtInBits;
-    int piece, kind;
-    char buf[MSG_SIZ];
-    u_int ss = squareSize;
 
-    XSynchronize(xDisplay, True); /* Work-around for xlib/xt
-				     buffering bug */
-
-    while (bib->squareSize != ss && bib->squareSize != 0) bib++;
-
-    for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    sprintf(buf, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
-		    pieceBitmapNames[piece],
-		    ss, kind == SOLID ? 's' : 'o');
-	    ReadBitmap(&pieceBitmap2[kind][piece], buf,
-		       bib->bits[kind][piece], ss, ss);
-	    if(piece <= (int)WhiteKing)
-		pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
-	}
-    }
-
-    XSynchronize(xDisplay, False); /* Work-around for xlib/xt
-				      buffering bug */
-}
-#endif
-
-void ReadBitmap(pm, name, bits, wreq, hreq)
-     Pixmap *pm;
-     String name;
-     unsigned char bits[];
-     u_int wreq, hreq;
-{
-    int x_hot, y_hot;
-    u_int w, h;
-    int errcode;
-    char msg[MSG_SIZ], fullname[MSG_SIZ];
-
-    if (*appData.bitmapDirectory != NULLCHAR) {
-        strcpy(fullname, appData.bitmapDirectory);
-	strcat(fullname, "/");
-	strcat(fullname, name);
-	errcode = XReadBitmapFile(xDisplay, xBoardWindow, fullname,
-				  &w, &h, pm, &x_hot, &y_hot);
-    fprintf(stderr, "load %s\n", name);
-	if (errcode != BitmapSuccess) {
-	    switch (errcode) {
-	      case BitmapOpenFailed:
-		snprintf(msg, sizeof(msg), _("Can't open bitmap file %s"), fullname);
-		break;
-	      case BitmapFileInvalid:
-		snprintf(msg, sizeof(msg), _("Invalid bitmap in file %s"), fullname);
-		break;
-	      case BitmapNoMemory:
-		snprintf(msg, sizeof(msg), _("Ran out of memory reading bitmap file %s"),
-			fullname);
-		break;
-	      default:
-		snprintf(msg, sizeof(msg), _("Unknown XReadBitmapFile error %d on file %s"),
-			errcode, fullname);
-		break;
-	    }
-	    fprintf(stderr, _("%s: %s...using built-in\n"),
-		    programName, msg);
-	} else if (w != wreq || h != hreq) {
-	    fprintf(stderr,
-		    _("%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"),
-		    programName, fullname, w, h, wreq, hreq);
-	} else {
-	    return;
-	}
-    }
-    if (bits == NULL) {
-#if 0
-	fprintf(stderr, _("%s: No built-in bitmap for %s; giving up\n"),
-		programName, name);
-	exit(1);
-#endif
-	; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
-    } else {
-	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
-				    wreq, hreq);
-    }
-}
 
 void CreateGrid()
 {
@@ -4292,32 +3883,32 @@ CreatePieceMenus()
     Arg args[16];
     ChessSquare selection;
 
-    whitePieceMenu = CreatePieceMenu("menuW", 0);
-    blackPieceMenu = CreatePieceMenu("menuB", 1);
-
-    XtRegisterGrabAction(PieceMenuPopup, True,
-			 (unsigned)(ButtonPressMask|ButtonReleaseMask),
-			 GrabModeAsync, GrabModeAsync);
-
-    XtSetArg(args[0], XtNlabel, _("Drop"));
-    dropMenu = XtCreatePopupShell("menuD", simpleMenuWidgetClass,
-				  boardWidget, args, 1);
-    for (i = 0; i < DROP_MENU_SIZE; i++) {
-	String item = dropMenuStrings[i];
-
-	if (strcmp(item, "----") == 0) {
-	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
-					  dropMenu, NULL, 0);
-	} else {
-          XtSetArg(args[0], XtNlabel, XtNewString(_(item)));
-	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-                                dropMenu, args, 1);
-	    selection = dropMenuTranslation[i];
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) DropMenuSelect,
-			  (caddr_t) selection);
-	}
-    }
+//    whitePieceMenu = CreatePieceMenu("menuW", 0);
+//    blackPieceMenu = CreatePieceMenu("menuB", 1);
+//
+//    XtRegisterGrabAction(PieceMenuPopup, True,
+//			 (unsigned)(ButtonPressMask|ButtonReleaseMask),
+//			 GrabModeAsync, GrabModeAsync);
+//
+//    XtSetArg(args[0], XtNlabel, _("Drop"));
+//    dropMenu = XtCreatePopupShell("menuD", simpleMenuWidgetClass,
+//				  boardWidget, args, 1);
+//    for (i = 0; i < DROP_MENU_SIZE; i++) {
+//	String item = dropMenuStrings[i];
+//
+//	if (strcmp(item, "----") == 0) {
+//	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
+//					  dropMenu, NULL, 0);
+//	} else {
+//          XtSetArg(args[0], XtNlabel, XtNewString(_(item)));
+//	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
+//                                dropMenu, args, 1);
+//	    selection = dropMenuTranslation[i];
+//	    XtAddCallback(entry, XtNcallback,
+//			  (XtCallbackProc) DropMenuSelect,
+//			  (caddr_t) selection);
+//	}
+//    }
 }
 
 void SetupDropMenu()
@@ -4553,36 +4144,52 @@ static void BlankSquare(x, y, color, piece, dest)
      Drawable dest;
 {
     if (useImages && useImageSqs) {
-	Pixmap pm;
-	switch (color) {
-	  case 1: /* light */
-	    pm = xpmLightSquare;
-	    break;
-	  case 0: /* dark */
-	    pm = xpmDarkSquare;
-	    break;
-	  case 2: /* neutral */
-	  default:
-	    pm = xpmJailSquare;
-	    break;
-	}
-	XCopyArea(xDisplay, pm, dest, wlPieceGC, 0, 0,
-		  squareSize, squareSize, x, y);
+      GdkPixbuf *pb;
+      switch (color) {
+      case 1: /* light */
+	pb = SVGLightSquare;
+	break;
+      case 0: /* dark */
+	pb = SVGDarkSquare;
+	break;
+      case 2: /* neutral */
+      default:
+	pb = SVGNeutralSquare;
+	break;
+      }
+      gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,pb,0,0,x,y,-1,-1, GDK_RGB_DITHER_NORMAL, 0, 0);
     } else {
-	GC gc;
-	switch (color) {
-	  case 1: /* light */
-	    gc = lightSquareGC;
-	    break;
-	  case 0: /* dark */
-	    gc = darkSquareGC;
-	    break;
-	  case 2: /* neutral */
-	  default:
-	    gc = jailSquareGC;
-	    break;
-	}
-	XFillRectangle(xDisplay, dest, gc, x, y, squareSize, squareSize);
+      GdkGC *gc;
+      GdkColor tmp;
+      
+      gc = gdk_gc_new(GDK_WINDOW(GUI_Board->window));
+      
+      switch (color) {
+      case 1: /* light */
+	//      gc = lightSquareGC;
+	tmp.green=60000;
+	tmp.red=63330;
+	tmp.blue=60000;
+	gdk_gc_set_rgb_fg_color(gc, &tmp);
+	break;
+      case 0: /* dark */
+	//      gc = darkSquareGC;
+	tmp.green=10000;
+	tmp.red=13330;
+	tmp.blue=1234;
+	gdk_gc_set_rgb_fg_color(gc, &tmp);
+	break;
+      case 2: /* neutral */
+      default:
+	//      gc = jailSquareGC;
+	tmp.green=30000;
+	tmp.red=33330;
+	tmp.blue=30234;
+	gdk_gc_set_rgb_fg_color(gc, &tmp);
+	break;
+      }
+      gdk_draw_rectangle(GDK_WINDOW(GUI_Board->window),gc,1,x,y,squareSize,squareSize);
+      
     }
 }
 
@@ -4858,33 +4465,6 @@ void DrawSquare(row, column, piece, do_flash)
 }
 
 
-/* Why is this needed on some versions of X? */
-void EventProc(widget, unused, event)
-     Widget widget;
-     caddr_t unused;
-     XEvent *event;
-{
-    if (!XtIsRealized(widget))
-      return;
-
-    switch (event->type) {
-      case Expose:
-	if (event->xexpose.count > 0) return;  /* no clipping is done */
-	XDrawPosition(widget, True, NULL);
-	break;
-      default:
-	return;
-    }
-}
-/* end why */
-
-void DrawPosition(fullRedraw, board)
-     /*Boolean*/int fullRedraw;
-     Board board;
-{
-    XDrawPosition(boardWidget, fullRedraw, board);
-}
-
 /* Returns 1 if there are "too many" differences between b1 and b2
    (i.e. more than 1 move was made) */
 static int too_many_diffs(b1, b2)
@@ -4957,8 +4537,7 @@ static int damage[BOARD_SIZE][BOARD_SIZE];
 /*
  * event handler for redrawing the board
  */
-void XDrawPosition(w, repaint, board)
-     Widget w;
+void DrawPosition( repaint, board)
      /*Boolean*/int repaint;
      Board board;
 {
@@ -4968,6 +4547,9 @@ void XDrawPosition(w, repaint, board)
     static Board lastBoard;
     Arg args[16];
     int rrow, rcol;
+
+    printf ("DEBUG: in draw position\n");
+
 
     if (board == NULL) {
 	if (!lastBoardValid) return;
@@ -4984,8 +4566,12 @@ void XDrawPosition(w, repaint, board)
      * but this causes a very distracting flicker.
      */
 
+    printf ("DEBUG: in draw position 0.1\n");
+
+
     if (!repaint && lastBoardValid && lastFlipView == flipView) {
 
+    printf ("DEBUG: in draw position 0.1a\n");
 	/* If too much changes (begin observing new game, etc.), don't
 	   do flashing */
 	do_flash = too_many_diffs(board, lastBoard) ? 0 : 1;
@@ -5019,8 +4605,26 @@ void XDrawPosition(w, repaint, board)
 	    }
     } else {
 	if (lineGap > 0)
-	  XDrawSegments(xDisplay, xBoardWindow, lineGC,
-			gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
+          {
+            /* todo move GC to setupgc */
+            GdkGC *gtklineGC=NULL;
+            GdkColor tmp;
+
+            gtklineGC = gdk_gc_new(GDK_WINDOW(GUI_Board->window));
+
+            tmp.green=60000;
+            tmp.red=0;
+            tmp.blue=1234;
+            gdk_gc_set_rgb_fg_color(gtklineGC, &tmp);
+
+            tmp.green=60000;
+            tmp.red=60000;
+            tmp.blue=61234;
+            gdk_gc_set_rgb_bg_color(gtklineGC, &tmp);
+
+            gdk_draw_segments(GUI_Board->window,gtklineGC,
+                              gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2 );
+          }
 
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++) {
@@ -5050,7 +4654,7 @@ void XDrawPosition(w, repaint, board)
     /* If piece being dragged around board, must redraw that too */
     DrawDragPiece();
 
-    XSync(xDisplay, False);
+    //    XSync(xDisplay, False);
 }
 
 
@@ -5063,7 +4667,7 @@ void DrawPositionProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    XDrawPosition(w, True, NULL);
+    DrawPosition(True, NULL);
 }
 
 
@@ -6038,68 +5642,30 @@ void ErrorPopUp(title, label, modal)
      char *title, *label;
      int modal;
 {
-    Arg args[16];
-    Widget dialog, layout;
-    Position x, y;
-    int xx, yy;
-    Window junk;
-    Dimension bw_width, pw_width;
-    Dimension pw_height;
-    int i;
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True);  i++;
-    XtSetArg(args[i], XtNtitle, title); i++;
-    errorShell =
-      XtCreatePopupShell("errorpopup", transientShellWidgetClass,
-			 shellWidget, args, i);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, errorShell,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    i = 0;
-    XtSetArg(args[i], XtNlabel, label); i++;
-    XtSetArg(args[i], XtNborderWidth, 0); i++;
-    dialog = XtCreateManagedWidget("dialog", dialogWidgetClass,
-				   layout, args, i);
-
-    XawDialogAddButton(dialog, _("ok"), ErrorCallback, (XtPointer) dialog);
-
-    XtRealizeWidget(errorShell);
-    CatchDeleteWindow(errorShell, "ErrorPopDown");
-
-    i = 0;
-    XtSetArg(args[i], XtNwidth, &bw_width);  i++;
-    XtGetValues(boardWidget, args, i);
-    i = 0;
-    XtSetArg(args[i], XtNwidth, &pw_width);  i++;
-    XtSetArg(args[i], XtNheight, &pw_height);  i++;
-    XtGetValues(errorShell, args, i);
-
-#ifdef NOTDEF
-    /* This code seems to tickle an X bug if it is executed too soon
-       after xboard starts up.  The coordinates get transformed as if
-       the main window was positioned at (0, 0).
-       */
-    XtTranslateCoords(boardWidget, (bw_width - pw_width) / 2,
-		      0 - pw_height + squareSize / 3, &x, &y);
-#else
-    XTranslateCoordinates(xDisplay, XtWindow(boardWidget),
-			  RootWindowOfScreen(XtScreen(boardWidget)),
-			  (bw_width - pw_width) / 2,
-			  0 - pw_height + squareSize / 3, &xx, &yy, &junk);
-    x = xx;
-    y = yy;
-#endif
-    if (y < 0) y = 0; /*avoid positioning top offscreen*/
-
-    i = 0;
-    XtSetArg(args[i], XtNx, x);  i++;
-    XtSetArg(args[i], XtNy, y);  i++;
-    XtSetValues(errorShell, args, i);
-
-    errorUp = True;
-    XtPopup(errorShell, modal ? XtGrabExclusive : XtGrabNone);
+  GtkWidget *dialog;
+ 
+  printf ("DEBUG: error %s %s\n\n",title,label);
+  
+  dialog = gtk_message_dialog_new(GTK_WINDOW(GUI_Window),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  GTK_MESSAGE_ERROR,
+                                  GTK_BUTTONS_CLOSE,
+                                  (gchar *)label);
+  
+  gtk_window_set_title(GTK_WINDOW(dialog),(gchar *) title);
+  if(modal)
+    {
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(GTK_WIDGET(dialog));
+    }
+  else
+    {
+      g_signal_connect_swapped (dialog, "response",
+                                G_CALLBACK (ErrorPopDownProc),
+                                dialog);
+      errorUp = True;
+      gtk_widget_show(GTK_WIDGET(dialog));
+    }
 }
 
 /* Disable all user input other than deleting the window */
@@ -6108,7 +5674,7 @@ void FreezeUI()
 {
   if (frozen) return;
   /* Grab by a widget that doesn't accept input */
-  XtAddGrab(messageWidget, TRUE, FALSE);
+  //  XtAddGrab(messageWidget, TRUE, FALSE);
   frozen = 1;
 }
 
@@ -6229,15 +5795,6 @@ void ModeHighlight()
 /*
  * Button/menu procedures
  */
-void ResetProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ResetGameEvent();
-    AnalysisPopDown();
-}
 
 int LoadGamePopUp(f, gameNumber, title)
      FILE *f;
@@ -6260,44 +5817,6 @@ int LoadGamePopUp(f, gameNumber, title)
     return LoadGame(f, gameNumber, title, FALSE);
 }
 
-void LoadGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
-	Reset(FALSE, TRUE);
-    }
-    FileNamePopUp(_("Load game file name?"), "", LoadGamePopUp, "rb");
-}
-
-void LoadNextGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ReloadGame(1);
-}
-
-void LoadPrevGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ReloadGame(-1);
-}
-
-void ReloadGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ReloadGame(0);
-}
 
 void LoadNextPositionProc(w, event, prms, nprms)
      Widget w;
@@ -6561,26 +6080,6 @@ void AutoSaveGame()
 {
     SaveGameProc(NULL, NULL, NULL, NULL);
 }
-
-
-void QuitProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ExitEvent(0);
-}
-
-void PauseProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    PauseEvent();
-}
-
 
 void MachineBlackProc(w, event, prms, nprms)
      Widget w;
@@ -7417,27 +6916,6 @@ void QuietPlayProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void ShowCoordsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.showCoords = !appData.showCoords;
-
-    if (appData.showCoords) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
-		args, 1);
-
-    DrawPosition(True, NULL);
-}
-
 void ShowThinkingProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -7526,28 +7004,6 @@ void BookProc(w, event, prms, nprms)
     BookEvent();
 }
 
-void AboutProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-#if ZIPPY
-    char *zippy = " (with Zippy code)";
-#else
-    char *zippy = "";
-#endif
-    snprintf(buf, sizeof(buf), "%s%s\n\n%s\n%s\n%s\n\n%s%s\n%s",
-	    programVersion, zippy,
-	    "Copyright 1991 Digital Equipment Corporation",
-	    "Enhancements Copyright 1992-2009 Free Software Foundation",
-	    "Enhancements Copyright 2005 Alessandro Scotti",
-	    PACKAGE, " is free software and carries NO WARRANTY;",
-	    "see the file COPYING for more information.");
-    ErrorPopUp(_("About XBoard"), buf, FALSE);
-}
-
 void DebugProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -7589,7 +7045,7 @@ void Iconify(w, event, prms, nprms)
 }
 
 void DisplayMessage(message, extMessage)
-     char *message, *extMessage;
+     gchar *message, *extMessage;
 {
     char buf[MSG_SIZ];
     Arg arg;
@@ -7602,8 +7058,9 @@ void DisplayMessage(message, extMessage)
 	    message = extMessage;
 	}
     }
-    XtSetArg(arg, XtNlabel, message);
-    XtSetValues(messageWidget, &arg, 1);
+ 
+    printf("TODO: message %s\n",message);
+    gtk_label_set_text( GTK_LABEL(gtk_builder_get_object (builder, "Messages")),message);
 }
 
 void DisplayTitle(text)
@@ -8218,40 +7675,48 @@ StartClockTimer(millisec)
 
 void
 DisplayTimerLabel(w, color, timer, highlight)
-     Widget w;
+     GtkWidget *w;
      char *color;
      long timer;
      int highlight;
 {
-    char buf[MSG_SIZ];
-    Arg args[16];
+  gchar buf[MSG_SIZ];
+  
+  
+  if (appData.clockMode) {
+    sprintf(buf, "%s: %s", color, TimeString(timer));
+  } else {
+    sprintf(buf, "%s  ", color);
+  }
+  gtk_label_set_text(GTK_LABEL(w),buf);
 
-    /* check for low time warning */
-    Pixel foregroundOrWarningColor = timerForegroundPixel;
+  /* check for low time warning */
+//    Pixel foregroundOrWarningColor = timerForegroundPixel;
 
-    if (timer > 0 &&
-        appData.lowTimeWarning && 
-        (timer / 1000) < appData.icsAlarmTime)
-      foregroundOrWarningColor = lowTimeWarningColor;
-
-    if (appData.clockMode) {
-	sprintf(buf, "%s: %s", color, TimeString(timer));
-	XtSetArg(args[0], XtNlabel, buf);
-    } else {
-	sprintf(buf, "%s  ", color);
-	XtSetArg(args[0], XtNlabel, buf);
-    }
-
-    if (highlight) {
-
-	XtSetArg(args[1], XtNbackground, foregroundOrWarningColor);
-	XtSetArg(args[2], XtNforeground, timerBackgroundPixel);
-    } else {
-	XtSetArg(args[1], XtNbackground, timerBackgroundPixel);
-	XtSetArg(args[2], XtNforeground, foregroundOrWarningColor);
-    }
-
-    XtSetValues(w, args, 3);
+//    if (timer > 0 &&
+//        appData.lowTimeWarning && 
+//        (timer / 1000) < appData.icsAlarmTime)
+//      foregroundOrWarningColor = lowTimeWarningColor;
+//
+//    if (appData.clockMode) {
+//	sprintf(buf, "%s: %s", color, TimeString(timer));
+//	XtSetArg(args[0], XtNlabel, buf);
+//    } else {
+//	sprintf(buf, "%s  ", color);
+//	XtSetArg(args[0], XtNlabel, buf);
+//    }
+//
+//    if (highlight) {
+//
+//	XtSetArg(args[1], XtNbackground, foregroundOrWarningColor);
+//	XtSetArg(args[2], XtNforeground, timerBackgroundPixel);
+//    } else {
+//	XtSetArg(args[1], XtNbackground, timerBackgroundPixel);
+//	XtSetArg(args[2], XtNforeground, foregroundOrWarningColor);
+//    }
+//
+//    XtSetValues(w, args, 3);
+//
 }
 
 void
@@ -8259,15 +7724,13 @@ DisplayWhiteClock(timeRemaining, highlight)
      long timeRemaining;
      int highlight;
 {
-    Arg args[16];
+  if(appData.noGUI) return;
 
-    if(appData.noGUI) return;
-    DisplayTimerLabel(whiteTimerWidget, _("White"), timeRemaining, highlight);
-    if (highlight && iconPixmap == bIconPixmap) {
-	iconPixmap = wIconPixmap;
-	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
-	XtSetValues(shellWidget, args, 1);
-    }
+  DisplayTimerLabel(GUI_Whiteclock, _("White"), timeRemaining, highlight);
+  if (highlight && WindowIcon == BlackIcon) {
+    WindowIcon = WhiteIcon;
+    gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
+  }
 }
 
 void
@@ -8275,14 +7738,11 @@ DisplayBlackClock(timeRemaining, highlight)
      long timeRemaining;
      int highlight;
 {
-    Arg args[16];
-
     if(appData.noGUI) return;
-    DisplayTimerLabel(blackTimerWidget, _("Black"), timeRemaining, highlight);
-    if (highlight && iconPixmap == wIconPixmap) {
-	iconPixmap = bIconPixmap;
-	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
-	XtSetValues(shellWidget, args, 1);
+    DisplayTimerLabel(GUI_Blackclock, _("Black"), timeRemaining, highlight);
+    if (highlight && WindowIcon == WhiteIcon) {
+        WindowIcon = BlackIcon;
+        gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
     }
 }
 
@@ -8831,7 +8291,7 @@ CreateAnimVars ()
 
   if (xpmDone && gameInfo.variant == old) return;
   if(xpmDone) old = gameInfo.variant; // first time pieces might not be created yet
-  XGetWindowAttributes(xDisplay, xBoardWindow, &info);
+  //  XGetWindowAttributes(xDisplay, xBoardWindow, &info);
 
   InitAnimState(&game, &info);
   InitAnimState(&player, &info);
@@ -9305,7 +8765,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
   damage[toY][toX] = True;
 }
 
-static void
+void
 DragPieceBegin(x, y)
      int x; int y;
 {
@@ -9384,7 +8844,7 @@ DragPieceMove(x, y)
 #endif
 }
 
-static void
+void
 DragPieceEnd(x, y)
      int x; int y;
 {

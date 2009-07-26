@@ -1,0 +1,14 @@
+void QuitProc P((GtkObject *object, gpointer user_data));
+void ResetProc P((GtkObject *object, gpointer user_data));
+void WhiteClockProc P((GtkObject *object, gpointer user_data));
+void BlackClockProc P((GtkObject *object, gpointer user_data));
+void AboutProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void ShowCoordsProc P((GtkObject *object, gpointer user_data));
+void ErrorPopDownProc P((GtkObject *object, gpointer user_data));
+void PauseProc P((GtkObject *object, gpointer user_data));
+void LoadNextGameProc P((GtkObject *object, gpointer user_data));
+void LoadPrevGameProc P((GtkObject *object, gpointer user_data));
+void ReloadGameProc P((GtkObject *object, gpointer user_data));
+void EventProc P((GtkWindow *window, GdkEvent *event, gpointer data));
+void UserMoveProc P((GtkWindow *window, GdkEvent *event, gpointer data));
+gboolean CloseWindowProc P((GtkWidget *button));

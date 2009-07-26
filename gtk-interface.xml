@@ -1,0 +1,618 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="MainWindow">
+    <property name="title" translatable="yes">XBoard</property>
+    <signal name="destroy" handler="QuitProc"/>
+    <child>
+      <object class="GtkAspectFrame" id="Aspectframe">
+        <property name="visible">True</property>
+        <property name="label_xalign">0</property>
+        <property name="shadow_type">none</property>
+        <property name="ratio">0.80000001192092896</property>
+        <child>
+          <object class="GtkVBox" id="VBox">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkMenuBar" id="MenuBar">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkMenuItem" id="MenuItemFile">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">_File</property>
+                    <property name="use_underline">True</property>
+                    <child type="submenu">
+                      <object class="GtkMenu" id="MenuFile">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Reset Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Reset Game</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImageMenuItem" id="menuFile.Load Game">
+                            <property name="label" translatable="yes">Load Game</property>
+                            <property name="visible">True</property>
+                            <property name="image">image1</property>
+                            <property name="use_stock">False</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Load Next Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Load Next Game</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Load Previous Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Load Previous Game</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Reload Same Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Reload Same Game</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Save Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Save Game</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Copy Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Copy Game</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Paste Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Paste Game</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="separatormenuitem3">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Load Position">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Load Position</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Load Next Position">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Load Next Position</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Load Previous Position">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Load Previous Position</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Reload Same Position">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Reload Same Position</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Save Position">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Save Position</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="separatormenuitem4">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Copy Position">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Copy Position</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Paste Position">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Paste Position</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="separatormenuitem5">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Mail Move">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Mail Move</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuFile.Reload CMail Message">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Reload CMail Message</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="separatormenuitem6">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImageMenuItem" id="menuFile.Quit">
+                            <property name="label">gtk-quit</property>
+                            <property name="visible">True</property>
+                            <property name="use_underline">True</property>
+                            <property name="use_stock">True</property>
+                            <signal name="activate" handler="QuitProc"/>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkMenuItem" id="MenuItemMode">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">_Mode</property>
+                    <property name="use_underline">True</property>
+                    <child type="submenu">
+                      <object class="GtkMenu" id="menu2">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="GtkRadioMenuItem" id="menuMode.Machine White">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Machine White</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkRadioMenuItem" id="menuMode.Machine Black">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Machine Black</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkRadioMenuItem" id="menuMode.Two Machines">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Two Machines</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkMenuItem" id="MenuItemAction">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">_Action</property>
+                    <property name="use_underline">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkMenuItem" id="MenuItemStep">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">_Step</property>
+                    <property name="use_underline">True</property>
+                    <child type="submenu">
+                      <object class="GtkMenu" id="menu4">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="GtkMenuItem" id="menuStep.Retract Move">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Retract Move</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkMenuItem" id="MenuItemOptions">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">_Options</property>
+                    <property name="use_underline">True</property>
+                    <child type="submenu">
+                      <object class="GtkMenu" id="menu5">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Always Queen">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Always Queen</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Animate Dragging">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Animate Dragging</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Animate Moving">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Animate Moving</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Auto Comment">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Auto Comment</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Auto Flag">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Auto Flag</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Auto Flip View">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Auto Flip View</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Auto Observe">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Auto Observe</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Auto Raise Board">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Auto Raise Board</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Auto Save">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Auto Save</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Blindfold">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Blindfold</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Flash Moves">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Flash Moves</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Flip View">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Flip View</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Get Move List">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Get Move List</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Highlight Last Move">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Highlight Last Move</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Move Sound">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Move Sound</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.ICS Alarm">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">ICS Alarm</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Old Save Style">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Old Save Style</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Periodic Updates">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Periodic Updates</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Ponder Next Move">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Ponder Next Move</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Popup Exit Message">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Popup Exit Message</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Popup Move Errors">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Popup Move Errors</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Premove">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Premove</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Quiet Play">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Quiet Play</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Show Coords">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Show Coords</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Show Thinking">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Show Thinking</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuOptions.Test Legality">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Test Legality</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkMenuItem" id="MenuItemHelp">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">_Help</property>
+                    <property name="use_underline">True</property>
+                    <child type="submenu">
+                      <object class="GtkMenu" id="menu3">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="GtkImageMenuItem" id="imagemenuitem10">
+                            <property name="label">gtk-about</property>
+                            <property name="visible">True</property>
+                            <property name="use_underline">True</property>
+                            <property name="use_stock">True</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkHBox" id="Timer">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkEventBox" id="WhiteClockEventBox">
+                    <property name="visible">True</property>
+                    <signal name="button_press_event" handler="WhiteClockProc"/>
+                    <child>
+                      <object class="GtkLabel" id="WhiteClock">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">White:</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEventBox" id="BlackClockEventBox">
+                    <property name="visible">True</property>
+                    <signal name="button_press_event" handler="BlackClockProc"/>
+                    <child>
+                      <object class="GtkLabel" id="BlackClock">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Black:</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkHBox" id="hbox1">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkLabel" id="Messages">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">not your turn</property>
+                    <property name="single_line_mode">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button1">
+                    <property name="label" translatable="yes">&lt;&lt;</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button2">
+                    <property name="label" translatable="yes">&lt;</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button3">
+                    <property name="label" translatable="yes">P</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <signal name="clicked" handler="PauseProc"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button4">
+                    <property name="label" translatable="yes">&gt;</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button5">
+                    <property name="label" translatable="yes">&gt;&gt;</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkDrawingArea" id="Board">
+                <property name="visible">True</property>
+                <signal name="button_press_event" handler="UserMoveProc"/>
+                <signal name="expose_event" handler="EventProc"/>
+                <signal name="button_release_event" handler="UserMoveProc"/>
+              </object>
+              <packing>
+                <property name="position">3</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="xalign">0.40000000596046448</property>
+    <property name="stock">gtk-open</property>
+  </object>
+</interface>
