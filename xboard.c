@@ -2137,11 +2137,9 @@ CatchDeleteWindow(Widget w, String procname)
 void
 BoardToTop()
 {
-  Arg args[16];
-  XtSetArg(args[0], XtNiconic, False);
-  XtSetValues(shellWidget, args, 1);
-
-  XtPopup(shellWidget, XtGrabNone); /* Raise if lowered  */
+  /* this should raise the board to the top */
+  gtk_window_present(GTK_WINDOW(GUI_Window));
+  return;
 }
 
 #ifdef IDSIZES
@@ -4253,28 +4251,31 @@ static void colorDrawPiece(piece, square_color, x, y, dest)
      int square_color, x, y;
      Drawable dest;
 {
-    if(pieceToSolid(piece) == NULL) return; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
-    switch (square_color) {
-      case 1: /* light */
-	XCopyPlane(xDisplay, *pieceToSolid(piece),
-		   dest, (int) piece < (int) BlackPawn
-		   ? wlPieceGC : blPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-      case 0: /* dark */
-	XCopyPlane(xDisplay, *pieceToSolid(piece),
-		   dest, (int) piece < (int) BlackPawn
-		   ? wdPieceGC : bdPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-      case 2: /* neutral */
-      default:
-	XCopyPlane(xDisplay, *pieceToSolid(piece),
-		   dest, (int) piece < (int) BlackPawn
-		   ? wjPieceGC : bjPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-    }
+  gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,GDK_PIXBUF(SVGpieces[piece]),0,0,x,y,-1,-1, GDK_RGB_DITHER_NORMAL, 0, 0);
+  return ;
+  
+//    if(pieceToSolid(piece) == NULL) return; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
+//    switch (square_color) {
+//      case 1: /* light */
+//	XCopyPlane(xDisplay, *pieceToSolid(piece),
+//		   dest, (int) piece < (int) BlackPawn
+//		   ? wlPieceGC : blPieceGC, 0, 0,
+//		   squareSize, squareSize, x, y, 1);
+//	break;
+//      case 0: /* dark */
+//	XCopyPlane(xDisplay, *pieceToSolid(piece),
+//		   dest, (int) piece < (int) BlackPawn
+//		   ? wdPieceGC : bdPieceGC, 0, 0,
+//		   squareSize, squareSize, x, y, 1);
+//	break;
+//      case 2: /* neutral */
+//      default:
+//	XCopyPlane(xDisplay, *pieceToSolid(piece),
+//		   dest, (int) piece < (int) BlackPawn
+//		   ? wjPieceGC : bjPieceGC, 0, 0,
+//		   squareSize, squareSize, x, y, 1);
+//	break;
+//    }
 }
 
 static void colorDrawPieceImage(piece, square_color, x, y, dest)
@@ -5730,67 +5731,42 @@ char *ModeToWidgetName(mode)
 
 void ModeHighlight()
 {
-    Arg args[16];
     static int oldPausing = FALSE;
     static GameMode oldmode = (GameMode) -1;
     char *wname;
 
-    if (!boardWidget || !XtIsRealized(boardWidget)) return;
+   // todo this toggling of the pause button doesn't seem to work?
+    // e.g. select pause from buttonbar doesn't activate menumode.pause
+
+    //    fprintf(stderr,"DEBUG: oldmode %d newmode %d oldpause %d newpause %d\n",oldmode,gameMode,oldPausing,pausing);
+    //fflush(stderr);
+
+    //    if (!boardWidget || !XtIsRealized(boardWidget)) return;
 
     if (pausing != oldPausing) {
-	oldPausing = pausing;
+      oldPausing = pausing;
+      gtk_button_set_relief(GTK_BUTTON (gtk_builder_get_object (builder, "menuMode.Pause")),pausing?GTK_RELIEF_NORMAL:GTK_RELIEF_NONE);
+      /* toggle background color in showbuttonbar */
+      if (appData.showButtonBar) {
 	if (pausing) {
-	    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+	  gtk_button_pressed(GTK_BUTTON (gtk_builder_get_object (builder, "buttonbar.Pause")));
 	} else {
-	    XtSetArg(args[0], XtNleftBitmap, None);
+	  gtk_button_released(GTK_BUTTON (gtk_builder_get_object (builder, "buttonbar.Pause")));
 	}
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Pause"),
-		    args, 1);
-
-	if (appData.showButtonBar) {
-#if 0
-	  if (pausing) {
-	    XtSetArg(args[0], XtNbackground, buttonForegroundPixel);
-	    XtSetArg(args[1], XtNforeground, buttonBackgroundPixel);
-	  } else {
-	    XtSetArg(args[0], XtNbackground, buttonBackgroundPixel);
-	    XtSetArg(args[1], XtNforeground, buttonForegroundPixel);
-	  }
-#else
-	  /* Always toggle, don't set.  Previous code messes up when
-	     invoked while the button is pressed, as releasing it
-	     toggles the state again. */
-	  {
-	    Pixel oldbg, oldfg;
-	    XtSetArg(args[0], XtNbackground, &oldbg);
-	    XtSetArg(args[1], XtNforeground, &oldfg);
-	    XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON),
-			args, 2);
-	    XtSetArg(args[0], XtNbackground, oldfg);
-	    XtSetArg(args[1], XtNforeground, oldbg);
-	  }
-#endif
-	  XtSetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
-	}
+      }
     }
-
+    
     wname = ModeToWidgetName(oldmode);
-    if (wname != NULL) {
-	XtSetArg(args[0], XtNleftBitmap, None);
-	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
-    }
-    wname = ModeToWidgetName(gameMode);
-    if (wname != NULL) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
-    }
+    if(wname)
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, wname)),True);
+    
     oldmode = gameMode;
-
+    
     /* Maybe all the enables should be handled here, not just this one */
-    XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Training"),
-		   gameMode == Training || gameMode == PlayFromGameFile);
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuMode.Training")),
+			     gameMode == Training || gameMode == PlayFromGameFile);
 }
-
+    
 
 /*
  * Button/menu procedures
@@ -7636,18 +7612,18 @@ StartAnalysisClock()
 		      (XtPointer) 0);
 }
 
-XtIntervalId clockTimerXID = 0;
+gint clockTimerTag = 0;
 
 int ClockTimerRunning()
 {
-    return clockTimerXID != 0;
+    return clockTimerTag != 0;
 }
 
 int StopClockTimer()
 {
-    if (clockTimerXID != 0) {
-	XtRemoveTimeOut(clockTimerXID);
-	clockTimerXID = 0;
+    if (clockTimerTag != 0) {
+      gtk_timeout_remove(clockTimerTag);
+	clockTimerTag = 0;
 	return TRUE;
     } else {
 	return FALSE;
@@ -7655,22 +7631,20 @@ int StopClockTimer()
 }
 
 void
-ClockTimerCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+ClockTimerCallback(data)
+     gpointer data;
 {
-    clockTimerXID = 0;
+    clockTimerTag = 0;
     DecrementClocks();
+    return;
 }
 
 void
 StartClockTimer(millisec)
      long millisec;
 {
-    clockTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) ClockTimerCallback,
-		      (XtPointer) 0);
+    clockTimerTag = gtk_timeout_add(millisec,(GtkFunction) ClockTimerCallback,NULL);
+    return;
 }
 
 void
