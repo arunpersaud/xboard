@@ -11,6 +11,7 @@
         <property name="label_xalign">0</property>
         <property name="shadow_type">none</property>
         <property name="ratio">0.80000001192092896</property>
+        <property name="obey_child">False</property>
         <child>
           <object class="GtkVBox" id="VBox">
             <property name="visible">True</property>
@@ -222,11 +223,98 @@
                           </object>
                         </child>
                         <child>
+                          <object class="GtkRadioMenuItem" id="menuMode.Analyze Mode">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Analyze Mode</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkRadioMenuItem" id="menuMode.Analyze File">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Analyze File</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkRadioMenuItem" id="menuMode.ICS Client">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">ICS Client</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkRadioMenuItem" id="menuMode.Edit Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Edit Game</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkRadioMenuItem" id="menuMode.Edit Position">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Edit Position</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkRadioMenuItem" id="menuMode.Training">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Training</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="menuModeSep1">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuMode.Show Game List">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Show Game List</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuMode.Show Move List">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Show Move List</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuMode.Edit Tags">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Edit Tags</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuMode.Edit Comments">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Edit Comments</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuMode.ICS Input Box">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">ICS Input Box</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckMenuItem" id="menuMode.Pause">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Pause</property>
+                            <property name="use_underline">True</property>
                           </object>
                         </child>
                       </object>
@@ -248,6 +336,60 @@
                     <child type="submenu">
                       <object class="GtkMenu" id="menu4">
                         <property name="visible">True</property>
+                        <child>
+                          <object class="GtkMenuItem" id="menuStep.Backward">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Backward</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuStep.Foward">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Forward</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuStep.Back To Start">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Back to Start</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuStep.Forward To End">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Forward to End</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuStep.Revert">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Revert</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuStep.Truncate Game">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Truncate Game</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="MenuStepSep1">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuStep.Move Now">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Move now</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
                         <child>
                           <object class="GtkMenuItem" id="menuStep.Retract Move">
                             <property name="visible">True</property>
