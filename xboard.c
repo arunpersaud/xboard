@@ -5144,14 +5144,18 @@ void HandleUserMove(w, event, prms, nprms)
 	x >= 0 && y >= 0) {
 	ChessSquare fromP;
 	ChessSquare toP;
+	int frc;
 
 	/* Check if clicking again on the same color piece */
 	fromP = boards[currentMove][fromY][fromX];
 	toP = boards[currentMove][y][x];
-	if ((WhitePawn <= fromP && fromP < WhiteKing && // [HGM] this test should go, as UserMoveTest now does it.
-	     WhitePawn <= toP && toP <= WhiteKing) ||   //       For now I made it less critical by exempting King
-	    (BlackPawn <= fromP && fromP < BlackKing && //       moves, to not interfere with FRC castlings.
-	     BlackPawn <= toP && toP <= BlackKing)) {
+	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom;
+ 	if ((WhitePawn <= fromP && fromP <= WhiteKing && // [HGM] this test should go, as UserMoveTest now does it.
+	     WhitePawn <= toP && toP <= WhiteKing &&
+	     !(fromP == WhiteKing && toP == WhiteRook && frc)) ||   
+	    (BlackPawn <= fromP && fromP <= BlackKing && 
+	     BlackPawn <= toP && toP <= BlackKing &&
+	     !(fromP == BlackKing && toP == BlackRook && frc))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
 	    if (appData.highlightDragging) {
