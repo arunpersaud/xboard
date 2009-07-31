@@ -5394,10 +5394,10 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
        FinishMove if the first part succeeded. Calls that do not need
        to do anything in between, can call this routine the old way. 
     */
-    ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar);
-if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
-    if(moveType != ImpossibleMove)
-        FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
+  ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar);
+  if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
+  if(moveType != ImpossibleMove)
+    FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
 void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cpstats )

@@ -487,7 +487,7 @@ Pixmap pieceBitmap2[2][(int)BlackPawn+4];       /* [HGM] pieces */
 Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD actually used*/
 Pixmap xpmPieceBitmap2[4][(int)BlackPawn+4];	/* LL, LD, DL, DD set to select from */
 Pixmap xpmLightSquare, xpmDarkSquare, xpmJailSquare;
-int useImages, useImageSqs;
+int useImages=0, useImageSqs;
 XImage *ximPieceBitmap[4][(int)BlackPawn+4];	/* LL, LD, DL, DD */
 Pixmap ximMaskPm[(int)BlackPawn];               /* clipmasks, used for XIM pieces */
 Pixmap ximMaskPm2[(int)BlackPawn+4];            /* clipmasks, used for XIM pieces */
@@ -2153,7 +2153,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     XtGeometryResult gres;
     int i;
 
-    if(!formWidget) return;
+    //    if(!formWidget) return;
 
     /*
      * Enable shell resizing.
@@ -2204,6 +2204,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 //		    programName, gres, w, h, wr, hr);
 //	}
     }
+    if(!formWidget) return;
 
     //    XawFormDoLayout(formWidget, True);
 
@@ -2461,56 +2462,56 @@ main(argc, argv)
     gameInfo.boardHeight   = appData.NrRanks > 0 ? appData.NrRanks : 8;
     gameInfo.holdingsWidth = appData.holdingsSize > 0 ? 2 : 0;
 #endif
-
-
+    
+    
 #ifdef IDSIZE
     InitDrawingSizes(-1, 0); // [HGM] initsize: make this into a subroutine
 #else
     if (isdigit(appData.boardSize[0])) {
-        i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
-		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
-		   &fontPxlSize, &smallLayout, &tinyLayout);
-        if (i == 0) {
-	    fprintf(stderr, _("%s: bad boardSize syntax %s\n"),
-		    programName, appData.boardSize);
-	    exit(2);
+      i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
+		 &lineGap, &clockFontPxlSize, &coordFontPxlSize,
+		 &fontPxlSize, &smallLayout, &tinyLayout);
+      if (i == 0) {
+	fprintf(stderr, _("%s: bad boardSize syntax %s\n"),
+		programName, appData.boardSize);
+	exit(2);
+      }
+      if (i < 7) {
+	/* Find some defaults; use the nearest known size */
+	SizeDefaults *szd, *nearest;
+	int distance = 99999;
+	nearest = szd = sizeDefaults;
+	while (szd->name != NULL) {
+	  if (abs(szd->squareSize - squareSize) < distance) {
+	    nearest = szd;
+	    distance = abs(szd->squareSize - squareSize);
+			   if (distance == 0) break;
+			   }
+	      szd++;
+	  }
+	  if (i < 2) lineGap = nearest->lineGap;
+	  if (i < 3) clockFontPxlSize = nearest->clockFontPxlSize;
+	  if (i < 4) coordFontPxlSize = nearest->coordFontPxlSize;
+	  if (i < 5) fontPxlSize = nearest->fontPxlSize;
+	  if (i < 6) smallLayout = nearest->smallLayout;
+	  if (i < 7) tinyLayout = nearest->tinyLayout;
 	}
-	if (i < 7) {
-	    /* Find some defaults; use the nearest known size */
-	    SizeDefaults *szd, *nearest;
-	    int distance = 99999;
-	    nearest = szd = sizeDefaults;
-	    while (szd->name != NULL) {
-		if (abs(szd->squareSize - squareSize) < distance) {
-		    nearest = szd;
-		    distance = abs(szd->squareSize - squareSize);
-		    if (distance == 0) break;
-		}
-		szd++;
-	    }
-	    if (i < 2) lineGap = nearest->lineGap;
-	    if (i < 3) clockFontPxlSize = nearest->clockFontPxlSize;
-	    if (i < 4) coordFontPxlSize = nearest->coordFontPxlSize;
-	    if (i < 5) fontPxlSize = nearest->fontPxlSize;
-	    if (i < 6) smallLayout = nearest->smallLayout;
-	    if (i < 7) tinyLayout = nearest->tinyLayout;
-	}
-    } else {
+      } else {
         SizeDefaults *szd = sizeDefaults;
         if (*appData.boardSize == NULLCHAR) {
-	    while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize ||
-		   DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) {
-	      szd++;
-	    }
-	    if (szd->name == NULL) szd--;
+	  while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize ||
+		 DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) {
+	    szd++;
+	  }
+	  if (szd->name == NULL) szd--;
 	} else {
-	    while (szd->name != NULL &&
-		   StrCaseCmp(szd->name, appData.boardSize) != 0) szd++;
-	    if (szd->name == NULL) {
-		fprintf(stderr, _("%s: unrecognized boardSize name %s\n"),
-			programName, appData.boardSize);
-		exit(2);
-	    }
+	  while (szd->name != NULL &&
+		 StrCaseCmp(szd->name, appData.boardSize) != 0) szd++;
+	  if (szd->name == NULL) {
+	    fprintf(stderr, _("%s: unrecognized boardSize name %s\n"),
+		    programName, appData.boardSize);
+	    exit(2);
+	  }
 	}
 	squareSize = szd->squareSize;
 	lineGap = szd->lineGap;
@@ -2521,27 +2522,9 @@ main(argc, argv)
 	tinyLayout = szd->tinyLayout;
     }
 
-    /* Now, using squareSize as a hint, find a good XPM/XIM set size */
-    if (strlen(appData.pixmapDirectory) > 0) {
-	p = ExpandPathName(appData.pixmapDirectory);
-	if (!p) {
-	    fprintf(stderr, _("Error expanding path name \"%s\"\n"),
-		   appData.pixmapDirectory);
-	    exit(1);
-	}
-	if (appData.debugMode) {
-          fprintf(stderr, _("\
-XBoard square size (hint): %d\n\
-%s fulldir:%s:\n"), squareSize, IMAGE_EXT, p);
-	}
-	squareSize = xpm_closest_to(p, squareSize, IMAGE_EXT);
-	if (appData.debugMode) {
-	    fprintf(stderr, _("Closest %s size: %d\n"), IMAGE_EXT, squareSize);
-	}
-    }
+    printf("DEBUG::main: squareSize %d\n",squareSize);
 
-    /* [HR] height treated separately (hacked) */
-    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    boardWidth  = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
     if (appData.showJail == 1) {
 	/* Jail on top and bottom */
@@ -3085,6 +3068,8 @@ XBoard square size (hint): %d\n\
     /* realize window */
     gtk_widget_show (GUI_Window);
 
+    printf("DEBUG: before created stuff squareSize %d.\n",squareSize);
+
     CreateGCs();
     CreateGrid();
     CreatePieces();
@@ -3094,7 +3079,7 @@ XBoard square size (hint): %d\n\
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
-    printf("DEBUG: created stuff.\n");
+    printf("DEBUG: created stuff squareSize %d.\n",squareSize);
 
 
 //    XtAugmentTranslations(formWidget,
@@ -3137,7 +3122,7 @@ XBoard square size (hint): %d\n\
     gdk_cursor_destroy(BoardCursor);
 
     /* end cursor */
-    printf("DEBUG: going into main.\n");
+    printf("DEBUG: going into gtk-main.\n");
 
     gtk_main ();
 
@@ -3704,7 +3689,7 @@ void CreateGrid()
     if (lineGap == 0) return;
 
     /* [HR] Split this into 2 loops for non-square boards. */
-
+    
     for (i = 0; i < BOARD_HEIGHT + 1; i++) {
         gridSegments[i].x1 = 0;
         gridSegments[i].x2 =
@@ -4251,6 +4236,7 @@ static void colorDrawPiece(piece, square_color, x, y, dest)
      int square_color, x, y;
      Drawable dest;
 {
+  printf("DEBUG::colorDrawPiece: piece %d square_color %d x %d y %d \n",piece,square_color,x,y);
   gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,GDK_PIXBUF(SVGpieces[piece]),0,0,x,y,-1,-1, GDK_RGB_DITHER_NORMAL, 0, 0);
   return ;
   
@@ -4314,18 +4300,19 @@ typedef void (*DrawFunc)();
 
 DrawFunc ChooseDrawFunc()
 {
-    if (appData.monoMode) {
-	if (DefaultDepth(xDisplay, xScreen) == 1) {
-	    return monoDrawPiece_1bit;
-	} else {
-	    return monoDrawPiece;
-	}
+  printf("DEBUG::ChooseDrawFunc: appData.monoMode %d useImages %d\n",appData.monoMode,useImages);
+  if (appData.monoMode) {
+    if (DefaultDepth(xDisplay, xScreen) == 1) {
+      return monoDrawPiece_1bit;
     } else {
-	if (useImages)
-	  return colorDrawPieceImage;
-	else
-	  return colorDrawPiece;
+      return monoDrawPiece;
     }
+  } else {
+    if (useImages)
+      return colorDrawPieceImage;
+    else
+      return colorDrawPiece;
+  }
 }
 
 /* [HR] determine square color depending on chess variant. */
@@ -4364,10 +4351,13 @@ void DrawSquare(row, column, piece, do_flash)
     XCharStruct overall;
     DrawFunc drawfunc;
     int flash_delay;
-
+    
     /* Calculate delay in milliseconds (2-delays per complete flash) */
     flash_delay = 500 / appData.flashRate;
 
+    printf("DEBUG: linegap %d squareSize %d \n",lineGap,squareSize);
+
+    /* calculate x and y coordinates from row and column */
     if (flipView) {
 	x = lineGap + ((BOARD_WIDTH-1)-column) *
 	  (squareSize + lineGap);
@@ -4380,88 +4370,90 @@ void DrawSquare(row, column, piece, do_flash)
 
     square_color = SquareColor(row, column);
 
+    printf("DEBUG::DrawSquare: row %d column %d piece %d do_flash %d square_color %d x %d y %d\n",row,column,piece,do_flash,square_color,x,y);
+
     if ( // [HGM] holdings: blank out area between board and holdings
-                 column == BOARD_LEFT-1 ||  column == BOARD_RGHT
-              || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
-	          || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
-			BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
-
-			// [HGM] print piece counts next to holdings
-			string[1] = NULLCHAR;
-			if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
-			    string[0] = '0' + piece;
-			    XTextExtents(countFontStruct, string, 1, &direction,
-				 &font_ascent, &font_descent, &overall);
-			    if (appData.monoMode) {
-				XDrawImageString(xDisplay, xBoardWindow, countGC,
-						 x + squareSize - overall.width - 2,
-						 y + font_ascent + 1, string, 1);
-			    } else {
-				XDrawString(xDisplay, xBoardWindow, countGC,
-					    x + squareSize - overall.width - 2,
-					    y + font_ascent + 1, string, 1);
-			    }
-			}
-			if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
-			    string[0] = '0' + piece;
-			    XTextExtents(countFontStruct, string, 1, &direction,
-					 &font_ascent, &font_descent, &overall);
-			    if (appData.monoMode) {
-				XDrawImageString(xDisplay, xBoardWindow, countGC,
-						 x + 2, y + font_ascent + 1, string, 1);
-			    } else {
-				XDrawString(xDisplay, xBoardWindow, countGC,
-					    x + 2, y + font_ascent + 1, string, 1);
-			    }
-			}
-    } else {
-	    if (piece == EmptySquare || appData.blindfold) {
-			BlankSquare(x, y, square_color, piece, xBoardWindow);
-	    } else {
-			drawfunc = ChooseDrawFunc();
-			if (do_flash && appData.flashCount > 0) {
-			    for (i=0; i<appData.flashCount; ++i) {
-
-					drawfunc(piece, square_color, x, y, xBoardWindow);
-					XSync(xDisplay, False);
-					do_flash_delay(flash_delay);
-
-					BlankSquare(x, y, square_color, piece, xBoardWindow);
-					XSync(xDisplay, False);
-					do_flash_delay(flash_delay);
-			    }
-			}
-			drawfunc(piece, square_color, x, y, xBoardWindow);
-    	}
+	column == BOARD_LEFT-1 ||  column == BOARD_RGHT
+	|| (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
+	|| (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
+      BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
+      
+      // [HGM] print piece counts next to holdings
+      string[1] = NULLCHAR;
+      if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
+	string[0] = '0' + piece;
+	XTextExtents(countFontStruct, string, 1, &direction,
+		     &font_ascent, &font_descent, &overall);
+	if (appData.monoMode) {
+	  XDrawImageString(xDisplay, xBoardWindow, countGC,
+			   x + squareSize - overall.width - 2,
+			   y + font_ascent + 1, string, 1);
+	} else {
+	  XDrawString(xDisplay, xBoardWindow, countGC,
+		      x + squareSize - overall.width - 2,
+		      y + font_ascent + 1, string, 1);
 	}
-
+      }
+      if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
+	string[0] = '0' + piece;
+	XTextExtents(countFontStruct, string, 1, &direction,
+		     &font_ascent, &font_descent, &overall);
+	if (appData.monoMode) {
+	  XDrawImageString(xDisplay, xBoardWindow, countGC,
+			   x + 2, y + font_ascent + 1, string, 1);
+	} else {
+	  XDrawString(xDisplay, xBoardWindow, countGC,
+		      x + 2, y + font_ascent + 1, string, 1);
+	}
+      }
+    } else {
+      if (piece == EmptySquare || appData.blindfold) {
+	BlankSquare(x, y, square_color, piece, xBoardWindow);
+      } else {
+	drawfunc = ChooseDrawFunc();
+	if (do_flash && appData.flashCount > 0) {
+	  for (i=0; i<appData.flashCount; ++i) {
+	    
+	    drawfunc(piece, square_color, x, y, xBoardWindow);
+	    XSync(xDisplay, False);
+	    do_flash_delay(flash_delay);
+	    
+	    BlankSquare(x, y, square_color, piece, xBoardWindow);
+	    XSync(xDisplay, False);
+	    do_flash_delay(flash_delay);
+	  }
+	}
+	drawfunc(piece, square_color, x, y, xBoardWindow);
+      }
+    }
+    
     string[1] = NULLCHAR;
     if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
-		&& column >= BOARD_LEFT && column < BOARD_RGHT) {
-	string[0] = 'a' + column - BOARD_LEFT;
-	XTextExtents(coordFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode) {
-	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			     x + squareSize - overall.width - 2,
-			     y + squareSize - font_descent - 1, string, 1);
-	} else {
-	    XDrawString(xDisplay, xBoardWindow, coordGC,
-			x + squareSize - overall.width - 2,
-			y + squareSize - font_descent - 1, string, 1);
-	}
+	&& column >= BOARD_LEFT && column < BOARD_RGHT) {
+      string[0] = 'a' + column - BOARD_LEFT;
+      XTextExtents(coordFontStruct, string, 1, &direction,
+		   &font_ascent, &font_descent, &overall);
+      if (appData.monoMode) {
+	XDrawImageString(xDisplay, xBoardWindow, coordGC,
+			 x + squareSize - overall.width - 2,
+			 y + squareSize - font_descent - 1, string, 1);
+      } else {
+	XDrawString(xDisplay, xBoardWindow, coordGC,
+		    x + squareSize - overall.width - 2,
+		    y + squareSize - font_descent - 1, string, 1);
+      }
     }
     if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT)) {
-	string[0] = ONE + row;
-	XTextExtents(coordFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode) {
-	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			     x + 2, y + font_ascent + 1, string, 1);
-	} else {
-	    XDrawString(xDisplay, xBoardWindow, coordGC,
-			x + 2, y + font_ascent + 1, string, 1);
-	}
+      string[0] = ONE + row;
+      XTextExtents(coordFontStruct, string, 1, &direction,
+		   &font_ascent, &font_descent, &overall);
+      if (appData.monoMode) {
+	XDrawImageString(xDisplay, xBoardWindow, coordGC,
+			 x + 2, y + font_ascent + 1, string, 1);
+      } else {
+	XDrawString(xDisplay, xBoardWindow, coordGC,
+		    x + 2, y + font_ascent + 1, string, 1);
+      }
     }
 }
 
@@ -4549,7 +4541,7 @@ void DrawPosition( repaint, board)
     Arg args[16];
     int rrow, rcol;
 
-    printf ("DEBUG: in draw position\n");
+    printf ("DEBUG::DrawPosition: start\n");
 
 
     if (board == NULL) {
@@ -4567,12 +4559,13 @@ void DrawPosition( repaint, board)
      * but this causes a very distracting flicker.
      */
 
-    printf ("DEBUG: in draw position 0.1\n");
+    printf ("DEBUG::DrawPosition: in draw position 0.1\n");
+    printf("DEBUG::DrawPosition: squareSize %d\n",squareSize);
 
 
     if (!repaint && lastBoardValid && lastFlipView == flipView) {
 
-    printf ("DEBUG: in draw position 0.1a\n");
+    printf ("DEBUG::DrawPosition: in draw position 0.1a\n");
 	/* If too much changes (begin observing new game, etc.), don't
 	   do flashing */
 	do_flash = too_many_diffs(board, lastBoard) ? 0 : 1;
@@ -4605,6 +4598,7 @@ void DrawPosition( repaint, board)
 		DrawSquare(i, j, board[i][j], do_flash);
 	    }
     } else {
+      printf("DEBUG::DrawPosition: in else linegap %d squareSize %d\n",lineGap,squareSize);
 	if (lineGap > 0)
           {
             /* todo move GC to setupgc */
@@ -4626,9 +4620,11 @@ void DrawPosition( repaint, board)
             gdk_draw_segments(GUI_Board->window,gtklineGC,
                               gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2 );
           }
-
+	
+	squareSize=108;
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++) {
+	    printf("DEBUG::DrawPosition: squareSize %d\n",squareSize);
 	      DrawSquare(i, j, board[i][j], 0);
 	      damage[i][j] = False;
 	  }

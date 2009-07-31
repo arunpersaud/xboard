@@ -32,6 +32,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Reset Game</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="ResetProc"/>
                           </object>
                         </child>
                         <child>
@@ -45,6 +46,7 @@
                             <property name="visible">True</property>
                             <property name="image">image1</property>
                             <property name="use_stock">False</property>
+                            <signal name="activate" handler="LoadGameProc"/>
                           </object>
                         </child>
                         <child>
@@ -52,6 +54,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Load Next Game</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="LoadNextGameProc"/>
                           </object>
                         </child>
                         <child>
@@ -66,6 +69,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Reload Same Game</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="ReloadGameProc"/>
                           </object>
                         </child>
                         <child>
@@ -334,6 +338,91 @@
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">_Action</property>
                     <property name="use_underline">True</property>
+                    <child type="submenu">
+                      <object class="GtkMenu" id="menu1">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Accept">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Accept</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Call Flag">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Call Flag</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuActioin.Decline">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Decline</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="menuActionsep1">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Rematch">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Rematch</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Draw">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Draw</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Adjourn">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Adjourn</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Resign">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Resign</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Abort">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Abort</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="menuActionsep2">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Stop Observing">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Stop Observing</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Stop Examine">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Stop Examine</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -583,6 +672,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Show Coords</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="ShowCoordsProc"/>
                           </object>
                         </child>
                         <child>
@@ -612,11 +702,31 @@
                       <object class="GtkMenu" id="menu3">
                         <property name="visible">True</property>
                         <child>
-                          <object class="GtkImageMenuItem" id="imagemenuitem10">
+                          <object class="GtkMenuItem" id="menuHelp.Hint">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Hint</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuHelp.Book">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Book</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="menuHelpsep1">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImageMenuItem" id="menuHelp.about">
                             <property name="label">gtk-about</property>
                             <property name="visible">True</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
+                            <signal name="activate" handler="AboutProc"/>
                           </object>
                         </child>
                       </object>
@@ -755,6 +865,7 @@
             <child>
               <object class="GtkDrawingArea" id="Board">
                 <property name="visible">True</property>
+                <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <signal name="button_press_event" handler="UserMoveProc"/>
                 <signal name="expose_event" handler="EventProc"/>
                 <signal name="button_release_event" handler="UserMoveProc"/>
