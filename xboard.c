@@ -5758,7 +5758,7 @@ void ModeHighlight()
     
     wname = ModeToWidgetName(oldmode);
     if(wname)
-      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, wname)),True);
+       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, wname)),True);
     
     oldmode = gameMode;
     

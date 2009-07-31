@@ -212,6 +212,7 @@
                             <property name="label" translatable="yes">Machine Black</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <property name="group">menuMode.Machine White</property>
                           </object>
                         </child>
                         <child>
@@ -220,6 +221,7 @@
                             <property name="label" translatable="yes">Two Machines</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <property name="group">menuMode.Machine White</property>
                           </object>
                         </child>
                         <child>
@@ -228,6 +230,7 @@
                             <property name="label" translatable="yes">Analyze Mode</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <property name="group">menuMode.Machine White</property>
                           </object>
                         </child>
                         <child>
@@ -236,6 +239,7 @@
                             <property name="label" translatable="yes">Analyze File</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <property name="group">menuMode.Machine White</property>
                           </object>
                         </child>
                         <child>
@@ -244,6 +248,7 @@
                             <property name="label" translatable="yes">ICS Client</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <property name="group">menuMode.Machine White</property>
                           </object>
                         </child>
                         <child>
@@ -252,6 +257,7 @@
                             <property name="label" translatable="yes">Edit Game</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <property name="group">menuMode.Machine White</property>
                           </object>
                         </child>
                         <child>
@@ -260,6 +266,7 @@
                             <property name="label" translatable="yes">Edit Position</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <property name="group">menuMode.Machine White</property>
                           </object>
                         </child>
                         <child>
@@ -268,6 +275,7 @@
                             <property name="label" translatable="yes">Training</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <property name="group">menuMode.Machine White</property>
                           </object>
                         </child>
                         <child>
