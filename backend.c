@@ -5206,7 +5206,13 @@ if(appData.debugMode) fprintf(debugFP, "moveType 1 = %d, promochar = %x\n", move
     /* [HGM] convert drag-and-drop piece drops to standard form */
     if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) {
          moveType = WhiteOnMove(currentMove) ? WhiteDrop : BlackDrop;
-         fromX = boards[currentMove][fromY][fromX];
+	   if(appData.debugMode) fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n", 
+		moveType, currentMove, fromX, fromY, boards[currentMove][fromY][fromX]);
+//         fromX = boards[currentMove][fromY][fromX];
+	   // holdings might not be sent yet in ICS play; we have to figure out which piece belongs here
+	   if(fromX == 0) fromY = BOARD_HEIGHT-1 - fromY; // black holdings upside-down
+	   fromX = fromX ? WhitePawn : BlackPawn; // first piece type in selected holdings
+	   while(PieceToChar(fromX) == '.' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) fromX++; 
          fromY = DROP_RANK;
     }
 
