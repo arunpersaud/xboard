@@ -165,8 +165,6 @@ void PauseProc(object, user_data)
 {
     // todo this toggling of the pause button doesn't seem to work?
     // e.g. select pause from buttonbar doesn't activate menumode.pause
-  //  fprintf(stderr,"DEBUG: in pause\n");
-  //  fflush(stderr);
   PauseEvent();
 }
 
@@ -266,7 +264,6 @@ void UserMoveProc(window, event, data)
     if (flipView && x >= 0) {
 	x = BOARD_WIDTH - 1 - x;
     }
-    printf("DEBUG::UserMoveProc: x %d y %d\n",x,y);
     
     if (fromX == -1) {
 	if (event->type == ButtonPress) {
@@ -275,7 +272,6 @@ void UserMoveProc(window, event, data)
 		fromX = x;
 		fromY = y;
 		second = 0;
-    printf("DEBUG::UserMoveProc: a\n");
 		DragPieceBegin(event->button.x, event->button.y);
 		if (appData.highlightDragging) {
 		    SetHighlights(x, y, -1, -1);
@@ -293,7 +289,6 @@ void UserMoveProc(window, event, data)
 	/* Check if clicking again on the same color piece */
 	fromP = boards[currentMove][fromY][fromX];
 	toP = boards[currentMove][y][x];
-    printf("DEBUG::UserMoveProc: b\n");
 	if ((WhitePawn <= fromP && fromP <= WhiteKing &&
 	     WhitePawn <= toP && toP <= WhiteKing) ||
 	    (BlackPawn <= fromP && fromP <= BlackKing &&
@@ -315,7 +310,6 @@ void UserMoveProc(window, event, data)
     }
 
     if (event->type == GDK_BUTTON_RELEASE &&	x == fromX && y == fromY) {
-    printf("DEBUG::UserMoveProc: c\n");
 	DragPieceEnd(event->button.x, event->button.y);
 	if (appData.animateDragging) {
 	    /* Undo animation damage if any */
@@ -339,9 +333,7 @@ void UserMoveProc(window, event, data)
     toX = x;
     toY = y;
     saveAnimate = appData.animate;
-    printf("DEBUG::UserMoveProc: d\n");
     if (event->type == GDK_BUTTON_PRESS) {
-    printf("DEBUG::UserMoveProc: e\n");
 	/* Finish clickclick move */
 	if (appData.animate || appData.highlightLastMove) {
 	    SetHighlights(fromX, fromY, toX, toY);
@@ -359,9 +351,7 @@ void UserMoveProc(window, event, data)
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
     }
-    printf("DEBUG::UserMoveProc: f\n");
     if (IsPromotion(fromX, fromY, toX, toY)) {
-    printf("DEBUG::UserMoveProc: f1\n");
 	if (appData.alwaysPromoteToQueen) {
 	    UserMoveEvent(fromX, fromY, toX, toY, 'q');
 	    if (!appData.highlightLastMove || gotPremove) ClearHighlights();
@@ -372,16 +362,13 @@ void UserMoveProc(window, event, data)
 	    PromotionPopUp();
 	}
     } else {
-    printf("DEBUG::UserMoveProc: f2\n");
     
 	UserMoveEvent(fromX, fromY, toX, toY, NULLCHAR);
-    printf("DEBUG::UserMoveProc: f3\n");
 	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
 	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
 	fromX = fromY = -1;
     }
     appData.animate = saveAnimate;
-    printf("DEBUG::UserMoveProc: g\n");
     if (appData.animate || appData.animateDragging) {
 	/* Undo animation damage if needed */
 	DrawPosition(FALSE, NULL);

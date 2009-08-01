@@ -2379,7 +2379,6 @@ main(argc, argv)
     // don't unref the builder, since we use it to get references to widgets
     //    g_object_unref (G_OBJECT (builder));
 
-    printf("DEBUG:finished building gtk\n");
     /* end parse glade file */
 
     if (argc > 1) {
@@ -2521,8 +2520,6 @@ main(argc, argv)
 	smallLayout = szd->smallLayout;
 	tinyLayout = szd->tinyLayout;
     }
-
-    printf("DEBUG::main: squareSize %d\n",squareSize);
 
     boardWidth  = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
@@ -2681,8 +2678,6 @@ main(argc, argv)
     textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
     textColors[ColorNone].attr = 0;
 
-    printf("DEBUG: I'm here 0\n");
-
     //    XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
 
     /*
@@ -2727,7 +2722,6 @@ main(argc, argv)
     XtSetArg(args[1], XtNtop,    XtChainTop);
     XtSetArg(args[2], XtNbottom, XtChainTop);
     XtSetValues(blackTimerWidget, args, 3);
-    printf("DEBUG: I'm here 1\n");
 
     if (appData.titleInWindow) {
 	widgetList[j++] = titleWidget =
@@ -2786,8 +2780,6 @@ main(argc, argv)
 
     /* end gtk set properties of widgets */
 
-    printf("DEBUG: made it.\n");
-
     /*
      * formWidget uses these constraints but they are stored
      * in the children.
@@ -2797,7 +2789,6 @@ main(argc, argv)
 //    XtSetValues(menuBarWidget, args, i);
 //    if (appData.titleInWindow) {
 //	if (smallLayout) {
-//    printf("DEBUG: made it a.\n");
 //	    i = 0;
 //	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
 //	    XtSetValues(whiteTimerWidget, args, i);
@@ -2820,7 +2811,6 @@ main(argc, argv)
 //	      XtSetValues(buttonBarWidget, args, i);
 //	    }
 //	} else {
-//    printf("DEBUG: made it b.\n");
 //	    i = 0;
 //	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
 //	    XtSetValues(whiteTimerWidget, args, i);
@@ -2842,7 +2832,7 @@ main(argc, argv)
 //	      XtSetValues(buttonBarWidget, args, i);
 //	    }
 //	}
-//    } else {    printf("DEBUG: made it c.\n");
+//    } else {
 //
 //	i = 0;
 //	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
@@ -2862,7 +2852,6 @@ main(argc, argv)
 //	  XtSetValues(buttonBarWidget, args, i);
 //	}
 //    }
-//    printf("DEBUG: made it 1.\n");
 //    i = 0;
 //    XtSetArg(args[0], XtNfromVert, messageWidget);
 //    XtSetArg(args[1], XtNtop,    XtChainTop);
@@ -2873,7 +2862,6 @@ main(argc, argv)
 //
 //    XtRealizeWidget(shellWidget);
 //
-    printf("DEBUG: made it 2.\n");
 
     /*
      * Correct the width of the message and title widgets.
@@ -3043,8 +3031,6 @@ main(argc, argv)
 //    XtSetValues(shellWidget, args, i);
 //
 
-    printf("DEBUG: creating svgs.\n");
-
     /* load square colors */
     SVGLightSquare   = load_pixbuf("svg/LightSquare.svg",squareSize);
     SVGDarkSquare    = load_pixbuf("svg/DarkSquare.svg",squareSize);
@@ -3062,8 +3048,6 @@ main(argc, argv)
     /* realize window */
     gtk_widget_show (GUI_Window);
 
-    printf("DEBUG: before created stuff squareSize %d.\n",squareSize);
-
     CreateGCs();
     CreateGrid();
     CreatePieces();
@@ -3072,9 +3056,6 @@ main(argc, argv)
 
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
-
-    printf("DEBUG: created stuff squareSize %d.\n",squareSize);
-
 
 //    XtAugmentTranslations(formWidget,
 //			  XtParseTranslationTable(globalTranslations));
@@ -3086,8 +3067,6 @@ main(argc, argv)
 //			  XtParseTranslationTable(blackTranslations));
 //
     InitBackEnd2();
-
-    printf("DEBUG: back end initiated.\n");
 
     if (errorExitStatus == -1) {
 	if (appData.icsActive) {
@@ -3116,8 +3095,6 @@ main(argc, argv)
     gdk_cursor_destroy(BoardCursor);
 
     /* end cursor */
-    printf("DEBUG: going into gtk-main.\n");
-
     gtk_main ();
 
     if (appData.debugMode) fclose(debugFP); // [DM] debug
@@ -4230,7 +4207,6 @@ static void colorDrawPiece(piece, square_color, x, y, dest)
      int square_color, x, y;
      Drawable dest;
 {
-  printf("DEBUG::colorDrawPiece: piece %d square_color %d x %d y %d \n",piece,square_color,x,y);
   gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,GDK_PIXBUF(SVGpieces[piece]),0,0,x,y,-1,-1, GDK_RGB_DITHER_NORMAL, 0, 0);
   return ;
   
@@ -4294,7 +4270,6 @@ typedef void (*DrawFunc)();
 
 DrawFunc ChooseDrawFunc()
 {
-  printf("DEBUG::ChooseDrawFunc: appData.monoMode %d useImages %d\n",appData.monoMode,useImages);
   if (appData.monoMode) {
     if (DefaultDepth(xDisplay, xScreen) == 1) {
       return monoDrawPiece_1bit;
@@ -4349,8 +4324,6 @@ void DrawSquare(row, column, piece, do_flash)
     /* Calculate delay in milliseconds (2-delays per complete flash) */
     flash_delay = 500 / appData.flashRate;
 
-    printf("DEBUG: linegap %d squareSize %d \n",lineGap,squareSize);
-
     /* calculate x and y coordinates from row and column */
     if (flipView) {
 	x = lineGap + ((BOARD_WIDTH-1)-column) *
@@ -4363,8 +4336,6 @@ void DrawSquare(row, column, piece, do_flash)
     }
 
     square_color = SquareColor(row, column);
-
-    printf("DEBUG::DrawSquare: row %d column %d piece %d do_flash %d square_color %d x %d y %d\n",row,column,piece,do_flash,square_color,x,y);
 
     if ( // [HGM] holdings: blank out area between board and holdings
 	column == BOARD_LEFT-1 ||  column == BOARD_RGHT
@@ -4535,9 +4506,6 @@ void DrawPosition( repaint, board)
     Arg args[16];
     int rrow, rcol;
 
-    printf ("DEBUG::DrawPosition: start\n");
-
-
     if (board == NULL) {
 	if (!lastBoardValid) return;
 	board = lastBoard;
@@ -4553,13 +4521,7 @@ void DrawPosition( repaint, board)
      * but this causes a very distracting flicker.
      */
 
-    printf ("DEBUG::DrawPosition: in draw position 0.1\n");
-    printf("DEBUG::DrawPosition: squareSize %d\n",squareSize);
-
-
     if (!repaint && lastBoardValid && lastFlipView == flipView) {
-
-    printf ("DEBUG::DrawPosition: in draw position 0.1a\n");
 	/* If too much changes (begin observing new game, etc.), don't
 	   do flashing */
 	do_flash = too_many_diffs(board, lastBoard) ? 0 : 1;
@@ -4592,7 +4554,6 @@ void DrawPosition( repaint, board)
 		DrawSquare(i, j, board[i][j], do_flash);
 	    }
     } else {
-      printf("DEBUG::DrawPosition: in else linegap %d squareSize %d\n",lineGap,squareSize);
 	if (lineGap > 0)
           {
             /* todo move GC to setupgc */
@@ -4618,7 +4579,6 @@ void DrawPosition( repaint, board)
 	squareSize=108;
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++) {
-	    printf("DEBUG::DrawPosition: squareSize %d\n",squareSize);
 	      DrawSquare(i, j, board[i][j], 0);
 	      damage[i][j] = False;
 	  }
@@ -5635,8 +5595,6 @@ void ErrorPopUp(title, label, modal)
 {
   GtkWidget *dialog;
  
-  printf ("DEBUG: error %s %s\n\n",title,label);
-  
   dialog = gtk_message_dialog_new(GTK_WINDOW(GUI_Window),
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   GTK_MESSAGE_ERROR,
@@ -5727,9 +5685,6 @@ void ModeHighlight()
 
    // todo this toggling of the pause button doesn't seem to work?
     // e.g. select pause from buttonbar doesn't activate menumode.pause
-
-    //    fprintf(stderr,"DEBUG: oldmode %d newmode %d oldpause %d newpause %d\n",oldmode,gameMode,oldPausing,pausing);
-    //fflush(stderr);
 
     //    if (!boardWidget || !XtIsRealized(boardWidget)) return;
 
@@ -7024,8 +6979,6 @@ void DisplayMessage(message, extMessage)
 	    message = extMessage;
 	}
     }
- 
-    printf("TODO: message %s\n",message);
     gtk_label_set_text( GTK_LABEL(gtk_builder_get_object (builder, "Messages")),message);
 }
 

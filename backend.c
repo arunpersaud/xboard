@@ -1076,39 +1076,30 @@ ParseTimeControl(tc, ti, mps)
 void
 InitBackEnd2()
 {
-  printf ("DEBUG: in init backend 2\n");
-
-    if (appData.debugMode) {
-	fprintf(debugFP, "%s\n", programVersion);
-    }
-
-    if (appData.matchGames > 0) {
-	appData.matchMode = TRUE;
-    } else if (appData.matchMode) {
-	appData.matchGames = 1;
-    }
-    if(appData.matchMode && appData.sameColorGames > 0) /* [HGM] alternate: overrule matchGames */
-	appData.matchGames = appData.sameColorGames;
-    if(appData.rewindIndex > 1) { /* [HGM] autoinc: rewind implies auto-increment and overrules given index */
-	if(appData.loadPositionIndex >= 0) appData.loadPositionIndex = -1;
-	if(appData.loadGameIndex >= 0) appData.loadGameIndex = -1;
-    }
-    printf ("DEBUG: before reset\n");
-    Reset(TRUE, FALSE);
-    printf ("DEBUG: after reset\n");
-    if (appData.noChessProgram || first.protocolVersion == 1) {
-      printf ("DEBUG: first if\n");
-      InitBackEnd3();
-    } else {
-      printf ("DEBUG: second if 0\n");
-      /* kludge: allow timeout for initial "feature" commands */
-      FreezeUI();
-      printf ("DEBUG: second if 1\n");
-      DisplayMessage("", _("Starting chess program"));
-      printf ("DEBUG: second if 2\n");
-      ScheduleDelayedEvent(InitBackEnd3, FEATURE_TIMEOUT);
-      printf ("DEBUG: second if 3\n");    }
-    printf ("DEBUG: end of init2\n");
+  if (appData.debugMode) {
+    fprintf(debugFP, "%s\n", programVersion);
+  }
+  
+  if (appData.matchGames > 0) {
+    appData.matchMode = TRUE;
+  } else if (appData.matchMode) {
+    appData.matchGames = 1;
+  }
+  if(appData.matchMode && appData.sameColorGames > 0) /* [HGM] alternate: overrule matchGames */
+    appData.matchGames = appData.sameColorGames;
+  if(appData.rewindIndex > 1) { /* [HGM] autoinc: rewind implies auto-increment and overrules given index */
+    if(appData.loadPositionIndex >= 0) appData.loadPositionIndex = -1;
+    if(appData.loadGameIndex >= 0) appData.loadGameIndex = -1;
+  }
+  Reset(TRUE, FALSE);
+  if (appData.noChessProgram || first.protocolVersion == 1) {
+    InitBackEnd3();
+  } else {
+    /* kludge: allow timeout for initial "feature" commands */
+    FreezeUI();
+    DisplayMessage("", _("Starting chess program"));
+    ScheduleDelayedEvent(InitBackEnd3, FEATURE_TIMEOUT);
+  }
 }
 
 void
@@ -4503,8 +4494,6 @@ InitPosition(redraw)
     oldh = gameInfo.holdingsWidth,
     oldv = gameInfo.variant;
 
-    printf ("DEBUG: in init position\n");
-
     currentMove = forwardMostMove = backwardMostMove = 0;
     if(appData.icsActive) shuffleOpenings = FALSE; // [HGM] shuffle: in ICS mode, only shuffle on ICS request
 
@@ -4642,7 +4631,6 @@ InitPosition(redraw)
       shuffleOpenings = 1;
       break;
     }
-    printf ("DEBUG: in init position 1\n");
 
     overrule = 0;
     if(appData.NrFiles >= 0) {
@@ -4701,9 +4689,6 @@ InitPosition(redraw)
             initialPosition[BOARD_HEIGHT-2][j] = BlackBishop;
     }
 
-    printf ("DEBUG: in init position 2\n");
-
-
     if( nrCastlingRights == -1) {
         /* [HGM] Build normal castling rights (must be done after board sizing!) */
         /*       This sets default castling rights from none to normal corners   */
@@ -4752,11 +4737,7 @@ InitPosition(redraw)
       startedFromSetupPosition = TRUE;
     }
 
-    printf ("DEBUG: in init position 3\n");
-	
-
     CopyBoard(boards[0], initialPosition);
-    printf ("DEBUG: in init position 3.1\n");
     if(oldx != gameInfo.boardWidth ||
        oldy != gameInfo.boardHeight ||
        oldh != gameInfo.holdingsWidth
@@ -4770,15 +4751,12 @@ InitPosition(redraw)
 #endif
                                          )
       {
-	    printf ("DEBUG: in init position 3.2\n");
             InitDrawingSizes(-2 ,0);
       }
-    printf ("DEBUG: init position 99\n");
 
     if (redraw)
       DrawPosition(TRUE, boards[currentMove]);
 
-    printf ("DEBUG: end init position\n");
 }
 
 void
@@ -8157,7 +8135,6 @@ Reset(redraw, init)
      int redraw, init;
 {
     int i;
-    printf ("DEBUG: in reset\n");
 
     if (appData.debugMode) {
 	fprintf(debugFP, "Reset(%d, %d) from gameMode %d\n",
@@ -8183,9 +8160,6 @@ Reset(redraw, init)
     white_holding[0] = black_holding[0] = NULLCHAR;
     ClearProgramStats();
     opponentKibitzes = FALSE; // [HGM] kibitz: do not reserve space in engine-output window in zippy mode
-
-    printf ("DEBUG: in reset 1\n");
-
     
     ResetFrontEnd();
     ClearHighlights();
@@ -8194,11 +8168,7 @@ Reset(redraw, init)
     gotPremove = FALSE;
     alarmSounded = FALSE;
 
-    printf ("DEBUG: in reset 2\n");
-
-
     GameEnds((ChessMove) 0, NULL, GE_PLAYER);
-    printf ("DEBUG: in reset2.1\n");
     if(appData.serverMovesName != NULL) {
         /* [HGM] prepare to make moves file for broadcasting */
         clock_t t = clock();
@@ -8212,23 +8182,18 @@ Reset(redraw, init)
         serverMoves = fopen(appData.serverMovesName, "w");
     }
 
-    printf ("DEBUG: in reset 3\n");
-
     ExitAnalyzeMode();
     gameMode = BeginningOfGame;
     ModeHighlight();
-    printf ("DEBUG: in reset 3.0.1\n");
 
     if(appData.icsActive) gameInfo.variant = VariantNormal;
     InitPosition(redraw);
-    printf ("DEBUG: in reset 3.0.1.1\n");
     for (i = 0; i < MAX_MOVES; i++) {
 	if (commentList[i] != NULL) {
 	    free(commentList[i]);
 	    commentList[i] = NULL;
 	}
     }
-    printf ("DEBUG: in reset 3.1\n");
 
     ResetClocks();
     timeRemaining[0][0] = whiteTimeRemaining;
@@ -8240,16 +8205,10 @@ Reset(redraw, init)
 	    InitChessProgram(&first, startedFromSetupPosition);
     }
     
-    printf ("DEBUG: in reset 4\n");
-	
-
     GUI_DisplayTitle("");
-    printf ("DEBUG: in reset 5\n");
     DisplayMessage("", "");
-    printf ("DEBUG: in reset 6\n");
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
 
-    printf ("DEBUG: end reset \n");
 }
 
 void

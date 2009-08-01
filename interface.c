@@ -86,7 +86,8 @@ void GUI_SetAspectRatio(ratio)
     GdkGeometry hints;
     extern GtkWidget *GUI_Window;
 
-    hints.min_aspect = hints.max_aspect = ratio;
+    hints.min_aspect = ratio;
+    hints.max_aspect = ratio;
     
     gtk_window_set_geometry_hints (GTK_WINDOW (GUI_Window),
 				   GTK_WIDGET (GUI_Window),
