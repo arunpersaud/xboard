@@ -20,4 +20,5 @@ GdkPixbuf               *SVGNeutralSquare=NULL;
 GdkCursor               *BoardCursor=NULL;
 
 
-GdkPixbuf *load_pixbuf(char *filename);
+GdkPixbuf *load_pixbuf(char *filename,int size);
+void GUI_SetAspectRatio(int ratio);

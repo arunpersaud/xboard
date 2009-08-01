@@ -33,12 +33,15 @@
 
 
 
-GdkPixbuf *load_pixbuf(char *filename)
+GdkPixbuf *load_pixbuf(char *filename,int size)
 {
   GdkPixbuf *image;
 
-  image = gdk_pixbuf_new_from_file(filename,NULL);
-
+  if(size)
+    image = gdk_pixbuf_new_from_file_at_size(filename,size,size,NULL);
+  else
+    image = gdk_pixbuf_new_from_file(filename,NULL);
+  
   if(image == NULL)
     {
       fprintf(stderr,_("Error: couldn't load file: %s\n"),filename);
@@ -74,4 +77,20 @@ void GUI_DisplayTitle(text)
 	sprintf(title, "%s: %s", programName, first.tidy);
     }
     gtk_window_set_title(GTK_WINDOW(GUI_Window),title);
+}
+
+void GUI_SetAspectRatio(ratio)
+     int ratio;
+{
+  /* sets the aspect ration of the main window */
+    GdkGeometry hints;
+    extern GtkWidget *GUI_Window;
+
+    hints.min_aspect = hints.max_aspect = ratio;
+    
+    gtk_window_set_geometry_hints (GTK_WINDOW (GUI_Window),
+				   GTK_WIDGET (GUI_Window),
+				   &hints,
+				   GDK_HINT_ASPECT);
+    return;
 }

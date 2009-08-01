@@ -3046,24 +3046,18 @@ main(argc, argv)
     printf("DEBUG: creating svgs.\n");
 
     /* load square colors */
-    SVGLightSquare   = load_pixbuf("svg/LightSquare.svg");
-    SVGDarkSquare    = load_pixbuf("svg/DarkSquare.svg");
-    SVGNeutralSquare = load_pixbuf("svg/NeutralSquare.svg");
+    SVGLightSquare   = load_pixbuf("svg/LightSquare.svg",squareSize);
+    SVGDarkSquare    = load_pixbuf("svg/DarkSquare.svg",squareSize);
+    SVGNeutralSquare = load_pixbuf("svg/NeutralSquare.svg",squareSize);
 
     /* use two icons to indicate if it is white's or black's turn */
-    WhiteIcon  = load_pixbuf("svg/icon_white.svg");
-    BlackIcon  = load_pixbuf("svg/icon_black.svg");
+    WhiteIcon  = load_pixbuf("svg/icon_white.svg",0);
+    BlackIcon  = load_pixbuf("svg/icon_black.svg",0);
     WindowIcon = WhiteIcon;
     gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
 
     /* do resizing to a fixed aspect ratio */
-    GdkGeometry hints;
-    hints.min_aspect = 0.8;
-    hints.max_aspect = 0.8;
-    gtk_window_set_geometry_hints (GTK_WINDOW (GUI_Window),
-				   GTK_WIDGET (GUI_Window),
-				   &hints,
-				   GDK_HINT_ASPECT);
+    GUI_SetAspectRatio(0.8);
 
     /* realize window */
     gtk_widget_show (GUI_Window);
@@ -3664,19 +3658,19 @@ void CreatePieces()
   BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing,
   */
 
-  SVGpieces[WhitePawn]   = load_pixbuf("svg/WhitePawn.svg");
-  SVGpieces[WhiteKnight] = load_pixbuf("svg/WhiteKnight.svg");
-  SVGpieces[WhiteBishop] = load_pixbuf("svg/WhiteBishop.svg");
-  SVGpieces[WhiteRook]   = load_pixbuf("svg/WhiteRook.svg");
-  SVGpieces[WhiteQueen]  = load_pixbuf("svg/WhiteQueen.svg");
-  SVGpieces[WhiteKing]   = load_pixbuf("svg/WhiteKing.svg");
+  SVGpieces[WhitePawn]   = load_pixbuf("svg/WhitePawn.svg",squareSize);
+  SVGpieces[WhiteKnight] = load_pixbuf("svg/WhiteKnight.svg",squareSize);
+  SVGpieces[WhiteBishop] = load_pixbuf("svg/WhiteBishop.svg",squareSize);
+  SVGpieces[WhiteRook]   = load_pixbuf("svg/WhiteRook.svg",squareSize);
+  SVGpieces[WhiteQueen]  = load_pixbuf("svg/WhiteQueen.svg",squareSize);
+  SVGpieces[WhiteKing]   = load_pixbuf("svg/WhiteKing.svg",squareSize);
 
-  SVGpieces[BlackPawn]   = load_pixbuf("svg/BlackPawn.svg");
-  SVGpieces[BlackKnight] = load_pixbuf("svg/BlackKnight.svg");
-  SVGpieces[BlackBishop] = load_pixbuf("svg/BlackBishop.svg");
-  SVGpieces[BlackRook]   = load_pixbuf("svg/BlackRook.svg");
-  SVGpieces[BlackQueen]  = load_pixbuf("svg/BlackQueen.svg");
-  SVGpieces[BlackKing]   = load_pixbuf("svg/BlackKing.svg");
+  SVGpieces[BlackPawn]   = load_pixbuf("svg/BlackPawn.svg",squareSize);
+  SVGpieces[BlackKnight] = load_pixbuf("svg/BlackKnight.svg",squareSize);
+  SVGpieces[BlackBishop] = load_pixbuf("svg/BlackBishop.svg",squareSize);
+  SVGpieces[BlackRook]   = load_pixbuf("svg/BlackRook.svg",squareSize);
+  SVGpieces[BlackQueen]  = load_pixbuf("svg/BlackQueen.svg",squareSize);
+  SVGpieces[BlackKing]   = load_pixbuf("svg/BlackKing.svg",squareSize);
 
   return;
 }
