@@ -2,7 +2,7 @@
  * xboard.c -- X front end for XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts. 
+ * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
  * 2007, 2008, 2009 Free Software Foundation, Inc.
@@ -250,7 +250,6 @@ void PieceMenuPopup P((Widget w, XEvent *event,
 		       String *params, Cardinal *num_params));
 static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
-void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
 void HandleUserMove P((Widget w, XEvent *event,
@@ -445,17 +444,21 @@ Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   jailSquareColor, highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
-GC lightSquareGC, darkSquareGC, jailSquareGC, lineGC, wdPieceGC, wlPieceGC,
-  bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
-  wjPieceGC, bjPieceGC, prelineGC, countGC;
+
+#define LINE_TYPE_NORMAL 0
+#define LINE_TYPE_HIGHLIGHT 1
+#define LINE_TYPE_PRE 2
+
+
+GC lightSquareGC, darkSquareGC, jailSquareGC,  wdPieceGC, wlPieceGC,
+  bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC,
+  wjPieceGC, bjPieceGC,  countGC;
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
-GdkSegment gridSegments[(BOARD_SIZE + 1) * 2];
-XSegment jailGridSegments[(BOARD_SIZE + 3) * 2];
 Font clockFontID, coordFontID, countFontID;
 XFontStruct *clockFontStruct, *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
@@ -681,23 +684,23 @@ MenuItem buttonBar[] = {
 #define PIECE_MENU_SIZE 18
 String pieceMenuStrings[2][PIECE_MENU_SIZE] = {
     { N_("White"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"), 
-      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"), 
+      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"),
+      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
       N_("Empty square"), N_("Clear board") },
     { N_("Black"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"), 
-      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"), 
+      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"),
+      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
       N_("Empty square"), N_("Clear board") }
 };
 /* must be in same order as PieceMenuStrings! */
 ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
     { WhitePlay, (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
 	WhiteRook, WhiteQueen, WhiteKing, (ChessSquare) 0, WhiteAlfil,
-	WhiteCannon, WhiteAngel, WhiteMarshall, (ChessSquare) 0, 
+	WhiteCannon, WhiteAngel, WhiteMarshall, (ChessSquare) 0,
 	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
     { BlackPlay, (ChessSquare) 0, BlackPawn, BlackKnight, BlackBishop,
 	BlackRook, BlackQueen, BlackKing, (ChessSquare) 0, BlackAlfil,
-	BlackCannon, BlackAngel, BlackMarshall, (ChessSquare) 0, 
+	BlackCannon, BlackAngel, BlackMarshall, (ChessSquare) 0,
 	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
 };
 
@@ -2171,7 +2174,6 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    CreateGrid();
 
 //    XtSetArg(args[0], XtNwidth, boardWidth);
 //    XtSetArg(args[1], XtNheight, boardHeight);
@@ -2293,6 +2295,7 @@ main(argc, argv)
     char *p;
     XrmDatabase xdb;
     int forceMono = False;
+
 #define INDIRECTION
 #ifdef INDIRECTION
     // [HGM] before anything else, expand any indirection files amongst options
@@ -2305,7 +2308,7 @@ main(argc, argv)
     j = 0;
     for(i=0; i<argc; i++) {
 	if(j >= 1000-2) { printf(_("too many arguments\n")); exit(-1); }
-//fprintf(stderr, "arg %s\n", argv[i]);
+	//fprintf(stderr, "arg %s\n", argv[i]);
 	if(argv[i][0] != '@') argvCopy[j++] = argv[i]; else {
 	    char c;
 	    FILE *f = fopen(argv[i]+1, "rb");
@@ -2381,35 +2384,44 @@ main(argc, argv)
 
     /* end parse glade file */
 
-    if (argc > 1) {
+    if (argc > 1)
+      {
 	fprintf(stderr, _("%s: unrecognized argument %s\n"),
 		programName, argv[1]);
 	fprintf(stderr, "Recognized options:\n");
-	for(i = 0; i < XtNumber(shellOptions); i++) {
+	for(i = 0; i < XtNumber(shellOptions); i++)
+	  {
 	    j = fprintf(stderr, "  %s%s", shellOptions[i].option,
 		        (shellOptions[i].argKind == XrmoptionSepArg
 			 ? " ARG" : ""));
-	    if (i++ < XtNumber(shellOptions)) {
+	    if (i++ < XtNumber(shellOptions))
+	      {
 		fprintf(stderr, "%*c%s%s\n", 40 - j, ' ',
 			shellOptions[i].option,
 			(shellOptions[i].argKind == XrmoptionSepArg
 			 ? " ARG" : ""));
-	    } else {
+	      }
+	    else
+	      {
 		fprintf(stderr, "\n");
-	    }
-	}
+	      }
+	  }
 	exit(2);
-    }
+      }
 
-    if ((chessDir = (char *) getenv("CHESSDIR")) == NULL) {
+    if ((chessDir = (char *) getenv("CHESSDIR")) == NULL)
+      {
 	chessDir = ".";
-    } else {
-	if (chdir(chessDir) != 0) {
+      }
+    else
+      {
+	if (chdir(chessDir) != 0)
+	  {
 	    fprintf(stderr, _("%s: can't cd to CHESSDIR: "), programName);
 	    perror(chessDir);
 	    exit(1);
-	}
-    }
+	  }
+      }
 
     p = getenv("HOME");
     if (p == NULL) p = "/tmp";
@@ -2435,7 +2447,7 @@ main(argc, argv)
     /* [HGM,HR] make sure board size is acceptable */
     if(appData.NrFiles > BOARD_SIZE ||
        appData.NrRanks > BOARD_SIZE   )
-	 DisplayFatalError(_("Recompile with BOARD_SIZE > 12, to support this size"), 0, 2);
+      DisplayFatalError(_("Recompile with BOARD_SIZE > 12, to support this size"), 0, 2);
 
 #if !HIGHDRAG
     /* This feature does not work; animation needs a rewrite */
@@ -2447,8 +2459,8 @@ main(argc, argv)
     xScreen = DefaultScreen(xDisplay);
     wm_delete_window = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
 
-	gameInfo.variant = StringToVariant(appData.variant);
-	InitPosition(FALSE);
+    gameInfo.variant = StringToVariant(appData.variant);
+    InitPosition(FALSE);
 #if 0
     /*
      * Determine boardSize
@@ -2461,8 +2473,8 @@ main(argc, argv)
     gameInfo.boardHeight   = appData.NrRanks > 0 ? appData.NrRanks : 8;
     gameInfo.holdingsWidth = appData.holdingsSize > 0 ? 2 : 0;
 #endif
-    
-    
+
+
 #ifdef IDSIZE
     InitDrawingSizes(-1, 0); // [HGM] initsize: make this into a subroutine
 #else
@@ -2635,7 +2647,7 @@ main(argc, argv)
     if (forceMono) {
       fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	      programName);
-      
+
       if (appData.bitmapDirectory == NULL ||
 	      appData.bitmapDirectory[0] == NULLCHAR)
 	    appData.bitmapDirectory = DEF_BITMAP_DIR;
@@ -2645,7 +2657,7 @@ main(argc, argv)
       vFrom.addr = (caddr_t) appData.lowTimeWarningColor;
       vFrom.size = strlen(appData.lowTimeWarningColor);
       XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-      if (vTo.addr == NULL) 
+      if (vTo.addr == NULL)
 		appData.monoMode = True;
       else
 		lowTimeWarningColor = *(Pixel *) vTo.addr;
@@ -3049,7 +3061,6 @@ main(argc, argv)
     gtk_widget_show (GUI_Window);
 
     CreateGCs();
-    CreateGrid();
     CreatePieces();
 
     CreatePieceMenus();
@@ -3539,10 +3550,6 @@ void CreateGCs()
     gc_values.function = GXcopy;
 
     gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-    gc_values.background = XBlackPixel(xDisplay, xScreen);
-    lineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-    gc_values.foreground = XBlackPixel(xDisplay, xScreen);
     gc_values.background = XWhitePixel(xDisplay, xScreen);
     coordGC = XtGetGC(shellWidget, value_mask, &gc_values);
     XSetFont(xDisplay, coordGC, coordFontID);
@@ -3554,10 +3561,6 @@ void CreateGCs()
     XSetFont(xDisplay, countGC, countFontID);
 
     if (appData.monoMode) {
-	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-	gc_values.background = XWhitePixel(xDisplay, xScreen);
-	highlineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
 	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
 	gc_values.background = XBlackPixel(xDisplay, xScreen);
 	lightSquareGC = wbPieceGC
@@ -3582,14 +3585,6 @@ void CreateGCs()
 	    }
 	}
     } else {
-	gc_values.foreground = highlightSquareColor;
-	gc_values.background = highlightSquareColor;
-	highlineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = premoveHighlightColor;
-	gc_values.background = premoveHighlightColor;
-	prelineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
 	gc_values.foreground = lightSquareColor;
 	gc_values.background = darkSquareColor;
 	lightSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
@@ -3652,31 +3647,6 @@ void CreatePieces()
   return;
 }
 
-
-void CreateGrid()
-{
-    int i, j;
-
-    if (lineGap == 0) return;
-
-    /* [HR] Split this into 2 loops for non-square boards. */
-    
-    for (i = 0; i < BOARD_HEIGHT + 1; i++) {
-        gridSegments[i].x1 = 0;
-        gridSegments[i].x2 =
-          lineGap + BOARD_WIDTH * (squareSize + lineGap);
-        gridSegments[i].y1 = gridSegments[i].y2
-          = lineGap / 2 + (i * (squareSize + lineGap));
-    }
-
-    for (j = 0; j < BOARD_WIDTH + 1; j++) {
-        gridSegments[j + i].y1 = 0;
-        gridSegments[j + i].y2 =
-          lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-        gridSegments[j + i].x1 = gridSegments[j + i].x2
-          = lineGap / 2 + (j * (squareSize + lineGap));
-    }
-}
 
 static void MenuBarSelect(w, addr, index)
      Widget w;
@@ -4002,26 +3972,58 @@ static void do_flash_delay(msec)
     TimeDelay(msec);
 }
 
-static void drawHighlight(file, rank, gc)
-     int file, rank;
-     GC gc;
+static void drawHighlight(file, rank, line_type)
+     int file, rank, line_type;
 {
     int x, y;
+    cairo_t *cr;
 
     if (lineGap == 0 || appData.blindfold) return;
 
-    if (flipView) {
+    if (flipView)
+      {
 	x = lineGap/2 + ((BOARD_WIDTH-1)-file) *
 	  (squareSize + lineGap);
 	y = lineGap/2 + rank * (squareSize + lineGap);
-    } else {
+      }
+    else
+      {
 	x = lineGap/2 + file * (squareSize + lineGap);
 	y = lineGap/2 + ((BOARD_HEIGHT-1)-rank) *
 	  (squareSize + lineGap);
-    }
+      }
 
-    XDrawRectangle(xDisplay, xBoardWindow, gc, x, y,
-		   squareSize+lineGap, squareSize+lineGap);
+    /* get a cairo_t */
+    cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
+
+    /* draw the highlight */
+    cairo_move_to (cr, x, y);
+    cairo_rel_line_to (cr, 0,squareSize+lineGap);
+    cairo_rel_line_to (cr, squareSize+lineGap,0);
+    cairo_rel_line_to (cr, 0,-squareSize-lineGap);
+    cairo_close_path (cr);
+
+    cairo_set_line_width (cr, lineGap);
+    switch(line_type)
+      {
+	/* TODO: use appdata colors */
+      case LINE_TYPE_HIGHLIGHT:
+	cairo_set_source_rgba (cr, 1, 1, 0, 1.0);
+	break;
+      case LINE_TYPE_PRE:
+	cairo_set_source_rgba (cr, 1, 0, 0, 1.0);
+	break;
+      case LINE_TYPE_NORMAL:
+      default:
+	cairo_set_source_rgba (cr, 0, 1, 0, 1.0);
+      }
+
+    cairo_stroke (cr);
+
+    /* free memory */
+    cairo_destroy (cr);
+
+    return;
 }
 
 int hi1X = -1, hi1Y = -1, hi2X = -1, hi2Y = -1;
@@ -4031,26 +4033,34 @@ void
 SetHighlights(fromX, fromY, toX, toY)
      int fromX, fromY, toX, toY;
 {
-    if (hi1X != fromX || hi1Y != fromY) {
-	if (hi1X >= 0 && hi1Y >= 0) {
-	    drawHighlight(hi1X, hi1Y, lineGC);
-	}
-	if (fromX >= 0 && fromY >= 0) {
-	    drawHighlight(fromX, fromY, highlineGC);
-	}
-    }
-    if (hi2X != toX || hi2Y != toY) {
-	if (hi2X >= 0 && hi2Y >= 0) {
-	    drawHighlight(hi2X, hi2Y, lineGC);
-	}
-	if (toX >= 0 && toY >= 0) {
-	    drawHighlight(toX, toY, highlineGC);
-	}
-    }
+    if (hi1X != fromX || hi1Y != fromY)
+      {
+	if (hi1X >= 0 && hi1Y >= 0)
+	  {
+	    drawHighlight(hi1X, hi1Y, LINE_TYPE_NORMAL);
+	  }
+	if (fromX >= 0 && fromY >= 0)
+	  {
+	    drawHighlight(fromX, fromY, LINE_TYPE_HIGHLIGHT);
+	  }
+      }
+    if (hi2X != toX || hi2Y != toY)
+      {
+	if (hi2X >= 0 && hi2Y >= 0)
+	  {
+	    drawHighlight(hi2X, hi2Y, LINE_TYPE_NORMAL);
+	  }
+	if (toX >= 0 && toY >= 0)
+	  {
+	    drawHighlight(toX, toY, LINE_TYPE_HIGHLIGHT);
+	  }
+      }
     hi1X = fromX;
     hi1Y = fromY;
     hi2X = toX;
     hi2Y = toY;
+
+    return;
 }
 
 void
@@ -4064,26 +4074,35 @@ void
 SetPremoveHighlights(fromX, fromY, toX, toY)
      int fromX, fromY, toX, toY;
 {
-    if (pm1X != fromX || pm1Y != fromY) {
-	if (pm1X >= 0 && pm1Y >= 0) {
-	    drawHighlight(pm1X, pm1Y, lineGC);
-	}
-	if (fromX >= 0 && fromY >= 0) {
-	    drawHighlight(fromX, fromY, prelineGC);
-	}
-    }
-    if (pm2X != toX || pm2Y != toY) {
-	if (pm2X >= 0 && pm2Y >= 0) {
-	    drawHighlight(pm2X, pm2Y, lineGC);
-	}
-	if (toX >= 0 && toY >= 0) {
-	    drawHighlight(toX, toY, prelineGC);
-	}
-    }
+    if (pm1X != fromX || pm1Y != fromY)
+      {
+	if (pm1X >= 0 && pm1Y >= 0)
+	  {
+	    drawHighlight(pm1X, pm1Y, LINE_TYPE_NORMAL);
+	  }
+	if (fromX >= 0 && fromY >= 0)
+	  {
+	    drawHighlight(fromX, fromY, LINE_TYPE_PRE);
+	  }
+      }
+    if (pm2X != toX || pm2Y != toY)
+      {
+	if (pm2X >= 0 && pm2Y >= 0)
+	  {
+	    drawHighlight(pm2X, pm2Y, LINE_TYPE_NORMAL);
+	  }
+	if (toX >= 0 && toY >= 0)
+	  {
+	    drawHighlight(toX, toY, LINE_TYPE_PRE);
+	  }
+      }
+
     pm1X = fromX;
     pm1Y = fromY;
     pm2X = toX;
     pm2Y = toY;
+
+    return;
 }
 
 void
@@ -4097,7 +4116,6 @@ static void BlankSquare(x, y, color, piece, dest)
      ChessSquare piece;
      Drawable dest;
 {
-    if (useImages && useImageSqs) {
       GdkPixbuf *pb;
       switch (color) {
       case 1: /* light */
@@ -4112,176 +4130,17 @@ static void BlankSquare(x, y, color, piece, dest)
 	break;
       }
       gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,pb,0,0,x,y,-1,-1, GDK_RGB_DITHER_NORMAL, 0, 0);
-    } else {
-      GdkGC *gc;
-      GdkColor tmp;
-      
-      gc = gdk_gc_new(GDK_WINDOW(GUI_Board->window));
-      
-      switch (color) {
-      case 1: /* light */
-	//      gc = lightSquareGC;
-	tmp.green=60000;
-	tmp.red=63330;
-	tmp.blue=60000;
-	gdk_gc_set_rgb_fg_color(gc, &tmp);
-	break;
-      case 0: /* dark */
-	//      gc = darkSquareGC;
-	tmp.green=10000;
-	tmp.red=13330;
-	tmp.blue=1234;
-	gdk_gc_set_rgb_fg_color(gc, &tmp);
-	break;
-      case 2: /* neutral */
-      default:
-	//      gc = jailSquareGC;
-	tmp.green=30000;
-	tmp.red=33330;
-	tmp.blue=30234;
-	gdk_gc_set_rgb_fg_color(gc, &tmp);
-	break;
-      }
-      gdk_draw_rectangle(GDK_WINDOW(GUI_Board->window),gc,1,x,y,squareSize,squareSize);
-      
-    }
 }
 
-/*
-   I split out the routines to draw a piece so that I could
-   make a generic flash routine.
-*/
-static void monoDrawPiece_1bit(piece, square_color, x, y, dest)
+static void DrawPiece(piece, square_color, x, y, dest)
      ChessSquare piece;
      int square_color, x, y;
      Drawable dest;
 {
-    /* Avoid XCopyPlane on 1-bit screens to work around Sun bug */
-    switch (square_color) {
-      case 1: /* light */
-      case 2: /* neutral */
-      default:
-	XCopyArea(xDisplay, (int) piece < (int) BlackPawn
-		  ? *pieceToOutline(piece)
-		  : *pieceToSolid(piece),
-		  dest, bwPieceGC, 0, 0,
-		  squareSize, squareSize, x, y);
-	break;
-      case 0: /* dark */
-	XCopyArea(xDisplay, (int) piece < (int) BlackPawn
-		  ? *pieceToSolid(piece)
-		  : *pieceToOutline(piece),
-		  dest, wbPieceGC, 0, 0,
-		  squareSize, squareSize, x, y);
-	break;
-    }
-}
-
-static void monoDrawPiece(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
-{
-    switch (square_color) {
-      case 1: /* light */
-      case 2: /* neutral */
-      default:
-	XCopyPlane(xDisplay, (int) piece < (int) BlackPawn
-		   ? *pieceToOutline(piece)
-		   : *pieceToSolid(piece),
-		   dest, bwPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-      case 0: /* dark */
-	XCopyPlane(xDisplay, (int) piece < (int) BlackPawn
-		   ? *pieceToSolid(piece)
-		   : *pieceToOutline(piece),
-		   dest, wbPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-    }
-}
-
-static void colorDrawPiece(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
-{
-  gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,GDK_PIXBUF(SVGpieces[piece]),0,0,x,y,-1,-1, GDK_RGB_DITHER_NORMAL, 0, 0);
+  gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,
+		  GDK_PIXBUF(SVGpieces[piece]),0,0,x,y,-1,-1,
+		  GDK_RGB_DITHER_NORMAL, 0, 0);
   return ;
-  
-//    if(pieceToSolid(piece) == NULL) return; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
-//    switch (square_color) {
-//      case 1: /* light */
-//	XCopyPlane(xDisplay, *pieceToSolid(piece),
-//		   dest, (int) piece < (int) BlackPawn
-//		   ? wlPieceGC : blPieceGC, 0, 0,
-//		   squareSize, squareSize, x, y, 1);
-//	break;
-//      case 0: /* dark */
-//	XCopyPlane(xDisplay, *pieceToSolid(piece),
-//		   dest, (int) piece < (int) BlackPawn
-//		   ? wdPieceGC : bdPieceGC, 0, 0,
-//		   squareSize, squareSize, x, y, 1);
-//	break;
-//      case 2: /* neutral */
-//      default:
-//	XCopyPlane(xDisplay, *pieceToSolid(piece),
-//		   dest, (int) piece < (int) BlackPawn
-//		   ? wjPieceGC : bjPieceGC, 0, 0,
-//		   squareSize, squareSize, x, y, 1);
-//	break;
-//    }
-}
-
-static void colorDrawPieceImage(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
-{
-    int kind;
-
-    switch (square_color) {
-      case 1: /* light */
-      case 2: /* neutral */
-      default:
-	if ((int)piece < (int) BlackPawn) {
-	    kind = 0;
-	} else {
-	    kind = 2;
-	    piece -= BlackPawn;
-	}
-	break;
-      case 0: /* dark */
-	if ((int)piece < (int) BlackPawn) {
-	    kind = 1;
-	} else {
-	    kind = 3;
-	    piece -= BlackPawn;
-	}
-	break;
-    }
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
-	      dest, wlPieceGC, 0, 0,
-	      squareSize, squareSize, x, y);
-}
-
-typedef void (*DrawFunc)();
-
-DrawFunc ChooseDrawFunc()
-{
-  if (appData.monoMode) {
-    if (DefaultDepth(xDisplay, xScreen) == 1) {
-      return monoDrawPiece_1bit;
-    } else {
-      return monoDrawPiece;
-    }
-  } else {
-    if (useImages)
-      return colorDrawPieceImage;
-    else
-      return colorDrawPiece;
-  }
 }
 
 /* [HR] determine square color depending on chess variant. */
@@ -4318,108 +4177,135 @@ void DrawSquare(row, column, piece, do_flash)
     int i;
     char string[2];
     XCharStruct overall;
-    DrawFunc drawfunc;
     int flash_delay;
-    
+
     /* Calculate delay in milliseconds (2-delays per complete flash) */
     flash_delay = 500 / appData.flashRate;
 
     /* calculate x and y coordinates from row and column */
-    if (flipView) {
+    if (flipView)
+      {
 	x = lineGap + ((BOARD_WIDTH-1)-column) *
 	  (squareSize + lineGap);
 	y = lineGap + row * (squareSize + lineGap);
-    } else {
+      }
+    else
+      {
 	x = lineGap + column * (squareSize + lineGap);
 	y = lineGap + ((BOARD_HEIGHT-1)-row) *
 	  (squareSize + lineGap);
-    }
+      }
 
     square_color = SquareColor(row, column);
 
-    if ( // [HGM] holdings: blank out area between board and holdings
-	column == BOARD_LEFT-1 ||  column == BOARD_RGHT
-	|| (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
-	|| (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
-      BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
-      
-      // [HGM] print piece counts next to holdings
-      string[1] = NULLCHAR;
-      if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
-	string[0] = '0' + piece;
-	XTextExtents(countFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode) {
-	  XDrawImageString(xDisplay, xBoardWindow, countGC,
-			   x + squareSize - overall.width - 2,
-			   y + font_ascent + 1, string, 1);
-	} else {
-	  XDrawString(xDisplay, xBoardWindow, countGC,
-		      x + squareSize - overall.width - 2,
-		      y + font_ascent + 1, string, 1);
-	}
-      }
-      if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
-	string[0] = '0' + piece;
-	XTextExtents(countFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode) {
-	  XDrawImageString(xDisplay, xBoardWindow, countGC,
-			   x + 2, y + font_ascent + 1, string, 1);
-	} else {
-	  XDrawString(xDisplay, xBoardWindow, countGC,
-		      x + 2, y + font_ascent + 1, string, 1);
-	}
-      }
-    } else {
-      if (piece == EmptySquare || appData.blindfold) {
-	BlankSquare(x, y, square_color, piece, xBoardWindow);
-      } else {
-	drawfunc = ChooseDrawFunc();
-	if (do_flash && appData.flashCount > 0) {
-	  for (i=0; i<appData.flashCount; ++i) {
-	    
-	    drawfunc(piece, square_color, x, y, xBoardWindow);
-	    XSync(xDisplay, False);
-	    do_flash_delay(flash_delay);
-	    
-	    BlankSquare(x, y, square_color, piece, xBoardWindow);
-	    XSync(xDisplay, False);
-	    do_flash_delay(flash_delay);
+    // [HGM] holdings: blank out area between board and holdings
+    if ( column == BOARD_LEFT-1 ||  column == BOARD_RGHT
+	 || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
+	 || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) )
+      {
+	BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
+
+	// [HGM] print piece counts next to holdings
+	string[1] = NULLCHAR;
+	if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 )
+	  {
+	    string[0] = '0' + piece;
+	    XTextExtents(countFontStruct, string, 1, &direction,
+			 &font_ascent, &font_descent, &overall);
+	    if (appData.monoMode)
+	      {
+		XDrawImageString(xDisplay, xBoardWindow, countGC,
+				 x + squareSize - overall.width - 2,
+				 y + font_ascent + 1, string, 1);
+	      }
+	    else
+	      {
+		XDrawString(xDisplay, xBoardWindow, countGC,
+			    x + squareSize - overall.width - 2,
+			    y + font_ascent + 1, string, 1);
+	      }
 	  }
-	}
-	drawfunc(piece, square_color, x, y, xBoardWindow);
+	if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1)
+	  {
+	    string[0] = '0' + piece;
+	    XTextExtents(countFontStruct, string, 1, &direction,
+			 &font_ascent, &font_descent, &overall);
+	    if (appData.monoMode)
+	      {
+		XDrawImageString(xDisplay, xBoardWindow, countGC,
+				 x + 2, y + font_ascent + 1, string, 1);
+	      }
+	    else
+	      {
+		XDrawString(xDisplay, xBoardWindow, countGC,
+			    x + 2, y + font_ascent + 1, string, 1);
+	      }
+	  }
       }
-    }
-    
+    else
+      {
+	/* square on the board */
+	if (piece == EmptySquare || appData.blindfold)
+	  {
+	    BlankSquare(x, y, square_color, piece, xBoardWindow);
+	  }
+	else
+	  {
+	    if (do_flash && appData.flashCount > 0)
+	      {
+		for (i=0; i<appData.flashCount; ++i)
+		  {
+
+		    DrawPiece(piece, square_color, x, y, xBoardWindow);
+		    do_flash_delay(flash_delay);
+
+		    BlankSquare(x, y, square_color, piece, xBoardWindow);
+		    do_flash_delay(flash_delay);
+		  }
+	      }
+	    DrawPiece(piece, square_color, x, y, xBoardWindow);
+	  }
+      }
+
+    /* show coordinates if necessary */
     string[1] = NULLCHAR;
     if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
-	&& column >= BOARD_LEFT && column < BOARD_RGHT) {
-      string[0] = 'a' + column - BOARD_LEFT;
-      XTextExtents(coordFontStruct, string, 1, &direction,
-		   &font_ascent, &font_descent, &overall);
-      if (appData.monoMode) {
-	XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			 x + squareSize - overall.width - 2,
-			 y + squareSize - font_descent - 1, string, 1);
-      } else {
-	XDrawString(xDisplay, xBoardWindow, coordGC,
-		    x + squareSize - overall.width - 2,
-		    y + squareSize - font_descent - 1, string, 1);
+	&& column >= BOARD_LEFT && column < BOARD_RGHT)
+      {
+	string[0] = 'a' + column - BOARD_LEFT;
+	XTextExtents(coordFontStruct, string, 1, &direction,
+		     &font_ascent, &font_descent, &overall);
+	if (appData.monoMode)
+	  {
+	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
+			     x + squareSize - overall.width - 2,
+			     y + squareSize - font_descent - 1, string, 1);
+	  }
+	else
+	  {
+	    XDrawString(xDisplay, xBoardWindow, coordGC,
+			x + squareSize - overall.width - 2,
+			y + squareSize - font_descent - 1, string, 1);
+	  }
       }
-    }
-    if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT)) {
-      string[0] = ONE + row;
-      XTextExtents(coordFontStruct, string, 1, &direction,
-		   &font_ascent, &font_descent, &overall);
-      if (appData.monoMode) {
-	XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			 x + 2, y + font_ascent + 1, string, 1);
-      } else {
-	XDrawString(xDisplay, xBoardWindow, coordGC,
-		    x + 2, y + font_ascent + 1, string, 1);
+    if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT))
+      {
+	string[0] = ONE + row;
+	XTextExtents(coordFontStruct, string, 1, &direction,
+		     &font_ascent, &font_descent, &overall);
+	if (appData.monoMode)
+	  {
+	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
+			     x + 2, y + font_ascent + 1, string, 1);
+	  }
+	else
+	  {
+	    XDrawString(xDisplay, xBoardWindow, coordGC,
+			x + 2, y + font_ascent + 1, string, 1);
+	  }
       }
-    }
+
+    return;
 }
 
 
@@ -4497,115 +4383,145 @@ static int damage[BOARD_SIZE][BOARD_SIZE];
  */
 void DrawPosition( repaint, board)
      /*Boolean*/int repaint;
-     Board board;
+		Board board;
 {
-    int i, j, do_flash;
-    static int lastFlipView = 0;
-    static int lastBoardValid = 0;
-    static Board lastBoard;
-    Arg args[16];
-    int rrow, rcol;
+  int i, j, do_flash;
+  static int lastFlipView = 0;
+  static int lastBoardValid = 0;
+  static Board lastBoard;
+  Arg args[16];
+  int rrow, rcol;
 
-    if (board == NULL) {
-	if (!lastBoardValid) return;
-	board = lastBoard;
-    }
-    if (!lastBoardValid || lastFlipView != flipView) {
-	XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flip View"),
-		    args, 1);
-    }
+  if (board == NULL) {
+    if (!lastBoardValid) return;
+    board = lastBoard;
+  }
+  if (!lastBoardValid || lastFlipView != flipView) {
+    XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flip View"),
+		args, 1);
+  }
 
-    /*
-     * It would be simpler to clear the window with XClearWindow()
-     * but this causes a very distracting flicker.
-     */
+  /*
+   * It would be simpler to clear the window with XClearWindow()
+   * but this causes a very distracting flicker.
+   */
 
-    if (!repaint && lastBoardValid && lastFlipView == flipView) {
-	/* If too much changes (begin observing new game, etc.), don't
-	   do flashing */
-	do_flash = too_many_diffs(board, lastBoard) ? 0 : 1;
+  if (!repaint && lastBoardValid && lastFlipView == flipView)
+    {
+      /* If too much changes (begin observing new game, etc.), don't
+	 do flashing */
+      do_flash = too_many_diffs(board, lastBoard) ? 0 : 1;
 
-	/* Special check for castling so we don't flash both the king
-	   and the rook (just flash the king). */
-	if (do_flash) {
-	    if (check_castle_draw(board, lastBoard, &rrow, &rcol)) {
-		/* Draw rook with NO flashing. King will be drawn flashing later */
-		DrawSquare(rrow, rcol, board[rrow][rcol], 0);
-		lastBoard[rrow][rcol] = board[rrow][rcol];
+      /* Special check for castling so we don't flash both the king
+	 and the rook (just flash the king). */
+      if (do_flash)
+	{
+	  if (check_castle_draw(board, lastBoard, &rrow, &rcol))
+	    {
+	      /* Draw rook with NO flashing. King will be drawn flashing later */
+	      DrawSquare(rrow, rcol, board[rrow][rcol], 0);
+	      lastBoard[rrow][rcol] = board[rrow][rcol];
 	    }
 	}
 
-	/* First pass -- Draw (newly) empty squares and repair damage.
-	   This prevents you from having a piece show up twice while it
-	   is flashing on its new square */
-	for (i = 0; i < BOARD_HEIGHT; i++)
-	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if ((board[i][j] != lastBoard[i][j] && board[i][j] == EmptySquare)
-		|| damage[i][j]) {
-		DrawSquare(i, j, board[i][j], 0);
-		damage[i][j] = False;
-	    }
-
-	/* Second pass -- Draw piece(s) in new position and flash them */
-	for (i = 0; i < BOARD_HEIGHT; i++)
-	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if (board[i][j] != lastBoard[i][j]) {
-		DrawSquare(i, j, board[i][j], do_flash);
-	    }
-    } else {
-	if (lineGap > 0)
-          {
-            /* todo move GC to setupgc */
-            GdkGC *gtklineGC=NULL;
-            GdkColor tmp;
-
-            gtklineGC = gdk_gc_new(GDK_WINDOW(GUI_Board->window));
-
-            tmp.green=60000;
-            tmp.red=0;
-            tmp.blue=1234;
-            gdk_gc_set_rgb_fg_color(gtklineGC, &tmp);
-
-            tmp.green=60000;
-            tmp.red=60000;
-            tmp.blue=61234;
-            gdk_gc_set_rgb_bg_color(gtklineGC, &tmp);
-
-            gdk_draw_segments(GUI_Board->window,gtklineGC,
-                              gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2 );
-          }
-	
-	squareSize=108;
-	for (i = 0; i < BOARD_HEIGHT; i++)
-	  for (j = 0; j < BOARD_WIDTH; j++) {
+      /* First pass -- Draw (newly) empty squares and repair damage.
+	 This prevents you from having a piece show up twice while it
+	 is flashing on its new square */
+      for (i = 0; i < BOARD_HEIGHT; i++)
+	for (j = 0; j < BOARD_WIDTH; j++)
+	  if ((board[i][j] != lastBoard[i][j] && board[i][j] == EmptySquare)
+	      || damage[i][j])
+	    {
 	      DrawSquare(i, j, board[i][j], 0);
 	      damage[i][j] = False;
+	    }
+
+      /* Second pass -- Draw piece(s) in new position and flash them */
+      for (i = 0; i < BOARD_HEIGHT; i++)
+	for (j = 0; j < BOARD_WIDTH; j++)
+	  if (board[i][j] != lastBoard[i][j])
+	    {
+	      DrawSquare(i, j, board[i][j], do_flash);
+	    }
+    }
+  else
+    {
+      /* redraw Grid */
+      if (lineGap > 0)
+	{
+	  int x1,x2,y1,y2;
+	  cairo_t *cr;
+
+	  /* get a cairo_t */
+	  cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
+
+	  cairo_set_line_width (cr, lineGap);
+
+	  /* TODO: use appdata colors */
+	  cairo_set_source_rgba (cr, 0, 1, 0, 1.0);
+
+	  cairo_stroke (cr);
+
+	  for (i = 0; i < BOARD_HEIGHT + 1; i++)
+	    {
+	      x1 = 0;
+	      x2 = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+	      y1 = y2 = lineGap / 2 + (i * (squareSize + lineGap));
+
+	      cairo_move_to (cr, x1, y1);
+	      cairo_rel_line_to (cr, x2,0);
+	      cairo_stroke (cr);
+	    }
+
+	  for (j = 0; j < BOARD_WIDTH + 1; j++)
+	    {
+	      y1 = 0;
+	      y2 = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+	      x1 = x2  = lineGap / 2 + (j * (squareSize + lineGap));
+
+	      cairo_move_to (cr, x1, y1);
+	      cairo_rel_line_to (cr, 0, y2);
+	      cairo_stroke (cr);
+	    }
+
+	  /* free memory */
+	  cairo_destroy (cr);
+	}
+
+      /* draw pieces */
+      for (i = 0; i < BOARD_HEIGHT; i++)
+	for (j = 0; j < BOARD_WIDTH; j++)
+	  {
+	    DrawSquare(i, j, board[i][j], 0);
+	    damage[i][j] = False;
 	  }
     }
 
-    CopyBoard(lastBoard, board);
-    lastBoardValid = 1;
-    lastFlipView = flipView;
+  CopyBoard(lastBoard, board);
+  lastBoardValid = 1;
+  lastFlipView = flipView;
 
-    /* Draw highlights */
-    if (pm1X >= 0 && pm1Y >= 0) {
-      drawHighlight(pm1X, pm1Y, prelineGC);
+  /* Draw highlights */
+  if (pm1X >= 0 && pm1Y >= 0)
+    {
+      drawHighlight(pm1X, pm1Y, LINE_TYPE_PRE);
     }
-    if (pm2X >= 0 && pm2Y >= 0) {
-      drawHighlight(pm2X, pm2Y, prelineGC);
+  if (pm2X >= 0 && pm2Y >= 0)
+    {
+      drawHighlight(pm2X, pm2Y, LINE_TYPE_PRE);
     }
-    if (hi1X >= 0 && hi1Y >= 0) {
-      drawHighlight(hi1X, hi1Y, highlineGC);
+  if (hi1X >= 0 && hi1Y >= 0)
+    {
+      drawHighlight(hi1X, hi1Y, LINE_TYPE_HIGHLIGHT);
     }
-    if (hi2X >= 0 && hi2Y >= 0) {
-      drawHighlight(hi2X, hi2Y, highlineGC);
+  if (hi2X >= 0 && hi2Y >= 0)
+    {
+      drawHighlight(hi2X, hi2Y, LINE_TYPE_HIGHLIGHT);
     }
 
-    /* If piece being dragged around board, must redraw that too */
-    DrawDragPiece();
-
-    //    XSync(xDisplay, False);
+  /* If piece being dragged around board, must redraw that too */
+  DrawDragPiece();
 }
 
 
@@ -5484,8 +5400,8 @@ void PromotionPopUp()
       XawDialogAddButton(dialog, _("King"), PromotionCallback,
 			 (XtPointer) dialog);
     }
-    if(gameInfo.variant == VariantCapablanca || 
-       gameInfo.variant == VariantGothic || 
+    if(gameInfo.variant == VariantCapablanca ||
+       gameInfo.variant == VariantGothic ||
        gameInfo.variant == VariantCapaRandom) {
       XawDialogAddButton(dialog, _("Archbishop"), PromotionCallback,
 			 (XtPointer) dialog);
@@ -5594,13 +5510,13 @@ void ErrorPopUp(title, label, modal)
      int modal;
 {
   GtkWidget *dialog;
- 
+
   dialog = gtk_message_dialog_new(GTK_WINDOW(GUI_Window),
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   GTK_MESSAGE_ERROR,
                                   GTK_BUTTONS_CLOSE,
                                   (gchar *)label);
-  
+
   gtk_window_set_title(GTK_WINDOW(dialog),(gchar *) title);
   if(modal)
     {
@@ -5700,18 +5616,18 @@ void ModeHighlight()
 	}
       }
     }
-    
+
     wname = ModeToWidgetName(oldmode);
     if(wname)
        gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, wname)),True);
-    
+
     oldmode = gameMode;
-    
+
     /* Maybe all the enables should be handled here, not just this one */
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuMode.Training")),
 			     gameMode == Training || gameMode == PlayFromGameFile);
 }
-    
+
 
 /*
  * Button/menu procedures
@@ -7598,8 +7514,8 @@ DisplayTimerLabel(w, color, timer, highlight)
      int highlight;
 {
   gchar buf[MSG_SIZ];
-  
-  
+
+
   if (appData.clockMode) {
     sprintf(buf, "%s: %s", color, TimeString(timer));
   } else {
@@ -7611,7 +7527,7 @@ DisplayTimerLabel(w, color, timer, highlight)
 //    Pixel foregroundOrWarningColor = timerForegroundPixel;
 
 //    if (timer > 0 &&
-//        appData.lowTimeWarning && 
+//        appData.lowTimeWarning &&
 //        (timer / 1000) < appData.icsAlarmTime)
 //      foregroundOrWarningColor = lowTimeWarningColor;
 //
@@ -8635,8 +8551,8 @@ AnimateMove(board, fromX, fromY, toX, toY)
   if (!appData.animate || appData.blindfold)
     return;
 
-  if(board[toY][toX] == WhiteRook && board[fromY][fromX] == WhiteKing || 
-     board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing) 
+  if(board[toY][toX] == WhiteRook && board[fromY][fromX] == WhiteKing ||
+     board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing)
 	return; // [HGM] FRC: no animtion of FRC castlings, as to-square is not true to-square
 
   if (fromY < 0 || fromX < 0 || toX < 0 || toY < 0) return;

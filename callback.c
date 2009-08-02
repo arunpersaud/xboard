@@ -23,7 +23,7 @@ extern int fromY;
 extern int toX;
 extern int toY;
 
-void 
+void
 QuitProc (object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -49,7 +49,7 @@ void AboutProc (object, user_data)
 			    "H.G. Muller <h.g.muller AT hccnet DOT nl>",
 			    "Eric Mullins <emwine AT earthlink DOT net>",
 			    "Arun Persaud <arun@nubati.net>"};
-  
+
   /* set up about window */
   about =  GTK_WIDGET(gtk_about_dialog_new());
 
@@ -61,10 +61,10 @@ void AboutProc (object, user_data)
   char *zippy = "";
 #endif
   sprintf(buf, "%s%s",  programVersion, zippy);
-  
+
   gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),buf);
 
-  gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about), 
+  gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about),
 				 "Copyright 1991 Digital Equipment Corporation\n"
 				 "Enhancements Copyright 1992-2009 Free Software Foundation\n"
 				 "Enhancements Copyright 2005 Alessandro Scotti");
@@ -73,7 +73,7 @@ void AboutProc (object, user_data)
   gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(about),
 					  " A. Alper (turkish)\n"
 					  " A. Persaud (german)\n");
-  
+
   /* end set up about window */
   gtk_dialog_run(GTK_DIALOG (about));
   gtk_widget_destroy(about);
@@ -110,12 +110,12 @@ gboolean CloseWindowProc(GtkWidget *button)
     return TRUE;
 }
 
-void 
+void
 ResetProc (object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-  ResetGameEvent(); 
+  ResetGameEvent();
   AnalysisPopDown();
 }
 
@@ -211,11 +211,11 @@ void EventProc(window, event, data)
      GdkEvent *event;
      gpointer data;
 {
-  /* todo do we still need this? 
+  /* todo do we still need this?
     if (!XtIsRealized(widget))
       return;
   */
-  
+
     switch (event->type) {
       case GDK_EXPOSE:
 	if (event->expose.count > 0) return;  /* no clipping is done */
@@ -243,43 +243,53 @@ void UserMoveProc(window, event, data)
 
     if (event->type == GDK_BUTTON_PRESS) ErrorPopDown();
 
-    if (promotionUp) {
-	if (event->type == GDK_BUTTON_PRESS) {
-	  /* todo add promotionshellwidget
-	    XtPopdown(promotionShell);
-	    XtDestroyWidget(promotionShell); */
+    if (promotionUp)
+      {
+	if (event->type == GDK_BUTTON_PRESS)
+	  {
+	    /* todo add promotionshellwidget
+	       XtPopdown(promotionShell);
+	       XtDestroyWidget(promotionShell); */
 	    promotionUp = False;
 	    ClearHighlights();
 	    fromX = fromY = -1;
-	} else {
+	  }
+	else
+	  {
 	    return;
-	}
-    }
-    
-    x = EventToSquare((int)event->button.x, BOARD_WIDTH);
-    y = EventToSquare((int)event->button.y, BOARD_HEIGHT);
-    if (!flipView && y >= 0) {
+	  }
+      }
+
+    x = EventToSquare( (int)event->button.x, BOARD_WIDTH  );
+    y = EventToSquare( (int)event->button.y, BOARD_HEIGHT );
+    if (!flipView && y >= 0)
+      {
 	y = BOARD_HEIGHT - 1 - y;
-    }
-    if (flipView && x >= 0) {
+      }
+    if (flipView && x >= 0)
+      {
 	x = BOARD_WIDTH - 1 - x;
-    }
-    
-    if (fromX == -1) {
-	if (event->type == ButtonPress) {
+      }
+
+    if (fromX == -1)
+      {
+	if (event->type == ButtonPress)
+	  {
 	    /* First square */
-	    if (OKToStartUserMove(x, y)) {
+	    if (OKToStartUserMove(x, y))
+	      {
 		fromX = x;
 		fromY = y;
 		second = 0;
 		DragPieceBegin(event->button.x, event->button.y);
-		if (appData.highlightDragging) {
+		if (appData.highlightDragging)
+		  {
 		    SetHighlights(x, y, -1, -1);
-		}
-	    }
-	}
+		  }
+	      }
+	  }
 	return;
-    }
+      }
 
     /* fromX != -1 */
     if (event->type == GDK_BUTTON_PRESS && gameMode != EditPosition &&
@@ -309,68 +319,94 @@ void UserMoveProc(window, event, data)
 	}
     }
 
-    if (event->type == GDK_BUTTON_RELEASE &&	x == fromX && y == fromY) {
+    if (event->type == GDK_BUTTON_RELEASE &&	x == fromX && y == fromY)
+      {
 	DragPieceEnd(event->button.x, event->button.y);
-	if (appData.animateDragging) {
+	if (appData.animateDragging)
+	  {
 	    /* Undo animation damage if any */
 	    DrawPosition(FALSE, NULL);
-	}
-	if (second) {
+	  }
+	if (second)
+	  {
 	    /* Second up/down in same square; just abort move */
 	    second = 0;
 	    fromX = fromY = -1;
 	    ClearHighlights();
 	    gotPremove = 0;
 	    ClearPremoveHighlights();
-	} else {
+	  }
+	else
+	  {
 	    /* First upclick in same square; start click-click mode */
 	    SetHighlights(x, y, -1, -1);
-	}
+	  }
 	return;
-    }
+      }
 
     /* Completed move */
     toX = x;
     toY = y;
     saveAnimate = appData.animate;
-    if (event->type == GDK_BUTTON_PRESS) {
+
+    if (event->type == GDK_BUTTON_PRESS)
+      {
 	/* Finish clickclick move */
-	if (appData.animate || appData.highlightLastMove) {
+	if (appData.animate || appData.highlightLastMove)
+	  {
 	    SetHighlights(fromX, fromY, toX, toY);
-	} else {
+	  }
+	else
+	  {
 	    ClearHighlights();
-	}
-    } else {
+	  }
+      }
+    else
+      {
 	/* Finish drag move */
-	if (appData.highlightLastMove) {
+	if (appData.highlightLastMove)
+	  {
 	    SetHighlights(fromX, fromY, toX, toY);
-	} else {
+	  }
+	else
+	  {
 	    ClearHighlights();
-	}
+	  }
 	DragPieceEnd(event->button.x, event->button.y);
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
-    }
-    if (IsPromotion(fromX, fromY, toX, toY)) {
-	if (appData.alwaysPromoteToQueen) {
+      }
+
+    if (IsPromotion(fromX, fromY, toX, toY))
+      {
+	if (appData.alwaysPromoteToQueen)
+	  {
 	    UserMoveEvent(fromX, fromY, toX, toY, 'q');
 	    if (!appData.highlightLastMove || gotPremove) ClearHighlights();
 	    if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
 	    fromX = fromY = -1;
-	} else {
+	  }
+	else
+	  {
 	    SetHighlights(fromX, fromY, toX, toY);
 	    PromotionPopUp();
-	}
-    } else {
-    
+	  }
+      }
+    else
+      {
 	UserMoveEvent(fromX, fromY, toX, toY, NULLCHAR);
+
 	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
 	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
 	fromX = fromY = -1;
-    }
+      }
+
     appData.animate = saveAnimate;
     if (appData.animate || appData.animateDragging) {
 	/* Undo animation damage if needed */
 	DrawPosition(FALSE, NULL);
     }
+
+    return;
 }
+
