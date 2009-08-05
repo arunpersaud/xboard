@@ -3013,8 +3013,8 @@ SetMachineThinkingEnables()
   case MachinePlaysBlack:
   case MachinePlaysWhite:
   case TwoMachinesPlay:
-    XtSetSensitive(XtNameToWidget(menuBarWidget,
-				  ModeToWidgetName(gameMode)), True);
+//    XtSetSensitive(XtNameToWidget(menuBarWidget,
+//				  ModeToWidgetName(gameMode)), True);
     break;
   default:
     break;
@@ -4173,8 +4173,8 @@ void HandleUserMove(w, event, prms, nprms)
 
     if (promotionUp) {
 	if (event->type == ButtonPress) {
-	    XtPopdown(promotionShell);
-	    XtDestroyWidget(promotionShell);
+//	    XtPopdown(promotionShell);
+//	    XtDestroyWidget(promotionShell);
 	    promotionUp = False;
 	    ClearHighlights();
 	    fromX = fromY = -1;
@@ -4194,9 +4194,10 @@ void HandleUserMove(w, event, prms, nprms)
 
     /* [HGM] holdings: next 5 lines: ignore all clicks between board and holdings */
     if(event->type == ButtonPress
-            && ( x == BOARD_LEFT-1 || x == BOARD_RGHT
-              || x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize
-              || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
+            && ( x == BOARD_LEFT-1 || 
+		 x == BOARD_RGHT   || 
+		 (x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize ) || 
+		 (x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize)) )
 	return;
 
     if (fromX == -1) {
@@ -7004,8 +7005,7 @@ ScheduleDelayedEvent(cb, millisec)
      DelayedEventCallback cb; long millisec;
 {
     delayedEventCallback = cb;
-    delayedEventTimerTag =
-      gtk_timeout_add(millisec,(GtkFunction) FireDelayedEvent, NULL);
+    delayedEventTimerTag = gtk_timeout_add(millisec,(GtkFunction) FireDelayedEvent, NULL);
 }
 
 DelayedEventCallback
@@ -7029,6 +7029,7 @@ CancelDelayedEvent()
       gtk_timeout_remove(delayedEventTimerTag);
       delayedEventTimerTag = 0;
     }
+
   return;
 }
 
@@ -7809,7 +7810,7 @@ static void
 FrameDelay (time)
      int time;
 {
-  XSync(xDisplay, False);
+  //  XSync(xDisplay, False);
   if (time > 0)
     usleep(time * 1000);
 }
@@ -8005,7 +8006,7 @@ SelectGCMask(piece, clip, outline, mask)
     else
       source = blPieceGC;
   }
-  XCopyGC(xDisplay, source, 0xFFFFFFFF, *clip);
+  //  XCopyGC(xDisplay, source, 0xFFFFFFFF, *clip);
 
   /* Outline only used in mono mode and is not modified */
   if (White(piece))
@@ -8022,23 +8023,25 @@ OverlayPiece(piece, clip, outline,  dest)
 
   if (!useImages) {
     /* Draw solid rectangle which will be clipped to shape of piece */
-    XFillRectangle(xDisplay, dest, clip,
-		   0, 0, squareSize, squareSize);
+//    XFillRectangle(xDisplay, dest, clip,
+//		   0, 0, squareSize, squareSize)
+;
     if (appData.monoMode)
       /* Also draw outline in contrasting color for black
 	 on black / white on white cases		*/
-      XCopyPlane(xDisplay, *pieceToOutline(piece), dest, outline,
-		 0, 0, squareSize, squareSize, 0, 0, 1);
+//      XCopyPlane(xDisplay, *pieceToOutline(piece), dest, outline,
+//		 0, 0, squareSize, squareSize, 0, 0, 1)
+;
   } else {
     /* Copy the piece */
     if (White(piece))
       kind = 0;
     else
       kind = 2;
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
-	      dest, clip,
-	      0, 0, squareSize, squareSize,
-	      0, 0);
+//    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
+//	      dest, clip,
+//	      0, 0, squareSize, squareSize,
+//	      0, 0);
   }
 }
 
@@ -8058,8 +8061,8 @@ BeginAnimation(anim, piece, startColor, start)
   anim->prevFrame = *start;
 
   /* The piece will be drawn using its own bitmap as a matte	*/
-  SelectGCMask(piece, &anim->pieceGC, &anim->outlineGC, &mask);
-  XSetClipMask(xDisplay, anim->pieceGC, mask);
+//  SelectGCMask(piece, &anim->pieceGC, &anim->outlineGC, &mask);
+//  XSetClipMask(xDisplay, anim->pieceGC, mask);
 }
 
 static void
@@ -8074,45 +8077,46 @@ AnimationFrame(anim, frame, piece)
   int	     count, i;
 
   /* Save what we are about to draw into the new buffer */
-  XCopyArea(xDisplay, xBoardWindow, anim->newBuf, anim->blitGC,
-	    frame->x, frame->y, squareSize, squareSize,
-	    0, 0);
+//  XCopyArea(xDisplay, xBoardWindow, anim->newBuf, anim->blitGC,
+//	    frame->x, frame->y, squareSize, squareSize,
+//	    0, 0);
 
   /* Erase bits of the previous frame */
   if (Intersect(&anim->prevFrame, frame, squareSize, &overlap, &pt)) {
     /* Where the new frame overlapped the previous,
        the contents in newBuf are wrong. */
-    XCopyArea(xDisplay, anim->saveBuf, anim->newBuf, anim->blitGC,
-	      overlap.x, overlap.y,
-	      overlap.width, overlap.height,
-	      pt.x, pt.y);
+//    XCopyArea(xDisplay, anim->saveBuf, anim->newBuf, anim->blitGC,
+//	      overlap.x, overlap.y,
+//	      overlap.width, overlap.height,
+//	      pt.x, pt.y);
     /* Repaint the areas in the old that don't overlap new */
     CalcUpdateRects(&anim->prevFrame, frame, squareSize, updates, &count);
     for (i = 0; i < count; i++)
-      XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-		updates[i].x - anim->prevFrame.x,
-		updates[i].y - anim->prevFrame.y,
-		updates[i].width, updates[i].height,
-		updates[i].x, updates[i].y);
+//      XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
+//		updates[i].x - anim->prevFrame.x,
+//		updates[i].y - anim->prevFrame.y,
+//		updates[i].width, updates[i].height,
+//		updates[i].x, updates[i].y)
+;
   } else {
     /* Easy when no overlap */
-    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-		  0, 0, squareSize, squareSize,
-		  anim->prevFrame.x, anim->prevFrame.y);
+//    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
+//		  0, 0, squareSize, squareSize,
+//		  anim->prevFrame.x, anim->prevFrame.y);
   }
 
   /* Save this frame for next time round */
-  XCopyArea(xDisplay, anim->newBuf, anim->saveBuf, anim->blitGC,
-		0, 0, squareSize, squareSize,
-		0, 0);
+//  XCopyArea(xDisplay, anim->newBuf, anim->saveBuf, anim->blitGC,
+//		0, 0, squareSize, squareSize,
+//		0, 0);
   anim->prevFrame = *frame;
 
   /* Draw piece over original screen contents, not current,
      and copy entire rect. Wipes out overlapping piece images. */
   OverlayPiece(piece, anim->pieceGC, anim->outlineGC, anim->newBuf);
-  XCopyArea(xDisplay, anim->newBuf, xBoardWindow, anim->blitGC,
-		0, 0, squareSize, squareSize,
-		frame->x, frame->y);
+//  XCopyArea(xDisplay, anim->newBuf, xBoardWindow, anim->blitGC,
+//		0, 0, squareSize, squareSize,
+//		frame->x, frame->y);
 }
 
 static void
@@ -8130,15 +8134,16 @@ EndAnimation (anim, finish)
   if (Intersect(&anim->prevFrame, finish, squareSize, &overlap, &pt)) {
     CalcUpdateRects(&anim->prevFrame, finish, squareSize, updates, &count);
     for (i = 0; i < count; i++)
-      XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-		updates[i].x - anim->prevFrame.x,
-		updates[i].y - anim->prevFrame.y,
-		updates[i].width, updates[i].height,
-		updates[i].x, updates[i].y);
+//      XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
+//		updates[i].x - anim->prevFrame.x,
+//		updates[i].y - anim->prevFrame.y,
+//		updates[i].width, updates[i].height,
+//		updates[i].x, updates[i].y)
+;
   } else {
-    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-		0, 0, squareSize, squareSize,
-		anim->prevFrame.x, anim->prevFrame.y);
+//    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
+//		0, 0, squareSize, squareSize,
+//		anim->prevFrame.x, anim->prevFrame.y);
   }
 }
 
@@ -8269,9 +8274,9 @@ DragPieceBegin(x, y)
 	   as seen by opponent) the move hasn't been made yet. */
            if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
               boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
-           XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
-	             corner.x, corner.y, squareSize, squareSize,
-	             0, 0); // [HGM] zh: unstack in stead of grab
+//           XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
+//	             corner.x, corner.y, squareSize, squareSize,
+//	             0, 0); // [HGM] zh: unstack in stead of grab
 	damage[boardY][boardX] = True;
     } else {
 	player.dragActive = False;

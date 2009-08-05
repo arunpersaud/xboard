@@ -13204,8 +13204,6 @@ StopClocks()
     if (!StopClockTimer()) return;
     if (!appData.clockMode) return;
 
-    printf("Debug: in stop clocks\n");
-
     GetTimeMark(&now);
 
     lastTickLength = SubtractTimeMarks(&now, &tickStartTM);
@@ -13219,7 +13217,6 @@ StopClocks()
 	DisplayBlackClock(blackTimeRemaining, !WhiteOnMove(currentMove));
     }
     CheckFlags();
-    printf("Debug: end stop clocks\n");
 }
 
 /* Start clock of player on move.  Time may have been reset, so

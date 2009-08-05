@@ -356,7 +356,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkMenuItem" id="menuActioin.Decline">
+                          <object class="GtkMenuItem" id="menuActio.Decline">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Decline</property>
                             <property name="use_underline">True</property>
@@ -415,7 +415,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkMenuItem" id="menuAction.Stop Examine">
+                          <object class="GtkMenuItem" id="menuAction.Stop Examining">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Stop Examine</property>
                             <property name="use_underline">True</property>
