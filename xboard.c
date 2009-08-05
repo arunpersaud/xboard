@@ -1866,41 +1866,6 @@ XtActionsRec boardActions[] = {
     { "SettingsPopDown", (XtActionProc) SettingsPopDown },
 };
 
-char globalTranslations[] =
-  ":<Key>R: ResignProc() \n \
-   :<Key>F: ToEndProc() \n \
-   :<Key>f: ForwardProc() \n \
-   :<Key>B: ToStartProc() \n \
-   :<Key>b: BackwardProc() \n \
-   :<Key>d: DrawProc() \n \
-   :<Key>t: CallFlagProc() \n \
-   :<Key>i: Iconify() \n \
-   :<Key>c: Iconify() \n \
-   :<Key>v: FlipViewProc() \n \
-   <KeyDown>Control_L: BackwardProc() \n \
-   <KeyUp>Control_L: ForwardProc() \n \
-   <KeyDown>Control_R: BackwardProc() \n \
-   <KeyUp>Control_R: ForwardProc() \n \
-   Shift<Key>1: AskQuestionProc(\"Direct command\",\
-                                \"Send to chess program:\",,1) \n \
-   Shift<Key>2: AskQuestionProc(\"Direct command\",\
-                                \"Send to second chess program:\",,2) \n";
-
-char boardTranslations[] =
-   "<Btn1Down>: HandleUserMove() \n \
-   <Btn1Up>: HandleUserMove() \n \
-   <Btn1Motion>: AnimateUserMove() \n \
-   Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
-                 PieceMenuPopup(menuB) \n \
-   Any<Btn2Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD) \
-                 PieceMenuPopup(menuW) \n \
-   Shift<Btn3Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD)\
-                 PieceMenuPopup(menuW) \n \
-   Any<Btn3Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD) \
-                 PieceMenuPopup(menuB) \n";
-
-char whiteTranslations[] = "<BtnDown>: WhiteClock()\n";
-char blackTranslations[] = "<BtnDown>: BlackClock()\n";
 
 char ICSInputTranslations[] =
     "<Key>Return: EnterKeyProc() \n";
@@ -1911,144 +1876,6 @@ String xboardResources[] = {
     "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
     NULL
   };
-
-
-/* Max possible square size */
-#define MAXSQSIZE 256
-
-static int xpm_avail[MAXSQSIZE];
-
-#ifdef HAVE_DIR_STRUCT
-
-/* Extract piece size from filename */
-static int
-xpm_getsize(name, len, ext)
-     char *name;
-     int len;
-     char *ext;
-{
-    char *p, *d;
-    char buf[10];
-
-    if (len < 4)
-      return 0;
-
-    if ((p=strchr(name, '.')) == NULL ||
-	StrCaseCmp(p+1, ext) != 0)
-      return 0;
-
-    p = name + 3;
-    d = buf;
-
-    while (*p && isdigit(*p))
-      *(d++) = *(p++);
-
-    *d = 0;
-    return atoi(buf);
-}
-
-/* Setup xpm_avail */
-static int
-xpm_getavail(dirname, ext)
-     char *dirname;
-     char *ext;
-{
-    DIR *dir;
-    struct dirent *ent;
-    int  i;
-
-    for (i=0; i<MAXSQSIZE; ++i)
-      xpm_avail[i] = 0;
-
-    if (appData.debugMode)
-      fprintf(stderr, "XPM dir:%s:ext:%s:\n", dirname, ext);
-
-    dir = opendir(dirname);
-    if (!dir)
-      {
-	  fprintf(stderr, _("%s: Can't access XPM directory %s\n"),
-		  programName, dirname);
-	  exit(1);
-      }
-
-    while ((ent=readdir(dir)) != NULL) {
-	i = xpm_getsize(ent->d_name, NAMLEN(ent), ext);
-	if (i > 0 && i < MAXSQSIZE)
-	  xpm_avail[i] = 1;
-    }
-
-    closedir(dir);
-
-    return 0;
-}
-
-void
-xpm_print_avail(fp, ext)
-     FILE *fp;
-     char *ext;
-{
-    int i;
-
-    fprintf(fp, _("Available `%s' sizes:\n"), ext);
-    for (i=1; i<MAXSQSIZE; ++i) {
-	if (xpm_avail[i])
-	  printf("%d\n", i);
-    }
-}
-
-/* Return XPM piecesize closest to size */
-int
-xpm_closest_to(dirname, size, ext)
-     char *dirname;
-     int size;
-     char *ext;
-{
-    int i;
-    int sm_diff = MAXSQSIZE;
-    int sm_index = 0;
-    int diff;
-
-    xpm_getavail(dirname, ext);
-
-    if (appData.debugMode)
-      xpm_print_avail(stderr, ext);
-
-    for (i=1; i<MAXSQSIZE; ++i) {
-	if (xpm_avail[i]) {
-	    diff = size - i;
-	    diff = (diff<0) ? -diff : diff;
-	    if (diff < sm_diff) {
-		sm_diff = diff;
-		sm_index = i;
-	    }
-	}
-    }
-
-    if (!sm_index) {
-	fprintf(stderr, _("Error: No `%s' files!\n"), ext);
-	exit(1);
-    }
-
-    return sm_index;
-}
-#else	/* !HAVE_DIR_STRUCT */
-/* If we are on a system without a DIR struct, we can't
-   read the directory, so we can't collect a list of
-   filenames, etc., so we can't do any size-fitting. */
-int
-xpm_closest_to(dirname, size, ext)
-     char *dirname;
-     int size;
-     char *ext;
-{
-    fprintf(stderr, _("\
-Warning: No DIR structure found on this system --\n\
-         Unable to autosize for XPM/XIM pieces.\n\
-   Please report this error to frankm@hiwaay.net.\n\
-   Include system type & operating system in message.\n"));
-    return size;
-}
-#endif /* HAVE_DIR_STRUCT */
 
 static char *cnames[9] = { "black", "red", "green", "yellow", "blue",
 			     "magenta", "cyan", "white" };
@@ -2156,68 +1983,29 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     XtGeometryResult gres;
     int i;
 
-    //    if(!formWidget) return;
-
-    /*
-     * Enable shell resizing.
-     */
-//    shellArgs[0].value = (XtArgVal) &w;
-//    shellArgs[1].value = (XtArgVal) &h;
-//    XtGetValues(shellWidget, shellArgs, 2);
-//
-//    shellArgs[4].value = 2*w; shellArgs[2].value = 10;
-//    shellArgs[5].value = 2*h; shellArgs[3].value = 10;
-//    XtSetValues(shellWidget, &shellArgs[2], 4);
-//
-//    XtSetArg(args[0], XtNdefaultDistance, &sep);
-//    XtGetValues(formWidget, args, 1);
-
-    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
+    boardWidth  = lineGap + BOARD_WIDTH  * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
 
-//    XtSetArg(args[0], XtNwidth, boardWidth);
-//    XtSetArg(args[1], XtNheight, boardHeight);
-//    XtSetValues(boardWidget, args, 2);
-
     timerWidth = (boardWidth - sep) / 2;
-//    XtSetArg(args[0], XtNwidth, timerWidth);
-//    XtSetValues(whiteTimerWidget, args, 1);
-//    XtSetValues(blackTimerWidget, args, 1);
-//
-//    XawFormDoLayout(formWidget, False);
 
-    if (appData.titleInWindow) {
+    if (appData.titleInWindow)
+      {
 	i = 0;
-//	XtSetArg(args[i], XtNborderWidth, &bor); i++;
-//	XtSetArg(args[i], XtNheight, &h);  i++;
-//	XtGetValues(titleWidget, args, i);
-	if (smallLayout) {
+	if (smallLayout)
+	  {
 	    w = boardWidth - 2*bor;
-	} else {
-//	    XtSetArg(args[0], XtNwidth, &w);
-//	    XtGetValues(menuBarWidget, args, 1);
+	  }
+	else
+	  {
 	    w = boardWidth - w - sep - 2*bor - 2; // WIDTH_FUDGE
-	}
+	  }
+      }
 
-//	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
-//	if (gres != XtGeometryYes && appData.debugMode) {
-//	    fprintf(stderr,
-//		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
-//		    programName, gres, w, h, wr, hr);
-//	}
-    }
     if(!formWidget) return;
-
-    //    XawFormDoLayout(formWidget, True);
 
     /*
      * Inhibit shell resizing.
      */
-    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW;
-    shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
-    shellArgs[4].value = shellArgs[2].value = w;
-    shellArgs[5].value = shellArgs[3].value = h;
-    //    XtSetValues(shellWidget, &shellArgs[0], 6);
 
     // [HGM] pieces: tailor piece bitmaps to needs of specific variant
     // (only for xpm)
@@ -2362,12 +2150,16 @@ main(argc, argv)
 		      XtNumber(shellOptions),
 		      &argc, argv, xboardResources, NULL, 0);
 
+
+    /* set up GTK */
     gtk_init (&argc, &argv);
 
-    /* parse glade file */
+    /* parse glade file to build widgets */
 
     builder = gtk_builder_new ();
     gtk_builder_add_from_file (builder, "gtk-interface.xml", NULL);
+
+    /* test if everything worked ok */
 
     GUI_Window = GTK_WIDGET (gtk_builder_get_object (builder, "MainWindow"));
     if(!GUI_Window) printf("Error: gtk_builder didn't work!\n");
@@ -2379,6 +2171,7 @@ main(argc, argv)
     if(!GUI_Blackclock) printf("Error: gtk_builder didn't work!\n");
 
     gtk_builder_connect_signals (builder, NULL);
+
     // don't unref the builder, since we use it to get references to widgets
     //    g_object_unref (G_OBJECT (builder));
 
@@ -2462,12 +2255,13 @@ main(argc, argv)
     gameInfo.variant = StringToVariant(appData.variant);
     InitPosition(FALSE);
 #if 0
+
     /*
      * Determine boardSize
      */
     gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] boardsize: make sure we start as 8x8
 
-//#ifndef IDSIZE
+    //#ifndef IDSIZE
     // [HGM] as long as we have not created the possibility to change size while running, start with requested size
     gameInfo.boardWidth    = appData.NrFiles > 0 ? appData.NrFiles : 8;
     gameInfo.boardHeight   = appData.NrRanks > 0 ? appData.NrRanks : 8;
@@ -2702,85 +2496,14 @@ main(argc, argv)
     } else {
 	layoutName = "normalLayout";
     }
-    /* Outer layoutWidget is there only to provide a name for use in
-       resources that depend on the layout style */
-    layoutWidget =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shellWidget,
-			    layoutArgs, XtNumber(layoutArgs));
-    formWidget =
-      XtCreateManagedWidget("form", formWidgetClass, layoutWidget,
-			    formArgs, XtNumber(formArgs));
-    XtSetArg(args[0], XtNdefaultDistance, &sep);
-    XtGetValues(formWidget, args, 1);
-
-    j = 0;
-    widgetList[j++] = menuBarWidget = CreateMenuBar(menuBar);
-    XtSetArg(args[0], XtNtop,    XtChainTop);
-    XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetValues(menuBarWidget, args, 2);
-
-    widgetList[j++] = whiteTimerWidget =
-      XtCreateWidget("whiteTime", labelWidgetClass,
-		     formWidget, timerArgs, XtNumber(timerArgs));
-    XtSetArg(args[0], XtNfont, clockFontStruct);
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainTop);
-    XtSetValues(whiteTimerWidget, args, 3);
-
-    widgetList[j++] = blackTimerWidget =
-      XtCreateWidget("blackTime", labelWidgetClass,
-		     formWidget, timerArgs, XtNumber(timerArgs));
-    XtSetArg(args[0], XtNfont, clockFontStruct);
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainTop);
-    XtSetValues(blackTimerWidget, args, 3);
 
     if (appData.titleInWindow) {
-	widgetList[j++] = titleWidget =
-	  XtCreateWidget("title", labelWidgetClass, formWidget,
-			 titleArgs, XtNumber(titleArgs));
-	XtSetArg(args[0], XtNtop,    XtChainTop);
-	XtSetArg(args[1], XtNbottom, XtChainTop);
-	XtSetValues(titleWidget, args, 2);
+      /* todo check what this appdata does */
     }
 
     if (appData.showButtonBar) {
-      widgetList[j++] = buttonBarWidget = CreateButtonBar(buttonBar);
-      XtSetArg(args[0], XtNleft,  XtChainRight); // [HGM] glue to right window edge
-      XtSetArg(args[1], XtNright, XtChainRight); //       for good run-time sizing
-      XtSetArg(args[2], XtNtop,    XtChainTop);
-      XtSetArg(args[3], XtNbottom, XtChainTop);
-      XtSetValues(buttonBarWidget, args, 4);
+      /* TODO hide button bar if requested */
     }
-
-//    widgetList[j++] = messageWidget =
-//      XtCreateWidget("message", labelWidgetClass, formWidget,
-//		     messageArgs, XtNumber(messageArgs));
-//    XtSetArg(args[0], XtNtop,    XtChainTop);
-//    XtSetArg(args[1], XtNbottom, XtChainTop);
-//    XtSetValues(messageWidget, args, 2);
-//
-//    widgetList[j++] = boardWidget =
-//      XtCreateWidget("board", widgetClass, formWidget, boardArgs,
-//		     XtNumber(boardArgs));
-//
-//    XtManageChildren(widgetList, j);
-//
-//    timerWidth = (boardWidth - sep) / 2;
-//    XtSetArg(args[0], XtNwidth, timerWidth);
-//    XtSetValues(whiteTimerWidget, args, 1);
-//    XtSetValues(blackTimerWidget, args, 1);
-//
-//    XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
-//    XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
-//    XtGetValues(whiteTimerWidget, args, 2);
-//
-//    if (appData.showButtonBar) {
-//      XtSetArg(args[0], XtNbackground, &buttonBackgroundPixel);
-//      XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
-//      XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
-//    }
-//
 
     /*
      *  gtk set properties of widgets
@@ -2792,256 +2515,122 @@ main(argc, argv)
 
     /* end gtk set properties of widgets */
 
-    /*
-     * formWidget uses these constraints but they are stored
-     * in the children.
-     */
-//    i = 0;
-//    XtSetArg(args[i], XtNfromHoriz, 0); i++;
-//    XtSetValues(menuBarWidget, args, i);
-//    if (appData.titleInWindow) {
-//	if (smallLayout) {
-//	    i = 0;
-//	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-//	    XtSetValues(whiteTimerWidget, args, i);
-//	    i = 0;
-//	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-//	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-//	    XtSetValues(blackTimerWidget, args, i);
-//	    i = 0;
-//	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-//            XtSetArg(args[i], XtNjustify, XtJustifyLeft); i++;
-//	    XtSetValues(titleWidget, args, i);
-//	    i = 0;
-//	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-//	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-//	    XtSetValues(messageWidget, args, i);
-//	    if (appData.showButtonBar) {
-//	      i = 0;
-//	      XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-//	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-//	      XtSetValues(buttonBarWidget, args, i);
-//	    }
-//	} else {
-//	    i = 0;
-//	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-//	    XtSetValues(whiteTimerWidget, args, i);
-//	    i = 0;
-//	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-//	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-//	    XtSetValues(blackTimerWidget, args, i);
-//	    i = 0;
-//	    XtSetArg(args[i], XtNfromHoriz, menuBarWidget); i++;
-//	    XtSetValues(titleWidget, args, i);
-//	    i = 0;
-//	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-//	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-//	    XtSetValues(messageWidget, args, i);
-//	    if (appData.showButtonBar) {
-//	      i = 0;
-//	      XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-//	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-//	      XtSetValues(buttonBarWidget, args, i);
-//	    }
-//	}
-//    } else {
-//
-//	i = 0;
-//	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-//	XtSetValues(whiteTimerWidget, args, i);
-//	i = 0;
-//	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-//	XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-//	XtSetValues(blackTimerWidget, args, i);
-//	i = 0;
-//	XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-//	XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-//	XtSetValues(messageWidget, args, i);
-//	if (appData.showButtonBar) {
-//	  i = 0;
-//	  XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-//	  XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-//	  XtSetValues(buttonBarWidget, args, i);
-//	}
-//    }
-//    i = 0;
-//    XtSetArg(args[0], XtNfromVert, messageWidget);
-//    XtSetArg(args[1], XtNtop,    XtChainTop);
-//    XtSetArg(args[2], XtNbottom, XtChainBottom);
-//    XtSetArg(args[3], XtNleft,   XtChainLeft);
-//    XtSetArg(args[4], XtNright,  XtChainRight);
-//    XtSetValues(boardWidget, args, 5);
-//
-//    XtRealizeWidget(shellWidget);
-//
+    if (appData.titleInWindow)
+      {
+	if (smallLayout)
+	  {
+	    /* make it small */
+	    if (appData.showButtonBar)
+	      {
 
-    /*
-     * Correct the width of the message and title widgets.
-     * It is not known why some systems need the extra fudge term.
-     * The value "2" is probably larger than needed.
-     */
-    //    XawFormDoLayout(formWidget, False);
+	      }
+	  }
+	else
+	  {
+	    if (appData.showButtonBar)
+	      {
+	      }
+	  }
+      }
+    else
+      {
+      }
 
-#define WIDTH_FUDGE 2
-//    i = 0;
-//    XtSetArg(args[i], XtNborderWidth, &bor);  i++;
-//    XtSetArg(args[i], XtNheight, &h);  i++;
-//    XtGetValues(messageWidget, args, i);
-    if (appData.showButtonBar) {
-//      i = 0;
-//      XtSetArg(args[i], XtNwidth, &w);  i++;
-//      XtGetValues(buttonBarWidget, args, i);
-//      w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
-    } else {
-//      w = boardWidth - 2*bor + 1; /*!! +1 compensates for kludge below */
-    }
-//
-//    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
-    if (gres != XtGeometryYes && appData.debugMode) {
-      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
-	      programName, gres, w, h, wr, hr);
-    }
-
-    /* !! Horrible hack to work around bug in XFree86 4.0.1 (X11R6.4.3) */
-    /* The size used for the child widget in layout lags one resize behind
-       its true size, so we resize a second time, 1 pixel smaller.  Yeech! */
-    w--;
-//    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
-    if (gres != XtGeometryYes && appData.debugMode) {
-      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
-	      programName, gres, w, h, wr, hr);
-    }
-    /* !! end hack */
-//    XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
-//    XtSetArg(args[1], XtNright, XtChainRight);
-//    XtSetValues(messageWidget, args, 2);
-//
-    if (appData.titleInWindow) {
-	i = 0;
-//	XtSetArg(args[i], XtNborderWidth, &bor); i++;
-//	XtSetArg(args[i], XtNheight, &h);  i++;
-//	XtGetValues(titleWidget, args, i);
-	if (smallLayout) {
-	    w = boardWidth - 2*bor;
-	} else {
-//	    XtSetArg(args[0], XtNwidth, &w);
-//	    XtGetValues(menuBarWidget, args, 1);
-//	    w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
-	}
-
-//	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
-	if (gres != XtGeometryYes && appData.debugMode) {
-	    fprintf(stderr,
-		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
-		    programName, gres, w, h, wr, hr);
-	}
-    }
-//    XawFormDoLayout(formWidget, True);
-//
-//    xBoardWindow = XtWindow(boardWidget);
-//
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
     //       not need to go into InitDrawingSizes().
 #endif
 
-    if (appData.alwaysPromoteToQueen) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Always Queen")),TRUE);
-    }
-    if (appData.animateDragging) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Dragging")),TRUE);
-    }
-    if (appData.animate) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Moving")),TRUE);
-    }
-    if (appData.autoComment) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Comment")),TRUE);
-    }
-    if (appData.autoCallFlag) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Flag")),TRUE);
-    }
-    if (appData.autoFlipView) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Flip View")),TRUE);
-    }
-    if (appData.autoObserve) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Observe")),TRUE);
-    }
-    if (appData.autoRaiseBoard) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Raise Board")),TRUE);
-    }
-    if (appData.autoSaveGames) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Save")),TRUE);
-    }
-    if (appData.saveGameFile[0] != NULLCHAR) {
-      /* Can't turn this off from menu */
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Save")),TRUE);
-      gtk_action_set_sensitive(GTK_ACTION (gtk_builder_get_object (builder, "menuOptions.Auto Save")),FALSE);
-    }
-    if (appData.blindfold) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Blindfold")),TRUE);
-    }
-    if (appData.flashCount > 0) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Flash Moves")),TRUE);
-    }
-    if (appData.getMoveList) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Get Move List")),TRUE);
-    }
-#if HIGHDRAG
-    if (appData.highlightDragging) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Highlight Dragging")),TRUE);
-    }
-#endif
-    if (appData.highlightLastMove) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Highlight Last Move")),TRUE);
-    }
-    if (appData.icsAlarm) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.ICS Alarm")),TRUE);
-    }
-    if (appData.ringBellAfterMoves) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Move Sound")),TRUE);
-    }
-    if (appData.oldSaveStyle) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Old Save Style")),TRUE);
-    }
-    if (appData.periodicUpdates) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Periodic Updates")),TRUE);
-    }
-    if (appData.ponderNextMove) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Ponder Next Move")),TRUE);
-    }
-    if (appData.popupExitMessage) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Popup Exit Message")),TRUE);
-    }
-    if (appData.popupMoveErrors) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Popup Move Errors")),TRUE);
-    }
-    if (appData.premove) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Premove")),TRUE);
-    }
-    if (appData.quietPlay) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Quit Play")),TRUE);
-    }
-    if (appData.showCoords) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Coords")),TRUE);
-    }
-    if (appData.showThinking) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Thinking")),TRUE);
-    }
-    if (appData.testLegality) {
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Test Legality")),TRUE);
-    }
+    /* set some checkboxes in the menu according to appData */
 
-    /*
-     * Create an icon.
-     */
-//    ReadBitmap(&wIconPixmap, "icon_white.bm",
-//	       icon_white_bits, icon_white_width, icon_white_height);
-//    ReadBitmap(&bIconPixmap, "icon_black.bm",
-//	       icon_black_bits, icon_black_width, icon_black_height);
-//    iconPixmap = wIconPixmap;
-//    i = 0;
-//    XtSetArg(args[i], XtNiconPixmap, iconPixmap);  i++;
-//    XtSetValues(shellWidget, args, i);
-//
+    if (appData.alwaysPromoteToQueen)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Always Queen")),TRUE);
+    
+    if (appData.animateDragging)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Dragging")),TRUE);
+    
+    if (appData.animate)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Moving")),TRUE);
+
+    if (appData.autoComment)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Comment")),TRUE);
+
+    if (appData.autoCallFlag)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Flag")),TRUE);
+
+    if (appData.autoFlipView)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Flip View")),TRUE);
+
+    if (appData.autoObserve)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Observe")),TRUE);
+
+    if (appData.autoRaiseBoard)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Raise Board")),TRUE);
+
+    if (appData.autoSaveGames)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Save")),TRUE);
+
+    if (appData.saveGameFile[0] != NULLCHAR)
+      {
+	/* Can't turn this off from menu */
+	gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Save")),TRUE);
+	gtk_action_set_sensitive(GTK_ACTION (gtk_builder_get_object (builder, "menuOptions.Auto Save")),FALSE);
+      }
+
+    if (appData.blindfold)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Blindfold")),TRUE);
+
+    if (appData.flashCount > 0)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Flash Moves")),TRUE);
+
+    if (appData.getMoveList)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Get Move List")),TRUE);
+
+#if HIGHDRAG
+    if (appData.highlightDragging)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Highlight Dragging")),TRUE);
+#endif
+
+    if (appData.highlightLastMove)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Highlight Last Move")),TRUE);
+
+    if (appData.icsAlarm)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.ICS Alarm")),TRUE);
+
+    if (appData.ringBellAfterMoves)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Move Sound")),TRUE);
+
+    if (appData.oldSaveStyle)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Old Save Style")),TRUE);
+
+    if (appData.periodicUpdates)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Periodic Updates")),TRUE);
+
+    if (appData.ponderNextMove)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Ponder Next Move")),TRUE);
+
+    if (appData.popupExitMessage)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Popup Exit Message")),TRUE);
+
+    if (appData.popupMoveErrors)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Popup Move Errors")),TRUE);
+
+    if (appData.premove)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Premove")),TRUE);
+
+    if (appData.quietPlay)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Quit Play")),TRUE);
+
+    if (appData.showCoords)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Coords")),TRUE);
+
+    if (appData.showThinking)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Thinking")),TRUE);
+
+    if (appData.testLegality)
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Test Legality")),TRUE);
+
+    /* end setting check boxes */
+    
 
     /* load square colors */
     SVGLightSquare   = load_pixbuf("svg/LightSquare.svg",squareSize);
@@ -3055,28 +2644,23 @@ main(argc, argv)
     gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
 
     /* do resizing to a fixed aspect ratio */
-    GUI_SetAspectRatio(0.8);
+    
+    printf("DEBUG: %d %d\n",boardWidth, boardHeight);
+    {
+      int i,j;
+    }
+    GUI_SetAspectRatio(0.7);
 
     /* realize window */
     gtk_widget_show (GUI_Window);
 
     CreateGCs();
     CreatePieces();
-
     CreatePieceMenus();
 
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
-//    XtAugmentTranslations(formWidget,
-//			  XtParseTranslationTable(globalTranslations));
-//    XtAugmentTranslations(boardWidget,
-//			  XtParseTranslationTable(boardTranslations));
-//    XtAugmentTranslations(whiteTimerWidget,
-//			  XtParseTranslationTable(whiteTranslations));
-//    XtAugmentTranslations(blackTimerWidget,
-//			  XtParseTranslationTable(blackTranslations));
-//
     InitBackEnd2();
 
     if (errorExitStatus == -1) {
@@ -7372,13 +6956,14 @@ char *HostName()
 #endif /* not HAVE_GETHOSTNAME */
 }
 
-XtIntervalId delayedEventTimerXID = 0;
+gint delayedEventTimerTag = 0;
 DelayedEventCallback delayedEventCallback = 0;
 
 void
-FireDelayedEvent()
+FireDelayedEvent(data)
+     gpointer data;
 {
-    delayedEventTimerXID = 0;
+    delayedEventTimerTag = 0;
     delayedEventCallback();
 }
 
@@ -7387,42 +6972,46 @@ ScheduleDelayedEvent(cb, millisec)
      DelayedEventCallback cb; long millisec;
 {
     delayedEventCallback = cb;
-    delayedEventTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) FireDelayedEvent, (XtPointer) 0);
+    delayedEventTimerTag =
+      gtk_timeout_add(millisec,(GtkFunction) FireDelayedEvent, NULL);
 }
 
 DelayedEventCallback
 GetDelayedEvent()
 {
-  if (delayedEventTimerXID) {
-    return delayedEventCallback;
-  } else {
-    return NULL;
-  }
+  if (delayedEventTimerTag) 
+    {
+      return delayedEventCallback;
+    } 
+  else 
+    {
+      return NULL;
+    }
 }
 
 void
 CancelDelayedEvent()
 {
-  if (delayedEventTimerXID) {
-    XtRemoveTimeOut(delayedEventTimerXID);
-    delayedEventTimerXID = 0;
-  }
+  if (delayedEventTimerTag) 
+    {
+      gtk_timeout_remove(delayedEventTimerTag);
+      delayedEventTimerTag = 0;
+    }
+  return;
 }
 
-XtIntervalId loadGameTimerXID = 0;
+gint loadGameTimerTag = 0;
 
 int LoadGameTimerRunning()
 {
-    return loadGameTimerXID != 0;
+    return loadGameTimerTag != 0;
 }
 
 int StopLoadGameTimer()
 {
-    if (loadGameTimerXID != 0) {
-	XtRemoveTimeOut(loadGameTimerXID);
-	loadGameTimerXID = 0;
+    if (loadGameTimerTag != 0) {
+	gtk_timeout_remove(loadGameTimerTag);
+	loadGameTimerTag = 0;
 	return TRUE;
     } else {
 	return FALSE;
@@ -7430,11 +7019,10 @@ int StopLoadGameTimer()
 }
 
 void
-LoadGameTimerCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+LoadGameTimerCallback(data)
+     gpointer data;
 {
-    loadGameTimerXID = 0;
+    loadGameTimerTag = 0;
     AutoPlayGameLoop();
 }
 
@@ -7442,33 +7030,29 @@ void
 StartLoadGameTimer(millisec)
      long millisec;
 {
-    loadGameTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) LoadGameTimerCallback,
-		      (XtPointer) 0);
+  loadGameTimerTag =
+    gtk_timeout_add( millisec, (GtkFunction) LoadGameTimerCallback, NULL);
 }
 
-XtIntervalId analysisClockXID = 0;
+gint analysisClockTag = 0;
 
 void
-AnalysisClockCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+AnalysisClockCallback(data)
+     gpointer data;
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile
-         || appData.icsEngineAnalyze) { // [DM]
+         || appData.icsEngineAnalyze) 
+      { 
 	AnalysisPeriodicEvent(0);
 	StartAnalysisClock();
-    }
+      }
 }
 
 void
 StartAnalysisClock()
 {
-    analysisClockXID =
-      XtAppAddTimeOut(appContext, 2000,
-		      (XtTimerCallbackProc) AnalysisClockCallback,
-		      (XtPointer) 0);
+    analysisClockTag =
+      gtk_timeout_add( 2000,(GtkFunction) AnalysisClockCallback, NULL);
 }
 
 gint clockTimerTag = 0;
@@ -7480,13 +7064,16 @@ int ClockTimerRunning()
 
 int StopClockTimer()
 {
-    if (clockTimerTag != 0) {
-      gtk_timeout_remove(clockTimerTag);
+    if (clockTimerTag != 0) 
+      {
+	gtk_timeout_remove(clockTimerTag);
 	clockTimerTag = 0;
 	return TRUE;
-    } else {
+      } 
+    else 
+      {
 	return FALSE;
-    }
+      }
 }
 
 void
@@ -7560,10 +7147,11 @@ DisplayWhiteClock(timeRemaining, highlight)
   if(appData.noGUI) return;
 
   DisplayTimerLabel(GUI_Whiteclock, _("White"), timeRemaining, highlight);
-  if (highlight && WindowIcon == BlackIcon) {
-    WindowIcon = WhiteIcon;
-    gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
-  }
+  if (highlight && WindowIcon == BlackIcon) 
+    {
+      WindowIcon = WhiteIcon;
+      gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
+    }
 }
 
 void
@@ -7572,11 +7160,13 @@ DisplayBlackClock(timeRemaining, highlight)
      int highlight;
 {
     if(appData.noGUI) return;
+
     DisplayTimerLabel(GUI_Blackclock, _("Black"), timeRemaining, highlight);
-    if (highlight && WindowIcon == WhiteIcon) {
+    if (highlight && WindowIcon == WhiteIcon) 
+      {
         WindowIcon = BlackIcon;
         gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
-    }
+      }
 }
 
 #define CPNone 0
