@@ -260,8 +260,6 @@ void WhiteClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void BlackClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
-void DrawPositionProc P((Widget w, XEvent *event,
-		     String *prms, Cardinal *nprms));
 void CommentPopUp P((char *title, char *label));
 void CommentPopDown P((void));
 void CommentCallback P((Widget w, XtPointer client_data,
@@ -452,7 +450,7 @@ Pixel lowTimeWarningColor;
 
 GC lightSquareGC, darkSquareGC, jailSquareGC,  wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC,
-  wjPieceGC, bjPieceGC,  countGC;
+  wjPieceGC, bjPieceGC;
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
@@ -1750,7 +1748,6 @@ XrmOptionDescRec shellOptions[] = {
 
 
 XtActionsRec boardActions[] = {
-    { "DrawPosition", DrawPositionProc },
     { "HandleUserMove", HandleUserMove },
     { "AnimateUserMove", AnimateUserMove },
     { "FileNameAction", FileNameAction },
@@ -2645,7 +2642,6 @@ main(argc, argv)
 
     /* do resizing to a fixed aspect ratio */
     
-    printf("DEBUG: %d %d\n",boardWidth, boardHeight);
     {
       int i,j;
     }
@@ -3137,12 +3133,6 @@ void CreateGCs()
     gc_values.background = XWhitePixel(xDisplay, xScreen);
     coordGC = XtGetGC(shellWidget, value_mask, &gc_values);
     XSetFont(xDisplay, coordGC, coordFontID);
-
-    // [HGM] make font for holdings counts (white on black0
-    gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-    gc_values.background = XBlackPixel(xDisplay, xScreen);
-    countGC = XtGetGC(shellWidget, value_mask, &gc_values);
-    XSetFont(xDisplay, countGC, countFontID);
 
     if (appData.monoMode) {
 	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
@@ -3757,10 +3747,9 @@ void DrawSquare(row, column, piece, do_flash)
      int row, column, do_flash;
      ChessSquare piece;
 {
-    int square_color, x, y, direction, font_ascent, font_descent;
+    int square_color, x, y;
     int i;
     char string[2];
-    XCharStruct overall;
     int flash_delay;
 
     /* Calculate delay in milliseconds (2-delays per complete flash) */
@@ -3788,43 +3777,53 @@ void DrawSquare(row, column, piece, do_flash)
 	 || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) )
       {
 	BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
-
+	
 	// [HGM] print piece counts next to holdings
 	string[1] = NULLCHAR;
-	if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 )
+	if(piece > 1)
 	  {
+	    cairo_text_extents_t extents;
+	    cairo_t *cr;
+	    int  xpos, ypos;
+
+	    /* get a cairo_t */
+	    cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
+	    
 	    string[0] = '0' + piece;
-	    XTextExtents(countFontStruct, string, 1, &direction,
-			 &font_ascent, &font_descent, &overall);
-	    if (appData.monoMode)
+	    
+	    /* TODO this has to go into the font-selection */
+	    cairo_select_font_face (cr, "Sans",
+				    CAIRO_FONT_SLANT_NORMAL,
+				    CAIRO_FONT_WEIGHT_NORMAL);
+	    
+	    cairo_set_font_size (cr, 12.0);
+	    cairo_text_extents (cr, string, &extents);
+	    
+
+	    if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) )
 	      {
-		XDrawImageString(xDisplay, xBoardWindow, countGC,
-				 x + squareSize - overall.width - 2,
-				 y + font_ascent + 1, string, 1);
+		xpos= x + squareSize - extents.width - 2;
+		ypos= y + extents.y_bearing + 1;
 	      }
-	    else
+	    if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1)
 	      {
-		XDrawString(xDisplay, xBoardWindow, countGC,
-			    x + squareSize - overall.width - 2,
-			    y + font_ascent + 1, string, 1);
+		xpos= x + 2;
+		ypos = y + extents.y_bearing + 1;
 	      }
+
+	    /* TODO mono mode? */
+	    cairo_move_to (cr, xpos, ypos);
+	    cairo_text_path (cr, string);
+	    cairo_set_source_rgb (cr, 1.0, 1.0, 1);
+	    cairo_fill_preserve (cr);
+	    cairo_set_source_rgb (cr, 0, 0, 0);
+	    cairo_set_line_width (cr, 0.1);
+	    cairo_stroke (cr);
+	    	    
+	    /* free memory */
+	    cairo_destroy (cr);
 	  }
-	if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1)
-	  {
-	    string[0] = '0' + piece;
-	    XTextExtents(countFontStruct, string, 1, &direction,
-			 &font_ascent, &font_descent, &overall);
-	    if (appData.monoMode)
-	      {
-		XDrawImageString(xDisplay, xBoardWindow, countGC,
-				 x + 2, y + font_ascent + 1, string, 1);
-	      }
-	    else
-	      {
-		XDrawString(xDisplay, xBoardWindow, countGC,
-			    x + 2, y + font_ascent + 1, string, 1);
-	      }
-	  }
+
       }
     else
       {
@@ -3852,41 +3851,74 @@ void DrawSquare(row, column, piece, do_flash)
       }
 
     /* show coordinates if necessary */
-    string[1] = NULLCHAR;
-    if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
-	&& column >= BOARD_LEFT && column < BOARD_RGHT)
+    if(appData.showCoords)
       {
-	string[0] = 'a' + column - BOARD_LEFT;
-	XTextExtents(coordFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode)
+	cairo_text_extents_t extents;
+	cairo_t *cr;
+	int  xpos, ypos;
+
+	/* TODO this has to go into the font-selection */
+	cairo_select_font_face (cr, "Sans",
+				CAIRO_FONT_SLANT_NORMAL,
+				CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size (cr, 12.0);
+		
+	string[1] = NULLCHAR;
+
+	/* get a cairo_t */
+	cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
+	
+	if (row == (flipView ? BOARD_HEIGHT-1 : 0) && 
+	    column >= BOARD_LEFT && column < BOARD_RGHT)
 	  {
-	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			     x + squareSize - overall.width - 2,
-			     y + squareSize - font_descent - 1, string, 1);
+	    string[0] = 'a' + column - BOARD_LEFT;
+	    cairo_text_extents (cr, string, &extents);
+
+	    xpos = x + squareSize - extents.width - 2;
+	    ypos = y + squareSize - extents.height - extents.y_bearing - 1;
+
+	    if (appData.monoMode)
+	      { /*TODO*/
+	      }
+	    else
+	      {
+	      }
+
+	    cairo_move_to (cr, xpos, ypos);
+	    cairo_text_path (cr, string);
+	    cairo_set_source_rgb (cr, 0.0, 0.0, 0);
+	    cairo_fill_preserve (cr);
+	    cairo_set_source_rgb (cr, 0, 1.0, 0);
+	    cairo_set_line_width (cr, 0.1);
+	    cairo_stroke (cr);
 	  }
-	else
+	if ( column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT))
 	  {
-	    XDrawString(xDisplay, xBoardWindow, coordGC,
-			x + squareSize - overall.width - 2,
-			y + squareSize - font_descent - 1, string, 1);
+
+	    string[0] = ONE + row;
+	    cairo_text_extents (cr, string, &extents);
+
+	    xpos = x + 2;
+	    ypos = y + extents.height + 1;
+
+	    if (appData.monoMode)
+	      { /*TODO*/
+	      }
+	    else
+	      {
+	      }
+
+	    cairo_move_to (cr, xpos, ypos);
+	    cairo_text_path (cr, string);
+	    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+	    cairo_fill_preserve (cr);
+	    cairo_set_source_rgb (cr, 0, 0, 1.0);
+	    cairo_set_line_width (cr, 0.1);
+	    cairo_stroke (cr);
+
 	  }
-      }
-    if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT))
-      {
-	string[0] = ONE + row;
-	XTextExtents(coordFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode)
-	  {
-	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			     x + 2, y + font_ascent + 1, string, 1);
-	  }
-	else
-	  {
-	    XDrawString(xDisplay, xBoardWindow, coordGC,
-			x + 2, y + font_ascent + 1, string, 1);
-	  }
+	/* free memory */
+	cairo_destroy (cr);
       }
 
     return;
@@ -3973,7 +4005,6 @@ void DrawPosition( repaint, board)
   static int lastFlipView = 0;
   static int lastBoardValid = 0;
   static Board lastBoard;
-  Arg args[16];
   int rrow, rcol;
 
   if (board == NULL) {
@@ -3981,9 +4012,9 @@ void DrawPosition( repaint, board)
     board = lastBoard;
   }
   if (!lastBoardValid || lastFlipView != flipView) {
-    XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flip View"),
-		args, 1);
+    //    XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
+    // XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flip View"),
+    //	args, 1);
   }
 
   /*
@@ -4106,21 +4137,9 @@ void DrawPosition( repaint, board)
 
   /* If piece being dragged around board, must redraw that too */
   DrawDragPiece();
+
+  return;
 }
-
-
-/*
- * event handler for redrawing the board
- */
-void DrawPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    DrawPosition(True, NULL);
-}
-
 
 /*
  * event handler for parsing user moves
@@ -5131,7 +5150,7 @@ void FreezeUI()
 void ThawUI()
 {
   if (!frozen) return;
-  XtRemoveGrab(messageWidget);
+  //  XtRemoveGrab(messageWidget);
   frozen = 0;
 }
 
@@ -7606,6 +7625,9 @@ CreateAnimMasks (pieceDepth)
   unsigned long	plane;
   XGCValues	values;
 
+  /* just return for gtk at the moment */
+  return;
+
   /* Need a bitmap just to get a GC with right depth */
   buf = XCreatePixmap(xDisplay, xBoardWindow,
 			8, 8, 1);
@@ -7683,27 +7705,27 @@ InitAnimState (anim, info)
   XGCValues values;
 
   /* Each buffer is square size, same depth as window */
-  anim->saveBuf = XCreatePixmap(xDisplay, xBoardWindow,
-			squareSize, squareSize, info->depth);
-  anim->newBuf = XCreatePixmap(xDisplay, xBoardWindow,
-			squareSize, squareSize, info->depth);
-
-  /* Create a plain GC for blitting */
-  mask = GCForeground | GCBackground | GCFunction |
-         GCPlaneMask | GCGraphicsExposures;
-  values.foreground = XBlackPixel(xDisplay, xScreen);
-  values.background = XWhitePixel(xDisplay, xScreen);
-  values.function   = GXcopy;
-  values.plane_mask = AllPlanes;
-  values.graphics_exposures = False;
-  anim->blitGC = XCreateGC(xDisplay, xBoardWindow, mask, &values);
-
-  /* Piece will be copied from an existing context at
-     the start of each new animation/drag. */
-  anim->pieceGC = XCreateGC(xDisplay, xBoardWindow, 0, &values);
-
-  /* Outline will be a read-only copy of an existing */
-  anim->outlineGC = None;
+//  anim->saveBuf = XCreatePixmap(xDisplay, xBoardWindow,
+//			squareSize, squareSize, info->depth);
+//  anim->newBuf = XCreatePixmap(xDisplay, xBoardWindow,
+//			squareSize, squareSize, info->depth);
+//
+//  /* Create a plain GC for blitting */
+//  mask = GCForeground | GCBackground | GCFunction |
+//         GCPlaneMask | GCGraphicsExposures;
+//  values.foreground = XBlackPixel(xDisplay, xScreen);
+//  values.background = XWhitePixel(xDisplay, xScreen);
+//  values.function   = GXcopy;
+//  values.plane_mask = AllPlanes;
+//  values.graphics_exposures = False;
+//  anim->blitGC = XCreateGC(xDisplay, xBoardWindow, mask, &values);
+//
+//  /* Piece will be copied from an existing context at
+//     the start of each new animation/drag. */
+//  anim->pieceGC = XCreateGC(xDisplay, xBoardWindow, 0, &values);
+//
+//  /* Outline will be a read-only copy of an existing */
+//  anim->outlineGC = None;
 }
 
 static void
@@ -7712,16 +7734,19 @@ CreateAnimVars ()
   static VariantClass old = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
   XWindowAttributes info;
 
+  /* for gtk at the moment just ... */
+  return;
+
   if (xpmDone && gameInfo.variant == old) return;
   if(xpmDone) old = gameInfo.variant; // first time pieces might not be created yet
   //  XGetWindowAttributes(xDisplay, xBoardWindow, &info);
 
-  InitAnimState(&game, &info);
-  InitAnimState(&player, &info);
+  //  InitAnimState(&game, &info);
+  //  InitAnimState(&player, &info);
 
   /* For XPM pieces, we need bitmaps to use as masks. */
-  if (useImages)
-    CreateAnimMasks(info.depth);
+  //  if (useImages)
+  //    CreateAnimMasks(info.depth);
    xpmDone = 1;
 }
 
