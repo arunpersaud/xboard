@@ -5,6 +5,8 @@ GtkWidget               *GUI_Window=NULL;
 GtkWidget               *GUI_Board=NULL;
 GtkWidget               *GUI_Whiteclock=NULL;
 GtkWidget               *GUI_Blackclock=NULL;
+GtkWidget               *GUI_Error=NULL;
+
 gint                     boardWidth;
 gint                     boardHeight;
 

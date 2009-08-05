@@ -235,6 +235,13 @@ typedef struct {
     MenuItem *mi;
 } Menu;
 
+typedef struct {
+    char *name;
+    gboolean value;
+} Enables;
+
+
+
 int main P((int argc, char **argv));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
@@ -431,6 +438,8 @@ void UciPopDown P(());
 void TimeControlPopDown P(());
 void NewVariantPopDown P(());
 void SettingsPopDown P(());
+void SetMenuEnables P((Enables *enab));
+
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -530,6 +539,157 @@ static Pixmap xpmMask[BlackKing + 1];
 #define kFactor	   4
 
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
+
+Enables icsEnables[] = {
+    { "menuFile.Mail Move", False },
+    { "menuFile.Reload CMail Message", False },
+    { "menuMode.Machine Black", False },
+    { "menuMode.Machine White", False },
+    { "menuMode.Analysis Mode", False },
+    { "menuMode.Analyze File", False },
+    { "menuMode.Two Machines", False },
+#ifndef ZIPPY
+    { "menuHelp.Hint", False },
+    { "menuHelp.Book", False },
+    { "menuStep.Move Now", False },
+    { "menuOptions.Periodic Updates", False },
+    { "menuOptions.Hide Thinking", False },
+    { "menuOptions.Ponder Next Move", False },
+#endif
+    { NULL, False }
+};
+
+Enables ncpEnables[] = {
+    { "menuFile.Mail Move", False },
+    { "menuFile.Reload CMail Message", False },
+    { "menuMode.Machine White", False },
+    { "menuMode.Machine Black", False },
+    { "menuMode.Analysis Mode", False },
+    { "menuMode.Analyze File", False },
+    { "menuMode.Two Machines", False },
+    { "menuMode.ICS Client", False },
+    { "menuMode.ICS Input Box", False },
+    { "Action", False },
+    { "menuStep.Revert", False },
+    { "menuStep.Move Now", False },
+    { "menuStep.Retract Move", False },
+    { "menuOptions.Auto Comment", False },
+    { "menuOptions.Auto Flag", False },
+    { "menuOptions.Auto Flip View", False },
+    { "menuOptions.Auto Observe", False },
+    { "menuOptions.Auto Raise Board", False },
+    { "menuOptions.Get Move List", False },
+    { "menuOptions.ICS Alarm", False },
+    { "menuOptions.Move Sound", False },
+    { "menuOptions.Quiet Play", False },
+    { "menuOptions.Hide Thinking", False },
+    { "menuOptions.Periodic Updates", False },
+    { "menuOptions.Ponder Next Move", False },
+    { "menuHelp.Hint", False },
+    { "menuHelp.Book", False },
+    { NULL, False }
+};
+
+Enables gnuEnables[] = {
+    { "menuMode.ICS Client", False },
+    { "menuMode.ICS Input Box", False },
+    { "menuAction.Accept", False },
+    { "menuAction.Decline", False },
+    { "menuAction.Rematch", False },
+    { "menuAction.Adjourn", False },
+    { "menuAction.Stop Examining", False },
+    { "menuAction.Stop Observing", False },
+    { "menuStep.Revert", False },
+    { "menuOptions.Auto Comment", False },
+    { "menuOptions.Auto Observe", False },
+    { "menuOptions.Auto Raise Board", False },
+    { "menuOptions.Get Move List", False },
+    { "menuOptions.Premove", False },
+    { "menuOptions.Quiet Play", False },
+
+    /* The next two options rely on SetCmailMode being called *after*    */
+    /* SetGNUMode so that when GNU is being used to give hints these     */
+    /* menu options are still available                                  */
+
+    { "menuFile.Mail Move", False },
+    { "menuFile.Reload CMail Message", False },
+    { NULL, False }
+};
+
+Enables cmailEnables[] = {
+    { "Action", True },
+    { "menuAction.Call Flag", False },
+    { "menuAction.Draw", True },
+    { "menuAction.Adjourn", False },
+    { "menuAction.Abort", False },
+    { "menuAction.Stop Observing", False },
+    { "menuAction.Stop Examining", False },
+    { "menuFile.Mail Move", True },
+    { "menuFile.Reload CMail Message", True },
+    { NULL, False }
+};
+
+Enables trainingOnEnables[] = {
+  { "menuMode.Edit Comment", False },
+  { "menuMode.Pause", False },
+  { "menuStep.Forward", False },
+  { "menuStep.Backward", False },
+  { "menuStep.Forward to End", False },
+  { "menuStep.Back to Start", False },
+  { "menuStep.Move Now", False },
+  { "menuStep.Truncate Game", False },
+  { NULL, False }
+};
+
+Enables trainingOffEnables[] = {
+  { "menuMode.Edit Comment", True },
+  { "menuMode.Pause", True },
+  { "menuStep.Forward", True },
+  { "menuStep.Backward", True },
+  { "menuStep.Forward to End", True },
+  { "menuStep.Back to Start", True },
+  { "menuStep.Move Now", True },
+  { "menuStep.Truncate Game", True },
+  { NULL, False }
+};
+
+Enables machineThinkingEnables[] = {
+  { "menuFile.Load Game", False },
+  { "menuFile.Load Next Game", False },
+  { "menuFile.Load Previous Game", False },
+  { "menuFile.Reload Same Game", False },
+  { "menuFile.Paste Game", False },
+  { "menuFile.Load Position", False },
+  { "menuFile.Load Next Position", False },
+  { "menuFile.Load Previous Position", False },
+  { "menuFile.Reload Same Position", False },
+  { "menuFile.Paste Position", False },
+  { "menuMode.Machine White", False },
+  { "menuMode.Machine Black", False },
+  { "menuMode.Two Machines", False },
+  { "menuStep.Retract Move", False },
+  { NULL, False }
+};
+
+Enables userThinkingEnables[] = {
+  { "menuFile.Load Game", True },
+  { "menuFile.Load Next Game", True },
+  { "menuFile.Load Previous Game", True },
+  { "menuFile.Reload Same Game", True },
+  { "menuFile.Paste Game", True },
+  { "menuFile.Load Position", True },
+  { "menuFile.Load Next Position", True },
+  { "menuFile.Load Previous Position", True },
+  { "menuFile.Reload Same Position", True },
+  { "menuFile.Paste Position", True },
+  { "menuMode.Machine White", True },
+  { "menuMode.Machine Black", True },
+  { "menuMode.Two Machines", True },
+  { "menuStep.Retract Move", True },
+  { NULL, False }
+};
+
+
 
 MenuItem fileMenu[] = {
     {N_("New Shuffle Game ..."), ShuffleMenuProc},
@@ -2541,10 +2701,10 @@ main(argc, argv)
 
     if (appData.alwaysPromoteToQueen)
       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Always Queen")),TRUE);
-    
+
     if (appData.animateDragging)
       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Dragging")),TRUE);
-    
+
     if (appData.animate)
       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Moving")),TRUE);
 
@@ -2627,7 +2787,7 @@ main(argc, argv)
       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Test Legality")),TRUE);
 
     /* end setting check boxes */
-    
+
 
     /* load square colors */
     SVGLightSquare   = load_pixbuf("svg/LightSquare.svg",squareSize);
@@ -2641,7 +2801,7 @@ main(argc, argv)
     gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
 
     /* do resizing to a fixed aspect ratio */
-    
+
     {
       int i,j;
     }
@@ -2768,11 +2928,6 @@ ResetFrontEnd()
     return;
 }
 
-typedef struct {
-    char *name;
-    gboolean value;
-} Enables;
-
 void
 SetMenuEnables(enab)
      Enables *enab;
@@ -2795,162 +2950,13 @@ SetMenuEnables(enab)
   }
 }
 
-Enables icsEnables[] = {
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
-    { "menuMode.Machine Black", False },
-    { "menuMode.Machine White", False },
-    { "menuMode.Analysis Mode", False },
-    { "menuMode.Analyze File", False },
-    { "menuMode.Two Machines", False },
-#ifndef ZIPPY
-    { "menuHelp.Hint", False },
-    { "menuHelp.Book", False },
-    { "menuStep.Move Now", False },
-    { "menuOptions.Periodic Updates", False },
-    { "menuOptions.Hide Thinking", False },
-    { "menuOptions.Ponder Next Move", False },
-#endif
-    { NULL, False }
-};
-
-Enables ncpEnables[] = {
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
-    { "menuMode.Machine White", False },
-    { "menuMode.Machine Black", False },
-    { "menuMode.Analysis Mode", False },
-    { "menuMode.Analyze File", False },
-    { "menuMode.Two Machines", False },
-    { "menuMode.ICS Client", False },
-    { "menuMode.ICS Input Box", False },
-    { "Action", False },
-    { "menuStep.Revert", False },
-    { "menuStep.Move Now", False },
-    { "menuStep.Retract Move", False },
-    { "menuOptions.Auto Comment", False },
-    { "menuOptions.Auto Flag", False },
-    { "menuOptions.Auto Flip View", False },
-    { "menuOptions.Auto Observe", False },
-    { "menuOptions.Auto Raise Board", False },
-    { "menuOptions.Get Move List", False },
-    { "menuOptions.ICS Alarm", False },
-    { "menuOptions.Move Sound", False },
-    { "menuOptions.Quiet Play", False },
-    { "menuOptions.Hide Thinking", False },
-    { "menuOptions.Periodic Updates", False },
-    { "menuOptions.Ponder Next Move", False },
-    { "menuHelp.Hint", False },
-    { "menuHelp.Book", False },
-    { NULL, False }
-};
-
-Enables gnuEnables[] = {
-    { "menuMode.ICS Client", False },
-    { "menuMode.ICS Input Box", False },
-    { "menuAction.Accept", False },
-    { "menuAction.Decline", False },
-    { "menuAction.Rematch", False },
-    { "menuAction.Adjourn", False },
-    { "menuAction.Stop Examining", False },
-    { "menuAction.Stop Observing", False },
-    { "menuStep.Revert", False },
-    { "menuOptions.Auto Comment", False },
-    { "menuOptions.Auto Observe", False },
-    { "menuOptions.Auto Raise Board", False },
-    { "menuOptions.Get Move List", False },
-    { "menuOptions.Premove", False },
-    { "menuOptions.Quiet Play", False },
-
-    /* The next two options rely on SetCmailMode being called *after*    */
-    /* SetGNUMode so that when GNU is being used to give hints these     */
-    /* menu options are still available                                  */
-
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
-    { NULL, False }
-};
-
-Enables cmailEnables[] = {
-    { "Action", True },
-    { "menuAction.Call Flag", False },
-    { "menuAction.Draw", True },
-    { "menuAction.Adjourn", False },
-    { "menuAction.Abort", False },
-    { "menuAction.Stop Observing", False },
-    { "menuAction.Stop Examining", False },
-    { "menuFile.Mail Move", True },
-    { "menuFile.Reload CMail Message", True },
-    { NULL, False }
-};
-
-Enables trainingOnEnables[] = {
-  { "menuMode.Edit Comment", False },
-  { "menuMode.Pause", False },
-  { "menuStep.Forward", False },
-  { "menuStep.Backward", False },
-  { "menuStep.Forward to End", False },
-  { "menuStep.Back to Start", False },
-  { "menuStep.Move Now", False },
-  { "menuStep.Truncate Game", False },
-  { NULL, False }
-};
-
-Enables trainingOffEnables[] = {
-  { "menuMode.Edit Comment", True },
-  { "menuMode.Pause", True },
-  { "menuStep.Forward", True },
-  { "menuStep.Backward", True },
-  { "menuStep.Forward to End", True },
-  { "menuStep.Back to Start", True },
-  { "menuStep.Move Now", True },
-  { "menuStep.Truncate Game", True },
-  { NULL, False }
-};
-
-Enables machineThinkingEnables[] = {
-  { "menuFile.Load Game", False },
-  { "menuFile.Load Next Game", False },
-  { "menuFile.Load Previous Game", False },
-  { "menuFile.Reload Same Game", False },
-  { "menuFile.Paste Game", False },
-  { "menuFile.Load Position", False },
-  { "menuFile.Load Next Position", False },
-  { "menuFile.Load Previous Position", False },
-  { "menuFile.Reload Same Position", False },
-  { "menuFile.Paste Position", False },
-  { "menuMode.Machine White", False },
-  { "menuMode.Machine Black", False },
-  { "menuMode.Two Machines", False },
-  { "menuStep.Retract Move", False },
-  { NULL, False }
-};
-
-Enables userThinkingEnables[] = {
-  { "menuFile.Load Game", True },
-  { "menuFile.Load Next Game", True },
-  { "menuFile.Load Previous Game", True },
-  { "menuFile.Reload Same Game", True },
-  { "menuFile.Paste Game", True },
-  { "menuFile.Load Position", True },
-  { "menuFile.Load Next Position", True },
-  { "menuFile.Load Previous Position", True },
-  { "menuFile.Reload Same Position", True },
-  { "menuFile.Paste Position", True },
-  { "menuMode.Machine White", True },
-  { "menuMode.Machine Black", True },
-  { "menuMode.Two Machines", True },
-  { "menuStep.Retract Move", True },
-  { NULL, False }
-};
-
 void SetICSMode()
 {
   SetMenuEnables(icsEnables);
 
 #ifdef ZIPPY
   if (appData.zippyPlay && !appData.noChessProgram)   /* [DM] icsEngineAnalyze */
-     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
+    {}; //     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
 #endif
 }
 
@@ -2977,7 +2983,7 @@ SetTrainingModeOn()
 {
   SetMenuEnables(trainingOnEnables);
   if (appData.showButtonBar) {
-    XtSetSensitive(buttonBarWidget, False);
+    //    XtSetSensitive(buttonBarWidget, False);
   }
   CommentPopDown();
 }
@@ -2987,7 +2993,7 @@ SetTrainingModeOff()
 {
   SetMenuEnables(trainingOffEnables);
   if (appData.showButtonBar) {
-    XtSetSensitive(buttonBarWidget, True);
+    //    XtSetSensitive(buttonBarWidget, True);
   }
 }
 
@@ -3777,7 +3783,7 @@ void DrawSquare(row, column, piece, do_flash)
 	 || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) )
       {
 	BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
-	
+
 	// [HGM] print piece counts next to holdings
 	string[1] = NULLCHAR;
 	if(piece > 1)
@@ -3788,17 +3794,17 @@ void DrawSquare(row, column, piece, do_flash)
 
 	    /* get a cairo_t */
 	    cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
-	    
+
 	    string[0] = '0' + piece;
-	    
+
 	    /* TODO this has to go into the font-selection */
 	    cairo_select_font_face (cr, "Sans",
 				    CAIRO_FONT_SLANT_NORMAL,
 				    CAIRO_FONT_WEIGHT_NORMAL);
-	    
+
 	    cairo_set_font_size (cr, 12.0);
 	    cairo_text_extents (cr, string, &extents);
-	    
+
 
 	    if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) )
 	      {
@@ -3819,7 +3825,7 @@ void DrawSquare(row, column, piece, do_flash)
 	    cairo_set_source_rgb (cr, 0, 0, 0);
 	    cairo_set_line_width (cr, 0.1);
 	    cairo_stroke (cr);
-	    	    
+
 	    /* free memory */
 	    cairo_destroy (cr);
 	  }
@@ -3862,13 +3868,13 @@ void DrawSquare(row, column, piece, do_flash)
 				CAIRO_FONT_SLANT_NORMAL,
 				CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_set_font_size (cr, 12.0);
-		
+
 	string[1] = NULLCHAR;
 
 	/* get a cairo_t */
 	cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
-	
-	if (row == (flipView ? BOARD_HEIGHT-1 : 0) && 
+
+	if (row == (flipView ? BOARD_HEIGHT-1 : 0) &&
 	    column >= BOARD_LEFT && column < BOARD_RGHT)
 	  {
 	    string[0] = 'a' + column - BOARD_LEFT;
@@ -5103,37 +5109,41 @@ void ErrorPopDown()
 {
     if (!errorUp) return;
     errorUp = False;
-    XtPopdown(errorShell);
-    XtDestroyWidget(errorShell);
+
+    if(GUI_Error)
+      gtk_widget_destroy(GTK_WIDGET(GUI_Error));
+
     if (errorExitStatus != -1) ExitEvent(errorExitStatus);
+
+    return;
 }
 
 void ErrorPopUp(title, label, modal)
      char *title, *label;
      int modal;
 {
-  GtkWidget *dialog;
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(GUI_Window),
+  GUI_Error = gtk_message_dialog_new(GTK_WINDOW(GUI_Window),
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   GTK_MESSAGE_ERROR,
                                   GTK_BUTTONS_CLOSE,
                                   (gchar *)label);
 
-  gtk_window_set_title(GTK_WINDOW(dialog),(gchar *) title);
+  gtk_window_set_title(GTK_WINDOW(GUI_Error),(gchar *) title);
   if(modal)
     {
-      gtk_dialog_run(GTK_DIALOG(dialog));
-      gtk_widget_destroy(GTK_WIDGET(dialog));
+      gtk_dialog_run(GTK_DIALOG(GUI_Error));
+      gtk_widget_destroy(GTK_WIDGET(GUI_Error));
     }
   else
     {
-      g_signal_connect_swapped (dialog, "response",
+      g_signal_connect_swapped (GUI_Error, "response",
                                 G_CALLBACK (ErrorPopDownProc),
-                                dialog);
+                                GUI_Error);
       errorUp = True;
-      gtk_widget_show(GTK_WIDGET(dialog));
+      gtk_widget_show(GTK_WIDGET(GUI_Error));
     }
+
+  return;
 }
 
 /* Disable all user input other than deleting the window */
@@ -6499,55 +6509,58 @@ void DisplayMessage(message, extMessage)
 	}
     }
     gtk_label_set_text( GTK_LABEL(gtk_builder_get_object (builder, "Messages")),message);
+
+    return;
 }
 
 void DisplayTitle(text)
      char *text;
 {
-    Arg args[16];
-    int i;
-    char title[MSG_SIZ];
-    char icon[MSG_SIZ];
+    gchar title[MSG_SIZ];
 
     if (text == NULL) text = "";
 
-    if (appData.titleInWindow) {
-	i = 0;
-	XtSetArg(args[i], XtNlabel, text);   i++;
-	XtSetValues(titleWidget, args, i);
-    }
+    if (appData.titleInWindow)
+      {
+	/* TODO */
+      }
 
-    if (*text != NULLCHAR) {
-	strcpy(icon, text);
+    if (*text != NULLCHAR)
+      {
 	strcpy(title, text);
-    } else if (appData.icsActive) {
-        snprintf(icon, sizeof(icon), "%s", appData.icsHost);
+      }
+    else if (appData.icsActive)
+      {
 	snprintf(title, sizeof(title), "%s: %s", programName, appData.icsHost);
-    } else if (appData.cmailGameName[0] != NULLCHAR) {
-        snprintf(icon, sizeof(icon), "%s", "CMail");
+      }
+    else if (appData.cmailGameName[0] != NULLCHAR)
+      {
 	snprintf(title,sizeof(title), "%s: %s", programName, "CMail");
 #ifdef GOTHIC
     // [HGM] license: This stuff should really be done in back-end, but WinBoard already had a pop-up for it
-    } else if (gameInfo.variant == VariantGothic) {
-	strcpy(icon, programName);
+      }
+    else if (gameInfo.variant == VariantGothic)
+      {
 	strcpy(title, GOTHIC);
 #endif
 #ifdef FALCON
-    } else if (gameInfo.variant == VariantFalcon) {
-	strcpy(icon, programName);
+      }
+    else if (gameInfo.variant == VariantFalcon)
+      {
 	strcpy(title, FALCON);
 #endif
-    } else if (appData.noChessProgram) {
-	strcpy(icon, programName);
+      }
+    else if (appData.noChessProgram)
+      {
 	strcpy(title, programName);
-    } else {
-	strcpy(icon, first.tidy);
+      }
+    else
+      {
 	snprintf(title,sizeof(title), "%s: %s", programName, first.tidy);
-    }
-    i = 0;
-    XtSetArg(args[i], XtNiconName, (XtArgVal) icon);    i++;
-    XtSetArg(args[i], XtNtitle, (XtArgVal) title);      i++;
-    XtSetValues(shellWidget, args, i);
+      }
+    gtk_window_set_title(GTK_WINDOW(GUI_Window),title);
+
+    return;
 }
 
 
@@ -6998,11 +7011,11 @@ ScheduleDelayedEvent(cb, millisec)
 DelayedEventCallback
 GetDelayedEvent()
 {
-  if (delayedEventTimerTag) 
+  if (delayedEventTimerTag)
     {
       return delayedEventCallback;
-    } 
-  else 
+    }
+  else
     {
       return NULL;
     }
@@ -7011,7 +7024,7 @@ GetDelayedEvent()
 void
 CancelDelayedEvent()
 {
-  if (delayedEventTimerTag) 
+  if (delayedEventTimerTag)
     {
       gtk_timeout_remove(delayedEventTimerTag);
       delayedEventTimerTag = 0;
@@ -7060,8 +7073,8 @@ AnalysisClockCallback(data)
      gpointer data;
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile
-         || appData.icsEngineAnalyze) 
-      { 
+         || appData.icsEngineAnalyze)
+      {
 	AnalysisPeriodicEvent(0);
 	StartAnalysisClock();
       }
@@ -7083,13 +7096,13 @@ int ClockTimerRunning()
 
 int StopClockTimer()
 {
-    if (clockTimerTag != 0) 
+    if (clockTimerTag != 0)
       {
 	gtk_timeout_remove(clockTimerTag);
 	clockTimerTag = 0;
 	return TRUE;
-      } 
-    else 
+      }
+    else
       {
 	return FALSE;
       }
@@ -7166,7 +7179,7 @@ DisplayWhiteClock(timeRemaining, highlight)
   if(appData.noGUI) return;
 
   DisplayTimerLabel(GUI_Whiteclock, _("White"), timeRemaining, highlight);
-  if (highlight && WindowIcon == BlackIcon) 
+  if (highlight && WindowIcon == BlackIcon)
     {
       WindowIcon = WhiteIcon;
       gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
@@ -7181,7 +7194,7 @@ DisplayBlackClock(timeRemaining, highlight)
     if(appData.noGUI) return;
 
     DisplayTimerLabel(GUI_Blackclock, _("Black"), timeRemaining, highlight);
-    if (highlight && WindowIcon == WhiteIcon) 
+    if (highlight && WindowIcon == WhiteIcon)
       {
         WindowIcon = BlackIcon;
         gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
