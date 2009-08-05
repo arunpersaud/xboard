@@ -8255,10 +8255,11 @@ Reset(redraw, init)
 	    InitChessProgram(&first, startedFromSetupPosition);
     }
 
-    GUI_DisplayTitle("");
+    DisplayTitle("");
     DisplayMessage("", "");
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
 
+    return;
 }
 
 void

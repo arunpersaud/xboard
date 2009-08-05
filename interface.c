@@ -50,35 +50,6 @@ GdkPixbuf *load_pixbuf(char *filename,int size)
   return image;
 }
 
-void GUI_DisplayTitle(text)
-     char *text;
-{
-    char title[MSG_SIZ];
-    extern GtkWidget *GUI_Window;
-
-    if (text == NULL) text = "";
-
-    /* todo
-    if (appData.titleInWindow) {
-	i = 0;
-	XtSetArg(args[i], XtNlabel, text);   i++;
-	XtSetValues(titleWidget, args, i);
-	} */
-
-    if (*text != NULLCHAR) {
-	strcpy(title, text);
-    } else if (appData.icsActive) {
-	sprintf(title, "%s: %s", programName, appData.icsHost);
-    } else if (appData.cmailGameName[0] != NULLCHAR) {
-	sprintf(title, "%s: %s", programName, "CMail");
-    } else if (appData.noChessProgram) {
-	strcpy(title, programName);
-    } else {
-	sprintf(title, "%s: %s", programName, first.tidy);
-    }
-    gtk_window_set_title(GTK_WINDOW(GUI_Window),title);
-}
-
 void GUI_SetAspectRatio(ratio)
      int ratio;
 {
