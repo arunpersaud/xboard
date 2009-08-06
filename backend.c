@@ -3824,7 +3824,7 @@ ParseBoard12(string)
 #endif
     }
 
-    if (moveNum > 0 && !gotPremove) {
+    if (moveNum > 0 && !gotPremove && !appData.noGUI) {
 	/* If move comes from a remote source, animate it.  If it
 	   isn't remote, it will have already been animated. */
 	if (!pausing && !ics_user_moved && prevMove == moveNum - 1) {
@@ -3854,7 +3854,7 @@ ParseBoard12(string)
     
     /* Display opponents and material strengths */
     if (gameInfo.variant != VariantBughouse &&
-	gameInfo.variant != VariantCrazyhouse) {
+	gameInfo.variant != VariantCrazyhouse && !appData.noGUI) {
 	if (tinyLayout || smallLayout) {
 	    if(gameInfo.variant == VariantNormal)
 		sprintf(str, "%s(%d) %s(%d) {%d %d}", 
@@ -3882,7 +3882,7 @@ ParseBoard12(string)
 
    
     /* Display the board */
-    if (!pausing) {
+    if (!pausing && !appData.noGUI) {
       
       if (appData.premove)
 	  if (!gotPremove || 
