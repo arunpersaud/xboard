@@ -1,0 +1,135 @@
+<html>
+<header>
+<title>WGP: Piece Fonts</title>
+</header>
+<body>
+<table cellpadding="20"><tr><td>
+<h1>The WinBoard Gold Pack 4.4.0</h1>
+<h2>For the ultimate WinBoard experience!</h2>
+</td><td>
+<img src="mini.gif">
+</td></tr></table>
+<p>
+Chess fonts are fonts where each letter is a small picture, like hieroglyphs.
+The pictures represent Chess pieces, e.g. the A can look like a King, the B like a Queen.
+Often there are separate characters for white and black pieces,
+and often also for pieces on white and black squares.
+In WinBoard 4.4, it is posible to use such fonts for displaying the pieces.
+You would only need the pieces on light squares for this,
+as WinBoard will draw the background by itself.
+</p>
+<h3>Step 1: Installing the Font on your Computer</h3>
+<p>
+The first step is to download the font.
+The "Chess Mark" font that is provided as an example in already included in this package,
+and the installer puts it in the Windows fonts folder for you,
+so it becomes automatically available in all your Windows applications.
+Other fonts can be obtained from the internet.
+A link to the website from which ChessMark was originally obtained,
+is given below.
+It contains many freeware fonts.
+You can pre-view the various fonts there as well.
+</p><p>
+To install new fonts, you can use the following procedure:
+After clicking the download link you can ask to open the file,
+Windows will then automatically show you its contents.
+(Often this does not work, though.
+In that case you will have to click 'Save' in stead of 'Open',
+and save the downloaded .zip file somewhere.
+After that you get the option to click 'Open' again,
+and then it usually works.)
+The opened zip file will in general contain 4 files,
+two READ_ME files (one in Danish), a Word document, and the font file (.tff) itself.
+</p><p>
+Click "extract all files" on the upper left.
+This makes the unpack wizzard pop up, which will guide you trough the unpacking process.
+You can unpack the fonts download in any convenient place;
+you will have to move some selected parts of it to another place anyway.
+</p><p>
+After unpacking,
+the .tff file must be moved to the /WINDOWS/FONTS folder to become installed.
+Sometimes it becomes only active after restarting your computer.
+If the font is correctly installed, you will see some Chess-piece symbols
+when you click the .tff file in your system's Fonts folder.
+If the page you see when clicking this file is mostly blank,
+you probably have to restart your computer.
+</p>
+<h3>Step 2: Tell WinBoard to use the Font</h3>
+<p>
+To use a font for rendering pieces, you have to tel WinBoard two things:
+<br>
+* Which font to use
+<br>
+* Which character represents which piece
+<br>
+The latter is unfortunately not standardized; every fonts does it differently.
+For the first thing there is a command-line option /renderPiecesWithFont="Chess Mark"
+(or whatever font you have downoaded).
+If you want this to become the global default for your "board look",
+you have to append this to the winboard.ini file in the WinBoard folder (i.e. ~\WinBoard\winboard.ini),
+using a text editor (e.g. MS NotePad).
+The option is already there in the winboard.ini supplied with the Gold Pack,
+but it is made inactive by putting a '*' in front of the font name.
+So you could also look for that option in the winboard.ini file, and delete the asterisk.
+</p><p>
+If you don't want to make the font a global default,
+you could make a special shortcut for it,
+that only works if WinBoard is invoked through this shortcut.
+The options we discuss here should then not go into the winboard.ini file,
+but in a separate small .ini file like the supplied example "ChessMark.ini".
+</p><p>
+The mapping of pieces on characters is controlled by the option /fontPieceToCharTable="...",
+where the "..." lists the character needed to obtain PNBRQKpnbrqk, in that order.
+Sometimes the mapping is specified in one of the README files that come with the font.
+But if you don't know which to use,
+you can experiment by making a text in MS Word consisting of the full alphabet,
+and then changing the font for it to the font you just installed.
+(If this package installed correctly, you should already have "ChessMark" in your font menu, there.)
+The winboard.ini supplied with this package already sets the proper values for ChessMark,
+but if you would try another font it would likely start to mix up the pieces unless you change these settings.
+</p>
+<h3>Coloring the Pieces and Fine Tuning</h3>
+<p>
+The inner part of the pieces (everything inside the black outline defined by the font)
+is filled with a color gradient.
+Usually, the black pieces have almost solid font images, so there is little to fill there.
+If you don't want that, you can use the /allWhite=true option
+(also selectable from the "Options -> Board..." menu dialog).
+The actual colors are set by the following four options,
+which define a foreground and background color for both the white and black pieces.
+The actual color gradually changes from foreground on one side to backfground on the other,
+to simulate shading.
+If you don't want this shading, you can make foreground and background colors equal.
+The colors (unfortnately) have to be given as hexadecimal code for RGB intensities...).
+In the winboard.ini supplied with this package they are set to white and black.
+</p><p>
+Pieces rendered with fonts are automaticaly scaled with the board size. 
+Not all fonts are equally big though, even if they are all called 12-point (or whatever).
+Therefore the size of the pieces can need some fine-tuning,
+which can be done with the option /fontPieceSize=N, where N is a number.
+The number is aproximately the percentage of the size that would nominally be needed
+to fill an entire board square.
+So usually we have to set it slightly below 100.
+The settings used in the ChessMark.ini example file are:
+</p>
+<pre>
+/renderPiecesWithFont="Chess Mark"
+/fontPieceBackColorWhite=#ffffff
+/fontPieceForeColorWhite=#000000
+/fontPieceBackColorBlack=#ffffff
+/fontPieceForeColorBlack=#000000
+/fontPieceSize=80
+/fontPieceToCharTable="pnbrqkomvtwl"
+</pre>
+<h3>Links</h3>
+<p>
+<a href="http://www.enpassant.dk/chess/fontedk.htm">A Download Page for Chess Fonts</a>
+</p>
+<p>
+<a href="texture.html">Using arbitrary bitmaps for chess board</a>
+</p>
+<p>
+<a href="shortcuts.html">Customizing WinBoard through shortcuts</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,27 @@
+License:
+    !insertmacro MUI_PAGE_LICENSE "..\READ_ME.txt"
+
+empty mkdir:
+  bitbases
+  egtb
+  GNU4
+  GNU5
+
+Section Core:
+  links:
+    Fairy-Max.lnk       (fairy.ini)
+    FICS.lnk            (FICS.ini)
+    Fruit.lnk           (Fruit\fruit.ini)
+    ICC.lnk             (ICC.ini)
+    ICS bot.lnk         (ICSbot.ini)
+    my WinBoard.lnk     (???)
+    PGN viewer.lnk      (viewer.ini)
+    Xiangqi.lnk         (xq.ini)
+
+ChessMark.ini, Gothic.ini, marble.ini
+QH\eleeye.ini
+
+TODO: PSWTBTM (Tournament Manager)
+Smirfoglot?? doesn't this require an engine?
+
+

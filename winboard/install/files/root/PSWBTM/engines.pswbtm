@@ -1,0 +1,12 @@
+CPW (Polyglot + .ini file)
+..\Polyglot15w\polyglot.exe
+cpw.ini
+CPW (WB UCI option)
+..\cpw_060109\cpw.exe
+WBopt /%sIsUCI=true
+Fairy-Max (time handicap 2x)
+C:\cygwin\home\fboard\Winboard_F.4.3.13\win15\Fairy-Max\fmax.exe
+22 WBopt /%sTimeOdds=2
+Fairy-Max 4.8(E)
+..\Fairy-Max\fmax.exe
+22
