@@ -24,7 +24,10 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
+
+#if HAVE_MALLOC_H
+  #include <malloc.h>
+#endif
 
 #ifdef WIN32
 // [HGM] this was probably a Windows-specific constant. Needs to be defined here now I
