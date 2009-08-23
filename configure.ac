@@ -330,12 +330,12 @@ dnl| USE_PTYS=1
   ;;
 esac
 
-AC_ARG_ENABLE(xpm,
-[  --enable-xpm            libXpm will be used if found (default)
-  --disable-xpm           libXpm will not be used],
-[enable_xpm="$enableval"], [enable_xpm="yes"])
+AC_ARG_ENABLE(	[xpm],
+		[AS_HELP_STRING([--enable-xpm],[libXpm will be used if found (default)])],
+		[enable_xpm="$enableval"],
+		[enable_xpm="yes"])
 
-if test "$enable_xpm" = "yes"; then
+if test x"$enable_xpm" != "xno"; then
   save_cflags="$CFLAGS"
   CFLAGS="$CFLAGS $X_CFLAGS"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
@@ -357,32 +357,36 @@ AC_SUBST(CONF_CFLAGS)
 AC_SUBST(CONF_LDFLAGS)
 
 AC_MSG_CHECKING(whether ptys or pipes should be used)
-AC_ARG_ENABLE(ptys, 
-[  --enable-ptys           force use of pseudo-ttys with child processes
-  --disable-ptys          force use of pipes with child processes],
+AC_ARG_ENABLE( [ptys], 
+	       [AS_HELP_STRING([--enable-ptys],[force use of pseudo-ttys with child processes])],
 [if test "$enableval" = yes; then
   USE_PTYS=1
+  enable_ptys="ptys"
   AC_MSG_RESULT([ptys (user override)])
 fi
 if test "$enableval" = no; then
   USE_PTYS=0
+  enable_ptys="pipes"
   AC_MSG_RESULT([pipes (user override)])
 fi],
 [if test "$USE_PTYS" = 1; then
   AC_MSG_RESULT(ptys)
+  enable_ptys="ptys"
 else
   AC_MSG_RESULT(pipes)
+  enable_ptys="pipes"
 fi])
 AC_DEFINE_UNQUOTED(USE_PTYS, $USE_PTYS)
 
 
 dnl | define not to build zippy as a default, so that autoheader is happy
 AC_DEFINE(ZIPPY, 0,[should zippy be enabled])
-AC_ARG_ENABLE(zippy, 
-[  --enable-zippy          support interfacing a chess program to ICS (default)
-  --disable-zippy         do not support interfacing a chess program to ICS],
-[enable_zippy="$enableval"], [enable_zippy="yes"])
-if test "$enable_zippy" = yes; then
+AC_ARG_ENABLE( [zippy], 
+	       [AS_HELP_STRING([--enable-zippy],[support interfacing a chess program to ICS (default)])],
+	       [], 
+	       [enable_zippy="yes"])
+
+if test x"$enable_zippy" != xno; then
   AC_DEFINE(ZIPPY, 1,[should zippy be enabled])
   ZIPPY_O=zippy.o
   ZIPPY_H=zippy.h
@@ -391,14 +395,32 @@ AC_SUBST(ZIPPY_O)
 AC_SUBST(ZIPPY_H)  
 
 AC_ARG_ENABLE(sigint, 
-[  --enable-sigint         sending SIGINT (^C) wakes up GNU Chess (default)
-  --disable-sigint        typing a command wakes up GNU Chess],
+[AS_HELP_STRING([--enable-sigint],[sending SIGINT (^C) wakes up GNU Chess (default)])],
 [if test "$enableval" = yes; then
   AC_DEFINE(ATTENTION, 1)
-fi],
-[AC_DEFINE(ATTENTION, 1)])
+fi
+enable_sigint=$enableval
+],
+[enable_sigint="yes"
+AC_DEFINE(ATTENTION, 1)])
+
 
 AC_CONFIG_FILES([Makefile cmail])
 AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])
 AC_CONFIG_COMMANDS([chmod-cmail],[chmod 755 cmail])
 AC_OUTPUT
+
+dnl
+dnl Output a summary
+dnl
+echo ""
+echo " Configurations summary:"
+echo ""
+echo "        prefix:          $prefix"
+echo ""
+echo "        Xaw3d:           $with_xaw3d"
+echo ""
+echo "        xpm:             $enable_xpm"
+echo "        ptys:            $enable_ptys"
+echo "        zippy:           $enable_zippy"
+echo "        sigint:          $enable_sigint"
