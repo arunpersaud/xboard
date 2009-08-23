@@ -3,38 +3,24 @@
 # For MSVC 8 (aka 2005) set VCVER=8.  Beyond that try 8 first.
 VCVER=6
 
-# If using MSVC 6.0 or earlier, you will need the latest platform SDK supported.
-# Set SDK_INC to the include directory after you install it.
-# See: http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdk-full.htm
-#SDK_INC="C:\Program Files\Microsoft SDK\include"
-
 
 PROJ = winboard
 
 
-OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj\
- zippy.obj parser.obj wclipbrd.obj wedittags.obj wengineo.obj wevalgraph.obj\
- wgamelist.obj whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj\
- wsockerr.obj help.obj
+OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj zippy.obj\
+ parser.obj wclipbrd.obj wedittags.obj wengineo.obj wevalgraph.obj wgamelist.obj\
+ whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj wsockerr.obj help.obj
 
 
 # Debugging?
 USE_DEBUG=0
-
-
-# JAWS support?
-JAWS=0
-
 
 CC = @cl
 RC = @rc
 LINK = link
 HC="c:\program files\help workshop\hcrtf.exe" -xn
 FLEX = "c:/mingw/mingw32/bin/flex.exe"
-DEFS = -D_WIN32_IE=0x300 -DWIN32 -DWINVER=0x0500 -D_WIN32_WINDOWS=0x500
-!if $(JAWS) == 1
-DEFS = -DJAWS $(DEFS)
-!endif
+DEFS = -D_WIN32_IE=0x300 -DWIN32 -DWINVER=0x400 -D_WIN32_WINDOWS=0x500
 #WARN = -W3
 ARCH =
 
@@ -60,9 +46,6 @@ OPTS = -Od -Zi -Fd$(PROJ).pdb $(LIBF)d
 LFDEBUG = -DEBUG -PDB:$(PROJ).pdb -MAP:$(PROJ).map $(CLIB)d.lib
 !endif
 CF = $(CFDEBUG) $(DEFS) $(DEPRECATE) -I. -I..
-!if DEFINED(SDK_INC)
-CF = $(CF) -I$(SDK_INC)
-!endif
 CFLAGS = -c -nologo $(WARN) $(CF) $(ARCH) $(OPTS)
 LFLAGS = -nologo $(LFDEBUG)
 
@@ -167,6 +150,9 @@ zippy.obj: ../zippy.c config.h ../common.h ../zippy.h ../frontend.h \
 
 uci.obj: ../uci.c ..//common.h ../backend.h ../frontend.h ../lists.h
         $(CC) $(CFLAGS) ../uci.c
+
+wsettings.obj: wsettings.c ..//common.h ../backend.h ../frontend.h ../lists.h
+        $(CC) $(CFLAGS) wsettings.c
 
 
 $(PROJ).exe: $(OBJS) $(PROJ).res $(PROJ).hlp

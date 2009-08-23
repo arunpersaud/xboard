@@ -856,7 +856,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   wp.rcNormalPosition.bottom = boardY + winHeight;
   SetWindowPlacement(hwndMain, &wp);
 
-  SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
+  if(!appData.noGUI) SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
                0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 
   if (hwndConsole) {
@@ -866,7 +866,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 #endif
     ShowWindow(hwndConsole, nCmdShow);
   }
-  UpdateWindow(hwnd);
+  if(!appData.noGUI)   UpdateWindow(hwnd);  else ShowWindow(hwnd, SW_MINIMIZE);
 
   return TRUE;
 
@@ -6125,6 +6125,14 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_EnginePlayOptions:
       EnginePlayOptionsPopup(hwnd);
+      break;
+
+    case IDM_Engine1Options:
+      EngineOptionsPopup(hwnd, &first);
+      break;
+
+    case IDM_Engine2Options:
+      EngineOptionsPopup(hwnd, &second);
       break;
 
     case IDM_OptionsUCI:
