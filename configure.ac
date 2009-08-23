@@ -328,14 +328,6 @@ dnl| USE_PTYS=1
       CONF_CFLAGS="-fwritable-strings"
     fi
   ;;
-dnl| OS X
-  *-apple-* )
-    if test -d /usr/X11/lib ; then
-      X_CFLAGS="$X_CFLAGS "
-      X_LIBS="$X_LIBS -L/usr/X11/lib -R/usr/X11/lib"
-      X_PRE_LIBS = "$X_PRE_LIBS -lXpm  -lSM -lICE"
-    fi
-  ;;
 esac
 
 AC_ARG_ENABLE(	[xpm],

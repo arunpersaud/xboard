@@ -8,8 +8,8 @@ endif
 bin_PROGRAMS = xboard
 xboard_SOURCES = backend.c lists.c pgntags.c xedittags.c xhistory.c $(ZPY) childio.c moves.c uci.c xengineoutput.c xoptions.c gamelist.c parser.l xboard.c xgamelist.c book.c
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"'
-AM_LDFLAGS= -lm @XAW_LIBS@
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@
+AM_LDFLAGS= -lm @X_PRE_LIBS@ @XAW_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ 
 
 info_TEXINFOS = copyright.texi xboard.texi
 man6_MANS = xboard.man 
