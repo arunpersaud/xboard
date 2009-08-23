@@ -5140,23 +5140,20 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                  ClearHighlights();
              }
              FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
-	     fromX = fromY = -1;
              if (appData.animate && !appData.highlightLastMove) {
                   ClearHighlights();
                   DrawPosition(forceFullRepaint || FALSE, NULL);
              }
           }
-          break;
+          fromX = fromY = -1;
+	  break;
         }
         if (gotPremove) {
-            /* [HGM] it seemed that braces were missing here */
-            SetPremoveHighlights(fromX, fromY, toX, toY);
-            fromX = fromY = -1;
-            break;
-        }
-      }
-      ClearHighlights();
-      DrawPosition(forceFullRepaint || FALSE, NULL);
+	    SetPremoveHighlights(fromX, fromY, toX, toY);
+            DrawPosition(forceFullRepaint || FALSE, NULL);
+	} else ClearHighlights();
+        fromX = fromY = -1;
+        DrawPosition(forceFullRepaint || FALSE, NULL);
     }
     /* First downclick, or restart on a square with same color piece */
     if (!frozen && OKToStartUserMove(x, y)) {
