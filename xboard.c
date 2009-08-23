@@ -1022,7 +1022,7 @@ XtResource clientResources[] = {
     { "localLineEditing", "localLineEditing", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, localLineEditing),
 	XtRImmediate, (XtPointer) True }, /* not implemented, must be True */
-#ifdef ZIPPY
+#if ZIPPY
     { "zippyTalk", "zippyTalk", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, zippyTalk),
 	XtRImmediate, (XtPointer) ZIPPY_TALK },
