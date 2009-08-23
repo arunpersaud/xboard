@@ -1473,17 +1473,20 @@ void CreateComboPopup(parent, name, n, mb)
 void SettingsPopUp(ChessProgramState *cps)
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit, form, oldform, last, b_ok, b_cancel;
+    Widget popup, layout, dialog, edit, form, oldform, last, b_ok, b_cancel, leftMargin = NULL;
     Window root, child;
-    int x, y, i, j;
+    int x, y, i, j, height, width, h, c;
     int win_x, win_y;
     unsigned int mask;
     char def[80], *p, *q;
+    static char pane[6] = "paneX";
 
     // to do: start up second engine if needed
     if(!cps->initDone || !cps->nrOptions) return; // nothing to be done
     currentCps = cps;
 
+    if(cps->nrOptions > 50) width = 4; else if(cps->nrOptions>24) width = 2; else width = 1;
+    height = cps->nrOptions / width + 1;
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
     SettingsShell = popup =
@@ -1493,12 +1496,20 @@ void SettingsPopUp(ChessProgramState *cps)
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
 			    layoutArgs, XtNumber(layoutArgs));
-  
+  for(c=0; c<width; c++) {
+    pane[4] = 'A'+c;
     form =
-      XtCreateManagedWidget(layoutName, formWidgetClass, layout,
+      XtCreateManagedWidget(pane, formWidgetClass, layout,
 			    formArgs, XtNumber(formArgs));
+    j=0;
+    XtSetArg(args[j], XtNfromHoriz, leftMargin);  j++;
+    XtSetValues(form, args, j);
+    leftMargin = form;
+
     last = NULL;
-    for(i=0; i<cps->nrOptions; i++) {
+    for(h=0; h<height; h++) {
+	i = h + c*height;
+        if(i >= cps->nrOptions) break;
 	switch(cps->option[i].type) {
 	  case Spin:
 	    sprintf(def, "%d", cps->option[i].value);
@@ -1586,7 +1597,7 @@ void SettingsPopUp(ChessProgramState *cps)
 	    break;
 	}
     }
-
+  }
     j=0;
     XtSetArg(args[j], XtNfromVert, last);  j++;
     XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
