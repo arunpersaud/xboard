@@ -1065,6 +1065,20 @@ void NewVariantPopUp()
     b_ok= XtCreateManagedWidget(_("  OK  "), commandWidgetClass, form, args, j);   
     XtAddCallback(b_ok, XtNcallback, NewVariantCallback, (XtPointer) 0);
 
+    j=0;
+    XtSetArg(args[j], XtNfromVert, buttonDesc[14].handle);  j++;
+//    XtSetArg(args[j], XtNheight, 70); j++;
+    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
+    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
+    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+    XtSetArg(args[j], XtNright, XtChainRight);  j++;
+    XtSetArg(args[j], XtNlabel, _("WARNING: variants with un-orthodox\n"
+				  "pieces only have built-in bitmaps\n"
+				  "for -boardSize middling, bulky and\n"
+				  "petite, and substitute king or amazon\n"
+				  "for missing bitmaps. (See manual.)")); j++;
+    XtCreateManagedWidget("warning", labelWidgetClass, form, args, j);
+
     XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "NewVariantPopDown");
     
@@ -1725,4 +1739,3 @@ void XXXMenuProc(w, event, prms, nprms)
    XXXPopUp();
 }
 #endif
-
