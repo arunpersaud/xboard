@@ -46,13 +46,13 @@
 #define PACKAGE_NAME "WinBoard"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "WinBoard 4.4.0.beta1"
+#define PACKAGE_STRING "WinBoard 4.4.0.beta2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "winboard"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.4.0.beta1"
+#define PACKAGE_VERSION "4.4.0.beta2"
 
 #define PTY_ITERATION
 

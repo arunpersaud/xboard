@@ -17,7 +17,7 @@
 ;--------------------------------
 
 !define InstName "WinBoard"
-!define InstVersion "4.4.0beta1"
+!define InstVersion "4.4.0beta2"
 !define InstBaseDir "WinBoard-4.4.0"
 
 ;--------------------------------
@@ -26,7 +26,7 @@
 
 Name "${InstName} ${InstVersion}"
 Caption "WinBoard - Chessboard For Windows"
-OutFile "WinBoard-4.4.0beta1.exe"
+OutFile "WinBoard-4.4.0beta2.exe"
 InstallDir $PROGRAMFILES\${InstBaseDir}
 
 SetCompressor lzma
