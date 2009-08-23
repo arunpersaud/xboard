@@ -328,6 +328,11 @@ dnl| USE_PTYS=1
       CONF_CFLAGS="-fwritable-strings"
     fi
   ;;
+
+dnl| add some libs for OS X
+  *-apple-* )
+    X_LIBS="$X_LIBS -lX11 -lXt"    
+  ;;
 esac
 
 AC_ARG_ENABLE(	[xpm],
