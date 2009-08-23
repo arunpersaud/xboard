@@ -917,8 +917,8 @@ static void UpdateControls( EngineOutputData * ed )
         sprintf( s_time, "%d:%02d.%02d", time_secs / 60, time_secs % 60, time_cent );
 
         /* Put all together... */
- 	if(ed->nodes == 0) /*sprintf( buf, "%3d\t \t \t \t", ed->depth );*/ buf[0]=0; else 
-	sprintf( buf, "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
+	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0) sprintf( buf, "%3d\t", ed->depth ); else 
+        sprintf( buf, "%3d  %s  %s\t%s\t", ed->depth, s_score, s_nodes, s_time );
 
         /* Add PV */
         buflen = strlen(buf);
