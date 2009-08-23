@@ -255,7 +255,8 @@ char * GameListLineFull P(( int, GameInfo *));
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
 
-typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, SaveButton } Control;
+typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, 
+		   SaveButton, FileName, PathName, Slider, Message } Control;
 
 typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
     int value;          // current setting, starts as default
@@ -328,7 +329,7 @@ typedef struct _CPS {
     char egtFormats[MSG_SIZ];     /* [HGM] EGT: supported tablebase formats */
     int bookSuspend;  /* [HGM] book: go was deferred because of book hit    */
     int nrOptions;    /* [HGM] options: remembered option="..." features    */
-#define MAX_OPTIONS 100
+#define MAX_OPTIONS 200
     Option option[MAX_OPTIONS];
     int comboCnt;
     char *comboList[20*MAX_OPTIONS];
