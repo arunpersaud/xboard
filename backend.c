@@ -242,6 +242,7 @@ int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     
 VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
 int lastIndex = 0;      /* [HGM] autoinc: last game/position used in match mode */
 int opponentKibitzes;
+int lastSavedGame; /* [HGM] save: ID of game */
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -7718,6 +7719,28 @@ void UserAdjudicationEvent( int result )
 }
 
 
+// [HGM] save: calculate checksum of game to make games easily identifiable
+int StringCheckSum(char *s)
+{
+	int i = 0;
+	if(s==NULL) return 0;
+	while(*s) i = i*259 + *s++;
+	return i;
+}
+
+int GameCheckSum()
+{
+	int i, sum=0;
+	for(i=backwardMostMove; i<forwardMostMove; i++) {
+		sum += pvInfoList[i].depth;
+		sum += StringCheckSum(parseList[i]);
+		sum += StringCheckSum(commentList[i]);
+		sum *= 261;
+	}
+	if(i>1 && sum==0) sum++; // make sure never zero for non-empty game
+	return sum + StringCheckSum(commentList[i]);
+} // end of save patch
+
 void
 GameEnds(result, resultDetails, whosays)
      ChessMove result;
@@ -7867,7 +7890,9 @@ GameEnds(result, resultDetails, whosays)
 		DisplayMove(currentMove - 1);
     
 	    if (forwardMostMove != 0) {
-		if (gameMode != PlayFromGameFile && gameMode != EditGame) {
+		if (gameMode != PlayFromGameFile && gameMode != EditGame
+		    && lastSavedGame != GameCheckSum() // [HGM] save: suppress duplicates
+								) {
 		    if (*appData.saveGameFile != NULLCHAR) {
 			SaveGameToFile(appData.saveGameFile, TRUE);
 		    } else if (appData.autoSaveGames) {
@@ -8211,6 +8236,7 @@ Reset(redraw, init)
     DisplayTitle("");
     DisplayMessage("", "");
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
+    lastSavedGame = 0; // [HGM] save: make sure next game counts as unsaved
 }
 
 void
@@ -9701,6 +9727,7 @@ SaveGamePGN(f)
     }
 
     fclose(f);
+    lastSavedGame = GameCheckSum(); // [HGM] save: remember ID of last saved game to prevent double saving
     return TRUE;
 }
 
@@ -9777,6 +9804,7 @@ SaveGame(f, dummy, dummy2)
      char *dummy2;
 {
     if (gameMode == EditPosition) EditPositionDone();
+    lastSavedGame = GameCheckSum(); // [HGM] save: remember ID of last saved game to prevent double saving
     if (appData.oldSaveStyle)
       return SaveGameOldStyle(f);
     else
