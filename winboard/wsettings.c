@@ -143,7 +143,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
     }
 }
 
-char *p
+char *
 EndMatch(char *s1, char *s2)
 {
 	char *p, *q;
@@ -183,11 +183,13 @@ DesignOptionDialog(ChessProgramState *cps)
 		LayoutOptions(k, k+groupSize, buf, cps->option); // flush the group
 		boxList[groups++] = layout; // group end in odd entries
 		k = n = k + groupSize;
+#if 0
 	} else {
 		// try to recognize "two-column groups" based on option suffix
 		int j = 1;
 		while((p = EndMatch(cps->option[k].name, EndMatch(cps->option[k+2*j].name)) &&
-		      (q = EndMatch(cps->option[k+1].name, EndMatch(cps->option[k+2*j+1].name)) ) j++
+		      (q = EndMatch(cps->option[k+1].name, EndMatch(cps->option[k+2*j+1].name)) ) j++;
+#endif
 	} else k += groupSize; // small groups are grouped with the solitary options
     }
     if(n != k) LayoutOptions(n, k, "", cps->option); // flush remaining solitary options
@@ -584,7 +586,8 @@ void AddOption(int x, int y, Control type, int i)
 	    AddControl(x+95, y-1, 50, 500, 0x0085, CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
 	    break;
 	case Button:
-	    AddControl(x, y, 40, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, i);
+	case SaveButton:
+	    AddControl(x-2, y, 65, 13, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, i);
 	    break;
     }
     
