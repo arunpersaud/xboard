@@ -13,8 +13,10 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <string.h>
 #include "common.h"
 #include "backend.h"
+#include "backendz.h"
 
 int layoutList[2*MAX_OPTIONS];
 int checkList[2*MAX_OPTIONS];
@@ -33,10 +35,13 @@ PrintOpt(int i, int right, ChessProgramState *cps)
     } else {
 	Option opt = cps->option[i];
 	switch(opt.type) {
+	    case Slider:
 	    case Spin:
 		fprintf(debugFP, "%20.20s [    +/-]", opt.name);
 		break;
 	    case TextBox:
+	    case FileName:
+	    case PathName:
 		fprintf(debugFP, "%20.20s [______________________________________]", opt.name);
 		break;
 	    case CheckBox:
@@ -48,6 +53,7 @@ PrintOpt(int i, int right, ChessProgramState *cps)
 	    case Button:
 	    case SaveButton:
 		fprintf(debugFP, "[ %26.26s ]", opt.name);
+	    case Message:
 		break;
 	}
     }
@@ -68,7 +74,7 @@ CreateOptionDialogTest(int *list, int nr, ChessProgramState *cps)
 void
 LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionList)
 {
-    int n, i, b = strlen(groupName), stop, prefix, right, nextOption, firstButton = buttons;
+    int i, b = strlen(groupName), stop, prefix, right, nextOption, firstButton = buttons;
     Control lastType, nextType;
 
     nextOption = firstOption;
@@ -83,7 +89,11 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 		case SaveButton:
 		case Button:  buttonList[buttons++] = nextOption; lastType = Button; break;
 		case TextBox:
+		case FileName:
+		case PathName:
+		case Slider:
 		case Spin: stop++;
+		case Message: ; // cannot happen
 	    }
 	    nextOption++;
 	}
@@ -165,7 +175,7 @@ DesignOptionDialog(ChessProgramState *cps)
     while(k < cps->nrOptions) { // k steps through 'solitary' options
 	// look if we hit a group of options having names that start with the same word
 	int groupSize = 1, groupNameLength = 50;
-	sscanf(cps->option[k].name, "%s", &buf); // get first word of option name
+	sscanf(cps->option[k].name, "%s", buf); // get first word of option name
 	while(k + groupSize < cps->nrOptions &&
 	      strstr(cps->option[k+groupSize].name, buf) == cps->option[k+groupSize].name) {
 		int j;
@@ -266,6 +276,7 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps)
 		break;
 	    case Button:
 	    case SaveButton:
+	    default:
 		break;
 	}
     }
@@ -291,7 +302,7 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps)
 // read out all controls, and if value is altered, remember it and send it to the engine
 {
     HANDLE hwndCombo;
-    int i, k, new, changed;
+    int i, k, new=0, changed=0;
     char **choices, newText[MSG_SIZ], buf[MSG_SIZ];
     BOOL success;
 
@@ -334,6 +345,7 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps)
 		if(changed) cps->option[j].value = new;
 		break;
 	    case Button:
+	    default:
 		break; // are treated instantly, so they have been sent already
 	}
 	if(changed == 2) sprintf(buf, "option %s=%d\n", cps->option[j].name, new); else
@@ -344,8 +356,6 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps)
 
 LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static int * lpIndexFRC;
-    BOOL index_is_ok;
     char buf[MSG_SIZ];
     int i, j;
 
@@ -562,6 +572,7 @@ void AddOption(int x, int y, Control type, int i)
 {
 
     switch(type) {
+	case Slider:
 	case Spin:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
 	    AddControl(x+95, y, 50, 11, 0x0081, ES_AUTOHSCROLL | ES_NUMBER | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
@@ -588,6 +599,7 @@ void AddOption(int x, int y, Control type, int i)
 	case Button:
 	case SaveButton:
 	    AddControl(x-2, y, 65, 13, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, i);
+	case Message:
 	    break;
     }
     
@@ -600,7 +612,7 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
 
     template.header.cdit = 0;
     template.header.cx = 307;
-    buttonRows = (buttons + 1 + 3)/4; // 4 per row, ronded up
+    buttonRows = (buttons + 1 + 3)/4; // 4 per row, rounded up
     if(nr > 50) { 
 	breakPoint = (nr+2*buttonRows+1)/2 & ~1;
 	template.header.cx = 625;
@@ -634,11 +646,13 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
     template.title[8] = cps == &first ? '1' :  '2';
     template.header.cy = y += 18*buttonRows+2;
     template.header.style &= ~WS_VSCROLL;
-    if(y > 300, 0) {
+#if 0
+    if(y > 300) {
 	template.header.cx = 295;
 	template.header.cy = 300;
 	template.header.style |= WS_VSCROLL;
     }
+#endif
 }
 
 void 
