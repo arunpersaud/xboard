@@ -2,9 +2,9 @@
 ;
 ;
 
-!define FILES "..\files\"
-!define ROOT "${FILES}root\"
-!define FNTDIR "${FILES}fonts\"
+!define FILES "..\..\"
+!define ROOT "${FILES}Chess\"
+!define FNTDIR "${FILES}Chess\RePackage\"
 
 ; grab the FontName plugin from NSIS for these
 !include FontRegAdv.nsh
@@ -69,7 +69,7 @@ SilentInstall normal
     ; Install Section
     ;--------------------------------------------------------------------
     !insertmacro MUI_PAGE_WELCOME
-    !insertmacro MUI_PAGE_LICENSE "${FILES}COPYING.txt"
+    !insertmacro MUI_PAGE_LICENSE "${ROOT}COPYRIGHT.txt"
     !insertmacro MUI_PAGE_COMPONENTS
     Page custom FileAssoc
     !insertmacro MUI_PAGE_DIRECTORY
@@ -120,116 +120,114 @@ SectionIn 1 RO
     File "${ROOT}README.html"
 
     SetOutPath "$INSTDIR\WinBoard\doc"
-    File "${ROOT}WinBoard\doc\engine-intf.html"
     File "${ROOT}WinBoard\doc\fonts.html"
     File "${ROOT}WinBoard\doc\manual.html"
-    File "${ROOT}WinBoard\doc\mini.gif"
-    File "${ROOT}WinBoard\doc\PolyglotGUI.html"
+    File "${ROOT}WinBoard\doc\UCIconfig.html"
     File "${ROOT}WinBoard\doc\shortcuts.html"
     File "${ROOT}WinBoard\doc\texture.html"
+    File "${ROOT}WinBoard\doc\engine-intf.html"
+    File "${ROOT}WinBoard\doc\FAQ.html"
+    File "${ROOT}WinBoard\doc\mini.gif"
+    File "${ROOT}WinBoard\doc\PG2fruit.png"
+    File "${ROOT}WinBoard\doc\zippy.README"
 
+    ; logo bitmaps for ICS and users
     SetOutPath "$INSTDIR\WinBoard\logos"
     File "${ROOT}WinBoard\logos\chessclub.com.bmp"
     File "${ROOT}WinBoard\logos\freechess.org.bmp"
-    File "${ROOT}WinBoard\logos\hgm.bmp"
+    File "${ROOT}WinBoard\logos\administrator.bmp"
+    File "${ROOT}WinBoard\logos\user.bmp"
+    File "${ROOT}WinBoard\logos\guest.bmp"
     File "${ROOT}WinBoard\logos\README.txt"
 
+    ; Polyglot ini files; fruit.ini always supplied (even if Fruit not installed) as example
     SetOutPath "$INSTDIR\WinBoard\PG"
     File "${ROOT}WinBoard\PG\fruit.ini"
 
-    SetOutPath "$INSTDIR\WinBoard\QH"
-    File "${ROOT}WinBoard\QH\eleeye.ini"
-
+    ; bitmaps for board squares; xqboard is an entire (even-colored) board grid
     SetOutPath "$INSTDIR\Winboard\textures"
     File "${ROOT}WinBoard\textures\marble_d.bmp"
     File "${ROOT}WinBoard\textures\marble_l.bmp"
     File "${ROOT}WinBoard\textures\wood_d.bmp"
     File "${ROOT}WinBoard\textures\wood_l.bmp"
     File "${ROOT}WinBoard\textures\xqboard.bmp"
-    File "${ROOT}WinBoard\textures\xqwood.bmp"
 
+    StrCpy $FONT_DIR $FONTS
+    !insertmacro InstallTTF '${FNTDIR}MARKFONT.TTF'
+    SendMessage ${HWND_BROADCAST} ${WM_FONTCHANGE} 0 0 /TIMEOUT=5000
+
+    ; the small ini files contain the command-line options used by the shortcuts
     SetOutPath "$INSTDIR\Winboard"
+    File "${ROOT}Winboard\winboard.ini"
+    File "${ROOT}Winboard\wood.ini"
+    File "${ROOT}Winboard\marble.ini"
     File "${ROOT}WinBoard\ChessMark.ini"
-    File "${ROOT}Winboard\default_book.bin"
     File "${ROOT}Winboard\fairy.ini"
     File "${ROOT}Winboard\FICS.ini"
     File "${ROOT}Winboard\fruit.ini"
     File "${ROOT}Winboard\Gothic.ini"
     File "${ROOT}Winboard\ICC.ini"
     File "${ROOT}Winboard\ICSbot.ini"
-    File "${ROOT}Winboard\marble.ini"
+    File "${ROOT}Winboard\viewer.ini"
+    File "${ROOT}Winboard\winboard.exe"
     File "${ROOT}Winboard\polyglot.exe"
-    File "${ROOT}Winboard\polyglot_1st.ini"
-    File "${ROOT}Winboard\QH2WB.exe"
     File "${ROOT}Winboard\timeseal.exe"
     File "${ROOT}Winboard\timestamp.exe"
-    File "${ROOT}Winboard\UCCI2WB.exe"
-    File "${ROOT}Winboard\viewer.ini"
     File "${ROOT}Winboard\winboard.chm"
-    File "${ROOT}Winboard\winboard.exe"
     File "${ROOT}Winboard\winboard.hlp"
-    File "${ROOT}Winboard\winboard.ini"
-    File "${ROOT}Winboard\wood.ini"
-    File "${ROOT}Winboard\xq.ini"
-    File "${ROOT}Winboard\xq_book.bin"
+    File "${ROOT}Winboard\default_book.bin"
 
     ;Create uninstaller
     WriteUninstaller "$INSTDIR\UnInstall.exe"
 
-    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+      ; create some shortcuts in the WinBoard folder
+	CreateShortCut "$INSTDIR\WinBoard\PGN Viewer.lnk" "$INSTDIR\WinBoard\winboard.exe" "@viewer" "$INSTDIR\WinBoard\winboard.exe" 0
+	CreateShortCut "$INSTDIR\WinBoard\ICC.lnk" "$INSTDIR\WinBoard\winboard.exe" "@ICC" "$INSTDIR\WinBoard\winboard.exe" 0
+	CreateShortCut "$INSTDIR\WinBoard\FICS.lnk" "$INSTDIR\WinBoard\winboard.exe" "@FICS" "$INSTDIR\WinBoard\winboard.exe" 0
+	CreateShortCut "$INSTDIR\WinBoard\Fairy-Max ICS bot.lnk" "$INSTDIR\WinBoard\winboard.exe" "@ICSbot" "$INSTDIR\WinBoard\winboard.exe" 0
+	CreateShortCut "$INSTDIR\WinBoard\my WinBoard.lnk" "$INSTDIR\WinBoard\winboard.exe" "@marble @ChessMark" "$INSTDIR\WinBoard\winboard.exe" 0
+	CreateShortCut "$INSTDIR\WinBoard\Fruit.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fruit" "$INSTDIR\WinBoard\winboard.exe" 0
+	CreateShortCut "$INSTDIR\WinBoard\Fairy-Max.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy" "$INSTDIR\WinBoard\winboard.exe" 0
 
-    CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER"
-    CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Game Viewer.lnk" "$INSTDIR\winboard.exe" "-ncp" "$INSTDIR\winboard.exe" 1
-    CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Game Viewer - Bobby Fischer.lnk" "$INSTDIR\winboard.exe" "-ncp -lgf RJF60.pgn" "$INSTDIR\winboard.exe" 1
-    CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Game Viewer - Karpov vs Kasparov.lnk" "$INSTDIR\winboard.exe" "-ncp -lgf kk13.pgn" "$INSTDIR\winboard.exe" 1
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard Help.lnk" "$INSTDIR\winboard.hlp"
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Frequently Asked Questions.lnk" "$INSTDIR\FAQ.html"
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard READ_ME.lnk" "$INSTDIR\READ_ME.txt"
-    CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard UnInstall.lnk" "$INSTDIR\UnInstall.exe"
-    CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Server - chessclub.com.lnk" "$INSTDIR\winboard.exe"  "-ics -icshost chessclub.com -icshelper timestamp" "$INSTDIR\winboard.exe" 0
-    CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Server - freechess.org.lnk" "$INSTDIR\winboard.exe"  "-ics -icshost freechess.org -icshelper timeseal" "$INSTDIR\winboard.exe" 0
-    CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Server - Other.lnk" "$INSTDIR\winboard.exe" "-ics" "$INSTDIR\winboard.exe" 0
-    CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard Startup Dialog.lnk" "$INSTDIR\winboard.exe" "" "$INSTDIR\winboard.exe" 2
-
-        !insertmacro MUI_STARTMENU_WRITE_END
+	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+	CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER"
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Game Viewer.lnk" "$INSTDIR\WinBoard\winboard.exe" "@viewer" "$INSTDIR\WinBoard\winboard.exe" 1
+	;CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard Help.lnk" "$INSTDIR\WinBoard\winboard.hlp"
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Frequently Asked Questions.lnk" "$INSTDIR\WinBoard\doc\FAQ.html"
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard README.lnk" "$INSTDIR\README.html"
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard UnInstall.lnk" "$INSTDIR\UnInstall.exe"
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard Files.lnk" "$INSTDIR\WinBoard"
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Server - chessclub.com.lnk" "$INSTDIR\WinBoard\winboard.exe"  "@ICC" "$INSTDIR\WinBoard\winboard.exe" 0
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Server - freechess.org.lnk" "$INSTDIR\WinBoard\winboard.exe"  "@FICS" "$INSTDIR\WinBoard\winboard.exe" 0
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Fancy-Look WinBoard.lnk" "$INSTDIR\WinBoard\winboard.exe" "@marble @ChessMark" "$INSTDIR\WinBoard\winboard.exe" 2
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard Startup Dialog.lnk" "$INSTDIR\WinBoard\winboard.exe" "" "$INSTDIR\WinBoard\winboard.exe" 2
+	!insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd
 
-SubSection /e "Chess Engines" Engines
+SectionGroup /e "Auxilliary Components and Engines" Profiles
 
-    Section "ElephantEye" eleeye
-        SetOutPath "$INSTDIR\EleEye"
-        File "${ROOT}EleEye\ATOM.DLL"
-        File "${ROOT}EleEye\BOOK.DAT"
-        File "${ROOT}EleEye\CCHESS.DLL"
-        File "${ROOT}EleEye\ELEEYE.EXE"
-        File "${ROOT}EleEye\EVALUATE.DLL"
-        File "${ROOT}EleEye\logo.bmp"
-
-        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
-        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\GNU Chess 5.0 Documentation.lnk" "$INSTDIR\gnuches5.txt"
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\GNU Chess 5.0.lnk" "$INSTDIR\winboard.exe" "-cp -fcp 'GNUChes5 xboard' -scp 'GNUChes5 xboard'" "$INSTDIR\winboard.exe" 2
-        !insertmacro MUI_STARTMENU_WRITE_END
-    SectionEnd
-
-    Section "Fairy-Max" fmax
+    Section "Fairy-Max Demo Engine" fmax
+        SectionIn 1 RO
+        ; Fairy-Max is so small it can always be included, to have at least one working engine
         SetOutPath "$INSTDIR\Fairy-Max"
         File "${ROOT}Fairy-Max\fmax.exe"
-        File "${ROOT}Fairy-Max\fmax.ini"
-        File "${ROOT}Fairy-Max\logo.bmp"
         File "${ROOT}Fairy-Max\MaxQi.exe"
+        File "${ROOT}Fairy-Max\fmax.ini"
         File "${ROOT}Fairy-Max\qmax.ini"
-        File "${ROOT}Fairy-Max\ShaMax.exe"
+        File "${ROOT}Fairy-Max\logo.bmp"
 
-        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
+        ; also create a menu item to play Xiangqi with MaxQi. It is put with the Chess Engines becase it uses western-style board
+	  SetOutPath $INSTDIR\WinBoard
         !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\GNU Chess 4.0 Documentation.lnk" "$INSTDIR\gnuchess.txt"
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\GNU Chess 4.0.lnk" "$INSTDIR\winboard.exe" "-cp -fcp GNUChess -scp GNUChess" "$INSTDIR\winboard.exe" 2
+        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Fairy-Max.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy" "$INSTDIR\Fairy-Max\fmax.exe" 0
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\MaxQi (XQ).lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy -fcp MaxQi -scp MaxQi -variant xiangqi" "$INSTDIR\Fairy-Max\MaxQi.exe" 0
         !insertmacro MUI_STARTMENU_WRITE_END
     SectionEnd
 
     Section "Fruit 2.1" Fruit
+        ; we include no separate book for Fruit, as it can use the GUI book. It is mostly included to provide a UCI example
         SetOutPath "$INSTDIR\Fruit"
         File "${ROOT}Fruit\copying.txt"
         File "${ROOT}Fruit\fruit_21.exe"
@@ -237,63 +235,24 @@ SubSection /e "Chess Engines" Engines
         File "${ROOT}Fruit\readme.txt"
         File "${ROOT}Fruit\technical_10.txt"
 
+	  SetOutPath $INSTDIR\WinBoard
         CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
         !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Crafty Documentation.lnk" "$INSTDIR\Crafty\crafty.doc.txt"
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Crafty 19.3.lnk" "$INSTDIR\winboard.exe" "-cp -fcp Crafty\wcrafty.exe -fd Crafty -scp Crafty\wcrafty.exe -sd Crafty" "$INSTDIR\winboard.exe" 2
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Fruit 2.1.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fruit" "$INSTDIR\WinBoard\winboard.exe" 2
         !insertmacro MUI_STARTMENU_WRITE_END
     SectionEnd
 
-    Section "HaQi" haqikid
-        SetOutPath "$INSTDIR\HaQi"
-        File "${ROOT}HaQi\haqikid.exe"
-        File "${ROOT}HaQi\logo.bmp"
-    SectionEnd
-
-    Section "Joker" joker
-        SetOutPath "$INSTDIR\Joker"
-        File "${ROOT}Joker\joker80.exe"
-        File "${ROOT}Joker\jokerKM.exe"
-        File "${ROOT}Joker\logo.bmp"
-    SectionEnd
-
-    Section "Pulsar" pulsar
-        SetOutPath "$INSTDIR\Pulsar"
-        File "${ROOT}Pulsar\atomicBookBlack.txt"
-        File "${ROOT}Pulsar\atomicBookWhite.txt"
-        File "${ROOT}Pulsar\bigbook.txt"
-        File "${ROOT}Pulsar\kingsBookBlack.txt"
-        File "${ROOT}Pulsar\kingsBookWhite.txt"
-        File "${ROOT}Pulsar\logo.bmp"
-        File "${ROOT}Pulsar\losersBlack.txt"
-        File "${ROOT}Pulsar\losersWhite.txt"
-        File "${ROOT}Pulsar\openbk.txt"
-        File "${ROOT}Pulsar\pulsar2009-9a.exe"
-        File "${ROOT}Pulsar\pulsarCrazyBlack.txt"
-        File "${ROOT}Pulsar\pulsarCrazyWhite.txt"
-        File "${ROOT}Pulsar\pulsarShatranjBlack.txt"
-        File "${ROOT}Pulsar\pulsarShatranjWhite.txt"
-        File "${ROOT}Pulsar\suicideBookBlack.txt"
-        File "${ROOT}Pulsar\suicideBookWhite.txt"
-        File "${ROOT}Pulsar\threeBookBlack.txt"
-        File "${ROOT}Pulsar\threeBookWhite.txt"
-    SectionEnd
-
-SubSectionEnd
-
-Section "Tournament Manager" PSWTBTM
+  Section "Tournament Manager" Tournaments
     SetOutPath "$INSTDIR\PSWBTM\doc"
-    File "${ROOT}PSWBTM\doc\conf.png"
     File "${ROOT}PSWBTM\doc\configure.html"
-    File "${ROOT}PSWBTM\doc\eman.png"
     File "${ROOT}PSWBTM\doc\install.html"
-    File "${ROOT}PSWBTM\doc\menu.png"
-    File "${ROOT}PSWBTM\doc\PGfruit.png"
-    File "${ROOT}PSWBTM\doc\pswbtm.png"
     File "${ROOT}PSWBTM\doc\running.html"
-    File "${ROOT}PSWBTM\doc\tour.png"
     File "${ROOT}PSWBTM\doc\tourney.html"
-    File "${ROOT}PSWBTM\doc\UCI.html"
+    File "${ROOT}PSWBTM\doc\menu.png"
+    File "${ROOT}PSWBTM\doc\conf.png"
+    File "${ROOT}PSWBTM\doc\eman.png"
+    File "${ROOT}PSWBTM\doc\pswbtm.png"
+    File "${ROOT}PSWBTM\doc\tour.png"
 
     CreateDirectory "$INSTDIR\PSWBTM\games"
 
@@ -307,14 +266,136 @@ Section "Tournament Manager" PSWTBTM
     File "${ROOT}PSWBTM\ntls.pswbtm"
     File "${ROOT}PSWBTM\PSWBTM.exe"
     File "${ROOT}PSWBTM\README.txt"
-SectionEnd
+  SectionEnd
 
-Section "Fonts"
-    StrCpy $FONT_DIR $FONTS
-    !insertmacro InstallTTF '${FNTDIR}MARKFONT.TTF'
-    !insertmacro InstallTTF '${FNTDIR}XIANGQI.TTF'
-    SendMessage ${HWND_BROADCAST} ${WM_FONTCHANGE} 0 0 /TIMEOUT=5000
-SectionEnd
+    SubSection "Xiangqi" Xiangqi
+
+      Section "Graphics (required!)" XQgraphics
+        ; the large bitmp of the wooden XQ board is optional, as is the XQ opening book
+        SetOutPath "$INSTDIR\WinBoard"
+        File "${ROOT}Winboard\xq.ini"
+        File "${ROOT}Winboard\xq_book.bin"
+        File "${ROOT}Winboard\UCCI2WB.exe"
+        File "${ROOT}Winboard\QH2WB.exe"
+
+        SetOutPath "$INSTDIR\WinBoard\textures"
+        File "${ROOT}WinBoard\textures\xqwood.bmp"
+        
+        StrCpy $FONT_DIR $FONTS
+        !insertmacro InstallTTF '${FNTDIR}XIANGQI.TTF'
+        SendMessage ${HWND_BROADCAST} ${WM_FONTCHANGE} 0 0 /TIMEOUT=5000
+
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines"
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard\Xiangqi.lnk" "$INSTDIR\WinBoard\winboard.exe" "@xq" "$INSTDIR\WinBoard\UCCI2WB.exe" 0
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines\MaxQi.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy @xq -fcp MaxQi -scp MaxQi" "$INSTDIR\Fairy-Max\MaxQi.exe" 0
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard XQ Startup (oriental).lnk" "$INSTDIR\WinBoard\winboard.exe" "@xq" "$INSTDIR\WinBoard\winboard.exe" 2
+        !insertmacro MUI_STARTMENU_WRITE_END
+      SectionEnd
+
+      Section "HaQiKi D XQ-Engine" HaQi
+        SetOutPath "$INSTDIR\HaQi"
+        File "${ROOT}HaQi\haqikid.exe"
+        File "${ROOT}HaQi\logo.bmp"
+        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines"
+
+        SetOutPath $INSTDIR\WinBoard
+        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines"
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines\HaQiKi D.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy @xq -fcp haqikid -fd ..\HaQi -scp haqikid -sd ..\HaQi" "$INSTDIR\HaQi\haqikid.exe" 0
+        !insertmacro MUI_STARTMENU_WRITE_END
+      SectionEnd
+
+      Section "Elephant Eye XQ-Engine" EleEye
+        SetOutPath "$INSTDIR\EleEye"
+        File "${ROOT}EleEye\ATOM.DLL"
+        File "${ROOT}EleEye\BOOK.DAT"
+        File "${ROOT}EleEye\CCHESS.DLL"
+        File "${ROOT}EleEye\ELEEYE.EXE"
+        File "${ROOT}EleEye\EVALUATE.DLL"
+        File "${ROOT}EleEye\logo.bmp"
+
+        SetOutPath "$INSTDIR\WinBoard\QH"
+        File "${ROOT}WinBoard\QH\eleeye.ini"
+
+        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines"
+        SetOutPath $INSTDIR\WinBoard
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines\Elephant Eye.lnk" "$INSTDIR\WinBoard\winboard.exe" '@xq -cp -fcp "UCCI2WB QH\eleeye.ini" -firstLogo ..\EleEye\logo.bmp -scp "UCCI2WB QH\eleeye.ini -secondLogo ..\EleEye\logo.bmp"' "$INSTDIR\EleEye\ELEEYE.exe" 0
+        !insertmacro MUI_STARTMENU_WRITE_END
+      SectionEnd
+
+    SubSectionEnd
+
+
+    SubSection "Chess Variants" Variants
+
+      Section "Pulsar Variant Engine (Mike Adams)" Pulsar
+        SetOutPath "$INSTDIR\Pulsar"
+        File "${ROOT}Pulsar\pulsar2009-9b.exe"
+        File "${ROOT}Pulsar\bigbook.txt"
+        File "${ROOT}Pulsar\openbk.txt"
+        File "${ROOT}Pulsar\atomicBookBlack.txt"
+        File "${ROOT}Pulsar\atomicBookWhite.txt"
+        File "${ROOT}Pulsar\kingsBookBlack.txt"
+        File "${ROOT}Pulsar\kingsBookWhite.txt"
+        File "${ROOT}Pulsar\losersBlack.txt"
+        File "${ROOT}Pulsar\losersWhite.txt"
+        File "${ROOT}Pulsar\pulsarCrazyBlack.txt"
+        File "${ROOT}Pulsar\pulsarCrazyWhite.txt"
+        File "${ROOT}Pulsar\pulsarShatranjBlack.txt"
+        File "${ROOT}Pulsar\pulsarShatranjWhite.txt"
+        File "${ROOT}Pulsar\suicideBookBlack.txt"
+        File "${ROOT}Pulsar\suicideBookWhite.txt"
+        File "${ROOT}Pulsar\threeBookBlack.txt"
+        File "${ROOT}Pulsar\threeBookWhite.txt"
+        File "${ROOT}Pulsar\logo.bmp"
+
+        SetOutPath $INSTDIR\WinBoard
+        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Pulsar.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy -fcp pulsar2009-9b.exe -fd ..\Pulsar -scp pulsar2009-9b.exe -sd ..\Pulsar -usePolyglotBook false -variant atomic" "$INSTDIR\WinBoard\winboard.exe" 2
+        !insertmacro MUI_STARTMENU_WRITE_END
+      SectionEnd
+
+      Section "Joker80 Variant Engine" Joker
+        SetOutPath "$INSTDIR\Joker"
+        File "${ROOT}Joker\joker80.exe"
+        File "${ROOT}Joker\jokerKM.exe"
+        File "${ROOT}Joker\logo.bmp"
+
+        SetOutPath $INSTDIR\WinBoard
+        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Joker80 (Gothic).lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy -fcp Joker80.exe -fd ..\Joker -variant gothic" "$INSTDIR\Joker\Joker80.exe" 0
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Joker Knightmate.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy -fcp JokerKM.exe -fd ..\Joker -variant knightmate" "$INSTDIR\Joker\JokerKM.exe" 0
+        !insertmacro MUI_STARTMENU_WRITE_END
+      SectionEnd
+
+      Section "Adapter for SMIRF Engine" Smirf
+        SetOutPath $INSTDIR\SMIRF
+        File "${ROOT}SMIRF\Smirfoglot.exe"
+        File "${ROOT}SMIRF\logo.bmp"
+
+        SetOutPath $INSTDIR\WinBoard
+        CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\SMIRF.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy -fcp Smirfoglot.exe -fd ..\SMIRF" "$INSTDIR\SMIRF\Smirfoglot.exe" 0
+        !insertmacro MUI_STARTMENU_WRITE_END
+      SectionEnd
+
+      Section "ShaMax Shatranj Engine" ShaMax
+        SetOutPath $INSTDIR\Fairy-Max
+        File ${ROOT}Fairy-Max\ShaMax.exe
+
+        SetOutPath $INSTDIR\WinBoard
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\ShaMax.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy -fcp ShaMax.exe -variant shatranj" "$INSTDIR\Fairy-Max\ShaMax.exe" 0
+        !insertmacro MUI_STARTMENU_WRITE_END
+      SectionEnd		
+
+    SubSectionEnd
+SectionGroupEnd
 
 ;Section "un.Fonts"
 ;    StrCpy $FONT_DIR $FONTS
@@ -372,21 +453,39 @@ FunctionEnd
 
   ;Language strings
 
-    LangString DESC_Core ${LANG_ENGLISH} "Winboard Core Components - Executable and Help Files"
-    LangString DESC_Engines ${LANG_ENGLISH} "Chess Engines to play against using the WinBoard Interface"
-    LangString DESC_GNUChess5 ${LANG_ENGLISH} "GNU Chess 5.0 Engine"
-    LangString DESC_GNUChess4 ${LANG_ENGLISH} "GNU Chess 4.0 Engine"
-    LangString DESC_Crafty ${LANG_ENGLISH} "Crafty 19.3 Chess Engine, by Robert Hyatt"
+	LangString DESC_Core ${LANG_ENGLISH} "Winboard Core Components - Executable, Help Files, Protocol Adapters, Settings Files and Graphics"
+	LangString DESC_Profiles ${LANG_ENGLISH} "Components only of Interest to Specific User Profiles"
+	LangString DESC_Xiangqi ${LANG_ENGLISH} "Xiangqi (Chinese Chess) Engines and Graphics"
+	LangString DESC_fmax ${LANG_ENGLISH} "Small Chess engine, also plays Gothic, Cylinder, Berolina, Capablanca, Superchess, Knightmate, Great Shatranj"
+	LangString DESC_Fruit ${LANG_ENGLISH} "Very strong Chess engine suitable for analysis, by Fabien Letouzy"
+	LangString DESC_Variants ${LANG_ENGLISH} "Engines for Chess-Variant Afficionados (e.g. Crazyhouse, Chess960, Gothic Chess)"
+	LangString DESC_Tournaments ${LANG_ENGLISH} "PSWBTM Tournament Manager for running automated engine-engine tournaments with WinBoard"
+	LangString DESC_XQgraphics ${LANG_ENGLISH} "Oriental-style board and pieces for WinBoard (the XQ-engine shortcuts won't work without it!)"
+	LangString DESC_HaQi ${LANG_ENGLISH} "HaQiKi D 0.8, a strong Xiangqi engine by H.G. Muller"
+	LangString DESC_EleEye ${LANG_ENGLISH} "Elephant Eye 3.1, a very strong Xiangqi engine by Morning Yellow"
+	LangString DESC_Joker ${LANG_ENGLISH} "Joker80 Gothic-Chess engine and JokerKM Knightmate engine by H.G.Muller"
+	LangString DESC_Pulsar ${LANG_ENGLISH} "Plays Chess960, Crazyhouse, Losers, Suicide, Giveway, Atomic, 3Check, TwoKings, Shatranj and standard Chess"
+	LangString DESC_ShaMax ${LANG_ENGLISH} "A derivative of the Fairy-Max engine dedicated to playing Shatranj"
+	LangString DESC_Smirf ${LANG_ENGLISH} "Smirfoglot adapter for Reinhard Scharnagl's SMIRF 10x8 and 8x8 Chess engine"
 
 
   ;Assign language strings to sections
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${Core} $(DESC_Core)
-    !insertmacro MUI_DESCRIPTION_TEXT ${Engines} $(DESC_Engines)
-    !insertmacro MUI_DESCRIPTION_TEXT ${GNUChess5} $(DESC_GNUChess5)
-    !insertmacro MUI_DESCRIPTION_TEXT ${GNUChess4} $(DESC_GNUChess4)
-    !insertmacro MUI_DESCRIPTION_TEXT ${Crafty} $(DESC_Crafty)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Core} $(DESC_Core)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Profiles} $(DESC_Profiles)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Xiangqi} $(DESC_Xiangqi)
+	!insertmacro MUI_DESCRIPTION_TEXT ${fmax} $(DESC_fmax)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Fruit} $(DESC_Fruit)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Variants} $(DESC_Variants)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Tournaments} $(DESC_Tournaments)
+	!insertmacro MUI_DESCRIPTION_TEXT ${XQgraphics} $(DESC_XQgraphics)
+	!insertmacro MUI_DESCRIPTION_TEXT ${HaQi} $(DESC_HaQi)
+	!insertmacro MUI_DESCRIPTION_TEXT ${EleEye} $(DESC_EleEye)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Joker} $(DESC_Joker)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Pulsar} $(DESC_Pulsar)
+	!insertmacro MUI_DESCRIPTION_TEXT ${ShaMax} $(DESC_ShaMax)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Smirf} $(DESC_Smirf)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -408,41 +507,148 @@ FunctionEnd
 
 Section "Uninstall"
 
-        Delete "$INSTDIR\bughouse.bat"
-    Delete "$INSTDIR\ChangeLog"
-    Delete "$INSTDIR\COPYING"
-    Delete "$INSTDIR\COPYRIGHT"
-    Delete "$INSTDIR\cygncurses7.dll"
-    Delete "$INSTDIR\cygreadline5.dll"
-    Delete "$INSTDIR\cygwin1.dll"
-    Delete "$INSTDIR\FAQ.html"
-    Delete "$INSTDIR\kk13.pgn"
-    Delete "$INSTDIR\NEWS"
-    Delete "$INSTDIR\READ_ME.txt"
-    Delete "$INSTDIR\RJF60.pgn"
-    Delete "$INSTDIR\timeseal.exe"
-    Delete "$INSTDIR\timestamp.exe"
-    Delete "$INSTDIR\winboard.exe"
-    Delete "$INSTDIR\winboard.hlp"
-    Delete "$INSTDIR\zippy.lines"
-    Delete "$INSTDIR\zippy.README"
-        Delete "$INSTDIR\book.dat"
-    Delete "$INSTDIR\GNUChes5.exe"
-    Delete "$INSTDIR\gnuches5.txt"
-    Delete "$INSTDIR\gnuchess.dat"
-    Delete "$INSTDIR\gnuchess.lan"
-    Delete "$INSTDIR\gnuchess.README"
-        Delete "$INSTDIR\gnuchesr.exe"
-    Delete "$INSTDIR\GNUChess.exe"
-    Delete "$INSTDIR\gnuchess.txt"
-    Delete "$INSTDIR\UnInstall.exe"
-    Delete "$INSTDIR\Crafty\wcrafty.exe"
-    Delete "$INSTDIR\Crafty\book.bin"
-    Delete "$INSTDIR\Crafty\books.bin"
-    Delete "$INSTDIR\Crafty\Crafty.rc"
-    Delete "$INSTDIR\Crafty\crafty.doc.txt"
-    RMDir "$INSTDIR\Crafty"
-    RMDir "$INSTDIR"
+	Delete "$INSTDIR\COPYING.txt"
+	Delete "$INSTDIR\COPYRIGHT.txt"
+	Delete "$INSTDIR\README.html"
+	Delete "$INSTDIR\WinBoard\PG\fruit.ini"
+	Delete "$INSTDIR\WinBoard\logos\chessclub.com.bmp"
+	Delete "$INSTDIR\WinBoard\logos\freechess.org.bmp"
+	Delete "$INSTDIR\WinBoard\logos\administrator.bmp"
+	Delete "$INSTDIR\WinBoard\logos\guest.bmp"
+	Delete "$INSTDIR\WinBoard\logos\user.bmp"
+	Delete "$INSTDIR\WinBoard\logos\README.txt"
+	Delete "$INSTDIR\WinBoard\textures\marble_l.bmp"
+	Delete "$INSTDIR\WinBoard\textures\marble_d.bmp"
+	Delete "$INSTDIR\WinBoard\textures\wood_l.bmp"
+	Delete "$INSTDIR\WinBoard\textures\wood_d.bmp"
+	Delete "$INSTDIR\WinBoard\textures\xqboard.bmp"
+	Delete "$INSTDIR\Fairy-Max\fmax.exe"
+	Delete "$INSTDIR\Fairy-Max\MaxQi.exe"
+	Delete "$INSTDIR\Fairy-Max\fmax.ini"
+	Delete "$INSTDIR\Fairy-Max\qmax.ini"
+	Delete "$INSTDIR\Fairy-Max\logo.bmp"
+	Delete "$INSTDIR\WinBoard\doc\engine-intf.html"
+	Delete "$INSTDIR\WinBoard\doc\FAQ.html"
+	Delete "$INSTDIR\WinBoard\doc\fonts.html"
+	Delete "$INSTDIR\WinBoard\doc\manual.html"
+	Delete "$INSTDIR\WinBoard\doc\UCIconfig.html"
+	Delete "$INSTDIR\WinBoard\doc\shortcuts.html"
+	Delete "$INSTDIR\WinBoard\doc\texture.html"
+	Delete "$INSTDIR\WinBoard\doc\mini.gif"
+	Delete "$INSTDIR\WinBoard\doc\PG2fruit.png"
+	Delete "$INSTDIR\WinBoard\doc\zippy.README"
+	;Delete "$FONTS\ChessMark.ttf"
+	Delete "$INSTDIR\WinBoard\polyglot.exe"
+	Delete "$INSTDIR\WinBoard\UCCI2WB.exe"
+	Delete "$INSTDIR\WinBoard\timeseal.exe"
+	Delete "$INSTDIR\WinBoard\timestamp.exe"
+	Delete "$INSTDIR\WinBoard\winboard.exe"
+	Delete "$INSTDIR\WinBoard\winboard.hlp"
+	Delete "$INSTDIR\WinBoard\winboard.chm"
+	Delete "$INSTDIR\WinBoard\FICS.ini"
+	Delete "$INSTDIR\WinBoard\ICC.ini"
+	Delete "$INSTDIR\WinBoard\fairy.ini"
+	Delete "$INSTDIR\WinBoard\Gothic.ini"
+	Delete "$INSTDIR\WinBoard\viewer.ini"
+	Delete "$INSTDIR\WinBoard\marble.ini"
+	Delete "$INSTDIR\WinBoard\wood.ini"
+	Delete "$INSTDIR\WinBoard\ICSbot.ini"
+	Delete "$INSTDIR\WinBoard\fruit.ini"
+	Delete "$INSTDIR\WinBoard\winboard.ini"
+	Delete "$INSTDIR\WinBoard\ChessMark.ini"
+	Delete "$INSTDIR\WinBoard\default_book.bin"
+	Delete "$INSTDIR\WinBoard\zippy.lines"
+	Delete "$INSTDIR\WinBoard\textures\xqwood.bmp"
+	Delete "$INSTDIR\WinBoard\FICS.lnk"
+	Delete "$INSTDIR\WinBoard\ICC.lnk"
+	Delete "$INSTDIR\WinBoard\Fairy-Max.lnk"
+	Delete "$INSTDIR\WinBoard\PGN Viewer.lnk"
+	Delete "$INSTDIR\WinBoard\my WinBoard.lnk"
+	Delete "$INSTDIR\WinBoard\Fairy-Max ICS bot.lnk"
+	Delete "$INSTDIR\WinBoard\Fruit.lnk"
+	Delete "$INSTDIR\WinBoard\polyglot_1st.ini"
+	Delete "$INSTDIR\WinBoard\polyglot_2nd.ini"
+
+	Delete "$INSTDIR\Fruit\fruit_21.exe"
+	Delete "$INSTDIR\Fruit\copying.txt"
+	Delete "$INSTDIR\Fruit\readme.txt"
+	Delete "$INSTDIR\Fruit\technical_10.txt"
+	Delete "$INSTDIR\Fruit\logo.bmp"
+
+	Delete "$INSTDIR\HaQi\haqikid.exe"
+	Delete "$INSTDIR\HaQi\logo.bmp"
+	Delete "$INSTDIR\EleEye\ELEEYE.exe"
+	Delete "$INSTDIR\EleEye\ATOM.DLL"
+	Delete "$INSTDIR\EleEye\CCHESS.DLL"
+	Delete "$INSTDIR\EleEye\EVALUATE.DLL"
+	Delete "$INSTDIR\EleEye\BOOK.DAT"
+	Delete "$INSTDIR\EleEye\logo.bmp"
+	Delete "$INSTDIR\WinBoard\QH\eleeye.ini"
+	;Delete "$FONTS\XIANGQI.ttf"
+	Delete "$INSTDIR\WinBoard\xq_book.bin"
+	Delete "$INSTDIR\WinBoard\QH2WB.exe"
+	Delete "$INSTDIR\WinBoard\xq.ini"
+
+	Delete "$INSTDIR\Pulsar\Pulsar2009-9b.exe"
+	Delete "$INSTDIR\Pulsar\atomicBookBlack.txt"
+	Delete "$INSTDIR\Pulsar\atomicBookWhite.txt"
+	Delete "$INSTDIR\Pulsar\kingsBookBlack.txt"
+	Delete "$INSTDIR\Pulsar\kingsBookWhite.txt"
+	Delete "$INSTDIR\Pulsar\losersBlack.txt"
+	Delete "$INSTDIR\Pulsar\losersWhite.txt"
+	Delete "$INSTDIR\Pulsar\pulsarCrazyBlack.txt"
+	Delete "$INSTDIR\Pulsar\pulsarCrazyWhite.txt"
+	Delete "$INSTDIR\Pulsar\pulsarShatranjBlack.txt"
+	Delete "$INSTDIR\Pulsar\pulsarShatranjWhite.txt"
+	Delete "$INSTDIR\Pulsar\suicideBookBlack.txt"
+	Delete "$INSTDIR\Pulsar\suicideBookWhite.txt"
+	Delete "$INSTDIR\Pulsar\threeBookBlack.txt"
+	Delete "$INSTDIR\Pulsar\threeBookWhite.txt"
+	Delete "$INSTDIR\Pulsar\bigbook.txt"
+	Delete "$INSTDIR\Pulsar\openbk.txt"
+	Delete "$INSTDIR\Pulsar\logo.bmp"
+	Delete "$INSTDIR\Joker\joker80.exe"
+	Delete "$INSTDIR\Joker\jokerKM.exe"
+	Delete "$INSTDIR\Joker\logo.bmp"
+	Delete "$INSTDIR\SMIRF\Smirfoglot.exe"
+	Delete "$INSTDIR\SMIRF\logo.bmp"
+	Delete "$INSTDIR\Fairy-Max\ShaMax.exe"
+
+	Delete "$INSTDIR\PSWBTM\PSWBTM.exe"
+	Delete "$INSTDIR\PSWBTM\README.txt"
+	Delete "$INSTDIR\PSWBTM\config.pswbtm"
+	Delete "$INSTDIR\PSWBTM\engines.pswbtm"
+	Delete "$INSTDIR\PSWBTM\ntls.pswbtm"
+	Delete "$INSTDIR\PSWBTM\start positions\nunn.pgn"
+	Delete "$INSTDIR\PSWBTM\start positions\silver.epd"
+	Delete "$INSTDIR\PSWBTM\doc\configure.html"
+	Delete "$INSTDIR\PSWBTM\doc\install.html"
+	Delete "$INSTDIR\PSWBTM\doc\running.html"
+	Delete "$INSTDIR\PSWBTM\doc\tourney.html"
+	Delete "$INSTDIR\PSWBTM\doc\conf.png"
+	Delete "$INSTDIR\PSWBTM\doc\eman.png"
+	Delete "$INSTDIR\PSWBTM\doc\menu.png"
+	Delete "$INSTDIR\PSWBTM\doc\pswbtm.png"
+	Delete "$INSTDIR\PSWBTM\doc\tour.png"
+
+	RMDir "$INSTDIR\WinBoard\doc"
+	RMDir "$INSTDIR\WinBoard\logos"
+	RMDir "$INSTDIR\WinBoard\textures"
+	RMDir "$INSTDIR\WinBoard\PG"
+	RMDir "$INSTDIR\WinBoard\QH"
+	RMDir "$INSTDIR\WinBoard"
+	RMDir "$INSTDIR\Fairy-Max"
+	RMDir "$INSTDIR\Pulsar"
+	RMDir "$INSTDIR\Joker"
+	RMDir "$INSTDIR\Fruit"
+	RMDir "$INSTDIR\PSWBTM\doc"
+	RMDir "$INSTDIR\PSWBTM\games"
+	RMDir "$INSTDIR\PSWBTM\start positions"
+	RMDir "$INSTDIR\PSWBTM"
+	RMDir "$INSTDIR\SMIRF"
+	RMDir "$INSTDIR\HaQi"
+	RMDir "$INSTDIR\EleEye"
+	RMDir "$INSTDIR"
 
 
     !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
