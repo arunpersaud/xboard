@@ -7,7 +7,7 @@ PROJ=winboard
 OBJS=backend.o book.o gamelist.o lists.o moves.o pgntags.o uci.o zippy.o\
  parser.o wbres.o wclipbrd.o wedittags.o wengineo.o wevalgraph.o\
  wgamelist.o whistory.o winboard.o wlayout.o woptions.o wsnap.o\
- wsockerr.o help.o settings.o
+ wsockerr.o help.o wsettings.o
 
 
 # make compiling less spammy
@@ -16,6 +16,10 @@ compile = @echo "$1"; $(CC) $(CFLAGS) $1
 
 # Debugging?
 USE_DEBUG=0
+
+
+# JAWS support?
+JAWS=0
 
 
 # set this to 1 unless you don't mind linking with cygwin1.dll
@@ -33,7 +37,9 @@ FLEX = "flex.exe" # we need version 2.5.4 or later, cygwin's is 2.5.35
 #      "c:/mingw/mingw32/bin/flex.exe"
 HC="C:/Program Files/Help Workshop/hcrtf" -xn
 DEFS = -D_WIN32_IE=0x0300 -DWIN32
-
+ifeq ($(JAWS),1)
+  DEFS += -DJAWS
+endif
 WARN = -Wall -Wno-char-subscripts -Wno-parentheses
 ARCH =
 ifeq ($(USE_DEBUG),0)
@@ -65,7 +71,7 @@ $(PROJ).hlp : $(PROJ).rtf
 
 # Update the resource if necessary
 wbres.o: $(PROJ).rc $(PROJ).h resource.h
-	windres --use-temp-file --include-dir .. $< -O coff -o $@
+	windres $(DEFS) --use-temp-file --include-dir .. $< -O coff -o $@
 
 
 # note: cygwin flex needs m4 package.  cygwin-setup forgets this dependency
