@@ -309,7 +309,6 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps)
     for(i=0; i<layout; i++) {
 	int j=layoutList[i];
 	if(j<0) continue;
-	SetDlgItemText( hDlg, 2000+2*i, cps->option[j].name );
 	switch(cps->option[j].type) {
 	    case Spin:
 		new = GetDlgItemInt( hDlg, 2001+2*i, &success, TRUE );
