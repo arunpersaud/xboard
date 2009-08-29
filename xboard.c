@@ -327,14 +327,7 @@ void EditCommentProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void IcsInputBoxProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
-void AdjuWhiteProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjuBlackProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjuDrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void StopObservingProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
-void StopExaminingProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
 void BackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ToStartProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -722,26 +715,6 @@ MenuItem modeMenu[] = {
     {NULL, NULL}
 };
 
-MenuItem actionMenu[] = {
-    //    {N_("Accept"), AcceptProc},
-    //    {N_("Decline"), DeclineProc},
-  //    {N_("Rematch"), RematchProc},
-  //    {"----", NothingProc},
-  //    {N_("Call Flag"), CallFlagProc},
-  //    {N_("Draw"), DrawProc},
-  //    {N_("Adjourn"), AdjournProc},
-  //    {N_("Abort"), AbortProc},
-  //    {N_("Resign"), ResignProc},
-    {"----", NothingProc},
-    {N_("Stop Observing"), StopObservingProc},
-    {N_("Stop Examining"), StopExaminingProc},
-    {"----", NothingProc},
-    {N_("Adjudicate to White"), AdjuWhiteProc},
-    {N_("Adjudicate to Black"), AdjuBlackProc},
-    {N_("Adjudicate Draw"), AdjuDrawProc},
-    {NULL, NULL}
-};
-
 MenuItem stepMenu[] = {
     {N_("Backward"), BackwardProc},
     {N_("Forward"), ForwardProc},
@@ -807,7 +780,6 @@ MenuItem helpMenu[] = {
 Menu menuBar[] = {
     {N_("File"), fileMenu},
     {N_("Mode"), modeMenu},
-    {N_("Action"), actionMenu},
     {N_("Step"), stepMenu},
     {N_("Options"), optionsMenu},
     {N_("Help"), helpMenu},
@@ -1939,12 +1911,12 @@ XtActionsRec boardActions[] = {
     //    { "AdjournProc", AdjournProc },
     //    { "AbortProc", AbortProc },
     //    { "ResignProc", ResignProc },
-    { "AdjuWhiteProc", AdjuWhiteProc },
-    { "AdjuBlackProc", AdjuBlackProc },
-    { "AdjuDrawProc", AdjuDrawProc },
+    //    { "AdjuWhiteProc", AdjuWhiteProc },
+    //    { "AdjuBlackProc", AdjuBlackProc },
+    //    { "AdjuDrawProc", AdjuDrawProc },
     { "EnterKeyProc", EnterKeyProc },
-    { "StopObservingProc", StopObservingProc },
-    { "StopExaminingProc", StopExaminingProc },
+    //    { "StopObservingProc", StopObservingProc },
+    //    { "StopExaminingProc", StopExaminingProc },
     { "BackwardProc", BackwardProc },
     { "ForwardProc", ForwardProc },
     { "ToStartProc", ToStartProc },
@@ -5651,32 +5623,6 @@ void IcsInputBoxProc(w, event, prms, nprms)
     }
 }
 
-void AdjuWhiteProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    UserAdjudicationEvent(+1);
-}
-
-void AdjuBlackProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    UserAdjudicationEvent(-1);
-}
-
-void AdjuDrawProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    UserAdjudicationEvent(0);
-}
 
 void EnterKeyProc(w, event, prms, nprms)
      Widget w;
@@ -5686,24 +5632,6 @@ void EnterKeyProc(w, event, prms, nprms)
 {
     if (ICSInputBoxUp == True)
       ICSInputSendText();
-}
-
-void StopObservingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    StopObservingEvent();
-}
-
-void StopExaminingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    StopExaminingEvent();
 }
 
 

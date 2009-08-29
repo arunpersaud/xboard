@@ -354,14 +354,6 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkMenuItem" id="menuAction.Call Flag">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">Call Flag</property>
-                            <property name="use_underline">True</property>
-                            <signal name="activate" handler="CallFlagProc"/>
-                          </object>
-                        </child>
-                        <child>
                           <object class="GtkMenuItem" id="menuAction.Decline">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Decline</property>
@@ -370,16 +362,24 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkSeparatorMenuItem" id="menuActionsep1">
-                            <property name="visible">True</property>
-                          </object>
-                        </child>
-                        <child>
                           <object class="GtkMenuItem" id="menuAction.Rematch">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Rematch</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="RematchProc"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="menuActionsep1">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Call Flag">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Call Flag</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="CallFlagProc"/>
                           </object>
                         </child>
                         <child>
@@ -399,19 +399,19 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkMenuItem" id="menuAction.Resign">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">Resign</property>
-                            <property name="use_underline">True</property>
-                            <signal name="activate" handler="ResignProc"/>
-                          </object>
-                        </child>
-                        <child>
                           <object class="GtkMenuItem" id="menuAction.Abort">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Abort</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="AbortProc"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Resign">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Resign</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="ResignProc"/>
                           </object>
                         </child>
                         <child>
@@ -431,6 +431,35 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Stop Examine</property>
                             <property name="use_underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="menuActionsep3">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Adjucate to White">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Adjucate to White</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="AdjuWhiteProc"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Adjucate to Black">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Adjucate to Black</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="AdjuBlackProc"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuAction.Adjucate Draw">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Adjucate Draw</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="AdjuDrawProc"/>
                           </object>
                         </child>
                       </object>

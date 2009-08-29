@@ -191,6 +191,45 @@ void ResignProc(object, user_data)
     return;
 }
 
+void StopObservingProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    StopObservingEvent();
+    return;
+}
+
+void StopExaminingProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    StopExaminingEvent();
+    return;
+}
+
+void AdjuWhiteProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    UserAdjudicationEvent(+1);
+    return;
+}
+
+void AdjuBlackProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    UserAdjudicationEvent(-1);
+    return;
+}
+
+void AdjuDrawProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    UserAdjudicationEvent(0);
+    return;
+}
 
 void MoveNowProc(object, user_data)
      GtkObject *object;
