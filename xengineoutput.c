@@ -144,7 +144,7 @@ extern int opponentKibitzes;
 
 /* Imports from winboard.c */
 //extern HWND engineOutputDialog;
-extern Arg layoutArgs[2], formArgs[2], messageArgs[4];
+extern Arg layoutArgs[2], formArgs[2];
 
 //extern WindowPlacement wpEngineOutput;
 

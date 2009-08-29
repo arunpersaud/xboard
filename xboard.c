@@ -842,15 +842,6 @@ DropMenuEnables dmEnables[] = {
     { 'Q', "Queen" }
 };
 
-Arg shellArgs[] = {
-    { XtNwidth, 0 },
-    { XtNheight, 0 },
-    { XtNminWidth, 0 },
-    { XtNminHeight, 0 },
-    { XtNmaxWidth, 0 },
-    { XtNmaxHeight, 0 }
-};
-
 Arg layoutArgs[] = {
     { XtNborderWidth, 0 },
     { XtNdefaultDistance, 0 },
@@ -865,25 +856,6 @@ Arg boardArgs[] = {
     { XtNborderWidth, 0 },
     { XtNwidth, 0 },
     { XtNheight, 0 }
-};
-
-Arg titleArgs[] = {
-    { XtNjustify, (XtArgVal) XtJustifyRight },
-    { XtNlabel, (XtArgVal) "..." },
-    { XtNresizable, (XtArgVal) True },
-    { XtNresize, (XtArgVal) False }
-};
-
-Arg messageArgs[] = {
-    { XtNjustify, (XtArgVal) XtJustifyLeft },
-    { XtNlabel, (XtArgVal) "..." },
-    { XtNresizable, (XtArgVal) True },
-    { XtNresize, (XtArgVal) False }
-};
-
-Arg timerArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNjustify, (XtArgVal) XtJustifyLeft }
 };
 
 XtResource clientResources[] = {
@@ -3683,6 +3655,10 @@ static void DrawPiece(piece, square_color, x, y, dest)
      int square_color, x, y;
      Drawable dest;
 {
+  /* redraw background, since piece might be transparent in some areas */
+  BlankSquare(x,y,square_color,piece,dest);
+
+  /* draw piece */
   gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,
 		  GDK_PIXBUF(SVGpieces[piece]),0,0,x,y,-1,-1,
 		  GDK_RGB_DITHER_NORMAL, 0, 0);
