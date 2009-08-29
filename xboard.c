@@ -317,8 +317,6 @@ void AnalyzeModeProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void AnalyzeFileProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
-void IcsClientProc P((Widget w, XEvent *event, String *prms,
-		      Cardinal *nprms));
 void EditGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EditPositionProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
@@ -328,15 +326,6 @@ void EditCommentProc P((Widget w, XEvent *event,
 void IcsInputBoxProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ToStartProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ToEndProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void RevertProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TruncateGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void RetractMoveProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
 void AlwaysQueenProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void AnimateDraggingProc P((Widget w, XEvent *event, String *prms,
@@ -699,7 +688,7 @@ MenuItem modeMenu[] = {
   //    {N_("Two Machines"), TwoMachinesProc},
     {N_("Analysis Mode"), AnalyzeModeProc},
     {N_("Analyze File"), AnalyzeFileProc },
-    {N_("ICS Client"), IcsClientProc},
+    //    {N_("ICS Client"), IcsClientProc},
     {N_("Edit Game"), EditGameProc},
     {N_("Edit Position"), EditPositionProc},
     {N_("Training"), TrainingProc},
@@ -712,19 +701,6 @@ MenuItem modeMenu[] = {
     {N_("Edit Tags"), EditTagsProc},
     {N_("Edit Comment"), EditCommentProc},
     {N_("ICS Input Box"), IcsInputBoxProc},
-    {NULL, NULL}
-};
-
-MenuItem stepMenu[] = {
-    {N_("Backward"), BackwardProc},
-    {N_("Forward"), ForwardProc},
-    {N_("Back to Start"), ToStartProc},
-    {N_("Forward to End"), ToEndProc},
-    {N_("Revert"), RevertProc},
-    {N_("Truncate Game"), TruncateGameProc},
-    {"----", NothingProc},
-    //    {N_("Move Now"), MoveNowProc},
-    {N_("Retract Move"), RetractMoveProc},
     {NULL, NULL}
 };
 
@@ -780,7 +756,6 @@ MenuItem helpMenu[] = {
 Menu menuBar[] = {
     {N_("File"), fileMenu},
     {N_("Mode"), modeMenu},
-    {N_("Step"), stepMenu},
     {N_("Options"), optionsMenu},
     {N_("Help"), helpMenu},
     {NULL, NULL}
@@ -788,11 +763,11 @@ Menu menuBar[] = {
 
 #define PAUSE_BUTTON N_("P")
 MenuItem buttonBar[] = {
-    {"<<", ToStartProc},
-    {"<", BackwardProc},
+  //    {"<<", ToStartProc},
+    //    {"<", BackwardProc},
     //    {PAUSE_BUTTON, PauseProc},
-    {">", ForwardProc},
-    {">>", ToEndProc},
+    //    {">", ForwardProc},
+  //    {">>", ToEndProc},
     {NULL, NULL}
 };
 
@@ -1864,7 +1839,7 @@ XtActionsRec boardActions[] = {
     { "AnalysisModeProc", AnalyzeModeProc },
     { "AnalyzeFileProc", AnalyzeFileProc },
     //    { "TwoMachinesProc", TwoMachinesProc },
-    { "IcsClientProc", IcsClientProc },
+    //    { "IcsClientProc", IcsClientProc },
     { "EditGameProc", EditGameProc },
     { "EditPositionProc", EditPositionProc },
     { "TrainingProc", EditPositionProc },
@@ -1889,14 +1864,14 @@ XtActionsRec boardActions[] = {
     { "EnterKeyProc", EnterKeyProc },
     //    { "StopObservingProc", StopObservingProc },
     //    { "StopExaminingProc", StopExaminingProc },
-    { "BackwardProc", BackwardProc },
-    { "ForwardProc", ForwardProc },
-    { "ToStartProc", ToStartProc },
-    { "ToEndProc", ToEndProc },
-    { "RevertProc", RevertProc },
-    { "TruncateGameProc", TruncateGameProc },
+    //    { "BackwardProc", BackwardProc },
+    //    { "ForwardProc", ForwardProc },
+    //    { "ToStartProc", ToStartProc },
+    //    { "ToEndProc", ToEndProc },
+    //    { "RevertProc", RevertProc },
+    //    { "TruncateGameProc", TruncateGameProc },
     //    { "MoveNowProc", MoveNowProc },
-    { "RetractMoveProc", RetractMoveProc },
+    //    { "RetractMoveProc", RetractMoveProc },
     { "AlwaysQueenProc", AlwaysQueenProc },
     { "AnimateDraggingProc", AnimateDraggingProc },
     { "AnimateMovingProc", AnimateMovingProc },
@@ -5537,14 +5512,6 @@ void AnalyzeFileProc(w, event, prms, nprms)
     AnalysisPeriodicEvent(1);
 }
 
-void IcsClientProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    IcsClientEvent();
-}
 
 void EditGameProc(w, event, prms, nprms)
      Widget w;
@@ -5608,70 +5575,6 @@ void EnterKeyProc(w, event, prms, nprms)
 {
     if (ICSInputBoxUp == True)
       ICSInputSendText();
-}
-
-
-void ForwardProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ForwardEvent();
-}
-
-
-void BackwardProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    BackwardEvent();
-}
-
-void ToStartProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ToStartEvent();
-}
-
-void ToEndProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ToEndEvent();
-}
-
-void RevertProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    RevertEvent();
-}
-
-void TruncateGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    TruncateGameEvent();
-}
-void RetractMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    RetractMoveEvent();
 }
 
 void AlwaysQueenProc(w, event, prms, nprms)

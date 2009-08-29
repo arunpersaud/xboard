@@ -79,6 +79,14 @@ void AboutProc (object, user_data)
   gtk_widget_destroy(about);
 }
 
+void IcsClientProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    IcsClientEvent();
+    return;
+}
+
 void LoadNextGameProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -231,6 +239,54 @@ void AdjuDrawProc(object, user_data)
     return;
 }
 
+void BackwardProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    BackwardEvent();
+    return;
+}
+
+void ForwardProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ForwardEvent();
+    return;
+}
+
+void ToStartProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ToStartEvent();
+    return;
+}
+
+void ToEndProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ToEndEvent();
+    return;
+}
+
+void RevertProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    RevertEvent();
+    return;
+}
+
+void TruncateGameProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    TruncateGameEvent();
+    return;
+}
+
 void MoveNowProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -239,6 +295,13 @@ void MoveNowProc(object, user_data)
     return;
 }
 
+void RetractMoveProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    RetractMoveEvent();
+    return;
+}
 
 gboolean CloseWindowProc(GtkWidget *button)
 {

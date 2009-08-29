@@ -1,4 +1,5 @@
 void QuitProc P((GtkObject *object, gpointer user_data));
+void IcsClientProc P((GtkObject *object, gpointer user_data));
 void MachineBlackProc P((GtkObject *object, gpointer user_data));
 void MachineWhiteProc P((GtkObject *object, gpointer user_data));
 void TwoMachinesProc P((GtkObject *object, gpointer user_data));
@@ -18,7 +19,17 @@ void AdjuDrawProc P((GtkObject *object, gpointer user_data));
 void ResetProc P((GtkObject *object, gpointer user_data));
 void WhiteClockProc P((GtkObject *object, gpointer user_data));
 void BlackClockProc P((GtkObject *object, gpointer user_data));
+
+/* Step Menu */
+void BackwardProc P((GtkObject *object, gpointer user_data));
+void ForwardProc P((GtkObject *object, gpointer user_data));
+void ToStartProc P((GtkObject *object, gpointer user_data));
+void ToEndProc P((GtkObject *object, gpointer user_data));
+void RevertProc P((GtkObject *object, gpointer user_data));
+void TruncateGameProc P((GtkObject *object, gpointer user_data));
 void MoveNowProc P((GtkObject *object, gpointer user_data));
+void RetractMoveProc P((GtkObject *object, gpointer user_data));
+
 void AboutProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ShowCoordsProc P((GtkObject *object, gpointer user_data));
 void ErrorPopDownProc P((GtkObject *object, gpointer user_data));

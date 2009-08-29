@@ -257,6 +257,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <signal name="activate" handler="IcsClientProc"/>
                           </object>
                         </child>
                         <child>
@@ -479,6 +480,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Backward</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="BackwardProc"/>
                           </object>
                         </child>
                         <child>
@@ -486,6 +488,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Forward</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="ForwardProc"/>
                           </object>
                         </child>
                         <child>
@@ -493,6 +496,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Back to Start</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="ToStartProc"/>
                           </object>
                         </child>
                         <child>
@@ -500,6 +504,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Forward to End</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="ToEndProc"/>
                           </object>
                         </child>
                         <child>
@@ -507,6 +512,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Revert</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="RevertProc"/>
                           </object>
                         </child>
                         <child>
@@ -514,6 +520,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Truncate Game</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="TruncateGameProc"/>
                           </object>
                         </child>
                         <child>
@@ -534,6 +541,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Retract Move</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="RetractMoveProc"/>
                           </object>
                         </child>
                       </object>
@@ -833,11 +841,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="button1">
+                  <object class="GtkButton" id="buttonbar.ToStart">
                     <property name="label" translatable="yes">&lt;&lt;</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <signal name="activate" handler="ToStartProc"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -846,11 +855,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="button2">
+                  <object class="GtkButton" id="buttonbar.Backward">
                     <property name="label" translatable="yes">&lt;</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <signal name="activate" handler="BackwardProc"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -873,7 +883,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="button4">
+                  <object class="GtkButton" id="buttonbar.Forward">
                     <property name="label" translatable="yes">&gt;</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -886,11 +896,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="button5">
+                  <object class="GtkButton" id="buttonbar.ToEnd">
                     <property name="label" translatable="yes">&gt;&gt;</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <signal name="activate" handler="ToEndProc"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
