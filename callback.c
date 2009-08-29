@@ -103,6 +103,103 @@ void ReloadGameProc(object, user_data)
     return;
 }
 
+void MachineWhiteProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MachineWhiteEvent();
+    return;
+}
+
+void MachineBlackProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MachineBlackEvent();
+    return;
+}
+
+void TwoMachinesProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    TwoMachinesEvent();
+    return;
+}
+
+void AcceptProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    AcceptEvent();
+    return;
+}
+
+void DeclineProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    DeclineEvent();
+    return;
+}
+
+void RematchProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    RematchEvent();
+    return;
+}
+
+void CallFlagProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    CallFlagEvent();
+    return;
+}
+
+void DrawProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    DrawEvent();
+    return;
+}
+
+void AbortProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    AbortEvent();
+    return;
+}
+
+void AdjournProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    AdjournEvent();
+    return;
+}
+
+void ResignProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ResignEvent();
+    return;
+}
+
+
+void MoveNowProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MoveNowEvent();
+    return;
+}
+
 
 gboolean CloseWindowProc(GtkWidget *button)
 {

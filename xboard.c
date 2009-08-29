@@ -313,16 +313,10 @@ void SavePositionProc P((Widget w, XEvent *event,
 void MailMoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
 			    Cardinal *nprms));
-void MachineBlackProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void MachineWhiteProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
 void AnalyzeModeProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void AnalyzeFileProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
-void TwoMachinesProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
 void IcsClientProc P((Widget w, XEvent *event, String *prms,
 		      Cardinal *nprms));
 void EditGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -333,14 +327,6 @@ void EditCommentProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void IcsInputBoxProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
-void AcceptProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DeclineProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void RematchProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void CallFlagProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AbortProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjournProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ResignProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjuWhiteProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjuBlackProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjuDrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -358,7 +344,6 @@ void TruncateGameProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void RetractMoveProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
-void MoveNowProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AlwaysQueenProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void AnimateDraggingProc P((Widget w, XEvent *event, String *prms,
@@ -716,9 +701,9 @@ MenuItem fileMenu[] = {
 };
 
 MenuItem modeMenu[] = {
-    {N_("Machine White"), MachineWhiteProc},
-    {N_("Machine Black"), MachineBlackProc},
-    {N_("Two Machines"), TwoMachinesProc},
+  //    {N_("Machine White"), MachineWhiteProc},
+  //    {N_("Machine Black"), MachineBlackProc},
+  //    {N_("Two Machines"), TwoMachinesProc},
     {N_("Analysis Mode"), AnalyzeModeProc},
     {N_("Analyze File"), AnalyzeFileProc },
     {N_("ICS Client"), IcsClientProc},
@@ -738,15 +723,15 @@ MenuItem modeMenu[] = {
 };
 
 MenuItem actionMenu[] = {
-    {N_("Accept"), AcceptProc},
-    {N_("Decline"), DeclineProc},
-    {N_("Rematch"), RematchProc},
-    {"----", NothingProc},
-    {N_("Call Flag"), CallFlagProc},
-    {N_("Draw"), DrawProc},
-    {N_("Adjourn"), AdjournProc},
-    {N_("Abort"), AbortProc},
-    {N_("Resign"), ResignProc},
+    //    {N_("Accept"), AcceptProc},
+    //    {N_("Decline"), DeclineProc},
+  //    {N_("Rematch"), RematchProc},
+  //    {"----", NothingProc},
+  //    {N_("Call Flag"), CallFlagProc},
+  //    {N_("Draw"), DrawProc},
+  //    {N_("Adjourn"), AdjournProc},
+  //    {N_("Abort"), AbortProc},
+  //    {N_("Resign"), ResignProc},
     {"----", NothingProc},
     {N_("Stop Observing"), StopObservingProc},
     {N_("Stop Examining"), StopExaminingProc},
@@ -765,7 +750,7 @@ MenuItem stepMenu[] = {
     {N_("Revert"), RevertProc},
     {N_("Truncate Game"), TruncateGameProc},
     {"----", NothingProc},
-    {N_("Move Now"), MoveNowProc},
+    //    {N_("Move Now"), MoveNowProc},
     {N_("Retract Move"), RetractMoveProc},
     {NULL, NULL}
 };
@@ -1930,11 +1915,11 @@ XtActionsRec boardActions[] = {
     { "SavePositionProc", SavePositionProc },
     { "MailMoveProc", MailMoveProc },
     { "ReloadCmailMsgProc", ReloadCmailMsgProc },
-    { "MachineWhiteProc", MachineWhiteProc },
-    { "MachineBlackProc", MachineBlackProc },
+    //    { "MachineWhiteProc", MachineWhiteProc },
+    //    { "MachineBlackProc", MachineBlackProc },
     { "AnalysisModeProc", AnalyzeModeProc },
     { "AnalyzeFileProc", AnalyzeFileProc },
-    { "TwoMachinesProc", TwoMachinesProc },
+    //    { "TwoMachinesProc", TwoMachinesProc },
     { "IcsClientProc", IcsClientProc },
     { "EditGameProc", EditGameProc },
     { "EditPositionProc", EditPositionProc },
@@ -1946,14 +1931,14 @@ XtActionsRec boardActions[] = {
     { "EditCommentProc", EditCommentProc },
     { "IcsAlarmProc", IcsAlarmProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
-    { "AcceptProc", AcceptProc },
-    { "DeclineProc", DeclineProc },
-    { "RematchProc", RematchProc },
-    { "CallFlagProc", CallFlagProc },
-    { "DrawProc", DrawProc },
-    { "AdjournProc", AdjournProc },
-    { "AbortProc", AbortProc },
-    { "ResignProc", ResignProc },
+    //    { "AcceptProc", AcceptProc },
+    //    { "DeclineProc", DeclineProc },
+    //    { "RematchProc", RematchProc },
+    //    { "CallFlagProc", CallFlagProc },
+    //    { "DrawProc", DrawProc },
+    //    { "AdjournProc", AdjournProc },
+    //    { "AbortProc", AbortProc },
+    //    { "ResignProc", ResignProc },
     { "AdjuWhiteProc", AdjuWhiteProc },
     { "AdjuBlackProc", AdjuBlackProc },
     { "AdjuDrawProc", AdjuDrawProc },
@@ -1966,7 +1951,7 @@ XtActionsRec boardActions[] = {
     { "ToEndProc", ToEndProc },
     { "RevertProc", RevertProc },
     { "TruncateGameProc", TruncateGameProc },
-    { "MoveNowProc", MoveNowProc },
+    //    { "MoveNowProc", MoveNowProc },
     { "RetractMoveProc", RetractMoveProc },
     { "AlwaysQueenProc", AlwaysQueenProc },
     { "AnimateDraggingProc", AnimateDraggingProc },
@@ -3209,6 +3194,12 @@ void CreatePieces()
   WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing,
   BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing,
   */
+  int i;
+
+  /* get some defaults going */
+  for(i=WhitePawn; i<DemotePiece+1; i++)
+    SVGpieces[i]   = load_pixbuf("svg/NeutralSquare.svg",squareSize);
+    
 
   SVGpieces[WhitePawn]   = load_pixbuf("svg/WhitePawn.svg",squareSize);
   SVGpieces[WhiteKnight] = load_pixbuf("svg/WhiteKnight.svg",squareSize);
@@ -3697,19 +3688,22 @@ static void BlankSquare(x, y, color, piece, dest)
      Drawable dest;
 {
       GdkPixbuf *pb;
-      switch (color) {
-      case 1: /* light */
-	pb = SVGLightSquare;
-	break;
-      case 0: /* dark */
-	pb = SVGDarkSquare;
-	break;
-      case 2: /* neutral */
-      default:
-	pb = SVGNeutralSquare;
-	break;
-      }
+
+      switch (color) 
+	{
+	case 0: /* dark */
+	  pb = SVGDarkSquare;
+	  break;
+	case 1: /* light */
+	  pb = SVGLightSquare;
+	  break;
+	case 2: /* neutral */
+	default:
+	  pb = SVGNeutralSquare;
+	  break;
+	}
       gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,pb,0,0,x,y,-1,-1, GDK_RGB_DITHER_NORMAL, 0, 0);
+      return;
 }
 
 static void DrawPiece(piece, square_color, x, y, dest)
@@ -3805,7 +3799,6 @@ void DrawSquare(row, column, piece, do_flash)
 	    cairo_set_font_size (cr, 12.0);
 	    cairo_text_extents (cr, string, &extents);
 
-
 	    if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) )
 	      {
 		xpos= x + squareSize - extents.width - 2;
@@ -3829,7 +3822,6 @@ void DrawSquare(row, column, piece, do_flash)
 	    /* free memory */
 	    cairo_destroy (cr);
 	  }
-
       }
     else
       {
@@ -5532,24 +5524,6 @@ void AutoSaveGame()
     SaveGameProc(NULL, NULL, NULL, NULL);
 }
 
-void MachineBlackProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    MachineBlackEvent();
-}
-
-void MachineWhiteProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    MachineWhiteEvent();
-}
-
 void AnalyzeModeProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5615,15 +5589,6 @@ void AnalyzeFileProc(w, event, prms, nprms)
     AnalysisPeriodicEvent(1);
 }
 
-void TwoMachinesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    TwoMachinesEvent();
-}
-
 void IcsClientProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5684,78 +5649,6 @@ void IcsInputBoxProc(w, event, prms, nprms)
     } else {
 	ICSInputBoxPopUp();
     }
-}
-
-void AcceptProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    AcceptEvent();
-}
-
-void DeclineProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    DeclineEvent();
-}
-
-void RematchProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    RematchEvent();
-}
-
-void CallFlagProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    CallFlagEvent();
-}
-
-void DrawProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    DrawEvent();
-}
-
-void AbortProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    AbortEvent();
-}
-
-void AdjournProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    AdjournEvent();
-}
-
-void ResignProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ResignEvent();
 }
 
 void AdjuWhiteProc(w, event, prms, nprms)
@@ -5876,16 +5769,6 @@ void RetractMoveProc(w, event, prms, nprms)
 {
     RetractMoveEvent();
 }
-
-void MoveNowProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    MoveNowEvent();
-}
-
 
 void AlwaysQueenProc(w, event, prms, nprms)
      Widget w;
