@@ -638,6 +638,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Flip View</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="FlipViewProc"/>
                           </object>
                         </child>
                         <child>
@@ -752,10 +753,27 @@
                       <object class="GtkMenu" id="menu3">
                         <property name="visible">True</property>
                         <child>
+                          <object class="GtkMenuItem" id="menuHelp.man">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Man XBoard</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="ManProc"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuHelp.Info">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Info XBoard</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="InfoProc"/>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkMenuItem" id="menuHelp.Hint">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Hint</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="HintProc"/>
                           </object>
                         </child>
                         <child>
@@ -763,6 +781,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Book</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="BookProc"/>
                           </object>
                         </child>
                         <child>

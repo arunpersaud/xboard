@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include "common.h"
+#include "xboard.h"
 #include <errno.h>
 #include "backend.h"
 
@@ -30,6 +31,44 @@ QuitProc (object, user_data)
 {
   gtk_main_quit();
   ExitEvent(0);
+}
+
+/* Help Menu */
+void InfoProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    char buf[MSG_SIZ];
+    snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
+	    INFODIR, INFOFILE);
+    system(buf);
+    return;
+}
+
+void ManProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    char buf[MSG_SIZ];
+    snprintf(buf, sizeof(buf), "xterm -e man xboard &");
+    system(buf);
+    return;
+}
+
+void HintProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    HintEvent();
+    return;
+}
+
+void BookProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    BookEvent();
+    return;
 }
 
 void AboutProc (object, user_data)
@@ -78,6 +117,8 @@ void AboutProc (object, user_data)
   gtk_dialog_run(GTK_DIALOG (about));
   gtk_widget_destroy(about);
 }
+
+/* End Help Menu */
 
 void IcsClientProc(object, user_data)
      GtkObject *object;
@@ -302,6 +343,18 @@ void RetractMoveProc(object, user_data)
     RetractMoveEvent();
     return;
 }
+
+/* Option Menu */
+void FlipViewProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  printf("DEBUG: in flip view\n");
+    flipView = !flipView;
+    DrawPosition(True, NULL);
+    return;
+}
+
 
 gboolean CloseWindowProc(GtkWidget *button)
 {

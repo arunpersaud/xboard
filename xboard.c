@@ -343,7 +343,6 @@ void AutosaveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BlindfoldProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FlashMovesProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
-void FlipViewProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GetMoveListProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void HighlightDraggingProc P((Widget w, XEvent *event, String *prms,
@@ -370,10 +369,6 @@ void HideThinkingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void TestLegalityProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
-void InfoProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ManProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void HintProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -705,8 +700,8 @@ MenuItem modeMenu[] = {
 };
 
 MenuItem optionsMenu[] = {
-    {N_("Flip View"), FlipViewProc},
-    {"----", NothingProc},
+  //    {N_("Flip View"), FlipViewProc},
+  //    {"----", NothingProc},
     {N_("Adjudications ..."), EngineMenuProc},
     {N_("General Settings ..."), UciMenuProc},
     {N_("Engine #1 Settings ..."), FirstSettingsProc},
@@ -743,21 +738,10 @@ MenuItem optionsMenu[] = {
     {NULL, NULL}
 };
 
-MenuItem helpMenu[] = {
-    {N_("Info XBoard"), InfoProc},
-    {N_("Man XBoard"), ManProc},
-    {"----", NothingProc},
-    {N_("Hint"), HintProc},
-    {N_("Book"), BookProc},
-    {"----", NothingProc},
-    {NULL, NULL}
-};
-
 Menu menuBar[] = {
     {N_("File"), fileMenu},
     {N_("Mode"), modeMenu},
     {N_("Options"), optionsMenu},
-    {N_("Help"), helpMenu},
     {NULL, NULL}
 };
 
@@ -1882,7 +1866,7 @@ XtActionsRec boardActions[] = {
     { "AutosaveProc", AutosaveProc },
     { "BlindfoldProc", BlindfoldProc },
     { "FlashMovesProc", FlashMovesProc },
-    { "FlipViewProc", FlipViewProc },
+    //    { "FlipViewProc", FlipViewProc },
     { "GetMoveListProc", GetMoveListProc },
 #if HIGHDRAG
     { "HighlightDraggingProc", HighlightDraggingProc },
@@ -1900,10 +1884,10 @@ XtActionsRec boardActions[] = {
     { "ShowThinkingProc", ShowThinkingProc },
     { "HideThinkingProc", HideThinkingProc },
     { "TestLegalityProc", TestLegalityProc },
-    { "InfoProc", InfoProc },
-    { "ManProc", ManProc },
-    { "HintProc", HintProc },
-    { "BookProc", BookProc },
+    //    { "InfoProc", InfoProc },
+    //    { "ManProc", ManProc },
+    //    { "HintProc", HintProc },
+    //    { "BookProc", BookProc },
     { "AboutGameProc", AboutGameProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
@@ -5815,16 +5799,6 @@ void FlashMovesProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void FlipViewProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    flipView = !flipView;
-    DrawPosition(True, NULL);
-}
-
 void GetMoveListProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6097,52 +6071,6 @@ void HideThinkingProc(w, event, prms, nprms)
     }
     XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
 		args, 1);
-}
-
-void InfoProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-    snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
-	    INFODIR, INFOFILE);
-    system(buf);
-}
-
-void ManProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-    String name;
-    if (nprms && *nprms > 0)
-      name = prms[0];
-    else
-      name = "xboard";
-    snprintf(buf, sizeof(buf), "xterm -e man %s &", name);
-    system(buf);
-}
-
-void HintProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    HintEvent();
-}
-
-void BookProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    BookEvent();
 }
 
 void DebugProc(w, event, prms, nprms)

@@ -30,7 +30,18 @@ void TruncateGameProc P((GtkObject *object, gpointer user_data));
 void MoveNowProc P((GtkObject *object, gpointer user_data));
 void RetractMoveProc P((GtkObject *object, gpointer user_data));
 
-void AboutProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+/* Option Menu */
+void FlipViewProc P((GtkObject *object, gpointer user_data));
+
+/* Help Menu */
+
+void InfoProc  P((GtkObject *object, gpointer user_data));
+void ManProc  P((GtkObject *object, gpointer user_data));
+void HintProc  P((GtkObject *object, gpointer user_data));
+void BookProc  P((GtkObject *object, gpointer user_data));
+void AboutProc  P((GtkObject *object, gpointer user_data));
+
+
 void ShowCoordsProc P((GtkObject *object, gpointer user_data));
 void ErrorPopDownProc P((GtkObject *object, gpointer user_data));
 void PauseProc P((GtkObject *object, gpointer user_data));
