@@ -354,7 +354,7 @@ SectionGroup /e "Auxilliary Components and Engines" Profiles
         SetOutPath $INSTDIR\WinBoard
         CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
         !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Pulsar.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy -fcp pulsar2009-9b.exe -fd ..\Pulsar -scp pulsar2009-9b.exe -sd ..\Pulsar -usePolyglotBook false -variant atomic" "$INSTDIR\WinBoard\winboard.exe" 2
+        CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Pulsar.lnk" "$INSTDIR\WinBoard\winboard.exe" '@fairy -fcp "pulsar2009-9b 2" -fd ..\Pulsar -scp "pulsar2009-9b 2" -sd ..\Pulsar -usePolyglotBook false -variant atomic' "$INSTDIR\WinBoard\winboard.exe" 2
         !insertmacro MUI_STARTMENU_WRITE_END
       SectionEnd
 
@@ -428,9 +428,9 @@ Function FileAssoc
     WriteRegStr HKCR ".pgn" "" "WinBoard.PGN"
     WriteRegStr HKCR ".pgn" "Content Type" "application/x-chess-pgn"
     WriteRegStr HKCR "WinBoard.PGN" "" "Chess Game"
-    WriteRegStr HKCR "WinBoard.PGN\DefaultIcon" "" "$INSTDIR\WinBoard.exe,1"
+    WriteRegStr HKCR "WinBoard.PGN\DefaultIcon" "" "$INSTDIR\WinBoard\WinBoard.exe,1"
     WriteRegStr HKCR "WinBoard.PGN\Shell\Open" "" "Open"
-    WriteRegStr HKCR "WinBoard.PGN\Shell\Open\command" "" '"$INSTDIR\WinBoard.exe" -ini "$INSTDIR\WinBoard.ini" -ncp -lgf "%1"'
+    WriteRegStr HKCR "WinBoard.PGN\Shell\Open\command" "" '"$INSTDIR\WinBoard\WinBoard.exe" -ini "$INSTDIR\WinBoard\WinBoard.ini" @viewer -lgf "%1"'
 
     CheckFEN:
     !insertmacro MUI_INSTALLOPTIONS_READ $INI_VALUE "FA.ini" "Field 3" "State"
@@ -440,9 +440,9 @@ Function FileAssoc
     WriteRegStr HKCR ".fen" "" "WinBoard.FEN"
     WriteRegStr HKCR ".fen" "Content Type" "application/x-chess-fen"
     WriteRegStr HKCR "WinBoard.FEN" "" "Chess Position"
-    WriteRegStr HKCR "WinBoard.FEN\DefaultIcon" "" "$INSTDIR\WinBoard.exe,1"
+    WriteRegStr HKCR "WinBoard.FEN\DefaultIcon" "" "$INSTDIR\WinBoard\WinBoard.exe,1"
     WriteRegStr HKCR "WinBoard.FEN\Shell\Open" "" "Open"
-    WriteRegStr HKCR "WinBoard.FEN\Shell\Open\command" "" '"$INSTDIR\WinBoard.exe" -ini "$INSTDIR\WinBoard.ini" -ncp -lpf "%1"'
+    WriteRegStr HKCR "WinBoard.FEN\Shell\Open\command" "" '"$INSTDIR\WinBoard\WinBoard.exe" -ini "$INSTDIR\WinBoard\WinBoard.ini" @viewer -lpf "%1"'
 
     Continue:
 
@@ -648,6 +648,7 @@ Section "Uninstall"
 	RMDir "$INSTDIR\SMIRF"
 	RMDir "$INSTDIR\HaQi"
 	RMDir "$INSTDIR\EleEye"
+	Delete "$INSTDIR\uninstall.exe"
 	RMDir "$INSTDIR"
 
 
@@ -658,7 +659,7 @@ Section "Uninstall"
     ReadRegStr $1 HKCR ".pgn" ""
     StrCmp $1 "WinBoard.PGN" "" DelFEN
     ReadRegStr $1 HKCR "WinBoard.PGN\Shell\Open\command" ""
-    StrCmp $1 '"$INSTDIR\WinBoard.exe" -ini "$INSTDIR\WinBoard.ini" -ncp -lgf "%1"' "" DelFEN
+    StrCmp $1 '"$INSTDIR\WinBoard\WinBoard.exe" -ini "$INSTDIR\WinBoard\WinBoard.ini" @viewer -lgf "%1"' "" DelFEN
     DeleteRegKey HKCR ".pgn"
     DeleteRegKey HKCR "WinBoard.PGN"
 
@@ -667,7 +668,7 @@ Section "Uninstall"
     ReadRegStr $1 HKCR ".fen" ""
     StrCmp $1 "WinBoard.FEN" "" ContDelFEN
     ReadRegStr $1 HKCR "WinBoard.FEN\Shell\Open\command" ""
-    StrCmp $1 '"$INSTDIR\WinBoard.exe" -ini "$INSTDIR\WinBoard.ini" -ncp -lpf "%1"' "" ContDelFEN
+    StrCmp $1 '"$INSTDIR\WinBoard\WinBoard.exe" -ini "$INSTDIR\WinBoard\WinBoard.ini" @viewer -lpf "%1"' "" ContDelFEN
     DeleteRegKey HKCR ".fen"
     DeleteRegKey HKCR "WinBoard.FEN"
 
