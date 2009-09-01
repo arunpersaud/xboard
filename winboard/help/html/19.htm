@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Files</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="files"></A>INITIALIZATION FILES</B></P>
+
+
+
+<P><B><A NAME="settings"></A>Settings</B></P>
+
+<P>When WinBoard starts up, it reads option settings from a file named <I>WinBoard.ini </I>in its installation directory (the directory containing WinBoard.exe). Options in this file have the same format as <A HREF="11.htm">command line options</A>, except that they do not all have to be on a single line. You can put a comment in a settings file by preceding it with a semicolon (<CODE>;</CODE>).</P>
+
+<P>The WinBoard.ini file is read before the command line is processed, so any options you give on the command line override options in the file.</P>
+
+<P>If WinBoard encounters a <A HREF="18.htm#settingsfile">/settingsFile</A> <I>filename </I>or <A HREF="18.htm#atsign">@</A><I>filename </I>option while reading settings (whether from the command line or a file), it reads more settings from the given file before reading the next option.</P>
+
+<P>The <A HREF="07.htm#savesettings">Save Settings Now</A> menu command writes the current values of most options to a file. In addition, settings are saved automatically when WinBoard exits if <A HREF="07.htm#savesettingsonexit">Save Settings on Exit</A> is checked. The settings are written to the last file named in a /settingsFile command, if any; otherwise to WinBoard.ini<I>.</I> The @ option does not affect which file settings are saved to.</P>
+
+<P>Warning: Because Save Settings overwrites the last settings file (usually WinBoard.ini) and only saves a subset of WinBoard's options, you should not add settings of more options to such a file with a text editor. If you do this, your additional options will be lost on the next Save Settings. You can change the values of existing settings freely, using Notepad or any plain text editor. Be careful not to do this while WinBoard is running, however, unless you know that Save Settings on Exit is off. Otherwise all your changes will be overwritten and lost when WinBoard exits.</P>
+
+<P><font color="#008000">Notice that tournament managers, like PSWBTM, usually call WinBoard with the option not to save settings on exit, so that the entire tournament uses the same settings. So it does make sense to edit ‘volatile’ options, such as /variant, into the settings file.</font></P>
+
+
+
+<P><B><A NAME="icslogon"></A>ICS Logon</B></P>
+
+<P>Whenever WinBoard connects to the Internet Chess Server, if it finds a file called <I>ICS.ini </I>in its installation directory<I>,</I> it feeds the file's contents to the ICS as commands. Usually the first two lines of the file should be your ICS user name and password. You can specify a different name instead of <I>ICS.ini</I> by using the <A HREF="14.htm#icslogon">icslogon</A> command line option.</P>
+
+</BODY>
+</HTML>

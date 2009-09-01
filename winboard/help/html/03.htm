@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>File Menu</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="filemenu"></A>File Menu</B></P>
+
+
+
+<P><B><A NAME="newgame"></A><font color="#ff0000">New Game</font> <font color="#ff0000">(former</font> Reset<font color="#ff0000">)</font></B></P>
+
+<P>Resets WinBoard and the chess engine (if any) to the beginning of a new chess game. In Internet Chess Server mode, clears the current state of WinBoard, then resynchronizes with ICS by sending a <B>refresh </B>command. If you want to stop playing, observing, or examining a game on ICS, use an appropriate command from the <A HREF="05.htm">Action</A> menu, not <font color="#ff0000">New Game</font>.</P>
+
+
+
+<P><B><A NAME="newshufflegame"></A><font color="#008000">New Shuffle Game</font></B></P>
+
+<P><font color="#ff0000">Brings you to a dialog box where you can enter the number of an opening setup for shuffle variants like FRC, or ask for a random number. After pressing OK, a new game is set up, using this position. The chosen position will continue to be used on every subsequent “New Game”,</font> <font color="#008000">even if you are playing a variant that normally is not shuffled, until you select a new variant through the “New Variant…” menu.</font> <font color="#ff0000">If you enter “-1” for the position number,  new random number is drawn before every game.</font></P>
+
+<P><font color="#008000">The type of shuffling that is done in reaction to a given position number obeys restrictions that depend on the selected variant. In variants that allow castling, Kings remain on the central files, Rooks in the corners. In games with FRC-style castlings, the King starts between the Rooks, but apart from that they could be anywhere. In games without castling, there are no restrictions on King and Rook placement. Pairs of color-bound pieces (such as Bishops) will be placed on oppositely colored squares. In ICS mode this feature has no effect, as the ICS determines the starting position.</font></P>
+
+
+
+<P><B><A NAME="newvariant"></A><font color="#008000">New Variant</font></B></P>
+
+<P><font color="#008000">Select a new variant. There are controls to enter a board width, board height and holdings size, but normally you leave them at ‘-1’, which means the default value for the selected variant will be used (e.g. 8x8 for normal Chess, 9x10 for xiangqi, 10x8 for capablanca, holdings for 5 pieces in crazyhouse). You can set a deviating value for each of the three parameters (e.g. to play a crazyhouse version of xiangqi or capablanca you would set the holdings to 6 or 7). If the board width deviates from the default, the game will start with an empty board.</font></P>
+
+<P><font color="#008000">The variant will remain in force until you select a new one; i.e. subsequent “New Game” commands will start a new game of the same variant. In ICS mode this command has no effect, as the ICS determines which variant will be played.</font></P>
+
+
+
+<P><B><A NAME="loadgame"></A>Load Game</B></P>
+
+<P>Plays a game from a record file. A popup dialog prompts you for the filename. If the file contains more than one game, a second popup dialog displays a list of games (with information drawn from their PGN tags, if any), and you can select the one you want.</P>
+
+<P>The game file parser will accept PGN (portable game notation), or in fact almost any file that contains moves in algebraic notation. Notation of the form <I>P@f7</I> is accepted for piece-drops in bughouse games; this is a nonstandard extension to PGN. If the file includes a PGN position (FEN tag), or a WinBoard position diagram bracketed by "[--" and "--]" before the first move, the game starts from that position. Text enclosed in parentheses, square brackets, or curly braces is assumed to be commentary and is displayed in a pop-up window. Any other text in the file is ignored. PGN variations (enclosed in parentheses) are treated as comments; WinBoard is not able to walk variation trees. The nonstandard PGN tag <CODE>[Variant "varname"]</CODE> functions similarly to the <A HREF="18.htm#variant">variant</A> command-line option, allowing games in certain chess variants to be loaded. There is also a heuristic to recognize chess variants from the <CODE>Event</CODE> tag, by looking for the strings that the Internet Chess Servers put there when saving variant ("wild") games.</P>
+
+
+
+<P><B><A NAME="loadnextgame"></A>Load Next Game</B></P>
+
+<P>Loads the next game from the last game record file you loaded.</P>
+
+
+
+<P><B><A NAME="loadpreviousgame"></A>Load Previous Game</B></P>
+
+<P>Loads the previous game from the last game record file you loaded. Not available if the last game was loaded from a pipe.</P>
+
+
+
+<P><B><A NAME="reloadsamegame"></A>Reload Same Game</B></P>
+
+<P>Reloads the last game you loaded. Not available if the last game was loaded from a pipe.</P>
+
+
+
+<P><B><A NAME="savegame"></A>Save Game</B></P>
+
+<P>Appends a record of the current game to a file. A popup dialog prompts you for the filename. If the game did not begin with the standard starting position, the game file includes the starting position used. Game files are saved in the PGN (portable game notation) format, unless the <A HREF="15.htm#oldsavestyle">oldSaveStyle</A> option is True, in which case they are saved in an older format that is specific to WinBoard. Both formats are human-readable, and both can be read back by the Load Game command. Notation of the form <I>P@f7</I> is generated for piece-drops in bughouse games; this is a nonstandard extension to PGN.</P>
+
+
+
+<P><B><A NAME="copygametoclipboard"></A>Copy Game To Clipboard</B></P>
+
+<P>Copies the record of the current game to the Windows clipboard in PGN (portable game notation) format.</P>
+
+
+
+<P><B><A NAME="pastegamefromclipboard"></A>Paste Game From Clipboard</B></P>
+
+<P>Plays a game from the Windows clipboard. See <A HREF="#loadgame">Load Game</A> for a discussion of game file format and parser behavior.</P>
+
+
+
+<P><B><A NAME="loadposition"></A>Load Position</B></P>
+
+<P>Sets up a position from a position file. A popup dialog prompts you for the filename. Position files must be in FEN (Forsythe-Edwards notation), or in the format that the <U>Save Position</U> command writes when <A HREF="15.htm#oldsavestyle">oldSaveStyle</A> is turned on. <font color="#008000">Note that many variants require an extension of the original FEN standard. WinBoard tries to be as universal as possible in understanding FENs when different standards are raound, but has to make a choice when writing them. In FRC is uses Shredder-FEN (Haha castling notation) , but it understands KQkq as the outermost Rook, so it also reads X-FEN. In Crazyhouse / Bughouse it appends the holdings immediately behind the board info between brackets [], but on input it also understands bFEN (which puts it behind a slash / as if it were an extra board rank). It uses a tilde ~ behind a piece to indicate it is really a promoted Pawn (like bFEN). In Shogi the holdings are printed like in Crazyhouse, but promoted pieces are represented by a plus sign + before the letter of the original piece. Letters used for the pieces can be set with the /pieceToCharTable command-line option.</font></P>
+
+
+
+<P><B><A NAME="loadnextposition"></A>Load Next Position</B></P>
+
+<P>Loads the next position from the last position file you loaded.</P>
+
+
+
+<P><B><A NAME="loadpreviousposition"></A>Load Previous Position</B></P>
+
+<P>Loads the previous position from the last position file you loaded. Not available if the last position was loaded from a pipe.</P>
+
+
+
+<P><B><A NAME="reloadsameposition"></A>Reload Same Position</B></P>
+
+<P>Reloads the last position you loaded. Not available if the last position was loaded from a pipe.</P>
+
+
+
+<P><B><A NAME="saveposition"></A>Save Position</B></P>
+
+<P>Appends a diagram of the current position to a file. A popup dialog prompts you for the filename. Positions are saved in FEN (Forsythe-Edwards notation) format, unless the <A HREF="15.htm#oldsavestyle">oldSaveStyle</A> option is True, in which case they are saved in an older, human-readable format that is specific to WinBoard<I>.</I> Both formats can be read back by the Load Position command; however, currently Load Position can load only the first position in a file.</P>
+
+
+
+<P><B><A NAME="save diagram"></A><font color="#008000">Save Diagram</font></B></P>
+
+<P><font color="#008000">Writes the current board display as a bitmap file. With this command you can use WinBoard as a diagram generator.</font></P>
+
+
+
+<P><B><A NAME="copypositiontoclipboard"></A>Copy Position To Clipboard</B></P>
+
+<P>Places a diagram of the current position (in Forsythe-Edwards notation) into the Windows clipboard.</P>
+
+
+
+<P><B><A NAME="pastepositionfromclipboard"></A>Paste Position From Clipboard</B></P>
+
+<P>Sets up a position from the Windows clipboard. Position must be in FEN (Forsythe-Edwards notation). Puts WinBoard into <A HREF="04.htm#editgame">Edit Game</A> mode if it was not there already.</P>
+
+
+
+<P><B><A NAME="exit"></A>Exit</B></P>
+
+<P>Exits from WinBoard.</P>
+
+</BODY>
+</HTML>

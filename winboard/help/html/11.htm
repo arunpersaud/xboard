@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Command Line Options</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="options"></A><SUP></SUP>COMMAND LINE OPTIONS</B></P>
+
+<P>All WinBoard options can be set either on the command line (if you start WinBoard by typing into an MSDOS Prompt box), in the Properties/Shortcut/Target box of a Windows shortcut, in a <A HREF="19.htm#settings">settings file</A>, or in the Additional Options box of the WinBoard startup dialog. Exactly the same syntax is used in all four places. Most options can also be set from the menus and saved using <A HREF="07.htm#savesettings">Save Settings Now</A> or <A HREF="07.htm#savesettingsonexit">Save Settings on Exit</A>, so most people will not need to read this section.</P>
+
+<P>Most options have two names, a long one that is easy to read and a short one that is easy to type. To turn on a boolean (true/false) option <I>opt</I>, you can just give its short name preceded by a minus sign or slash (-<I>opt</I> or /<I>opt</I>); to turn one off, prefix the short name by an “x” or an extra minus sign (-x<I>opt</I> or /-<I>opt</I>). To set any other kind of option, or to set a boolean option using its long name, give the value after the name, separated by a space, colon, or equal sign. (-<I>opt</I> 23 or /<I>option</I>:true). If a string option contains spaces or special characters, enclose it in double quotes and use the \ quoting convention of C to name the special characters. Alternatively, you can enclose a string value in curly braces (/opt={string}), as long as the value does not contain a closing curly brace. If a filename option contains spaces, enclose it in either single or double quotes. In filename options, the \ character is not treated specially, so use single quotes around the outside of the value if it has double quotes inside (and vice versa).</P>
+
+<P>When you start WinBoard, it will pop up the Startup dialog box unless you provide sufficient options on the command line for WinBoard to determine which major mode to be in and what engines to use or chess server to connect to. To bypass this box, you must at minimum give one of the three options <A HREF="12.htm#cp">/cp</A>, <A HREF="14.htm#ics">/ics</A>, or <A HREF="18.htm#ncp">/ncp</A>.  If you give the /cp option, you must also give the <A HREF="12.htm#fcp">/fcp</A> and <A HREF="12.htm#scp">/scp</A> options. If you give the /ics option, you must also give the <A HREF="14.htm#icshost">/icshost</A> option.</P>
+
+<P><A HREF="12.htm">Chess Engine Options</A></P>
+
+<P><A HREF="13.htm">UCI Engine Support                  !NEW!</A></P>
+
+<P><A HREF="14.htm">Internet Chess Server Options</A></P>
+
+<P><A HREF="15.htm">Load and Save Options</A></P>
+
+<P><A HREF="16.htm">User Interface Options</A></P>
+
+<P><A HREF="17.htm">Adjudication Options                   !NEW!</A></P>
+
+<P><A HREF="18.htm">Other Options</A></P>
+
+</BODY>
+</HTML>

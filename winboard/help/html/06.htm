@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Step Menu</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="stepmenu"></A>Step Menu</B></P>
+
+
+
+<P><B><A NAME="typeinmove"></A>Type In Move</B></P>
+
+<P>Pops up a dialog box, into which you can type moves in standard algebraic chess notation. (You can also get this dialog box by simply starting to type over the chessboard, except in ICS mode, where such typing is redirected into the ICS interaction window.)</P>
+
+
+
+<P><B><A NAME="backward"></A>Backward</B></P>
+
+<P>Steps backward through a series of remembered moves. The <B>&lt;</B> button is equivalent to selecting Backward<font color="#3333ff">, as is turning the mouse wheel towards you</font>. In most modes, Backward only lets you look back at old positions; it does not retract moves. This is the case if you are playing against a chess engine, playing or observing a game on the ICS, or loading a game. If you select Backward in any of these situations, you will not be allowed to make a different move. Use <A HREF="#retractmove">Retract Move</A> or <A HREF="04.htm#editgame">Edit Game</A> if you want to change past moves.</P>
+
+<P>If you are examining a game on the ICS, the behavior of Backward depends on whether WinBoard<I> </I>is in <A HREF="04.htm#pause">Pause</A> mode. If Pause mode is off, Backward issues the ICS command<B> backward</B>, which backs up everyone's view of the game and allows you to make a different move. If Pause mode is on, Backward only backs up your local view.</P>
+
+
+
+<P><B><A NAME="forward"></A>Forward</B></P>
+
+<P>Steps forward through a series of remembered moves (undoing the effect of <A HREF="#backward">Backward</A>) or through a game file. The <B>&gt;</B> button is equivalent<font color="#3333ff">, as is turning the mouse wheel away from you</font>.</P>
+
+<P>If you are examining a game on the ICS, the behavior of Forward depends on whether WinBoard<I> </I>is in <A HREF="04.htm#pause">Pause</A> mode. If Pause mode is off, Forward issues the ICS command<B> forward</B>, which moves everyone's view of the game forward along the current line. If Pause mode is on, Forward only moves your local view forward, and it will not go past the position the game was in when you paused.</P>
+
+
+
+<P><B><A NAME="backtostart"></A>Back to Start</B></P>
+
+<P>Jumps backward to the first remembered position in the game. The <B>&lt;&lt; </B>button is equivalent.</P>
+
+<P>In most modes, Back to Start only lets you look back at old positions; it does not retract moves. This is the case if you are playing against a chess engine, playing or observing a game on the ICS, or loading a game. If you select Back to Start in any of these situations, you will not be allowed to make a different move. Use <A HREF="#retractmove">Retract Move</A> or <A HREF="04.htm#editgame">Edit Game</A> if you want to change past moves; or use <A HREF="03.htm#newgame">New Game</A> to start a new game.</P>
+
+<P>If you are examining a game on the ICS, the behavior of Back to Start depends on whether WinBoard<I> </I>is in <A HREF="04.htm#pause">Pause</A> mode. If Pause mode is off, Backward issues the ICS command <B>backward 999999</B>, which backs up everyone's view of the game to the start and allows you to make different moves. If Pause mode is on, Back to Start only backs up your local view.</P>
+
+
+
+<P><B><A NAME="forwardtoend"></A>Forward to End</B></P>
+
+<P>Jumps forward to the last position in the game. The <B>&gt;&gt;</B> button is equivalent.</P>
+
+<P>If you are examining a game on the ICS, the behavior of Forward to End depends on whether WinBoard<I> </I>is in <A HREF="04.htm#pause">Pause</A> mode. If Pause mode is off, Forward to End issues the ICS command <B>forward 999999</B>, which moves everyone's view of the game forward to the end of the current line. If Pause mode is on, Forward to End only moves your local view forward, and it will not go past the position the game was in when you paused.</P>
+
+
+
+<P><B><A NAME="revert"></A>Revert</B></P>
+
+<P>If you are examining a game on the ICS, issues the ICS command <B>revert</B>.</P>
+
+
+
+<P><B><A NAME="truncategame"></A>Truncate Game</B></P>
+
+<P>Discards all remembered moves of the game beyond the current position. Puts WinBoard into <A HREF="04.htm#editgame">Edit Game</A> mode if it was not there already.</P>
+
+
+
+<P><B><A NAME="movenow"></A>Move Now</B></P>
+
+<P>Forces the chess engine to move immediately. May not work with all chess engines.</P>
+
+
+
+<P><B><A NAME="retractmove"></A>Retract Move</B></P>
+
+<P>Retracts your last move.</P>
+
+<P>In chess engine mode, you can do this only after the chess engine has replied to your move. If the chess engine is still thinking, use <A HREF="#movenow">Move Now</A> first.</P>
+
+<P>In ICS mode, Retract Move issues the command <B>takeback 1 </B>or <B>takeback 2</B>, depending on whether it is your opponent's move or yours.</P>
+
+</BODY>
+</HTML>

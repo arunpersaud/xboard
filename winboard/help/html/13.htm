@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>UCI Engine Support</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="ucienginesupport"></A><font color="#ff0000">UCI Engine Support</font></B></P>
+
+
+
+<P><B><A NAME="fuci"></A><font color="#ff0000">/fUCI </B>or<B> <A NAME="firstisuci"></A>/firstIsUCI<I> true|false</I></font></B></P>
+
+
+
+<P><B><font color="#ff0000"><A NAME="suci"></A>/sUCI </B>or<B> <A NAME="secondisuci"></A>/secondIsUCI<I> true|false</I></B></font></P>
+
+<P><font color="#ff0000">Indicates if the mentioned engine executable file is an UCI engine, and should be run with the aid of the Polyglot adapter rather than directly. WinBoard will then pass the other UCI options and engine name to Polyglot through a .ini temporary file ceated for the purpose.</font></P>
+
+
+
+<P><B><A NAME="polyglotdir"></A><font color="#ff0000">/PolyglotDir <I>filename</I></font></B></P>
+
+<P><font color="#ff0000">Gives the name of the folder in which Polyglot is installed.</font></P>
+
+
+
+<P><B><A NAME="usepolyglotbook"></A><font color="#ff0000">/usePolyglotBook <I>true|false</I></font></B></P>
+
+<P><font color="#ff0000">Specifies if the Polygot book should be used.</font></P>
+
+
+
+<P><B><A NAME="polyglotbook"></A><font color="#ff0000">/PolyglotBook <I>filename</I></font></B></P>
+
+<P><font color="#ff0000">Gives the filename of the opening book that Polyglot should use.</font></P>
+
+
+
+<P><B><A NAME="fnoownbookuci"></A><font color="#ff0000">/fNoOwnBookUCI </B>or<B> <A NAME="firstxbook"></A>/firstXBook </B>or<B> <A NAME="firsthasownbookuci"></A>/firstHasOwnBookUCI<I> true|false</I></font></B></P>
+
+
+
+<P><B><A NAME="snoownbookuci"></A><font color="#ff0000">/sNoOwnBookUCI </B>or<B> <A NAME="secondxbook"></A>/secondXBook </B>or<B> <A NAME="secondhasownbookuci"></A>/secondHasOwnBookUCI<I> true|false</I></B></font></P>
+
+<P><font color="#ff0000">Indicates if the mentioned engine lacks an opening book or not.</font> <font color="#3333ff">Engines that have an own opening book will not use the GUI book (as given by /polyglotBook) even if /usePolyglotBook is set to true.</font></P>
+
+
+
+<P><B><A NAME="defaulthashsize"></A><font color="#ff0000">/defaultHashSize <I>number</I></font></B></P>
+
+<P><font color="#ff0000">Sets the size of the hash table to <I>number</I> MegaBytes.</font></P>
+
+
+
+<P><B><A NAME="defaultcachesizeegtb"></A><font color="#ff0000">/defaultCacheSizeEGTB <I>number</I></font></B></P>
+
+<P><font color="#ff0000">Sets the size of the EGTB cache to <I>number</I> MegaBytes.</font></P>
+
+
+
+<P><B><A NAME="defaultpathegtb"></A><font color="#ff0000">/defaultPathEGTB <I>filename</I></font></B></P>
+
+<P><font color="#ff0000">Gives the name of the folder where the end-game tablebases are installed.</font></P>
+
+</BODY>
+</HTML>

@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Internet Chess Server Options</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="internetchessserveroptions"></A>Internet Chess Server Options</B></P>
+
+
+
+<P><B><A NAME="ics"></A>/ics </B>or <B>/xics</B>, or<B> <A NAME="internetchessservermode"></A>/internetChessServerMode<I> true|false</I></B></P>
+
+<P>Connect with an Internet Chess Server to play chess against its other users, observe games they are playing, or review games that have recently finished. See <A HREF="04.htm#icsclient">ICS Client</A> Default: False.</P>
+
+<P>You can create a script file containing ICS commands that WinBoard will type in for you whenever you connect to the ICS. See <A HREF="#icslogon">ICS Logon</A>.</P>
+
+
+
+<P><B><A NAME="icshost"></A>/icshost </B>or<B> <A NAME="internetchessserverhost"></A>/internetChessServerHost <I>hostname</I></B></P>
+
+<P>The host name or numeric address of the Internet Chess Server to connect to when in ICS mode. The default is the empty string, which causes WinBoard to pop up a menu of known ICS sites. The file ics-addresses.txt in the WinBoard distribution gives slightly more information on these sites. It includes their numeric addresses, which you can use if your site does not have a working name server.</P>
+
+
+
+<P><B><A NAME="icsport"></A>/icsport </B>or<B> <A NAME="internetchessserverport"></A>/internetChessServerPort <I>portnumber</I></B></P>
+
+<P>The port number to use when connecting to a chess server in ICS mode. Default: 5000.</P>
+
+
+
+<P><B><A NAME="via"></A>/icshelper <I>program</I></B></P>
+
+
+
+<P>An external helper program used to communicate with the chess server. Typically <I>timestamp</I> for the ICC (chessclub.com) or <I>timeseal</I> for FICS (freechess.org, eics.daimi.aau.dk, etc.). This option is shorthand for “/useTelnet /telnetProgram <I>program</I>”<B>.</B></P>
+
+
+
+<P><B><A NAME="telnet"></A>/telnet</B> or <B>/xtelnet</B>,<B> </B>or<B> <A NAME="usetelnet"></A>/useTelnet<I> true|false</I></B></P>
+
+<P>This option is poorly named; it should be called <B>/useHelper</B>. If set to True, it instructs WinBoard to use an external helper program to communicate with the ICS, as specified by the telnetProgram option. The external program must be a pure console application that can communicate with WinBoard through pipes; the Windows telnet application is not suitable. If the option is False (the default), WinBoard communicates with the ICS by opening a Winsock TCP socket and using its own internal implementation of the telnet protocol.</P>
+
+
+
+<P><B><A NAME="gateway"></A>/gateway <I>hostname</I></B></P>
+
+<P>If this option is set to a host name, WinBoard uses <A HREF="18.htm#rsh">rsh</A> to run the telnetProgram remotely on the given host to communicate with the Internet Chess Server instead of using its own internal implementation of the telnet protocol. See the <A HREF="21.htm">FIREWALLS</A> section below for an explanation of when this option is useful.</P>
+
+
+
+<P><B><A NAME="telnetprogram"></A>/telnetProgram <I>program</I></B></P>
+
+<P>This option is poorly named; it should be called <B>/helperProgram</B>. It gives the name of the remote or external helper program to be used with the gateway or useTelnet option. The default is "telnet". The telnet program is invoked with the value of internetChessServer as the first argument and the value of internetChessServerPort as the second argument on its command line.</P>
+
+
+
+<P><B><A NAME="icscom"></A>/icscom </B>or<B> <A NAME="internetchessservercomport"></A>/internetChessServerComPort <I>name</I></B></P>
+
+<P>If this option is set, WinBoard communicates with the Internet Chess Server using a serial communication port instead of a network connection. Use this option if your machine is not connected to a network (not even via SLIP or PPP), but you do have Internet access through another machine by dialing in using a modem or by connecting directly to a serial terminal port. Example:</P>
+
+<PRE><CODE>WinBoard /ics /icscom:com1</CODE></PRE>
+
+<P>After you start WinBoard in this way, type whatever modem commands are necessary to dial out to your Internet provider and log in. You may need to turn off <A HREF="07.htm#locallineediting">Local Line Editing</A> on the Options menu while typing commands to the modem, but turn it on again afterwards. Then telnet to the ICS, using a command like "telnet chessclub.com 5000". Important: See the paragraph in the <A HREF="22.htm">LIMITATIONS</A> section below about extra echoes.</P>
+
+
+
+<P><B><A NAME="comportsettings"></A>/comPortSettings</B> <B><I>“dataRate,dataBits,parity,stopBits,flow”</I></B></P>
+
+<P>This option allows serial port parameters to be set from the command line or a settings file. The values are simply filled in to the <A HREF="07.htm#communications">Communications</A> dialog.</P>
+
+
+
+<P><B><A NAME="icslogon"></A>/icslogon </B>or<B> <A NAME="internetchessserverlogonscript"></A>/internetChessServerLogonScript <I>filename</I></B></P>
+
+<P>This option lets you change the name used for the <A HREF="#icslogon">ICS Logon</A> file. Default: "ICS.ini". The filename is interpreted relative to WinBoard's installation directory (the directory containing WinBoard.exe).</P>
+
+
+
+<P><B><A NAME="autocomm"></A>/autocomm </B>or <B>/xautocomm</B>, or<B> <A NAME="autocomment"></A>/autoComment<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#autocommentcmd">Auto Comment</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="autoflag"></A>/autoflag</B> or <B>/xautoflag</B>,<B> </B>or<B> <A NAME="autocallflag"></A>/autoCallFlag<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="#autoflag">Auto Flag</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="autobs"></A>/autobs</B> or <B>/xautobs</B>,<B> </B>or<B> <A NAME="autoobservecmd"></A>/autoObserve<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="#autoobservecmd">Auto Observe</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="autokibitz"></A><font color="#008000">/autoKibitz</font></B></P>
+
+<P><font color="#008000">Kibitzes the engines last thinking output (depth, score, time, speed, PV) to the ICS in zippy mode. Show Thinking must be on for this option to work.</font> <font color="#3333ff">Also diverts similar kibitz information of an opponent engine that is playing you through the ICS to the engine-output window, as if the engine was playing locally.</font></P>
+
+
+
+<P><B><A NAME="moves"></A>/moves</B> or <B>/xmoves</B>,<B> </B>or<B> <A NAME="getmovelist"></A>/getMoveList<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#getmovelistcmd">Get Move List</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="edit"></A>/edit<SUP> </SUP></B> or <B>/xedit</B>,<B> </B>or<B> <A NAME="locallineeditingoption"></A>/localLineEditing<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#locallineediting">Local Line Editing</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="quiet"></A>/quiet </B>or <B>/xquiet</B>, or<B> <A NAME="quietplay"></A>/quietPlay<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#quietplaycmd">Quiet Play</A> option. Default: False</P>
+
+
+
+<P><B><A NAME="opt_blindfold"></A>/blindfold <I>true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#blindfoldcmd">Blindfold</A> option. Default: False</P>
+
+
+
+<P><B><A NAME="pre"></A>/pre </B>or<B> <A NAME="xpre"></A>/xpre</B>, or<B> <A NAME="premove"></A>/premove<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#premovecmd">Premove</A> option. If set to True, the premove feature is enabled. If set to False, premove is disabled and the other <A HREF="07.htm#premovecmd">Premove</A> settings are ignored. Default: False.</P>
+
+
+
+<P><B><A NAME="prewhite"></A>/prewhite </B>or<B> <A NAME="xprewhite"></A>/xprewhite</B>, or <B><A NAME="premovewhite"></A>/premoveWhite<I> true|false</I></B></P>
+
+
+
+<P><B><A NAME="premovewhitetext"></A>/premoveWhiteText<I> movetext</I></B></P>
+
+<P>If <B>premoveWhite</B> is set to True and you are playing white in an ICS game, the text specified by the <B>premoveWhiteText</B> option is sent to the ICS as soon as the game starts.  These options can be set from the <A HREF="07.htm#premovecmd">Premove</A> section of the <A HREF="07.htm#icsoptions">ICS Options</A> dialog box. The default for <B>premoveWhite</B> is False.</P>
+
+
+
+<P><B><A NAME="preblack"></A>/preblack </B>or<B> <A NAME="xpreblack"></A>/xpreblack</B>, or <B><A NAME="premoveblack"></A>/premoveBlack<I> true|false</I></B></P>
+
+
+
+<P><B><A NAME="premoveblacktext"></A>/premoveBlackText<I> movetext</I></B></P>
+
+<P>If <B>premoveBlack</B> is set to True and you are playing black in an ICS game, the text specified by the <B>premoveBlackText</B> option is sent to the ICS as soon as the first move is received from your opponent, even if you make a different premove on the board before the first white move is received. These options can be set from the <A HREF="07.htm#premovecmd">Premove</A> section of the <A HREF="07.htm#icsoptions">ICS Options</A> dialog box. The default for <B>premoveBlack</B> is False.</P>
+
+
+
+<P><B><A NAME="alarm"></A>/alarm </B>or<B> <A NAME="xalarm"></A>/xalarm</B>, or <B><A NAME="icsalarm"></A>/icsAlarm <I>true|false</I></B></P>
+
+
+
+<P><B><A NAME="icsalarmtime"></A>/icsAlarmTime <I>milliseconds</I></B></P>
+
+<P>When <B>icsAlarm</B> is set to True, the <A HREF="16.htm#soundicsalarm">alarm sound</A> is played when your clock counts down to <B>icsAlarmTime</B> seconds.  For ICS games with time controls that include an increment, the alarm will sound each time the clock counts down to the <B>icsAlarmTime</B>.  The <B>icsAlarmTime</B> can be set by selecting <A HREF="07.htm#icsalarm">ICS Alarm</A> from the <A HREF="07.htm#icsoptions">ICS options</A> dialog. The default is 5 seconds.</P>
+
+</BODY>
+</HTML>

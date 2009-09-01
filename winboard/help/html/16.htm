@@ -1,0 +1,493 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>User Interface Options</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="userinterfaceoptions"></A>User Interface Options</B></P>
+
+
+
+<P><B><A NAME="firstlogo"></A><font color="#3333ff">/firstLogo <I>filename</I></font></B></P>
+
+
+
+<P><B><A NAME="secondlogo"></A><font color="#3333ff">/secondLogo <I>filename</I></font></B></P>
+
+<P><font color="#3333ff">The appearance of either of these options causes WinBoard to reserve space for displaying logos on both sides of the clocks. Normally the first logo goes left, the second right, unless the option ‘swap clocks’ is in effect. The <I>filename</I> must refer to a bitmap file (.bmp) containing a logo for the particular player (usually a 130x65 or 100x50 bitmap, which will be scaled to the height of two clock lines.)</font></P>
+
+
+
+<P><B><A NAME="autologo"></A><font color="#3333ff">/autoLogo<I> true|false</I></font></B></P>
+
+<P><font color="#3333ff">When true, causes WinBoard to automatically supply a logo for the first and second chess program, by looking for a fie named logo.bmp in the engine directory (as specified by the /fd or /sd option), and then displays it like this file was given as an argument to the /firstLogo or /secondLogo option. In this mode it will also look in a sub-folder of its installation folder called “logos”, for finding logos with names corresponding to the ICS (e.g. “chessclub.com.bmp”) or to the human user, should they be involved in a game.</font></P>
+
+
+
+<P><B><A NAME="hidethinkingfromhuman"></A><font color="#ff0000">/hideThinkingFromHuman<I> true|false</I></font></B></P>
+
+<P><font color="#ff0000">Prevents the engine thinking output to appear in the display, without necessitating to suppress the sending of this information altogether (so it can still appear in the PGN).</font></P>
+
+
+
+<P><B><A NAME="nogui"></A><font color="#3333ff">/noGUI</font></B></P>
+
+<P><font color="#3333ff">Suppresses all GUI functions of WinBoard (to speed up automated ultra-fast engine-engine games, which you don’t want to watch). There will be no board or clock updates, no printing of moves, and no update of the icon on the task bar in this mode.</font></P>
+
+
+
+<P><B><A NAME="top"></A>/top </B>or <B>/xtop</B>, or<B> <A NAME="alwaysontopopt"></A>/alwaysOnTop<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#alwaysontop">Always On Top</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="queen"></A>/queen</B> or <B>/xqueen</B>,<B> </B>or<B> <A NAME="alwayspromotetoqueen"></A>/alwaysPromoteToQueen<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#alwaysqueen">Always Queen</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="drag"></A>/drag</B> or <B>/xdrag</B>,<B> </B>or<B> <A NAME="animatedraggingopt"></A>/animateDragging<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#animatedragging">Animate Dragging</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="animate"></A>/animate </B>or <B>/xanimate</B>, or<B> <A NAME="animatemovingopt"></A>/animateMoving<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#animatemoving">Animate Moving</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="flip"></A>/flip </B>or <B>/xflip</B>, or<B> <A NAME="flipviewoption"></A>/flipView<I> true|false</I></B></P>
+
+<P>If Auto Flip View is not set, or if you are observing but not participating in a game, then the positioning of the board at the start of each game depends on the flipView option.  If flipView is False (the default), the board is positioned so that the white pawns move from the bottom to the top; if True, the black pawns move from the bottom to the top. In any case, the <A HREF="07.htm#flipview">Flip View</A> menu command can be used to flip the board after the game starts</P>
+
+
+
+<P><B><A NAME="autoflip"></A>/autoflip</B> or <B>/xautoflip</B>, or <A NAME="autoflipviewoption"></A><B>/autoFlipView <I>true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#autoflipview">Auto Flip View</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="autoraise"></A>/autoraise</B> or <B>/xautoraise</B>, or <A NAME="autoraiseboardoption"></A><B>/autoRaiseBoard <I>true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#autoflipview">Auto Raise Board</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="highdrag"></A>/highdrag </B>or <B>/xhighdrag</B>, or<B> <A NAME="highlightdraggingopt"></A>/highlightDragging <I>true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#highlightdragging">Highlight Dragging</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="highlight"></A>/highlight </B>or <B>/xhighlight</B>, or<B> <A NAME="highlightlastmoveopt"></A>/highlightLastMove<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="#highlightlastmoveopt">Highlight Last Move</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="popup"></A>/exit</B> or <B>/xexit</B>,<B> </B>or<B> <A NAME="popupmoveerrorsopt"></A>/popupExitMessage<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#popupexitmessagecmd">Popup Exit Message</A> menu option. Default: False.</P>
+
+
+
+<P><B><A NAME="popup"></A>/popup</B> or <B>/xpopup</B>,<B> </B>or<B> <A NAME="popupmoveerrorsopt"></A>/popupMoveErrors<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#popupmoveerrorscmd">Popup Move Errors</A> menu option. Default: False.</P>
+
+
+
+<P><B><A NAME="coords"></A>/coords </B>or <B>/xcoords</B>, or<B> <A NAME="showcoords"></A>/showCoords<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="#showcoords">Show Coords</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="legal"></A>/legal </B>or <B>/xlegal</B>, or<B> <A NAME="testlegality"></A>/testLegality<I> true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#testlegalitycmd">Test Legality</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="size"></A>/size </B>or<B> <A NAME="boardsize"></A>/boardSize <I>sizename</I></B></P>
+
+<P>Sets the <A HREF="07.htm#boardsizecmd">Board Size</A> option. Also chooses which board size any following Font options will affect. The default is the largest size that will fit on your screen.</P>
+
+
+
+<P><B><A NAME="wpc"></A>/wpc</B> or <B><A NAME="whitepiececolor"></A>/whitePieceColor <I>color<BR>
+</I><A NAME="bpc"></A>/bpc </B>or <B><A NAME="blackpiececolor"></A>/blackPieceColor <I>color<BR>
+</I><A NAME="lsc"></A>/lsc </B>or<B><I> </I><A NAME="lightsquarecolor"></A>/lightSquareColor <I>color</I><SUP> </SUP><BR>
+<A NAME="dsc"></A>/dsc </B>or<B> <A NAME="darksquarecolor"></A>/darkSquareColor <I>color</I><SUP> </SUP></B></P>
+
+<P>Color specifications for white pieces, black pieces, light squares, and dark squares. Colors can be specified only by red/green/blue intensity, either in hexadecimal (as <I>#rrggbb</I>) or in decimal (as <I>rrr,ggg,bbb</I>). In the latter format, you must enclose the string in quotation marks if you leave spaces after the commas. The defaults are respectively #FFFFCC, #202020, #C8C365, and #77A26D. Available on the <A HREF="07.htm#boardcolors">Board Colors</A> section of the <A HREF="07.htm#boardoptions">Board Options</A> dialog.</P>
+
+
+
+<P>If you are using a <A NAME="grayscale"></A>grayscale monitor, try setting the colors to:</P>
+
+<PRE><CODE>-whitePieceColor:#FFFFFF
+-blackPieceColor:#000000
+-lightSquareColor:#CCCCCC
+-darkSquareColor:#999999</CODE></PRE>
+
+
+
+<P><B><A NAME="hsc"></A>/hsc </B>or<B> <A NAME="highlightsquarecolor"></A>/highlightSquareColor <I>color</I><SUP> </SUP><BR>
+<A NAME="phc"></A>/phc </B>or <B><A NAME="premovehighlightcolor"></A>/premoveHighlightColor <I>color</I><SUP> </SUP></B></P>
+
+<P>Color specifications for the <A HREF="07.htm#highlightlastmove">Highlight Last Move</A> and <A HREF="07.htm#premovecmd">Premove</A> options, respectively. Colors can be specified only by red/green/blue intensity, either in hexadecimal (as <I>#rrggbb</I>) or in decimal (as <I>rrr,ggg,bbb</I>). In the latter format, you must enclose the string in quotation marks if you leave spaces after the commas. The defaults are respectively #FFFF00 and #FF0000, respectively.</P>
+
+
+
+<P><B><A NAME="mono"></A>/mono</B> or <B>/xmono</B>,<B> </B>or<B> <A NAME="monomode"></A>/monoMode<I> true|false</I></B></P>
+
+<P>Determines whether WinBoard displays its pieces and squares in black and white (True) or color (False, the default). Available in the <A HREF="07.htm#boardcolors">Board Colors</A> section of the <A HREF="07.htm#boardoptions">Board Options</A> dialog.</P>
+
+
+
+<P><B><A NAME="flipblack"></A><font color="#008000">/flipBlack<I> true|false</I></font></B></P>
+
+<P><font color="#008000">Determines whether WinBoard displays the black pieces upside down (or the white pieces in Flip View). Useful with Shogi with the traditional Japanese pieces, which are not distinguished by color but by orientation.</font></P>
+
+
+
+<P><B><A NAME="allwhite"></A><font color="#008000">/allWhite<I> true|false</I></font></B></P>
+
+<P><font color="#008000">Determines whether the white piece bitmaps will be used to display black pieces. The white pieces have a dark outline, which the black pieces lack. This makes the latter look vague if the color you give them is not very dark.</font></P>
+
+
+
+<P><B><A NAME="renderpieceswithfont"></A><font color="#ff0000">/renderPiecesWithFont <I>fontname</I></font></B></P>
+
+<P><font color="#ff0000">Uses the named true-type font to render the pieces, rather than the built-in bitmaps. The font must be installed on your computer. If the name starts with a *  it is ignored, allowing you to easily disable a font temporarily in the whinboard.ini file.</font></P>
+
+
+
+<P><B><A NAME="fontpiecetochartable"></A><font color="#ff0000">/fontPieceToCharTable <I>characterstring</I></font></B></P>
+
+<P><font color="#ff0000">If font-based rendering of the pieces is used, this table specifies which character of the font alphabet should be used for which piece. The format of the character strings is the same as that of the argument of /pieceToCharTable.</font></P>
+
+
+
+<P><B><A NAME="fontpiecesize"></A><font color="#ff0000">/fontPieceSize <I>number</I></font></B></P>
+
+<P><font color="#ff0000">The number gives the size of the piece, as a percentage of the square size.</font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="fontpiecebackcolorwhite"></A>/fontPieceBackColorWhite <I>color<BR>
+</I><A NAME="fontpieceforecolorwhite"></A>/fontPieceForeColorWhite <I>color<BR>
+</I><A NAME="fontpiecebackcolorblack"></A>/fontPieceBackColorBlack <I>color<BR>
+</I><A NAME="fontpieceforecolorblack"></A>/fontPieceForeColorBlack <I>color</I><SUP> </SUP></B></font></P>
+
+<P><font color="#ff0000">Color specifications for white pieces, black pieces that are generated with font-based rendering.</font></P>
+
+
+
+<P><B><A NAME="litebacktexturefile"></A><font color="#ff0000">/liteBackTextureFile <I>filename</I></font></B></P>
+
+
+
+<P><B><A NAME="darkbacktexturefile"></A><font color="#ff0000">/darkBackTextureFile <I>filename</I></font></B></P>
+
+<P><font color="#ff0000">The filename indicates a bitmap file that should be used to display the light or dark squares, allowing you to make boards that look like wood, marble, etc. A filename starting with * is ignored.</font></P>
+
+
+
+<P><B><A NAME="litebacktexturemode"></A><font color="#ff0000">/liteBackTextureMode <I>number</I></font></B></P>
+
+
+
+<P><B><A NAME="darkbacktexturemode"></A><font color="#ff0000">/darkBackTextureMode <I>number</I></font></B></P>
+
+<P><font color="#ff0000">The number indicates the way the files given in the background-texture options should be used to fill in the squares. Valid texture modes are 1 (default) and 2. In mode 1 the squares are taken from portions of the texture bitmap and copied without further processing. In mode 2, squares can also be rotated, mirrored and so on in order to provide a little more variety to the texture. The operations are selected at random so the board will look slightly different every time the program is run.</font><BR>
+</P>
+
+
+
+<P><B><A NAME="overidelinegap"></A><font color="#ff0000">/overideLineGap <I>number</I></font></B></P>
+
+<P><font color="#ff0000">The number specifies the width, in pixels, of the grid lines used to separate the squares. If it is very small (like a single pixel), it becomes vey hard to see which squares are highlighted (to indicate the last move), as this highlighting is a color change of these grid lines. Highlighting the moves with an arrow is then recommended.</font></P>
+
+
+
+<P><B><A NAME="highlightmoveswitharrow"></A><font color="#ff0000">/highlightMovesWithArrow <I>true|false</I></font></B></P>
+
+<P><font color="#ff0000">If this option is true, a big, fat arrow is drawn to indicate the last move.</font></P>
+
+
+
+<P><B><A NAME="highlightarrowcolor"></A><font color="#ff0000">/highlightArrowColor <I>color</I></font></B></P>
+
+<P><font color="#ff0000">Specifies the color of the arrow that highlights the moves.</font></P>
+
+
+
+<P><B><A NAME="evalhistocolorwhite"></A><font color="#ff0000">/evalHistoColorWhite <I>color</I></font></B></P>
+
+
+
+<P><B><A NAME="evalhistocolorblack"></A><font color="#ff0000">/evalHistoColorBlack <I>color</I></font></B></P>
+
+<P><font color="#ff0000">Specifies the colors to be used to plot the white and black scores in the evaluation graph.</font><BR>
+</P>
+
+
+
+<P><B><A NAME="colorshout"></A>/colorShout<I> “effects color”<BR>
+</I><A NAME="colorsshout"></A>/colorSShout <I>“effects color”<BR>
+</I><A NAME="colorchannel1"></A>/colorChannel1 <I>“effects color”</I><BR>
+<A NAME="colorchannel"></A>/colorChannel <I>“effects color”</I><BR>
+<A NAME="colorkibitz"></A>/colorKibitz <I>“effects color”</I><BR>
+<A NAME="colortell"></A>/colorTell <I>“effects color”</I><BR>
+<A NAME="colorchallenge"></A>/colorChallenge <I>“effects color”</I><BR>
+<A NAME="colorrequest"></A>/colorRequest <I>“effects color”</I><BR>
+<A NAME="colorseek"></A>/colorSeek <I>“effects color”</I><BR>
+<A NAME="colornormal"></A>/colorNormal <I>“effects color”</I></B></P>
+
+<P>Select colors and effects to colorize messages in the ICS Interaction window. The effects may be any combination of <B>b</B>old, <B>i</B>talic, <B>u</B>nderline, and <B>s</B>trikeout. Colors are specified as for squares and pieces. Available on the <A HREF="07.htm#icsinteractioncolors">ICS Interaction Colors</A> section of the <A HREF="07.htm#icsoptions">ICS Options</A> dialog. Limitation: On 256 color displays, Windows chooses the nearest solid color from the system palette, which will not always be close to the color you selected.</P>
+
+
+
+<P><B><A NAME="colorbackground"></A>/colorBackground <I>color</I></B></P>
+
+<P>Sets the background color for the ICS Interaction window. Available on the <A HREF="07.htm#icsinteractioncolors">ICS Interaction Colors</A> section of the <A HREF="07.htm#icsoptions">ICS Options</A> dialog.</P>
+
+
+
+<P><B><A NAME="colorize"></A>/colorize<SUP> </SUP></B>or <B>/xcolorize</B>, or<B> <A NAME="colorizemessages"></A>/colorizeMessages<I> true|false</I></B></P>
+
+<P>If True, WinBoard colorizes messages in the ICS Interaction window with the colors listed above. Default: True. Available in the <A HREF="07.htm#icsinteractioncolors">ICS Interaction Colors</A> section of the <A HREF="07.htm#icsoptions">ICS Options</A> dialog.</P>
+
+
+
+<P><B><A NAME="clockfont"></A>/clockFont “<I>fontname:size effects</I>”<BR>
+<A NAME="messagefont"></A>/messageFont “<I>fontname:size effects</I>”<BR>
+<A NAME="coordfont"></A>/coordFont “<I>fontname:size effects</I>”<BR>
+<A NAME="tagsfont"></A>/tagsFont “<I>fontname:size effects</I>”<BR>
+<A NAME="commentfont"></A>/commentFont “<I>fontname:size effects</I>”<BR>
+<A NAME="icsfont"></A>/icsFont “<I>fontname:size effects</I>”</B></P>
+
+<P>The fonts used respectively for the clocks, the message display line, rank and file coordinate labels, the Edit Tags dialog, the Edit Comment dialog, and the ICS Interaction window. These options may be given more than once. Each occurrence affects the fonts for the current board size; that is, the size given in the last preceding /boardSize option, if any, or else the default size. The font size may contain a decimal point, and the effects may be any combination of <B>b</B>old, <B>i</B>talic, <B>u</B>nderline, and <B>s</B>trikeout. Example: <CODE>/clockFont="Arial:20.0 bi".</CODE> Available on the <A HREF="07.htm#fonts">Fonts</A> menu.</P>
+
+
+
+<P><B><A NAME="soundshout"></A>/soundShout<I> sound<BR>
+</I><A NAME="soundsshout"></A>/soundSShout <I>sound<BR>
+</I><A NAME="soundchannel1"></A>/soundChannel1 <I>sound</I><BR>
+<A NAME="soundchannel"></A>/soundChannel <I>sound</I><BR>
+<A NAME="soundkibitz"></A>/soundKibitz <I>sound</I><BR>
+<A NAME="soundtell"></A>/soundTell <I>sound</I><BR>
+<A NAME="soundchallenge"></A>/soundChallenge <I>sound</I><BR>
+<A NAME="soundrequest"></A>/soundRequest <I>sound</I><BR>
+<A NAME="soundmove"></A>/soundMove <I>sound</I><SUP> </SUP><BR>
+<A NAME="soundbell"></A>/soundBell <I>sound</I><SUP> </SUP></B></P>
+
+
+
+<P><B><A NAME="soundicswin"></A>/soundIcsWin <I>sound</I><BR>
+<A NAME="soundicsloss"></A>/soundIcsLoss <I>sound</I><SUP> </SUP><BR>
+<A NAME="soundicsdraw"></A>/soundIcsDraw <I>sound</I><SUP> </SUP><BR>
+<A NAME="soundicsunfinished"></A>/soundIcsUnfinished <I>sound</I><SUP> </SUP></B></P>
+
+
+
+<P><B><A NAME="soundicsalarm"></A>/soundIcsAlarm <I>sound</I><SUP> </SUP></B></P>
+
+<P>Associate sounds with WinBoard events. Most of the events are the same ones that cause text colorization. In addition, <B>soundMove</B> is played if a chess engine or another player makes a move. <B>SoundBell</B> is played if the chess server sends an ASCII BEL character (Ctrl+G). Available on the <A HREF="07.htm#sounds">Sounds</A> menu.</P>
+
+<P><B>SoundIcsWin</B>, <B>soundIcsLoss</B>, <B>soundIcsDraw</B> and <B>soundIcsUnfinished</B> are played at the conclusion of an ICS game.  The result of the game determines which sound is played.</P>
+
+<P><B>SoundIcsAlarm</B> is played when your game clock counts down to <A HREF="14.htm#icsalarmtime">icsAlarmTime</A>. </P>
+
+<P>The <I>sound</I> argument may be one of the following:
+
+<UL>
+	<LI>The name of a <CODE>.wav</CODE> file. The filename is interpreted relative to WinBoard's installation directory (the directory containing WinBoard.exe).<BR><BR></LI>
+
+	<LI><CODE>$</CODE>, indicating the default system sound.<BR><BR></LI>
+
+	<LI><CODE>!</CODE> followed by the name of a built-in WinBoard wave resource.<BR><BR></LI>
+
+	<LI><CODE>!</CODE> alone, or “” (empty string), indicating silence.</LI>
+</UL>
+
+<P>The default for soundMove and soundBell is <CODE>$</CODE>, while the others default to silence.</P>
+
+
+
+<P><B><A NAME="icsmenu"></A>/icsMenu={<I>entries</I>} </B>or <B>/icsMenu=@<I>filename</I></B></P>
+
+<P>This option lets you customize the right-button <A HREF="09.htm">context menu</A> that is available in the upper (output) pane of the ICS Interaction window. It consists of a list of menu entries, one per line. If the option value starts with an @ sign, it is the name of a file that contains the entries. Each entry contains either four fields separated by commas or the single character <CODE>"-"</CODE>. The fields are:
+
+<OL>
+	<LI>The menu text. If this field begins with <CODE>"|"</CODE>, the item begins a new column in the menu and the <CODE>"|"</CODE> is not shown. If this field contains an <CODE>"&amp;"</CODE>, the character after the ampersand is underlined in the menu and acts as a keyboard shortcut for the item when the menu is displayed. Do not assign the same shortcut key to two different menu items.<BR><BR></LI>
+
+	<LI>Text to insert into the input pane. The text cannot include a comma. You can use ICS aliases to get around this limitation.<BR><BR></LI>
+
+	<LI>A flag (1 or 0) saying whether to insert a space and <I>name </I>(see <A HREF="09.htm#tell">above</A>) after the text. If you set this flag, you might also want to put "(name)" into the menu text as a memory aid.<BR><BR></LI>
+
+	<LI>A flag (1 or 0) saying whether the result should be sent immediately to ICS or left in the input pane for further editing.</LI>
+</OL>
+
+<P>The entry <CODE>"-"</CODE> produces a separator line in the menu. The top three menu entries are always <B>Copy and Paste</B>, <B>Copy</B>, and <B>Paste</B>, but you have full control over the rest of the menu.</P>
+
+<P>The default menu is:</P>
+
+<PRE><CODE>–
+&amp;Who,who,0,1
+Playe&amp;rs,players,0,1
+&amp;Games,games,0,1
+&amp;Sought,sought,0,1
+|&amp;Tell (name),tell,1,0
+M&amp;essage (name),message,1,0
+–
+&amp;Finger (name),finger,1,1
+&amp;Vars (name),vars,1,1
+&amp;Observe (name),observe,1,1
+&amp;Match (name),match,1,1
+Pl&amp;ay (name),play,1,1</CODE></PRE>
+
+<P>There is no graphical user interface to set this option. To change it, edit your <A HREF="19.htm#settings">settings</A> file with a plain text editor such as Notepad.</P>
+
+
+
+<P><B><A NAME="icsnames"></A>/icsNames={<I>names</I>} </B>or <B>/icsNames=@<I>filename</I></B></P>
+
+<P>This option lets you customize the drop-down list of ICS names that appears in the WinBoard startup dialog. It consists of a list of strings, one per line. If the option value starts with an @ sign, it is the name of a file that contains the strings. When you select a string from the drop-down list, WinBoard prepends the text ”/ics /icsHost=” and adds the result to the command-line options. There is no graphical user interface to set this option. To change it, edit your <A HREF="19.htm#settings">settings</A> file with a plain text editor such as Notepad.</P>
+
+
+
+<P><B><A NAME="firstchessprogramnames"></A>/firstChessProgramNames={<I>names</I>} </B>or <B>/firstChessProgramNames="@<I>filename</I>"</B></P>
+
+<P>This option lets you customize the first drop-down list of chess engine names that appears in the WinBoard startup dialog. It consists of a list of strings, one per line. If the option value starts with an @ sign, it is the name of a file that contains the strings. When you select a string from the drop-down list, WinBoard prepends the text ”/cp /firstChessProgram=” and adds the result to the command-line options. </P>
+
+<P>There is no graphical user interface to set this option. To change it, edit your <A HREF="19.htm#settings">settings</A> file with a plain text editor such as Notepad. Example:</P>
+
+<PRE><CODE>/firstChessProgramNames={GNUChess
+WCrafty-15_11 /fd="C:\Program Files\Crafty"
+ArasanX /fd="C:\Program Files\Arasan\Arasan 4.1"
+"EXchess xb" /fd=C:\EXchess
+Comet-WB /fd=C:\Comet
+}</CODE></PRE>
+
+
+
+<P><B><A NAME="secondchessprogramnames"></A>/secondChessProgramNames={<I>names</I>}</B> or <B>/secondChessProgramNames="@<I>filename</I>"</B></P>
+
+<P>This option lets you customize the second drop-down list of chess engine names that appears in the WinBoard startup dialog. It consists of a list of strings, one per line. If the option value starts with an @ sign, it is the name of a file that contains the strings. When you select a string from the drop-down list, WinBoard prepends the text ”/cp /secondChessProgram=” and adds the result to the command-line options.</P>
+
+<P>There is no graphical user interface to set this option. To change it, edit your <A HREF="19.htm#settings">settings</A> file with a plain text editor such as Notepad. Example:</P>
+
+<P><CODE>/secondChessProgramNames={GNUChess<BR>
+WCrafty-15_11 /sd="C:\\Program Files\\Crafty\"<BR>
+ArasanX /sd="C:\Program Files\Arasan\Arasan 4.1"<BR>
+"EXchess xb" /sd=C:\EXchess<BR>
+Comet-WB /sd=C:\Comet<BR>
+}</CODE></P>
+
+
+
+<P><B><A NAME="xy"></A>/x=<I>xcoord  </I>/y=<I>ycoord</I></B></P>
+
+<P>Sets the initial location of the board window, giving the screen coordinates of the upper left-hand corner. Both arguments must be given together.</P>
+
+
+
+<P><B><A NAME="xywh"></A>/analysisX=<I>xcoord  </I>/analysisY=<I>ycoord</I>  /analysisW=<I>width</I>  /analysisH=<I>height</I></B></P>
+
+<P><font color="#3333ff">These options have been deprecated, as the analysis window is replaced by the more general engine-output window. They are recognized, but ignored, and no longer saved in the winboard.ini file.</font></P>
+
+
+
+<P><B><A NAME="xywh"></A>/commentX=<I>xcoord  </I>/commentY=<I>ycoord</I>  /commentW=<I>width</I>  /commentH=<I>height</I></B></P>
+
+<P>Sets the initial location and size of the Comment window, giving the screen coordinates of the upper left-hand corner <font color="#3333ff">(relative to the main window)</font>, the width, and the height. All four arguments must be given together.</P>
+
+
+
+<P><B><A NAME="xywh"></A>/gameListX=<I>xcoord  </I>/gameListY=<I>ycoord</I>  /gameListW=<I>width</I>  /gameListH=<I>height</I></B></P>
+
+<P>Sets the initial location and size of the Game List window, giving the screen coordinates of the upper left-hand corner <font color="#3333ff">(relative to the main window)</font>, the width, and the height. All four arguments must be given together.</P>
+
+
+
+<P><B><A NAME="xywh"></A>/icsX=<I>xcoord  </I>/icsY=<I>ycoord</I>  /icsW=<I>width</I>  /icsH=<I>height</I></B></P>
+
+<P>Sets the initial location and size of the ICS Interaction window, giving the screen coordinates of the upper left-hand corner <font color="#3333ff">(relative to the main window)</font>, the width, and the height. All four arguments must be given together.</P>
+
+
+
+<P><B><A NAME="xywh"></A>/tagsX=<I>xcoord  </I>/tagsY=<I>ycoord</I>  /tagsW=<I>width</I>  /tagsH=<I>height</I></B></P>
+
+<P>Sets the initial location and size of the Tags window, giving the screen coordinates of the upper left-hand corner <font color="#3333ff">(relative to the main window)</font>, the width, and the height. All four arguments must be given together.</P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="xywh"></A>/moveHistoryX=<I>xcoord  </I>moveHistoryY=<I>ycoord</I>  /moveHistoryW=<I>width</I>  /moveHistoryH=<I>height</I></B></font></P>
+
+<P><font color="#ff0000">Sets the initial location and size of the move-history window, giving the screen coordinates of the upper left-hand corner</font> <font color="#3333ff">(relative to the main window)</font><font color="#ff0000">, the width, and the height. All four arguments must be given together.</font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="xywh"></A>/evalGraphX=<I>xcoord  </I>/evalGraphY=<I>ycoord</I>  /evalGraphW=<I>width</I>  /evalGraphH=<I>height</I></B></font></P>
+
+<P><font color="#ff0000">Sets the initial location and size of the evaluation-graph window, giving the screen coordinates of the upper left-hand corner</font> <font color="#3333ff">(relative to the main window)</font><font color="#ff0000">, the width, and the height. All four arguments must be given together.</font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="xywh"></A>/engineOutputX=<I>xcoord  </I>/engineOutputY=<I>ycoord</I>  </B></font></P>
+
+<P><font color="#ff0000"><B>/engineOutputW=<I>width</I>  /engineOutputH=<I>height</I></B></font></P>
+
+<P><font color="#ff0000">Sets the initial location and size of the engine-output window, giving the screen coordinates of the upper left-hand corner</font> <font color="#3333ff">(relative to the main window)</font><font color="#ff0000">, the width, and the height. All four arguments must be given together.</font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="windowup"></A>/engineOutputUp <I>true|false </I></B></font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="windowup"></A>/evalGraphUp <I>true|false</I></B></font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="windowup"></A>/moveHistoryUp <I>true|false</I></B></font></P>
+
+<P><font color="#ff0000">If set to True, the corresponding window is displayed, if False, the window is absent.</font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="stickywindows"></A>/stickyWindows <I>true|false</I></B></font></P>
+
+<P><font color="#ff0000">Auxiliary windows touching the main window will stay attached to the latter when you move it.</font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="autodisplaycomment"></A>/autoDisplayComment <I>true|false</I></B></font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="autodisplaytags"></A>/autoDisplayTags <I>true|false</I></B></font></P>
+
+<P><font color="#ff0000">If set to True, these options cause the window with the move comments, and the window with PGN tags, respectively, to pop up automatically when such tags or comments are encountered during the replaying a stored or loaded game.</font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="gamelisttags"></A>/gameListTags <I>string</I></B></font></P>
+
+<P><font color="#ff0000">The <I>string</I> contains single-character codes specifying the PGN tags that have to be listed for each game in the game-list window, and their order. The meaning of the characters is a=out-of-book info, b=black Elo, e=event, d=date, o=round, p=players, r=result, w=white Elo, s=site, t=time control and v=variant, Default: “eprd”.</font></P>
+
+</BODY>
+</HTML>

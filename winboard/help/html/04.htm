@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Mode Menu</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="modemenu"></A>Mode Menu</B></P>
+
+
+
+<P><B><A NAME="machinewhite"></A>Machine White</B></P>
+
+<P>Forces the chess engine to play white.</P>
+
+
+
+<P><B><A NAME="machineblack"></A>Machine Black</B></P>
+
+<P>Forces the chess engine to play black.</P>
+
+
+
+<P><B><A NAME="twomachines"></A>Two Machines</B></P>
+
+<P>Starts a game between two chess engines.</P>
+
+
+
+<P><B><A NAME="machine both"></A><font color="#008000">Machine Both</font></B></P>
+
+<P><font color="#008000">A single chess engine plays itself. Mainly useful for pseudo-engines, that are in fact communication links to another machine, where you want to observe a game that is being played. (E.g. the gothic-chess.com server). This command is not implemented yet (version 4.3.14).</font></P>
+
+
+
+<P><B><A NAME="analysismode"></A>Analysis Mode</B></P>
+
+<P>In this mode, you can make moves for both sides on the board. After each move, the chess engine will think about possible replies and display its analysis in a separate window. Crafty was the first engine to support this feature, but by now there are many others that support it as well.</P>
+
+<P><font color="#3333ff">From WinBoard 4.4 on this function can also be invoked in ‘zippy mode’, i.e. when you are logged on to an ICS with an engine loaded. In that case it is not your own moves that the engine analyzes, but the moves that are played in a game on the ICS that you are observing. You must start observing before you start the analysis mode! See the file zippy.README for how to connect to an ICS and a chess engine running on your local computer at the same time. (Basically this amounts to adding the /zp command-line option in addition to all options you would need for connecting to the ICS, as well as those needed for running the chess engine.)</font></P>
+
+
+
+<P><B><A NAME="analyzefile"></A>Analyze File</B></P>
+
+<P>In this mode, you can load a game from a file, and the chess engine will analyze each move as in Analysis Mode. Crafty was the first engine to support this feature, but by now there are many others that support it as well.</P>
+
+
+
+<P><B><A NAME="icsclient"></A>ICS Client</B></P>
+
+<P>This is the normal mode when WinBoard is connected to a chess server. If you have moved into Edit Game or Edit Position mode, you can select this option to get out.</P>
+
+<P>When you run WinBoard in ICS mode, it starts up a console window in which you can type commands and receive text responses from the chess server. You can use the standard Windows editing keys to edit your command line before pressing Enter. The console window keeps a history of the last few commands you typed. Press the up-arrow key to go back to a previous command; press the down-arrow key to go forward again to a later command. Press the right mouse button in the output area for a <A HREF="09.htm">context menu</A> of editing commands and ICS command shortcuts.</P>
+
+<P>Some useful ICS commands include <B>who</B> to see who is logged on, <B>games</B> to see what games are being played, <B>match</B> to challenge another player to a game, <B>observe</B> to observe an ongoing game, <B>examine</B> or <B>smoves</B> to review a recently completed game, and of course <B>help</B>. </P>
+
+<P>Whenever you ask to observe an ongoing game, review a completed game, or resume an adjourned game, WinBoard retrieves and parses the list of past moves from the ICS, so you can review them with <A HREF="06.htm#forward">Forward</A> and <A HREF="06.htm#backward">Backward</A> or save them with <A HREF="03.htm#savegame">Save Game</A>.</P>
+
+<P>Some special ICS Client features are activated when you are in <B>examine</B> or <B>bsetup </B>mode on ICS. See the descriptions of the menu commands <A HREF="06.htm#forward">Forward</A>, <A HREF="06.htm#backward">Backward</A>, <A HREF="#pause">Pause</A>, and <A HREF="05.htm#stopexamining">Stop Examining</A> below. You can also issue the ICS position-editing commands with the mouse. Move pieces by dragging with the left mouse button, or by left-clicking once on the starting square and once on the ending square. Press the right mouse button over a square for a context menu that lets you drop a new piece, empty the square, or clear the board. Click on the White or Black clock to set the side to play. You cannot set the side to play or drag pieces to arbitrary squares while examining on ICC, but you can do so in bsetup mode on FICS. You can also make moves by typing them into the ICS window; you may have to do this occasionally if you are playing a chess variant whose rules WinBoard does not understand, such as Fischer Random.</P>
+
+<P>If you are playing a bughouse game on the ICS, a list of the offboard pieces that each player holds is shown in the window title bar. To drop an offboard piece, press the right mouse button over an empty square to bring up a context menu. To observe your partner's games, start a second copy of WinBoard, log in as a guest, and use the ICS <B>follow</B> or <B>pfollow</B> command in the new window.</P>
+
+
+
+<P><B><A NAME="editgame"></A>Edit Game</B></P>
+
+<P>Allows you to make moves for both Black and White, and to change moves after backing up with the <A HREF="06.htm#backward">Backward</A> command. The clocks do not run, but you can adjust their reading by clicking on them. A left-click subtracts one minute, a right-click adds one minute.</P>
+
+<P>In chess engine mode, the chess engine continues to check moves for legality but does not participate in the game. You can bring the chess engine back into the game by selecting <A HREF="#machinewhite">Machine White</A>, <A HREF="#machineblack">Machine Black</A>, or <A HREF="#twomachines">Two Machines</A>.</P>
+
+<P>In ICS mode, the moves are not sent to the ICS: Edit Game takes WinBoard out of ICS Client mode and lets you edit games locally. If you want to edit a game on ICS in a way that other ICS users can see, use the ICS <B>examine</B> command or start an ICS match against yourself.</P>
+
+
+
+<P><B><A NAME="editposition"></A>Edit Position</B></P>
+
+<P>Lets you set up an arbitrary board position. Use the left mouse button to drag pieces to new squares, or to delete a piece by dragging it off the board or dragging an empty square on top of it. To drop a new piece on a square, press the right mouse button over the square. This brings up a menu of pieces. Additional menu choices let you empty the square or clear the board. You can set the side to play next by clicking on the White or Black indicator at the top of the screen. <font color="#008000">The pop-up menu also contains options to ‘promote’ or ‘demote’ the piece currently in the square. (In variants like Crazyhouse a piece has a different representation when it is a promoted Pawn rater than an original piece.) This allows you to create some of the not-so-common pieces (e.g. a Unicorn is a promoted King, a Commoner is a demoted King).</font></P>
+
+<P>Selecting Edit Position causes WinBoard<I> </I>to discard all remembered moves in the current game.</P>
+
+<P>In ICS mode, change made to the position by Edit Position are not sent to the ICS: Edit Position takes WinBoard out of ICS Client mode and lets you edit positions locally. If you want to edit positions on ICS in a way that other ICS users can see, use the ICS <B>examine</B> command, or start an ICS match against yourself. (See also <A HREF="#icsclient">ICS Client</A> above.)</P>
+
+
+
+<P><B><A NAME="show engine output"></A><font color="#ff0000">Show Engine Output</font></B></P>
+
+<P><font color="#ff0000">Open a new window dedicated to showing the thinking output of the engine(s), as controlled by “Show Thinking”.</font></P>
+
+
+
+<P><B><A NAME="show evaluation graph"></A><font color="#ff0000">Show Evaluation Graph</font></B></P>
+
+<P><font color="#ff0000">Open a new window dedicated to displaying a graph, representing the development of the engine score(s) from the current game over time. (Needs “show Thinking” to be enabled in order to work.</font></P>
+
+
+
+<P><B><A NAME="showgamelist"></A>Show Game List</B></P>
+
+<P>Shows or hides the list of games generated by the last <A HREF="03.htm#loadgame">Load Game</A> command.</P>
+
+
+
+<P><B><A NAME="show move history"></A><font color="#ff0000">Show Move History</font></B></P>
+
+<P><font color="#ff0000">Open a new window dedicated to showing the game currently in progress.</font></P>
+
+
+
+<P><B><A NAME="training"></A>Training</B></P>
+
+<P>Training mode lets you interactively guess the moves of a game for one of the players. While in Training mode, the navigation buttons are disabled. You guess the next move of the game by playing the move on the board (or using the <A HREF="06.htm#typeinmove">Type In Move</A> command). If the move played matches the next move of the game, the move is accepted and the opponent’s response is autoplayed.  If the move played is incorrect, an error message is displayed. </P>
+
+
+
+<P><B><A NAME="edittags"></A>Edit Tags</B></P>
+
+<P>Lets you edit the PGN (portable game notation) tags for the current game. After editing, the tags must still conform to the PGN tag syntax:</P>
+
+<PRE><CODE>
+&lt;tag-section&gt; ::= &lt;tag-pair&gt; &lt;tag-section&gt;
+                  &lt;empty&gt;
+&lt;tag-pair&gt;    ::= [ &lt;tag-name&gt; &lt;tag-value&gt; ]
+&lt;tag-name&gt;    ::= &lt;identifier&gt;
+&lt;tag-value&gt;   ::= &lt;string&gt;</CODE></PRE>
+
+<P>See the PGN Standard for full details. Here is an example:</P>
+
+<PRE><CODE>
+[Event "Portoroz Interzonal"]
+[Site "Portoroz, Yugoslavia"]
+[Date "1958.08.16"]
+[Round "8"]
+[White "Robert J. Fischer"]
+[Black "Bent Larsen"]
+[Result "1-0"]</CODE></PRE>
+
+<P>Any characters that do not match this syntax are silently ignored. Note that the PGN standard requires all games to have at least the seven tags shown above. Any that you omit will be filled in by WinBoard with <CODE>"?"</CODE> (unknown value) or <CODE>"-"</CODE> (inapplicable value).</P>
+
+
+
+<P><B><A NAME="editcomment"></A>Edit Comment</B></P>
+
+<P>Adds or modifies a comment on the current position. Comments are saved by <A HREF="03.htm#savegame">Save Game</A> and are displayed by <A HREF="03.htm#loadgame">Load Game</A>, <A HREF="06.htm#forward">Forward</A>, and <A HREF="06.htm#backward">Backward</A>.</P>
+
+
+
+<P><B><A NAME="enterusername"></A><font color="#008000">Enter Username</font></B></P>
+
+<P><font color="#008000">Allows you to type the name of the human player, which will appear in the PGN header and in the window title.</font></P>
+
+
+
+<P><B><A NAME="pause"></A>Pause</B></P>
+
+<P>Pauses updates to the board, and if you are playing against a local chess engine, also pauses your clock. To continue, select Pause again, and the display will automatically update to the latest position. The <B>P</B> (or <B>C</B>) button is equivalent to selecting Pause.</P>
+
+<P>If you select Pause when you are playing against a chess engine and it is not your move, the chess engine’s clock will continue to run and it will eventually make a move, at which point both clocks will stop. Since board updates are paused, however, you will not see the move until you exit from Pause mode (or select <A HREF="06.htm#forward">Forward</A>). This behavior is meant to simulate adjournment with a sealed move.</P>
+
+<P>If you select Pause while you are in <B>examine</B> mode on ICS, you can step backward and forward in the current history of the examined game without affecting the other examiners or observers. Select Pause again to reconnect yourself to the current state of the game on ICS.</P>
+
+<P>If you select Pause while you are loading a game, the game stops loading. You can load more moves one at a time by selecting <A HREF="06.htm#forward">Forward</A>, or resume automatic loading by selecting Pause again.</P>
+
+</BODY>
+</HTML>
