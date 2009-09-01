@@ -83,7 +83,9 @@ to help update it.</i></p>
       <li><a href="#tag-B.23">[B.23] Can I get Zippy to automatically reconnect to ICS when its connection breaks?</a></li>
       <li><a href="#tag-B.24">[B.24] The chess engines are too strong and always beat me.  How can I adjust the difficulty level to make them weaker?</a></li>
       <li><a href="#tag-B.25">[B.25] May I use the piece bitmaps from XBoard/WinBoard in my own program?</a></li>
-  </ul></li>
+      <li><a href="#tag-B.26">[B.26] How can I get rid of these silly logos that this new WinBoard displays above the board?</a></li>
+      <li><a href="#tag-B.27">[B.27] How can I install logos for other engines, Internet Chess Servers or Human users?</a></li>
+  </ul></li> 
   
   <li><a name="tag-C0" href="#tag-C">[C] XBoard and WinBoard, bugs and problems</a>
     <ul>
@@ -1098,6 +1100,60 @@ shareware, or non-GPL freeware, then you cannot use the bitmaps unless
 you obtain special permission from Elmar.  See the file README.bitmaps
 that comes with the XBoard and WinBoard source code for more
 information and an email address you can write to.</p>
+
+<hr />
+<h3><a name="tag-B.26">[B.26]
+  How can I get rid of these silly logos that this new WinBoard displays above the board?</a></h3>
+
+<p>WinBoard 4.4.0 has an option /autoLogo, which makes is search for bitmap files to display as logo, 
+in the engine directory or in the folder "logos".
+If you see logos without having asked for them, the settings in your winboard.ini file probably contains the line</p>
+<pre>/autoLogo=true</pre>
+<p>Just change that to /autoLogo=false.
+You can also achieve that by starting WinBoard through the startup dialog (from the start menu),
+and then tick "additional options" at the bottom,
+and type /autoLogo=false in the edit field, before pressing OK.
+If you then later select "Save Settings Now" from the Option menu,
+or when "Save Settings on Exit" is on, and you close WinBoard,
+this will automatically end up in your settings field.
+</p><p>
+When /autoLogo=false, logos will only be displayed if you explicitly ask for them,
+by running WinBoard with the option /firstLogo=FILENAME.bmp or /secondLogo=FILENAME.bmp.
+(Which will not be stored in the winboard.ini,
+but might of course be hidden somewhere in a settings file mentioned on the command line as @SETTINGSFILE.ini.)
+</p>
+
+<hr />
+<h3><a name="tag-B.27">[B.27]
+  How can I install logos for other engines, Internet Chess Servers or Human users?</a></h3>
+
+<p>With the option /autoLogo=true, (which is remembered in your settings file),
+WinBoard automatically looks into the engine folder 
+(specified by the /fd="..." or /sd="..." option), for a file called "logo.bmp". 
+If it is found, it is used as a logo for the engine when it plays.
+So all you have to do is put a logo.bmp file there.
+Popular logo formats are 100x50 and 130x65; many engine logos are available from
+<a href="http://www.geocities.com/davedahlem/my_logos.html">David Dahlem</a> or
+<a href="http://kirill-kryukov.com/chess/discussion-board/viewtopic.php?t=545&f=7">Graham Banks</a>
+</p><p>
+It is possible to overrule the /autoLogo by explicitly using a /firstLogo="FILENAME.bmp" 
+or /secondLogo="FILENAME.bmp" with the engine on the engine line in the startup dialog.
+This is useful for engines that run with an adapter like Polyglot,
+when you have only one polyglot on your system, used by many engines.
+E.g. for Fruit the engine line to be typed in or selected from the combo box is
+<pre>
+"polyglot fruit.ini" /firstLogo="D:\Engines\Fruit\logo.bmp" /fd="D:\Engines\Polyglot"
+</pre>
+This prevents WinBoard looking for the logo in the Polyglot folder.
+</p>
+For Internet Chess Servers and Human users the logos should be in the "logos"
+sub-folder of the folder where WinBoard is installed.
+With /autoLogo=true, WinBoard would look for a logo file in that folder with
+the same name as the ICS, suffixed with .bmp (e.g. freechess.org.bmp)
+or the Human username 
+(specified by the /userName="..." option or taken from the system), 
+suffixed by .bmp, e.g. administrator.bmp)
+</p>
 
 <hr /><h2><a name="tag-C">[C] XBoard and WinBoard, bugs and problems</a></h2>
 

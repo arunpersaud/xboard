@@ -2,31 +2,36 @@
 <html>
 
 <head>
-<title>WinBoard 4.3.15</title>
+<title>WinBoard 4.4.0</title>
 </head>
 
 <body>
 <table><tr><td halign="top">
-<h1>WinBoard 4.3.15</h1>
+<h1>WinBoard 4.4.0</h1>
 <h2>"For the ultimate WinBoard experience"</h2>
 <h3>Introduction</h3>
 <p>
-The WinBoard 4.3 series is a continuation of the WinBoard_x line by Allessandro Scotti.
-It is been further developed, and is maintained, by H.G. Muller.
+The WinBoard 4.3 series was a continuation of the WinBoard_x line by Allessandro Scotti.
+It has been further developed, and is maintained, by H.G. Muller.
 Most addtions and improvements that went into this since the last version produced
 by the GNU-Savannah xboard project team, WinBoard 4.2.7b,
-are unfortunately not parallelled in xboard.
-On the contrary, they have destroyed the compatibility of the back-end sources
-shared by WinBoard and xboard with the xboard front-end of version 4.2.7b.
-Since WinBoard 4.3.14, however, the releases again coms with a compatible xboard front-end.
+were unfortunately not parallelled in XBoard.
+On the contrary, they had destroyed the compatibility of the back-end sources
+shared by WinBoard and XBoard with the XBoard front-end of version 4.2.7b.
+Since WinBoard 4.3.14, however, the releases again comes with a compatible XBoard front-end.
 That does not mean that all the features added to WinBoard can already be used
-in this xboard version.
+in the latest XBoard version.
 But some can, an in 4.3.15 many more have been added.
+</p><p>
+WinBoard 4.4 is a merger of the WinBoard 4.3 line (WinBoard 4.3.pre16) 
+and what was left in the GNU-Svannah XBoard repository (WinBoard 4.2.pre8).
+More WinBoard functionality has been ported to XBoard,
+but there still is a sizable gap to bridge.
 </p><p>
 The description below applies specifically to WinBoard, 
 although we have tried to mark features that can also be used in xboard by (x) everywhere.
-This version of xboard does does have som new menus added to control such features.
-Other functionss, if they work at all, must be switched on from the command line.
+This version of XBoard now does have some new menus added to control such features.
+Other functions, if they work at all, must be switched on from the command line.
 </p>
 </td><td width="20">
 </td><td width="200" halign="center" cellpdding="20">
@@ -84,7 +89,7 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
     </td><td>
       Options -> Engine.. (x)
   </td></tr><tr><td>
-      -adjudicateDrawMoves 0 (*)
+      -adjudicateDrawMoves 0 (*x)
     </td><td>
       adjudicate draw when game lasts too long
     </td><td>
@@ -154,9 +159,9 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
     </td><td>
       -
   </td></tr><tr><td>
-      -delayBeforeQuit 0 (*)
+      -delayBeforeQuit 0 (*x)
       <br>
-      -delayAfterQuit 0 (*)
+      -delayAfterQuit 0 (*x)
     </td><td>
       timing parameter specifying how to terminate the engine processes
     </td><td>
@@ -167,6 +172,12 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
       adjust the clocks by 1 minute (up or down)
     </td><td>
       left- or right-cick on clock in edit-game mode
+  </td></tr><tr><td>
+      -niceEngines 0 (*x)
+    </td><td>
+      lower the CPU priority of the engines
+    </td><td>
+      -
   </td></tr><tr><td>
       
     </td><td bgcolor="lightblue">
@@ -234,6 +245,16 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
     </td><td>
       -
   </td></tr><tr><td>
+      -autoLogo false (*)
+      <br>
+      -firstLogo ""
+      <br>
+      -secondLogo ""
+    </td><td>
+      causes WinBoard to display player logos above the board, next to the clocks.
+    </td><td>
+      -
+  </td></tr><tr><td>
       -
     </td><td>
       Swap white and black clock
@@ -242,82 +263,104 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
   </td></tr><tr><td>
       
     </td><td bgcolor="lightblue">
-      <strong>UCI ENGINE OPTIONS</strong>
+      <strong>(UCI) ENGINE OPTIONS</strong>
     </td><td>
       
   </td></tr><tr><td>
-      -polyglotDir "" (*)
+      -polyglotDir "" (*x)
     </td><td>
       tells WinBoard where you installed Polyglot, for automatic invocation with UCI engines
     </td><td>
-      Options -> UCI... (x)
+      Options -> Global Settings... (x)
   </td></tr><tr><td>
-      -polyglotBook "" (*)
+      -polyglotBook "" (*x)
     </td><td>
       tells WinBoard which opening book it should use, or should make Polyglot use.
     </td><td>
-      Options -> UCI... (x)
+      Options -> Global Settings... (x)
   </td></tr><tr><td>
-      -usePolyglotBook false (*)
+      -usePolyglotBook false (*x)
     </td><td>
       turns the use of the Polygot book on or off
     </td><td>
-      Options -> UCI... (x)
+      Options -> Global Settings... (x)
   </td></tr><tr><td>
-      -defaultPathEGTB "c:\egtb" (*)
+      -defaultPathEGTB "c:\egtb" (*x)
     </td><td>
       folder where to find end-game tables
     </td><td>
-      Options -> UCI... (x)
+      Options -> Global Settings... (x)
   </td></tr><tr><td>
-      -defaultCacheSizeEGTB 4 (*)
+      -defaultCacheSizeEGTB 4 (*x)
     </td><td>
       specifies the cache size for UCI engines
     </td><td>
-      Options -> UCI... (x)
+      Options -> Global Settings... (x)
   </td></tr><tr><td>
-      -defaultHashSize 64 (*)
+      -defaultHashSize 64 (*x)
     </td><td>
-      Specifies the size of the main hash table for UCI engines
+      specifies the size of the main hash table for UCI engines and WinBoard engines implementing the memory command
     </td><td>
-      Options -> UCI... (x)
+      Options -> Global Settings... (x)
   </td></tr><tr><td>
-      -firstIsUCI false
+      -firstIsUCI false (x)
       <br>
-      -secondIsUCI false
+      -secondIsUCI false (x)
       <br>
-      -fUCI
+      -fUCI (x)
       <br>
-      -sUCI
+      -sUCI (x)
     </td><td>
       tells WinBoard the corresponding engine should be run through Polyglot
     </td><td>
       -
   </td></tr><tr><td>
-      -firstHasOwnBookUCI true
+      -firstHasOwnBookUCI true (x)
       <br>
-      -secondHasOwnBookUCI true
+      -secondHasOwnBookUCI true (x)
       <br>
-      -fNoOwnBookUCI true
+      -fNoOwnBookUCI true (x)
       <br>
-      -sNoOwnBookUCI true
+      -sNoOwnBookUCI true (x)
+      <br>
+      -firstXBook (x)
+      <br>
+      -secondXBook (x)
     </td><td>
-      tells Polyglot if the engine should use its own opening book
+      tells WinBoard (or Polyglot) if the engine should use its own opening book
     </td><td>
-      Options -> Engine Settings... (xboard only)
+      Options -> Global Settings... (x)
   </td></tr><tr><td>
       -smpCores 1 (*x)
     </td><td>
-      Sets the maximum number of CPUs an SMP engine can use.
+      sets the maximum number of CPUs an SMP engine can use.
       (only affects engines that support the <strong>cores</strong> command of WB protocol)
     </td><td>
-      Options -> Engine Settings... (xboard only)
+      Options -> Global Settings... (x)
   </td></tr><tr><td>
       -egtFormats "" (*x)
     </td><td>
-      Specifies which end-game tables are installed on the computer,
+      specifies which end-game tables are installed on the computer,
       and where they can be found
       (e.g. "nalimov:\chess\egtb,scorpio:\chess\bitbases")
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -firstOptions "" (x)
+      <br>
+      -secondOptions "" (x)
+    </td><td>
+      sets engine-defined options of UCI engines and WinBoard engines that support the option feature.
+    </td><td>
+      Options -> Engine #1 Settings... (x)
+      <br>
+      Options -> Engine #2 Settings... (x)
+  </td></tr><tr><td>
+      -firstNeedsNoncompliantFEN "" (x)
+      <br>
+      -secondNeedsNoncompliantFEN "" (x)
+    </td><td>
+      directly specifies castling and e.p. field to be used in all FENs sent to mentioned engine
     </td><td>
       -
   </td></tr><tr><td>
@@ -341,7 +384,7 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
       -variant normal (x)
     </td><td>
       supports many new variants: xiangqi, shogi, fischerandom, capabanca, gothic, caparandom, janus,
-      shatranj, courier, knightmate, berolina, falcon, cylinder, fairy, super
+      shatranj, courier, knightmate, berolina, falcon, cylinder, fairy, super, great
     </td><td>
       File -> New Variant... (x)
   </td></tr><tr><td>
@@ -401,13 +444,19 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
     </td><td>
       Options -> General... (x)
   </td></tr><tr><td>
+      -userName "" (x)
+    </td><td>
+      sets the name of the human player
+    </td><td>
+      Mode -> Enter Username... (x)
+  </td></tr><tr><td>
       
     </td><td bgcolor="lightblue">
       <strong>USER-INTERFACE OPTIONS AND WINDOW CONTROL</strong>
     </td><td>
       
   </td></tr><tr><td>
-      -moveHistoryUP true (*)
+      -moveHistoryUp true (*)
       <br>
       -moveHistoryX 0 (*)
       <br>
@@ -418,6 +467,7 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
       -moveHistoryH 0 (*)
     </td><td>
       controls opening, placement and size of a window containing the moves of the current game
+      (new in 4.4 is that all X and Y coordinates of auxiliary windows are stored relative to the main window)
     </td><td>
       Mode -> Show Move History (x)
   </td></tr><tr><td>
@@ -488,17 +538,47 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
     </td><td>
       Options -> Game List...
   </td></tr><tr><td>
+      -noGUI (x)
+    </td><td>
+      suppress update of display on all machine and ICS moves (moves, clocks, icon)
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>ICS OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -autoKibitz (x)
+    </td><td>
+      kibitz engine Thinking Output to ICS, and capture opponent kibitz for in PGN
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -zippyShortGame 0 (x)
+    </td><td>
+      ban opponents on ICS that abort without playing
+    </td><td>
+      -
+  </td></tr><tr><td>
       
     </td><td bgcolor="lightblue">
       <strong>MISCELLANEOUS</strong>
     </td><td>
       
   </td></tr><tr><td>
-      -debugFile "winboard.debug"
+      -debugFile "winboard.debug" (x)
       <br>
-      -nameOfDebugFile "winboard.debug"
+      -nameOfDebugFile "winboard.debug" (x)
     </td><td>
       allows you to specify an alternative name for saving the debug information
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -engineDebugOutput 0 (x)
+    </td><td>
+      tells WinBoard if and how to put protocol-violating output in the debug file
     </td><td>
       -
   </td></tr><tr><td>
@@ -508,6 +588,12 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
       (only works for the smaller board formats!)
     </td><td>
       File -> Save Diagram...
+  </td></tr><tr><td>
+      -defaultFrcPosition -1 (*x)
+    </td><td>
+      specify the number of the starting position in shuffle Chess variants
+    </td><td>
+      File -> New Shuffle Game... (x)
   </td></tr><tr><td>
       -
     </td><td>
@@ -523,6 +609,12 @@ and handles the castling, e.p. and 50-move field in FENs on input and output as 
       This mode is specified by a negative value as argument of the /lgi or /lpi options,
       where -1 increments the index after every game of the match,
       and -2 after every two games (so that each position is played with black and white).
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -sameColorGames 0 (x)
+    </td><td>
+      play a match, but without alternating the colors (overrules -matchGames)
     </td><td>
       -
 </td></tr></table>
