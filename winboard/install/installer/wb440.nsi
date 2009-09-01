@@ -69,7 +69,7 @@ SilentInstall normal
     ; Install Section
     ;--------------------------------------------------------------------
     !insertmacro MUI_PAGE_WELCOME
-    !insertmacro MUI_PAGE_LICENSE "${ROOT}COPYRIGHT.txt"
+    !insertmacro MUI_PAGE_LICENSE "${ROOT}WinBoard\doc\COPYRIGHTS.txt"
     !insertmacro MUI_PAGE_COMPONENTS
     Page custom FileAssoc
     !insertmacro MUI_PAGE_DIRECTORY
@@ -116,8 +116,6 @@ Section "WinBoard Core Components" Core
 
 SectionIn 1 RO
 
-    SetOutPath "$INSTDIR"
-    File "${ROOT}README.html"
 
     SetOutPath "$INSTDIR\WinBoard\doc"
     File "${ROOT}WinBoard\doc\fonts.html"
@@ -130,6 +128,10 @@ SectionIn 1 RO
     File "${ROOT}WinBoard\doc\mini.gif"
     File "${ROOT}WinBoard\doc\PG2fruit.png"
     File "${ROOT}WinBoard\doc\zippy.README"
+    File "${ROOT}WinBoard\doc\README.html"
+    File "${ROOT}WinBoard\doc\COPYRIGHTS.txt"
+    File "${ROOT}WinBoard\doc\COPYRIGHT.txt"
+    File "${ROOT}WinBoard\doc\COPYING.txt"
 
     ; logo bitmaps for ICS and users
     SetOutPath "$INSTDIR\WinBoard\logos"
@@ -194,7 +196,7 @@ SectionIn 1 RO
 	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Game Viewer.lnk" "$INSTDIR\WinBoard\winboard.exe" "@viewer" "$INSTDIR\WinBoard\winboard.exe" 1
 	;CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard Help.lnk" "$INSTDIR\WinBoard\winboard.hlp"
 	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Frequently Asked Questions.lnk" "$INSTDIR\WinBoard\doc\FAQ.html"
-	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard README.lnk" "$INSTDIR\README.html"
+	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard Gold Pack README.lnk" "$INSTDIR\WinBoard\doc\README.html"
 	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard UnInstall.lnk" "$INSTDIR\UnInstall.exe"
 	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard Files.lnk" "$INSTDIR\WinBoard"
 	CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Server - chessclub.com.lnk" "$INSTDIR\WinBoard\winboard.exe"  "@ICC" "$INSTDIR\WinBoard\winboard.exe" 0
@@ -205,7 +207,7 @@ SectionIn 1 RO
 
 SectionEnd
 
-SectionGroup /e "Auxilliary Components and Engines" Profiles
+SectionGroup /e "Auxiliary Components and Engines" Profiles
 
     Section "Fairy-Max Demo Engine" fmax
         SectionIn 1 RO
@@ -219,8 +221,8 @@ SectionGroup /e "Auxilliary Components and Engines" Profiles
 
         ; also create a menu item to play Xiangqi with MaxQi. It is put with the Chess Engines becase it uses western-style board
 	  SetOutPath $INSTDIR\WinBoard
-        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
         CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines"
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
         CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\Fairy-Max.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy" "$INSTDIR\Fairy-Max\fmax.exe" 0
         CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Chess Engines\MaxQi (XQ).lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy -fcp MaxQi -scp MaxQi -variant xiangqi" "$INSTDIR\Fairy-Max\MaxQi.exe" 0
         !insertmacro MUI_STARTMENU_WRITE_END
@@ -271,13 +273,7 @@ SectionGroup /e "Auxilliary Components and Engines" Profiles
     SubSection "Xiangqi" Xiangqi
 
       Section "Graphics (required!)" XQgraphics
-        ; the large bitmp of the wooden XQ board is optional, as is the XQ opening book
-        SetOutPath "$INSTDIR\WinBoard"
-        File "${ROOT}Winboard\xq.ini"
-        File "${ROOT}Winboard\xq_book.bin"
-        File "${ROOT}Winboard\UCCI2WB.exe"
-        File "${ROOT}Winboard\QH2WB.exe"
-
+        ; the large bitmap of the wooden XQ board is optional, as is the XQ opening book
         SetOutPath "$INSTDIR\WinBoard\textures"
         File "${ROOT}WinBoard\textures\xqwood.bmp"
         
@@ -285,8 +281,14 @@ SectionGroup /e "Auxilliary Components and Engines" Profiles
         !insertmacro InstallTTF '${FNTDIR}XIANGQI.TTF'
         SendMessage ${HWND_BROADCAST} ${WM_FONTCHANGE} 0 0 /TIMEOUT=5000
 
-        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+        SetOutPath "$INSTDIR\WinBoard"
+        File "${ROOT}Winboard\xq.ini"
+        File "${ROOT}Winboard\xq_book.bin"
+        File "${ROOT}Winboard\UCCI2WB.exe"
+        File "${ROOT}Winboard\QH2WB.exe"
+
         CreateDirectory "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines"
+        !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
         CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard\Xiangqi.lnk" "$INSTDIR\WinBoard\winboard.exe" "@xq" "$INSTDIR\WinBoard\UCCI2WB.exe" 0
         CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\Xiangqi Engines\MaxQi.lnk" "$INSTDIR\WinBoard\winboard.exe" "@fairy @xq -fcp MaxQi -scp MaxQi" "$INSTDIR\Fairy-Max\MaxQi.exe" 0
         CreateShortCut "$SMPROGRAMS\$START_MENU_FOLDER\WinBoard XQ Startup (oriental).lnk" "$INSTDIR\WinBoard\winboard.exe" "@xq" "$INSTDIR\WinBoard\winboard.exe" 2
@@ -507,9 +509,6 @@ FunctionEnd
 
 Section "Uninstall"
 
-	Delete "$INSTDIR\COPYING.txt"
-	Delete "$INSTDIR\COPYRIGHT.txt"
-	Delete "$INSTDIR\README.html"
 	Delete "$INSTDIR\WinBoard\PG\fruit.ini"
 	Delete "$INSTDIR\WinBoard\logos\chessclub.com.bmp"
 	Delete "$INSTDIR\WinBoard\logos\freechess.org.bmp"
@@ -537,6 +536,10 @@ Section "Uninstall"
 	Delete "$INSTDIR\WinBoard\doc\mini.gif"
 	Delete "$INSTDIR\WinBoard\doc\PG2fruit.png"
 	Delete "$INSTDIR\WinBoard\doc\zippy.README"
+	Delete "$INSTDIR\WinBoard\doc\COPYING.txt"
+	Delete "$INSTDIR\WinBoard\doc\COPYRIGHT.txt"
+	Delete "$INSTDIR\WinBoard\doc\COPYRIGHTS.txt"
+	Delete "$INSTDIR\WinBoard\doc\README.html"
 	;Delete "$FONTS\ChessMark.ttf"
 	Delete "$INSTDIR\WinBoard\polyglot.exe"
 	Delete "$INSTDIR\WinBoard\UCCI2WB.exe"
