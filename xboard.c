@@ -2320,6 +2320,19 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 }
 #endif
 
+void EscapeExpand(char *p, char *q)
+{	// [HGM] initstring: routine to shape up string arguments
+	while(*p++ = *q++) if(p[-1] == '\\')
+	    switch(*q++) {
+		case 'n': p[-1] = '\n'; break;
+		case 'r': p[-1] = '\r'; break;
+		case 't': p[-1] = '\t'; break;
+		case '\\': p[-1] = '\\'; break;
+		case 0: *p = 0; return;
+		default: p[-1] = q[-1]; break;
+	    }
+}
+
 int
 main(argc, argv)
      int argc;
@@ -2378,7 +2391,6 @@ main(argc, argv)
 #endif
 #endif
 
-
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
     debugFP = stderr;
@@ -2419,16 +2431,6 @@ main(argc, argv)
 	exit(2);
     }
 
-    if ((chessDir = (char *) getenv("CHESSDIR")) == NULL) {
-	chessDir = ".";
-    } else {
-	if (chdir(chessDir) != 0) {
-	    fprintf(stderr, _("%s: can't cd to CHESSDIR: "), programName);
-	    perror(chessDir);
-	    exit(1);
-	}
-    }
-
     p = getenv("HOME");
     if (p == NULL) p = "/tmp";
     i = strlen(p) + strlen("/.xboardXXXXXx.pgn") + 1;
@@ -2440,6 +2442,28 @@ main(argc, argv)
     XtGetApplicationResources(shellWidget, (XtPointer) &appData,
 			      clientResources, XtNumber(clientResources),
 			      NULL, 0);
+
+    { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
+	static char buf[MSG_SIZ];
+	EscapeExpand(buf, appData.initString);
+	appData.initString = strdup(buf);
+	EscapeExpand(buf, appData.secondInitString);
+	appData.secondInitString = strdup(buf);
+	EscapeExpand(buf, appData.firstComputerString);
+	appData.firstComputerString = strdup(buf);
+	EscapeExpand(buf, appData.secondComputerString);
+	appData.secondComputerString = strdup(buf);
+    }
+
+    if ((chessDir = (char *) getenv("CHESSDIR")) == NULL) {
+	chessDir = ".";
+    } else {
+	if (chdir(chessDir) != 0) {
+	    fprintf(stderr, _("%s: can't cd to CHESSDIR: "), programName);
+	    perror(chessDir);
+	    exit(1);
+	}
+    }
 
     if (appData.debugMode && appData.nameOfDebugFile && strcmp(appData.nameOfDebugFile, "stderr")) {
 	/* [DM] debug info to file [HGM] make the filename a command-line option, and allow it to remain stderr */
@@ -3953,9 +3977,23 @@ void CreateXPMPieces()
 		if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
 					   &(xpmPieceBitmap2[kind][piece]),
 					   NULL, &attr)) != 0) {
-		    fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"),
-			    r, buf);
-		    exit(1);
+		    if(piece != (int)WhiteKing && piece > (int)WhiteQueen) {
+		      // [HGM] missing: read of unorthodox piece failed; substitute King.
+		      snprintf(buf, sizeof(buf), "%s/k%s%u.xpm",
+				ExpandPathName(appData.pixmapDirectory),
+				xpmkind[kind], ss);
+			if (appData.debugMode) {
+			    fprintf(stderr, _("(Replace by File:%s:) "), buf);
+			}
+			r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
+						&(xpmPieceBitmap2[kind][piece]),
+						NULL, &attr);
+		    }
+		    if (r != 0) {
+			fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"),
+				r, buf);
+			exit(1);
+		    }
 		}
 		if(piece <= (int) WhiteKing) 
 		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
