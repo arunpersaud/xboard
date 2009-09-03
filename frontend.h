@@ -55,6 +55,7 @@
 #define _FRONTEND
 
 #include <stdio.h>
+#include <glib.h>
 
 typedef VOIDSTAR ProcRef;
 #define NoProc ((ProcRef) 0)
@@ -114,7 +115,7 @@ void StartLoadGameTimer P((long millisec));
 void AutoSaveGame P((void));
 
 typedef void (*DelayedEventCallback) P((void));
-void ScheduleDelayedEvent P((DelayedEventCallback cb, long millisec));
+void ScheduleDelayedEvent P((DelayedEventCallback cb, guint millisec));
 DelayedEventCallback GetDelayedEvent P((void));
 void CancelDelayedEvent P((void));
 

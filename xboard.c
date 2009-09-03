@@ -6607,23 +6607,30 @@ char *HostName()
 #endif /* not HAVE_GETHOSTNAME */
 }
 
-gint delayedEventTimerTag = 0;
+guint delayedEventTimerTag = 0;
 DelayedEventCallback delayedEventCallback = 0;
 
 void
 FireDelayedEvent(data)
      gpointer data;
 {
-    delayedEventTimerTag = 0;
-    delayedEventCallback();
+  /* remove timer */
+  g_source_remove(delayedEventTimerTag);
+  delayedEventTimerTag = 0;
+
+  /* call function */
+  delayedEventCallback();
+
+  return;
 }
 
 void
 ScheduleDelayedEvent(cb, millisec)
-     DelayedEventCallback cb; long millisec;
+     DelayedEventCallback cb; guint millisec;
 {
     delayedEventCallback = cb;
-    delayedEventTimerTag = gtk_timeout_add(millisec,(GtkFunction) FireDelayedEvent, NULL);
+    delayedEventTimerTag = g_timeout_add(millisec,(GSourceFunc) FireDelayedEvent, NULL);
+    return;
 }
 
 DelayedEventCallback
@@ -6644,14 +6651,14 @@ CancelDelayedEvent()
 {
   if (delayedEventTimerTag)
     {
-      gtk_timeout_remove(delayedEventTimerTag);
+      g_source_remove(delayedEventTimerTag);
       delayedEventTimerTag = 0;
     }
 
   return;
 }
 
-gint loadGameTimerTag = 0;
+guint loadGameTimerTag = 0;
 
 int LoadGameTimerRunning()
 {
@@ -6661,7 +6668,7 @@ int LoadGameTimerRunning()
 int StopLoadGameTimer()
 {
     if (loadGameTimerTag != 0) {
-	gtk_timeout_remove(loadGameTimerTag);
+	g_source_remove(loadGameTimerTag);
 	loadGameTimerTag = 0;
 	return TRUE;
     } else {
@@ -6673,8 +6680,12 @@ void
 LoadGameTimerCallback(data)
      gpointer data;
 {
-    loadGameTimerTag = 0;
-    AutoPlayGameLoop();
+  /* remove timer */
+  g_source_remove(loadGameTimerTag);
+  loadGameTimerTag = 0;
+
+  AutoPlayGameLoop();
+  return;
 }
 
 void
@@ -6682,12 +6693,13 @@ StartLoadGameTimer(millisec)
      long millisec;
 {
   loadGameTimerTag =
-    gtk_timeout_add( millisec, (GtkFunction) LoadGameTimerCallback, NULL);
+    g_timeout_add( millisec, (GSourceFunc) LoadGameTimerCallback, NULL);
+  return;
 }
 
-gint analysisClockTag = 0;
+guint analysisClockTag = 0;
 
-void
+gboolean
 AnalysisClockCallback(data)
      gpointer data;
 {
@@ -6695,18 +6707,20 @@ AnalysisClockCallback(data)
          || appData.icsEngineAnalyze)
       {
 	AnalysisPeriodicEvent(0);
-	StartAnalysisClock();
+	return 1; /* keep on going */
       }
+    return 0; /* stop timer */
 }
 
 void
 StartAnalysisClock()
 {
-    analysisClockTag =
-      gtk_timeout_add( 2000,(GtkFunction) AnalysisClockCallback, NULL);
+  analysisClockTag =
+    g_timeout_add( 2000,(GSourceFunc) AnalysisClockCallback, NULL);
+  return;
 }
 
-gint clockTimerTag = 0;
+guint clockTimerTag = 0;
 
 int ClockTimerRunning()
 {
@@ -6717,7 +6731,7 @@ int StopClockTimer()
 {
     if (clockTimerTag != 0)
       {
-	gtk_timeout_remove(clockTimerTag);
+	g_source_remove(clockTimerTag);
 	clockTimerTag = 0;
 	return TRUE;
       }
@@ -6731,17 +6745,20 @@ void
 ClockTimerCallback(data)
      gpointer data;
 {
-    clockTimerTag = 0;
-    DecrementClocks();
-    return;
+  /* remove timer */
+  g_source_remove(clockTimerTag);
+  clockTimerTag = 0;
+
+  DecrementClocks();
+  return;
 }
 
 void
 StartClockTimer(millisec)
      long millisec;
 {
-    clockTimerTag = gtk_timeout_add(millisec,(GtkFunction) ClockTimerCallback,NULL);
-    return;
+  clockTimerTag = g_timeout_add(millisec,(GSourceFunc) ClockTimerCallback,NULL);
+  return;
 }
 
 void
