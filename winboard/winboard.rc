@@ -1148,7 +1148,7 @@ BEGIN
         MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
         MENUITEM "&Fonts...",                   IDM_Fonts
         MENUITEM "Soun&ds...",                  IDM_Sounds
-        MENUITEM "Game List...\tAlt+Shift+G",   IDM_GameListOptions
+        MENUITEM "Game List...",                IDM_GameListOptions
         MENUITEM SEPARATOR
         MENUITEM "Comm&unications...",          IDM_CommPort
         MENUITEM "&Load Game...\tAlt+Shift+L",  IDM_LoadOptions
