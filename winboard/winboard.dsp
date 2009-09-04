@@ -245,6 +245,10 @@ SOURCE=.\woptions.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\wsettings.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\wsnap.c
 # End Source File
 # Begin Source File

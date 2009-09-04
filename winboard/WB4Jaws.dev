@@ -1,7 +1,7 @@
 [Project]
 FileName=WB4Jaws.dev
 Name=Winboard
-UnitCount=22
+UnitCount=23
 Type=0
 Ver=1
 ObjFiles=
@@ -240,6 +240,16 @@ BuildCmd=
 
 [Unit22]
 FileName=help.c
+CompileCpp=0
+Folder=Winboard
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit23]
+FileName=wsettings.c
 CompileCpp=0
 Folder=Winboard
 Compile=1
