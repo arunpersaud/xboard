@@ -496,6 +496,8 @@
 #define IDC_SPECIFY_ENG_STATIC          1814
 #define IDC_SPECIFY_SERVER_STATIC       1815
 #define OPT_MESS                        1818
+#define IDM_Engine1Options		1890
+#define IDM_Engine2Options		1891
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

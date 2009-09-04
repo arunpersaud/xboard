@@ -1,0 +1,200 @@
+<html>
+<header>
+<title>WGP: Shortcuts for WinBoard</title>
+</header>
+<body>
+<table cellpadding="20"><tr><td>
+<h1>The WinBoard Gold Pack 4.4.0</h1>
+<h2>For the ultimate WinBoard experience!</h2>
+</td><td>
+<img src="mini.gif">
+</td></tr></table>
+<h3>Customizing WinBoard through Shortcuts</h3>
+<p>
+The most convenient way to run invoke WinBoard is usually through PSWBTM,
+as this combines an easy way to select the engine with a large choice of engines.
+A viable alternative for things you do very often 
+(e.g. play on FICS, or play your own engine on ICC)
+is to use a shortcut.
+Such a shortcut hardly offers any flexibility, as it always starts WinBoard with exactly
+the same combination of options.
+But it does allow you to start this combination with a single mouse click,
+which can be convenient for something you do frequently.
+And the WinBoard menus offer you a possibility to tailor some settings later.
+</p><p>
+If you browse to the WinBoard directory of this package (~\WinBoard),
+starting from "My Computer" on the desk top,
+You will see a number of black-knight icons.
+Except for the one marked "winboard" these are all shortcuts
+(recognizable from the small arrow in their lower left).
+They were defined as examples for how shortcuts can be used to ease some common tasks.
+</p><p>
+A good example to look how this works at is the "PGN viewer" shortcut.
+Double-click this, and you will see WinBoard pop up.
+Only the WinBoard main and move-history window will be there.
+Compare this to what you get when you click the winboard icon itself (i.e. not a shotcut):
+this will pop up the start-up dialog first, where you would have to tick that you want
+to use WinBoard to view or edit games only, after which it would come up in the default mode,
+with game history, engine output and evaluation graph all open up.
+(Unless you changed this default after downloading.)
+So to get into the same mode as was pre-programmed in the "PGN Viewer" shortcut,
+you would first have to close these auxiiary windows (in the "Mode" menu). 
+So the shortcut does save quite some effort.
+</p><p>
+In a shortcut you can include any command-line options with the command that invokes WinBoard
+(in the target field that you see when you right-click the shortcut, and select "properties").
+The shortcuts in this package are all based on the use of "indirection" file arguments.
+That means that the actual arguments for, say, the "PGN Viewer" icon,
+are collected into a file "viewer.ini".
+The only option on the command-line in the shortcut is then "@viewer".
+Such a name preceded by a '@' sign is interpreted by WinBoard as the name of an .ini file
+(in this case viewer.ini), which is then read to get the actual option settings.
+This allows for far more options than can be put in the target line of the shortcut,
+and allows you to easily modify the options with a text editor like NotePad,
+rather than in the cramped confines of the shortcut properties dialog.
+</p><p>
+So when you want to change the settings of the shortcuts,
+you only have to change the contents of the corresponding .ini file.
+The shortcuts themselves only contain
+</p>
+~\WinBoard\winboard.exe @INIFILENAME
+<p>
+in their target field, 
+where the twiddle stands for the path where you installed the Gold Pack.
+(Windows XP adapts this automatically, first time you use the shortcut.)
+And this can always stay that way.
+(Note that Windows XP and Vista do not show you the "@INIFILENAME" in the target field, 
+when you open its properties dialog, which is a bit confusing.)
+</p>
+<h3>Changing the Shortcut Settings</h3>
+<p>
+There is thus no reason to ever touch the shortcuts themselves.
+All you have to do is to edit or replace the corresponding.ini file.
+For instance, for the shortcut to play against Fairy-Max,
+the settingsfile "fairy.ini" contains:
+</p>
+<pre>
+;
+; parameters for playing against an engine
+;
+/cp
+/firstChessProgram="fmax 22"
+/firstDirectory="../Fairy-Max"
+/secondChessProgram="fmax 22"
+/secondDirectory="../Fairy-Max"
+;
+;
+; define window layout
+;
+/autoLogo=true
+/moveHistoryUp=true
+/evalGraphUp=false
+/engineOutputUp=false
+/hideThinkingFromHuman=true
+;
+; define window positions
+;
+/winWidth=426
+/winHeight=539
+/moveHistoryX=426
+/moveHistoryY=0
+/moveHistoryW=250
+/moveHistoryH=539
+;
+;
+; prevent these settings from becoming default
+; 
+/saveSettingsOnExit=false</pre>
+<p>
+One thing that is apparent is that a .ini file can contain "comments"
+describing what the options do, in lines starting with a semicolon.
+From top to bottom, the options tell WinBoard that we want it 
+to run a Chess program (so it skips the startup dialog),
+which one, and where to find it.
+Note that WinBoard always wants to have two Chess programs in this mode,
+so we give it the same twice.
+(The second program is only used when you select Two-Machines Mode.)
+In the next section we tell WinBoard that it should try to find logos
+to display with the players,
+that of the three auxiliary windows only the move history should be open,
+and that the Human opponent should not be alowed to see what the engine
+is thinking.
+</p><p>
+Then follows a section which describes exactly where to locate the windows,
+in this case only the move-history window.
+The position of this is given (in pixels) compared to the position of
+the main window.
+Note it does not specify where to position the main window,
+or what boardSize to use.
+So for this the default value will be used.
+(Usually what was used last time, as remembered in the winboard.ini file.)
+For reference, though, the width and height of the main window for
+which the position information on the other windows refers,
+is mentioned first, as /winWidth and /winHeight.
+This allows WinBoard to conclude at startup that the move-history window
+was touching the main window on the right edge 
+(since winWidth = moveHistoryX).
+So that it can retain this attachment if we start up WinBoard with
+a main window of a different width.
+(E.g. because we are playing Gothic Chess on a 10x8 board.)
+</p><p>
+At the bottom there is an option that says all this should not be copied 
+to the win	board.ini file automatically.
+After all, because these settings are collected in a shortcut,
+you can summon them at the click of a mouse.
+So there is no reason to make them disturb the carefuly chosen settings 
+of your previous session,
+which might take you a lot of effort to reproduce.
+</p><p>
+OK, that was pretty nasty, especially the coordinates part.
+You don't want to calculate coordinates by hand, and find out by trial and
+error what looks nice.
+A more convenient way of adjusting this, 
+is to start WinBoard not through a shortcut, but through the startup dialog,
+and then drag and size the windows where you want them 
+(or close them if you don't want them).
+You then save the settings in winboard.ini
+(usually done automatically, when you close WinBoard,
+but you can do it also with the "Options -> Save Settings Now" menu).
+Now you can open winboard.ini with the text editor,
+and at the end you will see all the coordinates of the windows as
+you just layed them out.
+Simply copy this information (starting with the /winWidth parameter)
+to the .ini file of the shortcut you are customizing.
+</p>
+<h3>Making a Shortcut from Scratch</h3>
+<p>
+If you want to create an entirely new shortcut, 
+e.g. for a task you commonly perform, but which was not delivered with this package,
+you can use the following procedure:
+</p><p>
+First start up WinBoard, and bring it in exactly the state you would want it
+to start up in through the shortcut.
+Then save the settings on the winboard.ini file,
+make a copy of winboard.ini, and rename that copy to "MyShortcut.ini" (say).
+Then open this MyShortcut.ini in NotePad (usually by double-left-clicking it).
+Now you can add option settings to it which are normally not remembered
+from session to session (because they are not saved in winboard.ini),
+such as the variant (e.g. /variant=fischerandom),
+or the chess program and its folder (e.g. /fcp=Fruit /fd="..\Fruit" /fUCI).
+</p><p>
+Right-click the "winboard" knight icon (which is not a shortcut),
+and select "Make Shortcut" from the popup menu.
+Change the name of the newly appearing shortcut to "MyShortcut".
+Then right-click this shortcut, and select "Propeties".
+The text in the "target" field of the popup will now just be the name of the winboard.exe.
+Click this text at the end to put the cursor there (posibly with help of the arrow keys).
+Then add to this line " @MyShortcut.ini", so the line becomes:
+</p>
+~\WinBoard\winboard.exe @MyShortcut.ini
+<p>
+and click "OK". This completes the process.
+</p><p>
+This is pretty much all that can be said about how to mak shortcuts;
+the main problem is to figure out what the options are that do what you want done.
+Looking in the winboard.ini file often can provide inspiration, and when all else fails,
+as a final resort, you can read the manual!
+</p>
+
+</body>
+</html>

@@ -1142,11 +1142,13 @@ BEGIN
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions
         MENUITEM "Adjudications...\tAlt+Shift+J",IDM_EnginePlayOptions
-        MENUITEM "Engine Settings...\tAlt+Shift+U",IDM_OptionsUCI
+        MENUITEM "Global Settings...\tAlt+Shift+U",IDM_OptionsUCI
+        MENUITEM "Engine #1 Settings...",       IDM_Engine1Options
+        MENUITEM "Engine #2 Settings...",       IDM_Engine2Options
         MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
         MENUITEM "&Fonts...",                   IDM_Fonts
         MENUITEM "Soun&ds...",                  IDM_Sounds
-        MENUITEM "Game List...\tAlt+Shift+G",   IDM_GameListOptions
+        MENUITEM "Game List...",                IDM_GameListOptions
         MENUITEM SEPARATOR
         MENUITEM "Comm&unications...",          IDM_CommPort
         MENUITEM "&Load Game...\tAlt+Shift+L",  IDM_LoadOptions

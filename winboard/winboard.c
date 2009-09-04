@@ -449,6 +449,8 @@ VOID EngineOutputPopDown();
 BOOL EngineOutputIsUp();
 VOID EngineOutputUpdate( FrontEndProgramStats * stats );
 
+VOID EngineOptionsPopup(); // [HGM] settings
+
 VOID GothicPopUp(char *title, VariantClass variant);
 /*
  * Setting "frozen" should disable all user input other than deleting
@@ -856,7 +858,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   wp.rcNormalPosition.bottom = boardY + winHeight;
   SetWindowPlacement(hwndMain, &wp);
 
-  SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
+  if(!appData.noGUI) SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
                0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 
   if (hwndConsole) {
@@ -866,7 +868,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 #endif
     ShowWindow(hwndConsole, nCmdShow);
   }
-  UpdateWindow(hwnd);
+  if(!appData.noGUI)   UpdateWindow(hwnd);  else ShowWindow(hwnd, SW_MINIMIZE);
 
   return TRUE;
 
@@ -5094,7 +5096,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                                                                         ) {
       /* Downclick on different square. */
       /* [HGM] if on holdings file, should count as new first click ! */
-      { /* [HGM] <sameColor> now always do UserMoveTest(), and check colors there */
+      /* [HGM] <sameColor> now always do UserMoveTest(), and check colors there */
 	toX = x;
 	toY = y;
         /* [HGM] <popupFix> UserMoveEvent requires two calls now,
@@ -5107,6 +5109,9 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break; 
 	} else 
         if(moveType != ImpossibleMove) {
+	  if(moveType == IllegalMove) {
+		;
+	  } else
           /* [HGM] We use PromotionToKnight in Shogi to indicate frorced promotion */
           if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
             ((moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
@@ -5124,7 +5129,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                      If promotion to Q is legal, all are legal! */
 		  if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat)
 		  { ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
-		    // kludge to temporarily execute move on display, wthout promotng yet
+		    // kludge to temporarily execute move on display, without promotng yet
 		    promotionChoice = TRUE;
 		    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
 		    boards[currentMove][toY][toX] = p;
@@ -5140,23 +5145,20 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                  ClearHighlights();
              }
              FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
-	     fromX = fromY = -1;
              if (appData.animate && !appData.highlightLastMove) {
                   ClearHighlights();
                   DrawPosition(forceFullRepaint || FALSE, NULL);
              }
           }
-          break;
+          fromX = fromY = -1;
+	  break;
         }
         if (gotPremove) {
-            /* [HGM] it seemed that braces were missing here */
-            SetPremoveHighlights(fromX, fromY, toX, toY);
-            fromX = fromY = -1;
-            break;
-        }
-      }
-      ClearHighlights();
-      DrawPosition(forceFullRepaint || FALSE, NULL);
+	    SetPremoveHighlights(fromX, fromY, toX, toY);
+            DrawPosition(forceFullRepaint || FALSE, NULL);
+	} else ClearHighlights();
+        fromX = fromY = -1;
+        DrawPosition(forceFullRepaint || FALSE, NULL);
     }
     /* First downclick, or restart on a square with same color piece */
     if (!frozen && OKToStartUserMove(x, y)) {
@@ -5652,7 +5654,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     
     JAWS_ALT_INTERCEPT
 
-    if (appData.icsActive && (isalpha((char)wParam) || wParam == '0')) { 
+    if (appData.icsActive && (char)wParam > ' ' && !((char)wParam >= '1' && (char)wParam <= '9')) { 
 	// [HGM] movenum: for non-zero digits we always do type-in dialog
 	HWND h = GetDlgItem(hwndConsole, OPT_ConsoleInput);
 	if (IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
@@ -6125,6 +6127,14 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_EnginePlayOptions:
       EnginePlayOptionsPopup(hwnd);
+      break;
+
+    case IDM_Engine1Options:
+      EngineOptionsPopup(hwnd, &first);
+      break;
+
+    case IDM_Engine2Options:
+      EngineOptionsPopup(hwnd, &second);
       break;
 
     case IDM_OptionsUCI:

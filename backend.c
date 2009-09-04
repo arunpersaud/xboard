@@ -242,6 +242,7 @@ int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     
 VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
 int lastIndex = 0;      /* [HGM] autoinc: last game/position used in match mode */
 int opponentKibitzes;
+int lastSavedGame; /* [HGM] save: ID of game */
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -2108,9 +2109,11 @@ read_from_ics(isr, closure, data, count, error)
 	for (i = 0; i < count; i++) {
 	    if (data[i] != NULLCHAR && data[i] != '\r')
 	      buf[buf_len++] = data[i];
-	    if(buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' &&
-                               buf[buf_len-3]==' '  && buf[buf_len-2]==' '  && buf[buf_len-1]==' ')
+	    if(buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
+                               buf[buf_len-3]==' '  && buf[buf_len-2]==' '  && buf[buf_len-1]==' ') {
 		buf_len -= 5; // [HGM] ICS: join continuation line of Lasker 2.2.3 server with previous
+		buf[buf_len++] = ' '; // replace by space (assumes ICS does not break lines within word)
+	    }
 	}
 
 	buf[buf_len] = NULLCHAR;
@@ -3824,7 +3827,7 @@ ParseBoard12(string)
 #endif
     }
 
-    if (moveNum > 0 && !gotPremove) {
+    if (moveNum > 0 && !gotPremove && !appData.noGUI) {
 	/* If move comes from a remote source, animate it.  If it
 	   isn't remote, it will have already been animated. */
 	if (!pausing && !ics_user_moved && prevMove == moveNum - 1) {
@@ -3854,7 +3857,7 @@ ParseBoard12(string)
 
     /* Display opponents and material strengths */
     if (gameInfo.variant != VariantBughouse &&
-	gameInfo.variant != VariantCrazyhouse) {
+	gameInfo.variant != VariantCrazyhouse && !appData.noGUI) {
 	if (tinyLayout || smallLayout) {
 	    if(gameInfo.variant == VariantNormal)
 		sprintf(str, "%s(%d) %s(%d) {%d %d}",
@@ -3882,8 +3885,7 @@ ParseBoard12(string)
 
 
     /* Display the board */
-    if (!pausing) {
-
+    if (!pausing && !appData.noGUI) {
       if (appData.premove)
 	  if (!gotPremove ||
 	     ((gameMode == IcsPlayingWhite) && (WhiteOnMove(currentMove))) ||
@@ -5208,20 +5210,32 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 	    return 0;
 	}
     }
-
+  
   /* [HGM] <popupFix> kludge to avoid having to know the exact promotion
      move type in caller when we know the move is a legal promotion */
   if(moveType == NormalMove && promoChar)
     moveType = PromoCharToMoveType(WhiteOnMove(currentMove), promoChar);
 
-  if(appData.debugMode)
+  if(appData.debugMode) 
     fprintf(debugFP, "moveType 1 = %d, promochar = %x\n", moveType, promoChar);
 
   /* [HGM] convert drag-and-drop piece drops to standard form */
-  if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1)
+  if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) 
     {
       moveType = WhiteOnMove(currentMove) ? WhiteDrop : BlackDrop;
-      fromX = boards[currentMove][fromY][fromX];
+      if(appData.debugMode) 
+	fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n", 
+		moveType, currentMove, fromX, fromY, boards[currentMove][fromY][fromX]);
+      //         fromX = boards[currentMove][fromY][fromX];
+      // holdings might not be sent yet in ICS play; we have to figure out which piece belongs here
+      if(fromX == 0) 
+	fromY = BOARD_HEIGHT-1 - fromY; // black holdings upside-down
+
+      fromX = fromX ? WhitePawn : BlackPawn; // first piece type in selected holdings
+
+      while(PieceToChar(fromX) == '.' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) 
+	fromX++; 
+
       fromY = DROP_RANK;
     }
 
@@ -5681,12 +5695,12 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  if(appData.autoKibitz && !appData.icsEngineAnalyze ) { /* [HGM] kibitz: send most-recent PV info to ICS */
 		char buf[3*MSG_SIZ];
 
-		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %.0f nodes, %1.0f knps) PV=%s\n",
+		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %1.0f knps) PV=%s\n",
 			programStats.score / 100.,
 			programStats.depth,
 			programStats.time / 100.,
-			u64ToDouble(programStats.nodes),
-			u64ToDouble(programStats.nodes) / (10*abs(programStats.time) + 1.),
+			(unsigned int)programStats.nodes,
+			(unsigned int)programStats.nodes / (10*abs(programStats.time) + 1.),
 			programStats.movelist);
 		SendToICS(buf);
 	  }
@@ -6160,6 +6174,10 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	cps->useSigint = FALSE;
 	cps->useSigterm = FALSE;
     }
+    if (strncmp(message, "feature ", 8) == 0) { // [HGM] moved forward to pre-empt non-compliant commands
+      ParseFeatures(message+8, cps);
+      return; // [HGM] This return was missing, causing option features to be recognized as non-compliant commands!
+    }
 
     /* [HGM] Allow engine to set up a position. Don't ask me why one would
      * want this, I was asked to put it in, and obliged.
@@ -6263,9 +6281,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	    SendToICS("\n");
 	    return;
 	}
-    }
-    if (strncmp(message, "feature ", 8) == 0) {
-      ParseFeatures(message+8, cps);
     }
     if (sscanf(message, "pong %d", &cps->lastPong) == 1) {
 	return;
@@ -7762,6 +7777,28 @@ void UserAdjudicationEvent( int result )
 }
 
 
+// [HGM] save: calculate checksum of game to make games easily identifiable
+int StringCheckSum(char *s)
+{
+	int i = 0;
+	if(s==NULL) return 0;
+	while(*s) i = i*259 + *s++;
+	return i;
+}
+
+int GameCheckSum()
+{
+	int i, sum=0;
+	for(i=backwardMostMove; i<forwardMostMove; i++) {
+		sum += pvInfoList[i].depth;
+		sum += StringCheckSum(parseList[i]);
+		sum += StringCheckSum(commentList[i]);
+		sum *= 261;
+	}
+	if(i>1 && sum==0) sum++; // make sure never zero for non-empty game
+	return sum + StringCheckSum(commentList[i]);
+} // end of save patch
+
 void
 GameEnds(result, resultDetails, whosays)
      ChessMove result;
@@ -7911,7 +7948,9 @@ GameEnds(result, resultDetails, whosays)
 		DisplayMove(currentMove - 1);
 
 	    if (forwardMostMove != 0) {
-		if (gameMode != PlayFromGameFile && gameMode != EditGame) {
+		if (gameMode != PlayFromGameFile && gameMode != EditGame
+		    && lastSavedGame != GameCheckSum() // [HGM] save: suppress duplicates
+								) {
 		    if (*appData.saveGameFile != NULLCHAR) {
 			SaveGameToFile(appData.saveGameFile, TRUE);
 		    } else if (appData.autoSaveGames) {
@@ -8258,7 +8297,7 @@ Reset(redraw, init)
     DisplayTitle("");
     DisplayMessage("", "");
     HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
-
+    lastSavedGame = 0; // [HGM] save: make sure next game counts as unsaved
     return;
 }
 
@@ -9653,8 +9692,10 @@ SaveGamePGN(f)
 	linelen += numlen;
 
 	/* Get move */
-	strcpy(move_buffer, parseList[i]); // [HGM] pgn: print move via buffer, so it can be edited
+	strcpy(move_buffer, SavePart(parseList[i])); // [HGM] pgn: print move via buffer, so it can be edited
 	movelen = strlen(move_buffer); /* [HGM] pgn: line-break point before move */
+#if 0
+	// SavePart already does this!
         if( i >= 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
 		int p = movelen - 1;
 		if(move_buffer[p] == ' ') p--;
@@ -9663,7 +9704,7 @@ SaveGamePGN(f)
 		    if(p && move_buffer[p-1] == ' ') move_buffer[movelen=p-1] = 0;
 		}
         }
-
+#endif
 	/* Print move */
 	blank = linelen > 0 && movelen > 0;
 	if (linelen + (blank ? 1 : 0) + movelen > PGN_MAX_LINE) {
@@ -9748,6 +9789,7 @@ SaveGamePGN(f)
     }
 
     fclose(f);
+    lastSavedGame = GameCheckSum(); // [HGM] save: remember ID of last saved game to prevent double saving
     return TRUE;
 }
 
@@ -9824,6 +9866,7 @@ SaveGame(f, dummy, dummy2)
      char *dummy2;
 {
     if (gameMode == EditPosition) EditPositionDone();
+    lastSavedGame = GameCheckSum(); // [HGM] save: remember ID of last saved game to prevent double saving
     if (appData.oldSaveStyle)
       return SaveGameOldStyle(f);
     else
@@ -12433,9 +12476,27 @@ ParseOption(Option *opt, ChessProgramState *cps)
 	    opt->min = min;
 	    opt->max = max;
 	    opt->type = Spin;
-	} else if(p = strstr(opt->name, " -string ")) {
+	} else if((p = strstr(opt->name, " -slider "))) {
+	    // for now -slider is a synonym for -spin, to already provide compatibility with future polyglots
+	    if((n = sscanf(p, " -slider %d %d %d", &def, &min, &max)) < 3 ) return FALSE;
+	    if(max < min) max = min; // enforce consistency
+	    if(def < min) def = min;
+	    if(def > max) def = max;
+	    opt->value = def;
+	    opt->min = min;
+	    opt->max = max;
+	    opt->type = Spin; // Slider;
+	} else if((p = strstr(opt->name, " -string "))) {
 	    opt->textValue = p+9;
 	    opt->type = TextBox;
+	} else if((p = strstr(opt->name, " -file "))) {
+	    // for now -file is a synonym for -string, to already provide compatibility with future polyglots
+	    opt->textValue = p+7;
+	    opt->type = TextBox; // FileName;
+	} else if((p = strstr(opt->name, " -path "))) {
+	    // for now -file is a synonym for -string, to already provide compatibility with future polyglots
+	    opt->textValue = p+7;
+	    opt->type = TextBox; // PathName;
 	} else if(p = strstr(opt->name, " -check ")) {
 	    if(sscanf(p, " -check %d", &def) < 1) return FALSE;
 	    opt->value = (def != 0);
@@ -12443,6 +12504,7 @@ ParseOption(Option *opt, ChessProgramState *cps)
 	} else if(p = strstr(opt->name, " -combo ")) {
 	    opt->textValue = (char*) (&cps->comboList[cps->comboCnt]); // cheat with pointer type
 	    cps->comboList[cps->comboCnt++] = q = p+8; // holds possible choices
+	    if(*q == '*') cps->comboList[cps->comboCnt-1]++;
 	    opt->value = n = 0;
 	    while(q = StrStr(q, " /// ")) {
 		n++; *q = 0;    // count choices, and null-terminate each of them
@@ -12548,7 +12610,11 @@ ParseFeatures(args, cps)
     if (BoolFeature(&p, "smp", &cps->maxCores, cps)) continue;
     if (StringFeature(&p, "egt", &cps->egtFormats, cps)) continue;
     if (StringFeature(&p, "option", &(cps->option[cps->nrOptions].name), cps)) {
-	ParseOption(&(cps->option[cps->nrOptions++]), cps); // [HGM] options: add option feature
+	if(!ParseOption(&(cps->option[cps->nrOptions++]), cps)) { // [HGM] options: add option feature
+	    sprintf(buf, "rejected option %s\n", cps->option[--cps->nrOptions].name);
+	    SendToProgram(buf, cps);
+	    continue;
+	}
 	if(cps->nrOptions >= MAX_OPTIONS) {
 	    cps->nrOptions--;
 	    sprintf(buf, "%s engine has too many options\n", cps->which);

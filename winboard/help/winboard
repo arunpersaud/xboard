@@ -1,0 +1,38 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=..\..\..\xboard-4.4.0.chm
+Contents file=Table of Contents.hhc
+Default topic=html\winb3mnn.htm
+Display compile progress=No
+Index file=winboard.hhk
+Language=0x413 Nederlands (Nederland)
+
+
+[FILES]
+html\winb3mnn.htm
+html\winb31o3.htm
+html\winb54vp.htm
+html\winb5lkl.htm
+html\winb9gqd.htm
+html\winb0nlh.htm
+html\winb85it.htm
+html\winb3j3p.htm
+html\winb4h6d.htm
+html\winb87ar.htm
+html\winb5qpf.htm
+html\winb75yr.htm
+html\winb3i0k.htm
+html\winb701f.htm
+html\winb1v8z.htm
+html\winb8ws3.htm
+html\winb55yr.htm
+html\winb8n03.htm
+html\winb85yr.htm
+html\winb2tv7.htm
+html\winb381f.htm
+html\winb1hir.htm
+html\winb3wmr.htm
+html\winb1ks4.htm
+
+[INFOTYPES]
+

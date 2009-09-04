@@ -1,0 +1,173 @@
+<html>
+<header>
+<title>WGP: Installing Engines</title>
+</header>
+<body>
+<table cellpadding="20"><tr><td>
+<h1>The WinBoard Gold Pack 4.4.0</h1>
+<h2>For the ultimate WinBoard experience!</h2>
+</td><td>
+<img src="../../WinBoard/doc/mini.gif">
+</td></tr></table>
+<h3>Installing Engines in PSWBTM</h3>
+<p>
+Installing a Chess engine always begins with obtaining the necessary files.
+There are many places from which you can download Chess engines.
+Especially the website of 
+<a href="http://wbec-ridderkerk.nl/html/enginesindex.htm">WBEC</a> offers a good overview of which engines are around,
+and where they can be obtained.
+</p><p>
+When downloading an engine, it usually come as a compressed archive, (e.g. a .zip file),
+containing the engine executabe (= application), plus the data files it needs for its operation
+(opening books, logos, manuals, sometimes source code).
+There are many compression formats around, e.g. .zip, .tar.gz, .rar, .7z.
+On a modern Windows system, the decompression sftware will understand most of those.
+</p><p>
+One thing one should carefully observe is if the downloaded archive contains a single folder,
+or  large group of individual files and folders.
+In the first case, we would like to place this single folder in the folder on our computer
+that holds all our Chess engines:
+we would like to have a single folder for each engine, or each version of an engine there.
+Otherwise, things would quickly degenerate into a mess, one Chess engine using incompatible data of another,
+because it happened to have the same name, etc.
+So if the engine comes as a set of loose files inside the archive, rather than a single folder,
+we first want to create a new folder inside the folder that holds all our engines,
+and unpack the archive there.
+Otherwise we would have a lot of trouble collecting the just unpacked files and folders
+from amongst out other engine folders.
+Milk is a lot easier to spill on the floor than to get back into the bottle, and the same holds for files.
+So just to be save I always create a new folder for the engine I am downloading.
+If it turns out that unpacking the download gives me a single folder inside this folder,
+it is easy enough to eliminate one level of folders, by selecting all the contents,
+and dragging it to the encompassing folder.
+Very often it is the folder that came with the archive that I get rid off, because it has a cumbersome name.
+</p><p>
+When the files are sitting where you want them, you have to tell PSWBTM were they are.
+PSWBTM will transmit that information to WinBoard when it wants this engine to play.
+So WinBoard itself does not have to know anything of the engines,
+except when you also want to run the without PSWBTM,
+through the WinBoard startup dialog.
+</p><p>
+To install an engine in PSWBTM, you start up PSWBTM, and select "Tools -> Engine Manager" to pop up
+the engine-manager window.
+First click the "New" button on the lower-left, to signal that you are going to install a new engine.
+(Otherwise you run the risk to overwrite an existing engine, so that it wil disappear from te PSWBTM database.)
+After that, you have to complete the three text fields on the upper right.
+</p><p>
+In the upper field you have to type the name under which you want this engine to appear in the list you see on the left.
+You can give it any name you like, this information is only for your convenience.
+On the second line you must tell PSWBTM where it can find the engine application file.
+Simplest is to use the "Browse" button to browse to it.
+This pops up a file-selector dialog.
+What you have to do then depends on the type of engine,
+if it is WinBoard or UCI.
+First we discuss the WinBoard case.
+</p>
+<h3>WinBoard Engines</h3>
+<p>
+Navigate through your file-system tree, first to your folder where all engines folders are, 
+and then to the folder of the freshly downloaded engine in it.
+The file-selector dialog only shows you folders and application (.exe) files.
+Usually the engine applicaton is present in the folder you downloaded; 
+sometimes it in a sub-folder "bin".
+Once you reach the executable, double-click it, and the file-selector dialaog will close,
+and leave the full name of the application in the second input field of the engine manager window.
+</p><p>
+The third line has to contain the options the engine needs on the command line that starts it.
+What you have to put here can vary enormously, and suffers from total absence of standardization.
+Some engines do not need any options on their command line,
+because they read all their settings from asom fixed file.
+(Usulally this is a .ini file that came with the download of the engine, and sits with it in the same folder.)
+Fairy-max is a very simple engine, and the only argument it can have is a number to specify the size of its hash table.
+If you omit this, Fairy-Mas uses a default value (96MB), so the option is not strictly needed.
+In the WinBoard Gold Pack Fairy-Max is installed with an 48MB hash table, which for Fairy-Max is indicated by the option "22".
+Which options you need, and what their values mean can only be learned from reading the documentation that came with the engine.
+Fairly common is an option to set the hash size, often called hash, -hash or /hash=....
+Some engines need an option xboard or /xboard or --io-mode=xboard to work as WinBoard engines,
+and use their own built-in GUI otherwise.
+Anyway, whatever the engine needs, you have to type in this third line.
+</p>
+<h3>UCI Engines</h3>
+<p>
+For UCI Engines you must not browse to the engine aplication, but to Polygot in stead.
+The latter can be found in the Polyglot15w folder of the WinBoard Gold Pack,
+which should also be located in the folder with all engine folders.
+In fact Polyglot is an engine for WinBoard, 
+except that it does't think up the moves it sends toWinBoard by itself,
+but consults a UCI engine (speaking to it in UCI protocol) without WinBoard knowing anything about it.
+The application you need is named "polyglot.exe" in this folder.
+Do not confuse it with "Polyglot GUI.exe, which should also be in this folder,
+if you downloaded it.
+Double-click polyglot to leave the file-selector dialog, and get its full file name in the second input field of the engine manager.
+</p><p>
+The third line, for the engine options, now contains the options for Polyglot.
+The latter needs only a single option, the name of a file where is specified what it really has to do
+(i.e. which UCI engine it should fire up to get the moves, and what parameter settings it should use to control this engine).
+If you type a simple filename (without a folder-name part, i.e. without backslashes '\' in it),
+Polyglot will look for this file in the directory where its .exe file is located,
+which is just the place where we put all such files.
+So we type such a simple filename here, which reminds us of the engine.
+E.g. to install Fruit, we would type "fruit.ini" on the third line.
+That is not the full story yet,
+as we also would have to provide the fruit.ini file.
+Normally we would have made that file before we would install the engine in PSWBTM,
+(see the <a = href="polyglotGUI">installing UCI engines with Polygot GUI</a> page),
+but you can also do it afterwards.
+The WinBoard Gold pack does already contain a pre-installed fruit.ini file, though,
+so at the moment we can simply continue.
+</p>
+<h3>Finishing the install for both WB and UCI engines</h3>
+<p>
+It is possible to add  few options for WinBoard that will only be used with this engine,
+and not automatically with any other engine you put it with in the same tournament.
+(Usually you don't need that so you might skip this paragraph, but it is useful to be aware of the possibility.)
+E.g., you could give it a time-odds penalty if it was too strong to make the tournament interesting,
+and let it play with only half the time (say) of its opponents.
+Winboard does have the optons /firstTimeOdd=2 and /secondTimeOdds=2 for this.
+PSWBTM does not have a separate input field for such engine-specific WinBoard settigs,
+but you can enter them at the end of te engine options, on the third input line,
+after the word "WBopt".
+Everything behind this word will be interpreted as WinBoard options,
+which will overrule any options in the winboard.ini, or even on the command line invoking WinBoard.
+Because the engine will sometimes run under WinBoard as first, and sometimes as second engine,
+(depending on the color it plays),
+you have to leave it open which of the two time-odds options should be used.
+This is done by replacing the "first" or "second" in the option name by "%s".
+So for the time-odds example, you would add "WBopt /%sTimeOdds=1" to the third line.
+An example for Fairy-Max is pre-installed.
+</p><p>
+When you have completed all three text-input fields, you should press the button "Save" below it.
+After that, you could install a new engine by pressing "New",
+but be sure you press "Save" first, or you would lose everything you just did!
+If you don't ant to install any other engines,
+you should press "Save Changes", and then "Exit" to close the engine manager.
+(It is kind eough to arn you if you forget to press "Save Changes",
+which is just as well, as exiting without it would make you lose all engines you just installed!)
+The newly installed engines are then ready for selection in a tournament!
+(Unless it was UCI and you forgot to make the Polyglot .ini file!)
+Befor you press "Exit"
+</p>
+<h3>Links</h3>
+<p>
+a href=".html"></a>
+</br>
+<a href=".html"></a>
+</br>
+<a href=".html"></a>
+</br>
+<a href=".html"></a>
+</br>
+<a href=""></a>
+</br>
+<a href=""></a>
+</br>
+<a href=""></a>
+</p><p>
+</p><p>
+</p><p>
+</p><p>
+</p><p>
+
+</p>
+</body>
+</html>

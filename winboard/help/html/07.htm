@@ -1,0 +1,401 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Options Menu</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="optionsmenu"></A>Options Menu</B></P>
+
+
+
+<P><B><A NAME="flipview"></A><U>Flip View</U></B></P>
+
+<P>Inverts your view of the chessboard.</P>
+
+<P>If you are playing a game on the ICS, the board is always oriented at the start of the game so that your pawns move from the bottom of the window towards the top. Otherwise, the starting position is determined by the <A HREF="16.htm#flipviewoption">flipView</A> command line option.</P>
+
+
+
+<P><B><A NAME="swap clocks"></A><font color="#008000"><U>Swap Clocks</U></font></B></P>
+
+<P><font color="#008000">Interchanges the position of the white and black clocks on the screen. Intended for manually-operated computer-computer games, where the monitor is standing to the side of the playing board, to make sure that the operator sees the time of his own machine on his side of the table. Note that it is possible to adjust the clocks in steps of one minute, by left- (decrement) or right-clicking (increment) it with the mouse in “Edit Game” mode. (Clicking the clocks in other modes is interpreted as claiming the flag.)</font></P>
+
+
+
+<P><B><U><A NAME="generaloptions"></A>General</U></B></P>
+
+
+
+<P><B><A NAME="alwaysontop"></A>Always On Top</B></P>
+
+<P>If this option is on, WinBoard sets its chessboard to be a <I>topmost</I> window, meaning that it always appears on top of all ordinary windows on the screen.</P>
+
+
+
+<P><B><A NAME="alwaysqueen"></A>Always Queen</B></P>
+
+<P>If Always Queen is off, WinBoard brings up a dialog box whenever you move a pawn to the last rank, asking what piece you want to promote it to. If the option is on, your pawns are always promoted to queens. Your opponent can still underpromote, however.</P>
+
+
+
+<P><B><A NAME="animatedragging"></A>Animate Dragging</B></P>
+
+<P>If Animate Dragging is on while you are dragging a piece with the mouse, an image of the piece follows the mouse cursor. If Animate Dragging is off, there is no visual feedback while you are</P>
+
+<P>dragging a piece, but if Animate Moving is on, the move will be animated when it is complete.</P>
+
+
+
+<P><B><A NAME="animatemoving"></A>Animate Moving</B></P>
+
+<P>If Animate Moving is on, all piece moves are animated.  An image of the piece is shown moving from the old square to the new square when the move is completed (unless the move was already animated by Animate Dragging). If Animate Moving is off, a moved piece instantly disappears from its old square and reappears on its new square when the move is complete.</P>
+
+
+
+<P><B><A NAME="autoflagcmd"></A>Auto Flag</B></P>
+
+<P>If this option is on and one player runs out of time before the other, WinBoard will automatically call his flag, claiming a win on time. In ICS mode, Auto Flag will only call your opponent's flag, not yours, and the ICS may award you a draw instead of a win if you have insufficient mating material. On most chess servers, you can now do<B> set autoflag 1 </B>instead and have the server call the flag. In local chess engine mode, WinBoard may call either player's flag and will not take material into account.</P>
+
+
+
+<P><B><A NAME="autoflipview"></A>Auto Flip View</B></P>
+
+<P>If this option is on when you start a game, the board will be automatically oriented so that your pawns move from the bottom of the window towards the top.</P>
+
+
+
+<P><B><A NAME="autoraiseboard"></A>Auto Raise Board</B></P>
+
+<P>If this option is on, whenever a new game begins, the chessboard window will be deiconized (if necessary) and raised to the top of the stack of windows on your screen.</P>
+
+
+
+<P><B><A NAME="blindfoldcmd"></A>Blindfold</B></P>
+
+<P>If Blindfold is on, WinBoard displays a blank board. Moves can still be entered with the mouse, either by dragging the (invisible) piece or clicking the starting and ending square. You can also enter your move by typing it on the keyboard.</P>
+
+
+
+<P><B><A NAME="highlightdragging"></A>Highlight Dragging</B></P>
+
+<P>If Highlight Dragging is on while you are dragging a piece with the mouse, the starting square and the square that the mouse cursor is over are highlighted. This option works even if Animate Dragging is off.</P>
+
+
+
+<P><B><A NAME="extendedpgninfo"></A><font color="#ff0000">Extended PGN Info</font></B></P>
+
+<P><font color="#ff0000">The PGN will contain the engine search depth, score and time for each move where the depth is non-zero, as a comment behind the move if this option is on. Works only when “Show Thinking” is enabled. The recorded time is the time reported by the engine.</font></P>
+
+
+
+<P><B><A NAME="extrainfoinmovehistory"></A><font color="#ff0000">Extra Info In Move History</font></B></P>
+
+<P><font color="#ff0000">Same as above, but in move-history window.</font></P>
+
+
+
+<P><B><A NAME="highlightlastmove"></A>Highlight Last Move</B></P>
+
+<P>If Highlight Last Move is on, after a move is made, the starting and ending squares remain highlighted. In addition, after you use <A HREF="06.htm#backward">Backward</A> or <A HREF="06.htm#backtostart">Back to Start</A>, the starting and ending squares of the last move to be <I>unmade</I> are highlighted.</P>
+
+
+
+<P><B><A NAME="periodicupdatescmd"></A>Periodic Updates</B></P>
+
+<P>If Periodic Updates is on, the Analysis window is updated every two seconds. If not, it is updated only when the best move found changes. The Analysis window currently works only with Crafty, and Periodic Updates may not work with all versions of Crafty.</P>
+
+
+
+<P><B><A NAME="pondernextmovecmd"></A>Ponder Next Move</B></P>
+
+<P>If this option is off, the chess engine will think only when it is on move. If the option is on, the engine will also think while waiting for you to make your move.</P>
+
+
+
+<P><B><A NAME="popupexitmessagecmd"></A>Popup Exit Message</B></P>
+
+<P>If this option is on, when WinBoard wants to display a message just before exiting, it brings up a modal dialog box and waits for you to click OK before exiting. If the option is off, WinBoard prints exits immediately without showing the message. If <A HREF="15.htm#debugmode">debugMode</A> is on, however, the message will appear in the debug log.</P>
+
+
+
+<P><B><A NAME="popupmoveerrorscmd"></A>Popup Move Errors</B></P>
+
+<P>If this option is off, when you make an error in moving (such as attempting an illegal move or moving the wrong color piece), the error message is displayed in the message area. If the option is on, move errors are displayed in small popup windows like other errors. You can dismiss an error popup either by clicking its OK button or by clicking anywhere on the board, including downclicking to start a move.</P>
+
+
+
+<P><B><A NAME="showbuttonbarcmd"></A>Show Button Bar</B></P>
+
+<P>If Show Button Bar is on, WinBoard displays on-screen <A HREF="10.htm">buttons</A> to step forward, backward, or pause the game. If it is off, the buttons are hidden, making the message line wider.</P>
+
+
+
+<P><B><A NAME="showcoordscmd"></A>Show Coords</B></P>
+
+<P>If Show Coords is on, WinBoard displays algebraic coordinates along the board's left and bottom edges. </P>
+
+
+
+<P><B><A NAME="showthinkingcmd"></A>Show Thinking</B></P>
+
+<P>If this option is set, WinBoard displays the chess engine’s current search depth and its notion of the score and best line of play from the current position as it is thinking. The score indicates how many pawns ahead (or if negative, behind) the engine thinks it is. In matches between two machines, the score is prefixed by W or B to indicate whether it is showing White's thinking or Black's.</P>
+
+
+
+<P><B><A NAME="testlegalitycmd"></A>Test Legality</B></P>
+
+<P>If Test Legality is on, WinBoard tests whether the moves you enter with the mouse or read from game files are legal, and displays an error if they are not. Turn this option off if you are playing a chess variant that WinBoard does not understand. (Bughouse, suicide, and wild variants where the king may castle after starting on the <B>d</B> file are generally supported with Test Legality on. <font color="#008000">The same holds for variants with non-FIDE pieces, like shatranj, xangqi, shogi, gothic, capablanca, courier, knightmate: WinBoard knows how all pieces occurring in those variants move. Falcon, cylinder and berolina are only partly supported, though, and the latter two should definitely be played with legality testing off, and falcon uses a wildcard piece for the Falcons, so it considers any move of them legal, but might miss checkmates that involve a Falcon. So you should not play it with claim verification switched on.)</font></P>
+
+
+
+<P><B><A NAME="hidethinkingfromhuman"></A><font color="#ff0000">Hide Thinking From Human</font></B></P>
+
+<P><font color="#ff0000">An alternative to suppressing the Thinking Output in the display above the board by switching “Show Thinking” off, but doing it in a way that still allows the extended PGN info to be recorded.</font></P>
+
+
+
+<P><B><A NAME="highlightmovewitharrow"></A><font color="#ff0000">Highlight Move With Arrow</font></B></P>
+
+<P><font color="#ff0000">A big, fat arrow is drawn between the start and target field of the last move, so you cannot possibly miss it.</font></P>
+
+
+
+<P><B><U><A NAME="boardoptions"></A>Board</U></B></P>
+
+
+
+<P><B><A NAME="boardsizecmd"></A>Board Size</B></P>
+
+<P>Determines how large the board will be and what fonts and piece bitmaps will be used. On a Titanic board the piece bitmaps are 129x129 pixels, on Colossal 116x116, Giant 108x108, Huge 95x95, Big 87x87, Large 80x80, Bulky 72x72, Medium 64x64, Moderate 58x58, Average 54x54, Middling 49x49, Mediocre 45x45, Small 40x40, Slim 37x37, Petite 33x33, Dinky 29x29, Teeny 25x25, and Tiny 21x21. The smaller boards have no system menu, but you can minimize or close them from the File menu.</P>
+
+<P>You can also change the board size by dragging the window edges or corners with the mouse. The board will snap to the largest size that fits into the area you outline.</P>
+
+<P><font color="#008000">Note that only sizes Bulky, Middling and to a lesser extent Petite have built-in bitmaps for the non-FIDE- pieces. Archbishop, Chancellor and the wildcard Lance exist in all sizes from Petite to Bulky, though. In size Moderate, variant shogi uses the traditional Japanese piece representation.</font></P>
+
+
+
+<P><B><A NAME="boardcolors"></A>Board Colors</B></P>
+
+<P>Lets you change the colors WinBoard is using to draw the board and pieces.</P>
+
+
+
+<P><B><A NAME="allwhite"></A><font color="#008000">All White</font></B></P>
+
+<P><font color="#008000">Uses the representation of the white pieces (a filled-in black outline) also for the black pieces (where you can fill them with another color to distinguish them). If you do not choose a very dark color for the black pieces, they look very ugly without outline, and using this option can fix that.</font></P>
+
+
+
+<P><B><A NAME="flipblack"></A><font color="#008000">Flip Black</font></B></P>
+
+<P><font color="#008000">Displays the black pieces upside down (or the white pieces in “Flip View”). This is useful in Shogi, when you want to use the traditional Japanese representation of the pieces.</font></P>
+
+
+
+<P><B><font color="#ff0000"><U><A NAME="adjudications"></A>Adjudications</U></font></B></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="pondernextmove"></A>Ponder Next Move,<SUP> <A NAME="showthinking"></A></SUP>Show Thinking, <A NAME="hidethinkingfromhuman"></A>Hide Thinking from Human and <A NAME="periodicupdates"></A>Periodic Updates</B></font></P>
+
+<P><font color="#ff0000">Duplicates of the controls in the “General” option menu.</font></P>
+
+
+
+<P><B><A NAME="adjudicatedrawmoves"></A><font color="#ff0000">Adjudicate Draw Moves</font></B></P>
+
+<P><font color="#ff0000">Adjudicate a draw after the given number of moves, to prevent games from dragging on forever if two engines in a dead-drawn position, conspire to avoid 50-move draws. This and the folowing options are only active in “Two Machines” mode.</font></P>
+
+
+
+<P><B><A NAME="adjudicatelossthreshold"></A><font color="#ff0000">Adjudicate Loss Threshold</font></B></P>
+
+<P><font color="#ff0000">Adjudicate the game as a loss when both engines agree that the (negative) score is  below the given threshold for the duration of 6 consecutive plies.</font></P>
+
+
+
+<P><B><A NAME="verifyclaims"></A><font color="#008000">Verify Claims</font></B></P>
+
+<P><font color="#008000">Verify result claims made by engines when they terminate the game. If needed, correct the results to a loss for the engine making the false claim. Needs “Test Legality” to be on in order to work.</font></P>
+
+
+
+<P><B><A NAME="detectmates"></A><font color="#008000">Detect Mates</font></B></P>
+
+<P><font color="#008000">Let WinBoard detect checkmate and stalemate, even before the engine gets the chance to claim it. Useful with buggy engines, that exit without a claim, or just hang. Needs “Test Legality” to be on in order to work.</font></P>
+
+
+
+<P><B><A NAME="drawifinsufficientmaterial"></A><font color="#008000">Draw If Insufficient Material</font></B></P>
+
+<P><font color="#008000">If this option is on, WinBoard will recognize KBKB positions with equally colored Bishops, KBK, KNK, and KK positions as draws, even before the engine can claim them. Needs “Test Legality” to be on in order to work.</font></P>
+
+
+
+<P><B><A NAME="adjudicatetrivialdraws"></A><font color="#008000">Adjudicate Trivial Draws</font></B></P>
+
+<P><font color="#008000">If this option is on, KBKB (with B on unlike color), KBKN, KNKN, KNNK, KRKR and KQKQ positions will be adjudicated draw after 6 ply. For KQKQ this is not really sound, and in the future it might be taken out of this option. But as long as tablebase adjudications are not implemented, it seems best to group this end-game with the trivial draws. Needs “Test Legality” to be on in order to work.</font></P>
+
+
+
+<P><B><A NAME="n-moverule"></A><font color="#008000">N-Move Rule</font></B></P>
+
+<P><font color="#008000">Here you can set the number of reversible moves (non-pawn, non-capture) after which WinBoard should adjudicate a game as draw. Engine draw claims are always consider ed valid after 50 moves (in the context of “Verify Claims”), but you can set a different value here to either give the engine more leeway if it wants to play on, or test its claiming capabilities, or set it to a smaller value if you are impatient.</font></P>
+
+
+
+<P><B><A NAME="n-foldrepetitionrule"></A><font color="#008000">N-Fold Repetition Rule</font></B></P>
+
+<P><font color="#008000">Here you can set the number of repetitions of the same position that should occur in order for WinBoard to adjudicate the game as draw. Engine draw claims are always consider ed valid after 3 repetitions (in the context of “Verify Claims”) , but you can set a different value here to either give the engine more leeway if it wants to play on, or test its claiming capabilities, or set it to 2 if you are impatient. (Do not set it to 1!)</font></P>
+
+
+
+<P><B><font color="#ff0000"><U><A NAME="engine settings"></A>Engine Settings</U></font></B></P>
+
+
+
+<P><B><A NAME="polyglotdirectory"></A><font color="#ff0000">Polyglot Directory</font></B></P>
+
+<P><font color="#ff0000">If WinBoard knows where to find Polyglot, you can install UCI engines as if they were WinBoard engines, and WinBoard will automatically invoke Polyglot as an adapter to run them.</font></P>
+
+
+
+<P><B><A NAME="hashsize"></A><font color="#ff0000">Hash Size, <A NAME="egtbpath"></A>EGTB Path, <A NAME="egtbcachesize"></A>EGTB Cache Size, <A NAME="openingbook"></A>Opening Book, <A NAME="number of cpus"></A>Number of CPUs</B></font></P>
+
+<P><font color="#ff0000">These are options that UCI engines expect to be specified.</font> <font color="#3333ff">WinBoard protocol now also allows native WinBoard engines to request similar information, so it might be used for these engines as well. The memory size specified by the WinBoard-protocol ‘memory’ command is the sum of the hash and EGTB cache sizes. The specified opening book, when enabled through the ‘Use Book’ check box, will be used as GUI book for engines that do not have their own book (as indicated by the check boxes). It must be a book in Polyglot format.</font></P>
+
+
+
+<P><B><U><A NAME="icsoptions"></A>ICS</U></B></P>
+
+
+
+<P><B><A NAME="autocommentcmd"></A>Auto Comment</B></P>
+
+<P>If Auto Comment is on, any remarks made on ICS while you are observing or playing a game are recorded as a comment on the current move. This includes remarks made with the ICS commands <B>say, tell, whisper, </B>and <B>kibitz</B>. Limitation: remarks that you type yourself are not </P>
+
+<P>recognized; WinBoard scans only the output from ICS, not the input you type to it.</P>
+
+
+
+<P><B><A NAME="autobscmd"></A>Auto Observe</B></P>
+
+<P>If Auto Observe is on and you add a player to your <B>gnotify</B> list on ICS, WinBoard will automatically observe all of that player's games, unless you are doing something else (such as observing or playing a game of your own) when one starts. On most chess servers, you can now do <B>follow <I>player</I></B> instead, and the server will automatically observe all of <B><I>player’s</I></B> games.</P>
+
+
+
+<P><B><A NAME="getmovelistcmd"></A>Get Move List</B></P>
+
+<P>If Get Move List is on, whenever WinBoard<I> </I>receives the first board of a new ICS game (or a different ICS game from the one it is currently displaying), it retrieves the list of past moves from the server. You can then review the moves with the Forward and Backward commands or save them with Save Game. You might want to turn off this option if you are observing several blitz games at once, to keep from wasting time and network bandwidth fetching the move lists over and over. If you turn this option on while a game is in progress, WinBoard<I> </I>immediately fetches the current move list.</P>
+
+
+
+<P><B><A NAME="locallineediting"></A>Local Line Editing</B></P>
+
+<P>If Local Line Editing is <B>on</B>, your machine handles echoing, backspacing, etc., for the characters that you type into the ICS Interaction window. Output is forwarded to the ICS only when you hit Enter.The Enter key produces a newline character, also known as Ctrl+J, \n, LF, linefeed, or decimal ASCII code 10. In this mode you can force a control character into the edit buffer by preceding it with Ctrl+Q (“quote”); however, the edit buffer will not accept certain control characters even when they are quoted in this way. You can force a control character to be sent immediately to ICS, bypassing the edit buffer, by preceding it with Ctrl+S (“send”).</P>
+
+<P>WinBoard keeps a history of lines you recently typed in Local Line Editing mode. You can bring back old lines by pressing the cursor up key in the text entry box. Press the cursor down key to go back down to newer lines.</P>
+
+<P>If Local Line Editing is <B>off</B>, all characters are sent to ICS as you type them. The Enter key produces a carriage return character, also known as Ctrl+M, \r, CR, or decimal ASCII code 13. Use Ctrl+Backspace if you need the ASCII DEL character. You can enter any character code by holding down the Alt key and typing its decimal value (always beginning with 0) on the numeric keypad; this is a little-known standard feature of Windows.</P>
+
+<P>In both modes, if WinBoard<I>’s </I>internal telnet protocol implementation is active, it translates all \n characters to the standard telnet end-of-line sequence \r\n just before sending them out to ICS; see <A HREF="14.htm#telnetprogram">telnetProgram</A>.</P>
+
+<P>It is generally not a good idea to turn off this option while connected to ICS. If you are tempted to do so because everything you type is being echoed an extra time, see the paragraph about extra echoes under <A HREF="22.htm">LIMITATIONS</A> below.</P>
+
+
+
+<P><B><A NAME="quietplaycmd"></A>Quiet Play</B></P>
+
+<P>If Quiet Play is on, WinBoard will automatically issue an ICS <B>set shout 0</B> command whenever you start a game and a <B>set shout 1</B> command whenever you finish one. Thus you will not be distracted by shouts from other ICS users while playing.</P>
+
+
+
+<P><B><A NAME="premovecmd"></A>Premove</B></P>
+
+<P>Premove allows you to play a move on the board before you have received your opponent’s move.  This move is highlighted on the board using the <A HREF="16.htm#premovehighlightcolor">Premove Highlight</A> color, and is sent to the ICS as soon as your opponent’s move is received. To cancel a premove, either click twice on the piece that was premoved or premove an illegal move.</P>
+
+<P>This group of controls allows you to set the following options: <A HREF="14.htm#premove">premove</A>, <A HREF="14.htm#premovewhite">premoveWhite</A>, <A HREF="14.htm#premovewhitetext">premoveWhiteText</A>, <A HREF="14.htm#premoveblack">premoveBlack</A>, <A HREF="14.htm#premoveblacktext">premoveBlackText</A>.</P>
+
+
+
+<P><B><A NAME="icsalarm"></A>ICS Alarm</B></P>
+
+<P>When <B>icsAlarm</B> is set to True, the <A HREF="16.htm#soundicsalarm">alarm sound</A> is played when your clock counts down to <A HREF="14.htm#icsalarmtime">icsAlarmTime</A> seconds.  For ICS games with time controls that include an increment, the alarm will sound each time the clock counts down to the <A HREF="14.htm#icsalarmtime">icsAlarmTime</A>.</P>
+
+
+
+<P><B><A NAME="icsinteractioncolors"></A>ICS Interaction Colors</B></P>
+
+<P>Lets you change the colors and type styles that WinBoard uses to distinguish between different types of messages in the ICS Interaction window. The types distinguished are: shout, sshout, channel 1 tell, other channel tell, kibitz (or whisper), personal tell (or new message notification), challenge, request (including abort, adjourn, draw, pause, and takeback), seek, and normal (all other messages).</P>
+
+
+
+<P><B><A NAME="fonts"></A><U>Fonts</U></B></P>
+
+<P>Lets you change the fonts WinBoard is using.  The clock font, message font and coordinates font are specific to each board size.  The tags font, comments font and ICS Interaction font are not dependent on the current size of the board.  The “Revert to Defaults” button will reset the clock font, message font and coordinates font for the current board size, and will set the tags font, message font and Ics Interaction font for all board sizes.</P>
+
+
+
+<P><B><A NAME="sounds"></A><U>Sounds</U></B></P>
+
+<P>Lets you change the sounds that WinBoard plays for various events.</P>
+
+
+
+<P><A NAME="movesound"></A>If the Move sound is on, WinBoard alerts you by playing a sound after each of your opponent's moves (or after every move if you are observing a game on the Internet Chess Server). The sound is not played after moves you make or moves read from a saved game file. If you turn on the Move sound when using WinBoard with the Internet Chess Server, you will probably want to give the <B>set bell 0</B> command to the ICS. Otherwise the ICS will send a bell character after every move (not just yours), causing WinBoard to play the ICS Bell sound too. Alternatively, you could turn off the ICS Bell sound in WinBoard, but that might cause you to miss ICS alerts for other interesting events.</P>
+
+<P>The other sound events correspond directly to the types of messages that the <A HREF="#icsinteractioncolors">ICS Interaction Colors</A> option knows how to colorize.</P>
+
+
+
+<P><B><A NAME="sounds"></A><U>Game List</U></B></P>
+
+<P>Lets you select which information is displayed in the Game List window.</P>
+
+
+
+<P><B><A NAME="communications"></A><U>Communications</U></B></P>
+
+<P>Lets you change the communication port parameters when the <A HREF="14.htm#internetchessservercomport">internetChessServerComPort</A> option is in use.</P>
+
+
+
+<P><B><A NAME="loadgameoptns"></A><U>Load Game</U></B></P>
+
+<P>Lets you change options used while loading games (<A HREF="15.htm#timedelay">timeDelay</A> option).</P>
+
+
+
+<P><B><A NAME="savegameoptns"></A><U>Save Game</U></B></P>
+
+<P>Lets you change options used for saving games (<A HREF="15.htm#autosavegames">autoSaveGames</A>, <A HREF="15.htm#oldsavestyle">oldSaveStyle</A>, and <A HREF="15.htm#savegamefile">saveGameFile</A> options).</P>
+
+
+
+<P><B><A NAME="timecontrolcmd"></A><U>Time Control</U></B></P>
+
+<P>Lets you change the time control to be used in games against a chess engine. Two types of timing are available.</P>
+
+<P>With conventional chess clocks, each player begins with his clock set to the <A HREF="12.htm#timecontrol">timeControl</A> period. When both players have made <A HREF="12.htm#movespersession">movesPerSession</A> moves, a new time control period begins. The time in the new period is added to whatever time the players have left on their clocks.</P>
+
+<P>With incremental clocks, each player is given an initial time allotment, and a <A HREF="12.htm#timeincrement">timeIncrement</A> is added to his clock after every move. The increment may be zero, in which case the entire game must be finished within the initial time allotment.</P>
+
+
+
+<P><B><A NAME="savesettings"></A><U>Save Settings Now</U></B></P>
+
+<P>Save the current option settings to a file, along with the current window sizes and positions, to be automatically reloaded next time WinBoard is run. See <A HREF="19.htm#settings">Settings</A> for the fine points.</P>
+
+
+
+<P><B><A NAME="savesettingsonexit"></A><U>Save Settings on Exit</U></B></P>
+
+<P>If this option is on, the current settings are automatically saved when WinBoard exits, as with Save Settings Now.</P>
+
+</BODY>
+</HTML>

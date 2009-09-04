@@ -1,0 +1,97 @@
+<html>
+<header>
+<title>WGP: Board and Pieces</title>
+</header>
+<body>
+<table cellpadding="20"><tr><td>
+<h1>The WinBoard Gold Pack 4.4.0</h1>
+<h2>For the ultimate WinBoard experience!</h2>
+</td><td>
+<img src="mini.gif">
+</td></tr></table>
+<h3>Using a Bitmap Image for Chess Board</h3>
+<p>
+WinBoard 4.4 allows the user to use arbitrary images for the board squares.
+This feature was first introduced in
+<a href="http://www.ascotti.org/programming/chess/winboard_x.htm">Winboard_x</a>.
+The images have to be given as a bitmap, and the board squares are cut out of it.
+The Winboard_x home page shows some examples of this,
+and hosts the bitmap files needed to acheive them for download.
+The direct links are listed below.
+</p><p>
+The first step is to download the image.
+Of course you could also provide one yourself.
+The format must be bitmap (.bmp), but if you have an image in another format
+(.jpg, .gif) you can use MicroSoft Paint to convert it to .bmp;
+simply open the image file in Paint, and the use the "File -> Save as..." menu 
+to save it as bitmap.
+The format in which you save can be selected at the bottom of the save dialog.
+</p><p>
+You will need two bitmaps, one for the light squares,the other for the dark.
+They have to be placed in the folder 'textures',
+which is already premade in the WinBoard folder of this package
+(~\WinBoard\textures).
+The bitmaps will have to be at least 129x129 
+(the largest square size used by winBoard),
+but using a larger bitmap will provide more variety in the squares that WinBoard 
+cuts out of it.
+</p><p>
+Next step is to tell WinBoard to use the bitmaps.
+For this the options /liteBackTextureFile="..." and /darkBackTextureFile="..." exist.
+They can be put as arguments on the command line,
+in the winboard.ini file, or in special .ini files called from the command line.
+</p>
+<pre>
+/liteBackTextureFile="textures/wood_l.bmp"
+/darkBackTextureFile="textures/wood_d.bmp"
+/liteBackTextureMode=2
+/darkBackTextureMode=2
+/overrideLineGap=0
+</pre>
+<p>
+When board textures are used, the black lines between the squares that WinBoard usually draws
+often are spoiling the nice look.
+With the /overrideLineGap option you can set them narrower, or make them disappear altogether.
+(The number gives the width in pixels.)
+Note that WinBoard colors these lines for highlighting from- and to-squares of moves,
+so if you make the lines invisibly narrow, you better highlight with an Arrow.
+(You can enable this form of highlighting in the "Options -> General..." menu.
+The TextureMode options determine how squares cut out of the bitmaps are randomly
+rotated before being glued together to form the board.
+</p>
+<h3>Having Many Pre-defined Board Looks</h3>
+<p>
+If you don't want these settings to be permanently stored in your winboard.ini file,
+e.g. because you frequently want to change between different customized looks,
+you can put the options listed above in a small .ini file,
+such as the ~\WinBoard\wood.ini that was provided with this package.
+You can then summon them up at any time by giving "@wood.ini" (without the quotes)
+as an extra option on the bottom line of the startup dialog,
+or even make a separate shortcut that has this option on the "target" line.
+</p>
+<h3>Redefining the Piece Symbols</h3>
+<p>
+For changing the appearence of the pieces, 
+you will need to use a true-type font to define the piece symbols.
+Such a true-type font can be scaled to any board size.
+How to do this is decriped on a separate page of this tutorial.
+</p>
+<h3>Links</h3>
+<p>
+<a href="fonts.html">How to Customize the Piece Symbols</a>
+</p>
+<p>
+<a href="shortcuts.html">Customizing WinBoard through Shortcuts</a>
+</p>
+<h3>Some Texture Bitmaps to Download</h3>
+<p>
+<a href="http://www.ascotti.org/programming/chess/zip/WbxSandy.zip">Sandy</a>
+</p><p>
+<a href="http://www.ascotti.org/programming/chess/zip/WbxClouds.zip">Clouds</a>
+</p><p>
+<a href="http://www.ascotti.org/programming/chess/zip/WbxBpWood.zip">Wood</a>
+</p><p>
+<a href="http://www.ascotti.org/programming/chess/zip/WbxDave.zip">Wood</a> (already included in the WinBoard Gold Pack)
+</p>
+</body>
+</html>

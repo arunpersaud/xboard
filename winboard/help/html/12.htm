@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Chess Engine Options</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="chessengineoptions"></A>Chess Engine Options</B></P>
+
+
+
+<P><B><A NAME="cp"></A>/cp</B> or<B> /xcp</B>,<B> </B>or<B> <A NAME="chessprogram"></A>/chessProgram <I>true|false</I></B></P>
+
+<P>If true, puts WinBoard in chess engine mode. In this mode, you can play against a chess program running on your PC or use it as an analysis partner.</P>
+
+
+
+<P><B><A NAME="tc"></A>/tc </B>or<B> <A NAME="timecontrol"></A>/timeControl <I>minutes[:seconds]</I></B></P>
+
+<P>Each player begins with his clock set to the timeControl period. Default: 5 minutes. The additional options movesPerSession and timeIncrement are mutually exclusive.</P>
+
+
+
+<P><B><A NAME="mps"></A>/mps </B>or<B> <A NAME="movespersession"></A>/movesPerSession <I>moves</I></B></P>
+
+<P>When both players have made movesPerSession moves, a new timeControl period is added to both clocks. Default: 40 moves.</P>
+
+
+
+<P><B><A NAME="inc"></A>/inc </B>or<B> <A NAME="timeincrement"></A>/timeIncrement <I>seconds</I></B></P>
+
+<P>If this option is specified, movesPerSession is ignored. Instead, after each player's move, timeIncrement seconds are added to his clock. Use -timeIncrement 0 if you want to require the entire game to be played in one timeControl period, with no increment. Default: -1, which specifies movesPerSession mode.</P>
+
+
+
+<P><B><A NAME="clock"></A>/clock </B>or <B>/xclock</B>, or<B> <A NAME="clockmode"></A>/clockMode <I>true|false</I></B></P>
+
+<P>Determines whether or not to display the chess clocks. If clockMode is False, the clocks are not shown, but the side that is to play next is still highlighted. Also, unless searchTime is set, the chess engine still keeps track of the clock time and uses it to determine how fast to make its moves.</P>
+
+
+
+<P><B><A NAME="st"></A>/st </B>or<B> <A NAME="searchtime"></A>/searchTime <I>minutes[:seconds]</I></B></P>
+
+<P>Tells the chess engine to spend at most the given amount of time searching for each of its moves. Without this option, the engine chooses its search time based on the number of moves and amount of time remaining until the next time control. Setting this option also sets clockMode to False.</P>
+
+
+
+<P><B><A NAME="sd"></A>/depth </B>or<B> <A NAME="searchdepth"></A>/searchDepth <I>number</I></B></P>
+
+<P>Tells the chess engine to look ahead at most the given number of moves when searching for a move to make. Without this option, the engine chooses its search depth based on the number of moves and amount of time remaining until the next time control. With the option, the engine will cut off its search early if it reaches the specified depth.</P>
+
+
+
+<P><B><A NAME="firstnps"></A><font color="#008000">/firstNPS <I>number</I></font></B></P>
+
+
+
+<P><B><A NAME="secondnps"></A><font color="#008000">/secondNPS <I>number</I></font></B></P>
+
+<P><font color="#008000">Tells the chess engine to use an internal time standard based on its node count, rather then wall-clock time, to make its timing decisions. The time in virtual seconds should be obtained by dividing the node count through the given <I>number</I>, like the number was a rate in nodes per second. WinBoard will manage the clocks in accordance with this, relying on the number of nodes reported by the engine in its thinking output. If <I>number</I> equals zero, it can obviously not be used to convert nodes to seconds, and the time reported by the engine is used to decrement the WinBoard clock. The engine is supposed to report in CPU time it uses, rather than wall-clock time in this mode. This option can provide fairer conditions for engine-engine matches on heavily loaded machines, or with very fast games (where the wall clock is too inaccurate). “Show Thinking” must be on for this option to work. Not many engines might support this yet!</font></P>
+
+
+
+<P><B><A NAME="firsttimeodds"></A><font color="#008000">/firstTimeOdds <I>factor</I></font></B></P>
+
+
+
+<P><B><A NAME="secondtimeodds"></A><font color="#008000">/secondTimeOdds <I>factor</I></font></B></P>
+
+<P><font color="#008000">Reduces the time given to the mentioned engine by the given <I>factor</I>. If pondering is off, the effect is indistinguishable from what would happen if the engine was running on a <I>factor</I> times slower machine.</font></P>
+
+
+
+<P><B><A NAME="timeoddsmode"></A><font color="#008000">/timeOddsMode <I>mode</I></font></B></P>
+
+<P><font color="#008000">This option determines how the case is handled when both engines have a time-odds handicap. If mode=1, the engine that gets the most time will always get the nominal time, as specified by the time-control options, and its opponent’s time is normalized similarly. If mode=0, both play with reduced time.</font></P>
+
+
+
+<P><B><A NAME="ponder"></A>/ponder</B> or <B>/xponder</B>,<B> </B>or<B> <A NAME="pondernextmove"></A>/ponderNextMove <I>true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#pondernextmovecmd">Ponder Next Move</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="thinking"></A>/thinking</B> or <B>/xthinking</B>,<B> </B>or<B> <A NAME="showthinking"></A>/showThinking <I>true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#showthinkingcmd">Show Thinking</A> option. Default: False.</P>
+
+
+
+<P><B><A NAME="periodic"></A>/periodic </B>or <B>/xperiodic</B>, or<B> <A NAME="periodicupdates"></A>/periodicUpdates <I>true|false</I></B></P>
+
+<P>Sets the <A HREF="07.htm#periodicupdatescmd">Periodic Updates</A> option. Default: True.</P>
+
+
+
+<P><B><A NAME="mg"></A>/mg </B>or<B> <A NAME="matchgames"></A>/matchGames <I>n</I></B></P>
+
+<P>Automatically runs an <I><B>n</B>-</I>game match between two chess engines, with alternating colors. If the <A HREF="15.htm#loadgamefile">loadGameFile</A> or <A HREF="15.htm#loadpositionfile">loadPositionFile</A> option is set, WinBoard will start each game with the given opening moves or the given position; otherwise, the games will start with the standard initial chess position. If the <A HREF="15.htm#savegamefile">saveGameFile</A> option is set, a move record for the match will be appended to the specified file. If the <A HREF="15.htm#savepositionfile">savePositionFile</A> option is set, the final position reached in each game of the match will be appended to the specified file. When the match is over, WinBoard will display the match score and exit. Default: 0 (do not run a match).</P>
+
+
+
+<P><B><A NAME="mm"></A>/mm </B>or <B>/xmm</B>, or<B> <A NAME="matchmode"></A>/matchMode <I>true|false</I></B></P>
+
+<P>Provided for backward compatibility. If true and matchGames=0, sets matchGames=1.</P>
+
+
+
+<P><B><A NAME="matchpause"></A><font color="#008000">/matchPause <I>number</I></font></B></P>
+
+<P><font color="#008000">Sets the length of the pause between games in match mode to <I>number</I> msec. Default value is 10000, i.e. 10 sec. (If this pause is too short, engines not implementing ‘ping’ will sometimes send the last move of their previous game only when a new game has started, at which time the move is illegal, and causes them to forfeit the game.)</font></P>
+
+
+
+<P><B><A NAME="fd"></A>/fd </B>or<B> <A NAME="firstdirectory"></A>/firstDirectory <I>dir<BR>
+</I><A NAME="sd"></A>/sd </B>or<B> <A NAME="seconddirectory"></A>/secondDirectory <I>dir</I><SUP> </SUP><BR>
+<A NAME="fcp"></A>/fcp </B>or<B> <A NAME="firstchessprogram"></A>/firstChessProgram <I>command<BR>
+</I><A NAME="scp"></A>/scp </B>or<B> <A NAME="secondchessprogram"></A>/secondChessProgram <I>command</I><SUP> </SUP></B></P>
+
+<P>Names of the chess engines and working directories in which they are to be run. The second chess engine is started only in Two Machines (match) mode. These arguments are parsed as filenames; that is, the \ character is interpreted literally, not as a C-style escape.</P>
+
+<P>The <I>dir</I> argument specifies the initial working directory for the chess engine. It should usually be the directory where the engine and its working files are installed. If <I>dir</I> is not an absolute pathname, it is interpreted relative to the directory from which WinBoard.exe itself was loaded. The <I>dir</I> argument is ignored if the chess engine is being run on a remote machine (see firstHost and secondHost below). The default value for <I>dir </I>"", meaning that the chess engine is expected to be installed in the same directory as WinBoard.</P>
+
+<P>The <I>command</I> argument is actually the command line to the chess engine, so if the engine itself needs command line arguments, you can include them by enclosing <I>command</I> in single or double quotes. If the engine name or an engine argument has a space in it, use single quotes around the whole <I>command, </I>and inside them use double quotes around each item that contains spaces. If the engine name has more than one period in it (for example, <CODE>QChess1.5.exe</CODE>), you must include the "<CODE>.exe</CODE>" extension; otherwise you can leave it out. The default value for <I>command</I> is "", which brings up the startup dialog to ask which engines you want.</P>
+
+<P>Examples:</P>
+
+<PRE><CODE>WinBoard /cp /fd="C:\Program Files\Crafty" /fcp=WCrafty-15.12.exe /scp=GNUChess
+WinBoard /cp /fd="C:\Miracle Games" /fcp='"Miracle Chess.exe" /wow' /scp=GNUChess</CODE></PRE>
+
+<P><font color="#008000">The basic rule is thus that what is inside the quotes delimiting the argument to /fcp and /scp, all goes to the engine, and is ignored by WinBoard. WinBoard 4.3.13 and later, however, knows an exception to this: If, within the quotes, the word WBopt appears, everything that follows this word will be interpreted as a WinBoard argument, in stead of being passed to the engine on startup of the latter. (The WBopt itself is also not passed to the engine.) This possibility of hiding WinBoard arguments in the engine command is provided in order to create options that follow the engine in a tournament, when a tournament manager like PSWBTM is used to invoke WinBoard. Because, in order to apply to a given engine, some options need to know if they apply to first or second engine, which might vary during the tournament, options hidden inside the engine command-line can contain ‘%s’ which will be replaced at the time the option is used by ‘first’ or ‘second’, as applicable.</font></P>
+
+<P><font color="#008000">Examples:</font></P>
+
+<font color="#008000"><PRE><CODE>WinBoard /cp /fd="C:\Engines\Crafty" /fcp=”WCrafty-15.12 WBopt /%sTimeOdds=2” /scp=GNUChess</CODE></PRE></font>
+
+<P><font color="#008000">Meaning that Crafty will have to play with half the time GNUChess will get.</font></P>
+
+<PRE></PRE>
+
+
+
+<P><B><A NAME="fh"></A>/fh </B>or<B> <A NAME="firsthost"></A>/firstHost <I>host<BR>
+</I><A NAME="sh"></A>/sh </B>or<B> <A NAME="secondhost"></A>/secondHost <I>host</I></B></P>
+
+<P>Hosts on which the chess engines are to run. The default for each is "localhost". If you specify another host, WinBoard<I> </I>uses <A HREF="18.htm#rsh">rsh</A> to run the chess program there. The /fd and /sd flags do not work in conjunction with these flags; if you need a remote chess engine to run somewhere other than your default login directory on the remote machine, you will have to include a "cd" command in the argument to /fcp or /scp.</P>
+
+
+
+<P><B><A NAME="initstring"></A>/firstInitString </B>or <B>/initString <I>string<BR>
+</I><A NAME="secondinitstring"></A>/secondInitString <I>string</I></B></P>
+
+<P>The strings that are sent to initialize the chess engines. Default: "new\nrandom\n". The "\n" sequences represent newlines. You can type "\n" on the command line or in a <A HREF="19.htm#settings">settings file</A>, and WinBoard will convert it to a newline.</P>
+
+<P>All chess engines require the "new" command to start a new game.</P>
+
+<P>You can remove the "random" command if you like; including it causes GNU Chess to randomize its move selection slightly so that it doesn't play the same moves in every game. Even without "random", GNU Chess randomizes its choice of moves from its opening book. You can also try adding other commands to the initString; see the GNU Chess documentation (gnuchess.txt) for details. Crafty ignores the "random" command; see its documentation for the commands it accepts.</P>
+
+
+
+<P><B><A NAME="initstring"></A>/firstComputerString <I>string<BR>
+</I><A NAME="secondinitstring"></A>/secondComputerString <I>string</I></B></P>
+
+<P>If the chess engine is playing against another computer program (whether locally or on a chess server), by default the command "computer\n" is sent to it. Some chess engines change their playing style when they receive this command. If you do not want the engine to know when it is playing another computer, you can set the string to "".</P>
+
+<P><font color="#008000">Note that the computer string is sent to the engine after most other initialization commands, and is thus ideal for hiding a WinBoard-protocol command in that should be sent only to one engine, when the WinBoard option that normally specifies this command cannot be differentiated by engine, but s always sent to both engines. E.g. if you want one of the engines to ponder, and the other not. Because it is sent last, in can overrule earlier commands.</font></P>
+
+
+
+<P><B><A NAME="fb"></A>/fb </B>or <B>/xfb</B>, or<B> <A NAME="firstplaysblack"></A>/firstPlaysBlack <I>true|false</I></B></P>
+
+<P>In games between two chess programs, the firstChessProgram normally plays white. (This is a change from earlier versions of WinBoard.) If this option is True, firstChessProgram plays black. In a multi-game match, this option affects the colors only for the first game; they still alternate in subsequent games.</P>
+
+
+
+<P><B><A NAME="reuse"></A>/reuse<SUP> </SUP></B>or <B>/xreuse</B>, or <B><A NAME="reusefirst"></A>/reuseFirst<I> true|false<BR>
+</I><A NAME="reuse2"></A>/reuse2<SUP> </SUP></B>or <B>/xreuse2</B>, or <B><A NAME="reusesecond"></A>/reuseSecond<I> true|false</I></B></P>
+
+<P>If this option is True (the default), WinBoard<I> </I>uses the same chess engine process repeatedly when playing multiple games. If the option is False, WinBoard kills off the chess engine after every game and starts a fresh one for the next game. Starting a fresh chess engine can be slow, so it is not recommended. However, some chess engines may not work properly when reused, such as versions of Crafty earlier than 12.0.</P>
+
+
+
+<P><B><A NAME="firstprotocolversion"></A>/firstProtocolVersion <I>ver<BR>
+</I><A NAME="secondprotocolversion"></A>/secondProtocolVersion <I>ver</I></B></P>
+
+<P>This option specifies which version of the chess engine communication protocol to use. By default, version-number is 2. In version 1, the "protover" command is not sent to the engine; since version 1 is a subset of version 2, nothing else changes. Other values for version-number are not supported.</P>
+
+
+
+<P><B><A NAME="firstscoreabs"></A><font color="#ff0000">/firstScoreAbs<I> true|false<BR>
+</I></font><A NAME="secondscoreabs"></A><font color="#ff0000">/secondScoreAbs<I> true|false</I></font></B></P>
+
+<P><font color="#ff0000">If this option is true, the score reported by the engine is taken to be that in favor of white, even when the engine plays black. Important when winboard uses the score for adjudications, or in PGN reporting. This can be a useful option in combination with WBopt in the engine command-line, see under /fcp.</font></P>
+
+
+
+<P><B><A NAME="niceengines"></A><font color="#3333ff">/niceEngines<I> priority</I></font></B></P>
+
+<P><font color="#3333ff">This option allows you to lower the priority of the engine processes, so that the generally insatiable hunger for CPU time of chess engines does not interfere so much with smooth operation of WinBoard (or the rest of your system). Try priority = 10 or even 20 to lower the priority of the engines. Negative values could increase the engine priority, which is not recommended.</font></P>
+
+
+
+<P><B><A NAME="firstoptions"></A><font color="#3333ff">/firstOptions<I> string</font><BR>
+</I><A NAME="secondoptions"></A><font color="#3333ff">/secondOptions<I> string</I></font></B></P>
+
+<P><font color="#3333ff">The given string is a comma-separated list of (option name, option value) pairs, like the following example: “style=Karpov,blunder rate=0”. If the options announced by the engine at startup through the feature commands of WinBoard protocol matches one of the option names (i.e. “style” or “blunder rate”), it would be set to the given value (i.e. “Karpov” or 0) through a corresponding option command to the engine. This provided that the type of the value (text or numeric) matches as well.</font></P>
+
+
+
+<P><B><A NAME="firstneedsnoncompliantfen"></A><font color="#3333ff">/firstNeedsNoncompliantFEN<I> string</font><BR>
+</I><A NAME="secondneedsnoncompliantfen"></A><font color="#3333ff">/secondNeedsNoncompliantFEN<I> string</I></font></B></P>
+
+<P><font color="#3333ff">The castling rights and e.p. fields of the FEN sent to the mentioned engine with the setboard command will be replaced by the given string. This can for instance be used to run engines that do not understand Chess960 FENs in variant fischerandom, to make them at least understand the opening position, through setting the string to “KQkq -”. (Note you also have to give the e.p. field!) Other possible applications are to provide work-arounds for engines that want to see castling and e.p. fields in variants that do not have castling or e.p. (shatranj, courier, xiangqi, shogi) so that WinBoard would normally omit them (string = “- -“, or to add variant-specific fields that are not yet supported by WinBoard (e.g. to indicate the number of checks in 3check).</font></P>
+
+</BODY>
+</HTML>

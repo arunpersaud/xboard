@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Load and Save Options</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="loadandsaveoptions"></A>Load and Save Options</B></P>
+
+
+
+<P><B><A NAME="lgf"></A>/lgf </B>or<B> <A NAME="loadgamefile"></A>/loadGameFile <I>filename</I><BR>
+<A NAME="lgi"></A>/lgi </B>or<B> <A NAME="loadgameindex"></A>/loadGameIndex <I>N</I></B></P>
+
+<P>If loadGameFile is set, WinBoard reads the specified game file at startup. You can leave out the name of this option and give just the file name, which is handy if you want to configure WinBoard as a game viewer with a browser such as the Windows Explorer or Netscape. The filename is interpreted relative to WinBoard's initial working directory. The filename "-" specifies the standard input. If there is more than one game in the file, WinBoard pops up a menu of the available games, with entries based on their PGN tags. If loadGameIndex is set to <I>N, </I>the menu is suppressed and the <I>N</I>th game found in the file is loaded immediately.</P>
+
+
+
+<P><B><A NAME="td"></A>/td </B>or<B> <A NAME="timedelay"></A>/timeDelay <I>seconds</I></B></P>
+
+<P>Time delay between moves during <A HREF="03.htm#loadgame">Load Game</A>. Fractional seconds are allowed; try 0.4. A time delay value of -1 tells WinBoard not to step through game files automatically. Default: 1 second.</P>
+
+
+
+<P><B><A NAME="sgf"></A>/sgf </B>or<B> <A NAME="savegamefile"></A>/saveGameFile <I>filename</I></B></P>
+
+<P>If this option is set, WinBoard appends a record of every game played to the specified file. The filename is interpreted relative to WinBoard's initial working directory. The filename "-" specifies the standard output.</P>
+
+
+
+<P><B><A NAME="autosave"></A>/autosave</B> or <B>/xautosave</B>,<B> </B>or<B> <A NAME="autosavegames"></A>/autoSaveGames<I> true|false</I></B></P>
+
+<P>If this option is True, at the end of every game WinBoard prompts you for a filename and appends a record of the game to the file you specify. Ignored if saveGameFile is set. Default: False.</P>
+
+
+
+<P><B><A NAME="lpf"></A>/lpf </B>or<B> <A NAME="loadpositionfile"></A>/loadPositionFile <I>filename</I><BR>
+<A NAME="lpi"></A>/lpi </B>or<B> <A NAME="loadpositionindex"></A>/loadPositionIndex <I>N</I></B></P>
+
+<P>If loadPositionFile is set, WinBoard loads the specified position file at startup. The filename is interpreted relative to WinBoard's initial working directory. The filename "-" specifies the standard input. If loadPositionIndex is set to <I>N</I>, the <I>N</I>th position found in the file is loaded; otherwise the first is loaded.</P>
+
+
+
+<P><B><A NAME="spf"></A>/spf </B>or<B> <A NAME="savepositionfile"></A>/savePositionFile <I>filename</I></B></P>
+
+<P>If this option is set, WinBoard appends the final position reached in every game played to the specified file. The filename is interpreted relative to WinBoard's initial working directory. The file name "-" specifies the standard output.</P>
+
+
+
+<P><B><A NAME="pgnextendedinfo"></A><font color="#ff0000">/pgnExtendedInfo <I>true|false</I></font></B></P>
+
+<P><font color="#ff0000">If this option is set, WinBoard saves depth, score and time used for each move that the engine found as a comment in the PGN file.</font></P>
+
+
+
+<P><B><A NAME="pgneventheader"></A><font color="#ff0000">/pgnEventHeader <I>string</I></font></B></P>
+
+<P><font color="#ff0000">Sets the name used in the PGN event tag to <I>string</I>.</font></P>
+
+
+
+<P><B><A NAME="saveoutofbookinfo"></A><font color="#ff0000">/saveOutOfBookInfo <I>true|false</I></font></B></P>
+
+<P><font color="#ff0000">Include the information on how the engine(s) game out of its opening book in a special ‘annotator’ tag with the PGN file.</font></P>
+
+
+
+<P><B><A NAME="oldsave"></A>/oldsave </B>or <B>/xoldsave</B>, or<B> <A NAME="oldsavestyle"></A>/oldSaveStyle<I> true|false</I></B></P>
+
+<P>If this option is False (the default), WinBoard saves games in PGN (portable game notation) and positions in FEN (Forsythe-Edwards notation). If the option is True, a save style that is compatible with older versions of WinBoard (and of xboard) is used instead.</P>
+
+
+
+<P><B><A NAME="debug"></A>/debug</B> or <B>/xdebug</B>,<B> </B>or<B> <A NAME="debugmode"></A>/debugMode<I> true|false</I></B></P>
+
+<P>Writes debugging information to the file “WinBoard.debug”, including all commands sent to the chess engine, all output received from it, and all commands sent to ICS. You can press Ctrl+Alt+F12 to turn this option on or off while WinBoard is running. Each time you turn it on, any existing debug file is overwritten.</P>
+
+
+
+<P><B><A NAME="debugfile"></A><font color="#ff0000">/debugFile<SUP> </SUP> <I>filename</I> </B>or<B> <A NAME="nameofdebugfile"></A>/nameOfDebugFile<I> filename</I></B></font></P>
+
+<P><font color="#ff0000">Sets the name of the file to which WinBoard saves debug information (including all communication to and from the engines).</font></P>
+
+
+
+<P><B><A NAME="enginedebugoutput"></A><font color="#008000">/engineDebugOutput<SUP> </SUP> <I>number</I></font></B></P>
+
+<P><font color="#008000">Specifies how WinBoard should handle unsollicited output from the engine, with respect to saving it in the debug file. The output is further (hopefully) ignored. If <I>number</I>=0, WinBoard refrains from writing such spurious output to the debug file. If<I> number</I>=1, all engine output is written faithfully to the debug file. If <I> number</I>=2, any protocol-violating line is prefixed with a ‘#’ character, as the engine itself should have done if it wanted to submit info for inclusion in the debug file.</font></P>
+
+<P><font color="#008000">This option is provided for the benefit of applications that use the debug file as a source of information, such as the broadcaster of live games TLCV / TLCS. Such applications can be protected from spurious engine output that might otherwise confuse them.</font></P>
+
+</BODY>
+</HTML>

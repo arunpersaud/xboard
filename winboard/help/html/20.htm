@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Installing Chess Engines</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="installingchessengines"></A>INSTALLING CHESS ENGINES</B></P>
+
+<P><B>Introduction</B></P>
+
+<P>WinBoard is capable of operating with many different chess engines. You can play chess against a compatible engine, set up matches between two engines, or (advanced users only) run an automated computer player on an ICS.</P>
+
+<P>Typically, the main difficulty in installing a new chess engine for use by WinBoard comes in getting the engine itself running and setting its options appropriately. The connection to WinBoard is relatively straightforward.</P>
+
+<P>WinBoard-compatible chess engines are Win32 command line programs that you can run by hand in an MS-DOS Prompt box and type human-readable commands to. WinBoard connects to an engine simply by starting the engine up in the background and communicating with it through a pair of pipes. Therefore the basic procedure for installing an engine is:</P>
+
+<P>1. Get a copy of the engine and any supporting files it needs.</P>
+
+<P>2. Install and configure the engine as a command-line program by following the instructions that come with it. Try it out by running it from the command line in an MS-DOS Prompt box and make sure it works.</P>
+
+<P>3. Optional, but recommended: Try out the WinBoard plus engine combination by running WinBoard with the proper command line arguments in an MS-DOS Prompt box.</P>
+
+<P>4. Create a shortcut on your desktop or Start menu to run the engine with WinBoard.</P>
+
+<P>5. Optionally edit your WinBoard.ini file to add the engine to the drop-down lists on WinBoard's startup dialog.</P>
+
+<P>This document cannot explain steps 1 and 2 in detail for all engines, but we will take you through all five steps in outline, using Crafty as an example.</P>
+
+<P><B>Example: Crafty</B></P>
+
+<P>1. Choose a directory to put Crafty in. We'll use <CODE>C:\Program Files\Crafty</CODE> in this example. Download your copy of Crafty into this directory from its author's FTP site, <CODE>ftp://ftp.cis.uab.edu/pub/hyatt</CODE>. At this writing, you will need at least the following files:</P>
+
+<P><CODE>read.me<BR>
+v15/crafty.doc<BR>
+v15/crafty.faq<BR>
+v15/wcrafty-15.*.exe</CODE> (where * is replaced by the largest number there)<BR>
+<CODE>common/start.zip<BR>
+common/medium.zip </CODE>(or another book).</P>
+
+<P>2. The first three files are documentation that you can read with a text editor. Read the read.me file first and follow the instructions carefully. This will take some time. Do not write to the author of WinBoard if you have trouble with the instructions in the Crafty read.me. Try running Crafty from an MS-DOS Prompt box and make sure it works before you go on.</P>
+
+<P>3. Optional, but recommended: In an MS-DOS Prompt box, <CODE>cd </CODE>to the directory where WinBoard is installed, typically <CODE>"C:\Program Files\WinBoard"</CODE>. Then type the following command line. Use the actual name of the wcrafty file you downloaded, not an <CODE>*</CODE>, and if your browser changed the first period to an underscore when you downloaded the file, make that change in the command line too.</P>
+
+<PRE><CODE>WinBoard /cp /fcp=WCrafty-15.* /fd="C:\Program Files\Crafty" /scp=WCrafty-15.* /sd="C:\Program Files\Crafty"</CODE></PRE>
+
+<P>WinBoard should start up, with Crafty running as its chess engine. Check that you can play chess against Crafty.</P>
+
+<P>4. To make a shortcut or Start menu entry for Crafty: Right-click on the desktop and select New/Shortcut. Use the Browse button to find your winboard.exe file and get its name into the Command Line box. (It usually will be "C:\Program Files\WinBoard\winboard.exe".) Click in the Command Line box and hit the End key to go to the end. Add the following to the end of the command line, <I>after</I> the closing quotation mark. Use the actual name of the wcrafty file you downloaded, not an <CODE>*</CODE>, and if your browser changed the first period to an underscore when you downloaded the file, make that change in the command line too.</P>
+
+<PRE><CODE>/cp /fcp=WCrafty-15.* /fd="C:\Program Files\Crafty" 
+/scp=WCrafty-15.* /sd="C:\Program Files\Crafty"</CODE></PRE>
+
+<P>Press Next, choose a name for the shortcut, and press Finish. You can now use this shortcut to run WinBoard with Crafty. Double-click it to check that it works. You can drag or copy the shortcut into your Start menu if you like.</P>
+
+<P>5. To add Crafty as an option in the WinBoard Startup dialog, edit your <A HREF="19.htm#settings">WinBoard.ini file</A> with Notepad or another plain text editor, carefully following the example shown under <A HREF="16.htm#firstchessprogramnames">/firstChessProgramNames</A> above.</P>
+
+<P><B>For more information</B></P>
+
+<P>If you would like to run an automated computer player on the ICS, see the separate file <CODE>zippy.README</CODE>. If you would like to write your own engine to interface to WinBoard, see the separate file <CODE>engine-intf.html</CODE>, and join the mailing list mentioned there. Both files are included in the WinBoard distribution. You might also want to get the source code for WinBoard. It is available from the author's Web page, http://www.tim-mann.org/chess.html<CODE>.</CODE></P>
+
+</BODY>
+</HTML>

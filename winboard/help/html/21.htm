@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Firewalls</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="firewalls"></A>FIREWALLS</B></P>
+
+<P>By default, "WinBoard /ics"<I> </I>communicates with an Internet Chess Server by opening a TCP socket directly from the machine it is running on to the ICS. If there is a firewall between your machine and the ICS, this won't work. Here are some recipes for getting around common kinds of firewalls using special options to WinBoard<I>.</I> Important: See the paragraph in the <A HREF="22.htm">LIMITATIONS</A> section below about extra echoes.</P>
+
+<P>Suppose that you can't telnet directly to ICS, but you can telnet to a firewall host, log in, and then telnet from there to ICS. Let's say the firewall is called fire.wall.com. Set command-line options as follows: </P>
+
+<PRE><CODE>WinBoard -ics -icshost fire.wall.com -icsport 23</CODE></PRE>
+
+<P>Then when you run WinBoard<I> </I>in ICS mode, you will be prompted to log in to the firewall host. (This works because port 23 is the standard telnet login service.) Do so, then telnet to ICS, using a command like "telnet chessclub.com 5000", or whatever command the firewall provides for telnetting to port 5000.</P>
+
+<P>If your firewall lets you telnet (or rlogin) to remote hosts, but doesn't let you telnet to port 5000, you will have to find some other host outside the firewall that does let you do this, and hop through it. For instance, suppose you have an account at foo.edu. Follow the recipe above, but instead of typing "telnet chessclub.com 5000" to the firewall, type "telnet foo.edu" (or "rlogin foo.edu"), log in there, and then type "telnet chessclub.com 5000".</P>
+
+<P>Exception: chessclub.com itself lets you connect to the chess server on the default telnet port (23), which is what you get if you don’t specify a port to the telnet program. But the other chess servers don’t allow this.</P>
+
+<P>Suppose that you can't telnet directly to ICS, but you can use rsh to run programs on a firewall host, and that host can telnet to ICS. Let's say the firewall is called rsh.wall.com. Set command-line options as follows: </P>
+
+<PRE><CODE>WinBoard -ics -gateway rsh.wall.com -icshost chessclub.com</CODE></PRE>
+
+<P>Then when you run WinBoard<I> </I>in ICS mode, it will connect to the ICS by using rsh to run the command "telnet chessclub.com 5000" on host rsh.wall.com.</P>
+
+<P>ICC timestamp and FICS timeseal do not work through many<B> </B>firewalls. You can use them only if your firewall gives a clean TCP connection with a full 8-bit wide path. If your firewall allows you to get out only by running a special telnet program, you can't use timestamp or timeseal across it. But if you have access to a computer just outside your firewall, and you have much lower netlag when talking to that computer than to the ICS, it might be worthwhile running timestamp there. Follow the instructions above for hopping through a host outside the firewall (foo.edu in the example), but run timestamp or timeseal on that host instead of telnet.</P>
+
+<P>Suppose that you have a SOCKS firewall that requires you to go through some extra level of authentication, but after that will give you a clean 8-bit wide TCP connection to the chess server. In that case, if you are using timestamp or timeseal, you need to somehow socksify it; if not, you need to socksify WinBoard itself. Socksification is beyond the scope of this document, but see the SOCKS Web site at http://www.socks.nec.com/how2socksify.html.</P>
+
+</BODY>
+</HTML>

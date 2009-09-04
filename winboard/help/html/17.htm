@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Adjudication Options</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><font color="#ff0000"><B><A NAME="adjudicationoptions"></A>Adjudication Options</B></font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="adjudicatelossthreshold"></A>/adjudicateLossThreshold <I>scorethreshold</I></B></font></P>
+
+<P><font color="#ff0000">If the given value is non-zero, WinBoard adjudicates the game as a loss if both engines agree for a duration of 6 consecutive ply that the score is below the given score threshold for that engine. Make sure the score is interpreted properly by WinBoard, using /firstScoreAbs and /secondScoreAbs if needed.</font></P>
+
+
+
+<P><font color="#ff0000"><B><A NAME="adjudicatedrawmoves"></A>/adjudicateDrawMoves <I>number</I></B></font></P>
+
+<P><font color="#ff0000">If the given value is non-zero, WinBoard adjudicates the game as a draw if after the given <I>number</I> of moves it was not yet decided.</font></P>
+
+
+
+<P><font color="#008000"><B><A NAME="checkmates"></A>/checkMates<I> true|false</I></B></font></P>
+
+<P><font color="#008000">If this option is True, WinBoard detects all checkmates and stalemates, and ends the game as soon as they occur. Legality-testing must be on for this option to work.</font></P>
+
+
+
+<P><font color="#008000"><B><A NAME="testclaims"></A>/testClaims<I> true|false</I></B></font></P>
+
+<P><font color="#008000">If this option is True, WinBoard verifies all result claims made by engines, and those who send false claims will forfeit the game because of it. Legality-testing must be on for this option to work.</font></P>
+
+
+
+<P><font color="#008000"><B><A NAME="materialdraws"></A>/materialDraws<I> true|false</I></B></font></P>
+
+<P><font color="#008000">If this option is True, WinBoard adjudicates games as draws when there is no sufficient material left to create a checkmate. This applies to KBKB with like bishops, and to KBK, KNK and KK. Legality-testing must be on for this option to work.</font></P>
+
+
+
+<P><font color="#008000"><B><A NAME="trivialdraws"></A>/trivialDraws<I> true|false</I></B></font></P>
+
+<P><font color="#008000">If this option is True, WinBoard adjudicates games as draws that cannot be usualy won without opponent assistance. This applies to KBKB with unlike bishops, and to KBKN, KNKN, KNNK, KRKR and KQKQ. The draw is called after 6 ply into these end-games, to allow quick mates that can occur in some positions. KQKQ does not really belong in this category, and might be taken out in the future. (When bitbase-based adjudications are implemented.) Legality-testing must be on for this option to work.</font></P>
+
+
+
+<P><font color="#008000"><B><A NAME="rulemoves"></A>/ruleMoves <I>number</I></B></font></P>
+
+<P><font color="#008000">If the given value is non-zero, WinBoard adjudicates the game as a draw after the given <I>number</I> of consecutive reversible moves. Engines can claim draws after 50 moves, irrespective of the value of <I>number</I>.</font></P>
+
+
+
+<P><font color="#008000"><B><A NAME="repeatstodraw"></A>/repeatsToDraw <I>number</I></B></font></P>
+
+<P><font color="#008000">If the given value is non-zero, WinBoard adjudicates the game as a draw if a position is repeated the given <I>number</I> of times. Engines can claim draws after 3 repeats, (on the 3rd occurrence, actually), irrespective of the value of <I>number</I>. Beware that positions that have different castling or en-passant rights do not count as repeats, WinBoard is fully e.p. and castling aware!</font></P>
+
+</BODY>
+</HTML>

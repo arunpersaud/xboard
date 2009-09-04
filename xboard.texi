@@ -183,6 +183,7 @@ and XBoard adapts automatically.) If you play with an engine, the engine must
 be able to play the selected variant, or the command will be ignored.
 XBoard supports all major variants, such as xiangqi, shogi, chess, chess960,
 Capablanca Chess, shatranj, crazyhouse, bughouse.
+(But not every board size has built-in bitmaps for un-orthodox pieces!)
 @item Load Game
 @cindex Load Game, Menu Item
 Plays a game from a record file. The @kbd{g} key is a keyboard equivalent.
@@ -2201,12 +2202,21 @@ fairy         A catchall variant in which all piece types
 unknown       Catchall for other unknown variants
 @end example
 
+NOT ALL BOARDSIZES PROVIDE A COMPLETE SET OF BUILT-IN BITMAPS FOR ALL
+UN-ORTHODOX PIECES, though. Only in @code{boardSize} middling and bulky
+all 22 piece types are provided, while -boardSize petite has most
+of them. Archbishop, Chancellor and Amazon are supported in every
+size from petite to bulky. Kings or Amazons are substituted for
+missing bitmaps. You can still play variants needing un-orthodox
+pieces in other board sizes providing your own bitmaps through the
+@code{bitmapDirectory} or @code{pixmapDirectory} options.
+
 In the shuffle variants, XBoard now does shuffle the pieces, although
 you can still do it by hand using Edit Position.  Some variants are
 supported only in ICS mode, including bughouse, and
 kriegspiel.  The winning/drawing conditions in crazyhouse (off-board
-interposition on mate), losers, suicide, giveaway, atomic, and 3check
-are not fully understood.  
+interposition on mate) are not fully understood, but losers, suicide, 
+giveaway, atomic, and 3check should be OK.
 Berolina and cylinder chess can only be played with legality testing off.
 In crazyhouse, XBoard now does keep
 track of off-board pieces.  In shatranj it does implement the baring

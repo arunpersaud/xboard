@@ -1050,7 +1050,7 @@ XtResource clientResources[] = {
     { "localLineEditing", "localLineEditing", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, localLineEditing),
 	XtRImmediate, (XtPointer) True }, /* not implemented, must be True */
-#ifdef ZIPPY
+#if ZIPPY
     { "zippyTalk", "zippyTalk", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, zippyTalk),
 	XtRImmediate, (XtPointer) ZIPPY_TALK },
@@ -1256,6 +1256,9 @@ XtResource clientResources[] = {
 	XtRImmediate, (XtPointer) True },
     { "adjudicateLossThreshold", "adjudicateLossThreshold", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, adjudicateLossThreshold),
+	XtRImmediate, (XtPointer) 0},
+    { "adjudicateDrawMoves", "adjudicateDrawMoves", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, adjudicateDrawMoves),
 	XtRImmediate, (XtPointer) 0},
     { "pgnEventHeader", "pgnEventHeader", XtRString,
         sizeof(String), XtOffset(AppDataPtr, pgnEventHeader),
@@ -1725,6 +1728,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-pgnExtendedInfo", "pgnExtendedInfo", XrmoptionSepArg, NULL },
     { "-hideThinkingFromHuman", "hideThinkingFromHuman", XrmoptionSepArg, NULL },
     { "-adjudicateLossThreshold", "adjudicateLossThreshold", XrmoptionSepArg, NULL },
+    { "-adjudicateDrawMoves", "adjudicateDrawMoves", XrmoptionSepArg, NULL },
     { "-pgnEventHeader", "pgnEventHeader", XrmoptionSepArg, NULL },
     { "-firstIsUCI", "firstIsUCI", XrmoptionSepArg, NULL },
     { "-secondIsUCI", "secondIsUCI", XrmoptionSepArg, NULL },
@@ -2114,6 +2118,19 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 }
 #endif
 
+void EscapeExpand(char *p, char *q)
+{	// [HGM] initstring: routine to shape up string arguments
+	while(*p++ = *q++) if(p[-1] == '\\')
+	    switch(*q++) {
+		case 'n': p[-1] = '\n'; break;
+		case 'r': p[-1] = '\r'; break;
+		case 't': p[-1] = '\t'; break;
+		case '\\': p[-1] = '\\'; break;
+		case 0: *p = 0; return;
+		default: p[-1] = q[-1]; break;
+	    }
+}
+
 int
 main(argc, argv)
      int argc;
@@ -2172,7 +2189,6 @@ main(argc, argv)
     }
 #endif
 #endif
-
 
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
@@ -2272,6 +2288,28 @@ main(argc, argv)
     XtGetApplicationResources(shellWidget, (XtPointer) &appData,
 			      clientResources, XtNumber(clientResources),
 			      NULL, 0);
+
+    { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
+	static char buf[MSG_SIZ];
+	EscapeExpand(buf, appData.initString);
+	appData.initString = strdup(buf);
+	EscapeExpand(buf, appData.secondInitString);
+	appData.secondInitString = strdup(buf);
+	EscapeExpand(buf, appData.firstComputerString);
+	appData.firstComputerString = strdup(buf);
+	EscapeExpand(buf, appData.secondComputerString);
+	appData.secondComputerString = strdup(buf);
+    }
+
+    if ((chessDir = (char *) getenv("CHESSDIR")) == NULL) {
+	chessDir = ".";
+    } else {
+	if (chdir(chessDir) != 0) {
+	    fprintf(stderr, _("%s: can't cd to CHESSDIR: "), programName);
+	    perror(chessDir);
+	    exit(1);
+	}
+    }
 
     if (appData.debugMode && appData.nameOfDebugFile && strcmp(appData.nameOfDebugFile, "stderr")) {
 	/* [DM] debug info to file [HGM] make the filename a command-line option, and allow it to remain stderr */
@@ -4120,14 +4158,18 @@ void HandleUserMove(w, event, prms, nprms)
 	x >= 0 && y >= 0) {
 	ChessSquare fromP;
 	ChessSquare toP;
+	int frc;
 
 	/* Check if clicking again on the same color piece */
 	fromP = boards[currentMove][fromY][fromX];
 	toP = boards[currentMove][y][x];
-	if ((WhitePawn <= fromP && fromP < WhiteKing && // [HGM] this test should go, as UserMoveTest now does it.
-	     WhitePawn <= toP && toP <= WhiteKing) ||   //       For now I made it less critical by exempting King
-	    (BlackPawn <= fromP && fromP < BlackKing && //       moves, to not interfere with FRC castlings.
-	     BlackPawn <= toP && toP <= BlackKing)) {
+	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom;
+ 	if ((WhitePawn <= fromP && fromP <= WhiteKing && // [HGM] this test should go, as UserMoveTest now does it.
+	     WhitePawn <= toP && toP <= WhiteKing &&
+	     !(fromP == WhiteKing && toP == WhiteRook && frc)) ||   
+	    (BlackPawn <= fromP && fromP <= BlackKing && 
+	     BlackPawn <= toP && toP <= BlackKing &&
+	     !(fromP == BlackKing && toP == BlackRook && frc))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
 	    if (appData.highlightDragging) {

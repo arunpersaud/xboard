@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Limitations</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+
+
+<P><B><A NAME="limitations"></A>LIMITATIONS <font color="#008000">AND NON-LIMITATIONS</font></B></P>
+
+<P>WinBoard<I> </I>is a Win32 application. It runs only on Windows NT and Windows 95. It does not work on Windows 3.11 or earlier, even with the Win32s compatibility package.</P>
+
+<P><I>CMail, </I>the companion program to xboard for playing electronic mail correspondence chess, has not been ported to Win32.</P>
+
+<P>There is no way for two people running copies of WinBoard<I> </I>to play each other without going through the Internet Chess Server.</P>
+
+<P>Under some circumstances, your ICS password may be echoed when you log on.</P>
+
+<P>If you are connecting to the ICS by running telnet, timestamp, or timeseal on an Internet provider host, you may find that each line you type is echoed back an extra time after you hit Enter. You can probably turn this echo off. If your Internet provider is a Unix system, type "<CODE>stty -echo</CODE>" after you log in to the provider but before you run telnet, timestamp, or timeseal. In addition, you may need to type the sequence “<CODE>Ctrl+Q Ctrl+E Enter</CODE>“ after you have finished logging in to ICS. On VMS, type “<CODE>set terminal /noecho /nowrap</CODE>”, and after you telnet to the ICS, type “<CODE>Ctrl+Q Ctrl+] Enter set mode char Enter Enter</CODE>”. It is a good idea to turn off the extra remote echo if you can, because otherwise it can get interleaved with output from the ICS and confuse WinBoard's parsing routines. Don’t just turn off <A HREF="07.htm#locallineediting">Local Line Editing</A> so that you see only the remote echo and not the local one; that will make the interleaving problem worse.</P>
+
+<P>The game parser recognizes only algebraic notation (SAN).</P>
+
+<P>The <A HREF="14.htm#icslogon">ICS logon</A> file does not work properly when you connect to ICS through a Unix gateway host by setting <A HREF="14.htm#icsport">icsPort</A> to 23. The Unix login process apparently discards type-ahead.</P>
+
+<P>Some WinBoard functions may not work with versions of GNU Chess earlier than 4.0, patchlevel 77. The current version of WinBoard<I> </I>works best with Crafty version 15.11 or later.</P>
+
+<P><font color="#008000">Many of the following points used to be limitations in WinBoard 4.2.7 and earlier, but are now fixed:</font></P>
+
+<P><font color="#008000">The internal move legality tester in WinBoard 4.3.xx does look at the game history, and is fully aware of castling or en passant-capture rights.</font> It permits castling with the king on the <B>d</B> file because this is possible in some "wild 1" games on ICS. The piece-drop menu does not check piece drops in bughouse to see if you actually hold the piece you are trying to drop. <font color="#008000">But this way of dropping pieces should be considered an obsolete feature, now that pieces can be dropped by dragging them from the holdings to the board.</font> Anyway, if you would attempt an illegal move when using a chess engine or the ICS, WinBoard will accept the error message that comes back, undo the move, and let you try another.</P>
+
+<P><font color="#008000">FEN positions saved by WinBoard<I> </I>do include correct information about whether castling or en passant are legal, and also handle the 50-move counter.</font></P>
+
+<P>The mate detector does not understand that non-contact mate is not really mate in bughouse. The only problem this causes while playing is minor: a "#" (mate indicator) character will show up after a non-contact mating move in the move list. WinBoard will not assume the game is over at that point, <font color="#008000">not even when the option Detect Mates is on.</font></P>
+
+<P><font color="#008000">Edit Game mode always uses the rules of the selected variant, which can be a variant that uses piece drops.  You can load and edit games that contain piece drops. The (obsolete) piece menus are not active, but you can perform piece drops by dragging pieces from the holdings.</font></P>
+
+<P><font color="#008000">Edit Position mode does not allow you to edit the Crazyhouse holdings properly. You cannot drag pieces to the holding, and using the popup menu to put pieces there does not adapt the holding counts and leads to an inconsistent state. Set up Crazyhouse positions by loading / pasting a bFEN, from there you can set the holdings.</font></P>
+
+<P><font color="#008000">Fischer Random castling is fully understood. You can enter castlings by dragging the King on top of your Rook. You can probably also play Fischer Random successfully on ICS by typing castling moves into the ICS Interaction window.</font></P>
+
+<P>Also see the ToDo file included with the distribution for many other possible bugs, limitations, and ideas for improvement that have been suggested.</P>
+
+</BODY>
+</HTML>

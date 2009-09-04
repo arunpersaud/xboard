@@ -547,7 +547,7 @@ void EngineOutputUpdate( FrontEndProgramStats * stats )
     if( clearMemo ) DoClearMemo(which);
 
     /* Update */
-    lastDepth[which] = depth;
+    lastDepth[which] = depth == 1 && ed.nodes == 0 ? 0 : depth; // [HGM] info-line kudge
     lastForwardMostMove[which] = forwardMostMove;
 
     if( ed.pv != 0 && ed.pv[0] == ' ' ) {
@@ -807,7 +807,8 @@ static void UpdateControls( EngineOutputData * ed )
         sprintf( s_time, "%d:%02d.%02d", time_secs / 60, time_secs % 60, time_cent );
 
         /* Put all together... */
-        sprintf( buf, "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
+	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0) sprintf( buf, "%3d\t", ed->depth ); else 
+	sprintf( buf, "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
 
         /* Add PV */
         buflen = strlen(buf);

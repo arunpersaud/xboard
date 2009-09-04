@@ -1,0 +1,36 @@
+                                      COPYRIGHTS
+
+This WinBoard installer package bundles software and data files released by various 
+copyright holders under various  licences. It can only be distributed under conditions 
+that simultaneously satisfy all license agreements of the components it contains.
+The various licenses that apply are listed below, with the copyright holders are indicated in parentheses.
+
+WinBoard is released under the GNU Public Licence (GPL) version 3. (Free Software Foundation)
+Polyglot is released under the GPL. (Fabien Letouzy, Huang Chen, Fonzy Bleumers & Michel van den Bergh)
+UCCI2WB is released under the Lesser GNUPublic License (LGPL) version 3. (Huang Chen & H.G.Muller)
+Fairy-Max, ShaMax and MaxQi are open-source freeware. (H.G.Muller)
+Fruit is released under the GPL. (Fabien Letouzy)
+Pulsar can be freely redistributed (Mike Adams)
+Joker80 and JokerKM are freeware. (H.G.Muller)
+Smirfoglot is freeware. (H.G.Muller)
+Elephant Eye 3.1 is released under the LGPL. (Huang Chen)
+HaQiKi D 0.8 is freeware. (H.G.Muller)
+default_book.bin can be freely (re-)distributed with this package. (Guenther Simon)
+xq_book.bin is released under the LGPL. (H.G.Muller) It is a reformatted version (cast into Polygot format)
+   of the Elephant-Eye book, which was released under the LGPL. (Huang Chen)
+The ChessMark font is freeware (Armando H.Marroquin)
+The XIANGQI font is free for all non-commercial purposes. (Kai Wan Leung)
+The FICS and ICC logos (owned by their respective organizations) can be freely distributed with this package.
+The micro-Max logo can be freely distributed with this package. (Graham Banks)
+The wood bitmaps ad Fruit and Pulsar logos can be freely distributed as part of this package. (David Dahlem)
+The bitmaps of the Xiangqi board can be freely distributed as part of this package. (David Dahlem & H.G.Muller)
+The marble textures are copyrighted by CGTextures.com. Permission to distribute these textures 
+   under the GPL has been granted to the author of this software. Note that textures downloaded 
+   from CGTextures.com may not be redistributed under any Open Source license by default. 
+   For more information please visit www.CGTextures.com and read the full Terms of Use.
+PSWBTM is open-source software and can be freely re-distributed under the condition that proper credit
+   is given to its original author, see http://www.pradu.us/home/cc/PSWBTM/ . (Pradu Kannan)
+Timeseal ???????????????
+Timestamp ???????????????
+
+

@@ -1,0 +1,627 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<title>WinBoard 4.4.0</title>
+</head>
+
+<body>
+<table><tr><td halign="top">
+<h1>WinBoard 4.4.0</h1>
+<h2>"For the ultimate WinBoard experience"</h2>
+<h3>Introduction</h3>
+<p>
+The WinBoard 4.3 series was a continuation of the WinBoard_x line by Allessandro Scotti.
+It has been further developed, and is maintained, by H.G. Muller.
+Most addtions and improvements that went into this since the last version produced
+by the GNU-Savannah xboard project team, WinBoard 4.2.7b,
+were unfortunately not parallelled in XBoard.
+On the contrary, they had destroyed the compatibility of the back-end sources
+shared by WinBoard and XBoard with the XBoard front-end of version 4.2.7b.
+Since WinBoard 4.3.14, however, the releases again comes with a compatible XBoard front-end.
+That does not mean that all the features added to WinBoard can already be used
+in the latest XBoard version.
+But some can, an in 4.3.15 many more have been added.
+</p><p>
+WinBoard 4.4 is a merger of the WinBoard 4.3 line (WinBoard 4.3.pre16) 
+and what was left in the GNU-Svannah XBoard repository (WinBoard 4.2.pre8).
+More WinBoard functionality has been ported to XBoard,
+but there still is a sizable gap to bridge.
+</p><p>
+The description below applies specifically to WinBoard, 
+although we have tried to mark features that can also be used in xboard by (x) everywhere.
+This version of XBoard now does have some new menus added to control such features.
+Other functions, if they work at all, must be switched on from the command line.
+</p>
+</td><td width="20">
+</td><td width="200" halign="center" cellpdding="20">
+<img src="mini.gif">
+</td></tr></table>
+<h3>New features since 4.2.7b</h3>
+<p>
+Below follows a table that lists the new features, 
+the command-line option needed to control them,
+and if there is a menu provided that can switch the option while WinBoard is running
+(command-line options exert their effect only at startup).
+Note that, unlike WinBoard 4.2.7, the WinBoard 4.3 series is fully castling and e.p. aware,
+and handles the castling, e.p. and 50-move field in FENs on input and output as should be expected.
+</p>
+<table cellpadding="3" border="1"><tr><td width="220">
+      <h3>command-line option</h3>
+    </td><td>
+      <h3>description</h3>
+    </td><td width="250">
+      <h3>menu</h3>
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>ENGINE-ENGINE ADJUDICATION OPTIONS<strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -adjudicateLossThreshold 0 (*x)
+    </td><td>
+      adjudicates engine-engine game based on score
+    </td><td>
+      Options -> Engine... (x)
+  </td></tr><tr><td>
+      -checkMates false (*x)
+    </td><td>
+      detect and end game on checkmates and stalemates
+    </td><td>
+      Options -> Engine... (x)
+  </td></tr><tr><td>
+      -testClaims false (*x)
+    </td><td>
+      WinBoard corrects false RESULT claims
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -materialDraws false (*x)
+    </td><td>
+      adjudicate draw when no mating material present
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -trivialDraws false (*x)
+    </td><td>
+      adjudicate draw in endgames like KRKR and KNNK
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -adjudicateDrawMoves 0 (*x)
+    </td><td>
+      adjudicate draw when game lasts too long
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -ruleMoves 51 (*x)
+    </td><td>
+      number of reversible moves after which to adjudicate draw
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -repeatsToDraw 6 (*x)
+    </td><td>
+      adjudicate draw when a position occurs this many times
+    </td><td>
+      Options -> Engine.. (x)
+  </td></tr><tr><td>
+      -firstScoreAbs false (x)
+      <br>
+      -secondScoreAbs false (x)
+    </td><td>
+      Engine indicates score for white, even when playing black
+    </td><td>
+      Options -> Adjudications.. (xboard-only)
+  </td></tr><tr><td>
+      -
+    </td><td>
+      Adjudicate the game in progress as win to white, win to black, or draw
+    </td><td>
+      Action -> Adjudicate to White
+      <br>
+      Action -> Adjudicate to Black
+      <br>
+      Action -> Adjudicate Draw
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>TIME-CONTROL AND TIMING OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -firstTimeOdds 1 (x)
+      <br>
+      -secondTimeOdds 1 (x)
+    </td><td>
+      reduce the thinking time of the mentioned engine by the given factor
+    </td><td>
+      Options -> Engine Settings.. (xboard only)
+  </td></tr><tr><td>
+      -timeOddsMode 1 (*x)
+    </td><td>
+      determines what happens when both engine have time odds
+    </td><td>
+      Options -> Engine Settings.. (xboard only)
+  </td></tr><tr><td>
+      -firstNPS -1 (x)
+      <br>
+      -secondNPS -1 (x)
+    </td><td>
+      engine must use node count for its time control, as if running at specified rate
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -matchPause 10000 (*x)
+    </td><td>
+      number of msec to wait between games in match mode
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -delayBeforeQuit 0 (*x)
+      <br>
+      -delayAfterQuit 0 (*x)
+    </td><td>
+      timing parameter specifying how to terminate the engine processes
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -
+    </td><td>
+      adjust the clocks by 1 minute (up or down)
+    </td><td>
+      left- or right-cick on clock in edit-game mode
+  </td></tr><tr><td>
+      -niceEngines 0 (*x)
+    </td><td>
+      lower the CPU priority of the engines
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>DISPLAY-LOOK OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -liteBackTextureFile "" (*)
+      <br>
+      -darkBackTextureFile "" (*)
+      <br>
+      -liteBackTextureMode 1 (*)
+      <br>
+      -darkBackTextureMode 1 (*)
+    </td><td>
+      Allows you to use any bitmap picture for displaying the board square
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -renderPiecesWithFont "" (*)
+    </td><td>
+      specifies a true-type Chess font to be used for piece symbols
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceToCharTable "" (*)
+    </td><td>
+      specifies which font character to use for the various piece types
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -overrideLineGap 1 (*)
+    </td><td>
+      controls the width of the black grid lines between squares
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceBackColorWhite #0 (*)
+      <br>
+      -fontPieceForeColorWhite #0 (*)
+      <br>
+      -fontPieceBackColorBlack #0 (*)
+      <br>
+      -fontPieceForeColorBlack #0 (*)
+    </td><td>
+      control piece colors in font-based rendering
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -fontPieceSize 80 (*)
+    </td><td>
+      tunes the size of pieces in font-based rendering (% of square size)
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -highlightMoveWithArrow false (*)
+    </td><td>
+      draws a big arrow to indicate the move last played
+    </td><td>
+      Options -> General...
+  </td></tr><tr><td>
+      -highlightArrowColor #FFFF80 (*)
+    </td><td>
+      controls the color of the highlight arrow
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -autoLogo false (*)
+      <br>
+      -firstLogo ""
+      <br>
+      -secondLogo ""
+    </td><td>
+      causes WinBoard to display player logos above the board, next to the clocks.
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -
+    </td><td>
+      Swap white and black clock
+    </td><td>
+      Options -> Swap Clocks
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>(UCI) ENGINE OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -polyglotDir "" (*x)
+    </td><td>
+      tells WinBoard where you installed Polyglot, for automatic invocation with UCI engines
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -polyglotBook "" (*x)
+    </td><td>
+      tells WinBoard which opening book it should use, or should make Polyglot use.
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -usePolyglotBook false (*x)
+    </td><td>
+      turns the use of the Polygot book on or off
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -defaultPathEGTB "c:\egtb" (*x)
+    </td><td>
+      folder where to find end-game tables
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -defaultCacheSizeEGTB 4 (*x)
+    </td><td>
+      specifies the cache size for UCI engines
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -defaultHashSize 64 (*x)
+    </td><td>
+      specifies the size of the main hash table for UCI engines and WinBoard engines implementing the memory command
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -firstIsUCI false (x)
+      <br>
+      -secondIsUCI false (x)
+      <br>
+      -fUCI (x)
+      <br>
+      -sUCI (x)
+    </td><td>
+      tells WinBoard the corresponding engine should be run through Polyglot
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -firstHasOwnBookUCI true (x)
+      <br>
+      -secondHasOwnBookUCI true (x)
+      <br>
+      -fNoOwnBookUCI true (x)
+      <br>
+      -sNoOwnBookUCI true (x)
+      <br>
+      -firstXBook (x)
+      <br>
+      -secondXBook (x)
+    </td><td>
+      tells WinBoard (or Polyglot) if the engine should use its own opening book
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -smpCores 1 (*x)
+    </td><td>
+      sets the maximum number of CPUs an SMP engine can use.
+      (only affects engines that support the <strong>cores</strong> command of WB protocol)
+    </td><td>
+      Options -> Global Settings... (x)
+  </td></tr><tr><td>
+      -egtFormats "" (*x)
+    </td><td>
+      specifies which end-game tables are installed on the computer,
+      and where they can be found
+      (e.g. "nalimov:\chess\egtb,scorpio:\chess\bitbases")
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -firstOptions "" (x)
+      <br>
+      -secondOptions "" (x)
+    </td><td>
+      sets engine-defined options of UCI engines and WinBoard engines that support the option feature.
+    </td><td>
+      Options -> Engine #1 Settings... (x)
+      <br>
+      Options -> Engine #2 Settings... (x)
+  </td></tr><tr><td>
+      -firstNeedsNoncompliantFEN "" (x)
+      <br>
+      -secondNeedsNoncompliantFEN "" (x)
+    </td><td>
+      directly specifies castling and e.p. field to be used in all FENs sent to mentioned engine
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>CHESS-VARIANT OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -boardHeight -1 (*x)
+      <br>
+      -boardWidth -1 (*x)
+      <br>
+      -holdingsSize -1 (*x)
+    </td><td>
+      specifies the board format and nr of piece types that can be dropped,
+      when you want it to be different from what is usual in the chosen varint
+    </td><td>
+      File -> New Variant...
+  </td></tr><tr><td>
+      -variant normal (x)
+    </td><td>
+      supports many new variants: xiangqi, shogi, fischerandom, capabanca, gothic, caparandom, janus,
+      shatranj, courier, knightmate, berolina, falcon, cylinder, fairy, super, great
+    </td><td>
+      File -> New Variant... (x)
+  </td></tr><tr><td>
+      -defaultFrcOpening -1 (x)
+    </td><td>
+      allows you to play from a specific opening shuffle, or make a new shuffle each game
+    </td><td>
+      File -> New Shuffle Game... (x)
+  </td></tr><tr><td>
+      -pieceToCharTable "" (x)
+    </td><td>
+      allows you to specify by which letters pieces are referred to in FEN and SAN,
+      if you want to deviate from what is usual for the current variant
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -flipBlack fase (*x)
+    </td><td>
+      displays opponent pieces uppside down (for Shogi)
+    </td><td>
+      Options -> Board...
+  </td></tr><tr><td>
+      -allWhite false (*x)
+    </td><td>
+      use white bitmaps (with black outline) also for display of black pieces (for Shogi)
+    </td><td>
+      Options -> Board...
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>PGN FILE OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -pgnExtendedInfo false (*x)
+    </td><td>
+      save engine output (depth, score time) in PGN
+    </td><td>
+      Options->General...
+  </td></tr><tr><td>
+      -pgnEventHeader </br>"Computer Chess Game" (*x)
+    </td><td>
+      specify the event for the PGN event tag
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -saveOutOfBookInfo true (*)
+    </td><td>
+      include an 'annotator' tag in the PGN file
+    </td><td>
+      
+  </td></tr><tr><td>
+      -hideThinkingFromHuman false (*x)
+    </td><td>
+      suppresses the engine thinking output in the display, without the need to switch it off
+      (so it can still appear in the PGN file)
+    </td><td>
+      Options -> General... (x)
+  </td></tr><tr><td>
+      -userName "" (x)
+    </td><td>
+      sets the name of the human player
+    </td><td>
+      Mode -> Enter Username... (x)
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>USER-INTERFACE OPTIONS AND WINDOW CONTROL</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -moveHistoryUp true (*)
+      <br>
+      -moveHistoryX 0 (*)
+      <br>
+      -moveHistoryY 0 (*)
+      <br>
+      -moveHistoryW 0 (*)
+      <br>
+      -moveHistoryH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing the moves of the current game
+      (new in 4.4 is that all X and Y coordinates of auxiliary windows are stored relative to the main window)
+    </td><td>
+      Mode -> Show Move History (x)
+  </td></tr><tr><td>
+      -evalGraphUp true (*)
+      <br>
+      -evalGraphX 0 (*)
+      <br>
+      -evalGraphY 0 (*)
+      <br>
+      -evalGraphW 0 (*)
+      <br>
+      -evalGraphH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing a graph of the
+      evaluation score of the engine(s) as a function of move number of the current game
+    </td><td>
+      Mode -> Show Evaluation Graph
+  </td></tr><tr><td>
+      -engineOutputUp true (*)
+      <br>
+      -engineOutputX 0 (*)
+      <br>
+      -engineOutputY 0 (*)
+      <br>
+      -engineOutputW 0 (*)
+      <br>
+      -engineOutputH 0 (*)
+    </td><td>
+      controls opening, placement and size of a window containing the thinking output of the engine(s)
+    </td><td>
+      Mode -> Show Engine Output (x)
+  </td></tr><tr><td>
+      -stickyWindows true (*)
+    </td><td>
+      make the various windows snap onto each other, and stick together
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -showEvalInMoveHistory true (*)
+    </td><td>
+      depth/score info of the engine is included as comments in the move history window
+    </td><td>
+      Options -> General...
+  </td></tr><tr><td>
+      -evalHistColorWhite #FFFFB0 (*)
+      <br>
+      -evalHistColorBlack #AD5D3D (*)
+    </td><td>
+      determines the color of the eval-score comments in the move-history window
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -autoDisplayComment true (*)
+    </td><td>
+      causes a window for displaying PGN comments to pop up automatically when such a comment is encountered
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -autoDisplayTags true (*)
+    </td><td>
+      causes a window with PGN tags to be displayed as soon as a PGN file is loaded
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -gameListTags "eprd" (*)
+    </td><td>
+      specifies the PGN tags that should be displayed in the game list
+    </td><td>
+      Options -> Game List...
+  </td></tr><tr><td>
+      -noGUI (x)
+    </td><td>
+      suppress update of display on all machine and ICS moves (moves, clocks, icon)
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>ICS OPTIONS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -autoKibitz (x)
+    </td><td>
+      kibitz engine Thinking Output to ICS, and capture opponent kibitz for in PGN
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -zippyShortGame 0 (x)
+    </td><td>
+      ban opponents on ICS that abort without playing
+    </td><td>
+      -
+  </td></tr><tr><td>
+      
+    </td><td bgcolor="lightblue">
+      <strong>MISCELLANEOUS</strong>
+    </td><td>
+      
+  </td></tr><tr><td>
+      -debugFile "winboard.debug" (x)
+      <br>
+      -nameOfDebugFile "winboard.debug" (x)
+    </td><td>
+      allows you to specify an alternative name for saving the debug information
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -engineDebugOutput 0 (x)
+    </td><td>
+      tells WinBoard if and how to put protocol-violating output in the debug file
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -
+    </td><td>
+      save chess-board display as diagram in bitmap file
+      (only works for the smaller board formats!)
+    </td><td>
+      File -> Save Diagram...
+  </td></tr><tr><td>
+      -defaultFrcPosition -1 (*x)
+    </td><td>
+      specify the number of the starting position in shuffle Chess variants
+    </td><td>
+      File -> New Shuffle Game... (x)
+  </td></tr><tr><td>
+      -
+    </td><td>
+      display only those lines in the game list that contain a given string
+    </td><td>
+      in Game-List window
+  </td></tr><tr><td>
+      -rewindFile 0 (x)
+    </td><td>
+      A nonzero value for this option causes the loadGameIndex or loadPositionIndex
+      to rewind to the beginning of the Games or Position file when it reaches
+      the given value in auto-increment match mode. 
+      This mode is specified by a negative value as argument of the /lgi or /lpi options,
+      where -1 increments the index after every game of the match,
+      and -2 after every two games (so that each position is played with black and white).
+    </td><td>
+      -
+  </td></tr><tr><td>
+      -sameColorGames 0 (x)
+    </td><td>
+      play a match, but without alternating the colors (overrules -matchGames)
+    </td><td>
+      -
+</td></tr></table>
+<p>
+The value with which the option is listed is the default value.
+If it is false or true, it is a Boolean option, a number implies an integer option.
+A value starting with # indicates an RGB color indication in hexadecimal notation.
+Options the settings of which are saved into the winboard.ini file are marked with (*).
+</p>
+</body>

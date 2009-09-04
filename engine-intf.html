@@ -6,13 +6,12 @@
 <body>
 <hr noshade size="2">
 <h1>Chess Engine Communication Protocol</h1>
-<h1><font color=green>Discussion Proposal</font></h1>
 <h2><a href="http://www.tim-mann.org/">Tim Mann</a> &amp; <a href="http://home.hccnet.nl/h.g.muller/winboardF.html">H.G.Muller</a></h2>
 <p>
-Version 2; implemented in xboard/WinBoard 4.2.1 and later.<br>
+Version 2; implemented in xboard/WinBoard 4.2.1 and later. (Sept 3, 2009)<br>
 Changes since version 1 are indicated in <font color=red>red</font>.<br>
 Changes for WinBoard 4.3.xx are indicated in <font color=green>green</font>.<br>
-Proposed changes, implemented only in alpha versions are indicated in <font color=blue>blue</font>.
+Changes for WinBoard 4.4.xx are indicated in <font color=blue>blue</font>.
 <hr noshade size="2">
 
 <ul>
@@ -536,6 +535,8 @@ or by having no legal moves (ICC)</font>
 <td><font color=green>Pieces wrap around between side edges, like board is a cylinder</font>
 <tr align="left"><th><font color=blue>super</font>
 <td><font color=blue>Superchess: a shuffle variant with 4 fairy pieces on 8x8 board</font>
+<tr align="left"><th><font color=blue>great</font>
+<td><font color=blue>Great Shatranj: sliders are replaced by corresponding short-range pieces on a 10x8 board</font>
 <tr align="left"><th>unknown<td>Unknown variant (not supported)
 </table>
 <p>
@@ -1211,6 +1212,10 @@ protocol version by rejecting some features that are defined in that
 version; however, you should realize that engine authors are likely to
 code for xboard and may not be prepared to have a feature that they
 depend on be rejected.
+<font color=blue>If the GUI rejects an option feature because of the
+syntax of the value, it should print the value string with the
+"rejected" command, e.g. "rejected option nonsense" in response
+to receiving feature option="nonsense".</font>
 </p>
 
 <p>
@@ -1452,13 +1457,18 @@ and will not send any "egtpath" commands to inform the engine about their wherea
 </font>
 <dd><font color=blue>
 This feature is used by the engine to define an option command to appear in a GUI menu,
-so that the user can change the corresponding setting of the engine through the GUI.
+so that the user can change the corresponding setting of the engine through the GUI interactively.
 The string describes the option by defining a name, type, current value and (sometimes) the acceptable value range.
-There are six different options types, each requiring a slighly different syntax of the defining string:
+Unlike other features, option features are accumulated by the GUI, 
+and the GUI must be able to add a new option to the list at any time,
+even after having received feature done=1.
+There are ten different options types, each requiring a slighly different syntax of the defining string:
 <br>
 feature option="NAME -button"
 <br>
 feature option="NAME -save"
+<br>
+feature option="NAME -reset"
 <br>
 feature option="NAME -check VALUE"
 <br>
@@ -1468,11 +1478,34 @@ feature option="NAME -spin VALUE MIN MAX"
 <br>
 feature option="NAME -combo CHOICE1 /// CHOICE2 ..."
 <br>
+feature option="NAME -slider VALUE MIN MAX"
+<br>
+feature option="NAME -file VALUE"
+<br>
+feature option="NAME -path VALUE"
+<br>
 NAME is an arbitrary alphanumeric string which can contain spaces; 
-the oter words in capitals would be replaced by the current (default) setting of the option,
+the other words in capitals would be replaced by the current (default) setting of the option,
+(a character string for -string options, a decimal number for -spin and -check options,
+were the latter uses 1=checked, 0=unchecked),
 the minimum or maximum value of numeric (-spin) options, 
 or arbitrary text labels (for -combo option).
-In the latter cae, the current value will be preceded by an asterisk.
+In the latter case, the current value will be preceded by an asterisk.
+The -file and -path options are similar to -string, but can be used to inform the GUI that
+the text represents a file name or folder name respectively, 
+so the GUI dialog could add the appropriate browse button to the text-edit field.
+Similarly, a -slider option is like a -spin, but the GUI might make a different
+graphical representation for it.
+A -save option is like a -button, and defines an immediate command to be sent by the engine.
+With -save the GUI will make sure all current option settings are flushed to the engine
+before it sends this command.
+A -reset option is like a -button, but use of it purges the list of options before sending 
+the corresponding option command to the engine.
+This enables the engine to completely redefine its options or their current settings,
+by sending a new set of option feature commands to the GUI, 
+terminated by feature done=1.
+(The effect of sending an option feature for an option with the same name as was defined before, 
+without first receiving a -reset option command, is undefined.)
 </font>
 
 <dt><font color=red>
@@ -1576,15 +1609,26 @@ Machines mode, and the PGN save file as required.
 will be taken by WinBoard as an unconditional refusal of the engine to play on,
 which might cause you to forfeit if the game was in fact not over.
 This command should thus not be used to offer draws, accept draws,
-or make draw-by-rule claims that might not be valid 
-(because it is not your move, and the opponent already moved without you knowing it yet).
-For offering and claiming draws, "offer draw" should be used.</font>
+or make draw-by-rule claims that are not yet valid in the current position
+(but will be after you move).
+For offering and claiming such draws, "offer draw" should be used.</font>
 <p>
+<font color=blue>
+Note that (in accordance with FIDE rules) only KK, KNK, KBK and KBKB with all bishops on the
+same color can be claimed as draws on the basis of insufficient mating material.
+The end-games KNNK, KBKN, KNKN and KBKB with unlike bishops do have mate positions,
+and cannot be claimed.
+Complex draws based on locked Pawn chains will not be recognized as draws by most interfaces,
+so do not claim in such positions, but just offer a draw or play on.
+</font>
+<p>
+<font color=blue>
 Note to GUI programmers: RESULT commands that the engine sends immediately after its move
 might be detected by the GUI only after the opponent has moved, because of communication
 and scheduling delays, no matter how fast the engine sent it.
 Any judgement of the validity of RESULT claims based on te "current" board position
 will have to account for this uncertainty.
+</font>
 </p>
 
 <dt><strong>resign</strong>
@@ -1593,6 +1637,8 @@ Alternatively, it can use the "RESULT {comment}" command if the string
 "resign" is included in the comment; for example "0-1 {White
 resigns}".  xboard relays the resignation to the user, the ICS, the
 other engine in Two Machines mode, and the PGN save file as required.
+<font color=blue>Note that many interfaces work more smoothly if you resign <em>before</em>
+you move.</font>
 <p>
 
 <dt><strong>offer draw</strong>
@@ -1604,7 +1650,7 @@ Machine Black, or Two Machines mode, the offer is considered valid
 until your engine has made two more moves.
 <font color=green>This command must also be used to accept a draw offer.
 Do not use the 1/2-1/2 command for that, as the offer might be no longer valid,
-in which case a refusal to play on implied by the RESULT command would make you forfeit the game.
+in which case a refusal to play on implied by the RESULT command might make you forfeit the game.
 "offer draw" should also be used to claim 50-move and 3-fold-repetition draws
 that will occur <em>after</em> your move, by sending it <em>before</em> making the move.
 WinBoard will grant draw offers without the opponent having any say in

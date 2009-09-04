@@ -7,7 +7,7 @@ PROJ=winboard
 OBJS=backend.o book.o gamelist.o lists.o moves.o pgntags.o uci.o zippy.o\
  parser.o wbres.o wclipbrd.o wedittags.o wengineo.o wevalgraph.o\
  wgamelist.o whistory.o winboard.o wlayout.o woptions.o wsnap.o\
- wsockerr.o help.o
+ wsockerr.o help.o wsettings.o
 
 
 # make compiling less spammy
@@ -161,6 +161,9 @@ book.o: ../book.c ../common.h ../backend.h ../lists.h
 	$(call compile, $<)
 
 uci.o: ../uci.c ..//common.h ../backend.h ../frontend.h ../lists.h
+	$(call compile, $<)
+
+wsettings.o: wsettings.c ..//common.h ../backend.h ../frontend.h ../lists.h
 	$(call compile, $<)
 
 %.o: %.c
