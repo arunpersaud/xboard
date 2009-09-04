@@ -12549,7 +12549,11 @@ ParseFeatures(args, cps)
     if (BoolFeature(&p, "smp", &cps->maxCores, cps)) continue;
     if (StringFeature(&p, "egt", &cps->egtFormats, cps)) continue;
     if (StringFeature(&p, "option", &(cps->option[cps->nrOptions].name), cps)) {
-	ParseOption(&(cps->option[cps->nrOptions++]), cps); // [HGM] options: add option feature
+	if(!ParseOption(&(cps->option[cps->nrOptions++]), cps)) { // [HGM] options: add option feature
+	    sprintf(buf, "rejected option %s\n", cps->option[--cps->nrOptions].name);
+	    SendToProgram(buf, cps);
+	    continue;
+	}
 	if(cps->nrOptions >= MAX_OPTIONS) {
 	    cps->nrOptions--;
 	    sprintf(buf, "%s engine has too many options\n", cps->which);

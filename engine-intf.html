@@ -8,7 +8,7 @@
 <h1>Chess Engine Communication Protocol</h1>
 <h2><a href="http://www.tim-mann.org/">Tim Mann</a> &amp; <a href="http://home.hccnet.nl/h.g.muller/winboardF.html">H.G.Muller</a></h2>
 <p>
-Version 2; implemented in xboard/WinBoard 4.2.1 and later.<br>
+Version 2; implemented in xboard/WinBoard 4.2.1 and later. (Sept 3, 2009)<br>
 Changes since version 1 are indicated in <font color=red>red</font>.<br>
 Changes for WinBoard 4.3.xx are indicated in <font color=green>green</font>.<br>
 Changes for WinBoard 4.4.xx are indicated in <font color=blue>blue</font>.
@@ -1212,6 +1212,10 @@ protocol version by rejecting some features that are defined in that
 version; however, you should realize that engine authors are likely to
 code for xboard and may not be prepared to have a feature that they
 depend on be rejected.
+<font color=blue>If the GUI rejects an option feature because of the
+syntax of the value, it should print the value string with the
+"rejected" command, e.g. "rejected option nonsense" in response
+to receiving feature option="nonsense".</font>
 </p>
 
 <p>
@@ -1453,13 +1457,18 @@ and will not send any "egtpath" commands to inform the engine about their wherea
 </font>
 <dd><font color=blue>
 This feature is used by the engine to define an option command to appear in a GUI menu,
-so that the user can change the corresponding setting of the engine through the GUI.
+so that the user can change the corresponding setting of the engine through the GUI interactively.
 The string describes the option by defining a name, type, current value and (sometimes) the acceptable value range.
-There are nine different options types, each requiring a slighly different syntax of the defining string:
+Unlike other features, option features are accumulated by the GUI, 
+and the GUI must be able to add a new option to the list at any time,
+even after having received feature done=1.
+There are ten different options types, each requiring a slighly different syntax of the defining string:
 <br>
 feature option="NAME -button"
 <br>
 feature option="NAME -save"
+<br>
+feature option="NAME -reset"
 <br>
 feature option="NAME -check VALUE"
 <br>
@@ -1483,13 +1492,20 @@ the minimum or maximum value of numeric (-spin) options,
 or arbitrary text labels (for -combo option).
 In the latter case, the current value will be preceded by an asterisk.
 The -file and -path options are similar to -string, but can be used to inform the GUI that
-the text represents a file name or folder name respectively, so the GUI dialog to set it
-could add the appropriate browse button to the text-edit field.
+the text represents a file name or folder name respectively, 
+so the GUI dialog could add the appropriate browse button to the text-edit field.
 Similarly, a -slider option is like a -spin, but the GUI might make a different
 graphical representation for it.
 A -save option is like a -button, and defines an immediate command to be sent by the engine.
 With -save the GUI will make sure all current option settings are flushed to the engine
 before it sends this command.
+A -reset option is like a -button, but use of it purges the list of options before sending 
+the corresponding option command to the engine.
+This enables the engine to completely redefine its options or their current settings,
+by sending a new set of option feature commands to the GUI, 
+terminated by feature done=1.
+(The effect of sending an option feature for an option with the same name as was defined before, 
+without first receiving a -reset option command, is undefined.)
 </font>
 
 <dt><font color=red>
