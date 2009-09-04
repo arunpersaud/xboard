@@ -7102,51 +7102,75 @@ typedef struct {
     int lineByLine;
     char *unused;
     InputCallback func;
-    XtInputId xid;
+    guint sid;
     char buf[INPUT_SOURCE_BUF_SIZE];
     VOIDSTAR closure;
 } InputSource;
 
 void
-DoInputCallback(closure, source, xid)
-     caddr_t closure;
-     int *source;
-     XtInputId *xid;
+DoInputCallback(io,cond,data)
+     GIOChannel   *io;
+     GIOCondition  cond;
+     gpointer *data;
 {
-    InputSource *is = (InputSource *) closure;
-    int count;
-    int error;
-    char *p, *q;
+  /* read input from one of the input source (for example a chess program, ICS, etc).
+   * and call a function that will handle the input
+   */
 
-    if (is->lineByLine) {
-	count = read(is->fd, is->unused,
-		     INPUT_SOURCE_BUF_SIZE - (is->unused - is->buf));
-	if (count <= 0) {
-	    (is->func)(is, is->closure, is->buf, count, count ? errno : 0);
-	    return;
+  int count; /* how many bytes did we read */
+  int error; 
+  char *p, *q;
+  
+  /* All information (callback function, file descriptor, etc) is
+   * saved in an InputSource structure 
+   */
+  InputSource *is = (InputSource *) data; 
+  
+  if (is->lineByLine) 
+    {
+      count = read(is->fd, is->unused,
+		   INPUT_SOURCE_BUF_SIZE - (is->unused - is->buf));
+
+      if (count <= 0) 
+	{
+	  (is->func)(is, is->closure, is->buf, count, count ? errno : 0);
+	  return;
 	}
-	is->unused += count;
-	p = is->buf;
-	while (p < is->unused) {
-	    q = memchr(p, '\n', is->unused - p);
-	    if (q == NULL) break;
-	    q++;
-	    (is->func)(is, is->closure, p, q - p, 0);
-	    p = q;
+      is->unused += count;
+      p = is->buf;
+      /* break input into lines and call the callback function on each
+       * line 
+       */
+      while (p < is->unused) 
+	{
+	  q = memchr(p, '\n', is->unused - p);
+	  if (q == NULL) break;
+	  q++;
+	  (is->func)(is, is->closure, p, q - p, 0);
+	  p = q;
 	}
-	q = is->buf;
-	while (p < is->unused) {
-	    *q++ = *p++;
+      /* remember not yet used part of the buffer */
+      q = is->buf;
+      while (p < is->unused) 
+	{
+	  *q++ = *p++;
 	}
-	is->unused = q;
-    } else {
-	count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
-	if (count == -1)
-	  error = errno;
-	else
-	  error = 0;
-	(is->func)(is, is->closure, is->buf, count, error);
+      is->unused = q;
     }
+  else 
+    {
+      /* read maximum length of input buffer and send the whole buffer
+       * to the callback function 
+       */
+      count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
+      if (count == -1)
+	error = errno;
+      else
+	error = 0;
+      (is->func)(is, is->closure, is->buf, count, error);
+    }
+  
+  return;
 }
 
 InputSourceRef AddInputSource(pr, lineByLine, func, closure)
@@ -7156,6 +7180,7 @@ InputSourceRef AddInputSource(pr, lineByLine, func, closure)
      VOIDSTAR closure;
 {
     InputSource *is;
+    GIOChannel *channel;
     ChildProc *cp = (ChildProc *) pr;
 
     is = (InputSource *) calloc(1, sizeof(InputSource));
@@ -7168,14 +7193,23 @@ InputSourceRef AddInputSource(pr, lineByLine, func, closure)
 	is->kind = cp->kind;
 	is->fd = cp->fdFrom;
     }
-    if (lineByLine) {
-	is->unused = is->buf;
-    }
+    if (lineByLine) 
+      is->unused = is->buf;
+    else
+      is->unused = NULL;
 
-    is->xid = XtAppAddInput(appContext, is->fd,
-			    (XtPointer) (XtInputReadMask),
-			    (XtInputCallbackProc) DoInputCallback,
-			    (XtPointer) is);
+//    is->xid = XtAppAddInput(appContext, is->fd,
+//			    (XtPointer) (XtInputReadMask),
+//			    (XtInputCallbackProc) DoInputCallback,
+//			    (XtPointer) is);
+//
+
+    /* TODO: will this work on windows?*/
+    printf("DEBUG: fd=%d %d\n",is->fd,is);
+
+    channel = g_io_channel_unix_new(is->fd);
+    g_io_channel_set_close_on_unref (channel, TRUE);
+    is->sid = g_io_add_watch(channel, G_IO_IN,(GIOFunc) DoInputCallback, is);
     is->closure = closure;
     return (InputSourceRef) is;
 }
@@ -7186,9 +7220,10 @@ RemoveInputSource(isr)
 {
     InputSource *is = (InputSource *) isr;
 
-    if (is->xid == 0) return;
-    XtRemoveInput(is->xid);
-    is->xid = 0;
+    if (is->sid == 0) return;
+    g_source_remove(is->sid);
+    is->sid = 0;
+    return;
 }
 
 int OutputToProcess(pr, message, count, outError)
