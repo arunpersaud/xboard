@@ -10912,8 +10912,19 @@ ExitAnalyzeMode()
 void
 EditPositionDone()
 {
+    int king = gameInfo.variant == VariantKnightmate ? WhiteUnicorn : WhiteKing;
+
     startedFromSetupPosition = TRUE;
     InitChessProgram(&first, FALSE);
+    castlingRights[0][2] = castlingRights[0][5] = BOARD_WIDTH>>1;
+    if(boards[0][0][BOARD_WIDTH>>1] == king) {
+	castlingRights[0][1] = boards[0][0][BOARD_LEFT] == WhiteRook ? 0 : -1;
+	castlingRights[0][0] = boards[0][0][BOARD_RGHT-1] == WhiteRook ? BOARD_RGHT-1 : -1;
+    } else castlingRights[0][2] = -1;
+    if(boards[0][BOARD_HEIGHT-1][BOARD_WIDTH>>1] == WHITE_TO_BLACK king) {
+	castlingRights[0][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? 0 : -1;
+	castlingRights[0][3] = boards[0][BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook ? BOARD_RGHT-1 : -1;
+    } else castlingRights[0][5] = -1;
     SendToProgram("force\n", &first);
     if (blackPlaysFirst) {
 	strcpy(moveList[0], "");
