@@ -12,6 +12,7 @@ COPYING for details.
 
 You can build xboard on most systems with the following commands.
 
+    	./autogen.sh
 	./configure
 	make
 

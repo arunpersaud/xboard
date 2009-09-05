@@ -2,6 +2,251 @@ ChangeLog for XBoard/WinBoard
 -----------------------------
 
 (latest entries created by git log --no-merges --pretty="* %ai: %s%n %b" vnew vold)
+
+* 2009-09-05 09:44:21 -0700: updated AUTHORS and README files for release
+ 
+* 2009-09-05 08:52:09 -0700: fixed some typos
+ 
+* 2009-09-04 22:39:45 -0700: set castling rights after setting up a position
+ I was going through old WB forum posts, and I encountered a
+bug report for a bug that I never fixed: The castling rights should
+be properly set (actually: cleared) after setting up a position
+in Edit Position mode (as opposed to pasting a FEN).
+
+* 2009-09-03 23:11:18 -0700: removed install files from master
+ they now live in their own branch
+
+* 2009-09-03 22:30:18 -0700: updated polyglot protocol
+ I added a new option type "-reset" to the protocol for the new option feature.
+4.4.0 does not implement it yet, but Michel wants it for future Polyglots,
+and I think it is best to update the protocol in one big swoop. So I want to already
+include it in the specs now. (engine-intf.html)
+
+I made xboard's response to an unknown option type compliant with the new protocol specs.
+
+* 2009-09-03 22:28:50 -0700: fixed some typos
+ 
+* 2009-09-03 20:47:13 -0600: Updated project files for DevCpp and Visual Studio to add wsettings.c
+ 
+* 2009-09-03 20:46:33 -0600: Added newline at end of file to silence warning.
+ 
+* 2009-08-31 20:29:49 -0700: workaround for error message for missing pieces used in variants and initstring bugfix
+ error messages showed for non-existing pieces showed up for old user supplied pixmaps. Loading a pixmap of the king for
+ the missing pieces now.
+
+Another bad bug surfaced: the -initString argument does not work in any
+XBoard version! (Including 4.2.7b) The escape sequences for linefeed in
+the string are not understood: -initString "new\nrandom\n" actually sends
+the \ and n to the engine (which then does not recognize the line as a
+valid command)!
+
+So I also added a patch to expand escape sequences in the InitString and
+ComputerString command-line options.
+
+* 2009-08-31 20:27:24 -0700: updated installe script
+ I re-organized the doc files in the install, so they now all go in the
+WinBoard\doc folder
+(and none in the root). I so included the COPYING and COPYRIGHT files there.
+This required some updates of the links in some html files, and of the menu
+link
+to README.html in the install script. I also fixed an error with the
+current directory
+in the menu short-cuts of some engines (which started in the fonts folder, and
+could not find the opening book there...).
+
+* 2009-08-31 20:25:17 -0700: updated documentation
+ 
+* 2009-08-31 20:20:55 -0700: updated installer script
+ 
+* 2009-08-31 19:51:48 -0700: new help files for windows
+ 
+* 2009-08-25 20:41:29 -0700: updated installer
+ 
+* 2009-08-25 20:36:53 -0700: undid some previous changes
+ some files got mixed up
+
+* 2009-08-25 20:32:22 -0700: fixed small bug in wsetting
+ 
+* 2009-08-25 20:29:06 -0700: trigger a focus switch to ICS input field when typing
+ old behavior was that "." or "," triggered this, now every printable character  except 1-9 will trigger the focus switc
+h
+
+* 2009-08-25 20:26:20 -0700: bug in backend.c when receiving lines from ICS
+ A space was appended to every character received from an ICS in stead of just at line breaks.
+
+* 2009-08-24 23:47:48 -0700: fixed warning messages from compiler
+ 
+* 2009-08-23 14:24:38 -0700: fixed build on OS X
+ this seems to fix it. Bug reported by Louis Zulli who also did the testing.
+
+* 2009-08-23 11:54:28 -0700: OK, this is the beefed up version of the Polyglot info-string kludge, for WB and XB.
+ 
+* 2009-08-23 10:22:48 -0700: added missing X_LIBS references to Makefile.am
+ 
+* 2009-08-22 23:33:44 -0700: made the install script and executable
+ 
+* 2009-08-22 23:19:07 -0700: changed beta1 to beta2
+ 
+* 2009-08-22 23:14:11 -0700: fixed enable zippy in configure script and added some checks for OS X
+ make tried to compile zippy even when --disable-zippy was given. Also fixed a bug in xboard.c where #ifdef instead of #
+if was used to test for ZIPPY (it's either 0 or 1, so we need #if).
+
+Also added some special checks for OS X, not sure if these will do it, but it's a start;)
+
+* 2009-08-22 19:09:54 -0700: added configure summary to configure output, also cleaned up configure.ac a bit
+ used AS_HELP_STRING where possible
+
+* 2009-08-22 18:10:57 -0700: added check for malloc.h
+ this should fix a build error on OS X
+
+* 2009-08-22 17:47:44 -0700: A small cosmetic change in the size of buttons inside a groupbox of the Engine-Setup dialog
+.
+ 
+* 2009-08-22 17:32:14 -0700: make xboard usable with UCI engines
+ I made a small patch in xoptions.c (where the corresponding Engine Settings
+dialog was for XBoard), to make it at least usable for UCI engines: I now
+divide the options over upto 4 columns, if there are too many to fit into
+a single column. This seems to work. Still looks very ugly, but it is
+functional.
+
+* 2009-08-22 17:30:05 -0700: fix premove for winboard
+ This might fix the illusive premove problem. In 4.2.7 the code was not properly
+indented, and this led to an unbalanced braces error that I then fixed the
+wrong way.
+Click-click premoves did only work after clicking the toSquare twice. It
+might be
+that they actually did work after clicking it once, but that the highlights
+were not
+displayed (although set) for lack of a display refresh.
+
+* 2009-08-22 17:28:11 -0700: fixed bug for double saved games
+ This patch should solve the problem with doubly saved games when XBoard is
+closed.
+I calculate a cecksum of each saved game now (including move comments),
+and suppress saving if the checksum is not changed.
+
+* 2009-08-22 17:25:58 -0700: fixed xengineoutput.c, to keep the duplicated code identical to that of wengineo.c.
+ 
+* 2009-08-22 17:24:08 -0700: updated xboard.texi: added warning that pixmaps are not build for all variants
+ 
+* 2009-08-22 17:19:11 -0700: added a dialog for engine-specific option settings
+ 
+* 2009-08-22 17:09:58 -0700: updated some documentation
+ 
+* 2009-08-22 17:07:10 -0700: fixed several bugs in the backend and added some more polyglot support
+ * I added recognition for the new UCI3 option types that are recognized in the WB
+option features, to make sure this version is compatible with future Polyglots.
+Also fixed a bug that failed to strip an asterisk prefix from the first
+combo-box item.
+
+* I fixed the ICS-time-in-PGN bug.
+
+* I fixed a bug which caused a space to be missing when long lines broken up by
+an ICS were joined.
+
+* 2009-08-22 17:02:58 -0700: better polyglot support for engine ouput
+ I fixed the algorithm for clearing the Engine Output window to work better with
+the latest Polyglot, whight outputs UCI "info strings" amongst the thinking
+output.
+
+* 2009-08-22 16:23:32 -0600: Beginnings of installer for 4.4.0.  HGM asked me to forward the nsi file, but it seemed bes
+t to just add the installer tree to git even though it's not finished.  You must install NSIS then FontName-0.7.exe (inc
+luded in installer folder) then run build.bat in the same directory.
+ 
+* 2009-08-05 22:18:29 -0700: patch backend.c to make the -noGUI option also work in ICS mode.
+ 
+* 2009-08-01 13:09:49 -0700: temporary fix for pre-select
+ As a temporary kludge I replaced looking into the holdings for the piece type by figuring out which piece would belong 
+on the clicked holdings square. This is a non-trivial process, as it depends on which pieces participate in a certain va
+riant.
+
+* 2009-07-30 00:19:37 -0700: changed click-click moves
+ I got complaints about the way XBoard 4.4.0 handles click-click moves, in particular changing the selected piece after 
+selecting King (for which I suppressed interference with FRC castling in a rather brutal way). People tell me it is very
+ annoying that clicks sometimes don't work to select a piece. WinBoard uses refined logic in the back-end to handle this
+, but the XBoard front-end is not interfaced with that yet. (This would require a major rewrite of the mouse handler.)
+
+This temporary patch suppresses this behavior in all variants that do not support Fischer castling, and even there only 
+exhibit it for Rook-after-King selection (which will be interpreted as an attempt to enter a castling move as K x own R)
+.
+
+* 2009-07-26 08:43:35 -0700: option -adjudicateDrawMoves is not included in the XBoard list.
+ added it to the option list
+
+* 2009-07-21 20:23:23 -0700: converted files from dos to unix format
+ run dos2unix over a bunch of files
+
+* 2009-07-16 07:43:38 -0600: Stripped out unused VersionInfo
+ 
+* 2009-07-15 23:16:19 -0700: changed version to 4.4.0.beta1
+ 
+* 2009-07-15 23:12:37 -0700: updated INSTALL file to add ./autogen.sh
+ 
+* 2009-07-15 22:44:05 -0700: higher number of engine options possible now
+ I upped the number of options per engine from
+50 to 100, and the average number of characters per option from 10 to 20.
+
+* 2009-07-15 12:30:37 -0600: Fix of bad bug
+ 
+* 2009-07-14 23:41:36 -0600: Added version information to resources.
+ 
+* 2009-07-14 23:40:50 -0600: Added Jaws targets to IDE projects.
+ 
+* 2009-07-14 23:39:12 -0600: Final makefile adjustments and compiling instructions.
+ 
+* 2009-07-13 22:35:17 -0600: Cleaned up garbage left behind from my makefile update.
+ 
+* 2009-07-13 22:26:56 -0600: Updated cmdline makefiles to be able to produce JAWS binaries.
+ This breaks support for MSVC 4.x.  It may still be possible to
+use that compiler if you obtain the latest SDK from Microsoft.
+MSVC 6.0 still works, but I had to change the target windows
+version to 0x500 which causes warnings about building beta
+applications.  This is all due to the use of MENUBARINFO data
+type in the jaws binary.  You can reduce the WINVER to 0x0400
+safely if you are not building a JAWS binary, and MSVC 4.x
+will work fine.
+
+* 2009-07-13 22:26:10 -0600: Removed dependency on jfwapi.h
+ Allows anyone to compile a jaws compatible binary.
+
+* 2009-07-13 22:23:31 -0600: Fixed duplicate resource in winboard.rc
+ PLEASE remember to pull before commiting.  This is the 2nd
+time I've fixed this.  It's a waste of time to keep fixing
+the same problems.
+
+* 2009-07-13 19:36:58 -0700: resolved conflict between Xt and Xaw libraries
+ seems like we don't need to link against Xt.
+
+* 2009-07-13 19:33:57 -0700: help-menu was not un-grayed in the JAWS version, when it played with engines
+ 
+* 2009-07-13 19:29:53 -0700: integrated jaws into winboard
+ I integrated the JAWS patch now into WinBoard in such a way that the
+JAWS and standard version can use the same resource file. This new
+winboard.c contains the improved dialog layot of the JAWS version,
+but none of the menus and JAWS-specific acclerator keys. The latter
+are now generated at run time by code in jaw.s. As a result jaws.h
+could be cancelled, as there the JAWS-specific defines are no
+longer needed outside jaws.c (now the .rc does not use them), and
+is incorporated in it.
+
+* 2009-07-12 15:37:26 -0700: fixed problem in autoconf using Xaw3d
+ rewrote the section for Xaw3d in the autoconf file
+
+* 2009-07-12 15:29:28 -0600: Added Jaws support to GCC makefile
+ 
+* 2009-07-12 15:28:20 -0600: added help support: MSVC IDE and DevCpp IDE project files
+ 
+* 2009-07-12 15:26:49 -0600: Removed obsolete makefiles and support files.
+
+* 2009-07-12 12:33:26 -0700: updated AUTHORS with the help of git
+ use
+
+git log --pretty=oneline --name-only --author=AUTHORNAME v4.2.7..HEAD  |sort |uniq
+
+a bit of hand editing and a quick emacs macro later and you have a nice comma seperated list of all files changes by one
+ author between two commits.
+
+* 2009-07-12 12:31:47 -0700: updated Changelog using git log --no-merges --pretty="* %ai: %s%n %b" HEAD v4.2.7
 	
 * 2009-07-12 11:34:28 -0700: cleaned up some more copyright notices
  
