@@ -79,12 +79,21 @@ needed in ICS mode.  Recognized variant names are:
                         known to XBoard can participate (8x8)
           unknown       Catchall for other unknown variants
 </pre>
+     <p>NOT ALL BOARDSIZES PROVIDE A COMPLETE SET OF BUILT-IN BITMAPS FOR ALL
+UN-ORTHODOX PIECES, though. Only in <code>boardSize</code> middling and bulky
+all 22 piece types are provided, while -boardSize petite has most
+of them. Archbishop, Chancellor and Amazon are supported in every
+size from petite to bulky. Kings or Amazons are substituted for
+missing bitmaps. You can still play variants needing un-orthodox
+pieces in other board sizes providing your own bitmaps through the
+<code>bitmapDirectory</code> or <code>pixmapDirectory</code> options.
+
      <p>In the shuffle variants, XBoard now does shuffle the pieces, although
 you can still do it by hand using Edit Position.  Some variants are
 supported only in ICS mode, including bughouse, and
 kriegspiel.  The winning/drawing conditions in crazyhouse (off-board
-interposition on mate), losers, suicide, giveaway, atomic, and 3check
-are not fully understood. 
+interposition on mate) are not fully understood, but losers, suicide,
+giveaway, atomic, and 3check should be OK. 
 Berolina and cylinder chess can only be played with legality testing off. 
 In crazyhouse, XBoard now does keep
 track of off-board pieces.  In shatranj it does implement the baring
