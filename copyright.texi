@@ -1,4 +1,3 @@
-\input texinfo  @c -*-texinfo-*-
 
 @setfilename copyright.info
 
@@ -54,5 +53,3 @@ into another language, under the above conditions for modified versions,
 except that the section entitled ``GNU General Public License,''
 and this permission notice, may be included in translations approved by
 the Free Software Foundation instead of in the original English.
-
-@bye

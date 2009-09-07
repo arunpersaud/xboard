@@ -34,7 +34,8 @@ DISTCLEANFILES = stamp-h
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@
 AM_LDFLAGS= -lm @X_PRE_LIBS@ @XAW_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
 
-info_TEXINFOS = copyright.texi xboard.texi
+info_TEXINFOS =  xboard.texi
+xboard_TEXINFOS =  copyright.texi 
 man6_MANS = xboard.man
 
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
