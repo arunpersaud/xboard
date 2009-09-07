@@ -1,3 +1,5 @@
+\input texinfo  @c -*-texinfo-*-
+
 @setfilename copyright.info
 
 Copyright @copyright{} 1991 Digital Equipment Corporation, Maynard, Massachusetts.
@@ -52,3 +54,5 @@ into another language, under the above conditions for modified versions,
 except that the section entitled ``GNU General Public License,''
 and this permission notice, may be included in translations approved by
 the Free Software Foundation instead of in the original English.
+
+@bye
