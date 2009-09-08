@@ -25,6 +25,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xhistory.c  xhistory.h \
 		 xoptions.c \
 		 $(ZPY)
+xboard_LDADD = -lm @X_PRE_LIBS@ @XAW_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
 
 EXTRA_DIST = pixmaps  bitmaps shogibitmaps \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man
@@ -32,7 +33,6 @@ EXTRA_DIST = pixmaps  bitmaps shogibitmaps \
 DISTCLEANFILES = stamp-h
 
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@
-AM_LDFLAGS= -lm @X_PRE_LIBS@ @XAW_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
 
 info_TEXINFOS =  xboard.texi
 xboard_TEXINFOS =  copyright.texi 
