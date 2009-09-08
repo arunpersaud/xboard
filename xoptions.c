@@ -78,6 +78,9 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
+extern void SendToProgram P((char *message, ChessProgramState *cps));
+
+
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
 extern int squareSize;

@@ -189,6 +189,8 @@ void GetMoveListEvent P((void));
 void ExitAnalyzeMode P((void));
 void AnalyzeModeEvent P((void));
 void AnalyzeFileEvent P((void));
+void InitPosition P((int redraw));
+void NewSettingEvent P((int option, char *command, int value));
 void DoEcho P((void));
 void DontEcho P((void));
 void TidyProgramName P((char *prog, char *host, char *buf));

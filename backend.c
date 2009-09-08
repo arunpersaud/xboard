@@ -151,7 +151,6 @@ void SendToICS P((char *s));
 void SendToICSDelayed P((char *s, long msdelay));
 void SendMoveToICS P((ChessMove moveType, int fromX, int fromY,
 		      int toX, int toY));
-void InitPosition P((int redraw));
 void HandleMachineMove P((char *message, ChessProgramState *cps));
 int AutoPlayOneMove P((void));
 int LoadGameOneMove P((ChessMove readAhead));
