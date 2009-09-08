@@ -28,7 +28,8 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 xboard_LDADD = -lm @X_PRE_LIBS@ @XAW_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
 
 EXTRA_DIST = pixmaps  bitmaps shogibitmaps \
-	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man
+	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
+	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm readme_HGM.txt zippy.README
 
 DISTCLEANFILES = stamp-h
 
