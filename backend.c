@@ -456,10 +456,10 @@ AppData appData;
 
 Board boards[MAX_MOVES];
 /* [HGM] Following 7 needed for accurate legality tests: */
-char  epStatus[MAX_MOVES];
-char  castlingRights[MAX_MOVES][BOARD_SIZE]; // stores files for pieces with castling rights or -1
-char  castlingRank[BOARD_SIZE]; // and corresponding ranks
-char  initialRights[BOARD_SIZE], FENcastlingRights[BOARD_SIZE], fileRights[BOARD_SIZE];
+signed char  epStatus[MAX_MOVES];
+signed char  castlingRights[MAX_MOVES][BOARD_SIZE]; // stores files for pieces with castling rights or -1
+signed char  castlingRank[BOARD_SIZE]; // and corresponding ranks
+signed char  initialRights[BOARD_SIZE], FENcastlingRights[BOARD_SIZE], fileRights[BOARD_SIZE];
 int   nrCastlingRights; // For TwoKings, or to implement castling-unknown status
 int   initialRulePlies, FENrulePlies;
 char  FENepStatus;

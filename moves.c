@@ -69,7 +69,7 @@ int BlackPiece P((ChessSquare));
 int SameColor P((ChessSquare, ChessSquare));
 int PosFlags(int index);
 
-extern char initialRights[BOARD_SIZE]; /* [HGM] all rights enabled, set in InitPosition */
+extern signed char initialRights[BOARD_SIZE]; /* [HGM] all rights enabled, set in InitPosition */
 
 
 int WhitePiece(piece)
