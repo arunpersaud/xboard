@@ -2416,14 +2416,15 @@ read_from_ics(isr, closure, data, count, error)
        #endif
 #endif
 	    } // [DM] 'else { ' deleted
-	 	if (/* Don't color "message" or "messages" output */
-		    (tkind = 5, looking_at(buf, &i, "*. * (*:*): ")) ||
-		    looking_at(buf, &i, "*. * at *:*: ") ||
-		    looking_at(buf, &i, "--* (*:*): ") ||
+	 	if (
 		    /* Regular tells and says */
 		    (tkind = 1, looking_at(buf, &i, "* tells you: ")) ||
 		    looking_at(buf, &i, "* (your partner) tells you: ") ||
 		    looking_at(buf, &i, "* says: ") ||
+		    /* Don't color "message" or "messages" output */
+		    (tkind = 5, looking_at(buf, &i, "*. * (*:*): ")) ||
+		    looking_at(buf, &i, "*. * at *:*: ") ||
+		    looking_at(buf, &i, "--* (*:*): ") ||
 		    /* Message notifications (same color as tells) */
 		    looking_at(buf, &i, "* has left a message ") ||
 		    looking_at(buf, &i, "* just sent you a message:\n") ||
