@@ -177,11 +177,15 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	    GetDlgItemText(hDlg, OPT_ChatInput, mess, MSG_SIZ);
 	    SetDlgItemText(hDlg, OPT_ChatInput, "");
 	    // from here on it could be back-end
-	    if(strcmp("WHISPER", chatPartner[partner])) {
-		sprintf(buf, "> %s\n", mess); // echo only tells, not whispers
+	    if(!strcmp("WHISPER", chatPartner[partner]))
+		sprintf(buf, "whisper %s\n", mess); // WHISPER box uses "whisper" to send
+	    else {
+		if(!atoi(chatPartner[partner])) {
+		    sprintf(buf, "> %s\n", mess); // echo only tells to handle, not channel
 		InsertIntoMemo(hDlg, buf);
+		}
 		sprintf(buf, "tell %s %s\n", chatPartner[partner], mess);
-	    } else sprintf(buf, "whisper %s\n", mess); // SAY box uses "say" to send
+	    }
 	    SendToICS(buf);
 	    break;
 

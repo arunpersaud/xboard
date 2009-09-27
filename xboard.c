@@ -1401,6 +1401,9 @@ XtResource clientResources[] = {
     { "delayAfterQuit", "delayAfterQuit", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, delayAfterQuit),
 	XtRImmediate, (XtPointer) 0},
+    { "keepAlive", "keepAlive", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, keepAlive),
+	XtRImmediate, (XtPointer) 0},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1768,6 +1771,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-secondOptions", "secondOptions", XrmoptionSepArg, NULL },
     { "-firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
+    { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
 };
 
 
@@ -2419,7 +2423,7 @@ main(argc, argv)
 	    j = fprintf(stderr, "  %s%s", shellOptions[i].option,
 		        (shellOptions[i].argKind == XrmoptionSepArg
 			 ? " ARG" : ""));
-	    if (i++ < XtNumber(shellOptions)) {
+	    if (i++ < XtNumber(shellOptions)) {		
 		fprintf(stderr, "%*c%s%s\n", 40 - j, ' ',
 			shellOptions[i].option,
 			(shellOptions[i].argKind == XrmoptionSepArg
@@ -8140,6 +8144,9 @@ void
 ScheduleDelayedEvent(cb, millisec)
      DelayedEventCallback cb; long millisec;
 {
+    if(delayedEventTimerXID && delayedEventCallback == cb)
+	// [HGM] alive: replace, rather than add or flush identical event
+	XtRemoveTimeOut(delayedEventTimerXID);
     delayedEventCallback = cb;
     delayedEventTimerXID =
       XtAppAddTimeOut(appContext, millisec,

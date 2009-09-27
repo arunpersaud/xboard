@@ -2093,6 +2093,7 @@ read_from_ics(isr, closure, data, count, error)
     int backup;    /* [DM] For zippy color lines */
     char *p;
     char talker[MSG_SIZ]; // [HGM] chat
+    int channel;
 
     if (appData.debugMode) {
       if (!error) {
@@ -2418,15 +2419,28 @@ read_from_ics(isr, closure, data, count, error)
 //if(appData.debugMode) fprintf(debugFP, "hunt for tell, buf = %s\n", buf+i);
 
 	    // [HGM] chat: intercept tells by users for which we have an open chat window
+	    channel = -1;
 	    if(started == STARTED_NONE && (looking_at(buf, &i, "* tells you:") || looking_at(buf, &i, "* says:") || 
-					   looking_at(buf, &i, "* whispers:"))) {
+					   looking_at(buf, &i, "* whispers:") ||
+					   looking_at(buf, &i, "*(*):") && (sscanf(star_match[1], "%d", &channel),1) ||
+					   looking_at(buf, &i, "*(*)(*):") && sscanf(star_match[2], "%d", &channel) == 1 )) {
 		int p;
 		sscanf(star_match[0], "%[^(]", talker+1); // strip (C) or (U) off ICS handle
 		chattingPartner = -1;
-		if(buf[i-3] == 'r') // whisper; look if there is a WHISPER chatbox
-		for(p=0; p<MAX_CHAT; p++) if(!strcmp("WHISPER", chatPartner[p])) {
+
+		if(channel >= 0) // channel broadcast; look if there is a chatbox for this channel
+		for(p=0; p<MAX_CHAT; p++) {
+		    if(channel == atoi(chatPartner[p])) {
 		    talker[0] = '['; strcat(talker, "]");
 		    chattingPartner = p; break;
+		    }
+		} else
+		if(buf[i-3] == 'r') // whisper; look if there is a WHISPER chatbox
+		for(p=0; p<MAX_CHAT; p++) {
+		    if(!strcmp("WHISPER", chatPartner[p])) {
+			talker[0] = '['; strcat(talker, "]");
+			chattingPartner = p; break;
+		    }
 		}
 		if(chattingPartner<0) // if not, look if there is a chatbox for this indivdual
 		for(p=0; p<MAX_CHAT; p++) if(!strcasecmp(talker+1, chatPartner[p])) {

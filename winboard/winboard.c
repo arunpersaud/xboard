@@ -9872,6 +9872,7 @@ ScheduleDelayedEvent(DelayedEventCallback cb, long millisec)
     }
     KillTimer(hwndMain, delayedTimerEvent);
     delayedTimerEvent = 0;
+    if(delayedTimerCallback != cb) // [HGM] alive: do not "flush" same event, just postpone it
     delayedTimerCallback();
   }
   delayedTimerCallback = cb;
