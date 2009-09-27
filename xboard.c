@@ -2290,7 +2290,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 	}
 #ifdef GOTHIC
 	if(gameInfo.variant == VariantGothic) {
-           ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[i][(int)WhiteSilver];
+           ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[(int)WhiteSilver];
 	}
 #endif
 #endif
