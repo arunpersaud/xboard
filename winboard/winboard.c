@@ -497,6 +497,7 @@ static int fromX = -1, fromY = -1, toX, toY; // [HGM] moved upstream, so JAWS ca
 #include "jaws.c"
 #else
 #define JAWS_INIT
+#define JAWS_ARGS
 #define JAWS_ALT_INTERCEPT
 #define JAWS_KB_NAVIGATION
 #define JAWS_MENU_ITEMS
@@ -919,6 +920,7 @@ ArgDescriptor argDescriptors[] = {
   { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE },
   { "", ArgNone, NULL },
   /* keyword arguments */
+  JAWS_ARGS
   { "whitePieceColor", ArgColor, (LPVOID) &whitePieceColor, TRUE },
   { "wpc", ArgColor, (LPVOID) &whitePieceColor, FALSE },
   { "blackPieceColor", ArgColor, (LPVOID) &blackPieceColor, TRUE },
@@ -9408,6 +9410,7 @@ static GLT_Item GLT_ItemInfo[] = {
     { GLT_TIME_CONTROL,"Time Control" },
     { GLT_VARIANT,    "Variant" },
     { GLT_OUT_OF_BOOK,PGN_OUT_OF_BOOK },
+    { GLT_RESULT_COMMENT, "Result Comment" }, // [HGM] rescom
     { 0, 0 }
 };
 

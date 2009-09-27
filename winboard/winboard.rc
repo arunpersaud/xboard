@@ -393,25 +393,26 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Sounds"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,132,86,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,188,86,50,14
-    LTEXT           "Event:",IDC_STATIC,4,7,26,9
+    LTEXT           "&Event:",IDC_STATIC,4,7,26,9
     COMBOBOX        CBO_Sounds,30,4,208,110,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    CONTROL         "No sound",OPT_NoSound,"Button",BS_AUTORADIOBUTTON | 
+//    GROUPBOX        "sound type",IDC_STATIC,8,18,66,62
+    CONTROL         "&No sound",OPT_NoSound,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,12,22,47,10
-    CONTROL         "Default beep",OPT_DefaultBeep,"Button",
+    CONTROL         "&Default beep",OPT_DefaultBeep,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,12,36,57,10
-    CONTROL         "Built-in sound:",OPT_BuiltInSound,"Button",
+    CONTROL         "&Built-in sound:",OPT_BuiltInSound,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,12,51,60,10
-    COMBOBOX        OPT_BuiltInSoundName,76,48,103,109,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Play",OPT_PlaySound,188,47,50,14
-    CONTROL         "WAV file:",OPT_WavFile,"Button",BS_AUTORADIOBUTTON | 
+    CONTROL         "&WAV file:",OPT_WavFile,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,12,66,45,10
+    COMBOBOX        OPT_BuiltInSoundName,76,48,103,109,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP | WS_GROUP
     EDITTEXT        OPT_WavFileName,76,65,103,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",OPT_BrowseSound,188,64,50,14
+    PUSHBUTTON      "B&rowse...",OPT_BrowseSound,188,64,50,14
     PUSHBUTTON      "Defaults",OPT_DefaultSounds,6,86,50,14
+    DEFPUSHBUTTON   "OK",IDOK,132,86,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,188,86,50,14
+    PUSHBUTTON      "&Play",OPT_PlaySound,188,47,50,14
 END
 
 DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 250, 183
@@ -756,21 +757,21 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,122,28,50,14
 END
 
-DLG_GameListOptions DIALOG DISCARDABLE  0, 0, 206, 140
+DLG_GameListOptions DIALOG DISCARDABLE  0, 0, 206, 150
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Game List Options"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "PGN &Tags:",IDC_GLT,2,2,36,8
-    LISTBOX         IDC_GameListTags,2,12,158,102,LBS_USETABSTOPS | 
+    LISTBOX         IDC_GameListTags,2,12,158,112,LBS_USETABSTOPS | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "&Up",IDC_GLT_Up,164,12,38,14
     PUSHBUTTON      "&Down",IDC_GLT_Down,164,30,38,14
-    PUSHBUTTON      "Default",IDC_GLT_Restore,164,82,38,14
-    PUSHBUTTON      "Factory",IDC_GLT_Default,164,100,38,14
-    DEFPUSHBUTTON   "OK",IDOK,96,122,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,152,122,50,14
-    LTEXT           "Restore to:",IDC_GLT_RestoreTo,164,70,36,8
+    PUSHBUTTON      "Default",IDC_GLT_Restore,164,92,38,14
+    PUSHBUTTON      "Factory",IDC_GLT_Default,164,110,38,14
+    DEFPUSHBUTTON   "OK",IDOK,96,132,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,152,132,50,14
+    LTEXT           "Restore to:",IDC_GLT_RestoreTo,164,80,36,8
 END
 
 DLG_MoveHistory DIALOGEX 0, 0, 225, 130

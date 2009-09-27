@@ -615,10 +615,11 @@ typedef struct {
 #define GLT_TIME_CONTROL    't'
 #define GLT_VARIANT         'v'
 #define GLT_OUT_OF_BOOK     'a'
+#define GLT_RESULT_COMMENT  'c'     /* [HGM] rescom */
 
 #define GLT_DEFAULT_TAGS    "eprd"  /* Event, players, result, date */
 
-#define GLT_ALL_TAGS        "esdoprwbtva"
+#define GLT_ALL_TAGS        "esdoprwbtvac"
 
 #define PGN_OUT_OF_BOOK     "Annotator"
 
