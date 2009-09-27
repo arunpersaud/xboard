@@ -600,6 +600,7 @@ typedef struct {
     char *secondOptions;
     char *fenOverride1;
     char *fenOverride2;
+    Boolean keepAlive;  /* [HGM] alive     */
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */
@@ -647,6 +648,11 @@ typedef struct {
     int holdingsSize;  /* number of different piece types in holdings       */
     int holdingsWidth; /* number of files left and right of board, 0 or 2   */
 } GameInfo;
+
+// [HGM] chat	
+#define MAX_CHAT 3
+extern int chatCount;
+extern char chatPartner[MAX_CHAT][MSG_SIZ];
 
 
 #endif

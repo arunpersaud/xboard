@@ -493,6 +493,14 @@
 #define IDM_FlipClock                   1700
 #define OPT_AllWhite                    1701
 #define OPT_UpsideDown                  1702
+#define DLG_Chat			1720
+#define IDC_Change			1721
+#define IDC_ChatPartner			1722
+#define IDC_ChatMemo			1723
+#define OPT_ChatInput			1724
+#define IDC_Clear			1725
+#define IDC_Send			1726
+#define IDM_NewChat			1727
 #define IDC_SPECIFY_ENG_STATIC          1814
 #define IDC_SPECIFY_SERVER_STATIC       1815
 #define OPT_MESS                        1818

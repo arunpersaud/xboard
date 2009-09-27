@@ -242,6 +242,9 @@ VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
 int lastIndex = 0;      /* [HGM] autoinc: last game/position used in match mode */
 int opponentKibitzes;
 int lastSavedGame; /* [HGM] save: ID of game */
+char chatPartner[MAX_CHAT][MSG_SIZ]; /* [HGM] chat: list of chatting partners */
+extern int chatCount;
+int chattingPartner;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -1452,6 +1455,13 @@ read_from_player(isr, closure, message, count, error)
 }
 
 void
+KeepAlive()
+{   // [HGM] alive: periodically send dummy (date) command to ICS to prevent time-out
+    SendToICS("date\n");
+    if(appData.keepAlive) ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
+}
+
+void
 SendToICS(s)
      char *s;
 {
@@ -2082,6 +2092,7 @@ read_from_ics(isr, closure, data, count, error)
     int tkind;
     int backup;    /* [DM] For zippy color lines */
     char *p;
+    char talker[MSG_SIZ]; // [HGM] chat
 
     if (appData.debugMode) {
       if (!error) {
@@ -2262,6 +2273,12 @@ read_from_ics(isr, closure, data, count, error)
 		parse[parse_pos++] = buf[i];
 		if (buf[i] == '\n') {
 		    parse[parse_pos] = NULLCHAR;
+		    if(chattingPartner>=0) {
+			char mess[MSG_SIZ];
+			sprintf(mess, "%s%s", talker, parse);
+			OutputChatMessage(chattingPartner, mess);
+			chattingPartner = -1;
+		    } else
 		    if(!suppressKibitz) // [HGM] kibitz
 			AppendComment(forwardMostMove, StripHighlight(parse));
 		    else { // [HGM kibitz: divert memorized engine kibitz to engine-output window
@@ -2397,6 +2414,32 @@ read_from_ics(isr, closure, data, count, error)
 		    suppressKibitz = TRUE;
 		}
 	    } // [HGM] kibitz: end of patch
+
+//if(appData.debugMode) fprintf(debugFP, "hunt for tell, buf = %s\n", buf+i);
+
+	    // [HGM] chat: intercept tells by users for which we have an open chat window
+	    if(started == STARTED_NONE && (looking_at(buf, &i, "* tells you:") || looking_at(buf, &i, "* says:") || 
+					   looking_at(buf, &i, "* whispers:"))) {
+		int p;
+		sscanf(star_match[0], "%[^(]", talker+1); // strip (C) or (U) off ICS handle
+		chattingPartner = -1;
+		if(buf[i-3] == 'r') // whisper; look if there is a WHISPER chatbox
+		for(p=0; p<MAX_CHAT; p++) if(!strcmp("WHISPER", chatPartner[p])) {
+		    talker[0] = '['; strcat(talker, "]");
+		    chattingPartner = p; break;
+		}
+		if(chattingPartner<0) // if not, look if there is a chatbox for this indivdual
+		for(p=0; p<MAX_CHAT; p++) if(!strcasecmp(talker+1, chatPartner[p])) {
+		    talker[0] = 0;
+		    chattingPartner = p; break;
+		}
+		if(chattingPartner<0) i = oldi; else {
+		    started = STARTED_COMMENT;
+		    parse_pos = 0; parse[0] = NULLCHAR;
+		    savingComment = TRUE;
+		    suppressKibitz = TRUE;
+		}
+	    } // [HGM] chat: end of patch
 
 	    if (appData.zippyTalk || appData.zippyPlay) {
                 /* [DM] Backup address for color zippy lines */
@@ -4087,6 +4130,8 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY)
 	break;
     }
     SendToICS(user_move);
+    if(appData.keepAlive) // [HGM] alive: schedule sending of dummy 'date' command
+	ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
 }
 
 void
@@ -5647,7 +5692,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  if(appData.autoKibitz && !appData.icsEngineAnalyze ) { /* [HGM] kibitz: send most-recent PV info to ICS */
 		char buf[3*MSG_SIZ];
 
-		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %1.0f knps) PV=%s\n",
+		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %.0f knps) PV=%s\n",
 			programStats.score / 100.,
 			programStats.depth,
 			programStats.time / 100.,
@@ -5655,6 +5700,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 			(unsigned int)programStats.nodes / (10*abs(programStats.time) + 1.),
 			programStats.movelist);
 		SendToICS(buf);
+if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.nodes, programStats.nodes);
 	  }
 	}
 #endif

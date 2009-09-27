@@ -202,6 +202,8 @@ Boolean ParseOneMove P((char *move, int moveNum,
 char *VariantName P((VariantClass v));
 VariantClass StringToVariant P((char *e));
 double u64ToDouble P((u64 value));
+void OutputChatMessage P((int partner, char *mess));
+
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));
@@ -257,7 +259,7 @@ char * GameListLineFull P(( int, GameInfo *));
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
 
-typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, 
+typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton,
 		   SaveButton, FileName, PathName, Slider, Message } Control;
 
 typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option

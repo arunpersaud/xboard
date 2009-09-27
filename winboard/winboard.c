@@ -100,6 +100,8 @@
 
 extern int whiteFlag, blackFlag;
 Boolean flipClock = FALSE;
+extern HANDLE chatHandle[];
+extern int ics_type;
 
 void DisplayHoldingsCount(HDC hdc, int x, int y, int align, int copyNumber);
 VOID NewVariantPopup(HWND hwnd);
@@ -108,6 +110,7 @@ int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 void AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames);
 void DisplayMove P((int moveNumber));
 Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
+void ChatPopUp P(());
 typedef struct {
   ChessSquare piece;  
   POINT pos;      /* window coordinates of current pos */
@@ -572,7 +575,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if(msg.hwnd == e2)                 currentElement = 3; else
 	if(msg.hwnd == moveHistoryDialog) currentElement = 4; else
 	if(msg.hwnd == mh)                currentElement = 4; else
-	if(msg.hwnd == evalGraphDialog)    currentElement = 7; else
+	if(msg.hwnd == evalGraphDialog)    currentElement = 6; else
 	if(msg.hwnd == hText)  currentElement = 5; else
 	if(msg.hwnd == hInput) currentElement = 6; else
 	for (i = 0; i < N_BUTTONS; i++) {
@@ -597,7 +600,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		case 4:
 		  if(!MoveHistoryIsUp()) continue;
 		  h = mh; break;
-//		case 5: // input to eval graph does not seem to get here!
+//		case 6: // input to eval graph does not seem to get here!
 //		  if(!EvalGraphIsUp()) continue;
 //		  h = evalGraphDialog; break;
 		case 5:
@@ -629,6 +632,12 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	  !(!frozen && TranslateAccelerator(hwndMain, hAccelMain, &msg)) && JAWS_ACCEL
           !(!hwndConsole && TranslateAccelerator(hwndMain, hAccelNoICS, &msg)) &&
 	  !(!hwndConsole && TranslateAccelerator(hwndMain, hAccelNoAlt, &msg))) {
+	int done = 0, i; // [HGM] chat: dispatch cat-box messages
+	for(i=0; i<MAX_CHAT; i++) 
+	    if(chatHandle[i] && IsDialogMessage(chatHandle[i], &msg)) {
+		done = 1; break;
+	}
+	if(done) continue; // [HGM] chat: end patch
 	TranslateMessage(&msg);	/* Translates virtual key codes */
 	DispatchMessage(&msg);	/* Dispatches message to window */
       }
@@ -1321,6 +1330,8 @@ ArgDescriptor argDescriptors[] = {
   { "secondOptions", ArgString, (LPVOID) &appData.secondOptions, FALSE },
   { "firstNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride1, FALSE },
   { "secondNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride2, FALSE },
+  { "keepAlive", ArgInt, (LPVOID) &appData.keepAlive, FALSE },
+  { "icstype", ArgInt, (LPVOID) &ics_type, FALSE },
 
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
@@ -5129,7 +5140,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                      If promotion to Q is legal, all are legal! */
 		  if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat)
 		  { ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
-		    // kludge to temporarily execute move on display, without promotng yet
+		    // kludge to temporarily execute move on display, without promoting yet
 		    promotionChoice = TRUE;
 		    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
 		    boards[currentMove][toY][toX] = p;
@@ -5863,6 +5874,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     /* [AS] Game list options dialog */
     case IDM_GameListOptions:
       GameListOptions();
+      break;
+
+    case IDM_NewChat:
+      ChatPopUp();
       break;
 
     case IDM_CopyPosition:
@@ -9849,7 +9864,7 @@ void
 ScheduleDelayedEvent(DelayedEventCallback cb, long millisec)
 {
   if (delayedTimerEvent != 0) {
-    if (appData.debugMode) {
+    if (appData.debugMode && cb != delayedTimerCallback) { // [HGM] alive: not too much debug
       fprintf(debugFP, "ScheduleDelayedEvent: event already scheduled\n");
     }
     KillTimer(hwndMain, delayedTimerEvent);
