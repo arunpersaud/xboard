@@ -343,7 +343,7 @@ GameListLineOld(number, gameInfo)
     return ret;
 }
 
-#define MAX_FIELD_LEN   64  /* To avoid overflowing the buffer */
+#define MAX_FIELD_LEN   80  /* To avoid overflowing the buffer */
 
 char * GameListLine( int number, GameInfo * gameInfo )
 {
@@ -431,12 +431,14 @@ char * GameListLineFull( int number, GameInfo * gameInfo )
     char * round = gameInfo->round ? gameInfo->round : "?";
     char * date = gameInfo->date ? gameInfo->date : "?";
     char * oob = gameInfo->outOfBook ? gameInfo->outOfBook : "";
+    char * reason = gameInfo->resultDetails ? gameInfo->resultDetails : "";
     
-    int len = 64 + strlen(event) + strlen(site) + strlen(white) + strlen(black) + strlen(date) + strlen(oob);
+    int len = 64 + strlen(event) + strlen(site) + strlen(white) + strlen(black) + strlen(date) + strlen(oob) + strlen(reason);
 
     char *ret = (char *) malloc(len);
 
-    sprintf(ret, "%d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"", number, event, site, round, white, black, PGNResult(gameInfo->result), date, oob );
+    sprintf(ret, "%d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"",
+	number, event, site, round, white, black, PGNResult(gameInfo->result), reason, date, oob );
 
     return ret;
 }
