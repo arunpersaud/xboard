@@ -10541,6 +10541,7 @@ MachineWhiteEvent()
     SetMachineThinkingEnables();
     first.maybeThinking = TRUE;
     StartClocks();
+    firstMove = FALSE;
 
     if (appData.autoFlipView && !flipView) {
       flipView = !flipView;
