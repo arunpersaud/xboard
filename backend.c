@@ -5441,7 +5441,9 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
     */
     ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar);
 if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
-    if(moveType != ImpossibleMove)
+    if(moveType == AmbiguousMove)
+	DrawPosition(FALSE, boards[currentMove]);
+    else if(moveType != ImpossibleMove)
         FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
