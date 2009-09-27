@@ -1918,6 +1918,7 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   SoundClass sc;
   ColorClass cc;
   SoundComboData *scd;
+  int oldMute;
 
   switch (message) {
   case WM_INITDIALOG:
@@ -1998,6 +1999,8 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	}
       }
 
+	mute = FALSE; // [HGM] mute: switch sounds automatically on if we select one
+      CheckMenuItem(GetMenu(hwndMain),IDM_MuteSounds,MF_BYCOMMAND|MF_UNCHECKED);
       ResetSoundComboData(soundComboData);
       EndDialog(hDlg, TRUE);
       return TRUE;
@@ -2027,7 +2030,9 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       tmp.name = strdup(SoundDialogGetName(hDlg, radio));
       tmp.data = NULL;
       MyLoadSound(&tmp);
+	oldMute = mute; mute = FALSE; // [HGM] mute: always sound when user presses play, ignorig mute setting
       MyPlaySound(&tmp);
+	mute = oldMute;
       if (tmp.data  != NULL) FreeResource(tmp.data); // technically obsolete fn, but tmp.data is NOT malloc'd mem
       if (tmp.name != NULL) free(tmp.name);
       return TRUE;

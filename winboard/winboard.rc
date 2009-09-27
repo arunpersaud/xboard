@@ -1158,6 +1158,7 @@ BEGIN
     BEGIN
         MENUITEM "Flip &View\tF2",              IDM_FlipView
         MENUITEM "Swap &Clocks",                IDM_FlipClock
+        MENUITEM "&Mute all Sounds",            IDM_MuteSounds
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions

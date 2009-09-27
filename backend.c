@@ -469,6 +469,7 @@ char  FENepStatus;
 FILE  *serverMoves = NULL; // next two for broadcasting (/serverMoves option)
 int loadFlag = 0; 
 int shuffleOpenings;
+int mute; // mute all sounds
 
 ChessSquare  FIDEArray[2][BOARD_SIZE] = {
     { WhiteRook, WhiteKnight, WhiteBishop, WhiteQueen,
@@ -12270,7 +12271,8 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		   sscanf(message, "resign%c", &c)!=1 && sscanf(message, "feature %c", &c)!=1 &&
 		   sscanf(message, "error %c", &c)!=1 && sscanf(message, "illegal %c", &c)!=1 &&
 		   sscanf(message, "tell%c", &c)!=1   && sscanf(message, "0-1 %c", &c)!=1 &&
-		   sscanf(message, "1-0 %c", &c)!=1   && sscanf(message, "1/2-1/2 %c", &c)!=1 && start != '#')
+		   sscanf(message, "1-0 %c", &c)!=1   && sscanf(message, "1/2-1/2 %c", &c)!=1 &&
+		   sscanf(message, "pong %c", &c)!=1   && start != '#')
 			{ quote = "# "; print = (appData.engineComments == 2); }
 		message[0] = start; // restore original message
 	}

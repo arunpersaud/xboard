@@ -879,6 +879,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
     ShowWindow(hwndConsole, nCmdShow);
   }
   if(!appData.noGUI)   UpdateWindow(hwnd);  else ShowWindow(hwnd, SW_MINIMIZE);
+  if(gameListDialog) SetFocus(gameListDialog); // [HGM] jaws: for if we clicked multi-game game file
 
   return TRUE;
 
@@ -6133,6 +6134,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       DrawPosition(FALSE, NULL);
       break;
 
+    case IDM_MuteSounds:
+      mute = !mute; // [HGM] mute: keep track of global muting variable
+      CheckMenuItem(GetMenu(hwndMain),IDM_MuteSounds, 
+				MF_BYCOMMAND|(mute?MF_CHECKED:MF_UNCHECKED));
+      break;
+
     case IDM_GeneralOptions:
       GeneralOptionsPopup(hwnd);
       DrawPosition(TRUE, NULL);
@@ -6692,6 +6699,7 @@ MyPlaySound(MySound *ms)
 {
   BOOLEAN ok = FALSE;
 
+  if(mute) return TRUE; // [HGM] mute: suppress all sound play when muted
   switch (ms->name[0]) {
   case NULLCHAR:
 	if(appData.debugMode) fprintf(debugFP, "silence\n");

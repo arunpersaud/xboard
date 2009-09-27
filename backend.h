@@ -93,7 +93,7 @@
 
 extern int gotPremove;
 extern GameMode gameMode;
-extern int pausing, cmailMsgLoaded, flipView;
+extern int pausing, cmailMsgLoaded, flipView, mute;
 extern char white_holding[], black_holding[];
 extern int currentMove, backwardMostMove, forwardMostMove;
 extern int blackPlaysFirst;
