@@ -7552,7 +7552,7 @@ void SendEgtPath(ChessProgramState *cps)
 		while(*r && *r != ',') r++; // path info is everything upto next ';' or end of string
 		c = *r; *r = 0;             // temporarily null-terminate path info
 		    *--q = 0;               // strip of trailig ':' from name
-		    sprintf(buf, "egtbpath %s %s\n", name+1, s);
+		    sprintf(buf, "egtpath %s %s\n", name+1, s);
 		*r = c;
 		SendToProgram(buf,cps);     // send egtbpath command for this format
 	    }
