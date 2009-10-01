@@ -1347,7 +1347,7 @@ XtResource clientResources[] = {
 	XtRImmediate, (XtPointer) "xboard.debug"},
     { "engineDebugOutput", "engineDebugOutput", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, engineComments),
-	XtRImmediate, (XtPointer) 0},
+	XtRImmediate, (XtPointer) 1},
     { "noGUI", "noGUI", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, noGUI),
 	XtRImmediate, (XtPointer) 0},
