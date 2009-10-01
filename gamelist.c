@@ -317,10 +317,6 @@ void ClearGameInfo(gameInfo)
     if (gameInfo->outOfBook != NULL) {
         free(gameInfo->outOfBook);
     }
-    if (gameInfo->resultDetails != NULL) {
-        free(gameInfo->resultDetails);
-    }
-
     GameListInitGameInfo(gameInfo);
 }
 
