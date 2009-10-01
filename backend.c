@@ -2444,7 +2444,7 @@ read_from_ics(isr, closure, data, count, error)
 		    }
 		}
 		if(chattingPartner<0) // if not, look if there is a chatbox for this indivdual
-		for(p=0; p<MAX_CHAT; p++) if(!strcasecmp(talker+1, chatPartner[p])) {
+		for(p=0; p<MAX_CHAT; p++) if(!StrCaseCmp(talker+1, chatPartner[p])) {
 		    talker[0] = 0;
 		    chattingPartner = p; break;
 		}

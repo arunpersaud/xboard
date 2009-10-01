@@ -151,5 +151,4 @@
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
-#define strcasecmp _stricmp
 #endif
