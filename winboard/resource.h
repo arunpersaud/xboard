@@ -60,6 +60,7 @@
 #define IDM_NewVariant                  184  
 #define IDM_TypeInName                  185  
 #define IDM_MachineBoth                 186  
+#define IDM_MuteSounds                  187
 #define OPT_TCtext1                     202
 #define OPT_TCTime                      203
 #define OPT_TCtext2                     204
