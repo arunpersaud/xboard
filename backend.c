@@ -4557,7 +4557,6 @@ InitPosition(redraw)
     oldh = gameInfo.holdingsWidth,
     oldv = gameInfo.variant;
 
-    currentMove = forwardMostMove = backwardMostMove = 0;
     if(appData.icsActive) shuffleOpenings = FALSE; // [HGM] shuffle: in ICS mode, only shuffle on ICS request
 
     /* [AS] Initialize pv info list [HGM] and game status */
@@ -8281,6 +8280,7 @@ Reset(redraw, init)
     gameMode = BeginningOfGame;
     ModeHighlight();
     if(appData.icsActive) gameInfo.variant = VariantNormal;
+    currentMove = forwardMostMove = backwardMostMove = 0;
     InitPosition(redraw);
     for (i = 0; i < MAX_MOVES; i++) {
 	if (commentList[i] != NULL) {
