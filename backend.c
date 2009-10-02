@@ -5158,6 +5158,12 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
 		    fprintf(debugFP, "Got premove: fromX %d,"
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
+		if(!WhiteOnMove(currentMove) && gotPremove == 1) {
+		    // [HGM] race: we must have been hit by an opponent move from the ICS while preparing the premove
+		    if (appData.debugMode) 
+			fprintf(debugFP, "Execute as normal move\n");
+		    gotPremove = 0; break;
+		}
 	    }
             return ImpossibleMove;
 	}
@@ -5179,6 +5185,12 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
 		    fprintf(debugFP, "Got premove: fromX %d,"
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
+		if(WhiteOnMove(currentMove) && gotPremove == 1) {
+		    // [HGM] race: we must have been hit by an opponent move from the ICS while preparing the premove
+		    if (appData.debugMode) 
+			fprintf(debugFP, "Execute as normal move\n");
+		    gotPremove = 0; break;
+		}
 	    }
             return ImpossibleMove;
 	}
