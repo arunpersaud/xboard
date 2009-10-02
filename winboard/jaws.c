@@ -919,13 +919,14 @@ SayWhosTurn()
 	}
 }
 	
+extern char *commentList[];
 
 VOID
 SayMachineMove(int evenIfDuplicate)
 {
 	int len, xPos, yPos, moveNr, secondSpace = 0, castle = 0, n;
 	ChessSquare currentpiece;
-	char *piece, *xchar, *ynum, *p;
+	char *piece, *xchar, *ynum, *p, checkMark = 0;
 	char c, buf[MSG_SIZ], comment[MSG_SIZ];
 	static char disambiguation[2];
 	static int previousMove = 0;
@@ -981,6 +982,7 @@ SayMachineMove(int evenIfDuplicate)
 		if(secondSpace) len = secondSpace; // position behind move
 		if(messageText[len-1] == '+' || messageText[len-1] == '#') {  /* you are in checkmate */
 			len--; // strip off check or mate indicator
+		      checkMark = messageText[len]; // make sure still seen after we stip off promo piece
 		}
 		if(messageText[len-2] == '=') {  /* promotion */
 			len-=2; // strip off promotion piece
@@ -1037,11 +1039,11 @@ SayMachineMove(int evenIfDuplicate)
 					SayString(piece, FALSE);
 				} else SayString("Capturing onn passann",FALSE);
 			}
-			if(messageText[len] == '+') SayString("check", FALSE); else
-			if(messageText[len] == '#') {
+		    }
+		    if(checkMark == '+') SayString("check", FALSE); else
+		    if(checkMark == '#') {
 				SayString("finishing off", FALSE);
 				SayString(WhiteOnMove(n) ? "White" : "Black", FALSE);
-			}
 		    }
 		}
 
@@ -1061,6 +1063,8 @@ SayMachineMove(int evenIfDuplicate)
 		    }
 		    SayString(comment, FALSE); // alphabetic comment (usually game end)
 	        } else if(p) SayString(p, FALSE);
+
+		if(commentDialog && commentList[currentMove]) SetFocus(commentDialog);
 
 	    } else {
 		/* starts not with digit */

@@ -1413,6 +1413,12 @@ BEGIN
     VK_PRIOR,       IDM_LoadPrevPosition,   VIRTKEY, SHIFT, ALT, NOINVERT
     VK_LEFT,        IDM_Backward,           VIRTKEY, ALT, NOINVERT
     VK_RIGHT,       IDM_Forward,            VIRTKEY, ALT, NOINVERT
+#ifndef JAWS
+    VK_LEFT,        IDM_Backward,           VIRTKEY, NOINVERT
+    VK_RIGHT,       IDM_Forward,            VIRTKEY, NOINVERT
+    VK_DOWN,        IDM_ToEnd,              VIRTKEY, NOINVERT
+    VK_DOWN,        IDM_ToStart,            VIRTKEY, NOINVERT
+#endif
 END
 
 NO_ALT ACCELERATORS MOVEABLE PURE 
