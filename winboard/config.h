@@ -54,6 +54,9 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "4.4.1.pre"
 
+/* Define the Windows-specific FILE version info.  this *MUST* be four comma separated 16-bit integers */
+#define PACKAGE_FILEVERSION 4,4,1,0
+
 #define PTY_ITERATION
 
 #define PTY_NAME_SPRINTF
