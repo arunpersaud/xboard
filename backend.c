@@ -151,7 +151,6 @@ void SendToICS P((char *s));
 void SendToICSDelayed P((char *s, long msdelay));
 void SendMoveToICS P((ChessMove moveType, int fromX, int fromY,
 		      int toX, int toY));
-void InitPosition P((int redraw));
 void HandleMachineMove P((char *message, ChessProgramState *cps));
 int AutoPlayOneMove P((void));
 int LoadGameOneMove P((ChessMove readAhead));
@@ -243,6 +242,9 @@ VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
 int lastIndex = 0;      /* [HGM] autoinc: last game/position used in match mode */
 int opponentKibitzes;
 int lastSavedGame; /* [HGM] save: ID of game */
+char chatPartner[MAX_CHAT][MSG_SIZ]; /* [HGM] chat: list of chatting partners */
+extern int chatCount;
+int chattingPartner;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -457,16 +459,17 @@ AppData appData;
 
 Board boards[MAX_MOVES];
 /* [HGM] Following 7 needed for accurate legality tests: */
-char  epStatus[MAX_MOVES];
-char  castlingRights[MAX_MOVES][BOARD_SIZE]; // stores files for pieces with castling rights or -1
-char  castlingRank[BOARD_SIZE]; // and corresponding ranks
-char  initialRights[BOARD_SIZE], FENcastlingRights[BOARD_SIZE], fileRights[BOARD_SIZE];
+signed char  epStatus[MAX_MOVES];
+signed char  castlingRights[MAX_MOVES][BOARD_SIZE]; // stores files for pieces with castling rights or -1
+signed char  castlingRank[BOARD_SIZE]; // and corresponding ranks
+signed char  initialRights[BOARD_SIZE], FENcastlingRights[BOARD_SIZE], fileRights[BOARD_SIZE];
 int   nrCastlingRights; // For TwoKings, or to implement castling-unknown status
 int   initialRulePlies, FENrulePlies;
 char  FENepStatus;
 FILE  *serverMoves = NULL; // next two for broadcasting (/serverMoves option)
 int loadFlag = 0;
 int shuffleOpenings;
+int mute; // mute all sounds
 
 ChessSquare  FIDEArray[2][BOARD_SIZE] = {
     { WhiteRook, WhiteKnight, WhiteBishop, WhiteQueen,
@@ -1453,6 +1456,13 @@ read_from_player(isr, closure, message, count, error)
 }
 
 void
+KeepAlive()
+{   // [HGM] alive: periodically send dummy (date) command to ICS to prevent time-out
+    SendToICS("date\n");
+    if(appData.keepAlive) ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
+}
+
+void
 SendToICS(s)
      char *s;
 {
@@ -2083,6 +2093,8 @@ read_from_ics(isr, closure, data, count, error)
     int tkind;
     int backup;    /* [DM] For zippy color lines */
     char *p;
+    char talker[MSG_SIZ]; // [HGM] chat
+    int channel;
 
     if (appData.debugMode) {
       if (!error) {
@@ -2263,6 +2275,12 @@ read_from_ics(isr, closure, data, count, error)
 		parse[parse_pos++] = buf[i];
 		if (buf[i] == '\n') {
 		    parse[parse_pos] = NULLCHAR;
+		    if(chattingPartner>=0) {
+			char mess[MSG_SIZ];
+			sprintf(mess, "%s%s", talker, parse);
+			OutputChatMessage(chattingPartner, mess);
+			chattingPartner = -1;
+		    } else
 		    if(!suppressKibitz) // [HGM] kibitz
 			AppendComment(forwardMostMove, StripHighlight(parse));
 		    else { // [HGM kibitz: divert memorized engine kibitz to engine-output window
@@ -2399,6 +2417,45 @@ read_from_ics(isr, closure, data, count, error)
 		}
 	    } // [HGM] kibitz: end of patch
 
+//if(appData.debugMode) fprintf(debugFP, "hunt for tell, buf = %s\n", buf+i);
+
+	    // [HGM] chat: intercept tells by users for which we have an open chat window
+	    channel = -1;
+	    if(started == STARTED_NONE && (looking_at(buf, &i, "* tells you:") || looking_at(buf, &i, "* says:") || 
+					   looking_at(buf, &i, "* whispers:") ||
+					   looking_at(buf, &i, "*(*):") && (sscanf(star_match[1], "%d", &channel),1) ||
+					   looking_at(buf, &i, "*(*)(*):") && sscanf(star_match[2], "%d", &channel) == 1 )) {
+		int p;
+		sscanf(star_match[0], "%[^(]", talker+1); // strip (C) or (U) off ICS handle
+		chattingPartner = -1;
+
+		if(channel >= 0) // channel broadcast; look if there is a chatbox for this channel
+		for(p=0; p<MAX_CHAT; p++) {
+		    if(channel == atoi(chatPartner[p])) {
+		    talker[0] = '['; strcat(talker, "]");
+		    chattingPartner = p; break;
+		    }
+		} else
+		if(buf[i-3] == 'r') // whisper; look if there is a WHISPER chatbox
+		for(p=0; p<MAX_CHAT; p++) {
+		    if(!strcmp("WHISPER", chatPartner[p])) {
+			talker[0] = '['; strcat(talker, "]");
+			chattingPartner = p; break;
+		    }
+		}
+		if(chattingPartner<0) // if not, look if there is a chatbox for this indivdual
+		for(p=0; p<MAX_CHAT; p++) if(!StrCaseCmp(talker+1, chatPartner[p])) {
+		    talker[0] = 0;
+		    chattingPartner = p; break;
+		}
+		if(chattingPartner<0) i = oldi; else {
+		    started = STARTED_COMMENT;
+		    parse_pos = 0; parse[0] = NULLCHAR;
+		    savingComment = TRUE;
+		    suppressKibitz = TRUE;
+		}
+	    } // [HGM] chat: end of patch
+
 	    if (appData.zippyTalk || appData.zippyPlay) {
                 /* [DM] Backup address for color zippy lines */
                 backup = i;
@@ -2417,14 +2474,15 @@ read_from_ics(isr, closure, data, count, error)
        #endif
 #endif
 	    } // [DM] 'else { ' deleted
-	 	if (/* Don't color "message" or "messages" output */
-		    (tkind = 5, looking_at(buf, &i, "*. * (*:*): ")) ||
-		    looking_at(buf, &i, "*. * at *:*: ") ||
-		    looking_at(buf, &i, "--* (*:*): ") ||
+	 	if (
 		    /* Regular tells and says */
 		    (tkind = 1, looking_at(buf, &i, "* tells you: ")) ||
 		    looking_at(buf, &i, "* (your partner) tells you: ") ||
 		    looking_at(buf, &i, "* says: ") ||
+		    /* Don't color "message" or "messages" output */
+		    (tkind = 5, looking_at(buf, &i, "*. * (*:*): ")) ||
+		    looking_at(buf, &i, "*. * at *:*: ") ||
+		    looking_at(buf, &i, "--* (*:*): ") ||
 		    /* Message notifications (same color as tells) */
 		    looking_at(buf, &i, "* has left a message ") ||
 		    looking_at(buf, &i, "* just sent you a message:\n") ||
@@ -4086,6 +4144,8 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY)
 	break;
     }
     SendToICS(user_move);
+    if(appData.keepAlive) // [HGM] alive: schedule sending of dummy 'date' command
+	ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
 }
 
 void
@@ -4496,7 +4556,6 @@ InitPosition(redraw)
     oldh = gameInfo.holdingsWidth,
     oldv = gameInfo.variant;
 
-    currentMove = forwardMostMove = backwardMostMove = 0;
     if(appData.icsActive) shuffleOpenings = FALSE; // [HGM] shuffle: in ICS mode, only shuffle on ICS request
 
     /* [AS] Initialize pv info list [HGM] and game status */
@@ -5100,6 +5159,12 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
 		    fprintf(debugFP, "Got premove: fromX %d,"
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
+		if(!WhiteOnMove(currentMove) && gotPremove == 1) {
+		    // [HGM] race: we must have been hit by an opponent move from the ICS while preparing the premove
+		    if (appData.debugMode) 
+			fprintf(debugFP, "Execute as normal move\n");
+		    gotPremove = 0; break;
+		}
 	    }
             return ImpossibleMove;
 	}
@@ -5121,6 +5186,12 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
 		    fprintf(debugFP, "Got premove: fromX %d,"
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
+		if(WhiteOnMove(currentMove) && gotPremove == 1) {
+		    // [HGM] race: we must have been hit by an opponent move from the ICS while preparing the premove
+		    if (appData.debugMode) 
+			fprintf(debugFP, "Execute as normal move\n");
+		    gotPremove = 0; break;
+		}
 	    }
             return ImpossibleMove;
 	}
@@ -5427,10 +5498,12 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
        FinishMove if the first part succeeded. Calls that do not need
        to do anything in between, can call this routine the old way.
     */
-  ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar);
-  if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
-  if(moveType != ImpossibleMove)
-    FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
+    ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar);
+if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
+    if(moveType == AmbiguousMove)
+	DrawPosition(FALSE, boards[currentMove]);
+    else if(moveType != ImpossibleMove)
+        FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
 void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cpstats )
@@ -5695,7 +5768,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  if(appData.autoKibitz && !appData.icsEngineAnalyze ) { /* [HGM] kibitz: send most-recent PV info to ICS */
 		char buf[3*MSG_SIZ];
 
-		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %1.0f knps) PV=%s\n",
+		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %.0f knps) PV=%s\n",
 			programStats.score / 100.,
 			programStats.depth,
 			programStats.time / 100.,
@@ -5703,6 +5776,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 			(unsigned int)programStats.nodes / (10*abs(programStats.time) + 1.),
 			programStats.movelist);
 		SendToICS(buf);
+if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.nodes, programStats.nodes);
 	  }
 	}
 #endif
@@ -7546,7 +7620,7 @@ void SendEgtPath(ChessProgramState *cps)
 		while(*r && *r != ',') r++; // path info is everything upto next ';' or end of string
 		c = *r; *r = 0;             // temporarily null-terminate path info
 		    *--q = 0;               // strip of trailig ':' from name
-		    sprintf(buf, "egtbpath %s %s\n", name+1, s);
+		    sprintf(buf, "egtpath %s %s\n", name+1, s);
 		*r = c;
 		SendToProgram(buf,cps);     // send egtbpath command for this format
 	    }
@@ -8276,6 +8350,7 @@ Reset(redraw, init)
     ModeHighlight();
 
     if(appData.icsActive) gameInfo.variant = VariantNormal;
+    currentMove = forwardMostMove = backwardMostMove = 0;
     InitPosition(redraw);
     for (i = 0; i < MAX_MOVES; i++) {
 	if (commentList[i] != NULL) {
@@ -10541,6 +10616,7 @@ MachineWhiteEvent()
     SetMachineThinkingEnables();
     first.maybeThinking = TRUE;
     StartClocks();
+    firstMove = FALSE;
 
     if (appData.autoFlipView && !flipView) {
       flipView = !flipView;
@@ -12271,7 +12347,8 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		   sscanf(message, "resign%c", &c)!=1 && sscanf(message, "feature %c", &c)!=1 &&
 		   sscanf(message, "error %c", &c)!=1 && sscanf(message, "illegal %c", &c)!=1 &&
 		   sscanf(message, "tell%c", &c)!=1   && sscanf(message, "0-1 %c", &c)!=1 &&
-		   sscanf(message, "1-0 %c", &c)!=1   && sscanf(message, "1/2-1/2 %c", &c)!=1 && start != '#')
+		   sscanf(message, "1-0 %c", &c)!=1   && sscanf(message, "1/2-1/2 %c", &c)!=1 &&
+		   sscanf(message, "pong %c", &c)!=1   && start != '#')
 			{ quote = "# "; print = (appData.engineComments == 2); }
 		message[0] = start; // restore original message
 	}

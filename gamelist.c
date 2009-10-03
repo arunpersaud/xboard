@@ -111,6 +111,7 @@ void GameListInitGameInfo(gameInfo)
     gameInfo->blackRating = -1; /* unknown */
     gameInfo->variant = VariantNormal;
     gameInfo->outOfBook = NULL;
+    gameInfo->resultDetails = NULL;
 }
 
 
@@ -155,6 +156,7 @@ int GameListBuild(f)
     ListGame *currentListGame = NULL;
     int error;
     int offset;
+    char lastComment[MSG_SIZ];
 
     GameListFree(&gameList);
     yynewfile(f);
@@ -240,6 +242,19 @@ int GameListBuild(f)
 	      lastStart = MoveNumberOne;
 	    }
 	    break;
+        case WhiteWins: // [HGM] rescom: save last comment as result details
+        case BlackWins:
+        case GameIsDrawn:
+        case GameUnfinished:
+	    if (currentListGame->gameInfo.resultDetails != NULL) {
+		free(currentListGame->gameInfo.resultDetails);
+	    }
+	    if(yy_text[0] == '{') { char *p;
+		strcpy(lastComment, yy_text+1);
+		if(p = strchr(lastComment, '}')) *p = 0;
+		currentListGame->gameInfo.resultDetails = StrSave(lastComment);
+	    }
+	    break;
 	  default:
 	    break;
 	}
@@ -302,7 +317,6 @@ void ClearGameInfo(gameInfo)
     if (gameInfo->outOfBook != NULL) {
         free(gameInfo->outOfBook);
     }
-
     GameListInitGameInfo(gameInfo);
 }
 
@@ -325,7 +339,7 @@ GameListLineOld(number, gameInfo)
     return ret;
 }
 
-#define MAX_FIELD_LEN   64  /* To avoid overflowing the buffer */
+#define MAX_FIELD_LEN   80  /* To avoid overflowing the buffer */
 
 char * GameListLine( int number, GameInfo * gameInfo )
 {
@@ -381,6 +395,9 @@ char * GameListLine( int number, GameInfo * gameInfo )
         case GLT_OUT_OF_BOOK:
             strncpy( buf, gameInfo->outOfBook ? gameInfo->outOfBook : "?", MAX_FIELD_LEN );
             break;
+        case GLT_RESULT_COMMENT:
+            strncpy( buf, gameInfo->resultDetails ? gameInfo->resultDetails : "res?", MAX_FIELD_LEN );
+            break;
         default:
             break;
         }
@@ -410,12 +427,14 @@ char * GameListLineFull( int number, GameInfo * gameInfo )
     char * round = gameInfo->round ? gameInfo->round : "?";
     char * date = gameInfo->date ? gameInfo->date : "?";
     char * oob = gameInfo->outOfBook ? gameInfo->outOfBook : "";
+    char * reason = gameInfo->resultDetails ? gameInfo->resultDetails : "";
     
-    int len = 64 + strlen(event) + strlen(site) + strlen(white) + strlen(black) + strlen(date) + strlen(oob);
+    int len = 64 + strlen(event) + strlen(site) + strlen(white) + strlen(black) + strlen(date) + strlen(oob) + strlen(reason);
 
     char *ret = (char *) malloc(len);
 
-    sprintf(ret, "%d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"", number, event, site, round, white, black, PGNResult(gameInfo->result), date, oob );
+    sprintf(ret, "%d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"",
+	number, event, site, round, white, black, PGNResult(gameInfo->result), reason, date, oob );
 
     return ret;
 }

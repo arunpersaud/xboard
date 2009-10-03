@@ -23,59 +23,31 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
+// code refactored by HGM to obtain front-end / back-end separation
+
 #include "config.h"
 
 #include <windows.h> /* required for all Windows applications */
-#include <richedit.h>
+//include <richedit.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <commdlg.h>
-#include <dlgs.h>
+//include <stdlib.h>
+//include <malloc.h>
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
 
-#include "wsnap.h"
-
-VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
-VOID EvalGraphPopUp();
-VOID EvalGraphPopDown();
-BOOL EvalGraphIsUp();
-
-#define WM_REFRESH_GRAPH    (WM_USER + 1)
-
-/* Imports from backend.c */
-char * SavePart(char *str);
-
 /* Imports from winboard.c */
-extern HWND evalGraphDialog;
-extern BOOLEAN evalGraphDialogUp;
+extern BOOLEAN evalGraphDialogUp; // should be back-end variable, and defined here
 
-extern HINSTANCE hInst;
-extern HWND hwndMain;
-
-extern WindowPlacement wpEvalGraph;
-
-/* Module globals */
+/* Module globals */ // used to communicate between back-end and front-end part
 static ChessProgramStats_Move * currPvInfo;
 static int currFirst = 0;
 static int currLast = 0;
 static int currCurrent = -1;
 
-static COLORREF crWhite = RGB( 0xFF, 0xFF, 0xB0 );
-static COLORREF crBlack = RGB( 0xAD, 0x5D, 0x3D );
-
-static HDC hdcPB = NULL;
-static HBITMAP hbmPB = NULL;
 static int nWidthPB = 0;
 static int nHeightPB = 0;
-static HPEN hpenDotted = NULL;
-static HPEN hpenBlueDotted = NULL;
-static HPEN hpenBold[2] = { NULL, NULL };
-static HBRUSH hbrHist[2] = { NULL, NULL };
 
 static int MarginX = 18;
 static int MarginW = 4;
@@ -84,6 +56,38 @@ static int MarginH = 4;
 #define MIN_HIST_WIDTH  4
 #define MAX_HIST_WIDTH  10
 
+#define PEN_NONE	0
+#define PEN_BLACK	1
+#define PEN_DOTTED	2
+#define PEN_BLUEDOTTED	3
+#define PEN_BOLD	4 /* or 5 for black */
+
+#define FILLED 1
+#define OPEN   0
+
+// calls from back-end part into front-end
+static void DrawSegment( int x, int y, int *lastX, int *lastY, int penType );
+void DrawRectangle( int left, int top, int right, int bottom, int side, int style );
+void DrawEvalText(char *buf, int cbBuf, int y);
+
+
+// back-end
+static void DrawLine( int x1, int y1, int x2, int y2, int penType )
+{
+    DrawSegment( x1, y1, NULL, NULL, PEN_NONE );
+    DrawSegment( x2, y2, NULL, NULL, penType );
+}
+
+// back-end
+static void DrawLineEx( int x1, int y1, int x2, int y2, int penType )
+{
+    int savX, savY;
+    DrawSegment( x1, y1, &savX, &savY, PEN_NONE );
+    DrawSegment( x2, y2, NULL, NULL, penType );
+    DrawSegment( savX, savY, NULL, NULL, PEN_NONE );
+}
+
+// back-end
 static int GetPvScore( int index )
 {
     int score = currPvInfo[ index ].score;
@@ -93,35 +97,7 @@ static int GetPvScore( int index )
     return score;
 }
 
-static VOID DrawLine( int x1, int y1, int x2, int y2 )
-{
-    MoveToEx( hdcPB, x1, y1, NULL );
-
-    LineTo( hdcPB, x2, y2 );
-}
-
-static VOID DrawLineEx( int x1, int y1, int x2, int y2 )
-{
-    POINT stPT;
-
-    MoveToEx( hdcPB, x1, y1, &stPT );
-
-    LineTo( hdcPB, x2, y2 );
-
-    MoveToEx( hdcPB, stPT.x, stPT.y, NULL );
-}
-
-static HBRUSH CreateBrush( UINT style, COLORREF color )
-{
-    LOGBRUSH stLB;
-
-    stLB.lbStyle = style;
-    stLB.lbColor = color;
-    stLB.lbHatch = 0;
-
-    return CreateBrushIndirect( &stLB );
-}
-
+// back-end
 /*
     For a centipawn value, this function returns the height of the corresponding
     histogram, centered on the reference axis.
@@ -136,36 +112,34 @@ static int GetValueY( int value )
     return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / 1400.0);
 }
 
-static VOID DrawAxisSegmentHoriz( int value, BOOL drawValue )
+// the brush selection is made part of the DrawLine, by passing a style argument
+// the wrapper for doing the text output makes this back-end
+static void DrawAxisSegmentHoriz( int value, BOOL drawValue )
 {
     int y = GetValueY( value*100 );
 
-    SelectObject( hdcPB, GetStockObject(BLACK_PEN) );
-    DrawLine( MarginX, y, MarginX + MarginW, y );
-    SelectObject( hdcPB, hpenDotted );
-    DrawLine( MarginX + MarginW, y, nWidthPB - MarginW, y );
-
     if( drawValue ) {
-        SIZE stSize;
         char buf[MSG_SIZ], *b = buf;
-        int cbBuf;
 
         if( value > 0 ) *b++ = '+';
 	sprintf(b, "%d", value);
 
-        cbBuf = strlen( buf );
-        GetTextExtentPoint32( hdcPB, buf, cbBuf, &stSize );
-        TextOut( hdcPB, MarginX - stSize.cx - 2, y - stSize.cy / 2, buf, cbBuf );
+	DrawEvalText(buf, strlen(buf), y);
     }
+    // [HGM] counts on DrawEvalText to have select transparent background for dotted line!
+    DrawLine( MarginX, y, MarginX + MarginW, y, PEN_BLACK ); // Y-axis tick marks
+    DrawLine( MarginX + MarginW, y, nWidthPB - MarginW, y, PEN_DOTTED ); // hor grid
 }
 
-static VOID DrawAxis()
+// The DrawLines again must select their own brush.
+// the initial brush selection is useless? BkMode needed for dotted line and text
+static void DrawAxis()
 {
     int cy = nHeightPB / 2;
     
-    SelectObject( hdcPB, GetStockObject(NULL_BRUSH) );
+//    SelectObject( hdcPB, GetStockObject(NULL_BRUSH) );
 
-    SetBkMode( hdcPB, TRANSPARENT );
+//    SetBkMode( hdcPB, TRANSPARENT );
 
     DrawAxisSegmentHoriz( +5, TRUE );
     DrawAxisSegmentHoriz( +3, FALSE );
@@ -175,59 +149,55 @@ static VOID DrawAxis()
     DrawAxisSegmentHoriz( -3, FALSE );
     DrawAxisSegmentHoriz( -5, TRUE );
 
-    SelectObject( hdcPB, GetStockObject(BLACK_PEN) );
-
-    DrawLine( MarginX + MarginW, cy, nWidthPB - MarginW, cy );
-    DrawLine( MarginX + MarginW, MarginH, MarginX + MarginW, nHeightPB - MarginH );
+    DrawLine( MarginX + MarginW, cy, nWidthPB - MarginW, cy, PEN_BLACK ); // x-axis
+    DrawLine( MarginX + MarginW, MarginH, MarginX + MarginW, nHeightPB - MarginH, PEN_BLACK ); // y-axis
 }
 
-static VOID DrawHistogram( int x, int y, int width, int value, int side )
+// back-end
+static void DrawHistogram( int x, int y, int width, int value, int side )
 {
-    RECT rc;
+    int left, top, right, bottom;
 
     if( value > -25 && value < +25 ) return;
 
-    rc.left = x;
-    rc.right = rc.left + width + 1;
+    left = x;
+    right = left + width + 1;
 
     if( value > 0 ) {
-        rc.top = GetValueY( value );
-        rc.bottom = y+1;
+        top = GetValueY( value );
+        bottom = y+1;
     }
     else {
-        rc.top = y;
-        rc.bottom = GetValueY( value ) + 1;
+        top = y;
+        bottom = GetValueY( value ) + 1;
     }
 
 
     if( width == MIN_HIST_WIDTH ) {
-        rc.right--;
-        FillRect( hdcPB, &rc, hbrHist[side] );
+        right--;
+        DrawRectangle( left, top, right, bottom, side, FILLED );
     }
     else {
-        SelectObject( hdcPB, hbrHist[side] );
-        Rectangle( hdcPB, rc.left, rc.top, rc.right, rc.bottom );
+        DrawRectangle( left, top, right, bottom, side, OPEN );
     }
 }
 
-static VOID DrawSeparator( int index, int x )
+// back-end
+static void DrawSeparator( int index, int x )
 {
     if( index > 0 ) {
         if( index == currCurrent ) {
-            HPEN hp = SelectObject( hdcPB, hpenBlueDotted );
-            DrawLineEx( x, MarginH, x, nHeightPB - MarginH );
-            SelectObject( hdcPB, hp );
+            DrawLineEx( x, MarginH, x, nHeightPB - MarginH, PEN_BLUEDOTTED );
         }
         else if( (index % 20) == 0 ) {
-            HPEN hp = SelectObject( hdcPB, hpenDotted );
-            DrawLineEx( x, MarginH, x, nHeightPB - MarginH );
-            SelectObject( hdcPB, hp );
+            DrawLineEx( x, MarginH, x, nHeightPB - MarginH, PEN_DOTTED );
         }
     }
 }
 
+// made back-end by replacing MoveToEx and LineTo by DrawSegment
 /* Actually draw histogram as a diagram, cause there's too much data */
-static VOID DrawHistogramAsDiagram( int cy, int paint_width, int hist_count )
+static void DrawHistogramAsDiagram( int cy, int paint_width, int hist_count )
 {
     double step;
     int i;
@@ -249,9 +219,7 @@ static VOID DrawHistogramAsDiagram( int cy, int paint_width, int hist_count )
             index++;
         }
 
-        SelectObject( hdcPB, hpenBold[side] );
-
-        MoveToEx( hdcPB, (int) x, cy, NULL );
+        DrawSegment( (int) x, cy, NULL, NULL, PEN_NONE );
 
         index += 2;
 
@@ -262,7 +230,7 @@ static VOID DrawHistogramAsDiagram( int cy, int paint_width, int hist_count )
 
             /* Extend line up to current point */
             if( currPvInfo[index].depth > 0 ) {
-                LineTo( hdcPB, (int) x, GetValueY( GetPvScore(index) ) );
+                DrawSegment((int) x, GetValueY( GetPvScore(index) ), NULL, NULL, PEN_BOLD + side );
             }
 
             index += 2;
@@ -270,11 +238,12 @@ static VOID DrawHistogramAsDiagram( int cy, int paint_width, int hist_count )
     }
 }
 
-static VOID DrawHistogramFull( int cy, int hist_width, int hist_count )
+// back-end, delete pen selection
+static void DrawHistogramFull( int cy, int hist_width, int hist_count )
 {
     int i;
 
-    SelectObject( hdcPB, GetStockObject(BLACK_PEN) );
+//    SelectObject( hdcPB, GetStockObject(BLACK_PEN) );
 
     for( i=0; i<hist_count; i++ ) {
         int index = currFirst + i;
@@ -297,7 +266,8 @@ typedef struct {
     int paint_width;
 } VisualizationData;
 
-static BOOL InitVisualization( VisualizationData * vd )
+// back-end
+static Boolean InitVisualization( VisualizationData * vd )
 {
     BOOL result = FALSE;
 
@@ -320,7 +290,8 @@ static BOOL InitVisualization( VisualizationData * vd )
     return result;
 }
 
-static VOID DrawHistograms()
+// back-end
+static void DrawHistograms()
 {
     VisualizationData vd;
 
@@ -334,7 +305,8 @@ static VOID DrawHistograms()
     }
 }
 
-static int GetMoveIndexFromPoint( int x, int y )
+// back-end
+int GetMoveIndexFromPoint( int x, int y )
 {
     int result = -1;
     int start_x = MarginX + MarginW;
@@ -366,24 +338,108 @@ static int GetMoveIndexFromPoint( int x, int y )
     return result;
 }
 
-static VOID DrawBackground()
+// init and display part split of so they can be moved to front end
+void PaintEvalGraph( void )
 {
-    HBRUSH hbr;
-    RECT rc;
-
-    hbr = CreateBrush( BS_SOLID, GetSysColor( COLOR_3DFACE ) );
-
-    rc.left = 0;
-    rc.top = 0;
-    rc.right = nWidthPB;
-    rc.bottom = nHeightPB;
-
-    FillRect( hdcPB, &rc, hbr );
-
-    DeleteObject( hbr );
+    /* Draw */
+    DrawRectangle(0, 0, nWidthPB, nHeightPB, 2, FILLED);
+    DrawAxis();
+    DrawHistograms();
 }
 
-static VOID PaintEvalGraph( HWND hWnd, HDC hDC )
+Boolean EvalGraphIsUp()
+{
+    return evalGraphDialogUp;
+}
+
+// ------------------------------------------ front-end starts here ----------------------------------------------
+
+#include <commdlg.h>
+#include <dlgs.h>
+
+#include "winboard.h"
+#include "wsnap.h"
+
+#define WM_REFRESH_GRAPH    (WM_USER + 1)
+
+void EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
+void EvalGraphPopUp();
+void EvalGraphPopDown();
+Boolean EvalGraphIsUp();
+
+// calls of front-end part into back-end part
+extern int GetMoveIndexFromPoint( int x, int y );
+extern void PaintEvalGraph( void );
+
+/* Imports from winboard.c */
+extern HWND evalGraphDialog;
+extern BOOLEAN evalGraphDialogUp; // should be back-end, really
+
+extern HINSTANCE hInst;
+extern HWND hwndMain;
+
+extern WindowPlacement wpEvalGraph;
+
+static COLORREF crWhite = RGB( 0xFF, 0xFF, 0xB0 );
+static COLORREF crBlack = RGB( 0xAD, 0x5D, 0x3D );
+
+static HDC hdcPB = NULL;
+static HBITMAP hbmPB = NULL;
+static HPEN pens[6]; // [HGM] put all pens in one array
+static HBRUSH hbrHist[3] = { NULL, NULL, NULL };
+
+// [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end) 
+static void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
+{
+    POINT stPt;
+    if(penType == PEN_NONE) MoveToEx( hdcPB, x, y, &stPt ); else {
+	HPEN hp = SelectObject( hdcPB, pens[penType] );
+	LineTo( hdcPB, x, y );
+	SelectObject( hdcPB, hp );
+    }
+    if(lastX != NULL) { *lastX = stPt.x; *lastY = stPt.y; }
+}
+
+// front-end wrapper for drawing functions to do rectangles
+void DrawRectangle( int left, int top, int right, int bottom, int side, int style )
+{
+    HPEN hp = SelectObject( hdcPB, pens[PEN_BLACK] );
+    RECT rc;
+
+    rc.top = top; rc.left = left; rc.bottom = bottom; rc.right = right;
+    if(style == FILLED)
+        FillRect( hdcPB, &rc, hbrHist[side] );
+    else {
+        SelectObject( hdcPB, hbrHist[side] );
+        Rectangle( hdcPB, left, top, right, bottom );
+    }
+    SelectObject( hdcPB, hp );
+}
+
+// front-end wrapper for putting text in graph
+void DrawEvalText(char *buf, int cbBuf, int y)
+{
+        SIZE stSize;
+	SetBkMode( hdcPB, TRANSPARENT );
+        GetTextExtentPoint32( hdcPB, buf, cbBuf, &stSize );
+        TextOut( hdcPB, MarginX - stSize.cx - 2, y - stSize.cy / 2, buf, cbBuf );
+}
+
+// front-end
+static HBRUSH CreateBrush( UINT style, COLORREF color )
+{
+    LOGBRUSH stLB;
+
+    stLB.lbStyle = style;
+    stLB.lbColor = color;
+    stLB.lbHatch = 0;
+
+    return CreateBrushIndirect( &stLB );
+}
+
+// front-end. Create pens, device context and buffer bitmap for global use, copy result to display
+// The back-end part n the middle has been taken out and moed to PainEvalGraph()
+static VOID DisplayEvalGraph( HWND hWnd, HDC hDC )
 {
     RECT rcClient;
     int width;
@@ -397,13 +453,15 @@ static VOID PaintEvalGraph( HWND hWnd, HDC hDC )
 
     /* Create or recreate paint box if needed */
     if( hbmPB == NULL || width != nWidthPB || height != nHeightPB ) {
-        if( hpenDotted == NULL ) {
-            hpenDotted = CreatePen( PS_DOT, 0, RGB(0xA0,0xA0,0xA0) );
-            hpenBlueDotted = CreatePen( PS_DOT, 0, RGB(0x00,0x00,0xFF) );
-            hpenBold[0] = CreatePen( PS_SOLID, 2, crWhite );
-            hpenBold[1] = CreatePen( PS_SOLID, 2, crBlack );
+        if( pens[PEN_DOTTED] == NULL ) {
+	    pens[PEN_BLACK]     = GetStockObject(BLACK_PEN);
+            pens[PEN_DOTTED]    = CreatePen( PS_DOT, 0, RGB(0xA0,0xA0,0xA0) );
+            pens[PEN_BLUEDOTTED] = CreatePen( PS_DOT, 0, RGB(0x00,0x00,0xFF) );
+            pens[PEN_BOLD]      = CreatePen( PS_SOLID, 2, crWhite );
+            pens[PEN_BOLD+1]    = CreatePen( PS_SOLID, 2, crBlack );
             hbrHist[0] = CreateBrush( BS_SOLID, crWhite );
             hbrHist[1] = CreateBrush( BS_SOLID, crBlack );
+            hbrHist[2] = CreateBrush( BS_SOLID, GetSysColor( COLOR_3DFACE ) ); // background
         }
 
         if( hdcPB != NULL ) {
@@ -425,15 +483,16 @@ static VOID PaintEvalGraph( HWND hWnd, HDC hDC )
         SelectObject( hdcPB, hbmPB );
     }
 
-    /* Draw */
-    DrawBackground();
-    DrawAxis();
-    DrawHistograms();
+    // back-end painting; calls back front-end primitives for lines, rectangles and text
+    PaintEvalGraph();
 
     /* Copy bitmap into destination DC */
-    BitBlt( hDC, 0, 0, width, height, hdcPB, 0, 0, SRCCOPY );
+    BitBlt( hDC, 0, 0, nWidthPB, nHeightPB, hdcPB, 0, 0, SRCCOPY );
 }
 
+// Note: Once the eval graph is opened, this window-proc lives forever; een closing the
+// eval-graph window merely hides it. On opening we re-initialize it, though, so it could
+// as well hae been destroyed. While it is open it processes the REFRESH_GRAPH commands.
 LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static SnapData sd;
@@ -472,13 +531,13 @@ LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 
     case WM_PAINT:
         hDC = BeginPaint( hDlg, &stPS );
-        PaintEvalGraph( hDlg, hDC );
+        DisplayEvalGraph( hDlg, hDC );
         EndPaint( hDlg, &stPS );
         break;
 
     case WM_REFRESH_GRAPH:
         hDC = GetDC( hDlg );
-        PaintEvalGraph( hDlg, hDC );
+        DisplayEvalGraph( hDlg, hDC );
         ReleaseDC( hDlg, hDC );
         break;
 
@@ -558,6 +617,7 @@ LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
     return FALSE;
 }
 
+// creates the eval graph, or unhides it.
 VOID EvalGraphPopUp()
 {
   FARPROC lpProc;
@@ -586,6 +646,7 @@ VOID EvalGraphPopUp()
   evalGraphDialogUp = TRUE;
 }
 
+// Note that this hides the window. It could as well have destroyed it.
 VOID EvalGraphPopDown()
 {
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowEvalGraph, MF_UNCHECKED);
@@ -597,6 +658,9 @@ VOID EvalGraphPopDown()
   evalGraphDialogUp = FALSE;
 }
 
+// This function is the interface to the back-end. It is currently called through the front-end,
+// though, where it shares the HistorySet() wrapper with MoveHistorySet(). Once all front-ends
+// support the eval graph, it would be more logical to call it directly from the back-end.
 VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo )
 {
     /* [AS] Danger! For now we rely on the pvInfo parameter being a static variable! */
@@ -611,7 +675,3 @@ VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pv
     }
 }
 
-BOOL EvalGraphIsUp()
-{
-    return evalGraphDialogUp;
-}

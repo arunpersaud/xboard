@@ -186,6 +186,10 @@ SOURCE=..\uci.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\wchat.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\wclipbrd.c
 # End Source File
 # Begin Source File

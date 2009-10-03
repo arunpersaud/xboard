@@ -1,0 +1,3 @@
+ed $1<metascript.txt
+ed winboard.rc<script.txt
+windres -D_WIN32_IE=0x0300 -DWIN32 -DJAWS --use-temp-file --include-dir .. tmp.rc -O coff -o wbres.o

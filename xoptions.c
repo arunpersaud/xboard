@@ -78,6 +78,8 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
+extern void SendToProgram P((char *message, ChessProgramState *cps));
+
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
 extern int squareSize;
@@ -1079,7 +1081,7 @@ void NewVariantPopUp()
 				  "for missing bitmaps. (See manual.)")); j++;
     XtCreateManagedWidget("warning", labelWidgetClass, form, args, j);
 
-    XtRealizeWidget(popup);
+	    XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "NewVariantPopDown");
     
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
@@ -1473,7 +1475,7 @@ void CreateComboPopup(parent, name, n, mb)
 void SettingsPopUp(ChessProgramState *cps)
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit, form, oldform, last, b_ok, b_cancel, leftMargin = NULL;
+    Widget popup, layout, dialog, edit=NULL, form, oldform, last, b_ok, b_cancel, leftMargin = NULL;
     Window root, child;
     int x, y, i, j, height, width, h, c;
     int win_x, win_y;
@@ -1487,7 +1489,7 @@ void SettingsPopUp(ChessProgramState *cps)
 
     if(cps->nrOptions > 50) width = 4; else if(cps->nrOptions>24) width = 2; else width = 1;
     height = cps->nrOptions / width + 1;
-    i = 0;
+     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
     SettingsShell = popup =
       XtCreatePopupShell(_("Settings Menu"), transientShellWidgetClass,
@@ -1505,7 +1507,7 @@ void SettingsPopUp(ChessProgramState *cps)
     XtSetArg(args[j], XtNfromHoriz, leftMargin);  j++;
     XtSetValues(form, args, j);
     leftMargin = form;
-
+ 
     last = NULL;
     for(h=0; h<height; h++) {
 	i = h + c*height;
@@ -1625,7 +1627,7 @@ void SettingsPopUp(ChessProgramState *cps)
     SettingsUp = True;
 
     previous = NULL;
-    SetFocus(edit, popup, (XEvent*) NULL, False);
+    if(edit)SetFocus(edit, popup, (XEvent*) NULL, False);
 }
 
 void FirstSettingsProc(w, event, prms, nprms)
@@ -1644,6 +1646,13 @@ void SecondSettingsProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    SettingsPopUp(&second);
+}
+
+//---------------------------- Chat Windows ----------------------------------------------
+
+void OutputChatMessage(int partner, char *mess)
+{
+    return; // dummy
 }
 
 //--------------------------- General Popup for Cloning ----------------------------------

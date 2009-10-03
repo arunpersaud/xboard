@@ -52,6 +52,7 @@ PrintOpt(int i, int right, ChessProgramState *cps)
 		break;
 	    case Button:
 	    case SaveButton:
+	    case ResetButton:
 		fprintf(debugFP, "[ %26.26s ]", opt.name);
 	    case Message:
 		break;
@@ -86,6 +87,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	    switch(nextType = optionList[nextOption].type) {
 		case CheckBox: checkList[checks++] = nextOption; lastType = CheckBox; break;
 		case ComboBox: comboList[combos++] = nextOption; lastType = ComboBox; break;
+		case ResetButton:
 		case SaveButton:
 		case Button:  buttonList[buttons++] = nextOption; lastType = Button; break;
 		case TextBox:
@@ -596,6 +598,7 @@ void AddOption(int x, int y, Control type, int i)
 	    AddControl(x+95, y-1, 50, 500, 0x0085, CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
 	    break;
 	case Button:
+	case ResetButton:
 	case SaveButton:
 	    AddControl(x-2, y, 65, 13, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, i);
 	case Message:

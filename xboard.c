@@ -1375,7 +1375,7 @@ XtResource clientResources[] = {
 	XtRImmediate, (XtPointer) "xboard.debug"},
     { "engineDebugOutput", "engineDebugOutput", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, engineComments),
-	XtRImmediate, (XtPointer) 0},
+	XtRImmediate, (XtPointer) 1},
     { "noGUI", "noGUI", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, noGUI),
 	XtRImmediate, (XtPointer) 0},
@@ -1428,6 +1428,9 @@ XtResource clientResources[] = {
 	XtRImmediate, (XtPointer) 0},
     { "delayAfterQuit", "delayAfterQuit", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, delayAfterQuit),
+	XtRImmediate, (XtPointer) 0},
+    { "keepAlive", "keepAlive", XtRInt,
+	sizeof(int), XtOffset(AppDataPtr, keepAlive),
 	XtRImmediate, (XtPointer) 0},
 };
 
@@ -1796,6 +1799,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-secondOptions", "secondOptions", XrmoptionSepArg, NULL },
     { "-firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
+    { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
 };
 
 
@@ -2088,7 +2092,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 	}
 #ifdef GOTHIC
 	if(gameInfo.variant == VariantGothic) {
-           ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[i][(int)WhiteSilver];
+           ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[(int)WhiteSilver];
 	}
 #endif
 #endif
@@ -6670,6 +6674,9 @@ void
 ScheduleDelayedEvent(cb, millisec)
      DelayedEventCallback cb; guint millisec;
 {
+    if(delayedEventTimerTag && delayedEventCallback == cb)
+	// [HGM] alive: replace, rather than add or flush identical event
+	g_source_remove(delayedEventTimerTag);
     delayedEventCallback = cb;
     delayedEventTimerTag = g_timeout_add(millisec,(GSourceFunc) FireDelayedEvent, NULL);
     return;

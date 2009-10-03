@@ -107,6 +107,10 @@ int ParsePGNTag(tag, gameInfo)
 	else
 	    gameInfo->result = GameUnfinished;
 	success = TRUE;
+    } else if (StrCaseCmp(name, "TimeControl") == 0) {
+//	int tc, mps, inc = -1;
+//	if(sscanf(value, "%d/%d", &mps, &tc) == 2 || )
+	success = StrSavePtr(value, &gameInfo->timeControl) != NULL;
     } else if (StrCaseCmp(name, "FEN") == 0) {
 	success = StrSavePtr(value, &gameInfo->fen) != NULL;
     } else if (StrCaseCmp(name, "SetUp") == 0) {

@@ -117,6 +117,22 @@ char *pieceToName[] = {
 		"Empty"
 	};
 
+char *pieceTypeName[] = {
+		"Pawn", "Knight", "Bishop", "Rook", "Queen", 
+		"Guard", "Elephant", "Arch Bishop", "Chancellor",
+		"General", "Man", "Cannon", "Night Rider",
+		"Crowned Bishop", "Crowned Rook", "Grass Hopper", "Veteran",
+		"Falcon", "Amazon", "Snake", "Unicorn",
+		"King",
+		"Pawn", "Knight", "Bishop", "Rook", "Queen", 
+		"Guard", "Elephant", "Arch Bishop", "Chancellor",
+		"General", "Man", "Cannon", "Night Rider",
+		"Crowned Bishop", "Crowned Rook", "Grass Hopper", "Veteran",
+		"Falcon", "Amazon", "Snake", "Unicorn",
+		"King",
+		"Empty"
+	};
+
 int CoordToNum(c)
 		char c;
 {
@@ -130,7 +146,7 @@ char* PieceToName(p, i)
 	int i;
 {
 	if(i) return pieceToName[(int) p];
-		return pieceToName[(int) p]+6;
+		return pieceTypeName[(int) p];
 }
 
 char* SquareToChar(x)
@@ -219,7 +235,7 @@ AdaptMenu()
 {
 	HMENU menuMain, menuJAWS;
 	MENUBARINFO helpMenuInfo;
-	int e, i;
+	int i;
 
 	helpMenuInfo.cbSize = sizeof(helpMenuInfo);
 	menuMain = GetMenu(hwndMain);
@@ -275,12 +291,15 @@ InitJAWS()
 	return TRUE;
 }
 
+int beeps[] = { 1, 0, 0, 0, 0 };
+int beepCodes[] = { 0, MB_OK, MB_ICONERROR, MB_ICONQUESTION, MB_ICONEXCLAMATION, MB_ICONASTERISK };
+
 VOID
 KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	ChessSquare currentPiece;
 	char *piece, *xchar, *ynum ;
-	int n;
+	int n, beepType = 1; // empty beep
 
 	if(fromX == -1 || fromY == -1) {
 		fromX = BOARD_LEFT; fromY = 0;
@@ -288,34 +307,37 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch(wParam) {
 	case VK_LEFT:
 		if(fromX == BOARD_RGHT+1) fromX -= 2; else
-		if(fromX == BOARD_LEFT) { if(fromY >= BOARD_HEIGHT - gameInfo.holdingsSize) fromX -= 2; } else
-		if(fromX > BOARD_LEFT) fromX--;
+		if(fromX == BOARD_LEFT) { if(fromY >= BOARD_HEIGHT - gameInfo.holdingsSize) fromX -= 2; else beepType = 0; } else
+		if(fromX > BOARD_LEFT) fromX--; else beepType = 0; // off-board beep
 		break;
 	case VK_RIGHT:
 		if(fromX == BOARD_LEFT-2) fromX += 2; else
-		if(fromX == BOARD_RGHT-1) { if(fromY < gameInfo.holdingsSize) fromX += 2; } else
-		if(fromX < BOARD_RGHT-1) fromX++;
+		if(fromX == BOARD_RGHT-1) { if(fromY < gameInfo.holdingsSize) fromX += 2; else beepType = 0; } else
+		if(fromX < BOARD_RGHT-1) fromX++; else beepType = 0;
 		break;
 	case VK_UP:
-		if(fromX == BOARD_RGHT+1) { if(fromY < gameInfo.holdingsSize - 1) fromY++; } else
-		if(fromY < BOARD_HEIGHT-1) fromY++;
+		if(fromX == BOARD_RGHT+1) { if(fromY < gameInfo.holdingsSize - 1) fromY++; else beepType = 0; } else
+		if(fromY < BOARD_HEIGHT-1) fromY++; else beepType = 0;
 		break;
 	case VK_DOWN:
-		if(fromX == BOARD_LEFT-2) { if(fromY > BOARD_HEIGHT - gameInfo.holdingsSize) fromY--; } else
-		if(fromY > 0) fromY--;
+		if(fromX == BOARD_LEFT-2) { if(fromY > BOARD_HEIGHT - gameInfo.holdingsSize) fromY--; else beepType = 0; } else
+		if(fromY > 0) fromY--; else beepType = 0;
 		break;
 	}
 	SetHighlights(fromX, fromY, -1, -1);
 	DrawPosition(FALSE, NULL);
 	currentPiece = boards[currentMove][fromY][fromX];
 	piece = PieceToName(currentPiece,1);
-	if(currentPiece != EmptySquare) MessageBeep(currentPiece < (int)BlackPawn ? MB_OK : MB_ICONEXCLAMATION);
+	if(beepType == 1 && currentPiece != EmptySquare) beepType = currentPiece < (int) BlackPawn ? 2 : 3; // white or black beep
+	if(beeps[beepType] == beeps[1] && (fromX == BOARD_RGHT+1 || fromX == BOARD_LEFT-2)) beepType = 4; // holdings beep
+	beepType = beeps[beepType]%6;
+	if(beepType) MessageBeep(beepCodes[beepType]);
 	if(fromX == BOARD_LEFT - 2) {
 		SayString("black holdings", FALSE);
 		if(currentPiece != EmptySquare) {
 			char buf[MSG_SIZ];
 			n = boards[currentMove][fromY][1];
-			sprintf(buf, "%d %s%s", n, piece+6, n == 1 ? "" : "s");
+			sprintf(buf, "%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
 			SayString(buf, TRUE);
 		}
 	} else
@@ -324,7 +346,7 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(currentPiece != EmptySquare) {
 			char buf[MSG_SIZ];
 			n = boards[currentMove][fromY][BOARD_WIDTH-2];
-			sprintf(buf, "%d %s%s", n, piece+6, n == 1 ? "" : "s");
+			sprintf(buf, "%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
 			SayString(buf, TRUE);
 		}
 	} else
@@ -814,7 +836,7 @@ SayAllBoard()
 {
 	int Xpos, Ypos;
 	ChessSquare currentpiece;
-	char *piece, *xchar, *ynum ;
+	char *piece, *ynum ;
 	
 	if(gameInfo.holdingsWidth) {
 		int first = 0;
@@ -848,7 +870,7 @@ SayAllBoard()
 		for(Xpos=BOARD_LEFT; Xpos<BOARD_RGHT; Xpos++) {
 			currentpiece = boards[currentMove][Ypos][Xpos];	
 			if(currentpiece != EmptySquare) {
-				int count = 0, oldX = Xpos;
+				int count = 0;
 				char buf[50];
 				piece = PieceToName(currentpiece,1);
 				while(Xpos < BOARD_RGHT && boards[currentMove][Ypos][Xpos] == currentpiece)
@@ -897,13 +919,14 @@ SayWhosTurn()
 	}
 }
 	
+extern char *commentList[];
 
 VOID
 SayMachineMove(int evenIfDuplicate)
 {
 	int len, xPos, yPos, moveNr, secondSpace = 0, castle = 0, n;
 	ChessSquare currentpiece;
-	char *piece, *xchar, *ynum, *p;
+	char *piece, *xchar, *ynum, *p, checkMark = 0;
 	char c, buf[MSG_SIZ], comment[MSG_SIZ];
 	static char disambiguation[2];
 	static int previousMove = 0;
@@ -959,6 +982,7 @@ SayMachineMove(int evenIfDuplicate)
 		if(secondSpace) len = secondSpace; // position behind move
 		if(messageText[len-1] == '+' || messageText[len-1] == '#') {  /* you are in checkmate */
 			len--; // strip off check or mate indicator
+		      checkMark = messageText[len]; // make sure still seen after we stip off promo piece
 		}
 		if(messageText[len-2] == '=') {  /* promotion */
 			len-=2; // strip off promotion piece
@@ -1015,11 +1039,11 @@ SayMachineMove(int evenIfDuplicate)
 					SayString(piece, FALSE);
 				} else SayString("Capturing onn passann",FALSE);
 			}
-			if(messageText[len] == '+') SayString("check", FALSE); else
-			if(messageText[len] == '#') {
+		    }
+		    if(checkMark == '+') SayString("check", FALSE); else
+		    if(checkMark == '#') {
 				SayString("finishing off", FALSE);
 				SayString(WhiteOnMove(n) ? "White" : "Black", FALSE);
-			}
 		    }
 		}
 
@@ -1039,6 +1063,8 @@ SayMachineMove(int evenIfDuplicate)
 		    }
 		    SayString(comment, FALSE); // alphabetic comment (usually game end)
 	        } else if(p) SayString(p, FALSE);
+
+		if(commentDialog && commentList[currentMove]) SetFocus(commentDialog);
 
 	    } else {
 		/* starts not with digit */
@@ -1167,12 +1193,12 @@ NiceTime(int x)
 	return (x%3000 == 0);
 }
 
-#if 0
-	    if(isalpha((char)wParam)) {
-		/* capitals of any ind are intercepted and distinguished by left and right shift */
-		int mine = GetKeyState(VK_RSHIFT) < 0;
-		if(mine || GetKeyState(VK_LSHIFT) < 0) {
-#endif
+#define JAWS_ARGS \
+  { "beepOffBoard", ArgInt, (LPVOID) beeps, TRUE },\
+  { "beepEmpty", ArgInt, (LPVOID) (beeps+1), TRUE },\
+  { "beepWhite", ArgInt, (LPVOID) (beeps+2), TRUE },\
+  { "beepBlack", ArgInt, (LPVOID) (beeps+3), TRUE },\
+  { "beepHoldings", ArgInt, (LPVOID) (beeps+4), TRUE },\
 
 #define JAWS_ALT_INTERCEPT \
 	    if(suppressOneKey) {\

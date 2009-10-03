@@ -188,9 +188,9 @@ typedef struct {
     int an_move_count;
 } EngineOutputData;
 
-static int VerifyDisplayMode();
+static void VerifyDisplayMode();
 static void UpdateControls( EngineOutputData * ed );
-static SetEngineState( int which, int state, char * state_data );
+static void SetEngineState( int which, int state, char * state_data );
 
 void ReadIcon(char *pixData[], int iconNr)
 {
@@ -570,7 +570,7 @@ void EngineOutputPopDown()
 
 
 // back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
-static SetEngineState( int which, int state, char * state_data )
+static void SetEngineState( int which, int state, char * state_data )
 {
     int x_which = 1 - which;
 
@@ -756,7 +756,7 @@ static void SetDisplayMode( int mode )
 }
 
 // pure back end
-int VerifyDisplayMode()
+void VerifyDisplayMode()
 {
     int mode;
 

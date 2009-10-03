@@ -600,6 +600,7 @@ typedef struct {
     char *secondOptions;
     char *fenOverride1;
     char *fenOverride2;
+    Boolean keepAlive;  /* [HGM] alive     */
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */
@@ -614,10 +615,11 @@ typedef struct {
 #define GLT_TIME_CONTROL    't'
 #define GLT_VARIANT         'v'
 #define GLT_OUT_OF_BOOK     'a'
+#define GLT_RESULT_COMMENT  'c'     /* [HGM] rescom */
 
 #define GLT_DEFAULT_TAGS    "eprd"  /* Event, players, result, date */
 
-#define GLT_ALL_TAGS        "esdoprwbtva"
+#define GLT_ALL_TAGS        "esdoprwbtvac"
 
 #define PGN_OUT_OF_BOOK     "Annotator"
 
@@ -647,6 +649,11 @@ typedef struct {
     int holdingsSize;  /* number of different piece types in holdings       */
     int holdingsWidth; /* number of files left and right of board, 0 or 2   */
 } GameInfo;
+
+// [HGM] chat	
+#define MAX_CHAT 3
+extern int chatCount;
+extern char chatPartner[MAX_CHAT][MSG_SIZ];
 
 
 #endif

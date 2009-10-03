@@ -15,7 +15,7 @@ PROJ = winboard
 OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj\
  zippy.obj parser.obj wclipbrd.obj wedittags.obj wengineo.obj wevalgraph.obj\
  wgamelist.obj whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj\
- wsockerr.obj help.obj wsettings.obj
+ wsockerr.obj help.obj wsettings.obj wchat.obj
 
 
 # Debugging?
@@ -165,12 +165,15 @@ zippy.obj: ../zippy.c config.h ../common.h ../zippy.h ../frontend.h \
 	../backend.h ../backendz.h ../lists.h
         $(CC) $(CFLAGS) ../zippy.c
 
-uci.obj: ../uci.c ..//common.h ../backend.h ../frontend.h ../lists.h
+uci.obj: ../uci.c ../common.h ../backend.h ../frontend.h ../lists.h
         $(CC) $(CFLAGS) ../uci.c
 
 
-wsettings.obj: wsettings.c ..//common.h ../backend.h ../frontend.h ../lists.h
+wsettings.obj: wsettings.c ../common.h ../backend.h ../frontend.h ../lists.h
         $(CC) $(CFLAGS) wsettings.c
+
+wchat.obj: wchat.c winboard.h wsnap.h ../common.h ../backend.h ../frontend.h ../lists.h
+        $(CC) $(CFLAGS) wchat.c
 
 
 $(PROJ).exe: $(OBJS) $(PROJ).res $(PROJ).hlp
