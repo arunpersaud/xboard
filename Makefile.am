@@ -9,13 +9,13 @@ bin_PROGRAMS = xboard
 
 xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 book.c \
-		 callback.c\
+		 callback.c callback.h \
 		 childio.c childio.h \
 	 	 common.h \
 		 frontend.h \
 	  	 gamelist.c \
 	 	 gettext.h  \
-		 interface.c	\
+		 interface.c interface.h \
 		 lists.c lists.h \
 		 moves.c moves.h \
 		 parser.l parser.h \
