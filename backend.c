@@ -8900,64 +8900,83 @@ LoadGame(f, gameNumber, title, useList)
 	SetTrainingModeOff();
 
     oldGameMode = gameMode;
-    if (gameMode != BeginningOfGame) {
-      Reset(FALSE, TRUE);
-    }
+    if (gameMode != BeginningOfGame) 
+      {
+	Reset(FALSE, TRUE);
+      };
 
     gameFileFP = f;
-    if (lastLoadGameFP != NULL && lastLoadGameFP != f) {
+    if (lastLoadGameFP != NULL && lastLoadGameFP != f) 
+      {
 	fclose(lastLoadGameFP);
-    }
+      };
 
-    if (useList) {
+    if (useList) 
+      {
 	lg = (ListGame *) ListElem(&gameList, gameNumber-1);
-
-	if (lg) {
+	
+	if (lg) 
+	  {
 	    fseek(f, lg->offset, 0);
 	    GameListHighlight(gameNumber);
 	    gn = 1;
-	}
-	else {
+	  }
+	else 
+	  {
 	    DisplayError(_("Game number out of range"), 0);
 	    return FALSE;
-	}
-    } else {
+	  };
+      } 
+    else 
+      {
 	GameListDestroy();
-	if (fseek(f, 0, 0) == -1) {
+	if (fseek(f, 0, 0) == -1) 
+	  {
 	    if (f == lastLoadGameFP ?
 	 	gameNumber == lastLoadGameNumber + 1 :
-		gameNumber == 1) {
+		gameNumber == 1) 
+	      {
 		gn = 1;
-	    } else {
+	      } 
+	    else 
+	      {
 		DisplayError(_("Can't seek on game file"), 0);
 		return FALSE;
-	    }
-	}
-    }
-    lastLoadGameFP = f;
-    lastLoadGameNumber = gameNumber;
+	      };
+	  };
+      };
+
+    lastLoadGameFP	= f;
+    lastLoadGameNumber	= gameNumber;
     strcpy(lastLoadGameTitle, title);
     lastLoadGameUseList = useList;
 
     yynewfile(f);
 
-    if (lg && lg->gameInfo.white && lg->gameInfo.black) {
-      snprintf(buf, sizeof(buf), "%s vs. %s", lg->gameInfo.white,
-		lg->gameInfo.black);
-	    DisplayTitle(buf);
-    } else if (*title != NULLCHAR) {
-	if (gameNumber > 1) {
+    if (lg && lg->gameInfo.white && lg->gameInfo.black) 
+      {
+	snprintf(buf, sizeof(buf), "%s vs. %s", lg->gameInfo.white,
+		 lg->gameInfo.black);
+	DisplayTitle(buf);
+      } 
+    else if (*title != NULLCHAR) 
+      {
+	if (gameNumber > 1) 
+	  {
 	    sprintf(buf, "%s %d", title, gameNumber);
 	    DisplayTitle(buf);
-	} else {
+	  } 
+	else 
+	  {
 	    DisplayTitle(title);
-	}
-    }
+	  };
+      };
 
-    if (gameMode != AnalyzeFile && gameMode != AnalyzeMode) {
+    if (gameMode != AnalyzeFile && gameMode != AnalyzeMode) 
+      {
 	gameMode = PlayFromGameFile;
 	ModeHighlight();
-    }
+      };
 
     currentMove = forwardMostMove = backwardMostMove = 0;
     CopyBoard(boards[0], initialPosition);

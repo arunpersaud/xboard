@@ -349,7 +349,6 @@ void FlipViewProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-  printf("DEBUG: in flip view\n");
     flipView = !flipView;
     DrawPosition(True, NULL);
     return;
@@ -441,16 +440,22 @@ void LoadGameProc(object, user_data)
 
       //see loadgamepopup
       f = fopen(filename, "rb");
-      if (f == NULL) {
-	DisplayError(_("Failed to open file"), errno);
-      } else {
-	/* TODO add indec */
-	(void) LoadGamePopUp(f, 0, filename);
-      }
+      if (f == NULL) 
+	{
+	  DisplayError(_("Failed to open file"), errno);
+	}
+      else 
+	{
+	  /* TODO add indec */
+	  (void) LoadGamePopUp(f, 0, filename);
+	}
       g_free (filename);
-    }
+    };
+  
   gtk_widget_destroy (dialog);
   ModeHighlight();
+  
+  return;
 }
 
 
@@ -662,3 +667,19 @@ void UserMoveProc(window, event, data)
     return;
 }
 
+void GetMoveListProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.getMoveList = !appData.getMoveList;
+  
+  if (appData.getMoveList) 
+    {
+      GetMoveListEvent();
+    } 
+
+  // gets set automatically? if we set it with set_active we end up in an endless loop switching between 0 and 1
+  //  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (object),(gboolean) appData.getMoveList );
+  
+  return;
+}

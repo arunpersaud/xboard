@@ -343,8 +343,6 @@ void AutosaveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BlindfoldProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FlashMovesProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
-void GetMoveListProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
 void HighlightDraggingProc P((Widget w, XEvent *event, String *prms,
 			      Cardinal *nprms));
 void HighlightLastMoveProc P((Widget w, XEvent *event, String *prms,
@@ -691,7 +689,7 @@ MenuItem modeMenu[] = {
     {N_("Show Engine Output"), EngineOutputProc},
     {N_("Show Evaluation Graph"), NothingProc}, // [HGM] evalgr: not functional yet
     {N_("Show Game List"), ShowGameListProc},
-    {"Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
+    //    {"Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
     {"----", NothingProc},
     {N_("Edit Tags"), EditTagsProc},
     {N_("Edit Comment"), EditCommentProc},
@@ -719,7 +717,7 @@ MenuItem optionsMenu[] = {
     {N_("Auto Save"), AutosaveProc},
     {N_("Blindfold"), BlindfoldProc},
     {N_("Flash Moves"), FlashMovesProc},
-    {N_("Get Move List"), GetMoveListProc},
+ //    {N_("Get Move List"), GetMoveListProc},
 #if HIGHDRAG
     {N_("Highlight Dragging"), HighlightDraggingProc},
 #endif
@@ -1837,7 +1835,7 @@ XtActionsRec boardActions[] = {
     { "TrainingProc", EditPositionProc },
     { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
     { "ShowGameListProc", ShowGameListProc },
-    { "ShowMoveListProc", HistoryShowProc},
+    //    { "ShowMoveListProc", HistoryShowProc},
     { "EditTagsProc", EditCommentProc },
     { "EditCommentProc", EditCommentProc },
     { "IcsAlarmProc", IcsAlarmProc },
@@ -1875,7 +1873,7 @@ XtActionsRec boardActions[] = {
     { "BlindfoldProc", BlindfoldProc },
     { "FlashMovesProc", FlashMovesProc },
     //    { "FlipViewProc", FlipViewProc },
-    { "GetMoveListProc", GetMoveListProc },
+    //    { "GetMoveListProc", GetMoveListProc },
 #if HIGHDRAG
     { "HighlightDraggingProc", HighlightDraggingProc },
 #endif
@@ -1909,7 +1907,7 @@ XtActionsRec boardActions[] = {
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
-    { "HistoryPopDown", (XtActionProc) HistoryPopDown },
+    //    { "HistoryPopDown", (XtActionProc) HistoryPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "ShufflePopDown", (XtActionProc) ShufflePopDown },
     { "EnginePopDown", (XtActionProc) EnginePopDown },
@@ -2187,11 +2185,6 @@ main(argc, argv)
     argvCopy[j] = NULL;
     argv = argvCopy;
     argc = j;
-#if 0
-    if(appData.debugMode,1) { // OK, appData is not initialized here yet...
-	for(i=0; i<argc; i++) fprintf(stderr, "argv[%2d] = '%s'\n", i, argv[i]);
-    }
-#endif
 #endif
 
     setbuf(stdout, NULL);
@@ -2228,12 +2221,22 @@ main(argc, argv)
 
     GUI_Window = GTK_WIDGET (gtk_builder_get_object (builder, "MainWindow"));
     if(!GUI_Window) printf("Error: gtk_builder didn't work!\n");
+
+    GUI_History = GTK_WIDGET (gtk_builder_get_object (builder, "MoveHistory"));
+    if(!GUI_History) printf("Error: gtk_builder didn't work!\n");
+
     GUI_Board  = GTK_WIDGET (gtk_builder_get_object (builder, "Board"));
     if(!GUI_Board) printf("Error: gtk_builder didn't work!\n");
+
     GUI_Whiteclock  = GTK_WIDGET (gtk_builder_get_object (builder, "WhiteClock"));
     if(!GUI_Whiteclock) printf("Error: gtk_builder didn't work!\n");
+
     GUI_Blackclock  = GTK_WIDGET (gtk_builder_get_object (builder, "BlackClock"));
     if(!GUI_Blackclock) printf("Error: gtk_builder didn't work!\n");
+
+    LIST_MoveHistory = GTK_LIST_STORE (gtk_builder_get_object (builder, "MoveHistoryStore"));
+    if(!LIST_MoveHistory) printf("Error: gtk_builder didn't work!\n");
+
 
     gtk_builder_connect_signals (builder, NULL);
 
@@ -5198,18 +5201,26 @@ int LoadGamePopUp(f, gameNumber, title)
      char *title;
 {
     cmailMsgLoaded = FALSE;
-    if (gameNumber == 0) {
+
+    if (gameNumber == 0) 
+      {
 	int error = GameListBuild(f);
-	if (error) {
+
+	if (error) 
+	  {
 	    DisplayError(_("Cannot build game list"), error);
-	} else if (!ListEmpty(&gameList) &&
-		   ((ListGame *) gameList.tailPred)->number > 1) {
+	  } 
+	else if (!ListEmpty(&gameList) 
+		 && ((ListGame *) gameList.tailPred)->number > 1) 
+	  {
 	    GameListPopUp(f, title);
 	    return TRUE;
-	}
+	  };
+
 	GameListDestroy();
 	gameNumber = 1;
-    }
+      };
+
     return LoadGame(f, gameNumber, title, FALSE);
 }
 
@@ -5842,26 +5853,6 @@ void FlashMovesProc(w, event, prms, nprms)
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flash Moves"),
-		args, 1);
-}
-
-void GetMoveListProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.getMoveList = !appData.getMoveList;
-
-    if (appData.getMoveList) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-	GetMoveListEvent();
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Get Move List"),
 		args, 1);
 }
 

@@ -23,10 +23,9 @@
 #ifndef _XHISTL_H
 #define _XHISTL_H 1
 
-void HistoryShowProc P((Widget w, XEvent *event,
-			String *prms, Cardinal *nprms));
-void HistoryPopDown P((Widget w, XtPointer client_data,
-		       XtPointer call_data));
+void HistoryShowProc  P((GtkObject *object, gpointer user_data));
+
+void HistoryPopDown   P((GtkObject *object, gpointer user_data));
 
 #endif /* _XHISTL_H */
  

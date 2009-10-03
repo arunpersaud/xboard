@@ -32,6 +32,7 @@ void RetractMoveProc P((GtkObject *object, gpointer user_data));
 
 /* Option Menu */
 void FlipViewProc P((GtkObject *object, gpointer user_data));
+void GetMoveListProc P((GtkObject *object, gpointer user_data));
 
 /* Help Menu */
 

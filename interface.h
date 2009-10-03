@@ -2,10 +2,13 @@
 GtkBuilder              *builder=NULL;
 
 GtkWidget               *GUI_Window=NULL;
+GtkWidget               *GUI_History=NULL;
 GtkWidget               *GUI_Board=NULL;
 GtkWidget               *GUI_Whiteclock=NULL;
 GtkWidget               *GUI_Blackclock=NULL;
 GtkWidget               *GUI_Error=NULL;
+
+GtkListStore            *LIST_MoveHistory=NULL;
 
 gint                     boardWidth;
 gint                     boardHeight;
