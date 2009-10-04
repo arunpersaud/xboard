@@ -131,6 +131,9 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
   char movewhite[2*MOVE_LEN],moveblack[2*MOVE_LEN],move[2*MOVE_LEN];
   GtkTreeIter iter;
 
+  /* first clear everything, do we need this? */
+  gtk_list_store_clear(LIST_MoveHistory);
+
   /* copy move list into history window */
 
   /* go through all moves */
