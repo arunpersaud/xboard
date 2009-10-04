@@ -1,3 +1,27 @@
+** Version 4.4.1 **
+   
+ * use "make distcheck" to generate tar-balls
+ * fixed wrong default value for engineDebugOutput 
+ * fixed loading of games from command lines, fixes cmail bug
+ * swapped 'tell' and 'message' parsing order for correct colorization.
+ * added a chat window to keep track of multiple conversations
+ * allow the result comment as a display item in the game list
+ * fixed parse bug for pgn files
+ * rewrote wevalgraph for better frontend/backend separation
+ * added the result comment to the game-list tags when the game 
+   list is exported to the clipboard
+ * Made the beep sounds for JAWS board navigation configurable 
+   through command-line options
+ * updated RTF docs
+ * added a "Mute All Sounds" item in the WinBoard Options menu
+ * fixed crash when opening Engine #1 Settings when there were no 
+   text-edit options in the dialog
+ * fixed engine did not start playing when out of GUI book on second 
+   move with white
+ * fix for edit-position "moves" being sent by XBoard to the engine
+ * bugfix for protocol extensions: egtbpath -> egtpath
+ * minor bugfixes
+
 ** Version 4.4.0 **
 
 A new release of both XBoard and WinBoard is now available.  Version
