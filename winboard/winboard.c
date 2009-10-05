@@ -225,7 +225,11 @@ static struct { int x; int y; int mode; } backTextureSquareInfo[BOARD_SIZE][BOAR
 #if __GNUC__ && !defined(_winmajor)
 #define oldDialog 0 /* cygwin doesn't define _winmajor; mingw does */
 #else
+#if defined(_winmajor)
 #define oldDialog (_winmajor < 4)
+#else
+#define oldDialog 0
+#endif
 #endif
 
 char *defaultTextAttribs[] = 
