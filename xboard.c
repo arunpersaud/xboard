@@ -7641,19 +7641,34 @@ void Iconify(w, event, prms, nprms)
 void DisplayMessage(message, extMessage)
      char *message, *extMessage;
 {
-    char buf[MSG_SIZ];
-    Arg arg;
-
-    if (extMessage) {
-	if (*message) {
-	    snprintf(buf, sizeof(buf), "%s  %s", message, extMessage);
-	    message = buf;
-	} else {
-	    message = extMessage;
-	}
-    }
-    XtSetArg(arg, XtNlabel, message);
-    XtSetValues(messageWidget, &arg, 1);
+  /* display a message in the message widget */
+  
+  char buf[MSG_SIZ];
+  Arg arg;
+  
+  if (extMessage) 
+    {
+      if (*message) 
+	{
+	  snprintf(buf, sizeof(buf), "%s  %s", message, extMessage);
+	  message = buf;
+	} 
+      else 
+	{
+	  message = extMessage;
+	};
+    };
+  
+  /* need to test if messageWidget already exists, since this function
+     can also be called during the startup, if for example a Xresource
+     is not set up correctly */
+  if(messageWidget)
+    {
+      XtSetArg(arg, XtNlabel, message);
+      XtSetValues(messageWidget, &arg, 1);
+    };
+  
+  return;
 }
 
 void DisplayTitle(text)
