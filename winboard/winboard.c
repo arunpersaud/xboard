@@ -1339,6 +1339,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride2, FALSE },
   { "keepAlive", ArgInt, (LPVOID) &appData.keepAlive, FALSE },
   { "icstype", ArgInt, (LPVOID) &ics_type, FALSE },
+  { "forceIllegalMoves", ArgTrue, (LPVOID) &appData.forceIllegal, FALSE },
 
 #ifdef ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },

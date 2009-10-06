@@ -6390,6 +6390,29 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	}
 #endif
 	if (pausing) PauseEvent();
+      if(appData.forceIllegal) {
+	    // [HGM] illegal: machine refused move; force position after move into it
+          SendToProgram("force\n", cps);
+          if(!cps->useSetboard) { // hideous kludge on kludge, because SendBoard sucks.
+		// we have a real problem now, as SendBoard will use the a2a3 kludge
+		// when black is to move, while there might be nothing on a2 or black
+		// might already have the move. So send the board as if white has the move.
+		// But first we must change the stm of the engine, as it refused the last move
+		SendBoard(cps, 0); // always kludgeless, as white is to move on boards[0]
+		if(WhiteOnMove(forwardMostMove)) {
+		    SendToProgram("a7a6\n", cps); // for the engine black still had the move
+		    SendBoard(cps, forwardMostMove); // kludgeless board
+		} else {
+		    SendToProgram("a2a3\n", cps); // for the engine white still had the move
+		    CopyBoard(boards[forwardMostMove+1], boards[forwardMostMove]);
+		    SendBoard(cps, forwardMostMove+1); // kludgeless board
+		}
+          } else SendBoard(cps, forwardMostMove); // FEN case, also sets stm properly
+	    if(gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack ||
+		 gameMode == TwoMachinesPlay)
+              SendToProgram("go\n", cps);
+	    return;
+      } else
 	if (gameMode == PlayFromGameFile) {
 	    /* Stop reading this game file */
 	    gameMode = EditGame;
