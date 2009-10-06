@@ -9645,6 +9645,7 @@ CommentPopUp(char *title, char *str)
 {
   HWND hwnd = GetActiveWindow();
   EitherCommentPopUp(0, title, str, FALSE);
+  SAY(str);
   SetActiveWindow(hwnd);
 }
 
