@@ -1404,6 +1404,9 @@ XtResource clientResources[] = {
     { "keepAlive", "keepAlive", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, keepAlive),
 	XtRImmediate, (XtPointer) 0},
+    { "forceIllegalMoves", "forceIllegalMoves", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, forceIllegal),
+	XtRImmediate, (XtPointer) False},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1772,6 +1775,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
+    { "-forceIllegalMoves", "forceIllegalMoves", XrmoptionNoArg, "True" },
 };
 
 
@@ -5131,10 +5135,40 @@ void HandleUserMove(w, event, prms, nprms)
 {
     int x, y;
     Boolean saveAnimate;
-    static int second = 0;
+    static int second = 0, promotionChoice = 0;
+    ChessMove moveType;
 
     if (w != boardWidget || errorExitStatus != -1) return;
 
+    x = EventToSquare(event->xbutton.x, BOARD_WIDTH);
+    y = EventToSquare(event->xbutton.y, BOARD_HEIGHT);
+    if (!flipView && y >= 0) {
+	y = BOARD_HEIGHT - 1 - y;
+    }
+    if (flipView && x >= 0) {
+	x = BOARD_WIDTH - 1 - x;
+    }
+
+    if(promotionChoice) { // we are waiting for a click to indicate promotion piece
+	if(event->type == ButtonRelease) return; // ignore upclick of click-click destination
+	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
+	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
+	if(gameInfo.holdingsWidth && 
+		(WhiteOnMove(currentMove) 
+			? x == BOARD_WIDTH-1 && y < gameInfo.holdingsSize && y > 0
+			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1) ) {
+	    // click in right holdings, for determining promotion piece
+	    ChessSquare p = boards[currentMove][y][x];
+	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
+	    if(p != EmptySquare) {
+		FinishMove(NormalMove, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
+		fromX = fromY = -1;
+		return;
+	    }
+	}
+	DrawPosition(FALSE, boards[currentMove]);
+	return;
+    }
     if (event->type == ButtonPress) ErrorPopDown();
 
     if (promotionUp) {
@@ -5149,15 +5183,6 @@ void HandleUserMove(w, event, prms, nprms)
 	}
     }
 
-    x = EventToSquare(event->xbutton.x, BOARD_WIDTH);
-    y = EventToSquare(event->xbutton.y, BOARD_HEIGHT);
-    if (!flipView && y >= 0) {
-	y = BOARD_HEIGHT - 1 - y;
-    }
-    if (flipView && x >= 0) {
-	x = BOARD_WIDTH - 1 - x;
-    }
-
     /* [HGM] holdings: next 5 lines: ignore all clicks between board and holdings */
     if(event->type == ButtonPress
             && ( x == BOARD_LEFT-1 || x == BOARD_RGHT
@@ -5167,7 +5192,7 @@ void HandleUserMove(w, event, prms, nprms)
 
     if (fromX == -1) {
 	if (event->type == ButtonPress) {
-	    /* First square */
+	    /* First square, prepare to drag */
 	    if (OKToStartUserMove(x, y)) {
 		fromX = x;
 		fromY = y;
@@ -5182,39 +5207,8 @@ void HandleUserMove(w, event, prms, nprms)
     }
 
     /* fromX != -1 */
-    if (event->type == ButtonPress && gameMode != EditPosition &&
-	x >= 0 && y >= 0) {
-	ChessSquare fromP;
-	ChessSquare toP;
-	int frc;
-
-	/* Check if clicking again on the same color piece */
-	fromP = boards[currentMove][fromY][fromX];
-	toP = boards[currentMove][y][x];
-	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom;
- 	if ((WhitePawn <= fromP && fromP <= WhiteKing && // [HGM] this test should go, as UserMoveTest now does it.
-	     WhitePawn <= toP && toP <= WhiteKing &&
-	     !(fromP == WhiteKing && toP == WhiteRook && frc)) ||   
-	    (BlackPawn <= fromP && fromP <= BlackKing && 
-	     BlackPawn <= toP && toP <= BlackKing &&
-	     !(fromP == BlackKing && toP == BlackRook && frc))) {
-	    /* Clicked again on same color piece -- changed his mind */
-	    second = (x == fromX && y == fromY);
-	    if (appData.highlightDragging) {
-		SetHighlights(x, y, -1, -1);
-	    } else {
-		ClearHighlights();
-	    }
-	    if (OKToStartUserMove(x, y)) {
-		fromX = x;
-		fromY = y;
-		DragPieceBegin(event->xbutton.x, event->xbutton.y);
-	    }
-	    return;
-	}
-    }
-
     if (event->type == ButtonRelease &&	x == fromX && y == fromY) {
+    /* Click on single square in stead of drag-drop */
 	DragPieceEnd(event->xbutton.x, event->xbutton.y);
 	if (appData.animateDragging) {
 	    /* Undo animation damage if any */
@@ -5234,7 +5228,34 @@ void HandleUserMove(w, event, prms, nprms)
 	return;
     }
 
-    /* Completed move */
+    moveType = UserMoveTest(fromX, fromY, x, y, NULLCHAR, event->type == ButtonRelease);
+
+    if (moveType == Comment) { // kludge for indicating capture-own on Press
+      /* Clicked again on same color piece -- changed his mind */
+      /* note that re-clicking same square always hits same color piece */
+      second = (x == fromX && y == fromY);
+      if (appData.highlightDragging) {
+	SetHighlights(x, y, -1, -1);
+      } else {
+	ClearHighlights();
+      }
+      if (OKToStartUserMove(x, y)) {
+	fromX = x;
+	fromY = y;
+	DragPieceBegin(event->xbutton.x, event->xbutton.y);
+      }
+      return;
+    }
+
+    if(moveType == AmbiguousMove) { // kludge to indicate edit-position move
+      fromX = fromY = -1; 
+      ClearHighlights();
+      DragPieceEnd(event->xbutton.x, event->xbutton.y);
+      DrawPosition(FALSE, boards[currentMove]);
+      return;
+    }
+
+    /* Complete move; (x,y) is now different from (fromX, fromY) on both Press and Release */
     toX = x;
     toY = y;
     saveAnimate = appData.animate;
@@ -5256,22 +5277,38 @@ void HandleUserMove(w, event, prms, nprms)
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
     }
-    if (IsPromotion(fromX, fromY, toX, toY)) {
-	if (appData.alwaysPromoteToQueen) {
-	    UserMoveEvent(fromX, fromY, toX, toY, 'q');
+    if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
+        (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
+            appData.alwaysPromoteToQueen) { // promotion, but no choice
+      FinishMove(moveType, fromX, fromY, toX, toY, 'q');
+    } else
+    if (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen ) {
+	SetHighlights(fromX, fromY, toX, toY);
+	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
+	    // [HGM] super: promotion to captured piece selected from holdings
+	    ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
+	    promotionChoice = TRUE;
+	    // kludge follows to temporarily execute move on display, without promoting yet
+	    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
+	    boards[currentMove][toY][toX] = p;
+	    DrawPosition(FALSE, boards[currentMove]);
+	    boards[currentMove][fromY][fromX] = p; // take back, but display stays
+	    boards[currentMove][toY][toX] = q;
+	    DisplayMessage("Click in holdings to choose piece", "");
+	    return;
+	}
+	PromotionPopUp();
+	goto skipClearingFrom; // the skipped stuff is done asynchronously by PromotionCallback
+    } else
+    if(moveType != ImpossibleMove) { // valid move, but no promotion
+      FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
+    } else { // invalid move; could have set premove
+      ClearHighlights();
+    }
 	    if (!appData.highlightLastMove || gotPremove) ClearHighlights();
 	    if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
 	    fromX = fromY = -1;
-	} else {
-	    SetHighlights(fromX, fromY, toX, toY);
-	    PromotionPopUp();
-	}
-    } else {
-	UserMoveEvent(fromX, fromY, toX, toY, NULLCHAR);
-	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
-	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
-	fromX = fromY = -1;
-    }
+skipClearingFrom:
     appData.animate = saveAnimate;
     if (appData.animate || appData.animateDragging) {
 	/* Undo animation damage if needed */
@@ -6056,7 +6093,7 @@ void PromotionCallback(w, client_data, call_data)
 	promoChar = ToLower(name[0]);
     }
 
-    UserMoveEvent(fromX, fromY, toX, toY, promoChar);
+    FinishMove(NormalMove, fromX, fromY, toX, toY, promoChar);
 
     if (!appData.highlightLastMove || gotPremove) ClearHighlights();
     if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);

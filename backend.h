@@ -167,7 +167,7 @@ void BookEvent P((void));
 void AboutGameEvent P((void));
 void ExitEvent P((int status));
 char *DefaultFileName P((char *));
-ChessMove UserMoveTest P((int fromX, int fromY, int toX, int toY, int promoChar));
+ChessMove UserMoveTest P((int fromX, int fromY, int toX, int toY, int promoChar, Boolean captureOwn));
 void UserMoveEvent P((int fromX, int fromY, int toX, int toY, int promoChar));
 void DecrementClocks P((void));
 char *TimeString P((long millisec));

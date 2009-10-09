@@ -494,7 +494,7 @@ void ThawUI()
   DrawMenuBar(hwndMain);
 }
 
-static int fromX = -1, fromY = -1, toX, toY; // [HGM] moved upstream, so JAWS can use them
+/*static*/ int fromX = -1, fromY = -1, toX, toY; // [HGM] moved upstream, so JAWS can use them
 
 /* JAWS preparation patch (WinBoard for the sight impaired). Define required insertions as empty */
 #ifdef JAWS
@@ -5120,17 +5120,14 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	toY = y;
         /* [HGM] <popupFix> UserMoveEvent requires two calls now,
            to make sure move is legal before showing promotion popup */
-        moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR);
+        moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR, FALSE);
 	if(moveType == AmbiguousMove) { /* [HGM] Edit-Position move executed */
 		fromX = fromY = -1; 
 		ClearHighlights();
 		DrawPosition(FALSE, boards[currentMove]);
 		break; 
 	} else 
-        if(moveType != ImpossibleMove) {
-	  if(moveType == IllegalMove) {
-		;
-	  } else
+        if(moveType != ImpossibleMove && moveType != Comment) {
           /* [HGM] We use PromotionToKnight in Shogi to indicate frorced promotion */
           if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
             ((moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
@@ -5155,9 +5152,11 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		    DrawPosition(FALSE, boards[currentMove]);
 		    boards[currentMove][fromY][fromX] = p; // take back, but display stays
 		    boards[currentMove][toY][toX] = q;
+		    DisplayMessage("Select piece from holdings", "");
 		  } else
                   PromotionPopup(hwnd);
-          } else {       /* not a promotion */
+		  goto noClear;
+          } else { // not a promotion. Move can be illegal if testLegality off, and should be made then.
              if (appData.animate || appData.highlightLastMove) {
                  SetHighlights(fromX, fromY, toX, toY);
              } else {
@@ -5170,14 +5169,16 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
              }
           }
           fromX = fromY = -1;
+	noClear:
 	  break;
         }
-        if (gotPremove) {
+        if (gotPremove && moveType != Comment) {
 	    SetPremoveHighlights(fromX, fromY, toX, toY);
-            DrawPosition(forceFullRepaint || FALSE, NULL);
+//            DrawPosition(forceFullRepaint || FALSE, NULL);
 	} else ClearHighlights();
         fromX = fromY = -1;
         DrawPosition(forceFullRepaint || FALSE, NULL);
+	if(moveType != Comment) break;
     }
     /* First downclick, or restart on a square with same color piece */
     if (!frozen && OKToStartUserMove(x, y)) {
@@ -5225,7 +5226,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       toY = y;
       saveAnimate = appData.animate; /* sorry, Hawk :) */
       appData.animate = appData.animate && !appData.animateDragging;
-      moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR);
+      moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR, TRUE);
       if(moveType == AmbiguousMove) { /* [HGM] Edit-Position move executed */
 		fromX = fromY = -1; 
 		ClearHighlights();
@@ -5253,6 +5254,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		    boards[currentMove][fromY][fromX] = p; // take back, but display stays
 		    boards[currentMove][toY][toX] = q;
 		    appData.animate = saveAnimate;
+		    DisplayMessage("Select piece from holdings", "");
 		    break;
 		  } else
                PromotionPopup(hwnd); /* [HGM] Popup now calls FinishMove */
