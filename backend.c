@@ -5052,36 +5052,36 @@ ChessMove lastLoadGameStart = (ChessMove) 0;
 
 
 ChessMove
-UserMoveTest(fromX, fromY, toX, toY, promoChar)
+UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
      int fromX, fromY, toX, toY;
      int promoChar;
+     Boolean captureOwn;
 {
     ChessMove moveType;
     ChessSquare pdown, pup;
 
     if (fromX < 0 || fromY < 0) return ImpossibleMove;
-    if ((fromX == toX) && (fromY == toY)) {
-        return ImpossibleMove;
-    }
 
     /* [HGM] suppress all moves into holdings area and guard band */
     if( toX < BOARD_LEFT || toX >= BOARD_RGHT || toY < 0 )
             return ImpossibleMove;
 
     /* [HGM] <sameColor> moved to here from winboard.c */
-    /* note: this code seems to exist for filtering out some obviously illegal premoves */
+    /* note: capture of own piece can be legal as drag-drop premove. For click-click it is selection of new piece. */
     pdown = boards[currentMove][fromY][fromX];
     pup = boards[currentMove][toY][toX];
-    if (    gameMode != EditPosition &&
+    if (    gameMode != EditPosition && !captureOwn &&
             (WhitePawn <= pdown && pdown < BlackPawn &&
              WhitePawn <= pup && pup < BlackPawn  ||
              BlackPawn <= pdown && pdown < EmptySquare &&
              BlackPawn <= pup && pup < EmptySquare 
             ) && !((gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom) &&
                     (pup == WhiteRook && pdown == WhiteKing && fromY == 0 && toY == 0||
-                     pup == BlackRook && pdown == BlackKing && fromY == BOARD_HEIGHT-1 && toY == BOARD_HEIGHT-1  ) 
+                     pup == BlackRook && pdown == BlackKing && fromY == BOARD_HEIGHT-1 && toY == BOARD_HEIGHT-1 ||
+                     pup == WhiteKing && pdown == WhiteRook && fromY == 0 && toY == 0|| // also allow RxK
+                     pup == BlackKing && pdown == BlackRook && fromY == BOARD_HEIGHT-1 && toY == BOARD_HEIGHT-1  ) 
         )           )
-         return ImpossibleMove;
+         return Comment;
 
     /* Check if the user is playing in turn.  This is complicated because we
        let the user "pick up" a piece before it is his turn.  So the piece he
@@ -5234,7 +5234,6 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar)
     moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
                           epStatus[currentMove], castlingRights[currentMove],
                                          fromY, fromX, toY, toX, promoChar);
-
     /* [HGM] but possibly ignore an IllegalMove result */
     if (appData.testLegality) {
 	if (moveType == IllegalMove || moveType == ImpossibleMove) {
@@ -5450,11 +5449,11 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
        FinishMove if the first part succeeded. Calls that do not need
        to do anything in between, can call this routine the old way. 
     */
-    ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar);
+    ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar, FALSE);
 if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
     if(moveType == AmbiguousMove)
 	DrawPosition(FALSE, boards[currentMove]);
-    else if(moveType != ImpossibleMove)
+    else if(moveType != ImpossibleMove && moveType != Comment)
         FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
