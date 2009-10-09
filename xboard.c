@@ -2427,7 +2427,7 @@ main(argc, argv)
 	    j = fprintf(stderr, "  %s%s", shellOptions[i].option,
 		        (shellOptions[i].argKind == XrmoptionSepArg
 			 ? " ARG" : ""));
-	    if (i++ < XtNumber(shellOptions)) {		
+	    if (++i < XtNumber(shellOptions)) {		
 		fprintf(stderr, "%*c%s%s\n", 40 - j, ' ',
 			shellOptions[i].option,
 			(shellOptions[i].argKind == XrmoptionSepArg
