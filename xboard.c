@@ -2419,25 +2419,35 @@ main(argc, argv)
       XtAppInitialize(&appContext, "XBoard", shellOptions,
 		      XtNumber(shellOptions),
 		      &argc, argv, xboardResources, NULL, 0);
-    if (argc > 1) {
+    if (argc > 1) 
+      { /* left over command line arguments, print out help and exit.
+	 * Use two columns to print help
+	 */
 	fprintf(stderr, _("%s: unrecognized argument %s\n"),
 		programName, argv[1]);
+
 	fprintf(stderr, "Recognized options:\n");
-	for(i = 0; i < XtNumber(shellOptions); i++) {
+	for(i = 0; i < XtNumber(shellOptions); i++) 
+	  {
+	    /* print first column */
 	    j = fprintf(stderr, "  %s%s", shellOptions[i].option,
 		        (shellOptions[i].argKind == XrmoptionSepArg
 			 ? " ARG" : ""));
-	    if (++i < XtNumber(shellOptions)) {		
+	    /* print second column and end line */
+	    if (++i < XtNumber(shellOptions)) 
+	      {		
 		fprintf(stderr, "%*c%s%s\n", 40 - j, ' ',
 			shellOptions[i].option,
 			(shellOptions[i].argKind == XrmoptionSepArg
 			 ? " ARG" : ""));
-	    } else {
+	      } 
+	    else 
+	      {
 		fprintf(stderr, "\n");
-	    }
-	}
+	      };
+	  };
 	exit(2);
-    }
+      };
 
     p = getenv("HOME");
     if (p == NULL) p = "/tmp";
