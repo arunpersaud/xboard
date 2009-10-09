@@ -1404,6 +1404,9 @@ XtResource clientResources[] = {
     { "keepAlive", "keepAlive", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, keepAlive),
 	XtRImmediate, (XtPointer) 0},
+    { "forceIllegalMoves", "forceIllegalMoves", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, forceIllegal),
+	XtRImmediate, (XtPointer) False},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1772,6 +1775,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
+    { "-forceIllegalMoves", "forceIllegalMoves", XrmoptionNoArg, "True" },
 };
 
 
