@@ -345,6 +345,26 @@ void RetractMoveProc(object, user_data)
 }
 
 /* Option Menu */
+void ShowThinkingProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    appData.showThinking = !appData.showThinking; 
+    ShowThinkingEvent();
+
+    return;
+}
+
+void HideThinkingProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman;
+    ShowThinkingEvent();
+
+    return;
+}
+
 void FlipViewProc(object, user_data)
      GtkObject *object;
      gpointer user_data;

@@ -361,10 +361,6 @@ void PopupExitMessageProc P((Widget w, XEvent *event, String *prms,
 			     Cardinal *nprms));
 void PremoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void QuietPlayProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ShowThinkingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void HideThinkingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
 void TestLegalityProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -731,7 +727,7 @@ MenuItem optionsMenu[] = {
     {N_("Popup Move Errors"), PopupMoveErrorsProc},
     {N_("Premove"), PremoveProc},
     {N_("Quiet Play"), QuietPlayProc},
-    {N_("Hide Thinking"), HideThinkingProc},
+    //    {N_("Hide Thinking"), HideThinkingProc},
     {N_("Test Legality"), TestLegalityProc},
     {NULL, NULL}
 };
@@ -1891,8 +1887,8 @@ XtActionsRec boardActions[] = {
     { "PopupMoveErrorsProc", PopupMoveErrorsProc },
     { "PremoveProc", PremoveProc },
     { "QuietPlayProc", QuietPlayProc },
-    { "ShowThinkingProc", ShowThinkingProc },
-    { "HideThinkingProc", HideThinkingProc },
+    //    { "ShowThinkingProc", ShowThinkingProc },
+    //    { "HideThinkingProc", HideThinkingProc },
     { "TestLegalityProc", TestLegalityProc },
     //    { "InfoProc", InfoProc },
     //    { "ManProc", ManProc },
@@ -5530,7 +5526,7 @@ void AnalyzeModeProc(w, event, prms, nprms)
             fprintf(debugFP, _("ICS engine analyze starting... \n"));
     }
     if (!appData.showThinking)
-      ShowThinkingProc(w,event,prms,nprms);
+      ShowThinkingProc(NULL,NULL);
 
     AnalyzeModeEvent();
 }
@@ -5550,7 +5546,7 @@ void AnalyzeFileProc(w, event, prms, nprms)
     Reset(FALSE, TRUE);
 
     if (!appData.showThinking)
-      ShowThinkingProc(w,event,prms,nprms);
+      ShowThinkingProc(NULL,NULL);
 
     AnalyzeFileEvent();
     FileNamePopUp(_("File to analyze"), "", LoadGamePopUp, "rb");
@@ -6069,38 +6065,6 @@ void QuietPlayProc(w, event, prms, nprms)
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Quiet Play"),
-		args, 1);
-}
-
-void ShowThinkingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
-    ShowThinkingEvent();
-}
-
-void HideThinkingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: tken out of ShowThinkingEvent
-    ShowThinkingEvent();
-
-    if (appData.hideThinkingFromHuman) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
 		args, 1);
 }
 

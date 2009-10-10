@@ -31,6 +31,8 @@ void MoveNowProc P((GtkObject *object, gpointer user_data));
 void RetractMoveProc P((GtkObject *object, gpointer user_data));
 
 /* Option Menu */
+void ShowThinkingProc P((GtkObject *object, gpointer user_data));
+void HideThinkingProc P((GtkObject *object, gpointer user_data));
 void FlipViewProc P((GtkObject *object, gpointer user_data));
 void GetMoveListProc P((GtkObject *object, gpointer user_data));
 
