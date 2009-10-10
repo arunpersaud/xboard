@@ -8105,6 +8105,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   static int sizeX, sizeY;
   int newSizeX, newSizeY;
   MINMAXINFO *mmi;
+  WORD wMask;
 
   switch (message) {
   case WM_NOTIFY:
@@ -8113,14 +8114,13 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       ENLINK *pLink = (ENLINK*)lParam;
       if (pLink->msg == WM_LBUTTONUP)
       {
-          TEXTRANGE tr;
+        TEXTRANGE tr;
 
-          tr.chrg = pLink->chrg;
-          tr.lpstrText = malloc(1+tr.chrg.cpMax-tr.chrg.cpMin);
-          hText = GetDlgItem(hDlg, OPT_ConsoleText);
-          SendMessage(hText, EM_GETTEXTRANGE, 0, (LPARAM)&tr);
-          ShellExecute(NULL, "open", tr.lpstrText, NULL, NULL, SW_SHOW);
-          free(tr.lpstrText);
+        tr.chrg = pLink->chrg;
+        tr.lpstrText = malloc(1+tr.chrg.cpMax-tr.chrg.cpMin);
+        SendMessage(hText, EM_GETTEXTRANGE, 0, (LPARAM)&tr);
+        ShellExecute(NULL, "open", tr.lpstrText, NULL, NULL, SW_SHOW);
+        free(tr.lpstrText);
       }
     }
     break;
@@ -8174,6 +8174,11 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
        wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
        SetWindowPlacement(hDlg, &wp);
     }
+
+   // Allow hText to highlight URLs and send notifications on them
+   wMask = SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
+   SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
+   SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
 
     return FALSE;
 
@@ -8244,18 +8249,10 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 VOID
 ConsoleCreate()
 {
-  HWND hCons, hText;
-  WORD wMask;
+  HWND hCons;
   if (hwndConsole) return;
   hCons = CreateDialog(hInst, szConsoleName, 0, NULL);
   SendMessage(hCons, WM_INITDIALOG, 0, 0);
-
-
-  // make the text item in the console do URL links
-  hText = GetDlgItem(hCons, OPT_ConsoleText);
-  wMask = SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
-  SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
-  SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
 }
 
 
