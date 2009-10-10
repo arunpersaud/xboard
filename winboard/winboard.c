@@ -1105,10 +1105,6 @@ ArgDescriptor argDescriptors[] = {
   { "autoraise", ArgTrue, (LPVOID) &appData.autoRaiseBoard, FALSE },
   { "xautoraise", ArgFalse, (LPVOID) &appData.autoRaiseBoard, FALSE },
   { "-autoraise", ArgFalse, (LPVOID) &appData.autoRaiseBoard, FALSE },
-#if 0
-  { "cmailGameName", ArgString, (LPVOID) &appData.cmailGameName, FALSE },
-  { "cmail", ArgString, (LPVOID) &appData.cmailGameName, FALSE },
-#endif
   { "alwaysPromoteToQueen", ArgBoolean, (LPVOID) &appData.alwaysPromoteToQueen, TRUE },
   { "queen", ArgTrue, (LPVOID) &appData.alwaysPromoteToQueen, FALSE },
   { "xqueen", ArgFalse, (LPVOID) &appData.alwaysPromoteToQueen, FALSE },
@@ -3040,57 +3036,10 @@ void CreatePiecesFromFont()
 
             /* Create bitmaps */
             hfont_old = SelectObject( hdc, hPieceFont );
-#if 0
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WP );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WN );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WB );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WR );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WQ );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WK );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BP );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BN );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BB );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BR );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BQ );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BK );
-
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WA );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WC );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WF );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WH );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WE );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WW );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WU );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WO );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WG );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WM );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WSG );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WV );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WAB );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WD );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WL );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_WS );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BA );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BC );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BF );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BH );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BE );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BW );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BU );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BO );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BG );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BM );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BSG );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BV );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BAB );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BD );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BL );
-            CreatePieceMaskFromFont( hdc_window, hdc, PM_BS );
-#else
 	    for(i=(int)WhitePawn; i<(int)EmptySquare; i++) /* [HGM] made a loop for this */
 		if(PieceToChar((ChessSquare)i) != '.')     /* skip unused pieces         */
 		    CreatePieceMaskFromFont( hdc_window, hdc, i );
-#endif
+
             SelectObject( hdc, hfont_old );
 
             fontBitmapSquareSize = squareSize;
@@ -3886,35 +3835,13 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
         StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
-#if 0
-      /* Use black piece color for outline of white pieces */
-      /* Not sure this looks really good (though xboard does it).
-	 Maybe better to have another selectable color, default black */
-      SelectObject(hdc, blackPieceBrush); /* could have own brush */
-      SelectObject(tmphdc, PieceBitmap(piece, OUTLINE_PIECE));
-      BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
-#else
       /* Use black for outline of white pieces */
       SelectObject(tmphdc, PieceBitmap(piece, OUTLINE_PIECE));
       if(appData.upsideDown && color==flipView)
         StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, SRCAND);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, SRCAND);
-#endif
     } else {
-#if 0
-      /* Use white piece color for details of black pieces */
-      /* Requires filled-in solid bitmaps (BLACK_PIECE class); the
-	 WHITE_PIECE ones aren't always the right shape. */
-      /* Not sure this looks really good (though xboard does it).
-	 Maybe better to have another selectable color, default medium gray? */
-      oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, BLACK_PIECE));
-      oldBrush = SelectObject(hdc, whitePieceBrush); /* could have own brush */
-      BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
-      SelectObject(tmphdc, PieceBitmap(piece, SOLID_PIECE));
-      SelectObject(hdc, blackPieceBrush);
-      BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
-#else
       /* Use square color for details of black pieces */
       oldBitmap = SelectObject(tmphdc, PieceBitmap(piece, SOLID_PIECE));
       oldBrush = SelectObject(hdc, blackPieceBrush);
@@ -3922,7 +3849,6 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
         StretchBlt(hdc, x+tmpSize, y+tmpSize, -tmpSize, -tmpSize, tmphdc, 0, 0, tmpSize, tmpSize, 0x00B8074A);
       else
         BitBlt(hdc, x, y, tmpSize, tmpSize, tmphdc, 0, 0, 0x00B8074A);
-#endif
     }
     SelectObject(hdc, oldBrush);
     SelectObject(tmphdc, oldBitmap);
@@ -4459,17 +4385,6 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
       fullrepaint = TRUE;
   }
 
-#if 0
-  if( fullrepaint ) {
-      static int repaint_count = 0;
-      char buf[128];
-
-      repaint_count++;
-      sprintf( buf, "FULL repaint: %d\n", repaint_count );
-      OutputDebugString( buf );
-  }
-#endif
-
   if (board == NULL) {
     if (!lastReqValid) {
       return;
@@ -4498,35 +4413,6 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   } else {
     releaseDC = FALSE;
   }
-
-#if 0
-  fprintf(debugFP, "*******************************\n"
-                   "repaint = %s\n"
-                   "dragInfo.from (%d,%d)\n"
-                   "dragInfo.start (%d,%d)\n"
-                   "dragInfo.pos (%d,%d)\n"
-                   "dragInfo.lastpos (%d,%d)\n", 
-                    repaint ? "TRUE" : "FALSE",
-                    dragInfo.from.x, dragInfo.from.y, 
-                    dragInfo.start.x, dragInfo.start.y,
-                    dragInfo.pos.x, dragInfo.pos.y,
-                    dragInfo.lastpos.x, dragInfo.lastpos.y);
-  fprintf(debugFP, "prev:  ");
-  for (row = 0; row < BOARD_HEIGHT; row++) {
-    for (column = 0; column < BOARD_WIDTH; column++) {
-      fprintf(debugFP, "%d ", lastDrawn[row][column]);
-    }
-  }
-  fprintf(debugFP, "\n");
-  fprintf(debugFP, "board: ");
-  for (row = 0; row < BOARD_HEIGHT; row++) {
-    for (column = 0; column < BOARD_WIDTH; column++) {
-      fprintf(debugFP, "%d ", board[row][column]);
-    }
-  }
-  fprintf(debugFP, "\n");
-  fflush(debugFP);
-#endif
 
   /* Create some work-DCs */
   hdcmem = CreateCompatibleDC(hdc);
@@ -5356,16 +5242,6 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	else
 	  MenuPopup(hwnd, pt, LoadMenu(hInst, "WhitePieceMenu"), -1);
       } else { /* message == WM_RBUTTONDOWN */
-#if 0
-	if (buttonCount == 3) {
-	  if (wParam & MK_SHIFT) 
-	    MenuPopup(hwnd, pt, LoadMenu(hInst, "WhitePieceMenu"), -1);
-	  else
-	    MenuPopup(hwnd, pt, LoadMenu(hInst, "BlackPieceMenu"), -1);
-	} else {
-	  MenuPopup(hwnd, pt, LoadMenu(hInst, "PieceMenu"), -1);
-	}
-#else
 	/* Just have one menu, on the right button.  Windows users don't
 	   think to try the middle one, and sometimes other software steals
 	   it, or it doesn't really exist. */
@@ -5373,7 +5249,6 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             MenuPopup(hwnd, pt, LoadMenu(hInst, "PieceMenu"), -1);
         else
             MenuPopup(hwnd, pt, LoadMenu(hInst, "ShogiPieceMenu"), -1);
-#endif
       }
       break;
     case IcsPlayingWhite:
@@ -5698,11 +5573,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       nnew = RealizePalette(hdc);
       if (nnew > 0) {
 	paletteChanged = TRUE;
-#if 0
-        UpdateColors(hdc);
-#else
-        InvalidateRect(hwnd, &boardRect, FALSE);/*faster!*/
-#endif
+        InvalidateRect(hwnd, &boardRect, FALSE);
       }
       ReleaseDC(hwnd, hdc);
     }
@@ -6739,13 +6610,6 @@ MyPlaySound(MySound *ms)
   /* Don't print an error: this can happen innocently if the sound driver
      is busy; for instance, if another instance of WinBoard is playing
      a sound at about the same time. */
-#if 0
-  if (!ok) {
-    char buf[MSG_SIZ];
-    sprintf(buf, "Error playing sound %s", ms->name);
-    DisplayError(buf, GetLastError());
-  }
-#endif
   return ok;
 }
 
@@ -11036,15 +10900,6 @@ Tween(start, mid, finish, factor, frames, nFrames)
 void
 HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
 {
-#if 0
-    char buf[256];
-
-    sprintf( buf, "HistorySet: first=%d, last=%d, current=%d (%s)\n",
-        first, last, current, current >= 0 ? movelist[current] : "n/a" );
-
-    OutputDebugString( buf );
-#endif
-
     MoveHistorySet( movelist, first, last, current, pvInfoList );
 
     EvalGraphSet( first, last, current, pvInfoList );
@@ -11052,14 +10907,5 @@ HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
 
 void SetProgramStats( FrontEndProgramStats * stats )
 {
-#if 0
-    char buf[1024];
-
-    sprintf( buf, "SetStats for %d: depth=%d, nodes=%lu, score=%5.2f, time=%5.2f, pv=%s\n",
-        stats->which, stats->depth, stats->nodes, stats->score / 100.0, stats->time / 100.0, stats->pv == 0 ? "n/a" : stats->pv );
-
-    OutputDebugString( buf );
-#endif
-
     EngineOutputUpdate( stats );
 }

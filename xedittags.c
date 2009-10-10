@@ -205,12 +205,8 @@ Widget TagsCreate(name, text, msg, mutable, callback)
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNwidth, bw_width/2);  j++;
     XtSetArg(args[j], XtNheight, bw_width/3);  j++;
-#if 0
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollWhenNeeded);  j++;
-#else
     /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
     XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-#endif
     XtSetArg(args[j], XtNautoFill, False);  j++;
     textw =
       XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
@@ -252,18 +248,6 @@ Widget TagsCreate(name, text, msg, mutable, callback)
 	  XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
 	XtAddCallback(b_cancel, XtNcallback, callback, (XtPointer) 0);
 
-#if 0
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, msgw);  j++;
-	XtSetArg(args[j], XtNfromHoriz, b);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_clear = b =
-	  XtCreateManagedWidget("clear", commandWidgetClass, form, args, j);
-	XtAddCallback(b_clear, XtNcallback, callback, (XtPointer) 0);
-#endif
     } else {
 	j = 0;
 	XtSetArg(args[j], XtNfromVert, msgw);  j++;

@@ -223,12 +223,8 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.saveExtendedInfoInPGN= IS_CHECKED(OPT_SaveExtPGN);
       appData.hideThinkingFromHuman= IS_CHECKED(OPT_HideThinkFromHuman);
       appData.showEvalInMoveHistory= IS_CHECKED(OPT_ExtraInfoInMoveHistory);
-#if 0
-      ShowThinkingEvent(             IS_CHECKED(OPT_ShowThinking));
-#else
       appData.showThinking         = IS_CHECKED(OPT_ShowThinking);
       ShowThinkingEvent(); // [HGM] thinking: tests four options
-#endif
       appData.testLegality         = IS_CHECKED(OPT_TestLegality);
       appData.highlightMoveWithArrow=IS_CHECKED(OPT_HighlightMoveArrow);
 
@@ -373,38 +369,16 @@ PaintSampleSquare(
       oldBrushPiece = SelectObject(hdcMem, brushPiece);
       BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
 	     hdcTemp, 0, 0, 0x00B8074A);
-#if 0
-      /* Use pieceDetailColor for outline of white pieces */
-      SelectObject(hdcTemp, pieces[OUTLINE]);
-      SelectObject(hdcMem, brushPieceDetail);
-      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
-	     hdcTemp, 0, 0, 0x00B8074A);
-#else
       /* Use black for outline of white pieces */
       SelectObject(hdcTemp, pieces[OUTLINE]);
       BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
 	     hdcTemp, 0, 0, SRCAND);
-#endif
     } else {
-#if 0
-      /* Use pieceDetailColor for details of black pieces */
-      /* Requires filled-in solid bitmaps (BLACK_PIECE class); the
-	 WHITE_PIECE ones aren't always the right shape. */
-      oldBitmapTemp = SelectObject(hdcTemp, pieces[BLACK]);
-      oldBrushPiece = SelectObject(hdcMem, brushPieceDetail);
-      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
-	     hdcTemp, 0, 0, 0x00B8074A);
-      SelectObject(hdcTemp, pieces[SOLID]);
-      SelectObject(hdcMem, brushPiece);
-      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
-	     hdcTemp, 0, 0, 0x00B8074A);
-#else
       /* Use square color for details of black pieces */
       oldBitmapTemp = SelectObject(hdcTemp, pieces[SOLID]);
       oldBrushPiece = SelectObject(hdcMem, brushPiece);
       BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
 	     hdcTemp, 0, 0, 0x00B8074A);
-#endif
     }
     SelectObject(hdcMem, oldBrushPiece);
     SelectObject(hdcTemp, oldBitmapTemp);
@@ -1489,21 +1463,6 @@ SetSampleFontText(HWND hwnd, int id, const MyFont *mf)
   rectFormat.bottom = center.y + (size.cy / 2) + 1;
   rectFormat.left   = center.x - (size.cx / 2) - 1;
   rectFormat.right  = center.x + (size.cx / 2) + 1;
-
-#if 0
-  fprintf(debugFP, "\nfont: %s\n"
-                   "center.x   %d, centerY %d\n"
-		   "size.cx    %d, size.cy %d\n"
-		   "client.top %d, bottom %d, left %d, right %d\n"
-		   "format.top %d, bottom %d, left %d, right %d\n",
-		   buf,
-		   center.x, center.y,
-		   size.cx, size.cy,
-		   rectClient.top, rectClient.bottom, rectClient.left,
-		   rectClient.right,
-		   rectFormat.top, rectFormat.bottom, rectFormat.left,
-		   rectFormat.right);
-#endif
 
   cf.cbSize = sizeof(CHARFORMAT);
   cf.dwMask = CFM_FACE|CFM_SIZE|CFM_CHARSET|CFM_BOLD|CFM_ITALIC;
@@ -2795,12 +2754,8 @@ LRESULT CALLBACK EnginePlayOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,
       PeriodicUpdatesEvent(          IS_CHECKED(IDC_EpPeriodicUpdates));
       PonderNextMoveEvent(           IS_CHECKED(IDC_EpPonder));
       appData.hideThinkingFromHuman= IS_CHECKED(IDC_EpHideThinkingHuman); // [HGM] thinking: moved up
-#if 0
-      ShowThinkingEvent(             IS_CHECKED(IDC_EpShowThinking));
-#else
       appData.showThinking   = IS_CHECKED(IDC_EpShowThinking);
       ShowThinkingEvent(); // [HGM] thinking: tests all options that need thinking output
-#endif
       appData.testClaims    = IS_CHECKED(IDC_TestClaims);
       appData.checkMates    = IS_CHECKED(IDC_DetectMates);
       appData.materialDraws = IS_CHECKED(IDC_MaterialDraws);

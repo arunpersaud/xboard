@@ -349,13 +349,9 @@ void PositionControlSet(which, form, bw_width)
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNwidth, bw_width);  j++; /*force wider than buttons*/
-#if 0
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollWhenNeeded);  j++;
-#else
     /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
     XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
     XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollWhenNeeded);  j++;
-#endif
 //    XtSetArg(args[j], XtNautoFill, True);  j++;
 //    XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
     outputField[which][nMemo] = edit =
@@ -417,20 +413,8 @@ Widget EngineOutputCreate(name, text)
 	Window junk;
 	Dimension pw_height;
 	Dimension ew_height;
-#if 0
-	j = 0;
-	XtSetArg(args[j], XtNheight, &ew_height);  j++;
-	XtGetValues(edit, args, j);
-
-	j = 0;
-	XtSetArg(args[j], XtNheight, &pw_height);  j++;
-	XtGetValues(shell, args, j);
-	engineOutputH = pw_height + (lines - 1) * ew_height;
-	engineOutputW = bw_width - 16;
-#else
 	engineOutputH = bw_height/2;
 	engineOutputW = bw_width-16;
-#endif
 
 	XSync(xDisplay, False);
 #ifdef NOTDEF

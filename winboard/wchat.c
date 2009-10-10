@@ -99,9 +99,7 @@ static void ResizeWindowControls( HWND hDlg )
     int clientHeight;
     int maxControlWidth;
     int buttonWidth, buttonHeight;
-#if 0
-}
-#else
+
     /* Initialize variables */
     GetClientRect( hDlg, &rc );
 
@@ -121,7 +119,6 @@ static void ResizeWindowControls( HWND hDlg )
 //    InvalidateRect( GetDlgItem(hDlg,IDC_EngineMemo1), NULL, FALSE );
 //    InvalidateRect( GetDlgItem(hDlg,IDC_EngineMemo2), NULL, FALSE );
 }
-#endif
 
 // front end. Actual printing of PV lines into the output field
 static void InsertIntoMemo( HANDLE hDlg, char * text )

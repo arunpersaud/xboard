@@ -299,26 +299,6 @@ static char * safeStrCpy( char * dst, const char * src, size_t count )
     return dst;
 }
 
-#if 0
-//[HGM] for future use? Conditioned out for now to suppress warning.
-static char * safeStrCat( char * dst, const char * src, size_t count )
-{
-    size_t  dst_len;
-
-    assert( dst != NULL );
-    assert( src != NULL );
-    assert( count > 0 );
-
-    dst_len = strlen(dst);
-
-    assert( count > dst_len ); /* Buffer size must be greater than current length */
-
-    safeStrCpy( dst + dst_len, src, count - dst_len );
-
-    return dst;
-}
-#endif
-
 /* Some compiler can't cast u64 to double
  * This function do the job for us:
 
@@ -831,20 +811,9 @@ InitBackEnd1()
 	programVersion = (char*) malloc(5 + strlen(PACKAGE_STRING));
 	sprintf(programVersion, "%s", PACKAGE_STRING);
     } else {
-#if 0
-	char *p, *q;
-	q = first.program;
-	while (*q != ' ' && *q != NULLCHAR) q++;
-	p = q;
-	while (p > first.program && *(p-1) != '/' && *(p-1) != '\\') p--; /* [HGM] backslash added */
-	programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING + (q - p));
-	sprintf(programVersion, "%s + ", PACKAGE_STRING);
-	strncat(programVersion, p, q - p);
-#else
-	/* [HGM] tidy: use tidy name, in stead of full pathname (which was probably a bug due to / vs \ ) */
-	programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
-	sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
-#endif
+      /* [HGM] tidy: use tidy name, in stead of full pathname (which was probably a bug due to / vs \ ) */
+      programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
+      sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
     }
 
     if (!appData.icsActive) {
@@ -1010,71 +979,58 @@ ParseTimeControl(tc, ti, mps)
      int ti;
      int mps;
 {
-#if 0
-    int matched, min, sec;
-
-    matched = sscanf(tc, "%d:%d", &min, &sec);
-    if (matched == 1) {
-	timeControl = min * 60 * 1000;
-    } else if (matched == 2) {
-	timeControl = (min * 60 + sec) * 1000;
-    } else {
-	return FALSE;
-    }
-#else
-    long tc1;
-    long tc2;
-    char buf[MSG_SIZ];
-
-    if(ti >= 0 && !strchr(tc, '+') && !strchr(tc, '/') ) mps = 0;
-    if(ti > 0) {
-        if(mps)
-             sprintf(buf, "+%d/%s+%d", mps, tc, ti);
-        else sprintf(buf, "+%s+%d", tc, ti);
-    } else {
-        if(mps)
+  long tc1;
+  long tc2;
+  char buf[MSG_SIZ];
+  
+  if(ti >= 0 && !strchr(tc, '+') && !strchr(tc, '/') ) mps = 0;
+  if(ti > 0) {
+    if(mps)
+      sprintf(buf, "+%d/%s+%d", mps, tc, ti);
+    else sprintf(buf, "+%s+%d", tc, ti);
+  } else {
+    if(mps)
              sprintf(buf, "+%d/%s", mps, tc);
-        else sprintf(buf, "+%s", tc);
+    else sprintf(buf, "+%s", tc);
+  }
+  fullTimeControlString = StrSave(buf);
+  
+  if( NextTimeControlFromString( &tc, &tc1 ) != 0 ) {
+    return FALSE;
+  }
+  
+  if( *tc == '/' ) {
+    /* Parse second time control */
+    tc++;
+    
+    if( NextTimeControlFromString( &tc, &tc2 ) != 0 ) {
+      return FALSE;
     }
-    fullTimeControlString = StrSave(buf);
-
-    if( NextTimeControlFromString( &tc, &tc1 ) != 0 ) {
-        return FALSE;
+    
+    if( tc2 == 0 ) {
+      return FALSE;
     }
-
-    if( *tc == '/' ) {
-        /* Parse second time control */
-        tc++;
-
-        if( NextTimeControlFromString( &tc, &tc2 ) != 0 ) {
-            return FALSE;
-        }
-
-        if( tc2 == 0 ) {
-            return FALSE;
-        }
-
-        timeControl_2 = tc2 * 1000;
-    }
-    else {
-        timeControl_2 = 0;
-    }
-
-    if( tc1 == 0 ) {
-        return FALSE;
-    }
-
-    timeControl = tc1 * 1000;
-#endif
-
-    if (ti >= 0) {
-	timeIncrement = ti * 1000;  /* convert to ms */
-	movesPerSession = 0;
-    } else {
-	timeIncrement = 0;
-	movesPerSession = mps;
-    }
-    return TRUE;
+    
+    timeControl_2 = tc2 * 1000;
+  }
+  else {
+    timeControl_2 = 0;
+  }
+  
+  if( tc1 == 0 ) {
+    return FALSE;
+  }
+  
+  timeControl = tc1 * 1000;
+  
+  if (ti >= 0) {
+    timeIncrement = ti * 1000;  /* convert to ms */
+    movesPerSession = 0;
+  } else {
+    timeIncrement = 0;
+    movesPerSession = mps;
+  }
+  return TRUE;
 }
 
 void
@@ -2029,17 +1985,7 @@ VariantSwitch(Board board, VariantClass newVariant)
         InitDrawingSizes(-2, 0);
 
         /* [HGM] The following should definitely be solved in a better way */
-#if 0
-        CopyBoard(board, tempBoard); /* save position in case it is board[0] */
-        for(i=0; i<BOARD_SIZE; i++) saveCastling[i] = castlingRights[0][i];
-        saveEP = epStatus[0];
-#endif
         InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
-#if 0
-        epStatus[0] = saveEP;
-        for(i=0; i<BOARD_SIZE; i++) castlingRights[0][i] = saveCastling[i];
-        CopyBoard(tempBoard, board); /* restore position received from ICS   */
-#endif
     } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
 
     forwardMostMove = oldForwardMostMove;
@@ -2832,18 +2778,10 @@ read_from_ics(isr, closure, data, count, error)
 				  }
 				  SendTimeRemaining(&first, TRUE);
 				}
-#if 0
-				if (first.useColors) {
-				  SendToProgram("white\ngo\n", &first);
-				} else {
-				  SendToProgram("go\n", &first);
-				}
-#else
 				if (first.useColors) {
 				  SendToProgram("white\n", &first); // [HGM] book: made sending of "go\n" book dependent
 				}
 				bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: probe book for initial pos
-#endif
 				first.maybeThinking = TRUE;
 			    } else {
 			        if (first.usePlayother) {
@@ -2864,18 +2802,10 @@ read_from_ics(isr, closure, data, count, error)
 				  }
 				  SendTimeRemaining(&first, FALSE);
 				}
-#if 0
-				if (first.useColors) {
-				  SendToProgram("black\ngo\n", &first);
-				} else {
-				  SendToProgram("go\n", &first);
-				}
-#else
 				if (first.useColors) {
 				  SendToProgram("black\n", &first);
 				}
 				bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE);
-#endif
 				first.maybeThinking = TRUE;
 			    } else {
 			        if (first.usePlayother) {
@@ -3827,12 +3757,6 @@ ParseBoard12(string)
     fprintf(debugFP, "Illegal move from ICS '%s'\n", move_str);
     fprintf(debugFP, "board L=%d, R=%d, H=%d, holdings=%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT, gameInfo.holdingsWidth);
   }
-#if 0
-	    if (appData.testLegality && appData.debugMode) {
-		sprintf(str, "Illegal move \"%s\" from ICS", move_str);
-		DisplayError(str, 0);
-	    }
-#endif
 	    strcpy(parseList[moveNum - 1], move_str);
 	    strcat(parseList[moveNum - 1], " ");
 	    strcat(parseList[moveNum - 1], elapsed_time);
@@ -4773,17 +4697,6 @@ InitPosition(redraw)
 	initialPosition[BOARD_HEIGHT-1-PieceToNumber(WhiteMan)][0] = BlackMan;
 	initialPosition[BOARD_HEIGHT-1-PieceToNumber(WhiteMan)][1] = 9;
      }
-#if 0
-    if(gameInfo.variant == VariantFischeRandom) {
-      if( appData.defaultFrcPosition < 0 ) {
-        ShuffleFRC( initialPosition );
-      }
-      else {
-        SetupFRC( initialPosition, appData.defaultFrcPosition );
-      }
-      startedFromSetupPosition = TRUE;
-    } else 
-#else
   if (appData.debugMode) {
     fprintf(debugFP, "shuffleOpenings = %d\n", shuffleOpenings);
   }
@@ -4791,7 +4704,6 @@ InitPosition(redraw)
 	SetUpShuffle(initialPosition, appData.defaultFrcPosition);
 	startedFromSetupPosition = TRUE;
     }
-#endif
     if(startedFromPositionFile) {
       /* [HGM] loadPos: use PositionFile for every new game */
       CopyBoard(initialPosition, filePosition);
@@ -5977,17 +5889,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                         epStatus[k+2] <= EP_NONE && epStatus[k+1] <= EP_NONE;
                     k-=2)
                 {   int rights=0;
-#if 0
-    if (appData.debugMode) {
-      fprintf(debugFP, " loop\n");
-    }
-#endif
                     if(CompareBoards(boards[k], boards[forwardMostMove])) {
-#if 0
-    if (appData.debugMode) {
-      fprintf(debugFP, "match\n");
-    }
-#endif
                         /* compare castling rights */
                         if( castlingRights[forwardMostMove][2] != castlingRights[k][2] &&
                              (castlingRights[k][0] >= 0 || castlingRights[k][1] >= 0) )
@@ -6005,16 +5907,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                                 castlingRights[forwardMostMove][4] != castlingRights[k][4] )
                                    rights++;
                         }
-#if 0
-    if (appData.debugMode) {
-      for(i=0; i<nrCastlingRights; i++)
-      fprintf(debugFP, " (%d,%d)", castlingRights[forwardMostMove][i], castlingRights[k][i]);
-    }
-
-    if (appData.debugMode) {
-      fprintf(debugFP, " %d %d\n", rights, k);
-    }
-#endif
                         if( rights == 0 && ++count > appData.drawRepeats-2
                             && appData.drawRepeats > 1) {
                              /* adjudicate after user-specified nr of repeats */
@@ -6366,16 +6258,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	if (gameMode == BeginningOfGame || gameMode == EndOfGame ||
 	    gameMode == IcsIdle) return;
 	if (forwardMostMove <= backwardMostMove) return;
-#if 0
-	/* Following removed: it caused a bug where a real illegal move
-	   message in analyze mored would be ignored. */
-	if (cps == &first && programStats.ok_to_send == 0) {
-	    /* Bogus message from Crafty responding to "."  This filtering
-	       can miss some of the bad messages, but fortunately the bug 
-	       is fixed in current Crafty versions, so it doesn't matter. */
-	    return;
-	}
-#endif
 	if (pausing) PauseEvent();
       if(appData.forceIllegal) {
 	    // [HGM] illegal: machine refused move; force position after move into it
@@ -6636,13 +6518,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
             /* [HGM] in two-machine mode we delay relaying draw offer      */
             /* until after we also have move, to see if it is really claim */
 	    }
-#if 0
-              else {
-	        if (cps->other->sendDrawOffers) {
-		    SendToProgram("draw\n", cps->other);
-		}
-	    }
-#endif
 	} else if (gameMode == MachinePlaysWhite ||
 		   gameMode == MachinePlaysBlack) {
 	  if (userOfferedDraw) {
@@ -9380,26 +9255,8 @@ LoadPosition(f, positionNumber, title)
 	DisplayError(_("Position not found in file"), 0);
 	return FALSE;
     }
-#if 0
-    switch (line[0]) {
-      case '#':  case 'x':
-      default:
-	fenMode = FALSE;
-	break;
-      case 'p':  case 'n':  case 'b':  case 'r':  case 'q':  case 'k':
-      case 'P':  case 'N':  case 'B':  case 'R':  case 'Q':  case 'K':
-      case '1':  case '2':  case '3':  case '4':  case '5':  case '6':
-      case '7':  case '8':  case '9':
-      case 'H':  case 'A':  case 'M':  case 'h':  case 'a':  case 'm':
-      case 'E':  case 'F':  case 'G':  case 'e':  case 'f':  case 'g':
-      case 'C':  case 'W':             case 'c':  case 'w': 
-	fenMode = TRUE;
-	break;
-    }
-#else
     // [HGM] FEN can begin with digit, any piece letter valid in this variant, or a + for Shogi promoted pieces
     fenMode = line[0] >= '0' && line[0] <= '9' || line[0] == '+' || CharToPiece(line[0]) != EmptySquare;
-#endif
 
     if (pn >= 2) {
 	if (fenMode || line[0] == '#') pn--;
@@ -9718,17 +9575,7 @@ SaveGamePGN(f)
 	/* Get move */
 	strcpy(move_buffer, SavePart(parseList[i])); // [HGM] pgn: print move via buffer, so it can be edited
 	movelen = strlen(move_buffer); /* [HGM] pgn: line-break point before move */
-#if 0
-	// SavePart already does this!
-        if( i >= 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
-		int p = movelen - 1;
-		if(move_buffer[p] == ' ') p--;
-		if(move_buffer[p] == ')') { // [HGM] pgn: strip off ICS time if we have extended info
-		    while(p && move_buffer[--p] != '(');
-		    if(p && move_buffer[p-1] == ' ') move_buffer[movelen=p-1] = 0;
-		}
-        }
-#endif
+
 	/* Print move */
 	blank = linelen > 0 && movelen > 0;
 	if (linelen + (blank ? 1 : 0) + movelen > PGN_MAX_LINE) {
@@ -10307,24 +10154,10 @@ ExitEvent(status)
     if (icsPR != NoProc) {
       DestroyChildProcess(icsPR, TRUE);
     }
-#if 0
-    /* Save game if resource set and not already saved by GameEnds() */
-    if ((gameInfo.resultDetails == NULL || errorExitFlag )
-                             && forwardMostMove > 0) {
-      if (*appData.saveGameFile != NULLCHAR) {
-	SaveGameToFile(appData.saveGameFile, TRUE);
-      } else if (appData.autoSaveGames) {
-	AutoSaveGame();
-      }
-      if (*appData.savePositionFile != NULLCHAR) {
-	SavePositionToFile(appData.savePositionFile);
-      }
-    }
-    GameEnds((ChessMove) 0, NULL, GE_PLAYER);
-#else
+
     /* [HGM] crash: leave writing PGN and position entirely to GameEnds() */
     GameEnds(gameInfo.result, gameInfo.resultDetails==NULL ? "xboard exit" : gameInfo.resultDetails, GE_PLAYER);
-#endif
+
     /* [HGM] crash: the above GameEnds() is a dud if another one was running */
     /* make sure this other one finishes before killing it!                  */
     if(endingGame) { int count = 0;

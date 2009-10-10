@@ -300,17 +300,8 @@ VOID PasteGameOrFENFromClipboard()
     return;
   }
 
-#if 0
-  tmp = buf;
-  while( *tmp == ' ' || *tmp == '\t' || *tmp == '\r' || *tmp == '\n' ) {
-      tmp++;
-  }
-
-  if( *tmp == '[' ) {
-#else
   // [HGM] paste any: make still smarter, to allow pasting of games without tags, recognize FEN in stead
   if(!ParseFEN(dummyBoard, &dummy, buf) ) {
-#endif
       PasteGameFromString( buf );
   }
   else {

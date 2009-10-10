@@ -195,13 +195,6 @@ DesignOptionDialog(ChessProgramState *cps)
 		LayoutOptions(k, k+groupSize, buf, cps->option); // flush the group
 		boxList[groups++] = layout; // group end in odd entries
 		k = n = k + groupSize;
-#if 0
-	} else {
-		// try to recognize "two-column groups" based on option suffix
-		int j = 1;
-		while((p = EndMatch(cps->option[k].name, EndMatch(cps->option[k+2*j].name)) &&
-		      (q = EndMatch(cps->option[k+1].name, EndMatch(cps->option[k+2*j+1].name)) ) j++;
-#endif
 	} else k += groupSize; // small groups are grouped with the solitary options
     }
     if(n != k) LayoutOptions(n, k, "", cps->option); // flush remaining solitary options
@@ -433,123 +426,6 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
     return FALSE;
 }
 
-#if 0
-// example copied from MS docs
-#define ID_HELP   150
-#define ID_TEXT   200
-
-LPWORD lpwAlign(LPWORD lpIn)
-{
-    ULONG ul;
-
-    ul = (ULONG)lpIn;
-    ul ++;
-    ul >>=1;
-    ul <<=1;
-    return (LPWORD)ul;
-}
-
-LRESULT DisplayMyMessage(HINSTANCE hinst, HWND hwndOwner, LPSTR lpszMessage)
-{
-    HGLOBAL hgbl;
-    LPDLGTEMPLATE lpdt;
-    LPDLGITEMTEMPLATE lpdit;
-    LPWORD lpw;
-    LPWSTR lpwsz;
-    LRESULT ret;
-    int nchar;
-
-    hgbl = GlobalAlloc(GMEM_ZEROINIT, 1024);
-    if (!hgbl)
-        return -1;
- 
-    lpdt = (LPDLGTEMPLATE)GlobalLock(hgbl);
- 
-    // Define a dialog box.
- 
-    lpdt->style = WS_POPUP | WS_BORDER | WS_SYSMENU | DS_MODALFRAME | WS_CAPTION;
-//		  WS_POPUP |             WS_SYSMENU | DS_MODALFRAME | WS_CAPTION | DS_SETFONT
-    lpdt->cdit = 3;         // Number of controls
-    lpdt->x  = 10;  lpdt->y  = 10;
-    lpdt->cx = 100; lpdt->cy = 100;
-
-    lpw = (LPWORD)(lpdt + 1);
-    *lpw++ = 0;             // No menu
-    *lpw++ = 0;             // Predefined dialog box class (by default)
-
-    lpwsz = (LPWSTR)lpw;
-    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "My Dialog", -1, lpwsz, 50);
-    lpw += nchar;
-
-    //-----------------------
-    // Define an OK button.
-    //-----------------------
-    lpw = lpwAlign(lpw);    // Align DLGITEMTEMPLATE on DWORD boundary
-    lpdit = (LPDLGITEMTEMPLATE)lpw;
-    lpdit->x  = 10; lpdit->y  = 70;
-    lpdit->cx = 80; lpdit->cy = 20;
-    lpdit->id = IDOK;       // OK button identifier
-    lpdit->style = WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON;
-
-    lpw = (LPWORD)(lpdit + 1);
-    *lpw++ = 0xFFFF;
-    *lpw++ = 0x0080;        // Button class
-
-    lpwsz = (LPWSTR)lpw;
-    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "OK", -1, lpwsz, 50);
-    lpw += nchar;
-    lpw = lpwAlign(lpw);    // Align creation data on DWORD boundary
-    *lpw++ = 0;             // No creation data
-
-    //-----------------------
-    // Define a Help button.
-    //-----------------------
-    lpw = lpwAlign(lpw);    // Align DLGITEMTEMPLATE on DWORD boundary
-    lpdit = (LPDLGITEMTEMPLATE)lpw;
-    lpdit->x  = 55; lpdit->y  = 10;
-    lpdit->cx = 40; lpdit->cy = 20;
-    lpdit->id = ID_HELP;    // Help button identifier
-    lpdit->style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
-
-    lpw = (LPWORD)(lpdit + 1);
-    *lpw++ = 0xFFFF;
-    *lpw++ = 0x0080;        // Button class atom
-
-    lpwsz = (LPWSTR)lpw;
-    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "Help", -1, lpwsz, 50);
-    lpw += nchar;
-    lpw = lpwAlign(lpw);    // Align creation data on DWORD boundary
-    *lpw++ = 0;             // No creation data
-
-    //-----------------------
-    // Define a static text control.
-    //-----------------------
-    lpw = lpwAlign(lpw);    // Align DLGITEMTEMPLATE on DWORD boundary
-    lpdit = (LPDLGITEMTEMPLATE)lpw;
-    lpdit->x  = 10; lpdit->y  = 10;
-    lpdit->cx = 40; lpdit->cy = 20;
-    lpdit->id = ID_TEXT;    // Text identifier
-    lpdit->style = WS_CHILD | WS_VISIBLE | SS_LEFT;
-
-    lpw = (LPWORD)(lpdit + 1);
-    *lpw++ = 0xFFFF;
-    *lpw++ = 0x0082;        // Static class
-
-    for (lpwsz = (LPWSTR)lpw; *lpwsz++ = (WCHAR)*lpszMessage++;);
-    lpw = (LPWORD)lpwsz;
-    lpw = lpwAlign(lpw);    // Align creation data on DWORD boundary
-    *lpw++ = 0;             // No creation data
-
-    GlobalUnlock(hgbl); 
-    ret = DialogBoxIndirect(hinst, 
-                           (LPDLGTEMPLATE)hgbl, 
-                           hwndOwner, 
-                           (DLGPROC)DialogProc); 
-    GlobalFree(hgbl); 
-    return ret; 
-}
-#endif
-
 void AddControl(int x, int y, int w, int h, int type, int style, int n)
 {
     int i;
@@ -648,13 +524,6 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
     template.title[8] = cps == &first ? '1' :  '2';
     template.header.cy = y += 18*buttonRows+2;
     template.header.style &= ~WS_VSCROLL;
-#if 0
-    if(y > 300) {
-	template.header.cx = 295;
-	template.header.cy = 300;
-	template.header.style |= WS_VSCROLL;
-    }
-#endif
 }
 
 void 

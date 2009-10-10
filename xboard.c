@@ -2392,11 +2392,6 @@ main(argc, argv)
     argvCopy[j] = NULL;
     argv = argvCopy;
     argc = j;
-#if 0
-    if(appData.debugMode,1) { // OK, appData is not initialized here yet...
-	for(i=0; i<argc; i++) fprintf(stderr, "argv[%2d] = '%s'\n", i, argv[i]);
-    }
-#endif
 #endif
 
     setbuf(stdout, NULL);
@@ -2509,19 +2504,6 @@ main(argc, argv)
 
 	gameInfo.variant = StringToVariant(appData.variant);
 	InitPosition(FALSE);
-#if 0
-    /*
-     * Determine boardSize
-     */
-    gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] boardsize: make sure we start as 8x8
-
-//#ifndef IDSIZE
-    // [HGM] as long as we have not created the possibility to change size while running, start with requested size
-    gameInfo.boardWidth    = appData.NrFiles > 0 ? appData.NrFiles : 8;
-    gameInfo.boardHeight   = appData.NrRanks > 0 ? appData.NrRanks : 8;
-    gameInfo.holdingsWidth = appData.holdingsSize > 0 ? 2 : 0;
-#endif
-
 
 #ifdef IDSIZE
     InitDrawingSizes(-1, 0); // [HGM] initsize: make this into a subroutine
@@ -3918,14 +3900,6 @@ void CreateXPMPieces()
     static char *xpmkind[] = { "ll", "ld", "dl", "dd" };
     XpmColorSymbol symbols[4];
 
-#if 0
-    /* Apparently some versions of Xpm don't define XpmFormat at all --tpm */
-    if (appData.debugMode) {
-	fprintf(stderr, "XPM Library Version: %d.%d%c\n",
-		XpmFormat, XpmVersion, (char)('a' + XpmRevision - 1));
-    }
-#endif
-
     /* The XSynchronize calls were copied from CreatePieces.
        Not sure if needed, but can't hurt */
     XSynchronize(xDisplay, True); /* Work-around for xlib/xt buffering bug */
@@ -4155,14 +4129,7 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 	    return;
 	}
     }
-    if (bits == NULL) {
-#if 0
-	fprintf(stderr, _("%s: No built-in bitmap for %s; giving up\n"),
-		programName, name);
-	exit(1);
-#endif
-	; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
-    } else {
+    if (bits != NULL) {
 	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
 				    wreq, hreq);
     }
@@ -5377,12 +5344,8 @@ Widget CommentCreate(name, text, mutable, callback, lines)
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNwidth, bw_width);  j++; /*force wider than buttons*/
-#if 0
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollWhenNeeded);  j++;
-#else
     /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
     XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-#endif
     XtSetArg(args[j], XtNautoFill, True);  j++;
     XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
     edit =
@@ -5535,12 +5498,8 @@ Widget MiscCreate(name, text, mutable, callback, lines)
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
-#if 0
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollWhenNeeded);  j++;
-#else
     /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
     XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-#endif
     XtSetArg(args[j], XtNautoFill, True);  j++;
     XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
     edit =
@@ -6279,15 +6238,6 @@ void ModeHighlight()
 		    args, 1);
 
 	if (appData.showButtonBar) {
-#if 0
-	  if (pausing) {
-	    XtSetArg(args[0], XtNbackground, buttonForegroundPixel);
-	    XtSetArg(args[1], XtNforeground, buttonBackgroundPixel);
-	  } else {
-	    XtSetArg(args[0], XtNbackground, buttonBackgroundPixel);
-	    XtSetArg(args[1], XtNforeground, buttonForegroundPixel);
-	  }
-#else
 	  /* Always toggle, don't set.  Previous code messes up when
 	     invoked while the button is pressed, as releasing it
 	     toggles the state again. */
@@ -6300,7 +6250,6 @@ void ModeHighlight()
 	    XtSetArg(args[0], XtNbackground, oldfg);
 	    XtSetArg(args[1], XtNforeground, oldbg);
 	  }
-#endif
 	  XtSetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
 	}
     }
@@ -7545,16 +7494,6 @@ void ShowThinkingProc(w, event, prms, nprms)
 
     appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
     ShowThinkingEvent();
-#if 0
-    // [HGM] thinking: currently no suc menu item; replaced by Hide Thinking (From Human)
-    if (appData.showThinking) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Thinking"),
-		args, 1);
-#endif
 }
 
 void HideThinkingProc(w, event, prms, nprms)
@@ -8985,12 +8924,7 @@ FrameDelay (time)
     delay.it_interval.tv_usec =
       delay.it_value.tv_usec = (time % 1000) * 1000;
     setitimer(ITIMER_REAL, &delay, NULL);
-#if 0
-    /* Ugh -- busy-wait! --tpm */
-    while (frameWaiting);
-#else
     while (frameWaiting) pause();
-#endif
     delay.it_interval.tv_sec = delay.it_value.tv_sec = 0;
     delay.it_interval.tv_usec = delay.it_value.tv_usec = 0;
     setitimer(ITIMER_REAL, &delay, NULL);
@@ -9439,19 +9373,10 @@ DragPieceBegin(x, y)
     ScreenSquare(boardX, boardY, &corner, &color);
     player.startSquare  = corner;
     player.startColor   = color;
-#if 0
-    /* Start from exactly where the piece is.  This can be confusing
-       if you start dragging far from the center of the square; most
-       or all of the piece can be over a different square from the one
-       the mouse pointer is in. */
-    player.mouseDelta.x = x - corner.x;
-    player.mouseDelta.y = y - corner.y;
-#else
     /* As soon as we start dragging, the piece will jump slightly to
        be centered over the mouse pointer. */
     player.mouseDelta.x = squareSize/2;
     player.mouseDelta.y = squareSize/2;
-#endif
     /* Initialise animation */
     player.dragPiece = PieceForSquare(boardX, boardY);
     /* Sanity check */
