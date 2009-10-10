@@ -84,6 +84,7 @@ void AskQuestion P((String title, String question, String replyPrefix,
 void DisplayIcsInteractionTitle P((String title));
 void DrawPosition P((int fullRedraw, Board board));
 void ResetFrontEnd P((void));
+void NotifyFrontendLogin P((void));
 void CommentPopUp P((String title, String comment));
 void CommentPopDown P((void));
 void EditCommentPopUp P((int index, String title, String text));

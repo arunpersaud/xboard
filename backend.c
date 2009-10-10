@@ -2225,6 +2225,7 @@ read_from_ics(isr, closure, data, count, error)
 		  strcat(str, "$iset nohighlight 1\n");
 #endif
 		  strcat(str, "$iset lock 1\n$style 12\n");
+		  NotifyFrontendLogin();
 		}
 		SendToICS(str);
 		intfSet = TRUE;

@@ -3273,6 +3273,11 @@ ResetFrontEnd()
     return;
 }
 
+void NotifyFrontendLogin()
+{
+	// placeholder
+}
+
 typedef struct {
     char *name;
     Boolean value;

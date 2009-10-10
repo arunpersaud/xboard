@@ -9534,6 +9534,11 @@ DrawPosition(int fullRedraw, Board board)
   HDCDrawPosition(NULL, (BOOLEAN) fullRedraw, board); 
 }
 
+void NotifyFrontendLogin()
+{
+	if (hwndConsole)
+		UpdateICSWidth(GetDlgItem(hwndConsole, OPT_ConsoleText));
+}
 
 VOID
 ResetFrontEnd()
