@@ -44,31 +44,12 @@ extern char *getenv();
 # include <unistd.h>
 #endif
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
 #include "xboard.h"
 #include "xhistory.h"
 #include "gettext.h"
-#include "gtk/gtk.h"
 
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)
@@ -78,28 +59,10 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-#define _LL_ 100
-
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
-extern Display *xDisplay;
-extern int squareSize;
-extern Pixmap xMarkPixmap;
-extern char *layoutName;
-
 extern GtkWidget               *GUI_History;
 extern GtkListStore            *LIST_MoveHistory;
 
-
-struct History{
-  String *Nr,*white,*black;
-  int     aNr;  /* space actually alocated */
-  Widget mvn,mvw,mvb,vbox,viewport,sh;
-  char Up;
-};
-
-struct History *hist=0;
 String dots=" ... ";
-Position gameHistoryX, gameHistoryY;
 
 void
 HistoryPopDown(object, user_data)
@@ -113,6 +76,7 @@ HistoryPopDown(object, user_data)
 void HistoryMoveProc(Widget w, XtPointer closure, XtPointer call_data)
 {
     int to;
+    /*
     XawListReturnStruct *R = (XawListReturnStruct *) call_data;
     if (w == hist->mvn || w == hist->mvw) {
       to=2*R->list_index-1;
@@ -122,6 +86,7 @@ void HistoryMoveProc(Widget w, XtPointer closure, XtPointer call_data)
       to=2*R->list_index;
       ToNrEvent(to);
     }
+    */
 }
 
 
@@ -130,6 +95,9 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
   int i,b,m;
   char movewhite[2*MOVE_LEN],moveblack[2*MOVE_LEN],move[2*MOVE_LEN];
   GtkTreeIter iter;
+
+  /* TODO need to add highlights for current move */
+  /* TODO need to add navigation by keyboard or mouse (double click on move) */
 
   /* first clear everything, do we need this? */
   gtk_list_store_clear(LIST_MoveHistory);
@@ -194,23 +162,6 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
     };
   
   return;
-  
-  
-  if(current<0){
-    //	XawListUnhighlight(hist->mvw);
-    //	XawListUnhighlight(hist->mvb);
-  }
-  else if((current%2)==0){
-    //	XawListHighlight(hist->mvw, current/2+1);
-    //	XawListUnhighlight(hist->mvb);
-  }
-  else{
-    //	XawListUnhighlight(hist->mvw);
-    //	if(current) XawListHighlight(hist->mvb, current/2+1);
-    //	else XawListUnhighlight(hist->mvb);
-  }
-
-return;
 }
 
 void HistoryCreate()
@@ -240,20 +191,9 @@ HistoryShowProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-  if (!hist) 
-    {
-      HistoryCreate();
-      HistoryPopUp();
-    } 
-  else if (hist->Up) 
-    {
-      HistoryPopDown(NULL,NULL);
-    } 
-  else 
-    {
-      HistoryPopUp();
-    }
-  ToNrEvent(currentMove);
+  HistoryCreate();
+  HistoryPopUp();
+  //TODO:  ToNrEvent(currentMove);
 
   return;
 }
