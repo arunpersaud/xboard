@@ -19,6 +19,7 @@ void AdjuDrawProc P((GtkObject *object, gpointer user_data));
 void ResetProc P((GtkObject *object, gpointer user_data));
 void WhiteClockProc P((GtkObject *object, gpointer user_data));
 void BlackClockProc P((GtkObject *object, gpointer user_data));
+gboolean ExposeProc P((GtkObject *object, gpointer user_data));
 
 /* Step Menu */
 void BackwardProc P((GtkObject *object, gpointer user_data));

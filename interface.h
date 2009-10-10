@@ -20,7 +20,8 @@ gint                     boardHeight;
 GdkPixbuf               *WindowIcon=NULL;
 GdkPixbuf               *WhiteIcon=NULL;
 GdkPixbuf               *BlackIcon=NULL;
-GdkPixbuf               *SVGpieces[100];
+#define MAXPIECES 100
+GdkPixbuf               *SVGpieces[MAXPIECES];
 GdkPixbuf               *SVGLightSquare=NULL;
 GdkPixbuf               *SVGDarkSquare=NULL;
 GdkPixbuf               *SVGNeutralSquare=NULL;

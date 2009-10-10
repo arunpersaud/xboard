@@ -2568,15 +2568,6 @@ main(argc, argv)
       /* TODO hide button bar if requested */
     }
 
-    /*
-     *  gtk set properties of widgets
-     */
-
-    /* set board size */
-    gtk_widget_set_size_request(GTK_WIDGET(GUI_Board),
-				boardWidth,boardHeight);
-
-    /* end gtk set properties of widgets */
 
     if (appData.titleInWindow)
       {
@@ -2706,25 +2697,7 @@ main(argc, argv)
     /* realize window */
     gtk_widget_show (GUI_Window);
 
-    /* do resizing to a fixed aspect ratio */
-    {
-      GtkRequisition w;
-      int totalh=boardHeight;
-      float ratio;
-
-      gtk_widget_size_request(GTK_WIDGET(GUI_Menubar),   &w);
-      totalh += w.height;
-
-      gtk_widget_size_request(GTK_WIDGET(GUI_Timer),     &w);
-      totalh += w.height;
-
-      gtk_widget_size_request(GTK_WIDGET(GUI_Buttonbar), &w);
-      totalh += w.height;
-
-      ratio  = (totalh)/(boardWidth) ;
-      GUI_SetAspectRatio(ratio);
-    }
-
+    /* recalc boardsize */
     CreateGCs();
     CreatePieces();
     CreatePieceMenus();
@@ -3120,17 +3093,29 @@ void CreateGCs()
 
 void CreatePieces()
 {
-  /* order of pieces
-  WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing,
-  BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing,
-  */
   int i;
+
+  /* free if used 
+  for(i=0;i<MAXPIECES;i++)
+    {
+      if(SVGpieces[i])
+	{	
+	  g_free(SVGpieces[i]);
+	  SVGpieces[i]=NULL;
+	}
+    }
+  */
+
+  /* reload these */
+  SVGLightSquare   = load_pixbuf("svg/LightSquare.svg",squareSize);
+  SVGDarkSquare    = load_pixbuf("svg/DarkSquare.svg",squareSize);
+  SVGNeutralSquare = load_pixbuf("svg/NeutralSquare.svg",squareSize);
+
 
   /* get some defaults going */
   for(i=WhitePawn; i<DemotePiece+1; i++)
     SVGpieces[i]   = load_pixbuf("svg/NeutralSquare.svg",squareSize);
     
-
   SVGpieces[WhitePawn]   = load_pixbuf("svg/WhitePawn.svg",squareSize);
   SVGpieces[WhiteKnight] = load_pixbuf("svg/WhiteKnight.svg",squareSize);
   SVGpieces[WhiteBishop] = load_pixbuf("svg/WhiteBishop.svg",squareSize);

@@ -12,9 +12,12 @@
 # define N_(s)  s
 #endif
 
-
 extern GtkWidget  *about;
 extern GtkWidget  *GUI_Window;
+extern GtkWidget  *GUI_Menubar;
+extern GtkWidget  *GUI_Timer;
+extern GtkWidget  *GUI_Buttonbar;
+extern GtkWidget  *GUI_Board;
 
 extern char *programVersion;
 extern int errorExitStatus;
@@ -23,6 +26,51 @@ extern int fromX;
 extern int fromY;
 extern int toX;
 extern int toY;
+extern int squareSize,lineGap;
+
+gboolean
+ExposeProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  /* do resizing to a fixed aspect ratio */
+  GtkRequisition w;
+  int totalh=0,nw,nh;
+  float ratio;
+  int boardWidth,boardHeight,old,new;
+  
+  nw=GTK_WIDGET(object)->allocation.width;
+  nh=GTK_WIDGET(object)->allocation.height;
+    
+  old=squareSize;
+  squareSize  = nw/(BOARD_WIDTH*1.05+0.05);
+
+  if(old!=squareSize)
+    {
+      lineGap = squareSize*0.05;
+      
+      boardWidth  = lineGap + BOARD_WIDTH  * (squareSize + lineGap);
+      boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
+      
+      /* get the height of the menus, etc. and calculate the aspect ratio */
+      gtk_widget_size_request(GTK_WIDGET(GUI_Menubar),   &w);
+      totalh += w.height;
+      gtk_widget_size_request(GTK_WIDGET(GUI_Timer),   &w);
+      totalh += w.height;
+      gtk_widget_size_request(GTK_WIDGET(GUI_Buttonbar),   &w);
+      totalh += w.height;
+      
+      ratio  = (totalh+boardHeight)/(boardWidth) ;
+            
+      gtk_widget_set_size_request(GTK_WIDGET(GUI_Board),
+				  boardWidth,boardHeight);
+      
+      GUI_SetAspectRatio(ratio);
+      /* recreate pieces with new size... TODO: keep svg in memory and just recreate pixmap instead of reloading files */
+      CreatePieces();
+    } 
+  return FALSE; /* return false, so that other expose events are called too */
+}
 
 void
 QuitProc (object, user_data)
