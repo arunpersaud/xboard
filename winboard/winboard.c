@@ -8099,13 +8099,15 @@ LRESULT CALLBACK
 ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   static SnapData sd;
-  static HWND hText, hInput /*, hFocus*/;
-//  InputSource *is = consoleInputSource;
+  HWND hText, hInput;
   RECT rect;
   static int sizeX, sizeY;
   int newSizeX, newSizeY;
   MINMAXINFO *mmi;
   WORD wMask;
+
+  hText = GetDlgItem(hDlg, OPT_ConsoleText);
+  hInput = GetDlgItem(hDlg, OPT_ConsoleInput);
 
   switch (message) {
   case WM_NOTIFY:
@@ -8126,8 +8128,6 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     break;
   case WM_INITDIALOG: /* message: initialize dialog box */
     hwndConsole = hDlg;
-    hText = GetDlgItem(hDlg, OPT_ConsoleText);
-    hInput = GetDlgItem(hDlg, OPT_ConsoleInput);
     SetFocus(hInput);
     consoleTextWindowProc = (WNDPROC)
       SetWindowLong(hText, GWL_WNDPROC, (LONG) ConsoleTextSubclass);
