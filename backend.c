@@ -147,6 +147,7 @@ void read_from_player P((InputSourceRef isr, VOIDSTAR closure,
 			 char *buf, int count, int error));
 void read_from_ics P((InputSourceRef isr, VOIDSTAR closure,
 		      char *buf, int count, int error));
+void ics_printf P((char *format, ...));
 void SendToICS P((char *s));
 void SendToICSDelayed P((char *s, long msdelay));
 void SendMoveToICS P((ChessMove moveType, int fromX, int fromY,
@@ -229,6 +230,7 @@ char *GetInfoFromComment( int, char * ); // [HGM] PV time: returns stripped comm
 void InitEngineUCI( const char * iniDir, ChessProgramState * cps ); // [HGM] moved here from winboard.c
 char *ProbeBook P((int moveNr, char *book)); // [HGM] book: returns a book move
 char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [HGM] book
+void ics_update_width P((int new_width));
 extern char installDir[MSG_SIZ];
 
 extern int tinyLayout, smallLayout;
@@ -1416,6 +1418,17 @@ KeepAlive()
 {   // [HGM] alive: periodically send dummy (date) command to ICS to prevent time-out
     SendToICS("date\n");
     if(appData.keepAlive) ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
+}
+
+/* added routine for printf style output to ics */
+void ics_printf(char *format, ...)
+{
+	char buffer[MSG_SIZ], *args;
+	
+	args = (char *)&format + sizeof(format);
+	vsnprintf(buffer, sizeof(buffer), format, args);
+	buffer[sizeof(buffer)-1] = '\0';
+	SendToICS(buffer);
 }
 
 void
@@ -3928,6 +3941,12 @@ AnalysisPeriodicEvent(force)
        the "." command (sending illegal cmds resets node count & time,
        which looks bad)) */
     programStats.ok_to_send = 0;
+}
+
+void ics_update_width(new_width)
+	int new_width;
+{
+	ics_printf("set width %d\n", new_width);
 }
 
 void
