@@ -4703,7 +4703,6 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	GetDIBits(tmphdc,bufferBitmap,0,b.bmHeight,pData,(BITMAPINFO*)&bih,DIB_RGB_COLORS);
 //	fprintf(diagFile, "%8x\n", (int) pData);
 
-#if 1
 	wb = b.bmWidthBytes;
 	// count colors
 	for(i=0; i<wb*(b.bmHeight - boardRect.top + OUTER_MARGIN)>>2; i++) {
@@ -4751,7 +4750,6 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	// write bitmap data
 	for(i=0; i<wb*(b.bmHeight - boardRect.top + OUTER_MARGIN); i++) 
 		fputc(pData[i], diagFile);
-#endif
      }
   }
 
@@ -8157,7 +8155,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
       SetWindowPlacement(hDlg, &wp);
     }
-#if 1
+
    // [HGM] Chessknight's change 2004-07-13
    else { /* Determine Defaults */
        WINDOWPLACEMENT wp;
@@ -8176,7 +8174,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
        wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
        SetWindowPlacement(hDlg, &wp);
     }
-#endif
+
     return FALSE;
 
   case WM_SETFOCUS:

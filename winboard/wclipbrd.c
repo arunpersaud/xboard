@@ -349,15 +349,11 @@ PasteTextFromClipboard(char **text)
     fprintf(debugFP, "PasteTextFromClipboard(): lock count %d\n", lockCount);
   }
   SetLastError(NO_ERROR);
-#if 1
   /*suggested by Wilkin Ng*/
   lockCount = GlobalFlags(hClipMem) & GMEM_LOCKCOUNT;
   if (lockCount) {
     locked = GlobalUnlock(hClipMem);
   }
-#else
-  locked = GlobalUnlock(hClipMem);
-#endif
   err = GetLastError();
   if (appData.debugMode) {
     lockCount = GlobalFlags(hClipMem) & GMEM_LOCKCOUNT;

@@ -5871,16 +5871,16 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 } else moveCount = 6;
 	    }
 	  }
-#if 1
-    if (appData.debugMode) { int i;
-      fprintf(debugFP, "repeat test fmm=%d bmm=%d ep=%d, reps=%d\n",
-              forwardMostMove, backwardMostMove, epStatus[backwardMostMove],
-              appData.drawRepeats);
-      for( i=forwardMostMove; i>=backwardMostMove; i-- )
-           fprintf(debugFP, "%d ep=%d\n", i, epStatus[i]);
+	  
+	  if (appData.debugMode) { int i;
+	    fprintf(debugFP, "repeat test fmm=%d bmm=%d ep=%d, reps=%d\n",
+		    forwardMostMove, backwardMostMove, epStatus[backwardMostMove],
+		    appData.drawRepeats);
+	    for( i=forwardMostMove; i>=backwardMostMove; i-- )
+	      fprintf(debugFP, "%d ep=%d\n", i, epStatus[i]);
+	    
+	  }
 
-    }
-#endif
                 /* Check for rep-draws */
                 count = 0;
                 for(k = forwardMostMove-2;
@@ -9595,7 +9595,6 @@ SaveGamePGN(f)
             /* [HGM] add time */
             char buf[MSG_SIZ]; int seconds = 0;
 
-#if 1
             if(i >= backwardMostMove) {
 		if(WhiteOnMove(i))
 			seconds = timeRemaining[0][i] - timeRemaining[0][i+1]
@@ -9605,9 +9604,6 @@ SaveGamePGN(f)
                                   + GetTimeQuota(i/2) / (1000*WhitePlayer()->other->timeOdds);
             }
             seconds = (seconds+50)/100; // deci-seconds, rounded to nearest
-#else
-            seconds = (pvInfoList[i].time + 5)/10; // [HGM] PVtime: use engine time
-#endif
 
             if( seconds <= 0) buf[0] = 0; else
             if( seconds < 30 ) sprintf(buf, " %3.1f%c", seconds/10., 0); else {

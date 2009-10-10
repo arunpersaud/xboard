@@ -164,7 +164,6 @@ void HistoryAlloc(int len){
 }
 
 
-#if 1
 /* Find empty space inside vbox form widget and redistribute it amongst
    the list widgets inside it. */
 /* This version sort of works */
@@ -213,58 +212,6 @@ HistoryFill()
   XtSetArg(args[j], XtNwidth, w);  j++;
   XtSetValues(hist->mvb, args, j);
 }
-#else
-/* Find empty space inside vbox form widget and redistribute it amongst
-   the list widgets inside it. */
-/* This version doesn't work */
-void
-HistoryFill()
-{
-  Arg args[16];
-  Dimension fw, niw, wiw, biw, nbw, wbw, bbw;
-  int j, nl, wl, bl, fdd;
-  long extra;
-
-  j = 0;
-  XtSetArg(args[j], XtNwidth, &fw);  j++;
-  XtSetArg(args[j], XtNdefaultDistance, &fdd);  j++;
-  XtGetValues(hist->vbox, args, j);
-
-  j = 0;
-  XtSetArg(args[j], XtNlongest, &nl);  j++;
-  XtSetArg(args[j], XtNinternalWidth, &niw);  j++;
-  XtSetArg(args[j], XtNborderWidth, &nbw);  j++;
-  XtGetValues(hist->mvn, args, j);
-
-  j = 0;
-  XtSetArg(args[j], XtNlongest, &wl);  j++;
-  XtSetArg(args[j], XtNinternalWidth, &wiw);  j++;
-  XtSetArg(args[j], XtNborderWidth, &wbw);  j++;
-  XtGetValues(hist->mvw, args, j);
-
-  j = 0;
-  XtSetArg(args[j], XtNlongest, &bl);  j++;
-  XtSetArg(args[j], XtNinternalWidth, &biw);  j++;
-  XtSetArg(args[j], XtNborderWidth, &bbw);  j++;
-  XtGetValues(hist->mvb, args, j);
-
-  extra = fw - 4*fdd -
-    nl - 1 - 2*niw - 2*nbw - wl - 2*wiw - 2*wbw - bl - 2*biw - 2*bbw;
-  if (extra < 0) extra = 0;
-
-  j = 0;
-  XtSetArg(args[j], XtNwidth, nl + 1 + 2*niw);  j++;
-  XtSetValues(hist->mvn, args, j);
-
-  j = 0;
-  XtSetArg(args[j], XtNwidth, wl + 2*wiw + extra/2);  j++;
-  XtSetValues(hist->mvw, args, j);
-
-  j = 0;
-  XtSetArg(args[j], XtNwidth, bl + 2*biw + extra/2);  j++;
-  XtSetValues(hist->mvb, args, j);
-}
-#endif
 
 void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
   int i,b,m;
