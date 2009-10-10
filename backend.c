@@ -5050,7 +5050,6 @@ int lastLoadGameUseList = FALSE;
 char lastLoadGameTitle[MSG_SIZ], lastLoadPositionTitle[MSG_SIZ];
 ChessMove lastLoadGameStart = (ChessMove) 0;
 
-
 ChessMove
 UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
      int fromX, fromY, toX, toY;
@@ -7475,9 +7474,6 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
 			0, 1);
       return;
     }
-    SwitchClocks();
-    timeRemaining[0][forwardMostMove+1] = whiteTimeRemaining;
-    timeRemaining[1][forwardMostMove+1] = blackTimeRemaining;
     if (commentList[forwardMostMove+1] != NULL) {
 	free(commentList[forwardMostMove+1]);
 	commentList[forwardMostMove+1] = NULL;
@@ -7487,6 +7483,9 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
     ApplyMove(fromX, fromY, toX, toY, promoChar, boards[forwardMostMove+1], 
 				castlingRights[forwardMostMove+1], &epStatus[forwardMostMove+1]);
     forwardMostMove++; // [HGM] bare: moved to after ApplyMove, to make sure clock interrupt finds complete board
+    SwitchClocks(); // uses forwardMostMove, so must be done after incrementing it !
+    timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
+    timeRemaining[1][forwardMostMove] = blackTimeRemaining;
     gameInfo.result = GameUnfinished;
     if (gameInfo.resultDetails != NULL) {
 	free(gameInfo.resultDetails);
