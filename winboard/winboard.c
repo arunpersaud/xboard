@@ -5456,6 +5456,29 @@ LoadGameDialog(HWND hwnd, char* title)
   }
 }
 
+void UpdateICSWidth(HWND hText)
+{
+	HDC hdc;
+	TEXTMETRIC tm;
+	RECT rc;
+	HFONT hfont, hold_font;
+	
+	// get the text metrics
+	hdc = GetDC(hText);
+	hfont = CreateFontIndirect(&font[boardSize][CONSOLE_FONT]->lf);
+	hold_font = SelectObject(hdc, hfont);
+	GetTextMetrics(hdc, &tm);
+	SelectObject(hdc, hold_font);
+	DeleteObject(hfont);
+	ReleaseDC(hText, hdc);
+
+	// get the rectangle
+	SendMessage(hText, EM_GETRECT, 0, (LPARAM)&rc);
+
+	// update the width
+	ics_update_width((rc.right-rc.left) / tm.tmAveCharWidth);
+}
+
 VOID
 ChangedConsoleFont()
 {
@@ -5495,6 +5518,7 @@ ChangedConsoleFont()
   paraf.dxOffset = WRAP_INDENT;
   SendMessage(hText, EM_SETPARAFORMAT, 0, (LPARAM) &paraf);
   SendMessage(hText, EM_EXSETSEL, 0, (LPARAM)&sel);
+  UpdateICSWidth(hText);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -8239,6 +8263,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return OnMoving( &sd, hDlg, wParam, lParam );
 
   case WM_EXITSIZEMOVE:
+  	UpdateICSWidth(hText);
     return OnExitSizeMove( &sd, hDlg, wParam, lParam );
   }
 
