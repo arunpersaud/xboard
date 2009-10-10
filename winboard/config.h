@@ -154,4 +154,5 @@
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
+#define vsnprintf _vsnprintf
 #endif
