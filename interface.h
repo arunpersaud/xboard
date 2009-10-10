@@ -7,6 +7,9 @@ GtkWidget               *GUI_Board=NULL;
 GtkWidget               *GUI_Whiteclock=NULL;
 GtkWidget               *GUI_Blackclock=NULL;
 GtkWidget               *GUI_Error=NULL;
+GtkWidget               *GUI_Menubar=NULL;
+GtkWidget               *GUI_Timer=NULL;
+GtkWidget               *GUI_Buttonbar=NULL;
 
 GtkListStore            *LIST_MoveHistory=NULL;
 

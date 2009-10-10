@@ -2023,9 +2023,6 @@ BoardToTop()
   return;
 }
 
-#ifdef IDSIZES
-  // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
-#else
 #define BoardSize int
 void InitDrawingSizes(BoardSize boardSize, int flags)
 {   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
@@ -2118,7 +2115,6 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     CreateAnimVars();
 #endif
 }
-#endif
 
 void EscapeExpand(char *p, char *q)
 {	// [HGM] initstring: routine to shape up string arguments
@@ -2224,6 +2220,12 @@ main(argc, argv)
     GUI_History = GTK_WIDGET (gtk_builder_get_object (builder, "MoveHistory"));
     if(!GUI_History) printf("Error: gtk_builder didn't work!\n");
 
+    GUI_Menubar  = GTK_WIDGET (gtk_builder_get_object (builder, "MenuBar"));
+    if(!GUI_Menubar) printf("Error: gtk_builder didn't work!\n");
+    GUI_Timer  = GTK_WIDGET (gtk_builder_get_object (builder, "Timer"));
+    if(!GUI_Timer) printf("Error: gtk_builder didn't work!\n");
+    GUI_Buttonbar  = GTK_WIDGET (gtk_builder_get_object (builder, "ButtonBar"));
+    if(!GUI_Buttonbar) printf("Error: gtk_builder didn't work!\n");
     GUI_Board  = GTK_WIDGET (gtk_builder_get_object (builder, "Board"));
     if(!GUI_Board) printf("Error: gtk_builder didn't work!\n");
 
@@ -2333,56 +2335,66 @@ main(argc, argv)
     gameInfo.variant = StringToVariant(appData.variant);
     InitPosition(FALSE);
 
-
-#ifdef IDSIZE
-    InitDrawingSizes(-1, 0); // [HGM] initsize: make this into a subroutine
-#else
-    if (isdigit(appData.boardSize[0])) {
-      i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
-		 &lineGap, &clockFontPxlSize, &coordFontPxlSize,
-		 &fontPxlSize, &smallLayout, &tinyLayout);
-      if (i == 0) {
-	fprintf(stderr, _("%s: bad boardSize syntax %s\n"),
-		programName, appData.boardSize);
-	exit(2);
-      }
-      if (i < 7) {
-	/* Find some defaults; use the nearest known size */
-	SizeDefaults *szd, *nearest;
-	int distance = 99999;
-	nearest = szd = sizeDefaults;
-	while (szd->name != NULL) {
-	  if (abs(szd->squareSize - squareSize) < distance) {
-	    nearest = szd;
-	    distance = abs(szd->squareSize - squareSize);
-			   if (distance == 0) break;
-			   }
-	      szd++;
-	  }
-	  if (i < 2) lineGap = nearest->lineGap;
-	  if (i < 3) clockFontPxlSize = nearest->clockFontPxlSize;
-	  if (i < 4) coordFontPxlSize = nearest->coordFontPxlSize;
-	  if (i < 5) fontPxlSize = nearest->fontPxlSize;
-	  if (i < 6) smallLayout = nearest->smallLayout;
-	  if (i < 7) tinyLayout = nearest->tinyLayout;
-	}
-      } else {
-        SizeDefaults *szd = sizeDefaults;
-        if (*appData.boardSize == NULLCHAR) {
-	  while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize ||
-		 DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) {
-	    szd++;
-	  }
-	  if (szd->name == NULL) szd--;
-	} else {
-	  while (szd->name != NULL &&
-		 StrCaseCmp(szd->name, appData.boardSize) != 0) szd++;
-	  if (szd->name == NULL) {
-	    fprintf(stderr, _("%s: unrecognized boardSize name %s\n"),
+    /* calc board size */
+    if (isdigit(appData.boardSize[0])) 
+      {
+	i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
+		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
+		   &fontPxlSize, &smallLayout, &tinyLayout);
+	if (i == 0) 
+	  {
+	    fprintf(stderr, _("%s: bad boardSize syntax %s\n"),
 		    programName, appData.boardSize);
 	    exit(2);
 	  }
-	}
+	if (i < 7) 
+	  {
+	    /* Find some defaults; use the nearest known size */
+	    SizeDefaults *szd, *nearest;
+	    int distance = 99999;
+	    nearest = szd = sizeDefaults;
+	    while (szd->name != NULL) 
+	      {
+		if (abs(szd->squareSize - squareSize) < distance) 
+		  {
+		    nearest = szd;
+		    distance = abs(szd->squareSize - squareSize);
+		    if (distance == 0) break;
+		  }
+		szd++;
+	      };
+	    if (i < 2) lineGap = nearest->lineGap;
+	    if (i < 3) clockFontPxlSize = nearest->clockFontPxlSize;
+	    if (i < 4) coordFontPxlSize = nearest->coordFontPxlSize;
+	    if (i < 5) fontPxlSize = nearest->fontPxlSize;
+	    if (i < 6) smallLayout = nearest->smallLayout;
+	    if (i < 7) tinyLayout = nearest->tinyLayout;
+	  }
+      } 
+    else 
+      {
+        SizeDefaults *szd = sizeDefaults;
+        if (*appData.boardSize == NULLCHAR) 
+	  {
+	    while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize 
+		   || DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) 
+	      {
+		szd++;
+	      }
+	    if (szd->name == NULL) szd--;
+	  } 
+	else 
+	  {
+	    while (szd->name != NULL 
+		   && StrCaseCmp(szd->name, appData.boardSize) != 0) 
+	      szd++;
+	    if (szd->name == NULL) 
+	      {
+		fprintf(stderr, _("%s: unrecognized boardSize name %s\n"),
+			programName, appData.boardSize);
+		exit(2);
+	      }
+	  }
 	squareSize = szd->squareSize;
 	lineGap = szd->lineGap;
 	clockFontPxlSize = szd->clockFontPxlSize;
@@ -2390,26 +2402,12 @@ main(argc, argv)
 	fontPxlSize = szd->fontPxlSize;
 	smallLayout = szd->smallLayout;
 	tinyLayout = szd->tinyLayout;
-    }
-
+      }
+    /* end figuring out what size to use */
+    
     boardWidth  = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    if (appData.showJail == 1) {
-	/* Jail on top and bottom */
-	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
-	XtSetArg(boardArgs[2], XtNheight,
-		 boardHeight + 2*(lineGap + squareSize));
-    } else if (appData.showJail == 2) {
-	/* Jail on sides */
-	XtSetArg(boardArgs[1], XtNwidth,
-		 boardWidth + 2*(lineGap + squareSize));
-	XtSetArg(boardArgs[2], XtNheight, boardHeight);
-    } else {
-	/* No jail */
-	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
-	XtSetArg(boardArgs[2], XtNheight, boardHeight);
-    }
-
+    
     /*
      * Determine what fonts to use.
      */
@@ -2601,9 +2599,6 @@ main(argc, argv)
       {
       }
 
-    // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
-    //       not need to go into InitDrawingSizes().
-#endif
 
     /* set some checkboxes in the menu according to appData */
 
@@ -2696,7 +2691,6 @@ main(argc, argv)
 
     /* end setting check boxes */
 
-
     /* load square colors */
     SVGLightSquare   = load_pixbuf("svg/LightSquare.svg",squareSize);
     SVGDarkSquare    = load_pixbuf("svg/DarkSquare.svg",squareSize);
@@ -2708,15 +2702,28 @@ main(argc, argv)
     WindowIcon = WhiteIcon;
     gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
 
-    /* do resizing to a fixed aspect ratio */
-
-    {
-      int i,j;
-    }
-    GUI_SetAspectRatio(0.7);
 
     /* realize window */
     gtk_widget_show (GUI_Window);
+
+    /* do resizing to a fixed aspect ratio */
+    {
+      GtkRequisition w;
+      int totalh=boardHeight;
+      float ratio;
+
+      gtk_widget_size_request(GTK_WIDGET(GUI_Menubar),   &w);
+      totalh += w.height;
+
+      gtk_widget_size_request(GTK_WIDGET(GUI_Timer),     &w);
+      totalh += w.height;
+
+      gtk_widget_size_request(GTK_WIDGET(GUI_Buttonbar), &w);
+      totalh += w.height;
+
+      ratio  = (totalh)/(boardWidth) ;
+      GUI_SetAspectRatio(ratio);
+    }
 
     CreateGCs();
     CreatePieces();
