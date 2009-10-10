@@ -1252,24 +1252,10 @@ void Disambiguate(board, flags, epfile, closure)
         /* [HGM] Shogi promotions. '=' means defer */
         if(closure->rfIn != DROP_RANK && closure->kind == NormalMove) {
             ChessSquare piece = closure->piece;
-#if 0
-    if (appData.debugMode) {
-        fprintf(debugFP, "Disambiguate A:   %d(%d,%d)-(%d,%d) = %d (%c)\n",
-                          closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
-                          closure->promoCharIn,closure->promoCharIn);
-    }
-#endif
             if(c != NULLCHAR && c != 'x' && c != '+' && c != '=' &&
                ToUpper(PieceToChar(PROMOTED piece)) != ToUpper(c) ) 
                     closure->kind = IllegalMove;
             else if(flags & F_WHITE_ON_MOVE) {
-#if 0
-    if (appData.debugMode) {
-        fprintf(debugFP, "Disambiguate B:   %d(%d,%d)-(%d,%d) = %d (%c)\n",
-                          closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
-                          closure->promoCharIn,closure->promoCharIn);
-    }
-#endif
                 if( (int) piece < (int) WhiteWazir &&
                      (closure->rf > BOARD_HEIGHT-4 || closure->rt > BOARD_HEIGHT-4) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && closure->rt > BOARD_HEIGHT-2 ||
@@ -1303,13 +1289,6 @@ void Disambiguate(board, flags, epfile, closure)
 	    closure->kind = IllegalMove;
 	}
     }
-#if 0
-    if (appData.debugMode) {
-        fprintf(debugFP, "Disambiguate C:   %d(%d,%d)-(%d,%d) = %d (%c)\n",
-                          closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
-                          closure->promoCharIn,closure->promoCharIn);
-    }
-#endif
     /* [HGM] returns 'q' for optional promotion, 'n' for mandatory */
     if(closure->promoCharIn != '=')
         closure->promoChar = ToLower(closure->promoCharIn);

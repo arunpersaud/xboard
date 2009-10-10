@@ -680,18 +680,11 @@ int ZippyConverse(buf, i)
 	    channel++;
 	  }
 	  channel[strlen(channel)-1] = NULLCHAR;
-#if 0
-	  /* Always tell to the channel (probability 90%) */
-	  if (strcmp(player, ics_handle) != 0 &&
-	      ((unsigned) random() % 10) < 9) {
-	    Speak("tell", channel);
-	  }
-#else
+
 	  /* Tell to the channel only if someone mentions our name */
 	  if (ZippyCalled(star_match[2])) {
 	    Speak("tell", channel);
 	  }
-#endif
 
           ColorizeEx( atoi(channel) == 1 ? ColorChannel1 : ColorChannel, FALSE );
 	}

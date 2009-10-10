@@ -565,38 +565,6 @@ LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
         break;
 
     /* Support for captionless window */
-#if 0
-    case WM_NCLBUTTONDBLCLK:
-        if( wParam == HTCAPTION ) {
-            int index;
-            POINT mouse_xy;
-            POINTS pts = MAKEPOINTS(lParam);
-
-            mouse_xy.x = pts.x;
-            mouse_xy.y = pts.y;
-            ScreenToClient( hDlg, &mouse_xy );
-
-            index = GetMoveIndexFromPoint( mouse_xy.x, mouse_xy.y );
-
-            if( index >= 0 && index < currLast ) {
-                ToNrEvent( index + 1 );
-            }
-        }
-        break;
-
-    case WM_NCHITTEST:
-        {
-            LRESULT res = DefWindowProc( hDlg, message, wParam, lParam );
-
-            if( res == HTCLIENT ) res = HTCAPTION;
-
-            SetWindowLong( hDlg, DWL_MSGRESULT, res );
-
-            return TRUE;
-        }
-        break;
-#endif
-
     case WM_CLOSE:
         EvalGraphPopDown();
         break;

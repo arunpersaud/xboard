@@ -1430,6 +1430,9 @@ XtResource clientResources[] = {
     { "keepAlive", "keepAlive", XtRInt,
 	sizeof(int), XtOffset(AppDataPtr, keepAlive),
 	XtRImmediate, (XtPointer) 0},
+    { "forceIllegalMoves", "forceIllegalMoves", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, forceIllegal),
+	XtRImmediate, (XtPointer) False},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1798,6 +1801,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
+    { "-forceIllegalMoves", "forceIllegalMoves", XrmoptionNoArg, "True" },
 };
 
 
@@ -2208,7 +2212,6 @@ main(argc, argv)
 		      XtNumber(shellOptions),
 		      &argc, argv, xboardResources, NULL, 0);
 
-
     /* set up GTK */
     gtk_init (&argc, &argv);
 
@@ -2249,40 +2252,29 @@ main(argc, argv)
       {
 	fprintf(stderr, _("%s: unrecognized argument %s\n"),
 		programName, argv[1]);
+
 	fprintf(stderr, "Recognized options:\n");
-	for(i = 0; i < XtNumber(shellOptions); i++)
+	for(i = 0; i < XtNumber(shellOptions); i++) 
 	  {
+	    /* print first column */
 	    j = fprintf(stderr, "  %s%s", shellOptions[i].option,
 		        (shellOptions[i].argKind == XrmoptionSepArg
 			 ? " ARG" : ""));
-	    if (i++ < XtNumber(shellOptions))
-	      {
+	    /* print second column and end line */
+	    if (++i < XtNumber(shellOptions)) 
+	      {		
 		fprintf(stderr, "%*c%s%s\n", 40 - j, ' ',
 			shellOptions[i].option,
 			(shellOptions[i].argKind == XrmoptionSepArg
 			 ? " ARG" : ""));
-	      }
-	    else
+	      } 
+	    else 
 	      {
 		fprintf(stderr, "\n");
-	      }
-	  }
+	      };
+	  };
 	exit(2);
-      }
-
-    if ((chessDir = (char *) getenv("CHESSDIR")) == NULL)
-      {
-	chessDir = ".";
-      }
-    else
-      {
-	if (chdir(chessDir) != 0)
-	  {
-	    fprintf(stderr, _("%s: can't cd to CHESSDIR: "), programName);
-	    perror(chessDir);
-	    exit(1);
-	  }
-      }
+      };
 
     p = getenv("HOME");
     if (p == NULL) p = "/tmp";
@@ -2344,19 +2336,6 @@ main(argc, argv)
 
     gameInfo.variant = StringToVariant(appData.variant);
     InitPosition(FALSE);
-#if 0
-
-    /*
-     * Determine boardSize
-     */
-    gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] boardsize: make sure we start as 8x8
-
-    //#ifndef IDSIZE
-    // [HGM] as long as we have not created the possibility to change size while running, start with requested size
-    gameInfo.boardWidth    = appData.NrFiles > 0 ? appData.NrFiles : 8;
-    gameInfo.boardHeight   = appData.NrRanks > 0 ? appData.NrRanks : 8;
-    gameInfo.holdingsWidth = appData.holdingsSize > 0 ? 2 : 0;
-#endif
 
 
 #ifdef IDSIZE
@@ -4109,10 +4088,40 @@ void HandleUserMove(w, event, prms, nprms)
 {
     int x, y;
     Boolean saveAnimate;
-    static int second = 0;
+    static int second = 0, promotionChoice = 0;
+    ChessMove moveType;
 
     if (w != boardWidget || errorExitStatus != -1) return;
 
+    x = EventToSquare(event->xbutton.x, BOARD_WIDTH);
+    y = EventToSquare(event->xbutton.y, BOARD_HEIGHT);
+    if (!flipView && y >= 0) {
+	y = BOARD_HEIGHT - 1 - y;
+    }
+    if (flipView && x >= 0) {
+	x = BOARD_WIDTH - 1 - x;
+    }
+
+    if(promotionChoice) { // we are waiting for a click to indicate promotion piece
+	if(event->type == ButtonRelease) return; // ignore upclick of click-click destination
+	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
+	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
+	if(gameInfo.holdingsWidth && 
+		(WhiteOnMove(currentMove) 
+			? x == BOARD_WIDTH-1 && y < gameInfo.holdingsSize && y > 0
+			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1) ) {
+	    // click in right holdings, for determining promotion piece
+	    ChessSquare p = boards[currentMove][y][x];
+	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
+	    if(p != EmptySquare) {
+		FinishMove(NormalMove, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
+		fromX = fromY = -1;
+		return;
+	    }
+	}
+	DrawPosition(FALSE, boards[currentMove]);
+	return;
+    }
     if (event->type == ButtonPress) ErrorPopDown();
 
     if (promotionUp) {
@@ -4127,15 +4136,6 @@ void HandleUserMove(w, event, prms, nprms)
 	}
     }
 
-    x = EventToSquare(event->xbutton.x, BOARD_WIDTH);
-    y = EventToSquare(event->xbutton.y, BOARD_HEIGHT);
-    if (!flipView && y >= 0) {
-	y = BOARD_HEIGHT - 1 - y;
-    }
-    if (flipView && x >= 0) {
-	x = BOARD_WIDTH - 1 - x;
-    }
-
     /* [HGM] holdings: next 5 lines: ignore all clicks between board and holdings */
     if(event->type == ButtonPress
             && ( x == BOARD_LEFT-1 || 
@@ -4146,7 +4146,7 @@ void HandleUserMove(w, event, prms, nprms)
 
     if (fromX == -1) {
 	if (event->type == ButtonPress) {
-	    /* First square */
+	    /* First square, prepare to drag */
 	    if (OKToStartUserMove(x, y)) {
 		fromX = x;
 		fromY = y;
@@ -4161,39 +4161,8 @@ void HandleUserMove(w, event, prms, nprms)
     }
 
     /* fromX != -1 */
-    if (event->type == ButtonPress && gameMode != EditPosition &&
-	x >= 0 && y >= 0) {
-	ChessSquare fromP;
-	ChessSquare toP;
-	int frc;
-
-	/* Check if clicking again on the same color piece */
-	fromP = boards[currentMove][fromY][fromX];
-	toP = boards[currentMove][y][x];
-	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom;
- 	if ((WhitePawn <= fromP && fromP <= WhiteKing && // [HGM] this test should go, as UserMoveTest now does it.
-	     WhitePawn <= toP && toP <= WhiteKing &&
-	     !(fromP == WhiteKing && toP == WhiteRook && frc)) ||   
-	    (BlackPawn <= fromP && fromP <= BlackKing && 
-	     BlackPawn <= toP && toP <= BlackKing &&
-	     !(fromP == BlackKing && toP == BlackRook && frc))) {
-	    /* Clicked again on same color piece -- changed his mind */
-	    second = (x == fromX && y == fromY);
-	    if (appData.highlightDragging) {
-		SetHighlights(x, y, -1, -1);
-	    } else {
-		ClearHighlights();
-	    }
-	    if (OKToStartUserMove(x, y)) {
-		fromX = x;
-		fromY = y;
-		DragPieceBegin(event->xbutton.x, event->xbutton.y);
-	    }
-	    return;
-	}
-    }
-
     if (event->type == ButtonRelease &&	x == fromX && y == fromY) {
+    /* Click on single square in stead of drag-drop */
 	DragPieceEnd(event->xbutton.x, event->xbutton.y);
 	if (appData.animateDragging) {
 	    /* Undo animation damage if any */
@@ -4213,7 +4182,34 @@ void HandleUserMove(w, event, prms, nprms)
 	return;
     }
 
-    /* Completed move */
+    moveType = UserMoveTest(fromX, fromY, x, y, NULLCHAR, event->type == ButtonRelease);
+
+    if (moveType == Comment) { // kludge for indicating capture-own on Press
+      /* Clicked again on same color piece -- changed his mind */
+      /* note that re-clicking same square always hits same color piece */
+      second = (x == fromX && y == fromY);
+      if (appData.highlightDragging) {
+	SetHighlights(x, y, -1, -1);
+      } else {
+	ClearHighlights();
+      }
+      if (OKToStartUserMove(x, y)) {
+	fromX = x;
+	fromY = y;
+	DragPieceBegin(event->xbutton.x, event->xbutton.y);
+      }
+      return;
+    }
+
+    if(moveType == AmbiguousMove) { // kludge to indicate edit-position move
+      fromX = fromY = -1; 
+      ClearHighlights();
+      DragPieceEnd(event->xbutton.x, event->xbutton.y);
+      DrawPosition(FALSE, boards[currentMove]);
+      return;
+    }
+
+    /* Complete move; (x,y) is now different from (fromX, fromY) on both Press and Release */
     toX = x;
     toY = y;
     saveAnimate = appData.animate;
@@ -4235,22 +4231,38 @@ void HandleUserMove(w, event, prms, nprms)
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
     }
-    if (IsPromotion(fromX, fromY, toX, toY)) {
-	if (appData.alwaysPromoteToQueen) {
-	    UserMoveEvent(fromX, fromY, toX, toY, 'q');
+    if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
+        (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
+            appData.alwaysPromoteToQueen) { // promotion, but no choice
+      FinishMove(moveType, fromX, fromY, toX, toY, 'q');
+    } else
+    if (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen ) {
+	SetHighlights(fromX, fromY, toX, toY);
+	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
+	    // [HGM] super: promotion to captured piece selected from holdings
+	    ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
+	    promotionChoice = TRUE;
+	    // kludge follows to temporarily execute move on display, without promoting yet
+	    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
+	    boards[currentMove][toY][toX] = p;
+	    DrawPosition(FALSE, boards[currentMove]);
+	    boards[currentMove][fromY][fromX] = p; // take back, but display stays
+	    boards[currentMove][toY][toX] = q;
+	    DisplayMessage("Click in holdings to choose piece", "");
+	    return;
+	}
+	PromotionPopUp();
+	goto skipClearingFrom; // the skipped stuff is done asynchronously by PromotionCallback
+    } else
+    if(moveType != ImpossibleMove) { // valid move, but no promotion
+      FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
+    } else { // invalid move; could have set premove
+      ClearHighlights();
+    }
 	    if (!appData.highlightLastMove || gotPremove) ClearHighlights();
 	    if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
 	    fromX = fromY = -1;
-	} else {
-	    SetHighlights(fromX, fromY, toX, toY);
-	    PromotionPopUp();
-	}
-    } else {
-	UserMoveEvent(fromX, fromY, toX, toY, NULLCHAR);
-	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
-	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
-	fromX = fromY = -1;
-    }
+skipClearingFrom:
     appData.animate = saveAnimate;
     if (appData.animate || appData.animateDragging) {
 	/* Undo animation damage if needed */
@@ -4309,12 +4321,8 @@ Widget CommentCreate(name, text, mutable, callback, lines)
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNwidth, bw_width);  j++; /*force wider than buttons*/
-#if 0
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollWhenNeeded);  j++;
-#else
     /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
     XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-#endif
     XtSetArg(args[j], XtNautoFill, True);  j++;
     XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
     edit =
@@ -4467,12 +4475,8 @@ Widget MiscCreate(name, text, mutable, callback, lines)
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
-#if 0
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollWhenNeeded);  j++;
-#else
     /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
     XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-#endif
     XtSetArg(args[j], XtNautoFill, True);  j++;
     XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
     edit =
@@ -5035,7 +5039,7 @@ void PromotionCallback(w, client_data, call_data)
 	promoChar = ToLower(name[0]);
     }
 
-    UserMoveEvent(fromX, fromY, toX, toY, promoChar);
+    FinishMove(NormalMove, fromX, fromY, toX, toY, promoChar);
 
     if (!appData.highlightLastMove || gotPremove) ClearHighlights();
     if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
@@ -6078,16 +6082,6 @@ void ShowThinkingProc(w, event, prms, nprms)
 
     appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
     ShowThinkingEvent();
-#if 0
-    // [HGM] thinking: currently no suc menu item; replaced by Hide Thinking (From Human)
-    if (appData.showThinking) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Thinking"),
-		args, 1);
-#endif
 }
 
 void HideThinkingProc(w, event, prms, nprms)
@@ -7502,12 +7496,7 @@ FrameDelay (time)
     delay.it_interval.tv_usec =
       delay.it_value.tv_usec = (time % 1000) * 1000;
     setitimer(ITIMER_REAL, &delay, NULL);
-#if 0
-    /* Ugh -- busy-wait! --tpm */
-    while (frameWaiting);
-#else
     while (frameWaiting) pause();
-#endif
     delay.it_interval.tv_sec = delay.it_value.tv_sec = 0;
     delay.it_interval.tv_usec = delay.it_value.tv_usec = 0;
     setitimer(ITIMER_REAL, &delay, NULL);
@@ -7960,19 +7949,10 @@ DragPieceBegin(x, y)
     ScreenSquare(boardX, boardY, &corner, &color);
     player.startSquare  = corner;
     player.startColor   = color;
-#if 0
-    /* Start from exactly where the piece is.  This can be confusing
-       if you start dragging far from the center of the square; most
-       or all of the piece can be over a different square from the one
-       the mouse pointer is in. */
-    player.mouseDelta.x = x - corner.x;
-    player.mouseDelta.y = y - corner.y;
-#else
     /* As soon as we start dragging, the piece will jump slightly to
        be centered over the mouse pointer. */
     player.mouseDelta.x = squareSize/2;
     player.mouseDelta.y = squareSize/2;
-#endif
     /* Initialise animation */
     player.dragPiece = PieceForSquare(boardX, boardY);
     /* Sanity check */

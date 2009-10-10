@@ -83,16 +83,6 @@
 
 extern long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement;
 
-#if 0
-// from moves.h, but no longer needed, as the new routines are all moved to winboard.c
-
-extern char* PieceToName P((ChessSquare p, int i));
-extern char* SquareToChar P((int Xpos)); 
-extern char* SquareToNum P((int Ypos));
-extern int CoordToNum P((char c));
-
-#endif
-
 // from moves.c, added WinBoard_F piece types and ranks / files
 
 char *squareToChar[] = { "ay", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l" };
