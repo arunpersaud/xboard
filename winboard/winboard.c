@@ -8245,6 +8245,23 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   MINMAXINFO *mmi;
 
   switch (message) {
+  case WM_NOTIFY:
+    if (((NMHDR*)lParam)->code == EN_LINK)
+    {
+      ENLINK *pLink = (ENLINK*)lParam;
+      if (pLink->msg == WM_LBUTTONUP)
+      {
+          TEXTRANGE tr;
+
+          tr.chrg = pLink->chrg;
+          tr.lpstrText = malloc(1+tr.chrg.cpMax-tr.chrg.cpMin);
+          hText = GetDlgItem(hDlg, OPT_ConsoleText);
+          SendMessage(hText, EM_GETTEXTRANGE, 0, (LPARAM)&tr);
+          ShellExecute(NULL, "open", tr.lpstrText, NULL, NULL, SW_SHOW);
+          free(tr.lpstrText);
+      }
+    }
+    break;
   case WM_INITDIALOG: /* message: initialize dialog box */
     hwndConsole = hDlg;
     hText = GetDlgItem(hDlg, OPT_ConsoleText);
@@ -8365,10 +8382,18 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 VOID
 ConsoleCreate()
 {
-  HWND hCons;
+  HWND hCons, hText;
+  WORD wMask;
   if (hwndConsole) return;
   hCons = CreateDialog(hInst, szConsoleName, 0, NULL);
   SendMessage(hCons, WM_INITDIALOG, 0, 0);
+
+
+  // make the text item in the console do URL links
+  hText = GetDlgItem(hCons, OPT_ConsoleText);
+  wMask = SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
+  SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
+  SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
 }
 
 
