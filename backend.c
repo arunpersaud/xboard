@@ -2124,7 +2124,8 @@ read_from_ics(isr, closure, data, count, error)
 	    if(buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
                                buf[buf_len-3]==' '  && buf[buf_len-2]==' '  && buf[buf_len-1]==' ') {
 		buf_len -= 5; // [HGM] ICS: join continuation line of Lasker 2.2.3 server with previous
-		buf[buf_len++] = ' '; // replace by space (assumes ICS does not break lines within word)
+		if(buf_len == 0 || buf[buf_len-1] != ' ')
+		   buf[buf_len++] = ' '; // add space (assumes ICS does not break lines within word)
 	    }
 	}
 
