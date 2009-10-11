@@ -2218,8 +2218,8 @@ read_from_ics(isr, closure, data, count, error)
 		  sprintf(str,
 			  "/set-quietly interface %s\n/set-quietly style 12\n",
 			  programVersion);
-		  strcat(str, "/set-quietly wrap 0\n");
-
+          if (!appData.noJoin)
+              strcat(str, "/set-quietly wrap 0\n");
 		} else if (ics_type == ICS_CHESSNET) {
 		  sprintf(str, "/style 12\n");
 		} else {
@@ -2229,7 +2229,8 @@ read_from_ics(isr, closure, data, count, error)
 #ifdef WIN32
 		  strcat(str, "$iset nohighlight 1\n");
 #endif
-		  strcat(str, "$iset nowrap 1\n");
+          if (!appData.noJoin)
+              strcat(str, "$iset nowrap 1\n");
 		  strcat(str, "$iset lock 1\n$style 12\n");
 		}
 		SendToICS(str);
