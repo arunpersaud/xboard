@@ -441,6 +441,14 @@ void AutoflagProc(object, user_data)
     return;
 }
 
+void AutoflipProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    appData.autoFlipView = !appData.autoFlipView;
+    return;
+}
+
 void ShowThinkingProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
