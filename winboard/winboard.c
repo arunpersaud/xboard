@@ -8742,6 +8742,7 @@ Enables gnuEnables[] = {
   { IDM_StopExamining, MF_BYCOMMAND|MF_GRAYED },
   { IDM_StopObserving, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Revert, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 
@@ -8751,6 +8752,7 @@ Enables icsEnables[] = {
   { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
   { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_MachineBoth, MF_BYCOMMAND|MF_GRAYED },
   { IDM_AnalysisMode, MF_BYCOMMAND|MF_ENABLED },
   { IDM_AnalyzeFile, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TimeControl, MF_BYCOMMAND|MF_GRAYED },
@@ -8758,6 +8760,8 @@ Enables icsEnables[] = {
   { IDM_Hint, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Book, MF_BYCOMMAND|MF_GRAYED },
   { IDM_IcsOptions, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 
@@ -8766,6 +8770,7 @@ Enables zippyEnables[] = {
   { IDM_MoveNow, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Hint, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Book, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Engine1Options, MF_BYCOMMAND|MF_ENABLED },
   { -1, -1 }
 };
 #endif
@@ -8786,6 +8791,10 @@ Enables ncpEnables[] = {
   { IDM_TimeControl, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Hint, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Book, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_MachineBoth, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 
