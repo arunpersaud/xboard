@@ -13498,6 +13498,14 @@ PositionToFEN(move, overrideCastling)
 	} else {
 	    *p++ = '-';
 	}
+    } else if(move == backwardMostMove) {
+	// [HGM] perhaps we should always do it like this, and forget the above?
+	if(epStatus[move] >= 0) {
+	    *p++ = epStatus[move] + AAA;
+	    *p++ = whiteToPlay ? '6'+BOARD_HEIGHT-8 : '3';
+	} else {
+	    *p++ = '-';
+	}
     } else {
 	*p++ = '-';
     }
