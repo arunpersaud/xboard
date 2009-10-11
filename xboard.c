@@ -262,10 +262,6 @@ void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
-void WhiteClock P((Widget w, XEvent *event,
-		   String *prms, Cardinal *nprms));
-void BlackClock P((Widget w, XEvent *event,
-		   String *prms, Cardinal *nprms));
 void CommentPopUp P((char *title, char *label));
 void CommentPopDown P((void));
 void CommentCallback P((Widget w, XtPointer client_data,
@@ -1791,8 +1787,8 @@ XtActionsRec boardActions[] = {
     { "AskQuestionProc", AskQuestionProc },
     { "AskQuestionReplyAction", AskQuestionReplyAction },
     { "PieceMenuPopup", PieceMenuPopup },
-    { "WhiteClock", WhiteClock },
-    { "BlackClock", BlackClock },
+    //    { "WhiteClock", WhiteClock },
+    //    { "BlackClock", BlackClock },
     { "Iconify", Iconify },
     { "LoadSelectedProc", LoadSelectedProc },
     { "LoadPositionProc", LoadPositionProc },
@@ -3356,33 +3352,6 @@ static void DropMenuSelect(w, piece, junk)
     if (pmFromX < 0 || pmFromY < 0) return;
     DropMenuEvent(piece, pmFromX, pmFromY);
 }
-
-void WhiteClock(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (gameMode == EditPosition || gameMode == IcsExamining) {
-	SetWhiteToPlayEvent();
-    } else if (gameMode == IcsPlayingBlack || gameMode == MachinePlaysWhite) {
-	CallFlagEvent();
-    }
-}
-
-void BlackClock(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (gameMode == EditPosition || gameMode == IcsExamining) {
-	SetBlackToPlayEvent();
-    } else if (gameMode == IcsPlayingWhite || gameMode == MachinePlaysBlack) {
-	CallFlagEvent();
-    }
-}
-
 
 /*
  * If the user selects on a border boundary, return -1; if off the board,
