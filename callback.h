@@ -1,4 +1,3 @@
-void QuitProc P((GtkObject *object, gpointer user_data));
 void IcsClientProc P((GtkObject *object, gpointer user_data));
 void MachineBlackProc P((GtkObject *object, gpointer user_data));
 void MachineWhiteProc P((GtkObject *object, gpointer user_data));
@@ -20,6 +19,15 @@ void ResetProc P((GtkObject *object, gpointer user_data));
 void WhiteClockProc P((GtkObject *object, gpointer user_data));
 void BlackClockProc P((GtkObject *object, gpointer user_data));
 gboolean ExposeProc P((GtkObject *object, gpointer user_data));
+
+/* File Menu */
+void QuitProc P((GtkObject *object, gpointer user_data));
+void LoadNextGameProc P((GtkObject *object, gpointer user_data));
+void LoadPrevGameProc P((GtkObject *object, gpointer user_data));
+void ReloadGameProc P((GtkObject *object, gpointer user_data));
+void LoadNextPositionProc P((GtkObject *object, gpointer user_data));
+void LoadPrevPositionProc P((GtkObject *object, gpointer user_data));
+void ReloadPositionProc P((GtkObject *object, gpointer user_data));
 
 /* Step Menu */
 void BackwardProc P((GtkObject *object, gpointer user_data));
@@ -49,9 +57,6 @@ void AboutProc  P((GtkObject *object, gpointer user_data));
 void ShowCoordsProc P((GtkObject *object, gpointer user_data));
 void ErrorPopDownProc P((GtkObject *object, gpointer user_data));
 void PauseProc P((GtkObject *object, gpointer user_data));
-void LoadNextGameProc P((GtkObject *object, gpointer user_data));
-void LoadPrevGameProc P((GtkObject *object, gpointer user_data));
-void ReloadGameProc P((GtkObject *object, gpointer user_data));
 void EventProc P((GtkWindow *window, GdkEvent *event, gpointer data));
 void UserMoveProc P((GtkWindow *window, GdkEvent *event, gpointer data));
 gboolean CloseWindowProc P((GtkWidget *button));

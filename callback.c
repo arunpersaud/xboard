@@ -176,6 +176,10 @@ void IcsClientProc(object, user_data)
     return;
 }
 
+/*
+ * File menu
+ */
+
 void LoadNextGameProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -199,6 +203,34 @@ void ReloadGameProc(object, user_data)
     ReloadGame(0);
     return;
 }
+
+
+void LoadNextPositionProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ReloadPosition(1);
+    return;
+}
+
+void LoadPrevPositionProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ReloadPosition(-1);
+    return;
+}
+
+void ReloadPositionProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ReloadPosition(0);
+    return;
+}
+
+
+/* End File Menu */
 
 void MachineWhiteProc(object, user_data)
      GtkObject *object;

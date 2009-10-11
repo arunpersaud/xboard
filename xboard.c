@@ -295,12 +295,6 @@ void EditCommentCallback P((Widget w, XtPointer client_data,
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
 void LoadPositionProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
-void LoadNextPositionProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void LoadPrevPositionProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void ReloadPositionProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
 void CopyPositionProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void PastePositionProc P((Widget w, XEvent *event, String *prms,
@@ -657,9 +651,9 @@ MenuItem fileMenu[] = {
     {N_("Paste Game"), PasteGameProc},
     {"----", NothingProc},
     {N_("Load Position"), LoadPositionProc},
-    {N_("Load Next Position"), LoadNextPositionProc},
-    {N_("Load Previous Position"), LoadPrevPositionProc},
-    {N_("Reload Same Position"), ReloadPositionProc},
+    //    {N_("Load Next Position"), LoadNextPositionProc},
+    //    {N_("Load Previous Position"), LoadPrevPositionProc},
+    //    {N_("Reload Same Position"), ReloadPositionProc},
     {N_("Save Position"), SavePositionProc},
     {"----", NothingProc},
     {N_("Copy Position"), CopyPositionProc},
@@ -1813,9 +1807,9 @@ XtActionsRec boardActions[] = {
     { "Iconify", Iconify },
     { "LoadSelectedProc", LoadSelectedProc },
     { "LoadPositionProc", LoadPositionProc },
-    { "LoadNextPositionProc", LoadNextPositionProc },
-    { "LoadPrevPositionProc", LoadPrevPositionProc },
-    { "ReloadPositionProc", ReloadPositionProc },
+    //    { "LoadNextPositionProc", LoadNextPositionProc },
+    //    { "LoadPrevPositionProc", LoadPrevPositionProc },
+    //    { "ReloadPositionProc", ReloadPositionProc },
     { "CopyPositionProc", CopyPositionProc },
     { "PastePositionProc", PastePositionProc },
     { "CopyGameProc", CopyGameProc },
@@ -3013,6 +3007,8 @@ char *FindFont(pattern, targetPxlSize)
 
 void CreateGCs()
 {
+  /* GCs are not needed anymore for GTK  just left them in here for the moment, since there is a lot of X-code still around that's wants them*/
+
     XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
       | GCBackground | GCFunction | GCPlaneMask;
     XGCValues gc_values;
@@ -5214,34 +5210,6 @@ int LoadGamePopUp(f, gameNumber, title)
       };
 
     return LoadGame(f, gameNumber, title, FALSE);
-}
-
-
-void LoadNextPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ReloadPosition(1);
-}
-
-void LoadPrevPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ReloadPosition(-1);
-}
-
-void ReloadPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ReloadPosition(0);
 }
 
 void LoadPositionProc(w, event, prms, nprms)
