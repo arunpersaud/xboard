@@ -1549,6 +1549,10 @@ StringToVariant(e)
         while( *e++ != '_');
     }
 
+    if(StrCaseStr(e, "misc/")) { // [HGM] on FICS, misc/shogi is not shogi
+	v = VariantNormal;
+	found = TRUE;
+    } else
     for (i=0; i<sizeof(variantNames)/sizeof(char*); i++) {
       if (StrCaseStr(e, variantNames[i])) {
 	v = (VariantClass) i;
