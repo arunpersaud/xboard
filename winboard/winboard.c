@@ -5462,6 +5462,7 @@ void UpdateICSWidth(HWND hText)
 	TEXTMETRIC tm;
 	RECT rc;
 	HFONT hfont, hold_font;
+	LONG old_width, new_width;
 	
 	// get the text metrics
 	hdc = GetDC(hText);
@@ -5476,7 +5477,13 @@ void UpdateICSWidth(HWND hText)
 	SendMessage(hText, EM_GETRECT, 0, (LPARAM)&rc);
 
 	// update the width
-	ics_update_width((rc.right-rc.left) / tm.tmAveCharWidth);
+	new_width = (rc.right-rc.left) / tm.tmAveCharWidth;
+	old_width = GetWindowLong(hText, GWL_USERDATA);
+	if (new_width != old_width)
+	{
+		ics_update_width(new_width);
+		SetWindowLong(hText, GWL_USERDATA, new_width);
+	}
 }
 
 VOID
@@ -8203,6 +8210,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
    wMask = SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
    SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
    SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
+   SetWindowLong(hText, GWL_USERDATA, 79); // initialize the text window's width
 
     return FALSE;
 
