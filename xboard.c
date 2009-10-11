@@ -251,7 +251,6 @@ void CreateXPMPieces P((void));
 void CreatePieces P((void));
 void CreatePieceMenus P((void));
 Widget CreateMenuBar P((Menu *mb));
-Widget CreateButtonBar P ((MenuItem *mi));
 char *FindFont P((char *pattern, int targetPxlSize));
 void PieceMenuPopup P((Widget w, XEvent *event,
 		       String *params, Cardinal *num_params));
@@ -414,7 +413,7 @@ Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
-  menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
+  menuBarWidget,  editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
 Font clockFontID, coordFontID, countFontID;
 XFontStruct *clockFontStruct, *coordFontStruct, *countFontStruct;
@@ -730,16 +729,6 @@ Menu menuBar[] = {
     {N_("File"), fileMenu},
     {N_("Mode"), modeMenu},
     {N_("Options"), optionsMenu},
-    {NULL, NULL}
-};
-
-#define PAUSE_BUTTON N_("P")
-MenuItem buttonBar[] = {
-  //    {"<<", ToStartProc},
-    //    {"<", BackwardProc},
-    //    {PAUSE_BUTTON, PauseProc},
-    //    {">", ForwardProc},
-  //    {">>", ToEndProc},
     {NULL, NULL}
 };
 
@@ -3211,39 +3200,6 @@ Widget CreateMenuBar(mb)
     return menuBar;
 }
 
-Widget CreateButtonBar(mi)
-     MenuItem *mi;
-{
-    int j;
-    Widget button, buttonBar;
-    Arg args[16];
-
-    j = 0;
-    XtSetArg(args[j], XtNorientation, XtorientHorizontal); j++;
-    if (tinyLayout) {
-	XtSetArg(args[j], XtNhSpace, 0); j++;
-    }
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNvSpace, 0);                        j++;
-    buttonBar = XtCreateWidget("buttonBar", boxWidgetClass,
-			       formWidget, args, j);
-
-    while (mi->string != NULL) {
-	j = 0;
-	if (tinyLayout) {
-	    XtSetArg(args[j], XtNinternalWidth, 2); j++;
-	    XtSetArg(args[j], XtNborderWidth, 0); j++;
-	}
-      XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string))); j++;
-	button = XtCreateManagedWidget(mi->string, commandWidgetClass,
-				       buttonBar, args, j);
-	XtAddCallback(button, XtNcallback,
-		      (XtCallbackProc) MenuBarSelect,
-		      (caddr_t) mi->proc);
-	mi++;
-    }
-    return buttonBar;
-}
 
 Widget
 CreatePieceMenu(name, color)
