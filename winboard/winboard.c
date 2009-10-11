@@ -1392,6 +1392,7 @@ ArgDescriptor argDescriptors[] = {
   { "firstNPS", ArgInt, (LPVOID) &appData.firstNPS, FALSE },
   { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE },
   { "noGUI", ArgTrue, (LPVOID) &appData.noGUI, FALSE },
+  { "keepLineBreaksICS", ArgBoolean, (LPVOID) &appData.noJoin, TRUE },
 
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
   { "minX", ArgZ, (LPVOID) &minX, FALSE }, // [HGM] placement: to make suer auxialary windows can be placed

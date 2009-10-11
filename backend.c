@@ -2080,7 +2080,7 @@ read_from_ics(isr, closure, data, count, error)
 	for (i = 0; i < count; i++) {
 	    if (data[i] != NULLCHAR && data[i] != '\r')
 	      buf[buf_len++] = data[i];
-	    if(buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
+	    if(!appData.noJoin && buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
                                buf[buf_len-3]==' '  && buf[buf_len-2]==' '  && buf[buf_len-1]==' ') {
 		buf_len -= 5; // [HGM] ICS: join continuation line of Lasker 2.2.3 server with previous
 		if(buf_len == 0 || buf[buf_len-1] != ' ')

@@ -1407,6 +1407,9 @@ XtResource clientResources[] = {
     { "forceIllegalMoves", "forceIllegalMoves", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, forceIllegal),
 	XtRImmediate, (XtPointer) False},
+    { "keepLineBreaksICS", "keepLineBreaksICS", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, noJoin),
+	XtRImmediate, (XtPointer) True},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1776,6 +1779,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
     { "-forceIllegalMoves", "forceIllegalMoves", XrmoptionNoArg, "True" },
+    { "-keepLineBreaksICS", "keepLineBreaksICS", XrmoptionSepArg, NULL },
 };
 
 
