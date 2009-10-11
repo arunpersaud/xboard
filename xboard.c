@@ -321,10 +321,6 @@ void AnimateDraggingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void AnimateMovingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
-void AutocommProc P((Widget w, XEvent *event, String *prms,
-		     Cardinal *nprms));
-void AutoflagProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AutoflipProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AutobsProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void AutoraiseProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -694,9 +690,9 @@ MenuItem optionsMenu[] = {
     {N_("Always Queen"), AlwaysQueenProc},
     {N_("Animate Dragging"), AnimateDraggingProc},
     {N_("Animate Moving"), AnimateMovingProc},
-    {N_("Auto Comment"), AutocommProc},
-    {N_("Auto Flag"), AutoflagProc},
-    {N_("Auto Flip View"), AutoflipProc},
+    //    {N_("Auto Comment"), AutocommProc},
+    //    {N_("Auto Flag"), AutoflagProc},
+    //    {N_("Auto Flip View"), AutoflipProc},
     {N_("Auto Observe"), AutobsProc},
     {N_("Auto Raise Board"), AutoraiseProc},
     {N_("Auto Save"), AutosaveProc},
@@ -1844,8 +1840,8 @@ XtActionsRec boardActions[] = {
     { "AlwaysQueenProc", AlwaysQueenProc },
     { "AnimateDraggingProc", AnimateDraggingProc },
     { "AnimateMovingProc", AnimateMovingProc },
-    { "AutoflagProc", AutoflagProc },
-    { "AutoflipProc", AutoflipProc },
+    //    { "AutoflagProc", AutoflagProc },
+    //    { "AutoflipProc", AutoflipProc },
     { "AutobsProc", AutobsProc },
     { "AutoraiseProc", AutoraiseProc },
     { "AutosaveProc", AutosaveProc },
@@ -5559,64 +5555,6 @@ void AnimateMovingProc(w, event, prms, nprms)
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
-		args, 1);
-}
-
-void AutocommProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoComment = !appData.autoComment;
-
-    if (appData.autoComment) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Comment"),
-		args, 1);
-}
-
-
-void AutoflagProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoCallFlag = !appData.autoCallFlag;
-
-    if (appData.autoCallFlag) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
-		args, 1);
-}
-
-void AutoflipProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoFlipView = !appData.autoFlipView;
-
-    if (appData.autoFlipView) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flip View"),
 		args, 1);
 }
 

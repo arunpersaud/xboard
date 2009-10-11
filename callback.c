@@ -425,6 +425,22 @@ void RetractMoveProc(object, user_data)
 }
 
 /* Option Menu */
+void AutocommProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    appData.autoComment = !appData.autoComment;
+    return;
+}
+
+void AutoflagProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    appData.autoCallFlag = !appData.autoCallFlag;
+    return;
+}
+
 void ShowThinkingProc(object, user_data)
      GtkObject *object;
      gpointer user_data;

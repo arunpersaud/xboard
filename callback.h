@@ -40,6 +40,9 @@ void MoveNowProc P((GtkObject *object, gpointer user_data));
 void RetractMoveProc P((GtkObject *object, gpointer user_data));
 
 /* Option Menu */
+void AutocommProc P((GtkObject *object, gpointer user_data));
+void AutoflagProc P((GtkObject *object, gpointer user_data));
+void AutoflipProc P((GtkObject *object, gpointer user_data));
 void ShowThinkingProc P((GtkObject *object, gpointer user_data));
 void HideThinkingProc P((GtkObject *object, gpointer user_data));
 void FlipViewProc P((GtkObject *object, gpointer user_data));
