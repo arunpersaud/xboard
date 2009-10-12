@@ -77,6 +77,7 @@
 #if STDC_HEADERS
 # include <stdlib.h>
 # include <string.h>
+# include <stdarg.h>
 #else /* not STDC_HEADERS */
 # if HAVE_STRING_H
 #  include <string.h>
@@ -1423,12 +1424,14 @@ KeepAlive()
 /* added routine for printf style output to ics */
 void ics_printf(char *format, ...)
 {
-	char buffer[MSG_SIZ], *args;
-	
-	args = (char *)&format + sizeof(format);
-	vsnprintf(buffer, sizeof(buffer), format, args);
-	buffer[sizeof(buffer)-1] = '\0';
-	SendToICS(buffer);
+    char buffer[MSG_SIZ];
+    va_list args;
+
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    buffer[sizeof(buffer)-1] = '\0';
+    SendToICS(buffer);
+    va_end(args);
 }
 
 void
