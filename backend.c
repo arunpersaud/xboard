@@ -9599,7 +9599,7 @@ SaveGamePGN(f)
 	    fprintf(f, " ");
 	    linelen++;
 	}
-	fprintf(f, numtext);
+	fprintf(f, "%s", numtext);
 	linelen += numlen;
 
 	/* Get move */
@@ -9617,7 +9617,7 @@ SaveGamePGN(f)
 	    fprintf(f, " ");
 	    linelen++;
 	}
-	fprintf(f, move_buffer);
+	fprintf(f, "%s", move_buffer);
 	linelen += movelen;
 
         /* [AS] Add PV info if present */
@@ -9661,7 +9661,7 @@ SaveGamePGN(f)
 		fprintf(f, " ");
 		linelen++;
 	    }
-	    fprintf(f, move_buffer);
+	    fprintf(f, "%s", move_buffer);
 	    linelen += movelen;
         }
 
