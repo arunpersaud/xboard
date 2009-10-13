@@ -232,6 +232,7 @@ typedef struct {
 int main P((int argc, char **argv));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
+RETSIGTYPE TermSizeSigHandler P((int sig));
 void CreateGCs P((void));
 void CreateXIMPieces P((void));
 void CreateXPMPieces P((void));
@@ -446,6 +447,8 @@ void UciPopDown P(());
 void TimeControlPopDown P(());
 void NewVariantPopDown P(());
 void SettingsPopDown P(());
+void update_ics_width P(());
+int get_term_width P(());
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -3211,6 +3214,11 @@ ShutDownFrontEnd()
     unlink(gamePasteFilename);
 }
 
+RETSIGTYPE TermSizeSigHandler(int sig)
+{
+    update_ics_width();
+}
+
 RETSIGTYPE
 IntSigHandler(sig)
      int sig;
@@ -3275,11 +3283,6 @@ ResetFrontEnd()
     EditCommentPopDown();
     TagsPopDown();
     return;
-}
-
-void NotifyFrontendLogin()
-{
-	// placeholder
 }
 
 typedef struct {
@@ -9486,4 +9489,39 @@ SetProgramStats( FrontEndProgramStats * stats )
   // [HR] TODO
   // [HGM] done, but perhaps backend should call this directly?
     EngineOutputUpdate( stats );
+}
+
+#include <sys/ioctl.h>
+int get_term_width()
+{
+    int fd, default_width;
+
+    fd = STDIN_FILENO;
+    default_width = 79; // this is FICS default anyway...
+
+#if !defined(TIOCGWINSZ) && defined(TIOCGSIZE)
+    struct ttysize win;
+    if (!ioctl(fd, TIOCGSIZE, &win))
+        default_width = win.ts_cols;
+#elif defined(TIOCGWINSZ)
+    struct winsize win;
+    if (!ioctl(fd, TIOCGWINSZ, &win))
+        default_width = win.ws_col;
+#endif
+    return default_width;
+}
+
+void update_ics_width()
+{
+    static int old_width = 0;
+    int new_width = get_term_width();
+
+    if (old_width != new_width)
+       ics_printf("set width %d\n", new_width);
+    old_width = new_width;
+}
+
+void NotifyFrontendLogin()
+{
+    update_ics_width();
 }
