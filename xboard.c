@@ -8398,6 +8398,10 @@ int StartChildProcess(cmdLine, dir, pr)
 
     SetUpChildIO(to_prog, from_prog);
 
+    #ifdef SIGWINCH
+    signal(SIGWINCH, TermSizeSigHandler);
+    #endif
+
     if ((pid = fork()) == 0) {
 	/* Child process */
 	// [HGM] PSWBTM: made order resistant against case where fd of created pipe was 0 or 1
