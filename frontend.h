@@ -159,6 +159,8 @@ void TagsPopDown P((void));
 
 void ICSInitScript P((void));
 void StartAnalysisClock P((void));
+void EngineOutputPopUp P((void));
+void EgineOutputPopDown P((void));
 
 void SetHighlights P((int fromX, int fromY, int toX, int toY));
 void ClearHighlights P((void));

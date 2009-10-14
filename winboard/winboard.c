@@ -5631,14 +5631,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wmId) {
     case IDM_NewGame:
       ResetGameEvent();
-      EngineOutputPopDown();
       SAY("new game enter a move to play against the computer with white");
       break;
 
     case IDM_NewGameFRC:
       if( NewGameFRC() == 0 ) {
         ResetGameEvent();
-	EngineOutputPopDown();
       }
       break;
 

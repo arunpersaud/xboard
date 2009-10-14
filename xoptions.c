@@ -142,7 +142,6 @@ void ShuffleCallback(w, client_data, call_data)
         ShufflePopDown();
 	shuffleOpenings = False; // [HGM] should be moved to New Variant menu, once we have it!
 	ResetGameEvent();
-	EngineOutputPopDown();
         return;
     }
     if (strcmp(name, _("random")) == 0) {
@@ -164,7 +163,6 @@ void ShuffleCallback(w, client_data, call_data)
 	shuffleOpenings = True;
         ShufflePopDown();
 	ResetGameEvent();
-	EngineOutputPopDown();
         return;
     }
 }

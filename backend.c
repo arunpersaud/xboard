@@ -184,7 +184,6 @@ void FeedMovesToProgram P((ChessProgramState *cps, int upto));
 void ResurrectChessProgram P((void));
 void DisplayComment P((int moveNumber, char *text));
 void DisplayMove P((int moveNumber));
-void DisplayAnalysis P((void));
 
 void ParseGameHistory P((char *game));
 void ParseBoard12 P((char *string));
@@ -6692,7 +6691,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 if (currentMove == forwardMostMove || gameMode == AnalyzeMode
                         || gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
-		    DisplayAnalysis();
 		}
 		return;
 
@@ -6720,7 +6718,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode || 
                            gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
-		    DisplayAnalysis();
 		}
 		return;
 	    } else if (sscanf(message,"stat01: %d " u64Display " %d %d %d %s",
@@ -6745,7 +6742,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
                 SendProgramStatsToFrontend( cps, &programStats );
 
-		DisplayAnalysis();
 		return;
 
 	    } else if (strncmp(message,"++",2) == 0) {
@@ -6781,7 +6777,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode ||
                            gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
-		    DisplayAnalysis();
 		}
 		return;
 	    }
@@ -10852,7 +10847,6 @@ ExitAnalyzeMode()
       SendToProgram("exit\n", &first);
       first.analyzing = FALSE;
     }
-    EngineOutputPopDown();
     thinkOutput[0] = NULLCHAR;
 }
 
@@ -12553,7 +12547,7 @@ PeriodicUpdatesEvent(newState)
     appData.periodicUpdates=newState;
 
     /* Display type changes, so update it now */
-    DisplayAnalysis();
+//    DisplayAnalysis();
 
     /* Get the ball rolling again... */
     if (newState) {
@@ -12690,90 +12684,6 @@ DisplayMove(moveNumber)
 		parseList[moveNumber], res);
 	DisplayMessage(message, cpThinkOutput);
     }
-}
-
-void
-DisplayAnalysisText(text)
-     char *text;
-{
-  if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
-      || appData.icsEngineAnalyze) 
-    {
-      EngineOutputPopUp();
-    }
-}
-
-static int
-only_one_move(str)
-     char *str;
-{
-    while (*str && isspace(*str)) ++str;
-    while (*str && !isspace(*str)) ++str;
-    if (!*str) return 1;
-    while (*str && isspace(*str)) ++str;
-    if (!*str) return 1;
-    return 0;
-}
-
-void
-DisplayAnalysis()
-{
-    char buf[MSG_SIZ];
-    char lst[MSG_SIZ / 2];
-    double nps;
-    static char *xtra[] = { "", " (--)", " (++)" };
-    int h, m, s, cs;
-  
-    if (programStats.time == 0) {
-	programStats.time = 1;
-    }
-  
-    if (programStats.got_only_move) {
-	safeStrCpy(buf, programStats.movelist, sizeof(buf));
-    } else {
-        safeStrCpy( lst, programStats.movelist, sizeof(lst));
-
-        nps = (u64ToDouble(programStats.nodes) /
-             ((double)programStats.time /100.0));
-
-	cs = programStats.time % 100;
-	s = programStats.time / 100;
-	h = (s / (60*60));
-	s = s - h*60*60;
-	m = (s/60);
-	s = s - m*60;
-
-	if (programStats.moves_left > 0 && appData.periodicUpdates) {
-	  if (programStats.move_name[0] != NULLCHAR) {
-	    sprintf(buf, "depth=%d %d/%d(%s) %+.2f %s%s\nNodes: " u64Display " NPS: %d\nTime: %02d:%02d:%02d.%02d",
-		    programStats.depth,
-		    programStats.nr_moves-programStats.moves_left,
-		    programStats.nr_moves, programStats.move_name,
-		    ((float)programStats.score)/100.0, lst,
-		    only_one_move(lst)?
-		    xtra[programStats.got_fail] : "",
-		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
-	  } else {
-	    sprintf(buf, "depth=%d %d/%d %+.2f %s%s\nNodes: " u64Display " NPS: %d\nTime: %02d:%02d:%02d.%02d",
-		    programStats.depth,
-		    programStats.nr_moves-programStats.moves_left,
-		    programStats.nr_moves, ((float)programStats.score)/100.0,
-		    lst,
-		    only_one_move(lst)?
-		    xtra[programStats.got_fail] : "",
-		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
-	  }
-	} else {
-	    sprintf(buf, "depth=%d %+.2f %s%s\nNodes: " u64Display " NPS: %d\nTime: %02d:%02d:%02d.%02d",
-		    programStats.depth,
-		    ((float)programStats.score)/100.0,
-		    lst,
-		    only_one_move(lst)?
-		    xtra[programStats.got_fail] : "",
-		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
-	}
-    }
-    DisplayAnalysisText(buf);
 }
 
 void

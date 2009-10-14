@@ -1897,7 +1897,6 @@ XtActionsRec boardActions[] = {
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
-    { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
@@ -6253,7 +6252,6 @@ void ResetProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     ResetGameEvent();
-    EngineOutputPopDown();
 }
 
 int LoadGamePopUp(f, gameNumber, title)
