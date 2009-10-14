@@ -54,6 +54,19 @@ void Paint(char dest[130][130], char src[130][130], int size, char c)
 	for(i=0; i<size; i++) for(j=0; j<size; j++) if(!src[i][j]) dest[i][j] = c;
 }
 
+FloodFill(char a[130][130], int size, int x, int y)
+{
+	char old = 'X', new = '.';
+	if(a[x][y] != old) return; else {
+		a[x][y] = new;
+		if(x > 0) FloodFill(a, size, x-1, y);
+		if(y > 0) FloodFill(a, size, x, y-1);
+		if(x < size-1) FloodFill(a, size, x+1, y);
+		if(y < size-1) FloodFill(a, size, x, y+1);
+	}
+	
+}
+
 void Save(FILE *f, char *name, char data[130][130], int size, char *col, int depth)
 {	// write out data in source format for d x d pixmap with specified square color
 	int i, j;
@@ -79,8 +92,10 @@ char data[130][130], oData[130][130], sData[130][130], wData[130][130];
 
 main(int argc, char **argv)
 {
-	int i, j, k, d, cnt, p, s, t; char c, h, w, *name, buf[80];
+	int i, j, k, d, cnt, p, s, t; char c, h, w, *name, buf[80], transparent;
 	FILE *f;
+
+    transparent = argc > 1 && !strcmp(argv[1], "-t");
 
     for(s=0; s<18; s++) for(p=0; pieceList[p] != NULL; p++) {
 
@@ -107,19 +122,26 @@ main(int argc, char **argv)
 	printf("%s loaded\n", buf);
 	// construct pixmaps as character arrays
 	d = sizeList[s];
-	for(i=0; i<d; i++) { for(j=0; j<d; j++) data[i][j] = '.'; data[i][d] = 0; } // fill square
+	for(i=0; i<d; i++) { for(j=0; j<d; j++) data[i][j] = transparent? '.' : 'X'; data[i][d] = 0; } // fill square
 
 	Paint(data, sData, d, ' '); // overay with solid piece bitmap
+
+	if(!transparent) { // background was painted same color as piece details; flood-fill it from corners
+	    FloodFill(data, d, 0, 0);
+	    FloodFill(data, d, 0, d-1);
+	    FloodFill(data, d, d-1, 0);
+	    FloodFill(data, d, d-1, d-1);
+	}
 
 	sprintf(buf, "%s%s%d.xpm", pieceList[p], "dd", d);
 	sprintf(name, "%s%s%d", pieceList[p], "dd", d);
 	f = fopen(buf, "w");
-	Save(f, name, data, d, "c green s dark_square", 2);
+	Save(f, name, data, d, "c green s dark_square", 3);
 
 	sprintf(buf, "%s%s%d.xpm", pieceList[p], "dl", d);
 	sprintf(name, "%s%s%d", pieceList[p], "dl", d);
 	f = fopen(buf, "w");
-	Save(f, name, data, d, "c gray s light_square", 2); // silly duplication; pixmap is te same, but other color
+	Save(f, name, data, d, "c gray s light_square", 3); // silly duplication; pixmap is te same, but other color
 
 	// now the light piece
 	for(i=0; i<d; i++) { for(j=0; j<d; j++) data[i][j] = '.'; data[i][d] = 0; } // fill square
