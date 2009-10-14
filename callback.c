@@ -14,6 +14,7 @@
 
 extern GtkWidget  *about;
 extern GtkWidget  *GUI_Window;
+extern GtkWidget  *GUI_Aspect;
 extern GtkWidget  *GUI_Menubar;
 extern GtkWidget  *GUI_Timer;
 extern GtkWidget  *GUI_Buttonbar;
