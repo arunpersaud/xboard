@@ -181,10 +181,12 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkMenuItem" id="menuFile.Save Game">
-                            <property name="visible">True</property>
+                          <object class="GtkImageMenuItem" id="menuFile.Save Game">
                             <property name="label" translatable="yes">Save Game</property>
-                            <property name="use_underline">True</property>
+                            <property name="visible">True</property>
+                            <property name="image">image2</property>
+                            <property name="use_stock">False</property>
+                            <signal name="activate" handler="SaveGameProc"/>
                           </object>
                         </child>
                         <child>
@@ -244,6 +246,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Save Position</property>
                             <property name="use_underline">True</property>
+                            <signal name="activate" handler="SavePositionProc"/>
                           </object>
                         </child>
                         <child>
@@ -356,6 +359,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <signal name="toggled" handler="AnalyzeFileProc"/>
                           </object>
                         </child>
                         <child>
@@ -1069,5 +1073,10 @@
     <property name="visible">True</property>
     <property name="xalign">0.40000000596046448</property>
     <property name="stock">gtk-open</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="stock">gtk-save</property>
+    <property name="icon-size">1</property>
   </object>
 </interface>

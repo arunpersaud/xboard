@@ -269,13 +269,6 @@ void CommentCallback P((Widget w, XtPointer client_data,
 			XtPointer call_data));
 void ICSInputBoxPopUp P((void));
 void ICSInputBoxPopDown P((void));
-void FileNamePopUp P((char *label, char *def,
-		      FileProc proc, char *openMode));
-void FileNamePopDown P((void));
-void FileNameCallback P((Widget w, XtPointer client_data,
-			 XtPointer call_data));
-void FileNameAction P((Widget w, XEvent *event,
-		       String *prms, Cardinal *nprms));
 void AskQuestionReplyAction P((Widget w, XEvent *event,
 			  String *prms, Cardinal *nprms));
 void AskQuestionProc P((Widget w, XEvent *event,
@@ -289,23 +282,16 @@ void EditCommentPopDown P((void));
 void EditCommentCallback P((Widget w, XtPointer client_data,
 			    XtPointer call_data));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
-void LoadPositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
 void CopyPositionProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void PastePositionProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
 void CopyGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void PasteGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SaveGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SavePositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
 void MailMoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
 			    Cardinal *nprms));
 void AnalyzeModeProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void AnalyzeFileProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void EditGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EditPositionProc P((Widget w, XEvent *event,
@@ -637,24 +623,24 @@ Enables userThinkingEnables[] = {
 MenuItem fileMenu[] = {
     {N_("New Shuffle Game ..."), ShuffleMenuProc},
     {N_("New Variant ..."), NewVariantProc},      // [HGM] variant: not functional yet
-    {"----", NothingProc},
-    {N_("Save Game"), SaveGameProc},
-    {"----", NothingProc},
+    //    {"----", NothingProc},
+    //    {N_("Save Game"), SaveGameProc},
+    //    {"----", NothingProc},
     {N_("Copy Game"), CopyGameProc},
     {N_("Paste Game"), PasteGameProc},
-    {"----", NothingProc},
-    {N_("Load Position"), LoadPositionProc},
+    //    {"----", NothingProc},
+    //    {N_("Load Position"), LoadPositionProc},
     //    {N_("Load Next Position"), LoadNextPositionProc},
     //    {N_("Load Previous Position"), LoadPrevPositionProc},
     //    {N_("Reload Same Position"), ReloadPositionProc},
-    {N_("Save Position"), SavePositionProc},
-    {"----", NothingProc},
+    //    {N_("Save Position"), SavePositionProc},
+    //    {"----", NothingProc},
     {N_("Copy Position"), CopyPositionProc},
     {N_("Paste Position"), PastePositionProc},
-    {"----", NothingProc},
+    //    {"----", NothingProc},
     {N_("Mail Move"), MailMoveProc},
     {N_("Reload CMail Message"), ReloadCmailMsgProc},
-    {"----", NothingProc},
+    //    {"----", NothingProc},
     {NULL, NULL}
 };
 
@@ -663,7 +649,7 @@ MenuItem modeMenu[] = {
   //    {N_("Machine Black"), MachineBlackProc},
   //    {N_("Two Machines"), TwoMachinesProc},
     {N_("Analysis Mode"), AnalyzeModeProc},
-    {N_("Analyze File"), AnalyzeFileProc },
+    //    {N_("Analyze File"), AnalyzeFileProc },
     //    {N_("ICS Client"), IcsClientProc},
     {N_("Edit Game"), EditGameProc},
     {N_("Edit Position"), EditPositionProc},
@@ -1785,7 +1771,7 @@ XrmOptionDescRec shellOptions[] = {
 XtActionsRec boardActions[] = {
     { "HandleUserMove", HandleUserMove },
     { "AnimateUserMove", AnimateUserMove },
-    { "FileNameAction", FileNameAction },
+    //    { "FileNameAction", FileNameAction },
     { "AskQuestionProc", AskQuestionProc },
     { "AskQuestionReplyAction", AskQuestionReplyAction },
     { "PieceMenuPopup", PieceMenuPopup },
@@ -1793,7 +1779,7 @@ XtActionsRec boardActions[] = {
     //    { "BlackClock", BlackClock },
     { "Iconify", Iconify },
     { "LoadSelectedProc", LoadSelectedProc },
-    { "LoadPositionProc", LoadPositionProc },
+    //    { "LoadPositionProc", LoadPositionProc },
     //    { "LoadNextPositionProc", LoadNextPositionProc },
     //    { "LoadPrevPositionProc", LoadPrevPositionProc },
     //    { "ReloadPositionProc", ReloadPositionProc },
@@ -1801,14 +1787,14 @@ XtActionsRec boardActions[] = {
     { "PastePositionProc", PastePositionProc },
     { "CopyGameProc", CopyGameProc },
     { "PasteGameProc", PasteGameProc },
-    { "SaveGameProc", SaveGameProc },
-    { "SavePositionProc", SavePositionProc },
+    //    { "SaveGameProc", SaveGameProc },
+    //    { "SavePositionProc", SavePositionProc },
     { "MailMoveProc", MailMoveProc },
     { "ReloadCmailMsgProc", ReloadCmailMsgProc },
     //    { "MachineWhiteProc", MachineWhiteProc },
     //    { "MachineBlackProc", MachineBlackProc },
     { "AnalysisModeProc", AnalyzeModeProc },
-    { "AnalyzeFileProc", AnalyzeFileProc },
+    //    { "AnalyzeFileProc", AnalyzeFileProc },
     //    { "TwoMachinesProc", TwoMachinesProc },
     //    { "IcsClientProc", IcsClientProc },
     { "EditGameProc", EditGameProc },
@@ -1884,7 +1870,7 @@ XtActionsRec boardActions[] = {
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
-    { "FileNamePopDown", (XtActionProc) FileNamePopDown },
+    //    { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
@@ -1903,7 +1889,7 @@ char ICSInputTranslations[] =
     "<Key>Return: EnterKeyProc() \n";
 
 String xboardResources[] = {
-    "*fileName*value.translations: #override\\n <Key>Return: FileNameAction()",
+  //    "*fileName*value.translations: #override\\n <Key>Return: FileNameAction()",
     "*question*value.translations: #override\\n <Key>Return: AskQuestionReplyAction()",
     "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
     NULL
@@ -4666,138 +4652,6 @@ void CommentPopDown()
     commentUp = False;
 }
 
-void FileNamePopUp(label, def, proc, openMode)
-     char *label;
-     char *def;
-     FileProc proc;
-     char *openMode;
-{
-    Arg args[16];
-    Widget popup, layout, dialog, edit;
-    Window root, child;
-    int x, y, i;
-    int win_x, win_y;
-    unsigned int mask;
-
-    fileProc = proc;		/* I can't see a way not */
-    fileOpenMode = openMode;	/*   to use globals here */
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    XtSetArg(args[i], XtNtitle, XtNewString(_("File name prompt"))); i++;
-    fileNameShell = popup =
-      XtCreatePopupShell("File name prompt", transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    i = 0;
-    XtSetArg(args[i], XtNlabel, label); i++;
-    XtSetArg(args[i], XtNvalue, def); i++;
-    XtSetArg(args[i], XtNborderWidth, 0); i++;
-    dialog = XtCreateManagedWidget("fileName", dialogWidgetClass,
-				   layout, args, i);
-
-    XawDialogAddButton(dialog, _("ok"), FileNameCallback, (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("cancel"), FileNameCallback,
-		       (XtPointer) dialog);
-
-    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "FileNamePopDown");
-
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    filenameUp = True;
-
-    edit = XtNameToWidget(dialog, "*value");
-    XtSetKeyboardFocus(popup, edit);
-}
-
-void FileNamePopDown()
-{
-    if (!filenameUp) return;
-    XtPopdown(fileNameShell);
-    XtDestroyWidget(fileNameShell);
-    filenameUp = False;
-    ModeHighlight();
-}
-
-void FileNameCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("cancel")) == 0) {
-        FileNamePopDown();
-        return;
-    }
-
-    FileNameAction(w, NULL, NULL, NULL);
-}
-
-void FileNameAction(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-    String name;
-    FILE *f;
-    char *p, *fullname;
-    int index;
-
-    name = XawDialogGetValueString(w = XtParent(w));
-
-    if ((name != NULL) && (*name != NULLCHAR)) {
-	strcpy(buf, name);
-	XtPopdown(w = XtParent(XtParent(w)));
-	XtDestroyWidget(w);
-	filenameUp = False;
-
-	p = strrchr(buf, ' ');
-	if (p == NULL) {
-	    index = 0;
-	} else {
-	    *p++ = NULLCHAR;
-	    index = atoi(p);
-	}
-	fullname = ExpandPathName(buf);
-	if (!fullname) {
-	    ErrorPopUp(_("Error"), _("Can't open file"), FALSE);
-	}
-	else {
-	    f = fopen(fullname, fileOpenMode);
-	    if (f == NULL) {
-		DisplayError(_("Failed to open file"), errno);
-	    } else {
-		(void) (*fileProc)(f, index, buf);
-	    }
-	}
-	ModeHighlight();
-	return;
-    }
-
-    XtPopdown(w = XtParent(XtParent(w)));
-    XtDestroyWidget(w);
-    filenameUp = False;
-    ModeHighlight();
-}
-
 void PromotionPopUp()
 {
     Arg args[16];
@@ -5095,7 +4949,8 @@ int LoadGamePopUp(f, gameNumber, title)
 	else if (!ListEmpty(&gameList) 
 		 && ((ListGame *) gameList.tailPred)->number > 1) 
 	  {
-	    GameListPopUp(f, title);
+	    // TODO convert to GTK
+	    //	    GameListPopUp(f, title);
 	    return TRUE;
 	  };
 
@@ -5104,40 +4959,6 @@ int LoadGamePopUp(f, gameNumber, title)
       };
 
     return LoadGame(f, gameNumber, title, FALSE);
-}
-
-void LoadPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
-	Reset(FALSE, TRUE);
-    }
-    FileNamePopUp(_("Load position file name?"), "", LoadPosition, "rb");
-}
-
-void SaveGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    FileNamePopUp(_("Save game file name?"),
-		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
-		  SaveGame, "a");
-}
-
-void SavePositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    FileNamePopUp(_("Save position file name?"),
-		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
-		  SavePosition, "a");
 }
 
 void ReloadCmailMsgProc(w, event, prms, nprms)
@@ -5339,7 +5160,8 @@ void PasteGameProc(w, event, prms, nprms)
 
 void AutoSaveGame()
 {
-    SaveGameProc(NULL, NULL, NULL, NULL);
+  SaveGameProc(NULL, NULL);
+  return;
 }
 
 void AnalyzeModeProc(w, event, prms, nprms)
@@ -5384,29 +5206,6 @@ void AnalyzeModeProc(w, event, prms, nprms)
 
     AnalyzeModeEvent();
 }
-
-void AnalyzeFileProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (!first.analysisSupport) {
-      char buf[MSG_SIZ];
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-    Reset(FALSE, TRUE);
-
-    if (!appData.showThinking)
-      ShowThinkingProc(NULL,NULL);
-
-    AnalyzeFileEvent();
-    FileNamePopUp(_("File to analyze"), "", LoadGamePopUp, "rb");
-    AnalysisPeriodicEvent(1);
-}
-
 
 void EditGameProc(w, event, prms, nprms)
      Widget w;

@@ -30,4 +30,6 @@ GdkPixbuf               *SVGNeutralSquare=NULL;
 GdkCursor               *BoardCursor=NULL;
 
 
-GdkPixbuf *load_pixbuf(char *filename,int size);
+GdkPixbuf *load_pixbuf P((char *filename,int size));
+void FileNamePopUp P((char *label, char *def,
+		      FileProc proc, char *openMode));

@@ -29,6 +29,11 @@ extern int toX;
 extern int toY;
 extern int squareSize,lineGap;
 
+extern int LoadGamePopUp P((FILE *f, int gameNumber, char *title));
+extern int LoadPosition P((FILE *f, int gameNumber, char *title));
+extern int SaveGame P((FILE *f, int gameNumber, char *title));
+extern int SavePosition P((FILE *f, int gameNumber, char *title));
+
 gboolean
 ExposeProc(object, user_data)
      GtkObject *object;
@@ -39,20 +44,20 @@ ExposeProc(object, user_data)
   int totalh=0,nw,nh;
   float ratio;
   int boardWidth,boardHeight,old,new;
-  
+
   nw=GTK_WIDGET(object)->allocation.width;
   nh=GTK_WIDGET(object)->allocation.height;
-    
+
   old=squareSize;
   squareSize  = nw/(BOARD_WIDTH*1.05+0.05);
 
   if(old!=squareSize)
     {
       lineGap = squareSize*0.05;
-      
+
       boardWidth  = lineGap + BOARD_WIDTH  * (squareSize + lineGap);
       boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-      
+
       /* get the height of the menus, etc. and calculate the aspect ratio */
       gtk_widget_size_request(GTK_WIDGET(GUI_Menubar),   &w);
       totalh += w.height;
@@ -60,17 +65,17 @@ ExposeProc(object, user_data)
       totalh += w.height;
       gtk_widget_size_request(GTK_WIDGET(GUI_Buttonbar),   &w);
       totalh += w.height;
-      
+
       ratio  = ((float)totalh+boardHeight)/((float)boardWidth) ;
-            
+
       gtk_widget_set_size_request(GTK_WIDGET(GUI_Board),
 				  boardWidth,boardHeight);
-      
+
       gtk_aspect_frame_set (GTK_ASPECT_FRAME(GUI_Aspect),0,0,ratio,TRUE);
 
       /* recreate pieces with new size... TODO: keep svg in memory and just recreate pixmap instead of reloading files */
       CreatePieces();
-    } 
+    }
   return FALSE; /* return false, so that other expose events are called too */
 }
 
@@ -182,7 +187,8 @@ void IcsClientProc(object, user_data)
  * File menu
  */
 
-void LoadNextGameProc(object, user_data)
+void
+LoadNextGameProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -190,7 +196,8 @@ void LoadNextGameProc(object, user_data)
     return;
 }
 
-void LoadPrevGameProc(object, user_data)
+void
+LoadPrevGameProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -198,7 +205,8 @@ void LoadPrevGameProc(object, user_data)
     return;
 }
 
-void ReloadGameProc(object, user_data)
+void
+ReloadGameProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -206,8 +214,8 @@ void ReloadGameProc(object, user_data)
     return;
 }
 
-
-void LoadNextPositionProc(object, user_data)
+void
+LoadNextPositionProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -215,7 +223,8 @@ void LoadNextPositionProc(object, user_data)
     return;
 }
 
-void LoadPrevPositionProc(object, user_data)
+void
+LoadPrevPositionProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -223,12 +232,72 @@ void LoadPrevPositionProc(object, user_data)
     return;
 }
 
-void ReloadPositionProc(object, user_data)
+void
+ReloadPositionProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
     ReloadPosition(0);
     return;
+}
+
+void
+LoadPositionProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  if (gameMode == AnalyzeMode || gameMode == AnalyzeFile)
+    {
+      Reset(FALSE, TRUE);
+    };
+
+  FileNamePopUp(_("Load position file name?"), "", LoadPosition, "rb");
+  return;
+}
+
+void
+SaveGameProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  FileNamePopUp(_("Save game file name?"),
+		DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
+		SaveGame, "a");
+  return;
+}
+
+void
+SavePositionProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  FileNamePopUp(_("Save position file name?"),
+		DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
+		SavePosition, "a");
+  return;
+}
+
+void
+AnalyzeFileProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  if (!first.analysisSupport)
+    {
+      char buf[MSG_SIZ];
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
+      DisplayError(buf, 0);
+      return;
+    };
+  Reset(FALSE, TRUE);
+
+  if (!appData.showThinking)
+    ShowThinkingProc(NULL,NULL);
+
+  AnalyzeFileEvent();
+  FileNamePopUp(_("File to analyze"), "", LoadGamePopUp, "rb");
+  AnalysisPeriodicEvent(1);
+  return;
 }
 
 
@@ -455,7 +524,7 @@ void ShowThinkingProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    appData.showThinking = !appData.showThinking; 
+    appData.showThinking = !appData.showThinking;
     ShowThinkingEvent();
 
     return;
@@ -550,37 +619,7 @@ void LoadGameProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-  GtkWidget *dialog;
-  dialog = gtk_file_chooser_dialog_new (_("Load game file name?"),
-					GTK_WINDOW(GUI_Window),
-					GTK_FILE_CHOOSER_ACTION_OPEN,
-					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-					NULL);
-  if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
-    {
-      char *filename;
-      FILE *f;
-
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-
-      //see loadgamepopup
-      f = fopen(filename, "rb");
-      if (f == NULL) 
-	{
-	  DisplayError(_("Failed to open file"), errno);
-	}
-      else 
-	{
-	  /* TODO add indec */
-	  (void) LoadGamePopUp(f, 0, filename);
-	}
-      g_free (filename);
-    };
-  
-  gtk_widget_destroy (dialog);
-  ModeHighlight();
-  
+  FileNamePopUp(_("Load game file name?"),"",LoadGamePopUp,"rb");
   return;
 }
 
@@ -798,14 +837,14 @@ void GetMoveListProc(object, user_data)
      gpointer user_data;
 {
   appData.getMoveList = !appData.getMoveList;
-  
-  if (appData.getMoveList) 
+
+  if (appData.getMoveList)
     {
       GetMoveListEvent();
-    } 
+    }
 
   // gets set automatically? if we set it with set_active we end up in an endless loop switching between 0 and 1
   //  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (object),(gboolean) appData.getMoveList );
-  
+
   return;
 }

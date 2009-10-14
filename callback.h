@@ -28,6 +28,9 @@ void ReloadGameProc P((GtkObject *object, gpointer user_data));
 void LoadNextPositionProc P((GtkObject *object, gpointer user_data));
 void LoadPrevPositionProc P((GtkObject *object, gpointer user_data));
 void ReloadPositionProc P((GtkObject *object, gpointer user_data));
+void LoadPositionProc P((GtkObject *object, gpointer user_data));
+void SaveGameProc P((GtkObject *object, gpointer user_data));
+void SavePositionProc P((GtkObject *object, gpointer user_data));
 
 /* Step Menu */
 void BackwardProc P((GtkObject *object, gpointer user_data));
