@@ -132,7 +132,7 @@ Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicato
 Widget outputField[2][7]; // [HGM] front-end array to translate output field to window handle
 
 void EngineOutputPopDown();
-void engineOutputPopUp(char *title, char *text);
+void engineOutputPopUp();
 int  EngineOutputIsUp();
 static void SetEngineColorIcon( int which );
 
@@ -483,12 +483,13 @@ void ResizeWindowControls(shell, mode)
     }
 }
 
-void EngineOutputPopUp(title, text)
-     char *title, *text;
+void 
+EngineOutputPopUp()
 {
     Arg args[16];
     int j;
     Widget edit;
+    static char *title = _("Engine output"), *text = _("This feature is experimental");
 
     if (engineOutputShell == NULL) {
 	engineOutputShell =
@@ -937,7 +938,7 @@ EngineOutputProc(w, event, prms, nprms)
   if (engineOutputDialogUp) {
     EngineOutputPopDown();
   } else {
-    EngineOutputPopUp(_("engine output"),_("This feature is experimental"));
+    EngineOutputPopUp();
   }
 //  ToNrEvent(currentMove);
 }
