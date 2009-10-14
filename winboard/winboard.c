@@ -5631,14 +5631,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wmId) {
     case IDM_NewGame:
       ResetGameEvent();
-      AnalysisPopDown();
       SAY("new game enter a move to play against the computer with white");
       break;
 
     case IDM_NewGameFRC:
       if( NewGameFRC() == 0 ) {
         ResetGameEvent();
-        AnalysisPopDown();
       }
       break;
 
@@ -10697,51 +10695,6 @@ AnalysisDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   }
   return FALSE;
 }
-
-VOID
-AnalysisPopUp(char* title, char* str)
-{
-  FARPROC lpProc;
-  char *p, *q;
-
-  /* [AS] */
-  EngineOutputPopUp();
-  return;
-
-  if (str == NULL) str = "";
-  p = (char *) malloc(2 * strlen(str) + 2);
-  q = p;
-  while (*str) {
-    if (*str == '\n') *q++ = '\r';
-    *q++ = *str++;
-  }
-  *q = NULLCHAR;
-  if (analysisText != NULL) free(analysisText);
-  analysisText = p;
-
-  if (analysisDialog) {
-    SetWindowText(analysisDialog, title);
-    SetDlgItemText(analysisDialog, OPT_AnalysisText, analysisText);
-    ShowWindow(analysisDialog, SW_SHOW);
-  } else {
-    analysisTitle = title;
-    lpProc = MakeProcInstance((FARPROC)AnalysisDialog, hInst);
-    CreateDialog(hInst, MAKEINTRESOURCE(DLG_Analysis),
-		 hwndMain, (DLGPROC)lpProc);
-    FreeProcInstance(lpProc);
-  }
-  analysisDialogUp = TRUE;  
-}
-
-VOID
-AnalysisPopDown()
-{
-  if (analysisDialog) {
-    ShowWindow(analysisDialog, SW_HIDE);
-  }
-  analysisDialogUp = FALSE;  
-}
-
 
 VOID
 SetHighlights(int fromX, int fromY, int toX, int toY)

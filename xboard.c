@@ -1897,7 +1897,7 @@ XtActionsRec boardActions[] = {
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
-    { "AnalysisPopDown", (XtActionProc) AnalysisPopDown },
+    { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
@@ -5744,37 +5744,6 @@ void CommentPopUp(title, text)
     commentUp = True;
 }
 
-void AnalysisPopUp(title, text)
-     char *title, *text;
-{
-    Arg args[16];
-    int j;
-    Widget edit;
-
-    if (analysisShell == NULL) {
-	analysisShell = MiscCreate(title, text, False, NULL, 4);
-	XtRealizeWidget(analysisShell);
-	CatchDeleteWindow(analysisShell, "AnalysisPopDown");
-
-    } else {
-	edit = XtNameToWidget(analysisShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, text); j++;
-	XtSetValues(edit, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) title);   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) title);      j++;
-	XtSetValues(analysisShell, args, j);
-    }
-
-    if (!analysisUp) {
-	XtPopup(analysisShell, XtGrabNone);
-    }
-    XSync(xDisplay, False);
-
-    analysisUp = True;
-}
-
 void CommentCallback(w, client_data, call_data)
      Widget w;
      XtPointer client_data, call_data;
@@ -5812,16 +5781,6 @@ void CommentPopDown()
     XSync(xDisplay, False);
     commentUp = False;
 }
-
-void AnalysisPopDown()
-{
-    if (!analysisUp) return;
-    XtPopdown(analysisShell);
-    XSync(xDisplay, False);
-    analysisUp = False;
-    if (appData.icsEngineAnalyze) ExitAnalyzeMode();    /* [DM] icsEngineAnalyze */
-}
-
 
 void FileNamePopUp(label, def, proc, openMode)
      char *label;
@@ -6294,7 +6253,7 @@ void ResetProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     ResetGameEvent();
-    AnalysisPopDown();
+    EngineOutputPopDown();
 }
 
 int LoadGamePopUp(f, gameNumber, title)

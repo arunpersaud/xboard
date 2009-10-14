@@ -10328,8 +10328,7 @@ AnalyzeModeEvent()
 	first.analyzing = TRUE;
 	/*first.maybeThinking = TRUE;*/
 	first.maybeThinking = FALSE; /* avoid killing GNU Chess */
-	AnalysisPopUp(_("Analysis"),
-		      _("Starting analysis mode...\nIf this message stays up, your chess program does not support analysis."));
+	EngineOutputPopUp();
     }
     if (!appData.icsEngineAnalyze) gameMode = AnalyzeMode;
     pausing = FALSE;
@@ -10355,8 +10354,7 @@ AnalyzeFileEvent()
 	first.analyzing = TRUE;
 	/*first.maybeThinking = TRUE;*/
 	first.maybeThinking = FALSE; /* avoid killing GNU Chess */
-	AnalysisPopUp(_("Analysis"),
-		      _("Starting analysis mode...\nIf this message stays up, your chess program does not support analysis."));
+	EngineOutputPopUp();
     }
     gameMode = AnalyzeFile;
     pausing = FALSE;
@@ -10854,7 +10852,7 @@ ExitAnalyzeMode()
       SendToProgram("exit\n", &first);
       first.analyzing = FALSE;
     }
-    AnalysisPopDown();
+    EngineOutputPopDown();
     thinkOutput[0] = NULLCHAR;
 }
 
@@ -12698,12 +12696,10 @@ void
 DisplayAnalysisText(text)
      char *text;
 {
-    char buf[MSG_SIZ];
-
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
-               || appData.icsEngineAnalyze) {
-	sprintf(buf, "Analysis (%s)", first.tidy);
-	AnalysisPopUp(buf, text);
+  if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
+      || appData.icsEngineAnalyze) 
+    {
+      EngineOutputPopUp();
     }
 }
 
