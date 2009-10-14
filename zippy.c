@@ -412,10 +412,6 @@ int ZippyControl(buf, i)
     char *player, *p;
     char reply[MSG_SIZ];
 
-#if TRIVIA
-#include "trivia.c"
-#endif
-
     /* Possibly reject Crafty as opponent */
     if (appData.zippyPlay && appData.zippyNoplayCrafty && forwardMostMove < 4
 	&& looking_at(buf, i, "* kibitzes: Hello from Crafty")) 
