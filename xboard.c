@@ -2198,6 +2198,9 @@ main(argc, argv)
     GUI_Window = GTK_WIDGET (gtk_builder_get_object (builder, "MainWindow"));
     if(!GUI_Window) printf("Error: gtk_builder didn't work!\n");
 
+    GUI_Aspect = GTK_WIDGET (gtk_builder_get_object (builder, "Aspectframe"));
+    if(!GUI_Aspect) printf("Error: gtk_builder didn't work!\n");
+
     GUI_History = GTK_WIDGET (gtk_builder_get_object (builder, "MoveHistory"));
     if(!GUI_History) printf("Error: gtk_builder didn't work!\n");
 

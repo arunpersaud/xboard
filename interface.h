@@ -2,6 +2,7 @@
 GtkBuilder              *builder=NULL;
 
 GtkWidget               *GUI_Window=NULL;
+GtkWidget               *GUI_Aspect=NULL;
 GtkWidget               *GUI_History=NULL;
 GtkWidget               *GUI_Board=NULL;
 GtkWidget               *GUI_Whiteclock=NULL;
@@ -30,4 +31,3 @@ GdkCursor               *BoardCursor=NULL;
 
 
 GdkPixbuf *load_pixbuf(char *filename,int size);
-void GUI_SetAspectRatio(int ratio);

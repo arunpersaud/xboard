@@ -60,12 +60,13 @@ ExposeProc(object, user_data)
       gtk_widget_size_request(GTK_WIDGET(GUI_Buttonbar),   &w);
       totalh += w.height;
       
-      ratio  = (totalh+boardHeight)/(boardWidth) ;
+      ratio  = ((float)totalh+boardHeight)/((float)boardWidth) ;
             
       gtk_widget_set_size_request(GTK_WIDGET(GUI_Board),
 				  boardWidth,boardHeight);
       
-      GUI_SetAspectRatio(ratio);
+      gtk_aspect_frame_set (GTK_ASPECT_FRAME(GUI_Aspect),0,0,ratio,TRUE);
+
       /* recreate pieces with new size... TODO: keep svg in memory and just recreate pixmap instead of reloading files */
       CreatePieces();
     } 

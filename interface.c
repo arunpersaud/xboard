@@ -49,20 +49,3 @@ GdkPixbuf *load_pixbuf(char *filename,int size)
     }
   return image;
 }
-
-void GUI_SetAspectRatio(ratio)
-     int ratio;
-{
-  /* sets the aspect ration of the main window */
-    GdkGeometry hints;
-    extern GtkWidget *GUI_Window;
-
-    hints.min_aspect = ratio;
-    hints.max_aspect = ratio;
-    
-    gtk_window_set_geometry_hints (GTK_WINDOW (GUI_Window),
-				   GTK_WIDGET (GUI_Window),
-				   &hints,
-				   GDK_HINT_ASPECT);
-    return;
-}
