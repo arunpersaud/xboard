@@ -8648,7 +8648,8 @@ LoadGameFromFile(filename, n, title, useList)
 	    DisplayError(_("Cannot build game list"), error);
 	} else if (!ListEmpty(&gameList) &&
 		   ((ListGame *) gameList.tailPred)->number > 1) {
-	    GameListPopUp(f, title);
+	  // TODO convert to GTK
+	  //	    GameListPopUp(f, title);
 	    return TRUE;
 	}
 	GameListDestroy();
