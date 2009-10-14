@@ -51,6 +51,22 @@ void HideThinkingProc P((GtkObject *object, gpointer user_data));
 void FlipViewProc P((GtkObject *object, gpointer user_data));
 void GetMoveListProc P((GtkObject *object, gpointer user_data));
 
+void AlwaysQueenProc P((GtkObject *object, gpointer user_data));
+void AnimateDraggingProc P((GtkObject *object, gpointer user_data));
+void AnimateMovingProc P((GtkObject *object, gpointer user_data));
+void AutobsProc P((GtkObject *object, gpointer user_data));
+void AutoraiseProc P((GtkObject *object, gpointer user_data));
+void AutosaveProc P((GtkObject *object, gpointer user_data));
+void BlindfoldProc P((GtkObject *object, gpointer user_data));
+void TestLegalityProc P((GtkObject *object, gpointer user_data));
+void FlashMovesProc P((GtkObject *object, gpointer user_data));
+void HighlightDraggingProc P((GtkObject *object, gpointer user_data));
+void HighlightLastMoveProc P((GtkObject *object, gpointer user_data));
+void IcsAlarmProc P((GtkObject *object, gpointer user_data));
+void MoveSoundProc P((GtkObject *object, gpointer user_data));
+void OldSaveStyleProc P((GtkObject *object, gpointer user_data));
+void PeriodicUpdatesProc P((GtkObject *object, gpointer user_data));
+
 /* Help Menu */
 
 void InfoProc  P((GtkObject *object, gpointer user_data));

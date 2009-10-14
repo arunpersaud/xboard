@@ -302,29 +302,6 @@ void EditCommentProc P((Widget w, XEvent *event,
 void IcsInputBoxProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AlwaysQueenProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void AnimateDraggingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void AnimateMovingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void AutobsProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void AutoraiseProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AutosaveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BlindfoldProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void FlashMovesProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void HighlightDraggingProc P((Widget w, XEvent *event, String *prms,
-			      Cardinal *nprms));
-void HighlightLastMoveProc P((Widget w, XEvent *event, String *prms,
-			      Cardinal *nprms));
-void MoveSoundProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void IcsAlarmProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void OldSaveStyleProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void PeriodicUpdatesProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
 void PonderNextMoveProc P((Widget w, XEvent *event, String *prms,
 			   Cardinal *nprms));
 void PopupMoveErrorsProc P((Widget w, XEvent *event, String *prms,
@@ -333,8 +310,6 @@ void PopupExitMessageProc P((Widget w, XEvent *event, String *prms,
 			     Cardinal *nprms));
 void PremoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void QuietPlayProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TestLegalityProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -675,33 +650,33 @@ MenuItem optionsMenu[] = {
     {N_("Engine #2 Settings ..."), SecondSettingsProc},
     {N_("Time Control ..."), TimeControlProc},
     {"----", NothingProc},
-    {N_("Always Queen"), AlwaysQueenProc},
-    {N_("Animate Dragging"), AnimateDraggingProc},
-    {N_("Animate Moving"), AnimateMovingProc},
+    //    {N_("Always Queen"), AlwaysQueenProc},
+    //    {N_("Animate Dragging"), AnimateDraggingProc},
+    //    {N_("Animate Moving"), AnimateMovingProc},
     //    {N_("Auto Comment"), AutocommProc},
     //    {N_("Auto Flag"), AutoflagProc},
     //    {N_("Auto Flip View"), AutoflipProc},
-    {N_("Auto Observe"), AutobsProc},
-    {N_("Auto Raise Board"), AutoraiseProc},
-    {N_("Auto Save"), AutosaveProc},
-    {N_("Blindfold"), BlindfoldProc},
-    {N_("Flash Moves"), FlashMovesProc},
+    //    {N_("Auto Observe"), AutobsProc},
+    //    {N_("Auto Raise Board"), AutoraiseProc},
+    //    {N_("Auto Save"), AutosaveProc},
+    //    {N_("Blindfold"), BlindfoldProc},
+    //    {N_("Flash Moves"), FlashMovesProc},
  //    {N_("Get Move List"), GetMoveListProc},
-#if HIGHDRAG
-    {N_("Highlight Dragging"), HighlightDraggingProc},
-#endif
-    {N_("Highlight Last Move"), HighlightLastMoveProc},
-    {N_("Move Sound"), MoveSoundProc},
-    {N_("ICS Alarm"), IcsAlarmProc},
-    {N_("Old Save Style"), OldSaveStyleProc},
-    {N_("Periodic Updates"), PeriodicUpdatesProc},
+    //#if HIGHDRAG
+    //    {N_("Highlight Dragging"), HighlightDraggingProc},
+    //#endif
+    //    {N_("Highlight Last Move"), HighlightLastMoveProc},
+    //    {N_("Move Sound"), MoveSoundProc},
+    //    {N_("ICS Alarm"), IcsAlarmProc},
+    //    {N_("Old Save Style"), OldSaveStyleProc},
+    //    {N_("Periodic Updates"), PeriodicUpdatesProc},
     {N_("Ponder Next Move"), PonderNextMoveProc},
     {N_("Popup Exit Message"), PopupExitMessageProc},
     {N_("Popup Move Errors"), PopupMoveErrorsProc},
     {N_("Premove"), PremoveProc},
     {N_("Quiet Play"), QuietPlayProc},
     //    {N_("Hide Thinking"), HideThinkingProc},
-    {N_("Test Legality"), TestLegalityProc},
+    //    {N_("Test Legality"), TestLegalityProc},
     {NULL, NULL}
 };
 
@@ -1805,7 +1780,7 @@ XtActionsRec boardActions[] = {
     //    { "ShowMoveListProc", HistoryShowProc},
     { "EditTagsProc", EditCommentProc },
     { "EditCommentProc", EditCommentProc },
-    { "IcsAlarmProc", IcsAlarmProc },
+    //    { "IcsAlarmProc", IcsAlarmProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
     //    { "AcceptProc", AcceptProc },
     //    { "DeclineProc", DeclineProc },
@@ -1829,26 +1804,26 @@ XtActionsRec boardActions[] = {
     //    { "TruncateGameProc", TruncateGameProc },
     //    { "MoveNowProc", MoveNowProc },
     //    { "RetractMoveProc", RetractMoveProc },
-    { "AlwaysQueenProc", AlwaysQueenProc },
-    { "AnimateDraggingProc", AnimateDraggingProc },
-    { "AnimateMovingProc", AnimateMovingProc },
+    //    { "AlwaysQueenProc", AlwaysQueenProc },
+    //    { "AnimateDraggingProc", AnimateDraggingProc },
+    //    { "AnimateMovingProc", AnimateMovingProc },
     //    { "AutoflagProc", AutoflagProc },
     //    { "AutoflipProc", AutoflipProc },
-    { "AutobsProc", AutobsProc },
-    { "AutoraiseProc", AutoraiseProc },
-    { "AutosaveProc", AutosaveProc },
-    { "BlindfoldProc", BlindfoldProc },
-    { "FlashMovesProc", FlashMovesProc },
+    //    { "AutobsProc", AutobsProc },
+    //    { "AutoraiseProc", AutoraiseProc },
+    //    { "AutosaveProc", AutosaveProc },
+    //    { "BlindfoldProc", BlindfoldProc },
+    //    { "FlashMovesProc", FlashMovesProc },
     //    { "FlipViewProc", FlipViewProc },
     //    { "GetMoveListProc", GetMoveListProc },
 #if HIGHDRAG
-    { "HighlightDraggingProc", HighlightDraggingProc },
+    //    { "HighlightDraggingProc", HighlightDraggingProc },
 #endif
-    { "HighlightLastMoveProc", HighlightLastMoveProc },
-    { "IcsAlarmProc", IcsAlarmProc },
-    { "MoveSoundProc", MoveSoundProc },
-    { "OldSaveStyleProc", OldSaveStyleProc },
-    { "PeriodicUpdatesProc", PeriodicUpdatesProc },
+    //    { "HighlightLastMoveProc", HighlightLastMoveProc },
+    //    { "IcsAlarmProc", IcsAlarmProc },
+    //    { "MoveSoundProc", MoveSoundProc },
+    //    { "OldSaveStyleProc", OldSaveStyleProc },
+    //    { "PeriodicUpdatesProc", PeriodicUpdatesProc },
     { "PonderNextMoveProc", PonderNextMoveProc },
     { "PopupExitMessageProc", PopupExitMessageProc },
     { "PopupMoveErrorsProc", PopupMoveErrorsProc },
@@ -5271,302 +5246,6 @@ void EnterKeyProc(w, event, prms, nprms)
       ICSInputSendText();
 }
 
-void AlwaysQueenProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.alwaysPromoteToQueen = !appData.alwaysPromoteToQueen;
-
-    if (appData.alwaysPromoteToQueen) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
-		args, 1);
-}
-
-void AnimateDraggingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.animateDragging = !appData.animateDragging;
-
-    if (appData.animateDragging) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-        CreateAnimVars();
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Dragging"),
-		args, 1);
-}
-
-void AnimateMovingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.animate = !appData.animate;
-
-    if (appData.animate) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-        CreateAnimVars();
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
-		args, 1);
-}
-
-void AutobsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoObserve = !appData.autoObserve;
-
-    if (appData.autoObserve) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Observe"),
-		args, 1);
-}
-
-void AutoraiseProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoRaiseBoard = !appData.autoRaiseBoard;
-
-    if (appData.autoRaiseBoard) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Raise Board"),
-		args, 1);
-}
-
-void AutosaveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoSaveGames = !appData.autoSaveGames;
-
-    if (appData.autoSaveGames) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Save"),
-		args, 1);
-}
-
-void BlindfoldProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.blindfold = !appData.blindfold;
-
-    if (appData.blindfold) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Blindfold"),
-		args, 1);
-
-    DrawPosition(True, NULL);
-}
-
-void TestLegalityProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.testLegality = !appData.testLegality;
-
-    if (appData.testLegality) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Test Legality"),
-		args, 1);
-}
-
-
-void FlashMovesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    if (appData.flashCount == 0) {
-	appData.flashCount = 3;
-    } else {
-	appData.flashCount = -appData.flashCount;
-    }
-
-    if (appData.flashCount > 0) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flash Moves"),
-		args, 1);
-}
-
-#if HIGHDRAG
-void HighlightDraggingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.highlightDragging = !appData.highlightDragging;
-
-    if (appData.highlightDragging) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Highlight Dragging"), args, 1);
-}
-#endif
-
-void HighlightLastMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.highlightLastMove = !appData.highlightLastMove;
-
-    if (appData.highlightLastMove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Highlight Last Move"), args, 1);
-}
-
-void IcsAlarmProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.icsAlarm = !appData.icsAlarm;
-
-    if (appData.icsAlarm) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.ICS Alarm"), args, 1);
-}
-
-void MoveSoundProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.ringBellAfterMoves = !appData.ringBellAfterMoves;
-
-    if (appData.ringBellAfterMoves) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
-		args, 1);
-}
-
-
-void OldSaveStyleProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.oldSaveStyle = !appData.oldSaveStyle;
-
-    if (appData.oldSaveStyle) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Old Save Style"),
-		args, 1);
-}
-
-void PeriodicUpdatesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    PeriodicUpdatesEvent(!appData.periodicUpdates);
-
-    if (appData.periodicUpdates) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Periodic Updates"),
-		args, 1);
-}
 
 void PonderNextMoveProc(w, event, prms, nprms)
      Widget w;

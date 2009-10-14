@@ -496,7 +496,8 @@ void RetractMoveProc(object, user_data)
 }
 
 /* Option Menu */
-void AutocommProc(object, user_data)
+void 
+AutocommProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -504,7 +505,8 @@ void AutocommProc(object, user_data)
     return;
 }
 
-void AutoflagProc(object, user_data)
+void 
+AutoflagProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -512,7 +514,8 @@ void AutoflagProc(object, user_data)
     return;
 }
 
-void AutoflipProc(object, user_data)
+void 
+AutoflipProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -520,7 +523,8 @@ void AutoflipProc(object, user_data)
     return;
 }
 
-void ShowThinkingProc(object, user_data)
+void 
+ShowThinkingProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -530,7 +534,8 @@ void ShowThinkingProc(object, user_data)
     return;
 }
 
-void HideThinkingProc(object, user_data)
+void 
+HideThinkingProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -540,7 +545,8 @@ void HideThinkingProc(object, user_data)
     return;
 }
 
-void FlipViewProc(object, user_data)
+void 
+FlipViewProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
@@ -549,6 +555,169 @@ void FlipViewProc(object, user_data)
     return;
 }
 
+void 
+AlwaysQueenProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.alwaysPromoteToQueen = !appData.alwaysPromoteToQueen;
+  return;
+}
+
+void 
+AnimateDraggingProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.animateDragging = !appData.animateDragging;
+
+  if (appData.animateDragging) 
+    {
+      // TODO convert to gtk
+      //      CreateAnimVars();
+    };
+
+  return;
+}
+
+void 
+AnimateMovingProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.animate = !appData.animate;
+  
+  if (appData.animate) 
+    {
+      // TODO convert to gtk
+      //      CreateAnimVars();
+    };
+
+  return;
+}
+
+void 
+AutobsProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.autoObserve = !appData.autoObserve;
+  return;
+}
+
+void 
+AutoraiseProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.autoRaiseBoard = !appData.autoRaiseBoard;
+  return;
+}
+
+void 
+AutosaveProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.autoSaveGames = !appData.autoSaveGames;
+  return;
+}
+
+void 
+BlindfoldProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.blindfold = !appData.blindfold;
+  DrawPosition(True, NULL);
+  return;
+}
+
+void 
+TestLegalityProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.testLegality = !appData.testLegality;
+  return;
+}
+
+void 
+FlashMovesProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  if (appData.flashCount == 0) 
+    {
+      appData.flashCount = 3;
+    }
+  else 
+    {
+      appData.flashCount = -appData.flashCount;
+    };
+  
+    // TODO: check if this is working correct*/
+    return;
+}
+
+#if HIGHDRAG
+void 
+HighlightDraggingProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  /* TODO: connect to option menu */
+  appData.highlightDragging = !appData.highlightDragging;
+  return;
+}
+#endif
+
+void 
+HighlightLastMoveProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.highlightLastMove = !appData.highlightLastMove;
+  return;
+}
+
+void 
+IcsAlarmProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.icsAlarm = !appData.icsAlarm;
+  return;
+}
+
+void 
+MoveSoundProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.ringBellAfterMoves = !appData.ringBellAfterMoves;
+  return;
+}
+
+void 
+OldSaveStyleProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.oldSaveStyle = !appData.oldSaveStyle;
+  return;
+}
+
+void 
+PeriodicUpdatesProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  PeriodicUpdatesEvent(!appData.periodicUpdates);
+  return;
+}
+
+/* end option menu */
 
 gboolean CloseWindowProc(GtkWidget *button)
 {

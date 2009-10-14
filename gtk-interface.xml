@@ -674,6 +674,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Always Queen</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="AlwaysQueenProc"/>
                           </object>
                         </child>
                         <child>
@@ -681,6 +682,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Animate Dragging</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="AnimateDraggingProc"/>
                           </object>
                         </child>
                         <child>
@@ -688,6 +690,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Animate Moving</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="AnimateMovingProc"/>
                           </object>
                         </child>
                         <child>
@@ -716,6 +719,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Auto Observe</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="AutobsProc"/>
                           </object>
                         </child>
                         <child>
@@ -723,6 +727,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Auto Raise Board</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="AutoraiseProc"/>
                           </object>
                         </child>
                         <child>
@@ -730,6 +735,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Auto Save</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="AutosaveProc"/>
                           </object>
                         </child>
                         <child>
@@ -737,6 +743,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Blindfold</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="BlindfoldProc"/>
                           </object>
                         </child>
                         <child>
@@ -744,6 +751,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Flash Moves</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="FlashMovesProc"/>
                           </object>
                         </child>
                         <child>
@@ -767,6 +775,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Highlight Last Move</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="HighlightLastMoveProc"/>
                           </object>
                         </child>
                         <child>
@@ -774,6 +783,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Move Sound</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="MoveSoundProc"/>
                           </object>
                         </child>
                         <child>
@@ -781,6 +791,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">ICS Alarm</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="IcsAlarmProc"/>
                           </object>
                         </child>
                         <child>
@@ -788,6 +799,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Old Save Style</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="OldSaveStyleProc"/>
                           </object>
                         </child>
                         <child>
@@ -795,6 +807,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Periodic Updates</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="PeriodicUpdatesProc"/>
                           </object>
                         </child>
                         <child>
@@ -853,6 +866,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Test Legality</property>
                             <property name="use_underline">True</property>
+                            <signal name="toggled" handler="TestLegalityProc"/>
                           </object>
                         </child>
                       </object>
