@@ -602,6 +602,7 @@ typedef struct {
     char *fenOverride2;
     Boolean keepAlive;  /* [HGM] alive     */
     Boolean forceIllegal;/*[HGM] illegal   */
+    Boolean noJoin;     /* [HGM] join      */
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

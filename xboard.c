@@ -245,6 +245,7 @@ typedef struct {
 int main P((int argc, char **argv));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
+RETSIGTYPE TermSizeSigHandler P((int sig));
 void CreateGCs P((void));
 void CreateXIMPieces P((void));
 void CreateXPMPieces P((void));
@@ -380,7 +381,8 @@ void TimeControlPopDown P(());
 void NewVariantPopDown P(());
 void SettingsPopDown P(());
 void SetMenuEnables P((Enables *enab));
-
+void update_ics_width P(());
+int get_term_width P(());
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -1404,6 +1406,9 @@ XtResource clientResources[] = {
     { "forceIllegalMoves", "forceIllegalMoves", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, forceIllegal),
 	XtRImmediate, (XtPointer) False},
+    { "keepLineBreaksICS", "keepLineBreaksICS", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, noJoin),
+	XtRImmediate, (XtPointer) True},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1773,6 +1778,7 @@ XrmOptionDescRec shellOptions[] = {
     { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
     { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
     { "-forceIllegalMoves", "forceIllegalMoves", XrmoptionNoArg, "True" },
+    { "-keepLineBreaksICS", "keepLineBreaksICS", XrmoptionSepArg, NULL },
 };
 
 
@@ -1877,7 +1883,7 @@ XtActionsRec boardActions[] = {
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
-    { "AnalysisPopDown", (XtActionProc) AnalysisPopDown },
+    { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
@@ -2723,6 +2729,11 @@ ShutDownFrontEnd()
     }
     unlink(gameCopyFilename);
     unlink(gamePasteFilename);
+}
+
+RETSIGTYPE TermSizeSigHandler(int sig)
+{
+    update_ics_width();
 }
 
 RETSIGTYPE
@@ -4614,37 +4625,6 @@ void CommentPopUp(title, text)
     commentUp = True;
 }
 
-void AnalysisPopUp(title, text)
-     char *title, *text;
-{
-    Arg args[16];
-    int j;
-    Widget edit;
-
-    if (analysisShell == NULL) {
-	analysisShell = MiscCreate(title, text, False, NULL, 4);
-	XtRealizeWidget(analysisShell);
-	CatchDeleteWindow(analysisShell, "AnalysisPopDown");
-
-    } else {
-	edit = XtNameToWidget(analysisShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, text); j++;
-	XtSetValues(edit, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) title);   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) title);      j++;
-	XtSetValues(analysisShell, args, j);
-    }
-
-    if (!analysisUp) {
-	XtPopup(analysisShell, XtGrabNone);
-    }
-    XSync(xDisplay, False);
-
-    analysisUp = True;
-}
-
 void CommentCallback(w, client_data, call_data)
      Widget w;
      XtPointer client_data, call_data;
@@ -4682,16 +4662,6 @@ void CommentPopDown()
     XSync(xDisplay, False);
     commentUp = False;
 }
-
-void AnalysisPopDown()
-{
-    if (!analysisUp) return;
-    XtPopdown(analysisShell);
-    XSync(xDisplay, False);
-    analysisUp = False;
-    if (appData.icsEngineAnalyze) ExitAnalyzeMode();    /* [DM] icsEngineAnalyze */
-}
-
 
 void FileNamePopUp(label, def, proc, openMode)
      char *label;
@@ -6704,6 +6674,10 @@ int StartChildProcess(cmdLine, dir, pr)
 
     SetUpChildIO(to_prog, from_prog);
 
+    #ifdef SIGWINCH
+    signal(SIGWINCH, TermSizeSigHandler);
+    #endif
+
     if ((pid = fork()) == 0) {
 	/* Child process */
 	// [HGM] PSWBTM: made order resistant against case where fd of created pipe was 0 or 1
@@ -7840,4 +7814,39 @@ SetProgramStats( FrontEndProgramStats * stats )
   // [HR] TODO
   // [HGM] done, but perhaps backend should call this directly?
     EngineOutputUpdate( stats );
+}
+
+#include <sys/ioctl.h>
+int get_term_width()
+{
+    int fd, default_width;
+
+    fd = STDIN_FILENO;
+    default_width = 79; // this is FICS default anyway...
+
+#if !defined(TIOCGWINSZ) && defined(TIOCGSIZE)
+    struct ttysize win;
+    if (!ioctl(fd, TIOCGSIZE, &win))
+        default_width = win.ts_cols;
+#elif defined(TIOCGWINSZ)
+    struct winsize win;
+    if (!ioctl(fd, TIOCGWINSZ, &win))
+        default_width = win.ws_col;
+#endif
+    return default_width;
+}
+
+void update_ics_width()
+{
+    static int old_width = 0;
+    int new_width = get_term_width();
+
+    if (old_width != new_width)
+       ics_printf("set width %d\n", new_width);
+    old_width = new_width;
+}
+
+void NotifyFrontendLogin()
+{
+    update_ics_width();
 }

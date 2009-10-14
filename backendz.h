@@ -64,6 +64,7 @@ extern ProcRef firstProgramPR;
 extern int startedFromSetupPosition;
 extern int firstMove;
 extern GameInfo gameInfo;
+extern void ics_printf P((char *format, ...));
 extern void SendToICS P((char *s));
 extern int looking_at P((char *, int *, char *));
 extern void SendToProgram P((char *message, ChessProgramState *cps));

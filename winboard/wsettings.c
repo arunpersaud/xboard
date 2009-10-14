@@ -9,9 +9,9 @@
  * that generates the actual dialog box from it.
  */
 
-//#include "config.h"
 #include "config.h"
 
+#include <windows.h>
 #include <stdio.h>
 #include <string.h>
 #include "common.h"

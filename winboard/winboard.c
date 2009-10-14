@@ -1392,6 +1392,7 @@ ArgDescriptor argDescriptors[] = {
   { "firstNPS", ArgInt, (LPVOID) &appData.firstNPS, FALSE },
   { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE },
   { "noGUI", ArgTrue, (LPVOID) &appData.noGUI, FALSE },
+  { "keepLineBreaksICS", ArgBoolean, (LPVOID) &appData.noJoin, TRUE },
 
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
   { "minX", ArgZ, (LPVOID) &minX, FALSE }, // [HGM] placement: to make suer auxialary windows can be placed
@@ -5456,6 +5457,36 @@ LoadGameDialog(HWND hwnd, char* title)
   }
 }
 
+void UpdateICSWidth(HWND hText)
+{
+	HDC hdc;
+	TEXTMETRIC tm;
+	RECT rc;
+	HFONT hfont, hold_font;
+	LONG old_width, new_width;
+	
+	// get the text metrics
+	hdc = GetDC(hText);
+	hfont = CreateFontIndirect(&font[boardSize][CONSOLE_FONT]->lf);
+	hold_font = SelectObject(hdc, hfont);
+	GetTextMetrics(hdc, &tm);
+	SelectObject(hdc, hold_font);
+	DeleteObject(hfont);
+	ReleaseDC(hText, hdc);
+
+	// get the rectangle
+	SendMessage(hText, EM_GETRECT, 0, (LPARAM)&rc);
+
+	// update the width
+	new_width = (rc.right-rc.left) / tm.tmAveCharWidth;
+	old_width = GetWindowLong(hText, GWL_USERDATA);
+	if (new_width != old_width)
+	{
+		ics_update_width(new_width);
+		SetWindowLong(hText, GWL_USERDATA, new_width);
+	}
+}
+
 VOID
 ChangedConsoleFont()
 {
@@ -5495,6 +5526,7 @@ ChangedConsoleFont()
   paraf.dxOffset = WRAP_INDENT;
   SendMessage(hText, EM_SETPARAFORMAT, 0, (LPARAM) &paraf);
   SendMessage(hText, EM_EXSETSEL, 0, (LPARAM)&sel);
+  UpdateICSWidth(hText);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -5599,14 +5631,14 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wmId) {
     case IDM_NewGame:
       ResetGameEvent();
-      AnalysisPopDown();
+      EngineOutputPopDown();
       SAY("new game enter a move to play against the computer with white");
       break;
 
     case IDM_NewGameFRC:
       if( NewGameFRC() == 0 ) {
         ResetGameEvent();
-        AnalysisPopDown();
+	EngineOutputPopDown();
       }
       break;
 
@@ -8099,12 +8131,15 @@ LRESULT CALLBACK
 ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   static SnapData sd;
-  static HWND hText, hInput /*, hFocus*/;
-//  InputSource *is = consoleInputSource;
+  HWND hText, hInput;
   RECT rect;
   static int sizeX, sizeY;
   int newSizeX, newSizeY;
   MINMAXINFO *mmi;
+  WORD wMask;
+
+  hText = GetDlgItem(hDlg, OPT_ConsoleText);
+  hInput = GetDlgItem(hDlg, OPT_ConsoleInput);
 
   switch (message) {
   case WM_NOTIFY:
@@ -8113,21 +8148,18 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       ENLINK *pLink = (ENLINK*)lParam;
       if (pLink->msg == WM_LBUTTONUP)
       {
-          TEXTRANGE tr;
+        TEXTRANGE tr;
 
-          tr.chrg = pLink->chrg;
-          tr.lpstrText = malloc(1+tr.chrg.cpMax-tr.chrg.cpMin);
-          hText = GetDlgItem(hDlg, OPT_ConsoleText);
-          SendMessage(hText, EM_GETTEXTRANGE, 0, (LPARAM)&tr);
-          ShellExecute(NULL, "open", tr.lpstrText, NULL, NULL, SW_SHOW);
-          free(tr.lpstrText);
+        tr.chrg = pLink->chrg;
+        tr.lpstrText = malloc(1+tr.chrg.cpMax-tr.chrg.cpMin);
+        SendMessage(hText, EM_GETTEXTRANGE, 0, (LPARAM)&tr);
+        ShellExecute(NULL, "open", tr.lpstrText, NULL, NULL, SW_SHOW);
+        free(tr.lpstrText);
       }
     }
     break;
   case WM_INITDIALOG: /* message: initialize dialog box */
     hwndConsole = hDlg;
-    hText = GetDlgItem(hDlg, OPT_ConsoleText);
-    hInput = GetDlgItem(hDlg, OPT_ConsoleInput);
     SetFocus(hInput);
     consoleTextWindowProc = (WNDPROC)
       SetWindowLong(hText, GWL_WNDPROC, (LONG) ConsoleTextSubclass);
@@ -8174,6 +8206,12 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
        wp.rcNormalPosition.bottom = wpConsole.y + wpConsole.height;
        SetWindowPlacement(hDlg, &wp);
     }
+
+   // Allow hText to highlight URLs and send notifications on them
+   wMask = SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
+   SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
+   SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
+   SetWindowLong(hText, GWL_USERDATA, 79); // initialize the text window's width
 
     return FALSE;
 
@@ -8234,6 +8272,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return OnMoving( &sd, hDlg, wParam, lParam );
 
   case WM_EXITSIZEMOVE:
+  	UpdateICSWidth(hText);
     return OnExitSizeMove( &sd, hDlg, wParam, lParam );
   }
 
@@ -8244,18 +8283,10 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 VOID
 ConsoleCreate()
 {
-  HWND hCons, hText;
-  WORD wMask;
+  HWND hCons;
   if (hwndConsole) return;
   hCons = CreateDialog(hInst, szConsoleName, 0, NULL);
   SendMessage(hCons, WM_INITDIALOG, 0, 0);
-
-
-  // make the text item in the console do URL links
-  hText = GetDlgItem(hCons, OPT_ConsoleText);
-  wMask = SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
-  SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
-  SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
 }
 
 
@@ -8711,6 +8742,7 @@ Enables gnuEnables[] = {
   { IDM_StopExamining, MF_BYCOMMAND|MF_GRAYED },
   { IDM_StopObserving, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Revert, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 
@@ -8720,6 +8752,7 @@ Enables icsEnables[] = {
   { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
   { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_MachineBoth, MF_BYCOMMAND|MF_GRAYED },
   { IDM_AnalysisMode, MF_BYCOMMAND|MF_ENABLED },
   { IDM_AnalyzeFile, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TimeControl, MF_BYCOMMAND|MF_GRAYED },
@@ -8727,6 +8760,8 @@ Enables icsEnables[] = {
   { IDM_Hint, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Book, MF_BYCOMMAND|MF_GRAYED },
   { IDM_IcsOptions, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 
@@ -8735,6 +8770,7 @@ Enables zippyEnables[] = {
   { IDM_MoveNow, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Hint, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Book, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Engine1Options, MF_BYCOMMAND|MF_ENABLED },
   { -1, -1 }
 };
 #endif
@@ -8755,6 +8791,10 @@ Enables ncpEnables[] = {
   { IDM_TimeControl, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Hint, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Book, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_MachineBoth, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 
@@ -9512,6 +9552,11 @@ DrawPosition(int fullRedraw, Board board)
   HDCDrawPosition(NULL, (BOOLEAN) fullRedraw, board); 
 }
 
+void NotifyFrontendLogin()
+{
+	if (hwndConsole)
+		UpdateICSWidth(GetDlgItem(hwndConsole, OPT_ConsoleText));
+}
 
 VOID
 ResetFrontEnd()
@@ -10652,51 +10697,6 @@ AnalysisDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   }
   return FALSE;
 }
-
-VOID
-AnalysisPopUp(char* title, char* str)
-{
-  FARPROC lpProc;
-  char *p, *q;
-
-  /* [AS] */
-  EngineOutputPopUp();
-  return;
-
-  if (str == NULL) str = "";
-  p = (char *) malloc(2 * strlen(str) + 2);
-  q = p;
-  while (*str) {
-    if (*str == '\n') *q++ = '\r';
-    *q++ = *str++;
-  }
-  *q = NULLCHAR;
-  if (analysisText != NULL) free(analysisText);
-  analysisText = p;
-
-  if (analysisDialog) {
-    SetWindowText(analysisDialog, title);
-    SetDlgItemText(analysisDialog, OPT_AnalysisText, analysisText);
-    ShowWindow(analysisDialog, SW_SHOW);
-  } else {
-    analysisTitle = title;
-    lpProc = MakeProcInstance((FARPROC)AnalysisDialog, hInst);
-    CreateDialog(hInst, MAKEINTRESOURCE(DLG_Analysis),
-		 hwndMain, (DLGPROC)lpProc);
-    FreeProcInstance(lpProc);
-  }
-  analysisDialogUp = TRUE;  
-}
-
-VOID
-AnalysisPopDown()
-{
-  if (analysisDialog) {
-    ShowWindow(analysisDialog, SW_HIDE);
-  }
-  analysisDialogUp = FALSE;  
-}
-
 
 VOID
 SetHighlights(int fromX, int fromY, int toX, int toY)

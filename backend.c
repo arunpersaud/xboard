@@ -77,6 +77,7 @@
 #if STDC_HEADERS
 # include <stdlib.h>
 # include <string.h>
+# include <stdarg.h>
 #else /* not STDC_HEADERS */
 # if HAVE_STRING_H
 #  include <string.h>
@@ -147,6 +148,7 @@ void read_from_player P((InputSourceRef isr, VOIDSTAR closure,
 			 char *buf, int count, int error));
 void read_from_ics P((InputSourceRef isr, VOIDSTAR closure,
 		      char *buf, int count, int error));
+void ics_printf P((char *format, ...));
 void SendToICS P((char *s));
 void SendToICSDelayed P((char *s, long msdelay));
 void SendMoveToICS P((ChessMove moveType, int fromX, int fromY,
@@ -229,6 +231,7 @@ char *GetInfoFromComment( int, char * ); // [HGM] PV time: returns stripped comm
 void InitEngineUCI( const char * iniDir, ChessProgramState * cps ); // [HGM] moved here from winboard.c
 char *ProbeBook P((int moveNr, char *book)); // [HGM] book: returns a book move
 char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [HGM] book
+void ics_update_width P((int new_width));
 extern char installDir[MSG_SIZ];
 
 extern int tinyLayout, smallLayout;
@@ -1418,6 +1421,19 @@ KeepAlive()
     if(appData.keepAlive) ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
 }
 
+/* added routine for printf style output to ics */
+void ics_printf(char *format, ...)
+{
+    char buffer[MSG_SIZ];
+    va_list args;
+
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    buffer[sizeof(buffer)-1] = '\0';
+    SendToICS(buffer);
+    va_end(args);
+}
+
 void
 SendToICS(s)
      char *s;
@@ -1536,6 +1552,10 @@ StringToVariant(e)
         while( *e++ != '_');
     }
 
+    if(StrCaseStr(e, "misc/")) { // [HGM] on FICS, misc/shogi is not shogi
+	v = VariantNormal;
+	found = TRUE;
+    } else
     for (i=0; i<sizeof(variantNames)/sizeof(char*); i++) {
       if (StrCaseStr(e, variantNames[i])) {
 	v = (VariantClass) i;
@@ -1920,8 +1940,6 @@ void
 VariantSwitch(Board board, VariantClass newVariant)
 {
    int newHoldingsWidth, newWidth = 8, newHeight = 8, i, j;
-   int oldCurrentMove = currentMove, oldForwardMostMove = forwardMostMove, oldBackwardMostMove = backwardMostMove;
-//   Board tempBoard; int saveCastling[BOARD_SIZE], saveEP;
 
    startedFromPositionFile = FALSE;
    if(gameInfo.variant == newVariant) return;
@@ -1937,60 +1955,65 @@ VariantSwitch(Board board, VariantClass newVariant)
     * but also when receiving holdings of a crazyhouse game. In the latter
     * case we want to add those holdings to the already received position.
     */
-
-
-  if (appData.debugMode) {
-    fprintf(debugFP, "Switch board from %s to %s\n",
-               VariantName(gameInfo.variant), VariantName(newVariant));
-    setbuf(debugFP, NULL);
-  }
-    shuffleOpenings = 0;       /* [HGM] shuffle */
-    gameInfo.holdingsSize = 5; /* [HGM] prepare holdings */
-    switch(newVariant) {
-            case VariantShogi:
-              newWidth = 9;  newHeight = 9;
-              gameInfo.holdingsSize = 7;
-            case VariantBughouse:
-            case VariantCrazyhouse:
-              newHoldingsWidth = 2; break;
-            default:
-              newHoldingsWidth = gameInfo.holdingsSize = 0;
-    }
-
-    if(newWidth  != gameInfo.boardWidth  ||
-       newHeight != gameInfo.boardHeight ||
-       newHoldingsWidth != gameInfo.holdingsWidth ) {
-
-        /* shift position to new playing area, if needed */
-        if(newHoldingsWidth > gameInfo.holdingsWidth) {
-           for(i=0; i<BOARD_HEIGHT; i++)
-               for(j=BOARD_RGHT-1; j>=BOARD_LEFT; j--)
-                   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
-                                                     board[i][j];
-           for(i=0; i<newHeight; i++) {
-               board[i][0] = board[i][newWidth+2*newHoldingsWidth-1] = EmptySquare;
-               board[i][1] = board[i][newWidth+2*newHoldingsWidth-2] = (ChessSquare) 0;
-           }
-        } else if(newHoldingsWidth < gameInfo.holdingsWidth) {
-           for(i=0; i<BOARD_HEIGHT; i++)
-               for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
-                   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
-                                                 board[i][j];
-        }
-
-        gameInfo.boardWidth  = newWidth;
-        gameInfo.boardHeight = newHeight;
-        gameInfo.holdingsWidth = newHoldingsWidth;
-        gameInfo.variant = newVariant;
-        InitDrawingSizes(-2, 0);
-
-        /* [HGM] The following should definitely be solved in a better way */
-        InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
-    } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
-
-    forwardMostMove = oldForwardMostMove;
-    backwardMostMove = oldBackwardMostMove;
-    currentMove = oldCurrentMove; /* InitPos reset these, but we need still to redraw the position */
+   
+   if (appData.debugMode) {
+     fprintf(debugFP, "Switch board from %s to %s\n",
+	     VariantName(gameInfo.variant), VariantName(newVariant));
+     setbuf(debugFP, NULL);
+   }
+   shuffleOpenings = 0;       /* [HGM] shuffle */
+   gameInfo.holdingsSize = 5; /* [HGM] prepare holdings */
+   switch(newVariant) 
+     {
+     case VariantShogi:
+       newWidth = 9;  newHeight = 9;
+       gameInfo.holdingsSize = 7;
+     case VariantBughouse:
+     case VariantCrazyhouse:
+       newHoldingsWidth = 2; break;
+     case VariantGreat:
+       newWidth = 10;
+     case VariantSuper:
+       newHoldingsWidth = 2;
+       gameInfo.holdingsSize = 8;
+       return;
+     case VariantGothic:
+     case VariantCapablanca:
+     case VariantCapaRandom:
+       newWidth = 10;
+     default:
+       newHoldingsWidth = gameInfo.holdingsSize = 0;
+     };
+   
+   if(newWidth  != gameInfo.boardWidth  ||
+      newHeight != gameInfo.boardHeight ||
+      newHoldingsWidth != gameInfo.holdingsWidth ) {
+     
+     /* shift position to new playing area, if needed */
+     if(newHoldingsWidth > gameInfo.holdingsWidth) {
+       for(i=0; i<BOARD_HEIGHT; i++) 
+	 for(j=BOARD_RGHT-1; j>=BOARD_LEFT; j--)
+	   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
+	     board[i][j];
+       for(i=0; i<newHeight; i++) {
+	 board[i][0] = board[i][newWidth+2*newHoldingsWidth-1] = EmptySquare;
+	 board[i][1] = board[i][newWidth+2*newHoldingsWidth-2] = (ChessSquare) 0;
+       }
+     } else if(newHoldingsWidth < gameInfo.holdingsWidth) {
+       for(i=0; i<BOARD_HEIGHT; i++)
+	 for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
+	   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
+	     board[i][j];
+     }
+     gameInfo.boardWidth  = newWidth;
+     gameInfo.boardHeight = newHeight;
+     gameInfo.holdingsWidth = newHoldingsWidth;
+     gameInfo.variant = newVariant;
+     InitDrawingSizes(-2, 0);
+     InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
+   } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
+   
+   DrawPosition(TRUE, boards[currentMove]);
 }
 
 static int loggedOn = FALSE;
@@ -2067,7 +2090,7 @@ read_from_ics(isr, closure, data, count, error)
 	for (i = 0; i < count; i++) {
 	    if (data[i] != NULLCHAR && data[i] != '\r')
 	      buf[buf_len++] = data[i];
-	    if(buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
+	    if(!appData.noJoin && buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
                                buf[buf_len-3]==' '  && buf[buf_len-2]==' '  && buf[buf_len-1]==' ') {
 		buf_len -= 5; // [HGM] ICS: join continuation line of Lasker 2.2.3 server with previous
 		if(buf_len == 0 || buf[buf_len-1] != ' ')
@@ -2201,7 +2224,8 @@ read_from_ics(isr, closure, data, count, error)
 		  sprintf(str,
 			  "/set-quietly interface %s\n/set-quietly style 12\n",
 			  programVersion);
-
+          if (!appData.noJoin)
+              strcat(str, "/set-quietly wrap 0\n");
 		} else if (ics_type == ICS_CHESSNET) {
 		  sprintf(str, "/style 12\n");
 		} else {
@@ -2211,9 +2235,12 @@ read_from_ics(isr, closure, data, count, error)
 #ifdef WIN32
 		  strcat(str, "$iset nohighlight 1\n");
 #endif
+          if (!appData.noJoin)
+              strcat(str, "$iset nowrap 1\n");
 		  strcat(str, "$iset lock 1\n$style 12\n");
 		}
 		SendToICS(str);
+		NotifyFrontendLogin();
 		intfSet = TRUE;
 	    }
 
@@ -3927,6 +3954,12 @@ AnalysisPeriodicEvent(force)
        the "." command (sending illegal cmds resets node count & time,
        which looks bad)) */
     programStats.ok_to_send = 0;
+}
+
+void ics_update_width(new_width)
+	int new_width;
+{
+	ics_printf("set width %d\n", new_width);
 }
 
 void
@@ -9649,7 +9682,7 @@ SaveGamePGN(f)
 	    fprintf(f, " ");
 	    linelen++;
 	}
-	fprintf(f, numtext);
+	fprintf(f, "%s", numtext);
 	linelen += numlen;
 
 	/* Get move */
@@ -9667,7 +9700,7 @@ SaveGamePGN(f)
 	    fprintf(f, " ");
 	    linelen++;
 	}
-	fprintf(f, move_buffer);
+	fprintf(f, "%s", move_buffer);
 	linelen += movelen;
 
         /* [AS] Add PV info if present */
@@ -9711,7 +9744,7 @@ SaveGamePGN(f)
 		fprintf(f, " ");
 		linelen++;
 	    }
-	    fprintf(f, move_buffer);
+	    fprintf(f, "%s", move_buffer);
 	    linelen += movelen;
         }
 
@@ -10374,8 +10407,7 @@ AnalyzeModeEvent()
 	first.analyzing = TRUE;
 	/*first.maybeThinking = TRUE;*/
 	first.maybeThinking = FALSE; /* avoid killing GNU Chess */
-	AnalysisPopUp(_("Analysis"),
-		      _("Starting analysis mode...\nIf this message stays up, your chess program does not support analysis."));
+	EngineOutputPopUp();
     }
     if (!appData.icsEngineAnalyze) gameMode = AnalyzeMode;
     pausing = FALSE;
@@ -10401,8 +10433,7 @@ AnalyzeFileEvent()
 	first.analyzing = TRUE;
 	/*first.maybeThinking = TRUE;*/
 	first.maybeThinking = FALSE; /* avoid killing GNU Chess */
-	AnalysisPopUp(_("Analysis"),
-		      _("Starting analysis mode...\nIf this message stays up, your chess program does not support analysis."));
+	EngineOutputPopUp();
     }
     gameMode = AnalyzeFile;
     pausing = FALSE;
@@ -10900,7 +10931,7 @@ ExitAnalyzeMode()
       SendToProgram("exit\n", &first);
       first.analyzing = FALSE;
     }
-    AnalysisPopDown();
+    EngineOutputPopDown();
     thinkOutput[0] = NULLCHAR;
 }
 
@@ -12744,12 +12775,10 @@ void
 DisplayAnalysisText(text)
      char *text;
 {
-    char buf[MSG_SIZ];
-
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile
-               || appData.icsEngineAnalyze) {
-	sprintf(buf, "Analysis (%s)", first.tidy);
-	AnalysisPopUp(buf, text);
+  if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
+      || appData.icsEngineAnalyze) 
+    {
+      EngineOutputPopUp();
     }
 }
 
@@ -13548,6 +13577,14 @@ PositionToFEN(move, overrideCastling)
 	    fromX == toX) {
 	    /* 2-square pawn move just happened */
             *p++ = toX + AAA;
+	    *p++ = whiteToPlay ? '6'+BOARD_HEIGHT-8 : '3';
+	} else {
+	    *p++ = '-';
+	}
+    } else if(move == backwardMostMove) {
+	// [HGM] perhaps we should always do it like this, and forget the above?
+	if(epStatus[move] >= 0) {
+	    *p++ = epStatus[move] + AAA;
 	    *p++ = whiteToPlay ? '6'+BOARD_HEIGHT-8 : '3';
 	} else {
 	    *p++ = '-';

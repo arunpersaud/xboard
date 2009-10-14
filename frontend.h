@@ -85,6 +85,7 @@ void AskQuestion P((String title, String question, String replyPrefix,
 void DisplayIcsInteractionTitle P((String title));
 void DrawPosition P((int fullRedraw, Board board));
 void ResetFrontEnd P((void));
+void NotifyFrontendLogin P((void));
 void CommentPopUp P((String title, String comment));
 void CommentPopDown P((void));
 void EditCommentPopUp P((int index, String title, String text));
@@ -159,8 +160,6 @@ void TagsPopDown P((void));
 
 void ICSInitScript P((void));
 void StartAnalysisClock P((void));
-void AnalysisPopUp P((char *title, char *label));
-void AnalysisPopDown P((void));
 
 void SetHighlights P((int fromX, int fromY, int toX, int toY));
 void ClearHighlights P((void));
