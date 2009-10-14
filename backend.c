@@ -1940,8 +1940,6 @@ void
 VariantSwitch(Board board, VariantClass newVariant)
 {
    int newHoldingsWidth, newWidth = 8, newHeight = 8, i, j;
-   int oldCurrentMove = currentMove, oldForwardMostMove = forwardMostMove, oldBackwardMostMove = backwardMostMove;
-//   Board tempBoard; int saveCastling[BOARD_SIZE], saveEP;
 
    startedFromPositionFile = FALSE;
    if(gameInfo.variant == newVariant) return;
@@ -1958,59 +1956,65 @@ VariantSwitch(Board board, VariantClass newVariant)
     * case we want to add those holdings to the already received position.
     */
 
-
-  if (appData.debugMode) {
-    fprintf(debugFP, "Switch board from %s to %s\n",
-               VariantName(gameInfo.variant), VariantName(newVariant));
-    setbuf(debugFP, NULL);
-  }
-    shuffleOpenings = 0;       /* [HGM] shuffle */
-    gameInfo.holdingsSize = 5; /* [HGM] prepare holdings */
-    switch(newVariant) {
-            case VariantShogi:
-              newWidth = 9;  newHeight = 9;
-              gameInfo.holdingsSize = 7;
-            case VariantBughouse:
-            case VariantCrazyhouse:
-              newHoldingsWidth = 2; break;
-            default:
-              newHoldingsWidth = gameInfo.holdingsSize = 0;
-    }
-
-    if(newWidth  != gameInfo.boardWidth  ||
-       newHeight != gameInfo.boardHeight ||
-       newHoldingsWidth != gameInfo.holdingsWidth ) {
-
-        /* shift position to new playing area, if needed */
-        if(newHoldingsWidth > gameInfo.holdingsWidth) {
-           for(i=0; i<BOARD_HEIGHT; i++) 
-               for(j=BOARD_RGHT-1; j>=BOARD_LEFT; j--)
-                   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
-                                                     board[i][j];
-           for(i=0; i<newHeight; i++) {
-               board[i][0] = board[i][newWidth+2*newHoldingsWidth-1] = EmptySquare;
-               board[i][1] = board[i][newWidth+2*newHoldingsWidth-2] = (ChessSquare) 0;
-           }
-        } else if(newHoldingsWidth < gameInfo.holdingsWidth) {
-           for(i=0; i<BOARD_HEIGHT; i++)
-               for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
-                   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
-                                                 board[i][j];
-        }
-
-        gameInfo.boardWidth  = newWidth;
-        gameInfo.boardHeight = newHeight;
-        gameInfo.holdingsWidth = newHoldingsWidth;
-        gameInfo.variant = newVariant;
-        InitDrawingSizes(-2, 0);
-
-        /* [HGM] The following should definitely be solved in a better way */
-        InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
-    } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
-
-    forwardMostMove = oldForwardMostMove;
-    backwardMostMove = oldBackwardMostMove;
-    currentMove = oldCurrentMove; /* InitPos reset these, but we need still to redraw the position */
+   
+   if (appData.debugMode) {
+     fprintf(debugFP, "Switch board from %s to %s\n",
+	     VariantName(gameInfo.variant), VariantName(newVariant));
+     setbuf(debugFP, NULL);
+   }
+   shuffleOpenings = 0;       /* [HGM] shuffle */
+   gameInfo.holdingsSize = 5; /* [HGM] prepare holdings */
+   switch(newVariant) 
+     {
+     case VariantShogi:
+       newWidth = 9;  newHeight = 9;
+       gameInfo.holdingsSize = 7;
+     case VariantBughouse:
+     case VariantCrazyhouse:
+       newHoldingsWidth = 2; break;
+     case VariantGreat:
+       newWidth = 10;
+     case VariantSuper:
+       newHoldingsWidth = 2;
+       gameInfo.holdingsSize = 8;
+       return;
+     case VariantGothic:
+     case VariantCapablanca:
+     case VariantCapaRandom:
+       newWidth = 10;
+     default:
+       newHoldingsWidth = gameInfo.holdingsSize = 0;
+     };
+   
+   if(newWidth  != gameInfo.boardWidth  ||
+      newHeight != gameInfo.boardHeight ||
+      newHoldingsWidth != gameInfo.holdingsWidth ) {
+     
+     /* shift position to new playing area, if needed */
+     if(newHoldingsWidth > gameInfo.holdingsWidth) {
+       for(i=0; i<BOARD_HEIGHT; i++) 
+	 for(j=BOARD_RGHT-1; j>=BOARD_LEFT; j--)
+	   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
+	     board[i][j];
+       for(i=0; i<newHeight; i++) {
+	 board[i][0] = board[i][newWidth+2*newHoldingsWidth-1] = EmptySquare;
+	 board[i][1] = board[i][newWidth+2*newHoldingsWidth-2] = (ChessSquare) 0;
+       }
+     } else if(newHoldingsWidth < gameInfo.holdingsWidth) {
+       for(i=0; i<BOARD_HEIGHT; i++)
+	 for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
+	   board[i][j+newHoldingsWidth-gameInfo.holdingsWidth] =
+	     board[i][j];
+     }
+     gameInfo.boardWidth  = newWidth;
+     gameInfo.boardHeight = newHeight;
+     gameInfo.holdingsWidth = newHoldingsWidth;
+     gameInfo.variant = newVariant;
+     InitDrawingSizes(-2, 0);
+     InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
+   } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
+   
+   DrawPosition(TRUE, boards[currentMove]);
 }
 
 static int loggedOn = FALSE;
