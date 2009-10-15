@@ -2023,6 +2023,7 @@ int gs_gamenum;
 char gs_kind[MSG_SIZ];
 static char player1Name[128] = "";
 static char player2Name[128] = "";
+static char cont_seq[] = "\n\\   ";
 static int player1Rating = -1;
 static int player2Rating = -1;
 /*----------------------------*/
@@ -2055,6 +2056,8 @@ read_from_ics(isr, closure, data, count, error)
     static int firstTime = TRUE, intfSet = FALSE;
     static ColorClass prevColor = ColorNormal;
     static int savingComment = FALSE;
+	static int cmatch = 0; // continuation sequence match
+	char *bp;
     char str[500];
     int i, oldi;
     int buf_len;
@@ -2085,18 +2088,52 @@ read_from_ics(isr, closure, data, count, error)
 	      buf[i] = buf[leftover_start + i];
 	}
 
-	/* Copy in new characters, removing nulls and \r's */
-	buf_len = leftover_len;
-	for (i = 0; i < count; i++) {
-	    if (data[i] != NULLCHAR && data[i] != '\r')
-	      buf[buf_len++] = data[i];
-	    if(!appData.noJoin && buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
-                               buf[buf_len-3]==' '  && buf[buf_len-2]==' '  && buf[buf_len-1]==' ') {
-		buf_len -= 5; // [HGM] ICS: join continuation line of Lasker 2.2.3 server with previous
-		if(buf_len == 0 || buf[buf_len-1] != ' ')
-		   buf[buf_len++] = ' '; // add space (assumes ICS does not break lines within word)
-	    }
-	}
+    /* copy new characters into the buffer */
+    bp = buf + leftover_len;
+    buf_len=leftover_len;
+    for (i=0; i<count; i++)
+    {
+        // ignore these
+        if (data[i] == '\r')
+            continue;
+
+        // join lines split by ICS?
+        if (!appData.noJoin)
+        {
+            /*
+                Joining just consists of finding matches against the
+                continuation sequence, and discarding that sequence
+                if found instead of copying it.  So, until a match
+                fails, there's nothing to do since it might be the
+                complete sequence, and thus, something we don't want
+                copied.
+            */
+            if (data[i] == cont_seq[cmatch])
+            {
+                cmatch++;
+                if (cmatch == strlen(cont_seq))
+                    cmatch = 0; // complete match.  just reset the counter
+                continue;
+            }
+            else if (cmatch)
+            {
+                /*
+                    match failed, so we have to copy what matched before
+                    falling through and copying this character.  In reality,
+                    this will only ever be just the newline character, but
+                    it doesn't hurt to be precise.
+                */
+                strncpy(bp, cont_seq, cmatch);
+                bp += cmatch;
+                buf_len += cmatch;
+                cmatch = 0;
+            }
+        }
+
+        // copy this char
+        *bp++ = data[i];
+        buf_len++;
+    }
 
 	buf[buf_len] = NULLCHAR;
 	next_out = leftover_len;
@@ -2224,8 +2261,6 @@ read_from_ics(isr, closure, data, count, error)
 		  sprintf(str,
 			  "/set-quietly interface %s\n/set-quietly style 12\n",
 			  programVersion);
-          if (!appData.noJoin)
-              strcat(str, "/set-quietly wrap 0\n");
 		} else if (ics_type == ICS_CHESSNET) {
 		  sprintf(str, "/style 12\n");
 		} else {
@@ -2235,8 +2270,6 @@ read_from_ics(isr, closure, data, count, error)
 #ifdef WIN32
 		  strcat(str, "$iset nohighlight 1\n");
 #endif
-          if (!appData.noJoin)
-              strcat(str, "$iset nowrap 1\n");
 		  strcat(str, "$iset lock 1\n$style 12\n");
 		}
 		SendToICS(str);
