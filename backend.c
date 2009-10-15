@@ -2056,8 +2056,8 @@ read_from_ics(isr, closure, data, count, error)
     static int firstTime = TRUE, intfSet = FALSE;
     static ColorClass prevColor = ColorNormal;
     static int savingComment = FALSE;
-	static int cmatch = 0; // continuation sequence match
-	char *bp;
+    static int cmatch = 0; // continuation sequence match
+    char *bp;
     char str[500];
     int i, oldi;
     int buf_len;
@@ -2112,7 +2112,21 @@ read_from_ics(isr, closure, data, count, error)
             {
                 cmatch++;
                 if (cmatch == strlen(cont_seq))
+                {
                     cmatch = 0; // complete match.  just reset the counter
+
+                    /*
+                        it's possible for the ICS to not include the space
+                        at the end of the last word, making our [correct]
+                        join operation fuse two separate words.  the server
+                        does this when the space occurs at the width setting.
+                    */
+                    if (!buf_len || buf[buf_len-1] != ' ')
+                    {
+                        *bp++ = ' ';
+                        buf_len++;
+                    }
+                }
                 continue;
             }
             else if (cmatch)
