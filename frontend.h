@@ -118,6 +118,13 @@ typedef void (*DelayedEventCallback) P((void));
 void ScheduleDelayedEvent P((DelayedEventCallback cb, long millisec));
 DelayedEventCallback GetDelayedEvent P((void));
 void CancelDelayedEvent P((void));
+// [HGM] mouse: next six used by mouse handler, which was moved to backend
+extern int fromX, fromY, toX, toY;
+typedef enum { Press, Release } ClickType;
+void PromotionPopUp P((void));
+void DragPieceBegin P((int x, int y));
+void DragPieceEnd P((int x, int y));
+void LeftClick P((ClickType c, int x, int y));
 
 int StartChildProcess P((char *cmdLine, char *dir, ProcRef *pr));
 void DestroyChildProcess P((ProcRef pr, int/*boolean*/ signal));

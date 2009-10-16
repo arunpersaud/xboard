@@ -114,7 +114,7 @@ void SetWhiteToPlayEvent P((void));
 void SetBlackToPlayEvent P((void));
 void InitBackEnd1 P((void));
 void InitBackEnd2 P((void));
-int IsPromotion P((int fromX, int fromY, int toX, int toY));
+int HasPromotionChoice P((int fromX, int fromY, int toX, int toY, char *choice));
 int InPalace P((int row, int column));
 int PieceForSquare P((int x, int y));
 int OKToStartUserMove P((int x, int y));

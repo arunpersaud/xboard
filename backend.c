@@ -4883,24 +4883,29 @@ SendBoard(cps, moveNum)
 }
 
 int
-IsPromotion(fromX, fromY, toX, toY)
-     int fromX, fromY, toX, toY;
+HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 {
+    /* [HGM] rewritten IsPromotion to only flag promotions that offer a choice */
     /* [HGM] add Shogi promotions */
     int promotionZoneSize=1, highestPromotingPiece = (int)WhitePawn;
     ChessSquare piece;
+    ChessMove moveType;
+    Boolean premove;
 
-    if(gameMode == EditPosition || gameInfo.variant == VariantXiangqi ||
-      !(fromX >=0 && fromY >= 0 && toX >= 0 && toY >= 0) ) return FALSE;
-   /* [HGM] Note to self: line above also weeds out drops */
+    if(fromX < BOARD_LEFT || fromX >= BOARD_RGHT) return FALSE; // drop
+    if(toX   < BOARD_LEFT || toX   >= BOARD_RGHT) return FALSE; // move into holdings
+
+    if(gameMode == EditPosition || gameInfo.variant == VariantXiangqi || // no promotions
+      !(fromX >=0 && fromY >= 0 && toX >= 0 && toY >= 0) ) // invalid move
+	return FALSE;
+
     piece = boards[currentMove][fromY][fromX];
     if(gameInfo.variant == VariantShogi) {
         promotionZoneSize = 3;
-        highestPromotingPiece = (int)WhiteKing;
-        /* [HGM] Should be Silver = Ferz, really, but legality testing is off,
-           and if in normal chess we then allow promotion to King, why not
-           allow promotion of other piece in Shogi?                         */
+        highestPromotingPiece = (int)WhiteFerz;
     }
+
+    // next weed out all moves that do not touch the promotion zone at all
     if((int)piece >= BlackPawn) {
         if(toY >= promotionZoneSize && fromY >= promotionZoneSize)
              return FALSE;
@@ -4909,7 +4914,62 @@ IsPromotion(fromX, fromY, toX, toY)
         if(  toY < BOARD_HEIGHT - promotionZoneSize &&
            fromY < BOARD_HEIGHT - promotionZoneSize) return FALSE;
     }
-    return ( (int)piece <= highestPromotingPiece );
+
+    if( (int)piece > highestPromotingPiece ) return FALSE; // non-promoting piece
+
+    // weed out mandatory Shogi promotions
+    if(gameInfo.variant == VariantShogi) {
+	if(piece >= BlackPawn) {
+	    if(toY == 0 && piece == BlackPawn ||
+	       toY == 0 && piece == BlackQueen ||
+	       toY <= 1 && piece == BlackKnight) {
+		*promoChoice = '+';
+		return FALSE;
+	    }
+	} else {
+	    if(toY == BOARD_HEIGHT-1 && piece == WhitePawn ||
+	       toY == BOARD_HEIGHT-1 && piece == WhiteQueen ||
+	       toY >= BOARD_HEIGHT-2 && piece == WhiteKnight) {
+		*promoChoice = '+';
+		return FALSE;
+	    }
+	}
+    }
+
+    // weed out obviously illegal Pawn moves
+    if(appData.testLegality  && (piece == WhitePawn || piece == BlackPawn) ) {
+	if(toX > fromX+1 || toX < fromX-1) return FALSE; // wide
+	if(piece == WhitePawn && toY != fromY+1) return FALSE; // deep
+	if(piece == BlackPawn && toY != fromY-1) return FALSE; // deep
+	if(fromX != toX && gameInfo.variant == VariantShogi) return FALSE;
+	// note we are not allowed to test for valid (non-)capture, due to premove
+    }
+
+    // we either have a choice what to promote to, or (in Shogi) whether to promote
+    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier) {
+	*promoChoice = PieceToChar(BlackFerz);  // no choice
+	return FALSE;
+    }
+    if(appData.alwaysPromoteToQueen) { // predetermined
+	if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantLosers)
+	     *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
+	else *promoChoice = PieceToChar(BlackQueen);
+	return FALSE;
+    }
+
+    // suppress promotion popup on illegal moves that are not premoves
+    premove = gameMode == IcsPlayingWhite && !WhiteOnMove(currentMove) ||
+	      gameMode == IcsPlayingBlack &&  WhiteOnMove(currentMove);
+    if(appData.testLegality && !premove) {
+	moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
+			epStatus[currentMove], castlingRights[currentMove],
+			fromY, fromX, toY, toX, NULLCHAR);
+	if(moveType != WhitePromotionQueen && moveType  != BlackPromotionQueen &&
+	   moveType != WhitePromotionKnight && moveType != BlackPromotionKnight)
+	    return FALSE;
+    }
+
+    return TRUE;
 }
 
 int
@@ -5052,29 +5112,6 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
     ChessMove moveType;
     ChessSquare pdown, pup;
 
-    if (fromX < 0 || fromY < 0) return ImpossibleMove;
-
-    /* [HGM] suppress all moves into holdings area and guard band */
-    if( toX < BOARD_LEFT || toX >= BOARD_RGHT || toY < 0 )
-            return ImpossibleMove;
-
-    /* [HGM] <sameColor> moved to here from winboard.c */
-    /* note: capture of own piece can be legal as drag-drop premove. For click-click it is selection of new piece. */
-    pdown = boards[currentMove][fromY][fromX];
-    pup = boards[currentMove][toY][toX];
-    if (    gameMode != EditPosition && !captureOwn &&
-            (WhitePawn <= pdown && pdown < BlackPawn &&
-             WhitePawn <= pup && pup < BlackPawn  ||
-             BlackPawn <= pdown && pdown < EmptySquare &&
-             BlackPawn <= pup && pup < EmptySquare 
-            ) && !((gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom) &&
-                    (pup == WhiteRook && pdown == WhiteKing && fromY == 0 && toY == 0||
-                     pup == BlackRook && pdown == BlackKing && fromY == BOARD_HEIGHT-1 && toY == BOARD_HEIGHT-1 ||
-                     pup == WhiteKing && pdown == WhiteRook && fromY == 0 && toY == 0|| // also allow RxK
-                     pup == BlackKing && pdown == BlackRook && fromY == BOARD_HEIGHT-1 && toY == BOARD_HEIGHT-1  ) 
-        )           )
-         return Comment;
-
     /* Check if the user is playing in turn.  This is complicated because we
        let the user "pick up" a piece before it is his turn.  So the piece he
        tried to pick up may have been captured by the time he puts it down!
@@ -5192,6 +5229,9 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	}
         return ImpossibleMove;
     }
+
+    pdown = boards[currentMove][fromY][fromX];
+    pup = boards[currentMove][toY][toX];
 
     /* [HGM] If move started in holdings, it means a drop */
     if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) { 
@@ -5435,6 +5475,184 @@ if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", move
 	DrawPosition(FALSE, boards[currentMove]);
     else if(moveType != ImpossibleMove && moveType != Comment)
         FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
+}
+
+void LeftClick(ClickType clickType, int xPix, int yPix)
+{
+    int x, y;
+    Boolean saveAnimate;
+    static int second = 0, promotionChoice = 0;
+    char promoChoice = NULLCHAR;
+
+    if (clickType == Press) ErrorPopDown();
+
+    x = EventToSquare(xPix, BOARD_WIDTH);
+    y = EventToSquare(yPix, BOARD_HEIGHT);
+    if (!flipView && y >= 0) {
+	y = BOARD_HEIGHT - 1 - y;
+    }
+    if (flipView && x >= 0) {
+	x = BOARD_WIDTH - 1 - x;
+    }
+
+    if(promotionChoice) { // we are waiting for a click to indicate promotion piece
+	if(clickType == Release) return; // ignore upclick of click-click destination
+	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
+	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
+	if(gameInfo.holdingsWidth && 
+		(WhiteOnMove(currentMove) 
+			? x == BOARD_WIDTH-1 && y < gameInfo.holdingsSize && y > 0
+			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1) ) {
+	    // click in right holdings, for determining promotion piece
+	    ChessSquare p = boards[currentMove][y][x];
+	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
+	    if(p != EmptySquare) {
+		FinishMove(NormalMove, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
+		fromX = fromY = -1;
+		return;
+	    }
+	}
+	DrawPosition(FALSE, boards[currentMove]);
+	return;
+    }
+
+    /* [HGM] holdings: next 5 lines: ignore all clicks between board and holdings */
+    if(clickType == Press
+            && ( x == BOARD_LEFT-1 || x == BOARD_RGHT
+              || x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize
+              || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
+	return;
+
+    if (fromX == -1) {
+	if (clickType == Press) {
+	    /* First square */
+	    if (OKToStartUserMove(x, y)) {
+		fromX = x;
+		fromY = y;
+		second = 0;
+		DragPieceBegin(xPix, yPix);
+		if (appData.highlightDragging) {
+		    SetHighlights(x, y, -1, -1);
+		}
+	    }
+	}
+	return;
+    }
+
+    /* fromX != -1 */
+    if (clickType == Press && gameMode != EditPosition) {
+	ChessSquare fromP;
+	ChessSquare toP;
+	int frc;
+
+	// ignore off-board to clicks
+	if(y < 0 || x < 0) return;
+
+	/* Check if clicking again on the same color piece */
+	fromP = boards[currentMove][fromY][fromX];
+	toP = boards[currentMove][y][x];
+	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom;
+ 	if ((WhitePawn <= fromP && fromP <= WhiteKing &&
+	     WhitePawn <= toP && toP <= WhiteKing &&
+	     !(fromP == WhiteKing && toP == WhiteRook && frc) &&
+	     !(fromP == WhiteRook && toP == WhiteKing && frc)) ||
+	    (BlackPawn <= fromP && fromP <= BlackKing && 
+	     BlackPawn <= toP && toP <= BlackKing &&
+	     !(fromP == BlackRook && toP == BlackKing && frc) && // allow also RxK as FRC castling
+	     !(fromP == BlackKing && toP == BlackRook && frc))) {
+	    /* Clicked again on same color piece -- changed his mind */
+	    second = (x == fromX && y == fromY);
+	    if (appData.highlightDragging) {
+		SetHighlights(x, y, -1, -1);
+	    } else {
+		ClearHighlights();
+	    }
+	    if (OKToStartUserMove(x, y)) {
+		fromX = x;
+		fromY = y;
+		DragPieceBegin(xPix, yPix);
+	    }
+	    return;
+	}
+	// ignore to-clicks in holdings
+	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;
+    }
+
+    if (clickType == Release && (x == fromX && y == fromY ||
+	x < BOARD_LEFT || x >= BOARD_RGHT)) {
+
+	// treat drags into holding as click on start square
+	x = fromX; y = fromY;
+
+	DragPieceEnd(xPix, yPix);
+	if (appData.animateDragging) {
+	    /* Undo animation damage if any */
+	    DrawPosition(FALSE, NULL);
+	}
+	if (second) {
+	    /* Second up/down in same square; just abort move */
+	    second = 0;
+	    fromX = fromY = -1;
+	    ClearHighlights();
+	    gotPremove = 0;
+	    ClearPremoveHighlights();
+	} else {
+	    /* First upclick in same square; start click-click mode */
+	    SetHighlights(x, y, -1, -1);
+	}
+	return;
+    }
+
+    /* we now have a different from- and to-square */
+    /* Completed move */
+    toX = x;
+    toY = y;
+    saveAnimate = appData.animate;
+    if (clickType == Press) {
+	/* Finish clickclick move */
+	if (appData.animate || appData.highlightLastMove) {
+	    SetHighlights(fromX, fromY, toX, toY);
+	} else {
+	    ClearHighlights();
+	}
+    } else {
+	/* Finish drag move */
+	if (appData.highlightLastMove) {
+	    SetHighlights(fromX, fromY, toX, toY);
+	} else {
+	    ClearHighlights();
+	}
+	DragPieceEnd(xPix, yPix);
+	/* Don't animate move and drag both */
+	appData.animate = FALSE;
+    }
+    if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice)) {
+	SetHighlights(fromX, fromY, toX, toY);
+	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
+	    // [HGM] super: promotion to captured piece selected from holdings
+	    ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
+	    promotionChoice = TRUE;
+	    // kludge follows to temporarily execute move on display, without promoting yet
+	    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
+	    boards[currentMove][toY][toX] = p;
+	    DrawPosition(FALSE, boards[currentMove]);
+	    boards[currentMove][fromY][fromX] = p; // take back, but display stays
+	    boards[currentMove][toY][toX] = q;
+	    DisplayMessage("Click in holdings to choose piece", "");
+	    return;
+	}
+	PromotionPopUp();
+    } else {
+	UserMoveEvent(fromX, fromY, toX, toY, promoChoice);
+	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
+	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
+	fromX = fromY = -1;
+    }
+    appData.animate = saveAnimate;
+    if (appData.animate || appData.animateDragging) {
+	/* Undo animation damage if needed */
+	DrawPosition(FALSE, NULL);
+    }
 }
 
 void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cpstats )
