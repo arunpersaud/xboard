@@ -11,6 +11,8 @@ GtkWidget               *GUI_Error=NULL;
 GtkWidget               *GUI_Menubar=NULL;
 GtkWidget               *GUI_Timer=NULL;
 GtkWidget               *GUI_Buttonbar=NULL;
+GtkWidget               *GUI_EditTags=NULL;
+GtkWidget               *GUI_EditTagsTextArea=NULL;
 
 GtkListStore            *LIST_MoveHistory=NULL;
 

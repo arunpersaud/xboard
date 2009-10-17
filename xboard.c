@@ -635,7 +635,7 @@ MenuItem modeMenu[] = {
     {N_("Show Game List"), ShowGameListProc},
     //    {"Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
     {"----", NothingProc},
-    {N_("Edit Tags"), EditTagsProc},
+    //    {N_("Edit Tags"), EditTagsProc},
     {N_("Edit Comment"), EditCommentProc},
     {N_("ICS Input Box"), IcsInputBoxProc},
     {NULL, NULL}
@@ -1778,7 +1778,7 @@ XtActionsRec boardActions[] = {
     { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
     { "ShowGameListProc", ShowGameListProc },
     //    { "ShowMoveListProc", HistoryShowProc},
-    { "EditTagsProc", EditCommentProc },
+    //    { "EditTagsProc", EditCommentProc },
     { "EditCommentProc", EditCommentProc },
     //    { "IcsAlarmProc", IcsAlarmProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
@@ -2182,6 +2182,13 @@ main(argc, argv)
 
     LIST_MoveHistory = GTK_LIST_STORE (gtk_builder_get_object (builder, "MoveHistoryStore"));
     if(!LIST_MoveHistory) printf("Error: gtk_builder didn't work!\n");
+
+    /* EditTags window */
+    GUI_EditTags = GTK_WIDGET (gtk_builder_get_object (builder, "EditTags"));
+    if(!GUI_EditTags) printf("Error: gtk_builder didn't work!\n");
+    
+    GUI_EditTagsTextArea = GTK_WIDGET (gtk_builder_get_object (builder, "EditTagsTextArea"));
+    if(!GUI_EditTagsTextArea) printf("Error: gtk_builder didn't work!\n");
 
 
     gtk_builder_connect_signals (builder, NULL);
