@@ -3193,6 +3193,9 @@ XBoard square size (hint): %d\n\
 	    if (appData.icsInputBox) ICSInputBoxPopUp();
 	}
 
+    #ifdef SIGWINCH
+    signal(SIGWINCH, TermSizeSigHandler);
+    #endif
 	signal(SIGINT, IntSigHandler);
 	signal(SIGTERM, IntSigHandler);
 	if (*appData.cmailGameName != NULLCHAR) {
@@ -8194,10 +8197,6 @@ int StartChildProcess(cmdLine, dir, pr)
     argv[i] = NULL;
 
     SetUpChildIO(to_prog, from_prog);
-
-    #ifdef SIGWINCH
-    signal(SIGWINCH, TermSizeSigHandler);
-    #endif
 
     if ((pid = fork()) == 0) {
 	/* Child process */
