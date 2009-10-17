@@ -603,6 +603,8 @@ typedef struct {
     Boolean keepAlive;  /* [HGM] alive     */
     Boolean forceIllegal;/*[HGM] illegal   */
     Boolean noJoin;     /* [HGM] join      */
+    char *wrapContSeq; /* continuation sequence when xboard wraps text */
+    Boolean useInternalWrap; /* use internal wrapping -- noJoin usurps this if set */
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

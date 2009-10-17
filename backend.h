@@ -259,6 +259,9 @@ char * GameListLineFull P(( int, GameInfo *));
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
 extern void ics_update_width P((int new_width));
+extern Boolean set_cont_sequence P((char *new_seq));
+extern int wrap P((char *dest, char *src, int count, int width, int *lp));
+
 typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton,
 		   SaveButton, FileName, PathName, Slider, Message } Control;
 

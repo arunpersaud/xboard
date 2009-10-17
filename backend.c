@@ -1042,6 +1042,7 @@ InitBackEnd2()
 	fprintf(debugFP, "%s\n", programVersion);
     }
 
+    set_cont_sequence(appData.wrapContSeq);
     if (appData.matchGames > 0) {
 	appData.matchMode = TRUE;
     } else if (appData.matchMode) {
@@ -13967,4 +13968,111 @@ EditPositionPasteFEN(char *fen)
       DrawPosition(FALSE, boards[currentMove]);
     }
   }
+}
+
+static char cseq[12] = "\\   ";
+
+Boolean set_cont_sequence(char *new_seq)
+{
+    int len;
+    Boolean ret;
+
+    // handle bad attempts to set the sequence
+	if (!new_seq)
+		return 0; // acceptable error - no debug
+
+    len = strlen(new_seq);
+    ret = (len > 0) && (len < sizeof(cseq));
+    if (ret)
+        strcpy(cseq, new_seq);
+    else if (appData.debugMode)
+        fprintf(debugFP, "Invalid continuation sequence \"%s\"  (maximum length is: %d)\n", new_seq, sizeof(cseq)-1);
+    return ret;
+}
+
+/*
+    reformat a source message so words don't cross the width boundary.  internal
+    newlines are not removed.  returns the wrapped size (no null character unless
+    included in source message).  If dest is NULL, only calculate the size required
+    for the dest buffer.  lp argument indicats line position upon entry, and it's
+    passed back upon exit.
+*/
+int wrap(char *dest, char *src, int count, int width, int *lp)
+{
+    int len, i, ansi, cseq_len, line, old_line, old_i, old_len, clen;
+
+    cseq_len = strlen(cseq);
+    old_line = line = *lp;
+    ansi = len = clen = 0;
+
+    for (i=0; i < count; i++)
+    {
+        if (src[i] == '\033')
+            ansi = 1;
+
+        // if we hit the width, back up
+        if (!ansi && (line >= width) && src[i] != '\n' && src[i] != ' ')
+        {
+            // store i & len in case the word is too long
+            old_i = i, old_len = len;
+
+            // find the end of the last word
+            while (i && src[i] != ' ' && src[i] != '\n')
+            {
+                i--;
+                len--;
+            }
+
+            // word too long?  restore i & len before splitting it
+            if ((old_i-i+clen) >= width)
+            {
+                i = old_i;
+                len = old_len;
+            }
+
+            // extra space?
+            if (i && src[i-1] == ' ')
+                len--;
+
+            if (src[i] != ' ' && src[i] != '\n')
+            {
+                i--;
+                if (len)
+                    len--;
+            }
+
+            // now append the newline and continuation sequence
+            if (dest)
+                dest[len] = '\n';
+            len++;
+            if (dest)
+                strncpy(dest+len, cseq, cseq_len);
+            len += cseq_len;
+            line = cseq_len;
+            clen = cseq_len;
+            continue;
+        }
+
+        if (dest)
+            dest[len] = src[i];
+        len++;
+        if (!ansi)
+            line++;
+        if (src[i] == '\n')
+            line = 0;
+        if (src[i] == 'm')
+            ansi = 0;
+    }
+    if (dest && appData.debugMode)
+    {
+        fprintf(debugFP, "wrap(count:%d,width:%d,line:%d,len:%d,*lp:%d,src: ",
+            count, width, line, len, *lp);
+        show_bytes(debugFP, src, count);
+        fprintf(debugFP, "\ndest: ");
+        show_bytes(debugFP, dest, len);
+        fprintf(debugFP, "\n");
+    }
+    *lp = dest ? line : old_line;
+
+    return len;
 }

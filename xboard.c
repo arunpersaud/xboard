@@ -1409,6 +1409,12 @@ XtResource clientResources[] = {
 	XtRImmediate, (XtPointer) False},
     { "keepLineBreaksICS", "keepLineBreaksICS", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, noJoin),
+	XtRImmediate, (XtPointer) False},
+    { "wrapContinuationSequence", "wrapContinuationSequence", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, wrapContSeq),
+	XtRString, ""},
+    { "useInternalWrap", "useInternalWrap", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, useInternalWrap),
 	XtRImmediate, (XtPointer) True},
 };
 
@@ -1780,8 +1786,9 @@ XrmOptionDescRec shellOptions[] = {
     { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
     { "-forceIllegalMoves", "forceIllegalMoves", XrmoptionNoArg, "True" },
     { "-keepLineBreaksICS", "keepLineBreaksICS", XrmoptionSepArg, NULL },
+    { "-wrapContinuationSequence", "wrapContinuationSequence", XrmoptionSepArg, NULL },
+    { "-useInternalWrap", "useInternalWrap", XrmoptionSepArg, NULL },
 };
-
 
 XtActionsRec boardActions[] = {
     { "DrawPosition", DrawPositionProc },
@@ -8506,11 +8513,33 @@ int OutputToProcess(pr, message, count, outError)
      int count;
      int *outError;
 {
+    static int line = 0;
     ChildProc *cp = (ChildProc *) pr;
     int outCount;
 
     if (pr == NoProc)
-      outCount = fwrite(message, 1, count, stdout);
+    {
+        if (appData.noJoin || !appData.useInternalWrap)
+            outCount = fwrite(message, 1, count, stdout);
+        else
+        {
+            int width = get_term_width();
+            int len = wrap(NULL, message, count, width, &line);
+            char *msg = malloc(len);
+            int dbgchk;
+
+            if (!msg)
+                outCount = fwrite(message, 1, count, stdout);
+            else
+            {
+                dbgchk = wrap(msg, message, count, width, &line);
+                if (dbgchk != len && appData.debugMode)
+                    fprintf(debugFP, "wrap(): dbgchk(%d) != len(%d)\n", dbgchk, len);
+                outCount = fwrite(msg, 1, dbgchk, stdout);
+                free(msg);
+            }
+        }
+    }
     else
       outCount = write(cp->fdTo, message, count);
 

@@ -1393,7 +1393,9 @@ ArgDescriptor argDescriptors[] = {
   { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE },
   { "noGUI", ArgTrue, (LPVOID) &appData.noGUI, FALSE },
   { "keepLineBreaksICS", ArgBoolean, (LPVOID) &appData.noJoin, TRUE },
-
+  { "wrapContinuationSequence", ArgString, (LPVOID) &appData.wrapContSeq, FALSE },
+  { "useInternalWrap", ArgTrue, (LPVOID) &appData.useInternalWrap, FALSE }, /* noJoin usurps this if set */
+  
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
   { "minX", ArgZ, (LPVOID) &minX, FALSE }, // [HGM] placement: to make suer auxialary windows can be placed
   { "minY", ArgZ, (LPVOID) &minY, FALSE },
@@ -5277,34 +5279,55 @@ LoadGameDialog(HWND hwnd, char* title)
   }
 }
 
+int get_term_width()
+{
+    HDC hdc;
+    TEXTMETRIC tm;
+    RECT rc;
+    HFONT hfont, hold_font;
+    LOGFONT lf;
+    HWND hText;
+
+    if (hwndConsole)
+        hText = GetDlgItem(hwndConsole, OPT_ConsoleText);
+    else
+        return 79;
+
+    // get the text metrics
+    hdc = GetDC(hText);
+    lf = font[boardSize][CONSOLE_FONT]->lf;
+    if (consoleCF.dwEffects & CFE_BOLD)
+        lf.lfWeight = FW_BOLD;
+    if (consoleCF.dwEffects & CFE_ITALIC)
+        lf.lfItalic = TRUE;
+    if (consoleCF.dwEffects & CFE_STRIKEOUT)
+        lf.lfStrikeOut = TRUE;
+    if (consoleCF.dwEffects & CFE_UNDERLINE)
+        lf.lfUnderline = TRUE;
+    hfont = CreateFontIndirect(&lf);
+    hold_font = SelectObject(hdc, hfont);
+    GetTextMetrics(hdc, &tm);
+    SelectObject(hdc, hold_font);
+    DeleteObject(hfont);
+    ReleaseDC(hText, hdc);
+
+    // get the rectangle
+    SendMessage(hText, EM_GETRECT, 0, (LPARAM)&rc);
+
+    return (rc.right-rc.left) / tm.tmAveCharWidth;
+}
+
 void UpdateICSWidth(HWND hText)
 {
-	HDC hdc;
-	TEXTMETRIC tm;
-	RECT rc;
-	HFONT hfont, hold_font;
-	LONG old_width, new_width;
-	
-	// get the text metrics
-	hdc = GetDC(hText);
-	hfont = CreateFontIndirect(&font[boardSize][CONSOLE_FONT]->lf);
-	hold_font = SelectObject(hdc, hfont);
-	GetTextMetrics(hdc, &tm);
-	SelectObject(hdc, hold_font);
-	DeleteObject(hfont);
-	ReleaseDC(hText, hdc);
+    LONG old_width, new_width;
 
-	// get the rectangle
-	SendMessage(hText, EM_GETRECT, 0, (LPARAM)&rc);
-
-	// update the width
-	new_width = (rc.right-rc.left) / tm.tmAveCharWidth;
-	old_width = GetWindowLong(hText, GWL_USERDATA);
-	if (new_width != old_width)
-	{
-		ics_update_width(new_width);
-		SetWindowLong(hText, GWL_USERDATA, new_width);
-	}
+    new_width = get_term_width(hText, FALSE);
+    old_width = GetWindowLong(hText, GWL_USERDATA);
+    if (new_width != old_width)
+    {
+        ics_update_width(new_width);
+        SetWindowLong(hText, GWL_USERDATA, new_width);
+    }
 }
 
 VOID
@@ -8026,7 +8049,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
 
    // Allow hText to highlight URLs and send notifications on them
-   wMask = SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
+   wMask = (WORD) SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
    SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
    SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
    SetWindowLong(hText, GWL_USERDATA, 79); // initialize the text window's width
@@ -10340,6 +10363,11 @@ RemoveInputSource(InputSourceRef isr)
   }
 }
 
+int no_wrap(char *message, int count)
+{
+    ConsoleOutput(message, count, FALSE);
+    return count;
+}
 
 int
 OutputToProcess(ProcRef pr, char *message, int count, int *outError)
@@ -10348,11 +10376,32 @@ OutputToProcess(ProcRef pr, char *message, int count, int *outError)
   int outCount = SOCKET_ERROR;
   ChildProc *cp = (ChildProc *) pr;
   static OVERLAPPED ovl;
+  static int line = 0;
 
-  if (pr == NoProc) {
-    ConsoleOutput(message, count, FALSE);
-    return count;
-  } 
+  if (pr == NoProc)
+  {
+    if (appData.noJoin || !appData.useInternalWrap)
+      return no_wrap(message, count);
+    else
+    {
+      int width = get_term_width();
+      int len = wrap(NULL, message, count, width, &line);
+      char *msg = malloc(len);
+      int dbgchk;
+
+      if (!msg)
+        return no_wrap(message, count);
+      else
+      {
+        dbgchk = wrap(msg, message, count, width, &line);
+        if (dbgchk != len && appData.debugMode)
+            fprintf(debugFP, "wrap(): dbgchk(%d) != len(%d)\n", dbgchk, len);
+        ConsoleOutput(msg, len, FALSE);
+        free(msg);
+        return len;
+      }
+    }
+  }
 
   if (ovl.hEvent == NULL) {
     ovl.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
