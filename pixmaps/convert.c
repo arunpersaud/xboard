@@ -92,7 +92,7 @@ char data[130][130], oData[130][130], sData[130][130], wData[130][130];
 
 main(int argc, char **argv)
 {
-	int i, j, k, d, cnt, p, s, t; char c, h, w, *name, buf[80], transparent;
+	int i, j, k, d, cnt, p, s, t; char c, h, w, name[80], buf[80], transparent;
 	FILE *f;
 
     transparent = argc > 1 && !strcmp(argv[1], "-t");
