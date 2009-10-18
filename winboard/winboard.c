@@ -1496,6 +1496,10 @@ ParseFontName(char *name, MyFontParams *mfp)
   mfp->italic = (strchr(p, 'i') != NULL);
   mfp->underline = (strchr(p, 'u') != NULL);
   mfp->strikeout = (strchr(p, 's') != NULL);
+  mfp->charset = DEFAULT_CHARSET;
+  q = strchr(p, 'c');
+  if (q)
+    mfp->charset = (BYTE) atoi(q+1);
 }
 
 /* Color name parser.
@@ -1870,7 +1874,7 @@ LFfromMFP(LOGFONT* lf, MyFontParams *mfp)
   lf->lfItalic = mfp->italic;
   lf->lfUnderline = mfp->underline;
   lf->lfStrikeOut = mfp->strikeout;
-  lf->lfCharSet = DEFAULT_CHARSET;
+  lf->lfCharSet = mfp->charset;
   lf->lfOutPrecision = OUT_DEFAULT_PRECIS;
   lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
   lf->lfQuality = DEFAULT_QUALITY;
@@ -2493,13 +2497,14 @@ SaveSettings(char* name)
 	for (bs=0; bs<NUM_SIZES; bs++) {
 	  MyFontParams *mfp = &font[bs][(int) ad->argLoc]->mfp;
           fprintf(f, "/size=%s ", sizeInfo[bs].name);
-	  fprintf(f, "/%s=\"%s:%g%s%s%s%s%s\"\n",
+	  fprintf(f, "/%s=\"%s:%g%s%s%s%s%sc%d\"\n",
 	    ad->argName, mfp->faceName, mfp->pointSize,
             mfp->bold || mfp->italic || mfp->underline || mfp->strikeout ? " " : "",
 	    mfp->bold ? "b" : "",
 	    mfp->italic ? "i" : "",
 	    mfp->underline ? "u" : "",
-	    mfp->strikeout ? "s" : "");
+	    mfp->strikeout ? "s" : "",
+            (int)mfp->charset);
 	}
       }
       break;
