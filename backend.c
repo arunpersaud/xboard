@@ -10930,7 +10930,9 @@ TwoMachinesEvent P((void))
 
 	strcpy(bookMove, "move ");
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	savedMessage = bookMove; // args for deferred call
+	savedState = onmove;
+	ScheduleDelayedEvent(DeferredBookMove, 1);
     }
 }
 
