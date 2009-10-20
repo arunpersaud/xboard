@@ -607,7 +607,7 @@ InitBackEnd1()
     ShowThinkingEvent(); // [HGM] thinking: make sure post/nopost state is set according to options
 
     GetTimeMark(&programStartTime);
-    srand(programStartTime.ms); // [HGM] book: makes sure random is unpredictabe to msec level
+    srandom(programStartTime.ms); // [HGM] book: makes sure random is unpredictabe to msec level
 
     ClearProgramStats();
     programStats.ok_to_send = 1;
@@ -3281,7 +3281,13 @@ read_from_ics(isr, closure, data, count, error)
                            * to move the position two files to the right to
                            * create room for them!
                            */
-                          VariantSwitch(boards[currentMove], VariantCrazyhouse); /* temp guess */
+			  VariantClass newVariant;
+			  switch(gameInfo.boardWidth) { // base guess on board width
+				case 9:  newVariant = VariantShogi; break;
+				case 10: newVariant = VariantGreat; break;
+				default: newVariant = VariantCrazyhouse; break;
+			  }
+                          VariantSwitch(boards[currentMove], newVariant); /* temp guess */
 			  /* Get a move list just to see the header, which
 			     will tell us whether this is really bug or zh */
 			  if (ics_getting_history == H_FALSE) {
@@ -3391,6 +3397,7 @@ ParseBoard12(string)
     char promoChar;
     int ranks=1, files=0; /* [HGM] ICS80: allow variable board size */
     char *bookHit = NULL; // [HGM] book
+    Boolean weird = FALSE;
 
     fromX = fromY = toX = toY = -1;
     
@@ -3406,6 +3413,7 @@ ParseBoard12(string)
         while(i < 199 && (string[i] != ' ' || string[i+2] != ' ')) {
 	    if(string[i] == ' ') { ranks++; files = 0; }
             else files++;
+	    if(!strchr(" -pnbrqkPNBRQK" , string[i])) weird = TRUE; // test for fairies
 	    i++;
 	}
 	for(j = 0; j <i; j++) board_chars[j] = string[j];
@@ -3418,6 +3426,26 @@ ParseBoard12(string)
 	       &white_stren, &black_stren, &white_time, &black_time,
 	       &moveNum, str, elapsed_time, move_str, &ics_flip,
 	       &ticking);
+fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardHeight,gameInfo.boardWidth,ranks,files,weird,gameInfo.variant);fflush(debugFP);
+   if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files || 
+					weird && (int)gameInfo.variant <= (int)VariantShogi) {
+     /* [HGM] We seem to switch variant during a game!
+      * Try to guess new variant from board size
+      */
+	  VariantClass newVariant = VariantFairy; // if 8x8, but fairies present
+	  if(ranks == 8 && files == 10) newVariant = VariantCapablanca; else
+	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
+	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
+	  if(ranks == 9 && files == 9)  newVariant = VariantShogi;
+          VariantSwitch(boards[currentMove], newVariant); /* temp guess */
+	  /* Get a move list just to see the header, which
+	     will tell us whether this is really bug or zh */
+	  if (ics_getting_history == H_FALSE) {
+	    ics_getting_history = H_REQUESTED;
+	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+	    SendToICS(str);
+	  }
+    }
 
     if (n < 21) {
         snprintf(str, sizeof(str), _("Failed to parse board string:\n\"%s\""), string);
