@@ -7514,14 +7514,20 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board, castling, ep)
         p = (int) fromX;
         if(p < (int) BlackPawn) { /* white drop */
              p -= (int)WhitePawn;
+		 p = PieceToNumber((ChessSquare)p);
              if(p >= gameInfo.holdingsSize) p = 0;
-             if(--board[p][BOARD_WIDTH-2] == 0)
+             if(--board[p][BOARD_WIDTH-2] <= 0)
                   board[p][BOARD_WIDTH-1] = EmptySquare;
+             if((int)board[p][BOARD_WIDTH-2] < 0)
+			board[p][BOARD_WIDTH-2] = 0;
         } else {                  /* black drop */
              p -= (int)BlackPawn;
+		 p = PieceToNumber((ChessSquare)p);
              if(p >= gameInfo.holdingsSize) p = 0;
-             if(--board[BOARD_HEIGHT-1-p][1] == 0)
+             if(--board[BOARD_HEIGHT-1-p][1] <= 0)
                   board[BOARD_HEIGHT-1-p][0] = EmptySquare;
+             if((int)board[BOARD_HEIGHT-1-p][1] < 0)
+			board[BOARD_HEIGHT-1-p][1] = 0;
         }
       }
       if (captured != EmptySquare && gameInfo.holdingsSize > 0
@@ -7555,7 +7561,6 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board, castling, ep)
           board[BOARD_HEIGHT-1-p][0] = WHITE_TO_BLACK captured;
 	}
       }
-
     } else if (gameInfo.variant == VariantAtomic) {
       if (captured != EmptySquare) {
 	int y, x;
