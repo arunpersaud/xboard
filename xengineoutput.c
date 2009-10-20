@@ -381,7 +381,11 @@ Widget EngineOutputCreate(name, text)
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
     shell =
+#if TOPLEVEL 
+     XtCreatePopupShell(name, topLevelShellWidgetClass,
+#else
       XtCreatePopupShell(name, transientShellWidgetClass,
+#endif
 			 shellWidget, args, j);
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,
