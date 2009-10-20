@@ -2813,16 +2813,6 @@ The program used by cmail to send email messages. This defaults to the
 environment variable @code{$CMAIL_MAILPROG} or failing that
 @file{/usr/ucb/Mail}, @file{/usr/ucb/mail} or @file{Mail}. You will need
 to set this variable if none of the above paths fit your system.
-@item -gamesFile <file>
-@cindex .cmailgames
-A file containing a list of games with email addresses. This defaults to
-the environment variable @code{$CMAIL_GAMES} or failing that
-@file{.cmailgames}.
-@item -aliasesFile <file>
-@cindex .cmailaliases
-A file containing one or more aliases for a set of email addresses. This
-defaults to the environment variable @code{$CMAIL_ALIASES} or failing
-that @file{.cmailaliases}.
 @item -logFile <file>
 A file in which to dump verbose debugging messages that are invoked with
 the @samp{-v}
