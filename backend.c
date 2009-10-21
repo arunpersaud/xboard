@@ -1977,7 +1977,7 @@ VariantSwitch(Board board, VariantClass newVariant)
      case VariantSuper:
        newHoldingsWidth = 2;
        gameInfo.holdingsSize = 8;
-       return;
+       break;
      case VariantGothic:
      case VariantCapablanca:
      case VariantCapaRandom:
