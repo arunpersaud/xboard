@@ -2011,10 +2011,8 @@ VariantSwitch(Board board, VariantClass newVariant)
      gameInfo.holdingsWidth = newHoldingsWidth;
      gameInfo.variant = newVariant;
      InitDrawingSizes(-2, 0);
-     InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
-   } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
-   
-   DrawPosition(TRUE, boards[currentMove]);
+     InitPosition(TRUE);          /* this sets up board[0], but also other stuff        */
+   } else { gameInfo.variant = newVariant; InitPosition(TRUE); }
 }
 
 static int loggedOn = FALSE;
@@ -2731,7 +2729,7 @@ read_from_ics(isr, closure, data, count, error)
 			   moves and soak them up so user can step
 			   through them and/or save them.
 			   */
-			Reset(FALSE, TRUE);
+			Reset(TRUE, TRUE);
 			gameMode = IcsObserving;
 			ModeHighlight();
 			ics_gamenum = -1;
@@ -3532,7 +3530,7 @@ ParseBoard12(string)
 	
 	/* Forget the old game and get the history (if any) of the new one */
 	if (gameMode != BeginningOfGame) {
-	  Reset(FALSE, TRUE);
+	  Reset(TRUE, TRUE);
 	}
 	newGame = TRUE;
 	if (appData.autoRaiseBoard) BoardToTop();
@@ -6424,7 +6422,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
             DisplayError(_("Bad FEN received from engine"), 0);
             return ;
         } else {
-           Reset(FALSE, FALSE);
+           Reset(TRUE, FALSE);
            CopyBoard(boards[0], initial_position);
            initialRulePlies = FENrulePlies;
            epStatus[0] = FENepStatus;
@@ -7967,7 +7965,7 @@ TwoMachinesEventIfReady P((void))
 void
 NextMatchGame P((void))
 {
-    int index; /* [HGM] autoinc: step lod index during match */
+    int index; /* [HGM] autoinc: step load index during match */
     Reset(FALSE, TRUE);
     if (*appData.loadGameFile != NULLCHAR) {
 	index = appData.loadGameIndex;
