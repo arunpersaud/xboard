@@ -3426,7 +3426,7 @@ ParseBoard12(string)
 	       &white_stren, &black_stren, &white_time, &black_time,
 	       &moveNum, str, elapsed_time, move_str, &ics_flip,
 	       &ticking);
-fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardHeight,gameInfo.boardWidth,ranks,files,weird,gameInfo.variant);fflush(debugFP);
+
    if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files || 
 					weird && (int)gameInfo.variant <= (int)VariantShogi) {
      /* [HGM] We seem to switch variant during a game!
@@ -3436,7 +3436,8 @@ fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardH
 	  if(ranks == 8 && files == 10) newVariant = VariantCapablanca; else
 	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
 	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
-	  if(ranks == 9 && files == 9)  newVariant = VariantShogi;
+	  if(ranks == 9 && files == 9)  newVariant = VariantShogi; else
+	  if(!weird) newVariant = VariantNormal;
           VariantSwitch(boards[currentMove], newVariant); /* temp guess */
 	  /* Get a move list just to see the header, which
 	     will tell us whether this is really bug or zh */
