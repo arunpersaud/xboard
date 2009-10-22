@@ -3301,8 +3301,8 @@ read_from_ics(isr, closure, data, count, error)
                         white_holding[strlen(white_holding)-1] = NULLCHAR;
                         black_holding[strlen(black_holding)-1] = NULLCHAR;
                         /* [HGM] copy holdings to board holdings area */
-                        CopyHoldings(boards[currentMove], white_holding, WhitePawn);
-                        CopyHoldings(boards[currentMove], black_holding, BlackPawn);
+                        CopyHoldings(boards[forwardMostMove], white_holding, WhitePawn);
+                        CopyHoldings(boards[forwardMostMove], black_holding, BlackPawn);
 #if ZIPPY
 			if (appData.zippyPlay && first.initDone) {
 			    ZippyHoldings(white_holding, black_holding,
