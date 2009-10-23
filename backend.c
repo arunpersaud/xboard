@@ -3720,15 +3720,6 @@ ParseBoard12(string)
     /* Update currentMove and known move number limits */
     newMove = newGame || moveNum > forwardMostMove;
 
-    /* [DM] If we found takebacks during icsEngineAnalyze try send to engine */
-    if (!newGame && appData.icsEngineAnalyze && moveNum < forwardMostMove) {
-        takeback = forwardMostMove - moveNum;
-        for (i = 0; i < takeback; i++) {
-             if (appData.debugMode) fprintf(debugFP, "take back move\n");
-             SendToProgram("undo\n", &first);
-        }
-    }
-
     if (newGame) {
 	forwardMostMove = backwardMostMove = currentMove = moveNum;
 	if (gameMode == IcsExamining && moveNum == 0) {
@@ -3741,6 +3732,20 @@ ParseBoard12(string)
 	}
     } else if (moveNum == forwardMostMove + 1 || moveNum == forwardMostMove
 	       || (moveNum < forwardMostMove && moveNum >= backwardMostMove)) {
+#if ZIPPY
+	/* [DM] If we found takebacks during icsEngineAnalyze try send to engine */
+	/* [HGM] applied this also to an engine that is silently watching        */
+	if (appData.zippyPlay && moveNum < forwardMostMove && first.initDone &&
+	    (gameMode == IcsObserving || gameMode == IcsExamining) &&
+	    gameInfo.variant == currentlyInitializedVariant) {
+	  takeback = forwardMostMove - moveNum;
+	  for (i = 0; i < takeback; i++) {
+	    if (appData.debugMode) fprintf(debugFP, "take back move\n");
+	    SendToProgram("undo\n", &first);
+	  }
+	}
+#endif
+
 	forwardMostMove = moveNum;
 	if (!pausing || currentMove > forwardMostMove)
 	  currentMove = forwardMostMove;
@@ -3751,12 +3756,20 @@ ParseBoard12(string)
 	    forwardMostMove = pauseExamForwardMostMove;
 	    return;
 	}
-	forwardMostMove = backwardMostMove = currentMove = moveNum;
 	if (gameMode == IcsExamining && moveNum > 0 && appData.getMoveList) {
+#if ZIPPY
+	    if(appData.zippyPlay && forwardMostMove > 0 && first.initDone) {
+		// [HGM] when we will receive the move list we now request, it will be
+		// fed to the engine from the first move on. So if the engine is not
+		// in the initial position now, bring it there.
+		InitChessProgram(&first, 0);
+	    }
+#endif
 	    ics_getting_history = H_REQUESTED;
 	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
 	    SendToICS(str);
 	}
+	forwardMostMove = backwardMostMove = currentMove = moveNum;
     }
     
     /* Update the clocks */
