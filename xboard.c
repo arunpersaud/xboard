@@ -2777,8 +2777,8 @@ XBoard square size (hint): %d\n\
     widgetList[j++] = menuBarWidget = CreateMenuBar(menuBar);
     XtSetArg(args[0], XtNtop,    XtChainTop);
     XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetArg(args[1], XtNright,  XtChainLeft);
-    XtSetValues(menuBarWidget, args, 2);
+    XtSetArg(args[2], XtNright,  XtChainLeft);
+    XtSetValues(menuBarWidget, args, 3);
 
     widgetList[j++] = whiteTimerWidget =
       XtCreateWidget("whiteTime", labelWidgetClass,
