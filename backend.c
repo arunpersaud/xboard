@@ -1904,6 +1904,8 @@ CopyHoldings(Board board, char *holdings, ChessSquare lowestPiece)
     ChessSquare piece;
 
     if(gameInfo.holdingsWidth < 2)  return;
+    if(gameInfo.variant != VariantBughouse && board[BOARD_SIZE-1][BOARD_SIZE-2])
+	return; // prevent overwriting by pre-board holdings
 
     if( (int)lowestPiece >= BlackPawn ) {
         holdingsColumn = 0;
@@ -1932,7 +1934,6 @@ CopyHoldings(Board board, char *holdings, ChessSquare lowestPiece)
         board[holdingsStartRow+j*direction][holdingsColumn] = piece;
         board[holdingsStartRow+j*direction][countsColumn]++;
     }
-
 }
 
 
@@ -2011,8 +2012,9 @@ VariantSwitch(Board board, VariantClass newVariant)
      gameInfo.holdingsWidth = newHoldingsWidth;
      gameInfo.variant = newVariant;
      InitDrawingSizes(-2, 0);
-     InitPosition(TRUE);          /* this sets up board[0], but also other stuff        */
-   } else { gameInfo.variant = newVariant; InitPosition(TRUE); }
+     InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
+   } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
+   DrawPosition(TRUE, boards[currentMove]);
 }
 
 static int loggedOn = FALSE;
@@ -2729,7 +2731,7 @@ read_from_ics(isr, closure, data, count, error)
 			   moves and soak them up so user can step
 			   through them and/or save them.
 			   */
-			Reset(TRUE, TRUE);
+			Reset(FALSE, TRUE);
 			gameMode = IcsObserving;
 			ModeHighlight();
 			ics_gamenum = -1;
@@ -2901,7 +2903,7 @@ read_from_ics(isr, closure, data, count, error)
 			currentMove = forwardMostMove;
 			ClearHighlights();/*!!could figure this out*/
 			flipView = appData.flipView;
-			DrawPosition(FALSE, boards[currentMove]);
+			DrawPosition(TRUE, boards[currentMove]);
 			DisplayBothClocks();
 			sprintf(str, "%s vs. %s",
 				gameInfo.white, gameInfo.black);
@@ -3301,6 +3303,7 @@ read_from_ics(isr, closure, data, count, error)
                         /* [HGM] copy holdings to board holdings area */
                         CopyHoldings(boards[forwardMostMove], white_holding, WhitePawn);
                         CopyHoldings(boards[forwardMostMove], black_holding, BlackPawn);
+                        boards[forwardMostMove][BOARD_SIZE-1][BOARD_SIZE-2] = 1; // flag holdings as set
 #if ZIPPY
 			if (appData.zippyPlay && first.initDone) {
 			    ZippyHoldings(white_holding, black_holding,
@@ -3652,6 +3655,7 @@ ParseBoard12(string)
       }
     }
     CopyBoard(boards[moveNum], board);
+    boards[moveNum][BOARD_SIZE-1][BOARD_SIZE-2] = 0; // [HGM] indicate holdings not set
     if (moveNum == 0) {
 	startedFromSetupPosition =
 	  !CompareBoards(board, initialPosition);
