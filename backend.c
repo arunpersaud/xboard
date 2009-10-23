@@ -6945,9 +6945,12 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
 			if(cps->nps == 0) ticklen = 10*time;                    // use engine reported time
 			else ticklen = (1000. * u64ToDouble(nodes)) / cps->nps; // convert node count to time
-			if(WhiteOnMove(forwardMostMove)) 
+			if(WhiteOnMove(forwardMostMove) && (gameMode == MachinePlaysWhite ||
+						gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'w')) 
 			     whiteTimeRemaining = timeRemaining[0][forwardMostMove] - ticklen;
-			else blackTimeRemaining = timeRemaining[1][forwardMostMove] - ticklen;
+			if(!WhiteOnMove(forwardMostMove) && (gameMode == MachinePlaysBlack ||
+						gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) 
+			     blackTimeRemaining = timeRemaining[1][forwardMostMove] - ticklen;
 		}
 
 		/* Buffer overflow protection */
