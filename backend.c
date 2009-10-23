@@ -607,7 +607,7 @@ InitBackEnd1()
     ShowThinkingEvent(); // [HGM] thinking: make sure post/nopost state is set according to options
 
     GetTimeMark(&programStartTime);
-    srandom(programStartTime.ms); // [HGM] book: makes sure random is unpredictabe to msec level
+    srandom((programStartTime.ms + 1000*programStartTime.sec)*0x1001001); // [HGM] book: makes sure random is unpredictabe to msec level
 
     ClearProgramStats();
     programStats.ok_to_send = 1;
