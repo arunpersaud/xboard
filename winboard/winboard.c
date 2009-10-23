@@ -5428,7 +5428,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     
     JAWS_ALT_INTERCEPT
 
-    if (appData.icsActive && (char)wParam > ' ' && !((char)wParam >= '1' && (char)wParam <= '9')) { 
+    if (appData.icsActive && ((char)wParam == '\r' || (char)wParam > ' ' && !((char)wParam >= '1' && (char)wParam <= '9'))) { 
 	// [HGM] movenum: for non-zero digits we always do type-in dialog
 	HWND h = GetDlgItem(hwndConsole, OPT_ConsoleInput);
 	if (IsIconic(hwndConsole)) ShowWindow(hwndConsole, SW_RESTORE);
