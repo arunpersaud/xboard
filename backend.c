@@ -3232,16 +3232,14 @@ read_from_ics(isr, closure, data, count, error)
 		      if (currentMove == 0 &&
 			  gameMode == IcsPlayingWhite &&
 			  appData.premoveWhite) {
-			sprintf(str, "%s%s\n", ics_prefix,
-				appData.premoveWhiteText);
+			sprintf(str, "%s\n", appData.premoveWhiteText);
 			if (appData.debugMode)
 			  fprintf(debugFP, "Sending premove:\n");
 			SendToICS(str);
 		      } else if (currentMove == 1 &&
 				 gameMode == IcsPlayingBlack &&
 				 appData.premoveBlack) {
-			sprintf(str, "%s%s\n", ics_prefix,
-				appData.premoveBlackText);
+			sprintf(str, "%s\n", appData.premoveBlackText);
 			if (appData.debugMode)
 			  fprintf(debugFP, "Sending premove:\n");
 			SendToICS(str);
@@ -5271,6 +5269,7 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
         return ImpossibleMove;
     }
 
+    if(toX < 0 || toY < 0) return ImpossibleMove;
     pdown = boards[currentMove][fromY][fromX];
     pup = boards[currentMove][toY][toX];
 
@@ -5615,16 +5614,11 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    }
 	    return;
 	}
-	// ignore to-clicks in holdings
+	// ignore clicks on holdings
 	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;
     }
 
-    if (clickType == Release && (x == fromX && y == fromY ||
-	x < BOARD_LEFT || x >= BOARD_RGHT)) {
-
-	// treat drags into holding as click on start square
-	x = fromX; y = fromY;
-
+    if (clickType == Release && x == fromX && y == fromY) {
 	DragPieceEnd(xPix, yPix);
 	if (appData.animateDragging) {
 	    /* Undo animation damage if any */
@@ -5644,7 +5638,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	return;
     }
 
-    /* we now have a different from- and to-square */
+    /* we now have a different from- and (possibly off-board) to-square */
     /* Completed move */
     toX = x;
     toY = y;
@@ -5667,6 +5661,17 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
     }
+
+    // moves into holding are invalid for now (later perhaps allow in EditPosition)
+    if(x >= 0 && x < BOARD_LEFT || x >= BOARD_RGHT) {
+	ClearHighlights();
+	fromX = fromY = -1;
+	return;
+    }
+
+    // off-board moves should not be highlighted
+    if(x < 0 || x < 0) ClearHighlights();
+
     if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice)) {
 	SetHighlights(fromX, fromY, toX, toY);
 	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
