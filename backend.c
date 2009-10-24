@@ -6959,8 +6959,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		    if (strlen(buf1) >= sizeof(programStats.movelist)
 			&& appData.debugMode) {
 			fprintf(debugFP,
-				"PV is too long; using the first %d bytes.\n",
-				sizeof(programStats.movelist) - 1);
+				"PV is too long; using the first %u bytes.\n",
+				(unsigned) sizeof(programStats.movelist) - 1);
 		    }
 
                     safeStrCpy( programStats.movelist, buf1, sizeof(programStats.movelist) );
@@ -12846,7 +12846,7 @@ ParseFeatures(args, cps)
     /* unknown feature: complain and skip */
     q = p;
     while (*q && *q != '=') q++;
-    sprintf(buf, "rejected %.*s\n", q-p, p);
+    sprintf(buf, "rejected %.*s\n", (int)(q-p), p);
     SendToProgram(buf, cps);
     p = q;
     if (*p == '=') {
@@ -14046,7 +14046,7 @@ Boolean set_cont_sequence(char *new_seq)
     if (ret)
         strcpy(cseq, new_seq);
     else if (appData.debugMode)
-        fprintf(debugFP, "Invalid continuation sequence \"%s\"  (maximum length is: %d)\n", new_seq, sizeof(cseq)-1);
+        fprintf(debugFP, "Invalid continuation sequence \"%s\"  (maximum length is: %u)\n", new_seq, (unsigned) sizeof(cseq)-1);
     return ret;
 }
 
