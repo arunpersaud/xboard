@@ -2669,46 +2669,41 @@ to the main line of development.
 @cindex Contributors
 
 Chris Sears and Dan Sears wrote the original XBoard.  They were
-responsible for versions 1.0 through 1.2.
-
-Evan Welsh wrote @code{CMail}.  Patrick Surry helped in designing,
-testing, and documenting CMail.
+responsible for versions 1.0 through 1.2.  The color scheme was taken
+from Wayne Christopher's @code{XChess} program.
 
 Tim Mann was primarily responsible for XBoard versions 1.3 through
 4.2.7, and for WinBoard (a port of XBoard to Microsoft Win32) from its
 inception through version 4.2.7.
 
-Mark Williams contributed the initial (WinBoard-only) implementation
-of many new features added to both XBoard and WinBoard in version
-4.1.0, including copy/paste, premove, icsAlarm, autoFlipView, training
-mode, auto raise, and blindfold.  Ben Nye contributed X copy/paste
-code for XBoard.
+John Chanak contributed the initial implementation of ICS mode.  Evan
+Welsh wrote @code{CMail}, and Patrick Surry helped in designing,
+testing, and documenting it.  Elmar Bartel contributed the new piece
+bitmaps introduced in version 3.2.  Jochen Wiedmann converted the
+documentation to texinfo.  Frank McIngvale added click/click moving,
+the Analysis modes, piece flashing, ZIICS import, and ICS text
+colorization to XBoard.  Hugh Fisher added animated piece movement to
+XBoard, and Henrik Gram added it to WinBoard.  Mark Williams
+contributed the initial (WinBoard-only) implementation of many new
+features added to both XBoard and WinBoard in version 4.1.0, including
+copy/paste, premove, icsAlarm, autoFlipView, training mode, auto
+raise, and blindfold.  Ben Nye contributed X copy/paste code for
+XBoard.
 
-Hugh Fisher added animated piece movement to XBoard, and Henrik Gram
-(henrikg@@funcom.com) added it to WinBoard.  Frank McIngvale added
-click/click moving, the Analysis modes, piece flashing, ZIICS import,
-and ICS text colorization to XBoard.  Jochen Wiedmann ported XBoard to
-the Amiga, creating AmyBoard, and converted the documentation to
-texinfo.  Elmar Bartel contributed the new piece bitmaps introduced in
-version 3.2.  John Chanak contributed the initial implementation of
-ICS mode.  The color scheme and the old 80x80 piece bitmaps were taken
-from Wayne Christopher's @code{XChess} program.
+In a fork from version 4.2.7, Alessandro Scotti added many elements to
+the user interface of WinBoard, including the board textures and
+font-based rendering, the evaluation-graph, move-history and
+engine-output window.  He was also responsible for adding the UCI
+support.
 
-In a fork from version 4.2.7,
-Alessandro Scotti added many elements to the user interface of WinBoard, 
-including the board textures and font-based rendering, the evaluation-graph, 
-move-history and engine-output window. 
-He was also responsible for adding the UCI support. 
-
-H. G. Muller continued this fork of the project,
-producing version 4.3.
-He made WinBoard castling- and e.p.-aware, 
-added variant support with adjustable board sizes, 
-the crazyhouse holdings, and the fairy pieces. 
-In addition he added most of the adjudication options, 
-made WinBoard more robust in dealing with buggy and crashing engines, 
-and extended time control with a time-odds and node-count-based modes.
-Most of the options that initially were WinBoard only have now been back-ported to XBoard.
+H. G. Muller continued this fork of the project, producing version
+4.3.  He made WinBoard castling- and e.p.-aware, added variant support
+with adjustable board sizes, the crazyhouse holdings, and the fairy
+pieces.  In addition he added most of the adjudication options, made
+WinBoard more robust in dealing with buggy and crashing engines, and
+extended time control with a time-odds and node-count-based modes.
+Most of the options that initially were WinBoard only have now been
+back-ported to XBoard.
 
 Michel van den Bergh provided the code for reading Polyglot opening books.
 
@@ -2716,7 +2711,7 @@ Meanwhile, some work continued on the GNU XBoard project maintained at
 savannah.gnu.org, but version 4.2.8 was never released.  Daniel
 Mehrmann was responsible for much of this work.
 
-More recently, Arun Persaud worked with H. G. Muller to merge all
+Most recently, Arun Persaud worked with H. G. Muller to merge all
 the features of the never-released XBoard/WinBoard 4.2.8 of the GNU
 XBoard project and the never-released 4.3.16 from H. G.'s fork into a
 unified XBoard/WinBoard 4.4, which is now available both from the
