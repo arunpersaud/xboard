@@ -706,7 +706,10 @@ extern void CopyBoard P((Board to, Board from));
             ff = initialRights[5];
             ft = initialRights[4];
         }
-        fprintf(debugFP, "Parser FRC long %d %d\n", ff, ft);
+        if (appData.debugMode) 
+        {
+          fprintf(debugFP, "Parser FRC long %d %d\n", ff, ft);
+        };
         if(ff < 0 || ft < 0) return 0;
     }
     sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
