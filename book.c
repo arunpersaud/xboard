@@ -481,7 +481,10 @@ char *ProbeBook(int moveNr, char *book)
     if(appData.debugMode) fprintf(debugFP, "book key = %08x%08x\n", (unsigned int)(key>>32), (unsigned int)key);
 
     offset=find_key(f, key, &entry);
-    if(entry.key != key) return NULL;
+    if(entry.key != key) {
+	  fclose(f);
+	  return NULL;
+    }
     entries[0] = entry;
     count=1;
     fseek(f, 16*(offset+1), SEEK_SET);
@@ -510,5 +513,6 @@ char *ProbeBook(int moveNr, char *book)
     move_to_string(move_s, entries[i].move);
     if(appData.debugMode) fprintf(debugFP, "book move field = %d\n", entries[i].move);
 
+    fclose(f);
     return move_s;
 }
