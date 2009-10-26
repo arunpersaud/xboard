@@ -919,7 +919,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) Comment; 
 }
 
-\([^()]*(\([^()]*\)[^()]*)+[^()]*\)  { 	  	/* nested () */
+\([^()]*(\([^()]*(\([^()]*(\([^()]*\)[^()]*)*\)[^()]*)*\)[^()]*)+[^()]*\)  { /* very nested () */
     return (int) Comment; 
 }
 
