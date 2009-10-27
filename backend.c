@@ -3578,7 +3578,7 @@ ParseBoard12(string)
 	timeIncrement = increment * 1000;
 	movesPerSession = 0;
 	gameInfo.timeControl = TimeControlTagValue();
-        VariantSwitch(board, StringToVariant(gameInfo.event) );
+        VariantSwitch(boards[currentMove], StringToVariant(gameInfo.event) );
   if (appData.debugMode) {
     fprintf(debugFP, "ParseBoard says variant = '%s'\n", gameInfo.event);
     fprintf(debugFP, "recognized as %s\n", VariantName(gameInfo.variant));
