@@ -6,7 +6,7 @@
 
 main(int argc, char **argv)
 {
-	int i, j, k, d, cnt; char c, h, w, *p, data[10000], *name;
+	int i, j, k, d, cnt; char c, *p, data[10000], *name; unsigned char h, w;
 	FILE *f;
 
 	if(argc<2) { printf("usage is: convert <bmp filename>\n"); exit(0); }
@@ -54,7 +54,7 @@ main(int argc, char **argv)
 	for(i=0; name[i]; i++) if(name[i] == '.') name[i] = 0;
 	printf("#define %s_width %d\n", name, w);
 	printf("#define %s_height %d\n", name, h);
-	printf("static char %s_bits[] = {\n", name);
+	printf("static unsigned char %s_bits[] = {\n", name);
 	cnt = 0;
 	for(i=h-1; i>=0; i--) {
 		for(j=0; j<w; j+=8) {
