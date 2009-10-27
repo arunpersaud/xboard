@@ -5674,6 +5674,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     if(x >= 0 && x < BOARD_LEFT || x >= BOARD_RGHT) {
 	ClearHighlights();
 	fromX = fromY = -1;
+	DrawPosition(TRUE, NULL);
 	return;
     }
 
