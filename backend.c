@@ -2016,8 +2016,7 @@ VariantSwitch(Board board, VariantClass newVariant)
    } else gameInfo.variant = newVariant;
    CopyBoard(oldBoard, board);   // remember correctly formatted board
      InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
-   if(currentMove == 0) CopyBoard(board, oldBoard); // preserve start position
-   DrawPosition(TRUE, boards[currentMove]);
+   DrawPosition(TRUE, currentMove ? boards[currentMove] : oldBoard);
 }
 
 static int loggedOn = FALSE;
