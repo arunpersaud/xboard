@@ -849,11 +849,11 @@ extern void CopyBoard P((Board to, Board from));
     return (int) GameIsDrawn;
 }
 
-(([Ww](hite)?)|([Bb](lack)?))" "([Mm]ate(s|ed)?)|([Ww][io]n(s)?.*)  {
+(([Ww](hite)?)|([Bb](lack)?))" "(([Mm]ates)|([Ww][io]n(s)?)) { 
     return (int) (ToUpper(yytext[0]) == 'W' ? WhiteWins : BlackWins);
 }
 
-(([Ww](hite)?)|([Bb](lack)?))" "([Mm]ate(s|ed)?)|([Ll]os[tes]+.*)  {
+(([Ww](hite)?)|([Bb](lack)?))" "(([Mm]ated)|([Ll]os[tes]+)) { 
     return (int) (ToUpper(yytext[0]) == 'W' ? BlackWins : WhiteWins);
 }
 
