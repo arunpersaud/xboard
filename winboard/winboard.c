@@ -4214,7 +4214,7 @@ BOOL DrawPositionNeedsFullRepaint()
         but animation is fast enough that it's difficult to notice.
     */
     if( animInfo.piece == EmptySquare ) {
-        if( (appData.highlightLastMove || appData.highlightDragging) && IsDrawArrowEnabled() && HasHighlightInfo() ) {
+        if( (appData.highlightLastMove || appData.highlightDragging) && IsDrawArrowEnabled() /*&& HasHighlightInfo()*/ ) {
             result = TRUE;
         }
     }
@@ -4847,7 +4847,7 @@ PaintProc(HWND hwnd)
  *   subtracted from x.
  */
 int EventToSquare(x, limit)
-     int x;
+     int x, limit;
 {
   if (x <= 0)
     return -2;
