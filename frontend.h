@@ -183,6 +183,7 @@ void HistorySet P((char movelist[][2*MOVE_LEN], int first, int last, int current
 void FreezeUI P((void));
 void ThawUI P((void));
 extern char *programName;
+extern int commentUp;
 
 typedef struct FrontEndProgramStats_TAG {
     int which;

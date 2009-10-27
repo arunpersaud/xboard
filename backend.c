@@ -13024,26 +13024,23 @@ DisplayComment(moveNumber, text)
     char title[MSG_SIZ];
     char buf[8000]; // comment can be long!
     int score, depth;
-
-    if( appData.autoDisplayComment ) {
-        if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
-	    strcpy(title, "Comment");
-        } else {
-	    sprintf(title, "Comment on %d.%s%s", moveNumber / 2 + 1,
-		    WhiteOnMove(moveNumber) ? " " : ".. ",
-		    parseList[moveNumber]);
-        }
-	// [HGM] PV info: display PV info together with (or as) comment
-	if(moveNumber >= 0 && (depth = pvInfoList[moveNumber].depth) > 0) {
-	    if(text == NULL) text = "";                                           
-	    score = pvInfoList[moveNumber].score;
-	    sprintf(buf, "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
-                              depth, (pvInfoList[moveNumber].time+50)/100, text);
-	    text = buf;
-	}
-    } else title[0] = 0;
-
-    if (text != NULL)
+    
+    if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
+      strcpy(title, "Comment");
+    } else {
+      sprintf(title, "Comment on %d.%s%s", moveNumber / 2 + 1,
+	      WhiteOnMove(moveNumber) ? " " : ".. ",
+	      parseList[moveNumber]);
+    }
+    // [HGM] PV info: display PV info together with (or as) comment
+    if(moveNumber >= 0 && (depth = pvInfoList[moveNumber].depth) > 0) {
+      if(text == NULL) text = "";                                           
+      score = pvInfoList[moveNumber].score;
+      sprintf(buf, "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
+	      depth, (pvInfoList[moveNumber].time+50)/100, text);
+      text = buf;
+    }
+    if (text != NULL && (appData.autoDisplayComment || commentUp))
         CommentPopUp(title, text);
 }
 
