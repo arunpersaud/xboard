@@ -1416,6 +1416,12 @@ XtResource clientResources[] = {
     { "useInternalWrap", "useInternalWrap", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, useInternalWrap),
 	XtRImmediate, (XtPointer) True},
+    { "autoDisplayTags", "autoDisplayTags", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, autoDisplayTags),
+	XtRImmediate, (XtPointer) True},
+    { "autoDisplayComment", "autoDisplayComment", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, autoDisplayComment),
+	XtRImmediate, (XtPointer) True},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1788,6 +1794,8 @@ XrmOptionDescRec shellOptions[] = {
     { "-keepLineBreaksICS", "keepLineBreaksICS", XrmoptionSepArg, NULL },
     { "-wrapContinuationSequence", "wrapContinuationSequence", XrmoptionSepArg, NULL },
     { "-useInternalWrap", "useInternalWrap", XrmoptionSepArg, NULL },
+    { "-autoDisplayTags", "autoDisplayTags", XrmoptionSepArg, NULL },
+    { "-autoDisplayComment", "autoDisplayComment", XrmoptionSepArg, NULL },
 };
 
 XtActionsRec boardActions[] = {

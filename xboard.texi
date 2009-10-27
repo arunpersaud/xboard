@@ -2086,6 +2086,14 @@ Sets the Animate Moving menu option. @xref{Options Menu}.  Default: true.
 @cindex -animateSpeed, option
 Number of milliseconds delay between each animation frame when Animate
 Moves is on.
+@item -autoDisplayComment true/false
+@itemx -autoDisplayTags true/false
+@cindex -autoDisplayComment, option
+@cindex -autoDisplayTags, option
+If set to true, these options cause the window with the move comments,
+and the window with PGN tags, respectively, to pop up automatically when
+such tags or comments are encountered during the replaying a stored or
+loaded game.
 @end table
 
 @node Adjudication Options
