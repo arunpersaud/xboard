@@ -229,7 +229,6 @@ AdaptMenu()
 
 	helpMenuInfo.cbSize = sizeof(helpMenuInfo);
 	menuMain = GetMenu(hwndMain);
-	if(appData.debugMode) fprintf(debugFP, "hwndMain: %8x %8x\n", hwndMain, menuMain);
 	menuJAWS = CreatePopupMenu();
 	
 	for(i=0; menuItemJAWS[i].name; i++) {
@@ -1123,9 +1122,10 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 				(BlackPawn <= pdown && pdown <= BlackKing &&
 				 BlackPawn <= pup && pup <= BlackKing))) {
 			/* EditPosition, empty square, or different color piece;
-			click-click move is possible */
+			click-click move is possible */		
+			char promoChoice = NULLCHAR;
 		
-			if (IsPromotion(oldFromX, oldFromY, fromX, fromY)) {
+			if (HasPromotionChoice(oldFromX, oldFromY, fromX, fromY, &promoChoice)) {
 				if (appData.alwaysPromoteToQueen) {
 					UserMoveEvent(oldFromX, oldFromY, fromX, fromY, 'q');
 				}
@@ -1136,7 +1136,7 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}	
 			}
 			else {
-				UserMoveEvent(oldFromX, oldFromY, fromX, fromY, NULLCHAR);
+				UserMoveEvent(oldFromX, oldFromY, fromX, fromY, promoChoice);
 			}
 		oldFromX = oldFromY = -1;
 		break;
