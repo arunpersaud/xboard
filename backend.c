@@ -3260,6 +3260,7 @@ read_from_ics(isr, closure, data, count, error)
 
 		    /* Usually suppress following prompt */
 		    if (!(forwardMostMove == 0 && gameMode == IcsExamining)) {
+			while(looking_at(buf, &i, "\n")); // [HGM] skip empty lines
 			if (looking_at(buf, &i, "*% ")) {
 			    savingComment = FALSE;
 			}
