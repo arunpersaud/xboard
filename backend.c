@@ -1941,6 +1941,7 @@ void
 VariantSwitch(Board board, VariantClass newVariant)
 {
    int newHoldingsWidth, newWidth = 8, newHeight = 8, i, j;
+   Board oldBoard;
 
    startedFromPositionFile = FALSE;
    if(gameInfo.variant == newVariant) return;
@@ -2012,8 +2013,10 @@ VariantSwitch(Board board, VariantClass newVariant)
      gameInfo.holdingsWidth = newHoldingsWidth;
      gameInfo.variant = newVariant;
      InitDrawingSizes(-2, 0);
+   } else gameInfo.variant = newVariant;
+   CopyBoard(oldBoard, board);   // remember correctly formatted board
      InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
-   } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
+   if(currentMove == 0) CopyBoard(board, oldBoard); // preserve start position
    DrawPosition(TRUE, boards[currentMove]);
 }
 
@@ -3327,6 +3330,7 @@ read_from_ics(isr, closure, data, count, error)
 		    }
 		    /* Suppress following prompt */
 		    if (looking_at(buf, &i, "*% ")) {
+			if(strchr(star_match[0], 7)) SendToPlayer("\007", 1); // Bell(); // FICS fuses bell for next board with prompt in zh captures
 			savingComment = FALSE;
 		    }
 		    next_out = i;
@@ -3396,7 +3400,7 @@ ParseBoard12(string)
     char promoChar;
     int ranks=1, files=0; /* [HGM] ICS80: allow variable board size */
     char *bookHit = NULL; // [HGM] book
-    Boolean weird = FALSE;
+    Boolean weird = FALSE, reqFlag = FALSE;
 
     fromX = fromY = toX = toY = -1;
     
@@ -3425,27 +3429,6 @@ ParseBoard12(string)
 	       &white_stren, &black_stren, &white_time, &black_time,
 	       &moveNum, str, elapsed_time, move_str, &ics_flip,
 	       &ticking);
-
-   if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files || 
-					weird && (int)gameInfo.variant <= (int)VariantShogi) {
-     /* [HGM] We seem to switch variant during a game!
-      * Try to guess new variant from board size
-      */
-	  VariantClass newVariant = VariantFairy; // if 8x8, but fairies present
-	  if(ranks == 8 && files == 10) newVariant = VariantCapablanca; else
-	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
-	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
-	  if(ranks == 9 && files == 9)  newVariant = VariantShogi; else
-	  if(!weird) newVariant = VariantNormal;
-          VariantSwitch(boards[currentMove], newVariant); /* temp guess */
-	  /* Get a move list just to see the header, which
-	     will tell us whether this is really bug or zh */
-	  if (ics_getting_history == H_FALSE) {
-	    ics_getting_history = H_REQUESTED;
-	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
-	    SendToICS(str);
-	  }
-    }
 
     if (n < 21) {
         snprintf(str, sizeof(str), _("Failed to parse board string:\n\"%s\""), string);
@@ -3523,6 +3506,27 @@ ParseBoard12(string)
 	ics_getting_history = H_FALSE;
 	return;
     }
+
+   if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files || 
+					weird && (int)gameInfo.variant <= (int)VariantShogi) {
+     /* [HGM] We seem to have switched variant unexpectedly
+      * Try to guess new variant from board size
+      */
+	  VariantClass newVariant = VariantFairy; // if 8x8, but fairies present
+	  if(ranks == 8 && files == 10) newVariant = VariantCapablanca; else
+	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
+	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
+	  if(ranks == 9 && files == 9)  newVariant = VariantShogi; else
+	  if(!weird) newVariant = VariantNormal;
+          VariantSwitch(boards[currentMove], newVariant); /* temp guess */
+	  /* Get a move list just to see the header, which
+	     will tell us whether this is really bug or zh */
+	  if (ics_getting_history == H_FALSE) {
+	    ics_getting_history = H_REQUESTED; reqFlag = TRUE;
+	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+	    SendToICS(str);
+	  }
+    }
     
     /* Take action if this is the first board of a new game, or of a
        different game than is currently being displayed.  */
@@ -3538,8 +3542,8 @@ ParseBoard12(string)
 	prevMove = -3;
 	if (gamenum == -1) {
 	    newGameMode = IcsIdle;
-	} else if (moveNum > 0 && newGameMode != IcsIdle &&
-		   appData.getMoveList) {
+	} else if ((moveNum > 0 || newGameMode == IcsObserving) && newGameMode != IcsIdle &&
+		   appData.getMoveList && !reqFlag) {
 	    /* Need to get game history */
 	    ics_getting_history = H_REQUESTED;
 	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
@@ -5670,7 +5674,6 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     if(x >= 0 && x < BOARD_LEFT || x >= BOARD_RGHT) {
 	ClearHighlights();
 	fromX = fromY = -1;
-	DrawPosition(FALSE, NULL);
 	return;
     }
 
