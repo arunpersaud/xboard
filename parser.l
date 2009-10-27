@@ -988,7 +988,7 @@ int yyoffset()
 static void output(ch)
      int ch;
 {
-    fprintf(stderr, "PARSER BUG: unmatched character '%c' (0%o)\n",
+    if(appData.debugMode) fprintf(debugFP, "PARSER BUG: unmatched character '%c' (0%o)\n",
 	    ch, ch);
 }
 
@@ -1000,7 +1000,7 @@ static void unput(ch)
 	StringToLex--;
     } else {
 	if (unputCount >= UNPUT_BUF_SIZE)
-	  fprintf(stderr, "PARSER BUG: unput buffer overflow '%c' (0%o)\n",
+	  if(appData.debugMode) fprintf(debugFP, "PARSER BUG: unput buffer overflow '%c' (0%o)\n",
 		  ch, ch);
 	unputBuffer[unputCount++] = ch;
     }
