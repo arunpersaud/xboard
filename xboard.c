@@ -6261,7 +6261,7 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
   char *selection_tmp;
 
   if (!selected_fen_position) return False; /* should never happen */
-  if (*target == XA_STRING){
+  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
     /* note: since no XtSelectionDoneProc was registered, Xt will
      * automatically call XtFree on the value returned.  So have to
      * make a copy of it allocated with XtMalloc */
@@ -6270,8 +6270,21 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
 
     *value_return=selection_tmp;
     *length_return=strlen(selection_tmp);
-    *type_return=XA_STRING;
+    *type_return=*target;
     *format_return = 8; /* bits per byte */
+    return True;
+  } else if (*target == XA_TARGETS(xDisplay)) {
+    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
+    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
+    targets_tmp[1] = XA_STRING;
+    *value_return = targets_tmp;
+    *type_return = XA_ATOM;
+    *length_return = 2;
+    *format_return = 8 * sizeof(Atom);
+    if (*format_return > 32) {
+      *length_return *= *format_return / 32;
+      *format_return = 32;
+    }
     return True;
   } else {
     return False;
@@ -6287,8 +6300,6 @@ void CopyPositionProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
   {
-    int ret;
-
     /*
      * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
      * have a notion of a position that is selected but not copied.
@@ -6349,7 +6360,7 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
 {
   char *selection_tmp;
 
-  if (*target == XA_STRING){
+  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
     FILE* f = fopen(gameCopyFilename, "r");
     long len;
     size_t count;
@@ -6366,8 +6377,21 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
     selection_tmp[len] = NULLCHAR;
     *value_return = selection_tmp;
     *length_return = len;
-    *type_return = XA_STRING;
+    *type_return = *target;
     *format_return = 8; /* bits per byte */
+    return True;
+  } else if (*target == XA_TARGETS(xDisplay)) {
+    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
+    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
+    targets_tmp[1] = XA_STRING;
+    *value_return = targets_tmp;
+    *type_return = XA_ATOM;
+    *length_return = 2;
+    *format_return = 8 * sizeof(Atom);
+    if (*format_return > 32) {
+      *length_return *= *format_return / 32;
+      *format_return = 32;
+    }
     return True;
   } else {
     return False;
@@ -7334,8 +7358,6 @@ void ShowThinkingProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
     ShowThinkingEvent();
 }
