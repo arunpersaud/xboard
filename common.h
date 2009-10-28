@@ -605,6 +605,7 @@ typedef struct {
     Boolean noJoin;     /* [HGM] join      */
     char *wrapContSeq; /* continuation sequence when xboard wraps text */
     Boolean useInternalWrap; /* use internal wrapping -- noJoin usurps this if set */
+    Boolean pasteSelection; /* paste X selection instead of clipboard */
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */

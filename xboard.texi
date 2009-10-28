@@ -2093,7 +2093,12 @@ Moves is on.
 If set to true, these options cause the window with the move comments,
 and the window with PGN tags, respectively, to pop up automatically when
 such tags or comments are encountered during the replaying a stored or
-loaded game.
+loaded game.  Default: true.
+@item -pasteSelection true/false
+@cindex -pasteSelection, option
+If this option is set to true, the Paste Position and Paste Game
+options paste from the currently selected text.  If false, they paste
+from the clipboard.  Default: false.
 @end table
 
 @node Adjudication Options
