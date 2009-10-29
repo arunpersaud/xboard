@@ -3,6 +3,623 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vnew vold)
 
+2009-10-28 20:35:06 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+prevent buffer overflow
+
+This is a buffer-size adjustments to prevent the JAWS version from
+crashing when it has to read out loud very long comments.
+
+2009-10-28 02:17:16 -0700 Tim Mann <tim@tim-mann.org>:
+Further copy/paste fixes
+
+We needed to implement the XA_TARGETS target in order for more
+sophisticated apps to really believe we put anything on the clipboard
+they can use.
+
+2009-10-27 23:57:25 -0700 Tim Mann <tim@tim-mann.org>:
+Make copy/paste position and game use clipboard, bug #27810
+
+Copy actually sets both the clipboard and the selection for
+convenience and compatibility with the old way of doing things.  Paste
+pastes from the clipboard by default, but the new -pasteSelection
+option lets you get back the old behavior of pasting from the
+selection.
+
+2009-10-27 15:44:28 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+switch focus to the board after loading a game
+
+
+2009-10-27 15:32:07 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27826: fixed autoDisplayComment
+
+apparently the -autoDisplayComment option was not working,
+not even in WinBoard. This patch should fix it,both for WB and XB.
+(Unfortunately xboard.c and winboard.c were using a different name
+for the same front-end variable I needed, so I had to change one of them.)
+
+2009-10-27 12:24:56 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27826: ported two options to xboard
+
+also updated the documentation
+
+2009-10-27 12:22:36 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed jaws version
+
+turns out the new mouse handler broke the JAWS patch, as I discarded
+the function IsPromotion. I adapted it to call HasPromotionChoice instead.
+Also fixed two arnings by removing a no-longer needed debug print.
+
+2009-10-27 12:03:02 -0700 Arun Persaud <arun@nubati.net>:
+reformated html to be correctly validated
+
+
+2009-10-27 10:33:42 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+quick fix for "White Mates" in parser.l
+
+
+2009-10-27 10:32:24 -0700 Arun Persaud <arun@nubati.net>:
+fixed a regression
+
+
+2009-10-26 20:45:15 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+changed stderr to debug output, since stderr is closed in winboard
+
+
+2009-10-26 20:42:24 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+removing empty lines from ICS play
+
+this patch causes removal of spurious prompts during ICS play also if the prompt is preceeded by a number of empty lines (as the board for the opponent move is on FICS).
+
+2009-10-26 20:40:00 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+another bug in VriantSwitch: an unitialized board was printed.
+
+Must have been there a long time, but this time it crashed WinBoard.
+
+2009-10-26 20:38:37 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+more work on variant switch
+
+the previous solution to the cosmetic problem of displaying a wrong shuffle
+in an ICS game that was observed from the very start unfortunately turned
+out to cause a real error in diplaying a stored game through the smoves
+command, for variants not using the FIDE setup as standard.
+
+This patch displays the position from before setting up the start position
+of the new variant, but does setup boards[0] to the initial position of that
+variant. (If this is a wrong shuffle, it is thus ot displayed, and a new board
+will immediately be sent from the ICS to correct the shuffle.)
+
+2009-10-26 20:34:04 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+force full redraw in winboard
+
+Full redraw is now always forced when highlightMovesWithArrow is on,
+rather than only when highlight info is available. (As in drop moves the
+latter is invalid, but we must still erase the arrow from the previous move.)
+
+2009-10-26 20:25:55 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27790 and 277772.
+
+Suppressing the display of a wrong shuffle when observing shuffle games from the first move(#27790 bis), and the sounding of the FICS bell on crazyhouse captures (#27772 bis).
+
+2009-10-26 20:22:13 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed bug related to unsigned char in convert.c
+
+I also fixed the unsigned-char bug in the convert.c for bitmaps that caused the
+129x129 XBoard bitmaps to be defective, and a bug that required fixup with sed
+afterwards (so I could use it to create a new m33s.bm)
+
+2009-10-25 23:37:48 -0700 Arun Persaud <arun@nubati.net>:
+unguarded debug printf. added the appropiate if statement
+
+
+2009-10-25 23:31:13 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for two compiler warnings
+
+
+2009-10-25 23:29:43 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27799: fix for nested-nested-nested variations
+
+
+2009-10-25 23:21:07 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+The book-probe code forgot to close the book file after opening it.
+
+fixed by adding an fclose at two points.
+
+2009-10-25 23:18:18 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+removed unused v54?.bm bitmaps from resource file
+
+it seems the v54?.bmp bitmaps were actually included in the WinBoard build
+(in the resource file), although they were never actually used. So I have
+removed their inclusion in the resource file now.
+
+2009-10-25 23:05:30 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+replaced defective bitmaps with copies from 4.2.7
+
+
+2009-10-25 23:02:08 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+removed bitmaps files that are not needed any more
+
+
+2009-10-25 22:58:34 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed some bitmaps
+
+
+2009-10-24 09:41:39 -0700 Tim Mann <tim@tim-mann.org>:
+Drop an obsolete script that was only used to update my personal web site
+
+
+2009-10-24 01:23:29 -0700 Tim Mann <tim@tim-mann.org>:
+Silence warnings when compiling 64-bit xboard
+
+Some harmless warnings were caused by 64-bit mode having 32-bit
+int but 64-bit long and pointer.  Add casts (etc.) to silence them.
+This might require adding a definition of intptr_t (a signed int
+type that is the same width as a pointer) on old systems that don't
+have it.
+
+2009-10-24 00:56:37 -0700 Tim Mann <tim@tim-mann.org>:
+Fix up man page some more
+
+Sigh, the project history was still partly in reverse chronological
+order and partly in forward order.  Swapped the order of some
+sentences to help straighten it out.  I don't really care about this,
+so other project members should feel free to do what they like here,
+but the messed-up order was bugging me.
+
+2009-10-24 00:46:20 -0700 Tim Mann <tim@tim-mann.org>:
+Fix some issues in the XBoard man page
+
+Correct places where the XBoard man page was calling XBoard
+"WinBoard".  Change references to "WinBoard engines" and "WinBoard
+protocol" to "XBoard/WinBoard ...".  Update bug reporting guidelines.
+Reorganize project history to something more like chronological order
+-- it had gotten pretty randomly ordered.
+
+2009-10-22 21:45:32 -0700 Arun Persaud <arun@nubati.net>:
+new pre-release version; updated version numbers
+
+
+2009-10-22 21:33:07 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+This patch adds <Enter> to the characters that cause an automatic switch to the ICS console when typed to the board window.
+
+
+2009-10-22 21:31:16 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix to the minor graphics issue contained some typos, as was remarked in the bugs reports
+
+
+2009-10-22 21:30:08 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+improved mouse handler
+
+The improved mouse handler still needed an extra call to DrawPosition to
+work in XBoard.
+
+2009-10-22 21:28:38 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+NPS plays and pondering
+
+Clock updating did not work correctly in node-based time controls when the
+engine was pondering. (It was not really meant for use with pondering. Oh well...)
+This patch checks if the engine reporting the node count is indeed thinking
+(as opposed to pondering).
+
+2009-10-22 21:25:36 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+holdings update and regression fix
+
+The holdings-update patch was not yet satisfactory, because FICS seems to send
+holdings both before and after the board! And those received before did overwrite
+the holdings received after the previous board. I know tried to fix that in a kludgey
+way, by hiding a flag in the board that tells if the holdings have already been written
+by the ICS or not, and ignore new holdings when they are. (Except in bughouse,
+where holdings updates cannot be tied to a particular board and multiple updates
+between boards are normal. (I hope?).)
+
+I also undid a regression in my previous fix for the minor graphics problem,
+and solved it in a slightly different way to prevent flicker.
+
+2009-10-22 21:23:39 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+improved mouse handler
+
+I improved the mouse handler in a way which will preclude disappearence of pieces
+on off-board or ambiguous (in-between squares) drag & drop moves. (As was reported
+in the "premove bug?" thread. Also the command-line premove problem reported there
+is now fixed, by removing the prefixing.
+
+2009-10-22 21:18:05 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #8847: moving backward while examining on FICS not reported to engine
+
+I moved Daniel's code that backs up the engine when a bord with a lower number is received to a place where it is always done in zippy mode, rather than only when the engine is analyzing.
+
+Apart from taking back moves, there was also the case where the
+user moves forward by more than one move (usually immediately to
+end-of-game). In this case a new movelist is fetched from the ICS
+to recover the moves that were skipped. But this assumes that the
+engine is at the start of the game and feeds all these moves to the
+engine. So the engine had to be reset in this case to stay in sync.
+
+2009-10-22 21:16:56 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+better init for random number generator
+
+
+2009-10-21 23:01:09 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27772: holdings not updated
+
+holdings lines from the ICS nor update the holdings of boards[forwardMostMove] in stead of boards[currentMove].
+
+2009-10-21 21:32:14 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+allowe parsing / disambiguation of SAN moves like Xe4 in certain situations
+
+This patch allows parsing / disambiguation of SAN moves like Xe4, if there
+is only one wild-card piece X on the board. Moves with wild-card pieces
+are now considered illegal if they leave the King in check by a piece of
+known gait.
+
+2009-10-20 19:09:46 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed bug when switching to variantsuper
+
+
+2009-10-20 19:06:43 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27715: 2 (minor) graphic issues
+
+I forced a total redraw when Reset is called from the ICS code in case a
+new game is encountered, in the hope it will make the reported
+(irreproducible) problem go away. As game switches are not frequent, I
+guess there is hardly any downside to this.
+
+2009-10-20 18:57:17 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27667: PV line missing in analysis window, part 3
+
+"3. Wish for Engine state string (right to the icon): Can you add the actual search depth in analyzing mode? A change like "
+
+I also added the requested display of depth of the analysis move in the
+EngineOutput window. I guess a similar change could be made to wengineo.c (as this is in the
+code they share in common), but no one ever requested that in the 5 years
+since Alessandro wrote it. So for now I leave it alone.
+
+2009-10-20 18:52:14 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27760: debug printf in backend.c and additional check for variant
+
+
+2009-10-19 23:17:46 -0700 Arun Persaud <arun@nubati.net>:
+fix for bug #10990: cmail does not seem to support .cmailgames or .cmailaliases
+
+this is correct, deleted the text out of the documentation that claims we support it
+
+2009-10-19 18:40:40 -0700 Arun Persaud <arun@nubati.net>:
+new alpha version; first one with new naming scheme
+
+
+2009-10-19 18:07:21 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+smarter analysis of the boards that XBoard receives from an ICS
+
+I added smarter analysis of the boards that XBoard receves from an ICS,
+based on board size and piece types in the position, to recognize cases
+where the board does not match the current variant, and switch to an
+appropriate variant.
+
+2009-10-19 18:04:08 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27667: window should be reference to toplevel
+
+The remaining objections of #27667 should be fixed by bringing the
+EngineOutput window under control of the TOPLEVEL compile-time switch.
+
+2009-10-19 18:02:42 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+partly fix for bug #27715: scaling of menu bar
+
+the menu bar to the left edge of the window.
+
+2009-10-19 17:59:43 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed bug reported in WB forum: second game of a match would not start when using the GUI book
+
+
+2009-10-19 17:57:14 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27751: negative holding counts displayed
+
+I put code in the back-end to prevent holdings counts from becoming negative
+when a drop move is made from empty holdings. (This can happen when
+re-loading ICS bughouse games, as the smoves command fails to fill the holdings.)
+
+2009-10-18 20:54:53 -0600 Eric Mullins <emwine@earthlink.net>:
+Updated compiling instructions.
+
+
+2009-10-18 11:32:55 -0600 Eric Mullins <emwine@earthlink.net>:
+Changes to allow fonts with any charset (such as terminal)
+
+Affects winboard only.
+
+2009-10-16 23:02:41 -0600 Eric Mullins <emwine@earthlink.net>:
+Moved SIGWINCH signal so it can be used...
+
+I goofed putting this in StartChildProcess() originally.
+
+2009-10-16 22:54:12 -0600 Eric Mullins <emwine@earthlink.net>:
+Added internal wrapping ability.
+
+New options:
+  -wrapContinuationSequence "foo"  (default: "\\   "
+  -useInternalWrap (Winboard default: false, XBoard default: true)
+
+Note: -keepLineBreaksICS if set, prevents wrapping, usurping the
+   useInternalWrap setting.  The idea is if you want to keep ICS line
+   breaks, then you don't want internal wrapping.  Because of this,
+   the new default for keepLineBreaksICS is now false for XBoard.
+
+2009-10-16 19:14:34 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed segfaul in convert.c used to convert pixmaps
+
+
+2009-10-15 19:46:07 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+new mousehandler to correct for premove and promotion popup
+
+this is the new mouse handler for XBoard, which should fully implement
+premove, including promotion popup, and yet suppress the promotion popup
+on illegal moves that are not premoves. It is almost completely moved to
+the back-end now, so that WinBoard will be able to use it as well. I just
+must hook it up to winboard.c, in particular harmonize the call-backs of
+the mouse driver into the front-end for grabbing and releasing pieces for
+dragging, to make sure they have the same names and arguments.
+
+2009-10-15 19:32:55 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+updated black fairy pieces
+
+here is a set of black fairy pieces with opaque white details, so they have
+the same style as the orthodox XBoard pieces.
+
+2009-10-15 16:54:51 -0600 Eric Mullins <emwine@earthlink.net>:
+Adjustment to joining to work around server not always including space.
+
+This patch implements commit 98aa02bda540f17f1f50be00e494efafe439b004
+into the updated joining routine.  This issue seems not to be server
+variance, but instead the server electing to omit the space between
+words when it occurs at exactly your width setting (-1 actually).
+
+This patch makes the joiner add back the space just like the referenced
+commit.  Note: this is just a workaround to a server issue-- the joiner
+actually joins correctly before this patch.
+
+2009-10-15 07:18:42 -0600 Eric Mullins <emwine@earthlink.net>:
+Fixed joiner detection, allowing it to work with timeseal
+
+When timeseal's buffer fills in the middle of the continuation
+sequence, detection fails, and the lines aren't joined.
+
+As a result of this fix, measures intended to bypass joining are
+no longer needed, so I removed them.  These utilize server vars
+when available to prevent splitting.
+
+2009-10-14 14:42:37 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed engingeoutput routine
+
+removed outdated code regarding analysis window
+
+2009-10-14 14:39:06 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+moved bitmap to correct location
+
+was misplaced in a previous commit
+
+2009-10-14 14:26:09 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed wrong number of arguments for EngineOutputPopUp
+
+
+2009-10-13 21:00:27 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+new bitmap converter (including fill option) and new pixmaps
+
+
+2009-10-13 20:52:40 -0700 Arun Persaud <arun@nubati.net>:
+forgot to add these two lines to the last commit
+
+
+2009-10-13 20:51:17 -0700 Arun Persaud <arun@nubati.net>:
+removed AnalysisPopUp. Use EngineOutputPopUp instead
+
+this was already in Winboard, copied it to xboard and removed unused code.
+
+2009-10-13 20:32:32 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+Proper board and holdings size when switching to variants gothic, capablanca, great and super within an ICS game.
+
+
+2009-10-13 20:25:13 -0700 Arun Persaud <arun@nubati.net>:
+cleaned up an old #ifdef in zippy
+
+
+2009-10-12 19:25:17 -0600 Eric Mullins <emwine@earthlink.net>:
+neglected this for the auto-width updating in xboard
+
+
+2009-10-12 19:19:59 -0600 Eric Mullins <emwine@earthlink.net>:
+Added server width adjustment based on client width changes
+
+
+2009-10-12 19:14:53 -0600 Eric Mullins <emwine@earthlink.net>:
+silence some compiler warnings
+
+
+2009-10-11 18:39:24 -0600 Eric Mullins <emwine@earthlink.net>:
+Maintainence to support all compilers.
+
+
+2009-10-11 17:07:27 -0600 Eric Mullins <emwine@earthlink.net>:
+Adjusted alternative joining method to obey keepLineBreaksICS
+
+
+2009-10-11 14:48:55 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27668: e.p. field still not passed to engine
+
+PositionToFEN now takes the e.p. rights from epStatus[moveNr], rather than
+calculating it on the spot from moveList[moveNr-1] (which failed on the first move).
+
+2009-10-11 14:46:14 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27666: naming of variants
+
+Variant names "misc/xxx" are recognized as "normal", rather than "xxx"
+to not get confused by the board "misc shogi" run by FICS.
+
+2009-10-11 10:14:09 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+changed enable menus
+
+Put the "Open Chat Window", "Machine Both", and "Engine #N Settings" menu items
+in the appropriate enable lists for graying them out wen not applicable.
+
+2009-10-11 10:13:14 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+Added a command-line option -keepLineBreaksICS true/false to control line joining.
+
+
+2009-10-10 19:30:23 -0600 Eric Mullins <emwine@earthlink.net>:
+Added code to prevent unnecessary width updates.
+
+
+2009-10-10 18:34:37 -0600 Eric Mullins <emwine@earthlink.net>:
+Turned off wrap when possible on ICS servers.
+
+Turning off line wrap prevents splitting lines up using the
+continuation sequence "\\   ".  This is desirable when using
+timeseal because timeseal's buffer is sometimes too small,
+causing it to break lines itself.  These lines can't be joined.
+
+2009-10-10 16:30:56 -0600 Eric Mullins <emwine@earthlink.net>:
+vsnprintf() must be _vsnprintf() for MSVC
+
+
+2009-10-10 16:16:45 -0600 Eric Mullins <emwine@earthlink.net>:
+added code to handle initial width update
+
+
+2009-10-10 14:21:12 -0600 Eric Mullins <emwine@earthlink.net>:
+Added width updates to ICS client on font and window size changes
+
+What still needs to be done is placing an update call after login
+to initialize with the correct width.  I didn't see where to put
+that.
+
+2009-10-10 14:19:30 -0600 Eric Mullins <emwine@earthlink.net>:
+added ics_printf() and ics_update_width() and utility functions
+
+
+2009-10-10 11:15:50 -0600 Eric Mullins <emwine@earthlink.net>:
+Cleaned up ConsoleWndProc  (not complete, see below)
+
+Using static variables this way is not appropriate.  I only addressed
+hInput and hText in this commit though.  But imagine the WndProc being
+used by multiple windows instead of just one, and you can see why
+using static variables in this way is wrong.
+
+2009-10-10 11:12:10 -0600 Eric Mullins <emwine@earthlink.net>:
+Restructured URL code so it fits better with how winboard is set up.
+
+
+2009-10-10 08:57:39 -0700 Arun Persaud <arun@nubati.net>:
+cleanup: removed "#if 1" statements
+
+
+2009-10-10 08:55:21 -0700 Arun Persaud <arun@nubati.net>:
+cleanup: removed "#if 0" from source
+
+a bit of cleanup of the source code
+
+2009-10-10 08:34:10 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix joining of lines split by ICS
+
+This patch fixes the joining of lines that were split by an ICS, so that adding
+a space at the break point is done only when there was not a space already.
+(Some ICS leave a space at the end of the broken line, others do not.)
+An extra space would interefere with board12 in Gothic Chess, which is so
+long that the ICS breaks it, and the WB parser could not handle a double
+space within the board.
+
+2009-10-10 08:27:55 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fix for bug #27642: Clock jumps strangely in engine mode
+
+This moves SwitchClocks() back to after incrementing forwardMostMove,
+so that it knows again who has the move (which was broken by the "bare" patch),
+and will take the appropriate tick length.
+
+2009-10-10 08:26:13 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+removed test for premove
+
+this was added while looking for the premove bug, but is not needed
+
+2009-10-10 02:03:45 -0600 Eric Mullins <emwine@earthlink.net>:
+added URL detection and provided hotlinks in the ICS client
+
+
+2009-10-10 02:00:52 -0600 Eric Mullins <emwine@earthlink.net>:
+reverted winboard.c beofre URL commit to correct whitespace conversion
+
+
+2009-10-09 02:14:22 -0600 Eric Mullins <emwine@earthlink.net>:
+Added URL detection into the console text window for ICS.
+
+
+2009-10-08 23:51:06 -0700 Arun Persaud <arun@nubati.net>:
+added some comments and formated code
+
+
+2009-10-08 23:46:52 -0700 Chris Rorvick <>:
+fix printing out help message (list of command line options) (tiny change)
+
+The postfix increment always resulted in an attempt to print out an
+option on the right side regardless of one actually existing. Use
+prefix increment to prevent a crash when printing an odd number of
+options.
+
+2009-10-09 00:04:51 -0600 Eric Mullins <emwine@earthlink.net>:
+Updated navigation accelerators, fixing ICS problems.
+
+Recent changes to the navigation accelerators were in the wrong
+accelerator table.  Since the goal was to correct non-JAWS versions
+back to 4.2.7 behavior, I updated it to how 4.2.7 did it, but still
+retained the #ifdef JAWS conditional compilation.
+
+On an ICS, the navigation keys took control away from the ics
+client to navigate the game.  The update requires the ALT key to
+be pressed, but it works identical to 4.2.7, not causing an
+unexpected focus back to the board window when you're just editing
+text.
+
+2009-10-08 20:33:39 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed premove recapture problem;promotion popup appearing on obviously illegal moves; promotions in Superchess and Great Shatranj
+
+1) the premove recapture problem
+2) the promotion popup appearing on obviously illegal moves (the 1. e2a8
+problem)
+3) promotions in Superchess and Great Shatranj, where the piece can now be
+selected from the holdings
+
+2009-10-08 20:28:50 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+added forceIllegalMove to xboard
+
+
+2009-10-05 21:01:32 -0700 Arun Persaud <arun@nubati.net>:
+bugfix: segfault when invalid option argument was given (bug #27427)
+
+when given a wrong argument to an option (e.g. -tc 0) xboard aborts before setting up the window, but tried to write a message to the messageWidget which doesn't exist at that point.
+
+2009-10-05 20:05:00 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+small improvement for JAWS version
+
+This is a patch to make JAWS read out any comments when /autoDiplaycomment=true.
+As focus does not stay on the Comment window, the comment was not spoken otherwise.
+
+2009-10-05 20:02:50 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+updated to winboard internationalization scripts
+
+Also a slight improvement of the internationalization scripting, to prevent it from crashing on messages containin a slash.
+
+2009-10-05 20:01:53 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
+new forceIllegalMoves option
+
+The -forceIllegalMoves option uses setboard or edit to force a position when an engine refuses the move leading to it by an "Illegal Move" message.
+Especially for engines using the edit command this was a bit tricky, because of the a2a3 kludge to avoid using the white and black commands.
+
+2009-10-05 01:01:54 -0600 Eric Mullins <emwine@earthlink.net>:
+removed _winmajor if not defined so that VC 2008 can compile the project
+
+The oldDialog variable should just be set to 0 in all cases now, and
+as such, legacy code supporting the old dialog ought to be removed.
+The test for _winmajor is against < 4, which is always false at present,
+causing oldDialog to be 0 in every conceviable circumstance.
+
+2009-10-04 09:58:29 -0700 Arun Persaud <arun@nubati.net>:
+getting ready for 4.4.1 release
+
 2009-10-02 20:47:01 -0600 Eric Mullins <emwine@earthlink.net>:
 Simplified future version changes.
 
