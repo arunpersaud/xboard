@@ -162,7 +162,7 @@ PSAYSTRING RealSayString;
 
 VOID SayString(char *mess, BOOL flag)
 { // for debug file
-	char buf[MSG_SIZ], *p;
+	char buf[8000], *p;
 	if(appData.debugMode) fprintf(debugFP, "SAY '%s'\n", mess);
 	strcpy(buf, mess);
 	if(p = StrCaseStr(buf, "Xboard adjudication:")) {
