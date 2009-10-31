@@ -181,7 +181,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		    sprintf(buf, "> %s\n", mess); // echo only tells to handle, not channel
 		InsertIntoMemo(hDlg, buf);
 		}
-		sprintf(buf, "tell %s %s\n", chatPartner[partner], mess);
+		sprintf(buf, "xtell %s %s\n", chatPartner[partner], mess);
 	    }
 	    SendToICS(buf);
 	    break;
