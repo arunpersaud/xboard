@@ -585,13 +585,13 @@ Engine Settings
      maximum number of processors that SMP engines can use, and where
      to find the Polyglot adapter needed to run UCI engines under
      XBoard. The feature that allows setting of these parameters on
-     engines is new since XBoard 4.3.15, so not many WinBoard engines
-     respond to it yet, but UCI engines should.  It is also possible to
-     specify a GUI opening book here, i.e. an opening book that XBoard
-     consults for any position a playing engine gets in.  It then
-     forces the engine to play the book move, rather than to think up
-     its own, if that position is found in the book.  The book can
-     switched on and off independently for either engine.
+     engines is new since XBoard 4.3.15, so not many XBoard/WinBoard
+     engines respond to it yet, but UCI engines should.  It is also
+     possible to specify a GUI opening book here, i.e. an opening book
+     that XBoard consults for any position a playing engine gets in.
+     It then forces the engine to play the book move, rather than to
+     think up its own, if that position is found in the book.  The book
+     can switched on and off independently for either engine.
 
 Time Control
      Pops up a sub-menu where you can set the time-control parameters
@@ -1007,8 +1007,8 @@ X resource, give its long name followed by the value true or false
 
 -smpCores number
      Specifies the maximum number of CPUs an SMP engine is allowed to
-     use.  Only works for engines that support the WinBoard-protocol
-     cores feature.
+     use.  Only works for engines that support the
+     XBoard/WinBoard-protocol cores feature.
 
 -mg or -matchGames n
      Automatically runs an n-game match between two chess engines, with
@@ -1125,19 +1125,19 @@ X resource, give its long name followed by the value true or false
      This option allows you to lower the priority of the engine
      processes, so that the generally insatiable hunger for CPU time of
      chess engines does not interfere so much with smooth operation of
-     WinBoard (or the rest of your system).  Negative values could
+     XBoard (or the rest of your system).  Negative values could
      increase the engine priority, which is not recommended.
 
 -firstOptions string
 -secondOptions string
      The given string is a comma-separated list of (option name=option
      value) pairs, like the following example: "style=Karpov,blunder
-     rate=0".  If the options announced by the engine at startup
-     through the feature commands of WinBoard protocol matches one of
-     the option names (i.e. "style" or "blunder rate"), it would be set
-     to the given value (i.e. "Karpov" or 0) through a corresponding
-     option command to the engine.  This provided that the type of the
-     value (text or numeric) matches as well.
+     rate=0".  If an option announced by the engine at startup through
+     the feature commands of the XBoard/WinBoard protocol matches one
+     of the option names (i.e. "style" or "blunder rate"), it would be
+     set to the given value (i.e. "Karpov" or 0) through a
+     corresponding option command to the engine.  This provided that
+     the type of the value (text or numeric) matches as well.
 
 -firstNeedsNoncompliantFEN string
 -secondNeedsNoncompliantFEN string
@@ -1150,8 +1150,8 @@ X resource, give its long name followed by the value true or false
      Other possible applications are to provide work-arounds for
      engines that want to see castling and e.p. fields in variants that
      do not have castling or e.p.  (shatranj, courier, xiangqi, shogi)
-     so that WinBoard would normally omit them (string = "- -"), or to
-     add variant-specific fields that are not yet supported by WinBoard
+     so that XBoard would normally omit them (string = "- -"), or to
+     add variant-specific fields that are not yet supported by XBoard
      (e.g. to indicate the number of checks in 3check).
 
 3.2 UCI + WB Engine Settings
@@ -1175,13 +1175,13 @@ X resource, give its long name followed by the value true or false
 
 -PolyglotBook filename
      Gives the filename of the opening book that Polyglot should use.
-     From XBoard 4.3.15 on, native WinBoard engines will also use the
-     opening book specified here, provided the `usePolyglotBook' option
-     is set to true, and the option `firstHasOwnBookUCI' or
-     `secondHasOwnBookUCI' applying to the engine is set to false.  The
-     engine will be kept in force mode as long as the current position
-     is in book, and XBoard will select the book moves for it. Default
-     "".
+     From XBoard 4.3.15 on, native XBoard/WinBoard engines will also
+     use the opening book specified here, provided the
+     `usePolyglotBook' option is set to true, and the option
+     `firstHasOwnBookUCI' or `secondHasOwnBookUCI' applying to the
+     engine is set to false.  The engine will be kept in force mode as
+     long as the current position is in book, and XBoard will select
+     the book moves for it. Default "".
 
 -fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false
 -sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false
@@ -1192,14 +1192,14 @@ X resource, give its long name followed by the value true or false
 -defaultHashSize n
      Sets the size of the hash table to n MegaBytes. Together with the
      EGTB cache size this number is also used to calculate the memory
-     setting of WinBoard engines, for those that support the memory
-     feature of WinBoard protocol. Default: 64.
+     setting of XBoard/WinBoard engines, for those that support the
+     memory feature of the XBoard/WinBoard protocol. Default: 64.
 
 -defaultCacheSizeEGTB n
      Sets the size of the EGTB cache to n MegaBytes. Together with the
      hash-table size this number is also used to calculate the memory
-     setting of WinBoard engines, for those that support the memory
-     feature of WinBoard protocol. Default: 4.
+     setting of XBoard/WinBoard engines, for those that support the
+     memory feature of the XBoard/WinBoard protocol. Default: 4.
 
 -defaultPathEGTB filename
      Gives the name of the directory where the end-game tablebases are
@@ -1548,8 +1548,8 @@ lowTimeWarning true/false
      specifies the standard output.
 
 -pgnExtendedInfo true/false
-     If this option is set, WinBoard saves depth, score and time used
-     for each move that the engine found as a comment in the PGN file.
+     If this option is set, XBoard saves depth, score and time used for
+     each move that the engine found as a comment in the PGN file.
      Default: false.
 
 -pgnEventHeader string
@@ -1806,6 +1806,18 @@ lowTimeWarning true/false
      Number of milliseconds delay between each animation frame when
      Animate Moves is on.
 
+-autoDisplayComment true/false
+-autoDisplayTags true/false
+     If set to true, these options cause the window with the move
+     comments, and the window with PGN tags, respectively, to pop up
+     automatically when such tags or comments are encountered during
+     the replaying a stored or loaded game.  Default: true.
+
+-pasteSelection true/false
+     If this option is set to true, the Paste Position and Paste Game
+     options paste from the currently selected text.  If false, they
+     paste from the clipboard.  Default: false.
+
 3.6 Adjudication Options
 ========================
 
@@ -1994,15 +2006,15 @@ lowTimeWarning true/false
      Turns on debugging printout.
 
 -debugFile filename or -nameOfDebugFile filename
-     Sets the name of the file to which WinBoard saves debug information
+     Sets the name of the file to which XBoard saves debug information
      (including all communication to and from the engines).
 
 -engineDebugOutput number
-     Specifies how WinBoard should handle unsolicited output from the
+     Specifies how XBoard should handle unsolicited output from the
      engine, with respect to saving it in the debug file.  The output
-     is further (hopefully) ignored.  If number=0, WinBoard refrains
-     from writing such spurious output to the debug file.  If number=1,
-     all engine output is written faithfully to the debug file.  If
+     is further (hopefully) ignored.  If number=0, XBoard refrains from
+     writing such spurious output to the debug file.  If number=1, all
+     engine output is written faithfully to the debug file.  If
      number=2, any protocol-violating line is prefixed with a '#'
      character, as the engine itself should have done if it wanted to
      submit info for inclusion in the debug file.  This option is
@@ -2026,10 +2038,10 @@ lowTimeWarning true/false
 
 -delayBeforeQuit number
 -delayAfterQuit number
-     These options specify how long WinBoard has to wait before sending
-     a termination signal to rogue engine processes, that do not want
-     to react to the 'quit' command. The second one determines the
-     pause after killing the engine, to make sure it dies.
+     These options specify how long XBoard has to wait before sending a
+     termination signal to rogue engine processes, that do not want to
+     react to the 'quit' command. The second one determines the pause
+     after killing the engine, to make sure it dies.
 
 
 4 Chess Servers
@@ -2289,9 +2301,9 @@ if you actually hold the piece you are trying to drop. But this way of
 dropping pieces should be considered an obsolete feature, now that
 pieces can be dropped by dragging them from the holdings to the board.
 Anyway, if you would attempt an illegal move when using a chess engine
-or the ICS, WinBoard will accept the error message that comes back,
-undo the move, and let you try another.  FEN positions saved by XBoard
-do include correct information about whether castling or en passant are
+or the ICS, XBoard will accept the error message that comes back, undo
+the move, and let you try another.  FEN positions saved by XBoard do
+include correct information about whether castling or en passant are
 legal, and also handle the 50-move counter.  The mate detector does not
 understand that non-contact mate is not really mate in bughouse.  The
 only problem this causes while playing is minor: a "#" (mate indicator)
@@ -2322,87 +2334,72 @@ suggested.
 8 Reporting problems
 ********************
 
-Report bugs and problems with XBoard to `<bug-xboard@gnu.org>'.
+You can report bugs and problems with XBoard using the bug tracker at
+`https://savannah.gnu.org/projects/xboard/' or by sending mail to
+`<bug-xboard@gnu.org>'.  It can also be useful to report or discuss
+bugs in the WinBoard Forum at `http://www.open-aurec.com/wbforum/',
+WinBoard development section.
 
    Please use the `script' program to start a typescript, run XBoard
 with the `-debug' option, and include the typescript output in your
 message.  Also tell us what kind of machine and what operating system
 version you are using.  The command `uname -a' will often tell you this.
-Here is a sample of approximately what you should type:
-
-     script
-     uname -a
-     ./configure
-     make
-     ./xboard -debug
-     exit
-     mail bug-xboard@gnu.org
-     Subject: Your short description of the problem
-     Your detailed description of the problem
-     ~r typescript
-     .
-
-   The WinBoard / XBoard 4.3 line is being developed by H.G. Muller
-independently of the GNU Savannah xboard project.  Bug reports on this
-version, and suggestions for improvements and additions, are best
-posted in the WinBoard forum, WinBoard-development section
-(http://www.open-aurec.com/wbforum).
 
    If you improve XBoard, please send a message about your changes, and
 we will get in touch with you about merging them in to the main line of
-development.  Also see our Web site at
-http://savannah.gnu.org/projects/xboard/.
+development.
 
 9 Authors and contributors
 **************************
 
-Tim Mann has been responsible for XBoard versions 1.3 and beyond, and
-for WinBoard, a port of XBoard to Microsoft Win32 (Windows NT and
-Windows 95). H.G.Muller is responsible for version 4.3.
+Chris Sears and Dan Sears wrote the original XBoard.  They were
+responsible for versions 1.0 through 1.2.  The color scheme was taken
+from Wayne Christopher's `XChess' program.
 
-   Mark Williams contributed the initial (WinBoard-only) implementation
-of many new features added to both XBoard and WinBoard in version
-4.1.0, including copy/paste, premove, icsAlarm, autoFlipView, training
-mode, auto raise, and blindfold.  Ben Nye contributed X copy/paste code
-for XBoard.
+   Tim Mann was primarily responsible for XBoard versions 1.3 through
+4.2.7, and for WinBoard (a port of XBoard to Microsoft Win32) from its
+inception through version 4.2.7.
 
-   Hugh Fisher added animated piece movement to XBoard, and Henrik Gram
-(henrikg@funcom.com) added it to WinBoard.  Frank McIngvale added
-click/click moving, the Analysis modes, piece flashing, ZIICS import,
-and ICS text colorization to XBoard.  Jochen Wiedmann ported XBoard to
-the Amiga, creating AmyBoard, and converted the documentation to
-texinfo.  Elmar Bartel contributed the new piece bitmaps introduced in
-version 3.2.  John Chanak contributed the initial implementation of ICS
-mode.  The color scheme and the old 80x80 piece bitmaps were taken from
-Wayne Christopher's `XChess' program.
+   John Chanak contributed the initial implementation of ICS mode.  Evan
+Welsh wrote `CMail', and Patrick Surry helped in designing, testing,
+and documenting it.  Elmar Bartel contributed the new piece bitmaps
+introduced in version 3.2.  Jochen Wiedmann converted the documentation
+to texinfo.  Frank McIngvale added click/click moving, the Analysis
+modes, piece flashing, ZIICS import, and ICS text colorization to
+XBoard.  Hugh Fisher added animated piece movement to XBoard, and
+Henrik Gram added it to WinBoard.  Mark Williams contributed the
+initial (WinBoard-only) implementation of many new features added to
+both XBoard and WinBoard in version 4.1.0, including copy/paste,
+premove, icsAlarm, autoFlipView, training mode, auto raise, and
+blindfold.  Ben Nye contributed X copy/paste code for XBoard.
 
-   Chris Sears and Dan Sears wrote the original XBoard.  They were
-responsible for versions 1.0 through 1.2.
+   In a fork from version 4.2.7, Alessandro Scotti added many elements
+to the user interface of WinBoard, including the board textures and
+font-based rendering, the evaluation-graph, move-history and
+engine-output window.  He was also responsible for adding the UCI
+support.
 
-   Evan Welsh wrote `CMail'.  Patrick Surry helped in designing,
-testing, and documenting CMail.
-
-   Alessandro Scotti added many elements to the user interface of
-WinBoard, including the board textures and font-based rendering, the
-evaluation-graph, move-history and engine-output window.  He was also
-responsible for adding the UCI support.
-
-   H.G. Muller made WinBoard castling- and e.p.-aware, added variant
-support with adjustable board sizes, the crazyhouse holdings, and the
-fairy pieces.  In addition he added most of the adjudication options,
-made WinBoard more robust in dealing with buggy and crashing engines,
-and extended time control with a time-odds and node-count-based modes.
+   H. G. Muller continued this fork of the project, producing version
+4.3.  He made WinBoard castling- and e.p.-aware, added variant support
+with adjustable board sizes, the crazyhouse holdings, and the fairy
+pieces.  In addition he added most of the adjudication options, made
+WinBoard more robust in dealing with buggy and crashing engines, and
+extended time control with a time-odds and node-count-based modes.
 Most of the options that initially were WinBoard only have now been
 back-ported to XBoard.
 
    Michel van den Bergh provided the code for reading Polyglot opening
 books.
 
-   Arun Persaud worked with H.G. Muller to combine all the features of
-the never-released WinBoard 4.2.8 of the Savannah project (mainly by
-Daniel Mehrmann), and the never-released 4.3.16 into a unified WinBoard
-4.4, which is now available both from the Savannah web site and the
-WinBoard forum.
+   Meanwhile, some work continued on the GNU XBoard project maintained
+at savannah.gnu.org, but version 4.2.8 was never released.  Daniel
+Mehrmann was responsible for much of this work.
+
+   Most recently, Arun Persaud worked with H. G. Muller to merge all
+the features of the never-released XBoard/WinBoard 4.2.8 of the GNU
+XBoard project and the never-released 4.3.16 from H. G.'s fork into a
+unified XBoard/WinBoard 4.4, which is now available both from the
+savannah.gnu.org web site and the WinBoard forum.
 
 10 CMail
 ********
@@ -2495,16 +2492,6 @@ your choice using XBoard as an interface.
      the environment variable `$CMAIL_MAILPROG' or failing that
      `/usr/ucb/Mail', `/usr/ucb/mail' or `Mail'. You will need to set
      this variable if none of the above paths fit your system.
-
--gamesFile <file>
-     A file containing a list of games with email addresses. This
-     defaults to the environment variable `$CMAIL_GAMES' or failing that
-     `.cmailgames'.
-
--aliasesFile <file>
-     A file containing one or more aliases for a set of email
-     addresses. This defaults to the environment variable
-     `$CMAIL_ALIASES' or failing that `.cmailaliases'.
 
 -logFile <file>
      A file in which to dump verbose debugging messages that are
@@ -3475,26 +3462,27 @@ Index
 *****
 
 -animateSpeed, option:                         See 3.5.      (line 1806)
-.cmailaliases:                                 See 10.1.     (line 2505)
-.cmailgames:                                   See 10.1.     (line 2500)
+-autoDisplayComment, option:                   See 3.5.      (line 1811)
+-autoDisplayTags, option:                      See 3.5.      (line 1811)
+-pasteSelection, option:                       See 3.5.      (line 1817)
 .icsrc:                                        See 3.3.      (line 1318)
 <, Button:                                     See 2.4.      (line  468)
 <<, Button:                                    See 2.4.      (line  501)
 >, Button:                                     See 2.4.      (line  488)
 >>, Button:                                    See 2.4.      (line  520)
-abort, ICS command:                            See 4.        (line 2106)
+abort, ICS command:                            See 4.        (line 2118)
 Abort, Menu Item:                              See 2.3.      (line  440)
 About XBoard, Menu Item:                       See 2.6.      (line  842)
-accept, ICS command:                           See 4.        (line 2093)
+accept, ICS command:                           See 4.        (line 2105)
 Accept, Menu Item:                             See 2.3.      (line  415)
 Action, Menu:                                  See 2.3.      (line  414)
-adjourn, ICS command:                          See 4.        (line 2106)
+adjourn, ICS command:                          See 4.        (line 2118)
 Adjourn, Menu Item:                            See 2.3.      (line  436)
 Adjudicate Draw, Menu Item:                    See 2.3.      (line  459)
 Adjudicate to Black, Menu Item:                See 2.3.      (line  459)
 Adjudicate to White, Menu Item:                See 2.3.      (line  459)
-adjudicateDrawMoves, option:                   See 3.6.      (line 1821)
-adjudicateLossThreshold, option:               See 3.6.      (line 1813)
+adjudicateDrawMoves, option:                   See 3.6.      (line 1833)
+adjudicateLossThreshold, option:               See 3.6.      (line 1825)
 Adjudications, Menu Item:                      See 2.5.      (line  560)
 alarm, option:                                 See 3.3.      (line 1361)
 Always Queen, Menu Item:                       See 2.5.      (line  606)
@@ -3506,7 +3494,7 @@ Animate Moving, Menu Item:                     See 2.5.      (line  619)
 animate, option:                               See 3.5.      (line 1802)
 animateDragging, option:                       See 3.5.      (line 1798)
 animateMoving, option:                         See 3.5.      (line 1802)
-Authors:                                       See 9.        (line 2359)
+Authors:                                       See 9.        (line 2355)
 Auto Comment, Menu Item:                       See 2.5.      (line  627)
 Auto Flag, Menu Item:                          See 2.5.      (line  635)
 Auto Flip View, Menu Item:                     See 2.5.      (line  644)
@@ -3536,22 +3524,22 @@ Blindfold, Menu Item:                          See 2.5.      (line  674)
 blindfold, option:                             See 3.5.      (line 1696)
 bm, option:                                    See 3.5.      (line 1729)
 board size:                                    See 3.5.      (line 1610)
-boardHeight, option:                           See 3.7.      (line 1943)
+boardHeight, option:                           See 3.7.      (line 1955)
 boardSize, option:                             See 3.5.      (line 1610)
-boardWidth, option:                            See 3.7.      (line 1948)
+boardWidth, option:                            See 3.7.      (line 1960)
 Book, Menu Item:                               See 2.6.      (line  832)
-Bug reports:                                   See 8.        (line 2325)
-Bugs <1>:                                      See 8.        (line 2325)
-Bugs:                                          See 7.        (line 2265)
+Bug reports:                                   See 8.        (line 2337)
+Bugs <1>:                                      See 8.        (line 2337)
+Bugs:                                          See 7.        (line 2277)
 buttons, option:                               See 3.5.      (line 1670)
 Call Flag, Menu Item:                          See 2.3.      (line  425)
-checkMates, option:                            See 3.6.      (line 1826)
+checkMates, option:                            See 3.6.      (line 1838)
 Chess engine options:                          See 3.1.      (line  919)
-CHESSDIR:                                      See 6.        (line 2256)
+CHESSDIR:                                      See 6.        (line 2268)
 clock, option:                                 See 3.1.      (line  936)
 clockFont, option:                             See 3.5.      (line 1700)
 clockMode, option:                             See 3.1.      (line  936)
-cmail:                                         See 10.       (line 2410)
+cmail:                                         See 10.       (line 2407)
 colorChallenge, option:                        See 3.3.      (line 1394)
 colorChannel, option:                          See 3.3.      (line 1394)
 colorChannel1, option:                         See 3.3.      (line 1394)
@@ -3565,26 +3553,26 @@ colorSeek, option:                             See 3.3.      (line 1394)
 colorShout, option:                            See 3.3.      (line 1394)
 colorSShout, option:                           See 3.3.      (line 1394)
 colorTell, option:                             See 3.3.      (line 1394)
-Contributors:                                  See 9.        (line 2359)
+Contributors:                                  See 9.        (line 2355)
 coordFont, option:                             See 3.5.      (line 1706)
 coords, option:                                See 3.5.      (line 1640)
 Copy Game, Menu Item:                          See 2.1.      (line  167)
 Copy Position, Menu Item:                      See 2.1.      (line  207)
 darkSquareColor, option:                       See 3.5.      (line 1776)
-debug, option:                                 See 3.7.      (line 1994)
-debugFile, option:                             See 3.7.      (line 1997)
-debugMode, option:                             See 3.7.      (line 1994)
-decline, ICS command:                          See 4.        (line 2093)
+debug, option:                                 See 3.7.      (line 2006)
+debugFile, option:                             See 3.7.      (line 2009)
+debugMode, option:                             See 3.7.      (line 2006)
+decline, ICS command:                          See 4.        (line 2105)
 Decline, Menu Item:                            See 2.3.      (line  420)
 defaultCacheSizeEGTB, option:                  See 3.2.      (line 1199)
-defaultFrcPosition, option:                    See 3.7.      (line 1963)
+defaultFrcPosition, option:                    See 3.7.      (line 1975)
 defaultHashSize, option:                       See 3.2.      (line 1193)
 defaultPathEGTB, option:                       See 3.2.      (line 1205)
-delayAfterQuit, option:                        See 3.7.      (line 2029)
-delayBeforeQuit, option:                       See 3.7.      (line 2029)
+delayAfterQuit, option:                        See 3.7.      (line 2041)
+delayBeforeQuit, option:                       See 3.7.      (line 2041)
 display, option:                               See 3.5.      (line 1580)
 drag, option:                                  See 3.5.      (line 1798)
-draw, ICS command:                             See 4.        (line 2106)
+draw, ICS command:                             See 4.        (line 2118)
 Draw, Menu Item:                               See 2.3.      (line  431)
 Edit Comment, Menu Item:                       See 2.2.      (line  376)
 Edit Game, Menu Item:                          See 2.2.      (line  294)
@@ -3592,9 +3580,9 @@ Edit Position, Menu Item:                      See 2.2.      (line  310)
 Edit Tags, Menu Item:                          See 2.2.      (line  352)
 egtFormats, option:                            See 3.2.      (line 1209)
 Engine Settings:                               See 3.2.      (line 1160)
-engineDebugOutput, option:                     See 3.7.      (line 2001)
-Environment variables:                         See 6.        (line 2256)
-examine, ICS command:                          See 4.        (line 2129)
+engineDebugOutput, option:                     See 3.7.      (line 2013)
+Environment variables:                         See 6.        (line 2268)
+examine, ICS command:                          See 4.        (line 2141)
 Exit, Menu Item:                               See 2.1.      (line  224)
 exit, option:                                  See 3.5.      (line 1594)
 fb, option:                                    See 3.1.      (line 1043)
@@ -3602,7 +3590,7 @@ fcp, option:                                   See 3.1.      (line 1036)
 fd, option:                                    See 3.1.      (line 1058)
 fh, option:                                    See 3.1.      (line 1050)
 File Menu:                                     See 2.1.      (line   82)
-finger, ICS command:                           See 4.        (line 2116)
+finger, ICS command:                           See 4.        (line 2128)
 firstChessProgram, option:                     See 3.1.      (line 1036)
 firstComputerString, option:                   See 3.1.      (line 1094)
 firstDirectory, option:                        See 3.1.      (line 1058)
@@ -3634,27 +3622,27 @@ Forward to End, Menu Item:                     See 2.4.      (line  520)
 Forward, Menu Item:                            See 2.4.      (line  488)
 fUCI, option:                                  See 3.2.      (line 1162)
 gameListTags, option:                          See 3.4.      (line 1568)
-games, ICS command:                            See 4.        (line 2082)
+games, ICS command:                            See 4.        (line 2094)
 gateway, option:                               See 3.3.      (line 1268)
 geometry, option:                              See 3.5.      (line 1580)
 Get Move List, Menu Item:                      See 2.5.      (line  694)
 getMoveList, option:                           See 3.3.      (line 1357)
 Help Menu:                                     See 2.6.      (line  814)
-help, ICS command:                             See 4.        (line 2067)
+help, ICS command:                             See 4.        (line 2079)
 Hide Thinking, Menu Item:                      See 2.5.      (line  791)
 Highlight Last Move, Menu Item:                See 2.5.      (line  706)
 highlight, option:                             See 3.5.      (line 1692)
 highlightLastMove, option:                     See 3.5.      (line 1692)
 highlightSquareColor, option:                  See 3.5.      (line 1776)
 Hint, Menu Item:                               See 2.6.      (line  829)
-holdingsSize, option:                          See 3.7.      (line 1955)
+holdingsSize, option:                          See 3.7.      (line 1967)
 iconic, option:                                See 3.5.      (line 1580)
-ICS:                                           See 4.        (line 2038)
+ICS:                                           See 4.        (line 2050)
 ICS Alarm, Menu Item:                          See 2.5.      (line  727)
 ICS Client, Menu Item:                         See 2.2.      (line  270)
 ICS Input Box, Menu Item:                      See 2.2.      (line  381)
 ICS options:                                   See 3.3.      (line 1223)
-ICS, addresses:                                See 4.        (line 2038)
+ICS, addresses:                                See 4.        (line 2050)
 ics, option:                                   See 3.3.      (line 1224)
 icsAlarm, option:                              See 3.3.      (line 1361)
 icsAlarmTime, option:                          See 3.3.      (line 1365)
@@ -3666,9 +3654,9 @@ icslogon, option:                              See 3.3.      (line 1318)
 icsport, option:                               See 3.3.      (line 1238)
 inc, option:                                   See 3.1.      (line  929)
 Info XBoard, Menu Item:                        See 2.6.      (line  815)
-initalMode, option:                            See 3.7.      (line 1878)
+initalMode, option:                            See 3.7.      (line 1890)
 initString, option:                            See 3.1.      (line 1067)
-Internet Chess Server:                         See 4.        (line 2038)
+Internet Chess Server:                         See 4.        (line 2050)
 internetChessServerCommPort, option:           See 3.3.      (line 1276)
 internetChessServerHelper, option:             See 3.3.      (line 1242)
 internetChessServerHost, option:               See 3.3.      (line 1229)
@@ -3683,7 +3671,7 @@ legal, option:                                 See 3.5.      (line 1606)
 lgf, option:                                   See 3.4.      (line 1490)
 lgi, option:                                   See 3.4.      (line 1490)
 lightSquareColor, option:                      See 3.5.      (line 1776)
-Limitations:                                   See 7.        (line 2265)
+Limitations:                                   See 7.        (line 2277)
 Load and Save options:                         See 3.4.      (line 1488)
 Load Game, Menu Item:                          See 2.1.      (line  115)
 Load Next Game, Menu Item:                     See 2.1.      (line  142)
@@ -3706,7 +3694,7 @@ Major modes:                                   See 1.        (line   19)
 Man XBoard, Menu Item:                         See 2.6.      (line  822)
 matchGames, option:                            See 3.1.      (line 1014)
 matchMode, option:                             See 3.1.      (line 1026)
-materialDraws, option:                         See 3.6.      (line 1838)
+materialDraws, option:                         See 3.6.      (line 1850)
 Menu, Action:                                  See 2.3.      (line  414)
 Menu, File:                                    See 2.1.      (line   82)
 Menu, Help:                                    See 2.6.      (line  814)
@@ -3717,7 +3705,7 @@ Menus:                                         See 2.        (line   57)
 mg, option:                                    See 3.1.      (line 1014)
 mm, option:                                    See 3.1.      (line 1026)
 Mode Menu:                                     See 2.2.      (line  229)
-mode, option:                                  See 3.7.      (line 1878)
+mode, option:                                  See 3.7.      (line 1890)
 mono, option:                                  See 3.5.      (line 1676)
 monoMode, option:                              See 3.5.      (line 1676)
 Move Now, Menu Item:                           See 2.4.      (line  541)
@@ -3727,35 +3715,35 @@ movesound, option:                             See 3.5.      (line 1589)
 movesPerSession, option:                       See 3.1.      (line  925)
 mps, option:                                   See 3.1.      (line  925)
 msLoginDelay, option:                          See 3.3.      (line 1327)
-nameOfDebugFile, option:                       See 3.7.      (line 1997)
-ncp, option:                                   See 3.7.      (line 1873)
+nameOfDebugFile, option:                       See 3.7.      (line 2009)
+ncp, option:                                   See 3.7.      (line 1885)
 New Game, Menu Item:                           See 2.1.      (line   83)
 New Shuffle Game, Menu Item:                   See 2.1.      (line   92)
 New variant, Menu Item:                        See 2.1.      (line  105)
 niceEngines, option:                           See 3.1.      (line 1125)
-noChessProgram, option:                        See 3.7.      (line 1873)
+noChessProgram, option:                        See 3.7.      (line 1885)
 noGUI, option:                                 See 3.5.      (line 1583)
-observe, ICS command:                          See 4.        (line 2125)
+observe, ICS command:                          See 4.        (line 2137)
 Old Save Style, Menu Item:                     See 2.5.      (line  736)
-oldmoves, ICS command:                         See 4.        (line 2129)
+oldmoves, ICS command:                         See 4.        (line 2141)
 oldsave, option:                               See 3.4.      (line 1564)
 oldSaveStyle, option:                          See 3.4.      (line 1564)
 Options:                                       See 3.        (line  893)
 Options Menu:                                  See 2.5.      (line  554)
-Options, adjudication:                         See 3.6.      (line 1812)
+Options, adjudication:                         See 3.6.      (line 1824)
 options, Chess engine:                         See 3.1.      (line  919)
 Options, ICS:                                  See 3.3.      (line 1223)
 Options, Load and Save:                        See 3.4.      (line 1488)
-Options, miscellaneous:                        See 3.7.      (line 1872)
+Options, miscellaneous:                        See 3.7.      (line 1884)
 Options, User interface:                       See 3.5.      (line 1577)
-Other programs:                                See 11.       (line 2618)
+Other programs:                                See 11.       (line 2605)
 Paste Game, Menu Item:                         See 2.1.      (line  176)
 Paste Position, Menu Item:                     See 2.1.      (line  216)
 Pause, Menu Item:                              See 2.2.      (line  388)
 Periodic Updates, Menu Item:                   See 2.5.      (line  744)
 pgnEventHeader, option`:                       See 3.4.      (line 1556)
 pgnExtendedInfo, option`:                      See 3.4.      (line 1551)
-pieceToSquareTable, option:                    See 3.7.      (line 1968)
+pieceToSquareTable, option:                    See 3.7.      (line 1980)
 pixmap, option:                                See 3.5.      (line 1729)
 pixmapDirectory, option:                       See 3.5.      (line 1729)
 PolyglotBook, option:                          See 3.2.      (line 1177)
@@ -3771,7 +3759,7 @@ popupMoveErrors, option:                       See 3.5.      (line 1598)
 pre, option:                                   See 3.3.      (line 1373)
 Premove, Menu Item:                            See 2.5.      (line  770)
 premove, option:                               See 3.3.      (line 1373)
-Problems:                                      See 8.        (line 2325)
+Problems:                                      See 8.        (line 2337)
 queen, option:                                 See 3.5.      (line 1602)
 Quiet Play, Menu Item:                         See 2.5.      (line  781)
 quiet, option:                                 See 3.3.      (line 1376)
@@ -3779,10 +3767,10 @@ quietPlay, option:                             See 3.3.      (line 1376)
 Reload CMail Message, Menu Item:               See 2.1.      (line  221)
 Reload Same Game, Menu Item:                   See 2.1.      (line  151)
 Reload Same Position, Menu Item:               See 2.1.      (line  195)
-remoteShell, option:                           See 3.7.      (line 2015)
-remoteUser, option:                            See 3.7.      (line 2020)
-Reporting bugs:                                See 8.        (line 2325)
-Reporting problems:                            See 8.        (line 2325)
+remoteShell, option:                           See 3.7.      (line 2027)
+remoteUser, option:                            See 3.7.      (line 2032)
+Reporting bugs:                                See 8.        (line 2337)
+Reporting problems:                            See 8.        (line 2337)
 Resign, Menu Item:                             See 2.3.      (line  445)
 Retract Move, Menu Item:                       See 2.4.      (line  545)
 reuse, option:                                 See 3.1.      (line 1102)
@@ -3791,9 +3779,9 @@ reuseFirst, option:                            See 3.1.      (line 1102)
 reuseSecond, option:                           See 3.1.      (line 1102)
 Revert, Menu Item:                             See 2.4.      (line  532)
 ringBellAfterMoves, option:                    See 3.5.      (line 1589)
-rsh, option:                                   See 3.7.      (line 2015)
-ruleMoves, option:                             See 3.6.      (line 1856)
-ruser, option:                                 See 3.7.      (line 2020)
+rsh, option:                                   See 3.7.      (line 2027)
+ruleMoves, option:                             See 3.6.      (line 1868)
+ruser, option:                                 See 3.7.      (line 2032)
 sameColorGames, option:                        See 3.1.      (line 1030)
 Save Game, Menu Item:                          See 2.1.      (line  155)
 saveGameFile, option:                          See 3.4.      (line 1521)
@@ -3817,7 +3805,7 @@ secondProtocolVersion, option:                 See 3.1.      (line 1111)
 secondScoreAbs, option:                        See 3.1.      (line 1119)
 secondTimeOdds, option:                        See 3.1.      (line  977)
 secondXBook, option:                           See 3.2.      (line 1188)
-set, ICS command:                              See 4.        (line 2122)
+set, ICS command:                              See 4.        (line 2134)
 Settings, Engine:                              See 3.2.      (line 1160)
 sgf, option:                                   See 3.4.      (line 1521)
 sh, option:                                    See 3.1.      (line 1050)
@@ -3858,7 +3846,7 @@ td, option:                                    See 3.4.      (line 1516)
 telnet, option:                                See 3.3.      (line 1250)
 telnetProgram, option:                         See 3.3.      (line 1259)
 Test Legality, Menu Item:                      See 2.5.      (line  800)
-testClaims, option:                            See 3.6.      (line 1832)
+testClaims, option:                            See 3.6.      (line 1844)
 testLegality, option:                          See 3.5.      (line 1606)
 thinking, option:                              See 3.1.      (line  995)
 Time Control, Menu Item:                       See 2.5.      (line  597)
@@ -3869,17 +3857,17 @@ timeOddsMode, option:                          See 3.1.      (line  983)
 title, option:                                 See 3.5.      (line 1662)
 titleInWindow, option:                         See 3.5.      (line 1662)
 Training, Menu Item:                           See 2.2.      (line  329)
-trivialDraws, option:                          See 3.6.      (line 1845)
+trivialDraws, option:                          See 3.6.      (line 1857)
 Truncate Game, Menu Item:                      See 2.4.      (line  536)
 Two Machines, Menu Item:                       See 2.2.      (line  236)
 usePolyglotBook, option:                       See 3.2.      (line 1174)
 User interface options:                        See 3.5.      (line 1577)
-userName, option:                              See 3.7.      (line 2024)
+userName, option:                              See 3.7.      (line 2036)
 useTelnet, option:                             See 3.3.      (line 1250)
-variant, option:                               See 3.7.      (line 1886)
-vars, ICS command:                             See 4.        (line 2119)
+variant, option:                               See 3.7.      (line 1898)
+vars, ICS command:                             See 4.        (line 2131)
 whitePieceColor, option:                       See 3.5.      (line 1776)
-who, ICS command:                              See 4.        (line 2075)
+who, ICS command:                              See 4.        (line 2087)
 xflash, option:                                See 3.5.      (line 1683)
 Table of Contents
 *****************

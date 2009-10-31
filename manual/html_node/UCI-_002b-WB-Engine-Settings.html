@@ -45,7 +45,7 @@ through a .ini temporary file created for the purpose.
 Default: "/usr/local/share/polyglot". 
 <br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-179"></a>Specifies if the Polyglot book should be used. 
 <br><dt>-PolyglotBook filename<dd><a name="index-PolyglotBook_002c-option-180"></a>Gives the filename of the opening book that Polyglot should use. 
-From XBoard 4.3.15 on, native WinBoard engines will also use the opening book specified here,
+From XBoard 4.3.15 on, native XBoard/WinBoard engines will also use the opening book specified here,
 provided the <code>usePolyglotBook</code> option is set to true,
 and the option <code>firstHasOwnBookUCI</code> or <code>secondHasOwnBookUCI</code> applying to the engine
 is set to false. 
@@ -54,11 +54,11 @@ and XBoard will select the book moves for it. Default "".
 <br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-181"></a><a name="index-sNoOwnBookUCI_002c-option-182"></a><a name="index-firstHasOwnBookUCI_002c-option-183"></a><a name="index-secondHasOwnBookUCI_002c-option-184"></a><a name="index-firstXBook_002c-option-185"></a><a name="index-secondXBook_002c-option-186"></a>Indicates if the mentioned engine has its own opening book it should play from,
 rather than using the external book through XBoard. Default: false. 
 <br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-187"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
-this number is also used to calculate the memory setting of WinBoard engines,
-for those that support the memory feature of WinBoard protocol. Default: 64. 
+this number is also used to calculate the memory setting of XBoard/WinBoard engines,
+for those that support the memory feature of the XBoard/WinBoard protocol. Default: 64. 
 <br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-188"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
-this number is also used to calculate the memory setting of WinBoard engines,
-for those that support the memory feature of WinBoard protocol. Default: 4. 
+this number is also used to calculate the memory setting of XBoard/WinBoard engines,
+for those that support the memory feature of the XBoard/WinBoard protocol. Default: 4. 
 <br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-189"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
 Default: "/usr/local/share/egtb". 
 <br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-190"></a>Specifies which end-game tables are installed on the computer, and where. 

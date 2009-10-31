@@ -597,7 +597,7 @@ the engines report scores from the viewpoint of white, or from that of their own
 such as hash-table size, tablebase cache size, maximum number of processors
 that SMP engines can use, and where to find the Polyglot adapter needed
 to run UCI engines under XBoard. The feature that allows setting of these parameters on
-engines is new since XBoard 4.3.15, so not many WinBoard engines respond
+engines is new since XBoard 4.3.15, so not many XBoard/WinBoard engines respond
 to it yet, but UCI engines should. 
 It is also possible to specify a GUI opening book here, i.e. an opening
 book that XBoard consults for any position a playing engine gets in. 
@@ -984,7 +984,7 @@ by the new option Hide Thinking. See <a href="#Options-Menu">Options Menu</a>. D
 it makes the engine send it despite the setting of this option.) 
 <br><dt>-ponder/-xponder or -ponderNextMove true/false<dd><a name="index-ponder_002c-option-134"></a><a name="index-ponderNextMove_002c-option-135"></a>Sets the Ponder Next Move menu option. See <a href="#Options-Menu">Options Menu</a>. Default: true. 
 <br><dt>-smpCores number<dd>Specifies the maximum number of CPUs an SMP engine is allowed to use. 
-Only works for engines that support the WinBoard-protocol cores feature. 
+Only works for engines that support the XBoard/WinBoard-protocol cores feature. 
 <br><dt>-mg or -matchGames n<dd><a name="index-mg_002c-option-136"></a><a name="index-matchGames_002c-option-137"></a>Automatically runs an n-game match between two chess engines,
 with alternating colors. 
 If the <code>loadGameFile</code> or <code>loadPositionFile</code> option is set,
@@ -1073,11 +1073,11 @@ that in favor of white, even when the engine plays black.
 Important when XBoard uses the score for adjudications, or in PGN reporting. 
 <br><dt>-niceEngines priority<dd><a name="index-niceEngines_002c-option-167"></a>This option allows you to lower the priority of the engine processes,
 so that the generally insatiable hunger for CPU time of chess engines does not interfere so much
-with smooth operation of WinBoard (or the rest of your system). 
+with smooth operation of XBoard (or the rest of your system). 
 Negative values could increase the engine priority, which is not recommended. 
 <br><dt>-firstOptions string<dt>-secondOptions string<dd><a name="index-firstOptions_002c-option-168"></a><a name="index-secondOptions_002c-option-169"></a>The given string is a comma-separated list of (option name=option value) pairs,
 like the following example: "style=Karpov,blunder rate=0". 
-If the options announced by the engine at startup through the feature commands of WinBoard protocol
+If an option announced by the engine at startup through the feature commands of the XBoard/WinBoard protocol
 matches one of the option names (i.e. "style" or "blunder rate"),
 it would be set to the given value (i.e. "Karpov" or 0)
 through a corresponding option command to the engine. 
@@ -1089,8 +1089,8 @@ variant fischerandom, to make them at least understand the opening position,
 through setting the string to "KQkq -". (Note you also have to give the e.p. field!) 
 Other possible applications are to provide work-arounds for engines that want to see
 castling and e.p. fields in variants that do not have castling or e.p. 
-(shatranj, courier, xiangqi, shogi) so that WinBoard would normally omit them
-(string = "- -"), or to add variant-specific fields that are not yet supported by WinBoard
+(shatranj, courier, xiangqi, shogi) so that XBoard would normally omit them
+(string = "- -"), or to add variant-specific fields that are not yet supported by XBoard
 (e.g. to indicate the number of checks in 3check). 
 </dl>
 
@@ -1116,7 +1116,7 @@ through a .ini temporary file created for the purpose.
 Default: "/usr/local/share/polyglot". 
 <br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-179"></a>Specifies if the Polyglot book should be used. 
 <br><dt>-PolyglotBook filename<dd><a name="index-PolyglotBook_002c-option-180"></a>Gives the filename of the opening book that Polyglot should use. 
-From XBoard 4.3.15 on, native WinBoard engines will also use the opening book specified here,
+From XBoard 4.3.15 on, native XBoard/WinBoard engines will also use the opening book specified here,
 provided the <code>usePolyglotBook</code> option is set to true,
 and the option <code>firstHasOwnBookUCI</code> or <code>secondHasOwnBookUCI</code> applying to the engine
 is set to false. 
@@ -1125,11 +1125,11 @@ and XBoard will select the book moves for it. Default "".
 <br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-181"></a><a name="index-sNoOwnBookUCI_002c-option-182"></a><a name="index-firstHasOwnBookUCI_002c-option-183"></a><a name="index-secondHasOwnBookUCI_002c-option-184"></a><a name="index-firstXBook_002c-option-185"></a><a name="index-secondXBook_002c-option-186"></a>Indicates if the mentioned engine has its own opening book it should play from,
 rather than using the external book through XBoard. Default: false. 
 <br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-187"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
-this number is also used to calculate the memory setting of WinBoard engines,
-for those that support the memory feature of WinBoard protocol. Default: 64. 
+this number is also used to calculate the memory setting of XBoard/WinBoard engines,
+for those that support the memory feature of the XBoard/WinBoard protocol. Default: 64. 
 <br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-188"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
-this number is also used to calculate the memory setting of WinBoard engines,
-for those that support the memory feature of WinBoard protocol. Default: 4. 
+this number is also used to calculate the memory setting of XBoard/WinBoard engines,
+for those that support the memory feature of the XBoard/WinBoard protocol. Default: 4. 
 <br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-189"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
 Default: "/usr/local/share/egtb". 
 <br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-190"></a>Specifies which end-game tables are installed on the computer, and where. 
@@ -1403,7 +1403,7 @@ first position of the file when it has reached a specified value.
 <br><dt>-spf or -savePositionFile file<dd><a name="index-spf_002c-option-275"></a><a name="index-savePositionFile_002c-option-276"></a>If this option is set, XBoard appends the final position reached
 in every game played to the specified file. The file name <samp><span class="file">-</span></samp>
 specifies the standard output. 
-<br><dt>-pgnExtendedInfo true/false<dd><a name="index-pgnExtendedInfo_002c-option_0060-277"></a>If this option is set, WinBoard saves depth, score and time used for each
+<br><dt>-pgnExtendedInfo true/false<dd><a name="index-pgnExtendedInfo_002c-option_0060-277"></a>If this option is set, XBoard saves depth, score and time used for each
 move that the engine found as a comment in the PGN file. 
 Default: false. 
 <br><dt>-pgnEventHeader string<dd><a name="index-pgnEventHeader_002c-option_0060-278"></a>Sets the name used in the PGN event tag to string. 
@@ -1604,6 +1604,13 @@ Defaults:
 <br><dt>-animate/-xanimate or -animateMoving true/false<dd><a name="index-animate_002c-option-345"></a><a name="index-animateMoving_002c-option-346"></a>Sets the Animate Moving menu option. See <a href="#Options-Menu">Options Menu</a>.  Default: true. 
 <br><dt>-animateSpeed n<dd><a name="index-g_t_002danimateSpeed_002c-option-347"></a>Number of milliseconds delay between each animation frame when Animate
 Moves is on. 
+<br><dt>-autoDisplayComment true/false<dt>-autoDisplayTags true/false<dd><a name="index-g_t_002dautoDisplayComment_002c-option-348"></a><a name="index-g_t_002dautoDisplayTags_002c-option-349"></a>If set to true, these options cause the window with the move comments,
+and the window with PGN tags, respectively, to pop up automatically when
+such tags or comments are encountered during the replaying a stored or
+loaded game.  Default: true. 
+<br><dt>-pasteSelection true/false<dd><a name="index-g_t_002dpasteSelection_002c-option-350"></a>If this option is set to true, the Paste Position and Paste Game
+options paste from the currently selected text.  If false, they paste
+from the clipboard.  Default: false. 
 </dl>
 
 <div class="node">
@@ -1617,35 +1624,35 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Options">Options</a>
 
 <h3 class="section">3.6 Adjudication Options</h3>
 
-<p><a name="index-Options_002c-adjudication-348"></a>
+<p><a name="index-Options_002c-adjudication-351"></a>
      <dl>
-<dt>-adjudicateLossThreshold n<dd><a name="index-adjudicateLossThreshold_002c-option-349"></a>If the given value is non-zero, XBoard adjudicates the game as a loss
+<dt>-adjudicateLossThreshold n<dd><a name="index-adjudicateLossThreshold_002c-option-352"></a>If the given value is non-zero, XBoard adjudicates the game as a loss
 if both engines agree for a duration of 6 consecutive ply that the score
 is below the given score threshold for that engine. Make sure the score
 is interpreted properly by XBoard,
 using <code>-firstScoreAbs</code> and <code>-secondScoreAbs</code> if needed. 
 Default: 0 (no adjudication)
-<br><dt>-adjudicateDrawMoves n<dd><a name="index-adjudicateDrawMoves_002c-option-350"></a>If the given value is non-zero, XBoard adjudicates the game as a draw
+<br><dt>-adjudicateDrawMoves n<dd><a name="index-adjudicateDrawMoves_002c-option-353"></a>If the given value is non-zero, XBoard adjudicates the game as a draw
 if after the given number of moves it was not yet decided. Default: 0 (no adjudication)
-<br><dt>-checkMates true/false<dd><a name="index-checkMates_002c-option-351"></a>If this option is set, XBoard detects all checkmates and stalemates,
+<br><dt>-checkMates true/false<dd><a name="index-checkMates_002c-option-354"></a>If this option is set, XBoard detects all checkmates and stalemates,
 and ends the game as soon as they occur. 
 Legality-testing must be switched on for this option to work. 
 Default: true
-<br><dt>-testClaims true/false<dd><a name="index-testClaims_002c-option-352"></a>If this option is set, XBoard verifies all result claims made by engines,
+<br><dt>-testClaims true/false<dd><a name="index-testClaims_002c-option-355"></a>If this option is set, XBoard verifies all result claims made by engines,
 and those who send false claims will forfeit the game because of it. 
 Legality-testing must be switched on for this option to work. Default: true
-<br><dt>-materialDraws true/false<dd><a name="index-materialDraws_002c-option-353"></a>If this option is set, XBoard adjudicates games as draws when there is
+<br><dt>-materialDraws true/false<dd><a name="index-materialDraws_002c-option-356"></a>If this option is set, XBoard adjudicates games as draws when there is
 no sufficient material left to inflict a checkmate. 
 This applies to KBKB with like bishops (any number, actually), and to KBK, KNK and KK. 
 Legality-testing must be switched on for this option to work. Default: true
-<br><dt>-trivialDraws true/false<dd><a name="index-trivialDraws_002c-option-354"></a>If this option is set, XBoard adjudicates games as draws that cannot be
+<br><dt>-trivialDraws true/false<dd><a name="index-trivialDraws_002c-option-357"></a>If this option is set, XBoard adjudicates games as draws that cannot be
 usually won without opponent cooperation. This applies to KBKB with unlike bishops,
 and to KBKN, KNKN, KNNK, KRKR and KQKQ. The draw is called after 6 ply into these end-games,
 to allow quick mates that can occur in some exceptional positions to be found by the engines. 
 KQKQ does not really belong in this category, and might be taken out in the future. 
 (When bitbase-based adjudications are implemented.) 
 Legality-testing must be on for this option to work. Default: false
-<br><dt>-ruleMoves n<dd><a name="index-ruleMoves_002c-option-355"></a>If the given value is non-zero, XBoard adjudicates the game as a draw after the given
+<br><dt>-ruleMoves n<dd><a name="index-ruleMoves_002c-option-358"></a>If the given value is non-zero, XBoard adjudicates the game as a draw after the given
 number of consecutive reversible moves. Engine draw claims are always accepted after 50 moves,
 irrespective of the given value of n. 
 <br><dt>-repeatsToDraw n<dd>If the given value is non-zero, xboard adjudicates the game as a draw if a position
@@ -1665,18 +1672,18 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Options">Options</a>
 
 <h3 class="section">3.7 Other options</h3>
 
-<p><a name="index-Options_002c-miscellaneous-356"></a>
+<p><a name="index-Options_002c-miscellaneous-359"></a>
      <dl>
-<dt>-ncp/-xncp or -noChessProgram true/false<dd><a name="index-ncp_002c-option-357"></a><a name="index-noChessProgram_002c-option-358"></a>If this option is true, XBoard acts as a passive chessboard; it
+<dt>-ncp/-xncp or -noChessProgram true/false<dd><a name="index-ncp_002c-option-360"></a><a name="index-noChessProgram_002c-option-361"></a>If this option is true, XBoard acts as a passive chessboard; it
 does not start a chess engine at all. Turning on this option
 also turns off clockMode. Default: false. 
-<br><dt>-mode or -initialMode modename<dd><a name="index-mode_002c-option-359"></a><a name="index-initalMode_002c-option-360"></a>If this option is given, XBoard selects the given modename
+<br><dt>-mode or -initialMode modename<dd><a name="index-mode_002c-option-362"></a><a name="index-initalMode_002c-option-363"></a>If this option is given, XBoard selects the given modename
 from the Mode menu after starting and (if applicable) processing the
 loadGameFile or loadPositionFile option. Default: "" (no selection). 
 Other supported values are
 MachineWhite, MachineBlack, TwoMachines, Analysis,
 AnalyzeFile, EditGame, EditPosition, and Training. 
-<br><dt>-variant varname<dd><a name="index-variant_002c-option-361"></a>Activates preliminary, partial support for playing chess variants
+<br><dt>-variant varname<dd><a name="index-variant_002c-option-364"></a>Activates preliminary, partial support for playing chess variants
 against a local engine or editing variant games.  This flag is not
 needed in ICS mode.  Recognized variant names are:
 
@@ -1731,25 +1738,25 @@ Berolina and cylinder chess can only be played with legality testing off.
 In crazyhouse, XBoard now does keep
 track of off-board pieces.  In shatranj it does implement the baring
 rule when mate detection is switched on. 
-<br><dt>-boardHeight N<dd><a name="index-boardHeight_002c-option-362"></a>Allows you to set a non-standard number of board ranks in any variant. 
+<br><dt>-boardHeight N<dd><a name="index-boardHeight_002c-option-365"></a>Allows you to set a non-standard number of board ranks in any variant. 
 If the height is given as -1, the default height for the variant is used. 
 Default: -1
-<br><dt>-boardWidth N<dd><a name="index-boardWidth_002c-option-363"></a>Allows you to set a non-standard number of board files in any variant. 
+<br><dt>-boardWidth N<dd><a name="index-boardWidth_002c-option-366"></a>Allows you to set a non-standard number of board files in any variant. 
 If the width is given as -1, the default width for the variant is used. 
 With a non-standard width, the initial position will always be an empty board,
 as the usual opening array will not fit. 
 Default: -1
-<br><dt>-holdingsSize N<dd><a name="index-holdingsSize_002c-option-364"></a>Allows you to set a non-standard size for the holdings in any variant. 
+<br><dt>-holdingsSize N<dd><a name="index-holdingsSize_002c-option-367"></a>Allows you to set a non-standard size for the holdings in any variant. 
 If the size is given as -1, the default holdings size for the variant is used. 
 The first N piece types will go into the holdings on capture, and you will be
 able to drop them on the board in stead of making a normal move. If size equals 0,
 there will be no holdings. 
 Default: -1
-<br><dt>-defaultFrcPosition N<dd><a name="index-defaultFrcPosition_002c-option-365"></a>Specifies the number of the opening position in shuffle games like Chess960. 
+<br><dt>-defaultFrcPosition N<dd><a name="index-defaultFrcPosition_002c-option-368"></a>Specifies the number of the opening position in shuffle games like Chess960. 
 A value of -1 means the position is randomly generated by XBoard
 at the beginning of every game. 
 Default: -1
-<br><dt>-pieceToSquareTable string<dd><a name="index-pieceToSquareTable_002c-option-366"></a>The characters that are used to represent the piece types XBoard knows in FEN
+<br><dt>-pieceToSquareTable string<dd><a name="index-pieceToSquareTable_002c-option-369"></a>The characters that are used to represent the piece types XBoard knows in FEN
 diagrams and SAN moves. The string argument has to have an even length
 (or it will be ignored), as white and black pieces have to be given separately
 (in that order). The last letter for each color will be the King. 
@@ -1769,27 +1776,27 @@ Note that promoted pieces are represented by pieces 11 further in the list.
 You should not have to use this option often: each variant has its own default
 setting for the piece representation in FEN, which should be sufficient in normal use. 
 Default: ""
-<br><dt>-debug/-xdebug or -debugMode true/false<dd><a name="index-debug_002c-option-367"></a><a name="index-debugMode_002c-option-368"></a>Turns on debugging printout. 
-<br><dt>-debugFile filename or -nameOfDebugFile filename<dd><a name="index-debugFile_002c-option-369"></a><a name="index-nameOfDebugFile_002c-option-370"></a>Sets the name of the file to which WinBoard saves debug information
+<br><dt>-debug/-xdebug or -debugMode true/false<dd><a name="index-debug_002c-option-370"></a><a name="index-debugMode_002c-option-371"></a>Turns on debugging printout. 
+<br><dt>-debugFile filename or -nameOfDebugFile filename<dd><a name="index-debugFile_002c-option-372"></a><a name="index-nameOfDebugFile_002c-option-373"></a>Sets the name of the file to which XBoard saves debug information
 (including all communication to and from the engines). 
-<br><dt>-engineDebugOutput number<dd><a name="index-engineDebugOutput_002c-option-371"></a>Specifies how WinBoard should handle unsolicited output from the engine,
+<br><dt>-engineDebugOutput number<dd><a name="index-engineDebugOutput_002c-option-374"></a>Specifies how XBoard should handle unsolicited output from the engine,
 with respect to saving it in the debug file. 
 The output is further (hopefully) ignored. 
-If number=0, WinBoard refrains from writing such spurious output to the debug file. 
+If number=0, XBoard refrains from writing such spurious output to the debug file. 
 If number=1, all engine output is written faithfully to the debug file. 
 If number=2, any protocol-violating line is prefixed with a '#' character,
 as the engine itself should have done if it wanted to submit info for inclusion in the debug file. 
 This option is provided for the benefit of applications that use the debug file
 as a source of information, such as the broadcaster of live games TLCV / TLCS. 
 Such applications can be protected from spurious engine output that might otherwise confuse them. 
-<br><dt>-rsh or -remoteShell shell-name<dd><a name="index-rsh_002c-option-372"></a><a name="index-remoteShell_002c-option-373"></a>Name of the command used to run programs remotely. The default
+<br><dt>-rsh or -remoteShell shell-name<dd><a name="index-rsh_002c-option-375"></a><a name="index-remoteShell_002c-option-376"></a>Name of the command used to run programs remotely. The default
 is <samp><span class="file">rsh</span></samp> or <samp><span class="file">remsh</span></samp>, determined when XBoard is
 configured and compiled. 
-<br><dt>-ruser or -remoteUser user-name<dd><a name="index-ruser_002c-option-374"></a><a name="index-remoteUser_002c-option-375"></a>User name on the remote system when running programs with the
+<br><dt>-ruser or -remoteUser user-name<dd><a name="index-ruser_002c-option-377"></a><a name="index-remoteUser_002c-option-378"></a>User name on the remote system when running programs with the
 <code>remoteShell</code>. The default is your local user name. 
-<br><dt>-userName username<dd><a name="index-userName_002c-option-376"></a>Name under which the Human player will be listed in the PGN file. 
+<br><dt>-userName username<dd><a name="index-userName_002c-option-379"></a>Name under which the Human player will be listed in the PGN file. 
 Default is the login name on your local computer. 
-<br><dt>-delayBeforeQuit number<dt>-delayAfterQuit number<dd><a name="index-delayBeforeQuit_002c-option-377"></a><a name="index-delayAfterQuit_002c-option-378"></a>These options specify how long WinBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies.
+<br><dt>-delayBeforeQuit number<dt>-delayAfterQuit number<dd><a name="index-delayBeforeQuit_002c-option-380"></a><a name="index-delayAfterQuit_002c-option-381"></a>These options specify how long XBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies.
 
    </dl>
 
@@ -1804,7 +1811,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <h2 class="chapter">4 Chess Servers</h2>
 
-<p><a name="index-ICS-379"></a><a name="index-ICS_002c-addresses-380"></a><a name="index-Internet-Chess-Server-381"></a>An <dfn>Internet Chess Server</dfn>, or <dfn>ICS</dfn>, is a place on the
+<p><a name="index-ICS-382"></a><a name="index-ICS_002c-addresses-383"></a><a name="index-Internet-Chess-Server-384"></a>An <dfn>Internet Chess Server</dfn>, or <dfn>ICS</dfn>, is a place on the
 Internet where people can get together to play chess, watch other
 people's games, or just chat.  You can use either <code>telnet</code> or a
 client program like XBoard to connect to the server.  There are
@@ -1837,25 +1844,25 @@ unique guest name for you.
    <p>Some useful ICS commands
 include
      <dl>
-<dt><kbd>help &lt;topic&gt;</kbd><dd><a name="index-help_002c-ICS-command-382"></a>to get help on the given &lt;topic&gt;. To get a list of possible topics type
+<dt><kbd>help &lt;topic&gt;</kbd><dd><a name="index-help_002c-ICS-command-385"></a>to get help on the given &lt;topic&gt;. To get a list of possible topics type
 <dfn>help</dfn> without topic.  Try the help command before you ask other
 people on the server for help.
 
      <p>For example <kbd>help register</kbd> tells you how to become a registered
 ICS player. 
-<br><dt><kbd>who &lt;flags&gt;</kbd><dd><a name="index-who_002c-ICS-command-383"></a>to see a list of people who are logged on.  Administrators
+<br><dt><kbd>who &lt;flags&gt;</kbd><dd><a name="index-who_002c-ICS-command-386"></a>to see a list of people who are logged on.  Administrators
 (people you should talk to if you have a problem) are marked
 with the character &lsquo;<samp><span class="samp">*</span></samp>&rsquo;, an asterisk. The &lt;flags&gt; allow you to
 display only selected players: For example, <kbd>who of</kbd> shows a
 list of players who are interested in playing but do not have
 an opponent. 
-<br><dt><kbd>games</kbd><dd><a name="index-games_002c-ICS-command-384"></a>to see what games are being played
+<br><dt><kbd>games</kbd><dd><a name="index-games_002c-ICS-command-387"></a>to see what games are being played
 <br><dt><kbd>match &lt;player&gt; [&lt;mins&gt;] [&lt;inc&gt;]</kbd><dd>to challenge another player to a game. Both opponents get &lt;mins&gt; minutes
 for the game, and &lt;inc&gt; seconds will be added after each move. 
 If another player challenges you, the server asks if you want to
 accept the challenge; use the <kbd>accept</kbd> or <kbd>decline</kbd> commands
 to answer. 
-<br><dt><kbd>accept</kbd><dt><kbd>decline</kbd><dd><a name="index-accept_002c-ICS-command-385"></a><a name="index-decline_002c-ICS-command-386"></a>to accept or decline another player's offer. 
+<br><dt><kbd>accept</kbd><dt><kbd>decline</kbd><dd><a name="index-accept_002c-ICS-command-388"></a><a name="index-decline_002c-ICS-command-389"></a>to accept or decline another player's offer. 
 The offer may be to start a new game, or to agree to a
 <kbd>draw</kbd>, <kbd>adjourn</kbd> or <kbd>abort</kbd> the current game. See <a href="#Action-Menu">Action Menu</a>.
 
@@ -1863,7 +1870,7 @@ The offer may be to start a new game, or to agree to a
 is challenging you, or if your opponent offers both a draw and to adjourn the
 game), you have to supply additional information, by typing something
 like <kbd>accept &lt;player&gt;</kbd>, <kbd>accept draw</kbd>, or <kbd>draw</kbd>. 
-<br><dt><kbd>draw</kbd><dt><kbd>adjourn</kbd><dt><kbd>abort</kbd><dd><a name="index-draw_002c-ICS-command-387"></a><a name="index-adjourn_002c-ICS-command-388"></a><a name="index-abort_002c-ICS-command-389"></a>asks your opponent to terminate a game by mutual agreement. Adjourned
+<br><dt><kbd>draw</kbd><dt><kbd>adjourn</kbd><dt><kbd>abort</kbd><dd><a name="index-draw_002c-ICS-command-390"></a><a name="index-adjourn_002c-ICS-command-391"></a><a name="index-abort_002c-ICS-command-392"></a>asks your opponent to terminate a game by mutual agreement. Adjourned
 games can be continued later. 
 Your opponent can either <kbd>decline</kbd> your offer or accept it (by typing the
 same command or typing <kbd>accept</kbd>).  In some cases these commands work
@@ -1871,11 +1878,11 @@ immediately, without asking your opponent to agree.  For example, you can
 abort the game unilaterally if your opponent is out of time, and you can claim
 a draw by repetition or the 50-move rule if available simply by typing
 <kbd>draw</kbd>. 
-<br><dt><kbd>finger &lt;player&gt;</kbd><dd><a name="index-finger_002c-ICS-command-390"></a>to get information about the given &lt;player&gt;. (Default: yourself.) 
-<br><dt><kbd>vars</kbd><dd><a name="index-vars_002c-ICS-command-391"></a>to get a list of personal settings
-<br><dt><kbd>set &lt;var&gt; &lt;value&gt;</kbd><dd><a name="index-set_002c-ICS-command-392"></a>to modify these settings
-<br><dt><kbd>observe &lt;player&gt;</kbd><dd><a name="index-observe_002c-ICS-command-393"></a>to observe an ongoing game of the given &lt;player&gt;. 
-<br><dt><kbd>examine</kbd><dt><kbd>oldmoves</kbd><dd><a name="index-examine_002c-ICS-command-394"></a><a name="index-oldmoves_002c-ICS-command-395"></a>to review a recently completed game
+<br><dt><kbd>finger &lt;player&gt;</kbd><dd><a name="index-finger_002c-ICS-command-393"></a>to get information about the given &lt;player&gt;. (Default: yourself.) 
+<br><dt><kbd>vars</kbd><dd><a name="index-vars_002c-ICS-command-394"></a>to get a list of personal settings
+<br><dt><kbd>set &lt;var&gt; &lt;value&gt;</kbd><dd><a name="index-set_002c-ICS-command-395"></a>to modify these settings
+<br><dt><kbd>observe &lt;player&gt;</kbd><dd><a name="index-observe_002c-ICS-command-396"></a>to observe an ongoing game of the given &lt;player&gt;. 
+<br><dt><kbd>examine</kbd><dt><kbd>oldmoves</kbd><dd><a name="index-examine_002c-ICS-command-397"></a><a name="index-oldmoves_002c-ICS-command-398"></a>to review a recently completed game
 </dl>
 
    <p>Some special XBoard features are activated when you are
@@ -2025,7 +2032,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <h2 class="chapter">6 Environment variables</h2>
 
-<p><a name="index-Environment-variables-396"></a><a name="index-CHESSDIR-397"></a>Game and position files are found in a directory named by the
+<p><a name="index-Environment-variables-399"></a><a name="index-CHESSDIR-400"></a>Game and position files are found in a directory named by the
 <code>CHESSDIR</code> environment variable. If this variable is not set, the
 current working directory is used. If <code>CHESSDIR</code> is set,
 XBoard actually changes its working directory to
@@ -2043,7 +2050,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <h2 class="chapter">7 Limitations and known bugs</h2>
 
-<p><a name="index-Limitations-398"></a><a name="index-Bugs-399"></a>There is no way for two people running copies of XBoard to play
+<p><a name="index-Limitations-401"></a><a name="index-Bugs-402"></a>There is no way for two people running copies of XBoard to play
 each other without going through an Internet Chess Server.
 
    <p>Under some circumstances, your ICS password may be echoed when you log on.
@@ -2069,7 +2076,7 @@ The piece-drop menu does not check piece drops in bughouse to see if you actuall
 the piece you are trying to drop. But this way of dropping pieces should be considered
 an obsolete feature, now that pieces can be dropped by dragging them from the holdings
 to the board. Anyway, if you would attempt an illegal move when using a chess engine or the ICS,
-WinBoard will accept the error message that comes back, undo the move, and let you try another. 
+XBoard will accept the error message that comes back, undo the move, and let you try another. 
 FEN positions saved by XBoard do include correct information about whether castling or
 en passant are legal, and also handle the 50-move counter. 
 The mate detector does not understand that non-contact mate is not really mate in bughouse. 
@@ -2108,38 +2115,23 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <h2 class="chapter">8 Reporting problems</h2>
 
-<p><a name="index-Bugs-400"></a><a name="index-Bug-reports-401"></a><a name="index-Reporting-bugs-402"></a><a name="index-Problems-403"></a><a name="index-Reporting-problems-404"></a>
-Report bugs and problems with XBoard to <code>&lt;bug-xboard@gnu.org&gt;</code>.
+<p><a name="index-Bugs-403"></a><a name="index-Bug-reports-404"></a><a name="index-Reporting-bugs-405"></a><a name="index-Problems-406"></a><a name="index-Reporting-problems-407"></a>
+You can report bugs and problems with XBoard using
+the bug tracker at <code>https://savannah.gnu.org/projects/xboard/</code>
+or by sending mail to <code>&lt;bug-xboard@gnu.org&gt;</code>.  It can also
+be useful to report or discuss bugs in the WinBoard Forum at
+<code>http://www.open-aurec.com/wbforum/</code>,
+WinBoard development section.
 
    <p>Please use the <samp><span class="file">script</span></samp> program to start a typescript, run
 XBoard with the &lsquo;<samp><span class="samp">-debug</span></samp>&rsquo; option, and include the typescript
 output in your message. 
 Also tell us what kind of machine and what operating system version
-you are using.  The command &lsquo;<samp><span class="samp">uname -a</span></samp>&rsquo; will often tell you this. 
-Here is a sample of approximately what you should type:
-
-<pre class="example">     script
-     uname -a
-     ./configure
-     make
-     ./xboard -debug
-     exit
-     mail bug-xboard@gnu.org
-     Subject: Your short description of the problem
-     Your detailed description of the problem
-     ~r typescript
-     .
-</pre>
-   <p>The WinBoard / XBoard 4.3 line is being developed by H.G. Muller
-independently of the GNU Savannah xboard project. 
-Bug reports on this version, and suggestions for improvements and additions,
-are best posted in the WinBoard forum,
-WinBoard-development section (http://www.open-aurec.com/wbforum).
+you are using.  The command &lsquo;<samp><span class="samp">uname -a</span></samp>&rsquo; will often tell you this.
 
    <p>If you improve XBoard, please send a message about your changes,
 and we will get in touch with you about merging them in
-to the main line of development. 
-Also see our Web site at http://savannah.gnu.org/projects/xboard/.
+to the main line of development.
 
 <div class="node">
 <p><hr>
@@ -2152,52 +2144,56 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <h2 class="chapter">9 Authors and contributors</h2>
 
-<p><a name="index-Authors-405"></a><a name="index-Contributors-406"></a>
-Tim Mann has been responsible for XBoard versions 1.3 and beyond, and
-for WinBoard, a port of XBoard to Microsoft Win32 (Windows NT and
-Windows 95). H.G.Muller is responsible for version 4.3.
-
-   <p>Mark Williams contributed the initial (WinBoard-only) implementation
-of many new features added to both XBoard and WinBoard in version
-4.1.0, including copy/paste, premove, icsAlarm, autoFlipView, training
-mode, auto raise, and blindfold.  Ben Nye contributed X copy/paste
-code for XBoard.
-
-   <p>Hugh Fisher added animated piece movement to XBoard, and Henrik Gram
-(henrikg@funcom.com) added it to WinBoard.  Frank McIngvale added
-click/click moving, the Analysis modes, piece flashing, ZIICS import,
-and ICS text colorization to XBoard.  Jochen Wiedmann ported XBoard to
-the Amiga, creating AmyBoard, and converted the documentation to
-texinfo.  Elmar Bartel contributed the new piece bitmaps introduced in
-version 3.2.  John Chanak contributed the initial implementation of
-ICS mode.  The color scheme and the old 80x80 piece bitmaps were taken
+<p><a name="index-Authors-408"></a><a name="index-Contributors-409"></a>
+Chris Sears and Dan Sears wrote the original XBoard.  They were
+responsible for versions 1.0 through 1.2.  The color scheme was taken
 from Wayne Christopher's <code>XChess</code> program.
 
-   <p>Chris Sears and Dan Sears wrote the original XBoard.  They were
-responsible for versions 1.0 through 1.2.
+   <p>Tim Mann was primarily responsible for XBoard versions 1.3 through
+4.2.7, and for WinBoard (a port of XBoard to Microsoft Win32) from its
+inception through version 4.2.7.
 
-   <p>Evan Welsh wrote <code>CMail</code>.  Patrick Surry helped in designing,
-testing, and documenting CMail.
+   <p>John Chanak contributed the initial implementation of ICS mode.  Evan
+Welsh wrote <code>CMail</code>, and Patrick Surry helped in designing,
+testing, and documenting it.  Elmar Bartel contributed the new piece
+bitmaps introduced in version 3.2.  Jochen Wiedmann converted the
+documentation to texinfo.  Frank McIngvale added click/click moving,
+the Analysis modes, piece flashing, ZIICS import, and ICS text
+colorization to XBoard.  Hugh Fisher added animated piece movement to
+XBoard, and Henrik Gram added it to WinBoard.  Mark Williams
+contributed the initial (WinBoard-only) implementation of many new
+features added to both XBoard and WinBoard in version 4.1.0, including
+copy/paste, premove, icsAlarm, autoFlipView, training mode, auto
+raise, and blindfold.  Ben Nye contributed X copy/paste code for
+XBoard.
 
-   <p>Alessandro Scotti added many elements to the user interface of WinBoard,
-including the board textures and font-based rendering, the evaluation-graph,
-move-history and engine-output window. 
-He was also responsible for adding the UCI support.
+   <p>In a fork from version 4.2.7, Alessandro Scotti added many elements to
+the user interface of WinBoard, including the board textures and
+font-based rendering, the evaluation-graph, move-history and
+engine-output window.  He was also responsible for adding the UCI
+support.
 
-   <p>H.G. Muller made WinBoard castling- and e.p.-aware,
-added variant support with adjustable board sizes,
-the crazyhouse holdings, and the fairy pieces. 
-In addition he added most of the adjudication options,
-made WinBoard more robust in dealing with buggy and crashing engines,
-and extended time control with a time-odds and node-count-based modes. 
-Most of the options that initially were WinBoard only have now been back-ported to XBoard.
+   <p>H. G. Muller continued this fork of the project, producing version
+4.3.  He made WinBoard castling- and e.p.-aware, added variant support
+with adjustable board sizes, the crazyhouse holdings, and the fairy
+pieces.  In addition he added most of the adjudication options, made
+WinBoard more robust in dealing with buggy and crashing engines, and
+extended time control with a time-odds and node-count-based modes. 
+Most of the options that initially were WinBoard only have now been
+back-ported to XBoard.
 
    <p>Michel van den Bergh provided the code for reading Polyglot opening books.
 
-   <p>Arun Persaud worked with H.G. Muller to combine all the features of the never-released WinBoard 4.2.8
-of the Savannah project (mainly by Daniel Mehrmann),
-and the never-released 4.3.16 into a unified WinBoard 4.4,
-which is now available both from the Savannah web site and the WinBoard forum. 
+   <p>Meanwhile, some work continued on the GNU XBoard project maintained at
+savannah.gnu.org, but version 4.2.8 was never released.  Daniel
+Mehrmann was responsible for much of this work.
+
+   <p>Most recently, Arun Persaud worked with H. G. Muller to merge all
+the features of the never-released XBoard/WinBoard 4.2.8 of the GNU
+XBoard project and the never-released 4.3.16 from H. G.'s fork into a
+unified XBoard/WinBoard 4.4, which is now available both from the
+savannah.gnu.org web site and the WinBoard forum.
+
 <div class="node">
 <p><hr>
 <a name="CMail"></a>
@@ -2209,7 +2205,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <h2 class="chapter">10 CMail</h2>
 
-<p><a name="index-cmail-407"></a>The <samp><span class="file">cmail</span></samp> program can help you play chess by email with opponents of
+<p><a name="index-cmail-410"></a>The <samp><span class="file">cmail</span></samp> program can help you play chess by email with opponents of
 your choice using XBoard as an interface.
 
    <p>You will usually run <samp><span class="file">cmail</span></samp> without giving any options.
@@ -2268,12 +2264,6 @@ directory as cmail keeps its working files (above).
 environment variable <code>$CMAIL_MAILPROG</code> or failing that
 <samp><span class="file">/usr/ucb/Mail</span></samp>, <samp><span class="file">/usr/ucb/mail</span></samp> or <samp><span class="file">Mail</span></samp>. You will need
 to set this variable if none of the above paths fit your system. 
-<br><dt>-gamesFile &lt;file&gt;<dd><a name="index-g_t_002ecmailgames-408"></a>A file containing a list of games with email addresses. This defaults to
-the environment variable <code>$CMAIL_GAMES</code> or failing that
-<samp><span class="file">.cmailgames</span></samp>. 
-<br><dt>-aliasesFile &lt;file&gt;<dd><a name="index-g_t_002ecmailaliases-409"></a>A file containing one or more aliases for a set of email addresses. This
-defaults to the environment variable <code>$CMAIL_ALIASES</code> or failing
-that <samp><span class="file">.cmailaliases</span></samp>. 
 <br><dt>-logFile &lt;file&gt;<dd>A file in which to dump verbose debugging messages that are invoked with
 the &lsquo;<samp><span class="samp">-v</span></samp>&rsquo;
 option. 
@@ -2425,7 +2415,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <h2 class="chapter">11 Other programs you can use with XBoard</h2>
 
-<p><a name="index-Other-programs-410"></a>
+<p><a name="index-Other-programs-411"></a>
 Here are some other programs you can use with XBoard
 
 <ul class="menu">
@@ -3341,26 +3331,27 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <ul class="index-cp" compact>
 <li><a href="#index-g_t_002danimateSpeed_002c-option-347">-animateSpeed, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-g_t_002ecmailaliases-409">.cmailaliases</a>: <a href="#CMail-options">CMail options</a></li>
-<li><a href="#index-g_t_002ecmailgames-408">.cmailgames</a>: <a href="#CMail-options">CMail options</a></li>
+<li><a href="#index-g_t_002dautoDisplayComment_002c-option-348">-autoDisplayComment, option</a>: <a href="#User-interface-options">User interface options</a></li>
+<li><a href="#index-g_t_002dautoDisplayTags_002c-option-349">-autoDisplayTags, option</a>: <a href="#User-interface-options">User interface options</a></li>
+<li><a href="#index-g_t_002dpasteSelection_002c-option-350">-pasteSelection, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-g_t_002eicsrc-209">.icsrc</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-g_t_003c_002c-Button-61">&lt;, Button</a>: <a href="#Step-Menu">Step Menu</a></li>
 <li><a href="#index-g_t_003c_003c_002c-Button-65">&lt;&lt;, Button</a>: <a href="#Step-Menu">Step Menu</a></li>
 <li><a href="#index-g_t_003e_002c-Button-63">&gt;, Button</a>: <a href="#Step-Menu">Step Menu</a></li>
 <li><a href="#index-g_t_003e_003e_002c-Button-67">&gt;&gt;, Button</a>: <a href="#Step-Menu">Step Menu</a></li>
-<li><a href="#index-abort_002c-ICS-command-389">abort, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-abort_002c-ICS-command-392">abort, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Abort_002c-Menu-Item-51">Abort, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-About-XBoard_002c-Menu-Item-108">About XBoard, Menu Item</a>: <a href="#Help-Menu">Help Menu</a></li>
-<li><a href="#index-accept_002c-ICS-command-385">accept, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-accept_002c-ICS-command-388">accept, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Accept_002c-Menu-Item-46">Accept, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-Action_002c-Menu-45">Action, Menu</a>: <a href="#Action-Menu">Action Menu</a></li>
-<li><a href="#index-adjourn_002c-ICS-command-388">adjourn, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-adjourn_002c-ICS-command-391">adjourn, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Adjourn_002c-Menu-Item-50">Adjourn, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-Adjudicate-Draw_002c-Menu-Item-57">Adjudicate Draw, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-Adjudicate-to-Black_002c-Menu-Item-56">Adjudicate to Black, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-Adjudicate-to-White_002c-Menu-Item-55">Adjudicate to White, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
-<li><a href="#index-adjudicateDrawMoves_002c-option-350">adjudicateDrawMoves, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
-<li><a href="#index-adjudicateLossThreshold_002c-option-349">adjudicateLossThreshold, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
+<li><a href="#index-adjudicateDrawMoves_002c-option-353">adjudicateDrawMoves, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
+<li><a href="#index-adjudicateLossThreshold_002c-option-352">adjudicateLossThreshold, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
 <li><a href="#index-Adjudications_002c-Menu-Item-75">Adjudications, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-alarm_002c-option-222">alarm, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-Always-Queen_002c-Menu-Item-77">Always Queen, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
@@ -3372,7 +3363,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-animate_002c-option-345">animate, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-animateDragging_002c-option-344">animateDragging, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-animateMoving_002c-option-346">animateMoving, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-Authors-405">Authors</a>: <a href="#Contributors">Contributors</a></li>
+<li><a href="#index-Authors-408">Authors</a>: <a href="#Contributors">Contributors</a></li>
 <li><a href="#index-Auto-Comment_002c-Menu-Item-80">Auto Comment, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-Auto-Flag_002c-Menu-Item-81">Auto Flag, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-Auto-Flip-View_002c-Menu-Item-82">Auto Flip View, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
@@ -3402,22 +3393,22 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-blindfold_002c-option-324">blindfold, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-bm_002c-option-332">bm, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-board-size-302">board size</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-boardHeight_002c-option-362">boardHeight, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-boardHeight_002c-option-365">boardHeight, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-boardSize_002c-option-301">boardSize, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-boardWidth_002c-option-363">boardWidth, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-boardWidth_002c-option-366">boardWidth, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-Book_002c-Menu-Item-107">Book, Menu Item</a>: <a href="#Help-Menu">Help Menu</a></li>
-<li><a href="#index-Bug-reports-401">Bug reports</a>: <a href="#Problems">Problems</a></li>
-<li><a href="#index-Bugs-400">Bugs</a>: <a href="#Problems">Problems</a></li>
-<li><a href="#index-Bugs-399">Bugs</a>: <a href="#Limitations">Limitations</a></li>
+<li><a href="#index-Bug-reports-404">Bug reports</a>: <a href="#Problems">Problems</a></li>
+<li><a href="#index-Bugs-403">Bugs</a>: <a href="#Problems">Problems</a></li>
+<li><a href="#index-Bugs-402">Bugs</a>: <a href="#Limitations">Limitations</a></li>
 <li><a href="#index-buttons_002c-option-313">buttons, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-Call-Flag_002c-Menu-Item-48">Call Flag, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
-<li><a href="#index-checkMates_002c-option-351">checkMates, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
+<li><a href="#index-checkMates_002c-option-354">checkMates, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
 <li><a href="#index-Chess-engine-options-114">Chess engine options</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
-<li><a href="#index-CHESSDIR-397">CHESSDIR</a>: <a href="#Environment">Environment</a></li>
+<li><a href="#index-CHESSDIR-400">CHESSDIR</a>: <a href="#Environment">Environment</a></li>
 <li><a href="#index-clock_002c-option-121">clock, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-clockFont_002c-option-325">clockFont, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-clockMode_002c-option-122">clockMode, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
-<li><a href="#index-cmail-407">cmail</a>: <a href="#CMail">CMail</a></li>
+<li><a href="#index-cmail-410">cmail</a>: <a href="#CMail">CMail</a></li>
 <li><a href="#index-colorChallenge_002c-option-239">colorChallenge, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-colorChannel_002c-option-236">colorChannel, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-colorChannel1_002c-option-235">colorChannel1, option</a>: <a href="#ICS-options">ICS options</a></li>
@@ -3431,26 +3422,26 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-colorShout_002c-option-233">colorShout, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-colorSShout_002c-option-234">colorSShout, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-colorTell_002c-option-238">colorTell, option</a>: <a href="#ICS-options">ICS options</a></li>
-<li><a href="#index-Contributors-406">Contributors</a>: <a href="#Contributors">Contributors</a></li>
+<li><a href="#index-Contributors-409">Contributors</a>: <a href="#Contributors">Contributors</a></li>
 <li><a href="#index-coordFont_002c-option-327">coordFont, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-coords_002c-option-303">coords, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-Copy-Game_002c-Menu-Item-14">Copy Game, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-Copy-Position_002c-Menu-Item-21">Copy Position, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-darkSquareColor_002c-option-340">darkSquareColor, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-debug_002c-option-367">debug, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-debugFile_002c-option-369">debugFile, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-debugMode_002c-option-368">debugMode, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-decline_002c-ICS-command-386">decline, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-debug_002c-option-370">debug, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-debugFile_002c-option-372">debugFile, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-debugMode_002c-option-371">debugMode, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-decline_002c-ICS-command-389">decline, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Decline_002c-Menu-Item-47">Decline, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-defaultCacheSizeEGTB_002c-option-188">defaultCacheSizeEGTB, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
-<li><a href="#index-defaultFrcPosition_002c-option-365">defaultFrcPosition, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-defaultFrcPosition_002c-option-368">defaultFrcPosition, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-defaultHashSize_002c-option-187">defaultHashSize, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
 <li><a href="#index-defaultPathEGTB_002c-option-189">defaultPathEGTB, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
-<li><a href="#index-delayAfterQuit_002c-option-378">delayAfterQuit, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-delayBeforeQuit_002c-option-377">delayBeforeQuit, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-delayAfterQuit_002c-option-381">delayAfterQuit, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-delayBeforeQuit_002c-option-380">delayBeforeQuit, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-display_002c-option-285">display, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-drag_002c-option-343">drag, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-draw_002c-ICS-command-387">draw, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-draw_002c-ICS-command-390">draw, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Draw_002c-Menu-Item-49">Draw, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-Edit-Comment_002c-Menu-Item-41">Edit Comment, Menu Item</a>: <a href="#Mode-Menu">Mode Menu</a></li>
 <li><a href="#index-Edit-Game_002c-Menu-Item-34">Edit Game, Menu Item</a>: <a href="#Mode-Menu">Mode Menu</a></li>
@@ -3458,9 +3449,9 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-Edit-Tags_002c-Menu-Item-40">Edit Tags, Menu Item</a>: <a href="#Mode-Menu">Mode Menu</a></li>
 <li><a href="#index-egtFormats_002c-option-190">egtFormats, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
 <li><a href="#index-Engine-Settings-172">Engine Settings</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
-<li><a href="#index-engineDebugOutput_002c-option-371">engineDebugOutput, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-Environment-variables-396">Environment variables</a>: <a href="#Environment">Environment</a></li>
-<li><a href="#index-examine_002c-ICS-command-394">examine, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-engineDebugOutput_002c-option-374">engineDebugOutput, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-Environment-variables-399">Environment variables</a>: <a href="#Environment">Environment</a></li>
+<li><a href="#index-examine_002c-ICS-command-397">examine, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Exit_002c-Menu-Item-25">Exit, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-exit_002c-option-292">exit, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-fb_002c-option-145">fb, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
@@ -3468,7 +3459,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-fd_002c-option-151">fd, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-fh_002c-option-147">fh, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-File-Menu-4">File Menu</a>: <a href="#File-Menu">File Menu</a></li>
-<li><a href="#index-finger_002c-ICS-command-390">finger, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-finger_002c-ICS-command-393">finger, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-firstChessProgram_002c-option-142">firstChessProgram, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-firstComputerString_002c-option-157">firstComputerString, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-firstDirectory_002c-option-152">firstDirectory, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
@@ -3500,27 +3491,27 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-Forward_002c-Menu-Item-62">Forward, Menu Item</a>: <a href="#Step-Menu">Step Menu</a></li>
 <li><a href="#index-fUCI_002c-option-174">fUCI, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
 <li><a href="#index-gameListTags_002c-option-282">gameListTags, option</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
-<li><a href="#index-games_002c-ICS-command-384">games, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-games_002c-ICS-command-387">games, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-gateway_002c-option-204">gateway, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-geometry_002c-option-286">geometry, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-Get-Move-List_002c-Menu-Item-88">Get Move List, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-getMoveList_002c-option-221">getMoveList, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-Help-Menu-103">Help Menu</a>: <a href="#Help-Menu">Help Menu</a></li>
-<li><a href="#index-help_002c-ICS-command-382">help, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-help_002c-ICS-command-385">help, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Hide-Thinking_002c-Menu-Item-100">Hide Thinking, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-Highlight-Last-Move_002c-Menu-Item-89">Highlight Last Move, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-highlight_002c-option-321">highlight, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-highlightLastMove_002c-option-322">highlightLastMove, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-highlightSquareColor_002c-option-341">highlightSquareColor, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-Hint_002c-Menu-Item-106">Hint, Menu Item</a>: <a href="#Help-Menu">Help Menu</a></li>
-<li><a href="#index-holdingsSize_002c-option-364">holdingsSize, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-holdingsSize_002c-option-367">holdingsSize, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-iconic_002c-option-287">iconic, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-ICS-379">ICS</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-ICS-382">ICS</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-ICS-Alarm_002c-Menu-Item-91">ICS Alarm, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-ICS-Client_002c-Menu-Item-33">ICS Client, Menu Item</a>: <a href="#Mode-Menu">Mode Menu</a></li>
 <li><a href="#index-ICS-Input-Box_002c-Menu-Item-42">ICS Input Box, Menu Item</a>: <a href="#Mode-Menu">Mode Menu</a></li>
 <li><a href="#index-ICS-options-191">ICS options</a>: <a href="#ICS-options">ICS options</a></li>
-<li><a href="#index-ICS_002c-addresses-380">ICS, addresses</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-ICS_002c-addresses-383">ICS, addresses</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-ics_002c-option-193">ics, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-icsAlarm_002c-option-223">icsAlarm, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-icsAlarmTime_002c-option-224">icsAlarmTime, option</a>: <a href="#ICS-options">ICS options</a></li>
@@ -3532,9 +3523,9 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-icsport_002c-option-197">icsport, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-inc_002c-option-119">inc, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-Info-XBoard_002c-Menu-Item-104">Info XBoard, Menu Item</a>: <a href="#Help-Menu">Help Menu</a></li>
-<li><a href="#index-initalMode_002c-option-360">initalMode, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-initalMode_002c-option-363">initalMode, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-initString_002c-option-155">initString, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
-<li><a href="#index-Internet-Chess-Server-381">Internet Chess Server</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-Internet-Chess-Server-384">Internet Chess Server</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-internetChessServerCommPort_002c-option-205">internetChessServerCommPort, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-internetChessServerHelper_002c-option-200">internetChessServerHelper, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-internetChessServerHost_002c-option-196">internetChessServerHost, option</a>: <a href="#ICS-options">ICS options</a></li>
@@ -3548,7 +3539,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-lgf_002c-option-261">lgf, option</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
 <li><a href="#index-lgi_002c-option-263">lgi, option</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
 <li><a href="#index-lightSquareColor_002c-option-339">lightSquareColor, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-Limitations-398">Limitations</a>: <a href="#Limitations">Limitations</a></li>
+<li><a href="#index-Limitations-401">Limitations</a>: <a href="#Limitations">Limitations</a></li>
 <li><a href="#index-Load-and-Save-options-260">Load and Save options</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
 <li><a href="#index-Load-Game_002c-Menu-Item-9">Load Game, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-Load-Next-Game_002c-Menu-Item-10">Load Next Game, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
@@ -3571,7 +3562,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-Man-XBoard_002c-Menu-Item-105">Man XBoard, Menu Item</a>: <a href="#Help-Menu">Help Menu</a></li>
 <li><a href="#index-matchGames_002c-option-137">matchGames, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-matchMode_002c-option-139">matchMode, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
-<li><a href="#index-materialDraws_002c-option-353">materialDraws, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
+<li><a href="#index-materialDraws_002c-option-356">materialDraws, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
 <li><a href="#index-Menu_002c-Action-44">Menu, Action</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-Menu_002c-File-5">Menu, File</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-Menu_002c-Help-102">Menu, Help</a>: <a href="#Help-Menu">Help Menu</a></li>
@@ -3582,7 +3573,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-mg_002c-option-136">mg, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-mm_002c-option-138">mm, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-Mode-Menu-27">Mode Menu</a>: <a href="#Mode-Menu">Mode Menu</a></li>
-<li><a href="#index-mode_002c-option-359">mode, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-mode_002c-option-362">mode, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-mono_002c-option-315">mono, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-monoMode_002c-option-316">monoMode, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-Move-Now_002c-Menu-Item-70">Move Now, Menu Item</a>: <a href="#Step-Menu">Step Menu</a></li>
@@ -3592,35 +3583,35 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-movesPerSession_002c-option-118">movesPerSession, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-mps_002c-option-117">mps, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-msLoginDelay_002c-option-210">msLoginDelay, option</a>: <a href="#ICS-options">ICS options</a></li>
-<li><a href="#index-nameOfDebugFile_002c-option-370">nameOfDebugFile, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-ncp_002c-option-357">ncp, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-nameOfDebugFile_002c-option-373">nameOfDebugFile, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-ncp_002c-option-360">ncp, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-New-Game_002c-Menu-Item-6">New Game, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-New-Shuffle-Game_002c-Menu-Item-7">New Shuffle Game, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-New-variant_002c-Menu-Item-8">New variant, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-niceEngines_002c-option-167">niceEngines, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
-<li><a href="#index-noChessProgram_002c-option-358">noChessProgram, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-noChessProgram_002c-option-361">noChessProgram, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-noGUI_002c-option-288">noGUI, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-observe_002c-ICS-command-393">observe, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-observe_002c-ICS-command-396">observe, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Old-Save-Style_002c-Menu-Item-92">Old Save Style, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
-<li><a href="#index-oldmoves_002c-ICS-command-395">oldmoves, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-oldmoves_002c-ICS-command-398">oldmoves, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-oldsave_002c-option-280">oldsave, option</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
 <li><a href="#index-oldSaveStyle_002c-option-281">oldSaveStyle, option</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
 <li><a href="#index-Options-111">Options</a>: <a href="#Options">Options</a></li>
 <li><a href="#index-Options-Menu-73">Options Menu</a>: <a href="#Options-Menu">Options Menu</a></li>
-<li><a href="#index-Options_002c-adjudication-348">Options, adjudication</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
+<li><a href="#index-Options_002c-adjudication-351">Options, adjudication</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
 <li><a href="#index-options_002c-Chess-engine-113">options, Chess engine</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-Options_002c-ICS-192">Options, ICS</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-Options_002c-Load-and-Save-259">Options, Load and Save</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
-<li><a href="#index-Options_002c-miscellaneous-356">Options, miscellaneous</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-Options_002c-miscellaneous-359">Options, miscellaneous</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-Options_002c-User-interface-284">Options, User interface</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-Other-programs-410">Other programs</a>: <a href="#Other-programs">Other programs</a></li>
+<li><a href="#index-Other-programs-411">Other programs</a>: <a href="#Other-programs">Other programs</a></li>
 <li><a href="#index-Paste-Game_002c-Menu-Item-15">Paste Game, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-Paste-Position_002c-Menu-Item-22">Paste Position, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-Pause_002c-Menu-Item-43">Pause, Menu Item</a>: <a href="#Mode-Menu">Mode Menu</a></li>
 <li><a href="#index-Periodic-Updates_002c-Menu-Item-93">Periodic Updates, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-pgnEventHeader_002c-option_0060-278">pgnEventHeader, option`</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
 <li><a href="#index-pgnExtendedInfo_002c-option_0060-277">pgnExtendedInfo, option`</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
-<li><a href="#index-pieceToSquareTable_002c-option-366">pieceToSquareTable, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-pieceToSquareTable_002c-option-369">pieceToSquareTable, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-pixmap_002c-option-334">pixmap, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-pixmapDirectory_002c-option-335">pixmapDirectory, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-PolyglotBook_002c-option-180">PolyglotBook, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
@@ -3636,7 +3627,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-pre_002c-option-226">pre, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-Premove_002c-Menu-Item-97">Premove, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-premove_002c-option-227">premove, option</a>: <a href="#ICS-options">ICS options</a></li>
-<li><a href="#index-Problems-403">Problems</a>: <a href="#Problems">Problems</a></li>
+<li><a href="#index-Problems-406">Problems</a>: <a href="#Problems">Problems</a></li>
 <li><a href="#index-queen_002c-option-296">queen, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-Quiet-Play_002c-Menu-Item-98">Quiet Play, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-quiet_002c-option-228">quiet, option</a>: <a href="#ICS-options">ICS options</a></li>
@@ -3644,10 +3635,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-Reload-CMail-Message_002c-Menu-Item-24">Reload CMail Message, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-Reload-Same-Game_002c-Menu-Item-12">Reload Same Game, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-Reload-Same-Position_002c-Menu-Item-19">Reload Same Position, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
-<li><a href="#index-remoteShell_002c-option-373">remoteShell, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-remoteUser_002c-option-375">remoteUser, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-Reporting-bugs-402">Reporting bugs</a>: <a href="#Problems">Problems</a></li>
-<li><a href="#index-Reporting-problems-404">Reporting problems</a>: <a href="#Problems">Problems</a></li>
+<li><a href="#index-remoteShell_002c-option-376">remoteShell, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-remoteUser_002c-option-378">remoteUser, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-Reporting-bugs-405">Reporting bugs</a>: <a href="#Problems">Problems</a></li>
+<li><a href="#index-Reporting-problems-407">Reporting problems</a>: <a href="#Problems">Problems</a></li>
 <li><a href="#index-Resign_002c-Menu-Item-52">Resign, Menu Item</a>: <a href="#Action-Menu">Action Menu</a></li>
 <li><a href="#index-Retract-Move_002c-Menu-Item-71">Retract Move, Menu Item</a>: <a href="#Step-Menu">Step Menu</a></li>
 <li><a href="#index-reuse_002c-option-159">reuse, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
@@ -3656,9 +3647,9 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-reuseSecond_002c-option-162">reuseSecond, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-Revert_002c-Menu-Item-68">Revert, Menu Item</a>: <a href="#Step-Menu">Step Menu</a></li>
 <li><a href="#index-ringBellAfterMoves_002c-option-291">ringBellAfterMoves, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-rsh_002c-option-372">rsh, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-ruleMoves_002c-option-355">ruleMoves, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
-<li><a href="#index-ruser_002c-option-374">ruser, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-rsh_002c-option-375">rsh, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-ruleMoves_002c-option-358">ruleMoves, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
+<li><a href="#index-ruser_002c-option-377">ruser, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-sameColorGames_002c-option-140">sameColorGames, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-Save-Game_002c-Menu-Item-13">Save Game, Menu Item</a>: <a href="#File-Menu">File Menu</a></li>
 <li><a href="#index-saveGameFile_002c-option-268">saveGameFile, option</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
@@ -3682,7 +3673,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-secondScoreAbs_002c-option-166">secondScoreAbs, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-secondTimeOdds_002c-option-130">secondTimeOdds, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-secondXBook_002c-option-186">secondXBook, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
-<li><a href="#index-set_002c-ICS-command-392">set, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-set_002c-ICS-command-395">set, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-Settings_002c-Engine-173">Settings, Engine</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
 <li><a href="#index-sgf_002c-option-267">sgf, option</a>: <a href="#Load-and-Save-options">Load and Save options</a></li>
 <li><a href="#index-sh_002c-option-149">sh, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
@@ -3723,7 +3714,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-telnet_002c-option-201">telnet, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-telnetProgram_002c-option-203">telnetProgram, option</a>: <a href="#ICS-options">ICS options</a></li>
 <li><a href="#index-Test-Legality_002c-Menu-Item-101">Test Legality, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
-<li><a href="#index-testClaims_002c-option-352">testClaims, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
+<li><a href="#index-testClaims_002c-option-355">testClaims, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
 <li><a href="#index-testLegality_002c-option-299">testLegality, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-thinking_002c-option-132">thinking, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-Time-Control_002c-Menu-Item-76">Time Control, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
@@ -3734,17 +3725,17 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-title_002c-option-311">title, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-titleInWindow_002c-option-312">titleInWindow, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-Training_002c-Menu-Item-36">Training, Menu Item</a>: <a href="#Mode-Menu">Mode Menu</a></li>
-<li><a href="#index-trivialDraws_002c-option-354">trivialDraws, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
+<li><a href="#index-trivialDraws_002c-option-357">trivialDraws, option</a>: <a href="#Adjudication-Options">Adjudication Options</a></li>
 <li><a href="#index-Truncate-Game_002c-Menu-Item-69">Truncate Game, Menu Item</a>: <a href="#Step-Menu">Step Menu</a></li>
 <li><a href="#index-Two-Machines_002c-Menu-Item-30">Two Machines, Menu Item</a>: <a href="#Mode-Menu">Mode Menu</a></li>
 <li><a href="#index-usePolyglotBook_002c-option-179">usePolyglotBook, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
 <li><a href="#index-User-interface-options-283">User interface options</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-userName_002c-option-376">userName, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-userName_002c-option-379">userName, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-useTelnet_002c-option-202">useTelnet, option</a>: <a href="#ICS-options">ICS options</a></li>
-<li><a href="#index-variant_002c-option-361">variant, option</a>: <a href="#Other-options">Other options</a></li>
-<li><a href="#index-vars_002c-ICS-command-391">vars, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-variant_002c-option-364">variant, option</a>: <a href="#Other-options">Other options</a></li>
+<li><a href="#index-vars_002c-ICS-command-394">vars, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-whitePieceColor_002c-option-337">whitePieceColor, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-who_002c-ICS-command-383">who, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
+<li><a href="#index-who_002c-ICS-command-386">who, ICS command</a>: <a href="#Chess-Servers">Chess Servers</a></li>
 <li><a href="#index-xflash_002c-option-320">xflash, option</a>: <a href="#User-interface-options">User interface options</a></li>
 </ul>
 <div class="contents">
