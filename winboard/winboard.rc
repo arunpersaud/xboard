@@ -54,7 +54,7 @@ BEGIN
                     OPT_MESS,6,85,120,16
 END
 
-DLG_TimeControl DIALOG DISCARDABLE  6, 18, 263, 172
+DLG_TimeControl DIALOG DISCARDABLE  6, 18, 263, 212
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Time Control"
 FONT 8, "MS Sans Serif"
@@ -65,6 +65,8 @@ BEGIN
                     BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,7,36,113,10
     CONTROL         "Incremental clock",OPT_TCUseInc,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,7,73,107,10
+    CONTROL         "Fixed time per move",OPT_TCUseFixed,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,7,124,107,10
     LTEXT           "Number of moves:",OPT_TCtext1,15,52,58,8,NOT WS_GROUP
     EDITTEXT        OPT_TCMoves,77,52,22,12,ES_AUTOHSCROLL | WS_GROUP
     LTEXT           "Within number of minutes:",OPT_TCtext2,113,54,81,8,NOT 
@@ -76,14 +78,17 @@ BEGIN
     LTEXT           "Plus number of seconds per move:",406,15,105,109,8,NOT 
                     WS_GROUP
     EDITTEXT        OPT_TCInc,127,103,32,12,ES_AUTOHSCROLL
-    LTEXT           "",408,185,108,67,8,NOT WS_GROUP
-    LTEXT           "Time-Odds Factors:",IDC_STATIC,6,118,150,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCOdds1,47,131,26,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "Engine #1:",IDC_STATIC,6,133,41,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCOdds2,124,131,26,12,ES_AUTOHSCROLL
-    LTEXT           "Engine #2:",IDC_STATIC,83,133,41,8,NOT WS_GROUP
-    PUSHBUTTON      "OK",IDOK,29,150,40,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,85,150,40,14
+    LTEXT           "Maximum seconds per move:",OPT_TCftext,15,142,109,8,NOT 
+                    WS_GROUP
+    EDITTEXT        OPT_TCFixed,127,140,32,12,ES_AUTOHSCROLL
+    LTEXT           "",408,185,148,67,8,NOT WS_GROUP
+    LTEXT           "Time-Odds Factors:",IDC_STATIC,6,158,150,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds1,47,171,32,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Engine #1:",IDC_STATIC,6,173,40,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds2,127,171,32,12,ES_AUTOHSCROLL
+    LTEXT           "Engine #2:",IDC_STATIC,86,173,40,8,NOT WS_GROUP
+    PUSHBUTTON      "OK",IDOK,29,190,40,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,85,190,40,14
 END
 
 DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 136, 55

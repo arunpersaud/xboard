@@ -89,6 +89,9 @@
 #define OPT_TCTime2                     409
 #define OPT_TCOdds1                     410
 #define OPT_TCOdds2                     411
+#define OPT_TCUseFixed                  412
+#define OPT_TCFixed                     413
+#define OPT_TCftext                     414
 #define DLG_PremoveOptions              450
 #define DLG_GeneralOptions              453
 #define DLG_IcsOptions                  454
