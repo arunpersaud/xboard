@@ -826,177 +826,25 @@ void UserMoveProc(window, event, data)
      GdkEvent *event;
      gpointer data;
 {
-    int x, y;
-    Boolean saveAnimate;
-    static int second = 0;
-
     if (errorExitStatus != -1) return;
 
-    if (event->type == GDK_BUTTON_PRESS) ErrorPopDown();
-
-    if (promotionUp)
+    if (promotionUp) 
       {
-	if (event->type == GDK_BUTTON_PRESS)
+	if (event->type == GDK_BUTTON_PRESS) 
 	  {
-	    /* todo add promotionshellwidget
-	       XtPopdown(promotionShell);
-	       XtDestroyWidget(promotionShell); */
 	    promotionUp = False;
 	    ClearHighlights();
 	    fromX = fromY = -1;
 	  }
-	else
+	else 
 	  {
 	    return;
 	  }
       }
-
-    x = EventToSquare( (int)event->button.x, BOARD_WIDTH  );
-    y = EventToSquare( (int)event->button.y, BOARD_HEIGHT );
-    if (!flipView && y >= 0)
-      {
-	y = BOARD_HEIGHT - 1 - y;
-      }
-    if (flipView && x >= 0)
-      {
-	x = BOARD_WIDTH - 1 - x;
-      }
-
-    if (fromX == -1)
-      {
-	if (event->type == ButtonPress)
-	  {
-	    /* First square */
-	    if (OKToStartUserMove(x, y))
-	      {
-		fromX = x;
-		fromY = y;
-		second = 0;
-		DragPieceBegin(event->button.x, event->button.y);
-		if (appData.highlightDragging)
-		  {
-		    SetHighlights(x, y, -1, -1);
-		  }
-	      }
-	  }
-	return;
-      }
-
-    /* fromX != -1 */
-    if (event->type == GDK_BUTTON_PRESS && gameMode != EditPosition &&
-	x >= 0 && y >= 0) {
-	ChessSquare fromP;
-	ChessSquare toP;
-	/* Check if clicking again on the same color piece */
-	fromP = boards[currentMove][fromY][fromX];
-	toP = boards[currentMove][y][x];
-	if ((WhitePawn <= fromP && fromP <= WhiteKing &&
-	     WhitePawn <= toP && toP <= WhiteKing) ||
-	    (BlackPawn <= fromP && fromP <= BlackKing &&
-	     BlackPawn <= toP && toP <= BlackKing)) {
-	    /* Clicked again on same color piece -- changed his mind */
-	    second = (x == fromX && y == fromY);
-	    if (appData.highlightDragging) {
-		SetHighlights(x, y, -1, -1);
-	    } else {
-		ClearHighlights();
-	    }
-	    if (OKToStartUserMove(x, y)) {
-		fromX = x;
-		fromY = y;
-		DragPieceBegin(event->button.x, event->button.y);
-	    }
-	    return;
-	}
-    }
-
-    if (event->type == GDK_BUTTON_RELEASE &&	x == fromX && y == fromY)
-      {
-	DragPieceEnd(event->button.x, event->button.y);
-	if (appData.animateDragging)
-	  {
-	    /* Undo animation damage if any */
-	    DrawPosition(FALSE, NULL);
-	  }
-	if (second)
-	  {
-	    /* Second up/down in same square; just abort move */
-	    second = 0;
-	    fromX = fromY = -1;
-	    ClearHighlights();
-	    gotPremove = 0;
-	    ClearPremoveHighlights();
-	  }
-	else
-	  {
-	    /* First upclick in same square; start click-click mode */
-	    SetHighlights(x, y, -1, -1);
-	  }
-	return;
-      }
-
-    /* Completed move */
-    toX = x;
-    toY = y;
-    saveAnimate = appData.animate;
-
-    if (event->type == GDK_BUTTON_PRESS)
-      {
-	/* Finish clickclick move */
-	if (appData.animate || appData.highlightLastMove)
-	  {
-	    SetHighlights(fromX, fromY, toX, toY);
-	  }
-	else
-	  {
-	    ClearHighlights();
-	  }
-      }
-    else
-      {
-	/* Finish drag move */
-	if (appData.highlightLastMove)
-	  {
-	    SetHighlights(fromX, fromY, toX, toY);
-	  }
-	else
-	  {
-	    ClearHighlights();
-	  }
-	DragPieceEnd(event->button.x, event->button.y);
-	/* Don't animate move and drag both */
-	appData.animate = FALSE;
-      }
-
-    if (IsPromotion(fromX, fromY, toX, toY))
-      {
-	if (appData.alwaysPromoteToQueen)
-	  {
-	    UserMoveEvent(fromX, fromY, toX, toY, 'q');
-	    if (!appData.highlightLastMove || gotPremove) ClearHighlights();
-	    if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
-	    fromX = fromY = -1;
-	  }
-	else
-	  {
-	    SetHighlights(fromX, fromY, toX, toY);
-	    PromotionPopUp();
-	  }
-      }
-    else
-      {
-	UserMoveEvent(fromX, fromY, toX, toY, NULLCHAR);
-
-	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
-	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
-	fromX = fromY = -1;
-      }
-
-    appData.animate = saveAnimate;
-    if (appData.animate || appData.animateDragging) {
-	/* Undo animation damage if needed */
-	DrawPosition(FALSE, NULL);
-    }
+    
+    // [HGM] mouse: the rest of the mouse handler is moved to the backend, and called here
+    if(event->type == GDK_BUTTON_PRESS)   LeftClick(Press,   (int)event->button.x, (int)event->button.y);
+    if(event->type == GDK_BUTTON_RELEASE) LeftClick(Release, (int)event->button.x, (int)event->button.y);
 
     return;
 }

@@ -5564,12 +5564,12 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
        FinishMove if the first part succeeded. Calls that do not need
        to do anything in between, can call this routine the old way.
     */
-    ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar, FALSE);
-if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
-    if(moveType == AmbiguousMove)
-	DrawPosition(FALSE, boards[currentMove]);
-    else if(moveType != ImpossibleMove && moveType != Comment)
-        FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
+  ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar, FALSE);
+  if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
+  if(moveType == AmbiguousMove)
+    DrawPosition(FALSE, boards[currentMove]);
+  else if(moveType != ImpossibleMove && moveType != Comment)
+    FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
 void LeftClick(ClickType clickType, int xPix, int yPix)
