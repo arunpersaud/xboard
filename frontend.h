@@ -89,6 +89,8 @@ void NotifyFrontendLogin P((void));
 void CommentPopUp P((String title, String comment));
 void CommentPopDown P((void));
 void EditCommentPopUp P((int index, String title, String text));
+void ErrorPopDown P((void));
+int  EventToSquare P((int x, int limit));
 
 void RingBell P((void));
 void PlayIcsWinSound P((void));
@@ -182,6 +184,7 @@ void HistorySet P((char movelist[][2*MOVE_LEN], int first, int last, int current
 void FreezeUI P((void));
 void ThawUI P((void));
 extern char *programName;
+extern int commentUp;
 
 typedef struct FrontEndProgramStats_TAG {
     int which;

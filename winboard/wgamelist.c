@@ -420,6 +420,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
             CmailLoadGame(gameFile, nItem + 1, gameFileName, TRUE);
         }
         else {
+	    SetFocus(hwndMain); // [HGM] automatic focus switch
             LoadGame(gameFile, nItem + 1, gameFileName, TRUE);
         }
     }
@@ -446,6 +447,7 @@ VOID GameListPopUp(FILE *fp, char *filename)
   if (gameListDialog) {
     SendMessage(gameListDialog, WM_INITDIALOG, 0, 0);
     if (!gameListUp) ShowWindow(gameListDialog, SW_SHOW);
+    else SetFocus(gameListDialog);
   } else {
     lpProc = MakeProcInstance((FARPROC)GameListDialog, hInst);
     CreateDialog(hInst, MAKEINTRESOURCE(DLG_GameList),
@@ -483,7 +485,8 @@ VOID GameListDestroy()
 VOID ShowGameListProc()
 {
   if (gameListUp) {
-    GameListPopDown();
+    if(gameListDialog) SetFocus(gameListDialog);
+//    GameListPopDown();
   } else {
     if (gameFileName) {
       GameListPopUp(gameFile, gameFileName);

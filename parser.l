@@ -706,7 +706,10 @@ extern void CopyBoard P((Board to, Board from));
             ff = initialRights[5];
             ft = initialRights[4];
         }
-        fprintf(debugFP, "Parser FRC long %d %d\n", ff, ft);
+        if (appData.debugMode) 
+        {
+          fprintf(debugFP, "Parser FRC long %d %d\n", ff, ft);
+        };
         if(ff < 0 || ft < 0) return 0;
     }
     sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
@@ -846,11 +849,11 @@ extern void CopyBoard P((Board to, Board from));
     return (int) GameIsDrawn;
 }
 
-(([Ww](hite)?)|([Bb](lack)?))" "([Mm]ate(s|ed)?)|([Ww][io]n(s)?.*)  {
+(([Ww](hite)?)|([Bb](lack)?))" "(([Mm]ates)|([Ww][io]n(s)?)) { 
     return (int) (ToUpper(yytext[0]) == 'W' ? WhiteWins : BlackWins);
 }
 
-(([Ww](hite)?)|([Bb](lack)?))" "([Mm]ate(s|ed)?)|([Ll]os[tes]+.*)  {
+(([Ww](hite)?)|([Bb](lack)?))" "(([Mm]ated)|([Ll]os[tes]+)) { 
     return (int) (ToUpper(yytext[0]) == 'W' ? BlackWins : WhiteWins);
 }
 
@@ -919,7 +922,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) Comment; 
 }
 
-\([^()]*(\([^()]*\)[^()]*)+[^()]*\)  { 	  	/* nested () */
+\([^()]*(\([^()]*(\([^()]*(\([^()]*\)[^()]*)*\)[^()]*)*\)[^()]*)+[^()]*\)  { /* very nested () */
     return (int) Comment; 
 }
 
@@ -985,7 +988,7 @@ int yyoffset()
 static void output(ch)
      int ch;
 {
-    fprintf(stderr, "PARSER BUG: unmatched character '%c' (0%o)\n",
+    if(appData.debugMode) fprintf(debugFP, "PARSER BUG: unmatched character '%c' (0%o)\n",
 	    ch, ch);
 }
 
@@ -997,7 +1000,7 @@ static void unput(ch)
 	StringToLex--;
     } else {
 	if (unputCount >= UNPUT_BUF_SIZE)
-	  fprintf(stderr, "PARSER BUG: unput buffer overflow '%c' (0%o)\n",
+	  if(appData.debugMode) fprintf(debugFP, "PARSER BUG: unput buffer overflow '%c' (0%o)\n",
 		  ch, ch);
 	unputBuffer[unputCount++] = ch;
     }

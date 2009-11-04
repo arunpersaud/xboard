@@ -1,0 +1,153 @@
+** Version 4.4.1 **
+
+(git shortlog --no-merges vold...vnew)
+
+Arun Persaud (24):
+      get "make distcheck" to work
+      reverted .texi file and fixed Makefile.am
+      fixed a few more small bugs reported by Stanislav Brabec
+      fixed some implicit declarations reported by Stanislav Brabec
+      added some more files to be distributed via make dist
+      another bug fix found by Stanislav Brabec
+      more files for git to ignore
+      updated cmail.in to adapt the CVS->git change
+      wrong default value for engineDebugOutput
+      updated version number to 4.4.1.pre
+      getting ready for 4.4.1 release
+      bugfix: segfault when invalid option argument was given (bug #27427)
+      added some comments and formated code
+      cleanup: removed "#if 0" from source
+      cleanup: removed "#if 1" statements
+      cleaned up an old #ifdef in zippy
+      removed AnalysisPopUp. Use EngineOutputPopUp instead
+      forgot to add these two lines to the last commit
+      new alpha version; first one with new naming scheme
+      fix for bug #10990: cmail does not seem to support .cmailgames or .cmailaliases
+      new pre-release version; updated version numbers
+      unguarded debug printf. added the appropiate if statement
+      fixed a regression
+      reformated html to be correctly validated
+
+Chris Rorvick (1):
+      fix printing out help message (list of command line options) (tiny change)
+
+Eric Mullins (31):
+      Swapped 'tell' and 'message' parsing order for colorization.  Sometimes messages are relayed as tells and should be colorized as tells.
+      Use of strcasecmp() broke Visual C++.
+      Add resource ID for new Mute menu item.
+      Previous fix for VC++/strcasecmp() was wrong-- use StrCaseCmp().
+      Added wchat.c to the project files we maintain.
+      Fixed bug dereferencing garbage, causing crash.
+      Simplified future version changes.
+      removed _winmajor if not defined so that VC 2008 can compile the project
+      Updated navigation accelerators, fixing ICS problems.
+      Added URL detection into the console text window for ICS.
+      reverted winboard.c beofre URL commit to correct whitespace conversion
+      added URL detection and provided hotlinks in the ICS client
+      Restructured URL code so it fits better with how winboard is set up.
+      Cleaned up ConsoleWndProc  (not complete, see below)
+      added ics_printf() and ics_update_width() and utility functions
+      Added width updates to ICS client on font and window size changes
+      added code to handle initial width update
+      vsnprintf() must be _vsnprintf() for MSVC
+      Turned off wrap when possible on ICS servers.
+      Added code to prevent unnecessary width updates.
+      Adjusted alternative joining method to obey keepLineBreaksICS
+      Maintainence to support all compilers.
+      silence some compiler warnings
+      Added server width adjustment based on client width changes
+      neglected this for the auto-width updating in xboard
+      Fixed joiner detection, allowing it to work with timeseal
+      Adjustment to joining to work around server not always including space.
+      Added internal wrapping ability.
+      Moved SIGWINCH signal so it can be used...
+      Changes to allow fonts with any charset (such as terminal)
+      Updated compiling instructions.
+
+H.G. Muller (77):
+      added a chat window to keep track of multiple conversations
+      fixed the HAVE_LIBXPM-dependent compile errors
+      allow the result comment as a display item in the game list
+      fixed parse bug for pgn files
+      fix for keepalive and chat window
+      rewrote wevalgraph for better frontend/backend separation
+      added the result comment to the game-list tags when the game list is exported to the clipboard
+      Prepared a system to internationalize the WinBoard menus
+      Made the beep sounds for JAWS board navigation configurable through command-line options
+      Updated the RTF docs for the chat windows, engine-settings dialog, /keepAlive option and new game-list tag
+      added a "Mute All Sounds" item in the WinBoard Options menu, on Eric's request
+      Opening Engine #1 Settings crashed XBoard when there were no text-edit options in the dialog (to which to set keyboard focus)
+      Engine did not start playing when out of GUI book on second move with white
+      fix for edit-position "moves" being sent by XBoard to the engine
+      bugfix for protocol extensions: egtbpath -> egtpath
+      small fixes for the JAWS version
+      fixed loading of saved games via command line
+      worked on premove bug
+      new forceIllegalMoves option
+      updated to winboard internationalization scripts
+      small improvement for JAWS version
+      added forceIllegalMove to xboard
+      fixed premove recapture problem;promotion popup appearing on obviously illegal moves; promotions in Superchess and Great Shatranj
+      removed test for premove
+      fix for bug #27642: Clock jumps strangely in engine mode
+      fix joining of lines split by ICS
+      Added a command-line option -keepLineBreaksICS true/false to control line joining.
+      changed enable menus
+      fix for bug #27666: naming of variants
+      fix for bug #27668: e.p. field still not passed to engine
+      Proper board and holdings size when switching to variants gothic, capablanca, great and super within an ICS game.
+      new bitmap converter (including fill option) and new pixmaps
+      fixed wrong number of arguments for EngineOutputPopUp
+      moved bitmap to correct location
+      fixed engingeoutput routine
+      updated black fairy pieces
+      new mousehandler to correct for premove and promotion popup
+      fixed segfaul in convert.c used to convert pixmaps
+      fix for bug #27751: negative holding counts displayed
+      fixed bug reported in WB forum: second game of a match would not start when using the GUI book
+      partly fix for bug #27715: scaling of menu bar
+      fix for bug #27667: window should be reference to toplevel
+      smarter analysis of the boards that XBoard receives from an ICS
+      fix for bug #27760: debug printf in backend.c and additional check for variant
+      fix for bug #27667: PV line missing in analysis window, part 3
+      fix for bug #27715: 2 (minor) graphic issues
+      fixed bug when switching to variantsuper
+      allowe parsing / disambiguation of SAN moves like Xe4 in certain situations
+      fix for bug #27772: holdings not updated
+      better init for random number generator
+      fix for bug #8847: moving backward while examining on FICS not reported to engine
+      improved mouse handler
+      holdings update and regression fix
+      NPS plays and pondering
+      improved mouse handler
+      fix to the minor graphics issue contained some typos, as was remarked in the bugs reports
+      This patch adds <Enter> to the characters that cause an automatic switch to the ICS console when typed to the board window.
+      fixed some bitmaps
+      removed bitmaps files that are not needed any more
+      replaced defective bitmaps with copies from 4.2.7
+      removed unused v54?.bm bitmaps from resource file
+      The book-probe code forgot to close the book file after opening it.
+      fix for bug #27799: fix for nested-nested-nested variations
+      fix for two compiler warnings
+      fixed bug related to unsigned char in convert.c
+      fix for bug #27790 and 277772.
+      force full redraw in winboard
+      more work on variant switch
+      another bug in VriantSwitch: an unitialized board was printed.
+      removing empty lines from ICS play
+      changed stderr to debug output, since stderr is closed in winboard
+      quick fix for "White Mates" in parser.l
+      fixed jaws version
+      fix for bug #27826: ported two options to xboard
+      fix for bug #27826: fixed autoDisplayComment
+      switch focus to the board after loading a game
+      prevent buffer overflow
+
+Tim Mann (6):
+      Fix some issues in the XBoard man page
+      Fix up man page some more
+      Silence warnings when compiling 64-bit xboard
+      Drop an obsolete script that was only used to update my personal web site
+      Make copy/paste position and game use clipboard, bug #27810
+      Further copy/paste fixes
+

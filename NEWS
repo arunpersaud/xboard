@@ -1,26 +1,43 @@
 ** Version 4.4.1 **
    
- * use "make distcheck" to generate tar-balls
- * fixed wrong default value for engineDebugOutput 
- * fixed loading of games from command lines, fixes cmail bug
- * swapped 'tell' and 'message' parsing order for correct colorization.
- * added a chat window to keep track of multiple conversations
+ * added chat windows to keep track of multiple conversations (WinBoard only)
  * allow the result comment as a display item in the game list
- * fixed parse bug for pgn files
- * rewrote wevalgraph for better frontend/backend separation
- * added the result comment to the game-list tags when the game 
-   list is exported to the clipboard
+ * added a "Mute All Sounds" item in the WinBoard Options menu
+ * new -forceIllegalMoves option
+ * new -keepAlive option (for ICS play)
+ * ported -autoDisplayComment and -autoDisplayTags to xboard, controling popups
+ * replaces analysispopup with engineoutputpopup in xboard
+ * allow copy/paste position and game to use clipboard (xboard)
+ * updated several bitmaps (xboard)
  * Made the beep sounds for JAWS board navigation configurable 
    through command-line options
+ * added the result comment to the game-list tags when the game 
+   list is exported to the clipboard
  * updated RTF docs
- * added a "Mute All Sounds" item in the WinBoard Options menu
- * fixed crash when opening Engine #1 Settings when there were no 
-   text-edit options in the dialog
+ * fixed premove problem
  * fixed engine did not start playing when out of GUI book on second 
    move with white
+ * fix bug using opening books (file were not closed)
+ * fixed crash when opening Engine #1 Settings when there were no 
+   text-edit options in the dialog
+ * fixed loading of games from command lines, fixes cmail bug
+ * fix joining lines split by ICS and resizing terminal window when using ICS
+   (new option -keepLineBreaksICS, -wrapContinuationSequence, -useInternalWrap)
+ * fixed -autoDisplayComment
+ * fixed wrong default value for engineDebugOutput in xboard
+ * swapped 'tell' and 'message' parsing order for correct colorization.
+ * fixed parse bug for pgn files
  * fix for edit-position "moves" being sent by XBoard to the engine
  * bugfix for protocol extensions: egtbpath -> egtpath
- * minor bugfixes
+ * fix bug in parser
+ * further bugfixes:  #8847, #10990, #27427, #27642, 
+   #27666, #27667, #27668, #27715, #27751, #27760, 
+   #27772, #27799, #27826 and several small ones
+ * use "make distcheck" to generate tar-balls
+ * prepared a system to internationalize winboard menus
+ * improved mouse handler
+ * rewrote wevalgraph for better frontend/backend separation
+ * code cleanup 
 
 ** Version 4.4.0 **
 

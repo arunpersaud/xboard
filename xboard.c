@@ -144,6 +144,7 @@ extern char *getenv();
 #include <X11/Shell.h>
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
+#include <X11/Xmu/Atoms.h>
 #if USE_XAW3D
 #include <X11/Xaw3d/Dialog.h>
 #include <X11/Xaw3d/Form.h>
@@ -1373,6 +1374,15 @@ XtResource clientResources[] = {
     { "useInternalWrap", "useInternalWrap", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, useInternalWrap),
 	XtRImmediate, (XtPointer) True},
+    { "autoDisplayTags", "autoDisplayTags", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, autoDisplayTags),
+	XtRImmediate, (XtPointer) True},
+    { "autoDisplayComment", "autoDisplayComment", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, autoDisplayComment),
+	XtRImmediate, (XtPointer) True},
+    { "pasteSelection", "pasteSelection", XtRBoolean,
+        sizeof(Boolean), XtOffset(AppDataPtr, pasteSelection),
+        XtRImmediate, (XtPointer) False},
 };
 
 XrmOptionDescRec shellOptions[] = {
@@ -1745,6 +1755,9 @@ XrmOptionDescRec shellOptions[] = {
     { "-keepLineBreaksICS", "keepLineBreaksICS", XrmoptionSepArg, NULL },
     { "-wrapContinuationSequence", "wrapContinuationSequence", XrmoptionSepArg, NULL },
     { "-useInternalWrap", "useInternalWrap", XrmoptionSepArg, NULL },
+    { "-autoDisplayTags", "autoDisplayTags", XrmoptionSepArg, NULL },
+    { "-autoDisplayComment", "autoDisplayComment", XrmoptionSepArg, NULL },
+    { "-pasteSelection", "pasteSelection", XrmoptionSepArg, NULL },
 };
 
 XtActionsRec boardActions[] = {
@@ -4813,7 +4826,7 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
   char *selection_tmp;
 
   if (!selected_fen_position) return False; /* should never happen */
-  if (*target == XA_STRING){
+  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
     /* note: since no XtSelectionDoneProc was registered, Xt will
      * automatically call XtFree on the value returned.  So have to
      * make a copy of it allocated with XtMalloc */
@@ -4822,8 +4835,21 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
 
     *value_return=selection_tmp;
     *length_return=strlen(selection_tmp);
-    *type_return=XA_STRING;
+    *type_return=*target;
     *format_return = 8; /* bits per byte */
+    return True;
+  } else if (*target == XA_TARGETS(xDisplay)) {
+    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
+    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
+    targets_tmp[1] = XA_STRING;
+    *value_return = targets_tmp;
+    *type_return = XA_ATOM;
+    *length_return = 2;
+    *format_return = 8 * sizeof(Atom);
+    if (*format_return > 32) {
+      *length_return *= *format_return / 32;
+      *format_return = 32;
+    }
     return True;
   } else {
     return False;
@@ -4839,20 +4865,24 @@ void CopyPositionProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
   {
-    int ret;
-
+    /*
+     * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
+     * have a notion of a position that is selected but not copied.
+     * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
+     */
     if (selected_fen_position) free(selected_fen_position);
     selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
     if (!selected_fen_position) return;
-    ret = XtOwnSelection(menuBarWidget, XA_PRIMARY,
-			 CurrentTime,
-			 SendPositionSelection,
-			 NULL/* lose_ownership_proc */ ,
-			 NULL/* transfer_done_proc */);
-    if (!ret) {
-      free(selected_fen_position);
-      selected_fen_position=NULL;
-    }
+    XtOwnSelection(menuBarWidget, XA_PRIMARY,
+		   CurrentTime,
+		   SendPositionSelection,
+		   NULL/* lose_ownership_proc */ ,
+		   NULL/* transfer_done_proc */);
+    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+		   CurrentTime,
+		   SendPositionSelection,
+		   NULL/* lose_ownership_proc */ ,
+		   NULL/* transfer_done_proc */);
   }
 
 /* function called when the data to Paste is ready */
@@ -4875,7 +4905,8 @@ void PastePositionProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
 {
-    XtGetSelectionValue(menuBarWidget, XA_PRIMARY, XA_STRING,
+    XtGetSelectionValue(menuBarWidget, 
+      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
       /* (XtSelectionCallbackProc) */ PastePositionCB,
       NULL, /* client_data passed to PastePositionCB */
 
@@ -4894,7 +4925,7 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
 {
   char *selection_tmp;
 
-  if (*target == XA_STRING){
+  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
     FILE* f = fopen(gameCopyFilename, "r");
     long len;
     size_t count;
@@ -4911,8 +4942,21 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
     selection_tmp[len] = NULLCHAR;
     *value_return = selection_tmp;
     *length_return = len;
-    *type_return = XA_STRING;
+    *type_return = *target;
     *format_return = 8; /* bits per byte */
+    return True;
+  } else if (*target == XA_TARGETS(xDisplay)) {
+    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
+    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
+    targets_tmp[1] = XA_STRING;
+    *value_return = targets_tmp;
+    *type_return = XA_ATOM;
+    *length_return = 2;
+    *format_return = 8 * sizeof(Atom);
+    if (*format_return > 32) {
+      *length_return *= *format_return / 32;
+      *format_return = 32;
+    }
     return True;
   } else {
     return False;
@@ -4933,11 +4977,21 @@ void CopyGameProc(w, event, prms, nprms)
   ret = SaveGameToFile(gameCopyFilename, FALSE);
   if (!ret) return;
 
-  ret = XtOwnSelection(menuBarWidget, XA_PRIMARY,
-		       CurrentTime,
-		       SendGameSelection,
-		       NULL/* lose_ownership_proc */ ,
-		       NULL/* transfer_done_proc */);
+  /*
+   * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
+   * have a notion of a game that is selected but not copied.
+   * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
+   */
+  XtOwnSelection(menuBarWidget, XA_PRIMARY,
+		 CurrentTime,
+		 SendGameSelection,
+		 NULL/* lose_ownership_proc */ ,
+		 NULL/* transfer_done_proc */);
+  XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+		 CurrentTime,
+		 SendGameSelection,
+		 NULL/* lose_ownership_proc */ ,
+		 NULL/* transfer_done_proc */);
 }
 
 /* function called when the data to Paste is ready */
@@ -4968,7 +5022,8 @@ void PasteGameProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
 {
-    XtGetSelectionValue(menuBarWidget, XA_PRIMARY, XA_STRING,
+    XtGetSelectionValue(menuBarWidget,
+      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
       /* (XtSelectionCallbackProc) */ PasteGameCB,
       NULL, /* client_data passed to PasteGameCB */
 

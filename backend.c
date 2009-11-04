@@ -1941,6 +1941,7 @@ void
 VariantSwitch(Board board, VariantClass newVariant)
 {
    int newHoldingsWidth, newWidth = 8, newHeight = 8, i, j;
+   Board oldBoard;
 
    startedFromPositionFile = FALSE;
    if(gameInfo.variant == newVariant) return;
@@ -2011,9 +2012,10 @@ VariantSwitch(Board board, VariantClass newVariant)
      gameInfo.holdingsWidth = newHoldingsWidth;
      gameInfo.variant = newVariant;
      InitDrawingSizes(-2, 0);
+   } else gameInfo.variant = newVariant;
+   CopyBoard(oldBoard, board);   // remember correctly formatted board
      InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
-   } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
-   DrawPosition(TRUE, boards[currentMove]);
+   DrawPosition(TRUE, currentMove ? boards[currentMove] : oldBoard);
 }
 
 static int loggedOn = FALSE;
@@ -3257,6 +3259,7 @@ read_from_ics(isr, closure, data, count, error)
 
 		    /* Usually suppress following prompt */
 		    if (!(forwardMostMove == 0 && gameMode == IcsExamining)) {
+			while(looking_at(buf, &i, "\n")); // [HGM] skip empty lines
 			if (looking_at(buf, &i, "*% ")) {
 			    savingComment = FALSE;
 			}
@@ -3326,6 +3329,7 @@ read_from_ics(isr, closure, data, count, error)
 		    }
 		    /* Suppress following prompt */
 		    if (looking_at(buf, &i, "*% ")) {
+			if(strchr(star_match[0], 7)) SendToPlayer("\007", 1); // Bell(); // FICS fuses bell for next board with prompt in zh captures
 			savingComment = FALSE;
 		    }
 		    next_out = i;
@@ -3395,7 +3399,7 @@ ParseBoard12(string)
     char promoChar;
     int ranks=1, files=0; /* [HGM] ICS80: allow variable board size */
     char *bookHit = NULL; // [HGM] book
-    Boolean weird = FALSE;
+    Boolean weird = FALSE, reqFlag = FALSE;
 
     fromX = fromY = toX = toY = -1;
 
@@ -3424,27 +3428,6 @@ ParseBoard12(string)
 	       &white_stren, &black_stren, &white_time, &black_time,
 	       &moveNum, str, elapsed_time, move_str, &ics_flip,
 	       &ticking);
-
-   if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files || 
-					weird && (int)gameInfo.variant <= (int)VariantShogi) {
-     /* [HGM] We seem to switch variant during a game!
-      * Try to guess new variant from board size
-      */
-	  VariantClass newVariant = VariantFairy; // if 8x8, but fairies present
-	  if(ranks == 8 && files == 10) newVariant = VariantCapablanca; else
-	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
-	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
-	  if(ranks == 9 && files == 9)  newVariant = VariantShogi; else
-	  if(!weird) newVariant = VariantNormal;
-          VariantSwitch(boards[currentMove], newVariant); /* temp guess */
-	  /* Get a move list just to see the header, which
-	     will tell us whether this is really bug or zh */
-	  if (ics_getting_history == H_FALSE) {
-	    ics_getting_history = H_REQUESTED;
-	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
-	    SendToICS(str);
-	  }
-    }
 
     if (n < 21) {
         snprintf(str, sizeof(str), _("Failed to parse board string:\n\"%s\""), string);
@@ -3523,6 +3506,27 @@ ParseBoard12(string)
 	return;
     }
 
+   if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files || 
+					weird && (int)gameInfo.variant <= (int)VariantShogi) {
+     /* [HGM] We seem to have switched variant unexpectedly
+      * Try to guess new variant from board size
+      */
+	  VariantClass newVariant = VariantFairy; // if 8x8, but fairies present
+	  if(ranks == 8 && files == 10) newVariant = VariantCapablanca; else
+	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
+	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
+	  if(ranks == 9 && files == 9)  newVariant = VariantShogi; else
+	  if(!weird) newVariant = VariantNormal;
+          VariantSwitch(boards[currentMove], newVariant); /* temp guess */
+	  /* Get a move list just to see the header, which
+	     will tell us whether this is really bug or zh */
+	  if (ics_getting_history == H_FALSE) {
+	    ics_getting_history = H_REQUESTED; reqFlag = TRUE;
+	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+	    SendToICS(str);
+	  }
+    }
+    
     /* Take action if this is the first board of a new game, or of a
        different game than is currently being displayed.  */
     if (gamenum != ics_gamenum || newGameMode != gameMode ||
@@ -3537,8 +3541,8 @@ ParseBoard12(string)
 	prevMove = -3;
 	if (gamenum == -1) {
 	    newGameMode = IcsIdle;
-	} else if (moveNum > 0 && newGameMode != IcsIdle &&
-		   appData.getMoveList) {
+	} else if ((moveNum > 0 || newGameMode == IcsObserving) && newGameMode != IcsIdle &&
+		   appData.getMoveList && !reqFlag) {
 	    /* Need to get game history */
 	    ics_getting_history = H_REQUESTED;
 	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
@@ -3574,7 +3578,7 @@ ParseBoard12(string)
 	timeIncrement = increment * 1000;
 	movesPerSession = 0;
 	gameInfo.timeControl = TimeControlTagValue();
-        VariantSwitch(board, StringToVariant(gameInfo.event) );
+        VariantSwitch(boards[currentMove], StringToVariant(gameInfo.event) );
   if (appData.debugMode) {
     fprintf(debugFP, "ParseBoard says variant = '%s'\n", gameInfo.event);
     fprintf(debugFP, "recognized as %s\n", VariantName(gameInfo.variant));
@@ -5717,7 +5721,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     if(x >= 0 && x < BOARD_LEFT || x >= BOARD_RGHT) {
 	ClearHighlights();
 	fromX = fromY = -1;
-	DrawPosition(FALSE, NULL);
+	DrawPosition(TRUE, NULL);
 	return;
     }
 
@@ -7006,8 +7010,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		    if (strlen(buf1) >= sizeof(programStats.movelist)
 			&& appData.debugMode) {
 			fprintf(debugFP,
-				"PV is too long; using the first %d bytes.\n",
-				sizeof(programStats.movelist) - 1);
+				"PV is too long; using the first %u bytes.\n",
+				(unsigned) sizeof(programStats.movelist) - 1);
 		    }
 
                     safeStrCpy( programStats.movelist, buf1, sizeof(programStats.movelist) );
@@ -12926,7 +12930,7 @@ ParseFeatures(args, cps)
     /* unknown feature: complain and skip */
     q = p;
     while (*q && *q != '=') q++;
-    sprintf(buf, "rejected %.*s\n", q-p, p);
+    sprintf(buf, "rejected %.*s\n", (int)(q-p), p);
     SendToProgram(buf, cps);
     p = q;
     if (*p == '=') {
@@ -13100,27 +13104,23 @@ DisplayComment(moveNumber, text)
     char title[MSG_SIZ];
     char buf[8000]; // comment can be long!
     int score, depth;
-
-    if( appData.autoDisplayComment ) {
-        if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
-	    strcpy(title, "Comment");
-        } else {
-	    sprintf(title, "Comment on %d.%s%s", moveNumber / 2 + 1,
-		    WhiteOnMove(moveNumber) ? " " : ".. ",
-		    parseList[moveNumber]);
-        }
-	// [HGM] PV info: display PV info together with (or as) comment
-	if(moveNumber >= 0 && (depth = pvInfoList[moveNumber].depth) > 0) {
-	    if(text == NULL) text = "";
-	    score = pvInfoList[moveNumber].score;
-	    sprintf(buf, "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
-                              depth, (pvInfoList[moveNumber].time+50)/100, text);
-	    text = buf;
-	}
-    } else title[0] = 0;
-
-    if (text != NULL)
-        CommentPopUp(title, text);
+    if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
+      strcpy(title, "Comment");
+    } else {
+      sprintf(title, "Comment on %d.%s%s", moveNumber / 2 + 1,
+	      WhiteOnMove(moveNumber) ? " " : ".. ",
+	      parseList[moveNumber]);
+    }
+    // [HGM] PV info: display PV info together with (or as) comment
+    if(moveNumber >= 0 && (depth = pvInfoList[moveNumber].depth) > 0) {
+      if(text == NULL) text = "";                                           
+      score = pvInfoList[moveNumber].score;
+      sprintf(buf, "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
+	      depth, (pvInfoList[moveNumber].time+50)/100, text);
+      text = buf;
+    }
+    if (text != NULL && (appData.autoDisplayComment || commentUp))
+      CommentPopUp(title, text);
 }
 
 /* This routine sends a ^C interrupt to gnuchess, to awaken it if it
@@ -14126,7 +14126,7 @@ Boolean set_cont_sequence(char *new_seq)
     if (ret)
         strcpy(cseq, new_seq);
     else if (appData.debugMode)
-        fprintf(debugFP, "Invalid continuation sequence \"%s\"  (maximum length is: %d)\n", new_seq, sizeof(cseq)-1);
+        fprintf(debugFP, "Invalid continuation sequence \"%s\"  (maximum length is: %u)\n", new_seq, (unsigned) sizeof(cseq)-1);
     return ret;
 }
 

@@ -958,7 +958,7 @@ void NewVariantCallback(w, client_data, call_data)
     XtGetValues(w, args, 1);
     
     if (strcmp(name, _("  OK  ")) == 0) {
-	int nr = (int) XawToggleGetCurrent(buttonDesc[0].handle) - 1;
+	int nr = (intptr_t) XawToggleGetCurrent(buttonDesc[0].handle) - 1;
 	if(nr < 0) return;
 	v = buttonDesc[nr].variant;
 	if(!appData.noChessProgram) { 
@@ -1338,23 +1338,24 @@ void SpinCallback(w, client_data, call_data)
     Arg args[16];
     char buf[MSG_SIZ];
     int i, j;
+    int data = (intptr_t) client_data;
     
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
     
     j = 0;
     XtSetArg(args[0], XtNstring, &val);
-    XtGetValues(currentCps->option[(int)client_data].handle, args, 1);
+    XtGetValues(currentCps->option[data].handle, args, 1);
     sscanf(val, "%d", &j);
     if (strcmp(name, "+") == 0) {
-	if(++j > currentCps->option[(int)client_data].max) return;
+	if(++j > currentCps->option[data].max) return;
     } else
     if (strcmp(name, "-") == 0) {
-	if(--j < currentCps->option[(int)client_data].min) return;
+	if(--j < currentCps->option[data].min) return;
     } else return;
     sprintf(buf, "%d", j);
     XtSetArg(args[0], XtNstring, buf);
-    XtSetValues(currentCps->option[(int)client_data].handle, args, 1);
+    XtSetValues(currentCps->option[data].handle, args, 1);
 }
 
 void SettingsCallback(w, client_data, call_data)
@@ -1366,6 +1367,7 @@ void SettingsCallback(w, client_data, call_data)
     Arg args[16];
     char buf[MSG_SIZ];
     int i, j;
+    int data = (intptr_t) client_data;
     
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
@@ -1374,7 +1376,7 @@ void SettingsCallback(w, client_data, call_data)
         SettingsPopDown();
         return;
     }
-    if (strcmp(name, _("OK")) == 0 || (int)client_data) { // save buttons imply OK
+    if (strcmp(name, _("OK")) == 0 || data) { // save buttons imply OK
 	int nr;
 
 	for(i=0; i<currentCps->nrOptions; i++) { // send all options that had to be OK-ed to engine
@@ -1420,7 +1422,7 @@ void SettingsCallback(w, client_data, call_data)
 		    break;
 	    }
 	}
-	if((int)client_data) { // send save-button command to engine
+	if(data) { // send save-button command to engine
 	    sprintf(buf, "option %s\n", name);
 	    SendToProgram(buf, currentCps);
 	}
@@ -1437,8 +1439,8 @@ void ComboSelect(w, addr, index) // callback for all combo items
      caddr_t index;
 {
     Arg args[16];
-    int i = ((int)addr)>>8;
-    int j = 255 & (int) addr;
+    int i = ((intptr_t)addr)>>8;
+    int j = 255 & (intptr_t) addr;
 
     values[i] = j; // store in temporary, for transfer at OK
     XtSetArg(args[0], XtNlabel, ((char**)currentCps->option[i].textValue)[j]);
@@ -1465,7 +1467,7 @@ void CreateComboPopup(parent, name, n, mb)
 					  menu, args, j);
 	    XtAddCallback(entry, XtNcallback,
 			  (XtCallbackProc) ComboSelect,
-			  (caddr_t) (256*n+i));
+			  (caddr_t)(intptr_t) (256*n+i));
 	i++;
     }
 }	
@@ -1543,7 +1545,8 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNheight, 10);  j++;
 	    XtSetArg(args[j], XtNwidth, 20);  j++;
 	    edit = XtCreateManagedWidget("+", commandWidgetClass, form, args, j);
-	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer) i);
+	    XtAddCallback(edit, XtNcallback, SpinCallback,
+			  (XtPointer)(intptr_t) i);
 
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, edit);  j++;
@@ -1551,7 +1554,8 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNheight, 10);  j++;
 	    XtSetArg(args[j], XtNwidth, 20);  j++;
 	    last = XtCreateManagedWidget("-", commandWidgetClass, form, args, j);
-	    XtAddCallback(last, XtNcallback, SpinCallback, (XtPointer) i);
+	    XtAddCallback(last, XtNcallback, SpinCallback,
+			  (XtPointer)(intptr_t) i);
 	    break;
 	  case CheckBox:
 	    j=0;
@@ -1575,7 +1579,8 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNstate, cps->option[i].value);  j++;
 	    cps->option[i].handle = (void*) 
 		(last = XtCreateManagedWidget(cps->option[i].name, commandWidgetClass, form, args, j));   
-	    XtAddCallback(last, XtNcallback, SettingsCallback, (XtPointer) (cps->option[i].type == SaveButton));
+	    XtAddCallback(last, XtNcallback, SettingsCallback,
+			  (XtPointer)(intptr_t) (cps->option[i].type == SaveButton));
 	    break;
 	  case ComboBox:
 	    j=0;

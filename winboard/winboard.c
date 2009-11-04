@@ -347,7 +347,7 @@ static char *commentText;
 static int commentIndex;
 static Boolean editComment = FALSE;
 HWND commentDialog = NULL;
-BOOLEAN commentDialogUp = FALSE;
+int commentUp = FALSE;
 static int commentX, commentY, commentH, commentW;
 
 static char *analysisTitle;
@@ -4214,7 +4214,7 @@ BOOL DrawPositionNeedsFullRepaint()
         but animation is fast enough that it's difficult to notice.
     */
     if( animInfo.piece == EmptySquare ) {
-        if( (appData.highlightLastMove || appData.highlightDragging) && IsDrawArrowEnabled() && HasHighlightInfo() ) {
+        if( (appData.highlightLastMove || appData.highlightDragging) && IsDrawArrowEnabled() /*&& HasHighlightInfo()*/ ) {
             result = TRUE;
         }
     }
@@ -4847,7 +4847,7 @@ PaintProc(HWND hwnd)
  *   subtracted from x.
  */
 int EventToSquare(x, limit)
-     int x;
+     int x, limit;
 {
   if (x <= 0)
     return -2;
@@ -5780,7 +5780,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_EditComment:
-      if (commentDialogUp && editComment) {
+      if (commentUp && editComment) {
 	CommentPopDown();
       } else {
 	EditCommentEvent();
@@ -7136,14 +7136,14 @@ EitherCommentPopUp(int index, char *title, char *str, BOOLEAN edit)
 
   if (commentDialog) {
     SendMessage(commentDialog, WM_INITDIALOG, 0, 0);
-    if (!commentDialogUp) ShowWindow(commentDialog, SW_SHOW);
+    if (!commentUp) ShowWindow(commentDialog, SW_SHOW);
   } else {
     lpProc = MakeProcInstance((FARPROC)CommentDialog, hInst);
     CreateDialog(hInst, MAKEINTRESOURCE(DLG_EditComment),
 		 hwndMain, (DLGPROC)lpProc);
     FreeProcInstance(lpProc);
   }
-  commentDialogUp = TRUE;
+  commentUp = TRUE;
 }
 
 
@@ -9436,7 +9436,7 @@ CommentPopDown(void)
   if (commentDialog) {
     ShowWindow(commentDialog, SW_HIDE);
   }
-  commentDialogUp = FALSE;
+  commentUp = FALSE;
 }
 
 VOID
