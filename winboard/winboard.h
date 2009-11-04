@@ -59,6 +59,7 @@ typedef struct {
   char faceName[LF_FACESIZE];
   float pointSize;
   BYTE bold, italic, underline, strikeout;
+  BYTE charset;
 } MyFontParams;
 
 typedef struct {

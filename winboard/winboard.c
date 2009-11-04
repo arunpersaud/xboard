@@ -1393,7 +1393,9 @@ ArgDescriptor argDescriptors[] = {
   { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE },
   { "noGUI", ArgTrue, (LPVOID) &appData.noGUI, FALSE },
   { "keepLineBreaksICS", ArgBoolean, (LPVOID) &appData.noJoin, TRUE },
-
+  { "wrapContinuationSequence", ArgString, (LPVOID) &appData.wrapContSeq, FALSE },
+  { "useInternalWrap", ArgTrue, (LPVOID) &appData.useInternalWrap, FALSE }, /* noJoin usurps this if set */
+  
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
   { "minX", ArgZ, (LPVOID) &minX, FALSE }, // [HGM] placement: to make suer auxialary windows can be placed
   { "minY", ArgZ, (LPVOID) &minY, FALSE },
@@ -1494,6 +1496,10 @@ ParseFontName(char *name, MyFontParams *mfp)
   mfp->italic = (strchr(p, 'i') != NULL);
   mfp->underline = (strchr(p, 'u') != NULL);
   mfp->strikeout = (strchr(p, 's') != NULL);
+  mfp->charset = DEFAULT_CHARSET;
+  q = strchr(p, 'c');
+  if (q)
+    mfp->charset = (BYTE) atoi(q+1);
 }
 
 /* Color name parser.
@@ -1868,7 +1874,7 @@ LFfromMFP(LOGFONT* lf, MyFontParams *mfp)
   lf->lfItalic = mfp->italic;
   lf->lfUnderline = mfp->underline;
   lf->lfStrikeOut = mfp->strikeout;
-  lf->lfCharSet = DEFAULT_CHARSET;
+  lf->lfCharSet = mfp->charset;
   lf->lfOutPrecision = OUT_DEFAULT_PRECIS;
   lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
   lf->lfQuality = DEFAULT_QUALITY;
@@ -2491,13 +2497,14 @@ SaveSettings(char* name)
 	for (bs=0; bs<NUM_SIZES; bs++) {
 	  MyFontParams *mfp = &font[bs][(int) ad->argLoc]->mfp;
           fprintf(f, "/size=%s ", sizeInfo[bs].name);
-	  fprintf(f, "/%s=\"%s:%g%s%s%s%s%s\"\n",
+	  fprintf(f, "/%s=\"%s:%g%s%s%s%s%sc%d\"\n",
 	    ad->argName, mfp->faceName, mfp->pointSize,
             mfp->bold || mfp->italic || mfp->underline || mfp->strikeout ? " " : "",
 	    mfp->bold ? "b" : "",
 	    mfp->italic ? "i" : "",
 	    mfp->underline ? "u" : "",
-	    mfp->strikeout ? "s" : "");
+	    mfp->strikeout ? "s" : "",
+            (int)mfp->charset);
 	}
       }
       break;
@@ -4839,8 +4846,8 @@ PaintProc(HWND hwnd)
  * The offset boardRect.left or boardRect.top must already have been
  *   subtracted from x.
  */
-int
-EventToSquare(int x)
+int EventToSquare(x, limit)
+     int x;
 {
   if (x <= 0)
     return -2;
@@ -4850,7 +4857,7 @@ EventToSquare(int x)
   if ((x % (squareSize + lineGap)) >= squareSize)
     return -1;
   x /= (squareSize + lineGap);
-  if (x >= BOARD_SIZE)
+    if (x >= limit)
     return -2;
   return x;
 }
@@ -4892,6 +4899,24 @@ SetupDropMenu(HMENU hmenu)
   }
 }
 
+void DragPieceBegin(int x, int y)
+{
+      dragInfo.lastpos.x = boardRect.left + x;
+      dragInfo.lastpos.y = boardRect.top + y;
+      dragInfo.from.x = fromX;
+      dragInfo.from.y = fromY;
+      dragInfo.start = dragInfo.from;
+      SetCapture(hwndMain);
+}
+
+void DragPieceEnd(int x, int y)
+{
+    ReleaseCapture();
+    dragInfo.start.x = dragInfo.start.y = -1;
+    dragInfo.from = dragInfo.start;
+    dragInfo.pos = dragInfo.lastpos = dragInfo.start;
+}
+
 /* Event handler for mouse messages */
 VOID
 MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -4900,11 +4925,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   POINT pt;
   static int recursive = 0;
   HMENU hmenu;
-//  BOOLEAN needsRedraw = FALSE;
-  BOOLEAN saveAnimate;
   BOOLEAN forceFullRepaint = IsFullRepaintPreferrable(); /* [AS] */
-  static BOOLEAN sameAgain = FALSE, promotionChoice = FALSE;
-  ChessMove moveType;
 
   if (recursive) {
     if (message == WM_MBUTTONUP) {
@@ -4920,8 +4941,8 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   
   pt.x = LOWORD(lParam);
   pt.y = HIWORD(lParam);
-  x = EventToSquare(pt.x - boardRect.left);
-  y = EventToSquare(pt.y - boardRect.top);
+  x = EventToSquare(pt.x - boardRect.left, BOARD_WIDTH);
+  y = EventToSquare(pt.y - boardRect.top, BOARD_HEIGHT);
   if (!flipView && y >= 0) {
     y = BOARD_HEIGHT - 1 - y;
   }
@@ -4931,29 +4952,6 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   switch (message) {
   case WM_LBUTTONDOWN:
-    if(promotionChoice) { // we are waiting for a click to indicate promotion piece
-	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
-	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
-	if(gameInfo.holdingsWidth && 
-		(WhiteOnMove(currentMove) 
-			? x == BOARD_WIDTH-1 && y < gameInfo.holdingsSize && y > 0
-			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1) ) {
-	    // click in right holdings, for determining promotion piece
-	    ChessSquare p = boards[currentMove][y][x];
-	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
-	    if(p != EmptySquare) {
-		FinishMove(WhitePromotionQueen, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
-		fromX = fromY = -1;
-		break;
-	    }
-	}
-	DrawPosition(FALSE, boards[currentMove]);
-	break;
-    }
-    ErrorPopDown();
-    sameAgain = FALSE;
-    if (y == -2) {
-      /* Downclick vertically off board; check if on clock */
       if (PtInRect((LPRECT) &whiteRect, pt)) {
         if (gameMode == EditPosition) {
 	  SetWhiteToPlayEvent();
@@ -4973,198 +4971,20 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
           AdjustClock(!flipClock, -1);
 	}
       }
-      if (!appData.highlightLastMove) {
-        ClearHighlights();
-	DrawPosition((int) (forceFullRepaint || FALSE), NULL);
-      }
-      fromX = fromY = -1;
       dragInfo.start.x = dragInfo.start.y = -1;
       dragInfo.from = dragInfo.start;
-      break;
-    } else if (x < 0 || y < 0
-      /* [HGM] block clicks between board and holdings */
-              || x == BOARD_LEFT-1 || x == BOARD_RGHT
-              || (x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize)
-              || (x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize)
-	/* EditPosition, empty square, or different color piece;
-	   click-click move is possible */
-                               ) {
-      break;
-    } else if (fromX == x && fromY == y) {
-      /* Downclick on same square again */
-      ClearHighlights();
-      DrawPosition(forceFullRepaint || FALSE, NULL);
-      sameAgain = TRUE;  
-    } else if (fromX != -1 &&
-               x != BOARD_LEFT-2 && x != BOARD_RGHT+1 
-                                                                        ) {
-      /* Downclick on different square. */
-      /* [HGM] if on holdings file, should count as new first click ! */
-      /* [HGM] <sameColor> now always do UserMoveTest(), and check colors there */
-	toX = x;
-	toY = y;
-        /* [HGM] <popupFix> UserMoveEvent requires two calls now,
-           to make sure move is legal before showing promotion popup */
-        moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR, FALSE);
-	if(moveType == AmbiguousMove) { /* [HGM] Edit-Position move executed */
+    if(fromX == -1 && frozen) { // not sure where this is for
 		fromX = fromY = -1; 
-		ClearHighlights();
-		DrawPosition(FALSE, boards[currentMove]);
-		break; 
-	} else 
-        if(moveType != ImpossibleMove && moveType != Comment) {
-          /* [HGM] We use PromotionToKnight in Shogi to indicate frorced promotion */
-          if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
-            ((moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
-              appData.alwaysPromoteToQueen)) {
-                  FinishMove(moveType, fromX, fromY, toX, toY, 'q');
-                  if (!appData.highlightLastMove) {
-                      ClearHighlights();
-                      DrawPosition(forceFullRepaint || FALSE, NULL);
-                  }
-          } else
-          if (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen ) {
-                  SetHighlights(fromX, fromY, toX, toY);
-                  DrawPosition(forceFullRepaint || FALSE, NULL);
-                  /* [HGM] <popupFix> Popup calls FinishMove now.
-                     If promotion to Q is legal, all are legal! */
-		  if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat)
-		  { ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
-		    // kludge to temporarily execute move on display, without promoting yet
-		    promotionChoice = TRUE;
-		    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
-		    boards[currentMove][toY][toX] = p;
-		    DrawPosition(FALSE, boards[currentMove]);
-		    boards[currentMove][fromY][fromX] = p; // take back, but display stays
-		    boards[currentMove][toY][toX] = q;
-		    DisplayMessage("Select piece from holdings", "");
-		  } else
-                  PromotionPopup(hwnd);
-		  goto noClear;
-          } else { // not a promotion. Move can be illegal if testLegality off, and should be made then.
-             if (appData.animate || appData.highlightLastMove) {
-                 SetHighlights(fromX, fromY, toX, toY);
-             } else {
-                 ClearHighlights();
-             }
-             FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
-             if (appData.animate && !appData.highlightLastMove) {
-                  ClearHighlights();
-                  DrawPosition(forceFullRepaint || FALSE, NULL);
-             }
-          }
-          fromX = fromY = -1;
-	noClear:
-	  break;
-        }
-        if (gotPremove && moveType != Comment) {
-	    SetPremoveHighlights(fromX, fromY, toX, toY);
-//            DrawPosition(forceFullRepaint || FALSE, NULL);
-	} else ClearHighlights();
-        fromX = fromY = -1;
-        DrawPosition(forceFullRepaint || FALSE, NULL);
-	if(moveType != Comment) break;
-    }
-    /* First downclick, or restart on a square with same color piece */
-    if (!frozen && OKToStartUserMove(x, y)) {
-      fromX = x;
-      fromY = y;
-      dragInfo.lastpos = pt;
-      dragInfo.from.x = fromX;
-      dragInfo.from.y = fromY;
-      dragInfo.start = dragInfo.from;
-      SetCapture(hwndMain);
-    } else {
-      fromX = fromY = -1;
-      dragInfo.start.x = dragInfo.start.y = -1;
-      dragInfo.from = dragInfo.start;
       DrawPosition(forceFullRepaint || FALSE, NULL); /* [AS] */
+      break;
     }
+      LeftClick(Press, pt.x - boardRect.left, pt.y - boardRect.top);
+      DrawPosition(TRUE, NULL);
     break;
 
   case WM_LBUTTONUP:
-    ReleaseCapture();
-    if (fromX == -1) break;
-    if (x == fromX && y == fromY) {
-      dragInfo.from.x = dragInfo.from.y = -1;
-      /* Upclick on same square */
-      if (sameAgain) {
-	/* Clicked same square twice: abort click-click move */
-	fromX = fromY = -1;
-	gotPremove = 0;
-	ClearPremoveHighlights();
-      } else {
-	/* First square clicked: start click-click move */
-	SetHighlights(fromX, fromY, -1, -1);
-      }
-      DrawPosition(forceFullRepaint || FALSE, NULL);
-    } else if (dragInfo.from.x < 0 || dragInfo.from.y < 0) {
-      /* Errant click; ignore */
-      break;
-    } else {
-      /* Finish drag move. */
-    if (appData.debugMode) {
-        fprintf(debugFP, "release\n");
-    }
-      dragInfo.from.x = dragInfo.from.y = -1;
-      toX = x;
-      toY = y;
-      saveAnimate = appData.animate; /* sorry, Hawk :) */
-      appData.animate = appData.animate && !appData.animateDragging;
-      moveType = UserMoveTest(fromX, fromY, toX, toY, NULLCHAR, TRUE);
-      if(moveType == AmbiguousMove) { /* [HGM] Edit-Position move executed */
-		fromX = fromY = -1; 
-		ClearHighlights();
-		DrawPosition(FALSE, boards[currentMove]);
-		appData.animate = saveAnimate;
-		break; 
-      } else 
-      if(moveType != ImpossibleMove) {
-          /* [HGM] use move type to determine if move is promotion.
-             Knight is Shogi kludge for mandatory promotion, Queen means choice */
-          if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
-            ((moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
-              appData.alwaysPromoteToQueen)) 
-               FinishMove(moveType, fromX, fromY, toX, toY, 'q');
-          else 
-          if (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen ) {
-               DrawPosition(forceFullRepaint || FALSE, NULL);
-		  if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat)
-		  { ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
-		    // kludge to temporarily execute move on display, wthout promotng yet
-		    promotionChoice = TRUE;
-		    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
-		    boards[currentMove][toY][toX] = p;
-		    DrawPosition(FALSE, boards[currentMove]);
-		    boards[currentMove][fromY][fromX] = p; // take back, but display stays
-		    boards[currentMove][toY][toX] = q;
-		    appData.animate = saveAnimate;
-		    DisplayMessage("Select piece from holdings", "");
-		    break;
-		  } else
-               PromotionPopup(hwnd); /* [HGM] Popup now calls FinishMove */
-          } else {
-	    if(saveAnimate /* ^$!%@#$!$ */  && gameInfo.variant == VariantAtomic 
-			  && (boards[currentMove][toY][toX] != EmptySquare || 
-					moveType == WhiteCapturesEnPassant || 
-					moveType == BlackCapturesEnPassant   ) )
-		AnimateAtomicCapture(fromX, fromY, toX, toY, 20);
-	    FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
-	  }
-      }
-      if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
-      appData.animate = saveAnimate;
-      fromX = fromY = -1;
-      if (appData.highlightDragging && !appData.highlightLastMove) {
-	ClearHighlights();
-      }
-      if (appData.animate || appData.animateDragging ||
-	  appData.highlightDragging || gotPremove) {
-	DrawPosition(forceFullRepaint || FALSE, NULL);
-      }
-    }
-    dragInfo.start.x = dragInfo.start.y = -1; 
-    dragInfo.pos = dragInfo.lastpos = dragInfo.start;
+      LeftClick(Release, pt.x - boardRect.left, pt.y - boardRect.top);
+      DrawPosition(TRUE, NULL);
     break;
 
   case WM_MOUSEMOVE:
@@ -5174,7 +4994,6 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
       BOOL full_repaint = FALSE;
 
-      sameAgain = FALSE; /* [HGM] if we drag something around, do keep square selected */
       if (appData.animateDragging) {
 	dragInfo.pos = pt;
       }
@@ -5399,7 +5218,8 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
        only show the popup when we are already sure the move is valid or
        legal. We pass a faulty move type, but the kludge is that FinishMove
        will figure out it is a promotion from the promoChar. */
-    FinishMove(NormalMove, fromX, fromY, toX, toY, promoChar);
+    UserMoveEvent(fromX, fromY, toX, toY, promoChar);
+    fromX = fromY = -1;
     if (!appData.highlightLastMove) {
       ClearHighlights();
       DrawPosition(FALSE, NULL);
@@ -5419,6 +5239,13 @@ PromotionPopup(HWND hwnd)
   DialogBox(hInst, MAKEINTRESOURCE(DLG_PromotionKing),
     hwnd, (DLGPROC)lpProc);
   FreeProcInstance(lpProc);
+}
+
+void
+PromotionPopUp()
+{
+  DrawPosition(TRUE, NULL);
+  PromotionPopup(hwndMain);
 }
 
 /* Toggle ShowThinking */
@@ -5457,34 +5284,55 @@ LoadGameDialog(HWND hwnd, char* title)
   }
 }
 
+int get_term_width()
+{
+    HDC hdc;
+    TEXTMETRIC tm;
+    RECT rc;
+    HFONT hfont, hold_font;
+    LOGFONT lf;
+    HWND hText;
+
+    if (hwndConsole)
+        hText = GetDlgItem(hwndConsole, OPT_ConsoleText);
+    else
+        return 79;
+
+    // get the text metrics
+    hdc = GetDC(hText);
+    lf = font[boardSize][CONSOLE_FONT]->lf;
+    if (consoleCF.dwEffects & CFE_BOLD)
+        lf.lfWeight = FW_BOLD;
+    if (consoleCF.dwEffects & CFE_ITALIC)
+        lf.lfItalic = TRUE;
+    if (consoleCF.dwEffects & CFE_STRIKEOUT)
+        lf.lfStrikeOut = TRUE;
+    if (consoleCF.dwEffects & CFE_UNDERLINE)
+        lf.lfUnderline = TRUE;
+    hfont = CreateFontIndirect(&lf);
+    hold_font = SelectObject(hdc, hfont);
+    GetTextMetrics(hdc, &tm);
+    SelectObject(hdc, hold_font);
+    DeleteObject(hfont);
+    ReleaseDC(hText, hdc);
+
+    // get the rectangle
+    SendMessage(hText, EM_GETRECT, 0, (LPARAM)&rc);
+
+    return (rc.right-rc.left) / tm.tmAveCharWidth;
+}
+
 void UpdateICSWidth(HWND hText)
 {
-	HDC hdc;
-	TEXTMETRIC tm;
-	RECT rc;
-	HFONT hfont, hold_font;
-	LONG old_width, new_width;
-	
-	// get the text metrics
-	hdc = GetDC(hText);
-	hfont = CreateFontIndirect(&font[boardSize][CONSOLE_FONT]->lf);
-	hold_font = SelectObject(hdc, hfont);
-	GetTextMetrics(hdc, &tm);
-	SelectObject(hdc, hold_font);
-	DeleteObject(hfont);
-	ReleaseDC(hText, hdc);
+    LONG old_width, new_width;
 
-	// get the rectangle
-	SendMessage(hText, EM_GETRECT, 0, (LPARAM)&rc);
-
-	// update the width
-	new_width = (rc.right-rc.left) / tm.tmAveCharWidth;
-	old_width = GetWindowLong(hText, GWL_USERDATA);
-	if (new_width != old_width)
-	{
-		ics_update_width(new_width);
-		SetWindowLong(hText, GWL_USERDATA, new_width);
-	}
+    new_width = get_term_width(hText, FALSE);
+    old_width = GetWindowLong(hText, GWL_USERDATA);
+    if (new_width != old_width)
+    {
+        ics_update_width(new_width);
+        SetWindowLong(hText, GWL_USERDATA, new_width);
+    }
 }
 
 VOID
@@ -5631,14 +5479,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wmId) {
     case IDM_NewGame:
       ResetGameEvent();
-      EngineOutputPopDown();
       SAY("new game enter a move to play against the computer with white");
       break;
 
     case IDM_NewGameFRC:
       if( NewGameFRC() == 0 ) {
         ResetGameEvent();
-	EngineOutputPopDown();
       }
       break;
 
@@ -8208,7 +8054,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
 
    // Allow hText to highlight URLs and send notifications on them
-   wMask = SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
+   wMask = (WORD) SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
    SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
    SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
    SetWindowLong(hText, GWL_USERDATA, 79); // initialize the text window's width
@@ -10522,6 +10368,11 @@ RemoveInputSource(InputSourceRef isr)
   }
 }
 
+int no_wrap(char *message, int count)
+{
+    ConsoleOutput(message, count, FALSE);
+    return count;
+}
 
 int
 OutputToProcess(ProcRef pr, char *message, int count, int *outError)
@@ -10530,11 +10381,32 @@ OutputToProcess(ProcRef pr, char *message, int count, int *outError)
   int outCount = SOCKET_ERROR;
   ChildProc *cp = (ChildProc *) pr;
   static OVERLAPPED ovl;
+  static int line = 0;
 
-  if (pr == NoProc) {
-    ConsoleOutput(message, count, FALSE);
-    return count;
-  } 
+  if (pr == NoProc)
+  {
+    if (appData.noJoin || !appData.useInternalWrap)
+      return no_wrap(message, count);
+    else
+    {
+      int width = get_term_width();
+      int len = wrap(NULL, message, count, width, &line);
+      char *msg = malloc(len);
+      int dbgchk;
+
+      if (!msg)
+        return no_wrap(message, count);
+      else
+      {
+        dbgchk = wrap(msg, message, count, width, &line);
+        if (dbgchk != len && appData.debugMode)
+            fprintf(debugFP, "wrap(): dbgchk(%d) != len(%d)\n", dbgchk, len);
+        ConsoleOutput(msg, len, FALSE);
+        free(msg);
+        return len;
+      }
+    }
+  }
 
   if (ovl.hEvent == NULL) {
     ovl.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);

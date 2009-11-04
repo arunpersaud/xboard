@@ -274,7 +274,6 @@ void AskQuestionReplyAction P((Widget w, XEvent *event,
 void AskQuestionProc P((Widget w, XEvent *event,
 			  String *prms, Cardinal *nprms));
 void AskQuestionPopDown P((void));
-void PromotionPopUp P((void));
 void PromotionPopDown P((void));
 void PromotionCallback P((Widget w, XtPointer client_data,
 			  XtPointer call_data));
@@ -322,9 +321,7 @@ void ErrorPopUp P((char *title, char *text, int modal));
 void ErrorPopDown P((void));
 static char *ExpandPathName P((char *path));
 static void CreateAnimVars P((void));
-void DragPieceBegin P((int x, int y));
 static void DragPieceMove P((int x, int y));
-void DragPieceEnd P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
 void EngineOutputUpdate( FrontEndProgramStats * stats );
@@ -1369,6 +1366,12 @@ XtResource clientResources[] = {
 	XtRImmediate, (XtPointer) False},
     { "keepLineBreaksICS", "keepLineBreaksICS", XtRBoolean,
 	sizeof(Boolean), XtOffset(AppDataPtr, noJoin),
+	XtRImmediate, (XtPointer) False},
+    { "wrapContinuationSequence", "wrapContinuationSequence", XtRString,
+	sizeof(String), XtOffset(AppDataPtr, wrapContSeq),
+	XtRString, ""},
+    { "useInternalWrap", "useInternalWrap", XtRBoolean,
+	sizeof(Boolean), XtOffset(AppDataPtr, useInternalWrap),
 	XtRImmediate, (XtPointer) True},
 };
 
@@ -1740,8 +1743,9 @@ XrmOptionDescRec shellOptions[] = {
     { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
     { "-forceIllegalMoves", "forceIllegalMoves", XrmoptionNoArg, "True" },
     { "-keepLineBreaksICS", "keepLineBreaksICS", XrmoptionSepArg, NULL },
+    { "-wrapContinuationSequence", "wrapContinuationSequence", XrmoptionSepArg, NULL },
+    { "-useInternalWrap", "useInternalWrap", XrmoptionSepArg, NULL },
 };
-
 
 XtActionsRec boardActions[] = {
     { "HandleUserMove", HandleUserMove },
@@ -1844,7 +1848,6 @@ XtActionsRec boardActions[] = {
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
-    { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     //    { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
@@ -2667,6 +2670,9 @@ main(argc, argv)
 	    if (appData.icsInputBox) ICSInputBoxPopUp();
 	}
 
+    #ifdef SIGWINCH
+    signal(SIGWINCH, TermSizeSigHandler);
+    #endif
 	signal(SIGINT, IntSigHandler);
 	signal(SIGTERM, IntSigHandler);
 	if (*appData.cmailGameName != NULLCHAR) {
@@ -3973,43 +3979,7 @@ void HandleUserMove(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    int x, y;
-    Boolean saveAnimate;
-    static int second = 0, promotionChoice = 0;
-    ChessMove moveType;
-
     if (w != boardWidget || errorExitStatus != -1) return;
-
-    x = EventToSquare(event->xbutton.x, BOARD_WIDTH);
-    y = EventToSquare(event->xbutton.y, BOARD_HEIGHT);
-    if (!flipView && y >= 0) {
-	y = BOARD_HEIGHT - 1 - y;
-    }
-    if (flipView && x >= 0) {
-	x = BOARD_WIDTH - 1 - x;
-    }
-
-    if(promotionChoice) { // we are waiting for a click to indicate promotion piece
-	if(event->type == ButtonRelease) return; // ignore upclick of click-click destination
-	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
-	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
-	if(gameInfo.holdingsWidth && 
-		(WhiteOnMove(currentMove) 
-			? x == BOARD_WIDTH-1 && y < gameInfo.holdingsSize && y > 0
-			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1) ) {
-	    // click in right holdings, for determining promotion piece
-	    ChessSquare p = boards[currentMove][y][x];
-	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
-	    if(p != EmptySquare) {
-		FinishMove(NormalMove, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
-		fromX = fromY = -1;
-		return;
-	    }
-	}
-	DrawPosition(FALSE, boards[currentMove]);
-	return;
-    }
-    if (event->type == ButtonPress) ErrorPopDown();
 
     if (promotionUp) {
 	if (event->type == ButtonPress) {
@@ -4023,138 +3993,9 @@ void HandleUserMove(w, event, prms, nprms)
 	}
     }
 
-    /* [HGM] holdings: next 5 lines: ignore all clicks between board and holdings */
-    if(event->type == ButtonPress
-            && ( x == BOARD_LEFT-1 || 
-		 x == BOARD_RGHT   || 
-		 (x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize ) || 
-		 (x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize)) )
-	return;
-
-    if (fromX == -1) {
-	if (event->type == ButtonPress) {
-	    /* First square, prepare to drag */
-	    if (OKToStartUserMove(x, y)) {
-		fromX = x;
-		fromY = y;
-		second = 0;
-		DragPieceBegin(event->xbutton.x, event->xbutton.y);
-		if (appData.highlightDragging) {
-		    SetHighlights(x, y, -1, -1);
-		}
-	    }
-	}
-	return;
-    }
-
-    /* fromX != -1 */
-    if (event->type == ButtonRelease &&	x == fromX && y == fromY) {
-    /* Click on single square in stead of drag-drop */
-	DragPieceEnd(event->xbutton.x, event->xbutton.y);
-	if (appData.animateDragging) {
-	    /* Undo animation damage if any */
-	    DrawPosition(FALSE, NULL);
-	}
-	if (second) {
-	    /* Second up/down in same square; just abort move */
-	    second = 0;
-	    fromX = fromY = -1;
-	    ClearHighlights();
-	    gotPremove = 0;
-	    ClearPremoveHighlights();
-	} else {
-	    /* First upclick in same square; start click-click mode */
-	    SetHighlights(x, y, -1, -1);
-	}
-	return;
-    }
-
-    moveType = UserMoveTest(fromX, fromY, x, y, NULLCHAR, event->type == ButtonRelease);
-
-    if (moveType == Comment) { // kludge for indicating capture-own on Press
-      /* Clicked again on same color piece -- changed his mind */
-      /* note that re-clicking same square always hits same color piece */
-      second = (x == fromX && y == fromY);
-      if (appData.highlightDragging) {
-	SetHighlights(x, y, -1, -1);
-      } else {
-	ClearHighlights();
-      }
-      if (OKToStartUserMove(x, y)) {
-	fromX = x;
-	fromY = y;
-	DragPieceBegin(event->xbutton.x, event->xbutton.y);
-      }
-      return;
-    }
-
-    if(moveType == AmbiguousMove) { // kludge to indicate edit-position move
-      fromX = fromY = -1; 
-      ClearHighlights();
-      DragPieceEnd(event->xbutton.x, event->xbutton.y);
-      DrawPosition(FALSE, boards[currentMove]);
-      return;
-    }
-
-    /* Complete move; (x,y) is now different from (fromX, fromY) on both Press and Release */
-    toX = x;
-    toY = y;
-    saveAnimate = appData.animate;
-    if (event->type == ButtonPress) {
-	/* Finish clickclick move */
-	if (appData.animate || appData.highlightLastMove) {
-	    SetHighlights(fromX, fromY, toX, toY);
-	} else {
-	    ClearHighlights();
-	}
-    } else {
-	/* Finish drag move */
-	if (appData.highlightLastMove) {
-	    SetHighlights(fromX, fromY, toX, toY);
-	} else {
-	    ClearHighlights();
-	}
-	DragPieceEnd(event->xbutton.x, event->xbutton.y);
-	/* Don't animate move and drag both */
-	appData.animate = FALSE;
-    }
-    if (moveType == WhitePromotionKnight || moveType == BlackPromotionKnight ||
-        (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen) &&
-            appData.alwaysPromoteToQueen) { // promotion, but no choice
-      FinishMove(moveType, fromX, fromY, toX, toY, 'q');
-    } else
-    if (moveType == WhitePromotionQueen || moveType == BlackPromotionQueen ) {
-	SetHighlights(fromX, fromY, toX, toY);
-	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
-	    // [HGM] super: promotion to captured piece selected from holdings
-	    ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
-	    promotionChoice = TRUE;
-	    // kludge follows to temporarily execute move on display, without promoting yet
-	    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
-	    boards[currentMove][toY][toX] = p;
-	    DrawPosition(FALSE, boards[currentMove]);
-	    boards[currentMove][fromY][fromX] = p; // take back, but display stays
-	    boards[currentMove][toY][toX] = q;
-	    DisplayMessage("Click in holdings to choose piece", "");
-	    return;
-	}
-	PromotionPopUp();
-	goto skipClearingFrom; // the skipped stuff is done asynchronously by PromotionCallback
-    } else
-    if(moveType != ImpossibleMove) { // valid move, but no promotion
-      FinishMove(moveType, fromX, fromY, toX, toY, NULLCHAR);
-    } else { // invalid move; could have set premove
-      ClearHighlights();
-    }
-	    if (!appData.highlightLastMove || gotPremove) ClearHighlights();
-	    if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
-	    fromX = fromY = -1;
-skipClearingFrom:
-    appData.animate = saveAnimate;
-    if (appData.animate || appData.animateDragging) {
-	/* Undo animation damage if needed */
-	DrawPosition(FALSE, NULL);
-    }
+    // [HGM] mouse: the rest of the mouse handler is moved to the backend, and called here
+    if(event->type == ButtonPress)   LeftClick(Press,   event->xbutton.x, event->xbutton.y);
+    if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
 }
 
 void AnimateUserMove (Widget w, XEvent * event,
@@ -4753,7 +4594,7 @@ void PromotionCallback(w, client_data, call_data)
 	promoChar = ToLower(name[0]);
     }
 
-    FinishMove(NormalMove, fromX, fromY, toX, toY, promoChar);
+    UserMoveEvent(fromX, fromY, toX, toY, promoChar);
 
     if (!appData.highlightLastMove || gotPremove) ClearHighlights();
     if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
@@ -6162,10 +6003,6 @@ int StartChildProcess(cmdLine, dir, pr)
 
     SetUpChildIO(to_prog, from_prog);
 
-    #ifdef SIGWINCH
-    signal(SIGWINCH, TermSizeSigHandler);
-    #endif
-
     if ((pid = fork()) == 0) {
 	/* Child process */
 	// [HGM] PSWBTM: made order resistant against case where fd of created pipe was 0 or 1
@@ -6515,11 +6352,33 @@ int OutputToProcess(pr, message, count, outError)
      int count;
      int *outError;
 {
+    static int line = 0;
     ChildProc *cp = (ChildProc *) pr;
     int outCount;
 
     if (pr == NoProc)
-      outCount = fwrite(message, 1, count, stdout);
+    {
+        if (appData.noJoin || !appData.useInternalWrap)
+            outCount = fwrite(message, 1, count, stdout);
+        else
+        {
+            int width = get_term_width();
+            int len = wrap(NULL, message, count, width, &line);
+            char *msg = malloc(len);
+            int dbgchk;
+
+            if (!msg)
+                outCount = fwrite(message, 1, count, stdout);
+            else
+            {
+                dbgchk = wrap(msg, message, count, width, &line);
+                if (dbgchk != len && appData.debugMode)
+                    fprintf(debugFP, "wrap(): dbgchk(%d) != len(%d)\n", dbgchk, len);
+                outCount = fwrite(msg, 1, dbgchk, stdout);
+                free(msg);
+            }
+        }
+    }
     else
       outCount = write(cp->fdTo, message, count);
 

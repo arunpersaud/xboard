@@ -731,7 +731,7 @@ ResetProc (object, user_data)
      gpointer user_data;
 {
   ResetGameEvent();
-  EngineOutputPopDown();
+  return;
 }
 
 void WhiteClockProc(object, user_data)

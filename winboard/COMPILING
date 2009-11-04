@@ -14,12 +14,12 @@ Compiling with an Integrated Development Envrionment
     DevCpp
     --
     For DevCpp, you need to 'File|Open Project or File...' and select either
-    'winboard.dev' or 'WB4Jaws.dev'.  After parsing the project, you can 'Execute|
-    Compile' to build.  This IDE has no facility for defines in the resource
-    compiler, so the version information resource will not indicate JAWS support
-    even if it actually has that support.  These projects are not set up for
-    debugging, but you can do so by adjusting the 'Compiler' and 'Parameters'
-    options in the 'Project|Project Options' dialog.
+    'winboard.dev' or 'WB4Jaws.dev'.  After parsing the project, you can
+    'Execute|Compile' to build.  This IDE has no facility for defines in the
+    resource compiler, so the version information resource will not indicate
+    JAWS support even if it actually has that support.  These projects are not
+    set up for debugging, but you can do so by adjusting the 'Compiler' and
+    'Parameters' options in the 'Project|Project Options' dialog.
 
 
 
@@ -38,9 +38,11 @@ Compiling from the Command Line
 
         nmake -f makefile.ms        Note: NMAKE, not MAKE
 
-        For Visual Studio 2005 and later, set VCVER to 8, otherwise set it to 6.
-        You can select JAWS support or debugging just like the GCC makefile.  For
-        MSVC 6.0 and earlier, you are going to need the latest SDK from Microsoft.
-        After you install it, set the SDK_INC variable appropriately.  It defaults
-        to the standard location, but you still need to uncomment the line.
-
+        For Visual Studio 2005 and later, set VCVER to 8, otherwise set it to
+        6.  You can select JAWS support or debugging just like the GCC
+        makefile.  For MSVC 6.0 and earlier, you are going to need the latest
+        SDK from Microsoft.  After you install it, set the SDK_INC variable
+        appropriately.  It defaults to the standard location, but you still
+        need to uncomment the line.  Prior to compiling from the command line,
+        it will be necessary to invoke VCVARS32.BAT if you didn't have MSVC
+        register the command line environment variables during installation.

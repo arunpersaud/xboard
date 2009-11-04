@@ -184,7 +184,6 @@ void FeedMovesToProgram P((ChessProgramState *cps, int upto));
 void ResurrectChessProgram P((void));
 void DisplayComment P((int moveNumber, char *text));
 void DisplayMove P((int moveNumber));
-void DisplayAnalysis P((void));
 
 void ParseGameHistory P((char *game));
 void ParseBoard12 P((char *string));
@@ -608,7 +607,7 @@ InitBackEnd1()
     ShowThinkingEvent(); // [HGM] thinking: make sure post/nopost state is set according to options
 
     GetTimeMark(&programStartTime);
-    srand(programStartTime.ms); // [HGM] book: makes sure random is unpredictabe to msec level
+    srandom(programStartTime.ms); // [HGM] book: makes sure random is unpredictabe to msec level
 
     ClearProgramStats();
     programStats.ok_to_send = 1;
@@ -1043,6 +1042,7 @@ InitBackEnd2()
     fprintf(debugFP, "%s\n", programVersion);
   }
 
+  set_cont_sequence(appData.wrapContSeq);
   if (appData.matchGames > 0) {
     appData.matchMode = TRUE;
   } else if (appData.matchMode) {
@@ -1057,7 +1057,7 @@ InitBackEnd2()
   Reset(TRUE, FALSE);
   if (appData.noChessProgram || first.protocolVersion == 1) {
     InitBackEnd3();
-  } else {
+    } else {
     /* kludge: allow timeout for initial "feature" commands */
     FreezeUI();
     DisplayMessage("", _("Starting chess program"));
@@ -2023,6 +2023,7 @@ int gs_gamenum;
 char gs_kind[MSG_SIZ];
 static char player1Name[128] = "";
 static char player2Name[128] = "";
+static char cont_seq[] = "\n\\   ";
 static int player1Rating = -1;
 static int player2Rating = -1;
 /*----------------------------*/
@@ -2055,6 +2056,8 @@ read_from_ics(isr, closure, data, count, error)
     static int firstTime = TRUE, intfSet = FALSE;
     static ColorClass prevColor = ColorNormal;
     static int savingComment = FALSE;
+    static int cmatch = 0; // continuation sequence match
+    char *bp;
     char str[500];
     int i, oldi;
     int buf_len;
@@ -2085,18 +2088,66 @@ read_from_ics(isr, closure, data, count, error)
 	      buf[i] = buf[leftover_start + i];
 	}
 
-	/* Copy in new characters, removing nulls and \r's */
-	buf_len = leftover_len;
-	for (i = 0; i < count; i++) {
-	    if (data[i] != NULLCHAR && data[i] != '\r')
-	      buf[buf_len++] = data[i];
-	    if(!appData.noJoin && buf_len >= 5 && buf[buf_len-5]=='\n' && buf[buf_len-4]=='\\' && 
-                               buf[buf_len-3]==' '  && buf[buf_len-2]==' '  && buf[buf_len-1]==' ') {
-		buf_len -= 5; // [HGM] ICS: join continuation line of Lasker 2.2.3 server with previous
-		if(buf_len == 0 || buf[buf_len-1] != ' ')
-		   buf[buf_len++] = ' '; // add space (assumes ICS does not break lines within word)
-	    }
-	}
+    /* copy new characters into the buffer */
+    bp = buf + leftover_len;
+    buf_len=leftover_len;
+    for (i=0; i<count; i++)
+    {
+        // ignore these
+        if (data[i] == '\r')
+            continue;
+
+        // join lines split by ICS?
+        if (!appData.noJoin)
+        {
+            /*
+                Joining just consists of finding matches against the
+                continuation sequence, and discarding that sequence
+                if found instead of copying it.  So, until a match
+                fails, there's nothing to do since it might be the
+                complete sequence, and thus, something we don't want
+                copied.
+            */
+            if (data[i] == cont_seq[cmatch])
+            {
+                cmatch++;
+                if (cmatch == strlen(cont_seq))
+                {
+                    cmatch = 0; // complete match.  just reset the counter
+
+                    /*
+                        it's possible for the ICS to not include the space
+                        at the end of the last word, making our [correct]
+                        join operation fuse two separate words.  the server
+                        does this when the space occurs at the width setting.
+                    */
+                    if (!buf_len || buf[buf_len-1] != ' ')
+                    {
+                        *bp++ = ' ';
+                        buf_len++;
+                    }
+                }
+                continue;
+            }
+            else if (cmatch)
+            {
+                /*
+                    match failed, so we have to copy what matched before
+                    falling through and copying this character.  In reality,
+                    this will only ever be just the newline character, but
+                    it doesn't hurt to be precise.
+                */
+                strncpy(bp, cont_seq, cmatch);
+                bp += cmatch;
+                buf_len += cmatch;
+                cmatch = 0;
+            }
+        }
+
+        // copy this char
+        *bp++ = data[i];
+        buf_len++;
+    }
 
 	buf[buf_len] = NULLCHAR;
 	next_out = leftover_len;
@@ -2224,8 +2275,6 @@ read_from_ics(isr, closure, data, count, error)
 		  sprintf(str,
 			  "/set-quietly interface %s\n/set-quietly style 12\n",
 			  programVersion);
-          if (!appData.noJoin)
-              strcat(str, "/set-quietly wrap 0\n");
 		} else if (ics_type == ICS_CHESSNET) {
 		  sprintf(str, "/style 12\n");
 		} else {
@@ -2235,8 +2284,6 @@ read_from_ics(isr, closure, data, count, error)
 #ifdef WIN32
 		  strcat(str, "$iset nohighlight 1\n");
 #endif
-          if (!appData.noJoin)
-              strcat(str, "$iset nowrap 1\n");
 		  strcat(str, "$iset lock 1\n$style 12\n");
 		}
 		SendToICS(str);
@@ -3233,7 +3280,13 @@ read_from_ics(isr, closure, data, count, error)
                            * to move the position two files to the right to
                            * create room for them!
                            */
-                          VariantSwitch(boards[currentMove], VariantCrazyhouse); /* temp guess */
+			  VariantClass newVariant;
+			  switch(gameInfo.boardWidth) { // base guess on board width
+				case 9:  newVariant = VariantShogi; break;
+				case 10: newVariant = VariantGreat; break;
+				default: newVariant = VariantCrazyhouse; break;
+			  }
+                          VariantSwitch(boards[currentMove], newVariant); /* temp guess */
 			  /* Get a move list just to see the header, which
 			     will tell us whether this is really bug or zh */
 			  if (ics_getting_history == H_FALSE) {
@@ -3343,6 +3396,7 @@ ParseBoard12(string)
     char promoChar;
     int ranks=1, files=0; /* [HGM] ICS80: allow variable board size */
     char *bookHit = NULL; // [HGM] book
+    Boolean weird = FALSE;
 
     fromX = fromY = toX = toY = -1;
 
@@ -3358,6 +3412,7 @@ ParseBoard12(string)
         while(i < 199 && (string[i] != ' ' || string[i+2] != ' ')) {
 	    if(string[i] == ' ') { ranks++; files = 0; }
             else files++;
+	    if(!strchr(" -pnbrqkPNBRQK" , string[i])) weird = TRUE; // test for fairies
 	    i++;
 	}
 	for(j = 0; j <i; j++) board_chars[j] = string[j];
@@ -3370,6 +3425,26 @@ ParseBoard12(string)
 	       &white_stren, &black_stren, &white_time, &black_time,
 	       &moveNum, str, elapsed_time, move_str, &ics_flip,
 	       &ticking);
+fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardHeight,gameInfo.boardWidth,ranks,files,weird,gameInfo.variant);fflush(debugFP);
+   if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files || 
+					weird && (int)gameInfo.variant <= (int)VariantShogi) {
+     /* [HGM] We seem to switch variant during a game!
+      * Try to guess new variant from board size
+      */
+	  VariantClass newVariant = VariantFairy; // if 8x8, but fairies present
+	  if(ranks == 8 && files == 10) newVariant = VariantCapablanca; else
+	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
+	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
+	  if(ranks == 9 && files == 9)  newVariant = VariantShogi;
+          VariantSwitch(boards[currentMove], newVariant); /* temp guess */
+	  /* Get a move list just to see the header, which
+	     will tell us whether this is really bug or zh */
+	  if (ics_getting_history == H_FALSE) {
+	    ics_getting_history = H_REQUESTED;
+	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+	    SendToICS(str);
+	  }
+    }
 
     if (n < 21) {
         snprintf(str, sizeof(str), _("Failed to parse board string:\n\"%s\""), string);
@@ -4837,24 +4912,29 @@ SendBoard(cps, moveNum)
 }
 
 int
-IsPromotion(fromX, fromY, toX, toY)
-     int fromX, fromY, toX, toY;
+HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 {
+    /* [HGM] rewritten IsPromotion to only flag promotions that offer a choice */
     /* [HGM] add Shogi promotions */
     int promotionZoneSize=1, highestPromotingPiece = (int)WhitePawn;
     ChessSquare piece;
+    ChessMove moveType;
+    Boolean premove;
 
-    if(gameMode == EditPosition || gameInfo.variant == VariantXiangqi ||
-      !(fromX >=0 && fromY >= 0 && toX >= 0 && toY >= 0) ) return FALSE;
-   /* [HGM] Note to self: line above also weeds out drops */
+    if(fromX < BOARD_LEFT || fromX >= BOARD_RGHT) return FALSE; // drop
+    if(toX   < BOARD_LEFT || toX   >= BOARD_RGHT) return FALSE; // move into holdings
+
+    if(gameMode == EditPosition || gameInfo.variant == VariantXiangqi || // no promotions
+      !(fromX >=0 && fromY >= 0 && toX >= 0 && toY >= 0) ) // invalid move
+	return FALSE;
+
     piece = boards[currentMove][fromY][fromX];
     if(gameInfo.variant == VariantShogi) {
         promotionZoneSize = 3;
-        highestPromotingPiece = (int)WhiteKing;
-        /* [HGM] Should be Silver = Ferz, really, but legality testing is off,
-           and if in normal chess we then allow promotion to King, why not
-           allow promotion of other piece in Shogi?                         */
+        highestPromotingPiece = (int)WhiteFerz;
     }
+
+    // next weed out all moves that do not touch the promotion zone at all
     if((int)piece >= BlackPawn) {
         if(toY >= promotionZoneSize && fromY >= promotionZoneSize)
              return FALSE;
@@ -4863,7 +4943,62 @@ IsPromotion(fromX, fromY, toX, toY)
         if(  toY < BOARD_HEIGHT - promotionZoneSize &&
            fromY < BOARD_HEIGHT - promotionZoneSize) return FALSE;
     }
-    return ( (int)piece <= highestPromotingPiece );
+
+    if( (int)piece > highestPromotingPiece ) return FALSE; // non-promoting piece
+
+    // weed out mandatory Shogi promotions
+    if(gameInfo.variant == VariantShogi) {
+	if(piece >= BlackPawn) {
+	    if(toY == 0 && piece == BlackPawn ||
+	       toY == 0 && piece == BlackQueen ||
+	       toY <= 1 && piece == BlackKnight) {
+		*promoChoice = '+';
+		return FALSE;
+	    }
+	} else {
+	    if(toY == BOARD_HEIGHT-1 && piece == WhitePawn ||
+	       toY == BOARD_HEIGHT-1 && piece == WhiteQueen ||
+	       toY >= BOARD_HEIGHT-2 && piece == WhiteKnight) {
+		*promoChoice = '+';
+		return FALSE;
+	    }
+	}
+    }
+
+    // weed out obviously illegal Pawn moves
+    if(appData.testLegality  && (piece == WhitePawn || piece == BlackPawn) ) {
+	if(toX > fromX+1 || toX < fromX-1) return FALSE; // wide
+	if(piece == WhitePawn && toY != fromY+1) return FALSE; // deep
+	if(piece == BlackPawn && toY != fromY-1) return FALSE; // deep
+	if(fromX != toX && gameInfo.variant == VariantShogi) return FALSE;
+	// note we are not allowed to test for valid (non-)capture, due to premove
+    }
+
+    // we either have a choice what to promote to, or (in Shogi) whether to promote
+    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier) {
+	*promoChoice = PieceToChar(BlackFerz);  // no choice
+	return FALSE;
+    }
+    if(appData.alwaysPromoteToQueen) { // predetermined
+	if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantLosers)
+	     *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
+	else *promoChoice = PieceToChar(BlackQueen);
+	return FALSE;
+    }
+
+    // suppress promotion popup on illegal moves that are not premoves
+    premove = gameMode == IcsPlayingWhite && !WhiteOnMove(currentMove) ||
+	      gameMode == IcsPlayingBlack &&  WhiteOnMove(currentMove);
+    if(appData.testLegality && !premove) {
+	moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
+			epStatus[currentMove], castlingRights[currentMove],
+			fromY, fromX, toY, toX, NULLCHAR);
+	if(moveType != WhitePromotionQueen && moveType  != BlackPromotionQueen &&
+	   moveType != WhitePromotionKnight && moveType != BlackPromotionKnight)
+	    return FALSE;
+    }
+
+    return TRUE;
 }
 
 int
@@ -5006,29 +5141,6 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
     ChessMove moveType;
     ChessSquare pdown, pup;
 
-    if (fromX < 0 || fromY < 0) return ImpossibleMove;
-
-    /* [HGM] suppress all moves into holdings area and guard band */
-    if( toX < BOARD_LEFT || toX >= BOARD_RGHT || toY < 0 )
-            return ImpossibleMove;
-
-    /* [HGM] <sameColor> moved to here from winboard.c */
-    /* note: capture of own piece can be legal as drag-drop premove. For click-click it is selection of new piece. */
-    pdown = boards[currentMove][fromY][fromX];
-    pup = boards[currentMove][toY][toX];
-    if (    gameMode != EditPosition && !captureOwn &&
-            (WhitePawn <= pdown && pdown < BlackPawn &&
-             WhitePawn <= pup && pup < BlackPawn  ||
-             BlackPawn <= pdown && pdown < EmptySquare &&
-             BlackPawn <= pup && pup < EmptySquare
-            ) && !((gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom) &&
-                    (pup == WhiteRook && pdown == WhiteKing && fromY == 0 && toY == 0||
-                     pup == BlackRook && pdown == BlackKing && fromY == BOARD_HEIGHT-1 && toY == BOARD_HEIGHT-1 ||
-                     pup == WhiteKing && pdown == WhiteRook && fromY == 0 && toY == 0|| // also allow RxK
-                     pup == BlackKing && pdown == BlackRook && fromY == BOARD_HEIGHT-1 && toY == BOARD_HEIGHT-1  ) 
-        )           )
-         return Comment;
-
     /* Check if the user is playing in turn.  This is complicated because we
        let the user "pick up" a piece before it is his turn.  So the piece he
        tried to pick up may have been captured by the time he puts it down!
@@ -5146,6 +5258,9 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	}
         return ImpossibleMove;
     }
+
+    pdown = boards[currentMove][fromY][fromX];
+    pup = boards[currentMove][toY][toX];
 
     /* [HGM] If move started in holdings, it means a drop */
     if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) {
@@ -5436,6 +5551,184 @@ if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", move
 	DrawPosition(FALSE, boards[currentMove]);
     else if(moveType != ImpossibleMove && moveType != Comment)
         FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
+}
+
+void LeftClick(ClickType clickType, int xPix, int yPix)
+{
+    int x, y;
+    Boolean saveAnimate;
+    static int second = 0, promotionChoice = 0;
+    char promoChoice = NULLCHAR;
+
+    if (clickType == Press) ErrorPopDown();
+
+    x = EventToSquare(xPix, BOARD_WIDTH);
+    y = EventToSquare(yPix, BOARD_HEIGHT);
+    if (!flipView && y >= 0) {
+	y = BOARD_HEIGHT - 1 - y;
+    }
+    if (flipView && x >= 0) {
+	x = BOARD_WIDTH - 1 - x;
+    }
+
+    if(promotionChoice) { // we are waiting for a click to indicate promotion piece
+	if(clickType == Release) return; // ignore upclick of click-click destination
+	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
+	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
+	if(gameInfo.holdingsWidth && 
+		(WhiteOnMove(currentMove) 
+			? x == BOARD_WIDTH-1 && y < gameInfo.holdingsSize && y > 0
+			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1) ) {
+	    // click in right holdings, for determining promotion piece
+	    ChessSquare p = boards[currentMove][y][x];
+	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
+	    if(p != EmptySquare) {
+		FinishMove(NormalMove, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
+		fromX = fromY = -1;
+		return;
+	    }
+	}
+	DrawPosition(FALSE, boards[currentMove]);
+	return;
+    }
+
+    /* [HGM] holdings: next 5 lines: ignore all clicks between board and holdings */
+    if(clickType == Press
+            && ( x == BOARD_LEFT-1 || x == BOARD_RGHT
+              || x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize
+              || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
+	return;
+
+    if (fromX == -1) {
+	if (clickType == Press) {
+	    /* First square */
+	    if (OKToStartUserMove(x, y)) {
+		fromX = x;
+		fromY = y;
+		second = 0;
+		DragPieceBegin(xPix, yPix);
+		if (appData.highlightDragging) {
+		    SetHighlights(x, y, -1, -1);
+		}
+	    }
+	}
+	return;
+    }
+
+    /* fromX != -1 */
+    if (clickType == Press && gameMode != EditPosition) {
+	ChessSquare fromP;
+	ChessSquare toP;
+	int frc;
+
+	// ignore off-board to clicks
+	if(y < 0 || x < 0) return;
+
+	/* Check if clicking again on the same color piece */
+	fromP = boards[currentMove][fromY][fromX];
+	toP = boards[currentMove][y][x];
+	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom;
+ 	if ((WhitePawn <= fromP && fromP <= WhiteKing &&
+	     WhitePawn <= toP && toP <= WhiteKing &&
+	     !(fromP == WhiteKing && toP == WhiteRook && frc) &&
+	     !(fromP == WhiteRook && toP == WhiteKing && frc)) ||
+	    (BlackPawn <= fromP && fromP <= BlackKing && 
+	     BlackPawn <= toP && toP <= BlackKing &&
+	     !(fromP == BlackRook && toP == BlackKing && frc) && // allow also RxK as FRC castling
+	     !(fromP == BlackKing && toP == BlackRook && frc))) {
+	    /* Clicked again on same color piece -- changed his mind */
+	    second = (x == fromX && y == fromY);
+	    if (appData.highlightDragging) {
+		SetHighlights(x, y, -1, -1);
+	    } else {
+		ClearHighlights();
+	    }
+	    if (OKToStartUserMove(x, y)) {
+		fromX = x;
+		fromY = y;
+		DragPieceBegin(xPix, yPix);
+	    }
+	    return;
+	}
+	// ignore to-clicks in holdings
+	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;
+    }
+
+    if (clickType == Release && (x == fromX && y == fromY ||
+	x < BOARD_LEFT || x >= BOARD_RGHT)) {
+
+	// treat drags into holding as click on start square
+	x = fromX; y = fromY;
+
+	DragPieceEnd(xPix, yPix);
+	if (appData.animateDragging) {
+	    /* Undo animation damage if any */
+	    DrawPosition(FALSE, NULL);
+	}
+	if (second) {
+	    /* Second up/down in same square; just abort move */
+	    second = 0;
+	    fromX = fromY = -1;
+	    ClearHighlights();
+	    gotPremove = 0;
+	    ClearPremoveHighlights();
+	} else {
+	    /* First upclick in same square; start click-click mode */
+	    SetHighlights(x, y, -1, -1);
+	}
+	return;
+    }
+
+    /* we now have a different from- and to-square */
+    /* Completed move */
+    toX = x;
+    toY = y;
+    saveAnimate = appData.animate;
+    if (clickType == Press) {
+	/* Finish clickclick move */
+	if (appData.animate || appData.highlightLastMove) {
+	    SetHighlights(fromX, fromY, toX, toY);
+	} else {
+	    ClearHighlights();
+	}
+    } else {
+	/* Finish drag move */
+	if (appData.highlightLastMove) {
+	    SetHighlights(fromX, fromY, toX, toY);
+	} else {
+	    ClearHighlights();
+	}
+	DragPieceEnd(xPix, yPix);
+	/* Don't animate move and drag both */
+	appData.animate = FALSE;
+    }
+    if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice)) {
+	SetHighlights(fromX, fromY, toX, toY);
+	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
+	    // [HGM] super: promotion to captured piece selected from holdings
+	    ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
+	    promotionChoice = TRUE;
+	    // kludge follows to temporarily execute move on display, without promoting yet
+	    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
+	    boards[currentMove][toY][toX] = p;
+	    DrawPosition(FALSE, boards[currentMove]);
+	    boards[currentMove][fromY][fromX] = p; // take back, but display stays
+	    boards[currentMove][toY][toX] = q;
+	    DisplayMessage("Click in holdings to choose piece", "");
+	    return;
+	}
+	PromotionPopUp();
+    } else {
+	UserMoveEvent(fromX, fromY, toX, toY, promoChoice);
+	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
+	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
+	fromX = fromY = -1;
+    }
+    appData.animate = saveAnimate;
+    if (appData.animate || appData.animateDragging) {
+	/* Undo animation damage if needed */
+	DrawPosition(FALSE, NULL);
+    }
 }
 
 void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cpstats )
@@ -6739,7 +7032,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 if (currentMove == forwardMostMove || gameMode == AnalyzeMode
                         || gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
-		    DisplayAnalysis();
 		}
 		return;
 
@@ -6767,7 +7059,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode ||
                            gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
-		    DisplayAnalysis();
 		}
 		return;
 	    } else if (sscanf(message,"stat01: %d " u64Display " %d %d %d %s",
@@ -6792,7 +7083,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
                 SendProgramStatsToFrontend( cps, &programStats );
 
-		DisplayAnalysis();
 		return;
 
 	    } else if (strncmp(message,"++",2) == 0) {
@@ -6828,7 +7118,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		if (currentMove == forwardMostMove || gameMode==AnalyzeMode ||
                            gameMode == AnalyzeFile || appData.icsEngineAnalyze) {
 		    DisplayMove(currentMove - 1);
-		    DisplayAnalysis();
 		}
 		return;
 	    }
@@ -7300,14 +7589,20 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board, castling, ep)
         p = (int) fromX;
         if(p < (int) BlackPawn) { /* white drop */
              p -= (int)WhitePawn;
+		 p = PieceToNumber((ChessSquare)p);
              if(p >= gameInfo.holdingsSize) p = 0;
-             if(--board[p][BOARD_WIDTH-2] == 0)
+             if(--board[p][BOARD_WIDTH-2] <= 0)
                   board[p][BOARD_WIDTH-1] = EmptySquare;
+             if((int)board[p][BOARD_WIDTH-2] < 0)
+			board[p][BOARD_WIDTH-2] = 0;
         } else {                  /* black drop */
              p -= (int)BlackPawn;
+		 p = PieceToNumber((ChessSquare)p);
              if(p >= gameInfo.holdingsSize) p = 0;
-             if(--board[BOARD_HEIGHT-1-p][1] == 0)
+             if(--board[BOARD_HEIGHT-1-p][1] <= 0)
                   board[BOARD_HEIGHT-1-p][0] = EmptySquare;
+             if((int)board[BOARD_HEIGHT-1-p][1] < 0)
+			board[BOARD_HEIGHT-1-p][1] = 0;
         }
       }
       if (captured != EmptySquare && gameInfo.holdingsSize > 0
@@ -7341,7 +7636,6 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board, castling, ep)
           board[BOARD_HEIGHT-1-p][0] = WHITE_TO_BLACK captured;
 	}
       }
-
     } else if (gameInfo.variant == VariantAtomic) {
       if (captured != EmptySquare) {
 	int y, x;
@@ -10744,7 +11038,9 @@ TwoMachinesEvent P((void))
 
 	strcpy(bookMove, "move ");
 	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+	savedMessage = bookMove; // args for deferred call
+	savedState = onmove;
+	ScheduleDelayedEvent(DeferredBookMove, 1);
     }
 }
 
@@ -10932,7 +11228,6 @@ ExitAnalyzeMode()
       SendToProgram("exit\n", &first);
       first.analyzing = FALSE;
     }
-    EngineOutputPopDown();
     thinkOutput[0] = NULLCHAR;
 }
 
@@ -12633,7 +12928,7 @@ PeriodicUpdatesEvent(newState)
     appData.periodicUpdates=newState;
 
     /* Display type changes, so update it now */
-    DisplayAnalysis();
+//    DisplayAnalysis();
 
     /* Get the ball rolling again... */
     if (newState) {
@@ -12770,90 +13065,6 @@ DisplayMove(moveNumber)
 		parseList[moveNumber], res);
 	DisplayMessage(message, cpThinkOutput);
     }
-}
-
-void
-DisplayAnalysisText(text)
-     char *text;
-{
-  if (gameMode == AnalyzeMode || gameMode == AnalyzeFile 
-      || appData.icsEngineAnalyze) 
-    {
-      EngineOutputPopUp();
-    }
-}
-
-static int
-only_one_move(str)
-     char *str;
-{
-    while (*str && isspace(*str)) ++str;
-    while (*str && !isspace(*str)) ++str;
-    if (!*str) return 1;
-    while (*str && isspace(*str)) ++str;
-    if (!*str) return 1;
-    return 0;
-}
-
-void
-DisplayAnalysis()
-{
-    char buf[MSG_SIZ];
-    char lst[MSG_SIZ / 2];
-    double nps;
-    static char *xtra[] = { "", " (--)", " (++)" };
-    int h, m, s, cs;
-
-    if (programStats.time == 0) {
-	programStats.time = 1;
-    }
-
-    if (programStats.got_only_move) {
-	safeStrCpy(buf, programStats.movelist, sizeof(buf));
-    } else {
-        safeStrCpy( lst, programStats.movelist, sizeof(lst));
-
-        nps = (u64ToDouble(programStats.nodes) /
-             ((double)programStats.time /100.0));
-
-	cs = programStats.time % 100;
-	s = programStats.time / 100;
-	h = (s / (60*60));
-	s = s - h*60*60;
-	m = (s/60);
-	s = s - m*60;
-
-	if (programStats.moves_left > 0 && appData.periodicUpdates) {
-	  if (programStats.move_name[0] != NULLCHAR) {
-	    sprintf(buf, "depth=%d %d/%d(%s) %+.2f %s%s\nNodes: " u64Display " NPS: %d\nTime: %02d:%02d:%02d.%02d",
-		    programStats.depth,
-		    programStats.nr_moves-programStats.moves_left,
-		    programStats.nr_moves, programStats.move_name,
-		    ((float)programStats.score)/100.0, lst,
-		    only_one_move(lst)?
-		    xtra[programStats.got_fail] : "",
-		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
-	  } else {
-	    sprintf(buf, "depth=%d %d/%d %+.2f %s%s\nNodes: " u64Display " NPS: %d\nTime: %02d:%02d:%02d.%02d",
-		    programStats.depth,
-		    programStats.nr_moves-programStats.moves_left,
-		    programStats.nr_moves, ((float)programStats.score)/100.0,
-		    lst,
-		    only_one_move(lst)?
-		    xtra[programStats.got_fail] : "",
-		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
-	  }
-	} else {
-	    sprintf(buf, "depth=%d %+.2f %s%s\nNodes: " u64Display " NPS: %d\nTime: %02d:%02d:%02d.%02d",
-		    programStats.depth,
-		    ((float)programStats.score)/100.0,
-		    lst,
-		    only_one_move(lst)?
-		    xtra[programStats.got_fail] : "",
-		    (u64)programStats.nodes, (int)nps, h, m, s, cs);
-	}
-    }
-    DisplayAnalysisText(buf);
 }
 
 void
@@ -13872,4 +14083,111 @@ EditPositionPasteFEN(char *fen)
       DrawPosition(FALSE, boards[currentMove]);
     }
   }
+}
+
+static char cseq[12] = "\\   ";
+
+Boolean set_cont_sequence(char *new_seq)
+{
+    int len;
+    Boolean ret;
+
+    // handle bad attempts to set the sequence
+	if (!new_seq)
+		return 0; // acceptable error - no debug
+
+    len = strlen(new_seq);
+    ret = (len > 0) && (len < sizeof(cseq));
+    if (ret)
+        strcpy(cseq, new_seq);
+    else if (appData.debugMode)
+        fprintf(debugFP, "Invalid continuation sequence \"%s\"  (maximum length is: %d)\n", new_seq, sizeof(cseq)-1);
+    return ret;
+}
+
+/*
+    reformat a source message so words don't cross the width boundary.  internal
+    newlines are not removed.  returns the wrapped size (no null character unless
+    included in source message).  If dest is NULL, only calculate the size required
+    for the dest buffer.  lp argument indicats line position upon entry, and it's
+    passed back upon exit.
+*/
+int wrap(char *dest, char *src, int count, int width, int *lp)
+{
+    int len, i, ansi, cseq_len, line, old_line, old_i, old_len, clen;
+
+    cseq_len = strlen(cseq);
+    old_line = line = *lp;
+    ansi = len = clen = 0;
+
+    for (i=0; i < count; i++)
+    {
+        if (src[i] == '\033')
+            ansi = 1;
+
+        // if we hit the width, back up
+        if (!ansi && (line >= width) && src[i] != '\n' && src[i] != ' ')
+        {
+            // store i & len in case the word is too long
+            old_i = i, old_len = len;
+
+            // find the end of the last word
+            while (i && src[i] != ' ' && src[i] != '\n')
+            {
+                i--;
+                len--;
+            }
+
+            // word too long?  restore i & len before splitting it
+            if ((old_i-i+clen) >= width)
+            {
+                i = old_i;
+                len = old_len;
+            }
+
+            // extra space?
+            if (i && src[i-1] == ' ')
+                len--;
+
+            if (src[i] != ' ' && src[i] != '\n')
+            {
+                i--;
+                if (len)
+                    len--;
+            }
+
+            // now append the newline and continuation sequence
+            if (dest)
+                dest[len] = '\n';
+            len++;
+            if (dest)
+                strncpy(dest+len, cseq, cseq_len);
+            len += cseq_len;
+            line = cseq_len;
+            clen = cseq_len;
+            continue;
+        }
+
+        if (dest)
+            dest[len] = src[i];
+        len++;
+        if (!ansi)
+            line++;
+        if (src[i] == '\n')
+            line = 0;
+        if (src[i] == 'm')
+            ansi = 0;
+    }
+    if (dest && appData.debugMode)
+    {
+        fprintf(debugFP, "wrap(count:%d,width:%d,line:%d,len:%d,*lp:%d,src: ",
+            count, width, line, len, *lp);
+        show_bytes(debugFP, src, count);
+        fprintf(debugFP, "\ndest: ");
+        show_bytes(debugFP, dest, len);
+        fprintf(debugFP, "\n");
+    }
+    *lp = dest ? line : old_line;
+
+    return len;
 }

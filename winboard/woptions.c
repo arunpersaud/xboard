@@ -1010,6 +1010,7 @@ MyCreateFont(HWND hwnd, MyFont *font)
   font->mfp.italic = font->lf.lfItalic;
   font->mfp.underline = font->lf.lfUnderline;
   font->mfp.strikeout = font->lf.lfStrikeOut;
+  font->mfp.charset = font->lf.lfCharSet;
   strcpy(font->mfp.faceName, font->lf.lfFaceName);
   return TRUE;
 }
@@ -1021,7 +1022,7 @@ UpdateSampleText(HWND hDlg, int id, MyColorizeAttribs *mca)
   CHARFORMAT cf;
   cf.cbSize = sizeof(CHARFORMAT);
   cf.dwMask = 
-    CFM_COLOR|CFM_BOLD|CFM_ITALIC|CFM_UNDERLINE|CFM_STRIKEOUT|CFM_FACE|CFM_SIZE;
+    CFM_COLOR|CFM_CHARSET|CFM_BOLD|CFM_ITALIC|CFM_UNDERLINE|CFM_STRIKEOUT|CFM_FACE|CFM_SIZE;
   cf.crTextColor = mca->color;
   cf.dwEffects = mca->effects;
   strcpy(cf.szFaceName, font[boardSize][CONSOLE_FONT]->mfp.faceName);
@@ -1265,7 +1266,9 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.colorize =
 	(Boolean)!IsDlgButtonChecked(hDlg, OPT_DontColorize);
 
-      if (!appData.colorize) {
+    ChangedConsoleFont();
+
+    if (!appData.colorize) {
 	CHARFORMAT cf;
 	COLORREF background = ParseColorName(COLOR_BKGD);
 	/*
@@ -1495,6 +1498,7 @@ CopyFont(MyFont *dest, const MyFont *src)
   dest->mfp.italic    = src->mfp.italic;
   dest->mfp.underline = src->mfp.underline;
   dest->mfp.strikeout = src->mfp.strikeout;
+  dest->mfp.charset   = src->mfp.charset;
   lstrcpy(dest->mfp.faceName, src->mfp.faceName);
   CreateFontInMF(dest);
 }
