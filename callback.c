@@ -717,6 +717,54 @@ PeriodicUpdatesProc(object, user_data)
   return;
 }
 
+void 
+PremoveProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.premove = !appData.premove;
+  return;
+}
+
+void 
+QuietPlayProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.quietPlay = !appData.quietPlay;
+  return;
+}
+
+
+void 
+PonderNextMoveProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  PonderNextMoveEvent(!appData.ponderNextMove);
+  return;
+}
+
+void 
+PopupExitMessageProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.popupExitMessage = !appData.popupExitMessage;
+  return;
+}
+
+void 
+PopupMoveErrorsProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  appData.popupMoveErrors = !appData.popupMoveErrors;
+  return;
+}
+
+
+
 /* end option menu */
 
 gboolean CloseWindowProc(GtkWidget *button)

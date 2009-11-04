@@ -260,8 +260,6 @@ static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 int EventToSquare P((int x, int limit));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
-void HandleUserMove P((Widget w, XEvent *event,
-		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
 void CommentPopUp P((char *title, char *label));
@@ -302,14 +300,6 @@ void EditCommentProc P((Widget w, XEvent *event,
 void IcsInputBoxProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PonderNextMoveProc P((Widget w, XEvent *event, String *prms,
-			   Cardinal *nprms));
-void PopupMoveErrorsProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void PopupExitMessageProc P((Widget w, XEvent *event, String *prms,
-			     Cardinal *nprms));
-void PremoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void QuietPlayProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -668,11 +658,11 @@ MenuItem optionsMenu[] = {
     //    {N_("ICS Alarm"), IcsAlarmProc},
     //    {N_("Old Save Style"), OldSaveStyleProc},
     //    {N_("Periodic Updates"), PeriodicUpdatesProc},
-    {N_("Ponder Next Move"), PonderNextMoveProc},
-    {N_("Popup Exit Message"), PopupExitMessageProc},
-    {N_("Popup Move Errors"), PopupMoveErrorsProc},
-    {N_("Premove"), PremoveProc},
-    {N_("Quiet Play"), QuietPlayProc},
+    //    {N_("Ponder Next Move"), PonderNextMoveProc},
+    //    {N_("Popup Exit Message"), PopupExitMessageProc},
+    //    {N_("Popup Move Errors"), PopupMoveErrorsProc},
+    //    {N_("Premove"), PremoveProc},
+    //    {N_("Quiet Play"), QuietPlayProc},
     //    {N_("Hide Thinking"), HideThinkingProc},
     //    {N_("Test Legality"), TestLegalityProc},
     {NULL, NULL}
@@ -1761,7 +1751,7 @@ XrmOptionDescRec shellOptions[] = {
 };
 
 XtActionsRec boardActions[] = {
-    { "HandleUserMove", HandleUserMove },
+    //    { "HandleUserMove", HandleUserMove },
     { "AnimateUserMove", AnimateUserMove },
     //    { "FileNameAction", FileNameAction },
     { "AskQuestionProc", AskQuestionProc },
@@ -1841,11 +1831,11 @@ XtActionsRec boardActions[] = {
     //    { "MoveSoundProc", MoveSoundProc },
     //    { "OldSaveStyleProc", OldSaveStyleProc },
     //    { "PeriodicUpdatesProc", PeriodicUpdatesProc },
-    { "PonderNextMoveProc", PonderNextMoveProc },
-    { "PopupExitMessageProc", PopupExitMessageProc },
-    { "PopupMoveErrorsProc", PopupMoveErrorsProc },
-    { "PremoveProc", PremoveProc },
-    { "QuietPlayProc", QuietPlayProc },
+    //    { "PonderNextMoveProc", PonderNextMoveProc },
+    //    { "PopupExitMessageProc", PopupExitMessageProc },
+    //    { "PopupMoveErrorsProc", PopupMoveErrorsProc },
+    //    { "PremoveProc", PremoveProc },
+    //    { "QuietPlayProc", QuietPlayProc },
     //    { "ShowThinkingProc", ShowThinkingProc },
     //    { "HideThinkingProc", HideThinkingProc },
     { "TestLegalityProc", TestLegalityProc },
@@ -3976,41 +3966,6 @@ void DrawPosition( repaint, board)
   return;
 }
 
-/*
- * event handler for parsing user moves
- */
-// [HGM] This routine will need quite some reworking. Although the backend still supports the old
-//       way of doing things, by calling UserMoveEvent() to test the legality of the move and then perform
-//       it at the end, and doing all kind of preliminary tests here (e.g. to weed out self-captures), it
-//       should be made to use the new way, of calling UserMoveTest early  to determine the legality of the
-//       move, (which will weed out the illegal selfcaptures and moves into the holdings, and flag promotions),
-//       and at the end FinishMove() to perform the move after optional promotion popups.
-//       For now I patched it to allow self-capture with King, and suppress clicks between board and holdings.
-void HandleUserMove(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (w != boardWidget || errorExitStatus != -1) return;
-
-    if (promotionUp) {
-	if (event->type == ButtonPress) {
-//	    XtPopdown(promotionShell);
-//	    XtDestroyWidget(promotionShell);
-	    promotionUp = False;
-	    ClearHighlights();
-	    fromX = fromY = -1;
-	} else {
-	    return;
-	}
-    }
-
-    // [HGM] mouse: the rest of the mouse handler is moved to the backend, and called here
-    if(event->type == ButtonPress)   LeftClick(Press,   event->xbutton.x, event->xbutton.y);
-    if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
-}
-
 void AnimateUserMove (Widget w, XEvent * event,
 		      String * params, Cardinal * nParams)
 {
@@ -5149,101 +5104,6 @@ void EnterKeyProc(w, event, prms, nprms)
       ICSInputSendText();
 }
 
-
-void PonderNextMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    PonderNextMoveEvent(!appData.ponderNextMove);
-
-    if (appData.ponderNextMove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Ponder Next Move"),
-		args, 1);
-}
-
-void PopupExitMessageProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.popupExitMessage = !appData.popupExitMessage;
-
-    if (appData.popupExitMessage) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Popup Exit Message"), args, 1);
-}
-
-void PopupMoveErrorsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.popupMoveErrors = !appData.popupMoveErrors;
-
-    if (appData.popupMoveErrors) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Popup Move Errors"),
-		args, 1);
-}
-
-void PremoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.premove = !appData.premove;
-
-    if (appData.premove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Premove"), args, 1);
-}
-
-void QuietPlayProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.quietPlay = !appData.quietPlay;
-
-    if (appData.quietPlay) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Quiet Play"),
-		args, 1);
-}
 
 void DebugProc(w, event, prms, nprms)
      Widget w;

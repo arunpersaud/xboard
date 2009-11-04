@@ -66,6 +66,11 @@ void IcsAlarmProc P((GtkObject *object, gpointer user_data));
 void MoveSoundProc P((GtkObject *object, gpointer user_data));
 void OldSaveStyleProc P((GtkObject *object, gpointer user_data));
 void PeriodicUpdatesProc P((GtkObject *object, gpointer user_data));
+void PremoveProc P((GtkObject *object, gpointer user_data));
+void QuietPlayProc P((GtkObject *object, gpointer user_data));
+void PonderNextMoveProc P((GtkObject *object, gpointer user_data));
+void PopupExitMessageProc P((GtkObject *object, gpointer user_data));
+void PopupMoveErrorsProc P((GtkObject *object, gpointer user_data));
 
 /* Help Menu */
 
