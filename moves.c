@@ -680,6 +680,14 @@ void GenPseudoLegal(board, flags, epfile, callback, closure)
                     }
 		  }
 	      break;
+	    case WhiteFalcon: // [HGM] wild: for wildcards, self-capture symbolizes move to anywhere
+	    case BlackFalcon:
+	    case WhiteCobra:
+	    case BlackCobra:
+	    case WhiteLance:
+	    case BlackLance:
+	      callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
+	      break;
 
 	  }
       }
@@ -1053,7 +1061,7 @@ ChessMove LegalityTest(board, flags, epfile, castlingRights, rf, ff, rt, ft, pro
     if(piece == WhiteFalcon || piece == BlackFalcon ||
        piece == WhiteCobra  || piece == BlackCobra  ||
        piece == WhiteLance  || piece == BlackLance)
-        return NormalMove;
+        return CheckTest(board, flags, rf, ff, rt, ft, FALSE) ? IllegalMove : NormalMove;
 
     cl.rf = rf;
     cl.ff = ff;
@@ -1195,6 +1203,13 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
      VOIDSTAR closure;
 {
     register DisambiguateClosure *cl = (DisambiguateClosure *) closure;
+    int wildCard = FALSE; ChessSquare piece = board[rf][ff];
+
+    // [HGM] wild: for wild-card pieces rt and rf are dummies
+    if(piece == WhiteFalcon || piece == BlackFalcon ||
+       piece == WhiteCobra  || piece == BlackCobra  ||
+       piece == WhiteLance  || piece == BlackLance)
+        wildCard = TRUE;
 
     if ((cl->pieceIn == EmptySquare || cl->pieceIn == board[rf][ff]
          || PieceToChar(board[rf][ff]) == '~'
@@ -1202,15 +1217,15 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
                                                                       ) &&
 	(cl->rfIn == -1 || cl->rfIn == rf) &&
 	(cl->ffIn == -1 || cl->ffIn == ff) &&
-	(cl->rtIn == -1 || cl->rtIn == rt) &&
-	(cl->ftIn == -1 || cl->ftIn == ft)) {
+	(cl->rtIn == -1 || cl->rtIn == rt || wildCard) &&
+	(cl->ftIn == -1 || cl->ftIn == ft || wildCard)) {
 
 	cl->count++;
         cl->piece = board[rf][ff];
 	cl->rf = rf;
 	cl->ff = ff;
-	cl->rt = rt;
-	cl->ft = ft;
+	cl->rt = wildCard ? cl->rtIn : rt;
+	cl->ft = wildCard ? cl->ftIn : ft;
 	cl->kind = kind;
     }
 }
@@ -1221,6 +1236,7 @@ void Disambiguate(board, flags, epfile, closure)
      DisambiguateClosure *closure;
 {
     int illegal = 0; char c = closure->promoCharIn;
+
     closure->count = 0;
     closure->rf = closure->ff = closure->rt = closure->ft = 0;
     closure->kind = ImpossibleMove;

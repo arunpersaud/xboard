@@ -607,7 +607,7 @@ InitBackEnd1()
     ShowThinkingEvent(); // [HGM] thinking: make sure post/nopost state is set according to options
 
     GetTimeMark(&programStartTime);
-    srandom(programStartTime.ms); // [HGM] book: makes sure random is unpredictabe to msec level
+    srandom((programStartTime.ms + 1000*programStartTime.sec)*0x1001001); // [HGM] book: makes sure random is unpredictabe to msec level
 
     ClearProgramStats();
     programStats.ok_to_send = 1;
@@ -1904,6 +1904,8 @@ CopyHoldings(Board board, char *holdings, ChessSquare lowestPiece)
     ChessSquare piece;
 
     if(gameInfo.holdingsWidth < 2)  return;
+    if(gameInfo.variant != VariantBughouse && board[BOARD_SIZE-1][BOARD_SIZE-2])
+	return; // prevent overwriting by pre-board holdings
 
     if( (int)lowestPiece >= BlackPawn ) {
         holdingsColumn = 0;
@@ -1932,7 +1934,6 @@ CopyHoldings(Board board, char *holdings, ChessSquare lowestPiece)
         board[holdingsStartRow+j*direction][holdingsColumn] = piece;
         board[holdingsStartRow+j*direction][countsColumn]++;
     }
-
 }
 
 
@@ -1976,7 +1977,7 @@ VariantSwitch(Board board, VariantClass newVariant)
      case VariantSuper:
        newHoldingsWidth = 2;
        gameInfo.holdingsSize = 8;
-       return;
+       break;
      case VariantGothic:
      case VariantCapablanca:
      case VariantCapaRandom:
@@ -2012,7 +2013,6 @@ VariantSwitch(Board board, VariantClass newVariant)
      InitDrawingSizes(-2, 0);
      InitPosition(FALSE);          /* this sets up board[0], but also other stuff        */
    } else { gameInfo.variant = newVariant; InitPosition(FALSE); }
-   
    DrawPosition(TRUE, boards[currentMove]);
 }
 
@@ -2902,7 +2902,7 @@ read_from_ics(isr, closure, data, count, error)
 			currentMove = forwardMostMove;
 			ClearHighlights();/*!!could figure this out*/
 			flipView = appData.flipView;
-			DrawPosition(FALSE, boards[currentMove]);
+			DrawPosition(TRUE, boards[currentMove]);
 			DisplayBothClocks();
 			sprintf(str, "%s vs. %s",
 				gameInfo.white, gameInfo.black);
@@ -3233,16 +3233,14 @@ read_from_ics(isr, closure, data, count, error)
 		      if (currentMove == 0 &&
 			  gameMode == IcsPlayingWhite &&
 			  appData.premoveWhite) {
-			sprintf(str, "%s%s\n", ics_prefix,
-				appData.premoveWhiteText);
+			sprintf(str, "%s\n", appData.premoveWhiteText);
 			if (appData.debugMode)
 			  fprintf(debugFP, "Sending premove:\n");
 			SendToICS(str);
 		      } else if (currentMove == 1 &&
 				 gameMode == IcsPlayingBlack &&
 				 appData.premoveBlack) {
-			sprintf(str, "%s%s\n", ics_prefix,
-				appData.premoveBlackText);
+			sprintf(str, "%s\n", appData.premoveBlackText);
 			if (appData.debugMode)
 			  fprintf(debugFP, "Sending premove:\n");
 			SendToICS(str);
@@ -3302,8 +3300,9 @@ read_from_ics(isr, closure, data, count, error)
                         white_holding[strlen(white_holding)-1] = NULLCHAR;
                         black_holding[strlen(black_holding)-1] = NULLCHAR;
                         /* [HGM] copy holdings to board holdings area */
-                        CopyHoldings(boards[currentMove], white_holding, WhitePawn);
-                        CopyHoldings(boards[currentMove], black_holding, BlackPawn);
+                        CopyHoldings(boards[forwardMostMove], white_holding, WhitePawn);
+                        CopyHoldings(boards[forwardMostMove], black_holding, BlackPawn);
+                        boards[forwardMostMove][BOARD_SIZE-1][BOARD_SIZE-2] = 1; // flag holdings as set
 #if ZIPPY
 			if (appData.zippyPlay && first.initDone) {
 			    ZippyHoldings(white_holding, black_holding,
@@ -3425,7 +3424,7 @@ ParseBoard12(string)
 	       &white_stren, &black_stren, &white_time, &black_time,
 	       &moveNum, str, elapsed_time, move_str, &ics_flip,
 	       &ticking);
-fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardHeight,gameInfo.boardWidth,ranks,files,weird,gameInfo.variant);fflush(debugFP);
+
    if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files || 
 					weird && (int)gameInfo.variant <= (int)VariantShogi) {
      /* [HGM] We seem to switch variant during a game!
@@ -3435,7 +3434,8 @@ fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardH
 	  if(ranks == 8 && files == 10) newVariant = VariantCapablanca; else
 	  if(ranks == 10 && files == 9) newVariant = VariantXiangqi; else
 	  if(ranks == 8 && files == 12) newVariant = VariantCourier; else
-	  if(ranks == 9 && files == 9)  newVariant = VariantShogi;
+	  if(ranks == 9 && files == 9)  newVariant = VariantShogi; else
+	  if(!weird) newVariant = VariantNormal;
           VariantSwitch(boards[currentMove], newVariant); /* temp guess */
 	  /* Get a move list just to see the header, which
 	     will tell us whether this is really bug or zh */
@@ -3530,7 +3530,7 @@ fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardH
 
 	/* Forget the old game and get the history (if any) of the new one */
 	if (gameMode != BeginningOfGame) {
-	  Reset(FALSE, TRUE);
+	  Reset(TRUE, TRUE);
 	}
 	newGame = TRUE;
 	if (appData.autoRaiseBoard) BoardToTop();
@@ -3654,6 +3654,7 @@ fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardH
       }
     }
     CopyBoard(boards[moveNum], board);
+    boards[moveNum][BOARD_SIZE-1][BOARD_SIZE-2] = 0; // [HGM] indicate holdings not set
     if (moveNum == 0) {
 	startedFromSetupPosition =
 	  !CompareBoards(board, initialPosition);
@@ -3720,15 +3721,6 @@ fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardH
     /* Update currentMove and known move number limits */
     newMove = newGame || moveNum > forwardMostMove;
 
-    /* [DM] If we found takebacks during icsEngineAnalyze try send to engine */
-    if (!newGame && appData.icsEngineAnalyze && moveNum < forwardMostMove) {
-        takeback = forwardMostMove - moveNum;
-        for (i = 0; i < takeback; i++) {
-             if (appData.debugMode) fprintf(debugFP, "take back move\n");
-             SendToProgram("undo\n", &first);
-        }
-    }
-
     if (newGame) {
 	forwardMostMove = backwardMostMove = currentMove = moveNum;
 	if (gameMode == IcsExamining && moveNum == 0) {
@@ -3741,6 +3733,20 @@ fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardH
 	}
     } else if (moveNum == forwardMostMove + 1 || moveNum == forwardMostMove
 	       || (moveNum < forwardMostMove && moveNum >= backwardMostMove)) {
+#if ZIPPY
+	/* [DM] If we found takebacks during icsEngineAnalyze try send to engine */
+	/* [HGM] applied this also to an engine that is silently watching        */
+	if (appData.zippyPlay && moveNum < forwardMostMove && first.initDone &&
+	    (gameMode == IcsObserving || gameMode == IcsExamining) &&
+	    gameInfo.variant == currentlyInitializedVariant) {
+	  takeback = forwardMostMove - moveNum;
+	  for (i = 0; i < takeback; i++) {
+	    if (appData.debugMode) fprintf(debugFP, "take back move\n");
+	    SendToProgram("undo\n", &first);
+	  }
+	}
+#endif
+
 	forwardMostMove = moveNum;
 	if (!pausing || currentMove > forwardMostMove)
 	  currentMove = forwardMostMove;
@@ -3751,12 +3757,20 @@ fprintf(debugFP, "old: %dx%d   new: %dx%d weird=%d variant=%d\n",gameInfo.boardH
 	    forwardMostMove = pauseExamForwardMostMove;
 	    return;
 	}
-	forwardMostMove = backwardMostMove = currentMove = moveNum;
 	if (gameMode == IcsExamining && moveNum > 0 && appData.getMoveList) {
+#if ZIPPY
+	    if(appData.zippyPlay && forwardMostMove > 0 && first.initDone) {
+		// [HGM] when we will receive the move list we now request, it will be
+		// fed to the engine from the first move on. So if the engine is not
+		// in the initial position now, bring it there.
+		InitChessProgram(&first, 0);
+	    }
+#endif
 	    ics_getting_history = H_REQUESTED;
 	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
 	    SendToICS(str);
 	}
+	forwardMostMove = backwardMostMove = currentMove = moveNum;
     }
 
     /* Update the clocks */
@@ -5259,6 +5273,7 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
         return ImpossibleMove;
     }
 
+    if(toX < 0 || toY < 0) return ImpossibleMove;
     pdown = boards[currentMove][fromY][fromX];
     pup = boards[currentMove][toY][toX];
 
@@ -5650,16 +5665,11 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    }
 	    return;
 	}
-	// ignore to-clicks in holdings
+	// ignore clicks on holdings
 	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;
     }
 
-    if (clickType == Release && (x == fromX && y == fromY ||
-	x < BOARD_LEFT || x >= BOARD_RGHT)) {
-
-	// treat drags into holding as click on start square
-	x = fromX; y = fromY;
-
+    if (clickType == Release && x == fromX && y == fromY) {
 	DragPieceEnd(xPix, yPix);
 	if (appData.animateDragging) {
 	    /* Undo animation damage if any */
@@ -5679,7 +5689,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	return;
     }
 
-    /* we now have a different from- and to-square */
+    /* we now have a different from- and (possibly off-board) to-square */
     /* Completed move */
     toX = x;
     toY = y;
@@ -5702,6 +5712,18 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
     }
+
+    // moves into holding are invalid for now (later perhaps allow in EditPosition)
+    if(x >= 0 && x < BOARD_LEFT || x >= BOARD_RGHT) {
+	ClearHighlights();
+	fromX = fromY = -1;
+	DrawPosition(FALSE, NULL);
+	return;
+    }
+
+    // off-board moves should not be highlighted
+    if(x < 0 || x < 0) ClearHighlights();
+
     if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice)) {
 	SetHighlights(fromX, fromY, toX, toY);
 	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
@@ -6470,7 +6492,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
             DisplayError(_("Bad FEN received from engine"), 0);
             return ;
         } else {
-           Reset(FALSE, FALSE);
+           Reset(TRUE, FALSE);
            CopyBoard(boards[0], initial_position);
            initialRulePlies = FENrulePlies;
            epStatus[0] = FENepStatus;
@@ -6971,9 +6993,12 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
 			if(cps->nps == 0) ticklen = 10*time;                    // use engine reported time
 			else ticklen = (1000. * u64ToDouble(nodes)) / cps->nps; // convert node count to time
-			if(WhiteOnMove(forwardMostMove))
+			if(WhiteOnMove(forwardMostMove) && (gameMode == MachinePlaysWhite ||
+						gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'w')) 
 			     whiteTimeRemaining = timeRemaining[0][forwardMostMove] - ticklen;
-			else blackTimeRemaining = timeRemaining[1][forwardMostMove] - ticklen;
+			if(!WhiteOnMove(forwardMostMove) && (gameMode == MachinePlaysBlack ||
+						gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) 
+			     blackTimeRemaining = timeRemaining[1][forwardMostMove] - ticklen;
 		}
 
 		/* Buffer overflow protection */
@@ -8022,7 +8047,7 @@ TwoMachinesEventIfReady P((void))
 void
 NextMatchGame P((void))
 {
-    int index; /* [HGM] autoinc: step lod index during match */
+    int index; /* [HGM] autoinc: step load index during match */
     Reset(FALSE, TRUE);
     if (*appData.loadGameFile != NULLCHAR) {
 	index = appData.loadGameIndex;

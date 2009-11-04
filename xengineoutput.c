@@ -851,7 +851,8 @@ static void UpdateControls( EngineOutputData * ed )
             strncpy( mov, ed->hint, sizeof(mov) );
             mov[ sizeof(mov)-1 ] = '\0';
 
-            sprintf( buf, "%d/%d: %s [%02d:%02d:%02d]", ed->an_move_index, ed->an_move_count, mov, time_mins / 60, time_mins % 60, time_secs % 60 );
+	    sprintf( buf, "[%d] %d/%d: %s [%02d:%02d:%02d]", ed->depth, ed->an_move_index,
+			ed->an_move_count, mov, time_mins / 60, time_mins % 60, time_secs % 60 );
         }
 
         SetEngineState( ed->which, STATE_ANALYZING, buf );
