@@ -794,7 +794,8 @@ InitBackEnd1()
 
     if (appData.icsActive) {
         appData.clockMode = TRUE;  /* changes dynamically in ICS mode */
-    } else if (*appData.searchTime != NULLCHAR || appData.noChessProgram) {
+//    } else if (*appData.searchTime != NULLCHAR || appData.noChessProgram) {
+    } else if (appData.noChessProgram) { // [HGM] st: searchTime mode now also is clockMode
 	appData.clockMode = FALSE;
 	first.sendTime = second.sendTime = 0;
     }
@@ -13131,7 +13132,7 @@ CheckFlags()
 void
 CheckTimeControl()
 {
-    if (!appData.clockMode || appData.icsActive ||
+    if (!appData.clockMode || appData.icsActive || searchTime || // [HGM] st: no inc in st mode
 	gameMode == PlayFromGameFile || forwardMostMove == 0) return;
 
     /*
@@ -13257,6 +13258,9 @@ ResetClocks()
     (void) StopClockTimer();
     if (appData.icsActive) {
 	whiteTimeRemaining = blackTimeRemaining = 0;
+    } else if (searchTime) {
+	whiteTimeRemaining = 1000*searchTime / WhitePlayer()->timeOdds;
+	blackTimeRemaining = 1000*searchTime / WhitePlayer()->other->timeOdds;
     } else { /* [HGM] correct new time quote for time odds */
         whiteTimeRemaining = GetTimeQuota(-1) / WhitePlayer()->timeOdds;
         blackTimeRemaining = GetTimeQuota(-1) / WhitePlayer()->other->timeOdds;
@@ -13384,6 +13388,12 @@ SwitchClocks()
 
       default:
 	break;
+    }
+
+    if (searchTime) { // [HGM] st: set clock of player that has to move to max time
+	if(WhiteOnMove(forwardMostMove))
+	     whiteTimeRemaining = 1000*searchTime / WhitePlayer()->timeOdds;
+	else blackTimeRemaining = 1000*searchTime / WhitePlayer()->other->timeOdds;
     }
 
     tickStartTM = now;
