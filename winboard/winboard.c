@@ -80,13 +80,11 @@
 #endif
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
+#include "winboard.h"
 #include "moves.h"
 #include "wclipbrd.h"
-#include "wgamelist.h"
-#include "wedittags.h"
 #include "woptions.h"
 #include "wsockerr.h"
 #include "defaults.h"
@@ -158,10 +156,10 @@ char installDir[MSG_SIZ];
 
 BoardSize boardSize;
 BOOLEAN chessProgram;
-static int boardX, boardY;
+//static int boardX, boardY;
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 static int squareSize, lineGap, minorSize;
-static int winWidth, winHeight, winW, winH;
+static int winW, winH;
 static RECT messageRect, whiteRect, blackRect, leftLogoRect, rightLogoRect; // [HGM] logo
 static int logoHeight = 0;
 static char messageText[MESSAGE_TEXT_MAX];
@@ -181,8 +179,6 @@ char *secondChessProgramNames;
 #define PALETTESIZE 256
 
 HINSTANCE hInst;          /* current instance */
-HWND hwndMain = NULL;        /* root window*/
-HWND hwndConsole = NULL;
 BOOLEAN alwaysOnTop = FALSE;
 RECT boardRect;
 COLORREF lightSquareColor, darkSquareColor, whitePieceColor, 
@@ -346,15 +342,7 @@ static char *commentTitle;
 static char *commentText;
 static int commentIndex;
 static Boolean editComment = FALSE;
-HWND commentDialog = NULL;
-int commentUp = FALSE;
-static int commentX, commentY, commentH, commentW;
 
-static char *analysisTitle;
-static char *analysisText;
-HWND analysisDialog = NULL;
-BOOLEAN analysisDialogUp = FALSE;
-static int analysisX, analysisY, analysisH, analysisW;
 
 char errorTitle[MSG_SIZ];
 char errorMessage[2*MSG_SIZ];
@@ -424,37 +412,27 @@ VOID UpdateSampleText(HWND hDlg, int id, MyColorizeAttribs *mca);
 int NewGameFRC();
 int GameListOptions();
 
+int dummy; // [HGM] for obsolete args
+
+HWND hwndMain = NULL;        /* root window*/
+HWND hwndConsole = NULL;
+HWND commentDialog = NULL;
 HWND moveHistoryDialog = NULL;
-BOOLEAN moveHistoryDialogUp = FALSE;
-
-WindowPlacement wpMoveHistory;
-
 HWND evalGraphDialog = NULL;
-BOOLEAN evalGraphDialogUp = FALSE;
-
-WindowPlacement wpEvalGraph;
-
 HWND engineOutputDialog = NULL;
-BOOLEAN engineOutputDialogUp = FALSE;
+HWND gameListDialog = NULL;
+HWND editTagsDialog = NULL;
 
+int commentUp = FALSE;
+
+WindowPlacement wpMain;
+WindowPlacement wpConsole;
+WindowPlacement wpComment;
+WindowPlacement wpMoveHistory;
+WindowPlacement wpEvalGraph;
 WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
-WindowPlacement wpConsole;
-
-VOID MoveHistoryPopUp();
-VOID MoveHistoryPopDown();
-VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo );
-BOOL MoveHistoryIsUp();
-
-VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
-VOID EvalGraphPopUp();
-VOID EvalGraphPopDown();
-BOOL EvalGraphIsUp();
-
-VOID EngineOutputPopUp();
-VOID EngineOutputPopDown();
-BOOL EngineOutputIsUp();
-VOID EngineOutputUpdate( FrontEndProgramStats * stats );
+WindowPlacement wpTags;
 
 VOID EngineOptionsPopup(); // [HGM] settings
 
@@ -861,15 +839,15 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   InitBackEnd2();
 
   /* Make the window visible; update its client area; and return "success" */
-  EnsureOnScreen(&boardX, &boardY, minX, minY);
+  EnsureOnScreen(&wpMain.x, &wpMain.y, minX, minY);
   wp.length = sizeof(WINDOWPLACEMENT);
   wp.flags = 0;
   wp.showCmd = nCmdShow;
   wp.ptMaxPosition.x = wp.ptMaxPosition.y = 0;
-  wp.rcNormalPosition.left = boardX;
-  wp.rcNormalPosition.right = boardX + winWidth;
-  wp.rcNormalPosition.top = boardY;
-  wp.rcNormalPosition.bottom = boardY + winHeight;
+  wp.rcNormalPosition.left = wpMain.x;
+  wp.rcNormalPosition.right = wpMain.x + wpMain.width;
+  wp.rcNormalPosition.top = wpMain.y;
+  wp.rcNormalPosition.bottom = wpMain.y + wpMain.height;
   SetWindowPlacement(hwndMain, &wp);
 
   if(!appData.noGUI) SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
@@ -1399,26 +1377,26 @@ ArgDescriptor argDescriptors[] = {
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
   { "minX", ArgZ, (LPVOID) &minX, FALSE }, // [HGM] placement: to make suer auxialary windows can be placed
   { "minY", ArgZ, (LPVOID) &minY, FALSE },
-  { "winWidth",  ArgInt, (LPVOID) &winWidth,  TRUE }, // [HGM] placement: dummies to remember right & bottom
-  { "winHeight", ArgInt, (LPVOID) &winHeight, TRUE }, //       for attaching auxiliary windows to them
-  { "x", ArgInt, (LPVOID) &boardX, TRUE },
-  { "y", ArgInt, (LPVOID) &boardY, TRUE },
+  { "winWidth",  ArgInt, (LPVOID) &wpMain.width,  TRUE }, // [HGM] placement: dummies to remember right & bottom
+  { "winHeight", ArgInt, (LPVOID) &wpMain.height, TRUE }, //       for attaching auxiliary windows to them
+  { "x", ArgInt, (LPVOID) &wpMain.x, TRUE },
+  { "y", ArgInt, (LPVOID) &wpMain.y, TRUE },
   { "icsX", ArgX,   (LPVOID) &wpConsole.x, TRUE },
   { "icsY", ArgY,   (LPVOID) &wpConsole.y, TRUE },
   { "icsW", ArgInt, (LPVOID) &wpConsole.width, TRUE },
   { "icsH", ArgInt, (LPVOID) &wpConsole.height, TRUE },
-  { "analysisX", ArgX,   (LPVOID) &analysisX, FALSE }, // [HGM] placement: analysis window no longer exists
-  { "analysisY", ArgY,   (LPVOID) &analysisY, FALSE }, //       provided for compatibility with old ini files
-  { "analysisW", ArgInt, (LPVOID) &analysisW, FALSE },
-  { "analysisH", ArgInt, (LPVOID) &analysisH, FALSE },
-  { "commentX", ArgX,   (LPVOID) &commentX, TRUE },
-  { "commentY", ArgY,   (LPVOID) &commentY, TRUE },
-  { "commentW", ArgInt, (LPVOID) &commentW, TRUE },
-  { "commentH", ArgInt, (LPVOID) &commentH, TRUE },
-  { "tagsX", ArgX,   (LPVOID) &editTagsX, TRUE },
-  { "tagsY", ArgY,   (LPVOID) &editTagsY, TRUE },
-  { "tagsW", ArgInt, (LPVOID) &editTagsW, TRUE },
-  { "tagsH", ArgInt, (LPVOID) &editTagsH, TRUE },
+  { "analysisX", ArgX,   (LPVOID) &dummy, FALSE }, // [HGM] placement: analysis window no longer exists
+  { "analysisY", ArgY,   (LPVOID) &dummy, FALSE }, //       provided for compatibility with old ini files
+  { "analysisW", ArgInt, (LPVOID) &dummy, FALSE },
+  { "analysisH", ArgInt, (LPVOID) &dummy, FALSE },
+  { "commentX", ArgX,   (LPVOID) &wpComment.x, TRUE },
+  { "commentY", ArgY,   (LPVOID) &wpComment.y, TRUE },
+  { "commentW", ArgInt, (LPVOID) &wpComment.width, TRUE },
+  { "commentH", ArgInt, (LPVOID) &wpComment.height, TRUE },
+  { "tagsX", ArgX,   (LPVOID) &wpTags.x, TRUE },
+  { "tagsY", ArgY,   (LPVOID) &wpTags.y, TRUE },
+  { "tagsW", ArgInt, (LPVOID) &wpTags.width, TRUE },
+  { "tagsH", ArgInt, (LPVOID) &wpTags.height, TRUE },
   { "gameListX", ArgX,   (LPVOID) &wpGameList.x, TRUE },
   { "gameListY", ArgY,   (LPVOID) &wpGameList.y, TRUE },
   { "gameListW", ArgInt, (LPVOID) &wpGameList.width, TRUE },
@@ -1777,16 +1755,16 @@ ParseArgs(GetFunc get, void *cl)
       break;
 
     case ArgX:
-      *(int *) ad->argLoc = atoi(argValue) + boardX; // [HGM] placement: translate stored relative to absolute 
+      *(int *) ad->argLoc = atoi(argValue) + wpMain.x; // [HGM] placement: translate stored relative to absolute 
       break;
 
     case ArgY:
-      *(int *) ad->argLoc = atoi(argValue) + boardY; // (this is really kludgey, it should be done where used...)
+      *(int *) ad->argLoc = atoi(argValue) + wpMain.y; // (this is really kludgey, it should be done where used...)
       break;
 
     case ArgZ:
       *(int *) ad->argLoc = atoi(argValue);
-      EnsureOnScreen(&boardX, &boardY, minX, minY); 
+      EnsureOnScreen(&wpMain.x, &wpMain.y, minX, minY); 
       break;
 
     case ArgFloat:
@@ -2050,20 +2028,16 @@ InitAppData(LPSTR lpCmdLine)
   dcb.StopBits = ONESTOPBIT;
   settingsFileName = SETTINGS_FILE;
   saveSettingsOnExit = TRUE;
-  boardX = CW_USEDEFAULT;
-  boardY = CW_USEDEFAULT;
-  analysisX = CW_USEDEFAULT; 
-  analysisY = CW_USEDEFAULT; 
-  analysisW = CW_USEDEFAULT;
-  analysisH = CW_USEDEFAULT;
-  commentX = CW_USEDEFAULT; 
-  commentY = CW_USEDEFAULT; 
-  commentW = CW_USEDEFAULT;
-  commentH = CW_USEDEFAULT;
-  editTagsX = CW_USEDEFAULT; 
-  editTagsY = CW_USEDEFAULT; 
-  editTagsW = CW_USEDEFAULT;
-  editTagsH = CW_USEDEFAULT;
+  wpMain.x = CW_USEDEFAULT;
+  wpMain.y = CW_USEDEFAULT;
+  wpComment.x = CW_USEDEFAULT; 
+  wpComment.y = CW_USEDEFAULT; 
+  wpComment.width = CW_USEDEFAULT;
+  wpComment.height = CW_USEDEFAULT;
+  wpTags.x = CW_USEDEFAULT; 
+  wpTags.y = CW_USEDEFAULT; 
+  wpTags.width = CW_USEDEFAULT;
+  wpTags.height = CW_USEDEFAULT;
   icsTextMenuString = ICS_TEXT_MENU_DEFAULT;
   icsNames = ICS_NAMES;
   firstChessProgramNames = FCP_NAMES;
@@ -2304,16 +2278,49 @@ InitMenuChecks()
 				     MF_CHECKED : MF_UNCHECKED));
 }
 
+// [HGM] args: these two cases taken out to stay in front-end
+      void SaveFontArg(FILE *f, ArgDescriptor *ad)
+      {
+        int bs;
+	for (bs=0; bs<NUM_SIZES; bs++) {
+	  MyFontParams *mfp = &font[bs][(int) ad->argLoc]->mfp;
+          fprintf(f, "/size=%s ", sizeInfo[bs].name);
+	  fprintf(f, "/%s=\"%s:%g%s%s%s%s%sc%d\"\n",
+	    ad->argName, mfp->faceName, mfp->pointSize,
+            mfp->bold || mfp->italic || mfp->underline || mfp->strikeout ? " " : "",
+	    mfp->bold ? "b" : "",
+	    mfp->italic ? "i" : "",
+	    mfp->underline ? "u" : "",
+	    mfp->strikeout ? "s" : "",
+            (int)mfp->charset);
+	}
+      }
+
+      void SaveAttribsArg(FILE *f, ArgDescriptor *ad)
+      {
+	MyTextAttribs* ta = &textAttribs[(ColorClass)ad->argLoc];
+	fprintf(f, "/%s=\"%s%s%s%s%s#%02lx%02lx%02lx\"\n", ad->argName,
+          (ta->effects & CFE_BOLD) ? "b" : "",
+          (ta->effects & CFE_ITALIC) ? "i" : "",
+          (ta->effects & CFE_UNDERLINE) ? "u" : "",
+          (ta->effects & CFE_STRIKEOUT) ? "s" : "",
+          (ta->effects) ? " " : "",
+	  ta->color&0xff, (ta->color >> 8)&0xff, (ta->color >> 16)&0xff);
+      }
+
+int MainWindowUp()
+{ // [HGM] args: allows testing if main window is realized from back-end
+  return hwndMain != NULL;
+}
 
 VOID
 SaveSettings(char* name)
 {
   FILE *f;
   ArgDescriptor *ad;
-  WINDOWPLACEMENT wp;
   char dir[MSG_SIZ];
 
-  if (!hwndMain) return;
+  if (!MainWindowUp()) return;
 
   GetCurrentDirectory(MSG_SIZ, dir);
   SetCurrentDirectory(installDir);
@@ -2331,83 +2338,23 @@ SaveSettings(char* name)
   fprintf(f, "; Use a shortcut, an @indirection file, or a .bat file instead.\n");
   fprintf(f, ";\n");
 
-  wp.length = sizeof(WINDOWPLACEMENT);
-  GetWindowPlacement(hwndMain, &wp);
-  boardX = wp.rcNormalPosition.left;
-  boardY = wp.rcNormalPosition.top;
-
-  if (hwndConsole) {
-    GetWindowPlacement(hwndConsole, &wp);
-    wpConsole.x = wp.rcNormalPosition.left;
-    wpConsole.y = wp.rcNormalPosition.top;
-    wpConsole.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    wpConsole.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
-  }
-
-  if (analysisDialog) {
-    GetWindowPlacement(analysisDialog, &wp);
-    analysisX = wp.rcNormalPosition.left;
-    analysisY = wp.rcNormalPosition.top;
-    analysisW = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    analysisH = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
-  }
-
-  if (commentDialog) {
-    GetWindowPlacement(commentDialog, &wp);
-    commentX = wp.rcNormalPosition.left;
-    commentY = wp.rcNormalPosition.top;
-    commentW = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    commentH = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
-  }
-
-  if (editTagsDialog) {
-    GetWindowPlacement(editTagsDialog, &wp);
-    editTagsX = wp.rcNormalPosition.left;
-    editTagsY = wp.rcNormalPosition.top;
-    editTagsW = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    editTagsH = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
-  }
-
-  if (gameListDialog) {
-    GetWindowPlacement(gameListDialog, &wp);
-    wpGameList.x = wp.rcNormalPosition.left;
-    wpGameList.y = wp.rcNormalPosition.top;
-    wpGameList.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    wpGameList.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
-  }
+  GetActualPlacement(hwndMain, &wpMain);
+  GetActualPlacement(hwndConsole, &wpConsole);
+  GetActualPlacement(commentDialog, &wpComment);
+  GetActualPlacement(editTagsDialog, &wpTags);
+  GetActualPlacement(gameListDialog, &wpGameList);
 
   /* [AS] Move history */
   wpMoveHistory.visible = MoveHistoryIsUp();
-  
-  if( moveHistoryDialog ) {
-    GetWindowPlacement(moveHistoryDialog, &wp);
-    wpMoveHistory.x = wp.rcNormalPosition.left;
-    wpMoveHistory.y = wp.rcNormalPosition.top;
-    wpMoveHistory.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    wpMoveHistory.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
-  }
+  GetActualPlacement(moveHistoryDialog, &wpMoveHistory);
 
   /* [AS] Eval graph */
   wpEvalGraph.visible = EvalGraphIsUp();
-
-  if( evalGraphDialog ) {
-    GetWindowPlacement(evalGraphDialog, &wp);
-    wpEvalGraph.x = wp.rcNormalPosition.left;
-    wpEvalGraph.y = wp.rcNormalPosition.top;
-    wpEvalGraph.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    wpEvalGraph.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
-  }
+  GetActualPlacement(evalGraphDialog, &wpEvalGraph);
 
   /* [AS] Engine output */
   wpEngineOutput.visible = EngineOutputIsUp();
-
-  if( engineOutputDialog ) {
-    GetWindowPlacement(engineOutputDialog, &wp);
-    wpEngineOutput.x = wp.rcNormalPosition.left;
-    wpEngineOutput.y = wp.rcNormalPosition.top;
-    wpEngineOutput.width = wp.rcNormalPosition.right - wp.rcNormalPosition.left;
-    wpEngineOutput.height = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
-  }
+  GetActualPlacement(engineOutputDialog, &wpEngineOutput);
 
   for (ad = argDescriptors; ad->argName != NULL; ad++) {
     if (!ad->save) continue;
@@ -2443,10 +2390,10 @@ SaveSettings(char* name)
       fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc);
       break;
     case ArgX:
-      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - boardX); // [HGM] placement: stor relative value
+      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - wpMain.x); // [HGM] placement: stor relative value
       break;
     case ArgY:
-      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - boardY);
+      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - wpMain.y);
       break;
     case ArgFloat:
       fprintf(f, "/%s=%g\n", ad->argName, *(float *)ad->argLoc);
@@ -2469,16 +2416,7 @@ SaveSettings(char* name)
       }
       break;
     case ArgAttribs:
-      {
-	MyTextAttribs* ta = &textAttribs[(ColorClass)ad->argLoc];
-	fprintf(f, "/%s=\"%s%s%s%s%s#%02lx%02lx%02lx\"\n", ad->argName,
-          (ta->effects & CFE_BOLD) ? "b" : "",
-          (ta->effects & CFE_ITALIC) ? "i" : "",
-          (ta->effects & CFE_UNDERLINE) ? "u" : "",
-          (ta->effects & CFE_STRIKEOUT) ? "s" : "",
-          (ta->effects) ? " " : "",
-	  ta->color&0xff, (ta->color >> 8)&0xff, (ta->color >> 16)&0xff);
-      }
+      SaveAttribsArg(f, ad);
       break;
     case ArgFilename:
       if (strchr(*(char **)ad->argLoc, '\"')) {
@@ -2492,21 +2430,7 @@ SaveSettings(char* name)
 	      sizeInfo[*(BoardSize *)ad->argLoc].name);
       break;
     case ArgFont:
-      {
-        int bs;
-	for (bs=0; bs<NUM_SIZES; bs++) {
-	  MyFontParams *mfp = &font[bs][(int) ad->argLoc]->mfp;
-          fprintf(f, "/size=%s ", sizeInfo[bs].name);
-	  fprintf(f, "/%s=\"%s:%g%s%s%s%s%sc%d\"\n",
-	    ad->argName, mfp->faceName, mfp->pointSize,
-            mfp->bold || mfp->italic || mfp->underline || mfp->strikeout ? " " : "",
-	    mfp->bold ? "b" : "",
-	    mfp->italic ? "i" : "",
-	    mfp->underline ? "u" : "",
-	    mfp->strikeout ? "s" : "",
-            (int)mfp->charset);
-	}
-      }
+      SaveFontArg(f, ad);
       break;
     case ArgCommSettings:
       PrintCommSettings(f, ad->argName, (DCB *)ad->argLoc);
@@ -3032,7 +2956,7 @@ void CreatePiecesFromFont()
                 }
                 else if( strstr(lf.lfFaceName,"GC2004D") != NULL ) {
                     /* Good Companion (Some characters get warped as literal :-( */
-                    char s[] = "1cmWG0ñueOS¯®oYI23wgQU";
+                    char s[] = "1cmWG0??S??oYI23wgQU";
                     s[0]=0xB9; s[1]=0xA9; s[6]=0xB1; s[11]=0xBB; s[12]=0xAB; s[17]=0xB3;
                     SetCharTable(pieceToFontChar, s);
                 }
@@ -3200,10 +3124,10 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   /* [HGM] call with -2 uses old size (for if nr of files, ranks changes) */
   if(boardSize == (BoardSize)(-2) ) boardSize = oldBoardSize;
 
-  oldRect.left = boardX; //[HGM] placement: remember previous window params
-  oldRect.top = boardY;
-  oldRect.right = boardX + winWidth;
-  oldRect.bottom = boardY + winHeight;
+  oldRect.left = wpMain.x; //[HGM] placement: remember previous window params
+  oldRect.top = wpMain.y;
+  oldRect.right = wpMain.x + wpMain.width;
+  oldRect.bottom = wpMain.y + wpMain.height;
 
   tinyLayout = sizeInfo[boardSize].tinyLayout;
   smallLayout = sizeInfo[boardSize].smallLayout;
@@ -3311,49 +3235,49 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   winH = 2 * GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYMENU) +
     GetSystemMetrics(SM_CYCAPTION) + boardRect.bottom + OUTER_MARGIN;
   if(suppressVisibleEffects) return; // [HGM] when called for filling sizeInfo only
-  winWidth = winW;  // [HGM] placement: set through temporary which can used by initial sizing choice
-  winHeight = winH; //       without disturbing window attachments
+  wpMain.width = winW;  // [HGM] placement: set through temporary which can used by initial sizing choice
+  wpMain.height = winH; //       without disturbing window attachments
   GetWindowRect(hwndMain, &wrect);
-  SetWindowPos(hwndMain, NULL, 0, 0, winWidth, winHeight,
+  SetWindowPos(hwndMain, NULL, 0, 0, wpMain.width, wpMain.height,
 	       SWP_NOCOPYBITS|SWP_NOZORDER|SWP_NOMOVE);
 
   // [HGM] placement: let attached windows follow size change.
-  ReattachAfterSize( &oldRect, winWidth, winHeight, moveHistoryDialog, &wpMoveHistory );
-  ReattachAfterSize( &oldRect, winWidth, winHeight, evalGraphDialog, &wpEvalGraph );
-  ReattachAfterSize( &oldRect, winWidth, winHeight, engineOutputDialog, &wpEngineOutput );
-  ReattachAfterSize( &oldRect, winWidth, winHeight, gameListDialog, &wpGameList );
-  ReattachAfterSize( &oldRect, winWidth, winHeight, hwndConsole, &wpConsole );
+  ReattachAfterSize( &oldRect, wpMain.width, wpMain.height, moveHistoryDialog, &wpMoveHistory );
+  ReattachAfterSize( &oldRect, wpMain.width, wpMain.height, evalGraphDialog, &wpEvalGraph );
+  ReattachAfterSize( &oldRect, wpMain.width, wpMain.height, engineOutputDialog, &wpEngineOutput );
+  ReattachAfterSize( &oldRect, wpMain.width, wpMain.height, gameListDialog, &wpGameList );
+  ReattachAfterSize( &oldRect, wpMain.width, wpMain.height, hwndConsole, &wpConsole );
 
   /* compensate if menu bar wrapped */
   GetClientRect(hwndMain, &crect);
   offby = boardRect.bottom + OUTER_MARGIN - crect.bottom;
-  winHeight += offby;
+  wpMain.height += offby;
   switch (flags) {
   case WMSZ_TOPLEFT:
     SetWindowPos(hwndMain, NULL, 
-                 wrect.right - winWidth, wrect.bottom - winHeight, 
-                 winWidth, winHeight, SWP_NOCOPYBITS|SWP_NOZORDER);
+                 wrect.right - wpMain.width, wrect.bottom - wpMain.height, 
+                 wpMain.width, wpMain.height, SWP_NOCOPYBITS|SWP_NOZORDER);
     break;
 
   case WMSZ_TOPRIGHT:
   case WMSZ_TOP:
     SetWindowPos(hwndMain, NULL, 
-                 wrect.left, wrect.bottom - winHeight, 
-                 winWidth, winHeight, SWP_NOCOPYBITS|SWP_NOZORDER);
+                 wrect.left, wrect.bottom - wpMain.height, 
+                 wpMain.width, wpMain.height, SWP_NOCOPYBITS|SWP_NOZORDER);
     break;
 
   case WMSZ_BOTTOMLEFT:
   case WMSZ_LEFT:
     SetWindowPos(hwndMain, NULL, 
-                 wrect.right - winWidth, wrect.top, 
-                 winWidth, winHeight, SWP_NOCOPYBITS|SWP_NOZORDER);
+                 wrect.right - wpMain.width, wrect.top, 
+                 wpMain.width, wpMain.height, SWP_NOCOPYBITS|SWP_NOZORDER);
     break;
 
   case WMSZ_BOTTOMRIGHT:
   case WMSZ_BOTTOM:
   case WMSZ_RIGHT:
   default:
-    SetWindowPos(hwndMain, NULL, 0, 0, winWidth, winHeight,
+    SetWindowPos(hwndMain, NULL, 0, 0, wpMain.width, wpMain.height,
                SWP_NOCOPYBITS|SWP_NOZORDER|SWP_NOMOVE);
     break;
   }
@@ -6252,18 +6176,18 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             RECT rcMain;
 
 //            GetWindowRect( hwnd, &rcMain ); //[HGM] sticky: in XP this returned new position, not old
-	    rcMain.left   = boardX;           //              replace by these 4 lines to reconstruct old rect
-	    rcMain.right  = boardX + winWidth;
-	    rcMain.top    = boardY;
-	    rcMain.bottom = boardY + winHeight;
+	    rcMain.left   = wpMain.x;           //              replace by these 4 lines to reconstruct old rect
+	    rcMain.right  = wpMain.x + wpMain.width;
+	    rcMain.top    = wpMain.y;
+	    rcMain.bottom = wpMain.y + wpMain.height;
             
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, moveHistoryDialog, &wpMoveHistory );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, evalGraphDialog, &wpEvalGraph );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, engineOutputDialog, &wpEngineOutput );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, gameListDialog, &wpGameList );
             ReattachAfterMove( &rcMain, lpwp->x, lpwp->y, hwndConsole, &wpConsole );
-	    boardX = lpwp->x;
-            boardY = lpwp->y;
+	    wpMain.x = lpwp->x;
+            wpMain.y = lpwp->y;
         }
     }
     break;
@@ -7026,18 +6950,18 @@ CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       GetClientRect(hDlg, &rect);
       sizeX = rect.right;
       sizeY = rect.bottom;
-      if (commentX != CW_USEDEFAULT && commentY != CW_USEDEFAULT &&
-	  commentW != CW_USEDEFAULT && commentH != CW_USEDEFAULT) {
+      if (wpComment.x != CW_USEDEFAULT && wpComment.y != CW_USEDEFAULT &&
+	  wpComment.width != CW_USEDEFAULT && wpComment.height != CW_USEDEFAULT) {
 	WINDOWPLACEMENT wp;
-	EnsureOnScreen(&commentX, &commentY, 0, 0);
+	EnsureOnScreen(&wpComment.x, &wpComment.y, 0, 0);
 	wp.length = sizeof(WINDOWPLACEMENT);
 	wp.flags = 0;
 	wp.showCmd = SW_SHOW;
 	wp.ptMaxPosition.x = wp.ptMaxPosition.y = 0;
-	wp.rcNormalPosition.left = commentX;
-	wp.rcNormalPosition.right = commentX + commentW;
-	wp.rcNormalPosition.top = commentY;
-	wp.rcNormalPosition.bottom = commentY + commentH;
+	wp.rcNormalPosition.left = wpComment.x;
+	wp.rcNormalPosition.right = wpComment.x + wpComment.width;
+	wp.rcNormalPosition.top = wpComment.y;
+	wp.rcNormalPosition.bottom = wpComment.y + wpComment.height;
 	SetWindowPlacement(hDlg, &wp);
 
 	GetClientRect(hDlg, &rect);
@@ -7416,7 +7340,7 @@ GothicDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG:
     GetWindowRect(hDlg, &rChild);
 
-    SetWindowPos(hDlg, NULL, boardX, boardY-height, winWidth, height,
+    SetWindowPos(hDlg, NULL, wpMain.x, wpMain.y-height, wpMain.width, height,
                                                              SWP_NOZORDER);
 
     /* 
@@ -8037,10 +7961,10 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
    // [HGM] Chessknight's change 2004-07-13
    else { /* Determine Defaults */
        WINDOWPLACEMENT wp;
-       wpConsole.x = winWidth + 1;
-       wpConsole.y = boardY;
-       wpConsole.width = screenWidth -  winWidth;
-       wpConsole.height = winHeight;
+       wpConsole.x = wpMain.width + 1;
+       wpConsole.y = wpMain.y;
+       wpConsole.width = screenWidth -  wpMain.width;
+       wpConsole.height = wpMain.height;
        EnsureOnScreen(&wpConsole.x, &wpConsole.y, 0, 0);
        wp.length = sizeof(WINDOWPLACEMENT);
        wp.flags = 0;
@@ -10488,86 +10412,6 @@ StartAnalysisClock()
   if (analysisTimerEvent) return;
   analysisTimerEvent = SetTimer(hwndMain, (UINT) ANALYSIS_TIMER_ID,
 		                        (UINT) 2000, NULL);
-}
-
-LRESULT CALLBACK
-AnalysisDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-  static HANDLE hwndText;
-  RECT rect;
-  static int sizeX, sizeY;
-  int newSizeX, newSizeY, flags;
-  MINMAXINFO *mmi;
-
-  switch (message) {
-  case WM_INITDIALOG: /* message: initialize dialog box */
-    /* Initialize the dialog items */
-    hwndText = GetDlgItem(hDlg, OPT_AnalysisText);
-    SetWindowText(hDlg, analysisTitle);
-    SetDlgItemText(hDlg, OPT_AnalysisText, analysisText);
-    /* Size and position the dialog */
-    if (!analysisDialog) {
-      analysisDialog = hDlg;
-      flags = SWP_NOZORDER;
-      GetClientRect(hDlg, &rect);
-      sizeX = rect.right;
-      sizeY = rect.bottom;
-      if (analysisX != CW_USEDEFAULT && analysisY != CW_USEDEFAULT &&
-	  analysisW != CW_USEDEFAULT && analysisH != CW_USEDEFAULT) {
-	WINDOWPLACEMENT wp;
-	EnsureOnScreen(&analysisX, &analysisY, 0, 0);
-	wp.length = sizeof(WINDOWPLACEMENT);
-	wp.flags = 0;
-	wp.showCmd = SW_SHOW;
-	wp.ptMaxPosition.x = wp.ptMaxPosition.y = 0;
-	wp.rcNormalPosition.left = analysisX;
-	wp.rcNormalPosition.right = analysisX + analysisW;
-	wp.rcNormalPosition.top = analysisY;
-	wp.rcNormalPosition.bottom = analysisY + analysisH;
-	SetWindowPlacement(hDlg, &wp);
-
-	GetClientRect(hDlg, &rect);
-	newSizeX = rect.right;
-	newSizeY = rect.bottom;
-        ResizeEditPlusButtons(hDlg, hwndText, sizeX, sizeY,
-			      newSizeX, newSizeY);
-	sizeX = newSizeX;
-	sizeY = newSizeY;
-      }
-    }
-    return FALSE;
-
-  case WM_COMMAND: /* message: received a command */
-    switch (LOWORD(wParam)) {
-    case IDCANCEL:
-      if (appData.icsActive && appData.icsEngineAnalyze) { /* [DM] icsEngineAnalyze */
-          ExitAnalyzeMode();
-          ModeHighlight();
-          return TRUE;
-      }
-      EditGameEvent();
-      return TRUE;
-    default:
-      break;
-    }
-    break;
-
-  case WM_SIZE:
-    newSizeX = LOWORD(lParam);
-    newSizeY = HIWORD(lParam);
-    ResizeEditPlusButtons(hDlg, hwndText, sizeX, sizeY, newSizeX, newSizeY);
-    sizeX = newSizeX;
-    sizeY = newSizeY;
-    break;
-
-  case WM_GETMINMAXINFO:
-    /* Prevent resizing window too small */
-    mmi = (MINMAXINFO *) lParam;
-    mmi->ptMinTrackSize.x = 100;
-    mmi->ptMinTrackSize.y = 100;
-    break;
-  }
-  return FALSE;
 }
 
 VOID

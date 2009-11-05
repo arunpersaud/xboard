@@ -33,6 +33,7 @@
 #include <dlgs.h>
 
 #include "common.h"
+#include "frontend.h"
 #include "winboard.h"
 
 VOID RestoreWindowPlacement( HWND hWnd, WindowPlacement * wp )
@@ -93,7 +94,7 @@ static BOOL IsDefaultPlacement( WindowPlacement * wp )
     return result;
 }
 
-static BOOL GetActualPlacement( HWND hWnd, WindowPlacement * wp )
+BOOL GetActualPlacement( HWND hWnd, WindowPlacement * wp )
 {
     BOOL result = FALSE;
 

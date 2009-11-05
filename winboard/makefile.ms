@@ -122,11 +122,11 @@ wclipbrd.obj: wclipbrd.c config.h ../common.h ../frontend.h ../backend.h \
         $(CC) $(CFLAGS) wclipbrd.c
 
 wedittags.obj: wedittags.c config.h ../common.h winboard.h resource.h ../frontend.h \
-        ../backend.h ../lists.h wedittags.h
+        ../backend.h ../lists.h
         $(CC) $(CFLAGS) wedittags.c
 
 wgamelist.obj: wgamelist.c config.h. ../common.h winboard.h resource.h ../frontend.h \
-        ../backend.h wgamelist.h ../lists.h
+        ../backend.h ../lists.h
         $(CC) $(CFLAGS) wgamelist.c
 
 woptions.obj: woptions.c config.h ../common.h ../frontend.h ../backend.h \
@@ -145,7 +145,7 @@ wevalgraph.obj: wevalgraph.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
         $(CC) $(CFLAGS) wevalgraph.c
 
-wlayout.obj: wlayout.c config.h ../common.h winboard.h resource.h
+wlayout.obj: wlayout.c config.h ../common.h ../frontend.h winboard.h resource.h
         $(CC) $(CFLAGS) wlayout.c
 
 wsockerr.obj: wsockerr.c wsockerr.h

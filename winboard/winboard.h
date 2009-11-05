@@ -173,6 +173,19 @@ extern MyFont *font[NUM_SIZES][NUM_FONTS];
 #define COPY_TMP "wbcopy.tmp"
 #define PASTE_TMP "wbpaste.tmp"
 
+/* variables */
+extern HINSTANCE hInst;
+extern HWND hwndMain;
+extern BoardSize boardSize;
+
+// [HGM] Some stuff to allo a platform-independent reference to windows
+// This should be moved to frontend.h in due time
+
+typedef enum {
+  W_Main, W_Console, W_Comment, W_Tags, W_GameList, 
+  W_MoveHist, W_EngineOut, W_GameList, NUM_WINDOWS
+} WindowID;
+
 /* [AS] Layout management */
 typedef struct {
     Boolean visible;
@@ -182,10 +195,41 @@ typedef struct {
     int height;
 } WindowPlacement;
 
+extern WindowPlacement placementTab[NUM_WINDOWS];
+extern HWND hwndTab[NUM_WINDOWS]; // this remains pure front-end.
+
 VOID InitWindowPlacement( WindowPlacement * wp );
-
 VOID RestoreWindowPlacement( HWND hWnd, WindowPlacement * wp );
-
 VOID ReattachAfterMove( LPRECT lprcOldPos, int new_x, int new_y, HWND hWndChild, WindowPlacement * pwpChild );
-
 VOID ReattachAfterSize( LPRECT lprcOldPos, int new_w, int new_h, HWND hWndChild, WindowPlacement * pwpChild );
+BOOL GetActualPlacement( HWND hWnd, WindowPlacement * wp );
+
+extern WindowPlacement wpEngineOutput;
+extern WindowPlacement wpEvalGraph;
+extern WindowPlacement wpMoveHistory;
+extern WindowPlacement wpGameList;
+extern WindowPlacement wpTags;
+
+VOID MoveHistoryPopUp();
+VOID MoveHistoryPopDown();
+VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo );
+BOOL MoveHistoryIsUp();
+extern HWND moveHistoryDialog;
+
+VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
+VOID EvalGraphPopUp();
+VOID EvalGraphPopDown();
+Boolean EvalGraphIsUp();
+extern HWND evalGraphDialog;
+
+VOID EngineOutputPopUp();
+VOID EngineOutputPopDown();
+BOOL EngineOutputIsUp();
+VOID EngineOutputUpdate( FrontEndProgramStats * stats );
+extern HWND engineOutputDialog;
+
+VOID ShowGameListProc(void);
+extern HWND gameListDialog;
+
+VOID EditTagsProc(void);
+extern HWND editTagsDialog;

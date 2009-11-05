@@ -34,9 +34,9 @@
 #include <dlgs.h>
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
+#include "winboard.h"
 
 #include "wsnap.h"
 
@@ -61,26 +61,7 @@ HICON icons[8]; // [HGM] this front-end array translates back-end icon indicator
 
 HWND outputField[2][7]; // [HGM] front-end array to translate output field to window handle
 
-void EngineOutputPopUp();
-void EngineOutputPopDown();
-int  EngineOutputIsUp();
-
 #define SHOW_PONDERING
-
-/* Imports from backend.c */
-char * SavePart(char *str);
-extern int opponentKibitzes;
-
-/* Imports from winboard.c */
-extern HWND engineOutputDialog;
-extern int     engineOutputDialogUp;
-
-extern HINSTANCE hInst;
-extern HWND hwndMain;
-
-extern WindowPlacement wpEngineOutput;
-
-extern BoardSize boardSize;
 
 /* Module variables */
 #define H_MARGIN            2
@@ -97,12 +78,11 @@ extern BoardSize boardSize;
 #define STATE_ANALYZING  3
 
 static int  windowMode = 1;
-
 static int  needInit = TRUE;
-
 static int  lastDepth[2] = { -1, -1 };
 static int  lastForwardMostMove[2] = { -1, -1 };
 static int  engineState[2] = { -1, -1 };
+static BOOLEAN engineOutputDialogUp = FALSE;
 
 typedef struct {
 //    HWND hColorIcon; // [HGM] the output-control handles are no loger passed,

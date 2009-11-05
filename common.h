@@ -655,6 +655,13 @@ typedef struct {
     int holdingsWidth; /* number of files left and right of board, 0 or 2   */
 } GameInfo;
 
+/* [AS] Search stats from chessprogram, for the played move */
+typedef struct {
+    int score;  /* Centipawns */
+    int depth;  /* Plies */
+    int time;   /* Milliseconds */
+} ChessProgramStats_Move;
+
 // [HGM] chat	
 #define MAX_CHAT 3
 extern int chatCount;

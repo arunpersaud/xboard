@@ -37,9 +37,6 @@
 #include "frontend.h"
 #include "backend.h"
 
-/* Imports from winboard.c */
-extern BOOLEAN evalGraphDialogUp; // should be back-end variable, and defined here
-
 /* Module globals */ // used to communicate between back-end and front-end part
 static ChessProgramStats_Move * currPvInfo;
 static int currFirst = 0;
@@ -347,11 +344,6 @@ void PaintEvalGraph( void )
     DrawHistograms();
 }
 
-Boolean EvalGraphIsUp()
-{
-    return evalGraphDialogUp;
-}
-
 // ------------------------------------------ front-end starts here ----------------------------------------------
 
 #include <commdlg.h>
@@ -362,18 +354,12 @@ Boolean EvalGraphIsUp()
 
 #define WM_REFRESH_GRAPH    (WM_USER + 1)
 
-void EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
-void EvalGraphPopUp();
-void EvalGraphPopDown();
-Boolean EvalGraphIsUp();
-
 // calls of front-end part into back-end part
 extern int GetMoveIndexFromPoint( int x, int y );
 extern void PaintEvalGraph( void );
 
 /* Imports from winboard.c */
-extern HWND evalGraphDialog;
-extern BOOLEAN evalGraphDialogUp; // should be back-end, really
+static BOOLEAN evalGraphDialogUp; // should be back-end, really
 
 extern HINSTANCE hInst;
 extern HWND hwndMain;
@@ -387,6 +373,11 @@ static HDC hdcPB = NULL;
 static HBITMAP hbmPB = NULL;
 static HPEN pens[6]; // [HGM] put all pens in one array
 static HBRUSH hbrHist[3] = { NULL, NULL, NULL };
+
+Boolean EvalGraphIsUp()
+{
+    return evalGraphDialogUp;
+}
 
 // [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end) 
 static void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )

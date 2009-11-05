@@ -32,8 +32,8 @@
 #include <dlgs.h>
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
+#include "winboard.h"
 #include "backend.h"
 
 #include "wsnap.h"

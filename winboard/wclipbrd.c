@@ -32,9 +32,9 @@
 #include <sys/stat.h>
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
+#include "winboard.h"
 #include "wclipbrd.h"
 
 /* Imports from winboard.c */

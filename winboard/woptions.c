@@ -32,11 +32,11 @@
 #include <ctype.h>
 
 #include "common.h"
+#include "frontend.h"
 #include "winboard.h"
 #include "backend.h"
 #include "woptions.h"
 #include "defaults.h"
-#include "wedittags.h"
 #include <richedit.h>
 
 #if __GNUC__
