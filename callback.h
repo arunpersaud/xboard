@@ -1,7 +1,3 @@
-void IcsClientProc P((GtkObject *object, gpointer user_data));
-void MachineBlackProc P((GtkObject *object, gpointer user_data));
-void MachineWhiteProc P((GtkObject *object, gpointer user_data));
-void TwoMachinesProc P((GtkObject *object, gpointer user_data));
 void AcceptProc P((GtkObject *object, gpointer user_data));
 void DeclineProc P((GtkObject *object, gpointer user_data));
 void RematchProc P((GtkObject *object, gpointer user_data));
@@ -31,6 +27,17 @@ void ReloadPositionProc P((GtkObject *object, gpointer user_data));
 void LoadPositionProc P((GtkObject *object, gpointer user_data));
 void SaveGameProc P((GtkObject *object, gpointer user_data));
 void SavePositionProc P((GtkObject *object, gpointer user_data));
+
+/* Mode Menu */
+void AnalyzeFileProc P((GtkObject *object, gpointer user_data));
+void AnalyzeModeProc P((GtkObject *object, gpointer user_data));
+void IcsClientProc P((GtkObject *object, gpointer user_data));
+void MachineBlackProc P((GtkObject *object, gpointer user_data));
+void MachineWhiteProc P((GtkObject *object, gpointer user_data));
+void TwoMachinesProc P((GtkObject *object, gpointer user_data));
+void EditGameProc P((GtkObject *object, gpointer user_data));
+void EditPositionProc P((GtkObject *object, gpointer user_data));
+void TrainingProc P((GtkObject *object, gpointer user_data));
 
 /* Step Menu */
 void BackwardProc P((GtkObject *object, gpointer user_data));

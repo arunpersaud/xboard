@@ -350,6 +350,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <signal name="activate" handler="AnalyzeModeProc"/>
                           </object>
                         </child>
                         <child>
@@ -379,6 +380,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <signal name="activate" handler="EditGameProc"/>
                           </object>
                         </child>
                         <child>
@@ -388,6 +390,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <signal name="activate" handler="EditPositionProc"/>
                           </object>
                         </child>
                         <child>
@@ -397,6 +400,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <signal name="activate" handler="TrainingProc"/>
                           </object>
                         </child>
                         <child>

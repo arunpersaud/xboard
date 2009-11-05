@@ -289,12 +289,6 @@ void PasteGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void MailMoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
 			    Cardinal *nprms));
-void AnalyzeModeProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void EditGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EditPositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void TrainingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EditCommentProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void IcsInputBoxProc P((Widget w, XEvent *event,
@@ -611,18 +605,18 @@ MenuItem modeMenu[] = {
   //    {N_("Machine White"), MachineWhiteProc},
   //    {N_("Machine Black"), MachineBlackProc},
   //    {N_("Two Machines"), TwoMachinesProc},
-    {N_("Analysis Mode"), AnalyzeModeProc},
+  //    {N_("Analysis Mode"), AnalyzeModeProc},
     //    {N_("Analyze File"), AnalyzeFileProc },
     //    {N_("ICS Client"), IcsClientProc},
-    {N_("Edit Game"), EditGameProc},
-    {N_("Edit Position"), EditPositionProc},
-    {N_("Training"), TrainingProc},
-    {"----", NothingProc},
+  //    {N_("Edit Game"), EditGameProc},
+  //    {N_("Edit Position"), EditPositionProc},
+  //    {N_("Training"), TrainingProc},
+    //    {"----", NothingProc},
     {N_("Show Engine Output"), EngineOutputProc},
     {N_("Show Evaluation Graph"), NothingProc}, // [HGM] evalgr: not functional yet
     {N_("Show Game List"), ShowGameListProc},
     //    {"Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
-    {"----", NothingProc},
+    //    {"----", NothingProc},
     //    {N_("Edit Tags"), EditTagsProc},
     {N_("Edit Comment"), EditCommentProc},
     {N_("ICS Input Box"), IcsInputBoxProc},
@@ -1775,13 +1769,13 @@ XtActionsRec boardActions[] = {
     { "ReloadCmailMsgProc", ReloadCmailMsgProc },
     //    { "MachineWhiteProc", MachineWhiteProc },
     //    { "MachineBlackProc", MachineBlackProc },
-    { "AnalysisModeProc", AnalyzeModeProc },
+    //    { "AnalysisModeProc", AnalyzeModeProc },
     //    { "AnalyzeFileProc", AnalyzeFileProc },
     //    { "TwoMachinesProc", TwoMachinesProc },
     //    { "IcsClientProc", IcsClientProc },
-    { "EditGameProc", EditGameProc },
-    { "EditPositionProc", EditPositionProc },
-    { "TrainingProc", EditPositionProc },
+    //    { "EditGameProc", EditGameProc },
+    //    { "EditPositionProc", EditPositionProc },
+    //    { "TrainingProc", EditPositionProc },
     { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
     { "ShowGameListProc", ShowGameListProc },
     //    { "ShowMoveListProc", HistoryShowProc},
@@ -4997,75 +4991,6 @@ void AutoSaveGame()
   return;
 }
 
-void AnalyzeModeProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-
-    if (!first.analysisSupport) {
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-    /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
-    if (appData.icsActive) {
-        if (gameMode != IcsObserving) {
-            sprintf(buf,_("You are not observing a game"));
-            DisplayError(buf, 0);
-            /* secure check */
-            if (appData.icsEngineAnalyze) {
-                if (appData.debugMode)
-                    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
-                ExitAnalyzeMode();
-                ModeHighlight();
-            }
-            return;
-        }
-        /* if enable, use want disable icsEngineAnalyze */
-        if (appData.icsEngineAnalyze) {
-                ExitAnalyzeMode();
-                ModeHighlight();
-                return;
-        }
-        appData.icsEngineAnalyze = TRUE;
-        if (appData.debugMode)
-            fprintf(debugFP, _("ICS engine analyze starting... \n"));
-    }
-    if (!appData.showThinking)
-      ShowThinkingProc(NULL,NULL);
-
-    AnalyzeModeEvent();
-}
-
-void EditGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    EditGameEvent();
-}
-
-void EditPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    EditPositionEvent();
-}
-
-void TrainingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    TrainingEvent();
-}
 
 void EditCommentProc(w, event, prms, nprms)
      Widget w;

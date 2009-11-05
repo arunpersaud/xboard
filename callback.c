@@ -175,6 +175,32 @@ void AboutProc (object, user_data)
 
 /* End Help Menu */
 
+/* Mode Menu */
+
+void MachineWhiteProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MachineWhiteEvent();
+    return;
+}
+
+void MachineBlackProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MachineBlackEvent();
+    return;
+}
+
+void TwoMachinesProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    TwoMachinesEvent();
+    return;
+}
+
 void IcsClientProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -182,6 +208,108 @@ void IcsClientProc(object, user_data)
     IcsClientEvent();
     return;
 }
+
+void
+AnalyzeFileProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  if (!first.analysisSupport)
+    {
+      char buf[MSG_SIZ];
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
+      DisplayError(buf, 0);
+      return;
+    };
+  Reset(FALSE, TRUE);
+
+  if (!appData.showThinking)
+    ShowThinkingProc(NULL,NULL);
+
+  AnalyzeFileEvent();
+  FileNamePopUp(_("File to analyze"), "", LoadGamePopUp, "rb");
+  AnalysisPeriodicEvent(1);
+  return;
+}
+
+void 
+AnalyzeModeProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    char buf[MSG_SIZ];
+
+    if (!first.analysisSupport) 
+      {
+	snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
+	DisplayError(buf, 0);
+	return;
+      }
+    /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
+    if (appData.icsActive) 
+      {
+        if (gameMode != IcsObserving) 
+	  {
+	    sprintf(buf,_("You are not observing a game"));
+	    DisplayError(buf, 0);
+            /* secure check */
+            if (appData.icsEngineAnalyze) 
+	      {
+		if (appData.debugMode)
+		  fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
+                ExitAnalyzeMode();
+                ModeHighlight();
+	      }
+            return;
+	  }
+        /* if enable, use want disable icsEngineAnalyze */
+        if (appData.icsEngineAnalyze) 
+	  {
+	    ExitAnalyzeMode();
+	    ModeHighlight();
+	    return;
+	  }
+        appData.icsEngineAnalyze = TRUE;
+        if (appData.debugMode)
+	  fprintf(debugFP, _("ICS engine analyze starting... \n"));
+      }
+    if (!appData.showThinking)
+      ShowThinkingProc(NULL,NULL);
+    
+    AnalyzeModeEvent();
+    return;
+}
+
+void 
+EditGameProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  EditGameEvent();
+  return;
+}
+
+void 
+EditPositionProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  EditPositionEvent();
+  return;
+}
+
+void 
+TrainingProc(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  TrainingEvent();
+  return;
+}
+
+
+
+/* End Mode Menu */
 
 /*
  * File menu
@@ -277,55 +405,8 @@ SavePositionProc(object, user_data)
   return;
 }
 
-void
-AnalyzeFileProc(object, user_data)
-     GtkObject *object;
-     gpointer user_data;
-{
-  if (!first.analysisSupport)
-    {
-      char buf[MSG_SIZ];
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    };
-  Reset(FALSE, TRUE);
-
-  if (!appData.showThinking)
-    ShowThinkingProc(NULL,NULL);
-
-  AnalyzeFileEvent();
-  FileNamePopUp(_("File to analyze"), "", LoadGamePopUp, "rb");
-  AnalysisPeriodicEvent(1);
-  return;
-}
-
 
 /* End File Menu */
-
-void MachineWhiteProc(object, user_data)
-     GtkObject *object;
-     gpointer user_data;
-{
-    MachineWhiteEvent();
-    return;
-}
-
-void MachineBlackProc(object, user_data)
-     GtkObject *object;
-     gpointer user_data;
-{
-    MachineBlackEvent();
-    return;
-}
-
-void TwoMachinesProc(object, user_data)
-     GtkObject *object;
-     gpointer user_data;
-{
-    TwoMachinesEvent();
-    return;
-}
 
 void AcceptProc(object, user_data)
      GtkObject *object;
