@@ -103,7 +103,7 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
    EP_UNKNOWN if we don't know and want to allow all e.p. captures.
    Promotion moves generated are to Queen only.
 */
-extern void GenPseudoLegal P((Board board, int flags, int epfile,
+extern void GenPseudoLegal P((Board board, int flags,
 			      MoveCallback callback, VOIDSTAR closure));
 
 /* Like GenPseudoLegal, but include castling moves and (unless 
@@ -112,8 +112,7 @@ extern void GenPseudoLegal P((Board board, int flags, int epfile,
    ruled out by a move of the king or rook.  Return TRUE if the player
    on move is currently in check and F_IGNORE_CHECK is not set.
 */
-extern int GenLegal P((Board board, int flags, int epfile,
-                        char castlingRights[], /* [HGM] */
+extern int GenLegal P((Board board, int flags,
 			MoveCallback callback, VOIDSTAR closure));
 
 /* If the player on move were to move from (rf, ff) to (rt, ft), would
@@ -129,8 +128,7 @@ extern int CheckTest P((Board board, int flags,
 /* Is a move from (rf, ff) to (rt, ft) legal for the player whom the
    flags say is on move?  Other arguments as in GenPseudoLegal.
    Returns the type of move made, taking promoChar into account. */
-extern ChessMove LegalityTest P((Board board, int flags, int epfile,
-                                 char castlingRights[], /* [HGM] */
+extern ChessMove LegalityTest P((Board board, int flags,
 				 int rf, int ff, int rt, int ft,
 				 int promoChar));
 
@@ -146,8 +144,7 @@ extern ChessMove LegalityTest P((Board board, int flags, int epfile,
 #define MT_NOKING    9 /* [HGM] atomic: for games lost through king capture              */
 
 /* Return MT_NONE, MT_CHECK, MT_CHECKMATE, or MT_STALEMATE */
-extern int MateTest P((Board board, int flags, int epfile,
-                                        char castlingRights[])); /* [HGM] */
+extern int MateTest P((Board board, int flags));
 
 typedef struct {
     /* Input data */
@@ -163,13 +160,12 @@ typedef struct {
 } DisambiguateClosure;
 
 /* Disambiguate a partially-known move */
-void Disambiguate P((Board board, int flags, int epfile,
-		     DisambiguateClosure *closure));
+void Disambiguate P((Board board, int flags, DisambiguateClosure *closure));
 
 
 /* Convert coordinates to normal algebraic notation.
    promoChar must be NULLCHAR or '.' if not a promotion.
 */
-ChessMove CoordsToAlgebraic P((Board board, int flags, int epfile,
+ChessMove CoordsToAlgebraic P((Board board, int flags,
 			       int rf, int ff, int rt, int ft,
 			       int promoChar, char out[MOVE_LEN]));

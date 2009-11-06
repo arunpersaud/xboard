@@ -467,8 +467,8 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
-XSegment gridSegments[(BOARD_SIZE + 1) * 2];
-XSegment jailGridSegments[(BOARD_SIZE + 3) * 2];
+XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
+XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
 Font clockFontID, coordFontID, countFontID;
 XFontStruct *clockFontStruct, *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
@@ -2511,9 +2511,9 @@ main(argc, argv)
     }
 
     /* [HGM,HR] make sure board size is acceptable */
-    if(appData.NrFiles > BOARD_SIZE ||
-       appData.NrRanks > BOARD_SIZE   )
-	 DisplayFatalError(_("Recompile with BOARD_SIZE > 12, to support this size"), 0, 2);
+    if(appData.NrFiles > BOARD_FILES ||
+       appData.NrRanks > BOARD_RANKS   )
+	 DisplayFatalError(_("Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"), 0, 2);
 
 #if !HIGHDRAG
     /* This feature does not work; animation needs a rewrite */
@@ -5011,7 +5011,7 @@ static int check_castle_draw(newb, oldb, rrow, rcol)
     return 0;
 }
 
-static int damage[BOARD_SIZE][BOARD_SIZE];
+static int damage[BOARD_RANKS][BOARD_FILES];
 
 /*
  * event handler for redrawing the board

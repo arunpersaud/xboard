@@ -65,8 +65,6 @@ entry_t entry_none = {
 };
 
 char *promote_pieces=" nbrqac=";
-extern char castlingRights[][BOARD_SIZE];
-extern char epStatus[];
 
 uint64 Random64[781] = {
    U64(0x9D39247E33776D41), U64(0x2AF7398005AAA5C7), U64(0x44DB015024623547), U64(0x9C15F73E62A76AE2),
@@ -312,16 +310,16 @@ uint64 hash(int moveNr)
     }
     // Holdings not implemented yet!
 
-    if(castlingRights[moveNr][2] >= 0) {
-	if(castlingRights[moveNr][0] >= 0) key^=RandomCastle[0];
-	if(castlingRights[moveNr][1] >= 0) key^=RandomCastle[1];
+    if(boards[moveNr][CASTLING][2] != NoRights) {
+	if(boards[moveNr][CASTLING][0] != NoRights) key^=RandomCastle[0];
+	if(boards[moveNr][CASTLING][1] != NoRights) key^=RandomCastle[1];
     }
-    if(castlingRights[moveNr][5] >= 0) {
-	if(castlingRights[moveNr][3] >= 0) key^=RandomCastle[2];
-	if(castlingRights[moveNr][4] >= 0) key^=RandomCastle[3];
+    if(boards[moveNr][CASTLING][5] != NoRights) {
+	if(boards[moveNr][CASTLING][3] != NoRights) key^=RandomCastle[2];
+	if(boards[moveNr][CASTLING][4] != NoRights) key^=RandomCastle[3];
     }
 
-    f = epStatus[moveNr];
+    f = boards[moveNr][EP_STATUS];
     if(f >= 0 && f < 8){
         if(!WhiteOnMove(moveNr)){
 	    // the test for neighboring Pawns might not be needed, 

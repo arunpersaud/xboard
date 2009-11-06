@@ -193,8 +193,8 @@ static HBRUSH lightSquareBrush, darkSquareBrush,
   blackSquareBrush, /* [HGM] for band between board and holdings */
   explodeBrush,     /* [HGM] atomic */
   whitePieceBrush, blackPieceBrush, iconBkgndBrush /*, outlineBrush*/;
-static POINT gridEndpoints[(BOARD_SIZE + 1) * 4];
-static DWORD gridVertexCounts[(BOARD_SIZE + 1) * 2];
+static POINT gridEndpoints[(BOARD_RANKS + BOARD_FILES + 2) * 2];
+static DWORD gridVertexCounts[BOARD_RANKS + BOARD_FILES + 2];
 static HPEN gridPen = NULL;
 static HPEN highlightPen = NULL;
 static HPEN premovePen = NULL;
@@ -216,7 +216,7 @@ static HBITMAP darkBackTexture = NULL;
 static int liteBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
 static int darkBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
 static int backTextureSquareSize = 0;
-static struct { int x; int y; int mode; } backTextureSquareInfo[BOARD_SIZE][BOARD_SIZE];
+static struct { int x; int y; int mode; } backTextureSquareInfo[BOARD_RANKS][BOARD_FILES];
 
 #if __GNUC__ && !defined(_winmajor)
 #define oldDialog 0 /* cygwin doesn't define _winmajor; mingw does */
@@ -2167,9 +2167,9 @@ InitAppData(LPSTR lpCmdLine)
   ParseArgs(StringGet, &lpCmdLine);
 
   /* [HGM] make sure board size is acceptable */
-  if(appData.NrFiles > BOARD_SIZE ||
-     appData.NrRanks > BOARD_SIZE   )
-      DisplayFatalError("Recompile with BOARD_SIZE > 12, to support this size", 0, 2);
+  if(appData.NrFiles > BOARD_FILES ||
+     appData.NrRanks > BOARD_RANKS   )
+      DisplayFatalError("Recompile with BOARD_RANKS or BOARD_FILES, to support this size", 0, 2);
 
   /* [HGM] After parsing the options from the .ini file, and overruling them
    * with options from the command line, we now make an even higher priority
@@ -4158,8 +4158,8 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
   if( liteBackTexture != NULL || darkBackTexture != NULL ) {
       static int backTextureBoardSize; /* [HGM] boardsize: also new texture if board format changed */
       if( backTextureSquareSize != squareSize 
-       || backTextureBoardSize != BOARD_WIDTH+BOARD_SIZE*BOARD_HEIGHT) {
-	  backTextureBoardSize = BOARD_WIDTH+BOARD_SIZE*BOARD_HEIGHT;
+       || backTextureBoardSize != BOARD_WIDTH+BOARD_FILES*BOARD_HEIGHT) {
+	  backTextureBoardSize = BOARD_WIDTH+BOARD_FILES*BOARD_HEIGHT;
           backTextureSquareSize = squareSize;
           RebuildTextureSquareInfo();
       }

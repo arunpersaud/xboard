@@ -125,13 +125,17 @@ int pclose(FILE *);
    outside world in ASCII. In a similar way, the different rank numbering
    systems (starting at rank 0 or 1) are implemented by redefining '1'.
 */
-#define BOARD_SIZE              16            /* [HGM] for in declarations */
-#define BOARD_HEIGHT (gameInfo.boardHeight)   // [HGM] made user adjustable 
+#define BOARD_RANKS             11             /* [HGM] for in declarations  */
+#define BOARD_FILES             16             /* [HGM] for in declarations  */
+#define BOARD_HEIGHT (gameInfo.boardHeight)    /* [HGM] made user adjustable */
 #define BOARD_WIDTH  (gameInfo.boardWidth + 2*gameInfo.holdingsWidth)   
-#define BOARD_LEFT   (gameInfo.holdingsWidth) // [HGM] play-board edges     
+#define BOARD_LEFT   (gameInfo.holdingsWidth)  /* [HGM] play-board edges     */
 #define BOARD_RGHT   (gameInfo.boardWidth + gameInfo.holdingsWidth)
-#define ONE          ('1'-(BOARD_HEIGHT>9))   // [HGM] foremost board rank  
-#define AAA          ('a'-BOARD_LEFT)         // [HGM] leftmost board file  
+#define CASTLING     (BOARD_RANKS-1)           /* [HGM] hide in upper rank   */
+#define EP_STATUS    CASTLING][(BOARD_FILES-2) /* [HGM] in upper rank        */
+#define HOLDINGS_SET CASTLING][(BOARD_FILES-1) /* [HGM] in upper-right corner*/
+#define ONE          ('1'-(BOARD_HEIGHT>9))    /* [HGM] foremost board rank  */
+#define AAA          ('a'-BOARD_LEFT)          /* [HGM] leftmost board file  */
 #define DROP_RANK               -3
 #define MAX_MOVES		1000
 #define MSG_SIZ			512
@@ -209,6 +213,7 @@ typedef enum {
     BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
     BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
     EmptySquare, 
+    NoRights, // [HGM] gamestate: for castling rights hidden in board[CASTLING]
     ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
   } ChessSquare;
 
@@ -220,7 +225,7 @@ typedef enum {
 #define SHOGI          (int)EmptySquare + (int)
 
 
-typedef ChessSquare Board[BOARD_SIZE][BOARD_SIZE];
+typedef ChessSquare Board[BOARD_RANKS][BOARD_FILES];
 
 typedef enum {
     WhiteKingSideCastle = 1, WhiteQueenSideCastle,
@@ -656,6 +661,7 @@ typedef struct {
 } GameInfo;
 
 /* [AS] Search stats from chessprogram, for the played move */
+// [HGM] moved here from backend.h because it occurs in declarations of front-end functions
 typedef struct {
     int score;  /* Centipawns */
     int depth;  /* Plies */

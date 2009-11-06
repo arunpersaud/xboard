@@ -69,7 +69,7 @@ int BlackPiece P((ChessSquare));
 int SameColor P((ChessSquare, ChessSquare));
 int PosFlags(int index);
 
-extern signed char initialRights[BOARD_SIZE]; /* [HGM] all rights enabled, set in InitPosition */
+extern signed char initialRights[BOARD_FILES]; /* [HGM] all rights enabled, set in InitPosition */
 
 
 int WhitePiece(piece)
@@ -227,6 +227,9 @@ void CopyBoard(to, from)
     for (i = 0; i < BOARD_HEIGHT; i++)
       for (j = 0; j < BOARD_WIDTH; j++)
 	to[i][j] = from[i][j];
+    for (j = 0; j < BOARD_FILES-1; j++) // [HGM] gamestate: copy castling rights and ep status
+	to[CASTLING][j] = from[CASTLING][j];
+    to[HOLDINGS_SET] = 0; // flag used in ICS play
 }
 
 int CompareBoards(board1, board2)
@@ -251,15 +254,15 @@ int CompareBoards(board1, board2)
    EP_UNKNOWN if we don't know and want to allow all e.p. captures.
    Promotion moves generated are to Queen only.
 */
-void GenPseudoLegal(board, flags, epfile, callback, closure)
+void GenPseudoLegal(board, flags, callback, closure)
      Board board;
      int flags;
-     int epfile;
      MoveCallback callback;
      VOIDSTAR closure;
 {
     int rf, ff;
     int i, j, d, s, fs, rs, rt, ft, m;
+    int epfile = board[EP_STATUS]; // [HGM] gamestate: extract ep status from board
 
     for (rf = 0; rf < BOARD_HEIGHT; rf++) 
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
@@ -748,22 +751,20 @@ typedef struct {
    true if castling is not yet ruled out by a move of the king or
    rook.  Return TRUE if the player on move is currently in check and
    F_IGNORE_CHECK is not set.  [HGM] add castlingRights parameter */
-int GenLegal(board, flags, epfile, castlingRights, callback, closure)
+int GenLegal(board, flags, callback, closure)
      Board board;
      int flags;
-     int epfile;
-     char castlingRights[];
      MoveCallback callback;
      VOIDSTAR closure;
 {
     GenLegalClosure cl;
     int ff, ft, k, left, right;
     int ignoreCheck = (flags & F_IGNORE_CHECK) != 0;
-    ChessSquare wKing = WhiteKing, bKing = BlackKing;
+    ChessSquare wKing = WhiteKing, bKing = BlackKing, *castlingRights = board[CASTLING];
 
     cl.cb = callback;
     cl.cl = closure;
-    GenPseudoLegal(board, flags, epfile, GenLegalCallback, (VOIDSTAR) &cl);
+    GenPseudoLegal(board, flags, GenLegalCallback, (VOIDSTAR) &cl);
 
     if (!ignoreCheck &&
 	CheckTest(board, flags, -1, -1, -1, -1, FALSE)) return TRUE;
@@ -782,7 +783,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
             board[0][BOARD_RGHT-3] == EmptySquare &&
             board[0][BOARD_RGHT-2] == EmptySquare &&
             board[0][BOARD_RGHT-1] == WhiteRook &&
-            castlingRights[0] >= 0 && /* [HGM] check rights */
+            (int)castlingRights[0] >= 0 && /* [HGM] check rights */
             ( castlingRights[2] == ff || castlingRights[6] == ff ) &&
             (ignoreCheck ||                             
 	     (!CheckTest(board, flags, 0, ff, 0, ff + 1, FALSE) &&
@@ -802,7 +803,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
             board[0][BOARD_LEFT+2] == EmptySquare &&
             board[0][BOARD_LEFT+1] == EmptySquare &&
             board[0][BOARD_LEFT+0] == WhiteRook &&
-            castlingRights[1] >= 0 && /* [HGM] check rights */
+            (int)castlingRights[1] >= 0 && /* [HGM] check rights */
             ( castlingRights[2] == ff || castlingRights[6] == ff ) &&
 	    (ignoreCheck ||
 	     (!CheckTest(board, flags, 0, ff, 0, ff - 1, FALSE) &&
@@ -821,7 +822,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
             board[BOARD_HEIGHT-1][BOARD_RGHT-3] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_RGHT-2] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook &&
-            castlingRights[3] >= 0 && /* [HGM] check rights */
+            (int)castlingRights[3] >= 0 && /* [HGM] check rights */
             ( castlingRights[5] == ff || castlingRights[7] == ff ) &&
 	    (ignoreCheck ||
 	     (!CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ff + 1, FALSE) &&
@@ -841,7 +842,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
             board[BOARD_HEIGHT-1][BOARD_LEFT+2] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_LEFT+1] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_LEFT+0] == BlackRook &&
-            castlingRights[4] >= 0 && /* [HGM] check rights */
+            (int)castlingRights[4] >= 0 && /* [HGM] check rights */
             ( castlingRights[5] == ff || castlingRights[7] == ff ) &&
 	    (ignoreCheck ||
 	     (!CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ff - 1, FALSE) &&
@@ -999,8 +1000,7 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
                           cl.check++;
               }
 
-	      GenPseudoLegal(board, flags ^ F_WHITE_ON_MOVE, -1,
-			     CheckTestCallback, (VOIDSTAR) &cl);
+	      GenPseudoLegal(board, flags ^ F_WHITE_ON_MOVE, CheckTestCallback, (VOIDSTAR) &cl);
 	      goto undo_move;  /* 2-level break */
 	  }
       }
@@ -1043,13 +1043,12 @@ void LegalityTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
       cl->kind = kind;
 }
 
-ChessMove LegalityTest(board, flags, epfile, castlingRights, rf, ff, rt, ft, promoChar)
+ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
      Board board;
-     int flags, epfile;
+     int flags;
      int rf, ff, rt, ft, promoChar;
-     char castlingRights[];
 {
-    LegalityTestClosure cl; ChessSquare piece = board[rf][ff];
+    LegalityTestClosure cl; ChessSquare piece = board[rf][ff], *castlingRights = board[CASTLING];
     
     if (appData.debugMode) {
         int i;
@@ -1069,7 +1068,7 @@ ChessMove LegalityTest(board, flags, epfile, castlingRights, rf, ff, rt, ft, pro
     cl.ft = ft;
     cl.kind = IllegalMove;
     cl.captures = 0; // [HGM] losers: prepare to count legal captures.
-    GenLegal(board, flags, epfile, castlingRights, LegalityTestCallback, (VOIDSTAR) &cl);
+    GenLegal(board, flags, LegalityTestCallback, (VOIDSTAR) &cl);
     if((flags & F_MANDATORY_CAPTURE) && cl.captures && board[rt][ft] == EmptySquare
 		&& cl.kind != WhiteCapturesEnPassant && cl.kind != BlackCapturesEnPassant)
 	return(IllegalMove); // [HGM] losers: if there are legal captures, non-capts are illegal
@@ -1142,10 +1141,9 @@ void MateTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
 }
 
 /* Return MT_NONE, MT_CHECK, MT_CHECKMATE, or MT_STALEMATE */
-int MateTest(board, flags, epfile, castlingRights)
+int MateTest(board, flags)
      Board board;
-     int flags, epfile;
-     char castlingRights[];
+     int flags;
 {
     MateTestClosure cl;
     int inCheck, r, f, myPieces=0, hisPieces=0, nrKing=0;
@@ -1173,7 +1171,7 @@ int MateTest(board, flags, epfile, castlingRights)
 		if(myPieces == 1) return MT_BARE;
     }
     cl.count = 0;
-    inCheck = GenLegal(board, flags, epfile, castlingRights, MateTestCallback, (VOIDSTAR) &cl);
+    inCheck = GenLegal(board, flags, MateTestCallback, (VOIDSTAR) &cl);
     // [HGM] 3check: yet to do!
     if (cl.count > 0) {
 	return inCheck ? MT_CHECK : MT_NONE;
@@ -1230,9 +1228,9 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
     }
 }
 
-void Disambiguate(board, flags, epfile, closure)
+void Disambiguate(board, flags, closure)
      Board board;
-     int flags, epfile;
+     int flags;
      DisambiguateClosure *closure;
 {
     int illegal = 0; char c = closure->promoCharIn;
@@ -1245,12 +1243,11 @@ void Disambiguate(board, flags, epfile, closure)
                              closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
                              closure->promoCharIn, closure->promoCharIn >= ' ' ? closure->promoCharIn : '-');
     }
-    GenLegal(board, flags, epfile, initialRights, DisambiguateCallback, (VOIDSTAR) closure);
+    GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) closure);
     if (closure->count == 0) {
 	/* See if it's an illegal move due to check */
         illegal = 1;
-        GenLegal(board, flags|F_IGNORE_CHECK, epfile, initialRights, DisambiguateCallback,
-		 (VOIDSTAR) closure);	
+        GenLegal(board, flags|F_IGNORE_CHECK, DisambiguateCallback, (VOIDSTAR) closure);	
 	if (closure->count == 0) {
 	    /* No, it's not even that */
     if (appData.debugMode) { int i, j;
@@ -1380,10 +1377,9 @@ void CoordsToAlgebraicCallback(board, flags, kind, rf, ff, rt, ft, closure)
 /* Convert coordinates to normal algebraic notation.
    promoChar must be NULLCHAR or 'x' if not a promotion.
 */
-ChessMove CoordsToAlgebraic(board, flags, epfile,
-			    rf, ff, rt, ft, promoChar, out)
+ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
      Board board;
-     int flags, epfile;
+     int flags;
      int rf, ff, rt, ft;
      int promoChar;
      char out[MOVE_LEN];
@@ -1414,12 +1410,11 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
     switch (piece) {
       case WhitePawn:
       case BlackPawn:
-        kind = LegalityTest(board, flags, epfile, initialRights, rf, ff, rt, ft, promoChar);
+        kind = LegalityTest(board, flags, rf, ff, rt, ft, promoChar);
 	if (kind == IllegalMove && !(flags&F_IGNORE_CHECK)) {
 	    /* Keep short notation if move is illegal only because it
                leaves the player in check, but still return IllegalMove */
-            kind = LegalityTest(board, flags|F_IGNORE_CHECK, epfile, initialRights,
-			       rf, ff, rt, ft, promoChar);
+            kind = LegalityTest(board, flags|F_IGNORE_CHECK, rf, ff, rt, ft, promoChar);
 	    if (kind == IllegalMove) break;
 	    kind = IllegalMove;
 	}
@@ -1463,8 +1458,7 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 	if((piece == WhiteKing && board[rt][ft] == WhiteRook) ||
 	   (piece == BlackKing && board[rt][ft] == BlackRook)) {
 	  if(ft > ff) strcpy(out, "O-O"); else strcpy(out, "O-O-O");
-            return LegalityTest(board, flags, epfile, initialRights,
-				rf, ff, rt, ft, promoChar);
+            return LegalityTest(board, flags, rf, ff, rt, ft, promoChar);
 	}
 	/* End of code added by Tord */
 	/* Test for castling or ICS wild castling */
@@ -1486,8 +1480,7 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 	       this situation.  So I am not going to worry about it;
 	       I'll just generate an ambiguous O-O in this case.
 	    */
-            return LegalityTest(board, flags, epfile, initialRights,
-				rf, ff, rt, ft, promoChar);
+            return LegalityTest(board, flags, rf, ff, rt, ft, promoChar);
 	}
 
 	/* else fall through */
@@ -1500,15 +1493,13 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 	cl.piece = piece;
 	cl.kind = IllegalMove;
 	cl.rank = cl.file = cl.either = 0;
-        GenLegal(board, flags, epfile, initialRights,
-		 CoordsToAlgebraicCallback, (VOIDSTAR) &cl);
+        GenLegal(board, flags, CoordsToAlgebraicCallback, (VOIDSTAR) &cl);
 
 	if (cl.kind == IllegalMove && !(flags&F_IGNORE_CHECK)) {
 	    /* Generate pretty moves for moving into check, but
 	       still return IllegalMove.
 	    */
-            GenLegal(board, flags|F_IGNORE_CHECK, epfile, initialRights,
-		     CoordsToAlgebraicCallback, (VOIDSTAR) &cl);
+            GenLegal(board, flags|F_IGNORE_CHECK, CoordsToAlgebraicCallback, (VOIDSTAR) &cl);
 	    if (cl.kind == IllegalMove) break;
 	    cl.kind = IllegalMove;
 	}
@@ -1735,7 +1726,7 @@ int PerpetualChase(int first, int last)
         if(appData.debugMode) fprintf(debugFP, "judge position %i\n", i);
 	chaseStackPointer = 0;   // clear stack that is going to hold possible chases
 	// determine all captures possible after the move, and put them on chaseStack
-	GenLegal(boards[i+1], PosFlags(i), EP_NONE, initialRights, AttacksCallback, &cl);
+	GenLegal(boards[i+1], PosFlags(i), AttacksCallback, &cl);
 	if(appData.debugMode) { int n; 
 	    for(n=0; n<chaseStackPointer; n++) 
                 fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE, 
@@ -1747,7 +1738,7 @@ int PerpetualChase(int first, int last)
 	cl.ff = moveList[i][0]-AAA+BOARD_LEFT;
 	cl.rt = moveList[i][3]-ONE;
 	cl.ft = moveList[i][2]-AAA+BOARD_LEFT;
-	GenLegal(boards[i],   PosFlags(i), EP_NONE, initialRights, ExistingAttacksCallback, &cl);
+	GenLegal(boards[i],   PosFlags(i), ExistingAttacksCallback, &cl);
 	if(appData.debugMode) { int n; 
 	    for(n=0; n<chaseStackPointer; n++) 
                 fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE, 
@@ -1766,7 +1757,7 @@ int PerpetualChase(int first, int last)
 		continue; // C or H attack on R is always chase; leave on chaseStack
 
 	    if(attacker == victim) {
-                if(LegalityTest(boards[i+1], PosFlags(i+1), EP_NONE, initialRights, chaseStack[j].rt, 
+                if(LegalityTest(boards[i+1], PosFlags(i+1), chaseStack[j].rt, 
                    chaseStack[j].ft, chaseStack[j].rf, chaseStack[j].ff, NULLCHAR) == NormalMove) {
 			// we can capture back with equal piece, so this is no chase but a sacrifice
                         chaseStack[j] = chaseStack[--chaseStackPointer]; // delete the capture from the chaseStack
@@ -1787,7 +1778,7 @@ int PerpetualChase(int first, int last)
 	    if(appData.debugMode) {
             	fprintf(debugFP, "test if we can recapture %c%c\n", cl.ft+AAA, cl.rt+ONE);
 	    }
-            GenLegal(boards[i+1], PosFlags(i+1), EP_NONE, initialRights, ProtectedCallback, &cl); // try all moves
+            GenLegal(boards[i+1], PosFlags(i+1), ProtectedCallback, &cl); // try all moves
 	    // unmake the capture
 	    boards[i+1][chaseStack[j].rf][chaseStack[j].ff] = boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
             boards[i+1][chaseStack[j].rt][chaseStack[j].ft] = captured;
