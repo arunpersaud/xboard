@@ -262,7 +262,7 @@ void GenPseudoLegal(board, flags, callback, closure)
 {
     int rf, ff;
     int i, j, d, s, fs, rs, rt, ft, m;
-    int epfile = board[EP_STATUS]; // [HGM] gamestate: extract ep status from board
+    int epfile = (signed char)board[EP_STATUS]; // [HGM] gamestate: extract ep status from board
 
     for (rf = 0; rf < BOARD_HEIGHT; rf++) 
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
@@ -783,7 +783,7 @@ int GenLegal(board, flags, callback, closure)
             board[0][BOARD_RGHT-3] == EmptySquare &&
             board[0][BOARD_RGHT-2] == EmptySquare &&
             board[0][BOARD_RGHT-1] == WhiteRook &&
-            (int)castlingRights[0] >= 0 && /* [HGM] check rights */
+            castlingRights[0] != NoRights && /* [HGM] check rights */
             ( castlingRights[2] == ff || castlingRights[6] == ff ) &&
             (ignoreCheck ||                             
 	     (!CheckTest(board, flags, 0, ff, 0, ff + 1, FALSE) &&
@@ -803,7 +803,7 @@ int GenLegal(board, flags, callback, closure)
             board[0][BOARD_LEFT+2] == EmptySquare &&
             board[0][BOARD_LEFT+1] == EmptySquare &&
             board[0][BOARD_LEFT+0] == WhiteRook &&
-            (int)castlingRights[1] >= 0 && /* [HGM] check rights */
+            castlingRights[1] != NoRights && /* [HGM] check rights */
             ( castlingRights[2] == ff || castlingRights[6] == ff ) &&
 	    (ignoreCheck ||
 	     (!CheckTest(board, flags, 0, ff, 0, ff - 1, FALSE) &&
@@ -822,7 +822,7 @@ int GenLegal(board, flags, callback, closure)
             board[BOARD_HEIGHT-1][BOARD_RGHT-3] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_RGHT-2] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook &&
-            (int)castlingRights[3] >= 0 && /* [HGM] check rights */
+            castlingRights[3] != NoRights && /* [HGM] check rights */
             ( castlingRights[5] == ff || castlingRights[7] == ff ) &&
 	    (ignoreCheck ||
 	     (!CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ff + 1, FALSE) &&
@@ -842,7 +842,7 @@ int GenLegal(board, flags, callback, closure)
             board[BOARD_HEIGHT-1][BOARD_LEFT+2] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_LEFT+1] == EmptySquare &&
             board[BOARD_HEIGHT-1][BOARD_LEFT+0] == BlackRook &&
-            (int)castlingRights[4] >= 0 && /* [HGM] check rights */
+            castlingRights[4] != NoRights && /* [HGM] check rights */
             ( castlingRights[5] == ff || castlingRights[7] == ff ) &&
 	    (ignoreCheck ||
 	     (!CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ff - 1, FALSE) &&
@@ -863,7 +863,7 @@ int GenLegal(board, flags, callback, closure)
 
     if ((flags & F_WHITE_ON_MOVE) != 0) {
         ff = castlingRights[2]; /* King file if we have any rights */
-        if(ff > 0 && board[0][ff] == WhiteKing) {
+        if(ff != NoRights && board[0][ff] == WhiteKing) {
     if (appData.debugMode) {
         fprintf(debugFP, "FRC castling, %d %d %d %d %d %d\n",
                 castlingRights[0],castlingRights[1],ff,castlingRights[3],castlingRights[4],castlingRights[5]);
@@ -872,49 +872,49 @@ int GenLegal(board, flags, callback, closure)
             left  = ff+1;
             right = BOARD_RGHT-2;
             if(ff == BOARD_RGHT-2) left = right = ff-1;    /* special case */
-            for(k=left; k<=right && ft >= 0; k++) /* first test if blocked */
-                if(k != ft && board[0][k] != EmptySquare) ft = -1;
-            for(k=left; k<right && ft >= 0; k++) /* then if not checked */
-                if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = -1;
-            if(ft >= 0 && board[0][ft] == WhiteRook)
+            for(k=left; k<=right && ft != NoRights; k++) /* first test if blocked */
+                if(k != ft && board[0][k] != EmptySquare) ft = NoRights;
+            for(k=left; k<right && ft != NoRights; k++) /* then if not checked */
+                if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = NoRights;
+            if(ft != NoRights && board[0][ft] == WhiteRook)
                 callback(board, flags, WhiteHSideCastleFR, 0, ff, 0, ft, closure);
 
             ft = castlingRights[1]; /* Rook file if we have A-side rights */
             left  = BOARD_LEFT+2;
             right = ff-1;
             if(ff <= BOARD_LEFT+2) { left = ff+1; right = BOARD_LEFT+3; }
-            for(k=left; k<=right && ft >= 0; k++) /* first test if blocked */
-                if(k != ft && board[0][k] != EmptySquare) ft = -1;
+            for(k=left; k<=right && ft != NoRights; k++) /* first test if blocked */
+                if(k != ft && board[0][k] != EmptySquare) ft = NoRights;
             if(ff > BOARD_LEFT+2) 
-            for(k=left+1; k<=right && ft >= 0; k++) /* then if not checked */
-                if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = -1;
-            if(ft >= 0 && board[0][ft] == WhiteRook)
+            for(k=left+1; k<=right && ft != NoRights; k++) /* then if not checked */
+                if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = NoRights;
+            if(ft != NoRights && board[0][ft] == WhiteRook)
                 callback(board, flags, WhiteASideCastleFR, 0, ff, 0, ft, closure);
         }
     } else {
         ff = castlingRights[5]; /* King file if we have any rights */
-        if(ff > 0 && board[BOARD_HEIGHT-1][ff] == BlackKing) {
+        if(ff != NoRights && board[BOARD_HEIGHT-1][ff] == BlackKing) {
             ft = castlingRights[3]; /* Rook file if we have H-side rights */
             left  = ff+1;
             right = BOARD_RGHT-2;
             if(ff == BOARD_RGHT-2) left = right = ff-1;    /* special case */
-            for(k=left; k<=right && ft >= 0; k++) /* first test if blocked */
-                if(k != ft && board[BOARD_HEIGHT-1][k] != EmptySquare) ft = -1;
-            for(k=left; k<right && ft >= 0; k++) /* then if not checked */
-                if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = -1;
-            if(ft >= 0 && board[BOARD_HEIGHT-1][ft] == BlackRook)
+            for(k=left; k<=right && ft != NoRights; k++) /* first test if blocked */
+                if(k != ft && board[BOARD_HEIGHT-1][k] != EmptySquare) ft = NoRights;
+            for(k=left; k<right && ft != NoRights; k++) /* then if not checked */
+                if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = NoRights;
+            if(ft != NoRights && board[BOARD_HEIGHT-1][ft] == BlackRook)
                 callback(board, flags, BlackHSideCastleFR, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
 
             ft = castlingRights[4]; /* Rook file if we have A-side rights */
             left  = BOARD_LEFT+2;
             right = ff-1;
             if(ff <= BOARD_LEFT+2) { left = ff+1; right = BOARD_LEFT+3; }
-            for(k=left; k<=right && ft >= 0; k++) /* first test if blocked */
-                if(k != ft && board[BOARD_HEIGHT-1][k] != EmptySquare) ft = -1;
+            for(k=left; k<=right && ft != NoRights; k++) /* first test if blocked */
+                if(k != ft && board[BOARD_HEIGHT-1][k] != EmptySquare) ft = NoRights;
             if(ff > BOARD_LEFT+2) 
-            for(k=left+1; k<=right && ft >= 0; k++) /* then if not checked */
-                if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = -1;
-            if(ft >= 0 && board[BOARD_HEIGHT-1][ft] == BlackRook)
+            for(k=left+1; k<=right && ft != NoRights; k++) /* then if not checked */
+                if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = NoRights;
+            if(ft != NoRights && board[BOARD_HEIGHT-1][ft] == BlackRook)
                 callback(board, flags, BlackASideCastleFR, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
         }
     }

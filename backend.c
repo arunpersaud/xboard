@@ -2304,7 +2304,7 @@ read_from_ics(isr, closure, data, count, error)
 			chattingPartner = -1;
 		    } else
 		    if(!suppressKibitz) // [HGM] kibitz
-			AppendComment(forwardMostMove, StripHighlight(parse));
+			AppendComment(forwardMostMove, StripHighlight(parse), TRUE);
 		    else { // [HGM kibitz: divert memorized engine kibitz to engine-output window
 			int nrDigit = 0, nrAlph = 0, i;
 			if(parse_pos > MSG_SIZ - 30) // defuse unreasonably long input
@@ -6145,7 +6145,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	      case MT_STALEMATE:
 	      case MT_STAINMATE:
 		reason = "Xboard adjudication: Stalemate";
-		if((int)boards[forwardMostMove][EP_STATUS] != EP_CHECKMATE) { // [HGM] don't touch win through baring or K-capt
+		if((signed char)boards[forwardMostMove][EP_STATUS] != EP_CHECKMATE) { // [HGM] don't touch win through baring or K-capt
 		    boards[forwardMostMove][EP_STATUS] = EP_STALEMATE;   // default result for stalemate is draw
 		    if(gameInfo.variant == VariantLosers  || gameInfo.variant == VariantGiveaway) // [HGM] losers:
 			boards[forwardMostMove][EP_STATUS] = EP_WINS;    // in these variants stalemated is always a win
@@ -6163,7 +6163,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		break;
 	    }
 
-		switch(i = (int)boards[forwardMostMove][EP_STATUS]) {
+		switch(i = (signed char)boards[forwardMostMove][EP_STATUS]) {
 		    case EP_STALEMATE:
 			result = GameIsDrawn; break;
 		    case EP_CHECKMATE:
@@ -6224,7 +6224,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		    forwardMostMove, backwardMostMove, boards[backwardMostMove][EP_STATUS],
 		    appData.drawRepeats);
 	    for( i=forwardMostMove; i>=backwardMostMove; i-- )
-	      fprintf(debugFP, "%d ep=%d\n", i, (int)boards[i][EP_STATUS]);
+	      fprintf(debugFP, "%d ep=%d\n", i, (signed char)boards[i][EP_STATUS]);
 	    
 	  }
 
@@ -6232,8 +6232,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 count = 0;
                 for(k = forwardMostMove-2;
                     k>=backwardMostMove && k>=forwardMostMove-100 &&
-                        (int)boards[k][EP_STATUS] < EP_UNKNOWN &&
-                        (int)boards[k+2][EP_STATUS] <= EP_NONE && (int)boards[k+1][EP_STATUS] <= EP_NONE;
+                        (signed char)boards[k][EP_STATUS] < EP_UNKNOWN &&
+                        (signed char)boards[k+2][EP_STATUS] <= EP_NONE && (signed char)boards[k+1][EP_STATUS] <= EP_NONE;
                     k-=2)
                 {   int rights=0;
                     if(CompareBoards(boards[k], boards[forwardMostMove])) {
@@ -6303,7 +6303,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 /* Now we test for 50-move draws. Determine ply count */
                 count = forwardMostMove;
                 /* look for last irreversble move */
-                while( (int)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove )
+                while( (signed char)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove )
                     count--;
                 /* if we hit starting position, add initial plies */
                 if( count == backwardMostMove )
@@ -6327,11 +6327,11 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                  */
                 if( cps->other->offeredDraw || cps->offeredDraw ) {
                          char *p = NULL;
-                         if((int)boards[forwardMostMove][EP_STATUS] == EP_RULE_DRAW)
+                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_RULE_DRAW)
                              p = "Draw claim: 50-move rule";
-                         if((int)boards[forwardMostMove][EP_STATUS] == EP_REP_DRAW)
+                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_REP_DRAW)
                              p = "Draw claim: 3-fold repetition";
-                         if((int)boards[forwardMostMove][EP_STATUS] == EP_INSUF_DRAW)
+                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_INSUF_DRAW)
                              p = "Draw claim: insufficient mating material";
                          if( p != NULL ) {
 			     SendToProgram("force\n", cps->other); // suppress reply
@@ -7343,7 +7343,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
     { int i;
 
       if(gameInfo.variant == VariantBerolina) berolina = EP_BEROLIN_A;
-      oldEP = board[EP_STATUS];
+      oldEP = (signed char)board[EP_STATUS];
       board[EP_STATUS] = EP_NONE;
 
       if( board[toY][toX] != EmptySquare ) 
@@ -8110,15 +8110,15 @@ GameEnds(result, resultDetails, whosays)
                                             second.twoMachinesColor[0] ;
 
 		// [HGM] losers: because the logic is becoming a bit hairy, determine true result first
-		if((int)boards[forwardMostMove][EP_STATUS] == EP_CHECKMATE) {
+		if((signed char)boards[forwardMostMove][EP_STATUS] == EP_CHECKMATE) {
 		    /* [HGM] verify: engine mate claims accepted if they were flagged */
 		    trueResult = WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins;
 		} else
-		if((int)boards[forwardMostMove][EP_STATUS] == EP_WINS) { // added code for games where being mated is a win
+		if((signed char)boards[forwardMostMove][EP_STATUS] == EP_WINS) { // added code for games where being mated is a win
 		    /* [HGM] verify: engine mate claims accepted if they were flagged */
 		    trueResult = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins;
 		} else
-		if((int)boards[forwardMostMove][EP_STATUS] == EP_STALEMATE) { // only used to indicate draws now
+		if((signed char)boards[forwardMostMove][EP_STATUS] == EP_STALEMATE) { // only used to indicate draws now
 		    trueResult = GameIsDrawn; // default; in variants where stalemate loses, Status is CHECKMATE
 		}
 
@@ -8129,7 +8129,7 @@ GameEnds(result, resultDetails, whosays)
                      result == BlackWins && claimer == 'b'   ) ) { // case to verify: engine claims own win
 		      if (appData.debugMode) {
 	 		fprintf(debugFP, "result=%d sp=%d move=%d\n",
-		 		result, (int)boards[forwardMostMove][EP_STATUS], forwardMostMove);
+		 		result, (signed char)boards[forwardMostMove][EP_STATUS], forwardMostMove);
 		      }
 		      if(result != trueResult) {
 	                      sprintf(buf, "False win claim: '%s'", resultDetails);
@@ -8137,9 +8137,9 @@ GameEnds(result, resultDetails, whosays)
 	                      resultDetails = buf;
 		      }
                 } else
-                if( result == GameIsDrawn && (int)boards[forwardMostMove][EP_STATUS] > EP_DRAWS
+                if( result == GameIsDrawn && (signed char)boards[forwardMostMove][EP_STATUS] > EP_DRAWS
                     && (forwardMostMove <= backwardMostMove ||
-                        (int)boards[forwardMostMove-1][EP_STATUS] > EP_DRAWS ||
+                        (signed char)boards[forwardMostMove-1][EP_STATUS] > EP_DRAWS ||
                         (claimer=='b')==(forwardMostMove&1))
                                                                                   ) {
                       /* [HGM] verify: draws that were not flagged are false claims */
@@ -8156,7 +8156,7 @@ GameEnds(result, resultDetails, whosays)
 	       && result != GameIsDrawn)
 	    {   int i, j, k=0, color = (result==WhiteWins ? (int)WhitePawn : (int)BlackPawn);
 		for(j=BOARD_LEFT; j<BOARD_RGHT; j++) for(i=0; i<BOARD_HEIGHT; i++) {
-			int p = (int)boards[forwardMostMove][i][j] - color;
+			int p = (signed char)boards[forwardMostMove][i][j] - color;
 			if(p >= 0 && p <= (int)WhiteKing) k++;
 		}
 		if (appData.debugMode) {
@@ -8635,14 +8635,9 @@ LoadGameOneMove(readAhead)
 	if (appData.debugMode) 
 	  fprintf(debugFP, "Parsed Comment: %s\n", yy_text);
 	p = yy_text;
-	if (*p == '{' || *p == '[' || *p == '(') {
-	    p[strlen(p) - 1] = NULLCHAR;
-	    p++;
-	}
 
 	/* append the comment but don't display it */
-	while (*p == '\n') p++;
-	AppendComment(currentMove, p);
+	AppendComment(currentMove, p, FALSE);
 	return TRUE;
 
       case WhiteCapturesEnPassant:
@@ -9310,12 +9305,7 @@ LoadGame(f, gameNumber, title, useList)
 	    if (appData.debugMode) 
 	      fprintf(debugFP, "Parsed Comment: %s\n", yy_text);
 	    p = yy_text;
-	    if (*p == '{' || *p == '[' || *p == '(') {
-		p[strlen(p) - 1] = NULLCHAR;
-		p++;
-	    }
-	    while (*p == '\n') p++;
-	    AppendComment(currentMove, p);
+	    AppendComment(currentMove, p, FALSE);
 	    yyboardindex = forwardMostMove;
 	    cm = (ChessMove) yylex();
 	}
@@ -9416,12 +9406,7 @@ LoadGame(f, gameNumber, title, useList)
 	if (appData.debugMode) 
 	  fprintf(debugFP, "Parsed Comment: %s\n", yy_text);
 	p = yy_text;
-	if (*p == '{' || *p == '[' || *p == '(') {
-	    p[strlen(p) - 1] = NULLCHAR;
-	    p++;
-	}
-	while (*p == '\n') p++;
-	AppendComment(currentMove, p);
+	AppendComment(currentMove, p, FALSE);
 	yyboardindex = forwardMostMove;
 	cm = (ChessMove) yylex();
     }
@@ -9867,7 +9852,7 @@ SaveGamePGN(f)
 	/* Print comments preceding this move */
 	if (commentList[i] != NULL) {
 	    if (linelen > 0) fprintf(f, "\n");
-	    fprintf(f, "{\n%s}\n", commentList[i]);
+	    fprintf(f, "%s\n", commentList[i]);
 	    linelen = 0;
 	    newblock = TRUE;
 	}
@@ -9970,7 +9955,7 @@ SaveGamePGN(f)
 
     /* Print comments after last move */
     if (commentList[i] != NULL) {
-	fprintf(f, "{\n%s}\n", commentList[i]);
+	fprintf(f, "%s\n", commentList[i]);
     }
 
     /* Print result */
@@ -11442,7 +11427,7 @@ DeclineEvent()
 	    StrStr(commentList[cmailOldMove], WhiteOnMove(cmailOldMove) ?
 		   "Black offers a draw" : "White offers a draw")) {
 #ifdef NOTDEF
-	    AppendComment(cmailOldMove, "Draw declined");
+	    AppendComment(cmailOldMove, "Draw declined", TRUE);
 	    DisplayComment(cmailOldMove - 1, "Draw declined");
 #endif /*NOTDEF*/
 	} else {
@@ -11524,7 +11509,7 @@ DrawEvent()
 	} else if (currentMove == cmailOldMove + 1) {
 	    char *offer = WhiteOnMove(cmailOldMove) ?
 	      "White offers a draw" : "Black offers a draw";
-	    AppendComment(currentMove, offer);
+	    AppendComment(currentMove, offer, TRUE);
 	    DisplayComment(currentMove - 1, offer);
 	    cmailMoveType[lastLoadGameNumber - 1] = CMAIL_DRAW;
 	} else {
@@ -12201,10 +12186,20 @@ ReplaceComment(index, text)
 	commentList[index] = NULL;
 	return;
     }
+  if(*text == '{' || *text == '(' || *text == '[') {
     commentList[index] = (char *) malloc(len + 2);
     strncpy(commentList[index], text, len);
     commentList[index][len] = '\n';
     commentList[index][len + 1] = NULLCHAR;
+  } else { 
+    // [HGM] braces: if text does not start with known OK delimiter, put braces around it.
+    char *p;
+    commentList[index] = (char *) malloc(len + 6);
+    strcpy(commentList[index], "{\n");
+    strcat(commentList[index], text);
+    while(p = strchr(commentList[index], '}')) *p = ')'; // kill all } to make it one comment
+    strcat(commentList[index], "\n}");
+  }
 }
 
 void
@@ -12223,13 +12218,15 @@ CrushCRs(text)
 }
 
 void
-AppendComment(index, text)
+AppendComment(index, text, addBraces)
      int index;
      char *text;
+     Boolean addBraces; // [HGM] braces: tells if we should add {}
 {
     int oldlen, len;
     char *old;
 
+if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces); fflush(debugFP);
     text = GetInfoFromComment( index, text ); /* [HGM] PV time: strip PV info from comment */
 
     CrushCRs(text);
@@ -12242,17 +12239,25 @@ AppendComment(index, text)
     if (commentList[index] != NULL) {
 	old = commentList[index];
 	oldlen = strlen(old);
-	commentList[index] = (char *) malloc(oldlen + len + 2);
+	commentList[index] = (char *) malloc(oldlen + len + 4); // might waste 2
 	strcpy(commentList[index], old);
 	free(old);
+	// [HGM] braces: join "{A\n}" + "{B}" as "{A\nB\n}"
+	if(commentList[index][oldlen-1] == '}' && (text[0] == '{' || addBraces)) {
+	  if(addBraces) addBraces = FALSE; else { text++; len--; }
+	  while (*text == '\n') { text++; len--; }
+	  commentList[index][oldlen-1] = NULLCHAR;
+	  oldlen--;
+      }
 	strncpy(&commentList[index][oldlen], text, len);
-	commentList[index][oldlen + len] = '\n';
-	commentList[index][oldlen + len + 1] = NULLCHAR;
+	if(addBraces) strcpy(&commentList[index][oldlen + len], "\n}");
+	else          strcpy(&commentList[index][oldlen + len], "\n");
     } else {
-	commentList[index] = (char *) malloc(len + 2);
-	strncpy(commentList[index], text, len);
-	commentList[index][len] = '\n';
-	commentList[index][len + 1] = NULLCHAR;
+	commentList[index] = (char *) malloc(len + 4); // perhaps wastes 2...
+	if(addBraces) commentList[index][0] = '{';
+	strcpy(commentList[index] + addBraces, text);
+	strcat(commentList[index], "\n");
+	if(addBraces) strcat(commentList[index], "}");
     }
 }
 
@@ -12296,10 +12301,13 @@ char *GetInfoFromComment( int index, char * text )
 
             if( s_emt != NULL ) {
             }
+		return text;
         }
         else {
             /* We expect something like: [+|-]nnn.nn/dd */
             int score_lo = 0;
+
+            if(*text != '{') return text; // [HGM] braces: must be normal comment
 
             sep = strchr( text, '/' );
             if( sep == NULL || sep < (text+4) ) {
@@ -12307,10 +12315,10 @@ char *GetInfoFromComment( int index, char * text )
             }
 
             time = -1; sec = -1; deci = -1;
-            if( sscanf( text, "%d.%d/%d %d:%d", &score, &score_lo, &depth, &time, &sec ) != 5 &&
-		sscanf( text, "%d.%d/%d %d.%d", &score, &score_lo, &depth, &time, &deci ) != 5 &&
-                sscanf( text, "%d.%d/%d %d", &score, &score_lo, &depth, &time ) != 4 &&
-                sscanf( text, "%d.%d/%d", &score, &score_lo, &depth ) != 3   ) {
+            if( sscanf( text+1, "%d.%d/%d %d:%d", &score, &score_lo, &depth, &time, &sec ) != 5 &&
+		sscanf( text+1, "%d.%d/%d %d.%d", &score, &score_lo, &depth, &time, &deci ) != 5 &&
+                sscanf( text+1, "%d.%d/%d %d", &score, &score_lo, &depth, &time ) != 4 &&
+                sscanf( text+1, "%d.%d/%d", &score, &score_lo, &depth ) != 3   ) {
                 return text;
             }
 
@@ -12345,6 +12353,7 @@ char *GetInfoFromComment( int index, char * text )
         pvInfoList[index-1].depth = depth;
         pvInfoList[index-1].score = score;
         pvInfoList[index-1].time  = 10*time; // centi-sec
+        if(*sep == '}') *sep = 0; else *--sep = '{';
     }
     return sep;
 }
@@ -12374,7 +12383,7 @@ SendToProgram(message, cps)
                          && !endingGame) { /* [HGM] crash: to not hang GameEnds() writing to deceased engines */
 	sprintf(buf, _("Error writing to %s chess program"), cps->which);
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
-            if((int)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
+            if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
                 gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
                 sprintf(buf, "%s program exits in draw position (%s)", cps->which, cps->program);
             } else {
@@ -12405,7 +12414,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		    _("Error: %s chess program (%s) exited unexpectedly"),
 		    cps->which, cps->program);
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
-                if((int)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
+                if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
                     gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
                     sprintf(buf, _("%s program exits in draw position (%s)"), cps->which, cps->program);
                 } else {
@@ -13718,7 +13727,7 @@ PositionToFEN(move, overrideCastling)
 	}
     } else if(move == backwardMostMove) {
 	// [HGM] perhaps we should always do it like this, and forget the above?
-	if((int)boards[move][EP_STATUS] >= 0) {
+	if((signed char)boards[move][EP_STATUS] >= 0) {
 	    *p++ = boards[move][EP_STATUS] + AAA;
 	    *p++ = whiteToPlay ? '6'+BOARD_HEIGHT-8 : '3';
 	} else {
@@ -13737,11 +13746,11 @@ PositionToFEN(move, overrideCastling)
         if (appData.debugMode) { int k;
             fprintf(debugFP, "write FEN 50-move: %d %d %d\n", initialRulePlies, forwardMostMove, backwardMostMove);
             for(k=backwardMostMove; k<=forwardMostMove; k++)
-                fprintf(debugFP, "e%d. p=%d\n", k, (int)boards[k][EP_STATUS]);
+                fprintf(debugFP, "e%d. p=%d\n", k, (signed char)boards[k][EP_STATUS]);
 
         }
 
-        while(j > backwardMostMove && (int)boards[j][EP_STATUS] <= EP_NONE) j--,i++;
+        while(j > backwardMostMove && (signed char)boards[j][EP_STATUS] <= EP_NONE) j--,i++;
         if( j == backwardMostMove ) i += initialRulePlies;
         sprintf(p, "%d ", i);
         p += i>=100 ? 4 : i >= 10 ? 3 : 2;
