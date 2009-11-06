@@ -450,6 +450,20 @@ int loadFlag = 0;
 int shuffleOpenings;
 int mute; // mute all sounds
 
+// [HGM] vari: next 12 to save and restore variations
+#define MAX_VARIATIONS 10
+int framePtr = MAX_MOVES-1; // points to free stack entry
+int storedGames = 0;
+int savedFirst[MAX_VARIATIONS];
+int savedLast[MAX_VARIATIONS];
+int savedFramePtr[MAX_VARIATIONS];
+char *savedDetails[MAX_VARIATIONS];
+ChessMove savedResult[MAX_VARIATIONS];
+
+void PushTail P((int firstMove, int lastMove));
+Boolean PopTail P((void));
+void CleanupTail P((void));
+
 ChessSquare  FIDEArray[2][BOARD_FILES] = {
     { WhiteRook, WhiteKnight, WhiteBishop, WhiteQueen,
 	WhiteKing, WhiteBishop, WhiteKnight, WhiteRook },
@@ -641,7 +655,7 @@ InitBackEnd1()
     {
         int i, j;
 
-        for( i=0; i<MAX_MOVES; i++ ) {
+        for( i=0; i<=framePtr; i++ ) {
             pvInfoList[i].depth = -1;
             boards[i][EP_STATUS] = EP_NONE;
             for( j=0; j<BOARD_FILES-2; j++ ) boards[i][CASTLING][j] = NoRights;
@@ -3437,7 +3451,7 @@ ParseBoard12(string)
     /* Convert the move number to internal form */
     moveNum = (moveNum - 1) * 2;
     if (to_play == 'B') moveNum++;
-    if (moveNum >= MAX_MOVES) {
+    if (moveNum > framePtr) { // [HGM] vari: do not run into saved variations
       DisplayFatalError(_("Game too long; increase MAX_MOVES and recompile"),
 			0, 1);
       return;
@@ -4611,7 +4625,7 @@ InitPosition(redraw)
 
     /* [AS] Initialize pv info list [HGM] and game status */
     {
-        for( i=0; i<MAX_MOVES; i++ ) {
+        for( i=0; i<=framePtr; i++ ) { // [HGM] vari: spare saved variations
             pvInfoList[i].depth = 0;
             boards[i][EP_STATUS] = EP_NONE;
             for( j=0; j<BOARD_FILES-2; j++ ) boards[i][CASTLING][j] = NoRights;
@@ -5100,12 +5114,6 @@ OKToStartUserMove(x, y)
 	    /* Could disallow this or prompt for confirmation */
 	    cmailOldMove = -1;
 	}
-	if (currentMove < forwardMostMove) {
-	    /* Discarding moves */
-	    /* Could prompt for confirmation here,
-	       but I don't think that's such a good idea */
-	    forwardMostMove = currentMove;
-	}
 	break;
 
       case BeginningOfGame:
@@ -5134,6 +5142,7 @@ OKToStartUserMove(x, y)
 	break;
     }
     if (currentMove != forwardMostMove && gameMode != AnalyzeMode
+	&& gameMode != EditGame // [HGM] vari: treat as AnalyzeMode
 	&& gameMode != AnalyzeFile && gameMode != Training) {
 	DisplayMoveError(_("Displayed position is not current"));
 	return FALSE;
@@ -5394,8 +5403,9 @@ if(appData.debugMode) fprintf(debugFP, "moveType 1 = %d, promochar = %x\n", move
 
   /* Ok, now we know that the move is good, so we can kill
      the previous line in Analysis Mode */
-  if (gameMode == AnalyzeMode && currentMove < forwardMostMove) {
-    forwardMostMove = currentMove;
+  if ((gameMode == AnalyzeMode || gameMode == EditGame) 
+				&& currentMove < forwardMostMove) {
+    PushTail(currentMove, forwardMostMove); // [HGM] vari: save tail of game
   }
 
   /* If we need the chess program but it's dead, restart it */
@@ -7686,7 +7696,7 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
         fflush(serverMoves);
     }
 
-    if (forwardMostMove+1 >= MAX_MOVES) {
+    if (forwardMostMove+1 > framePtr) { // [HGM] vari: do not run into saved variations
       DisplayFatalError(_("Game too long; increase MAX_MOVES and recompile"),
 			0, 1);
       return;
@@ -8468,6 +8478,7 @@ Reset(redraw, init)
 	fprintf(debugFP, "Reset(%d, %d) from gameMode %d\n",
 		redraw, init, gameMode);
     }
+    CleanupTail(); // [HGM] vari: delete any stored variations
     pausing = pauseExamInvalid = FALSE;
     startedFromSetupPosition = blackPlaysFirst = FALSE;
     firstMove = TRUE;
@@ -10861,7 +10872,8 @@ TwoMachinesEvent P((void))
 	break;
     }
 
-    forwardMostMove = currentMove;
+//    forwardMostMove = currentMove;
+    TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
     ResurrectChessProgram();	/* in case first program isn't running */
 
     if (second.pr == NULL) {
@@ -11826,6 +11838,9 @@ ToNrEvent(int to)
 void
 RevertEvent()
 {
+    if(PopTail()) { // [HGM] vari: restore old game tail
+	return;
+    }
     if (gameMode != IcsExamining) {
 	DisplayError(_("You are not examining a game"), 0);
 	return;
@@ -11923,6 +11938,7 @@ TruncateGameEvent()
 void
 TruncateGame()
 {
+    CleanupTail(); // [HGM] vari: only keep current variation if we explicitly truncate
     if (forwardMostMove > currentMove) {
 	if (gameInfo.resultDetails != NULL) {
 	    free(gameInfo.resultDetails);
@@ -14116,4 +14132,96 @@ int wrap(char *dest, char *src, int count, int width, int *lp)
     *lp = dest ? line : old_line;
 
     return len;
+}
+
+// [HGM] vari: routines for shelving variations
+
+void 
+PushTail(int firstMove, int lastMove)
+{
+	int i, j, nrMoves = lastMove - firstMove;
+
+	if(appData.icsActive) { // only in local mode
+		forwardMostMove = currentMove; // mimic old ICS behavior
+		return;
+	}
+	if(storedGames >= MAX_VARIATIONS-1) return;
+
+	// push current tail of game on stack
+	savedResult[storedGames] = gameInfo.result;
+	savedDetails[storedGames] = gameInfo.resultDetails;
+	gameInfo.resultDetails = NULL;
+	savedFirst[storedGames] = firstMove;
+	savedLast [storedGames] = lastMove;
+	savedFramePtr[storedGames] = framePtr;
+	framePtr -= nrMoves; // reserve space for the boards
+	for(i=nrMoves; i>=1; i--) { // copy boards to stack, working downwards, in case of overlap
+	    CopyBoard(boards[framePtr+i], boards[firstMove+i]);
+	    for(j=0; j<MOVE_LEN; j++)
+		moveList[framePtr+i][j] = moveList[firstMove+i-1][j];
+	    for(j=0; j<2*MOVE_LEN; j++)
+		parseList[framePtr+i][j] = parseList[firstMove+i-1][j];
+	    timeRemaining[0][framePtr+i] = timeRemaining[0][firstMove+i];
+	    timeRemaining[1][framePtr+i] = timeRemaining[1][firstMove+i];
+	    pvInfoList[framePtr+i] = pvInfoList[firstMove+i-1];
+	    pvInfoList[firstMove+i-1].depth = 0;
+	    commentList[framePtr+i] = commentList[firstMove+i];
+	    commentList[firstMove+i] = NULL;
+	}
+
+	storedGames++;
+	forwardMostMove = currentMove; // truncte game so we can start variation
+	if(storedGames == 1) GreyRevert(FALSE);
+}
+
+Boolean 
+PopTail()
+{
+	int i, j, nrMoves;
+
+	if(appData.icsActive) return FALSE; // only in local mode
+	if(!storedGames) return FALSE; // sanity
+
+	storedGames--;
+	ToNrEvent(savedFirst[storedGames]); // sets currentMove
+	nrMoves = savedLast[storedGames] - currentMove;
+	for(i=1; i<nrMoves; i++) { // copy last variation back
+	    CopyBoard(boards[currentMove+i], boards[framePtr+i]);
+	    for(j=0; j<MOVE_LEN; j++)
+		moveList[currentMove+i-1][j] = moveList[framePtr+i][j];
+	    for(j=0; j<2*MOVE_LEN; j++)
+		parseList[currentMove+i-1][j] = parseList[framePtr+i][j];
+	    timeRemaining[0][currentMove+i] = timeRemaining[0][framePtr+i];
+	    timeRemaining[1][currentMove+i] = timeRemaining[1][framePtr+i];
+	    pvInfoList[currentMove+i-1] = pvInfoList[framePtr+i];
+	    if(commentList[currentMove+i]) free(commentList[currentMove+i]);
+	    commentList[currentMove+i] = commentList[framePtr+i];
+	    commentList[framePtr+i] = NULL;
+	}
+	framePtr = savedFramePtr[storedGames];
+	gameInfo.result = savedResult[storedGames];
+	if(gameInfo.resultDetails != NULL) {
+	    free(gameInfo.resultDetails);
+      }
+	gameInfo.resultDetails = savedDetails[storedGames];
+	forwardMostMove = currentMove + nrMoves;
+	if(storedGames == 0) GreyRevert(TRUE);
+	return TRUE;
+}
+
+void 
+CleanupTail()
+{	// remove all shelved variations
+	int i;
+	for(i=0; i<storedGames; i++) {
+	    if(savedDetails[i])
+		free(savedDetails[i]);
+	    savedDetails[i] = NULL;
+	}
+	for(i=framePtr; i<MAX_MOVES; i++) {
+		if(commentList[i]) free(commentList[i]);
+		commentList[i] = NULL;
+	}
+	framePtr = MAX_MOVES-1;
+	storedGames = 0;
 }

@@ -7110,13 +7110,8 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	// [HGM] movenum: allow move number to be typed in any mode
 	if(sscanf(move, "%d", &n) == 1 && n != 0 ) {
-	  currentMove = 2*n-1;
-	  if(currentMove > forwardMostMove)  currentMove = forwardMostMove;
-	  if(currentMove < backwardMostMove) currentMove = backwardMostMove;
+	  ToNrEvent(2*n-1);
 	  EndDialog(hDlg, TRUE);
-	  DrawPosition(TRUE, boards[currentMove]);
-	  if(currentMove > backwardMostMove) DisplayMove(currentMove - 1);
-	  else DisplayMessage("", "");
 	  return TRUE;
 	}
       }
@@ -8491,6 +8486,13 @@ typedef struct {
   int item;
   int flags;
 } Enables;
+
+VOID
+GreyRevert(Boolean grey)
+{ // [HGM] vari: for retracting variations in local mode
+  HMENU hmenu = GetMenu(hwndMain);
+  EnableMenuItem(hmenu, IDM_Revert, MF_BYCOMMAND|(grey ? MF_GRAYED : MF_ENABLED));
+}
 
 VOID
 SetMenuEnables(HMENU hmenu, Enables *enab)

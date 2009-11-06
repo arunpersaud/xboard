@@ -3311,6 +3311,20 @@ typedef struct {
 } Enables;
 
 void
+GreyRevert(grey)
+     Boolean grey;
+{
+    Widget w;
+    if (!menuBarWidget) return;
+    w = XtNameToWidget(menuBarWidget, "menuStep.Revert");
+    if (w == NULL) {
+      DisplayError("menuStep.Revert", 0);
+    } else {
+      XtSetSensitive(w, !grey);
+    }
+}
+
+void
 SetMenuEnables(enab)
      Enables *enab;
 {

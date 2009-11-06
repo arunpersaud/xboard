@@ -185,6 +185,8 @@ void ThawUI P((void));
 extern char *programName;
 extern int commentUp;
 
+void GreyRevert P((Boolean grey));
+
 typedef struct FrontEndProgramStats_TAG {
     int which;
     int depth;
