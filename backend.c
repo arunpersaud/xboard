@@ -5314,7 +5314,7 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
             return ImpossibleMove;
 	}
     }
-if(appData.debugMode) fprintf(debugFP, "moveType 3 = %d, promochar = %x\n", moveType, promoChar);
+
     return moveType;
     /* [HGM] <popupFix> in stead of calling FinishMove directly, this
        function is made into one that returns an OK move type if FinishMove
@@ -5333,7 +5333,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
      /*char*/int promoChar;
 {
     char *bookHit = 0;
-if(appData.debugMode) fprintf(debugFP, "moveType 5 = %d, promochar = %x\n", moveType, promoChar);
+
     if((gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) && promoChar != NULLCHAR) { 
 	// [HGM] superchess: suppress promotions to non-available piece
 	int k = PieceToNumber(CharToPiece(ToUpper(promoChar)));
@@ -5348,13 +5348,12 @@ if(appData.debugMode) fprintf(debugFP, "moveType 5 = %d, promochar = %x\n", move
        move type in caller when we know the move is a legal promotion */
     if(moveType == NormalMove && promoChar)
         moveType = PromoCharToMoveType(WhiteOnMove(currentMove), promoChar);
-if(appData.debugMode) fprintf(debugFP, "moveType 1 = %d, promochar = %x\n", moveType, promoChar);
+
     /* [HGM] convert drag-and-drop piece drops to standard form */
     if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) {
          moveType = WhiteOnMove(currentMove) ? WhiteDrop : BlackDrop;
 	   if(appData.debugMode) fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n", 
 		moveType, currentMove, fromX, fromY, boards[currentMove][fromY][fromX]);
-//         fromX = boards[currentMove][fromY][fromX];
 	   // holdings might not be sent yet in ICS play; we have to figure out which piece belongs here
 	   if(fromX == 0) fromY = BOARD_HEIGHT-1 - fromY; // black holdings upside-down
 	   fromX = fromX ? WhitePawn : BlackPawn; // first piece type in selected holdings
@@ -5363,7 +5362,7 @@ if(appData.debugMode) fprintf(debugFP, "moveType 1 = %d, promochar = %x\n", move
     }
 
     /* [HGM] <popupFix> The following if has been moved here from
-       UserMoveEvent(). Because it seemed to belon here (why not allow
+       UserMoveEvent(). Because it seemed to belong here (why not allow
        piece drops in training games?), and because it can only be
        performed after it is known to what we promote. */
     if (gameMode == Training) {
@@ -5438,7 +5437,7 @@ if(appData.debugMode) fprintf(debugFP, "moveType 1 = %d, promochar = %x\n", move
     }
     ModeHighlight();
   }
-if(appData.debugMode) fprintf(debugFP, "moveType 2 = %d, promochar = %x\n", moveType, promoChar);
+
   /* Relay move to ICS or chess engine */
   if (appData.icsActive) {
     if (gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
@@ -11797,7 +11796,7 @@ void
 ToStartEvent()
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
-	/* to optimze, we temporarily turn off analysis mode while we undo
+	/* to optimize, we temporarily turn off analysis mode while we undo
 	 * all the moves. Otherwise we get analysis output after each undo.
 	 */ 
         if (first.analysisSupport) {
