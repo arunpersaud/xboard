@@ -181,7 +181,7 @@ void ProcessICSInitScript P((FILE * f));
 void EditCommentEvent P((void));
 void ReplaceComment P((int index, char *text));
 int ReplaceTags P((char *tags, GameInfo *gi));/* returns nonzero on error */
-void AppendComment P((int index, char *text));
+void AppendComment P((int index, char *text, Boolean addBraces));
 void ReloadCmailMsgEvent P((int unregister));
 void MailMoveEvent P((void));
 void EditTagsEvent P((void));
