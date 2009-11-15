@@ -226,13 +226,13 @@ void DoSetWindowText(int which, int field, char *s_label)
 	XtSetValues(outputField[which][field], &arg, 1);
 }
 
-static void InsertIntoMemo( int which, char * text )
+static void InsertIntoMemo( int which, char * text, int where )
 {
 	Arg arg; XawTextBlock t; Widget edit;
 
 	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
 	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
-	XawTextReplace(edit, 0, 0, &t);
+	XawTextReplace(edit, where, where, &t);
 //	XtSetArg(arg, XtNstring, (XtArgVal) text);
 //	XtSetValues(outputField[which][nMemo], &arg, 1);
 }
@@ -558,6 +558,9 @@ void EngineOutputPopDown()
 //------------------------ pure back-end routines -------------------------------
 
 
+#define MAX_VAR 400
+static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
+
 // back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
 static void SetEngineState( int which, int state, char * state_data )
 {
@@ -792,6 +795,38 @@ static void SetEngineColorIcon( int which )
 
 #define MAX_NAME_LENGTH 32
 
+// [HGM] multivar: sort Thinking Output within one depth on score
+
+static int InsertionPoint( int len, EngineOutputData * ed )
+{
+	int i, offs = 0, newScore = ed->score, n = ed->which;
+
+	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0)
+		newScore = 1e6; // info lines inserted on top
+	if(ed->depth != curDepth[n]) { // depth has changed
+		curDepth[n] = ed->depth;
+		nrVariations[n] = 0; // throw away everything we had
+	}
+	// loop through all lines. Note even / odd used for different panes
+	for(i=nrVariations[n]-2; i>=0; i-=2) {
+		// put new item behind those we haven't looked at
+		offs = textEnd[i+n];
+		textEnd[i+n+2] = offs + len;
+		scores[i+n+2] = newScore;
+		if(newScore < scores[i+n]) break;
+		// if it had higher score as previous, move previous in stead
+		scores[i+n+2] = scores[i+n];
+		textEnd[i+n+2] = textEnd[i+n] + len;
+	}
+	if(i<0) {
+		offs = 0;
+		textEnd[n] = offs + len;
+		scores[n] = newScore;
+	}
+	nrVariations[n] += 2;
+      return offs;
+}
+
 // pure back end, now SetWindowText is called via wrapper DoSetWindowText
 static void UpdateControls( EngineOutputData * ed )
 {
@@ -920,7 +955,7 @@ static void UpdateControls( EngineOutputData * ed )
         strcat( buf + buflen, "\n" );
 
         /* Update memo */
-        InsertIntoMemo( ed->which, buf );
+        InsertIntoMemo( ed->which, buf, InsertionPoint(strlen(buf), ed) );
     }
 
     /* Colors */
@@ -966,5 +1001,5 @@ void OutputKibitz(int window, char *text)
 	DoSetWindowText(1, nLabel, gameMode == IcsPlayingBlack ? gameInfo.white : gameInfo.black); // opponent name
 	SetIcon( 1, nColorIcon,  gameMode == IcsPlayingBlack ? nColorWhite : nColorBlack);
 	SetIcon( 1, nStateIcon,  nClear);
-	InsertIntoMemo(window-1, text);
+	InsertIntoMemo(window-1, text, 0);
 }
