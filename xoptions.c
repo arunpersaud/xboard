@@ -45,6 +45,7 @@ extern char *getenv();
 #if HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+#include <stdint.h>
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
