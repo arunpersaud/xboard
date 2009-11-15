@@ -461,7 +461,7 @@ char *savedDetails[MAX_VARIATIONS];
 ChessMove savedResult[MAX_VARIATIONS];
 
 void PushTail P((int firstMove, int lastMove));
-Boolean PopTail P((void));
+Boolean PopTail P((Boolean annotate));
 void CleanupTail P((void));
 
 ChessSquare  FIDEArray[2][BOARD_FILES] = {
@@ -9862,7 +9862,7 @@ SaveGamePGN(f)
 	/* Print comments preceding this move */
 	if (commentList[i] != NULL) {
 	    if (linelen > 0) fprintf(f, "\n");
-	    fprintf(f, "%s\n", commentList[i]);
+	    fprintf(f, "%s", commentList[i]);
 	    linelen = 0;
 	    newblock = TRUE;
 	}
@@ -9915,17 +9915,9 @@ SaveGamePGN(f)
         /* [AS] Add PV info if present */
         if( i >= 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
             /* [HGM] add time */
-            char buf[MSG_SIZ]; int seconds = 0;
+            char buf[MSG_SIZ]; int seconds;
 
-            if(i >= backwardMostMove) {
-		if(WhiteOnMove(i))
-			seconds = timeRemaining[0][i] - timeRemaining[0][i+1]
-				  + GetTimeQuota(i/2) / (1000*WhitePlayer()->timeOdds);
-		else
-			seconds = timeRemaining[1][i] - timeRemaining[1][i+1]
-                                  + GetTimeQuota(i/2) / (1000*WhitePlayer()->other->timeOdds);
-            }
-            seconds = (seconds+50)/100; // deci-seconds, rounded to nearest
+            seconds = (pvInfoList[i].time+5)/10; // deci-seconds, rounded to nearest
 
             if( seconds <= 0) buf[0] = 0; else
             if( seconds < 30 ) sprintf(buf, " %3.1f%c", seconds/10., 0); else {
@@ -10095,6 +10087,7 @@ SavePosition(f, dummy, dummy2)
     time_t tm;
     char *fen;
     
+    if (gameMode == EditPosition) EditPositionDone(TRUE);
     if (appData.oldSaveStyle) {
 	tm = time((time_t *) NULL);
     
@@ -11837,7 +11830,7 @@ ToNrEvent(int to)
 void
 RevertEvent()
 {
-    if(PopTail()) { // [HGM] vari: restore old game tail
+    if(PopTail(TRUE)) { // [HGM] vari: restore old game tail
 	return;
     }
     if (gameMode != IcsExamining) {
@@ -12100,6 +12093,14 @@ SetGameInfo()
 {
     /* This routine is used only for certain modes */
     VariantClass v = gameInfo.variant;
+    ChessMove r = GameUnfinished;
+    char *p = NULL;
+
+    if(gameMode == EditGame) { // [HGM] vari: do not erase result on EditGame
+	r = gameInfo.result; 
+	p = gameInfo.resultDetails; 
+	gameInfo.resultDetails = NULL;
+    }
     ClearGameInfo(&gameInfo);
     gameInfo.variant = v;
 
@@ -12152,6 +12153,8 @@ SetGameInfo()
 	gameInfo.round = StrSave("-");
 	gameInfo.white = StrSave("-");
 	gameInfo.black = StrSave("-");
+	gameInfo.result = r;
+	gameInfo.resultDetails = p;
 	break;
 
       case EditPosition:
@@ -12201,7 +12204,9 @@ ReplaceComment(index, text)
 	commentList[index] = NULL;
 	return;
     }
-  if(*text == '{' || *text == '(' || *text == '[') {
+  if( *text == '{' && strchr(text, '}') || // [HGM] braces: if certainy malformed, put braces
+      *text == '[' && strchr(text, ']') || // otherwise hope the user knows what he is doing
+      *text == '(' && strchr(text, ')')) { // (perhaps check if this parses as comment-only?)
     commentList[index] = (char *) malloc(len + 2);
     strncpy(commentList[index], text, len);
     commentList[index][len] = '\n';
@@ -12211,9 +12216,10 @@ ReplaceComment(index, text)
     char *p;
     commentList[index] = (char *) malloc(len + 6);
     strcpy(commentList[index], "{\n");
-    strcat(commentList[index], text);
+    strncpy(commentList[index]+2, text, len);
+    commentList[index][len+2] = NULLCHAR;
     while(p = strchr(commentList[index], '}')) *p = ')'; // kill all } to make it one comment
-    strcat(commentList[index], "\n}");
+    strcat(commentList[index], "\n}\n");
   }
 }
 
@@ -12254,25 +12260,30 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
     if (commentList[index] != NULL) {
 	old = commentList[index];
 	oldlen = strlen(old);
-	commentList[index] = (char *) malloc(oldlen + len + 4); // might waste 2
+	while(commentList[index][oldlen-1] ==  '\n')
+	  commentList[index][--oldlen] = NULLCHAR;
+	commentList[index] = (char *) malloc(oldlen + len + 6); // might waste 4
 	strcpy(commentList[index], old);
 	free(old);
-	// [HGM] braces: join "{A\n}" + "{B}" as "{A\nB\n}"
+	// [HGM] braces: join "{A\n}\n" + "{\nB}" as "{A\nB\n}"
 	if(commentList[index][oldlen-1] == '}' && (text[0] == '{' || addBraces)) {
 	  if(addBraces) addBraces = FALSE; else { text++; len--; }
 	  while (*text == '\n') { text++; len--; }
-	  commentList[index][oldlen-1] = NULLCHAR;
-	  oldlen--;
+	  commentList[index][--oldlen] = NULLCHAR;
       }
-	strncpy(&commentList[index][oldlen], text, len);
-	if(addBraces) strcpy(&commentList[index][oldlen + len], "\n}");
-	else          strcpy(&commentList[index][oldlen + len], "\n");
+	if(addBraces) strcat(commentList[index], "\n{\n");
+	else          strcat(commentList[index], "\n");
+	strcat(commentList[index], text);
+	if(addBraces) strcat(commentList[index], "\n}\n");
+	else          strcat(commentList[index], "\n");
     } else {
-	commentList[index] = (char *) malloc(len + 4); // perhaps wastes 2...
-	if(addBraces) commentList[index][0] = '{';
-	strcpy(commentList[index] + addBraces, text);
+	commentList[index] = (char *) malloc(len + 6); // perhaps wastes 4...
+	if(addBraces)
+	     strcpy(commentList[index], "{\n");
+	else commentList[index][0] = NULLCHAR;
+	strcat(commentList[index], text);
 	strcat(commentList[index], "\n");
-	if(addBraces) strcat(commentList[index], "}");
+	if(addBraces) strcat(commentList[index], "}\n");
     }
 }
 
@@ -12404,7 +12415,7 @@ SendToProgram(message, cps)
             } else {
                 gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
             }
-            gameInfo.resultDetails = buf;
+            gameInfo.resultDetails = StrSave(buf);
         }
         DisplayFatalError(buf, error, 1);
     }
@@ -12435,7 +12446,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
                 } else {
                     gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
                 }
-                gameInfo.resultDetails = buf;
+                gameInfo.resultDetails = StrSave(buf);
             }
 	    RemoveInputSource(cps->isr);
 	    DisplayFatalError(buf, 0, 1);
@@ -14173,10 +14184,11 @@ PushTail(int firstMove, int lastMove)
 	if(storedGames == 1) GreyRevert(FALSE);
 }
 
-Boolean 
-PopTail()
+Boolean
+PopTail(Boolean annotate)
 {
 	int i, j, nrMoves;
+	char buf[8000], moveBuf[20];
 
 	if(appData.icsActive) return FALSE; // only in local mode
 	if(!storedGames) return FALSE; // sanity
@@ -14184,6 +14196,19 @@ PopTail()
 	storedGames--;
 	ToNrEvent(savedFirst[storedGames]); // sets currentMove
 	nrMoves = savedLast[storedGames] - currentMove;
+	if(annotate) {
+		int cnt = 10;
+		if(!WhiteOnMove(currentMove)) sprintf(buf, "(%d...", currentMove+2>>1);
+		else strcpy(buf, "(");
+		for(i=currentMove; i<forwardMostMove; i++) {
+			if(WhiteOnMove(i))
+			     sprintf(moveBuf, " %d. %s", i+2>>1, SavePart(parseList[i]));
+			else sprintf(moveBuf, " %s", SavePart(parseList[i]));
+			strcat(buf, moveBuf);
+			if(!--cnt) { strcat(buf, "\n"); cnt = 10; }
+		}
+		strcat(buf, ")");
+	}
 	for(i=1; i<nrMoves; i++) { // copy last variation back
 	    CopyBoard(boards[currentMove+i], boards[framePtr+i]);
 	    for(j=0; j<MOVE_LEN; j++)
@@ -14197,6 +14222,7 @@ PopTail()
 	    commentList[currentMove+i] = commentList[framePtr+i];
 	    commentList[framePtr+i] = NULL;
 	}
+	if(annotate) AppendComment(currentMove+1, buf, FALSE);
 	framePtr = savedFramePtr[storedGames];
 	gameInfo.result = savedResult[storedGames];
 	if(gameInfo.resultDetails != NULL) {
