@@ -202,8 +202,6 @@ extern char *getenv();
 void EngineOutputProc P((Widget w, XEvent *event,
  String *prms, Cardinal *nprms));
 
-void EngineOutputPopDown();
-
 
 #ifdef __EMX__
 #ifndef HAVE_USLEEP
@@ -431,7 +429,6 @@ static void CreateAnimVars P((void));
 static void DragPieceMove P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
-void EngineOutputUpdate( FrontEndProgramStats * stats );
 void ShuffleMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EngineMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UciMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -9371,14 +9368,6 @@ DrawDragPiece ()
 		player.startColor, EmptySquare, xBoardWindow);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
   damage[player.startBoardY][player.startBoardX] = TRUE;
-}
-
-void
-SetProgramStats( FrontEndProgramStats * stats )
-{
-  // [HR] TODO
-  // [HGM] done, but perhaps backend should call this directly?
-    EngineOutputUpdate( stats );
 }
 
 #include <sys/ioctl.h>

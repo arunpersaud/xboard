@@ -10620,8 +10620,3 @@ HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
 
     EvalGraphSet( first, last, current, pvInfoList );
 }
-
-void SetProgramStats( FrontEndProgramStats * stats )
-{
-    EngineOutputUpdate( stats );
-}

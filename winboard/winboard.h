@@ -222,10 +222,6 @@ VOID EvalGraphPopDown();
 Boolean EvalGraphIsUp();
 extern HWND evalGraphDialog;
 
-VOID EngineOutputPopUp();
-VOID EngineOutputPopDown();
-BOOL EngineOutputIsUp();
-VOID EngineOutputUpdate( FrontEndProgramStats * stats );
 extern HWND engineOutputDialog;
 
 VOID ShowGameListProc(void);

@@ -201,4 +201,9 @@ typedef struct FrontEndProgramStats_TAG {
 
 void SetProgramStats P(( FrontEndProgramStats * stats )); /* [AS] */
 
+void EngineOutputPopUp P((void));
+void EngineOutputPopDown P((void));
+int  EngineOutputIsUp P((void));
+int  EngineOutputDialogExists P((void));
+
 #endif
