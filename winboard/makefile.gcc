@@ -7,7 +7,7 @@ PROJ=winboard
 OBJS=backend.o book.o gamelist.o lists.o moves.o pgntags.o uci.o zippy.o\
  parser.o wbres.o wclipbrd.o wedittags.o wengineoutput.o wevalgraph.o\
  wgamelist.o whistory.o winboard.o wlayout.o woptions.o wsnap.o\
- wsockerr.o help.o wsettings.o wchat.o engineoutput.o 
+ wsockerr.o help.o wsettings.o wchat.o engineoutput.o evalgraph.o
 
 
 # make compiling less spammy
@@ -137,8 +137,12 @@ whistory.o: whistory.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
 	$(call compile, $<)
 
-wevalgraph.o: wevalgraph.c config.h ../common.h ../frontend.h ../backend.h \
-	../lists.h winboard.h resource.h wsnap.h
+wevalgraph.o: wevalgraph.c ../evalgraph.h config.h ../common.h ../frontend.h \
+	../backend.h ../lists.h winboard.h resource.h wsnap.h
+	$(call compile, $<)
+
+evalgraph.o: ../evalgraph.c ../evalgraph.h config.h ../common.h ../frontend.h \
+	../backend.h ../lists.h
 	$(call compile, $<)
 
 wlayout.o: wlayout.c config.h ../common.h ../frontend.h winboard.h resource.h
