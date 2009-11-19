@@ -12411,7 +12411,7 @@ SendToProgram(message, cps)
             } else {
                 gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
             }
-            gameInfo.resultDetails = buf;
+            gameInfo.resultDetails = StrSave(buf);
         }
         DisplayFatalError(buf, error, 1);
     }
@@ -12442,7 +12442,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
                 } else {
                     gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
                 }
-                gameInfo.resultDetails = buf;
+                gameInfo.resultDetails = StrSave(buf);
             }
 	    RemoveInputSource(cps->isr);
 	    DisplayFatalError(buf, 0, 1);
