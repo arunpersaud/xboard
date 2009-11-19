@@ -435,7 +435,7 @@ BOOLEAN evalGraphDialogUp = FALSE;
 WindowPlacement wpEvalGraph;
 
 HWND engineOutputDialog = NULL;
-BOOLEAN engineOutputDialogUp = FALSE;
+int engineOutputDialogUp = FALSE;
 
 WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
