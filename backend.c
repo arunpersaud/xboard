@@ -168,7 +168,7 @@ int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 void BackwardInner P((int target));
 void ForwardInner P((int target));
 void GameEnds P((ChessMove result, char *resultDetails, int whosays));
-void EditPositionDone P((void));
+void EditPositionDone P((Boolean fakeRights));
 void PrintOpponents P((FILE *fp));
 void PrintPosition P((FILE *fp, int move));
 void StartChessProgram P((ChessProgramState *cps));
@@ -10088,7 +10088,7 @@ SaveGame(f, dummy, dummy2)
      int dummy;
      char *dummy2;
 {
-    if (gameMode == EditPosition) EditPositionDone();
+    if (gameMode == EditPosition) EditPositionDone(TRUE);
     lastSavedGame = GameCheckSum(); // [HGM] save: remember ID of last saved game to prevent double saving
     if (appData.oldSaveStyle)
       return SaveGameOldStyle(f);
@@ -10128,7 +10128,8 @@ SavePosition(f, dummy, dummy2)
 {
     time_t tm;
     char *fen;
-    
+
+    if (gameMode == EditPosition) EditPositionDone(TRUE);
     if (appData.oldSaveStyle) {
 	tm = time((time_t *) NULL);
     
@@ -10706,7 +10707,7 @@ MachineWhiteEvent()
 	EditGameEvent();
 
     if (gameMode == EditPosition) 
-        EditPositionDone();
+        EditPositionDone(TRUE);
 
     if (!WhiteOnMove(currentMove)) {
 	DisplayError(_("It is not White's turn"), 0);
@@ -10787,7 +10788,7 @@ MachineBlackEvent()
         EditGameEvent();
 
     if (gameMode == EditPosition) 
-        EditPositionDone();
+        EditPositionDone(TRUE);
 
     if (WhiteOnMove(currentMove)) {
 	DisplayError(_("It is not Black's turn"), 0);
@@ -10894,7 +10895,7 @@ TwoMachinesEvent P((void))
 	if (gameMode != EditGame) return;
 	break;
       case EditPosition:
-	EditPositionDone();
+	EditPositionDone(TRUE);
 	break;
       case AnalyzeMode:
       case AnalyzeFile:
@@ -11032,7 +11033,7 @@ IcsClientEvent()
 	break;
 
       case EditPosition:
-	EditPositionDone();
+	EditPositionDone(TRUE);
 	break;
 
       case AnalyzeMode:
@@ -11073,7 +11074,7 @@ EditGameEvent()
 	}
 	break;
       case EditPosition:
-	EditPositionDone();
+	EditPositionDone(TRUE);
 	break;
       case AnalyzeMode:
       case AnalyzeFile:
@@ -11180,21 +11181,30 @@ ExitAnalyzeMode()
 }
 
 void
-EditPositionDone()
+EditPositionDone(Boolean fakeRights)
 {
     int king = gameInfo.variant == VariantKnightmate ? WhiteUnicorn : WhiteKing;
 
     startedFromSetupPosition = TRUE;
     InitChessProgram(&first, FALSE);
-    castlingRights[0][2] = castlingRights[0][5] = BOARD_WIDTH>>1;
-    if(boards[0][0][BOARD_WIDTH>>1] == king) {
-	castlingRights[0][1] = boards[0][0][BOARD_LEFT] == WhiteRook ? 0 : -1;
-	castlingRights[0][0] = boards[0][0][BOARD_RGHT-1] == WhiteRook ? BOARD_RGHT-1 : -1;
-    } else castlingRights[0][2] = -1;
-    if(boards[0][BOARD_HEIGHT-1][BOARD_WIDTH>>1] == WHITE_TO_BLACK king) {
-	castlingRights[0][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? 0 : -1;
-	castlingRights[0][3] = boards[0][BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook ? BOARD_RGHT-1 : -1;
-    } else castlingRights[0][5] = -1;
+    if(fakeRights)  
+      { /* don't do this if we just pasted FEN */
+	castlingRights[0][2] = castlingRights[0][5] = BOARD_WIDTH>>1;
+	if(boards[0][0][BOARD_WIDTH>>1] == king) 
+	  {
+	    castlingRights[0][1] = boards[0][0][BOARD_LEFT] == WhiteRook ? 0 : -1;
+	    castlingRights[0][0] = boards[0][0][BOARD_RGHT-1] == WhiteRook ? BOARD_RGHT-1 : -1;
+	  } 
+	else 
+	  castlingRights[0][2] = -1;
+	if(boards[0][BOARD_HEIGHT-1][BOARD_WIDTH>>1] == WHITE_TO_BLACK king) 
+	  {
+	    castlingRights[0][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? 0 : -1;
+	    castlingRights[0][3] = boards[0][BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook ? BOARD_RGHT-1 : -1;
+	  } 
+	else 
+	  castlingRights[0][5] = -1;
+      }
     SendToProgram("force\n", &first);
     if (blackPlaysFirst) {
 	strcpy(moveList[0], "");
@@ -12026,7 +12036,7 @@ BookEvent()
 	}
 	break;
       case EditPosition:
-	EditPositionDone();
+	EditPositionDone(TRUE);
 	break;
       case TwoMachinesPlay:
 	return;
@@ -12890,7 +12900,7 @@ PonderNextMoveEvent(newState)
      int newState;
 {
     if (newState == appData.ponderNextMove) return;
-    if (gameMode == EditPosition) EditPositionDone();
+    if (gameMode == EditPosition) EditPositionDone(TRUE);
     if (newState) {
 	SendToProgram("hard\n", &first);
 	if (gameMode == TwoMachinesPlay) {
@@ -12913,7 +12923,7 @@ NewSettingEvent(option, command, value)
 {
     char buf[MSG_SIZ];
 
-    if (gameMode == EditPosition) EditPositionDone();
+    if (gameMode == EditPosition) EditPositionDone(TRUE);
     sprintf(buf, "%s%s %d\n", (option ? "option ": ""), command, value);
     SendToProgram(buf, &first);
     if (gameMode == TwoMachinesPlay) {
@@ -12932,7 +12942,7 @@ ShowThinkingEvent()
     
     if (oldState == newState) return;
     oldState = newState;
-    if (gameMode == EditPosition) EditPositionDone();
+    if (gameMode == EditPosition) EditPositionDone(TRUE);
     if (oldState) {
 	SendToProgram("post\n", &first);
 	if (gameMode == TwoMachinesPlay) {
@@ -14023,7 +14033,7 @@ EditPositionPasteFEN(char *fen)
               for( i=0; i<nrCastlingRights; i++ )
                   castlingRights[0][i] = FENcastlingRights[i];
           }
-      EditPositionDone();
+      EditPositionDone(FALSE);
       DisplayBothClocks();
       DrawPosition(FALSE, boards[currentMove]);
     }
