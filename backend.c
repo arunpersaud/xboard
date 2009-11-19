@@ -9949,17 +9949,9 @@ SaveGamePGN(f)
         /* [AS] Add PV info if present */
         if( i >= 0 && appData.saveExtendedInfoInPGN && pvInfoList[i].depth > 0 ) {
             /* [HGM] add time */
-            char buf[MSG_SIZ]; int seconds = 0;
+            char buf[MSG_SIZ]; int seconds;
 
-            if(i >= backwardMostMove) {
-		if(WhiteOnMove(i))
-			seconds = timeRemaining[0][i] - timeRemaining[0][i+1]
-				  + GetTimeQuota(i/2) / (1000*WhitePlayer()->timeOdds);
-		else
-			seconds = timeRemaining[1][i] - timeRemaining[1][i+1]
-                                  + GetTimeQuota(i/2) / (1000*WhitePlayer()->other->timeOdds);
-            }
-            seconds = (seconds+50)/100; // deci-seconds, rounded to nearest
+            seconds = (pvInfoList[i].time+5)/10; // deci-seconds, rounded to nearest
 
             if( seconds <= 0) buf[0] = 0; else
             if( seconds < 30 ) sprintf(buf, " %3.1f%c", seconds/10., 0); else {
