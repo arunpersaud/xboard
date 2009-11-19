@@ -3155,6 +3155,7 @@ read_from_ics(isr, closure, data, count, error)
 		    strncmp(why, "Continuing ", 11) == 0) {
 		    gs_gamenum = gamenum;
 		    strcpy(gs_kind, strchr(why, ' ') + 1);
+		    VariantSwitch(boards[currentMove], StringToVariant(gs_kind)); // [HGM] variantswitch: even before we get first board
 #if ZIPPY
 		    if (appData.zippyPlay) {
 			ZippyGameStart(whitename, blackname);
