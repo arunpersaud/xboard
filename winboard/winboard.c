@@ -903,6 +903,8 @@ typedef struct {
 
 int junk;
 
+#define XBOARD FALSE
+
 ArgDescriptor argDescriptors[] = {
   /* positional arguments */
   { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE, INVALID },
@@ -952,7 +954,30 @@ ArgDescriptor argDescriptors[] = {
   { "fd", ArgFilename, (LPVOID) &appData.firstDirectory, FALSE, INVALID },
   { "secondDirectory", ArgFilename, (LPVOID) &appData.secondDirectory, FALSE, (ArgIniType) SECOND_DIRECTORY },
   { "sd", ArgFilename, (LPVOID) &appData.secondDirectory, FALSE, INVALID },
-  /*!!bitmapDirectory?*/
+
+  /* some options only used by the XBoard front end, and ignored in WinBoard         */
+  /* Their saving is controlled by XBOARD, which in WinBoard is defined as FALSE */
+  { "internetChessServerInputBox", ArgBoolean, (LPVOID) &appData.icsInputBox, XBOARD, (ArgIniType) FALSE },
+  { "icsinput", ArgTrue, (LPVOID) &appData.icsInputBox, FALSE, INVALID },
+  { "xicsinput", ArgFalse, (LPVOID) &appData.icsInputBox, FALSE, INVALID },
+  { "cmail", ArgString, (LPVOID) &appData.cmailGameName, FALSE, (ArgIniType) "" },
+  { "soundProgram", ArgFilename, (LPVOID) &appData.soundProgram, XBOARD, (ArgIniType) "play" },
+  { "fontSizeTolerance", ArgInt, (LPVOID) &appData.fontSizeTolerance, XBOARD, (ArgIniType) 4 },
+  { "lowTimeWarningColor", ArgColor, (LPVOID) &appData.lowTimeWarningColor, XBOARD, 
+	(ArgIniType) LOWTIMEWARNING_COLOR },
+  { "lowTimeWarning", ArgBoolean, (LPVOID) &appData.lowTimeWarning, XBOARD, (ArgIniType) FALSE },
+  { "titleInWindow", ArgBoolean, (LPVOID) &appData.titleInWindow, XBOARD, (ArgIniType) FALSE },
+  { "title", ArgTrue, (LPVOID) &appData.titleInWindow, FALSE, INVALID },
+  { "xtitle", ArgFalse, (LPVOID) &appData.titleInWindow, FALSE, INVALID },
+  { "flashCount", ArgInt, (LPVOID) &appData.flashCount, XBOARD, (ArgIniType) FLASH_COUNT },
+  { "flashRate", ArgInt, (LPVOID) &appData.flashRate, XBOARD, (ArgIniType) FLASH_RATE },
+  { "pixmapDirectory", ArgFilename, (LPVOID) &appData.pixmapDirectory, XBOARD, (ArgIniType) "" },
+  { "pixmap", ArgFilename, (LPVOID) &appData.pixmapDirectory, FALSE, INVALID },
+  { "bitmapDirectory", ArgFilename, (LPVOID) &appData.bitmapDirectory, XBOARD, (ArgIniType) "" },
+  { "bm", ArgFilename, (LPVOID) &appData.bitmapDirectory, FALSE, INVALID },
+  { "msLoginDelay", ArgInt, (LPVOID) &appData.msLoginDelay, XBOARD, (ArgIniType) MS_LOGIN_DELAY },
+  { "pasteSelection", ArgBoolean, (LPVOID) &appData.pasteSelection, XBOARD, (ArgIniType) FALSE },
+
   { "remoteShell", ArgFilename, (LPVOID) &appData.remoteShell, FALSE, (ArgIniType) REMOTE_SHELL },
   { "rsh", ArgFilename, (LPVOID) &appData.remoteShell, FALSE, INVALID },
   { "remoteUser", ArgString, (LPVOID) &appData.remoteUser, FALSE, INVALID },
@@ -982,6 +1007,8 @@ ArgDescriptor argDescriptors[] = {
   { "xtelnet", ArgFalse, (LPVOID) &appData.useTelnet, FALSE, INVALID },
   { "-telnet", ArgFalse, (LPVOID) &appData.useTelnet, FALSE, INVALID },
   { "telnetProgram", ArgFilename, (LPVOID) &appData.telnetProgram, FALSE, (ArgIniType) TELNET_PROGRAM },
+  { "internetChessserverHelper", ArgFilename, (LPVOID) &appData.icsHelper, 
+	FALSE, INVALID }, // for XB
   { "icshelper", ArgFilename, (LPVOID) &appData.icsHelper, FALSE, (ArgIniType) "" },
   { "gateway", ArgString, (LPVOID) &appData.gateway, FALSE, (ArgIniType) "" },
   { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE, (ArgIniType) "" },
@@ -1060,6 +1087,10 @@ ArgDescriptor argDescriptors[] = {
   { "size", ArgBoardSize, (LPVOID) &boardSize, FALSE, INVALID },
   { "ringBellAfterMoves", ArgBoolean, (LPVOID) &appData.ringBellAfterMoves,
     FALSE, (ArgIniType) TRUE }, /* historical; kept only so old winboard.ini files will parse */
+  { "bell", ArgTrue, (LPVOID) &appData.ringBellAfterMoves, FALSE, INVALID }, // for XB
+  { "xbell", ArgFalse, (LPVOID) &appData.ringBellAfterMoves, FALSE, INVALID }, // for XB
+  { "movesound", ArgTrue, (LPVOID) &appData.ringBellAfterMoves, FALSE, INVALID }, // for XB
+  { "xmovesound", ArgFalse, (LPVOID) &appData.ringBellAfterMoves, FALSE, INVALID }, // for XB
   { "alwaysOnTop", ArgBoolean, (LPVOID) &alwaysOnTop, TRUE, INVALID },
   { "top", ArgTrue, (LPVOID) &alwaysOnTop, FALSE, INVALID },
   { "xtop", ArgFalse, (LPVOID) &alwaysOnTop, FALSE, INVALID },
@@ -1169,35 +1200,23 @@ ArgDescriptor argDescriptors[] = {
   { "colorSeek", ArgAttribs, (LPVOID) ColorSeek, TRUE, INVALID },
   { "colorNormal", ArgAttribs, (LPVOID) ColorNormal, TRUE, INVALID },
   { "colorBackground", ArgColor, (LPVOID) &consoleBackgroundColor, TRUE, INVALID },
-  { "soundShout", ArgFilename,
-    (LPVOID) &textAttribs[ColorShout].sound.name, TRUE, INVALID },
-  { "soundSShout", ArgFilename,
-    (LPVOID) &textAttribs[ColorSShout].sound.name, TRUE, INVALID },
-  { "soundChannel1", ArgFilename,
-    (LPVOID) &textAttribs[ColorChannel1].sound.name, TRUE, INVALID },
-  { "soundChannel", ArgFilename,
-    (LPVOID) &textAttribs[ColorChannel].sound.name, TRUE, INVALID },
-  { "soundKibitz", ArgFilename,
-    (LPVOID) &textAttribs[ColorKibitz].sound.name, TRUE, INVALID },
-  { "soundTell", ArgFilename,
-    (LPVOID) &textAttribs[ColorTell].sound.name, TRUE, INVALID },
-  { "soundChallenge", ArgFilename,
-    (LPVOID) &textAttribs[ColorChallenge].sound.name, TRUE, INVALID },
-  { "soundRequest", ArgFilename,
-    (LPVOID) &textAttribs[ColorRequest].sound.name, TRUE, INVALID },
-  { "soundSeek", ArgFilename,
-    (LPVOID) &textAttribs[ColorSeek].sound.name, TRUE, INVALID },
-  { "soundMove", ArgFilename, (LPVOID) &sounds[(int)SoundMove].name, TRUE, INVALID },
-  { "soundBell", ArgFilename, (LPVOID) &sounds[(int)SoundBell].name, TRUE, INVALID },
-  { "soundIcsWin", ArgFilename, (LPVOID) &sounds[(int)SoundIcsWin].name, TRUE, INVALID },
-  { "soundIcsLoss", ArgFilename, 
-    (LPVOID) &sounds[(int)SoundIcsLoss].name, TRUE, INVALID },
-  { "soundIcsDraw", ArgFilename, 
-    (LPVOID) &sounds[(int)SoundIcsDraw].name, TRUE, INVALID },
-  { "soundIcsUnfinished", ArgFilename, 
-    (LPVOID) &sounds[(int)SoundIcsUnfinished].name, TRUE, INVALID },
-  { "soundIcsAlarm", ArgFilename, 
-    (LPVOID) &sounds[(int)SoundAlarm].name, TRUE, INVALID },
+  { "soundShout", ArgFilename, (LPVOID) &appData.soundShout, TRUE, (ArgIniType) "" },
+  { "soundSShout", ArgFilename, (LPVOID) &appData.soundSShout, TRUE, (ArgIniType) "" },
+  { "soundCShout", ArgFilename, (LPVOID) &appData.soundSShout, TRUE, (ArgIniType) "" }, // for XB
+  { "soundChannel1", ArgFilename, (LPVOID) &appData.soundChannel1, TRUE, (ArgIniType) "" },
+  { "soundChannel", ArgFilename, (LPVOID) &appData.soundChannel, TRUE, (ArgIniType) "" },
+  { "soundKibitz", ArgFilename, (LPVOID) &appData.soundKibitz, TRUE, (ArgIniType) "" },
+  { "soundTell", ArgFilename, (LPVOID) &appData.soundTell, TRUE, (ArgIniType) "" },
+  { "soundChallenge", ArgFilename, (LPVOID) &appData.soundChallenge, TRUE, (ArgIniType) "" },
+  { "soundRequest", ArgFilename, (LPVOID) &appData.soundRequest, TRUE, (ArgIniType) "" },
+  { "soundSeek", ArgFilename, (LPVOID) &appData.soundSeek, TRUE, (ArgIniType) "" },
+  { "soundMove", ArgFilename, (LPVOID) &appData.soundMove, TRUE, (ArgIniType) "" },
+  { "soundBell", ArgFilename, (LPVOID) &appData.soundBell, TRUE, (ArgIniType) SOUND_BELL },
+  { "soundIcsWin", ArgFilename, (LPVOID) &appData.soundIcsWin, TRUE, (ArgIniType) "" },
+  { "soundIcsLoss", ArgFilename, (LPVOID) &appData.soundIcsLoss, TRUE, (ArgIniType) "" },
+  { "soundIcsDraw", ArgFilename, (LPVOID) &appData.soundIcsDraw, TRUE, (ArgIniType) "" },
+  { "soundIcsUnfinished", ArgFilename, (LPVOID) &appData.soundIcsUnfinished, TRUE, (ArgIniType) "" },
+  { "soundIcsAlarm", ArgFilename, (LPVOID) &appData.soundIcsAlarm, TRUE, (ArgIniType) "" },
   { "reuseFirst", ArgBoolean, (LPVOID) &appData.reuseFirst, FALSE, (ArgIniType) TRUE },
   { "reuse", ArgTrue, (LPVOID) &appData.reuseFirst, FALSE, INVALID },
   { "xreuse", ArgFalse, (LPVOID) &appData.reuseFirst, FALSE, INVALID },
@@ -1886,29 +1905,27 @@ SetDefaultTextAttribs()
 
 VOID
 SetDefaultSounds()
-{
+{ // [HGM] only sounds for which no option exists
   ColorClass cc;
-  SoundClass sc;
-  for (cc = (ColorClass)0; cc < NColorClasses; cc++) {
+  for (cc = ColorNormal; cc < NColorClasses; cc++) {
     textAttribs[cc].sound.name = strdup("");
     textAttribs[cc].sound.data = NULL;
   }
-  for (sc = (SoundClass)0; sc < NSoundClasses; sc++) {
-    sounds[sc].name = strdup("");
-    sounds[sc].data = NULL;
-  }
-  sounds[(int)SoundBell].name = strdup(SOUND_BELL);
 }
 
 VOID
 LoadAllSounds()
-{
+{ // [HGM] import name from appData first
   ColorClass cc;
   SoundClass sc;
-  for (cc = (ColorClass)0; cc < NColorClasses; cc++) {
+  for (cc = (ColorClass)0; cc < ColorNormal; cc++) {
+    textAttribs[cc].sound.name = strdup((&appData.soundShout)[cc]);
+    textAttribs[cc].sound.data = NULL;
     MyLoadSound(&textAttribs[cc].sound);
   }
   for (sc = (SoundClass)0; sc < NSoundClasses; sc++) {
+    sounds[sc].name = strdup((&appData.soundMove)[sc]);
+    sounds[sc].data = NULL;
     MyLoadSound(&sounds[sc]);
   }
 }
@@ -2153,6 +2170,17 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
 	}
       }
 
+VOID
+ExportSounds()
+{ // [HGM] copy the names from the internal WB variables to appData
+  ColorClass cc;
+  SoundClass sc;
+  for (cc = (ColorClass)0; cc < ColorNormal; cc++)
+    (&appData.soundShout)[cc] = textAttribs[cc].sound.name;
+  for (sc = (SoundClass)0; sc < NSoundClasses; sc++)
+    (&appData.soundMove)[sc] = sounds[sc].name;
+}
+
 void
 SaveAttribsArg(FILE *f, ArgDescriptor *ad)
 {	// here the "argLoc" defines a table index. It could have contained the 'ta' pointer itself, though
@@ -2222,6 +2250,9 @@ SaveSettings(char* name)
   /* [AS] Engine output */
   wpEngineOutput.visible = EngineOutputIsUp();
   GetActualPlacement(engineOutputDialog, &wpEngineOutput);
+
+  // [HGM] in WB we have to copy sound names to appData first
+  ExportSounds();
 
   for (ad = argDescriptors; ad->argName != NULL; ad++) {
     if (!ad->save) continue;

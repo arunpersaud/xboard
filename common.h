@@ -168,9 +168,17 @@ int pclose(FILE *);
 #define JAIL_SQUARE_COLOR       "#808080"
 #define HIGHLIGHT_SQUARE_COLOR	"#FFFF00"
 #define PREMOVE_HIGHLIGHT_COLOR	"#FF0000"
+#define LOWTIMEWARNING_COLOR    "#FF0000"
 #define BELLCHAR                '\007'
 #define NULLCHAR                '\000'
 #define FEATURE_TIMEOUT         10000 /*ms*/
+
+/* Default to no flashing (the "usual" XBoard behavior) */
+#define FLASH_COUNT	0		/* Number of times to flash */
+#define FLASH_RATE	5		/* Flashes per second */
+
+/* Default delay per character (in msec) while sending login script */
+#define MS_LOGIN_DELAY  0
 
 /* Zippy defaults */
 #define ZIPPY_TALK FALSE
@@ -443,7 +451,7 @@ typedef struct {
 			  ICS logon script (xboard only) */
     Boolean colorize;	/* If True, use the following colors to color text */
     /* Strings for colors, as "fg, bg, bold" (strings used in xboard only) */
-    char *colorShout;
+    char *colorShout;    // [HGM] IMPORTANT: order must conform to ColorClass definition
     char *colorSShout;
     char *colorChannel1;
     char *colorChannel;
@@ -454,7 +462,7 @@ typedef struct {
     char *colorSeek;
     char *colorNormal;
     char *soundProgram; /* sound-playing program */
-    char *soundShout;
+    char *soundShout;     // [HGM] IMPORTANT: order must be as in ColorClass
     char *soundSShout;
     char *soundChannel1;
     char *soundChannel;
@@ -463,12 +471,13 @@ typedef struct {
     char *soundChallenge;
     char *soundRequest;
     char *soundSeek;
-    char *soundMove;
+    char *soundMove;     // [HGM] IMPORTANT: order must be as in SoundClass
+    char *soundBell;
+    char *soundIcsAlarm;
     char *soundIcsWin;
     char *soundIcsLoss;
     char *soundIcsDraw;
     char *soundIcsUnfinished;
-    char *soundIcsAlarm;
     Boolean reuseFirst;
     Boolean reuseSecond;
     Boolean animateDragging; /* If True, animate mouse dragging of pieces */
@@ -611,6 +620,7 @@ typedef struct {
     char *wrapContSeq; /* continuation sequence when xboard wraps text */
     Boolean useInternalWrap; /* use internal wrapping -- noJoin usurps this if set */
     Boolean pasteSelection; /* paste X selection instead of clipboard */
+    int nrVariations;   /* [HGM] multivar  */
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */
