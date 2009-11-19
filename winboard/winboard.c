@@ -875,6 +875,9 @@ typedef enum {
   ArgX, ArgY, ArgZ // [HGM] placement: for window-placement options stored relative to main window
 } ArgType;
 
+typedef void *ArgIniType;
+#define INVALID (ArgIniType) 6915 /* Some number unlikely to be needed as default for anything */
+
 typedef struct {
   char *argName;
   ArgType argType;
@@ -895,532 +898,534 @@ typedef struct {
   ***/
   LPVOID argLoc;
   BOOL save;
+  ArgIniType defaultValue;
 } ArgDescriptor;
 
 int junk;
+
 ArgDescriptor argDescriptors[] = {
   /* positional arguments */
-  { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE },
-  { "", ArgNone, NULL },
+  { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE, INVALID },
+  { "", ArgNone, NULL, FALSE, INVALID },
   /* keyword arguments */
   JAWS_ARGS
-  { "whitePieceColor", ArgColor, (LPVOID) &whitePieceColor, TRUE },
-  { "wpc", ArgColor, (LPVOID) &whitePieceColor, FALSE },
-  { "blackPieceColor", ArgColor, (LPVOID) &blackPieceColor, TRUE },
-  { "bpc", ArgColor, (LPVOID) &blackPieceColor, FALSE },
-  { "lightSquareColor", ArgColor, (LPVOID) &lightSquareColor, TRUE },
-  { "lsc", ArgColor, (LPVOID) &lightSquareColor, FALSE },
-  { "darkSquareColor", ArgColor, (LPVOID) &darkSquareColor, TRUE },
-  { "dsc", ArgColor, (LPVOID) &darkSquareColor, FALSE },
-  { "highlightSquareColor", ArgColor, (LPVOID) &highlightSquareColor, TRUE },
-  { "hsc", ArgColor, (LPVOID) &highlightSquareColor, FALSE },
-  { "premoveHighlightColor", ArgColor, (LPVOID) &premoveHighlightColor, TRUE },
-  { "phc", ArgColor, (LPVOID) &premoveHighlightColor, FALSE },
-  { "movesPerSession", ArgInt, (LPVOID) &appData.movesPerSession, TRUE },
-  { "mps", ArgInt, (LPVOID) &appData.movesPerSession, FALSE },
-  { "initString", ArgString, (LPVOID) &appData.initString, FALSE },
-  { "firstInitString", ArgString, (LPVOID) &appData.initString, FALSE },
-  { "secondInitString", ArgString, (LPVOID) &appData.secondInitString, FALSE },
+  { "whitePieceColor", ArgColor, (LPVOID) &whitePieceColor, TRUE, INVALID },
+  { "wpc", ArgColor, (LPVOID) &whitePieceColor, FALSE, INVALID },
+  { "blackPieceColor", ArgColor, (LPVOID) &blackPieceColor, TRUE, INVALID },
+  { "bpc", ArgColor, (LPVOID) &blackPieceColor, FALSE, INVALID },
+  { "lightSquareColor", ArgColor, (LPVOID) &lightSquareColor, TRUE, INVALID },
+  { "lsc", ArgColor, (LPVOID) &lightSquareColor, FALSE, INVALID },
+  { "darkSquareColor", ArgColor, (LPVOID) &darkSquareColor, TRUE, INVALID },
+  { "dsc", ArgColor, (LPVOID) &darkSquareColor, FALSE, INVALID },
+  { "highlightSquareColor", ArgColor, (LPVOID) &highlightSquareColor, TRUE, INVALID },
+  { "hsc", ArgColor, (LPVOID) &highlightSquareColor, FALSE, INVALID },
+  { "premoveHighlightColor", ArgColor, (LPVOID) &premoveHighlightColor, TRUE, INVALID },
+  { "phc", ArgColor, (LPVOID) &premoveHighlightColor, FALSE, INVALID },
+  { "movesPerSession", ArgInt, (LPVOID) &appData.movesPerSession, TRUE, (ArgIniType) MOVES_PER_SESSION },
+  { "mps", ArgInt, (LPVOID) &appData.movesPerSession, FALSE, INVALID },
+  { "initString", ArgString, (LPVOID) &appData.initString, FALSE, INVALID },
+  { "firstInitString", ArgString, (LPVOID) &appData.initString, FALSE, (ArgIniType) INIT_STRING },
+  { "secondInitString", ArgString, (LPVOID) &appData.secondInitString, FALSE, (ArgIniType) INIT_STRING },
   { "firstComputerString", ArgString, (LPVOID) &appData.firstComputerString,
-    FALSE },
+    FALSE, (ArgIniType) COMPUTER_STRING },
   { "secondComputerString", ArgString, (LPVOID) &appData.secondComputerString,
-    FALSE },
+    FALSE, (ArgIniType) COMPUTER_STRING },
   { "firstChessProgram", ArgFilename, (LPVOID) &appData.firstChessProgram,
-    FALSE },
-  { "fcp", ArgFilename, (LPVOID) &appData.firstChessProgram, FALSE },
+    FALSE, (ArgIniType) FIRST_CHESS_PROGRAM },
+  { "fcp", ArgFilename, (LPVOID) &appData.firstChessProgram, FALSE, INVALID },
   { "secondChessProgram", ArgFilename, (LPVOID) &appData.secondChessProgram,
-    FALSE },
-  { "scp", ArgFilename, (LPVOID) &appData.secondChessProgram, FALSE },
-  { "firstPlaysBlack", ArgBoolean, (LPVOID) &appData.firstPlaysBlack, FALSE },
-  { "fb", ArgTrue, (LPVOID) &appData.firstPlaysBlack, FALSE },
-  { "xfb", ArgFalse, (LPVOID) &appData.firstPlaysBlack, FALSE },
-  { "-fb", ArgFalse, (LPVOID) &appData.firstPlaysBlack, FALSE },
-  { "noChessProgram", ArgBoolean, (LPVOID) &appData.noChessProgram, FALSE },
-  { "ncp", ArgTrue, (LPVOID) &appData.noChessProgram, FALSE },
-  { "xncp", ArgFalse, (LPVOID) &appData.noChessProgram, FALSE },
-  { "-ncp", ArgFalse, (LPVOID) &appData.noChessProgram, FALSE },
-  { "firstHost", ArgString, (LPVOID) &appData.firstHost, FALSE },
-  { "fh", ArgString, (LPVOID) &appData.firstHost, FALSE },
-  { "secondHost", ArgString, (LPVOID) &appData.secondHost, FALSE },
-  { "sh", ArgString, (LPVOID) &appData.secondHost, FALSE },
-  { "firstDirectory", ArgFilename, (LPVOID) &appData.firstDirectory, FALSE },
-  { "fd", ArgFilename, (LPVOID) &appData.firstDirectory, FALSE },
-  { "secondDirectory", ArgFilename, (LPVOID) &appData.secondDirectory, FALSE },
-  { "sd", ArgFilename, (LPVOID) &appData.secondDirectory, FALSE },
+    FALSE, (ArgIniType) SECOND_CHESS_PROGRAM },
+  { "scp", ArgFilename, (LPVOID) &appData.secondChessProgram, FALSE, INVALID },
+  { "firstPlaysBlack", ArgBoolean, (LPVOID) &appData.firstPlaysBlack, FALSE, FALSE },
+  { "fb", ArgTrue, (LPVOID) &appData.firstPlaysBlack, FALSE, FALSE },
+  { "xfb", ArgFalse, (LPVOID) &appData.firstPlaysBlack, FALSE, INVALID },
+  { "-fb", ArgFalse, (LPVOID) &appData.firstPlaysBlack, FALSE, INVALID },
+  { "noChessProgram", ArgBoolean, (LPVOID) &appData.noChessProgram, FALSE, FALSE },
+  { "ncp", ArgTrue, (LPVOID) &appData.noChessProgram, FALSE, INVALID },
+  { "xncp", ArgFalse, (LPVOID) &appData.noChessProgram, FALSE, INVALID },
+  { "-ncp", ArgFalse, (LPVOID) &appData.noChessProgram, FALSE, INVALID },
+  { "firstHost", ArgString, (LPVOID) &appData.firstHost, FALSE, (ArgIniType) FIRST_HOST },
+  { "fh", ArgString, (LPVOID) &appData.firstHost, FALSE, INVALID },
+  { "secondHost", ArgString, (LPVOID) &appData.secondHost, FALSE, (ArgIniType) SECOND_HOST },
+  { "sh", ArgString, (LPVOID) &appData.secondHost, FALSE, INVALID },
+  { "firstDirectory", ArgFilename, (LPVOID) &appData.firstDirectory, FALSE, (ArgIniType) FIRST_DIRECTORY },
+  { "fd", ArgFilename, (LPVOID) &appData.firstDirectory, FALSE, INVALID },
+  { "secondDirectory", ArgFilename, (LPVOID) &appData.secondDirectory, FALSE, (ArgIniType) SECOND_DIRECTORY },
+  { "sd", ArgFilename, (LPVOID) &appData.secondDirectory, FALSE, INVALID },
   /*!!bitmapDirectory?*/
-  { "remoteShell", ArgFilename, (LPVOID) &appData.remoteShell, FALSE },
-  { "rsh", ArgFilename, (LPVOID) &appData.remoteShell, FALSE },
-  { "remoteUser", ArgString, (LPVOID) &appData.remoteUser, FALSE },
-  { "ruser", ArgString, (LPVOID) &appData.remoteUser, FALSE },
-  { "timeDelay", ArgFloat, (LPVOID) &appData.timeDelay, TRUE },
-  { "td", ArgFloat, (LPVOID) &appData.timeDelay, FALSE },
-  { "timeControl", ArgString, (LPVOID) &appData.timeControl, TRUE },
-  { "tc", ArgString, (LPVOID) &appData.timeControl, FALSE },
-  { "timeIncrement", ArgInt, (LPVOID) &appData.timeIncrement, TRUE },
-  { "inc", ArgInt, (LPVOID) &appData.timeIncrement, FALSE },
-  { "internetChessServerMode", ArgBoolean, (LPVOID) &appData.icsActive, FALSE },
-  { "ics", ArgTrue, (LPVOID) &appData.icsActive, FALSE },
-  { "xics", ArgFalse, (LPVOID) &appData.icsActive, FALSE },
-  { "-ics", ArgFalse, (LPVOID) &appData.icsActive, FALSE },
-  { "internetChessServerHost", ArgString, (LPVOID) &appData.icsHost, FALSE },
-  { "icshost", ArgString, (LPVOID) &appData.icsHost, FALSE },
-  { "internetChessServerPort", ArgString, (LPVOID) &appData.icsPort, FALSE },
-  { "icsport", ArgString, (LPVOID) &appData.icsPort, FALSE },
-  { "internetChessServerCommPort", ArgString, (LPVOID) &appData.icsCommPort, FALSE },
-  { "icscomm", ArgString, (LPVOID) &appData.icsCommPort, FALSE },
-  { "internetChessServerComPort", ArgString, (LPVOID) &appData.icsCommPort, FALSE },
-  { "icscom", ArgString, (LPVOID) &appData.icsCommPort, FALSE },
-  { "internetChessServerLogonScript", ArgFilename, (LPVOID) &appData.icsLogon, FALSE },
-  { "icslogon", ArgFilename, (LPVOID) &appData.icsLogon, FALSE },
-  { "useTelnet", ArgBoolean, (LPVOID) &appData.useTelnet, FALSE },
-  { "telnet", ArgTrue, (LPVOID) &appData.useTelnet, FALSE },
-  { "xtelnet", ArgFalse, (LPVOID) &appData.useTelnet, FALSE },
-  { "-telnet", ArgFalse, (LPVOID) &appData.useTelnet, FALSE },
-  { "telnetProgram", ArgFilename, (LPVOID) &appData.telnetProgram, FALSE },
-  { "icshelper", ArgFilename, (LPVOID) &appData.icsHelper, FALSE },
-  { "gateway", ArgString, (LPVOID) &appData.gateway, FALSE },
-  { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE },
-  { "lgf", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE },
-  { "loadGameIndex", ArgInt, (LPVOID) &appData.loadGameIndex, FALSE },
-  { "lgi", ArgInt, (LPVOID) &appData.loadGameIndex, FALSE },
-  { "saveGameFile", ArgFilename, (LPVOID) &appData.saveGameFile, TRUE },
-  { "sgf", ArgFilename, (LPVOID) &appData.saveGameFile, FALSE },
-  { "autoSaveGames", ArgBoolean, (LPVOID) &appData.autoSaveGames, TRUE },
-  { "autosave", ArgTrue, (LPVOID) &appData.autoSaveGames, FALSE },
-  { "xautosave", ArgFalse, (LPVOID) &appData.autoSaveGames, FALSE },
-  { "-autosave", ArgFalse, (LPVOID) &appData.autoSaveGames, FALSE },
-  { "loadPositionFile", ArgFilename, (LPVOID) &appData.loadPositionFile, FALSE },
-  { "lpf", ArgFilename, (LPVOID) &appData.loadPositionFile, FALSE },
-  { "loadPositionIndex", ArgInt, (LPVOID) &appData.loadPositionIndex, FALSE },
-  { "lpi", ArgInt, (LPVOID) &appData.loadPositionIndex, FALSE },
-  { "savePositionFile", ArgFilename, (LPVOID) &appData.savePositionFile, FALSE },
-  { "spf", ArgFilename, (LPVOID) &appData.savePositionFile, FALSE },
-  { "matchMode", ArgBoolean, (LPVOID) &appData.matchMode, FALSE },
-  { "mm", ArgTrue, (LPVOID) &appData.matchMode, FALSE },
-  { "xmm", ArgFalse, (LPVOID) &appData.matchMode, FALSE },
-  { "-mm", ArgFalse, (LPVOID) &appData.matchMode, FALSE },
-  { "matchGames", ArgInt, (LPVOID) &appData.matchGames, FALSE },
-  { "mg", ArgInt, (LPVOID) &appData.matchGames, FALSE },
-  { "monoMode", ArgBoolean, (LPVOID) &appData.monoMode, TRUE },
-  { "mono", ArgTrue, (LPVOID) &appData.monoMode, FALSE },
-  { "xmono", ArgFalse, (LPVOID) &appData.monoMode, FALSE },
-  { "-mono", ArgFalse, (LPVOID) &appData.monoMode, FALSE },
-  { "debugMode", ArgBoolean, (LPVOID) &appData.debugMode, FALSE },
-  { "debug", ArgTrue, (LPVOID) &appData.debugMode, FALSE },
-  { "xdebug", ArgFalse, (LPVOID) &appData.debugMode, FALSE },
-  { "-debug", ArgFalse, (LPVOID) &appData.debugMode, FALSE },
-  { "clockMode", ArgBoolean, (LPVOID) &appData.clockMode, FALSE },
-  { "clock", ArgTrue, (LPVOID) &appData.clockMode, FALSE },
-  { "xclock", ArgFalse, (LPVOID) &appData.clockMode, FALSE },
-  { "-clock", ArgFalse, (LPVOID) &appData.clockMode, FALSE },
-  { "searchTime", ArgString, (LPVOID) &appData.searchTime, FALSE },
-  { "st", ArgString, (LPVOID) &appData.searchTime, FALSE },
-  { "searchDepth", ArgInt, (LPVOID) &appData.searchDepth, FALSE },
-  { "depth", ArgInt, (LPVOID) &appData.searchDepth, FALSE },
-  { "showCoords", ArgBoolean, (LPVOID) &appData.showCoords, TRUE },
-  { "coords", ArgTrue, (LPVOID) &appData.showCoords, FALSE },
-  { "xcoords", ArgFalse, (LPVOID) &appData.showCoords, FALSE },
-  { "-coords", ArgFalse, (LPVOID) &appData.showCoords, FALSE },
-  { "showThinking", ArgBoolean, (LPVOID) &appData.showThinking, TRUE },
-  { "thinking", ArgTrue, (LPVOID) &appData.showThinking, FALSE },
-  { "xthinking", ArgFalse, (LPVOID) &appData.showThinking, FALSE },
-  { "-thinking", ArgFalse, (LPVOID) &appData.showThinking, FALSE },
-  { "ponderNextMove", ArgBoolean, (LPVOID) &appData.ponderNextMove, TRUE },
-  { "ponder", ArgTrue, (LPVOID) &appData.ponderNextMove, FALSE },
-  { "xponder", ArgFalse, (LPVOID) &appData.ponderNextMove, FALSE },
-  { "-ponder", ArgFalse, (LPVOID) &appData.ponderNextMove, FALSE },
-  { "periodicUpdates", ArgBoolean, (LPVOID) &appData.periodicUpdates, TRUE },
-  { "periodic", ArgTrue, (LPVOID) &appData.periodicUpdates, FALSE },
-  { "xperiodic", ArgFalse, (LPVOID) &appData.periodicUpdates, FALSE },
-  { "-periodic", ArgFalse, (LPVOID) &appData.periodicUpdates, FALSE },
-  { "popupExitMessage", ArgBoolean, (LPVOID) &appData.popupExitMessage, TRUE },
-  { "exit", ArgTrue, (LPVOID) &appData.popupExitMessage, FALSE },
-  { "xexit", ArgFalse, (LPVOID) &appData.popupExitMessage, FALSE },
-  { "-exit", ArgFalse, (LPVOID) &appData.popupExitMessage, FALSE },
-  { "popupMoveErrors", ArgBoolean, (LPVOID) &appData.popupMoveErrors, TRUE },
-  { "popup", ArgTrue, (LPVOID) &appData.popupMoveErrors, FALSE },
-  { "xpopup", ArgFalse, (LPVOID) &appData.popupMoveErrors, FALSE },
-  { "-popup", ArgFalse, (LPVOID) &appData.popupMoveErrors, FALSE },
+  { "remoteShell", ArgFilename, (LPVOID) &appData.remoteShell, FALSE, (ArgIniType) REMOTE_SHELL },
+  { "rsh", ArgFilename, (LPVOID) &appData.remoteShell, FALSE, INVALID },
+  { "remoteUser", ArgString, (LPVOID) &appData.remoteUser, FALSE, INVALID },
+  { "ruser", ArgString, (LPVOID) &appData.remoteUser, FALSE, INVALID },
+  { "timeDelay", ArgFloat, (LPVOID) &appData.timeDelay, TRUE, INVALID },
+  { "td", ArgFloat, (LPVOID) &appData.timeDelay, FALSE, INVALID },
+  { "timeControl", ArgString, (LPVOID) &appData.timeControl, TRUE, (ArgIniType) TIME_CONTROL },
+  { "tc", ArgString, (LPVOID) &appData.timeControl, FALSE, INVALID },
+  { "timeIncrement", ArgInt, (LPVOID) &appData.timeIncrement, TRUE, (ArgIniType) TIME_INCREMENT },
+  { "inc", ArgInt, (LPVOID) &appData.timeIncrement, FALSE, INVALID },
+  { "internetChessServerMode", ArgBoolean, (LPVOID) &appData.icsActive, FALSE, INVALID },
+  { "ics", ArgTrue, (LPVOID) &appData.icsActive, FALSE, (ArgIniType) FALSE },
+  { "xics", ArgFalse, (LPVOID) &appData.icsActive, FALSE, INVALID },
+  { "-ics", ArgFalse, (LPVOID) &appData.icsActive, FALSE, INVALID },
+  { "internetChessServerHost", ArgString, (LPVOID) &appData.icsHost, FALSE, (ArgIniType) "" },
+  { "icshost", ArgString, (LPVOID) &appData.icsHost, FALSE, INVALID },
+  { "internetChessServerPort", ArgString, (LPVOID) &appData.icsPort, FALSE, (ArgIniType) ICS_PORT },
+  { "icsport", ArgString, (LPVOID) &appData.icsPort, FALSE, INVALID },
+  { "internetChessServerCommPort", ArgString, (LPVOID) &appData.icsCommPort, FALSE, (ArgIniType) ICS_COMM_PORT },
+  { "icscomm", ArgString, (LPVOID) &appData.icsCommPort, FALSE, INVALID },
+  { "internetChessServerComPort", ArgString, (LPVOID) &appData.icsCommPort, FALSE, INVALID },
+  { "icscom", ArgString, (LPVOID) &appData.icsCommPort, FALSE, INVALID },
+  { "internetChessServerLogonScript", ArgFilename, (LPVOID) &appData.icsLogon, FALSE, (ArgIniType) ICS_LOGON },
+  { "icslogon", ArgFilename, (LPVOID) &appData.icsLogon, FALSE, INVALID },
+  { "useTelnet", ArgBoolean, (LPVOID) &appData.useTelnet, FALSE, INVALID },
+  { "telnet", ArgTrue, (LPVOID) &appData.useTelnet, FALSE, INVALID },
+  { "xtelnet", ArgFalse, (LPVOID) &appData.useTelnet, FALSE, INVALID },
+  { "-telnet", ArgFalse, (LPVOID) &appData.useTelnet, FALSE, INVALID },
+  { "telnetProgram", ArgFilename, (LPVOID) &appData.telnetProgram, FALSE, (ArgIniType) TELNET_PROGRAM },
+  { "icshelper", ArgFilename, (LPVOID) &appData.icsHelper, FALSE, (ArgIniType) "" },
+  { "gateway", ArgString, (LPVOID) &appData.gateway, FALSE, (ArgIniType) "" },
+  { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE, (ArgIniType) "" },
+  { "lgf", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE, INVALID },
+  { "loadGameIndex", ArgInt, (LPVOID) &appData.loadGameIndex, FALSE, (ArgIniType) 0 },
+  { "lgi", ArgInt, (LPVOID) &appData.loadGameIndex, FALSE, INVALID },
+  { "saveGameFile", ArgFilename, (LPVOID) &appData.saveGameFile, TRUE, (ArgIniType) "" },
+  { "sgf", ArgFilename, (LPVOID) &appData.saveGameFile, FALSE, INVALID },
+  { "autoSaveGames", ArgBoolean, (LPVOID) &appData.autoSaveGames, TRUE, (ArgIniType) FALSE },
+  { "autosave", ArgTrue, (LPVOID) &appData.autoSaveGames, FALSE, INVALID },
+  { "xautosave", ArgFalse, (LPVOID) &appData.autoSaveGames, FALSE, INVALID },
+  { "-autosave", ArgFalse, (LPVOID) &appData.autoSaveGames, FALSE, INVALID },
+  { "loadPositionFile", ArgFilename, (LPVOID) &appData.loadPositionFile, FALSE, (ArgIniType) "" },
+  { "lpf", ArgFilename, (LPVOID) &appData.loadPositionFile, FALSE, INVALID },
+  { "loadPositionIndex", ArgInt, (LPVOID) &appData.loadPositionIndex, FALSE, (ArgIniType) 1 },
+  { "lpi", ArgInt, (LPVOID) &appData.loadPositionIndex, FALSE, INVALID },
+  { "savePositionFile", ArgFilename, (LPVOID) &appData.savePositionFile, FALSE, (ArgIniType) "" },
+  { "spf", ArgFilename, (LPVOID) &appData.savePositionFile, FALSE, INVALID },
+  { "matchMode", ArgBoolean, (LPVOID) &appData.matchMode, FALSE, (ArgIniType) FALSE },
+  { "mm", ArgTrue, (LPVOID) &appData.matchMode, FALSE, INVALID },
+  { "xmm", ArgFalse, (LPVOID) &appData.matchMode, FALSE, INVALID },
+  { "-mm", ArgFalse, (LPVOID) &appData.matchMode, FALSE, INVALID },
+  { "matchGames", ArgInt, (LPVOID) &appData.matchGames, FALSE, (ArgIniType) 0 },
+  { "mg", ArgInt, (LPVOID) &appData.matchGames, FALSE, INVALID },
+  { "monoMode", ArgBoolean, (LPVOID) &appData.monoMode, TRUE, (ArgIniType) FALSE },
+  { "mono", ArgTrue, (LPVOID) &appData.monoMode, FALSE, INVALID },
+  { "xmono", ArgFalse, (LPVOID) &appData.monoMode, FALSE, INVALID },
+  { "-mono", ArgFalse, (LPVOID) &appData.monoMode, FALSE, INVALID },
+  { "debugMode", ArgBoolean, (LPVOID) &appData.debugMode, FALSE, (ArgIniType) FALSE },
+  { "debug", ArgTrue, (LPVOID) &appData.debugMode, FALSE, INVALID },
+  { "xdebug", ArgFalse, (LPVOID) &appData.debugMode, FALSE, INVALID },
+  { "-debug", ArgFalse, (LPVOID) &appData.debugMode, FALSE, INVALID },
+  { "clockMode", ArgBoolean, (LPVOID) &appData.clockMode, FALSE, (ArgIniType) TRUE },
+  { "clock", ArgTrue, (LPVOID) &appData.clockMode, FALSE, INVALID },
+  { "xclock", ArgFalse, (LPVOID) &appData.clockMode, FALSE, INVALID },
+  { "-clock", ArgFalse, (LPVOID) &appData.clockMode, FALSE, INVALID },
+  { "searchTime", ArgString, (LPVOID) &appData.searchTime, FALSE, (ArgIniType) "" },
+  { "st", ArgString, (LPVOID) &appData.searchTime, FALSE, INVALID },
+  { "searchDepth", ArgInt, (LPVOID) &appData.searchDepth, FALSE, (ArgIniType) 0 },
+  { "depth", ArgInt, (LPVOID) &appData.searchDepth, FALSE, INVALID },
+  { "showCoords", ArgBoolean, (LPVOID) &appData.showCoords, TRUE, (ArgIniType) FALSE },
+  { "coords", ArgTrue, (LPVOID) &appData.showCoords, FALSE, INVALID },
+  { "xcoords", ArgFalse, (LPVOID) &appData.showCoords, FALSE, INVALID },
+  { "-coords", ArgFalse, (LPVOID) &appData.showCoords, FALSE, INVALID },
+  { "showThinking", ArgBoolean, (LPVOID) &appData.showThinking, TRUE, (ArgIniType) FALSE },
+  { "thinking", ArgTrue, (LPVOID) &appData.showThinking, FALSE, INVALID },
+  { "xthinking", ArgFalse, (LPVOID) &appData.showThinking, FALSE, INVALID },
+  { "-thinking", ArgFalse, (LPVOID) &appData.showThinking, FALSE, INVALID },
+  { "ponderNextMove", ArgBoolean, (LPVOID) &appData.ponderNextMove, TRUE, (ArgIniType) TRUE },
+  { "ponder", ArgTrue, (LPVOID) &appData.ponderNextMove, FALSE, INVALID },
+  { "xponder", ArgFalse, (LPVOID) &appData.ponderNextMove, FALSE, INVALID },
+  { "-ponder", ArgFalse, (LPVOID) &appData.ponderNextMove, FALSE, INVALID },
+  { "periodicUpdates", ArgBoolean, (LPVOID) &appData.periodicUpdates, TRUE, (ArgIniType) TRUE },
+  { "periodic", ArgTrue, (LPVOID) &appData.periodicUpdates, FALSE, INVALID },
+  { "xperiodic", ArgFalse, (LPVOID) &appData.periodicUpdates, FALSE, INVALID },
+  { "-periodic", ArgFalse, (LPVOID) &appData.periodicUpdates, FALSE, INVALID },
+  { "popupExitMessage", ArgBoolean, (LPVOID) &appData.popupExitMessage, TRUE, (ArgIniType) TRUE },
+  { "exit", ArgTrue, (LPVOID) &appData.popupExitMessage, FALSE, INVALID },
+  { "xexit", ArgFalse, (LPVOID) &appData.popupExitMessage, FALSE, INVALID },
+  { "-exit", ArgFalse, (LPVOID) &appData.popupExitMessage, FALSE, INVALID },
+  { "popupMoveErrors", ArgBoolean, (LPVOID) &appData.popupMoveErrors, TRUE, (ArgIniType) FALSE },
+  { "popup", ArgTrue, (LPVOID) &appData.popupMoveErrors, FALSE, INVALID },
+  { "xpopup", ArgFalse, (LPVOID) &appData.popupMoveErrors, FALSE, INVALID },
+  { "-popup", ArgFalse, (LPVOID) &appData.popupMoveErrors, FALSE, INVALID },
   { "popUpErrors", ArgBoolean, (LPVOID) &appData.popupMoveErrors, 
-    FALSE }, /* only so that old WinBoard.ini files from betas can be read */
-  { "clockFont", ArgFont, (LPVOID) CLOCK_FONT, TRUE },
-  { "messageFont", ArgFont, (LPVOID) MESSAGE_FONT, TRUE },
-  { "coordFont", ArgFont, (LPVOID) COORD_FONT, TRUE },
-  { "tagsFont", ArgFont, (LPVOID) EDITTAGS_FONT, TRUE },
-  { "commentFont", ArgFont, (LPVOID) COMMENT_FONT, TRUE },
-  { "icsFont", ArgFont, (LPVOID) CONSOLE_FONT, TRUE },
-  { "moveHistoryFont", ArgFont, (LPVOID) MOVEHISTORY_FONT, TRUE }, /* [AS] */
+    FALSE, INVALID }, /* only so that old WinBoard.ini files from betas can be read */
+  { "clockFont", ArgFont, (LPVOID) CLOCK_FONT, TRUE, INVALID },
+  { "messageFont", ArgFont, (LPVOID) MESSAGE_FONT, TRUE, INVALID },
+  { "coordFont", ArgFont, (LPVOID) COORD_FONT, TRUE, INVALID },
+  { "tagsFont", ArgFont, (LPVOID) EDITTAGS_FONT, TRUE, INVALID },
+  { "commentFont", ArgFont, (LPVOID) COMMENT_FONT, TRUE, INVALID },
+  { "icsFont", ArgFont, (LPVOID) CONSOLE_FONT, TRUE, INVALID },
+  { "moveHistoryFont", ArgFont, (LPVOID) MOVEHISTORY_FONT, TRUE, INVALID }, /* [AS] */
   { "boardSize", ArgBoardSize, (LPVOID) &boardSize,
-    TRUE }, /* must come after all fonts */
-  { "size", ArgBoardSize, (LPVOID) &boardSize, FALSE },
+    TRUE, (ArgIniType) -1 }, /* must come after all fonts */
+  { "size", ArgBoardSize, (LPVOID) &boardSize, FALSE, INVALID },
   { "ringBellAfterMoves", ArgBoolean, (LPVOID) &appData.ringBellAfterMoves,
-    FALSE }, /* historical; kept only so old winboard.ini files will parse */
-  { "alwaysOnTop", ArgBoolean, (LPVOID) &alwaysOnTop, TRUE },
-  { "top", ArgTrue, (LPVOID) &alwaysOnTop, FALSE },
-  { "xtop", ArgFalse, (LPVOID) &alwaysOnTop, FALSE },
-  { "-top", ArgFalse, (LPVOID) &alwaysOnTop, FALSE },
-  { "autoCallFlag", ArgBoolean, (LPVOID) &appData.autoCallFlag, TRUE },
-  { "autoflag", ArgTrue, (LPVOID) &appData.autoCallFlag, FALSE },
-  { "xautoflag", ArgFalse, (LPVOID) &appData.autoCallFlag, FALSE },
-  { "-autoflag", ArgFalse, (LPVOID) &appData.autoCallFlag, FALSE },
-  { "autoComment", ArgBoolean, (LPVOID) &appData.autoComment, TRUE },
-  { "autocomm", ArgTrue, (LPVOID) &appData.autoComment, FALSE },
-  { "xautocomm", ArgFalse, (LPVOID) &appData.autoComment, FALSE },
-  { "-autocomm", ArgFalse, (LPVOID) &appData.autoComment, FALSE },
-  { "autoObserve", ArgBoolean, (LPVOID) &appData.autoObserve, TRUE },
-  { "autobs", ArgTrue, (LPVOID) &appData.autoObserve, FALSE },
-  { "xautobs", ArgFalse, (LPVOID) &appData.autoObserve, FALSE },
-  { "-autobs", ArgFalse, (LPVOID) &appData.autoObserve, FALSE },
-  { "flipView", ArgBoolean, (LPVOID) &appData.flipView, FALSE },
-  { "flip", ArgTrue, (LPVOID) &appData.flipView, FALSE },
-  { "xflip", ArgFalse, (LPVOID) &appData.flipView, FALSE },
-  { "-flip", ArgFalse, (LPVOID) &appData.flipView, FALSE },
-  { "autoFlipView", ArgBoolean, (LPVOID) &appData.autoFlipView, TRUE },
-  { "autoflip", ArgTrue, (LPVOID) &appData.autoFlipView, FALSE },
-  { "xautoflip", ArgFalse, (LPVOID) &appData.autoFlipView, FALSE },
-  { "-autoflip", ArgFalse, (LPVOID) &appData.autoFlipView, FALSE },
-  { "autoRaiseBoard", ArgBoolean, (LPVOID) &appData.autoRaiseBoard, TRUE },
-  { "autoraise", ArgTrue, (LPVOID) &appData.autoRaiseBoard, FALSE },
-  { "xautoraise", ArgFalse, (LPVOID) &appData.autoRaiseBoard, FALSE },
-  { "-autoraise", ArgFalse, (LPVOID) &appData.autoRaiseBoard, FALSE },
-  { "alwaysPromoteToQueen", ArgBoolean, (LPVOID) &appData.alwaysPromoteToQueen, TRUE },
-  { "queen", ArgTrue, (LPVOID) &appData.alwaysPromoteToQueen, FALSE },
-  { "xqueen", ArgFalse, (LPVOID) &appData.alwaysPromoteToQueen, FALSE },
-  { "-queen", ArgFalse, (LPVOID) &appData.alwaysPromoteToQueen, FALSE },
-  { "oldSaveStyle", ArgBoolean, (LPVOID) &appData.oldSaveStyle, TRUE },
-  { "oldsave", ArgTrue, (LPVOID) &appData.oldSaveStyle, FALSE },
-  { "xoldsave", ArgFalse, (LPVOID) &appData.oldSaveStyle, FALSE },
-  { "-oldsave", ArgFalse, (LPVOID) &appData.oldSaveStyle, FALSE },
-  { "quietPlay", ArgBoolean, (LPVOID) &appData.quietPlay, TRUE },
-  { "quiet", ArgTrue, (LPVOID) &appData.quietPlay, FALSE },
-  { "xquiet", ArgFalse, (LPVOID) &appData.quietPlay, FALSE },
-  { "-quiet", ArgFalse, (LPVOID) &appData.quietPlay, FALSE },
-  { "getMoveList", ArgBoolean, (LPVOID) &appData.getMoveList, TRUE },
-  { "moves", ArgTrue, (LPVOID) &appData.getMoveList, FALSE },
-  { "xmoves", ArgFalse, (LPVOID) &appData.getMoveList, FALSE },
-  { "-moves", ArgFalse, (LPVOID) &appData.getMoveList, FALSE },
-  { "testLegality", ArgBoolean, (LPVOID) &appData.testLegality, TRUE },
-  { "legal", ArgTrue, (LPVOID) &appData.testLegality, FALSE },
-  { "xlegal", ArgFalse, (LPVOID) &appData.testLegality, FALSE },
-  { "-legal", ArgFalse, (LPVOID) &appData.testLegality, FALSE },
-  { "premove", ArgBoolean, (LPVOID) &appData.premove, TRUE },
-  { "pre", ArgTrue, (LPVOID) &appData.premove, FALSE },
-  { "xpre", ArgFalse, (LPVOID) &appData.premove, FALSE },
-  { "-pre", ArgFalse, (LPVOID) &appData.premove, FALSE },
-  { "premoveWhite", ArgBoolean, (LPVOID) &appData.premoveWhite, TRUE },
-  { "prewhite", ArgTrue, (LPVOID) &appData.premoveWhite, FALSE },
-  { "xprewhite", ArgFalse, (LPVOID) &appData.premoveWhite, FALSE },
-  { "-prewhite", ArgFalse, (LPVOID) &appData.premoveWhite, FALSE },
-  { "premoveWhiteText", ArgString, (LPVOID) &appData.premoveWhiteText, TRUE },
-  { "premoveBlack", ArgBoolean, (LPVOID) &appData.premoveBlack, TRUE },
-  { "preblack", ArgTrue, (LPVOID) &appData.premoveBlack, FALSE },
-  { "xpreblack", ArgFalse, (LPVOID) &appData.premoveBlack, FALSE },
-  { "-preblack", ArgFalse, (LPVOID) &appData.premoveBlack, FALSE },
-  { "premoveBlackText", ArgString, (LPVOID) &appData.premoveBlackText, TRUE },
-  { "icsAlarm", ArgBoolean, (LPVOID) &appData.icsAlarm, TRUE},
+    FALSE, (ArgIniType) TRUE }, /* historical; kept only so old winboard.ini files will parse */
+  { "alwaysOnTop", ArgBoolean, (LPVOID) &alwaysOnTop, TRUE, INVALID },
+  { "top", ArgTrue, (LPVOID) &alwaysOnTop, FALSE, INVALID },
+  { "xtop", ArgFalse, (LPVOID) &alwaysOnTop, FALSE, INVALID },
+  { "-top", ArgFalse, (LPVOID) &alwaysOnTop, FALSE, INVALID },
+  { "autoCallFlag", ArgBoolean, (LPVOID) &appData.autoCallFlag, TRUE, (ArgIniType) FALSE },
+  { "autoflag", ArgTrue, (LPVOID) &appData.autoCallFlag, FALSE, INVALID },
+  { "xautoflag", ArgFalse, (LPVOID) &appData.autoCallFlag, FALSE, INVALID },
+  { "-autoflag", ArgFalse, (LPVOID) &appData.autoCallFlag, FALSE, INVALID },
+  { "autoComment", ArgBoolean, (LPVOID) &appData.autoComment, TRUE, (ArgIniType) FALSE },
+  { "autocomm", ArgTrue, (LPVOID) &appData.autoComment, FALSE, INVALID },
+  { "xautocomm", ArgFalse, (LPVOID) &appData.autoComment, FALSE, INVALID },
+  { "-autocomm", ArgFalse, (LPVOID) &appData.autoComment, FALSE, INVALID },
+  { "autoObserve", ArgBoolean, (LPVOID) &appData.autoObserve, TRUE, (ArgIniType) FALSE },
+  { "autobs", ArgTrue, (LPVOID) &appData.autoObserve, FALSE, INVALID },
+  { "xautobs", ArgFalse, (LPVOID) &appData.autoObserve, FALSE, INVALID },
+  { "-autobs", ArgFalse, (LPVOID) &appData.autoObserve, FALSE, INVALID },
+  { "flipView", ArgBoolean, (LPVOID) &appData.flipView, FALSE, (ArgIniType) FALSE },
+  { "flip", ArgTrue, (LPVOID) &appData.flipView, FALSE, INVALID },
+  { "xflip", ArgFalse, (LPVOID) &appData.flipView, FALSE, INVALID },
+  { "-flip", ArgFalse, (LPVOID) &appData.flipView, FALSE, INVALID },
+  { "autoFlipView", ArgBoolean, (LPVOID) &appData.autoFlipView, TRUE, (ArgIniType) TRUE },
+  { "autoflip", ArgTrue, (LPVOID) &appData.autoFlipView, FALSE, INVALID },
+  { "xautoflip", ArgFalse, (LPVOID) &appData.autoFlipView, FALSE, INVALID },
+  { "-autoflip", ArgFalse, (LPVOID) &appData.autoFlipView, FALSE, INVALID },
+  { "autoRaiseBoard", ArgBoolean, (LPVOID) &appData.autoRaiseBoard, TRUE, (ArgIniType) TRUE },
+  { "autoraise", ArgTrue, (LPVOID) &appData.autoRaiseBoard, FALSE, INVALID },
+  { "xautoraise", ArgFalse, (LPVOID) &appData.autoRaiseBoard, FALSE, INVALID },
+  { "-autoraise", ArgFalse, (LPVOID) &appData.autoRaiseBoard, FALSE, INVALID },
+  { "alwaysPromoteToQueen", ArgBoolean, (LPVOID) &appData.alwaysPromoteToQueen, TRUE, (ArgIniType) FALSE },
+  { "queen", ArgTrue, (LPVOID) &appData.alwaysPromoteToQueen, FALSE, INVALID },
+  { "xqueen", ArgFalse, (LPVOID) &appData.alwaysPromoteToQueen, FALSE, INVALID },
+  { "-queen", ArgFalse, (LPVOID) &appData.alwaysPromoteToQueen, FALSE, INVALID },
+  { "oldSaveStyle", ArgBoolean, (LPVOID) &appData.oldSaveStyle, TRUE, (ArgIniType) FALSE },
+  { "oldsave", ArgTrue, (LPVOID) &appData.oldSaveStyle, FALSE, INVALID },
+  { "xoldsave", ArgFalse, (LPVOID) &appData.oldSaveStyle, FALSE, INVALID },
+  { "-oldsave", ArgFalse, (LPVOID) &appData.oldSaveStyle, FALSE, INVALID },
+  { "quietPlay", ArgBoolean, (LPVOID) &appData.quietPlay, TRUE, (ArgIniType) FALSE },
+  { "quiet", ArgTrue, (LPVOID) &appData.quietPlay, FALSE, INVALID },
+  { "xquiet", ArgFalse, (LPVOID) &appData.quietPlay, FALSE, INVALID },
+  { "-quiet", ArgFalse, (LPVOID) &appData.quietPlay, FALSE, INVALID },
+  { "getMoveList", ArgBoolean, (LPVOID) &appData.getMoveList, TRUE, (ArgIniType) TRUE },
+  { "moves", ArgTrue, (LPVOID) &appData.getMoveList, FALSE, INVALID },
+  { "xmoves", ArgFalse, (LPVOID) &appData.getMoveList, FALSE, INVALID },
+  { "-moves", ArgFalse, (LPVOID) &appData.getMoveList, FALSE, INVALID },
+  { "testLegality", ArgBoolean, (LPVOID) &appData.testLegality, TRUE, (ArgIniType) TRUE },
+  { "legal", ArgTrue, (LPVOID) &appData.testLegality, FALSE, INVALID },
+  { "xlegal", ArgFalse, (LPVOID) &appData.testLegality, FALSE, INVALID },
+  { "-legal", ArgFalse, (LPVOID) &appData.testLegality, FALSE, INVALID },
+  { "premove", ArgBoolean, (LPVOID) &appData.premove, TRUE, (ArgIniType) TRUE },
+  { "pre", ArgTrue, (LPVOID) &appData.premove, FALSE, INVALID },
+  { "xpre", ArgFalse, (LPVOID) &appData.premove, FALSE, INVALID },
+  { "-pre", ArgFalse, (LPVOID) &appData.premove, FALSE, INVALID },
+  { "premoveWhite", ArgBoolean, (LPVOID) &appData.premoveWhite, TRUE, (ArgIniType) FALSE },
+  { "prewhite", ArgTrue, (LPVOID) &appData.premoveWhite, FALSE, INVALID },
+  { "xprewhite", ArgFalse, (LPVOID) &appData.premoveWhite, FALSE, INVALID },
+  { "-prewhite", ArgFalse, (LPVOID) &appData.premoveWhite, FALSE, INVALID },
+  { "premoveWhiteText", ArgString, (LPVOID) &appData.premoveWhiteText, TRUE, (ArgIniType) "" },
+  { "premoveBlack", ArgBoolean, (LPVOID) &appData.premoveBlack, TRUE, (ArgIniType) FALSE },
+  { "preblack", ArgTrue, (LPVOID) &appData.premoveBlack, FALSE, INVALID },
+  { "xpreblack", ArgFalse, (LPVOID) &appData.premoveBlack, FALSE, INVALID },
+  { "-preblack", ArgFalse, (LPVOID) &appData.premoveBlack, FALSE, INVALID },
+  { "premoveBlackText", ArgString, (LPVOID) &appData.premoveBlackText, TRUE, (ArgIniType) "" },
+  { "icsAlarm", ArgBoolean, (LPVOID) &appData.icsAlarm, TRUE, (ArgIniType) TRUE},
   { "alarm", ArgTrue, (LPVOID) &appData.icsAlarm, FALSE},
   { "xalarm", ArgFalse, (LPVOID) &appData.icsAlarm, FALSE},
   { "-alarm", ArgFalse, (LPVOID) &appData.icsAlarm, FALSE},
-  { "icsAlarmTime", ArgInt, (LPVOID) &appData.icsAlarmTime, TRUE},
-  { "localLineEditing", ArgBoolean, (LPVOID) &appData.localLineEditing, FALSE},
-  { "localLineEditing", ArgBoolean, (LPVOID) &appData.localLineEditing, FALSE},
-  { "edit", ArgTrue, (LPVOID) &appData.localLineEditing, FALSE },
-  { "xedit", ArgFalse, (LPVOID) &appData.localLineEditing, FALSE },
-  { "-edit", ArgFalse, (LPVOID) &appData.localLineEditing, FALSE },
-  { "animateMoving", ArgBoolean, (LPVOID) &appData.animate, TRUE },
-  { "animate", ArgTrue, (LPVOID) &appData.animate, FALSE },
-  { "xanimate", ArgFalse, (LPVOID) &appData.animate, FALSE },
-  { "-animate", ArgFalse, (LPVOID) &appData.animate, FALSE },
-  { "animateSpeed", ArgInt, (LPVOID) &appData.animSpeed, TRUE },
-  { "animateDragging", ArgBoolean, (LPVOID) &appData.animateDragging, TRUE },
-  { "drag", ArgTrue, (LPVOID) &appData.animateDragging, FALSE },
-  { "xdrag", ArgFalse, (LPVOID) &appData.animateDragging, FALSE },
-  { "-drag", ArgFalse, (LPVOID) &appData.animateDragging, FALSE },
-  { "blindfold", ArgBoolean, (LPVOID) &appData.blindfold, TRUE },
-  { "blind", ArgTrue, (LPVOID) &appData.blindfold, FALSE },
-  { "xblind", ArgFalse, (LPVOID) &appData.blindfold, FALSE },
-  { "-blind", ArgFalse, (LPVOID) &appData.blindfold, FALSE },
+  { "icsAlarmTime", ArgInt, (LPVOID) &appData.icsAlarmTime, TRUE, (ArgIniType) 5000},
+  { "localLineEditing", ArgBoolean, (LPVOID) &appData.localLineEditing, FALSE, (ArgIniType) TRUE},
+  { "edit", ArgTrue, (LPVOID) &appData.localLineEditing, FALSE, INVALID },
+  { "xedit", ArgFalse, (LPVOID) &appData.localLineEditing, FALSE, INVALID },
+  { "-edit", ArgFalse, (LPVOID) &appData.localLineEditing, FALSE, INVALID },
+  { "animateMoving", ArgBoolean, (LPVOID) &appData.animate, TRUE, (ArgIniType) TRUE },
+  { "animate", ArgTrue, (LPVOID) &appData.animate, FALSE, INVALID },
+  { "xanimate", ArgFalse, (LPVOID) &appData.animate, FALSE, INVALID },
+  { "-animate", ArgFalse, (LPVOID) &appData.animate, FALSE, INVALID },
+  { "animateSpeed", ArgInt, (LPVOID) &appData.animSpeed, TRUE, (ArgIniType) 10 },
+  { "animateDragging", ArgBoolean, (LPVOID) &appData.animateDragging, TRUE, (ArgIniType) TRUE },
+  { "drag", ArgTrue, (LPVOID) &appData.animateDragging, FALSE, INVALID },
+  { "xdrag", ArgFalse, (LPVOID) &appData.animateDragging, FALSE, INVALID },
+  { "-drag", ArgFalse, (LPVOID) &appData.animateDragging, FALSE, INVALID },
+  { "blindfold", ArgBoolean, (LPVOID) &appData.blindfold, TRUE, (ArgIniType) FALSE },
+  { "blind", ArgTrue, (LPVOID) &appData.blindfold, FALSE, INVALID },
+  { "xblind", ArgFalse, (LPVOID) &appData.blindfold, FALSE, INVALID },
+  { "-blind", ArgFalse, (LPVOID) &appData.blindfold, FALSE, INVALID },
   { "highlightLastMove", ArgBoolean,
-    (LPVOID) &appData.highlightLastMove, TRUE },
-  { "highlight", ArgTrue, (LPVOID) &appData.highlightLastMove, FALSE },
-  { "xhighlight", ArgFalse, (LPVOID) &appData.highlightLastMove, FALSE },
-  { "-highlight", ArgFalse, (LPVOID) &appData.highlightLastMove, FALSE },
+    (LPVOID) &appData.highlightLastMove, TRUE, (ArgIniType) TRUE },
+  { "highlight", ArgTrue, (LPVOID) &appData.highlightLastMove, FALSE, INVALID },
+  { "xhighlight", ArgFalse, (LPVOID) &appData.highlightLastMove, FALSE, INVALID },
+  { "-highlight", ArgFalse, (LPVOID) &appData.highlightLastMove, FALSE, INVALID },
   { "highlightDragging", ArgBoolean,
-    (LPVOID) &appData.highlightDragging, TRUE },
-  { "highdrag", ArgTrue, (LPVOID) &appData.highlightDragging, FALSE },
-  { "xhighdrag", ArgFalse, (LPVOID) &appData.highlightDragging, FALSE },
-  { "-highdrag", ArgFalse, (LPVOID) &appData.highlightDragging, FALSE },
-  { "colorizeMessages", ArgBoolean, (LPVOID) &appData.colorize, TRUE },
-  { "colorize", ArgTrue, (LPVOID) &appData.colorize, FALSE },
-  { "xcolorize", ArgFalse, (LPVOID) &appData.colorize, FALSE },
-  { "-colorize", ArgFalse, (LPVOID) &appData.colorize, FALSE },
-  { "colorShout", ArgAttribs, (LPVOID) ColorShout, TRUE },
-  { "colorSShout", ArgAttribs, (LPVOID) ColorSShout, TRUE },
-  { "colorChannel1", ArgAttribs, (LPVOID) ColorChannel1, TRUE },
-  { "colorChannel", ArgAttribs, (LPVOID) ColorChannel, TRUE },
-  { "colorKibitz", ArgAttribs, (LPVOID) ColorKibitz, TRUE },
-  { "colorTell", ArgAttribs, (LPVOID) ColorTell, TRUE },
-  { "colorChallenge", ArgAttribs, (LPVOID) ColorChallenge, TRUE },
-  { "colorRequest", ArgAttribs, (LPVOID) ColorRequest, TRUE },
-  { "colorSeek", ArgAttribs, (LPVOID) ColorSeek, TRUE },
-  { "colorNormal", ArgAttribs, (LPVOID) ColorNormal, TRUE },
-  { "colorBackground", ArgColor, (LPVOID) &consoleBackgroundColor, TRUE },
+    (LPVOID) &appData.highlightDragging, TRUE, INVALID },
+  { "highdrag", ArgTrue, (LPVOID) &appData.highlightDragging, FALSE, INVALID },
+  { "xhighdrag", ArgFalse, (LPVOID) &appData.highlightDragging, FALSE, INVALID },
+  { "-highdrag", ArgFalse, (LPVOID) &appData.highlightDragging, FALSE, INVALID },
+  { "colorizeMessages", ArgBoolean, (LPVOID) &appData.colorize, TRUE, (ArgIniType) TRUE },
+  { "colorize", ArgTrue, (LPVOID) &appData.colorize, FALSE, INVALID },
+  { "xcolorize", ArgFalse, (LPVOID) &appData.colorize, FALSE, INVALID },
+  { "-colorize", ArgFalse, (LPVOID) &appData.colorize, FALSE, INVALID },
+  { "colorShout", ArgAttribs, (LPVOID) ColorShout, TRUE, INVALID },
+  { "colorSShout", ArgAttribs, (LPVOID) ColorSShout, TRUE, INVALID },
+  { "colorChannel1", ArgAttribs, (LPVOID) ColorChannel1, TRUE, INVALID },
+  { "colorChannel", ArgAttribs, (LPVOID) ColorChannel, TRUE, INVALID },
+  { "colorKibitz", ArgAttribs, (LPVOID) ColorKibitz, TRUE, INVALID },
+  { "colorTell", ArgAttribs, (LPVOID) ColorTell, TRUE, INVALID },
+  { "colorChallenge", ArgAttribs, (LPVOID) ColorChallenge, TRUE, INVALID },
+  { "colorRequest", ArgAttribs, (LPVOID) ColorRequest, TRUE, INVALID },
+  { "colorSeek", ArgAttribs, (LPVOID) ColorSeek, TRUE, INVALID },
+  { "colorNormal", ArgAttribs, (LPVOID) ColorNormal, TRUE, INVALID },
+  { "colorBackground", ArgColor, (LPVOID) &consoleBackgroundColor, TRUE, INVALID },
   { "soundShout", ArgFilename,
-    (LPVOID) &textAttribs[ColorShout].sound.name, TRUE },
+    (LPVOID) &textAttribs[ColorShout].sound.name, TRUE, INVALID },
   { "soundSShout", ArgFilename,
-    (LPVOID) &textAttribs[ColorSShout].sound.name, TRUE },
+    (LPVOID) &textAttribs[ColorSShout].sound.name, TRUE, INVALID },
   { "soundChannel1", ArgFilename,
-    (LPVOID) &textAttribs[ColorChannel1].sound.name, TRUE },
+    (LPVOID) &textAttribs[ColorChannel1].sound.name, TRUE, INVALID },
   { "soundChannel", ArgFilename,
-    (LPVOID) &textAttribs[ColorChannel].sound.name, TRUE },
+    (LPVOID) &textAttribs[ColorChannel].sound.name, TRUE, INVALID },
   { "soundKibitz", ArgFilename,
-    (LPVOID) &textAttribs[ColorKibitz].sound.name, TRUE },
+    (LPVOID) &textAttribs[ColorKibitz].sound.name, TRUE, INVALID },
   { "soundTell", ArgFilename,
-    (LPVOID) &textAttribs[ColorTell].sound.name, TRUE },
+    (LPVOID) &textAttribs[ColorTell].sound.name, TRUE, INVALID },
   { "soundChallenge", ArgFilename,
-    (LPVOID) &textAttribs[ColorChallenge].sound.name, TRUE },
+    (LPVOID) &textAttribs[ColorChallenge].sound.name, TRUE, INVALID },
   { "soundRequest", ArgFilename,
-    (LPVOID) &textAttribs[ColorRequest].sound.name, TRUE },
+    (LPVOID) &textAttribs[ColorRequest].sound.name, TRUE, INVALID },
   { "soundSeek", ArgFilename,
-    (LPVOID) &textAttribs[ColorSeek].sound.name, TRUE },
-  { "soundMove", ArgFilename, (LPVOID) &sounds[(int)SoundMove].name, TRUE },
-  { "soundBell", ArgFilename, (LPVOID) &sounds[(int)SoundBell].name, TRUE },
-  { "soundIcsWin", ArgFilename, (LPVOID) &sounds[(int)SoundIcsWin].name,TRUE },
+    (LPVOID) &textAttribs[ColorSeek].sound.name, TRUE, INVALID },
+  { "soundMove", ArgFilename, (LPVOID) &sounds[(int)SoundMove].name, TRUE, INVALID },
+  { "soundBell", ArgFilename, (LPVOID) &sounds[(int)SoundBell].name, TRUE, INVALID },
+  { "soundIcsWin", ArgFilename, (LPVOID) &sounds[(int)SoundIcsWin].name, TRUE, INVALID },
   { "soundIcsLoss", ArgFilename, 
-    (LPVOID) &sounds[(int)SoundIcsLoss].name, TRUE },
+    (LPVOID) &sounds[(int)SoundIcsLoss].name, TRUE, INVALID },
   { "soundIcsDraw", ArgFilename, 
-    (LPVOID) &sounds[(int)SoundIcsDraw].name, TRUE },
+    (LPVOID) &sounds[(int)SoundIcsDraw].name, TRUE, INVALID },
   { "soundIcsUnfinished", ArgFilename, 
-    (LPVOID) &sounds[(int)SoundIcsUnfinished].name, TRUE},
+    (LPVOID) &sounds[(int)SoundIcsUnfinished].name, TRUE, INVALID },
   { "soundIcsAlarm", ArgFilename, 
-    (LPVOID) &sounds[(int)SoundAlarm].name, TRUE },
-  { "reuseFirst", ArgBoolean, (LPVOID) &appData.reuseFirst, FALSE },
-  { "reuse", ArgTrue, (LPVOID) &appData.reuseFirst, FALSE },
-  { "xreuse", ArgFalse, (LPVOID) &appData.reuseFirst, FALSE },
-  { "-reuse", ArgFalse, (LPVOID) &appData.reuseFirst, FALSE },
+    (LPVOID) &sounds[(int)SoundAlarm].name, TRUE, INVALID },
+  { "reuseFirst", ArgBoolean, (LPVOID) &appData.reuseFirst, FALSE, (ArgIniType) TRUE },
+  { "reuse", ArgTrue, (LPVOID) &appData.reuseFirst, FALSE, INVALID },
+  { "xreuse", ArgFalse, (LPVOID) &appData.reuseFirst, FALSE, INVALID },
+  { "-reuse", ArgFalse, (LPVOID) &appData.reuseFirst, FALSE, INVALID },
   { "reuseChessPrograms", ArgBoolean,
-    (LPVOID) &appData.reuseFirst, FALSE }, /* backward compat only */
-  { "reuseSecond", ArgBoolean, (LPVOID) &appData.reuseSecond, FALSE },
-  { "reuse2", ArgTrue, (LPVOID) &appData.reuseSecond, FALSE },
-  { "xreuse2", ArgFalse, (LPVOID) &appData.reuseSecond, FALSE },
-  { "-reuse2", ArgFalse, (LPVOID) &appData.reuseSecond, FALSE },
-  { "comPortSettings", ArgCommSettings, (LPVOID) &dcb, TRUE },
-  { "settingsFile", ArgSettingsFilename, (LPVOID) &settingsFileName, FALSE },
-  { "ini", ArgSettingsFilename, (LPVOID) &settingsFileName, FALSE },
-  { "saveSettingsOnExit", ArgBoolean, (LPVOID) &saveSettingsOnExit, TRUE },
-  { "chessProgram", ArgBoolean, (LPVOID) &chessProgram, FALSE },
-  { "cp", ArgTrue, (LPVOID) &chessProgram, FALSE },
-  { "xcp", ArgFalse, (LPVOID) &chessProgram, FALSE },
-  { "-cp", ArgFalse, (LPVOID) &chessProgram, FALSE },
-  { "icsMenu", ArgString, (LPVOID) &icsTextMenuString, TRUE },
-  { "icsNames", ArgString, (LPVOID) &icsNames, TRUE },
+    (LPVOID) &appData.reuseFirst, FALSE, INVALID }, /* backward compat only */
+  { "reuseSecond", ArgBoolean, (LPVOID) &appData.reuseSecond, FALSE, (ArgIniType) TRUE },
+  { "reuse2", ArgTrue, (LPVOID) &appData.reuseSecond, FALSE, INVALID },
+  { "xreuse2", ArgFalse, (LPVOID) &appData.reuseSecond, FALSE, INVALID },
+  { "-reuse2", ArgFalse, (LPVOID) &appData.reuseSecond, FALSE, INVALID },
+  { "comPortSettings", ArgCommSettings, (LPVOID) &dcb, TRUE, INVALID },
+  { "settingsFile", ArgSettingsFilename, (LPVOID) &settingsFileName, FALSE, (ArgIniType) SETTINGS_FILE },
+  { "ini", ArgSettingsFilename, (LPVOID) &settingsFileName, FALSE, INVALID },
+  { "saveSettingsOnExit", ArgBoolean, (LPVOID) &saveSettingsOnExit, TRUE, (ArgIniType) TRUE },
+  { "chessProgram", ArgBoolean, (LPVOID) &chessProgram, FALSE, (ArgIniType) FALSE },
+  { "cp", ArgTrue, (LPVOID) &chessProgram, FALSE, INVALID },
+  { "xcp", ArgFalse, (LPVOID) &chessProgram, FALSE, INVALID },
+  { "-cp", ArgFalse, (LPVOID) &chessProgram, FALSE, INVALID },
+  { "icsMenu", ArgString, (LPVOID) &icsTextMenuString, TRUE, (ArgIniType) ICS_TEXT_MENU_DEFAULT },
+  { "icsNames", ArgString, (LPVOID) &icsNames, TRUE, (ArgIniType) ICS_NAMES },
   { "firstChessProgramNames", ArgString, (LPVOID) &firstChessProgramNames,
-    TRUE },
+    TRUE, (ArgIniType) FCP_NAMES },
   { "secondChessProgramNames", ArgString, (LPVOID) &secondChessProgramNames,
-    TRUE },
-  { "initialMode", ArgString, (LPVOID) &appData.initialMode, FALSE },
-  { "mode", ArgString, (LPVOID) &appData.initialMode, FALSE },
-  { "variant", ArgString, (LPVOID) &appData.variant, FALSE },
-  { "firstProtocolVersion", ArgInt, (LPVOID) &appData.firstProtocolVersion, FALSE },
-  { "secondProtocolVersion", ArgInt, (LPVOID) &appData.secondProtocolVersion,FALSE },
-  { "showButtonBar", ArgBoolean, (LPVOID) &appData.showButtonBar, TRUE },
-  { "buttons", ArgTrue, (LPVOID) &appData.showButtonBar, FALSE },
-  { "xbuttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE },
-  { "-buttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE },
+    TRUE, (ArgIniType) SCP_NAMES },
+  { "initialMode", ArgString, (LPVOID) &appData.initialMode, FALSE, (ArgIniType) "" },
+  { "mode", ArgString, (LPVOID) &appData.initialMode, FALSE, INVALID },
+  { "variant", ArgString, (LPVOID) &appData.variant, FALSE, (ArgIniType) "normal" },
+  { "firstProtocolVersion", ArgInt, (LPVOID) &appData.firstProtocolVersion, FALSE, (ArgIniType) PROTOVER },
+  { "secondProtocolVersion", ArgInt, (LPVOID) &appData.secondProtocolVersion,FALSE, (ArgIniType) PROTOVER },
+  { "showButtonBar", ArgBoolean, (LPVOID) &appData.showButtonBar, TRUE, (ArgIniType) TRUE },
+  { "buttons", ArgTrue, (LPVOID) &appData.showButtonBar, FALSE, INVALID },
+  { "xbuttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE, INVALID },
+  { "-buttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE, INVALID },
+
   /* [AS] New features */
-  { "firstScoreAbs", ArgBoolean, (LPVOID) &appData.firstScoreIsAbsolute, FALSE },
-  { "secondScoreAbs", ArgBoolean, (LPVOID) &appData.secondScoreIsAbsolute, FALSE },
-  { "pgnExtendedInfo", ArgBoolean, (LPVOID) &appData.saveExtendedInfoInPGN, TRUE },
-  { "hideThinkingFromHuman", ArgBoolean, (LPVOID) &appData.hideThinkingFromHuman, TRUE },
-  { "liteBackTextureFile", ArgString, (LPVOID) &appData.liteBackTextureFile, TRUE },
-  { "darkBackTextureFile", ArgString, (LPVOID) &appData.darkBackTextureFile, TRUE },
-  { "liteBackTextureMode", ArgInt, (LPVOID) &appData.liteBackTextureMode, TRUE },
-  { "darkBackTextureMode", ArgInt, (LPVOID) &appData.darkBackTextureMode, TRUE },
-  { "renderPiecesWithFont", ArgString, (LPVOID) &appData.renderPiecesWithFont, TRUE },
-  { "fontPieceToCharTable", ArgString, (LPVOID) &appData.fontToPieceTable, TRUE },
-  { "fontPieceBackColorWhite", ArgColor, (LPVOID) &appData.fontBackColorWhite, TRUE },
-  { "fontPieceForeColorWhite", ArgColor, (LPVOID) &appData.fontForeColorWhite, TRUE },
-  { "fontPieceBackColorBlack", ArgColor, (LPVOID) &appData.fontBackColorBlack, TRUE },
-  { "fontPieceForeColorBlack", ArgColor, (LPVOID) &appData.fontForeColorBlack, TRUE },
-  { "fontPieceSize", ArgInt, (LPVOID) &appData.fontPieceSize, TRUE },
-  { "overrideLineGap", ArgInt, (LPVOID) &appData.overrideLineGap, TRUE },
-  { "adjudicateLossThreshold", ArgInt, (LPVOID) &appData.adjudicateLossThreshold, TRUE },
-  { "delayBeforeQuit", ArgInt, (LPVOID) &appData.delayBeforeQuit, TRUE },
-  { "delayAfterQuit", ArgInt, (LPVOID) &appData.delayAfterQuit, TRUE },
-  { "nameOfDebugFile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE },
-  { "debugfile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE },
-  { "pgnEventHeader", ArgString, (LPVOID) &appData.pgnEventHeader, TRUE },
-  { "defaultFrcPosition", ArgInt, (LPVOID) &appData.defaultFrcPosition, TRUE },
-  { "gameListTags", ArgString, (LPVOID) &appData.gameListTags, TRUE },
-  { "saveOutOfBookInfo", ArgBoolean, (LPVOID) &appData.saveOutOfBookInfo, TRUE },
-  { "showEvalInMoveHistory", ArgBoolean, (LPVOID) &appData.showEvalInMoveHistory, TRUE },
-  { "evalHistColorWhite", ArgColor, (LPVOID) &appData.evalHistColorWhite, TRUE },
-  { "evalHistColorBlack", ArgColor, (LPVOID) &appData.evalHistColorBlack, TRUE },
-  { "highlightMoveWithArrow", ArgBoolean, (LPVOID) &appData.highlightMoveWithArrow, TRUE },
-  { "highlightArrowColor", ArgColor, (LPVOID) &appData.highlightArrowColor, TRUE },
-  { "stickyWindows", ArgBoolean, (LPVOID) &appData.useStickyWindows, TRUE },
-  { "adjudicateDrawMoves", ArgInt, (LPVOID) &appData.adjudicateDrawMoves, TRUE },
-  { "autoDisplayComment", ArgBoolean, (LPVOID) &appData.autoDisplayComment, TRUE },
-  { "autoDisplayTags", ArgBoolean, (LPVOID) &appData.autoDisplayTags, TRUE },
-  { "firstIsUCI", ArgBoolean, (LPVOID) &appData.firstIsUCI, FALSE },
-  { "fUCI", ArgTrue, (LPVOID) &appData.firstIsUCI, FALSE },
-  { "secondIsUCI", ArgBoolean, (LPVOID) &appData.secondIsUCI, FALSE },
-  { "sUCI", ArgTrue, (LPVOID) &appData.secondIsUCI, FALSE },
-  { "firstHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.firstHasOwnBookUCI, FALSE },
-  { "fNoOwnBookUCI", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE },
-  { "firstXBook", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE },
-  { "secondHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.secondHasOwnBookUCI, FALSE },
-  { "sNoOwnBookUCI", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE },
-  { "secondXBook", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE },
-  { "polyglotDir", ArgFilename, (LPVOID) &appData.polyglotDir, TRUE },
-  { "usePolyglotBook", ArgBoolean, (LPVOID) &appData.usePolyglotBook, TRUE },
-  { "polyglotBook", ArgFilename, (LPVOID) &appData.polyglotBook, TRUE },
-  { "defaultHashSize", ArgInt, (LPVOID) &appData.defaultHashSize, TRUE }, 
-  { "defaultCacheSizeEGTB", ArgInt, (LPVOID) &appData.defaultCacheSizeEGTB, TRUE },
-  { "defaultPathEGTB", ArgFilename, (LPVOID) &appData.defaultPathEGTB, TRUE },
+  { "firstScoreAbs", ArgBoolean, (LPVOID) &appData.firstScoreIsAbsolute, FALSE, (ArgIniType) FALSE },
+  { "secondScoreAbs", ArgBoolean, (LPVOID) &appData.secondScoreIsAbsolute, FALSE, (ArgIniType) FALSE },
+  { "pgnExtendedInfo", ArgBoolean, (LPVOID) &appData.saveExtendedInfoInPGN, TRUE, (ArgIniType) FALSE },
+  { "hideThinkingFromHuman", ArgBoolean, (LPVOID) &appData.hideThinkingFromHuman, TRUE, (ArgIniType) FALSE },
+  { "liteBackTextureFile", ArgString, (LPVOID) &appData.liteBackTextureFile, TRUE, (ArgIniType) "" },
+  { "darkBackTextureFile", ArgString, (LPVOID) &appData.darkBackTextureFile, TRUE, (ArgIniType) "" },
+  { "liteBackTextureMode", ArgInt, (LPVOID) &appData.liteBackTextureMode, TRUE, (ArgIniType) BACK_TEXTURE_MODE_PLAIN },
+  { "darkBackTextureMode", ArgInt, (LPVOID) &appData.darkBackTextureMode, TRUE, (ArgIniType) BACK_TEXTURE_MODE_PLAIN },
+  { "renderPiecesWithFont", ArgString, (LPVOID) &appData.renderPiecesWithFont, TRUE, (ArgIniType) "" },
+  { "fontPieceToCharTable", ArgString, (LPVOID) &appData.fontToPieceTable, TRUE, (ArgIniType) "" },
+  { "fontPieceBackColorWhite", ArgColor, (LPVOID) &appData.fontBackColorWhite, TRUE, (ArgIniType) 0 },
+  { "fontPieceForeColorWhite", ArgColor, (LPVOID) &appData.fontForeColorWhite, TRUE, (ArgIniType) 0 },
+  { "fontPieceBackColorBlack", ArgColor, (LPVOID) &appData.fontBackColorBlack, TRUE, (ArgIniType) 0 },
+  { "fontPieceForeColorBlack", ArgColor, (LPVOID) &appData.fontForeColorBlack, TRUE, (ArgIniType) 0 },
+  { "fontPieceSize", ArgInt, (LPVOID) &appData.fontPieceSize, TRUE, (ArgIniType) 80 },
+  { "overrideLineGap", ArgInt, (LPVOID) &appData.overrideLineGap, TRUE, (ArgIniType) 1 },
+  { "adjudicateLossThreshold", ArgInt, (LPVOID) &appData.adjudicateLossThreshold, TRUE, (ArgIniType) 0 },
+  { "delayBeforeQuit", ArgInt, (LPVOID) &appData.delayBeforeQuit, TRUE, (ArgIniType) 0 },
+  { "delayAfterQuit", ArgInt, (LPVOID) &appData.delayAfterQuit, TRUE, (ArgIniType) 0 },
+  { "nameOfDebugFile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE, (ArgIniType) "winboard.debug" },
+  { "debugfile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE, INVALID },
+  { "pgnEventHeader", ArgString, (LPVOID) &appData.pgnEventHeader, TRUE, (ArgIniType) "Computer Chess Game" },
+  { "defaultFrcPosition", ArgInt, (LPVOID) &appData.defaultFrcPosition, TRUE, (ArgIniType) -1 },
+  { "gameListTags", ArgString, (LPVOID) &appData.gameListTags, TRUE, (ArgIniType) GLT_DEFAULT_TAGS },
+  { "saveOutOfBookInfo", ArgBoolean, (LPVOID) &appData.saveOutOfBookInfo, TRUE, (ArgIniType) TRUE },
+  { "showEvalInMoveHistory", ArgBoolean, (LPVOID) &appData.showEvalInMoveHistory, TRUE, (ArgIniType) TRUE },
+  { "evalHistColorWhite", ArgColor, (LPVOID) &appData.evalHistColorWhite, TRUE, INVALID },
+  { "evalHistColorBlack", ArgColor, (LPVOID) &appData.evalHistColorBlack, TRUE, INVALID },
+  { "highlightMoveWithArrow", ArgBoolean, (LPVOID) &appData.highlightMoveWithArrow, TRUE, (ArgIniType) FALSE },
+  { "highlightArrowColor", ArgColor, (LPVOID) &appData.highlightArrowColor, TRUE, INVALID },
+  { "stickyWindows", ArgBoolean, (LPVOID) &appData.useStickyWindows, TRUE, (ArgIniType) TRUE },
+  { "adjudicateDrawMoves", ArgInt, (LPVOID) &appData.adjudicateDrawMoves, TRUE, (ArgIniType) TRUE },
+  { "autoDisplayComment", ArgBoolean, (LPVOID) &appData.autoDisplayComment, TRUE, (ArgIniType) TRUE },
+  { "autoDisplayTags", ArgBoolean, (LPVOID) &appData.autoDisplayTags, TRUE, (ArgIniType) TRUE },
+  { "firstIsUCI", ArgBoolean, (LPVOID) &appData.firstIsUCI, FALSE, (ArgIniType) FALSE },
+  { "fUCI", ArgTrue, (LPVOID) &appData.firstIsUCI, FALSE, INVALID },
+  { "secondIsUCI", ArgBoolean, (LPVOID) &appData.secondIsUCI, FALSE, (ArgIniType) FALSE },
+  { "sUCI", ArgTrue, (LPVOID) &appData.secondIsUCI, FALSE, INVALID },
+  { "firstHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.firstHasOwnBookUCI, FALSE, (ArgIniType) TRUE },
+  { "fNoOwnBookUCI", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE, INVALID },
+  { "firstXBook", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE, INVALID },
+  { "secondHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.secondHasOwnBookUCI, FALSE, (ArgIniType) TRUE },
+  { "sNoOwnBookUCI", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE, INVALID },
+  { "secondXBook", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE, INVALID },
+  { "polyglotDir", ArgFilename, (LPVOID) &appData.polyglotDir, TRUE, (ArgIniType) "" },
+  { "usePolyglotBook", ArgBoolean, (LPVOID) &appData.usePolyglotBook, TRUE, (ArgIniType) FALSE },
+  { "polyglotBook", ArgFilename, (LPVOID) &appData.polyglotBook, TRUE, (ArgIniType) "" },
+  { "defaultHashSize", ArgInt, (LPVOID) &appData.defaultHashSize, TRUE, (ArgIniType) 64 }, 
+  { "defaultCacheSizeEGTB", ArgInt, (LPVOID) &appData.defaultCacheSizeEGTB, TRUE, (ArgIniType) 4 },
+  { "defaultPathEGTB", ArgFilename, (LPVOID) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
 
   /* [HGM] board-size, adjudication and misc. options */
-  { "boardWidth", ArgInt, (LPVOID) &appData.NrFiles, TRUE },
-  { "boardHeight", ArgInt, (LPVOID) &appData.NrRanks, TRUE },
-  { "holdingsSize", ArgInt, (LPVOID) &appData.holdingsSize, TRUE },
-  { "matchPause", ArgInt, (LPVOID) &appData.matchPause, TRUE },
-  { "pieceToCharTable", ArgString, (LPVOID) &appData.pieceToCharTable, FALSE },
-  { "flipBlack", ArgBoolean, (LPVOID) &appData.upsideDown, TRUE },
-  { "allWhite", ArgBoolean, (LPVOID) &appData.allWhite, TRUE },
-  { "alphaRank", ArgBoolean, (LPVOID) &appData.alphaRank, FALSE },
-  { "firstAlphaRank", ArgBoolean, (LPVOID) &first.alphaRank, FALSE },
-  { "secondAlphaRank", ArgBoolean, (LPVOID) &second.alphaRank, FALSE },
-  { "testClaims", ArgBoolean, (LPVOID) &appData.testClaims, TRUE },
-  { "checkMates", ArgBoolean, (LPVOID) &appData.checkMates, TRUE },
-  { "materialDraws", ArgBoolean, (LPVOID) &appData.materialDraws, TRUE },
-  { "trivialDraws", ArgBoolean, (LPVOID) &appData.trivialDraws, TRUE },
-  { "ruleMoves", ArgInt, (LPVOID) &appData.ruleMoves, TRUE },
-  { "repeatsToDraw", ArgInt, (LPVOID) &appData.drawRepeats, TRUE },
-  { "autoKibitz", ArgTrue, (LPVOID) &appData.autoKibitz, FALSE },
-  { "engineDebugOutput", ArgInt, (LPVOID) &appData.engineComments, FALSE },
-  { "userName", ArgString, (LPVOID) &appData.userName, FALSE },
-  { "rewindIndex", ArgInt, (LPVOID) &appData.rewindIndex, FALSE },
-  { "sameColorGames", ArgInt, (LPVOID) &appData.sameColorGames, FALSE },
-  { "smpCores", ArgInt, (LPVOID) &appData.smpCores, TRUE },
-  { "egtFormats", ArgString, (LPVOID) &appData.egtFormats, TRUE },
-  { "niceEngines", ArgInt, (LPVOID) &appData.niceEngines, TRUE },
-  { "firstLogo", ArgFilename, (LPVOID) &appData.firstLogo, FALSE },
-  { "secondLogo", ArgFilename, (LPVOID) &appData.secondLogo, FALSE },
-  { "autoLogo", ArgBoolean, (LPVOID) &appData.autoLogo, TRUE },
-  { "firstOptions", ArgString, (LPVOID) &appData.firstOptions, FALSE },
-  { "secondOptions", ArgString, (LPVOID) &appData.secondOptions, FALSE },
-  { "firstNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride1, FALSE },
-  { "secondNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride2, FALSE },
-  { "keepAlive", ArgInt, (LPVOID) &appData.keepAlive, FALSE },
-  { "icstype", ArgInt, (LPVOID) &ics_type, FALSE },
-  { "forceIllegalMoves", ArgTrue, (LPVOID) &appData.forceIllegal, FALSE },
+  { "boardWidth", ArgInt, (LPVOID) &appData.NrFiles, TRUE, (ArgIniType) -1 },
+  { "boardHeight", ArgInt, (LPVOID) &appData.NrRanks, TRUE, (ArgIniType) -1 },
+  { "holdingsSize", ArgInt, (LPVOID) &appData.holdingsSize, TRUE, (ArgIniType) -1 },
+  { "matchPause", ArgInt, (LPVOID) &appData.matchPause, TRUE, (ArgIniType) 10000 },
+  { "pieceToCharTable", ArgString, (LPVOID) &appData.pieceToCharTable, FALSE, INVALID },
+  { "flipBlack", ArgBoolean, (LPVOID) &appData.upsideDown, TRUE, (ArgIniType) FALSE },
+  { "allWhite", ArgBoolean, (LPVOID) &appData.allWhite, TRUE, (ArgIniType) FALSE },
+  { "alphaRank", ArgBoolean, (LPVOID) &appData.alphaRank, FALSE, (ArgIniType) FALSE },
+  { "firstAlphaRank", ArgBoolean, (LPVOID) &first.alphaRank, FALSE, (ArgIniType) FALSE },
+  { "secondAlphaRank", ArgBoolean, (LPVOID) &second.alphaRank, FALSE, (ArgIniType) FALSE },
+  { "testClaims", ArgBoolean, (LPVOID) &appData.testClaims, TRUE, (ArgIniType) FALSE },
+  { "checkMates", ArgBoolean, (LPVOID) &appData.checkMates, TRUE, (ArgIniType) FALSE },
+  { "materialDraws", ArgBoolean, (LPVOID) &appData.materialDraws, TRUE, (ArgIniType) FALSE },
+  { "trivialDraws", ArgBoolean, (LPVOID) &appData.trivialDraws, TRUE, (ArgIniType) FALSE },
+  { "ruleMoves", ArgInt, (LPVOID) &appData.ruleMoves, TRUE, (ArgIniType) 51 },
+  { "repeatsToDraw", ArgInt, (LPVOID) &appData.drawRepeats, TRUE, (ArgIniType) 6 },
+  { "autoKibitz", ArgTrue, (LPVOID) &appData.autoKibitz, FALSE, INVALID },
+  { "engineDebugOutput", ArgInt, (LPVOID) &appData.engineComments, FALSE, (ArgIniType) 1 },
+  { "userName", ArgString, (LPVOID) &appData.userName, FALSE, INVALID },
+  { "rewindIndex", ArgInt, (LPVOID) &appData.rewindIndex, FALSE, INVALID },
+  { "sameColorGames", ArgInt, (LPVOID) &appData.sameColorGames, FALSE, INVALID },
+  { "smpCores", ArgInt, (LPVOID) &appData.smpCores, TRUE, (ArgIniType) 1 },
+  { "egtFormats", ArgString, (LPVOID) &appData.egtFormats, TRUE, (ArgIniType) "" },
+  { "niceEngines", ArgInt, (LPVOID) &appData.niceEngines, TRUE, INVALID },
+  { "firstLogo", ArgFilename, (LPVOID) &appData.firstLogo, FALSE, INVALID },
+  { "secondLogo", ArgFilename, (LPVOID) &appData.secondLogo, FALSE, INVALID },
+  { "autoLogo", ArgBoolean, (LPVOID) &appData.autoLogo, TRUE, INVALID },
+  { "firstOptions", ArgString, (LPVOID) &appData.firstOptions, FALSE, (ArgIniType) "" },
+  { "secondOptions", ArgString, (LPVOID) &appData.secondOptions, FALSE, (ArgIniType) "" },
+  { "firstNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride1, FALSE, (ArgIniType) "" },
+  { "secondNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride2, FALSE, (ArgIniType) "" },
+  { "keepAlive", ArgInt, (LPVOID) &appData.keepAlive, FALSE, INVALID },
+  { "icstype", ArgInt, (LPVOID) &ics_type, FALSE, INVALID },
+  { "forceIllegalMoves", ArgTrue, (LPVOID) &appData.forceIllegal, FALSE, INVALID },
 
 #ifdef ZIPPY
-  { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
-  { "zt", ArgTrue, (LPVOID) &appData.zippyTalk, FALSE },
-  { "xzt", ArgFalse, (LPVOID) &appData.zippyTalk, FALSE },
-  { "-zt", ArgFalse, (LPVOID) &appData.zippyTalk, FALSE },
-  { "zippyPlay", ArgBoolean, (LPVOID) &appData.zippyPlay, FALSE },
-  { "zp", ArgTrue, (LPVOID) &appData.zippyPlay, FALSE },
-  { "xzp", ArgFalse, (LPVOID) &appData.zippyPlay, FALSE },
-  { "-zp", ArgFalse, (LPVOID) &appData.zippyPlay, FALSE },
-  { "zippyLines", ArgFilename, (LPVOID) &appData.zippyLines, FALSE },
-  { "zippyPinhead", ArgString, (LPVOID) &appData.zippyPinhead, FALSE },
-  { "zippyPassword", ArgString, (LPVOID) &appData.zippyPassword, FALSE },
-  { "zippyPassword2", ArgString, (LPVOID) &appData.zippyPassword2, FALSE },
+  { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },
+  { "zt", ArgTrue, (LPVOID) &appData.zippyTalk, FALSE, INVALID },
+  { "xzt", ArgFalse, (LPVOID) &appData.zippyTalk, FALSE, INVALID },
+  { "-zt", ArgFalse, (LPVOID) &appData.zippyTalk, FALSE, INVALID },
+  { "zippyPlay", ArgBoolean, (LPVOID) &appData.zippyPlay, FALSE, (ArgIniType) ZIPPY_PLAY },
+  { "zp", ArgTrue, (LPVOID) &appData.zippyPlay, FALSE, INVALID },
+  { "xzp", ArgFalse, (LPVOID) &appData.zippyPlay, FALSE, INVALID },
+  { "-zp", ArgFalse, (LPVOID) &appData.zippyPlay, FALSE, INVALID },
+  { "zippyLines", ArgFilename, (LPVOID) &appData.zippyLines, FALSE, (ArgIniType) ZIPPY_LINES },
+  { "zippyPinhead", ArgString, (LPVOID) &appData.zippyPinhead, FALSE, (ArgIniType) ZIPPY_PINHEAD },
+  { "zippyPassword", ArgString, (LPVOID) &appData.zippyPassword, FALSE, (ArgIniType) ZIPPY_PASSWORD },
+  { "zippyPassword2", ArgString, (LPVOID) &appData.zippyPassword2, FALSE, (ArgIniType) ZIPPY_PASSWORD2 },
   { "zippyWrongPassword", ArgString, (LPVOID) &appData.zippyWrongPassword,
-    FALSE },
-  { "zippyAcceptOnly", ArgString, (LPVOID) &appData.zippyAcceptOnly, FALSE },
-  { "zippyUseI", ArgBoolean, (LPVOID) &appData.zippyUseI, FALSE },
-  { "zui", ArgTrue, (LPVOID) &appData.zippyUseI, FALSE },
-  { "xzui", ArgFalse, (LPVOID) &appData.zippyUseI, FALSE },
-  { "-zui", ArgFalse, (LPVOID) &appData.zippyUseI, FALSE },
-  { "zippyBughouse", ArgInt, (LPVOID) &appData.zippyBughouse, FALSE },
+    FALSE, (ArgIniType) ZIPPY_WRONG_PASSWORD },
+  { "zippyAcceptOnly", ArgString, (LPVOID) &appData.zippyAcceptOnly, FALSE, (ArgIniType) ZIPPY_ACCEPT_ONLY },
+  { "zippyUseI", ArgBoolean, (LPVOID) &appData.zippyUseI, FALSE, (ArgIniType) ZIPPY_USE_I },
+  { "zui", ArgTrue, (LPVOID) &appData.zippyUseI, FALSE, INVALID },
+  { "xzui", ArgFalse, (LPVOID) &appData.zippyUseI, FALSE, INVALID },
+  { "-zui", ArgFalse, (LPVOID) &appData.zippyUseI, FALSE, INVALID },
+  { "zippyBughouse", ArgInt, (LPVOID) &appData.zippyBughouse, FALSE, (ArgIniType) ZIPPY_BUGHOUSE },
   { "zippyNoplayCrafty", ArgBoolean, (LPVOID) &appData.zippyNoplayCrafty,
-    FALSE },
-  { "znc", ArgTrue, (LPVOID) &appData.zippyNoplayCrafty, FALSE },
-  { "xznc", ArgFalse, (LPVOID) &appData.zippyNoplayCrafty, FALSE },
-  { "-znc", ArgFalse, (LPVOID) &appData.zippyNoplayCrafty, FALSE },
-  { "zippyGameEnd", ArgString, (LPVOID) &appData.zippyGameEnd, FALSE },
-  { "zippyGameStart", ArgString, (LPVOID) &appData.zippyGameStart, FALSE },
-  { "zippyAdjourn", ArgBoolean, (LPVOID) &appData.zippyAdjourn, FALSE },
-  { "zadj", ArgTrue, (LPVOID) &appData.zippyAdjourn, FALSE },
-  { "xzadj", ArgFalse, (LPVOID) &appData.zippyAdjourn, FALSE },
-  { "-zadj", ArgFalse, (LPVOID) &appData.zippyAdjourn, FALSE },
-  { "zippyAbort", ArgBoolean, (LPVOID) &appData.zippyAbort, FALSE },
-  { "zab", ArgTrue, (LPVOID) &appData.zippyAbort, FALSE },
-  { "xzab", ArgFalse, (LPVOID) &appData.zippyAbort, FALSE },
-  { "-zab", ArgFalse, (LPVOID) &appData.zippyAbort, FALSE },
-  { "zippyVariants", ArgString, (LPVOID) &appData.zippyVariants, FALSE },
-  { "zippyMaxGames", ArgInt, (LPVOID)&appData.zippyMaxGames, FALSE },
-  { "zippyReplayTimeout", ArgInt, (LPVOID)&appData.zippyReplayTimeout, FALSE },
-  { "zippyShortGame", ArgInt, (LPVOID)&appData.zippyShortGame, FALSE },
+    FALSE, (ArgIniType) ZIPPY_NOPLAY_CRAFTY },
+  { "znc", ArgTrue, (LPVOID) &appData.zippyNoplayCrafty, FALSE, INVALID },
+  { "xznc", ArgFalse, (LPVOID) &appData.zippyNoplayCrafty, FALSE, INVALID },
+  { "-znc", ArgFalse, (LPVOID) &appData.zippyNoplayCrafty, FALSE, INVALID },
+  { "zippyGameEnd", ArgString, (LPVOID) &appData.zippyGameEnd, FALSE, (ArgIniType) ZIPPY_GAME_END },
+  { "zippyGameStart", ArgString, (LPVOID) &appData.zippyGameStart, FALSE, (ArgIniType) ZIPPY_GAME_START },
+  { "zippyAdjourn", ArgBoolean, (LPVOID) &appData.zippyAdjourn, FALSE, (ArgIniType) ZIPPY_ADJOURN },
+  { "zadj", ArgTrue, (LPVOID) &appData.zippyAdjourn, FALSE, INVALID },
+  { "xzadj", ArgFalse, (LPVOID) &appData.zippyAdjourn, FALSE, INVALID },
+  { "-zadj", ArgFalse, (LPVOID) &appData.zippyAdjourn, FALSE, INVALID },
+  { "zippyAbort", ArgBoolean, (LPVOID) &appData.zippyAbort, FALSE, (ArgIniType) ZIPPY_ABORT },
+  { "zab", ArgTrue, (LPVOID) &appData.zippyAbort, FALSE, INVALID },
+  { "xzab", ArgFalse, (LPVOID) &appData.zippyAbort, FALSE, INVALID },
+  { "-zab", ArgFalse, (LPVOID) &appData.zippyAbort, FALSE, INVALID },
+  { "zippyVariants", ArgString, (LPVOID) &appData.zippyVariants, FALSE, (ArgIniType) ZIPPY_VARIANTS },
+  { "zippyMaxGames", ArgInt, (LPVOID)&appData.zippyMaxGames, FALSE, (ArgIniType) ZIPPY_MAX_GAMES},
+  { "zippyReplayTimeout", ArgInt, (LPVOID)&appData.zippyReplayTimeout, FALSE, (ArgIniType) ZIPPY_REPLAY_TIMEOUT },
+  { "zippyShortGame", ArgInt, (LPVOID)&appData.zippyShortGame, FALSE, INVALID },
   /* Kludge to allow winboard.ini files from buggy 4.0.4 to be read: */
-  { "zippyReplyTimeout", ArgInt, (LPVOID)&junk, FALSE },
+  { "zippyReplyTimeout", ArgInt, (LPVOID)&junk, FALSE, INVALID },
 #endif
   /* [HGM] options for broadcasting and time odds */
-  { "serverMoves", ArgString, (LPVOID) &appData.serverMovesName, FALSE },
-  { "suppressLoadMoves", ArgBoolean, (LPVOID) &appData.suppressLoadMoves, FALSE },
-  { "serverPause", ArgInt, (LPVOID) &appData.serverPause, FALSE },
-  { "firstTimeOdds", ArgInt, (LPVOID) &appData.firstTimeOdds, FALSE },
-  { "secondTimeOdds", ArgInt, (LPVOID) &appData.secondTimeOdds, FALSE },
-  { "timeOddsMode", ArgInt, (LPVOID) &appData.timeOddsMode, TRUE },
-  { "firstAccumulateTC", ArgInt, (LPVOID) &appData.firstAccumulateTC, FALSE },
-  { "secondAccumulateTC", ArgInt, (LPVOID) &appData.secondAccumulateTC, FALSE },
-  { "firstNPS", ArgInt, (LPVOID) &appData.firstNPS, FALSE },
-  { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE },
-  { "noGUI", ArgTrue, (LPVOID) &appData.noGUI, FALSE },
-  { "keepLineBreaksICS", ArgBoolean, (LPVOID) &appData.noJoin, TRUE },
-  { "wrapContinuationSequence", ArgString, (LPVOID) &appData.wrapContSeq, FALSE },
-  { "useInternalWrap", ArgTrue, (LPVOID) &appData.useInternalWrap, FALSE }, /* noJoin usurps this if set */
+  { "serverMoves", ArgString, (LPVOID) &appData.serverMovesName, FALSE, (ArgIniType) NULL },
+  { "suppressLoadMoves", ArgBoolean, (LPVOID) &appData.suppressLoadMoves, FALSE, (ArgIniType) FALSE },
+  { "serverPause", ArgInt, (LPVOID) &appData.serverPause, FALSE, (ArgIniType) 15 },
+  { "firstTimeOdds", ArgInt, (LPVOID) &appData.firstTimeOdds, FALSE, (ArgIniType) 1 },
+  { "secondTimeOdds", ArgInt, (LPVOID) &appData.secondTimeOdds, FALSE, (ArgIniType) 1 },
+  { "timeOddsMode", ArgInt, (LPVOID) &appData.timeOddsMode, TRUE, INVALID },
+  { "firstAccumulateTC", ArgInt, (LPVOID) &appData.firstAccumulateTC, FALSE, (ArgIniType) 1 },
+  { "secondAccumulateTC", ArgInt, (LPVOID) &appData.secondAccumulateTC, FALSE, (ArgIniType) 1 },
+  { "firstNPS", ArgInt, (LPVOID) &appData.firstNPS, FALSE, (ArgIniType) -1 },
+  { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE, (ArgIniType) -1 },
+  { "noGUI", ArgTrue, (LPVOID) &appData.noGUI, FALSE, INVALID },
+  { "keepLineBreaksICS", ArgBoolean, (LPVOID) &appData.noJoin, TRUE, INVALID },
+  { "wrapContinuationSequence", ArgString, (LPVOID) &appData.wrapContSeq, FALSE, INVALID },
+  { "useInternalWrap", ArgTrue, (LPVOID) &appData.useInternalWrap, FALSE, INVALID }, /* noJoin usurps this if set */
   
   // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
-  { "minX", ArgZ, (LPVOID) &minX, FALSE }, // [HGM] placement: to make suer auxialary windows can be placed
-  { "minY", ArgZ, (LPVOID) &minY, FALSE },
-  { "winWidth",  ArgInt, (LPVOID) &wpMain.width,  TRUE }, // [HGM] placement: dummies to remember right & bottom
-  { "winHeight", ArgInt, (LPVOID) &wpMain.height, TRUE }, //       for attaching auxiliary windows to them
-  { "x", ArgInt, (LPVOID) &wpMain.x, TRUE },
-  { "y", ArgInt, (LPVOID) &wpMain.y, TRUE },
-  { "icsX", ArgX,   (LPVOID) &wpConsole.x, TRUE },
-  { "icsY", ArgY,   (LPVOID) &wpConsole.y, TRUE },
-  { "icsW", ArgInt, (LPVOID) &wpConsole.width, TRUE },
-  { "icsH", ArgInt, (LPVOID) &wpConsole.height, TRUE },
-  { "analysisX", ArgX,   (LPVOID) &dummy, FALSE }, // [HGM] placement: analysis window no longer exists
-  { "analysisY", ArgY,   (LPVOID) &dummy, FALSE }, //       provided for compatibility with old ini files
-  { "analysisW", ArgInt, (LPVOID) &dummy, FALSE },
-  { "analysisH", ArgInt, (LPVOID) &dummy, FALSE },
-  { "commentX", ArgX,   (LPVOID) &wpComment.x, TRUE },
-  { "commentY", ArgY,   (LPVOID) &wpComment.y, TRUE },
-  { "commentW", ArgInt, (LPVOID) &wpComment.width, TRUE },
-  { "commentH", ArgInt, (LPVOID) &wpComment.height, TRUE },
-  { "tagsX", ArgX,   (LPVOID) &wpTags.x, TRUE },
-  { "tagsY", ArgY,   (LPVOID) &wpTags.y, TRUE },
-  { "tagsW", ArgInt, (LPVOID) &wpTags.width, TRUE },
-  { "tagsH", ArgInt, (LPVOID) &wpTags.height, TRUE },
-  { "gameListX", ArgX,   (LPVOID) &wpGameList.x, TRUE },
-  { "gameListY", ArgY,   (LPVOID) &wpGameList.y, TRUE },
-  { "gameListW", ArgInt, (LPVOID) &wpGameList.width, TRUE },
-  { "gameListH", ArgInt, (LPVOID) &wpGameList.height, TRUE },
+  { "minX", ArgZ, (LPVOID) &minX, FALSE, INVALID }, // [HGM] placement: to make suer auxialary windows can be placed
+  { "minY", ArgZ, (LPVOID) &minY, FALSE, INVALID },
+  { "winWidth",  ArgInt, (LPVOID) &wpMain.width,  TRUE, INVALID }, // [HGM] placement: dummies to remember right & bottom
+  { "winHeight", ArgInt, (LPVOID) &wpMain.height, TRUE, INVALID }, //       for attaching auxiliary windows to them
+  { "x", ArgInt, (LPVOID) &wpMain.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "y", ArgInt, (LPVOID) &wpMain.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "icsX", ArgX,   (LPVOID) &wpConsole.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "icsY", ArgY,   (LPVOID) &wpConsole.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "icsW", ArgInt, (LPVOID) &wpConsole.width, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "icsH", ArgInt, (LPVOID) &wpConsole.height, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "analysisX", ArgX,   (LPVOID) &dummy, FALSE, INVALID }, // [HGM] placement: analysis window no longer exists
+  { "analysisY", ArgY,   (LPVOID) &dummy, FALSE, INVALID }, //       provided for compatibility with old ini files
+  { "analysisW", ArgInt, (LPVOID) &dummy, FALSE, INVALID },
+  { "analysisH", ArgInt, (LPVOID) &dummy, FALSE, INVALID },
+  { "commentX", ArgX,   (LPVOID) &wpComment.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "commentY", ArgY,   (LPVOID) &wpComment.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "commentW", ArgInt, (LPVOID) &wpComment.width, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "commentH", ArgInt, (LPVOID) &wpComment.height, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "tagsX", ArgX,   (LPVOID) &wpTags.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "tagsY", ArgY,   (LPVOID) &wpTags.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "tagsW", ArgInt, (LPVOID) &wpTags.width, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "tagsH", ArgInt, (LPVOID) &wpTags.height, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "gameListX", ArgX,   (LPVOID) &wpGameList.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "gameListY", ArgY,   (LPVOID) &wpGameList.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "gameListW", ArgInt, (LPVOID) &wpGameList.width, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "gameListH", ArgInt, (LPVOID) &wpGameList.height, TRUE, (ArgIniType) CW_USEDEFAULT },
   /* [AS] Layout stuff */
-  { "moveHistoryUp", ArgBoolean, (LPVOID) &wpMoveHistory.visible, TRUE },
-  { "moveHistoryX", ArgX,   (LPVOID) &wpMoveHistory.x, TRUE },
-  { "moveHistoryY", ArgY,   (LPVOID) &wpMoveHistory.y, TRUE },
-  { "moveHistoryW", ArgInt, (LPVOID) &wpMoveHistory.width, TRUE },
-  { "moveHistoryH", ArgInt, (LPVOID) &wpMoveHistory.height, TRUE },
+  { "moveHistoryUp", ArgBoolean, (LPVOID) &wpMoveHistory.visible, TRUE, (ArgIniType) TRUE },
+  { "moveHistoryX", ArgX,   (LPVOID) &wpMoveHistory.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "moveHistoryY", ArgY,   (LPVOID) &wpMoveHistory.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "moveHistoryW", ArgInt, (LPVOID) &wpMoveHistory.width, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "moveHistoryH", ArgInt, (LPVOID) &wpMoveHistory.height, TRUE, (ArgIniType) CW_USEDEFAULT },
 
-  { "evalGraphUp", ArgBoolean, (LPVOID) &wpEvalGraph.visible, TRUE },
-  { "evalGraphX", ArgX,   (LPVOID) &wpEvalGraph.x, TRUE },
-  { "evalGraphY", ArgY,   (LPVOID) &wpEvalGraph.y, TRUE },
-  { "evalGraphW", ArgInt, (LPVOID) &wpEvalGraph.width, TRUE },
-  { "evalGraphH", ArgInt, (LPVOID) &wpEvalGraph.height, TRUE },
+  { "evalGraphUp", ArgBoolean, (LPVOID) &wpEvalGraph.visible, TRUE, (ArgIniType) TRUE },
+  { "evalGraphX", ArgX,   (LPVOID) &wpEvalGraph.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "evalGraphY", ArgY,   (LPVOID) &wpEvalGraph.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "evalGraphW", ArgInt, (LPVOID) &wpEvalGraph.width, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "evalGraphH", ArgInt, (LPVOID) &wpEvalGraph.height, TRUE, (ArgIniType) CW_USEDEFAULT },
 
-  { "engineOutputUp", ArgBoolean, (LPVOID) &wpEngineOutput.visible, TRUE },
-  { "engineOutputX", ArgX,   (LPVOID) &wpEngineOutput.x, TRUE },
-  { "engineOutputY", ArgY,   (LPVOID) &wpEngineOutput.y, TRUE },
-  { "engineOutputW", ArgInt, (LPVOID) &wpEngineOutput.width, TRUE },
-  { "engineOutputH", ArgInt, (LPVOID) &wpEngineOutput.height, TRUE },
+  { "engineOutputUp", ArgBoolean, (LPVOID) &wpEngineOutput.visible, TRUE, (ArgIniType) TRUE },
+  { "engineOutputX", ArgX,   (LPVOID) &wpEngineOutput.x, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "engineOutputY", ArgY,   (LPVOID) &wpEngineOutput.y, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "engineOutputW", ArgInt, (LPVOID) &wpEngineOutput.width, TRUE, (ArgIniType) CW_USEDEFAULT },
+  { "engineOutputH", ArgInt, (LPVOID) &wpEngineOutput.height, TRUE, (ArgIniType) CW_USEDEFAULT },
 
-  { NULL, ArgNone, NULL, FALSE }
+  { NULL, ArgNone, NULL, FALSE, INVALID }
 };
 
 
@@ -1908,6 +1913,39 @@ LoadAllSounds()
   }
 }
 
+void
+SetDefaultsFromList()
+{ // [HGM] ini: take defaults from argDescriptor list
+  int i;
+
+  for(i=0; argDescriptors[i].argName != NULL; i++) {
+    if(argDescriptors[i].defaultValue != INVALID)
+      switch(argDescriptors[i].argType) {
+        case ArgBoolean:
+        case ArgTrue:
+        case ArgFalse:
+          *(Boolean *) argDescriptors[i].argLoc = (int)argDescriptors[i].defaultValue;
+          break;
+        case ArgInt:
+        case ArgX:
+        case ArgY:
+        case ArgZ:
+          *(int *) argDescriptors[i].argLoc = (int)argDescriptors[i].defaultValue;
+          break;
+        case ArgString:
+        case ArgFilename:
+        case ArgSettingsFilename:
+          *(char **) argDescriptors[i].argLoc = (char *)argDescriptors[i].defaultValue;
+          break;
+        case ArgBoardSize:
+          *(BoardSize *) argDescriptors[i].argLoc = (BoardSize)argDescriptors[i].defaultValue;
+          break;
+        case ArgFloat: // floats cannot be casted to int without precision loss
+        default: ; // some arg types cannot be initialized through table
+    }
+  }
+}
+
 VOID
 InitAppData(LPSTR lpCmdLine)
 {
@@ -1918,6 +1956,18 @@ InitAppData(LPSTR lpCmdLine)
   programName = szAppName;
 
   /* Initialize to defaults */
+  SetDefaultsFromList(); // this sets most defaults
+
+  // some parameters for which there are no options!
+  appData.Iconic = FALSE; /*unused*/
+  appData.cmailGameName = "";
+  appData.icsEngineAnalyze = FALSE;
+
+  // float: casting to int is not harmless, so default cannot be contained in table
+  appData.timeDelay = TIME_DELAY;
+
+  // colors have platform-dependent option format and internal representation
+  // their setting and parsing must remain in front-end
   lightSquareColor = ParseColorName(LIGHT_SQUARE_COLOR);
   darkSquareColor = ParseColorName(DARK_SQUARE_COLOR);
   whitePieceColor = ParseColorName(WHITE_PIECE_COLOR);
@@ -1925,89 +1975,15 @@ InitAppData(LPSTR lpCmdLine)
   highlightSquareColor = ParseColorName(HIGHLIGHT_SQUARE_COLOR);
   premoveHighlightColor = ParseColorName(PREMOVE_HIGHLIGHT_COLOR);
   consoleBackgroundColor = ParseColorName(COLOR_BKGD);
+  // the following must be moved out of appData to front-end variables
+  appData.evalHistColorWhite = ParseColorName( "#FFFFB0" );
+  appData.evalHistColorBlack = ParseColorName( "#AD5D3D" );
+  appData.highlightArrowColor = ParseColorName( "#FFFF80" );
+
+  // some complex, platform-dependent stuff
   SetDefaultTextAttribs();
   SetDefaultSounds();
-  appData.movesPerSession = MOVES_PER_SESSION;
-  appData.initString = INIT_STRING;
-  appData.secondInitString = INIT_STRING;
-  appData.firstComputerString = COMPUTER_STRING;
-  appData.secondComputerString = COMPUTER_STRING;
-  appData.firstChessProgram = FIRST_CHESS_PROGRAM;
-  appData.secondChessProgram = SECOND_CHESS_PROGRAM;
-  appData.firstPlaysBlack = FALSE;
-  appData.noChessProgram = FALSE;
-  chessProgram = FALSE;
-  appData.firstHost = FIRST_HOST;
-  appData.secondHost = SECOND_HOST;
-  appData.firstDirectory = FIRST_DIRECTORY;
-  appData.secondDirectory = SECOND_DIRECTORY;
-  appData.bitmapDirectory = "";
-  appData.remoteShell = REMOTE_SHELL;
-  appData.remoteUser = "";
-  appData.timeDelay = TIME_DELAY;
-  appData.timeControl = TIME_CONTROL;
-  appData.timeIncrement = TIME_INCREMENT;
-  appData.icsActive = FALSE;
-  appData.icsHost = "";
-  appData.icsPort = ICS_PORT;
-  appData.icsCommPort = ICS_COMM_PORT;
-  appData.icsLogon = ICS_LOGON;
-  appData.icsHelper = "";
-  appData.useTelnet = FALSE;
-  appData.telnetProgram = TELNET_PROGRAM;
-  appData.gateway = "";
-  appData.loadGameFile = "";
-  appData.loadGameIndex = 0;
-  appData.saveGameFile = "";
-  appData.autoSaveGames = FALSE;
-  appData.loadPositionFile = "";
-  appData.loadPositionIndex = 1;
-  appData.savePositionFile = "";
-  appData.matchMode = FALSE;
-  appData.matchGames = 0;
-  appData.monoMode = FALSE;
-  appData.debugMode = FALSE;
-  appData.clockMode = TRUE;
-  boardSize = (BoardSize) -1; /* determine by screen size */
-  appData.Iconic = FALSE; /*unused*/
-  appData.searchTime = "";
-  appData.searchDepth = 0;
-  appData.showCoords = FALSE;
-  appData.ringBellAfterMoves = TRUE; /*obsolete in WinBoard*/
-  appData.autoCallFlag = FALSE;
-  appData.flipView = FALSE;
-  appData.autoFlipView = TRUE;
-  appData.cmailGameName = "";
-  appData.alwaysPromoteToQueen = FALSE;
-  appData.oldSaveStyle = FALSE;
-  appData.quietPlay = FALSE;
-  appData.showThinking = FALSE;
-  appData.ponderNextMove = TRUE;
-  appData.periodicUpdates = TRUE;
-  appData.popupExitMessage = TRUE;
-  appData.popupMoveErrors = FALSE;
-  appData.autoObserve = FALSE;
-  appData.autoComment = FALSE;
-  appData.animate = TRUE;
-  appData.animSpeed = 10;
-  appData.animateDragging = TRUE;
-  appData.highlightLastMove = TRUE;
-  appData.getMoveList = TRUE;
-  appData.testLegality = TRUE;
-  appData.premove = TRUE;
-  appData.premoveWhite = FALSE;
-  appData.premoveWhiteText = "";
-  appData.premoveBlack = FALSE;
-  appData.premoveBlackText = "";
-  appData.icsAlarm = TRUE;
-  appData.icsAlarmTime = 5000;
-  appData.autoRaiseBoard = TRUE;
-  appData.localLineEditing = TRUE;
-  appData.colorize = TRUE;
-  appData.reuseFirst = TRUE;
-  appData.reuseSecond = TRUE;
-  appData.blindfold = FALSE;
-  appData.icsEngineAnalyze = FALSE;
+
   memset(&dcb, 0, sizeof(DCB)); // required by VS 2002 +
   dcb.DCBlength = sizeof(DCB);
   dcb.BaudRate = 9600;
@@ -2026,128 +2002,6 @@ InitAppData(LPSTR lpCmdLine)
   dcb.ByteSize = 7;
   dcb.Parity = SPACEPARITY;
   dcb.StopBits = ONESTOPBIT;
-  settingsFileName = SETTINGS_FILE;
-  saveSettingsOnExit = TRUE;
-  wpMain.x = CW_USEDEFAULT;
-  wpMain.y = CW_USEDEFAULT;
-  wpComment.x = CW_USEDEFAULT; 
-  wpComment.y = CW_USEDEFAULT; 
-  wpComment.width = CW_USEDEFAULT;
-  wpComment.height = CW_USEDEFAULT;
-  wpTags.x = CW_USEDEFAULT; 
-  wpTags.y = CW_USEDEFAULT; 
-  wpTags.width = CW_USEDEFAULT;
-  wpTags.height = CW_USEDEFAULT;
-  icsTextMenuString = ICS_TEXT_MENU_DEFAULT;
-  icsNames = ICS_NAMES;
-  firstChessProgramNames = FCP_NAMES;
-  secondChessProgramNames = SCP_NAMES;
-  appData.initialMode = "";
-  appData.variant = "normal";
-  appData.firstProtocolVersion = PROTOVER;
-  appData.secondProtocolVersion = PROTOVER;
-  appData.showButtonBar = TRUE;
-
-   /* [AS] New properties (see comments in header file) */
-  appData.firstScoreIsAbsolute = FALSE;
-  appData.secondScoreIsAbsolute = FALSE;
-  appData.saveExtendedInfoInPGN = FALSE;
-  appData.hideThinkingFromHuman = FALSE;
-  appData.liteBackTextureFile = "";
-  appData.liteBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
-  appData.darkBackTextureFile = "";
-  appData.darkBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
-  appData.renderPiecesWithFont = "";
-  appData.fontToPieceTable = "";
-  appData.fontBackColorWhite = 0;
-  appData.fontForeColorWhite = 0;
-  appData.fontBackColorBlack = 0;
-  appData.fontForeColorBlack = 0;
-  appData.fontPieceSize = 80;
-  appData.overrideLineGap = 1;
-  appData.adjudicateLossThreshold = 0;
-  appData.delayBeforeQuit = 0;
-  appData.delayAfterQuit = 0;
-  appData.nameOfDebugFile = "winboard.debug";
-  appData.pgnEventHeader = "Computer Chess Game";
-  appData.defaultFrcPosition = -1;
-  appData.gameListTags = GLT_DEFAULT_TAGS;
-  appData.saveOutOfBookInfo = TRUE;
-  appData.showEvalInMoveHistory = TRUE;
-  appData.evalHistColorWhite = ParseColorName( "#FFFFB0" );
-  appData.evalHistColorBlack = ParseColorName( "#AD5D3D" );
-  appData.highlightMoveWithArrow = FALSE;
-  appData.highlightArrowColor = ParseColorName( "#FFFF80" );
-  appData.useStickyWindows = TRUE;
-  appData.adjudicateDrawMoves = 0;
-  appData.autoDisplayComment = TRUE;
-  appData.autoDisplayTags = TRUE;
-  appData.firstIsUCI = FALSE;
-  appData.secondIsUCI = FALSE;
-  appData.firstHasOwnBookUCI = TRUE;
-  appData.secondHasOwnBookUCI = TRUE;
-  appData.polyglotDir = "";
-  appData.usePolyglotBook = FALSE;
-  appData.polyglotBook = "";
-  appData.defaultHashSize = 64;
-  appData.defaultCacheSizeEGTB = 4;
-  appData.defaultPathEGTB = "c:\\egtb";
-  appData.firstOptions = "";
-  appData.secondOptions = "";
-
-  InitWindowPlacement( &wpGameList );
-  InitWindowPlacement( &wpMoveHistory );
-  InitWindowPlacement( &wpEvalGraph );
-  InitWindowPlacement( &wpEngineOutput );
-  InitWindowPlacement( &wpConsole );
-
-  /* [HGM] User-selectable board size, adjudication control, miscellaneous */
-  appData.NrFiles      = -1;
-  appData.NrRanks      = -1;
-  appData.holdingsSize = -1;
-  appData.testClaims   = FALSE;
-  appData.checkMates   = FALSE;
-  appData.materialDraws= FALSE;
-  appData.trivialDraws = FALSE;
-  appData.ruleMoves    = 51;
-  appData.drawRepeats  = 6;
-  appData.matchPause   = 10000;
-  appData.alphaRank    = FALSE;
-  appData.allWhite     = FALSE;
-  appData.upsideDown   = FALSE;
-  appData.serverPause  = 15;
-  appData.serverMovesName   = NULL;
-  appData.suppressLoadMoves = FALSE;
-  appData.firstTimeOdds  = 1;
-  appData.secondTimeOdds = 1;
-  appData.firstAccumulateTC  = 1; // combine previous and current sessions
-  appData.secondAccumulateTC = 1;
-  appData.firstNPS  = -1; // [HGM] nps: use wall-clock time
-  appData.secondNPS = -1;
-  appData.engineComments = 1;
-  appData.smpCores = 1; // [HGM] SMP: max nr of cores
-  appData.egtFormats = "";
-
-#ifdef ZIPPY
-  appData.zippyTalk = ZIPPY_TALK;
-  appData.zippyPlay = ZIPPY_PLAY;
-  appData.zippyLines = ZIPPY_LINES;
-  appData.zippyPinhead = ZIPPY_PINHEAD;
-  appData.zippyPassword = ZIPPY_PASSWORD;
-  appData.zippyPassword2 = ZIPPY_PASSWORD2;
-  appData.zippyWrongPassword = ZIPPY_WRONG_PASSWORD;
-  appData.zippyAcceptOnly = ZIPPY_ACCEPT_ONLY;
-  appData.zippyUseI = ZIPPY_USE_I;
-  appData.zippyBughouse = ZIPPY_BUGHOUSE;
-  appData.zippyNoplayCrafty = ZIPPY_NOPLAY_CRAFTY;
-  appData.zippyGameEnd = ZIPPY_GAME_END;
-  appData.zippyGameStart = ZIPPY_GAME_START;
-  appData.zippyAdjourn = ZIPPY_ADJOURN;
-  appData.zippyAbort = ZIPPY_ABORT;
-  appData.zippyVariants = ZIPPY_VARIANTS;
-  appData.zippyMaxGames = ZIPPY_MAX_GAMES;
-  appData.zippyReplayTimeout = ZIPPY_REPLAY_TIMEOUT;
-#endif
 
   /* Point font array elements to structures and
      parse default font names */
@@ -2278,9 +2132,12 @@ InitMenuChecks()
 				     MF_CHECKED : MF_UNCHECKED));
 }
 
-// [HGM] args: these two cases taken out to stay in front-end
-      void SaveFontArg(FILE *f, ArgDescriptor *ad)
-      {
+// [HGM] args: these three cases taken out to stay in front-end
+void
+SaveFontArg(FILE *f, ArgDescriptor *ad)
+{	// in WinBoard every board size has its own font, and the "argLoc" identifies the table,
+	// while the curent board size determines the element. This system should be ported to XBoard.
+	// What the table contains pointers to, and how to print the font description, remains platform-dependent
         int bs;
 	for (bs=0; bs<NUM_SIZES; bs++) {
 	  MyFontParams *mfp = &font[bs][(int) ad->argLoc]->mfp;
@@ -2296,8 +2153,9 @@ InitMenuChecks()
 	}
       }
 
-      void SaveAttribsArg(FILE *f, ArgDescriptor *ad)
-      {
+void
+SaveAttribsArg(FILE *f, ArgDescriptor *ad)
+{	// here the "argLoc" defines a table index. It could have contained the 'ta' pointer itself, though
 	MyTextAttribs* ta = &textAttribs[(ColorClass)ad->argLoc];
 	fprintf(f, "/%s=\"%s%s%s%s%s#%02lx%02lx%02lx\"\n", ad->argName,
           (ta->effects & CFE_BOLD) ? "b" : "",
@@ -2308,7 +2166,16 @@ InitMenuChecks()
 	  ta->color&0xff, (ta->color >> 8)&0xff, (ta->color >> 16)&0xff);
       }
 
-int MainWindowUp()
+void
+SaveColor(FILE *f, ArgDescriptor *ad)
+{	// in WinBoard the color is an int and has to be converted to text. In X it would be a string already?
+	COLORREF color = *(COLORREF *)ad->argLoc;
+	fprintf(f, "/%s=#%02lx%02lx%02lx\n", ad->argName, 
+	  color&0xff, (color>>8)&0xff, (color>>16)&0xff);
+}
+
+int
+MainWindowUp()
 { // [HGM] args: allows testing if main window is realized from back-end
   return hwndMain != NULL;
 }
@@ -2409,14 +2276,9 @@ SaveSettings(char* name)
       if (!*(Boolean *)ad->argLoc) fprintf(f, "/%s\n", ad->argName);
       break;
     case ArgColor:
-      {
-	COLORREF color = *(COLORREF *)ad->argLoc;
-	fprintf(f, "/%s=#%02lx%02lx%02lx\n", ad->argName, 
-	  color&0xff, (color>>8)&0xff, (color>>16)&0xff);
-      }
+      SaveColor(f, ad);
       break;
     case ArgAttribs:
-      SaveAttribsArg(f, ad);
       break;
     case ArgFilename:
       if (strchr(*(char **)ad->argLoc, '\"')) {

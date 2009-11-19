@@ -1180,11 +1180,11 @@ NiceTime(int x)
 }
 
 #define JAWS_ARGS \
-  { "beepOffBoard", ArgInt, (LPVOID) beeps, TRUE },\
-  { "beepEmpty", ArgInt, (LPVOID) (beeps+1), TRUE },\
-  { "beepWhite", ArgInt, (LPVOID) (beeps+2), TRUE },\
-  { "beepBlack", ArgInt, (LPVOID) (beeps+3), TRUE },\
-  { "beepHoldings", ArgInt, (LPVOID) (beeps+4), TRUE },\
+  { "beepOffBoard", ArgInt, (LPVOID) beeps, TRUE, (ArgIniType) 1 },\
+  { "beepEmpty", ArgInt, (LPVOID) (beeps+1), TRUE, (ArgIniType) 0 },\
+  { "beepWhite", ArgInt, (LPVOID) (beeps+2), TRUE, (ArgIniType) 0 },\
+  { "beepBlack", ArgInt, (LPVOID) (beeps+3), TRUE, (ArgIniType) 0 },\
+  { "beepHoldings", ArgInt, (LPVOID) (beeps+4), TRUE, (ArgIniType) 0 },\
 
 #define JAWS_ALT_INTERCEPT \
 	    if(suppressOneKey) {\
