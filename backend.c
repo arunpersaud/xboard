@@ -5350,7 +5350,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
         moveType = PromoCharToMoveType(WhiteOnMove(currentMove), promoChar);
 
     /* [HGM] convert drag-and-drop piece drops to standard form */
-    if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) {
+    if( (fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) && fromY != DROP_RANK ){
          moveType = WhiteOnMove(currentMove) ? WhiteDrop : BlackDrop;
 	   if(appData.debugMode) fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n", 
 		moveType, currentMove, fromX, fromY, boards[currentMove][fromY][fromX]);
