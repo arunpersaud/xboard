@@ -6224,15 +6224,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 } else moveCount = 6;
 	    }
 	  }
-	  
-	  if (appData.debugMode) { int i;
-	    fprintf(debugFP, "repeat test fmm=%d bmm=%d ep=%d, reps=%d\n",
-		    forwardMostMove, backwardMostMove, epStatus[backwardMostMove],
-		    appData.drawRepeats);
-	    for( i=forwardMostMove; i>=backwardMostMove; i-- )
-	      fprintf(debugFP, "%d ep=%d\n", i, epStatus[i]);
-	    
-	  }
 
                 /* Check for rep-draws */
                 count = 0;

@@ -863,10 +863,6 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
     if ((flags & F_WHITE_ON_MOVE) != 0) {
         ff = castlingRights[2]; /* King file if we have any rights */
         if(ff > 0 && board[0][ff] == WhiteKing) {
-    if (appData.debugMode) {
-        fprintf(debugFP, "FRC castling, %d %d %d %d %d %d\n",
-                castlingRights[0],castlingRights[1],ff,castlingRights[3],castlingRights[4],castlingRights[5]);
-    }
             ft = castlingRights[0]; /* Rook file if we have H-side rights */
             left  = ff+1;
             right = BOARD_RGHT-2;
@@ -1034,9 +1030,6 @@ void LegalityTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
 {
     register LegalityTestClosure *cl = (LegalityTestClosure *) closure;
 
-//    if (appData.debugMode) {
-//        fprintf(debugFP, "Legality test: %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
-//    }
     if(board[rt][ft] != EmptySquare || kind==WhiteCapturesEnPassant || kind==BlackCapturesEnPassant)
 	cl->captures++; // [HGM] losers: count legal captures
     if (rf == cl->rf && ff == cl->ff && rt == cl->rt && ft == cl->ft)
@@ -1051,11 +1044,6 @@ ChessMove LegalityTest(board, flags, epfile, castlingRights, rf, ff, rt, ft, pro
 {
     LegalityTestClosure cl; ChessSquare piece = board[rf][ff];
     
-    if (appData.debugMode) {
-        int i;
-        for(i=0; i<6; i++) fprintf(debugFP, "%d ", castlingRights[i]);
-        fprintf(debugFP, "Legality test? %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
-    }
     /* [HGM] Lance, Cobra and Falcon are wildcard pieces; consider all their moves legal */
     /* (perhaps we should disallow moves that obviously leave us in check?)              */
     if(piece == WhiteFalcon || piece == BlackFalcon ||
@@ -1160,7 +1148,7 @@ int MateTest(board, flags, epfile, castlingRights)
 	    else hisPieces++;
 	}
     }
-    if(appData.debugMode) fprintf(debugFP, "MateTest: K=%d, my=%d, his=%d\n", nrKing, myPieces, hisPieces);
+
     switch(gameInfo.variant) { // [HGM] losers: extinction wins
 	case VariantShatranj:
 		if(hisPieces == 1) return myPieces > 1 ? MT_BARE : MT_DRAW;
@@ -1240,11 +1228,7 @@ void Disambiguate(board, flags, epfile, closure)
     closure->count = 0;
     closure->rf = closure->ff = closure->rt = closure->ft = 0;
     closure->kind = ImpossibleMove;
-    if (appData.debugMode) {
-        fprintf(debugFP, "Disambiguate in:  %d(%d,%d)-(%d,%d) = %d (%c)\n",
-                             closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
-                             closure->promoCharIn, closure->promoCharIn >= ' ' ? closure->promoCharIn : '-');
-    }
+
     GenLegal(board, flags, epfile, initialRights, DisambiguateCallback, (VOIDSTAR) closure);
     if (closure->count == 0) {
 	/* See if it's an illegal move due to check */
@@ -1253,13 +1237,6 @@ void Disambiguate(board, flags, epfile, closure)
 		 (VOIDSTAR) closure);	
 	if (closure->count == 0) {
 	    /* No, it's not even that */
-    if (appData.debugMode) { int i, j;
-	for(i=BOARD_HEIGHT-1; i>=0; i--) {
-		for(j=0; j<BOARD_WIDTH; j++)
-		        fprintf(debugFP, "%3d", (int) board[i][j]);
-	        fprintf(debugFP, "\n");
-	}
-    }
 	    return;
 	}
     }
@@ -1323,11 +1300,6 @@ void Disambiguate(board, flags, epfile, closure)
     if(closure->kind == IllegalMove)
     /* [HGM] might be a variant we don't understand, pass on promotion info */
         closure->promoChar = ToLower(closure->promoCharIn);
-    if (appData.debugMode) {
-        fprintf(debugFP, "Disambiguate out: %d(%d,%d)-(%d,%d) = %d (%c)\n",
-        closure->piece,closure->ff,closure->rf,closure->ft,closure->rt,closure->promoChar,
-	closure->promoChar >= ' ' ? closure->promoChar:'-');
-    }
 }
 
 
@@ -1409,8 +1381,6 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
     piece = board[rf][ff];
     if(PieceToChar(piece)=='~') piece = (ChessSquare)(DEMOTED piece);
 
-  if (appData.debugMode)
-          fprintf(debugFP, "CoordsToAlgebraic, piece=%d (%d,%d)-(%d,%d) %c\n", (int)piece,ff,rf,ft,rt,promoChar >= ' ' ? promoChar : '-');
     switch (piece) {
       case WhitePawn:
       case BlackPawn:
@@ -1441,8 +1411,6 @@ ChessMove CoordsToAlgebraic(board, flags, epfile,
 	}
 	/* Use promotion suffix style "=Q" */
 	*outp = NULLCHAR;
-  if (appData.debugMode)
-          fprintf(debugFP, "movetype=%d, promochar=%d=%c\n", (int)kind, promoChar, promoChar >= ' ' ? promoChar : '-');
         if (promoChar != NULLCHAR) {
             if(gameInfo.variant == VariantShogi) {
                 /* [HGM] ... but not in Shogi! */
