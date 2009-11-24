@@ -366,6 +366,13 @@ Widget EngineOutputCreate(name, text)
 
     XtRealizeWidget(shell);
 
+    if(wpEngineOutput.width > 0) {
+      engineOutputW = wpEngineOutput.width;
+      engineOutputH = wpEngineOutput.height;
+      engineOutputX = wpEngineOutput.x;
+      engineOutputY = wpEngineOutput.y;
+    }
+
     if (engineOutputX == -1) {
 	int xx, yy;
 	Window junk;
@@ -499,6 +506,10 @@ void EngineOutputPopDown()
     XtSetArg(args[j], XtNwidth, &engineOutputW); j++;
     XtSetArg(args[j], XtNheight, &engineOutputH); j++;
     XtGetValues(engineOutputShell, args, j);
+    wpEngineOutput.x = engineOutputX - 4;
+    wpEngineOutput.y = engineOutputY - 23;
+    wpEngineOutput.width = engineOutputW;
+    wpEngineOutput.height = engineOutputH;
     XtPopdown(engineOutputShell);
     XSync(xDisplay, False);
     j=0;

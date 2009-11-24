@@ -78,7 +78,7 @@ extern char *getenv();
 
 #define _LL_ 100
 
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
+extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, historyShell;
 extern Display *xDisplay;
 extern int squareSize;
 extern Pixmap xMarkPixmap;
@@ -94,7 +94,7 @@ struct History{
 struct History *hist=0;
 String dots=" ... ";
 Position gameHistoryX, gameHistoryY;
-Dimension gameHistoryW;
+Dimension gameHistoryW, gameHistoryH;
 
 void
 HistoryPopDown(w, client_data, call_data)
@@ -104,6 +104,19 @@ HistoryPopDown(w, client_data, call_data)
   Arg args[16];
   int j;
   if(hist) {
+
+    // [HGM] remember old position
+    j = 0;
+    XtSetArg(args[j], XtNx, &gameHistoryX);  j++;
+    XtSetArg(args[j], XtNy, &gameHistoryY);  j++;
+    XtSetArg(args[j], XtNwidth, &gameHistoryW);  j++;
+    XtSetArg(args[j], XtNheight, &gameHistoryH);  j++;
+    XtGetValues(hist->sh, args, j);
+    wpMoveHistory.x = gameHistoryX - 4;
+    wpMoveHistory.y = gameHistoryY - 23;
+    wpMoveHistory.width  = gameHistoryW;
+    wpMoveHistory.height = gameHistoryH;
+
     XtPopdown(hist->sh);
     hist->Up=False;
   }
@@ -283,11 +296,11 @@ Widget HistoryCreate()
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNallowShellResize, True);  j++;
 #if TOPLEVEL
-    hist->sh =
+    hist->sh = historyShell =
       XtCreatePopupShell(_("Move list"), topLevelShellWidgetClass,
 			 shellWidget, args, j);
 #else
-    hist->sh =
+    hist->sh = historyShell =
       XtCreatePopupShell(_("Move list"), transientShellWidgetClass,
 			 shellWidget, args, j);
 #endif
@@ -304,10 +317,8 @@ Widget HistoryCreate()
 
     form =
       XtCreateManagedWidget("form", formWidgetClass, layout, args, j);
-     j=0;
 
     j = 0;
-
     XtSetArg(args[j], XtNtop, XtChainTop);  j++;
     XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
@@ -396,16 +407,22 @@ Widget HistoryCreate()
       strcpy(hist->black[i],"");
      }
 
+    if(wpMoveHistory.width > 0) {
+      gameHistoryW = wpMoveHistory.width;
+      gameHistoryH = wpMoveHistory.height;
+      gameHistoryX = wpMoveHistory.x;
+      gameHistoryY = wpMoveHistory.y;
+    }
+
   // [HGM] restore old position
+  if(gameHistoryW > 0) {
   j = 0;
-  XtSetArg(args[j], XtNx, &gameHistoryX);  j++;
-  XtSetArg(args[j], XtNy, &gameHistoryY);  j++;
-  XtSetArg(args[j], XtNwidth, &gameHistoryW);  j++;
-  XtGetValues(shellWidget, args, j);
-  j = 0;
-  XtSetArg(args[j], XtNx, gameHistoryX + gameHistoryW);  j++;
+    XtSetArg(args[j], XtNx, gameHistoryX);  j++;
   XtSetArg(args[j], XtNy, gameHistoryY);  j++;
+    XtSetArg(args[j], XtNwidth, gameHistoryW);  j++;
+    XtSetArg(args[j], XtNheight, gameHistoryH);  j++;
   XtSetValues(hist->sh, args, j);
+  }
     XtRealizeWidget(hist->sh);
 
     return hist->sh;
@@ -447,3 +464,8 @@ HistoryShowProc(w, event, prms, nprms)
   ToNrEvent(currentMove);
 }
 
+Boolean
+MoveHistoryIsUp()
+{
+  return hist && hist->Up;
+}

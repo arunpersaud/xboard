@@ -27,6 +27,8 @@ void HistoryShowProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void HistoryPopDown P((Widget w, XtPointer client_data,
 		       XtPointer call_data));
+Boolean MoveHistoryIsUp P((void));
 
+extern Widget historyShell;
 #endif /* _XHISTL_H */
  

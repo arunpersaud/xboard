@@ -27,4 +27,5 @@
 void EditTagsProc P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 
+extern Widget editTagsShell, tagsShell;
 #endif

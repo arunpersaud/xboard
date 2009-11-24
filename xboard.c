@@ -466,6 +466,7 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
+Widget historyShell, evalGraphShell, gameListShell;
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
 Font clockFontID, coordFontID, countFontID;
@@ -1250,6 +1251,7 @@ BoardToTop()
 // these two must some day move to frontend.h, when they are implemented
 Boolean EvalGraphIsUp();
 Boolean MoveHistoryIsUp();
+Boolean GameListIsUp();
 
 // The option definition and parsing code common to XBoard and WinBoard is collected in this file
 #include "args.h"
@@ -1385,19 +1387,45 @@ ParseCommPortSettings(char *s)
 { // no such option in XBoard (yet)
 }
 
+extern Widget engineOutputShell;
+extern Widget tagsShell, editTagsShell;
+void
+GetActualPlacement(Widget wg, WindowPlacement *wp)
+{
+  Arg args[16];
+  Dimension w, h;
+  Position x, y;
+  int i;
+
+  if(!wg) return;
+  
+    i = 0;
+    XtSetArg(args[i], XtNx, &x); i++;
+    XtSetArg(args[i], XtNy, &y); i++;
+    XtSetArg(args[i], XtNwidth, &w); i++;
+    XtSetArg(args[i], XtNheight, &h); i++;
+    XtGetValues(wg, args, i);
+    wp->x = x - 4;
+    wp->y = y - 23;
+    wp->height = h;
+    wp->width = w;
+}
+
 void
 GetWindowCoords()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
-#if 0
   // In XBoard this will have to wait until awareness of window parameters is implemented
-  GetActualPlacement(hwndMain, &wpMain);
+  GetActualPlacement(shellWidget, &wpMain);
+  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
+  if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
+  if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
+  if(commentShell) GetActualPlacement(commentShell, &wpComment);
+  else             GetActualPlacement(editShell,    &wpComment);
+  if(tagsShell) GetActualPlacement(tagsShell, &wpTags);
+  else      GetActualPlacement(editTagsShell, &wpTags);
+#if 0
   GetActualPlacement(hwndConsole, &wpConsole);
-  GetActualPlacement(commentDialog, &wpComment);
-  GetActualPlacement(editTagsDialog, &wpTags);
-  GetActualPlacement(gameListDialog, &wpGameList);
-  GetActualPlacement(moveHistoryDialog, &wpMoveHistory);
   GetActualPlacement(evalGraphDialog, &wpEvalGraph);
-  GetActualPlacement(engineOutputDialog, &wpEngineOutput);
 #endif
 }
 
@@ -1428,12 +1456,6 @@ void
 EnsureOnScreen(int *x, int *y, int minX, int minY)
 {
   return;
-}
-
-Boolean
-MoveHistoryIsUp()
-{
-  return True; // still have to fix this *****************************************************************************
 }
 
 Boolean
@@ -2165,6 +2187,12 @@ XBoard square size (hint): %d\n\
     XtSetValues(boardWidget, args, 5);
 
     XtRealizeWidget(shellWidget);
+
+    if(wpMain.x > 0) {
+      XtSetArg(args[0], XtNx, wpMain.x);
+      XtSetArg(args[1], XtNy, wpMain.y);
+      XtSetValues(shellWidget, args, 2);
+    }
 
     /*
      * Correct the width of the message and title widgets.
@@ -4560,6 +4588,14 @@ Widget CommentCreate(name, text, mutable, callback, lines)
 #endif /*!NOTDEF*/
 	if (commentY < 0) commentY = 0; /*avoid positioning top offscreen*/
     }
+
+    if(wpComment.width > 0) {
+      commentX = wpComment.x;
+      commentY = wpComment.y;
+      commentW = wpComment.width;
+      commentH = wpComment.height;
+    }
+
     j = 0;
     XtSetArg(args[j], XtNheight, commentH);  j++;
     XtSetArg(args[j], XtNwidth, commentW);  j++;

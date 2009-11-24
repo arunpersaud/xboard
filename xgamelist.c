@@ -91,7 +91,7 @@ extern char *getenv();
 #endif
 
 
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
+extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell;
 extern Display *xDisplay;
 extern int squareSize;
 extern Pixmap xMarkPixmap;
@@ -137,11 +137,11 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNallowShellResize, True);  j++;
 #if TOPLEVEL
-    shell =
+    shell = gameListShell =
       XtCreatePopupShell(name, topLevelShellWidgetClass,
 			 shellWidget, args, j);
 #else
-    shell =
+    shell = gameListShell =
       XtCreatePopupShell(name, transientShellWidgetClass,
 			 shellWidget, args, j);
 #endif
@@ -217,6 +217,13 @@ GameListCreate(name, callback, client_data)
     b_close =
       XtCreateManagedWidget(_("close"), commandWidgetClass, form, args, j);
     XtAddCallback(b_close, XtNcallback, callback, client_data);
+
+    if(wpGameList.width > 0) {
+	glc->x = wpGameList.x;
+	glc->y = wpGameList.y;
+	glc->w = wpGameList.width;
+	glc->h = wpGameList.height;
+    }
 
     if (glc->x == -1) {
 	Position y1;
@@ -455,6 +462,10 @@ GameListPopDown()
     XtSetArg(args[j], XtNheight, &glc->h); j++;
     XtSetArg(args[j], XtNwidth, &glc->w); j++;
     XtGetValues(glc->shell, args, j);
+    wpGameList.x = glc->x - 4;
+    wpGameList.y = glc->y - 23;
+    wpGameList.width = glc->w;
+    wpGameList.height = glc->h;
     XtPopdown(glc->shell);
     XtSetKeyboardFocus(shellWidget, formWidget);
     glc->up = False;
@@ -472,4 +483,10 @@ GameListHighlight(index)
     if (glc == NULL || !glc->up) return;
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
     XawListHighlight(listwidg, index - 1);
+}
+
+Boolean
+GameListIsUp()
+{
+    return glc && glc->up;
 }
