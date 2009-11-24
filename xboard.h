@@ -54,9 +54,9 @@
 #define ICS_LOGON    ".icsrc"
 #define INFOFILE     "xboard.info"
 #define MANPAGE      "xboard.6"
-#define CLOCK_FONT   "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
-#define COORD_FONT   "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
-#define DEFAULT_FONT "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*"
+#define CLOCK_FONT_NAME         "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
+#define COORD_FONT_NAME         "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
+#define DEFAULT_FONT_NAME       "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*"
 #define COLOR_SHOUT             "green"
 #define COLOR_SSHOUT            "green,black,1"
 #define COLOR_CHANNEL1          "cyan"
@@ -106,8 +106,15 @@ typedef struct {
 #define BORDER_Y_OFFSET 27
 #define FIRST_CHESS_PROGRAM	"fairymax"
 #define SECOND_CHESS_PROGRAM	"fairymax"
-
-#define XBOARD True
+#define FIRST_DIRECTORY         "."
+#define SECOND_DIRECTORY        "."
+#define SOUND_BELL              ""
+#define ICS_NAMES               ""
+#define FCP_NAMES               ""
+#define SCP_NAMES               ""
+#define ICS_TEXT_MENU_DEFAULT   ""
+#define SETTINGS_FILE           "/etc/xboard/xboard.conf"
+#define COLOR_BKGD              "white"
 
 typedef int (*FileProc) P((FILE *f, int n, char *title));
 void CatchDeleteWindow(Widget w, String procname);

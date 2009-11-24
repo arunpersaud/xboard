@@ -121,8 +121,6 @@ VOID ChangeBoardSize(BoardSize newSize);
 BOOL APIENTRY MyCreateFont(HWND hwnd, MyFont *font);
 VOID ErrorPopDown(VOID);
 VOID EnsureOnScreen(int *x, int *y, int minX, int minY);
-typedef char GetFunc(void *getClosure);
-VOID ParseArgs(GetFunc get, void *cl);
 HBITMAP 
 DoLoadBitmap(HINSTANCE hinst, char *piece, int squareSize, char *suffix);
 COLORREF ParseColorName(char *name);
@@ -134,6 +132,7 @@ void InitComboStrings(HANDLE hwndCombo, char **cd);
 BOOLEAN MyLoadSound(MySound *ms);
 BOOLEAN MyPlaySound(MySound *ms);
 VOID ExitArgError(char *msg, char *badArg);
+void SaveSettings(char* name);
 
 /* Constants */
 
@@ -186,15 +185,6 @@ typedef enum {
   W_MoveHist, W_EngineOut, W_GameList, NUM_WINDOWS
 } WindowID;
 
-/* [AS] Layout management */
-typedef struct {
-    Boolean visible;
-    int x;
-    int y;
-    int width;
-    int height;
-} WindowPlacement;
-
 extern WindowPlacement placementTab[NUM_WINDOWS];
 extern HWND hwndTab[NUM_WINDOWS]; // this remains pure front-end.
 
@@ -204,22 +194,14 @@ VOID ReattachAfterMove( LPRECT lprcOldPos, int new_x, int new_y, HWND hWndChild,
 VOID ReattachAfterSize( LPRECT lprcOldPos, int new_w, int new_h, HWND hWndChild, WindowPlacement * pwpChild );
 BOOL GetActualPlacement( HWND hWnd, WindowPlacement * wp );
 
-extern WindowPlacement wpEngineOutput;
-extern WindowPlacement wpEvalGraph;
-extern WindowPlacement wpMoveHistory;
-extern WindowPlacement wpGameList;
-extern WindowPlacement wpTags;
-
 VOID MoveHistoryPopUp();
 VOID MoveHistoryPopDown();
 VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo );
-BOOL MoveHistoryIsUp();
 extern HWND moveHistoryDialog;
 
 VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
 VOID EvalGraphPopUp();
 VOID EvalGraphPopDown();
-Boolean EvalGraphIsUp();
 extern HWND evalGraphDialog;
 
 extern HWND engineOutputDialog;

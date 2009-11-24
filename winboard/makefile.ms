@@ -92,7 +92,7 @@ parser.c: ../parser.l
 
 winboard.obj: winboard.c config.h winboard.h ../common.h ../frontend.h \
         ../backend.h ../moves.h wgamelist.h defaults.h resource.h wclipbrd.h \
-        wedittags.h wsockerr.h woptions.h wsnap.h ../lists.h help.h
+        wedittags.h wsockerr.h woptions.h wsnap.h ../lists.h help.h ../args.h
         $(CC) $(CFLAGS) winboard.c
 
 backend.obj: ../backend.c config.h ../common.h ../frontend.h ../backend.h \
