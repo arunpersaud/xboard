@@ -203,6 +203,7 @@ char *VariantName P((VariantClass v));
 VariantClass StringToVariant P((char *e));
 double u64ToDouble P((u64 value));
 void OutputChatMessage P((int partner, char *mess));
+void EditPositionDone P((Boolean fakeRights));
 
 
 char *StrStr P((char *string, char *match));

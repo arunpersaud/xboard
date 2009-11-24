@@ -5605,6 +5605,7 @@ void CopyPositionProc(w, event, prms, nprms)
      * have a notion of a position that is selected but not copied.
      * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
      */
+    if(gameMode == EditPosition) EditPositionDone(TRUE);
     if (selected_fen_position) free(selected_fen_position);
     selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
     if (!selected_fen_position) return;
