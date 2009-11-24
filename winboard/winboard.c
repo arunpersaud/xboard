@@ -884,6 +884,9 @@ InitMenuChecks()
 #define ICS_TEXT_MENU_SIZE (IDM_CommandXLast - IDM_CommandX + 1)
 #define XBOARD FALSE
 
+#define OPTCHAR "/"
+#define SEPCHAR "="
+
 #include "args.h"
 
 // front-end part of option handling

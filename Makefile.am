@@ -40,5 +40,8 @@ info_TEXINFOS =  xboard.texi
 xboard_TEXINFOS =  copyright.texi 
 man6_MANS = xboard.man
 
+install-data-local: $(srcdir)/xboard.conf
+	$(INSTALL_DATA) $(srcdir)/xboard.conf $(DESTDIR)/etc/xboard
+
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 	$(srcdir)/texi2man $(srcdir)/xboard.texi > xboard.man || (rm -f xboard.man ; false)

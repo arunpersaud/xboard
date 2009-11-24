@@ -1247,6 +1247,8 @@ BoardToTop()
 #define ICS_TEXT_MENU_SIZE 90
 #define SetCurrentDirectory chdir
 #define GetCurrentDirectory(SIZE, NAME) getcwd(NAME, SIZE)
+#define OPTCHAR "-"
+#define SEPCHAR " "
 
 // these two must some day move to frontend.h, when they are implemented
 Boolean EvalGraphIsUp();
@@ -1355,7 +1357,7 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
     default:
       return;
   }
-  fprintf(f, "/%s=%s\n", ad->argName, name);
+  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, name);
 }
 
 void
@@ -1366,20 +1368,20 @@ ExportSounds()
 void
 SaveAttribsArg(FILE *f, ArgDescriptor *ad)
 {	// here the "argLoc" defines a table index. It could have contained the 'ta' pointer itself, though
-	fprintf(f, "/%s=%s\n", ad->argName, (&appData.colorShout)[(int)ad->argLoc]);
+	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, (&appData.colorShout)[(int)ad->argLoc]);
 }
 
 void
 SaveColor(FILE *f, ArgDescriptor *ad)
 {	// in WinBoard the color is an int and has to be converted to text. In X it would be a string already?
 	if(colorVariable[(int)ad->argLoc])
-	fprintf(f, "/%s=%s\n", ad->argName, *(char**)colorVariable[(int)ad->argLoc]);
+	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, *(char**)colorVariable[(int)ad->argLoc]);
 }
 
 void
 SaveBoardSize(FILE *f, char *name, void *addr)
 { // wrapper to shield back-end from BoardSize & sizeInfo
-  fprintf(f, "/%s=%s\n", name, appData.boardSize);
+  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", name, appData.boardSize);
 }
 
 void

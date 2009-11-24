@@ -1264,10 +1264,10 @@ SaveSettings(char* name)
 	if ((strchr(p, '\\') || strchr(p, '\n')) && !strchr(p, '}')) {
 	  /* Quote multiline values or \-containing values
 	     with { } if possible */
-	  fprintf(f, "/%s={%s}\n", ad->argName, p);
+	  fprintf(f, OPTCHAR "%s" SEPCHAR "{%s}\n", ad->argName, p);
 	} else {
 	  /* Else quote with " " */
-	  fprintf(f, "/%s=\"", ad->argName);
+	  fprintf(f, OPTCHAR "%s" SEPCHAR "\"", ad->argName);
 	  while (*p) {
 	    if (*p == '\n') fprintf(f, "\n");
 	    else if (*p == '\r') fprintf(f, "\\r");
@@ -1286,26 +1286,26 @@ SaveSettings(char* name)
       break;
     case ArgInt:
     case ArgZ:
-      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc);
+      fprintf(f, OPTCHAR "%s" SEPCHAR "%d\n", ad->argName, *(int *)ad->argLoc);
       break;
     case ArgX:
-      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - wpMain.x); // [HGM] placement: stor relative value
+      fprintf(f, OPTCHAR "%s" SEPCHAR "%d\n", ad->argName, *(int *)ad->argLoc - wpMain.x); // [HGM] placement: store relative value
       break;
     case ArgY:
-      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - wpMain.y);
+      fprintf(f, OPTCHAR "%s" SEPCHAR "%d\n", ad->argName, *(int *)ad->argLoc - wpMain.y);
       break;
     case ArgFloat:
-      fprintf(f, "/%s=%g\n", ad->argName, *(float *)ad->argLoc);
+      fprintf(f, OPTCHAR "%s" SEPCHAR "%g\n", ad->argName, *(float *)ad->argLoc);
       break;
     case ArgBoolean:
-      fprintf(f, "/%s=%s\n", ad->argName, 
+      fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, 
 	(*(Boolean *)ad->argLoc) ? "true" : "false");
       break;
     case ArgTrue:
-      if (*(Boolean *)ad->argLoc) fprintf(f, "/%s\n", ad->argName);
+      if (*(Boolean *)ad->argLoc) fprintf(f, OPTCHAR "%s\n", ad->argName);
       break;
     case ArgFalse:
-      if (!*(Boolean *)ad->argLoc) fprintf(f, "/%s\n", ad->argName);
+      if (!*(Boolean *)ad->argLoc) fprintf(f, OPTCHAR "%s\n", ad->argName);
       break;
     case ArgColor:
       SaveColor(f, ad);
@@ -1316,9 +1316,9 @@ SaveSettings(char* name)
     case ArgFilename:
       if(*(char**)ad->argLoc == NULL) break; // just in case
       if (strchr(*(char **)ad->argLoc, '\"')) {
-	fprintf(f, "/%s='%s'\n", ad->argName, *(char **)ad->argLoc);
+	fprintf(f, OPTCHAR "%s" SEPCHAR "'%s'\n", ad->argName, *(char **)ad->argLoc);
       } else {
-	fprintf(f, "/%s=\"%s\"\n", ad->argName, *(char **)ad->argLoc);
+	fprintf(f, OPTCHAR "%s" SEPCHAR "\"%s\"\n", ad->argName, *(char **)ad->argLoc);
       }
       break;
     case ArgBoardSize:
