@@ -2461,6 +2461,19 @@ XBoard square size (hint): %d\n\
 		      (XtEventHandler) EventProc, NULL);
     /* end why */
 
+    /* [AS] Restore layout */
+    if( wpMoveHistory.visible ) {
+      HistoryPopUp();
+    }
+
+//    if( wpEvalGraph.visible ) {
+//      EvalGraphPopUp();
+//    }
+
+    if( wpEngineOutput.visible ) {
+      EngineOutputPopUp();
+    }
+
     InitBackEnd2();
 
     if (errorExitStatus == -1) {
