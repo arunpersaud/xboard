@@ -16,7 +16,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 lists.c lists.h \
 		 moves.c moves.h \
 		 parser.l parser.h \
-	     pgntags.c \
+		 pgntags.c \
 	  	 uci.c \
 	 	 xboard.c xboard.h args.h \
 		 xedittags.c xedittags.h \
@@ -26,7 +26,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xhistory.c  xhistory.h \
 		 xoptions.c \
 		 $(ZPY)
-xboard_LDADD = -lm @X_PRE_LIBS@ @XAW_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
+xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ 
 
 EXTRA_DIST = pixmaps bitmaps winboard\
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
