@@ -603,8 +603,8 @@ void EngineCallback(w, client_data, call_data)
 	// read all switches
 	appData.periodicUpdates = ReadToggle(w1);
 //	appData.hideThinkingFromHuman = ReadToggle(w2);
-	appData.firstScoreIsAbsolute  = ReadToggle(w3);
-	appData.secondScoreIsAbsolute = ReadToggle(w4);
+	first.scoreIsAbsolute  = appData.firstScoreIsAbsolute  = ReadToggle(w3);
+	second.scoreIsAbsolute = appData.secondScoreIsAbsolute = ReadToggle(w4);
 	appData.testClaims    = ReadToggle(w5);
 	appData.checkMates    = ReadToggle(w6);
 	appData.materialDraws = ReadToggle(w7);
