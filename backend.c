@@ -13702,7 +13702,7 @@ PositionToFEN(move, overrideCastling)
     *p++ = ' ';
 
   if(q = overrideCastling) { // [HGM] FRC: override castling & e.p fields for non-compliant engines
-    while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' ';
+    while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' '; else --p;
   } else {
   if(nrCastlingRights) {
      q = p;
