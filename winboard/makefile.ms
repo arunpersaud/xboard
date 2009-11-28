@@ -84,7 +84,7 @@ $(PROJ).hlp : $(PROJ).rtf
 
 
 # Update the resource if necessary
-$(PROJ).res: $(PROJ).rc $(PROJ).h resource.h
+$(PROJ).res: $(PROJ).rc $(PROJ).h resource.h config.h
     $(RC) $(CF) -r -fo $(PROJ).res $(PROJ).rc
 
 parser.c: ../parser.l
