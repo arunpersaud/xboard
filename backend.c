@@ -6931,7 +6931,12 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
                 /* [AS] Negate score if machine is playing black and reporting absolute scores */
                 if( cps->scoreIsAbsolute && 
-                    ((gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) )
+                    ( gameMode == MachinePlaysBlack ||
+                      gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b' ||
+                      gameMode == IcsPlayingBlack ||     // [HGM] also add other situations where engine should report black POV
+                     (gameMode == AnalyzeMode || gameMode == AnalyzeFile || gameMode == IcsObserving && appData.icsEngineAnalyze) &&
+                     !WhiteOnMove(currentMove)
+                    ) )
                 {
                     curscore = -curscore;
                 }
