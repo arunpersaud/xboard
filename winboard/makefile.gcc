@@ -70,7 +70,7 @@ $(PROJ).hlp : $(PROJ).rtf
 
 
 # Update the resource if necessary
-wbres.o: $(PROJ).rc $(PROJ).h resource.h
+wbres.o: $(PROJ).rc $(PROJ).h resource.h config.h
 	windres $(DEFS) --use-temp-file --include-dir .. $< -O coff -o $@
 
 
