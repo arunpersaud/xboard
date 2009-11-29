@@ -2042,7 +2042,7 @@ read_from_ics(isr, closure, data, count, error)
      int count;
      int error;
 {
-#define BUF_SIZE 8192
+#define BUF_SIZE (16*1024) /* overflowed at 8K with "inchannel 1" on FICS? */
 #define STARTED_NONE 0
 #define STARTED_MOVES 1
 #define STARTED_BOARD 2
