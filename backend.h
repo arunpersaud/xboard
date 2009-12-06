@@ -204,7 +204,7 @@ VariantClass StringToVariant P((char *e));
 double u64ToDouble P((u64 value));
 void OutputChatMessage P((int partner, char *mess));
 void EditPositionDone P((Boolean fakeRights));
-
+Boolean GetArgValue P((char *name));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));

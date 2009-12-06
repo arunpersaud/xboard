@@ -529,6 +529,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondHasOwnBookUCI", ArgBoolean, (void *) &appData.secondHasOwnBookUCI, FALSE, (ArgIniType) TRUE },
   { "sNoOwnBookUCI", ArgFalse, (void *) &appData.secondHasOwnBookUCI, FALSE, INVALID },
   { "secondXBook", ArgFalse, (void *) &appData.secondHasOwnBookUCI, FALSE, INVALID },
+  { "adapterCommand", ArgFilename, (void *) &appData.adapterCommand, TRUE, (ArgIniType) "polyglot -noini -ec %%cp -ed %%d" },
   { "polyglotDir", ArgFilename, (void *) &appData.polyglotDir, TRUE, (ArgIniType) "" },
   { "usePolyglotBook", ArgBoolean, (void *) &appData.usePolyglotBook, TRUE, (ArgIniType) FALSE },
   { "polyglotBook", ArgFilename, (void *) &appData.polyglotBook, TRUE, (ArgIniType) "" },
@@ -1334,4 +1335,32 @@ SaveSettings(char* name)
     }
   }
   fclose(f);
+}
+
+Boolean
+GetArgValue(char *name)
+{ // retrieve (as text) current value of string or int argument given by name
+  // (this is used for maing the values available in the adapter command)
+  ArgDescriptor *ad;
+
+  for (ad = argDescriptors; ad->argName != NULL; ad++)
+    if (strcmp(ad->argName, name) == 0) break;
+
+  if (ad->argName == NULL) return FALSE;
+
+  switch(ad->argType) {
+    case ArgString:
+    case ArgFilename:
+      strcpy(name, *(char**) ad->argLoc);
+      return TRUE;
+    case ArgInt:
+      sprintf(name, "%d", *(int*) ad->argLoc);
+      return TRUE;
+    case ArgBoolean:
+      sprintf(name, "%s", *(Boolean*) ad->argLoc ? "true" : "false");
+      return TRUE;
+    default: ;
+  }
+
+  return FALSE;
 }

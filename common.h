@@ -557,6 +557,7 @@ typedef struct {
     Boolean secondIsUCI;
     Boolean firstHasOwnBookUCI;
     Boolean secondHasOwnBookUCI;
+    char * adapterCommand;
     char * polyglotDir;
     Boolean usePolyglotBook;
     char * polyglotBook;
