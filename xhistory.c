@@ -275,6 +275,7 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
       else XawListUnhighlight(hist->mvb);
     }
   }
+  EvalGraphSet( first, last, current, pvInfoList ); // piggy-backed
 }
 
 Widget HistoryCreate()

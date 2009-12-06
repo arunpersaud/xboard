@@ -200,7 +200,9 @@ extern char *getenv();
 // must be moved to xengineoutput.h
 
 void EngineOutputProc P((Widget w, XEvent *event,
- String *prms, Cardinal *nprms));
+			 String *prms, Cardinal *nprms));
+void EvalGraphProc P((Widget w, XEvent *event,
+		      String *prms, Cardinal *nprms));
 
 
 #ifdef __EMX__
@@ -605,9 +607,9 @@ MenuItem modeMenu[] = {
     {N_("Training"), TrainingProc},
     {"----", NothingProc},
     {N_("Show Engine Output"), EngineOutputProc},
-    {N_("Show Evaluation Graph"), NothingProc}, // [HGM] evalgr: not functional yet
+    {N_("Show Evaluation Graph"), EvalGraphProc},
     {N_("Show Game List"), ShowGameListProc},
-    {"Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
+    {N_("Show Move History"), HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
     {"----", NothingProc},
     {N_("Edit Tags"), EditTagsProc},
     {N_("Edit Comment"), EditCommentProc},
@@ -865,6 +867,7 @@ XtActionsRec boardActions[] = {
     { "EditPositionProc", EditPositionProc },
     { "TrainingProc", EditPositionProc },
     { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
+    { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
     { "ShowMoveListProc", HistoryShowProc},
     { "EditTagsProc", EditCommentProc },
@@ -944,6 +947,7 @@ XtActionsRec boardActions[] = {
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "HistoryPopDown", (XtActionProc) HistoryPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
+    { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "ShufflePopDown", (XtActionProc) ShufflePopDown },
     { "EnginePopDown", (XtActionProc) EnginePopDown },
     { "UciPopDown", (XtActionProc) UciPopDown },
@@ -1251,7 +1255,6 @@ BoardToTop()
 #define SEPCHAR " "
 
 // these two must some day move to frontend.h, when they are implemented
-Boolean EvalGraphIsUp();
 Boolean MoveHistoryIsUp();
 Boolean GameListIsUp();
 
@@ -1261,6 +1264,8 @@ Boolean GameListIsUp();
 // front-end part of option handling
 
 // [HGM] This platform-dependent table provides the location for storing the color info
+extern char *crWhite, * crBlack;
+
 void *
 colorVariable[] = {
   &appData.whitePieceColor, 
@@ -1275,8 +1280,8 @@ colorVariable[] = {
   NULL,
   NULL,
   NULL,
-  NULL,
-  NULL,
+  &crWhite,
+  &crBlack,
   NULL
 };
 
@@ -1420,15 +1425,12 @@ GetWindowCoords()
   GetActualPlacement(shellWidget, &wpMain);
   if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
   if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
+  if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
   if(commentShell) GetActualPlacement(commentShell, &wpComment);
   else             GetActualPlacement(editShell,    &wpComment);
   if(tagsShell) GetActualPlacement(tagsShell, &wpTags);
   else      GetActualPlacement(editTagsShell, &wpTags);
-#if 0
-  GetActualPlacement(hwndConsole, &wpConsole);
-  GetActualPlacement(evalGraphDialog, &wpEvalGraph);
-#endif
 }
 
 void
@@ -1458,12 +1460,6 @@ void
 EnsureOnScreen(int *x, int *y, int minX, int minY)
 {
   return;
-}
-
-Boolean
-EvalGraphIsUp()
-{
-  return False;
 }
 
 int
@@ -2466,10 +2462,11 @@ XBoard square size (hint): %d\n\
       HistoryPopUp();
     }
 
-//    if( wpEvalGraph.visible ) {
-//      EvalGraphPopUp();
-//    }
-
+    if( wpEvalGraph.visible ) 
+      {
+	EvalGraphPopUp();
+      };
+    
     if( wpEngineOutput.visible ) {
       EngineOutputPopUp();
     }
