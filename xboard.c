@@ -7572,8 +7572,11 @@ int StartChildProcess(cmdLine, dir, pr)
     strcpy(buf, cmdLine);
     p = buf;
     for (;;) {
+	while(*p == ' ') p++;
 	argv[i++] = p;
-	p = strchr(p, ' ');
+	if(*p == '"' || *p == '\'')
+	     p = strchr(++argv[i-1], *p);
+	else p = strchr(p, ' ');
 	if (p == NULL) break;
 	*p++ = NULLCHAR;
     }
