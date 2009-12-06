@@ -230,6 +230,10 @@ static void InsertIntoMemo( int which, char * text )
 {
 	Arg arg; XawTextBlock t; Widget edit;
 
+	/* the backend adds \r\n, which is needed for winboard, 
+	 * for xboard we delete them again over here */
+	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
+
 	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
 	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
 	XawTextReplace(edit, 0, 0, &t);
