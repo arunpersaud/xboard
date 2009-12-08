@@ -1,3 +1,38 @@
+** Version 4.4.2 **
+
+(git shortlog --no-merges v4.4.1...HEAD)
+
+Arun Persaud (7):
+      updated version number to unstable
+      added missing library for build on OS X
+      add Winboard source files into tar-ball
+      removed files that should only be in the windboard directory
+      fixed build on openbsd
+      new developer release
+      fix for bug #28077: xboard needs to link against x11
+
+H.G. Muller (19):
+      cleaned up some debug messages and typos
+      fix crash on engine crash
+      fix casting rights after FEN pasting
+      the last move before the time control now gets its time listed in the PGN
+      fix double start of zippy engine after switch to gothic
+      fix declaration of engineOutputDialogUp
+      fix engine-sync on move-number type-in bug
+      removing some rather verbose debug messages that seem no longer needed.
+      fix bug in bughouse drop menu
+      use xtell for talking to handles, but tell for talking into a channel.
+      fix the irritating wandering off of the MoveHistory window in XBoard on opening/closing.
+      fixed some outstanding pixmaps
+      Fix castling rights when copying FEN to clipboard (again)
+      score sign in analysis mode
+      correctly apply some check boxes from the option menu
+      updates makefiles to include dependency on config.h
+      fix problem with empty string in -firstNeedsNoncompliantFEN
+      double buffer size to prevent overflow
+      remove trailing \r in xboard output
+
+
 ** Version 4.4.1 **
 
 (git shortlog --no-merges vold...vnew)

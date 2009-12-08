@@ -3,6 +3,144 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vnew vold)
 
+2009-12-06 11:34:50 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+remove trailing \r in xboard output
+
+there is an annoying carriage return (displayed as ^M) at the end of the PV in the engine-output window, not
+only with Fairy-Max, but also with UCI engine running under Polyglot. This patch replaces the trailing CR that Linux programs send after the PV line y a space.
+
+2009-11-29 11:56:32 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+double buffer size to prevent overflow
+
+This patch doubles the size of the ICS input buffer to 16KB, to prevent
+the suspected overflow with -keepLineBreaksICS false when using
+"inchannel 1" on FICS and over 500 people are tuned in.
+
+2009-11-28 13:33:52 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fix problem with empty string in -firstNeedsNoncompliantFEN
+
+This fixes a bug in the use of the -firstNeedsNoncompliantFEN option with
+an empty string as argument. (Which led to truncation of the FEN.)
+
+2009-11-28 13:32:12 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+updates makefiles to include dependency on config.h
+
+adds the dependency of wbres.o on config.c introduced by having the VersionInfo in the resource
+
+2009-11-28 13:28:00 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+correctly apply some check boxes from the option menu
+
+Usng the check-boxes in the Option->Adjudications menu to indicate the
+engine reports absolute scores is now copied directly to the ChessProgramState,
+from where it is used, in stead of only to appData. This makes the change take
+effect immediately, in stead of after restarting.
+
+2009-11-28 13:27:43 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+score sign in analysis mode
+
+this does not alter any of the current behavior with compliant engines,
+but does extend the correction for non-compliant score reporting under
+control of the -first(second)ScoreIsAbs option to cases where the engine
+is analyzing or playing on an ICS.
+
+2009-11-24 21:09:30 -0800 Arun Persaud <arun@nubati.net>:
+fix for bug #28077: xboard needs to link against x11
+
+hopefully fixed automake to take care of this
+
+2009-11-23 20:37:20 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix castling rights when copying FEN to clipboard (again)
+
+missed a spot last time
+
+2009-11-23 20:21:14 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fixed some outstanding pixmaps
+
+fixed transparency issues
+
+2009-11-22 12:47:00 -0800 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2009-11-22 12:34:13 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fix the irritating wandering off of the MoveHistory window in XBoard on opening/closing.
+
+
+2009-11-22 12:29:47 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+use xtell for talking to handles, but tell for talking into a channel.
+
+by changing the chatboxes to use xtell in stead of tell, we broke
+the possibility to use the chat-box for chatting into a channel (which is
+apparently not possible with xtell).
+
+2009-11-22 12:15:15 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fix bug in bughouse drop menu
+
+This patch fixes the bughouse drop menu, which was broken by the
+new mouse driver, and could no longer drop white Pawns.
+
+2009-11-22 12:13:05 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+removing some rather verbose debug messages that seem no longer needed.
+
+
+2009-11-19 20:23:09 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fix engine-sync on move-number type-in bug
+
+
+2009-11-18 19:15:26 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fix declaration of engineOutputDialogUp
+
+was defined as BOOLEAN (=char), but should be int
+
+2009-11-18 19:12:25 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fix double start of zippy engine after switch to gothic
+
+In ICS mode we now switch to the proper variant as soon as we receive
+the generic game-start message, to prevent a mismatch when the first
+board is received (which would trigger fetching of a move list).
+
+2009-11-18 19:09:20 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+the last move before the time control now gets its time listed in the PGN
+
+
+2009-11-18 19:08:30 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fix casting rights after FEN pasting
+
+
+2009-11-18 18:54:58 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+fix crash on engine crash
+
+
+2009-11-14 22:13:10 -0800 Arun Persaud <arun@nubati.net>:
+fixed build on openbsd
+
+added missing header file
+
+2009-11-06 09:06:44 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
+cleaned up some debug messages and typos
+
+
+2009-11-06 08:44:59 -0800 Arun Persaud <arun@nubati.net>:
+removed files that should only be in the windboard directory
+
+
+2009-11-05 19:32:35 -0800 Arun Persaud <arun@nubati.net>:
+add Winboard source files into tar-ball
+
+forgot to add them when rewriting the Makefile.am
+
+2009-11-05 19:03:17 -0800 Arun Persaud <arun@nubati.net>:
+added missing library for build on OS X
+
+Xmu seems to be missing
+
+2009-10-31 10:42:50 -0700 Arun Persaud <arun@nubati.net>:
+updated version number to unstable
+
+
+2009-10-31 10:25:37 -0700 Arun Persaud <arun@nubati.net>:
+release of version 4.4.1
+
 2009-10-30 19:59:23 -0700 H.G. Muller <h.g.muller@hccnet.nl>:
 cleaned up ChangeLog and NEWS
 

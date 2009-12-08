@@ -1,3 +1,81 @@
+
+** Version 4.4.2 **
+
+(git diff --stat --summary -M v4.4.1...HEAD)
+
+ Makefile.am            |    6 +-
+ backend.c              |  108 +++++++++++++++++++++++------------------------
+ backend.h              |    1 +
+ configure.ac           |   12 ++++-
+ moves.c                |   36 +---------------
+ pixmaps/asdd72.xpm     |   26 ++++++------
+ pixmaps/asdl72.xpm     |   26 ++++++------
+ pixmaps/cvdd37.xpm     |   32 +++++++-------
+ pixmaps/cvdd45.xpm     |   42 +++++++++---------
+ pixmaps/cvdd49.xpm     |   48 +++++++++++-----------
+ pixmaps/cvdl37.xpm     |   32 +++++++-------
+ pixmaps/cvdl45.xpm     |   42 +++++++++---------
+ pixmaps/cvdl49.xpm     |   48 +++++++++++-----------
+ pixmaps/hdd49.xpm      |   64 ++++++++++++++--------------
+ pixmaps/hdd72.xpm      |  108 ++++++++++++++++++++++++------------------------
+ pixmaps/hdl49.xpm      |   64 ++++++++++++++--------------
+ pixmaps/hdl72.xpm      |  108 ++++++++++++++++++++++++------------------------
+ shogibitmaps/README    |    2 -
+ shogibitmaps/sa58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sb58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sc58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sf58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sg58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sh58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sk58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sk58w.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sl58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sl58w.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sn58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sn58w.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sp58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sp58w.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sr58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sr58w.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/ss58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/su58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sw58o.bmp |  Bin 526 -> 0 bytes
+ shogibitmaps/sw58w.bmp |  Bin 526 -> 0 bytes
+ winboard/config.h      |    6 +-
+ winboard/makefile.gcc  |    2 +-
+ winboard/makefile.ms   |    2 +-
+ winboard/wchat.c       |    5 +-
+ winboard/wclipbrd.c    |    3 +-
+ winboard/winboard.c    |    9 +---
+ winboard/woptions.c    |    4 +-
+ xboard.c               |    1 +
+ xengineoutput.c        |    4 ++
+ xhistory.c             |   25 ++++++-----
+ xoptions.c             |    5 +-
+ 49 files changed, 424 insertions(+), 447 deletions(-)
+ delete mode 100644 shogibitmaps/README
+ delete mode 100644 shogibitmaps/sa58o.bmp
+ delete mode 100644 shogibitmaps/sb58o.bmp
+ delete mode 100644 shogibitmaps/sc58o.bmp
+ delete mode 100644 shogibitmaps/sf58o.bmp
+ delete mode 100644 shogibitmaps/sg58o.bmp
+ delete mode 100644 shogibitmaps/sh58o.bmp
+ delete mode 100644 shogibitmaps/sk58o.bmp
+ delete mode 100644 shogibitmaps/sk58w.bmp
+ delete mode 100644 shogibitmaps/sl58o.bmp
+ delete mode 100644 shogibitmaps/sl58w.bmp
+ delete mode 100644 shogibitmaps/sn58o.bmp
+ delete mode 100644 shogibitmaps/sn58w.bmp
+ delete mode 100644 shogibitmaps/sp58o.bmp
+ delete mode 100644 shogibitmaps/sp58w.bmp
+ delete mode 100644 shogibitmaps/sr58o.bmp
+ delete mode 100644 shogibitmaps/sr58w.bmp
+ delete mode 100644 shogibitmaps/ss58o.bmp
+ delete mode 100644 shogibitmaps/su58o.bmp
+ delete mode 100644 shogibitmaps/sw58o.bmp
+ delete mode 100644 shogibitmaps/sw58w.bmp
+
+   
 ** Version 4.4.1 **
 
 (git diff --stat --summary -M vold...vnew)
