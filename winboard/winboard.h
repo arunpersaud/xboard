@@ -182,7 +182,7 @@ extern BoardSize boardSize;
 
 typedef enum {
   W_Main, W_Console, W_Comment, W_Tags, W_GameList, 
-  W_MoveHist, W_EngineOut, W_GameList, NUM_WINDOWS
+  W_MoveHist, W_EngineOut, NUM_WINDOWS
 } WindowID;
 
 extern WindowPlacement placementTab[NUM_WINDOWS];

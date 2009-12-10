@@ -115,7 +115,6 @@ int  EngineOutputIsUp();
 void SetEngineColorIcon( int which );
 
 /* Imports from backend.c */
-char * SavePart(char *str);
 extern int opponentKibitzes;
 
 /* Imports from xboard.c */

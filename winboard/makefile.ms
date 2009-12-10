@@ -31,7 +31,7 @@ RC = @rc
 LINK = link
 HC="c:\program files\help workshop\hcrtf.exe" -xn
 FLEX = "c:/mingw/mingw32/bin/flex.exe"
-DEFS = -D_WIN32_IE=0x300 -DWIN32 -DWINVER=0x0500 -D_WIN32_WINDOWS=0x500
+DEFS = -D_WIN32_IE=0x300 -DWIN32 -DWINVER=0x0500 -D_WIN32_WINDOWS=0x500 -D YY_NO_UNISTD_H
 !if $(JAWS) == 1
 DEFS = -DJAWS $(DEFS)
 !endif
@@ -91,8 +91,8 @@ parser.c: ../parser.l
     $(FLEX) -oparser.c -L ../parser.l
 
 winboard.obj: winboard.c config.h winboard.h ../common.h ../frontend.h \
-        ../backend.h ../moves.h wgamelist.h defaults.h resource.h wclipbrd.h \
-        wedittags.h wsockerr.h woptions.h wsnap.h ../lists.h help.h ../args.h
+        ../backend.h ../moves.h defaults.h resource.h wclipbrd.h \
+        wsockerr.h woptions.h wsnap.h ../lists.h help.h ../args.h
         $(CC) $(CFLAGS) winboard.c
 
 backend.obj: ../backend.c config.h ../common.h ../frontend.h ../backend.h \
