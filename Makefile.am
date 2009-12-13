@@ -29,7 +29,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 $(ZPY)
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ 
 
-EXTRA_DIST = pixmaps bitmaps winboard\
+EXTRA_DIST = pixmaps bitmaps winboard sounds \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm readme_HGM.txt zippy.README
 
