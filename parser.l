@@ -698,7 +698,7 @@ extern void CopyBoard P((Board to, Board from));
             ft = BOARD_LEFT+2;
 	}
     }
-    if(gameInfo.variant == VariantFischeRandom) {
+    if(PosFlags(0) & F_FRC_TYPE_CASTLING) {
         if (WhiteOnMove(yyboardindex)) {
             ff = initialRights[2];
             ft = initialRights[1];
@@ -755,7 +755,7 @@ extern void CopyBoard P((Board to, Board from));
             ft = BOARD_RGHT-2;
 	}
     }
-    if(gameInfo.variant == VariantFischeRandom) {
+    if(PosFlags(0) & F_FRC_TYPE_CASTLING) {
         if (WhiteOnMove(yyboardindex)) {
             ff = initialRights[2];
             ft = initialRights[0];
