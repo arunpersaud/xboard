@@ -24,6 +24,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if HAVE_MALLOC_H
   #include <malloc.h>
@@ -31,7 +32,7 @@
 
 #include "common.h"
 #include "backend.h"
-
+Boolean GetArgValue(char *a);				
 
 void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
 {   // replace engine command line by adapter command with expanded meta-symbols
@@ -44,13 +45,18 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
         while(*p) {
           if(*p == '\\') p++; else
           if(*p == '%') { // substitute marker
-            char argName[MSG_SIZ], *s = argName;
+            char argName[MSG_SIZ], buf[MSG_SIZ], *s = buf;
             if(*++p == '%') { // second %, expand as f or s in option name (e.g. %%cp -> fcp)
               *s++ = cps == &first ? 'f' : 's';
               p++;
             }
-            while(*p != ' ' && *p) *s++ = *p++; // copy option name
+            while(*p >= '0' && *p) *s++ = *p++; // copy option name
             *s = NULLCHAR;
+            if(cps == &second) { // change options for first into those for second engine
+              if(strstr(buf, "first") == buf) sprintf(argName, "second%s", buf+5); else
+              if(buf[0] == 'f') sprintf(argName, "s%s", buf+1); else
+              strcpy(argName, buf);
+            } else strcpy(argName, buf);
             if(GetArgValue(argName)) { // look up value of option with this name
               s = argName;
               while(*s) *q++ = *s++;

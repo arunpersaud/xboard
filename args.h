@@ -529,7 +529,7 @@ ArgDescriptor argDescriptors[] = {
   { "secondHasOwnBookUCI", ArgBoolean, (void *) &appData.secondHasOwnBookUCI, FALSE, (ArgIniType) TRUE },
   { "sNoOwnBookUCI", ArgFalse, (void *) &appData.secondHasOwnBookUCI, FALSE, INVALID },
   { "secondXBook", ArgFalse, (void *) &appData.secondHasOwnBookUCI, FALSE, INVALID },
-  { "adapterCommand", ArgFilename, (void *) &appData.adapterCommand, TRUE, (ArgIniType) "polyglot -noini -ec %%cp -ed %%d" },
+  { "adapterCommand", ArgFilename, (void *) &appData.adapterCommand, TRUE, (ArgIniType) "polyglot -noini -ec \"%fcp\" -ed \"%fd\"" },
   { "polyglotDir", ArgFilename, (void *) &appData.polyglotDir, TRUE, (ArgIniType) "" },
   { "usePolyglotBook", ArgBoolean, (void *) &appData.usePolyglotBook, TRUE, (ArgIniType) FALSE },
   { "polyglotBook", ArgFilename, (void *) &appData.polyglotBook, TRUE, (ArgIniType) "" },
