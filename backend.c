@@ -4518,12 +4518,12 @@ void SetUpShuffle(Board board, int number)
 	    // Last King gets castling rights
 	    while(piecesLeft[(int)WhiteUnicorn]) {
 		i = put(board, WhiteUnicorn, 0, piecesLeft[(int)WhiteRook]/2, ANY);
-		initialRights[2]  = initialRights[5]  = boards[0][CASTLING][2] = boards[0][CASTLING][5] = i;
+		initialRights[2]  = initialRights[5]  = board[CASTLING][2] = board[CASTLING][5] = i;
 	    }
 
 	    while(piecesLeft[(int)WhiteKing]) {
 		i = put(board, WhiteKing, 0, piecesLeft[(int)WhiteRook]/2, ANY);
-		initialRights[2]  = initialRights[5]  = boards[0][CASTLING][2] = boards[0][CASTLING][5] = i;
+		initialRights[2]  = initialRights[5]  = board[CASTLING][2] = board[CASTLING][5] = i;
 	    }
 
 
@@ -4538,9 +4538,9 @@ void SetUpShuffle(Board board, int number)
 		if(PosFlags(0) & F_FRC_TYPE_CASTLING) { // first and last Rook get FRC castling rights
 			if(first) {
 				first=0;
-				initialRights[1]  = initialRights[4]  = boards[0][CASTLING][1] = boards[0][CASTLING][4] = i;
+				initialRights[1]  = initialRights[4]  = board[CASTLING][1] = board[CASTLING][4] = i;
 			}
-			initialRights[0]  = initialRights[3]  = boards[0][CASTLING][0] = boards[0][CASTLING][3] = i;
+			initialRights[0]  = initialRights[3]  = board[CASTLING][0] = board[CASTLING][3] = i;
 		}
 	}
 	for(i=BOARD_LEFT; i<BOARD_RGHT; i++) { // copy black from white
