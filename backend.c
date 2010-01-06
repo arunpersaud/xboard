@@ -13912,12 +13912,12 @@ ParseFEN(board, blackPlaysFirst, fen)
         board[CASTLING][i] =
             gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom ? NoRights : initialRights[i];
     }   /* assume possible unless obviously impossible */
-    if(initialRights[0]>=0 && board[castlingRank[0]][initialRights[0]] != WhiteRook) board[CASTLING][0] = NoRights;
-    if(initialRights[1]>=0 && board[castlingRank[1]][initialRights[1]] != WhiteRook) board[CASTLING][1] = NoRights;
-    if(initialRights[2]>=0 && board[castlingRank[2]][initialRights[2]] != WhiteKing) board[CASTLING][2] = NoRights;
-    if(initialRights[3]>=0 && board[castlingRank[3]][initialRights[3]] != BlackRook) board[CASTLING][3] = NoRights;
-    if(initialRights[4]>=0 && board[castlingRank[4]][initialRights[4]] != BlackRook) board[CASTLING][4] = NoRights;
-    if(initialRights[5]>=0 && board[castlingRank[5]][initialRights[5]] != BlackKing) board[CASTLING][5] = NoRights;
+    if(initialRights[0]!=NoRights && board[castlingRank[0]][initialRights[0]] != WhiteRook) board[CASTLING][0] = NoRights;
+    if(initialRights[1]!=NoRights && board[castlingRank[1]][initialRights[1]] != WhiteRook) board[CASTLING][1] = NoRights;
+    if(initialRights[2]!=NoRights && board[castlingRank[2]][initialRights[2]] != WhiteKing) board[CASTLING][2] = NoRights;
+    if(initialRights[3]!=NoRights && board[castlingRank[3]][initialRights[3]] != BlackRook) board[CASTLING][3] = NoRights;
+    if(initialRights[4]!=NoRights && board[castlingRank[4]][initialRights[4]] != BlackRook) board[CASTLING][4] = NoRights;
+    if(initialRights[5]!=NoRights && board[castlingRank[5]][initialRights[5]] != BlackKing) board[CASTLING][5] = NoRights;
     FENrulePlies = 0;
 
     while(*p==' ') p++;
