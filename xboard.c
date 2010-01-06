@@ -1658,44 +1658,8 @@ main(argc, argv)
     char *p;
     XrmDatabase xdb;
     int forceMono = False;
-//define INDIRECTION
-#ifdef INDIRECTION
-    // [HGM] before anything else, expand any indirection files amongst options
-    char *argvCopy[1000]; // 1000 seems enough
-    char newArgs[10000];  // holds actual characters
-    int k = 0;
 
     srandom(time(0)); // [HGM] book: make random truly random
-
-    j = 0;
-    for(i=0; i<argc; i++) {
-	if(j >= 1000-2) { printf(_("too many arguments\n")); exit(-1); }
-//fprintf(stderr, "arg %s\n", argv[i]);
-	if(argv[i][0] != '@') argvCopy[j++] = argv[i]; else {
-	    char c;
-	    FILE *f = fopen(argv[i]+1, "rb");
-	    if(f == NULL) { fprintf(stderr, _("ignore %s\n"), argv[i]); continue; } // do not expand non-existing
-	    argvCopy[j++] = newArgs + k; // get ready for first argument from file
-	    while((c = fgetc(f)) != EOF) { // each line of file inserts 1 argument in the list
-		if(c == '\n') {
-		    if(j >= 1000-2) { printf(_("too many arguments\n")); exit(-1); }
-		    newArgs[k++] = 0;  // terminate current arg
-		    if(k >= 10000-1) { printf(_("too long arguments\n")); exit(-1); }
-		    argvCopy[j++] = newArgs + k; // get ready for next
-		} else {
-		    if(k >= 10000-1) { printf(_("too long arguments\n")); exit(-1); }
-		    newArgs[k++] = c;
-		}
-	    }
-	    newArgs[k] = 0;
-	    j--;
-	    fclose(f);
-	}
-    }
-    argvCopy[j] = NULL;
-    argv = argvCopy;
-    argc = j;
-#endif
 
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
