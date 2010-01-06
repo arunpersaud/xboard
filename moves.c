@@ -855,7 +855,7 @@ int GenLegal(board, flags, callback, closure)
 	}
     }
 
-  if(gameInfo.variant == VariantFischeRandom) {
+  if(flags & F_FRC_TYPE_CASTLING) {
 
     /* generate all potential FRC castling moves (KxR), ignoring flags */
     /* [HGM] test if the Rooks we find have castling rights */
