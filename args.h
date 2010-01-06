@@ -504,7 +504,7 @@ ArgDescriptor argDescriptors[] = {
   { "adjudicateLossThreshold", ArgInt, (void *) &appData.adjudicateLossThreshold, TRUE, (ArgIniType) 0 },
   { "delayBeforeQuit", ArgInt, (void *) &appData.delayBeforeQuit, TRUE, (ArgIniType) 0 },
   { "delayAfterQuit", ArgInt, (void *) &appData.delayAfterQuit, TRUE, (ArgIniType) 0 },
-  { "nameOfDebugFile", ArgFilename, (void *) &appData.nameOfDebugFile, FALSE, (ArgIniType) "winboard.debug" },
+  { "nameOfDebugFile", ArgFilename, (void *) &appData.nameOfDebugFile, FALSE, (ArgIniType) DEBUG_FILE },
   { "debugfile", ArgFilename, (void *) &appData.nameOfDebugFile, FALSE, INVALID },
   { "pgnEventHeader", ArgString, (void *) &appData.pgnEventHeader, TRUE, (ArgIniType) "Computer Chess Game" },
   { "defaultFrcPosition", ArgInt, (void *) &appData.defaultFrcPosition, TRUE, (ArgIniType) -1 },

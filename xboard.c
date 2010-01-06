@@ -1249,6 +1249,7 @@ BoardToTop()
 #define JAWS_ARGS
 #define CW_USEDEFAULT (1<<31)
 #define ICS_TEXT_MENU_SIZE 90
+#define DEBUG_FILE "xboard.debug"
 #define SetCurrentDirectory chdir
 #define GetCurrentDirectory(SIZE, NAME) getcwd(NAME, SIZE)
 #define OPTCHAR "-"

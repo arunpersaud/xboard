@@ -211,6 +211,7 @@
 }
 
 #define SETTINGS_FILE         "winboard.ini"
+#define DEBUG_FILE            "winboard.debug"
 
 #define ICS_LOGON             "ics.ini"
 
