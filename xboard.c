@@ -1665,6 +1665,11 @@ main(argc, argv)
     setbuf(stderr, NULL);
     debugFP = stderr;
 
+    if(argc > 1 && (!strcmp(argv[1], "-v" ) || !strcmp(argv[1], "--version" ))) {
+	printf("%s version %s\n", PACKAGE_NAME, PACKAGE_VERSION);
+	exit(0);
+    }
+
     programName = strrchr(argv[0], '/');
     if (programName == NULL)
       programName = argv[0];
