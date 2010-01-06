@@ -1362,7 +1362,9 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
     default:
       return;
   }
-  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, name);
+//  Do not save fonts for now, as the saved font would be board-size specific
+//  and not suitable for a re-start at another board size
+//  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, name); 
 }
 
 void
