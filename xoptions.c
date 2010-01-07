@@ -246,6 +246,7 @@ int tcIncrement, tcMoves;
 void TimeControlPopDown()
 {
     if (!TimeControlUp) return;
+    previous = NULL;
     XtPopdown(TimeControlShell);
     XtDestroyWidget(TimeControlShell);
     TimeControlUp = False;
@@ -568,6 +569,7 @@ Widget engDrawMoves, engThreshold, engRule, engRepeat;
 void EnginePopDown()
 {
     if (!EngineUp) return;
+    previous = NULL;
     XtPopdown(EngineShell);
     XtDestroyWidget(EngineShell);
     EngineUp = False;
@@ -1126,6 +1128,7 @@ struct UciControl controlDesc[] = {
 void UciPopDown()
 {
     if (!UciUp) return;
+    previous = NULL;
     XtPopdown(UciShell);
     XtDestroyWidget(UciShell);
     UciUp = False;
@@ -1324,6 +1327,7 @@ ChessProgramState *currentCps;
 void SettingsPopDown()
 {
     if (!SettingsUp) return;
+    previous = NULL;
     XtPopdown(SettingsShell);
     XtDestroyWidget(SettingsShell);
     SettingsUp = False;

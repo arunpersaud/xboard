@@ -448,6 +448,7 @@ void NewVariantPopDown P(());
 void SettingsPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
+int CopyMemoProc P(());
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -954,6 +955,7 @@ XtActionsRec boardActions[] = {
     { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
     { "NewVariantPopDown", (XtActionProc) NewVariantPopDown },
     { "SettingsPopDown", (XtActionProc) SettingsPopDown },
+    { "CopyMemoProc", (XtActionProc) CopyMemoProc },
 };
 
 char globalTranslations[] =
@@ -5520,9 +5522,9 @@ void MailMoveProc(w, event, prms, nprms)
 }
 
 /* this variable is shared between CopyPositionProc and SendPositionSelection */
-static char *selected_fen_position=NULL;
+char *selected_fen_position=NULL;
 
-static Boolean
+Boolean
 SendPositionSelection(Widget w, Atom *selection, Atom *target,
 		 Atom *type_return, XtPointer *value_return,
 		 unsigned long *length_return, int *format_return)
