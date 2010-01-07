@@ -345,6 +345,7 @@ typedef struct _CPS {
     char *optionSettings;
     void *programLogo; /* [HGM] logo: bitmap of the logo                    */
     char *fenOverride; /* [HGM} FRC: force FEN casling & ep fields by hand  */
+    char userError;    /* [HGM] crash: flag to suppress fatal-error messages*/
 } ChessProgramState;
 
 extern ChessProgramState first, second;
@@ -370,5 +371,6 @@ extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
 extern int shuffleOpenings;
 extern ChessProgramStats programStats;
 extern int opponentKibitzes; // used by wengineo.c
+extern int errorExitStatus;
 
 #endif /* _BACKEND */

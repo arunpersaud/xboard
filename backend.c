@@ -5796,6 +5796,8 @@ HandleMachineMove(message, cps)
     int machineWhite;
     char *bookHit;
 
+    cps->userError = 0;
+
 FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book hit
     /*
      * Kludge to ignore BEL characters
@@ -6468,6 +6470,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	return;
     }
     if (!strncmp(message, "tellusererror ", 14)) {
+	cps->userError = 1;
 	DisplayError(message + 14, 0);
 	return;
     }
@@ -12422,7 +12425,7 @@ SendToProgram(message, cps)
             }
             gameInfo.resultDetails = StrSave(buf);
         }
-        DisplayFatalError(buf, error, 1);
+        if(!cps->userError || !appData.popupExitMessage) DisplayFatalError(buf, error, 1); else errorExitStatus = 1;
     }
 }
 
@@ -12454,7 +12457,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
                 gameInfo.resultDetails = StrSave(buf);
             }
 	    RemoveInputSource(cps->isr);
-	    DisplayFatalError(buf, 0, 1);
+	    if(!cps->userError || !appData.popupExitMessage) DisplayFatalError(buf, 0, 1); else errorExitStatus = 1;
 	} else {
 	    sprintf(buf,
 		    _("Error reading from %s chess program (%s)"),
@@ -12467,7 +12470,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
                 cps->pr = NoProc;
             }
 
-            DisplayFatalError(buf, error, 1);
+            if(!cps->userError || !appData.popupExitMessage) DisplayFatalError(buf, error, 1); else errorExitStatus = 1;
 	}
 	return;
     }

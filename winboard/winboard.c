@@ -6065,6 +6065,7 @@ ErrorPopDown()
   if (errorDialog == NULL) return;
   DestroyWindow(errorDialog);
   errorDialog = NULL;
+  if(errorExitStatus) ExitEvent(errorExitStatus);
 }
 
 LRESULT CALLBACK
