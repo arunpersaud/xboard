@@ -1258,7 +1258,6 @@ BoardToTop()
 #define SEPCHAR " "
 
 // these two must some day move to frontend.h, when they are implemented
-Boolean MoveHistoryIsUp();
 Boolean GameListIsUp();
 
 // The option definition and parsing code common to XBoard and WinBoard is collected in this file

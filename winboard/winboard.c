@@ -153,6 +153,7 @@ char *programName;
 char *settingsFileName;
 Boolean saveSettingsOnExit;
 char installDir[MSG_SIZ];
+int errorExitStatus;
 
 BoardSize boardSize;
 Boolean chessProgram;

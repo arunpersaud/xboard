@@ -209,5 +209,6 @@ void EvalGraphPopUp P((void));
 void EvalGraphPopDown P((void));
 Boolean EvalGraphIsUp P((void));
 int  EvalGraphDialogExists P((void));
+Boolean MoveHistoryIsUp P((void));
 
 #endif
