@@ -1284,7 +1284,7 @@ colorVariable[] = {
   &appData.darkSquareColor, 
   &appData.highlightSquareColor,
   &appData.premoveHighlightColor,
-  NULL,
+  &appData.lowTimeWarningColor,
   NULL,
   NULL,
   NULL,
