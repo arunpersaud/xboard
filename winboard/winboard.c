@@ -3786,8 +3786,10 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     DrawPosition(TRUE, NULL);
 
     switch (gameMode) {
-    case EditPosition:
     case IcsExamining:
+      if(x < BOARD_LEFT || x >= BOARD_RGHT) break;
+    case EditPosition:
+      if (x == BOARD_LEFT-1 || x == BOARD_RGHT) break;
       if (x < 0 || y < 0) break;
       fromX = x;
       fromY = y;

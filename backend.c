@@ -5383,6 +5383,18 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	    return AmbiguousMove;
 	} else if (toX >= 0 && toY >= 0) {
 	    boards[0][toY][toX] = boards[0][fromY][fromX];
+	    if(fromX == BOARD_LEFT-2) { // handle 'moves' out of holdings
+		if(boards[0][fromY][0] != EmptySquare) {
+		    if(boards[0][fromY][1]) boards[0][fromY][1]--;
+		    if(boards[0][fromY][1] == 0)  boards[0][fromY][0] = EmptySquare; 
+		}
+	    } else
+	    if(fromX == BOARD_RGHT+1) {
+		if(boards[0][fromY][BOARD_WIDTH-1] != EmptySquare) {
+		    if(boards[0][fromY][BOARD_WIDTH-2]) boards[0][fromY][BOARD_WIDTH-2]--;
+		    if(boards[0][fromY][BOARD_WIDTH-2] == 0)  boards[0][fromY][BOARD_WIDTH-1] = EmptySquare; 
+		}
+	    } else
 	    boards[0][fromY][fromX] = EmptySquare;
 	    return AmbiguousMove;
 	}
@@ -5820,11 +5832,30 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	appData.animate = FALSE;
     }
 
-    // moves into holding are invalid for now (later perhaps allow in EditPosition)
+    // moves into holding are invalid for now (except in EditPosition, adapting to-square)
     if(x >= 0 && x < BOARD_LEFT || x >= BOARD_RGHT) {
+	ChessSquare piece = boards[currentMove][fromY][fromX];
+	if(gameMode == EditPosition && piece != EmptySquare &&
+	   fromX >= BOARD_LEFT && fromX < BOARD_RGHT) {
+	    int n;
+	     
+	    if(x == BOARD_LEFT-2 && piece >= BlackPawn) {
+		n = PieceToNumber(piece - (int)BlackPawn);
+		if(n > gameInfo.holdingsSize) { n = 0; piece = BlackPawn; }
+		boards[currentMove][BOARD_HEIGHT-1 - n][0] = piece;
+		boards[currentMove][BOARD_HEIGHT-1 - n][1]++;
+	    } else
+	    if(x == BOARD_RGHT+1 && piece < BlackPawn) {
+		n = PieceToNumber(piece);
+		if(n > gameInfo.holdingsSize) { n = 0; piece = WhitePawn; }
+		boards[currentMove][n][BOARD_WIDTH-1] = piece;
+		boards[currentMove][n][BOARD_WIDTH-2]++;
+	    }
+	    boards[currentMove][fromY][fromX] = EmptySquare;
+	}
 	ClearHighlights();
 	fromX = fromY = -1;
-	DrawPosition(TRUE, NULL);
+	DrawPosition(TRUE, boards[currentMove]);
 	return;
     }
 
@@ -11453,9 +11484,20 @@ EditPositionMenuEvent(selection, x, y)
 
       case EmptySquare:
 	if (gameMode == IcsExamining) {
+            if (x < BOARD_LEFT || x >= BOARD_RGHT) break; // [HGM] holdings
             sprintf(buf, "%sx@%c%c\n", ics_prefix, AAA + x, ONE + y);
 	    SendToICS(buf);
 	} else {
+            if(x < BOARD_LEFT || x >= BOARD_RGHT) {
+                if(x == BOARD_LEFT-2) {
+                    if(y < BOARD_HEIGHT-1-gameInfo.holdingsSize) break;
+                    boards[0][y][1] = 0;
+                } else
+                if(x == BOARD_RGHT+1) {
+                    if(y >= gameInfo.holdingsSize) break;
+                    boards[0][y][BOARD_WIDTH-2] = 0;
+                } else break;
+            }
 	    boards[0][y][x] = EmptySquare;
 	    DrawPosition(FALSE, boards[0]);
 	}
@@ -11494,12 +11536,28 @@ EditPositionMenuEvent(selection, x, y)
       default:
         defaultlabel:
 	if (gameMode == IcsExamining) {
+            if (x < BOARD_LEFT || x >= BOARD_RGHT) break; // [HGM] holdings
   	    sprintf(buf, "%s%c@%c%c\n", ics_prefix,
                     PieceToChar(selection), AAA + x, ONE + y);
 	    SendToICS(buf);
 	} else {
+            if(x < BOARD_LEFT || x >= BOARD_RGHT) {
+                int n;
+                if(x == BOARD_LEFT-2 && selection >= BlackPawn) {
+                    n = PieceToNumber(selection - BlackPawn);
+                    if(n > gameInfo.holdingsSize) { n = 0; selection = BlackPawn; }
+                    boards[0][BOARD_HEIGHT-1-n][0] = selection;
+                    boards[0][BOARD_HEIGHT-1-n][1]++;
+                } else
+                if(x == BOARD_RGHT+1 && selection < BlackPawn) {
+                    n = PieceToNumber(selection);
+                    if(n > gameInfo.holdingsSize) { n = 0; selection = WhitePawn; }
+                    boards[0][n][BOARD_WIDTH-1] = selection;
+                    boards[0][n][BOARD_WIDTH-2]++;
+                }
+            } else
 	    boards[0][y][x] = selection;
-	    DrawPosition(FALSE, boards[0]);
+	    DrawPosition(TRUE, boards[0]);
 	}
 	break;
     }
