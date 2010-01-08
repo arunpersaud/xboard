@@ -4349,7 +4349,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
 	if (appData.testLegality) {
 	  return (*moveType != IllegalMove);
 	} else {
-	  return !(fromX == fromY && toX == toY);
+	  return !(*fromX == *toX && *fromY == *toY);
 	}
 
       case WhiteDrop:
