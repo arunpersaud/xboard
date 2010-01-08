@@ -4433,9 +4433,32 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c '%s'\n", valid, fromX+AAA, fromY+ONE, toX+
     moveList[endPV-1][3] = toY + ONE;
     parseList[endPV-1][0] = NULLCHAR;
   } while(valid);
+  currentMove = endPV;
+  if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
+  SetPremoveHighlights(moveList[currentMove-1][0]-AAA, moveList[currentMove-1][1]-ONE,
+                       moveList[currentMove-1][2]-AAA, moveList[currentMove-1][3]-ONE);
+  DrawPosition(TRUE, boards[currentMove]);
 }
 
 static int lastX, lastY;
+
+Boolean
+LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
+{
+	int startPV;
+
+	if(index < 0 || index >= strlen(buf)) return FALSE; // sanity
+	lastX = x; lastY = y;
+	while(index > 0 && buf[index-1] != '\n') index--; // beginning of line
+	startPV = index;
+      while(buf[index] != '\n') if(buf[index++] == '\t') startPV = index;
+      index = startPV;
+	while(buf[index] && buf[index] != '\n') index++;
+	buf[index] = 0;
+	ParsePV(buf+startPV);
+	*start = startPV; *end = index-1;
+	return TRUE;
+}
 
 Boolean
 LoadPV(int x, int y)
@@ -4443,11 +4466,6 @@ LoadPV(int x, int y)
   int which = gameMode == TwoMachinesPlay && (WhiteOnMove(forwardMostMove) == (second.twoMachinesColor[0] == 'w'));
   lastX = x; lastY = y;
   ParsePV(lastPV[which]); // load the PV of the thinking engine in the boards array.
-  currentMove = endPV;
-  if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
-  SetPremoveHighlights(moveList[currentMove-1][0]-AAA, moveList[currentMove-1][1]-ONE,
-                       moveList[currentMove-1][2]-AAA, moveList[currentMove-1][3]-ONE);
-  DrawPosition(TRUE, boards[currentMove]);
   return TRUE;
 }
 

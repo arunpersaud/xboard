@@ -223,12 +223,39 @@ void ResizeWindowControls( int mode )
     InvalidateRect( GetDlgItem(hDlg,IDC_EngineMemo2), NULL, FALSE );
 }
 
+static int currentPV, highTextStart[2], highTextEnd[2];
+extern RECT boardRect;
+
+VOID
+GetMemoLine(HWND hDlg, int x, int y)
+{	// [HGM] pv: translate click to PV line, and load it for display
+	char buf[10000];
+	int index, start, end, memo;
+	POINT pt;
+
+	pt.x = x; pt.y = y;
+	memo = currentPV ? IDC_EngineMemo2 : IDC_EngineMemo1;
+	index = SendDlgItemMessage( hDlg, memo, EM_CHARFROMPOS, 0, (LPARAM) &pt );
+	GetDlgItemText(hDlg, memo, buf, sizeof(buf));
+	if(LoadMultiPV(x, y, buf, index, &start, &end)) {
+	    SetCapture(hDlg);
+	    SendMessage( outputField[currentPV][nMemo], EM_SETSEL, (WPARAM)start, (LPARAM)end );
+	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
+	    SetFocus(outputField[currentPV][nMemo]);
+	}
+}
+
 // front end. Actual printing of PV lines into the output field
 void InsertIntoMemo( int which, char * text, int where )
 {
     SendMessage( outputField[which][nMemo], EM_SETSEL, where, where ); // [HGM] multivar: choose insertion point
 
     SendMessage( outputField[which][nMemo], EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) text );
+    if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
+	int len = strlen(text);
+	highTextStart[which] += len; highTextEnd[which] += len;
+	SendMessage( outputField[which][nMemo], EM_SETSEL, highTextStart[which], highTextEnd[which] );
+    }
 }
 
 // front end. Associates an icon with an output field ("control" in Windows jargon).
@@ -261,6 +288,9 @@ LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
 
             ResizeWindowControls( windowMode );
 
+            SendDlgItemMessage( hDlg, IDC_EngineMemo1, EM_SETEVENTMASK, 0, ENM_MOUSEEVENTS );
+            SendDlgItemMessage( hDlg, IDC_EngineMemo2, EM_SETEVENTMASK, 0, ENM_MOUSEEVENTS );
+
 	    /* Set font */
 	    SendDlgItemMessage( engineOutputDialog, IDC_EngineMemo1, WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, MAKELPARAM(TRUE, 0 ));
 	    SendDlgItemMessage( engineOutputDialog, IDC_EngineMemo2, WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, MAKELPARAM(TRUE, 0 ));
@@ -285,6 +315,27 @@ LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
           break;
         }
 
+        break;
+
+    case WM_MOUSEMOVE:
+        MovePV(LOWORD(lParam) - boardRect.left, HIWORD(lParam) - boardRect.top, boardRect.bottom - boardRect.top);
+        break;
+
+    case WM_RBUTTONUP:
+        ReleaseCapture();
+        SendMessage( outputField[currentPV][nMemo], EM_SETSEL, 0, 0 );
+        highTextStart[currentPV] = highTextEnd[currentPV] = 0;
+        UnLoadPV();
+        break;
+
+    case WM_NOTIFY:
+        if( wParam == IDC_EngineMemo1 || wParam == IDC_EngineMemo2 ) {
+            MSGFILTER * lpMF = (MSGFILTER *) lParam;
+            if( lpMF->msg == WM_RBUTTONDOWN && (lpMF->wParam & (MK_CONTROL | MK_SHIFT)) == 0 ) {
+                currentPV = (wParam == IDC_EngineMemo2);
+                GetMemoLine(hDlg, LOWORD(lpMF->lParam), HIWORD(lpMF->lParam));
+            }
+        }
         break;
 
     case WM_GETMINMAXINFO:
