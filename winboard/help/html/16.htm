@@ -88,6 +88,11 @@
 <P>Sets the <A HREF="07.htm#highlightdragging">Highlight Dragging</A> option. Default: False.</P>
 
 
+<P><B><A NAME="showtargets"></A><font color="#3333ff">/showTargetSquares <I>true|false</I></font></B></P>
+
+<P><font color="#3333ff">When set, and the Highlight Dragging option is set, WinBoard will indicate all squares a piece can legally move to when you pick up that piece, by drawing a colored circle in it. Default: False.</font></P>
+
+
 
 <P><B><A NAME="highlight"></A>/highlight </B>or <B>/xhighlight</B>, or<B> <A NAME="highlightlastmoveopt"></A>/highlightLastMove<I> true|false</I></B></P>
 
@@ -146,7 +151,7 @@
 <P><B><A NAME="hsc"></A>/hsc </B>or<B> <A NAME="highlightsquarecolor"></A>/highlightSquareColor <I>color</I><SUP> </SUP><BR>
 <A NAME="phc"></A>/phc </B>or <B><A NAME="premovehighlightcolor"></A>/premoveHighlightColor <I>color</I><SUP> </SUP></B></P>
 
-<P>Color specifications for the <A HREF="07.htm#highlightlastmove">Highlight Last Move</A> and <A HREF="07.htm#premovecmd">Premove</A> options, respectively. Colors can be specified only by red/green/blue intensity, either in hexadecimal (as <I>#rrggbb</I>) or in decimal (as <I>rrr,ggg,bbb</I>). In the latter format, you must enclose the string in quotation marks if you leave spaces after the commas. The defaults are respectively #FFFF00 and #FF0000, respectively.</P>
+<P>Color specifications for the <A HREF="07.htm#highlightlastmove">Highlight Last Move</A> and <A HREF="07.htm#premovecmd">Premove</A> options, respectively. Colors can be specified only by red/green/blue intensity, either in hexadecimal (as <I>#rrggbb</I>) or in decimal (as <I>rrr,ggg,bbb</I>). In the latter format, you must enclose the string in quotation marks if you leave spaces after the commas. The defaults are respectively #FFFF00 and #FF0000, respectively. <font color="#3333FF">These colors are also used to indicate non-captures and captures, respectively, with the /showTargetSquares option. The premove color is also used to indicate the most recent move when stepping through the principal variation of an engine.</font></P>
 
 
 
@@ -325,6 +330,10 @@
 
 <P>The default for soundMove and soundBell is <CODE>$</CODE>, while the others default to silence.</P>
 
+
+<P><B><A NAME="dropmenu"></A><font color="#3333FF">/dropMenu <I>true|false</I></font></B></P>
+
+<P><font color="#3333FF">This option allows you to emulate old behavior, where the right mouse button brings up the (now deprecated) drop menu rather than displaying the position at the end of the principal variation. Default: False.</font></P>
 
 
 <P><B><A NAME="icsmenu"></A>/icsMenu={<I>entries</I>} </B>or <B>/icsMenu=@<I>filename</I></B></P>
