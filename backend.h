@@ -205,6 +205,9 @@ double u64ToDouble P((u64 value));
 void OutputChatMessage P((int partner, char *mess));
 void EditPositionDone P((Boolean fakeRights));
 Boolean GetArgValue P((char *name));
+Boolean LoadPV P((int x, int y));
+void UnLoadPV P(());
+void MovePV P((int x, int y, int h));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));

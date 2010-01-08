@@ -235,6 +235,8 @@ extern char installDir[MSG_SIZ];
 
 extern int tinyLayout, smallLayout;
 ChessProgramStats programStats;
+char lastPV[2][2*MSG_SIZ]; /* [HGM] pv: last PV in thinking output of each engine */
+int endPV = -1;
 static int exiting = 0; /* [HGM] moved to top */
 static int setboardSpoiledMachineBlack = 0 /*, errorExitFlag = 0*/;
 int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos */
@@ -4396,6 +4398,90 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
     }
 }
 
+
+void
+ParsePV(char *pv)
+{ // Parse a string of PV moves, and append to current game, behind forwardMostMove
+  int fromX, fromY, toX, toY; char promoChar;
+  ChessMove moveType;
+  Boolean valid;
+  int nr = 0;
+
+  endPV = forwardMostMove;
+  do {
+    while(*pv == ' ') pv++;
+    if(*pv == '(') pv++; // first (ponder) move can be in parentheses
+    valid = ParseOneMove(pv, endPV, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
+if(appData.debugMode){
+fprintf(debugFP,"parsePV: %d %c%c%c%c '%s'\n", valid, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, pv);
+}
+    if(!valid && nr == 0 &&
+       ParseOneMove(pv, endPV-1, &moveType, &fromX, &fromY, &toX, &toY, &promoChar)){ 
+        nr++; moveType = Comment; // First move has been played; kludge to make sure we continue
+    }
+    while(*pv && *pv++ != ' '); // skip what we parsed; assume space separators
+    if(moveType == Comment) { valid++; continue; } // allow comments in PV
+    nr++;
+    if(endPV+1 > framePtr) break; // no space, truncate
+    if(!valid) break;
+    endPV++;
+    CopyBoard(boards[endPV], boards[endPV-1]);
+    ApplyMove(fromX, fromY, toX, toY, promoChar, boards[endPV]);
+    moveList[endPV-1][0] = fromX + AAA;
+    moveList[endPV-1][1] = fromY + ONE;
+    moveList[endPV-1][2] = toX + AAA;
+    moveList[endPV-1][3] = toY + ONE;
+    parseList[endPV-1][0] = NULLCHAR;
+  } while(valid);
+}
+
+static int lastX, lastY;
+
+Boolean
+LoadPV(int x, int y)
+{ // called on right mouse click to load PV
+  int which = gameMode == TwoMachinesPlay && (WhiteOnMove(forwardMostMove) == (second.twoMachinesColor[0] == 'w'));
+  lastX = x; lastY = y;
+  ParsePV(lastPV[which]); // load the PV of the thinking engine in the boards array.
+  currentMove = endPV;
+  if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
+  SetPremoveHighlights(moveList[currentMove-1][0]-AAA, moveList[currentMove-1][1]-ONE,
+                       moveList[currentMove-1][2]-AAA, moveList[currentMove-1][3]-ONE);
+  DrawPosition(TRUE, boards[currentMove]);
+  return TRUE;
+}
+
+void
+UnLoadPV()
+{
+  if(endPV < 0) return;
+  endPV = -1;
+  currentMove = forwardMostMove;
+  ClearPremoveHighlights();
+  DrawPosition(TRUE, boards[currentMove]);
+}
+
+void
+MovePV(int x, int y, int h)
+{ // step through PV based on mouse coordinates (called on mouse move)
+  int margin = h>>3, step = 0;
+
+  if(endPV < 0) return;
+  // we must somehow check if right button is still down (might be released off board!)
+  if(y < margin && (abs(x - lastX) > 6 || abs(y - lastY) > 6)) step = 1; else
+  if(y > h - margin && (abs(x - lastX) > 6 || abs(y - lastY) > 6)) step = -1; else
+  if( y > lastY + 6 ) step = -1; else if(y < lastY - 6) step = 1;
+  if(!step) return;
+  lastX = x; lastY = y;
+  if(currentMove + step > endPV || currentMove + step < forwardMostMove) step = 0;
+  currentMove += step;
+  if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
+  SetPremoveHighlights(moveList[currentMove-1][0]-AAA, moveList[currentMove-1][1]-ONE,
+                       moveList[currentMove-1][2]-AAA, moveList[currentMove-1][3]-ONE);
+  DrawPosition(FALSE, boards[currentMove]);
+}
+
+
 // [HGM] shuffle: a general way to suffle opening setups, applicable to arbitrary variants.
 // All positions will have equal probability, but the current method will not provide a unique
 // numbering scheme for arrays that contain 3 or more pieces of the same kind.
@@ -5735,6 +5821,8 @@ void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cp
         stats.an_move_index = cpstats->nr_moves - cpstats->moves_left;
         stats.an_move_count = cpstats->nr_moves;
     }
+
+    if(stats.pv && stats.pv[0]) strcpy(lastPV[stats.which], stats.pv); // [HGM] pv: remember last PV of each
 
     SetProgramStats( &stats );
 }
@@ -7709,6 +7797,7 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
 			0, 1);
       return;
     }
+    UnLoadPV(); // [HGM] pv: if we are looking at a PV, abort this
     if (commentList[forwardMostMove+1] != NULL) {
 	free(commentList[forwardMostMove+1]);
 	commentList[forwardMostMove+1] = NULL;
@@ -13308,12 +13397,12 @@ DecrementClocks()
 	if(whiteNPS >= 0) lastTickLength = 0;
 	timeRemaining = whiteTimeRemaining -= lastTickLength;
 	DisplayWhiteClock(whiteTimeRemaining - fudge,
-			  WhiteOnMove(currentMove));
+			  WhiteOnMove(currentMove < forwardMostMove ? currentMove : forwardMostMove));
     } else {
 	if(blackNPS >= 0) lastTickLength = 0;
 	timeRemaining = blackTimeRemaining -= lastTickLength;
 	DisplayBlackClock(blackTimeRemaining - fudge,
-			  !WhiteOnMove(currentMove));
+			  !WhiteOnMove(currentMove < forwardMostMove ? currentMove : forwardMostMove));
     }
 
     if (CheckFlags()) return;

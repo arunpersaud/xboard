@@ -256,6 +256,8 @@ void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
+void HandlePV P((Widget w, XEvent * event,
+		     String * params, Cardinal * nParams));
 void WhiteClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void BlackClock P((Widget w, XEvent *event,
@@ -832,6 +834,8 @@ XtActionsRec boardActions[] = {
     { "DrawPosition", DrawPositionProc },
     { "HandleUserMove", HandleUserMove },
     { "AnimateUserMove", AnimateUserMove },
+    { "HandlePV", HandlePV },
+    { "UnLoadPV", UnLoadPV },
     { "FileNameAction", FileNameAction },
     { "AskQuestionProc", AskQuestionProc },
     { "AskQuestionReplyAction", AskQuestionReplyAction },
@@ -988,6 +992,8 @@ char boardTranslations[] =
    "<Btn1Down>: HandleUserMove() \n \
    <Btn1Up>: HandleUserMove() \n \
    <Btn1Motion>: AnimateUserMove() \n \
+   <Btn3Motion>: HandlePV() \n \
+   <Btn3Up>: UnLoadPV() \n \
    Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
                  PieceMenuPopup(menuB) \n \
    Any<Btn2Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD) \
@@ -3672,6 +3678,8 @@ void PieceMenuPopup(w, event, params, num_params)
      Cardinal *num_params;
 {
     String whichMenu;
+
+    if (event->type != ButtonRelease) UnLoadPV(); // [HGM] pv
     if (event->type != ButtonPress) return;
     if (errorUp) ErrorPopDown();
     switch (gameMode) {
@@ -3679,12 +3687,25 @@ void PieceMenuPopup(w, event, params, num_params)
       case IcsExamining:
 	whichMenu = params[0];
 	break;
+      case IcsObserving:
+	if(!appData.icsEngineAnalyze) return;
       case IcsPlayingWhite:
       case IcsPlayingBlack:
-      case EditGame:
+	if(!appData.zippyPlay) goto noZip;
+      case AnalyzeMode:
+      case AnalyzeFile:
       case MachinePlaysWhite:
       case MachinePlaysBlack:
-	if (appData.testLegality &&
+      case TwoMachinesPlay: // [HGM] pv: use for showing PV
+	if (!appData.dropMenu) {
+	  LoadPV(event->xbutton.x, event->xbutton.y);
+	  return;
+	}
+	if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
+           gameMode == AnalyzeFile || gameMode == IcsObserving) return;
+      case EditGame:
+      noZip:
+	if (!appData.dropMenu || appData.testLegality &&
 	    gameInfo.variant != VariantBughouse &&
 	    gameInfo.variant != VariantCrazyhouse) return;
 	SetupDropMenu();
@@ -4427,6 +4448,12 @@ void AnimateUserMove (Widget w, XEvent * event,
 		      String * params, Cardinal * nParams)
 {
     DragPieceMove(event->xmotion.x, event->xmotion.y);
+}
+
+void HandlePV (Widget w, XEvent * event,
+		      String * params, Cardinal * nParams)
+{   // [HGM] pv: walk PV
+    MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 }
 
 Widget CommentCreate(name, text, mutable, callback, lines)
