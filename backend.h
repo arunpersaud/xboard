@@ -101,6 +101,7 @@ extern FILE *debugFP;
 extern char* programVersion;
 extern ProcRef firstProgramPR, secondProgramPR;
 extern Board boards[];
+extern char marker[BOARD_RANKS][BOARD_FILES];
 
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */

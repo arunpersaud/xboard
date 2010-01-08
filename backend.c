@@ -249,6 +249,7 @@ int lastSavedGame; /* [HGM] save: ID of game */
 char chatPartner[MAX_CHAT][MSG_SIZ]; /* [HGM] chat: list of chatting partners */
 extern int chatCount;
 int chattingPartner;
+char marker[BOARD_RANKS][BOARD_FILES]; /* [HGM] marks for target squares */
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -5634,6 +5635,43 @@ if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", move
         FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
+void
+Mark(board, flags, kind, rf, ff, rt, ft, closure)
+     Board board;
+     int flags;
+     ChessMove kind;
+     int rf, ff, rt, ft;
+     VOIDSTAR closure;
+{
+    typedef char Markers[BOARD_RANKS][BOARD_FILES];
+    Markers *m = (Markers *) closure;
+    if(rf == fromY && ff == fromX)
+	(*m)[rt][ft] = 1 + (board[rt][ft] != EmptySquare
+			 || kind == WhiteCapturesEnPassant
+			 || kind == BlackCapturesEnPassant);
+    else if(flags & F_MANDATORY_CAPTURE && board[rt][ft] != EmptySquare) (*m)[rt][ft] = 3;
+}
+
+void
+MarkTargetSquares(int clear)
+{
+  int x, y;
+  if(!appData.markers || !appData.highlightDragging || 
+     !appData.testLegality || gameMode == EditPosition) return;
+  if(clear) {
+    for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) marker[y][x] = 0;
+  } else {
+    int capt = 0;
+    GenLegal(boards[currentMove], PosFlags(currentMove), Mark, (void*) marker);
+    if(PosFlags(0) & F_MANDATORY_CAPTURE) {
+      for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) if(marker[y][x]>1) capt++;
+      if(capt)
+      for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) if(marker[y][x] == 1) marker[y][x] = 0;
+    }
+  }
+  DrawPosition(TRUE, NULL);
+}
+
 void LeftClick(ClickType clickType, int xPix, int yPix)
 {
     int x, y;
@@ -5642,6 +5680,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     char promoChoice = NULLCHAR;
 
     if (clickType == Press) ErrorPopDown();
+    MarkTargetSquares(1);
 
     x = EventToSquare(xPix, BOARD_WIDTH);
     y = EventToSquare(yPix, BOARD_HEIGHT);
@@ -5687,6 +5726,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		fromX = x;
 		fromY = y;
 		second = 0;
+		MarkTargetSquares(0);
 		DragPieceBegin(xPix, yPix);
 		if (appData.highlightDragging) {
 		    SetHighlights(x, y, -1, -1);
@@ -5727,6 +5767,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    if (OKToStartUserMove(x, y)) {
 		fromX = x;
 		fromY = y;
+		MarkTargetSquares(0);
 		DragPieceBegin(xPix, yPix);
 	    }
 	    return;

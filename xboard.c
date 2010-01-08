@@ -49,6 +49,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
+#define HIGHDRAG 1
+
 #include "config.h"
 
 #include <stdio.h>
@@ -4196,6 +4198,10 @@ void DrawSquare(row, column, piece, do_flash)
 	    XDrawString(xDisplay, xBoardWindow, coordGC,
 			x + 2, y + font_ascent + 1, string, 1);
 	}
+    }
+    if(marker[row][column]) {
+	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC, 
+		x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
     }
 }
 
@@ -8632,7 +8638,7 @@ DragPieceMove(x, y)
     corner.x = x - player.mouseDelta.x;
     corner.y = y - player.mouseDelta.y;
     AnimationFrame(&player, &corner, player.dragPiece);
-#if HIGHDRAG
+#if HIGHDRAG*0
     if (appData.highlightDragging) {
 	int boardX, boardY;
 	BoardSquare(x, y, &boardX, &boardY);
