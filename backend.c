@@ -743,7 +743,7 @@ InitBackEnd1()
     /* [HGM] time odds: set factor for each machine */
     first.timeOdds  = appData.firstTimeOdds;
     second.timeOdds = appData.secondTimeOdds;
-    { int norm = 1;
+    { float norm = 1;
         if(appData.timeOddsMode) {
             norm = first.timeOdds;
             if(norm > second.timeOdds) norm = second.timeOdds;
@@ -12602,7 +12602,7 @@ SendTimeRemaining(cps, machineWhite)
     /* [HGM] translate opponent's time by time-odds factor */
     otime = (otime * cps->other->timeOdds) / cps->timeOdds;
     if (appData.debugMode) {
-        fprintf(debugFP, "time odds: %d %d \n", cps->timeOdds, cps->other->timeOdds);
+        fprintf(debugFP, "time odds: %f %f \n", cps->timeOdds, cps->other->timeOdds);
     }
 
     if (time <= 0) time = 1;

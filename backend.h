@@ -325,7 +325,7 @@ typedef struct _CPS {
     int hasOwnBookUCI;   /* [AS] 0=use GUI or Polyglot book, 1=has own book */
 
     /* [HGM] time odds */
-    int timeOdds;   /* factor through which we divide time for this engine  */
+    float timeOdds; /* factor through which we divide time for this engine  */
     int debug;      /* [HGM] ignore engine debug lines starting with '#'    */
     int maxNrOfSessions; /* [HGM] secondary TC: max args in 'level' command */
     int accumulateTC; /* [HGM] secondary TC: how to handle extra sessions   */
