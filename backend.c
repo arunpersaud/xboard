@@ -5458,8 +5458,6 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 	}
       ModeHighlight();
     }
-    ModeHighlight();
-  }
 
   /* Relay move to ICS or chess engine */
   if (appData.icsActive)
@@ -5498,21 +5496,35 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   switch (gameMode) 
     {
     case EditGame:
-      switch (MateTest(boards[currentMove], PosFlags(currentMove)) ) {
-      case MT_NONE:
-      case MT_CHECK:
-	break;
-
+      switch (MateTest(boards[currentMove], PosFlags(currentMove)) ) 
+	{
+	case MT_NONE:
+	case MT_CHECK:
+	  break;
+	case MT_CHECKMATE:
+	case MT_STAINMATE:
+	  if (WhiteOnMove(currentMove)) {
+	    GameEnds(BlackWins, "Black mates", GE_PLAYER);
+	  } else {
+	    GameEnds(WhiteWins, "White mates", GE_PLAYER);
+	  }
+	  break;
+	case MT_STALEMATE:
+	  GameEnds(GameIsDrawn, "Stalemate", GE_PLAYER);
+	  break;
+	}
+      break;
+      
     case MachinePlaysBlack:
     case MachinePlaysWhite:
       /* disable certain menu options while machine is thinking */
       SetMachineThinkingEnables();
       break;
-
+      
     default:
       break;
     }
-
+  
   if(bookHit)
     { // [HGM] book: simulate book reply
       static char bookMove[MSG_SIZ]; // a bit generous?
