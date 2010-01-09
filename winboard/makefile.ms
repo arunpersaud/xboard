@@ -87,8 +87,8 @@ $(PROJ).hlp : $(PROJ).rtf
 $(PROJ).res: $(PROJ).rc $(PROJ).h resource.h config.h
     $(RC) $(CF) -r -fo $(PROJ).res $(PROJ).rc
 
-parser.c: ../parser.l
-    $(FLEX) -oparser.c -L ../parser.l
+../parser.c: ../parser.l
+    $(FLEX) -o../parser.c -L ../parser.l
 
 winboard.obj: winboard.c config.h winboard.h ../common.h ../frontend.h \
         ../backend.h ../moves.h wgamelist.h defaults.h resource.h wclipbrd.h \
@@ -99,7 +99,7 @@ backend.obj: ../backend.c config.h ../common.h ../frontend.h ../backend.h \
         ../parser.h ../moves.h ../zippy.h ../backendz.h ../gettext.h ../lists.h
         $(CC) $(CFLAGS) ../backend.c
 
-parser.obj: parser.c config.h ../common.h ../backend.h ../parser.h \
+parser.obj: ../parser.c config.h ../common.h ../backend.h ../parser.h \
         ../frontend.h ../moves.h ../lists.h
         $(CC) $(CFLAGS) parser.c
 

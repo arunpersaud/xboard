@@ -77,8 +77,8 @@ wbres.o: $(PROJ).rc $(PROJ).h resource.h config.h
 # note: cygwin flex needs m4 package.  cygwin-setup forgets this dependency
 # note2: use mingw flex instead... although I got cygwin's flex working (with m4),
 #        it didn't produce a useable parser.c (1000's of errors)
-parser.c: ../parser.l
-	$(FLEX) -oparser.c -L ../parser.l
+../parser.c: ../parser.l
+	$(FLEX) -o../parser.c -L ../parser.l
 
 
 $(PROJ).exe: $(OBJS) $(PROJ).hlp
@@ -94,7 +94,7 @@ backend.o: ../backend.c config.h ../common.h ../frontend.h ../backend.h \
 	../parser.h ../moves.h ../zippy.h ../backendz.h ../gettext.h ../lists.h
 	$(call compile, $<)
 
-parser.o: parser.c config.h ../common.h ../backend.h ../parser.h \
+parser.o: ../parser.c config.h ../common.h ../backend.h ../parser.h \
 	../frontend.h ../moves.h ../lists.h
 	$(call compile, $<)
 
