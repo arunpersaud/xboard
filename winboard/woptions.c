@@ -32,11 +32,11 @@
 #include <ctype.h>
 
 #include "common.h"
+#include "frontend.h"
 #include "winboard.h"
 #include "backend.h"
 #include "woptions.h"
 #include "defaults.h"
-#include "wedittags.h"
 #include <richedit.h>
 
 #if __GNUC__
@@ -70,6 +70,7 @@ extern HWND hCommPort;    /* currently open comm port */
 extern DCB dcb;
 extern BOOLEAN chessProgram;
 extern int startedFromPositionFile; /* [HGM] loadPos */
+extern int searchTime;
 
 /* types */
 
@@ -2583,24 +2584,27 @@ SetTimeControlEnables(HWND hDlg)
 {
   UINT state;
 
-  state = IsDlgButtonChecked(hDlg, OPT_TCUseMoves);
-  EnableWindow(GetDlgItem(hDlg, OPT_TCTime), state);
-  EnableWindow(GetDlgItem(hDlg, OPT_TCMoves), state);
-  EnableWindow(GetDlgItem(hDlg, OPT_TCtext1), state);
-  EnableWindow(GetDlgItem(hDlg, OPT_TCtext2), state);
+  state = IsDlgButtonChecked(hDlg, OPT_TCUseMoves)
+	+ 2*IsDlgButtonChecked(hDlg, OPT_TCUseFixed);
+  EnableWindow(GetDlgItem(hDlg, OPT_TCTime), state == 1);
+  EnableWindow(GetDlgItem(hDlg, OPT_TCMoves), state == 1);
+  EnableWindow(GetDlgItem(hDlg, OPT_TCtext1), state == 1);
+  EnableWindow(GetDlgItem(hDlg, OPT_TCtext2), state == 1);
   EnableWindow(GetDlgItem(hDlg, OPT_TCTime2), !state);
   EnableWindow(GetDlgItem(hDlg, OPT_TCInc), !state);
   EnableWindow(GetDlgItem(hDlg, OPT_TCitext1), !state);
   EnableWindow(GetDlgItem(hDlg, OPT_TCitext2), !state);
   EnableWindow(GetDlgItem(hDlg, OPT_TCitext3), !state);
+  EnableWindow(GetDlgItem(hDlg, OPT_TCFixed), state == 2);
+  EnableWindow(GetDlgItem(hDlg, OPT_TCftext), state == 2);
 }
 
 
 LRESULT CALLBACK
 TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  char buf[MSG_SIZ];
-  int mps, increment, odds1, odds2;
+  char buf[MSG_SIZ], *tc;
+  int mps, increment, odds1, odds2, st;
   BOOL ok, ok2;
 
   switch (message) {
@@ -2609,8 +2613,13 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
     /* Initialize the dialog items */
     if (appData.clockMode && !appData.icsActive) {
+      if (searchTime) {
+	CheckRadioButton(hDlg, OPT_TCUseMoves, OPT_TCUseFixed,
+			 OPT_TCUseFixed);
+	SetDlgItemInt(hDlg, OPT_TCFixed, searchTime, FALSE);
+      } else
       if (appData.timeIncrement == -1) {
-	CheckRadioButton(hDlg, OPT_TCUseMoves, OPT_TCUseInc,
+	CheckRadioButton(hDlg, OPT_TCUseMoves, OPT_TCUseFixed,
 			 OPT_TCUseMoves);
 	SetDlgItemText(hDlg, OPT_TCTime, appData.timeControl);
 	SetDlgItemInt(hDlg, OPT_TCMoves, appData.movesPerSession,
@@ -2618,7 +2627,7 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	SetDlgItemText(hDlg, OPT_TCTime2, "");
 	SetDlgItemText(hDlg, OPT_TCInc, "");
       } else {
-	CheckRadioButton(hDlg, OPT_TCUseMoves, OPT_TCUseInc,
+	CheckRadioButton(hDlg, OPT_TCUseMoves, OPT_TCUseFixed,
 			 OPT_TCUseInc);
 	SetDlgItemText(hDlg, OPT_TCTime, "");
 	SetDlgItemText(hDlg, OPT_TCMoves, "");
@@ -2634,7 +2643,19 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND: /* message: received a command */
     switch (LOWORD(wParam)) {
     case IDOK:
+      mps = appData.movesPerSession;
+      increment = appData.timeIncrement;
+      tc = appData.timeControl;
+      st = 0;
       /* Read changed options from the dialog box */
+      if (IsDlgButtonChecked(hDlg, OPT_TCUseFixed)) {
+	st = GetDlgItemInt(hDlg, OPT_TCFixed, &ok, FALSE);
+	if (!ok || st <= 0) {
+	  MessageBox(hDlg, "Invalid max time per move",
+		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  return FALSE;
+	}
+      } else
       if (IsDlgButtonChecked(hDlg, OPT_TCUseMoves)) {
 	increment = -1;
 	mps = GetDlgItemInt(hDlg, OPT_TCMoves, &ok, FALSE);
@@ -2649,9 +2670,9 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
 	}
+      tc = buf;
       } else {
 	increment = GetDlgItemInt(hDlg, OPT_TCInc, &ok, FALSE);
-	mps = appData.movesPerSession;
 	if (!ok || increment < 0) {
 	  MessageBox(hDlg, "Invalid increment",
 		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
@@ -2663,6 +2684,7 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
 	}
+      tc = buf;
       }
       odds1 = GetDlgItemInt(hDlg, OPT_TCOdds1, &ok, FALSE);
       odds2 = GetDlgItemInt(hDlg, OPT_TCOdds2, &ok2, FALSE);
@@ -2671,7 +2693,8 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
       }
-      appData.timeControl = strdup(buf);
+      searchTime = st;
+      appData.timeControl = strdup(tc);
       appData.movesPerSession = mps;
       appData.timeIncrement = increment;
       appData.firstTimeOdds  = first.timeOdds  = odds1;

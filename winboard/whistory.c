@@ -34,33 +34,15 @@
 #include <dlgs.h>
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
+#include "winboard.h"
 
 #include "wsnap.h"
 
-VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo );
-VOID MoveHistoryPopUp();
-VOID MoveHistoryPopDown();
-BOOL MoveHistoryIsUp();
-
-/* Imports from backend.c */
-char * SavePart(char *str);
-
-/* Imports from winboard.c */
-extern HWND moveHistoryDialog;
-extern BOOLEAN moveHistoryDialogUp;
-
-extern HINSTANCE hInst;
-extern HWND hwndMain;
-
-extern WindowPlacement wpMoveHistory;
-
-extern BoardSize boardSize;
-
 /* Module globals */
 typedef char MoveHistoryString[ MOVE_LEN*2 ];
+static BOOLEAN moveHistoryDialogUp = FALSE;
 
 static int lastFirst = 0;
 static int lastLast = 0;

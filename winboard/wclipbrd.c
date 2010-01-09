@@ -32,9 +32,9 @@
 #include <sys/stat.h>
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
+#include "winboard.h"
 #include "wclipbrd.h"
 
 /* Imports from winboard.c */
@@ -50,6 +50,7 @@ CopyFENToClipboard()
 {
   char *fen = NULL;
 
+  if(gameMode == EditPosition) EditPositionDone(TRUE); // [HGM] mak sure castling rights are set consistently
   fen = PositionToFEN(currentMove, NULL);
   if (!fen) {
     DisplayError("Unable to convert position to FEN.", 0);

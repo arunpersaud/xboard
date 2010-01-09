@@ -181,7 +181,7 @@ void ProcessICSInitScript P((FILE * f));
 void EditCommentEvent P((void));
 void ReplaceComment P((int index, char *text));
 int ReplaceTags P((char *tags, GameInfo *gi));/* returns nonzero on error */
-void AppendComment P((int index, char *text));
+void AppendComment P((int index, char *text, Boolean addBraces));
 void ReloadCmailMsgEvent P((int unregister));
 void MailMoveEvent P((void));
 void EditTagsEvent P((void));
@@ -347,13 +347,6 @@ typedef struct _CPS {
 
 extern ChessProgramState first, second;
 
-/* [AS] Search stats from chessprogram, for the played move */
-typedef struct {
-    int score;  /* Centipawns */
-    int depth;  /* Plies */
-    int time;   /* Milliseconds */
-} ChessProgramStats_Move;
-
 /* Search stats from chessprogram */
 typedef struct {
   char movelist[2*MSG_SIZ]; /* Last PV we were sent */
@@ -374,5 +367,6 @@ typedef struct {
 extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
 extern int shuffleOpenings;
 extern ChessProgramStats programStats;
+extern int opponentKibitzes; // used by wengineo.c
 
 #endif /* _BACKEND */

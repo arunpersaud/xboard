@@ -23,6 +23,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	  	 uci.c \
 	 	 xboard.c xboard.h \
 		 xedittags.c xedittags.h \
+		 engineoutput.c engineoutput.h \
 		 xengineoutput.c \
 	 	 xgamelist.c xgamelist.h\
 		 xhistory.c  xhistory.h \
@@ -30,7 +31,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 $(ZPY)
 xboard_LDADD = -lm  @XAW_LIBS@ @GTK_LIBS@
 
-EXTRA_DIST = pixmaps  bitmaps shogibitmaps \
+EXTRA_DIST = pixmaps bitmaps winboard\
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm readme_HGM.txt zippy.README
 

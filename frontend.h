@@ -186,6 +186,8 @@ void ThawUI P((void));
 extern char *programName;
 extern int commentUp;
 
+void GreyRevert P((Boolean grey));
+
 typedef struct FrontEndProgramStats_TAG {
     int which;
     int depth;
@@ -199,5 +201,10 @@ typedef struct FrontEndProgramStats_TAG {
 } FrontEndProgramStats;
 
 void SetProgramStats P(( FrontEndProgramStats * stats )); /* [AS] */
+
+void EngineOutputPopUp P((void));
+void EngineOutputPopDown P((void));
+int  EngineOutputIsUp P((void));
+int  EngineOutputDialogExists P((void));
 
 #endif

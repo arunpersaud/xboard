@@ -1,0 +1,502 @@
+/*
+ * engineoutput.c - split-off backe-end from Engine output (PV) by HGM
+ *
+ * Author: Alessandro Scotti (Dec 2005)
+ *
+ * Copyright 2005 Alessandro Scotti
+ *
+ * ------------------------------------------------------------------------
+ *
+ * GNU XBoard is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * GNU XBoard is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.  *
+ *
+ *------------------------------------------------------------------------
+ ** See the file ChangeLog for a revision history.  */
+
+#define SHOW_PONDERING
+
+#include "config.h"
+
+#include <stdio.h>
+#include <malloc.h>
+
+#if STDC_HEADERS
+# include <stdlib.h>
+# include <string.h>
+#else /* not STDC_HEADERS */
+# if HAVE_STRING_H
+#  include <string.h>
+# else /* not HAVE_STRING_H */
+#  include <strings.h>
+# endif /* not HAVE_STRING_H */
+#endif /* not STDC_HEADERS */
+
+#include "common.h"
+#include "frontend.h"
+#include "backend.h"
+#include "engineoutput.h"
+
+typedef struct {
+    char * name;
+    int which;
+    int depth;
+    u64 nodes;
+    int score;
+    int time;
+    char * pv;
+    char * hint;
+    int an_move_index;
+    int an_move_count;
+} EngineOutputData;
+
+// called by other front-end
+void EngineOutputUpdate( FrontEndProgramStats * stats );
+void OutputKibitz(int window, char *text);
+
+// module back-end routines
+static void VerifyDisplayMode();
+static void UpdateControls( EngineOutputData * ed );
+
+static int  lastDepth[2] = { -1, -1 };
+static int  lastForwardMostMove[2] = { -1, -1 };
+static int  engineState[2] = { -1, -1 };
+
+#define MAX_VAR 400
+static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
+
+// back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
+void SetEngineState( int which, int state, char * state_data )
+{
+    int x_which = 1 - which;
+
+    if( engineState[ which ] != state ) {
+        engineState[ which ] = state;
+
+        switch( state ) {
+        case STATE_THINKING:
+            SetIcon( which, nStateIcon, nThinking );
+            if( engineState[ x_which ] == STATE_THINKING ) {
+                SetEngineState( x_which, STATE_IDLE, "" );
+            }
+            break;
+        case STATE_PONDERING:
+            SetIcon( which, nStateIcon, nPondering );
+            break;
+        case STATE_ANALYZING:
+            SetIcon( which, nStateIcon, nAnalyzing );
+            break;
+        default:
+            SetIcon( which, nStateIcon, nClear );
+            break;
+        }
+    }
+
+    if( state_data != 0 ) {
+        DoSetWindowText( which, nStateData, state_data );
+    }
+}
+
+// back end, now the front-end wrapper ClearMemo is used, and ed no longer contains handles.
+void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by back-end
+{
+    EngineOutputData ed;
+    int clearMemo = FALSE;
+    int which;
+    int depth;
+
+    if( stats == 0 ) {
+        SetEngineState( 0, STATE_IDLE, "" );
+        SetEngineState( 1, STATE_IDLE, "" );
+        return;
+    }
+
+    if(gameMode == IcsObserving && !appData.icsEngineAnalyze)
+	return; // [HGM] kibitz: shut up engine if we are observing an ICS game
+
+    which = stats->which;
+    depth = stats->depth;
+
+    if( which < 0 || which > 1 || depth < 0 || stats->time < 0 || stats->pv == 0 ) {
+        return;
+    }
+
+    if( !EngineOutputDialogExists() ) {
+        return;
+    }
+
+    VerifyDisplayMode();
+
+    ed.which = which;
+    ed.depth = depth;
+    ed.nodes = stats->nodes;
+    ed.score = stats->score;
+    ed.time = stats->time;
+    ed.pv = stats->pv;
+    ed.hint = stats->hint;
+    ed.an_move_index = stats->an_move_index;
+    ed.an_move_count = stats->an_move_count;
+
+    /* Get target control. [HGM] this is moved to front end, which get them from a table */
+    if( which == 0 ) {
+        ed.name = first.tidy;
+    }
+    else {
+        ed.name = second.tidy;
+    }
+
+    /* Clear memo if needed */
+    if( lastDepth[which] > depth || (lastDepth[which] == depth && depth <= 1) ) {
+        clearMemo = TRUE;
+    }
+
+    if( lastForwardMostMove[which] != forwardMostMove ) {
+        clearMemo = TRUE;
+    }
+
+    if( clearMemo ) { DoClearMemo(which); nrVariations[which] = 0; }
+
+    /* Update */
+    lastDepth[which] = depth == 1 && ed.nodes == 0 ? 0 : depth; // [HGM] info-line kudge
+    lastForwardMostMove[which] = forwardMostMove;
+
+    if( ed.pv != 0 && ed.pv[0] == ' ' ) {
+        if( strncmp( ed.pv, " no PV", 6 ) == 0 ) { /* Hack on hack! :-O */
+            ed.pv = "";
+        }
+    }
+
+    UpdateControls( &ed );
+}
+
+#define ENGINE_COLOR_WHITE      'w'
+#define ENGINE_COLOR_BLACK      'b'
+#define ENGINE_COLOR_UNKNOWN    ' '
+
+// pure back end
+static char GetEngineColor( int which )
+{
+    char result = ENGINE_COLOR_UNKNOWN;
+
+    if( which == 0 || which == 1 ) {
+        ChessProgramState * cps;
+
+        switch (gameMode) {
+        case MachinePlaysBlack:
+        case IcsPlayingBlack:
+            result = ENGINE_COLOR_BLACK;
+            break;
+        case MachinePlaysWhite:
+        case IcsPlayingWhite:
+            result = ENGINE_COLOR_WHITE;
+            break;
+        case AnalyzeMode:
+        case AnalyzeFile:
+            result = WhiteOnMove(forwardMostMove) ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
+            break;
+        case TwoMachinesPlay:
+            cps = (which == 0) ? &first : &second;
+            result = cps->twoMachinesColor[0];
+            result = result == 'w' ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
+            break;
+        default: ; // does not happen, but suppresses pedantic warnings
+        }
+    }
+
+    return result;
+}
+
+// pure back end
+static char GetActiveEngineColor()
+{
+    char result = ENGINE_COLOR_UNKNOWN;
+
+    if( gameMode == TwoMachinesPlay ) {
+        result = WhiteOnMove(forwardMostMove) ? ENGINE_COLOR_WHITE : ENGINE_COLOR_BLACK;
+    }
+
+    return result;
+}
+
+// pure back end
+static int IsEnginePondering( int which )
+{
+    int result = FALSE;
+
+    switch (gameMode) {
+    case MachinePlaysBlack:
+    case IcsPlayingBlack:
+        if( WhiteOnMove(forwardMostMove) ) result = TRUE;
+        break;
+    case MachinePlaysWhite:
+    case IcsPlayingWhite:
+        if( ! WhiteOnMove(forwardMostMove) ) result = TRUE;
+        break;
+    case TwoMachinesPlay:
+        if( GetActiveEngineColor() != ENGINE_COLOR_UNKNOWN ) {
+            if( GetEngineColor( which ) != GetActiveEngineColor() ) result = TRUE;
+        }
+        break;
+    default: ; // does not happen, but suppresses pedantic warnings
+    }
+
+    return result;
+}
+
+// back end
+static void SetDisplayMode( int mode )
+{
+    if( windowMode != mode ) {
+        windowMode = mode;
+
+        ResizeWindowControls( mode );
+    }
+}
+
+// pure back end
+static void VerifyDisplayMode()
+{
+    int mode;
+
+    /* Get proper mode for current game */
+    switch( gameMode ) {
+    case IcsObserving:    // [HGM] ICS analyze
+	if(!appData.icsEngineAnalyze) return;
+    case AnalyzeMode:
+    case AnalyzeFile:
+    case MachinePlaysWhite:
+    case MachinePlaysBlack:
+        mode = 0;
+        break;
+    case IcsPlayingWhite:
+    case IcsPlayingBlack:
+        mode = appData.zippyPlay && opponentKibitzes; // [HGM] kibitz
+        break;
+    case TwoMachinesPlay:
+        mode = 1;
+        break;
+    default:
+        /* Do not change */
+        return;
+    }
+
+    SetDisplayMode( mode );
+}
+
+// back end. Determine what icon to set in the color-icon field, and print it
+void SetEngineColorIcon( int which )
+{
+    char color = GetEngineColor(which);
+    int nicon = 0;
+
+    if( color == ENGINE_COLOR_BLACK )
+        nicon = nColorBlack;
+    else if( color == ENGINE_COLOR_WHITE )
+        nicon = nColorWhite;
+    else
+        nicon = nColorUnknown;
+
+    SetIcon( which, nColorIcon, nicon );
+}
+
+#define MAX_NAME_LENGTH 32
+
+// [HGM] multivar: sort Thinking Output within one depth on score
+
+static int InsertionPoint( int len, EngineOutputData * ed )
+{
+	int i, offs = 0, newScore = ed->score, n = ed->which;
+
+	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0)
+		newScore = 1e6; // info lines inserted on top
+	if(ed->depth != curDepth[n]) { // depth has changed
+		curDepth[n] = ed->depth;
+		nrVariations[n] = 0; // throw away everything we had
+	}
+	// loop through all lines. Note even / odd used for different panes
+	for(i=nrVariations[n]-2; i>=0; i-=2) {
+		// put new item behind those we haven't looked at
+		offs = textEnd[i+n];
+		textEnd[i+n+2] = offs + len;
+		scores[i+n+2] = newScore;
+		if(newScore < scores[i+n]) break;
+		// if it had higher score as previous, move previous in stead
+		scores[i+n+2] = scores[i+n];
+		textEnd[i+n+2] = textEnd[i+n] + len;
+	}
+	if(i<0) {
+		offs = 0;
+		textEnd[n] = offs + len;
+		scores[n] = newScore;
+	}
+	nrVariations[n] += 2;
+      return offs;
+}
+
+
+// pure back end, now SetWindowText is called via wrapper DoSetWindowText
+static void UpdateControls( EngineOutputData * ed )
+{
+//    int isPondering = FALSE;
+
+    char s_label[MAX_NAME_LENGTH + 32];
+    
+    char * name = ed->name;
+
+    /* Label */
+    if( name == 0 || *name == '\0' ) {
+        name = "?";
+    }
+
+    strncpy( s_label, name, MAX_NAME_LENGTH );
+    s_label[ MAX_NAME_LENGTH-1 ] = '\0';
+
+#ifdef SHOW_PONDERING
+    if( IsEnginePondering( ed->which ) ) {
+        char buf[8];
+
+        buf[0] = '\0';
+
+        if( ed->hint != 0 && *ed->hint != '\0' ) {
+            strncpy( buf, ed->hint, sizeof(buf) );
+            buf[sizeof(buf)-1] = '\0';
+        }
+        else if( ed->pv != 0 && *ed->pv != '\0' ) {
+            char * sep = strchr( ed->pv, ' ' );
+            int buflen = sizeof(buf);
+
+            if( sep != NULL ) {
+                buflen = sep - ed->pv + 1;
+                if( buflen > sizeof(buf) ) buflen = sizeof(buf);
+            }
+
+            strncpy( buf, ed->pv, buflen );
+            buf[ buflen-1 ] = '\0';
+        }
+
+        SetEngineState( ed->which, STATE_PONDERING, buf );
+    }
+    else if( gameMode == TwoMachinesPlay ) {
+        SetEngineState( ed->which, STATE_THINKING, "" );
+    }
+    else if( gameMode == AnalyzeMode || gameMode == AnalyzeFile
+	  || (gameMode == IcsObserving && appData.icsEngineAnalyze)) { // [HGM] ICS-analyze
+        char buf[64];
+        int time_secs = ed->time / 100;
+        int time_mins = time_secs / 60;
+
+        buf[0] = '\0';
+
+        if( ed->an_move_index != 0 && ed->an_move_count != 0 && *ed->hint != '\0' ) {
+            char mov[16];
+
+            strncpy( mov, ed->hint, sizeof(mov) );
+            mov[ sizeof(mov)-1 ] = '\0';
+
+            sprintf( buf, "[%d] %d/%d: %s [%02d:%02d:%02d]", ed->depth, ed->an_move_index,
+			ed->an_move_count, mov, time_mins / 60, time_mins % 60, time_secs % 60 );
+        }
+
+        SetEngineState( ed->which, STATE_ANALYZING, buf );
+    }
+    else {
+        SetEngineState( ed->which, STATE_IDLE, "" );
+    }
+#endif
+
+    DoSetWindowText( ed->which, nLabel, s_label );
+
+    s_label[0] = '\0';
+
+    if( ed->time > 0 && ed->nodes > 0 ) {
+        unsigned long nps_100 = ed->nodes / ed->time;
+
+        if( nps_100 < 100000 ) {
+            sprintf( s_label, "NPS: %lu", nps_100 * 100 );
+        }
+        else {
+            sprintf( s_label, "NPS: %.1fk", nps_100 / 10.0 );
+        }
+    }
+
+    DoSetWindowText( ed->which, nLabelNPS, s_label );
+
+    /* Memo */
+    if( ed->pv != 0 && *ed->pv != '\0' ) {
+        char s_nodes[24];
+        char s_score[16];
+        char s_time[24];
+        char buf[256];
+        int buflen;
+        int time_secs = ed->time / 100;
+        int time_cent = ed->time % 100;
+
+        /* Nodes */
+        if( ed->nodes < 1000000 ) {
+            sprintf( s_nodes, u64Display, ed->nodes );
+        }
+        else {
+            sprintf( s_nodes, "%.1fM", u64ToDouble(ed->nodes) / 1000000.0 );
+        }
+
+        /* Score */
+        if( ed->score > 0 ) {
+            sprintf( s_score, "+%.2f", ed->score / 100.0 );
+        }
+        else {
+            sprintf( s_score, "%.2f", ed->score / 100.0 );
+        }
+
+        /* Time */
+        sprintf( s_time, "%d:%02d.%02d", time_secs / 60, time_secs % 60, time_cent );
+
+        /* Put all together... */
+	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0) sprintf( buf, "%3d\t", ed->depth ); else 
+	sprintf( buf, "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
+
+        /* Add PV */
+        buflen = strlen(buf);
+
+        strncpy( buf + buflen, ed->pv, sizeof(buf) - buflen );
+
+        buf[ sizeof(buf) - 3 ] = '\0';
+
+        strcat( buf + buflen, "\r\n" );
+
+        /* Update memo */
+        InsertIntoMemo( ed->which, buf, InsertionPoint(strlen(buf), ed) );
+    }
+
+    /* Colors */
+    SetEngineColorIcon( ed->which );
+}
+
+// [HGM] kibitz: write kibitz line; split window for it if necessary
+void OutputKibitz(int window, char *text)
+{
+	if(!EngineOutputIsUp()) return;
+	if(!opponentKibitzes) { // on first kibitz of game, clear memos
+	    DoClearMemo(1);
+	    if(gameMode == IcsObserving) DoClearMemo(0);
+	}
+	opponentKibitzes = TRUE; // this causes split window DisplayMode in ICS modes.
+	VerifyDisplayMode();
+	if(gameMode == IcsObserving) {
+	    DoSetWindowText(0, nLabel, gameInfo.white);
+	    SetIcon( 0, nColorIcon,  nColorWhite);
+	    SetIcon( 0, nStateIcon,  nClear);
+	}
+	DoSetWindowText(1, nLabel, gameMode == IcsPlayingBlack ? gameInfo.white : gameInfo.black); // opponent name
+	SetIcon( 1, nColorIcon,  gameMode == IcsPlayingBlack ? nColorWhite : nColorBlack);
+	SetIcon( 1, nStateIcon,  nClear);
+	InsertIntoMemo(window-1, text, 0); // [HGM] multivar: always at top
+}

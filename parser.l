@@ -244,8 +244,6 @@ extern void CopyBoard P((Board to, Board from));
 
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
-			  EP_UNKNOWN,
-                          initialRights, /* [HGM] assume all castlings allowed */
                           currentMoveString[1] - ONE,
                           currentMoveString[0] - AAA,
                           currentMoveString[3] - ONE,
@@ -306,8 +304,6 @@ extern void CopyBoard P((Board to, Board from));
 
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
-			  EP_UNKNOWN,
-                          initialRights, /* [HGM] assume all castlings allowed */
                           currentMoveString[1] - ONE,
                           currentMoveString[0] - AAA,
                           currentMoveString[3] - ONE,
@@ -360,8 +356,7 @@ extern void CopyBoard P((Board to, Board from));
       return IllegalMove;
 
 
-    Disambiguate(boards[yyboardindex],
-		 PosFlags(yyboardindex), EP_UNKNOWN, &cl);
+    Disambiguate(boards[yyboardindex], PosFlags(yyboardindex), &cl);
 
     currentMoveString[0] = cl.ff + AAA;
     currentMoveString[1] = cl.rf + ONE;
@@ -415,8 +410,7 @@ extern void CopyBoard P((Board to, Board from));
     if(c != '=' && c != '+' && c != NULLCHAR && CharToPiece(c) == EmptySquare)
       return IllegalMove;
 
-    Disambiguate(boards[yyboardindex],
-		 PosFlags(yyboardindex), EP_UNKNOWN, &cl);
+    Disambiguate(boards[yyboardindex], PosFlags(yyboardindex), &cl);
 
     currentMoveString[0] = cl.ff + AAA;
     currentMoveString[1] = cl.rf + ONE;
@@ -492,8 +486,6 @@ extern void CopyBoard P((Board to, Board from));
 
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
-			  EP_UNKNOWN,
-                          initialRights, /* [HGM] assume all castlings allowed */
                           currentMoveString[1] - ONE,
                           currentMoveString[0] - AAA,
                           currentMoveString[3] - ONE,
@@ -533,8 +525,6 @@ extern void CopyBoard P((Board to, Board from));
 
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
-			  EP_UNKNOWN,
-                          initialRights, /* [HGM] assume all castlings allowed */
                           currentMoveString[1] - ONE,
                           currentMoveString[0] - AAA,
                           currentMoveString[3] - ONE,
@@ -591,8 +581,7 @@ extern void CopyBoard P((Board to, Board from));
        cl.ftIn <  BOARD_LEFT     )
       return 0;
 
-    Disambiguate(boards[yyboardindex],
-		 PosFlags(yyboardindex), EP_UNKNOWN, &cl);
+    Disambiguate(boards[yyboardindex], PosFlags(yyboardindex), &cl);
 
     currentMoveString[0] = cl.ff + AAA;
     currentMoveString[1] = cl.rf + ONE;
@@ -652,8 +641,7 @@ extern void CopyBoard P((Board to, Board from));
        cl.ftIn <  BOARD_LEFT     )
       return 0;
 
-    Disambiguate(boards[yyboardindex],
-		 PosFlags(yyboardindex), EP_UNKNOWN, &cl);
+    Disambiguate(boards[yyboardindex], PosFlags(yyboardindex), &cl);
 
     currentMoveString[0] = cl.ff + AAA;
     currentMoveString[1] = cl.rf + ONE;
@@ -718,8 +706,6 @@ extern void CopyBoard P((Board to, Board from));
     }
     return (int) LegalityTest(boards[yyboardindex],
 			      PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: e.p.!
-			      EP_UNKNOWN,
-                              castlingRights[yyboardindex], /* [HGM] use true castling rights */
 			      rf, ff, rt, ft, NULLCHAR);
 }
 
@@ -775,8 +761,6 @@ extern void CopyBoard P((Board to, Board from));
 
     return (int) LegalityTest(boards[yyboardindex],
 			      PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: e.p.!
-			      EP_UNKNOWN,
-                              castlingRights[yyboardindex], /* [HGM] use true castling rights */
 			      rf, ff, rt, ft, NULLCHAR);
 }
 

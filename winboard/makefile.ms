@@ -13,9 +13,9 @@ PROJ = winboard
 
 
 OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj\
- zippy.obj parser.obj wclipbrd.obj wedittags.obj wengineo.obj wevalgraph.obj\
+ zippy.obj parser.obj wclipbrd.obj wedittags.obj wengineoutput.obj wevalgraph.obj\
  wgamelist.obj whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj\
- wsockerr.obj help.obj wsettings.obj wchat.obj
+ wsockerr.obj help.obj wsettings.obj wchat.obj engineoutput.obj evalgraph.obj
 
 
 # Debugging?
@@ -122,20 +122,24 @@ wclipbrd.obj: wclipbrd.c config.h ../common.h ../frontend.h ../backend.h \
         $(CC) $(CFLAGS) wclipbrd.c
 
 wedittags.obj: wedittags.c config.h ../common.h winboard.h resource.h ../frontend.h \
-        ../backend.h ../lists.h wedittags.h
+        ../backend.h ../lists.h
         $(CC) $(CFLAGS) wedittags.c
 
 wgamelist.obj: wgamelist.c config.h. ../common.h winboard.h resource.h ../frontend.h \
-        ../backend.h wgamelist.h ../lists.h
+        ../backend.h ../lists.h
         $(CC) $(CFLAGS) wgamelist.c
 
 woptions.obj: woptions.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h defaults.h winboard.h resource.h
         $(CC) $(CFLAGS) woptions.c
 
-wengineo.obj: wengineo.c config.h ../common.h ../frontend.h ../backend.h \
+wengineoutput.obj: wengineoutput.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
-        $(CC) $(CFLAGS) wengineo.c
+        $(CC) $(CFLAGS) wengineoutput.c
+
+engineoutput.obj: ../engineoutput.c ../engineoutput.h config.h ../common.h \
+	../frontend.h ../backend.h ../lists.h
+        $(CC) $(CFLAGS) ../engineoutput.c
 
 whistory.obj: whistory.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
@@ -145,7 +149,11 @@ wevalgraph.obj: wevalgraph.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
         $(CC) $(CFLAGS) wevalgraph.c
 
-wlayout.obj: wlayout.c config.h ../common.h winboard.h resource.h
+evalgraph.obj: ../evalgraph.c ../evalgraph.h config.h ../common.h ../frontend.h \
+	../backend.h ../lists.h
+        $(CC) $(CFLAGS) ../evalgraph.c
+
+wlayout.obj: wlayout.c config.h ../common.h ../frontend.h winboard.h resource.h
         $(CC) $(CFLAGS) wlayout.c
 
 wsockerr.obj: wsockerr.c wsockerr.h

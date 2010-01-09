@@ -35,25 +35,16 @@
 #include <dlgs.h>
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
+#include "winboard.h"
 
 #include "wsnap.h"
-#include "wgamelist.h"
-
-extern BoardSize boardSize;
 
 /* Module globals */
-HWND gameListDialog = NULL;
-BOOLEAN gameListUp = FALSE;
-FILE* gameFile;
-char* gameFileName = NULL;
-
-/* Imports from winboard.c */
-extern HINSTANCE hInst;
-extern HWND hwndMain;
-extern WindowPlacement wpGameList;
+static BOOLEAN gameListUp = FALSE;
+static FILE* gameFile;
+static char* gameFileName = NULL;
 
 struct GameListStats
 {
@@ -265,7 +256,9 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 			      newSizeX, newSizeY);
 	sizeX = newSizeX;
 	sizeY = newSizeY;
-      }
+      } 
+   else 
+     GetActualPlacement( gameListDialog, &wpGameList );
 
       GameListUpdateTitle( hDlg, szDlgTitle, count, ((ListGame *) gameList.tailPred)->number, &stats );
     }

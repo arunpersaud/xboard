@@ -335,7 +335,7 @@ dnl| USE_PTYS=1
 
 dnl| add some libs for OS X
   *-apple-* )
-    X_LIBS="$X_LIBS -lX11 -lXt"    
+    X_LIBS="$X_LIBS -lXmu -lX11 -lXt "    
   ;;
 esac
 

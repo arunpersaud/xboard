@@ -63,6 +63,8 @@ extern GtkWidget               *GUI_History;
 extern GtkListStore            *LIST_MoveHistory;
 
 String dots=" ... ";
+Position gameHistoryX, gameHistoryY;
+Dimension gameHistoryW;
 
 void
 HistoryPopDown(object, user_data)
@@ -173,6 +175,137 @@ void HistoryCreate()
              <Key>Right: ForwardProc() \n";
 
     return;
+    /*-------- create the widgets ---------------*/
+//    j = 0;
+//    XtSetArg(args[j], XtNresizable, True);  j++;
+//    XtSetArg(args[j], XtNallowShellResize, True);  j++;
+//#if TOPLEVEL
+//    hist->sh =
+//      XtCreatePopupShell(_("Move list"), topLevelShellWidgetClass,
+//			 shellWidget, args, j);
+//#else
+//    hist->sh =
+//      XtCreatePopupShell(_("Move list"), transientShellWidgetClass,
+//			 shellWidget, args, j);
+//#endif
+//    j = 0;
+//    XtSetArg(args[j], XtNborderWidth, 0); j++;
+//    XtSetArg(args[j], XtNdefaultDistance, 0);  j++;
+//      layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, hist->sh,
+//			    args, j);
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNborderWidth, 0); j++;
+//    XtSetArg(args[j], XtNresizable, True);  j++;
+//
+//    form =
+//      XtCreateManagedWidget("form", formWidgetClass, layout, args, j);
+//     j=0;
+//
+//    j = 0;
+//
+//    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
+//    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+//    XtSetArg(args[j], XtNright, XtChainRight);  j++;
+//
+//    XtSetArg(args[j], XtNborderWidth, 1); j++;
+//    XtSetArg(args[j], XtNresizable, False);  j++;
+//    XtSetArg(args[j], XtNallowVert, True); j++;
+//    XtSetArg(args[j], XtNallowHoriz, True);  j++;
+//    XtSetArg(args[j], XtNforceBars, False); j++;
+//    XtSetArg(args[j], XtNheight, 280); j++;
+//    hist->viewport =
+//      XtCreateManagedWidget("viewport", viewportWidgetClass,
+//			    form, args, j);
+//    j=0;
+//    XtSetArg(args[j], XtNborderWidth, 0); j++;
+//    XtSetArg(args[j], XtNorientation,XtorientHorizontal);j++;
+//    hist->vbox =
+//      XtCreateManagedWidget("vbox", formWidgetClass, hist->viewport, args, j);
+//
+//    j=0;
+//    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
+//    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+//    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
+//
+//    XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
+//    XtSetArg(args[j], XtNforceColumns, True);  j++;
+//    XtSetArg(args[j], XtNverticalList, True);  j++;
+//    XtSetArg(args[j], XtNborderWidth, 0); j++;
+//    XtSetArg(args[j], XtNresizable,True);j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+//    hist->mvn = XtCreateManagedWidget("movesn", listWidgetClass,
+//				      hist->vbox, args, j);
+//    XtAddCallback(hist->mvn, XtNcallback, HistoryMoveProc, (XtPointer) hist);
+//
+//    j=0;
+//    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
+//    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+//    XtSetArg(args[j], XtNright, XtRubber);  j++;
+//
+//    XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
+//    XtSetArg(args[j], XtNforceColumns, True);  j++;
+//    XtSetArg(args[j], XtNverticalList, True);  j++;
+//    XtSetArg(args[j], XtNborderWidth, 0); j++;
+//    XtSetArg(args[j], XtNresizable,True);j++;
+//    XtSetArg(args[j], XtNfromHoriz, hist->mvn);  j++;
+//    hist->mvw = XtCreateManagedWidget("movesw", listWidgetClass,
+//				      hist->vbox, args, j);
+//    XtAddCallback(hist->mvw, XtNcallback, HistoryMoveProc, (XtPointer) hist);
+//
+//    j=0;
+//    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
+//    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
+//    XtSetArg(args[j], XtNleft, XtRubber);  j++;
+//    XtSetArg(args[j], XtNright,  XtRubber);  j++;
+//
+//    XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
+//    XtSetArg(args[j], XtNforceColumns, True);  j++;
+//    XtSetArg(args[j], XtNverticalList, True);  j++;
+//    XtSetArg(args[j], XtNborderWidth, 0); j++;
+//    XtSetArg(args[j], XtNresizable,True);j++;
+//    XtSetArg(args[j], XtNfromHoriz, hist->mvw);  j++;
+//    hist->mvb = XtCreateManagedWidget("movesb", listWidgetClass,
+//				      hist->vbox, args, j);
+//    XtAddCallback(hist->mvb, XtNcallback, HistoryMoveProc, (XtPointer) hist);
+//
+//    j=0;
+//    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
+//    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+//    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
+//    XtSetArg(args[j], XtNfromVert, hist->viewport);  j++;
+//    b_close= XtCreateManagedWidget(_("Close"), commandWidgetClass,
+//				   form, args, j);
+//    XtAddCallback(b_close, XtNcallback, HistoryPopDown, (XtPointer) 0);
+//
+//    XtAugmentTranslations(hist->sh,XtParseTranslationTable (trstr));
+//
+//    XtRealizeWidget(hist->sh);
+//    CatchDeleteWindow(hist->sh, "HistoryPopDown");
+//
+//    for(i=1;i<hist->aNr;i++){
+//      strcpy(hist->white[i],dots);
+//      strcpy(hist->black[i],"");
+//     }
+//
+//  // [HGM] restore old position
+//  j = 0;
+//  XtSetArg(args[j], XtNx, &gameHistoryX);  j++;
+//  XtSetArg(args[j], XtNy, &gameHistoryY);  j++;
+//  XtSetArg(args[j], XtNwidth, &gameHistoryW);  j++;
+//  XtGetValues(shellWidget, args, j);
+//  j = 0;
+//  XtSetArg(args[j], XtNx, gameHistoryX + gameHistoryW);  j++;
+//  XtSetArg(args[j], XtNy, gameHistoryY);  j++;
+//  XtSetValues(hist->sh, args, j);
+//    XtRealizeWidget(hist->sh);
+//
+//    return hist->sh;
 }
 
 void

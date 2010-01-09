@@ -1,5 +1,5 @@
 /*
- * Evaluation graph
+ * wevalgraph.c - Evaluation graph front-end part
  *
  * Author: Alessandro Scotti (Dec 2005)
  *
@@ -27,358 +27,22 @@
 
 #include "config.h"
 
-#include <windows.h> /* required for all Windows applications */
-//include <richedit.h>
+#include <windows.h>
+#include <commdlg.h>
+#include <dlgs.h>
 #include <stdio.h>
-//include <stdlib.h>
-//include <malloc.h>
 
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
-
-/* Imports from winboard.c */
-extern BOOLEAN evalGraphDialogUp; // should be back-end variable, and defined here
-
-/* Module globals */ // used to communicate between back-end and front-end part
-static ChessProgramStats_Move * currPvInfo;
-static int currFirst = 0;
-static int currLast = 0;
-static int currCurrent = -1;
-
-static int nWidthPB = 0;
-static int nHeightPB = 0;
-
-static int MarginX = 18;
-static int MarginW = 4;
-static int MarginH = 4;
-
-#define MIN_HIST_WIDTH  4
-#define MAX_HIST_WIDTH  10
-
-#define PEN_NONE	0
-#define PEN_BLACK	1
-#define PEN_DOTTED	2
-#define PEN_BLUEDOTTED	3
-#define PEN_BOLD	4 /* or 5 for black */
-
-#define FILLED 1
-#define OPEN   0
-
-// calls from back-end part into front-end
-static void DrawSegment( int x, int y, int *lastX, int *lastY, int penType );
-void DrawRectangle( int left, int top, int right, int bottom, int side, int style );
-void DrawEvalText(char *buf, int cbBuf, int y);
-
-
-// back-end
-static void DrawLine( int x1, int y1, int x2, int y2, int penType )
-{
-    DrawSegment( x1, y1, NULL, NULL, PEN_NONE );
-    DrawSegment( x2, y2, NULL, NULL, penType );
-}
-
-// back-end
-static void DrawLineEx( int x1, int y1, int x2, int y2, int penType )
-{
-    int savX, savY;
-    DrawSegment( x1, y1, &savX, &savY, PEN_NONE );
-    DrawSegment( x2, y2, NULL, NULL, penType );
-    DrawSegment( savX, savY, NULL, NULL, PEN_NONE );
-}
-
-// back-end
-static int GetPvScore( int index )
-{
-    int score = currPvInfo[ index ].score;
-
-    if( index & 1 ) score = -score; /* Flip score for black */
-
-    return score;
-}
-
-// back-end
-/*
-    For a centipawn value, this function returns the height of the corresponding
-    histogram, centered on the reference axis.
-
-    Note: height can be negative!
-*/
-static int GetValueY( int value )
-{
-    if( value < -700 ) value = -700;
-    if( value > +700 ) value = +700;
-
-    return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / 1400.0);
-}
-
-// the brush selection is made part of the DrawLine, by passing a style argument
-// the wrapper for doing the text output makes this back-end
-static void DrawAxisSegmentHoriz( int value, BOOL drawValue )
-{
-    int y = GetValueY( value*100 );
-
-    if( drawValue ) {
-        char buf[MSG_SIZ], *b = buf;
-
-        if( value > 0 ) *b++ = '+';
-	sprintf(b, "%d", value);
-
-	DrawEvalText(buf, strlen(buf), y);
-    }
-    // [HGM] counts on DrawEvalText to have select transparent background for dotted line!
-    DrawLine( MarginX, y, MarginX + MarginW, y, PEN_BLACK ); // Y-axis tick marks
-    DrawLine( MarginX + MarginW, y, nWidthPB - MarginW, y, PEN_DOTTED ); // hor grid
-}
-
-// The DrawLines again must select their own brush.
-// the initial brush selection is useless? BkMode needed for dotted line and text
-static void DrawAxis()
-{
-    int cy = nHeightPB / 2;
-    
-//    SelectObject( hdcPB, GetStockObject(NULL_BRUSH) );
-
-//    SetBkMode( hdcPB, TRANSPARENT );
-
-    DrawAxisSegmentHoriz( +5, TRUE );
-    DrawAxisSegmentHoriz( +3, FALSE );
-    DrawAxisSegmentHoriz( +1, FALSE );
-    DrawAxisSegmentHoriz(  0, TRUE );
-    DrawAxisSegmentHoriz( -1, FALSE );
-    DrawAxisSegmentHoriz( -3, FALSE );
-    DrawAxisSegmentHoriz( -5, TRUE );
-
-    DrawLine( MarginX + MarginW, cy, nWidthPB - MarginW, cy, PEN_BLACK ); // x-axis
-    DrawLine( MarginX + MarginW, MarginH, MarginX + MarginW, nHeightPB - MarginH, PEN_BLACK ); // y-axis
-}
-
-// back-end
-static void DrawHistogram( int x, int y, int width, int value, int side )
-{
-    int left, top, right, bottom;
-
-    if( value > -25 && value < +25 ) return;
-
-    left = x;
-    right = left + width + 1;
-
-    if( value > 0 ) {
-        top = GetValueY( value );
-        bottom = y+1;
-    }
-    else {
-        top = y;
-        bottom = GetValueY( value ) + 1;
-    }
-
-
-    if( width == MIN_HIST_WIDTH ) {
-        right--;
-        DrawRectangle( left, top, right, bottom, side, FILLED );
-    }
-    else {
-        DrawRectangle( left, top, right, bottom, side, OPEN );
-    }
-}
-
-// back-end
-static void DrawSeparator( int index, int x )
-{
-    if( index > 0 ) {
-        if( index == currCurrent ) {
-            DrawLineEx( x, MarginH, x, nHeightPB - MarginH, PEN_BLUEDOTTED );
-        }
-        else if( (index % 20) == 0 ) {
-            DrawLineEx( x, MarginH, x, nHeightPB - MarginH, PEN_DOTTED );
-        }
-    }
-}
-
-// made back-end by replacing MoveToEx and LineTo by DrawSegment
-/* Actually draw histogram as a diagram, cause there's too much data */
-static void DrawHistogramAsDiagram( int cy, int paint_width, int hist_count )
-{
-    double step;
-    int i;
-
-    /* Rescale the graph every few moves (as opposed to every move) */
-    hist_count -= hist_count % 8;
-    hist_count += 8;
-    hist_count /= 2;
-
-    step = (double) paint_width / (hist_count + 1);
-
-    for( i=0; i<2; i++ ) {
-        int index = currFirst;
-        int side = (currCurrent + i + 1) & 1; /* Draw current side last */
-        double x = MarginX + MarginW;
-
-        if( (index & 1) != side ) {
-            x += step / 2;
-            index++;
-        }
-
-        DrawSegment( (int) x, cy, NULL, NULL, PEN_NONE );
-
-        index += 2;
-
-        while( index < currLast ) {
-            x += step;
-
-            DrawSeparator( index, (int) x );
-
-            /* Extend line up to current point */
-            if( currPvInfo[index].depth > 0 ) {
-                DrawSegment((int) x, GetValueY( GetPvScore(index) ), NULL, NULL, PEN_BOLD + side );
-            }
-
-            index += 2;
-        }
-    }
-}
-
-// back-end, delete pen selection
-static void DrawHistogramFull( int cy, int hist_width, int hist_count )
-{
-    int i;
-
-//    SelectObject( hdcPB, GetStockObject(BLACK_PEN) );
-
-    for( i=0; i<hist_count; i++ ) {
-        int index = currFirst + i;
-        int x = MarginX + MarginW + index * hist_width;
-
-        /* Draw a separator every 10 moves */
-        DrawSeparator( index, x );
-
-        /* Draw histogram */
-        if( currPvInfo[i].depth > 0 ) {
-            DrawHistogram( x, cy, hist_width, GetPvScore(index), index & 1 );
-        }
-    }
-}
-
-typedef struct {
-    int cy;
-    int hist_width;
-    int hist_count;
-    int paint_width;
-} VisualizationData;
-
-// back-end
-static Boolean InitVisualization( VisualizationData * vd )
-{
-    BOOL result = FALSE;
-
-    vd->cy = nHeightPB / 2;
-    vd->hist_width = MIN_HIST_WIDTH;
-    vd->hist_count = currLast - currFirst;
-    vd->paint_width = nWidthPB - MarginX - 2*MarginW;
-
-    if( vd->hist_count > 0 ) {
-        result = TRUE;
-
-        /* Compute width */
-        vd->hist_width = vd->paint_width / vd->hist_count;
-
-        if( vd->hist_width > MAX_HIST_WIDTH ) vd->hist_width = MAX_HIST_WIDTH;
-
-        vd->hist_width -= vd->hist_width % 2;
-    }
-
-    return result;
-}
-
-// back-end
-static void DrawHistograms()
-{
-    VisualizationData vd;
-
-    if( InitVisualization( &vd ) ) {
-        if( vd.hist_width < MIN_HIST_WIDTH ) {
-            DrawHistogramAsDiagram( vd.cy, vd.paint_width, vd.hist_count );
-        }
-        else {
-            DrawHistogramFull( vd.cy, vd.hist_width, vd.hist_count );
-        }
-    }
-}
-
-// back-end
-int GetMoveIndexFromPoint( int x, int y )
-{
-    int result = -1;
-    int start_x = MarginX + MarginW;
-    VisualizationData vd;
-
-    if( x >= start_x && InitVisualization( &vd ) ) {
-        /* Almost an hack here... we duplicate some of the paint logic */
-        if( vd.hist_width < MIN_HIST_WIDTH ) {
-            double step;
-
-            vd.hist_count -= vd.hist_count % 8;
-            vd.hist_count += 8;
-            vd.hist_count /= 2;
-
-            step = (double) vd.paint_width / (vd.hist_count + 1);
-            step /= 2;
-
-            result = (int) (0.5 + (double) (x - start_x) / step);
-        }
-        else {
-            result = (x - start_x) / vd.hist_width;
-        }
-    }
-
-    if( result >= currLast ) {
-        result = -1;
-    }
-
-    return result;
-}
-
-// init and display part split of so they can be moved to front end
-void PaintEvalGraph( void )
-{
-    /* Draw */
-    DrawRectangle(0, 0, nWidthPB, nHeightPB, 2, FILLED);
-    DrawAxis();
-    DrawHistograms();
-}
-
-Boolean EvalGraphIsUp()
-{
-    return evalGraphDialogUp;
-}
-
-// ------------------------------------------ front-end starts here ----------------------------------------------
-
-#include <commdlg.h>
-#include <dlgs.h>
-
 #include "winboard.h"
+#include "evalgraph.h"
 #include "wsnap.h"
 
 #define WM_REFRESH_GRAPH    (WM_USER + 1)
 
-void EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
-void EvalGraphPopUp();
-void EvalGraphPopDown();
-Boolean EvalGraphIsUp();
-
-// calls of front-end part into back-end part
-extern int GetMoveIndexFromPoint( int x, int y );
-extern void PaintEvalGraph( void );
-
-/* Imports from winboard.c */
-extern HWND evalGraphDialog;
-extern BOOLEAN evalGraphDialogUp; // should be back-end, really
-
-extern HINSTANCE hInst;
-extern HWND hwndMain;
-
-extern WindowPlacement wpEvalGraph;
+/* Module globals */
+static BOOLEAN evalGraphDialogUp;
 
 static COLORREF crWhite = RGB( 0xFF, 0xFF, 0xB0 );
 static COLORREF crBlack = RGB( 0xAD, 0x5D, 0x3D );
@@ -388,8 +52,13 @@ static HBITMAP hbmPB = NULL;
 static HPEN pens[6]; // [HGM] put all pens in one array
 static HBRUSH hbrHist[3] = { NULL, NULL, NULL };
 
+Boolean EvalGraphIsUp()
+{
+    return evalGraphDialogUp;
+}
+
 // [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end) 
-static void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
+void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
 {
     POINT stPt;
     if(penType == PEN_NONE) MoveToEx( hdcPB, x, y, &stPt ); else {
@@ -642,4 +311,3 @@ VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pv
         SendMessage( evalGraphDialog, WM_REFRESH_GRAPH, 0, 0 );
     }
 }
-

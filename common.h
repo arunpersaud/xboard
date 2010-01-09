@@ -125,13 +125,17 @@ int pclose(FILE *);
    outside world in ASCII. In a similar way, the different rank numbering
    systems (starting at rank 0 or 1) are implemented by redefining '1'.
 */
-#define BOARD_SIZE              16            /* [HGM] for in declarations */
-#define BOARD_HEIGHT (gameInfo.boardHeight)   // [HGM] made user adjustable 
+#define BOARD_RANKS             11             /* [HGM] for in declarations  */
+#define BOARD_FILES             16             /* [HGM] for in declarations  */
+#define BOARD_HEIGHT (gameInfo.boardHeight)    /* [HGM] made user adjustable */
 #define BOARD_WIDTH  (gameInfo.boardWidth + 2*gameInfo.holdingsWidth)   
-#define BOARD_LEFT   (gameInfo.holdingsWidth) // [HGM] play-board edges     
+#define BOARD_LEFT   (gameInfo.holdingsWidth)  /* [HGM] play-board edges     */
 #define BOARD_RGHT   (gameInfo.boardWidth + gameInfo.holdingsWidth)
-#define ONE          ('1'-(BOARD_HEIGHT>9))   // [HGM] foremost board rank  
-#define AAA          ('a'-BOARD_LEFT)         // [HGM] leftmost board file  
+#define CASTLING     (BOARD_RANKS-1)           /* [HGM] hide in upper rank   */
+#define EP_STATUS    CASTLING][(BOARD_FILES-2) /* [HGM] in upper rank        */
+#define HOLDINGS_SET CASTLING][(BOARD_FILES-1) /* [HGM] in upper-right corner*/
+#define ONE          ('1'-(BOARD_HEIGHT>9))    /* [HGM] foremost board rank  */
+#define AAA          ('a'-BOARD_LEFT)          /* [HGM] leftmost board file  */
 #define DROP_RANK               -3
 #define MAX_MOVES		1000
 #define MSG_SIZ			512
@@ -164,9 +168,17 @@ int pclose(FILE *);
 #define JAIL_SQUARE_COLOR       "#808080"
 #define HIGHLIGHT_SQUARE_COLOR	"#FFFF00"
 #define PREMOVE_HIGHLIGHT_COLOR	"#FF0000"
+#define LOWTIMEWARNING_COLOR    "#FF0000"
 #define BELLCHAR                '\007'
 #define NULLCHAR                '\000'
 #define FEATURE_TIMEOUT         10000 /*ms*/
+
+/* Default to no flashing (the "usual" XBoard behavior) */
+#define FLASH_COUNT	0		/* Number of times to flash */
+#define FLASH_RATE	5		/* Flashes per second */
+
+/* Default delay per character (in msec) while sending login script */
+#define MS_LOGIN_DELAY  0
 
 /* Zippy defaults */
 #define ZIPPY_TALK FALSE
@@ -209,6 +221,7 @@ typedef enum {
     BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
     BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
     EmptySquare, 
+    NoRights, // [HGM] gamestate: for castling rights hidden in board[CASTLING]
     ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
   } ChessSquare;
 
@@ -220,7 +233,7 @@ typedef enum {
 #define SHOGI          (int)EmptySquare + (int)
 
 
-typedef ChessSquare Board[BOARD_SIZE][BOARD_SIZE];
+typedef ChessSquare Board[BOARD_RANKS][BOARD_FILES];
 
 typedef enum {
     WhiteKingSideCastle = 1, WhiteQueenSideCastle,
@@ -438,7 +451,7 @@ typedef struct {
 			  ICS logon script (xboard only) */
     Boolean colorize;	/* If True, use the following colors to color text */
     /* Strings for colors, as "fg, bg, bold" (strings used in xboard only) */
-    char *colorShout;
+    char *colorShout;    // [HGM] IMPORTANT: order must conform to ColorClass definition
     char *colorSShout;
     char *colorChannel1;
     char *colorChannel;
@@ -449,7 +462,7 @@ typedef struct {
     char *colorSeek;
     char *colorNormal;
     char *soundProgram; /* sound-playing program */
-    char *soundShout;
+    char *soundShout;     // [HGM] IMPORTANT: order must be as in ColorClass
     char *soundSShout;
     char *soundChannel1;
     char *soundChannel;
@@ -458,12 +471,13 @@ typedef struct {
     char *soundChallenge;
     char *soundRequest;
     char *soundSeek;
-    char *soundMove;
+    char *soundMove;     // [HGM] IMPORTANT: order must be as in SoundClass
+    char *soundBell;
+    char *soundIcsAlarm;
     char *soundIcsWin;
     char *soundIcsLoss;
     char *soundIcsDraw;
     char *soundIcsUnfinished;
-    char *soundIcsAlarm;
     Boolean reuseFirst;
     Boolean reuseSecond;
     Boolean animateDragging; /* If True, animate mouse dragging of pieces */
@@ -606,6 +620,7 @@ typedef struct {
     char *wrapContSeq; /* continuation sequence when xboard wraps text */
     Boolean useInternalWrap; /* use internal wrapping -- noJoin usurps this if set */
     Boolean pasteSelection; /* paste X selection instead of clipboard */
+    int nrVariations;   /* [HGM] multivar  */
 } AppData, *AppDataPtr;
 
 /* [AS] PGN tags (for showing in the game list) */
@@ -654,6 +669,14 @@ typedef struct {
     int holdingsSize;  /* number of different piece types in holdings       */
     int holdingsWidth; /* number of files left and right of board, 0 or 2   */
 } GameInfo;
+
+/* [AS] Search stats from chessprogram, for the played move */
+// [HGM] moved here from backend.h because it occurs in declarations of front-end functions
+typedef struct {
+    int score;  /* Centipawns */
+    int depth;  /* Plies */
+    int time;   /* Milliseconds */
+} ChessProgramStats_Move;
 
 // [HGM] chat	
 #define MAX_CHAT 3

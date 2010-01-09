@@ -5,9 +5,9 @@ PROJ=winboard
 
 
 OBJS=backend.o book.o gamelist.o lists.o moves.o pgntags.o uci.o zippy.o\
- parser.o wbres.o wclipbrd.o wedittags.o wengineo.o wevalgraph.o\
+ parser.o wbres.o wclipbrd.o wedittags.o wengineoutput.o wevalgraph.o\
  wgamelist.o whistory.o winboard.o wlayout.o woptions.o wsnap.o\
- wsockerr.o help.o wsettings.o wchat.o
+ wsockerr.o help.o wsettings.o wchat.o engineoutput.o evalgraph.o
 
 
 # make compiling less spammy
@@ -86,8 +86,8 @@ $(PROJ).exe: $(OBJS) $(PROJ).hlp
 
 
 winboard.o: winboard.c config.h winboard.h ../common.h ../frontend.h ../backend.h \
-	../moves.h wgamelist.h defaults.h resource.h wclipbrd.h \
-	wedittags.h wsockerr.h woptions.h wsnap.h ../lists.h help.h
+	../moves.h defaults.h resource.h wclipbrd.h \
+	wsockerr.h woptions.h wsnap.h ../lists.h help.h
 	$(call compile, $<)
 
 backend.o: ../backend.c config.h ../common.h ../frontend.h ../backend.h \
@@ -114,30 +114,38 @@ wclipbrd.o: wclipbrd.c config.h ../common.h ../frontend.h ../backend.h \
 	$(call compile, $<)
 
 wedittags.o: wedittags.c config.h ../common.h winboard.h resource.h ../frontend.h \
-	../backend.h ../lists.h wedittags.h
+	../backend.h ../lists.h
 	$(call compile, $<)
 
 wgamelist.o: wgamelist.c config.h. ../common.h winboard.h resource.h ../frontend.h \
-	../backend.h wgamelist.h ../lists.h
+	../backend.h ../lists.h
 	$(call compile, $<)
 
 woptions.o: woptions.c config.h ../common.h ../frontend.h ../backend.h ../lists.h \
 	defaults.h winboard.h resource.h
 	$(call compile, $<)
 
-wengineo.o: wengineo.c config.h ../common.h ../frontend.h ../backend.h \
-	../lists.h winboard.h resource.h wsnap.h
+wengineoutput.o: wengineoutput.c ../engineoutput.h config.h ../common.h \
+	../frontend.h ../backend.h ../lists.h winboard.h resource.h wsnap.h
+	$(call compile, $<)
+
+engineoutput.o: ../engineoutput.c ../engineoutput.h config.h ../common.h \
+	../frontend.h ../backend.h ../lists.h
 	$(call compile, $<)
 
 whistory.o: whistory.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
 	$(call compile, $<)
 
-wevalgraph.o: wevalgraph.c config.h ../common.h ../frontend.h ../backend.h \
-	../lists.h winboard.h resource.h wsnap.h
+wevalgraph.o: wevalgraph.c ../evalgraph.h config.h ../common.h ../frontend.h \
+	../backend.h ../lists.h winboard.h resource.h wsnap.h
 	$(call compile, $<)
 
-wlayout.o: wlayout.c config.h ../common.h winboard.h resource.h
+evalgraph.o: ../evalgraph.c ../evalgraph.h config.h ../common.h ../frontend.h \
+	../backend.h ../lists.h
+	$(call compile, $<)
+
+wlayout.o: wlayout.c config.h ../common.h ../frontend.h winboard.h resource.h
 	$(call compile, $<)
 
 wsockerr.o: wsockerr.c wsockerr.h

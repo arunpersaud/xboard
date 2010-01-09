@@ -107,12 +107,7 @@ typedef struct {
 #define FIRST_CHESS_PROGRAM	"fairymax"
 #define SECOND_CHESS_PROGRAM	"fairymax"
 
-/* Default to no flashing (the "usual" XBoard behavior) */
-#define FLASH_COUNT	0		/* Number of times to flash */
-#define FLASH_RATE	5		/* Flashes per second */
-
-/* Default delay per character (in msec) while sending login script */
-#define MS_LOGIN_DELAY  0
+#define XBOARD True
 
 typedef int (*FileProc) P((FILE *f, int n, char *title));
 void CatchDeleteWindow(Widget w, String procname);

@@ -35,17 +35,14 @@
 #include <dlgs.h>
 
 #include "common.h"
-#include "winboard.h"
 #include "frontend.h"
 #include "backend.h"
-#include "wedittags.h"
+#include "winboard.h"
 
 /* Module globals */
 static char *editTagsText;
-HWND editTagsDialog = NULL;
 BOOL editTagsUp = FALSE;
 BOOL canEditTags = FALSE;
-int editTagsX, editTagsY, editTagsW, editTagsH;
 
 /* Imports from winboard.c */
 extern HINSTANCE hInst;
@@ -86,18 +83,18 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       GetClientRect(hDlg, &rect);
       sizeX = rect.right;
       sizeY = rect.bottom;
-      if (editTagsX != CW_USEDEFAULT && editTagsY != CW_USEDEFAULT &&
-	  editTagsW != CW_USEDEFAULT && editTagsH != CW_USEDEFAULT) {
+      if (wpTags.x != CW_USEDEFAULT && wpTags.y != CW_USEDEFAULT &&
+	  wpTags.width != CW_USEDEFAULT && wpTags.height != CW_USEDEFAULT) {
 	WINDOWPLACEMENT wp;
-	EnsureOnScreen(&editTagsX, &editTagsY, 0, 0);
+	EnsureOnScreen(&wpTags.x, &wpTags.y, 0, 0);
 	wp.length = sizeof(WINDOWPLACEMENT);
 	wp.flags = 0;
 	wp.showCmd = SW_SHOW;
 	wp.ptMaxPosition.x = wp.ptMaxPosition.y = 0;
-	wp.rcNormalPosition.left = editTagsX;
-	wp.rcNormalPosition.right = editTagsX + editTagsW;
-	wp.rcNormalPosition.top = editTagsY;
-	wp.rcNormalPosition.bottom = editTagsY + editTagsH;
+	wp.rcNormalPosition.left = wpTags.x;
+	wp.rcNormalPosition.right = wpTags.x + wpTags.width;
+	wp.rcNormalPosition.top = wpTags.y;
+	wp.rcNormalPosition.bottom = wpTags.y + wpTags.height;
 	SetWindowPlacement(hDlg, &wp);
 
 	GetClientRect(hDlg, &rect);

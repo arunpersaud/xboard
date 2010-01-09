@@ -208,8 +208,6 @@ extern char *getenv();
 void EngineOutputProc P((Widget w, XEvent *event,
  String *prms, Cardinal *nprms));
 
-void EngineOutputPopDown();
-
 
 #ifdef __EMX__
 #ifndef HAVE_USLEEP
@@ -309,7 +307,6 @@ static void CreateAnimVars P((void));
 static void DragPieceMove P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
-void EngineOutputUpdate( FrontEndProgramStats * stats );
 void ShuffleMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EngineMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UciMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -352,6 +349,10 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget,  editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
+
+//XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
+//XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
+
 Font clockFontID, coordFontID, countFontID;
 XFontStruct *clockFontStruct, *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
@@ -2270,9 +2271,9 @@ main(argc, argv)
     }
 
     /* [HGM,HR] make sure board size is acceptable */
-    if(appData.NrFiles > BOARD_SIZE ||
-       appData.NrRanks > BOARD_SIZE   )
-      DisplayFatalError(_("Recompile with BOARD_SIZE > 12, to support this size"), 0, 2);
+    if(appData.NrFiles > BOARD_FILES ||
+       appData.NrRanks > BOARD_RANKS   )
+	 DisplayFatalError(_("Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"), 0, 2);
 
 #if !HIGHDRAG
     /* This feature does not work; animation needs a rewrite */
@@ -2774,6 +2775,20 @@ ResetFrontEnd()
     EditCommentPopDown();
     TagsPopDown();
     return;
+}
+
+void
+GreyRevert(grey)
+     Boolean grey;
+{
+    Widget w;
+    if (!menuBarWidget) return;
+    w = XtNameToWidget(menuBarWidget, "menuStep.Revert");
+    if (w == NULL) {
+      DisplayError("menuStep.Revert", 0);
+    } else {
+      XtSetSensitive(w, !grey);
+    }
 }
 
 void
@@ -3811,7 +3826,7 @@ static int check_castle_draw(newb, oldb, rrow, rcol)
     return 0;
 }
 
-static int damage[BOARD_SIZE][BOARD_SIZE];
+static int damage[BOARD_RANKS][BOARD_FILES];
 
 /*
  * event handler for redrawing the board
@@ -6993,14 +7008,6 @@ DrawDragPiece ()
 		player.startColor, EmptySquare, xBoardWindow);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
   damage[player.startBoardY][player.startBoardX] = TRUE;
-}
-
-void
-SetProgramStats( FrontEndProgramStats * stats )
-{
-  // [HR] TODO
-  // [HGM] done, but perhaps backend should call this directly?
-    EngineOutputUpdate( stats );
 }
 
 #include <sys/ioctl.h>
