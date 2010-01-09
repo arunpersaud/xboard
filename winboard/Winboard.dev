@@ -1,7 +1,7 @@
 [Project]
 FileName=Winboard.dev
 Name=Winboard
-UnitCount=24
+UnitCount=26
 Type=0
 Ver=1
 ObjFiles=
@@ -70,16 +70,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=wengineo.c
-CompileCpp=0
-Folder=Winboard
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit6]
 FileName=wevalgraph.c
 CompileCpp=0
 Folder=Winboard
@@ -89,7 +79,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit7]
+[Unit6]
 FileName=wgamelist.c
 CompileCpp=0
 Folder=Winboard
@@ -99,7 +89,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit8]
+[Unit7]
 FileName=whistory.c
 CompileCpp=0
 Folder=Winboard
@@ -109,7 +99,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit9]
+[Unit8]
 FileName=winboard.c
 CompileCpp=0
 Folder=Winboard
@@ -119,7 +109,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
+[Unit9]
 FileName=wlayout.c
 CompileCpp=0
 Folder=Winboard
@@ -129,7 +119,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
+[Unit10]
 FileName=woptions.c
 CompileCpp=0
 Folder=Winboard
@@ -139,7 +129,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
+[Unit11]
 FileName=wsnap.c
 CompileCpp=0
 Folder=Winboard
@@ -149,7 +139,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit13]
+[Unit12]
 FileName=..\uci.c
 CompileCpp=0
 Folder=Winboard
@@ -159,7 +149,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit13]
 FileName=..\backend.c
 CompileCpp=0
 Folder=Winboard
@@ -169,7 +159,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit14]
 FileName=..\book.c
 CompileCpp=0
 Folder=Winboard
@@ -179,7 +169,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit15]
 FileName=..\gamelist.c
 CompileCpp=0
 Folder=Winboard
@@ -189,7 +179,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit16]
 FileName=..\lists.c
 CompileCpp=0
 Folder=Winboard
@@ -199,7 +189,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
+[Unit17]
 FileName=..\moves.c
 CompileCpp=0
 Folder=Winboard
@@ -209,7 +199,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit18]
 FileName=..\pgntags.c
 CompileCpp=0
 Folder=Winboard
@@ -219,8 +209,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit20]
+[Unit19]
 FileName=winboard.rc
+CompileCpp=0
 Folder=Winboard
 Compile=1
 Link=0
@@ -228,17 +219,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit21]
+[Unit20]
 FileName=..\zippy.c
-CompileCpp=0
 Folder=Winboard
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=0
 
-[Unit22]
+[Unit21]
 FileName=help.c
 CompileCpp=0
 Folder=Winboard
@@ -248,7 +239,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit23]
+[Unit22]
 FileName=wsettings.c
 CompileCpp=0
 Folder=Winboard
@@ -258,7 +249,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit24]
+[Unit23]
 FileName=wchat.c
 CompileCpp=0
 Folder=Winboard
@@ -268,21 +259,33 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[VersionInfo]
-Major=0
-Minor=1
-Release=1
-Build=1
-LanguageID=1033
-CharsetID=1252
-CompanyName=
-FileVersion=0.1
-FileDescription=Developed using the Dev-C++ IDE
-InternalName=
-LegalCopyright=
-LegalTrademarks=
-OriginalFilename=Winboard.exe
-ProductName=Winboard
-ProductVersion=0.1
-AutoIncBuildNr=0
+[Unit24]
+FileName=wengineoutput.c
+CompileCpp=0
+Folder=Winboard
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit25]
+FileName=..\evalgraph.c
+CompileCpp=0
+Folder=Winboard
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit26]
+FileName=..\engineoutput.c
+CompileCpp=0
+Folder=Winboard
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 

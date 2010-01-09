@@ -28,4 +28,5 @@ void ShowGameListProc P((Widget w, XEvent *event,
 void LoadSelectedProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 
+extern Widget gameListShell;
 #endif /* _XGAMEL_H */

@@ -27,4 +27,5 @@
 void EditTagsProc P((GtkObject *object, gpointer user_data));
 void EditTagsHideProc P((GtkObject *object, gpointer user_data));
 
+extern Widget editTagsShell, tagsShell;
 #endif

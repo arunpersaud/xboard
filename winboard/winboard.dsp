@@ -45,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Og /Os /Oy /Gf /I "." /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /YX /Zl /FD /Gs /GA /c
+# ADD CPP /nologo /MD /W3 /GX /Og /Os /Oy /Gf /I "." /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /D "YY_NO_UNISTD_H" /YX /Zl /FD /Gs /GA /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -71,7 +71,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /D "YY_NO_UNISTD_H" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -98,7 +98,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /D "JAWS" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "JAWS" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /D "YY_NO_UNISTD_H" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /i ".." /d "_DEBUG"
@@ -125,7 +125,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /Og /Os /Oy /Gf /I "." /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /YX /Zl /FD /Gs /GA /c
-# ADD CPP /nologo /MD /W3 /GX /Og /Os /Oy /Gf /I "." /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /D "JAWS" /YX /Zl /FD /Gs /GA /c
+# ADD CPP /nologo /MD /W3 /GX /Og /Os /Oy /Gf /I "." /I ".." /D "NDEBUG" /D "JAWS" /D "WIN32" /D "_WINDOWS" /D _WIN32_IE=0x300 /D WINVER=0x400 /D _WIN32_WINDOWS=0x500 /D "YY_NO_UNISTD_H" /YX /Zl /FD /Gs /GA /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /i ".." /d "NDEBUG"
@@ -155,6 +155,14 @@ SOURCE=..\backend.c
 # Begin Source File
 
 SOURCE=..\book.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\engineoutput.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\evalgraph.c
 # End Source File
 # Begin Source File
 
@@ -198,7 +206,7 @@ SOURCE=.\wedittags.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\wengineo.c
+SOURCE=.\wengineoutput.c
 # End Source File
 # Begin Source File
 

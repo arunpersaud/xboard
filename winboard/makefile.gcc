@@ -70,7 +70,7 @@ $(PROJ).hlp : $(PROJ).rtf
 
 
 # Update the resource if necessary
-wbres.o: $(PROJ).rc $(PROJ).h resource.h
+wbres.o: $(PROJ).rc $(PROJ).h resource.h config.h
 	windres $(DEFS) --use-temp-file --include-dir .. $< -O coff -o $@
 
 
@@ -87,7 +87,7 @@ $(PROJ).exe: $(OBJS) $(PROJ).hlp
 
 winboard.o: winboard.c config.h winboard.h ../common.h ../frontend.h ../backend.h \
 	../moves.h defaults.h resource.h wclipbrd.h \
-	wsockerr.h woptions.h wsnap.h ../lists.h help.h
+	wsockerr.h woptions.h wsnap.h ../lists.h help.h ../args.h
 	$(call compile, $<)
 
 backend.o: ../backend.c config.h ../common.h ../frontend.h ../backend.h \

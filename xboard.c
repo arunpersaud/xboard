@@ -206,7 +206,9 @@ extern char *getenv();
 // must be moved to xengineoutput.h
 
 void EngineOutputProc P((Widget w, XEvent *event,
- String *prms, Cardinal *nprms));
+			 String *prms, Cardinal *nprms));
+void EvalGraphProc P((Widget w, XEvent *event,
+		      String *prms, Cardinal *nprms));
 
 
 #ifdef __EMX__
@@ -292,6 +294,8 @@ void EditCommentProc P((Widget w, XEvent *event,
 void IcsInputBoxProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void SaveSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void SaveOnExitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -350,6 +354,7 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   menuBarWidget,  editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
 
+Widget historyShell, evalGraphShell, gameListShell;
 //XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 //XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
 
@@ -365,7 +370,11 @@ char installDir[] = "."; // [HGM] UCI: needed for UCI; probably needs run-time i
 
 Position commentX = -1, commentY = -1;
 Dimension commentW, commentH;
+typedef unsigned int BoardSize;
+BoardSize boardSize;
+Boolean chessProgram;
 
+int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int squareSize, smallLayout = 0, tinyLayout = 0,
   marginW, marginH, // [HGM] for run-time resizing
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
@@ -376,6 +385,22 @@ Pixel timerForegroundPixel, timerBackgroundPixel;
 Pixel buttonForegroundPixel, buttonBackgroundPixel;
 char *chessDir, *programName, *programVersion,
   *gameCopyFilename, *gamePasteFilename;
+Boolean alwaysOnTop = False;
+Boolean saveSettingsOnExit;
+char *settingsFileName;
+char *icsTextMenuString;
+char *icsNames;
+char *firstChessProgramNames;
+char *secondChessProgramNames;
+
+WindowPlacement wpMain;
+WindowPlacement wpConsole;
+WindowPlacement wpComment;
+WindowPlacement wpMoveHistory;
+WindowPlacement wpEvalGraph;
+WindowPlacement wpEngineOutput;
+WindowPlacement wpGameList;
+WindowPlacement wpTags;
 
 #define SOLID 0
 #define OUTLINE 1
@@ -614,7 +639,7 @@ MenuItem modeMenu[] = {
   //    {N_("Training"), TrainingProc},
     //    {"----", NothingProc},
     {N_("Show Engine Output"), EngineOutputProc},
-    {N_("Show Evaluation Graph"), NothingProc}, // [HGM] evalgr: not functional yet
+    {N_("Show Evaluation Graph"), EvalGraphProc},
     {N_("Show Game List"), ShowGameListProc},
     //    {"Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
     //    {"----", NothingProc},
@@ -660,6 +685,10 @@ MenuItem optionsMenu[] = {
     //    {N_("Quiet Play"), QuietPlayProc},
     //    {N_("Hide Thinking"), HideThinkingProc},
     //    {N_("Test Legality"), TestLegalityProc},
+    //    {N_("Show Coords"), ShowCoordsProc},
+    {"----", NothingProc},
+    {N_("Save Settings Now"), SaveSettingsProc},
+    {N_("Save Settings on Exit"), SaveOnExitProc},
     {NULL, NULL}
 };
 
@@ -733,1016 +762,15 @@ Arg boardArgs[] = {
 };
 
 XtResource clientResources[] = {
-    { "whitePieceColor", "whitePieceColor", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, whitePieceColor), XtRString,
-	WHITE_PIECE_COLOR },
-    { "blackPieceColor", "blackPieceColor", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, blackPieceColor), XtRString,
-	BLACK_PIECE_COLOR },
-    { "lightSquareColor", "lightSquareColor", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, lightSquareColor),
-	XtRString, LIGHT_SQUARE_COLOR },
-    { "darkSquareColor", "darkSquareColor", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, darkSquareColor), XtRString,
-	DARK_SQUARE_COLOR },
-    { "highlightSquareColor", "highlightSquareColor", XtRString,
-	sizeof(String),	XtOffset(AppDataPtr, highlightSquareColor),
-	XtRString, HIGHLIGHT_SQUARE_COLOR },
-    { "premoveHighlightColor", "premoveHighlightColor", XtRString,
-	sizeof(String),	XtOffset(AppDataPtr, premoveHighlightColor),
-	XtRString, PREMOVE_HIGHLIGHT_COLOR },
-    { "movesPerSession", "movesPerSession", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, movesPerSession), XtRImmediate,
-	(XtPointer) MOVES_PER_SESSION },
-    { "timeIncrement", "timeIncrement", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, timeIncrement), XtRImmediate,
-	(XtPointer) TIME_INCREMENT },
-    { "initString", "initString", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, initString), XtRString, INIT_STRING },
-    { "secondInitString", "secondInitString", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, secondInitString), XtRString, INIT_STRING },
-    { "firstComputerString", "firstComputerString", XtRString,
-        sizeof(String),	XtOffset(AppDataPtr, firstComputerString), XtRString,
-      COMPUTER_STRING },
-    { "secondComputerString", "secondComputerString", XtRString,
-        sizeof(String),	XtOffset(AppDataPtr, secondComputerString), XtRString,
-      COMPUTER_STRING },
-    { "firstChessProgram", "firstChessProgram", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, firstChessProgram),
-	XtRString, FIRST_CHESS_PROGRAM },
-    { "secondChessProgram", "secondChessProgram", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, secondChessProgram),
-	XtRString, SECOND_CHESS_PROGRAM },
-    { "firstPlaysBlack", "firstPlaysBlack", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, firstPlaysBlack),
-	XtRImmediate, (XtPointer) False },
-    { "noChessProgram", "noChessProgram", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, noChessProgram),
-	XtRImmediate, (XtPointer) False },
-    { "firstHost", "firstHost", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, firstHost), XtRString, FIRST_HOST },
-    { "secondHost", "secondHost", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, secondHost), XtRString, SECOND_HOST },
-    { "firstDirectory", "firstDirectory", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, firstDirectory), XtRString, "." },
-    { "secondDirectory", "secondDirectory", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, secondDirectory), XtRString, "." },
-    { "bitmapDirectory", "bitmapDirectory", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, bitmapDirectory),
-	XtRString, "" },
-    { "remoteShell", "remoteShell", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, remoteShell), XtRString, REMOTE_SHELL },
-    { "remoteUser", "remoteUser", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, remoteUser), XtRString, "" },
-    { "timeDelay", "timeDelay", XtRFloat, sizeof(float),
-	XtOffset(AppDataPtr, timeDelay), XtRString,
-	(XtPointer) TIME_DELAY_QUOTE },
-    { "timeControl", "timeControl", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, timeControl), XtRString,
-	(XtPointer) TIME_CONTROL },
-    { "internetChessServerMode", "internetChessServerMode",
-	XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, icsActive), XtRImmediate,
-	(XtPointer) False },
-    { "internetChessServerHost", "internetChessServerHost",
-	XtRString, sizeof(String),
-	XtOffset(AppDataPtr, icsHost),
-	XtRString, (XtPointer) ICS_HOST },
-    { "internetChessServerPort", "internetChessServerPort",
-	XtRString, sizeof(String),
-	XtOffset(AppDataPtr, icsPort), XtRString,
-	(XtPointer) ICS_PORT },
-    { "internetChessServerCommPort", "internetChessServerCommPort",
-	XtRString, sizeof(String),
-	XtOffset(AppDataPtr, icsCommPort), XtRString,
-	ICS_COMM_PORT },
-    { "internetChessServerLogonScript", "internetChessServerLogonScript",
-	XtRString, sizeof(String),
-	XtOffset(AppDataPtr, icsLogon), XtRString,
-	ICS_LOGON },
-    { "internetChessServerHelper", "internetChessServerHelper",
-	XtRString, sizeof(String),
-	XtOffset(AppDataPtr, icsHelper), XtRString, "" },
-    { "internetChessServerInputBox", "internetChessServerInputBox",
-	XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, icsInputBox), XtRImmediate,
-	(XtPointer) False },
-    { "icsAlarm", "icsAlarm",
-	XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, icsAlarm), XtRImmediate,
-	(XtPointer) True },
-    { "icsAlarmTime", "icsAlarmTime",
-	XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, icsAlarmTime), XtRImmediate,
-	(XtPointer) 5000 },
-    { "useTelnet", "useTelnet", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, useTelnet), XtRImmediate,
-	(XtPointer) False },
-    { "telnetProgram", "telnetProgram", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, telnetProgram), XtRString, TELNET_PROGRAM },
-    { "gateway", "gateway", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, gateway), XtRString, "" },
-    { "loadGameFile", "loadGameFile", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, loadGameFile), XtRString, "" },
-    { "loadGameIndex", "loadGameIndex",
-	XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, loadGameIndex), XtRImmediate,
-	(XtPointer) 0 },
-    { "saveGameFile", "saveGameFile", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, saveGameFile), XtRString, "" },
-    { "autoRaiseBoard", "autoRaiseBoard", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoRaiseBoard),
-	XtRImmediate, (XtPointer) True },
-    { "autoSaveGames", "autoSaveGames", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoSaveGames),
-	XtRImmediate, (XtPointer) False },
-    { "blindfold", "blindfold", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, blindfold),
-	XtRImmediate, (XtPointer) False },
-    { "loadPositionFile", "loadPositionFile", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, loadPositionFile),
-	XtRString, "" },
-    { "loadPositionIndex", "loadPositionIndex",
-	XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, loadPositionIndex), XtRImmediate,
-	(XtPointer) 1 },
-    { "savePositionFile", "savePositionFile", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, savePositionFile),
-	XtRString, "" },
-    { "matchMode", "matchMode", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, matchMode), XtRImmediate, (XtPointer) False },
-    { "matchGames", "matchGames", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, matchGames), XtRImmediate,
-	(XtPointer) 0 },
-    { "monoMode", "monoMode", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, monoMode), XtRImmediate,
-	(XtPointer) False },
-    { "debugMode", "debugMode", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, debugMode), XtRImmediate,
-	(XtPointer) False },
-    { "clockMode", "clockMode", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, clockMode), XtRImmediate,
-	(XtPointer) True },
-    { "boardSize", "boardSize", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, boardSize), XtRString, "" },
-    { "searchTime", "searchTime", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, searchTime), XtRString,
-	(XtPointer) "" },
-    { "searchDepth", "searchDepth", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, searchDepth), XtRImmediate,
-	(XtPointer) 0 },
-    { "showCoords", "showCoords", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, showCoords), XtRImmediate,
-	(XtPointer) False },
-    { "showJail", "showJail", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, showJail), XtRImmediate,
-	(XtPointer) 0 },
-    { "showThinking", "showThinking", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, showThinking), XtRImmediate,
-	(XtPointer) True },
-    { "ponderNextMove", "ponderNextMove", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, ponderNextMove), XtRImmediate,
-	(XtPointer) True },
-    { "periodicUpdates", "periodicUpdates", XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, periodicUpdates), XtRImmediate,
-	(XtPointer) True },
-    { "clockFont", "clockFont", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, clockFont), XtRString, CLOCK_FONT },
-    { "coordFont", "coordFont", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, coordFont), XtRString, COORD_FONT },
-    { "font", "font", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, font), XtRString, DEFAULT_FONT },
-    { "ringBellAfterMoves", "ringBellAfterMoves",
-	XtRBoolean, sizeof(Boolean),
-	XtOffset(AppDataPtr, ringBellAfterMoves),
-	XtRImmediate, (XtPointer) False	},
-    { "autoCallFlag", "autoCallFlag", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoCallFlag),
-	XtRImmediate, (XtPointer) False },
-    { "autoFlipView", "autoFlipView", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoFlipView),
-	XtRImmediate, (XtPointer) True },
-    { "autoObserve", "autoObserve", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoObserve),
-	XtRImmediate, (XtPointer) False },
-    { "autoComment", "autoComment", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoComment),
-	XtRImmediate, (XtPointer) False },
-    { "getMoveList", "getMoveList", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, getMoveList),
-	XtRImmediate, (XtPointer) True },
-#if HIGHDRAG
-    { "highlightDragging", "highlightDragging", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, highlightDragging),
-	XtRImmediate, (XtPointer) False },
-#endif
-    { "highlightLastMove", "highlightLastMove", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, highlightLastMove),
-	XtRImmediate, (XtPointer) False },
-    { "premove", "premove", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, premove),
-        XtRImmediate, (XtPointer) True },
-    { "testLegality", "testLegality", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, testLegality),
-	XtRImmediate, (XtPointer) True },
-    { "flipView", "flipView", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, flipView),
-	XtRImmediate, (XtPointer) False },
-    { "cmail", "cmailGameName", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, cmailGameName), XtRString, "" },
-    { "alwaysPromoteToQueen", "alwaysPromoteToQueen", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, alwaysPromoteToQueen),
-	XtRImmediate, (XtPointer) False },
-    { "oldSaveStyle", "oldSaveStyle", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, oldSaveStyle),
-	XtRImmediate, (XtPointer) False },
-    { "quietPlay", "quietPlay", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, quietPlay),
-	XtRImmediate, (XtPointer) False },
-    { "titleInWindow", "titleInWindow", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, titleInWindow),
-	XtRImmediate, (XtPointer) False },
-    { "localLineEditing", "localLineEditing", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, localLineEditing),
-	XtRImmediate, (XtPointer) True }, /* not implemented, must be True */
-#if ZIPPY
-    { "zippyTalk", "zippyTalk", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, zippyTalk),
-	XtRImmediate, (XtPointer) ZIPPY_TALK },
-    { "zippyPlay", "zippyPlay", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, zippyPlay),
-	XtRImmediate, (XtPointer) ZIPPY_PLAY },
-    { "zippyLines", "zippyLines", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, zippyLines), XtRString, ZIPPY_LINES },
-    { "zippyPinhead", "zippyPinhead", XtRString, sizeof(String),
-        XtOffset(AppDataPtr, zippyPinhead), XtRString, ZIPPY_PINHEAD },
-    { "zippyPassword", "zippyPassword", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, zippyPassword), XtRString, ZIPPY_PASSWORD },
-    { "zippyPassword2", "zippyPassword2", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, zippyPassword2), XtRString, ZIPPY_PASSWORD2 },
-    { "zippyWrongPassword", "zippyWrongPassword", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, zippyWrongPassword), XtRString,
-        ZIPPY_WRONG_PASSWORD },
-    { "zippyAcceptOnly", "zippyAcceptOnly", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, zippyAcceptOnly), XtRString, ZIPPY_ACCEPT_ONLY },
-    { "zippyUseI", "zippyUseI", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, zippyUseI),
-        XtRImmediate, (XtPointer) ZIPPY_USE_I },
-    { "zippyBughouse", "zippyBughouse", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, zippyBughouse),
-	XtRImmediate, (XtPointer) ZIPPY_BUGHOUSE },
-    { "zippyNoplayCrafty", "zippyNoplayCrafty", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, zippyNoplayCrafty),
-        XtRImmediate, (XtPointer) ZIPPY_NOPLAY_CRAFTY },
-    { "zippyGameEnd", "zippyGameEnd", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, zippyGameEnd), XtRString, ZIPPY_GAME_END },
-    { "zippyGameStart", "zippyGameStart", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, zippyGameStart), XtRString, ZIPPY_GAME_START },
-    { "zippyAdjourn", "zippyAdjourn", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, zippyAdjourn),
-	XtRImmediate, (XtPointer) ZIPPY_ADJOURN },
-    { "zippyAbort", "zippyAbort", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, zippyAbort),
-	XtRImmediate, (XtPointer) ZIPPY_ABORT },
-    { "zippyVariants", "zippyVariants", XtRString, sizeof(String),
-	XtOffset(AppDataPtr, zippyVariants), XtRString, ZIPPY_VARIANTS },
-    { "zippyMaxGames", "zippyMaxGames", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, zippyMaxGames), XtRImmediate,
-        (XtPointer) ZIPPY_MAX_GAMES },
-    { "zippyReplayTimeout", "zippyReplayTimeout", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, zippyReplayTimeout), XtRImmediate,
-        (XtPointer) ZIPPY_REPLAY_TIMEOUT },
-    { "zippyShortGame", "zippyShortGame", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, zippyShortGame), XtRImmediate,
-        (XtPointer) 0 },
-#endif
     { "flashCount", "flashCount", XtRInt, sizeof(int),
 	XtOffset(AppDataPtr, flashCount), XtRImmediate,
 	(XtPointer) FLASH_COUNT  },
-    { "flashRate", "flashRate", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, flashRate), XtRImmediate,
-	(XtPointer) FLASH_RATE },
-    { "pixmapDirectory", "pixmapDirectory", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, pixmapDirectory),
-	XtRString, "" },
-    { "msLoginDelay", "msLoginDelay", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, msLoginDelay), XtRImmediate,
-	(XtPointer) MS_LOGIN_DELAY },
-    { "colorizeMessages", "colorizeMessages", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, colorize),
-	XtRImmediate, (XtPointer) False },
-    { "colorShout", "colorShout", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorShout),
-	XtRString, COLOR_SHOUT },
-    { "colorSShout", "colorSShout", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorSShout),
-	XtRString, COLOR_SSHOUT },
-    { "colorChannel1", "colorChannel1", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorChannel1),
-	XtRString, COLOR_CHANNEL1 },
-    { "colorChannel", "colorChannel", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorChannel),
-	XtRString, COLOR_CHANNEL },
-    { "colorKibitz", "colorKibitz", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorKibitz),
-	XtRString, COLOR_KIBITZ },
-    { "colorTell", "colorTell", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorTell),
-	XtRString, COLOR_TELL },
-    { "colorChallenge", "colorChallenge", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorChallenge),
-	XtRString, COLOR_CHALLENGE },
-    { "colorRequest", "colorRequest", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorRequest),
-	XtRString, COLOR_REQUEST },
-    { "colorSeek", "colorSeek", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorSeek),
-	XtRString, COLOR_SEEK },
-    { "colorNormal", "colorNormal", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, colorNormal),
-	XtRString, COLOR_NORMAL },
-    { "soundProgram", "soundProgram", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundProgram),
-      XtRString, "play" },
-    { "soundShout", "soundShout", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundShout),
-      XtRString, "" },
-    { "soundSShout", "soundSShout", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundSShout),
-      XtRString, "" },
-    { "soundChannel1", "soundChannel1", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundChannel1),
-      XtRString, "" },
-    { "soundChannel", "soundChannel", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundChannel),
-      XtRString, "" },
-    { "soundKibitz", "soundKibitz", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundKibitz),
-      XtRString, "" },
-    { "soundTell", "soundTell", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundTell),
-      XtRString, "" },
-    { "soundChallenge", "soundChallenge", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundChallenge),
-      XtRString, "" },
-    { "soundRequest", "soundRequest", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundRequest),
-      XtRString, "" },
-    { "soundSeek", "soundSeek", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundSeek),
-      XtRString, "" },
-    { "soundMove", "soundMove", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundMove),
-      XtRString, "$" },
-    { "soundIcsWin", "soundIcsWin", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundIcsWin),
-      XtRString, "" },
-    { "soundIcsLoss", "soundIcsLoss", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundIcsLoss),
-      XtRString, "" },
-    { "soundIcsDraw", "soundIcsDraw", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundIcsDraw),
-      XtRString, "" },
-    { "soundIcsUnfinished", "soundIcsUnfinished", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundIcsUnfinished),
-      XtRString, "" },
-    { "soundIcsAlarm", "soundIcsAlarm", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, soundIcsAlarm),
-      XtRString, "$" },
-    { "reuseFirst", "reuseFirst", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, reuseFirst),
-	XtRImmediate, (XtPointer) True },
-    { "reuseSecond", "reuseSecond", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, reuseSecond),
-	XtRImmediate, (XtPointer) True },
-    { "animateDragging", "animateDragging", XtRBoolean,
-        sizeof(Boolean), XtOffset(AppDataPtr, animateDragging),
-	XtRImmediate, (XtPointer) True },
-    { "animateMoving", "animateMoving", XtRBoolean,
-        sizeof(Boolean), XtOffset(AppDataPtr, animate),
-	XtRImmediate, (XtPointer) True },
-    { "animateSpeed", "animateSpeed", XtRInt,
-        sizeof(int), XtOffset(AppDataPtr, animSpeed),
-	XtRImmediate, (XtPointer)10 },
-    { "popupExitMessage", "popupExitMessage", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, popupExitMessage),
-	XtRImmediate, (XtPointer) True },
-    { "popupMoveErrors", "popupMoveErrors", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, popupMoveErrors),
-	XtRImmediate, (XtPointer) False },
-    { "fontSizeTolerance", "fontSizeTolerance", XtRInt,
-        sizeof(int), XtOffset(AppDataPtr, fontSizeTolerance),
-	XtRImmediate, (XtPointer)4 },
-    { "initialMode", "initialMode", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, initialMode),
-	XtRImmediate, (XtPointer) "" },
-    { "variant", "variant", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, variant),
-	XtRImmediate, (XtPointer) "normal" },
-    { "firstProtocolVersion", "firstProtocolVersion", XtRInt,
-        sizeof(int), XtOffset(AppDataPtr, firstProtocolVersion),
-	XtRImmediate, (XtPointer)PROTOVER },
-    { "secondProtocolVersion", "secondProtocolVersion", XtRInt,
-        sizeof(int), XtOffset(AppDataPtr, secondProtocolVersion),
-	XtRImmediate, (XtPointer)PROTOVER },
-    { "showButtonBar", "showButtonBar", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, showButtonBar),
-	XtRImmediate, (XtPointer) True },
-    { "lowTimeWarningColor", "lowTimeWarningColor", XtRString,
-      sizeof(String), XtOffset(AppDataPtr, lowTimeWarningColor),
-      XtRString, COLOR_LOWTIMEWARNING },
-    { "lowTimeWarning", "lowTimeWarning", XtRBoolean,
-      sizeof(Boolean), XtOffset(AppDataPtr, lowTimeWarning),
-      XtRImmediate, (XtPointer) False },
-    {"icsEngineAnalyze", "icsEngineAnalyze", XtRBoolean,        /* [DM] icsEngineAnalyze */
-        sizeof(Boolean), XtOffset(AppDataPtr, icsEngineAnalyze),
-        XtRImmediate, (XtPointer) False },
-    { "firstScoreAbs", "firstScoreAbs", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, firstScoreIsAbsolute),
-	XtRImmediate, (XtPointer) False },
-    { "secondScoreAbs", "secondScoreAbs", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, secondScoreIsAbsolute),
-	XtRImmediate, (XtPointer) False },
-    { "pgnExtendedInfo", "pgnExtendedInfo", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, saveExtendedInfoInPGN),
-	XtRImmediate, (XtPointer) False },
-    { "hideThinkingFromHuman", "hideThinkingFromHuman", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, hideThinkingFromHuman),
-	XtRImmediate, (XtPointer) True },
-    { "adjudicateLossThreshold", "adjudicateLossThreshold", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, adjudicateLossThreshold),
-	XtRImmediate, (XtPointer) 0},
-    { "adjudicateDrawMoves", "adjudicateDrawMoves", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, adjudicateDrawMoves),
-	XtRImmediate, (XtPointer) 0},
-    { "pgnEventHeader", "pgnEventHeader", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, pgnEventHeader),
-	XtRImmediate, (XtPointer) "Computer Chess Game" },
-    { "defaultFrcPosition", "defaultFrcPositon", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, defaultFrcPosition),
-	XtRImmediate, (XtPointer) -1},
-    { "gameListTags", "gameListTags", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, gameListTags),
-	XtRImmediate, (XtPointer) GLT_DEFAULT_TAGS },
-
-    // [HGM] 4.3.xx options
-    { "boardWidth", "boardWidth", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, NrFiles),
-	XtRImmediate, (XtPointer) -1},
-    { "boardHeight", "boardHeight", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, NrRanks),
-	XtRImmediate, (XtPointer) -1},
-    { "matchPause", "matchPause", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, matchPause),
-	XtRImmediate, (XtPointer) 10000},
-    { "holdingsSize", "holdingsSize", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, holdingsSize),
-	XtRImmediate, (XtPointer) -1},
-    { "flipBlack", "flipBlack", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, upsideDown),
-	XtRImmediate, (XtPointer) False},
-    { "allWhite", "allWhite", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, allWhite),
-	XtRImmediate, (XtPointer) False},
-    { "pieceToCharTable", "pieceToCharTable", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, pieceToCharTable),
-	XtRImmediate, (XtPointer) 0},
-    { "alphaRank", "alphaRank", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, alphaRank),
-	XtRImmediate, (XtPointer) False},
-    { "testClaims", "testClaims", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, testClaims),
-	XtRImmediate, (XtPointer) True},
-    { "checkMates", "checkMates", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, checkMates),
-	XtRImmediate, (XtPointer) True},
-    { "materialDraws", "materialDraws", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, materialDraws),
-	XtRImmediate, (XtPointer) True},
-    { "trivialDraws", "trivialDraws", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, trivialDraws),
-	XtRImmediate, (XtPointer) False},
-    { "ruleMoves", "ruleMoves", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, ruleMoves),
-	XtRImmediate, (XtPointer) 51},
-    { "repeatsToDraw", "repeatsToDraw", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, drawRepeats),
-	XtRImmediate, (XtPointer) 6},
-    { "engineDebugOutput", "engineDebugOutput", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, engineComments),
-	XtRImmediate, (XtPointer) 1},
-    { "userName", "userName", XtRString,
-	sizeof(int), XtOffset(AppDataPtr, userName),
-	XtRImmediate, (XtPointer) 0},
-    { "autoKibitz", "autoKibitz", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoKibitz),
-	XtRImmediate, (XtPointer) False},
-    { "firstTimeOdds", "firstTimeOdds", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, firstTimeOdds),
-	XtRImmediate, (XtPointer) 1},
-    { "secondTimeOdds", "secondTimeOdds", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, secondTimeOdds),
-	XtRImmediate, (XtPointer) 1},
-    { "timeOddsMode", "timeOddsMode", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, timeOddsMode),
-	XtRImmediate, (XtPointer) 0},
-    { "firstAccumulateTC", "firstAccumulateTC", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, firstAccumulateTC),
-	XtRImmediate, (XtPointer) 1},
-    { "secondAccumulateTC", "secondAccumulateTC", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, secondAccumulateTC),
-	XtRImmediate, (XtPointer) 1},
-    { "firstNPS", "firstNPS", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, firstNPS),
-	XtRImmediate, (XtPointer) -1},
-    { "secondNPS", "secondNPS", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, secondNPS),
-	XtRImmediate, (XtPointer) -1},
-    { "serverMoves", "serverMoves", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, serverMovesName),
-	XtRImmediate, (XtPointer) 0},
-    { "serverPause", "serverPause", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, serverPause),
-	XtRImmediate, (XtPointer) 0},
-    { "suppressLoadMoves", "suppressLoadMoves", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, suppressLoadMoves),
-	XtRImmediate, (XtPointer) False},
-    { "userName", "userName", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, userName),
-	XtRImmediate, (XtPointer) 0},
-    { "egtFormats", "egtFormats", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, egtFormats),
-	XtRImmediate, (XtPointer) 0},
-    { "rewindIndex", "rewindIndex", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, rewindIndex),
-	XtRImmediate, (XtPointer) 0},
-    { "sameColorGames", "sameColorGames", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, sameColorGames),
-	XtRImmediate, (XtPointer) 0},
-    { "smpCores", "smpCores", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, smpCores),
-	XtRImmediate, (XtPointer) 1},
-    { "niceEngines", "niceEngines", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, niceEngines),
-	XtRImmediate, (XtPointer) 0},
-    { "nameOfDebugFile", "nameOfDebugFile", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, nameOfDebugFile),
-	XtRImmediate, (XtPointer) "xboard.debug"},
-    { "engineDebugOutput", "engineDebugOutput", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, engineComments),
-	XtRImmediate, (XtPointer) 1},
-    { "noGUI", "noGUI", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, noGUI),
-	XtRImmediate, (XtPointer) 0},
-    { "firstOptions", "firstOptions", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, firstOptions),
-	XtRImmediate, (XtPointer) "" },
-    { "secondOptions", "secondOptions", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, secondOptions),
-	XtRImmediate, (XtPointer) "" },
-    { "firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, fenOverride1),
-	XtRImmediate, (XtPointer) 0 },
-    { "secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, fenOverride2),
-	XtRImmediate, (XtPointer) 0 },
-
-    // [HGM] Winboard_x UCI options
-    { "firstIsUCI", "firstIsUCI", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, firstIsUCI),
-	XtRImmediate, (XtPointer) False},
-    { "secondIsUCI", "secondIsUCI", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, secondIsUCI),
-	XtRImmediate, (XtPointer) False},
-    { "firstHasOwnBookUCI", "firstHasOwnBookUCI", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, firstHasOwnBookUCI),
-	XtRImmediate, (XtPointer) True},
-    { "secondHasOwnBookUCI", "secondHasOwnBookUCI", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, secondHasOwnBookUCI),
-	XtRImmediate, (XtPointer) True},
-    { "usePolyglotBook", "usePolyglotBook", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, usePolyglotBook),
-	XtRImmediate, (XtPointer) False},
-    { "defaultHashSize", "defaultHashSize", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, defaultHashSize),
-	XtRImmediate, (XtPointer) 64},
-    { "defaultCacheSizeEGTB", "defaultCacheSizeEGTB", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, defaultCacheSizeEGTB),
-	XtRImmediate, (XtPointer) 4},
-    { "polyglotDir", "polyglotDir", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, polyglotDir),
-	XtRImmediate, (XtPointer) "." },
-    { "polyglotBook", "polyglotBook", XtRString,
-        sizeof(String), XtOffset(AppDataPtr, polyglotBook),
-	XtRImmediate, (XtPointer) "" },
-    { "defaultPathEGTB", "defaultPathEGTB", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, defaultPathEGTB),
-	XtRImmediate, (XtPointer) "/usr/local/share/egtb"},
-    { "delayBeforeQuit", "delayBeforeQuit", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, delayBeforeQuit),
-	XtRImmediate, (XtPointer) 0},
-    { "delayAfterQuit", "delayAfterQuit", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, delayAfterQuit),
-	XtRImmediate, (XtPointer) 0},
-    { "keepAlive", "keepAlive", XtRInt,
-	sizeof(int), XtOffset(AppDataPtr, keepAlive),
-	XtRImmediate, (XtPointer) 0},
-    { "forceIllegalMoves", "forceIllegalMoves", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, forceIllegal),
-	XtRImmediate, (XtPointer) False},
-    { "keepLineBreaksICS", "keepLineBreaksICS", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, noJoin),
-	XtRImmediate, (XtPointer) False},
-    { "wrapContinuationSequence", "wrapContinuationSequence", XtRString,
-	sizeof(String), XtOffset(AppDataPtr, wrapContSeq),
-	XtRString, ""},
-    { "useInternalWrap", "useInternalWrap", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, useInternalWrap),
-	XtRImmediate, (XtPointer) True},
-    { "autoDisplayTags", "autoDisplayTags", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoDisplayTags),
-	XtRImmediate, (XtPointer) True},
-    { "autoDisplayComment", "autoDisplayComment", XtRBoolean,
-	sizeof(Boolean), XtOffset(AppDataPtr, autoDisplayComment),
-	XtRImmediate, (XtPointer) True},
-    { "pasteSelection", "pasteSelection", XtRBoolean,
-        sizeof(Boolean), XtOffset(AppDataPtr, pasteSelection),
-        XtRImmediate, (XtPointer) False},
 };
 
 XrmOptionDescRec shellOptions[] = {
-    { "-whitePieceColor", "whitePieceColor", XrmoptionSepArg, NULL },
-    { "-blackPieceColor", "blackPieceColor", XrmoptionSepArg, NULL },
-    { "-lightSquareColor", "lightSquareColor", XrmoptionSepArg, NULL },
-    { "-darkSquareColor", "darkSquareColor", XrmoptionSepArg, NULL },
-    { "-highlightSquareColor", "highlightSquareColor", XrmoptionSepArg, NULL },
-    { "-premoveHighlightColor", "premoveHighlightColor", XrmoptionSepArg,NULL},
-    { "-movesPerSession", "movesPerSession", XrmoptionSepArg, NULL },
-    { "-mps", "movesPerSession", XrmoptionSepArg, NULL },
-    { "-timeIncrement", "timeIncrement", XrmoptionSepArg, NULL },
-    { "-inc", "timeIncrement", XrmoptionSepArg, NULL },
-    { "-initString", "initString", XrmoptionSepArg, NULL },
-    { "-firstInitString", "initString", XrmoptionSepArg, NULL },
-    { "-secondInitString", "secondInitString", XrmoptionSepArg, NULL },
-    { "-firstComputerString", "firstComputerString", XrmoptionSepArg, NULL },
-    { "-secondComputerString", "secondComputerString", XrmoptionSepArg, NULL },
-    { "-firstChessProgram", "firstChessProgram", XrmoptionSepArg, NULL },
-    { "-fcp", "firstChessProgram", XrmoptionSepArg, NULL },
-    { "-secondChessProgram", "secondChessProgram", XrmoptionSepArg, NULL },
-    { "-scp", "secondChessProgram", XrmoptionSepArg, NULL },
-    { "-firstPlaysBlack", "firstPlaysBlack", XrmoptionSepArg, NULL },
-    { "-fb", "firstPlaysBlack", XrmoptionNoArg, "True" },
-    { "-xfb", "firstPlaysBlack", XrmoptionNoArg, "False" },
-    { "-noChessProgram", "noChessProgram", XrmoptionSepArg, NULL },
-    { "-ncp", "noChessProgram", XrmoptionNoArg, "True" },
-    { "-xncp", "noChessProgram", XrmoptionNoArg, "False" },
-    { "-firstHost", "firstHost", XrmoptionSepArg, NULL },
-    { "-fh", "firstHost", XrmoptionSepArg, NULL },
-    { "-secondHost", "secondHost", XrmoptionSepArg, NULL },
-    { "-sh", "secondHost", XrmoptionSepArg, NULL },
-    { "-firstDirectory", "firstDirectory", XrmoptionSepArg, NULL },
-    { "-fd", "firstDirectory", XrmoptionSepArg, NULL },
-    { "-secondDirectory", "secondDirectory", XrmoptionSepArg, NULL },
-    { "-sd", "secondDirectory", XrmoptionSepArg, NULL },
-    { "-bitmapDirectory", "bitmapDirectory", XrmoptionSepArg, NULL },
-    { "-bm", "bitmapDirectory", XrmoptionSepArg, NULL },
-    { "-remoteShell", "remoteShell", XrmoptionSepArg, NULL },
-    { "-rsh", "remoteShell", XrmoptionSepArg, NULL },
-    { "-remoteUser", "remoteUser", XrmoptionSepArg, NULL },
-    { "-ruser", "remoteUser", XrmoptionSepArg, NULL },
-    { "-timeDelay", "timeDelay", XrmoptionSepArg, NULL },
-    { "-td", "timeDelay", XrmoptionSepArg, NULL },
-    { "-timeControl", "timeControl", XrmoptionSepArg, NULL },
-    { "-tc", "timeControl", XrmoptionSepArg, NULL },
-    { "-internetChessServerMode", "internetChessServerMode",
-	XrmoptionSepArg, NULL },
-    { "-ics", "internetChessServerMode", XrmoptionNoArg, "True" },
-    { "-xics", "internetChessServerMode", XrmoptionNoArg, "False" },
-    { "-internetChessServerHost", "internetChessServerHost",
-	XrmoptionSepArg, NULL },
-    { "-icshost", "internetChessServerHost", XrmoptionSepArg, NULL },
-    { "-internetChessServerPort", "internetChessServerPort",
-	XrmoptionSepArg, NULL },
-    { "-icsport", "internetChessServerPort", XrmoptionSepArg, NULL },
-    { "-internetChessServerCommPort", "internetChessServerCommPort",
-	XrmoptionSepArg, NULL },
-    { "-icscomm", "internetChessServerCommPort", XrmoptionSepArg, NULL },
-    { "-internetChessServerLogonScript", "internetChessServerLogonScript",
-	XrmoptionSepArg, NULL },
-    { "-icslogon", "internetChessServerLogonScript", XrmoptionSepArg, NULL },
-    { "-internetChessServerHelper", "internetChessServerHelper",
-	XrmoptionSepArg, NULL },
-    { "-icshelper", "internetChessServerHelper", XrmoptionSepArg, NULL },
-    { "-internetChessServerInputBox", "internetChessServerInputBox",
-	XrmoptionSepArg, NULL },
-    { "-icsinput", "internetChessServerInputBox", XrmoptionNoArg, "True" },
-    { "-xicsinput", "internetChessServerInputBox", XrmoptionNoArg, "False" },
-    { "-icsAlarm", "icsAlarm", XrmoptionSepArg, NULL },
-    { "-alarm", "icsAlarm", XrmoptionNoArg, "True" },
-    { "-xalarm", "icsAlarm", XrmoptionNoArg, "False" },
-    { "-icsAlarmTime", "icsAlarmTime", XrmoptionSepArg, NULL },
-    { "-useTelnet", "useTelnet", XrmoptionSepArg, NULL },
-    { "-telnet", "useTelnet", XrmoptionNoArg, "True" },
-    { "-xtelnet", "useTelnet", XrmoptionNoArg, "False" },
-    { "-telnetProgram", "telnetProgram", XrmoptionSepArg, NULL },
-    { "-gateway", "gateway", XrmoptionSepArg, NULL },
-    { "-loadGameFile", "loadGameFile", XrmoptionSepArg, NULL },
-    { "-lgf", "loadGameFile", XrmoptionSepArg, NULL },
-    { "-loadGameIndex", "loadGameIndex", XrmoptionSepArg, NULL },
-    { "-lgi", "loadGameIndex", XrmoptionSepArg, NULL },
-    { "-saveGameFile", "saveGameFile", XrmoptionSepArg, NULL },
-    { "-sgf", "saveGameFile", XrmoptionSepArg, NULL },
-    { "-autoSaveGames", "autoSaveGames", XrmoptionSepArg, NULL },
-    { "-autosave", "autoSaveGames", XrmoptionNoArg, "True" },
-    { "-xautosave", "autoSaveGames", XrmoptionNoArg, "False" },
-    { "-autoRaiseBoard", "autoRaiseBoard", XrmoptionSepArg, NULL },
-    { "-autoraise", "autoRaiseBoard", XrmoptionNoArg, "True" },
-    { "-xautoraise", "autoRaiseBoard", XrmoptionNoArg, "False" },
-    { "-blindfold", "blindfold", XrmoptionSepArg, NULL },
-    { "-blind", "blindfold", XrmoptionNoArg, "True" },
-    { "-xblind", "blindfold", XrmoptionNoArg, "False" },
-    { "-loadPositionFile", "loadPositionFile", XrmoptionSepArg, NULL },
-    { "-lpf", "loadPositionFile", XrmoptionSepArg, NULL },
-    { "-loadPositionIndex", "loadPositionIndex", XrmoptionSepArg, NULL },
-    { "-lpi", "loadPositionIndex", XrmoptionSepArg, NULL },
-    { "-savePositionFile", "savePositionFile", XrmoptionSepArg, NULL },
-    { "-spf", "savePositionFile", XrmoptionSepArg, NULL },
-    { "-matchMode", "matchMode", XrmoptionSepArg, NULL },
-    { "-mm", "matchMode", XrmoptionNoArg, "True" },
-    { "-xmm", "matchMode", XrmoptionNoArg, "False" },
-    { "-matchGames", "matchGames", XrmoptionSepArg, NULL },
-    { "-mg", "matchGames", XrmoptionSepArg, NULL },
-    { "-monoMode", "monoMode", XrmoptionSepArg, NULL },
-    { "-mono", "monoMode", XrmoptionNoArg, "True" },
-    { "-xmono", "monoMode", XrmoptionNoArg, "False" },
-    { "-debugMode", "debugMode", XrmoptionSepArg, NULL },
-    { "-debug", "debugMode", XrmoptionNoArg, "True" },
-    { "-xdebug", "debugMode", XrmoptionNoArg, "False" },
-    { "-clockMode", "clockMode", XrmoptionSepArg, NULL },
-    { "-clock", "clockMode", XrmoptionNoArg, "True" },
-    { "-xclock", "clockMode", XrmoptionNoArg, "False" },
-    { "-boardSize", "boardSize", XrmoptionSepArg, NULL },
-    { "-size", "boardSize", XrmoptionSepArg, NULL },
-    { "-searchTime", "searchTime", XrmoptionSepArg, NULL },
-    { "-st", "searchTime", XrmoptionSepArg, NULL },
-    { "-searchDepth", "searchDepth", XrmoptionSepArg, NULL },
-    { "-depth", "searchDepth", XrmoptionSepArg, NULL },
-    { "-showCoords", "showCoords", XrmoptionSepArg, NULL },
-    { "-coords", "showCoords", XrmoptionNoArg, "True" },
-    { "-xcoords", "showCoords", XrmoptionNoArg, "False" },
-#if JAIL
-    { "-showJail", "showJail", XrmoptionSepArg, NULL },
-    { "-jail", "showJail", XrmoptionNoArg, "1" },
-    { "-sidejail", "showJail", XrmoptionNoArg, "2" },
-    { "-xjail", "showJail", XrmoptionNoArg, "0" },
-#endif
-    { "-showThinking", "showThinking", XrmoptionSepArg, NULL },
-    { "-thinking", "showThinking", XrmoptionNoArg, "True" },
-    { "-xthinking", "showThinking", XrmoptionNoArg, "False" },
-    { "-ponderNextMove", "ponderNextMove", XrmoptionSepArg, NULL },
-    { "-ponder", "ponderNextMove", XrmoptionNoArg, "True" },
-    { "-xponder", "ponderNextMove", XrmoptionNoArg, "False" },
-    { "-periodicUpdates", "periodicUpdates", XrmoptionSepArg, NULL },
-    { "-periodic", "periodicUpdates", XrmoptionNoArg, "True" },
-    { "-xperiodic", "periodicUpdates", XrmoptionNoArg, "False" },
-    { "-clockFont", "clockFont", XrmoptionSepArg, NULL },
-    { "-coordFont", "coordFont", XrmoptionSepArg, NULL },
-    { "-font", "font", XrmoptionSepArg, NULL },
-    { "-ringBellAfterMoves", "ringBellAfterMoves", XrmoptionSepArg, NULL },
-    { "-bell", "ringBellAfterMoves", XrmoptionNoArg, "True" },
-    { "-xbell", "ringBellAfterMoves", XrmoptionNoArg, "False" },
-    { "-movesound", "ringBellAfterMoves", XrmoptionNoArg, "True" },
-    { "-xmovesound", "ringBellAfterMoves", XrmoptionNoArg, "False" },
-    { "-autoCallFlag", "autoCallFlag", XrmoptionSepArg, NULL },
-    { "-autoflag", "autoCallFlag", XrmoptionNoArg, "True" },
-    { "-xautoflag", "autoCallFlag", XrmoptionNoArg, "False" },
-    { "-autoFlipView", "autoFlipView", XrmoptionSepArg, NULL },
-    { "-autoflip", "autoFlipView", XrmoptionNoArg, "True" },
-    { "-xautoflip", "autoFlipView", XrmoptionNoArg, "False" },
-    { "-autoObserve", "autoObserve", XrmoptionSepArg, NULL },
-    { "-autobs", "autoObserve", XrmoptionNoArg, "True" },
-    { "-xautobs", "autoObserve", XrmoptionNoArg, "False" },
-    { "-autoComment", "autoComment", XrmoptionSepArg, NULL },
-    { "-autocomm", "autoComment", XrmoptionNoArg, "True" },
-    { "-xautocomm", "autoComment", XrmoptionNoArg, "False" },
-    { "-getMoveList", "getMoveList", XrmoptionSepArg, NULL },
-    { "-moves", "getMoveList", XrmoptionNoArg, "True" },
-    { "-xmoves", "getMoveList", XrmoptionNoArg, "False" },
-#if HIGHDRAG
-    { "-highlightDragging", "highlightDragging", XrmoptionSepArg, NULL },
-    { "-highdrag", "highlightDragging", XrmoptionNoArg, "True" },
-    { "-xhighdrag", "highlightDragging", XrmoptionNoArg, "False" },
-#endif
-    { "-highlightLastMove", "highlightLastMove", XrmoptionSepArg, NULL },
-    { "-highlight", "highlightLastMove", XrmoptionNoArg, "True" },
-    { "-xhighlight", "highlightLastMove", XrmoptionNoArg, "False" },
-    { "-premove", "premove", XrmoptionSepArg, NULL },
-    { "-pre", "premove", XrmoptionNoArg, "True" },
-    { "-xpre", "premove", XrmoptionNoArg, "False" },
-    { "-testLegality", "testLegality", XrmoptionSepArg, NULL },
-    { "-legal", "testLegality", XrmoptionNoArg, "True" },
-    { "-xlegal", "testLegality", XrmoptionNoArg, "False" },
-    { "-flipView", "flipView", XrmoptionSepArg, NULL },
-    { "-flip", "flipView", XrmoptionNoArg, "True" },
-    { "-xflip", "flipView", XrmoptionNoArg, "False" },
-    { "-cmail", "cmailGameName", XrmoptionSepArg, NULL },
-    { "-alwaysPromoteToQueen", "alwaysPromoteToQueen",
-	XrmoptionSepArg, NULL },
-    { "-queen", "alwaysPromoteToQueen", XrmoptionNoArg, "True" },
-    { "-xqueen", "alwaysPromoteToQueen", XrmoptionNoArg, "False" },
-    { "-oldSaveStyle", "oldSaveStyle", XrmoptionSepArg, NULL },
-    { "-oldsave", "oldSaveStyle", XrmoptionNoArg, "True" },
-    { "-xoldsave", "oldSaveStyle", XrmoptionNoArg, "False" },
-    { "-quietPlay", "quietPlay", XrmoptionSepArg, NULL },
-    { "-quiet", "quietPlay", XrmoptionNoArg, "True" },
-    { "-xquiet", "quietPlay", XrmoptionNoArg, "False" },
-    { "-titleInWindow", "titleInWindow", XrmoptionSepArg, NULL },
-    { "-title", "titleInWindow", XrmoptionNoArg, "True" },
-    { "-xtitle", "titleInWindow", XrmoptionNoArg, "False" },
-#ifdef ZIPPY
-    { "-zippyTalk", "zippyTalk", XrmoptionSepArg, NULL },
-    { "-zt", "zippyTalk", XrmoptionNoArg, "True" },
-    { "-xzt", "zippyTalk", XrmoptionNoArg, "False" },
-    { "-zippyPlay", "zippyPlay", XrmoptionSepArg, NULL },
-    { "-zp", "zippyPlay", XrmoptionNoArg, "True" },
-    { "-xzp", "zippyPlay", XrmoptionNoArg, "False" },
-    { "-zippyLines", "zippyLines", XrmoptionSepArg, NULL },
-    { "-zippyPinhead", "zippyPinhead", XrmoptionSepArg, NULL },
-    { "-zippyPassword", "zippyPassword", XrmoptionSepArg, NULL },
-    { "-zippyPassword2", "zippyPassword2", XrmoptionSepArg, NULL },
-    { "-zippyWrongPassword", "zippyWrongPassword", XrmoptionSepArg, NULL },
-    { "-zippyAcceptOnly", "zippyAcceptOnly", XrmoptionSepArg, NULL },
-    { "-zippyUseI", "zippyUseI", XrmoptionSepArg, NULL },
-    { "-zui", "zippyUseI", XrmoptionNoArg, "True" },
-    { "-xzui", "zippyUseI", XrmoptionNoArg, "False" },
-    { "-zippyBughouse", "zippyBughouse", XrmoptionSepArg, NULL },
-    { "-zippyNoplayCrafty", "zippyNoplayCrafty", XrmoptionSepArg, NULL },
-    { "-znc", "zippyNoplayCrafty", XrmoptionNoArg, "True" },
-    { "-xznc", "zippyNoplayCrafty", XrmoptionNoArg, "False" },
-    { "-zippyGameEnd", "zippyGameEnd", XrmoptionSepArg, NULL },
-    { "-zippyGameStart", "zippyGameStart", XrmoptionSepArg, NULL },
-    { "-zippyAdjourn", "zippyAdjourn", XrmoptionSepArg, NULL },
-    { "-zadj", "zippyAdjourn", XrmoptionNoArg, "True" },
-    { "-xzadj", "zippyAdjourn", XrmoptionNoArg, "False" },
-    { "-zippyAbort", "zippyAbort", XrmoptionSepArg, NULL },
-    { "-zab", "zippyAbort", XrmoptionNoArg, "True" },
-    { "-xzab", "zippyAbort", XrmoptionNoArg, "False" },
-    { "-zippyVariants", "zippyVariants", XrmoptionSepArg, NULL },
-    { "-zippyMaxGames", "zippyMaxGames", XrmoptionSepArg, NULL },
-    { "-zippyReplayTimeout", "zippyReplayTimeout", XrmoptionSepArg, NULL },
-    { "-zippyShortGame", "zippyShortGame", XrmoptionSepArg, NULL },
-#endif
     { "-flashCount", "flashCount", XrmoptionSepArg, NULL },
     { "-flash", "flashCount", XrmoptionNoArg, "3" },
     { "-xflash", "flashCount", XrmoptionNoArg, "0" },
-    { "-flashRate", "flashRate", XrmoptionSepArg, NULL },
-    { "-pixmapDirectory", "pixmapDirectory", XrmoptionSepArg, NULL },
-    { "-msLoginDelay", "msLoginDelay", XrmoptionSepArg, NULL },
-    { "-pixmap", "pixmapDirectory", XrmoptionSepArg, NULL },
-    { "-colorizeMessages", "colorizeMessages", XrmoptionSepArg, NULL },
-    { "-colorize", "colorizeMessages", XrmoptionNoArg, "True" },
-    { "-xcolorize", "colorizeMessages", XrmoptionNoArg, "False" },
-    { "-colorShout", "colorShout", XrmoptionSepArg, NULL },
-    { "-colorSShout", "colorSShout", XrmoptionSepArg, NULL },
-    { "-colorCShout", "colorSShout", XrmoptionSepArg, NULL }, /*FICS name*/
-    { "-colorChannel1", "colorChannel1", XrmoptionSepArg, NULL },
-    { "-colorChannel", "colorChannel", XrmoptionSepArg, NULL },
-    { "-colorKibitz", "colorKibitz", XrmoptionSepArg, NULL },
-    { "-colorTell", "colorTell", XrmoptionSepArg, NULL },
-    { "-colorChallenge", "colorChallenge", XrmoptionSepArg, NULL },
-    { "-colorRequest", "colorRequest", XrmoptionSepArg, NULL },
-    { "-colorSeek", "colorSeek", XrmoptionSepArg, NULL },
-    { "-colorNormal", "colorNormal", XrmoptionSepArg, NULL },
-    { "-soundProgram", "soundProgram", XrmoptionSepArg, NULL },
-    { "-soundShout", "soundShout", XrmoptionSepArg, NULL },
-    { "-soundSShout", "soundSShout", XrmoptionSepArg, NULL },
-    { "-soundCShout", "soundSShout", XrmoptionSepArg, NULL }, /*FICS name*/
-    { "-soundChannel1", "soundChannel1", XrmoptionSepArg, NULL },
-    { "-soundChannel", "soundChannel", XrmoptionSepArg, NULL },
-    { "-soundKibitz", "soundKibitz", XrmoptionSepArg, NULL },
-    { "-soundTell", "soundTell", XrmoptionSepArg, NULL },
-    { "-soundChallenge", "soundChallenge", XrmoptionSepArg, NULL },
-    { "-soundRequest", "soundRequest", XrmoptionSepArg, NULL },
-    { "-soundSeek", "soundSeek", XrmoptionSepArg, NULL },
-    { "-soundMove", "soundMove", XrmoptionSepArg, NULL },
-    { "-soundIcsWin", "soundIcsWin", XrmoptionSepArg, NULL },
-    { "-soundIcsLoss", "soundIcsLoss", XrmoptionSepArg, NULL },
-    { "-soundIcsDraw", "soundIcsDraw", XrmoptionSepArg, NULL },
-    { "-soundIcsUnfinished", "soundIcsUnfinished", XrmoptionSepArg, NULL },
-    { "-soundIcsAlarm", "soundIcsAlarm", XrmoptionSepArg, NULL },
-    { "-reuseFirst", "reuseFirst", XrmoptionSepArg, NULL },
-    { "-reuseChessPrograms", "reuseFirst", XrmoptionSepArg, NULL }, /*compat*/
-    { "-reuse", "reuseFirst", XrmoptionNoArg, "True" },
-    { "-xreuse", "reuseFirst", XrmoptionNoArg, "False" },
-    { "-reuseSecond", "reuseSecond", XrmoptionSepArg, NULL },
-    { "-reuse2", "reuseSecond", XrmoptionNoArg, "True" },
-    { "-xreuse2", "reuseSecond", XrmoptionNoArg, "False" },
-    { "-animateMoving", "animateMoving", XrmoptionSepArg, NULL },
-    { "-animate", "animateMoving", XrmoptionNoArg, "True" },
-    { "-xanimate", "animateMoving", XrmoptionNoArg, "False" },
-    { "-animateDragging", "animateDragging", XrmoptionSepArg, NULL },
-    { "-drag", "animateDragging", XrmoptionNoArg, "True" },
-    { "-xdrag", "animateDragging", XrmoptionNoArg, "False" },
-    { "-animateSpeed", "animateSpeed", XrmoptionSepArg, NULL },
-    { "-popupExitMessage", "popupExitMessage", XrmoptionSepArg, NULL },
-    { "-exit", "popupExitMessage", XrmoptionNoArg, "True" },
-    { "-xexit", "popupExitMessage", XrmoptionNoArg, "False" },
-    { "-popupMoveErrors", "popupMoveErrors", XrmoptionSepArg, NULL },
-    { "-popup", "popupMoveErrors", XrmoptionNoArg, "True" },
-    { "-xpopup", "popupMoveErrors", XrmoptionNoArg, "False" },
-    { "-fontSizeTolerance", "fontSizeTolerance", XrmoptionSepArg, NULL },
-    { "-initialMode", "initialMode", XrmoptionSepArg, NULL },
-    { "-mode", "initialMode", XrmoptionSepArg, NULL },
-    { "-variant", "variant", XrmoptionSepArg, NULL },
-    { "-firstProtocolVersion", "firstProtocolVersion", XrmoptionSepArg, NULL },
-    { "-secondProtocolVersion","secondProtocolVersion",XrmoptionSepArg, NULL },
-    { "-showButtonBar", "showButtonBar", XrmoptionSepArg, NULL },
-    { "-buttons", "showButtonBar", XrmoptionNoArg, "True" },
-    { "-xbuttons", "showButtonBar", XrmoptionNoArg, "False" },
-    { "-lowTimeWarningColor", "lowTimeWarningColor", XrmoptionSepArg, NULL },
-    { "-lowTimeWarning", "lowTimeWarning", XrmoptionSepArg, NULL },
-    /* [AS,HR] New features */
-    { "-firstScoreAbs", "firstScoreAbs", XrmoptionSepArg, NULL },
-    { "-secondScoreAbs", "secondScoreAbs", XrmoptionSepArg, NULL },
-    { "-pgnExtendedInfo", "pgnExtendedInfo", XrmoptionSepArg, NULL },
-    { "-hideThinkingFromHuman", "hideThinkingFromHuman", XrmoptionSepArg, NULL },
-    { "-adjudicateLossThreshold", "adjudicateLossThreshold", XrmoptionSepArg, NULL },
-    { "-adjudicateDrawMoves", "adjudicateDrawMoves", XrmoptionSepArg, NULL },
-    { "-pgnEventHeader", "pgnEventHeader", XrmoptionSepArg, NULL },
-    { "-firstIsUCI", "firstIsUCI", XrmoptionSepArg, NULL },
-    { "-secondIsUCI", "secondIsUCI", XrmoptionSepArg, NULL },
-    { "-fUCI", "firstIsUCI", XrmoptionNoArg, "True" },
-    { "-sUCI", "secondIsUCI", XrmoptionNoArg, "True" },
-    { "-firstHasOwnBookUCI", "firstHasOwnBookUCI", XrmoptionSepArg, NULL },
-    { "-secondHasOwnBookUCI", "secondHasOwnBookUCI", XrmoptionSepArg, NULL },
-    { "-fNoOwnBookUCI", "firstHasOwnBookUCI", XrmoptionNoArg, "False" },
-    { "-sNoOwnBookUCI", "secondHasOwnBookUCI", XrmoptionNoArg, "False" },
-    { "-firstXBook", "firstHasOwnBookUCI", XrmoptionNoArg, "False" },
-    { "-secondXBook", "secondHasOwnBookUCI", XrmoptionNoArg, "False" },
-    { "-polyglotDir", "polyglotDir", XrmoptionSepArg, NULL },
-    { "-usePolyglotBook", "usePolyglotBook", XrmoptionSepArg, NULL },
-    { "-polyglotBook", "polyglotBook", XrmoptionSepArg, NULL },
-    { "-defaultHashSize", "defaultHashSize", XrmoptionSepArg, NULL },
-    { "-defaultCacheSizeEGTB", "defaultCacheSizeEGTB", XrmoptionSepArg, NULL },
-    { "-defaultPathEGTB", "defaultPathEGTB", XrmoptionSepArg, NULL },
-    { "-defaultFrcPosition", "defaultFrcPosition", XrmoptionSepArg, NULL },
-    { "-gameListTags", "gameListTags", XrmoptionSepArg, NULL },
-    // [HGM] I am sure AS added many more options, but we have to fish them out, from the list in winboard.c
-
-    /* [HGM,HR] User-selectable board size */
-    { "-boardWidth", "boardWidth", XrmoptionSepArg, NULL },
-    { "-boardHeight", "boardHeight", XrmoptionSepArg, NULL },
-    { "-matchPause", "matchPause", XrmoptionSepArg, NULL },
-
-    /* [HGM] new arguments of 4.3.xx. All except first three are back-end options, which should work immediately */
-    { "-holdingsSize", "holdingsSize", XrmoptionSepArg, NULL }, // requires extensive front-end changes to work
-    { "-flipBlack", "flipBlack", XrmoptionSepArg, NULL },       // requires front-end changes to work
-    { "-allWhite", "allWhite", XrmoptionSepArg, NULL },         // requires front-end changes to work
-    { "-pieceToCharTable", "pieceToCharTable", XrmoptionSepArg, NULL },
-    { "-alphaRank", "alphaRank", XrmoptionSepArg, NULL },
-    { "-testClaims", "testClaims", XrmoptionSepArg, NULL },
-    { "-checkMates", "checkMates", XrmoptionSepArg, NULL },
-    { "-materialDraws", "materialDraws", XrmoptionSepArg, NULL },
-    { "-trivialDraws", "trivialDraws", XrmoptionSepArg, NULL },
-    { "-ruleMoves", "ruleMoves", XrmoptionSepArg, NULL },
-    { "-repeatsToDraw", "repeatsToDraw", XrmoptionSepArg, NULL },
-    { "-engineDebugOutput", "engineDebugOutput", XrmoptionSepArg, NULL },
-    { "-userName", "userName", XrmoptionSepArg, NULL },
-    { "-autoKibitz", "autoKibitz", XrmoptionNoArg, "True" },
-    { "-firstTimeOdds", "firstTimeOdds", XrmoptionSepArg, NULL },
-    { "-secondTimeOdds", "secondTimeOdds", XrmoptionSepArg, NULL },
-    { "-timeOddsMode", "timeOddsMode", XrmoptionSepArg, NULL },
-    { "-firstAccumulateTC", "firstAccumulateTC", XrmoptionSepArg, NULL },
-    { "-secondAccumulateTC", "secondAccumulateTC", XrmoptionSepArg, NULL },
-    { "-firstNPS", "firstNPS", XrmoptionSepArg, NULL },
-    { "-secondNPS", "secondNPS", XrmoptionSepArg, NULL },
-    { "-serverMoves", "serverMoves", XrmoptionSepArg, NULL },
-    { "-serverPause", "serverPause", XrmoptionSepArg, NULL },
-    { "-suppressLoadMoves", "suppressLoadMoves", XrmoptionSepArg, NULL },
-    { "-egtFormats", "egtFormats", XrmoptionSepArg, NULL },
-    { "-userName", "userName", XrmoptionSepArg, NULL },
-    { "-smpCores", "smpCores", XrmoptionSepArg, NULL },
-    { "-sameColorGames", "sameColorGames", XrmoptionSepArg, NULL },
-    { "-rewindIndex", "rewindIndex", XrmoptionSepArg, NULL },
-    { "-niceEngines", "niceEngines", XrmoptionSepArg, NULL },
-    { "-delayBeforeQuit", "delayBeforeQuit", XrmoptionSepArg, NULL },
-    { "-delayAfterQuit", "delayAfterQuit", XrmoptionSepArg, NULL },
-    { "-nameOfDebugFile", "nameOfDebugFile", XrmoptionSepArg, NULL },
-    { "-debugFile", "nameOfDebugFile", XrmoptionSepArg, NULL },
-    { "-engineDebugOutput", "engineDebugOutput", XrmoptionSepArg, NULL },
-    { "-noGUI", "noGUI", XrmoptionNoArg, "True" },
-    { "-firstOptions", "firstOptions", XrmoptionSepArg, NULL },
-    { "-secondOptions", "secondOptions", XrmoptionSepArg, NULL },
-    { "-firstNeedsNoncompliantFEN", "firstNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
-    { "-secondNeedsNoncompliantFEN", "secondNeedsNoncompliantFEN", XrmoptionSepArg, NULL },
-    { "-keepAlive", "keepAlive", XrmoptionSepArg, NULL },
-    { "-forceIllegalMoves", "forceIllegalMoves", XrmoptionNoArg, "True" },
-    { "-keepLineBreaksICS", "keepLineBreaksICS", XrmoptionSepArg, NULL },
-    { "-wrapContinuationSequence", "wrapContinuationSequence", XrmoptionSepArg, NULL },
-    { "-useInternalWrap", "useInternalWrap", XrmoptionSepArg, NULL },
-    { "-autoDisplayTags", "autoDisplayTags", XrmoptionSepArg, NULL },
-    { "-autoDisplayComment", "autoDisplayComment", XrmoptionSepArg, NULL },
-    { "-pasteSelection", "pasteSelection", XrmoptionSepArg, NULL },
 };
 
 XtActionsRec boardActions[] = {
@@ -1778,6 +806,7 @@ XtActionsRec boardActions[] = {
     //    { "EditPositionProc", EditPositionProc },
     //    { "TrainingProc", EditPositionProc },
     { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
+    { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
     //    { "ShowMoveListProc", HistoryShowProc},
     //    { "EditTagsProc", EditCommentProc },
@@ -1833,11 +862,13 @@ XtActionsRec boardActions[] = {
     //    { "QuietPlayProc", QuietPlayProc },
     //    { "ShowThinkingProc", ShowThinkingProc },
     //    { "HideThinkingProc", HideThinkingProc },
-    { "TestLegalityProc", TestLegalityProc },
-    //    { "InfoProc", InfoProc },
-    //    { "ManProc", ManProc },
-    //    { "HintProc", HintProc },
-    //    { "BookProc", BookProc },
+    //    { "TestLegalityProc", TestLegalityProc },
+    { "SaveSettingsProc", SaveSettingsProc },
+    { "SaveOnExitProc", SaveOnExitProc },
+//    { "InfoProc", InfoProc },
+//    { "ManProc", ManProc },
+//    { "HintProc", HintProc },
+//    { "BookProc", BookProc },
     { "AboutGameProc", AboutGameProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
@@ -1852,6 +883,7 @@ XtActionsRec boardActions[] = {
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     //    { "HistoryPopDown", (XtActionProc) HistoryPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
+    { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "ShufflePopDown", (XtActionProc) ShufflePopDown },
     { "EnginePopDown", (XtActionProc) EnginePopDown },
     { "UciPopDown", (XtActionProc) UciPopDown },
@@ -1966,6 +998,259 @@ BoardToTop()
   return;
 }
 
+//---------------------------------------------------------------------------------------------------------
+// some symbol definitions to provide the proper (= XBoard) context for the code in args.h
+#define XBOARD True
+#define JAWS_ARGS
+#define CW_USEDEFAULT (1<<31)
+#define ICS_TEXT_MENU_SIZE 90
+#define SetCurrentDirectory chdir
+#define GetCurrentDirectory(SIZE, NAME) getcwd(NAME, SIZE)
+#define OPTCHAR "-"
+#define SEPCHAR " "
+
+// these two must some day move to frontend.h, when they are implemented
+Boolean MoveHistoryIsUp();
+Boolean GameListIsUp();
+
+// The option definition and parsing code common to XBoard and WinBoard is collected in this file
+#include "args.h"
+
+// front-end part of option handling
+
+// [HGM] This platform-dependent table provides the location for storing the color info
+extern char *crWhite, * crBlack;
+
+void *
+colorVariable[] = {
+  &appData.whitePieceColor, 
+  &appData.blackPieceColor, 
+  &appData.lightSquareColor,
+  &appData.darkSquareColor, 
+  &appData.highlightSquareColor,
+  &appData.premoveHighlightColor,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  &crWhite,
+  &crBlack,
+  NULL
+};
+
+void
+ParseFont(char *name, int number)
+{ // in XBoard, only 2 of the fonts are currently implemented, and we just copy their name
+  switch(number) {
+    case 0: // CLOCK_FONT
+	appData.clockFont = strdup(name);
+      break;
+    case 1: // MESSAGE_FONT
+	appData.font = strdup(name);
+      break;
+    case 2: // COORD_FONT
+	appData.coordFont = strdup(name);
+      break;
+    default:
+      return;
+  }
+}
+
+void
+SetFontDefaults()
+{ // only 2 fonts currently
+  appData.clockFont = CLOCK_FONT_NAME;
+  appData.coordFont = COORD_FONT_NAME;
+  appData.font  =   DEFAULT_FONT_NAME;
+}
+
+void
+CreateFonts()
+{ // no-op, until we identify the code for this already in XBoard and move it here
+}
+
+void
+ParseColor(int n, char *name)
+{ // in XBoard, just copy the color-name string
+  if(colorVariable[n]) *(char**)colorVariable[n] = strdup(name);
+}
+
+void
+ParseTextAttribs(ColorClass cc, char *s)
+{   
+    (&appData.colorShout)[cc] = strdup(s);
+}
+
+void
+ParseBoardSize(void *addr, char *name)
+{
+    appData.boardSize = strdup(name);
+}
+
+void
+LoadAllSounds()
+{ // In XBoard the sound-playing program takes care of obtaining the actual sound
+}
+
+void
+SetCommPortDefaults()
+{ // for now, this is a no-op, as the corresponding option does not exist in XBoard
+}
+
+// [HGM] args: these three cases taken out to stay in front-end
+void
+SaveFontArg(FILE *f, ArgDescriptor *ad)
+{
+  char *name;
+  switch((int)ad->argLoc) {
+    case 0: // CLOCK_FONT
+	name = appData.clockFont;
+      break;
+    case 1: // MESSAGE_FONT
+	name = appData.font;
+      break;
+    case 2: // COORD_FONT
+	name = appData.coordFont;
+      break;
+    default:
+      return;
+  }
+  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, name);
+}
+
+void
+ExportSounds()
+{ // nothing to do, as the sounds are at all times represented by their text-string names already
+}
+
+void
+SaveAttribsArg(FILE *f, ArgDescriptor *ad)
+{	// here the "argLoc" defines a table index. It could have contained the 'ta' pointer itself, though
+	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, (&appData.colorShout)[(int)ad->argLoc]);
+}
+
+void
+SaveColor(FILE *f, ArgDescriptor *ad)
+{	// in WinBoard the color is an int and has to be converted to text. In X it would be a string already?
+	if(colorVariable[(int)ad->argLoc])
+	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, *(char**)colorVariable[(int)ad->argLoc]);
+}
+
+void
+SaveBoardSize(FILE *f, char *name, void *addr)
+{ // wrapper to shield back-end from BoardSize & sizeInfo
+  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", name, appData.boardSize);
+}
+
+void
+ParseCommPortSettings(char *s)
+{ // no such option in XBoard (yet)
+}
+
+extern Widget engineOutputShell;
+extern Widget tagsShell, editTagsShell;
+void
+GetActualPlacement(Widget wg, WindowPlacement *wp)
+{
+  Arg args[16];
+  Dimension w, h;
+  Position x, y;
+  int i;
+
+  if(!wg) return;
+  
+    i = 0;
+    XtSetArg(args[i], XtNx, &x); i++;
+    XtSetArg(args[i], XtNy, &y); i++;
+    XtSetArg(args[i], XtNwidth, &w); i++;
+    XtSetArg(args[i], XtNheight, &h); i++;
+    XtGetValues(wg, args, i);
+    wp->x = x - 4;
+    wp->y = y - 23;
+    wp->height = h;
+    wp->width = w;
+}
+
+void
+GetWindowCoords()
+{ // wrapper to shield use of window handles from back-end (make addressible by number?)
+  // In XBoard this will have to wait until awareness of window parameters is implemented
+  GetActualPlacement(shellWidget, &wpMain);
+  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
+  if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
+  if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
+  if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
+  if(commentShell) GetActualPlacement(commentShell, &wpComment);
+  else             GetActualPlacement(editShell,    &wpComment);
+  if(tagsShell) GetActualPlacement(tagsShell, &wpTags);
+  else      GetActualPlacement(editTagsShell, &wpTags);
+}
+
+void
+PrintCommPortSettings(FILE *f, char *name)
+{ // This option does not exist in XBoard
+}
+
+int
+MySearchPath(char *installDir, char *name, char *fullname)
+{ // just append installDir and name. Perhaps ExpandPath should be used here?
+  name = ExpandPathName(name);
+  if(name && name[0] == '/') strcpy(fullname, name); else {
+    sprintf(fullname, "%s%c%s", installDir, '/', name);
+  }
+  return 1;
+}
+
+int
+MyGetFullPathName(char *name, char *fullname)
+{ // should use ExpandPath?
+  name = ExpandPathName(name);
+  strcpy(fullname, name);
+  return 1;
+}
+
+void
+EnsureOnScreen(int *x, int *y, int minX, int minY)
+{
+  return;
+}
+
+int
+MainWindowUp()
+{ // [HGM] args: allows testing if main window is realized from back-end
+  return xBoardWindow != 0;
+}
+
+void
+PopUpStartupDialog()
+{  // start menu not implemented in XBoard
+}
+char *
+ConvertToLine(int argc, char **argv)
+{
+  static char line[128*1024], buf[1024];
+  int i;
+
+  line[0] = NULLCHAR;
+  for(i=1; i<argc; i++) {
+    if( (strchr(argv[i], ' ') || strchr(argv[i], '\n') ||strchr(argv[i], '\t') )
+	&& argv[i][0] != '{' )
+         sprintf(buf, "{%s} ", argv[i]);
+    else sprintf(buf, "%s ", argv[i]);
+    strcat(line, buf);
+  }
+    line[strlen(line)-1] = NULLCHAR;
+  return line;
+}
+
+//--------------------------------------------------------------------------------------------
+
+#ifdef IDSIZES
+  // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
+#else
+
 #define BoardSize int
 void InitDrawingSizes(BoardSize boardSize, int flags)
 {   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
@@ -2058,6 +1343,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     CreateAnimVars();
 #endif
 }
+#endif
 
 void EscapeExpand(char *p, char *q)
 {	// [HGM] initstring: routine to shape up string arguments
@@ -2087,7 +1373,8 @@ main(argc, argv)
     XrmDatabase xdb;
     int forceMono = False;
 
-#define INDIRECTION
+//define INDIRECTION
+
 #ifdef INDIRECTION
     // [HGM] before anything else, expand any indirection files amongst options
     char *argvCopy[1000]; // 1000 seems enough
@@ -2198,6 +1485,9 @@ main(argc, argv)
     //    g_object_unref (G_OBJECT (builder));
 
     /* end parse glade file */
+
+    appData.boardSize = "";
+    InitAppData(ConvertToLine(argc, argv));
 
     if (argc > 1)
       {
@@ -2335,6 +1625,7 @@ main(argc, argv)
 		szd++;
 	      }
 	    if (szd->name == NULL) szd--;
+	    appData.boardSize = strdup(szd->name); // [HGM] settings: remember name for saving settings
 	  } 
 	else 
 	  {
@@ -2628,10 +1919,17 @@ main(argc, argv)
       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Coords")),TRUE);
 
     if (appData.showThinking)
-      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Thinking")),TRUE);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Hide Thinking")),TRUE);
 
     if (appData.testLegality)
       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Test Legality")),TRUE);
+
+    // TODO: add
+    //    if (saveSettingsOnExit) {
+    //	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
+    //		    args, 1);
+    //   }
+
 
     /* end setting check boxes */
 
@@ -2702,6 +2000,7 @@ ShutDownFrontEnd()
     if (appData.icsActive && oldICSInteractionTitle != NULL) {
         DisplayIcsInteractionTitle(oldICSInteractionTitle);
     }
+    if (saveSettingsOnExit) SaveSettings(settingsFileName);
     unlink(gameCopyFilename);
     unlink(gamePasteFilename);
 }
@@ -4125,6 +3424,14 @@ Widget CommentCreate(name, text, mutable, callback, lines)
 #endif /*!NOTDEF*/
 	if (commentY < 0) commentY = 0; /*avoid positioning top offscreen*/
     }
+
+    if(wpComment.width > 0) {
+      commentX = wpComment.x;
+      commentY = wpComment.y;
+      commentW = wpComment.width;
+      commentH = wpComment.height;
+    }
+
     j = 0;
     XtSetArg(args[j], XtNheight, commentH);  j++;
     XtSetArg(args[j], XtNwidth, commentW);  j++;
@@ -4834,6 +4141,7 @@ void CopyPositionProc(w, event, prms, nprms)
      * have a notion of a position that is selected but not copied.
      * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
      */
+    if(gameMode == EditPosition) EditPositionDone(TRUE);
     if (selected_fen_position) free(selected_fen_position);
     selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
     if (!selected_fen_position) return;
@@ -4997,6 +4305,34 @@ void PasteGameProc(w, event, prms, nprms)
       CurrentTime
     );
     return;
+}
+
+void SaveOnExitProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    Arg args[16];
+
+    saveSettingsOnExit = !saveSettingsOnExit;
+
+    if (saveSettingsOnExit) {
+	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+    } else {
+	XtSetArg(args[0], XtNleftBitmap, None);
+    }
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
+		args, 1);
+}
+
+void SaveSettingsProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+     SaveSettings(settingsFileName);
 }
 
 
@@ -5849,8 +5185,11 @@ int StartChildProcess(cmdLine, dir, pr)
     strcpy(buf, cmdLine);
     p = buf;
     for (;;) {
+	while(*p == ' ') p++;
 	argv[i++] = p;
-	p = strchr(p, ' ');
+	if(*p == '"' || *p == '\'')
+	     p = strchr(++argv[i-1], *p);
+	else p = strchr(p, ' ');
 	if (p == NULL) break;
 	*p++ = NULLCHAR;
     }

@@ -115,7 +115,6 @@ int  EngineOutputIsUp();
 void SetEngineColorIcon( int which );
 
 /* Imports from backend.c */
-char * SavePart(char *str);
 extern int opponentKibitzes;
 
 /* Imports from xboard.c */
@@ -183,6 +182,10 @@ void DoSetWindowText(int which, int field, char *s_label)
 void InsertIntoMemo( int which, char * text, int where )
 {
 	Arg arg; XawTextBlock t; Widget edit;
+
+	/* the backend adds \r\n, which is needed for winboard, 
+	 * for xboard we delete them again over here */
+	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
 
 	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
 	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
@@ -366,6 +369,13 @@ Widget EngineOutputCreate(name, text)
 
     XtRealizeWidget(shell);
 
+    if(wpEngineOutput.width > 0) {
+      engineOutputW = wpEngineOutput.width;
+      engineOutputH = wpEngineOutput.height;
+      engineOutputX = wpEngineOutput.x;
+      engineOutputY = wpEngineOutput.y;
+    }
+
     if (engineOutputX == -1) {
 	int xx, yy;
 	Window junk;
@@ -499,6 +509,10 @@ void EngineOutputPopDown()
     XtSetArg(args[j], XtNwidth, &engineOutputW); j++;
     XtSetArg(args[j], XtNheight, &engineOutputH); j++;
     XtGetValues(engineOutputShell, args, j);
+    wpEngineOutput.x = engineOutputX - 4;
+    wpEngineOutput.y = engineOutputY - 23;
+    wpEngineOutput.width = engineOutputW;
+    wpEngineOutput.height = engineOutputH;
     XtPopdown(engineOutputShell);
     XSync(xDisplay, False);
     j=0;

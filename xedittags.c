@@ -56,6 +56,7 @@ extern char *getenv();
 extern GtkWidget               *GUI_EditTags;
 extern GtkWidget               *GUI_EditTagsTextArea;
 
+Widget tagsShell, editTagsShell;
 
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)

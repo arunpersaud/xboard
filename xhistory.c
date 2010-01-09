@@ -64,7 +64,7 @@ extern GtkListStore            *LIST_MoveHistory;
 
 String dots=" ... ";
 Position gameHistoryX, gameHistoryY;
-Dimension gameHistoryW;
+Dimension gameHistoryW, gameHistoryH;
 
 void
 HistoryPopDown(object, user_data)
@@ -149,6 +149,7 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
 	  strcpy(moveblack,"");
 	};
     }
+
   /* check if ther is a white move left */
   if(movewhite[0])
     {
@@ -162,6 +163,9 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
 			  2, moveblack,
 			  -1);
     };
+
+  //TODO
+  //  EvalGraphSet( first, last, current, pvInfoList ); // piggy-backed
   
   return;
 }
@@ -176,15 +180,16 @@ void HistoryCreate()
 
     return;
     /*-------- create the widgets ---------------*/
+//<<<<<<< HEAD
 //    j = 0;
 //    XtSetArg(args[j], XtNresizable, True);  j++;
 //    XtSetArg(args[j], XtNallowShellResize, True);  j++;
 //#if TOPLEVEL
-//    hist->sh =
+//    hist->sh = historyShell =
 //      XtCreatePopupShell(_("Move list"), topLevelShellWidgetClass,
 //			 shellWidget, args, j);
 //#else
-//    hist->sh =
+//    hist->sh = historyShell =
 //      XtCreatePopupShell(_("Move list"), transientShellWidgetClass,
 //			 shellWidget, args, j);
 //#endif
@@ -201,10 +206,8 @@ void HistoryCreate()
 //
 //    form =
 //      XtCreateManagedWidget("form", formWidgetClass, layout, args, j);
-//     j=0;
 //
 //    j = 0;
-//
 //    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
 //    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
 //    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
@@ -293,19 +296,26 @@ void HistoryCreate()
 //      strcpy(hist->black[i],"");
 //     }
 //
+//    if(wpMoveHistory.width > 0) {
+//      gameHistoryW = wpMoveHistory.width;
+//      gameHistoryH = wpMoveHistory.height;
+//      gameHistoryX = wpMoveHistory.x;
+//      gameHistoryY = wpMoveHistory.y;
+//    }
+//
 //  // [HGM] restore old position
+//  if(gameHistoryW > 0) {
 //  j = 0;
-//  XtSetArg(args[j], XtNx, &gameHistoryX);  j++;
-//  XtSetArg(args[j], XtNy, &gameHistoryY);  j++;
-//  XtSetArg(args[j], XtNwidth, &gameHistoryW);  j++;
-//  XtGetValues(shellWidget, args, j);
-//  j = 0;
-//  XtSetArg(args[j], XtNx, gameHistoryX + gameHistoryW);  j++;
+//    XtSetArg(args[j], XtNx, gameHistoryX);  j++;
 //  XtSetArg(args[j], XtNy, gameHistoryY);  j++;
+//    XtSetArg(args[j], XtNwidth, gameHistoryW);  j++;
+//    XtSetArg(args[j], XtNheight, gameHistoryH);  j++;
 //  XtSetValues(hist->sh, args, j);
+//  }
 //    XtRealizeWidget(hist->sh);
 //
 //    return hist->sh;
+//
 }
 
 void
@@ -331,3 +341,10 @@ HistoryShowProc(object, user_data)
   return;
 }
 
+Boolean
+MoveHistoryIsUp()
+{
+  // TODO
+  return 0;
+  //  return hist && hist->Up;
+}

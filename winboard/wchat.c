@@ -47,7 +47,6 @@ void ChatPopUp();
 void ChatPopDown();
 
 /* Imports from backend.c */
-char * SavePart(char *str);
 extern int opponentKibitzes;
 
 /* Imports from winboard.c */

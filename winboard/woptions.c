@@ -2793,8 +2793,8 @@ LRESULT CALLBACK EnginePlayOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,
       appData.ruleMoves = GetDlgItemInt(hDlg, IDC_RuleMoves, NULL, FALSE );
       appData.drawRepeats = (int) GetDlgItemInt(hDlg, IDC_DrawRepeats, NULL, FALSE );
 
-      appData.firstScoreIsAbsolute  = IS_CHECKED(IDC_ScoreAbs1);
-      appData.secondScoreIsAbsolute = IS_CHECKED(IDC_ScoreAbs2);
+      first.scoreIsAbsolute  = appData.firstScoreIsAbsolute  = IS_CHECKED(IDC_ScoreAbs1);
+      second.scoreIsAbsolute = appData.secondScoreIsAbsolute = IS_CHECKED(IDC_ScoreAbs2);
 
       EndDialog(hDlg, TRUE);
       return TRUE;

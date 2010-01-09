@@ -151,11 +151,11 @@ char szConsoleTitle[] = "I C S Interaction";
 
 char *programName;
 char *settingsFileName;
-BOOLEAN saveSettingsOnExit;
+Boolean saveSettingsOnExit;
 char installDir[MSG_SIZ];
 
 BoardSize boardSize;
-BOOLEAN chessProgram;
+Boolean chessProgram;
 //static int boardX, boardY;
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 static int squareSize, lineGap, minorSize;
@@ -174,12 +174,10 @@ char *icsNames;
 char *firstChessProgramNames;
 char *secondChessProgramNames;
 
-#define ARG_MAX 128*1024 /* [AS] For Roger Brown's very long list! */
-
 #define PALETTESIZE 256
 
 HINSTANCE hInst;          /* current instance */
-BOOLEAN alwaysOnTop = FALSE;
+Boolean alwaysOnTop = FALSE;
 RECT boardRect;
 COLORREF lightSquareColor, darkSquareColor, whitePieceColor, 
   blackPieceColor, highlightSquareColor, premoveHighlightColor;
@@ -206,11 +204,6 @@ static int lastSizing = 0;
 static int prevStderrPort;
 static HBITMAP userLogo;
 
-/* [AS] Support for background textures */
-#define BACK_TEXTURE_MODE_DISABLED      0
-#define BACK_TEXTURE_MODE_PLAIN         1
-#define BACK_TEXTURE_MODE_FULL_RANDOM   2
-
 static HBITMAP liteBackTexture = NULL;
 static HBITMAP darkBackTexture = NULL;
 static int liteBackTextureMode = BACK_TEXTURE_MODE_PLAIN;
@@ -227,13 +220,6 @@ static struct { int x; int y; int mode; } backTextureSquareInfo[BOARD_RANKS][BOA
 #define oldDialog 0
 #endif
 #endif
-
-char *defaultTextAttribs[] = 
-{
-  COLOR_SHOUT, COLOR_SSHOUT, COLOR_CHANNEL1, COLOR_CHANNEL, COLOR_KIBITZ,
-  COLOR_TELL, COLOR_CHALLENGE, COLOR_REQUEST, COLOR_SEEK, COLOR_NORMAL,
-  COLOR_NONE
-};
 
 typedef struct {
   char *name;
@@ -712,6 +698,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   char *filepart;
 
   hInst = hInstance;	/* Store instance handle in our global variable */
+  programName = szAppName;
 
   if (SearchPath(NULL, "WinBoard.exe", NULL, MSG_SIZ, installDir, &filepart)) {
     *filepart = NULLCHAR;
@@ -721,6 +708,17 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] won't have open window otherwise
   screenWidth = screenHeight = 1000; // [HGM] placement: kludge to allow calling EnsureOnScreen from InitAppData
   InitAppData(lpCmdLine);      /* Get run-time parameters */
+  /* xboard, and older WinBoards, controlled the move sound with the
+     appData.ringBellAfterMoves option.  In the current WinBoard, we
+     always turn the option on (so that the backend will call us),
+     then let the user turn the sound off by setting it to silence if
+     desired.  To accommodate old winboard.ini files saved by old
+     versions of WinBoard, we also turn off the sound if the option
+     was initially set to false. [HGM] taken out of InitAppData */
+  if (!appData.ringBellAfterMoves) {
+    sounds[(int)SoundMove].name = strdup("");
+    appData.ringBellAfterMoves = TRUE;
+  }
   if (appData.debugMode) {
     debugFP = fopen(appData.nameOfDebugFile, "w");
     setbuf(debugFP, NULL);
@@ -867,602 +865,80 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 
 }
 
+VOID
+InitMenuChecks()
+{
+  HMENU hmenu = GetMenu(hwndMain);
 
-typedef enum {
-  ArgString, ArgInt, ArgFloat, ArgBoolean, ArgTrue, ArgFalse, ArgNone, 
-  ArgColor, ArgAttribs, ArgFilename, ArgBoardSize, ArgFont, ArgCommSettings,
-  ArgSettingsFilename,
-  ArgX, ArgY, ArgZ // [HGM] placement: for window-placement options stored relative to main window
-} ArgType;
+  (void) EnableMenuItem(hmenu, IDM_CommPort,
+			MF_BYCOMMAND|((appData.icsActive &&
+				       *appData.icsCommPort != NULLCHAR) ?
+				      MF_ENABLED : MF_GRAYED));
+  (void) CheckMenuItem(hmenu, IDM_SaveSettingsOnExit,
+		       MF_BYCOMMAND|(saveSettingsOnExit ?
+				     MF_CHECKED : MF_UNCHECKED));
+}
 
-typedef void *ArgIniType;
-#define INVALID (ArgIniType) 6915 /* Some number unlikely to be needed as default for anything */
+//---------------------------------------------------------------------------------------------------------
 
-typedef struct {
-  char *argName;
-  ArgType argType;
-  /***
-  union {
-    String *pString;       // ArgString
-    int *pInt;             // ArgInt
-    float *pFloat;         // ArgFloat
-    Boolean *pBoolean;     // ArgBoolean
-    COLORREF *pColor;      // ArgColor
-    ColorClass cc;         // ArgAttribs
-    String *pFilename;     // ArgFilename
-    BoardSize *pBoardSize; // ArgBoardSize
-    int whichFont;         // ArgFont
-    DCB *pDCB;             // ArgCommSettings
-    String *pFilename;     // ArgSettingsFilename
-  } argLoc;
-  ***/
-  LPVOID argLoc;
-  BOOL save;
-  ArgIniType defaultValue;
-} ArgDescriptor;
-
-int junk;
-
+#define ICS_TEXT_MENU_SIZE (IDM_CommandXLast - IDM_CommandX + 1)
 #define XBOARD FALSE
 
-ArgDescriptor argDescriptors[] = {
-  /* positional arguments */
-  { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE, INVALID },
-  { "", ArgNone, NULL, FALSE, INVALID },
-  /* keyword arguments */
-  JAWS_ARGS
-  { "whitePieceColor", ArgColor, (LPVOID) &whitePieceColor, TRUE, INVALID },
-  { "wpc", ArgColor, (LPVOID) &whitePieceColor, FALSE, INVALID },
-  { "blackPieceColor", ArgColor, (LPVOID) &blackPieceColor, TRUE, INVALID },
-  { "bpc", ArgColor, (LPVOID) &blackPieceColor, FALSE, INVALID },
-  { "lightSquareColor", ArgColor, (LPVOID) &lightSquareColor, TRUE, INVALID },
-  { "lsc", ArgColor, (LPVOID) &lightSquareColor, FALSE, INVALID },
-  { "darkSquareColor", ArgColor, (LPVOID) &darkSquareColor, TRUE, INVALID },
-  { "dsc", ArgColor, (LPVOID) &darkSquareColor, FALSE, INVALID },
-  { "highlightSquareColor", ArgColor, (LPVOID) &highlightSquareColor, TRUE, INVALID },
-  { "hsc", ArgColor, (LPVOID) &highlightSquareColor, FALSE, INVALID },
-  { "premoveHighlightColor", ArgColor, (LPVOID) &premoveHighlightColor, TRUE, INVALID },
-  { "phc", ArgColor, (LPVOID) &premoveHighlightColor, FALSE, INVALID },
-  { "movesPerSession", ArgInt, (LPVOID) &appData.movesPerSession, TRUE, (ArgIniType) MOVES_PER_SESSION },
-  { "mps", ArgInt, (LPVOID) &appData.movesPerSession, FALSE, INVALID },
-  { "initString", ArgString, (LPVOID) &appData.initString, FALSE, INVALID },
-  { "firstInitString", ArgString, (LPVOID) &appData.initString, FALSE, (ArgIniType) INIT_STRING },
-  { "secondInitString", ArgString, (LPVOID) &appData.secondInitString, FALSE, (ArgIniType) INIT_STRING },
-  { "firstComputerString", ArgString, (LPVOID) &appData.firstComputerString,
-    FALSE, (ArgIniType) COMPUTER_STRING },
-  { "secondComputerString", ArgString, (LPVOID) &appData.secondComputerString,
-    FALSE, (ArgIniType) COMPUTER_STRING },
-  { "firstChessProgram", ArgFilename, (LPVOID) &appData.firstChessProgram,
-    FALSE, (ArgIniType) FIRST_CHESS_PROGRAM },
-  { "fcp", ArgFilename, (LPVOID) &appData.firstChessProgram, FALSE, INVALID },
-  { "secondChessProgram", ArgFilename, (LPVOID) &appData.secondChessProgram,
-    FALSE, (ArgIniType) SECOND_CHESS_PROGRAM },
-  { "scp", ArgFilename, (LPVOID) &appData.secondChessProgram, FALSE, INVALID },
-  { "firstPlaysBlack", ArgBoolean, (LPVOID) &appData.firstPlaysBlack, FALSE, FALSE },
-  { "fb", ArgTrue, (LPVOID) &appData.firstPlaysBlack, FALSE, FALSE },
-  { "xfb", ArgFalse, (LPVOID) &appData.firstPlaysBlack, FALSE, INVALID },
-  { "-fb", ArgFalse, (LPVOID) &appData.firstPlaysBlack, FALSE, INVALID },
-  { "noChessProgram", ArgBoolean, (LPVOID) &appData.noChessProgram, FALSE, FALSE },
-  { "ncp", ArgTrue, (LPVOID) &appData.noChessProgram, FALSE, INVALID },
-  { "xncp", ArgFalse, (LPVOID) &appData.noChessProgram, FALSE, INVALID },
-  { "-ncp", ArgFalse, (LPVOID) &appData.noChessProgram, FALSE, INVALID },
-  { "firstHost", ArgString, (LPVOID) &appData.firstHost, FALSE, (ArgIniType) FIRST_HOST },
-  { "fh", ArgString, (LPVOID) &appData.firstHost, FALSE, INVALID },
-  { "secondHost", ArgString, (LPVOID) &appData.secondHost, FALSE, (ArgIniType) SECOND_HOST },
-  { "sh", ArgString, (LPVOID) &appData.secondHost, FALSE, INVALID },
-  { "firstDirectory", ArgFilename, (LPVOID) &appData.firstDirectory, FALSE, (ArgIniType) FIRST_DIRECTORY },
-  { "fd", ArgFilename, (LPVOID) &appData.firstDirectory, FALSE, INVALID },
-  { "secondDirectory", ArgFilename, (LPVOID) &appData.secondDirectory, FALSE, (ArgIniType) SECOND_DIRECTORY },
-  { "sd", ArgFilename, (LPVOID) &appData.secondDirectory, FALSE, INVALID },
+#define OPTCHAR "/"
+#define SEPCHAR "="
 
-  /* some options only used by the XBoard front end, and ignored in WinBoard         */
-  /* Their saving is controlled by XBOARD, which in WinBoard is defined as FALSE */
-  { "internetChessServerInputBox", ArgBoolean, (LPVOID) &appData.icsInputBox, XBOARD, (ArgIniType) FALSE },
-  { "icsinput", ArgTrue, (LPVOID) &appData.icsInputBox, FALSE, INVALID },
-  { "xicsinput", ArgFalse, (LPVOID) &appData.icsInputBox, FALSE, INVALID },
-  { "cmail", ArgString, (LPVOID) &appData.cmailGameName, FALSE, (ArgIniType) "" },
-  { "soundProgram", ArgFilename, (LPVOID) &appData.soundProgram, XBOARD, (ArgIniType) "play" },
-  { "fontSizeTolerance", ArgInt, (LPVOID) &appData.fontSizeTolerance, XBOARD, (ArgIniType) 4 },
-  { "lowTimeWarningColor", ArgColor, (LPVOID) &appData.lowTimeWarningColor, XBOARD, 
-	(ArgIniType) LOWTIMEWARNING_COLOR },
-  { "lowTimeWarning", ArgBoolean, (LPVOID) &appData.lowTimeWarning, XBOARD, (ArgIniType) FALSE },
-  { "titleInWindow", ArgBoolean, (LPVOID) &appData.titleInWindow, XBOARD, (ArgIniType) FALSE },
-  { "title", ArgTrue, (LPVOID) &appData.titleInWindow, FALSE, INVALID },
-  { "xtitle", ArgFalse, (LPVOID) &appData.titleInWindow, FALSE, INVALID },
-  { "flashCount", ArgInt, (LPVOID) &appData.flashCount, XBOARD, (ArgIniType) FLASH_COUNT },
-  { "flashRate", ArgInt, (LPVOID) &appData.flashRate, XBOARD, (ArgIniType) FLASH_RATE },
-  { "pixmapDirectory", ArgFilename, (LPVOID) &appData.pixmapDirectory, XBOARD, (ArgIniType) "" },
-  { "pixmap", ArgFilename, (LPVOID) &appData.pixmapDirectory, FALSE, INVALID },
-  { "bitmapDirectory", ArgFilename, (LPVOID) &appData.bitmapDirectory, XBOARD, (ArgIniType) "" },
-  { "bm", ArgFilename, (LPVOID) &appData.bitmapDirectory, FALSE, INVALID },
-  { "msLoginDelay", ArgInt, (LPVOID) &appData.msLoginDelay, XBOARD, (ArgIniType) MS_LOGIN_DELAY },
-  { "pasteSelection", ArgBoolean, (LPVOID) &appData.pasteSelection, XBOARD, (ArgIniType) FALSE },
+#include "args.h"
 
-  { "remoteShell", ArgFilename, (LPVOID) &appData.remoteShell, FALSE, (ArgIniType) REMOTE_SHELL },
-  { "rsh", ArgFilename, (LPVOID) &appData.remoteShell, FALSE, INVALID },
-  { "remoteUser", ArgString, (LPVOID) &appData.remoteUser, FALSE, INVALID },
-  { "ruser", ArgString, (LPVOID) &appData.remoteUser, FALSE, INVALID },
-  { "timeDelay", ArgFloat, (LPVOID) &appData.timeDelay, TRUE, INVALID },
-  { "td", ArgFloat, (LPVOID) &appData.timeDelay, FALSE, INVALID },
-  { "timeControl", ArgString, (LPVOID) &appData.timeControl, TRUE, (ArgIniType) TIME_CONTROL },
-  { "tc", ArgString, (LPVOID) &appData.timeControl, FALSE, INVALID },
-  { "timeIncrement", ArgInt, (LPVOID) &appData.timeIncrement, TRUE, (ArgIniType) TIME_INCREMENT },
-  { "inc", ArgInt, (LPVOID) &appData.timeIncrement, FALSE, INVALID },
-  { "internetChessServerMode", ArgBoolean, (LPVOID) &appData.icsActive, FALSE, INVALID },
-  { "ics", ArgTrue, (LPVOID) &appData.icsActive, FALSE, (ArgIniType) FALSE },
-  { "xics", ArgFalse, (LPVOID) &appData.icsActive, FALSE, INVALID },
-  { "-ics", ArgFalse, (LPVOID) &appData.icsActive, FALSE, INVALID },
-  { "internetChessServerHost", ArgString, (LPVOID) &appData.icsHost, FALSE, (ArgIniType) "" },
-  { "icshost", ArgString, (LPVOID) &appData.icsHost, FALSE, INVALID },
-  { "internetChessServerPort", ArgString, (LPVOID) &appData.icsPort, FALSE, (ArgIniType) ICS_PORT },
-  { "icsport", ArgString, (LPVOID) &appData.icsPort, FALSE, INVALID },
-  { "internetChessServerCommPort", ArgString, (LPVOID) &appData.icsCommPort, FALSE, (ArgIniType) ICS_COMM_PORT },
-  { "icscomm", ArgString, (LPVOID) &appData.icsCommPort, FALSE, INVALID },
-  { "internetChessServerComPort", ArgString, (LPVOID) &appData.icsCommPort, FALSE, INVALID },
-  { "icscom", ArgString, (LPVOID) &appData.icsCommPort, FALSE, INVALID },
-  { "internetChessServerLogonScript", ArgFilename, (LPVOID) &appData.icsLogon, FALSE, (ArgIniType) ICS_LOGON },
-  { "icslogon", ArgFilename, (LPVOID) &appData.icsLogon, FALSE, INVALID },
-  { "useTelnet", ArgBoolean, (LPVOID) &appData.useTelnet, FALSE, INVALID },
-  { "telnet", ArgTrue, (LPVOID) &appData.useTelnet, FALSE, INVALID },
-  { "xtelnet", ArgFalse, (LPVOID) &appData.useTelnet, FALSE, INVALID },
-  { "-telnet", ArgFalse, (LPVOID) &appData.useTelnet, FALSE, INVALID },
-  { "telnetProgram", ArgFilename, (LPVOID) &appData.telnetProgram, FALSE, (ArgIniType) TELNET_PROGRAM },
-  { "internetChessserverHelper", ArgFilename, (LPVOID) &appData.icsHelper, 
-	FALSE, INVALID }, // for XB
-  { "icshelper", ArgFilename, (LPVOID) &appData.icsHelper, FALSE, (ArgIniType) "" },
-  { "gateway", ArgString, (LPVOID) &appData.gateway, FALSE, (ArgIniType) "" },
-  { "loadGameFile", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE, (ArgIniType) "" },
-  { "lgf", ArgFilename, (LPVOID) &appData.loadGameFile, FALSE, INVALID },
-  { "loadGameIndex", ArgInt, (LPVOID) &appData.loadGameIndex, FALSE, (ArgIniType) 0 },
-  { "lgi", ArgInt, (LPVOID) &appData.loadGameIndex, FALSE, INVALID },
-  { "saveGameFile", ArgFilename, (LPVOID) &appData.saveGameFile, TRUE, (ArgIniType) "" },
-  { "sgf", ArgFilename, (LPVOID) &appData.saveGameFile, FALSE, INVALID },
-  { "autoSaveGames", ArgBoolean, (LPVOID) &appData.autoSaveGames, TRUE, (ArgIniType) FALSE },
-  { "autosave", ArgTrue, (LPVOID) &appData.autoSaveGames, FALSE, INVALID },
-  { "xautosave", ArgFalse, (LPVOID) &appData.autoSaveGames, FALSE, INVALID },
-  { "-autosave", ArgFalse, (LPVOID) &appData.autoSaveGames, FALSE, INVALID },
-  { "loadPositionFile", ArgFilename, (LPVOID) &appData.loadPositionFile, FALSE, (ArgIniType) "" },
-  { "lpf", ArgFilename, (LPVOID) &appData.loadPositionFile, FALSE, INVALID },
-  { "loadPositionIndex", ArgInt, (LPVOID) &appData.loadPositionIndex, FALSE, (ArgIniType) 1 },
-  { "lpi", ArgInt, (LPVOID) &appData.loadPositionIndex, FALSE, INVALID },
-  { "savePositionFile", ArgFilename, (LPVOID) &appData.savePositionFile, FALSE, (ArgIniType) "" },
-  { "spf", ArgFilename, (LPVOID) &appData.savePositionFile, FALSE, INVALID },
-  { "matchMode", ArgBoolean, (LPVOID) &appData.matchMode, FALSE, (ArgIniType) FALSE },
-  { "mm", ArgTrue, (LPVOID) &appData.matchMode, FALSE, INVALID },
-  { "xmm", ArgFalse, (LPVOID) &appData.matchMode, FALSE, INVALID },
-  { "-mm", ArgFalse, (LPVOID) &appData.matchMode, FALSE, INVALID },
-  { "matchGames", ArgInt, (LPVOID) &appData.matchGames, FALSE, (ArgIniType) 0 },
-  { "mg", ArgInt, (LPVOID) &appData.matchGames, FALSE, INVALID },
-  { "monoMode", ArgBoolean, (LPVOID) &appData.monoMode, TRUE, (ArgIniType) FALSE },
-  { "mono", ArgTrue, (LPVOID) &appData.monoMode, FALSE, INVALID },
-  { "xmono", ArgFalse, (LPVOID) &appData.monoMode, FALSE, INVALID },
-  { "-mono", ArgFalse, (LPVOID) &appData.monoMode, FALSE, INVALID },
-  { "debugMode", ArgBoolean, (LPVOID) &appData.debugMode, FALSE, (ArgIniType) FALSE },
-  { "debug", ArgTrue, (LPVOID) &appData.debugMode, FALSE, INVALID },
-  { "xdebug", ArgFalse, (LPVOID) &appData.debugMode, FALSE, INVALID },
-  { "-debug", ArgFalse, (LPVOID) &appData.debugMode, FALSE, INVALID },
-  { "clockMode", ArgBoolean, (LPVOID) &appData.clockMode, FALSE, (ArgIniType) TRUE },
-  { "clock", ArgTrue, (LPVOID) &appData.clockMode, FALSE, INVALID },
-  { "xclock", ArgFalse, (LPVOID) &appData.clockMode, FALSE, INVALID },
-  { "-clock", ArgFalse, (LPVOID) &appData.clockMode, FALSE, INVALID },
-  { "searchTime", ArgString, (LPVOID) &appData.searchTime, FALSE, (ArgIniType) "" },
-  { "st", ArgString, (LPVOID) &appData.searchTime, FALSE, INVALID },
-  { "searchDepth", ArgInt, (LPVOID) &appData.searchDepth, FALSE, (ArgIniType) 0 },
-  { "depth", ArgInt, (LPVOID) &appData.searchDepth, FALSE, INVALID },
-  { "showCoords", ArgBoolean, (LPVOID) &appData.showCoords, TRUE, (ArgIniType) FALSE },
-  { "coords", ArgTrue, (LPVOID) &appData.showCoords, FALSE, INVALID },
-  { "xcoords", ArgFalse, (LPVOID) &appData.showCoords, FALSE, INVALID },
-  { "-coords", ArgFalse, (LPVOID) &appData.showCoords, FALSE, INVALID },
-  { "showThinking", ArgBoolean, (LPVOID) &appData.showThinking, TRUE, (ArgIniType) FALSE },
-  { "thinking", ArgTrue, (LPVOID) &appData.showThinking, FALSE, INVALID },
-  { "xthinking", ArgFalse, (LPVOID) &appData.showThinking, FALSE, INVALID },
-  { "-thinking", ArgFalse, (LPVOID) &appData.showThinking, FALSE, INVALID },
-  { "ponderNextMove", ArgBoolean, (LPVOID) &appData.ponderNextMove, TRUE, (ArgIniType) TRUE },
-  { "ponder", ArgTrue, (LPVOID) &appData.ponderNextMove, FALSE, INVALID },
-  { "xponder", ArgFalse, (LPVOID) &appData.ponderNextMove, FALSE, INVALID },
-  { "-ponder", ArgFalse, (LPVOID) &appData.ponderNextMove, FALSE, INVALID },
-  { "periodicUpdates", ArgBoolean, (LPVOID) &appData.periodicUpdates, TRUE, (ArgIniType) TRUE },
-  { "periodic", ArgTrue, (LPVOID) &appData.periodicUpdates, FALSE, INVALID },
-  { "xperiodic", ArgFalse, (LPVOID) &appData.periodicUpdates, FALSE, INVALID },
-  { "-periodic", ArgFalse, (LPVOID) &appData.periodicUpdates, FALSE, INVALID },
-  { "popupExitMessage", ArgBoolean, (LPVOID) &appData.popupExitMessage, TRUE, (ArgIniType) TRUE },
-  { "exit", ArgTrue, (LPVOID) &appData.popupExitMessage, FALSE, INVALID },
-  { "xexit", ArgFalse, (LPVOID) &appData.popupExitMessage, FALSE, INVALID },
-  { "-exit", ArgFalse, (LPVOID) &appData.popupExitMessage, FALSE, INVALID },
-  { "popupMoveErrors", ArgBoolean, (LPVOID) &appData.popupMoveErrors, TRUE, (ArgIniType) FALSE },
-  { "popup", ArgTrue, (LPVOID) &appData.popupMoveErrors, FALSE, INVALID },
-  { "xpopup", ArgFalse, (LPVOID) &appData.popupMoveErrors, FALSE, INVALID },
-  { "-popup", ArgFalse, (LPVOID) &appData.popupMoveErrors, FALSE, INVALID },
-  { "popUpErrors", ArgBoolean, (LPVOID) &appData.popupMoveErrors, 
-    FALSE, INVALID }, /* only so that old WinBoard.ini files from betas can be read */
-  { "clockFont", ArgFont, (LPVOID) CLOCK_FONT, TRUE, INVALID },
-  { "messageFont", ArgFont, (LPVOID) MESSAGE_FONT, TRUE, INVALID },
-  { "coordFont", ArgFont, (LPVOID) COORD_FONT, TRUE, INVALID },
-  { "tagsFont", ArgFont, (LPVOID) EDITTAGS_FONT, TRUE, INVALID },
-  { "commentFont", ArgFont, (LPVOID) COMMENT_FONT, TRUE, INVALID },
-  { "icsFont", ArgFont, (LPVOID) CONSOLE_FONT, TRUE, INVALID },
-  { "moveHistoryFont", ArgFont, (LPVOID) MOVEHISTORY_FONT, TRUE, INVALID }, /* [AS] */
-  { "boardSize", ArgBoardSize, (LPVOID) &boardSize,
-    TRUE, (ArgIniType) -1 }, /* must come after all fonts */
-  { "size", ArgBoardSize, (LPVOID) &boardSize, FALSE, INVALID },
-  { "ringBellAfterMoves", ArgBoolean, (LPVOID) &appData.ringBellAfterMoves,
-    FALSE, (ArgIniType) TRUE }, /* historical; kept only so old winboard.ini files will parse */
-  { "bell", ArgTrue, (LPVOID) &appData.ringBellAfterMoves, FALSE, INVALID }, // for XB
-  { "xbell", ArgFalse, (LPVOID) &appData.ringBellAfterMoves, FALSE, INVALID }, // for XB
-  { "movesound", ArgTrue, (LPVOID) &appData.ringBellAfterMoves, FALSE, INVALID }, // for XB
-  { "xmovesound", ArgFalse, (LPVOID) &appData.ringBellAfterMoves, FALSE, INVALID }, // for XB
-  { "alwaysOnTop", ArgBoolean, (LPVOID) &alwaysOnTop, TRUE, INVALID },
-  { "top", ArgTrue, (LPVOID) &alwaysOnTop, FALSE, INVALID },
-  { "xtop", ArgFalse, (LPVOID) &alwaysOnTop, FALSE, INVALID },
-  { "-top", ArgFalse, (LPVOID) &alwaysOnTop, FALSE, INVALID },
-  { "autoCallFlag", ArgBoolean, (LPVOID) &appData.autoCallFlag, TRUE, (ArgIniType) FALSE },
-  { "autoflag", ArgTrue, (LPVOID) &appData.autoCallFlag, FALSE, INVALID },
-  { "xautoflag", ArgFalse, (LPVOID) &appData.autoCallFlag, FALSE, INVALID },
-  { "-autoflag", ArgFalse, (LPVOID) &appData.autoCallFlag, FALSE, INVALID },
-  { "autoComment", ArgBoolean, (LPVOID) &appData.autoComment, TRUE, (ArgIniType) FALSE },
-  { "autocomm", ArgTrue, (LPVOID) &appData.autoComment, FALSE, INVALID },
-  { "xautocomm", ArgFalse, (LPVOID) &appData.autoComment, FALSE, INVALID },
-  { "-autocomm", ArgFalse, (LPVOID) &appData.autoComment, FALSE, INVALID },
-  { "autoObserve", ArgBoolean, (LPVOID) &appData.autoObserve, TRUE, (ArgIniType) FALSE },
-  { "autobs", ArgTrue, (LPVOID) &appData.autoObserve, FALSE, INVALID },
-  { "xautobs", ArgFalse, (LPVOID) &appData.autoObserve, FALSE, INVALID },
-  { "-autobs", ArgFalse, (LPVOID) &appData.autoObserve, FALSE, INVALID },
-  { "flipView", ArgBoolean, (LPVOID) &appData.flipView, FALSE, (ArgIniType) FALSE },
-  { "flip", ArgTrue, (LPVOID) &appData.flipView, FALSE, INVALID },
-  { "xflip", ArgFalse, (LPVOID) &appData.flipView, FALSE, INVALID },
-  { "-flip", ArgFalse, (LPVOID) &appData.flipView, FALSE, INVALID },
-  { "autoFlipView", ArgBoolean, (LPVOID) &appData.autoFlipView, TRUE, (ArgIniType) TRUE },
-  { "autoflip", ArgTrue, (LPVOID) &appData.autoFlipView, FALSE, INVALID },
-  { "xautoflip", ArgFalse, (LPVOID) &appData.autoFlipView, FALSE, INVALID },
-  { "-autoflip", ArgFalse, (LPVOID) &appData.autoFlipView, FALSE, INVALID },
-  { "autoRaiseBoard", ArgBoolean, (LPVOID) &appData.autoRaiseBoard, TRUE, (ArgIniType) TRUE },
-  { "autoraise", ArgTrue, (LPVOID) &appData.autoRaiseBoard, FALSE, INVALID },
-  { "xautoraise", ArgFalse, (LPVOID) &appData.autoRaiseBoard, FALSE, INVALID },
-  { "-autoraise", ArgFalse, (LPVOID) &appData.autoRaiseBoard, FALSE, INVALID },
-  { "alwaysPromoteToQueen", ArgBoolean, (LPVOID) &appData.alwaysPromoteToQueen, TRUE, (ArgIniType) FALSE },
-  { "queen", ArgTrue, (LPVOID) &appData.alwaysPromoteToQueen, FALSE, INVALID },
-  { "xqueen", ArgFalse, (LPVOID) &appData.alwaysPromoteToQueen, FALSE, INVALID },
-  { "-queen", ArgFalse, (LPVOID) &appData.alwaysPromoteToQueen, FALSE, INVALID },
-  { "oldSaveStyle", ArgBoolean, (LPVOID) &appData.oldSaveStyle, TRUE, (ArgIniType) FALSE },
-  { "oldsave", ArgTrue, (LPVOID) &appData.oldSaveStyle, FALSE, INVALID },
-  { "xoldsave", ArgFalse, (LPVOID) &appData.oldSaveStyle, FALSE, INVALID },
-  { "-oldsave", ArgFalse, (LPVOID) &appData.oldSaveStyle, FALSE, INVALID },
-  { "quietPlay", ArgBoolean, (LPVOID) &appData.quietPlay, TRUE, (ArgIniType) FALSE },
-  { "quiet", ArgTrue, (LPVOID) &appData.quietPlay, FALSE, INVALID },
-  { "xquiet", ArgFalse, (LPVOID) &appData.quietPlay, FALSE, INVALID },
-  { "-quiet", ArgFalse, (LPVOID) &appData.quietPlay, FALSE, INVALID },
-  { "getMoveList", ArgBoolean, (LPVOID) &appData.getMoveList, TRUE, (ArgIniType) TRUE },
-  { "moves", ArgTrue, (LPVOID) &appData.getMoveList, FALSE, INVALID },
-  { "xmoves", ArgFalse, (LPVOID) &appData.getMoveList, FALSE, INVALID },
-  { "-moves", ArgFalse, (LPVOID) &appData.getMoveList, FALSE, INVALID },
-  { "testLegality", ArgBoolean, (LPVOID) &appData.testLegality, TRUE, (ArgIniType) TRUE },
-  { "legal", ArgTrue, (LPVOID) &appData.testLegality, FALSE, INVALID },
-  { "xlegal", ArgFalse, (LPVOID) &appData.testLegality, FALSE, INVALID },
-  { "-legal", ArgFalse, (LPVOID) &appData.testLegality, FALSE, INVALID },
-  { "premove", ArgBoolean, (LPVOID) &appData.premove, TRUE, (ArgIniType) TRUE },
-  { "pre", ArgTrue, (LPVOID) &appData.premove, FALSE, INVALID },
-  { "xpre", ArgFalse, (LPVOID) &appData.premove, FALSE, INVALID },
-  { "-pre", ArgFalse, (LPVOID) &appData.premove, FALSE, INVALID },
-  { "premoveWhite", ArgBoolean, (LPVOID) &appData.premoveWhite, TRUE, (ArgIniType) FALSE },
-  { "prewhite", ArgTrue, (LPVOID) &appData.premoveWhite, FALSE, INVALID },
-  { "xprewhite", ArgFalse, (LPVOID) &appData.premoveWhite, FALSE, INVALID },
-  { "-prewhite", ArgFalse, (LPVOID) &appData.premoveWhite, FALSE, INVALID },
-  { "premoveWhiteText", ArgString, (LPVOID) &appData.premoveWhiteText, TRUE, (ArgIniType) "" },
-  { "premoveBlack", ArgBoolean, (LPVOID) &appData.premoveBlack, TRUE, (ArgIniType) FALSE },
-  { "preblack", ArgTrue, (LPVOID) &appData.premoveBlack, FALSE, INVALID },
-  { "xpreblack", ArgFalse, (LPVOID) &appData.premoveBlack, FALSE, INVALID },
-  { "-preblack", ArgFalse, (LPVOID) &appData.premoveBlack, FALSE, INVALID },
-  { "premoveBlackText", ArgString, (LPVOID) &appData.premoveBlackText, TRUE, (ArgIniType) "" },
-  { "icsAlarm", ArgBoolean, (LPVOID) &appData.icsAlarm, TRUE, (ArgIniType) TRUE},
-  { "alarm", ArgTrue, (LPVOID) &appData.icsAlarm, FALSE},
-  { "xalarm", ArgFalse, (LPVOID) &appData.icsAlarm, FALSE},
-  { "-alarm", ArgFalse, (LPVOID) &appData.icsAlarm, FALSE},
-  { "icsAlarmTime", ArgInt, (LPVOID) &appData.icsAlarmTime, TRUE, (ArgIniType) 5000},
-  { "localLineEditing", ArgBoolean, (LPVOID) &appData.localLineEditing, FALSE, (ArgIniType) TRUE},
-  { "edit", ArgTrue, (LPVOID) &appData.localLineEditing, FALSE, INVALID },
-  { "xedit", ArgFalse, (LPVOID) &appData.localLineEditing, FALSE, INVALID },
-  { "-edit", ArgFalse, (LPVOID) &appData.localLineEditing, FALSE, INVALID },
-  { "animateMoving", ArgBoolean, (LPVOID) &appData.animate, TRUE, (ArgIniType) TRUE },
-  { "animate", ArgTrue, (LPVOID) &appData.animate, FALSE, INVALID },
-  { "xanimate", ArgFalse, (LPVOID) &appData.animate, FALSE, INVALID },
-  { "-animate", ArgFalse, (LPVOID) &appData.animate, FALSE, INVALID },
-  { "animateSpeed", ArgInt, (LPVOID) &appData.animSpeed, TRUE, (ArgIniType) 10 },
-  { "animateDragging", ArgBoolean, (LPVOID) &appData.animateDragging, TRUE, (ArgIniType) TRUE },
-  { "drag", ArgTrue, (LPVOID) &appData.animateDragging, FALSE, INVALID },
-  { "xdrag", ArgFalse, (LPVOID) &appData.animateDragging, FALSE, INVALID },
-  { "-drag", ArgFalse, (LPVOID) &appData.animateDragging, FALSE, INVALID },
-  { "blindfold", ArgBoolean, (LPVOID) &appData.blindfold, TRUE, (ArgIniType) FALSE },
-  { "blind", ArgTrue, (LPVOID) &appData.blindfold, FALSE, INVALID },
-  { "xblind", ArgFalse, (LPVOID) &appData.blindfold, FALSE, INVALID },
-  { "-blind", ArgFalse, (LPVOID) &appData.blindfold, FALSE, INVALID },
-  { "highlightLastMove", ArgBoolean,
-    (LPVOID) &appData.highlightLastMove, TRUE, (ArgIniType) TRUE },
-  { "highlight", ArgTrue, (LPVOID) &appData.highlightLastMove, FALSE, INVALID },
-  { "xhighlight", ArgFalse, (LPVOID) &appData.highlightLastMove, FALSE, INVALID },
-  { "-highlight", ArgFalse, (LPVOID) &appData.highlightLastMove, FALSE, INVALID },
-  { "highlightDragging", ArgBoolean,
-    (LPVOID) &appData.highlightDragging, TRUE, INVALID },
-  { "highdrag", ArgTrue, (LPVOID) &appData.highlightDragging, FALSE, INVALID },
-  { "xhighdrag", ArgFalse, (LPVOID) &appData.highlightDragging, FALSE, INVALID },
-  { "-highdrag", ArgFalse, (LPVOID) &appData.highlightDragging, FALSE, INVALID },
-  { "colorizeMessages", ArgBoolean, (LPVOID) &appData.colorize, TRUE, (ArgIniType) TRUE },
-  { "colorize", ArgTrue, (LPVOID) &appData.colorize, FALSE, INVALID },
-  { "xcolorize", ArgFalse, (LPVOID) &appData.colorize, FALSE, INVALID },
-  { "-colorize", ArgFalse, (LPVOID) &appData.colorize, FALSE, INVALID },
-  { "colorShout", ArgAttribs, (LPVOID) ColorShout, TRUE, INVALID },
-  { "colorSShout", ArgAttribs, (LPVOID) ColorSShout, TRUE, INVALID },
-  { "colorChannel1", ArgAttribs, (LPVOID) ColorChannel1, TRUE, INVALID },
-  { "colorChannel", ArgAttribs, (LPVOID) ColorChannel, TRUE, INVALID },
-  { "colorKibitz", ArgAttribs, (LPVOID) ColorKibitz, TRUE, INVALID },
-  { "colorTell", ArgAttribs, (LPVOID) ColorTell, TRUE, INVALID },
-  { "colorChallenge", ArgAttribs, (LPVOID) ColorChallenge, TRUE, INVALID },
-  { "colorRequest", ArgAttribs, (LPVOID) ColorRequest, TRUE, INVALID },
-  { "colorSeek", ArgAttribs, (LPVOID) ColorSeek, TRUE, INVALID },
-  { "colorNormal", ArgAttribs, (LPVOID) ColorNormal, TRUE, INVALID },
-  { "colorBackground", ArgColor, (LPVOID) &consoleBackgroundColor, TRUE, INVALID },
-  { "soundShout", ArgFilename, (LPVOID) &appData.soundShout, TRUE, (ArgIniType) "" },
-  { "soundSShout", ArgFilename, (LPVOID) &appData.soundSShout, TRUE, (ArgIniType) "" },
-  { "soundCShout", ArgFilename, (LPVOID) &appData.soundSShout, TRUE, (ArgIniType) "" }, // for XB
-  { "soundChannel1", ArgFilename, (LPVOID) &appData.soundChannel1, TRUE, (ArgIniType) "" },
-  { "soundChannel", ArgFilename, (LPVOID) &appData.soundChannel, TRUE, (ArgIniType) "" },
-  { "soundKibitz", ArgFilename, (LPVOID) &appData.soundKibitz, TRUE, (ArgIniType) "" },
-  { "soundTell", ArgFilename, (LPVOID) &appData.soundTell, TRUE, (ArgIniType) "" },
-  { "soundChallenge", ArgFilename, (LPVOID) &appData.soundChallenge, TRUE, (ArgIniType) "" },
-  { "soundRequest", ArgFilename, (LPVOID) &appData.soundRequest, TRUE, (ArgIniType) "" },
-  { "soundSeek", ArgFilename, (LPVOID) &appData.soundSeek, TRUE, (ArgIniType) "" },
-  { "soundMove", ArgFilename, (LPVOID) &appData.soundMove, TRUE, (ArgIniType) "" },
-  { "soundBell", ArgFilename, (LPVOID) &appData.soundBell, TRUE, (ArgIniType) SOUND_BELL },
-  { "soundIcsWin", ArgFilename, (LPVOID) &appData.soundIcsWin, TRUE, (ArgIniType) "" },
-  { "soundIcsLoss", ArgFilename, (LPVOID) &appData.soundIcsLoss, TRUE, (ArgIniType) "" },
-  { "soundIcsDraw", ArgFilename, (LPVOID) &appData.soundIcsDraw, TRUE, (ArgIniType) "" },
-  { "soundIcsUnfinished", ArgFilename, (LPVOID) &appData.soundIcsUnfinished, TRUE, (ArgIniType) "" },
-  { "soundIcsAlarm", ArgFilename, (LPVOID) &appData.soundIcsAlarm, TRUE, (ArgIniType) "" },
-  { "reuseFirst", ArgBoolean, (LPVOID) &appData.reuseFirst, FALSE, (ArgIniType) TRUE },
-  { "reuse", ArgTrue, (LPVOID) &appData.reuseFirst, FALSE, INVALID },
-  { "xreuse", ArgFalse, (LPVOID) &appData.reuseFirst, FALSE, INVALID },
-  { "-reuse", ArgFalse, (LPVOID) &appData.reuseFirst, FALSE, INVALID },
-  { "reuseChessPrograms", ArgBoolean,
-    (LPVOID) &appData.reuseFirst, FALSE, INVALID }, /* backward compat only */
-  { "reuseSecond", ArgBoolean, (LPVOID) &appData.reuseSecond, FALSE, (ArgIniType) TRUE },
-  { "reuse2", ArgTrue, (LPVOID) &appData.reuseSecond, FALSE, INVALID },
-  { "xreuse2", ArgFalse, (LPVOID) &appData.reuseSecond, FALSE, INVALID },
-  { "-reuse2", ArgFalse, (LPVOID) &appData.reuseSecond, FALSE, INVALID },
-  { "comPortSettings", ArgCommSettings, (LPVOID) &dcb, TRUE, INVALID },
-  { "settingsFile", ArgSettingsFilename, (LPVOID) &settingsFileName, FALSE, (ArgIniType) SETTINGS_FILE },
-  { "ini", ArgSettingsFilename, (LPVOID) &settingsFileName, FALSE, INVALID },
-  { "saveSettingsOnExit", ArgBoolean, (LPVOID) &saveSettingsOnExit, TRUE, (ArgIniType) TRUE },
-  { "chessProgram", ArgBoolean, (LPVOID) &chessProgram, FALSE, (ArgIniType) FALSE },
-  { "cp", ArgTrue, (LPVOID) &chessProgram, FALSE, INVALID },
-  { "xcp", ArgFalse, (LPVOID) &chessProgram, FALSE, INVALID },
-  { "-cp", ArgFalse, (LPVOID) &chessProgram, FALSE, INVALID },
-  { "icsMenu", ArgString, (LPVOID) &icsTextMenuString, TRUE, (ArgIniType) ICS_TEXT_MENU_DEFAULT },
-  { "icsNames", ArgString, (LPVOID) &icsNames, TRUE, (ArgIniType) ICS_NAMES },
-  { "firstChessProgramNames", ArgString, (LPVOID) &firstChessProgramNames,
-    TRUE, (ArgIniType) FCP_NAMES },
-  { "secondChessProgramNames", ArgString, (LPVOID) &secondChessProgramNames,
-    TRUE, (ArgIniType) SCP_NAMES },
-  { "initialMode", ArgString, (LPVOID) &appData.initialMode, FALSE, (ArgIniType) "" },
-  { "mode", ArgString, (LPVOID) &appData.initialMode, FALSE, INVALID },
-  { "variant", ArgString, (LPVOID) &appData.variant, FALSE, (ArgIniType) "normal" },
-  { "firstProtocolVersion", ArgInt, (LPVOID) &appData.firstProtocolVersion, FALSE, (ArgIniType) PROTOVER },
-  { "secondProtocolVersion", ArgInt, (LPVOID) &appData.secondProtocolVersion,FALSE, (ArgIniType) PROTOVER },
-  { "showButtonBar", ArgBoolean, (LPVOID) &appData.showButtonBar, TRUE, (ArgIniType) TRUE },
-  { "buttons", ArgTrue, (LPVOID) &appData.showButtonBar, FALSE, INVALID },
-  { "xbuttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE, INVALID },
-  { "-buttons", ArgFalse, (LPVOID) &appData.showButtonBar, FALSE, INVALID },
-
-  /* [AS] New features */
-  { "firstScoreAbs", ArgBoolean, (LPVOID) &appData.firstScoreIsAbsolute, FALSE, (ArgIniType) FALSE },
-  { "secondScoreAbs", ArgBoolean, (LPVOID) &appData.secondScoreIsAbsolute, FALSE, (ArgIniType) FALSE },
-  { "pgnExtendedInfo", ArgBoolean, (LPVOID) &appData.saveExtendedInfoInPGN, TRUE, (ArgIniType) FALSE },
-  { "hideThinkingFromHuman", ArgBoolean, (LPVOID) &appData.hideThinkingFromHuman, TRUE, (ArgIniType) FALSE },
-  { "liteBackTextureFile", ArgString, (LPVOID) &appData.liteBackTextureFile, TRUE, (ArgIniType) "" },
-  { "darkBackTextureFile", ArgString, (LPVOID) &appData.darkBackTextureFile, TRUE, (ArgIniType) "" },
-  { "liteBackTextureMode", ArgInt, (LPVOID) &appData.liteBackTextureMode, TRUE, (ArgIniType) BACK_TEXTURE_MODE_PLAIN },
-  { "darkBackTextureMode", ArgInt, (LPVOID) &appData.darkBackTextureMode, TRUE, (ArgIniType) BACK_TEXTURE_MODE_PLAIN },
-  { "renderPiecesWithFont", ArgString, (LPVOID) &appData.renderPiecesWithFont, TRUE, (ArgIniType) "" },
-  { "fontPieceToCharTable", ArgString, (LPVOID) &appData.fontToPieceTable, TRUE, (ArgIniType) "" },
-  { "fontPieceBackColorWhite", ArgColor, (LPVOID) &appData.fontBackColorWhite, TRUE, (ArgIniType) 0 },
-  { "fontPieceForeColorWhite", ArgColor, (LPVOID) &appData.fontForeColorWhite, TRUE, (ArgIniType) 0 },
-  { "fontPieceBackColorBlack", ArgColor, (LPVOID) &appData.fontBackColorBlack, TRUE, (ArgIniType) 0 },
-  { "fontPieceForeColorBlack", ArgColor, (LPVOID) &appData.fontForeColorBlack, TRUE, (ArgIniType) 0 },
-  { "fontPieceSize", ArgInt, (LPVOID) &appData.fontPieceSize, TRUE, (ArgIniType) 80 },
-  { "overrideLineGap", ArgInt, (LPVOID) &appData.overrideLineGap, TRUE, (ArgIniType) 1 },
-  { "adjudicateLossThreshold", ArgInt, (LPVOID) &appData.adjudicateLossThreshold, TRUE, (ArgIniType) 0 },
-  { "delayBeforeQuit", ArgInt, (LPVOID) &appData.delayBeforeQuit, TRUE, (ArgIniType) 0 },
-  { "delayAfterQuit", ArgInt, (LPVOID) &appData.delayAfterQuit, TRUE, (ArgIniType) 0 },
-  { "nameOfDebugFile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE, (ArgIniType) "winboard.debug" },
-  { "debugfile", ArgFilename, (LPVOID) &appData.nameOfDebugFile, FALSE, INVALID },
-  { "pgnEventHeader", ArgString, (LPVOID) &appData.pgnEventHeader, TRUE, (ArgIniType) "Computer Chess Game" },
-  { "defaultFrcPosition", ArgInt, (LPVOID) &appData.defaultFrcPosition, TRUE, (ArgIniType) -1 },
-  { "gameListTags", ArgString, (LPVOID) &appData.gameListTags, TRUE, (ArgIniType) GLT_DEFAULT_TAGS },
-  { "saveOutOfBookInfo", ArgBoolean, (LPVOID) &appData.saveOutOfBookInfo, TRUE, (ArgIniType) TRUE },
-  { "showEvalInMoveHistory", ArgBoolean, (LPVOID) &appData.showEvalInMoveHistory, TRUE, (ArgIniType) TRUE },
-  { "evalHistColorWhite", ArgColor, (LPVOID) &appData.evalHistColorWhite, TRUE, INVALID },
-  { "evalHistColorBlack", ArgColor, (LPVOID) &appData.evalHistColorBlack, TRUE, INVALID },
-  { "highlightMoveWithArrow", ArgBoolean, (LPVOID) &appData.highlightMoveWithArrow, TRUE, (ArgIniType) FALSE },
-  { "highlightArrowColor", ArgColor, (LPVOID) &appData.highlightArrowColor, TRUE, INVALID },
-  { "stickyWindows", ArgBoolean, (LPVOID) &appData.useStickyWindows, TRUE, (ArgIniType) TRUE },
-  { "adjudicateDrawMoves", ArgInt, (LPVOID) &appData.adjudicateDrawMoves, TRUE, (ArgIniType) TRUE },
-  { "autoDisplayComment", ArgBoolean, (LPVOID) &appData.autoDisplayComment, TRUE, (ArgIniType) TRUE },
-  { "autoDisplayTags", ArgBoolean, (LPVOID) &appData.autoDisplayTags, TRUE, (ArgIniType) TRUE },
-  { "firstIsUCI", ArgBoolean, (LPVOID) &appData.firstIsUCI, FALSE, (ArgIniType) FALSE },
-  { "fUCI", ArgTrue, (LPVOID) &appData.firstIsUCI, FALSE, INVALID },
-  { "secondIsUCI", ArgBoolean, (LPVOID) &appData.secondIsUCI, FALSE, (ArgIniType) FALSE },
-  { "sUCI", ArgTrue, (LPVOID) &appData.secondIsUCI, FALSE, INVALID },
-  { "firstHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.firstHasOwnBookUCI, FALSE, (ArgIniType) TRUE },
-  { "fNoOwnBookUCI", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE, INVALID },
-  { "firstXBook", ArgFalse, (LPVOID) &appData.firstHasOwnBookUCI, FALSE, INVALID },
-  { "secondHasOwnBookUCI", ArgBoolean, (LPVOID) &appData.secondHasOwnBookUCI, FALSE, (ArgIniType) TRUE },
-  { "sNoOwnBookUCI", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE, INVALID },
-  { "secondXBook", ArgFalse, (LPVOID) &appData.secondHasOwnBookUCI, FALSE, INVALID },
-  { "polyglotDir", ArgFilename, (LPVOID) &appData.polyglotDir, TRUE, (ArgIniType) "" },
-  { "usePolyglotBook", ArgBoolean, (LPVOID) &appData.usePolyglotBook, TRUE, (ArgIniType) FALSE },
-  { "polyglotBook", ArgFilename, (LPVOID) &appData.polyglotBook, TRUE, (ArgIniType) "" },
-  { "defaultHashSize", ArgInt, (LPVOID) &appData.defaultHashSize, TRUE, (ArgIniType) 64 }, 
-  { "defaultCacheSizeEGTB", ArgInt, (LPVOID) &appData.defaultCacheSizeEGTB, TRUE, (ArgIniType) 4 },
-  { "defaultPathEGTB", ArgFilename, (LPVOID) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
-
-  /* [HGM] board-size, adjudication and misc. options */
-  { "boardWidth", ArgInt, (LPVOID) &appData.NrFiles, TRUE, (ArgIniType) -1 },
-  { "boardHeight", ArgInt, (LPVOID) &appData.NrRanks, TRUE, (ArgIniType) -1 },
-  { "holdingsSize", ArgInt, (LPVOID) &appData.holdingsSize, TRUE, (ArgIniType) -1 },
-  { "matchPause", ArgInt, (LPVOID) &appData.matchPause, TRUE, (ArgIniType) 10000 },
-  { "pieceToCharTable", ArgString, (LPVOID) &appData.pieceToCharTable, FALSE, INVALID },
-  { "flipBlack", ArgBoolean, (LPVOID) &appData.upsideDown, TRUE, (ArgIniType) FALSE },
-  { "allWhite", ArgBoolean, (LPVOID) &appData.allWhite, TRUE, (ArgIniType) FALSE },
-  { "alphaRank", ArgBoolean, (LPVOID) &appData.alphaRank, FALSE, (ArgIniType) FALSE },
-  { "firstAlphaRank", ArgBoolean, (LPVOID) &first.alphaRank, FALSE, (ArgIniType) FALSE },
-  { "secondAlphaRank", ArgBoolean, (LPVOID) &second.alphaRank, FALSE, (ArgIniType) FALSE },
-  { "testClaims", ArgBoolean, (LPVOID) &appData.testClaims, TRUE, (ArgIniType) FALSE },
-  { "checkMates", ArgBoolean, (LPVOID) &appData.checkMates, TRUE, (ArgIniType) FALSE },
-  { "materialDraws", ArgBoolean, (LPVOID) &appData.materialDraws, TRUE, (ArgIniType) FALSE },
-  { "trivialDraws", ArgBoolean, (LPVOID) &appData.trivialDraws, TRUE, (ArgIniType) FALSE },
-  { "ruleMoves", ArgInt, (LPVOID) &appData.ruleMoves, TRUE, (ArgIniType) 51 },
-  { "repeatsToDraw", ArgInt, (LPVOID) &appData.drawRepeats, TRUE, (ArgIniType) 6 },
-  { "autoKibitz", ArgTrue, (LPVOID) &appData.autoKibitz, FALSE, INVALID },
-  { "engineDebugOutput", ArgInt, (LPVOID) &appData.engineComments, FALSE, (ArgIniType) 1 },
-  { "userName", ArgString, (LPVOID) &appData.userName, FALSE, INVALID },
-  { "rewindIndex", ArgInt, (LPVOID) &appData.rewindIndex, FALSE, INVALID },
-  { "sameColorGames", ArgInt, (LPVOID) &appData.sameColorGames, FALSE, INVALID },
-  { "smpCores", ArgInt, (LPVOID) &appData.smpCores, TRUE, (ArgIniType) 1 },
-  { "egtFormats", ArgString, (LPVOID) &appData.egtFormats, TRUE, (ArgIniType) "" },
-  { "niceEngines", ArgInt, (LPVOID) &appData.niceEngines, TRUE, INVALID },
-  { "firstLogo", ArgFilename, (LPVOID) &appData.firstLogo, FALSE, INVALID },
-  { "secondLogo", ArgFilename, (LPVOID) &appData.secondLogo, FALSE, INVALID },
-  { "autoLogo", ArgBoolean, (LPVOID) &appData.autoLogo, TRUE, INVALID },
-  { "firstOptions", ArgString, (LPVOID) &appData.firstOptions, FALSE, (ArgIniType) "" },
-  { "secondOptions", ArgString, (LPVOID) &appData.secondOptions, FALSE, (ArgIniType) "" },
-  { "firstNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride1, FALSE, (ArgIniType) "" },
-  { "secondNeedsNoncompliantFEN", ArgString, (LPVOID) &appData.fenOverride2, FALSE, (ArgIniType) "" },
-  { "keepAlive", ArgInt, (LPVOID) &appData.keepAlive, FALSE, INVALID },
-  { "icstype", ArgInt, (LPVOID) &ics_type, FALSE, INVALID },
-  { "forceIllegalMoves", ArgTrue, (LPVOID) &appData.forceIllegal, FALSE, INVALID },
-
-#ifdef ZIPPY
-  { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },
-  { "zt", ArgTrue, (LPVOID) &appData.zippyTalk, FALSE, INVALID },
-  { "xzt", ArgFalse, (LPVOID) &appData.zippyTalk, FALSE, INVALID },
-  { "-zt", ArgFalse, (LPVOID) &appData.zippyTalk, FALSE, INVALID },
-  { "zippyPlay", ArgBoolean, (LPVOID) &appData.zippyPlay, FALSE, (ArgIniType) ZIPPY_PLAY },
-  { "zp", ArgTrue, (LPVOID) &appData.zippyPlay, FALSE, INVALID },
-  { "xzp", ArgFalse, (LPVOID) &appData.zippyPlay, FALSE, INVALID },
-  { "-zp", ArgFalse, (LPVOID) &appData.zippyPlay, FALSE, INVALID },
-  { "zippyLines", ArgFilename, (LPVOID) &appData.zippyLines, FALSE, (ArgIniType) ZIPPY_LINES },
-  { "zippyPinhead", ArgString, (LPVOID) &appData.zippyPinhead, FALSE, (ArgIniType) ZIPPY_PINHEAD },
-  { "zippyPassword", ArgString, (LPVOID) &appData.zippyPassword, FALSE, (ArgIniType) ZIPPY_PASSWORD },
-  { "zippyPassword2", ArgString, (LPVOID) &appData.zippyPassword2, FALSE, (ArgIniType) ZIPPY_PASSWORD2 },
-  { "zippyWrongPassword", ArgString, (LPVOID) &appData.zippyWrongPassword,
-    FALSE, (ArgIniType) ZIPPY_WRONG_PASSWORD },
-  { "zippyAcceptOnly", ArgString, (LPVOID) &appData.zippyAcceptOnly, FALSE, (ArgIniType) ZIPPY_ACCEPT_ONLY },
-  { "zippyUseI", ArgBoolean, (LPVOID) &appData.zippyUseI, FALSE, (ArgIniType) ZIPPY_USE_I },
-  { "zui", ArgTrue, (LPVOID) &appData.zippyUseI, FALSE, INVALID },
-  { "xzui", ArgFalse, (LPVOID) &appData.zippyUseI, FALSE, INVALID },
-  { "-zui", ArgFalse, (LPVOID) &appData.zippyUseI, FALSE, INVALID },
-  { "zippyBughouse", ArgInt, (LPVOID) &appData.zippyBughouse, FALSE, (ArgIniType) ZIPPY_BUGHOUSE },
-  { "zippyNoplayCrafty", ArgBoolean, (LPVOID) &appData.zippyNoplayCrafty,
-    FALSE, (ArgIniType) ZIPPY_NOPLAY_CRAFTY },
-  { "znc", ArgTrue, (LPVOID) &appData.zippyNoplayCrafty, FALSE, INVALID },
-  { "xznc", ArgFalse, (LPVOID) &appData.zippyNoplayCrafty, FALSE, INVALID },
-  { "-znc", ArgFalse, (LPVOID) &appData.zippyNoplayCrafty, FALSE, INVALID },
-  { "zippyGameEnd", ArgString, (LPVOID) &appData.zippyGameEnd, FALSE, (ArgIniType) ZIPPY_GAME_END },
-  { "zippyGameStart", ArgString, (LPVOID) &appData.zippyGameStart, FALSE, (ArgIniType) ZIPPY_GAME_START },
-  { "zippyAdjourn", ArgBoolean, (LPVOID) &appData.zippyAdjourn, FALSE, (ArgIniType) ZIPPY_ADJOURN },
-  { "zadj", ArgTrue, (LPVOID) &appData.zippyAdjourn, FALSE, INVALID },
-  { "xzadj", ArgFalse, (LPVOID) &appData.zippyAdjourn, FALSE, INVALID },
-  { "-zadj", ArgFalse, (LPVOID) &appData.zippyAdjourn, FALSE, INVALID },
-  { "zippyAbort", ArgBoolean, (LPVOID) &appData.zippyAbort, FALSE, (ArgIniType) ZIPPY_ABORT },
-  { "zab", ArgTrue, (LPVOID) &appData.zippyAbort, FALSE, INVALID },
-  { "xzab", ArgFalse, (LPVOID) &appData.zippyAbort, FALSE, INVALID },
-  { "-zab", ArgFalse, (LPVOID) &appData.zippyAbort, FALSE, INVALID },
-  { "zippyVariants", ArgString, (LPVOID) &appData.zippyVariants, FALSE, (ArgIniType) ZIPPY_VARIANTS },
-  { "zippyMaxGames", ArgInt, (LPVOID)&appData.zippyMaxGames, FALSE, (ArgIniType) ZIPPY_MAX_GAMES},
-  { "zippyReplayTimeout", ArgInt, (LPVOID)&appData.zippyReplayTimeout, FALSE, (ArgIniType) ZIPPY_REPLAY_TIMEOUT },
-  { "zippyShortGame", ArgInt, (LPVOID)&appData.zippyShortGame, FALSE, INVALID },
-  /* Kludge to allow winboard.ini files from buggy 4.0.4 to be read: */
-  { "zippyReplyTimeout", ArgInt, (LPVOID)&junk, FALSE, INVALID },
-#endif
-  /* [HGM] options for broadcasting and time odds */
-  { "serverMoves", ArgString, (LPVOID) &appData.serverMovesName, FALSE, (ArgIniType) NULL },
-  { "suppressLoadMoves", ArgBoolean, (LPVOID) &appData.suppressLoadMoves, FALSE, (ArgIniType) FALSE },
-  { "serverPause", ArgInt, (LPVOID) &appData.serverPause, FALSE, (ArgIniType) 15 },
-  { "firstTimeOdds", ArgInt, (LPVOID) &appData.firstTimeOdds, FALSE, (ArgIniType) 1 },
-  { "secondTimeOdds", ArgInt, (LPVOID) &appData.secondTimeOdds, FALSE, (ArgIniType) 1 },
-  { "timeOddsMode", ArgInt, (LPVOID) &appData.timeOddsMode, TRUE, INVALID },
-  { "firstAccumulateTC", ArgInt, (LPVOID) &appData.firstAccumulateTC, FALSE, (ArgIniType) 1 },
-  { "secondAccumulateTC", ArgInt, (LPVOID) &appData.secondAccumulateTC, FALSE, (ArgIniType) 1 },
-  { "firstNPS", ArgInt, (LPVOID) &appData.firstNPS, FALSE, (ArgIniType) -1 },
-  { "secondNPS", ArgInt, (LPVOID) &appData.secondNPS, FALSE, (ArgIniType) -1 },
-  { "noGUI", ArgTrue, (LPVOID) &appData.noGUI, FALSE, INVALID },
-  { "keepLineBreaksICS", ArgBoolean, (LPVOID) &appData.noJoin, TRUE, INVALID },
-  { "wrapContinuationSequence", ArgString, (LPVOID) &appData.wrapContSeq, FALSE, INVALID },
-  { "useInternalWrap", ArgTrue, (LPVOID) &appData.useInternalWrap, FALSE, INVALID }, /* noJoin usurps this if set */
-  
-  // [HGM] placement: put all window layouts last in ini file, but man X,Y before all others
-  { "minX", ArgZ, (LPVOID) &minX, FALSE, INVALID }, // [HGM] placement: to make suer auxialary windows can be placed
-  { "minY", ArgZ, (LPVOID) &minY, FALSE, INVALID },
-  { "winWidth",  ArgInt, (LPVOID) &wpMain.width,  TRUE, INVALID }, // [HGM] placement: dummies to remember right & bottom
-  { "winHeight", ArgInt, (LPVOID) &wpMain.height, TRUE, INVALID }, //       for attaching auxiliary windows to them
-  { "x", ArgInt, (LPVOID) &wpMain.x, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "y", ArgInt, (LPVOID) &wpMain.y, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "icsX", ArgX,   (LPVOID) &wpConsole.x, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "icsY", ArgY,   (LPVOID) &wpConsole.y, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "icsW", ArgInt, (LPVOID) &wpConsole.width, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "icsH", ArgInt, (LPVOID) &wpConsole.height, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "analysisX", ArgX,   (LPVOID) &dummy, FALSE, INVALID }, // [HGM] placement: analysis window no longer exists
-  { "analysisY", ArgY,   (LPVOID) &dummy, FALSE, INVALID }, //       provided for compatibility with old ini files
-  { "analysisW", ArgInt, (LPVOID) &dummy, FALSE, INVALID },
-  { "analysisH", ArgInt, (LPVOID) &dummy, FALSE, INVALID },
-  { "commentX", ArgX,   (LPVOID) &wpComment.x, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "commentY", ArgY,   (LPVOID) &wpComment.y, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "commentW", ArgInt, (LPVOID) &wpComment.width, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "commentH", ArgInt, (LPVOID) &wpComment.height, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "tagsX", ArgX,   (LPVOID) &wpTags.x, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "tagsY", ArgY,   (LPVOID) &wpTags.y, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "tagsW", ArgInt, (LPVOID) &wpTags.width, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "tagsH", ArgInt, (LPVOID) &wpTags.height, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "gameListX", ArgX,   (LPVOID) &wpGameList.x, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "gameListY", ArgY,   (LPVOID) &wpGameList.y, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "gameListW", ArgInt, (LPVOID) &wpGameList.width, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "gameListH", ArgInt, (LPVOID) &wpGameList.height, TRUE, (ArgIniType) CW_USEDEFAULT },
-  /* [AS] Layout stuff */
-  { "moveHistoryUp", ArgBoolean, (LPVOID) &wpMoveHistory.visible, TRUE, (ArgIniType) TRUE },
-  { "moveHistoryX", ArgX,   (LPVOID) &wpMoveHistory.x, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "moveHistoryY", ArgY,   (LPVOID) &wpMoveHistory.y, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "moveHistoryW", ArgInt, (LPVOID) &wpMoveHistory.width, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "moveHistoryH", ArgInt, (LPVOID) &wpMoveHistory.height, TRUE, (ArgIniType) CW_USEDEFAULT },
-
-  { "evalGraphUp", ArgBoolean, (LPVOID) &wpEvalGraph.visible, TRUE, (ArgIniType) TRUE },
-  { "evalGraphX", ArgX,   (LPVOID) &wpEvalGraph.x, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "evalGraphY", ArgY,   (LPVOID) &wpEvalGraph.y, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "evalGraphW", ArgInt, (LPVOID) &wpEvalGraph.width, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "evalGraphH", ArgInt, (LPVOID) &wpEvalGraph.height, TRUE, (ArgIniType) CW_USEDEFAULT },
-
-  { "engineOutputUp", ArgBoolean, (LPVOID) &wpEngineOutput.visible, TRUE, (ArgIniType) TRUE },
-  { "engineOutputX", ArgX,   (LPVOID) &wpEngineOutput.x, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "engineOutputY", ArgY,   (LPVOID) &wpEngineOutput.y, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "engineOutputW", ArgInt, (LPVOID) &wpEngineOutput.width, TRUE, (ArgIniType) CW_USEDEFAULT },
-  { "engineOutputH", ArgInt, (LPVOID) &wpEngineOutput.height, TRUE, (ArgIniType) CW_USEDEFAULT },
-
-  { NULL, ArgNone, NULL, FALSE, INVALID }
-};
-
-
-/* Kludge for indirection files on command line */
-char* lastIndirectionFilename;
-ArgDescriptor argDescriptorIndirection =
-{ "", ArgSettingsFilename, (LPVOID) NULL, FALSE };
-
+// front-end part of option handling
 
 VOID
-ExitArgError(char *msg, char *badArg)
+LFfromMFP(LOGFONT* lf, MyFontParams *mfp)
 {
-  char buf[MSG_SIZ];
-
-  sprintf(buf, "%s %s", msg, badArg);
-  DisplayFatalError(buf, 0, 2);
-  exit(2);
+  HDC hdc = CreateDC("DISPLAY", NULL, NULL, NULL);
+  lf->lfHeight = -(int)(mfp->pointSize * GetDeviceCaps(hdc, LOGPIXELSY) / 72.0 + 0.5);
+  DeleteDC(hdc);
+  lf->lfWidth = 0;
+  lf->lfEscapement = 0;
+  lf->lfOrientation = 0;
+  lf->lfWeight = mfp->bold ? FW_BOLD : FW_NORMAL;
+  lf->lfItalic = mfp->italic;
+  lf->lfUnderline = mfp->underline;
+  lf->lfStrikeOut = mfp->strikeout;
+  lf->lfCharSet = mfp->charset;
+  lf->lfOutPrecision = OUT_DEFAULT_PRECIS;
+  lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
+  lf->lfQuality = DEFAULT_QUALITY;
+  lf->lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;
+  strcpy(lf->lfFaceName, mfp->faceName);
 }
+
+void
+CreateFontInMF(MyFont *mf)
+{ 
+  LFfromMFP(&mf->lf, &mf->mfp);
+  if (mf->hf) DeleteObject(mf->hf);
+  mf->hf = CreateFontIndirect(&mf->lf);
+}
+
+// [HGM] This platform-dependent table provides the location for storing the color info
+void *
+colorVariable[] = {
+  &whitePieceColor, 
+  &blackPieceColor, 
+  &lightSquareColor,
+  &darkSquareColor, 
+  &highlightSquareColor,
+  &premoveHighlightColor,
+  NULL,
+  &consoleBackgroundColor,
+  &appData.fontForeColorWhite,
+  &appData.fontBackColorWhite,
+  &appData.fontForeColorBlack,
+  &appData.fontBackColorBlack,
+  &appData.evalHistColorWhite,
+  &appData.evalHistColorBlack,
+  &appData.highlightArrowColor,
+};
 
 /* Command line font name parser.  NULL name means do nothing.
    Syntax like "Courier New:10.0 bi" or "Arial:10" or "Arial:10b"
@@ -1504,6 +980,36 @@ ParseFontName(char *name, MyFontParams *mfp)
     mfp->charset = (BYTE) atoi(q+1);
 }
 
+void
+ParseFont(char *name, int number)
+{ // wrapper to shield back-end from 'font'
+  ParseFontName(name, &font[boardSize][number]->mfp);
+}
+
+void
+SetFontDefaults()
+{ // in WB  we have a 2D array of fonts; this initializes their description
+  int i, j;
+  /* Point font array elements to structures and
+     parse default font names */
+  for (i=0; i<NUM_FONTS; i++) {
+    for (j=0; j<NUM_SIZES; j++) {
+      font[j][i] = &fontRec[j][i];
+      ParseFontName(font[j][i]->def, &font[j][i]->mfp);
+    }
+  }
+}
+
+void
+CreateFonts()
+{ // here we create the actual fonts from the selected descriptions
+  int i, j;
+  for (i=0; i<NUM_FONTS; i++) {
+    for (j=0; j<NUM_SIZES; j++) {
+      CreateFontInMF(font[j][i]);
+    }
+  }
+}
 /* Color name parser.
    X version accepts X color names, but this one
    handles only the #rrggbb form (hex) or rrr,ggg,bbb (decimal) */
@@ -1526,8 +1032,14 @@ ParseColorName(char *name)
   return PALETTERGB(red, green, blue);
 }
 
+void
+ParseColor(int n, char *name)
+{ // for WinBoard the color is an int, which needs to be derived from the string
+  if(colorVariable[n]) *(int*)colorVariable[n] = ParseColorName(name);
+}
 
-void ParseAttribs(COLORREF *color, int *effects, char* argValue)
+void
+ParseAttribs(COLORREF *color, int *effects, char* argValue)
 {
   char *e = argValue;
   int eff = 0;
@@ -1544,376 +1056,28 @@ void ParseAttribs(COLORREF *color, int *effects, char* argValue)
   *color   = ParseColorName(e);
 }
 
+void
+ParseTextAttribs(ColorClass cc, char *s)
+{   // [HGM] front-end wrapper that does the platform-dependent call
+    // for XBoard we would set (&appData.colorShout)[cc] = strdup(s);
+    ParseAttribs(&textAttribs[cc].color, &textAttribs[cc].effects, s);
+}
 
-BoardSize
-ParseBoardSize(char *name)
-{
+void
+ParseBoardSize(void *addr, char *name)
+{ // [HGM] rewritten with return-value ptr to shield back-end from BoardSize
   BoardSize bs = SizeTiny;
   while (sizeInfo[bs].name != NULL) {
-    if (StrCaseCmp(name, sizeInfo[bs].name) == 0) return bs;
+    if (StrCaseCmp(name, sizeInfo[bs].name) == 0) {
+	*(BoardSize *)addr = bs;
+	return;
+    }
     bs++;
   }
   ExitArgError("Unrecognized board size value", name);
-  return bs; /* not reached */
 }
 
-
-char
-StringGet(void *getClosure)
-{
-  char **p = (char **) getClosure;
-  return *((*p)++);
-}
-
-char
-FileGet(void *getClosure)
-{
-  int c;
-  FILE* f = (FILE*) getClosure;
-
-  c = getc(f);
-  if (c == '\r') c = getc(f); // work around DOS format files by bypassing the '\r' completely
-  if (c == EOF)
-    return NULLCHAR;
-  else
-    return (char) c;
-}
-
-/* Parse settings file named "name". If file found, return the
-   full name in fullname and return TRUE; else return FALSE */
-BOOLEAN
-ParseSettingsFile(char *name, char fullname[MSG_SIZ])
-{
-  char *dummy;
-  FILE *f;
-  int ok; char buf[MSG_SIZ];
-
-  ok = SearchPath(installDir, name, NULL, MSG_SIZ, fullname, &dummy);
-  if(!ok && strchr(name, '.') == NULL) { // [HGM] append default file-name extension '.ini' when needed
-    sprintf(buf, "%s.ini", name);
-    ok = SearchPath(installDir, buf, NULL, MSG_SIZ, fullname, &dummy);
-  }
-  if (ok) {
-    f = fopen(fullname, "r");
-    if (f != NULL) {
-      ParseArgs(FileGet, f);
-      fclose(f);
-      return TRUE;
-    }
-  }
-  return FALSE;
-}
-
-VOID
-ParseArgs(GetFunc get, void *cl)
-{
-  char argName[ARG_MAX];
-  char argValue[ARG_MAX];
-  ArgDescriptor *ad;
-  char start;
-  char *q;
-  int i, octval;
-  char ch;
-  int posarg = 0;
-
-  ch = get(cl);
-  for (;;) {
-    while (ch == ' ' || ch == '\n' || ch == '\t') ch = get(cl);
-    if (ch == NULLCHAR) break;
-    if (ch == ';') {
-      /* Comment to end of line */
-      ch = get(cl);
-      while (ch != '\n' && ch != NULLCHAR) ch = get(cl);
-      continue;
-    } else if (ch == '/' || ch == '-') {
-      /* Switch */
-      q = argName;
-      while (ch != ' ' && ch != '=' && ch != ':' && ch != NULLCHAR &&
-	     ch != '\n' && ch != '\t') {
-	*q++ = ch;
-	ch = get(cl);
-      }
-      *q = NULLCHAR;
-
-      for (ad = argDescriptors; ad->argName != NULL; ad++)
-	if (strcmp(ad->argName, argName + 1) == 0) break;
-
-      if (ad->argName == NULL)
-	ExitArgError("Unrecognized argument", argName);
-
-    } else if (ch == '@') {
-      /* Indirection file */
-      ad = &argDescriptorIndirection;
-      ch = get(cl);
-    } else {
-      /* Positional argument */
-      ad = &argDescriptors[posarg++];
-      strcpy(argName, ad->argName);
-    }
-
-    if (ad->argType == ArgTrue) {
-      *(Boolean *) ad->argLoc = TRUE;
-      continue;
-    }
-    if (ad->argType == ArgFalse) {
-      *(Boolean *) ad->argLoc = FALSE;
-      continue;
-    }
-
-    while (ch == ' ' || ch == '=' || ch == ':' || ch == '\t') ch = get(cl);
-    if (ch == NULLCHAR || ch == '\n') {
-      ExitArgError("No value provided for argument", argName);
-    }
-    q = argValue;
-    if (ch == '{') {
-      // Quoting with { }.  No characters have to (or can) be escaped.
-      // Thus the string cannot contain a '}' character.
-      start = ch;
-      ch = get(cl);
-      while (start) {
-	switch (ch) {
-	case NULLCHAR:
-	  start = NULLCHAR;
-	  break;
-	  
-	case '}':
-	  ch = get(cl);
-	  start = NULLCHAR;
-	  break;
-
-	default:
-	  *q++ = ch;
-	  ch = get(cl);
-	  break;
-	}
-      }	  
-    } else if (ch == '\'' || ch == '"') {
-      // Quoting with ' ' or " ", with \ as escape character.
-      // Inconvenient for long strings that may contain Windows filenames.
-      start = ch;
-      ch = get(cl);
-      while (start) {
-	switch (ch) {
-	case NULLCHAR:
-	  start = NULLCHAR;
-	  break;
-
-	default:
-        not_special:
-	  *q++ = ch;
-	  ch = get(cl);
-	  break;
-
-	case '\'':
-	case '\"':
-	  if (ch == start) {
-	    ch = get(cl);
-	    start = NULLCHAR;
-	    break;
-	  } else {
-	    goto not_special;
-	  }
-
-	case '\\':
-          if (ad->argType == ArgFilename
-	      || ad->argType == ArgSettingsFilename) {
-	      goto not_special;
-	  }
-	  ch = get(cl);
-	  switch (ch) {
-	  case NULLCHAR:
-	    ExitArgError("Incomplete \\ escape in value for", argName);
-	    break;
-	  case 'n':
-	    *q++ = '\n';
-	    ch = get(cl);
-	    break;
-	  case 'r':
-	    *q++ = '\r';
-	    ch = get(cl);
-	    break;
-	  case 't':
-	    *q++ = '\t';
-	    ch = get(cl);
-	    break;
-	  case 'b':
-	    *q++ = '\b';
-	    ch = get(cl);
-	    break;
-	  case 'f':
-	    *q++ = '\f';
-	    ch = get(cl);
-	    break;
-	  default:
-	    octval = 0;
-	    for (i = 0; i < 3; i++) {
-	      if (ch >= '0' && ch <= '7') {
-		octval = octval*8 + (ch - '0');
-		ch = get(cl);
-	      } else {
-		break;
-	      }
-	    }
-	    if (i > 0) {
-	      *q++ = (char) octval;
-	    } else {
-	      *q++ = ch;
-	      ch = get(cl);
-	    }
-	    break;
-	  }
-	  break;
-	}
-      }
-    } else {
-      while (ch != ' ' && ch != NULLCHAR && ch != '\t' && ch != '\n') {
-	*q++ = ch;
-	ch = get(cl);
-      }
-    }
-    *q = NULLCHAR;
-
-    switch (ad->argType) {
-    case ArgInt:
-      *(int *) ad->argLoc = atoi(argValue);
-      break;
-
-    case ArgX:
-      *(int *) ad->argLoc = atoi(argValue) + wpMain.x; // [HGM] placement: translate stored relative to absolute 
-      break;
-
-    case ArgY:
-      *(int *) ad->argLoc = atoi(argValue) + wpMain.y; // (this is really kludgey, it should be done where used...)
-      break;
-
-    case ArgZ:
-      *(int *) ad->argLoc = atoi(argValue);
-      EnsureOnScreen(&wpMain.x, &wpMain.y, minX, minY); 
-      break;
-
-    case ArgFloat:
-      *(float *) ad->argLoc = (float) atof(argValue);
-      break;
-
-    case ArgString:
-    case ArgFilename:
-      *(char **) ad->argLoc = strdup(argValue);
-      break;
-
-    case ArgSettingsFilename:
-      {
-	char fullname[MSG_SIZ];
-	if (ParseSettingsFile(argValue, fullname)) {
-	  if (ad->argLoc != NULL) {
-	    *(char **) ad->argLoc = strdup(fullname);
-	  }
-	} else {
-	  if (ad->argLoc != NULL) {
-	  } else {
-	    ExitArgError("Failed to open indirection file", argValue);
-	  }
-	}
-      }
-      break;
-
-    case ArgBoolean:
-      switch (argValue[0]) {
-      case 't':
-      case 'T':
-	*(Boolean *) ad->argLoc = TRUE;
-	break;
-      case 'f':
-      case 'F':
-	*(Boolean *) ad->argLoc = FALSE;
-	break;
-      default:
-	ExitArgError("Unrecognized boolean argument value", argValue);
-	break;
-      }
-      break;
-
-    case ArgColor:
-      *(COLORREF *)ad->argLoc = ParseColorName(argValue);
-      break;
-
-    case ArgAttribs: {
-      ColorClass cc = (ColorClass)ad->argLoc;
-      ParseAttribs(&textAttribs[cc].color, &textAttribs[cc].effects, argValue);
-      }
-      break;
-      
-    case ArgBoardSize:
-      *(BoardSize *)ad->argLoc = ParseBoardSize(argValue);
-      break;
-
-    case ArgFont:
-      ParseFontName(argValue, &font[boardSize][(int)ad->argLoc]->mfp);
-      break;
-
-    case ArgCommSettings:
-      ParseCommSettings(argValue, &dcb);
-      break;
-
-    case ArgNone:
-      ExitArgError("Unrecognized argument", argValue);
-      break;
-    case ArgTrue:
-    case ArgFalse: ;
-    }
-  }
-}
-
-VOID
-LFfromMFP(LOGFONT* lf, MyFontParams *mfp)
-{
-  HDC hdc = CreateDC("DISPLAY", NULL, NULL, NULL);
-  lf->lfHeight = -(int)(mfp->pointSize * GetDeviceCaps(hdc, LOGPIXELSY) / 72.0 + 0.5);
-  DeleteDC(hdc);
-  lf->lfWidth = 0;
-  lf->lfEscapement = 0;
-  lf->lfOrientation = 0;
-  lf->lfWeight = mfp->bold ? FW_BOLD : FW_NORMAL;
-  lf->lfItalic = mfp->italic;
-  lf->lfUnderline = mfp->underline;
-  lf->lfStrikeOut = mfp->strikeout;
-  lf->lfCharSet = mfp->charset;
-  lf->lfOutPrecision = OUT_DEFAULT_PRECIS;
-  lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
-  lf->lfQuality = DEFAULT_QUALITY;
-  lf->lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;
-  strcpy(lf->lfFaceName, mfp->faceName);
-}
-
-VOID
-CreateFontInMF(MyFont *mf)
-{
-  LFfromMFP(&mf->lf, &mf->mfp);
-  if (mf->hf) DeleteObject(mf->hf);
-  mf->hf = CreateFontIndirect(&mf->lf);
-}
-
-VOID
-SetDefaultTextAttribs()
-{
-  ColorClass cc;
-  for (cc = (ColorClass)0; cc < NColorClasses; cc++) {
-    ParseAttribs(&textAttribs[cc].color, 
-		 &textAttribs[cc].effects, 
-	         defaultTextAttribs[cc]);
-  }
-}
-
-VOID
-SetDefaultSounds()
-{ // [HGM] only sounds for which no option exists
-  ColorClass cc;
-  for (cc = ColorNormal; cc < NColorClasses; cc++) {
-    textAttribs[cc].sound.name = strdup("");
-    textAttribs[cc].sound.data = NULL;
-  }
-}
-
-VOID
+void
 LoadAllSounds()
 { // [HGM] import name from appData first
   ColorClass cc;
@@ -1923,6 +1087,10 @@ LoadAllSounds()
     textAttribs[cc].sound.data = NULL;
     MyLoadSound(&textAttribs[cc].sound);
   }
+  for (cc = ColorNormal; cc < NColorClasses; cc++) {
+    textAttribs[cc].sound.name = strdup("");
+    textAttribs[cc].sound.data = NULL;
+  }
   for (sc = (SoundClass)0; sc < NSoundClasses; sc++) {
     sounds[sc].name = strdup((&appData.soundMove)[sc]);
     sounds[sc].data = NULL;
@@ -1931,77 +1099,9 @@ LoadAllSounds()
 }
 
 void
-SetDefaultsFromList()
-{ // [HGM] ini: take defaults from argDescriptor list
-  int i;
-
-  for(i=0; argDescriptors[i].argName != NULL; i++) {
-    if(argDescriptors[i].defaultValue != INVALID)
-      switch(argDescriptors[i].argType) {
-        case ArgBoolean:
-        case ArgTrue:
-        case ArgFalse:
-          *(Boolean *) argDescriptors[i].argLoc = (int)argDescriptors[i].defaultValue;
-          break;
-        case ArgInt:
-        case ArgX:
-        case ArgY:
-        case ArgZ:
-          *(int *) argDescriptors[i].argLoc = (int)argDescriptors[i].defaultValue;
-          break;
-        case ArgString:
-        case ArgFilename:
-        case ArgSettingsFilename:
-          *(char **) argDescriptors[i].argLoc = (char *)argDescriptors[i].defaultValue;
-          break;
-        case ArgBoardSize:
-          *(BoardSize *) argDescriptors[i].argLoc = (BoardSize)argDescriptors[i].defaultValue;
-          break;
-        case ArgFloat: // floats cannot be casted to int without precision loss
-        default: ; // some arg types cannot be initialized through table
-    }
-  }
-}
-
-VOID
-InitAppData(LPSTR lpCmdLine)
+SetCommPortDefaults()
 {
-  int i, j;
-  char buf[ARG_MAX], currDir[MSG_SIZ];
-  char *dummy, *p;
-
-  programName = szAppName;
-
-  /* Initialize to defaults */
-  SetDefaultsFromList(); // this sets most defaults
-
-  // some parameters for which there are no options!
-  appData.Iconic = FALSE; /*unused*/
-  appData.cmailGameName = "";
-  appData.icsEngineAnalyze = FALSE;
-
-  // float: casting to int is not harmless, so default cannot be contained in table
-  appData.timeDelay = TIME_DELAY;
-
-  // colors have platform-dependent option format and internal representation
-  // their setting and parsing must remain in front-end
-  lightSquareColor = ParseColorName(LIGHT_SQUARE_COLOR);
-  darkSquareColor = ParseColorName(DARK_SQUARE_COLOR);
-  whitePieceColor = ParseColorName(WHITE_PIECE_COLOR);
-  blackPieceColor = ParseColorName(BLACK_PIECE_COLOR);
-  highlightSquareColor = ParseColorName(HIGHLIGHT_SQUARE_COLOR);
-  premoveHighlightColor = ParseColorName(PREMOVE_HIGHLIGHT_COLOR);
-  consoleBackgroundColor = ParseColorName(COLOR_BKGD);
-  // the following must be moved out of appData to front-end variables
-  appData.evalHistColorWhite = ParseColorName( "#FFFFB0" );
-  appData.evalHistColorBlack = ParseColorName( "#AD5D3D" );
-  appData.highlightArrowColor = ParseColorName( "#FFFF80" );
-
-  // some complex, platform-dependent stuff
-  SetDefaultTextAttribs();
-  SetDefaultSounds();
-
-  memset(&dcb, 0, sizeof(DCB)); // required by VS 2002 +
+   memset(&dcb, 0, sizeof(DCB)); // required by VS 2002 +
   dcb.DCBlength = sizeof(DCB);
   dcb.BaudRate = 9600;
   dcb.fBinary = TRUE;
@@ -2019,134 +1119,6 @@ InitAppData(LPSTR lpCmdLine)
   dcb.ByteSize = 7;
   dcb.Parity = SPACEPARITY;
   dcb.StopBits = ONESTOPBIT;
-
-  /* Point font array elements to structures and
-     parse default font names */
-  for (i=0; i<NUM_FONTS; i++) {
-    for (j=0; j<NUM_SIZES; j++) {
-      font[j][i] = &fontRec[j][i];
-      ParseFontName(font[j][i]->def, &font[j][i]->mfp);
-    }
-  }
-  
-  /* Parse default settings file if any */
-  if (ParseSettingsFile(settingsFileName, buf)) {
-    settingsFileName = strdup(buf);
-  }
-
-  /* Parse command line */
-  ParseArgs(StringGet, &lpCmdLine);
-
-  /* [HGM] make sure board size is acceptable */
-  if(appData.NrFiles > BOARD_FILES ||
-     appData.NrRanks > BOARD_RANKS   )
-      DisplayFatalError("Recompile with BOARD_RANKS or BOARD_FILES, to support this size", 0, 2);
-
-  /* [HGM] After parsing the options from the .ini file, and overruling them
-   * with options from the command line, we now make an even higher priority
-   * overrule by WB options attached to the engine command line. This so that
-   * tournament managers can use WB options (such as /timeOdds) that follow
-   * the engines.
-   */
-  if(appData.firstChessProgram != NULL) {
-      char *p = StrStr(appData.firstChessProgram, "WBopt");
-      static char *f = "first";
-      char buf[MSG_SIZ], *q = buf;
-      if(p != NULL) { // engine command line contains WinBoard options
-          sprintf(buf, p+6, f, f, f, f, f, f, f, f, f, f); // replace %s in them by "first"
-          ParseArgs(StringGet, &q);
-          p[-1] = 0; // cut them offengine command line
-      }
-  }
-  // now do same for second chess program
-  if(appData.secondChessProgram != NULL) {
-      char *p = StrStr(appData.secondChessProgram, "WBopt");
-      static char *s = "second";
-      char buf[MSG_SIZ], *q = buf;
-      if(p != NULL) { // engine command line contains WinBoard options
-          sprintf(buf, p+6, s, s, s, s, s, s, s, s, s, s); // replace %s in them by "first"
-          ParseArgs(StringGet, &q);
-          p[-1] = 0; // cut them offengine command line
-      }
-  }
-
-
-  /* Propagate options that affect others */
-  if (appData.matchMode || appData.matchGames) chessProgram = TRUE;
-  if (appData.icsActive || appData.noChessProgram) {
-     chessProgram = FALSE;  /* not local chess program mode */
-  }
-
-  /* Open startup dialog if needed */
-  if ((!appData.noChessProgram && !chessProgram && !appData.icsActive) ||
-      (appData.icsActive && *appData.icsHost == NULLCHAR) ||
-      (chessProgram && (*appData.firstChessProgram == NULLCHAR ||
-                        *appData.secondChessProgram == NULLCHAR))) {
-    FARPROC lpProc;
-    
-    lpProc = MakeProcInstance((FARPROC)StartupDialog, hInst);
-    DialogBox(hInst, MAKEINTRESOURCE(DLG_Startup), NULL, (DLGPROC)lpProc);
-    FreeProcInstance(lpProc);
-  }
-
-  /* Make sure save files land in the right (?) directory */
-  if (GetFullPathName(appData.saveGameFile, MSG_SIZ, buf, &dummy)) {
-    appData.saveGameFile = strdup(buf);
-  }
-  if (GetFullPathName(appData.savePositionFile, MSG_SIZ, buf, &dummy)) {
-    appData.savePositionFile = strdup(buf);
-  }
-
-  /* Finish initialization for fonts and sounds */
-  for (i=0; i<NUM_FONTS; i++) {
-    for (j=0; j<NUM_SIZES; j++) {
-      CreateFontInMF(font[j][i]);
-    }
-  }
-  /* xboard, and older WinBoards, controlled the move sound with the
-     appData.ringBellAfterMoves option.  In the current WinBoard, we
-     always turn the option on (so that the backend will call us),
-     then let the user turn the sound off by setting it to silence if
-     desired.  To accommodate old winboard.ini files saved by old
-     versions of WinBoard, we also turn off the sound if the option
-     was initially set to false. */
-  if (!appData.ringBellAfterMoves) {
-    sounds[(int)SoundMove].name = strdup("");
-    appData.ringBellAfterMoves = TRUE;
-  }
-  GetCurrentDirectory(MSG_SIZ, currDir);
-  SetCurrentDirectory(installDir);
-  LoadAllSounds();
-  SetCurrentDirectory(currDir);
-
-  p = icsTextMenuString;
-  if (p[0] == '@') {
-    FILE* f = fopen(p + 1, "r");
-    if (f == NULL) {
-      DisplayFatalError(p + 1, errno, 2);
-      return;
-    }
-    i = fread(buf, 1, sizeof(buf)-1, f);
-    fclose(f);
-    buf[i] = NULLCHAR;
-    p = buf;
-  }
-  ParseIcsTextMenu(strdup(p));
-}
-
-
-VOID
-InitMenuChecks()
-{
-  HMENU hmenu = GetMenu(hwndMain);
-
-  (void) EnableMenuItem(hmenu, IDM_CommPort,
-			MF_BYCOMMAND|((appData.icsActive &&
-				       *appData.icsCommPort != NULLCHAR) ?
-				      MF_ENABLED : MF_GRAYED));
-  (void) CheckMenuItem(hmenu, IDM_SaveSettingsOnExit,
-		       MF_BYCOMMAND|(saveSettingsOnExit ?
-				     MF_CHECKED : MF_UNCHECKED));
 }
 
 // [HGM] args: these three cases taken out to stay in front-end
@@ -2170,7 +1142,7 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
 	}
       }
 
-VOID
+void
 ExportSounds()
 { // [HGM] copy the names from the internal WB variables to appData
   ColorClass cc;
@@ -2197,9 +1169,54 @@ SaveAttribsArg(FILE *f, ArgDescriptor *ad)
 void
 SaveColor(FILE *f, ArgDescriptor *ad)
 {	// in WinBoard the color is an int and has to be converted to text. In X it would be a string already?
-	COLORREF color = *(COLORREF *)ad->argLoc;
+	COLORREF color = *(COLORREF *)colorVariable[(int)ad->argLoc];
 	fprintf(f, "/%s=#%02lx%02lx%02lx\n", ad->argName, 
 	  color&0xff, (color>>8)&0xff, (color>>16)&0xff);
+}
+
+void
+SaveBoardSize(FILE *f, char *name, void *addr)
+{ // wrapper to shield back-end from BoardSize & sizeInfo
+  fprintf(f, "/%s=%s\n", name, sizeInfo[*(BoardSize *)addr].name);
+}
+
+void
+ParseCommPortSettings(char *s)
+{ // wrapper to keep dcb from back-end
+  ParseCommSettings(s, &dcb);
+}
+
+void
+GetWindowCoords()
+{ // wrapper to shield use of window handles from back-end (make addressible by number?)
+  GetActualPlacement(hwndMain, &wpMain);
+  GetActualPlacement(hwndConsole, &wpConsole);
+  GetActualPlacement(commentDialog, &wpComment);
+  GetActualPlacement(editTagsDialog, &wpTags);
+  GetActualPlacement(gameListDialog, &wpGameList);
+  GetActualPlacement(moveHistoryDialog, &wpMoveHistory);
+  GetActualPlacement(evalGraphDialog, &wpEvalGraph);
+  GetActualPlacement(engineOutputDialog, &wpEngineOutput);
+}
+
+void
+PrintCommPortSettings(FILE *f, char *name)
+{ // wrapper to shield back-end from DCB
+      PrintCommSettings(f, name, &dcb);
+}
+
+int
+MySearchPath(char *installDir, char *name, char *fullname)
+{
+  char *dummy;
+  return (int) SearchPath(installDir, name, NULL, MSG_SIZ, fullname, &dummy);
+}
+
+int
+MyGetFullPathName(char *name, char *fullname)
+{
+  char *dummy;
+  return (int) GetFullPathName(name, MSG_SIZ, fullname, &dummy);
 }
 
 int
@@ -2208,133 +1225,15 @@ MainWindowUp()
   return hwndMain != NULL;
 }
 
-VOID
-SaveSettings(char* name)
+void
+PopUpStartupDialog()
 {
-  FILE *f;
-  ArgDescriptor *ad;
-  char dir[MSG_SIZ];
-
-  if (!MainWindowUp()) return;
-
-  GetCurrentDirectory(MSG_SIZ, dir);
-  SetCurrentDirectory(installDir);
-  f = fopen(name, "w");
-  SetCurrentDirectory(dir);
-  if (f == NULL) {
-    DisplayError(name, errno);
-    return;
-  }
-  fprintf(f, ";\n");
-  fprintf(f, "; %s Save Settings file\n", PACKAGE_STRING);
-  fprintf(f, ";\n");
-  fprintf(f, "; You can edit the values of options that are already set in this file,\n");
-  fprintf(f, "; but if you add other options, the next Save Settings will not save them.\n");
-  fprintf(f, "; Use a shortcut, an @indirection file, or a .bat file instead.\n");
-  fprintf(f, ";\n");
-
-  GetActualPlacement(hwndMain, &wpMain);
-  GetActualPlacement(hwndConsole, &wpConsole);
-  GetActualPlacement(commentDialog, &wpComment);
-  GetActualPlacement(editTagsDialog, &wpTags);
-  GetActualPlacement(gameListDialog, &wpGameList);
-
-  /* [AS] Move history */
-  wpMoveHistory.visible = MoveHistoryIsUp();
-  GetActualPlacement(moveHistoryDialog, &wpMoveHistory);
-
-  /* [AS] Eval graph */
-  wpEvalGraph.visible = EvalGraphIsUp();
-  GetActualPlacement(evalGraphDialog, &wpEvalGraph);
-
-  /* [AS] Engine output */
-  wpEngineOutput.visible = EngineOutputIsUp();
-  GetActualPlacement(engineOutputDialog, &wpEngineOutput);
-
-  // [HGM] in WB we have to copy sound names to appData first
-  ExportSounds();
-
-  for (ad = argDescriptors; ad->argName != NULL; ad++) {
-    if (!ad->save) continue;
-    switch (ad->argType) {
-    case ArgString:
-      {
-	char *p = *(char **)ad->argLoc;
-	if ((strchr(p, '\\') || strchr(p, '\n')) && !strchr(p, '}')) {
-	  /* Quote multiline values or \-containing values
-	     with { } if possible */
-	  fprintf(f, "/%s={%s}\n", ad->argName, p);
-	} else {
-	  /* Else quote with " " */
-	  fprintf(f, "/%s=\"", ad->argName);
-	  while (*p) {
-	    if (*p == '\n') fprintf(f, "\n");
-	    else if (*p == '\r') fprintf(f, "\\r");
-	    else if (*p == '\t') fprintf(f, "\\t");
-	    else if (*p == '\b') fprintf(f, "\\b");
-	    else if (*p == '\f') fprintf(f, "\\f");
-	    else if (*p < ' ') fprintf(f, "\\%03o", *p);
-	    else if (*p == '\"') fprintf(f, "\\\"");
-	    else if (*p == '\\') fprintf(f, "\\\\");
-	    else putc(*p, f);
-	    p++;
-	  }
-	  fprintf(f, "\"\n");
-	}
-      }
-      break;
-    case ArgInt:
-    case ArgZ:
-      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc);
-      break;
-    case ArgX:
-      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - wpMain.x); // [HGM] placement: stor relative value
-      break;
-    case ArgY:
-      fprintf(f, "/%s=%d\n", ad->argName, *(int *)ad->argLoc - wpMain.y);
-      break;
-    case ArgFloat:
-      fprintf(f, "/%s=%g\n", ad->argName, *(float *)ad->argLoc);
-      break;
-    case ArgBoolean:
-      fprintf(f, "/%s=%s\n", ad->argName, 
-	(*(Boolean *)ad->argLoc) ? "true" : "false");
-      break;
-    case ArgTrue:
-      if (*(Boolean *)ad->argLoc) fprintf(f, "/%s\n", ad->argName);
-      break;
-    case ArgFalse:
-      if (!*(Boolean *)ad->argLoc) fprintf(f, "/%s\n", ad->argName);
-      break;
-    case ArgColor:
-      SaveColor(f, ad);
-      break;
-    case ArgAttribs:
-      break;
-    case ArgFilename:
-      if (strchr(*(char **)ad->argLoc, '\"')) {
-	fprintf(f, "/%s='%s'\n", ad->argName, *(char **)ad->argLoc);
-      } else {
-	fprintf(f, "/%s=\"%s\"\n", ad->argName, *(char **)ad->argLoc);
-      }
-      break;
-    case ArgBoardSize:
-      fprintf(f, "/%s=%s\n", ad->argName,
-	      sizeInfo[*(BoardSize *)ad->argLoc].name);
-      break;
-    case ArgFont:
-      SaveFontArg(f, ad);
-      break;
-    case ArgCommSettings:
-      PrintCommSettings(f, ad->argName, (DCB *)ad->argLoc);
-    case ArgNone:
-    case ArgSettingsFilename: ;
-    }
-  }
-  fclose(f);
+    FARPROC lpProc;
+    
+    lpProc = MakeProcInstance((FARPROC)StartupDialog, hInst);
+    DialogBox(hInst, MAKEINTRESOURCE(DLG_Startup), NULL, (DLGPROC)lpProc);
+    FreeProcInstance(lpProc);
 }
-
-
 
 /*---------------------------------------------------------------------------*\
  *
@@ -6581,7 +5480,7 @@ InitComboStrings(HANDLE hwndCombo, char **cd)
 void
 InitComboStringsFromOption(HANDLE hwndCombo, char *str)
 {
-  char buf1[ARG_MAX];
+  char buf1[MAX_ARG_LEN];
   int len;
 
   if (str[0] == '@') {
@@ -7328,76 +6227,7 @@ NextInHistory()
 {
   if (histP == histIn) return NULL;
   histP = (histP + 1) % HISTORY_SIZE;
-  return history[histP];
-}
-
-typedef struct {
-  char *item;
-  char *command;
-  BOOLEAN getname;
-  BOOLEAN immediate;
-} IcsTextMenuEntry;
-#define ICS_TEXT_MENU_SIZE (IDM_CommandXLast - IDM_CommandX + 1)
-IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
-
-void
-ParseIcsTextMenu(char *icsTextMenuString)
-{
-//  int flags = 0;
-  IcsTextMenuEntry *e = icsTextMenuEntry;
-  char *p = icsTextMenuString;
-  while (e->item != NULL && e < icsTextMenuEntry + ICS_TEXT_MENU_SIZE) {
-    free(e->item);
-    e->item = NULL;
-    if (e->command != NULL) {
-      free(e->command);
-      e->command = NULL;
-    }
-    e++;
-  }
-  e = icsTextMenuEntry;
-  while (*p && e < icsTextMenuEntry + ICS_TEXT_MENU_SIZE) {
-    if (*p == ';' || *p == '\n') {
-      e->item = strdup("-");
-      e->command = NULL;
-      p++;
-    } else if (*p == '-') {
-      e->item = strdup("-");
-      e->command = NULL;
-      p++;
-      if (*p) p++;
-    } else {
-      char *q, *r, *s, *t;
-      char c;
-      q = strchr(p, ',');
-      if (q == NULL) break;
-      *q = NULLCHAR;
-      r = strchr(q + 1, ',');
-      if (r == NULL) break;
-      *r = NULLCHAR;
-      s = strchr(r + 1, ',');
-      if (s == NULL) break;
-      *s = NULLCHAR;
-      c = ';';
-      t = strchr(s + 1, c);
-      if (t == NULL) {
-	c = '\n';
-	t = strchr(s + 1, c);
-      }
-      if (t != NULL) *t = NULLCHAR;
-      e->item = strdup(p);
-      e->command = strdup(q + 1);
-      e->getname = *(r + 1) != '0';
-      e->immediate = *(s + 1) != '0';
-      *q = ',';
-      *r = ',';
-      *s = ',';
-      if (t == NULL) break;
-      *t = c;
-      p = t + 1;
-    }
-    e++;
-  } 
+  return history[histP];   
 }
 
 HMENU

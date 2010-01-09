@@ -868,9 +868,9 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckMenuItem" id="menuOptions.Show Thinking">
+                          <object class="GtkCheckMenuItem" id="menuOptions.Hide Thinking">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">Show Thinking</property>
+                            <property name="label" translatable="yes">Hide Thinking</property>
                             <property name="use_underline">True</property>
                             <signal name="toggled" handler="HideThinkingProc"/>
                           </object>

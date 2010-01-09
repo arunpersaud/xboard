@@ -111,6 +111,8 @@ AC_CHECK_FUNC(setlocale, [],
 
 AC_CHECK_LIB(seq, getpseudotty)
 
+
+dnl | check for X-libraries
 AC_PATH_XTRA
 if test -n "$no_x" ; then
   echo $PACKAGE requires the X Window System header files and libraries!
@@ -335,7 +337,6 @@ dnl| USE_PTYS=1
 
 dnl| add some libs for OS X
   *-apple-* )
-    X_LIBS="$X_LIBS -lXmu -lX11 -lXt "    
   ;;
 esac
 
@@ -410,6 +411,13 @@ enable_sigint=$enableval
 ],
 [enable_sigint="yes"
 AC_DEFINE(ATTENTION, 1)])
+
+
+dnl | save all information for X in X_LIBS, also add the libraries themself
+dnl | since AC_PATH_XTRA only adds the paths
+X_LIBS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS -lXmu -lX11 -lXt "    
+AC_SUBST(X_CFLAGS)
+AC_SUBST(X_LIBS)
 
 
 AC_CONFIG_FILES([Makefile cmail])

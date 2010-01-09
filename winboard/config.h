@@ -46,7 +46,7 @@
 #define PACKAGE_NAME "WinBoard"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "WinBoard master-200911122"
+#define PACKAGE_STRING "WinBoard master-20091122"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "winboard"

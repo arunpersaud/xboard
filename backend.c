@@ -2052,7 +2052,7 @@ read_from_ics(isr, closure, data, count, error)
      int count;
      int error;
 {
-#define BUF_SIZE 8192
+#define BUF_SIZE (16*1024) /* overflowed at 8K with "inchannel 1" on FICS? */
 #define STARTED_NONE 0
 #define STARTED_MOVES 1
 #define STARTED_BOARD 2
@@ -6964,8 +6964,13 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		}
 
                 /* [AS] Negate score if machine is playing black and reporting absolute scores */
-                if( cps->scoreIsAbsolute &&
-                    ((gameMode == MachinePlaysBlack) || (gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b')) )
+                if( cps->scoreIsAbsolute && 
+                    ( gameMode == MachinePlaysBlack ||
+                      gameMode == TwoMachinesPlay && cps->twoMachinesColor[0] == 'b' ||
+                      gameMode == IcsPlayingBlack ||     // [HGM] also add other situations where engine should report black POV
+                     (gameMode == AnalyzeMode || gameMode == AnalyzeFile || gameMode == IcsObserving && appData.icsEngineAnalyze) &&
+                     !WhiteOnMove(currentMove)
+                    ) )
                 {
                     curscore = -curscore;
                 }
@@ -13761,7 +13766,7 @@ PositionToFEN(move, overrideCastling)
     *p++ = ' ';
 
   if(q = overrideCastling) { // [HGM] FRC: override castling & e.p fields for non-compliant engines
-    while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' ';
+    while(*p++ = *q++); if(q != overrideCastling+1) p[-1] = ' '; else --p;
   } else {
   if(nrCastlingRights) {
      q = p;

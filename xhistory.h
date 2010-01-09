@@ -27,5 +27,8 @@ void HistoryShowProc  P((GtkObject *object, gpointer user_data));
 
 void HistoryPopDown   P((GtkObject *object, gpointer user_data));
 
+Boolean MoveHistoryIsUp P((void));
+
+extern Widget historyShell;
 #endif /* _XHISTL_H */
  

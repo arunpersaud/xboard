@@ -173,12 +173,26 @@ int pclose(FILE *);
 #define NULLCHAR                '\000'
 #define FEATURE_TIMEOUT         10000 /*ms*/
 
+#define CLOCK_FONT 0
+#define MESSAGE_FONT 1
+#define COORD_FONT 2
+#define CONSOLE_FONT 3
+#define COMMENT_FONT 4
+#define EDITTAGS_FONT 5
+#define MOVEHISTORY_FONT 6
+#define NUM_FONTS 7
+
 /* Default to no flashing (the "usual" XBoard behavior) */
 #define FLASH_COUNT	0		/* Number of times to flash */
 #define FLASH_RATE	5		/* Flashes per second */
 
 /* Default delay per character (in msec) while sending login script */
 #define MS_LOGIN_DELAY  0
+
+/* [AS] Support for background textures */
+#define BACK_TEXTURE_MODE_DISABLED      0
+#define BACK_TEXTURE_MODE_PLAIN         1
+#define BACK_TEXTURE_MODE_FULL_RANDOM   2
 
 /* Zippy defaults */
 #define ZIPPY_TALK FALSE
@@ -543,6 +557,7 @@ typedef struct {
     Boolean secondIsUCI;
     Boolean firstHasOwnBookUCI;
     Boolean secondHasOwnBookUCI;
+    char * adapterCommand;
     char * polyglotDir;
     Boolean usePolyglotBook;
     char * polyglotBook;
@@ -677,6 +692,21 @@ typedef struct {
     int depth;  /* Plies */
     int time;   /* Milliseconds */
 } ChessProgramStats_Move;
+
+/* [AS] Layout management */
+typedef struct {
+    Boolean visible;
+    int x;
+    int y;
+    int width;
+    int height;
+} WindowPlacement;
+
+extern WindowPlacement wpEngineOutput;
+extern WindowPlacement wpEvalGraph;
+extern WindowPlacement wpMoveHistory;
+extern WindowPlacement wpGameList;
+extern WindowPlacement wpTags;
 
 // [HGM] chat	
 #define MAX_CHAT 3
