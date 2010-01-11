@@ -4831,7 +4831,7 @@ InitPosition(redraw)
       break;
     case VariantFairy:
       pieces = fairyArray;
-      SetCharTable(pieceToChar, "PNBRQFEACWMOHIJGDVSLUKpnbrqfeacwmohijgdvsluk"); 
+      SetCharTable(pieceToChar, "PNBRQFEACWMOHIJGDVLSUKpnbrqfeacwmohijgdvlsuk"); 
       break;
     case VariantGreat:
       pieces = GreatArray;
