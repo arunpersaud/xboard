@@ -2168,7 +2168,8 @@ read_from_ics(isr, closure, data, count, error)
     }
 
 	buf[buf_len] = NULLCHAR;
-	next_out = leftover_len;
+//	next_out = leftover_len; // [HGM] should we set this to 0, and not print it in advance?
+	next_out = 0;
 	leftover_start = 0;
 	
 	i = 0;
@@ -2323,16 +2324,16 @@ read_from_ics(isr, closure, data, count, error)
 		    if(!suppressKibitz) // [HGM] kibitz
 			AppendComment(forwardMostMove, StripHighlight(parse), TRUE);
 		    else { // [HGM kibitz: divert memorized engine kibitz to engine-output window
-			int nrDigit = 0, nrAlph = 0, i;
+			int nrDigit = 0, nrAlph = 0, j;
 			if(parse_pos > MSG_SIZ - 30) // defuse unreasonably long input
 			{ parse_pos = MSG_SIZ-30; parse[parse_pos - 1] = '\n'; }
 			parse[parse_pos] = NULLCHAR;
 			// try to be smart: if it does not look like search info, it should go to
 			// ICS interaction window after all, not to engine-output window.
-			for(i=0; i<parse_pos; i++) { // count letters and digits
-			    nrDigit += (parse[i] >= '0' && parse[i] <= '9');
-			    nrAlph  += (parse[i] >= 'a' && parse[i] <= 'z');
-			    nrAlph  += (parse[i] >= 'A' && parse[i] <= 'Z');
+			for(j=0; j<parse_pos; j++) { // count letters and digits
+			    nrDigit += (parse[j] >= '0' && parse[j] <= '9');
+			    nrAlph  += (parse[j] >= 'a' && parse[j] <= 'z');
+			    nrAlph  += (parse[j] >= 'A' && parse[j] <= 'Z');
 			}
 			if(nrAlph < 9*nrDigit) { // if more than 10% digit we assume search info
 			    int depth=0; float score;
@@ -2342,6 +2343,7 @@ read_from_ics(isr, closure, data, count, error)
 				pvInfoList[forwardMostMove-1].score = 100*score;
 			    }
 			    OutputKibitz(suppressKibitz, parse);
+			    next_out = i+1; // [HGM] suppress printing in ICS window
 			} else {
 			    char tmp[MSG_SIZ];
 			    sprintf(tmp, _("your opponent kibitzes: %s"), parse);
@@ -2350,7 +2352,7 @@ read_from_ics(isr, closure, data, count, error)
 		    }
 		    started = STARTED_NONE;
 		} else {
-		    /* Don't match patterns against characters in chatter */
+		    /* Don't match patterns against characters in comment */
 		    i++;
 		    continue;
 		}
@@ -2450,9 +2452,11 @@ read_from_ics(isr, closure, data, count, error)
 			} 
 			continue;
 		} else
-		if(looking_at(buf, &i, "kibitzed to")) { // suppress the acknowledgements of our own autoKibitz
-		    started = STARTED_CHATTER;
-		    suppressKibitz = TRUE;
+		if(looking_at(buf, &i, "kibitzed to *\n") && atoi(star_match[0])) {
+		    // suppress the acknowledgements of our own autoKibitz
+		    SendToPlayer(star_match[0], strlen(star_match[0]));
+		    looking_at(buf, &i, "*% "); // eat prompt
+		    next_out = i;
 		}
 	    } // [HGM] kibitz: end of patch
 
@@ -2852,7 +2856,9 @@ read_from_ics(isr, closure, data, count, error)
 	    if (looking_at(buf, &i, "% ") ||
 		((started == STARTED_MOVES || started == STARTED_MOVES_NOHIDE)
 		 && looking_at(buf, &i, "}*"))) { char *bookHit = NULL; // [HGM] book
+		if(suppressKibitz) next_out = i;
 		savingComment = FALSE;
+		suppressKibitz = 0;
 		switch (started) {
 		  case STARTED_MOVES:
 		  case STARTED_MOVES_NOHIDE:
@@ -3278,6 +3284,7 @@ read_from_ics(isr, closure, data, count, error)
 			while(looking_at(buf, &i, "\n")); // [HGM] skip empty lines
 			if (looking_at(buf, &i, "*% ")) {
 			    savingComment = FALSE;
+			    suppressKibitz = 0;
 			}
 		    }
 		    next_out = i;
@@ -3347,6 +3354,7 @@ read_from_ics(isr, closure, data, count, error)
 		    if (looking_at(buf, &i, "*% ")) {
 			if(strchr(star_match[0], 7)) SendToPlayer("\007", 1); // Bell(); // FICS fuses bell for next board with prompt in zh captures
 			savingComment = FALSE;
+			suppressKibitz = 0;
 		    }
 		    next_out = i;
 		}
@@ -3356,12 +3364,13 @@ read_from_ics(isr, closure, data, count, error)
 	    i++;		/* skip unparsed character and loop back */
 	}
 	
-	if (started != STARTED_MOVES && started != STARTED_BOARD && !suppressKibitz && // [HGM] kibitz suppress printing in ICS interaction window
-	    started != STARTED_HOLDINGS && i > next_out) {
-	    SendToPlayer(&buf[next_out], i - next_out);
+	if (started != STARTED_MOVES && started != STARTED_BOARD && !suppressKibitz && // [HGM] kibitz
+//	    started != STARTED_HOLDINGS && i > next_out) { // [HGM] should we compare to leftover_start in stead of i?
+//	    SendToPlayer(&buf[next_out], i - next_out);
+	    started != STARTED_HOLDINGS && leftover_start > next_out) {
+	    SendToPlayer(&buf[next_out], leftover_start - next_out);
 	    next_out = i;
 	}
-	suppressKibitz = FALSE; // [HGM] kibitz: has done its duty in if-statement above
 	
 	leftover_len = buf_len - leftover_start;
 	/* if buffer ends with something we couldn't parse,
