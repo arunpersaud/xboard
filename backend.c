@@ -3700,6 +3700,11 @@ ParseBoard12(string)
         for(k=BOARD_LEFT; k<BOARD_RGHT; k++)
             if(board[BOARD_HEIGHT-1][k] == bKing)
                 initialRights[5] = castlingRights[moveNum][5] = k;
+        if(gameInfo.variant == VariantTwoKings) {
+            // In TwoKings looking for a King does not work, so always give castling rights to a King on e1/e8
+            if(board[0][4] == wKing) initialRights[2] = castlingRights[moveNum][2] = 4;
+            if(board[BOARD_HEIGHT-1][4] == bKing) initialRights[5] = castlingRights[moveNum][5] = 4;
+        }
     } else { int r;
         r = castlingRights[moveNum][0] = initialRights[0];
         if(board[0][r] != WhiteRook) castlingRights[moveNum][0] = -1;
