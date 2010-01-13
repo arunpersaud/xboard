@@ -3705,16 +3705,16 @@ ParseBoard12(string)
     if(moveNum == 0 || gameInfo.variant != VariantFischeRandom)
     { int i, j; ChessSquare wKing = WhiteKing, bKing = BlackKing;
 
-        for(i=BOARD_LEFT, j= -1; i<BOARD_RGHT; i++)
+        for(i=BOARD_LEFT, j=NoRights; i<BOARD_RGHT; i++)
             if(board[0][i] == WhiteRook) j = i;
         initialRights[0] = boards[moveNum][CASTLING][0] = (castle_ws == 0 && gameInfo.variant != VariantFischeRandom ? NoRights : j);
-        for(i=BOARD_RGHT-1, j= -1; i>=BOARD_LEFT; i--)
+        for(i=BOARD_RGHT-1, j=NoRights; i>=BOARD_LEFT; i--)
             if(board[0][i] == WhiteRook) j = i;
         initialRights[1] = boards[moveNum][CASTLING][1] = (castle_wl == 0 && gameInfo.variant != VariantFischeRandom ? NoRights : j);
-        for(i=BOARD_LEFT, j= -1; i<BOARD_RGHT; i++)
+        for(i=BOARD_LEFT, j=NoRights; i<BOARD_RGHT; i++)
             if(board[BOARD_HEIGHT-1][i] == BlackRook) j = i;
         initialRights[3] = boards[moveNum][CASTLING][3] = (castle_bs == 0 && gameInfo.variant != VariantFischeRandom ? NoRights : j);
-        for(i=BOARD_RGHT-1, j= -1; i>=BOARD_LEFT; i--)
+        for(i=BOARD_RGHT-1, j=NoRights; i>=BOARD_LEFT; i--)
             if(board[BOARD_HEIGHT-1][i] == BlackRook) j = i;
         initialRights[4] = boards[moveNum][CASTLING][4] = (castle_bl == 0 && gameInfo.variant != VariantFischeRandom ? NoRights : j);
 
