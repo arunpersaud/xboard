@@ -2347,6 +2347,7 @@ berolina      Pawns capture straight ahead, and move diagonal
 cylinder      Pieces wrap around the board edge
 knightmate    King moves as Knight, and vice versa 
 super         Superchess (shuffle variant with 4 exo-pieces)
+makruk        Thai Chess (shatranj-like, P promotes on 6th rank)
 fairy         A catchall variant in which all piece types 
               known to XBoard can participate (8x8)
 unknown       Catchall for other unknown variants

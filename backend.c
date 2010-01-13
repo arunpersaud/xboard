@@ -356,6 +356,7 @@ PosFlags(index)
   case VariantNoCastle:
   case VariantShatranj:
   case VariantCourier:
+  case VariantMakruk:
     flags &= ~F_ALL_CASTLE_OK;
     break;
   default:
@@ -500,6 +501,13 @@ ChessSquare ShatranjArray[2][BOARD_FILES] = { /* [HGM] (movGen knows about Shatr
         WhiteFerz, WhiteAlfil, WhiteKnight, WhiteRook },
     { BlackRook, BlackKnight, BlackAlfil, BlackKing,
         BlackFerz, BlackAlfil, BlackKnight, BlackRook }
+};
+
+ChessSquare makrukArray[2][BOARD_FILES] = { /* [HGM] (movGen knows about Shatranj Q and P) */
+    { WhiteRook, WhiteKnight, WhiteMan, WhiteKing,
+        WhiteFerz, WhiteMan, WhiteKnight, WhiteRook },
+    { BlackRook, BlackKnight, BlackMan, BlackFerz,
+        BlackKing, BlackMan, BlackKnight, BlackRook }
 };
 
 
@@ -888,6 +896,7 @@ InitBackEnd1()
       case VariantAtomic:     /* should work except for win condition */
       case Variant3Check:     /* should work except for win condition */
       case VariantShatranj:   /* should work except for all win conditions */
+      case VariantMakruk:     /* should work except for daw countdown */
       case VariantBerolina:   /* might work if TestLegality is off */
       case VariantCapaRandom: /* should work */
       case VariantJanus:      /* should work */
@@ -4199,7 +4208,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY)
       case BlackPromotionChancellor:
       case WhitePromotionArchbishop:
       case BlackPromotionArchbishop:
-        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier)
+        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             sprintf(user_move, "%c%c%c%c=%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY,
 		PieceToChar(WhiteFerz));
@@ -4787,6 +4796,12 @@ InitPosition(redraw)
       nrCastlingRights = 0;
       SetCharTable(pieceToChar, "PN.R.QB...Kpn.r.qb...k"); 
       break;
+    case VariantMakruk:
+      pieces = makrukArray;
+      nrCastlingRights = 0;
+      startedFromSetupPosition = TRUE;
+      SetCharTable(pieceToChar, "PN.R.M....SKpn.r.m....sk"); 
+      break;
     case VariantTwoKings:
       pieces = twoKingsArray;
       break;
@@ -4898,6 +4913,7 @@ InitPosition(redraw)
 
     pawnRow = gameInfo.boardHeight - 7; /* seems to work in all common variants */
     if(pawnRow < 1) pawnRow = 1;
+    if(gameInfo.variant == VariantMakruk) pawnRow = 2;
 
     /* User pieceToChar list overrules defaults */
     if(appData.pieceToCharTable != NULL)
@@ -5083,6 +5099,8 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
     if(gameInfo.variant == VariantShogi) {
         promotionZoneSize = 3;
         highestPromotingPiece = (int)WhiteFerz;
+    } else if(gameInfo.variant == VariantMakruk) {
+        promotionZoneSize = 3;
     }
 
     // next weed out all moves that do not touch the promotion zone at all
@@ -5126,7 +5144,7 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
     }
 
     // we either have a choice what to promote to, or (in Shogi) whether to promote
-    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier) {
+    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk) {
 	*promoChoice = PieceToChar(BlackFerz);  // no choice
 	return FALSE;
     }
@@ -7548,6 +7566,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
      Board board;
 {
   ChessSquare captured = board[toY][toX], piece, king; int p, oldEP = EP_NONE, berolina = 0;
+  int promoRank = gameInfo.variant == VariantMakruk ? 3 : 1;
 
     /* [HGM] compute & store e.p. status and castling rights for new position */
     /* we can always do that 'in place', now pointers to these rights are passed to ApplyMove */
@@ -7594,7 +7613,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
     }
 
   /* [HGM] In Shatranj and Courier all promotions are to Ferz */
-  if((gameInfo.variant==VariantShatranj || gameInfo.variant==VariantCourier)
+  if((gameInfo.variant==VariantShatranj || gameInfo.variant==VariantCourier || gameInfo.variant == VariantMakruk)
        && promoChar != 0) promoChar = PieceToChar(WhiteFerz);
          
   if (fromX == toX && fromY == toY) return;
@@ -7645,7 +7664,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
         board[toY][toX+1] = board[fromY][BOARD_LEFT];
         board[fromY][BOARD_LEFT] = EmptySquare;
     } else if (board[fromY][fromX] == WhitePawn
-               && toY == BOARD_HEIGHT-1
+               && toY >= BOARD_HEIGHT-promoRank
                && gameInfo.variant != VariantXiangqi
                ) {
 	/* white pawn promotion */
@@ -7709,13 +7728,13 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 	board[fromY][0] = EmptySquare;
 	board[toY][2] = BlackRook;
     } else if (board[fromY][fromX] == BlackPawn
-	       && toY == 0
+	       && toY < promoRank
                && gameInfo.variant != VariantXiangqi
                ) {
 	/* black pawn promotion */
-	board[0][toX] = CharToPiece(ToLower(promoChar));
-	if (board[0][toX] == EmptySquare) {
-	    board[0][toX] = BlackQueen;
+	board[toY][toX] = CharToPiece(ToLower(promoChar));
+	if (board[toY][toX] == EmptySquare) {
+	    board[toY][toX] = BlackQueen;
 	}
         if(gameInfo.variant==VariantBughouse ||
            gameInfo.variant==VariantCrazyhouse) /* [HGM] use shadow piece */
@@ -11538,7 +11557,8 @@ EditPositionMenuEvent(selection, x, y)
       case BlackQueen:
         if(gameInfo.variant == VariantShatranj ||
            gameInfo.variant == VariantXiangqi  ||
-           gameInfo.variant == VariantCourier    )
+           gameInfo.variant == VariantCourier  ||
+           gameInfo.variant == VariantMakruk     )
             selection = (ChessSquare)((int)selection - (int)WhiteQueen + (int)WhiteFerz);
         goto defaultlabel;
 
@@ -13964,7 +13984,7 @@ PositionToFEN(move, overrideCastling)
   }
 
   if(gameInfo.variant != VariantShogi    && gameInfo.variant != VariantXiangqi &&
-     gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier ) { 
+     gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier && gameInfo.variant != VariantMakruk ) { 
     /* En passant target square */
     if (move > backwardMostMove) {
         fromX = moveList[move - 1][0] - AAA;
@@ -14234,7 +14254,7 @@ ParseFEN(board, blackPlaysFirst, fen)
 
     /* read e.p. field in games that know e.p. capture */
     if(gameInfo.variant != VariantShogi    && gameInfo.variant != VariantXiangqi &&
-       gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier ) { 
+       gameInfo.variant != VariantShatranj && gameInfo.variant != VariantCourier && gameInfo.variant != VariantMakruk ) { 
       if(*p=='-') {
         p++; board[EP_STATUS] = EP_NONE;
       } else {

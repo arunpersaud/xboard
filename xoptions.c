@@ -910,6 +910,7 @@ struct NewVarButton buttonDesc[] = {
     {N_("berolina"),          "#FFFFFF", 0, VariantBerolina},
     {N_("cylinder"),          "#FFFFFF", 0, VariantCylinder},
     {N_("shatranj"),          "#FFFFFF", 0, VariantShatranj},
+    {N_("makruk"),            "#FFFFFF", 0, VariantMakruk},
     {N_("atomic"),            "#FFFFFF", 0, VariantAtomic},
     {N_("two kings"),         "#FFFFFF", 0, VariantTwoKings},
     {N_("3-checks"),          "#FFFFFF", 0, Variant3Check},

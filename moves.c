@@ -263,6 +263,7 @@ void GenPseudoLegal(board, flags, callback, closure)
     int rf, ff;
     int i, j, d, s, fs, rs, rt, ft, m;
     int epfile = (signed char)board[EP_STATUS]; // [HGM] gamestate: extract ep status from board
+    int promoRank = gameInfo.variant == VariantMakruk ? 3 : 1;
 
     for (rf = 0; rf < BOARD_HEIGHT; rf++) 
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
@@ -306,7 +307,7 @@ void GenPseudoLegal(board, flags, callback, closure)
               }
               if (rf < BOARD_HEIGHT-1 && board[rf + 1][ff] == EmptySquare) {
 		  callback(board, flags,
-			   rf == BOARD_HEIGHT-2 ? WhitePromotionQueen : NormalMove,
+			   rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotionQueen : NormalMove,
 			   rf, ff, rf + 1, ff, closure);
 	      }
 	      if (rf == 1 && board[2][ff] == EmptySquare &&
@@ -321,7 +322,7 @@ void GenPseudoLegal(board, flags, callback, closure)
 		      ((flags & F_KRIEGSPIEL_CAPTURE) ||
 		       BlackPiece(board[rf + 1][ff + s]))) {
 		      callback(board, flags, 
-			       rf == BOARD_HEIGHT-2 ? WhitePromotionQueen : NormalMove,
+			       rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotionQueen : NormalMove,
 			       rf, ff, rf + 1, ff + s, closure);
 		  }
 		  if (rf == BOARD_HEIGHT-4) {
@@ -356,7 +357,7 @@ void GenPseudoLegal(board, flags, callback, closure)
               }
 	      if (rf > 0 && board[rf - 1][ff] == EmptySquare) {
 		  callback(board, flags, 
-			   rf == 1 ? BlackPromotionQueen : NormalMove,
+			   rf <= promoRank ? BlackPromotionQueen : NormalMove,
 			   rf, ff, rf - 1, ff, closure);
 	      }
 	      if (rf == BOARD_HEIGHT-2 && board[BOARD_HEIGHT-3][ff] == EmptySquare &&
@@ -371,7 +372,7 @@ void GenPseudoLegal(board, flags, callback, closure)
 		      ((flags & F_KRIEGSPIEL_CAPTURE) ||
 		       WhitePiece(board[rf - 1][ff + s]))) {
 		      callback(board, flags, 
-			       rf == 1 ? BlackPromotionQueen : NormalMove,
+			       rf <= promoRank ? BlackPromotionQueen : NormalMove,
 			       rf, ff, rf - 1, ff + s, closure);
 		  }
 		  if (rf == 3) {
@@ -611,6 +612,8 @@ void GenPseudoLegal(board, flags, callback, closure)
 
             /* Shogi Pawn and Silver General: first the Pawn move,    */
             /* then the General continues like a Ferz                 */
+            case WhiteMan:
+                if(gameInfo.variant != VariantMakruk) goto commoner;
             case SHOGI WhitePawn:
             case SHOGI WhiteFerz:
                   if (rf < BOARD_HEIGHT-1 &&
@@ -620,6 +623,8 @@ void GenPseudoLegal(board, flags, callback, closure)
               if(piece != SHOGI WhitePawn) goto finishSilver;
               break;
 
+            case BlackMan:
+                if(gameInfo.variant != VariantMakruk) goto commoner;
             case SHOGI BlackPawn:
             case SHOGI BlackFerz:
                   if (rf > 0 &&
@@ -647,8 +652,7 @@ void GenPseudoLegal(board, flags, callback, closure)
 	    case WhiteSilver:
 	    case BlackSilver:
 		m++; // [HGM] superchess: use for Centaur
-            case WhiteMan:
-            case BlackMan:
+            commoner:
             case SHOGI WhiteKing:
             case SHOGI BlackKing:
 	    case WhiteKing:
