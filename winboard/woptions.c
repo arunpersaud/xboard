@@ -773,7 +773,8 @@ VariantWhichRadio(HWND hDlg)
          (IsDlgButtonChecked(hDlg, OPT_VariantGreat) ? VariantGreat :
          (IsDlgButtonChecked(hDlg, OPT_VariantGiveaway) ? VariantGiveaway :
          (IsDlgButtonChecked(hDlg, OPT_VariantTwilight) ? VariantTwilight :
-          VariantNormal ))))))))))))))))))))))))))));
+         (IsDlgButtonChecked(hDlg, OPT_VariantMakruk) ? VariantMakruk :
+          VariantNormal )))))))))))))))))))))))))))));
 }
 
 LRESULT CALLBACK
@@ -871,6 +872,9 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case VariantTwilight:
       CheckDlgButton(hDlg, OPT_VariantTwilight, TRUE);
+      break;
+    case VariantMakruk:
+      CheckDlgButton(hDlg, OPT_VariantMakruk, TRUE);
       break;
     default: ;
     }

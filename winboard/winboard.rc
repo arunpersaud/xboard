@@ -673,6 +673,8 @@ BEGIN
                     84,50,10
     CONTROL         "&fairy",OPT_VariantFairy,"Button",BS_AUTORADIOBUTTON,70,
                     94,50,10
+    CONTROL         "&makruk",OPT_VariantMakruk,"Button",BS_AUTORADIOBUTTON,70,
+                    104,50,10
     CONTROL         "&gothic",OPT_VariantGothic,"Button",BS_AUTORADIOBUTTON,134,14,
                     50,10
     CONTROL         "&capablanca",OPT_VariantCapablanca,"Button",BS_AUTORADIOBUTTON,134,
