@@ -153,6 +153,7 @@ char *programName;
 char *settingsFileName;
 Boolean saveSettingsOnExit;
 char installDir[MSG_SIZ];
+int errorExitStatus;
 
 BoardSize boardSize;
 Boolean chessProgram;
@@ -190,6 +191,7 @@ static HBITMAP pieceBitmap[3][(int) BlackPawn]; /* [HGM] nr of bitmaps referred 
 static HBRUSH lightSquareBrush, darkSquareBrush,
   blackSquareBrush, /* [HGM] for band between board and holdings */
   explodeBrush,     /* [HGM] atomic */
+  markerBrush,      /* [HGM] markers */
   whitePieceBrush, blackPieceBrush, iconBkgndBrush /*, outlineBrush*/;
 static POINT gridEndpoints[(BOARD_RANKS + BOARD_FILES + 2) * 2];
 static DWORD gridVertexCounts[BOARD_RANKS + BOARD_FILES + 2];
@@ -1852,6 +1854,7 @@ InitDrawingColors()
   blackPieceBrush = CreateSolidBrush(blackPieceColor);
   iconBkgndBrush = CreateSolidBrush(GetSysColor(COLOR_BACKGROUND));
   explodeBrush = CreateSolidBrush(highlightSquareColor); // [HGM] atomic
+  markerBrush = CreateSolidBrush(premoveHighlightColor); // [HGM] markers
   /* [AS] Force rendering of the font-based pieces */
   if( fontBitmapSquareSize > 0 ) {
     fontBitmapSquareSize = 0;
@@ -3311,6 +3314,18 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
     DrawHighlightsOnDC(hdcmem);
     DrawBoardOnDC(hdcmem, board, tmphdc);
   }
+  for (row = 0; row < BOARD_HEIGHT; row++) {
+    for (column = 0; column < BOARD_WIDTH; column++) {
+	if (marker[row][column]) { // marker changes only occur with full repaint!
+	    HBRUSH oldBrush = SelectObject(hdcmem, 
+			marker[row][column] == 2 ? markerBrush : explodeBrush);
+	    SquareToPos(row, column, &x, &y);
+	    Ellipse(hdcmem, x + squareSize/4, y + squareSize/4,
+		  	  x + 3*squareSize/4, y + 3*squareSize/4);
+	    SelectObject(hdcmem, oldBrush);
+	}
+    }
+  }
   if(logoHeight) {
 	HBITMAP whiteLogo = (HBITMAP) first.programLogo, blackLogo = (HBITMAP) second.programLogo;
 	if(appData.autoLogo) {
@@ -3704,6 +3719,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
 
   case WM_MOUSEMOVE:
+    MovePV(pt.x - boardRect.left, pt.y - boardRect.top, boardRect.bottom - boardRect.top);
     if ((appData.animateDragging || appData.highlightDragging)
 	&& (wParam & MK_LBUTTON)
 	&& dragInfo.from.x >= 0) 
@@ -3741,6 +3757,12 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
 
+  case WM_MBUTTONUP:
+  case WM_RBUTTONUP:
+    ReleaseCapture();
+    UnLoadPV();
+    break;
+ 
   case WM_MBUTTONDOWN:
   case WM_RBUTTONDOWN:
     ErrorPopDown();
@@ -3764,8 +3786,10 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     DrawPosition(TRUE, NULL);
 
     switch (gameMode) {
-    case EditPosition:
     case IcsExamining:
+      if(x < BOARD_LEFT || x >= BOARD_RGHT) break;
+    case EditPosition:
+      if (x == BOARD_LEFT-1 || x == BOARD_RGHT) break;
       if (x < 0 || y < 0) break;
       fromX = x;
       fromY = y;
@@ -3785,15 +3809,29 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             MenuPopup(hwnd, pt, LoadMenu(hInst, "ShogiPieceMenu"), -1);
       }
       break;
+    case IcsObserving:
+      if(!appData.icsEngineAnalyze) break;
     case IcsPlayingWhite:
     case IcsPlayingBlack:
-    case EditGame:
+      if(!appData.zippyPlay) goto noZip;
     case MachinePlaysWhite:
     case MachinePlaysBlack:
-      if (appData.testLegality &&
-	  gameInfo.variant != VariantBughouse &&
-	  gameInfo.variant != VariantCrazyhouse) break;
+    case TwoMachinesPlay:
+    case AnalyzeMode:
+    case AnalyzeFile:
+      if (!appData.dropMenu) {
+        SetCapture(hwndMain);
+        LoadPV(pt.x - boardRect.left, pt.y - boardRect.top);
+        break;
+      }
+      if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
+         gameMode == AnalyzeFile || gameMode == IcsObserving) break;
+    case EditGame:
+    noZip:
       if (x < 0 || y < 0) break;
+      if (!appData.dropMenu || appData.testLegality &&
+  	  gameInfo.variant != VariantBughouse &&
+  	  gameInfo.variant != VariantCrazyhouse) break;
       fromX = x;
       fromY = y;
       hmenu = LoadMenu(hInst, "DropPieceMenu");
@@ -6065,6 +6103,7 @@ ErrorPopDown()
   if (errorDialog == NULL) return;
   DestroyWindow(errorDialog);
   errorDialog = NULL;
+  if(errorExitStatus) ExitEvent(errorExitStatus);
 }
 
 LRESULT CALLBACK

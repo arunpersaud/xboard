@@ -593,6 +593,11 @@
 		<param name="Local" value="html/07.htm#drawifinsufficientmaterial">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="dropMenu">
+		<param name="Name" value="User Interface Options">
+		<param name="Local" value="html/16.htm#dropmenu">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="dsc">
 		<param name="Name" value="User Interface Options">
 		<param name="Local" value="html/16.htm#wpc">
@@ -1403,6 +1408,11 @@
 		<param name="Local" value="html/12.htm#mps">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Mute all Sounds">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#mute">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="N-Fold Repetition Rule">
 		<param name="Name" value="Options Menu">
 		<param name="Local" value="html/07.htm#n-foldrepetitionrule">
@@ -1984,6 +1994,11 @@
 		<param name="Keyword" value="showCoords">
 		<param name="Name" value="User Interface Options">
 		<param name="Local" value="html/16.htm#coords">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="showTargetSquares">
+		<param name="Name" value="User Interface Options">
+		<param name="Local" value="html/16.htm#showTargets">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="showThinking">

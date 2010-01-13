@@ -101,6 +101,7 @@ extern FILE *debugFP;
 extern char* programVersion;
 extern ProcRef firstProgramPR, secondProgramPR;
 extern Board boards[];
+extern char marker[BOARD_RANKS][BOARD_FILES];
 
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */
@@ -205,6 +206,10 @@ double u64ToDouble P((u64 value));
 void OutputChatMessage P((int partner, char *mess));
 void EditPositionDone P((Boolean fakeRights));
 Boolean GetArgValue P((char *name));
+Boolean LoadPV P((int x, int y));
+Boolean LoadMultiPV P((int x, int y, char *buf, int index, int *start, int *end));
+void UnLoadPV P(());
+void MovePV P((int x, int y, int h));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));
@@ -326,7 +331,7 @@ typedef struct _CPS {
     int hasOwnBookUCI;   /* [AS] 0=use GUI or Polyglot book, 1=has own book */
 
     /* [HGM] time odds */
-    int timeOdds;   /* factor through which we divide time for this engine  */
+    float timeOdds; /* factor through which we divide time for this engine  */
     int debug;      /* [HGM] ignore engine debug lines starting with '#'    */
     int maxNrOfSessions; /* [HGM] secondary TC: max args in 'level' command */
     int accumulateTC; /* [HGM] secondary TC: how to handle extra sessions   */
@@ -345,6 +350,7 @@ typedef struct _CPS {
     char *optionSettings;
     void *programLogo; /* [HGM] logo: bitmap of the logo                    */
     char *fenOverride; /* [HGM} FRC: force FEN casling & ep fields by hand  */
+    char userError;    /* [HGM] crash: flag to suppress fatal-error messages*/
 } ChessProgramState;
 
 extern ChessProgramState first, second;
@@ -370,5 +376,6 @@ extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
 extern int shuffleOpenings;
 extern ChessProgramStats programStats;
 extern int opponentKibitzes; // used by wengineo.c
+extern int errorExitStatus;
 
 #endif /* _BACKEND */

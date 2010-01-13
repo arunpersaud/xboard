@@ -49,6 +49,8 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
+#define HIGHDRAG 1
+
 #include "config.h"
 
 #include <stdio.h>
@@ -262,6 +264,8 @@ int EventToSquare P((int x, int limit));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
 void AnimateUserMove P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
+void HandlePV P((Widget w, XEvent * event,
+		     String * params, Cardinal * nParams));
 void CommentPopUp P((char *title, char *label));
 void CommentPopDown P((void));
 void CommentCallback P((Widget w, XtPointer client_data,
@@ -327,6 +331,7 @@ void SettingsPopDown P(());
 void SetMenuEnables P((Enables *enab));
 void update_ics_width P(());
 int get_term_width P(());
+int CopyMemoProc P(());
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -777,6 +782,8 @@ XtActionsRec boardActions[] = {
     //    { "HandleUserMove", HandleUserMove },
     { "AnimateUserMove", AnimateUserMove },
     //    { "FileNameAction", FileNameAction },
+    { "HandlePV", HandlePV },
+    { "UnLoadPV", UnLoadPV },
     { "AskQuestionProc", AskQuestionProc },
     { "AskQuestionReplyAction", AskQuestionReplyAction },
     { "PieceMenuPopup", PieceMenuPopup },
@@ -890,8 +897,52 @@ XtActionsRec boardActions[] = {
     { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
     { "NewVariantPopDown", (XtActionProc) NewVariantPopDown },
     { "SettingsPopDown", (XtActionProc) SettingsPopDown },
+    { "CopyMemoProc", (XtActionProc) CopyMemoProc },
 };
 
+//char globalTranslations[] =
+//  ":<Key>R: ResignProc() \n \
+//   :<Key>r: ResetProc() \n \
+//   :<Key>g: LoadGameProc() \n \
+//   :<Key>N: LoadNextGameProc() \n \
+//   :<Key>P: LoadPrevGameProc() \n \
+//   :<Key>Q: QuitProc() \n \
+//   :<Key>F: ToEndProc() \n \
+//   :<Key>f: ForwardProc() \n \
+//   :<Key>B: ToStartProc() \n \
+//   :<Key>b: BackwardProc() \n \
+//   :<Key>p: PauseProc() \n \
+//   :<Key>d: DrawProc() \n \
+//   :<Key>t: CallFlagProc() \n \
+//   :<Key>i: Iconify() \n \
+//   :<Key>c: Iconify() \n \
+//   :<Key>v: FlipViewProc() \n \
+//   <KeyDown>Control_L: BackwardProc() \n \
+//   <KeyUp>Control_L: ForwardProc() \n \
+//   <KeyDown>Control_R: BackwardProc() \n \
+//   <KeyUp>Control_R: ForwardProc() \n \
+//   Shift<Key>1: AskQuestionProc(\"Direct command\",\
+//                                \"Send to chess program:\",,1) \n \
+//   Shift<Key>2: AskQuestionProc(\"Direct command\",\
+//                                \"Send to second chess program:\",,2) \n";
+//
+//char boardTranslations[] =
+//   "<Btn1Down>: HandleUserMove() \n \
+//   <Btn1Up>: HandleUserMove() \n \
+//   <Btn1Motion>: AnimateUserMove() \n \
+//   <Btn3Motion>: HandlePV() \n \
+//   <Btn3Up>: UnLoadPV() \n \
+//   Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
+//                 PieceMenuPopup(menuB) \n \
+//   Any<Btn2Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD) \
+//                 PieceMenuPopup(menuW) \n \
+//   Shift<Btn3Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD)\
+//                 PieceMenuPopup(menuW) \n \
+//   Any<Btn3Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD) \
+//                 PieceMenuPopup(menuB) \n";
+//
+//char whiteTranslations[] = "<BtnDown>: WhiteClock()\n";
+//char blackTranslations[] = "<BtnDown>: BlackClock()\n";
 
 char ICSInputTranslations[] =
     "<Key>Return: EnterKeyProc() \n";
@@ -1004,13 +1055,13 @@ BoardToTop()
 #define JAWS_ARGS
 #define CW_USEDEFAULT (1<<31)
 #define ICS_TEXT_MENU_SIZE 90
+#define DEBUG_FILE "xboard.debug"
 #define SetCurrentDirectory chdir
 #define GetCurrentDirectory(SIZE, NAME) getcwd(NAME, SIZE)
 #define OPTCHAR "-"
 #define SEPCHAR " "
 
 // these two must some day move to frontend.h, when they are implemented
-Boolean MoveHistoryIsUp();
 Boolean GameListIsUp();
 
 // The option definition and parsing code common to XBoard and WinBoard is collected in this file
@@ -1029,7 +1080,7 @@ colorVariable[] = {
   &appData.darkSquareColor, 
   &appData.highlightSquareColor,
   &appData.premoveHighlightColor,
-  NULL,
+  &appData.lowTimeWarningColor,
   NULL,
   NULL,
   NULL,
@@ -1117,7 +1168,9 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
     default:
       return;
   }
-  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, name);
+//  Do not save fonts for now, as the saved font would be board-size specific
+//  and not suitable for a re-start at another board size
+//  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, name); 
 }
 
 void
@@ -1373,49 +1426,16 @@ main(argc, argv)
     XrmDatabase xdb;
     int forceMono = False;
 
-//define INDIRECTION
-
-#ifdef INDIRECTION
-    // [HGM] before anything else, expand any indirection files amongst options
-    char *argvCopy[1000]; // 1000 seems enough
-    char newArgs[10000];  // holds actual characters
-    int k = 0;
-
     srandom(time(0)); // [HGM] book: make random truly random
-
-    j = 0;
-    for(i=0; i<argc; i++) {
-	if(j >= 1000-2) { printf(_("too many arguments\n")); exit(-1); }
-	//fprintf(stderr, "arg %s\n", argv[i]);
-	if(argv[i][0] != '@') argvCopy[j++] = argv[i]; else {
-	    char c;
-	    FILE *f = fopen(argv[i]+1, "rb");
-	    if(f == NULL) { fprintf(stderr, _("ignore %s\n"), argv[i]); continue; } // do not expand non-existing
-	    argvCopy[j++] = newArgs + k; // get ready for first argument from file
-	    while((c = fgetc(f)) != EOF) { // each line of file inserts 1 argument in the list
-		if(c == '\n') {
-		    if(j >= 1000-2) { printf(_("too many arguments\n")); exit(-1); }
-		    newArgs[k++] = 0;  // terminate current arg
-		    if(k >= 10000-1) { printf(_("too long arguments\n")); exit(-1); }
-		    argvCopy[j++] = newArgs + k; // get ready for next
-		} else {
-		    if(k >= 10000-1) { printf(_("too long arguments\n")); exit(-1); }
-		    newArgs[k++] = c;
-		}
-	    }
-	    newArgs[k] = 0;
-	    j--;
-	    fclose(f);
-	}
-    }
-    argvCopy[j] = NULL;
-    argv = argvCopy;
-    argc = j;
-#endif
 
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
     debugFP = stderr;
+
+    if(argc > 1 && (!strcmp(argv[1], "-v" ) || !strcmp(argv[1], "--version" ))) {
+	printf("%s version %s\n", PACKAGE_NAME, PACKAGE_VERSION);
+	exit(0);
+    }
 
     programName = strrchr(argv[0], '/');
     if (programName == NULL)
@@ -2595,6 +2615,8 @@ void PieceMenuPopup(w, event, params, num_params)
      Cardinal *num_params;
 {
     String whichMenu;
+
+    if (event->type != ButtonRelease) UnLoadPV(); // [HGM] pv
     if (event->type != ButtonPress) return;
     if (errorUp) ErrorPopDown();
     switch (gameMode) {
@@ -2602,12 +2624,25 @@ void PieceMenuPopup(w, event, params, num_params)
       case IcsExamining:
 	whichMenu = params[0];
 	break;
+      case IcsObserving:
+	if(!appData.icsEngineAnalyze) return;
       case IcsPlayingWhite:
       case IcsPlayingBlack:
-      case EditGame:
+	if(!appData.zippyPlay) goto noZip;
+      case AnalyzeMode:
+      case AnalyzeFile:
       case MachinePlaysWhite:
       case MachinePlaysBlack:
-	if (appData.testLegality &&
+      case TwoMachinesPlay: // [HGM] pv: use for showing PV
+	if (!appData.dropMenu) {
+	  LoadPV(event->xbutton.x, event->xbutton.y);
+	  return;
+	}
+	if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
+           gameMode == AnalyzeFile || gameMode == IcsObserving) return;
+      case EditGame:
+      noZip:
+	if (!appData.dropMenu || appData.testLegality &&
 	    gameInfo.variant != VariantBughouse &&
 	    gameInfo.variant != VariantCrazyhouse) return;
 	SetupDropMenu();
@@ -3278,6 +3313,12 @@ void AnimateUserMove (Widget w, XEvent * event,
 		      String * params, Cardinal * nParams)
 {
     DragPieceMove(event->xmotion.x, event->xmotion.y);
+}
+
+void HandlePV (Widget w, XEvent * event,
+		      String * params, Cardinal * nParams)
+{   // [HGM] pv: walk PV
+    MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 }
 
 Widget CommentCreate(name, text, mutable, callback, lines)
@@ -4087,9 +4128,9 @@ void MailMoveProc(w, event, prms, nprms)
 }
 
 /* this variable is shared between CopyPositionProc and SendPositionSelection */
-static char *selected_fen_position=NULL;
+char *selected_fen_position=NULL;
 
-static Boolean
+Boolean
 SendPositionSelection(Widget w, Atom *selection, Atom *target,
 		 Atom *type_return, XtPointer *value_return,
 		 unsigned long *length_return, int *format_return)
@@ -6293,7 +6334,7 @@ DragPieceMove(x, y)
     corner.x = x - player.mouseDelta.x;
     corner.y = y - player.mouseDelta.y;
     AnimationFrame(&player, &corner, player.dragPiece);
-#if HIGHDRAG
+#if HIGHDRAG*0
     if (appData.highlightDragging) {
 	int boardX, boardY;
 	BoardSquare(x, y, &boardX, &boardY);

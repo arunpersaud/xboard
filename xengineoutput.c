@@ -65,6 +65,8 @@ extern char *getenv();
 #include <X11/Xaw/Text.h>
 #include <X11/Xaw/AsciiText.h>
 #include <X11/Xaw/Viewport.h>
+#include <X11/Xatom.h>
+#include <X11/Xmu/Atoms.h>
 
 #include "common.h"
 #include "frontend.h"
@@ -215,11 +217,57 @@ void DoClearMemo(int which)
 	XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
 }
 
+// cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
+
+extern char *selected_fen_position;
+
+Boolean SendPositionSelection(Widget w, Atom *selection, Atom *target,
+		 Atom *type_return, XtPointer *value_return,
+		 unsigned long *length_return, int *format_return); // from xboard.c
+void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b); // from xoptions.c
+
+char memoTranslations[] =
+":Ctrl<Key>c: CopyMemoProc() \n";
+
+static void
+MemoCB(Widget w, XtPointer client_data, Atom *selection,
+	   Atom *type, XtPointer value, unsigned long *len, int *format)
+{
+  if (value==NULL || *len==0) return; /* nothing had been selected to copy */
+  selected_fen_position = value;
+  selected_fen_position[*len]='\0'; /* normally this string is terminated, but be safe */
+    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+		   CurrentTime,
+		   SendPositionSelection,
+		   NULL/* lose_ownership_proc */ ,
+		   NULL/* transfer_done_proc */);
+}
+
+void CopyMemoProc(w, event, prms, nprms)
+  Widget w;
+  XEvent *event;
+  String *prms;
+  Cardinal *nprms;
+{
+    if(appData.pasteSelection) return;
+    if (selected_fen_position) free(selected_fen_position);
+    XtGetSelectionValue(menuBarWidget, 
+      XA_PRIMARY, XA_STRING,
+      /* (XtSelectionCallbackProc) */ MemoCB,
+      NULL, /* client_data passed to PastePositionCB */
+
+      /* better to use the time field from the event that triggered the
+       * call to this function, but that isn't trivial to get
+       */
+      CurrentTime
+    );
+}
+
 // The following routines are mutated clones of the commentPopUp routines
 
-void PositionControlSet(which, form, bw_width)
+void PositionControlSet(which, shell, form, bw_width)
      int which;
-     Widget form;
+     Widget shell, form;
      Dimension bw_width;
 {
     Arg args[16];
@@ -314,6 +362,9 @@ void PositionControlSet(which, form, bw_width)
     outputField[which][nMemo] = edit =
       XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
 
+    XtOverrideTranslations(edit, XtParseTranslationTable(memoTranslations));
+    XtAddEventHandler(edit, ButtonPressMask, False, SetFocus, (XtPointer) shell);
+
     j = 0;
     XtSetArg(args[j], XtNfromVert, ColorWidget); j++;
 //    XtSetArg(args[j], XtNresizable, (XtArgVal) True); j++;
@@ -364,8 +415,8 @@ Widget EngineOutputCreate(name, text)
     XtSetValues(shell, args, j);
 
     // fill up both forms with control elements
-    PositionControlSet(0, form,  bw_width);
-    PositionControlSet(1, form2, bw_width);
+    PositionControlSet(0, shell, form,  bw_width);
+    PositionControlSet(1, shell, form2, bw_width);
 
     XtRealizeWidget(shell);
 

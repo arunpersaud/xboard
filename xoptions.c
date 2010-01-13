@@ -246,6 +246,7 @@ int tcIncrement, tcMoves;
 void TimeControlPopDown()
 {
     if (!TimeControlUp) return;
+    previous = NULL;
     XtPopdown(TimeControlShell);
     XtDestroyWidget(TimeControlShell);
     TimeControlUp = False;
@@ -568,6 +569,7 @@ Widget engDrawMoves, engThreshold, engRule, engRepeat;
 void EnginePopDown()
 {
     if (!EngineUp) return;
+    previous = NULL;
     XtPopdown(EngineShell);
     XtDestroyWidget(EngineShell);
     EngineUp = False;
@@ -1126,6 +1128,7 @@ struct UciControl controlDesc[] = {
 void UciPopDown()
 {
     if (!UciUp) return;
+    previous = NULL;
     XtPopdown(UciShell);
     XtDestroyWidget(UciShell);
     UciUp = False;
@@ -1324,6 +1327,7 @@ ChessProgramState *currentCps;
 void SettingsPopDown()
 {
     if (!SettingsUp) return;
+    previous = NULL;
     XtPopdown(SettingsShell);
     XtDestroyWidget(SettingsShell);
     SettingsUp = False;
@@ -1479,10 +1483,11 @@ void SettingsPopUp(ChessProgramState *cps)
     Widget popup, layout, dialog, edit=NULL, form, oldform, last, b_ok, b_cancel, leftMargin = NULL;
     Window root, child;
     int x, y, i, j, height, width, h, c;
-    int win_x, win_y;
+    int win_x, win_y, maxWidth, maxTextWidth;
     unsigned int mask;
     char def[80], *p, *q;
     static char pane[6] = "paneX";
+    Widget texts[100], forelast = NULL, anchor, widest;
 
     // to do: start up second engine if needed
     if(!cps->initDone || !cps->nrOptions) return; // nothing to be done
@@ -1509,8 +1514,9 @@ void SettingsPopUp(ChessProgramState *cps)
     XtSetValues(form, args, j);
     leftMargin = form;
  
-    last = NULL;
+    last = widest = NULL; anchor = forelast;
     for(h=0; h<height; h++) {
+	forelast = last;
 	i = h + c*height;
         if(i >= cps->nrOptions) break;
 	switch(cps->option[i].type) {
@@ -1521,12 +1527,13 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+	    texts[h] =
 	    dialog = XtCreateManagedWidget(cps->option[i].name, labelWidgetClass, form, args, j);   
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
 	    XtSetArg(args[j], XtNborderWidth, 1); j++;
-	    XtSetArg(args[j], XtNwidth, cps->option[i].type == Spin ? 40 : 100); j++;
+	    XtSetArg(args[j], XtNwidth, cps->option[i].type == Spin ? 40 : 175); j++;
 	    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
 	    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
 	    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
@@ -1579,7 +1586,7 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNstate, cps->option[i].value);  j++;
 	    cps->option[i].handle = (void*) 
-		(last = XtCreateManagedWidget(cps->option[i].name, commandWidgetClass, form, args, j));   
+		(dialog = last = XtCreateManagedWidget(cps->option[i].name, commandWidgetClass, form, args, j));   
 	    XtAddCallback(last, XtNcallback, SettingsCallback,
 			  (XtPointer)(intptr_t) (cps->option[i].type == SaveButton));
 	    break;
@@ -1603,17 +1610,54 @@ void SettingsPopUp(ChessProgramState *cps)
 	    break;
 	}
     }
+
+    // make an attempt to align all spins and textbox controls
+    maxWidth = maxTextWidth = 0;
+    for(h=0; h<height; h++) {
+	i = h + c*height;
+        if(i >= cps->nrOptions) break;
+	if(cps->option[i].type == Spin || cps->option[i].type == TextBox) {
+	    Dimension w;
+	    j=0;
+	    XtSetArg(args[j], XtNwidth, &w);  j++;
+	    XtGetValues(texts[h], args, j);
+	    if(cps->option[i].type == Spin) {
+		if(w > maxWidth) maxWidth = w;
+		widest = texts[h];
+	    } else {
+		if(w > maxTextWidth) maxTextWidth = w;
+		if(!widest) widest = texts[h];
+	    }
+	}
+    }
+    if(maxTextWidth + 110 < maxWidth)
+	 maxTextWidth = maxWidth - 110;
+    else maxWidth = maxTextWidth + 110;
+    for(h=0; h<height; h++) {
+	i = h + c*height;
+        if(i >= cps->nrOptions) break;
+	j=0;
+	if(cps->option[i].type == Spin) {
+	    XtSetArg(args[j], XtNwidth, maxWidth);  j++;
+	    XtSetValues(texts[h], args, j);
+	} else
+	if(cps->option[i].type == TextBox) {
+	    XtSetArg(args[j], XtNwidth, maxTextWidth);  j++;
+	    XtSetValues(texts[h], args, j);
+	}
+    }
   }
     j=0;
-    XtSetArg(args[j], XtNfromVert, last);  j++;
+    XtSetArg(args[j], XtNfromVert, anchor ? anchor : last);  j++;
     XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
     XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
+    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
+    XtSetArg(args[j], XtNright, XtChainRight);  j++;
+    XtSetArg(args[j], XtNfromHoriz, widest ? widest : dialog);  j++;
     b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);   
     XtAddCallback(b_ok, XtNcallback, SettingsCallback, (XtPointer) 0);
 
-    XtSetArg(args[j], XtNfromHoriz, b_ok);  j++;
+    XtSetArg(args[j-1], XtNfromHoriz, b_ok);
     b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);   
     XtAddCallback(b_cancel, XtNcallback, SettingsPopDown, (XtPointer) 0);
 

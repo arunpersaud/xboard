@@ -66,9 +66,9 @@
 
 /* Settable */
 #define FIRST_CHESS_PROGRAM	""
-#define FIRST_DIRECTORY		""
+#define FIRST_DIRECTORY		"."
 #define SECOND_CHESS_PROGRAM	""
-#define SECOND_DIRECTORY	""
+#define SECOND_DIRECTORY	"."
 
 #define CLOCK_FONT_TINY        "Arial:9.0 b"
 #define CLOCK_FONT_TEENY       "Arial:9.0 b"
@@ -211,6 +211,7 @@
 }
 
 #define SETTINGS_FILE         "winboard.ini"
+#define DEBUG_FILE            "winboard.debug"
 
 #define ICS_LOGON             "ics.ini"
 

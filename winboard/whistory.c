@@ -452,7 +452,7 @@ VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int curre
     }
 }
 
-BOOL MoveHistoryIsUp()
+Boolean MoveHistoryIsUp()
 {
     return moveHistoryDialogUp;
 }
