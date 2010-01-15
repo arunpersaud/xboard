@@ -477,11 +477,11 @@ ChessSquare  KnightmateArray[2][BOARD_SIZE] = {
         BlackUnicorn, BlackBishop, BlackMan, BlackRook }
 };
 
-ChessSquare fairyArray[2][BOARD_SIZE] = { /* [HGM] Queen side differs from King side */
-    { WhiteCannon, WhiteNightrider, WhiteAlfil, WhiteQueen,
+ChessSquare fairyArray[2][BOARD_SIZE] = { /* [HGM] white and black different armies! */
+    { WhiteRook, WhiteKnight, WhiteBishop, WhiteQueen,
         WhiteKing, WhiteBishop, WhiteKnight, WhiteRook },
-    { BlackCannon, BlackNightrider, BlackAlfil, BlackQueen,
-	BlackKing, BlackBishop, BlackKnight, BlackRook }
+    { BlackLance, BlackAlfil, BlackMarshall, BlackAngel,
+	BlackKing, BlackMarshall, BlackAlfil, BlackLance }
 };
 
 ChessSquare ShatranjArray[2][BOARD_SIZE] = { /* [HGM] (movGen knows about Shatranj Q and P) */
