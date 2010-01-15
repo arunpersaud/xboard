@@ -14139,10 +14139,12 @@ ParseFEN(board, blackPlaysFirst, fen)
     }   /* assume possible unless obviously impossible */
     if(initialRights[0]!=NoRights && board[castlingRank[0]][initialRights[0]] != WhiteRook) board[CASTLING][0] = NoRights;
     if(initialRights[1]!=NoRights && board[castlingRank[1]][initialRights[1]] != WhiteRook) board[CASTLING][1] = NoRights;
-    if(initialRights[2]!=NoRights && board[castlingRank[2]][initialRights[2]] != WhiteKing) board[CASTLING][2] = NoRights;
+    if(initialRights[2]!=NoRights && board[castlingRank[2]][initialRights[2]] != WhiteUnicorn
+				  && board[castlingRank[2]][initialRights[2]] != WhiteKing) board[CASTLING][2] = NoRights;
     if(initialRights[3]!=NoRights && board[castlingRank[3]][initialRights[3]] != BlackRook) board[CASTLING][3] = NoRights;
     if(initialRights[4]!=NoRights && board[castlingRank[4]][initialRights[4]] != BlackRook) board[CASTLING][4] = NoRights;
-    if(initialRights[5]!=NoRights && board[castlingRank[5]][initialRights[5]] != BlackKing) board[CASTLING][5] = NoRights;
+    if(initialRights[5]!=NoRights && board[castlingRank[5]][initialRights[5]] != BlackUnicorn
+				  && board[castlingRank[5]][initialRights[5]] != BlackKing) board[CASTLING][5] = NoRights;
     FENrulePlies = 0;
 
     while(*p==' ') p++;
@@ -14157,12 +14159,18 @@ ParseFEN(board, blackPlaysFirst, fen)
              (gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom) &&
              ( *p >= 'a' && *p < 'a' + gameInfo.boardWidth) ||
              ( *p >= 'A' && *p < 'A' + gameInfo.boardWidth)   ) {
-        char c = *p++; int whiteKingFile=-1, blackKingFile=-1;
+        char c = *p++; int whiteKingFile=NoRights, blackKingFile=NoRights;
 
         for(i=BOARD_LEFT; i<BOARD_RGHT; i++) {
             if(board[BOARD_HEIGHT-1][i] == BlackKing) blackKingFile = i;
             if(board[0             ][i] == WhiteKing) whiteKingFile = i;
         }
+        if(gameInfo.variant == VariantTwoKings || gameInfo.variant == VariantKnightmate)
+            whiteKingFile = blackKingFile = BOARD_WIDTH >> 1; // for these variant scanning fails
+        if(whiteKingFile == NoRights || board[0][whiteKingFile] != WhiteUnicorn
+                                     && board[0][whiteKingFile] != WhiteKing) whiteKingFile = NoRights;
+        if(blackKingFile == NoRights || board[BOARD_HEIGHT-1][blackKingFile] != BlackUnicorn
+                                     && board[BOARD_HEIGHT-1][blackKingFile] != BlackKing) blackKingFile = NoRights;
         switch(c) {
           case'K':
               for(i=BOARD_RGHT-1; board[0][i]!=WhiteRook && i>whiteKingFile; i--);
@@ -14170,7 +14178,7 @@ ParseFEN(board, blackPlaysFirst, fen)
               board[CASTLING][2] = whiteKingFile;
               break;
           case'Q':
-              for(i=BOARD_LEFT; board[0][i]!=WhiteRook && i<whiteKingFile; i++);
+              for(i=BOARD_LEFT;  i<BOARD_RGHT && board[0][i]!=WhiteRook && i<whiteKingFile; i++);
               board[CASTLING][1] = i != whiteKingFile ? i : NoRights;
               board[CASTLING][2] = whiteKingFile;
               break;
@@ -14180,7 +14188,7 @@ ParseFEN(board, blackPlaysFirst, fen)
               board[CASTLING][5] = blackKingFile;
               break;
           case'q':
-              for(i=BOARD_LEFT; board[BOARD_HEIGHT-1][i]!=BlackRook && i<blackKingFile; i++);
+              for(i=BOARD_LEFT; i<BOARD_RGHT && board[BOARD_HEIGHT-1][i]!=BlackRook && i<blackKingFile; i++);
               board[CASTLING][4] = i != blackKingFile ? i : NoRights;
               board[CASTLING][5] = blackKingFile;
           case '-':
