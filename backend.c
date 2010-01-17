@@ -13981,6 +13981,8 @@ ParseFEN(board, blackPlaysFirst, fen)
               }
         }
       }
+      for(i=0; i<nrCastlingRights; i++)
+        if(FENcastlingRights[i] >= 0) initialRights[i] = FENcastlingRights[i];
     if (appData.debugMode) {
         fprintf(debugFP, "FEN castling rights:");
         for(i=0; i<nrCastlingRights; i++)
