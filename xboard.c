@@ -5560,7 +5560,6 @@ InputSourceRef AddInputSource(pr, lineByLine, func, closure)
 //
 
     /* TODO: will this work on windows?*/
-    printf("DEBUG: fd=%d %d\n",is->fd,is);
 
     channel = g_io_channel_unix_new(is->fd);
     g_io_channel_set_close_on_unref (channel, TRUE);

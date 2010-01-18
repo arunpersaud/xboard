@@ -86,10 +86,8 @@ FileNamePopUp(label, def, proc, openMode)
 	}
       else 
 	{
-	  printf( "DEBUG: before call\n");
 	  /* TODO add indec */
 	  (*proc)(f, 0, filename);
-	  printf( "DEBUG: after call\n");
 	}
       g_free (filename);
     };
