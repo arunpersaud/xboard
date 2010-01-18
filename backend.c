@@ -1092,198 +1092,267 @@ InitBackEnd2()
 void
 InitBackEnd3 P((void))
 {
-    GameMode initialMode;
-    char buf[MSG_SIZ];
-    int err;
-
-    InitChessProgram(&first, startedFromSetupPosition);
-
-
-    if (appData.icsActive) {
-#ifdef WIN32
-        /* [DM] Make a console window if needed [HGM] merged ifs */
-        ConsoleCreate();
-#endif
-	err = establish();
-	if (err != 0) {
-	    if (*appData.icsCommPort != NULLCHAR) {
-		sprintf(buf, _("Could not open comm port %s"),
-			appData.icsCommPort);
-	    } else {
-		snprintf(buf, sizeof(buf), _("Could not connect to host %s, port %s"),
-			appData.icsHost, appData.icsPort);
+  GameMode initialMode;
+  char buf[MSG_SIZ];
+  int err;
+  
+  InitChessProgram(&first, startedFromSetupPosition);
+  
+  
+  if (appData.icsActive) 
+    {
+      err = establish();
+      if (err != 0) 
+	{
+	  if (*appData.icsCommPort != NULLCHAR) 
+	    {
+	      sprintf(buf, _("Could not open comm port %s"),
+		      appData.icsCommPort);
 	    }
-	    DisplayFatalError(buf, err, 1);
-	    return;
+	  else 
+	    {
+	      snprintf(buf, sizeof(buf), _("Could not connect to host %s, port %s"),
+		       appData.icsHost, appData.icsPort);
+	    }
+	  DisplayFatalError(buf, err, 1);
+	  return;
 	}
-	SetICSMode();
-	telnetISR =
-	  AddInputSource(icsPR, FALSE, read_from_ics, &telnetISR);
-	fromUserISR =
-	  AddInputSource(NoProc, FALSE, read_from_player, &fromUserISR);
-    } else if (appData.noChessProgram) {
-	SetNCPMode();
-    } else {
-	SetGNUMode();
+      SetICSMode();
+      telnetISR =
+	AddInputSource(icsPR, FALSE, read_from_ics, &telnetISR);
+      fromUserISR =
+	AddInputSource(NoProc, FALSE, read_from_player, &fromUserISR);
     }
-
-    if (*appData.cmailGameName != NULLCHAR) {
-	SetCmailMode();
-	OpenLoopback(&cmailPR);
-	cmailISR =
-	  AddInputSource(cmailPR, FALSE, CmailSigHandlerCallBack, &cmailISR);
+  else if (appData.noChessProgram) 
+    {
+      SetNCPMode();
+    } 
+  else 
+    {
+      SetGNUMode();
     }
-
-    ThawUI();
-    DisplayMessage("", "");
-    if (StrCaseCmp(appData.initialMode, "") == 0) {
+  
+  if (*appData.cmailGameName != NULLCHAR) 
+    {
+      SetCmailMode();
+      OpenLoopback(&cmailPR);
+      cmailISR =
+	AddInputSource(cmailPR, FALSE, CmailSigHandlerCallBack, &cmailISR);
+    }
+  
+  ThawUI();
+  DisplayMessage("", "");
+  if (StrCaseCmp(appData.initialMode, "") == 0) 
+    {
       initialMode = BeginningOfGame;
-    } else if (StrCaseCmp(appData.initialMode, "TwoMachines") == 0) {
+    } 
+  else if (StrCaseCmp(appData.initialMode, "TwoMachines") == 0) 
+    {
       initialMode = TwoMachinesPlay;
-    } else if (StrCaseCmp(appData.initialMode, "AnalyzeFile") == 0) {
+    } 
+  else if (StrCaseCmp(appData.initialMode, "AnalyzeFile") == 0) 
+    {
       initialMode = AnalyzeFile;
-    } else if (StrCaseCmp(appData.initialMode, "Analysis") == 0) {
+    } 
+  else if (StrCaseCmp(appData.initialMode, "Analysis") == 0) 
+    {
       initialMode = AnalyzeMode;
-    } else if (StrCaseCmp(appData.initialMode, "MachineWhite") == 0) {
+    } 
+  else if (StrCaseCmp(appData.initialMode, "MachineWhite") == 0) 
+    {
       initialMode = MachinePlaysWhite;
-    } else if (StrCaseCmp(appData.initialMode, "MachineBlack") == 0) {
+    } 
+  else if (StrCaseCmp(appData.initialMode, "MachineBlack") == 0) 
+    {
       initialMode = MachinePlaysBlack;
-    } else if (StrCaseCmp(appData.initialMode, "EditGame") == 0) {
+    } 
+  else if (StrCaseCmp(appData.initialMode, "EditGame") == 0) 
+    {
       initialMode = EditGame;
-    } else if (StrCaseCmp(appData.initialMode, "EditPosition") == 0) {
+    } 
+  else if (StrCaseCmp(appData.initialMode, "EditPosition") == 0) 
+    {
       initialMode = EditPosition;
-    } else if (StrCaseCmp(appData.initialMode, "Training") == 0) {
+    } 
+  else if (StrCaseCmp(appData.initialMode, "Training") == 0) 
+    {
       initialMode = Training;
-    } else {
+    } 
+  else 
+    {
       sprintf(buf, _("Unknown initialMode %s"), appData.initialMode);
       DisplayFatalError(buf, 0, 2);
       return;
     }
-
-    if (appData.matchMode) {
-	/* Set up machine vs. machine match */
-	if (appData.noChessProgram) {
-	    DisplayFatalError(_("Can't have a match with no chess programs"),
-			      0, 2);
-	    return;
+  
+  if (appData.matchMode) 
+    {
+      /* Set up machine vs. machine match */
+      if (appData.noChessProgram) 
+	{
+	  DisplayFatalError(_("Can't have a match with no chess programs"),
+			    0, 2);
+	  return;
 	}
-	matchMode = TRUE;
-	matchGame = 1;
-	if (*appData.loadGameFile != NULLCHAR) {
-	    int index = appData.loadGameIndex; // [HGM] autoinc
-	    if(index<0) lastIndex = index = 1;
-	    if (!LoadGameFromFile(appData.loadGameFile,
-				  index,
-				  appData.loadGameFile, FALSE)) {
-		DisplayFatalError(_("Bad game file"), 0, 1);
-		return;
+      matchMode = TRUE;
+      matchGame = 1;
+      if (*appData.loadGameFile != NULLCHAR) 
+	{
+	  int index = appData.loadGameIndex; // [HGM] autoinc
+	  if(index<0) lastIndex = index = 1;
+	  if (!LoadGameFromFile(appData.loadGameFile,
+				index,
+				appData.loadGameFile, FALSE)) 
+	    {
+	      DisplayFatalError(_("Bad game file"), 0, 1);
+	      return;
 	    }
-	} else if (*appData.loadPositionFile != NULLCHAR) {
-	    int index = appData.loadPositionIndex; // [HGM] autoinc
-	    if(index<0) lastIndex = index = 1;
-	    if (!LoadPositionFromFile(appData.loadPositionFile,
-				      index,
-				      appData.loadPositionFile)) {
-		DisplayFatalError(_("Bad position file"), 0, 1);
-		return;
+	} 
+      else if (*appData.loadPositionFile != NULLCHAR) 
+	{
+	  int index = appData.loadPositionIndex; // [HGM] autoinc
+	  if(index<0) lastIndex = index = 1;
+	  if (!LoadPositionFromFile(appData.loadPositionFile,
+				    index,
+				    appData.loadPositionFile)) 
+	    {
+	      DisplayFatalError(_("Bad position file"), 0, 1);
+	      return;
 	    }
 	}
-	TwoMachinesEvent();
-    } else if (*appData.cmailGameName != NULLCHAR) {
-	/* Set up cmail mode */
-	ReloadCmailMsgEvent(TRUE);
-    } else {
-	/* Set up other modes */
-	if (initialMode == AnalyzeFile) {
-	  if (*appData.loadGameFile == NULLCHAR) {
-	    DisplayFatalError(_("AnalyzeFile mode requires a game file"), 0, 1);
-	    return;
-	  }
+      TwoMachinesEvent();
+    } 
+  else if (*appData.cmailGameName != NULLCHAR) 
+    {
+      /* Set up cmail mode */
+      ReloadCmailMsgEvent(TRUE);
+    } 
+  else 
+    {
+      /* Set up other modes */
+      if (initialMode == AnalyzeFile) 
+	{
+	  if (*appData.loadGameFile == NULLCHAR) 
+	    {
+	      DisplayFatalError(_("AnalyzeFile mode requires a game file"), 0, 1);
+	      return;
+	    }
 	}
-	if (*appData.loadGameFile != NULLCHAR) {
-	    (void) LoadGameFromFile(appData.loadGameFile,
-				    appData.loadGameIndex,
-				    appData.loadGameFile, TRUE);
-	} else if (*appData.loadPositionFile != NULLCHAR) {
-	    (void) LoadPositionFromFile(appData.loadPositionFile,
-					appData.loadPositionIndex,
-					appData.loadPositionFile);
-            /* [HGM] try to make self-starting even after FEN load */
-            /* to allow automatic setup of fairy variants with wtm */
-            if(initialMode == BeginningOfGame && !blackPlaysFirst) {
-                gameMode = BeginningOfGame;
-                setboardSpoiledMachineBlack = 1;
+      if (*appData.loadGameFile != NULLCHAR) 
+	{
+	  (void) LoadGameFromFile(appData.loadGameFile,
+				  appData.loadGameIndex,
+				  appData.loadGameFile, TRUE);
+	} 
+      else if (*appData.loadPositionFile != NULLCHAR) 
+	{
+	  (void) LoadPositionFromFile(appData.loadPositionFile,
+				      appData.loadPositionIndex,
+				      appData.loadPositionFile);
+	  /* [HGM] try to make self-starting even after FEN load */
+	  /* to allow automatic setup of fairy variants with wtm */
+	  if(initialMode == BeginningOfGame && !blackPlaysFirst) 
+	    {
+	      gameMode = BeginningOfGame;
+	      setboardSpoiledMachineBlack = 1;
             }
-            /* [HGM] loadPos: make that every new game uses the setup */
-            /* from file as long as we do not switch variant          */
-            if(!blackPlaysFirst) {
-                startedFromPositionFile = TRUE;
-                CopyBoard(filePosition, boards[0]);
-            }
+	  /* [HGM] loadPos: make that every new game uses the setup */
+	  /* from file as long as we do not switch variant          */
+	  if(!blackPlaysFirst) 
+	    {
+	      startedFromPositionFile = TRUE;
+	      CopyBoard(filePosition, boards[0]);
+	    }
 	}
-	if (initialMode == AnalyzeMode) {
-	  if (appData.noChessProgram) {
-	    DisplayFatalError(_("Analysis mode requires a chess engine"), 0, 2);
-	    return;
-	  }
-	  if (appData.icsActive) {
-	    DisplayFatalError(_("Analysis mode does not work with ICS mode"),0,2);
-	    return;
-	  }
+      if (initialMode == AnalyzeMode) 
+	{
+	  if (appData.noChessProgram) 
+	    {
+	      DisplayFatalError(_("Analysis mode requires a chess engine"), 0, 2);
+	      return;
+	    }
+	  if (appData.icsActive) 
+	    {
+	      DisplayFatalError(_("Analysis mode does not work with ICS mode"),0,2);
+	      return;
+	    }
 	  AnalyzeModeEvent();
-	} else if (initialMode == AnalyzeFile) {
+	} 
+      else if (initialMode == AnalyzeFile) 
+	{
 	  appData.showThinking = TRUE; // [HGM] thinking: moved out of ShowThinkingEvent
 	  ShowThinkingEvent();
 	  AnalyzeFileEvent();
 	  AnalysisPeriodicEvent(1);
-	} else if (initialMode == MachinePlaysWhite) {
-	  if (appData.noChessProgram) {
-	    DisplayFatalError(_("MachineWhite mode requires a chess engine"),
-			      0, 2);
-	    return;
-	  }
-	  if (appData.icsActive) {
-	    DisplayFatalError(_("MachineWhite mode does not work with ICS mode"),
-			      0, 2);
-	    return;
-	  }
+	} 
+      else if (initialMode == MachinePlaysWhite) 
+	{
+	  if (appData.noChessProgram) 
+	    {
+	      DisplayFatalError(_("MachineWhite mode requires a chess engine"),
+				0, 2);
+	      return;
+	    }
+	  if (appData.icsActive) 
+	    {
+	      DisplayFatalError(_("MachineWhite mode does not work with ICS mode"),
+				0, 2);
+	      return;
+	    }
 	  MachineWhiteEvent();
-	} else if (initialMode == MachinePlaysBlack) {
-	  if (appData.noChessProgram) {
-	    DisplayFatalError(_("MachineBlack mode requires a chess engine"),
-			      0, 2);
-	    return;
-	  }
-	  if (appData.icsActive) {
-	    DisplayFatalError(_("MachineBlack mode does not work with ICS mode"),
-			      0, 2);
-	    return;
-	  }
+	} 
+      else if (initialMode == MachinePlaysBlack) 
+	{
+	  if (appData.noChessProgram) 
+	    {
+	      DisplayFatalError(_("MachineBlack mode requires a chess engine"),
+				0, 2);
+	      return;
+	    }
+	  if (appData.icsActive) 
+	    {
+	      DisplayFatalError(_("MachineBlack mode does not work with ICS mode"),
+				0, 2);
+	      return;
+	    }
 	  MachineBlackEvent();
-	} else if (initialMode == TwoMachinesPlay) {
-	  if (appData.noChessProgram) {
-	    DisplayFatalError(_("TwoMachines mode requires a chess engine"),
-			      0, 2);
-	    return;
-	  }
-	  if (appData.icsActive) {
-	    DisplayFatalError(_("TwoMachines mode does not work with ICS mode"),
-			      0, 2);
-	    return;
-	  }
+	} 
+      else if (initialMode == TwoMachinesPlay) 
+	{
+	  if (appData.noChessProgram) 
+	    {
+	      DisplayFatalError(_("TwoMachines mode requires a chess engine"),
+				0, 2);
+	      return;
+	    }
+	  if (appData.icsActive) 
+	    {
+	      DisplayFatalError(_("TwoMachines mode does not work with ICS mode"),
+				0, 2);
+	      return;
+	    }
 	  TwoMachinesEvent();
-	} else if (initialMode == EditGame) {
+	} 
+      else if (initialMode == EditGame) 
+	{
 	  EditGameEvent();
-	} else if (initialMode == EditPosition) {
+	} 
+      else if (initialMode == EditPosition) 
+	{
 	  EditPositionEvent();
-	} else if (initialMode == Training) {
-	  if (*appData.loadGameFile == NULLCHAR) {
-	    DisplayFatalError(_("Training mode requires a game file"), 0, 2);
-	    return;
-	  }
+	} 
+      else if (initialMode == Training) 
+	{
+	  if (*appData.loadGameFile == NULLCHAR) 
+	    {
+	      DisplayFatalError(_("Training mode requires a game file"), 0, 2);
+	      return;
+	    }
 	  TrainingEvent();
 	}
     }
+  
+  return;
 }
 
 /*
@@ -11018,76 +11087,84 @@ MachineWhiteEvent()
 void
 MachineBlackEvent()
 {
-    char buf[MSG_SIZ];
-   char *bookHit = NULL;
-
-    if (appData.noChessProgram || (gameMode == MachinePlaysBlack))
-	return;
-
-
-    if (gameMode == PlayFromGameFile ||
-	gameMode == TwoMachinesPlay  ||
-	gameMode == Training         ||
-	gameMode == AnalyzeMode      ||
-	gameMode == EndOfGame)
-        EditGameEvent();
-
-    if (gameMode == EditPosition) 
-        EditPositionDone(TRUE);
-
-    if (WhiteOnMove(currentMove)) {
-	DisplayError(_("It is not Black's turn"), 0);
-	return;
+  char buf[MSG_SIZ];
+  char *bookHit = NULL;
+  
+  if (appData.noChessProgram || (gameMode == MachinePlaysBlack))
+    return;
+  
+  
+  if (gameMode == PlayFromGameFile 
+      || gameMode == TwoMachinesPlay  
+      || gameMode == Training     
+      || gameMode == AnalyzeMode
+      || gameMode == EndOfGame)
+    EditGameEvent();
+  
+  if (gameMode == EditPosition) 
+    EditPositionDone(TRUE);
+  
+  if (WhiteOnMove(currentMove)) 
+    {
+      DisplayError(_("It is not Black's turn"), 0);
+      return;
     }
-
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile)
-      ExitAnalyzeMode();
-
-    if (gameMode == EditGame || gameMode == AnalyzeMode ||
-	gameMode == AnalyzeFile)
-	TruncateGame();
-
-    ResurrectChessProgram();	/* in case it isn't running */
-    gameMode = MachinePlaysBlack;
-    pausing = FALSE;
-    ModeHighlight();
-    SetGameInfo();
-    sprintf(buf, "%s vs. %s", gameInfo.white, gameInfo.black);
-    DisplayTitle(buf);
-    if (first.sendName) {
+  
+  if (gameMode == AnalyzeMode || gameMode == AnalyzeFile)
+    ExitAnalyzeMode();
+  
+  if (gameMode == EditGame || gameMode == AnalyzeMode 
+      || gameMode == AnalyzeFile)
+    TruncateGame();
+  
+  ResurrectChessProgram();	/* in case it isn't running */
+  gameMode = MachinePlaysBlack;
+  pausing  = FALSE;
+  ModeHighlight();
+  SetGameInfo();
+  sprintf(buf, "%s vs. %s", gameInfo.white, gameInfo.black);
+  DisplayTitle(buf);
+  if (first.sendName) 
+    {
       sprintf(buf, "name %s\n", gameInfo.white);
       SendToProgram(buf, &first);
     }
-    if (first.sendTime) {
-      if (first.useColors) {
-	SendToProgram("white\n", &first); /*gnu kludge*/
-      }
+  if (first.sendTime) 
+    {
+      if (first.useColors) 
+	{
+	  SendToProgram("white\n", &first); /*gnu kludge*/
+	}
       SendTimeRemaining(&first, FALSE);
     }
-    if (first.useColors) {
+  if (first.useColors) 
+    {
       SendToProgram("black\n", &first); // [HGM] book: 'go' sent separately
     }
-    bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
-    SetMachineThinkingEnables();
-    first.maybeThinking = TRUE;
-    StartClocks();
-
-    if (appData.autoFlipView && flipView) {
+  bookHit = SendMoveToBookUser(forwardMostMove-1, &first, TRUE); // [HGM] book: send go or retrieve book move
+  SetMachineThinkingEnables();
+  first.maybeThinking = TRUE;
+  StartClocks();
+  
+  if (appData.autoFlipView && flipView) 
+    {
       flipView = !flipView;
       DrawPosition(FALSE, NULL);
       DisplayBothClocks();       // [HGM] logo: clocks might have to be exchanged;
     }
-    if(bookHit) { // [HGM] book: simulate book reply
-	static char bookMove[MSG_SIZ]; // a bit generous?
-
-	programStats.nodes = programStats.depth = programStats.time =
-	programStats.score = programStats.got_only_move = 0;
-	sprintf(programStats.movelist, "%s (xbook)", bookHit);
-
-	strcpy(bookMove, "move ");
-	strcat(bookMove, bookHit);
-	HandleMachineMove(bookMove, &first);
+  if(bookHit) 
+    { // [HGM] book: simulate book reply
+      static char bookMove[MSG_SIZ]; // a bit generous?
+      
+      programStats.nodes = programStats.depth = programStats.time 
+	= programStats.score = programStats.got_only_move = 0;
+      sprintf(programStats.movelist, "%s (xbook)", bookHit);
+      
+      strcpy(bookMove, "move ");
+      strcat(bookMove, bookHit);
+      HandleMachineMove(bookMove, &first);
     }
+  return;
 }
 
 
