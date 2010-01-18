@@ -359,7 +359,7 @@ Widget  layoutWidget, formWidget, boardWidget, messageWidget,
   menuBarWidget,  editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
 
-Widget historyShell, evalGraphShell, gameListShell;
+Widget  evalGraphShell, gameListShell;
 //XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 //XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
 
@@ -1187,6 +1187,7 @@ ParseCommPortSettings(char *s)
 
 extern Widget engineOutputShell;
 extern Widget tagsShell, editTagsShell;
+
 void
 GetActualPlacement(Widget wg, WindowPlacement *wp)
 {
@@ -1216,7 +1217,7 @@ GetWindowCoords()
 
   //  GetActualPlacement(shellWidget, &wpMain);
   if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
-  if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
+//  if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
   if(commentShell) GetActualPlacement(commentShell, &wpComment);

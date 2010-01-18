@@ -31,6 +31,7 @@
               <object class="GtkTreeView" id="MoveHistoryView">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <property name="model">MoveHistoryStore</property>
                 <property name="headers_clickable">False</property>
                 <property name="enable_search">False</property>
