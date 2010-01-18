@@ -75,18 +75,27 @@ possible.</p>
 
 <h4>development version</h4>
 
-<p>It would be great if people would like help in the developing process. We can use all kind of help, from people who just use the software and have a feature request (send them to developer mailing list), to people who can update/check the documentation... a big help would be people that test the latest git-version or the developer snapshots and send us bugreports.</p>
+<p>It would be great if people would like help in the developing process. We can use all kind of help, from people who just use the software and have a feature request (send them to developer mailing list), to people who can update/check the documentation and especially people who test development versions (send problems to the developer mailing list). </p>
 
 <p>At the moment we have three developer versions:</p>
 
 <ul>
 <li>A snapshot of the 4.4.3 branch: 
-   This will become the next stable version. Nothing there since 4.4.2 just got released...</li>
-<li>A snapshot of the master branch: <a href="ftp://alpha.gnu.org/gnu/xboard/">master-20091122</a>. <br />
+   This will become the next stable version.  <a href="ftp://alpha.gnu.org/gnu/xboard/">4.4.3.20100118</a></li>
+<li>A snapshot of the master branch: <a href="ftp://alpha.gnu.org/gnu/xboard/">master-20100118</a>. <br />
    The master branch at this moment also includes changes that will go in future version, but not necessary in the next release. Since this includes lots of changes, chances for major bugs are higher.</li>
-<li>A snapshot of the gtk branch: <a href="ftp://alpha.gnu.org/gnu/xboard/">gtk-20091122</a>. <br />
+<li>A snapshot of the gtk branch: <a href="ftp://alpha.gnu.org/gnu/xboard/">gtk-20100118</a>. <br />
    In the gtk branch we are working on merging Winboard and Xboard back together using a gtk-frontend. This code doesn't work 100% yet, it will crash quite often, but you can almost play normal games against a machine already.</li>
 </ul>
+
+<h5>How to build the development version</h5>
+
+<h6>git version</h6>
+<p> After cloning the git-repository, do ./autogen.sh, ./configure and then a make.</p>
+
+<h6>tar-balls</h6>
+<p> Unpack the tar ball and do ./configure followed by make.</p>
+
 
 <p>For development sources and other information, please see
 the <a href="http://savannah.gnu.org/projects/xboard/">XBoard project
