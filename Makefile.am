@@ -34,7 +34,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 xboard_LDADD = -lm  @XAW_LIBS@ @GTK_LIBS@
 
 EXTRA_DIST = pixmaps bitmaps winboard sounds \
-	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
+	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.conf \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm readme_HGM.txt zippy.README
 
 DISTCLEANFILES = stamp-h
@@ -45,8 +45,7 @@ info_TEXINFOS =  xboard.texi
 xboard_TEXINFOS =  copyright.texi 
 man6_MANS = xboard.man
 
-install-data-local: $(srcdir)/xboard.conf
-	$(INSTALL_DATA) $(srcdir)/xboard.conf $(DESTDIR)/etc/xboard
+sysconf_DATA=xboard.conf
 
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 	$(srcdir)/texi2man $(srcdir)/xboard.texi > xboard.man || (rm -f xboard.man ; false)
