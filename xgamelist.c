@@ -22,6 +22,7 @@
 
 #include "config.h"
 
+#include <gtk/gtk.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
@@ -90,6 +91,9 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
+extern GtkWidget               *GUI_GameList;
+extern GtkListStore            *LIST_GameList;
+
 
 extern Widget formWidget, boardWidget, menuBarWidget, gameListShell;
 extern int squareSize;
@@ -121,153 +125,7 @@ GameListCreate(name, callback, client_data)
      XtCallbackProc callback;
      XtPointer client_data;
 {
-    Arg args[16];
-    Widget shell, form, viewport, listwidg, layout;
-    Widget b_load, b_loadprev, b_loadnext, b_close;
-    Dimension fw_width;
-    int j;
-    GameListClosure *glc = (GameListClosure *) client_data;
-
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &fw_width);  j++;
-    XtGetValues(formWidget, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNallowShellResize, True);  j++;
-#if TOPLEVEL
-//    shell = gameListShell =
-//      XtCreatePopupShell(name, topLevelShellWidgetClass,
-//			 shellWidget, args, j);
-#else
-//    shell = gameListShell =
-//      XtCreatePopupShell(name, transientShellWidgetClass,
-//			 shellWidget, args, j);
-#endif
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-			    layoutArgs, XtNumber(layoutArgs));
-    j = 0;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNresizable, False);  j++;
-    XtSetArg(args[j], XtNwidth, fw_width);  j++;
-    XtSetArg(args[j], XtNallowVert, True); j++;
-    viewport =
-      XtCreateManagedWidget("viewport", viewportWidgetClass, form, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNlist, glc->strings);  j++;
-    XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
-    XtSetArg(args[j], XtNforceColumns, True);  j++;
-    XtSetArg(args[j], XtNverticalList, True);  j++;
-    listwidg = 
-      XtCreateManagedWidget("list", listWidgetClass, viewport, args, j);
-    XawListHighlight(listwidg, 0);
-    XtAugmentTranslations(listwidg,
-			  XtParseTranslationTable(gameListTranslations));
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_load =
-      XtCreateManagedWidget(_("load"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_load, XtNcallback, callback, client_data);
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_load);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_loadprev =
-      XtCreateManagedWidget(_("prev"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_loadprev, XtNcallback, callback, client_data);
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_loadprev);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_loadnext =
-      XtCreateManagedWidget(_("next"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_loadnext, XtNcallback, callback, client_data);
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_loadnext);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_close =
-      XtCreateManagedWidget(_("close"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_close, XtNcallback, callback, client_data);
-
-    if(wpGameList.width > 0) {
-	glc->x = wpGameList.x;
-	glc->y = wpGameList.y;
-	glc->w = wpGameList.width;
-	glc->h = wpGameList.height;
-    }
-
-    if (glc->x == -1) {
-	Position y1;
-	Dimension h1;
-	int xx, yy;
-	Window junk;
-
-	j = 0;
-	XtSetArg(args[j], XtNheight, &h1); j++;
-	XtSetArg(args[j], XtNy, &y1); j++;
-	XtGetValues(boardWidget, args, j);
-	glc->w = fw_width * 3/4;
-	glc->h = squareSize * 3;
-
-	//	XSync(xDisplay, False);
-#ifdef NOTDEF
-	/* This code seems to tickle an X bug if it is executed too soon
-	   after xboard starts up.  The coordinates get transformed as if
-	   the main window was positioned at (0, 0).
-	*/
-//	XtTranslateCoords(shellWidget, (fw_width - glc->w) / 2,
-//			  y1 + (h1 - glc->h + appData.borderYoffset) / 2,
-//			  &glc->x, &glc->y);
-#else /*!NOTDEF*/
-//        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-//			      RootWindowOfScreen(XtScreen(shellWidget)),
-//			      (fw_width - glc->w) / 2,
-//			      y1 + (h1 - glc->h + appData.borderYoffset) / 2,
-//			      &xx, &yy, &junk);
-	glc->x = xx;
-	glc->y = yy;
-#endif /*!NOTDEF*/
-	if (glc->y < 0) glc->y = 0; /*avoid positioning top offscreen*/
-    }
-    j = 0;
-    XtSetArg(args[j], XtNheight, glc->h);  j++;
-    XtSetArg(args[j], XtNwidth, glc->w);  j++;
-    XtSetArg(args[j], XtNx, glc->x - appData.borderXoffset);  j++;
-    XtSetArg(args[j], XtNy, glc->y - appData.borderYoffset);  j++;
-    XtSetValues(shell, args, j);
-
-    XtRealizeWidget(shell);
-    //    CatchDeleteWindow(shell, "GameListPopDown");
-
-    return shell;
+  return;
 }
 
 void
@@ -328,75 +186,48 @@ GameListPopUp(fp, filename)
      FILE *fp;
      char *filename;
 {
-    Arg args[16];
-    int j, nstrings;
-    Widget listwidg;
-    ListGame *lg;
-    char **st;
+  GtkTreeIter iter;
+  int  i=0,nstrings;
+  ListGame *lg;
+  
+  /* first clear everything, do we need this? */
+  gtk_list_store_clear(LIST_GameList);
 
-    if (glc == NULL) {
-	glc = (GameListClosure *) calloc(1, sizeof(GameListClosure));
-	glc->x = glc->y = -1;
+  /* fill list with information */
+  lg = (ListGame *) gameList.head;
+  nstrings = ((ListGame *) gameList.tailPred)->number;
+  while (nstrings--) 
+    {
+      gtk_list_store_append (LIST_GameList, &iter);
+      gtk_list_store_set (LIST_GameList, &iter,
+			  0, StrSave(filename),
+			  1, GameListLine(lg->number, &lg->gameInfo),
+			  2, fp,
+			  -1);
+      lg = (ListGame *) lg->node.succ;
     }
 
-    if (glc->strings != NULL) {
-	st = glc->strings;
-	while (*st) {
-	    free(*st++);
-	}
-	free(glc->strings);
-    }
 
-    nstrings = ((ListGame *) gameList.tailPred)->number;
-    glc->strings = (char **) malloc((nstrings + 1) * sizeof(char *));
-    st = glc->strings;
-    lg = (ListGame *) gameList.head;
-    while (nstrings--) {
-	*st++ = GameListLine(lg->number, &lg->gameInfo);
-	lg = (ListGame *) lg->node.succ;
-     }
-    *st = NULL;
+  /* show widget */
+  gtk_widget_show (GUI_GameList);
 
-    glc->fp = fp;
+//    XtPopup(glc->shell, XtGrabNone);
+//    glc->up = True;
+//    j = 0;
+//    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Game List"),
+//		args, j);
 
-    if (glc->filename != NULL) free(glc->filename);
-    glc->filename = StrSave(filename);
-
-    if (glc->shell == NULL) {
-	glc->shell = GameListCreate(filename, GameListCallback, glc); 
-    } else {
-	listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-	XawListChange(listwidg, glc->strings, 0, 0, True);
-	XawListHighlight(listwidg, 0);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) filename);  j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) filename);  j++;
-	XtSetValues(glc->shell, args, j);
-    }
-
-    XtPopup(glc->shell, XtGrabNone);
-    glc->up = True;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Game List"),
-		args, j);
+  return;
 }
 
 void
 GameListDestroy()
 {
-    if (glc == NULL) return;
-    GameListPopDown();
-    if (glc->strings != NULL) {
-	char **st;
-	st = glc->strings;
-	while (*st) {
-	    free(*st++);
-	}
-	free(glc->strings);
-    }
-    free(glc);
-    glc = NULL;
+  GameListPopDown();
+
+  gtk_list_store_clear(LIST_GameList);
+  return;
 }
 
 void
@@ -451,27 +282,10 @@ LoadSelectedProc(w, event, prms, nprms)
 void
 GameListPopDown()
 {
-    Arg args[16];
-    int j;
+  /* hides the history window */
 
-    if (glc == NULL) return;
-    j = 0;
-    XtSetArg(args[j], XtNx, &glc->x); j++;
-    XtSetArg(args[j], XtNy, &glc->y); j++;
-    XtSetArg(args[j], XtNheight, &glc->h); j++;
-    XtSetArg(args[j], XtNwidth, &glc->w); j++;
-    XtGetValues(glc->shell, args, j);
-    wpGameList.x = glc->x - 4;
-    wpGameList.y = glc->y - 23;
-    wpGameList.width = glc->w;
-    wpGameList.height = glc->h;
-    XtPopdown(glc->shell);
-//    XtSetKeyboardFocus(shellWidget, formWidget);
-    glc->up = False;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Game List"),
-		args, j);
+  gtk_widget_hide (GUI_GameList);
+  return;
 }
 
 void
@@ -487,5 +301,7 @@ GameListHighlight(index)
 Boolean
 GameListIsUp()
 {
-    return glc && glc->up;
+  /* return status of history window */
+  
+  return gtk_widget_get_visible (GUI_GameList);
 }

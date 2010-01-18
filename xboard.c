@@ -1453,6 +1453,9 @@ main(argc, argv)
     GUI_History = GTK_WIDGET (gtk_builder_get_object (builder, "MoveHistory"));
     if(!GUI_History) printf("Error: gtk_builder didn't work!\n");
 
+    GUI_GameList = GTK_WIDGET (gtk_builder_get_object (builder, "GameList"));
+    if(!GUI_GameList) printf("Error: gtk_builder didn't work!\n");
+
     GUI_Menubar  = GTK_WIDGET (gtk_builder_get_object (builder, "MenuBar"));
     if(!GUI_Menubar) printf("Error: gtk_builder didn't work!\n");
     GUI_Timer  = GTK_WIDGET (gtk_builder_get_object (builder, "Timer"));
@@ -1470,6 +1473,9 @@ main(argc, argv)
 
     LIST_MoveHistory = GTK_LIST_STORE (gtk_builder_get_object (builder, "MoveHistoryStore"));
     if(!LIST_MoveHistory) printf("Error: gtk_builder didn't work!\n");
+
+    LIST_GameList = GTK_LIST_STORE (gtk_builder_get_object (builder, "GameListStore"));
+    if(!LIST_GameList) printf("Error: gtk_builder didn't work!\n");
 
     /* EditTags window */
     GUI_EditTags = GTK_WIDGET (gtk_builder_get_object (builder, "EditTags"));
@@ -3899,8 +3905,11 @@ int LoadGamePopUp(f, gameNumber, title)
 	else if (!ListEmpty(&gameList) 
 		 && ((ListGame *) gameList.tailPred)->number > 1) 
 	  {
-	    // TODO convert to GTK
-	    //	    GameListPopUp(f, title);
+	    /* we need an answer which game to load, so let's make it modal for a while*/
+	    gtk_window_set_modal(GTK_WINDOW(GUI_GameList) , TRUE);  
+	    GameListPopUp(f, title);
+	    gtk_window_set_modal(GTK_WINDOW(GUI_GameList) , FALSE);  
+
 	    return TRUE;
 	  };
 

@@ -4,6 +4,7 @@ GtkBuilder              *builder=NULL;
 GtkWidget               *GUI_Window=NULL;
 GtkWidget               *GUI_Aspect=NULL;
 GtkWidget               *GUI_History=NULL;
+GtkWidget               *GUI_GameList=NULL;
 GtkWidget               *GUI_Board=NULL;
 GtkWidget               *GUI_Whiteclock=NULL;
 GtkWidget               *GUI_Blackclock=NULL;
@@ -15,6 +16,7 @@ GtkWidget               *GUI_EditTags=NULL;
 GtkWidget               *GUI_EditTagsTextArea=NULL;
 
 GtkListStore            *LIST_MoveHistory=NULL;
+GtkListStore            *LIST_GameList=NULL;
 
 gint                     boardWidth;
 gint                     boardHeight;
