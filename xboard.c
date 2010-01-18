@@ -3863,9 +3863,10 @@ void ModeHighlight()
       }
     }
 
-    wname = ModeToWidgetName(oldmode);
-    if(wname)
-       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, wname)),True);
+    // probably not needed anymore
+//    wname = ModeToWidgetName(oldmode);
+//    if(wname)
+//       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, wname)),True);
 
     oldmode = gameMode;
 
