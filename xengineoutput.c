@@ -101,8 +101,7 @@ extern char *getenv();
 #define _LL_ 100
 
 // imports from xboard.c
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
-extern Display *xDisplay;
+extern Widget formWidget, boardWidget, menuBarWidget;
 extern Window xBoardWindow;
 extern int squareSize;
 extern Pixmap xMarkPixmap, wIconPixmap, bIconPixmap;
@@ -151,13 +150,13 @@ void ReadIcon(char *pixData[], int iconNr)
 {
     int r;
 
-	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(outputField[0][nColorIcon]),
-				       pixData,
-				       &(icons[iconNr]),
-				       NULL, NULL /*&attr*/)) != 0) {
-	  fprintf(stderr, _("Error %d loading icon image\n"), r);
-	  exit(1); 
-	}	
+//	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(outputField[0][nColorIcon]),
+//				       pixData,
+//				       &(icons[iconNr]),
+//				       NULL, NULL /*&attr*/)) != 0) {
+//	  fprintf(stderr, _("Error %d loading icon image\n"), r);
+//	  exit(1); 
+//	}	
 }
 
 static void InitializeEngineOutput()
@@ -236,11 +235,11 @@ MemoCB(Widget w, XtPointer client_data, Atom *selection,
   if (value==NULL || *len==0) return; /* nothing had been selected to copy */
   selected_fen_position = value;
   selected_fen_position[*len]='\0'; /* normally this string is terminated, but be safe */
-    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
+//    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+//		   CurrentTime,
+//		   SendPositionSelection,
+//		   NULL/* lose_ownership_proc */ ,
+//		   NULL/* transfer_done_proc */);
 }
 
 void CopyMemoProc(w, event, prms, nprms)
@@ -390,14 +389,14 @@ Widget EngineOutputCreate(name, text)
     XtSetArg(args[j], XtNresizable, True);  j++;
     shell =
 #if TOPLEVEL 
-     XtCreatePopupShell(name, topLevelShellWidgetClass,
+      //     XtCreatePopupShell(name, topLevelShellWidgetClass,
 #else
-      XtCreatePopupShell(name, transientShellWidgetClass,
+      //      XtCreatePopupShell(name, transientShellWidgetClass,
 #endif
-			 shellWidget, args, j);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-			    layoutArgs, XtNumber(layoutArgs));
+      //			 shellWidget, args, j);
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
+//			    layoutArgs, XtNumber(layoutArgs));
     // divide window vertically into two equal parts, by creating two forms
     form =
       XtCreateManagedWidget("form", formWidgetClass, layout,
@@ -435,20 +434,20 @@ Widget EngineOutputCreate(name, text)
 	engineOutputH = bw_height/2;
 	engineOutputW = bw_width-16;
 
-	XSync(xDisplay, False);
+	//	XSync(xDisplay, False);
 #ifdef NOTDEF
 	/* This code seems to tickle an X bug if it is executed too soon
 	   after xboard starts up.  The coordinates get transformed as if
 	   the main window was positioned at (0, 0).
 	   */
-	XtTranslateCoords(shellWidget,
-			  (bw_width - engineOutputW) / 2, 0 - engineOutputH / 2,
-			  &engineOutputX, &engineOutputY);
+//	XtTranslateCoords(shellWidget,
+//			  (bw_width - engineOutputW) / 2, 0 - engineOutputH / 2,
+//			  &engineOutputX, &engineOutputY);
 #else  /*!NOTDEF*/
-        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			      RootWindowOfScreen(XtScreen(shellWidget)),
-			      (bw_width - engineOutputW) / 2, 0 - engineOutputH / 2,
-			      &xx, &yy, &junk);
+//        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
+//			      RootWindowOfScreen(XtScreen(shellWidget)),
+//			      (bw_width - engineOutputW) / 2, 0 - engineOutputH / 2,
+//			      &xx, &yy, &junk);
 	engineOutputX = xx;
 	engineOutputY = yy;
 #endif /*!NOTDEF*/
@@ -515,7 +514,7 @@ EngineOutputPopUp()
 	engineOutputShell =
 	  EngineOutputCreate(title, text);
 	XtRealizeWidget(engineOutputShell);
-	CatchDeleteWindow(engineOutputShell, "EngineOutputPopDown");
+	//	CatchDeleteWindow(engineOutputShell, "EngineOutputPopDown");
 	if( needInit ) {
 	    InitializeEngineOutput();
 	    needInit = FALSE;
@@ -536,7 +535,7 @@ EngineOutputPopUp()
     }
 
     XtPopup(engineOutputShell, XtGrabNone);
-    XSync(xDisplay, False);
+    //    XSync(xDisplay, False);
 
     j=0;
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
@@ -565,7 +564,7 @@ void EngineOutputPopDown()
     wpEngineOutput.width = engineOutputW;
     wpEngineOutput.height = engineOutputH;
     XtPopdown(engineOutputShell);
-    XSync(xDisplay, False);
+    //    XSync(xDisplay, False);
     j=0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
     XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Engine Output"),

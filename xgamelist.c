@@ -91,8 +91,7 @@ extern char *getenv();
 #endif
 
 
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell;
-extern Display *xDisplay;
+extern Widget formWidget, boardWidget, menuBarWidget, gameListShell;
 extern int squareSize;
 extern Pixmap xMarkPixmap;
 extern char *layoutName;
@@ -137,13 +136,13 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNallowShellResize, True);  j++;
 #if TOPLEVEL
-    shell = gameListShell =
-      XtCreatePopupShell(name, topLevelShellWidgetClass,
-			 shellWidget, args, j);
+//    shell = gameListShell =
+//      XtCreatePopupShell(name, topLevelShellWidgetClass,
+//			 shellWidget, args, j);
 #else
-    shell = gameListShell =
-      XtCreatePopupShell(name, transientShellWidgetClass,
-			 shellWidget, args, j);
+//    shell = gameListShell =
+//      XtCreatePopupShell(name, transientShellWidgetClass,
+//			 shellWidget, args, j);
 #endif
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,
@@ -238,21 +237,21 @@ GameListCreate(name, callback, client_data)
 	glc->w = fw_width * 3/4;
 	glc->h = squareSize * 3;
 
-	XSync(xDisplay, False);
+	//	XSync(xDisplay, False);
 #ifdef NOTDEF
 	/* This code seems to tickle an X bug if it is executed too soon
 	   after xboard starts up.  The coordinates get transformed as if
 	   the main window was positioned at (0, 0).
 	*/
-	XtTranslateCoords(shellWidget, (fw_width - glc->w) / 2,
-			  y1 + (h1 - glc->h + appData.borderYoffset) / 2,
-			  &glc->x, &glc->y);
+//	XtTranslateCoords(shellWidget, (fw_width - glc->w) / 2,
+//			  y1 + (h1 - glc->h + appData.borderYoffset) / 2,
+//			  &glc->x, &glc->y);
 #else /*!NOTDEF*/
-        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			      RootWindowOfScreen(XtScreen(shellWidget)),
-			      (fw_width - glc->w) / 2,
-			      y1 + (h1 - glc->h + appData.borderYoffset) / 2,
-			      &xx, &yy, &junk);
+//        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
+//			      RootWindowOfScreen(XtScreen(shellWidget)),
+//			      (fw_width - glc->w) / 2,
+//			      y1 + (h1 - glc->h + appData.borderYoffset) / 2,
+//			      &xx, &yy, &junk);
 	glc->x = xx;
 	glc->y = yy;
 #endif /*!NOTDEF*/
@@ -266,7 +265,7 @@ GameListCreate(name, callback, client_data)
     XtSetValues(shell, args, j);
 
     XtRealizeWidget(shell);
-    CatchDeleteWindow(shell, "GameListPopDown");
+    //    CatchDeleteWindow(shell, "GameListPopDown");
 
     return shell;
 }
@@ -467,7 +466,7 @@ GameListPopDown()
     wpGameList.width = glc->w;
     wpGameList.height = glc->h;
     XtPopdown(glc->shell);
-    XtSetKeyboardFocus(shellWidget, formWidget);
+//    XtSetKeyboardFocus(shellWidget, formWidget);
     glc->up = False;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;

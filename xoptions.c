@@ -81,8 +81,7 @@ extern char *getenv();
 
 extern void SendToProgram P((char *message, ChessProgramState *cps));
 
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
-extern Display *xDisplay;
+extern Widget formWidget,  boardWidget, menuBarWidget;
 extern int squareSize;
 extern Pixmap xMarkPixmap;
 extern char *layoutName;
@@ -181,14 +180,14 @@ void ShufflePopUp()
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
     XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    shuffleShell = popup =
-      XtCreatePopupShell(_("New Shuffle Game"), transientShellWidgetClass,
-			 shellWidget, args, i);
-    
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-  
+//    shuffleShell = popup =
+//      XtCreatePopupShell(_("New Shuffle Game"), transientShellWidgetClass,
+//			 shellWidget, args, i);
+//    
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
+//			    layoutArgs, XtNumber(layoutArgs));
+//  
     sprintf(def, "%d\n", appData.defaultFrcPosition);
     i = 0;
     XtSetArg(args[i], XtNlabel, _("Start-position number:")); i++;
@@ -207,10 +206,10 @@ void ShufflePopUp()
     XawDialogAddButton(dialog, _("off"), ShuffleCallback, (XtPointer) dialog);
     
     XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "ShufflePopDown");
+    //    CatchDeleteWindow(popup, "ShufflePopDown");
     
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
+//    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+//		  &x, &y, &win_x, &win_y, &mask);
     
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
@@ -364,18 +363,18 @@ void TimeControlPopUp()
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
 //    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    TimeControlShell = popup =
-      XtCreatePopupShell(_("TimeControl Menu"), transientShellWidgetClass,
-			 shellWidget, args, i);
-    
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-  
-    form =
-      XtCreateManagedWidget(layoutName, formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-  
+//    TimeControlShell = popup =
+//      XtCreatePopupShell(_("TimeControl Menu"), transientShellWidgetClass,
+//			 shellWidget, args, i);
+//    
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
+//			    layoutArgs, XtNumber(layoutArgs));
+//  
+//    form =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, layout,
+//			    formArgs, XtNumber(formArgs));
+//  
     j = 0;
 //    XtSetArg(args[j], XtNwidth,     (XtArgVal) 300); j++;
 //    XtSetArg(args[j], XtNheight,    (XtArgVal) 85); j++;
@@ -533,10 +532,10 @@ void TimeControlPopUp()
     XtAddCallback(b_cancel, XtNcallback, TimeControlPopDown, (XtPointer) 0);
 
     XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "TimeControlPopDown");
+    //    CatchDeleteWindow(popup, "TimeControlPopDown");
     
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
+//    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+//		  &x, &y, &win_x, &win_y, &mask);
     
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
@@ -654,18 +653,18 @@ void EnginePopUp()
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
 //    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    EngineShell = popup =
-      XtCreatePopupShell(_("Adjudications"), transientShellWidgetClass,
-			 shellWidget, args, i);
-    
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-  
-    form =
-      XtCreateManagedWidget(layoutName, formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-  
+//    EngineShell = popup =
+//      XtCreatePopupShell(_("Adjudications"), transientShellWidgetClass,
+//			 shellWidget, args, i);
+//    
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
+//			    layoutArgs, XtNumber(layoutArgs));
+//  
+//    form =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, layout,
+//			    formArgs, XtNumber(formArgs));
+//  
     j = 0;
 //    XtSetArg(args[j], XtNwidth,     (XtArgVal) 250); j++;
 //    XtSetArg(args[j], XtNheight,    (XtArgVal) 400); j++;
@@ -868,10 +867,10 @@ void EnginePopUp()
     XtAddCallback(b_cancel, XtNcallback, EnginePopDown, (XtPointer) 0);
 
     XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "EnginePopDown");
-    
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
+//    CatchDeleteWindow(popup, "EnginePopDown");
+//    
+//    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+//		  &x, &y, &win_x, &win_y, &mask);
     
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
@@ -1007,24 +1006,24 @@ void NewVariantPopUp()
     XtSetArg(args[i], XtNresizable, True); i++;
 //    XtSetArg(args[i], XtNwidth, 250); i++;
 //    XtSetArg(args[i], XtNheight, 300); i++;
-    NewVariantShell = popup =
-      XtCreatePopupShell(_("NewVariant Menu"), transientShellWidgetClass,
-			 shellWidget, args, i);
-    
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-  
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-  
+//    NewVariantShell = popup =
+//      XtCreatePopupShell(_("NewVariant Menu"), transientShellWidgetClass,
+//			 shellWidget, args, i);
+//    
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
+//			    layoutArgs, XtNumber(layoutArgs));
+//  
+//    form =
+//      XtCreateManagedWidget("form", formWidgetClass, layout,
+//			    formArgs, XtNumber(formArgs));
+//  
     for(i = 0; buttonDesc[i].name != NULL; i++) {
 	Pixel buttonColor;
 	if (!appData.monoMode) {
 	    vFrom.addr = (caddr_t) buttonDesc[i].color;
 	    vFrom.size = strlen(buttonDesc[i].color);
-	    XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	    //	    XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
 	    if (vTo.addr == NULL) {
 	  	buttonColor = (Pixel) -1;
 	    } else {
@@ -1084,10 +1083,10 @@ void NewVariantPopUp()
     XtCreateManagedWidget("warning", labelWidgetClass, form, args, j);
 
 	    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "NewVariantPopDown");
-    
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
+//    CatchDeleteWindow(popup, "NewVariantPopDown");
+//    
+//    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+//		  &x, &y, &win_x, &win_y, &mask);
     
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
@@ -1202,19 +1201,19 @@ void UciPopUp()
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
 //    XtSetArg(args[i], XtNwidth, 300); i++;
-    UciShell = popup =
-      XtCreatePopupShell(_("Engine Settings"), transientShellWidgetClass,
-			 shellWidget, args, i);
-    
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-  
-    
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-  
+//    UciShell = popup =
+//      XtCreatePopupShell(_("Engine Settings"), transientShellWidgetClass,
+//			 shellWidget, args, i);
+//    
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
+//			    layoutArgs, XtNumber(layoutArgs));
+//  
+//    
+//    form =
+//      XtCreateManagedWidget("form", formWidgetClass, layout,
+//			    formArgs, XtNumber(formArgs));
+//  
     j = 0;
     XtSetArg(args[j], XtNtop, XtChainTop);  j++;
     XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
@@ -1292,10 +1291,10 @@ void UciPopUp()
 //    XtAddCallback(w3, XtNcallback, UciCallback, (XtPointer) 0);
 
     XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "UciPopDown");
-    
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
+//    CatchDeleteWindow(popup, "UciPopDown");
+//    
+//    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+//		  &x, &y, &win_x, &win_y, &mask);
     
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
@@ -1498,13 +1497,13 @@ void SettingsPopUp(ChessProgramState *cps)
     height = cps->nrOptions / width + 1;
      i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
-    SettingsShell = popup =
-      XtCreatePopupShell(_("Settings Menu"), transientShellWidgetClass,
-			 shellWidget, args, i);
-    
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
+//    SettingsShell = popup =
+//      XtCreatePopupShell(_("Settings Menu"), transientShellWidgetClass,
+//			 shellWidget, args, i);
+//    
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
+//			    layoutArgs, XtNumber(layoutArgs));
   for(c=0; c<width; c++) {
     pane[4] = 'A'+c;
     form =
@@ -1663,10 +1662,10 @@ void SettingsPopUp(ChessProgramState *cps)
     XtAddCallback(b_cancel, XtNcallback, SettingsPopDown, (XtPointer) 0);
 
     XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "SettingsPopDown");
-    
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
+//    CatchDeleteWindow(popup, "SettingsPopDown");
+//    
+//    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+//		  &x, &y, &win_x, &win_y, &mask);
     
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);

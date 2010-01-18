@@ -338,7 +338,7 @@ int CopyMemoProc P(());
 int xtVersion = XtSpecificationRelease;
 
 int xScreen;
-Display *xDisplay;
+
 Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   jailSquareColor, highlightSquareColor, premoveHighlightColor;
@@ -353,7 +353,7 @@ GC lightSquareGC, darkSquareGC, jailSquareGC,  wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC,
   wjPieceGC, bjPieceGC;
 Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
-Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
+Widget  layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget,  editShell, errorShell, analysisShell,
@@ -772,12 +772,6 @@ XtResource clientResources[] = {
 	(XtPointer) FLASH_COUNT  },
 };
 
-XrmOptionDescRec shellOptions[] = {
-    { "-flashCount", "flashCount", XrmoptionSepArg, NULL },
-    { "-flash", "flashCount", XrmoptionNoArg, "3" },
-    { "-xflash", "flashCount", XrmoptionNoArg, "0" },
-};
-
 XtActionsRec boardActions[] = {
     //    { "HandleUserMove", HandleUserMove },
     { "AnimateUserMove", AnimateUserMove },
@@ -1030,17 +1024,6 @@ parse_cpair(cc, str)
 }
 
 
-/* Arrange to catch delete-window events */
-Atom wm_delete_window;
-void
-CatchDeleteWindow(Widget w, String procname)
-{
-  char buf[MSG_SIZ];
-  XSetWMProtocols(xDisplay, XtWindow(w), &wm_delete_window, 1);
-  snprintf(buf, sizeof(buf), "<Message>WM_PROTOCOLS: %s() \n", procname);
-  XtAugmentTranslations(w, XtParseTranslationTable(buf));
-}
-
 void
 BoardToTop()
 {
@@ -1230,7 +1213,8 @@ void
 GetWindowCoords()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
-  GetActualPlacement(shellWidget, &wpMain);
+
+  //  GetActualPlacement(shellWidget, &wpMain);
   if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
   if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
@@ -1449,11 +1433,6 @@ main(argc, argv)
     textdomain(PACKAGE);
 #endif
 
-    shellWidget =
-      XtAppInitialize(&appContext, "XBoard", shellOptions,
-		      XtNumber(shellOptions),
-		      &argc, argv, xboardResources, NULL, 0);
-
     /* set up GTK */
     gtk_init (&argc, &argv);
 
@@ -1509,34 +1488,6 @@ main(argc, argv)
     appData.boardSize = "";
     InitAppData(ConvertToLine(argc, argv));
 
-    if (argc > 1)
-      {
-	fprintf(stderr, _("%s: unrecognized argument %s\n"),
-		programName, argv[1]);
-
-	fprintf(stderr, "Recognized options:\n");
-	for(i = 0; i < XtNumber(shellOptions); i++) 
-	  {
-	    /* print first column */
-	    j = fprintf(stderr, "  %s%s", shellOptions[i].option,
-		        (shellOptions[i].argKind == XrmoptionSepArg
-			 ? " ARG" : ""));
-	    /* print second column and end line */
-	    if (++i < XtNumber(shellOptions)) 
-	      {		
-		fprintf(stderr, "%*c%s%s\n", 40 - j, ' ',
-			shellOptions[i].option,
-			(shellOptions[i].argKind == XrmoptionSepArg
-			 ? " ARG" : ""));
-	      } 
-	    else 
-	      {
-		fprintf(stderr, "\n");
-	      };
-	  };
-	exit(2);
-      };
-
     p = getenv("HOME");
     if (p == NULL) p = "/tmp";
     i = strlen(p) + strlen("/.xboardXXXXXx.pgn") + 1;
@@ -1545,9 +1496,9 @@ main(argc, argv)
     snprintf(gameCopyFilename,i, "%s/.xboard%05uc.pgn", p, getpid());
     snprintf(gamePasteFilename,i, "%s/.xboard%05up.pgn", p, getpid());
 
-    XtGetApplicationResources(shellWidget, (XtPointer) &appData,
-			      clientResources, XtNumber(clientResources),
-			      NULL, 0);
+//    XtGetApplicationResources(shellWidget, (XtPointer) &appData,
+//			      clientResources, XtNumber(clientResources),
+//			      NULL, 0);
 
     { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
 	static char buf[MSG_SIZ];
@@ -1580,10 +1531,6 @@ main(argc, argv)
         setbuf(debugFP, NULL);
     }
 
-    /* [HGM,HR] make sure board size is acceptable */
-    if(appData.NrFiles > BOARD_FILES ||
-       appData.NrRanks > BOARD_RANKS   )
-	 DisplayFatalError(_("Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"), 0, 2);
 
 #if !HIGHDRAG
     /* This feature does not work; animation needs a rewrite */
@@ -1591,83 +1538,18 @@ main(argc, argv)
 #endif
     InitBackEnd1();
 
-    xDisplay = XtDisplay(shellWidget);
-    xScreen = DefaultScreen(xDisplay);
-    wm_delete_window = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
-
     gameInfo.variant = StringToVariant(appData.variant);
     InitPosition(FALSE);
 
-    /* calc board size */
-    if (isdigit(appData.boardSize[0])) 
-      {
-	i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
-		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
-		   &fontPxlSize, &smallLayout, &tinyLayout);
-	if (i == 0) 
-	  {
-	    fprintf(stderr, _("%s: bad boardSize syntax %s\n"),
-		    programName, appData.boardSize);
-	    exit(2);
-	  }
-	if (i < 7) 
-	  {
-	    /* Find some defaults; use the nearest known size */
-	    SizeDefaults *szd, *nearest;
-	    int distance = 99999;
-	    nearest = szd = sizeDefaults;
-	    while (szd->name != NULL) 
-	      {
-		if (abs(szd->squareSize - squareSize) < distance) 
-		  {
-		    nearest = szd;
-		    distance = abs(szd->squareSize - squareSize);
-		    if (distance == 0) break;
-		  }
-		szd++;
-	      };
-	    if (i < 2) lineGap = nearest->lineGap;
-	    if (i < 3) clockFontPxlSize = nearest->clockFontPxlSize;
-	    if (i < 4) coordFontPxlSize = nearest->coordFontPxlSize;
-	    if (i < 5) fontPxlSize = nearest->fontPxlSize;
-	    if (i < 6) smallLayout = nearest->smallLayout;
-	    if (i < 7) tinyLayout = nearest->tinyLayout;
-	  }
-      } 
-    else 
-      {
-        SizeDefaults *szd = sizeDefaults;
-        if (*appData.boardSize == NULLCHAR) 
-	  {
-	    while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize 
-		   || DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) 
-	      {
-		szd++;
-	      }
-	    if (szd->name == NULL) szd--;
-	    appData.boardSize = strdup(szd->name); // [HGM] settings: remember name for saving settings
-	  } 
-	else 
-	  {
-	    while (szd->name != NULL 
-		   && StrCaseCmp(szd->name, appData.boardSize) != 0) 
-	      szd++;
-	    if (szd->name == NULL) 
-	      {
-		fprintf(stderr, _("%s: unrecognized boardSize name %s\n"),
-			programName, appData.boardSize);
-		exit(2);
-	      }
-	  }
-	squareSize = szd->squareSize;
-	lineGap = szd->lineGap;
-	clockFontPxlSize = szd->clockFontPxlSize;
-	coordFontPxlSize = szd->coordFontPxlSize;
-	fontPxlSize = szd->fontPxlSize;
-	smallLayout = szd->smallLayout;
-	tinyLayout = szd->tinyLayout;
-      }
-    /* end figuring out what size to use */
+
+    squareSize		= 40;
+    lineGap		= 1;
+    clockFontPxlSize	= 20;
+    coordFontPxlSize	= 20;
+    fontPxlSize		= 20;
+    smallLayout		= 16;
+    tinyLayout		= 10;
+
     
     boardWidth  = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
@@ -1675,31 +1557,31 @@ main(argc, argv)
     /*
      * Determine what fonts to use.
      */
-    appData.clockFont = FindFont(appData.clockFont, clockFontPxlSize);
-    clockFontID = XLoadFont(xDisplay, appData.clockFont);
-    clockFontStruct = XQueryFont(xDisplay, clockFontID);
-    appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
-    coordFontID = XLoadFont(xDisplay, appData.coordFont);
-    coordFontStruct = XQueryFont(xDisplay, coordFontID);
-    appData.font = FindFont(appData.font, fontPxlSize);
-    countFontID = XLoadFont(xDisplay, appData.coordFont); // [HGM] holdings
-    countFontStruct = XQueryFont(xDisplay, countFontID);
+//    appData.clockFont = FindFont(appData.clockFont, clockFontPxlSize);
+//    clockFontID = XLoadFont(xDisplay, appData.clockFont);
+//    clockFontStruct = XQueryFont(xDisplay, clockFontID);
+//    appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
+//    coordFontID = XLoadFont(xDisplay, appData.coordFont);
+//    coordFontStruct = XQueryFont(xDisplay, coordFontID);
+//    appData.font = FindFont(appData.font, fontPxlSize);
+//    countFontID = XLoadFont(xDisplay, appData.coordFont); // [HGM] holdings
+//    countFontStruct = XQueryFont(xDisplay, countFontID);
 //    appData.font = FindFont(appData.font, fontPxlSize);
 
-    xdb = XtDatabase(xDisplay);
-    XrmPutStringResource(&xdb, "*font", appData.font);
+//    xdb = XtDatabase(xDisplay);
+//    XrmPutStringResource(&xdb, "*font", appData.font);
 
     /*
      * Detect if there are not enough colors available and adapt.
      */
-    if (DefaultDepth(xDisplay, xScreen) <= 2) {
-      appData.monoMode = True;
-    }
+//    if (DefaultDepth(xDisplay, xScreen) <= 2) {
+//      appData.monoMode = True;
+//    }
 
     if (!appData.monoMode) {
 	vFrom.addr = (caddr_t) appData.lightSquareColor;
 	vFrom.size = strlen(appData.lightSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	//	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
 	if (vTo.addr == NULL) {
 	  appData.monoMode = True;
 	  forceMono = True;
@@ -1710,7 +1592,7 @@ main(argc, argv)
     if (!appData.monoMode) {
 	vFrom.addr = (caddr_t) appData.darkSquareColor;
 	vFrom.size = strlen(appData.darkSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	//	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
 	if (vTo.addr == NULL) {
 	  appData.monoMode = True;
 	  forceMono = True;
@@ -1721,7 +1603,7 @@ main(argc, argv)
     if (!appData.monoMode) {
 	vFrom.addr = (caddr_t) appData.whitePieceColor;
 	vFrom.size = strlen(appData.whitePieceColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	//	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
 	if (vTo.addr == NULL) {
 	  appData.monoMode = True;
 	  forceMono = True;
@@ -1732,7 +1614,7 @@ main(argc, argv)
     if (!appData.monoMode) {
 	vFrom.addr = (caddr_t) appData.blackPieceColor;
 	vFrom.size = strlen(appData.blackPieceColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	//	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
 	if (vTo.addr == NULL) {
 	  appData.monoMode = True;
 	  forceMono = True;
@@ -1744,7 +1626,7 @@ main(argc, argv)
     if (!appData.monoMode) {
 	vFrom.addr = (caddr_t) appData.highlightSquareColor;
 	vFrom.size = strlen(appData.highlightSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	//	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
 	if (vTo.addr == NULL) {
 	  appData.monoMode = True;
 	  forceMono = True;
@@ -1756,7 +1638,7 @@ main(argc, argv)
     if (!appData.monoMode) {
 	vFrom.addr = (caddr_t) appData.premoveHighlightColor;
 	vFrom.size = strlen(appData.premoveHighlightColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	//	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
 	if (vTo.addr == NULL) {
 	  appData.monoMode = True;
 	  forceMono = True;
@@ -1777,17 +1659,11 @@ main(argc, argv)
     if (appData.lowTimeWarning && !appData.monoMode) {
       vFrom.addr = (caddr_t) appData.lowTimeWarningColor;
       vFrom.size = strlen(appData.lowTimeWarningColor);
-      XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+      //      XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
       if (vTo.addr == NULL)
 		appData.monoMode = True;
       else
 		lowTimeWarningColor = *(Pixel *) vTo.addr;
-    }
-
-    if (appData.monoMode && appData.debugMode) {
-	fprintf(stderr, _("white pixel = 0x%lx, black pixel = 0x%lx\n"),
-		(unsigned long) XWhitePixel(xDisplay, xScreen),
-		(unsigned long) XBlackPixel(xDisplay, xScreen));
     }
 
     if (parse_cpair(ColorShout, appData.colorShout) < 0 ||
@@ -2247,12 +2123,12 @@ char *FindFont(pattern, targetPxlSize)
 
     nfonts = XFontsOfFontSet(fntSet, &fnt_list, &fonts);
 #else
-    fonts = XListFonts(xDisplay, pattern, 999999, &nfonts);
-    if (nfonts < 1) {
-	fprintf(stderr, _("%s: no fonts match pattern %s\n"),
-		programName, pattern);
-	exit(2);
-    }
+//    fonts = XListFonts(xDisplay, pattern, 999999, &nfonts);
+//    if (nfonts < 1) {
+//	fprintf(stderr, _("%s: no fonts match pattern %s\n"),
+//		programName, pattern);
+//	exit(2);
+//    }
 #endif
 
     best = fonts[0];
@@ -2298,7 +2174,7 @@ char *FindFont(pattern, targetPxlSize)
 #ifdef ENABLE_NLS
     if (missing_count > 0)
        XFreeStringList(missing_list);
-    XFreeFontSet(xDisplay, fntSet);
+    //    XFreeFontSet(xDisplay, fntSet);
 #else
      XFreeFontNames(fonts);
 #endif
@@ -2308,83 +2184,7 @@ char *FindFont(pattern, targetPxlSize)
 void CreateGCs()
 {
   /* GCs are not needed anymore for GTK  just left them in here for the moment, since there is a lot of X-code still around that's wants them*/
-
-    XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
-      | GCBackground | GCFunction | GCPlaneMask;
-    XGCValues gc_values;
-    GC copyInvertedGC;
-
-    gc_values.plane_mask = AllPlanes;
-    gc_values.line_width = lineGap;
-    gc_values.line_style = LineSolid;
-    gc_values.function = GXcopy;
-
-    gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-    gc_values.background = XWhitePixel(xDisplay, xScreen);
-    coordGC = XtGetGC(shellWidget, value_mask, &gc_values);
-    XSetFont(xDisplay, coordGC, coordFontID);
-
-    if (appData.monoMode) {
-	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-	gc_values.background = XBlackPixel(xDisplay, xScreen);
-	lightSquareGC = wbPieceGC
-	  = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-	gc_values.background = XWhitePixel(xDisplay, xScreen);
-	darkSquareGC = bwPieceGC
-	  = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	if (DefaultDepth(xDisplay, xScreen) == 1) {
-	    /* Avoid XCopyPlane on 1-bit screens to work around Sun bug */
-	    gc_values.function = GXcopyInverted;
-	    copyInvertedGC = XtGetGC(shellWidget, value_mask, &gc_values);
-	    gc_values.function = GXcopy;
-	    if (XBlackPixel(xDisplay, xScreen) == 1) {
-		bwPieceGC = darkSquareGC;
-		wbPieceGC = copyInvertedGC;
-	    } else {
-		bwPieceGC = copyInvertedGC;
-		wbPieceGC = lightSquareGC;
-	    }
-	}
-    } else {
-	gc_values.foreground = lightSquareColor;
-	gc_values.background = darkSquareColor;
-	lightSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = darkSquareColor;
-	gc_values.background = lightSquareColor;
-	darkSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = jailSquareColor;
-	gc_values.background = jailSquareColor;
-	jailSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = darkSquareColor;
-	wdPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = lightSquareColor;
-	wlPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = jailSquareColor;
-	wjPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = darkSquareColor;
-	bdPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = lightSquareColor;
-	blPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = jailSquareColor;
-	bjPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-    }
+  return;
 }
 
 void CreatePieces()
@@ -3339,13 +3139,13 @@ Widget CommentCreate(name, text, mutable, callback, lines)
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
 #if TOPLEVEL
-    shell =
-      XtCreatePopupShell(name, topLevelShellWidgetClass,
-			 shellWidget, args, j);
+//    shell =
+//      XtCreatePopupShell(name, topLevelShellWidgetClass,
+//			 shellWidget, args, j);
 #else
-    shell =
-      XtCreatePopupShell(name, transientShellWidgetClass,
-			 shellWidget, args, j);
+//    shell =
+//      XtCreatePopupShell(name, transientShellWidgetClass,
+//			 shellWidget, args, j);
 #endif
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,
@@ -3446,20 +3246,20 @@ Widget CommentCreate(name, text, mutable, callback, lines)
 	commentH = pw_height + (lines - 1) * ew_height;
 	commentW = bw_width - 16;
 
-	XSync(xDisplay, False);
+	//	XSync(xDisplay, False);
 #ifdef NOTDEF
 	/* This code seems to tickle an X bug if it is executed too soon
 	   after xboard starts up.  The coordinates get transformed as if
 	   the main window was positioned at (0, 0).
 	   */
-	XtTranslateCoords(shellWidget,
-			  (bw_width - commentW) / 2, 0 - commentH / 2,
-			  &commentX, &commentY);
+//	XtTranslateCoords(shellWidget,
+//			  (bw_width - commentW) / 2, 0 - commentH / 2,
+//			  &commentX, &commentY);
 #else  /*!NOTDEF*/
-        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			      RootWindowOfScreen(XtScreen(shellWidget)),
-			      (bw_width - commentW) / 2, 0 - commentH / 2,
-			      &xx, &yy, &junk);
+//        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
+//			      RootWindowOfScreen(XtScreen(shellWidget)),
+//			      (bw_width - commentW) / 2, 0 - commentH / 2,
+//			      &xx, &yy, &junk);
 	commentX = xx;
 	commentY = yy;
 #endif /*!NOTDEF*/
@@ -3502,13 +3302,13 @@ Widget MiscCreate(name, text, mutable, callback, lines)
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
 #if TOPLEVEL
-    shell =
-      XtCreatePopupShell(name, topLevelShellWidgetClass,
-			 shellWidget, args, j);
+//    shell =
+//      XtCreatePopupShell(name, topLevelShellWidgetClass,
+//			 shellWidget, args, j);
 #else
-    shell =
-      XtCreatePopupShell(name, transientShellWidgetClass,
-			 shellWidget, args, j);
+//    shell =
+//      XtCreatePopupShell(name, transientShellWidgetClass,
+//			 shellWidget, args, j);
 #endif
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,
@@ -3551,17 +3351,17 @@ Widget MiscCreate(name, text, mutable, callback, lines)
     h = pw_height + (lines - 1) * ew_height;
     w = bw_width - 16;
 
-    XSync(xDisplay, False);
+    //    XSync(xDisplay, False);
 #ifdef NOTDEF
     /* This code seems to tickle an X bug if it is executed too soon
        after xboard starts up.  The coordinates get transformed as if
        the main window was positioned at (0, 0).
     */
-    XtTranslateCoords(shellWidget, (bw_width - w) / 2, 0 - h / 2, &x, &y);
+//    XtTranslateCoords(shellWidget, (bw_width - w) / 2, 0 - h / 2, &x, &y);
 #else  /*!NOTDEF*/
-    XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			  RootWindowOfScreen(XtScreen(shellWidget)),
-			  (bw_width - w) / 2, 0 - h / 2, &xx, &yy, &junk);
+//    XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
+//			  RootWindowOfScreen(XtScreen(shellWidget)),
+//			  (bw_width - w) / 2, 0 - h / 2, &xx, &yy, &junk);
 #endif /*!NOTDEF*/
     x = xx;
     y = yy;
@@ -3595,7 +3395,7 @@ void EditCommentPopUp(index, title, text)
 	editShell =
 	  CommentCreate(title, text, True, EditCommentCallback, 4);
 	XtRealizeWidget(editShell);
-	CatchDeleteWindow(editShell, "EditCommentPopDown");
+	//	CatchDeleteWindow(editShell, "EditCommentPopDown");
     } else {
 	edit = XtNameToWidget(editShell, "*form.text");
 	j = 0;
@@ -3679,7 +3479,7 @@ void ICSInputBoxPopUp()
 	edit = XtNameToWidget(ICSInputShell, "*form.text");
 	XtOverrideTranslations(edit, tr);
 	XtRealizeWidget(ICSInputShell);
-	CatchDeleteWindow(ICSInputShell, "ICSInputBoxPopDown");
+	//	CatchDeleteWindow(ICSInputShell, "ICSInputBoxPopDown");
 
     } else {
 	edit = XtNameToWidget(ICSInputShell, "*form.text");
@@ -3744,7 +3544,7 @@ void CommentPopUp(title, text)
 	commentShell =
 	  CommentCreate(title, text, False, CommentCallback, 4);
 	XtRealizeWidget(commentShell);
-	CatchDeleteWindow(commentShell, "CommentPopDown");
+	//	CatchDeleteWindow(commentShell, "CommentPopDown");
     } else {
 	edit = XtNameToWidget(commentShell, "*form.text");
 	j = 0;
@@ -3757,7 +3557,7 @@ void CommentPopUp(title, text)
     }
 
     XtPopup(commentShell, XtGrabNone);
-    XSync(xDisplay, False);
+    //    XSync(xDisplay, False);
 
     commentUp = True;
 }
@@ -3796,7 +3596,7 @@ void CommentPopDown()
     XtSetArg(args[j], XtNheight, &commentH); j++;
     XtGetValues(commentShell, args, j);
     XtPopdown(commentShell);
-    XSync(xDisplay, False);
+    //    XSync(xDisplay, False);
     commentUp = False;
 }
 
@@ -3815,13 +3615,13 @@ void PromotionPopUp()
     j = 0;
     XtSetArg(args[j], XtNresizable, True); j++;
     XtSetArg(args[j], XtNtitle, XtNewString(_("Promotion"))); j++;
-    promotionShell =
-      XtCreatePopupShell("Promotion", transientShellWidgetClass,
-			 shellWidget, args, j);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, promotionShell,
-			    layoutArgs, XtNumber(layoutArgs));
-
+//    promotionShell =
+//      XtCreatePopupShell("Promotion", transientShellWidgetClass,
+//			 shellWidget, args, j);
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, promotionShell,
+//			    layoutArgs, XtNumber(layoutArgs));
+//
     j = 0;
     XtSetArg(args[j], XtNlabel, _("Promote to what?")); j++;
     XtSetArg(args[j], XtNborderWidth, 0); j++;
@@ -3861,7 +3661,7 @@ void PromotionPopUp()
 		       (XtPointer) dialog);
 
     XtRealizeWidget(promotionShell);
-    CatchDeleteWindow(promotionShell, "PromotionPopDown");
+    //    CatchDeleteWindow(promotionShell, "PromotionPopDown");
 
     j = 0;
     XtSetArg(args[j], XtNwidth, &pw_width); j++;
@@ -4138,34 +3938,34 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
   char *selection_tmp;
 
   if (!selected_fen_position) return False; /* should never happen */
-  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
-    /* note: since no XtSelectionDoneProc was registered, Xt will
-     * automatically call XtFree on the value returned.  So have to
-     * make a copy of it allocated with XtMalloc */
-    selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
-    strcpy(selection_tmp, selected_fen_position);
-
-    *value_return=selection_tmp;
-    *length_return=strlen(selection_tmp);
-    *type_return=*target;
-    *format_return = 8; /* bits per byte */
-    return True;
-  } else if (*target == XA_TARGETS(xDisplay)) {
-    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
-    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
-    targets_tmp[1] = XA_STRING;
-    *value_return = targets_tmp;
-    *type_return = XA_ATOM;
-    *length_return = 2;
-    *format_return = 8 * sizeof(Atom);
-    if (*format_return > 32) {
-      *length_return *= *format_return / 32;
-      *format_return = 32;
-    }
-    return True;
-  } else {
-    return False;
-  }
+//  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
+//    /* note: since no XtSelectionDoneProc was registered, Xt will
+//     * automatically call XtFree on the value returned.  So have to
+//     * make a copy of it allocated with XtMalloc */
+//    selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
+//    strcpy(selection_tmp, selected_fen_position);
+//
+//    *value_return=selection_tmp;
+//    *length_return=strlen(selection_tmp);
+//    *type_return=*target;
+//    *format_return = 8; /* bits per byte */
+//    return True;
+//  } else if (*target == XA_TARGETS(xDisplay)) {
+//    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
+//    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
+//    targets_tmp[1] = XA_STRING;
+//    *value_return = targets_tmp;
+//    *type_return = XA_ATOM;
+//    *length_return = 2;
+//    *format_return = 8 * sizeof(Atom);
+//    if (*format_return > 32) {
+//      *length_return *= *format_return / 32;
+//      *format_return = 32;
+//    }
+//    return True;
+//  } else {
+//    return False;
+//  }
 }
 
 /* note: when called from menu all parameters are NULL, so no clue what the
@@ -4186,16 +3986,16 @@ void CopyPositionProc(w, event, prms, nprms)
     if (selected_fen_position) free(selected_fen_position);
     selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
     if (!selected_fen_position) return;
-    XtOwnSelection(menuBarWidget, XA_PRIMARY,
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
-    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
+//    XtOwnSelection(menuBarWidget, XA_PRIMARY,
+//		   CurrentTime,
+//		   SendPositionSelection,
+//		   NULL/* lose_ownership_proc */ ,
+//		   NULL/* transfer_done_proc */);
+//    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+//		   CurrentTime,
+//		   SendPositionSelection,
+//		   NULL/* lose_ownership_proc */ ,
+//		   NULL/* transfer_done_proc */);
   }
 
 /* function called when the data to Paste is ready */
@@ -4218,16 +4018,16 @@ void PastePositionProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
 {
-    XtGetSelectionValue(menuBarWidget, 
-      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-      /* (XtSelectionCallbackProc) */ PastePositionCB,
-      NULL, /* client_data passed to PastePositionCB */
-
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
+//    XtGetSelectionValue(menuBarWidget, 
+//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
+//      /* (XtSelectionCallbackProc) */ PastePositionCB,
+//      NULL, /* client_data passed to PastePositionCB */
+//
+//      /* better to use the time field from the event that triggered the
+//       * call to this function, but that isn't trivial to get
+//       */
+//      CurrentTime
+//    );
     return;
 }
 
@@ -4238,42 +4038,42 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
 {
   char *selection_tmp;
 
-  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
-    FILE* f = fopen(gameCopyFilename, "r");
-    long len;
-    size_t count;
-    if (f == NULL) return False;
-    fseek(f, 0, 2);
-    len = ftell(f);
-    rewind(f);
-    selection_tmp = XtMalloc(len + 1);
-    count = fread(selection_tmp, 1, len, f);
-    if (len != count) {
-      XtFree(selection_tmp);
-      return False;
-    }
-    selection_tmp[len] = NULLCHAR;
-    *value_return = selection_tmp;
-    *length_return = len;
-    *type_return = *target;
-    *format_return = 8; /* bits per byte */
-    return True;
-  } else if (*target == XA_TARGETS(xDisplay)) {
-    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
-    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
-    targets_tmp[1] = XA_STRING;
-    *value_return = targets_tmp;
-    *type_return = XA_ATOM;
-    *length_return = 2;
-    *format_return = 8 * sizeof(Atom);
-    if (*format_return > 32) {
-      *length_return *= *format_return / 32;
-      *format_return = 32;
-    }
-    return True;
-  } else {
-    return False;
-  }
+//  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
+//    FILE* f = fopen(gameCopyFilename, "r");
+//    long len;
+//    size_t count;
+//    if (f == NULL) return False;
+//    fseek(f, 0, 2);
+//    len = ftell(f);
+//    rewind(f);
+//    selection_tmp = XtMalloc(len + 1);
+//    count = fread(selection_tmp, 1, len, f);
+//    if (len != count) {
+//      XtFree(selection_tmp);
+//      return False;
+//    }
+//    selection_tmp[len] = NULLCHAR;
+//    *value_return = selection_tmp;
+//    *length_return = len;
+//    *type_return = *target;
+//    *format_return = 8; /* bits per byte */
+//    return True;
+//  } else if (*target == XA_TARGETS(xDisplay)) {
+//    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
+//    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
+//    targets_tmp[1] = XA_STRING;
+//    *value_return = targets_tmp;
+//    *type_return = XA_ATOM;
+//    *length_return = 2;
+//    *format_return = 8 * sizeof(Atom);
+//    if (*format_return > 32) {
+//      *length_return *= *format_return / 32;
+//      *format_return = 32;
+//    }
+//    return True;
+//  } else {
+//    return False;
+//  }
 }
 
 /* note: when called from menu all parameters are NULL, so no clue what the
@@ -4295,16 +4095,16 @@ void CopyGameProc(w, event, prms, nprms)
    * have a notion of a game that is selected but not copied.
    * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
    */
-  XtOwnSelection(menuBarWidget, XA_PRIMARY,
-		 CurrentTime,
-		 SendGameSelection,
-		 NULL/* lose_ownership_proc */ ,
-		 NULL/* transfer_done_proc */);
-  XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		 CurrentTime,
-		 SendGameSelection,
-		 NULL/* lose_ownership_proc */ ,
-		 NULL/* transfer_done_proc */);
+//  XtOwnSelection(menuBarWidget, XA_PRIMARY,
+//		 CurrentTime,
+//		 SendGameSelection,
+//		 NULL/* lose_ownership_proc */ ,
+//		 NULL/* transfer_done_proc */);
+//  XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+//		 CurrentTime,
+//		 SendGameSelection,
+//		 NULL/* lose_ownership_proc */ ,
+//		 NULL/* transfer_done_proc */);
 }
 
 /* function called when the data to Paste is ready */
@@ -4335,17 +4135,17 @@ void PasteGameProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
 {
-    XtGetSelectionValue(menuBarWidget,
-      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-      /* (XtSelectionCallbackProc) */ PasteGameCB,
-      NULL, /* client_data passed to PasteGameCB */
-
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
-    return;
+//    XtGetSelectionValue(menuBarWidget,
+//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
+//      /* (XtSelectionCallbackProc) */ PasteGameCB,
+//      NULL, /* client_data passed to PasteGameCB */
+//
+//      /* better to use the time field from the event that triggered the
+//       * call to this function, but that isn't trivial to get
+//       */
+//      CurrentTime
+//    );
+//    return;
 }
 
 void SaveOnExitProc(w, event, prms, nprms)
@@ -4457,9 +4257,9 @@ void Iconify(w, event, prms, nprms)
 {
     Arg args[16];
 
-    fromX = fromY = -1;
-    XtSetArg(args[0], XtNiconic, True);
-    XtSetValues(shellWidget, args, 1);
+//    fromX = fromY = -1;
+//    XtSetArg(args[0], XtNiconic, True);
+//    XtSetValues(shellWidget, args, 1);
 }
 
 void DisplayMessage(message, extMessage)
@@ -4626,14 +4426,14 @@ void DisplayIcsInteractionTitle(message)
       Window root, parent, *children;
       unsigned int nchildren;
       int (*oldHandler)() = XSetErrorHandler(NullXErrorCheck);
-      for (;;) {
-	if (XFetchName(xDisplay, win, &oldICSInteractionTitle)) break;
-	if (!XQueryTree(xDisplay, win, &root, &parent,
-			&children, &nchildren)) break;
-	if (children) XFree((void *)children);
-	if (parent == root || parent == 0) break;
-	win = parent;
-      }
+//      for (;;) {
+//	if (XFetchName(xDisplay, win, &oldICSInteractionTitle)) break;
+//	if (!XQueryTree(xDisplay, win, &root, &parent,
+//			&children, &nchildren)) break;
+//	if (children) XFree((void *)children);
+//	if (parent == root || parent == 0) break;
+//	win = parent;
+//      }
       XSetErrorHandler(oldHandler);
     }
     if (oldICSInteractionTitle == NULL) {
@@ -4724,14 +4524,14 @@ void AskQuestion(title, question, replyPrefix, pr)
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
     XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    askQuestionShell = popup =
-      XtCreatePopupShell(title, transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
+//    askQuestionShell = popup =
+//      XtCreatePopupShell(title, transientShellWidgetClass,
+//			 shellWidget, args, i);
+//
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
+//			    layoutArgs, XtNumber(layoutArgs));
+//
     i = 0;
     XtSetArg(args[i], XtNlabel, question); i++;
     XtSetArg(args[i], XtNvalue, ""); i++;
@@ -4745,20 +4545,20 @@ void AskQuestion(title, question, replyPrefix, pr)
 		       (XtPointer) dialog);
 
     XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "AskQuestionPopDown");
+    //    CatchDeleteWindow(popup, "AskQuestionPopDown");
 
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    askQuestionUp = True;
-
-    edit = XtNameToWidget(dialog, "*value");
-    XtSetKeyboardFocus(popup, edit);
+//    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
+//		  &x, &y, &win_x, &win_y, &mask);
+//
+//    XtSetArg(args[0], XtNx, x - 10);
+//    XtSetArg(args[1], XtNy, y - 30);
+//    XtSetValues(popup, args, 2);
+//
+//    XtPopup(popup, XtGrabExclusive);
+//    askQuestionUp = True;
+//
+//    edit = XtNameToWidget(dialog, "*value");
+//    XtSetKeyboardFocus(popup, edit);
 }
 
 
@@ -5689,71 +5489,71 @@ CreateAnimMasks (pieceDepth)
   return;
 
   /* Need a bitmap just to get a GC with right depth */
-  buf = XCreatePixmap(xDisplay, xBoardWindow,
-			8, 8, 1);
+//  buf = XCreatePixmap(xDisplay, xBoardWindow,
+//			8, 8, 1);
   values.foreground = 1;
   values.background = 0;
   /* Don't use XtGetGC, not read only */
-  maskGC = XCreateGC(xDisplay, buf,
-		    GCForeground | GCBackground, &values);
-  XFreePixmap(xDisplay, buf);
-
-  buf = XCreatePixmap(xDisplay, xBoardWindow,
-		      squareSize, squareSize, pieceDepth);
-  values.foreground = XBlackPixel(xDisplay, xScreen);
-  values.background = XWhitePixel(xDisplay, xScreen);
-  bufGC = XCreateGC(xDisplay, buf,
-		    GCForeground | GCBackground, &values);
-
+//  maskGC = XCreateGC(xDisplay, buf,
+//		    GCForeground | GCBackground, &values);
+//  XFreePixmap(xDisplay, buf);
+//
+//  buf = XCreatePixmap(xDisplay, xBoardWindow,
+//		      squareSize, squareSize, pieceDepth);
+//  values.foreground = XBlackPixel(xDisplay, xScreen);
+//  values.background = XWhitePixel(xDisplay, xScreen);
+//  bufGC = XCreateGC(xDisplay, buf,
+//		    GCForeground | GCBackground, &values);
+//
   for (piece = WhitePawn; piece <= BlackKing; piece++) {
     /* Begin with empty mask */
-    if(!xpmDone) // [HGM] pieces: keep using existing
-    xpmMask[piece] = XCreatePixmap(xDisplay, xBoardWindow,
-				 squareSize, squareSize, 1);
-    XSetFunction(xDisplay, maskGC, GXclear);
-    XFillRectangle(xDisplay, xpmMask[piece], maskGC,
-		   0, 0, squareSize, squareSize);
-
+//    if(!xpmDone) // [HGM] pieces: keep using existing
+//    xpmMask[piece] = XCreatePixmap(xDisplay, xBoardWindow,
+//				 squareSize, squareSize, 1);
+//    XSetFunction(xDisplay, maskGC, GXclear);
+//    XFillRectangle(xDisplay, xpmMask[piece], maskGC,
+//		   0, 0, squareSize, squareSize);
+//
     /* Take a copy of the piece */
     if (White(piece))
       kind = 0;
     else
       kind = 2;
-    XSetFunction(xDisplay, bufGC, GXcopy);
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
-	      buf, bufGC,
-	      0, 0, squareSize, squareSize, 0, 0);
+//    XSetFunction(xDisplay, bufGC, GXcopy);
+//    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
+//	      buf, bufGC,
+//	      0, 0, squareSize, squareSize, 0, 0);
 
     /* XOR the background (light) over the piece */
-    XSetFunction(xDisplay, bufGC, GXxor);
-    if (useImageSqs)
-      XCopyArea(xDisplay, xpmLightSquare, buf, bufGC,
-		0, 0, squareSize, squareSize, 0, 0);
-    else {
-      XSetForeground(xDisplay, bufGC, lightSquareColor);
-      XFillRectangle(xDisplay, buf, bufGC, 0, 0, squareSize, squareSize);
-    }
+//    XSetFunction(xDisplay, bufGC, GXxor);
+//    if (useImageSqs)
+//      XCopyArea(xDisplay, xpmLightSquare, buf, bufGC,
+//		0, 0, squareSize, squareSize, 0, 0);
+//    else {
+//      XSetForeground(xDisplay, bufGC, lightSquareColor);
+//      XFillRectangle(xDisplay, buf, bufGC, 0, 0, squareSize, squareSize);
+//    }
 
     /* We now have an inverted piece image with the background
        erased. Construct mask by just selecting all the non-zero
        pixels - no need to reconstruct the original image.	*/
-    XSetFunction(xDisplay, maskGC, GXor);
+    //    XSetFunction(xDisplay, maskGC, GXor);
     plane = 1;
     /* Might be quicker to download an XImage and create bitmap
        data from it rather than this N copies per piece, but it
        only takes a fraction of a second and there is a much
        longer delay for loading the pieces.	   	*/
-    for (n = 0; n < pieceDepth; n ++) {
-      XCopyPlane(xDisplay, buf, xpmMask[piece], maskGC,
-		 0, 0, squareSize, squareSize,
-		 0, 0, plane);
-      plane = plane << 1;
-    }
+//    for (n = 0; n < pieceDepth; n ++) {
+//      XCopyPlane(xDisplay, buf, xpmMask[piece], maskGC,
+//		 0, 0, squareSize, squareSize,
+//		 0, 0, plane);
+//      plane = plane << 1;
+//    }
   }
   /* Clean up */
-  XFreePixmap(xDisplay, buf);
-  XFreeGC(xDisplay, bufGC);
-  XFreeGC(xDisplay, maskGC);
+//  XFreePixmap(xDisplay, buf);
+//  XFreeGC(xDisplay, bufGC);
+//  XFreeGC(xDisplay, maskGC);
 }
 
 static void
