@@ -29,11 +29,12 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 xgamelist.c xgamelist.h\
 		 xhistory.c  xhistory.h \
 		 xoptions.c \
+		 gtk-interface.xml \
 		 $(ZPY)
 
 xboard_LDADD = -lm  @XAW_LIBS@ @GTK_LIBS@
 
-EXTRA_DIST = pixmaps bitmaps winboard sounds \
+EXTRA_DIST = pixmaps bitmaps svg sounds \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.conf \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm readme_HGM.txt zippy.README
 
