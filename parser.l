@@ -313,7 +313,7 @@ extern void CopyBoard P((Board to, Board from));
     if (currentMoveString[4] == NULLCHAR &&
         (result == WhitePromotionKnight || result == BlackPromotionKnight ||
          result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
-        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier)
+        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             currentMoveString[4] = PieceToChar(BlackFerz);
         else if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
@@ -497,7 +497,7 @@ extern void CopyBoard P((Board to, Board from));
          result == WhitePromotionKnight || result == BlackPromotionKnight)) {
         currentMoveString[4] = PieceToChar(BlackQueen);
 	// [HGM] shatranj: take care of variants without Queen
-	if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier)
+	if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             currentMoveString[4] = PieceToChar(BlackFerz);
 	if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
