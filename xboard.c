@@ -3722,6 +3722,7 @@ void PieceMenuPopup(w, event, params, num_params)
     switch(menuNr) {
       case 0: whichMenu = params[0]; break;
       case 1: SetupDropMenu(); whichMenu = "menuD"; break;
+      case 2:
       case -1: if (errorUp) ErrorPopDown();
       default: return;
     }

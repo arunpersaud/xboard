@@ -3652,7 +3652,7 @@ void DragPieceEnd(int x, int y)
 VOID
 MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  int x, y;
+  int x, y, menuNr;
   POINT pt;
   static int recursive = 0;
   HMENU hmenu;
@@ -3760,7 +3760,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_MBUTTONUP:
   case WM_RBUTTONUP:
     ReleaseCapture();
-    UnLoadPV();
+    RightClick(Release, pt.x - boardRect.left, pt.y - boardRect.top, &fromX, &fromY);
     break;
  
   case WM_MBUTTONDOWN:
@@ -3785,14 +3785,9 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     DrawPosition(TRUE, NULL);
 
-    switch (gameMode) {
-    case IcsExamining:
-      if(x < BOARD_LEFT || x >= BOARD_RGHT) break;
-    case EditPosition:
-      if (x == BOARD_LEFT-1 || x == BOARD_RGHT) break;
-      if (x < 0 || y < 0) break;
-      fromX = x;
-      fromY = y;
+    menuNr = RightClick(Press, pt.x - boardRect.left, pt.y - boardRect.top, &fromX, &fromY);
+    switch (menuNr) {
+    case 0:
       if (message == WM_MBUTTONDOWN) {
 	buttonCount = 3;  /* even if system didn't think so */
 	if (wParam & MK_SHIFT) 
@@ -3809,35 +3804,13 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             MenuPopup(hwnd, pt, LoadMenu(hInst, "ShogiPieceMenu"), -1);
       }
       break;
-    case IcsObserving:
-      if(!appData.icsEngineAnalyze) break;
-    case IcsPlayingWhite:
-    case IcsPlayingBlack:
-      if(!appData.zippyPlay) goto noZip;
-    case MachinePlaysWhite:
-    case MachinePlaysBlack:
-    case TwoMachinesPlay:
-    case AnalyzeMode:
-    case AnalyzeFile:
-      if (!appData.dropMenu) {
-        SetCapture(hwndMain);
-        LoadPV(pt.x - boardRect.left, pt.y - boardRect.top);
-        break;
-      }
-      if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
-         gameMode == AnalyzeFile || gameMode == IcsObserving) break;
-    case EditGame:
-    noZip:
-      if (x < 0 || y < 0) break;
-      if (!appData.dropMenu || appData.testLegality &&
-  	  gameInfo.variant != VariantBughouse &&
-  	  gameInfo.variant != VariantCrazyhouse) break;
-      fromX = x;
-      fromY = y;
+    case 2:
+      SetCapture(hwndMain);
+      break;
+    case 1:
       hmenu = LoadMenu(hInst, "DropPieceMenu");
       SetupDropMenu(hmenu);
       MenuPopup(hwnd, pt, hmenu, -1);
-      break;
     default:
       break;
     }

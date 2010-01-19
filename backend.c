@@ -5943,14 +5943,19 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 
 int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 {   // front-end-free part taken out of PieceMenuPopup
-    int whichMenu;
+    int whichMenu; int xSqr, ySqr;
 
+    xSqr = EventToSquare(x, BOARD_WIDTH);
+    ySqr = EventToSquare(y, BOARD_HEIGHT);
     if (action == Release) UnLoadPV(); // [HGM] pv
     if (action != Press) return -2;
     switch (gameMode) {
-      case EditPosition:
       case IcsExamining:
-	whichMenu = 0;
+	if(xSqr < BOARD_LEFT || xSqr >= BOARD_RGHT) return -1;
+      case EditPosition:
+	if (xSqr == BOARD_LEFT-1 || xSqr == BOARD_RGHT) return -1;
+	if (xSqr < 0 || ySqr < 0) return -1;
+	whichMenu = 0; // edit-position menu
 	break;
       case IcsObserving:
 	if(!appData.icsEngineAnalyze) return -1;
@@ -5964,23 +5969,24 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
       case TwoMachinesPlay: // [HGM] pv: use for showing PV
 	if (!appData.dropMenu) {
 	  LoadPV(x, y);
-	  return -1;
+	  return 2; // flag front-end to grab mouse events
 	}
 	if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
            gameMode == AnalyzeFile || gameMode == IcsObserving) return -1;
       case EditGame:
       noZip:
+	if (xSqr < 0 || ySqr < 0) return -1;
 	if (!appData.dropMenu || appData.testLegality &&
 	    gameInfo.variant != VariantBughouse &&
 	    gameInfo.variant != VariantCrazyhouse) return -1;
-	whichMenu = 1;
+	whichMenu = 1; // drop menu
 	break;
       default:
 	return -1;
     }
 
-    if (((*fromX = EventToSquare(x, BOARD_WIDTH)) < 0) ||
-	((*fromY = EventToSquare(y, BOARD_HEIGHT)) < 0)) {
+    if (((*fromX = xSqr) < 0) ||
+	((*fromY = ySqr) < 0)) {
 	*fromX = *fromY = -1;
 	return -1;
     }
