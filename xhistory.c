@@ -103,6 +103,7 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
   /* TODO need to add highlights for current move */
   /* TODO need to add navigation by keyboard or mouse (double click on move) */
 
+
   /* first clear everything, do we need this? */
   gtk_list_store_clear(LIST_MoveHistory);
 
@@ -142,7 +143,7 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
 	  /* save move */
 	  gtk_list_store_append (LIST_MoveHistory, &iter);
 	  gtk_list_store_set (LIST_MoveHistory, &iter,
-			      0, i,
+			      0, (i/2 +1),
 			      1, movewhite,
 			      2, moveblack,
 			      -1);
@@ -155,16 +156,17 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
   /* check if there is a white move left */
   if(movewhite[0])
     {
-      i++;
       strcpy(moveblack,"");
+
       /* save move */
       gtk_list_store_append (LIST_MoveHistory, &iter);
       gtk_list_store_set (LIST_MoveHistory, &iter,
-			  0, i,
+			  0, (i/2 +1),
 			  1, movewhite,
 			  2, moveblack,
 			  -1);
     };
+
 
   //TODO
   //  EvalGraphSet( first, last, current, pvInfoList ); // piggy-backed

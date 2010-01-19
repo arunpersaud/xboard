@@ -18,6 +18,9 @@ GtkWidget               *GUI_EditTagsTextArea=NULL;
 GtkListStore            *LIST_MoveHistory=NULL;
 GtkListStore            *LIST_GameList=NULL;
 
+GtkTreeView             *TREE_History=NULL;
+GtkTreeView             *TREE_Game=NULL;
+
 gint                     boardWidth;
 gint                     boardHeight;
 

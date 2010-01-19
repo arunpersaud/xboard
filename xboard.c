@@ -1450,12 +1450,6 @@ main(argc, argv)
     GUI_Aspect = GTK_WIDGET (gtk_builder_get_object (builder, "Aspectframe"));
     if(!GUI_Aspect) printf("Error: gtk_builder didn't work!\n");
 
-    GUI_History = GTK_WIDGET (gtk_builder_get_object (builder, "MoveHistory"));
-    if(!GUI_History) printf("Error: gtk_builder didn't work!\n");
-
-    GUI_GameList = GTK_WIDGET (gtk_builder_get_object (builder, "GameList"));
-    if(!GUI_GameList) printf("Error: gtk_builder didn't work!\n");
-
     GUI_Menubar  = GTK_WIDGET (gtk_builder_get_object (builder, "MenuBar"));
     if(!GUI_Menubar) printf("Error: gtk_builder didn't work!\n");
     GUI_Timer  = GTK_WIDGET (gtk_builder_get_object (builder, "Timer"));
@@ -1471,6 +1465,7 @@ main(argc, argv)
     GUI_Blackclock  = GTK_WIDGET (gtk_builder_get_object (builder, "BlackClock"));
     if(!GUI_Blackclock) printf("Error: gtk_builder didn't work!\n");
 
+    /* GTK lists stores*/
     LIST_MoveHistory = GTK_LIST_STORE (gtk_builder_get_object (builder, "MoveHistoryStore"));
     if(!LIST_MoveHistory) printf("Error: gtk_builder didn't work!\n");
 
@@ -1484,6 +1479,23 @@ main(argc, argv)
     GUI_EditTagsTextArea = GTK_WIDGET (gtk_builder_get_object (builder, "EditTagsTextArea"));
     if(!GUI_EditTagsTextArea) printf("Error: gtk_builder didn't work!\n");
 
+    /* move history and game list windows */
+    GUI_History = GTK_WIDGET (gtk_builder_get_object (builder, "MoveHistory"));
+    if(!GUI_History) printf("Error: gtk_builder didn't work!\n");
+
+    TREE_History = GTK_TREE_VIEW (gtk_builder_get_object (builder, "MoveHistoryView"));
+    if(!TREE_History) printf("Error: gtk_builder didn't work!\n");
+
+    GUI_GameList = GTK_WIDGET (gtk_builder_get_object (builder, "GameList"));
+    if(!GUI_GameList) printf("Error: gtk_builder didn't work!\n");
+
+    TREE_Game = GTK_TREE_VIEW (gtk_builder_get_object (builder, "GameListView"));
+    if(!TREE_Game) printf("Error: gtk_builder didn't work!\n");
+
+
+    /* connect lists to views */
+    gtk_tree_view_set_model(TREE_History,GTK_TREE_MODEL(LIST_MoveHistory));
+    gtk_tree_view_set_model(TREE_Game,GTK_TREE_MODEL(LIST_GameList));
 
     gtk_builder_connect_signals (builder, NULL);
 
