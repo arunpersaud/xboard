@@ -5941,6 +5941,57 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     }
 }
 
+int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
+{   // front-end-free part taken out of PieceMenuPopup
+    int whichMenu;
+
+    if (action == Release) UnLoadPV(); // [HGM] pv
+    if (action != Press) return -2;
+    switch (gameMode) {
+      case EditPosition:
+      case IcsExamining:
+	whichMenu = 0;
+	break;
+      case IcsObserving:
+	if(!appData.icsEngineAnalyze) return -1;
+      case IcsPlayingWhite:
+      case IcsPlayingBlack:
+	if(!appData.zippyPlay) goto noZip;
+      case AnalyzeMode:
+      case AnalyzeFile:
+      case MachinePlaysWhite:
+      case MachinePlaysBlack:
+      case TwoMachinesPlay: // [HGM] pv: use for showing PV
+	if (!appData.dropMenu) {
+	  LoadPV(x, y);
+	  return -1;
+	}
+	if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
+           gameMode == AnalyzeFile || gameMode == IcsObserving) return -1;
+      case EditGame:
+      noZip:
+	if (!appData.dropMenu || appData.testLegality &&
+	    gameInfo.variant != VariantBughouse &&
+	    gameInfo.variant != VariantCrazyhouse) return -1;
+	whichMenu = 1;
+	break;
+      default:
+	return -1;
+    }
+
+    if (((*fromX = EventToSquare(x, BOARD_WIDTH)) < 0) ||
+	((*fromY = EventToSquare(y, BOARD_HEIGHT)) < 0)) {
+	*fromX = *fromY = -1;
+	return -1;
+    }
+    if (flipView)
+      *fromX = BOARD_WIDTH - 1 - *fromX;
+    else
+      *fromY = BOARD_HEIGHT - 1 - *fromY;
+
+    return whichMenu;
+}
+
 void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cpstats )
 {
 //    char * hint = lastHint;

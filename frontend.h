@@ -127,6 +127,7 @@ void PromotionPopUp P((void));
 void DragPieceBegin P((int x, int y));
 void DragPieceEnd P((int x, int y));
 void LeftClick P((ClickType c, int x, int y));
+int  RightClick P((ClickType c, int x, int y, int *col, int *row));
 
 int StartChildProcess P((char *cmdLine, char *dir, ProcRef *pr));
 void DestroyChildProcess P((ProcRef pr, int/*boolean*/ signal));

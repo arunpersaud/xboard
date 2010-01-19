@@ -3708,59 +3708,6 @@ void SetupDropMenu()
     }
 }
 
-int RightClick(int action, int x, int y)
-{   // front-end-free part taken out of PieceMenuPopup
-    int whichMenu;
-
-    if (event->type == ButtonRelease) UnLoadPV(); // [HGM] pv
-    if (event->type != ButtonPress) return;
-    if (errorUp) ErrorPopDown();
-    switch (gameMode) {
-      case EditPosition:
-      case IcsExamining:
-	whichMenu = 0;
-	break;
-      case IcsObserving:
-	if(!appData.icsEngineAnalyze) return -1;
-      case IcsPlayingWhite:
-      case IcsPlayingBlack:
-	if(!appData.zippyPlay) goto noZip;
-      case AnalyzeMode:
-      case AnalyzeFile:
-      case MachinePlaysWhite:
-      case MachinePlaysBlack:
-      case TwoMachinesPlay: // [HGM] pv: use for showing PV
-	if (!appData.dropMenu) {
-	  LoadPV(x, y);
-	  return;
-	}
-	if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
-           gameMode == AnalyzeFile || gameMode == IcsObserving) return -1;
-      case EditGame:
-      noZip:
-	if (!appData.dropMenu || appData.testLegality &&
-	    gameInfo.variant != VariantBughouse &&
-	    gameInfo.variant != VariantCrazyhouse) return -1;
-	SetupDropMenu();
-	whichMenu = 1;
-	break;
-      default:
-	return -1;
-    }
-
-    if (((pmFromX = EventToSquare(x, BOARD_WIDTH)) < 0) ||
-	((pmFromY = EventToSquare(y, BOARD_HEIGHT)) < 0)) {
-	pmFromX = pmFromY = -1;
-	return -1;
-    }
-    if (flipView)
-      pmFromX = BOARD_WIDTH - 1 - pmFromX;
-    else
-      pmFromY = BOARD_HEIGHT - 1 - pmFromY;
-
-    return whichMenu;
-}
-
 void PieceMenuPopup(w, event, params, num_params)
      Widget w;
      XEvent *event;
@@ -3768,11 +3715,14 @@ void PieceMenuPopup(w, event, params, num_params)
      Cardinal *num_params;
 {
     String whichMenu; int menuNr;
-    if (event->type == ButtonRelease) menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y); // [HGM] pv
-    if (event->type == ButtonPress)   menuNr = RightClick(Press,   event->xbutton.x, event->xbutton.y);
+    if (event->type == ButtonRelease)
+        menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY); 
+    else if (event->type == ButtonPress)
+        menuNr = RightClick(Press,   event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
     switch(menuNr) {
       case 0: whichMenu = params[0]; break;
-      case 1: whichMenu = "menuD"; break;
+      case 1: SetupDropMenu(); whichMenu = "menuD"; break;
+      case -1: if (errorUp) ErrorPopDown();
       default: return;
     }
     XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
