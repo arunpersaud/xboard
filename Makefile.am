@@ -30,6 +30,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xhistory.c  xhistory.h \
 		 xoptions.c \
 		 gtk-interface.xml \
+		 xpromo.c \
 		 $(ZPY)
 
 xboard_LDADD = -lm  @XAW_LIBS@ @GTK_LIBS@

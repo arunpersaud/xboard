@@ -6097,6 +6097,51 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 }
 
 void
+PromoDialog(int h, int w, Board board, Boolean clearBoard)
+{	// dummy routine to mimic with pseudo-popup what front-end should do:
+	// display a popup with h x w mini-board
+	int i, j;
+	DisplayMessage("Click on your piece of choice", "");
+	DrawPosition(TRUE, board);
+}
+
+int hTab[(int)EmptySquare/2+1] = { 1,1,1,1,1,1,2,1,2,3,2,3,3,3,2,3,4,3,3,4,4,3,4 };
+int wTab[(int)EmptySquare/2+1] = { 1,1,2,3,4,5,3,7,4,3,5,4,4,5,7,5,4,6,6,5,5,7,6 };
+Board promoBoard;
+int promotionChoice = 0;
+
+void PromoPopUp(ChessSquare piece)
+{   // determine the layout of the piece-choice dialog
+    int w, h, i, j, nr;
+    ChessSquare list[EmptySquare];
+
+    if(gameInfo.variant == VariantShogi) {
+	// non-Pawn promotes; must be shogi
+	h = 1; w = 1; list[0] = piece;
+	if(PieceToChar(PROMOTED piece) != '.') {
+	    // promoted version is enabled
+	    w = 2; list[1] = PROMOTED piece;
+	}
+    } else {
+	// Pawn, promotes to any enabled other piece
+	h = 1; w = nr = 0;
+	for(i=1; i<EmptySquare/2; i++) {
+	    if(PieceToChar(piece+i) != '.' 
+	   && PieceToChar(PROMOTED piece + i) != '~' // suppress bughouse true pieces
+							) {
+		list[w++] = piece+i; nr++;
+	    }
+	}
+	if(appData.testLegality && gameInfo.variant != VariantSuicide) nr--,w--; // remove King
+	h = hTab[nr]; w = wTab[nr]; // factorize with nice ratio
+	for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++) promoBoard[i][j] = EmptySquare;
+	for(i=0; i < nr; i++) promoBoard[BOARD_LEFT+i/w][i%w] = list[i]; // layout
+    }
+    promotionChoice = 2; // wait for click on board
+    PromoDialog(h, w, promoBoard, FALSE);
+}
+
+void
 Mark(board, flags, kind, rf, ff, rt, ft, closure)
      Board board;
      int flags;
@@ -6137,7 +6182,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 {
     int x, y;
     Boolean saveAnimate;
-    static int second = 0, promotionChoice = 0;
+    static int second = 0;
     char promoChoice = NULLCHAR;
 
     if(appData.seekGraph && appData.icsActive && loggedOn &&
@@ -6159,22 +6204,25 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     }
 
     if(promotionChoice) { // we are waiting for a click to indicate promotion piece
+	ChessSquare p = EmptySquare; Boolean inHoldings;
 	if(clickType == Release) return; // ignore upclick of click-click destination
-	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
 	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
-	if(gameInfo.holdingsWidth && 
+	inHoldings = gameInfo.holdingsWidth &&
 		(WhiteOnMove(currentMove) 
 			? x == BOARD_WIDTH-1 && y < gameInfo.holdingsSize && y > 0
-			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1) ) {
+			: x == 0 && y >= BOARD_HEIGHT - gameInfo.holdingsSize && y < BOARD_HEIGHT-1);
 	    // click in right holdings, for determining promotion piece
-	    ChessSquare p = boards[currentMove][y][x];
+	if(promotionChoice == 1 && inHoldings || promotionChoice == 2 && x >= BOARD_LEFT && x < BOARD_RGHT) {
+	    p = promoBoard[y][x];
 	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
 	    if(p != EmptySquare) {
 		FinishMove(NormalMove, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
 		fromX = fromY = -1;
+		promotionChoice = 0;
 		return;
 	    }
 	}
+	promotionChoice = 0; // only one chance: if click not OK it is interpreted as cancel
 	DrawPosition(FALSE, boards[currentMove]);
 	return;
     }
@@ -6323,18 +6371,18 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	SetHighlights(fromX, fromY, toX, toY);
 	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
 	    // [HGM] super: promotion to captured piece selected from holdings
-	    ChessSquare p = boards[currentMove][fromY][fromX], q = boards[currentMove][toY][toX];
-	    promotionChoice = TRUE;
+	    ChessSquare p = boards[currentMove][fromY][fromX];
+	    promotionChoice = 1;
+	    CopyBoard(promoBoard, boards[currentMove]);
 	    // kludge follows to temporarily execute move on display, without promoting yet
-	    boards[currentMove][fromY][fromX] = EmptySquare; // move Pawn to 8th rank
-	    boards[currentMove][toY][toX] = p;
-	    DrawPosition(FALSE, boards[currentMove]);
-	    boards[currentMove][fromY][fromX] = p; // take back, but display stays
-	    boards[currentMove][toY][toX] = q;
+	    promoBoard[fromY][fromX] = EmptySquare; // move Pawn to 8th rank
+	    promoBoard[toY][toX] = p;
+	    DrawPosition(FALSE, promoBoard);
 	    DisplayMessage("Click in holdings to choose piece", "");
 	    return;
 	}
-	PromotionPopUp();
+	CopyBoard(promoBoard, boards[currentMove]);
+	PromoPopUp(boards[currentMove][fromY][fromX]);
     } else {
 	UserMoveEvent(fromX, fromY, toX, toY, promoChoice);
 	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
