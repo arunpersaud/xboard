@@ -1000,7 +1000,7 @@ char boardTranslations[] =
    <Btn1Up>: HandleUserMove() \n \
    <Btn1Motion>: AnimateUserMove() \n \
    <Btn3Motion>: HandlePV() \n \
-   <Btn3Up>: UnLoadPV() \n \
+   <Btn3Up>: PieceMenuPopup(menuB) \n \
    Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
                  PieceMenuPopup(menuB) \n \
    Any<Btn2Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD) \
@@ -3708,13 +3708,9 @@ void SetupDropMenu()
     }
 }
 
-void PieceMenuPopup(w, event, params, num_params)
-     Widget w;
-     XEvent *event;
-     String *params;
-     Cardinal *num_params;
-{
-    String whichMenu;
+int RightClick(int action, int x, int y)
+{   // front-end-free part taken out of PieceMenuPopup
+    int whichMenu;
 
     if (event->type == ButtonRelease) UnLoadPV(); // [HGM] pv
     if (event->type != ButtonPress) return;
@@ -3722,10 +3718,10 @@ void PieceMenuPopup(w, event, params, num_params)
     switch (gameMode) {
       case EditPosition:
       case IcsExamining:
-	whichMenu = params[0];
+	whichMenu = 0;
 	break;
       case IcsObserving:
-	if(!appData.icsEngineAnalyze) return;
+	if(!appData.icsEngineAnalyze) return -1;
       case IcsPlayingWhite:
       case IcsPlayingBlack:
 	if(!appData.zippyPlay) goto noZip;
@@ -3735,33 +3731,50 @@ void PieceMenuPopup(w, event, params, num_params)
       case MachinePlaysBlack:
       case TwoMachinesPlay: // [HGM] pv: use for showing PV
 	if (!appData.dropMenu) {
-	  LoadPV(event->xbutton.x, event->xbutton.y);
+	  LoadPV(x, y);
 	  return;
 	}
 	if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
-           gameMode == AnalyzeFile || gameMode == IcsObserving) return;
+           gameMode == AnalyzeFile || gameMode == IcsObserving) return -1;
       case EditGame:
       noZip:
 	if (!appData.dropMenu || appData.testLegality &&
 	    gameInfo.variant != VariantBughouse &&
-	    gameInfo.variant != VariantCrazyhouse) return;
+	    gameInfo.variant != VariantCrazyhouse) return -1;
 	SetupDropMenu();
-	whichMenu = "menuD";
+	whichMenu = 1;
 	break;
       default:
-	return;
+	return -1;
     }
 
-    if (((pmFromX = EventToSquare(event->xbutton.x, BOARD_WIDTH)) < 0) ||
-	((pmFromY = EventToSquare(event->xbutton.y, BOARD_HEIGHT)) < 0)) {
+    if (((pmFromX = EventToSquare(x, BOARD_WIDTH)) < 0) ||
+	((pmFromY = EventToSquare(y, BOARD_HEIGHT)) < 0)) {
 	pmFromX = pmFromY = -1;
-	return;
+	return -1;
     }
     if (flipView)
       pmFromX = BOARD_WIDTH - 1 - pmFromX;
     else
       pmFromY = BOARD_HEIGHT - 1 - pmFromY;
 
+    return whichMenu;
+}
+
+void PieceMenuPopup(w, event, params, num_params)
+     Widget w;
+     XEvent *event;
+     String *params;
+     Cardinal *num_params;
+{
+    String whichMenu; int menuNr;
+    if (event->type == ButtonRelease) menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y); // [HGM] pv
+    if (event->type == ButtonPress)   menuNr = RightClick(Press,   event->xbutton.x, event->xbutton.y);
+    switch(menuNr) {
+      case 0: whichMenu = params[0]; break;
+      case 1: whichMenu = "menuD"; break;
+      default: return;
+    }
     XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
 }
 
