@@ -3681,7 +3681,7 @@ void PieceMenuPopup(w, event, params, num_params)
 {
     String whichMenu;
 
-    if (event->type != ButtonRelease) UnLoadPV(); // [HGM] pv
+    if (event->type == ButtonRelease) UnLoadPV(); // [HGM] pv
     if (event->type != ButtonPress) return;
     if (errorUp) ErrorPopDown();
     switch (gameMode) {
