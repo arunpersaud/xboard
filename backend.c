@@ -6099,8 +6099,10 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 void
 PromoDialog(int h, int w, Board board, Boolean clearBoard)
 {	// dummy routine to mimic with pseudo-popup what front-end should do:
-	// display a popup with h x w mini-board
-	int i, j;
+	// display a popup with h x w mini-board, and divert any mouse clicks
+	// on it to the back-end routines RightClick and LeftClick, just
+	// like the mouse event hadler of the board widget does now.
+	// (Note it would have to off-set x if holdings are displayed!)
 	DisplayMessage("Click on your piece of choice", "");
 	DrawPosition(TRUE, board);
 }
@@ -6110,7 +6112,32 @@ int wTab[(int)EmptySquare/2+1] = { 1,1,2,3,4,5,3,7,4,3,5,4,4,5,7,5,4,6,6,5,5,7,6
 Board promoBoard;
 int promotionChoice = 0;
 
-void PromoPopUp(ChessSquare piece)
+void
+PiecePopUp()
+{
+    int i, j, h, w, nWhite=0, nBlack=0;
+    ChessSquare list[EmptySquare];
+    for(i=0; i<EmptySquare/2; i++) {
+	if(PieceToChar(i) != '.') list[nWhite++] = i;
+	if(PieceToChar(i+EmptySquare/2) != '.') list[EmptySquare - ++nBlack] = i + EmptySquare/2;
+    }
+    CopyBoard(promoBoard, boards[currentMove]);
+    for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++) promoBoard[i][j] = EmptySquare;
+    j = nWhite + nBlack + 1;
+    h = sqrt((j+1)/2 + 1.); w = (j+h-1)/h;
+    if(w>BOARD_RGHT-BOARD_LEFT) { w = BOARD_RGHT - BOARD_LEFT; h = (j+w-1)/w; }
+    for(i=0; i<nWhite; i++) promoBoard[i/w][BOARD_LEFT+i%w] = list[nWhite-1-i];
+    if(h==2 && nWhite == nBlack)
+	for(i=0; i<nWhite; i++) promoBoard[1][BOARD_LEFT+i%w] = list[EmptySquare-nBlack+i];
+    else
+	for(i=0; i<nBlack; i++) promoBoard[h-1-i/w][BOARD_LEFT+w-1-i%w] = list[EmptySquare-nBlack+i];
+    promotionChoice = 3;
+    ClearHighlights();
+    PromoDialog(h, w, promoBoard, TRUE);
+}
+
+void
+PromoPopUp(ChessSquare piece)
 {   // determine the layout of the piece-choice dialog
     int w, h, i, j, nr;
     ChessSquare list[EmptySquare];
@@ -6205,6 +6232,12 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 
     if(promotionChoice) { // we are waiting for a click to indicate promotion piece
 	ChessSquare p = EmptySquare; Boolean inHoldings;
+	if(promotionChoice == 3) {
+	    if(clickType == Press) EditPositionMenuEvent(promoBoard[y][x], fromX, fromY);
+	    else if(clickType == Release) promotionChoice = 0;
+	    fromX = fromY = -1;
+	    return;
+	}
 	if(clickType == Release) return; // ignore upclick of click-click destination
 	if(appData.debugMode) fprintf(debugFP, "promotion click, x=%d, y=%d\n", x, y);
 	inHoldings = gameInfo.holdingsWidth &&
@@ -6396,7 +6429,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     }
 }
 
-int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
+int RightClick(ClickType action, int x, int y, int *xx, int *yy)
 {   // front-end-free part taken out of PieceMenuPopup
     int whichMenu; int xSqr, ySqr;
 
@@ -6408,6 +6441,18 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 
     xSqr = EventToSquare(x, BOARD_WIDTH);
     ySqr = EventToSquare(y, BOARD_HEIGHT);
+    if (flipView)
+      xSqr = BOARD_WIDTH - 1 - xSqr;
+    else
+      ySqr = BOARD_HEIGHT - 1 - ySqr;
+    if(promotionChoice == 3 && action == Release
+	 && promoBoard[ySqr][xSqr] != EmptySquare && (xSqr != fromX || ySqr != fromY) // not needed if separate window
+						) {
+	EditPositionMenuEvent(promoBoard[ySqr][xSqr], fromX, fromY);
+	fromX = fromY = -1;
+	promotionChoice = 0;
+	return -1;
+    }
     if (action == Release) UnLoadPV(); // [HGM] pv
     if (action != Press) return -2; // return code to be ignored
     switch (gameMode) {
@@ -6446,15 +6491,14 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 	return -1;
     }
 
-    if (((*fromX = xSqr) < 0) ||
-	((*fromY = ySqr) < 0)) {
-	*fromX = *fromY = -1;
+    if (((*xx = xSqr) < 0) ||
+	((*yy = ySqr) < 0)) {
+	*xx = *yy = -1;
 	return -1;
     }
-    if (flipView)
-      *fromX = BOARD_WIDTH - 1 - *fromX;
-    else
-      *fromY = BOARD_HEIGHT - 1 - *fromY;
+
+    fromX = *xx; fromY = *yy;
+    if(whichMenu == 0) { PiecePopUp(); return -1; } // suppress EditPosition menu
 
     return whichMenu;
 }
