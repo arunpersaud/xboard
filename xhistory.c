@@ -61,6 +61,7 @@ extern char *getenv();
 
 extern GtkWidget               *GUI_History;
 extern GtkListStore            *LIST_MoveHistory;
+extern GtkTreeView             *TREE_History;
 
 String dots=" ... ";
 Position gameHistoryX, gameHistoryY;
@@ -77,20 +78,52 @@ HistoryPopDown(object, user_data)
   return;
 }
 
-void HistoryMoveProc(Widget w, XtPointer closure, XtPointer call_data)
+void 
+HistoryMoveProc(window, event, data)
+     GtkWindow *window;
+     GdkEvent *event;
+     gpointer data;
 {
-    int to;
-    /*
-    XawListReturnStruct *R = (XawListReturnStruct *) call_data;
-    if (w == hist->mvn || w == hist->mvw) {
-      to=2*R->list_index-1;
-      ToNrEvent(to);
+  int to; /* the move we want to go to */
+  
+  /* check if the mouse was clicked */
+  if(event->type == GDK_BUTTON_PRESS)
+    {	
+      GtkTreeViewColumn *column;
+      GtkTreePath *path;
+      GList *cols;
+      gint *indices;
+      gint row,col;
+      
+      /* can we convert this into an element of the history list? */
+      if(gtk_tree_view_get_path_at_pos(TREE_History,
+				       (gint)event->button.x, (gint)event->button.y,
+				       &path,&column,NULL,NULL))
+	{
+	  /* find out which row and column the user clicked on */
+	  indices = gtk_tree_path_get_indices(path);
+	  row     = indices[0];
+	  cols    = gtk_tree_view_get_columns(GTK_TREE_VIEW(column->tree_view));
+	  col     = g_list_index(cols,(gpointer)column);
+	  g_list_free(cols);
+	  gtk_tree_path_free(path);
+	  
+	  printf("DEBUG: row %d col %d\n",row,col);
+
+
+	  if(col)
+	    {
+	      /* user didn't click on the move number */
+
+	      to = 2*row + col;
+	      printf("DEBUG: going to %d\n",to);fflush(stdout);
+
+	      /* set board to that move */
+	      ToNrEvent(to);
+	    }
+	}
     }
-    else if (w == hist->mvb) {
-      to=2*R->list_index;
-      ToNrEvent(to);
-    }
-    */
+  return;
 }
 
 
@@ -103,6 +136,8 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current)
   /* TODO need to add highlights for current move */
   /* TODO need to add navigation by keyboard or mouse (double click on move) */
 
+  strcpy(movewhite,"");
+  strcpy(moveblack,"");
 
   /* first clear everything, do we need this? */
   gtk_list_store_clear(LIST_MoveHistory);

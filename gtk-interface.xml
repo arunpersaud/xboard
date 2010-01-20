@@ -44,8 +44,12 @@
                 <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <property name="model">MoveHistoryStore</property>
                 <property name="headers_clickable">False</property>
+                <property name="rules_hint">True</property>
                 <property name="enable_search">False</property>
                 <property name="search_column">0</property>
+                <property name="hover_selection">True</property>
+                <signal name="button_press_event" handler="HistoryMoveProc"/>
+                <signal name="key_press_event" handler="HistoryMoveProc"/>
                 <child>
                   <object class="GtkTreeViewColumn" id="Move">
                     <property name="title">Move</property>
