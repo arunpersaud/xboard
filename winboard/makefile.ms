@@ -14,7 +14,7 @@ PROJ = winboard
 
 OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj\
  zippy.obj parser.obj wclipbrd.obj wedittags.obj wengineoutput.obj wevalgraph.obj\
- wgamelist.obj whistory.obj winboard.obj wlayout.obj woptions.obj wsnap.obj\
+ wgamelist.obj whistory.obj history.obj winboard.obj wlayout.obj woptions.obj wsnap.obj\
  wsockerr.obj help.obj wsettings.obj wchat.obj engineoutput.obj evalgraph.obj
 
 
@@ -143,6 +143,10 @@ engineoutput.obj: ../engineoutput.c ../engineoutput.h config.h ../common.h \
 
 whistory.obj: whistory.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h
+        $(CC) $(CFLAGS) whistory.c
+
+history.obj: ../history.c config.h ../common.h ../frontend.h ../backend.h \
+	../lists.h
         $(CC) $(CFLAGS) whistory.c
 
 wevalgraph.obj: wevalgraph.c config.h ../common.h ../frontend.h ../backend.h \
