@@ -106,6 +106,8 @@ static int listLength;
 char gameListTranslations[] =
   "<Btn1Up>(2): LoadSelectedProc() \n \
    <Key>Return: LoadSelectedProc() \n";
+char filterTranslations[] =
+  "<Key>Return: SetFilterProc() \n";
 
 typedef struct {
     Widget shell;
@@ -254,6 +256,8 @@ GameListCreate(name, callback, client_data)
     filterText =
       XtCreateManagedWidget(_("filtertext"), asciiTextWidgetClass, form, args, j);
     XtAddEventHandler(filterText, ButtonPressMask, False, SetFocus, (XtPointer) shell);
+    XtOverrideTranslations(filterText,
+			  XtParseTranslationTable(filterTranslations));
 
     j = 0;
     XtSetArg(args[j], XtNfromVert, viewport);  j++;
@@ -532,6 +536,29 @@ LoadSelectedProc(w, event, prms, nprms)
     } else {
 	LoadGame(glc->fp, index + 1, glc->filename, True);
     }
+}
+
+void
+SetFilterProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+	Arg args[16];
+        String name;
+	Widget list;
+        int j = 0;
+        XtSetArg(args[j], XtNstring, &name);  j++;
+	XtGetValues(filterText, args, j);
+        strcpy(filterString, name);
+        if(GameListPrepare()) GameListReplace(); // crashes on empty list...
+	list = XtNameToWidget(glc->shell, "*form.viewport.list");
+	XawListHighlight(list, 0);
+        j = 0;
+	XtSetArg(args[j], XtNdisplayCaret, False); j++;
+	XtSetValues(filterText, args, j);
+	XtSetKeyboardFocus(glc->shell, list);
 }
 
 void
