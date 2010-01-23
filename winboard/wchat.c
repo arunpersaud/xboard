@@ -137,6 +137,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
     static SnapData sd;
     char buf[MSG_SIZ], mess[MSG_SIZ];
     int partner = -1, i;
+    static BOOL filterHasFocus[MAX_CHAT];
 
     for(i=0; i<MAX_CHAT; i++) if(hDlg == chatHandle[i]) { partner = i; break; }
 
@@ -149,10 +150,33 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		SetWindowText(hDlg, buf);
         }
 	chatPartner[partner][0] = 0;
+	filterHasFocus[partner] = FALSE;
 
         return FALSE;
 
     case WM_COMMAND:
+      /* 
+        [AS]
+        If <Enter> is pressed while editing the filter, it's better to apply
+        the filter rather than selecting the current game.
+      */
+      if( LOWORD(wParam) == IDC_ChatPartner ) {
+          switch( HIWORD(wParam) ) {
+          case EN_SETFOCUS:
+              filterHasFocus[partner] = TRUE;
+              break;
+          case EN_KILLFOCUS:
+              filterHasFocus[partner] = FALSE;
+              break;
+          }
+      }
+
+      if( filterHasFocus[partner] && (LOWORD(wParam) == IDC_Send) ) {
+	  SetFocus(GetDlgItem(hDlg, OPT_ChatInput));
+          wParam = IDC_Change;
+      }
+      /* [AS] End command replacement */
+
         switch (LOWORD(wParam)) {
 
 	case IDCANCEL:
