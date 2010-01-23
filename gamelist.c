@@ -56,6 +56,64 @@ static ListGame *GameListCreate P((void));
 static void GameListFree P((List *));
 static int GameListNewGame P((ListGame **));
 
+/* [AS] Wildcard pattern matching */
+Boolean
+HasPattern( const char * text, const char * pattern )
+{
+    while( *pattern != '\0' ) {
+        if( *pattern == '*' ) {
+            while( *pattern == '*' ) {
+                pattern++;
+            }
+
+            if( *pattern == '\0' ) {
+                return TRUE;
+            }
+
+            while( *text != '\0' ) {
+                if( HasPattern( text, pattern ) ) {
+                    return TRUE;
+                }
+                text++;
+            }
+        }
+        else if( (*pattern == *text) || ((*pattern == '?') && (*text != '\0')) ) {
+            pattern++;
+            text++;
+            continue;
+        }
+
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+Boolean
+SearchPattern( const char * text, const char * pattern )
+{
+    Boolean result = TRUE;
+
+    if( pattern != NULL && *pattern != '\0' ) {
+        if( *pattern == '*' ) {
+            result = HasPattern( text, pattern );
+        }
+        else {
+            result = FALSE;
+
+            while( *text != '\0' ) {
+                if( HasPattern( text, pattern ) ) {
+                    result = TRUE;
+                    break;
+                }
+                text++;
+            }
+        }
+    }
+
+    return result;
+}
+
 /* Delete a ListGame; implies removint it from a list.
  */
 static void GameListDeleteGame(listGame)

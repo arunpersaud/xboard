@@ -54,62 +54,6 @@ struct GameListStats
     int unfinished;
 };
 
-/* [AS] Wildcard pattern matching */
-static BOOL HasPattern( const char * text, const char * pattern )
-{
-    while( *pattern != '\0' ) {
-        if( *pattern == '*' ) {
-            while( *pattern == '*' ) {
-                pattern++;
-            }
-
-            if( *pattern == '\0' ) {
-                return TRUE;
-            }
-
-            while( *text != '\0' ) {
-                if( HasPattern( text, pattern ) ) {
-                    return TRUE;
-                }
-                text++;
-            }
-        }
-        else if( (*pattern == *text) || ((*pattern == '?') && (*text != '\0')) ) {
-            pattern++;
-            text++;
-            continue;
-        }
-
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-static BOOL SearchPattern( const char * text, const char * pattern )
-{
-    BOOL result = TRUE;
-
-    if( pattern != NULL && *pattern != '\0' ) {
-        if( *pattern == '*' ) {
-            result = HasPattern( text, pattern );
-        }
-        else {
-            result = FALSE;
-
-            while( *text != '\0' ) {
-                if( HasPattern( text, pattern ) ) {
-                    result = TRUE;
-                    break;
-                }
-                text++;
-            }
-        }
-    }
-
-    return result;
-}
-
 /* [AS] Setup the game list according to the specified filter */
 static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct GameListStats * stats )
 {

@@ -121,6 +121,8 @@ int PieceForSquare P((int x, int y));
 int OKToStartUserMove P((int x, int y));
 void Reset P((int redraw, int init));
 void ResetGameEvent P((void));
+Boolean HasPattern P(( const char * text, const char * pattern ));
+Boolean SearchPattern P(( const char * text, const char * pattern ));
 int LoadGame P((FILE *f, int n, char *title, int useList));
 int LoadGameFromFile P((char *filename, int n, char *title, int useList));
 int CmailLoadGame P((FILE *f, int n, char *title, int useList));
