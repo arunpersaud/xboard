@@ -91,11 +91,17 @@ extern char *getenv();
 #endif
 
 
+void SetFocus P((Widget w, XtPointer data, XEvent *event, Boolean *b));
+
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell;
 extern Display *xDisplay;
 extern int squareSize;
 extern Pixmap xMarkPixmap;
 extern char *layoutName;
+
+static Widget filterText;
+static char filterString[MSG_SIZ];
+static int listLength;
 
 char gameListTranslations[] =
   "<Btn1Up>(2): LoadSelectedProc() \n \
@@ -110,11 +116,68 @@ typedef struct {
     char *filename;
     char **strings;
 } GameListClosure;
+static GameListClosure *glc = NULL;
 
 static Arg layoutArgs[] = {
     { XtNborderWidth, 0 },
     { XtNdefaultDistance, 0 }
 };
+
+/* [AS] Wildcard pattern matching */
+static Boolean HasPattern( const char * text, const char * pattern )
+{
+    while( *pattern != '\0' ) {
+        if( *pattern == '*' ) {
+            while( *pattern == '*' ) {
+                pattern++;
+            }
+
+            if( *pattern == '\0' ) {
+                return TRUE;
+            }
+
+            while( *text != '\0' ) {
+                if( HasPattern( text, pattern ) ) {
+                    return TRUE;
+                }
+                text++;
+            }
+        }
+        else if( (*pattern == *text) || ((*pattern == '?') && (*text != '\0')) ) {
+            pattern++;
+            text++;
+            continue;
+        }
+
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+static Boolean SearchPattern( const char * text, const char * pattern )
+{
+    Boolean result = TRUE;
+
+    if( pattern != NULL && *pattern != '\0' ) {
+        if( *pattern == '*' ) {
+            result = HasPattern( text, pattern );
+        }
+        else {
+            result = FALSE;
+
+            while( *text != '\0' ) {
+                if( HasPattern( text, pattern ) ) {
+                    result = TRUE;
+                    break;
+                }
+                text++;
+            }
+        }
+    }
+
+    return result;
+}
 
 Widget
 GameListCreate(name, callback, client_data)
@@ -123,8 +186,8 @@ GameListCreate(name, callback, client_data)
      XtPointer client_data;
 {
     Arg args[16];
-    Widget shell, form, viewport, listwidg, layout;
-    Widget b_load, b_loadprev, b_loadnext, b_close;
+    Widget shell, form, viewport, listwidg, layout, label;
+    Widget b_load, b_loadprev, b_loadnext, b_close, b_filter;
     Dimension fw_width;
     int j;
     GameListClosure *glc = (GameListClosure *) client_data;
@@ -218,6 +281,48 @@ GameListCreate(name, callback, client_data)
       XtCreateManagedWidget(_("close"), commandWidgetClass, form, args, j);
     XtAddCallback(b_close, XtNcallback, callback, client_data);
 
+    j = 0;
+    XtSetArg(args[j], XtNfromVert, viewport);  j++;
+    XtSetArg(args[j], XtNfromHoriz, b_close);  j++;
+    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
+    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
+    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+    XtSetArg(args[j], XtNright, XtChainLeft); j++;
+    XtSetArg(args[j], XtNborderWidth, 0); j++;
+    label =
+      XtCreateManagedWidget(_("Filter:"), labelWidgetClass, form, args, j);
+
+    j = 0;
+    XtSetArg(args[j], XtNfromVert, viewport);  j++;
+    XtSetArg(args[j], XtNfromHoriz, label);  j++;
+    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
+    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
+    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+    XtSetArg(args[j], XtNright, XtChainRight); j++;
+    XtSetArg(args[j], XtNwidth, 173); j++;
+    XtSetArg(args[j], XtNstring, filterString);  j++;
+    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
+    XtSetArg(args[j], XtNresizable, True);  j++;
+//    XtSetArg(args[j], XtNwidth, bw_width);  j++; /*force wider than buttons*/
+    /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
+    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
+    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
+    filterText =
+      XtCreateManagedWidget(_("filtertext"), asciiTextWidgetClass, form, args, j);
+    XtAddEventHandler(filterText, ButtonPressMask, False, SetFocus, (XtPointer) shell);
+
+    j = 0;
+    XtSetArg(args[j], XtNfromVert, viewport);  j++;
+    XtSetArg(args[j], XtNfromHoriz, filterText);  j++;
+    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
+    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
+    XtSetArg(args[j], XtNleft, XtChainRight); j++;
+    XtSetArg(args[j], XtNright, XtChainRight); j++;
+    b_filter =
+      XtCreateManagedWidget(_("apply"), commandWidgetClass, form, args, j);
+    XtAddCallback(b_filter, XtNcallback, callback, client_data);
+
+
     if(wpGameList.width > 0) {
 	glc->x = wpGameList.x;
 	glc->y = wpGameList.y;
@@ -271,6 +376,42 @@ GameListCreate(name, callback, client_data)
     return shell;
 }
 
+static int
+GameListPrepare()
+{   // [HGM] filter: put in separate routine, to make callable from call-back
+    int nstrings;
+    ListGame *lg;
+    char **st, *line;
+
+    nstrings = ((ListGame *) gameList.tailPred)->number;
+    glc->strings = (char **) malloc((nstrings + 1) * sizeof(char *));
+    st = glc->strings;
+    lg = (ListGame *) gameList.head;
+    listLength = 0;
+    while (nstrings--) {
+	line = GameListLine(lg->number, &lg->gameInfo);
+	if(filterString[0] == NULLCHAR || SearchPattern( line, filterString ) ) {
+	    *st++ = line; // [HGM] filter: make adding line conditional
+	    listLength++;
+	}
+	lg = (ListGame *) lg->node.succ;
+     }
+    *st = NULL;
+    return listLength;
+}
+
+static void
+GameListReplace()
+{   // [HGM] filter: put in separate routine, to make callable from call-back
+    Arg args[16];
+    int j;
+    Widget listwidg;
+
+	listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
+	XawListChange(listwidg, glc->strings, 0, 0, True);
+	XawListHighlight(listwidg, 0);
+}
+
 void
 GameListCallback(w, client_data, call_data)
      Widget w;
@@ -302,7 +443,7 @@ GameListCallback(w, client_data, call_data)
 	}
     } else if (strcmp(name, _("next")) == 0) {
 	index = rs->list_index + 1;
-	if (index >= ((ListGame *) gameList.tailPred)->number) {
+	if (index >= listLength) {
 	    DisplayError(_("Can't go forward any further"), 0);
 	    return;
 	}
@@ -314,15 +455,23 @@ GameListCallback(w, client_data, call_data)
 	    return;
 	}
 	XawListHighlight(listwidg, index);
+    } else if (strcmp(name, _("apply")) == 0) {
+        String name;
+        j = 0;
+        XtSetArg(args[j], XtNstring, &name);  j++;
+	XtGetValues(filterText, args, j);
+        strcpy(filterString, name);
+	XawListHighlight(listwidg, 0);
+        if(GameListPrepare()) GameListReplace(); // crashes on empty list...
+        return;
     }
+    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
     } else {
 	LoadGame(glc->fp, index + 1, glc->filename, True);
     }
 }
-
-static GameListClosure *glc = NULL;
 
 void
 GameListPopUp(fp, filename)
@@ -348,27 +497,18 @@ GameListPopUp(fp, filename)
 	free(glc->strings);
     }
 
-    nstrings = ((ListGame *) gameList.tailPred)->number;
-    glc->strings = (char **) malloc((nstrings + 1) * sizeof(char *));
-    st = glc->strings;
-    lg = (ListGame *) gameList.head;
-    while (nstrings--) {
-	*st++ = GameListLine(lg->number, &lg->gameInfo);
-	lg = (ListGame *) lg->node.succ;
-     }
-    *st = NULL;
+    GameListPrepare(); // [HGM] filter: code put in separate routine
 
     glc->fp = fp;
 
     if (glc->filename != NULL) free(glc->filename);
     glc->filename = StrSave(filename);
 
+
     if (glc->shell == NULL) {
 	glc->shell = GameListCreate(filename, GameListCallback, glc); 
     } else {
-	listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-	XawListChange(listwidg, glc->strings, 0, 0, True);
-	XawListHighlight(listwidg, 0);
+        GameListReplace(); // [HGM] filter: code put in separate routine
 	j = 0;
 	XtSetArg(args[j], XtNiconName, (XtArgVal) filename);  j++;
 	XtSetArg(args[j], XtNtitle, (XtArgVal) filename);  j++;
@@ -442,6 +582,7 @@ LoadSelectedProc(w, event, prms, nprms)
     rs = XawListShowCurrent(listwidg);
     index = rs->list_index;
     if (index < 0) return;
+    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
     } else {
@@ -480,9 +621,12 @@ GameListHighlight(index)
      int index;
 {
     Widget listwidg;
+    int i=0; char **st;
     if (glc == NULL || !glc->up) return;
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-    XawListHighlight(listwidg, index - 1);
+    st = glc->strings;
+    while(*st && atoi(*st)<index) st++,i++;
+    XawListHighlight(listwidg, i);
 }
 
 Boolean
