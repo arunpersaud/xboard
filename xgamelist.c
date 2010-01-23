@@ -104,8 +104,14 @@ static char filterString[MSG_SIZ];
 static int listLength;
 
 char gameListTranslations[] =
-  "<Btn1Up>(2): LoadSelectedProc() \n \
-   <Key>Return: LoadSelectedProc() \n";
+  "<Btn1Up>(2): LoadSelectedProc(0) \n \
+   <Key>Home: LoadSelectedProc(-2) \n \
+   <Key>End: LoadSelectedProc(2) \n \
+   <Key>Up: LoadSelectedProc(-1) \n \
+   <Key>Down: LoadSelectedProc(1) \n \
+   <Key>Left: LoadSelectedProc(-1) \n \
+   <Key>Right: LoadSelectedProc(1) \n \
+   <Key>Return: LoadSelectedProc(0) \n";
 char filterTranslations[] =
   "<Key>Return: SetFilterProc() \n";
 
@@ -320,6 +326,7 @@ GameListCreate(name, callback, client_data)
 
     XtRealizeWidget(shell);
     CatchDeleteWindow(shell, "GameListPopDown");
+    XtSetKeyboardFocus(shell, listwidg);
 
     return shell;
 }
@@ -523,13 +530,21 @@ LoadSelectedProc(w, event, prms, nprms)
 {
     Widget listwidg;
     XawListReturnStruct *rs;
-    int index;
+    int index, direction = atoi(prms[0]);
 
     if (glc == NULL) return;
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
     rs = XawListShowCurrent(listwidg);
     index = rs->list_index;
     if (index < 0) return;
+    if(direction != 0) {
+	index += direction; 
+	if(direction == -2) index = 0;
+	if(direction == 2) index = listLength-1;
+	if(index < 0 || index >= listLength) return;
+	XawListHighlight(listwidg, index);
+	return;
+    }
     index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
