@@ -187,6 +187,7 @@ void DisplayMove P((int moveNumber));
 
 void ParseGameHistory P((char *game));
 void ParseBoard12 P((char *string));
+void KeepAlive P((void));
 void StartClocks P((void));
 void SwitchClocks P((void));
 void StopClocks P((void));
@@ -244,6 +245,7 @@ char endingGame = 0;    /* [HGM] crash: flag to prevent recursion of GameEnds() 
 int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     */
 VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
 int lastIndex = 0;      /* [HGM] autoinc: last game/position used in match mode */
+Boolean connectionAlive;/* [HGM] alive: ICS connection status from probing      */
 int opponentKibitzes;
 int lastSavedGame; /* [HGM] save: ID of game */
 char chatPartner[MAX_CHAT][MSG_SIZ]; /* [HGM] chat: list of chatting partners */
@@ -1121,6 +1123,8 @@ InitBackEnd3 P((void))
 	  AddInputSource(icsPR, FALSE, read_from_ics, &telnetISR);
 	fromUserISR =
 	  AddInputSource(NoProc, FALSE, read_from_player, &fromUserISR);
+	if(appData.keepAlive) // [HGM] alive: schedule sending of dummy 'date' command
+	    ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
     } else if (appData.noChessProgram) {
 	SetNCPMode();
     } else {
@@ -1440,6 +1444,8 @@ read_from_player(isr, closure, message, count, error)
 void
 KeepAlive()
 {   // [HGM] alive: periodically send dummy (date) command to ICS to prevent time-out
+    if(!connectionAlive) DisplayFatalError("No response from ICS", 0, 1);
+    connectionAlive = FALSE; // only sticks if no response to 'date' command.
     SendToICS("date\n");
     if(appData.keepAlive) ScheduleDelayedEvent(KeepAlive, appData.keepAlive*60*1000);
 }
@@ -2093,6 +2099,8 @@ read_from_ics(isr, closure, data, count, error)
     char *p;
     char talker[MSG_SIZ]; // [HGM] chat
     int channel;
+
+    connectionAlive = TRUE; // [HGM] alive: I think, therefore I am...
 
     if (appData.debugMode) {
       if (!error) {
