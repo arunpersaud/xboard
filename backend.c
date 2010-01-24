@@ -5473,8 +5473,6 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	}
     }
 
-    userOfferedDraw = FALSE; // [HGM] drawclaim: only if we do a legal move!
-	
     return moveType;
     /* [HGM] <popupFix> in stead of calling FinishMove directly, this
        function is made into one that returns an OK move type if FinishMove
@@ -5604,6 +5602,12 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   if (appData.icsActive) {
     if (gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
 	gameMode == IcsExamining) {
+      if(userOfferedDraw && (signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
+        SendToICS(ics_prefix); // [HGM] drawclaim: send caim and move on one line for FICS
+	SendToICS("draw ");
+        SendMoveToICS(moveType, fromX, fromY, toX, toY);
+      }
+      // also send plain move, in case ICS does not understand atomic claims
       SendMoveToICS(moveType, fromX, fromY, toX, toY);
       ics_user_moved = 1;
     }
@@ -5655,6 +5659,8 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
     break;
   }
 
+  userOfferedDraw = FALSE; // [HGM] drawclaim: after move made, and tested for claimable draw
+	
   if(bookHit) { // [HGM] book: simulate book reply
 	static char bookMove[MSG_SIZ]; // a bit generous?
 
