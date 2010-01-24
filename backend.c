@@ -6553,26 +6553,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	if (cps->sendTime == 2) cps->sendTime = 1;
 	if (cps->offeredDraw) cps->offeredDraw--;
 
-#if ZIPPY
-	if ((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack) &&
-	    first.initDone) {
-	  SendMoveToICS(moveType, fromX, fromY, toX, toY);
-	  ics_user_moved = 1;
-	  if(appData.autoKibitz && !appData.icsEngineAnalyze ) { /* [HGM] kibitz: send most-recent PV info to ICS */
-		char buf[3*MSG_SIZ];
-
-		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %.0f knps) PV=%s\n",
-			programStats.score / 100.,
-			programStats.depth,
-			programStats.time / 100.,
-			(unsigned int)programStats.nodes,
-			(unsigned int)programStats.nodes / (10*abs(programStats.time) + 1.),
-			programStats.movelist);
-		SendToICS(buf);
-if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.nodes, programStats.nodes);
-	  }
-	}
-#endif
 	/* currentMoveString is set as a side-effect of ParseOneMove */
 	strcpy(machineMove, currentMoveString);
 	strcat(machineMove, "\n");
@@ -6618,6 +6598,32 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
         }
 
 	if(Adjudicate(cps)) return; // [HGM] adjudicate: for all automatic game ends
+
+#if ZIPPY
+	if ((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack) &&
+	    first.initDone) {
+	  if(cps->offeredDraw && (signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
+		SendToICS(ics_prefix); // [HGM] drawclaim: send caim and move on one line for FICS
+		SendToICS("draw ");
+		SendMoveToICS(moveType, fromX, fromY, toX, toY);
+	  }
+	  SendMoveToICS(moveType, fromX, fromY, toX, toY);
+	  ics_user_moved = 1;
+	  if(appData.autoKibitz && !appData.icsEngineAnalyze ) { /* [HGM] kibitz: send most-recent PV info to ICS */
+		char buf[3*MSG_SIZ];
+
+		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %.0f knps) PV=%s\n",
+			programStats.score / 100.,
+			programStats.depth,
+			programStats.time / 100.,
+			(unsigned int)programStats.nodes,
+			(unsigned int)programStats.nodes / (10*abs(programStats.time) + 1.),
+			programStats.movelist);
+		SendToICS(buf);
+if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.nodes, programStats.nodes);
+	  }
+	}
+#endif
 
 	bookHit = NULL;
 	if (gameMode == TwoMachinesPlay) {
