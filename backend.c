@@ -5958,6 +5958,361 @@ void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cp
     SetProgramStats( &stats );
 }
 
+int
+Adjudicate(ChessProgramState *cps)
+{	// [HGM] some adjudications useful with buggy engines
+	// [HGM] adjudicate: made into separate routine, which now can be called after every move
+	//       In any case it determnes if the game is a claimable draw (filling in EP_STATUS).
+	//       Actually ending the game is now based on the additional internal condition canAdjudicate.
+	//       Only when the game is ended, and the opponent is a computer, this opponent gets the move relayed.
+	int k, count = 0; static int bare = 1;
+	ChessProgramState *engineOpponent = (gameMode == TwoMachinesPlay ? cps->other : (cps ? NULL : &first));
+	Boolean canAdjudicate = !appData.icsActive;
+
+	// most tests only when we understand the game, i.e. legality-checking on, and (for the time being) no piece drops
+	if(gameInfo.holdingsSize == 0 || gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
+	    if( appData.testLegality )
+	    {   /* [HGM] Some more adjudications for obstinate engines */
+		int NrWN=0, NrBN=0, NrWB=0, NrBB=0, NrWR=0, NrBR=0,
+                    NrWQ=0, NrBQ=0, NrW=0, NrK=0, bishopsColor = 0,
+                    NrPieces=0, NrPawns=0, PawnAdvance=0, i, j;
+		static int moveCount = 6;
+		ChessMove result;
+		char *reason = NULL;
+
+                /* Count what is on board. */
+		for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
+		{   ChessSquare p = boards[forwardMostMove][i][j];
+		    int m=i;
+
+		    switch((int) p)
+		    {   /* count B,N,R and other of each side */
+                        case WhiteKing:
+                        case BlackKing:
+			     NrK++; break; // [HGM] atomic: count Kings
+                        case WhiteKnight:
+                             NrWN++; break;
+                        case WhiteBishop:
+                        case WhiteFerz:    // [HGM] shatranj: kludge to mke it work in shatranj
+                             bishopsColor |= 1 << ((i^j)&1);
+                             NrWB++; break;
+                        case BlackKnight:
+                             NrBN++; break;
+                        case BlackBishop:
+                        case BlackFerz:    // [HGM] shatranj: kludge to mke it work in shatranj
+                             bishopsColor |= 1 << ((i^j)&1);
+                             NrBB++; break;
+                        case WhiteRook:
+                             NrWR++; break;
+                        case BlackRook:
+                             NrBR++; break;
+                        case WhiteQueen:
+                             NrWQ++; break;
+                        case BlackQueen:
+                             NrBQ++; break;
+                        case EmptySquare: 
+                             break;
+                        case BlackPawn:
+                             m = 7-i;
+                        case WhitePawn:
+                             PawnAdvance += m; NrPawns++;
+                    }
+                    NrPieces += (p != EmptySquare);
+                    NrW += ((int)p < (int)BlackPawn);
+		    if(gameInfo.variant == VariantXiangqi && 
+		      (p == WhiteFerz || p == WhiteAlfil || p == BlackFerz || p == BlackAlfil)) {
+			NrPieces--; // [HGM] XQ: do not count purely defensive pieces
+                        NrW -= ((int)p < (int)BlackPawn);
+		    }
+                }
+
+		/* Some material-based adjudications that have to be made before stalemate test */
+		if(gameInfo.variant == VariantAtomic && NrK < 2) {
+		    // [HGM] atomic: stm must have lost his King on previous move, as destroying own K is illegal
+		     boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE; // make claimable as if stm is checkmated
+		     if(canAdjudicate && appData.checkMates) {
+			 if(engineOpponent)
+			   SendMoveToProgram(forwardMostMove-1, engineOpponent); // make sure opponent gets move
+                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                         GameEnds( WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins, 
+							"Xboard adjudication: King destroyed", GE_XBOARD );
+                         return 1;
+		     }
+		}
+
+		/* Bare King in Shatranj (loses) or Losers (wins) */
+                if( NrW == 1 || NrPieces - NrW == 1) {
+                  if( gameInfo.variant == VariantLosers) { // [HGM] losers: bare King wins (stm must have it first)
+		     boards[forwardMostMove][EP_STATUS] = EP_WINS;  // mark as win, so it becomes claimable
+		     if(canAdjudicate && appData.checkMates) {
+			 if(engineOpponent)
+			   SendMoveToProgram(forwardMostMove-1, engineOpponent); // make sure opponent gets to see move
+                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                         GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
+							"Xboard adjudication: Bare king", GE_XBOARD );
+                         return 1;
+		     }
+		  } else
+                  if( gameInfo.variant == VariantShatranj && --bare < 0)
+                  {    /* bare King */
+			boards[forwardMostMove][EP_STATUS] = EP_WINS; // make claimable as win for stm
+			if(canAdjudicate && appData.checkMates) {
+			    /* but only adjudicate if adjudication enabled */
+			    if(engineOpponent)
+			      SendMoveToProgram(forwardMostMove-1, engineOpponent); // make sure opponent gets move
+			    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+			    GameEnds( NrW > 1 ? WhiteWins : NrPieces - NrW > 1 ? BlackWins : GameIsDrawn, 
+							"Xboard adjudication: Bare king", GE_XBOARD );
+			    return 1;
+			}
+		  }
+                } else bare = 1;
+
+
+            // don't wait for engine to announce game end if we can judge ourselves
+            switch (MateTest(boards[forwardMostMove], PosFlags(forwardMostMove)) ) {
+	      case MT_CHECK:
+		if(gameInfo.variant == Variant3Check) { // [HGM] 3check: when in check, test if 3rd time
+		    int i, checkCnt = 0;    // (should really be done by making nr of checks part of game state)
+		    for(i=forwardMostMove-2; i>=backwardMostMove; i-=2) {
+			if(MateTest(boards[i], PosFlags(i)) == MT_CHECK)
+			    checkCnt++;
+			if(checkCnt >= 2) {
+			    reason = "Xboard adjudication: 3rd check";
+			    boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE;
+			    break;
+			}
+		    }
+		}
+	      case MT_NONE:
+	      default:
+		break;
+	      case MT_STALEMATE:
+	      case MT_STAINMATE:
+		reason = "Xboard adjudication: Stalemate";
+		if((signed char)boards[forwardMostMove][EP_STATUS] != EP_CHECKMATE) { // [HGM] don't touch win through baring or K-capt
+		    boards[forwardMostMove][EP_STATUS] = EP_STALEMATE;   // default result for stalemate is draw
+		    if(gameInfo.variant == VariantLosers  || gameInfo.variant == VariantGiveaway) // [HGM] losers:
+			boards[forwardMostMove][EP_STATUS] = EP_WINS;    // in these variants stalemated is always a win
+		    else if(gameInfo.variant == VariantSuicide) // in suicide it depends
+			boards[forwardMostMove][EP_STATUS] = NrW == NrPieces-NrW ? EP_STALEMATE :
+						   ((NrW < NrPieces-NrW) != WhiteOnMove(forwardMostMove) ?
+									EP_CHECKMATE : EP_WINS);
+		    else if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantXiangqi)
+		        boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE; // and in these variants being stalemated loses
+		}
+		break;
+	      case MT_CHECKMATE:
+		reason = "Xboard adjudication: Checkmate";
+		boards[forwardMostMove][EP_STATUS] = (gameInfo.variant == VariantLosers ? EP_WINS : EP_CHECKMATE);
+		break;
+	    }
+
+		switch(i = (signed char)boards[forwardMostMove][EP_STATUS]) {
+		    case EP_STALEMATE:
+			result = GameIsDrawn; break;
+		    case EP_CHECKMATE:
+			result = WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins; break;
+		    case EP_WINS:
+			result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins; break;
+		    default:
+			result = (ChessMove) 0;
+		}
+                if(canAdjudicate && appData.checkMates && result) { // [HGM] mates: adjudicate finished games if requested
+		    if(engineOpponent)
+		      SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
+		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+		    GameEnds( result, reason, GE_XBOARD );
+		    return 1;
+		}
+
+                /* Next absolutely insufficient mating material. */
+                if( NrPieces == 2 || gameInfo.variant != VariantXiangqi && 
+				     gameInfo.variant != VariantShatranj && // [HGM] baring will remain possible
+			(NrPieces == 3 && NrWN+NrBN+NrWB+NrBB == 1 ||
+			 NrPieces == NrBB+NrWB+2 && bishopsColor != 3)) // [HGM] all Bishops (Ferz!) same color
+                {    /* KBK, KNK, KK of KBKB with like Bishops */
+
+                     /* always flag draws, for judging claims */
+                     boards[forwardMostMove][EP_STATUS] = EP_INSUF_DRAW;
+
+                     if(canAdjudicate && appData.materialDraws) {
+                         /* but only adjudicate them if adjudication enabled */
+			 if(engineOpponent) {
+			   SendToProgram("force\n", engineOpponent); // suppress reply
+			   SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see last move */
+			 }
+                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                         GameEnds( GameIsDrawn, "Xboard adjudication: Insufficient mating material", GE_XBOARD );
+                         return 1;
+                     }
+                }
+
+                /* Then some trivial draws (only adjudicate, cannot be claimed) */
+                if(NrPieces == 4 && 
+                   (   NrWR == 1 && NrBR == 1 /* KRKR */
+                   || NrWQ==1 && NrBQ==1     /* KQKQ */
+                   || NrWN==2 || NrBN==2     /* KNNK */
+                   || NrWN+NrWB == 1 && NrBN+NrBB == 1 /* KBKN, KBKB, KNKN */
+                  ) ) {
+                     if(canAdjudicate && --moveCount < 0 && appData.trivialDraws)
+                     {    /* if the first 3 moves do not show a tactical win, declare draw */
+			  if(engineOpponent) {
+			    SendToProgram("force\n", engineOpponent); // suppress reply
+			    SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
+			  }
+                          ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                          GameEnds( GameIsDrawn, "Xboard adjudication: Trivial draw", GE_XBOARD );
+                          return 1;
+                     }
+                } else moveCount = 6;
+	    }
+	}
+	  
+	if (appData.debugMode) { int i;
+	    fprintf(debugFP, "repeat test fmm=%d bmm=%d ep=%d, reps=%d\n",
+		    forwardMostMove, backwardMostMove, boards[backwardMostMove][EP_STATUS],
+		    appData.drawRepeats);
+	    for( i=forwardMostMove; i>=backwardMostMove; i-- )
+	      fprintf(debugFP, "%d ep=%d\n", i, (signed char)boards[i][EP_STATUS]);
+	    
+	}
+
+	// Repetition draws and 50-move rule can be applied independently of legality testing
+
+                /* Check for rep-draws */
+                count = 0;
+                for(k = forwardMostMove-2;
+                    k>=backwardMostMove && k>=forwardMostMove-100 &&
+                        (signed char)boards[k][EP_STATUS] < EP_UNKNOWN &&
+                        (signed char)boards[k+2][EP_STATUS] <= EP_NONE && (signed char)boards[k+1][EP_STATUS] <= EP_NONE;
+                    k-=2)
+                {   int rights=0;
+                    if(CompareBoards(boards[k], boards[forwardMostMove])) {
+                        /* compare castling rights */
+                        if( boards[forwardMostMove][CASTLING][2] != boards[k][CASTLING][2] &&
+                             (boards[k][CASTLING][0] != NoRights || boards[k][CASTLING][1] != NoRights) )
+                                rights++; /* King lost rights, while rook still had them */
+                        if( boards[forwardMostMove][CASTLING][2] != NoRights ) { /* king has rights */
+                            if( boards[forwardMostMove][CASTLING][0] != boards[k][CASTLING][0] ||
+                                boards[forwardMostMove][CASTLING][1] != boards[k][CASTLING][1] )
+                                   rights++; /* but at least one rook lost them */
+                        }
+                        if( boards[forwardMostMove][CASTLING][5] != boards[k][CASTLING][5] &&
+                             (boards[k][CASTLING][3] != NoRights || boards[k][CASTLING][4] != NoRights) )
+                                rights++; 
+                        if( boards[forwardMostMove][CASTLING][5] != NoRights ) {
+                            if( boards[forwardMostMove][CASTLING][3] != boards[k][CASTLING][3] ||
+                                boards[forwardMostMove][CASTLING][4] != boards[k][CASTLING][4] )
+                                   rights++;
+                        }
+                        if( canAdjudicate && rights == 0 && ++count > appData.drawRepeats-2
+                            && appData.drawRepeats > 1) {
+                             /* adjudicate after user-specified nr of repeats */
+			     if(engineOpponent) {
+			       SendToProgram("force\n", engineOpponent); // suppress reply
+			       SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
+			     }
+                             ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+			     if(gameInfo.variant == VariantXiangqi && appData.testLegality) { 
+				// [HGM] xiangqi: check for forbidden perpetuals
+				int m, ourPerpetual = 1, hisPerpetual = 1;
+				for(m=forwardMostMove; m>k; m-=2) {
+				    if(MateTest(boards[m], PosFlags(m)) != MT_CHECK)
+					ourPerpetual = 0; // the current mover did not always check
+				    if(MateTest(boards[m-1], PosFlags(m-1)) != MT_CHECK)
+					hisPerpetual = 0; // the opponent did not always check
+				}
+				if(appData.debugMode) fprintf(debugFP, "XQ perpetual test, our=%d, his=%d\n",
+									ourPerpetual, hisPerpetual);
+				if(ourPerpetual && !hisPerpetual) { // we are actively checking him: forfeit
+				    GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
+		 			   "Xboard adjudication: perpetual checking", GE_XBOARD );
+				    return 1;
+				}
+				if(hisPerpetual && !ourPerpetual)   // he is checking us, but did not repeat yet
+				    break; // (or we would have caught him before). Abort repetition-checking loop.
+				// Now check for perpetual chases
+				if(!ourPerpetual && !hisPerpetual) { // no perpetual check, test for chase
+				    hisPerpetual = PerpetualChase(k, forwardMostMove);
+				    ourPerpetual = PerpetualChase(k+1, forwardMostMove);
+				    if(ourPerpetual && !hisPerpetual) { // we are actively chasing him: forfeit
+					GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
+		 				      "Xboard adjudication: perpetual chasing", GE_XBOARD );
+					return 1;
+				    }
+				    if(hisPerpetual && !ourPerpetual)   // he is chasing us, but did not repeat yet
+					break; // Abort repetition-checking loop.
+				}
+				// if neither of us is checking or chasing all the time, or both are, it is draw
+			     }
+                             GameEnds( GameIsDrawn, "Xboard adjudication: repetition draw", GE_XBOARD );
+                             return 1;
+                        }
+                        if( rights == 0 && count > 1 ) /* occurred 2 or more times before */
+                             boards[forwardMostMove][EP_STATUS] = EP_REP_DRAW;
+                    }
+                }
+
+                /* Now we test for 50-move draws. Determine ply count */
+                count = forwardMostMove;
+                /* look for last irreversble move */
+                while( (signed char)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove )
+                    count--;
+                /* if we hit starting position, add initial plies */
+                if( count == backwardMostMove )
+                    count -= initialRulePlies;
+                count = forwardMostMove - count; 
+                if( count >= 100)
+                         boards[forwardMostMove][EP_STATUS] = EP_RULE_DRAW;
+                         /* this is used to judge if draw claims are legal */
+                if(canAdjudicate && appData.ruleMoves > 0 && count >= 2*appData.ruleMoves) {
+			 if(engineOpponent) {
+			   SendToProgram("force\n", engineOpponent); // suppress reply
+			   SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
+			 }
+                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                         GameEnds( GameIsDrawn, "Xboard adjudication: 50-move rule", GE_XBOARD );
+                         return 1;
+                }
+
+                /* if draw offer is pending, treat it as a draw claim
+                 * when draw condition present, to allow engines a way to
+                 * claim draws before making their move to avoid a race
+                 * condition occurring after their move
+                 */
+		if(gameMode == TwoMachinesPlay) // for now; figure out how to handle claims in human games
+                if( cps->other->offeredDraw || cps->offeredDraw ) {
+                         char *p = NULL;
+                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_RULE_DRAW)
+                             p = "Draw claim: 50-move rule";
+                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_REP_DRAW)
+                             p = "Draw claim: 3-fold repetition";
+                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_INSUF_DRAW)
+                             p = "Draw claim: insufficient mating material";
+                         if( p != NULL ) {
+			     if(engineOpponent) {
+			       SendToProgram("force\n", engineOpponent); // suppress reply
+			       SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
+			     }
+                             ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                             GameEnds( GameIsDrawn, p, GE_XBOARD );
+                             return 1;
+                         }
+                }
+
+	        if( canAdjudicate && appData.adjudicateDrawMoves > 0 && forwardMostMove > (2*appData.adjudicateDrawMoves) ) {
+		    if(engineOpponent) {
+		      SendToProgram("force\n", engineOpponent); // suppress reply
+		      SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
+		    }
+		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+	            GameEnds( GameIsDrawn, "Xboard adjudication: long game", GE_XBOARD );
+	            return 1;
+        	}
+	return 0;
+}
+
 char *SendMoveToBookUser(int moveNr, ChessProgramState *cps, int initial)
 {   // [HGM] book: this routine intercepts moves to simulate book replies
     char *bookHit = NULL;
@@ -6254,336 +6609,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
             }
         }
 
-	if( gameMode == TwoMachinesPlay ) {
-	  // [HGM] some adjudications useful with buggy engines
-            int k, count = 0; static int bare = 1;
-	  if(gameInfo.holdingsSize == 0 || gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
-
-
-	    if( appData.testLegality )
-	    {   /* [HGM] Some more adjudications for obstinate engines */
-		int NrWN=0, NrBN=0, NrWB=0, NrBB=0, NrWR=0, NrBR=0,
-                    NrWQ=0, NrBQ=0, NrW=0, NrK=0, bishopsColor = 0,
-                    NrPieces=0, NrPawns=0, PawnAdvance=0, i, j;
-		static int moveCount = 6;
-		ChessMove result;
-		char *reason = NULL;
-
-                /* Count what is on board. */
-		for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
-		{   ChessSquare p = boards[forwardMostMove][i][j];
-		    int m=i;
-
-		    switch((int) p)
-		    {   /* count B,N,R and other of each side */
-                        case WhiteKing:
-                        case BlackKing:
-			     NrK++; break; // [HGM] atomic: count Kings
-                        case WhiteKnight:
-                             NrWN++; break;
-                        case WhiteBishop:
-                        case WhiteFerz:    // [HGM] shatranj: kludge to mke it work in shatranj
-                             bishopsColor |= 1 << ((i^j)&1);
-                             NrWB++; break;
-                        case BlackKnight:
-                             NrBN++; break;
-                        case BlackBishop:
-                        case BlackFerz:    // [HGM] shatranj: kludge to mke it work in shatranj
-                             bishopsColor |= 1 << ((i^j)&1);
-                             NrBB++; break;
-                        case WhiteRook:
-                             NrWR++; break;
-                        case BlackRook:
-                             NrBR++; break;
-                        case WhiteQueen:
-                             NrWQ++; break;
-                        case BlackQueen:
-                             NrBQ++; break;
-                        case EmptySquare: 
-                             break;
-                        case BlackPawn:
-                             m = 7-i;
-                        case WhitePawn:
-                             PawnAdvance += m; NrPawns++;
-                    }
-                    NrPieces += (p != EmptySquare);
-                    NrW += ((int)p < (int)BlackPawn);
-		    if(gameInfo.variant == VariantXiangqi && 
-		      (p == WhiteFerz || p == WhiteAlfil || p == BlackFerz || p == BlackAlfil)) {
-			NrPieces--; // [HGM] XQ: do not count purely defensive pieces
-                        NrW -= ((int)p < (int)BlackPawn);
-		    }
-                }
-
-		/* Some material-based adjudications that have to be made before stalemate test */
-		if(gameInfo.variant == VariantAtomic && NrK < 2) {
-		    // [HGM] atomic: stm must have lost his King on previous move, as destroying own K is illegal
-		     boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE; // make claimable as if stm is checkmated
-		     if(appData.checkMates) {
-			 SendMoveToProgram(forwardMostMove-1, cps->other); // make sure opponent gets move
-                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                         GameEnds( WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins, 
-							"Xboard adjudication: King destroyed", GE_XBOARD );
-                         return;
-		     }
-		}
-
-		/* Bare King in Shatranj (loses) or Losers (wins) */
-                if( NrW == 1 || NrPieces - NrW == 1) {
-                  if( gameInfo.variant == VariantLosers) { // [HGM] losers: bare King wins (stm must have it first)
-		     boards[forwardMostMove][EP_STATUS] = EP_WINS;  // mark as win, so it becomes claimable
-		     if(appData.checkMates) {
-			 SendMoveToProgram(forwardMostMove-1, cps->other); // make sure opponent gets to see move
-                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                         GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
-							"Xboard adjudication: Bare king", GE_XBOARD );
-                         return;
-		     }
-		  } else
-                  if( gameInfo.variant == VariantShatranj && --bare < 0)
-                  {    /* bare King */
-			boards[forwardMostMove][EP_STATUS] = EP_WINS; // make claimable as win for stm
-			if(appData.checkMates) {
-			    /* but only adjudicate if adjudication enabled */
-			    SendMoveToProgram(forwardMostMove-1, cps->other); // make sure opponent gets move
-			    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-			    GameEnds( NrW > 1 ? WhiteWins : NrPieces - NrW > 1 ? BlackWins : GameIsDrawn, 
-							"Xboard adjudication: Bare king", GE_XBOARD );
-			    return;
-			}
-		  }
-                } else bare = 1;
-
-
-            // don't wait for engine to announce game end if we can judge ourselves
-            switch (MateTest(boards[forwardMostMove], PosFlags(forwardMostMove)) ) {
-	      case MT_CHECK:
-		if(gameInfo.variant == Variant3Check) { // [HGM] 3check: when in check, test if 3rd time
-		    int i, checkCnt = 0;    // (should really be done by making nr of checks part of game state)
-		    for(i=forwardMostMove-2; i>=backwardMostMove; i-=2) {
-			if(MateTest(boards[i], PosFlags(i)) == MT_CHECK)
-			    checkCnt++;
-			if(checkCnt >= 2) {
-			    reason = "Xboard adjudication: 3rd check";
-			    boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE;
-			    break;
-			}
-		    }
-		}
-	      case MT_NONE:
-	      default:
-		break;
-	      case MT_STALEMATE:
-	      case MT_STAINMATE:
-		reason = "Xboard adjudication: Stalemate";
-		if((signed char)boards[forwardMostMove][EP_STATUS] != EP_CHECKMATE) { // [HGM] don't touch win through baring or K-capt
-		    boards[forwardMostMove][EP_STATUS] = EP_STALEMATE;   // default result for stalemate is draw
-		    if(gameInfo.variant == VariantLosers  || gameInfo.variant == VariantGiveaway) // [HGM] losers:
-			boards[forwardMostMove][EP_STATUS] = EP_WINS;    // in these variants stalemated is always a win
-		    else if(gameInfo.variant == VariantSuicide) // in suicide it depends
-			boards[forwardMostMove][EP_STATUS] = NrW == NrPieces-NrW ? EP_STALEMATE :
-						   ((NrW < NrPieces-NrW) != WhiteOnMove(forwardMostMove) ?
-									EP_CHECKMATE : EP_WINS);
-		    else if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantXiangqi)
-		        boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE; // and in these variants being stalemated loses
-		}
-		break;
-	      case MT_CHECKMATE:
-		reason = "Xboard adjudication: Checkmate";
-		boards[forwardMostMove][EP_STATUS] = (gameInfo.variant == VariantLosers ? EP_WINS : EP_CHECKMATE);
-		break;
-	    }
-
-		switch(i = (signed char)boards[forwardMostMove][EP_STATUS]) {
-		    case EP_STALEMATE:
-			result = GameIsDrawn; break;
-		    case EP_CHECKMATE:
-			result = WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins; break;
-		    case EP_WINS:
-			result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins; break;
-		    default:
-			result = (ChessMove) 0;
-		}
-                if(appData.checkMates && result) { // [HGM] mates: adjudicate finished games if requested
-		    SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-		    GameEnds( result, reason, GE_XBOARD );
-		    return;
-		}
-
-                /* Next absolutely insufficient mating material. */
-                if( NrPieces == 2 || gameInfo.variant != VariantXiangqi && 
-				     gameInfo.variant != VariantShatranj && // [HGM] baring will remain possible
-			(NrPieces == 3 && NrWN+NrBN+NrWB+NrBB == 1 ||
-			 NrPieces == NrBB+NrWB+2 && bishopsColor != 3)) // [HGM] all Bishops (Ferz!) same color
-                {    /* KBK, KNK, KK of KBKB with like Bishops */
-
-                     /* always flag draws, for judging claims */
-                     boards[forwardMostMove][EP_STATUS] = EP_INSUF_DRAW;
-
-                     if(appData.materialDraws) {
-                         /* but only adjudicate them if adjudication enabled */
-			 SendToProgram("force\n", cps->other); // suppress reply
-			 SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see last move */
-                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                         GameEnds( GameIsDrawn, "Xboard adjudication: Insufficient mating material", GE_XBOARD );
-                         return;
-                     }
-                }
-
-                /* Then some trivial draws (only adjudicate, cannot be claimed) */
-                if(NrPieces == 4 && 
-                   (   NrWR == 1 && NrBR == 1 /* KRKR */
-                   || NrWQ==1 && NrBQ==1     /* KQKQ */
-                   || NrWN==2 || NrBN==2     /* KNNK */
-                   || NrWN+NrWB == 1 && NrBN+NrBB == 1 /* KBKN, KBKB, KNKN */
-                  ) ) {
-                     if(--moveCount < 0 && appData.trivialDraws)
-                     {    /* if the first 3 moves do not show a tactical win, declare draw */
-			  SendToProgram("force\n", cps->other); // suppress reply
-			  SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-                          ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                          GameEnds( GameIsDrawn, "Xboard adjudication: Trivial draw", GE_XBOARD );
-                          return;
-                     }
-                } else moveCount = 6;
-	    }
-	  }
-	  
-	  if (appData.debugMode) { int i;
-	    fprintf(debugFP, "repeat test fmm=%d bmm=%d ep=%d, reps=%d\n",
-		    forwardMostMove, backwardMostMove, boards[backwardMostMove][EP_STATUS],
-		    appData.drawRepeats);
-	    for( i=forwardMostMove; i>=backwardMostMove; i-- )
-	      fprintf(debugFP, "%d ep=%d\n", i, (signed char)boards[i][EP_STATUS]);
-	    
-	  }
-
-                /* Check for rep-draws */
-                count = 0;
-                for(k = forwardMostMove-2;
-                    k>=backwardMostMove && k>=forwardMostMove-100 &&
-                        (signed char)boards[k][EP_STATUS] < EP_UNKNOWN &&
-                        (signed char)boards[k+2][EP_STATUS] <= EP_NONE && (signed char)boards[k+1][EP_STATUS] <= EP_NONE;
-                    k-=2)
-                {   int rights=0;
-                    if(CompareBoards(boards[k], boards[forwardMostMove])) {
-                        /* compare castling rights */
-                        if( boards[forwardMostMove][CASTLING][2] != boards[k][CASTLING][2] &&
-                             (boards[k][CASTLING][0] != NoRights || boards[k][CASTLING][1] != NoRights) )
-                                rights++; /* King lost rights, while rook still had them */
-                        if( boards[forwardMostMove][CASTLING][2] != NoRights ) { /* king has rights */
-                            if( boards[forwardMostMove][CASTLING][0] != boards[k][CASTLING][0] ||
-                                boards[forwardMostMove][CASTLING][1] != boards[k][CASTLING][1] )
-                                   rights++; /* but at least one rook lost them */
-                        }
-                        if( boards[forwardMostMove][CASTLING][5] != boards[k][CASTLING][5] &&
-                             (boards[k][CASTLING][3] != NoRights || boards[k][CASTLING][4] != NoRights) )
-                                rights++; 
-                        if( boards[forwardMostMove][CASTLING][5] != NoRights ) {
-                            if( boards[forwardMostMove][CASTLING][3] != boards[k][CASTLING][3] ||
-                                boards[forwardMostMove][CASTLING][4] != boards[k][CASTLING][4] )
-                                   rights++;
-                        }
-                        if( rights == 0 && ++count > appData.drawRepeats-2
-                            && appData.drawRepeats > 1) {
-                             /* adjudicate after user-specified nr of repeats */
-			     SendToProgram("force\n", cps->other); // suppress reply
-			     SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-                             ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-			     if(gameInfo.variant == VariantXiangqi && appData.testLegality) { 
-				// [HGM] xiangqi: check for forbidden perpetuals
-				int m, ourPerpetual = 1, hisPerpetual = 1;
-				for(m=forwardMostMove; m>k; m-=2) {
-				    if(MateTest(boards[m], PosFlags(m)) != MT_CHECK)
-					ourPerpetual = 0; // the current mover did not always check
-				    if(MateTest(boards[m-1], PosFlags(m-1)) != MT_CHECK)
-					hisPerpetual = 0; // the opponent did not always check
-				}
-				if(appData.debugMode) fprintf(debugFP, "XQ perpetual test, our=%d, his=%d\n",
-									ourPerpetual, hisPerpetual);
-				if(ourPerpetual && !hisPerpetual) { // we are actively checking him: forfeit
-				    GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
-		 			   "Xboard adjudication: perpetual checking", GE_XBOARD );
-				    return;
-				}
-				if(hisPerpetual && !ourPerpetual)   // he is checking us, but did not repeat yet
-				    break; // (or we would have caught him before). Abort repetition-checking loop.
-				// Now check for perpetual chases
-				if(!ourPerpetual && !hisPerpetual) { // no perpetual check, test for chase
-				    hisPerpetual = PerpetualChase(k, forwardMostMove);
-				    ourPerpetual = PerpetualChase(k+1, forwardMostMove);
-				    if(ourPerpetual && !hisPerpetual) { // we are actively chasing him: forfeit
-					GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
-		 				      "Xboard adjudication: perpetual chasing", GE_XBOARD );
-					return;
-				    }
-				    if(hisPerpetual && !ourPerpetual)   // he is chasing us, but did not repeat yet
-					break; // Abort repetition-checking loop.
-				}
-				// if neither of us is checking or chasing all the time, or both are, it is draw
-			     }
-                             GameEnds( GameIsDrawn, "Xboard adjudication: repetition draw", GE_XBOARD );
-                             return;
-                        }
-                        if( rights == 0 && count > 1 ) /* occurred 2 or more times before */
-                             boards[forwardMostMove][EP_STATUS] = EP_REP_DRAW;
-                    }
-                }
-
-                /* Now we test for 50-move draws. Determine ply count */
-                count = forwardMostMove;
-                /* look for last irreversble move */
-                while( (signed char)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove )
-                    count--;
-                /* if we hit starting position, add initial plies */
-                if( count == backwardMostMove )
-                    count -= initialRulePlies;
-                count = forwardMostMove - count; 
-                if( count >= 100)
-                         boards[forwardMostMove][EP_STATUS] = EP_RULE_DRAW;
-                         /* this is used to judge if draw claims are legal */
-                if(appData.ruleMoves > 0 && count >= 2*appData.ruleMoves) {
-			 SendToProgram("force\n", cps->other); // suppress reply
-			 SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-                         ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                         GameEnds( GameIsDrawn, "Xboard adjudication: 50-move rule", GE_XBOARD );
-                         return;
-                }
-
-                /* if draw offer is pending, treat it as a draw claim
-                 * when draw condition present, to allow engines a way to
-                 * claim draws before making their move to avoid a race
-                 * condition occurring after their move
-                 */
-                if( cps->other->offeredDraw || cps->offeredDraw ) {
-                         char *p = NULL;
-                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_RULE_DRAW)
-                             p = "Draw claim: 50-move rule";
-                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_REP_DRAW)
-                             p = "Draw claim: 3-fold repetition";
-                         if((signed char)boards[forwardMostMove][EP_STATUS] == EP_INSUF_DRAW)
-                             p = "Draw claim: insufficient mating material";
-                         if( p != NULL ) {
-			     SendToProgram("force\n", cps->other); // suppress reply
-			     SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-                             GameEnds( GameIsDrawn, p, GE_XBOARD );
-                             ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                             return;
-                         }
-                }
-
-
-	        if( appData.adjudicateDrawMoves > 0 && forwardMostMove > (2*appData.adjudicateDrawMoves) ) {
-		    SendToProgram("force\n", cps->other); // suppress reply
-		    SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-
-	            GameEnds( GameIsDrawn, "Xboard adjudication: long game", GE_XBOARD );
-
-	            return;
-        	}
-        }
+	if(Adjudicate(cps)) return; // [HGM] adjudicate: for all automatic game ends
 
 	bookHit = NULL;
 	if (gameMode == TwoMachinesPlay) {
