@@ -5462,8 +5462,6 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
          return WhiteDrop; /* Not needed to specify white or black yet */
     }
 
-    userOfferedDraw = FALSE;
-	
     /* [HGM] always test for legality, to get promotion info */
     moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
                                          fromY, fromX, toY, toX, promoChar);
@@ -5475,6 +5473,8 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	}
     }
 
+    userOfferedDraw = FALSE; // [HGM] drawclaim: only if we do a legal move!
+	
     return moveType;
     /* [HGM] <popupFix> in stead of calling FinishMove directly, this
        function is made into one that returns an OK move type if FinishMove
@@ -6284,8 +6284,7 @@ Adjudicate(ChessProgramState *cps)
                  * claim draws before making their move to avoid a race
                  * condition occurring after their move
                  */
-		if(gameMode == TwoMachinesPlay) // for now; figure out how to handle claims in human games
-                if( cps->other->offeredDraw || cps->offeredDraw ) {
+		if((gameMode == TwoMachinesPlay ? second.offeredDraw : userOfferedDraw) || first.offeredDraw ) {
                          char *p = NULL;
                          if((signed char)boards[forwardMostMove][EP_STATUS] == EP_RULE_DRAW)
                              p = "Draw claim: 50-move rule";
@@ -6293,7 +6292,7 @@ Adjudicate(ChessProgramState *cps)
                              p = "Draw claim: 3-fold repetition";
                          if((signed char)boards[forwardMostMove][EP_STATUS] == EP_INSUF_DRAW)
                              p = "Draw claim: insufficient mating material";
-                         if( p != NULL ) {
+                         if( p != NULL && canAdjudicate) {
 			     if(engineOpponent) {
 			       SendToProgram("force\n", engineOpponent); // suppress reply
 			       SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
@@ -11790,6 +11789,7 @@ DrawEvent()
 	
         SendToICS(ics_prefix);
 	SendToICS("draw\n");
+        userOfferedDraw = TRUE; // [HGM] drawclaim: also set flag in ICS play
     } else if (cmailMsgLoaded) {
 	if (currentMove == cmailOldMove &&
 	    commentList[cmailOldMove] != NULL &&
