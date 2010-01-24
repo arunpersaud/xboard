@@ -167,6 +167,7 @@ int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 		   /*char*/int promoChar));
 void BackwardInner P((int target));
 void ForwardInner P((int target));
+int Adjudicate P((ChessProgramState *cps));
 void GameEnds P((ChessMove result, char *resultDetails, int whosays));
 void EditPositionDone P((Boolean fakeRights));
 void PrintOpponents P((FILE *fp));
@@ -5576,6 +5577,8 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   thinkOutput[0] = NULLCHAR;
 
   MakeMove(fromX, fromY, toX, toY, promoChar); /*updates forwardMostMove*/
+
+  if(Adjudicate(NULL)) return 1; // [HGM] adjudicate: take care of automtic game end
 
   if (gameMode == BeginningOfGame) {
     if (appData.noChessProgram) {

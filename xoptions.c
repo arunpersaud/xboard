@@ -747,7 +747,7 @@ void EnginePopUp()
     XtSetArg(args[j-3], XtNstate,       appData.secondScoreIsAbsolute);
     w4 = XtCreateManagedWidget(_("Engine #2 Score is Absolute"), toggleWidgetClass, form, args, j);
 
-    s1 = XtCreateManagedWidget(_("\nEngine-Engine Adjudications:"), labelWidgetClass, form, args, 3);
+    s1 = XtCreateManagedWidget(_("\nAdjudications in non-ICS games:"), labelWidgetClass, form, args, 3);
 
     XtSetArg(args[j-1], XtNfromVert,  (XtArgVal) s1);
     XtSetArg(args[j-3], XtNstate,       appData.testClaims);
