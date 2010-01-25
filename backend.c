@@ -6450,9 +6450,7 @@ int RightClick(ClickType action, int x, int y, int *xx, int *yy)
       xSqr = BOARD_WIDTH - 1 - xSqr;
     else
       ySqr = BOARD_HEIGHT - 1 - ySqr;
-    if(promotionChoice == 3 && action == Release
-	 && promoBoard[ySqr][xSqr] != EmptySquare && (xSqr != fromX || ySqr != fromY) // not needed if separate window
-						) {
+    if(promotionChoice == 3 && action == Release) {
 	EditPositionMenuEvent(promoBoard[ySqr][xSqr], fromX, fromY);
 	fromX = fromY = -1;
 	promotionChoice = 0;
