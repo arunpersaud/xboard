@@ -6096,6 +6096,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
     FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
+#if 0
 void
 PromoDialog(int h, int w, Board board, Boolean clearBoard, char *title, int x, int y)
 {	// dummy routine to mimic with pseudo-popup what front-end should do:
@@ -6106,6 +6107,7 @@ PromoDialog(int h, int w, Board board, Boolean clearBoard, char *title, int x, i
 	DisplayMessage("Click on your piece of choice", "");
 	DrawPosition(TRUE, board);
 }
+#endif
 
 int hTab[(int)EmptySquare/2+1] = { 1,1,1,1,1,1,2,1,2,3,2,3,3,3,2,3,4,3,3,4,4,3,4 };
 int wTab[(int)EmptySquare/2+1] = { 1,1,2,3,4,5,3,7,4,3,5,4,4,5,7,5,4,6,6,5,5,7,6 };

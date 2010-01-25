@@ -324,6 +324,7 @@ void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
+void PromoPopDown P(());
 void ShufflePopDown P(());
 void EnginePopDown P(());
 void UciPopDown P(());
