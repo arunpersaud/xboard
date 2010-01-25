@@ -1296,9 +1296,25 @@ colorVariable[] = {
   NULL
 };
 
+// [HGM] font: keep a font for each square size, even non-stndard ones
+#define NUM_SIZES 18
+#define MAX_SIZE 130
+Boolean fontSet[NUM_FONTS], fontValid[NUM_FONTS][MAX_SIZE];
+char *fontTable[NUM_FONTS][MAX_SIZE];
+
 void
 ParseFont(char *name, int number)
 { // in XBoard, only 2 of the fonts are currently implemented, and we just copy their name
+  int size;
+  if(sscanf(name, "size%d:", &size)) {
+    // [HGM] font: font is meant for specific boardSize (likely from settings file);
+    //       defer processing it until we know if it matches our board size
+    if(size >= 0 && size<MAX_SIZE) { // for now, fixed limit
+	fontTable[number][size] = strdup(strchr(name, ':')+1);
+	fontValid[number][size] = True;
+    }
+    return;
+  }
   switch(number) {
     case 0: // CLOCK_FONT
 	appData.clockFont = strdup(name);
@@ -1312,6 +1328,7 @@ ParseFont(char *name, int number)
     default:
       return;
   }
+  fontSet[number] = True; // [HGM] font: indicate a font was specified (not from settings file)
 }
 
 void
@@ -1359,8 +1376,9 @@ SetCommPortDefaults()
 void
 SaveFontArg(FILE *f, ArgDescriptor *ad)
 {
-  char *name;
-  switch((int)ad->argLoc) {
+  char *name, buf[MSG_SIZ];
+  int i, n = (int)ad->argLoc;
+  switch(n) {
     case 0: // CLOCK_FONT
 	name = appData.clockFont;
       break;
@@ -1373,9 +1391,14 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
     default:
       return;
   }
-//  Do not save fonts for now, as the saved font would be board-size specific
-//  and not suitable for a re-start at another board size
-//  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, name); 
+  for(i=0; i<NUM_SIZES; i++) // [HGM] font: current font becomes standard for current size
+    if(sizeDefaults[i].squareSize == squareSize) { // only for standard sizes!
+	fontTable[n][squareSize] = strdup(name);
+	fontValid[n][squareSize] = True;
+	break;
+  }
+  for(i=0; i<MAX_SIZE; i++) if(fontValid[n][i]) // [HGM] font: store all standard fonts
+    fprintf(f, OPTCHAR "%s" SEPCHAR "size%d:%s\n", ad->argName, i, fontTable[n][i]); 
 }
 
 void
@@ -1816,7 +1839,14 @@ main(argc, argv)
 	fontPxlSize = szd->fontPxlSize;
 	smallLayout = szd->smallLayout;
 	tinyLayout = szd->tinyLayout;
+	// [HGM] font: use defaults from settings file if available and not overruled
     }
+    if(!fontSet[CLOCK_FONT] && fontValid[CLOCK_FONT][squareSize])
+	appData.clockFont = fontTable[CLOCK_FONT][squareSize];
+    if(!fontSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
+	appData.font = fontTable[MESSAGE_FONT][squareSize];
+    if(!fontSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
+	appData.coordFont = fontTable[COORD_FONT][squareSize];
 
     /* Now, using squareSize as a hint, find a good XPM/XIM set size */
     if (strlen(appData.pixmapDirectory) > 0) {
