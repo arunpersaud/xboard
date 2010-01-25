@@ -251,7 +251,7 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
     XtSetArg(args[j], XtNleft, XtChainLeft); j++;
     XtSetArg(args[j], XtNright, XtChainRight); j++;
-    XtSetArg(args[j], XtNwidth, 173); j++;
+    XtSetArg(args[j], XtNwidth, fw_width - 225 - squareSize); j++;
     XtSetArg(args[j], XtNstring, filterString);  j++;
     XtSetArg(args[j], XtNdisplayCaret, False);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
