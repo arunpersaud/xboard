@@ -99,8 +99,6 @@ extern char *getenv();
 
 #define _LL_ 100
 
-#define MARGIN 3
-
 typedef void (*DrawFunc)();
 DrawFunc ChooseDrawFunc();
 
@@ -181,7 +179,7 @@ void DrawPromoSquare(row, column, piece)
     DrawFunc drawfunc;
 
     x = lineGap + column * (squareSize + lineGap);
-    y = lineGap + row * (squareSize + lineGap) + MARGIN;
+    y = lineGap + row * (squareSize + lineGap);
 
     square_color = 1;
 
@@ -219,7 +217,7 @@ static void DisplayPromoDialog()
         nHeightPB = height;
     }
 
-    XFillRectangle(zDisplay, promoWindow, blackBrush, 0, MARGIN, w, h);
+    XFillRectangle(zDisplay, promoWindow, blackBrush, 0, 0, w, h);
     for(r = 0; r<nrow; r++) for(f=0; f<ncol; f++) 
 	DrawPromoSquare(r, f, promoBoard[r][f+BOARD_LEFT]);
 
@@ -243,9 +241,7 @@ void PromoClick(widget, unused, event)
     int boardWidth  = lineGap + BOARD_WIDTH  * (squareSize + lineGap);
     int boardLeft   = BOARD_LEFT  * (squareSize + lineGap);
     int x = event->xbutton.x;
-    int y = event->xbutton.y - MARGIN;
-
-    if(y <= lineGap) y = lineGap + 1;
+    int y = event->xbutton.y;
 
     // translate click to as if it was on main board near a1
     if(flipView) x = boardWidth - x; else y = boardHeight - y;
@@ -276,14 +272,33 @@ void PromoEventProc(widget, unused, event)
 	return;
     }
 }
-// The following routines are mutated clones of the commentPopUp routines
 
-Widget PromoCreate(name, x, y)
+void PromoCallback(w, client_data, call_data)
+     Widget w;
+     XtPointer client_data, call_data;
+{
+    String name;
+    Widget w2;
+    Arg args[16];
+    char buf[80];
+    VariantClass v;
+    
+    XtSetArg(args[0], XtNlabel, &name);
+    XtGetValues(w, args, 1);
+    
+    if (strcmp(name, _("clear board")) == 0) {
+	EditPositionMenuEvent(ClearBoard, 0, 0);
+    }
+    PromoPopDown();
+}
+
+Widget PromoCreate(name, x, y, clear)
      char *name;
      int x, y;
+     Boolean clear;
 {
     Arg args[16];
-    Widget shell, layout, form;
+    Widget shell, layout, form, panel, b_clear, b_grant, b_revoke;
     int j, h, w;
 
     // define form within layout within shell.
@@ -295,15 +310,36 @@ Widget PromoCreate(name, x, y)
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,
 			    layoutArgs, XtNumber(layoutArgs));
-    // divide window vertically into two equal parts, by creating two forms
     form =
       XtCreateManagedWidget("form", formWidgetClass, layout,
+			    formArgs, XtNumber(formArgs));
+    panel =
+      XtCreateManagedWidget("panel", formWidgetClass, form,
 			    formArgs, XtNumber(formArgs));
     // make sure width is known in advance, for better placement of child widgets
     j = 0;
     XtSetArg(args[j], XtNwidth,  (XtArgVal) (w = ncol*squareSize + (ncol+1)*lineGap)); j++;
-    XtSetArg(args[j], XtNheight, (XtArgVal) (h = nrow*squareSize + (nrow+1)*lineGap + MARGIN)); j++;
-    XtSetValues(form, args, j);
+    XtSetArg(args[j], XtNheight, (XtArgVal) (h = nrow*squareSize + (nrow+1)*lineGap)); j++;
+    XtSetValues(panel, args, j);
+
+    if(clear) { // piece menu: add buttons
+	j=0;
+	XtSetArg(args[j], XtNfromVert, panel);  j++;
+	b_clear = XtCreateManagedWidget(_("clear board"), commandWidgetClass, form, args, j);
+	XtAddCallback(b_clear, XtNcallback, PromoCallback, (XtPointer) 0);
+
+	j=0;
+	XtSetArg(args[j], XtNfromHoriz, b_clear);  j++;
+	XtSetArg(args[j], XtNfromVert, panel);  j++;
+	b_grant = XtCreateManagedWidget(_("grant rights"), commandWidgetClass, form, args, j);
+	XtAddCallback(b_grant, XtNcallback, PromoCallback, (XtPointer) 0);
+
+	j=0;
+	XtSetArg(args[j], XtNfromHoriz, b_grant);  j++;
+	XtSetArg(args[j], XtNfromVert, panel);  j++;
+	b_revoke = XtCreateManagedWidget(_("revoke rights"), commandWidgetClass, form, args, j);
+	XtAddCallback(b_revoke, XtNcallback, PromoCallback, (XtPointer) 0);
+    }
 
     if(y >= 0) {
 	Dimension bx, by;
@@ -322,12 +358,10 @@ Widget PromoCreate(name, x, y)
     XtRealizeWidget(shell);
 
     zDisplay = XtDisplay(shell);
-    promoWindow = XtWindow(form);
-    XtAddEventHandler(form, ExposureMask, False,
+    promoWindow = XtWindow(panel);
+    XtAddEventHandler(panel, ExposureMask, False,
 		      (XtEventHandler) PromoEventProc, NULL);
-    XtAddEventHandler(form, ButtonPressMask, False,
-		      (XtEventHandler) PromoClick, NULL);
-    XtAddEventHandler(form, ButtonReleaseMask, False,
+    XtAddEventHandler(panel, ButtonPressMask|ButtonReleaseMask, False,
 		      (XtEventHandler) PromoClick, NULL);
 
     return shell;
@@ -346,7 +380,7 @@ PromoDialog(int h, int w, Board b, Boolean clear, char *title, int x, int y)
     if (promoShell == NULL) {
 
 	promoShell =
-	  PromoCreate(title, x, y);
+	  PromoCreate(title, x, y, clear);
 	XtRealizeWidget(promoShell);
 	CatchDeleteWindow(promoShell, "PromoPopDown");
 	InitializePromoDialog();
