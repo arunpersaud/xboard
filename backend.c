@@ -6097,7 +6097,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 }
 
 void
-PromoDialog(int h, int w, Board board, Boolean clearBoard)
+PromoDialog(int h, int w, Board board, Boolean clearBoard, char *title, int x, int y)
 {	// dummy routine to mimic with pseudo-popup what front-end should do:
 	// display a popup with h x w mini-board, and divert any mouse clicks
 	// on it to the back-end routines RightClick and LeftClick, just
@@ -6113,7 +6113,7 @@ Board promoBoard;
 int promotionChoice = 0;
 
 void
-PiecePopUp()
+PiecePopUp(int x, int y)
 {
     int i, j, h, w, nWhite=0, nBlack=0;
     ChessSquare list[EmptySquare];
@@ -6133,7 +6133,7 @@ PiecePopUp()
 	for(i=0; i<nBlack; i++) promoBoard[h-1-i/w][BOARD_LEFT+w-1-i%w] = list[EmptySquare-nBlack+i];
     promotionChoice = 3;
     ClearHighlights();
-    PromoDialog(h, w, promoBoard, TRUE);
+    PromoDialog(h, w, promoBoard, TRUE, _("Select piece:"), x, y);
 }
 
 void
@@ -6142,30 +6142,31 @@ PromoPopUp(ChessSquare piece)
     int w, h, i, j, nr;
     ChessSquare list[EmptySquare];
 
+    for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++) promoBoard[i][j] = EmptySquare;
     if(gameInfo.variant == VariantShogi) {
 	// non-Pawn promotes; must be shogi
-	h = 1; w = 1; list[0] = piece;
+	h = 1; w = 1; promoBoard[0][BOARD_LEFT+0] = piece;
 	if(PieceToChar(PROMOTED piece) != '.') {
 	    // promoted version is enabled
-	    w = 2; list[1] = PROMOTED piece;
+	    w = 2; promoBoard[0][BOARD_LEFT+1] = PROMOTED piece;
 	}
     } else {
 	// Pawn, promotes to any enabled other piece
 	h = 1; w = nr = 0;
 	for(i=1; i<EmptySquare/2; i++) {
 	    if(PieceToChar(piece+i) != '.' 
-	   && PieceToChar(PROMOTED piece + i) != '~' // suppress bughouse true pieces
+	   && PieceToChar(piece + i) != '~' // suppress bughouse true pieces
 							) {
 		list[w++] = piece+i; nr++;
 	    }
 	}
-	if(appData.testLegality && gameInfo.variant != VariantSuicide) nr--,w--; // remove King
+	if(appData.testLegality && gameInfo.variant != VariantSuicide
+			&& gameInfo.variant != VariantGiveaway) nr--,w--; // remove King
 	h = hTab[nr]; w = wTab[nr]; // factorize with nice ratio
-	for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++) promoBoard[i][j] = EmptySquare;
-	for(i=0; i < nr; i++) promoBoard[BOARD_LEFT+i/w][i%w] = list[i]; // layout
+	for(i=0; i < nr; i++) promoBoard[i/w][BOARD_LEFT+i%w] = list[i]; // layout
     }
     promotionChoice = 2; // wait for click on board
-    PromoDialog(h, w, promoBoard, FALSE);
+    PromoDialog(h, w, promoBoard, FALSE, _("Promote to:"), -1, -1);
 }
 
 void
@@ -6249,7 +6250,9 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    p = promoBoard[y][x];
 	    if(appData.debugMode) fprintf(debugFP, "square contains %d\n", (int)p);
 	    if(p != EmptySquare) {
-		FinishMove(NormalMove, fromX, fromY, toX, toY, ToLower(PieceToChar(p)));
+		char promoChar = PieceToChar(p);
+		if(gameInfo.variant == VariantShogi && promoChar != '+') promoChar = '=';
+		FinishMove(NormalMove, fromX, fromY, toX, toY, ToLower(promoChar));
 		fromX = fromY = -1;
 		promotionChoice = 0;
 		return;
@@ -6498,7 +6501,7 @@ int RightClick(ClickType action, int x, int y, int *xx, int *yy)
     }
 
     fromX = *xx; fromY = *yy;
-    if(whichMenu == 0) { PiecePopUp(); return -1; } // suppress EditPosition menu
+    if(whichMenu == 0) { PiecePopUp(x, y); return -1; } // suppress EditPosition menu
 
     return whichMenu;
 }
