@@ -6096,19 +6096,6 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
     FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
-#if 0
-void
-PromoDialog(int h, int w, Board board, Boolean clearBoard, char *title, int x, int y)
-{	// dummy routine to mimic with pseudo-popup what front-end should do:
-	// display a popup with h x w mini-board, and divert any mouse clicks
-	// on it to the back-end routines RightClick and LeftClick, just
-	// like the mouse event hadler of the board widget does now.
-	// (Note it would have to off-set x if holdings are displayed!)
-	DisplayMessage("Click on your piece of choice", "");
-	DrawPosition(TRUE, board);
-}
-#endif
-
 int hTab[(int)EmptySquare/2+1] = { 1,1,1,1,1,1,2,1,2,3,2,3,3,3,2,3,4,3,3,4,4,3,4 };
 int wTab[(int)EmptySquare/2+1] = { 1,1,2,3,4,5,3,7,4,3,5,4,4,5,7,5,4,6,6,5,5,7,6 };
 Board promoBoard;

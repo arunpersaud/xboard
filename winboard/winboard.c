@@ -3821,9 +3821,13 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_MBUTTONUP:
   case WM_RBUTTONUP:
     ReleaseCapture();
+    { extern int promotionChoice; extern Board promoBoard;
+      if(promotionChoice == 3 && (promoBoard[y][x] == EmptySquare || x == fromX && y == fromY))
+         break; // [HGM] promopopup: suppression of up-click selection as long as pseudo-popup is used
+    }
     RightClick(Release, pt.x - boardRect.left, pt.y - boardRect.top, &fromX, &fromY);
     break;
- 
+
   case WM_MBUTTONDOWN:
   case WM_RBUTTONDOWN:
     ErrorPopDown();
@@ -4034,6 +4038,17 @@ PromotionPopUp()
 {
   DrawPosition(TRUE, NULL);
   PromotionPopup(hwndMain);
+}
+
+void
+PromoDialog(int h, int w, Board board, Boolean clearBoard, char *title, int x, int y)
+{	// dummy routine to mimic with pseudo-popup what front-end should do:
+	// display a popup with h x w mini-board, and divert any mouse clicks
+	// on it to the back-end routines RightClick and LeftClick, just
+	// like the mouse event hadler of the board widget does now.
+	// (Note it would have to off-set x if holdings are displayed!)
+	DisplayMessage("Click on your piece of choice", "");
+	DrawPosition(TRUE, board);
 }
 
 /* Toggle ShowThinking */
