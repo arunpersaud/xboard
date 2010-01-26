@@ -5891,13 +5891,13 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	     
 	    if(x == BOARD_LEFT-2 && piece >= BlackPawn) {
 		n = PieceToNumber(piece - (int)BlackPawn);
-		if(n > gameInfo.holdingsSize) { n = 0; piece = BlackPawn; }
+		if(n >= gameInfo.holdingsSize) { n = 0; piece = BlackPawn; }
 		boards[currentMove][BOARD_HEIGHT-1 - n][0] = piece;
 		boards[currentMove][BOARD_HEIGHT-1 - n][1]++;
 	    } else
 	    if(x == BOARD_RGHT+1 && piece < BlackPawn) {
 		n = PieceToNumber(piece);
-		if(n > gameInfo.holdingsSize) { n = 0; piece = WhitePawn; }
+		if(n >= gameInfo.holdingsSize) { n = 0; piece = WhitePawn; }
 		boards[currentMove][n][BOARD_WIDTH-1] = piece;
 		boards[currentMove][n][BOARD_WIDTH-2]++;
 	    }
@@ -11628,13 +11628,13 @@ EditPositionMenuEvent(selection, x, y)
                 int n;
                 if(x == BOARD_LEFT-2 && selection >= BlackPawn) {
                     n = PieceToNumber(selection - BlackPawn);
-                    if(n > gameInfo.holdingsSize) { n = 0; selection = BlackPawn; }
+                    if(n >= gameInfo.holdingsSize) { n = 0; selection = BlackPawn; }
                     boards[0][BOARD_HEIGHT-1-n][0] = selection;
                     boards[0][BOARD_HEIGHT-1-n][1]++;
                 } else
                 if(x == BOARD_RGHT+1 && selection < BlackPawn) {
                     n = PieceToNumber(selection);
-                    if(n > gameInfo.holdingsSize) { n = 0; selection = WhitePawn; }
+                    if(n >= gameInfo.holdingsSize) { n = 0; selection = WhitePawn; }
                     boards[0][n][BOARD_WIDTH-1] = selection;
                     boards[0][n][BOARD_WIDTH-2]++;
                 }
