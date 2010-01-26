@@ -699,6 +699,14 @@ ExitArgError(char *msg, char *badArg)
   exit(2);
 }
 
+int
+ValidateInt(char *s)
+{
+  char *p = s;
+  if(*p == '-' || *p == '+') p++;
+  while(*p) if(!isdigit(*p++)) ExitArgError("Bad integer value", s);
+  return atoi(s);
+}
 
 char
 StringGet(void *getClosure)
@@ -919,19 +927,19 @@ ParseArgs(GetFunc get, void *cl)
 
     switch (ad->argType) {
     case ArgInt:
-      *(int *) ad->argLoc = atoi(argValue);
+      *(int *) ad->argLoc = ValidateInt(argValue);
       break;
 
     case ArgX:
-      *(int *) ad->argLoc = atoi(argValue) + wpMain.x; // [HGM] placement: translate stored relative to absolute 
+      *(int *) ad->argLoc = ValidateInt(argValue) + wpMain.x; // [HGM] placement: translate stored relative to absolute 
       break;
 
     case ArgY:
-      *(int *) ad->argLoc = atoi(argValue) + wpMain.y; // (this is really kludgey, it should be done where used...)
+      *(int *) ad->argLoc = ValidateInt(argValue) + wpMain.y; // (this is really kludgey, it should be done where used...)
       break;
 
     case ArgZ:
-      *(int *) ad->argLoc = atoi(argValue);
+      *(int *) ad->argLoc = ValidateInt(argValue);
       EnsureOnScreen(&wpMain.x, &wpMain.y, minX, minY); 
       break;
 
