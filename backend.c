@@ -242,6 +242,7 @@ int endPV = -1;
 static int exiting = 0; /* [HGM] moved to top */
 static int setboardSpoiledMachineBlack = 0 /*, errorExitFlag = 0*/;
 int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos */
+int rightsBoard[BOARD_RANKS][BOARD_FILES];                  /* [HGM] editrights */
 char endingGame = 0;    /* [HGM] crash: flag to prevent recursion of GameEnds() */
 int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     */
 VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
@@ -5791,6 +5792,7 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	   click-click move is possible */
 	if (toX == -2 || toY == -2) {
 	    boards[0][fromY][fromX] = EmptySquare;
+ 	    rightsBoard[fromY][fromX] = 0;
 	    return AmbiguousMove;
 	} else if (toX >= 0 && toY >= 0) {
 	    boards[0][toY][toX] = boards[0][fromY][fromX];
@@ -5807,6 +5809,7 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 		}
 	    } else
 	    boards[0][fromY][fromX] = EmptySquare;
+ 	    rightsBoard[fromY][fromX] = rightsBoard[toY][toX] = 0;
 	    return AmbiguousMove;
 	}
         return ImpossibleMove;
@@ -11960,7 +11963,6 @@ EditGameEvent()
     SetGameInfo();
 }
 
-
 void
 EditPositionEvent()
 {
@@ -11977,7 +11979,14 @@ EditPositionEvent()
     SetGameInfo();
     if (currentMove > 0)
       CopyBoard(boards[0], boards[currentMove]);
-
+    { int i, r, f; // [HGM] editrights: take note of existing rights
+      for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) rightsBoard[r][f] = 0;
+      for(i=0; i<nrCastlingRights; i++) {
+	if(boards[0][CASTLING][i] != NoRights)
+	  rightsBoard [castlingRank[i]] [boards[0][CASTLING][i]] = 1 + (i == 2 || i == 5);
+      }
+    }
+    
     blackPlaysFirst = !WhiteOnMove(currentMove);
     ResetClocks();
     currentMove = forwardMostMove = backwardMostMove = 0;
@@ -12009,7 +12018,22 @@ EditPositionDone(Boolean fakeRights)
     startedFromSetupPosition = TRUE;
     InitChessProgram(&first, FALSE);
     if(fakeRights) { // [HGM] suppress this if we just pasted a FEN.
+      int i, r, f, kf, err;
+      for(i=0; i<nrCastlingRights; i++) boards[0][CASTLING][i] = NoRights;
+      kf = NoRights; err = 0;
+      for(f=BOARD_RGHT-1; f>=0; f--)
+	if(rightsBoard[0][f] == 2) { if(kf != NoRights) err=10; boards[0][CASTLING][2] = kf = f; }
+      for(f=BOARD_RGHT-1; f>=0; f--)
+	if(rightsBoard[0][f] == 1) { err++; boards[0][CASTLING][f<kf] = f; }
+      kf = NoRights; err = 0;
+      for(f=BOARD_RGHT-1; f>=0; f--)
+	if(rightsBoard[BOARD_HEIGHT-1][f] == 2) { if(kf != NoRights) err=10; boards[0][CASTLING][5] = kf = f; }
+      for(f=BOARD_RGHT-1; f>=0; f--)
+	if(rightsBoard[BOARD_HEIGHT-1][f] == 1) { err++; boards[0][CASTLING][3+(f<kf)] = f; }
+      if(err + 2 > nrCastlingRights) DisplayError("unclear castling rights", 0);
+
       boards[0][EP_STATUS] = EP_NONE;
+#if 0
       boards[0][CASTLING][2] = boards[0][CASTLING][5] = BOARD_WIDTH>>1;
     if(boards[0][0][BOARD_WIDTH>>1] == king) {
 	boards[0][CASTLING][1] = boards[0][0][BOARD_LEFT] == WhiteRook ? 0 : NoRights;
@@ -12019,6 +12043,7 @@ EditPositionDone(Boolean fakeRights)
 	boards[0][CASTLING][4] = boards[0][BOARD_HEIGHT-1][BOARD_LEFT] == BlackRook ? 0 : NoRights;
 	boards[0][CASTLING][3] = boards[0][BOARD_HEIGHT-1][BOARD_RGHT-1] == BlackRook ? BOARD_RGHT-1 : NoRights;
       } else boards[0][CASTLING][5] = NoRights;
+#endif
     }
     SendToProgram("force\n", &first);
     if (blackPlaysFirst) {
@@ -12116,6 +12141,7 @@ EditPositionMenuEvent(selection, x, y)
 {
     char buf[MSG_SIZ];
     ChessSquare piece = boards[0][y][x];
+    int rights = 0; // [HGM] editrights: most new pieces get no castling rights
 
     if (gameMode != EditPosition && gameMode != IcsExamining) return;
 
@@ -12139,6 +12165,7 @@ EditPositionMenuEvent(selection, x, y)
 			}
 		    } else {
 			boards[0][y][x] = p;
+			rightsBoard[y][x] = 0; // [HGM] editrights: clear all castling rights
 		    }
 		}
 	    }
@@ -12202,12 +12229,24 @@ EditPositionMenuEvent(selection, x, y)
             selection = (ChessSquare)((int)selection - (int)WhiteQueen + (int)WhiteFerz);
         goto defaultlabel;
 
+      case WhiteRook: // [HGM] editrights: corner Rooks get castling rights by default
+	if(y == 0 && (x == BOARD_LEFT || x == BOARD_RGHT-1)) rights = 1;
+	goto defaultlabel;
+
+      case BlackRook:
+	if(y == BOARD_HEIGHT-1 && (x == BOARD_LEFT || x == BOARD_RGHT-1)) rights = 1;
+	goto defaultlabel;
+
       case WhiteKing:
       case BlackKing:
         if(gameInfo.variant == VariantXiangqi)
             selection = (ChessSquare)((int)selection - (int)WhiteKing + (int)WhiteWazir);
         if(gameInfo.variant == VariantKnightmate)
             selection = (ChessSquare)((int)selection - (int)WhiteKing + (int)WhiteUnicorn);
+      case WhiteUnicorn:
+      case BlackUnicorn:
+	if(y == (selection <= WhiteKing ? 0 : BOARD_HEIGHT-1) && (x == BOARD_WIDTH>>1)) 
+	    rights = 2; // [HGM] editrights: King on right-center file gets rights
       default:
         defaultlabel:
 	if (gameMode == IcsExamining) {
@@ -12232,6 +12271,7 @@ EditPositionMenuEvent(selection, x, y)
                 }
             } else
 	    boards[0][y][x] = selection;
+ 	    rightsBoard[y][x] = rights; // [HGM] editrights: set default rights of created piece
 	    DrawPosition(TRUE, boards[0]);
 	}
 	break;
