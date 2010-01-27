@@ -12023,11 +12023,13 @@ EditPositionDone(Boolean fakeRights)
       kf = NoRights; err = 0;
       for(f=BOARD_RGHT-1; f>=0; f--)
 	if(rightsBoard[0][f] == 2) { if(kf != NoRights) err=10; boards[0][CASTLING][2] = kf = f; }
+      if(kf == NoRights) kf = 4;
       for(f=BOARD_RGHT-1; f>=0; f--)
 	if(rightsBoard[0][f] == 1) { err++; boards[0][CASTLING][f<kf] = f; }
       kf = NoRights; err = 0;
       for(f=BOARD_RGHT-1; f>=0; f--)
 	if(rightsBoard[BOARD_HEIGHT-1][f] == 2) { if(kf != NoRights) err=10; boards[0][CASTLING][5] = kf = f; }
+      if(kf == NoRights) kf = 4;
       for(f=BOARD_RGHT-1; f>=0; f--)
 	if(rightsBoard[BOARD_HEIGHT-1][f] == 1) { err++; boards[0][CASTLING][3+(f<kf)] = f; }
       if(err + 2 > nrCastlingRights) DisplayError("unclear castling rights", 0);
