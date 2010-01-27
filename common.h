@@ -236,6 +236,7 @@ typedef enum {
     BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
     EmptySquare, 
     NoRights, // [HGM] gamestate: for castling rights hidden in board[CASTLING]
+    GrantRights, // [HGM] promopopup: for EditPosition menu
     ClearBoard, WhitePlay, BlackPlay, PromotePiece, DemotePiece /*for use on EditPosition menus*/
   } ChessSquare;
 

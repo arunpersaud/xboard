@@ -12183,6 +12183,18 @@ EditPositionMenuEvent(selection, x, y)
 	SetBlackToPlayEvent();
 	break;
 
+      case NoRights:
+	rightsBoard[y][x] = 0;
+        break;
+
+      case GrantRights:
+        { ChessSquare p = boards[0][y][x];
+	  rightsBoard[y][x] = 1;
+	  if(p == WhiteKing || p == WhiteUnicorn || p == BlackKing || p == BlackUnicorn)
+		rightsBoard[y][x] = 2;
+	}
+        break;
+
       case EmptySquare:
 	if (gameMode == IcsExamining) {
             if (x < BOARD_LEFT || x >= BOARD_RGHT) break; // [HGM] holdings

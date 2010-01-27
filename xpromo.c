@@ -288,6 +288,12 @@ void PromoCallback(w, client_data, call_data)
     
     if (strcmp(name, _("clear board")) == 0) {
 	EditPositionMenuEvent(ClearBoard, 0, 0);
+    } else
+    if (strcmp(name, _("grant rights")) == 0) {
+	EditPositionMenuEvent(GrantRights, fromX, fromY);
+    } else
+    if (strcmp(name, _("revoke rights")) == 0) {
+	EditPositionMenuEvent(NoRights, fromX, fromY);
     }
     PromoPopDown();
 }
