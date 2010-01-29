@@ -12,7 +12,7 @@ VCVER=6
 PROJ = winboard
 
 
-OBJS=backend.obj book.obj gamelist.obj lists.obj moves.obj pgntags.obj uci.obj\
+OBJS=backend.obj book.obj gamelist.obj gamelistopt.obj lists.obj moves.obj pgntags.obj uci.obj\
  zippy.obj parser.obj wclipbrd.obj wedittags.obj wengineoutput.obj wevalgraph.obj\
  wgamelist.obj whistory.obj history.obj winboard.obj wlayout.obj woptions.obj wsnap.obj\
  wsockerr.obj help.obj wsettings.obj wchat.obj engineoutput.obj evalgraph.obj
@@ -109,6 +109,10 @@ book.obj: ../book.c ../common.h ../backend.h ../lists.h
 gamelist.obj: ../gamelist.c config.h ../lists.h ../common.h ../frontend.h \
         ../backend.h ../parser.h
         $(CC) $(CFLAGS) ../gamelist.c
+
+gamelistopt.obj: ../gamelistopt.c config.h ../lists.h ../common.h ../frontend.h \
+        ../backend.h
+        $(CC) $(CFLAGS) ../gamelistopt.c
 
 lists.obj: ../lists.c config.h ../lists.h ../common.h
         $(CC) $(CFLAGS) ../lists.c

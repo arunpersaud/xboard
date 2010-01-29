@@ -7868,104 +7868,42 @@ int NewGameFRC()
     return result;
 }
 
-/* [AS] Game list options */
-typedef struct {
-    char id;
-    char * name;
-} GLT_Item;
+/* [AS] Game list options. Refactored by HGM */
 
-static GLT_Item GLT_ItemInfo[] = {
-    { GLT_EVENT,      "Event" },
-    { GLT_SITE,       "Site" },
-    { GLT_DATE,       "Date" },
-    { GLT_ROUND,      "Round" },
-    { GLT_PLAYERS,    "Players" },
-    { GLT_RESULT,     "Result" },
-    { GLT_WHITE_ELO,  "White Rating" },
-    { GLT_BLACK_ELO,  "Black Rating" },
-    { GLT_TIME_CONTROL,"Time Control" },
-    { GLT_VARIANT,    "Variant" },
-    { GLT_OUT_OF_BOOK,PGN_OUT_OF_BOOK },
-    { GLT_RESULT_COMMENT, "Result Comment" }, // [HGM] rescom
-    { 0, 0 }
-};
+HWND gameListOptionsDialog;
 
-const char * GLT_FindItem( char id )
+// low-level front-end: clear text edit / list widget
+void
+GLT_ClearList()
 {
-    const char * result = 0;
-
-    GLT_Item * list = GLT_ItemInfo;
-
-    while( list->id != 0 ) {
-        if( list->id == id ) {
-            result = list->name;
-            break;
-        }
-
-        list++;
-    }
-
-    return result;
+    SendDlgItemMessage( gameListOptionsDialog, IDC_GameListTags, LB_RESETCONTENT, 0, 0 );
 }
 
-void GLT_AddToList( HWND hDlg, int iDlgItem, char id, int index )
+// low-level front-end: clear text edit / list widget
+void
+GLT_DeSelectList()
 {
-    const char * name = GLT_FindItem( id );
+    SendDlgItemMessage( gameListOptionsDialog, IDC_GameListTags, LB_SETCURSEL, 0, 0 );
+}
 
+// low-level front-end: append line to text edit / list widget
+void
+GLT_AddToList( char *name )
+{
     if( name != 0 ) {
-        if( index >= 0 ) {
-            SendDlgItemMessage( hDlg, iDlgItem, LB_INSERTSTRING, index, (LPARAM) name );
-        }
-        else {
-            SendDlgItemMessage( hDlg, iDlgItem, LB_ADDSTRING, 0, (LPARAM) name );
-        }
+            SendDlgItemMessage( gameListOptionsDialog, IDC_GameListTags, LB_ADDSTRING, 0, (LPARAM) name );
     }
 }
 
-void GLT_TagsToList( HWND hDlg, char * tags )
+// low-level front-end: get line from text edit / list widget
+Boolean
+GLT_GetFromList( int index, char *name )
 {
-    char * pc = tags;
-
-    SendDlgItemMessage( hDlg, IDC_GameListTags, LB_RESETCONTENT, 0, 0 );
-
-    while( *pc ) {
-        GLT_AddToList( hDlg, IDC_GameListTags, *pc, -1 );
-        pc++;
+    if( name != 0 ) {
+	    if( SendDlgItemMessage( gameListOptionsDialog, IDC_GameListTags, LB_GETTEXT, index, (LPARAM) name ) != LB_ERR )
+		return TRUE;
     }
-
-    SendDlgItemMessage( hDlg, IDC_GameListTags, LB_ADDSTRING, 0, (LPARAM) "\t --- Hidden tags ---" );
-
-    pc = GLT_ALL_TAGS;
-
-    while( *pc ) {
-        if( strchr( tags, *pc ) == 0 ) {
-            GLT_AddToList( hDlg, IDC_GameListTags, *pc, -1 );
-        }
-        pc++;
-    }
-
-    SendDlgItemMessage( hDlg, IDC_GameListTags, LB_SETCURSEL, 0, 0 );
-}
-
-char GLT_ListItemToTag( HWND hDlg, int index )
-{
-    char result = '\0';
-    char name[128];
-
-    GLT_Item * list = GLT_ItemInfo;
-
-    if( SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETTEXT, index, (LPARAM) name ) != LB_ERR ) {
-        while( list->id != 0 ) {
-            if( strcmp( list->name, name ) == 0 ) {
-                result = list->id;
-                break;
-            }
-
-            list++;
-        }
-    }
-
-    return result;
+    return FALSE;
 }
 
 void GLT_MoveSelection( HWND hDlg, int delta )
@@ -7986,20 +7924,15 @@ void GLT_MoveSelection( HWND hDlg, int delta )
 
 LRESULT CALLBACK GameListOptions_Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static char glt[64];
-    static char * lpUserGLT;
-
     switch( message )
     {
     case WM_INITDIALOG:
-        lpUserGLT = (char *) lParam;
+	gameListOptionsDialog = hDlg; // [HGM] pass through global to keep out off back-end
         
-        strcpy( glt, lpUserGLT );
-
         CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
 
         /* Initialize list */
-        GLT_TagsToList( hDlg, glt );
+        GLT_TagsToList( lpUserGLT );
 
         SetFocus( GetDlgItem(hDlg, IDC_GameListTags) );
 
@@ -8008,19 +7941,7 @@ LRESULT CALLBACK GameListOptions_Proc(HWND hDlg, UINT message, WPARAM wParam, LP
     case WM_COMMAND:
         switch( LOWORD(wParam) ) {
         case IDOK:
-            {
-                char * pc = lpUserGLT;
-                int idx = 0;
-//                int cnt = (int) SendDlgItemMessage( hDlg, IDC_GameListTags, LB_GETCOUNT, 0, 0 );
-                char id;
-
-                do {
-                    id = GLT_ListItemToTag( hDlg, idx );
-
-                    *pc++ = id;
-                    idx++;
-                } while( id != '\0' );
-            }
+	    GLT_ParseList();
             EndDialog( hDlg, 0 );
             return TRUE;
         case IDCANCEL:
@@ -8028,13 +7949,11 @@ LRESULT CALLBACK GameListOptions_Proc(HWND hDlg, UINT message, WPARAM wParam, LP
             return TRUE;
 
         case IDC_GLT_Default:
-            strcpy( glt, GLT_DEFAULT_TAGS );
-            GLT_TagsToList( hDlg, glt );
+            GLT_TagsToList( GLT_DEFAULT_TAGS );
             return TRUE;
 
         case IDC_GLT_Restore:
-            strcpy( glt, lpUserGLT );
-            GLT_TagsToList( hDlg, glt );
+            GLT_TagsToList( appData.gameListTags );
             return TRUE;
 
         case IDC_GLT_Up:
@@ -8054,22 +7973,20 @@ LRESULT CALLBACK GameListOptions_Proc(HWND hDlg, UINT message, WPARAM wParam, LP
 
 int GameListOptions()
 {
-    char glt[64];
     int result;
     FARPROC lpProc = MakeProcInstance( (FARPROC) GameListOptions_Proc, hInst );
 
-    strcpy( glt, appData.gameListTags );
+    strcpy( lpUserGLT, appData.gameListTags );
 
-    result = DialogBoxParam( hInst, MAKEINTRESOURCE(DLG_GameListOptions), hwndMain, (DLGPROC)lpProc, (LPARAM)glt );
+    result = DialogBoxParam( hInst, MAKEINTRESOURCE(DLG_GameListOptions), hwndMain, (DLGPROC)lpProc, (LPARAM)lpUserGLT );
 
     if( result == 0 ) {
         /* [AS] Memory leak here! */
-        appData.gameListTags = strdup( glt ); 
+        appData.gameListTags = strdup( lpUserGLT ); 
     }
 
     return result;
 }
-
 
 VOID
 DisplayIcsInteractionTitle(char *str)

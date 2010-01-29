@@ -4,7 +4,7 @@
 PROJ=winboard
 
 
-OBJS=backend.o book.o gamelist.o lists.o moves.o pgntags.o uci.o zippy.o\
+OBJS=backend.o book.o gamelist.o gamelistopt.o lists.o moves.o pgntags.o uci.o zippy.o\
  parser.o wbres.o wclipbrd.o wedittags.o wengineoutput.o wevalgraph.o\
  wgamelist.o whistory.o history.o winboard.o wlayout.o woptions.o wsnap.o\
  wsockerr.o help.o wsettings.o wchat.o engineoutput.o evalgraph.o
@@ -107,6 +107,10 @@ lists.o: ../lists.c config.h ../lists.h ../common.h
 
 gamelist.o: ../gamelist.c config.h ../lists.h ../common.h ../frontend.h \
 	../backend.h ../parser.h
+	$(call compile, $<)
+
+gamelistopt.o: ../gamelistopt.c config.h ../lists.h ../common.h ../frontend.h \
+	../backend.h
 	$(call compile, $<)
 
 wclipbrd.o: wclipbrd.c config.h ../common.h ../frontend.h ../backend.h \

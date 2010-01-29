@@ -264,6 +264,8 @@ int GameListBuild P((FILE *));
 void GameListInitGameInfo P((GameInfo *));
 char *GameListLine P((int, GameInfo *));
 char * GameListLineFull P(( int, GameInfo *));
+void GLT_TagsToList P(( char * tags ));
+void GLT_ParseList P((void));
 
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
