@@ -97,7 +97,7 @@ GLT_TagsToList( char * tags )
         pc++;
     }
 
-    GLT_AddToList( "\t --- Hidden tags ---" );
+    GLT_AddToList( "     --- Hidden tags ---     " );
 
     pc = GLT_ALL_TAGS;
 

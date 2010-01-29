@@ -444,6 +444,8 @@ void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void GameListOptionsPopDown P(());
 void ShufflePopDown P(());
 void EnginePopDown P(());
 void UciPopDown P(());
@@ -664,6 +666,7 @@ MenuItem optionsMenu[] = {
     {N_("Engine #1 Settings ..."), FirstSettingsProc},
     {N_("Engine #2 Settings ..."), SecondSettingsProc},
     {N_("Time Control ..."), TimeControlProc},
+    {N_("Game List ..."), GameListOptionsPopUp},
     {"----", NothingProc},
     {N_("Always Queen"), AlwaysQueenProc},
     {N_("Animate Dragging"), AnimateDraggingProc},
@@ -952,6 +955,7 @@ XtActionsRec boardActions[] = {
     { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
+    { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "HistoryPopDown", (XtActionProc) HistoryPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
