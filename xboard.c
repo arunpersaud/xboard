@@ -233,6 +233,8 @@ typedef struct {
 } Menu;
 
 int main P((int argc, char **argv));
+FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
+		char *init_path, char *mode, int (*show_entry)(), char **name_return));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
@@ -5045,45 +5047,14 @@ void FileNamePopUp(label, def, proc, openMode)
 
     fileProc = proc;		/* I can't see a way not */
     fileOpenMode = openMode;	/*   to use globals here */
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    XtSetArg(args[i], XtNtitle, XtNewString(_("File name prompt"))); i++;
-    fileNameShell = popup =
-      XtCreatePopupShell("File name prompt", transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    i = 0;
-    XtSetArg(args[i], XtNlabel, label); i++;
-    XtSetArg(args[i], XtNvalue, def); i++;
-    XtSetArg(args[i], XtNborderWidth, 0); i++;
-    dialog = XtCreateManagedWidget("fileName", dialogWidgetClass,
-				   layout, args, i);
-
-    XawDialogAddButton(dialog, _("ok"), FileNameCallback, (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("cancel"), FileNameCallback,
-		       (XtPointer) dialog);
-
-    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "FileNamePopDown");
-
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    filenameUp = True;
-
-    edit = XtNameToWidget(dialog, "*value");
-    XtSetKeyboardFocus(popup, edit);
+    {   // [HGM] use file-selector dialog stolen from Ghostview
+	char *name;
+	int index; // this is not supported yet
+	FILE *f;
+	if(f = XsraSelFile(shellWidget, label, NULL, NULL, "could not open: ",
+	    NULL, openMode, NULL, &name))
+		(void) (*fileProc)(f, index=0, name);
+    }
 }
 
 void FileNamePopDown()

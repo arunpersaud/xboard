@@ -29,7 +29,9 @@ dnl| the standard version of xboard.
 
 dnl| define second argument as VERSION.PATCHLEVEL. e.g. 4.4.0j
 AC_INIT([xboard],[master-20100206],[bug-xboard@gnu.org])
-AM_INIT_AUTOMAKE
+
+dnl| need this to be able to compile some files in a subdir (filebrowser)
+AM_INIT_AUTOMAKE([subdir-objects])
 
 AC_CONFIG_HEADERS([config.h])
 
@@ -64,6 +66,10 @@ dnl| Prevent the next macro from setting CFLAGS to -g
   CFLAGS=" "
 fi
 AC_PROG_CC
+
+dnl| need this to be able to compile files in a subdir
+AM_PROG_CC_C_O 
+
 AC_PROG_CPP
 AC_ISC_POSIX
 AC_PROG_INSTALL

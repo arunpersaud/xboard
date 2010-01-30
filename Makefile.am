@@ -26,10 +26,13 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 xgamelist.c xgamelist.h\
 		 xhistory.c  xhistory.h \
 		 xoptions.c \
+		 filebrowser/selfile.c filebrowser/selfile.h \
+		 filebrowser/draw.c filebrowser/path.c \
+		 filebrowser/dir.c filebrowser/xstat.h \
 		 $(ZPY)
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ 
 
-EXTRA_DIST = pixmaps bitmaps winboard sounds \
+EXTRA_DIST = pixmaps bitmaps winboard sounds filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm readme_HGM.txt zippy.README
 
