@@ -113,7 +113,8 @@ typedef struct {
 #define FCP_NAMES               ""
 #define SCP_NAMES               ""
 #define ICS_TEXT_MENU_DEFAULT   ""
-#define SETTINGS_FILE           SYSCONFDIR"/xboard.conf"
+//define SETTINGS_FILE           SYSCONFDIR"/xboard.conf"
+#define SETTINGS_FILE           "/etc/xboard/xboard.conf"
 #define COLOR_BKGD              "white"
 
 typedef int (*FileProc) P((FILE *f, int n, char *title));
