@@ -3295,6 +3295,8 @@ InitDrawingSizes(BoardSize boardSize, int flags)
     blackRect.right = blackRect.left + boardWidth/2 - 1;
     blackRect.top = whiteRect.top;
     blackRect.bottom = whiteRect.bottom;
+
+    logoHeight = 0; // [HGM] logo: suppress logo after change to tiny layout!
   }
 
   messageRect.left = OUTER_MARGIN + MESSAGE_LINE_LEFTMARGIN;
