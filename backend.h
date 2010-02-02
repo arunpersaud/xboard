@@ -70,11 +70,17 @@
        #else
                /* place holder
                 * or dummy types for other compiler
+                * [HGM] seems that -mno-cygwin comple needs %I64?
                 */
                #define u64 unsigned long long
                #define s64 signed long long
-               #define u64Display "%llu"
-               #define s64Display "%lld"
+               #ifdef __MINGW32__
+                  #define u64Display "%I64u"
+                  #define s64Display "%I64d"
+               #else
+                  #define u64Display "%llu"
+                  #define s64Display "%lld"
+               #endif
                #define u64Const(c) (c ## ULL)
                #define s64Const(c) (c ## LL)
        #endif
