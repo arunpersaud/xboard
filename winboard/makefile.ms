@@ -125,7 +125,7 @@ wedittags.obj: wedittags.c config.h ../common.h winboard.h resource.h ../fronten
         ../backend.h ../lists.h wedittags.h
         $(CC) $(CFLAGS) wedittags.c
 
-wgamelist.obj: wgamelist.c config.h. ../common.h winboard.h resource.h ../frontend.h \
+wgamelist.obj: wgamelist.c config.h ../common.h winboard.h resource.h ../frontend.h \
         ../backend.h wgamelist.h ../lists.h
         $(CC) $(CFLAGS) wgamelist.c
 
