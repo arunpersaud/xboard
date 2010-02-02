@@ -117,7 +117,7 @@ wedittags.o: wedittags.c config.h ../common.h winboard.h resource.h ../frontend.
 	../backend.h ../lists.h
 	$(call compile, $<)
 
-wgamelist.o: wgamelist.c config.h. ../common.h winboard.h resource.h ../frontend.h \
+wgamelist.o: wgamelist.c config.h ../common.h winboard.h resource.h ../frontend.h \
 	../backend.h ../lists.h
 	$(call compile, $<)
 
