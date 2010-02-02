@@ -28,7 +28,7 @@ USE_MINGW=1
 
 # set up for cygwin or not
 ifeq ($(USE_MINGW),1)
-CFCYG = -mno-cygwin
+CFCYG = -mno-cygwin -DUSE_I64
 LFCYG = -mno-cygwin -lmsvcrt
 endif
 
