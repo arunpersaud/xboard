@@ -1462,6 +1462,15 @@ ExitArgError(char *msg, char *badArg)
   exit(2);
 }
 
+int
+ValidateInt(char *s)
+{
+  char *p = s;
+  if(*p == '-' || *p == '+') p++;
+  while(*p) if(!isdigit(*p++)) ExitArgError("Bad integer value", s);
+  return atoi(s);
+}
+
 /* Command line font name parser.  NULL name means do nothing.
    Syntax like "Courier New:10.0 bi" or "Arial:10" or "Arial:10b"
    For backward compatibility, syntax without the colon is also
@@ -1773,19 +1782,19 @@ ParseArgs(GetFunc get, void *cl)
 
     switch (ad->argType) {
     case ArgInt:
-      *(int *) ad->argLoc = atoi(argValue);
+      *(int *) ad->argLoc = ValidateInt(argValue);
       break;
 
     case ArgX:
-      *(int *) ad->argLoc = atoi(argValue) + boardX; // [HGM] placement: translate stored relative to absolute 
+      *(int *) ad->argLoc = ValidateInt(argValue) + boardX; // [HGM] placement: translate stored relative to absolute 
       break;
 
     case ArgY:
-      *(int *) ad->argLoc = atoi(argValue) + boardY; // (this is really kludgey, it should be done where used...)
+      *(int *) ad->argLoc = ValidateInt(argValue) + boardY; // (this is really kludgey, it should be done where used...)
       break;
 
     case ArgZ:
-      *(int *) ad->argLoc = atoi(argValue);
+      *(int *) ad->argLoc = ValidateInt(argValue);
       EnsureOnScreen(&boardX, &boardY, minX, minY); 
       break;
 
