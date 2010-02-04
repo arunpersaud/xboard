@@ -2071,6 +2071,7 @@ Boolean seekGraphUp;
 char *seekAdList[MAX_SEEK_ADS];
 int ratingList[MAX_SEEK_ADS], xList[MAX_SEEK_ADS], yList[MAX_SEEK_ADS], seekNrList[MAX_SEEK_ADS], zList[MAX_SEEK_ADS];
 float tcList[MAX_SEEK_ADS];
+char colorList[MAX_SEEK_ADS];
 int nrOfSeekAds = 0;
 int minRating = 1010, maxRating = 2800;
 int hMargin = 10, vMargin = 20, h, w;
@@ -2088,14 +2089,14 @@ PlotSeekAd(int i)
 	if(tc > 95.) tc = 95.;
 	x = (w-hMargin)* log(tc)/log(100.) + hMargin;
 	y = ((double)r - minRating)/(maxRating - minRating)
-	    * (h-vMargin-squareSize/8) + vMargin;
+	    * (h-vMargin-squareSize/8-1) + vMargin;
 	if(ratingList[i] < 0) y = vMargin + squareSize/4;
 	if(strstr(seekAdList[i], " u ")) color = 1;
 	if(!strstr(seekAdList[i], "lightning") && // for now all wilds same color
 	   !strstr(seekAdList[i], "bullet") &&
 	   !strstr(seekAdList[i], "blitz") &&
 	   !strstr(seekAdList[i], "standard") ) color = 2;
-	DrawSeekDot(xList[i]=x+3*color, yList[i]=h-1-y, color);
+	DrawSeekDot(xList[i]=x+3*color, yList[i]=h-1-y, colorList[i]=color);
 }
 
 void
@@ -2118,6 +2119,40 @@ AddAd(char *handle, char *rating, int base, int inc,  char rated, char *type, in
 	    seekNrList[nrOfSeekAds] = nr;
 	    seekAdList[nrOfSeekAds++] = StrSave(buf);
 	    if(plot) PlotSeekAd(nrOfSeekAds-1);
+	}
+}
+
+void
+EraseSeekDot(int i)
+{
+    int x = xList[i], y = yList[i], d=squareSize/4, k;
+    DrawSeekBackground(x-squareSize/8, y-squareSize/8, x+squareSize/8+1, y+squareSize/8+1);
+    if(x < hMargin+d) DrawSeekAxis(hMargin, y-squareSize/8, hMargin, y+squareSize/8+1);
+    // now replot every dot that overlapped
+    for(k=0; k<nrOfSeekAds; k++) if(k != i) {
+	int xx = xList[k], yy = yList[k];
+	if(xx <= x+d && xx > x-d && yy <= y+d && yy > y-d)
+	    DrawSeekDot(xx, yy, colorList[k]);
+    }
+}
+
+void
+RemoveSeekAd(int nr)
+{
+	int i;
+	for(i=0; i<nrOfSeekAds; i++) if(seekNrList[i] == nr) {
+	    EraseSeekDot(i);
+	    if(seekAdList[i]) free(seekAdList[i]);
+	    seekAdList[i] = seekAdList[--nrOfSeekAds];
+	    seekNrList[i] = seekNrList[nrOfSeekAds];
+	    ratingList[i] = ratingList[nrOfSeekAds];
+	    colorList[i]  = colorList[nrOfSeekAds];
+	    tcList[i] = tcList[nrOfSeekAds];
+	    xList[i]  = xList[nrOfSeekAds];
+	    yList[i]  = yList[nrOfSeekAds];
+	    zList[i]  = zList[nrOfSeekAds];
+	    seekAdList[nrOfSeekAds] = NULL;
+	    break;
 	}
 }
 
@@ -2151,7 +2186,7 @@ DrawSeekGraph()
     DrawSeekAxis(hMargin, h-1-vMargin, w-5, h-1-vMargin);
     DrawSeekAxis(hMargin, h-1-vMargin, hMargin, 5);
     for(i=0; i<4000; i+= 100) if(i>=minRating && i<maxRating) {
-	int yy =((double)i - minRating)/(maxRating - minRating)*(h-vMargin-squareSize/8) + vMargin;
+	int yy =((double)i - minRating)/(maxRating - minRating)*(h-vMargin-squareSize/8-1) + vMargin;
 	yy = h-1-yy;
 	DrawSeekAxis(hMargin+5*(i%500==0), yy, hMargin-5, yy); // rating ticks
 	if(i%500 == 0) {
@@ -2456,12 +2491,16 @@ read_from_ics(isr, closure, data, count, error)
 		  sprintf(str,
 			  "/set-quietly interface %s\n/set-quietly style 12\n",
 			  programVersion);
+		  if(appData.seekGraph && appData.autoRefresh) // [HGM] seekgraph
+		      strcat(str, "/set-2 51 1\n/set seek 1\n");
 		} else if (ics_type == ICS_CHESSNET) {
 		  sprintf(str, "/style 12\n");
 		} else {
 		  strcpy(str, "alias $ @\n$set interface ");
 		  strcat(str, programVersion);
 		  strcat(str, "\n$iset startpos 1\n$iset ms 1\n");
+		  if(appData.seekGraph && appData.autoRefresh) // [HGM] seekgraph
+		      strcat(str, "$iset seekremove 1\n$set seek 1\n");
 #ifdef WIN32
 		  strcat(str, "$iset nohighlight 1\n");
 #endif
@@ -2590,6 +2629,7 @@ read_from_ics(isr, closure, data, count, error)
 		    next_out = leftover_start = i;
 		    started = STARTED_CHATTER;
 		    suppressKibitz = TRUE;
+		    continue;
 		}
 		if((gameMode == IcsIdle || gameMode == BeginningOfGame)
 			&& looking_at(buf, &i, "* ads displayed")) {
@@ -2597,6 +2637,27 @@ read_from_ics(isr, closure, data, count, error)
 		    seekGraphUp = TRUE;
 		    DrawSeekGraph();
 		    continue;
+		}
+		if(appData.autoRefresh) {
+		    if(looking_at(buf, &i, "* (*) seeking * * * * *\"play *\" to respond)\n")) {
+			int s = (ics_type == ICS_ICC); // ICC format differs
+			if(seekGraphUp)
+			AddAd(star_match[0], star_match[1], atoi(star_match[2+s]), atoi(star_match[3+s]), 
+			      star_match[4+s][0], star_match[5-3*s], atoi(star_match[7]), TRUE);
+			looking_at(buf, &i, "*% "); // eat prompt
+			next_out = i; // suppress
+			continue;
+		    }
+		    if(looking_at(buf, &i, "Ads removed: *\n") || looking_at(buf, &i, "\031(51 * *\031)")) {
+			char *p = star_match[0];
+			while(*p) {
+			    if(seekGraphUp) RemoveSeekAd(atoi(p));
+			    while(*p && *p++ != ' '); // next
+			}
+			looking_at(buf, &i, "*% "); // eat prompt
+			next_out = i;
+			continue;
+		    }
 		}
 	    }
 
@@ -5913,7 +5974,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     static int second = 0, promotionChoice = 0;
     char promoChoice = NULLCHAR;
 
-    if(appData.seekGraph && appData.icsActive && 
+    if(appData.seekGraph && appData.icsActive && loggedOn &&
 	(gameMode == BeginningOfGame || gameMode == IcsIdle)) {
 	SeekGraphClick(clickType, xPix, yPix, FALSE);
 	return;

@@ -414,6 +414,7 @@ typedef struct {
     Boolean icsInputBox;
     Boolean useTelnet;
     Boolean seekGraph;
+    Boolean autoRefresh;
     char *telnetProgram;
     char *gateway;
     char *loadGameFile;
