@@ -3127,8 +3127,14 @@ void DrawSeekText(char *buf, int x, int y)
 
 void DrawSeekDot(int x, int y, int color)
 {
+	int square = color & 0x80;
+	color &= 0x7F;
 	    HBRUSH oldBrush = SelectObject(hdcSeek, 
 			color == 0 ? markerBrush : color == 1 ? darkSquareBrush : explodeBrush);
+	if(square)
+	    Rectangle(hdcSeek, boardRect.left+x - squareSize/9, boardRect.top+y - squareSize/9,
+			       boardRect.left+x + squareSize/9, boardRect.top+y + squareSize/9);
+	else
 	    Ellipse(hdcSeek, boardRect.left+x - squareSize/8, boardRect.top+y - squareSize/8,
 			     boardRect.left+x + squareSize/8, boardRect.top+y + squareSize/8);
 	    SelectObject(hdcSeek, oldBrush);

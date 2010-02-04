@@ -4321,9 +4321,17 @@ void DrawSeekText(char *buf, int x, int y)
     XDrawString(xDisplay, xBoardWindow, coordGC, x, y+4, buf, strlen(buf));
 }
 
-void DrawSeekDot(int x, int y, int color)
+void DrawSeekDot(int x, int y, int colorNr)
 {
-	XFillArc(xDisplay, xBoardWindow, color == 0 ? prelineGC : color == 1 ? darkSquareGC : highlineGC, 
+    int square = colorNr & 0x80;
+    GC color;
+    colorNr &= 0x7F;
+    color = colorNr == 0 ? prelineGC : colorNr == 1 ? darkSquareGC : highlineGC;
+    if(square)
+	XFillRectangle(xDisplay, xBoardWindow, color,
+		x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
+    else
+	XFillArc(xDisplay, xBoardWindow, color, 
 		x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
 }
 

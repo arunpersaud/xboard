@@ -2068,6 +2068,7 @@ int suppressKibitz = 0;
 Boolean soughtPending = FALSE;
 Boolean seekGraphUp;
 #define MAX_SEEK_ADS 200
+#define SQUARE 0x80
 char *seekAdList[MAX_SEEK_ADS];
 int ratingList[MAX_SEEK_ADS], xList[MAX_SEEK_ADS], yList[MAX_SEEK_ADS], seekNrList[MAX_SEEK_ADS], zList[MAX_SEEK_ADS];
 float tcList[MAX_SEEK_ADS];
@@ -2095,7 +2096,8 @@ PlotSeekAd(int i)
 	   !strstr(seekAdList[i], "bullet") &&
 	   !strstr(seekAdList[i], "blitz") &&
 	   !strstr(seekAdList[i], "standard") ) color = 2;
-	DrawSeekDot(xList[i]=x+3*color, yList[i]=h-1-y, colorList[i]=color);
+	if(strstr(seekAdList[i], "(C) ")) color |= SQUARE; // plot computer seeks as squares
+	DrawSeekDot(xList[i]=x+3*(color&~SQUARE), yList[i]=h-1-y, colorList[i]=color);
 }
 
 void
