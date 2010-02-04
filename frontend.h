@@ -90,6 +90,10 @@ void CommentPopDown P((void));
 void EditCommentPopUp P((int index, String title, String text));
 void ErrorPopDown P((void));
 int  EventToSquare P((int x, int limit));
+void DrawSeekAxis P(( int x, int y, int xTo, int yTo ));
+void DrawSeekBackground P(( int left, int top, int right, int bottom ));
+void DrawSeekText P((char *buf, int x, int y));
+void DrawSeekDot P((int x, int y, int color));
 
 void RingBell P((void));
 void PlayIcsWinSound P((void));

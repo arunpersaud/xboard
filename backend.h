@@ -138,6 +138,8 @@ int SaveGameToFile P((char *filename, int append));
 int LoadPosition P((FILE *f, int n, char *title));
 int ReloadPosition P((int offset));
 int SavePosition P((FILE *f, int dummy, char *dummy2));
+int DrawSeekGraph P(());
+int SeekGraphClick P((ClickType click, int x, int y, Boolean moving));
 void EditPositionEvent P((void));
 void FlipViewEvent P((void));
 void MachineWhiteEvent P((void));

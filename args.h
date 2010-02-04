@@ -241,6 +241,8 @@ ArgDescriptor argDescriptors[] = {
   { "internetChessserverHelper", ArgFilename, (void *) &appData.icsHelper, 
 	FALSE, INVALID }, // for XB
   { "icshelper", ArgFilename, (void *) &appData.icsHelper, FALSE, (ArgIniType) "" },
+  { "seekGraph", ArgBoolean, (void *) &appData.seekGraph, TRUE, (ArgIniType) FALSE },
+  { "sg", ArgTrue, (void *) &appData.seekGraph, FALSE, INVALID },
   { "gateway", ArgString, (void *) &appData.gateway, FALSE, (ArgIniType) "" },
   { "loadGameFile", ArgFilename, (void *) &appData.loadGameFile, FALSE, (ArgIniType) "" },
   { "lgf", ArgFilename, (void *) &appData.loadGameFile, FALSE, INVALID },

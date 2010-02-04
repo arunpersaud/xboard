@@ -2064,6 +2064,150 @@ static int player2Rating = -1;
 ColorClass curColor = ColorNormal;
 int suppressKibitz = 0;
 
+// [HGM] seekgraph
+Boolean soughtPending = FALSE;
+Boolean seekGraphUp;
+#define MAX_SEEK_ADS 200
+char *seekAdList[MAX_SEEK_ADS];
+int ratingList[MAX_SEEK_ADS], xList[MAX_SEEK_ADS], yList[MAX_SEEK_ADS], seekNrList[MAX_SEEK_ADS], zList[MAX_SEEK_ADS];
+float tcList[MAX_SEEK_ADS];
+int nrOfSeekAds = 0;
+int minRating = 1010, maxRating = 2800;
+int hMargin = 10, vMargin = 20, h, w;
+extern int squareSize, lineGap;
+
+void
+PlotSeekAd(int i)
+{
+	int x, y, color = 0, r = ratingList[i]; float tc = tcList[i];
+	xList[i] = yList[i] = -100; // outside graph, so cannot be clicked
+	zList[i] = 0;
+	if(r < minRating+100 && r >=0 ) r = minRating+100;
+	if(r > maxRating) r = maxRating;
+	if(tc < 1.) tc = 1.;
+	if(tc > 95.) tc = 95.;
+	x = (w-hMargin)* log(tc)/log(100.) + hMargin;
+	y = ((double)r - minRating)/(maxRating - minRating)
+	    * (h-vMargin-squareSize/8) + vMargin;
+	if(ratingList[i] < 0) y = vMargin + squareSize/4;
+	if(strstr(seekAdList[i], " u ")) color = 1;
+	if(!strstr(seekAdList[i], "lightning") && // for now all wilds same color
+	   !strstr(seekAdList[i], "bullet") &&
+	   !strstr(seekAdList[i], "blitz") &&
+	   !strstr(seekAdList[i], "standard") ) color = 2;
+	DrawSeekDot(xList[i]=x+3*color, yList[i]=h-1-y, color);
+}
+
+void
+AddAd(char *handle, char *rating, int base, int inc,  char rated, char *type, int nr, Boolean plot)
+{
+	char buf[MSG_SIZ], *ext = "";
+	VariantClass v = StringToVariant(type);
+	if(strstr(type, "wild")) {
+	    ext = type + 4; // append wild number
+	    if(v == VariantFischeRandom) type = "chess960"; else
+	    if(v == VariantLoadable) type = "setup"; else
+	    type = VariantName(v);
+	}
+	sprintf(buf, "%s (%s) %d %d %c %s%s", handle, rating, base, inc, rated, type, ext);
+	if(nrOfSeekAds < MAX_SEEK_ADS-1) {
+	    if(seekAdList[nrOfSeekAds]) free(seekAdList[nrOfSeekAds]);
+	    ratingList[nrOfSeekAds] = -1; // for if seeker has no rating
+	    sscanf(rating, "%d", &ratingList[nrOfSeekAds]);
+	    tcList[nrOfSeekAds] = base + (2./3.)*inc;
+	    seekNrList[nrOfSeekAds] = nr;
+	    seekAdList[nrOfSeekAds++] = StrSave(buf);
+	    if(plot) PlotSeekAd(nrOfSeekAds-1);
+	}
+}
+
+Boolean
+MatchSoughtLine(char *line)
+{
+    char handle[MSG_SIZ], rating[MSG_SIZ], type[MSG_SIZ];
+    int nr, base, inc, u=0; char dummy;
+
+    if(sscanf(line, "%d %s %s %d %d rated %s", &nr, rating, handle, &base, &inc, type) == 6 ||
+       sscanf(line, "%d %s %s %s %d %d rated %c", &nr, rating, handle, type, &base, &inc, &dummy) == 7 ||
+       (u=1) &&
+       (sscanf(line, "%d %s %s %d %d unrated %s", &nr, rating, handle, &base, &inc, type) == 6 ||
+        sscanf(line, "%d %s %s %s %d %d unrated %c", &nr, rating, handle, type, &base, &inc, &dummy) == 7)  ) {
+	// match: compact and save the line
+	AddAd(handle, rating, base, inc, u ? 'u' : 'r', type, nr, FALSE);
+	return TRUE;
+    }
+    return FALSE;
+}
+
+int
+DrawSeekGraph()
+{
+    if(!seekGraphUp) return FALSE;
+    int i;
+    h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
+    w = BOARD_WIDTH  * (squareSize + lineGap) + lineGap;
+
+    DrawSeekBackground(0, 0, w, h);
+    DrawSeekAxis(hMargin, h-1-vMargin, w-5, h-1-vMargin);
+    DrawSeekAxis(hMargin, h-1-vMargin, hMargin, 5);
+    for(i=0; i<4000; i+= 100) if(i>=minRating && i<maxRating) {
+	int yy =((double)i - minRating)/(maxRating - minRating)*(h-vMargin-squareSize/8) + vMargin;
+	yy = h-1-yy;
+	DrawSeekAxis(hMargin+5*(i%500==0), yy, hMargin-5, yy); // rating ticks
+	if(i%500 == 0) {
+	    char buf[MSG_SIZ];
+	    sprintf(buf, "%d", i);
+	    DrawSeekText(buf, hMargin+squareSize/8+7, yy);
+	}
+    }
+    DrawSeekText("unrated", hMargin+squareSize/8+7, h-1-vMargin-squareSize/4);
+    for(i=1; i<100; i+=(i<10?1:5)) {
+	int xx = (w-hMargin)* log((double)i)/log(100.) + hMargin;
+	DrawSeekAxis(xx, h-1-vMargin, xx, h-6-vMargin-3*(i%10==0)); // TC ticks
+	if(i<=5 || (i>40 ? i%20 : i%10) == 0) {
+	    char buf[MSG_SIZ];
+	    sprintf(buf, "%d", i);
+	    DrawSeekText(buf, xx-2-3*(i>9), h-1-vMargin/2);
+	}
+    }
+    for(i=0; i<nrOfSeekAds; i++) PlotSeekAd(i);
+    return TRUE;
+}
+
+int SeekGraphClick(ClickType click, int x, int y, Boolean moving)
+{
+    static int lastDown = 0;
+    if(!seekGraphUp) { // initiate cration of seek graph by requesting seek-ad list
+	if(click == Release || moving) return FALSE;
+	nrOfSeekAds = 0;
+	soughtPending = TRUE;
+	SendToICS(ics_prefix);
+	SendToICS("sought\n"); // should this be "sought all"?
+    } else { // issue challenge based on clicked ad
+	int dist = 10000; int i, closest = 0;
+	for(i=0; i<nrOfSeekAds; i++) {
+	    int d = (x-xList[i])*(x-xList[i]) +  (y-yList[i])*(y-yList[i]) + zList[i];
+	    if(d < dist) { dist = d; closest = i; }
+	    if(click == Press && zList[i]>0) zList[i] *= 0.8; // age priority
+	}
+	if(dist < 300) {
+	    char buf[MSG_SIZ];
+	    if(lastDown != closest) DisplayMessage(seekAdList[closest], "");
+	    sprintf(buf, "play %d\n", seekNrList[closest]);
+	    if(click == Press) { lastDown = closest; return TRUE; } // on press 'hit', only show info
+	    SendToICS(ics_prefix);
+	    SendToICS(buf); // should this be "sought all"?
+	} else if(click == Release) { // release 'miss' is ignored
+	    zList[lastDown] = 200; // make future selection of the rejected ad more difficult
+	    return TRUE;
+	} else if(moving) { if(lastDown >= 0) DisplayMessage("", ""); lastDown = -1; return TRUE; }
+	// press miss or release hit 'pop down' seek graph
+	seekGraphUp = FALSE;
+	DrawPosition(TRUE, NULL);
+    }
+    return TRUE;
+}
+
 void
 read_from_ics(isr, closure, data, count, error)
      InputSourceRef isr;
@@ -2437,6 +2581,23 @@ read_from_ics(isr, closure, data, count, error)
 	      started = STARTED_CHATTER;
 	      i += 3;
 	      continue;
+	    }
+
+	    // [HGM] seekgraph: recognize sought lines and end-of-sought message
+	    if(appData.seekGraph) {
+		if(soughtPending && MatchSoughtLine(buf+i)) {
+		    i = strstr(buf+i, "rated") - buf;
+		    next_out = leftover_start = i;
+		    started = STARTED_CHATTER;
+		    suppressKibitz = TRUE;
+		}
+		if((gameMode == IcsIdle || gameMode == BeginningOfGame)
+			&& looking_at(buf, &i, "* ads displayed")) {
+		    soughtPending = FALSE;
+		    seekGraphUp = TRUE;
+		    DrawSeekGraph();
+		    continue;
+		}
 	    }
 
 	    /* skip formula vars */
@@ -2878,6 +3039,11 @@ read_from_ics(isr, closure, data, count, error)
 	    if (looking_at(buf, &i, "% ") ||
 		((started == STARTED_MOVES || started == STARTED_MOVES_NOHIDE)
 		 && looking_at(buf, &i, "}*"))) { char *bookHit = NULL; // [HGM] book
+		if(ics_type == ICS_ICC && soughtPending) { // [HGM] seekgraph: on ICC sought-list has no termination line
+		    soughtPending = FALSE;
+		    seekGraphUp = TRUE;
+		    DrawSeekGraph();
+		}
 		if(suppressKibitz) next_out = i;
 		savingComment = FALSE;
 		suppressKibitz = 0;
@@ -4039,7 +4205,7 @@ ParseBoard12(string)
   }
     }
 
-   
+
     /* Display the board */
     if (!pausing && !appData.noGUI) {
       
@@ -4049,7 +4215,9 @@ ParseBoard12(string)
 	     ((gameMode == IcsPlayingBlack) && (!WhiteOnMove(currentMove))))
 	      ClearPremoveHighlights();
 
-      DrawPosition(FALSE, boards[currentMove]);
+      j = seekGraphUp; seekGraphUp = FALSE; // [HGM] seekgraph: when we draw a board, it overwrites the seek graph
+      DrawPosition(j, boards[currentMove]);
+
       DisplayMove(moveNum - 1);
       if (appData.ringBellAfterMoves && /*!ics_user_moved*/ // [HGM] use absolute method to recognize own move
 	    !((gameMode == IcsPlayingWhite) && (!WhiteOnMove(moveNum)) ||
@@ -5744,6 +5912,12 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     Boolean saveAnimate;
     static int second = 0, promotionChoice = 0;
     char promoChoice = NULLCHAR;
+
+    if(appData.seekGraph && appData.icsActive && 
+	(gameMode == BeginningOfGame || gameMode == IcsIdle)) {
+	SeekGraphClick(clickType, xPix, yPix, FALSE);
+	return;
+    }
 
     if (clickType == Press) ErrorPopDown();
     MarkTargetSquares(1);

@@ -413,6 +413,7 @@ typedef struct {
     char *icsHelper;
     Boolean icsInputBox;
     Boolean useTelnet;
+    Boolean seekGraph;
     char *telnetProgram;
     char *gateway;
     char *loadGameFile;

@@ -2469,7 +2469,7 @@ XBoard square size (hint): %d\n\
 
     /* Why is the following needed on some versions of X instead
      * of a translation? */
-    XtAddEventHandler(boardWidget, ExposureMask, False,
+    XtAddEventHandler(boardWidget, ExposureMask|PointerMotionMask, False,
 		      (XtEventHandler) EventProc, NULL);
     /* end why */
 
@@ -4223,6 +4223,8 @@ void EventProc(widget, unused, event)
 	if (event->xexpose.count > 0) return;  /* no clipping is done */
 	XDrawPosition(widget, True, NULL);
 	break;
+      case MotionNotify:
+        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, TRUE)) break;
       default:
 	return;
     }
@@ -4303,6 +4305,28 @@ static int check_castle_draw(newb, oldb, rrow, rcol)
     return 0;
 }
 
+// [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph 
+void DrawSeekAxis( int x, int y, int xTo, int yTo )
+{
+      XDrawLine(xDisplay, xBoardWindow, lineGC, x, y, xTo, yTo);
+}
+
+void DrawSeekBackground( int left, int top, int right, int bottom )
+{
+    XFillRectangle(xDisplay, xBoardWindow, lightSquareGC, left, top, right-left, bottom-top);
+}
+
+void DrawSeekText(char *buf, int x, int y)
+{
+    XDrawString(xDisplay, xBoardWindow, coordGC, x, y+4, buf, strlen(buf));
+}
+
+void DrawSeekDot(int x, int y, int color)
+{
+	XFillArc(xDisplay, xBoardWindow, color == 0 ? prelineGC : color == 1 ? darkSquareGC : highlineGC, 
+		x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
+}
+
 static int damage[BOARD_RANKS][BOARD_FILES];
 
 /*
@@ -4319,6 +4343,8 @@ void XDrawPosition(w, repaint, board)
     static Board lastBoard;
     Arg args[16];
     int rrow, rcol;
+
+    if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
 
     if (board == NULL) {
 	if (!lastBoardValid) return;

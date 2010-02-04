@@ -159,7 +159,7 @@ BoardSize boardSize;
 Boolean chessProgram;
 //static int boardX, boardY;
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
-static int squareSize, lineGap, minorSize;
+int squareSize, lineGap, minorSize;
 static int winW, winH;
 static RECT messageRect, whiteRect, blackRect, leftLogoRect, rightLogoRect; // [HGM] logo
 static int logoHeight = 0;
@@ -3084,6 +3084,56 @@ DrawLogoOnDC(HDC hdc, RECT logoRect, HBITMAP logo)
   DeleteDC(tmphdc);
 }
 
+static HDC hdcSeek;
+
+// [HGM] seekgraph
+void DrawSeekAxis( int x, int y, int xTo, int yTo )
+{
+    POINT stPt;
+    HPEN hp = SelectObject( hdcSeek, gridPen );
+    MoveToEx( hdcSeek, boardRect.left+x, boardRect.top+y, &stPt );
+    LineTo( hdcSeek, boardRect.left+xTo, boardRect.top+yTo );
+    SelectObject( hdcSeek, hp );
+}
+
+// front-end wrapper for drawing functions to do rectangles
+void DrawSeekBackground( int left, int top, int right, int bottom )
+{
+    HPEN hp;
+    RECT rc;
+
+    if (hdcSeek == NULL) {
+    hdcSeek = GetDC(hwndMain);
+      if (!appData.monoMode) {
+        SelectPalette(hdcSeek, hPal, FALSE);
+        RealizePalette(hdcSeek);
+      }
+    }
+    hp = SelectObject( hdcSeek, gridPen );
+    rc.top = boardRect.top+top; rc.left = boardRect.left+left; 
+    rc.bottom = boardRect.top+bottom; rc.right = boardRect.left+right;
+    FillRect( hdcSeek, &rc, lightSquareBrush );
+    SelectObject( hdcSeek, hp );
+}
+
+// front-end wrapper for putting text in graph
+void DrawSeekText(char *buf, int x, int y)
+{
+        SIZE stSize;
+	SetBkMode( hdcSeek, TRANSPARENT );
+        GetTextExtentPoint32( hdcSeek, buf, strlen(buf), &stSize );
+        TextOut( hdcSeek, boardRect.left+x-3, boardRect.top+y-stSize.cy/2, buf, strlen(buf) );
+}
+
+void DrawSeekDot(int x, int y, int color)
+{
+	    HBRUSH oldBrush = SelectObject(hdcSeek, 
+			color == 0 ? markerBrush : color == 1 ? darkSquareBrush : explodeBrush);
+	    Ellipse(hdcSeek, boardRect.left+x - squareSize/8, boardRect.top+y - squareSize/8,
+			     boardRect.left+x + squareSize/8, boardRect.top+y + squareSize/8);
+	    SelectObject(hdcSeek, oldBrush);
+}
+
 VOID
 HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 {
@@ -3109,6 +3159,8 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
    * gamestart and similar)  --Hawk
    */
   Boolean fullrepaint = repaint;
+
+  if(DrawSeekGraph()) return; // [HG} seekgraph: suppress printing board if seek graph up
 
   if( DrawPositionNeedsFullRepaint() ) {
       fullrepaint = TRUE;
@@ -3721,6 +3773,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
 
   case WM_MOUSEMOVE:
+    if(SeekGraphClick(Press, pt.x - boardRect.left, pt.y - boardRect.top, TRUE)) break;
     MovePV(pt.x - boardRect.left, pt.y - boardRect.top, boardRect.bottom - boardRect.top);
     if ((appData.animateDragging || appData.highlightDragging)
 	&& (wParam & MK_LBUTTON)
