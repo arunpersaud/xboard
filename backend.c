@@ -2082,7 +2082,6 @@ PlotSeekAd(int i)
 {
 	int x, y, color = 0, r = ratingList[i]; float tc = tcList[i];
 	xList[i] = yList[i] = -100; // outside graph, so cannot be clicked
-	zList[i] = 0;
 	if(r < minRating+100 && r >=0 ) r = minRating+100;
 	if(r > maxRating) r = maxRating;
 	if(tc < 1.) tc = 1.;
@@ -2117,6 +2116,7 @@ AddAd(char *handle, char *rating, int base, int inc,  char rated, char *type, in
 	    sscanf(rating, "%d", &ratingList[nrOfSeekAds]);
 	    tcList[nrOfSeekAds] = base + (2./3.)*inc;
 	    seekNrList[nrOfSeekAds] = nr;
+	    zList[nrOfSeekAds] = 0;
 	    seekAdList[nrOfSeekAds++] = StrSave(buf);
 	    if(plot) PlotSeekAd(nrOfSeekAds-1);
 	}
@@ -2209,9 +2209,9 @@ DrawSeekGraph()
     return TRUE;
 }
 
-int SeekGraphClick(ClickType click, int x, int y, Boolean moving)
+int SeekGraphClick(ClickType click, int x, int y, int moving)
 {
-    static int lastDown = 0;
+    static int lastDown = 0, displayed = 0, lastSecond;
     if(!seekGraphUp) { // initiate cration of seek graph by requesting seek-ad list
 	if(click == Release || moving) return FALSE;
 	nrOfSeekAds = 0;
@@ -2219,23 +2219,39 @@ int SeekGraphClick(ClickType click, int x, int y, Boolean moving)
 	SendToICS(ics_prefix);
 	SendToICS("sought\n"); // should this be "sought all"?
     } else { // issue challenge based on clicked ad
-	int dist = 10000; int i, closest = 0;
+	int dist = 10000; int i, closest = 0, second = 0;
 	for(i=0; i<nrOfSeekAds; i++) {
 	    int d = (x-xList[i])*(x-xList[i]) +  (y-yList[i])*(y-yList[i]) + zList[i];
 	    if(d < dist) { dist = d; closest = i; }
-	    if(click == Press && zList[i]>0) zList[i] *= 0.8; // age priority
+	    second += (d - zList[i] < 120); // count in-range ads
+	    if(click == Press && moving != 1 && zList[i]>0) zList[i] *= 0.8; // age priority
 	}
-	if(dist < 300) {
+	if(dist < 120) {
 	    char buf[MSG_SIZ];
-	    if(lastDown != closest) DisplayMessage(seekAdList[closest], "");
+	    second = (second > 1);
+	    if(displayed != closest || second != lastSecond) {
+		DisplayMessage(second ? "!" : "", seekAdList[closest]);
+		lastSecond = second; displayed = closest;
+	    }
 	    sprintf(buf, "play %d\n", seekNrList[closest]);
-	    if(click == Press) { lastDown = closest; return TRUE; } // on press 'hit', only show info
+	    if(click == Press) {
+		if(moving == 2) zList[closest] = 100; // right-click; push to back on press
+		lastDown = closest;
+		return TRUE;
+	    } // on press 'hit', only show info
+	    if(moving == 2) return TRUE; // ignore right up-clicks on dot
 	    SendToICS(ics_prefix);
 	    SendToICS(buf); // should this be "sought all"?
 	} else if(click == Release) { // release 'miss' is ignored
-	    zList[lastDown] = 200; // make future selection of the rejected ad more difficult
+	    zList[lastDown] = 100; // make future selection of the rejected ad more difficult
+	    if(moving == 2) { // right up-click
+		nrOfSeekAds = 0; // refresh graph
+		soughtPending = TRUE;
+		SendToICS(ics_prefix);
+		SendToICS("sought\n"); // should this be "sought all"?
+	    }
 	    return TRUE;
-	} else if(moving) { if(lastDown >= 0) DisplayMessage("", ""); lastDown = -1; return TRUE; }
+	} else if(moving) { if(displayed >= 0) DisplayMessage("", ""); displayed = -1; return TRUE; }
 	// press miss or release hit 'pop down' seek graph
 	seekGraphUp = FALSE;
 	DrawPosition(TRUE, NULL);
@@ -5976,7 +5992,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 
     if(appData.seekGraph && appData.icsActive && loggedOn &&
 	(gameMode == BeginningOfGame || gameMode == IcsIdle)) {
-	SeekGraphClick(clickType, xPix, yPix, FALSE);
+	SeekGraphClick(clickType, xPix, yPix, 0);
 	return;
     }
 
@@ -6184,10 +6200,16 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 {   // front-end-free part taken out of PieceMenuPopup
     int whichMenu; int xSqr, ySqr;
 
+    if(seekGraphUp) { // [HGM] seekgraph
+	if(action == Press)   SeekGraphClick(Press, x, y, 2); // 2 indicates right-click: no pop-down on miss
+	if(action == Release) SeekGraphClick(Release, x, y, 2); // and no challenge on hit
+	return -2;
+    }
+
     xSqr = EventToSquare(x, BOARD_WIDTH);
     ySqr = EventToSquare(y, BOARD_HEIGHT);
     if (action == Release) UnLoadPV(); // [HGM] pv
-    if (action != Press) return -2;
+    if (action != Press) return -2; // return code to be ignored
     switch (gameMode) {
       case IcsExamining:
 	if(xSqr < BOARD_LEFT || xSqr >= BOARD_RGHT) return -1;

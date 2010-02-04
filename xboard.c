@@ -4224,7 +4224,7 @@ void EventProc(widget, unused, event)
 	XDrawPosition(widget, True, NULL);
 	break;
       case MotionNotify:
-        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, TRUE)) break;
+        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, 1)) break;
       default:
 	return;
     }

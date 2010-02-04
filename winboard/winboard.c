@@ -3773,7 +3773,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
 
   case WM_MOUSEMOVE:
-    if(SeekGraphClick(Press, pt.x - boardRect.left, pt.y - boardRect.top, TRUE)) break;
+    if(SeekGraphClick(Press, pt.x - boardRect.left, pt.y - boardRect.top, 1)) break;
     MovePV(pt.x - boardRect.left, pt.y - boardRect.top, boardRect.bottom - boardRect.top);
     if ((appData.animateDragging || appData.highlightDragging)
 	&& (wParam & MK_LBUTTON)
