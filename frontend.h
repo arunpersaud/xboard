@@ -155,6 +155,14 @@ void CmailSigHandlerCallBack P((InputSourceRef isr, VOIDSTAR closure,
 
 extern ProcRef cmailPR;
 
+/* in xgamelist.c or winboard.c */
+void GLT_ClearList();
+void GLT_DeSelectList();
+void GLT_AddToList( char *name );
+Boolean GLT_GetFromList( int index, char *name );
+
+extern char lpUserGLT[];
+
 /* these are in wgamelist.c */
 void GameListPopUp P((FILE *fp, char *filename));
 void GameListPopDown P((void));

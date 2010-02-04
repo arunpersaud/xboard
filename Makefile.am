@@ -12,7 +12,6 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 common.h \
 		 frontend.h \
 	  	 gamelist.c \
-	  	 gamelistopt.c \
 	 	 gettext.h  \
 		 lists.c lists.h \
 		 moves.c moves.h \
@@ -25,7 +24,6 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xengineoutput.c \
 		 evalgraph.c evalgraph.h xevalgraph.c \
 	 	 xgamelist.c xgamelist.h\
-	  	 xgamelistopt.c \
 		 xhistory.c  xhistory.h \
 		 xoptions.c \
 		 $(ZPY)
