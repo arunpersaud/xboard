@@ -2464,14 +2464,14 @@ read_from_ics(isr, closure, data, count, error)
 		if(channel >= 0) // channel broadcast; look if there is a chatbox for this channel
 		for(p=0; p<MAX_CHAT; p++) {
 		    if(channel == atoi(chatPartner[p])) {
-		    talker[0] = '['; strcat(talker, "]");
+		    talker[0] = '['; strcat(talker, "] ");
 		    chattingPartner = p; break;
 		    }
 		} else
 		if(buf[i-3] == 'r') // whisper; look if there is a WHISPER chatbox
 		for(p=0; p<MAX_CHAT; p++) {
 		    if(!strcmp("WHISPER", chatPartner[p])) {
-			talker[0] = '['; strcat(talker, "]");
+			talker[0] = '['; strcat(talker, "] ");
 			chattingPartner = p; break;
 		    }
 		}
@@ -2483,7 +2483,7 @@ read_from_ics(isr, closure, data, count, error)
 		if(chattingPartner<0) i = oldi; else {
 		    started = STARTED_COMMENT;
 		    parse_pos = 0; parse[0] = NULLCHAR;
-		    savingComment = TRUE;
+		    savingComment = 3 + chattingPartner; // counts as TRUE
 		    suppressKibitz = TRUE;
 		}
 	    } // [HGM] chat: end of patch
@@ -2678,6 +2678,8 @@ read_from_ics(isr, closure, data, count, error)
 		    memcpy(parse, &buf[oldi], parse_pos);
 		    parse[parse_pos] = NULLCHAR;
 		    started = STARTED_COMMENT;
+		    if(savingComment >= 3) // [HGM] chat: continuation of line for chat box
+		        chattingPartner = savingComment - 3; // kludge to remember the box
 		} else {
 		    started = STARTED_CHATTER;
 		}
