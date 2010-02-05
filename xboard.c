@@ -3833,14 +3833,18 @@ SetHighlights(fromX, fromY, toX, toY)
 	if (hi1X >= 0 && hi1Y >= 0) {
 	    drawHighlight(hi1X, hi1Y, lineGC);
 	}
+    } // [HGM] first erase both, then draw new!
+    if (hi2X != toX || hi2Y != toY) {
+	if (hi2X >= 0 && hi2Y >= 0) {
+	    drawHighlight(hi2X, hi2Y, lineGC);
+	}
+    }
+    if (hi1X != fromX || hi1Y != fromY) {
 	if (fromX >= 0 && fromY >= 0) {
 	    drawHighlight(fromX, fromY, highlineGC);
 	}
     }
     if (hi2X != toX || hi2Y != toY) {
-	if (hi2X >= 0 && hi2Y >= 0) {
-	    drawHighlight(hi2X, hi2Y, lineGC);
-	}
 	if (toX >= 0 && toY >= 0) {
 	    drawHighlight(toX, toY, highlineGC);
 	}
