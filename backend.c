@@ -2472,6 +2472,8 @@ read_from_ics(isr, closure, data, count, error)
 		} else
 		if(looking_at(buf, &i, "kibitzed to *\n") && atoi(star_match[0])) {
 		    // suppress the acknowledgements of our own autoKibitz
+		    char *p;
+		    if(p = strchr(star_match[0], ' ')) p[1] = NULLCHAR; // clip off "players)" on FICS
 		    SendToPlayer(star_match[0], strlen(star_match[0]));
 		    looking_at(buf, &i, "*% "); // eat prompt
 		    next_out = i;
