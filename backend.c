@@ -6617,14 +6617,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	strcat(machineMove, "\n");
 	strcpy(moveList[forwardMostMove], machineMove);
 
-        /* [AS] Save move info and clear stats for next move */
-        pvInfoList[ forwardMostMove ].score = programStats.score;
-        pvInfoList[ forwardMostMove ].depth = programStats.depth;
-        pvInfoList[ forwardMostMove ].time =  programStats.time; // [HGM] PGNtime: take time from engine stats
-        ClearProgramStats();
-        thinkOutput[0] = NULLCHAR;
-        hiddenThinkOutputState = 0;
-
 	MakeMove(fromX, fromY, toX, toY, promoChar);/*updates forwardMostMove*/
 
         /* [AS] Adjudicate game if needed (note: remember that forwardMostMove now points past the last move) */
@@ -6683,6 +6675,14 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	  }
 	}
 #endif
+
+        /* [AS] Save move info and clear stats for next move */
+        pvInfoList[ forwardMostMove-1 ].score = programStats.score;
+        pvInfoList[ forwardMostMove-1 ].depth = programStats.depth;
+        pvInfoList[ forwardMostMove-1 ].time =  programStats.time; // [HGM] PGNtime: take time from engine stats
+        ClearProgramStats();
+        thinkOutput[0] = NULLCHAR;
+        hiddenThinkOutputState = 0;
 
 	bookHit = NULL;
 	if (gameMode == TwoMachinesPlay) {
