@@ -5549,6 +5549,55 @@ OKToStartUserMove(x, y)
     return TRUE;
 }
 
+Boolean
+OnlyMove(int *x, int *y) {
+    DisambiguateClosure cl;
+    if (appData.zippyPlay) return FALSE;
+    switch(gameMode) {
+      case MachinePlaysBlack:
+      case IcsPlayingWhite:
+      case BeginningOfGame:
+	if(!WhiteOnMove(currentMove)) return FALSE;
+	break;
+      case MachinePlaysWhite:
+      case IcsPlayingBlack:
+	if(WhiteOnMove(currentMove)) return FALSE;
+	break;
+      default:
+	return FALSE;
+    }
+    cl.pieceIn = EmptySquare; 
+    cl.rfIn = *y;
+    cl.ffIn = *x;
+    cl.rtIn = -1;
+    cl.ftIn = -1;
+    cl.promoCharIn = NULLCHAR;
+    Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
+    if(cl.kind == NormalMove) {
+      fromX = cl.ff;
+      fromY = cl.rf;
+      *x = cl.ft;
+      *y = cl.rt;
+      return TRUE;
+    }
+    if(cl.kind != ImpossibleMove) return FALSE;
+    cl.pieceIn = EmptySquare;
+    cl.rfIn = -1;
+    cl.ffIn = -1;
+    cl.rtIn = *y;
+    cl.ftIn = *x;
+    cl.promoCharIn = NULLCHAR;
+    Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
+    if(cl.kind == NormalMove) {
+      fromX = cl.ff;
+      fromY = cl.rf;
+      *x = cl.ft;
+      *y = cl.rt;
+      return TRUE;
+    }
+    return FALSE;
+}
+
 FILE *lastLoadGameFP = NULL, *lastLoadPositionFP = NULL;
 int lastLoadGameNumber = 0, lastLoadPositionNumber = 0;
 int lastLoadGameUseList = FALSE;
@@ -6039,6 +6088,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	return;
 
     if (fromX == -1) {
+      if(!appData.oneClick || !OnlyMove(&x, &y)) {
 	if (clickType == Press) {
 	    /* First square */
 	    if (OKToStartUserMove(x, y)) {
@@ -6053,6 +6103,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    }
 	}
 	return;
+      }
     }
 
     /* fromX != -1 */

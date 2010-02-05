@@ -542,6 +542,7 @@ ArgDescriptor argDescriptors[] = {
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
 
   /* [HGM] board-size, adjudication and misc. options */
+  { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },
   { "boardWidth", ArgInt, (void *) &appData.NrFiles, TRUE, (ArgIniType) -1 },
   { "boardHeight", ArgInt, (void *) &appData.NrRanks, TRUE, (ArgIniType) -1 },
   { "holdingsSize", ArgInt, (void *) &appData.holdingsSize, TRUE, (ArgIniType) -1 },

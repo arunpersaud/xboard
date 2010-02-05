@@ -448,6 +448,7 @@ typedef struct {
     char *cmailGameName; /* xboard only */
     Boolean alwaysPromoteToQueen;
     Boolean oldSaveStyle;
+    Boolean oneClick;
     Boolean quietPlay;
     Boolean showThinking;
     Boolean ponderNextMove;
