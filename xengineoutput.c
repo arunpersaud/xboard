@@ -504,6 +504,8 @@ void ResizeWindowControls(mode)
 void 
 EngineOutputPopUp()
 {
+  return;
+  //TODO
     Arg args[16];
     int j;
     Widget edit;
@@ -548,6 +550,9 @@ EngineOutputPopUp()
 
 void EngineOutputPopDown()
 {
+  return;
+  //TODO
+
     Arg args[16];
     int j;
 

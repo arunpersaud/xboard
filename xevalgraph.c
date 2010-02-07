@@ -368,6 +368,9 @@ Widget EvalGraphCreate(name)
 void 
 EvalGraphPopUp()
 {
+  return;
+
+  //TODO
     Arg args[16];
     int j;
     Widget edit;
@@ -405,6 +408,9 @@ EvalGraphPopUp()
 
 void EvalGraphPopDown()
 {
+  return; 
+  //TODO
+  
     Arg args[16];
     int j;
 

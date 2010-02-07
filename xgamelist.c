@@ -439,7 +439,7 @@ GameListOptionsPopDown()
     XtPopdown(gameListOptShell);
     XtDestroyWidget(gameListOptShell);
     gameListOptShell = 0;
-    XtSetKeyboardFocus(shellWidget, formWidget);
+    //    XtSetKeyboardFocus(shellWidget, formWidget);
 }
 
 void
@@ -512,9 +512,9 @@ GameListOptionsCreate()
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNallowShellResize, True);  j++;
-    shell = gameListOptShell =
-      XtCreatePopupShell("Game-list options", transientShellWidgetClass,
-			 shellWidget, args, j);
+    //    shell = gameListOptShell =
+      //      XtCreatePopupShell("Game-list options", transientShellWidgetClass,
+      //			 shellWidget, args, j);
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, shell,
 			    layoutArgs, XtNumber(layoutArgs));
@@ -591,7 +591,7 @@ GameListOptionsCreate()
     GLT_TagsToList(lpUserGLT);
 
     XtRealizeWidget(shell);
-    CatchDeleteWindow(shell, "GameListOptionsPopDown");
+    //    CatchDeleteWindow(shell, "GameListOptionsPopDown");
 
     return shell;
 }
