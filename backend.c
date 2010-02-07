@@ -190,7 +190,7 @@ void ParseGameHistory P((char *game));
 void ParseBoard12 P((char *string));
 void KeepAlive P((void));
 void StartClocks P((void));
-void SwitchClocks P((void));
+void SwitchClocks P((int nr));
 void StopClocks P((void));
 void ResetClocks P((void));
 char *PGNDate P((void));
@@ -3318,10 +3318,10 @@ read_from_ics(isr, closure, data, count, error)
 		    looking_at(buf, &i, "It is not your move")) {
 		    /* Illegal move */
 		    if (ics_user_moved && forwardMostMove > backwardMostMove) { // only backup if we already moved
-			currentMove = --forwardMostMove;
+			currentMove = forwardMostMove-1;
 			DisplayMove(currentMove - 1); /* before DMError */
 			DrawPosition(FALSE, boards[currentMove]);
-			SwitchClocks();
+			SwitchClocks(forwardMostMove-1); // [HGM] race
 			DisplayBothClocks();
 		    }
 		    DisplayMoveError(_("Illegal move (rejected by ICS)")); // [HGM] but always relay error msg
@@ -7287,9 +7287,9 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	    gameMode = EditGame;
 	    ModeHighlight();
 	}
-	currentMove = --forwardMostMove;
+	currentMove = forwardMostMove-1;
 	DisplayMove(currentMove-1); /* before DisplayMoveError */
-	SwitchClocks();
+	SwitchClocks(forwardMostMove-1); // [HGM] race
 	DisplayBothClocks();
 	sprintf(buf1, _("Illegal move \"%s\" (rejected by %s chess program)"),
 		parseList[currentMove], cps->which);
@@ -8362,8 +8362,8 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
     }
     CopyBoard(boards[forwardMostMove+1], boards[forwardMostMove]);
     ApplyMove(fromX, fromY, toX, toY, promoChar, boards[forwardMostMove+1]);
-    forwardMostMove++; // [HGM] bare: moved to after ApplyMove, to make sure clock interrupt finds complete board
-    SwitchClocks(); // uses forwardMostMove, so must be done after incrementing it !
+    // forwardMostMove++; // [HGM] bare: moved to after ApplyMove, to make sure clock interrupt finds complete board
+    SwitchClocks(forwardMostMove+1); // [HGM] race: incrementing move nr inside
     timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
     timeRemaining[1][forwardMostMove] = blackTimeRemaining;
     gameInfo.result = GameUnfinished;
@@ -14032,7 +14032,7 @@ DecrementClocks()
    from the color that is *not* on move now.
 */
 void
-SwitchClocks()
+SwitchClocks(int newMoveNr)
 {
     long lastTickLength;
     TimeMark now;
@@ -14042,7 +14042,7 @@ SwitchClocks()
 
     if (StopClockTimer() && appData.clockMode) {
 	lastTickLength = SubtractTimeMarks(&now, &tickStartTM);
-	if (WhiteOnMove(forwardMostMove)) {
+	if (!WhiteOnMove(forwardMostMove)) {
 	    if(blackNPS >= 0) lastTickLength = 0;
 	    blackTimeRemaining -= lastTickLength;
            /* [HGM] PGNtime: save time for PGN file if engine did not give it */
@@ -14059,6 +14059,7 @@ SwitchClocks()
 	}
 	flagged = CheckFlags();
     }
+    forwardMostMove = newMoveNr; // [HGM] race: change stm when no timer interrupt scheduled
     CheckTimeControl();
 
     if (flagged || !appData.clockMode) return;
