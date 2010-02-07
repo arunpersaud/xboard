@@ -5552,7 +5552,7 @@ OKToStartUserMove(x, y)
 }
 
 Boolean
-OnlyMove(int *x, int *y) {
+OnlyMove(int *x, int *y, Boolean captures) {
     DisambiguateClosure cl;
     if (appData.zippyPlay) return FALSE;
     switch(gameMode) {
@@ -5576,6 +5576,7 @@ OnlyMove(int *x, int *y) {
     cl.promoCharIn = NULLCHAR;
     Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
     if( cl.kind == NormalMove ||
+	cl.kind == AmbiguousMove && captures && cl.captures == 1 ||
 	cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen ||
 	cl.kind == WhitePromotionKnight || cl.kind == BlackPromotionKnight ||
 	cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) {
@@ -5594,6 +5595,7 @@ OnlyMove(int *x, int *y) {
     cl.promoCharIn = NULLCHAR;
     Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
     if( cl.kind == NormalMove ||
+	cl.kind == AmbiguousMove && captures && cl.captures == 1 ||
 	cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen ||
 	cl.kind == WhitePromotionKnight || cl.kind == BlackPromotionKnight ||
 	cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) {
@@ -6099,7 +6101,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     autoQueen = appData.alwaysPromoteToQueen;
 
     if (fromX == -1) {
-      if(!appData.oneClick || !OnlyMove(&x, &y)) {
+      if(!appData.oneClick || !OnlyMove(&x, &y, FALSE)) {
 	if (clickType == Press) {
 	    /* First square */
 	    if (OKToStartUserMove(x, y)) {
@@ -6140,6 +6142,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	     !(fromP == BlackKing && toP == BlackRook && frc))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
+	   if(!second || !OnlyMove(&x, &y, TRUE)) {
 	    if (appData.highlightDragging) {
 		SetHighlights(x, y, -1, -1);
 	    } else {
@@ -6152,6 +6155,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		DragPieceBegin(xPix, yPix);
 	    }
 	    return;
+	   }
 	}
 	// ignore clicks on holdings
 	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;

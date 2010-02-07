@@ -1229,6 +1229,7 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
 	cl->rt = wildCard ? cl->rtIn : rt;
 	cl->ft = wildCard ? cl->ftIn : ft;
 	cl->kind = kind;
+	cl->captures += (board[cl->rt][cl->ft] != EmptySquare); // [HGM] oneclick: count captures
     }
 }
 
@@ -1239,7 +1240,7 @@ void Disambiguate(board, flags, closure)
 {
     int illegal = 0; char c = closure->promoCharIn;
 
-    closure->count = 0;
+    closure->count = closure->captures = 0;
     closure->rf = closure->ff = closure->rt = closure->ft = 0;
     closure->kind = ImpossibleMove;
     if (appData.debugMode) {
