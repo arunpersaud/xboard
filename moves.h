@@ -157,6 +157,7 @@ typedef struct {
     int rf, ff, rt, ft;
     int promoChar; /* 'q' if a promotion and promoCharIn was NULLCHAR */
     int count;     /* Number of possibilities found */
+    int captures;  /* [HGM] oneclick: number of matching captures */
 } DisambiguateClosure;
 
 /* Disambiguate a partially-known move */

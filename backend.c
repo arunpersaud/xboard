@@ -190,7 +190,7 @@ void ParseGameHistory P((char *game));
 void ParseBoard12 P((char *string));
 void KeepAlive P((void));
 void StartClocks P((void));
-void SwitchClocks P((void));
+void SwitchClocks P((int nr));
 void StopClocks P((void));
 void ResetClocks P((void));
 char *PGNDate P((void));
@@ -3388,10 +3388,10 @@ read_from_ics(isr, closure, data, count, error)
 		    looking_at(buf, &i, "It is not your move")) {
 		    /* Illegal move */
 		    if (ics_user_moved && forwardMostMove > backwardMostMove) { // only backup if we already moved
-			currentMove = --forwardMostMove;
+			currentMove = forwardMostMove-1;
 			DisplayMove(currentMove - 1); /* before DMError */
 			DrawPosition(FALSE, boards[currentMove]);
-			SwitchClocks();
+			SwitchClocks(forwardMostMove-1); // [HGM] race
 			DisplayBothClocks();
 		    }
 		    DisplayMoveError(_("Illegal move (rejected by ICS)")); // [HGM] but always relay error msg
@@ -5408,6 +5408,8 @@ SendBoard(cps, moveNum)
     setboardSpoiledMachineBlack = 0; /* [HGM] assume WB 4.2.7 already solves this after sending setboard */
 }
 
+static int autoQueen; // [HGM] oneclick
+
 int
 HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 {
@@ -5478,7 +5480,7 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 	*promoChoice = PieceToChar(BlackFerz);  // no choice
 	return FALSE;
     }
-    if(appData.alwaysPromoteToQueen) { // predetermined
+    if(autoQueen) { // predetermined
 	if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantLosers)
 	     *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
 	else *promoChoice = PieceToChar(BlackQueen);
@@ -5620,7 +5622,7 @@ OKToStartUserMove(x, y)
 }
 
 Boolean
-OnlyMove(int *x, int *y) {
+OnlyMove(int *x, int *y, Boolean captures) {
     DisambiguateClosure cl;
     if (appData.zippyPlay) return FALSE;
     switch(gameMode) {
@@ -5643,7 +5645,11 @@ OnlyMove(int *x, int *y) {
     cl.ftIn = -1;
     cl.promoCharIn = NULLCHAR;
     Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
-    if(cl.kind == NormalMove) {
+    if( cl.kind == NormalMove ||
+	cl.kind == AmbiguousMove && captures && cl.captures == 1 ||
+	cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen ||
+	cl.kind == WhitePromotionKnight || cl.kind == BlackPromotionKnight ||
+	cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) {
       fromX = cl.ff;
       fromY = cl.rf;
       *x = cl.ft;
@@ -5658,11 +5664,16 @@ OnlyMove(int *x, int *y) {
     cl.ftIn = *x;
     cl.promoCharIn = NULLCHAR;
     Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
-    if(cl.kind == NormalMove) {
+    if( cl.kind == NormalMove ||
+	cl.kind == AmbiguousMove && captures && cl.captures == 1 ||
+	cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen ||
+	cl.kind == WhitePromotionKnight || cl.kind == BlackPromotionKnight ||
+	cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) {
       fromX = cl.ff;
       fromY = cl.rf;
       *x = cl.ft;
       *y = cl.rt;
+      autoQueen = TRUE; // act as if autoQueen on when we click to-square
       return TRUE;
     }
     return FALSE;
@@ -6262,8 +6273,10 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
               || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
 	return;
 
+    autoQueen = appData.alwaysPromoteToQueen;
+
     if (fromX == -1) {
-      if(!appData.oneClick || !OnlyMove(&x, &y)) {
+      if(!appData.oneClick || !OnlyMove(&x, &y, FALSE)) {
 	if (clickType == Press) {
 	    /* First square */
 	    if (OKToStartUserMove(x, y)) {
@@ -6304,6 +6317,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	     !(fromP == BlackKing && toP == BlackRook && frc))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
+	   if(!second || !OnlyMove(&x, &y, TRUE)) {
 	    if (appData.highlightDragging) {
 		SetHighlights(x, y, -1, -1);
 	    } else {
@@ -6316,6 +6330,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		DragPieceBegin(xPix, yPix);
 	    }
 	    return;
+	   }
 	}
 	// ignore clicks on holdings
 	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;
@@ -7457,9 +7472,9 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	    gameMode = EditGame;
 	    ModeHighlight();
 	}
-	currentMove = --forwardMostMove;
+	currentMove = forwardMostMove-1;
 	DisplayMove(currentMove-1); /* before DisplayMoveError */
-	SwitchClocks();
+	SwitchClocks(forwardMostMove-1); // [HGM] race
 	DisplayBothClocks();
 	sprintf(buf1, _("Illegal move \"%s\" (rejected by %s chess program)"),
 		parseList[currentMove], cps->which);
@@ -8532,8 +8547,8 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
     }
     CopyBoard(boards[forwardMostMove+1], boards[forwardMostMove]);
     ApplyMove(fromX, fromY, toX, toY, promoChar, boards[forwardMostMove+1]);
-    forwardMostMove++; // [HGM] bare: moved to after ApplyMove, to make sure clock interrupt finds complete board
-    SwitchClocks(); // uses forwardMostMove, so must be done after incrementing it !
+    // forwardMostMove++; // [HGM] bare: moved to after ApplyMove, to make sure clock interrupt finds complete board
+    SwitchClocks(forwardMostMove+1); // [HGM] race: incrementing move nr inside
     timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
     timeRemaining[1][forwardMostMove] = blackTimeRemaining;
     gameInfo.result = GameUnfinished;
@@ -8899,6 +8914,8 @@ GameEnds(result, resultDetails, whosays)
       fprintf(debugFP, "GameEnds(%d, %s, %d)\n",
 	      result, resultDetails ? resultDetails : "(null)", whosays);
     }
+
+    fromX = fromY = -1; // [HGM] abort any move the user is entering.
 
     if (appData.icsActive && (whosays == GE_ENGINE || whosays >= GE_ENGINE1)) {
 	/* If we are playing on ICS, the server decides when the
@@ -14289,7 +14306,7 @@ DecrementClocks()
    from the color that is *not* on move now.
 */
 void
-SwitchClocks()
+SwitchClocks(int newMoveNr)
 {
     long lastTickLength;
     TimeMark now;
@@ -14299,7 +14316,7 @@ SwitchClocks()
 
     if (StopClockTimer() && appData.clockMode) {
 	lastTickLength = SubtractTimeMarks(&now, &tickStartTM);
-	if (WhiteOnMove(forwardMostMove)) {
+	if (!WhiteOnMove(forwardMostMove)) {
 	    if(blackNPS >= 0) lastTickLength = 0;
 	    blackTimeRemaining -= lastTickLength;
            /* [HGM] PGNtime: save time for PGN file if engine did not give it */
@@ -14316,6 +14333,7 @@ SwitchClocks()
 	}
 	flagged = CheckFlags();
     }
+    forwardMostMove = newMoveNr; // [HGM] race: change stm when no timer interrupt scheduled
     CheckTimeControl();
 
     if (flagged || !appData.clockMode) return;
