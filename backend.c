@@ -242,6 +242,8 @@ int endPV = -1;
 static int exiting = 0; /* [HGM] moved to top */
 static int setboardSpoiledMachineBlack = 0 /*, errorExitFlag = 0*/;
 int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos */
+Board partnerBoard;     /* [HGM] bughouse: for peeking at partner game          */
+Boolean partnerUp;
 char endingGame = 0;    /* [HGM] crash: flag to prevent recursion of GameEnds() */
 int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     */
 VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
@@ -3766,6 +3768,26 @@ ParseBoard12(string)
 	break;
     }
     
+    if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
+	 && newGameMode == IcsObserving && appData.bgObserve) {
+      // [HGM] bughouse: don't act on alien boards while we play. Just parse the board and save it */
+      char buf[MSG_SIZ];
+      for (k = 0; k < ranks; k++) {
+        for (j = 0; j < files; j++)
+          board[k][j+gameInfo.holdingsWidth] = CharToPiece(board_chars[(ranks-1-k)*(files+1) + j]);
+        if(gameInfo.holdingsWidth > 1) {
+             board[k][0] = board[k][BOARD_WIDTH-1] = EmptySquare;
+             board[k][1] = board[k][BOARD_WIDTH-2] = (ChessSquare) 0;;
+        }
+      }
+      CopyBoard(partnerBoard, board);
+      if(partnerUp) DrawPosition(FALSE, partnerBoard);
+      sprintf(buf, "W: %d:%d B: %d:%d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
+		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
+      DisplayMessage(buf, "");
+      return;
+    }
+
     /* Modify behavior for initial board display on move listing
        of wild games.
        */
@@ -6271,6 +6293,13 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
     if(seekGraphUp) { // [HGM] seekgraph
 	if(action == Press)   SeekGraphClick(Press, x, y, 2); // 2 indicates right-click: no pop-down on miss
 	if(action == Release) SeekGraphClick(Release, x, y, 2); // and no challenge on hit
+	return -2;
+    }
+
+    if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
+	 && !appData.zippyPlay && appData.bgObserve) { // [HGM] bughouse: show background game
+	if(action == Press)   { flipView = !flipView; DrawPosition(TRUE, partnerBoard); partnerUp = TRUE; } else
+	if(action == Release) { flipView = !flipView; DrawPosition(TRUE, boards[currentMove]); partnerUp = FALSE; }
 	return -2;
     }
 
