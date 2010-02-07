@@ -643,6 +643,7 @@ void GLT_AddToList(char *name)
 Boolean GLT_GetFromList(int index, char *name)
 {
     strcpy(name, strings[index]);
+    return TRUE;
 }
 
 void GLT_DeSelectList()
