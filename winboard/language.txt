@@ -255,7 +255,7 @@ HELP:ABOUT
 "About WinBoard"===""
 "Chessboard for Windows"===""
 "Copyright 1991 Digital Equipment Corporation"===""
-"Enhancements Copyright 1992-2009   Free Software Foundation"===""
+"Enhancements Copyright 1992-2010   Free Software Foundation"===""
 "Enhancements Copyright 2005\r\nAlessandro Scotti"===""
 
 OTHER DIALOGS (ALPHABETICALLY)
