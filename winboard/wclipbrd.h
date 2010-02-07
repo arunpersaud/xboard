@@ -1,7 +1,7 @@
 /*
  * wclipbrd.c -- Clipboard routines for WinBoard
  *
- * Copyright 2000,2009 Free Software Foundation, Inc.
+ * Copyright 2000, 2009, 2010 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *

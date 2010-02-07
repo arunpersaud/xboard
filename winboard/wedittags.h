@@ -1,7 +1,7 @@
 /*
  * wedittags.h -- EditTags window for WinBoard
  *
- * Copyright 1995,2009 Free Software Foundation, Inc.
+ * Copyright 1995, 2009, 2010 Free Software Foundation, Inc.
  *
  * Enhancements Copyright 2005 Alessandro Scotti
  *
