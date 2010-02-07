@@ -564,6 +564,7 @@ typedef struct {
     Boolean highlightMoveWithArrow;
     int highlightArrowColor;
     Boolean useStickyWindows;
+    Boolean bgObserve;   /* [HGM] bughouse */
     int adjudicateDrawMoves;
     Boolean autoDisplayComment;
     Boolean autoDisplayTags;

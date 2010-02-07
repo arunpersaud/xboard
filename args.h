@@ -559,6 +559,7 @@ ArgDescriptor argDescriptors[] = {
   { "trivialDraws", ArgBoolean, (void *) &appData.trivialDraws, TRUE, (ArgIniType) FALSE },
   { "ruleMoves", ArgInt, (void *) &appData.ruleMoves, TRUE, (ArgIniType) 51 },
   { "repeatsToDraw", ArgInt, (void *) &appData.drawRepeats, TRUE, (ArgIniType) 6 },
+  { "backgroundObserve", ArgBoolean, (void *) &appData.bgObserve, TRUE, (ArgIniType) FALSE },
   { "autoKibitz", ArgTrue, (void *) &appData.autoKibitz, FALSE, INVALID },
   { "engineDebugOutput", ArgInt, (void *) &appData.engineComments, FALSE, (ArgIniType) 1 },
   { "userName", ArgString, (void *) &appData.userName, FALSE, INVALID },
