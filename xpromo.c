@@ -135,6 +135,9 @@ Widget promoShell;
 
 void PromoPopDown()
 {
+  return;
+  //  TODO
+  
     if (!promoShell) return;
     XtPopdown(promoShell);
     XtDestroyWidget(promoShell);
@@ -186,7 +189,7 @@ void DrawPromoSquare(row, column, piece)
     if (piece == EmptySquare) {
 	BlankSquare(x, y, square_color, piece, promoWindow);
     } else {
-	drawfunc = ChooseDrawFunc();
+     //	drawfunc = ChooseDrawFunc();
 	drawfunc(piece, square_color, x, y, promoWindow);
     }
 
@@ -303,6 +306,9 @@ Widget PromoCreate(name, x, y, clear)
      int x, y;
      Boolean clear;
 {
+  return;
+  //  TODO
+
     Arg args[16];
     Widget shell, layout, form, panel, b_clear, b_grant, b_revoke;
     int j, h, w;
@@ -388,7 +394,7 @@ PromoDialog(int h, int w, Board b, Boolean clear, char *title, int x, int y)
 	promoShell =
 	  PromoCreate(title, x, y, clear);
 	XtRealizeWidget(promoShell);
-	CatchDeleteWindow(promoShell, "PromoPopDown");
+	//	CatchDeleteWindow(promoShell, "PromoPopDown");
 	InitializePromoDialog();
     }
 
