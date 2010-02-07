@@ -56,6 +56,64 @@ static ListGame *GameListCreate P((void));
 static void GameListFree P((List *));
 static int GameListNewGame P((ListGame **));
 
+/* [AS] Wildcard pattern matching */
+Boolean
+HasPattern( const char * text, const char * pattern )
+{
+    while( *pattern != '\0' ) {
+        if( *pattern == '*' ) {
+            while( *pattern == '*' ) {
+                pattern++;
+            }
+
+            if( *pattern == '\0' ) {
+                return TRUE;
+            }
+
+            while( *text != '\0' ) {
+                if( HasPattern( text, pattern ) ) {
+                    return TRUE;
+                }
+                text++;
+            }
+        }
+        else if( (*pattern == *text) || ((*pattern == '?') && (*text != '\0')) ) {
+            pattern++;
+            text++;
+            continue;
+        }
+
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+Boolean
+SearchPattern( const char * text, const char * pattern )
+{
+    Boolean result = TRUE;
+
+    if( pattern != NULL && *pattern != '\0' ) {
+        if( *pattern == '*' ) {
+            result = HasPattern( text, pattern );
+        }
+        else {
+            result = FALSE;
+
+            while( *text != '\0' ) {
+                if( HasPattern( text, pattern ) ) {
+                    result = TRUE;
+                    break;
+                }
+                text++;
+            }
+        }
+    }
+
+    return result;
+}
+
 /* Delete a ListGame; implies removint it from a list.
  */
 static void GameListDeleteGame(listGame)
@@ -438,3 +496,115 @@ char * GameListLineFull( int number, GameInfo * gameInfo )
 
     return ret;
 }
+
+// --------------------------------------- Game-List options dialog --------------------------------------
+
+// back-end
+typedef struct {
+    char id;
+    char * name;
+} GLT_Item;
+
+// back-end: translation table tag id-char <-> full tag name
+static GLT_Item GLT_ItemInfo[] = {
+    { GLT_EVENT,      "Event" },
+    { GLT_SITE,       "Site" },
+    { GLT_DATE,       "Date" },
+    { GLT_ROUND,      "Round" },
+    { GLT_PLAYERS,    "Players" },
+    { GLT_RESULT,     "Result" },
+    { GLT_WHITE_ELO,  "White Rating" },
+    { GLT_BLACK_ELO,  "Black Rating" },
+    { GLT_TIME_CONTROL,"Time Control" },
+    { GLT_VARIANT,    "Variant" },
+    { GLT_OUT_OF_BOOK,PGN_OUT_OF_BOOK },
+    { GLT_RESULT_COMMENT, "Result Comment" }, // [HGM] rescom
+    { 0, 0 }
+};
+
+char lpUserGLT[64];
+
+// back-end: convert the tag id-char to a full tag name
+char * GLT_FindItem( char id )
+{
+    char * result = 0;
+
+    GLT_Item * list = GLT_ItemInfo;
+
+    while( list->id != 0 ) {
+        if( list->id == id ) {
+            result = list->name;
+            break;
+        }
+
+        list++;
+    }
+
+    return result;
+}
+
+// back-end: build the list of tag names
+void
+GLT_TagsToList( char * tags )
+{
+    char * pc = tags;
+
+    GLT_ClearList();
+
+    while( *pc ) {
+        GLT_AddToList( GLT_FindItem(*pc) );
+        pc++;
+    }
+
+    GLT_AddToList( "     --- Hidden tags ---     " );
+
+    pc = GLT_ALL_TAGS;
+
+    while( *pc ) {
+        if( strchr( tags, *pc ) == 0 ) {
+            GLT_AddToList( GLT_FindItem(*pc) );
+        }
+        pc++;
+    }
+
+    GLT_DeSelectList();
+}
+
+// back-end: retrieve item from dialog and translate to id-char
+char
+GLT_ListItemToTag( int index )
+{
+    char result = '\0';
+    char name[128];
+
+    GLT_Item * list = GLT_ItemInfo;
+
+    if( GLT_GetFromList(index, name) ) {
+        while( list->id != 0 ) {
+            if( strcmp( list->name, name ) == 0 ) {
+                result = list->id;
+                break;
+            }
+
+            list++;
+        }
+    }
+
+    return result;
+}
+
+// back-end: add items id-chars one-by-one to temp tags string
+void
+GLT_ParseList()
+{
+    char * pc = lpUserGLT;
+    int idx = 0;
+    char id;
+
+    do {
+	id = GLT_ListItemToTag( idx );
+	*pc++ = id;
+	idx++;
+    } while( id != '\0' );
+}
+

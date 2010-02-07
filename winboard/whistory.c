@@ -2,6 +2,7 @@
  * Move history for WinBoard
  *
  * Author: Alessandro Scotti (Dec 2005)
+ * front-end code split off by HGM
  *
  * Copyright 2005 Alessandro Scotti
  *
@@ -25,11 +26,11 @@
 
 #include "config.h"
 
-#include <windows.h> /* required for all Windows applications */
-#include <richedit.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <windows.h> /* required for all Windows applications */
+#include <richedit.h>
 #include <commdlg.h>
 #include <dlgs.h>
 
@@ -37,51 +38,30 @@
 #include "frontend.h"
 #include "backend.h"
 #include "winboard.h"
-
 #include "wsnap.h"
 
-/* Module globals */
-typedef char MoveHistoryString[ MOVE_LEN*2 ];
-static BOOLEAN moveHistoryDialogUp = FALSE;
-
-static int lastFirst = 0;
-static int lastLast = 0;
-static int lastCurrent = -1;
-
-static char lastLastMove[ MOVE_LEN ];
-
-static MoveHistoryString * currMovelist;
-static ChessProgramStats_Move * currPvInfo;
-static int currFirst = 0;
-static int currLast = 0;
-static int currCurrent = -1;
-
-typedef struct {
-    int memoOffset;
-    int memoLength;
-} HistoryMove;
-
-static HistoryMove histMoves[ MAX_MOVES ];
-
-#define WM_REFRESH_HISTORY  (WM_USER+4657)
+// templates for calls into back-end
+void RefreshMemoContent P((void));
+void MemoContentUpdated P((void));
+void FindMoveByCharIndex P(( int char_index ));
 
 #define DEFAULT_COLOR       0xFFFFFFFF
 
 #define H_MARGIN            2
 #define V_MARGIN            2
 
-/* Note: in the following code a "Memo" is a Rich Edit control (it's Delphi lingo) */
+static BOOLEAN moveHistoryDialogUp = FALSE;
 
-static VOID HighlightMove( int index, BOOL highlight )
+// ------------- low-level front-end actions called by MoveHistory back-end -----------------
+
+// low-level front-end, after calculating from & to is left to caller
+// it task is to highlight the indicated characters. (In WinBoard it makes them bold and blue.)
+void HighlightMove( int from, int to, Boolean highlight )
 {
-    if( index >= 0 && index < MAX_MOVES ) {
         CHARFORMAT cf;
         HWND hMemo = GetDlgItem( moveHistoryDialog, IDC_MoveHistory );
 
-        SendMessage( hMemo, 
-            EM_SETSEL, 
-            histMoves[index].memoOffset, 
-            histMoves[index].memoOffset + histMoves[index].memoLength );
+        SendMessage( hMemo, EM_SETSEL, from, to);
 
 
         /* Set style */
@@ -99,60 +79,24 @@ static VOID HighlightMove( int index, BOOL highlight )
         }
 
         SendMessage( hMemo, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &cf );
-    }
 }
 
-static BOOL OnlyCurrentPositionChanged()
-{
-    BOOL result = FALSE;
-
-    if( lastFirst >= 0 &&
-        lastLast >= lastFirst &&
-        lastCurrent >= lastFirst && 
-        currFirst == lastFirst &&
-        currLast == lastLast &&
-        currCurrent >= 0 &&
-        TRUE )
-    {
-        result = TRUE;
-
-        /* Special case: last move changed */
-        if( currCurrent == currLast-1 ) {
-            if( strcmp( currMovelist[currCurrent], lastLastMove ) != 0 ) {
-                result = FALSE;
-            }
-        }
-    }
-
-    return result;
-}
-
-static BOOL OneMoveAppended()
-{
-    BOOL result = FALSE;
-
-    if( lastCurrent >= 0 && lastCurrent >= lastFirst && lastLast >= lastFirst &&
-        currCurrent >= 0 && currCurrent >= currFirst && currLast >= currFirst &&
-        lastFirst == currFirst &&
-        lastLast == (currLast-1) &&
-        lastCurrent == (currCurrent-1) &&
-        currCurrent == (currLast-1) &&
-        TRUE )
-    {
-        result = TRUE;
-    }
-
-    return result;
-}
-
-static VOID ClearMemo()
+// low-level front-end, but replace Windows data types to make it callable from back-end
+// its task is to clear the contents of the move-history text edit
+void ClearHistoryMemo()
 {
     SendDlgItemMessage( moveHistoryDialog, IDC_MoveHistory, WM_SETTEXT, 0, (LPARAM) "" );
 }
 
-static int AppendToMemo( char * text, DWORD flags, DWORD color )
+// low-level front-end, made callable from back-end by passing flags and color numbers
+// its task is to append the given text to the text edit
+// the bold argument says 0 = normal, 1 = bold typeface
+// the colorNr argument says 0 = font-default, 1 = gray
+int AppendToHistoryMemo( char * text, int bold, int colorNr )
 {
     CHARFORMAT cf;
+    DWORD flags = bold ? CFE_BOLD :0;
+    DWORD color = colorNr ? GetSysColor(COLOR_GRAYTEXT) : DEFAULT_COLOR;
 
     HWND hMemo = GetDlgItem( moveHistoryDialog, IDC_MoveHistory );
 
@@ -184,98 +128,21 @@ static int AppendToMemo( char * text, DWORD flags, DWORD color )
     return cbTextLen;
 }
 
-static VOID AppendMoveToMemo( int index )
+// low-level front-end; wrapper for the code to scroll the mentioned character in view (-1 = end)
+void ScrollToCurrent(int caretPos)
 {
-    char buf[64];
-    DWORD flags = 0;
-    DWORD color = DEFAULT_COLOR;
-
-    if( index < 0 || index >= MAX_MOVES ) {
-        return;
-    }
-
-    buf[0] = '\0';
-
-    /* Move number */
-    if( (index % 2) == 0 ) {
-        sprintf( buf, "%d.%s ", (index / 2)+1, index & 1 ? ".." : "" );
-        AppendToMemo( buf, CFE_BOLD, DEFAULT_COLOR );
-    }
-
-    /* Move text */
-    strcpy( buf, SavePart( currMovelist[index] ) );
-    strcat( buf, " " );
-
-    histMoves[index].memoOffset = AppendToMemo( buf, flags, color );
-    histMoves[index].memoLength = strlen(buf)-1;
-
-    /* PV info (if any) */
-    if( appData.showEvalInMoveHistory && currPvInfo[index].depth > 0 ) {
-        sprintf( buf, "{%s%.2f/%d} ", 
-            currPvInfo[index].score >= 0 ? "+" : "",
-            currPvInfo[index].score / 100.0,
-            currPvInfo[index].depth );
-
-        AppendToMemo( buf, flags, 
-            color == DEFAULT_COLOR ? GetSysColor(COLOR_GRAYTEXT) : color );
-    }
-}
-
-static void RefreshMemoContent()
-{
-    int i;
-
-    ClearMemo();
-
-    for( i=currFirst; i<currLast; i++ ) {
-        AppendMoveToMemo( i );
-    }
-}
-
-static void MemoContentUpdated()
-{
-    int caretPos;
-
-    HighlightMove( lastCurrent, FALSE );
-    HighlightMove( currCurrent, TRUE );
-
-    lastFirst = currFirst;
-    lastLast = currLast;
-    lastCurrent = currCurrent;
-    lastLastMove[0] = '\0';
-
-    if( lastLast > 0 ) {
-        strcpy( lastLastMove, SavePart( currMovelist[lastLast-1] ) );
-    }
-
-    /* Deselect any text, move caret to end of memo */
-    if( currCurrent >= 0 ) {
-        caretPos = histMoves[currCurrent].memoOffset + histMoves[currCurrent].memoLength;
-    }
-    else {
+    if(caretPos < 0)
         caretPos = (int) SendDlgItemMessage( moveHistoryDialog, IDC_MoveHistory, WM_GETTEXTLENGTH, 0, 0 );
-    }
-
     SendDlgItemMessage( moveHistoryDialog, IDC_MoveHistory, EM_SETSEL, caretPos, caretPos );
 
     SendDlgItemMessage( moveHistoryDialog, IDC_MoveHistory, EM_SCROLLCARET, 0, 0 );
 }
 
-int FindMoveByCharIndex( int char_index )
-{
-    int index;
 
-    for( index=currFirst; index<currLast; index++ ) {
-        if( char_index >= histMoves[index].memoOffset &&
-            char_index <  (histMoves[index].memoOffset + histMoves[index].memoLength) )
-        {
-            return index;
-        }
-    }
+// ------------------------------ call backs --------------------------
 
-    return -1;
-}
-
+// front-end. Universal call-back for any event. Recognized vents are dialog creation, OK and cancel button-press
+// (dead code, as these buttons do not exist?), mouse clicks on the text edit, and moving / sizing
 LRESULT CALLBACK HistoryDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static SnapData sd;
@@ -333,11 +200,7 @@ LRESULT CALLBACK HistoryDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPAR
 
                 index = SendDlgItemMessage( hDlg, IDC_MoveHistory, EM_CHARFROMPOS, 0, (LPARAM) &pt );
 
-                index = FindMoveByCharIndex( index );
-
-                if( index >= 0 ) {
-                    ToNrEvent( index + 1 );
-                }
+                FindMoveByCharIndex( index ); // [HGM] also does the actual moving to it, now
 
                 /* Zap the message for good: apparently, returning non-zero is not enough */
                 lpMF->msg = WM_USER;
@@ -345,22 +208,6 @@ LRESULT CALLBACK HistoryDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPAR
                 return TRUE;
             }
         }
-        break;
-
-    case WM_REFRESH_HISTORY:
-        /* Update the GUI */
-        if( OnlyCurrentPositionChanged() ) {
-            /* Only "cursor" changed, no need to update memo content */
-        }
-        else if( OneMoveAppended() ) {
-            AppendMoveToMemo( currCurrent );
-        }
-        else {
-            RefreshMemoContent();
-        }
-
-        MemoContentUpdated();
-
         break;
 
     case WM_SIZE:
@@ -401,6 +248,9 @@ LRESULT CALLBACK HistoryDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPAR
     return FALSE;
 }
 
+// ------------ standard entry points into MoveHistory code -----------
+
+// front-end
 VOID MoveHistoryPopUp()
 {
   FARPROC lpProc;
@@ -424,8 +274,13 @@ VOID MoveHistoryPopUp()
   }
 
   moveHistoryDialogUp = TRUE;
+
+// Note that in WIndows creating the dialog causes its call-back to perform
+// RefreshMemoContent() and MemoContentUpdated() immediately after it is realized.
+// To port this to X we might have to do that from here.
 }
 
+// front-end
 VOID MoveHistoryPopDown()
 {
   CheckMenuItem(GetMenu(hwndMain), IDM_ShowMoveHistory, MF_UNCHECKED);
@@ -437,22 +292,14 @@ VOID MoveHistoryPopDown()
   moveHistoryDialogUp = FALSE;
 }
 
-VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo )
-{
-    /* [AS] Danger! For now we rely on the movelist parameter being a static variable! */
-
-    currMovelist = movelist;
-    currFirst = first;
-    currLast = last;
-    currCurrent = current;
-    currPvInfo = pvInfo;
-
-    if( moveHistoryDialog ) {
-        SendMessage( moveHistoryDialog, WM_REFRESH_HISTORY, 0, 0 );
-    }
-}
-
+// front-end
 Boolean MoveHistoryIsUp()
 {
     return moveHistoryDialogUp;
+}
+
+// front-end
+Boolean MoveHistoryDialogExists()
+{
+    return moveHistoryDialog != NULL;
 }

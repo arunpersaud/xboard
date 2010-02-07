@@ -91,6 +91,10 @@ void CommentPopDown P((void));
 void EditCommentPopUp P((int index, String title, String text));
 void ErrorPopDown P((void));
 int  EventToSquare P((int x, int limit));
+void DrawSeekAxis P(( int x, int y, int xTo, int yTo ));
+void DrawSeekBackground P(( int left, int top, int right, int bottom ));
+void DrawSeekText P((char *buf, int x, int y));
+void DrawSeekDot P((int x, int y, int color));
 
 void RingBell P((void));
 void PlayIcsWinSound P((void));
@@ -128,6 +132,7 @@ void PromotionPopUp P((void));
 void DragPieceBegin P((int x, int y));
 void DragPieceEnd P((int x, int y));
 void LeftClick P((ClickType c, int x, int y));
+int  RightClick P((ClickType c, int x, int y, int *col, int *row));
 
 int StartChildProcess P((char *cmdLine, char *dir, ProcRef *pr));
 void DestroyChildProcess P((ProcRef pr, int/*boolean*/ signal));
@@ -155,6 +160,14 @@ void CmailSigHandlerCallBack P((InputSourceRef isr, VOIDSTAR closure,
 				char *buf, int count, int error));
 
 extern ProcRef cmailPR;
+
+/* in xgamelist.c or winboard.c */
+void GLT_ClearList();
+void GLT_DeSelectList();
+void GLT_AddToList( char *name );
+Boolean GLT_GetFromList( int index, char *name );
+
+extern char lpUserGLT[];
 
 /* these are in wgamelist.c */
 void GameListPopUp P((FILE *fp, char *filename));

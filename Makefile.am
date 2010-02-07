@@ -40,13 +40,17 @@ EXTRA_DIST = pixmaps bitmaps svg sounds \
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @GTK_CFLAGS@
+
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @GTK_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"'
+
 
 info_TEXINFOS =  xboard.texi
 xboard_TEXINFOS =  copyright.texi 
 man6_MANS = xboard.man
 
-sysconf_DATA=xboard.conf
+
+dist_sysconf_DATA = xboard.conf
+
 
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 	$(srcdir)/texi2man $(srcdir)/xboard.texi > xboard.man || (rm -f xboard.man ; false)

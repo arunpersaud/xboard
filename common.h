@@ -413,6 +413,8 @@ typedef struct {
     char *icsHelper;
     Boolean icsInputBox;
     Boolean useTelnet;
+    Boolean seekGraph;
+    Boolean autoRefresh;
     char *telnetProgram;
     char *gateway;
     char *loadGameFile;
@@ -446,6 +448,7 @@ typedef struct {
     char *cmailGameName; /* xboard only */
     Boolean alwaysPromoteToQueen;
     Boolean oldSaveStyle;
+    Boolean oneClick;
     Boolean quietPlay;
     Boolean showThinking;
     Boolean ponderNextMove;

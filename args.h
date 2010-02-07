@@ -241,6 +241,9 @@ ArgDescriptor argDescriptors[] = {
   { "internetChessserverHelper", ArgFilename, (void *) &appData.icsHelper, 
 	FALSE, INVALID }, // for XB
   { "icshelper", ArgFilename, (void *) &appData.icsHelper, FALSE, (ArgIniType) "" },
+  { "seekGraph", ArgBoolean, (void *) &appData.seekGraph, TRUE, (ArgIniType) FALSE },
+  { "sg", ArgTrue, (void *) &appData.seekGraph, FALSE, INVALID },
+  { "autoRefresh", ArgBoolean, (void *) &appData.autoRefresh, TRUE, (ArgIniType) FALSE },
   { "gateway", ArgString, (void *) &appData.gateway, FALSE, (ArgIniType) "" },
   { "loadGameFile", ArgFilename, (void *) &appData.loadGameFile, FALSE, (ArgIniType) "" },
   { "lgf", ArgFilename, (void *) &appData.loadGameFile, FALSE, INVALID },
@@ -539,6 +542,7 @@ ArgDescriptor argDescriptors[] = {
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
 
   /* [HGM] board-size, adjudication and misc. options */
+  { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },
   { "boardWidth", ArgInt, (void *) &appData.NrFiles, TRUE, (ArgIniType) -1 },
   { "boardHeight", ArgInt, (void *) &appData.NrRanks, TRUE, (ArgIniType) -1 },
   { "holdingsSize", ArgInt, (void *) &appData.holdingsSize, TRUE, (ArgIniType) -1 },
@@ -699,6 +703,14 @@ ExitArgError(char *msg, char *badArg)
   exit(2);
 }
 
+int
+ValidateInt(char *s)
+{
+  char *p = s;
+  if(*p == '-' || *p == '+') p++;
+  while(*p) if(!isdigit(*p++)) ExitArgError("Bad integer value", s);
+  return atoi(s);
+}
 
 char
 StringGet(void *getClosure)
@@ -919,19 +931,19 @@ ParseArgs(GetFunc get, void *cl)
 
     switch (ad->argType) {
     case ArgInt:
-      *(int *) ad->argLoc = atoi(argValue);
+      *(int *) ad->argLoc = ValidateInt(argValue);
       break;
 
     case ArgX:
-      *(int *) ad->argLoc = atoi(argValue) + wpMain.x; // [HGM] placement: translate stored relative to absolute 
+      *(int *) ad->argLoc = ValidateInt(argValue) + wpMain.x; // [HGM] placement: translate stored relative to absolute 
       break;
 
     case ArgY:
-      *(int *) ad->argLoc = atoi(argValue) + wpMain.y; // (this is really kludgey, it should be done where used...)
+      *(int *) ad->argLoc = ValidateInt(argValue) + wpMain.y; // (this is really kludgey, it should be done where used...)
       break;
 
     case ArgZ:
-      *(int *) ad->argLoc = atoi(argValue);
+      *(int *) ad->argLoc = ValidateInt(argValue);
       EnsureOnScreen(&wpMain.x, &wpMain.y, minX, minY); 
       break;
 

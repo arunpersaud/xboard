@@ -88,6 +88,7 @@ extern char *layoutName;
 extern Window xBoardWindow;
 extern Arg layoutArgs[2], formArgs[2];
 Pixel timerForegroundPixel, timerBackgroundPixel;
+extern int searchTime;
 
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
@@ -266,54 +267,77 @@ void TimeControlCallback(w, client_data, call_data)
     XtGetValues(w, args, 1);
     
     if (strcmp(name, _("classical")) == 0) {
-	if(!tcInc) return;
+	if(tcInc == 0) return;
 	j=0;
 	XtSetArg(args[j], XtNlabel, _("minutes for each")); j++;
 	XtSetValues(tcMess1, args, j);
 	j=0;
 	XtSetArg(args[j], XtNlabel, _("moves")); j++;
 	XtSetValues(tcMess2, args, j);
-	j=0;
-	XtSetArg(args[j], XtNstring, &name); j++;
-	XtGetValues(tcData, args, j);
-	tcIncrement = 0; sscanf(name, "%d", &tcIncrement);
+	if(tcInc == 1) {
+	    j=0;
+	    XtSetArg(args[j], XtNstring, &name); j++;
+	    XtGetValues(tcData, args, j);
+	    tcIncrement = 0; sscanf(name, "%d", &tcIncrement);
+	}
 	sprintf(buf, "%d", tcMoves);
 	j=0;
 	XtSetArg(args[j], XtNstring, buf); j++;
 	XtSetValues(tcData, args, j);
-	tcInc = False;
+	tcInc = 0;
         return;
     }
     if (strcmp(name, _("incremental")) == 0) {
-	if(tcInc) return;
+	if(tcInc == 1) return;
 	j=0;
 	XtSetArg(args[j], XtNlabel, _("minutes, plus")); j++;
 	XtSetValues(tcMess1, args, j);
 	j=0;
 	XtSetArg(args[j], XtNlabel, _("sec/move")); j++;
 	XtSetValues(tcMess2, args, j);
-	j=0;
-	XtSetArg(args[j], XtNstring, &name); j++;
-	XtGetValues(tcData, args, j);
-	tcMoves = appData.movesPerSession; sscanf(name, "%d", &tcMoves);
+	if(tcInc == 0) {
+	    j=0;
+	    XtSetArg(args[j], XtNstring, &name); j++;
+	    XtGetValues(tcData, args, j);
+	    tcMoves = appData.movesPerSession; sscanf(name, "%d", &tcMoves);
+	}
 	sprintf(buf, "%d", tcIncrement);
 	j=0;
 	XtSetArg(args[j], XtNstring, buf); j++;
 	XtSetValues(tcData, args, j);
-	tcInc = True;
+	tcInc = 1;
+        return;
+    }
+    if (strcmp(name, _("fixed time")) == 0) {
+	if(tcInc == 2) return;
+	j=0;
+	XtSetArg(args[j], XtNlabel, _("sec/move (max)")); j++;
+	XtSetValues(tcMess1, args, j);
+	j=0;
+	XtSetArg(args[j], XtNlabel, _("")); j++;
+	XtSetValues(tcMess2, args, j);
+	j=0;
+	XtSetArg(args[j], XtNstring, ""); j++;
+	XtSetValues(tcData, args, j);
+	tcInc = 2;
         return;
     }
     if (strcmp(name, _(" OK ")) == 0) {
 	int inc, mps, tc, ok;
 	XtSetArg(args[0], XtNstring, &txt);
 	XtGetValues(tcData, args, 1);
-	if(tcInc) {
+	switch(tcInc) {
+	  case 1:
 	    ok = sscanf(txt, "%d", &inc); mps = 0;
 	    if(!ok && txt[0] == 0) { inc = 0; ok = 1; } // accept empty string as zero
 	    ok &= (inc >= 0);
-	} else {
+	    break;
+	  case 0:
 	    ok = sscanf(txt, "%d", &mps); inc = -1;
 	    ok &= (mps > 0);
+	    break;
+	  case 2:
+	    ok = 1; inc = -1; mps = 40;
 	}
 	if(ok != 1) {
 	    XtSetArg(args[0], XtNstring, ""); // erase any offending input
@@ -322,15 +346,26 @@ void TimeControlCallback(w, client_data, call_data)
 	}
 	XtSetArg(args[0], XtNstring, &txt);
 	XtGetValues(tcTime, args, 1);
-	if(!ParseTimeControl(txt, inc, mps)) {
-	    XtSetArg(args[0], XtNstring, ""); // erase any offending input
-	    XtSetValues(tcTime, args, 1);
-	    DisplayError(_("Bad Time-Control String"), 0);
-	    return;
+	if(tcInc == 2) {
+	    if(sscanf(txt, "%d", &inc) != 1) {
+		XtSetArg(args[0], XtNstring, ""); // erase any offending input
+		XtSetValues(tcTime, args, 1);
+		DisplayError(_("Bad Time-Control String"), 0);
+		return;
+	    }
+	    searchTime = inc;
+	} else {
+	    if(!ParseTimeControl(txt, inc, mps)) {
+		XtSetArg(args[0], XtNstring, ""); // erase any offending input
+		XtSetValues(tcTime, args, 1);
+		DisplayError(_("Bad Time-Control String"), 0);
+		return;
+	    }
+	    searchTime = 0;
+	    appData.movesPerSession = mps;
+	    appData.timeIncrement = inc;
+	    appData.timeControl = strdup(txt);
 	}
-	appData.movesPerSession = mps;
-	appData.timeIncrement = inc;
-	appData.timeControl = strdup(txt);
 	XtSetArg(args[0], XtNstring, &txt);
 	XtGetValues(tcOdds1, args, 1);
 	appData.firstTimeOdds = first.timeOdds 
@@ -355,7 +390,7 @@ void TimeControlPopUp()
     unsigned int mask;
     char def[80];
     
-    tcInc = (appData.timeIncrement >= 0);
+    tcInc = searchTime > 0 ? 2 : (appData.timeIncrement >= 0);
     tcMoves = appData.movesPerSession; tcIncrement = appData.timeIncrement;
     if(!tcInc) tcIncrement = 0;
     sprintf(def, "%d", tcInc ? tcIncrement : tcMoves);
@@ -397,7 +432,7 @@ void TimeControlPopUp()
     XtAddEventHandler(tcTime, ButtonPressMask, False, SetFocus, (XtPointer) popup);
 
     j= 0;
-    XtSetArg(args[j], XtNlabel, tcInc ? _("   minutes, plus   ") : _("minutes for each")); j++;
+    XtSetArg(args[j], XtNlabel, tcInc ? tcInc == 2 ? _("sec/move (max)   ") : _("   minutes, plus   ") : _("minutes for each")); j++;
     XtSetArg(args[j], XtNborderWidth, 0); j++;
     XtSetArg(args[j], XtNfromHoriz, tcTime); j++;
     XtSetArg(args[j], XtNtop, XtChainTop);  j++;
@@ -426,7 +461,7 @@ void TimeControlPopUp()
     XtAddEventHandler(tcData, ButtonPressMask, False, SetFocus, (XtPointer) popup);
 
     j= 0;
-    XtSetArg(args[j], XtNlabel, tcInc ? _("sec/move") : _("moves     ")); j++;
+    XtSetArg(args[j], XtNlabel, tcInc ? tcInc == 2 ? _("             ") : _("sec/move") : _("moves     ")); j++;
     XtSetArg(args[j], XtNjustify, XtJustifyLeft); j++;
     XtSetArg(args[j], XtNborderWidth, 0); j++;
     XtSetArg(args[j], XtNfromHoriz, tcData); j++;
@@ -494,18 +529,34 @@ void TimeControlPopUp()
     XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    b_clas= XtCreateManagedWidget(_("classical"), commandWidgetClass,
+    XtSetArg(args[j], XtNstate, tcInc==0); j++;
+    b_clas= XtCreateManagedWidget(_("classical"), toggleWidgetClass,
 				   form, args, j);   
     XtAddCallback(b_clas, XtNcallback, TimeControlCallback, (XtPointer) 0);
 
     j=0;
+    XtSetArg(args[j], XtNradioGroup, b_clas); j++;
     XtSetArg(args[j], XtNfromVert, tcOdds1);  j++;
     XtSetArg(args[j], XtNfromHoriz, b_clas);  j++;
     XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
     XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    b_inc = XtCreateManagedWidget(_("incremental"), commandWidgetClass,
+    XtSetArg(args[j], XtNstate, tcInc==1); j++;
+    b_inc = XtCreateManagedWidget(_("incremental"), toggleWidgetClass,
+				   form, args, j);   
+    XtAddCallback(b_inc, XtNcallback, TimeControlCallback, (XtPointer) 0);
+
+    j=0;
+    XtSetArg(args[j], XtNradioGroup, b_inc); j++;
+    XtSetArg(args[j], XtNfromVert, tcOdds1);  j++;
+    XtSetArg(args[j], XtNfromHoriz, b_inc);  j++;
+    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
+    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
+    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
+    XtSetArg(args[j], XtNstate, tcInc==2); j++;
+    b_inc = XtCreateManagedWidget(_("fixed time"), toggleWidgetClass,
 				   form, args, j);   
     XtAddCallback(b_inc, XtNcallback, TimeControlCallback, (XtPointer) 0);
 
@@ -695,7 +746,7 @@ void EnginePopUp()
     XtSetArg(args[j-3], XtNstate,       appData.secondScoreIsAbsolute);
     w4 = XtCreateManagedWidget(_("Engine #2 Score is Absolute"), toggleWidgetClass, form, args, j);
 
-    s1 = XtCreateManagedWidget(_("\nEngine-Engine Adjudications:"), labelWidgetClass, form, args, 3);
+    s1 = XtCreateManagedWidget(_("\nAdjudications in non-ICS games:"), labelWidgetClass, form, args, 3);
 
     XtSetArg(args[j-1], XtNfromVert,  (XtArgVal) s1);
     XtSetArg(args[j-3], XtNstate,       appData.testClaims);

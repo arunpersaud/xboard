@@ -70,11 +70,17 @@
        #else
                /* place holder
                 * or dummy types for other compiler
+                * [HGM] seems that -mno-cygwin comple needs %I64?
                 */
                #define u64 unsigned long long
                #define s64 signed long long
-               #define u64Display "%llu"
-               #define s64Display "%lld"
+               #ifdef USE_I64
+                  #define u64Display "%I64u"
+                  #define s64Display "%I64d"
+               #else
+                  #define u64Display "%llu"
+                  #define s64Display "%lld"
+               #endif
                #define u64Const(c) (c ## ULL)
                #define s64Const(c) (c ## LL)
        #endif
@@ -121,6 +127,8 @@ int PieceForSquare P((int x, int y));
 int OKToStartUserMove P((int x, int y));
 void Reset P((int redraw, int init));
 void ResetGameEvent P((void));
+Boolean HasPattern P(( const char * text, const char * pattern ));
+Boolean SearchPattern P(( const char * text, const char * pattern ));
 int LoadGame P((FILE *f, int n, char *title, int useList));
 int LoadGameFromFile P((char *filename, int n, char *title, int useList));
 int CmailLoadGame P((FILE *f, int n, char *title, int useList));
@@ -130,6 +138,8 @@ int SaveGameToFile P((char *filename, int append));
 int LoadPosition P((FILE *f, int n, char *title));
 int ReloadPosition P((int offset));
 int SavePosition P((FILE *f, int dummy, char *dummy2));
+int DrawSeekGraph P(());
+int SeekGraphClick P((ClickType click, int x, int y, int moving));
 void EditPositionEvent P((void));
 void FlipViewEvent P((void));
 void MachineWhiteEvent P((void));
@@ -262,6 +272,8 @@ int GameListBuild P((FILE *));
 void GameListInitGameInfo P((GameInfo *));
 char *GameListLine P((int, GameInfo *));
 char * GameListLineFull P(( int, GameInfo *));
+void GLT_TagsToList P(( char * tags ));
+void GLT_ParseList P((void));
 
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */

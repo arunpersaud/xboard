@@ -1,4 +1,4 @@
-/*
+Xg/*
  * xboard.c -- X front end for XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
@@ -322,6 +322,8 @@ void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void GameListOptionsPopDown P(());
 void ShufflePopDown P(());
 void EnginePopDown P(());
 void UciPopDown P(());
@@ -662,6 +664,7 @@ MenuItem optionsMenu[] = {
     {N_("Engine #1 Settings ..."), FirstSettingsProc},
     {N_("Engine #2 Settings ..."), SecondSettingsProc},
     {N_("Time Control ..."), TimeControlProc},
+    {N_("Game List ..."), GameListOptionsPopUp},
     {"----", NothingProc},
     //    {N_("Always Queen"), AlwaysQueenProc},
     //    {N_("Animate Dragging"), AnimateDraggingProc},
@@ -785,10 +788,19 @@ XtActionsRec boardActions[] = {
     //    { "BlackClock", BlackClock },
     { "Iconify", Iconify },
     { "LoadSelectedProc", LoadSelectedProc },
+<<<<<<< HEAD
     //    { "LoadPositionProc", LoadPositionProc },
     //    { "LoadNextPositionProc", LoadNextPositionProc },
     //    { "LoadPrevPositionProc", LoadPrevPositionProc },
     //    { "ReloadPositionProc", ReloadPositionProc },
+=======
+    { "SetFilterProc", SetFilterProc },
+    { "ReloadGameProc", ReloadGameProc },
+    { "LoadPositionProc", LoadPositionProc },
+    { "LoadNextPositionProc", LoadNextPositionProc },
+    { "LoadPrevPositionProc", LoadPrevPositionProc },
+    { "ReloadPositionProc", ReloadPositionProc },
+>>>>>>> master
     { "CopyPositionProc", CopyPositionProc },
     { "PastePositionProc", PastePositionProc },
     { "CopyGameProc", CopyGameProc },
@@ -881,6 +893,7 @@ XtActionsRec boardActions[] = {
     //    { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
+    { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     //    { "HistoryPopDown", (XtActionProc) HistoryPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
@@ -1074,9 +1087,25 @@ colorVariable[] = {
   NULL
 };
 
+// [HGM] font: keep a font for each square size, even non-stndard ones
+#define NUM_SIZES 18
+#define MAX_SIZE 130
+Boolean fontSet[NUM_FONTS], fontValid[NUM_FONTS][MAX_SIZE];
+char *fontTable[NUM_FONTS][MAX_SIZE];
+
 void
 ParseFont(char *name, int number)
 { // in XBoard, only 2 of the fonts are currently implemented, and we just copy their name
+  int size;
+  if(sscanf(name, "size%d:", &size)) {
+    // [HGM] font: font is meant for specific boardSize (likely from settings file);
+    //       defer processing it until we know if it matches our board size
+    if(size >= 0 && size<MAX_SIZE) { // for now, fixed limit
+	fontTable[number][size] = strdup(strchr(name, ':')+1);
+	fontValid[number][size] = True;
+    }
+    return;
+  }
   switch(number) {
     case 0: // CLOCK_FONT
 	appData.clockFont = strdup(name);
@@ -1090,6 +1119,7 @@ ParseFont(char *name, int number)
     default:
       return;
   }
+  fontSet[number] = True; // [HGM] font: indicate a font was specified (not from settings file)
 }
 
 void
@@ -1137,8 +1167,9 @@ SetCommPortDefaults()
 void
 SaveFontArg(FILE *f, ArgDescriptor *ad)
 {
-  char *name;
-  switch((int)ad->argLoc) {
+  char *name, buf[MSG_SIZ];
+  int i, n = (int)ad->argLoc;
+  switch(n) {
     case 0: // CLOCK_FONT
 	name = appData.clockFont;
       break;
@@ -1151,9 +1182,14 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
     default:
       return;
   }
-//  Do not save fonts for now, as the saved font would be board-size specific
-//  and not suitable for a re-start at another board size
-//  fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, name); 
+  for(i=0; i<NUM_SIZES; i++) // [HGM] font: current font becomes standard for current size
+    if(sizeDefaults[i].squareSize == squareSize) { // only for standard sizes!
+	fontTable[n][squareSize] = strdup(name);
+	fontValid[n][squareSize] = True;
+	break;
+  }
+  for(i=0; i<MAX_SIZE; i++) if(fontValid[n][i]) // [HGM] font: store all standard fonts
+    fprintf(f, OPTCHAR "%s" SEPCHAR "size%d:%s\n", ad->argName, i, fontTable[n][i]); 
 }
 
 void
@@ -1871,6 +1907,20 @@ main(argc, argv)
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
 
+    /* [AS] Restore layout */
+    if( wpMoveHistory.visible ) {
+      HistoryPopUp();
+    }
+
+    if( wpEvalGraph.visible ) 
+      {
+	EvalGraphPopUp();
+      };
+    
+    if( wpEngineOutput.visible ) {
+      EngineOutputPopUp();
+    }
+
     InitBackEnd2();
 
     if (errorExitStatus == -1) {
@@ -2433,54 +2483,18 @@ void PieceMenuPopup(w, event, params, num_params)
      String *params;
      Cardinal *num_params;
 {
-    String whichMenu;
-
-    if (event->type != ButtonRelease) UnLoadPV(); // [HGM] pv
-    if (event->type != ButtonPress) return;
-    if (errorUp) ErrorPopDown();
-    switch (gameMode) {
-      case EditPosition:
-      case IcsExamining:
-	whichMenu = params[0];
-	break;
-      case IcsObserving:
-	if(!appData.icsEngineAnalyze) return;
-      case IcsPlayingWhite:
-      case IcsPlayingBlack:
-	if(!appData.zippyPlay) goto noZip;
-      case AnalyzeMode:
-      case AnalyzeFile:
-      case MachinePlaysWhite:
-      case MachinePlaysBlack:
-      case TwoMachinesPlay: // [HGM] pv: use for showing PV
-	if (!appData.dropMenu) {
-	  LoadPV(event->xbutton.x, event->xbutton.y);
-	  return;
-	}
-	if(gameMode == TwoMachinesPlay || gameMode == AnalyzeMode ||
-           gameMode == AnalyzeFile || gameMode == IcsObserving) return;
-      case EditGame:
-      noZip:
-	if (!appData.dropMenu || appData.testLegality &&
-	    gameInfo.variant != VariantBughouse &&
-	    gameInfo.variant != VariantCrazyhouse) return;
-	SetupDropMenu();
-	whichMenu = "menuD";
-	break;
-      default:
-	return;
+    String whichMenu; int menuNr;
+    if (event->type == ButtonRelease)
+        menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY); 
+    else if (event->type == ButtonPress)
+        menuNr = RightClick(Press,   event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
+    switch(menuNr) {
+      case 0: whichMenu = params[0]; break;
+      case 1: SetupDropMenu(); whichMenu = "menuD"; break;
+      case 2:
+      case -1: if (errorUp) ErrorPopDown();
+      default: return;
     }
-
-    if (((pmFromX = EventToSquare(event->xbutton.x, BOARD_WIDTH)) < 0) ||
-	((pmFromY = EventToSquare(event->xbutton.y, BOARD_HEIGHT)) < 0)) {
-	pmFromX = pmFromY = -1;
-	return;
-    }
-    if (flipView)
-      pmFromX = BOARD_WIDTH - 1 - pmFromX;
-    else
-      pmFromY = BOARD_HEIGHT - 1 - pmFromY;
-
     XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
 }
 
@@ -2595,10 +2609,6 @@ SetHighlights(fromX, fromY, toX, toY)
 	  {
 	    drawHighlight(hi1X, hi1Y, LINE_TYPE_NORMAL);
 	  }
-	if (fromX >= 0 && fromY >= 0)
-	  {
-	    drawHighlight(fromX, fromY, LINE_TYPE_HIGHLIGHT);
-	  }
       }
     if (hi2X != toX || hi2Y != toY)
       {
@@ -2606,6 +2616,15 @@ SetHighlights(fromX, fromY, toX, toY)
 	  {
 	    drawHighlight(hi2X, hi2Y, LINE_TYPE_NORMAL);
 	  }
+      }
+    if (hi1X != fromX || hi1Y != fromY)
+      {
+	if (fromX >= 0 && fromY >= 0)
+	  {
+	    drawHighlight(fromX, fromY, LINE_TYPE_HIGHLIGHT);
+	  }
+    if (hi2X != toX || hi2Y != toY)
+      {    
 	if (toX >= 0 && toY >= 0)
 	  {
 	    drawHighlight(toX, toY, LINE_TYPE_HIGHLIGHT);
@@ -2784,6 +2803,19 @@ void DrawSquare(row, column, piece, do_flash)
 	    cairo_select_font_face (cr, "Sans",
 				    CAIRO_FONT_SLANT_NORMAL,
 				    CAIRO_FONT_WEIGHT_NORMAL);
+	    //TODO
+//    switch (event->type) {
+//      case Expose:
+//	if (event->xexpose.count > 0) return;  /* no clipping is done */
+//	XDrawPosition(widget, True, NULL);
+//	break;
+//      case MotionNotify:
+//        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, 1)) break;
+//      default:
+//	return;
+//    }
+//}
+/* end why */
 
 	    cairo_set_font_size (cr, 12.0);
 	    cairo_text_extents (cr, string, &extents);
@@ -2979,6 +3011,36 @@ static int check_castle_draw(newb, oldb, rrow, rcol)
     return 0;
 }
 
+// [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph 
+void DrawSeekAxis( int x, int y, int xTo, int yTo )
+{
+      XDrawLine(xDisplay, xBoardWindow, lineGC, x, y, xTo, yTo);
+}
+
+void DrawSeekBackground( int left, int top, int right, int bottom )
+{
+    XFillRectangle(xDisplay, xBoardWindow, lightSquareGC, left, top, right-left, bottom-top);
+}
+
+void DrawSeekText(char *buf, int x, int y)
+{
+    XDrawString(xDisplay, xBoardWindow, coordGC, x, y+4, buf, strlen(buf));
+}
+
+void DrawSeekDot(int x, int y, int colorNr)
+{
+    int square = colorNr & 0x80;
+    GC color;
+    colorNr &= 0x7F;
+    color = colorNr == 0 ? prelineGC : colorNr == 1 ? darkSquareGC : highlineGC;
+    if(square)
+	XFillRectangle(xDisplay, xBoardWindow, color,
+		x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
+    else
+	XFillArc(xDisplay, xBoardWindow, color, 
+		x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
+}
+
 static int damage[BOARD_RANKS][BOARD_FILES];
 
 /*
@@ -2993,6 +3055,8 @@ void DrawPosition( repaint, board)
   static int lastBoardValid = 0;
   static Board lastBoard;
   int rrow, rcol;
+
+    if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
 
   if (board == NULL) {
     if (!lastBoardValid) return;

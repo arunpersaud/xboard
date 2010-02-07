@@ -857,7 +857,7 @@ BEGIN
     CONTROL         "Periodic Updates (for Analysis Mode)",
                     IDC_EpPeriodicUpdates,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,4,40,131,10
-    GROUPBOX        "Engine-engine matches",IDC_STATIC,4,56,200,98
+    GROUPBOX        "Adjudications in non-ICS games",IDC_STATIC,4,56,200,98
     LTEXT           "Adjudicate draw after:",IDC_STATIC,10,72,70,8
     EDITTEXT        IDC_EpDrawMoveCount,116,68,40,14,ES_AUTOHSCROLL
     LTEXT           "moves",IDC_STATIC,158,72,22,8
