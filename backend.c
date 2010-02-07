@@ -5338,6 +5338,8 @@ SendBoard(cps, moveNum)
     setboardSpoiledMachineBlack = 0; /* [HGM] assume WB 4.2.7 already solves this after sending setboard */
 }
 
+static int autoQueen; // [HGM] oneclick
+
 int
 HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 {
@@ -5408,7 +5410,7 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 	*promoChoice = PieceToChar(BlackFerz);  // no choice
 	return FALSE;
     }
-    if(appData.alwaysPromoteToQueen) { // predetermined
+    if(autoQueen) { // predetermined
 	if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantLosers)
 	     *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
 	else *promoChoice = PieceToChar(BlackQueen);
@@ -5573,7 +5575,10 @@ OnlyMove(int *x, int *y) {
     cl.ftIn = -1;
     cl.promoCharIn = NULLCHAR;
     Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
-    if(cl.kind == NormalMove) {
+    if( cl.kind == NormalMove ||
+	cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen ||
+	cl.kind == WhitePromotionKnight || cl.kind == BlackPromotionKnight ||
+	cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) {
       fromX = cl.ff;
       fromY = cl.rf;
       *x = cl.ft;
@@ -5588,11 +5593,15 @@ OnlyMove(int *x, int *y) {
     cl.ftIn = *x;
     cl.promoCharIn = NULLCHAR;
     Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
-    if(cl.kind == NormalMove) {
+    if( cl.kind == NormalMove ||
+	cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen ||
+	cl.kind == WhitePromotionKnight || cl.kind == BlackPromotionKnight ||
+	cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) {
       fromX = cl.ff;
       fromY = cl.rf;
       *x = cl.ft;
       *y = cl.rt;
+      autoQueen = TRUE; // act as if autoQueen on when we click to-square
       return TRUE;
     }
     return FALSE;
@@ -6086,6 +6095,8 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
               || x == BOARD_LEFT-2 && y < BOARD_HEIGHT-gameInfo.holdingsSize
               || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
 	return;
+
+    autoQueen = appData.alwaysPromoteToQueen;
 
     if (fromX == -1) {
       if(!appData.oneClick || !OnlyMove(&x, &y)) {
