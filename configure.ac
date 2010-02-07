@@ -28,7 +28,7 @@ dnl| to regenerate configure.  Then submit your changes to be folded into
 dnl| the standard version of xboard.
 
 dnl| define second argument as VERSION.PATCHLEVEL. e.g. 4.4.0j
-AC_INIT([xboard],[master-20100118],[bug-xboard@gnu.org])
+AC_INIT([xboard],[master-20100206],[bug-xboard@gnu.org])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_HEADERS([config.h])
