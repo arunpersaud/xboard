@@ -1,7 +1,7 @@
 /*
  * help.h
  *
- * Copyright 2009 Free Software Foundation, Inc.
+ * Copyright 2009, 2010 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
