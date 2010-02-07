@@ -8717,6 +8717,8 @@ GameEnds(result, resultDetails, whosays)
 	      result, resultDetails ? resultDetails : "(null)", whosays);
     }
 
+    fromX = fromY = -1; // [HGM] abort any move the user is entering.
+
     if (appData.icsActive && (whosays == GE_ENGINE || whosays >= GE_ENGINE1)) {
 	/* If we are playing on ICS, the server decides when the
 	   game is over, but the engine can offer to draw, claim 
