@@ -3569,8 +3569,8 @@ read_from_ics(isr, closure, data, count, error)
 		    if (appData.debugMode)
                       fprintf(debugFP, "Parsing holdings: %s, currentMove = %d\n",
                                                         parse, currentMove);
-		    if (sscanf(parse, " game %d", &gamenum) == 1 &&
-			gamenum == ics_gamenum) {
+		    if (sscanf(parse, " game %d", &gamenum) == 1) {
+		      if(gamenum == ics_gamenum) { // [HGM] bughouse: old code if part of foreground game
 		        if (gameInfo.variant == VariantNormal) {
                           /* [HGM] We seem to switch variant during a game!
                            * Presumably no holdings were displayed, so we have
@@ -3622,6 +3622,17 @@ read_from_ics(isr, closure, data, count, error)
 
                         DrawPosition(FALSE, boards[currentMove]);
 			DisplayTitle(str);
+		      } else if(appData.bgObserve) { // [HGM] bughouse: holdings of other game => background
+			sscanf(parse, "game %d white [%s black [%s <- %s",
+			       &gamenum, white_holding, black_holding,
+			       new_piece);
+                        white_holding[strlen(white_holding)-1] = NULLCHAR;
+                        black_holding[strlen(black_holding)-1] = NULLCHAR;
+                        /* [HGM] copy holdings to partner-board holdings area */
+                        CopyHoldings(partnerBoard, white_holding, WhitePawn);
+                        CopyHoldings(partnerBoard, black_holding, BlackPawn);
+                        if(partnerUp) DrawPosition(FALSE, partnerBoard);
+		      }
 		    }
 		    /* Suppress following prompt */
 		    if (looking_at(buf, &i, "*% ")) {
