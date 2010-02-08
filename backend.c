@@ -2308,15 +2308,16 @@ int SeekGraphClick(ClickType click, int x, int y, int moving)
 		DisplayMessage(second ? "!" : "", seekAdList[closest]);
 		lastSecond = second; displayed = closest;
 	    }
-	    sprintf(buf, "play %d\n", seekNrList[closest]);
 	    if(click == Press) {
 		if(moving == 2) zList[closest] = 100; // right-click; push to back on press
 		lastDown = closest;
 		return TRUE;
 	    } // on press 'hit', only show info
 	    if(moving == 2) return TRUE; // ignore right up-clicks on dot
+	    sprintf(buf, "play %d\n", seekNrList[closest]);
 	    SendToICS(ics_prefix);
-	    SendToICS(buf); // should this be "sought all"?
+	    SendToICS(buf);
+	    return TRUE; // let incoming board of started game pop down the graph
 	} else if(click == Release) { // release 'miss' is ignored
 	    zList[lastDown] = 100; // make future selection of the rejected ad more difficult
 	    if(moving == 2) { // right up-click
