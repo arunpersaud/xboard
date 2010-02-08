@@ -277,92 +277,96 @@ void EvalEventProc(widget, unused, event)
 Widget EvalGraphCreate(name)
      char *name;
 {
-    Arg args[16];
-    Widget shell, layout, form, form2, edit;
-    Dimension bw_width, bw_height;
-    int j;
+  Widget *tmp=NULL;
+  return *tmp;
 
-    // get board width
-    j = 0;
-    XtSetArg(args[j], XtNwidth,  &bw_width);  j++;
-    XtSetArg(args[j], XtNheight, &bw_height);  j++;
-    XtGetValues(boardWidget, args, j);
-
-    // define form within layout within shell.
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    shell =
-#if TOPLEVEL 
-      //     XtCreatePopupShell(name, topLevelShellWidgetClass,
-#else
-      //      XtCreatePopupShell(name, transientShellWidgetClass,
-#endif
-      //			 shellWidget, args, j);
-//    layout =
-//      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-//			    layoutArgs, XtNumber(layoutArgs));
-    // divide window vertically into two equal parts, by creating two forms
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-    // make sure width is known in advance, for better placement of child widgets
-    j = 0;
-    XtSetArg(args[j], XtNwidth,     (XtArgVal) bw_width-16); j++;
-    XtSetArg(args[j], XtNheight,    (XtArgVal) bw_height/4); j++;
-    XtSetValues(shell, args, j);
-
-    XtRealizeWidget(shell);
-
-    if(wpEvalGraph.width > 0) {
-      evalGraphW = wpEvalGraph.width;
-      evalGraphH = wpEvalGraph.height;
-      evalGraphX = wpEvalGraph.x;
-      evalGraphY = wpEvalGraph.y;
-    }
-
-    if (evalGraphX == -1) {
-	int xx, yy;
-	Window junk;
-	Dimension pw_height;
-	Dimension ew_height;
-	evalGraphH = bw_height/4;
-	evalGraphW = bw_width-16;
-
-	//	XSync(xDisplay, False);
-#ifdef NOTDEF
-	/* This code seems to tickle an X bug if it is executed too soon
-	   after xboard starts up.  The coordinates get transformed as if
-	   the main window was positioned at (0, 0).
-	   */
-//	XtTranslateCoords(shellWidget,
-//			  (bw_width - evalGraphW) / 2, 0 - evalGraphH / 2,
-//			  &evalGraphX, &evalGraphY);
-#else  /*!NOTDEF*/
-//        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-//			      RootWindowOfScreen(XtScreen(shellWidget)),
-//			      (bw_width - evalGraphW) / 2, 0 - evalGraphH / 2,
-//			      &xx, &yy, &junk);
-	evalGraphX = xx;
-	evalGraphY = yy;
-#endif /*!NOTDEF*/
-	if (evalGraphY < 0) evalGraphY = 0; /*avoid positioning top offscreen*/
-    }
-    j = 0;
-    XtSetArg(args[j], XtNheight, evalGraphH);  j++;
-    XtSetArg(args[j], XtNwidth, evalGraphW);  j++;
-    XtSetArg(args[j], XtNx, evalGraphX);  j++;
-    XtSetArg(args[j], XtNy, evalGraphY);  j++;
-    XtSetValues(shell, args, j);
-//    XtSetKeyboardFocus(shell, edit);
-
-    yDisplay = XtDisplay(shell);
-    eGraphWindow = XtWindow(form);
-    XtAddEventHandler(form, ExposureMask, False,
-		      (XtEventHandler) EvalEventProc, NULL);
-    XtAddEventHandler(form, ButtonPressMask, False,
-		      (XtEventHandler) EvalClick, NULL);
-
-    return shell;
+//    Arg args[16];
+//    Widget shell, layout, form, form2, edit;
+//    Dimension bw_width, bw_height;
+//    int j;
+//
+//    // get board width
+//    j = 0;
+//    XtSetArg(args[j], XtNwidth,  &bw_width);  j++;
+//    XtSetArg(args[j], XtNheight, &bw_height);  j++;
+//    XtGetValues(boardWidget, args, j);
+//
+//    // define form within layout within shell.
+//    j = 0;
+//    XtSetArg(args[j], XtNresizable, True);  j++;
+//    shell =
+//#if TOPLEVEL 
+//      //     XtCreatePopupShell(name, topLevelShellWidgetClass,
+//#else
+//      //      XtCreatePopupShell(name, transientShellWidgetClass,
+//#endif
+//      //			 shellWidget, args, j);
+////    layout =
+////      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
+////			    layoutArgs, XtNumber(layoutArgs));
+//    // divide window vertically into two equal parts, by creating two forms
+//    form =
+//      XtCreateManagedWidget("form", formWidgetClass, layout,
+//			    formArgs, XtNumber(formArgs));
+//    // make sure width is known in advance, for better placement of child widgets
+//    j = 0;
+//    XtSetArg(args[j], XtNwidth,     (XtArgVal) bw_width-16); j++;
+//    XtSetArg(args[j], XtNheight,    (XtArgVal) bw_height/4); j++;
+//    XtSetValues(shell, args, j);
+//
+//    XtRealizeWidget(shell);
+//
+//    if(wpEvalGraph.width > 0) {
+//      evalGraphW = wpEvalGraph.width;
+//      evalGraphH = wpEvalGraph.height;
+//      evalGraphX = wpEvalGraph.x;
+//      evalGraphY = wpEvalGraph.y;
+//    }
+//
+//    if (evalGraphX == -1) {
+//	int xx, yy;
+//	Window junk;
+//	Dimension pw_height;
+//	Dimension ew_height;
+//	evalGraphH = bw_height/4;
+//	evalGraphW = bw_width-16;
+//
+//	//	XSync(xDisplay, False);
+//#ifdef NOTDEF
+//	/* This code seems to tickle an X bug if it is executed too soon
+//	   after xboard starts up.  The coordinates get transformed as if
+//	   the main window was positioned at (0, 0).
+//	   */
+////	XtTranslateCoords(shellWidget,
+////			  (bw_width - evalGraphW) / 2, 0 - evalGraphH / 2,
+////			  &evalGraphX, &evalGraphY);
+//#else  /*!NOTDEF*/
+////        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
+////			      RootWindowOfScreen(XtScreen(shellWidget)),
+////			      (bw_width - evalGraphW) / 2, 0 - evalGraphH / 2,
+////			      &xx, &yy, &junk);
+//	evalGraphX = xx;
+//	evalGraphY = yy;
+//#endif /*!NOTDEF*/
+//	if (evalGraphY < 0) evalGraphY = 0; /*avoid positioning top offscreen*/
+//    }
+//    j = 0;
+//    XtSetArg(args[j], XtNheight, evalGraphH);  j++;
+//    XtSetArg(args[j], XtNwidth, evalGraphW);  j++;
+//    XtSetArg(args[j], XtNx, evalGraphX);  j++;
+//    XtSetArg(args[j], XtNy, evalGraphY);  j++;
+//    XtSetValues(shell, args, j);
+////    XtSetKeyboardFocus(shell, edit);
+//
+//    yDisplay = XtDisplay(shell);
+//    eGraphWindow = XtWindow(form);
+//    XtAddEventHandler(form, ExposureMask, False,
+//		      (XtEventHandler) EvalEventProc, NULL);
+//    XtAddEventHandler(form, ButtonPressMask, False,
+//		      (XtEventHandler) EvalClick, NULL);
+//
+//    return shell;
+//
 }
 
 void 

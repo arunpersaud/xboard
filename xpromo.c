@@ -306,7 +306,8 @@ Widget PromoCreate(name, x, y, clear)
      int x, y;
      Boolean clear;
 {
-  return;
+  Widget *tmp=NULL;
+  return *tmp;
   //  TODO
 
     Arg args[16];

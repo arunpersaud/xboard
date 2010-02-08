@@ -983,8 +983,9 @@ parse_color(str, which)
   }
   
   /* Could be looking at something like:
-     black, , 1
-     .. in which case we want to stop on a comma also */
+   *     black, , 1
+   * .. in which case we want to stop on a comma also 
+   */
   while (*p && *p != ',' && !isalpha(*p) && !isdigit(*p))
     ++p;
   
@@ -4066,6 +4067,7 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
 //  } else {
 //    return False;
 //  }
+  return False;
 }
 
 /* note: when called from menu all parameters are NULL, so no clue what the

@@ -140,7 +140,8 @@ GameListCreate(name, callback, client_data)
      XtCallbackProc callback;
      XtPointer client_data;
 {
-  return;
+  Widget *tmp=NULL;
+  return *tmp;
 }
 
 static int
@@ -499,102 +500,105 @@ GameListOptionsCallback(w, client_data, call_data)
 Widget
 GameListOptionsCreate()
 {
-    Arg args[16];
-    Widget shell, form, viewport, layout;
-    Widget b_load, b_loadprev, b_loadnext, b_close, b_cancel;
-    Dimension fw_width;
-    XtPointer client_data = NULL;
-    int j;
+  Widget *tmp=NULL;
+  return *tmp;
 
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &fw_width);  j++;
-    XtGetValues(formWidget, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNallowShellResize, True);  j++;
-    //    shell = gameListOptShell =
-      //      XtCreatePopupShell("Game-list options", transientShellWidgetClass,
-      //			 shellWidget, args, j);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-			    layoutArgs, XtNumber(layoutArgs));
-    j = 0;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
-    XtSetArg(args[j], XtNforceColumns, True);  j++;
-    XtSetArg(args[j], XtNverticalList, True);  j++;
-    listwidg = viewport =
-      XtCreateManagedWidget("list", listWidgetClass, form, args, j);
-    XawListHighlight(listwidg, 0);
-//    XtAugmentTranslations(listwidg,
-//			  XtParseTranslationTable(gameListOptTranslations));
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_load =
-      XtCreateManagedWidget(_("factory"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_load, XtNcallback, GameListOptionsCallback, client_data);
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_load);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_loadprev =
-      XtCreateManagedWidget(_("up"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_loadprev, XtNcallback, GameListOptionsCallback, client_data);
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_loadprev);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_loadnext =
-      XtCreateManagedWidget(_("down"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_loadnext, XtNcallback, GameListOptionsCallback, client_data);
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_loadnext);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_cancel =
-      XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, GameListOptionsCallback, client_data);
-
-    j = 0;
-    XtSetArg(args[j], XtNfromVert, viewport);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_cancel);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-    b_close =
-      XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_close, XtNcallback, GameListOptionsCallback, client_data);
-
-    strcpy(lpUserGLT, appData.gameListTags);
-    GLT_TagsToList(lpUserGLT);
-
-    XtRealizeWidget(shell);
-    //    CatchDeleteWindow(shell, "GameListOptionsPopDown");
-
-    return shell;
+//    Arg args[16];
+//    Widget shell, form, viewport, layout;
+//    Widget b_load, b_loadprev, b_loadnext, b_close, b_cancel;
+//    Dimension fw_width;
+//    XtPointer client_data = NULL;
+//    int j;
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNwidth, &fw_width);  j++;
+//    XtGetValues(formWidget, args, j);
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNresizable, True);  j++;
+//    XtSetArg(args[j], XtNallowShellResize, True);  j++;
+//    //    shell = gameListOptShell =
+//      //      XtCreatePopupShell("Game-list options", transientShellWidgetClass,
+//      //			 shellWidget, args, j);
+//    layout =
+//      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
+//			    layoutArgs, XtNumber(layoutArgs));
+//    j = 0;
+//    XtSetArg(args[j], XtNborderWidth, 0); j++;
+//    form =
+//      XtCreateManagedWidget("form", formWidgetClass, layout, args, j);
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
+//    XtSetArg(args[j], XtNforceColumns, True);  j++;
+//    XtSetArg(args[j], XtNverticalList, True);  j++;
+//    listwidg = viewport =
+//      XtCreateManagedWidget("list", listWidgetClass, form, args, j);
+//    XawListHighlight(listwidg, 0);
+////    XtAugmentTranslations(listwidg,
+////			  XtParseTranslationTable(gameListOptTranslations));
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNfromVert, viewport);  j++;
+//    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+//    XtSetArg(args[j], XtNright, XtChainLeft); j++;
+//    b_load =
+//      XtCreateManagedWidget(_("factory"), commandWidgetClass, form, args, j);
+//    XtAddCallback(b_load, XtNcallback, GameListOptionsCallback, client_data);
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNfromVert, viewport);  j++;
+//    XtSetArg(args[j], XtNfromHoriz, b_load);  j++;
+//    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+//    XtSetArg(args[j], XtNright, XtChainLeft); j++;
+//    b_loadprev =
+//      XtCreateManagedWidget(_("up"), commandWidgetClass, form, args, j);
+//    XtAddCallback(b_loadprev, XtNcallback, GameListOptionsCallback, client_data);
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNfromVert, viewport);  j++;
+//    XtSetArg(args[j], XtNfromHoriz, b_loadprev);  j++;
+//    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+//    XtSetArg(args[j], XtNright, XtChainLeft); j++;
+//    b_loadnext =
+//      XtCreateManagedWidget(_("down"), commandWidgetClass, form, args, j);
+//    XtAddCallback(b_loadnext, XtNcallback, GameListOptionsCallback, client_data);
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNfromVert, viewport);  j++;
+//    XtSetArg(args[j], XtNfromHoriz, b_loadnext);  j++;
+//    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+//    XtSetArg(args[j], XtNright, XtChainLeft); j++;
+//    b_cancel =
+//      XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
+//    XtAddCallback(b_cancel, XtNcallback, GameListOptionsCallback, client_data);
+//
+//    j = 0;
+//    XtSetArg(args[j], XtNfromVert, viewport);  j++;
+//    XtSetArg(args[j], XtNfromHoriz, b_cancel);  j++;
+//    XtSetArg(args[j], XtNtop, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
+//    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
+//    XtSetArg(args[j], XtNright, XtChainLeft); j++;
+//    b_close =
+//      XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
+//    XtAddCallback(b_close, XtNcallback, GameListOptionsCallback, client_data);
+//
+//    strcpy(lpUserGLT, appData.gameListTags);
+//    GLT_TagsToList(lpUserGLT);
+//
+//    XtRealizeWidget(shell);
+//    //    CatchDeleteWindow(shell, "GameListOptionsPopDown");
+//
+//    return shell;
 }
 
 void
