@@ -2471,7 +2471,9 @@ read_from_ics(isr, closure, data, count, error)
 	    if(started == STARTED_NONE && (looking_at(buf, &i, "* tells you:") || looking_at(buf, &i, "* says:") || 
 					   looking_at(buf, &i, "* whispers:") ||
 					   looking_at(buf, &i, "*(*):") && (sscanf(star_match[1], "%d", &channel),1) ||
-					   looking_at(buf, &i, "*(*)(*):") && sscanf(star_match[2], "%d", &channel) == 1 )) {
+					   looking_at(buf, &i, "*(*)(*):") && (sscanf(star_match[2], "%d", &channel),1) ||
+					   looking_at(buf, &i, "*(*)(*)(*):") && (sscanf(star_match[3], "%d", &channel),1) ||
+					   looking_at(buf, &i, "*(*)(*)(*)(*):") && sscanf(star_match[4], "%d", &channel) == 1 )) {
 		int p;
 		sscanf(star_match[0], "%[^(]", talker+1); // strip (C) or (U) off ICS handle
 		chattingPartner = -1;
