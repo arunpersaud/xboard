@@ -1,3 +1,39 @@
+** Version 4.4.3 **
+
+(git shortlog --no-merges v4.4.2...HEAD)
+
+Arun Persaud (5):
+      updated to unstable version number
+      added missing sounds files to be able to compile on windows
+      new developer release
+      update year in copyright info
+      DOS line endings and 644 mode for woptions.c
+
+H.G. Muller (23):
+      Implement castling for variant CRC
+      Chmod 644
+      Bugfix legality null move in parsing with -testLegality off
+      Fix bug for incommensurate time odds
+      Make WinBoard makefiles use parser.c in XBoard directory
+      Fix piece-to-char table -variant fairy
+      Fix TwoKings ICS castling-rights bug
+      Fix reading castling rights FEN in knightmate and twokings
+      Fix OO-castling in FRC after pasting FEN
+      Accept <Enter> for changing chat partner
+      Use -keepAlive option to determine connection health
+      Fix of ancient WinBoard bug: check value of int options
+      Fix bug in display of logos
+      Remove stray dot from WinBoard makefiles
+      Fix u64 format for cygwin
+      Send continuation lines to chat box they belong to
+      Fix highlighting bug in XBoard
+      Extensive bugfix of -autoKibitz
+      Remove race condition in clock switching
+      Add variant Makruk
+      Change opening array -variant fairy
+      Match handles with multiple titles for channel Chat Boxes
+      Bugfix stale first-click
+
 ** Version 4.4.2 **
 
 (git shortlog --no-merges v4.4.1...HEAD)

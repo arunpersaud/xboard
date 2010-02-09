@@ -1,3 +1,25 @@
+** Version 4.4.3 **
+
+ * Add variant Makruk
+ * Implement castling for variant CRC
+ * Extensive bugfix of -autoKibitz
+ * Accept <Enter> for changing chat partner
+ * Change opening array -variant fairy
+ * Send continuation lines to chat box they belong to
+ * Use -keepAlive option to determine connection health
+ * Fix of ancient WinBoard bug: check value of int options
+ * Fix bug for incommensurate time odds
+ * Fix piece-to-char table -variant fairy
+ * Fix TwoKings ICS castling-rights bug
+ * Fix reading castling rights FEN in knightmate and twokings
+ * Fix OO-castling in FRC after pasting FEN
+ * Fix bug in display of logos
+ * Fix highlighting bug in XBoard
+ * Match handles with multiple titles for channel Chat Boxes
+ * Make WinBoard makefiles use parser.c in XBoard directory
+ * Added missing sounds files to be able to compile on windows
+ * Small bugfixes
+
 ** Version 4.4.2 **
 
  * add Winboard source files into tar-ball

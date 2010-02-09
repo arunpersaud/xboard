@@ -3,6 +3,191 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vnew vold)
 
+2010-02-07 11:18:56 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Bugfix stale first-click
+
+When the opponent resigned after the user had cicked a from-square,
+clicking the from-square for the first move in the next game would
+produce an "illegal move" message, because it was considered a to-click!
+We now set fromX and fromY to invalid in GameEnds().
+Should we also reset them on mode changes?
+
+2010-02-08 11:57:57 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Match handles with multiple titles for channel Chat Boxes
+
+Only handles with at most one suffixed 'title', such as (U), (C), (IM)
+or (TD), followed by the parenthesized channel number, were recognized,
+so tells by people with more titles always went to the ICS console window.
+Patterns are added to recognize handles with upto three such qualifiers.
+
+2010-01-15 21:55:29 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Change opening array -variant fairy
+
+We now use the position of "Chess with Different Armies", FIDE army vs.
+a fantasy army (inspired on the Color-bound Clobberers) as opening
+position.
+
+2010-01-13 19:08:45 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add variant Makruk
+
+Thai Chess, played by 2 million world-wide. Required pawn promotion to
+happen in a zone, and the Alfil to move as Shogi Silver, a new opening
+array, and unusual Pawn placement. Because of the latter, I consider it
+a setup position, so a FEN will always be sent to the engine.
+
+2010-02-08 19:45:06 -0800 Arun Persaud <arun@nubati.net>:
+DOS line endings and 644 mode for woptions.c
+
+
+2010-02-07 16:43:36 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove race condition in clock switching
+
+The move number is now incremented inside SwitchClock, when no timer
+interrupt is scheduled, so the interrupt cannot occur at the wrong side
+of the increment, and decrement the wrong clock.
+
+2010-01-11 16:44:40 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Extensive bugfix of -autoKibitz
+
+Suppression of printing of diverted kibitz messages failed when they
+extended over more than one read. This could even lead to such
+messages being erroneously saved as comments, which then lead to
+crashes. The suppression mechanism now waits for a prompt, in stead of
+the end of buffer. This required the printing of any leftover in the
+buffer to be deferred until the next read completes it.
+The number of people kibitzed to is now printed (with the "players)"
+stripped off on FICS, but leaving a separating space).
+
+2010-02-05 20:36:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix highlighting bug in XBoard
+
+The from-square was drawn before the to-square was erased, which led to
+a missing highlight line if they shared an edge or corner.
+
+2010-02-04 23:33:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Send continuation lines to chat box they belong to
+
+The variable savingComment is used as a kludge to remember where the
+comment should go (i.e. which chatbox, or elsewhere), so that when a
+continuation line is matched, chatPartner (which was reset at EOL) can
+be restored to its original value. Also put space after handle of talker
+in channel Chat Windows
+
+2010-02-06 18:46:56 -0800 Arun Persaud <arun@nubati.net>:
+update year in copyright info
+
+
+2010-02-02 19:08:42 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix u64 format for cygwin
+
+With a -mno-cygwin compile %llu and %lld are definitely not understood
+by scanf and printf, although they are by the compiler. In stead, %I64u
+seems to work. Put it in under control of the switch __MINGW__ .
+
+2010-02-02 19:02:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove stray dot from WinBoard makefiles
+
+There was a period suffixed to config.h in the wgamelist.o dependency.
+Also wedittags.h was not listed in the makefile dependencies.
+
+2010-02-01 14:50:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in display of logos
+
+The logo continued to be drawn after a boardSize change to a tinyLayout
+size, although there was no space reserved for it. Fixed by explicitly
+resetting logoHeight when no logo space is reserved in InitDrawingSizes().
+
+2010-02-03 13:42:09 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix of ancient WinBoard bug: check value of int options
+
+Only strings of digits are accepted now.
+
+2010-01-24 11:46:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use -keepAlive option to determine connection health
+
+When there has been no ICS response since the previous 'ping', assume we
+are disconnected and do a fatal-error exit. Also auto-start the ping
+process in InitBackend3().
+
+2010-01-23 21:44:36 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Accept <Enter> for changing chat partner
+
+A kludge stolen from Alessandro's GameList filter allowed to let the
+typing of <Enter> while updating the chat-partner field of the WinBoard
+chat windows to act as pressing the Change button. Gives focus to the
+input field of the window afterwards.
+
+2010-01-18 12:24:27 -0800 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2010-01-17 14:24:12 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix OO-castling in FRC after pasting FEN
+
+Because the FEN parser did not set initialRights, the rights from the
+previous game kept hanging there, and prevented recognition of
+OO-castling (although KxR castling was still understood).
+
+2010-01-15 14:32:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix reading castling rights FEN in knightmate and twokings
+
+Scanning for a King on the back-rank did not work in these variants,
+because either the Unicorn castles, or there might be two Kings there.
+
+2010-01-13 11:35:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix TwoKings ICS castling-rights bug
+
+Scanning the rank (as is done because of FRC) assigned castling rights
+to the rightmost King. Even scanning the opposite direction would not
+work, as it is not always the leftmost King that can castle. So we now
+explicitly test for a King on e1/e8 in TwoKings and assign it rights,
+relying on the Rook rights received from the ICS to control castling.
+
+2010-01-11 16:30:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix piece-to-char table -variant fairy
+
+The letters for Lance and Snake where swapped.
+
+2010-01-09 11:54:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make WinBoard makefiles use parser.c in XBoard directory
+
+
+2010-01-08 12:35:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug for incommensurate time odds
+
+After normalization (-timeOddsMode 1) the time odds factors can be
+non-integer, and thus must be stored as float.
+
+2010-01-08 09:21:04 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Bugfix legality null move in parsing with -testLegality off
+
+The pointers were compared, in stead of the values.
+Also in stead of rejecting null moves with legality testing off, it rejected moves on the main diagonal.
+
+2010-01-07 23:27:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Chmod 644
+
+
+2010-01-06 16:56:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement castling for variant CRC
+
+
+2009-12-12 23:38:20 -0800 Arun Persaud <arun@nubati.net>:
+added missing sounds files to be able to compile on windows
+
+
+2009-12-07 22:08:08 -0800 Arun Persaud <arun@nubati.net>:
+updated to unstable version number
+
+
+2009-12-07 21:42:37 -0800 Arun Persaud <arun@nubati.net>:
+release of version 4.4.2
+
+Signed-off-by: Arun Persaud <arun@nubati.net>
+
+2009-12-07 21:40:23 -0800 Arun Persaud <arun@nubati.net>:
+add DIFFSTAT and SHORTLOG to tar-ball
+
 2009-12-06 11:34:50 -0800 H.G. Muller <h.g.muller@hccnet.nl>:
 remove trailing \r in xboard output
 
