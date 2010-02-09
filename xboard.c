@@ -355,6 +355,8 @@ void AdjuWhiteProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjuBlackProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjuDrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void StopObservingProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
 void StopExaminingProc P((Widget w, XEvent *event, String *prms,
@@ -898,6 +900,8 @@ XtActionsRec boardActions[] = {
     { "AdjuBlackProc", AdjuBlackProc },
     { "AdjuDrawProc", AdjuDrawProc },
     { "EnterKeyProc", EnterKeyProc },
+    { "UpKeyProc", UpKeyProc },
+    { "DownKeyProc", DownKeyProc },
     { "StopObservingProc", StopObservingProc },
     { "StopExaminingProc", StopExaminingProc },
     { "BackwardProc", BackwardProc },
@@ -1014,6 +1018,8 @@ char whiteTranslations[] = "<BtnDown>: WhiteClock()\n";
 char blackTranslations[] = "<BtnDown>: BlackClock()\n";
 
 char ICSInputTranslations[] =
+    "<Key>Up: UpKeyProc() \n "
+    "<Key>Down: DownKeyProc() \n "
     "<Key>Return: EnterKeyProc() \n";
 
 String xboardResources[] = {
@@ -2851,6 +2857,51 @@ SetMachineThinkingEnables()
     break;
   }
 }
+
+// [HGM] code borrowed from winboard.c (which should thus go to backend.c!)
+#define HISTORY_SIZE 64
+static char *history[HISTORY_SIZE];
+int histIn = 0, histP = 0;
+
+void
+SaveInHistory(char *cmd)
+{
+  if (history[histIn] != NULL) {
+    free(history[histIn]);
+    history[histIn] = NULL;
+  }
+  if (*cmd == NULLCHAR) return;
+  history[histIn] = StrSave(cmd);
+  histIn = (histIn + 1) % HISTORY_SIZE;
+  if (history[histIn] != NULL) {
+    free(history[histIn]);
+    history[histIn] = NULL;
+  }
+  histP = histIn;
+}
+
+char *
+PrevInHistory(char *cmd)
+{
+  int newhp;
+  if (histP == histIn) {
+    if (history[histIn] != NULL) free(history[histIn]);
+    history[histIn] = StrSave(cmd);
+  }
+  newhp = (histP - 1 + HISTORY_SIZE) % HISTORY_SIZE;
+  if (newhp == histIn || history[newhp] == NULL) return NULL;
+  histP = newhp;
+  return history[histP];
+}
+
+char *
+NextInHistory()
+{
+  if (histP == histIn) return NULL;
+  histP = (histP + 1) % HISTORY_SIZE;
+  return history[histP];   
+}
+// end of borrowed code
 
 #define Abs(n) ((n)<0 ? -(n) : (n))
 
@@ -4891,6 +4942,7 @@ void ICSInputSendText()
     j = 0;
     XtSetArg(args[j], XtNstring, &val); j++;
     XtGetValues(edit, args, j);
+    SaveInHistory(val);
     SendMultiLineToICS(val);
     XtCallActionProc(edit, "select-all", NULL, NULL, 0);
     XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
@@ -6098,6 +6150,55 @@ void EnterKeyProc(w, event, prms, nprms)
 {
     if (ICSInputBoxUp == True)
       ICSInputSendText();
+}
+
+void UpKeyProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{   // [HGM] input: let up-arrow recall previous line from history
+    Widget edit;
+    int j;
+    Arg args[16];
+    String val;
+    XawTextBlock t;
+
+    if (!ICSInputBoxUp) return;
+    edit = XtNameToWidget(ICSInputShell, "*form.text");
+    j = 0;
+    XtSetArg(args[j], XtNstring, &val); j++;
+    XtGetValues(edit, args, j);
+    val = PrevInHistory(val);
+    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
+    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
+    if(val) {
+	t.ptr = val; t.firstPos = 0; t.length = strlen(val); t.format = XawFmt8Bit;
+	XawTextReplace(edit, 0, 0, &t);
+	XawTextSetInsertionPoint(edit, 9999);
+    }
+}
+
+void DownKeyProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{   // [HGM] input: let down-arrow recall next line from history
+    Widget edit;
+    String val;
+    XawTextBlock t;
+
+    if (!ICSInputBoxUp) return;
+    edit = XtNameToWidget(ICSInputShell, "*form.text");
+    val = NextInHistory();
+    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
+    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
+    if(val) {
+	t.ptr = val; t.firstPos = 0; t.length = strlen(val); t.format = XawFmt8Bit;
+	XawTextReplace(edit, 0, 0, &t);
+	XawTextSetInsertionPoint(edit, 9999);
+    }
 }
 
 void StopObservingProc(w, event, prms, nprms)
