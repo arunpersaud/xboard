@@ -104,6 +104,7 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
     }
     XtSetArg(args, XtNdisplayCaret, True);
     XtSetValues(w, &args, 1);
+    XawTextSetInsertionPoint(w, 9999); // position cursor at end
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
 }
