@@ -2740,6 +2740,9 @@ read_from_ics(isr, closure, data, count, error)
 	    channel = -1;
 	    if(started == STARTED_NONE && (looking_at(buf, &i, "* tells you:") || looking_at(buf, &i, "* says:") || 
 					   looking_at(buf, &i, "* whispers:") ||
+					   looking_at(buf, &i, "* shouts:") ||
+					   looking_at(buf, &i, "* c-shouts:") ||
+					   looking_at(buf, &i, "--> * ") ||
 					   looking_at(buf, &i, "*(*):") && (sscanf(star_match[1], "%d", &channel),1) ||
 					   looking_at(buf, &i, "*(*)(*):") && (sscanf(star_match[2], "%d", &channel),1) ||
 					   looking_at(buf, &i, "*(*)(*)(*):") && (sscanf(star_match[3], "%d", &channel),1) ||
@@ -2757,8 +2760,17 @@ read_from_ics(isr, closure, data, count, error)
 		} else
 		if(buf[i-3] == 'r') // whisper; look if there is a WHISPER chatbox
 		for(p=0; p<MAX_CHAT; p++) {
-		    if(!strcmp("WHISPER", chatPartner[p])) {
+		    if(!strcmp("whispers", chatPartner[p])) {
 			talker[0] = '['; strcat(talker, "] ");
+			chattingPartner = p; break;
+		    }
+		} else
+		if(buf[i-3] == 't' || buf[oldi+2] == '>') // shout, c-shout or it; look if there is a 'shouts' chatbox
+		for(p=0; p<MAX_CHAT; p++) {
+		    if(!strcmp("shouts", chatPartner[p])) {
+			if(buf[oldi+2] == '>') { talker[0] = '<'; strcat(talker, "> "); }
+			else if(buf[i-8] == '-') { talker[0] = '('; strcat(talker, ") "); }
+			else { talker[0] = '['; strcat(talker, "] "); }
 			chattingPartner = p; break;
 		    }
 		}

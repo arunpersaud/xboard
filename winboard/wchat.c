@@ -285,8 +285,10 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	    SetDlgItemText(hDlg, OPT_ChatInput, "");
 	    // from here on it could be back-end
 	    SaveInHistory(mess);
-	    if(!strcmp("WHISPER", chatPartner[partner]))
+	    if(!strcmp("whispers", chatPartner[partner]))
 		sprintf(buf, "whisper %s\n", mess); // WHISPER box uses "whisper" to send
+	    else if(!strcmp("shouts", chatPartner[partner]))
+		sprintf(buf, "shout %s\n", mess); // SHOUT box uses "shout" to send
 	    else {
 		if(!atoi(chatPartner[partner])) {
 		    sprintf(buf, "> %s\r\n", mess); // echo only tells to handle, not channel
