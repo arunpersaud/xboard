@@ -45,7 +45,7 @@ extern char chatPartner[MAX_CHAT][MSG_SIZ];
 HANDLE chatHandle[MAX_CHAT];
 
 void SendToICS P((char *s));
-void ChatPopUp();
+void ChatPopUp P((char *s));
 void ChatPopDown();
 
 /* Imports from backend.c */
@@ -150,9 +150,14 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		sprintf(buf, "Chat Window %s", first.tidy);
 		SetWindowText(hDlg, buf);
         }
-	chatPartner[partner][0] = 0;
-	filterHasFocus[partner] = FALSE;
-
+//	chatPartner[partner][0] = 0;
+	SendMessage( GetDlgItem(hDlg, IDC_ChatPartner), // [HGM] clickbox: initialize with requested handle
+			WM_SETTEXT, 0, (LPARAM) chatPartner[partner] );
+	filterHasFocus[partner] = TRUE;
+	if(chatPartner[partner][0]) {
+	    filterHasFocus[partner] = FALSE;
+	    SetFocus( GetDlgItem(hDlg, OPT_ChatInput) );
+	}
         return FALSE;
 
     case WM_COMMAND:
@@ -246,13 +251,19 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 }
 
 // front end
-void ChatPopUp()
+void ChatPopUp(char *icsHandle)
 {
   FARPROC lpProc;
+  int i, partner = -1;
   
   if(chatCount >= MAX_CHAT) return;
 
   CheckMenuItem(GetMenu(hwndMain), IDM_NewChat, MF_CHECKED);
+  for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] == NULL) { partner = i; break; }
+  if(partner == -1) { DisplayError("No chat box available", 0); return; }
+  if(icsHandle) // [HGM] clickbox set handle in advance
+       strcpy(chatPartner[partner], icsHandle);
+  else chatPartner[partner][0] = NULLCHAR;
   chatCount++;
 
     lpProc = MakeProcInstance( (FARPROC) ChatProc, hInst );

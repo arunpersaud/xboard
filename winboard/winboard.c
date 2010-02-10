@@ -108,7 +108,7 @@ int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 void AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames);
 void DisplayMove P((int moveNumber));
 Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
-void ChatPopUp P(());
+void ChatPopUp P((char *s));
 typedef struct {
   ChessSquare piece;  
   POINT pos;      /* window coordinates of current pos */
@@ -4422,7 +4422,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_NewChat:
-      ChatPopUp();
+      ChatPopUp(NULL);
       break;
 
     case IDM_CopyPosition:
@@ -6388,6 +6388,7 @@ CommandX(HWND hwnd, char *command, BOOLEAN getname, BOOLEAN immediate)
     SetWindowText(hInput, buf);
     SendMessage(hInput, WM_CHAR, '\r', 0);
   } else {
+    if(!strcmp(command, "chat")) { ChatPopUp(name); return; }
     sprintf(buf, "%s %s ", command, name); /* trailing space */
     SetWindowText(hInput, buf);
     sel.cpMin = 999999;
