@@ -279,5 +279,7 @@ void OutputChatMessage(int partner, char *text)
 {
 	if(!chatHandle[partner]) return;
 
+	int n = strlen(text);
+	text[n+1] = 0; text[n] = '\n'; text[n-1] = '\r'; // Needs CR to not lose line breaks on copy-paste
 	InsertIntoMemo(chatHandle[partner], text);
 }
