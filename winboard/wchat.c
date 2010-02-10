@@ -208,7 +208,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		sprintf(buf, "whisper %s\n", mess); // WHISPER box uses "whisper" to send
 	    else {
 		if(!atoi(chatPartner[partner])) {
-		    sprintf(buf, "> %s\n", mess); // echo only tells to handle, not channel
+		    sprintf(buf, "> %s\r\n", mess); // echo only tells to handle, not channel
 		InsertIntoMemo(hDlg, buf);
 		sprintf(buf, "xtell %s %s\n", chatPartner[partner], mess);
 		} else
@@ -287,5 +287,7 @@ void OutputChatMessage(int partner, char *text)
 {
 	if(!chatHandle[partner]) return;
 
+	int n = strlen(text);
+	text[n+1] = 0; text[n] = '\n'; text[n-1] = '\r'; // Needs CR to not lose line breaks on copy-paste
 	InsertIntoMemo(chatHandle[partner], text);
 }
