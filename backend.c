@@ -2160,7 +2160,7 @@ PlotSeekAd(int i)
 	if(r > maxRating) r = maxRating;
 	if(tc < 1.) tc = 1.;
 	if(tc > 95.) tc = 95.;
-	x = (w-hMargin)* log(tc)/log(100.) + hMargin;
+	x = (w-hMargin-squareSize/8-7)* log(tc)/log(95.) + hMargin;
 	y = ((double)r - minRating)/(maxRating - minRating)
 	    * (h-vMargin-squareSize/8-1) + vMargin;
 	if(ratingList[i] < 0) y = vMargin + squareSize/4;
@@ -2272,7 +2272,7 @@ DrawSeekGraph()
     }
     DrawSeekText("unrated", hMargin+squareSize/8+7, h-1-vMargin-squareSize/4);
     for(i=1; i<100; i+=(i<10?1:5)) {
-	int xx = (w-hMargin)* log((double)i)/log(100.) + hMargin;
+	int xx = (w-hMargin-squareSize/8-7)* log((double)i)/log(95.) + hMargin;
 	DrawSeekAxis(xx, h-1-vMargin, xx, h-6-vMargin-3*(i%10==0)); // TC ticks
 	if(i<=5 || (i>40 ? i%20 : i%10) == 0) {
 	    char buf[MSG_SIZ];
