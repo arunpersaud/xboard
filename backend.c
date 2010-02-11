@@ -2322,6 +2322,7 @@ read_from_ics(isr, closure, data, count, error)
 			sprintf(mess, "%s%s", talker, parse);
 			OutputChatMessage(chattingPartner, mess);
 			chattingPartner = -1;
+			next_out = i+1; // [HGM] suppress printing in ICS window
 		    } else
 		    if(!suppressKibitz) // [HGM] kibitz
 			AppendComment(forwardMostMove, StripHighlight(parse));
@@ -2345,12 +2346,12 @@ read_from_ics(isr, closure, data, count, error)
 				pvInfoList[forwardMostMove-1].score = 100*score;
 			    }
 			    OutputKibitz(suppressKibitz, parse);
-			    next_out = i+1; // [HGM] suppress printing in ICS window
 			} else {
 			    char tmp[MSG_SIZ];
 			    sprintf(tmp, _("your opponent kibitzes: %s"), parse);
 			    SendToPlayer(tmp, strlen(tmp));
 			}
+			next_out = i+1; // [HGM] suppress printing in ICS window
 		    }
 		    started = STARTED_NONE;
 		} else {
@@ -2366,6 +2367,7 @@ read_from_ics(isr, closure, data, count, error)
 		    continue;
 		}
 		started = STARTED_NONE;
+		if(suppressKibitz) next_out = i+1;
 	    }
 
             /* Kludge to deal with rcmd protocol */
@@ -2436,10 +2438,12 @@ read_from_ics(isr, closure, data, count, error)
 	    if (appData.autoKibitz && started == STARTED_NONE && 
                 !appData.icsEngineAnalyze &&                     // [HGM] [DM] ICS analyze
 		(gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack || gameMode == IcsObserving)) {
-		if(looking_at(buf, &i, "* kibitzes: ") &&
+		if((looking_at(buf, &i, "\n* kibitzes: ") || looking_at(buf, &i, "* kibitzes: ")) &&
 		   (StrStr(star_match[0], gameInfo.white) == star_match[0] || 
 		    StrStr(star_match[0], gameInfo.black) == star_match[0]   )) { // kibitz of self or opponent
 		    	suppressKibitz = TRUE;
+			if (oldi > next_out) SendToPlayer(&buf[next_out], oldi - next_out);
+			next_out = i;
 			if((StrStr(star_match[0], gameInfo.white) == star_match[0]
 				&& (gameMode == IcsPlayingWhite)) ||
 			   (StrStr(star_match[0], gameInfo.black) == star_match[0]
@@ -2454,13 +2458,18 @@ read_from_ics(isr, closure, data, count, error)
 			} 
 			continue;
 		} else
-		if(looking_at(buf, &i, "kibitzed to *\n") && atoi(star_match[0])) {
+		if((looking_at(buf, &i, "\nkibitzed to *\n") || looking_at(buf, &i, "kibitzed to *\n") ||
+		    looking_at(buf, &i, "\n(kibitzed to *\n") || looking_at(buf, &i, "(kibitzed to *\n"))
+			 && atoi(star_match[0])) {
 		    // suppress the acknowledgements of our own autoKibitz
 		    char *p;
+		    if (oldi > next_out) SendToPlayer(&buf[next_out], oldi - next_out);
 		    if(p = strchr(star_match[0], ' ')) p[1] = NULLCHAR; // clip off "players)" on FICS
 		    SendToPlayer(star_match[0], strlen(star_match[0]));
-		    looking_at(buf, &i, "*% "); // eat prompt
+		    if(looking_at(buf, &i, "*% ")) // eat prompt
+			suppressKibitz = FALSE;
 		    next_out = i;
+		    continue;
 		}
 	    } // [HGM] kibitz: end of patch
 
@@ -2498,6 +2507,8 @@ read_from_ics(isr, closure, data, count, error)
 		    chattingPartner = p; break;
 		}
 		if(chattingPartner<0) i = oldi; else {
+		    if(oldi > 0 && buf[oldi-1] == '\n') oldi--;
+		    if (oldi > next_out) SendToPlayer(&buf[next_out], oldi - next_out);
 		    started = STARTED_COMMENT;
 		    parse_pos = 0; parse[0] = NULLCHAR;
 		    savingComment = 3 + chattingPartner; // counts as TRUE
