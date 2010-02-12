@@ -835,7 +835,7 @@ BEGIN
     PUSHBUTTON      "Clear",IDC_Clear,198,3,25,13
     DEFPUSHBUTTON   "Send",IDC_Send,228,3,25,13
     CONTROL         "",IDC_ChatMemo,"RICHEDIT",ES_MULTILINE | ES_READONLY |
-                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_BORDER | WS_VSCROLL | 
+                    ES_AUTOVSCROLL | WS_BORDER | WS_VSCROLL | 
                     WS_HSCROLL | WS_TABSTOP,3,17,250,70
     CONTROL         "",OPT_ChatInput,"RICHEDIT",ES_AUTOHSCROLL | ES_NOHIDESEL | 
                     WS_BORDER | WS_TABSTOP,3,90,250,13
