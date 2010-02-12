@@ -139,6 +139,8 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
     char buf[MSG_SIZ], mess[MSG_SIZ];
     int partner = -1, i;
     static BOOL filterHasFocus[MAX_CHAT];
+    WORD wMask;
+    HWND hMemo;
 
     for(i=0; i<MAX_CHAT; i++) if(hDlg == chatHandle[i]) { partner = i; break; }
 
@@ -158,7 +160,28 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	    filterHasFocus[partner] = FALSE;
 	    SetFocus( GetDlgItem(hDlg, OPT_ChatInput) );
 	}
+	hMemo = GetDlgItem(hDlg, IDC_ChatMemo);
+	wMask = (WORD) SendMessage(hMemo, EM_GETEVENTMASK, 0, 0L);
+	SendMessage(hMemo, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
+	SendMessage(hMemo, EM_AUTOURLDETECT, TRUE, 0L);
         return FALSE;
+
+    case WM_NOTIFY:
+      if (((NMHDR*)lParam)->code == EN_LINK)
+      {
+	ENLINK *pLink = (ENLINK*)lParam;
+	if (pLink->msg == WM_LBUTTONUP)
+	{
+	  TEXTRANGE tr;
+
+	  tr.chrg = pLink->chrg;
+	  tr.lpstrText = malloc(1+tr.chrg.cpMax-tr.chrg.cpMin);
+	  SendMessage( GetDlgItem(hDlg, IDC_ChatMemo), EM_GETTEXTRANGE, 0, (LPARAM)&tr);
+	  ShellExecute(NULL, "open", tr.lpstrText, NULL, NULL, SW_SHOW);
+	  free(tr.lpstrText);
+	}
+      }
+    break;
 
     case WM_COMMAND:
       /* 
