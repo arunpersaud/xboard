@@ -238,7 +238,9 @@ chess.mds.mdh.se /icsport=5000\n\
 Playe&rs,players,0,1\n\
 &Games,games,0,1\n\
 &Sought,sought,0,1\n\
-|&Tell (name),tell,1,0\n\
+| ,none,0,0\n\
+Open Chat &Box (name),chat,1,0\n\
+&Tell (name),tell,1,0\n\
 M&essage (name),message,1,0\n\
 -\n\
 &Finger (name),finger,1,1\n\
