@@ -6328,13 +6328,14 @@ LoadIcsTextMenu(IcsTextMenuEntry *e)
   while (e->item) {
     if (strcmp(e->item, "-") == 0) {
       AppendMenu(h, MF_SEPARATOR, 0, 0);
-    } else {
+    } else { // [HGM] re-written a bit to use only one AppendMenu call for both cases (| or no |)
+      int flags = MF_STRING, j = 0;
       if (e->item[0] == '|') {
-	AppendMenu(h, MF_STRING|MF_MENUBARBREAK,
-		   IDM_CommandX + i, &e->item[1]);
-      } else {
-	AppendMenu(h, MF_STRING, IDM_CommandX + i, e->item);
+	flags |= MF_MENUBARBREAK;
+        j++;
       }
+      if(!strcmp(e->command, "none")) flags |= MF_GRAYED; // [HGM] chatclick: provide inactive dummy
+      AppendMenu(h, flags, IDM_CommandX + i, e->item + j);
     }
     e++;
     i++;
@@ -6456,32 +6457,6 @@ ConsoleTextSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return 0;
    } // [HGM] navigate: for Ctrl+R, flow into nex case (moved up here) to summon up menu
-  case WM_RBUTTONUP:
-    if (GetKeyState(VK_SHIFT) & ~1) {
-      SendDlgItemMessage(hwndConsole, OPT_ConsoleText, 
-        WM_COMMAND, MAKEWPARAM(IDM_QuickPaste, 0), 0);
-    } else {
-      POINT pt;
-      HMENU hmenu = LoadIcsTextMenu(icsTextMenuEntry);
-      SendMessage(hwnd, EM_EXGETSEL, 0, (LPARAM)&sel);
-      if (sel.cpMin == sel.cpMax) {
-        EnableMenuItem(hmenu, IDM_Copy, MF_BYCOMMAND|MF_GRAYED);
-        EnableMenuItem(hmenu, IDM_QuickPaste, MF_BYCOMMAND|MF_GRAYED);
-      }
-      if (!IsClipboardFormatAvailable(CF_TEXT)) {
-        EnableMenuItem(hmenu, IDM_Paste, MF_BYCOMMAND|MF_GRAYED);
-      }
-      pt.x = LOWORD(lParam);
-      pt.y = HIWORD(lParam);
-      MenuPopup(hwnd, pt, hmenu, -1);
-    }
-    return 0;
-  case WM_PASTE:
-    hInput = GetDlgItem(hwndConsole, OPT_ConsoleInput);
-    SetFocus(hInput);
-    return SendMessage(hInput, message, wParam, lParam);
-  case WM_MBUTTONDOWN:
-    return SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(IDM_QuickPaste, 0), 0);
   case WM_RBUTTONDOWN:
     if (!(GetKeyState(VK_SHIFT) & ~1)) {
       /* Move selection here if it was empty */
@@ -6495,8 +6470,36 @@ ConsoleTextSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	SendMessage(hwnd, EM_EXSETSEL, 0, (LPARAM)&sel);
       }
       SendMessage(hwnd, EM_HIDESELECTION, FALSE, FALSE);
+{ // [HGM] chatclick: code moved here from WM_RBUTTONUP case, to have menu appear on down-click
+      POINT pt;
+      HMENU hmenu = LoadIcsTextMenu(icsTextMenuEntry);
+      SendMessage(hwnd, EM_EXGETSEL, 0, (LPARAM)&sel);
+      if (sel.cpMin == sel.cpMax) {
+        EnableMenuItem(hmenu, IDM_Copy, MF_BYCOMMAND|MF_GRAYED);
+        EnableMenuItem(hmenu, IDM_QuickPaste, MF_BYCOMMAND|MF_GRAYED);
+      }
+      if (!IsClipboardFormatAvailable(CF_TEXT)) {
+        EnableMenuItem(hmenu, IDM_Paste, MF_BYCOMMAND|MF_GRAYED);
+      }
+      pt.x = LOWORD(lParam)-30; // [HGM] chatclick: make menu pop up with pointer above upper-right item
+      pt.y = HIWORD(lParam)-10; //       make it appear as if mouse moved there, so it will be selected on up-click
+      PostMessage(hwnd, WM_MOUSEMOVE, wParam, lParam+5);
+      MenuPopup(hwnd, pt, hmenu, -1);
+}
     }
     return 0;
+  case WM_RBUTTONUP:
+    if (GetKeyState(VK_SHIFT) & ~1) {
+      SendDlgItemMessage(hwndConsole, OPT_ConsoleText, 
+        WM_COMMAND, MAKEWPARAM(IDM_QuickPaste, 0), 0);
+    }
+    return 0;
+  case WM_PASTE:
+    hInput = GetDlgItem(hwndConsole, OPT_ConsoleInput);
+    SetFocus(hInput);
+    return SendMessage(hInput, message, wParam, lParam);
+  case WM_MBUTTONDOWN:
+    return SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(IDM_QuickPaste, 0), 0);
   case WM_COMMAND:
     switch (LOWORD(wParam)) {
     case IDM_QuickPaste:

@@ -256,11 +256,9 @@ void ChatPopUp(char *icsHandle)
   FARPROC lpProc;
   int i, partner = -1;
   
-  if(chatCount >= MAX_CHAT) return;
-
   CheckMenuItem(GetMenu(hwndMain), IDM_NewChat, MF_CHECKED);
   for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] == NULL) { partner = i; break; }
-  if(partner == -1) { DisplayError("No chat box available", 0); return; }
+  if(partner == -1) { DisplayError("You first have to close a Chat Box\nbefore you can open a new one", 0); return; }
   if(icsHandle) // [HGM] clickbox set handle in advance
        strcpy(chatPartner[partner], icsHandle);
   else chatPartner[partner][0] = NULLCHAR;
