@@ -105,7 +105,6 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
     }
     XtSetArg(args, XtNdisplayCaret, True);
     XtSetValues(w, &args, 1);
-    XawTextSetInsertionPoint(w, 9999); // position cursor at end
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
 }
@@ -429,7 +428,7 @@ void TimeControlPopUp()
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNwidth,  85);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
+    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
     tcTime = XtCreateManagedWidget("TC", asciiTextWidgetClass, form, args, j);
     XtAddEventHandler(tcTime, ButtonPressMask, False, SetFocus, (XtPointer) popup);
 
@@ -816,7 +815,7 @@ void EnginePopUp()
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
     XtSetArg(args[j], XtNwidth,  60);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
+    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
     engThreshold = XtCreateManagedWidget("Threshold", asciiTextWidgetClass, form, args, j);
     XtAddEventHandler(engThreshold, ButtonPressMask, False, SetFocus, (XtPointer) popup);
 
@@ -1290,6 +1289,7 @@ void UciPopUp()
 	XtSetArg(args[j], XtNright, XtChainRight);  j++;
 	XtSetArg(args[j], XtNresizable, True);  j++;
 	XtSetArg(args[j], XtNwidth, i&1 ? 245 : 50); j++;
+	XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
 	if(i&1) {
 	    XtSetArg(args[j], XtNstring, * (char**) controlDesc[i].ptr ? 
 					 * (char**) controlDesc[i].ptr : ""); j++;
@@ -1533,7 +1533,7 @@ void CreateComboPopup(parent, name, n, mb)
 void SettingsPopUp(ChessProgramState *cps)
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit=NULL, form, oldform, last, b_ok, b_cancel, leftMargin = NULL;
+    Widget popup, layout, dialog, edit=NULL, form, oldform, last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
     Window root, child;
     int x, y, i, j, height, width, h, c;
     int win_x, win_y, maxWidth, maxTextWidth;
@@ -1593,9 +1593,10 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNright, XtChainRight);  j++;
 	    XtSetArg(args[j], XtNresizable, True);  j++;
 	    XtSetArg(args[j], XtNstring, cps->option[i].type==Spin ? def : cps->option[i].textValue);  j++;
+	    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
 	    edit = last;
 	    cps->option[i].handle = (void*)
-		(last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));   
+		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));   
 	    XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup);
 	    if(cps->option[i].type == TextBox) break;
 
@@ -1728,7 +1729,7 @@ void SettingsPopUp(ChessProgramState *cps)
     SettingsUp = True;
 
     previous = NULL;
-    if(edit)SetFocus(edit, popup, (XEvent*) NULL, False);
+    if(textField)SetFocus(textField, popup, (XEvent*) NULL, False);
 }
 
 void FirstSettingsProc(w, event, prms, nprms)
