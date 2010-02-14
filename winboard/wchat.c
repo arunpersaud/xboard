@@ -204,7 +204,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		sprintf(buf, "whisper %s\n", mess); // WHISPER box uses "whisper" to send
 	    else {
 		if(!atoi(chatPartner[partner])) {
-		    sprintf(buf, "> %s\n", mess); // echo only tells to handle, not channel
+		    sprintf(buf, "> %s\r\n", mess); // echo only tells to handle, not channel
 		InsertIntoMemo(hDlg, buf);
 		sprintf(buf, "xtell %s %s\n", chatPartner[partner], mess);
 		} else
