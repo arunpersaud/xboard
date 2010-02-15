@@ -2513,6 +2513,7 @@ read_from_ics(isr, closure, data, count, error)
 		    parse_pos = 0; parse[0] = NULLCHAR;
 		    savingComment = 3 + chattingPartner; // counts as TRUE
 		    suppressKibitz = TRUE;
+		    continue;
 		}
 	    } // [HGM] chat: end of patch
 
