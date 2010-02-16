@@ -519,6 +519,7 @@ typedef struct {
     int fontSizeTolerance; /* xboard only */
     char *initialMode;
     char *variant;
+    char *chatBoxes;
     int firstProtocolVersion;
     int secondProtocolVersion;
     Boolean showButtonBar;
