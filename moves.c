@@ -1223,12 +1223,15 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
 	(cl->ftIn == -1 || cl->ftIn == ft || wildCard)) {
 
 	cl->count++;
-        cl->piece = board[rf][ff];
-	cl->rf = rf;
-	cl->ff = ff;
-	cl->rt = wildCard ? cl->rtIn : rt;
-	cl->ft = wildCard ? cl->ftIn : ft;
-	cl->kind = kind;
+	if(cl->count == 1 || board[rt][ft] != EmptySquare) {
+	  // [HGM] oneclick: if multiple moves, be sure we remember capture
+	  cl->piece = board[rf][ff];
+	  cl->rf = rf;
+	  cl->ff = ff;
+	  cl->rt = wildCard ? cl->rtIn : rt;
+	  cl->ft = wildCard ? cl->ftIn : ft;
+	  cl->kind = kind;
+	}
 	cl->captures += (board[cl->rt][cl->ft] != EmptySquare); // [HGM] oneclick: count captures
     }
 }
