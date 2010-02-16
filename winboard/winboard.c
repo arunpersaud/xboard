@@ -859,6 +859,17 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
                  0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 #endif
     ShowWindow(hwndConsole, nCmdShow);
+    if(appData.chatBoxes) { // [HGM] chat: open chat boxes
+      char buf[MSG_SIZ], *p = buf, *q;
+      strcpy(buf, appData.chatBoxes);
+      do {
+	q = strchr(p, ';');
+	if(q) *q++ = 0;
+	if(*p) ChatPopUp(p);
+      } while(p=q);
+//      Sleep(1000);
+    }
+    SetActiveWindow(hwndConsole);
   }
   if(!appData.noGUI)   UpdateWindow(hwnd);  else ShowWindow(hwnd, SW_MINIMIZE);
   if(gameListDialog) SetFocus(gameListDialog); // [HGM] jaws: for if we clicked multi-game game file

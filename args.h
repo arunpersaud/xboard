@@ -624,6 +624,7 @@ ArgDescriptor argDescriptors[] = {
   { "zippyReplyTimeout", ArgInt, (void *)&junk, FALSE, INVALID },
 #endif
   /* [HGM] options for broadcasting and time odds */
+  { "chatBoxes", ArgString, (void *) &appData.chatBoxes, !XBOARD, (ArgIniType) NULL },
   { "serverMoves", ArgString, (void *) &appData.serverMovesName, FALSE, (ArgIniType) NULL },
   { "suppressLoadMoves", ArgBoolean, (void *) &appData.suppressLoadMoves, FALSE, (ArgIniType) FALSE },
   { "serverPause", ArgInt, (void *) &appData.serverPause, FALSE, (ArgIniType) 15 },
