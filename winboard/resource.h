@@ -507,6 +507,10 @@
 #define IDC_Clear			1725
 #define IDC_Send			1726
 #define IDM_NewChat			1727
+#define IDC_Focus1			1730
+#define IDC_Focus2			1731
+#define IDC_Focus3			1732
+#define IDC_Focus4			1733
 #define IDC_SPECIFY_ENG_STATIC          1814
 #define IDC_SPECIFY_SERVER_STATIC       1815
 #define OPT_MESS                        1818

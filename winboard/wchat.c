@@ -32,6 +32,7 @@
 #include <malloc.h>
 #include <commdlg.h>
 #include <dlgs.h>
+#include <Windowsx.h>
 
 #include "common.h"
 #include "frontend.h"
@@ -41,6 +42,7 @@
 #include "wsnap.h"
 
 int chatCount;
+static int onTop;
 extern char chatPartner[MAX_CHAT][MSG_SIZ];
 HANDLE chatHandle[MAX_CHAT];
 static WNDPROC chatInputWindowProc;
@@ -62,6 +64,7 @@ extern HINSTANCE hInst;
 extern HWND hwndMain;
 
 extern WindowPlacement wpChat[MAX_CHAT];
+extern WindowPlacement wpConsole;
 
 extern BoardSize boardSize;
 
@@ -192,7 +195,15 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		sprintf(buf, "Chat Window %s", first.tidy);
 		SetWindowText(hDlg, buf);
         }
-//	chatPartner[partner][0] = 0;
+	for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] && i != partner) {
+	    // set our button in other open chats
+	    SetDlgItemText(chatHandle[i], IDC_Focus1+partner-(i<partner), chatPartner[partner]);
+	    EnableWindow( GetDlgItem(chatHandle[i], IDC_Focus1+partner-(i<partner)), 1 );
+	    // and buttons for other chats in ours
+	    SetDlgItemText(hDlg, IDC_Focus1+i-(i>partner), chatPartner[i]);
+	} else EnableWindow( GetDlgItem(hDlg, IDC_Focus1+i-(i>partner)), 1 );
+	for(i=0; i<MAX_CHAT-1; i++) { Button_SetStyle(GetDlgItem(hDlg, IDC_Focus1+i), BS_PUSHBUTTON|BS_LEFT, TRUE); }
+        SetWindowPos(hDlg, NULL, wpConsole.x, wpConsole.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
 	SendMessage( GetDlgItem(hDlg, IDC_ChatPartner), // [HGM] clickbox: initialize with requested handle
 			WM_SETTEXT, 0, (LPARAM) chatPartner[partner] );
 	filterHasFocus[partner] = TRUE;
@@ -263,6 +274,10 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 
 	case IDC_Change:
 	    GetDlgItemText(hDlg, IDC_ChatPartner, chatPartner[partner], MSG_SIZ);
+	    for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] && i != partner) {
+	      // set our button in other open chats
+	      SetDlgItemText(chatHandle[i], IDC_Focus1+partner-(i<partner), chatPartner[partner]);
+	    }
 	    break;
 
 	case IDC_Send:
@@ -283,6 +298,22 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	    SendToICS(buf);
 	    break;
 
+	case IDC_Focus1:
+	case IDC_Focus2:
+	case IDC_Focus3:
+	case IDC_Focus4:
+	    i = LOWORD(wParam) - IDC_Focus1;
+	    if(i >= partner) i++;
+	    onTop = i;
+	    SetFocus(GetDlgItem(hDlg, IDC_Send));
+	    if(chatHandle[i]) {
+		int j;
+		for(j=0; j<MAX_CHAT; j++) if(i != j && chatHandle[j])
+		    Button_SetState(GetDlgItem(chatHandle[j], IDC_Focus1+i-(j<i)), FALSE);
+		SetFocus(GetDlgItem(chatHandle[i], OPT_ChatInput));
+	    }
+	    break;
+
         default:
           break;
         }
@@ -293,6 +324,11 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	chatHandle[partner] = 0;
 	chatPartner[partner][0] = 0;
         ChatPopDown();
+	for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] && i != partner) {
+	    // set our button in other open chats
+	    SetDlgItemText(chatHandle[i], IDC_Focus1+partner-(i<partner), "");
+	    EnableWindow( GetDlgItem(chatHandle[i], IDC_Focus1+partner-(i<partner)), 0 );
+	}
 	EndDialog(hDlg, TRUE);
         break;
 
@@ -351,9 +387,12 @@ void ChatPopDown()
 
 void OutputChatMessage(int partner, char *text)
 {
+	int j;
 	if(!chatHandle[partner]) return;
 
 	int n = strlen(text);
 	text[n+1] = 0; text[n] = '\n'; text[n-1] = '\r'; // Needs CR to not lose line breaks on copy-paste
 	InsertIntoMemo(chatHandle[partner], text);
+	if(partner != onTop) for(j=0; j<MAX_CHAT; j++) if(j != partner && chatHandle[j])
+	    Button_SetState(GetDlgItem(chatHandle[j], IDC_Focus1+partner-(j<partner)), TRUE);
 }
