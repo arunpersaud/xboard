@@ -727,7 +727,7 @@ extern WindowPlacement wpGameList;
 extern WindowPlacement wpTags;
 
 // [HGM] chat	
-#define MAX_CHAT 3
+#define MAX_CHAT 5
 extern int chatCount;
 extern char chatPartner[MAX_CHAT][MSG_SIZ];
 
