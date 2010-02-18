@@ -4753,6 +4753,20 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c '%s'\n", valid, fromX+AAA, fromY+ONE, toX+
     if(!valid && nr == 0 &&
        ParseOneMove(pv, endPV-1, &moveType, &fromX, &fromY, &toX, &toY, &promoChar)){ 
         nr++; moveType = Comment; // First move has been played; kludge to make sure we continue
+        // Hande case where played move is different from leading PV move
+        CopyBoard(boards[endPV+1], boards[endPV-1]); // tentatively unplay last game move
+        CopyBoard(boards[endPV+2], boards[endPV-1]); // and play first move of PV
+        ApplyMove(fromX, fromY, toX, toY, promoChar, boards[endPV+2]);
+        if(!CompareBoards(boards[endPV], boards[endPV+2])) {
+          endPV += 2; // if position different, keep this
+          moveList[endPV-1][0] = fromX + AAA;
+          moveList[endPV-1][1] = fromY + ONE;
+          moveList[endPV-1][2] = toX + AAA;
+          moveList[endPV-1][3] = toY + ONE;
+          parseList[endPV-1][0] = NULLCHAR;
+          strcpy(moveList[endPV-2], "_0_0"); // suppress premove highlight on takeback move
+        }
+      }
     }
     while(*pv && *pv++ != ' '); // skip what we parsed; assume space separators
     if(moveType == Comment) { valid++; continue; } // allow comments in PV
