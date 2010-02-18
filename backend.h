@@ -154,7 +154,7 @@ void BackwardEvent P((void));
 void ToEndEvent P((void));
 void ToStartEvent P((void));
 void ToNrEvent P((int to));
-void RevertEvent P((void));
+void RevertEvent P((Boolean annotate));
 void RetractMoveEvent P((void));
 void MoveNowEvent P((void));
 void TruncateGameEvent P((void));

@@ -54,6 +54,7 @@
 #define IDM_Debug                       174
 #define IDM_AnalysisMode                177
 #define IDM_AnalyzeFile                 178
+#define IDM_Annotate                    179
 #define IDM_CopyGame                    180
 #define IDM_PasteGame                   181
 #define IDM_CopyPosition                182

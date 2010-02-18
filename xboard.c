@@ -277,6 +277,7 @@ void AskQuestionReplyAction P((Widget w, XEvent *event,
 void AskQuestionProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void UploadProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void AnnotateProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AskQuestionPopDown P((void));
 void PromotionPopDown P((void));
 void PromotionCallback P((Widget w, XtPointer client_data,
@@ -833,8 +834,9 @@ XtActionsRec boardActions[] = {
   //    { "ToStartProc", ToStartProc },
   //    { "ToEndProc", ToEndProc },
   //    { "RevertProc", RevertProc },
+   { "AnnotateProc", AnnotateProc },
   //    { "TruncateGameProc", TruncateGameProc },
-  //    { "MoveNowProc", MoveNowProc },
+  //    { "MoveNowProc", MoveNowProc },g26
   //    { "RetractMoveProc", RetractMoveProc },
   //    { "AlwaysQueenProc", AlwaysQueenProc },
   //    { "AnimateDraggingProc", AnimateDraggingProc },
@@ -2077,6 +2079,12 @@ GreyRevert(grey)
   } else {
     XtSetSensitive(w, !grey);
   }
+  w = XtNameToWidget(menuBarWidget, "menuStep.Annotate");
+  if (w == NULL) {
+    DisplayError("menuStep.Annotate", 0);
+  } else {
+    XtSetSensitive(w, !grey);
+  }
 }
 
 void
@@ -2084,7 +2092,7 @@ SetMenuEnables(enab)
      Enables *enab;
 {
   GObject *o;
-  
+ 
   if (!builder) return;
   while (enab->name != NULL) {
     o = gtk_builder_get_object(builder, enab->name);
@@ -6222,4 +6230,13 @@ void UploadProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     UploadGameEvent();
+}
+
+void AnnotateProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    RevertEvent(True);
 }

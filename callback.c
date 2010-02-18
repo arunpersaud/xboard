@@ -569,7 +569,7 @@ void RevertProc(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    RevertEvent();
+    RevertEvent(False);
     return;
 }
 
