@@ -369,6 +369,7 @@ void ForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ToStartProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ToEndProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void RevertProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void AnnotateProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TruncateGameProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void RetractMoveProc P((Widget w, XEvent *event, String *prms,
@@ -657,6 +658,7 @@ MenuItem stepMenu[] = {
     {N_("Back to Start"), ToStartProc},
     {N_("Forward to End"), ToEndProc},
     {N_("Revert"), RevertProc},
+    {N_("Annotate"), AnnotateProc},
     {N_("Truncate Game"), TruncateGameProc},
     {"----", NothingProc},
     {N_("Move Now"), MoveNowProc},
@@ -914,6 +916,7 @@ XtActionsRec boardActions[] = {
     { "ToStartProc", ToStartProc },
     { "ToEndProc", ToEndProc },
     { "RevertProc", RevertProc },
+    { "AnnotateProc", AnnotateProc },
     { "TruncateGameProc", TruncateGameProc },
     { "MoveNowProc", MoveNowProc },
     { "RetractMoveProc", RetractMoveProc },
@@ -2624,6 +2627,12 @@ GreyRevert(grey)
     } else {
       XtSetSensitive(w, !grey);
     }
+    w = XtNameToWidget(menuBarWidget, "menuStep.Annotate");
+    if (w == NULL) {
+      DisplayError("menuStep.Annotate", 0);
+    } else {
+      XtSetSensitive(w, !grey);
+    }
 }
 
 void
@@ -2659,6 +2668,7 @@ Enables icsEnables[] = {
     { "menuOptions.Hide Thinking", False },
     { "menuOptions.Ponder Next Move", False },
 #endif
+    { "menuStep.Annotate", False },
     { NULL, False }
 };
 
@@ -2674,6 +2684,7 @@ Enables ncpEnables[] = {
     { "menuMode.ICS Input Box", False },
     { "Action", False },
     { "menuStep.Revert", False },
+    { "menuStep.Annotate", False },
     { "menuStep.Move Now", False },
     { "menuStep.Retract Move", False },
     { "menuOptions.Auto Comment", False },
@@ -2704,6 +2715,7 @@ Enables gnuEnables[] = {
     { "menuAction.Stop Observing", False },
     { "menuAction.Upload to Examine", False },
     { "menuStep.Revert", False },
+    { "menuStep.Annotate", False },
     { "menuOptions.Auto Comment", False },
     { "menuOptions.Auto Observe", False },
     { "menuOptions.Auto Raise Board", False },
@@ -6247,7 +6259,16 @@ void RevertProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    RevertEvent();
+    RevertEvent(False);
+}
+
+void AnnotateProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    RevertEvent(True);
 }
 
 void TruncateGameProc(w, event, prms, nprms)

@@ -12667,9 +12667,9 @@ ToNrEvent(int to)
 }
 
 void
-RevertEvent()
+RevertEvent(Boolean annotate)
 {
-    if(PopTail(TRUE)) { // [HGM] vari: restore old game tail
+    if(PopTail(annotate)) { // [HGM] vari: restore old game tail
 	return;
     }
     if (gameMode != IcsExamining) {
@@ -15055,6 +15055,7 @@ PopTail(Boolean annotate)
 			     sprintf(moveBuf, " %d. %s", i+2>>1, SavePart(parseList[i]));
 			else sprintf(moveBuf, " %s", SavePart(parseList[i]));
 			strcat(buf, moveBuf);
+			if(commentList[i]) { strcat(buf, " "); strcat(buf, commentList[i]); }
 			if(!--cnt) { strcat(buf, "\n"); cnt = 10; }
 		}
 		strcat(buf, ")");

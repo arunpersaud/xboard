@@ -1160,6 +1160,7 @@ BEGIN
         MENUITEM "Back to &Start\tAlt+Home",    IDM_ToStart
         MENUITEM "Forward to &End\tAlt+End",    IDM_ToEnd
         MENUITEM "Re&vert",                     IDM_Revert
+        MENUITEM "&Annotate",                   IDM_Annotate
         MENUITEM "&Truncate Game",              IDM_TruncateGame
         MENUITEM SEPARATOR
         MENUITEM "&Move Now\tCtrl+M",           IDM_MoveNow

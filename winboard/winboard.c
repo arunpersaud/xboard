@@ -867,7 +867,6 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 	if(q) *q++ = 0;
 	if(*p) ChatPopUp(p);
       } while(p=q);
-//      Sleep(1000);
     }
     SetActiveWindow(hwndConsole);
   }
@@ -4665,7 +4664,11 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_Revert:
-      RevertEvent();
+      RevertEvent(FALSE);
+      break;
+
+    case IDM_Annotate: // [HGM] vari: revert with annotation
+      RevertEvent(TRUE);
       break;
 
     case IDM_TruncateGame:
@@ -7307,6 +7310,7 @@ GreyRevert(Boolean grey)
 { // [HGM] vari: for retracting variations in local mode
   HMENU hmenu = GetMenu(hwndMain);
   EnableMenuItem(hmenu, IDM_Revert, MF_BYCOMMAND|(grey ? MF_GRAYED : MF_ENABLED));
+  EnableMenuItem(hmenu, IDM_Annotate, MF_BYCOMMAND|(grey ? MF_GRAYED : MF_ENABLED));
 }
 
 VOID
@@ -7330,6 +7334,7 @@ Enables gnuEnables[] = {
   { IDM_StopObserving, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Upload, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Revert, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Annotate, MF_BYCOMMAND|MF_GRAYED },
   { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
@@ -7350,6 +7355,7 @@ Enables icsEnables[] = {
   { IDM_IcsOptions, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Annotate, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 
@@ -7374,6 +7380,7 @@ Enables ncpEnables[] = {
   { IDM_IcsClient, MF_BYCOMMAND|MF_GRAYED },
   { ACTION_POS, MF_BYPOSITION|MF_GRAYED },
   { IDM_Revert, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Annotate, MF_BYCOMMAND|MF_GRAYED },
   { IDM_MoveNow, MF_BYCOMMAND|MF_GRAYED },
   { IDM_RetractMove, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TimeControl, MF_BYCOMMAND|MF_GRAYED },
