@@ -4816,17 +4816,17 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
 
 
 void
-ParsePV(char *pv)
+ParsePV(char *pv, Boolean storeComments)
 { // Parse a string of PV moves, and append to current game, behind forwardMostMove
   int fromX, fromY, toX, toY; char promoChar;
   ChessMove moveType;
   Boolean valid;
-  int nr = 0;
+  int nr = 0, dummy;
 
   endPV = forwardMostMove;
   do {
     while(*pv == ' ') pv++;
-    if(*pv == '(') pv++; // first (ponder) move can be in parentheses
+    if(nr == 0 && *pv == '(') pv++; // first (ponder) move can be in parentheses
     valid = ParseOneMove(pv, endPV, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
 if(appData.debugMode){
 fprintf(debugFP,"parsePV: %d %c%c%c%c '%s'\n", valid, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, pv);
@@ -4848,9 +4848,30 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c '%s'\n", valid, fromX+AAA, fromY+ONE, toX+
           strcpy(moveList[endPV-2], "_0_0"); // suppress premove highlight on takeback move
         }
       }
+    if(moveType == Comment) {
+	// [HGM] vari: try to skip comment
+	int level = 0; char c, *start = pv, wait = NULLCHAR;
+	do {
+	    if(!wait) {
+		if(*pv == '(') level++; else
+		if(*pv == ')' && level) level--;
+	    }
+	    if(*pv == wait) wait = NULLCHAR; else
+	    if(*pv == '{') wait = '}'; else
+	    if(*pv == '[') wait = ']';
+	    pv++;
+	} while(*pv && (wait || level));
+	if(storeComments) {
+	  c = *pv; *pv = NULLCHAR;
+	  AppendComment(endPV, start, FALSE);
+	  *pv = c;
+	}
+      valid++; // allow comments in PV
+	continue;
     }
+    if(sscanf(pv, "%d...", &dummy) == 1 || sscanf(pv, "%d.", &dummy) == 1)
+	while(*pv && *pv++ != ' '); // skip any move numbers
     while(*pv && *pv++ != ' '); // skip what we parsed; assume space separators
-    if(moveType == Comment) { valid++; continue; } // allow comments in PV
     nr++;
     if(endPV+1 > framePtr) break; // no space, truncate
     if(!valid) break;
@@ -4861,7 +4882,13 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c '%s'\n", valid, fromX+AAA, fromY+ONE, toX+
     moveList[endPV-1][1] = fromY + ONE;
     moveList[endPV-1][2] = toX + AAA;
     moveList[endPV-1][3] = toY + ONE;
-    parseList[endPV-1][0] = NULLCHAR;
+    if(storeComments)
+	CoordsToAlgebraic(boards[endPV - 1],
+			     PosFlags(endPV - 1),
+			     fromY, fromX, toY, toX, promoChar,
+			     parseList[endPV - 1]);
+    else
+	parseList[endPV-1][0] = NULLCHAR;
   } while(valid);
   currentMove = endPV;
   if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
@@ -4885,7 +4912,7 @@ LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
       index = startPV;
 	while(buf[index] && buf[index] != '\n') index++;
 	buf[index] = 0;
-	ParsePV(buf+startPV);
+	ParsePV(buf+startPV, FALSE);
 	*start = startPV; *end = index-1;
 	return TRUE;
 }
@@ -4895,7 +4922,7 @@ LoadPV(int x, int y)
 { // called on right mouse click to load PV
   int which = gameMode == TwoMachinesPlay && (WhiteOnMove(forwardMostMove) == (second.twoMachinesColor[0] == 'w'));
   lastX = x; lastY = y;
-  ParsePV(lastPV[which]); // load the PV of the thinking engine in the boards array.
+  ParsePV(lastPV[which], FALSE); // load the PV of the thinking engine in the boards array.
   return TRUE;
 }
 
@@ -15030,7 +15057,7 @@ PushTail(int firstMove, int lastMove)
 	}
 
 	storedGames++;
-	forwardMostMove = currentMove; // truncte game so we can start variation
+	forwardMostMove = firstMove; // truncate game so we can start variation
 	if(storedGames == 1) GreyRevert(FALSE);
 }
 
@@ -15042,6 +15069,7 @@ PopTail(Boolean annotate)
 
 	if(appData.icsActive) return FALSE; // only in local mode
 	if(!storedGames) return FALSE; // sanity
+	CommentPopDown(); // make sure no stale variation comments to the destroyed line can remain open
 
 	storedGames--;
 	ToNrEvent(savedFirst[storedGames]); // sets currentMove
@@ -15060,7 +15088,7 @@ PopTail(Boolean annotate)
 		}
 		strcat(buf, ")");
 	}
-	for(i=1; i<nrMoves; i++) { // copy last variation back
+	for(i=1; i<=nrMoves; i++) { // copy last variation back
 	    CopyBoard(boards[currentMove+i], boards[framePtr+i]);
 	    for(j=0; j<MOVE_LEN; j++)
 		moveList[currentMove+i-1][j] = moveList[framePtr+i][j];
@@ -15100,4 +15128,36 @@ CleanupTail()
 	}
 	framePtr = MAX_MOVES-1;
 	storedGames = 0;
+}
+
+void
+LoadVariation(int index, char *text)
+{       // [HGM] vari: shelve previous line and load new variation, parsed from text around text[index]
+	char *p = text, *start = NULL, *end = NULL, wait = NULLCHAR;
+	int level = 0, move;
+
+	if(gameMode != EditGame && gameMode != AnalyzeMode) return;
+	// first find outermost bracketing variation
+	while(*p) { // hope I got this right... Non-nesting {} and [] can screen each other and nesting ()
+	    if(!wait) { // while inside [] pr {}, ignore everyting except matching closing ]}
+		if(*p == '{') wait = '}'; else
+		if(*p == '[') wait = ']'; else
+		if(*p == '(' && level++ == 0 && p-text < index) start = p+1;
+		if(*p == ')' && level > 0 && --level == 0 && p-text > index && end == NULL) end = p-1;
+	    }
+	    if(*p == wait) wait = NULLCHAR; // closing ]} found
+	    p++;
+	}
+	if(!start || !end) return; // no variation found, or syntax error in PGN: ignore click
+	if(appData.debugMode) fprintf(debugFP, "at move %d load variation '%s'\n", currentMove, start);
+	end[1] = NULLCHAR; // clip off comment beyond variation
+	ToNrEvent(currentMove-1);
+	PushTail(currentMove, forwardMostMove); // shelve main variation. This truncates game
+	// kludge: use ParsePV() to append variation to game
+	move = currentMove;
+	ParsePV(start, TRUE);
+	forwardMostMove = endPV; endPV = -1; currentMove = move; // cleanup what ParsePV did
+	ClearPremoveHighlights();
+	CommentPopDown();
+	ToNrEvent(currentMove+1);
 }

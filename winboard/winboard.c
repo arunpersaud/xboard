@@ -5855,6 +5855,7 @@ CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	sizeY = newSizeY;
       }
     }
+    SendDlgItemMessage( hDlg, OPT_CommentText, EM_SETEVENTMASK, 0, ENM_MOUSEEVENTS );
     return FALSE;
 
   case WM_COMMAND: /* message: received a command */
@@ -5898,6 +5899,36 @@ CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     }
     break;
+
+  case WM_NOTIFY: // [HGM] vari: cloned from whistory.c
+        if( wParam == OPT_CommentText ) {
+            MSGFILTER * lpMF = (MSGFILTER *) lParam;
+
+            if( lpMF->msg == WM_RBUTTONDOWN && (lpMF->wParam & (MK_CONTROL | MK_SHIFT)) == 0 ) {
+                POINTL pt;
+                LRESULT index;
+
+                pt.x = LOWORD( lpMF->lParam );
+                pt.y = HIWORD( lpMF->lParam );
+
+                index = SendDlgItemMessage( hDlg, OPT_CommentText, EM_CHARFROMPOS, 0, (LPARAM) &pt );
+
+		hwndText = GetDlgItem(hDlg, OPT_CommentText); // cloned from above
+		len = GetWindowTextLength(hwndText);
+		str = (char *) malloc(len + 1);
+		GetWindowText(hwndText, str, len + 1);
+		ReplaceComment(commentIndex, str);
+		if(commentIndex != currentMove) ToNrEvent(commentIndex);
+                LoadVariation( index, str ); // [HGM] also does the actual moving to it, now
+		free(str);
+
+                /* Zap the message for good: apparently, returning non-zero is not enough */
+                lpMF->msg = WM_USER;
+
+                return TRUE;
+            }
+        }
+        break;
 
   case WM_SIZE:
     newSizeX = LOWORD(lParam);
@@ -8090,7 +8121,7 @@ VOID
 CommentPopUp(char *title, char *str)
 {
   HWND hwnd = GetActiveWindow();
-  EitherCommentPopUp(0, title, str, FALSE);
+  EitherCommentPopUp(currentMove, title, str, FALSE); // [HGM] vari: fake move index, rather than 0
   SAY(str);
   SetActiveWindow(hwnd);
 }
