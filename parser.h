@@ -54,7 +54,7 @@
 extern void yynewfile P((FILE *f));
 extern void yynewstr P((char *s));
 extern int yylex P((void));
-extern ChessMove yylexstr P((int boardIndex, char *s));
+extern ChessMove yylexstr P((int boardIndex, char *s, char *buf, int buflen));
 extern char currentMoveString[];
 extern int yyboardindex;
 extern int yyskipmoves;  /* If TRUE, all moves are reported as AmbiguousMove
