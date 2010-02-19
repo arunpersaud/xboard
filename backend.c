@@ -4621,6 +4621,73 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY)
 }
 
 void
+UploadGameEvent()
+{   // [HGM] upload: send entire stored game to ICS as long-algebraic moves.
+    int i, last = forwardMostMove; // make sure ICS reply cannot pre-empt us by clearing fmm
+    static char *castlingStrings[4] = { "none", "kside", "qside", "both" };
+    if(gameMode == IcsObserving || gameMode == IcsPlayingBlack || gameMode == IcsPlayingWhite) {
+	DisplayError("You cannot do this while you are playing or observing", 0);
+	return;
+    }
+    if(gameMode != IcsExamining) { // is this ever not the case?
+	char buf[MSG_SIZ], *p, *fen, command[MSG_SIZ], bsetup = 0;
+
+	if(ics_type == ICS_ICC) { // on ICC match ourselves in applicable variant
+	    sprintf(command, "match %s", ics_handle);
+	} else { // on FICS we must first go to general examine mode
+	    strcpy(command, "examine\nbsetup"); // and specify variant within it with bsetups
+	}
+	if(gameInfo.variant != VariantNormal) {
+	    // try figure out wild number, as xboard names are not always valid on ICS
+	    for(i=1; i<=36; i++) {
+		sprintf(buf, "wild/%d", i);
+		if(StringToVariant(buf) == gameInfo.variant) break;
+	    }
+	    if(i<=36 && ics_type == ICS_ICC) sprintf(buf, "%s w%d\n", command, i);
+	    else if(i == 22) sprintf(buf, "%s fr\n", command);
+	    else sprintf(buf, "%s %s\n", command, VariantName(gameInfo.variant));
+	} else sprintf(buf, "%s\n", ics_type == ICS_ICC ? command : "examine\n"); // match yourself or examine
+	SendToICS(ics_prefix);
+	SendToICS(buf);
+	if(startedFromSetupPosition || backwardMostMove != 0) {
+	  fen = PositionToFEN(backwardMostMove, NULL);
+	  if(ics_type == ICS_ICC) { // on ICC we can simply send a complete FEN to set everything
+	    sprintf(buf, "loadfen %s\n", fen);
+	    SendToICS(buf);
+	  } else { // FICS: everything has to set by separate bsetup commands
+	    p = strchr(fen, ' '); p[0] = NULLCHAR; // cut after board
+	    sprintf(buf, "bsetup fen %s\n", fen);
+	    SendToICS(buf);
+	    if(!WhiteOnMove(backwardMostMove)) {
+		SendToICS("bsetup tomove black\n");
+	    }
+	    i = (strchr(p+3, 'K') != NULL) + 2*(strchr(p+3, 'Q') != NULL);
+	    sprintf(buf, "bsetup wcastle %s\n", castlingStrings[i]);
+	    SendToICS(buf);
+	    i = (strchr(p+3, 'k') != NULL) + 2*(strchr(p+3, 'q') != NULL);
+	    sprintf(buf, "bsetup bcastle %s\n", castlingStrings[i]);
+	    SendToICS(buf);
+	    i = boards[backwardMostMove][EP_STATUS];
+	    if(i >= 0) { // set e.p.
+		sprintf(buf, "bsetup eppos %c\n", i+AAA);
+		SendToICS(buf);
+	    }
+	    bsetup++;
+	  }
+	}
+      if(bsetup || ics_type != ICS_ICC && gameInfo.variant != VariantNormal)
+	    SendToICS("bsetup done\n"); // switch to normal examining.
+    }
+    for(i = backwardMostMove; i<last; i++) {
+	char buf[20];
+	sprintf(buf, "%s\n", parseList[i]);
+	SendToICS(buf);
+    }
+    SendToICS(ics_prefix);
+    SendToICS(ics_type == ICS_ICC ? "tag result Game in progress\n" : "commit\n");
+}
+
+void
 CoordsToComputerAlgebraic(rf, ff, rt, ft, promoChar, move)
      int rf, ff, rt, ft;
      char promoChar;

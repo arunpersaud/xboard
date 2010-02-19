@@ -1142,6 +1142,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Stop &Observing\tF10",        IDM_StopObserving
         MENUITEM "Stop E&xamining\tF11",        IDM_StopExamining
+        MENUITEM "&Upload to Examine",          IDM_Upload
         MENUITEM SEPARATOR
         MENUITEM "Adjudicate to &White",        IDM_UserAdjudication_White
         MENUITEM "Adjudicate to &Black",        IDM_UserAdjudication_Black

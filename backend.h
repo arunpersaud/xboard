@@ -119,6 +119,7 @@ void SendMultiLineToICS P(( char *text ));
 void AnalysisPeriodicEvent P((int force));
 void SetWhiteToPlayEvent P((void));
 void SetBlackToPlayEvent P((void));
+void UploadGameEvent P((void));
 void InitBackEnd1 P((void));
 void InitBackEnd2 P((void));
 int HasPromotionChoice P((int fromX, int fromY, int toX, int toY, char *choice));

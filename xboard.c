@@ -276,6 +276,7 @@ void AskQuestionReplyAction P((Widget w, XEvent *event,
 			       String *prms, Cardinal *nprms));
 void AskQuestionProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
+void UploadProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AskQuestionPopDown P((void));
 void PromotionPopDown P((void));
 void PromotionCallback P((Widget w, XtPointer client_data,
@@ -826,6 +827,7 @@ XtActionsRec boardActions[] = {
   { "EnterKeyProc", EnterKeyProc },
   //    { "StopObservingProc", StopObservingProc },
   //    { "StopExaminingProc", StopExaminingProc },
+  {N_("Upload to Examine"), UploadProc},
   //    { "BackwardProc", BackwardProc },
   //    { "ForwardProc", ForwardProc },
   //    { "ToStartProc", ToStartProc },
@@ -6213,3 +6215,11 @@ DrawGrid(int x, int y, int Nx, int Ny)
   return;
 }
 
+void UploadProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    UploadGameEvent();
+}
