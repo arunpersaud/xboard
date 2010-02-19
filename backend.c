@@ -4785,6 +4785,8 @@ AlphaRank(char *move, int n)
     }
 }
 
+char yy_textstr[8000];
+
 /* Parser for moves from gnuchess, ICS, or user typein box */
 Boolean
 ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
@@ -4797,7 +4799,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
     if (appData.debugMode) {
         fprintf(debugFP, "move to parse: %s\n", move);
     }
-    *moveType = yylexstr(moveNum, move);
+    *moveType = yylexstr(moveNum, move, yy_textstr, sizeof yy_textstr);
 
     switch (*moveType) {
       case WhitePromotionChancellor:
@@ -4891,15 +4893,15 @@ ParsePV(char *pv, Boolean storeComments)
   int fromX, fromY, toX, toY; char promoChar;
   ChessMove moveType;
   Boolean valid;
-  int nr = 0, dummy;
+  int nr = 0;
 
   endPV = forwardMostMove;
   do {
-    while(*pv == ' ') pv++;
-    if(nr == 0 && *pv == '(') pv++; // first (ponder) move can be in parentheses
+    while(*pv == ' ' || *pv == '\n' || *pv == '\t') pv++; // must still read away whitespace
+    if(nr == 0 && !storeComments && *pv == '(') pv++; // first (ponder) move can be in parentheses
     valid = ParseOneMove(pv, endPV, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
 if(appData.debugMode){
-fprintf(debugFP,"parsePV: %d %c%c%c%c '%s'\n", valid, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, pv);
+fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, yy_textstr, pv);
 }
     if(!valid && nr == 0 &&
        ParseOneMove(pv, endPV-1, &moveType, &fromX, &fromY, &toX, &toY, &promoChar)){ 
@@ -4918,30 +4920,13 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c '%s'\n", valid, fromX+AAA, fromY+ONE, toX+
           strcpy(moveList[endPV-2], "_0_0"); // suppress premove highlight on takeback move
         }
       }
-    if(moveType == Comment) {
-	// [HGM] vari: try to skip comment
-	int level = 0; char c, *start = pv, wait = NULLCHAR;
-	do {
-	    if(!wait) {
-		if(*pv == '(') level++; else
-		if(*pv == ')' && level) level--;
-	    }
-	    if(*pv == wait) wait = NULLCHAR; else
-	    if(*pv == '{') wait = '}'; else
-	    if(*pv == '[') wait = ']';
-	    pv++;
-	} while(*pv && (wait || level));
-	if(storeComments) {
-	  c = *pv; *pv = NULLCHAR;
-	  AppendComment(endPV, start, FALSE);
-	  *pv = c;
-	}
-      valid++; // allow comments in PV
+    pv = strstr(pv, yy_textstr) + strlen(yy_textstr); // skip what we parsed
+    if(nr == 0 && !storeComments && *pv == ')') pv++; // closing parenthesis of ponder move;
+    if(moveType == Comment && storeComments) AppendComment(endPV, yy_textstr, FALSE);
+    if(moveType == Comment || moveType == NAG || moveType == ElapsedTime) {
+	valid++; // allow comments in PV
 	continue;
     }
-    if(sscanf(pv, "%d...", &dummy) == 1 || sscanf(pv, "%d.", &dummy) == 1)
-	while(*pv && *pv++ != ' '); // skip any move numbers
-    while(*pv && *pv++ != ' '); // skip what we parsed; assume space separators
     nr++;
     if(endPV+1 > framePtr) break; // no space, truncate
     if(!valid) break;

@@ -1085,9 +1085,9 @@ int yywrap()
 
 /* Parse a move from the given string s */
 /* ^ at start of pattern WON'T work here unless using flex */
-ChessMove yylexstr(boardIndex, s)
-     int boardIndex;
-     char *s;
+ChessMove yylexstr(boardIndex, s, text, len)
+     int boardIndex, len;
+     char *s, *text;
 {
     ChessMove ret;
     char *oldStringToLex;
@@ -1105,6 +1105,8 @@ ChessMove yylexstr(boardIndex, s)
 #endif /*FLEX_SCANNER*/
 
     ret = (ChessMove) yylex();
+     strncpy(text, yy_text, len-1); // [HGM] vari: yy_text is not available to caller after buffer switch ?!?
+     text[len-1] = NULLCHAR;
 
 #ifdef FLEX_SCANNER
     if (oldBuffer != NULL) 
