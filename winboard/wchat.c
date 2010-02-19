@@ -43,6 +43,7 @@
 int chatCount;
 extern char chatPartner[MAX_CHAT][MSG_SIZ];
 HANDLE chatHandle[MAX_CHAT];
+static WNDPROC chatInputWindowProc;
 
 void SendToICS P((char *s));
 void ChatPopUp P((char *s));
@@ -52,6 +53,9 @@ void ChatPopDown();
 extern int opponentKibitzes;
 
 /* Imports from winboard.c */
+VOID SaveInHistory(char *cmd);
+char *PrevInHistory(char *cmd);
+char *NextInHistory();
 extern HWND ChatDialog;
 
 extern HINSTANCE hInst;
@@ -132,6 +136,42 @@ static void InsertIntoMemo( HANDLE hDlg, char * text )
     SendMessage( hMemo, EM_SCROLLCARET, 0, 0);
 }
 
+LRESULT CALLBACK
+InterceptArrowKeys(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  char buf[MSG_SIZ];
+  char *p;
+  CHARRANGE sel;
+
+  switch (message) {
+  case WM_KEYDOWN: // cloned from ConsoleInputSubClass()
+    switch (wParam) {
+    case VK_UP:
+      GetWindowText(hwnd, buf, MSG_SIZ);
+      p = PrevInHistory(buf);
+      if (p != NULL) {
+	SetWindowText(hwnd, p);
+	sel.cpMin = 999999;
+	sel.cpMax = 999999;
+	SendMessage(hwnd, EM_EXSETSEL, 0, (LPARAM)&sel);
+        return 0;
+      }
+      break;
+    case VK_DOWN:
+      p = NextInHistory();
+      if (p != NULL) {
+	SetWindowText(hwnd, p);
+	sel.cpMin = 999999;
+	sel.cpMax = 999999;
+	SendMessage(hwnd, EM_EXSETSEL, 0, (LPARAM)&sel);
+        return 0;
+      }
+      break;
+    }
+  }
+  return (*chatInputWindowProc)(hwnd, message, wParam, lParam);
+}
+
 // This seems pure front end
 LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
@@ -164,6 +204,8 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	wMask = (WORD) SendMessage(hMemo, EM_GETEVENTMASK, 0, 0L);
 	SendMessage(hMemo, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
 	SendMessage(hMemo, EM_AUTOURLDETECT, TRUE, 0L);
+	chatInputWindowProc = (WNDPROC) // cloned from ConsoleWndProc(). Assume they all share same proc.
+	      SetWindowLong(GetDlgItem(hDlg, OPT_ChatInput), GWL_WNDPROC, (LONG) InterceptArrowKeys);
         return FALSE;
 
     case WM_NOTIFY:
@@ -227,6 +269,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	    GetDlgItemText(hDlg, OPT_ChatInput, mess, MSG_SIZ);
 	    SetDlgItemText(hDlg, OPT_ChatInput, "");
 	    // from here on it could be back-end
+	    SaveInHistory(mess);
 	    if(!strcmp("WHISPER", chatPartner[partner]))
 		sprintf(buf, "whisper %s\n", mess); // WHISPER box uses "whisper" to send
 	    else {
