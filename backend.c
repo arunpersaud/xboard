@@ -2755,6 +2755,7 @@ read_from_ics(isr, closure, data, count, error)
 		for(p=0; p<MAX_CHAT; p++) {
 		    if(channel == atoi(chatPartner[p])) {
 		    talker[0] = '['; strcat(talker, "] ");
+		    Colorize(channel == 1 ? ColorChannel1 : ColorChannel, FALSE);
 		    chattingPartner = p; break;
 		    }
 		} else
@@ -2768,18 +2769,19 @@ read_from_ics(isr, closure, data, count, error)
 		if(buf[i-3] == 't' || buf[oldi+2] == '>') // shout, c-shout or it; look if there is a 'shouts' chatbox
 		for(p=0; p<MAX_CHAT; p++) {
 		    if(!strcmp("shouts", chatPartner[p])) {
-			if(buf[oldi+2] == '>') { talker[0] = '<'; strcat(talker, "> "); }
-			else if(buf[i-8] == '-') { talker[0] = '('; strcat(talker, ") "); }
-			else { talker[0] = '['; strcat(talker, "] "); }
+			if(buf[oldi+2] == '>') { talker[0] = '<'; strcat(talker, "> "); Colorize(ColorShout, FALSE); }
+			else if(buf[i-8] == '-') { talker[0] = '('; strcat(talker, ") "); Colorize(ColorSShout, FALSE); }
+			else { talker[0] = '['; strcat(talker, "] "); Colorize(ColorShout, FALSE); }
 			chattingPartner = p; break;
 		    }
 		}
 		if(chattingPartner<0) // if not, look if there is a chatbox for this indivdual
 		for(p=0; p<MAX_CHAT; p++) if(!StrCaseCmp(talker+1, chatPartner[p])) {
-		    talker[0] = 0;
+		    talker[0] = 0; Colorize(ColorTell, FALSE);
 		    chattingPartner = p; break;
 		}
 		if(chattingPartner<0) i = oldi; else {
+		    Colorize(curColor, TRUE); // undo the bogus colorations we just made to trigger the souds
 		    if(oldi > 0 && buf[oldi-1] == '\n') oldi--;
 		    if (oldi > next_out) SendToPlayer(&buf[next_out], oldi - next_out);
 		    started = STARTED_COMMENT;
