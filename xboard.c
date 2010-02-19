@@ -363,6 +363,7 @@ void StopObservingProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
 void StopExaminingProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
+void UploadProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ToStartProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -642,6 +643,7 @@ MenuItem actionMenu[] = {
     {"----", NothingProc},
     {N_("Stop Observing"), StopObservingProc},
     {N_("Stop Examining"), StopExaminingProc},
+    {N_("Upload to Examine"), UploadProc},
     {"----", NothingProc},
     {N_("Adjudicate to White"), AdjuWhiteProc},
     {N_("Adjudicate to Black"), AdjuBlackProc},
@@ -906,6 +908,7 @@ XtActionsRec boardActions[] = {
     { "DownKeyProc", DownKeyProc },
     { "StopObservingProc", StopObservingProc },
     { "StopExaminingProc", StopExaminingProc },
+    { "UploadProc", UploadProc },
     { "BackwardProc", BackwardProc },
     { "ForwardProc", ForwardProc },
     { "ToStartProc", ToStartProc },
@@ -2699,6 +2702,7 @@ Enables gnuEnables[] = {
     { "menuAction.Adjourn", False },
     { "menuAction.Stop Examining", False },
     { "menuAction.Stop Observing", False },
+    { "menuAction.Upload to Examine", False },
     { "menuStep.Revert", False },
     { "menuOptions.Auto Comment", False },
     { "menuOptions.Auto Observe", False },
@@ -6188,6 +6192,15 @@ void StopExaminingProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     StopExaminingEvent();
+}
+
+void UploadProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    UploadGameEvent();
 }
 
 

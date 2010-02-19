@@ -44,6 +44,7 @@
 #define IDM_TruncateGame                158
 #define IDM_MoveNow                     159
 #define IDM_RetractMove                 160
+#define IDM_Upload                      161
 #define IDM_MailMove                    164
 #define IDM_ReloadCMailMsg              165
 #define IDM_Book                        166

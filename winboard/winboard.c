@@ -4619,6 +4619,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       StopExaminingEvent();
       break;
 
+    case IDM_Upload:
+      UploadGameEvent();
+      break;
+
     case IDM_TypeInMove:
       PopUpMoveDialog('\000');
       break;
@@ -7313,6 +7317,7 @@ Enables gnuEnables[] = {
   { IDM_Adjourn, MF_BYCOMMAND|MF_GRAYED },
   { IDM_StopExamining, MF_BYCOMMAND|MF_GRAYED },
   { IDM_StopObserving, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Upload, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Revert, MF_BYCOMMAND|MF_GRAYED },
   { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
