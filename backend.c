@@ -3718,7 +3718,7 @@ read_from_ics(isr, closure, data, count, error)
 				    gameInfo.white, white_holding,
 				    gameInfo.black, black_holding);
 			}
-
+			if(!partnerUp) // [HGM] bughouse: when peeking at partner game we already know what he captured...
                         DrawPosition(FALSE, boards[currentMove]);
 			DisplayTitle(str);
 		      } else if(appData.bgObserve) { // [HGM] bughouse: holdings of other game => background
