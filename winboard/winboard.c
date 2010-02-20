@@ -1906,6 +1906,7 @@ ResizeBoard(int newSizeX, int newSizeY, int flags)
 }
 
 
+extern Boolean twoBoards, partnerUp; // [HGM] dual
 
 VOID
 InitDrawingSizes(BoardSize boardSize, int flags)
@@ -2041,6 +2042,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   winW = 2 * GetSystemMetrics(SM_CXFRAME) + boardRect.right + OUTER_MARGIN;
   winH = 2 * GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYMENU) +
     GetSystemMetrics(SM_CYCAPTION) + boardRect.bottom + OUTER_MARGIN;
+  winW *= 1 + twoBoards;
   if(suppressVisibleEffects) return; // [HGM] when called for filling sizeInfo only
   wpMain.width = winW;  // [HGM] placement: set through temporary which can used by initial sizing choice
   wpMain.height = winH; //       without disturbing window attachments
@@ -3181,6 +3183,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   if( DrawPositionNeedsFullRepaint() ) {
       fullrepaint = TRUE;
   }
+  if(twoBoards) fullrepaint = TRUE; // [HGM] dual: our memory of last-drawn will be all wrong
 
   if (board == NULL) {
     if (!lastReqValid) {
@@ -3486,7 +3489,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
    * This way we avoid any flickering
    */
   oldBitmap = SelectObject(tmphdc, bufferBitmap);
-  BitBlt(hdc, boardRect.left, boardRect.top,
+  BitBlt(hdc, boardRect.left + twoBoards*partnerUp*wpMain.width/2, boardRect.top, // [HGM] dual
 	 boardRect.right - boardRect.left,
 	 boardRect.bottom - boardRect.top,
 	 tmphdc, boardRect.left, boardRect.top, SRCCOPY);

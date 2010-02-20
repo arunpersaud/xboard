@@ -363,7 +363,9 @@ Widget  layoutWidget, formWidget, boardWidget, messageWidget,
   menuBarWidget,  editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
 
+
 Widget  evalGraphShell, gameListShell;
+XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 //XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 //XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
 
@@ -1307,6 +1309,8 @@ ConvertToLine(int argc, char **argv)
 
 //--------------------------------------------------------------------------------------------
 
+extern Boolean twoBoards, partnerUp;
+
 #ifdef IDSIZES
 // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
 #else
@@ -1330,6 +1334,12 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
       if (smallLayout)
 	{
 	  w = boardWidth - 2*bor;
+	  hOffset = boardWidth + 10;
+	  for(i=0; i<BOARD_WIDTH+BOARD_HEIGHT+2; i++) { // [HGM] dual: grid for second board
+	    secondSegments[i] = gridSegments[i];
+	    secondSegments[i].x1 += hOffset;
+	    secondSegments[i].x2 += hOffset;
+	  }
 	}
       else
 	{
@@ -1357,6 +1367,16 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 	xpmPieceBitmap[i][(int)WhiteGrasshopper] = xpmPieceBitmap2[i][(int)WhiteKing+4];
 	xpmPieceBitmap[i][(int)WhiteQueen] = xpmPieceBitmap2[i][(int)WhiteLance];
       }
+
+    /*
+     * Inhibit shell resizing.
+     */
+    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW + twoBoards*hOffset; // [HGM] dual
+    shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
+    shellArgs[4].value = shellArgs[2].value = w;
+    shellArgs[5].value = shellArgs[3].value = h;
+    XtSetValues(shellWidget, &shellArgs[0], 6);
+
 #ifdef GOTHIC
       if(gameInfo.variant == VariantGothic) {
 	xpmPieceBitmap[i][(int)WhiteMarshall] = xpmPieceBitmap2[i][(int)WhiteSilver];
@@ -2823,6 +2843,8 @@ DrawSquare(row, column, piece, do_flash)
 	  (squareSize + lineGap);
       }
 
+    if(twoBoards && partnerUp) x += hOffset; // [HGM] dual: draw second board
+
     square_color = SquareColor(row, column);
     
     // [HGM] holdings: blank out area between board and holdings
@@ -3093,6 +3115,7 @@ DrawPosition( repaint, board)
   int rrow, rcol;
 
     if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
+    if(twoBoards) repaint = True;
 
   if (board == NULL) {
     if (!lastBoardValid) return;
@@ -3147,6 +3170,13 @@ DrawPosition( repaint, board)
       /* redraw Grid for the whole board*/
       if (lineGap > 0)
 	DrawGrid(0,0,BOARD_HEIGHT,BOARD_WIDTH);
+
+      /* TODO add secondboard drawing
+
+      XDrawSegments(xDisplay, xBoardWindow, lineGC,
+		    twoBoards & partnerUp ? secondSegments : // [HGM] dual
+		    gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
+      */
 
       /* draw pieces */
       for (i = 0; i < BOARD_HEIGHT; i++)
