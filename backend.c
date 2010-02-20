@@ -246,6 +246,7 @@ Board partnerBoard;     /* [HGM] bughouse: for peeking at partner game          
 char partnerStatus[MSG_SIZ];
 Boolean partnerUp;
 Boolean originalFlip;
+Boolean twoBoards = 0;
 char endingGame = 0;    /* [HGM] crash: flag to prevent recursion of GameEnds() */
 int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     */
 VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
@@ -3661,7 +3662,9 @@ read_from_ics(isr, closure, data, count, error)
                         /* [HGM] copy holdings to partner-board holdings area */
                         CopyHoldings(partnerBoard, white_holding, WhitePawn);
                         CopyHoldings(partnerBoard, black_holding, BlackPawn);
+                        if(twoBoards) { partnerUp = 1; flipView = !flipView; } // [HGM] dual: always draw
                         if(partnerUp) DrawPosition(FALSE, partnerBoard);
+                        if(twoBoards) { partnerUp = 0; flipView = !flipView; DrawPosition(TRUE, boards[currentMove]); } // [HGM] dual: redraw own
 		      }
 		    }
 		    /* Suppress following prompt */
@@ -3823,8 +3826,10 @@ ParseBoard12(string)
              board[k][1] = board[k][BOARD_WIDTH-2] = (ChessSquare) 0;;
         }
       }
+      if(appData.dualBoard) { twoBoards = partnerUp = 1; flipView = !flipView; InitDrawingSizes(-2,0); } // [HGM] dual
       CopyBoard(partnerBoard, board);
       if(partnerUp) DrawPosition(FALSE, partnerBoard);
+      if(twoBoards) { partnerUp = 0; flipView = !flipView; DrawPosition(TRUE, boards[currentMove]); } // [HGM] dual: redraw own game!
       sprintf(partnerStatus, "W: %d:%d B: %d:%d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
 		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
       DisplayMessage(partnerStatus, "");
@@ -8893,6 +8898,7 @@ GameEnds(result, resultDetails, whosays)
 
     if(endingGame) return; /* [HGM] crash: forbid recursion */
     endingGame = 1;
+    if(twoBoards) { twoBoards = partnerUp = 0; InitDrawingSizes(-2, 0); } // [HGM] dual
 
     if (appData.debugMode) {
       fprintf(debugFP, "GameEnds(%d, %s, %d)\n",

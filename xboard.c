@@ -482,6 +482,8 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
 Widget historyShell, evalGraphShell, gameListShell;
+int hOffset; // [HGM] dual
+XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
 Font clockFontID, coordFontID, countFontID;
@@ -1546,6 +1548,8 @@ ConvertToLine(int argc, char **argv)
 
 //--------------------------------------------------------------------------------------------
 
+extern Boolean twoBoards, partnerUp;
+
 #ifdef IDSIZES
   // eventually, all layout determining code should go into a subroutine, but until then IDSIZE remains undefined
 #else
@@ -1566,7 +1570,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     shellArgs[1].value = (XtArgVal) &h;
     XtGetValues(shellWidget, shellArgs, 2);
 
-    shellArgs[4].value = 2*w; shellArgs[2].value = 10;
+    shellArgs[4].value = 3*w; shellArgs[2].value = 10;
     shellArgs[5].value = 2*h; shellArgs[3].value = 10;
     XtSetValues(shellWidget, &shellArgs[2], 4);
 
@@ -1576,6 +1580,12 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
     CreateGrid();
+    hOffset = boardWidth + 10;
+    for(i=0; i<BOARD_WIDTH+BOARD_HEIGHT+2; i++) { // [HGM] dual: grid for second board
+	secondSegments[i] = gridSegments[i];
+	secondSegments[i].x1 += hOffset;
+	secondSegments[i].x2 += hOffset;
+    }
 
     XtSetArg(args[0], XtNwidth, boardWidth);
     XtSetArg(args[1], XtNheight, boardHeight);
@@ -1614,7 +1624,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     /*
      * Inhibit shell resizing.
      */
-    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW;
+    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW + twoBoards*hOffset; // [HGM] dual
     shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
     shellArgs[4].value = shellArgs[2].value = w;
     shellArgs[5].value = shellArgs[3].value = h;
@@ -4186,6 +4196,8 @@ void DrawSquare(row, column, piece, do_flash)
 	  (squareSize + lineGap);
     }
 
+    if(twoBoards && partnerUp) x += hOffset; // [HGM] dual: draw second board
+
     square_color = SquareColor(row, column);
 
     if ( // [HGM] holdings: blank out area between board and holdings
@@ -4422,6 +4434,7 @@ void XDrawPosition(w, repaint, board)
     int rrow, rcol;
 
     if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
+    if(twoBoards) repaint = True;
 
     if (board == NULL) {
 	if (!lastBoardValid) return;
@@ -4474,6 +4487,7 @@ void XDrawPosition(w, repaint, board)
     } else {
 	if (lineGap > 0)
 	  XDrawSegments(xDisplay, xBoardWindow, lineGC,
+			twoBoards & partnerUp ? secondSegments : // [HGM] dual
 			gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
 
 	for (i = 0; i < BOARD_HEIGHT; i++)
