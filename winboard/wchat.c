@@ -207,6 +207,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	SendMessage( GetDlgItem(hDlg, IDC_ChatPartner), // [HGM] clickbox: initialize with requested handle
 			WM_SETTEXT, 0, (LPARAM) chatPartner[partner] );
 	filterHasFocus[partner] = TRUE;
+	onTop = partner; // a newly opened box becomes top one
 	if(chatPartner[partner][0]) {
 	    filterHasFocus[partner] = FALSE;
 	    SetFocus( GetDlgItem(hDlg, OPT_ChatInput) );
