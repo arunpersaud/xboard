@@ -4888,14 +4888,17 @@ Boolean
 LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
 {
 	int startPV;
+	char *p;
 
 	if(index < 0 || index >= strlen(buf)) return FALSE; // sanity
 	lastX = x; lastY = y;
 	while(index > 0 && buf[index-1] != '\n') index--; // beginning of line
 	startPV = index;
-      while(buf[index] != '\n') if(buf[index++] == '\t') startPV = index;
-      index = startPV;
-	while(buf[index] && buf[index] != '\n') index++;
+	while(buf[index] != '\n') if(buf[index++] == '\t') startPV = index;
+	if(index == startPV && (p = StrCaseStr(buf+index, "PV="))) startPV = p - buf + 3;
+	index = startPV;
+	do{ while(buf[index] && buf[index] != '\n') index++;
+	} while(buf[index] == '\n' && buf[index+1] == '\\' && buf[index+2] == ' ' && index++); // join kibitzed PV continuation line
 	buf[index] = 0;
 	ParsePV(buf+startPV, FALSE);
 	*start = startPV; *end = index-1;
