@@ -492,6 +492,7 @@ void OutputKibitz(int window, char *text)
 	}
 	opponentKibitzes = TRUE; // this causes split window DisplayMode in ICS modes.
 	VerifyDisplayMode();
+	strcpy(text+strlen(text)-1, "\r\n"); // to not lose line breaks on copying
 	if(gameMode == IcsObserving) {
 	    DoSetWindowText(0, nLabel, gameInfo.white);
 	    SetIcon( 0, nColorIcon,  nColorWhite);
