@@ -483,10 +483,12 @@ static void UpdateControls( EngineOutputData * ed )
 // [HGM] kibitz: write kibitz line; split window for it if necessary
 void OutputKibitz(int window, char *text)
 {
+	static int currentLineEnd[2];
+	int where = 0;
 	if(!EngineOutputIsUp()) return;
 	if(!opponentKibitzes) { // on first kibitz of game, clear memos
-	    DoClearMemo(1);
-	    if(gameMode == IcsObserving) DoClearMemo(0);
+	    DoClearMemo(1); currentLineEnd[1] = 0;
+	    if(gameMode == IcsObserving) { DoClearMemo(0); currentLineEnd[0] = 0; }
 	}
 	opponentKibitzes = TRUE; // this causes split window DisplayMode in ICS modes.
 	VerifyDisplayMode();
@@ -498,5 +500,8 @@ void OutputKibitz(int window, char *text)
 	DoSetWindowText(1, nLabel, gameMode == IcsPlayingBlack ? gameInfo.white : gameInfo.black); // opponent name
 	SetIcon( 1, nColorIcon,  gameMode == IcsPlayingBlack ? nColorWhite : nColorBlack);
 	SetIcon( 1, nStateIcon,  nClear);
-	InsertIntoMemo(window-1, text, 0); // [HGM] multivar: always at top
+	if(strstr(text, "\\  ") == text) where = currentLineEnd[window-1]; // continuation line
+//if(appData.debugMode) fprintf(debugFP, "insert '%s' at %d (end = %d,%d)\n", text, where, currentLineEnd[0], currentLineEnd[1]);
+	InsertIntoMemo(window-1, text, where); // [HGM] multivar: always at top
+	currentLineEnd[window-1] = where + strlen(text);
 }
