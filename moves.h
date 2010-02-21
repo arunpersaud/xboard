@@ -113,7 +113,7 @@ extern void GenPseudoLegal P((Board board, int flags, int epfile,
    on move is currently in check and F_IGNORE_CHECK is not set.
 */
 extern int GenLegal P((Board board, int flags, int epfile,
-                        char castlingRights[], /* [HGM] */
+                        signed char castlingRights[], /* [HGM] */
 			MoveCallback callback, VOIDSTAR closure));
 
 /* If the player on move were to move from (rf, ff) to (rt, ft), would
@@ -130,7 +130,7 @@ extern int CheckTest P((Board board, int flags,
    flags say is on move?  Other arguments as in GenPseudoLegal.
    Returns the type of move made, taking promoChar into account. */
 extern ChessMove LegalityTest P((Board board, int flags, int epfile,
-                                 char castlingRights[], /* [HGM] */
+                                 signed char castlingRights[], /* [HGM] */
 				 int rf, int ff, int rt, int ft,
 				 int promoChar));
 
@@ -147,7 +147,7 @@ extern ChessMove LegalityTest P((Board board, int flags, int epfile,
 
 /* Return MT_NONE, MT_CHECK, MT_CHECKMATE, or MT_STALEMATE */
 extern int MateTest P((Board board, int flags, int epfile,
-                                        char castlingRights[])); /* [HGM] */
+                                        signed char castlingRights[])); /* [HGM] */
 
 typedef struct {
     /* Input data */

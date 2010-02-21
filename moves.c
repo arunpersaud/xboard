@@ -756,7 +756,7 @@ int GenLegal(board, flags, epfile, castlingRights, callback, closure)
      Board board;
      int flags;
      int epfile;
-     char castlingRights[];
+     signed char castlingRights[];
      MoveCallback callback;
      VOIDSTAR closure;
 {
@@ -1044,7 +1044,7 @@ ChessMove LegalityTest(board, flags, epfile, castlingRights, rf, ff, rt, ft, pro
      Board board;
      int flags, epfile;
      int rf, ff, rt, ft, promoChar;
-     char castlingRights[];
+     signed char castlingRights[];
 {
     LegalityTestClosure cl; ChessSquare piece = board[rf][ff];
     
@@ -1137,7 +1137,7 @@ void MateTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
 int MateTest(board, flags, epfile, castlingRights)
      Board board;
      int flags, epfile;
-     char castlingRights[];
+     signed char castlingRights[];
 {
     MateTestClosure cl;
     int inCheck, r, f, myPieces=0, hisPieces=0, nrKing=0;
