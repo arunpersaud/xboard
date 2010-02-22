@@ -473,13 +473,13 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,145,126,10
 END
 
-DLG_IcsOptions DIALOGEX 0, 0, 302, 255
+DLG_IcsOptions DIALOGEX 0, 0, 302, 268
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ICS Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,194,237,50,15
-    PUSHBUTTON      "Cancel",IDCANCEL,248,237,50,15
+    DEFPUSHBUTTON   "OK",IDOK,194,250,50,15
+    PUSHBUTTON      "Cancel",IDCANCEL,248,250,50,15
     CONTROL         "&Auto Comment",OPT_AutoComment,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,12,63,8
     CONTROL         "Auto &Observe",OPT_AutoObserve,"Button",BS_AUTOCHECKBOX | 
@@ -499,56 +499,56 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,40,66,10
     EDITTEXT        OPT_PremoveBlackText,236,38,25,14,ES_AUTOHSCROLL
     CONTROL         "&Sound alarm at",OPT_IcsAlarm,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,160,72,63,10
-    EDITTEXT        OPT_IcsAlarmTime,236,68,26,14,ES_AUTOHSCROLL
-    LTEXT           "seconds",IDC_STATIC,264,72,28,8
-    PUSHBUTTON      "Choose...",OPT_ChooseShoutColor,97,101,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseSShoutColor,97,121,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseChannel1Color,97,141,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseChannelColor,97,161,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseKibitzColor,97,181,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseTellColor,246,101,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseChallengeColor,246,121,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseRequestColor,246,141,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseSeekColor,246,161,45,15
-    PUSHBUTTON      "Choose...",OPT_ChooseNormalColor,246,181,45,15
-    PUSHBUTTON      "Background...",OPT_ChooseBackgroundColor,10,208,50,16
-    PUSHBUTTON      "&Defaults...",OPT_DefaultColors,68,208,50,16
+                    WS_TABSTOP,160,85,63,10
+    EDITTEXT        OPT_IcsAlarmTime,236,81,26,14,ES_AUTOHSCROLL
+    LTEXT           "seconds",IDC_STATIC,264,85,28,8
+    PUSHBUTTON      "Choose...",OPT_ChooseShoutColor,97,114,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseSShoutColor,97,134,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChannel1Color,97,154,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChannelColor,97,174,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseKibitzColor,97,194,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseTellColor,246,114,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseChallengeColor,246,134,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseRequestColor,246,154,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseSeekColor,246,174,45,15
+    PUSHBUTTON      "Choose...",OPT_ChooseNormalColor,246,194,45,15
+    PUSHBUTTON      "Background...",OPT_ChooseBackgroundColor,10,221,50,16
+    PUSHBUTTON      "&Defaults...",OPT_DefaultColors,68,221,50,16
     CONTROL         "Do &not colorize messages",OPT_DontColorize,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,192,212,97,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,192,225,97,10
     CONTROL         "",OPT_SampleShout,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,10,101,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,10,114,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleSShout,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,10,121,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,10,134,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleChannel1,"RICHEDIT",ES_CENTER | 
                     ES_MULTILINE | ES_READONLY | WS_DISABLED | WS_GROUP,10,
-                    141,75,15,WS_EX_CLIENTEDGE
+                    154,75,15,WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleChannel,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,10,161,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,10,174,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleKibitz,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_GROUP,10,181,75,15,WS_EX_CLIENTEDGE
+                    ES_READONLY | WS_GROUP,10,194,75,15,WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleTell,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,159,101,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,159,114,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleChallenge,"RICHEDIT",ES_CENTER | 
                     ES_MULTILINE | ES_READONLY | WS_DISABLED | WS_GROUP,159,
-                    121,75,15,WS_EX_CLIENTEDGE
+                    134,75,15,WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleRequest,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,159,141,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,159,154,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleSeek,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,159,161,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,159,174,75,15,
                     WS_EX_CLIENTEDGE
     CONTROL         "",OPT_SampleNormal,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
-                    ES_READONLY | WS_DISABLED | WS_GROUP,159,181,75,15,
+                    ES_READONLY | WS_DISABLED | WS_GROUP,159,194,75,15,
                     WS_EX_CLIENTEDGE
-    GROUPBOX        "Interaction Colors",IDC_STATIC,4,90,294,140
-    GROUPBOX        "Premove",IDC_STATIC,154,0,144,56
-    GROUPBOX        "General",IDC_STATIC,4,0,146,88
-    GROUPBOX        "Alarm",IDC_STATIC,154,58,144,30
+    GROUPBOX        "Interaction Colors",IDC_STATIC,4,103,294,140
+    GROUPBOX        "Premove",IDC_STATIC,154,0,144,69
+    GROUPBOX        "General",IDC_STATIC,4,0,146,101
+    GROUPBOX        "Alarm",IDC_STATIC,154,71,144,30
 END
 
 DLG_BoardOptions DIALOG DISCARDABLE  0, 0, 194, 250
