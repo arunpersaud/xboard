@@ -82,7 +82,7 @@ SFchdir(path)
 	return result;
 }
 
-static
+static void
 SFfree(i)
 	int	i;
 {
@@ -103,17 +103,19 @@ SFfree(i)
 	XtFree(dir->dir);
 
 	dir->dir = NULL;
+	return;
 }
 
-static
+static void
 SFstrdup(s1, s2)
 	char	**s1;
 	char	*s2;
 {
 	*s1 = strcpy(XtMalloc((unsigned) (strlen(s2) + 1)), s2);
+	return;
 }
 
-static
+static void
 SFunreadableDir(dir)
 	SFDir	*dir;
 {
@@ -125,6 +127,7 @@ SFunreadableDir(dir)
 	dir->entries[0].shown = dir->entries[0].real;
 	dir->nEntries = 1;
 	dir->nChars = strlen(cannotOpen);
+	return;
 }
 
 #ifdef SEL_FILE_IGNORE_CASE
@@ -172,7 +175,7 @@ SFstrncmp(p, q, n)
 }
 #endif /* def SEL_FILE_IGNORE_CASE */
 
-static
+static void
 SFreplaceText(dir, str)
 	SFDir	*dir;
 	char	*str;
@@ -193,6 +196,7 @@ SFreplaceText(dir, str)
 	}
 
 	SFtextChanged();
+	return;
 }
 
 static void
@@ -356,7 +360,7 @@ SFfindFile(dir, str)
 	return 0;
 }
 
-static
+static void
 SFunselect()
 {
 	SFDir	*dir;
@@ -367,6 +371,7 @@ SFunselect()
 	}
 	dir->beginSelection = -1;
 	dir->endSelection = -1;
+	return;
 }
 
 static int
@@ -376,7 +381,7 @@ SFcompareLogins(p, q)
 	return strcmp(p->name, q->name);
 }
 
-static
+static void
 SFgetHomeDirs()
 {
 	struct passwd	*pw;
@@ -452,6 +457,7 @@ SFgetHomeDirs()
 	for (i--; i >= 0; i--) {
 		(void) strcat(entries[i].real, "/");
 	}
+	return;
 }
 
 static int
@@ -483,6 +489,7 @@ SFfindHomeDir(begin, end)
 	return 0;
 }
 
+void
 SFupdatePath()
 {
 	static int	alloc;
@@ -670,8 +677,10 @@ SFupdatePath()
 			}
 		}
 	}
+	return;
 }
 
+void
 SFsetText(path)
 	char	*path;
 {
@@ -684,6 +693,8 @@ SFsetText(path)
 
 	XawTextReplace(selFileField, 0, strlen(SFtextBuffer), &text);
 	XawTextSetInsertionPoint(selFileField, strlen(SFtextBuffer));
+
+	return;
 }
 
 /* ARGSUSED */

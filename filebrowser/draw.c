@@ -59,6 +59,7 @@ static int SFcurrentListY;
 
 static XtIntervalId SFscrollTimerId;
 
+void
 SFinitFont()
 {
 	TextData	*data;
@@ -84,8 +85,10 @@ SFinitFont()
 	SFcharWidth = (SFfont->max_bounds.width + SFfont->min_bounds.width) / 2;
 	SFcharAscent = SFfont->max_bounds.ascent;
 	SFcharHeight = SFcharAscent + SFfont->max_bounds.descent;
+	return;
 }
 
+void
 SFcreateGC()
 {
 	XGCValues	gcValues;
@@ -149,8 +152,10 @@ SFcreateGC()
 		1,
 		Unsorted
 	);
+	return;
 }
 
+void
 SFclearList(n, doScroll)
 	int	n;
 	int	doScroll;
@@ -191,9 +196,10 @@ SFclearList(n, doScroll)
 				(float) 1.0);
 		}
 	}
+	return;
 }
 
-static
+static void
 SFdeleteEntry(dir, entry)
 	SFDir	*dir;
 	SFEntry	*entry;
@@ -242,15 +248,17 @@ SFdeleteEntry(dir, entry)
 		(float) (((double) ((dir->nEntries < SFlistSize) ?
 			dir->nEntries : SFlistSize)) / dir->nEntries)
 	);
+	return;
 }
 
-static
+static void
 SFwriteStatChar(name, last, statBuf)
 	char		*name;
 	int		last;
 	struct stat	*statBuf;
 {
 	name[last] = SFstatChar(statBuf);
+	return;
 }
 
 static int
@@ -320,7 +328,7 @@ SFstatAndCheck(dir, entry)
 	return 0;
 }
 
-static
+static void
 SFdrawStrings(w, dir, from, to)
 	register Window	w;
 	register SFDir	*dir;
@@ -395,8 +403,10 @@ SFdrawStrings(w, dir, from, to)
 			);
 		}
 	}
+	return;
 }
 
+void
 SFdrawList(n, doScroll)
 	int	n;
 	int	doScroll;
@@ -420,8 +430,10 @@ SFdrawList(n, doScroll)
 		);
 		SFdrawStrings(w, dir, 0, SFlistSize - 1);
 	}
+	return;
 }
 
+void
 SFdrawLists(doScroll)
 	int	doScroll;
 {
@@ -430,9 +442,10 @@ SFdrawLists(doScroll)
 	for (i = 0; i < NR; i++) {
 		SFdrawList(i, doScroll);
 	}
+	return;
 }
 
-static
+static void
 SFinvertEntry(n)
 	register int	n;
 {
@@ -445,6 +458,7 @@ SFinvertEntry(n)
 		SFentryWidth,
 		SFentryHeight
 	);
+	return;
 }
 
 static unsigned long
@@ -620,6 +634,7 @@ SFmotionList(w, n, event)
 			SFinvertEntry(n);
 		}
 	}
+	return;
 }
 
 /* ARGSUSED */

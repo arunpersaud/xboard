@@ -588,6 +588,7 @@ SFopenFile(name, mode, prompt, failed)
     return fp;
 }
 
+void
 SFtextChanged()
 {
 
@@ -608,6 +609,7 @@ SFtextChanged()
 	}
 
 	SFupdatePath();
+	return;
 }
 
 static char *
@@ -617,7 +619,7 @@ SFgetText()
 		SFtextBuffer);
 }
 
-static
+static void
 SFprepareToReturn()
 {
 	SFstatus = SEL_FILE_NULL;
@@ -630,6 +632,7 @@ SFprepareToReturn()
 			"XsraSelFile: can't return to current directory"
 		);
 	}
+	return;
 }
 
 FILE *
