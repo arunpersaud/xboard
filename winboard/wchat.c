@@ -61,7 +61,7 @@ char *NextInHistory();
 extern HWND ChatDialog;
 
 extern HINSTANCE hInst;
-extern HWND hwndMain;
+extern HWND hwndConsole;
 
 extern WindowPlacement wpChat[MAX_CHAT];
 extern WindowPlacement wpConsole;
@@ -372,7 +372,7 @@ void ChatPopUp(char *icsHandle)
     lpProc = MakeProcInstance( (FARPROC) ChatProc, hInst );
 
     /* Note to self: dialog must have the WS_VISIBLE style set, otherwise it's not shown! */
-    CreateDialog( hInst, MAKEINTRESOURCE(DLG_Chat), hwndMain, (DLGPROC)lpProc );
+    CreateDialog( hInst, MAKEINTRESOURCE(DLG_Chat), hwndConsole, (DLGPROC)lpProc );
 
     FreeProcInstance(lpProc);
 
