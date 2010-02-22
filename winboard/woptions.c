@@ -1175,6 +1175,11 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_GetMoveList, appData.getMoveList);
     CHECK_BOX(OPT_LocalLineEditing, appData.localLineEditing);
     CHECK_BOX(OPT_QuietPlay, appData.quietPlay);
+    CHECK_BOX(OPT_SeekGraph, appData.seekGraph);
+    CHECK_BOX(OPT_AutoRefresh, appData.autoRefresh);
+    CHECK_BOX(OPT_BgObserve, appData.bgObserve);
+    CHECK_BOX(OPT_DualBoard, appData.dualBoard);
+    CHECK_BOX(OPT_SmartMove, appData.oneClick);
     CHECK_BOX(OPT_Premove, appData.premove);
     CHECK_BOX(OPT_PremoveWhite, appData.premoveWhite);
     CHECK_BOX(OPT_PremoveBlack, appData.premoveBlack);
@@ -1187,6 +1192,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     SetDlgItemText(hDlg, OPT_IcsAlarmTime, buf);
     SetDlgItemText(hDlg, OPT_PremoveWhiteText, appData.premoveWhiteText);
     SetDlgItemText(hDlg, OPT_PremoveBlackText, appData.premoveBlackText);
+    SetDlgItemText(hDlg, OPT_StartupChatBoxes, appData.chatBoxes);
 
     SendDlgItemMessage(hDlg, OPT_SampleShout,     EM_SETBKGNDCOLOR, 0, cbc);
     SendDlgItemMessage(hDlg, OPT_SampleSShout,    EM_SETBKGNDCOLOR, 0, cbc);
@@ -1253,12 +1259,19 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.getMoveList      = IS_CHECKED(OPT_GetMoveList);
       appData.localLineEditing = IS_CHECKED(OPT_LocalLineEditing);
       appData.quietPlay        = IS_CHECKED(OPT_QuietPlay);
+      appData.seekGraph        = IS_CHECKED(OPT_SeekGraph);
+      appData.autoRefresh      = IS_CHECKED(OPT_AutoRefresh);
+      appData.bgObserve        = IS_CHECKED(OPT_BgObserve);
+      appData.dualBoard        = IS_CHECKED(OPT_DualBoard);
+      appData.oneClick         = IS_CHECKED(OPT_SmartMove);
 
 #undef IS_CHECKED
 
       appData.icsAlarmTime = number * 1000;
       GetDlgItemText(hDlg, OPT_PremoveWhiteText, appData.premoveWhiteText, 5);
       GetDlgItemText(hDlg, OPT_PremoveBlackText, appData.premoveBlackText, 5);
+      GetDlgItemText(hDlg, OPT_StartupChatBoxes, buf, sizeof(buf));
+      buf[sizeof(buf)-1] = NULLCHAR; appData.chatBoxes = StrSave(buf); // memory leak
 
       if (appData.localLineEditing) {
 	DontEcho();

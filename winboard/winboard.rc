@@ -490,6 +490,14 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,10,51,84,8
     CONTROL         "&Quiet Play",OPT_QuietPlay,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,64,63,8
+    CONTROL         "See&k Graph",OPT_SeekGraph,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,77,63,8
+    CONTROL         "auto-&Refresh",OPT_AutoRefresh,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,84,77,63,8
+    CONTROL         "Bckgnd Obser&ve",OPT_BgObserve,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,90,68,8
+    CONTROL         "&Dual Board",OPT_DualBoard,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,84,90,63,8
     CONTROL         "&Premove",OPT_Premove,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,160,12,46,10
     CONTROL         "&White first move",OPT_PremoveWhite,"Button",
@@ -498,6 +506,8 @@ BEGIN
     CONTROL         "&Black first move",OPT_PremoveBlack,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,40,66,10
     EDITTEXT        OPT_PremoveBlackText,236,38,25,14,ES_AUTOHSCROLL
+    CONTROL         "One-Click &Move",OPT_SmartMove,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,160,54,100,10
     CONTROL         "&Sound alarm at",OPT_IcsAlarm,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,160,85,63,10
     EDITTEXT        OPT_IcsAlarmTime,236,81,26,14,ES_AUTOHSCROLL
@@ -545,6 +555,8 @@ BEGIN
     CONTROL         "",OPT_SampleNormal,"RICHEDIT",ES_CENTER | ES_MULTILINE | 
                     ES_READONLY | WS_DISABLED | WS_GROUP,159,194,75,15,
                     WS_EX_CLIENTEDGE
+    LTEXT           "Startup &Chat Boxes:",IDC_STATIC,4,251,65,8
+    EDITTEXT        OPT_StartupChatBoxes,72,249,90,14,ES_AUTOHSCROLL
     GROUPBOX        "Interaction Colors",IDC_STATIC,4,103,294,140
     GROUPBOX        "Premove",IDC_STATIC,154,0,144,69
     GROUPBOX        "General",IDC_STATIC,4,0,146,101
