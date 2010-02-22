@@ -512,6 +512,12 @@
 #define IDC_Focus2			1731
 #define IDC_Focus3			1732
 #define IDC_Focus4			1733
+#define OPT_SeekGraph			1750
+#define OPT_AutoRefresh			1751
+#define OPT_BgObserve			1752
+#define OPT_DualBoard			1753
+#define OPT_SmartMove			1754
+#define OPT_StartupChatBoxes		1755
 #define IDC_SPECIFY_ENG_STATIC          1814
 #define IDC_SPECIFY_SERVER_STATIC       1815
 #define OPT_MESS                        1818
