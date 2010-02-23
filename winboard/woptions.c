@@ -146,12 +146,14 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   static Boolean oldShowCoords;
   static Boolean oldBlindfold;
   static Boolean oldShowButtonBar;
+  static Boolean oldAutoLogo;
 
   switch (message) {
   case WM_INITDIALOG: /* message: initialize dialog box */
     oldShowCoords = appData.showCoords;
     oldBlindfold  = appData.blindfold;
     oldShowButtonBar = appData.showButtonBar;
+    oldAutoLogo  = appData.autoLogo;
 
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
@@ -181,6 +183,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_SaveExtPGN, appData.saveExtendedInfoInPGN);
     CHECK_BOX(OPT_ExtraInfoInMoveHistory, appData.showEvalInMoveHistory);
     CHECK_BOX(OPT_HighlightMoveArrow, appData.highlightMoveWithArrow);
+    CHECK_BOX(OPT_AutoLogo, appData.autoLogo); // [HGM] logo
 
 #undef CHECK_BOX
 
@@ -228,6 +231,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       ShowThinkingEvent(); // [HGM] thinking: tests four options
       appData.testLegality         = IS_CHECKED(OPT_TestLegality);
       appData.highlightMoveWithArrow=IS_CHECKED(OPT_HighlightMoveArrow);
+      appData.autoLogo             =IS_CHECKED(OPT_AutoLogo); // [HGM] logo
 
 #undef IS_CHECKED
 
@@ -249,7 +253,10 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
        */
       EndDialog(hDlg, TRUE);
 
-      if (oldShowButtonBar != appData.showButtonBar) {
+      if (oldAutoLogo != appData.autoLogo) { // [HGM] logo: remove any logos when we switch autologo off
+	if(oldAutoLogo) first.programLogo = second.programLogo = NULL;
+	InitDrawingSizes(boardSize, 0);
+      } else if (oldShowButtonBar != appData.showButtonBar) {
 	InitDrawingSizes(boardSize, 0);
       } else if ((oldShowCoords != appData.showCoords) || 
 		 (oldBlindfold != appData.blindfold)) {

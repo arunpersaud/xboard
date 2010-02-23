@@ -420,13 +420,13 @@ BEGIN
     PUSHBUTTON      "&Play",OPT_PlaySound,188,47,50,14
 END
 
-DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 250, 183
+DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 250, 197
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,110,164,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,166,164,50,14
+    DEFPUSHBUTTON   "OK",IDOK,110,178,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,166,178,50,14
     CONTROL         "Always on &Top",OPT_AlwaysOnTop,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,4,6,126,10
     CONTROL         "Highlight Last &Move",OPT_HighlightLastMove,"Button",
@@ -471,6 +471,8 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,146,126,10
     CONTROL         "Highlight with Arro&w",OPT_HighlightMoveArrow,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,145,126,10
+    CONTROL         "Displa&y Logos",OPT_AutoLogo,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,160,126,10
 END
 
 DLG_IcsOptions DIALOGEX 0, 0, 302, 268
