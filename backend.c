@@ -243,6 +243,7 @@ static int exiting = 0; /* [HGM] moved to top */
 static int setboardSpoiledMachineBlack = 0 /*, errorExitFlag = 0*/;
 int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos */
 Board partnerBoard;     /* [HGM] bughouse: for peeking at partner game          */
+Boolean partnerBoardValid = 0;
 char partnerStatus[MSG_SIZ];
 Boolean partnerUp;
 Boolean originalFlip;
@@ -3464,6 +3465,7 @@ read_from_ics(isr, closure, data, count, error)
 			ZippyGameStart(whitename, blackname);
 		    }
 #endif /*ZIPPY*/
+		    partnerBoardValid = FALSE; // [HGM] bughouse
 		    continue;
 		}
 
@@ -3504,6 +3506,7 @@ read_from_ics(isr, closure, data, count, error)
 		    Reset(TRUE, TRUE);
 		}
 #endif /*ZIPPY*/
+		if(appData.bgObserve && partnerBoardValid) DrawPosition(TRUE, partnerBoard);
 		continue;
 	    }
 
@@ -3833,6 +3836,7 @@ ParseBoard12(string)
       sprintf(partnerStatus, "W: %d:%d B: %d:%d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
 		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
       DisplayMessage(partnerStatus, "");
+	partnerBoardValid = TRUE;
       return;
     }
 
@@ -6443,6 +6447,8 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 
     if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
 	 && !appData.zippyPlay && appData.bgObserve) { // [HGM] bughouse: show background game
+	if(!partnerBoardValid) return -2; // suppress display of uninitialized boards
+	if( appData.dualBoard) return -2; // [HGM] dual: is already displayed
 	if(action == Press)   {
 	    originalFlip = flipView;
 	    flipView = !flipView; // temporarily flip board to see game from partners perspective
