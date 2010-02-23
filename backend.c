@@ -244,7 +244,9 @@ static int setboardSpoiledMachineBlack = 0 /*, errorExitFlag = 0*/;
 int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos */
 int rightsBoard[BOARD_RANKS][BOARD_FILES];                  /* [HGM] editrights */
 Board partnerBoard;     /* [HGM] bughouse: for peeking at partner game          */
+char partnerStatus[MSG_SIZ];
 Boolean partnerUp;
+Boolean originalFlip;
 char endingGame = 0;    /* [HGM] crash: flag to prevent recursion of GameEnds() */
 int whiteNPS, blackNPS; /* [HGM] nps: for easily making clocks aware of NPS     */
 VariantClass currentlyInitializedVariant; /* [HGM] variantswitch */
@@ -3884,7 +3886,6 @@ ParseBoard12(string)
     if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
 	 && newGameMode == IcsObserving && appData.bgObserve) {
       // [HGM] bughouse: don't act on alien boards while we play. Just parse the board and save it */
-      char buf[MSG_SIZ];
       for (k = 0; k < ranks; k++) {
         for (j = 0; j < files; j++)
           board[k][j+gameInfo.holdingsWidth] = CharToPiece(board_chars[(ranks-1-k)*(files+1) + j]);
@@ -3895,9 +3896,9 @@ ParseBoard12(string)
       }
       CopyBoard(partnerBoard, board);
       if(partnerUp) DrawPosition(FALSE, partnerBoard);
-      sprintf(buf, "W: %d:%d B: %d:%d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
+      sprintf(partnerStatus, "W: %d:%d B: %d:%d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
 		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
-      DisplayMessage(buf, "");
+      DisplayMessage(partnerStatus, "");
       return;
     }
 
@@ -4429,6 +4430,7 @@ ParseBoard12(string)
 	      ClearPremoveHighlights();
 
       j = seekGraphUp; seekGraphUp = FALSE; // [HGM] seekgraph: when we draw a board, it overwrites the seek graph
+	if(partnerUp) { flipView = originalFlip; partnerUp = FALSE; j = TRUE; } // [HGM] bughouse: restore view
       DrawPosition(j, boards[currentMove]);
 
       DisplayMove(moveNum - 1);
@@ -6612,8 +6614,17 @@ int RightClick(ClickType action, int x, int y, int *xx, int *yy)
 
     if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
 	 && !appData.zippyPlay && appData.bgObserve) { // [HGM] bughouse: show background game
-	if(action == Press)   { flipView = !flipView; DrawPosition(TRUE, partnerBoard); partnerUp = TRUE; } else
-	if(action == Release) { flipView = !flipView; DrawPosition(TRUE, boards[currentMove]); partnerUp = FALSE; }
+	if(action == Press)   {
+	    originalFlip = flipView;
+	    flipView = !flipView; // temporarily flip board to see game from partners perspective
+	    DrawPosition(TRUE, partnerBoard);
+	    DisplayMessage(partnerStatus, "");
+	    partnerUp = TRUE;
+	} else if(action == Release) {
+	    flipView = originalFlip;
+	    DrawPosition(TRUE, boards[currentMove]);
+	    partnerUp = FALSE;
+	}
 	return -2;
     }
 
