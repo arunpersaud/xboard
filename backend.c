@@ -9408,7 +9408,9 @@ LoadGame(f, gameNumber, title, useList)
     if (numPGNTags > 0){
         char *tags;
 	if (gameInfo.variant == VariantNormal) {
-	  gameInfo.variant = StringToVariant(gameInfo.event);
+	  VariantClass v = StringToVariant(gameInfo.event);
+	  // [HGM] do not recognize variants from event tag that were introduced after supporting variant tag
+	  if(v < VariantShogi) gameInfo.variant = v;
 	}
 	if (!matchMode) {
           if( appData.autoDisplayTags ) {
