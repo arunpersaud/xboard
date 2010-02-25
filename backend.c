@@ -2776,9 +2776,9 @@ read_from_ics(isr, closure, data, count, error)
 	    if (appData.autoKibitz && started == STARTED_NONE &&
                 !appData.icsEngineAnalyze &&                     // [HGM] [DM] ICS analyze
 		(gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack || gameMode == IcsObserving)) {
-		if(looking_at(buf, &i, "* kibitzes: ") &&
-		   (StrStr(star_match[0], gameInfo.white) == star_match[0] ||
-		    StrStr(star_match[0], gameInfo.black) == star_match[0]   )) { // kibitz of self or opponent
+		if((looking_at(buf, &i, "* kibitzes: ") || looking_at(buf, &i, "* whispers: ")) &&
+		   (StrStr(star_match[0], gameInfo.white) == star_match[0] 
+		    || StrStr(star_match[0], gameInfo.black) == star_match[0]   )) { // kibitz of self or opponent
 		    	suppressKibitz = TRUE;
 			if (oldi > next_out) SendToPlayer(&buf[next_out], oldi - next_out);
 			next_out = i;
