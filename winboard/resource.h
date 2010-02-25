@@ -519,6 +519,7 @@
 #define OPT_DualBoard			1753
 #define OPT_SmartMove			1754
 #define OPT_StartupChatBoxes		1755
+#define OPT_AutoKibitz			1756
 #define IDC_SPECIFY_ENG_STATIC          1814
 #define IDC_SPECIFY_SERVER_STATIC       1815
 #define OPT_MESS                        1818

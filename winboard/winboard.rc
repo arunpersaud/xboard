@@ -484,6 +484,8 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,248,250,50,15
     CONTROL         "&Auto Comment",OPT_AutoComment,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,12,63,8
+    CONTROL         "&Auto Kibitz",OPT_AutoKibitz,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,84,12,63,8
     CONTROL         "Auto &Observe",OPT_AutoObserve,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,25,63,8
     CONTROL         "&Get Move List",OPT_GetMoveList,"Button",
