@@ -4283,7 +4283,7 @@ void DrawSquare(row, column, piece, do_flash)
 			x + 2, y + font_ascent + 1, string, 1);
 	}
     }
-    if(marker[row][column]) {
+    if(!partnerUp && marker[row][column]) {
 	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC, 
 		x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
     }
@@ -4303,6 +4303,11 @@ void EventProc(widget, unused, event)
       case Expose:
 	if (event->xexpose.count > 0) return;  /* no clipping is done */
 	XDrawPosition(widget, True, NULL);
+	if(twoBoards) { // [HGM] dual: draw other board in other orientation
+	    flipView = !flipView; partnerUp = !partnerUp;
+	    XDrawPosition(widget, True, NULL);
+	    flipView = !flipView; partnerUp = !partnerUp;
+	}
 	break;
       case MotionNotify:
         if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, 1)) break;
@@ -4416,7 +4421,7 @@ void DrawSeekDot(int x, int y, int colorNr)
 		x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
 }
 
-static int damage[BOARD_RANKS][BOARD_FILES];
+static int damage[2][BOARD_RANKS][BOARD_FILES];
 
 /*
  * event handler for redrawing the board
@@ -4428,19 +4433,19 @@ void XDrawPosition(w, repaint, board)
 {
     int i, j, do_flash;
     static int lastFlipView = 0;
-    static int lastBoardValid = 0;
-    static Board lastBoard;
+    static int lastBoardValid[2] = {0, 0};
+    static Board lastBoard[2];
     Arg args[16];
     int rrow, rcol;
+    int nr = twoBoards*partnerUp;
 
     if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
-    if(twoBoards) repaint = True;
 
     if (board == NULL) {
 	if (!lastBoardValid) return;
-	board = lastBoard;
+	board = lastBoard[nr];
     }
-    if (!lastBoardValid || lastFlipView != flipView) {
+    if (!lastBoardValid[nr] || (nr == 0 && lastFlipView != flipView)) {
 	XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flip View"),
 		    args, 1);
@@ -4451,19 +4456,19 @@ void XDrawPosition(w, repaint, board)
      * but this causes a very distracting flicker.
      */
 
-    if (!repaint && lastBoardValid && lastFlipView == flipView) {
+    if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
 
 	/* If too much changes (begin observing new game, etc.), don't
 	   do flashing */
-	do_flash = too_many_diffs(board, lastBoard) ? 0 : 1;
+	do_flash = too_many_diffs(board, lastBoard[nr]) ? 0 : 1;
 
 	/* Special check for castling so we don't flash both the king
 	   and the rook (just flash the king). */
 	if (do_flash) {
-	    if (check_castle_draw(board, lastBoard, &rrow, &rcol)) {
+	    if (check_castle_draw(board, lastBoard[nr], &rrow, &rcol)) {
 		/* Draw rook with NO flashing. King will be drawn flashing later */
 		DrawSquare(rrow, rcol, board[rrow][rcol], 0);
-		lastBoard[rrow][rcol] = board[rrow][rcol];
+		lastBoard[nr][rrow][rcol] = board[rrow][rcol];
 	    }
 	}
 
@@ -4472,16 +4477,16 @@ void XDrawPosition(w, repaint, board)
 	   is flashing on its new square */
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if ((board[i][j] != lastBoard[i][j] && board[i][j] == EmptySquare)
-		|| damage[i][j]) {
+	    if ((board[i][j] != lastBoard[nr][i][j] && board[i][j] == EmptySquare)
+		|| damage[nr][i][j]) {
 		DrawSquare(i, j, board[i][j], 0);
-		damage[i][j] = False;
+		damage[nr][i][j] = False;
 	    }
 
 	/* Second pass -- Draw piece(s) in new position and flash them */
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if (board[i][j] != lastBoard[i][j]) {
+	    if (board[i][j] != lastBoard[nr][i][j]) {
 		DrawSquare(i, j, board[i][j], do_flash);
 	    }
     } else {
@@ -4493,12 +4498,13 @@ void XDrawPosition(w, repaint, board)
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++) {
 	      DrawSquare(i, j, board[i][j], 0);
-	      damage[i][j] = False;
+	      damage[nr][i][j] = False;
 	  }
     }
 
-    CopyBoard(lastBoard, board);
-    lastBoardValid = 1;
+    CopyBoard(lastBoard[nr], board);
+    lastBoardValid[nr] = 1;
+  if(nr == 0) { // [HGM] dual: no highlights on second board yet
     lastFlipView = flipView;
 
     /* Draw highlights */
@@ -4514,7 +4520,7 @@ void XDrawPosition(w, repaint, board)
     if (hi2X >= 0 && hi2Y >= 0) {
       drawHighlight(hi2X, hi2Y, highlineGC);
     }
-
+  }
     /* If piece being dragged around board, must redraw that too */
     DrawDragPiece();
 
@@ -8731,7 +8737,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
   FrameSequence(&game, piece, startColor, &start, &finish, frames, nFrames);
 
   /* Be sure end square is redrawn */
-  damage[toY][toX] = True;
+  damage[0][toY][toX] = True;
 }
 
 void
@@ -8771,7 +8777,7 @@ DragPieceBegin(x, y)
            XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
 	             corner.x, corner.y, squareSize, squareSize,
 	             0, 0); // [HGM] zh: unstack in stead of grab
-	damage[boardY][boardX] = True;
+	damage[0][boardY][boardX] = True;
     } else {
 	player.dragActive = False;
     }
@@ -8825,7 +8831,7 @@ DragPieceEnd(x, y)
     EndAnimation(&player, &corner);
 
     /* Be sure end square is redrawn */
-    damage[boardY][boardX] = True;
+    damage[0][boardY][boardX] = True;
 
     /* This prevents weird things happening with fast successive
        clicks which on my Sun at least can cause motion events
@@ -8848,7 +8854,7 @@ DrawDragPiece ()
   BlankSquare(player.startSquare.x, player.startSquare.y,
 		player.startColor, EmptySquare, xBoardWindow);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
-  damage[player.startBoardY][player.startBoardX] = TRUE;
+  damage[0][player.startBoardY][player.startBoardX] = TRUE;
 }
 
 #include <sys/ioctl.h>

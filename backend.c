@@ -3667,7 +3667,7 @@ read_from_ics(isr, closure, data, count, error)
                         CopyHoldings(partnerBoard, black_holding, BlackPawn);
                         if(twoBoards) { partnerUp = 1; flipView = !flipView; } // [HGM] dual: always draw
                         if(partnerUp) DrawPosition(FALSE, partnerBoard);
-                        if(twoBoards) { partnerUp = 0; flipView = !flipView; DrawPosition(TRUE, boards[currentMove]); } // [HGM] dual: redraw own
+                        if(twoBoards) { partnerUp = 0; flipView = !flipView; }
 		      }
 		    }
 		    /* Suppress following prompt */
@@ -3744,7 +3744,7 @@ ParseBoard12(string)
     char promoChar;
     int ranks=1, files=0; /* [HGM] ICS80: allow variable board size */
     char *bookHit = NULL; // [HGM] book
-    Boolean weird = FALSE, reqFlag = FALSE;
+    Boolean weird = FALSE, reqFlag = FALSE, repaint = FALSE;
 
     fromX = fromY = toX = toY = -1;
     
@@ -3829,10 +3829,11 @@ ParseBoard12(string)
              board[k][1] = board[k][BOARD_WIDTH-2] = (ChessSquare) 0;;
         }
       }
-      if(appData.dualBoard) { twoBoards = partnerUp = 1; flipView = !flipView; InitDrawingSizes(-2,0); } // [HGM] dual
       CopyBoard(partnerBoard, board);
-      if(partnerUp) DrawPosition(FALSE, partnerBoard);
-      if(twoBoards) { partnerUp = 0; flipView = !flipView; DrawPosition(TRUE, boards[currentMove]); } // [HGM] dual: redraw own game!
+      if(appData.dualBoard && !twoBoards) { twoBoards = repaint = 1; InitDrawingSizes(-2,0); }
+      if(twoBoards) { partnerUp = 1; flipView = !flipView; } // [HGM] dual
+      if(partnerUp) DrawPosition(repaint, partnerBoard);
+      if(twoBoards) { partnerUp = 0; flipView = !flipView; } // [HGM] dual
       sprintf(partnerStatus, "W: %d:%02d B: %d:%02d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
 		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
       DisplayMessage(partnerStatus, "");
@@ -8904,8 +8905,10 @@ GameEnds(result, resultDetails, whosays)
 
     if(endingGame) return; /* [HGM] crash: forbid recursion */
     endingGame = 1;
-    if(twoBoards) { twoBoards = partnerUp = 0; InitDrawingSizes(-2, 0); } // [HGM] dual
-
+    if(twoBoards) { // [HGM] dual: switch back to one board
+	twoBoards = partnerUp = 0; InitDrawingSizes(-2, 0);
+	DrawPosition(TRUE, partnerBoard); // observed game becomes foreground
+    }
     if (appData.debugMode) {
       fprintf(debugFP, "GameEnds(%d, %s, %d)\n",
 	      result, resultDetails ? resultDetails : "(null)", whosays);
