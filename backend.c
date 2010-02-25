@@ -2815,6 +2815,7 @@ read_from_ics(isr, closure, data, count, error)
 	    channel = -1;
 	    if(started == STARTED_NONE && (looking_at(buf, &i, "* tells you:") || looking_at(buf, &i, "* says:") || 
 					   looking_at(buf, &i, "* whispers:") ||
+					   looking_at(buf, &i, "* kibitzes:") ||
 					   looking_at(buf, &i, "* shouts:") ||
 					   looking_at(buf, &i, "* c-shouts:") ||
 					   looking_at(buf, &i, "--> * ") ||
@@ -2834,6 +2835,13 @@ read_from_ics(isr, closure, data, count, error)
 		    chattingPartner = p; break;
 		    }
 		} else
+		if(buf[i-3] == 'e') // kibitz; look if there is a KIBITZ chatbox
+		for(p=0; p<MAX_CHAT; p++) {
+		    if(!strcmp("kibitzes", chatPartner[p])) {
+			talker[0] = '['; strcat(talker, "] ");
+			chattingPartner = p; break;
+		    }
+		} else
 		if(buf[i-3] == 'r') // whisper; look if there is a WHISPER chatbox
 		for(p=0; p<MAX_CHAT; p++) {
 		    if(!strcmp("whispers", chatPartner[p])) {
@@ -2841,14 +2849,23 @@ read_from_ics(isr, closure, data, count, error)
 			chattingPartner = p; break;
 		    }
 		} else
-		if(buf[i-3] == 't' || buf[oldi+2] == '>') // shout, c-shout or it; look if there is a 'shouts' chatbox
-		for(p=0; p<MAX_CHAT; p++) {
+		if(buf[i-3] == 't' || buf[oldi+2] == '>') {// shout, c-shout or it; look if there is a 'shouts' chatbox
+		  if(buf[i-8] == '-' && buf[i-3] == 't')
+		  for(p=0; p<MAX_CHAT; p++) { // c-shout; check if dedicatesd c-shout box exists
+		    if(!strcmp("c-shouts", chatPartner[p])) {
+			talker[0] = '('; strcat(talker, ") "); Colorize(ColorSShout, FALSE);
+			chattingPartner = p; break;
+		    }
+		  }
+		  if(chattingPartner < 0)
+		  for(p=0; p<MAX_CHAT; p++) {
 		    if(!strcmp("shouts", chatPartner[p])) {
 			if(buf[oldi+2] == '>') { talker[0] = '<'; strcat(talker, "> "); Colorize(ColorShout, FALSE); }
 			else if(buf[i-8] == '-') { talker[0] = '('; strcat(talker, ") "); Colorize(ColorSShout, FALSE); }
 			else { talker[0] = '['; strcat(talker, "] "); Colorize(ColorShout, FALSE); }
 			chattingPartner = p; break;
 		    }
+		  }
 		}
 		if(chattingPartner<0) // if not, look if there is a chatbox for this indivdual
 		for(p=0; p<MAX_CHAT; p++) if(!StrCaseCmp(talker+1, chatPartner[p])) {
