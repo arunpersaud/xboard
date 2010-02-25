@@ -3904,7 +3904,7 @@ ParseBoard12(string)
       CopyBoard(partnerBoard, board);
       if(partnerUp) DrawPosition(FALSE, partnerBoard);
       if(twoBoards) { partnerUp = 0; flipView = !flipView; DrawPosition(TRUE, boards[currentMove]); } // [HGM] dual: redraw own game!
-      sprintf(partnerStatus, "W: %d:%d B: %d:%d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
+      sprintf(partnerStatus, "W: %d:%02d B: %d:%02d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
 		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
       DisplayMessage(partnerStatus, "");
 	partnerBoardValid = TRUE;
