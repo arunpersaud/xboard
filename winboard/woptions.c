@@ -1177,6 +1177,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* Initialize the dialog items */
 #define CHECK_BOX(x,y) CheckDlgButton(hDlg, (x), (BOOL)(y))
 
+    CHECK_BOX(OPT_AutoKibitz, appData.autoKibitz);
     CHECK_BOX(OPT_AutoComment, appData.autoComment);
     CHECK_BOX(OPT_AutoObserve, appData.autoObserve);
     CHECK_BOX(OPT_GetMoveList, appData.getMoveList);
@@ -1261,6 +1262,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.premove          = IS_CHECKED(OPT_Premove);
       appData.premoveWhite     = IS_CHECKED(OPT_PremoveWhite);
       appData.premoveBlack     = IS_CHECKED(OPT_PremoveBlack);
+      appData.autoKibitz       = IS_CHECKED(OPT_AutoKibitz);
       appData.autoComment      = IS_CHECKED(OPT_AutoComment);
       appData.autoObserve      = IS_CHECKED(OPT_AutoObserve);
       appData.getMoveList      = IS_CHECKED(OPT_GetMoveList);
