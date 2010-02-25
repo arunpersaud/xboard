@@ -2939,6 +2939,24 @@ DrawSquare(row, column, piece, do_flash)
 
 	string[1] = NULLCHAR;
 
+//    switch (event->type) {
+//      case Expose:
+//	if (event->xexpose.count > 0) return;  /* no clipping is done */
+//	XDrawPosition(widget, True, NULL);
+//	if(twoBoards) { // [HGM] dual: draw other board in other orientation
+//	    flipView = !flipView; partnerUp = !partnerUp;
+//	    XDrawPosition(widget, True, NULL);
+//	    flipView = !flipView; partnerUp = !partnerUp;
+//	}
+//	break;
+//      case MotionNotify:
+//        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, 1)) break;
+//      default:
+//	return;
+//    }
+//}
+///* end why */
+
 	/* get a cairo_t */
 	cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
 
@@ -3098,7 +3116,7 @@ DrawSeekDot(int x, int y, int colorNr)
     //	     x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
 }
 
-static int damage[BOARD_RANKS][BOARD_FILES];
+static int damage[2][BOARD_RANKS][BOARD_FILES];
 
 /*
  * event handler for redrawing the board
@@ -3110,38 +3128,38 @@ DrawPosition( repaint, board)
 {
   int i, j, do_flash;
   static int lastFlipView = 0;
-  static int lastBoardValid = 0;
-  static Board lastBoard;
+  static int lastBoardValid[2] = {0, 0};
+  static Board lastBoard[2];
   int rrow, rcol;
+  int nr = twoBoards*partnerUp;
 
-    if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
-    if(twoBoards) repaint = True;
+  if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
 
   if (board == NULL) {
     if (!lastBoardValid) return;
-    board = lastBoard;
+    board = lastBoard[nr];
   }
-  if (!lastBoardValid || lastFlipView != flipView) {
+  if (!lastBoardValid || (nr==0 && lastFlipView != flipView)) {
     //    XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
     // XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flip View"),
     //	args, 1);
   }
 
-  if (!repaint && lastBoardValid && lastFlipView == flipView)
+  if (!repaint && lastBoardValid[nr] && (nr==1 && lastFlipView == flipView))
     {
       /* If too much changes (begin observing new game, etc.), don't
 	 do flashing */
-      do_flash = too_many_diffs(board, lastBoard) ? 0 : 1;
+      do_flash = too_many_diffs(board, lastBoard[nr]) ? 0 : 1;
 
       /* Special check for castling so we don't flash both the king
 	 and the rook (just flash the king). */
       if (do_flash)
 	{
-	  if (check_castle_draw(board, lastBoard, &rrow, &rcol))
+	  if (check_castle_draw(board, lastBoard[nr], &rrow, &rcol))
 	    {
 	      /* Draw rook with NO flashing. King will be drawn flashing later */
 	      DrawSquare(rrow, rcol, board[rrow][rcol], 0);
-	      lastBoard[rrow][rcol] = board[rrow][rcol];
+	      lastBoard[nr][rrow][rcol] = board[rrow][rcol];
 	    }
 	}
 
@@ -3150,17 +3168,17 @@ DrawPosition( repaint, board)
 	 is flashing on its new square */
       for (i = 0; i < BOARD_HEIGHT; i++)
 	for (j = 0; j < BOARD_WIDTH; j++)
-	  if ((board[i][j] != lastBoard[i][j] && board[i][j] == EmptySquare)
-	      || damage[i][j])
+	  if ((board[i][j] != lastBoard[nr][i][j] && board[i][j] == EmptySquare)
+	      || damage[nr][i][j])
 	    {
 	      DrawSquare(i, j, board[i][j], 0);
-	      damage[i][j] = False;
+	      damage[nr][i][j] = False;
 	    }
 
       /* Second pass -- Draw piece(s) in new position and flash them */
       for (i = 0; i < BOARD_HEIGHT; i++)
 	for (j = 0; j < BOARD_WIDTH; j++)
-	  if (board[i][j] != lastBoard[i][j])
+	  if (board[i][j] != lastBoard[nr][i][j])
 	    {
 	      DrawSquare(i, j, board[i][j], do_flash);
 	    }
@@ -3183,34 +3201,51 @@ DrawPosition( repaint, board)
 	for (j = 0; j < BOARD_WIDTH; j++)
 	  {
 	    DrawSquare(i, j, board[i][j], 0);
-	    damage[i][j] = False;
+	    damage[nr][i][j] = False;
 	  }
     }
 
-  CopyBoard(lastBoard, board);
-  lastBoardValid = 1;
-  lastFlipView = flipView;
+  CopyBoard(lastBoard[nr], board);
+  lastBoardValid[nr] = 1;
+  if(nr == 0) 
+    {
+      lastFlipView = flipView;
 
-  /* Draw highlights */
-  if (pm1X >= 0 && pm1Y >= 0)
-    {
-      drawHighlight(pm1X, pm1Y, LINE_TYPE_PRE);
-    }
-  if (pm2X >= 0 && pm2Y >= 0)
-    {
-      drawHighlight(pm2X, pm2Y, LINE_TYPE_PRE);
-    }
-  if (hi1X >= 0 && hi1Y >= 0)
-    {
-      drawHighlight(hi1X, hi1Y, LINE_TYPE_HIGHLIGHT);
-    }
-  if (hi2X >= 0 && hi2Y >= 0)
-    {
-      drawHighlight(hi2X, hi2Y, LINE_TYPE_HIGHLIGHT);
+      for (i = 0; i < BOARD_HEIGHT; i++)
+	for (j = 0; j < BOARD_WIDTH; j++) {
+	  DrawSquare(i, j, board[i][j], 0);
+	  damage[nr][i][j] = False;
+	}
     }
 
-  /* If piece being dragged around board, must redraw that too */
-  DrawDragPiece();
+    CopyBoard(lastBoard[nr], board);
+    lastBoardValid[nr] = 1;
+  if(nr == 0) 
+    { // [HGM] dual: no highlights on second board yet
+      lastFlipView = flipView;
+      
+      /* Draw highlights */
+      if (pm1X >= 0 && pm1Y >= 0)
+	{
+	  drawHighlight(pm1X, pm1Y, LINE_TYPE_PRE);
+	}
+      if (pm2X >= 0 && pm2Y >= 0)
+	{
+	  drawHighlight(pm2X, pm2Y, LINE_TYPE_PRE);
+	}
+      if (hi1X >= 0 && hi1Y >= 0)
+	{
+	  drawHighlight(hi1X, hi1Y, LINE_TYPE_HIGHLIGHT);
+	}
+      if (hi2X >= 0 && hi2Y >= 0)
+	{
+	  drawHighlight(hi2X, hi2Y, LINE_TYPE_HIGHLIGHT);
+	}
+
+      /* If piece being dragged around board, must redraw that too */
+      
+      DrawDragPiece();
+    }
 
   return;
 }
@@ -6047,7 +6082,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
   FrameSequence(&game, piece, startColor, &start, &finish, frames, nFrames);
 
   /* Be sure end square is redrawn */
-  damage[toY][toX] = True;
+  damage[0][toY][toX] = True;
   
   return;
 }
@@ -6086,7 +6121,7 @@ DragPieceBegin(x, y)
 	   as seen by opponent) the move hasn't been made yet. */
 	if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
 	   boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
-	damage[boardY][boardX] = True;
+	damage[0][boardY][boardX] = True;
     } else {
 	player.dragActive = False;
     }
@@ -6140,7 +6175,7 @@ DragPieceEnd(x, y)
     EndAnimation(&player, &corner);
 
     /* Be sure end square is redrawn */
-    damage[boardY][boardX] = True;
+    damage[0][boardY][boardX] = True;
 
     /* This prevents weird things happening with fast successive
        clicks which on my Sun at least can cause motion events
@@ -6165,7 +6200,8 @@ DrawDragPiece ()
   BlankSquare(player.startSquare.x, player.startSquare.y,
 	      player.startColor, EmptySquare, xBoardWindow);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
-  damage[player.startBoardY][player.startBoardX] = TRUE;
+
+  damage[0][player.startBoardY][player.startBoardX] = TRUE;
 
   return;
 }

@@ -3155,10 +3155,10 @@ void DrawSeekDot(int x, int y, int color)
 VOID
 HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 {
-  static Board lastReq, lastDrawn;
+  static Board lastReq[2], lastDrawn[2];
   static HighlightInfo lastDrawnHighlight, lastDrawnPremove;
   static int lastDrawnFlipView = 0;
-  static int lastReqValid = 0, lastDrawnValid = 0;
+  static int lastReqValid[2] = {0, 0}, lastDrawnValid[2] = {0, 0};
   int releaseDC, x, y, x2, y2, row, column, num_clips = 0, i;
   HDC tmphdc;
   HDC hdcmem;
@@ -3167,6 +3167,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   RECT Rect;
   HRGN clips[MAX_CLIPS];
   ChessSquare dragged_piece = EmptySquare;
+  int nr = twoBoards*partnerUp;
 
   /* I'm undecided on this - this function figures out whether a full
    * repaint is necessary on its own, so there's no real reason to have the
@@ -3183,16 +3184,15 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   if( DrawPositionNeedsFullRepaint() ) {
       fullrepaint = TRUE;
   }
-  if(twoBoards) fullrepaint = TRUE; // [HGM] dual: our memory of last-drawn will be all wrong
 
   if (board == NULL) {
-    if (!lastReqValid) {
+    if (!lastReqValid[nr]) {
       return;
     }
-    board = lastReq;
+    board = lastReq[nr];
   } else {
-    CopyBoard(lastReq, board);
-    lastReqValid = 1;
+    CopyBoard(lastReq[nr], board);
+    lastReqValid[nr] = 1;
   }
 
   if (doingSizing) {
@@ -3238,16 +3238,17 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
    * newest board with the last drawn board and checking if
    * flipping has changed.
    */
-  if (!fullrepaint && lastDrawnValid && lastDrawnFlipView == flipView) {
+  if (!fullrepaint && lastDrawnValid[nr] && (nr == 1 || lastDrawnFlipView == flipView)) {
     for (row = 0; row < BOARD_HEIGHT; row++) { /* [HGM] true size, not 8 */
       for (column = 0; column < BOARD_WIDTH; column++) {
-	if (lastDrawn[row][column] != board[row][column]) {
+	if (lastDrawn[nr][row][column] != board[row][column]) {
 	  SquareToPos(row, column, &x, &y);
 	  clips[num_clips++] =
 	    CreateRectRgn(x, y, x + squareSize, y + squareSize);
 	}
       }
     }
+   if(nr == 0) { // [HGM] dual: no highlights on second board
     for (i=0; i<2; i++) {
       if (lastDrawnHighlight.sq[i].x != highlightInfo.sq[i].x ||
 	  lastDrawnHighlight.sq[i].y != highlightInfo.sq[i].y) {
@@ -3288,6 +3289,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	}
       }
     }
+   }
   } else {
     fullrepaint = TRUE;
   }
@@ -3347,7 +3349,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	 explodes.  The old and new positions both had an empty square
 	 at the destination, but animation has drawn a piece there and
 	 we have to remember to erase it. [HGM] moved until after setting lastDrawn */
-      lastDrawn[animInfo.to.y][animInfo.to.x] = animInfo.piece;
+      lastDrawn[0][animInfo.to.y][animInfo.to.x] = animInfo.piece;
     }
   }
 
@@ -3384,9 +3386,10 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	SelectObject(hdcmem, oldBrush);
   } else {
     DrawGridOnDC(hdcmem);
-    DrawHighlightsOnDC(hdcmem);
+    if(nr == 0) DrawHighlightsOnDC(hdcmem); // [HGM] dual: no highlights on right board yet
     DrawBoardOnDC(hdcmem, board, tmphdc);
   }
+  if(nr == 0) // [HGM] dual: markers only on left board
   for (row = 0; row < BOARD_HEIGHT; row++) {
     for (column = 0; column < BOARD_WIDTH; column++) {
 	if (marker[row][column]) { // marker changes only occur with full repaint!
@@ -3441,7 +3444,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 
   DrawCoordsOnDC(hdcmem);
 
-  CopyBoard(lastDrawn, board); /* [HGM] Moved to here from end of routine, */
+  CopyBoard(lastDrawn[nr], board); /* [HGM] Moved to here from end of routine, */
                  /* to make sure lastDrawn contains what is actually drawn */
 
   /* Put the dragged piece back into place and draw it (out of place!) */
@@ -3478,6 +3481,13 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 
   /* Set clipping on the target DC */
   if (!fullrepaint) {
+    if(nr == 1) for (x = 0; x < num_clips; x++) { // [HGM] dual: translate clips
+	RECT rect;
+	GetRgnBox(clips[x], &rect);
+	DeleteObject(clips[x]);
+	clips[x] = CreateRectRgn(rect.left + wpMain.width/2, rect.top, 
+	                  rect.right + wpMain.width/2, rect.bottom);
+    }
     SelectClipRgn(hdc, clips[0]);
     for (x = 1; x < num_clips; x++) {
       if (ExtSelectClipRgn(hdc, clips[x], RGN_OR) == ERROR)
@@ -3577,7 +3587,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   if (releaseDC) 
     ReleaseDC(hwndMain, hdc);
   
-  if (lastDrawnFlipView != flipView) {
+  if (lastDrawnFlipView != flipView && nr == 0) {
     if (flipView)
       CheckMenuItem(GetMenu(hwndMain),IDM_FlipView, MF_BYCOMMAND|MF_CHECKED);
     else
@@ -3588,7 +3598,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   lastDrawnHighlight = highlightInfo;
   lastDrawnPremove   = premoveHighlightInfo;
   lastDrawnFlipView = flipView;
-  lastDrawnValid = 1;
+  lastDrawnValid[nr] = 1;
 }
 
 /* [HGM] diag: Save the current board display to the given open file and close the file */
@@ -3629,6 +3639,11 @@ PaintProc(HWND hwnd)
 	RealizePalette(hdc);
       }
       HDCDrawPosition(hdc, 1, NULL);
+      if(twoBoards) { // [HGM] dual: also redraw other board in other orientation
+	flipView = !flipView; partnerUp = !partnerUp;
+	HDCDrawPosition(hdc, 1, NULL);
+	flipView = !flipView; partnerUp = !partnerUp;
+      }
       oldFont =
 	SelectObject(hdc, font[boardSize][MESSAGE_FONT]->hf);
       ExtTextOut(hdc, messageRect.left, messageRect.top,
