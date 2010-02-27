@@ -1107,6 +1107,11 @@ InitBackEnd3 P((void))
 
     InitChessProgram(&first, startedFromSetupPosition);
 
+    if(!appData.noChessProgram) {  /* [HGM] tidy: redo program version to use name from myname feature */
+	free(programVersion);
+	programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
+	sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
+    }
 
     if (appData.icsActive) {
 #ifdef WIN32
