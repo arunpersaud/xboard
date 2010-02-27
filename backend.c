@@ -1103,30 +1103,34 @@ InitBackEnd2()
 void
 InitBackEnd3 P((void))
 {
-  GameMode initialMode;
-  char buf[MSG_SIZ];
-  int err;
-  
-  InitChessProgram(&first, startedFromSetupPosition);
-  
-  
-  if (appData.icsActive) 
-    {
-      err = establish();
-      if (err != 0) 
-	{
-	  if (*appData.icsCommPort != NULLCHAR) 
-	    {
-	      sprintf(buf, _("Could not open comm port %s"),
-		      appData.icsCommPort);
+    GameMode initialMode;
+    char buf[MSG_SIZ];
+    int err;
+
+    InitChessProgram(&first, startedFromSetupPosition);
+
+    if(!appData.noChessProgram) {  /* [HGM] tidy: redo program version to use name from myname feature */
+	free(programVersion);
+	programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
+	sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
+    }
+
+    if (appData.icsActive) {
+#ifdef WIN32
+        /* [DM] Make a console window if needed [HGM] merged ifs */
+        ConsoleCreate(); 
+#endif
+	err = establish();
+	if (err != 0) {
+	    if (*appData.icsCommPort != NULLCHAR) {
+		sprintf(buf, _("Could not open comm port %s"),  
+			appData.icsCommPort);
+	    } else {
+		snprintf(buf, sizeof(buf), _("Could not connect to host %s, port %s"),  
+			appData.icsHost, appData.icsPort);
 	    }
-	  else 
-	    {
-	      snprintf(buf, sizeof(buf), _("Could not connect to host %s, port %s"),
-		       appData.icsHost, appData.icsPort);
-	    }
-	  DisplayFatalError(buf, err, 1);
-	  return;
+	    DisplayFatalError(buf, err, 1);
+	    return;
 	}
 
 	SetICSMode();
