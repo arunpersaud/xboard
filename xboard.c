@@ -2593,7 +2593,7 @@ drawHighlight(file, rank, line_type)
       break;
     case LINE_TYPE_NORMAL:
     default:
-      cairo_set_source_rgba (cr, 0, 1, 0, 1.0);
+      cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
     }
   
   cairo_stroke (cr);
@@ -3139,7 +3139,7 @@ void DrawPosition( repaint, board)
 	  cairo_set_line_width (cr, lineGap);
 
 	  /* TODO: use appdata colors */
-	  cairo_set_source_rgba (cr, 0, 1, 0, 1.0);
+	  cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
 
 	  cairo_stroke (cr);
 
