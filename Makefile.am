@@ -46,5 +46,11 @@ man6_MANS = xboard.man
 
 dist_sysconf_DATA = xboard.conf
 
+icondir = $(datadir)/icons/hicolor/48x48/apps
+dist_icon_DATA = xboard.png
+svgicondir = $(datadir)/icons/hicolor/scalable/apps
+dist_svgicon_DATA = xboard.svg
+
+
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 	$(srcdir)/texi2man $(srcdir)/xboard.texi > xboard.man || (rm -f xboard.man ; false)
