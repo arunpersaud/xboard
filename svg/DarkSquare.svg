@@ -13,7 +13,7 @@
    width="100"
    height="100"
    id="svg2"
-   inkscape:version="0.46+devel r21645"
+   inkscape:version="0.46+devel r22620"
    sodipodi:docname="DarkSquare.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <metadata
@@ -36,13 +36,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="790"
-     inkscape:window-height="813"
+     inkscape:window-width="1276"
+     inkscape:window-height="961"
      id="namedview125"
      showgrid="false"
-     inkscape:zoom="2.58"
-     inkscape:cx="62.015504"
-     inkscape:cy="44.96124"
+     inkscape:zoom="1.29"
+     inkscape:cx="104.73184"
+     inkscape:cy="63.811844"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -68,14 +68,4 @@
        id="rect12"
        style="color:#000000;fill:#c8c365;fill-opacity:1;stroke:none;stroke-width:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   </g>
-  <text
-     xml:space="preserve"
-     style="font-size:12px;fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="85.658913"
-     y="93.023254"
-     id="text131"><tspan
-       sodipodi:role="line"
-       id="tspan133"
-       x="85.658913"
-       y="93.023254">D</tspan></text>
 </svg>

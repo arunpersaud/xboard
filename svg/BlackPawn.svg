@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -8,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="97.221024"
-   height="89.91935"
+   width="100"
+   height="100"
    id="svg2833"
    sodipodi:version="0.32"
-   inkscape:version="0.46+devel"
+   inkscape:version="0.46+devel r22620"
    version="1.0"
    sodipodi:docname="BlackPawn.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -74,6 +75,13 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3605"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -83,15 +91,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="8.7527877"
+     inkscape:cx="-117.0112"
      inkscape:cy="82.430952"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="658"
      inkscape:window-height="834"
-     inkscape:window-x="564"
-     inkscape:window-y="56" />
+     inkscape:window-x="180"
+     inkscape:window-y="59"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata2838">
     <rdf:RDF>
@@ -100,7 +109,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -108,10 +117,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-67.582896,-63.246303)">
+     transform="translate(-67.582896,-53.165653)">
     <path
        style="stroke-width:1px"
-       d="m 107.6261,86.227321 c -1.78648,-4.76394 -4.16845,-9.52787 0,-14.29181 5.35943,-6.55042 18.46025,-4.16845 19.65123,4.76394 0.5955,3.57295 -1.19098,6.55041 -2.38196,9.52787 13.69632,2.97746 9.52787,19.055759 4.16844,26.797159 10.12337,2.97746 15.4828,14.29182 17.26928,23.81969 0,2.38197 1.78648,8.33689 -0.59549,10.12337 -2.38197,2.38197 -10.71887,0.59549 -14.29182,0.59549 l -30.3701,0 c -4.168442,0 -9.527872,1.19099 -13.696322,0 -3.57295,-1.19098 -1.19098,-8.33689 -1.19098,-10.71886 1.78647,-9.52787 7.1459,-20.84223 17.269272,-23.81969 -5.359432,-7.7414 -9.527872,-23.819699 4.16845,-26.797159 z"
+       d="m 108.40557,79.622086 c -1.91368,-5.10314 -4.46524,-10.20627 0,-15.30941 5.74103,-7.01682 19.77466,-4.46525 21.05044,5.10314 0.6379,3.82735 -1.27578,7.01681 -2.55156,10.20627 14.67152,3.18946 10.20627,20.412544 4.46524,28.705144 10.84417,3.18946 16.5852,15.30942 18.49888,25.51569 0,2.55157 1.91368,8.93049 -0.63789,10.84417 -2.55157,2.55157 -11.48207,0.63789 -15.30942,0.63789 l -32.5325,0 c -4.465237,0 -10.206267,1.27579 -14.671517,0 -3.82735,-1.27578 -1.27578,-8.93049 -1.27578,-11.48206 1.91367,-10.20627 7.6547,-22.32623 18.498867,-25.51569 -5.741027,-8.2926 -10.206267,-25.515684 4.46524,-28.705144 z"
        id="BlackPawn" />
   </g>
 </svg>
