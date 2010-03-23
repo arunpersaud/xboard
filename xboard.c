@@ -262,6 +262,10 @@ void AnimateUserMove P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
 void HandlePV P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
+void SelectPV P((Widget w, XEvent * event,
+		     String * params, Cardinal * nParams));
+void StopPV P((Widget w, XEvent * event,
+		     String * params, Cardinal * nParams));
 void WhiteClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void BlackClock P((Widget w, XEvent *event,
@@ -850,7 +854,8 @@ XtActionsRec boardActions[] = {
     { "HandleUserMove", HandleUserMove },
     { "AnimateUserMove", AnimateUserMove },
     { "HandlePV", HandlePV },
-    { "UnLoadPV", UnLoadPV },
+    { "SelectPV", SelectPV },
+    { "StopPV", StopPV },
     { "FileNameAction", FileNameAction },
     { "AskQuestionProc", AskQuestionProc },
     { "AskQuestionReplyAction", AskQuestionReplyAction },

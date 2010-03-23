@@ -131,6 +131,7 @@ static int engineOutputDialogUp;
 
 /* Module variables */
 int  windowMode = 1;
+static int currentPV, highTextStart[2], highTextEnd[2];
 
 typedef struct {
     char * name;
@@ -192,8 +193,11 @@ void InsertIntoMemo( int which, char * text, int where )
 	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
 	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
 	XawTextReplace(edit, where, where, &t);
-//	XtSetArg(arg, XtNstring, (XtArgVal) text);
-//	XtSetValues(outputField[which][nMemo], &arg, 1);
+	if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
+	    int len = strlen(text);
+	    highTextStart[which] += len; highTextEnd[which] += len;
+	    XawTextSetSelection( outputField[which][nMemo], highTextStart[which], highTextEnd[which] );
+	}
 }
 
 void SetIcon( int which, int field, int nIcon )
@@ -227,7 +231,38 @@ Boolean SendPositionSelection(Widget w, Atom *selection, Atom *target,
 void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b); // from xoptions.c
 
 char memoTranslations[] =
-":Ctrl<Key>c: CopyMemoProc() \n";
+":Ctrl<Key>c: CopyMemoProc() \n \
+<Btn3Motion>: HandlePV() \n \
+<Btn3Down>: select-start() SelectPV() \n \
+<Btn3Up>: extend-end() StopPV() \n";
+
+void
+SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
+{	// [HGM] pv: translate click to PV line, and load it for display
+	String val;
+	int start, end, memo, j;
+	XawTextPosition index, dummy;
+	int x, y;
+	Arg arg;
+
+	x = event->xmotion.x; y = event->xmotion.y;
+	currentPV = (w == outputField[1][nMemo]);
+	XawTextGetSelectionPos(w, &index, &dummy);
+	XtSetArg(arg, XtNstring, &val);
+	XtGetValues(w, &arg, 1);
+	if(LoadMultiPV(x, y, val, index, &start, &end)) {
+	    XawTextSetSelection( outputField[currentPV][nMemo], start, end );
+	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;
+	}
+}
+
+void
+StopPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
+{	// [HGM] pv: on right-button release, stop displaying PV
+        XawTextUnsetSelection( w );
+        highTextStart[currentPV] = highTextEnd[currentPV] = 0;
+        UnLoadPV();
+}
 
 static void
 MemoCB(Widget w, XtPointer client_data, Atom *selection,
