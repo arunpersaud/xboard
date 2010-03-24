@@ -3797,20 +3797,20 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       if (PtInRect((LPRECT) &whiteRect, pt)) {
         if (gameMode == EditPosition) {
 	  SetWhiteToPlayEvent();
+        } else if (gameMode == EditGame || GetKeyState(VK_SHIFT) < 0) {
+          AdjustClock(flipClock, -1);
 	} else if (gameMode == IcsPlayingBlack ||
 		   gameMode == MachinePlaysWhite) {
 	  CallFlagEvent();
-        } else if (gameMode == EditGame) {
-          AdjustClock(flipClock, -1);
         }
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
 	if (gameMode == EditPosition) {
 	  SetBlackToPlayEvent();
+        } else if (gameMode == EditGame || GetKeyState(VK_SHIFT) < 0) {
+          AdjustClock(!flipClock, -1);
 	} else if (gameMode == IcsPlayingWhite ||
 		   gameMode == MachinePlaysBlack) {
 	  CallFlagEvent();
-        } else if (gameMode == EditGame) {
-          AdjustClock(!flipClock, -1);
 	}
       }
       dragInfo.start.x = dragInfo.start.y = -1;
@@ -3894,10 +3894,11 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     if(y == -2) {
       /* [HGM] right mouse button in clock area edit-game mode ups clock */
       if (PtInRect((LPRECT) &whiteRect, pt)) {
-          if (gameMode == EditGame) AdjustClock(flipClock, 1);
+          if (gameMode == EditGame || GetKeyState(VK_SHIFT) < 0) AdjustClock(flipClock, 1);
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
-          if (gameMode == EditGame) AdjustClock(!flipClock, 1);
+          if (gameMode == EditGame || GetKeyState(VK_SHIFT) < 0) AdjustClock(!flipClock, 1);
       }
+      break;
     }
     DrawPosition(TRUE, NULL);
 
