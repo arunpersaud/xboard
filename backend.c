@@ -244,6 +244,7 @@ static int setboardSpoiledMachineBlack = 0 /*, errorExitFlag = 0*/;
 int startedFromPositionFile = FALSE; Board filePosition;       /* [HGM] loadPos */
 int rightsBoard[BOARD_RANKS][BOARD_FILES];                  /* [HGM] editrights */
 Board partnerBoard;     /* [HGM] bughouse: for peeking at partner game          */
+int partnerHighlight[2];
 Boolean partnerBoardValid = 0;
 char partnerStatus[MSG_SIZ];
 Boolean partnerUp;
@@ -3836,7 +3837,7 @@ ParseBoard12(string)
     char promoChar;
     int ranks=1, files=0; /* [HGM] ICS80: allow variable board size */
     char *bookHit = NULL; // [HGM] book
-    Boolean weird = FALSE, reqFlag = FALSE, repaint = FALSE;
+    Boolean weird = FALSE, reqFlag = FALSE;
 
     fromX = fromY = toX = toY = -1;
 
@@ -3913,6 +3914,7 @@ ParseBoard12(string)
     if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
 	 && newGameMode == IcsObserving && appData.bgObserve) {
       // [HGM] bughouse: don't act on alien boards while we play. Just parse the board and save it */
+      char *toSqr;
       for (k = 0; k < ranks; k++) {
         for (j = 0; j < files; j++)
           board[k][j+gameInfo.holdingsWidth] = CharToPiece(board_chars[(ranks-1-k)*(files+1) + j]);
@@ -3922,9 +3924,17 @@ ParseBoard12(string)
         }
       }
       CopyBoard(partnerBoard, board);
-      if(appData.dualBoard && !twoBoards) { twoBoards = repaint = 1; InitDrawingSizes(-2,0); }
+      if(toSqr = strchr(str, '/')) { // extract highlights from long move
+        partnerBoard[EP_STATUS-3] = toSqr[1] - AAA; // kludge: hide highlighting info in board
+        partnerBoard[EP_STATUS-4] = toSqr[2] - ONE;
+      } else partnerBoard[EP_STATUS-4] = partnerBoard[EP_STATUS-3] = -1;
+      if(toSqr = strchr(str, '-')) {
+        partnerBoard[EP_STATUS-1] = toSqr[1] - AAA;
+        partnerBoard[EP_STATUS-2] = toSqr[2] - ONE;
+      } else partnerBoard[EP_STATUS-1] = partnerBoard[EP_STATUS-2] = -1;
+      if(appData.dualBoard && !twoBoards) { twoBoards = 1; InitDrawingSizes(-2,0); }
       if(twoBoards) { partnerUp = 1; flipView = !flipView; } // [HGM] dual
-      if(partnerUp) DrawPosition(repaint, partnerBoard);
+      if(partnerUp) DrawPosition(FALSE, partnerBoard);
       if(twoBoards) { partnerUp = 0; flipView = !flipView; } // [HGM] dual
       sprintf(partnerStatus, "W: %d:%02d B: %d:%02d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
 		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);

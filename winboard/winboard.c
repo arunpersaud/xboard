@@ -134,6 +134,8 @@ typedef struct {
 
 static HighlightInfo highlightInfo        = { {{-1, -1}, {-1, -1}} };
 static HighlightInfo premoveHighlightInfo = { {{-1, -1}, {-1, -1}} };
+static HighlightInfo partnerHighlightInfo = { {{-1, -1}, {-1, -1}} };
+static HighlightInfo oldPartnerHighlight  = { {{-1, -1}, {-1, -1}} };
 
 typedef struct { // [HGM] atomic
   int fromX, fromY, toX, toY, radius;
@@ -2489,23 +2491,14 @@ DrawHighlightOnDC(HDC hdc, BOOLEAN on, int x, int y, int pen)
 }
 
 VOID
-DrawHighlightsOnDC(HDC hdc)
+DrawHighlightsOnDC(HDC hdc, HighlightInfo *h, int pen)
 {
   int i;
   for (i=0; i<2; i++) {
-    if (highlightInfo.sq[i].x >= 0 && highlightInfo.sq[i].y >= 0) 
+    if (h->sq[i].x >= 0 && h->sq[i].y >= 0) 
       DrawHighlightOnDC(hdc, TRUE,
-			highlightInfo.sq[i].x, highlightInfo.sq[i].y,
-			HIGHLIGHT_PEN);
-  }
-  for (i=0; i<2; i++) {
-    if (premoveHighlightInfo.sq[i].x >= 0 && 
-	premoveHighlightInfo.sq[i].y >= 0) {
-	DrawHighlightOnDC(hdc, TRUE,
-	   		  premoveHighlightInfo.sq[i].x, 
-			  premoveHighlightInfo.sq[i].y,
-			  PREMOVE_PEN);
-    }
+			h->sq[i].x, h->sq[i].y,
+			pen);
   }
 }
 
@@ -3289,6 +3282,29 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	}
       }
     }
+   } else { // nr == 1
+	partnerHighlightInfo.sq[0].y = board[EP_STATUS-4];
+	partnerHighlightInfo.sq[0].x = board[EP_STATUS-3];
+	partnerHighlightInfo.sq[1].y = board[EP_STATUS-2];
+	partnerHighlightInfo.sq[1].x = board[EP_STATUS-1];
+      for (i=0; i<2; i++) {
+	if (partnerHighlightInfo.sq[i].x >= 0 &&
+	    partnerHighlightInfo.sq[i].y >= 0) {
+	  SquareToPos(partnerHighlightInfo.sq[i].y,
+		      partnerHighlightInfo.sq[i].x, &x, &y);
+	  clips[num_clips++] =
+	    CreateRectRgn(x - lineGap, y - lineGap, 
+	                  x + squareSize + lineGap, y + squareSize + lineGap);
+	}
+	if (oldPartnerHighlight.sq[i].x >= 0 && 
+	    oldPartnerHighlight.sq[i].y >= 0) {
+	  SquareToPos(oldPartnerHighlight.sq[i].y, 
+		      oldPartnerHighlight.sq[i].x, &x, &y);
+	  clips[num_clips++] =
+	    CreateRectRgn(x - lineGap, y - lineGap, 
+	                  x + squareSize + lineGap, y + squareSize + lineGap);
+	}
+      }
    }
   } else {
     fullrepaint = TRUE;
@@ -3379,14 +3395,21 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	  ExtSelectClipRgn(hdcmem, clips[num_clips++], RGN_OR);
 	}
 	DrawGridOnDC(hdcmem);
-	DrawHighlightsOnDC(hdcmem);
+	DrawHighlightsOnDC(hdcmem, &highlightInfo, HIGHLIGHT_PEN);
+	DrawHighlightsOnDC(hdcmem, &premoveHighlightInfo, PREMOVE_PEN);
 	DrawBoardOnDC(hdcmem, board, tmphdc);
 	oldBrush = SelectObject(hdcmem, explodeBrush);
 	Ellipse(hdcmem, x-r, y-r, x+r, y+r);
 	SelectObject(hdcmem, oldBrush);
   } else {
     DrawGridOnDC(hdcmem);
-    if(nr == 0) DrawHighlightsOnDC(hdcmem); // [HGM] dual: no highlights on right board yet
+    if(nr == 0) { // [HGM] dual: decide which highlights to draw
+	DrawHighlightsOnDC(hdcmem, &highlightInfo, HIGHLIGHT_PEN);
+	DrawHighlightsOnDC(hdcmem, &premoveHighlightInfo, PREMOVE_PEN);
+    } else {
+	DrawHighlightsOnDC(hdcmem, &partnerHighlightInfo, HIGHLIGHT_PEN);
+	oldPartnerHighlight = partnerHighlightInfo;
+    }
     DrawBoardOnDC(hdcmem, board, tmphdc);
   }
   if(nr == 0) // [HGM] dual: markers only on left board
