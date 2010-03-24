@@ -858,8 +858,6 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
       EngineOutputPopUp();
   }
 
-  InitBackEnd2();
-
   /* Make the window visible; update its client area; and return "success" */
   EnsureOnScreen(&boardX, &boardY, minX, minY);
   wp.length = sizeof(WINDOWPLACEMENT);
@@ -871,6 +869,8 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   wp.rcNormalPosition.top = boardY;
   wp.rcNormalPosition.bottom = boardY + winHeight;
   SetWindowPlacement(hwndMain, &wp);
+
+  InitBackEnd2(); // [HGM] moved until after all windows placed, to save correct position if fatal error on engine start
 
   if(!appData.noGUI) SetWindowPos(hwndMain, alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST,
                0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
