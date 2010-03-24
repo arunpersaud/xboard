@@ -15756,3 +15756,4 @@ LoadVariation(int index, char *text)
 	CommentPopDown();
 	ToNrEvent(currentMove+1);
 }
+

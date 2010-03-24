@@ -946,6 +946,10 @@ XtActionsRec boardActions[] = {
 char ICSInputTranslations[] =
   "<Key>Return: EnterKeyProc() \n";
 
+// [HGM] vari: another hideous kludge: call extend-end first so we can be sure select-start works,
+//             as the widget is destroyed before the up-click can call extend-end
+char commentTranslations[] = "<Btn3Down>: extend-end() select-start() CommentClick() \n";
+
 String xboardResources[] = {
   //    "*fileName*value.translations: #override\\n <Key>Return: FileNameAction()",
   "*question*value.translations: #override\\n <Key>Return: AskQuestionReplyAction()",
@@ -3328,6 +3332,7 @@ Widget CommentCreate(name, text, mutable, callback, lines)
     XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
     edit =
       XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
+    XtOverrideTranslations(edit, XtParseTranslationTable(commentTranslations));
 
     if (mutable) {
 	j = 0;
@@ -3536,6 +3541,20 @@ Widget MiscCreate(name, text, mutable, callback, lines)
 
 static int savedIndex;  /* gross that this is global */
 
+void CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
+{
+	String val;
+	XawTextPosition index, dummy;
+	Arg arg;
+
+	XawTextGetSelectionPos(w, &index, &dummy);
+	XtSetArg(arg, XtNstring, &val);
+	XtGetValues(w, &arg, 1);
+	ReplaceComment(savedIndex, val);
+	if(savedIndex != currentMove) ToNrEvent(savedIndex);
+	LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
+}
+
 void EditCommentPopUp(index, title, text)
      int index;
      char *title, *text;
@@ -3696,6 +3715,7 @@ void CommentPopUp(title, text)
     int j;
     Widget edit;
 
+    savedIndex = currentMove; // [HGM] vari
     if (commentShell == NULL) {
 	commentShell =
 	  CommentCreate(title, text, False, CommentCallback, 4);
