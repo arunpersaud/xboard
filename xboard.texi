@@ -138,6 +138,21 @@ the position the chess program thinks it will end up in,
 while moving the mouse vertically with this button pressed will step
 through the principal variation to show how this position will be 
 reached.
+Lines of play displayed in the engine-output window an similarly
+be played out on the board, by right-clicking on them.
+
+When connected to an ICS, it is possible to call up a graphical
+representation of players seeking a game in stead of the chess board,
+when the latter is not in use
+(i.e. when you are not playing or observing).
+Left-clicking the display area will switch between this 'seek graph'
+and the chess board.
+Hovering the mouse pointer over a dot will show the details of the
+seek ad in the message field above the board.
+Left-clicking the dot will challenge that player.
+Right-clicking a dot will 'push it to the back',
+to reveal any dots that were hidden behind it.
+Right-clicking off dots will refresh the graph.
 
 Most other XBoard commands are available from the menu bar. The most
 frequently used commands also have shortcut keys or on-screen buttons.
@@ -227,11 +242,20 @@ before the first move, the game starts from that position. Text
 enclosed in parentheses, square brackets, or curly braces is assumed to
 be commentary and is displayed in a pop-up window. Any other
 text in the file is ignored. PGN variations (enclosed in
-parentheses) are treated as comments; XBoard is not able to walk
-variation trees.
+parentheses) also are treated as comments;
+however, if you rights-click them in the comment window,
+XBoard will shelve the current line, and load the the selected variation,
+so you can step through it.
+You can later revert to the previous line with the @samp{Revert} command.
+This way you can walk quite complex varation trees with XBoard.
+(The XBoard PGN parser is currenty limited to three nested levels of variations
+on top of the main game, however.)
 The nonstandard PGN tag [Variant "varname"] functions similarly to
 the -variant command-line option (see below), allowing games in certain chess
-variants to be loaded.  There is also a heuristic to 
+variants to be loaded.  
+Note that it must appear before any FEN tag for XBoard to recognize
+variant FENs appropriately.
+There is also a heuristic to 
 recognize chess variants from the Event tag, by looking for the strings
 that the Internet Chess Servers put there when saving variant ("wild") games.
 @item Load Next Game
@@ -580,6 +604,12 @@ observe command with no arguments. ICS mode only.
 @cindex Stop Examining, Menu Item
 Ends your participation in examining a game, by issuing the ICS
 unexamine command. ICS mode only.
+@item Upload to Examine
+@cindex Upload to Examine, Menu Item
+Create an examined game of the proper variant on the ICS,
+and send the game there that is currenty loaded in XBoard
+(e.g. through pasting or loading from file).
+You must be connected to an ICS for this to work.
 @item Adjudicate to White
 @itemx Adjudicate to Black
 @itemx Adjudicate Draw
@@ -668,20 +698,28 @@ the current line. If Pause mode is on, @samp{Forward to End} only moves
 your local view forward, and it will not go past the position
 that the game was in when you paused.
 @item Revert
+@itemx Annotate
 @cindex Revert, Menu Item
+@cindex Annotate, Menu Item
 If you are examining an ICS game and Pause mode is off, issues
 the ICS command @samp{revert}.
 In local mode, when you were editing or analyzing a game, 
 and have been entering a number of moves by hand, starting from 
 a position not at the end of the game, 
 the revert command restores the game to the variation you started from. 
-The variation you had been entering is currently added as a comment 
-to the original move where you deviated. 
 This can be applied recursively, 
 so that you can analyze variations on variations; 
 each time you create a new variation by entering an alternative move, 
 the current variation will be shelved. 
 Revert allows you to return to the most recently shelved variation.
+The difference between Revert and Annotate is that with the latter,
+the variation you had been entering and are now abandoning
+is currently added as a comment 
+(in PGN variation syntax, i.e. between parentheses)
+to the original move where you deviated.
+Note that such 'variation comments' can be played out on the board again
+(also when they were loaded from file)
+by clicking them in the comment window.
 @item Truncate Game
 @cindex Truncate Game, Menu Item
 Discards all remembered moves of the game beyond the current
@@ -1414,6 +1452,12 @@ castling and e.p. fields in variants that do not have castling or e.p.
 (shatranj, courier, xiangqi, shogi) so that XBoard would normally omit them 
 (string = "- -"), or to add variant-specific fields that are not yet supported by XBoard 
 (e.g. to indicate the number of checks in 3check).
+@item -shuffleOpenings
+@cindex shuffleOpenings, option
+Forces shuffling of the opening setup in variants that normally have a fixed initial position.
+Shufflings are symmetric for black and white, and exempt King and Rooks in variants
+with normal castling.
+Remains in force until a new variant is selected.
 @end table
 
 @node UCI + WB Engine Settings
@@ -1642,6 +1686,58 @@ to the ICS, in zippy mode. The option @code{showThinking} must be switched on fo
 this option to work.
 Also diverts similar kibitz information of an opponent engine that is playing you 
 through the ICS to the engine-output window, as if the engine was playing locally.
+@item -seekGraph true/false or -sg
+@cindex seekGraph, option
+@cindex sg, option
+Enables displaying of the seek graph by left-clicking the board when
+you are logged on to an ICS and currently idle.
+The seek graph show all players currently seeking games on the ICS,
+plotted according to their rating and the time control of the game they seek,
+in three different colors (for rated, unrated and wild games).
+Computer ads are displayed as squares, human ads are dots.
+Default: false.
+@item -autoRefresh true/false
+@cindex autoRefresh, option
+Enables automatic updating of the seek graph,
+by having the ICS send a running update of all newly placed
+and removed seek ads.
+This consumes a substantial amount of communication bandwidth,
+and is only supported for FICS and ICC.
+Default: false.
+@item -backgroundObserve true/false
+@cindex backgroundObserve, option
+When true, boards sent to you by the ICS from other games while you are playing
+(e.g. because you are observing them)
+will not be automatically displayed.
+Only a summary of time left and material of both players will appear
+in the message field above the board.
+XBoard will remember the last board it has received this way,
+and will display it in stead of the position in your own game
+when you press the right mouse button.
+No other information is stored on such games observed in the background;
+you cannot save such a game later, or step through its moves.
+This feature is provided solely for the benefit of bughouse players,
+to enable them to peek at their partner's game without the need
+to logon twice.
+Default: false.
+@item -dualBoard true/false
+@cindex dualBoard, option
+In combination with -backgroundObserve true, this option will display
+the board of the background game side by side with that of your own game,
+so you can have it in view permanently.
+Any board or holdings info coming in will be displayed on the secondary
+board immediately.
+This feature is still experimental and largely unfinished.
+There is no animation or highlighting of moves on the secondary board.
+Default: false.
+@item -oneClickMove true/false
+@cindex oneClickMove, option
+When set, this option allows you to enter moves by only clicking the to-
+or from-square, when only a single legal move to or from that square
+is possible.
+Double-clicking a piece (or clicking an already selected piece)
+will instruct that piece to make the only capture it can legally do.
+Defaut: false.
 @item -moves/-xmoves or -getMoveList true/false
 @cindex moves, option
 @cindex getMoveList, option
