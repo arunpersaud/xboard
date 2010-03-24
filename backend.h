@@ -207,6 +207,7 @@ void NewSettingEvent P((int option, char *command, int value));
 void DoEcho P((void));
 void DontEcho P((void));
 void TidyProgramName P((char *prog, char *host, char *buf));
+void SetGameInfo P((void));
 void AskQuestionEvent P((char *title, char *question,
 			 char *replyPrefix, char *which));
 Boolean ParseOneMove P((char *move, int moveNum,
