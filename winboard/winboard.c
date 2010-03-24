@@ -6141,6 +6141,12 @@ TypeInNameDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       GetDlgItemText(hDlg, OPT_Name, move, sizeof(move));
       appData.userName = strdup(move);
       SetUserLogo();
+      SetGameInfo();
+      if(gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack) {
+	sprintf(move, "%s vs. %s", gameInfo.white, gameInfo.black);
+	DisplayTitle(move);
+      }
+
 
       EndDialog(hDlg, TRUE);
       return TRUE;
