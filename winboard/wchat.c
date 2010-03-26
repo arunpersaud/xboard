@@ -195,13 +195,14 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		sprintf(buf, "Chat Window %s", first.tidy);
 		SetWindowText(hDlg, buf);
         }
-	for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] && i != partner) {
+	for(i=0; i<MAX_CHAT; i++) if(chatHandle[i]) {
+	    if(i == partner) continue;
 	    // set our button in other open chats
 	    SetDlgItemText(chatHandle[i], IDC_Focus1+partner-(i<partner), chatPartner[partner]);
 	    EnableWindow( GetDlgItem(chatHandle[i], IDC_Focus1+partner-(i<partner)), 1 );
 	    // and buttons for other chats in ours
 	    SetDlgItemText(hDlg, IDC_Focus1+i-(i>partner), chatPartner[i]);
-	} else EnableWindow( GetDlgItem(hDlg, IDC_Focus1+i-(i>partner)), 1 );
+	} else EnableWindow( GetDlgItem(hDlg, IDC_Focus1+i-(i>partner)), 0 );
 	for(i=0; i<MAX_CHAT-1; i++) { Button_SetStyle(GetDlgItem(hDlg, IDC_Focus1+i), BS_PUSHBUTTON|BS_LEFT, TRUE); }
         SetWindowPos(hDlg, NULL, wpConsole.x, wpConsole.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
 	SendMessage( GetDlgItem(hDlg, IDC_ChatPartner), // [HGM] clickbox: initialize with requested handle
