@@ -1223,6 +1223,14 @@ int
 MySearchPath(char *installDir, char *name, char *fullname)
 {
   char *dummy;
+  if(name[0] == '~' && name[1] == '\\') { // [HGM] recognize ~ as HOMEPATH environment variable
+    installDir = getenv("HOMEPATH");
+    name += 2;
+    strcpy(fullname, installDir);
+    strcat(fullname, "\\");
+    strcat(fullname, name);
+    return strlen(fullname);
+  }
   return (int) SearchPath(installDir, name, NULL, MSG_SIZ, fullname, &dummy);
 }
 
