@@ -912,7 +912,7 @@ END
 
 DLG_OptionsUCI DIALOG DISCARDABLE  0, 0, 228, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Engine Settings"
+CAPTION "Common Engine Settings"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Polyglot Directory:",IDC_STATIC,2,8,58,8
@@ -1191,7 +1191,7 @@ BEGIN
         MENUITEM "&General...",                 IDM_GeneralOptions
         MENUITEM "&Board...",                   IDM_BoardOptions
         MENUITEM "Adjudications...\tAlt+Shift+J",IDM_EnginePlayOptions
-        MENUITEM "Global Settings...\tAlt+Shift+U",IDM_OptionsUCI
+        MENUITEM "Common Engine...\tAlt+Shift+U",IDM_OptionsUCI
         MENUITEM "Engine #1 Settings...",       IDM_Engine1Options
         MENUITEM "Engine #2 Settings...",       IDM_Engine2Options
         MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
