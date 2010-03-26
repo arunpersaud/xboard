@@ -85,12 +85,12 @@
 
 <P><B><A NAME="highdrag"></A>/highdrag </B>or <B>/xhighdrag</B>, or<B> <A NAME="highlightdraggingopt"></A>/highlightDragging <I>true|false</I></B></P>
 
-<P>Sets the <A HREF="07.htm#highlightdragging">Highlight Dragging</A> option. Default: False.</P>
+<P>Sets the <A HREF="07.htm#highlightdragging">Highlight Dragging</A> option. <font color="#FF00FF">Must be on for /showTargetSquares to work.</font> Default: False.</P>
 
 
-<P><B><A NAME="showtargets"></A><font color="#3333ff">/showTargetSquares <I>true|false</I></font></B></P>
+<P><B><A NAME="showtargets"></A><font color="#ff00ff">/showTargetSquares <I>true|false</I></font></B></P>
 
-<P><font color="#3333ff">When set, and the Highlight Dragging option is set, WinBoard will indicate all squares a piece can legally move to when you pick up that piece, by drawing a colored circle in it. Default: False.</font></P>
+<P><font color="#ff00ff">When set, and the Highlight Dragging option is set, WinBoard will indicate all squares a piece can legally move to when you pick up that piece, by drawing a colored dot in it. Default: False.</font></P>
 
 
 
@@ -331,9 +331,9 @@
 <P>The default for soundMove and soundBell is <CODE>$</CODE>, while the others default to silence.</P>
 
 
-<P><B><A NAME="dropmenu"></A><font color="#3333FF">/dropMenu <I>true|false</I></font></B></P>
+<P><B><A NAME="dropmenu"></A><font color="#FF00FF">/dropMenu <I>true|false</I></font></B></P>
 
-<P><font color="#3333FF">This option allows you to emulate old behavior, where the right mouse button brings up the (now deprecated) drop menu rather than displaying the position at the end of the principal variation. Default: False.</font></P>
+<P><font color="#FF00FF">This option allows you to emulate old behavior, where the right mouse button brings up the (now deprecated) drop menu rather than displaying the position at the end of the principal variation. Default: False.</font></P>
 
 
 <P><B><A NAME="icsmenu"></A>/icsMenu={<I>entries</I>} </B>or <B>/icsMenu=@<I>filename</I></B></P>
@@ -350,6 +350,8 @@
 	<LI>A flag (1 or 0) saying whether the result should be sent immediately to ICS or left in the input pane for further editing.</LI>
 </OL>
 
+<P><font color="#FF00FF">You can now use two special insert texts “chat” and “none” in the entry definitions. In stead of being sent to the ICS, WinBoard will recognize them as special cases (they are not valid ICS commands anyway). “Chat” will open a chat box for the handle you clicked on, “none” will define a disabled entry (usually used with an item name of spaces), which you could put in the position of the menu that pops up under your mouse pointer, so there would be no default action when you up-click without moving the mouse first.</font></P>
+
 <P>The entry <CODE>"-"</CODE> produces a separator line in the menu. The top three menu entries are always <B>Copy and Paste</B>, <B>Copy</B>, and <B>Paste</B>, but you have full control over the rest of the menu.</P>
 
 <P>The default menu is:</P>
@@ -359,7 +361,9 @@
 Playe&amp;rs,players,0,1
 &amp;Games,games,0,1
 &amp;Sought,sought,0,1
-|&amp;Tell (name),tell,1,0
+|<font color="#FF00FF"> ,none,0,0
+Open Chat &Box (name),chat,1,0</font>
+&amp;Tell (name),tell,1,0
 M&amp;essage (name),message,1,0
 –
 &amp;Finger (name),finger,1,1

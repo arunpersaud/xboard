@@ -1,6 +1,12 @@
 [OPTIONS]
-Contents file=C:\Chess\WinBoard\help\contents.hhc
-Index file=C:\Chess\WinBoard\help\winboard.hhk
+Compatibility=1.1 or later
+Compiled file=winboard.chm
+Contents file=contents.hhc
+Default topic=html\01.htm
+Display compile progress=No
+Index file=winboard.hhk
+Language=0x413 Nederlands (Nederland)
+
 
 [FILES]
 html\01.htm
@@ -27,3 +33,6 @@ html\21.htm
 html\22.htm
 html\23.htm
 html\24.htm
+
+[INFOTYPES]
+

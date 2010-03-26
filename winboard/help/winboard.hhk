@@ -149,6 +149,11 @@
 		<param name="Local" value="html/16.htm#animate">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Annotate">
+		<param name="Name" value="Step Menu">
+		<param name="Local" value="html/06.htm#annotate">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="at sign">
 		<param name="Name" value="Other Options">
 		<param name="Local" value="html/18.htm#ini">
@@ -174,6 +179,11 @@
 		<param name="Local" value="html/07.htm#autoflipview">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Auto Kibitz">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#autokibitzcmd">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Auto Observe">
 		<param name="Name" value="Options Menu">
 		<param name="Local" value="html/07.htm#autobscmd">
@@ -182,6 +192,16 @@
 		<param name="Keyword" value="Auto Raise Board">
 		<param name="Name" value="Options Menu">
 		<param name="Local" value="html/07.htm#autoraiseboard">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Auto Refresh">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#autorefreshcmd">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="autoRefresh">
+		<param name="Name" value="Internet Chess Server Options">
+		<param name="Local" value="html/14.htm#autorefresh">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="autobs">
@@ -278,6 +298,16 @@
 		<param name="Local" value="html/10.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Background Observe">
+		<param name="Name" value="Internet Chess Server Options">
+		<param name="Local" value="html/14.htm#backgroundobserve">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="backgroundObserve">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#backgroundobservecmd">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="blackPieceColor">
 		<param name="Name" value="User Interface Options">
 		<param name="Local" value="html/16.htm#wpc">
@@ -341,6 +371,11 @@
 		<param name="Keyword" value="Call Flag">
 		<param name="Name" value="Action Menu">
 		<param name="Local" value="html/05.htm#callflag">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="chatBoxes">
+		<param name="Name" value="Internet Chess Server Options">
+		<param name="Local" value="html/14.htm#chatboxes">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="checkMates">
@@ -446,6 +481,11 @@
 		<param name="Keyword" value="commentFont">
 		<param name="Name" value="User Interface Options">
 		<param name="Local" value="html/16.htm#clockfont">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Common Engine Settings">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#commonsettings">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Communications">
@@ -578,6 +618,11 @@
 		<param name="Local" value="html/07.htm#detectmates">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Display Logos">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#displaylogos">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="drag">
 		<param name="Name" value="User Interface Options">
 		<param name="Local" value="html/16.htm#drag">
@@ -601,6 +646,16 @@
 		<param name="Keyword" value="dsc">
 		<param name="Name" value="User Interface Options">
 		<param name="Local" value="html/16.htm#wpc">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Dual Board">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#dualboardcmd">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="dualBoard">
+		<param name="Name" value="Internet Chess Server Options">
+		<param name="Local" value="html/14.htm#dualboard">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="edit">
@@ -640,7 +695,7 @@
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Engine Settings">
 		<param name="Name" value="Options Menu">
-		<param name="Local" value="html/07.htm#engine settings">
+		<param name="Local" value="html/07.htm#enginesettings">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="engineDebugOutput">
@@ -1171,6 +1226,11 @@
 		<param name="Local" value="html/14.htm#icsport">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="keepAlive">
+		<param name="Name" value="Internet Chess Server Options">
+		<param name="Local" value="html/14.htm#keepalive">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="legal">
 		<param name="Name" value="User Interface Options">
 		<param name="Local" value="html/16.htm#legal">
@@ -1483,6 +1543,26 @@
 		<param name="Local" value="html/15.htm#oldsave">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="One-Click Move">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#oneclickmovecmd">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="oneClickMove">
+		<param name="Name" value="Internet Chess Server Options">
+		<param name="Local" value="html/14.htm#oneclickmove">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Open Chat Box">
+		<param name="Name" value="ICS Interaction Context Menu">
+		<param name="Local" value="html/09.htm#openchatbox">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Open Chat Window">
+		<param name="Name" value="Mode Menu">
+		<param name="Local" value="html/04.htm#openchatwindow">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Opening Book">
 		<param name="Name" value="Options Menu">
 		<param name="Local" value="html/07.htm#hashsize">
@@ -1562,9 +1642,9 @@
 		<param name="Local" value="html/16.htm#hsc">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="pieceToSquareTable">
+		<param name="Keyword" value="pieceToCharTable">
 		<param name="Name" value="Other Options">
-		<param name="Local" value="html/18.htm#piecetosquaretable">
+		<param name="Local" value="html/18.htm#piecetochartable">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Play">
@@ -1773,6 +1853,11 @@
 		<param name="Local" value="html/06.htm#revert">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="rewindIndex">
+		<param name="Name" value="Load and Save Options">
+		<param name="Local" value="html/15.htm#rewindindex">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="rsh">
 		<param name="Name" value="Other Options">
 		<param name="Local" value="html/18.htm#rsh">
@@ -1934,6 +2019,16 @@
 		<param name="Local" value="html/13.htm#snoownbookuci">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Seek Graph">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#seekgraphcmd">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="seekGraph">
+		<param name="Name" value="Internet Chess Server Options">
+		<param name="Local" value="html/14.htm#seekgraph">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Settings">
 		<param name="Name" value="Files">
 		<param name="Local" value="html/19.htm#settings">
@@ -1942,6 +2037,11 @@
 		<param name="Keyword" value="settingsFile">
 		<param name="Name" value="Other Options">
 		<param name="Local" value="html/18.htm#ini">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="sg">
+		<param name="Name" value="Internet Chess Server Options">
+		<param name="Local" value="html/14.htm#seekgraph">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="sgf">
@@ -1966,12 +2066,12 @@
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Show Engine Output">
 		<param name="Name" value="Mode Menu">
-		<param name="Local" value="html/04.htm#show engine output">
+		<param name="Local" value="html/04.htm#showengineoutput">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Show Evaluation Graph">
 		<param name="Name" value="Mode Menu">
-		<param name="Local" value="html/04.htm#show evaluation graph">
+		<param name="Local" value="html/04.htm#showevaluationgraph">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Show Game List">
@@ -1981,7 +2081,7 @@
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Show Move History">
 		<param name="Name" value="Mode Menu">
-		<param name="Local" value="html/04.htm#show move history">
+		<param name="Local" value="html/04.htm#showmovehistory">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Show Thinking">
@@ -1998,12 +2098,17 @@
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="showTargetSquares">
 		<param name="Name" value="User Interface Options">
-		<param name="Local" value="html/16.htm#showTargets">
+		<param name="Local" value="html/16.htm#showtargets">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="showThinking">
 		<param name="Name" value="Chess Engine Options">
 		<param name="Local" value="html/12.htm#thinking">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="shuffleOpenings">
+		<param name="Name" value="Other Options">
+		<param name="Local" value="html/18.htm#shuffleopenings">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="size">
@@ -2111,6 +2216,11 @@
 		<param name="Keyword" value="st">
 		<param name="Name" value="Chess Engine Options">
 		<param name="Local" value="html/12.htm#st">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Startup Chat Boxes">
+		<param name="Name" value="Options Menu">
+		<param name="Local" value="html/07.htm#startupchatboxescmd">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Step Menu">
@@ -2261,6 +2371,11 @@
 		<param name="Keyword" value="UCI Engine Support">
 		<param name="Name" value="UCI Engine Support">
 		<param name="Local" value="html/13.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Upload to Examine">
+		<param name="Name" value="Action Menu">
+		<param name="Local" value="html/05.htm#uploadtoexamine">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="usePolyglotBook">

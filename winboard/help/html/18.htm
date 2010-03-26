@@ -91,11 +91,17 @@ atomic</td><td>Capturing piece explodes (ICC wild 27)
 
 <P><font color="#008000">In the shuffle variants, WinBoard does now shuffle the pieces, although you can still do it by hand using Edit Position.</font> 
 Some variants are supported only in ICS mode, including bughouse, and kriegspiel. 
-The winning/drawing conditions in crazyhouse (offboard interposition on mate) is not fully understood, 
+The winning/drawing conditions in crazyhouse (off-board interposition on mate) is not fully understood, 
 <font color="#3333ff">but losers, suicide, giveaway, atomic, and 3check should be OK.</font> 
-In crazyhouse, <font color="#3333ff">WinBoard now does keep track of offboard pieces.
+In crazyhouse, <font color="#3333ff">WinBoard now does keep track of off-board pieces.
 In shatranj it does implement the baring rule when mate detection is switched on.
-In xiangqi it does implement the rules for perpetual checking and chasing (in Two-Machines mode)</font></P>
+In xiangqi it does implement the rules for perpetual checking and chasing (in Two-Machines mode).</font></P>
+
+
+
+<P><font color="#FF00FF"><B><A NAME="shuffleopenings"></A>/shuffleOpenings</B></font></P>
+
+<P><font color="#FF00FF">This volatile option will cause shuffling of all pieces on the back rank, even in variants that normally have a fixed opening setup, according to the setting of the /defaultFrcPosition. It will remain in effect untill you select a new variant. In variants with normal castling, corner Rooks and King will be exempted from shuffling. Color-bound pieces such as Bishops will be kept on differently colored squares.</font></P>
 
 
 
@@ -123,7 +129,7 @@ In xiangqi it does implement the rules for perpetual checking and chasing (in Tw
 
 
 
-<P><font color="#008000"><B><A NAME="piecetosquaretable"></A>/pieceToSquareTable <I>characterstring</I></B></font></P>
+<P><font color="#008000"><B><A NAME="piecetochartable"></A>/pieceToCharTable <I>characterstring</I></B></font></P>
 
 <P><font color="#008000">The characters that are used to represent the piece types WinBoard knows in FEN diagrams and SAN moves. The string argument has to have an even length (or it will be ignored), as white and black pieces have to be given separately (in that order). The last letter for each color will be the King. The letters before that will be PNBRQ and then a whole host of fairy pieces in an order that has not fully crystallized yet (currently FEACWMOHIJGDVSLU, F=Ferz, Elephant, A=Archbishop, C=Chancellor, W=Wazir, M=Commoner, O=Cannon, H=Nightrider). You should list at least all pieces that occur in the variant you are playing. If you have less than 44 characters in the string, the pieces not mentioned will get assigned a period, and you will not be able to distinguish them in FENs. You can also explicitly assign pieces a period, in which case they will not be counted in deciding which captured pieces can go into the holdings.</font></P>
 

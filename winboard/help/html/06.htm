@@ -15,7 +15,7 @@
 
 <P><B><A NAME="typeinmove"></A>Type In Move</B></P>
 
-<P>Pops up a dialog box, into which you can type moves in standard algebraic chess notation. (You can also get this dialog box by simply starting to type over the chessboard, except in ICS mode, where such typing is redirected into the ICS interaction window.)</P>
+<P>Pops up a dialog box, into which you can type moves in standard algebraic chess notation. (You can also get this dialog box by simply starting to type over the chessboard, except in ICS mode, where such typing is redirected into the ICS interaction window.) <font color="#FF00FF">Typing a number will have the same effect as stepping forward or backward to the position after that move. In Edit Position mode you can also type a FEN to set up the position.</font></P>
 
 
 
@@ -56,7 +56,11 @@
 <P><B><A NAME="revert"></A>Revert</B></P>
 
 <P>If you are examining a game on the ICS, issues the ICS command <B>revert</B>.
-<font color="#3333FF">In local mode, when you were editing or analyzing a game, and have been entering a number of moves by hand, starting from a position not at the end of the game, the revert command restores the game to the variation you started from. The variation you had been entering is currently added as a comment to the original move where you deviated. This can be applied recursively, so that you can analyze variations on variations; each time you create a new variation by entering an alternative move, the current variation will be shelved. Revert allows you to return to the most recently shelved variation.</font></P>
+<font color="#3333FF">In local mode, when you were editing or analyzing a game, and have been entering a number of moves by hand, starting from a position not at the end of the game, the revert command restores the game to the variation you started from. This can be applied recursively, so that you can analyze variations on variations; each time you create a new variation by entering an alternative move, the current variation will be shelved. Revert allows you to return to the most recently shelved variation.</font></P>
+
+<P><font color="#FF00FF"><B><A NAME="annotate"></A>Annotate</B></font></P>
+
+<P><font color="#FF00FF">Similar to the <A HREF="#revert">Revert</A> command, but in local mode it will add the variation you are abandoning as a comment to the move where it first deviated, in PGN variation format (i.e. in parentheses). You can right-click such variation comments to recall them.</font></P>
 
 
 

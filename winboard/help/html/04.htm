@@ -39,7 +39,7 @@
 
 <P><B><A NAME="analysismode"></A>Analysis Mode</B></P>
 
-<P>In this mode, you can make moves for both sides on the board. After each move, the chess engine will think about possible replies and display its analysis in a separate window. Crafty was the first engine to support this feature, but by now there are many others that support it as well.</P>
+<P>In this mode, you can make moves for both sides on the board. After each move, the chess engine will think about possible replies and display its analysis in a separate window. Crafty was the first engine to support this feature, but by now there are many others that support it as well. font color="#ff00ff">With respect to playing variations, the same holds as in Edit Game mode.</font></P>
 
 <P><font color="#3333ff">From WinBoard 4.4 on this function can also be invoked in ‘zippy mode’, i.e. when you are logged on to an ICS with an engine loaded. In that case it is not your own moves that the engine analyzes, but the moves that are played in a game on the ICS that you are observing. You must start observing before you start the analysis mode! See the file zippy.README for how to connect to an ICS and a chess engine running on your local computer at the same time. (Basically this amounts to adding the /zp command-line option in addition to all options you would need for connecting to the ICS, as well as those needed for running the chess engine.)</font></P>
 
@@ -61,9 +61,11 @@
 
 <P>Whenever you ask to observe an ongoing game, review a completed game, or resume an adjourned game, WinBoard retrieves and parses the list of past moves from the ICS, so you can review them with <A HREF="06.htm#forward">Forward</A> and <A HREF="06.htm#backward">Backward</A> or save them with <A HREF="03.htm#savegame">Save Game</A>.</P>
 
-<P>Some special ICS Client features are activated when you are in <B>examine</B> or <B>bsetup </B>mode on ICS. See the descriptions of the menu commands <A HREF="06.htm#forward">Forward</A>, <A HREF="06.htm#backward">Backward</A>, <A HREF="#pause">Pause</A>, and <A HREF="05.htm#stopexamining">Stop Examining</A> below. You can also issue the ICS position-editing commands with the mouse. Move pieces by dragging with the left mouse button, or by left-clicking once on the starting square and once on the ending square. Press the right mouse button over a square for a context menu that lets you drop a new piece, empty the square, or clear the board. Click on the White or Black clock to set the side to play. You cannot set the side to play or drag pieces to arbitrary squares while examining on ICC, but you can do so in bsetup mode on FICS. You can also make moves by typing them into the ICS window; you may have to do this occasionally if you are playing a chess variant whose rules WinBoard does not understand, such as Fischer Random.</P>
+<P><font color="#FF00FF">In ICS mode a graph of players seeking games can be displayed in stead of the chess board, when you are idle (i.e. not playing, observing or examining). When this feature is enabled, left-clicking in the board area will switch between board and the seek graph. For details on this, see the Seek Graph command.</font></P>
 
-<P>If you are playing a bughouse game on the ICS, a list of the offboard pieces that each player holds is shown in the window title bar. To drop an offboard piece, press the right mouse button over an empty square to bring up a context menu. To observe your partner's games, start a second copy of WinBoard, log in as a guest, and use the ICS <B>follow</B> or <B>pfollow</B> command in the new window.</P>
+<P>Some special ICS Client features are activated when you are in <B>examine</B> or <B>bsetup </B>mode on ICS. See the descriptions of the menu commands <A HREF="06.htm#forward">Forward</A>, <A HREF="06.htm#backward">Backward</A>, <A HREF="#pause">Pause</A>, and <A HREF="05.htm#stopexamining">Stop Examining</A> below. You can also issue the ICS position-editing commands with the mouse. Move pieces by dragging with the left mouse button, or by left-clicking once on the starting square and once on the ending square. Press the right mouse button over a square for a context menu that lets you drop a new piece, empty the square, or clear the board. Click on the White or Black clock to set the side to play. You cannot set the side to play or drag pieces to arbitrary squares while examining on ICC, but you can do so in bsetup mode on FICS. You can also make moves by typing them into the ICS window; you may have to do this occasionally if you are playing a chess variant whose rules WinBoard does not understand. <font color="#FF00FF">(But this list is getting shorter, and Fischer Random is not on it anymore; you can enter castling there with the mouse by dragging the King on top of the Rook.)</font></P>
+
+<P>If you are playing a bughouse game on the ICS, a list of the offboard pieces that each player holds is shown in the window title bar<font color="#3333FF">, and graphically in the holdings area next to the board</font>. To drop an offboard piece<font color="#3333FF">, drag it from the holdings to the board.</font> <font color="#FF00FF">(Pressing the right mouse button over an empty square to bring up a context menu will still work if you have set the /dropMenu option.)</font> To observe your partner's games, start a second copy of WinBoard, log in as a guest, and use the ICS <B>follow</B> or <B>pfollow</B> command in the new window. <font color="#FF00FF">You can also use the Background Observe  or Dual Board features to follow your partner’s game through a single connection on which you are also playing yourself, in the background (peeking at it by pressing the right mouse button), or on side-by-side boards in the board window.</font></P>
 
 
 
@@ -75,11 +77,15 @@
 
 <P>In ICS mode, the moves are not sent to the ICS: Edit Game takes WinBoard out of ICS Client mode and lets you edit games locally. If you want to edit a game on ICS in a way that other ICS users can see, use the ICS <B>examine</B> command or start an ICS match against yourself.</P>
 
+<P><font color="#FF00FF">If you edit an existing game locally by playing new moves while not at the end, you will create a new variation. (New moves at the end will simply be appended to the existing game.) WinBoard will then shelve the original variation (‘main line’) from beyond the point where you played a new move. You can later revert to that new line with the Revert or Annotate commands. This will discard the variation you just entered, and restores the moves of the original main line that you overwrote. This procedure can be applied recursively, so you an make (sub-)variations on variations. Rather than entering variations move by move, you can also recall them from PGN variations in the Comment window, by right-clicking those.</font></P>
+
 
 
 <P><B><A NAME="editposition"></A>Edit Position</B></P>
 
 <P>Lets you set up an arbitrary board position. Use the left mouse button to drag pieces to new squares, or to delete a piece by dragging it off the board or dragging an empty square on top of it. To drop a new piece on a square, press the right mouse button over the square. This brings up a menu of pieces. Additional menu choices let you empty the square or clear the board. You can set the side to play next by clicking on the White or Black indicator at the top of the screen. <font color="#008000">The pop-up menu also contains options to ‘promote’ or ‘demote’ the piece currently in the square. (In variants like Crazyhouse a piece has a different representation when it is a promoted Pawn rater than an original piece.) This allows you to create some of the not-so-common pieces (e.g. a Unicorn is a promoted King, a Commoner is a demoted King).</font></P>
+
+<P><font color="#ff0000">In Edit Position mode you can type a FEN in the move type-in box to setup the corresponding position.</font></P>
 
 <P>Selecting Edit Position causes WinBoard<I> </I>to discard all remembered moves in the current game.</P>
 
@@ -87,27 +93,36 @@
 
 
 
-<P><B><A NAME="show engine output"></A><font color="#ff0000">Show Engine Output</font></B></P>
+<P><B><A NAME="showengineoutput"></A><font color="#ff0000">Show Engine Output</font></B></P>
 
-<P><font color="#ff0000">Open a new window dedicated to showing the thinking output of the engine(s), as controlled by “Show Thinking”.</font></P>
+<P><font color="#ff0000">Open a new window dedicated to showing the thinking output of the engine(s), as controlled by “Show Thinking”.</font> <font color="#008000">In ICS mode kibitzed info of an opponent engine can appear here as well, under control of the /autoKibitz option.</font>
+<font color="#FF00FF">Right-clicking a line of thinking output will allow you to step through the PV it contains on the main board, by vertically moving the mouse, keeping the right-button pressed. This also works for PVs kibitzed to you through an ICS.</font></P>
+
+<P><font color="#FF00FF">WinBoard will display lines of thinking output of the same depth ordered by score, (highest score on top), rather than in the order the engine produced them. Usually this amounts to the same, as a normal engine search will only find new PV (and emit it as thinking output) when it searches a move with a higher score than the previous variation. But when the engine is in multi-variation mode this needs not always be true, and it is more convenient for someone analyzing games to see the moves sorted by score. The order in which the engine found them is only of interest o the engine author, and can still be deduced from the time or node count printed with the line.</font></P>
 
 
 
-<P><B><A NAME="show evaluation graph"></A><font color="#ff0000">Show Evaluation Graph</font></B></P>
+<P><B><A NAME="showevaluationgraph"></A><font color="#ff0000">Show Evaluation Graph</font></B></P>
 
-<P><font color="#ff0000">Open a new window dedicated to displaying a graph, representing the development of the engine score(s) from the current game over time. (Needs “Show Thinking” to be enabled in order to work.</font> <font color="#3333FF">WinBoard will display lines of thinking output of the same depth ordered by score, (highest score on top), rather than in the order the engine produced them. Usually this amounts to the same, as a normal engine search will only find new PV (and emit it as thinking output) when it searches a move with a higher score than the previous variation. But when the engine is in multi-variation mode this needs not always be true, and it is more convenient for someone analyzing games to see the moves sorted by score. The order in which the engine found them is only of interest o the engine author, and can still be deduced from the time or node count printed with the line.</font></P>
+<P><font color="#ff0000">Open a new window dedicated to displaying a graph, representing the development of the engine score(s) from the current game over time. (Needs “Show Thinking” to be enabled in order to work.) Right-clicking on the graph will take you to the corresponding move in the board display.</font></P>
 
 
 
 <P><B><A NAME="showgamelist"></A>Show Game List</B></P>
 
-<P>Shows or hides the list of games generated by the last <A HREF="03.htm#loadgame">Load Game</A> command.</P>
+<P>Shows or hides the list of games generated by the last <A HREF="03.htm#loadgame">Load Game</A> command. Which info from the PGN tags is included in the game-description line can be customized. <font color="#ff0000">A 'Filter' field in this window allows you to display only lines that contain a certain string. (E.g. a player name to see only games of that player from a big tournament file.)</font></P>
 
 
 
-<P><B><A NAME="show move history"></A><font color="#ff0000">Show Move History</font></B></P>
+<P><B><A NAME="showmovehistory"></A><font color="#ff0000">Show Move History</font></B></P>
 
-<P><font color="#ff0000">Open a new window dedicated to showing the game currently in progress.</font></P>
+<P><font color="#ff0000">Open a new window dedicated to showing the game currently in progress. Double-clicking on a move takes you to the corresponding position in the board display.</font></P>
+
+
+
+<P><font color="#FF00FF"><B><A NAME="openchatwindow"></A>Open Chat Window</B></font></P>
+
+<P><font color="#FF00FF">Open a new window that in ICS mode can be used to display messages received from ICS tell commands from a specified ICS handle, from a channel (when you set the handle to the channel number), shouts / c-shouts, or whispers / kibitzes from co-observers of a game (when you set the handle to “”shouts, “c-shouts”, “whisper” or “kibitzes”). You have to press the “Change” button in the chat window to activate the entered handle, or type <Enter>. Typing into the bottom field of the window will send tell messages to the handle or channel, or whispers to co-observers. You can open up to five chat windows. Messages that are diverted to such a chat window will not appear in the ICS interaction window. A window dedicated to shouts will also capture c-shouts (if there is no dedicated c-shout box) and ‘It’ messages, recognizable on the type of bracketing used around the shouter name ( [ ], ( ) or < >, respectively).</font></P>
 
 
 

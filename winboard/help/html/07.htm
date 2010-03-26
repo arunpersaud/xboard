@@ -85,7 +85,7 @@
 
 <P><B><A NAME="highlightdragging"></A>Highlight Dragging</B></P>
 
-<P>If Highlight Dragging is on while you are dragging a piece with the mouse, the starting square and the square that the mouse cursor is over are highlighted. This option works even if Animate Dragging is off. <font color="#3333FF">When the option /showTargetSquares is set, WinBoard will also indicate all squares where a piece can legally move to as soon as you lift it.</font></P>
+<P>If Highlight Dragging is on while you are dragging a piece with the mouse, the starting square and the square that the mouse cursor is over are highlighted. This option works even if Animate Dragging is off. <font color="#FF00FF">When the option /showTargetSquares is set, WinBoard will also indicate all squares where a piece can legally move to as soon as you lift it.</font></P>
 
 
 
@@ -164,6 +164,12 @@
 <P><B><A NAME="highlightmovewitharrow"></A><font color="#ff0000">Highlight Move With Arrow</font></B></P>
 
 <P><font color="#ff0000">A big, fat arrow is drawn between the start and target field of the last move, so you cannot possibly miss it.</font></P>
+
+
+
+<P><B><A NAME="displaylogos"></A><font color="#FF00FF">Display Logos</font></B></P>
+
+<P><font color="#ff00ff">Controls the display of engine, user or ICS logos above the board, next to the clocks, by switching on or off the option /autoLogo.</font></P>
 
 
 
@@ -257,7 +263,7 @@
 
 
 
-<P><B><font color="#ff0000"><U><A NAME="engine settings"></A>Engine Settings</U></font></B></P>
+<P><B><font color="#ff0000"><U><A NAME="commonsettings"></A>Common Engine Settings</U></font></B></P>
 
 
 
@@ -270,6 +276,11 @@
 <P><B><A NAME="hashsize"></A><font color="#ff0000">Hash Size, <A NAME="egtbpath"></A>EGTB Path, <A NAME="egtbcachesize"></A>EGTB Cache Size, <A NAME="openingbook"></A>Opening Book, <A NAME="number of cpus"></A>Number of CPUs</B></font></P>
 
 <P><font color="#ff0000">These are options that UCI engines expect to be specified.</font> <font color="#3333ff">WinBoard protocol now also allows native WinBoard engines to request similar information, so it might be used for these engines as well. The memory size specified by the WinBoard-protocol ‘memory’ command is the sum of the hash and EGTB cache sizes. The specified opening book, when enabled through the ‘Use Book’ check box, will be used as GUI book for engines that do not have their own book (as indicated by the check boxes). It must be a book in Polyglot format.</font></P>
+
+
+<P><font color="#3333ff"><A NAME="enginesettings"></A><B>Engine #1 Settings</B>, <B>Engine #2 Settings</B></font></P>
+
+<P><font color="#3333ff">This pops up a dialog that allows the user to set engine-defined options of the mentioned engine (if it is in use). What is in the dialog is entirely determined by the engine. Generally, any changes you make to the controls are only sent to the engine after you press “OK”. An exception are engine-defined push buttons; the corresponding signal is sent to the engine immediately when you push those. To see the options of UCI engines, you need a Polyglot adapter that supports the recent WB-protocol extensions.</font></P>
 
 
 
@@ -288,6 +299,12 @@
 <P><B><A NAME="autobscmd"></A>Auto Observe</B></P>
 
 <P>If Auto Observe is on and you add a player to your <B>gnotify</B> list on ICS, WinBoard will automatically observe all of that player's games, unless you are doing something else (such as observing or playing a game of your own) when one starts. On most chess servers, you can now do <B>follow <I>player</I></B> instead, and the server will automatically observe all of <B><I>player’s</I></B> games.</P>
+
+
+
+<P><font color="#FF00FF"><B><A NAME="autokibitzcmd"></A>Auto Kibitz</B></font></P>
+
+<P><font color="#FF00FF">Auto Kibitz controls how output of computers playing on an ICS is handled. In many tournaments, computers are obliged to kibitz their thinking output to the ICS, and this option will do that automatically, without the engine having to know it. In addition, such kibitzed output by your opponent will be kept out of the console window, and will be diverted to the engine-output window.</font></P>
 
 
 
@@ -317,12 +334,36 @@
 
 
 
+<P><font color="#FF00FF"><B><A NAME="seekgraphcmd"></A>Seek Graph</B></font></P>
+<P><font color="#FF00FF"><B><A NAME="autorefreshcmd"></A>Auto Refresh</B></font></P>
+
+<P><font color="#FF00FF">If Seek Graph is on, you can summon up a graphical representation of players seeking a game on the ICS in stead of the chess board, by left-clicking the latter when you are not using it. The requested games are separated out by rating and time control. Rated, unrated and wild games are displayed in different colors, computers as squares, humans as dots. Hovering the mouse over a dot in the graph will display the details of the corresponding seek ad in the message field above the board. Left-clicking the dot will take up the challenge. Right-clicking dots will ‘push them to the back’, so you can see seek ads that might have been hidden behind it. Right-clicking off dots will refresh the graph, left-clicking off dots will take the graph down ad display the chess board again.</font></P>
+
+<P><font color="#FF00FF">In combination with Auto Refresh, the seek graph will be updated automatically. This is only implemented for the FICS and ICC servers. To make switching on of this option effective might require you to log off and on again to the ICS, as it requires changing ICS settings that are locked during a session.</font></P>
+
+
+
+<P><font color="#FF00FF"><B><A NAME="backgroundobservecmd"></A>Background Observe</B></font></P>
+<P><font color="#FF00FF"><B><A NAME="dualboardcmd"></A>Dual Board</B></font></P>
+
+<P><font color="#FF00FF">If Background Observe is on, boards sent to you by the ICS when you are playing, but which are not of your game, (but of games you are observing), will not be displayed automatically. In stead WinBoard will remember the last board it received that way, and display it when you press the right mouse button in stead of the board of your own game. This feature is meant to enable bughouse players a peek at their partner’s game, without the need to log on to the ICS a second time.</font></P>
+
+<P><font color="#FF00FF">If in addition Dual Board is also on, such background games are even displayed on a second board, side by side with your own game, so that it is always in view. This feature is experimental, and largely undeveloped; there is no animation of moves on this second board, while the effets are undefined if the board format of the observed game is not the same as that of your own game.</font></P>
+
+
+
 <P><B><A NAME="premovecmd"></A>Premove</B></P>
 
 <P>Premove allows you to play a move on the board before you have received your opponent’s move.  This move is highlighted on the board using the <A HREF="16.htm#premovehighlightcolor">Premove Highlight</A> color, and is sent to the ICS as soon as your opponent’s move is received. To cancel a premove, either click twice on the piece that was premoved or premove an illegal move.</P>
 
 <P>This group of controls allows you to set the following options: <A HREF="14.htm#premove">premove</A>, <A HREF="14.htm#premovewhite">premoveWhite</A>, <A HREF="14.htm#premovewhitetext">premoveWhiteText</A>, <A HREF="14.htm#premoveblack">premoveBlack</A>, <A HREF="14.htm#premoveblacktext">premoveBlackText</A>.</P>
 
+
+
+<P><font color="#FF00FF"><B><A NAME="oneclickmovecmd"></A>One-Click Move</B></font></P>
+
+
+<P><font color="#FF00FF">When One-Click Move is set, a click on an own piece will immediately move that piece if it only has a single legal move, without waiting for you to click a to-square. Similarly, clicking an opponent piece or empty square will immediately perform the move to that square, if only a single legal move to it existed. This is the mouse equivalent of having to type only e4 when you mean e2-e4. Finally, double clicking an own piece (or clicking an already selected piece) will make it execute its only capture, which can save you some time if the target square was far away. Legality testing has to be switched on for this to work.</font></P>
 
 
 <P><B><A NAME="icsalarm"></A>ICS Alarm</B></P>
@@ -334,6 +375,12 @@
 <P><B><A NAME="icsinteractioncolors"></A>ICS Interaction Colors</B></P>
 
 <P>Lets you change the colors and type styles that WinBoard uses to distinguish between different types of messages in the ICS Interaction window. The types distinguished are: shout, sshout, channel 1 tell, other channel tell, kibitz (or whisper), personal tell (or new message notification), challenge, request (including abort, adjourn, draw, pause, and takeback), seek, and normal (all other messages).</P>
+
+
+
+<P><font color="#FF00FF"><B><A NAME="startupchatboxescmd"></A>Startup Chat Boxes</B></font></P>
+
+<P><font color="#FF00FF">You can put a semicolon-separated list of ICS handles or channel numbers here, WinBoard will open a <A HREF="04.htm#openchatwindow">Chat Window</A> for each handle at startup in ICS mode.</font></P>
 
 
 
@@ -387,7 +434,9 @@
 
 <P>With incremental clocks, each player is given an initial time allotment, and a <A HREF="12.htm#timeincrement">timeIncrement</A> is added to his clock after every move. The increment may be zero, in which case the entire game must be finished within the initial time allotment.</P>
 
-<P><font color="#3333FF">With fixed time per move, the clock is reset to the given time before each move, and any left-over time is discarded (i.e. not added to the time for the next move).</font></P>
+<P><font color="#FF00FF">With fixed time per move, the clock is reset to the given time before each move, and any left-over time is discarded (i.e. not added to the time for the next move).</font></P>
+
+<P><font color="#FF00FF">Note that in local modes it is always possible to adjust the clocks during a game by Shift + click on it, where a right-click adds a minute, and a left-click subtracts one.</font></P>
 
 <P><B><A NAME="savesettings"></A><U>Save Settings Now</U></B></P>
 

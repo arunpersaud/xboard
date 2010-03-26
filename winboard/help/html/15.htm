@@ -16,7 +16,8 @@
 <P><B><A NAME="lgf"></A>/lgf </B>or<B> <A NAME="loadgamefile"></A>/loadGameFile <I>filename</I><BR>
 <A NAME="lgi"></A>/lgi </B>or<B> <A NAME="loadgameindex"></A>/loadGameIndex <I>N</I></B></P>
 
-<P>If loadGameFile is set, WinBoard reads the specified game file at startup. You can leave out the name of this option and give just the file name, which is handy if you want to configure WinBoard as a game viewer with a browser such as the Windows Explorer or Netscape. The filename is interpreted relative to WinBoard's initial working directory. The filename "-" specifies the standard input. If there is more than one game in the file, WinBoard pops up a menu of the available games, with entries based on their PGN tags. If loadGameIndex is set to <I>N, </I>the menu is suppressed and the <I>N</I>th game found in the file is loaded immediately.</P>
+<P>If loadGameFile is set, WinBoard reads the specified game file at startup. You can leave out the name of this option and give just the file name, which is handy if you want to configure WinBoard as a game viewer with a browser such as the Windows Explorer or Netscape. The filename is interpreted relative to WinBoard's initial working directory. The filename "-" specifies the standard input. If there is more than one game in the file, WinBoard pops up a menu of the available games, with entries based on their PGN tags. If loadGameIndex is set to <I>N, </I>the menu is suppressed and the <I>N</I>th game found in the file is loaded immediately. 
+<font color="#008000">A game index of –1 will load the first game, but step to the next game on each new game in <A HREF="12.htm#matchgames">Match Mode</A>. Similarly, an index of –2 will step to the next game every two games, so that all games are played by each player with both colors.</font></P>
 
 
 
@@ -41,7 +42,14 @@
 <P><B><A NAME="lpf"></A>/lpf </B>or<B> <A NAME="loadpositionfile"></A>/loadPositionFile <I>filename</I><BR>
 <A NAME="lpi"></A>/lpi </B>or<B> <A NAME="loadpositionindex"></A>/loadPositionIndex <I>N</I></B></P>
 
-<P>If loadPositionFile is set, WinBoard loads the specified position file at startup. The filename is interpreted relative to WinBoard's initial working directory. The filename "-" specifies the standard input. If loadPositionIndex is set to <I>N</I>, the <I>N</I>th position found in the file is loaded; otherwise the first is loaded.</P>
+<P>If loadPositionFile is set, WinBoard loads the specified position file at startup. The filename is interpreted relative to WinBoard's initial working directory. The filename "-" specifies the standard input. If loadPositionIndex is set to <I>N</I>, the <I>N</I>th position found in the file is loaded; otherwise the first is loaded.
+<font color="#008000">A position index of –1 will load the first position, but step to the next position on each new game in <A HREF="12.htm#matchgames">Match Mode</A>. Similarly, an index of –2 will step to the next position every two games, so that all positions are played by each player with both colors.</font></P>
+
+
+
+<P><B><A NAME="rewindindex"></A><font color="#008000">/rewindIndex <I>number</I></font></B></P>
+
+<P><font color="#008000">When <I>number</I> is non-zero, resets the game or position index used in the /lgf or /lpf options back to 1 after it has reached the value <I>number</I>. Default: 0.</font></P>
 
 
 
@@ -89,9 +97,9 @@
 
 <P><B><A NAME="enginedebugoutput"></A><font color="#008000">/engineDebugOutput<SUP> </SUP> <I>number</I></font></B></P>
 
-<P><font color="#008000">Specifies how WinBoard should handle unsollicited output from the engine, with respect to saving it in the debug file. The output is further (hopefully) ignored. If <I>number</I>=0, WinBoard refrains from writing such spurious output to the debug file. If<I> number</I>=1, all engine output is written faithfully to the debug file. If <I> number</I>=2, any protocol-violating line is prefixed with a ‘#’ character, as the engine itself should have done if it wanted to submit info for inclusion in the debug file.</font></P>
+<P><font color="#008000">Specifies how WinBoard should handle unsollicited output from the engine, with respect to saving it in the debug file. The output is further (hopefully) ignored. If <I>number</I>=0, WinBoard refrains from writing such spurious output to the debug file. If<I> number</I>=1, all engine output is written faithfully to the debug file. If <I> number</I>=2, any protocol-violating line is prefixed with a ‘#’ character, as the engine itself should have done if it wanted to submit info for inclusion in the debug file.</font></font></P>
 
-<P><font color="#008000">This option is provided for the benefit of applications that use the debug file as a source of information, such as the broadcaster of live games TLCV / TLCS. Such applications can be protected from spurious engine output that might otherwise confuse them.</font></P>
+<P><font color="#008000">This option is provided for the benefit of applications that use the debug file as a source of information, such as the broadcaster of live games TLCV / TLCS. Such applications can be protected from spurious engine output that might otherwise confuse them.<font color="#FF00FF">The case <I>number</I>=3 is similar, but now marks non-compliant engine output with a more conspicuous prefix.</font></P>
 
 </BODY>
 </HTML>

@@ -129,6 +129,30 @@
 
 
 
+<P><font color="#FF00FF"><A NAME="seekgraph"></A><B>/seekGraph <I>true|false</I></B>, or <A NAME="sg"></A><B>/sg</B></font></P>
+
+<P><font color="#FF00FF">Enables summoning up of the <A HREF="07.htm#seekgraphcmd">Seek Graph</A>  by left-clicking the board. Default: False</font></P>
+
+
+
+<P><B><font color="#FF00FF"><A NAME="autorefresh"></A>/autoRefresh <I>true|false</I></font></B></P>
+
+<P><font color="#FF00FF">Sets the <A HREF="07.htm#autorefreshcmd">Auto Refresh</A> option of the <A HREF="07.htm#seekgraphcmd">Seek Graph</A>. Default: False</font></P>
+
+
+
+<P><B><font color="#FF00FF"><A NAME="backgroundobserve"></A>/backgroundObserve <I>true|false</I></font></B></P>
+
+<P><font color="#FF00FF">Sets the <A HREF="07.htm#backgroundobservecmd">Background Observe</A> option for observing other games during play. Default: False</font></P>
+
+
+
+<P><B><font color="#FF00FF"><A NAME="dualboard"></A>/dualBoard <I>true|false</I></font></B></P>
+
+<P><font color="#FF00FF">Sets the <A HREF="07.htm#dualboardcmd">Dual Board</A> option for observing your partner's bughouse game. Default: False</font></P>
+
+
+
 <P><B><A NAME="pre"></A>/pre </B>or<B> <A NAME="xpre"></A>/xpre</B>, or<B> <A NAME="premove"></A>/premove<I> true|false</I></B></P>
 
 <P>Sets the <A HREF="07.htm#premovecmd">Premove</A> option. If set to True, the premove feature is enabled. If set to False, premove is disabled and the other <A HREF="07.htm#premovecmd">Premove</A> settings are ignored. Default: False.</P>
@@ -155,6 +179,12 @@
 
 
 
+<P><B><font color="#FF00FF"><A NAME="oneclickmove"></A>/oneClickMove <I>true|false</I></font></B></P>
+
+<P><font color="#FF00FF">Sets the <A HREF="07.htm#oneclickmovecmd">One-Click Move</A> option. Default: False</font></P>
+
+
+
 <P><B><A NAME="alarm"></A>/alarm </B>or<B> <A NAME="xalarm"></A>/xalarm</B>, or <B><A NAME="icsalarm"></A>/icsAlarm <I>true|false</I></B></P>
 
 
@@ -162,6 +192,18 @@
 <P><B><A NAME="icsalarmtime"></A>/icsAlarmTime <I>milliseconds</I></B></P>
 
 <P>When <B>icsAlarm</B> is set to True, the <A HREF="16.htm#soundicsalarm">alarm sound</A> is played when your clock counts down to <B>icsAlarmTime</B> seconds.  For ICS games with time controls that include an increment, the alarm will sound each time the clock counts down to the <B>icsAlarmTime</B>.  The <B>icsAlarmTime</B> can be set by selecting <A HREF="07.htm#icsalarm">ICS Alarm</A> from the <A HREF="07.htm#icsoptions">ICS options</A> dialog. The default is 5 seconds.</P>
+
+
+<P><B><font color="#3333FF"><A NAME="keepalive"></A>/keepAlive <I>time</I></font></B></P>
+
+<P><font color="#3333FF">When <I>time</I> is non-zero, send a “date” command every <I>time</I> minutes after your last move to the ICS, to prevent it from logging you off. (Do not use frivolously! The ICS operator might ban you.) Default: 0.</font></P>
+
+
+<P><B><font color="#FF00FF"><A NAME="chatboxes"></A>/chatBoxes <I>handles</I></font></B></P>
+
+<P><font color="#FF00FF">Sets the list of <A HREF="04.htm#openchatwindow">Chat Boxes</A> to be opened at startup. The given string handles should be a semicolon-separated list, like “shouts;53;Johnny” to open 3 chat boxes, to capture all shouts (including c-shouts and ‘it’ messages), the traffic on channel 53, and for a player named Johnny. Default: no chat windows.</font></P>
+
+
 
 </BODY>
 </HTML>
