@@ -3912,7 +3912,7 @@ ParseBoard12(string)
     }
     
     if((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack)
-	 && newGameMode == IcsObserving && appData.bgObserve) {
+	 && newGameMode == IcsObserving && gamenum != ics_gamenum && appData.bgObserve) {
       // [HGM] bughouse: don't act on alien boards while we play. Just parse the board and save it */
       char *toSqr;
       for (k = 0; k < ranks; k++) {
