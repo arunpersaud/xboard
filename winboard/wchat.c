@@ -262,12 +262,9 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 
         switch (LOWORD(wParam)) {
 
-	case IDCANCEL:
-	    chatHandle[partner] = 0;
-	    chatPartner[partner][0] = 0;
-            ChatPopDown();
-	    EndDialog(hDlg, TRUE);
-            break;
+	case IDCANCEL: /* let Esc key switch focus back to console */
+	    SetFocus(GetDlgItem(hwndConsole, OPT_ConsoleInput));
+	    break;
 
 	case IDC_Clear:
 	    SendMessage( GetDlgItem(hDlg, IDC_ChatMemo), WM_SETTEXT, 0, (LPARAM) "" );
