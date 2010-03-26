@@ -180,7 +180,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 {
     static SnapData sd;
     char buf[MSG_SIZ], mess[MSG_SIZ];
-    int partner = -1, i;
+    int partner = -1, i, x, y;
     static BOOL filterHasFocus[MAX_CHAT];
     WORD wMask;
     HWND hMemo;
@@ -204,7 +204,8 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	    SetDlgItemText(hDlg, IDC_Focus1+i-(i>partner), chatPartner[i]);
 	} else EnableWindow( GetDlgItem(hDlg, IDC_Focus1+i-(i>partner)), 0 );
 	for(i=0; i<MAX_CHAT-1; i++) { Button_SetStyle(GetDlgItem(hDlg, IDC_Focus1+i), BS_PUSHBUTTON|BS_LEFT, TRUE); }
-        SetWindowPos(hDlg, NULL, wpConsole.x, wpConsole.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
+        x = wpConsole.x; y = wpConsole.y; EnsureOnScreen(&x, &y, 0, 0);
+        SetWindowPos(hDlg, NULL, x, y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
 	SendMessage( GetDlgItem(hDlg, IDC_ChatPartner), // [HGM] clickbox: initialize with requested handle
 			WM_SETTEXT, 0, (LPARAM) chatPartner[partner] );
 	filterHasFocus[partner] = TRUE;
