@@ -1983,7 +1983,7 @@ void
 VariantSwitch(Board board, VariantClass newVariant)
 {
    int newHoldingsWidth, newWidth = 8, newHeight = 8, i, j;
-   Board oldBoard;
+   static Board oldBoard;
 
    startedFromPositionFile = FALSE;
    if(gameInfo.variant == newVariant) return;
