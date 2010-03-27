@@ -18,6 +18,17 @@
  * Match handles with multiple titles for channel Chat Boxes
  * Make WinBoard makefiles use parser.c in XBoard directory
  * Added missing sounds files to be able to compile on windows
+ * Added logo files for xboard
+ * Bugfix stale first-click
+ * Fix copying of WB Chat Window contents
+ * Fix XB crash on giving keyboard focus to non-text widget
+ * Bugfix copying from Chat Box, own lines
+ * Fix 'mamer bug' in Chat Boxes
+ * Fix copying of kibitzed lines from WB Engine-Output window
+ * Do not recognize non-ICS variants from PGN event tag
+ * Remake programVersion string after receiving engine features
+ * Set keyboard focus at startup to board window
+ * Fix window-position upset on failing engine start in WinBoard
  * Small bugfixes
 
 ** Version 4.4.2 **

@@ -2,10 +2,15 @@
 
 (git diff -b --stat --summary -M v4.4.2...HEAD)
 
+ AUTHORS                   |   14 ++--
  COPYRIGHT                 |    2 +-
- Makefile.am               |    2 +-
+ ChangeLog                 |  185 ++++++++++++++++++++++++++++++++++++++++++++
+ DIFFSTAT                  |   71 +++++++++++++++++
+ Makefile.am               |    7 ++-
+ NEWS                      |   22 +++++
+ SHORTLOG                  |   36 +++++++++
  autogen.sh                |    2 +-
- backend.c                 |  163 +++++++++++++++++++++++++++++++--------------
+ backend.c                 |  186 ++++++++++++++++++++++++++++++++-------------
  backend.h                 |   10 ++-
  backendz.h                |    2 +-
  bitmaps/bitmaps.h         |    2 +-
@@ -14,17 +19,17 @@
  cmail.in                  |    2 +-
  common.h                  |    4 +-
  config.rpath              |    2 +-
- configure.ac              |    4 +-
+ configure.ac              |    6 +-
  copyright.texi            |    2 +-
  frontend.h                |    2 +-
  gamelist.c                |    2 +-
  gettext.h                 |    2 +-
  lists.c                   |    2 +-
  lists.h                   |    2 +-
- moves.c                   |   20 +++--
- moves.h                   |    2 +-
+ moves.c                   |   26 ++++---
+ moves.h                   |    8 +-
  parser.h                  |    2 +-
- parser.l                  |   10 ++--
+ parser.l                  |   10 +-
  pgntags.c                 |    2 +-
  pixmaps/pixmaps.h         |    2 +-
  winboard/config.h         |    6 +-
@@ -35,22 +40,25 @@
  winboard/makefile.gcc     |    8 +-
  winboard/makefile.ms      |    8 +-
  winboard/resource.h       |    1 +
- winboard/wchat.c          |   26 +++++++
+ winboard/wchat.c          |   30 +++++++-
  winboard/wclipbrd.c       |    2 +-
  winboard/wclipbrd.h       |    2 +-
  winboard/wedittags.c      |    2 +-
  winboard/wedittags.h      |    2 +-
+ winboard/wengineo.c       |    1 +
  winboard/wgamelist.c      |    2 +-
  winboard/wgamelist.h      |    2 +-
- winboard/winboard.c       |   21 +++++--
+ winboard/winboard.c       |   25 +++++--
  winboard/winboard.h       |    2 +-
  winboard/winboard.rc      |    2 +
  winboard/woptions.c       |    8 ++-
  winboard/woptions.h       |    2 +-
  winboard/wsockerr.c       |    2 +-
  winboard/wsockerr.h       |    2 +-
- xboard.c                  |   12 ++-
+ xboard.c                  |   13 ++-
  xboard.h                  |    2 +-
+ xboard.png                |  Bin 0 -> 1342 bytes
+ xboard.svg                |  119 +++++++++++++++++++++++++++++
  xboard.texi               |    1 +
  xedittags.c               |    2 +-
  xedittags.h               |    2 +-
@@ -59,16 +67,19 @@
  xgamelist.h               |    2 +-
  xhistory.c                |    2 +-
  xhistory.h                |    2 +-
- xoptions.c                |    3 +-
+ xoptions.c                |   15 ++--
  zic2xpm.c                 |    2 +-
  zic2xpm.man               |    2 +-
  zippy.c                   |    2 +-
  zippy.h                   |    2 +-
- 62 files changed, 261 insertions(+), 136 deletions(-)
+ 70 files changed, 749 insertions(+), 159 deletions(-)
  mode change 100755 => 100644 backend.c
  mode change 100755 => 100644 gamelist.c
  mode change 100755 => 100644 gettext.h
  mode change 100755 => 100644 winboard/woptions.c
+ create mode 100644 xboard.png
+ create mode 100644 xboard.svg
+
 
 ** Version 4.4.2 **
 

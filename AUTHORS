@@ -243,7 +243,7 @@ winboard/wengineoutput.c, winboard/wevalgraph.c,
 winboard/whistory.c, winboard/winboard.c, winboard/winboard.h,
 winboard/winboard.rc, winboard/wlayout.c, winboard/woptions.c,
 winboard/woptions.h, winboard/wsnap.c, winboard/wsnap.h,
-winboard/wsockerr.c, winboard/wsockerr.h, xboard.c, xboard.h,
+winboard/wsockerr.c, winboard/wsockerr.h, xboard.c, xboard.h, xboard.png, xboard.svg
 xboard.texi, xedittags.c, xedittags.h, xengineoutput.c, xgamelist.c,
 xgamelist.h, xhistory.c, xhistory.h, xoptions.c, zic2xpm.c,
 zic2xpm.man, zippy.c, zippy.h, zippy.README

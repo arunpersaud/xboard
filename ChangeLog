@@ -3,6 +3,108 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vnew vold)
 
+2010-03-24 11:04:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix window-position upset on failing engine start in WinBoard
+
+The main window was only positoned according to the settings-file data
+after the engine was started up from InitBackend2(), so that if the
+latter gave a fatal error, and Save Settings on Exit was on, a wrong
+position for the main window would be saved. The call to InitBackend2()
+is now moved until after setting the main-window position.
+
+2010-03-10 18:54:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Set keyboard focus at startup to board window
+
+This makes XBoard sensitive to the keybindings also when the cursor is
+outside the board window. This focus seems to persist indefinitely: each
+time the board window gets selected, the key bindings become activem
+wherever the mouse pointer is. Downside: the mouse pointer is no longer
+an arrow outside the board window, but becomes a text-insert tool there.
+
+2010-02-27 20:49:21 -0800 Arun Persaud <arun@nubati.net>:
+added logo files for xboard
+
+logos are installed in the hicolor theme [1] using $datadir as the basedir.
+Added both png and svg logo.
+
+[1] http://standards.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html
+
+2010-02-27 17:36:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remake programVersion string after receiving engine features
+
+The engine could have sent a more accurate version of its own name
+than the one derived from the exe filename in a myname feature, and we
+better use that in the programVersion string, which will be sent as
+interface name to the ICS.
+
+2010-02-24 17:01:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Do not recognize non-ICS variants from PGN event tag
+
+These variants were introduced after supporting the variant tag, so if
+the variant tag is missing, their recognition from the event tag will be
+a false match. (Mainly to prevent events with 'super' in the name being
+recognized as Superchess.)
+
+2010-02-24 10:23:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix copying of kibitzed lines from WB Engine-Output window
+
+A CR is inserted before the LF. This relies on the argument (which
+currently always is the parse buffer that collects comments) being
+writabe without doing any harm.
+
+2010-02-21 09:15:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make signedness of castling rights explicit in function arguments
+
+Some move-generator functions were using the castling rights as char,
+which would lead to errors on systems where char = unsigned char.
+
+2010-02-20 15:01:10 -0800 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2010-02-15 13:13:56 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix 'mamer bug' in Chat Boxes
+
+False parsing of (*): occurred because of a missing continue.
+
+2010-02-14 23:17:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Bugfix copying from Chat Box, own lines
+
+The tell messages sent to a handle (which are not echoed by the ICS, and
+thus have to copied to the chat box directly) had no CR in them yet.
+
+2010-02-13 15:34:04 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix XB crash on giving keyboard focus to non-text widget
+
+In the Engine-Settings dialog SetFocus() could be called for non-text
+widgets, and this made XawTextSetInsertionPoint() croak. Setting the
+insertion point to the end in SetFocus() was a bad ide anyway, as it
+interfered with copying from the engine-output window, which would
+uncontrollably scroll on getting focus. It is solved now by setting the
+insertion point already on creation of the text widgets.
+
+2010-02-11 16:09:43 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Bugfix of autoKibitz and Chat suppression in ICS window
+
+Add flushing of data in buf preceding suppressed message, and set
+next_out to after suppressed message everywhere. Rely on prompt to clear
+suppressKibitz condition.
+
+2010-02-10 10:58:29 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix copying of WB Chat Window contents
+
+All line breks were lost on copy-pasting the contents of a chat window.
+Adding CR to each outputted line in the front-end (wchat.c) solves this.
+
+2010-02-09 14:34:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Start insertion point at end of text edits in XB dialogs
+
+The function SetFocus now uses XawTextSetInsertionPoint to position the
+end of the string it aready contains, rather than at the beginning.
+
+2010-02-08 20:12:20 -0800 Arun Persaud <arun@nubati.net>:
+updated files (AUTHORS, Changelog, etc) for new release
+
 2010-02-07 11:18:56 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
 Bugfix stale first-click
 

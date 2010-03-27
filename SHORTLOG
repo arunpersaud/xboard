@@ -2,14 +2,17 @@
 
 (git shortlog --no-merges v4.4.2...HEAD)
 
-Arun Persaud (5):
+Arun Persaud (8):
       updated to unstable version number
       added missing sounds files to be able to compile on windows
       new developer release
       update year in copyright info
       DOS line endings and 644 mode for woptions.c
+      updated files (AUTHORS, Changelog, etc) for new release
+      new developer release
+      added logo files for xboard
 
-H.G. Muller (23):
+H.G. Muller (35):
       Implement castling for variant CRC
       Chmod 644
       Bugfix legality null move in parsing with -testLegality off
@@ -33,6 +36,18 @@ H.G. Muller (23):
       Change opening array -variant fairy
       Match handles with multiple titles for channel Chat Boxes
       Bugfix stale first-click
+      Start insertion point at end of text edits in XB dialogs
+      Fix copying of WB Chat Window contents
+      Bugfix of autoKibitz and Chat suppression in ICS window
+      Fix XB crash on giving keyboard focus to non-text widget
+      Bugfix copying from Chat Box, own lines
+      Fix 'mamer bug' in Chat Boxes
+      Make signedness of castling rights explicit in function arguments
+      Fix copying of kibitzed lines from WB Engine-Output window
+      Do not recognize non-ICS variants from PGN event tag
+      Remake programVersion string after receiving engine features
+      Set keyboard focus at startup to board window
+      Fix window-position upset on failing engine start in WinBoard
 
 ** Version 4.4.2 **
 
