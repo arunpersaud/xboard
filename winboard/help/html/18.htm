@@ -123,7 +123,7 @@ In xiangqi it does implement the rules for perpetual checking and chasing (in Tw
 
 
 
-<P><font color="#008000"><B><A NAME="piecetosquaretable"></A>/pieceToSquareTable <I>characterstring</I></B></font></P>
+<P><font color="#008000"><B><A NAME="piecetochartable"></A>/pieceToCharTable <I>characterstring</I></B></font></P>
 
 <P><font color="#008000">The characters that are used to represent the piece types WinBoard knows in FEN diagrams and SAN moves. The string argument has to have an even length (or it will be ignored), as white and black pieces have to be given separately (in that order). The last letter for each color will be the King. The letters before that will be PNBRQ and then a whole host of fairy pieces in an order that has not fully crystallized yet (currently FEACWMOHIJGDVSLU, F=Ferz, Elephant, A=Archbishop, C=Chancellor, W=Wazir, M=Commoner, O=Cannon, H=Nightrider). You should list at least all pieces that occur in the variant you are playing. If you have less than 44 characters in the string, the pieces not mentioned will get assigned a period, and you will not be able to distinguish them in FENs. You can also explicitly assign pieces a period, in which case they will not be counted in deciding which captured pieces can go into the holdings.</font></P>
 

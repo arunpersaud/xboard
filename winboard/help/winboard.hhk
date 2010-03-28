@@ -1552,9 +1552,9 @@
 		<param name="Local" value="html/16.htm#hsc">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Keyword" value="pieceToSquareTable">
+		<param name="Keyword" value="pieceToCharTable">
 		<param name="Name" value="Other Options">
-		<param name="Local" value="html/18.htm#piecetosquaretable">
+		<param name="Local" value="html/18.htm#piecetochartable">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Keyword" value="Play">
