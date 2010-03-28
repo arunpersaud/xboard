@@ -7977,6 +7977,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	}
 
 	if (!ignore) {
+	    ChessProgramStats tempStats = programStats; // [HGM] info: filter out info lines
 	    buf1[0] = NULLCHAR;
 	    if (sscanf(message, "%d%c %d %d " u64Display " %[^\n]\n",
 		       &plylev, &plyext, &curscore, &time, &nodes, buf1) >= 5) {
@@ -7998,11 +7999,11 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 }
 
 
-		programStats.depth = plylev;
-		programStats.nodes = nodes;
-		programStats.time = time;
-		programStats.score = curscore;
-		programStats.got_only_move = 0;
+		tempStats.depth = plylev;
+		tempStats.nodes = nodes;
+		tempStats.time = time;
+		tempStats.score = curscore;
+		tempStats.got_only_move = 0;
 
 		if(cps->nps >= 0) { /* [HGM] nps: use engine nodes or time to decrement clock */
 			int ticklen;
@@ -8019,31 +8020,34 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
 		/* Buffer overflow protection */
 		if (buf1[0] != NULLCHAR) {
-		    if (strlen(buf1) >= sizeof(programStats.movelist)
+		    if (strlen(buf1) >= sizeof(tempStats.movelist)
 			&& appData.debugMode) {
 			fprintf(debugFP,
 				"PV is too long; using the first %u bytes.\n",
-				(unsigned) sizeof(programStats.movelist) - 1);
+				(unsigned) sizeof(tempStats.movelist) - 1);
 		    }
 
-                    safeStrCpy( programStats.movelist, buf1, sizeof(programStats.movelist) );
+                    safeStrCpy( tempStats.movelist, buf1, sizeof(tempStats.movelist) );
 		} else {
-		    sprintf(programStats.movelist, " no PV\n");
+		    sprintf(tempStats.movelist, " no PV\n");
 		}
 
-		if (programStats.seen_stat) {
-		    programStats.ok_to_send = 1;
+		if (tempStats.seen_stat) {
+		    tempStats.ok_to_send = 1;
 		}
 
-		if (strchr(programStats.movelist, '(') != NULL) {
-		    programStats.line_is_book = 1;
-		    programStats.nr_moves = 0;
-		    programStats.moves_left = 0;
+		if (strchr(tempStats.movelist, '(') != NULL) {
+		    tempStats.line_is_book = 1;
+		    tempStats.nr_moves = 0;
+		    tempStats.moves_left = 0;
 		} else {
-		    programStats.line_is_book = 0;
+		    tempStats.line_is_book = 0;
 		}
 
-                SendProgramStatsToFrontend( cps, &programStats );
+		    if(tempStats.score != 0 || tempStats.nodes != 0 || tempStats.time != 0)
+			programStats = tempStats; // [HGM] info: only set stats if genuine PV and not an info line
+
+                SendProgramStatsToFrontend( cps, &tempStats );
 
                 /*
                     [AS] Protect the thinkOutput buffer from overflow... this
