@@ -1222,13 +1222,12 @@ PrintCommPortSettings(FILE *f, char *name)
 int
 MySearchPath(char *installDir, char *name, char *fullname)
 {
-  char *dummy;
-  if(name[0] == '~' && name[1] == '\\') { // [HGM] recognize ~ as HOMEPATH environment variable
-    installDir = getenv("HOMEPATH");
-    name += 2;
-    strcpy(fullname, installDir);
-    strcat(fullname, "\\");
-    strcat(fullname, name);
+  char *dummy, buf[MSG_SIZ];
+  if(name[0] == '%' && strchr(name+1, '%')) { // [HGM] recognize %*% as environment variable
+    strcpy(buf, name+1);
+    *strchr(buf, '%') = 0;
+    installDir = getenv(buf);
+    sprintf(fullname, "%s\\%s", installDir, strchr(name+1, '%')+1);
     return strlen(fullname);
   }
   return (int) SearchPath(installDir, name, NULL, MSG_SIZ, fullname, &dummy);
