@@ -6957,7 +6957,7 @@ Adjudicate(ChessProgramState *cps)
                    || NrWN==2 || NrBN==2     /* KNNK */
                    || NrWN+NrWB == 1 && NrBN+NrBB == 1 /* KBKN, KBKB, KNKN */
                   ) ) {
-                     if(canAdjudicate && --moveCount < 0 && appData.trivialDraws)
+                     if(--moveCount < 0 && appData.trivialDraws && canAdjudicate)
                      {    /* if the first 3 moves do not show a tactical win, declare draw */
 			  if(engineOpponent) {
 			    SendToProgram("force\n", engineOpponent); // suppress reply
@@ -7008,7 +7008,7 @@ Adjudicate(ChessProgramState *cps)
                                 boards[forwardMostMove][CASTLING][4] != boards[k][CASTLING][4] )
                                    rights++;
                         }
-                        if( canAdjudicate && rights == 0 && ++count > appData.drawRepeats-2
+                        if( rights == 0 && ++count > appData.drawRepeats-2 && canAdjudicate
                             && appData.drawRepeats > 1) {
                              /* adjudicate after user-specified nr of repeats */
 			     if(engineOpponent) {
