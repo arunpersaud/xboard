@@ -1351,6 +1351,19 @@ establish()
     }
 }
 
+void EscapeExpand(char *p, char *q)
+{	// [HGM] initstring: routine to shape up string arguments
+	while(*p++ = *q++) if(p[-1] == '\\')
+	    switch(*q++) {
+		case 'n': p[-1] = '\n'; break;
+		case 'r': p[-1] = '\r'; break;
+		case 't': p[-1] = '\t'; break;
+		case '\\': p[-1] = '\\'; break;
+		case 0: *p = 0; return;
+		default: p[-1] = q[-1]; break;
+	    }
+}
+
 void
 show_bytes(fp, buf, count)
      FILE *fp;
@@ -7334,11 +7347,13 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
      * Look for communication commands
      */
     if (!strncmp(message, "telluser ", 9)) {
+	EscapeExpand(message+9, message+9); // [HGM] esc: allow escape sequences in popup box
 	DisplayNote(message + 9);
 	return;
     }
     if (!strncmp(message, "tellusererror ", 14)) {
 	cps->userError = 1;
+	EscapeExpand(message+14, message+14); // [HGM] esc: allow escape sequences in popup box
 	DisplayError(message + 14, 0);
 	return;
     }
