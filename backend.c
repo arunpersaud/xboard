@@ -449,7 +449,11 @@ int adjudicateLossPlies = 6;
 char white_holding[64], black_holding[64];
 TimeMark lastNodeCountTime;
 long lastNodeCount=0;
+
 int have_sent_ICS_logon = 0;
+int sending_ICS_login    = 0;
+int sending_ICS_password = 0;
+
 int movesPerSession;
 int suddenDeath, whiteStartMove, blackStartMove; /* [HGM] for implementation of 'any per time' sessions, as in first part of byoyomi TC */
 long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement, lastWhite, lastBlack;
@@ -3108,10 +3112,17 @@ read_from_ics(isr, closure, data, count, error)
 	    if (!have_sent_ICS_logon && looking_at(buf, &i, "login:")) {
 		ICSInitScript();
 		have_sent_ICS_logon = 1;
+		sending_ICS_password = 0; // in case we come back to login
+		sending_ICS_login = 1; 
 		continue;
 	    }
-
-	    if (ics_getting_history != H_GETTING_MOVES /*smpos kludge*/ &&
+	    /* need to shadow the password */
+	    if (!sending_ICS_password && looking_at(buf, &i, "password:")) {
+	      sending_ICS_password = 1;
+	      continue;
+	    }
+	      
+	    if (ics_getting_history != H_GETTING_MOVES /*smpos kludge*/ && 
 		(looking_at(buf, &i, "\n<12> ") ||
 		 looking_at(buf, &i, "<12> "))) {
 		loggedOn = TRUE;

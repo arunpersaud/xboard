@@ -141,6 +141,12 @@ extern char *getenv();
 # endif
 #endif
 
+
+# if HAVE_LIBREADLINE /* add gnu-readline support */
+#include <readline/readline.h>
+#include <readline/history.h>
+# endif
+
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
@@ -468,6 +474,11 @@ void SettingsPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
 int CopyMemoProc P(());
+
+# if HAVE_LIBREADLINE /* add gnu-readline support */
+static void ReadlineCompleteHandler P((char *)); 
+# endif
+
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -502,6 +513,13 @@ char *oldICSInteractionTitle;
 FileProc fileProc;
 char *fileOpenMode;
 char installDir[] = "."; // [HGM] UCI: needed for UCI; probably needs run-time initializtion
+
+# if HAVE_LIBREADLINE /* gnu readline support */
+static char* readline_buffer;
+static int readline_complete=0;
+extern int sending_ICS_login;
+extern int sending_ICS_password;
+#endif
 
 Position commentX = -1, commentY = -1;
 Dimension commentW, commentH;
@@ -1773,6 +1791,12 @@ main(argc, argv)
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
     debugFP = stderr;
+    
+# if HAVE_LIBREADLINE
+    /* install gnu-readline handler */
+    rl_callback_handler_install("> ", ReadlineCompleteHandler);
+    rl_readline_name="XBoard";
+# endif
 
     if(argc > 1 && (!strcmp(argv[1], "-v" ) || !strcmp(argv[1], "--version" ))) {
 	printf("%s version %s\n", PACKAGE_NAME, PACKAGE_VERSION);
@@ -2596,6 +2620,13 @@ ShutDownFrontEnd()
     if (saveSettingsOnExit) SaveSettings(settingsFileName);
     unlink(gameCopyFilename);
     unlink(gamePasteFilename);
+
+# if HAVE_LIBREADLINE
+    /* remove gnu-readline handler.  */
+    rl_callback_handler_remove();
+#endif
+
+    return;
 }
 
 RETSIGTYPE TermSizeSigHandler(int sig)
@@ -8075,16 +8106,97 @@ DoInputCallback(closure, source, xid)
 	}
 	q = is->buf;
 	while (p < is->unused) {
-	    *q++ = *p++;
+	  *q++ = *p++;
 	}
 	is->unused = q;
     } else {
-	count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
-	if (count == -1)
-	  error = errno;
-	else
-	  error = 0;
-	(is->func)(is, is->closure, is->buf, count, error);
+# if HAVE_LIBREADLINE
+      /* check if input is from stdin, if yes, use gnu-readline */
+      if( is->fd==fileno(stdin) )
+	{
+	  /* to clear the line */
+	  printf("\r                                                 \r");
+	  
+	  /* read from stdin */
+	  rl_callback_read_char(); 
+	  /* redisplay the current line */
+	  if(sending_ICS_password)
+	    {
+	      int i; char buf[MSG_SIZ];
+
+	      bzero(buf,MSG_SIZ);
+
+	      /* blank the password */
+	      count = strlen(rl_line_buffer);
+	      if(count>MSG_SIZ-1)
+		{
+		  printf("PROBLEM with readline\n");
+		  count=MSG_SIZ;
+		}
+	      for(i=0;i<count;i++)
+		buf[i]='*';
+	      i++;
+	      buf[i]='\0';
+	      printf("\rpassword: %s",buf);
+	    }
+	  else if (sending_ICS_login)
+	    {
+	      /* show login prompt */
+	      count = strlen(rl_line_buffer);
+	      printf("\rlogin: %s",rl_line_buffer);
+	    }
+	  else
+	    rl_reset_line_state();
+	  
+	  if(readline_complete)
+	    {
+	      /* copy into XBoards buffer */
+	      count = strlen(readline_buffer);
+	      if (count>INPUT_SOURCE_BUF_SIZE-1)
+		{
+		  printf("PROBLEM with readline\n");
+		  count = INPUT_SOURCE_BUF_SIZE;
+		};
+	      strncpy(is->buf,readline_buffer,count);
+	      is->buf[count]='\n';count++; 
+
+	      /* reset gnu-readline state */
+	      free(readline_buffer);
+	      readline_buffer=NULL;
+	      readline_complete=0;
+
+	      if (count == -1)
+		error = errno;
+	      else
+		error = 0;
+	      (is->func)(is, is->closure, is->buf, count, error);
+
+	      /* are we done with the password? */
+	      if(sending_ICS_password)
+		sending_ICS_password=0;
+	      if(sending_ICS_login)
+		sending_ICS_login=0;
+	    }
+	}
+      else
+	{
+	  /* input not from stdin, use default method */
+	  count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
+	  if (count == -1)
+	    error = errno;
+	  else
+	    error = 0;
+	  (is->func)(is, is->closure, is->buf, count, error);
+	};
+#else /* no readline support */
+      count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
+      if (count == -1)
+	error = errno;
+      else
+	error = 0;
+      (is->func)(is, is->closure, is->buf, count, error);
+#endif
+
     }
 }
 
@@ -8140,28 +8252,36 @@ int OutputToProcess(pr, message, count, outError)
     ChildProc *cp = (ChildProc *) pr;
     int outCount;
 
+
     if (pr == NoProc)
     {
-        if (appData.noJoin || !appData.useInternalWrap)
-            outCount = fwrite(message, 1, count, stdout);
-        else
+      if (appData.noJoin || !appData.useInternalWrap)
+	outCount = fwrite(message, 1, count, stdout);
+      else
         {
-            int width = get_term_width();
-            int len = wrap(NULL, message, count, width, &line);
-            char *msg = malloc(len);
-            int dbgchk;
-
-            if (!msg)
-                outCount = fwrite(message, 1, count, stdout);
-            else
+	  int width = get_term_width();
+	  int len = wrap(NULL, message, count, width, &line);
+	  char *msg = malloc(len);
+	  int dbgchk;
+	  
+	  if (!msg)
+	    outCount = fwrite(message, 1, count, stdout);
+	  else
             {
-                dbgchk = wrap(msg, message, count, width, &line);
-                if (dbgchk != len && appData.debugMode)
-                    fprintf(debugFP, "wrap(): dbgchk(%d) != len(%d)\n", dbgchk, len);
-                outCount = fwrite(msg, 1, dbgchk, stdout);
-                free(msg);
+	      dbgchk = wrap(msg, message, count, width, &line);
+	      if (dbgchk != len && appData.debugMode)
+		fprintf(debugFP, "wrap(): dbgchk(%d) != len(%d)\n", dbgchk, len);
+	      outCount = fwrite(msg, 1, dbgchk, stdout);
+	      free(msg);
             }
         }
+      
+# if HAVE_LIBREADLINE
+      /* readline support */
+      if(strlen(rl_line_buffer))
+	 printf("\n>  %s",rl_line_buffer);
+#endif
+
     }
     else
       outCount = write(cp->fdTo, message, count);
@@ -8964,3 +9084,18 @@ void NotifyFrontendLogin()
 {
     update_ics_width();
 }
+
+# if HAVE_LIBREADLINE
+static void 
+ReadlineCompleteHandler(char* ptr)
+{
+  /* make gnu-readline keep the history */
+  readline_buffer = ptr;
+  readline_complete = 1;
+  
+  if (ptr && *ptr && !sending_ICS_password && !sending_ICS_login)
+    add_history(ptr);
+
+  return;
+}
+#endif
