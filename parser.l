@@ -329,7 +329,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) result;
 }
 
-[a-l][0-9]((=?\(?[A-Z]\)?)|=)?       {
+[a-l][0-9]((=?\(?[A-Za-z]\)?)|=)?       {
     /*
      * Pawn move, possibly with promotion
      */
@@ -347,7 +347,7 @@ extern void CopyBoard P((Board to, Board from));
     cl.ffIn = yytext[0] - AAA;
     cl.rtIn = yytext[1] - ONE;
     cl.ftIn = yytext[0] - AAA;
-    c = cl.promoCharIn = yytext[2+skip];
+    c = cl.promoCharIn = ToLower(yytext[2+skip]);
 
     /* [HGM] do not allow values beyond board size */
     if(cl.rtIn >= BOARD_HEIGHT ||
