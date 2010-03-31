@@ -947,7 +947,7 @@ SayMachineMove(int evenIfDuplicate)
 				    break;
 				}
 			    }
-			    if(c != lastMover) return; // line is thinking output of future move, ignore.
+			    if(c != lastMover && !evenIfDuplicate) return; // line is thinking output of future move, ignore.
 			    if(2*moveNr - (dotCount < 2) == previousMove)
 				return; // do not repeat same move; likely ponder output
 			    sprintf(buf, "score %s %d at %d ply", 
