@@ -1426,20 +1426,6 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 }
 #endif
 
-void EscapeExpand(char *p, char *q)
-{	// [HGM] initstring: routine to shape up string arguments
-  while(*p++ = *q++) 
-    if(p[-1] == '\\')
-      switch(*q++) {
-      case 'n': p[-1] = '\n'; break;
-      case 'r': p[-1] = '\r'; break;
-      case 't': p[-1] = '\t'; break;
-      case '\\': p[-1] = '\\'; break;
-      case 0: *p = 0; return;
-      default: p[-1] = q[-1]; break;
-      }
-}
-
 int
 main(argc, argv)
      int argc;
