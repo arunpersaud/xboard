@@ -282,6 +282,7 @@ InitJAWS()
 
 int beeps[] = { 1, 0, 0, 0, 0 };
 int beepCodes[] = { 0, MB_OK, MB_ICONERROR, MB_ICONQUESTION, MB_ICONEXCLAMATION, MB_ICONASTERISK };
+static int dropX = -1, dropY = -1;
 
 VOID
 KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -290,6 +291,10 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	char *piece, *xchar, *ynum ;
 	int n, beepType = 1; // empty beep
 
+	if(fromX == -1 || fromY == -1) { // if we just dropped piece, stay at that square
+		fromX = dropX; fromY = dropY;
+		dropX = dropY = -1; // but only once
+        }
 	if(fromX == -1 || fromY == -1) {
 		fromX = BOARD_LEFT; fromY = 0;
         }
@@ -345,7 +350,7 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		ynum = SquareToNum(fromY);
 		if(currentPiece != EmptySquare) {
 //			SayString(piece[0] == 'W' ? "white" : "black", TRUE);
-			sprintf(buf, "%s %s %s", piece, xchar, ynum);
+			sprintf(buf, "%s %s %s", xchar, ynum, piece);
 		} else sprintf(buf, "%s %s", xchar, ynum);
 		SayString(buf, TRUE);
 	}
@@ -1075,11 +1080,11 @@ SayClockTime()
 		suppressClocks = 0; // back on after two requests in rapid succession
 	sprintf(buf1, "%s", TimeString(whiteTimeRemaining));
 	str1 = buf1;
-	SayString("White's remaining time is", FALSE);
+	SayString("White clock", FALSE);
 	SayString(str1, FALSE);
 	sprintf(buf2, "%s", TimeString(blackTimeRemaining));
 	str2 = buf2;
-	SayString("Black's remaining time is", FALSE);
+	SayString("Black clock", FALSE);
 	SayString(str2, FALSE);
 	lastWhiteTime = whiteTimeRemaining;
 	lastBlackTime = blackTimeRemaining;
@@ -1198,6 +1203,7 @@ NiceTime(int x)
 	    if ((char)wParam == 022 && gameMode == EditPosition) { /* <Ctl R>. Pop up piece menu */\
 		POINT pt; int x, y;\
 		SquareToPos(fromY, fromX, &x, &y);\
+		dropX = fromX; dropY = fromY;\
 		pt.x = x; pt.y = y;\
         	if(gameInfo.variant != VariantShogi)\
 		    MenuPopup(hwnd, pt, LoadMenu(hInst, "PieceMenu"), -1);\
