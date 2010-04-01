@@ -4563,7 +4563,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	  TagsPopUp(tags, CmailMsg());
 	  free(tags);
       }
-      SAY("programs start playing each other");
+      SAY("computer starts playing both sides");
       break;
 
     case IDM_AnalysisMode:
@@ -4626,7 +4626,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_EditPosition:
       EditPositionEvent();
-      SAY("to set up a position type a FEN");
+      SAY("enter a FEN string or setup a position on the board using the control R pop up menu");
       break;
 
     case IDM_Training:
