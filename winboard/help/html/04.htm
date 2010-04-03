@@ -39,7 +39,7 @@
 
 <P><B><A NAME="analysismode"></A>Analysis Mode</B></P>
 
-<P>In this mode, you can make moves for both sides on the board. After each move, the chess engine will think about possible replies and display its analysis in a separate window. Crafty was the first engine to support this feature, but by now there are many others that support it as well. font color="#ff00ff">With respect to playing variations, the same holds as in Edit Game mode.</font></P>
+<P>In this mode, you can make moves for both sides on the board. After each move, the chess engine will think about possible replies and display its analysis in a separate window. Crafty was the first engine to support this feature, but by now there are many others that support it as well. <font color="#ff00ff">With respect to playing variations, the same holds as in Edit Game mode.</font></P>
 
 <P><font color="#3333ff">From WinBoard 4.4 on this function can also be invoked in ‘zippy mode’, i.e. when you are logged on to an ICS with an engine loaded. In that case it is not your own moves that the engine analyzes, but the moves that are played in a game on the ICS that you are observing. You must start observing before you start the analysis mode! See the file zippy.README for how to connect to an ICS and a chess engine running on your local computer at the same time. (Basically this amounts to adding the /zp command-line option in addition to all options you would need for connecting to the ICS, as well as those needed for running the chess engine.)</font></P>
 
@@ -77,7 +77,7 @@
 
 <P>In ICS mode, the moves are not sent to the ICS: Edit Game takes WinBoard out of ICS Client mode and lets you edit games locally. If you want to edit a game on ICS in a way that other ICS users can see, use the ICS <B>examine</B> command or start an ICS match against yourself.</P>
 
-<P><font color="#FF00FF">If you edit an existing game locally by playing new moves while not at the end, you will create a new variation. (New moves at the end will simply be appended to the existing game.) WinBoard will then shelve the original variation (‘main line’) from beyond the point where you played a new move. You can later revert to that new line with the Revert or Annotate commands. This will discard the variation you just entered, and restores the moves of the original main line that you overwrote. This procedure can be applied recursively, so you an make (sub-)variations on variations. Rather than entering variations move by move, you can also recall them from PGN variations in the Comment window, by right-clicking those.</font></P>
+<P><font color="#FF00FF">If you edit an existing game locally by playing new moves while not at the end, you will create a new variation. (New moves at the end will simply be appended to the existing game.) WinBoard will then shelve the original variation (‘main line’) from beyond the point where you played a new move. You can later revert to that main line with the Revert or Annotate commands. This will discard the variation you just entered, and restores the moves of the original main line that you overwrote. This procedure can be applied recursively, so you an make (sub-)variations on variations. Rather than entering variations move by move, you can also recall them from PGN variations in the Comment window, by right-clicking those.</font></P>
 
 
 
