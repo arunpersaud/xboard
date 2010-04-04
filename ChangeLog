@@ -3,6 +3,45 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vnew vold)
 
+2010-04-04 13:47:44 -0700 Arun Persaud <arun@nubati.net>:
+updated winboard/parser.c
+
+2010-04-01 15:22:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix JAWS piece drop cursor, and streamline some sentences
+
+The cursor square was reset to a1 after every use of the piece menu,
+which was very inconvenient. Some of the spoken sentences have been
+improved; the square is read before the piece now, when using the arrow
+keys on the board.
+
+2010-03-31 21:36:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Alt+M JAWS command in Two-Machines mode
+
+The command refused to read the ast move because it contained thinking
+output of the other engine. Let it pay attention to evenIfDuplicate.
+
+2010-03-31 21:29:39 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow lower-case promochar in moves of type h8=Q
+
+Updated the parser rules. Other move formats already allowed this.
+
+2010-03-28 11:59:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Correct error in texi file
+
+The option /pieceToCharTable was listed as /pieceToSquareTable
+
+2010-03-28 11:24:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix info lines being used as normal thinking output
+
+The new standard of using thinking output with time = nodes = score = 0
+as info messages for printing in the Engine-Output window was not
+understood everywhere, and led to such info lines being used for
+autoKibitzing and PGN annotation. The programStats are now only updated
+from thinking output received from an engine when it is not an info line.
+
+2010-03-27 14:58:19 -0700 Arun Persaud <arun@nubati.net>:
+new developer release
+
 2010-03-24 11:04:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix window-position upset on failing engine start in WinBoard
 

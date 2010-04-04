@@ -2,7 +2,7 @@
 
 (git shortlog --no-merges v4.4.2...HEAD)
 
-Arun Persaud (8):
+Arun Persaud (11):
       updated to unstable version number
       added missing sounds files to be able to compile on windows
       new developer release
@@ -11,8 +11,11 @@ Arun Persaud (8):
       updated files (AUTHORS, Changelog, etc) for new release
       new developer release
       added logo files for xboard
+      new developer release
+      updated winboard/parser.c
+      release of version 4.4.3
 
-H.G. Muller (35):
+H.G. Muller (40):
       Implement castling for variant CRC
       Chmod 644
       Bugfix legality null move in parsing with -testLegality off
@@ -48,6 +51,11 @@ H.G. Muller (35):
       Remake programVersion string after receiving engine features
       Set keyboard focus at startup to board window
       Fix window-position upset on failing engine start in WinBoard
+      Fix info lines being used as normal thinking output
+      Correct error in texi file
+      Allow lower-case promochar in moves of type h8=Q
+      Fix Alt+M JAWS command in Two-Machines mode
+      Fix JAWS piece drop cursor, and streamline some sentences
 
 ** Version 4.4.2 **
 

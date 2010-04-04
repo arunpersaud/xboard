@@ -29,6 +29,8 @@
  * Remake programVersion string after receiving engine features
  * Set keyboard focus at startup to board window
  * Fix window-position upset on failing engine start in WinBoard
+ * Allow lower-case promochar in moves of type h8=Q
+ * Small bugfixed for JAWS version
  * Small bugfixes
 
 ** Version 4.4.2 **
