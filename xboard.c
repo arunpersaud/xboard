@@ -866,6 +866,7 @@ XtActionsRec boardActions[] = {
     { "BlackClock", BlackClock },
     { "Iconify", Iconify },
     { "ResetProc", ResetProc },
+    { "NewVariantProc", NewVariantProc },
     { "LoadGameProc", LoadGameProc },
     { "LoadNextGameProc", LoadNextGameProc },
     { "LoadPrevGameProc", LoadPrevGameProc },
@@ -929,6 +930,9 @@ XtActionsRec boardActions[] = {
     { "TruncateGameProc", TruncateGameProc },
     { "MoveNowProc", MoveNowProc },
     { "RetractMoveProc", RetractMoveProc },
+    { "EngineMenuProc", (XtActionProc) EngineMenuProc },
+    { "UciMenuProc", (XtActionProc) UciMenuProc },
+    { "TimeControlProc", (XtActionProc) TimeControlProc },
     { "AlwaysQueenProc", AlwaysQueenProc },
     { "AnimateDraggingProc", AnimateDraggingProc },
     { "AnimateMovingProc", AnimateMovingProc },
@@ -992,26 +996,64 @@ XtActionsRec boardActions[] = {
 };
 
 char globalTranslations[] =
-  ":<Key>R: ResignProc() \n \
-   :<Key>r: ResetProc() \n \
-   :<Key>g: LoadGameProc() \n \
-   :<Key>N: LoadNextGameProc() \n \
-   :<Key>P: LoadPrevGameProc() \n \
-   :<Key>Q: QuitProc() \n \
-   :<Key>F: ToEndProc() \n \
-   :<Key>f: ForwardProc() \n \
-   :<Key>B: ToStartProc() \n \
-   :<Key>b: BackwardProc() \n \
-   :<Key>p: PauseProc() \n \
-   :<Key>d: DrawProc() \n \
-   :<Key>t: CallFlagProc() \n \
-   :<Key>i: Iconify() \n \
-   :<Key>c: Iconify() \n \
-   :<Key>v: FlipViewProc() \n \
-   <KeyDown>Control_L: BackwardProc() \n \
-   <KeyUp>Control_L: ForwardProc() \n \
-   <KeyDown>Control_R: BackwardProc() \n \
-   <KeyUp>Control_R: ForwardProc() \n \
+  ":<Key>F9: ResignProc() \n \
+   :Ctrl<Key>n: ResetProc() \n \
+   :Meta<Key>V: NewVariantProc() \n \
+   :Ctrl<Key>o: LoadGameProc() \n \
+   :Meta<Key>Next: LoadNextGameProc() \n \
+   :Meta<Key>Prior: LoadPrevGameProc() \n \
+   :Ctrl<Key>s: SaveGameProc() \n \
+   :Ctrl<Key>c: CopyGameProc() \n \
+   :Ctrl<Key>v: PasteGameProc() \n \
+   :Ctrl<Key>O: LoadPositionProc() \n \
+   :Shift Meta<Key>Next: LoadNextPositionProc() \n \
+   :Shift Meta<Key>Prior: LoadPrevPositionProc() \n \
+   :Ctrl<Key>S: SavePositionProc() \n \
+   :Ctrl<Key>C: CopyPositionProc() \n \
+   :Ctrl<Key>V: PastePositionProc() \n \
+   :Ctrl<Key>q: QuitProc() \n \
+   :Ctrl<Key>w: MachineWhiteProc() \n \
+   :Ctrl<Key>b: MachineBlackProc() \n \
+   :Ctrl<Key>t: TwoMachinesProc() \n \
+   :Ctrl<Key>a: AnalysisModeProc() \n \
+   :Ctrl<Key>f: AnalyzeFileProc() \n \
+   :Ctrl<Key>e: EditGameProc() \n \
+   :Ctrl<Key>E: EditPositionProc() \n \
+   :Meta<Key>O: EngineOutputProc() \n \
+   :Meta<Key>E: EvalGraphProc() \n \
+   :Meta<Key>G: ShowGameListProc() \n \
+   :Meta<Key>H: ShowMoveListProc() \n \
+   :<Key>Pause: PauseProc() \n \
+   :<Key>F3: AcceptProc() \n \
+   :<Key>F4: DeclineProc() \n \
+   :<Key>F12: RematchProc() \n \
+   :<Key>F5: CallFlagProc() \n \
+   :<Key>F6: DrawProc() \n \
+   :<Key>F7: AdjournProc() \n \
+   :<Key>F8: AbortProc() \n \
+   :<Key>F10: StopObservingProc() \n \
+   :<Key>F11: StopExaminingProc() \n \
+   :Meta Ctrl<Key>F12: DebugProc() \n \
+   :Meta<Key>End: ToEndProc() \n \
+   :Meta<Key>Right: ForwardProc() \n \
+   :Meta<Key>Home: ToStartProc() \n \
+   :Meta<Key>Left: BackwardProc() \n \
+   :Ctrl<Key>m: MoveNowProc() \n \
+   :Ctrl<Key>x: RetractMoveProc() \n \
+   :Meta<Key>J: EngineMenuProc() \n \
+   :Meta<Key>U: UciMenuProc() \n \
+   :Meta<Key>T: TimeControlProc() \n \
+   :Ctrl<Key>Q: AlwaysQueenProc() \n \
+   :Ctrl<Key>F: AutoflagProc() \n \
+   :Ctrl<Key>A: AnimateMovingProc() \n \
+   :Ctrl<Key>P: PonderNextMoveProc() \n \
+   :Ctrl<Key>L: TestLegalityProc() \n \
+   :Ctrl<Key>H: HideThinkingProc() \n \
+   :<Key>-: Iconify() \n \
+   :<Key>F1: ManProc() \n \
+   :<Key>F2: FlipViewProc() \n \
+   <KeyDown>.: BackwardProc() \n \
+   <KeyUp>.: ForwardProc() \n \
    Shift<Key>1: AskQuestionProc(\"Direct command\",\
                                 \"Send to chess program:\",,1) \n \
    Shift<Key>2: AskQuestionProc(\"Direct command\",\
