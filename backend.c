@@ -6317,9 +6317,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                         if( rights == 0 && ++count > appData.drawRepeats-2
                             && appData.drawRepeats > 1) {
                              /* adjudicate after user-specified nr of repeats */
-			     SendToProgram("force\n", cps->other); // suppress reply
-			     SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
-                             ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+			     int result = GameIsDrawn;
+			     char *details = "Xboard adjudication: repetition draw";
 			     if(gameInfo.variant == VariantXiangqi && appData.testLegality) { 
 				// [HGM] xiangqi: check for forbidden perpetuals
 				int m, ourPerpetual = 1, hisPerpetual = 1;
@@ -6334,27 +6333,29 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 				if(appData.debugMode) fprintf(debugFP, "XQ perpetual test, our=%d, his=%d\n",
 									ourPerpetual, hisPerpetual);
 				if(ourPerpetual && !hisPerpetual) { // we are actively checking him: forfeit
-				    GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
-		 			   "Xboard adjudication: perpetual checking", GE_XBOARD );
-				    return;
-				}
-				if(hisPerpetual && !ourPerpetual)   // he is checking us, but did not repeat yet
+				    result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins;
+		 		    details = "Xboard adjudication: perpetual checking";
+				} else
+				if(hisPerpetual && !ourPerpetual) { // he is checking us, but did not repeat yet
 				    break; // (or we would have caught him before). Abort repetition-checking loop.
 				// Now check for perpetual chases
+				} else
 				if(!ourPerpetual && !hisPerpetual) { // no perpetual check, test for chase
 				    hisPerpetual = PerpetualChase(k, forwardMostMove);
 				    ourPerpetual = PerpetualChase(k+1, forwardMostMove);
 				    if(ourPerpetual && !hisPerpetual) { // we are actively chasing him: forfeit
-					GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
-		 				      "Xboard adjudication: perpetual chasing", GE_XBOARD );
-					return;
-				    }
+					result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins;
+					details = "Xboard adjudication: perpetual chasing";
+				    } else
 				    if(hisPerpetual && !ourPerpetual)   // he is chasing us, but did not repeat yet
 					break; // Abort repetition-checking loop.
 				}
 				// if neither of us is checking or chasing all the time, or both are, it is draw
 			     }
-                             GameEnds( GameIsDrawn, "Xboard adjudication: repetition draw", GE_XBOARD );
+			     SendToProgram("force\n", cps->other); // suppress reply
+			     SendMoveToProgram(forwardMostMove-1, cps->other); /* make sure opponent gets to see move */
+                             ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+                             GameEnds( result, details, GE_XBOARD );
                              return;
                         }
                         if( rights == 0 && count > 1 ) /* occurred 2 or more times before */
