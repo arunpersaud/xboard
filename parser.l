@@ -232,7 +232,7 @@ extern void CopyBoard P((Board to, Board from));
        currentMoveString[2] - AAA >= BOARD_RGHT   ||
        currentMoveString[0] - AAA <  BOARD_LEFT   ||
        currentMoveString[2] - AAA <  BOARD_LEFT     )
-      return 0;
+      return ImpossibleMove;
 
     piece = boards[yyboardindex]
       [currentMoveString[1] - ONE][currentMoveString[0] - AAA];
@@ -300,7 +300,7 @@ extern void CopyBoard P((Board to, Board from));
        currentMoveString[2] - AAA >= BOARD_RGHT   ||
        currentMoveString[0] - AAA <  BOARD_LEFT   ||
        currentMoveString[2] - AAA <  BOARD_LEFT     )
-      return 0;
+      return ImpossibleMove;
 
     result = LegalityTest(boards[yyboardindex],
 			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
@@ -350,7 +350,7 @@ extern void CopyBoard P((Board to, Board from));
        cl.rtIn <  0            ||
        cl.ffIn >= BOARD_RGHT   ||
        cl.ftIn <  BOARD_LEFT     )
-      return 0;
+      return ImpossibleMove;
 
     if(c != '=' && c != '+' && c != NULLCHAR && CharToPiece(c) == EmptySquare)
       return IllegalMove;
@@ -405,7 +405,7 @@ extern void CopyBoard P((Board to, Board from));
        cl.ffIn <  BOARD_LEFT  ||
        cl.ftIn >= BOARD_RGHT  ||
        cl.ftIn <  BOARD_LEFT     )
-      return 0;
+      return ImpossibleMove;
 
     if(c != '=' && c != '+' && c != NULLCHAR && CharToPiece(c) == EmptySquare)
       return IllegalMove;
@@ -455,7 +455,7 @@ extern void CopyBoard P((Board to, Board from));
        currentMoveString[2] - AAA >= BOARD_RGHT   ||
        currentMoveString[0] - AAA <  BOARD_LEFT   ||
        currentMoveString[2] - AAA <  BOARD_LEFT     )
-      return 0;
+      return ImpossibleMove;
 
     if (gameInfo.variant == VariantXiangqi && /* [HGM] In Xiangqi rank stays same */
          currentMoveString[0] != currentMoveString[2] ) {
@@ -579,7 +579,7 @@ extern void CopyBoard P((Board to, Board from));
        cl.rtIn <  0            ||
        cl.ftIn >= BOARD_RGHT   ||
        cl.ftIn <  BOARD_LEFT     )
-      return 0;
+      return ImpossibleMove;
 
     Disambiguate(boards[yyboardindex], PosFlags(yyboardindex), &cl);
 
@@ -639,7 +639,7 @@ extern void CopyBoard P((Board to, Board from));
        cl.rtIn <  0            ||
        cl.ftIn >= BOARD_RGHT   ||
        cl.ftIn <  BOARD_LEFT     )
-      return 0;
+      return ImpossibleMove;
 
     Disambiguate(boards[yyboardindex], PosFlags(yyboardindex), &cl);
 
@@ -777,7 +777,7 @@ extern void CopyBoard P((Board to, Board from));
     /* [HGM] do not allow values beyond board size */
     if(currentMoveString[3] - ONE >= BOARD_HEIGHT ||
        currentMoveString[2] - AAA >= BOARD_WIDTH     )
-      return 0;
+      return ImpossibleMove;
 
     if (WhiteOnMove(yyboardindex)) {
 	currentMoveString[0] = ToUpper(yytext[0]);
