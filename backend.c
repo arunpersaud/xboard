@@ -5816,8 +5816,7 @@ char *SendMoveToBookUser(int moveNr, ChessProgramState *cps, int initial)
 	// after a book hit we never send 'go', and the code after the call to this routine
 	// has '&& !bookHit' added to suppress potential sending there (based on 'firstMove').
 	char buf[MSG_SIZ];
-	if (cps->useUsermove) sprintf(buf, "usermove "); // sorry, no SAN yet :(
-	sprintf(buf, "%s\n", bookHit); // force book move into program supposed to play it
+	sprintf(buf, "%s%s\n", (cps->useUsermove ? "usermove " : ""), bookHit); // force book move into program supposed to play it
 	SendToProgram(buf, cps);
 	if(!initial) firstMove = FALSE; // normally we would clear the firstMove condition after return & sending 'go'
     } else if(initial) { // 'go' was needed irrespective of firstMove, and it has to be done in this routine
