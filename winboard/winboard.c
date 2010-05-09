@@ -3866,12 +3866,12 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
        /* Mouse Wheel is being rolled forward
         * Play moves forward
         */
-       if((short)HIWORD(wParam) > 0 && currentMove < forwardMostMove) 
+       if((short)HIWORD(wParam) < 0 && currentMove < forwardMostMove) 
 		{ if(lastDir == 1) ForwardEvent(); else lastDir = 1; } // [HGM] suppress first event in direction
        /* Mouse Wheel is being rolled backward
         * Play moves backward
         */
-       if((short)HIWORD(wParam) < 0 && currentMove > backwardMostMove) 
+       if((short)HIWORD(wParam) > 0 && currentMove > backwardMostMove) 
 		{ if(lastDir == -1) BackwardEvent(); else lastDir = -1; }
     }
     break;
