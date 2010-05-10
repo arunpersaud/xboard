@@ -8169,6 +8169,7 @@ ResetFrontEnd()
     ReleaseCapture();
     DrawPosition(TRUE, NULL);
   }
+  TagsPopDown();
 }
 
 
