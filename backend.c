@@ -6430,7 +6430,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 {
     int x, y;
     Boolean saveAnimate;
-    static int second = 0;
+    static int second = 0, promotionChoice = 0, dragging = 0;
     char promoChoice = NULLCHAR;
 
     if(appData.seekGraph && appData.icsActive && loggedOn &&
@@ -6501,11 +6501,14 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		fromY = y;
 		second = 0;
 		MarkTargetSquares(0);
-		DragPieceBegin(xPix, yPix);
+		DragPieceBegin(xPix, yPix); dragging = 1;
 		if (appData.highlightDragging) {
 		    SetHighlights(x, y, -1, -1);
 		}
 	    }
+	} else if(dragging); { // [HGM] from-square must have been reset due to game end since last press
+	    DragPieceEnd(xPix, yPix); dragging = 0;
+	    DrawPosition(FALSE, NULL);
 	}
 	return;
       }
@@ -6542,7 +6545,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    }
 	    if (OKToStartUserMove(x, y)) {
 		fromX = x;
-		fromY = y;
+		fromY = y; dragging = 1;
 		MarkTargetSquares(0);
 		DragPieceBegin(xPix, yPix);
 	    }
@@ -6554,7 +6557,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     }
 
     if (clickType == Release && x == fromX && y == fromY) {
-	DragPieceEnd(xPix, yPix);
+	DragPieceEnd(xPix, yPix); dragging = 0;
 	if (appData.animateDragging) {
 	    /* Undo animation damage if any */
 	    DrawPosition(FALSE, NULL);
@@ -6592,7 +6595,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	} else {
 	    ClearHighlights();
 	}
-	DragPieceEnd(xPix, yPix);
+	DragPieceEnd(xPix, yPix); dragging = 0;
 	/* Don't animate move and drag both */
 	appData.animate = FALSE;
     }
