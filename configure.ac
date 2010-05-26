@@ -78,7 +78,7 @@ fi
 
 AC_CHECK_PROGS(RSH, remsh rsh, rsh)
 AC_CHECK_PROGS(MINFO, makeinfo, makeinfo_not_found)
-if test "$MINFO" == makeinfo_not_found ; then
+if test "$MINFO" = makeinfo_not_found ; then
    echo Please install \"makeinfo\"
    exit 1
 fi
@@ -119,7 +119,7 @@ fi
 
 AC_CHECK_HEADER(X11/Intrinsic.h,xt="yes",xt="no")
 
-if test "$xt" == "no" ; then
+if test "$xt" = "no" ; then
    echo Xt headers not found
    exit 1
 fi
@@ -143,14 +143,14 @@ AS_IF([test "x$with_xaw3d" != xno],
 		     AC_MSG_FAILURE(
       		               [--with-Xaw3d was given, but test for Xaw3d failed])],
 			       [-lXaw])])
-if test "$with_xaw3d" == "no" ; then
+if test "$with_xaw3d" = "no" ; then
    XAW_LIBS="-lXaw"
 fi
 AC_SUBST(XAW_LIBS)
 
 dnl | end Xaw3d test
 
-if test "$xaw_headers" == "no" ; then
+if test "$xaw_headers" = "no" ; then
    echo Xaw headers not found 
    exit 1
 
