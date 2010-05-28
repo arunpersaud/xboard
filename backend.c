@@ -5646,7 +5646,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		    SetHighlights(x, y, -1, -1);
 		}
 	    }
-	} else if(dragging); { // [HGM] from-square must have been reset due to game end since last press
+	} else if(dragging) { // [HGM] from-square must have been reset due to game end since last press
 	    DragPieceEnd(xPix, yPix); dragging = 0;
 	    DrawPosition(FALSE, NULL);
 	}
