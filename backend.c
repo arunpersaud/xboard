@@ -8766,7 +8766,7 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
         if( (boards[forwardMostMove][fromY][fromX] == WhitePawn ||
              boards[forwardMostMove][fromY][fromX] == BlackPawn   ) &&
              boards[forwardMostMove][toY][toX] == EmptySquare
-             && fromX != toX )
+             && fromX != toX && fromY != toY)
                 fprintf(serverMoves, ":%c%c:%c%c", AAA+fromX, ONE+fromY, AAA+toX, ONE+fromY);
         // promotion suffix
         if(promoChar != NULLCHAR)
