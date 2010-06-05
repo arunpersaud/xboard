@@ -1,4 +1,4 @@
-1;2205;0cdnl| configure.in
+dnl| configure.in
 dnl|
 dnl| Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006, 2007, 
 dnl| 2008, 2009, 2010 Free Software Foundation, Inc.
