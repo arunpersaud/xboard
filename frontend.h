@@ -176,8 +176,8 @@ void GameListHighlight P((int index));
 void GameListDestroy P((void));
 
 /* these are in wedittags.c */
-void EditTagsPopUp P((char *tags));
-void TagsPopUp P((char *tags, char *msg));
+void EditTagsPopUp P((GameInfo *));
+void TagsPopUp P((GameInfo *, char *));
 void TagsPopDown P((void));
 
 void ICSInitScript P((void));

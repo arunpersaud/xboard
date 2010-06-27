@@ -10200,15 +10200,12 @@ LoadGame(f, gameNumber, title, useList)
      * pasted from clipboard the Event tag may not exist
      */
     if (numPGNTags > 0){
-        char *tags;
 	if (gameInfo.variant == VariantNormal) {
 	  gameInfo.variant = StringToVariant(gameInfo.event);
 	}
 	if (!matchMode) {
           if( appData.autoDisplayTags ) {
-	    tags = PGNTags(&gameInfo);
-	    TagsPopUp(tags, CmailMsg());
-	    free(tags);
+	    TagsPopUp(&gameInfo, CmailMsg());
           }
 	}
     } else {
@@ -11462,9 +11459,9 @@ EditCommentEvent()
 void
 EditTagsEvent()
 {
-    char *tags = PGNTags(&gameInfo);
-    EditTagsPopUp(tags);
-    free(tags);
+  EditTagsPopUp(&gameInfo);
+
+  return;
 }
 
 void
@@ -12965,9 +12962,9 @@ BookEvent()
 void
 AboutGameEvent()
 {
-    char *tags = PGNTags(&gameInfo);
-    TagsPopUp(tags, CmailMsg());
-    free(tags);
+    TagsPopUp(&gameInfo, CmailMsg());
+
+    return;
 }
 
 /* end button procedures */

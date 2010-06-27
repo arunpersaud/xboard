@@ -1512,8 +1512,8 @@ main(argc, argv)
   GUI_EditTags = GTK_WIDGET (gtk_builder_get_object (builder, "EditTags"));
   if(!GUI_EditTags) printf("Error: gtk_builder didn't work (EditTags)!\n");
   
-  GUI_EditTagsTextArea = GTK_WIDGET (gtk_builder_get_object (builder, "EditTagsTextArea"));
-  if(!GUI_EditTagsTextArea) printf("Error: gtk_builder didn't work(EditTagsTextArea)!\n");
+  GUI_TagBox = GTK_WIDGET (gtk_builder_get_object (builder, "TagBox"));
+  if(!GUI_TagBox) printf("Error: gtk_builder didn't work(TagBox)!\n");
   
   /* move history and game list windows */
   GUI_History = GTK_WIDGET (gtk_builder_get_object (builder, "MoveHistory"));

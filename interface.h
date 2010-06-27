@@ -34,7 +34,7 @@ GtkWidget               *GUI_Menubar=NULL;
 GtkWidget               *GUI_Timer=NULL;
 GtkWidget               *GUI_Buttonbar=NULL;
 GtkWidget               *GUI_EditTags=NULL;
-GtkWidget               *GUI_EditTagsTextArea=NULL;
+GtkWidget               *GUI_TagBox=NULL;
 
 GtkListStore            *LIST_MoveHistory=NULL;
 GtkListStore            *LIST_GameList=NULL;
