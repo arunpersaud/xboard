@@ -362,6 +362,19 @@ if test x"$enable_xpm" != "xno"; then
   fi
 fi
 
+
+AC_ARG_ENABLE(enable_warnings, AC_HELP_STRING(--enable-warnings, [enable compiler warnings. [[default=no]]]))
+AC_MSG_CHECKING([if compiler warnings is to be enabled])
+if test "$enable_warnings" != "yes"; then
+  enable_warnings="no"
+fi
+AC_MSG_RESULT($enable_warnings)
+
+if test "$enable_warnings" = "yes"; then
+    CFLAGS="$CFLAGS -DGDK_PIXBUF_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -Wunused-function -Wunused-label -Wunused-value -Wunused-variable "
+fi
+
+
 AC_SUBST(PRE_XMULIB)
 AC_SUBST(POST_XMULIB)
 AC_SUBST(CONF_CFLAGS)
