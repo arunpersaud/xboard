@@ -28,7 +28,6 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <gtk/gtk.h>
-#include <glib.h>
 
 #if STDC_HEADERS
 # include <stdlib.h>
@@ -53,12 +52,10 @@ extern char *getenv();
 #include "xedittags.h"
 #include "gettext.h"
 
-extern GtkWidget               *GUI_EditTags;
-extern GtkWidget               *GUI_TagBox;
+extern GtkWidget   *GUI_EditTags; /* set in xboard.c */
+extern GtkWidget   *GUI_TagBox;   /* set in xboard.c */
 
-extern GameInfo gameInfo;
-
-Widget tagsShell, editTagsShell;
+extern GameInfo     gameInfo; /* defined in backend.c */
 
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)
@@ -68,71 +65,77 @@ Widget tagsShell, editTagsShell;
 # define N_(s)  s
 #endif
 
-void 
+
+/* show and hide the window */
+
+void
 TagsPopDown()
 {
   gtk_widget_hide (GUI_EditTags);
   return;
 }
 
-void 
+void
 TagsPopUp(GameInfo *gameInfo, char *msg)
 {
   EditTagsPopUp(gameInfo);
   return;
 }
 
-/* helper */
-void 
-TagToGameInfo(label, content, gameInfo)
-     char *label;
-     char *content;
-     GameInfo *gameInfo;
+/*
+ *   helper
+ */
+
+void
+TagToGameInfo(char *label, char *content)
 {
+  /* check what the label and save the content in the correct gameInfo variable */
+
   int success=FALSE;
-  
-  if (StrCaseCmp(label, "Event") == 0) 
-	success = StrSavePtr(content, &gameInfo->event) != NULL;
+
+  if (StrCaseCmp(label, "Event") == 0)
+	success = StrSavePtr(content, &gameInfo.event) != NULL;
   else if (StrCaseCmp(label, "Site") == 0)
-    success = StrSavePtr(content, &gameInfo->site) != NULL;
-  else if (StrCaseCmp(label, "Date") == 0) 
-    success = StrSavePtr(content, &gameInfo->date) != NULL;
-  else if (StrCaseCmp(label, "Round") == 0) 
-    success = StrSavePtr(content, &gameInfo->round) != NULL;
-  else if (StrCaseCmp(label, "White") == 0) 
-    success = StrSavePtr(content, &gameInfo->white) != NULL;
-  else if (StrCaseCmp(label, "Black") == 0) 
-    success = StrSavePtr(content, &gameInfo->black) != NULL;
+    success = StrSavePtr(content, &gameInfo.site) != NULL;
+  else if (StrCaseCmp(label, "Date") == 0)
+    success = StrSavePtr(content, &gameInfo.date) != NULL;
+  else if (StrCaseCmp(label, "Round") == 0)
+    success = StrSavePtr(content, &gameInfo.round) != NULL;
+  else if (StrCaseCmp(label, "White") == 0)
+    success = StrSavePtr(content, &gameInfo.white) != NULL;
+  else if (StrCaseCmp(label, "Black") == 0)
+    success = StrSavePtr(content, &gameInfo.black) != NULL;
   else if (StrCaseCmp(label, "WhiteElo")==0)
     {
       success = TRUE;
-      gameInfo->whiteRating = atoi( content );
-    } 
+      sscanf(content, "%12d", &gameInfo.whiteRating );
+    }
   else if (StrCaseCmp(label, "BlackElo")==0)
     {
       success = TRUE;
-      gameInfo->blackRating = atoi( content );
+      sscanf(content, "%12d", &gameInfo.blackRating );
     }
-  else if (StrCaseCmp(label, "Result") == 0) 
+  else if (StrCaseCmp(label, "Result") == 0)
     {
       if (strcmp(content, "1-0") == 0)
-	gameInfo->result = WhiteWins;
+	gameInfo.result = WhiteWins;
       else if (strcmp(content, "0-1") == 0)
-	gameInfo->result = BlackWins;
+	gameInfo.result = BlackWins;
       else if (strcmp(content, "1/2-1/2") == 0)
-	gameInfo->result = GameIsDrawn;
+	gameInfo.result = GameIsDrawn;
       else
-	gameInfo->result = GameUnfinished;
+	gameInfo.result = GameUnfinished;
       success = TRUE;
-    } 
-  else if (StrCaseCmp(label, "TimeControl") == 0) 
-    success = StrSavePtr(content, &gameInfo->timeControl) != NULL;
-  else if (StrCaseCmp(label, "Variant") == 0) 
+    }
+  else if (StrCaseCmp(label, "TimeControl") == 0)
+    success = StrSavePtr(content, &gameInfo.timeControl) != NULL;
+  else if (StrCaseCmp(label, "Variant") == 0)
     {
         /* xboard-defined extension */
-        gameInfo->variant = StringToVariant(content);
+        gameInfo.variant = StringToVariant(content);
 	success = TRUE;
     }
+
   if(! success)
     printf("Warning: problem converting Tags, please file a bug report\n");
 
@@ -140,12 +143,12 @@ TagToGameInfo(label, content, gameInfo)
 }
 /* end helper */
 
-/* Callbacks */
+/* Callbacks for pressed buttons */
 void
 EditTagClearProc(GtkObject *object, gpointer user_data)
 {
   /* go through all tags in the widget and clear the text input boxes */
-  
+
   GList *hboxes;
   GList *outer, *inner;  /* iterator for for-loops */
 
@@ -161,8 +164,11 @@ EditTagClearProc(GtkObject *object, gpointer user_data)
 	  if(GTK_IS_ENTRY(inner->data))
 	    gtk_entry_set_text(GTK_ENTRY(inner->data),"");
 	}
+      g_list_free(inner);
       g_list_free(tags);
     }
+
+  g_list_free(outer);
   g_list_free(hboxes);
 
   return;
@@ -172,29 +178,6 @@ void
 EditTagCancelProc(GtkObject *object, gpointer user_data)
 {
   TagsPopDown();
-
-  /* go through all tags in the widget and clear the text input boxes */
-  
-  GList *hboxes;
-  GList *outer, *inner;  /* iterator for for-loops */
-
-  hboxes = gtk_container_get_children (GTK_CONTAINER( GUI_TagBox) );
-
-  for ( outer = g_list_first(hboxes); outer != NULL; outer = g_list_next(outer))
-    {
-      GList *tags;
-      tags = gtk_container_get_children (GTK_CONTAINER( outer->data) );
-
-      for ( inner = g_list_first(tags); inner != NULL; inner = g_list_next(inner))
-	{
-	  if(GTK_IS_ENTRY(inner->data))
-	    gtk_entry_set_text(GTK_ENTRY(inner->data),"");
-	}
-      g_list_free(tags);
-    }
-  g_list_free(hboxes);
-
-
   return;
 }
 
@@ -203,26 +186,20 @@ EditTagOKProc(GtkObject *object, gpointer user_data)
 {
   G_CONST_RETURN gchar *label;
   G_CONST_RETURN gchar *content;
-  
 
-  /* go through all tags in the widget and clear the text input boxes */
-  
+  /* go through all tags in the widget and set values in gameInfo */
+
   GList *hboxes;
   GList *outer, *inner;  /* iterator for for-loops */
-
-  printf("need to OK new TAGS\n");
-
 
   hboxes = gtk_container_get_children (GTK_CONTAINER( GUI_TagBox) );
 
   for ( outer = g_list_first(hboxes); outer != NULL; outer = g_list_next(outer))
     {
-      label   = "unknown";
-      content = "?";
-      
       GList *tags;
       tags = gtk_container_get_children (GTK_CONTAINER( outer->data) );
 
+      /* get information from a single tag */
       for ( inner = g_list_first(tags); inner != NULL; inner = g_list_next(inner))
 	{
 	  if(GTK_IS_LABEL(inner->data))
@@ -230,12 +207,16 @@ EditTagOKProc(GtkObject *object, gpointer user_data)
 	  if(GTK_IS_ENTRY(inner->data))
 	    content = gtk_entry_get_text(GTK_ENTRY(inner->data));
 	}
-      printf ("New TAG: %s -> %s\n",label,content);
-//      TagToGameInfo(label,content,gameInfo);
+      /* save new information */
+      if( label && content )
+	TagToGameInfo((char *)label,(char *)content);
+
+      g_list_free(inner);
       g_list_free(tags);
     }
+
+  g_list_free(outer);
   g_list_free(hboxes);
-  
 
   TagsPopDown();
 
@@ -245,13 +226,14 @@ EditTagOKProc(GtkObject *object, gpointer user_data)
 /* end Callbacks */
 
 
-void 
-EditTagsPopUp(gameInfo)
-     GameInfo *gameInfo;
+void
+EditTagsPopUp(GameInfo *gameinfo)
 {
-  
+
   GtkWidget *tmp;
-  char Elo[12];
+
+#define ELOLENGTH 12
+  char Elo[ELOLENGTH];
 
 
   /* remove old tags that we already added */
@@ -259,41 +241,41 @@ EditTagsPopUp(gameInfo)
 
 
   /* add new ones */
-  tmp = GTK_WIDGET ( GTK_create_tag("Event", gameInfo->event) );
+  tmp = GTK_WIDGET ( GTK_create_tag("Event", gameinfo->event) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
 
-  tmp = GTK_WIDGET ( GTK_create_tag("Site", gameInfo->site) );
+  tmp = GTK_WIDGET ( GTK_create_tag("Site", gameinfo->site) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
 
-  tmp = GTK_WIDGET ( GTK_create_tag("Date", gameInfo->date) );
+  tmp = GTK_WIDGET ( GTK_create_tag("Date", gameinfo->date) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
 
-  tmp = GTK_WIDGET ( GTK_create_tag("Round", gameInfo->round) );
+  tmp = GTK_WIDGET ( GTK_create_tag("Round", gameinfo->round) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
-    
-  tmp = GTK_WIDGET ( GTK_create_tag("White", gameInfo->white) );
+
+  tmp = GTK_WIDGET ( GTK_create_tag("White", gameinfo->white) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
-    
-  tmp = GTK_WIDGET ( GTK_create_tag("Black", gameInfo->black) );
+
+  tmp = GTK_WIDGET ( GTK_create_tag("Black", gameinfo->black) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
-    
-  tmp = GTK_WIDGET ( GTK_create_tag("Result", PGNResult(gameInfo->result)) );
+
+  tmp = GTK_WIDGET ( GTK_create_tag("Result", PGNResult(gameinfo->result)) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
-    
-  sprintf(Elo,"%11d",gameInfo->whiteRating);
+
+  snprintf(Elo,ELOLENGTH,"%d",gameinfo->whiteRating);
   tmp = GTK_WIDGET ( GTK_create_tag("WhiteElo", Elo) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
 
-  sprintf(Elo,"%11d",gameInfo->blackRating);
+  snprintf(Elo,ELOLENGTH,"%d",gameinfo->blackRating);
   tmp = GTK_WIDGET ( GTK_create_tag("BlackElo", Elo) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
 
-  tmp = GTK_WIDGET ( GTK_create_tag("TimeControl", gameInfo->timeControl) );
+  tmp = GTK_WIDGET ( GTK_create_tag("TimeControl", gameinfo->timeControl) );
   gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
 
-  if (gameInfo->variant != VariantNormal) 
+  if (gameinfo->variant != VariantNormal)
     {
-      tmp = GTK_WIDGET ( GTK_create_tag("Variant", gameInfo->variant) );
+      tmp = GTK_WIDGET ( GTK_create_tag("Variant", gameinfo->variant) );
       gtk_box_pack_start(GTK_BOX(GUI_TagBox), tmp, TRUE, FALSE, 4);
     }
 
@@ -306,43 +288,43 @@ EditTagsPopUp(gameInfo)
 GtkWidget *
 GTK_create_tag(gchar *tagname, gchar *tagcontent )
 {
+  /* create a hbox with a label and a text entry box for a single tag
+   */
+
   GtkWidget *box;
 
-  GtkWidget *label;  
+  GtkWidget *label;
 
   GtkWidget *content;
   GtkEntryBuffer *contentbuffer;
 
   box = gtk_hbox_new(1,1);
-  
+
   label = gtk_label_new (tagname);
   gtk_label_set_justify(GTK_LABEL(label),  GTK_JUSTIFY_RIGHT);
 
   contentbuffer = gtk_entry_buffer_new(tagcontent,sizeof(tagcontent));
-  content =  gtk_entry_new_with_buffer (contentbuffer);     
+  content =  gtk_entry_new_with_buffer (contentbuffer);
 
-  gtk_box_pack_start(GTK_BOX(box), label, TRUE, FALSE,  2);
-  gtk_box_pack_start(GTK_BOX(box), content, TRUE, FALSE,  2);
-
+  gtk_box_pack_start(GTK_BOX(box), label, TRUE, FALSE,  1);
+  gtk_box_pack_start(GTK_BOX(box), content, TRUE, FALSE,  1);
 
   return box;
 }
 
 
 void
-EditTagsProc(object, user_data)
-     GtkObject *object;
-     gpointer user_data;
+EditTagsProc(GtkObject *object, gpointer user_data)
 {
-  /* always call EditTagsEvent, which calls the function to popup the window */
+  /* always call EditTagsEvent, which calls the function to popup the window.
+   * Called from the XBoard menu
+   */
   EditTagsEvent();
   return;
 }
 
 void
-EditTagsHideProc(object, user_data)
-     GtkObject *object;
-     gpointer user_data;
+EditTagsHideProc( GtkObject *object, gpointer user_data)
 {
   /* hide everything */
   gtk_widget_hide_all(GUI_EditTags);
