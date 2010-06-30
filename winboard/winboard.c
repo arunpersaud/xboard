@@ -3809,6 +3809,9 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
 
         SelectObject( tmphdc, hPieceMask[ index ] );
 
+      if(appData.upsideDown ? color==flipView : (flipView && gameInfo.variant == VariantShogi))
+        StretchBlt(hdc, x+squareSize, y+squareSize, -squareSize, -squareSize, tmphdc, 0, 0, squareSize, squareSize, SRCAND);
+      else
         BitBlt( hdc,
             x, y,
             squareSize, squareSize,
@@ -3818,6 +3821,9 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
 
         SelectObject( tmphdc, hPieceFace[ index ] );
 
+      if(appData.upsideDown ? color==flipView : (flipView && gameInfo.variant == VariantShogi))
+        StretchBlt(hdc, x+squareSize, y+squareSize, -squareSize, -squareSize, tmphdc, 0, 0, squareSize, squareSize, SRCPAINT);
+      else
         BitBlt( hdc,
             x, y,
             squareSize, squareSize,
