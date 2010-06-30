@@ -2655,7 +2655,13 @@ VOID RebuildTextureSquareInfo()
             if( (col + row) & 1 ) {
                 /* Lite square */
                 if( lite_w >= squareSize && lite_h >= squareSize ) {
+                  if( lite_w >= squareSize*BOARD_WIDTH )
+                    backTextureSquareInfo[row][col].x = (2*col+1)*lite_w/(2*BOARD_WIDTH) - squareSize/2;  /* [HGM] cut out of center of virtual square */
+                  else
                     backTextureSquareInfo[row][col].x = col * (lite_w - squareSize) / (BOARD_WIDTH-1);  /* [HGM] divide by size-1 in stead of size! */
+                  if( lite_h >= squareSize*BOARD_HEIGHT )
+                    backTextureSquareInfo[row][col].y = (2*(BOARD_HEIGHT-row)-1)*lite_h/(2*BOARD_HEIGHT) - squareSize/2;
+                  else
                     backTextureSquareInfo[row][col].y = (BOARD_HEIGHT-1-row) * (lite_h - squareSize) / (BOARD_HEIGHT-1);
                     backTextureSquareInfo[row][col].mode = GetBackTextureMode(liteBackTextureMode);
                 }
@@ -2663,7 +2669,13 @@ VOID RebuildTextureSquareInfo()
             else {
                 /* Dark square */
                 if( dark_w >= squareSize && dark_h >= squareSize ) {
+                  if( dark_w >= squareSize*BOARD_WIDTH )
+                    backTextureSquareInfo[row][col].x = (2*col+1) * dark_w / (2*BOARD_WIDTH) - squareSize/2;
+                  else
                     backTextureSquareInfo[row][col].x = col * (dark_w - squareSize) / (BOARD_WIDTH-1);
+                  if( dark_h >= squareSize*BOARD_HEIGHT )
+                    backTextureSquareInfo[row][col].y = (2*(BOARD_HEIGHT-row)-1) * dark_h / (2*BOARD_HEIGHT) - squareSize/2;
+                  else
                     backTextureSquareInfo[row][col].y = (BOARD_HEIGHT-1-row) * (dark_h - squareSize) / (BOARD_HEIGHT-1);
                     backTextureSquareInfo[row][col].mode = GetBackTextureMode(darkBackTextureMode);
                 }
