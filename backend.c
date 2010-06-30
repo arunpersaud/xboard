@@ -6897,6 +6897,17 @@ Adjudicate(ChessProgramState *cps)
                 if( count == backwardMostMove )
                     count -= initialRulePlies;
                 count = forwardMostMove - count; 
+		if(gameInfo.variant == VariantXiangqi && ( count >= 100 || count >= 2*appData.ruleMoves ) ) {
+			// adjust reversible move counter for checks in Xiangqi
+			int i = forwardMostMove - count, inCheck = 0, lastCheck;
+			if(i < backwardMostMove) i = backwardMostMove;
+			while(i <= forwardMostMove) {
+				lastCheck = inCheck; // check evasion does not count
+				inCheck = (MateTest(boards[i], PosFlags(i)) == MT_CHECK);
+				if(inCheck || lastCheck) count--; // check does not count
+				i++;
+			}
+		}
                 if( count >= 100)
                          boards[forwardMostMove][EP_STATUS] = EP_RULE_DRAW;
                          /* this is used to judge if draw claims are legal */
