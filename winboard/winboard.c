@@ -2522,7 +2522,7 @@ DrawPieceOnDC(HDC hdc, ChessSquare piece, int color, int sqcolor, int x, int y, 
   if (appData.blindfold) return;
 
   /* [AS] Use font-based pieces if needed */
-  if( fontBitmapSquareSize >= 0 && squareSize > 32 ) {
+  if( fontBitmapSquareSize >= 0 && (squareSize > 32 || gameInfo.variant >= VariantShogi)) {
     /* Create piece bitmaps, or do nothing if piece set is up to date */
     CreatePiecesFromFont();
 
