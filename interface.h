@@ -36,6 +36,10 @@ GtkWidget               *GUI_Buttonbar=NULL;
 GtkWidget               *GUI_EditTags=NULL;
 GtkWidget               *GUI_TagBox=NULL;
 
+/* engine output */
+GtkWidget               *GUI_EngineOutput=NULL;
+GtkWidget               *GUI_EngineOutputFields[2][6]; 
+
 GtkListStore            *LIST_MoveHistory=NULL;
 GtkListStore            *LIST_GameList=NULL;
 

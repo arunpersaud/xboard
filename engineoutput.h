@@ -33,12 +33,23 @@
 #define nAnalyzing    7
 
 // [HGM] same for output fields (note that there are two of each type, one per color)
+#define GUI_N 6 //total
+#define GUI_COLOR 1
+#define GUI_NAME  3
+#define GUI_MODE  2
+#define GUI_MOVE  4
+#define GUI_NODES 5
+#define GUI_TEXT  6
+
 #define nColorIcon 1
 #define nStateIcon 2
 #define nLabel     3
 #define nStateData 4
 #define nLabelNPS  5
 #define nMemo      6
+
+#define GUI_WHITE 0
+#define GUI_BLACK 1
 
 /* Module variables */
 #define H_MARGIN            2

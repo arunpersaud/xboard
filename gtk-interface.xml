@@ -439,6 +439,15 @@
                           </object>
                         </child>
                         <child>
+                          <object class="GtkMenuItem" id="menuMode.ShowEngineOutput">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Show Engine Output</property>
+                            <property name="use_underline">True</property>
+                            <accelerator key="o" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                            <signal name="activate" handler="EngineOutputProc"/>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkMenuItem" id="menuMode.Edit Tags">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Edit Tags</property>
@@ -1510,5 +1519,176 @@
       <action-widget response="0">NextButton-GameList</action-widget>
       <action-widget response="0">CloseButton-GameList</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkWindow" id="EngineOutput">
+    <property name="title" translatable="yes">Xboard Engine Output</property>
+    <child>
+      <object class="GtkVBox" id="EngineOutput_engines">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkVBox" id="EngineOutput_white">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkHBox" id="EngineOutput_white_info">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkImage" id="EngineOutput_white_color">
+                    <property name="visible">True</property>
+                    <property name="stock">gtk-missing-image</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="EngineOutput_white_name">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">1st engine</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="EngineOutput_white_mode">
+                    <property name="visible">True</property>
+                    <property name="stock">gtk-missing-image</property>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="EngineOutput_white_move">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="EngineOutput_white_nodes">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">NPS</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="EngineOutput_white_scroll">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">automatic</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <child>
+                  <object class="GtkTextView" id="EngineOutput_white_text">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="cursor_visible">False</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkVBox" id="EngineOutput_black">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkHBox" id="EngineOutput_black_info">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkImage" id="EngineOutput_black_color">
+                    <property name="visible">True</property>
+                    <property name="stock">gtk-missing-image</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="EngineOutput_black_name">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">2nd engine</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="EngineOutput_black_mode">
+                    <property name="visible">True</property>
+                    <property name="stock">gtk-missing-image</property>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="EngineOutput_black_move">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="EngineOutput_black_nodes">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">NPS</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="EngineOutput_black_scroll">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">automatic</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <child>
+                  <object class="GtkTextView" id="EngineOutput_black_text">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="cursor_visible">False</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
 </interface>

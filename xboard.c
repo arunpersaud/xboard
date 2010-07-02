@@ -204,11 +204,10 @@ extern char *getenv();
 #include "gettext.h"
 #include "callback.h"
 #include "interface.h"
+#include "engineoutput.h"
 
 // must be moved to xengineoutput.h
 
-void EngineOutputProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
 void EvalGraphProc P((Widget w, XEvent *event,
 		      String *prms, Cardinal *nprms));
 
@@ -334,7 +333,7 @@ void SettingsPopDown P(());
 void SetMenuEnables P((Enables *enab));
 void update_ics_width P(());
 int get_term_width P(());
-int CopyMemoProc P(());
+//int CopyMemoProc P(());
 /*
  * XBoard depends on Xt R4 or higher
  */
@@ -646,7 +645,7 @@ MenuItem modeMenu[] = {
   //    {N_("Edit Position"), EditPositionProc},
   //    {N_("Training"), TrainingProc},
   //    {"----", NothingProc},
-  {N_("Show Engine Output"), EngineOutputProc},
+  //  {N_("Show Engine Output"), EngineOutputProc},
   {N_("Show Evaluation Graph"), EvalGraphProc},
   {N_("Show Game List"), ShowGameListProc},
   //    {"Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
@@ -811,7 +810,7 @@ XtActionsRec boardActions[] = {
   //    { "EditGameProc", EditGameProc },
   //    { "EditPositionProc", EditPositionProc },
   //    { "TrainingProc", EditPositionProc },
-  { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
+  //  { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
   { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
   { "ShowGameListProc", ShowGameListProc },
   //    { "ShowMoveListProc", HistoryShowProc},
@@ -889,7 +888,7 @@ XtActionsRec boardActions[] = {
   { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
   { "PromotionPopDown", (XtActionProc) PromotionPopDown },
   //    { "HistoryPopDown", (XtActionProc) HistoryPopDown },
-  { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
+  //  { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
   { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
   { "ShufflePopDown", (XtActionProc) ShufflePopDown },
   { "EnginePopDown", (XtActionProc) EnginePopDown },
@@ -897,7 +896,7 @@ XtActionsRec boardActions[] = {
   { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
   { "NewVariantPopDown", (XtActionProc) NewVariantPopDown },
   { "SettingsPopDown", (XtActionProc) SettingsPopDown },
-  { "CopyMemoProc", (XtActionProc) CopyMemoProc },
+  //  { "CopyMemoProc", (XtActionProc) CopyMemoProc },
 };
 
 //char globalTranslations[] =
@@ -1215,8 +1214,6 @@ ParseCommPortSettings(char *s)
 { // no such option in XBoard (yet)
 }
 
-extern Widget engineOutputShell;
-
 void
 GetActualPlacement(Widget wg, WindowPlacement *wp)
 {
@@ -1245,9 +1242,9 @@ GetWindowCoords()
   // In XBoard this will have to wait until awareness of window parameters is implemented
   
   //  GetActualPlacement(shellWidget, &wpMain);
-  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
-    //  if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
-    if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
+  //  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
+  //  if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
+  if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
   if(commentShell) GetActualPlacement(commentShell, &wpComment);
   else             GetActualPlacement(editShell,    &wpComment);
@@ -1521,7 +1518,40 @@ main(argc, argv)
   
   GUI_GameList = GTK_WIDGET (gtk_builder_get_object (builder, "GameList"));
   if(!GUI_GameList) printf("Error: gtk_builder didn't work (GameList)!\n");
+
+  GUI_EngineOutput = GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput"));
+  if(!GUI_EngineOutput) printf("Error: gtk_builder didn't work (EngineOutput)!\n");
+  /* get all the subwidget too */
+
+  /* white */
+  GUI_EngineOutputFields[GUI_WHITE][GUI_COLOR] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_white_color"));
+  if(!GUI_EngineOutputFields[GUI_WHITE][GUI_COLOR]) printf("Error: gtk_builder didn't work (EngineOutput white color)!\n");
+  GUI_EngineOutputFields[GUI_WHITE][GUI_NAME] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_white_name"));
+  if(!GUI_EngineOutputFields[GUI_WHITE][GUI_NAME]) printf("Error: gtk_builder didn't work (EngineOutput white name)!\n");
+  GUI_EngineOutputFields[GUI_WHITE][GUI_MODE] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_white_mode"));
+  if(!GUI_EngineOutputFields[GUI_WHITE][GUI_MODE]) printf("Error: gtk_builder didn't work (EngineOutput white mode)!\n");
+  GUI_EngineOutputFields[GUI_WHITE][GUI_MOVE] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_white_move"));
+  if(!GUI_EngineOutputFields[GUI_WHITE][GUI_MOVE]) printf("Error: gtk_builder didn't work (EngineOutput white move)!\n");
+  GUI_EngineOutputFields[GUI_WHITE][GUI_NODES] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_white_nodes"));
+  if(!GUI_EngineOutputFields[GUI_WHITE][GUI_NODES]) printf("Error: gtk_builder didn't work (EngineOutput white nodes)!\n");
+  GUI_EngineOutputFields[GUI_WHITE][GUI_TEXT] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_white_text"));
+  if(!GUI_EngineOutputFields[GUI_WHITE][GUI_TEXT]) printf("Error: gtk_builder didn't work (EngineOutput white text)!\n");
   
+  /* black */
+  GUI_EngineOutputFields[GUI_BLACK][GUI_COLOR] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_black_color"));
+  if(!GUI_EngineOutputFields[GUI_BLACK][GUI_COLOR]) printf("Error: gtk_builder didn't work (EngineOutput black color)!\n");
+  GUI_EngineOutputFields[GUI_BLACK][GUI_NAME] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_black_name"));
+  if(!GUI_EngineOutputFields[GUI_BLACK][GUI_NAME]) printf("Error: gtk_builder didn't work (EngineOutput black name)!\n");
+  GUI_EngineOutputFields[GUI_BLACK][GUI_MODE] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_black_mode"));
+  if(!GUI_EngineOutputFields[GUI_BLACK][GUI_MODE]) printf("Error: gtk_builder didn't work (EngineOutput black mode)!\n");
+  GUI_EngineOutputFields[GUI_BLACK][GUI_MOVE] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_black_move"));
+  if(!GUI_EngineOutputFields[GUI_BLACK][GUI_MOVE]) printf("Error: gtk_builder didn't work (EngineOutput black move)!\n");
+  GUI_EngineOutputFields[GUI_BLACK][GUI_NODES] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_black_nodes"));
+  if(!GUI_EngineOutputFields[GUI_BLACK][GUI_NODES]) printf("Error: gtk_builder didn't work (EngineOutput black nodes)!\n");
+  GUI_EngineOutputFields[GUI_BLACK][GUI_TEXT] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_black_text"));
+  if(!GUI_EngineOutputFields[GUI_BLACK][GUI_TEXT]) printf("Error: gtk_builder didn't work (EngineOutput black text)!\n");
+  
+
   TREE_Game = GTK_TREE_VIEW (gtk_builder_get_object (builder, "GameListView"));
   if(!TREE_Game) printf("Error: gtk_builder didn't work (GameListView)!\n");
   

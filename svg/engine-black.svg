@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2972"
+   version="1.1"
+   inkscape:version="0.47+devel r9320"
+   width="8.3249998"
+   height="8.3249998"
+   sodipodi:docname="engine-black.svg">
+  <metadata
+     id="metadata2978">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs2976" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="803"
+     inkscape:window-height="679"
+     id="namedview2974"
+     showgrid="false"
+     inkscape:zoom="10"
+     inkscape:cx="8.6858759"
+     inkscape:cy="13.60062"
+     inkscape:window-x="414"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2972" />
+  <path
+     sodipodi:type="arc"
+     style="color:#000000;fill:#2e3436;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     id="path3063"
+     sodipodi:cx="6"
+     sodipodi:cy="7.3000002"
+     sodipodi:rx="4.0999999"
+     sodipodi:ry="4.0999999"
+     d="m 10.1,7.3000002 a 4.0999999,4.0999999 0 1 1 -8.1999999,0 4.0999999,4.0999999 0 1 1 8.1999999,0 z"
+     transform="translate(-1.8375001,-3.1375003)" />
+</svg>
