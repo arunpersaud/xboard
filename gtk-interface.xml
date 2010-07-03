@@ -335,6 +335,7 @@
                             <property name="label" translatable="yes">Machine White</property>
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
+                            <accelerator key="w" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                             <signal name="activate" handler="MachineWhiteProc"/>
                           </object>
                         </child>
@@ -345,6 +346,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <accelerator key="b" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                             <signal name="activate" handler="MachineBlackProc"/>
                           </object>
                         </child>
@@ -355,6 +357,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <accelerator key="t" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                             <signal name="activate" handler="TwoMachinesProc"/>
                           </object>
                         </child>
@@ -365,6 +368,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <accelerator key="a" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                             <signal name="activate" handler="AnalyzeModeProc"/>
                           </object>
                         </child>
@@ -375,6 +379,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <accelerator key="f" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                             <signal name="toggled" handler="AnalyzeFileProc"/>
                           </object>
                         </child>
@@ -395,6 +400,7 @@
                             <property name="use_underline">True</property>
                             <property name="draw_as_radio">True</property>
                             <property name="group">menuMode.Machine White</property>
+                            <accelerator key="e" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                             <signal name="activate" handler="EditGameProc"/>
                           </object>
                         </child>
@@ -435,6 +441,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Show Move List</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="h" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
                             <signal name="activate" handler="HistoryShowProc"/>
                           </object>
                         </child>
@@ -474,6 +481,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Pause</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="Pause" signal="activate"/>
                           </object>
                         </child>
                       </object>
@@ -493,6 +501,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Accept</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F3" signal="activate"/>
                             <signal name="activate" handler="AcceptProc"/>
                           </object>
                         </child>
@@ -501,6 +510,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Decline</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F4" signal="activate"/>
                             <signal name="activate" handler="DeclineProc"/>
                           </object>
                         </child>
@@ -509,6 +519,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Rematch</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F12" signal="activate"/>
                             <signal name="activate" handler="RematchProc"/>
                           </object>
                         </child>
@@ -522,6 +533,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Call Flag</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F5" signal="activate"/>
                             <signal name="activate" handler="CallFlagProc"/>
                           </object>
                         </child>
@@ -530,6 +542,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Draw</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F6" signal="activate"/>
                             <signal name="activate" handler="DrawProc"/>
                           </object>
                         </child>
@@ -538,6 +551,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Adjourn</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F7" signal="activate"/>
                             <signal name="activate" handler="AdjournProc"/>
                           </object>
                         </child>
@@ -546,6 +560,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Abort</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F8" signal="activate"/>
                             <signal name="activate" handler="AbortProc"/>
                           </object>
                         </child>
@@ -554,6 +569,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Resign</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F9" signal="activate"/>
                             <signal name="activate" handler="ResignProc"/>
                           </object>
                         </child>
@@ -567,6 +583,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Stop Observing</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F10" signal="activate"/>
                           </object>
                         </child>
                         <child>
@@ -574,6 +591,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Stop Examine</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="F11" signal="activate"/>
                           </object>
                         </child>
                         <child>
@@ -622,6 +640,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Backward</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="Left" signal="activate" modifiers="GDK_MOD1_MASK"/>
                             <signal name="activate" handler="BackwardProc"/>
                           </object>
                         </child>
@@ -630,6 +649,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Forward</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="Right" signal="activate" modifiers="GDK_MOD1_MASK"/>
                             <signal name="activate" handler="ForwardProc"/>
                           </object>
                         </child>
@@ -638,6 +658,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Back to Start</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="Home" signal="activate" modifiers="GDK_MOD1_MASK"/>
                             <signal name="activate" handler="ToStartProc"/>
                           </object>
                         </child>
@@ -646,6 +667,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Forward to End</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="End" signal="activate" modifiers="GDK_MOD1_MASK"/>
                             <signal name="activate" handler="ToEndProc"/>
                           </object>
                         </child>
@@ -675,6 +697,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Move now</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="m" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                             <signal name="activate" handler="MoveNowProc"/>
                           </object>
                         </child>
@@ -683,6 +706,7 @@
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">Retract Move</property>
                             <property name="use_underline">True</property>
+                            <accelerator key="x" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                             <signal name="activate" handler="RetractMoveProc"/>
                           </object>
                         </child>
