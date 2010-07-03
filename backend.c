@@ -445,7 +445,8 @@ Boolean animateTraining;
 
 GameInfo gameInfo;
 
-AppData appData;
+AppData appData;     /* All program related settings */
+AppData appDataTmp;  /* Used in xoption.c to store the preferences until the user hits the OK button */
 
 Board boards[MAX_MOVES];
 /* [HGM] Following 7 needed for accurate legality tests: */
@@ -15218,4 +15219,279 @@ CleanupTail()
 	}
 	framePtr = MAX_MOVES-1;
 	storedGames = 0;
+}
+
+void
+AppDataStrCpy(char *dest, char *src)
+{
+  /* free dest and alloc correct amount of memory */
+  
+  /* because of a memcpy in CopyAppData it can be that dest=src
+   * in which case we can't free it */
+
+  if(dest && dest!=src )
+    free(dest);
+
+  if(src)
+    {
+      dest = malloc(strlen(src)+1);
+      if(!dest)
+	{
+	  printf("Error during malloc...will exit\n");
+	  exit(1);
+	}
+    }
+  else
+    {
+      dest = NULL;
+      return;
+    }
+  
+  /* safely copy string */
+  safeStrCpy(dest,src,strlen(src)+1);
+  
+  return;
+}
+
+void 
+CopyAppData (AppData *dest, AppData *src)
+{
+  /* copy AppData structures */
+  
+  /* copy everything, this gives us a copy of all the non-pointers */
+  memcpy(dest, src, sizeof(AppData));
+  
+  /* now handle all the pointers  (see common.h for definition) */
+  
+#if !defined(_amigados)
+  AppDataStrCpy(dest->whitePieceColor,src->whitePieceColor);
+  AppDataStrCpy(dest->blackPieceColor,src->blackPieceColor);
+  AppDataStrCpy(dest->lightSquareColor,src->lightSquareColor);
+  AppDataStrCpy(dest->darkSquareColor,src->darkSquareColor);
+  AppDataStrCpy(dest->jailSquareColor,src->jailSquareColor);
+  AppDataStrCpy(dest->highlightSquareColor,src->highlightSquareColor);
+  AppDataStrCpy(dest->premoveHighlightColor,src->premoveHighlightColor);
+#endif
+  AppDataStrCpy(dest->initString,src->initString);
+  AppDataStrCpy(dest->secondInitString,src->secondInitString);
+  AppDataStrCpy(dest->firstComputerString,src->firstComputerString);
+  AppDataStrCpy(dest->secondComputerString,src->secondComputerString);
+  AppDataStrCpy(dest->firstChessProgram,src->firstChessProgram);
+  AppDataStrCpy(dest->secondChessProgram,src->secondChessProgram);
+  AppDataStrCpy(dest->firstDirectory,src->firstDirectory);
+  AppDataStrCpy(dest->secondDirectory,src->secondDirectory);
+  AppDataStrCpy(dest->firstHost,src->firstHost);
+  AppDataStrCpy(dest->secondHost,src->secondHost);
+  AppDataStrCpy(dest->bitmapDirectory,src->bitmapDirectory);
+  AppDataStrCpy(dest->remoteShell,src->remoteShell);
+  AppDataStrCpy(dest->remoteUser,src->remoteUser);
+  AppDataStrCpy(dest->timeControl,src->timeControl);
+  AppDataStrCpy(dest->icsHost,src->icsHost);
+  AppDataStrCpy(dest->icsPort,src->icsPort);
+  AppDataStrCpy(dest->icsCommPort,src->icsCommPort);  
+  AppDataStrCpy(dest->icsLogon,src->icsLogon);     
+  AppDataStrCpy(dest->icsHelper,src->icsHelper);
+  AppDataStrCpy(dest->telnetProgram,src->telnetProgram);
+  AppDataStrCpy(dest->gateway,src->gateway);
+  AppDataStrCpy(dest->loadGameFile,src->loadGameFile);
+  AppDataStrCpy(dest->saveGameFile,src->saveGameFile);
+  AppDataStrCpy(dest->loadPositionFile,src->loadPositionFile);
+  AppDataStrCpy(dest->savePositionFile,src->savePositionFile);
+  AppDataStrCpy(dest->boardSize,src->boardSize);
+  AppDataStrCpy(dest->searchTime,src->searchTime);
+  AppDataStrCpy(dest->clockFont,src->clockFont);
+  AppDataStrCpy(dest->messageFont,src->messageFont);
+  AppDataStrCpy(dest->coordFont,src->coordFont);
+  AppDataStrCpy(dest->font,src->font); 
+  AppDataStrCpy(dest->tagsFont,src->tagsFont); 
+  AppDataStrCpy(dest->commentFont,src->commentFont); 
+  AppDataStrCpy(dest->icsFont,src->icsFont); 
+  AppDataStrCpy(dest->cmailGameName,src->cmailGameName); 
+  AppDataStrCpy(dest->pixmapDirectory,src->pixmapDirectory);
+  AppDataStrCpy(dest->colorShout,src->colorShout);   
+  AppDataStrCpy(dest->colorSShout,src->colorSShout);
+  AppDataStrCpy(dest->colorChannel1,src->colorChannel1);
+  AppDataStrCpy(dest->colorChannel,src->colorChannel);
+  AppDataStrCpy(dest->colorKibitz,src->colorKibitz);
+  AppDataStrCpy(dest->colorTell,src->colorTell);
+  AppDataStrCpy(dest->colorChallenge,src->colorChallenge);
+  AppDataStrCpy(dest->colorRequest,src->colorRequest);
+  AppDataStrCpy(dest->colorSeek,src->colorSeek);
+  AppDataStrCpy(dest->colorNormal,src->colorNormal);
+  AppDataStrCpy(dest->soundProgram,src->soundProgram); 
+  AppDataStrCpy(dest->soundShout,src->soundShout);   
+  AppDataStrCpy(dest->soundSShout,src->soundSShout);
+  AppDataStrCpy(dest->soundChannel1,src->soundChannel1);
+  AppDataStrCpy(dest->soundChannel,src->soundChannel);
+  AppDataStrCpy(dest->soundKibitz,src->soundKibitz);
+  AppDataStrCpy(dest->soundTell,src->soundTell);
+  AppDataStrCpy(dest->soundChallenge,src->soundChallenge);
+  AppDataStrCpy(dest->soundRequest,src->soundRequest);
+  AppDataStrCpy(dest->soundSeek,src->soundSeek);
+  AppDataStrCpy(dest->soundMove,src->soundMove);    
+  AppDataStrCpy(dest->soundBell,src->soundBell);
+  AppDataStrCpy(dest->soundIcsAlarm,src->soundIcsAlarm);
+  AppDataStrCpy(dest->soundIcsWin,src->soundIcsWin);
+  AppDataStrCpy(dest->soundIcsLoss,src->soundIcsLoss);
+  AppDataStrCpy(dest->soundIcsDraw,src->soundIcsDraw);
+  AppDataStrCpy(dest->soundIcsUnfinished,src->soundIcsUnfinished);
+  AppDataStrCpy(dest->premoveWhiteText,src->premoveWhiteText);	
+  AppDataStrCpy(dest->premoveBlackText,src->premoveBlackText);	
+  AppDataStrCpy(dest->initialMode,src->initialMode);
+  AppDataStrCpy(dest->variant,src->variant);
+  AppDataStrCpy(dest->liteBackTextureFile,src->liteBackTextureFile); 
+  AppDataStrCpy(dest->darkBackTextureFile,src->darkBackTextureFile); 
+  AppDataStrCpy(dest->renderPiecesWithFont,src->renderPiecesWithFont); 
+  AppDataStrCpy(dest->fontToPieceTable,src->fontToPieceTable); 
+  AppDataStrCpy(dest->nameOfDebugFile,src->nameOfDebugFile);
+  AppDataStrCpy(dest->pgnEventHeader,src->pgnEventHeader);
+  AppDataStrCpy(dest->gameListTags,src->gameListTags);
+  AppDataStrCpy(dest->adapterCommand,src->adapterCommand);
+  AppDataStrCpy(dest->polyglotDir,src->polyglotDir);
+  AppDataStrCpy(dest->polyglotBook,src->polyglotBook);
+  AppDataStrCpy(dest->defaultPathEGTB,src->defaultPathEGTB);
+  AppDataStrCpy(dest->pieceToCharTable,src->pieceToCharTable);
+#if ZIPPY
+  AppDataStrCpy(dest->zippyLines,src->zippyLines);
+  AppDataStrCpy(dest->zippyPinhead,src->zippyPinhead);
+  AppDataStrCpy(dest->zippyPassword,src->zippyPassword);
+  AppDataStrCpy(dest->zippyPassword2,src->zippyPassword2);
+  AppDataStrCpy(dest->zippyWrongPassword,src->zippyWrongPassword);
+  AppDataStrCpy(dest->zippyAcceptOnly,src->zippyAcceptOnly);
+  AppDataStrCpy(dest->zippyGameEnd,src->zippyGameEnd);
+  AppDataStrCpy(dest->zippyGameStart,src->zippyGameStart);
+  AppDataStrCpy(dest->zippyVariants,src->zippyVariants);
+#endif
+  AppDataStrCpy(dest->lowTimeWarningColor,src->lowTimeWarningColor);
+  AppDataStrCpy(dest->serverMovesName,src->serverMovesName);
+  AppDataStrCpy(dest->userName,src->userName);
+  AppDataStrCpy(dest->egtFormats,src->egtFormats);
+  AppDataStrCpy(dest->firstLogo,src->firstLogo);   
+  AppDataStrCpy(dest->secondLogo,src->secondLogo);
+  AppDataStrCpy(dest->firstOptions,src->firstOptions);
+  AppDataStrCpy(dest->secondOptions,src->secondOptions);
+  AppDataStrCpy(dest->fenOverride1,src->fenOverride1);
+  AppDataStrCpy(dest->fenOverride2,src->fenOverride2);
+  AppDataStrCpy(dest->wrapContSeq,src->wrapContSeq); 
+
+  return;
+}
+
+void 
+AppDataZero (AppData *a)
+{
+  /* initialize all strings in appdata */
+  
+#if !defined(_amigados)
+  a->whitePieceColor = NULL;
+  a->blackPieceColor = NULL;
+  a->lightSquareColor = NULL;
+  a->darkSquareColor = NULL;
+  a->jailSquareColor = NULL;
+  a->highlightSquareColor = NULL;
+  a->premoveHighlightColor = NULL;
+#endif
+  a->initString = NULL;
+  a->secondInitString = NULL;
+  a->firstComputerString = NULL;
+  a->secondComputerString = NULL;
+  a->firstChessProgram = NULL;
+  a->secondChessProgram = NULL;
+  a->firstDirectory = NULL;
+  a->secondDirectory = NULL;
+  a->firstHost = NULL;
+  a->secondHost = NULL;
+  a->bitmapDirectory = NULL;
+  a->remoteShell = NULL;
+  a->remoteUser = NULL;
+  a->timeControl = NULL;
+  a->icsHost = NULL;
+  a->icsPort = NULL;
+  a->icsCommPort = NULL;
+  a->icsLogon = NULL;
+  a->icsHelper = NULL;
+  a->telnetProgram = NULL;
+  a->gateway = NULL;
+  a->loadGameFile = NULL;
+  a->saveGameFile = NULL;
+  a->loadPositionFile = NULL;
+  a->savePositionFile = NULL;
+  a->boardSize = NULL;
+  a->searchTime = NULL;
+  a->clockFont = NULL;
+  a->messageFont = NULL;
+  a->coordFont = NULL;
+  a->font = NULL;
+  a->tagsFont = NULL;
+  a->commentFont = NULL;
+  a->icsFont = NULL;
+  a->cmailGameName = NULL;
+  a->pixmapDirectory = NULL;
+  a->colorShout = NULL;
+  a->colorSShout = NULL;
+  a->colorChannel1 = NULL;
+  a->colorChannel = NULL;
+  a->colorKibitz = NULL;
+  a->colorTell = NULL;
+  a->colorChallenge = NULL;
+  a->colorRequest = NULL;
+  a->colorSeek = NULL;
+  a->colorNormal = NULL;
+  a->soundProgram = NULL;
+  a->soundShout = NULL;
+  a->soundSShout = NULL;
+  a->soundChannel1 = NULL;
+  a->soundChannel = NULL;
+  a->soundKibitz = NULL;
+  a->soundTell = NULL;
+  a->soundChallenge = NULL;
+  a->soundRequest = NULL;
+  a->soundSeek = NULL;
+  a->soundMove = NULL;
+  a->soundBell = NULL;
+  a->soundIcsAlarm = NULL;
+  a->soundIcsWin = NULL;
+  a->soundIcsLoss = NULL;
+  a->soundIcsDraw = NULL;
+  a->soundIcsUnfinished = NULL;
+  a->premoveWhiteText = NULL;
+  a->premoveBlackText = NULL;
+  a->initialMode = NULL;
+  a->variant = NULL;
+  a->liteBackTextureFile = NULL;
+  a->darkBackTextureFile = NULL;
+  a->renderPiecesWithFont = NULL;
+  a->fontToPieceTable = NULL;
+  a->nameOfDebugFile = NULL;
+  a->pgnEventHeader = NULL;
+  a->gameListTags = NULL;
+  a->adapterCommand = NULL;
+  a->polyglotDir = NULL;
+  a->polyglotBook = NULL;
+  a->defaultPathEGTB = NULL;
+  a->pieceToCharTable = NULL;
+#if ZIPPY
+  a->zippyLines = NULL;
+  a->zippyPinhead = NULL;
+  a->zippyPassword = NULL;
+  a->zippyPassword2 = NULL;
+  a->zippyWrongPassword = NULL;
+  a->zippyAcceptOnly = NULL;
+  a->zippyGameEnd = NULL;
+  a->zippyGameStart = NULL;
+  a->zippyVariants = NULL;
+#endif
+  a->lowTimeWarningColor = NULL;
+  a->serverMovesName = NULL;
+  a->userName = NULL;
+  a->egtFormats = NULL;
+  a->firstLogo = NULL;
+  a->secondLogo = NULL;
+  a->firstOptions = NULL;
+  a->secondOptions = NULL;
+  a->fenOverride1 = NULL;
+  a->fenOverride2 = NULL;
+  a->wrapContSeq = NULL;
+
+  return;
 }

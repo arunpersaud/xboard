@@ -227,6 +227,10 @@ char *StrSave P((char *s));
 char *StrSavePtr P((char *s, char **savePtr));
 char *SavePart P((char *));
 
+void CopyAppData P((AppData *, AppData *));
+void AppDataZero P((AppData *));
+
+
 #ifndef _amigados
 int StrCaseCmp P((char *s1, char *s2));
 int ToLower P((int c));

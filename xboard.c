@@ -1458,6 +1458,8 @@ main(argc, argv)
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
 #endif
+
+  AppDataZero(&appData);
   
   /* set up GTK */
   gtk_init (&argc, &argv);
@@ -1501,6 +1503,11 @@ main(argc, argv)
   
   LIST_GameList = GTK_LIST_STORE (gtk_builder_get_object (builder, "GameListStore"));
   if(!LIST_GameList) printf("Error: gtk_builder didn't work (GameListStore)!\n");
+
+  /* Preferences */
+  GUI_Preferences = GTK_WIDGET (gtk_builder_get_object (builder, "Preferences"));
+  if(!GUI_Preferences) printf("Error: gtk_builder didn't work (Preferences)!\n");
+
   
   /* EditTags window */
   GUI_EditTags = GTK_WIDGET (gtk_builder_get_object (builder, "EditTags"));

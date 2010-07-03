@@ -29,6 +29,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <gtk/gtk.h>
 
 #if STDC_HEADERS
 # include <stdlib.h>
@@ -79,6 +80,133 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
+
+
+
+/*
+ * Handling Preferences
+ *
+ *
+ *  The preferences window will open in modal mode. It will keep a
+ *  copy of the xboard settings and the moment a user changes
+ *  something track those changes via a callback. The modified
+ *  settings are either discarded (cancel) or will overwrite the
+ *  current settings (ok) or can be used as the current settings and
+ *  written to the config file (save)
+ *
+ */
+
+extern GtkWidget               *GUI_Preferences;
+
+/* possible return values from the preference dialog */
+
+#define PREF_OK     1
+#define PREF_CANCEL 2
+#define PREF_SAVE   3
+
+/* We need a list of all possible preferences for a switch statement later */
+
+#define PREF_PONDER	1
+#define PREF_THINKING	2
+#define PREF_NONE	0
+
+
+/* Now let's connect this list with the names of the widget, that was clicked */
+
+static struct Pref_lookuptable 
+{
+  char *string;
+  int code;
+} tab[] = 
+  {
+    {"PrefAdjudication.PonderNextMove",	PREF_PONDER},
+    {"PrefAdjudication.EnableAndShowThinking",	PREF_THINKING},
+  };
+
+/* lookup function that takes a string and returns the #define value */
+
+int
+PrefLookUp(const char *string)
+{
+  /* taken from C-FAQ */
+  int i;
+  for(i = 0; i < sizeof(tab) / sizeof(tab[0]); i++)
+    if(strcmp(tab[i].string, string) == 0)
+      return tab[i].code;
+  
+  return PREF_NONE;
+}
+
+
+/* callback: whenever you click on something in the preferences, this
+   add the change to the temporary settings variable */
+
+void
+Preferences_cb(GtkObject *object,  gpointer user_data)
+{
+  /* TODO: enable SAVE in case it's disabled */
+
+
+  switch( PrefLookUp(gtk_widget_get_name (GTK_WIDGET(object))) ) 
+    {
+    case PREF_PONDER:
+      printf ("clicked on ponder, status is %d\n", gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(object)));
+      // appDataTmp....= gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(object));
+      break;
+    case PREF_THINKING:
+      printf ("clicked on thinking, status is %d\n", gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(object)));
+      break;
+    case PREF_NONE:
+      printf ("did something else\n");
+      break;
+    }
+  return;
+}
+
+
+
+void
+PreferencesProc(GtkObject *object,  gpointer user_data)
+{
+  int result;
+
+  /* make a copy of the settings variable */
+  CopyAppData ( &appDataTmp, &appData );
+  
+  /* show window */
+  gtk_widget_show_all (GUI_Preferences);
+
+  result = gtk_dialog_run(GTK_DIALOG (GUI_Preferences));
+  
+  printf ("Result from pref %d\n",result);
+
+  switch(result)
+    {
+    case PREF_SAVE:
+      printf ("Pref: need to save settings\n");
+    case PREF_OK:
+      CopyAppData (&appData,&appDataTmp );
+      break;
+    case PREF_CANCEL:
+      /* no op */
+      break;
+    }
+
+  gtk_widget_hide_all(GUI_Preferences);
+
+  return;
+}
+
+
+
+
+
+
+
+
+
+/* OLD X-code */
+
 extern void SendToProgram P((char *message, ChessProgramState *cps));
 
 extern Widget formWidget,  boardWidget, menuBarWidget;
@@ -89,6 +217,10 @@ extern Window xBoardWindow;
 extern Arg layoutArgs[2], formArgs[2];
 Pixel timerForegroundPixel, timerBackgroundPixel;
 extern int searchTime;
+
+
+
+
 
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 

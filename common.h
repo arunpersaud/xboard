@@ -369,6 +369,14 @@ typedef enum {
   "unknown" \
 }
 
+/*
+ * structure for storing the program settings 
+ *
+ * if you add or change something here, also add it to
+ * CopyAppData/AppDataZero in backend.c and add the setttings to the
+ * preference dialog
+ */
+
 typedef struct {
 #if !defined(_amigados)
     char *whitePieceColor;
@@ -667,6 +675,7 @@ typedef struct {
 #define PGN_OUT_OF_BOOK     "Annotator"
 
 extern AppData appData;
+extern AppData appDataTmp;
 
 typedef struct {
     /* PGN 7-tag info */

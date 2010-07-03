@@ -729,6 +729,7 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
                             <accelerator key="p" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                            <signal name="activate" handler="PreferencesProc"/>
                           </object>
                         </child>
                         <child>
@@ -1246,62 +1247,17 @@
     <property name="type_hint">normal</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
-      <object class="GtkVBox" id="dialog-vbox3">
+      <object class="GtkVBox" id="Pref_vbox">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
-          <object class="GtkNotebook" id="Options">
+          <object class="GtkNotebook" id="Pref_tabs">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
-              <object class="GtkLayout" id="layout1">
+              <object class="GtkLayout" id="Pref-Adjudication-layout">
                 <property name="visible">True</property>
-                <child>
-                  <object class="GtkCheckButton" id="PeriodicUpdates">
-                    <property name="label" translatable="yes">Periodic Updates (Analysis Mode)</property>
-                    <property name="width_request">300</property>
-                    <property name="height_request">40</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="draw_indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="x">30</property>
-                    <property name="y">10</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="Engine1Score">
-                    <property name="label" translatable="yes">Engine #1 Score is Absolute </property>
-                    <property name="width_request">300</property>
-                    <property name="height_request">40</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="draw_indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="x">30</property>
-                    <property name="y">60</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="Engine2Score">
-                    <property name="label" translatable="yes">Engine #1 Score is Absolute </property>
-                    <property name="width_request">400</property>
-                    <property name="height_request">40</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="draw_indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="x">30</property>
-                    <property name="y">110</property>
-                  </packing>
-                </child>
                 <child>
                   <object class="GtkLabel" id="EngineEngine">
                     <property name="width_request">300</property>
@@ -1309,10 +1265,151 @@
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes">Engine-Engine Adjustications:</property>
+                    <property name="single_line_mode">True</property>
                   </object>
                   <packing>
                     <property name="x">10</property>
                     <property name="y">160</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="PrefAdjudication.PonderNextMove">
+                    <property name="label" translatable="yes">Ponder next move</property>
+                    <property name="width_request">200</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="Preferences_cb"/>
+                  </object>
+                  <packing>
+                    <property name="x">15</property>
+                    <property name="y">15</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="PrefAdjudication.EnableAndShowThinking">
+                    <property name="label" translatable="yes">Enable and show thinking</property>
+                    <property name="width_request">300</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="yalign">0.47999998927116394</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="Preferences_cb"/>
+                  </object>
+                  <packing>
+                    <property name="x">15</property>
+                    <property name="y">45</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="PrefAdjudication.HideThinkingWhenPlayingAgainstHuman">
+                    <property name="label" translatable="yes">Hide thinking when playing against Human</property>
+                    <property name="width_request">300</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="x">15</property>
+                    <property name="y">75</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="PrefAdjudication.PeriodicUpdates">
+                    <property name="label" translatable="yes">Periodic Updates (for Analyzing mode)</property>
+                    <property name="width_request">300</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="x">15</property>
+                    <property name="y">105</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="PrefAdjudication.MovesLabel">
+                    <property name="width_request">200</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Adjucate draw after:</property>
+                    <property name="single_line_mode">True</property>
+                  </object>
+                  <packing>
+                    <property name="x">25</property>
+                    <property name="y">200</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="PrefAdjudication.MovesValue">
+                    <property name="width_request">100</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                  </object>
+                  <packing>
+                    <property name="x">230</property>
+                    <property name="y">200</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="PrefAdjudication.MovesText">
+                    <property name="width_request">50</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">moves</property>
+                  </object>
+                  <packing>
+                    <property name="x">340</property>
+                    <property name="y">200</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="PrefAdjudication.MovesLabel1">
+                    <property name="width_request">200</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Win/loss adjudication threshold</property>
+                    <property name="ellipsize">end</property>
+                    <property name="single_line_mode">True</property>
+                  </object>
+                  <packing>
+                    <property name="x">25</property>
+                    <property name="y">240</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="PrefAdjudication.MovesValue1">
+                    <property name="width_request">100</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                  </object>
+                  <packing>
+                    <property name="x">231</property>
+                    <property name="y">240</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="PrefAdjudication.MovesText1">
+                    <property name="width_request">80</property>
+                    <property name="height_request">30</property>
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">centipawns</property>
+                  </object>
+                  <packing>
+                    <property name="x">340</property>
+                    <property name="y">240</property>
                   </packing>
                 </child>
               </object>
@@ -1384,11 +1481,11 @@
           </packing>
         </child>
         <child internal-child="action_area">
-          <object class="GtkHButtonBox" id="dialog-action_area3">
+          <object class="GtkHButtonBox" id="PrefDialogArea">
             <property name="visible">True</property>
             <property name="layout_style">end</property>
             <child>
-              <object class="GtkButton" id="button1">
+              <object class="GtkButton" id="Pref.OK">
                 <property name="label" translatable="yes">gtk-ok</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -1402,7 +1499,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button2">
+              <object class="GtkButton" id="Pref.Cancel">
                 <property name="label" translatable="yes">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -1415,6 +1512,20 @@
                 <property name="position">1</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkButton" id="Pref.Save">
+                <property name="label" translatable="yes">gtk-save</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1425,8 +1536,9 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button1</action-widget>
-      <action-widget response="0">button2</action-widget>
+      <action-widget response="1">Pref.OK</action-widget>
+      <action-widget response="2">Pref.Cancel</action-widget>
+      <action-widget response="3">Pref.Save</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="GameList">

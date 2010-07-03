@@ -35,6 +35,7 @@ GtkWidget               *GUI_Timer=NULL;
 GtkWidget               *GUI_Buttonbar=NULL;
 GtkWidget               *GUI_EditTags=NULL;
 GtkWidget               *GUI_TagBox=NULL;
+GtkWidget               *GUI_Preferences=NULL;
 
 /* engine output */
 GtkWidget               *GUI_EngineOutput=NULL;
