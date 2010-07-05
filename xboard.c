@@ -54,6 +54,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h> //for testing with random()
 #include <ctype.h>
 #include <signal.h>
 #include <errno.h>
@@ -260,9 +261,9 @@ void PieceMenuPopup P((Widget w, XEvent *event,
 static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 int EventToSquare P((int x, int limit));
+void DrawGrid P((int x, int y, int Nx, int Ny));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
-void AnimateUserMove P((Widget w, XEvent * event,
-			String * params, Cardinal * nParams));
+void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
 void HandlePV P((Widget w, XEvent * event,
 		 String * params, Cardinal * nParams));
 void CommentPopUp P((char *title, char *label));
@@ -310,7 +311,6 @@ int LoadGamePopUp P((FILE *f, int gameNumber, char *title));
 void ErrorPopUp P((char *title, char *text, int modal));
 void ErrorPopDown P((void));
 static char *ExpandPathName P((char *path));
-static void CreateAnimVars P((void));
 static void DragPieceMove P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
@@ -428,18 +428,12 @@ XImage *xim_Cross;
 
 #define White(piece) ((int)(piece) < (int)BlackPawn)
 
-/* Variables for doing smooth animation. This whole thing
-   would be much easier if the board was double-buffered,
-   but that would require a fairly major rewrite.	*/
-
+/* Variables for doing smooth animation.*/
 typedef struct {
-  Pixmap  saveBuf;
-  Pixmap	newBuf;
-  GC	blitGC, pieceGC, outlineGC;
-  XPoint	startSquare, prevFrame, mouseDelta;
-  int	startColor;
-  int	dragPiece;
-  Boolean	dragActive;
+  GdkPoint  startSquare, prevFrame, mouseDelta;
+  int	  startColor;
+  int	  dragPiece;
+  Boolean dragActive;
   int     startBoardX, startBoardY;
 } AnimState;
 
@@ -777,7 +771,7 @@ XtResource clientResources[] = {
 
 XtActionsRec boardActions[] = {
   //    { "HandleUserMove", HandleUserMove },
-  { "AnimateUserMove", AnimateUserMove },
+  //  { "AnimateUserMove", AnimateUserMove },
   //    { "FileNameAction", FileNameAction },
   { "HandlePV", HandlePV },
   { "UnLoadPV", UnLoadPV },
@@ -1401,9 +1395,6 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 #endif
     }
   }
-#if HAVE_LIBXPM
-  CreateAnimVars();
-#endif
 }
 #endif
 
@@ -1632,7 +1623,7 @@ main(argc, argv)
   
   
   squareSize		= 40;
-  lineGap		= 1;
+  lineGap = squareSize*0.05;
   clockFontPxlSize	= 20;
   coordFontPxlSize	= 20;
   fontPxlSize		= 20;
@@ -1937,10 +1928,7 @@ main(argc, argv)
   CreateGCs();
   CreatePieces();
   CreatePieceMenus();
-  
-  if (appData.animate || appData.animateDragging)
-    CreateAnimVars();
-  
+    
   /* [AS] Restore layout */
   if( wpMoveHistory.visible ) {
     HistoryPopUp();
@@ -2729,7 +2717,8 @@ ClearPremoveHighlights()
   SetPremoveHighlights(-1, -1, -1, -1);
 }
 
-void BlankSquare(x, y, color, piece, dest)
+void 
+BlankSquare(x, y, color, piece, dest)
      int x, y, color;
      ChessSquare piece;
      Drawable dest;
@@ -2752,16 +2741,16 @@ void BlankSquare(x, y, color, piece, dest)
   gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,pb,0,0,x,y,-1,-1, GDK_RGB_DITHER_NORMAL, 0, 0);
   return;
 }
- 
+
 void 
 DrawPiece(piece, square_color, x, y, dest)
-  ChessSquare piece;
- int square_color, x, y;
- Drawable dest;
+     ChessSquare piece;
+     int square_color, x, y;
+     Drawable dest;
 {
   /* redraw background, since piece might be transparent in some areas */
   BlankSquare(x,y,square_color,piece,dest);
-
+  
   /* draw piece */
   gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,
 		  GDK_PIXBUF(SVGpieces[piece]),0,0,x,y,-1,-1,
@@ -2770,32 +2759,35 @@ DrawPiece(piece, square_color, x, y, dest)
 }
 
 /* [HR] determine square color depending on chess variant. */
-static int SquareColor(row, column)
+static int 
+SquareColor(row, column)
      int row, column;
 {
-    int square_color;
-
-    if (gameInfo.variant == VariantXiangqi) {
-        if (column >= 3 && column <= 5 && row >= 0 && row <= 2) {
-            square_color = 1;
-        } else if (column >= 3 && column <= 5 && row >= 7 && row <= 9) {
-            square_color = 0;
-        } else if (row <= 4) {
-            square_color = 0;
-        } else {
-            square_color = 1;
-        }
-    } else {
-        square_color = ((column + row) % 2) == 1;
-    }
-
-    /* [hgm] holdings: next line makes all holdings squares light */
-    if(column < BOARD_LEFT || column >= BOARD_RGHT) square_color = 1;
-
-    return square_color;
+  int square_color;
+  
+  if (gameInfo.variant == VariantXiangqi) 
+    {
+      if (column >= 3 && column <= 5 && row >= 0 && row <= 2) 
+	square_color = 1;
+      else if (column >= 3 && column <= 5 && row >= 7 && row <= 9) 
+	square_color = 0;
+      else if (row <= 4) 
+	square_color = 0;
+      else 
+	square_color = 1;
+    } 
+  else 
+    square_color = ((column + row) % 2) == 1;
+  
+  /* [hgm] holdings: next line makes all holdings squares light */
+  if(column < BOARD_LEFT || column >= BOARD_RGHT) 
+    square_color = 1;
+  
+  return square_color;
 }
 
-void DrawSquare(row, column, piece, do_flash)
+void 
+DrawSquare(row, column, piece, do_flash)
      int row, column, do_flash;
      ChessSquare piece;
 {
@@ -2803,10 +2795,10 @@ void DrawSquare(row, column, piece, do_flash)
     int i;
     char string[2];
     int flash_delay;
-
+    
     /* Calculate delay in milliseconds (2-delays per complete flash) */
     flash_delay = 500 / appData.flashRate;
-
+    
     /* calculate x and y coordinates from row and column */
     if (flipView)
       {
@@ -2822,14 +2814,14 @@ void DrawSquare(row, column, piece, do_flash)
       }
 
     square_color = SquareColor(row, column);
-
+    
     // [HGM] holdings: blank out area between board and holdings
     if ( column == BOARD_LEFT-1 ||  column == BOARD_RGHT
 	 || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
 	 || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) )
       {
 	BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
-
+	
 	// [HGM] print piece counts next to holdings
 	string[1] = NULLCHAR;
 	if(piece > 1)
@@ -2840,26 +2832,13 @@ void DrawSquare(row, column, piece, do_flash)
 
 	    /* get a cairo_t */
 	    cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
-
+	    
 	    string[0] = '0' + piece;
-
+	    
 	    /* TODO this has to go into the font-selection */
 	    cairo_select_font_face (cr, "Sans",
 				    CAIRO_FONT_SLANT_NORMAL,
 				    CAIRO_FONT_WEIGHT_NORMAL);
-	    //TODO
-//    switch (event->type) {
-//      case Expose:
-//	if (event->xexpose.count > 0) return;  /* no clipping is done */
-//	XDrawPosition(widget, True, NULL);
-//	break;
-//      case MotionNotify:
-//        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, 1)) break;
-//      default:
-//	return;
-//    }
-//}
-/* end why */
 
 	    cairo_set_font_size (cr, 12.0);
 	    cairo_text_extents (cr, string, &extents);
@@ -2874,7 +2853,7 @@ void DrawSquare(row, column, piece, do_flash)
 		xpos= x + 2;
 		ypos = y + extents.y_bearing + 1;
 	      }
-
+	    
 	    /* TODO mono mode? */
 	    cairo_move_to (cr, xpos, ypos);
 	    cairo_text_path (cr, string);
@@ -2936,10 +2915,10 @@ void DrawSquare(row, column, piece, do_flash)
 	  {
 	    string[0] = 'a' + column - BOARD_LEFT;
 	    cairo_text_extents (cr, string, &extents);
-
+	    
 	    xpos = x + squareSize - extents.width - 2;
 	    ypos = y + squareSize - extents.height - extents.y_bearing - 1;
-
+	    
 	    if (appData.monoMode)
 	      { /*TODO*/
 	      }
@@ -2957,13 +2936,13 @@ void DrawSquare(row, column, piece, do_flash)
 	  }
 	if ( column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT))
 	  {
-
+	    
 	    string[0] = ONE + row;
 	    cairo_text_extents (cr, string, &extents);
-
+	    
 	    xpos = x + 2;
 	    ypos = y + extents.height + 1;
-
+	    
 	    if (appData.monoMode)
 	      { /*TODO*/
 	      }
@@ -2978,34 +2957,32 @@ void DrawSquare(row, column, piece, do_flash)
 	    cairo_set_source_rgb (cr, 0, 0, 1.0);
 	    cairo_set_line_width (cr, 0.1);
 	    cairo_stroke (cr);
-
+	    
 	  }
 	/* free memory */
 	cairo_destroy (cr);
       }
-
+    
     return;
 }
 
 
 /* Returns 1 if there are "too many" differences between b1 and b2
    (i.e. more than 1 move was made) */
-static int too_many_diffs(b1, b2)
+static int 
+too_many_diffs(b1, b2)
      Board b1, b2;
 {
-    int i, j;
-    int c = 0;
-
-    for (i=0; i<BOARD_HEIGHT; ++i) {
-	for (j=0; j<BOARD_WIDTH; ++j) {
-	    if (b1[i][j] != b2[i][j]) {
-		if (++c > 4)	/* Castling causes 4 diffs */
-		  return 1;
-	    }
-	}
-    }
-
-    return 0;
+  int i, j;
+  int c = 0;
+  
+  for (i=0; i<BOARD_HEIGHT; ++i) 
+    for (j=0; j<BOARD_WIDTH; ++j) 
+      if (b1[i][j] != b2[i][j]) 
+	if (++c > 4)	/* Castling causes 4 diffs */
+	  return 1;
+  
+  return 0;
 }
 
 /* Matrix describing castling maneuvers */
@@ -3094,7 +3071,8 @@ static int damage[BOARD_RANKS][BOARD_FILES];
 /*
  * event handler for redrawing the board
  */
-void DrawPosition( repaint, board)
+void 
+DrawPosition( repaint, board)
      /*Boolean*/int repaint;
 		Board board;
 {
@@ -3115,11 +3093,6 @@ void DrawPosition( repaint, board)
     // XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flip View"),
     //	args, 1);
   }
-
-  /*
-   * It would be simpler to clear the window with XClearWindow()
-   * but this causes a very distracting flicker.
-   */
 
   if (!repaint && lastBoardValid && lastFlipView == flipView)
     {
@@ -3161,47 +3134,9 @@ void DrawPosition( repaint, board)
     }
   else
     {
-      /* redraw Grid */
+      /* redraw Grid for the whole board*/
       if (lineGap > 0)
-	{
-	  int x1,x2,y1,y2;
-	  cairo_t *cr;
-
-	  /* get a cairo_t */
-	  cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
-
-	  cairo_set_line_width (cr, lineGap);
-
-	  /* TODO: use appdata colors */
-	  cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
-
-	  cairo_stroke (cr);
-
-	  for (i = 0; i < BOARD_HEIGHT + 1; i++)
-	    {
-	      x1 = 0;
-	      x2 = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-	      y1 = y2 = lineGap / 2 + (i * (squareSize + lineGap));
-
-	      cairo_move_to (cr, x1, y1);
-	      cairo_rel_line_to (cr, x2,0);
-	      cairo_stroke (cr);
-	    }
-
-	  for (j = 0; j < BOARD_WIDTH + 1; j++)
-	    {
-	      y1 = 0;
-	      y2 = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-	      x1 = x2  = lineGap / 2 + (j * (squareSize + lineGap));
-
-	      cairo_move_to (cr, x1, y1);
-	      cairo_rel_line_to (cr, 0, y2);
-	      cairo_stroke (cr);
-	    }
-
-	  /* free memory */
-	  cairo_destroy (cr);
-	}
+	DrawGrid(0,0,BOARD_HEIGHT,BOARD_WIDTH);
 
       /* draw pieces */
       for (i = 0; i < BOARD_HEIGHT; i++)
@@ -3240,10 +3175,25 @@ void DrawPosition( repaint, board)
   return;
 }
 
-void AnimateUserMove (Widget w, XEvent * event,
-		      String * params, Cardinal * nParams)
+void 
+AnimateUserMove (GtkWidget *w, GdkEventMotion *event)
 {
-    DragPieceMove(event->xmotion.x, event->xmotion.y);
+  int x, y;
+  GdkModifierType state;
+
+  if (event->is_hint)
+    gdk_window_get_pointer (event->window, &x, &y, &state);
+  else
+    {
+      x = event->x;
+      y = event->y;
+      state = event->state;
+    }
+    
+  if (state & GDK_BUTTON1_MASK)
+    {
+      DragPieceMove(x, y);
+    }
 }
 
 void HandlePV (Widget w, XEvent * event,
@@ -5610,141 +5560,6 @@ int OutputToProcessDelayed(pr, message, count, outError, msdelay)
 
 static int xpmDone = 0;
 
-static void
-CreateAnimMasks (pieceDepth)
-     int pieceDepth;
-{
-  ChessSquare   piece;
-  Pixmap	buf;
-  GC		bufGC, maskGC;
-  int		kind, n;
-  unsigned long	plane;
-  XGCValues	values;
-
-  /* just return for gtk at the moment */
-  return;
-
-  /* Need a bitmap just to get a GC with right depth */
-//  buf = XCreatePixmap(xDisplay, xBoardWindow,
-//			8, 8, 1);
-  values.foreground = 1;
-  values.background = 0;
-  /* Don't use XtGetGC, not read only */
-//  maskGC = XCreateGC(xDisplay, buf,
-//		    GCForeground | GCBackground, &values);
-//  XFreePixmap(xDisplay, buf);
-//
-//  buf = XCreatePixmap(xDisplay, xBoardWindow,
-//		      squareSize, squareSize, pieceDepth);
-//  values.foreground = XBlackPixel(xDisplay, xScreen);
-//  values.background = XWhitePixel(xDisplay, xScreen);
-//  bufGC = XCreateGC(xDisplay, buf,
-//		    GCForeground | GCBackground, &values);
-//
-  for (piece = WhitePawn; piece <= BlackKing; piece++) {
-    /* Begin with empty mask */
-//    if(!xpmDone) // [HGM] pieces: keep using existing
-//    xpmMask[piece] = XCreatePixmap(xDisplay, xBoardWindow,
-//				 squareSize, squareSize, 1);
-//    XSetFunction(xDisplay, maskGC, GXclear);
-//    XFillRectangle(xDisplay, xpmMask[piece], maskGC,
-//		   0, 0, squareSize, squareSize);
-//
-    /* Take a copy of the piece */
-    if (White(piece))
-      kind = 0;
-    else
-      kind = 2;
-//    XSetFunction(xDisplay, bufGC, GXcopy);
-//    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
-//	      buf, bufGC,
-//	      0, 0, squareSize, squareSize, 0, 0);
-
-    /* XOR the background (light) over the piece */
-//    XSetFunction(xDisplay, bufGC, GXxor);
-//    if (useImageSqs)
-//      XCopyArea(xDisplay, xpmLightSquare, buf, bufGC,
-//		0, 0, squareSize, squareSize, 0, 0);
-//    else {
-//      XSetForeground(xDisplay, bufGC, lightSquareColor);
-//      XFillRectangle(xDisplay, buf, bufGC, 0, 0, squareSize, squareSize);
-//    }
-
-    /* We now have an inverted piece image with the background
-       erased. Construct mask by just selecting all the non-zero
-       pixels - no need to reconstruct the original image.	*/
-    //    XSetFunction(xDisplay, maskGC, GXor);
-    plane = 1;
-    /* Might be quicker to download an XImage and create bitmap
-       data from it rather than this N copies per piece, but it
-       only takes a fraction of a second and there is a much
-       longer delay for loading the pieces.	   	*/
-//    for (n = 0; n < pieceDepth; n ++) {
-//      XCopyPlane(xDisplay, buf, xpmMask[piece], maskGC,
-//		 0, 0, squareSize, squareSize,
-//		 0, 0, plane);
-//      plane = plane << 1;
-//    }
-  }
-  /* Clean up */
-//  XFreePixmap(xDisplay, buf);
-//  XFreeGC(xDisplay, bufGC);
-//  XFreeGC(xDisplay, maskGC);
-}
-
-static void
-InitAnimState (anim, info)
-  AnimState * anim;
-  XWindowAttributes * info;
-{
-  XtGCMask  mask;
-  XGCValues values;
-
-  /* Each buffer is square size, same depth as window */
-//  anim->saveBuf = XCreatePixmap(xDisplay, xBoardWindow,
-//			squareSize, squareSize, info->depth);
-//  anim->newBuf = XCreatePixmap(xDisplay, xBoardWindow,
-//			squareSize, squareSize, info->depth);
-//
-//  /* Create a plain GC for blitting */
-//  mask = GCForeground | GCBackground | GCFunction |
-//         GCPlaneMask | GCGraphicsExposures;
-//  values.foreground = XBlackPixel(xDisplay, xScreen);
-//  values.background = XWhitePixel(xDisplay, xScreen);
-//  values.function   = GXcopy;
-//  values.plane_mask = AllPlanes;
-//  values.graphics_exposures = False;
-//  anim->blitGC = XCreateGC(xDisplay, xBoardWindow, mask, &values);
-//
-//  /* Piece will be copied from an existing context at
-//     the start of each new animation/drag. */
-//  anim->pieceGC = XCreateGC(xDisplay, xBoardWindow, 0, &values);
-//
-//  /* Outline will be a read-only copy of an existing */
-//  anim->outlineGC = None;
-}
-
-static void
-CreateAnimVars ()
-{
-  static VariantClass old = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
-  XWindowAttributes info;
-
-  /* for gtk at the moment just ... */
-  return;
-
-  if (xpmDone && gameInfo.variant == old) return;
-  if(xpmDone) old = gameInfo.variant; // first time pieces might not be created yet
-  //  XGetWindowAttributes(xDisplay, xBoardWindow, &info);
-
-  //  InitAnimState(&game, &info);
-  //  InitAnimState(&player, &info);
-
-  /* For XPM pieces, we need bitmaps to use as masks. */
-  //  if (useImages)
-  //    CreateAnimMasks(info.depth);
-   xpmDone = 1;
-}
 
 #ifndef HAVE_USLEEP
 
@@ -5798,7 +5613,10 @@ FrameDelay (time)
 
 static void
 ScreenSquare(column, row, pt, color)
-     int column; int row; XPoint * pt; int * color;
+     int column; 
+     int row; 
+     GdkPoint *pt; 
+     int *color;
 {
   if (flipView) {
     pt->x = lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
@@ -5833,12 +5651,13 @@ BoardSquare(x, y, column, row)
 
 static void
 SetRect(rect, x, y, width, height)
-     XRectangle * rect; int x; int y; int width; int height;
+     GdkRectangle *rect; int x; int y; int width; int height;
 {
   rect->x = x;
   rect->y = y;
   rect->width  = width;
   rect->height = height;
+  return;
 }
 
 /*	Test if two frames overlap. If they do, return
@@ -5847,17 +5666,18 @@ SetRect(rect, x, y, width, height)
 
 static Boolean
 Intersect(old, new, size, area, pt)
-     XPoint * old; XPoint * new;
-     int size; XRectangle * area; XPoint * pt;
+     GdkPoint *old; GdkPoint *new;
+     int size; GdkRectangle *area; GdkPoint *pt;
 {
-  if (old->x > new->x + size || new->x > old->x + size ||
-      old->y > new->y + size || new->y > old->y + size) {
-    return False;
-  } else {
-    SetRect(area, Max(new->x - old->x, 0), Max(new->y - old->y, 0),
-            size - abs(old->x - new->x), size - abs(old->y - new->y));
-    pt->x = Max(old->x - new->x, 0);
-    pt->y = Max(old->y - new->y, 0);
+  if (    abs(old->x - new->x) > size 
+       || abs(old->y - new->y) > size )
+       return False;
+  else 
+    {
+      SetRect(area, Max(new->x - old->x, 0), Max(new->y - old->y, 0),
+	      size - abs(old->x - new->x), size - abs(old->y - new->y));
+      pt->x = Max(old->x - new->x, 0);
+      pt->y = Max(old->y - new->y, 0);
     return True;
   }
 }
@@ -5867,8 +5687,8 @@ Intersect(old, new, size, area, pt)
 
 static void
 CalcUpdateRects(old, new, size, update, nUpdates)
-     XPoint * old; XPoint * new; int size;
-     XRectangle update[]; int * nUpdates;
+     GdkPoint *old; GdkPoint *new; int size;
+     GdkRectangle update[]; int *nUpdates;
 {
   int	     count;
 
@@ -5915,9 +5735,9 @@ CalcUpdateRects(old, new, size, update, nUpdates)
 
 static void
 Tween(start, mid, finish, factor, frames, nFrames)
-     XPoint * start; XPoint * mid;
-     XPoint * finish; int factor;
-     XPoint frames[]; int * nFrames;
+     GdkPoint *start; GdkPoint *mid;
+     GdkPoint *finish; int factor;
+     GdkPoint frames[]; int *nFrames;
 {
   int fraction, n, count;
 
@@ -5947,6 +5767,8 @@ Tween(start, mid, finish, factor, frames, nFrames)
     fraction = fraction * 2;
   }
   *nFrames = count;
+
+  return;
 }
 
 /*	Draw a piece on the screen without disturbing what's there	*/
@@ -5993,33 +5815,17 @@ SelectGCMask(piece, clip, outline, mask)
 }
 
 static void
-OverlayPiece(piece, clip, outline,  dest)
-     ChessSquare piece; GC clip; GC outline; Drawable dest;
+OverlayPiece(piece, position, dest)
+     ChessSquare piece; 
+     GdkPoint *position;
+     Drawable dest;
 {
-  int	kind;
-
-  if (!useImages) {
-    /* Draw solid rectangle which will be clipped to shape of piece */
-//    XFillRectangle(xDisplay, dest, clip,
-//		   0, 0, squareSize, squareSize)
-;
-    if (appData.monoMode)
-      /* Also draw outline in contrasting color for black
-	 on black / white on white cases		*/
-//      XCopyPlane(xDisplay, *pieceToOutline(piece), dest, outline,
-//		 0, 0, squareSize, squareSize, 0, 0, 1)
-;
-  } else {
-    /* Copy the piece */
-    if (White(piece))
-      kind = 0;
-    else
-      kind = 2;
-//    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
-//	      dest, clip,
-//	      0, 0, squareSize, squareSize,
-//	      0, 0);
-  }
+  /* draw piece */
+  gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,
+		  GDK_PIXBUF(SVGpieces[piece]),0,0,
+		  position->x,position->y,-1,-1,
+		  GDK_RGB_DITHER_NORMAL, 0, 0);
+  return;
 }
 
 /* Animate the movement of a single piece */
@@ -6029,107 +5835,103 @@ BeginAnimation(anim, piece, startColor, start)
      AnimState *anim;
      ChessSquare piece;
      int startColor;
-     XPoint * start;
+     GdkPoint *start;
 {
-  Pixmap mask;
-
-  /* The old buffer is initialised with the start square (empty) */
-  BlankSquare(0, 0, startColor, EmptySquare, anim->saveBuf);
-  anim->prevFrame = *start;
-
-  /* The piece will be drawn using its own bitmap as a matte	*/
-//  SelectGCMask(piece, &anim->pieceGC, &anim->outlineGC, &mask);
-//  XSetClipMask(xDisplay, anim->pieceGC, mask);
+  anim->prevFrame   = *start;
+  return;
 }
 
 static void
 AnimationFrame(anim, frame, piece)
      AnimState *anim;
-     XPoint *frame;
+     GdkPoint *frame;
      ChessSquare piece;
 {
-  XRectangle updates[4];
-  XRectangle overlap;
-  XPoint     pt;
-  int	     count, i;
+  GdkPoint *pt;
+  GdkRectangle updates[4];
+  GdkRectangle overlap;
+  int  count, i,x,y;
+  int xb,yb, xoffset,yoffset,sx,sy;
 
-  /* Save what we are about to draw into the new buffer */
-//  XCopyArea(xDisplay, xBoardWindow, anim->newBuf, anim->blitGC,
-//	    frame->x, frame->y, squareSize, squareSize,
-//	    0, 0);
 
-  /* Erase bits of the previous frame */
-  if (Intersect(&anim->prevFrame, frame, squareSize, &overlap, &pt)) {
-    /* Where the new frame overlapped the previous,
-       the contents in newBuf are wrong. */
-//    XCopyArea(xDisplay, anim->saveBuf, anim->newBuf, anim->blitGC,
-//	      overlap.x, overlap.y,
-//	      overlap.width, overlap.height,
-//	      pt.x, pt.y);
-    /* Repaint the areas in the old that don't overlap new */
-    CalcUpdateRects(&anim->prevFrame, frame, squareSize, updates, &count);
-    for (i = 0; i < count; i++)
-//      XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-//		updates[i].x - anim->prevFrame.x,
-//		updates[i].y - anim->prevFrame.y,
-//		updates[i].width, updates[i].height,
-//		updates[i].x, updates[i].y)
-;
-  } else {
-    /* Easy when no overlap */
-//    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-//		  0, 0, squareSize, squareSize,
-//		  anim->prevFrame.x, anim->prevFrame.y);
-  }
+  /* TODO: check lineGap, seems to be not correct   */
 
-  /* Save this frame for next time round */
-//  XCopyArea(xDisplay, anim->newBuf, anim->saveBuf, anim->blitGC,
-//		0, 0, squareSize, squareSize,
-//		0, 0);
+  /* clear pic from last frame */
+
+  /* get coordinates */
+  if(anim->prevFrame.x<0)
+    anim->prevFrame.x += squareSize;
+  if(anim->prevFrame.y<0)
+    anim->prevFrame.y += squareSize;
+
+  x = EventToSquare(anim->prevFrame.x, BOARD_WIDTH);
+  y = EventToSquare(anim->prevFrame.y, BOARD_HEIGHT);
+
+  /* for the pieces we need to include flipview */
+  BoardSquare(anim->prevFrame.x,anim->prevFrame.y,&xb,&yb);
+  BoardSquare(anim->startSquare.x,anim->startSquare.y,&sx,&sy);
+
+  /* override the 4 squares that can be affected by a moving piece */
+  if(x>=0 && y>=0 )
+    {
+      DrawGrid(x,y,2,2);
+      
+      if (flipView)
+	{
+	  xoffset=-1;
+	  yoffset=+1;
+	}
+      else
+	{
+	  xoffset=+1;
+	  yoffset=-1;
+	}
+
+      /* make sure start square stays empty */
+      if(! (xb==sx && yb==sy) )
+	DrawSquare(yb  ,xb,    boards[currentMove][yb  ][xb  ], 0);
+      else
+	DrawSquare(yb  ,xb,    EmptySquare, 0);
+
+      if(! (xb==sx && yb+yoffset==sy) )
+	DrawSquare(yb+yoffset,xb,    boards[currentMove][yb+yoffset][xb  ], 0);
+      else
+	DrawSquare(yb+yoffset  ,xb,    EmptySquare, 0);
+
+      if(! (xb+xoffset==sx && yb==sy) )
+	DrawSquare(yb  ,xb+xoffset,  boards[currentMove][yb  ][xb+xoffset], 0);
+      else
+	DrawSquare(yb  ,xb+xoffset,  EmptySquare, 0);
+
+      if(! (xb+xoffset==sx && yb+yoffset==sy) )
+	DrawSquare(yb+yoffset,xb+xoffset,  boards[currentMove][yb+yoffset][xb+xoffset], 0);
+      else
+	DrawSquare(yb+yoffset,xb+xoffset,  EmptySquare, 0);
+
+    }
+
+  /* Draw moving piece  */
+  OverlayPiece(piece, frame, xBoardWindow);
+
+  /* remember this position */
   anim->prevFrame = *frame;
-
-  /* Draw piece over original screen contents, not current,
-     and copy entire rect. Wipes out overlapping piece images. */
-  OverlayPiece(piece, anim->pieceGC, anim->outlineGC, anim->newBuf);
-//  XCopyArea(xDisplay, anim->newBuf, xBoardWindow, anim->blitGC,
-//		0, 0, squareSize, squareSize,
-//		frame->x, frame->y);
+  return;
 }
 
 static void
 EndAnimation (anim, finish)
      AnimState *anim;
-     XPoint *finish;
+     GdkPoint *finish;
 {
-  XRectangle updates[4];
-  XRectangle overlap;
-  XPoint     pt;
-  int	     count, i;
-
-  /* The main code will redraw the final square, so we
-     only need to erase the bits that don't overlap.	*/
-  if (Intersect(&anim->prevFrame, finish, squareSize, &overlap, &pt)) {
-    CalcUpdateRects(&anim->prevFrame, finish, squareSize, updates, &count);
-    for (i = 0; i < count; i++)
-//      XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-//		updates[i].x - anim->prevFrame.x,
-//		updates[i].y - anim->prevFrame.y,
-//		updates[i].width, updates[i].height,
-//		updates[i].x, updates[i].y)
-;
-  } else {
-//    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-//		0, 0, squareSize, squareSize,
-//		anim->prevFrame.x, anim->prevFrame.y);
-  }
+  return;
 }
 
 static void
 FrameSequence(anim, piece, startColor, start, finish, frames, nFrames)
      AnimState *anim;
      ChessSquare piece; int startColor;
-     XPoint * start; XPoint * finish;
-     XPoint frames[]; int nFrames;
+     GdkPoint *start; GdkPoint *finish;
+     GdkPoint frames[]; int nFrames;
 {
   int n;
 
@@ -6153,8 +5955,8 @@ AnimateMove(board, fromX, fromY, toX, toY)
 {
   ChessSquare piece;
   int hop;
-  XPoint      start, finish, mid;
-  XPoint      frames[kFactor * 2 + 1];
+  GdkPoint      start, finish, mid;
+  GdkPoint      frames[kFactor * 2 + 1];
   int	      nFrames, startColor, endColor;
 
   /* Are we animating? */
@@ -6206,6 +6008,8 @@ AnimateMove(board, fromX, fromY, toX, toY)
 
   /* Be sure end square is redrawn */
   damage[toY][toX] = True;
+  
+  return;
 }
 
 void
@@ -6213,7 +6017,7 @@ DragPieceBegin(x, y)
      int x; int y;
 {
     int	 boardX, boardY, color;
-    XPoint corner;
+    GdkPoint corner;
 
     /* Are we animating? */
     if (!appData.animateDragging || appData.blindfold)
@@ -6240,11 +6044,8 @@ DragPieceBegin(x, y)
 	/* Mark this square as needing to be redrawn. Note that
 	   we don't remove the piece though, since logically (ie
 	   as seen by opponent) the move hasn't been made yet. */
-           if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
-              boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
-//           XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
-//	             corner.x, corner.y, squareSize, squareSize,
-//	             0, 0); // [HGM] zh: unstack in stead of grab
+	if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
+	   boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
 	damage[boardY][boardX] = True;
     } else {
 	player.dragActive = False;
@@ -6255,7 +6056,7 @@ static void
 DragPieceMove(x, y)
      int x; int y;
 {
-    XPoint corner;
+    GdkPoint corner;
 
     /* Are we animating? */
     if (!appData.animateDragging || appData.blindfold)
@@ -6283,7 +6084,7 @@ DragPieceEnd(x, y)
      int x; int y;
 {
     int boardX, boardY, color;
-    XPoint corner;
+    GdkPoint corner;
 
     /* Are we animating? */
     if (!appData.animateDragging || appData.blindfold)
@@ -6305,6 +6106,8 @@ DragPieceEnd(x, y)
        clicks which on my Sun at least can cause motion events
        without corresponding press/release. */
     player.dragActive = False;
+
+    return;
 }
 
 /* Handle expose event while piece being dragged */
@@ -6320,9 +6123,11 @@ DrawDragPiece ()
      it's being dragged around the board. So we erase the square
      that the piece is on and draw it at the last known drag point. */
   BlankSquare(player.startSquare.x, player.startSquare.y,
-		player.startColor, EmptySquare, xBoardWindow);
+	      player.startColor, EmptySquare, xBoardWindow);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
   damage[player.startBoardY][player.startBoardX] = TRUE;
+
+  return;
 }
 
 #include <sys/ioctl.h>
@@ -6359,3 +6164,52 @@ void NotifyFrontendLogin()
 {
     update_ics_width();
 }
+
+
+void
+DrawGrid(int x, int y, int Nx, int Ny)
+{
+  /* draws a grid starting around Nx, Ny squares starting at x,y */
+  int i,j;
+  
+  int x1,x2,y1,y2;
+  cairo_t *cr;
+  
+  /* get a cairo_t */
+  cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
+  
+  cairo_set_line_width (cr, lineGap);
+  
+  /* TODO: use appdata colors */
+  cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
+    
+  /* lines in X */
+  for (i = y; i < MIN(BOARD_HEIGHT,y + Ny+1); i++)
+    {
+      x1 = x * (squareSize + lineGap);;
+      x2 = lineGap + MIN(BOARD_WIDTH,x + Nx) * (squareSize + lineGap);
+      y1 = y2 = lineGap / 2 + (i * (squareSize + lineGap));
+      
+      cairo_move_to (cr, x1, y1);
+      cairo_line_to (cr, x2,y2);
+      cairo_stroke (cr);
+    }
+  
+  /* lines in Y */
+  for (j = x; j < MIN(BOARD_WIDTH,x + Nx+1) ; j++)
+    {
+      y1 = y * (squareSize + lineGap);
+      y2 = lineGap + MIN(BOARD_HEIGHT,y + Ny) * (squareSize + lineGap);
+      x1 = x2  = lineGap / 2 + (j * (squareSize + lineGap));
+      
+      cairo_move_to (cr, x1, y1);
+      cairo_line_to (cr, x2, y2);
+      cairo_stroke (cr);
+    }
+  
+  /* free memory */
+  cairo_destroy (cr);
+  
+  return;
+}
+

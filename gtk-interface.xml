@@ -1131,9 +1131,10 @@
             <child>
               <object class="GtkDrawingArea" id="Board">
                 <property name="visible">True</property>
-                <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
+                <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <signal name="button_press_event" handler="UserMoveProc"/>
                 <signal name="expose_event" handler="EventProc"/>
+                <signal name="motion_notify_event" handler="AnimateUserMove"/>
                 <signal name="button_release_event" handler="UserMoveProc"/>
               </object>
               <packing>
