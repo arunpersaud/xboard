@@ -404,6 +404,8 @@ char *icsNames;
 char *firstChessProgramNames;
 char *secondChessProgramNames;
 
+int hOffset;
+
 WindowPlacement wpMain;
 WindowPlacement wpConsole;
 WindowPlacement wpComment;
@@ -1340,9 +1342,9 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 	  w = boardWidth - 2*bor;
 	  hOffset = boardWidth + 10;
 	  for(i=0; i<BOARD_WIDTH+BOARD_HEIGHT+2; i++) { // [HGM] dual: grid for second board
-	    secondSegments[i] = gridSegments[i];
-	    secondSegments[i].x1 += hOffset;
-	    secondSegments[i].x2 += hOffset;
+//	    secondSegments[i] = gridSegments[i];
+//	    secondSegments[i].x1 += hOffset;
+//	    secondSegments[i].x2 += hOffset;
 	  }
 	}
       else
@@ -1375,12 +1377,12 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     /*
      * Inhibit shell resizing.
      */
-    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW + twoBoards*hOffset; // [HGM] dual
-    shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
-    shellArgs[4].value = shellArgs[2].value = w;
-    shellArgs[5].value = shellArgs[3].value = h;
-    XtSetValues(shellWidget, &shellArgs[0], 6);
-
+//    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW + twoBoards*hOffset; // [HGM] dual
+//    shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
+//    shellArgs[4].value = shellArgs[2].value = w;
+//    shellArgs[5].value = shellArgs[3].value = h;
+//    XtSetValues(shellWidget, &shellArgs[0], 6);
+//
 #ifdef GOTHIC
       if(gameInfo.variant == VariantGothic) {
 	xpmPieceBitmap[i][(int)WhiteMarshall] = xpmPieceBitmap2[i][(int)WhiteSilver];
