@@ -9352,6 +9352,7 @@ LoadGame(f, gameNumber, title, useList)
         /* [HGM] PGNvariant: automatically switch to variant given in PGN tag */
         if(gameInfo.variant != oldVariant) {
             startedFromPositionFile = FALSE; /* [HGM] loadPos: variant switch likely makes position invalid */
+	    ResetFrontEnd(); // [HGM] might need other bitmaps. Cannot use Reset() because it clears gameInfo :-(
 	    InitPosition(TRUE);
             oldVariant = gameInfo.variant;
 	    if (appData.debugMode) 
