@@ -13,7 +13,7 @@
    width="100"
    height="100"
    id="svg2"
-   inkscape:version="0.46+devel r22620"
+   inkscape:version="0.47+devel r9320"
    sodipodi:docname="NeutralSquare.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <metadata
@@ -60,13 +60,13 @@
   <g
      transform="translate(-31.428572,-40.933632)"
      id="layer1"
-     style="stroke:#d3d7cf;fill:#d3d7cf">
+     style="stroke:none;fill:#d3d7cf">
     <rect
        width="100"
        height="100"
        x="31.428572"
        y="40.933632"
        id="rect12"
-       style="color:#000000;fill:#d3d7cf;fill-opacity:1;stroke:#d3d7cf;stroke-width:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;fill:#d3d7cf;fill-opacity:1;stroke:none;stroke-width:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   </g>
 </svg>
