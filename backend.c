@@ -6640,8 +6640,10 @@ Adjudicate(ChessProgramState *cps)
                         case BlackRook:
                              NrBR++; break;
                         case WhiteQueen:
+                        case WhiteCannon:
                              NrWQ++; break;
                         case BlackQueen:
+                        case BlackCannon:
                              NrBQ++; break;
                         case EmptySquare: 
                              break;
@@ -6763,7 +6765,10 @@ Adjudicate(ChessProgramState *cps)
                 if( NrPieces == 2 || gameInfo.variant != VariantXiangqi && 
 				     gameInfo.variant != VariantShatranj && // [HGM] baring will remain possible
 			(NrPieces == 3 && NrWN+NrBN+NrWB+NrBB == 1 ||
-			 NrPieces == NrBB+NrWB+2 && bishopsColor != 3)) // [HGM] all Bishops (Ferz!) same color
+			 NrPieces == NrBB+NrWB+2 && bishopsColor != 3) // [HGM] all Bishops (Ferz!) same color
+				  || gameInfo.variant == VariantXiangqi &&
+			(NrPieces == 3 && (NrWQ==1 && NrWB==0 && NrBB<2 || NrBQ==1 && NrBB==0 && NrWB<2) ||
+			 NrPieces == 4 && NrWQ==1 && NrBQ==1 && NrWB==0 && NrBB==0))
                 {    /* KBK, KNK, KK of KBKB with like Bishops */
 
                      /* always flag draws, for judging claims */
