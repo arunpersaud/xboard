@@ -1260,7 +1260,7 @@ void Disambiguate(board, flags, epfile, closure)
                              closure->kind = c == '=' ? IllegalMove : WhitePromotionKnight;
                     else /* promotion optional, default is promote */
                              closure->kind = c == '=' ? NormalMove  : WhitePromotionQueen;
-                   
+                    if(c != '=') closure->promoCharIn = 'q';
                 } else closure->kind = (c == NULLCHAR || c == 'x' || c == '=') ?
                                             NormalMove : IllegalMove;
             } else {
@@ -1270,7 +1270,7 @@ void Disambiguate(board, flags, epfile, closure)
                              closure->kind = c == '=' ? IllegalMove : BlackPromotionKnight;
                     else /* promotion optional, default is promote */
                              closure->kind = c == '=' ? NormalMove  : BlackPromotionQueen;
-
+                    if(c != '=') closure->promoCharIn = 'q';
                 } else closure->kind = (c == NULLCHAR || c == 'x' || c == '=') ?
                                             NormalMove : IllegalMove;
             }
