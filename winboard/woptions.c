@@ -130,7 +130,6 @@ void SelectComboValue(HANDLE hwndCombo, ComboData *cd, unsigned value);
 VOID SetLoadOptionEnables(HWND hDlg);
 VOID SetSaveOptionEnables(HWND hDlg);
 VOID SetTimeControlEnables(HWND hDlg);
-void NewSettingEvent(int option, char *command, int value);
 
 /*---------------------------------------------------------------------------*\
  *
@@ -2894,7 +2893,7 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
       // [HGM] smp: get nr of cores:
       oldCores = appData.smpCores;
       appData.smpCores = GetDlgItemInt(hDlg, IDC_Cores, NULL, FALSE );
-      if(appData.smpCores != oldCores) NewSettingEvent(FALSE, "cores", appData.smpCores);
+      if(appData.smpCores != oldCores) NewSettingEvent(FALSE, &(first.maxCores), "cores", appData.smpCores);
       // [HGM] book: read tick boxes for own book use
       appData.firstHasOwnBookUCI  = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook1 );
       appData.secondHasOwnBookUCI = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook2 );

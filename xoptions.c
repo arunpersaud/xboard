@@ -1179,7 +1179,7 @@ void UciCallback(w, client_data, call_data)
 	    // Some changed setting need immediate sending always.
 	    PonderNextMoveEvent(ponder);
 	    if(oldCores != appData.smpCores)
-		NewSettingEvent(False, "cores", appData.smpCores);
+		NewSettingEvent(False, &(first.maxCores), "cores", appData.smpCores);
       }
       UciPopDown();
       return;
