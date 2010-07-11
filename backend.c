@@ -6362,7 +6362,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	     !(fromP == BlackKing && toP == BlackRook && frc))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
-	   if(!second || !OnlyMove(&x, &y, TRUE)) {
+	   if(!second || appData.oneClick && !OnlyMove(&x, &y, TRUE)) {
 	    if (appData.highlightDragging) {
 		SetHighlights(x, y, -1, -1);
 	    } else {
