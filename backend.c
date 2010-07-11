@@ -13804,7 +13804,6 @@ ParseFeatures(args, cps)
 	}
 	continue;
     }
-    if (BoolFeature(&p, "smp", &cps->maxCores, cps)) continue;
     /* End of additions by HGM */
 
     /* unknown feature: complain and skip */
