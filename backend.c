@@ -13867,17 +13867,17 @@ PonderNextMoveEvent(newState)
 }
 
 void
-NewSettingEvent(option, command, value)
+NewSettingEvent(option, feature, command, value)
      char *command;
-     int option, value;
+     int option, value, *feature;
 {
     char buf[MSG_SIZ];
 
     if (gameMode == EditPosition) EditPositionDone(TRUE);
     sprintf(buf, "%s%s %d\n", (option ? "option ": ""), command, value);
-    SendToProgram(buf, &first);
+    if(feature == NULL || *feature) SendToProgram(buf, &first);
     if (gameMode == TwoMachinesPlay) {
-	SendToProgram(buf, &second);
+	if(feature == NULL || feature[(int*)&second - (int*)&first]) SendToProgram(buf, &second);
     }
 }
 
