@@ -6591,6 +6591,73 @@ void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cp
     SetProgramStats( &stats );
 }
 
+void
+Count(Board board, int pCnt[], int *nW, int *nB, int *wStale, int *bStale, int *bishopColor)
+{	// count all piece types
+	int p, f, r;
+	*nB = *nW = *wStale = *bStale = *bishopColor = 0;
+	for(p=WhitePawn; p<=EmptySquare; p++) pCnt[p] = 0;
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+		p = board[r][f];
+		if(p == WhitePawn && r == BOARD_HEIGHT-1) (*wStale)++; else
+		if(p == BlackPawn && r == 0) (*bStale)++; else pCnt[p]++; // count last-Rank Pawns (XQ) separately
+		if(p <= WhiteKing) (*nW)++; else if(p <= BlackKing) (*nB)++;
+		if(p == WhiteBishop || p == WhiteFerz || p == WhiteAlfil ||
+		   p == BlackBishop || p == BlackFerz || p == BlackAlfil   )
+			*bishopColor |= 1 << ((f^r)&1); // track square color of color-bound pieces
+	}
+}
+
+int
+MatingPotential(int pCnt[], int side, int nMine, int nHis, int stale, int bisColor)
+{
+	VariantClass v = gameInfo.variant;
+
+	if(v == VariantShogi || v == VariantCrazyhouse || v == VariantBughouse) return TRUE; // drop games always winnable
+	if(v == VariantShatranj) return TRUE; // always winnable through baring
+	if(v == VariantLosers || v == VariantSuicide || v == VariantGiveaway) return TRUE;
+	if(v == Variant3Check || v == VariantAtomic) return nMine > 1; // can win through checking / exploding King
+
+	if(v == VariantXiangqi) {
+		int majors = 5*pCnt[BlackKnight-side] + 7*pCnt[BlackCannon-side] + 7*pCnt[BlackRook-side];
+
+		nMine -= pCnt[WhiteFerz+side] + pCnt[WhiteAlfil+side] + stale; // discount defensive pieces and back-rank Pawns
+		if(nMine + stale == 1) return (pCnt[BlackFerz-side] > 1 && pCnt[BlackKnight-side] > 0); // bare K can stalemate KHAA (!)
+		if(nMine > 2) return TRUE; // if we don't have P, H or R, we must have CC
+		if(nMine == 2 && pCnt[WhiteCannon+side] == 0) return TRUE; // We have at least one P, H or R
+		// if we get here, we must have KC... or KP..., possibly with additional A, E or last-rank P
+		if(stale) // we have at least one last-rank P plus perhaps C
+		    return majors // KPKX
+		        || pCnt[BlackFerz-side] && pCnt[BlackFerz-side] + pCnt[WhiteCannon+side] + stale > 2; // KPKAA, KPPKA and KCPKA
+		else // KCA*E*
+		    return pCnt[WhiteFerz+side] // KCAK
+		        || pCnt[WhiteAlfil+side] && pCnt[BlackRook-side] + pCnt[BlackCannon-side] + pCnt[BlackFerz-side] // KCEKA, KCEKX (X!=H)
+		        || majors + (12*pCnt[BlackFerz-side] | 6*pCnt[BlackAlfil-side]) > 16; // KCKAA, KCKAX, KCKEEX, KCKEXX (XX!=HH), KCKXXX
+		// TO DO: cases wih an unpromoted f-Pawn acting as platform for an opponent Cannon
+
+	} else if(pCnt[WhiteKing] == 1 && pCnt[BlackKing] == 1) { // other variants with orthodox Kings
+		int nBishops = pCnt[WhiteBishop+side] + pCnt[WhiteFerz+side];
+		
+		if(nMine == 1) return FALSE; // bare King
+		if(nBishops && bisColor == 3) return TRUE; // There must be a second B/A/F, which can either block (his) or attack (mine) the escape square
+		nMine += (nBishops > 0) - nBishops; // By now all Bishops (and Ferz) on like-colored squares, so count as one
+		if(nMine > 2 && nMine != pCnt[WhiteAlfil+side] + 1) return TRUE; // At least two pieces, not all Alfils
+		// by now we have King + 1 piece (or multiple Bishops on the same color)
+		if(pCnt[WhiteKnight+side])
+			return (pCnt[BlackKnight-side] + pCnt[BlackBishop-side] + pCnt[BlackMan-side] + 
+				pCnt[BlackWazir-side] + pCnt[BlackSilver-side] + bisColor // KNKN, KNKB, KNKF, KNKE, KNKW, KNKM, KNKS
+			     || nHis > 3); // be sure to cover suffocation mates in corner (e.g. KNKQCA)
+		if(nBishops)
+			return (pCnt[BlackKnight-side]); // KBKN, KFKN
+		if(pCnt[WhiteAlfil+side])
+			return (nHis > 2); // Alfils can in general not reach a corner square, but there might be edge (suffocation) mates
+		if(pCnt[WhiteWazir+side])
+			return (pCnt[BlackKnight-side] + pCnt[BlackWazir-side] + pCnt[BlackAlfil-side]); // KWKN, KWKW, KWKE
+	}
+
+	return TRUE;
+}
+
 int
 Adjudicate(ChessProgramState *cps)
 {	// [HGM] some adjudications useful with buggy engines
@@ -6606,63 +6673,16 @@ Adjudicate(ChessProgramState *cps)
 	if(gameInfo.holdingsSize == 0 || gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
 	    if( appData.testLegality )
 	    {   /* [HGM] Some more adjudications for obstinate engines */
-		int NrWN=0, NrBN=0, NrWB=0, NrBB=0, NrWR=0, NrBR=0,
-                    NrWQ=0, NrBQ=0, NrW=0, NrK=0, bishopsColor = 0,
-                    NrPieces=0, NrPawns=0, PawnAdvance=0, i, j;
+		int nrW, nrB, bishopColor, staleW, staleB, nr[EmptySquare+1], i;
 		static int moveCount = 6;
 		ChessMove result;
 		char *reason = NULL;
 
                 /* Count what is on board. */
-		for(i=0; i<BOARD_HEIGHT; i++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++)
-		{   ChessSquare p = boards[forwardMostMove][i][j];
-		    int m=i;
-
-		    switch((int) p)
-		    {   /* count B,N,R and other of each side */
-                        case WhiteKing:
-                        case BlackKing:
-			     NrK++; break; // [HGM] atomic: count Kings
-                        case WhiteKnight:
-                             NrWN++; break;
-                        case WhiteBishop:
-                        case WhiteFerz:    // [HGM] shatranj: kludge to mke it work in shatranj
-                             bishopsColor |= 1 << ((i^j)&1);
-                             NrWB++; break;
-                        case BlackKnight:
-                             NrBN++; break;
-                        case BlackBishop:
-                        case BlackFerz:    // [HGM] shatranj: kludge to mke it work in shatranj
-                             bishopsColor |= 1 << ((i^j)&1);
-                             NrBB++; break;
-                        case WhiteRook:
-                             NrWR++; break;
-                        case BlackRook:
-                             NrBR++; break;
-                        case WhiteQueen:
-                        case WhiteCannon:
-                             NrWQ++; break;
-                        case BlackQueen:
-                        case BlackCannon:
-                             NrBQ++; break;
-                        case EmptySquare: 
-                             break;
-                        case BlackPawn:
-                             m = 7-i;
-                        case WhitePawn:
-                             PawnAdvance += m; NrPawns++;
-                    }
-                    NrPieces += (p != EmptySquare);
-                    NrW += ((int)p < (int)BlackPawn);
-		    if(gameInfo.variant == VariantXiangqi && 
-		      (p == WhiteFerz || p == WhiteAlfil || p == BlackFerz || p == BlackAlfil)) {
-			NrPieces--; // [HGM] XQ: do not count purely defensive pieces
-                        NrW -= ((int)p < (int)BlackPawn);
-		    }
-                }
+		Count(boards[forwardMostMove], nr, &nrW, &nrB, &staleW, &staleB, &bishopColor);
 
 		/* Some material-based adjudications that have to be made before stalemate test */
-		if(gameInfo.variant == VariantAtomic && NrK < 2) {
+		if(gameInfo.variant == VariantAtomic && nr[WhiteKing] + nr[BlackKing] < 2) {
 		    // [HGM] atomic: stm must have lost his King on previous move, as destroying own K is illegal
 		     boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE; // make claimable as if stm is checkmated
 		     if(canAdjudicate && appData.checkMates) {
@@ -6676,7 +6696,7 @@ Adjudicate(ChessProgramState *cps)
 		}
 
 		/* Bare King in Shatranj (loses) or Losers (wins) */
-                if( NrW == 1 || NrPieces - NrW == 1) {
+                if( nrW == 1 || nrB == 1) {
                   if( gameInfo.variant == VariantLosers) { // [HGM] losers: bare King wins (stm must have it first)
 		     boards[forwardMostMove][EP_STATUS] = EP_WINS;  // mark as win, so it becomes claimable
 		     if(canAdjudicate && appData.checkMates) {
@@ -6696,7 +6716,7 @@ Adjudicate(ChessProgramState *cps)
 			    if(engineOpponent)
 			      SendMoveToProgram(forwardMostMove-1, engineOpponent); // make sure opponent gets move
 			    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-			    GameEnds( NrW > 1 ? WhiteWins : NrPieces - NrW > 1 ? BlackWins : GameIsDrawn, 
+			    GameEnds( nrW > 1 ? WhiteWins : nrB > 1 ? BlackWins : GameIsDrawn, 
 							"Xboard adjudication: Bare king", GE_XBOARD );
 			    return 1;
 			}
@@ -6730,8 +6750,8 @@ Adjudicate(ChessProgramState *cps)
 		    if(gameInfo.variant == VariantLosers  || gameInfo.variant == VariantGiveaway) // [HGM] losers:
 			boards[forwardMostMove][EP_STATUS] = EP_WINS;    // in these variants stalemated is always a win
 		    else if(gameInfo.variant == VariantSuicide) // in suicide it depends
-			boards[forwardMostMove][EP_STATUS] = NrW == NrPieces-NrW ? EP_STALEMATE :
-						   ((NrW < NrPieces-NrW) != WhiteOnMove(forwardMostMove) ?
+			boards[forwardMostMove][EP_STATUS] = nrW == nrB ? EP_STALEMATE :
+						   ((nrW < nrB) != WhiteOnMove(forwardMostMove) ?
 									EP_CHECKMATE : EP_WINS);
 		    else if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantXiangqi)
 		        boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE; // and in these variants being stalemated loses
@@ -6762,14 +6782,9 @@ Adjudicate(ChessProgramState *cps)
 		}
 
                 /* Next absolutely insufficient mating material. */
-                if( NrPieces == 2 || gameInfo.variant != VariantXiangqi && 
-				     gameInfo.variant != VariantShatranj && // [HGM] baring will remain possible
-			(NrPieces == 3 && NrWN+NrBN+NrWB+NrBB == 1 ||
-			 NrPieces == NrBB+NrWB+2 && bishopsColor != 3) // [HGM] all Bishops (Ferz!) same color
-				  || gameInfo.variant == VariantXiangqi &&
-			(NrPieces == 3 && (NrWQ==1 && NrWB==0 && NrBB<2 || NrBQ==1 && NrBB==0 && NrWB<2) ||
-			 NrPieces == 4 && NrWQ==1 && NrBQ==1 && NrWB==0 && NrBB==0))
-                {    /* KBK, KNK, KK of KBKB with like Bishops */
+                if(!MatingPotential(nr, WhitePawn, nrW, nrB, staleW, bishopColor) &&
+                   !MatingPotential(nr, BlackPawn, nrB, nrW, staleB, bishopColor))
+                {    /* includes KBK, KNK, KK of KBKB with like Bishops */
 
                      /* always flag draws, for judging claims */
                      boards[forwardMostMove][EP_STATUS] = EP_INSUF_DRAW;
@@ -6787,11 +6802,11 @@ Adjudicate(ChessProgramState *cps)
                 }
 
                 /* Then some trivial draws (only adjudicate, cannot be claimed) */
-                if(NrPieces == 4 && 
-                   (   NrWR == 1 && NrBR == 1 /* KRKR */
-                   || NrWQ==1 && NrBQ==1     /* KQKQ */
-                   || NrWN==2 || NrBN==2     /* KNNK */
-                   || NrWN+NrWB == 1 && NrBN+NrBB == 1 /* KBKN, KBKB, KNKN */
+                if(nrW + nrB == 4 && 
+                   (   nr[WhiteRook] == 1 && nr[BlackRook] == 1 /* KRKR */
+                   || nr[WhiteQueen] && nr[BlackQueen]==1     /* KQKQ */
+                   || nr[WhiteKnight]==2 || nr[BlackKnight]==2     /* KNNK */
+                   || nr[WhiteKnight]+nr[WhiteBishop] == 1 && nr[BlackKnight]+nr[BlackBishop] == 1 /* KBKN, KBKB, KNKN */
                   ) ) {
                      if(--moveCount < 0 && appData.trivialDraws && canAdjudicate)
                      {    /* if the first 3 moves do not show a tactical win, declare draw */
