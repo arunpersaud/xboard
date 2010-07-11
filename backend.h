@@ -171,7 +171,6 @@ void UserAdjudicationEvent P((int result));
 void StopObservingEvent P((void));
 void StopExaminingEvent P((void));
 void PonderNextMoveEvent P((int newState));
-void NewSettingeEvent P((int option, char *command, int value));
 void ShowThinkingEvent P(());
 void PeriodicUpdatesEvent P((int newState));
 void HintEvent P((void));
