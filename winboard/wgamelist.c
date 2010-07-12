@@ -204,8 +204,8 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
    else 
      GetActualPlacement( gameListDialog, &wpGameList );
 
-      GameListUpdateTitle( hDlg, szDlgTitle, count, ((ListGame *) gameList.tailPred)->number, &stats );
     }
+    GameListUpdateTitle( hDlg, "Game List", count, ((ListGame *) gameList.tailPred)->number, &stats );
     return FALSE;
     
   case WM_SIZE:
@@ -299,7 +299,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
             if( GetDlgItemText( hDlg, IDC_GameListFilter, filter, sizeof(filter) ) >= 0 ) {
                 filter[ sizeof(filter)-1 ] = '\0';
                 count = GameListToListBox( hDlg, TRUE, filter, &stats );
-                GameListUpdateTitle( hDlg, szDlgTitle, count, ((ListGame *) gameList.tailPred)->number, &stats );
+                GameListUpdateTitle( hDlg, "Game List", count, ((ListGame *) gameList.tailPred)->number, &stats );
             }
         }
         return FALSE;
