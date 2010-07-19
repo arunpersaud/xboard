@@ -32,6 +32,9 @@ AC_INIT([xboard],[gtk-20100206],[bug-xboard@gnu.org])
 
 AM_INIT_AUTOMAKE
 
+dnl | use silent rules
+AM_SILENT_RULES([yes])
+
 AC_CONFIG_HEADERS([config.h])
 
 dnl | a bunch of templates for defines used below
