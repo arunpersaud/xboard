@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h> // for exit()
 #include <ctype.h>
 #include <signal.h>
 #include <errno.h>
@@ -55,7 +56,8 @@
 extern GtkWidget *GUI_Window;
 
 
-GdkPixbuf *load_pixbuf(char *filename,int size)
+GdkPixbuf *
+load_pixbuf(char *filename,int size)
 {
   GdkPixbuf *image;
 
@@ -67,7 +69,7 @@ GdkPixbuf *load_pixbuf(char *filename,int size)
   if(image == NULL)
     {
       fprintf(stderr,_("Error: couldn't load file: %s\n"),filename);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   return image;
 }

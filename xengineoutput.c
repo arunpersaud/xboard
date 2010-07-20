@@ -112,25 +112,17 @@ void ResizeWindowControls(mode)
 }
 
 
-void InitializeEngineOutput()
+void 
+InitializeEngineOutput()
 { 
-  EngineIcons[nColorWhite]   = load_pixbuf("svg/engine-white.svg",14);
-  EngineIcons[nColorBlack]   = load_pixbuf("svg/engine-black.svg",14);
-  EngineIcons[nColorUnknown] = load_pixbuf("svg/engine-unknown.svg",14);
-  EngineIcons[nClear]        = load_pixbuf("svg/engine-clear.svg",14);
-  EngineIcons[nPondering]    = load_pixbuf("svg/engine-ponder.svg",14);
-  EngineIcons[nThinking]     = load_pixbuf("svg/engine-thinking.svg",14);
-  EngineIcons[nAnalyzing]    = load_pixbuf("svg/engine-analyzing.svg",14);
-// [HGM] pixmaps of some ICONS used in the engine-outut window
-//#include "pixmaps/WHITE_14.xpm"
-//#include "pixmaps/BLACK_14.xpm"
-//#include "pixmaps/CLEAR_14.xpm"
-//#include "pixmaps/UNKNOWN_14.xpm"
-//#include "pixmaps/THINKING_14.xpm"
-//#include "pixmaps/PONDER_14.xpm"
-//#include "pixmaps/ANALYZING_14.xpm"
-//
-  
+  EngineIcons[nColorWhite]   = (GdkPixbuf *)load_pixbuf("svg/engine-white.svg",14);
+  EngineIcons[nColorBlack]   = (GdkPixbuf *)load_pixbuf("svg/engine-black.svg",14);
+  EngineIcons[nColorUnknown] = (GdkPixbuf *)load_pixbuf("svg/engine-unknown.svg",14);
+  EngineIcons[nClear]        = (GdkPixbuf *)load_pixbuf("svg/engine-clear.svg",14);
+  EngineIcons[nPondering]    = (GdkPixbuf *)load_pixbuf("svg/engine-ponder.svg",14);
+  EngineIcons[nThinking]     = (GdkPixbuf *)load_pixbuf("svg/engine-thinking.svg",14);
+  EngineIcons[nAnalyzing]    = (GdkPixbuf *)load_pixbuf("svg/engine-analyzing.svg",14);
+
   return;
 }
 
@@ -141,7 +133,8 @@ DoSetWindowText(int which, int field, char *text)
   return;
 }
 
-void InsertIntoMemo( int which, char * text, int where )
+void 
+InsertIntoMemo( int which, char * text, int where )
 {
   GtkTextBuffer *buffer=NULL;
   GtkTextIter iter;

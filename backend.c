@@ -15761,8 +15761,10 @@ AppDataZero (AppData *a)
   return;
 }
 
+void
 LoadVariation(int index, char *text)
-{       // [HGM] vari: shelve previous line and load new variation, parsed from text around text[index]
+{   
+    // [HGM] vari: shelve previous line and load new variation, parsed from text around text[index]
 	char *p = text, *start = NULL, *end = NULL, wait = NULLCHAR;
 	int level = 0, move;
 
@@ -15790,5 +15792,7 @@ LoadVariation(int index, char *text)
 	ClearPremoveHighlights();
 	CommentPopDown();
 	ToNrEvent(currentMove+1);
+	
+	return;
 }
 

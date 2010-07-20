@@ -54,6 +54,8 @@ extern int LoadGamePopUp P((FILE *f, int gameNumber, char *title));
 extern int LoadPosition P((FILE *f, int gameNumber, char *title));
 extern int SaveGame P((FILE *f, int gameNumber, char *title));
 extern int SavePosition P((FILE *f, int gameNumber, char *title));
+void ShowThinkingProc P((GtkObject *object, gpointer user_data));
+
 
 gboolean
 ExposeProc(object, user_data)
