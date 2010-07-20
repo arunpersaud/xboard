@@ -253,7 +253,7 @@ extern GameInfo gameInfo;
 #define ICS_CHESSNET 3 /* not really supported */
 int ics_type;
 
- 
+
 
 /* pgntags.c prototypes
  */
@@ -273,7 +273,7 @@ typedef struct _ListGame {
     unsigned long offset;   /*  Byte offset of game within file.     */
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;
- 
+
 extern List gameList;
 void ClearGameInfo P((GameInfo *));
 int GameListBuild P((FILE *));

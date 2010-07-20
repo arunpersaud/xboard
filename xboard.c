@@ -336,6 +336,54 @@ void SetMenuEnables P((Enables *enab));
 void update_ics_width P(());
 int get_term_width P(());
 //int CopyMemoProc P(());
+
+
+/* GTK widgets */
+GtkBuilder              *builder=NULL;
+
+GtkWidget               *GUI_Window=NULL;
+GtkWidget               *GUI_Aspect=NULL;
+GtkWidget               *GUI_History=NULL;
+GtkWidget               *GUI_GameList=NULL;
+GtkWidget               *GUI_Board=NULL;
+GtkWidget               *GUI_Whiteclock=NULL;
+GtkWidget               *GUI_Blackclock=NULL;
+GtkWidget               *GUI_Error=NULL;
+GtkWidget               *GUI_Menubar=NULL;
+GtkWidget               *GUI_Timer=NULL;
+GtkWidget               *GUI_Buttonbar=NULL;
+GtkWidget               *GUI_EditTags=NULL;
+GtkWidget               *GUI_TagBox=NULL;
+GtkWidget               *GUI_Preferences=NULL;
+
+/* engine output */
+GtkWidget               *GUI_EngineOutput=NULL;
+GtkWidget               *GUI_EngineOutputFields[2][6];
+
+GtkListStore            *LIST_MoveHistory=NULL;
+GtkListStore            *LIST_GameList=NULL;
+
+GtkTreeView             *TREE_History=NULL;
+GtkTreeView             *TREE_Game=NULL;
+
+gint                     boardWidth;
+gint                     boardHeight;
+
+
+GdkPixbuf               *WindowIcon=NULL;
+GdkPixbuf               *WhiteIcon=NULL;
+GdkPixbuf               *BlackIcon=NULL;
+#define MAXPIECES 100
+GdkPixbuf               *SVGpieces[MAXPIECES];
+GdkPixbuf               *SVGLightSquare=NULL;
+GdkPixbuf               *SVGDarkSquare=NULL;
+GdkPixbuf               *SVGNeutralSquare=NULL;
+
+GdkCursor               *BoardCursor=NULL;
+
+/* end GTK widgets */
+
+
 /*
  * XBoard depends on Xt R4 or higher
  */
@@ -525,11 +573,11 @@ Enables gnuEnables[] = {
   { "menuOptions.Get Move List", False },
   { "menuOptions.Premove", False },
   { "menuOptions.Quiet Play", False },
-  
+
   /* The next two options rely on SetCmailMode being called *after*    */
   /* SetGNUMode so that when GNU is being used to give hints these     */
   /* menu options are still available                                  */
-  
+
   { "menuFile.Mail Move", False },
   { "menuFile.Reload CMail Message", False },
   { NULL, False }
@@ -974,10 +1022,10 @@ parse_color(str, which)
 {
   char *p, buf[100], *d;
   int i;
-  
+
   if (strlen(str) > 99)	/* watch bounds on buf */
     return -1;
-  
+
   p = str;
   d = buf;
   for (i=0; i<which; ++i) {
@@ -986,32 +1034,32 @@ parse_color(str, which)
       return -1;
     ++p;
   }
-  
+
   /* Could be looking at something like:
    *     black, , 1
-   * .. in which case we want to stop on a comma also 
+   * .. in which case we want to stop on a comma also
    */
   while (*p && *p != ',' && !isalpha(*p) && !isdigit(*p))
     ++p;
-  
+
   if (*p == ',') {
     return -1;		/* Use default for empty field */
   }
-  
+
   if (which == 2 || isdigit(*p))
     return atoi(p);
-  
+
   while (*p && isalpha(*p))
     *(d++) = *(p++);
-  
+
   *d = 0;
-  
+
   for (i=0; i<8; ++i) {
     if (!StrCaseCmp(buf, cnames[i]))
       return which? (i+40) : (i+30);
   }
   if (!StrCaseCmp(buf, "default")) return -1;
-  
+
   fprintf(stderr, _("%s: unrecognized color %s\n"), programName, buf);
   return -2;
 }
@@ -1026,7 +1074,7 @@ parse_cpair(cc, str)
 	    programName, str);
     return -1;
   }
-  
+
   /* bg and attr are optional */
   textColors[(int)cc].bg = parse_color(str, 1);
   if ((textColors[(int)cc].attr = parse_color(str, 2)) < 0) {
@@ -1069,10 +1117,10 @@ extern char *crWhite, * crBlack;
 
 void *
 colorVariable[] = {
-  &appData.whitePieceColor, 
-  &appData.blackPieceColor, 
+  &appData.whitePieceColor,
+  &appData.blackPieceColor,
   &appData.lightSquareColor,
-  &appData.darkSquareColor, 
+  &appData.darkSquareColor,
   &appData.highlightSquareColor,
   &appData.premoveHighlightColor,
   &appData.lowTimeWarningColor,
@@ -1142,7 +1190,7 @@ ParseColor(int n, char *name)
 
 void
 ParseTextAttribs(ColorClass cc, char *s)
-{   
+{
   (&appData.colorShout)[cc] = strdup(s);
 }
 
@@ -1188,7 +1236,7 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
       break;
     }
   for(i=0; i<MAX_SIZE; i++) if(fontValid[n][i]) // [HGM] font: store all standard fonts
-			      fprintf(f, OPTCHAR "%s" SEPCHAR "size%d:%s\n", ad->argName, i, fontTable[n][i]); 
+			      fprintf(f, OPTCHAR "%s" SEPCHAR "size%d:%s\n", ad->argName, i, fontTable[n][i]);
 }
 
 void
@@ -1227,9 +1275,9 @@ GetActualPlacement(Widget wg, WindowPlacement *wp)
   Dimension w, h;
   Position x, y;
   int i;
-  
+
   if(!wg) return;
-  
+
   i = 0;
   XtSetArg(args[i], XtNx, &x); i++;
   XtSetArg(args[i], XtNy, &y); i++;
@@ -1246,7 +1294,7 @@ void
 GetWindowCoords()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
-  
+
   //  GetActualPlacement(shellWidget, &wpMain);
   //  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
   //  if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
@@ -1300,7 +1348,7 @@ ConvertToLine(int argc, char **argv)
 {
   static char line[128*1024], buf[1024];
   int i;
-  
+
   line[0] = NULLCHAR;
   for(i=1; i<argc; i++) {
     if( (strchr(argv[i], ' ') || strchr(argv[i], '\n') ||strchr(argv[i], '\t') )
@@ -1328,12 +1376,12 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
   Arg args[16];
   XtGeometryResult gres;
   int i;
-  
+
   boardWidth  = lineGap + BOARD_WIDTH  * (squareSize + lineGap);
   boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-  
+
   timerWidth = (boardWidth - sep) / 2;
-  
+
   if (appData.titleInWindow)
     {
       i = 0;
@@ -1352,13 +1400,13 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 	  w = boardWidth - w - sep - 2*bor - 2; // WIDTH_FUDGE
 	}
     }
-  
+
   if(!formWidget) return;
-  
+
   /*
    * Inhibit shell resizing.
    */
-  
+
   // [HGM] pieces: tailor piece bitmaps to needs of specific variant
   // (only for xpm)
   if(useImages) {
@@ -1442,24 +1490,24 @@ main(argc, argv)
   char *p;
   XrmDatabase xdb;
   int forceMono = False;
-  
+
   srandom(time(0)); // [HGM] book: make random truly random
-  
+
   setbuf(stdout, NULL);
   setbuf(stderr, NULL);
   debugFP = stderr;
-  
+
   if(argc > 1 && (!strcmp(argv[1], "-v" ) || !strcmp(argv[1], "--version" ))) {
     printf("%s version %s\n", PACKAGE_NAME, PACKAGE_VERSION);
     exit(0);
   }
-  
+
   programName = strrchr(argv[0], '/');
   if (programName == NULL)
     programName = argv[0];
   else
     programName++;
-  
+
 #ifdef ENABLE_NLS
   XtSetLanguageProc(NULL, NULL, NULL);
   bindtextdomain(PACKAGE, LOCALEDIR);
@@ -1467,12 +1515,12 @@ main(argc, argv)
 #endif
 
   AppDataZero(&appData);
-  
+
   /* set up GTK */
   gtk_init (&argc, &argv);
-  
+
   /* parse glade file to build widgets */
-  
+
   builder = gtk_builder_new ();
   GError *gtkerror=NULL;
   if(!gtk_builder_add_from_file (builder, "gtk-interface.xml", &gtkerror))
@@ -1480,15 +1528,15 @@ main(argc, argv)
       if(gtkerror)
 	printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
     }
-  
+
   /* test if everything worked ok */
-  
+
   GUI_Window = GTK_WIDGET (gtk_builder_get_object (builder, "MainWindow"));
   if(!GUI_Window) printf("Error: gtk_builder didn't work (MainWindow)!\n");
-  
+
   GUI_Aspect = GTK_WIDGET (gtk_builder_get_object (builder, "Aspectframe"));
   if(!GUI_Aspect) printf("Error: gtk_builder didn't work (Aspectframe)!\n");
-  
+
   GUI_Menubar  = GTK_WIDGET (gtk_builder_get_object (builder, "MenuBar"));
   if(!GUI_Menubar) printf("Error: gtk_builder didn't work (MenuBar)!\n");
   GUI_Timer  = GTK_WIDGET (gtk_builder_get_object (builder, "Timer"));
@@ -1497,17 +1545,17 @@ main(argc, argv)
   if(!GUI_Buttonbar) printf("Error: gtk_builder didn't work (ButtonBar)!\n");
   GUI_Board  = GTK_WIDGET (gtk_builder_get_object (builder, "Board"));
   if(!GUI_Board) printf("Error: gtk_builder didn't work (Board)!\n");
-  
+
   GUI_Whiteclock  = GTK_WIDGET (gtk_builder_get_object (builder, "WhiteClock"));
   if(!GUI_Whiteclock) printf("Error: gtk_builder didn't work (WhiteClock)!\n");
-  
+
   GUI_Blackclock  = GTK_WIDGET (gtk_builder_get_object (builder, "BlackClock"));
   if(!GUI_Blackclock) printf("Error: gtk_builder didn't work (BlackClock)!\n");
-  
+
   /* GTK lists stores*/
   LIST_MoveHistory = GTK_LIST_STORE (gtk_builder_get_object (builder, "MoveHistoryStore"));
   if(!LIST_MoveHistory) printf("Error: gtk_builder didn't work (MoveHistoryStore)!\n");
-  
+
   LIST_GameList = GTK_LIST_STORE (gtk_builder_get_object (builder, "GameListStore"));
   if(!LIST_GameList) printf("Error: gtk_builder didn't work (GameListStore)!\n");
 
@@ -1515,21 +1563,21 @@ main(argc, argv)
   GUI_Preferences = GTK_WIDGET (gtk_builder_get_object (builder, "Preferences"));
   if(!GUI_Preferences) printf("Error: gtk_builder didn't work (Preferences)!\n");
 
-  
+
   /* EditTags window */
   GUI_EditTags = GTK_WIDGET (gtk_builder_get_object (builder, "EditTags"));
   if(!GUI_EditTags) printf("Error: gtk_builder didn't work (EditTags)!\n");
-  
+
   GUI_TagBox = GTK_WIDGET (gtk_builder_get_object (builder, "TagBox"));
   if(!GUI_TagBox) printf("Error: gtk_builder didn't work(TagBox)!\n");
-  
+
   /* move history and game list windows */
   GUI_History = GTK_WIDGET (gtk_builder_get_object (builder, "MoveHistory"));
   if(!GUI_History) printf("Error: gtk_builder didn't work (MoveHistory)!\n");
-  
+
   TREE_History = GTK_TREE_VIEW (gtk_builder_get_object (builder, "MoveHistoryView"));
   if(!TREE_History) printf("Error: gtk_builder didn't work (MoveHistoryView)!\n");
-  
+
   GUI_GameList = GTK_WIDGET (gtk_builder_get_object (builder, "GameList"));
   if(!GUI_GameList) printf("Error: gtk_builder didn't work (GameList)!\n");
 
@@ -1550,7 +1598,7 @@ main(argc, argv)
   if(!GUI_EngineOutputFields[GUI_WHITE][GUI_NODES]) printf("Error: gtk_builder didn't work (EngineOutput white nodes)!\n");
   GUI_EngineOutputFields[GUI_WHITE][GUI_TEXT] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_white_text"));
   if(!GUI_EngineOutputFields[GUI_WHITE][GUI_TEXT]) printf("Error: gtk_builder didn't work (EngineOutput white text)!\n");
-  
+
   /* black */
   GUI_EngineOutputFields[GUI_BLACK][GUI_COLOR] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_black_color"));
   if(!GUI_EngineOutputFields[GUI_BLACK][GUI_COLOR]) printf("Error: gtk_builder didn't work (EngineOutput black color)!\n");
@@ -1564,26 +1612,26 @@ main(argc, argv)
   if(!GUI_EngineOutputFields[GUI_BLACK][GUI_NODES]) printf("Error: gtk_builder didn't work (EngineOutput black nodes)!\n");
   GUI_EngineOutputFields[GUI_BLACK][GUI_TEXT] =   GTK_WIDGET (gtk_builder_get_object (builder, "EngineOutput_black_text"));
   if(!GUI_EngineOutputFields[GUI_BLACK][GUI_TEXT]) printf("Error: gtk_builder didn't work (EngineOutput black text)!\n");
-  
+
 
   TREE_Game = GTK_TREE_VIEW (gtk_builder_get_object (builder, "GameListView"));
   if(!TREE_Game) printf("Error: gtk_builder didn't work (GameListView)!\n");
-  
-  
+
+
   /* connect lists to views */
   gtk_tree_view_set_model(TREE_History, GTK_TREE_MODEL(LIST_MoveHistory));
   gtk_tree_view_set_model(TREE_Game,    GTK_TREE_MODEL(LIST_GameList));
-  
+
   gtk_builder_connect_signals (builder, NULL);
-  
+
   // don't unref the builder, since we use it to get references to widgets
   //    g_object_unref (G_OBJECT (builder));
-  
+
   /* end parse glade file */
-  
+
   appData.boardSize = "";
   InitAppData(ConvertToLine(argc, argv));
-  
+
   p = getenv("HOME");
   if (p == NULL) p = "/tmp";
   i = strlen(p) + strlen("/.xboardXXXXXx.pgn") + 1;
@@ -1591,11 +1639,11 @@ main(argc, argv)
   gamePasteFilename = (char*) malloc(i);
   snprintf(gameCopyFilename,i, "%s/.xboard%05uc.pgn", p, getpid());
   snprintf(gamePasteFilename,i, "%s/.xboard%05up.pgn", p, getpid());
-  
+
   //    XtGetApplicationResources(shellWidget, (XtPointer) &appData,
   //			      clientResources, XtNumber(clientResources),
   //			      NULL, 0);
-  
+
   { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
     static char buf[MSG_SIZ];
     EscapeExpand(buf, appData.initString);
@@ -1607,7 +1655,7 @@ main(argc, argv)
     EscapeExpand(buf, appData.secondComputerString);
     appData.secondComputerString = strdup(buf);
   }
-  
+
   if ((chessDir = (char *) getenv("CHESSDIR")) == NULL) {
     chessDir = ".";
   } else {
@@ -1617,7 +1665,7 @@ main(argc, argv)
       exit(1);
     }
   }
-  
+
   if (appData.debugMode && appData.nameOfDebugFile && strcmp(appData.nameOfDebugFile, "stderr")) {
     /* [DM] debug info to file [HGM] make the filename a command-line option, and allow it to remain stderr */
     if ((debugFP = fopen(appData.nameOfDebugFile, "w")) == NULL)  {
@@ -1626,18 +1674,18 @@ main(argc, argv)
     }
     setbuf(debugFP, NULL);
   }
-  
-  
+
+
 #if !HIGHDRAG
   /* This feature does not work; animation needs a rewrite */
   appData.highlightDragging = FALSE;
 #endif
   InitBackEnd1();
-  
+
   gameInfo.variant = StringToVariant(appData.variant);
   InitPosition(FALSE);
-  
-  
+
+
   squareSize		= 40;
   lineGap = squareSize*0.05;
   clockFontPxlSize	= 20;
@@ -1645,11 +1693,11 @@ main(argc, argv)
   fontPxlSize		= 20;
   smallLayout		= 16;
   tinyLayout		= 10;
-  
-  
+
+
   boardWidth  = lineGap + BOARD_WIDTH * (squareSize + lineGap);
   boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-  
+
   /*
    * Determine what fonts to use.
    */
@@ -1663,17 +1711,17 @@ main(argc, argv)
   //    countFontID = XLoadFont(xDisplay, appData.coordFont); // [HGM] holdings
   //    countFontStruct = XQueryFont(xDisplay, countFontID);
   //    appData.font = FindFont(appData.font, fontPxlSize);
-  
+
   //    xdb = XtDatabase(xDisplay);
   //    XrmPutStringResource(&xdb, "*font", appData.font);
-  
+
   /*
    * Detect if there are not enough colors available and adapt.
    */
   //    if (DefaultDepth(xDisplay, xScreen) <= 2) {
   //      appData.monoMode = True;
   //    }
-  
+
   if (!appData.monoMode) {
     vFrom.addr = (caddr_t) appData.lightSquareColor;
     vFrom.size = strlen(appData.lightSquareColor);
@@ -1718,7 +1766,7 @@ main(argc, argv)
       blackPieceColor = *(Pixel *) vTo.addr;
     }
   }
-  
+
   if (!appData.monoMode) {
     vFrom.addr = (caddr_t) appData.highlightSquareColor;
     vFrom.size = strlen(appData.highlightSquareColor);
@@ -1730,7 +1778,7 @@ main(argc, argv)
       highlightSquareColor = *(Pixel *) vTo.addr;
     }
   }
-  
+
   if (!appData.monoMode) {
     vFrom.addr = (caddr_t) appData.premoveHighlightColor;
     vFrom.size = strlen(appData.premoveHighlightColor);
@@ -1742,16 +1790,16 @@ main(argc, argv)
       premoveHighlightColor = *(Pixel *) vTo.addr;
     }
   }
-  
+
   if (forceMono) {
     fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	    programName);
-    
+
     if (appData.bitmapDirectory == NULL ||
 	appData.bitmapDirectory[0] == NULLCHAR)
       appData.bitmapDirectory = DEF_BITMAP_DIR;
   }
-  
+
   if (appData.lowTimeWarning && !appData.monoMode) {
     vFrom.addr = (caddr_t) appData.lowTimeWarningColor;
     vFrom.size = strlen(appData.lowTimeWarningColor);
@@ -1761,7 +1809,7 @@ main(argc, argv)
     else
       lowTimeWarningColor = *(Pixel *) vTo.addr;
   }
-  
+
   if (parse_cpair(ColorShout, appData.colorShout) < 0 ||
       parse_cpair(ColorSShout, appData.colorSShout) < 0 ||
       parse_cpair(ColorChannel1, appData.colorChannel1) < 0  ||
@@ -1782,9 +1830,9 @@ main(argc, argv)
     }
   textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
   textColors[ColorNone].attr = 0;
-  
+
   //    XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
-  
+
   /*
    * widget hierarchy
    */
@@ -1795,16 +1843,16 @@ main(argc, argv)
   } else {
     layoutName = "normalLayout";
   }
-  
+
   if (appData.titleInWindow) {
     /* todo check what this appdata does */
   }
-  
+
   if (appData.showButtonBar) {
     /* TODO hide button bar if requested */
   }
 
-  
+
   if (appData.titleInWindow)
     {
       if (smallLayout)
@@ -1812,7 +1860,7 @@ main(argc, argv)
 	  /* make it small */
 	  if (appData.showButtonBar)
 	    {
-	      
+
 	    }
 	}
       else
@@ -1825,142 +1873,142 @@ main(argc, argv)
   else
     {
     }
-  
-  
+
+
   /* set some checkboxes in the menu according to appData */
-  
+
   if (appData.alwaysPromoteToQueen)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Always Queen")),TRUE);
-  
+
   if (appData.animateDragging)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Dragging")),TRUE);
-  
+
   if (appData.animate)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Animate Moving")),TRUE);
-  
+
   if (appData.autoComment)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Comment")),TRUE);
-  
+
   if (appData.autoCallFlag)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Flag")),TRUE);
-  
+
   if (appData.autoFlipView)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Flip View")),TRUE);
-  
+
   if (appData.autoObserve)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Observe")),TRUE);
-  
+
   if (appData.autoRaiseBoard)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Raise Board")),TRUE);
-  
+
   if (appData.autoSaveGames)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Save")),TRUE);
-  
+
   if (appData.saveGameFile[0] != NULLCHAR)
     {
       /* Can't turn this off from menu */
       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Auto Save")),TRUE);
       gtk_action_set_sensitive(GTK_ACTION (gtk_builder_get_object (builder, "menuOptions.Auto Save")),FALSE);
     }
-  
+
   if (appData.blindfold)
       gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Blindfold")),TRUE);
-  
+
   if (appData.flashCount > 0)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Flash Moves")),TRUE);
-  
+
   if (appData.getMoveList)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Get Move List")),TRUE);
-  
+
 #if HIGHDRAG
   if (appData.highlightDragging)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Highlight Dragging")),TRUE);
 #endif
-  
+
   if (appData.highlightLastMove)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Highlight Last Move")),TRUE);
-  
+
   if (appData.icsAlarm)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.ICS Alarm")),TRUE);
-  
+
   if (appData.ringBellAfterMoves)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Move Sound")),TRUE);
-  
+
   if (appData.oldSaveStyle)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Old Save Style")),TRUE);
-  
+
   if (appData.periodicUpdates)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Periodic Updates")),TRUE);
-  
+
   if (appData.ponderNextMove)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Ponder Next Move")),TRUE);
-  
+
   if (appData.popupExitMessage)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Popup Exit Message")),TRUE);
-  
+
   if (appData.popupMoveErrors)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Popup Move Errors")),TRUE);
-  
+
   if (appData.premove)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Premove")),TRUE);
-  
+
   if (appData.quietPlay)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Quit Play")),TRUE);
-  
+
   if (appData.showCoords)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Show Coords")),TRUE);
-  
+
   if (appData.showThinking)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Hide Thinking")),TRUE);
-  
+
   if (appData.testLegality)
     gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (gtk_builder_get_object (builder, "menuOptions.Test Legality")),TRUE);
-  
+
   // TODO: add
   //    if (saveSettingsOnExit) {
   //	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
   //		    args, 1);
   //   }
-  
-  
+
+
   /* end setting check boxes */
-  
+
   /* load square colors */
   SVGLightSquare   = load_pixbuf("svg/LightSquare.svg",squareSize);
   SVGDarkSquare    = load_pixbuf("svg/DarkSquare.svg",squareSize);
   SVGNeutralSquare = load_pixbuf("svg/NeutralSquare.svg",squareSize);
-  
+
   /* use two icons to indicate if it is white's or black's turn */
   WhiteIcon  = load_pixbuf("svg/icon_white.svg",0);
   BlackIcon  = load_pixbuf("svg/icon_black.svg",0);
   WindowIcon = WhiteIcon;
   gtk_window_set_icon(GTK_WINDOW(GUI_Window),WindowIcon);
-  
-  
+
+
   /* realize window */
   gtk_widget_show (GUI_Window);
-  
+
   /* recalc boardsize */
   CreateGCs();
   CreatePieces();
   CreatePieceMenus();
-    
+
   /* [AS] Restore layout */
   if( wpMoveHistory.visible ) {
     HistoryPopUp();
   }
-  
-  if( wpEvalGraph.visible ) 
+
+  if( wpEvalGraph.visible )
     {
       EvalGraphPopUp();
     };
-  
+
   if( wpEngineOutput.visible ) {
     EngineOutputPopUp();
   }
-  
+
   InitBackEnd2();
-  
+
   if (errorExitStatus == -1) {
     if (appData.icsActive) {
       /* We now wait until we see "login:" from the ICS before
@@ -1968,7 +2016,7 @@ main(argc, argv)
       /*ICSInitScript();*/
       if (appData.icsInputBox) ICSInputBoxPopUp();
     }
-    
+
 #ifdef SIGWINCH
     signal(SIGWINCH, TermSizeSigHandler);
 #endif
@@ -1980,19 +2028,19 @@ main(argc, argv)
   }
   gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
   InitPosition(TRUE);
-  
+
   /*
    * Create a cursor for the board widget.
    * (This needs to be called after the window has been created to have access to board-window)
    */
-  
+
   BoardCursor = gdk_cursor_new(GDK_HAND2);
   gdk_window_set_cursor(GUI_Board->window, BoardCursor);
   gdk_cursor_destroy(BoardCursor);
-  
+
   /* end cursor */
   gtk_main ();
-  
+
   if (appData.debugMode) fclose(debugFP); // [DM] debug
   return 0;
 }
@@ -2026,12 +2074,12 @@ CmailSigHandler(sig)
 {
   int dummy = 0;
   int error;
-  
+
   signal(SIGUSR1, SIG_IGN);	/* suspend handler     */
-  
+
   /* Activate call-back function CmailSigHandlerCallBack()             */
   OutputToProcess(cmailPR, (char *)(&dummy), sizeof(int), &error);
-  
+
   signal(SIGUSR1, CmailSigHandler); /* re-activate handler */
 }
 
@@ -2055,7 +2103,7 @@ ICSInitScript()
   FILE *f;
   char buf[MSG_SIZ];
   char *p;
-  
+
   f = fopen(appData.icsLogon, "r");
   if (f == NULL) {
     p = getenv("HOME");
@@ -2104,7 +2152,7 @@ SetMenuEnables(enab)
      Enables *enab;
 {
   GObject *o;
- 
+
   if (!builder) return;
   while (enab->name != NULL) {
     o = gtk_builder_get_object(builder, enab->name);
@@ -2124,7 +2172,7 @@ SetMenuEnables(enab)
 void SetICSMode()
 {
   SetMenuEnables(icsEnables);
-  
+
 #ifdef ZIPPY
   if (appData.zippyPlay && !appData.noChessProgram)   /* [DM] icsEngineAnalyze */
     {}; //     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
@@ -2209,31 +2257,31 @@ char *FindFont(pattern, targetPxlSize)
 {
   char **fonts, *p, *best, *scalable, *scalableTail;
   int i, j, nfonts, minerr, err, pxlSize;
-  
+
 #ifdef ENABLE_NLS
   char **missing_list;
   int missing_count;
   char *def_string, *base_fnt_lst, strInt[3];
   XFontSet fntSet;
   XFontStruct **fnt_list;
-  
+
   base_fnt_lst = calloc(1, strlen(pattern) + 3);
   sprintf(strInt, "%d", targetPxlSize);
   p = strstr(pattern, "--");
   strncpy(base_fnt_lst, pattern, p - pattern + 2);
   strcat(base_fnt_lst, strInt);
   strcat(base_fnt_lst, strchr(p + 2, '-'));
-  
+
   if ((fntSet = XCreateFontSet(xDisplay,
 			       base_fnt_lst,
 			       &missing_list,
 			       &missing_count,
 			       &def_string)) == NULL) {
-    
+
     fprintf(stderr, _("Unable to create font set.\n"));
     exit (2);
   }
-  
+
   nfonts = XFontsOfFontSet(fntSet, &fnt_list, &fonts);
 #else
   //    fonts = XListFonts(xDisplay, pattern, 999999, &nfonts);
@@ -2243,7 +2291,7 @@ char *FindFont(pattern, targetPxlSize)
   //	exit(2);
   //    }
 #endif
-  
+
   best = fonts[0];
   scalable = NULL;
   minerr = 999999;
@@ -2303,42 +2351,42 @@ void CreateGCs()
 void CreatePieces()
 {
   int i;
-  
-  /* free if used 
+
+  /* free if used
      for(i=0;i<MAXPIECES;i++)
      {
      if(SVGpieces[i])
-     {	
+     {
      g_free(SVGpieces[i]);
      SVGpieces[i]=NULL;
      }
      }
   */
-  
+
   /* reload these */
   SVGLightSquare   = load_pixbuf("svg/LightSquare.svg",squareSize);
   SVGDarkSquare    = load_pixbuf("svg/DarkSquare.svg",squareSize);
   SVGNeutralSquare = load_pixbuf("svg/NeutralSquare.svg",squareSize);
-  
-  
+
+
   /* get some defaults going */
   for(i=WhitePawn; i<DemotePiece+1; i++)
     SVGpieces[i]   = load_pixbuf("svg/NeutralSquare.svg",squareSize);
-  
+
   SVGpieces[WhitePawn]   = load_pixbuf("svg/WhitePawn.svg",squareSize);
   SVGpieces[WhiteKnight] = load_pixbuf("svg/WhiteKnight.svg",squareSize);
   SVGpieces[WhiteBishop] = load_pixbuf("svg/WhiteBishop.svg",squareSize);
   SVGpieces[WhiteRook]   = load_pixbuf("svg/WhiteRook.svg",squareSize);
   SVGpieces[WhiteQueen]  = load_pixbuf("svg/WhiteQueen.svg",squareSize);
   SVGpieces[WhiteKing]   = load_pixbuf("svg/WhiteKing.svg",squareSize);
-  
+
   SVGpieces[BlackPawn]   = load_pixbuf("svg/BlackPawn.svg",squareSize);
   SVGpieces[BlackKnight] = load_pixbuf("svg/BlackKnight.svg",squareSize);
   SVGpieces[BlackBishop] = load_pixbuf("svg/BlackBishop.svg",squareSize);
   SVGpieces[BlackRook]   = load_pixbuf("svg/BlackRook.svg",squareSize);
   SVGpieces[BlackQueen]  = load_pixbuf("svg/BlackQueen.svg",squareSize);
   SVGpieces[BlackKing]   = load_pixbuf("svg/BlackKing.svg",squareSize);
-  
+
   return;
 }
 
@@ -2349,7 +2397,7 @@ static void MenuBarSelect(w, addr, index)
      caddr_t index;
 {
   XtActionProc proc = (XtActionProc) addr;
-  
+
   (proc)(NULL, NULL, NULL, NULL);
 }
 
@@ -2362,7 +2410,7 @@ void CreateMenuBarPopup(parent, name, mb)
   Widget menu, entry;
   MenuItem *mi;
   Arg args[16];
-  
+
   menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
 			    parent, NULL, 0);
   j = 0;
@@ -2385,7 +2433,7 @@ void CreateMenuBarPopup(parent, name, mb)
   }
 }
 
-Widget 
+Widget
 CreateMenuBar(mb)
      Menu *mb;
 {
@@ -2393,14 +2441,14 @@ CreateMenuBar(mb)
   Widget anchor, menuBar;
   Arg args[16];
   char menuName[MSG_SIZ];
-  
+
   j = 0;
   XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
   XtSetArg(args[j], XtNvSpace, 0);                        j++;
   XtSetArg(args[j], XtNborderWidth, 0);                   j++;
   menuBar = XtCreateWidget("menuBar", boxWidgetClass,
 			   formWidget, args, j);
-  
+
   while (mb->name != NULL) {
     strcpy(menuName, "menu");
     strcat(menuName, mb->name);
@@ -2415,7 +2463,7 @@ CreateMenuBar(mb)
     else {
       XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
     }
-    
+
     XtSetArg(args[j], XtNborderWidth, 0);                   j++;
     anchor = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
 				   menuBar, args, j);
@@ -2435,13 +2483,13 @@ CreatePieceMenu(name, color)
   Widget entry, menu;
   Arg args[16];
   ChessSquare selection;
-  
+
   menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
 			    boardWidget, args, 0);
-  
+
   for (i = 0; i < PIECE_MENU_SIZE; i++) {
     String item = pieceMenuStrings[color][i];
-    
+
     if (strcmp(item, "----") == 0) {
       entry = XtCreateManagedWidget(item, smeLineObjectClass,
 				    menu, NULL, 0);
@@ -2469,7 +2517,7 @@ CreatePieceMenus()
   Widget entry;
   Arg args[16];
   ChessSquare selection;
-  
+
   //    whitePieceMenu = CreatePieceMenu("menuW", 0);
   //    blackPieceMenu = CreatePieceMenu("menuB", 1);
   //
@@ -2498,7 +2546,7 @@ CreatePieceMenus()
   //    }
 }
 
-void 
+void
 SetupDropMenu()
 {
   int i, j, count;
@@ -2506,7 +2554,7 @@ SetupDropMenu()
   Arg args[16];
   Widget entry;
   char* p;
-  
+
   for (i=0; i<sizeof(dmEnables)/sizeof(DropMenuEnables); i++) {
     entry = XtNameToWidget(dropMenu, dmEnables[i].widget);
     p = strchr(gameMode == IcsPlayingWhite ? white_holding : black_holding,
@@ -2523,7 +2571,7 @@ SetupDropMenu()
   }
 }
 
-void 
+void
 PieceMenuPopup(w, event, params, num_params)
      Widget w;
      XEvent *event;
@@ -2532,7 +2580,7 @@ PieceMenuPopup(w, event, params, num_params)
 {
   String whichMenu; int menuNr;
   if (event->type == ButtonRelease)
-    menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY); 
+    menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
   else if (event->type == ButtonPress)
     menuNr = RightClick(Press,   event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
   switch(menuNr) {
@@ -2545,7 +2593,7 @@ PieceMenuPopup(w, event, params, num_params)
   XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
 }
 
-static void 
+static void
 PieceMenuSelect(w, piece, junk)
      Widget w;
      ChessSquare piece;
@@ -2555,7 +2603,7 @@ PieceMenuSelect(w, piece, junk)
   EditPositionMenuEvent(piece, pmFromX, pmFromY);
 }
 
-static void 
+static void
 DropMenuSelect(w, piece, junk)
      Widget w;
      ChessSquare piece;
@@ -2569,7 +2617,7 @@ DropMenuSelect(w, piece, junk)
  * If the user selects on a border boundary, return -1; if off the board,
  *   return -2.  Otherwise map the event coordinate to the square.
  */
-int 
+int
 EventToSquare(x, limit)
      int x;
 {
@@ -2586,22 +2634,22 @@ EventToSquare(x, limit)
   return x;
 }
 
-static void 
+static void
 do_flash_delay(msec)
      unsigned long msec;
 {
   TimeDelay(msec);
 }
 
-static void 
+static void
 drawHighlight(file, rank, line_type)
      int file, rank, line_type;
 {
   int x, y;
   cairo_t *cr;
-  
+
   if (lineGap == 0 || appData.blindfold) return;
-  
+
   if (flipView)
     {
       x = lineGap/2 + ((BOARD_WIDTH-1)-file) *
@@ -2614,17 +2662,17 @@ drawHighlight(file, rank, line_type)
       y = lineGap/2 + ((BOARD_HEIGHT-1)-rank) *
 	(squareSize + lineGap);
     }
-  
+
   /* get a cairo_t */
   cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
-  
+
   /* draw the highlight */
   cairo_move_to (cr, x, y);
   cairo_rel_line_to (cr, 0,squareSize+lineGap);
   cairo_rel_line_to (cr, squareSize+lineGap,0);
   cairo_rel_line_to (cr, 0,-squareSize-lineGap);
   cairo_close_path (cr);
-  
+
   cairo_set_line_width (cr, lineGap);
   switch(line_type)
     {
@@ -2639,12 +2687,12 @@ drawHighlight(file, rank, line_type)
     default:
       cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
     }
-  
+
   cairo_stroke (cr);
-  
+
   /* free memory */
   cairo_destroy (cr);
-  
+
   return;
 }
 
@@ -2675,9 +2723,9 @@ SetHighlights(fromX, fromY, toX, toY)
 	{
 	  drawHighlight(fromX, fromY, LINE_TYPE_HIGHLIGHT);
 	}
-    }     
+    }
   if (hi2X != toX || hi2Y != toY)
-    {    
+    {
       if (toX >= 0 && toY >= 0)
 	{
 	  drawHighlight(toX, toY, LINE_TYPE_HIGHLIGHT);
@@ -2687,7 +2735,7 @@ SetHighlights(fromX, fromY, toX, toY)
   hi1Y = fromY;
   hi2X = toX;
   hi2Y = toY;
-  
+
   return;
 }
 
@@ -2739,15 +2787,15 @@ ClearPremoveHighlights()
   SetPremoveHighlights(-1, -1, -1, -1);
 }
 
-void 
+void
 BlankSquare(x, y, color, piece, dest)
      int x, y, color;
      ChessSquare piece;
      Drawable dest;
 {
   GdkPixbuf *pb;
-  
-  switch (color) 
+
+  switch (color)
     {
     case 0: /* dark */
       pb = SVGDarkSquare;
@@ -2764,7 +2812,7 @@ BlankSquare(x, y, color, piece, dest)
   return;
 }
 
-void 
+void
 DrawPiece(piece, square_color, x, y, dest)
      ChessSquare piece;
      int square_color, x, y;
@@ -2772,7 +2820,7 @@ DrawPiece(piece, square_color, x, y, dest)
 {
   /* redraw background, since piece might be transparent in some areas */
   BlankSquare(x,y,square_color,piece,dest);
-  
+
   /* draw piece */
   gdk_draw_pixbuf(GDK_WINDOW(GUI_Board->window),NULL,
 		  GDK_PIXBUF(SVGpieces[piece]),0,0,x,y,-1,-1,
@@ -2781,34 +2829,34 @@ DrawPiece(piece, square_color, x, y, dest)
 }
 
 /* [HR] determine square color depending on chess variant. */
-static int 
+static int
 SquareColor(row, column)
      int row, column;
 {
   int square_color;
-  
-  if (gameInfo.variant == VariantXiangqi) 
+
+  if (gameInfo.variant == VariantXiangqi)
     {
-      if (column >= 3 && column <= 5 && row >= 0 && row <= 2) 
+      if (column >= 3 && column <= 5 && row >= 0 && row <= 2)
 	square_color = 1;
-      else if (column >= 3 && column <= 5 && row >= 7 && row <= 9) 
+      else if (column >= 3 && column <= 5 && row >= 7 && row <= 9)
 	square_color = 0;
-      else if (row <= 4) 
+      else if (row <= 4)
 	square_color = 0;
-      else 
+      else
 	square_color = 1;
-    } 
-  else 
+    }
+  else
     square_color = ((column + row) % 2) == 1;
-  
+
   /* [hgm] holdings: next line makes all holdings squares light */
-  if(column < BOARD_LEFT || column >= BOARD_RGHT) 
+  if(column < BOARD_LEFT || column >= BOARD_RGHT)
     square_color = 1;
-  
+
   return square_color;
 }
 
-void 
+void
 DrawSquare(row, column, piece, do_flash)
      int row, column, do_flash;
      ChessSquare piece;
@@ -2817,10 +2865,10 @@ DrawSquare(row, column, piece, do_flash)
     int i;
     char string[2];
     int flash_delay;
-    
+
     /* Calculate delay in milliseconds (2-delays per complete flash) */
     flash_delay = 500 / appData.flashRate;
-    
+
     /* calculate x and y coordinates from row and column */
     if (flipView)
       {
@@ -2838,14 +2886,14 @@ DrawSquare(row, column, piece, do_flash)
     if(twoBoards && partnerUp) x += hOffset; // [HGM] dual: draw second board
 
     square_color = SquareColor(row, column);
-    
+
     // [HGM] holdings: blank out area between board and holdings
     if ( column == BOARD_LEFT-1 ||  column == BOARD_RGHT
 	 || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
 	 || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) )
       {
 	BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
-	
+
 	// [HGM] print piece counts next to holdings
 	string[1] = NULLCHAR;
 	if(piece > 1)
@@ -2856,9 +2904,9 @@ DrawSquare(row, column, piece, do_flash)
 
 	    /* get a cairo_t */
 	    cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
-	    
+
 	    string[0] = '0' + piece;
-	    
+
 	    /* TODO this has to go into the font-selection */
 	    cairo_select_font_face (cr, "Sans",
 				    CAIRO_FONT_SLANT_NORMAL,
@@ -2877,7 +2925,7 @@ DrawSquare(row, column, piece, do_flash)
 		xpos= x + 2;
 		ypos = y + extents.y_bearing + 1;
 	      }
-	    
+
 	    /* TODO mono mode? */
 	    cairo_move_to (cr, xpos, ypos);
 	    cairo_text_path (cr, string);
@@ -2957,10 +3005,10 @@ DrawSquare(row, column, piece, do_flash)
 	  {
 	    string[0] = 'a' + column - BOARD_LEFT;
 	    cairo_text_extents (cr, string, &extents);
-	    
+
 	    xpos = x + squareSize - extents.width - 2;
 	    ypos = y + squareSize - extents.height - extents.y_bearing - 1;
-	    
+
 	    if (appData.monoMode)
 	      { /*TODO*/
 	      }
@@ -2978,13 +3026,13 @@ DrawSquare(row, column, piece, do_flash)
 	  }
 	if ( column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT))
 	  {
-	    
+
 	    string[0] = ONE + row;
 	    cairo_text_extents (cr, string, &extents);
-	    
+
 	    xpos = x + 2;
 	    ypos = y + extents.height + 1;
-	    
+
 	    if (appData.monoMode)
 	      { /*TODO*/
 	      }
@@ -2999,31 +3047,31 @@ DrawSquare(row, column, piece, do_flash)
 	    cairo_set_source_rgb (cr, 0, 0, 1.0);
 	    cairo_set_line_width (cr, 0.1);
 	    cairo_stroke (cr);
-	    
+
 	  }
 	/* free memory */
 	cairo_destroy (cr);
       }
-    
+
     return;
 }
 
 
 /* Returns 1 if there are "too many" differences between b1 and b2
    (i.e. more than 1 move was made) */
-static int 
+static int
 too_many_diffs(b1, b2)
      Board b1, b2;
 {
   int i, j;
   int c = 0;
-  
-  for (i=0; i<BOARD_HEIGHT; ++i) 
-    for (j=0; j<BOARD_WIDTH; ++j) 
-      if (b1[i][j] != b2[i][j]) 
+
+  for (i=0; i<BOARD_HEIGHT; ++i)
+    for (j=0; j<BOARD_WIDTH; ++j)
+      if (b1[i][j] != b2[i][j])
 	if (++c > 4)	/* Castling causes 4 diffs */
 	  return 1;
-  
+
   return 0;
 }
 
@@ -3074,26 +3122,26 @@ static int check_castle_draw(newb, oldb, rrow, rcol)
     return 0;
 }
 
-// [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph 
-void 
+// [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph
+void
 DrawSeekAxis( int x, int y, int xTo, int yTo )
 {
   //  XDrawLine(xDisplay, xBoardWindow, lineGC, x, y, xTo, yTo);
 }
 
-void 
+void
 DrawSeekBackground( int left, int top, int right, int bottom )
 {
   //  XFillRectangle(xDisplay, xBoardWindow, lightSquareGC, left, top, right-left, bottom-top);
 }
 
-void 
+void
 DrawSeekText(char *buf, int x, int y)
 {
   //    XDrawString(xDisplay, xBoardWindow, coordGC, x, y+4, buf, strlen(buf));
 }
 
-void 
+void
 DrawSeekDot(int x, int y, int colorNr)
 {
   int square = colorNr & 0x80;
@@ -3104,7 +3152,7 @@ DrawSeekDot(int x, int y, int colorNr)
     //    XFillRectangle(xDisplay, xBoardWindow, color,
     //		   x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
   //  else
-    //    XFillArc(xDisplay, xBoardWindow, color, 
+    //    XFillArc(xDisplay, xBoardWindow, color,
     //	     x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
 }
 
@@ -3113,7 +3161,7 @@ static int damage[2][BOARD_RANKS][BOARD_FILES];
 /*
  * event handler for redrawing the board
  */
-void 
+void
 DrawPosition( repaint, board)
      /*Boolean*/int repaint;
 		Board board;
@@ -3199,7 +3247,7 @@ DrawPosition( repaint, board)
 
   CopyBoard(lastBoard[nr], board);
   lastBoardValid[nr] = 1;
-  if(nr == 0) 
+  if(nr == 0)
     {
       lastFlipView = flipView;
 
@@ -3212,10 +3260,10 @@ DrawPosition( repaint, board)
 
     CopyBoard(lastBoard[nr], board);
     lastBoardValid[nr] = 1;
-  if(nr == 0) 
+  if(nr == 0)
     { // [HGM] dual: no highlights on second board yet
       lastFlipView = flipView;
-      
+
       /* Draw highlights */
       if (pm1X >= 0 && pm1Y >= 0)
 	{
@@ -3235,14 +3283,14 @@ DrawPosition( repaint, board)
 	}
 
       /* If piece being dragged around board, must redraw that too */
-      
+
       DrawDragPiece();
     }
 
   return;
 }
 
-void 
+void
 AnimateUserMove (GtkWidget *w, GdkEventMotion *event)
 {
   int x, y;
@@ -3256,7 +3304,7 @@ AnimateUserMove (GtkWidget *w, GdkEventMotion *event)
       y = event->y;
       state = event->state;
     }
-    
+
   if (state & GDK_BUTTON1_MASK)
     {
       DragPieceMove(x, y);
@@ -4051,21 +4099,21 @@ int LoadGamePopUp(f, gameNumber, title)
 {
     cmailMsgLoaded = FALSE;
 
-    if (gameNumber == 0) 
+    if (gameNumber == 0)
       {
 	int error = GameListBuild(f);
 
-	if (error) 
+	if (error)
 	  {
 	    DisplayError(_("Cannot build game list"), error);
-	  } 
-	else if (!ListEmpty(&gameList) 
-		 && ((ListGame *) gameList.tailPred)->number > 1) 
+	  }
+	else if (!ListEmpty(&gameList)
+		 && ((ListGame *) gameList.tailPred)->number > 1)
 	  {
 	    /* we need an answer which game to load, so let's make it modal for a while*/
-	    gtk_window_set_modal(GTK_WINDOW(GUI_GameList) , TRUE);  
+	    gtk_window_set_modal(GTK_WINDOW(GUI_GameList) , TRUE);
 	    GameListPopUp(f, title);
-	    gtk_window_set_modal(GTK_WINDOW(GUI_GameList) , FALSE);  
+	    gtk_window_set_modal(GTK_WINDOW(GUI_GameList) , FALSE);
 
 	    return TRUE;
 	  };
@@ -4187,7 +4235,7 @@ void PastePositionProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
 {
-//    XtGetSelectionValue(menuBarWidget, 
+//    XtGetSelectionValue(menuBarWidget,
 //      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
 //      /* (XtSelectionCallbackProc) */ PastePositionCB,
 //      NULL, /* client_data passed to PastePositionCB */
@@ -5442,20 +5490,20 @@ DoInputCallback(io,cond,data)
    */
 
   int count; /* how many bytes did we read */
-  int error; 
+  int error;
   char *p, *q;
-  
+
   /* All information (callback function, file descriptor, etc) is
-   * saved in an InputSource structure 
+   * saved in an InputSource structure
    */
-  InputSource *is = (InputSource *) data; 
-  
-  if (is->lineByLine) 
+  InputSource *is = (InputSource *) data;
+
+  if (is->lineByLine)
     {
       count = read(is->fd, is->unused,
 		   INPUT_SOURCE_BUF_SIZE - (is->unused - is->buf));
 
-      if (count <= 0) 
+      if (count <= 0)
 	{
 	  (is->func)(is, is->closure, is->buf, count, count ? errno : 0);
 	  return;
@@ -5463,9 +5511,9 @@ DoInputCallback(io,cond,data)
       is->unused += count;
       p = is->buf;
       /* break input into lines and call the callback function on each
-       * line 
+       * line
        */
-      while (p < is->unused) 
+      while (p < is->unused)
 	{
 	  q = memchr(p, '\n', is->unused - p);
 	  if (q == NULL) break;
@@ -5475,16 +5523,16 @@ DoInputCallback(io,cond,data)
 	}
       /* remember not yet used part of the buffer */
       q = is->buf;
-      while (p < is->unused) 
+      while (p < is->unused)
 	{
 	  *q++ = *p++;
 	}
       is->unused = q;
     }
-  else 
+  else
     {
       /* read maximum length of input buffer and send the whole buffer
-       * to the callback function 
+       * to the callback function
        */
       count = read(is->fd, is->buf, INPUT_SOURCE_BUF_SIZE);
       if (count == -1)
@@ -5493,7 +5541,7 @@ DoInputCallback(io,cond,data)
 	error = 0;
       (is->func)(is, is->closure, is->buf, count, error);
     }
-  
+
   return;
 }
 
@@ -5517,7 +5565,7 @@ InputSourceRef AddInputSource(pr, lineByLine, func, closure)
 	is->kind = cp->kind;
 	is->fd = cp->fdFrom;
     }
-    if (lineByLine) 
+    if (lineByLine)
       is->unused = is->buf;
     else
       is->unused = NULL;
@@ -5696,9 +5744,9 @@ FrameDelay (time)
 
 static void
 ScreenSquare(column, row, pt, color)
-     int column; 
-     int row; 
-     GdkPoint *pt; 
+     int column;
+     int row;
+     GdkPoint *pt;
      int *color;
 {
   if (flipView) {
@@ -5752,10 +5800,10 @@ Intersect(old, new, size, area, pt)
      GdkPoint *old; GdkPoint *new;
      int size; GdkRectangle *area; GdkPoint *pt;
 {
-  if (    abs(old->x - new->x) > size 
+  if (    abs(old->x - new->x) > size
        || abs(old->y - new->y) > size )
        return False;
-  else 
+  else
     {
       SetRect(area, Max(new->x - old->x, 0), Max(new->y - old->y, 0),
 	      size - abs(old->x - new->x), size - abs(old->y - new->y));
@@ -5899,7 +5947,7 @@ SelectGCMask(piece, clip, outline, mask)
 
 static void
 OverlayPiece(piece, position, dest)
-     ChessSquare piece; 
+     ChessSquare piece;
      GdkPoint *position;
      Drawable dest;
 {
@@ -5958,7 +6006,7 @@ AnimationFrame(anim, frame, piece)
   if(x>=0 && y>=0 )
     {
       DrawGrid(x,y,2,2);
-      
+
       if (flipView)
 	{
 	  xoffset=-1;
@@ -6091,7 +6139,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
 
   /* Be sure end square is redrawn */
   damage[0][toY][toX] = True;
-  
+
   return;
 }
 
@@ -6255,45 +6303,45 @@ DrawGrid(int x, int y, int Nx, int Ny)
 {
   /* draws a grid starting around Nx, Ny squares starting at x,y */
   int i,j;
-  
+
   int x1,x2,y1,y2;
   cairo_t *cr;
-  
+
   /* get a cairo_t */
   cr = gdk_cairo_create (GDK_WINDOW(GUI_Board->window));
-  
+
   cairo_set_line_width (cr, lineGap);
-  
+
   /* TODO: use appdata colors */
   cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
-    
+
   /* lines in X */
   for (i = y; i < MIN(BOARD_HEIGHT,y + Ny+1); i++)
     {
       x1 = x * (squareSize + lineGap);;
       x2 = lineGap + MIN(BOARD_WIDTH,x + Nx) * (squareSize + lineGap);
       y1 = y2 = lineGap / 2 + (i * (squareSize + lineGap));
-      
+
       cairo_move_to (cr, x1, y1);
       cairo_line_to (cr, x2,y2);
       cairo_stroke (cr);
     }
-  
+
   /* lines in Y */
   for (j = x; j < MIN(BOARD_WIDTH,x + Nx+1) ; j++)
     {
       y1 = y * (squareSize + lineGap);
       y2 = lineGap + MIN(BOARD_HEIGHT,y + Ny) * (squareSize + lineGap);
       x1 = x2  = lineGap / 2 + (j * (squareSize + lineGap));
-      
+
       cairo_move_to (cr, x1, y1);
       cairo_line_to (cr, x2, y2);
       cairo_stroke (cr);
     }
-  
+
   /* free memory */
   cairo_destroy (cr);
-  
+
   return;
 }
 

@@ -49,7 +49,11 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
+#ifndef XBOARD_H
+#define XBOARD_H
+
 #include <stdio.h>
+#include <gtk/gtk.h>
 
 #define ICS_LOGON    ".icsrc"
 #define INFOFILE     "xboard.info"
@@ -116,8 +120,55 @@ typedef struct {
 #define SETTINGS_FILE           SYSCONFDIR"/xboard.conf"
 #define COLOR_BKGD              "white"
 
+/* GTK widgets */
+extern GtkBuilder              *builder;
+
+extern GtkWidget               *GUI_Window;
+extern GtkWidget               *GUI_Aspect;
+extern GtkWidget               *GUI_History;
+extern GtkWidget               *GUI_GameList;
+extern GtkWidget               *GUI_Board;
+extern GtkWidget               *GUI_Whiteclock;
+extern GtkWidget               *GUI_Blackclock;
+extern GtkWidget               *GUI_Error;
+extern GtkWidget               *GUI_Menubar;
+extern GtkWidget               *GUI_Timer;
+extern GtkWidget               *GUI_Buttonbar;
+extern GtkWidget               *GUI_EditTags;
+extern GtkWidget               *GUI_TagBox;
+extern GtkWidget               *GUI_Preferences;
+
+/* engine output */
+extern GtkWidget               *GUI_EngineOutput;
+extern GtkWidget               *GUI_EngineOutputFields[2][6];
+
+extern GtkListStore            *LIST_MoveHistory;
+extern GtkListStore            *LIST_GameList;
+
+extern GtkTreeView             *TREE_History;
+extern GtkTreeView             *TREE_Game;
+
+extern gint                     boardWidth;
+extern gint                     boardHeight;
+
+
+extern GdkPixbuf               *WindowIcon;
+extern GdkPixbuf               *WhiteIcon;
+extern GdkPixbuf               *BlackIcon;
+
+#define MAXPIECES 100
+extern GdkPixbuf               *SVGpieces[MAXPIECES];
+extern GdkPixbuf               *SVGLightSquare;
+extern GdkPixbuf               *SVGDarkSquare;
+extern GdkPixbuf               *SVGNeutralSquare;
+
+extern GdkCursor               *BoardCursor;
+
+/* end GTK widgets */
+
 typedef int (*FileProc) P((FILE *f, int n, char *title));
 void CatchDeleteWindow(Widget w, String procname);
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */
 
+#endif /* XBOARD_H */

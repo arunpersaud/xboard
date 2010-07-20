@@ -53,8 +53,6 @@
 # define N_(s)  s
 #endif
 
-extern GtkWidget *GUI_Window;
-
 
 GdkPixbuf *
 load_pixbuf(char *filename,int size)
@@ -65,7 +63,7 @@ load_pixbuf(char *filename,int size)
     image = gdk_pixbuf_new_from_file_at_size(filename,size,size,NULL);
   else
     image = gdk_pixbuf_new_from_file(filename,NULL);
-  
+
   if(image == NULL)
     {
       fprintf(stderr,_("Error: couldn't load file: %s\n"),filename);
@@ -103,21 +101,21 @@ FileNamePopUp(label, def, proc, openMode)
 
       //see loadgamepopup
       f = fopen(filename, openMode);
-      if (f == NULL) 
+      if (f == NULL)
 	{
 	  DisplayError(_("Failed to open file"), errno);
 	}
-      else 
+      else
 	{
 	  /* TODO add indec */
 	  (*proc)(f, 0, filename);
 	}
       g_free (filename);
     };
-  
+
   gtk_widget_destroy (dialog);
   ModeHighlight();
-  
+
   return;
 
 }

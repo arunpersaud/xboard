@@ -137,7 +137,7 @@ static HDC hdcPB = NULL;
 static HBITMAP hbmPB = NULL;
 #endif
 
-// [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end) 
+// [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end)
 void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
 {
 static curX, curY;
@@ -295,7 +295,7 @@ Widget EvalGraphCreate(name)
 //    j = 0;
 //    XtSetArg(args[j], XtNresizable, True);  j++;
 //    shell =
-//#if TOPLEVEL 
+//#if TOPLEVEL
 //      //     XtCreatePopupShell(name, topLevelShellWidgetClass,
 //#else
 //      //      XtCreatePopupShell(name, transientShellWidgetClass,
@@ -369,7 +369,7 @@ Widget EvalGraphCreate(name)
 //
 }
 
-void 
+void
 EvalGraphPopUp()
 {
   return;
@@ -412,9 +412,9 @@ EvalGraphPopUp()
 
 void EvalGraphPopDown()
 {
-  return; 
+  return;
   //TODO
-  
+
     Arg args[16];
     int j;
 

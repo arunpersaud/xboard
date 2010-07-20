@@ -58,8 +58,7 @@ extern char *getenv();
 #include "xboard.h"
 #include "engineoutput.h"
 #include "gettext.h"
-
-extern GtkWidget   *GUI_EngineOutput; /* set in xboard.x */
+#include "interface.h"
 
 
 #ifdef ENABLE_NLS
@@ -72,8 +71,6 @@ extern GtkWidget   *GUI_EngineOutput; /* set in xboard.x */
 
 
 GdkPixbuf *EngineIcons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
-
-extern GtkWidget *GUI_EngineOutputFields[2][GUI_N]; // [HGM] front-end array to translate output field to window handle
 
 Boolean   engineOutputDialogUp=False;
 
@@ -99,11 +96,11 @@ typedef struct {
 } EngineOutputData;
 
 
-void ResizeWindowControls(mode)
-	int mode;
+void
+ResizeWindowControls(int mode)
 {
-  /* mode = 0 : hide one output 
-   *        1 : show both 
+  /* mode = 0 : hide one output
+   *        1 : show both
    */
 
   //TODO
@@ -112,9 +109,9 @@ void ResizeWindowControls(mode)
 }
 
 
-void 
+void
 InitializeEngineOutput()
-{ 
+{
   EngineIcons[nColorWhite]   = (GdkPixbuf *)load_pixbuf("svg/engine-white.svg",14);
   EngineIcons[nColorBlack]   = (GdkPixbuf *)load_pixbuf("svg/engine-black.svg",14);
   EngineIcons[nColorUnknown] = (GdkPixbuf *)load_pixbuf("svg/engine-unknown.svg",14);
@@ -126,14 +123,14 @@ InitializeEngineOutput()
   return;
 }
 
-void 
+void
 DoSetWindowText(int which, int field, char *text)
-{ 
+{
   gtk_label_set_text(GTK_LABEL(GUI_EngineOutputFields[which][field]),text);
   return;
 }
 
-void 
+void
 InsertIntoMemo( int which, char * text, int where )
 {
   GtkTextBuffer *buffer=NULL;
@@ -147,28 +144,28 @@ InsertIntoMemo( int which, char * text, int where )
   return;
 }
 
-void 
+void
 SetIcon( int which, int field, int nIcon )
 {
 
   if( nIcon != 0   )
     gtk_image_set_from_pixbuf (GTK_IMAGE(GUI_EngineOutputFields[which][field]),EngineIcons[nIcon]);
-  
+
   return;
 }
 
 void DoClearMemo(int which)
-{ 
+{
   GtkTextBuffer *buffer;
 
   buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(GUI_EngineOutputFields[which][GUI_TEXT]));
-  
+
   gtk_text_buffer_set_text(buffer,"",0);
 
   return;
 }
 
-void 
+void
 EngineOutputPopUp()
 {
   InitializeEngineOutput();
@@ -195,16 +192,18 @@ void EngineOutputPopDown()
   gtk_widget_hide (GUI_EngineOutput);
   return;
 
-  // [HGM] thinking: might need to shut off thinking 
-  ShowThinkingEvent(); 
+  // [HGM] thinking: might need to shut off thinking
+  ShowThinkingEvent();
 }
 
-int EngineOutputIsUp()
+int
+EngineOutputIsUp()
 {
     return engineOutputDialogUp;
 }
 
-int EngineOutputDialogExists()
+int
+EngineOutputDialogExists()
 {
   return 1;
 }
@@ -212,10 +211,10 @@ int EngineOutputDialogExists()
 void
 EngineOutputProc(GtkObject *object, gpointer user_data)
 {
-  if (engineOutputDialogUp) 
+  if (engineOutputDialogUp)
     EngineOutputPopDown();
-  else 
+  else
     EngineOutputPopUp();
- 
+
   return;
 }
