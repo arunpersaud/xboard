@@ -8133,7 +8133,7 @@ GameEnds(result, resultDetails, whosays)
 {
     GameMode nextGameMode;
     int isIcsGame;
-    char buf[MSG_SIZ];
+    char buf[MSG_SIZ], popupRequested = 0;
 
     if(endingGame) return; /* [HGM] crash: forbid recursion */
     endingGame = 1;
@@ -8472,7 +8472,7 @@ GameEnds(result, resultDetails, whosays)
 		    first.tidy, second.tidy,
 		    first.matchWins, second.matchWins,
 		    appData.matchGames - (first.matchWins + second.matchWins));
-	    DisplayFatalError(buf, 0, 0);
+	    popupRequested++; // [HGM] crash: postpone to after resetting endingGame
 	}
     }
     if ((gameMode == AnalyzeMode || gameMode == AnalyzeFile) &&
@@ -8481,6 +8481,7 @@ GameEnds(result, resultDetails, whosays)
     gameMode = nextGameMode;
     ModeHighlight();
     endingGame = 0;  /* [HGM] crash */
+    if(popupRequested) DisplayFatalError(buf, 0, 0); // [HGM] crash: this call GameEnds recursively through ExitEvent! Make it a harmless tail recursion.
 }
 
 /* Assumes program was just initialized (initString sent).
