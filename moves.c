@@ -144,6 +144,7 @@ char pieceToChar[] = {
                         'p', 'n', 'b', 'r', 'q', 'f', 'e', 'a', 'c', 'w', 'm', 
                         'o', 'h', 'i', 'j', 'g', 'd', 'v', 'l', 's', 'u', 'k', 
                         'x' };
+char pieceNickName[EmptySquare];
 
 char PieceToChar(p)
      ChessSquare p;
@@ -166,6 +167,8 @@ ChessSquare CharToPiece(c)
      int c;
 {
      int i;
+     for(i=0; i< (int) EmptySquare; i++)
+          if(pieceNickName[i] == c) return (ChessSquare) i;
      for(i=0; i< (int) EmptySquare; i++)
           if(pieceToChar[i] == c) return (ChessSquare) i;
      return EmptySquare;

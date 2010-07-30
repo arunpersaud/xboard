@@ -234,6 +234,7 @@ char *ProbeBook P((int moveNr, char *book)); // [HGM] book: returns a book move
 char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [HGM] book
 void ics_update_width P((int new_width));
 extern char installDir[MSG_SIZ];
+VariantClass startVariant; /* [HGM] nicks: initial variant */
 
 extern int tinyLayout, smallLayout;
 ChessProgramStats programStats;
@@ -637,6 +638,7 @@ InitBackEnd1()
     int matched, min, sec;
 
     ShowThinkingEvent(); // [HGM] thinking: make sure post/nopost state is set according to options
+    startVariant = StringToVariant(appData.variant); // [HGM] nicks: remember original variant
 
     GetTimeMark(&programStartTime);
     srandom((programStartTime.ms + 1000*programStartTime.sec)*0x1001001); // [HGM] book: makes sure random is unpredictabe to msec level
@@ -5260,7 +5262,10 @@ InitPosition(redraw)
     for(i=0; i<BOARD_FILES-2; i++)
       initialPosition[CASTLING][i] = initialRights[i] = NoRights; /* but no rights yet */
     initialPosition[EP_STATUS] = EP_NONE;
-    SetCharTable(pieceToChar, "PNBRQ...........Kpnbrq...........k"); 
+    SetCharTable(pieceToChar, "PNBRQ...........Kpnbrq...........k");
+    if(startVariant == gameInfo.variant) // [HGM] nicks: enable nicknames in original variant
+         SetCharTable(pieceNickName, appData.pieceNickNames);
+    else SetCharTable(pieceNickName, "............");
 
     switch (gameInfo.variant) {
     case VariantFischeRandom:

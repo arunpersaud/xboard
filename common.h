@@ -579,6 +579,7 @@ typedef struct {
     int holdingsSize;
     int matchPause;
     char * pieceToCharTable;
+    char * pieceNickNames;
     Boolean allWhite;
     Boolean upsideDown;
     Boolean alphaRank;

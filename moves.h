@@ -60,6 +60,7 @@ extern int PieceToNumber P((ChessSquare p));
 extern void CopyBoard P((Board to, Board from));
 extern int CompareBoards P((Board board1, Board board2));
 extern char pieceToChar[(int)EmptySquare+1];
+extern char pieceNickName[(int)EmptySquare];
 
 typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
