@@ -5146,7 +5146,7 @@ void FileNamePopUp(label, def, proc, openMode)
 	int index; // this is not supported yet
 	FILE *f;
 	if(f = XsraSelFile(shellWidget, label, NULL, NULL, "could not open: ",
-	    NULL, openMode, NULL, &name))
+	    def, openMode, NULL, &name))
 		(void) (*fileProc)(f, index=0, name);
     }
 }
