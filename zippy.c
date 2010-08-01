@@ -931,20 +931,13 @@ int ZippyMatch(buf, i)
     }
 
 
-    if (ics_type == ICS_ICC) { // [DM]
-        if (looking_at(buf, i, "Your opponent offers you a draw")) {
-            if (first.sendDrawOffers && first.initDone)
-                SendToProgram("draw\n", &first);
-            return TRUE;
-        }
-    } else {
-        if (looking_at(buf, i, "offers you a draw")) {
+        if (looking_at(buf, i, "Your opponent offers you a draw") ||
+            looking_at(buf, i, "* offers you a draw")) {
             if (first.sendDrawOffers && first.initDone) {
                 SendToProgram("draw\n", &first);
             }
             return TRUE;
         }
-    }
 
     if (looking_at(buf, i, "requests that the game be aborted") ||
         looking_at(buf, i, "would like to abort")) {
