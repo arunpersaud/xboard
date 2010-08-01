@@ -2526,18 +2526,9 @@ read_from_ics(isr, closure, data, count, error)
                 /* [DM] Backup address for color zippy lines */
                 backup = i;
 #if ZIPPY
-       #ifdef WIN32
                if (loggedOn == TRUE)
                        if (ZippyControl(buf, &backup) || ZippyConverse(buf, &backup) ||
                           (appData.zippyPlay && ZippyMatch(buf, &backup)));
-       #else
-                if (ZippyControl(buf, &i) ||
-                    ZippyConverse(buf, &i) ||
-                    (appData.zippyPlay && ZippyMatch(buf, &i))) {
-		      loggedOn = TRUE;
-                      if (!appData.colorize) continue;
-		}
-       #endif
 #endif
 	    } // [DM] 'else { ' deleted
 	 	if (
