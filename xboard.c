@@ -3481,7 +3481,7 @@ void SetICSMode()
 {
   SetMenuEnables(icsEnables);
 
-#ifdef ZIPPY
+#if ZIPPY
   if (appData.zippyPlay && !appData.noChessProgram)   /* [DM] icsEngineAnalyze */
      XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
 #endif

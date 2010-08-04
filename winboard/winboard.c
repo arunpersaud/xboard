@@ -1337,7 +1337,7 @@ ArgDescriptor argDescriptors[] = {
   { "icstype", ArgInt, (LPVOID) &ics_type, FALSE },
   { "forceIllegalMoves", ArgTrue, (LPVOID) &appData.forceIllegal, FALSE },
 
-#ifdef ZIPPY
+#if ZIPPY
   { "zippyTalk", ArgBoolean, (LPVOID) &appData.zippyTalk, FALSE },
   { "zt", ArgTrue, (LPVOID) &appData.zippyTalk, FALSE },
   { "xzt", ArgFalse, (LPVOID) &appData.zippyTalk, FALSE },
@@ -2163,7 +2163,7 @@ InitAppData(LPSTR lpCmdLine)
   appData.smpCores = 1; // [HGM] SMP: max nr of cores
   appData.egtFormats = "";
 
-#ifdef ZIPPY
+#if ZIPPY
   appData.zippyTalk = ZIPPY_TALK;
   appData.zippyPlay = ZIPPY_PLAY;
   appData.zippyLines = ZIPPY_LINES;
@@ -8635,7 +8635,7 @@ Enables icsEnables[] = {
   { -1, -1 }
 };
 
-#ifdef ZIPPY
+#if ZIPPY
 Enables zippyEnables[] = {
   { IDM_MoveNow, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Hint, MF_BYCOMMAND|MF_ENABLED },
@@ -8845,7 +8845,7 @@ SetICSMode()
   SetMenuEnables(hmenu, icsEnables);
   EnableMenuItem(GetSubMenu(hmenu, OPTIONS_POS), ICS_POS,
     MF_BYPOSITION|MF_ENABLED);
-#ifdef ZIPPY
+#if ZIPPY
   if (appData.zippyPlay) {
     SetMenuEnables(hmenu, zippyEnables);
     if (!appData.noChessProgram)     /* [DM] icsEngineAnalyze */
