@@ -4523,7 +4523,7 @@ SendMoveToProgram(moveNum, cps)
     /*       Send 'go' if we are in a mode where machine should play. */
     if( (moveNum == 0 && setboardSpoiledMachineBlack && cps == &first) &&
         (gameMode == TwoMachinesPlay   ||
-#ifdef ZIPPY
+#if ZIPPY
          gameMode == IcsPlayingBlack     || gameMode == IcsPlayingWhite ||
 #endif
          gameMode == MachinePlaysBlack || gameMode == MachinePlaysWhite) ) {

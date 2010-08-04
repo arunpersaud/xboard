@@ -585,7 +585,7 @@ ArgDescriptor argDescriptors[] = {
   { "forceIllegalMoves", ArgTrue, (void *) &appData.forceIllegal, FALSE, INVALID },
   { "showTargetSquares", ArgBoolean, (void *) &appData.markers, TRUE, FALSE },
 
-#ifdef ZIPPY
+#if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },
   { "zt", ArgTrue, (void *) &appData.zippyTalk, FALSE, INVALID },
   { "xzt", ArgFalse, (void *) &appData.zippyTalk, FALSE, INVALID },
