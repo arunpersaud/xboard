@@ -9320,7 +9320,6 @@ GameEnds(result, resultDetails, whosays)
 	    endingGame = 0; /* [HGM] crash */
 	    return;
 	} else {
-	    char buf[MSG_SIZ];
 	    gameMode = nextGameMode;
 	    sprintf(buf, _("Match %s vs. %s: final score %d-%d-%d"),
 		    first.tidy, second.tidy,
