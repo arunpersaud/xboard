@@ -555,6 +555,7 @@ ArgDescriptor argDescriptors[] = {
   { "matchPause", ArgInt, (void *) &appData.matchPause, TRUE, (ArgIniType) 10000 },
   { "pieceToCharTable", ArgString, (void *) &appData.pieceToCharTable, FALSE, INVALID },
   { "pieceNickNames", ArgString, (void *) &appData.pieceNickNames, FALSE, INVALID },
+  { "colorNickNames", ArgString, (void *) &appData.colorNickNames, FALSE, INVALID },
   { "flipBlack", ArgBoolean, (void *) &appData.upsideDown, TRUE, (ArgIniType) FALSE },
   { "allWhite", ArgBoolean, (void *) &appData.allWhite, TRUE, (ArgIniType) FALSE },
   { "alphaRank", ArgBoolean, (void *) &appData.alphaRank, FALSE, (ArgIniType) FALSE },

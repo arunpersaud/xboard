@@ -14762,7 +14762,7 @@ ParseFEN(board, blackPlaysFirst, fen)
      char *fen;
 {
     int i, j;
-    char *p;
+    char *p, c;
     int emptycount;
     ChessSquare piece;
 
@@ -14855,7 +14855,12 @@ ParseFEN(board, blackPlaysFirst, fen)
     while(*p == ' ') p++;
 
     /* Active color */
-    switch (*p++) {
+    c = *p++;
+    if(appData.colorNickNames) {
+      if( c == appData.colorNickNames[0] ) c = 'w'; else
+      if( c == appData.colorNickNames[1] ) c = 'b';
+    }
+    switch (c) {
       case 'w':
         *blackPlaysFirst = FALSE;
 	break;

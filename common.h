@@ -583,6 +583,7 @@ typedef struct {
     int matchPause;
     char * pieceToCharTable;
     char * pieceNickNames;
+    char * colorNickNames;
     Boolean allWhite;
     Boolean upsideDown;
     Boolean alphaRank;
