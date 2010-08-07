@@ -2920,6 +2920,7 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
     CheckDlgButton( hDlg, IDC_OwnBook2, (BOOL) appData.secondHasOwnBookUCI );
     SetDlgItemInt( hDlg, IDC_BookDep, appData.bookDepth, TRUE );
     SetDlgItemInt( hDlg, IDC_BookStr, appData.bookStrength, TRUE );
+    SetDlgItemInt( hDlg, IDC_Games, appData.defaultMatchGames, TRUE );
 
     SendDlgItemMessage( hDlg, IDC_PolyglotDir, EM_SETSEL, 0, -1 );
 
@@ -2946,6 +2947,7 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
       appData.secondHasOwnBookUCI = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook2 );
       appData.bookDepth = GetDlgItemInt(hDlg, IDC_BookDep, NULL, FALSE );
       appData.bookStrength = GetDlgItemInt(hDlg, IDC_BookStr, NULL, FALSE );
+      appData.defaultMatchGames = GetDlgItemInt(hDlg, IDC_Games, NULL, FALSE );
 
       if(gameMode == BeginningOfGame) Reset(TRUE, TRUE);
       EndDialog(hDlg, TRUE);

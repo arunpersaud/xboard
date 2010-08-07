@@ -939,6 +939,8 @@ BEGIN
     EDITTEXT        IDC_BookDep,162,94,40,14,ES_AUTOHSCROLL
     LTEXT           "Book Variation:",IDC_STATIC,106,116,52,8
     EDITTEXT        IDC_BookStr,162,112,40,14,ES_AUTOHSCROLL
+    LTEXT           "Default Match Games:",IDC_STATIC,2,135,72,8
+    EDITTEXT        IDC_Games,76,131,28,14,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,118,142,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,174,142,50,14
 END
@@ -1132,7 +1134,8 @@ BEGIN
         MENUITEM "Machine &White\tCtrl+W",      IDM_MachineWhite
         MENUITEM "Machine &Black\tCtrl+B",      IDM_MachineBlack
         MENUITEM "Two &Machines\tCtrl+T",       IDM_TwoMachines
-        MENUITEM "Machine Bot&h",               IDM_MachineBoth
+        MENUITEM "Machine Both",                IDM_MachineBoth
+        MENUITEM "Machine Matc&h",              IDM_Match
         MENUITEM "&Analysis Mode\tCtrl+A",      IDM_AnalysisMode
         MENUITEM "Analyze &File\tCtrl+F",       IDM_AnalyzeFile
         MENUITEM "&ICS Client",                 IDM_IcsClient

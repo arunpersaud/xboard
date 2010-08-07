@@ -4555,6 +4555,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       SAY("computer starts playing black");
       break;
 
+    case IDM_Match: // [HGM] match: flows into next case, after setting Match Mode and nr of Games
+      if(gameMode != BeginningOfGame) break; // allow menu item to remain enabled for better mode highligting
+      matchMode = 2;// distinguish from command-line-triggered case (matchMode=1)
+      appData.matchGames = appData.defaultMatchGames;
+      matchGame = 1;
+
     case IDM_TwoMachines:
       TwoMachinesEvent();
       /*
@@ -7449,6 +7455,7 @@ Enables icsEnables[] = {
   { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
   { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Match, MF_BYCOMMAND|MF_GRAYED },
   { IDM_MachineBoth, MF_BYCOMMAND|MF_GRAYED },
   { IDM_AnalysisMode, MF_BYCOMMAND|MF_ENABLED },
   { IDM_AnalyzeFile, MF_BYCOMMAND|MF_GRAYED },
@@ -7479,6 +7486,7 @@ Enables ncpEnables[] = {
   { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
   { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Match, MF_BYCOMMAND|MF_GRAYED },
   { IDM_AnalysisMode, MF_BYCOMMAND|MF_GRAYED },
   { IDM_AnalyzeFile, MF_BYCOMMAND|MF_GRAYED },
   { IDM_IcsClient, MF_BYCOMMAND|MF_GRAYED },
@@ -7547,6 +7555,7 @@ Enables machineThinkingEnables[] = {
   { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
   { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Match, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TypeInMove, MF_BYCOMMAND|MF_GRAYED },
   { IDM_RetractMove, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
@@ -7566,6 +7575,7 @@ Enables userThinkingEnables[] = {
   { IDM_MachineWhite, MF_BYCOMMAND|MF_ENABLED },
   { IDM_MachineBlack, MF_BYCOMMAND|MF_ENABLED },
   { IDM_TwoMachines, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Match, MF_BYCOMMAND|MF_ENABLED },
   { IDM_TypeInMove, MF_BYCOMMAND|MF_ENABLED },
   { IDM_RetractMove, MF_BYCOMMAND|MF_ENABLED },
   { -1, -1 }
@@ -7607,7 +7617,7 @@ ModeHighlight()
     nowChecked = IDM_MachineWhite;
     break;
   case TwoMachinesPlay:
-    nowChecked = IDM_TwoMachines;
+    nowChecked = matchMode ? IDM_Match : IDM_TwoMachines; // [HGM] match
     break;
   case AnalyzeMode:
     nowChecked = IDM_AnalysisMode;
@@ -7748,7 +7758,7 @@ SetMachineThinkingEnables()
   } else if (gameMode == MachinePlaysWhite) {
     (void)EnableMenuItem(hMenu, IDM_MachineWhite, flags);
   } else if (gameMode == TwoMachinesPlay) {
-    (void)EnableMenuItem(hMenu, IDM_TwoMachines, flags);
+    (void)EnableMenuItem(hMenu, matchMode ? IDM_Match : IDM_TwoMachines, flags); // [HGM] match
   }
 }
 

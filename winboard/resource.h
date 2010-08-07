@@ -63,6 +63,7 @@
 #define IDM_TypeInName                  185  
 #define IDM_MachineBoth                 186  
 #define IDM_MuteSounds                  187
+#define IDM_Match                       188
 #define OPT_TCtext1                     202
 #define OPT_TCTime                      203
 #define OPT_TCtext2                     204
@@ -459,6 +460,7 @@
 #define IDC_Cores                       1473
 #define IDC_BookDep                     1474
 #define IDC_BookStr                     1475
+#define IDC_Games                       1476
 #define DLG_NewVariant                  1500
 #define OPT_VariantGothic               1501
 #define OPT_VariantCrazyhouse           1502

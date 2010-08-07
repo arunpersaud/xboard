@@ -574,6 +574,7 @@ typedef struct {
     int defaultHashSize;
     int defaultCacheSizeEGTB;
     char * defaultPathEGTB;
+    int defaultMatchGames;
 
     /* [HGM] Board size */
     int NrFiles;
