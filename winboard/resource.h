@@ -457,6 +457,8 @@
 #define IDC_OwnBook1                    1471
 #define IDC_OwnBook2                    1472
 #define IDC_Cores                       1473
+#define IDC_BookDep                     1474
+#define IDC_BookStr                     1475
 #define DLG_NewVariant                  1500
 #define OPT_VariantGothic               1501
 #define OPT_VariantCrazyhouse           1502

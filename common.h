@@ -569,6 +569,8 @@ typedef struct {
     char * polyglotDir;
     Boolean usePolyglotBook;
     char * polyglotBook;
+    int bookDepth;
+    int bookStrength;
     int defaultHashSize;
     int defaultCacheSizeEGTB;
     char * defaultPathEGTB;

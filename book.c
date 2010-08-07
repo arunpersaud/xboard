@@ -32,6 +32,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "common.h"
 #include "backend.h"
@@ -466,7 +467,7 @@ char *ProbeBook(int moveNr, char *book)
     static char move_s[6];
     int total_weight;
 
-    if(book == NULL) return NULL; 
+    if(book == NULL || moveNr >= 2*appData.bookDepth) return NULL; 
 //    if(gameInfo.variant != VariantNormal) return NULL; // Zobrist scheme only works for normal Chess, so far
     f=fopen(book,"rb");
     if(!f){
@@ -497,11 +498,21 @@ char *ProbeBook(int moveNr, char *book)
         if(count == MOVE_BUF) break;
         entries[count++] = entry;
     }
+    if(appData.bookStrength != 50) { // transform weights
+        double power, maxWeight = 0.0;
+        if(appData.bookStrength) power = (100.-appData.bookStrength)/appData.bookStrength;
+        for(i=0; i<count; i++) if(entries[i].weight > maxWeight) maxWeight = entries[i].weight;
+        for(i=0; i<count; i++){
+            double weight = entries[i].weight / maxWeight;
+	      if(weight > 0)
+                entries[i].weight = appData.bookStrength || weight == 1.0 ? 1e4*exp(power * log(weight)) + 0.5 : 0.0;
+        }
+    }
     total_weight = 0;
     for(i=0; i<count; i++){
         total_weight += entries[i].weight;
     }
-    j = (random() & 0x7FFF) * total_weight >> 15; // create random < total_weight
+    j = (random() & 0xFFF) * total_weight >> 12; // create random < total_weight
     total_weight = 0;
     for(i=0; i<count; i++){
         total_weight += entries[i].weight;

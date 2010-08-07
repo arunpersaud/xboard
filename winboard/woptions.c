@@ -2918,6 +2918,8 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
     // [HGM] book: tick boxes for own book use
     CheckDlgButton( hDlg, IDC_OwnBook1, (BOOL) appData.firstHasOwnBookUCI );
     CheckDlgButton( hDlg, IDC_OwnBook2, (BOOL) appData.secondHasOwnBookUCI );
+    SetDlgItemInt( hDlg, IDC_BookDep, appData.bookDepth, TRUE );
+    SetDlgItemInt( hDlg, IDC_BookStr, appData.bookStrength, TRUE );
 
     SendDlgItemMessage( hDlg, IDC_PolyglotDir, EM_SETSEL, 0, -1 );
 
@@ -2942,6 +2944,8 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
       // [HGM] book: read tick boxes for own book use
       appData.firstHasOwnBookUCI  = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook1 );
       appData.secondHasOwnBookUCI = (Boolean) IsDlgButtonChecked( hDlg, IDC_OwnBook2 );
+      appData.bookDepth = GetDlgItemInt(hDlg, IDC_BookDep, NULL, FALSE );
+      appData.bookStrength = GetDlgItemInt(hDlg, IDC_BookStr, NULL, FALSE );
 
       if(gameMode == BeginningOfGame) Reset(TRUE, TRUE);
       EndDialog(hDlg, TRUE);
