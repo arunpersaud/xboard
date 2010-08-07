@@ -1,3 +1,34 @@
+** Version 4.4.4 **
+
+(git shortlog --no-merges v4.4.3...HEAD)
+
+Arun Persaud (1):
+      updated version number to indicate development on 4.4.4
+
+Clint Adams (1):
+      Remove unnecessary double equals from configure.ac.
+
+H.G. Muller (18):
+      Let move parser return ImpossibleMove for off-board moves
+      Prevent engine stall on perpetual-chase evasion
+      Fix bug in sending "usermove" when forcing book moves
+      Pop down old tags on loadng new game in WinBoard
+      Fix game end during dragging
+      Repair animate dragging
+      Fix bug in sending cores command to engine
+      Fix parsing of SAN shogi promotions
+      Fix variant switch on PGN loading
+      Cut board squares out of texture bitmap more cleverly
+      Allow -flipBlack to work with font-based piece rendering
+      Allow font-based piece rendering in board sizes below petite
+      Fix WinBoard game-list title
+      Fix deadlock in match-result display
+      Fix regression in colorization of zippy-matched commands
+      Fix zippy handling of draw offers from ICS
+      Make some more zippy code obey the --disable-zippy flag
+      Repair exit-popup deadlock patch
+
+
 ** Version 4.4.3 **
 
 (git shortlog --no-merges v4.4.2...HEAD)

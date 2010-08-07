@@ -1,3 +1,25 @@
+** Version 4.4.4 **
+
+ * Repair exit-popup deadlock patch
+ * Fix bug in sending "usermove" when forcing book moves
+ * Let move parser return ImpossibleMove for off-board moves
+ * Prevent engine stall on perpetual-chase evasion
+ * Pop down old tags on loadng new game in WinBoard
+ * Fix game end during dragging
+ * Repair animate dragging
+ * Fix bug in sending cores command to engine
+ * Fix parsing of SAN shogi promotions
+ * Fix variant switch on PGN loading
+ * Allow -flipBlack to work with font-based piece rendering
+ * Allow font-based piece rendering in board sizes below petite
+ * Fix WinBoard game-list title
+ * Fix deadlock in match-result display
+ * Fix regression in colorization of zippy-matched commands
+ * Fix zippy handling of draw offers from ICS
+ * Make some more zippy code obey the --disable-zippy flag
+ * Remove unnecessary double equals from configure.ac.
+ * Cut board squares out of texture bitmap more cleverly
+
 ** Version 4.4.3 **
 
  * Add variant Makruk
@@ -62,7 +84,7 @@
 
 
 ** Version 4.4.1 **
-   
+
  * added chat windows to keep track of multiple conversations (WinBoard only)
  * allow the result comment as a display item in the game list
  * added a "Mute All Sounds" item in the WinBoard Options menu
@@ -72,16 +94,16 @@
  * replaces analysispopup with engineoutputpopup in xboard
  * allow copy/paste position and game to use clipboard (xboard)
  * updated several bitmaps (xboard)
- * Made the beep sounds for JAWS board navigation configurable 
+ * Made the beep sounds for JAWS board navigation configurable
    through command-line options
- * added the result comment to the game-list tags when the game 
+ * added the result comment to the game-list tags when the game
    list is exported to the clipboard
  * updated RTF docs
  * fixed premove problem
- * fixed engine did not start playing when out of GUI book on second 
+ * fixed engine did not start playing when out of GUI book on second
    move with white
  * fix bug using opening books (file were not closed)
- * fixed crash when opening Engine #1 Settings when there were no 
+ * fixed crash when opening Engine #1 Settings when there were no
    text-edit options in the dialog
  * fixed loading of games from command lines, fixes cmail bug
  * fix joining lines split by ICS and resizing terminal window when using ICS
@@ -93,14 +115,14 @@
  * fix for edit-position "moves" being sent by XBoard to the engine
  * bugfix for protocol extensions: egtbpath -> egtpath
  * fix bug in parser
- * further bugfixes:  #8847, #10990, #27427, #27642, 
-   #27666, #27667, #27668, #27715, #27751, #27760, 
+ * further bugfixes:  #8847, #10990, #27427, #27642,
+   #27666, #27667, #27668, #27715, #27751, #27760,
    #27772, #27799, #27826 and several small ones
  * use "make distcheck" to generate tar-balls
  * prepared a system to internationalize winboard menus
  * improved mouse handler
  * rewrote wevalgraph for better frontend/backend separation
- * code cleanup 
+ * code cleanup
 
 ** Version 4.4.0 **
 
@@ -155,7 +177,7 @@ New menu items
 
 General Enhancements:
 * WinBoard engines can now also use the Polyglot opening book (implemented as general GUI book)
-* New WB-protocol commands memory, cores and egtpath make interactive setting of these parameters 
+* New WB-protocol commands memory, cores and egtpath make interactive setting of these parameters
   possible on WB engines
 * New Polyglot is available that relays the interactive setting of these parameters to UCI engines
 * Match mode suports an auto-increment mode, so that all games or positions from a file can be played
@@ -171,37 +193,37 @@ since 4.2.7, as I do not have those compilers.
 
 Compared to version 4.3.13 described below, this version features
 
-New command-line options: 
-/autoKibitz (for relaying the PV info of the engine to the ICS) 
-/userName="..." (for setting the name of the Human player, also as menu) 
-/engineDebugOutput=N (controlling the writing of engine output to debug file) 
-/firstNPS=N (for time management by node count or CPU time) 
-/secondNPS=N (likewise for the other engine) 
+New command-line options:
+/autoKibitz (for relaying the PV info of the engine to the ICS)
+/userName="..." (for setting the name of the Human player, also as menu)
+/engineDebugOutput=N (controlling the writing of engine output to debug file)
+/firstNPS=N (for time management by node count or CPU time)
+/secondNPS=N (likewise for the other engine)
 
-New Menu items 
-+ Enter Username (same as /userName command-line option) 
-+ Save Diagram (for saving the Chessboard display as bitmap file) 
-+ Machine Both (not implemented yet, but menu item already provided) 
-+ New-Variant menu adds CRC, Janus and Berolina (the latter only with legality testing off!) 
-+ Any variant can be played from a shuffled opening setup 
+New Menu items
++ Enter Username (same as /userName command-line option)
++ Save Diagram (for saving the Chessboard display as bitmap file)
++ Machine Both (not implemented yet, but menu item already provided)
++ New-Variant menu adds CRC, Janus and Berolina (the latter only with legality testing off!)
++ Any variant can be played from a shuffled opening setup
 
-Bugfixes: 
-* Problems with switching the variant in ICS zippy mode solved 
-* In ICS observing mode game history is now fully accessible 
-* Moves are not fed to engine in zippy mode, when observing a game from a variant unknown to the engine 
+Bugfixes:
+* Problems with switching the variant in ICS zippy mode solved
+* In ICS observing mode game history is now fully accessible
+* Moves are not fed to engine in zippy mode, when observing a game from a variant unknown to the engine
 * a problem with loading PGN of FRC games with move disambiguation and initial castling rights was fixed.
 * A bug in the clock display that made previous versions of WinBoard crash for tiny displays is fixed
 
-General enhancements: 
-* variant name displayed in title bar in ICS mode, when not 'normal' 
-* when receiving a challenge in ICS zippy mode, it is checked if the engine supports the variant (/zippyVariants="..." can still be used to limit the allowed variants, and for protocol-1 engines is still the only thing to go on) 
-* when loading a game from a PGN file, WB automatically switches to the variant specified in the PGN tags 
+General enhancements:
+* variant name displayed in title bar in ICS mode, when not 'normal'
+* when receiving a challenge in ICS zippy mode, it is checked if the engine supports the variant (/zippyVariants="..." can still be used to limit the allowed variants, and for protocol-1 engines is still the only thing to go on)
+* when loading a game from a PGN file, WB automatically switches to the variant specified in the PGN tags
 * when starting from a loaded position (using /loadPositionFile), this position will be used on subsequent 'New Game' commands as well (until we switch variant)
 
 New is also that the source tree is now brought back in the original WinBoard 4.2.7 format, including
 xboard source files. Note, however, that the xboard sources are from an older date, and I did not test
 if they still compile together with the much newer backend sources. I did add code in xboard.c to recognize
-the new command-line options I added since then, and in so far they are back-end options that should be enough 
+the new command-line options I added since then, and in so far they are back-end options that should be enough
 to make them work. This is completely untested, though; I did not even try to compile it. Last time anyone
 built a working xboard.exe from this was at a stage where WinBoard did have adjustable board size, allowing
 it to play Xiangqi. But no crazyhouse holdings yet.
@@ -213,7 +235,7 @@ This version of WinBoard_F fixes several bugs in 4.3.12, and also addse a few ne
 The new features include:
 - some more fairy pieces, so that each side now has 22 piece types in stead of 17,
 making most fairy pieces available in board size "petite" (next to "bulky" and "middling"),
-making the ArchBishop and Chancellor, as well as one wildcard piece (the Lance) available in all 
+making the ArchBishop and Chancellor, as well as one wildcard piece (the Lance) available in all
 sizes from "petite" to "bulky".
 - The FRC support is fully fixed, both in local and ICS mode.
 - A mechanism is provided for safe draw claiming in cases where a 3-fold repetition woud occur only
@@ -239,7 +261,7 @@ It mainly contains developments on WinBoard. Nevertheless, an attempt
 has been started to back-port the enormous number of improvements that
 have been made to WinBoard since the Linux and Windows developments branched
 to xboard. This is reflected by the source tree now having the same format
-as that of xboard 4.2.7, including all the xboard sources. 
+as that of xboard 4.2.7, including all the xboard sources.
 
 An enormous amount of work still has to be done to make the xboard version
 fully equivalent to WinBoard, especially on user-interface side. As a modest
@@ -251,10 +273,10 @@ xboard bitmaps directory. Other quick patches include the coloring of the
 board squares (for xiangqi and holdings), and some code in the user-move
 handling to suppress all moves into or out of the area between board and
 holdings in crazyhouse, and the treatment of king-captures-own-piece
-as a possibly valid move (for FRC castling). This should make it possible 
+as a possibly valid move (for FRC castling). This should make it possible
 to run xboard with the new back-end files without too much inconvenience.
 
-New xboard command-line options have been added to make the added back-end 
+New xboard command-line options have been added to make the added back-end
 features available. The include the new variants (as argument of the old
 -variant option), -boardWidth, -boardHeight and -holdingsSize. Be sure
 to call xboard with "-boardSize middling" or "-boardSize bulky" if you

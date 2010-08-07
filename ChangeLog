@@ -3,6 +3,174 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vnew vold)
 
+2010-08-06 11:18:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Repair exit-popup deadlock patch
+
+Relocating the exit popup call had made it lose access to the message it
+should print, because it was declared only in an inner code block, by
+the same name: buf[]. Deleting the inner declaration fixes it.
+
+2010-08-04 11:10:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make some more zippy code obey the --disable-zippy flag
+
+In several other places #ifdef ZIPPY was used in a failed attempt to
+disablezippy code. Replaced it by #if ZIPPY.
+
+In the 4.4.x branch winboard.c contained more occurrences of #ifdef
+ZIPPY as the patch cherry-picked from the master branch had...
+
+2010-08-01 13:27:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix zippy handling of draw offers from ICS
+
+The patch by DM to fix the problem introduced by the coloration of
+zippy-matched commands (namely that the coloration code beat the zippy
+draw recognition to it, and ate the draw offer away) was only targeting
+ICC. The new fix should work on any ICS (by using the same pattern in
+zippy as in the colorization code).
+
+2010-08-01 13:15:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix regression in colorization of zippy-matched commands
+
+The patch by Daniel Mehrman from 4.2.pre8 was not properly merged, so
+that in XBoard no coloration would take place of ICS commands that were
+matched by zippy. (It was using &i as input pointer, rather than &backup.
+The XBoard-specific code now has been deleted completely, to remove a
+seemingly needless dependence on _WIN32_ of the back-end. Both WB and XB
+now use the XBoard method, to only match zippy commands when logged in.
+
+2010-07-30 23:10:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix deadlock in match-result display
+
+At the end of a match, GameEnds() was recursively calling itself,
+through DisplayFatalError() and ExitEvent(), and the latter was then
+delaying until the calling GameEnds() terminated. (Which it would of
+course never do before ExitEvent returned; fortunately there was a tim
+limit to this delay, but in XBoard it was 10 sec in stead of 10 msec.)
+ Now the calling of DisplayFatalError() (to show the result popup) is
+delayed until after GameEnds completes (and resets the anti-recursion
+flag 'endingGame'), so that it is simply executed a second time, unaware
+of the earlier call. But this second time it does not do anything,
+because the gameMode ws set to EndOfGame the first time, and the writing
+of the PGN is blocked by the checksum being still the same.
+
+2010-07-12 11:10:17 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix WinBoard game-list title
+
+Number of displayed games and WDL stats were always appended to the
+existing title, leading to an ever-growing title in the game-list
+window. Now the old actual title is ignored, and the starts is appended
+to the original title "Game List". (In the future we could use the
+filename here?)
+
+In addition, the title was not updated when re-opening the game-list
+window, while the stats could change if filtering was active when the
+window was closed. (In that case the filter is cleared on re-opening, so
+the number of displayed games changes.) Now a title-update (after
+recalculating the stats) is done every time the game-list window is
+opened.
+
+2010-06-30 10:46:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow font-based piece rendering in board sizes below petite
+
+At least for variants that use unorthodox pieces, so that switching back
+to using bitmaps is not really an option anyway.
+
+2010-06-30 10:49:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow -flipBlack to work with font-based piece rendering
+
+In addition the font-based pieces will also be flipped vertically in
+flipView for variant shogi when -flipBlack is off.
+
+2010-06-30 10:52:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Cut board squares out of texture bitmap more cleverly
+
+When the bitmap is larger than the entire board, the squares are now cut
+out of the center of the virtual squares from subdividing the bitmap, so
+that they stay centered on the grid of a Xiangqi board bitmap. If the
+board size exceeds that of the bitmap, the old algorithm is still used,
+as the centering would make the edge squares exceed the bitmap, and
+cause a black rim around the board.
+
+2010-07-05 09:55:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix variant switch on PGN loading
+
+When the PGN specified an essentially different variant, the
+piece bitmaps were not properly adapted, because the switch was done by
+calling InitPosition(), rather than Reset(). (The latter would destroy
+the PGN tags info.) We now added an explicit call to ResetFrontEnd(),
+(which is normally done from Reset()).
+
+2010-07-05 10:00:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parsing of SAN shogi promotions
+
+A missing promotion character defaults to promotion in the move type,
+but the promotion character was not set when this happened in variant
+shogi. And it is especially important there, as the promotion character
+'+' will always be missing, as the parser will take it to be a 'check'
+symbol, and strip it from the move.
+
+2010-07-11 10:54:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in sending cores command to engine
+
+The cores command was alwas sent to the engine(s) when the user changed
+it through the menu, even when the engine had sent feature smp=0 (which
+is default anyway). NewSettingEvent() was patched to send the new
+setting conditionally, based on the engine properties as recorded in
+ChessProgramStates first, second; In this particular case it now
+consults cps->maxCores. (Note the code for testing the second engine
+contains some dirty pointer arithmetic.)
+
+2010-05-25 21:20:27 -0400 Clint Adams <schizo@debian.org>:
+Remove unnecessary double equals from configure.ac.
+
+2010-05-28 11:02:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Repair animate dragging
+
+The previous patch had left a stray semicolon in the mouse handler.
+
+2010-05-10 10:32:19 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix game end during dragging
+
+The stale-first-click fix interfered with proper handling of a piece
+being dragged when a game suddenly ended (because of opponent resign,
+or caling the flag), because up-clicks when the from-square was reset
+were completely ignored. Now such an 'unmatched' upclick calls
+DragPieceEnd() and redraws the board.
+
+2010-05-10 10:09:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Pop down old tags on loadng new game in WinBoard
+
+ResetFrontEnd(), called from Reset(), did not do this in WinBoard
+(unlike XBoard), so that the tags from the previous game were left on
+display when -autoDisplayTags was off.
+
+2010-05-09 22:07:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in sending "usermove" when forcing book moves
+
+The keyword "usermove" was copied to the buffer, but not sent before it
+was overwritten by the actual book move.
+
+2010-05-06 17:36:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Prevent engine stall on perpetual-chase evasion
+
+The adjudication code put the engine in force mode before it decided it
+could not adjudicate yet.
+
+2010-05-06 16:37:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let move parser return ImpossibleMove for off-board moves
+
+It used to return 0, which interfered with buiding a game list. This
+broke reading of multi-game PGN files containing games in a variant with
+a board size larger than that of the currenty active variant.
+
+2010-04-04 14:39:15 -0700 Arun Persaud <arun@nubati.net>:
+updated version number to indicate development on 4.4.4
+
+2010-04-04 13:27:11 -0700 Arun Persaud <arun@nubati.net>:
+release of version 4.4.3
+
+Signed-off-by: Arun Persaud <arun@nubati.net>
+
 2010-04-04 13:47:44 -0700 Arun Persaud <arun@nubati.net>:
 updated winboard/parser.c
 
