@@ -149,8 +149,8 @@ void SaveSettings(char* name);
 /* It's gross that these are needed. */
 #define ACTION_POS 2	 /* Posn of "Action" on menu bar */
 #define OPTIONS_POS 4	 /* Posn of "Options" on menu bar */
-#define ICS_POS 4 	 /* Posn of "ICS " on Options menu */
-#define SOUNDS_POS 6     /* Posn of "Sounds" on Options menu */
+#define ICS_POS 10 	 /* Posn of "ICS " on Options menu */
+#define SOUNDS_POS 12    /* Posn of "Sounds" on Options menu */
 /* end grossness */
 
 extern MyFont *font[NUM_SIZES][NUM_FONTS];
