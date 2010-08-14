@@ -1222,13 +1222,18 @@ PrintCommPortSettings(FILE *f, char *name)
 int
 MySearchPath(char *installDir, char *name, char *fullname)
 {
-  char *dummy, buf[MSG_SIZ];
-  if(name[0] == '%' && strchr(name+1, '%')) { // [HGM] recognize %*% as environment variable
-    strcpy(buf, name+1);
-    *strchr(buf, '%') = 0;
-    installDir = getenv(buf);
-    sprintf(fullname, "%s\\%s", installDir, strchr(name+1, '%')+1);
-    return strlen(fullname);
+  char *dummy, buf[MSG_SIZ], *p = name, *q;
+  if(name[0]== '%') {
+    fullname[0] = 0; // [HGM] first expand any environment variables in the given name
+    while(*p == '%' && (q = strchr(p+1, '%'))) { // [HGM] recognize %*% as environment variable
+      strcpy(buf, p+1);
+      *strchr(buf, '%') = 0;
+      strcat(fullname, getenv(buf));
+      p = q+1; while(*p == '\\') { strcat(fullname, "\\"); p++; }
+    }
+    strcat(fullname, p); // after environment variables (if any), take the remainder of the given name
+    if(appData.debugMode) fprintf(debugFP, "name = '%s', expanded name = '%s'\n", name, fullname);
+    return (int) strlen(fullname);
   }
   return (int) SearchPath(installDir, name, NULL, MSG_SIZ, fullname, &dummy);
 }
