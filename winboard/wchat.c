@@ -389,10 +389,9 @@ void ChatPopDown()
 
 void OutputChatMessage(int partner, char *text)
 {
-	int j;
-	if(!chatHandle[partner]) return;
+	int j, n = strlen(text);
 
-	int n = strlen(text);
+	if(!chatHandle[partner]) return;
 	text[n+1] = 0; text[n] = '\n'; text[n-1] = '\r'; // Needs CR to not lose line breaks on copy-paste
 	InsertIntoMemo(chatHandle[partner], text);
 	if(partner != onTop) for(j=0; j<MAX_CHAT; j++) if(j != partner && chatHandle[j])

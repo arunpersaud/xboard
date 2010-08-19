@@ -2206,8 +2206,8 @@ MatchSoughtLine(char *line)
 int
 DrawSeekGraph()
 {
-    if(!seekGraphUp) return FALSE;
     int i;
+    if(!seekGraphUp) return FALSE;
     h = BOARD_HEIGHT * (squareSize + lineGap) + lineGap;
     w = BOARD_WIDTH  * (squareSize + lineGap) + lineGap;
 
