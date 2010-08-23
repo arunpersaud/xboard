@@ -9366,7 +9366,12 @@ GameEnds(result, resultDetails, whosays)
     gameMode = nextGameMode;
     ModeHighlight();
     endingGame = 0;  /* [HGM] crash */
-    if(popupRequested) DisplayFatalError(buf, 0, 0); // [HGM] crash: this call GameEnds recursively through ExitEvent! Make it a harmless tail recursion.
+    if(popupRequested) { // [HGM] crash: this calls GameEnds recursively through ExitEvent! Make it a harmless tail recursion.
+      if(matchMode == TRUE) DisplayFatalError(buf, 0, 0); else {
+	matchMode = FALSE; appData.matchGames = matchGame = 0;
+	DisplayNote(buf);
+      }
+    }
 }
 
 /* Assumes program was just initialized (initString sent).
