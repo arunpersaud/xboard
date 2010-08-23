@@ -37,6 +37,9 @@
 #include "winboard.h"
 #include "wclipbrd.h"
 
+#define _(s) T_(s)
+#define N_(s) s
+
 /* Imports from winboard.c */
 extern HWND hwndMain;
 Boolean ParseFEN(Board b, int *stm, char *FEN);
@@ -53,11 +56,11 @@ CopyFENToClipboard()
   if(gameMode == EditPosition) EditPositionDone(TRUE); // [HGM] mak sure castling rights are set consistently
   fen = PositionToFEN(currentMove, NULL);
   if (!fen) {
-    DisplayError("Unable to convert position to FEN.", 0);
+    DisplayError(_("Unable to convert position to FEN."), 0);
     return;
   }
   if (!CopyTextToClipboard(fen))
-      DisplayError("Unable to copy FEN to clipboard.", 0);
+      DisplayError(_("Unable to copy FEN to clipboard."), 0);
   free(fen);
 }
 
@@ -110,50 +113,50 @@ CopyGameToClipboard()
     copyTemp = tempnam(NULL, "wbcp");
   }
   if (!copyTemp) {
-      DisplayError("Cannot create temporary file name.",0);
+      DisplayError(_("Cannot create temporary file name."),0);
       return;
   }
   f = fopen(copyTemp, "w");
   if (!f) {
-    DisplayError("Cannot open temporary file.", 0);
+    DisplayError(_("Cannot open temporary file."), 0);
     return;
   }
   if (!SaveGame(f,0,"")) { 			/* call into backend */
-    DisplayError("Cannot write to temporary file.", 0);
+    DisplayError(_("Cannot write to temporary file."), 0);
     goto copy_game_to_clipboard_cleanup;
   }
   f = fopen(copyTemp, "rb");
   if (!f) {
-    DisplayError("Cannot reopen temporary file.", 0);
+    DisplayError(_("Cannot reopen temporary file."), 0);
     goto copy_game_to_clipboard_cleanup;
   }
   if (fstat(fileno(f), &st) < 0) {
-    DisplayError("Cannot determine size of file.", 0);
+    DisplayError(_(_("Cannot determine size of file.")), 0);
     goto copy_game_to_clipboard_cleanup;
   }
   size = st.st_size;
   if (size == -1) {
-    DisplayError("Cannot determine size of file.", 0);
+    DisplayError(_(_("Cannot determine size of file.")), 0);
     goto copy_game_to_clipboard_cleanup;
   }
   rewind(f);
   buf = (char*)malloc(size+1);
   if (!buf) {
-    DisplayError("Cannot allocate clipboard buffer.", 0);
+    DisplayError(_("Cannot allocate clipboard buffer."), 0);
     goto copy_game_to_clipboard_cleanup;
   }
   len = fread(buf, sizeof(char), size, f);
   if (len == -1) {
-    DisplayError("Cannot read from temporary file.", 0);
+    DisplayError(_("Cannot read from temporary file."), 0);
     goto copy_game_to_clipboard_cleanup;
   }
   if ((unsigned long)size != (unsigned long)len) { /* sigh */ 
-      DisplayError("Error reading from temporary file.", 0);
+      DisplayError(_("Error reading from temporary file."), 0);
       goto copy_game_to_clipboard_cleanup;
   }
   buf[size] = 0;
   if (!CopyTextToClipboard(buf)) {
-      DisplayError("Cannot copy text to clipboard", 0);
+      DisplayError(_("Cannot copy text to clipboard"), 0);
   }
 
 copy_game_to_clipboard_cleanup:
@@ -176,12 +179,12 @@ CopyTextToClipboard(char *text)
 
   hGlobalMem = GlobalAlloc(GHND, (DWORD)lstrlen(text)+1);
   if (hGlobalMem == NULL) {
-    DisplayError("Unable to allocate memory for clipboard.", 0);
+    DisplayError(_("Unable to allocate memory for clipboard."), 0);
     return FALSE;
   }
   lpGlobalMem = GlobalLock(hGlobalMem);
   if (lpGlobalMem == NULL) {
-    DisplayError("Unable to lock clipboard memory.", 0);
+    DisplayError(_(_("Unable to lock clipboard memory.")), 0);
     GlobalFree(hGlobalMem);
     return FALSE;
   }
@@ -205,27 +208,27 @@ CopyTextToClipboard(char *text)
     }
   }
   if (locked) {
-    DisplayError("Cannot unlock clipboard memory.", 0);
+    DisplayError(_("Cannot unlock clipboard memory."), 0);
     GlobalFree(hGlobalMem);
     return FALSE;
   }
   if (!OpenClipboard(hwndMain)) {
-    DisplayError("Cannot open clipboard.", 0);
+    DisplayError(_("Cannot open clipboard."), 0);
     GlobalFree(hGlobalMem);
     return FALSE;
   }
   if (!EmptyClipboard()) {
-    DisplayError("Cannot empty clipboard.", 0);
+    DisplayError(_("Cannot empty clipboard."), 0);
     return FALSE;
   }
   if (hGlobalMem != SetClipboardData(CF_TEXT, hGlobalMem)) {
-    DisplayError("Cannot copy text to clipboard.", 0);
+    DisplayError(_("Cannot copy text to clipboard."), 0);
     CloseClipboard();
     GlobalFree(hGlobalMem);
     return FALSE;
   }
   if (!CloseClipboard())
-    DisplayError("Cannot close clipboard.", 0);
+    DisplayError(_("Cannot close clipboard."), 0);
   
   return TRUE;
 }
@@ -247,7 +250,7 @@ PasteFENFromClipboard()
 {
   char *fen = NULL;
   if (!PasteTextFromClipboard(&fen)) {
-      DisplayError("Unable to paste FEN from clipboard.", 0);
+      DisplayError(_("Unable to paste FEN from clipboard."), 0);
       return;
   }
   PasteFENFromString( fen );
@@ -262,14 +265,14 @@ VOID PasteGameFromString( char * buf )
   }
   f = fopen(pasteTemp, "w");
   if (!f) {
-    DisplayError("Unable to create temporary file.", 0);
+    DisplayError(_("Unable to create temporary file."), 0);
     free(buf); /* [AS] */
     return;
   }
   len = fwrite(buf, sizeof(char), strlen(buf), f);
   fclose(f);
   if (len != strlen(buf)) {
-    DisplayError("Error writing to temporary file.", 0);
+    DisplayError(_("Error writing to temporary file."), 0);
     free(buf); /* [AS] */
     return;
   }
@@ -323,24 +326,24 @@ PasteTextFromClipboard(char **text)
   UINT lockCount;
 
   if (!OpenClipboard(hwndMain)) {
-    DisplayError("Unable to open clipboard.", 0);
+    DisplayError(_("Unable to open clipboard."), 0);
     return FALSE;
   }
   hClipMem = GetClipboardData(CF_TEXT);
   if (hClipMem == NULL) {
     CloseClipboard();
-    DisplayError("No text in clipboard.", 0);
+    DisplayError(_("No text in clipboard."), 0);
     return FALSE;
   }
   lpClipMem = GlobalLock(hClipMem);
   if (lpClipMem == NULL) {
     CloseClipboard();
-    DisplayError("Unable to lock clipboard memory.", 0);
+    DisplayError(_(_("Unable to lock clipboard memory.")), 0);
     return FALSE;
   }
   *text = (char *) malloc(GlobalSize(hClipMem)+1);
   if (!*text) {
-    DisplayError("Unable to allocate memory for text string.", 0);
+    DisplayError(_("Unable to allocate memory for text string."), 0);
     CloseClipboard();
     return FALSE;
   }
@@ -368,10 +371,10 @@ PasteTextFromClipboard(char **text)
     }
   }
   if (locked) 
-    DisplayError("Unable to unlock clipboard memory.", 0);
+    DisplayError(_("Unable to unlock clipboard memory."), 0);
   
   if (!CloseClipboard())
-    DisplayError("Unable to close clipboard.", 0);
+    DisplayError(_("Unable to close clipboard."), 0);
   
   return TRUE;
 }

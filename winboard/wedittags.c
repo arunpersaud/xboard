@@ -39,6 +39,8 @@
 #include "backend.h"
 #include "winboard.h"
 
+#define _(s) T_(s)
+
 /* Module globals */
 static char *editTagsText;
 BOOL editTagsUp = FALSE;
@@ -63,7 +65,8 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   switch (message) {
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Initialize the dialog items */
-    hwndText = GetDlgItem(hDlg, OPT_TagsText);
+    Translate(hDlg, DLG_EditTags);
+   hwndText = GetDlgItem(hDlg, OPT_TagsText);
     SendMessage(hwndText, WM_SETFONT, 
       (WPARAM)font[boardSize][EDITTAGS_FONT]->hf, MAKELPARAM(FALSE, 0));
     SetDlgItemText(hDlg, OPT_TagsText, editTagsText);
@@ -71,10 +74,10 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     EnableWindow(GetDlgItem(hDlg, OPT_EditTags), !canEditTags);
     SendMessage(hwndText, EM_SETREADONLY, !canEditTags, 0);
     if (canEditTags) {
-      SetWindowText(hDlg, "Edit Tags");
+      SetWindowText(hDlg, _("Edit Tags"));
       SetFocus(hwndText);
     } else {
-      SetWindowText(hDlg, "Tags");
+      SetWindowText(hDlg, _("Tags"));
       SetFocus(GetDlgItem(hDlg, IDOK));
     }
     if (!editTagsDialog) {
@@ -126,7 +129,7 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	*p = NULLCHAR;
 	err = ReplaceTags(str, &gameInfo);
-	if (err) DisplayError("Error replacing tags.", err);
+	if (err) DisplayError(_("Error replacing tags."), err);
 
 	free(str);
       }

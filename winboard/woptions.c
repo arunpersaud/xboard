@@ -44,6 +44,9 @@
 #include <string.h>
 #endif
 
+#define _(s) T_(s)
+#define N_(s) s
+
 /* Imports from winboard.c */
 
 extern MyFont *font[NUM_SIZES][NUM_FONTS];
@@ -497,6 +500,7 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_BoardOptions);
     /* Initialize the dialog items */
     switch (boardSize) {
     case SizeTiny:
@@ -794,6 +798,7 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_NewVariant);
     /* Initialize the dialog items */
     switch (gameInfo.variant) {
     case VariantNormal:
@@ -913,12 +918,12 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if(!appData.noChessProgram) { char *name = VariantName(v), buf[MSG_SIZ];
 	if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
 	    /* [HGM] in protocol 2 we check if variant is suported by engine */
-	    sprintf(buf, "Variant %s not supported by %s", name, first.tidy);
+	    sprintf(buf, _("Variant %s not supported by %s"), name, first.tidy);
 	    DisplayError(buf, 0);
-	    return TRUE; /* treat as "Cancel" if first engine does not support it */
+	    return TRUE; /* treat as _("Cancel") if first engine does not support it */
 	} else
 	if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
-	    sprintf(buf, "Warning: second engine (%s) does not support this!", second.tidy);
+	    sprintf(buf, _("Warning: second engine (%s) does not support this!"), second.tidy);
 	    DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
 	}
       }
@@ -1061,6 +1066,7 @@ ColorizeTextDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     mca = colorizeAttribs[cc];
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_Colorize);
     /* Initialize the dialog items */
     CheckDlgButton(hDlg, OPT_Bold, (mca.effects & CFE_BOLD) != 0);
     CheckDlgButton(hDlg, OPT_Italic, (mca.effects & CFE_ITALIC) != 0);
@@ -1172,6 +1178,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_IcsOptions);
 
     /* Initialize the dialog items */
 #define CHECK_BOX(x,y) CheckDlgButton(hDlg, (x), (BOOL)(y))
@@ -1250,8 +1257,8 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       /* Read changed options from the dialog box */
       GetDlgItemText(hDlg, OPT_IcsAlarmTime, buf, MSG_SIZ);
       if (sscanf(buf, "%d", &number) != 1 || (number < 0)){
-	  MessageBox(hDlg, "Invalid ICS Alarm Time",
-		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  MessageBox(hDlg, _("Invalid ICS Alarm Time"),
+		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
       }
 
@@ -1545,6 +1552,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     for (i=0; i < NUM_FONTS; i++)
       CopyFont(&workFont[i], font[boardSize][i]);
 
+    Translate(hDlg, DLG_Fonts);
     if (!appData.icsActive)
       EnableWindow(GetDlgItem(hDlg, OPT_ChooseConsoleFont), FALSE);
 
@@ -1724,22 +1732,22 @@ FontsOptionsPopup(HWND hwnd)
 
 
 SoundComboData soundComboData[] = {
-  {"Move", NULL},
-  {"Bell", NULL},
-  {"ICS Alarm", NULL},
-  {"ICS Win", NULL},
-  {"ICS Loss", NULL},
-  {"ICS Draw", NULL},
-  {"ICS Unfinished", NULL},
-  {"Shout", NULL},
-  {"SShout/CShout", NULL},
-  {"Channel 1", NULL},
-  {"Channel", NULL},
-  {"Kibitz", NULL},
-  {"Tell", NULL},
-  {"Challenge", NULL},
-  {"Request", NULL},
-  {"Seek", NULL},
+  {N_("Move"), NULL},
+  {N_("Bell"), NULL},
+  {N_("ICS Alarm"), NULL},
+  {N_("ICS Win"), NULL},
+  {N_("ICS Loss"), NULL},
+  {N_("ICS Draw"), NULL},
+  {N_("ICS Unfinished"), NULL},
+  {N_("Shout"), NULL},
+  {N_("SShout/CShout"), NULL},
+  {N_("Channel 1"), NULL},
+  {N_("Channel"), NULL},
+  {N_("Kibitz"), NULL},
+  {N_("Tell"), NULL},
+  {N_("Challenge"), NULL},
+  {N_("Request"), NULL},
+  {N_("Seek"), NULL},
   {NULL, NULL},
 };
 
@@ -1913,6 +1921,7 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG:
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_Sound);
 
     /* Initialize the built-in sounds combo */
     hBISN = GetDlgItem(hDlg, OPT_BuiltInSoundName);
@@ -2028,7 +2037,7 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     case OPT_BrowseSound:
       f = OpenFileDialog(hDlg, "rb", NULL, "wav", SOUND_FILT,
-	"Browse for Sound File", NULL, NULL, buf);
+	_("Browse for Sound File"), NULL, NULL, buf);
       if (f != NULL) {
 	fclose(f);
 	SetDlgItemText(hDlg, OPT_WavFileName, buf);
@@ -2153,7 +2162,7 @@ ParseCommSettings(char *arg, DCB *dcb)
   if (cd->label == NULL) goto cant_parse;
   return;
 cant_parse:
-    ExitArgError("Can't parse com port settings", arg);
+    ExitArgError(_("Can't parse com port settings"), arg);
 }
 
 
@@ -2233,6 +2242,7 @@ CommPortOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,	LPARAM lParam)
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow(hDlg, GW_OWNER));
+    Translate(hDlg, DLG_CommPort);
     /* Initialize the dialog items */
     /* !! There should probably be some synchronization
        in accessing hCommPort and dcb.  Or does modal nature
@@ -2312,8 +2322,8 @@ CommPortOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,	LPARAM lParam)
       hwndCombo = GetDlgItem(hDlg, OPT_DataRate);
       SendMessage(hwndCombo, WM_GETTEXT, (WPARAM) MSG_SIZ, (LPARAM) buf);
       if (sscanf(buf, "%u", &value) != 1) {
-	MessageBox(hDlg, "Invalid data rate",
-		   "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	MessageBox(hDlg, _("Invalid data rate"),
+		   _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	return TRUE;
       }
       dcb.BaudRate = value;
@@ -2358,9 +2368,9 @@ CommPortOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,	LPARAM lParam)
 	err = GetLastError();
 	switch(MessageBox(hDlg, 
 	                 "Failed to set comm port state;\r\ninvalid options?",
-			 "Option Error", MB_ABORTRETRYIGNORE|MB_ICONQUESTION)) {
+			 _("Option Error"), MB_ABORTRETRYIGNORE|MB_ICONQUESTION)) {
 	case IDABORT:
-	  DisplayFatalError("Failed to set comm port state", err, 1);
+	  DisplayFatalError(_("Failed to set comm port state"), err, 1);
 	  exit(1);  /*is it ok to do this from here?*/
 
 	case IDRETRY:
@@ -2421,6 +2431,7 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_LoadOptions);
     /* Initialize the dialog items */
     if (appData.timeDelay >= 0.0) {
       CheckDlgButton(hDlg, OPT_Autostep, TRUE);
@@ -2439,8 +2450,8 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if (IsDlgButtonChecked(hDlg, OPT_Autostep)) {
 	GetDlgItemText(hDlg, OPT_ASTimeDelay, buf, MSG_SIZ);
 	if (sscanf(buf, "%f", &fnumber) != 1) {
-	  MessageBox(hDlg, "Invalid load game step rate",
-		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  MessageBox(hDlg, _("Invalid load game step rate"),
+		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
 	}
 	appData.timeDelay = fnumber;
@@ -2506,6 +2517,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_SaveOptions);
     /* Initialize the dialog items */
     if (*appData.saveGameFile != NULLCHAR) {
       CheckDlgButton(hDlg, OPT_Autosave, (UINT) TRUE);
@@ -2537,8 +2549,8 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	} else /*if (IsDlgButtonChecked(hDlg, OPT_AVToFile))*/ {
 	  GetDlgItemText(hDlg, OPT_AVFilename, buf, MSG_SIZ);
 	  if (*buf == NULLCHAR) {
-	    MessageBox(hDlg, "Invalid save game file name",
-		       "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	    MessageBox(hDlg, _("Invalid save game file name"),
+		       _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	    return FALSE;
 	  }
 	  if ((isalpha(buf[0]) && buf[1] == ':') ||
@@ -2573,7 +2585,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case OPT_AVBrowse:
       f = OpenFileDialog(hDlg, "a", NULL, 
 	                 appData.oldSaveStyle ? "gam" : "pgn", 
-   	                 GAME_FILT, "Browse for Auto Save File", 
+   	                 GAME_FILT, _("Browse for Auto Save File"), 
 			 NULL, NULL, buf);
       if (f != NULL) {
 	fclose(f);
@@ -2636,6 +2648,7 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_TimeControl);
     /* Initialize the dialog items */
     if (appData.clockMode && !appData.icsActive) {
       if (searchTime) {
@@ -2676,8 +2689,8 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if (IsDlgButtonChecked(hDlg, OPT_TCUseFixed)) {
 	st = GetDlgItemInt(hDlg, OPT_TCFixed, &ok, FALSE);
 	if (!ok || st <= 0) {
-	  MessageBox(hDlg, "Invalid max time per move",
-		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  MessageBox(hDlg, _("Invalid max time per move"),
+		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
 	}
       } else
@@ -2685,28 +2698,28 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	increment = -1;
 	mps = GetDlgItemInt(hDlg, OPT_TCMoves, &ok, FALSE);
 	if (!ok || mps <= 0) {
-	  MessageBox(hDlg, "Invalid moves per time control",
-		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  MessageBox(hDlg, _("Invalid moves per time control"),
+		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
 	}
 	GetDlgItemText(hDlg, OPT_TCTime, buf, MSG_SIZ);
 	if (!ParseTimeControl(buf, increment, mps)) {
-	  MessageBox(hDlg, "Invalid minutes per time control",
-		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  MessageBox(hDlg, _("Invalid minutes per time control"),
+		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
 	}
       tc = buf;
       } else {
 	increment = GetDlgItemInt(hDlg, OPT_TCInc, &ok, FALSE);
 	if (!ok || increment < 0) {
-	  MessageBox(hDlg, "Invalid increment",
-		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  MessageBox(hDlg, _("Invalid increment"),
+		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
 	}
 	GetDlgItemText(hDlg, OPT_TCTime2, buf, MSG_SIZ);
 	if (!ParseTimeControl(buf, increment, mps)) {
-	  MessageBox(hDlg, "Invalid initial time",
-		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  MessageBox(hDlg, _("Invalid initial time"),
+		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
 	}
       tc = buf;
@@ -2714,8 +2727,8 @@ TimeControl(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       odds1 = GetDlgItemInt(hDlg, OPT_TCOdds1, &ok, FALSE);
       odds2 = GetDlgItemInt(hDlg, OPT_TCOdds2, &ok2, FALSE);
       if (!ok || !ok2 || odds1 <= 0 || odds2 <= 0) {
-	  MessageBox(hDlg, "Invalid time-odds factor",
-		     "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	  MessageBox(hDlg, _("Invalid time-odds factor"),
+		     _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	  return FALSE;
       }
       searchTime = st;
@@ -2745,7 +2758,7 @@ VOID
 TimeControlOptionsPopup(HWND hwnd)
 {
   if (gameMode != BeginningOfGame) {
-    DisplayError("Changing time control during a game is not implemented", 0);
+    DisplayError(_("Changing time control during a game is not implemented"), 0);
   } else {
     FARPROC lpProc = MakeProcInstance((FARPROC)TimeControl, hInst);
     DialogBox(hInst, MAKEINTRESOURCE(DLG_TimeControl), hwnd, (DLGPROC) lpProc);
@@ -2770,6 +2783,7 @@ LRESULT CALLBACK EnginePlayOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,
 
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_EnginePlayOptions);
 
     /* Initialize the dialog items */
     CHECK_BOX(IDC_EpPeriodicUpdates, appData.periodicUpdates);
@@ -2874,7 +2888,7 @@ static BOOL BrowseForFolder( const char * title, char * path )
 
     ZeroMemory( &bi, sizeof(bi) );
 
-    bi.lpszTitle = title == 0 ? "Choose Folder" : title;
+    bi.lpszTitle = title == 0 ? _("Choose Folder") : title;
     bi.ulFlags = BIF_RETURNONLYFSDIRS;
 
     pidl = SHBrowseForFolder( &bi );
@@ -2905,6 +2919,7 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_OptionsUCI);
 
     /* Initialize the dialog items */
     SetDlgItemText( hDlg, IDC_PolyglotDir, appData.polyglotDir );
@@ -2978,7 +2993,7 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
           ofn.lpstrFilter = filter;
           ofn.lpstrFile = buf;
           ofn.nMaxFile = sizeof(buf);
-          ofn.lpstrTitle = "Choose Book";
+          ofn.lpstrTitle = _("Choose Book");
           ofn.Flags = OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
 
           if( GetOpenFileName( &ofn ) ) {
@@ -2988,19 +3003,19 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
       return TRUE;
 
     case IDC_BrowseForPolyglotDir:
-      if( BrowseForFolder( "Choose Polyglot Directory", buf ) ) {
+      if( BrowseForFolder( _("Choose Polyglot Directory"), buf ) ) {
         SetDlgItemText( hDlg, IDC_PolyglotDir, buf );
 
         strcat( buf, "\\polyglot.exe" );
 
         if( GetFileAttributes(buf) == 0xFFFFFFFF ) {
-            MessageBox( hDlg, "Polyglot was not found in the specified folder!", "Warning", MB_OK | MB_ICONWARNING );
+            MessageBox( hDlg, _("Polyglot was not found in the specified folder!"), "Warning", MB_OK | MB_ICONWARNING );
         }
       }
       return TRUE;
 
     case IDC_BrowseForEGTB:
-      if( BrowseForFolder( "Choose EGTB Directory:", buf ) ) {
+      if( BrowseForFolder( _("Choose EGTB Directory:"), buf ) ) {
         SetDlgItemText( hDlg, IDC_PathToEGTB, buf );
       }
       return TRUE;

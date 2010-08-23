@@ -225,6 +225,212 @@ static struct { int x; int y; int mode; } backTextureSquareInfo[BOARD_RANKS][BOA
 #endif
 #endif
 
+#define INTERNATIONAL
+
+#ifdef INTERNATIONAL
+#  define _(s) T_(s)
+#  define N_(s) s
+#else
+#  define _(s) s
+#  define N_(s) s
+#  define T_(s) s
+#  define Translate(x, y)
+#  define LoadLanguageFile(s)
+#endif
+
+#ifdef INTERNATIONAL
+
+Boolean barbaric; // flag indicating if translation is needed
+
+// list of item numbers used in each dialog (used to alter language at run time)
+
+#define ABOUTBOX -1  /* not sure why these are needed */
+#define ABOUTBOX2 -1
+
+int dialogItems[][40] = {
+{ ABOUTBOX, IDOK, 400 }, 
+{ DLG_TimeControl, IDC_Babble, OPT_TCUseMoves, OPT_TCUseInc, OPT_TCUseFixed, 
+  OPT_TCtext1, OPT_TCtext2, OPT_TCitext1, OPT_TCitext2, OPT_TCftext, GPB_Factors,   IDC_Factor1, IDC_Factor2, IDOK, IDCANCEL }, 
+{ DLG_LoadOptions, OPT_Autostep, OPT_AStext1, IDOK, IDCANCEL }, 
+{ DLG_SaveOptions, OPT_Autosave, OPT_AVPrompt, OPT_AVToFile, OPT_AVBrowse,
+  801, OPT_PGN, OPT_Old, OPT_OutOfBookInfo, IDOK, IDCANCEL }, 
+{ 1536, 1090, IDC_Directories, 1089, 1091, IDOK, IDCANCEL, 1038, IDC_IndexNr, 1037 }, 
+{ DLG_CommPort, IDOK, IDCANCEL, IDC_Port, IDC_Rate, IDC_Bits, IDC_Parity,
+  IDC_Stop, IDC_Flow, OPT_SerialHelp }, 
+{ DLG_EditComment, IDOK, OPT_CancelComment, OPT_ClearComment, OPT_EditComment }, 
+{ DLG_PromotionKing, PB_Chancellor, PB_Archbishop, PB_Queen, PB_Rook, 
+  PB_Bishop, PB_Knight, PB_King, IDCANCEL, IDC_Yes, IDC_No, IDC_Centaur }, 
+{ ABOUTBOX2, IDC_ChessBoard }, 
+{ DLG_GameList, OPT_GameListLoad, OPT_GameListPrev, OPT_GameListNext, 
+  OPT_GameListClose, IDC_GameListDoFilter }, 
+{ DLG_EditTags, IDOK, OPT_TagsCancel, OPT_EditTags }, 
+{ DLG_Error, IDOK }, 
+{ DLG_Colorize, IDOK, IDCANCEL, OPT_ChooseColor, OPT_Bold, OPT_Italic,
+  OPT_Underline, OPT_Strikeout, OPT_Sample }, 
+{ DLG_Question, IDOK, IDCANCEL, OPT_QuestionText }, 
+{ DLG_Startup, IDC_Welcome, OPT_ChessEngine, OPT_ChessServer, OPT_View,
+  IDC_SPECIFY_ENG_STATIC, IDC_SPECIFY_SERVER_STATIC, OPT_AnyAdditional,
+  IDOK, IDCANCEL, IDM_HELPCONTENTS }, 
+{ DLG_IndexNumber, IDC_Index }, 
+{ DLG_TypeInMove, IDOK, IDCANCEL }, 
+{ DLG_TypeInName, IDOK, IDCANCEL }, 
+{ DLG_Sound, IDC_Event, OPT_NoSound, OPT_DefaultBeep, OPT_BuiltInSound,
+  OPT_WavFile, OPT_BrowseSound, OPT_DefaultSounds, IDOK, IDCANCEL, OPT_PlaySound }, 
+{ DLG_GeneralOptions, IDOK, IDCANCEL, OPT_AlwaysOnTop, OPT_HighlightLastMove,
+  OPT_AlwaysQueen, OPT_PeriodicUpdates, OPT_AnimateDragging, OPT_PonderNextMove,  OPT_AnimateMoving, OPT_PopupExitMessage, OPT_AutoFlag,  OPT_PopupMoveErrors,
+  OPT_AutoFlipView, OPT_ShowButtonBar, OPT_AutoRaiseBoard, OPT_ShowCoordinates,
+  OPT_Blindfold, OPT_ShowThinking, OPT_HighlightDragging, OPT_TestLegality,
+  OPT_SaveExtPGN, OPT_HideThinkFromHuman, OPT_ExtraInfoInMoveHistory,
+  OPT_HighlightMoveArrow, OPT_AutoLogo }, 
+{ DLG_IcsOptions, IDOK, IDCANCEL, OPT_AutoComment, OPT_AutoKibitz, OPT_AutoObserve,
+  OPT_GetMoveList, OPT_LocalLineEditing, OPT_QuietPlay, OPT_SeekGraph, OPT_AutoRefresh,
+  OPT_BgObserve, OPT_DualBoard, OPT_Premove, OPT_PremoveWhite, OPT_PremoveBlack,
+  OPT_SmartMove, OPT_IcsAlarm, IDC_Sec, OPT_ChooseShoutColor, OPT_ChooseSShoutColor,
+  OPT_ChooseChannel1Color, OPT_ChooseChannelColor, OPT_ChooseKibitzColor,
+  OPT_ChooseTellColor, OPT_ChooseChallengeColor, OPT_ChooseRequestColor,
+  OPT_ChooseSeekColor, OPT_ChooseNormalColor, OPT_ChooseBackgroundColor,
+  OPT_DefaultColors, OPT_DontColorize, IDC_Boxes, GPB_Colors, GPB_Premove,
+  GPB_General, GPB_Alarm }, 
+{ DLG_BoardOptions, IDOK, IDCANCEL, OPT_SizeTiny, OPT_SizeTeeny, OPT_SizeDinky,
+  OPT_SizePetite, OPT_SizeSlim, OPT_SizeSmall, OPT_SizeMediocre, OPT_SizeMiddling,
+  OPT_SizeAverage, OPT_SizeModerate, OPT_SizeMedium, OPT_SizeBulky, OPT_SizeLarge,
+  OPT_SizeBig, OPT_SizeHuge, OPT_SizeGiant, OPT_SizeColossal, OPT_SizeTitanic,
+  OPT_ChooseLightSquareColor, OPT_ChooseDarkSquareColor, OPT_ChooseWhitePieceColor,
+  OPT_ChooseBlackPieceColor, OPT_ChooseHighlightSquareColor, OPT_ChoosePremoveHighlightColor,
+  OPT_Monochrome, OPT_AllWhite, OPT_UpsideDown, OPT_DefaultBoardColors, GPB_Colors,
+  IDC_Light, IDC_Dark, IDC_White, IDC_Black, IDC_High, IDC_PreHigh, GPB_Size }, 
+{ DLG_NewVariant, IDOK, IDCANCEL, OPT_VariantNormal, OPT_VariantFRC, OPT_VariantWildcastle,
+  OPT_VariantNocastle, OPT_VariantLosers, OPT_VariantGiveaway, OPT_VariantSuicide,
+  OPT_Variant3Check, OPT_VariantTwoKings, OPT_VariantAtomic, OPT_VariantCrazyhouse,
+  OPT_VariantBughouse, OPT_VariantTwilight, OPT_VariantShogi, OPT_VariantSuper,
+  OPT_VariantKnightmate, OPT_VariantBerolina, OPT_VariantCylinder, OPT_VariantFairy,
+  OPT_VariantMakruk, OPT_VariantGothic, OPT_VariantCapablanca, OPT_VariantJanus,
+  OPT_VariantCRC, OPT_VariantFalcon, OPT_VariantCourier, OPT_VariantGreat,
+  OPT_VariantShatranj, OPT_VariantXiangqi, GPB_Variant, GPB_Board, IDC_Height,
+  IDC_Width, IDC_Hand, IDC_Pieces, IDC_Def }, 
+{ DLG_Fonts, IDOK, IDCANCEL, OPT_ChooseClockFont, OPT_ChooseMessageFont,
+  OPT_ChooseCoordFont, OPT_ChooseTagFont, OPT_ChooseCommentsFont,  OPT_ChooseConsoleFont, OPT_ChooseMoveHistoryFont, OPT_DefaultFonts,
+  OPT_ClockFont, OPT_MessageFont, OPT_CoordFont, OPT_EditTagsFont,
+  OPT_CommentsFont, OPT_MessageFont5, GPB_Current, GPB_All, OPT_MessageFont6 }, 
+{ DLG_NewGameFRC, IDC_NFG_Label, IDC_NFG_Random, IDOK, IDCANCEL }, 
+{ DLG_GameListOptions, IDC_GLT, IDC_GLT_Up, IDC_GLT_Down, IDC_GLT_Restore,
+  IDC_GLT_Default, IDOK, IDCANCEL, IDC_GLT_RestoreTo }, 
+{ DLG_MoveHistory }, 
+{ DLG_EvalGraph }, 
+{ DLG_EngineOutput, IDC_EngineLabel1, IDC_Engine1_NPS, IDC_EngineLabel2, IDC_Engine2_NPS }, 
+{ DLG_Chat, IDC_Partner, IDC_Clear, IDC_Send,  }, 
+{ DLG_EnginePlayOptions, IDC_EpPonder, IDC_EpShowThinking, IDC_EpHideThinkingHuman,
+  IDC_EpPeriodicUpdates, GPB_Adjudications, IDC_Draw, IDC_Moves, IDC_Threshold,
+  IDC_Centi, IDC_TestClaims, IDC_DetectMates, IDC_MaterialDraws, IDC_TrivialDraws,
+  GPB_Apply, IDC_Rule, IDC_Repeats, IDC_ScoreAbs1, IDC_ScoreAbs2, IDOK, IDCANCEL }, 
+{ DLG_OptionsUCI, IDC_PolyDir, IDC_BrowseForPolyglotDir, IDC_Hash, IDC_Path,
+  IDC_BrowseForEGTB, IDC_Cache, IDC_UseBook, IDC_BrowseForBook, IDC_CPU, IDC_OwnBook1,
+  IDC_OwnBook2, IDC_Depth, IDC_Variation, IDC_DefGames, IDOK, IDCANCEL },
+{ 0 }
+};
+
+char languageBuf[40000], *foreign[1000], *english[1000];
+
+void
+LoadLanguageFile(char *name)
+{   //load the file with translations, and make a list of the strings to be translated, and their translations
+    FILE *f;
+    int i=0, j=0, n=0, k;
+    static char oldLanguage[MSG_SIZ];
+    if(!strcmp(name, oldLanguage)) return;
+    if(!name || name[0] == NULLCHAR) return;
+    if((f = fopen(name, "r")) == NULL) return;
+    while((k = fgetc(f)) != EOF) {
+        if(i >= sizeof(languageBuf)) { DisplayError("Language file too big", 0); return; }
+        languageBuf[i] = k;
+        if(k == '\n') {
+            if(languageBuf[n] == '"' && languageBuf[i-1] == '"') {
+                char *p;
+                if(p = strstr(languageBuf + n + 1, "\" === \"")) {
+                    if(p > languageBuf+n+2 && p+8 < languageBuf+i) {
+                        if(j >= sizeof(english)) { DisplayError("Too many translated strings", 0); return; }
+                        english[j] = languageBuf + n + 1; *p = 0;
+                        foreign[j++] = p + 7; languageBuf[i-1] = 0;
+if(appData.debugMode) fprintf(debugFP, "translation: replace '%s' by '%s'\n", english[j-1], foreign[j-1]);
+                    }
+                }
+            }
+            n = i + 1;
+        } else if(i > 0 && languageBuf[i-1] == '\\') {
+            switch(k) {
+              case 'n': k = '\n'; break;
+              case 'r': k = '\r'; break;
+              case 't': k = '\t'; break;
+            }
+            languageBuf[--i] = k;
+        }
+        i++;
+    }
+    fclose(f);
+    barbaric = (j != 0);
+    if(barbaric) strcpy(oldLanguage, name); else oldLanguage[0] = NULLCHAR;
+}
+
+char *
+T_(char *s)
+{   // return the translation of the given string
+    // efficiency can be improved a lot...
+    int i=0;
+if(appData.debugMode) fprintf(debugFP, "T_(%s)\n", s);
+    if(!barbaric) return s;
+    if(!s) return ""; // sanity
+    while(english[i]) {
+        if(!strcmp(s, english[i])) return foreign[i];
+        i++;
+    }
+    return s;
+}
+
+void
+Translate(HANDLE hDlg, int dialogID)
+{   // translate all text items in the given dialog
+    int i=0, j, k;
+    char buf[MSG_SIZ], *s;
+//if(appData.debugMode) fprintf(debugFP, "Translate(%d)\n", dialogID);
+    if(!barbaric) return;
+    while(dialogItems[i][0] && dialogItems[i][0] != dialogID) i++; // find the dialog description
+    if(dialogItems[i][0] != dialogID) return; // unknown dialog, should not happen
+    GetWindowText( hDlg, buf, MSG_SIZ );
+    s = T_(buf);
+if(appData.debugMode) fprintf(debugFP, "WindowText '%s' -> '%s'\n", buf, s);
+    if(strcmp(buf, s)) SetWindowText(hDlg, s); // replace by translated string (if different)
+    for(j=1; k=dialogItems[i][j]; j++) { // translate all listed dialog items
+        GetDlgItemText(hDlg, k, buf, MSG_SIZ);
+        if(strlen(buf) == 0) continue;
+        s = T_(buf);
+        if(strcmp(buf, s)) SetDlgItemText(hDlg, k, s); // replace by translated string (if different)
+    }
+}
+
+void
+TranslateMenus()
+{
+    int i, j;
+    if(barbaric) {
+        HMENU mainMenu = GetMenu(hwndMain);
+        for (i=GetMenuItemCount(mainMenu)-1; i>=0; i--) {
+          HMENU subMenu = GetSubMenu(mainMenu, i);
+          for(j=GetMenuItemCount(subMenu)-1; j>=0; j--){
+            char buf[MSG_SIZ];
+            UINT k = GetMenuItemID(subMenu, j);
+            GetMenuString(subMenu, j, buf, MSG_SIZ, MF_BYPOSITION);
+            if(buf[0] == NULLCHAR) continue;
+//fprintf(debugFP, "menu(%d,%d) = %s (%08x, %08x) %d\n", i, j, buf, mainMenu, subMenu, k);
+            ModifyMenu(subMenu, j, MF_STRING|MF_BYPOSITION, 
+            k, T_(buf));
+          }
+        }
+    
+    }
+}
+
+#endif
+
 typedef struct {
   char *name;
   int squareSize;
@@ -304,8 +510,8 @@ MyButtonDesc buttonDesc[N_BUTTONS] =
 int tinyLayout = 0, smallLayout = 0;
 #define MENU_BAR_ITEMS 7
 char *menuBarText[2][MENU_BAR_ITEMS+1] = {
-  { "&File", "&Mode", "&Action", "&Step", "&Options", "&Help", NULL },
-  { "&F", "&M", "&A", "&S", "&O", "&H", NULL },
+  { N_("&File"), N_("&Mode"), N_("&Action"), N_("&Step"), N_("&Options"), N_("&Help"), NULL },
+  { N_("&F"), N_("&M"), N_("&A"), N_("&S"), N_("&O"), N_("&H"), NULL },
 };
 
 
@@ -313,17 +519,17 @@ MySound sounds[(int)NSoundClasses];
 MyTextAttribs textAttribs[(int)NColorClasses];
 
 MyColorizeAttribs colorizeAttribs[] = {
-  { (COLORREF)0, 0, "Shout Text" },
-  { (COLORREF)0, 0, "SShout/CShout" },
-  { (COLORREF)0, 0, "Channel 1 Text" },
-  { (COLORREF)0, 0, "Channel Text" },
-  { (COLORREF)0, 0, "Kibitz Text" },
-  { (COLORREF)0, 0, "Tell Text" },
-  { (COLORREF)0, 0, "Challenge Text" },
-  { (COLORREF)0, 0, "Request Text" },
-  { (COLORREF)0, 0, "Seek Text" },
-  { (COLORREF)0, 0, "Normal Text" },
-  { (COLORREF)0, 0, "None" }
+  { (COLORREF)0, 0, N_("Shout Text") },
+  { (COLORREF)0, 0, N_("SShout/CShout") },
+  { (COLORREF)0, 0, N_("Channel 1 Text") },
+  { (COLORREF)0, 0, N_("Channel Text") },
+  { (COLORREF)0, 0, N_("Kibitz Text") },
+  { (COLORREF)0, 0, N_("Tell Text") },
+  { (COLORREF)0, 0, N_("Challenge Text") },
+  { (COLORREF)0, 0, N_("Request Text") },
+  { (COLORREF)0, 0, N_("Seek Text") },
+  { (COLORREF)0, 0, N_("Normal Text") },
+  { (COLORREF)0, 0, N_("None") }
 };
 
 
@@ -728,6 +934,8 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
     setbuf(debugFP, NULL);
   }
 
+  LoadLanguageFile(appData.language);
+
   InitBackEnd1();
 
 //  InitEngineUCI( installDir, &first ); // [HGM] incorporated in InitBackEnd1()
@@ -799,6 +1007,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
 
   InitDrawingSizes(boardSize, 0);
+  TranslateMenus();
   InitMenuChecks();
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
 
@@ -968,7 +1177,7 @@ ParseFontName(char *name, MyFontParams *mfp)
   q = strchr(p, ':');
   if (q) {
     if (q - p >= sizeof(mfp->faceName))
-      ExitArgError("Font name too long:", name);
+      ExitArgError(_("Font name too long:"), name);
     memcpy(mfp->faceName, p, q - p);
     mfp->faceName[q - p] = NULLCHAR;
     p = q + 1;
@@ -977,12 +1186,12 @@ ParseFontName(char *name, MyFontParams *mfp)
     while (*p && !isdigit(*p)) {
       *q++ = *p++;
       if (q - mfp->faceName >= sizeof(mfp->faceName))
-	ExitArgError("Font name too long:", name);
+	ExitArgError(_("Font name too long:"), name);
     }
     while (q > mfp->faceName && q[-1] == ' ') q--;
     *q = NULLCHAR;
   }
-  if (!*p) ExitArgError("Font point size missing:", name);
+  if (!*p) ExitArgError(_("Font point size missing:"), name);
   mfp->pointSize = (float) atof(p);
   mfp->bold = (strchr(p, 'b') != NULL);
   mfp->italic = (strchr(p, 'i') != NULL);
@@ -1039,7 +1248,7 @@ ParseColorName(char *name)
       &red, &green, &blue);
   }
   if (count != 3) {
-    sprintf(buf, "Can't parse color name %s", name);
+    sprintf(buf, _("Can't parse color name %s"), name);
     DisplayError(buf, 0);
     return RGB(0, 0, 0);
   }
@@ -1088,7 +1297,7 @@ ParseBoardSize(void *addr, char *name)
     }
     bs++;
   }
-  ExitArgError("Unrecognized board size value", name);
+  ExitArgError(_("Unrecognized board size value"), name);
 }
 
 void
@@ -1256,6 +1465,7 @@ PopUpStartupDialog()
 {
     FARPROC lpProc;
     
+    LoadLanguageFile(appData.language);
     lpProc = MakeProcInstance((FARPROC)StartupDialog, hInst);
     DialogBox(hInst, MAKEINTRESOURCE(DLG_Startup), NULL, (DLGPROC)lpProc);
     FreeProcInstance(lpProc);
@@ -1831,7 +2041,7 @@ InsertInPalette(COLORREF color)
   LPPALETTEENTRY pe = &(pLogPal->palPalEntry[pLogPal->palNumEntries]);
 
   if (pLogPal->palNumEntries++ >= PALETTESIZE) {
-    DisplayFatalError("Too many colors", 0, 1);
+    DisplayFatalError(_("Too many colors"), 0, 1);
     pLogPal->palNumEntries--;
     return;
   }
@@ -1973,7 +2183,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 
     for (i=0; menuBarText[tinyLayout][i]; i++) {
       ModifyMenu(hmenu, i, MF_STRING|MF_BYPOSITION|MF_POPUP, 
-	(UINT)GetSubMenu(hmenu, i), menuBarText[tinyLayout][i]);
+	(UINT)GetSubMenu(hmenu, i), T_(menuBarText[tinyLayout][i]));
     }
     DrawMenuBar(hwndMain);
   }
@@ -1984,14 +2194,14 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   /* Get text area sizes */
   hdc = GetDC(hwndMain);
   if (appData.clockMode) {
-    sprintf(buf, "White: %s", TimeString(23*60*60*1000L));
+    sprintf(buf, _("White: %s"), TimeString(23*60*60*1000L));
   } else {
-    sprintf(buf, "White");
+    sprintf(buf, _("White"));
   }
   oldFont = SelectObject(hdc, font[boardSize][CLOCK_FONT]->hf);
   GetTextExtentPoint(hdc, buf, strlen(buf), &clockSize);
   SelectObject(hdc, font[boardSize][MESSAGE_FONT]->hf);
-  str = "We only care about the height here";
+  str = _("We only care about the height here");
   GetTextExtentPoint(hdc, str, strlen(str), &messageSize);
   SelectObject(hdc, oldFont);
   ReleaseDC(hwndMain, hdc);
@@ -3741,11 +3951,11 @@ typedef struct {
 } DropEnable;
 
 DropEnable dropEnables[] = {
-  { 'P', DP_Pawn, "Pawn" },
-  { 'N', DP_Knight, "Knight" },
-  { 'B', DP_Bishop, "Bishop" },
-  { 'R', DP_Rook, "Rook" },
-  { 'Q', DP_Queen, "Queen" },
+  { 'P', DP_Pawn, N_("Pawn") },
+  { 'N', DP_Knight, N_("Knight") },
+  { 'B', DP_Bishop, N_("Bishop") },
+  { 'R', DP_Rook, N_("Rook") },
+  { 'Q', DP_Queen, N_("Queen") },
 };
 
 VOID
@@ -3761,7 +3971,7 @@ SetupDropMenu(HMENU hmenu)
 	       dropEnables[i].piece);
     count = 0;
     while (p && *p++ == dropEnables[i].piece) count++;
-    sprintf(item, "%s  %d", dropEnables[i].name, count);
+    sprintf(item, "%s  %d", T_(dropEnables[i].name), count);
     enable = count > 0 || !appData.testLegality
       /*!!temp:*/ || (gameInfo.variant == VariantCrazyhouse
 		      && !appData.icsActive);
@@ -4017,6 +4227,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Center the dialog over the application window */
     CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
+    Translate(hDlg, DLG_PromotionKing);
     ShowWindow(GetDlgItem(hDlg, PB_King), 
       (!appData.testLegality || gameInfo.variant == VariantSuicide ||
        gameInfo.variant == VariantGiveaway || gameInfo.variant == VariantSuper ) ?
@@ -4141,7 +4352,7 @@ LoadGameDialog(HWND hwnd, char* title)
     if (number == 0) {
       int error = GameListBuild(f);
       if (error) {
-        DisplayError("Cannot build game list", error);
+        DisplayError(_("Cannot build game list"), error);
       } else if (!ListEmpty(&gameList) &&
                  ((ListGame *) gameList.tailPred)->number > 1) {
 	GameListPopUp(f, fileTitle);
@@ -4363,7 +4574,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_LoadGame:
-      LoadGameDialog(hwnd, "Load Game from File");
+      LoadGameDialog(hwnd, _("Load Game from File"));
       break;
 
     case IDM_LoadNextGame:
@@ -4386,7 +4597,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       f = OpenFileDialog(hwnd, "rb", "",
 			 appData.oldSaveStyle ? "pos" : "fen",
 			 POSITION_FILT,
-			 "Load Position from File", &number, fileTitle, NULL);
+			 _("Load Position from File"), &number, fileTitle, NULL);
       if (f != NULL) {
 	LoadPosition(f, number, fileTitle);
       }
@@ -4409,7 +4620,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       f = OpenFileDialog(hwnd, "a", defName,
 			 appData.oldSaveStyle ? "gam" : "pgn",
 			 GAME_FILT,
-			 "Save Game to File", NULL, fileTitle, NULL);
+			 _("Save Game to File"), NULL, fileTitle, NULL);
       if (f != NULL) {
 	SaveGame(f, 0, "");
       }
@@ -4420,7 +4631,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       f = OpenFileDialog(hwnd, "a", defName,
 			 appData.oldSaveStyle ? "pos" : "fen",
 			 POSITION_FILT,
-			 "Save Position to File", NULL, fileTitle, NULL);
+			 _("Save Position to File"), NULL, fileTitle, NULL);
       if (f != NULL) {
 	SavePosition(f, 0, "");
       }
@@ -4582,7 +4793,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_AnalysisMode:
       if (!first.analysisSupport) {
-        sprintf(buf, "%s does not support analysis", first.tidy);
+        sprintf(buf, _("%s does not support analysis"), first.tidy);
         DisplayError(buf, 0);
       } else {
 	SAY("analyzing current position");
@@ -4619,12 +4830,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_AnalyzeFile:
       if (!first.analysisSupport) {
         char buf[MSG_SIZ];
-        sprintf(buf, "%s does not support analysis", first.tidy);
+        sprintf(buf, _("%s does not support analysis"), first.tidy);
         DisplayError(buf, 0);
       } else {
 	if (!appData.showThinking) ToggleShowThinking();
 	AnalyzeFileEvent();
-	LoadGameDialog(hwnd, "Analyze Game from File");
+	LoadGameDialog(hwnd, _("Analyze Game from File"));
 	AnalysisPeriodicEvent(1);
       }
       break;
@@ -4873,7 +5084,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       if (!MyHelp (hwnd, "winboard.hlp", HELP_KEY,(DWORD)(LPSTR)"CONTENTS") &&
 	  !HtmlHelp(hwnd, "winboard.chm", 0, 0)	) {
 	  MessageBox (GetFocus(),
-		    "Unable to activate help",
+		    _("Unable to activate help"),
 		    szAppName, MB_SYSTEMMODAL|MB_OK|MB_ICONHAND);
       }
       break;
@@ -4882,7 +5093,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (!MyHelp (hwnd, "winboard.hlp", HELP_PARTIALKEY, (DWORD)(LPSTR)"") &&
 	    !HtmlHelp(hwnd, "winboard.chm", 0, 0)	) {
 	MessageBox (GetFocus(),
-		    "Unable to activate help",
+		    _("Unable to activate help"),
 		    szAppName, MB_SYSTEMMODAL|MB_OK|MB_ICONHAND);
       }
       break;
@@ -4890,7 +5101,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_HELPHELP:
       if(!WinHelp(hwnd, (LPSTR)NULL, HELP_HELPONHELP, 0)) {
 	MessageBox (GetFocus(),
-		    "Unable to activate help",
+		    _("Unable to activate help"),
 		    szAppName, MB_SYSTEMMODAL|MB_OK|MB_ICONHAND);
       }
       break;
@@ -4904,12 +5115,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_DirectCommand1:
-      AskQuestionEvent("Direct Command",
-		       "Send to chess program:", "", "1");
+      AskQuestionEvent(_("Direct Command"),
+		       _("Send to chess program:"), "", "1");
       break;
     case IDM_DirectCommand2:
-      AskQuestionEvent("Direct Command",
-		       "Send to second chess program:", "", "2");
+      AskQuestionEvent(_("Direct Command"),
+		       _("Send to second chess program:"), "", "2");
       break;
 
     case EP_WhitePawn:
@@ -5326,7 +5537,7 @@ MyLoadSound(MySound *ms)
   }
   if (!ok) {
     char buf[MSG_SIZ];
-    sprintf(buf, "Error loading sound %s", ms->name);
+    sprintf(buf, _("Error loading sound %s"), ms->name);
     DisplayError(buf, GetLastError());
   }
   return ok;
@@ -5474,13 +5685,13 @@ OpenFileDialog(HWND hwnd, char *write, char *defName, char *defExt, // [HGM] dia
     /* open the file */
     f = fopen(openFileName.lpstrFile, write);
     if (f == NULL) {
-      MessageBox(hwnd, "File open failed", NULL,
+      MessageBox(hwnd, _("File open failed"), NULL,
 		 MB_OK|MB_ICONEXCLAMATION);
       return NULL;
     }
   } else {
     int err = CommDlgExtendedError();
-    if (err != 0) DisplayError("Internal error in file dialog box", err);
+    if (err != 0) DisplayError(_("Internal error in file dialog box"), err);
     return FALSE;
   }
   return f;
@@ -5743,6 +5954,7 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG:
     /* Center the dialog */
     CenterWindow (hDlg, GetDesktopWindow());
+    Translate(hDlg, DLG_Startup);
     /* Initialize the dialog items */
     InitEngineBox(hDlg, GetDlgItem(hDlg, OPT_ChessEngineName),
 	          appData.firstChessProgram, "fd", appData.firstDirectory,
@@ -5807,8 +6019,8 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	appData.noChessProgram = TRUE;
 	appData.icsActive = FALSE;
       } else {
-	MessageBox(hDlg, "Choose an option, or cancel to exit",
-		   "Option Error", MB_OK|MB_ICONEXCLAMATION);
+	MessageBox(hDlg, _("Choose an option, or cancel to exit"),
+		   _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	return TRUE;
       }
       if (IsDlgButtonChecked(hDlg, OPT_AnyAdditional)) {
@@ -5826,7 +6038,7 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_HELPCONTENTS:
       if (!WinHelp (hDlg, "winboard.hlp", HELP_KEY,(DWORD)(LPSTR)"CONTENTS")) {
 	MessageBox (GetFocus(),
-		    "Unable to activate help",
+		    _("Unable to activate help"),
 		    szAppName, MB_SYSTEMMODAL|MB_OK|MB_ICONHAND);
       }
       break;
@@ -5888,6 +6100,7 @@ CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   switch (message) {
   case WM_INITDIALOG: /* message: initialize dialog box */
     /* Initialize the dialog items */
+    Translate(hDlg, DLG_EditComment);
     hwndText = GetDlgItem(hDlg, OPT_CommentText);
     SetDlgItemText(hDlg, OPT_CommentText, commentText);
     EnableWindow(GetDlgItem(hDlg, OPT_CancelComment), editComment);
@@ -6082,6 +6295,7 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     move[0] = (char) lParam;
     move[1] = NULLCHAR;
     CenterWindowEx(hDlg, GetWindow(hDlg, GW_OWNER), 1 );
+    Translate(hDlg, DLG_TypeInMove);
     hInput = GetDlgItem(hDlg, OPT_Move);
     SetWindowText(hInput, move);
     SetFocus(hInput);
@@ -6108,7 +6322,7 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       }
       if (gameMode != EditGame && currentMove != forwardMostMove && 
 	gameMode != Training) {
-	DisplayMoveError("Displayed move is not current");
+	DisplayMoveError(_("Displayed move is not current"));
       } else {
 //	GetDlgItemText(hDlg, OPT_Move, move, sizeof(move)); // moved upstream
 	int ok = ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
@@ -6120,7 +6334,7 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	      forwardMostMove = currentMove;
 	  UserMoveEvent(fromX, fromY, toX, toY, promoChar);	
 	} else {
-	  DisplayMoveError("Could not parse move");
+	  DisplayMoveError(_("Could not parse move"));
 	}
       }
       EndDialog(hDlg, TRUE);
@@ -6174,6 +6388,7 @@ TypeInNameDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     move[0] = (char) lParam;
     move[1] = NULLCHAR;
     CenterWindowEx(hDlg, GetWindow(hDlg, GW_OWNER), 1 );
+    Translate(hDlg, DLG_TypeInName);
     hInput = GetDlgItem(hDlg, OPT_Name);
     SetWindowText(hInput, move);
     SetFocus(hInput);
@@ -6296,6 +6511,7 @@ ErrorDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         For now, just give it a default position.
     */
     SetWindowPos(hDlg, NULL, boardRect.left+8, boardRect.top+8, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
+    Translate(hDlg, DLG_Error);
 
     errorDialog = hDlg;
     SetWindowText(hDlg, errorTitle);
@@ -7856,7 +8072,7 @@ DisplayError(char *str, int error)
     }
   }
   
-  ErrorPopUp("Error", buf);
+  ErrorPopUp(_("Error"), buf);
 }
 
 
@@ -7867,7 +8083,7 @@ DisplayMoveError(char *str)
   ClearHighlights();
   DrawPosition(FALSE, NULL);
   if (appData.popupMoveErrors) {
-    ErrorPopUp("Error", str);
+    ErrorPopUp(_("Error"), str);
   } else {
     DisplayMessage(str, "");
     moveErrorMessageUp = TRUE;
@@ -7879,7 +8095,7 @@ DisplayFatalError(char *str, int error, int exitStatus)
 {
   char buf[2*MSG_SIZ], buf2[MSG_SIZ];
   int len;
-  char *label = exitStatus ? "Fatal Error" : "Exiting";
+  char *label = exitStatus ? _("Fatal Error") : _("Exiting");
 
   if (error != 0) {
     len = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
@@ -7912,14 +8128,14 @@ DisplayFatalError(char *str, int error, int exitStatus)
 VOID
 DisplayInformation(char *str)
 {
-  (void) MessageBox(hwndMain, str, "Information", MB_OK|MB_ICONINFORMATION);
+  (void) MessageBox(hwndMain, str, _("Information"), MB_OK|MB_ICONINFORMATION);
 }
 
 
 VOID
 DisplayNote(char *str)
 {
-  ErrorPopUp("Note", str);
+  ErrorPopUp(_("Note"), str);
 }
 
 
@@ -7939,6 +8155,7 @@ QuestionDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG:
     qp = (QuestionParams *) lParam;
     CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
+    Translate(hDlg, DLG_Question);
     SetWindowText(hDlg, qp->title);
     SetDlgItemText(hDlg, OPT_QuestionText, qp->question);
     SetFocus(GetDlgItem(hDlg, OPT_QuestionInput));
@@ -7954,7 +8171,7 @@ QuestionDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       strcat(reply, "\n");
       OutputToProcess(qp->pr, reply, strlen(reply), &err);
       EndDialog(hDlg, TRUE);
-      if (err) DisplayFatalError("Error writing to chess program", err, 1);
+      if (err) DisplayFatalError(_("Error writing to chess program"), err, 1);
       return TRUE;
     case IDCANCEL:
       EndDialog(hDlg, FALSE);
@@ -7996,6 +8213,7 @@ LRESULT CALLBACK NewGameFRC_Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
         lpIndexFRC = (int *) lParam;
 
         CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
+        Translate(hDlg, DLG_NewGameFRC);
 
         SendDlgItemMessage( hDlg, IDC_NFG_Edit, EM_SETLIMITTEXT, sizeof(buf)-1, 0 );
         SetDlgItemInt( hDlg, IDC_NFG_Edit, *lpIndexFRC, TRUE );
@@ -8110,6 +8328,7 @@ LRESULT CALLBACK GameListOptions_Proc(HWND hDlg, UINT message, WPARAM wParam, LP
 	gameListOptionsDialog = hDlg; // [HGM] pass through global to keep out off back-end
         
         CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
+        Translate(hDlg, DLG_GameListOptions);
 
         /* Initialize list */
         GLT_TagsToList( lpUserGLT );
@@ -8312,7 +8531,7 @@ UserName()
   }
   if (!GetUserName(buf, &bufsiz)) {
     /*DisplayError("Error getting user name", GetLastError());*/
-    strcpy(buf, "User");
+    strcpy(buf, _("User"));
   }
   return buf;
 }
@@ -8325,7 +8544,7 @@ HostName()
 
   if (!GetComputerName(buf, &bufsiz)) {
     /*DisplayError("Error getting host name", GetLastError());*/
-    strcpy(buf, "Unknown");
+    strcpy(buf, _("Unknown"));
   }
   return buf;
 }
@@ -8363,7 +8582,7 @@ DisplayWhiteClock(long timeRemaining, int highlight)
   hdc = GetDC(hwndMain);
   if (!IsIconic(hwndMain)) {
     DisplayAClock(hdc, timeRemaining, highlight, 
-			flipClock ? &blackRect : &whiteRect, "White", flag);
+			flipClock ? &blackRect : &whiteRect, _("White"), flag);
   }
   if (highlight && iconCurrent == iconBlack) {
     iconCurrent = iconWhite;
@@ -8387,7 +8606,7 @@ DisplayBlackClock(long timeRemaining, int highlight)
   hdc = GetDC(hwndMain);
   if (!IsIconic(hwndMain)) {
     DisplayAClock(hdc, timeRemaining, highlight, 
-			flipClock ? &whiteRect : &blackRect, "Black", flag);
+			flipClock ? &whiteRect : &blackRect, _("Black"), flag);
   }
   if (highlight && iconCurrent == iconWhite) {
     iconCurrent = iconBlack;
@@ -8435,7 +8654,7 @@ AutoSaveGame()
   f = OpenFileDialog(hwndMain, "a", defName,
 		     appData.oldSaveStyle ? "gam" : "pgn",
 		     GAME_FILT, 
-		     "Save Game to File", NULL, fileTitle, NULL);
+		     _("Save Game to File"), NULL, fileTitle, NULL);
   if (f != NULL) {
     SaveGame(f, 0, "");
     fclose(f);
@@ -8874,7 +9093,7 @@ OpenCommPort(char *name, ProcRef *pr)
 int
 OpenLoopback(ProcRef *pr)
 {
-  DisplayFatalError("Not implemented", 0, 1);
+  DisplayFatalError(_("Not implemented"), 0, 1);
   return NO_ERROR;
 }
 
@@ -9244,7 +9463,7 @@ void
 CmailSigHandlerCallBack(InputSourceRef isr, VOIDSTAR closure,
 			char *buf, int count, int error)
 {
-  DisplayFatalError("Not implemented", 0, 1);
+  DisplayFatalError(_("Not implemented"), 0, 1);
 }
 
 /* see wgamelist.c for Game List functions */

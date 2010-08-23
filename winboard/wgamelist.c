@@ -41,6 +41,8 @@
 
 #include "wsnap.h"
 
+#define _(s) T_(s)
+
 /* Module globals */
 static BOOLEAN gameListUp = FALSE;
 static FILE* gameFile;
@@ -122,7 +124,7 @@ static int GameListUpdateTitle( HWND hDlg, char * pszTitle, int item_count, int 
 {
     char buf[256];
 
-    sprintf( buf, "%s - %d/%d games", pszTitle, item_count, item_total );
+    sprintf( buf, _("%s - %d/%d games"), pszTitle, item_count, item_total );
 
     if( stats != 0 ) {
         sprintf( buf+strlen(buf), " (%d-%d-%d)", stats->white_wins, stats->black_wins, stats->drawn );
@@ -152,6 +154,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 
   switch (message) {
   case WM_INITDIALOG: 
+    Translate(hDlg, DLG_GameList);
     GetWindowText( hDlg, szDlgTitle, sizeof(szDlgTitle) );
     szDlgTitle[ sizeof(szDlgTitle)-1 ] = '\0';
 
@@ -200,12 +203,11 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 			      newSizeX, newSizeY);
 	sizeX = newSizeX;
 	sizeY = newSizeY;
-      } 
-   else 
-     GetActualPlacement( gameListDialog, &wpGameList );
+      } else 
+        GetActualPlacement( gameListDialog, &wpGameList );
 
     }
-    GameListUpdateTitle( hDlg, "Game List", count, ((ListGame *) gameList.tailPred)->number, &stats );
+      GameListUpdateTitle( hDlg, _("Game List"), count, ((ListGame *) gameList.tailPred)->number, &stats ); // [HGM] always update title
     return FALSE;
     
   case WM_SIZE:
@@ -264,7 +266,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       nItem = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
       if (nItem < 0) {
 	/* is this possible? */
-	DisplayError("No game selected", 0);
+	DisplayError(_("No game selected"), 0);
 	return TRUE;
       }
       break; /* load the game*/
@@ -274,7 +276,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       nItem++;
       if (nItem >= ((ListGame *) gameList.tailPred)->number) {
         /* [AS] Removed error message */
-	/* DisplayError("Can't go forward any further", 0); */
+	/* DisplayError(_("Can't go forward any further"), 0); */
 	return TRUE;
       }
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, nItem, 0);
@@ -285,7 +287,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       nItem--;
       if (nItem < 0) {
         /* [AS] Removed error message, added return */
-	/* DisplayError("Can't back up any further", 0); */
+	/* DisplayError(_("Can't back up any further"), 0); */
         return TRUE;
       }
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, nItem, 0);
@@ -299,7 +301,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
             if( GetDlgItemText( hDlg, IDC_GameListFilter, filter, sizeof(filter) ) >= 0 ) {
                 filter[ sizeof(filter)-1 ] = '\0';
                 count = GameListToListBox( hDlg, TRUE, filter, &stats );
-                GameListUpdateTitle( hDlg, "Game List", count, ((ListGame *) gameList.tailPred)->number, &stats );
+                GameListUpdateTitle( hDlg, _("Game List"), count, ((ListGame *) gameList.tailPred)->number, &stats );
             }
         }
         return FALSE;
@@ -428,7 +430,7 @@ VOID ShowGameListProc()
     if (gameFileName) {
       GameListPopUp(gameFile, gameFileName);
     } else {
-      DisplayError("No game list", 0);
+      DisplayError(_("No game list"), 0);
     }
   }
 }
@@ -442,7 +444,7 @@ HGLOBAL ExportGameListAsText()
     DWORD dwLen = 0;
 
     if( ! gameFileName || ((ListGame *) gameList.tailPred)->number <= 0 ) {
-        DisplayError("Game list not loaded or empty", 0);
+        DisplayError(_(_("Game list not loaded or empty")), 0);
         return NULL;
     }
 

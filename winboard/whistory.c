@@ -151,6 +151,7 @@ LRESULT CALLBACK HistoryDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPAR
     case WM_INITDIALOG:
         if( moveHistoryDialog == NULL ) {
             moveHistoryDialog = hDlg;
+            Translate(hDlg, DLG_MoveHistory);
 
             /* Enable word wrapping and notifications */
             SendDlgItemMessage( moveHistoryDialog, IDC_MoveHistory, EM_SETTARGETDEVICE, 0, 0 );

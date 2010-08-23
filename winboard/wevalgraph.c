@@ -171,6 +171,7 @@ LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 
     switch (message) {
     case WM_INITDIALOG:
+        Translate(hDlg, DLG_EvalGraph);
         if( evalGraphDialog == NULL ) {
             evalGraphDialog = hDlg;
 

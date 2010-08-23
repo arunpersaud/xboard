@@ -20,6 +20,8 @@
 #include "winboard.h"
 #include "backendz.h"
 
+#define _(s) T_(s)
+
 int layoutList[2*MAX_OPTIONS];
 int checkList[2*MAX_OPTIONS];
 int comboList[2*MAX_OPTIONS];
@@ -277,9 +279,9 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps)
 		break;
 	}
     }
-    SetDlgItemText( hDlg, IDOK, "OK" );
-    SetDlgItemText( hDlg, IDCANCEL, "Cancel" );
-    sprintf(title, "%s Engine Settings (%s)", cps->which, cps->tidy); 
+    SetDlgItemText( hDlg, IDOK, _("OK") );
+    SetDlgItemText( hDlg, IDCANCEL, _("Cancel") );
+    sprintf(title, _("%s Engine Settings (%s)"), T_(cps->which), cps->tidy); 
     title[0] &= ~32; // capitalize
     SetWindowText( hDlg, title);
     for(i=0; i<groups; i+=2) { 
@@ -405,7 +407,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		          ofn.lpstrFilter = filter;
 		          ofn.lpstrFile = buf;
 		          ofn.nMaxFile = sizeof(buf);
-		          ofn.lpstrTitle = "Choose Book";
+		          ofn.lpstrTitle = _("Choose Book");
 		          ofn.Flags = OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
 
 		          if( GetOpenFileName( &ofn ) ) {

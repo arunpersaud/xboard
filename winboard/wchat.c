@@ -189,6 +189,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 
     switch (message) {
     case WM_INITDIALOG:
+        Translate(hDlg, DLG_Chat);
 	if(partner<0) {
 		for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] == NULL) { partner = i; break; }
 	        chatHandle[partner] = hDlg;

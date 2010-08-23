@@ -284,6 +284,7 @@ LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
         if( engineOutputDialog == NULL ) {
             engineOutputDialog = hDlg;
 
+            Translate(hDlg, DLG_EngineOutput);
             RestoreWindowPlacement( hDlg, &wpEngineOutput ); /* Restore window placement */
 
             ResizeWindowControls( windowMode );
