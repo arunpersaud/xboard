@@ -6595,13 +6595,43 @@ Count(Board board, int pCnt[], int *nW, int *nB, int *wStale, int *bStale, int *
 	for(p=WhitePawn; p<=EmptySquare; p++) pCnt[p] = 0;
 	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
 		p = board[r][f];
+		pCnt[p]++;
 		if(p == WhitePawn && r == BOARD_HEIGHT-1) (*wStale)++; else
-		if(p == BlackPawn && r == 0) (*bStale)++; else pCnt[p]++; // count last-Rank Pawns (XQ) separately
+		if(p == BlackPawn && r == 0) (*bStale)++; // count last-Rank Pawns (XQ) separately
 		if(p <= WhiteKing) (*nW)++; else if(p <= BlackKing) (*nB)++;
 		if(p == WhiteBishop || p == WhiteFerz || p == WhiteAlfil ||
 		   p == BlackBishop || p == BlackFerz || p == BlackAlfil   )
 			*bishopColor |= 1 << ((f^r)&1); // track square color of color-bound pieces
 	}
+}
+
+int
+SufficientDefence(int pCnt[], int side, int nMine, int nHis)
+{
+	int myPawns = pCnt[WhitePawn+side]; // my total Pawn count;
+	int majorDefense = pCnt[BlackRook-side] + pCnt[BlackCannon-side] + pCnt[BlackKnight-side];
+		   
+	nMine -= pCnt[WhiteFerz+side] + pCnt[WhiteAlfil+side]; // discount defenders
+	if(nMine - myPawns > 2) return FALSE; // no trivial draws with more than 1 major
+	if(myPawns == 2 && nMine == 3) // KPP
+	    return majorDefense || pCnt[BlackFerz-side] + pCnt[BlackAlfil-side] >= 3;
+	if(myPawns == 1 && nMine == 2) // KP
+	    return majorDefense || pCnt[BlackFerz-side] + pCnt[BlackAlfil-side]  + pCnt[BlackPawn-side] >= 1;
+	if(myPawns == 1 && nMine == 3 && pCnt[WhiteKnight+side]) // KHP
+	    return majorDefense || pCnt[BlackFerz-side] + pCnt[BlackAlfil-side]*2 >= 5;
+	if(myPawns) return FALSE;
+	if(pCnt[WhiteRook+side])
+	    return pCnt[BlackRook-side] || 
+		   pCnt[BlackCannon-side] && (pCnt[BlackFerz-side] >= 2 || pCnt[BlackAlfil-side] >= 2) ||
+		   pCnt[BlackKnight-side] && pCnt[BlackFerz-side] + pCnt[BlackAlfil-side] > 2 ||
+		   pCnt[BlackFerz-side] + pCnt[BlackAlfil-side] >= 4;
+	if(pCnt[WhiteCannon+side]) {
+	    if(pCnt[WhiteFerz+side] + myPawns == 0) return TRUE; // Cannon needs platform
+	    return majorDefense || pCnt[BlackAlfil-side] >= 2;
+	}
+	if(pCnt[WhiteKnight+side])
+	    return majorDefense || pCnt[BlackFerz-side] >= 2 || pCnt[BlackAlfil-side] + pCnt[BlackPawn-side] >= 1;
+	return FALSE;
 }
 
 int
@@ -6798,12 +6828,14 @@ Adjudicate(ChessProgramState *cps)
                 }
 
                 /* Then some trivial draws (only adjudicate, cannot be claimed) */
-                if(nrW + nrB == 4 && 
+                if(gameInfo.variant == VariantXiangqi ?
+                       SufficientDefence(nr, WhitePawn, nrW, nrB) && SufficientDefence(nr, BlackPawn, nrB, nrW)
+                 : nrW + nrB == 4 && 
                    (   nr[WhiteRook] == 1 && nr[BlackRook] == 1 /* KRKR */
                    || nr[WhiteQueen] && nr[BlackQueen]==1     /* KQKQ */
                    || nr[WhiteKnight]==2 || nr[BlackKnight]==2     /* KNNK */
                    || nr[WhiteKnight]+nr[WhiteBishop] == 1 && nr[BlackKnight]+nr[BlackBishop] == 1 /* KBKN, KBKB, KNKN */
-                  ) ) {
+                   ) ) {
                      if(--moveCount < 0 && appData.trivialDraws && canAdjudicate)
                      {    /* if the first 3 moves do not show a tactical win, declare draw */
 			  if(engineOpponent) {
