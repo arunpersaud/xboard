@@ -60,6 +60,7 @@ typedef VOIDSTAR ProcRef;
 #define NoProc ((ProcRef) 0)
 typedef VOIDSTAR InputSourceRef;
 
+char *T_ P((char *s));
 void ModeHighlight P((void));
 void SetICSMode P((void));
 void SetGNUMode P((void));

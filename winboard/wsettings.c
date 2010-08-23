@@ -15,7 +15,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "frontend.h"
 #include "backend.h"
+#include "winboard.h"
 #include "backendz.h"
 
 int layoutList[2*MAX_OPTIONS];

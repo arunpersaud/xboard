@@ -188,6 +188,7 @@ typedef enum {
 extern WindowPlacement placementTab[NUM_WINDOWS];
 extern HWND hwndTab[NUM_WINDOWS]; // this remains pure front-end.
 
+void Translate( HWND hDlg, int id);
 VOID InitWindowPlacement( WindowPlacement * wp );
 VOID RestoreWindowPlacement( HWND hWnd, WindowPlacement * wp );
 VOID ReattachAfterMove( LPRECT lprcOldPos, int new_x, int new_y, HWND hWndChild, WindowPlacement * pwpChild );
