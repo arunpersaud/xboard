@@ -530,6 +530,63 @@
 #define IDM_Engine1Options		1890
 #define IDM_Engine2Options		1891
 #define IDC_STATIC                      -1
+// static strings that were made dynamic to allow run-time translation
+#define IDC_Babble			1900
+#define GPB_Factors			1901
+#define IDC_Factor1			1902
+#define IDC_Factor2			1903
+#define IDC_Directories			1904
+#define IDC_IndexNr			1905
+#define IDC_Port			1906
+#define IDC_Rate			1907
+#define IDC_Bits			1908
+#define IDC_Parity			1909
+#define IDC_Stop			1910
+#define IDC_Flow			1911
+#define IDC_ChessBoard			1912
+#define IDC_Welcome			1913
+#define IDC_Index			1914
+#define IDC_Event			1915
+#define IDC_Sec				1916
+#define IDC_Boxes			1917
+#define GPB_Premove			1918
+#define GPB_General			1919
+#define GPB_Colors			1920
+#define GPB_Alarm			1921
+#define IDC_Light			1922
+#define IDC_Dark			1923
+#define IDC_White			1924
+#define IDC_Black			1925
+#define IDC_High			1926
+#define IDC_PreHigh			1927
+#define GPB_Size			1928
+#define IDC_Height			1929
+#define IDC_Width			1930
+#define IDC_Hand			1931
+#define IDC_Pieces			1932
+#define IDC_Def				1933
+#define GPB_Board			1934
+#define GPB_Current			1935
+#define GPB_All				1936
+#define IDC_Partner			1937
+#define IDC_Draw			1938
+#define IDC_Threshold			1939
+#define IDC_Moves			1940
+#define IDC_Centi			1941
+#define IDC_Rule			1942
+#define IDC_Repeats			1943
+#define GPB_Adjudications		1944	
+#define GPB_Apply			1945
+#define IDC_PolyDir			1946
+#define IDC_Hash			1947
+#define IDC_Path			1948
+#define IDC_Cache			1949
+#define IDC_CPU				1950
+#define IDC_Depth			1951
+#define IDC_Variation			1952
+#define IDC_DefGames			1953
+#define GPB_Variant			1954
+
 
 // Next default values for new objects
 // 
