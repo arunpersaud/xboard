@@ -330,17 +330,23 @@ int dialogItems[][40] = {
 { 0 }
 };
 
-char languageBuf[40000], *foreign[1000], *english[1000];
+static char languageBuf[50000], *foreign[1000], *english[1000], *languageFile[MSG_SIZ];
+static int lastChecked;
+static char oldLanguage[MSG_SIZ], *menuText[10][25];
+extern int tinyLayout;
+extern char * menuBarText[][8];
 
 void
 LoadLanguageFile(char *name)
 {   //load the file with translations, and make a list of the strings to be translated, and their translations
     FILE *f;
     int i=0, j=0, n=0, k;
-    static char oldLanguage[MSG_SIZ];
-    if(!strcmp(name, oldLanguage)) return;
+    char buf[MSG_SIZ];
+
     if(!name || name[0] == NULLCHAR) return;
-    if((f = fopen(name, "r")) == NULL) return;
+    sprintf(buf, "%s%s", name, strchr(name, '.') ? "" : ".lng"); // auto-append lng extension
+    if(!strcmp(buf, oldLanguage)) { barbaric = 1; return; } // this language already loaded; just switch on
+    if((f = fopen(buf, "r")) == NULL) return;
     while((k = fgetc(f)) != EOF) {
         if(i >= sizeof(languageBuf)) { DisplayError("Language file too big", 0); return; }
         languageBuf[i] = k;
@@ -409,24 +415,57 @@ if(appData.debugMode) fprintf(debugFP, "WindowText '%s' -> '%s'\n", buf, s);
 }
 
 void
-TranslateMenus()
+TranslateMenus(int addLanguage)
 {
     int i, j;
-    if(barbaric) {
+    WIN32_FIND_DATA fileData;
+    HANDLE hFind;
+#define IDM_English 1895
+    if(1) {
         HMENU mainMenu = GetMenu(hwndMain);
         for (i=GetMenuItemCount(mainMenu)-1; i>=0; i--) {
           HMENU subMenu = GetSubMenu(mainMenu, i);
+          ModifyMenu(mainMenu, i, MF_STRING|MF_BYPOSITION|MF_POPUP|EnableMenuItem(mainMenu, i, MF_BYPOSITION),
+                                                                  (UINT) subMenu, T_(menuBarText[tinyLayout][i]));
           for(j=GetMenuItemCount(subMenu)-1; j>=0; j--){
             char buf[MSG_SIZ];
             UINT k = GetMenuItemID(subMenu, j);
-            GetMenuString(subMenu, j, buf, MSG_SIZ, MF_BYPOSITION);
+            if(menuText[i][j]) strcpy(buf, menuText[i][j]); else {
+                GetMenuString(subMenu, j, buf, MSG_SIZ, MF_BYPOSITION);
+                menuText[i][j] = strdup(buf); // remember original on first change
+            }
             if(buf[0] == NULLCHAR) continue;
 //fprintf(debugFP, "menu(%d,%d) = %s (%08x, %08x) %d\n", i, j, buf, mainMenu, subMenu, k);
-            ModifyMenu(subMenu, j, MF_STRING|MF_BYPOSITION, 
-            k, T_(buf));
+            ModifyMenu(subMenu, j, MF_STRING|MF_BYPOSITION
+                                   |CheckMenuItem(subMenu, j, MF_BYPOSITION)
+                                   |EnableMenuItem(subMenu, j, MF_BYPOSITION), k, T_(buf));
           }
         }
-    
+        DrawMenuBar(hwndMain);
+    }
+
+    if(!addLanguage) return;
+    if((hFind = FindFirstFile("*.LNG", &fileData)) != INVALID_HANDLE_VALUE) {
+        HMENU mainMenu = GetMenu(hwndMain);
+        HMENU subMenu = GetSubMenu(mainMenu, GetMenuItemCount(mainMenu)-1);
+        AppendMenu(subMenu, MF_SEPARATOR, (UINT_PTR) 0, NULL);
+        AppendMenu(subMenu, MF_ENABLED|MF_STRING|(barbaric?MF_UNCHECKED:MF_CHECKED), (UINT_PTR) IDM_English, (LPCTSTR) "English");
+        i = 0; lastChecked = IDM_English;
+        do {
+            char *p, *q = fileData.cFileName;
+            int checkFlag = MF_UNCHECKED;
+            languageFile[i] = strdup(q);
+            if(barbaric && !strcmp(oldLanguage, q)) {
+                checkFlag = MF_CHECKED;
+                lastChecked = IDM_English + i + 1;
+                CheckMenuItem(mainMenu, IDM_English, MF_BYCOMMAND|MF_UNCHECKED);
+            }
+            *q = ToUpper(*q); while(*++q) *q = ToLower(*q);
+            p = strstr(fileData.cFileName, ".lng");
+            if(p) *p = 0;
+            AppendMenu(subMenu, MF_ENABLED|MF_STRING|checkFlag, (UINT_PTR) IDM_English + ++i, (LPCTSTR) fileData.cFileName);
+        } while(FindNextFile(hFind, &fileData));
+        FindClose(hFind);
     }
 }
 
@@ -1008,7 +1047,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
 
   InitDrawingSizes(boardSize, 0);
-  TranslateMenus();
+  TranslateMenus(1);
   InitMenuChecks();
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
 
@@ -5299,7 +5338,23 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       fromX = fromY = -1;
       break;
 
+    case IDM_English:
+      barbaric = 0;
+      TranslateMenus(0);
+      CheckMenuItem(GetMenu(hwndMain), lastChecked, MF_BYCOMMAND|MF_UNCHECKED);
+      CheckMenuItem(GetMenu(hwndMain), IDM_English, MF_BYCOMMAND|MF_CHECKED);
+      lastChecked = wmId;
+      break;
+
     default:
+      if(wmId > IDM_English && wmId < IDM_English+5) {
+          LoadLanguageFile(languageFile[wmId - IDM_English - 1]);
+          TranslateMenus(0);
+          CheckMenuItem(GetMenu(hwndMain), lastChecked, MF_BYCOMMAND|MF_UNCHECKED);
+          CheckMenuItem(GetMenu(hwndMain), wmId, MF_BYCOMMAND|MF_CHECKED);
+          lastChecked = wmId;
+          break;
+      }
       return (DefWindowProc(hwnd, message, wParam, lParam));
     }
     break;
