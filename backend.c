@@ -719,8 +719,8 @@ InitBackEnd1()
     /* [AS] Adjudication threshold */
     adjudicateLossThreshold = appData.adjudicateLossThreshold;
     
-    first.which = "first";
-    second.which = "second";
+    first.which = _("first");
+    second.which = _("second");
     first.maybeThinking = second.maybeThinking = FALSE;
     first.pr = second.pr = NoProc;
     first.isr = second.isr = NULL;
@@ -6721,7 +6721,7 @@ Adjudicate(ChessProgramState *cps)
 			   SendMoveToProgram(forwardMostMove-1, engineOpponent); // make sure opponent gets move
                          ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
                          GameEnds( WhiteOnMove(forwardMostMove) ? BlackWins : WhiteWins, 
-							_("Xboard adjudication: King destroyed"), GE_XBOARD );
+							"Xboard adjudication: King destroyed", GE_XBOARD );
                          return 1;
 		     }
 		}
@@ -6735,7 +6735,7 @@ Adjudicate(ChessProgramState *cps)
 			   SendMoveToProgram(forwardMostMove-1, engineOpponent); // make sure opponent gets to see move
                          ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
                          GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
-							_("Xboard adjudication: Bare king"), GE_XBOARD );
+							"Xboard adjudication: Bare king", GE_XBOARD );
                          return 1;
 		     }
 		  } else
@@ -6748,7 +6748,7 @@ Adjudicate(ChessProgramState *cps)
 			      SendMoveToProgram(forwardMostMove-1, engineOpponent); // make sure opponent gets move
 			    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
 			    GameEnds( nrW > 1 ? WhiteWins : nrB > 1 ? BlackWins : GameIsDrawn, 
-							_("Xboard adjudication: Bare king"), GE_XBOARD );
+							"Xboard adjudication: Bare king", GE_XBOARD );
 			    return 1;
 			}
 		  }
@@ -6764,7 +6764,7 @@ Adjudicate(ChessProgramState *cps)
 			if(MateTest(boards[i], PosFlags(i)) == MT_CHECK)
 			    checkCnt++;
 			if(checkCnt >= 2) {
-			    reason = _("Xboard adjudication: 3rd check");
+			    reason = "Xboard adjudication: 3rd check";
 			    boards[forwardMostMove][EP_STATUS] = EP_CHECKMATE;
 			    break;
 			}
@@ -6775,7 +6775,7 @@ Adjudicate(ChessProgramState *cps)
 		break;
 	      case MT_STALEMATE:
 	      case MT_STAINMATE:
-		reason = _("Xboard adjudication: Stalemate");
+		reason = "Xboard adjudication: Stalemate";
 		if((signed char)boards[forwardMostMove][EP_STATUS] != EP_CHECKMATE) { // [HGM] don't touch win through baring or K-capt
 		    boards[forwardMostMove][EP_STATUS] = EP_STALEMATE;   // default result for stalemate is draw
 		    if(gameInfo.variant == VariantLosers  || gameInfo.variant == VariantGiveaway) // [HGM] losers:
@@ -6789,7 +6789,7 @@ Adjudicate(ChessProgramState *cps)
 		}
 		break;
 	      case MT_CHECKMATE:
-		reason = _("Xboard adjudication: Checkmate");
+		reason = "Xboard adjudication: Checkmate";
 		boards[forwardMostMove][EP_STATUS] = (gameInfo.variant == VariantLosers ? EP_WINS : EP_CHECKMATE);
 		break;
 	    }
@@ -6827,7 +6827,7 @@ Adjudicate(ChessProgramState *cps)
 			   SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see last move */
 			 }
                          ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                         GameEnds( GameIsDrawn, _("Xboard adjudication: Insufficient mating material"), GE_XBOARD );
+                         GameEnds( GameIsDrawn, "Xboard adjudication: Insufficient mating material", GE_XBOARD );
                          return 1;
                      }
                 }
@@ -6848,7 +6848,7 @@ Adjudicate(ChessProgramState *cps)
 			    SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
 			  }
                           ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                          GameEnds( GameIsDrawn, _("Xboard adjudication: Trivial draw"), GE_XBOARD );
+                          GameEnds( GameIsDrawn, "Xboard adjudication: Trivial draw", GE_XBOARD );
                           return 1;
                      }
                 } else moveCount = 6;
@@ -6896,7 +6896,7 @@ Adjudicate(ChessProgramState *cps)
                             && appData.drawRepeats > 1) {
                              /* adjudicate after user-specified nr of repeats */
 			     int result = GameIsDrawn;
-			     char *details = _("XBoard adjudication: repetition draw");
+			     char *details = "XBoard adjudication: repetition draw";
 			     if(gameInfo.variant == VariantXiangqi && appData.testLegality) { 
 				// [HGM] xiangqi: check for forbidden perpetuals
 				int m, ourPerpetual = 1, hisPerpetual = 1;
@@ -6910,7 +6910,7 @@ Adjudicate(ChessProgramState *cps)
 									ourPerpetual, hisPerpetual);
 				if(ourPerpetual && !hisPerpetual) { // we are actively checking him: forfeit
 				    result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins;
-		 		    details = _("Xboard adjudication: perpetual checking");
+		 		    details = "Xboard adjudication: perpetual checking";
 				} else
 				if(hisPerpetual && !ourPerpetual) { // he is checking us, but did not repeat yet
 				    break; // (or we would have caught him before). Abort repetition-checking loop.
@@ -6921,7 +6921,7 @@ Adjudicate(ChessProgramState *cps)
 				    ourPerpetual = PerpetualChase(k+1, forwardMostMove);
 				    if(ourPerpetual && !hisPerpetual) { // we are actively chasing him: forfeit
 					result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins;
-		 			details = _("Xboard adjudication: perpetual chasing");
+		 			details = "Xboard adjudication: perpetual chasing";
 				    } else
 				    if(hisPerpetual && !ourPerpetual)   // he is chasing us, but did not repeat yet
 					break; // Abort repetition-checking loop.
@@ -6970,7 +6970,7 @@ Adjudicate(ChessProgramState *cps)
 			   SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
 			 }
                          ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-                         GameEnds( GameIsDrawn, _("Xboard adjudication: 50-move rule"), GE_XBOARD );
+                         GameEnds( GameIsDrawn, "Xboard adjudication: 50-move rule", GE_XBOARD );
                          return 1;
                 }
 
@@ -7004,7 +7004,7 @@ Adjudicate(ChessProgramState *cps)
 		      SendMoveToProgram(forwardMostMove-1, engineOpponent); /* make sure opponent gets to see move */
 		    }
 		    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
-	            GameEnds( GameIsDrawn, _("Xboard adjudication: long game"), GE_XBOARD );
+	            GameEnds( GameIsDrawn, "Xboard adjudication: long game", GE_XBOARD );
 	            return 1;
         	}
 	return 0;
@@ -7275,7 +7275,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	        ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
 
                 GameEnds( WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins, 
-                    _("Xboard adjudication"), 
+                    "Xboard adjudication", 
                     GE_XBOARD );
 
                 return;
@@ -14012,7 +14012,7 @@ DisplayMove(moveNumber)
 	    sprintf(res, " %s", PGNResult(gameInfo.result));
 	} else {
 	    sprintf(res, " {%s} %s",
-		    gameInfo.resultDetails, PGNResult(gameInfo.result));
+		    T_(gameInfo.resultDetails), PGNResult(gameInfo.result));
 	}
     } else {
 	res[0] = NULLCHAR;
