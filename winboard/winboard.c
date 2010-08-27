@@ -277,7 +277,8 @@ int dialogItems[][40] = {
 { DLG_Sound, IDC_Event, OPT_NoSound, OPT_DefaultBeep, OPT_BuiltInSound,
   OPT_WavFile, OPT_BrowseSound, OPT_DefaultSounds, IDOK, IDCANCEL, OPT_PlaySound }, 
 { DLG_GeneralOptions, IDOK, IDCANCEL, OPT_AlwaysOnTop, OPT_HighlightLastMove,
-  OPT_AlwaysQueen, OPT_PeriodicUpdates, OPT_AnimateDragging, OPT_PonderNextMove,  OPT_AnimateMoving, OPT_PopupExitMessage, OPT_AutoFlag,  OPT_PopupMoveErrors,
+  OPT_AlwaysQueen, OPT_PeriodicUpdates, OPT_AnimateDragging, OPT_PonderNextMove,
+  OPT_AnimateMoving, OPT_PopupExitMessage, OPT_AutoFlag, OPT_PopupMoveErrors,
   OPT_AutoFlipView, OPT_ShowButtonBar, OPT_AutoRaiseBoard, OPT_ShowCoordinates,
   OPT_Blindfold, OPT_ShowThinking, OPT_HighlightDragging, OPT_TestLegality,
   OPT_SaveExtPGN, OPT_HideThinkFromHuman, OPT_ExtraInfoInMoveHistory,
@@ -351,7 +352,7 @@ LoadLanguageFile(char *name)
                         if(j >= sizeof(english)) { DisplayError("Too many translated strings", 0); return; }
                         english[j] = languageBuf + n + 1; *p = 0;
                         foreign[j++] = p + 7; languageBuf[i-1] = 0;
-if(appData.debugMode) fprintf(debugFP, "translation: replace '%s' by '%s'\n", english[j-1], foreign[j-1]);
+//if(appData.debugMode) fprintf(debugFP, "translation: replace '%s' by '%s'\n", english[j-1], foreign[j-1]);
                     }
                 }
             }
@@ -368,7 +369,7 @@ if(appData.debugMode) fprintf(debugFP, "translation: replace '%s' by '%s'\n", en
     }
     fclose(f);
     barbaric = (j != 0);
-    if(barbaric) strcpy(oldLanguage, name); else oldLanguage[0] = NULLCHAR;
+    strcpy(oldLanguage, buf);
 }
 
 char *
@@ -387,7 +388,7 @@ if(appData.debugMode) fprintf(debugFP, "T_(%s)\n", s);
 }
 
 void
-Translate(HANDLE hDlg, int dialogID)
+Translate(HWND hDlg, int dialogID)
 {   // translate all text items in the given dialog
     int i=0, j, k;
     char buf[MSG_SIZ], *s;
@@ -5603,6 +5604,7 @@ OldOpenFileHook(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       number = NULL;
     }
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, 1536);
     return FALSE;  /* Allow for further processing */
 
   case WM_COMMAND:
@@ -5622,6 +5624,7 @@ OpenFileHook(HWND hdlg, UINT uiMsg, WPARAM wParam, LPARAM lParam)
   OFNOTIFY *ofnot;
   switch (uiMsg) {
   case WM_INITDIALOG:
+    Translate(hdlg, DLG_IndexNumber);
     ofname = (OPENFILENAME *)lParam;
     number = (UINT *)(ofname->lCustData);
     break;
@@ -5851,7 +5854,7 @@ InitComboStrings(HANDLE hwndCombo, char **cd)
   SendMessage(hwndCombo, CB_RESETCONTENT, 0, 0);
 
   while (*cd != NULL) {
-    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) *cd);
+    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) T_(*cd));
     cd++;
   }
 }
@@ -6067,6 +6070,7 @@ About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
     SetDlgItemText(hDlg, ABOUTBOX_Version, programVersion);
+    Translate(hDlg, ABOUTBOX);
     JAWS_COPYRIGHT
     return (TRUE);
 

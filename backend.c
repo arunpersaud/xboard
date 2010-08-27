@@ -131,6 +131,7 @@ extern int gettimeofday(struct timeval *, struct timezone *);
 #ifdef ENABLE_NLS 
 # define _(s) gettext (s) 
 # define N_(s) gettext_noop (s) 
+# define T_(s) gettext(s)
 #else 
 # ifdef WIN32
 #   define _(s) T_(s)
@@ -138,6 +139,7 @@ extern int gettimeofday(struct timeval *, struct timezone *);
 # else
 #   define _(s) (s) 
 #   define N_(s) s 
+#   define T_(s) s
 # endif
 #endif 
 

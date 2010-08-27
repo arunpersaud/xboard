@@ -159,6 +159,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
+    Translate(hDlg, DLG_GeneralOptions);
 
     /* Initialize the dialog items */
 #define CHECK_BOX(x,y) CheckDlgButton(hDlg, (x), (BOOL)(y))
@@ -1081,7 +1082,7 @@ ColorizeTextDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* set the background color */
     SendDlgItemMessage(hDlg, OPT_Sample, EM_SETBKGNDCOLOR, FALSE, background);
 
-    SetDlgItemText(hDlg, OPT_Sample, mca.name);
+    SetDlgItemText(hDlg, OPT_Sample, T_(mca.name));
     UpdateSampleText(hDlg, OPT_Sample, &mca);
     return TRUE;
 
@@ -1219,16 +1220,16 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     SendDlgItemMessage(hDlg, OPT_SampleSeek,      EM_SETBKGNDCOLOR, 0, cbc);
     SendDlgItemMessage(hDlg, OPT_SampleNormal,    EM_SETBKGNDCOLOR, 0, cbc);
 
-    SetDlgItemText(hDlg, OPT_SampleShout,     mca[ColorShout].name);
-    SetDlgItemText(hDlg, OPT_SampleSShout,    mca[ColorSShout].name);
-    SetDlgItemText(hDlg, OPT_SampleChannel1,  mca[ColorChannel1].name);
-    SetDlgItemText(hDlg, OPT_SampleChannel,   mca[ColorChannel].name);
-    SetDlgItemText(hDlg, OPT_SampleKibitz,    mca[ColorKibitz].name);
-    SetDlgItemText(hDlg, OPT_SampleTell,      mca[ColorTell].name);
-    SetDlgItemText(hDlg, OPT_SampleChallenge, mca[ColorChallenge].name);
-    SetDlgItemText(hDlg, OPT_SampleRequest,   mca[ColorRequest].name);
-    SetDlgItemText(hDlg, OPT_SampleSeek,      mca[ColorSeek].name);
-    SetDlgItemText(hDlg, OPT_SampleNormal,    mca[ColorNormal].name);
+    SetDlgItemText(hDlg, OPT_SampleShout,     T_(mca[ColorShout].name));
+    SetDlgItemText(hDlg, OPT_SampleSShout,    T_(mca[ColorSShout].name));
+    SetDlgItemText(hDlg, OPT_SampleChannel1,  T_(mca[ColorChannel1].name));
+    SetDlgItemText(hDlg, OPT_SampleChannel,   T_(mca[ColorChannel].name));
+    SetDlgItemText(hDlg, OPT_SampleKibitz,    T_(mca[ColorKibitz].name));
+    SetDlgItemText(hDlg, OPT_SampleTell,      T_(mca[ColorTell].name));
+    SetDlgItemText(hDlg, OPT_SampleChallenge, T_(mca[ColorChallenge].name));
+    SetDlgItemText(hDlg, OPT_SampleRequest,   T_(mca[ColorRequest].name));
+    SetDlgItemText(hDlg, OPT_SampleSeek,      T_(mca[ColorSeek].name));
+    SetDlgItemText(hDlg, OPT_SampleNormal,    T_(mca[ColorNormal].name));
 
     UpdateSampleText(hDlg, OPT_SampleShout,     &mca[ColorShout]);
     UpdateSampleText(hDlg, OPT_SampleSShout,    &mca[ColorSShout]);
@@ -1793,7 +1794,7 @@ InitSoundCombo(HWND hwndCombo, SoundComboData *scd)
 
   /* send the labels to the combo box */
   while (scd->label) {
-    err = SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) scd->label);
+    err = SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) T_(scd->label));
     if (err != cnt++) {
       sprintf(buf, "InitSoundCombo(): err '%d', cnt '%d'\n",
 	  (int)err, (int)cnt);
