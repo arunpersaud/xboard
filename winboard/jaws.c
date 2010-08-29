@@ -894,11 +894,11 @@ SayAllBoard()
 VOID
 SayWhosTurn()
 {
-	if(gameMode == MachinePlaysBlack || gameMode == IcsPlayingBlack) {
+	if(gameMode == MachinePlaysBlack || gameMode == IcsPlayingWhite) {
 		if(WhiteOnMove(currentMove))
 			SayString("It is your turn", FALSE);
 		else	SayString("It is your opponents turn", FALSE);
-	} else if(gameMode == MachinePlaysWhite || gameMode == IcsPlayingWhite) {
+	} else if(gameMode == MachinePlaysWhite || gameMode == IcsPlayingBlack) {
 		if(WhiteOnMove(currentMove))
 			SayString("It is your opponents turn", FALSE);
 		else	SayString("It is your turn", FALSE);
