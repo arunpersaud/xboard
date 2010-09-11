@@ -18,7 +18,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/.  
+ * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
@@ -308,9 +308,9 @@ int GameListBuild(f)
 		free(currentListGame->gameInfo.resultDetails);
 	    }
 	    if(yy_text[0] == '{') { char *p;
-		strcpy(lastComment, yy_text+1);
-		if(p = strchr(lastComment, '}')) *p = 0;
-		currentListGame->gameInfo.resultDetails = StrSave(lastComment);
+	      safeStrCpy(lastComment, yy_text+1, sizeof(lastComment)/sizeof(lastComment[0]));
+	      if(p = strchr(lastComment, '}')) *p = 0;
+	      currentListGame->gameInfo.resultDetails = StrSave(lastComment);
 	    }
 	    break;
 	  default:
@@ -389,7 +389,7 @@ GameListLineOld(number, gameInfo)
     char *white = gameInfo->white ? gameInfo->white : "?";
     char *black = gameInfo->black ? gameInfo->black : "?";
     char *date = gameInfo->date ? gameInfo->date : "?";
-    int len = 10 + strlen(event) + 2 + strlen(white) + 1 + 
+    int len = 10 + strlen(event) + 2 + strlen(white) + 1 +
       strlen(black) + 11 + strlen(date) + 1;
     char *ret = (char *) malloc(len);
     sprintf(ret, "%d. %s, %s-%s, %s, %s",
@@ -401,10 +401,10 @@ GameListLineOld(number, gameInfo)
 
 char * GameListLine( int number, GameInfo * gameInfo )
 {
-    char buffer[1024];
+    char buffer[2*MSG_SIZ];
     char * buf = buffer;
     char * glt = appData.gameListTags;
-    
+
     buf += sprintf( buffer, "%d.", number );
 
     while( *glt != '\0' ) {
@@ -431,19 +431,19 @@ char * GameListLine( int number, GameInfo * gameInfo )
             strncpy( buf, gameInfo->black ? gameInfo->black : "?", MAX_FIELD_LEN );
             break;
         case GLT_RESULT:
-            strcpy( buf, PGNResult(gameInfo->result) );
+	    safeStrCpy( buf, PGNResult(gameInfo->result), 2*MSG_SIZ );
             break;
         case GLT_WHITE_ELO:
             if( gameInfo->whiteRating > 0 )
                 sprintf( buf, "%d", gameInfo->whiteRating );
             else
-                strcpy( buf, "?" );
+	      safeStrCpy( buf, "?" , 2*MSG_SIZ);
             break;
         case GLT_BLACK_ELO:
             if( gameInfo->blackRating > 0 )
                 sprintf( buf, "%d", gameInfo->blackRating );
             else
-                strcpy( buf, "?" );
+	      safeStrCpy( buf, "?" , 2*MSG_SIZ);
             break;
         case GLT_TIME_CONTROL:
             strncpy( buf, gameInfo->timeControl ? gameInfo->timeControl : "?", MAX_FIELD_LEN );
@@ -486,7 +486,7 @@ char * GameListLineFull( int number, GameInfo * gameInfo )
     char * date = gameInfo->date ? gameInfo->date : "?";
     char * oob = gameInfo->outOfBook ? gameInfo->outOfBook : "";
     char * reason = gameInfo->resultDetails ? gameInfo->resultDetails : "";
-    
+
     int len = 64 + strlen(event) + strlen(site) + strlen(white) + strlen(black) + strlen(date) + strlen(oob) + strlen(reason);
 
     char *ret = (char *) malloc(len);
@@ -522,7 +522,7 @@ static GLT_Item GLT_ItemInfo[] = {
     { 0, 0 }
 };
 
-char lpUserGLT[64];
+char lpUserGLT[LPUSERGLT_SIZE];
 
 // back-end: convert the tag id-char to a full tag name
 char * GLT_FindItem( char id )
@@ -575,7 +575,7 @@ char
 GLT_ListItemToTag( int index )
 {
     char result = '\0';
-    char name[128];
+    char name[MSG_SIZ];
 
     GLT_Item * list = GLT_ItemInfo;
 

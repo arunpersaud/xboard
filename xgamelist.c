@@ -415,7 +415,7 @@ GameListCallback(w, client_data, call_data)
         j = 0;
         XtSetArg(args[j], XtNstring, &name);  j++;
 	XtGetValues(filterText, args, j);
-        strcpy(filterString, name);
+        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
 	XawListHighlight(listwidg, 0);
         if(GameListPrepare()) GameListReplace(); // crashes on empty list...
         return;
@@ -566,7 +566,7 @@ SetFilterProc(w, event, prms, nprms)
         int j = 0;
         XtSetArg(args[j], XtNstring, &name);  j++;
 	XtGetValues(filterText, args, j);
-        strcpy(filterString, name);
+        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
         if(GameListPrepare()) GameListReplace(); // crashes on empty list...
 	list = XtNameToWidget(glc->shell, "*form.viewport.list");
 	XawListHighlight(list, 0);
@@ -642,8 +642,8 @@ void GLT_AddToList(char *name)
 
 Boolean GLT_GetFromList(int index, char *name)
 {
-    strcpy(name, strings[index]);
-    return TRUE;
+  safeStrCpy(name, strings[index], MSG_SIZ);
+  return TRUE;
 }
 
 void GLT_DeSelectList()
@@ -711,9 +711,9 @@ GameListOptionsCallback(w, client_data, call_data)
 	strings[--index] = p;
     } else
     if (strcmp(name, _("factory")) == 0) {
-	strcpy(lpUserGLT, GLT_DEFAULT_TAGS);
-	GLT_TagsToList(lpUserGLT);
-	index = 0;
+      safeStrCpy(lpUserGLT, GLT_DEFAULT_TAGS, LPUSERGLT_SIZE);
+      GLT_TagsToList(lpUserGLT);
+      index = 0;
     }
     XawListHighlight(listwidg, index);
 }
@@ -810,7 +810,7 @@ GameListOptionsCreate()
       XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
     XtAddCallback(b_close, XtNcallback, GameListOptionsCallback, client_data);
 
-    strcpy(lpUserGLT, appData.gameListTags);
+    safeStrCpy(lpUserGLT, appData.gameListTags, LPUSERGLT_SIZE);
     GLT_TagsToList(lpUserGLT);
 
     XtRealizeWidget(shell);

@@ -2,7 +2,7 @@
  * xboard.c -- X front end for XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts. 
+ * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
  * 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
@@ -752,23 +752,23 @@ MenuItem buttonBar[] = {
 #define PIECE_MENU_SIZE 18
 String pieceMenuStrings[2][PIECE_MENU_SIZE] = {
     { N_("White"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"), 
-      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"), 
+      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"),
+      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
       N_("Empty square"), N_("Clear board") },
     { N_("Black"), "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"),
-      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"), 
-      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"), 
+      N_("Queen"), N_("King"), "----", N_("Elephant"), N_("Cannon"),
+      N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
       N_("Empty square"), N_("Clear board") }
 };
 /* must be in same order as PieceMenuStrings! */
 ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
     { WhitePlay, (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
 	WhiteRook, WhiteQueen, WhiteKing, (ChessSquare) 0, WhiteAlfil,
-	WhiteCannon, WhiteAngel, WhiteMarshall, (ChessSquare) 0, 
+	WhiteCannon, WhiteAngel, WhiteMarshall, (ChessSquare) 0,
 	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
     { BlackPlay, (ChessSquare) 0, BlackPawn, BlackKnight, BlackBishop,
 	BlackRook, BlackQueen, BlackKing, (ChessSquare) 0, BlackAlfil,
-	BlackCannon, BlackAngel, BlackMarshall, (ChessSquare) 0, 
+	BlackCannon, BlackAngel, BlackMarshall, (ChessSquare) 0,
 	PromotePiece, DemotePiece, EmptySquare, ClearBoard },
 };
 
@@ -1353,10 +1353,10 @@ extern char *crWhite, * crBlack;
 
 void *
 colorVariable[] = {
-  &appData.whitePieceColor, 
-  &appData.blackPieceColor, 
+  &appData.whitePieceColor,
+  &appData.blackPieceColor,
   &appData.lightSquareColor,
-  &appData.darkSquareColor, 
+  &appData.darkSquareColor,
   &appData.highlightSquareColor,
   &appData.premoveHighlightColor,
   &appData.lowTimeWarningColor,
@@ -1426,7 +1426,7 @@ ParseColor(int n, char *name)
 
 void
 ParseTextAttribs(ColorClass cc, char *s)
-{   
+{
     (&appData.colorShout)[cc] = strdup(s);
 }
 
@@ -1472,7 +1472,7 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
 	break;
   }
   for(i=0; i<MAX_SIZE; i++) if(fontValid[n][i]) // [HGM] font: store all standard fonts
-    fprintf(f, OPTCHAR "%s" SEPCHAR "size%d:%s\n", ad->argName, i, fontTable[n][i]); 
+    fprintf(f, OPTCHAR "%s" SEPCHAR "size%d:%s\n", ad->argName, i, fontTable[n][i]);
 }
 
 void
@@ -1515,7 +1515,7 @@ GetActualPlacement(Widget wg, WindowPlacement *wp)
   int i;
 
   if(!wg) return;
-  
+
     i = 0;
     XtSetArg(args[i], XtNx, &x); i++;
     XtSetArg(args[i], XtNy, &y); i++;
@@ -1552,7 +1552,9 @@ int
 MySearchPath(char *installDir, char *name, char *fullname)
 { // just append installDir and name. Perhaps ExpandPath should be used here?
   name = ExpandPathName(name);
-  if(name && name[0] == '/') strcpy(fullname, name); else {
+  if(name && name[0] == '/')
+    safeStrCpy(fullname, name, MSG_SIZ );
+  else {
     sprintf(fullname, "%s%c%s", installDir, '/', name);
   }
   return 1;
@@ -1562,7 +1564,7 @@ int
 MyGetFullPathName(char *name, char *fullname)
 { // should use ExpandPath?
   name = ExpandPathName(name);
-  strcpy(fullname, name);
+  safeStrCpy(fullname, name, MSG_SIZ );
   return 1;
 }
 
@@ -2051,7 +2053,7 @@ XBoard square size (hint): %d\n\
     if (forceMono) {
       fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	      programName);
-      
+
       if (appData.bitmapDirectory == NULL ||
 	      appData.bitmapDirectory[0] == NULLCHAR)
 	    appData.bitmapDirectory = DEF_BITMAP_DIR;
@@ -2061,7 +2063,7 @@ XBoard square size (hint): %d\n\
       vFrom.addr = (caddr_t) appData.lowTimeWarningColor;
       vFrom.size = strlen(appData.lowTimeWarningColor);
       XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-      if (vTo.addr == NULL) 
+      if (vTo.addr == NULL)
 		appData.monoMode = True;
       else
 		lowTimeWarningColor = *(Pixel *) vTo.addr;
@@ -2543,11 +2545,11 @@ XBoard square size (hint): %d\n\
       HistoryPopUp();
     }
 
-    if( wpEvalGraph.visible ) 
+    if( wpEvalGraph.visible )
       {
 	EvalGraphPopUp();
       };
-    
+
     if( wpEngineOutput.visible ) {
       EngineOutputPopUp();
     }
@@ -2643,10 +2645,10 @@ ICSInitScript()
     if (f == NULL) {
 	p = getenv("HOME");
 	if (p != NULL) {
-	    strcpy(buf, p);
-	    strcat(buf, "/");
-	    strcat(buf, appData.icsLogon);
-	    f = fopen(buf, "r");
+	  safeStrCpy(buf, p, sizeof(buf)/sizeof(buf[0]) );
+	  strcat(buf, "/");
+	  strcat(buf, appData.icsLogon);
+	  f = fopen(buf, "r");
 	}
     }
     if (f != NULL)
@@ -2984,7 +2986,8 @@ NextInHistory()
  * The return value should be freed with XtFree when no
  * longer needed.
  */
-char *FindFont(pattern, targetPxlSize)
+char *
+FindFont(pattern, targetPxlSize)
      char *pattern;
      int targetPxlSize;
 {
@@ -3058,8 +3061,8 @@ char *FindFont(pattern, targetPxlSize)
 	while (isdigit(*scalableTail)) scalableTail++;
 	sprintf(p, "%.*s%d%s", headlen, scalable, targetPxlSize, scalableTail);
     } else {
-        p = (char *) XtMalloc(strlen(best) + 1);
-        strcpy(p, best);
+        p = (char *) XtMalloc(strlen(best) + 2);
+        safeStrCpy(p, best, strlen(best)+1 );
     }
     if (appData.debugMode) {
         fprintf(debugFP, _("resolved %s at pixel size %d\n  to %s\n"),
@@ -3445,7 +3448,7 @@ void CreateXPMPieces()
 			exit(1);
 		    }
 		}
-		if(piece <= (int) WhiteKing) 
+		if(piece <= (int) WhiteKing)
 		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
 	    }
 	}
@@ -3554,7 +3557,7 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
     char msg[MSG_SIZ], fullname[MSG_SIZ];
 
     if (*appData.bitmapDirectory != NULLCHAR) {
-        strcpy(fullname, appData.bitmapDirectory);
+      safeStrCpy(fullname, appData.bitmapDirectory, sizeof(fullname)/sizeof(fullname[0]) );
 	strcat(fullname, "/");
 	strcat(fullname, name);
 	errcode = XReadBitmapFile(xDisplay, xBoardWindow, fullname,
@@ -3676,7 +3679,7 @@ Widget CreateMenuBar(mb)
 			     formWidget, args, j);
 
     while (mb->name != NULL) {
-	strcpy(menuName, "menu");
+        safeStrCpy(menuName, "menu", sizeof(menuName)/sizeof(menuName[0]) );
 	strcat(menuName, mb->name);
 	j = 0;
 	XtSetArg(args[j], XtNmenuName, XtNewString(menuName));  j++;
@@ -3837,7 +3840,7 @@ void PieceMenuPopup(w, event, params, num_params)
 {
     String whichMenu; int menuNr;
     if (event->type == ButtonRelease)
-        menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY); 
+        menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
     else if (event->type == ButtonPress)
         menuNr = RightClick(Press,   event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
     switch(menuNr) {
@@ -4326,7 +4329,7 @@ void DrawSquare(row, column, piece, do_flash)
 	}
     }
     if(!partnerUp && marker[row][column]) {
-	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC, 
+	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC,
 		x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
     }
 }
@@ -4433,7 +4436,7 @@ static int check_castle_draw(newb, oldb, rrow, rcol)
     return 0;
 }
 
-// [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph 
+// [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph
 void DrawSeekAxis( int x, int y, int xTo, int yTo )
 {
       XDrawLine(xDisplay, xBoardWindow, lineGC, x, y, xTo, yTo);
@@ -4459,7 +4462,7 @@ void DrawSeekDot(int x, int y, int colorNr)
 	XFillRectangle(xDisplay, xBoardWindow, color,
 		x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
     else
-	XFillArc(xDisplay, xBoardWindow, color, 
+	XFillArc(xDisplay, xBoardWindow, color,
 		x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
 }
 
@@ -5193,7 +5196,7 @@ void FileNameAction(w, event, prms, nprms)
     name = XawDialogGetValueString(w = XtParent(w));
 
     if ((name != NULL) && (*name != NULLCHAR)) {
-	strcpy(buf, name);
+        safeStrCpy(buf, name, sizeof(buf)/sizeof(buf[0]) );
 	XtPopdown(w = XtParent(XtParent(w)));
 	XtDestroyWidget(w);
 	filenameUp = False;
@@ -5269,8 +5272,8 @@ void PromotionPopUp()
       XawDialogAddButton(dialog, _("King"), PromotionCallback,
 			 (XtPointer) dialog);
     }
-    if(gameInfo.variant == VariantCapablanca || 
-       gameInfo.variant == VariantGothic || 
+    if(gameInfo.variant == VariantCapablanca ||
+       gameInfo.variant == VariantGothic ||
        gameInfo.variant == VariantCapaRandom) {
       XawDialogAddButton(dialog, _("Archbishop"), PromotionCallback,
 			 (XtPointer) dialog);
@@ -5723,7 +5726,7 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
      * automatically call XtFree on the value returned.  So have to
      * make a copy of it allocated with XtMalloc */
     selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
-    strcpy(selection_tmp, selected_fen_position);
+    safeStrCpy(selection_tmp, selected_fen_position, sizeof(selection_tmp)/sizeof(selection_tmp[0]) );
 
     *value_return=selection_tmp;
     *length_return=strlen(selection_tmp);
@@ -5798,7 +5801,7 @@ void PastePositionProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
 {
-    XtGetSelectionValue(menuBarWidget, 
+    XtGetSelectionValue(menuBarWidget,
       appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
       /* (XtSelectionCallbackProc) */ PastePositionCB,
       NULL, /* client_data passed to PastePositionCB */
@@ -7047,23 +7050,23 @@ void DisplayMessage(message, extMessage)
      char *message, *extMessage;
 {
   /* display a message in the message widget */
-  
+
   char buf[MSG_SIZ];
   Arg arg;
-  
-  if (extMessage) 
+
+  if (extMessage)
     {
-      if (*message) 
+      if (*message)
 	{
 	  snprintf(buf, sizeof(buf), "%s  %s", message, extMessage);
 	  message = buf;
-	} 
-      else 
+	}
+      else
 	{
 	  message = extMessage;
 	};
     };
-  
+
   /* need to test if messageWidget already exists, since this function
      can also be called during the startup, if for example a Xresource
      is not set up correctly */
@@ -7072,7 +7075,7 @@ void DisplayMessage(message, extMessage)
       XtSetArg(arg, XtNlabel, message);
       XtSetValues(messageWidget, &arg, 1);
     };
-  
+
   return;
 }
 
@@ -7093,8 +7096,8 @@ void DisplayTitle(text)
     }
 
     if (*text != NULLCHAR) {
-	strcpy(icon, text);
-	strcpy(title, text);
+      safeStrCpy(icon, text, sizeof(icon)/sizeof(icon[0]) );
+      safeStrCpy(title, text, sizeof(title)/sizeof(title[0]) );
     } else if (appData.icsActive) {
         snprintf(icon, sizeof(icon), "%s", appData.icsHost);
 	snprintf(title, sizeof(title), "%s: %s", programName, appData.icsHost);
@@ -7104,19 +7107,19 @@ void DisplayTitle(text)
 #ifdef GOTHIC
     // [HGM] license: This stuff should really be done in back-end, but WinBoard already had a pop-up for it
     } else if (gameInfo.variant == VariantGothic) {
-	strcpy(icon, programName);
-	strcpy(title, GOTHIC);
+      safeStrCpy(icon,  programName, sizeof(icon)/sizeof(icon[0]) );
+      safeStrCpy(title, GOTHIC,     sizeof(title)/sizeof(title[0]) );
 #endif
 #ifdef FALCON
     } else if (gameInfo.variant == VariantFalcon) {
-	strcpy(icon, programName);
-	strcpy(title, FALCON);
+      safeStrCpy(icon, programName, sizeof(icon)/sizeof(icon[0]) );
+      safeStrCpy(title, FALCON, sizeof(title)/sizeof(title[0]) );
 #endif
     } else if (appData.noChessProgram) {
-	strcpy(icon, programName);
-	strcpy(title, programName);
+      safeStrCpy(icon, programName, sizeof(icon)/sizeof(icon[0]) );
+      safeStrCpy(title, programName, sizeof(title)/sizeof(title[0]) );
     } else {
-	strcpy(icon, first.tidy);
+      safeStrCpy(icon, first.tidy, sizeof(icon)/sizeof(icon[0]) );
 	snprintf(title,sizeof(title), "%s: %s", programName, first.tidy);
     }
     i = 0;
@@ -7126,7 +7129,8 @@ void DisplayTitle(text)
 }
 
 
-void DisplayError(message, error)
+void
+DisplayError(message, error)
      String message;
      int error;
 {
@@ -7274,7 +7278,7 @@ void AskQuestionReplyAction(w, event, prms, nprms)
     String reply;
 
     reply = XawDialogGetValueString(w = XtParent(w));
-    strcpy(buf, pendingReplyPrefix);
+    safeStrCpy(buf, pendingReplyPrefix, sizeof(buf)/sizeof(buf[0]) );
     if (*buf) strcat(buf, " ");
     strcat(buf, reply);
     strcat(buf, "\n");
@@ -7312,7 +7316,7 @@ void AskQuestion(title, question, replyPrefix, pr)
     int win_x, win_y;
     unsigned int mask;
 
-    strcpy(pendingReplyPrefix, replyPrefix);
+    safeStrCpy(pendingReplyPrefix, replyPrefix, sizeof(pendingReplyPrefix)/sizeof(pendingReplyPrefix[0]) );
     pendingReplyPR = pr;
 
     i = 0;
@@ -7490,11 +7494,12 @@ char *UserName()
     return getpwuid(getuid())->pw_name;
 }
 
-static char *ExpandPathName(path)
+static char *
+ExpandPathName(path)
      char *path;
 {
-    static char static_buf[2000];
-    char *d, *s, buf[2000];
+    static char static_buf[4*MSG_SIZ];
+    char *d, *s, buf[4*MSG_SIZ];
     struct passwd *pwd;
 
     s = path;
@@ -7510,25 +7515,25 @@ static char *ExpandPathName(path)
 
     if (*s == '~') {
 	if (*(s+1) == '/') {
-	    strcpy(d, getpwuid(getuid())->pw_dir);
-	    strcat(d, s+1);
+	  safeStrCpy(d, getpwuid(getuid())->pw_dir, 4*MSG_SIZ );
+	  strcat(d, s+1);
 	}
 	else {
-	    strcpy(buf, s+1);
-	    *strchr(buf, '/') = 0;
-	    pwd = getpwnam(buf);
-	    if (!pwd)
-	      {
-		  fprintf(stderr, _("ERROR: Unknown user %s (in path %s)\n"),
-			  buf, path);
-		  return NULL;
-	      }
-	    strcpy(d, pwd->pw_dir);
-	    strcat(d, strchr(s+1, '/'));
+	  safeStrCpy(buf, s+1, sizeof(buf)/sizeof(buf[0]) );
+	  *strchr(buf, '/') = 0;
+	  pwd = getpwnam(buf);
+	  if (!pwd)
+	    {
+	      fprintf(stderr, _("ERROR: Unknown user %s (in path %s)\n"),
+		      buf, path);
+	      return NULL;
+	    }
+	  safeStrCpy(d, pwd->pw_dir, 4*MSG_SIZ );
+	  strcat(d, strchr(s+1, '/'));
 	}
     }
     else
-      strcpy(d, s);
+      safeStrCpy(d, s, 4*MSG_SIZ );
 
     return static_buf;
 }
@@ -7703,7 +7708,7 @@ DisplayTimerLabel(w, color, timer, highlight)
     Pixel foregroundOrWarningColor = timerForegroundPixel;
 
     if (timer > 0 &&
-        appData.lowTimeWarning && 
+        appData.lowTimeWarning &&
         (timer / 1000) < appData.icsAlarmTime)
       foregroundOrWarningColor = lowTimeWarningColor;
 
@@ -7793,7 +7798,7 @@ int StartChildProcess(cmdLine, dir, pr)
        most simple-minded way possible.
        */
     i = 0;
-    strcpy(buf, cmdLine);
+    safeStrCpy(buf, cmdLine, sizeof(buf)/sizeof(buf[0]) );
     p = buf;
     for (;;) {
 	while(*p == ' ') p++;
@@ -8751,8 +8756,8 @@ AnimateMove(board, fromX, fromY, toX, toY)
   if (!appData.animate || appData.blindfold)
     return;
 
-  if(board[toY][toX] == WhiteRook && board[fromY][fromX] == WhiteKing || 
-     board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing) 
+  if(board[toY][toX] == WhiteRook && board[fromY][fromX] == WhiteKing ||
+     board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing)
 	return; // [HGM] FRC: no animtion of FRC castlings, as to-square is not true to-square
 
   if (fromY < 0 || fromX < 0 || toX < 0 || toY < 0) return;

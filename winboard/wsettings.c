@@ -323,7 +323,7 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps)
 		success = GetDlgItemText( hDlg, 2001+2*i, newText, MSG_SIZ - strlen(cps->option[j].name) - 9 );
 		if(!success) break;
 		changed = strcmp(cps->option[j].textValue, newText) != 0;
-		strcpy(cps->option[j].textValue, newText);
+		safeStrCpy(cps->option[j].textValue, newText, sizeof(cps->option[j].textValue)/sizeof(cps->option[j].textValue[0]) );
 		break;
 	    case CheckBox:
 		new = IsDlgButtonChecked( hDlg, 2000+2*i );
@@ -397,7 +397,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 */
 		          OPENFILENAME ofn;
 
-		          strcpy( buf, "" );
+		          safeStrCpy( buf, "" , sizeof( buf)/sizeof( buf[0]) );
 
 		          ZeroMemory( &ofn, sizeof(ofn) );
 

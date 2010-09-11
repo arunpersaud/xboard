@@ -164,7 +164,7 @@ VOID SayString(char *mess, BOOL flag)
 { // for debug file
 	char buf[8000], *p;
 	if(appData.debugMode) fprintf(debugFP, "SAY '%s'\n", mess);
-	strcpy(buf, mess);
+	safeStrCpy(buf, mess, sizeof(buf)/sizeof(buf[0]));
 	if(p = StrCaseStr(buf, "Xboard adjudication:")) {
 		int i;
 		for(i=19; i>1; i--) p[i] = p[i-1];

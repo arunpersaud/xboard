@@ -650,7 +650,9 @@ typedef struct {
     Boolean markers;    /* [HGM] markers   */
 } AppData, *AppDataPtr;
 
-/* [AS] PGN tags (for showing in the game list) */
+/*  PGN tags (for showing in the game list) */
+#define LPUSERGLT_SIZE      64
+
 #define GLT_EVENT           'e'
 #define GLT_SITE            's'
 #define GLT_DATE            'd'

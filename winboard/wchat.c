@@ -365,7 +365,8 @@ void ChatPopUp(char *icsHandle)
   for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] == NULL) { partner = i; break; }
   if(partner == -1) { DisplayError("You first have to close a Chat Box\nbefore you can open a new one", 0); return; }
   if(icsHandle) // [HGM] clickbox set handle in advance
-       strcpy(chatPartner[partner], icsHandle);
+    safeStrCpy(chatPartner[partner], icsHandle, 
+	       sizeof(chatPartner[partner])/sizeof(chatPartner[partner][0]) );
   else chatPartner[partner][0] = NULLCHAR;
   chatCount++;
 

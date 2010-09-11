@@ -55,8 +55,8 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
             if(cps == &second) { // change options for first into those for second engine
               if(strstr(buf, "first") == buf) sprintf(argName, "second%s", buf+5); else
               if(buf[0] == 'f') sprintf(argName, "s%s", buf+1); else
-              strcpy(argName, buf);
-            } else strcpy(argName, buf);
+		safeStrCpy(argName, buf, sizeof(argName)/sizeof(argName[0]));
+            } else safeStrCpy(argName, buf, sizeof(argName)/sizeof(argName[0]));
             if(GetArgValue(argName)) { // look up value of option with this name
               s = argName;
               while(*s) *q++ = *s++;

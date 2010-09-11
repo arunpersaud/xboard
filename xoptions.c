@@ -1443,9 +1443,9 @@ void SettingsCallback(w, client_data, call_data)
 		    XtSetArg(args[0], XtNstring, &val);
 		    XtGetValues(currentCps->option[i].handle, args, 1);
 		    if(strcmp(currentCps->option[i].textValue, val)) {
-			strcpy(currentCps->option[i].textValue, val);
-			sprintf(buf, "option %s=%s\n", currentCps->option[i].name, val);
-			SendToProgram(buf, currentCps);
+		      safeStrCpy(currentCps->option[i].textValue, val, sizeof(currentCps->option[i].textValue)/sizeof(currentCps->option[i].textValue[0]));
+		      sprintf(buf, "option %s=%s\n", currentCps->option[i].name, val);
+		      SendToProgram(buf, currentCps);
 		    }
 		    break;
 		case Spin:

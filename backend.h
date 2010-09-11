@@ -231,6 +231,7 @@ char *StrCaseStr P((char *string, char *match));
 char *StrSave P((char *s));
 char *StrSavePtr P((char *s, char **savePtr));
 char *SavePart P((char *));
+char* safeStrCpy P(( char *dst, const char *src, size_t count ));
 
 #ifndef _amigados
 int StrCaseCmp P((char *s1, char *s2));

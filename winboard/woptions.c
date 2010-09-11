@@ -1028,7 +1028,7 @@ MyCreateFont(HWND hwnd, MyFont *font)
   font->mfp.underline = font->lf.lfUnderline;
   font->mfp.strikeout = font->lf.lfStrikeOut;
   font->mfp.charset = font->lf.lfCharSet;
-  strcpy(font->mfp.faceName, font->lf.lfFaceName);
+  safeStrCpy(font->mfp.faceName, font->lf.lfFaceName, sizeof(font->mfp.faceName)/sizeof(font->mfp.faceName[0]) );
   return TRUE;
 }
 
@@ -1042,7 +1042,7 @@ UpdateSampleText(HWND hDlg, int id, MyColorizeAttribs *mca)
     CFM_COLOR|CFM_CHARSET|CFM_BOLD|CFM_ITALIC|CFM_UNDERLINE|CFM_STRIKEOUT|CFM_FACE|CFM_SIZE;
   cf.crTextColor = mca->color;
   cf.dwEffects = mca->effects;
-  strcpy(cf.szFaceName, font[boardSize][CONSOLE_FONT]->mfp.faceName);
+  safeStrCpy(cf.szFaceName, font[boardSize][CONSOLE_FONT]->mfp.faceName, sizeof(cf.szFaceName)/sizeof(cf.szFaceName[0]) );
   /* 
    * The 20.0 below is in fact documented. yHeight is expressed in twips.
    * A twip is 1/20 of a font's point size. See documentation of CHARFORMAT.
@@ -1506,7 +1506,7 @@ SetSampleFontText(HWND hwnd, int id, const MyFont *mf)
   cf.dwEffects = 0;
   if (mf->lf.lfWeight == FW_BOLD) cf.dwEffects |= CFE_BOLD;
   if (mf->lf.lfItalic) cf.dwEffects |= CFE_ITALIC;
-  strcpy(cf.szFaceName, mf->mfp.faceName);
+  safeStrCpy(cf.szFaceName, mf->mfp.faceName, sizeof(cf.szFaceName)/sizeof(cf.szFaceName[0]) );
   /*
    * yHeight is expressed in twips.  A twip is 1/20 of a font's point
    * size. See documentation of CHARFORMAT.  --msw
@@ -1533,7 +1533,7 @@ CopyFont(MyFont *dest, const MyFont *src)
   dest->mfp.underline = src->mfp.underline;
   dest->mfp.strikeout = src->mfp.strikeout;
   dest->mfp.charset   = src->mfp.charset;
-  lstrcpy(dest->mfp.faceName, src->mfp.faceName);
+  lsafeStrCpy(dest->mfp.faceName, src->mfp.faceName, sizeof(dest->mfp.faceName)/sizeof(dest->mfp.faceName[0]) );
   CreateFontInMF(dest);
 }
 
@@ -2984,7 +2984,7 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
           OPENFILENAME ofn;
 
-          strcpy( buf, "" );
+          safeStrCpy( buf, "" , sizeof( buf)/sizeof( buf[0]) );
 
           ZeroMemory( &ofn, sizeof(ofn) );
 

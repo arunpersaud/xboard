@@ -132,7 +132,7 @@ static void AppendMoveToMemo( int index )
     }
 
     /* Move text */
-    strcpy( buf, SavePart( currMovelist[index] ) );
+    safeStrCpy( buf, SavePart( currMovelist[index]) , sizeof( buf)/sizeof( buf[0]) );
     strcat( buf, " " );
 
     histMoves[index].memoOffset = AppendToHistoryMemo( buf, 0, 0 );
@@ -184,7 +184,7 @@ void MemoContentUpdated()
     lastLastMove[0] = '\0';
 
     if( lastLast > 0 ) {
-        strcpy( lastLastMove, SavePart( currMovelist[lastLast-1] ) );
+      safeStrCpy( lastLastMove, SavePart( currMovelist[lastLast-1] ) , sizeof( lastLastMove)/sizeof( lastLastMove[0]) );
     }
 
     /* Deselect any text, move caret to end of memo */

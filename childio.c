@@ -66,6 +66,7 @@
 
 #include "common.h"
 #include "frontend.h"
+#include "backend.h" /* for safeStrCpy */
 
 #if !USE_PTYS
 /* This code is for systems where pipes work properly */
@@ -137,7 +138,7 @@ int PseudoTTY(pty_name)
     if (grantpt(fd) == -1) return -1;
     if (unlockpt(fd) == -1) return -1;
     if (!(ptss = ptsname(fd))) return -1;
-    strcpy(pty_name, ptss);
+    safeStrCpy(pty_name, ptss, sizeof(pty_name)/sizeof(pty_name[0]));
     return fd;
 }
 
@@ -153,7 +154,7 @@ int PseudoTTY(pty_name)
 
     ptyn = _getpty(&fd, O_RDWR, 0600, 0);
     if (ptyn == NULL) return -1;
-    strcpy(pty_name, ptyn);
+    safeStrCpy(pty_name, ptyn, sizeof(pty_name)/sizeof(pty_name[0]));
     return fd;
 }
 
@@ -169,7 +170,7 @@ int PseudoTTY(pty_name)
 
     fd = getpseudotty(&slave, &master);
     if (fd < 0) return fd;
-    strcpy(pty_name, slave);
+    safeStrCpy(pty_name, slave, sizeof(pty_name)/sizeof(pty_name[0]));
     return fd;
 }
 

@@ -816,7 +816,7 @@ ParseArgs(GetFunc get, void *cl)
     } else {
       /* Positional argument */
       ad = &argDescriptors[posarg++];
-      strcpy(argName, ad->argName);
+      strncpy(argName, ad->argName,sizeof(argName)/sizeof(argName[0]));
     }
 
     if (ad->argType == ArgTrue) {
@@ -1377,7 +1377,7 @@ GetArgValue(char *name)
   switch(ad->argType) {
     case ArgString:
     case ArgFilename:
-      strcpy(name, *(char**) ad->argLoc);
+      strncpy(name, *(char**) ad->argLoc, MSG_SIZ);
       return TRUE;
     case ArgInt:
       sprintf(name, "%d", *(int*) ad->argLoc);

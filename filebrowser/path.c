@@ -36,6 +36,11 @@
 #include "xstat.h"
 #include <X11/Xaw/Scrollbar.h>
 
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 1024
+#endif /* ndef MAXPATHLEN */
+
+
 #if defined(SVR4) || defined(SYSV) || defined(USG)
 extern uid_t getuid();
 extern void qsort();
@@ -75,7 +80,7 @@ SFchdir(path)
 	if (strcmp(path, SFcurrentDir)) {
 		result = chdir(path);
 		if (!result) {
-			(void) strcpy(SFcurrentDir, path);
+		  (void) strncpy(SFcurrentDir, path, MAXPATHLEN);
 		}
 	}
 
@@ -475,8 +480,9 @@ SFfindHomeDir(begin, end)
 		if (!strcmp(SFhomeDir.entries[i].real, begin)) {
 			*end = save;
 			SFstrdup(&theRest, end);
-			(void) strcat(strcat(strcpy(SFcurrentPath,
-				SFlogins[i].dir), "/"), theRest);
+			(void) strcat(strcat(strncpy(SFcurrentPath,SFlogins[i].dir,
+						     MAXPATHLEN), "/"),
+				      theRest);
 			XtFree(theRest);
 			SFsetText(SFcurrentPath);
 			SFtextChanged();

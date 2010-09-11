@@ -375,7 +375,7 @@ LoadLanguageFile(char *name)
     }
     fclose(f);
     barbaric = (j != 0);
-    strcpy(oldLanguage, buf);
+    safeStrCpy(oldLanguage, buf, sizeof(oldLanguage)/sizeof(oldLanguage[0]) );
 }
 
 char *
@@ -430,7 +430,8 @@ TranslateMenus(int addLanguage)
           for(j=GetMenuItemCount(subMenu)-1; j>=0; j--){
             char buf[MSG_SIZ];
             UINT k = GetMenuItemID(subMenu, j);
-            if(menuText[i][j]) strcpy(buf, menuText[i][j]); else {
+	      if(menuText[i][j]) 
+		safeStrCpy(buf, menuText[i][j], sizeof(buf)/sizeof(buf[0]) ); else {
                 GetMenuString(subMenu, j, buf, MSG_SIZ, MF_BYPOSITION);
                 menuText[i][j] = strdup(buf); // remember original on first change
             }
@@ -882,7 +883,7 @@ SetUserLogo()
 	  if(strcmp(curName, oldUserName)) {
 		sprintf(oldUserName, "logos\\%s.bmp", curName);
 		userLogo = LoadImage( 0, oldUserName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
-		strcpy(oldUserName, curName);
+		safeStrCpy(oldUserName, curName, sizeof(oldUserName)/sizeof(oldUserName[0]) );
 	  }
     }
 }
@@ -1112,7 +1113,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
     ShowWindow(hwndConsole, nCmdShow);
     if(appData.chatBoxes) { // [HGM] chat: open chat boxes
       char buf[MSG_SIZ], *p = buf, *q;
-      strcpy(buf, appData.chatBoxes);
+	safeStrCpy(buf, appData.chatBoxes, sizeof(buf)/sizeof(buf[0]) );
       do {
 	q = strchr(p, ';');
 	if(q) *q++ = 0;
@@ -1172,7 +1173,7 @@ LFfromMFP(LOGFONT* lf, MyFontParams *mfp)
   lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
   lf->lfQuality = DEFAULT_QUALITY;
   lf->lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;
-  strcpy(lf->lfFaceName, mfp->faceName);
+    safeStrCpy(lf->lfFaceName, mfp->faceName, sizeof(lf->lfFaceName)/sizeof(lf->lfFaceName[0]) );
 }
 
 void
@@ -1475,7 +1476,7 @@ MySearchPath(char *installDir, char *name, char *fullname)
   if(name[0]== '%') {
     fullname[0] = 0; // [HGM] first expand any environment variables in the given name
     while(*p == '%' && (q = strchr(p+1, '%'))) { // [HGM] recognize %*% as environment variable
-      strcpy(buf, p+1);
+      safeStrCpy(buf, p+1, sizeof(buf)/sizeof(buf[0]) );
       *strchr(buf, '%') = 0;
       strcat(fullname, getenv(buf));
       p = q+1; while(*p == '\\') { strcat(fullname, "\\"); p++; }
@@ -2064,7 +2065,7 @@ DoLoadBitmap(HINSTANCE hinst, char *piece, int squareSize, char *suffix)
   if (gameInfo.event &&
       strcmp(gameInfo.event, "Easter Egg Hunt") == 0 &&
       strcmp(name, "k80s") == 0) {
-    strcpy(name, "tim");
+    safeStrCpy(name, "tim", sizeof(name)/sizeof(name[0]) );
   }
   return LoadBitmap(hinst, name);
 }
@@ -4468,7 +4469,8 @@ ChangedConsoleFont()
 
   cfmt.cbSize = sizeof(CHARFORMAT);
   cfmt.dwMask = CFM_FACE|CFM_SIZE|CFM_CHARSET;
-  strcpy(cfmt.szFaceName, font[boardSize][CONSOLE_FONT]->mfp.faceName);
+    safeStrCpy(cfmt.szFaceName, font[boardSize][CONSOLE_FONT]->mfp.faceName,
+	       sizeof(cfmt.szFaceName)/sizeof(cfmt.szFaceName[0]) );
   /* yHeight is expressed in twips.  A twip is 1/20 of a font's point
    * size.  This was undocumented in the version of MSVC++ that I had
    * when I wrote the code, but is apparently documented now.
@@ -5705,12 +5707,12 @@ OpenFileDialog(HWND hwnd, char *write, char *defName, char *defExt, // [HGM] dia
 
   if (fileName == NULL) fileName = buf1;
   if (defName == NULL) {
-    strcpy(fileName, "*.");
+    safeStrCpy(fileName, "*.", sizeof(fileName)/sizeof(fileName[0]) );
     strcat(fileName, defExt);
   } else {
-    strcpy(fileName, defName);
+    safeStrCpy(fileName, defName, sizeof(fileName)/sizeof(fileName[0]) );
   }
-  if (fileTitle) strcpy(fileTitle, "");
+    if (fileTitle) safeStrCpy(fileTitle, "", sizeof(fileTitle)/sizeof(fileTitle[0]) );
   if (number) *number = 0;
 
   openFileName.lStructSize       = sizeof(OPENFILENAME);
@@ -6052,23 +6054,23 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     switch (LOWORD(wParam)) {
     case IDOK:
       if (IsDlgButtonChecked(hDlg, OPT_ChessEngine)) {
-        strcpy(buf, "/fcp=");
+        safeStrCpy(buf, "/fcp=", sizeof(buf)/sizeof(buf[0]) );
 	GetDlgItemText(hDlg, OPT_ChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
         p = buf;
 	ParseArgs(StringGet, &p);
-        strcpy(buf, "/scp=");
+	safeStrCpy(buf, "/scp=", sizeof(buf)/sizeof(buf[0]) );
 	GetDlgItemText(hDlg, OPT_SecondChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
         p = buf;
 	ParseArgs(StringGet, &p);
 	appData.noChessProgram = FALSE;
 	appData.icsActive = FALSE;
       } else if (IsDlgButtonChecked(hDlg, OPT_ChessServer)) {
-        strcpy(buf, "/ics /icshost=");
+        safeStrCpy(buf, "/ics /icshost=", sizeof(buf)/sizeof(buf[0]) );
 	GetDlgItemText(hDlg, OPT_ChessServerName, buf + strlen(buf), sizeof(buf) - strlen(buf));
         p = buf;
 	ParseArgs(StringGet, &p);
 	if (appData.zippyPlay) {
-	  strcpy(buf, "/fcp=");
+	  safeStrCpy(buf, "/fcp=", sizeof(buf)/sizeof(buf[0]) );
   	  GetDlgItemText(hDlg, OPT_ChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
 	  p = buf;
 	  ParseArgs(StringGet, &p);
@@ -8048,7 +8050,7 @@ DisplayTitle(char *str)
 {
   char title[MSG_SIZ], *host;
   if (str[0] != NULLCHAR) {
-    strcpy(title, str);
+    safeStrCpy(title, str, sizeof(title)/sizeof(title[0]) );
   } else if (appData.icsActive) {
     if (appData.icsCommPort[0] != NULLCHAR)
       host = "ICS";
@@ -8056,9 +8058,9 @@ DisplayTitle(char *str)
       host = appData.icsHost;
     sprintf(title, "%s: %s", szTitle, host);
   } else if (appData.noChessProgram) {
-    strcpy(title, szTitle);
+    safeStrCpy(title, szTitle, sizeof(title)/sizeof(title[0]) );
   } else {
-    strcpy(title, szTitle);
+    safeStrCpy(title, szTitle, sizeof(title)/sizeof(title[0]) );
     strcat(title, ": ");
     strcat(title, first.tidy);
   }
@@ -8113,7 +8115,7 @@ DisplayError(char *str, int error)
   int len;
 
   if (error == 0) {
-    strcpy(buf, str);
+    safeStrCpy(buf, str, sizeof(buf)/sizeof(buf[0]) );
   } else {
     len = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
 			NULL, error, LANG_NEUTRAL,
@@ -8223,7 +8225,7 @@ QuestionDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND:
     switch (LOWORD(wParam)) {
     case IDOK:
-      strcpy(reply, qp->replyPrefix);
+      safeStrCpy(reply, qp->replyPrefix, sizeof(reply)/sizeof(reply[0]) );
       if (*reply) strcat(reply, " ");
       len = strlen(reply);
       GetDlgItemText(hDlg, OPT_QuestionInput, reply + len, sizeof(reply) - len);
@@ -8434,7 +8436,7 @@ int GameListOptions()
     int result;
     FARPROC lpProc = MakeProcInstance( (FARPROC) GameListOptions_Proc, hInst );
 
-    strcpy( lpUserGLT, appData.gameListTags );
+      safeStrCpy( lpUserGLT, appData.gameListTags ,LPUSERGLT_SIZE ); 
 
     result = DialogBoxParam( hInst, MAKEINTRESOURCE(DLG_GameListOptions), hwndMain, (DLGPROC)lpProc, (LPARAM)lpUserGLT );
 
@@ -8590,7 +8592,7 @@ UserName()
   }
   if (!GetUserName(buf, &bufsiz)) {
     /*DisplayError("Error getting user name", GetLastError());*/
-    strcpy(buf, _("User"));
+    safeStrCpy(buf, _("User"), sizeof(buf)/sizeof(buf[0]) );
   }
   return buf;
 }
@@ -8603,7 +8605,7 @@ HostName()
 
   if (!GetComputerName(buf, &bufsiz)) {
     /*DisplayError("Error getting host name", GetLastError());*/
-    strcpy(buf, _("Unknown"));
+    safeStrCpy(buf, _("Unknown"), sizeof(buf)/sizeof(buf[0]) );
   }
   return buf;
 }
@@ -9120,7 +9122,7 @@ OpenCommPort(char *name, ProcRef *pr)
   if (*name != '\\')
     sprintf(fullname, "\\\\.\\%s", name);
   else
-    strcpy(fullname, name);
+    safeStrCpy(fullname, name, sizeof(fullname)/sizeof(fullname[0]) );
 
   h = CreateFile(name, GENERIC_READ | GENERIC_WRITE,
 		 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);

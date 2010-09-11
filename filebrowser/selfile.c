@@ -593,11 +593,11 @@ SFtextChanged()
 {
 
 	if ((SFtextBuffer[0] == '/') || (SFtextBuffer[0] == '~')) {
-		(void) strcpy(SFcurrentPath, SFtextBuffer);
+	  (void) strncpy(SFcurrentPath, SFtextBuffer, MAXPATHLEN);
 
 		SFtextPos = XawTextGetInsertionPoint(selFileField);
 	} else {
-		(void) strcat(strcpy(SFcurrentPath, SFstartDir), SFtextBuffer);
+	  (void) strcat(strncpy(SFcurrentPath, SFstartDir, MAXPATHLEN), SFtextBuffer);
 
 		SFtextPos = XawTextGetInsertionPoint(selFileField) +
 			strlen(SFstartDir);
@@ -697,11 +697,11 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 		XtAppError(SFapp, "XsraSelFile: can't get current directory");
 	}
 	(void) strcat(SFstartDir, "/");
-	(void) strcpy(SFcurrentDir, SFstartDir);
+	(void) strncpy(SFcurrentDir, SFstartDir, MAXPATHLEN);
 
 	if (init_path) {
 		if (init_path[0] == '/') {
-			(void) strcpy(SFcurrentPath, init_path);
+		  (void) strncpy(SFcurrentPath, init_path, MAXPATHLEN);
 			if (strncmp(
 				SFcurrentPath,
 				SFstartDir,
@@ -712,12 +712,12 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 				SFsetText(&(SFcurrentPath[strlen(SFstartDir)]));
 			}
 		} else {
-			(void) strcat(strcpy(SFcurrentPath, SFstartDir),
+		  (void) strcat(strncpy(SFcurrentPath, SFstartDir, MAXPATHLEN),
 				init_path);
 			SFsetText(&(SFcurrentPath[strlen(SFstartDir)]));
 		}
 	} else {
-		(void) strcpy(SFcurrentPath, SFstartDir);
+	  (void) strncpy(SFcurrentPath, SFstartDir, MAXPATHLEN);
 	}
 
 	SFfunc = show_entry;
