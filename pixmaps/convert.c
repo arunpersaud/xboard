@@ -9,8 +9,8 @@
 
 
 int sizeList[] = { 21, 25, 29, 33, 37, 40, 45, 49, 54, 58, 64, 72, 80, 87, 95, 108, 116, 129 };
-char *(pieceList[]) = {"p", "n", "b", "r", "q", "f", "e", "as", "c", "w", "m", 
-		       "o", "h", "a", "dk", "g", "d", "v", "l", "s", "u", "k", 
+char *(pieceList[]) = {"p", "n", "b", "r", "q", "f", "e", "as", "c", "w", "m",
+		       "o", "h", "a", "dk", "g", "d", "v", "l", "s", "u", "k",
 		       "wp", "wl", "wn", "ws", "cv", NULL };
 char kindList[] = "sow";
 
@@ -64,7 +64,7 @@ FloodFill(char a[130][130], int size, int x, int y)
 		if(x < size-1) FloodFill(a, size, x+1, y);
 		if(y < size-1) FloodFill(a, size, x, y+1);
 	}
-	
+
 }
 
 void Save(FILE *f, char *name, char data[130][130], int size, char *col, int depth)
@@ -92,7 +92,10 @@ char data[130][130], oData[130][130], sData[130][130], wData[130][130];
 
 main(int argc, char **argv)
 {
-	int i, j, k, d, cnt, p, s, t; char c, h, w, name[80], buf[80], transparent;
+
+#define BUFLEN 80
+
+	int i, j, k, d, cnt, p, s, t; char c, h, w, name[BUFLEN], buf[BUFLEN], transparent;
 	FILE *f;
 
     transparent = argc > 1 && !strcmp(argv[1], "-t");
@@ -101,20 +104,20 @@ main(int argc, char **argv)
 
 	// Load the 3 kinds of Windows monochrome bitmaps (outline, solid, white fill)
 
-	sprintf(buf, "../winboard/bitmaps/%s%d%c.bmp", pieceList[p], sizeList[s], 'o');
+	snprintf(buf, BUFLEN, "../winboard/bitmaps/%s%d%c.bmp", pieceList[p], sizeList[s], 'o');
 	printf("try %s\n", buf);
 	f = fopen(buf, "rb");
 	if(f == NULL) continue;
 	Load(f, oData, buf);
 
-	sprintf(buf, "../winboard/bitmaps/%s%d%c.bmp", pieceList[p], sizeList[s], 's');
+	snprintf(buf, BUFLEN, "../winboard/bitmaps/%s%d%c.bmp", pieceList[p], sizeList[s], 's');
 	f = fopen(buf, "rb");
 	if(f == NULL) continue;
 	Load(f, sData, buf);
 
-	sprintf(buf, "../winboard/bitmaps/%s%d%c.bmp", pieceList[p], sizeList[s], 'w');
+	snprintf(buf, BUFLEN, "../winboard/bitmaps/%s%d%c.bmp", pieceList[p], sizeList[s], 'w');
 	if(pieceList[p][0]=='w')
-	sprintf(buf, "../winboard/bitmaps/%s%d%c.bmp", "w", sizeList[s], 'w');
+	snprintf(buf, BUFLEN, "../winboard/bitmaps/%s%d%c.bmp", "w", sizeList[s], 'w');
 	f = fopen(buf, "rb");
 	if(f == NULL) continue;
 	Load(f, wData, buf);
@@ -133,13 +136,13 @@ main(int argc, char **argv)
 	    FloodFill(data, d, d-1, d-1);
 	}
 
-	sprintf(buf, "%s%s%d.xpm", pieceList[p], "dd", d);
-	sprintf(name, "%s%s%d", pieceList[p], "dd", d);
+	snprintf(buf, BUFLEN, "%s%s%d.xpm", pieceList[p], "dd", d);
+	snprintf(name, BUFLEN, "%s%s%d", pieceList[p], "dd", d);
 	f = fopen(buf, "w");
 	Save(f, name, data, d, "c green s dark_square", 3);
 
-	sprintf(buf, "%s%s%d.xpm", pieceList[p], "dl", d);
-	sprintf(name, "%s%s%d", pieceList[p], "dl", d);
+	snprintf(buf, BUFLEN, "%s%s%d.xpm", pieceList[p], "dl", d);
+	snprintf(name, BUFLEN, "%s%s%d", pieceList[p], "dl", d);
 	f = fopen(buf, "w");
 	Save(f, name, data, d, "c gray s light_square", 3); // silly duplication; pixmap is te same, but other color
 
@@ -149,13 +152,13 @@ main(int argc, char **argv)
 	Paint(data, wData, d, 'X'); // overay with white-filler piece bitmap
 	Paint(data, oData, d, ' '); // overay with outline piece bitmaps
 
-	sprintf(buf, "%s%s%d.xpm", pieceList[p], "ld", d);
-	sprintf(name, "%s%s%d", pieceList[p], "ld", d);
+	snprintf(buf, BUFLEN, "%s%s%d.xpm", pieceList[p], "ld", d);
+	snprintf(name, BUFLEN, "%s%s%d", pieceList[p], "ld", d);
 	f = fopen(buf, "w");
 	Save(f, name, data, d, "c green s dark_square", 3);
 
-	sprintf(buf, "%s%s%d.xpm", pieceList[p], "ll", d);
-	sprintf(name, "%s%s%d", pieceList[p], "ll", d);
+	snprintf(buf, BUFLEN, "%s%s%d.xpm", pieceList[p], "ll", d);
+	snprintf(name, BUFLEN, "%s%s%d", pieceList[p], "ll", d);
 	f = fopen(buf, "w");
 	Save(f, name, data, d, "c gray s light_square", 3);
 

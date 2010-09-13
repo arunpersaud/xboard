@@ -1,7 +1,7 @@
 /*
  * Engine-settings dialog. The complexity come from an attempt to present the engine-defined options
  * in a nicey formatted layout. To this end we first run a back-end pre-formatter, which will distribute
- * the controls over two columns (the minimum required, as some are double width). It also takes care of 
+ * the controls over two columns (the minimum required, as some are double width). It also takes care of
  * grouping options that start with the same word (mainly for "Polyglot ..." options). It assigns relative
  * suitability to break points between lines, and in the end decides if and where to break up the list
  * for display in multiple (2*N) columns.
@@ -104,7 +104,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	    nextOption++;
 	}
 	// We now must be at the end, or looking at a spin or textbox (in nextType)
-	if(!stop) 
+	if(!stop)
 	    nextType = Button; // kudge to flush remaining checks and combos undistorted
 	// Take a new line if a spin follows combos or checks, or when we encounter a textbox
 	if((combos+checks || nextType == TextBox) && layout&1) {
@@ -122,7 +122,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	if(nextType == TextBox && lastType == ComboBox)
 	    checkList[checks++] = comboList[--combos];
 	// Now append the checks behind the (remaining) combos to treat them as one group
-	for(i=0; i< checks; i++) 
+	for(i=0; i< checks; i++)
 	    comboList[combos++] = checkList[i];
 	// emit the consecutive checks and combos in two columns
 	right = combos/2; // rounded down if odd!
@@ -189,7 +189,7 @@ DesignOptionDialog(ChessProgramState *cps)
 		    if( cps->option[k].name[j] != cps->option[k+groupSize].name[j]) break;
 		groupNameLength = j;
 		groupSize++;
-		
+
 	}
 	if(groupSize > 3) {
 		// We found a group to terminates the current section
@@ -203,7 +203,7 @@ DesignOptionDialog(ChessProgramState *cps)
     }
     if(n != k) LayoutOptions(n, k, "", cps->option); // flush remaining solitary options
     // decide if and where we break into two column pairs
-    
+
     // Emit buttons and add OK and cancel
 //    for(k=0; k<buttons; k++) layoutList[layout++] = buttonList[k];
     // Create the dialog window
@@ -281,10 +281,10 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps)
     }
     SetDlgItemText( hDlg, IDOK, _("OK") );
     SetDlgItemText( hDlg, IDCANCEL, _("Cancel") );
-    sprintf(title, _("%s Engine Settings (%s)"), T_(cps->which), cps->tidy); 
+    snprintf(title, MSG_SIZ, _("%s Engine Settings (%s)"), T_(cps->which), cps->tidy);
     title[0] &= ~32; // capitalize
     SetWindowText( hDlg, title);
-    for(i=0; i<groups; i+=2) { 
+    for(i=0; i<groups; i+=2) {
 	int id, p; char buf[MSG_SIZ];
 	id = k = boxList[i];
 	if(layoutList[k] < 0) k++;
@@ -346,8 +346,10 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps)
 	    default:
 		break; // are treated instantly, so they have been sent already
 	}
-	if(changed == 2) sprintf(buf, "option %s=%d\n", cps->option[j].name, new); else
-	if(changed == 1) sprintf(buf, "option %s=%s\n", cps->option[j].name, newText);
+	if(changed == 2)
+	  snprintf(buf, MSG_SIZ, "option %s=%d\n", cps->option[j].name, new); else
+	if(changed == 1)
+	  snprintf(buf, MSG_SIZ, "option %s=%s\n", cps->option[j].name, newText);
 	if(changed) SendToProgram(buf, cps);
     }
 }
@@ -376,7 +378,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
             return TRUE;
 
         case IDCANCEL:
-            EndDialog( hDlg, 1 );   
+            EndDialog( hDlg, 1 );
             return TRUE;
 
 	default:
@@ -385,10 +387,10 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 	    if( i>=2000 &&  i < 2000+2*(layout+buttons)) {
 		j = layoutList[(i - 2000)/2];
 		if(j == -2) {
-		          char filter[] = 
+		          char filter[] =
 				"All files\0*.*\0BIN Files\0*.bin\0LOG Files\0*.log\0INI Files\0*.ini\0\0";
 /*
-{ 
+{
 		              'A','l','l',' ','F','i','l','e','s', 0,
 		              '*','.','*', 0,
 		              'B','I','N',' ','F','i','l','e','s', 0,
@@ -418,7 +420,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		if( activeCps->option[j].type  == SaveButton)
 		     GetOptionValues(hDlg, activeCps);
 		else if( activeCps->option[j].type  != Button) break;
-		sprintf(buf, "option %s\n", activeCps->option[j].name);
+		snprintf(buf, MSG_SIZ, "option %s\n", activeCps->option[j].name);
 		SendToProgram(buf, activeCps);
 	    }
 	    break;
@@ -484,7 +486,7 @@ void AddOption(int x, int y, Control type, int i)
 	case Message:
 	    break;
     }
-    
+
 }
 
 void
@@ -495,7 +497,7 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
     template.header.cdit = 0;
     template.header.cx = 307;
     buttonRows = (buttons + 1 + 3)/4; // 4 per row, rounded up
-    if(nr > 50) { 
+    if(nr > 50) {
 	breakPoint = (nr+2*buttonRows+1)/2 & ~1;
 	template.header.cx = 625;
     }
@@ -503,9 +505,9 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
     for(i=0; i<nr; i++) {
 	if(k < groups && i == boxList[k]) {
 	    y += 10;
-	    AddControl(x+2, y+13*(i>>1)-2, 301, 13*(boxList[k+1]-boxList[k]>>1)+8, 
+	    AddControl(x+2, y+13*(i>>1)-2, 301, 13*(boxList[k+1]-boxList[k]>>1)+8,
 						0x0082, WS_VISIBLE | WS_CHILD | SS_BLACKFRAME, 2400);
-	    AddControl(x+60, y+13*(i>>1)-6, 10*groupNameList[k]/3, 10, 
+	    AddControl(x+60, y+13*(i>>1)-6, 10*groupNameList[k]/3, 10,
 						0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, 2*(i+MAX_OPTIONS));
 	}
 	j = layoutList[i];
@@ -530,7 +532,7 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
     template.header.style &= ~WS_VSCROLL;
 }
 
-void 
+void
 EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
 {
     FARPROC lpProc = MakeProcInstance( (FARPROC) SettingsProc, hInst );

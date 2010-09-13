@@ -115,6 +115,7 @@ typedef struct {
 } z2xpm;
 
 #define NR_ZIICS_COLORS 4
+#define BUFLEN 100
 
 /* SHOWSETS.PAS (from ZIICS) states that images may only
    use color numbers 0, 2, 14, and 15 */
@@ -441,7 +442,7 @@ int process_file_xim( filename )
   int nr_pieces = 6;
   int nr_kinds = 4;
   FILE *fp;
-  char buf[100];
+  char buf[BUFLEN];
 
   src_name = filename;
   
@@ -478,18 +479,18 @@ int process_file_xim( filename )
 		{
 		  printf( "." );
 		  /* Form output filename -- <piece><kind><size>.xim */
-		  sprintf(buf, "%c%s%d.xim", pieces[piece], prefixes[kind], w);
+		  snprintf(buf, BUFLEN, "%c%s%d.xim", pieces[piece], prefixes[kind], w);
 		  create_piece_xim( buf, fp, w, h );
 		}
 	  printf("\n");
 	}
 
   /* Write the light & dark squares */
-  sprintf( buf, "lsq%d.xim", w );
+  snprintf( buf, BUFLEN, "lsq%d.xim", w );
   printf("Light Square" );
   create_piece_xim( buf, fp, w, h );
 
-  sprintf( buf, "dsq%d.xim", w );
+  snprintf( buf, BUFLEN, "dsq%d.xim", w );
   printf("\nDark Square" );
   create_piece_xim( buf, fp, w, h );  
   printf("\n");
@@ -508,7 +509,7 @@ int process_file_xpm( filename )
   int nr_pieces = 6;
   int nr_kinds = 4;
   FILE *fp;
-  char buf[100];
+  char buf[BUFLEN];
 
   src_name = filename;
   
@@ -545,18 +546,18 @@ int process_file_xpm( filename )
 		{
 		  printf( "." );
 		  /* Form output filename -- <piece><kind><size>.xpm */
-		  sprintf(buf, "%c%s%d.xpm", pieces[piece], prefixes[kind], w);
+		  snprintf(buf, BUFLEN, "%c%s%d.xpm", pieces[piece], prefixes[kind], w);
 		  create_piece_xpm( buf, fp, w, h );
 		}
 	  printf("\n");
 	}
 
   /* Write the light & dark squares */
-  sprintf( buf, "lsq%d.xpm", w );
+  snprintf( buf, BUFLEN, "lsq%d.xpm", w );
   printf("Light Square" );
   create_piece_xpm( buf, fp, w, h );
 
-  sprintf( buf, "dsq%d.xpm", w );
+  snprintf( buf, BUFLEN, "dsq%d.xpm", w );
   printf("\nDark Square" );
   create_piece_xpm( buf, fp, w, h );  
   printf("\n");

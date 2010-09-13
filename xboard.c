@@ -1594,8 +1594,9 @@ ConvertToLine(int argc, char **argv)
   for(i=1; i<argc; i++) {
     if( (strchr(argv[i], ' ') || strchr(argv[i], '\n') ||strchr(argv[i], '\t') )
 	&& argv[i][0] != '{' )
-         sprintf(buf, "{%s} ", argv[i]);
-    else sprintf(buf, "%s ", argv[i]);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), "{%s} ", argv[i]);
+    else
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%s ", argv[i]);
     strcat(line, buf);
   }
     line[strlen(line)-1] = NULLCHAR;
@@ -3002,7 +3003,7 @@ FindFont(pattern, targetPxlSize)
     XFontStruct **fnt_list;
 
     base_fnt_lst = calloc(1, strlen(pattern) + 3);
-    sprintf(strInt, "%d", targetPxlSize);
+    snprintf(strInt, sizeof(strInt)/sizeof(strInt[0]), "%d", targetPxlSize);
     p = strstr(pattern, "--");
     strncpy(base_fnt_lst, pattern, p - pattern + 2);
     strcat(base_fnt_lst, strInt);
@@ -3502,12 +3503,12 @@ void CreatePieces()
 
     for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
 	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    sprintf(buf, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
-		    pieceBitmapNames[piece],
-		    ss, kind == SOLID ? 's' : 'o');
-	    ReadBitmap(&pieceBitmap2[kind][piece], buf, NULL, ss, ss);
-	    if(piece <= (int)WhiteKing)
-		pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
+	  snprintf(buf, MSG_SIZ, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
+		   pieceBitmapNames[piece],
+		   ss, kind == SOLID ? 's' : 'o');
+	  ReadBitmap(&pieceBitmap2[kind][piece], buf, NULL, ss, ss);
+	  if(piece <= (int)WhiteKing)
+	    pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
 	}
     }
 
@@ -3530,13 +3531,13 @@ void CreatePieces()
 
     for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
 	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    sprintf(buf, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
-		    pieceBitmapNames[piece],
-		    ss, kind == SOLID ? 's' : 'o');
-	    ReadBitmap(&pieceBitmap2[kind][piece], buf,
-		       bib->bits[kind][piece], ss, ss);
-	    if(piece <= (int)WhiteKing)
-		pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
+	  snprintf(buf, MSG_SIZ, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
+		   pieceBitmapNames[piece],
+		   ss, kind == SOLID ? 's' : 'o');
+	  ReadBitmap(&pieceBitmap2[kind][piece], buf,
+		     bib->bits[kind][piece], ss, ss);
+	  if(piece <= (int)WhiteKing)
+	    pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
 	}
     }
 
@@ -5991,7 +5992,7 @@ void AnalyzeModeProc(w, event, prms, nprms)
     /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
     if (appData.icsActive) {
         if (gameMode != IcsObserving) {
-            sprintf(buf,_("You are not observing a game"));
+	  snprintf(buf, MSG_SIZ, _("You are not observing a game"));
             DisplayError(buf, 0);
             /* secure check */
             if (appData.icsEngineAnalyze) {
@@ -7433,18 +7434,18 @@ Colorize(cc, continuation)
 
     if (textColors[(int)cc].bg > 0) {
 	if (textColors[(int)cc].fg > 0) {
-	    sprintf(buf, "\033[0;%d;%d;%dm", textColors[(int)cc].attr,
-		    textColors[(int)cc].fg, textColors[(int)cc].bg);
+	  snprintf(buf, MSG_SIZ, "\033[0;%d;%d;%dm", textColors[(int)cc].attr,
+		   textColors[(int)cc].fg, textColors[(int)cc].bg);
 	} else {
-	    sprintf(buf, "\033[0;%d;%dm", textColors[(int)cc].attr,
-		    textColors[(int)cc].bg);
+	  snprintf(buf, MSG_SIZ, "\033[0;%d;%dm", textColors[(int)cc].attr,
+		   textColors[(int)cc].bg);
 	}
     } else {
 	if (textColors[(int)cc].fg > 0) {
-	    sprintf(buf, "\033[0;%d;%dm", textColors[(int)cc].attr,
+	  snprintf(buf, MSG_SIZ, "\033[0;%d;%dm", textColors[(int)cc].attr,
 		    textColors[(int)cc].fg);
 	} else {
-	    sprintf(buf, "\033[0;%dm", textColors[(int)cc].attr);
+	  snprintf(buf, MSG_SIZ, "\033[0;%dm", textColors[(int)cc].attr);
 	}
     }
     count = strlen(buf);
@@ -7713,11 +7714,11 @@ DisplayTimerLabel(w, color, timer, highlight)
       foregroundOrWarningColor = lowTimeWarningColor;
 
     if (appData.clockMode) {
-	sprintf(buf, "%s: %s", color, TimeString(timer));
-	XtSetArg(args[0], XtNlabel, buf);
+      snprintf(buf, MSG_SIZ, "%s: %s", color, TimeString(timer));
+      XtSetArg(args[0], XtNlabel, buf);
     } else {
-	sprintf(buf, "%s  ", color);
-	XtSetArg(args[0], XtNlabel, buf);
+      snprintf(buf, MSG_SIZ, "%s  ", color);
+      XtSetArg(args[0], XtNlabel, buf);
     }
 
     if (highlight) {

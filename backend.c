@@ -315,7 +315,6 @@ safeStrCpy( char *dst, const char *src, size_t count )
   /* see for example: https://buildsecurityin.us-cert.gov/bsi-rules/home/g1/854-BSI.html
    *
    * usage:   safeStrCpy( stringA, stringB, sizeof(stringA)/sizeof(stringA[0]);
-   *
    */
 
   assert( dst != NULL );
@@ -825,25 +824,41 @@ InitBackEnd1()
     first.hasOwnBookUCI = appData.firstHasOwnBookUCI; /* [AS] */
     second.hasOwnBookUCI = appData.secondHasOwnBookUCI; /* [AS] */
 
-    if (appData.firstProtocolVersion > PROTOVER ||
-	appData.firstProtocolVersion < 1) {
-      char buf[MSG_SIZ];
-      sprintf(buf, _("protocol version %d not supported"),
-	      appData.firstProtocolVersion);
-      DisplayFatalError(buf, 0, 2);
-    } else {
-      first.protocolVersion = appData.firstProtocolVersion;
-    }
+    if (appData.firstProtocolVersion > PROTOVER
+	|| appData.firstProtocolVersion < 1)
+      {
+	char buf[MSG_SIZ];
+	int len;
 
-    if (appData.secondProtocolVersion > PROTOVER ||
-	appData.secondProtocolVersion < 1) {
-      char buf[MSG_SIZ];
-      sprintf(buf, _("protocol version %d not supported"),
-	      appData.secondProtocolVersion);
-      DisplayFatalError(buf, 0, 2);
-    } else {
-      second.protocolVersion = appData.secondProtocolVersion;
-    }
+	len = snprintf(buf, MSG_SIZ, _("protocol version %d not supported"),
+		       appData.firstProtocolVersion);
+	if( (len > MSG_SIZ) && appData.debugMode )
+	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
+
+	DisplayFatalError(buf, 0, 2);
+      }
+    else
+      {
+	first.protocolVersion = appData.firstProtocolVersion;
+      }
+
+    if (appData.secondProtocolVersion > PROTOVER
+	|| appData.secondProtocolVersion < 1)
+      {
+	char buf[MSG_SIZ];
+	int len;
+
+	len = snprintf(buf, MSG_SIZ, _("protocol version %d not supported"),
+		       appData.secondProtocolVersion);
+	if( (len > MSG_SIZ) && appData.debugMode )
+	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
+
+	DisplayFatalError(buf, 0, 2);
+      }
+    else
+      {
+	second.protocolVersion = appData.secondProtocolVersion;
+      }
 
     if (appData.icsActive) {
         appData.clockMode = TRUE;  /* changes dynamically in ICS mode */
@@ -874,6 +889,8 @@ InitBackEnd1()
 
     if (!appData.icsActive) {
       char buf[MSG_SIZ];
+      int len;
+
       /* Check for variants that are supported only in ICS mode,
          or not at all.  Some that are accepted here nevertheless
          have bugs; see comments below.
@@ -882,8 +899,11 @@ InitBackEnd1()
       switch (variant) {
       case VariantBughouse:     /* need four players and two boards */
       case VariantKriegspiel:   /* need to hide pieces and move details */
-      /* case VariantFischeRandom: (Fabien: moved below) */
-	sprintf(buf, _("Variant %s supported only in ICS mode"), appData.variant);
+	/* case VariantFischeRandom: (Fabien: moved below) */
+	len = snprintf(buf,MSG_SIZ, _("Variant %s supported only in ICS mode"), appData.variant);
+	if( (len > MSG_SIZ) && appData.debugMode )
+	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
+
 	DisplayFatalError(buf, 0, 2);
 	return;
 
@@ -898,7 +918,10 @@ InitBackEnd1()
       case Variant35:
       case Variant36:
       default:
-	sprintf(buf, _("Unknown variant name %s"), appData.variant);
+	len = snprintf(buf, MSG_SIZ, _("Unknown variant name %s"), appData.variant);
+	if( (len > MSG_SIZ) && appData.debugMode )
+	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
+
 	DisplayFatalError(buf, 0, 2);
 	return;
 
@@ -1049,18 +1072,22 @@ ParseTimeControl(tc, ti, mps)
   long tc2;
   char buf[MSG_SIZ], buf2[MSG_SIZ], *mytc = tc;
   int min, sec=0;
-  
+  int len;
+
   if(ti >= 0 && !strchr(tc, '+') && !strchr(tc, '/') ) mps = 0;
   if(!strchr(tc, '+') && !strchr(tc, '/') && sscanf(tc, "%d:%d", &min, &sec) >= 1)
       sprintf(mytc=buf2, "%d", 60*min+sec); // convert 'classical' min:sec tc string to seconds
   if(ti > 0) {
+
     if(mps)
-      sprintf(buf, ":%d/%s+%d", mps, mytc, ti);
-    else sprintf(buf, ":%s+%d", mytc, ti);
+      snprintf(buf, MSG_SIZ, ":%d/%s+%d", mps, mytc, ti);
+    else 
+      snprintf(buf, MSG_SIZ, ":%s+%d", mytc, ti);
   } else {
     if(mps)
-             sprintf(buf, ":%d/%s", mps, mytc);
-    else sprintf(buf, ":%s", mytc);
+      snprintf(buf, MSG_SIZ, ":%d/%s", mps, mytc);
+    else 
+      snprintf(buf, MSG_SIZ, ":%s", mytc);
   }
   fullTimeControlString = StrSave(buf); // this should now be in PGN format
   
@@ -1137,7 +1164,7 @@ InitBackEnd3 P((void))
 {
     GameMode initialMode;
     char buf[MSG_SIZ];
-    int err;
+    int err, len;
 
     InitChessProgram(&first, startedFromSetupPosition);
 
@@ -1153,14 +1180,18 @@ InitBackEnd3 P((void))
         ConsoleCreate();
 #endif
 	err = establish();
-	if (err != 0) {
-	    if (*appData.icsCommPort != NULLCHAR) {
-		sprintf(buf, _("Could not open comm port %s"),
-			appData.icsCommPort);
-	    } else {
-		snprintf(buf, sizeof(buf), _("Could not connect to host %s, port %s"),
+	if (err != 0)
+	  {
+	    if (*appData.icsCommPort != NULLCHAR)
+	      len = snprintf(buf, MSG_SIZ, _("Could not open comm port %s"),
+			     appData.icsCommPort);
+	    else
+	      len = snprintf(buf, MSG_SIZ, _("Could not connect to host %s, port %s"),
 			appData.icsHost, appData.icsPort);
-	    }
+
+	    if( (len > MSG_SIZ) && appData.debugMode )
+	      fprintf(debugFP, "InitBackEnd3: buffer truncated.\n");
+
 	    DisplayFatalError(buf, err, 1);
 	    return;
 	}
@@ -1205,7 +1236,10 @@ InitBackEnd3 P((void))
     } else if (StrCaseCmp(appData.initialMode, "Training") == 0) {
       initialMode = Training;
     } else {
-      sprintf(buf, _("Unknown initialMode %s"), appData.initialMode);
+      len = snprintf(buf, MSG_SIZ, _("Unknown initialMode %s"), appData.initialMode);
+      if( (len > MSG_SIZ) && appData.debugMode )
+	fprintf(debugFP, "InitBackEnd3: buffer truncated.\n");
+
       DisplayFatalError(buf, 0, 2);
       return;
     }
@@ -1631,6 +1665,7 @@ StringToVariant(e)
     VariantClass v = VariantNormal;
     int i, found = FALSE;
     char buf[MSG_SIZ];
+    int len;
 
     if (!e) return v;
 
@@ -1806,7 +1841,10 @@ StringToVariant(e)
 	  v = VariantNormal;
 	  break;
 	default:
-	  sprintf(buf, _("Unknown wild type %d"), wnum);
+	  len = snprintf(buf, MSG_SIZ, _("Unknown wild type %d"), wnum);
+	  if( (len > MSG_SIZ) && appData.debugMode )
+	    fprintf(debugFP, "StringToVariant: buffer truncated.\n");
+
 	  DisplayError(buf, 0);
 	  v = VariantUnknown;
 	  break;
@@ -1946,7 +1984,7 @@ TelnetRequest(ddww, option)
 	    break;
 	  default:
 	    ddwwStr = buf1;
-	    sprintf(buf1, "%d", ddww);
+	    snprintf(buf1,sizeof(buf1)/sizeof(buf1[0]), "%d", ddww);
 	    break;
 	}
 	switch (option) {
@@ -1955,7 +1993,7 @@ TelnetRequest(ddww, option)
 	    break;
 	  default:
 	    optionStr = buf2;
-	    sprintf(buf2, "%d", option);
+	    snprintf(buf2,sizeof(buf2)/sizeof(buf2[0]), "%d", option);
 	    break;
 	}
 	fprintf(debugFP, ">%s %s ", ddwwStr, optionStr);
@@ -2169,7 +2207,7 @@ AddAd(char *handle, char *rating, int base, int inc,  char rated, char *type, in
 	    if(v == VariantLoadable) type = "setup"; else
 	    type = VariantName(v);
 	}
-	sprintf(buf, "%s (%s) %d %d %c %s%s", handle, rating, base, inc, rated, type, ext);
+	snprintf(buf, MSG_SIZ, "%s (%s) %d %d %c %s%s", handle, rating, base, inc, rated, type, ext);
 	if(nrOfSeekAds < MAX_SEEK_ADS-1) {
 	    if(seekAdList[nrOfSeekAds]) free(seekAdList[nrOfSeekAds]);
 	    ratingList[nrOfSeekAds] = -1; // for if seeker has no rating
@@ -2251,7 +2289,7 @@ DrawSeekGraph()
 	DrawSeekAxis(hMargin+5*(i%500==0), yy, hMargin-5, yy); // rating ticks
 	if(i%500 == 0) {
 	    char buf[MSG_SIZ];
-	    sprintf(buf, "%d", i);
+	    snprintf(buf, MSG_SIZ, "%d", i);
 	    DrawSeekText(buf, hMargin+squareSize/8+7, yy);
 	}
     }
@@ -2261,7 +2299,7 @@ DrawSeekGraph()
 	DrawSeekAxis(xx, h-1-vMargin, xx, h-6-vMargin-3*(i%10==0)); // TC ticks
 	if(i<=5 || (i>40 ? i%20 : i%10) == 0) {
 	    char buf[MSG_SIZ];
-	    sprintf(buf, "%d", i);
+	    snprintf(buf, MSG_SIZ, "%d", i);
 	    DrawSeekText(buf, xx-2-3*(i>9), h-1-vMargin/2);
 	}
     }
@@ -2299,7 +2337,7 @@ int SeekGraphClick(ClickType click, int x, int y, int moving)
 		return TRUE;
 	    } // on press 'hit', only show info
 	    if(moving == 2) return TRUE; // ignore right up-clicks on dot
-	    sprintf(buf, "play %d\n", seekNrList[closest]);
+	    snprintf(buf, MSG_SIZ, "play %d\n", seekNrList[closest]);
 	    SendToICS(ics_prefix);
 	    SendToICS(buf);
 	    return TRUE; // let incoming board of started game pop down the graph
@@ -2565,13 +2603,13 @@ read_from_ics(isr, closure, data, count, error)
 
 	    if (loggedOn && !intfSet) {
 		if (ics_type == ICS_ICC) {
-		  sprintf(str,
+		  snprintf(str, MSG_SIZ,
 			  "/set-quietly interface %s\n/set-quietly style 12\n",
 			  programVersion);
 		  if(appData.seekGraph && appData.autoRefresh) // [HGM] seekgraph
 		      strcat(str, "/set-2 51 1\n/set seek 1\n");
 		} else if (ics_type == ICS_CHESSNET) {
-		  sprintf(str, "/style 12\n");
+		  snprintf(str, MSG_SIZ, "/style 12\n");
 		} else {
 		  safeStrCpy(str, "alias $ @\n$set interface ", sizeof(str)/sizeof(str[0]));
 		  strcat(str, programVersion);
@@ -2595,7 +2633,7 @@ read_from_ics(isr, closure, data, count, error)
 		    parse[parse_pos] = NULLCHAR;
 		    if(chattingPartner>=0) {
 			char mess[MSG_SIZ];
-			sprintf(mess, "%s%s", talker, parse);
+			snprintf(mess, MSG_SIZ, "%s%s", talker, parse);
 			OutputChatMessage(chattingPartner, mess);
 			chattingPartner = -1;
 			next_out = i+1; // [HGM] suppress printing in ICS window
@@ -2624,7 +2662,7 @@ read_from_ics(isr, closure, data, count, error)
 			    OutputKibitz(suppressKibitz, parse);
 			} else {
 			    char tmp[MSG_SIZ];
-			    sprintf(tmp, _("your opponent kibitzes: %s"), parse);
+			    snprintf(tmp, MSG_SIZ, _("your opponent kibitzes: %s"), parse);
 			    SendToPlayer(tmp, strlen(tmp));
 			}
 			next_out = i+1; // [HGM] suppress printing in ICS window
@@ -3167,7 +3205,7 @@ read_from_ics(isr, closure, data, count, error)
 		/* Header for a move list -- second line */
 		/* Initial board will follow if this is a wild game */
 		if (gameInfo.event != NULL) free(gameInfo.event);
-		sprintf(str, "ICS %s %s match", star_match[0], star_match[1]);
+		snprintf(str, MSG_SIZ, "ICS %s %s match", star_match[0], star_match[1]);
 		gameInfo.event = StrSave(str);
                 /* [HGM] we switched variant. Translate boards if needed. */
                 VariantSwitch(boards[currentMove], StringToVariant(gameInfo.event));
@@ -3292,7 +3330,7 @@ read_from_ics(isr, closure, data, count, error)
 			flipView = appData.flipView;
 			DrawPosition(TRUE, boards[currentMove]);
 			DisplayBothClocks();
-			sprintf(str, "%s vs. %s",
+			snprintf(str, MSG_SIZ, "%s vs. %s",
 				gameInfo.white, gameInfo.black);
 			DisplayTitle(str);
 			gameMode = IcsIdle;
@@ -3362,7 +3400,7 @@ read_from_ics(isr, closure, data, count, error)
 		} else {
 		    player = star_match[2];
 		}
-		sprintf(str, "%sobserve %s\n",
+		snprintf(str, MSG_SIZ, "%sobserve %s\n",
 			ics_prefix, StripHighlightAndTitle(player));
 		SendToICS(str);
 
@@ -3624,14 +3662,14 @@ read_from_ics(isr, closure, data, count, error)
 		      if (currentMove == 0 &&
 			  gameMode == IcsPlayingWhite &&
 			  appData.premoveWhite) {
-			sprintf(str, "%s\n", appData.premoveWhiteText);
+			snprintf(str, MSG_SIZ, "%s\n", appData.premoveWhiteText);
 			if (appData.debugMode)
 			  fprintf(debugFP, "Sending premove:\n");
 			SendToICS(str);
 		      } else if (currentMove == 1 &&
 				 gameMode == IcsPlayingBlack &&
 				 appData.premoveBlack) {
-			sprintf(str, "%s\n", appData.premoveBlackText);
+			snprintf(str, MSG_SIZ, "%s\n", appData.premoveBlackText);
 			if (appData.debugMode)
 			  fprintf(debugFP, "Sending premove:\n");
 			SendToICS(str);
@@ -3682,7 +3720,7 @@ read_from_ics(isr, closure, data, count, error)
 			     will tell us whether this is really bug or zh */
 			  if (ics_getting_history == H_FALSE) {
 			    ics_getting_history = H_REQUESTED;
-			    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+			    snprintf(str, MSG_SIZ, "%smoves %d\n", ics_prefix, gamenum);
 			    SendToICS(str);
 			  }
 			}
@@ -3706,10 +3744,10 @@ read_from_ics(isr, closure, data, count, error)
 			    char wh[16], bh[16];
 			    PackHolding(wh, white_holding);
 			    PackHolding(bh, black_holding);
-			    sprintf(str, "[%s-%s] %s-%s", wh, bh,
+			    snprintf(str, MSG_SIZ,"[%s-%s] %s-%s", wh, bh,
 				    gameInfo.white, gameInfo.black);
 			} else {
-			    sprintf(str, "%s [%s] vs. %s [%s]",
+			  snprintf(str, MSG_SIZ, "%s [%s] vs. %s [%s]",
 				    gameInfo.white, white_holding,
 				    gameInfo.black, black_holding);
 			}
@@ -3903,7 +3941,7 @@ ParseBoard12(string)
       if(twoBoards) { partnerUp = 1; flipView = !flipView; } // [HGM] dual
       if(partnerUp) DrawPosition(FALSE, partnerBoard);
       if(twoBoards) { partnerUp = 0; flipView = !flipView; } // [HGM] dual
-      sprintf(partnerStatus, "W: %d:%02d B: %d:%02d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
+      snprintf(partnerStatus, MSG_SIZ,"W: %d:%02d B: %d:%02d (%d-%d) %c", white_time/60000, (white_time%60000)/1000,
 		 (black_time/60000), (black_time%60000)/1000, white_stren, black_stren, to_play);
       DisplayMessage(partnerStatus, "");
 	partnerBoardValid = TRUE;
@@ -3959,7 +3997,7 @@ ParseBoard12(string)
 	     will tell us whether this is really bug or zh */
 	  if (ics_getting_history == H_FALSE) {
 	    ics_getting_history = H_REQUESTED; reqFlag = TRUE;
-	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+	    snprintf(str, MSG_SIZ, "%smoves %d\n", ics_prefix, gamenum);
 	    SendToICS(str);
 	  }
     }
@@ -3982,7 +4020,7 @@ ParseBoard12(string)
 		   appData.getMoveList && !reqFlag) {
 	    /* Need to get game history */
 	    ics_getting_history = H_REQUESTED;
-	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+	    snprintf(str, MSG_SIZ, "%smoves %d\n", ics_prefix, gamenum);
 	    SendToICS(str);
 	}
 
@@ -4000,7 +4038,7 @@ ParseBoard12(string)
 	if (gamenum == gs_gamenum) {
 	    int klen = strlen(gs_kind);
 	    if (gs_kind[klen - 1] == '.') gs_kind[klen - 1] = NULLCHAR;
-	    sprintf(str, "ICS %s", gs_kind);
+	    snprintf(str, MSG_SIZ, "ICS %s", gs_kind);
 	    gameInfo.event = StrSave(str);
 	} else {
 	    gameInfo.event = StrSave("ICS game");
@@ -4174,7 +4212,7 @@ ParseBoard12(string)
 	     type when starting to examine a game.  But if we ask for
 	     the move list, the move list header will tell us */
 	    ics_getting_history = H_REQUESTED;
-	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+	    snprintf(str, MSG_SIZ, "%smoves %d\n", ics_prefix, gamenum);
 	    SendToICS(str);
 	}
     } else if (moveNum == forwardMostMove + 1 || moveNum == forwardMostMove
@@ -4213,7 +4251,7 @@ ParseBoard12(string)
 	    }
 #endif
 	    ics_getting_history = H_REQUESTED;
-	    sprintf(str, "%smoves %d\n", ics_prefix, gamenum);
+	    snprintf(str, MSG_SIZ, "%smoves %d\n", ics_prefix, gamenum);
 	    SendToICS(str);
 	}
 	forwardMostMove = backwardMostMove = currentMove = moveNum;
@@ -4275,7 +4313,7 @@ ParseBoard12(string)
 
 	  // str looks something like "Q/a1-a2"; kill the slash
 	  if(str[1] == '/')
-		sprintf(buf, "%c%s", str[0], str+2);
+	    snprintf(buf, MSG_SIZ,"%c%s", str[0], str+2);
 	  else  safeStrCpy(buf, str, sizeof(buf)/sizeof(buf[0])); // might be castling
 	  if((prom = strstr(move_str, "=")) && !strstr(buf, "="))
 		strcat(buf, prom); // long move lacks promo specification!
@@ -4339,7 +4377,7 @@ ParseBoard12(string)
 	    if ((gameMode == IcsPlayingWhite && WhiteOnMove(moveNum)) ||
 		(gameMode == IcsPlayingBlack && !WhiteOnMove(moveNum))) {
 		if (moveList[moveNum - 1][0] == NULLCHAR) {
-		    sprintf(str, _("Couldn't parse move \"%s\" from ICS"),
+		  snprintf(str, MSG_SIZ, _("Couldn't parse move \"%s\" from ICS"),
 			    move_str);
 		    DisplayError(str, 0);
 		} else {
@@ -4361,7 +4399,7 @@ ParseBoard12(string)
 		}
 	    } else if (gameMode == IcsObserving || gameMode == IcsExamining) {
 	      if (moveList[moveNum - 1][0] == NULLCHAR) {
-		sprintf(str, _("Couldn't parse move \"%s\" from ICS"), move_str);
+		snprintf(str, MSG_SIZ, _("Couldn't parse move \"%s\" from ICS"), move_str);
 		DisplayError(str, 0);
 	      } else {
 		if(gameInfo.variant == currentlyInitializedVariant) // [HGM] refrain sending moves engine can't understand!
@@ -4405,20 +4443,20 @@ ParseBoard12(string)
 	gameInfo.variant != VariantCrazyhouse && !appData.noGUI) {
 	if (tinyLayout || smallLayout) {
 	    if(gameInfo.variant == VariantNormal)
-		sprintf(str, "%s(%d) %s(%d) {%d %d}",
+	      snprintf(str, MSG_SIZ, "%s(%d) %s(%d) {%d %d}",
 		    gameInfo.white, white_stren, gameInfo.black, black_stren,
 		    basetime, increment);
 	    else
-		sprintf(str, "%s(%d) %s(%d) {%d %d w%d}",
+	      snprintf(str, MSG_SIZ, "%s(%d) %s(%d) {%d %d w%d}",
 		    gameInfo.white, white_stren, gameInfo.black, black_stren,
 		    basetime, increment, (int) gameInfo.variant);
 	} else {
 	    if(gameInfo.variant == VariantNormal)
-		sprintf(str, "%s (%d) vs. %s (%d) {%d %d}",
+	      snprintf(str, MSG_SIZ, "%s (%d) vs. %s (%d) {%d %d}",
 		    gameInfo.white, white_stren, gameInfo.black, black_stren,
 		    basetime, increment);
 	    else
-		sprintf(str, "%s (%d) vs. %s (%d) {%d %d %s}",
+	      snprintf(str, MSG_SIZ, "%s (%d) vs. %s (%d) {%d %d %s}",
 		    gameInfo.white, white_stren, gameInfo.black, black_stren,
 		    basetime, increment, VariantName(gameInfo.variant));
 	}
@@ -4472,7 +4510,7 @@ GetMoveListEvent()
     char buf[MSG_SIZ];
     if (appData.icsActive && gameMode != IcsIdle && ics_gamenum > 0) {
 	ics_getting_history = H_REQUESTED;
-	sprintf(buf, "%smoves %d\n", ics_prefix, ics_gamenum);
+	snprintf(buf, MSG_SIZ, "%smoves %d\n", ics_prefix, ics_gamenum);
 	SendToICS(buf);
     }
 }
@@ -4519,7 +4557,7 @@ SendMoveToProgram(moveNum, cps)
 	buf[len++] = '\n';
 	buf[len] = NULLCHAR;
       } else {
-	sprintf(buf, "%s\n", parseList[moveNum]);
+	snprintf(buf, MSG_SIZ,"%s\n", parseList[moveNum]);
       }
       SendToProgram(buf, cps);
     } else {
@@ -4576,7 +4614,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
 
     switch (moveType) {
       default:
-	sprintf(user_move, _("say Internal error; bad moveType %d (%d,%d-%d,%d)"),
+	snprintf(user_move, MSG_SIZ, _("say Internal error; bad moveType %d (%d,%d-%d,%d)"),
 		(int)moveType, fromX, fromY, toX, toY);
 	DisplayError(user_move + strlen("say "), 0);
 	break;
@@ -4588,7 +4626,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case WhiteHSideCastleFR:
       case BlackHSideCastleFR:
       /* POP Fabien */
-	sprintf(user_move, "o-o\n");
+	snprintf(user_move, MSG_SIZ, "o-o\n");
 	break;
       case WhiteQueenSideCastle:
       case BlackQueenSideCastle:
@@ -4598,7 +4636,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case WhiteASideCastleFR:
       case BlackASideCastleFR:
       /* POP Fabien */
-	sprintf(user_move, "o-o-o\n");
+	snprintf(user_move, MSG_SIZ, "o-o-o\n");
 	break;
       case WhiteNonPromotion:
       case BlackNonPromotion:
@@ -4607,21 +4645,21 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case WhitePromotion:
       case BlackPromotion:
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
-            sprintf(user_move, "%c%c%c%c=%c\n",
+	  snprintf(user_move, MSG_SIZ, "%c%c%c%c=%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY,
 		PieceToChar(WhiteFerz));
         else if(gameInfo.variant == VariantGreat)
-            sprintf(user_move, "%c%c%c%c=%c\n",
+	  snprintf(user_move, MSG_SIZ,"%c%c%c%c=%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY,
 		PieceToChar(WhiteMan));
         else
-            sprintf(user_move, "%c%c%c%c=%c\n",
+	  snprintf(user_move, MSG_SIZ, "%c%c%c%c=%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY,
 		promoChar);
 	break;
       case WhiteDrop:
       case BlackDrop:
-	sprintf(user_move, "%c@%c%c\n",
+	snprintf(user_move, MSG_SIZ, "%c@%c%c\n",
 		ToUpper(PieceToChar((ChessSquare) fromX)),
                 AAA + toX, ONE + toY);
 	break;
@@ -4629,7 +4667,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case WhiteCapturesEnPassant:
       case BlackCapturesEnPassant:
       case IllegalMove:  /* could be a variant we don't quite understand */
-	sprintf(user_move, "%c%c%c%c\n",
+	snprintf(user_move, MSG_SIZ,"%c%c%c%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY);
 	break;
     }
@@ -4651,43 +4689,43 @@ UploadGameEvent()
 	char buf[MSG_SIZ], *p, *fen, command[MSG_SIZ], bsetup = 0;
 
 	if(ics_type == ICS_ICC) { // on ICC match ourselves in applicable variant
-	    sprintf(command, "match %s", ics_handle);
+	  snprintf(command,MSG_SIZ, "match %s", ics_handle);
 	} else { // on FICS we must first go to general examine mode
 	  safeStrCpy(command, "examine\nbsetup", sizeof(command)/sizeof(command[0])); // and specify variant within it with bsetups
 	}
 	if(gameInfo.variant != VariantNormal) {
 	    // try figure out wild number, as xboard names are not always valid on ICS
 	    for(i=1; i<=36; i++) {
-		sprintf(buf, "wild/%d", i);
+	      snprintf(buf, MSG_SIZ, "wild/%d", i);
 		if(StringToVariant(buf) == gameInfo.variant) break;
 	    }
-	    if(i<=36 && ics_type == ICS_ICC) sprintf(buf, "%s w%d\n", command, i);
-	    else if(i == 22) sprintf(buf, "%s fr\n", command);
-	    else sprintf(buf, "%s %s\n", command, VariantName(gameInfo.variant));
-	} else sprintf(buf, "%s\n", ics_type == ICS_ICC ? command : "examine\n"); // match yourself or examine
+	    if(i<=36 && ics_type == ICS_ICC) snprintf(buf, MSG_SIZ,"%s w%d\n", command, i);
+	    else if(i == 22) snprintf(buf,MSG_SIZ, "%s fr\n", command);
+	    else snprintf(buf, MSG_SIZ,"%s %s\n", command, VariantName(gameInfo.variant));
+	} else snprintf(buf, MSG_SIZ,"%s\n", ics_type == ICS_ICC ? command : "examine\n"); // match yourself or examine
 	SendToICS(ics_prefix);
 	SendToICS(buf);
 	if(startedFromSetupPosition || backwardMostMove != 0) {
 	  fen = PositionToFEN(backwardMostMove, NULL);
 	  if(ics_type == ICS_ICC) { // on ICC we can simply send a complete FEN to set everything
-	    sprintf(buf, "loadfen %s\n", fen);
+	    snprintf(buf, MSG_SIZ,"loadfen %s\n", fen);
 	    SendToICS(buf);
 	  } else { // FICS: everything has to set by separate bsetup commands
 	    p = strchr(fen, ' '); p[0] = NULLCHAR; // cut after board
-	    sprintf(buf, "bsetup fen %s\n", fen);
+	    snprintf(buf, MSG_SIZ,"bsetup fen %s\n", fen);
 	    SendToICS(buf);
 	    if(!WhiteOnMove(backwardMostMove)) {
 		SendToICS("bsetup tomove black\n");
 	    }
 	    i = (strchr(p+3, 'K') != NULL) + 2*(strchr(p+3, 'Q') != NULL);
-	    sprintf(buf, "bsetup wcastle %s\n", castlingStrings[i]);
+	    snprintf(buf, MSG_SIZ,"bsetup wcastle %s\n", castlingStrings[i]);
 	    SendToICS(buf);
 	    i = (strchr(p+3, 'k') != NULL) + 2*(strchr(p+3, 'q') != NULL);
-	    sprintf(buf, "bsetup bcastle %s\n", castlingStrings[i]);
+	    snprintf(buf, MSG_SIZ, "bsetup bcastle %s\n", castlingStrings[i]);
 	    SendToICS(buf);
 	    i = boards[backwardMostMove][EP_STATUS];
 	    if(i >= 0) { // set e.p.
-		sprintf(buf, "bsetup eppos %c\n", i+AAA);
+	      snprintf(buf, MSG_SIZ,"bsetup eppos %c\n", i+AAA);
 		SendToICS(buf);
 	    }
 	    bsetup++;
@@ -4698,7 +4736,7 @@ UploadGameEvent()
     }
     for(i = backwardMostMove; i<last; i++) {
 	char buf[20];
-	sprintf(buf, "%s\n", parseList[i]);
+	snprintf(buf, sizeof(buf)/sizeof(buf[0]),"%s\n", parseList[i]);
 	SendToICS(buf);
     }
     SendToICS(ics_prefix);
@@ -4712,11 +4750,11 @@ CoordsToComputerAlgebraic(rf, ff, rt, ft, promoChar, move)
      char move[7];
 {
     if (rf == DROP_RANK) {
-	sprintf(move, "%c@%c%c\n",
+      sprintf(move, "%c@%c%c\n",
                 ToUpper(PieceToChar((ChessSquare) ff)), AAA + ft, ONE + rt);
     } else {
 	if (promoChar == 'x' || promoChar == NULLCHAR) {
-	    sprintf(move, "%c%c%c%c\n",
+	  sprintf(move, "%c%c%c%c\n",
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt);
 	} else {
 	    sprintf(move, "%c%c%c%c%c\n",
@@ -5504,7 +5542,7 @@ SendBoard(cps, moveNum)
 
     if (cps->useSetboard) {
       char* fen = PositionToFEN(moveNum, cps->fenOverride);
-      sprintf(message, "setboard %s\n", fen);
+      snprintf(message, MSG_SIZ,"setboard %s\n", fen);
       SendToProgram(message, cps);
       free(fen);
 
@@ -5522,10 +5560,10 @@ SendBoard(cps, moveNum)
 	bp = &boards[moveNum][i][BOARD_LEFT];
         for (j = BOARD_LEFT; j < BOARD_RGHT; j++, bp++) {
 	  if ((int) *bp < (int) BlackPawn) {
-	    sprintf(message, "%c%c%c\n", PieceToChar(*bp),
+	    snprintf(message, MSG_SIZ, "%c%c%c\n", PieceToChar(*bp),
                     AAA + j, ONE + i);
             if(message[0] == '+' || message[0] == '~') {
-                sprintf(message, "%c%c%c+\n",
+	      snprintf(message, MSG_SIZ,"%c%c%c+\n",
                         PieceToChar((ChessSquare)(DEMOTED *bp)),
                         AAA + j, ONE + i);
             }
@@ -5544,10 +5582,10 @@ SendBoard(cps, moveNum)
         for (j = BOARD_LEFT; j < BOARD_RGHT; j++, bp++) {
 	  if (((int) *bp != (int) EmptySquare)
 	      && ((int) *bp >= (int) BlackPawn)) {
-	    sprintf(message, "%c%c%c\n", ToUpper(PieceToChar(*bp)),
+	    snprintf(message,MSG_SIZ, "%c%c%c\n", ToUpper(PieceToChar(*bp)),
                     AAA + j, ONE + i);
             if(message[0] == '+' || message[0] == '~') {
-                sprintf(message, "%c%c%c+\n",
+	      snprintf(message, MSG_SIZ,"%c%c%c+\n",
                         PieceToChar((ChessSquare)(DEMOTED *bp)),
                         AAA + j, ONE + i);
             }
@@ -6102,10 +6140,10 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
       gameMode = MachinePlaysBlack;
       StartClocks();
       SetGameInfo();
-      sprintf(buf, "%s vs. %s", gameInfo.white, gameInfo.black);
+      snprintf(buf, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
       DisplayTitle(buf);
       if (first.sendName) {
-	sprintf(buf, "name %s\n", gameInfo.white);
+	snprintf(buf, MSG_SIZ,"name %s\n", gameInfo.white);
 	SendToProgram(buf, &first);
       }
       StartClocks();
@@ -6990,7 +7028,7 @@ char *SendMoveToBookUser(int moveNr, ChessProgramState *cps, int initial)
 	// after a book hit we never send 'go', and the code after the call to this routine
 	// has '&& !bookHit' added to suppress potential sending there (based on 'firstMove').
 	char buf[MSG_SIZ];
-	sprintf(buf, "%s%s\n", (cps->useUsermove ? "usermove " : ""), bookHit); // force book move into program supposed to play it
+	snprintf(buf, MSG_SIZ, "%s%s\n", (cps->useUsermove ? "usermove " : ""), bookHit); // force book move into program supposed to play it
 	SendToProgram(buf, cps);
 	if(!initial) firstMove = FALSE; // normally we would clear the firstMove condition after return & sending 'go'
     } else if(initial) { // 'go' was needed irrespective of firstMove, and it has to be done in this routine
@@ -7142,10 +7180,10 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         if (!ParseOneMove(machineMove, forwardMostMove, &moveType,
                               &fromX, &fromY, &toX, &toY, &promoChar)) {
 	    /* Machine move could not be parsed; ignore it. */
-            sprintf(buf1, _("Illegal move \"%s\" from %s machine"),
+	  snprintf(buf1, MSG_SIZ*10, _("Illegal move \"%s\" from %s machine"),
 		    machineMove, cps->which);
 	    DisplayError(buf1, 0);
-            sprintf(buf1, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d",
+            snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d",
                     machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, moveType);
 	    if (gameMode == TwoMachinesPlay) {
 	      GameEnds(machineWhite ? BlackWins : WhiteWins,
@@ -7170,7 +7208,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                 fprintf(debugFP, "castling rights\n");
 	    }
             if(moveType == IllegalMove) {
-                sprintf(buf1, "Xboard: Forfeit due to illegal move: %s (%c%c%c%c)%c",
+	      snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to illegal move: %s (%c%c%c%c)%c",
                         machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, 0);
                 GameEnds(machineWhite ? BlackWins : WhiteWins,
                            buf1, GE_XBOARD);
@@ -7256,7 +7294,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  if(appData.autoKibitz && !appData.icsEngineAnalyze ) { /* [HGM] kibitz: send most-recent PV info to ICS */
 		char buf[3*MSG_SIZ];
 
-		sprintf(buf, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %.0f knps) PV=%s\n",
+		snprintf(buf, 3*MSG_SIZ, "kibitz !!! %+.2f/%d (%.2f sec, %u nodes, %.0f knps) PV=%s\n",
 			programStats.score / 100.,
 			programStats.depth,
 			programStats.time / 100.,
@@ -7497,7 +7535,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	    cps->analysisSupport = FALSE;
 	    cps->analyzing = FALSE;
 	    Reset(FALSE, TRUE);
-	    sprintf(buf2, _("%s does not support analysis"), cps->tidy);
+	    snprintf(buf2,MSG_SIZ, _("%s does not support analysis"), cps->tidy);
 	    DisplayError(buf2, 0);
 	    return;
 	}
@@ -7556,7 +7594,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	DisplayMove(currentMove-1); /* before DisplayMoveError */
 	SwitchClocks(forwardMostMove-1); // [HGM] race
 	DisplayBothClocks();
-	sprintf(buf1, _("Illegal move \"%s\" (rejected by %s chess program)"),
+	snprintf(buf1, 10*MSG_SIZ, _("Illegal move \"%s\" (rejected by %s chess program)"),
 		parseList[currentMove], cps->which);
 	DisplayMoveError(buf1);
 	DrawPosition(FALSE, boards[currentMove]);
@@ -7911,13 +7949,13 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                     [AS] Protect the thinkOutput buffer from overflow... this
                     is only useful if buf1 hasn't overflowed first!
                 */
-		sprintf(thinkOutput, "[%d]%c%+.2f %s%s",
-			plylev,
-			(gameMode == TwoMachinesPlay ?
-			 ToUpper(cps->twoMachinesColor[0]) : ' '),
-			((double) curscore) / 100.0,
-			prefixHint ? lastHint : "",
-			prefixHint ? " " : "" );
+		snprintf(thinkOutput, sizeof(thinkOutput)/sizeof(thinkOutput[0]), "[%d]%c%+.2f %s%s",
+			 plylev,
+			 (gameMode == TwoMachinesPlay ?
+			  ToUpper(cps->twoMachinesColor[0]) : ' '),
+			 ((double) curscore) / 100.0,
+			 prefixHint ? lastHint : "",
+			 prefixHint ? " " : "" );
 
                 if( buf1[0] != NULLCHAR ) {
                     unsigned max_len = sizeof(thinkOutput) - strlen(thinkOutput) - 1;
@@ -7943,7 +7981,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		 * if there is only 1 legal move
                  */
 		sscanf(p, "(only move) %s", buf1);
-		sprintf(thinkOutput, "%s (only move)", buf1);
+		snprintf(thinkOutput, sizeof(thinkOutput)/sizeof(thinkOutput[0]), "%s (only move)", buf1);
 		sprintf(programStats.movelist, "%s (only move)", buf1);
 		programStats.depth = 1;
 		programStats.nr_moves = 1;
@@ -8152,7 +8190,7 @@ ParseGameHistory(game)
 	    break;
 	  case AmbiguousMove:
 	    /* bug? */
-	    sprintf(buf, _("Ambiguous move in ICS output: \"%s\""), yy_text);
+	    snprintf(buf, MSG_SIZ, _("Ambiguous move in ICS output: \"%s\""), yy_text);
   if (appData.debugMode) {
     fprintf(debugFP, "Ambiguous move from ICS: '%s'\n", yy_text);
     fprintf(debugFP, "board L=%d, R=%d, H=%d, holdings=%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT, gameInfo.holdingsWidth);
@@ -8162,7 +8200,7 @@ ParseGameHistory(game)
 	    return;
 	  case ImpossibleMove:
 	    /* bug? */
-	    sprintf(buf, _("Illegal move in ICS output: \"%s\""), yy_text);
+	    snprintf(buf, MSG_SIZ, _("Illegal move in ICS output: \"%s\""), yy_text);
   if (appData.debugMode) {
     fprintf(debugFP, "Impossible move from ICS: '%s'\n", yy_text);
     fprintf(debugFP, "board L=%d, R=%d, H=%d, holdings=%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT, gameInfo.holdingsWidth);
@@ -8695,7 +8733,7 @@ void SendEgtPath(ChessProgramState *cps)
 	    if( appData.defaultPathEGTB && appData.defaultPathEGTB[0] &&
 		strcmp(name, ",nalimov:") == 0 ) {
 		// take nalimov path from the menu-changeable option first, if it is defined
-		sprintf(buf, "egtpath nalimov %s\n", appData.defaultPathEGTB);
+	      snprintf(buf, MSG_SIZ, "egtpath nalimov %s\n", appData.defaultPathEGTB);
 		SendToProgram(buf,cps);     // send egtbpath command for nalimov
 	    } else
 	    if( (s = StrStr(appData.egtFormats, name+1)) == appData.egtFormats ||
@@ -8705,7 +8743,7 @@ void SendEgtPath(ChessProgramState *cps)
 		while(*r && *r != ',') r++; // path info is everything upto next ';' or end of string
 		c = *r; *r = 0;             // temporarily null-terminate path info
 		    *--q = 0;               // strip of trailig ':' from name
-		    sprintf(buf, "egtpath %s %s\n", name+1, s);
+		    snprintf(buf, MSG_SIZ, "egtpath %s %s\n", name+1, s);
 		*r = c;
 		SendToProgram(buf,cps);     // send egtbpath command for this format
 	    }
@@ -8726,12 +8764,12 @@ InitChessProgram(cps, setup)
     /* [HGM] some new WB protocol commands to configure engine are sent now, if engine supports them */
     /*       moved to before sending initstring in 4.3.15, so Polyglot can delay UCI 'isready' to recepton of 'new' */
     if(cps->memSize) { /* [HGM] memory */
-	sprintf(buf, "memory %d\n", appData.defaultHashSize + appData.defaultCacheSizeEGTB);
+      snprintf(buf, MSG_SIZ, "memory %d\n", appData.defaultHashSize + appData.defaultCacheSizeEGTB);
 	SendToProgram(buf, cps);
     }
     SendEgtPath(cps); /* [HGM] EGT */
     if(cps->maxCores) { /* [HGM] SMP: (protocol specified must be last settings command before new!) */
-	sprintf(buf, "cores %d\n", appData.smpCores);
+      snprintf(buf, MSG_SIZ, "cores %d\n", appData.smpCores);
 	SendToProgram(buf, cps);
     }
 
@@ -8744,7 +8782,7 @@ InitChessProgram(cps, setup)
       char *v = VariantName(gameInfo.variant);
       if (cps->protocolVersion != 1 && StrStr(cps->variants, v) == NULL) {
         /* [HGM] in protocol 1 we have to assume all variants valid */
-	sprintf(buf, _("Variant %s not supported by %s"), v, cps->tidy);
+	snprintf(buf, MSG_SIZ, _("Variant %s not supported by %s"), v, cps->tidy);
 	DisplayFatalError(buf, 0, 1);
 	return;
       }
@@ -8768,14 +8806,14 @@ InitChessProgram(cps, setup)
            overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 8;
 
       if(overruled) {
-           sprintf(b, "%dx%d+%d_%s", gameInfo.boardWidth, gameInfo.boardHeight,
-                               gameInfo.holdingsSize, VariantName(gameInfo.variant)); // cook up sized variant name
+	snprintf(b, MSG_SIZ, "%dx%d+%d_%s", gameInfo.boardWidth, gameInfo.boardHeight,
+		 gameInfo.holdingsSize, VariantName(gameInfo.variant)); // cook up sized variant name
            /* [HGM] varsize: try first if this defiant size variant is specifically known */
            if(StrStr(cps->variants, b) == NULL) {
                // specific sized variant not known, check if general sizing allowed
                if (cps->protocolVersion != 1) { // for protocol 1 we cannot check and hope for the best
                    if(StrStr(cps->variants, "boardsize") == NULL) {
-                       sprintf(buf, "Board size %dx%d+%d not supported by %s",
+		     snprintf(buf, MSG_SIZ, "Board size %dx%d+%d not supported by %s",
                             gameInfo.boardWidth, gameInfo.boardHeight, gameInfo.holdingsSize, cps->tidy);
                        DisplayFatalError(buf, 0, 1);
                        return;
@@ -8783,8 +8821,8 @@ InitChessProgram(cps, setup)
                    /* [HGM] here we really should compare with the maximum supported board size */
                }
            }
-      } else sprintf(b, "%s", VariantName(gameInfo.variant));
-      sprintf(buf, "variant %s\n", b);
+      } else snprintf(b, MSG_SIZ,"%s", VariantName(gameInfo.variant));
+      snprintf(buf, MSG_SIZ, "variant %s\n", b);
       SendToProgram(buf, cps);
     }
     currentlyInitializedVariant = gameInfo.variant;
@@ -8823,7 +8861,7 @@ InitChessProgram(cps, setup)
 	SendToProgram("easy\n", cps);
     }
     if (cps->usePing) {
-      sprintf(buf, "ping %d\n", ++cps->lastPing);
+      snprintf(buf, MSG_SIZ, "ping %d\n", ++cps->lastPing);
       SendToProgram(buf, cps);
     }
     cps->initDone = TRUE;
@@ -8856,7 +8894,7 @@ StartChessProgram(cps)
     }
 
     if (err != 0) {
-	sprintf(buf, _("Startup failure on '%s'"), cps->program);
+      snprintf(buf, MSG_SIZ, _("Startup failure on '%s'"), cps->program);
 	DisplayFatalError(buf, err, 1);
 	cps->pr = NoProc;
 	cps->isr = NULL;
@@ -8865,7 +8903,7 @@ StartChessProgram(cps)
 
     cps->isr = AddInputSource(cps->pr, TRUE, ReceiveFromProgram, cps);
     if (cps->protocolVersion > 1) {
-      sprintf(buf, "xboard\nprotover %d\n", cps->protocolVersion);
+      snprintf(buf, MSG_SIZ, "xboard\nprotover %d\n", cps->protocolVersion);
       cps->nrOptions = 0; // [HGM] options: clear all engine-specific options
       cps->comboCnt = 0;  //                and values of combo boxes
       SendToProgram(buf, cps);
@@ -9057,7 +9095,7 @@ GameEnds(result, resultDetails, whosays)
 		 		result, (signed char)boards[forwardMostMove][EP_STATUS], forwardMostMove);
 		      }
 		      if(result != trueResult) {
-	                      sprintf(buf, "False win claim: '%s'", resultDetails);
+			snprintf(buf, MSG_SIZ, "False win claim: '%s'", resultDetails);
 	                      result = claimer == 'w' ? BlackWins : WhiteWins;
 	                      resultDetails = buf;
 		      }
@@ -9068,7 +9106,7 @@ GameEnds(result, resultDetails, whosays)
                         (claimer=='b')==(forwardMostMove&1))
                                                                                   ) {
                       /* [HGM] verify: draws that were not flagged are false claims */
-                      sprintf(buf, "False draw claim: '%s'", resultDetails);
+		  snprintf(buf, MSG_SIZ, "False draw claim: '%s'", resultDetails);
                       result = claimer == 'w' ? BlackWins : WhiteWins;
                       resultDetails = buf;
                 }
@@ -9090,7 +9128,7 @@ GameEnds(result, resultDetails, whosays)
 		}
 		if(k <= 1) {
 			result = GameIsDrawn;
-			sprintf(buf, "%s but bare king", resultDetails);
+			snprintf(buf, MSG_SIZ, "%s but bare king", resultDetails);
 			resultDetails = buf;
 		}
 	    }
@@ -9140,7 +9178,7 @@ GameEnds(result, resultDetails, whosays)
 		gameMode == IcsPlayingBlack ||
 		gameMode == BeginningOfGame) {
 		char buf[MSG_SIZ];
-		sprintf(buf, "result %s {%s}\n", PGNResult(result),
+		snprintf(buf, MSG_SIZ, "result %s {%s}\n", PGNResult(result),
 			resultDetails);
 		if (first.pr != NoProc) {
 		    SendToProgram(buf, &first);
@@ -9223,7 +9261,7 @@ GameEnds(result, resultDetails, whosays)
 	    SendToProgram("force\n", &first);
 	    if (first.usePing) {
 	      char buf[MSG_SIZ];
-	      sprintf(buf, "ping %d\n", ++first.lastPing);
+	      snprintf(buf, MSG_SIZ, "ping %d\n", ++first.lastPing);
 	      SendToProgram(buf, &first);
 	    }
 	}
@@ -9249,7 +9287,7 @@ GameEnds(result, resultDetails, whosays)
 	    SendToProgram("force\n", &second);
 	    if (second.usePing) {
 	      char buf[MSG_SIZ];
-	      sprintf(buf, "ping %d\n", ++second.lastPing);
+	      snprintf(buf, MSG_SIZ, "ping %d\n", ++second.lastPing);
 	      SendToProgram(buf, &second);
 	    }
 	}
@@ -9303,10 +9341,10 @@ GameEnds(result, resultDetails, whosays)
 	    return;
 	} else {
 	    gameMode = nextGameMode;
-	    sprintf(buf, _("Match %s vs. %s: final score %d-%d-%d"),
-		    first.tidy, second.tidy,
-		    first.matchWins, second.matchWins,
-		    appData.matchGames - (first.matchWins + second.matchWins));
+	    snprintf(buf, MSG_SIZ, _("Match %s vs. %s: final score %d-%d-%d"),
+		     first.tidy, second.tidy,
+		     first.matchWins, second.matchWins,
+		     appData.matchGames - (first.matchWins + second.matchWins));
 	    popupRequested++; // [HGM] crash: postpone to after resetting endingGame
 	}
     }
@@ -9337,11 +9375,12 @@ FeedMovesToProgram(cps, upto)
       fprintf(debugFP, "Feeding %smoves %d through %d to %s chess program\n",
 	      startedFromSetupPosition ? "position and " : "",
 	      backwardMostMove, upto, cps->which);
-    if(currentlyInitializedVariant != gameInfo.variant) { char buf[MSG_SIZ];
+    if(currentlyInitializedVariant != gameInfo.variant) {
+      char buf[MSG_SIZ];
         // [HGM] variantswitch: make engine aware of new variant
 	if(cps->protocolVersion > 1 && StrStr(cps->variants, VariantName(gameInfo.variant)) == NULL)
 		return; // [HGM] refrain from feeding moves altogether if variant is unsupported!
-	sprintf(buf, "variant %s\n", VariantName(gameInfo.variant));
+	snprintf(buf, MSG_SIZ, "variant %s\n", VariantName(gameInfo.variant));
 	SendToProgram(buf, cps);
         currentlyInitializedVariant = gameInfo.variant;
     }
@@ -9709,7 +9748,7 @@ LoadGameOneMove(readAhead)
 	if (appData.testLegality) {
 	    if (appData.debugMode)
 	      fprintf(debugFP, "Parsed IllegalMove: %s\n", yy_text);
-	    sprintf(move, _("Illegal move: %d.%s%s"),
+	    snprintf(move, MSG_SIZ, _("Illegal move: %d.%s%s"),
 		    (forwardMostMove / 2) + 1,
 		    WhiteOnMove(forwardMostMove) ? " " : ".. ", yy_text);
 	    DisplayError(move, 0);
@@ -9729,7 +9768,7 @@ LoadGameOneMove(readAhead)
       case AmbiguousMove:
 	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed AmbiguousMove: %s\n", yy_text);
-	sprintf(move, _("Ambiguous move: %d.%s%s"),
+	snprintf(move, MSG_SIZ, _("Ambiguous move: %d.%s%s"),
 		(forwardMostMove / 2) + 1,
 		WhiteOnMove(forwardMostMove) ? " " : ".. ", yy_text);
 	DisplayError(move, 0);
@@ -9740,7 +9779,7 @@ LoadGameOneMove(readAhead)
       case ImpossibleMove:
 	if (appData.debugMode)
 	  fprintf(debugFP, "Parsed ImpossibleMove (type = %d): %s\n", moveType, yy_text);
-	sprintf(move, _("Illegal move: %d.%s%s"),
+	snprintf(move, MSG_SIZ, _("Illegal move: %d.%s%s"),
 		(forwardMostMove / 2) + 1,
 		WhiteOnMove(forwardMostMove) ? " " : ".. ", yy_text);
 	DisplayError(move, 0);
@@ -10019,7 +10058,7 @@ LoadGame(f, gameNumber, title, useList)
 	    DisplayTitle(buf);
     } else if (*title != NULLCHAR) {
 	if (gameNumber > 1) {
-	    sprintf(buf, "%s %d", title, gameNumber);
+	  snprintf(buf, MSG_SIZ, "%s %d", title, gameNumber);
 	    DisplayTitle(buf);
 	} else {
 	    DisplayTitle(title);
@@ -10560,7 +10599,7 @@ int i, j;
     }
 
     if (positionNumber > 1) {
-	sprintf(line, "%s %d", title, positionNumber);
+      snprintf(line, MSG_SIZ, "%s %d", title, positionNumber);
 	DisplayTitle(line);
     } else {
 	DisplayTitle(title);
@@ -10780,15 +10819,14 @@ SaveGamePGN(f)
 	}
 
 	/* Format move number */
-	if ((i % 2) == 0) {
-	    sprintf(numtext, "%d.", (i - offset)/2 + 1);
-	} else {
-	    if (newblock) {
-		sprintf(numtext, "%d...", (i - offset)/2 + 1);
-	    } else {
-		numtext[0] = NULLCHAR;
-	    }
-	}
+	if ((i % 2) == 0)
+	  snprintf(numtext, sizeof(numtext)/sizeof(numtext[0]),"%d.", (i - offset)/2 + 1);
+        else
+	  if (newblock)
+	    snprintf(numtext, sizeof(numtext)/sizeof(numtext[0]), "%d...", (i - offset)/2 + 1);
+	  else
+	    numtext[0] = NULLCHAR;
+
 	numlen = strlen(numtext);
 	newblock = FALSE;
 
@@ -10831,18 +10869,25 @@ SaveGamePGN(f)
 
             seconds = (pvInfoList[i].time+5)/10; // deci-seconds, rounded to nearest
 
-            if( seconds <= 0) buf[0] = 0; else
-            if( seconds < 30 ) sprintf(buf, " %3.1f%c", seconds/10., 0); else {
-		seconds = (seconds + 4)/10; // round to full seconds
-	        if( seconds < 60 ) sprintf(buf, " %d%c", seconds, 0); else
-				   sprintf(buf, " %d:%02d%c", seconds/60, seconds%60, 0);
-	    }
+            if( seconds <= 0)
+	      buf[0] = 0;
+	    else
+	      if( seconds < 30 )
+		snprintf(buf, MSG_SIZ, " %3.1f%c", seconds/10., 0);
+	      else
+		{
+		  seconds = (seconds + 4)/10; // round to full seconds
+		  if( seconds < 60 )
+		    snprintf(buf, MSG_SIZ, " %d%c", seconds, 0);
+		  else
+		    snprintf(buf, MSG_SIZ, " %d:%02d%c", seconds/60, seconds%60, 0);
+		}
 
-            sprintf( move_buffer, "{%s%.2f/%d%s}",
-                pvInfoList[i].score >= 0 ? "+" : "",
-                pvInfoList[i].score / 100.0,
-                pvInfoList[i].depth,
-		buf );
+            snprintf( move_buffer, sizeof(move_buffer)/sizeof(move_buffer[0]),"{%s%.2f/%d%s}",
+		      pvInfoList[i].score >= 0 ? "+" : "",
+		      pvInfoList[i].score / 100.0,
+		      pvInfoList[i].depth,
+		      buf );
 
 	    movelen = strlen(move_buffer); /* [HGM] pgn: line-break point after move */
 
@@ -11147,14 +11192,13 @@ RegisterMove()
 	  fprintf(debugFP, "Saving %s for game %d\n",
 		  cmailMove[lastLoadGameNumber - 1], lastLoadGameNumber);
 
-	sprintf(string,
-		"%s.game.out.%d", appData.cmailGameName, lastLoadGameNumber);
+	snprintf(string, MSG_SIZ, "%s.game.out.%d", appData.cmailGameName, lastLoadGameNumber);
 
 	f = fopen(string, "w");
 	if (appData.oldSaveStyle) {
 	    SaveGameOldStyle(f); /* also closes the file */
 
-	    sprintf(string, "%s.pos.out", appData.cmailGameName);
+	    snprintf(string, MSG_SIZ, "%s.pos.out", appData.cmailGameName);
 	    f = fopen(string, "w");
 	    SavePosition(f, 0, NULL); /* also closes the file */
 	} else {
@@ -11200,7 +11244,7 @@ MailMoveEvent()
 
 #if CMAIL_PROHIBIT_REMAIL
     if (cmailMailedMove) {
-	sprintf(msg, _("You have already mailed a move.\nWait until a move arrives from your opponent.\nTo resend the same move, type\n\"cmail -remail -game %s\"\non the command line."), appData.cmailGameName);
+      snprintf(msg, MSG_SIZ, _("You have already mailed a move.\nWait until a move arrives from your opponent.\nTo resend the same move, type\n\"cmail -remail -game %s\"\non the command line."), appData.cmailGameName);
 	DisplayError(msg, 0);
 	return;
     }
@@ -11210,8 +11254,8 @@ MailMoveEvent()
 
     if (   cmailMailedMove
 	|| (nCmailMovesRegistered + nCmailResults == nCmailGames)) {
-	sprintf(string, partCommandString,
-		appData.debugMode ? " -v" : "", appData.cmailGameName);
+      snprintf(string, MSG_SIZ, partCommandString,
+	       appData.debugMode ? " -v" : "", appData.cmailGameName);
 	commandOutput = popen(string, "r");
 
 	if (commandOutput == NULL) {
@@ -11241,10 +11285,10 @@ MailMoveEvent()
 		if (   archived
 		    && (   (arcDir = (char *) getenv("CMAIL_ARCDIR"))
 			!= NULL)) {
-		    sprintf(buffer, "%s/%s.%s.archive",
-			    arcDir,
-			    appData.cmailGameName,
-			    gameInfo.date);
+		  snprintf(buffer, MSG_SIZ, "%s/%s.%s.archive",
+			   arcDir,
+			   appData.cmailGameName,
+			   gameInfo.date);
 		    LoadGameFromFile(buffer, 1, buffer, FALSE);
 		    cmailMsgLoaded = FALSE;
 		}
@@ -11277,17 +11321,17 @@ CmailMsg()
     if (!cmailMsgLoaded) return "";
 
     if (cmailMailedMove) {
-	sprintf(cmailMsg, _("Waiting for reply from opponent\n"));
+      snprintf(cmailMsg, MSG_SIZ, _("Waiting for reply from opponent\n"));
     } else {
 	/* Create a list of games left */
-	sprintf(string, "[");
+      snprintf(string, MSG_SIZ, "[");
 	for (i = 0; i < nCmailGames; i ++) {
 	    if (! (   cmailMoveRegistered[i]
 		   || (cmailResult[i] == CMAIL_OLD_RESULT))) {
 		if (prependComma) {
-		    sprintf(number, ",%d", i + 1);
+		    snprintf(number, sizeof(number)/sizeof(number[0]), ",%d", i + 1);
 		} else {
-		    sprintf(number, "%d", i + 1);
+		    snprintf(number, sizeof(number)/sizeof(number[0]), "%d", i + 1);
 		    prependComma = 1;
 		}
 
@@ -11299,41 +11343,36 @@ CmailMsg()
 	if (nCmailMovesRegistered + nCmailResults == 0) {
 	    switch (nCmailGames) {
 	      case 1:
-		sprintf(cmailMsg,
-			_("Still need to make move for game\n"));
+		snprintf(cmailMsg, MSG_SIZ, _("Still need to make move for game\n"));
 		break;
 
 	      case 2:
-		sprintf(cmailMsg,
-			_("Still need to make moves for both games\n"));
+		snprintf(cmailMsg, MSG_SIZ, _("Still need to make moves for both games\n"));
 		break;
 
 	      default:
-		sprintf(cmailMsg,
-			_("Still need to make moves for all %d games\n"),
-			nCmailGames);
+		snprintf(cmailMsg, MSG_SIZ, _("Still need to make moves for all %d games\n"),
+			 nCmailGames);
 		break;
 	    }
 	} else {
 	    switch (nCmailGames - nCmailMovesRegistered - nCmailResults) {
 	      case 1:
-		sprintf(cmailMsg,
-			_("Still need to make a move for game %s\n"),
-			string);
+		snprintf(cmailMsg, MSG_SIZ, _("Still need to make a move for game %s\n"),
+			 string);
 		break;
 
 	      case 0:
 		if (nCmailResults == nCmailGames) {
-		    sprintf(cmailMsg, _("No unfinished games\n"));
+		  snprintf(cmailMsg, MSG_SIZ, _("No unfinished games\n"));
 		} else {
-		    sprintf(cmailMsg, _("Ready to send mail\n"));
+		  snprintf(cmailMsg, MSG_SIZ, _("Ready to send mail\n"));
 		}
 		break;
 
 	      default:
-		sprintf(cmailMsg,
-			_("Still need to make moves for games %s\n"),
-			string);
+		snprintf(cmailMsg, MSG_SIZ, _("Still need to make moves for games %s\n"),
+			 string);
 	    }
 	}
     }
@@ -11488,9 +11527,9 @@ EditCommentEvent()
     if (currentMove < 1 || parseList[currentMove - 1][0] == NULLCHAR) {
       safeStrCpy(title, _("Edit comment"), sizeof(title)/sizeof(title[0]));
     } else {
-      sprintf(title, _("Edit comment on %d.%s%s"), (currentMove - 1) / 2 + 1,
-	      WhiteOnMove(currentMove - 1) ? " " : ".. ",
-	      parseList[currentMove - 1]);
+      snprintf(title, MSG_SIZ, _("Edit comment on %d.%s%s"), (currentMove - 1) / 2 + 1,
+	       WhiteOnMove(currentMove - 1) ? " " : ".. ",
+	       parseList[currentMove - 1]);
     }
 
     EditCommentPopUp(currentMove, title, commentList[currentMove]);
@@ -11600,10 +11639,10 @@ MachineWhiteEvent()
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
-    sprintf(buf, "%s vs. %s", gameInfo.white, gameInfo.black);
+    snprintf(buf, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
     DisplayTitle(buf);
     if (first.sendName) {
-      sprintf(buf, "name %s\n", gameInfo.black);
+      snprintf(buf, MSG_SIZ, "name %s\n", gameInfo.black);
       SendToProgram(buf, &first);
     }
     if (first.sendTime) {
@@ -11643,8 +11682,8 @@ MachineWhiteEvent()
 void
 MachineBlackEvent()
 {
-    char buf[MSG_SIZ];
-   char *bookHit = NULL;
+  char buf[MSG_SIZ];
+  char *bookHit = NULL;
 
     if (appData.noChessProgram || (gameMode == MachinePlaysBlack))
 	return;
@@ -11677,10 +11716,10 @@ MachineBlackEvent()
     pausing = FALSE;
     ModeHighlight();
     SetGameInfo();
-    sprintf(buf, "%s vs. %s", gameInfo.white, gameInfo.black);
+    snprintf(buf, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
     DisplayTitle(buf);
     if (first.sendName) {
-      sprintf(buf, "name %s\n", gameInfo.white);
+      snprintf(buf, MSG_SIZ, "name %s\n", gameInfo.white);
       SendToProgram(buf, &first);
     }
     if (first.sendTime) {
@@ -11722,18 +11761,18 @@ DisplayTwoMachinesTitle()
     char buf[MSG_SIZ];
     if (appData.matchGames > 0) {
         if (first.twoMachinesColor[0] == 'w') {
-	    sprintf(buf, "%s vs. %s (%d-%d-%d)",
-		    gameInfo.white, gameInfo.black,
-		    first.matchWins, second.matchWins,
-		    matchGame - 1 - (first.matchWins + second.matchWins));
+	  snprintf(buf, MSG_SIZ, "%s vs. %s (%d-%d-%d)",
+		   gameInfo.white, gameInfo.black,
+		   first.matchWins, second.matchWins,
+		   matchGame - 1 - (first.matchWins + second.matchWins));
 	} else {
-	    sprintf(buf, "%s vs. %s (%d-%d-%d)",
-		    gameInfo.white, gameInfo.black,
-		    second.matchWins, first.matchWins,
-		    matchGame - 1 - (first.matchWins + second.matchWins));
+	  snprintf(buf, MSG_SIZ, "%s vs. %s (%d-%d-%d)",
+		   gameInfo.white, gameInfo.black,
+		   second.matchWins, first.matchWins,
+		   matchGame - 1 - (first.matchWins + second.matchWins));
 	}
     } else {
-	sprintf(buf, "%s vs. %s", gameInfo.white, gameInfo.black);
+      snprintf(buf, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
     }
     DisplayTitle(buf);
 }
@@ -11819,12 +11858,12 @@ TwoMachinesEvent P((void))
 
     SendToProgram(first.computerString, &first);
     if (first.sendName) {
-      sprintf(buf, "name %s\n", second.tidy);
+      snprintf(buf, MSG_SIZ, "name %s\n", second.tidy);
       SendToProgram(buf, &first);
     }
     SendToProgram(second.computerString, &second);
     if (second.sendName) {
-      sprintf(buf, "name %s\n", first.tidy);
+      snprintf(buf, MSG_SIZ, "name %s\n", first.tidy);
       SendToProgram(buf, &second);
     }
 
@@ -12183,7 +12222,7 @@ EditPositionMenuEvent(selection, x, y)
                 for (y = 0; y < BOARD_HEIGHT; y++) {
 		    if (gameMode == IcsExamining) {
 			if (boards[currentMove][y][x] != EmptySquare) {
-			    sprintf(buf, "%sx@%c%c\n", ics_prefix,
+			  snprintf(buf, MSG_SIZ, "%sx@%c%c\n", ics_prefix,
                                     AAA + x, ONE + y);
 			    SendToICS(buf);
 			}
@@ -12209,7 +12248,7 @@ EditPositionMenuEvent(selection, x, y)
       case EmptySquare:
 	if (gameMode == IcsExamining) {
             if (x < BOARD_LEFT || x >= BOARD_RGHT) break; // [HGM] holdings
-            sprintf(buf, "%sx@%c%c\n", ics_prefix, AAA + x, ONE + y);
+            snprintf(buf, MSG_SIZ, "%sx@%c%c\n", ics_prefix, AAA + x, ONE + y);
 	    SendToICS(buf);
 	} else {
             if(x < BOARD_LEFT || x >= BOARD_RGHT) {
@@ -12262,8 +12301,8 @@ EditPositionMenuEvent(selection, x, y)
         defaultlabel:
 	if (gameMode == IcsExamining) {
             if (x < BOARD_LEFT || x >= BOARD_RGHT) break; // [HGM] holdings
-  	    sprintf(buf, "%s%c@%c%c\n", ics_prefix,
-                    PieceToChar(selection), AAA + x, ONE + y);
+	    snprintf(buf, MSG_SIZ, "%s%c@%c%c\n", ics_prefix,
+		     PieceToChar(selection), AAA + x, ONE + y);
 	    SendToICS(buf);
 	} else {
             if(x < BOARD_LEFT || x >= BOARD_RGHT) {
@@ -13020,11 +13059,11 @@ TimeControlTagValue()
     if (!appData.clockMode) {
       safeStrCpy(buf, "-", sizeof(buf)/sizeof(buf[0]));
     } else if (movesPerSession > 0) {
-      sprintf(buf, "%d/%ld", movesPerSession, timeControl/1000);
+      snprintf(buf, MSG_SIZ, "%d/%ld", movesPerSession, timeControl/1000);
     } else if (timeIncrement == 0) {
-      sprintf(buf, "%ld", timeControl/1000);
+      snprintf(buf, MSG_SIZ, "%ld", timeControl/1000);
     } else {
-      sprintf(buf, "%ld+%ld", timeControl/1000, timeIncrement/1000);
+      snprintf(buf, MSG_SIZ, "%ld+%ld", timeControl/1000, timeIncrement/1000);
     }
     return StrSave(buf);
 }
@@ -13072,7 +13111,7 @@ SetGameInfo()
 	gameInfo.date = PGNDate();
 	if (matchGame > 0) {
 	    char buf[MSG_SIZ];
-	    sprintf(buf, "%d", matchGame);
+	    snprintf(buf, MSG_SIZ, "%d", matchGame);
 	    gameInfo.round = StrSave(buf);
 	} else {
 	    gameInfo.round = StrSave("-");
@@ -13348,11 +13387,11 @@ SendToProgram(message, cps)
     outCount = OutputToProcess(cps->pr, message, count, &error);
     if (outCount < count && !exiting
                          && !endingGame) { /* [HGM] crash: to not hang GameEnds() writing to deceased engines */
-	sprintf(buf, _("Error writing to %s chess program"), cps->which);
+      snprintf(buf, MSG_SIZ, _("Error writing to %s chess program"), cps->which);
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
             if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
                 gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
-                sprintf(buf, "%s program exits in draw position (%s)", cps->which, cps->program);
+                snprintf(buf, MSG_SIZ, "%s program exits in draw position (%s)", cps->which, cps->program);
             } else {
                 gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
             }
@@ -13377,13 +13416,12 @@ ReceiveFromProgram(isr, closure, message, count, error)
     if (isr != cps->isr) return; /* Killed intentionally */
     if (count <= 0) {
 	if (count == 0) {
-	    sprintf(buf,
-		    _("Error: %s chess program (%s) exited unexpectedly"),
+	    snprintf(buf, MSG_SIZ, _("Error: %s chess program (%s) exited unexpectedly"),
 		    cps->which, cps->program);
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
                 if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
                     gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
-                    sprintf(buf, _("%s program exits in draw position (%s)"), cps->which, cps->program);
+                    snprintf(buf, MSG_SIZ, _("%s program exits in draw position (%s)"), cps->which, cps->program);
                 } else {
                     gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
                 }
@@ -13392,8 +13430,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
 	    RemoveInputSource(cps->isr);
 	    if(!cps->userError || !appData.popupExitMessage) DisplayFatalError(buf, 0, 1); else errorExitStatus = 1;
 	} else {
-	    sprintf(buf,
-		    _("Error reading from %s chess program (%s)"),
+	    snprintf(buf, MSG_SIZ, _("Error reading from %s chess program (%s)"),
 		    cps->which, cps->program);
 	    RemoveInputSource(cps->isr);
 
@@ -13478,12 +13515,12 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
 	/* GNU Chess 4 has no st command; uses level in a nonstandard way */
 	seconds = st % 60;
 	if (seconds == 0) {
-	  sprintf(buf, "level 1 %d\n", st/60);
+	  snprintf(buf, MSG_SIZ, "level 1 %d\n", st/60);
 	} else {
-	  sprintf(buf, "level 1 %d:%02d\n", st/60, seconds);
+	  snprintf(buf, MSG_SIZ, "level 1 %d:%02d\n", st/60, seconds);
 	}
       } else {
-	sprintf(buf, "st %d\n", st);
+	snprintf(buf, MSG_SIZ, "st %d\n", st);
       }
     } else {
       /* Set conventional or incremental time control, using level command */
@@ -13491,10 +13528,10 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
 	/* Note old gnuchess bug -- minutes:seconds used to not work.
 	   Fixed in later versions, but still avoid :seconds
 	   when seconds is 0. */
-	sprintf(buf, "level %d %ld %d\n", mps, tc/60000, inc/1000);
+	snprintf(buf, MSG_SIZ, "level %d %ld %d\n", mps, tc/60000, inc/1000);
       } else {
-	sprintf(buf, "level %d %ld:%02d %d\n", mps, tc/60000,
-		seconds, inc/1000);
+	snprintf(buf, MSG_SIZ, "level %d %ld:%02d %d\n", mps, tc/60000,
+		 seconds, inc/1000);
       }
     }
     SendToProgram(buf, cps);
@@ -13503,18 +13540,19 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
     /* Orthogonally, limit search to given depth */
     if (sd > 0) {
       if (cps->sdKludge) {
-	sprintf(buf, "depth\n%d\n", sd);
+	snprintf(buf, MSG_SIZ, "depth\n%d\n", sd);
       } else {
-	sprintf(buf, "sd %d\n", sd);
+	snprintf(buf, MSG_SIZ, "sd %d\n", sd);
       }
       SendToProgram(buf, cps);
     }
 
     if(cps->nps > 0) { /* [HGM] nps */
-	if(cps->supportsNPS == FALSE) cps->nps = -1; // don't use if engine explicitly says not supported!
+	if(cps->supportsNPS == FALSE)
+	  cps->nps = -1; // don't use if engine explicitly says not supported!
 	else {
-		sprintf(buf, "nps %d\n", cps->nps);
-	      SendToProgram(buf, cps);
+	  snprintf(buf, MSG_SIZ, "nps %d\n", cps->nps);
+	  SendToProgram(buf, cps);
 	}
     }
 }
@@ -13556,10 +13594,10 @@ SendTimeRemaining(cps, machineWhite)
     if (time <= 0) time = 1;
     if (otime <= 0) otime = 1;
 
-    sprintf(message, "time %ld\n", time);
+    snprintf(message, MSG_SIZ, "time %ld\n", time);
     SendToProgram(message, cps);
 
-    sprintf(message, "otim %ld\n", otime);
+    snprintf(message, MSG_SIZ, "otim %ld\n", otime);
     SendToProgram(message, cps);
 }
 
@@ -13573,12 +13611,14 @@ BoolFeature(p, name, loc, cps)
   char buf[MSG_SIZ];
   int len = strlen(name);
   int val;
+
   if (strncmp((*p), name, len) == 0 && (*p)[len] == '=') {
     (*p) += len + 1;
     sscanf(*p, "%d", &val);
     *loc = (val != 0);
-    while (**p && **p != ' ') (*p)++;
-    sprintf(buf, "accepted %s\n", name);
+    while (**p && **p != ' ')
+      (*p)++;
+    snprintf(buf, MSG_SIZ, "accepted %s\n", name);
     SendToProgram(buf, cps);
     return TRUE;
   }
@@ -13598,7 +13638,7 @@ IntFeature(p, name, loc, cps)
     (*p) += len + 1;
     sscanf(*p, "%d", loc);
     while (**p && **p != ' ') (*p)++;
-    sprintf(buf, "accepted %s\n", name);
+    snprintf(buf, MSG_SIZ, "accepted %s\n", name);
     SendToProgram(buf, cps);
     return TRUE;
   }
@@ -13620,7 +13660,7 @@ StringFeature(p, name, loc, cps)
     sscanf(*p, "%[^\"]", loc);
     while (**p && **p != '\"') (*p)++;
     if (**p == '\"') (*p)++;
-    sprintf(buf, "accepted %s\n", name);
+    snprintf(buf, MSG_SIZ, "accepted %s\n", name);
     SendToProgram(buf, cps);
     return TRUE;
   }
@@ -13696,7 +13736,7 @@ ParseOption(Option *opt, ChessProgramState *cps)
 	if(cps->optionSettings && cps->optionSettings[0])
 	    p = strstr(cps->optionSettings, opt->name); else p = NULL;
 	if(p && (p == cps->optionSettings || p[-1] == ',')) {
-		sprintf(buf, "option %s", p);
+	  snprintf(buf, MSG_SIZ, "option %s", p);
 		if(p = strstr(buf, ",")) *p = 0;
 		strcat(buf, "\n");
 		SendToProgram(buf, cps);
@@ -13779,13 +13819,13 @@ ParseFeatures(args, cps)
     if (StringFeature(&p, "egt", &cps->egtFormats, cps)) continue;
     if (StringFeature(&p, "option", &(cps->option[cps->nrOptions].name), cps)) {
 	if(!ParseOption(&(cps->option[cps->nrOptions++]), cps)) { // [HGM] options: add option feature
-	    sprintf(buf, "rejected option %s\n", cps->option[--cps->nrOptions].name);
+	  snprintf(buf, MSG_SIZ, "rejected option %s\n", cps->option[--cps->nrOptions].name);
 	    SendToProgram(buf, cps);
 	    continue;
 	}
 	if(cps->nrOptions >= MAX_OPTIONS) {
 	    cps->nrOptions--;
-	    sprintf(buf, "%s engine has too many options\n", cps->which);
+	    snprintf(buf, MSG_SIZ, "%s engine has too many options\n", cps->which);
 	    DisplayError(buf, 0);
 	}
 	continue;
@@ -13795,7 +13835,7 @@ ParseFeatures(args, cps)
     /* unknown feature: complain and skip */
     q = p;
     while (*q && *q != '=') q++;
-    sprintf(buf, "rejected %.*s\n", (int)(q-p), p);
+    snprintf(buf, MSG_SIZ,"rejected %.*s\n", (int)(q-p), p);
     SendToProgram(buf, cps);
     p = q;
     if (*p == '=') {
@@ -13860,7 +13900,7 @@ NewSettingEvent(option, feature, command, value)
     char buf[MSG_SIZ];
 
     if (gameMode == EditPosition) EditPositionDone(TRUE);
-    sprintf(buf, "%s%s %d\n", (option ? "option ": ""), command, value);
+    snprintf(buf, MSG_SIZ,"%s%s %d\n", (option ? "option ": ""), command, value);
     if(feature == NULL || *feature) SendToProgram(buf, &first);
     if (gameMode == TwoMachinesPlay) {
 	if(feature == NULL || feature[(int*)&second - (int*)&first]) SendToProgram(buf, &second);
@@ -13942,9 +13982,9 @@ DisplayMove(moveNumber)
     if (moveNumber == forwardMostMove - 1 &&
 	gameInfo.resultDetails != NULL) {
 	if (gameInfo.resultDetails[0] == NULLCHAR) {
-	    sprintf(res, " %s", PGNResult(gameInfo.result));
+	  snprintf(res, MSG_SIZ, " %s", PGNResult(gameInfo.result));
 	} else {
-	    sprintf(res, " {%s} %s",
+	  snprintf(res, MSG_SIZ, " {%s} %s",
 		    T_(gameInfo.resultDetails), PGNResult(gameInfo.result));
 	}
     } else {
@@ -13954,7 +13994,7 @@ DisplayMove(moveNumber)
     if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
 	DisplayMessage(res, cpThinkOutput);
     } else {
-	sprintf(message, "%d.%s%s%s", moveNumber / 2 + 1,
+      snprintf(message, MSG_SIZ, "%d.%s%s%s", moveNumber / 2 + 1,
 		WhiteOnMove(moveNumber) ? " " : ".. ",
 		parseList[moveNumber], res);
 	DisplayMessage(message, cpThinkOutput);
@@ -13973,7 +14013,7 @@ DisplayComment(moveNumber, text)
     if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
       safeStrCpy(title, "Comment", sizeof(title)/sizeof(title[0]));
     } else {
-      sprintf(title, "Comment on %d.%s%s", moveNumber / 2 + 1,
+      snprintf(title,MSG_SIZ, "Comment on %d.%s%s", moveNumber / 2 + 1,
 	      WhiteOnMove(moveNumber) ? " " : ".. ",
 	      parseList[moveNumber]);
     }
@@ -13981,7 +14021,7 @@ DisplayComment(moveNumber, text)
     if(moveNumber >= 0 && (depth = pvInfoList[moveNumber].depth) > 0) {
       if(text == NULL) text = "";
       score = pvInfoList[moveNumber].score;
-      sprintf(buf, "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
+      snprintf(buf,sizeof(buf)/sizeof(buf[0]), "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
 	      depth, (pvInfoList[moveNumber].time+50)/100, text);
       text = buf;
     }
@@ -14438,7 +14478,7 @@ TimeString(ms)
       /* convert milliseconds to tenths, rounding up */
       double tenths = floor( ((double)(ms + 99L)) / 100.00 );
 
-      sprintf(buf, " %03.1f ", tenths/10.0);
+      snprintf(buf,sizeof(buf)/sizeof(buf[0]), " %03.1f ", tenths/10.0);
       return buf;
     }
 
@@ -14460,12 +14500,12 @@ TimeString(ms)
     second = second % 60;
 
     if (day > 0)
-      sprintf(buf, " %s%ld:%02ld:%02ld:%02ld ",
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%ld:%02ld:%02ld:%02ld ",
 	      sign, day, hour, minute, second);
     else if (hour > 0)
-      sprintf(buf, " %s%ld:%02ld:%02ld ", sign, hour, minute, second);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%ld:%02ld:%02ld ", sign, hour, minute, second);
     else
-      sprintf(buf, " %s%2ld:%02ld ", sign, minute, second);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), " %s%2ld:%02ld ", sign, minute, second);
 
     return buf;
 }
@@ -14576,7 +14616,7 @@ PGNDate()
 
     clock = time((time_t *)NULL);
     tm = localtime(&clock);
-    sprintf(buf, "%04d.%02d.%02d",
+    snprintf(buf, MSG_SIZ, "%04d.%02d.%02d",
 	    tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
     return StrSave(buf);
 }
@@ -15178,12 +15218,13 @@ PopTail(Boolean annotate)
 	nrMoves = savedLast[storedGames] - currentMove;
 	if(annotate) {
 		int cnt = 10;
-		if(!WhiteOnMove(currentMove)) sprintf(buf, "(%d...", currentMove+2>>1);
+		if(!WhiteOnMove(currentMove))
+		  snprintf(buf, sizeof(buf)/sizeof(buf[0]),"(%d...", currentMove+2>>1);
 		else safeStrCpy(buf, "(", sizeof(buf)/sizeof(buf[0]));
 		for(i=currentMove; i<forwardMostMove; i++) {
 			if(WhiteOnMove(i))
-			     sprintf(moveBuf, " %d. %s", i+2>>1, SavePart(parseList[i]));
-			else sprintf(moveBuf, " %s", SavePart(parseList[i]));
+			  snprintf(moveBuf, sizeof(moveBuf)/sizeof(moveBuf[0]), " %d. %s", i+2>>1, SavePart(parseList[i]));
+			else snprintf(moveBuf, sizeof(moveBuf)/sizeof(moveBuf[0])," %s", SavePart(parseList[i]));
 			strcat(buf, moveBuf);
 			if(commentList[i]) { strcat(buf, " "); strcat(buf, commentList[i]); }
 			if(!--cnt) { strcat(buf, "\n"); cnt = 10; }

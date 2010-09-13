@@ -54,7 +54,7 @@ extern HINSTANCE hInst;          /* current instance */
 extern HWND hwndMain;            /* root window*/
 extern BOOLEAN alwaysOnTop;
 extern RECT boardRect;
-extern COLORREF lightSquareColor, darkSquareColor, whitePieceColor, 
+extern COLORREF lightSquareColor, darkSquareColor, whitePieceColor,
   blackPieceColor, highlightSquareColor, premoveHighlightColor;
 extern HPALETTE hPal;
 extern BoardSize boardSize;
@@ -100,15 +100,15 @@ LRESULT CALLBACK SaveOptions(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK TimeControl(HWND, UINT, WPARAM, LPARAM);
 VOID ChangeBoardSize(BoardSize newSize);
 VOID PaintSampleSquare(
-    HWND     hwnd, 
-    int      ctrlid, 
-    COLORREF squareColor, 
+    HWND     hwnd,
+    int      ctrlid,
+    COLORREF squareColor,
     COLORREF pieceColor,
     COLORREF squareOutlineColor,
     COLORREF pieceDetailColor,
     BOOL     isWhitePiece,
     BOOL     isMono,
-    HBITMAP  pieces[3] 
+    HBITMAP  pieces[3]
     );
 VOID PaintColorBlock(HWND hwnd, int ctrlid, COLORREF color);
 VOID SetBoardOptionEnables(HWND hDlg);
@@ -196,9 +196,9 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		 appData.icsActive || !appData.noChessProgram);
     EnableWindow(GetDlgItem(hDlg, OPT_PonderNextMove),
 		 !appData.noChessProgram);
-    EnableWindow(GetDlgItem(hDlg, OPT_PeriodicUpdates), 
+    EnableWindow(GetDlgItem(hDlg, OPT_PeriodicUpdates),
 		 !appData.noChessProgram && !appData.icsActive);
-    EnableWindow(GetDlgItem(hDlg, OPT_ShowThinking), 
+    EnableWindow(GetDlgItem(hDlg, OPT_ShowThinking),
 		 !appData.noChessProgram);
     return TRUE;
 
@@ -207,7 +207,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     switch (LOWORD(wParam)) {
     case IDOK:
       /* Read changed options from the dialog box */
-      
+
 #define IS_CHECKED(x) (Boolean)IsDlgButtonChecked(hDlg, (x))
 
       alwaysOnTop                  = IS_CHECKED(OPT_AlwaysOnTop);
@@ -250,7 +250,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	ClearHighlights();
 	DrawPosition(FALSE, NULL);
       }
-      /* 
+      /*
        * for some reason the redraw seems smoother when we invalidate
        * the board rect after the call to EndDialog()
        */
@@ -261,7 +261,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	InitDrawingSizes(boardSize, 0);
       } else if (oldShowButtonBar != appData.showButtonBar) {
 	InitDrawingSizes(boardSize, 0);
-      } else if ((oldShowCoords != appData.showCoords) || 
+      } else if ((oldShowCoords != appData.showCoords) ||
 		 (oldBlindfold != appData.blindfold)) {
 	InvalidateRect(hwndMain, &boardRect, FALSE);
       }
@@ -278,7 +278,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   return FALSE;
 }
 
-VOID 
+VOID
 GeneralOptionsPopup(HWND hwnd)
 {
   FARPROC lpProc;
@@ -307,15 +307,15 @@ ChangeBoardSize(BoardSize newSize)
 
 VOID
 PaintSampleSquare(
-    HWND     hwnd, 
-    int      ctrlid, 
-    COLORREF squareColor, 
+    HWND     hwnd,
+    int      ctrlid,
+    COLORREF squareColor,
     COLORREF pieceColor,
     COLORREF squareOutlineColor,
     COLORREF pieceDetailColor,
     BOOL     isWhitePiece,
     BOOL     isMono,
-    HBITMAP  pieces[3] 
+    HBITMAP  pieces[3]
     )
 {
   HBRUSH  brushSquare;
@@ -358,15 +358,15 @@ PaintSampleSquare(
   brushPiece          = CreateSolidBrush(pieceColor);
   brushPieceDetail    = CreateSolidBrush(pieceDetailColor);
 
-  /* 
-   * first draw the rectangle 
+  /*
+   * first draw the rectangle
    */
   pen      = CreatePen(PS_SOLID, BORDER, squareOutlineColor);
   oldPen   = (HPEN)  SelectObject(hdcMem, pen);
   oldBrushSquare = (HBRUSH)SelectObject(hdcMem, brushSquare);
   Rectangle(hdcMem, rect.left, rect.top, rect.right, rect.bottom);
 
-  /* 
+  /*
    * now draw the piece
    */
   if (isMono) {
@@ -378,23 +378,23 @@ PaintSampleSquare(
     if (isWhitePiece) {
       oldBitmapTemp = SelectObject(hdcTemp, pieces[WHITE]);
       oldBrushPiece = SelectObject(hdcMem, brushPiece);
-      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
+      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE,
 	     hdcTemp, 0, 0, 0x00B8074A);
       /* Use black for outline of white pieces */
       SelectObject(hdcTemp, pieces[OUTLINE]);
-      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
+      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE,
 	     hdcTemp, 0, 0, SRCAND);
     } else {
       /* Use square color for details of black pieces */
       oldBitmapTemp = SelectObject(hdcTemp, pieces[SOLID]);
       oldBrushPiece = SelectObject(hdcMem, brushPiece);
-      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE, 
+      BitBlt(hdcMem, x, y, SAMPLE_SQ_SIZE, SAMPLE_SQ_SIZE,
 	     hdcTemp, 0, 0, 0x00B8074A);
     }
     SelectObject(hdcMem, oldBrushPiece);
     SelectObject(hdcTemp, oldBitmapTemp);
   }
-  /* 
+  /*
    * copy the memory dc to the screen
    */
   SelectObject(hdcMem, bufferBitmap);
@@ -403,7 +403,7 @@ PaintSampleSquare(
 	 rect.bottom - rect.top,
 	 hdcMem, rect.left, rect.top, SRCCOPY);
   SelectObject(hdcMem, oldBitmapMem);
-  /* 
+  /*
    * clean up
    */
   SelectObject(hdcMem, oldBrushPiece);
@@ -466,7 +466,7 @@ SetBoardOptionEnables(HWND hDlg)
   }
 }
 
-BoardSize 
+BoardSize
 BoardOptionsWhichRadio(HWND hDlg)
 {
   return (IsDlgButtonChecked(hDlg, OPT_SizeTiny) ? SizeTiny :
@@ -572,7 +572,7 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     pieces[0] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "s");
     pieces[1] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "w");
     pieces[2] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "o");
-	
+
     lsc = lightSquareColor;
     dsc = darkSquareColor;
     wpc = whitePieceColor;
@@ -604,7 +604,7 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND: /* message: received a command */
     switch (LOWORD(wParam)) {
     case IDOK:
-      /* 
+      /*
        * if we call EndDialog() after the call to ChangeBoardSize(),
        * then ChangeBoardSize() does not take effect, although the new
        * boardSize is saved. Go figure...
@@ -657,42 +657,42 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       return TRUE;
 
     case OPT_ChooseLightSquareColor:
-      if (ChangeColor(hDlg, &lsc)) 
+      if (ChangeColor(hDlg, &lsc))
 	PaintColorBlock(hDlg, OPT_LightSquareColor, lsc);
 	PaintSampleSquare(hDlg, OPT_SampleLightSquare, lsc, wpc, hsc, bpc,
 	    TRUE, mono, pieces);
       break;
 
     case OPT_ChooseDarkSquareColor:
-      if (ChangeColor(hDlg, &dsc)) 
+      if (ChangeColor(hDlg, &dsc))
 	PaintColorBlock(hDlg, OPT_DarkSquareColor, dsc);
 	PaintSampleSquare(hDlg, OPT_SampleDarkSquare, dsc, bpc, phc, wpc,
 	    FALSE, mono, pieces);
       break;
 
     case OPT_ChooseWhitePieceColor:
-      if (ChangeColor(hDlg, &wpc)) 
+      if (ChangeColor(hDlg, &wpc))
 	PaintColorBlock(hDlg, OPT_WhitePieceColor, wpc);
 	PaintSampleSquare(hDlg, OPT_SampleLightSquare, lsc, wpc, hsc, bpc,
 	    TRUE, mono, pieces);
       break;
 
     case OPT_ChooseBlackPieceColor:
-      if (ChangeColor(hDlg, &bpc)) 
+      if (ChangeColor(hDlg, &bpc))
 	PaintColorBlock(hDlg, OPT_BlackPieceColor, bpc);
 	PaintSampleSquare(hDlg, OPT_SampleDarkSquare, dsc, bpc, phc, wpc,
 	    FALSE, mono, pieces);
       break;
 
     case OPT_ChooseHighlightSquareColor:
-      if (ChangeColor(hDlg, &hsc)) 
+      if (ChangeColor(hDlg, &hsc))
 	PaintColorBlock(hDlg, OPT_HighlightSquareColor, hsc);
 	PaintSampleSquare(hDlg, OPT_SampleLightSquare, lsc, wpc, hsc, bpc,
 	    TRUE, mono, pieces);
       break;
 
     case OPT_ChoosePremoveHighlightColor:
-      if (ChangeColor(hDlg, &phc)) 
+      if (ChangeColor(hDlg, &phc))
 	PaintColorBlock(hDlg, OPT_PremoveHighlightColor, phc);
 	PaintSampleSquare(hDlg, OPT_SampleDarkSquare, dsc, bpc, phc, wpc,
 	    FALSE, mono, pieces);
@@ -908,7 +908,7 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND: /* message: received a command */
     switch (LOWORD(wParam)) {
     case IDOK:
-      /* 
+      /*
        * if we call EndDialog() after the call to ChangeBoardSize(),
        * then ChangeBoardSize() does not take effect, although the new
        * boardSize is saved. Go figure...
@@ -916,16 +916,17 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       EndDialog(hDlg, TRUE);
 
       v = VariantWhichRadio(hDlg);
-      if(!appData.noChessProgram) { char *name = VariantName(v), buf[MSG_SIZ];
+      if(!appData.noChessProgram) {
+	char *name = VariantName(v), buf[MSG_SIZ];
 	if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
-	    /* [HGM] in protocol 2 we check if variant is suported by engine */
-	    sprintf(buf, _("Variant %s not supported by %s"), name, first.tidy);
-	    DisplayError(buf, 0);
-	    return TRUE; /* treat as _("Cancel") if first engine does not support it */
+	  /* [HGM] in protocol 2 we check if variant is suported by engine */
+	  snprintf(buf, MSG_SIZ, _("Variant %s not supported by %s"), name, first.tidy);
+	  DisplayError(buf, 0);
+	  return TRUE; /* treat as _("Cancel") if first engine does not support it */
 	} else
 	if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
-	    sprintf(buf, _("Warning: second engine (%s) does not support this!"), second.tidy);
-	    DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
+	  snprintf(buf, MSG_SIZ, r_("Warning: second engine (%s) does not support this!"), second.tidy);
+	  DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
 	}
       }
 
@@ -1038,12 +1039,12 @@ UpdateSampleText(HWND hDlg, int id, MyColorizeAttribs *mca)
 {
   CHARFORMAT cf;
   cf.cbSize = sizeof(CHARFORMAT);
-  cf.dwMask = 
+  cf.dwMask =
     CFM_COLOR|CFM_CHARSET|CFM_BOLD|CFM_ITALIC|CFM_UNDERLINE|CFM_STRIKEOUT|CFM_FACE|CFM_SIZE;
   cf.crTextColor = mca->color;
   cf.dwEffects = mca->effects;
   safeStrCpy(cf.szFaceName, font[boardSize][CONSOLE_FONT]->mfp.faceName, sizeof(cf.szFaceName)/sizeof(cf.szFaceName[0]) );
-  /* 
+  /*
    * The 20.0 below is in fact documented. yHeight is expressed in twips.
    * A twip is 1/20 of a font's point size. See documentation of CHARFORMAT.
    * --msw
@@ -1075,8 +1076,8 @@ ColorizeTextDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CheckDlgButton(hDlg, OPT_Strikeout, (mca.effects & CFE_STRIKEOUT) != 0);
 
     /* get the current background color from the parent window */
-    SendMessage(GetWindow(hDlg, GW_OWNER),WM_COMMAND, 
-        	(WPARAM)WM_USER_GetConsoleBackground, 
+    SendMessage(GetWindow(hDlg, GW_OWNER),WM_COMMAND,
+        	(WPARAM)WM_USER_GetConsoleBackground,
 	        (LPARAM)&background);
 
     /* set the background color */
@@ -1099,7 +1100,7 @@ ColorizeTextDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	cf.cbSize = sizeof(CHARFORMAT);
 	cf.dwMask = CFM_COLOR;
 	cf.crTextColor = mca.color;
-	SendDlgItemMessage(hwndConsole, OPT_ConsoleInput, 
+	SendDlgItemMessage(hwndConsole, OPT_ConsoleInput,
 	  EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&cf);
       }
       EndDialog(hDlg, TRUE);
@@ -1203,7 +1204,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 #undef CHECK_BOX
 
-    sprintf(buf, "%d", appData.icsAlarmTime / 1000);
+    snprintf(buf, MSG_SIZ, "%d", appData.icsAlarmTime / 1000);
     SetDlgItemText(hDlg, OPT_IcsAlarmTime, buf);
     SetDlgItemText(hDlg, OPT_PremoveWhiteText, appData.premoveWhiteText);
     SetDlgItemText(hDlg, OPT_PremoveBlackText, appData.premoveBlackText);
@@ -1248,7 +1249,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND: /* message: received a command */
     switch (LOWORD(wParam)) {
 
-    case WM_USER_GetConsoleBackground: 
+    case WM_USER_GetConsoleBackground:
       /* the ColorizeTextDialog needs the current background color */
       colorref = (COLORREF *)lParam;
       *colorref = cbc;
@@ -1313,20 +1314,20 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	cf.dwMask = CFM_COLOR;
 	cf.crTextColor = ParseColorName(COLOR_NORMAL);
 
-	SendDlgItemMessage(hwndConsole, OPT_ConsoleInput, 
+	SendDlgItemMessage(hwndConsole, OPT_ConsoleInput,
 	  EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&cf);
-        SendDlgItemMessage(hwndConsole, OPT_ConsoleText, 
+        SendDlgItemMessage(hwndConsole, OPT_ConsoleText,
   	  EM_SETBKGNDCOLOR, FALSE, background);
-	SendDlgItemMessage(hwndConsole, OPT_ConsoleInput, 
+	SendDlgItemMessage(hwndConsole, OPT_ConsoleInput,
 	  EM_SETBKGNDCOLOR, FALSE, background);
       }
 
       if (cbc != consoleBackgroundColor) {
 	consoleBackgroundColor = cbc;
 	if (appData.colorize) {
-	  SendDlgItemMessage(hwndConsole, OPT_ConsoleText, 
+	  SendDlgItemMessage(hwndConsole, OPT_ConsoleText,
 	    EM_SETBKGNDCOLOR, FALSE, consoleBackgroundColor);
-	  SendDlgItemMessage(hwndConsole, OPT_ConsoleInput, 
+	  SendDlgItemMessage(hwndConsole, OPT_ConsoleInput,
 	    EM_SETBKGNDCOLOR, FALSE, consoleBackgroundColor);
 	}
       }
@@ -1355,7 +1356,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     case OPT_ChooseChannel1Color:
       ColorizeTextPopup(hDlg, ColorChannel1);
-      UpdateSampleText(hDlg, OPT_SampleChannel1, 
+      UpdateSampleText(hDlg, OPT_SampleChannel1,
 		       &colorizeAttribs[ColorChannel1]);
       break;
 
@@ -1411,7 +1412,7 @@ IcsOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     case OPT_DefaultColors:
       for (i=0; i < NColorClasses - 1; i++)
-	ParseAttribs(&mca[i].color, 
+	ParseAttribs(&mca[i].color,
 		     &mca[i].effects,
 		     defaultTextAttribs[i]);
 
@@ -1476,21 +1477,21 @@ SetSampleFontText(HWND hwnd, int id, const MyFont *mf)
   POINT center;
   int len;
 
-  len = sprintf(buf, "%.0f pt. %s%s%s\n",
-		mf->mfp.pointSize, mf->mfp.faceName,
-		mf->mfp.bold ? " bold" : "",
-		mf->mfp.italic ? " italic" : "");
+  len = snprintf(buf, MSG_SIZ, "%.0f pt. %s%s%s\n",
+		 mf->mfp.pointSize, mf->mfp.faceName,
+		 mf->mfp.bold ? " bold" : "",
+		 mf->mfp.italic ? " italic" : "");
   SetDlgItemText(hwnd, id, buf);
 
   hControl = GetDlgItem(hwnd, id);
   hdc = GetDC(hControl);
   SetMapMode(hdc, MM_TEXT);	/* 1 pixel == 1 logical unit */
   oldFont = SelectObject(hdc, mf->hf);
-  
+
   /* get number of logical units necessary to display font name */
   GetTextExtentPoint32(hdc, buf, len, &size);
 
-  /* calculate formatting rectangle in the rich edit control.  
+  /* calculate formatting rectangle in the rich edit control.
    * May be larger or smaller than the actual control.
    */
   GetClientRect(hControl, &rectClient);
@@ -1616,7 +1617,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
       if (commentDialog) {
 	SendDlgItemMessage(commentDialog, OPT_CommentText,
-	  WM_SETFONT, (WPARAM)font[boardSize][COMMENT_FONT]->hf, 
+	  WM_SETFONT, (WPARAM)font[boardSize][COMMENT_FONT]->hf,
 	  MAKELPARAM(TRUE, 0));
 	GetClientRect(GetDlgItem(commentDialog, OPT_CommentText), &rect);
 	InvalidateRect(commentDialog, &rect, TRUE);
@@ -1624,7 +1625,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
       if (editTagsDialog) {
 	SendDlgItemMessage(editTagsDialog, OPT_TagsText,
-  	  WM_SETFONT, (WPARAM)font[boardSize][EDITTAGS_FONT]->hf, 
+  	  WM_SETFONT, (WPARAM)font[boardSize][EDITTAGS_FONT]->hf,
 	  MAKELPARAM(TRUE, 0));
 	GetClientRect(GetDlgItem(editTagsDialog, OPT_TagsText), &rect);
 	InvalidateRect(editTagsDialog, &rect, TRUE);
@@ -1632,7 +1633,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
       if( moveHistoryDialog != NULL ) {
 	SendDlgItemMessage(moveHistoryDialog, IDC_MoveHistory,
-  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, 
+  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf,
 	  MAKELPARAM(TRUE, 0));
         SendMessage( moveHistoryDialog, WM_INITDIALOG, 0, 0 );
 //	InvalidateRect(editTagsDialog, NULL, TRUE); // [HGM] this ws improperly cloned?
@@ -1640,10 +1641,10 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
       if( engineOutputDialog != NULL ) {
 	SendDlgItemMessage(engineOutputDialog, IDC_EngineMemo1,
-  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, 
+  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf,
 	  MAKELPARAM(TRUE, 0));
 	SendDlgItemMessage(engineOutputDialog, IDC_EngineMemo2,
-  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, 
+  	  WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf,
 	  MAKELPARAM(TRUE, 0));
       }
 
@@ -1796,7 +1797,7 @@ InitSoundCombo(HWND hwndCombo, SoundComboData *scd)
   while (scd->label) {
     err = SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) T_(scd->label));
     if (err != cnt++) {
-      sprintf(buf, "InitSoundCombo(): err '%d', cnt '%d'\n",
+      snprintf(buf, MSG_SIZ,  "InitSoundCombo(): err '%d', cnt '%d'\n",
 	  (int)err, (int)cnt);
       MessageBox(NULL, buf, NULL, MB_OK);
     }
@@ -1857,7 +1858,7 @@ void
 DisplaySelectedSound(HWND hDlg, HWND hCombo, const char *name)
 {
   int radio;
-  /* 
+  /*
    * I think it's best to clear the combo and edit boxes. It looks stupid
    * to have a value from another sound event sitting there grayed out.
    */
@@ -1883,7 +1884,7 @@ DisplaySelectedSound(HWND hDlg, HWND hCombo, const char *name)
       radio = OPT_NoSound;
     } else {
       radio = OPT_BuiltInSound;
-      if (SendMessage(hCombo, CB_SELECTSTRING, (WPARAM) -1, 
+      if (SendMessage(hCombo, CB_SELECTSTRING, (WPARAM) -1,
 		      (LPARAM) (name + 1)) == CB_ERR) {
 	SendMessage(hCombo, CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0);
 	SendMessage(hCombo, WM_SETTEXT, (WPARAM) 0, (LPARAM) (name + 1));
@@ -1898,7 +1899,7 @@ DisplaySelectedSound(HWND hDlg, HWND hCombo, const char *name)
   SoundDialogSetEnables(hDlg, radio);
   CheckRadioButton(hDlg, OPT_NoSound, OPT_WavFile, radio);
 }
-    
+
 
 char *builtInSoundNames[] = BUILT_IN_SOUND_NAMES;
 
@@ -1940,16 +1941,16 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
   case WM_COMMAND: /* message: received a command */
 
-    if (((HWND)lParam == hSoundCombo) && 
+    if (((HWND)lParam == hSoundCombo) &&
 	(HIWORD(wParam) == CBN_SELCHANGE)) {
-      /* 
+      /*
        * the user has selected a new sound event. We must store the name for
        * the previously selected event, then retrieve the name for the
-       * newly selected event and update the dialog. 
+       * newly selected event and update the dialog.
        */
       radio = SoundDialogWhichRadio(hDlg);
       newName = strdup(SoundDialogGetName(hDlg, radio));
-      
+
       if (strcmp(newName, soundComboData[index].name) != 0) {
 	free(soundComboData[index].name);
 	soundComboData[index].name = newName;
@@ -1960,13 +1961,13 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       /* now get the settings for the newly selected event */
       index = SendMessage(hSoundCombo, CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
       DisplaySelectedSound(hDlg, hBISN, soundComboData[index].name);
-      
+
       return TRUE;
     }
     switch (LOWORD(wParam)) {
     case IDOK:
-      /* 
-       * save the name for the currently selected sound event 
+      /*
+       * save the name for the currently selected sound event
        */
       radio = SoundDialogWhichRadio(hDlg);
       newName = strdup(SoundDialogGetName(hDlg, radio));
@@ -1990,7 +1991,7 @@ SoundOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       }
       for ( cc = (ColorClass)0; cc < NColorClasses - 2; cc++) {
 	index = (int)cc + (int)NSoundClasses;
-	if (strcmp(soundComboData[index].name, 
+	if (strcmp(soundComboData[index].name,
 		   textAttribs[cc].sound.name) != 0) {
 	  free(textAttribs[cc].sound.name);
 	  textAttribs[cc].sound.name = strdup(soundComboData[index].name);
@@ -2171,7 +2172,7 @@ VOID PrintCommSettings(FILE *f, char *name, DCB *dcb)
 {
   char *flow = "??", *parity = "??", *stopBits = "??";
   ComboData *cd;
-  
+
   cd = cdParity;
   while (cd->label != NULL) {
     if (dcb->Parity == cd->value) {
@@ -2261,7 +2262,7 @@ CommPortOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,	LPARAM lParam)
 
     hwndCombo = GetDlgItem(hDlg, OPT_DataRate);
     InitCombo(hwndCombo, cdDataRate);
-    sprintf(buf, "%u", (int)dcb.BaudRate);
+    snprintf(buf, MSG_SIZ, "%u", (int)dcb.BaudRate);
     if (SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) -1, (LPARAM) buf) == CB_ERR) {
       SendMessage(hwndCombo, CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0);
       SendMessage(hwndCombo, WM_SETTEXT, (WPARAM) 0, (LPARAM) buf);
@@ -2367,7 +2368,7 @@ CommPortOptionsDialog(HWND hDlg, UINT message, WPARAM wParam,	LPARAM lParam)
       }
       if (!SetCommState(hCommPort, (LPDCB) &dcb)) {
 	err = GetLastError();
-	switch(MessageBox(hDlg, 
+	switch(MessageBox(hDlg,
 	                 "Failed to set comm port state;\r\ninvalid options?",
 			 _("Option Error"), MB_ABORTRETRYIGNORE|MB_ICONQUESTION)) {
 	case IDABORT:
@@ -2436,7 +2437,7 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* Initialize the dialog items */
     if (appData.timeDelay >= 0.0) {
       CheckDlgButton(hDlg, OPT_Autostep, TRUE);
-      sprintf(buf, "%.2g", appData.timeDelay);
+      snprintf(buf, MSG_SIZ, "%.2g", appData.timeDelay);
       SetDlgItemText(hDlg, OPT_ASTimeDelay, buf);
     } else {
       CheckDlgButton(hDlg, OPT_Autostep, FALSE);
@@ -2476,7 +2477,7 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-VOID 
+VOID
 LoadOptionsPopup(HWND hwnd)
 {
   FARPROC lpProc = MakeProcInstance((FARPROC)LoadOptions, hInst);
@@ -2584,9 +2585,9 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       return TRUE;
 
     case OPT_AVBrowse:
-      f = OpenFileDialog(hDlg, "a", NULL, 
-	                 appData.oldSaveStyle ? "gam" : "pgn", 
-   	                 GAME_FILT, _("Browse for Auto Save File"), 
+      f = OpenFileDialog(hDlg, "a", NULL,
+	                 appData.oldSaveStyle ? "gam" : "pgn",
+   	                 GAME_FILT, _("Browse for Auto Save File"),
 			 NULL, NULL, buf);
       if (f != NULL) {
 	fclose(f);
@@ -2975,7 +2976,7 @@ LRESULT CALLBACK UciOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
     case IDC_BrowseForBook:
       {
-          char filter[] = { 
+          char filter[] = {
               'A','l','l',' ','F','i','l','e','s', 0,
               '*','.','*', 0,
               'B','I','N',' ','F','i','l','e','s', 0,

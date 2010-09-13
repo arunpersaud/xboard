@@ -3,7 +3,7 @@
  *
  * Author: H.G.Muller (August 2009)
  *
- * Copyright 2009, 2010 Free Software Foundation, Inc. 
+ * Copyright 2009, 2010 Free Software Foundation, Inc.
  *
  * ------------------------------------------------------------------------
  *
@@ -193,7 +193,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	if(partner<0) {
 		for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] == NULL) { partner = i; break; }
 	        chatHandle[partner] = hDlg;
-		sprintf(buf, "Chat Window %s", first.tidy);
+		snprintf(buf, MSG_SIZ, "Chat Window %s", first.tidy);
 		SetWindowText(hDlg, buf);
         }
 	for(i=0; i<MAX_CHAT; i++) if(chatHandle[i]) {
@@ -241,7 +241,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
     break;
 
     case WM_COMMAND:
-      /* 
+      /*
         [AS]
         If <Enter> is pressed while editing the filter, it's better to apply
         the filter rather than selecting the current game.
@@ -287,16 +287,16 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	    // from here on it could be back-end
 	    SaveInHistory(mess);
 	    if(!strcmp("whispers", chatPartner[partner]))
-		sprintf(buf, "whisper %s\n", mess); // WHISPER box uses "whisper" to send
+	      snprintf(buf, MSG_SIZ, "whisper %s\n", mess); // WHISPER box uses "whisper" to send
 	    else if(!strcmp("shouts", chatPartner[partner]))
-		sprintf(buf, "shout %s\n", mess); // SHOUT box uses "shout" to send
+	      snprintf(buf, MSG_SIZ, "shout %s\n", mess); // SHOUT box uses "shout" to send
 	    else {
 		if(!atoi(chatPartner[partner])) {
-		    sprintf(buf, "> %s\r\n", mess); // echo only tells to handle, not channel
+		  snprintf(buf, MSG_SIZ, "> %s\r\n", mess); // echo only tells to handle, not channel
 		InsertIntoMemo(hDlg, buf);
-		sprintf(buf, "xtell %s %s\n", chatPartner[partner], mess);
+		snprintf(buf, MSG_SIZ, "xtell %s %s\n", chatPartner[partner], mess);
 		} else
-		sprintf(buf, "tell %s %s\n", chatPartner[partner], mess);
+		  snprintf(buf, MSG_SIZ, "tell %s %s\n", chatPartner[partner], mess);
 	    }
 	    SendToICS(buf);
 	    break;
@@ -360,12 +360,12 @@ void ChatPopUp(char *icsHandle)
 {
   FARPROC lpProc;
   int i, partner = -1;
-  
+
   CheckMenuItem(GetMenu(hwndMain), IDM_NewChat, MF_CHECKED);
   for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] == NULL) { partner = i; break; }
   if(partner == -1) { DisplayError("You first have to close a Chat Box\nbefore you can open a new one", 0); return; }
   if(icsHandle) // [HGM] clickbox set handle in advance
-    safeStrCpy(chatPartner[partner], icsHandle, 
+    safeStrCpy(chatPartner[partner], icsHandle,
 	       sizeof(chatPartner[partner])/sizeof(chatPartner[partner][0]) );
   else chatPartner[partner][0] = NULLCHAR;
   chatCount++;

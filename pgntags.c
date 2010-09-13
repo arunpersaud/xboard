@@ -155,41 +155,41 @@ static char *PGNTagsStatic(gameInfo)
 
     buf[0] = NULLCHAR;
 
-    sprintf(buf1, "[Event \"%s\"]\n",
+    snprintf(buf1, MSG_SIZ, "[Event \"%s\"]\n",
 	    gameInfo->event ? gameInfo->event : "?");
     strcat(buf, buf1);
-    sprintf(buf1, "[Site \"%s\"]\n",
+    snprintf(buf1, MSG_SIZ, "[Site \"%s\"]\n",
 	    gameInfo->site ? gameInfo->site : "?");
     strcat(buf, buf1);
-    sprintf(buf1, "[Date \"%s\"]\n",
+    snprintf(buf1, MSG_SIZ, "[Date \"%s\"]\n",
 	    gameInfo->date ? gameInfo->date : "?");
     strcat(buf, buf1);
-    sprintf(buf1, "[Round \"%s\"]\n",
+    snprintf(buf1, MSG_SIZ, "[Round \"%s\"]\n",
 	    gameInfo->round ? gameInfo->round : "-");
     strcat(buf, buf1);
-    sprintf(buf1, "[White \"%s\"]\n",
+    snprintf(buf1, MSG_SIZ, "[White \"%s\"]\n",
 	    gameInfo->white ? gameInfo->white : "?");
     strcat(buf, buf1);
-    sprintf(buf1, "[Black \"%s\"]\n",
+    snprintf(buf1, MSG_SIZ, "[Black \"%s\"]\n",
 	    gameInfo->black ? gameInfo->black : "?");
     strcat(buf, buf1);
-    sprintf(buf1, "[Result \"%s\"]\n", PGNResult(gameInfo->result));
+    snprintf(buf1, MSG_SIZ, "[Result \"%s\"]\n", PGNResult(gameInfo->result));
     strcat(buf, buf1);
- 
+
     if (gameInfo->whiteRating >= 0 ) {
-	sprintf(buf1, "[WhiteElo \"%d\"]\n", gameInfo->whiteRating );
+	snprintf(buf1, MSG_SIZ, "[WhiteElo \"%d\"]\n", gameInfo->whiteRating );
 	strcat(buf, buf1);
     }
     if ( gameInfo->blackRating >= 0 ) {
-	sprintf(buf1, "[BlackElo \"%d\"]\n", gameInfo->blackRating );
+	snprintf(buf1, MSG_SIZ, "[BlackElo \"%d\"]\n", gameInfo->blackRating );
 	strcat(buf, buf1);
-    }    
+    }
     if (gameInfo->timeControl != NULL) {
-	sprintf(buf1, "[TimeControl \"%s\"]\n", gameInfo->timeControl);
+	snprintf(buf1, MSG_SIZ, "[TimeControl \"%s\"]\n", gameInfo->timeControl);
 	strcat(buf, buf1);
     }
     if (gameInfo->variant != VariantNormal) {
-        sprintf(buf1, "[Variant \"%s\"]\n", VariantName(gameInfo->variant));
+        snprintf(buf1, MSG_SIZ, "[Variant \"%s\"]\n", VariantName(gameInfo->variant));
 	strcat(buf, buf1);
     }
     if (gameInfo->extraTags != NULL) {
@@ -199,7 +199,7 @@ static char *PGNTagsStatic(gameInfo)
 }
 
 
- 
+
 /* Print game info
  */
 void PrintPGNTags(fp, gameInfo)
@@ -235,7 +235,7 @@ char *PGNResult(result)
       case GameIsDrawn:
 	return "1/2-1/2";
     }
-}  
+}
 
 /* Returns 0 for success, nonzero for error */
 int
@@ -256,7 +256,7 @@ ReplaceTags(tags, gameInfo)
 	} else if (moveType == PGNTag) {
 	    err = ParsePGNTag(yy_text, gameInfo);
 	    if (err != 0) return err;
-	} 
+	}
     }
     /* just one problem...if there is a result in the new tags,
      * DisplayMove() won't ever show it because ClearGameInfo() set

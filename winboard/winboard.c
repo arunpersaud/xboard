@@ -344,7 +344,7 @@ LoadLanguageFile(char *name)
     char buf[MSG_SIZ];
 
     if(!name || name[0] == NULLCHAR) return;
-    sprintf(buf, "%s%s", name, strchr(name, '.') ? "" : ".lng"); // auto-append lng extension
+      snprintf(buf, MSG_SIZ, "%s%s", name, strchr(name, '.') ? "" : ".lng"); // auto-append lng extension
     if(!strcmp(buf, oldLanguage)) { barbaric = 1; return; } // this language already loaded; just switch on
     if((f = fopen(buf, "r")) == NULL) return;
     while((k = fgetc(f)) != EOF) {
@@ -430,7 +430,7 @@ TranslateMenus(int addLanguage)
           for(j=GetMenuItemCount(subMenu)-1; j>=0; j--){
             char buf[MSG_SIZ];
             UINT k = GetMenuItemID(subMenu, j);
-	      if(menuText[i][j]) 
+	      if(menuText[i][j])
 		safeStrCpy(buf, menuText[i][j], sizeof(buf)/sizeof(buf[0]) ); else {
                 GetMenuString(subMenu, j, buf, MSG_SIZ, MF_BYPOSITION);
                 menuText[i][j] = strdup(buf); // remember original on first change
@@ -881,7 +881,7 @@ SetUserLogo()
     if(appData.autoLogo) {
 	  curName = UserName();
 	  if(strcmp(curName, oldUserName)) {
-		sprintf(oldUserName, "logos\\%s.bmp", curName);
+	    snprintf(oldUserName, MSG_SIZ, "logos\\%s.bmp", curName);
 		userLogo = LoadImage( 0, oldUserName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
 		safeStrCpy(oldUserName, curName, sizeof(oldUserName)/sizeof(oldUserName[0]) );
 	  }
@@ -1004,7 +1004,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   } else if(appData.autoLogo) {
       if(appData.firstDirectory && appData.firstDirectory[0]) {
 	char buf[MSG_SIZ];
-	sprintf(buf, "%s/logo.bmp", appData.firstDirectory);
+	  snprintf(buf, MSG_SIZ, "%s/logo.bmp", appData.firstDirectory);
 	first.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
       }
   }
@@ -1018,11 +1018,11 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   } else if(appData.autoLogo) {
       char buf[MSG_SIZ];
       if(appData.icsActive) { // [HGM] logo: in ICS mode second can be used for ICS
-	sprintf(buf, "logos\\%s.bmp", appData.icsHost);
+	snprintf(buf, MSG_SIZ, "logos\\%s.bmp", appData.icsHost);
 	second.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
       } else
       if(appData.secondDirectory && appData.secondDirectory[0]) {
-	sprintf(buf, "%s\\logo.bmp", appData.secondDirectory);
+	snprintf(buf, MSG_SIZ, "%s\\logo.bmp", appData.secondDirectory);
 	second.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
       }
   }
@@ -1289,7 +1289,7 @@ ParseColorName(char *name)
       &red, &green, &blue);
   }
   if (count != 3) {
-    sprintf(buf, _("Can't parse color name %s"), name);
+    snprintf(buf, MSG_SIZ, _("Can't parse color name %s"), name);
     DisplayError(buf, 0);
     return RGB(0, 0, 0);
   }
@@ -2061,7 +2061,7 @@ DoLoadBitmap(HINSTANCE hinst, char *piece, int squareSize, char *suffix)
 {
   char name[128];
 
-  sprintf(name, "%s%d%s", piece, squareSize, suffix);
+    snprintf(name, sizeof(name)/sizeof(name[0]), "%s%d%s", piece, squareSize, suffix);
   if (gameInfo.event &&
       strcmp(gameInfo.event, "Easter Egg Hunt") == 0 &&
       strcmp(name, "k80s") == 0) {
@@ -2235,9 +2235,9 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   /* Get text area sizes */
   hdc = GetDC(hwndMain);
   if (appData.clockMode) {
-    sprintf(buf, _("White: %s"), TimeString(23*60*60*1000L));
+    snprintf(buf, MSG_SIZ, _("White: %s"), TimeString(23*60*60*1000L));
   } else {
-    sprintf(buf, _("White"));
+    snprintf(buf, MSG_SIZ, _("White"));
   }
   oldFont = SelectObject(hdc, font[boardSize][CLOCK_FONT]->hf);
   GetTextExtentPoint(hdc, buf, strlen(buf), &clockSize);
@@ -4012,7 +4012,7 @@ SetupDropMenu(HMENU hmenu)
 	       dropEnables[i].piece);
     count = 0;
     while (p && *p++ == dropEnables[i].piece) count++;
-    sprintf(item, "%s  %d", T_(dropEnables[i].name), count);
+      snprintf(item, MSG_SIZ, "%s  %d", T_(dropEnables[i].name), count);
     enable = count > 0 || !appData.testLegality
       /*!!temp:*/ || (gameInfo.variant == VariantCrazyhouse
 		      && !appData.icsActive);
@@ -4835,14 +4835,14 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_AnalysisMode:
       if (!first.analysisSupport) {
-        sprintf(buf, _("%s does not support analysis"), first.tidy);
+        snprintf(buf, MSG_SIZ, _("%s does not support analysis"), first.tidy);
         DisplayError(buf, 0);
       } else {
 	SAY("analyzing current position");
         /* [DM] icsEngineAnlyze [HGM] Why is this front-end??? */
         if (appData.icsActive) {
                if (gameMode != IcsObserving) {
-                       sprintf(buf, "You are not observing a game");
+		 snprintf(buf, MSG_SIZ, "You are not observing a game");
                        DisplayError(buf, 0);
                        /* secure check */
                        if (appData.icsEngineAnalyze) {
@@ -4872,7 +4872,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_AnalyzeFile:
       if (!first.analysisSupport) {
         char buf[MSG_SIZ];
-        sprintf(buf, _("%s does not support analysis"), first.tidy);
+	  snprintf(buf, MSG_SIZ, _("%s does not support analysis"), first.tidy);
         DisplayError(buf, 0);
       } else {
 	if (!appData.showThinking) ToggleShowThinking();
@@ -5595,7 +5595,7 @@ MyLoadSound(MySound *ms)
   }
   if (!ok) {
     char buf[MSG_SIZ];
-    sprintf(buf, _("Error loading sound %s"), ms->name);
+      snprintf(buf, MSG_SIZ, _("Error loading sound %s"), ms->name);
     DisplayError(buf, GetLastError());
   }
   return ok;
@@ -5990,10 +5990,10 @@ InitEngineBox(HWND hDlg, HWND hwndCombo, char* nthcp, char* nthd, char* nthdir, 
 
   InitComboStringsFromOption(hwndCombo, nthnames);
   q = QuoteForFilename(nthcp);
-  sprintf(buf, "%s%s%s", q, nthcp, q);
+    snprintf(buf, MSG_SIZ, "%s%s%s", q, nthcp, q);
   if (*nthdir != NULLCHAR) {
     q = QuoteForFilename(nthdir);
-    sprintf(buf + strlen(buf), " /%s=%s%s%s", nthd, q, nthdir, q);
+      snprintf(buf + strlen(buf), MSG_SIZ, " /%s=%s%s%s", nthd, q, nthdir, q);
   }
   if (*nthcp == NULLCHAR) {
     SendMessage(hwndCombo, CB_SETCURSEL, (WPARAM) 0, (LPARAM) 0);
@@ -6024,7 +6024,7 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		  secondChessProgramNames);
     hwndCombo = GetDlgItem(hDlg, OPT_ChessServerName);
     InitComboStringsFromOption(hwndCombo, icsNames);    
-    sprintf(buf, "%s /icsport=%s", appData.icsHost, appData.icsPort);
+      snprintf(buf, MSG_SIZ, "%s /icsport=%s", appData.icsHost, appData.icsPort);
     if (*appData.icsHelper != NULLCHAR) {
       char *q = QuoteForFilename(appData.icsHelper);
       sprintf(buf + strlen(buf), " /icshelper=%s%s%s", q, appData.icsHelper, q);
@@ -6464,7 +6464,7 @@ TypeInNameDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetUserLogo();
       SetGameInfo();
       if(gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack) {
-	sprintf(move, "%s vs. %s", gameInfo.white, gameInfo.black);
+	snprintf(move, MSG_SIZ, "%s vs. %s", gameInfo.white, gameInfo.black);
 	DisplayTitle(move);
       }
 
@@ -6795,12 +6795,12 @@ CommandX(HWND hwnd, char *command, BOOLEAN getname, BOOLEAN immediate)
     SendMessage(hwnd, EM_GETSELTEXT, 0, (LPARAM) name);
   }
   if (immediate) {
-    sprintf(buf, "%s %s", command, name);
+    snprintf(buf, MSG_SIZ, "%s %s", command, name);
     SetWindowText(hInput, buf);
     SendMessage(hInput, WM_CHAR, '\r', 0);
   } else {
     if(!strcmp(command, "chat")) { ChatPopUp(name); return; }
-    sprintf(buf, "%s %s ", command, name); /* trailing space */
+      snprintf(buf, MSG_SIZ, "%s %s ", command, name); /* trailing space */
     SetWindowText(hInput, buf);
     sel.cpMin = 999999;
     sel.cpMax = 999999;
@@ -7366,7 +7366,8 @@ DisplayHoldingsCount(HDC hdc, int x, int y, int rightAlign, int copyNumber)
   HFONT oldFont;
   RECT rect;
 
-  if(copyNumber > 1) sprintf(buf, "%d", copyNumber); else buf[0] = 0;
+  if(copyNumber > 1)
+    snprintf(buf, sizeof(buf)/sizeof(buf[0]),"%d", copyNumber); else buf[0] = 0;
 
   oldFg = SetTextColor(hdc, RGB(255, 255, 255)); /* white */
   oldBg = SetBkColor(hdc, RGB(0, 0, 0)); /* black */
@@ -7399,9 +7400,9 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
 
   if (appData.clockMode) {
     if (tinyLayout)
-      sprintf(buf, "%c %s %s", color[0], TimeString(timeRemaining), flagFell);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%c %s %s", color[0], TimeString(timeRemaining), flagFell);
     else
-      sprintf(buf, "%s:%c%s %s", color, (logoHeight>0 ? 0 : ' '), TimeString(timeRemaining), flagFell);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%s:%c%s %s", color, (logoHeight>0 ? 0 : ' '), TimeString(timeRemaining), flagFell);
     str = buf;
   } else {
     str = color;
@@ -7423,7 +7424,7 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
 	     rect, str, strlen(str), NULL);
   if(logoHeight > 0 && appData.clockMode) {
       RECT r;
-      sprintf(buf, "%s %s", buf+7, flagFell);
+      snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%s %s", buf+7, flagFell);
       r.top = rect->top + logoHeight/2;
       r.left = rect->left;
       r.right = rect->right;
@@ -8056,7 +8057,7 @@ DisplayTitle(char *str)
       host = "ICS";
     else 
       host = appData.icsHost;
-    sprintf(title, "%s: %s", szTitle, host);
+      snprintf(title, MSG_SIZ, "%s: %s", szTitle, host);
   } else if (appData.noChessProgram) {
     safeStrCpy(title, szTitle, sizeof(title)/sizeof(title[0]) );
   } else {
@@ -8121,14 +8122,14 @@ DisplayError(char *str, int error)
 			NULL, error, LANG_NEUTRAL,
 			(LPSTR) buf2, MSG_SIZ, NULL);
     if (len > 0) {
-      sprintf(buf, "%s:\n%s", str, buf2);
+      snprintf(buf, 2*MSG_SIZ, "%s:\n%s", str, buf2);
     } else {
       ErrorMap *em = errmap;
       while (em->err != 0 && em->err != error) em++;
       if (em->err != 0) {
-	sprintf(buf, "%s:\n%s", str, em->msg);
+	snprintf(buf, 2*MSG_SIZ, "%s:\n%s", str, em->msg);
       } else {
-	sprintf(buf, "%s:\nError code %d", str, error);
+	snprintf(buf, 2*MSG_SIZ, "%s:\nError code %d", str, error);
       }
     }
   }
@@ -8163,14 +8164,14 @@ DisplayFatalError(char *str, int error, int exitStatus)
 			NULL, error, LANG_NEUTRAL,
 			(LPSTR) buf2, MSG_SIZ, NULL);
     if (len > 0) {
-      sprintf(buf, "%s:\n%s", str, buf2);
+      snprintf(buf, 2*MSG_SIZ, "%s:\n%s", str, buf2);
     } else {
       ErrorMap *em = errmap;
       while (em->err != 0 && em->err != error) em++;
       if (em->err != 0) {
-	sprintf(buf, "%s:\n%s", str, em->msg);
+	snprintf(buf, 2*MSG_SIZ, "%s:\n%s", str, em->msg);
       } else {
-	sprintf(buf, "%s:\nError code %d", str, error);
+	snprintf(buf, 2*MSG_SIZ, "%s:\nError code %d", str, error);
       }
     }
     str = buf;
@@ -8301,7 +8302,7 @@ LRESULT CALLBACK NewGameFRC_Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
             }
             return TRUE;
         case IDC_NFG_Random:
-            sprintf( buf, "%d", myrandom() ); /* [HGM] shuffle: no longer limit to 960 */
+	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%d", myrandom() ); /* [HGM] shuffle: no longer limit to 960 */
             SetDlgItemText(hDlg, IDC_NFG_Edit, buf );
             return TRUE;
         }
@@ -8453,7 +8454,7 @@ DisplayIcsInteractionTitle(char *str)
 {
   char consoleTitle[MSG_SIZ];
 
-  sprintf(consoleTitle, "%s: %s", szConsoleTitle, str);
+    snprintf(consoleTitle, MSG_SIZ, "%s: %s", szConsoleTitle, str);
   SetWindowText(hwndConsole, consoleTitle);
 }
 
@@ -9019,9 +9020,9 @@ OpenTelnet(char *host, char *port, ProcRef *pr)
   char cmdLine[MSG_SIZ];
 
   if (port[0] == NULLCHAR) {
-    sprintf(cmdLine, "%s %s", appData.telnetProgram, host);
+    snprintf(cmdLine, MSG_SIZ, "%s %s", appData.telnetProgram, host);
   } else {
-    sprintf(cmdLine, "%s %s %s", appData.telnetProgram, host, port);
+    snprintf(cmdLine, MSG_SIZ, "%s %s %s", appData.telnetProgram, host, port);
   }
   return StartChildProcess(cmdLine, "", pr);
 }
@@ -9120,7 +9121,7 @@ OpenCommPort(char *name, ProcRef *pr)
   char fullname[MSG_SIZ];
 
   if (*name != '\\')
-    sprintf(fullname, "\\\\.\\%s", name);
+    snprintf(fullname, MSG_SIZ, "\\\\.\\%s", name);
   else
     safeStrCpy(fullname, name, sizeof(fullname)/sizeof(fullname[0]) );
 
@@ -9292,7 +9293,7 @@ OpenRcmd(char* host, char* user, char* cmd, ProcRef* pr)
     break;
   }
   prevStderrPort = fromPort; // remember port used
-  sprintf(stderrPortStr, "%d", fromPort);
+  snprintf(stderrPortStr, MSG_SIZ, "%d", fromPort);
 
   if (send(s, stderrPortStr, strlen(stderrPortStr) + 1, 0) == SOCKET_ERROR) {
     err = WSAGetLastError();

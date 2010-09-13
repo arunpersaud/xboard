@@ -60,7 +60,7 @@ HtmlHelp( HWND hwnd, LPCSTR helpFile, UINT action, DWORD_PTR data )
 	siStartInfo.hStdOutput = NULL;
 	siStartInfo.hStdError = debugFP;
 
-	sprintf(buf, "Hh.exe %s", helpFile);
+	snprintf(buf, sizeof(buf)/sizeof(buf[0]),"Hh.exe %s", helpFile);
 
 	// ignore the other parameters; just start the viewer with the help file
 	if(  CreateProcess(NULL,

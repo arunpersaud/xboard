@@ -209,7 +209,7 @@ int PseudoTTY(pty_name)
 #ifdef PTY_NAME_SPRINTF
 	PTY_NAME_SPRINTF
 #else
-	sprintf (pty_name, "/dev/pty%c%x", c, i);
+	  sprintf (pty_name, "/dev/pty%c%x", c, i);
 #endif /* no PTY_NAME_SPRINTF */
 
 #ifdef PTY_OPEN
@@ -233,7 +233,7 @@ int PseudoTTY(pty_name)
 #ifdef PTY_TTY_NAME_SPRINTF
 	    PTY_TTY_NAME_SPRINTF
 #else
-            sprintf (pty_name, "/dev/tty%c%x", c, i);
+	      sprintf (pty_name,  "/dev/tty%c%x", c, i);
 #endif /* no PTY_TTY_NAME_SPRINTF */
 #ifndef UNIPLUS
 	    if (access (pty_name, 6) != 0)

@@ -131,11 +131,11 @@ void ShuffleCallback(w, client_data, call_data)
     String name;
     Widget w2;
     Arg args[16];
-    char buf[80];
-    
+    char buf[MSG_SIZ];
+
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
-    
+
     if (strcmp(name, _("cancel")) == 0) {
         ShufflePopDown();
         return;
@@ -147,7 +147,7 @@ void ShuffleCallback(w, client_data, call_data)
         return;
     }
     if (strcmp(name, _("random")) == 0) {
-	sprintf(buf, "%d", rand());
+      snprintf(buf, MSG_SIZ,  "%d", rand());
 	XtSetArg(args[0],XtNvalue, buf); // erase bad (non-numeric) value
 	XtSetValues(XtParent(w), args, 1);
         return;
@@ -156,7 +156,7 @@ void ShuffleCallback(w, client_data, call_data)
 	int nr; String name;
         name = XawDialogGetValueString(w2 = XtParent(w));
 	if(sscanf(name ,"%d",&nr) != 1) {
-	    sprintf(buf, "%d", appData.defaultFrcPosition);
+	  snprintf(buf, MSG_SIZ,  "%d", appData.defaultFrcPosition);
 	    XtSetArg(args[0],XtNvalue, buf); // erase bad (non-numeric) value
 	    XtSetValues(w2, args, 1);
 	    return;
@@ -177,27 +177,27 @@ void ShufflePopUp()
     int x, y, i;
     int win_x, win_y;
     unsigned int mask;
-    char def[80];
-    
+    char def[MSG_SIZ];
+
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
     XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
     shuffleShell = popup =
       XtCreatePopupShell(_("New Shuffle Game"), transientShellWidgetClass,
 			 shellWidget, args, i);
-    
+
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
 			    layoutArgs, XtNumber(layoutArgs));
-  
-    sprintf(def, "%d\n", appData.defaultFrcPosition);
+
+    snprintf(def, MSG_SIZ,  "%d\n", appData.defaultFrcPosition);
     i = 0;
     XtSetArg(args[i], XtNlabel, _("Start-position number:")); i++;
     XtSetArg(args[i], XtNvalue, def); i++;
     XtSetArg(args[i], XtNborderWidth, 0); i++;
     dialog = XtCreateManagedWidget(_("Shuffle"), dialogWidgetClass,
 				   layout, args, i);
-    
+
 //    XtSetArg(args[0], XtNeditType, XawtextEdit);  // [HGM] can't get edit to work decently
 //    XtSetArg(args[1], XtNuseStringInPlace, False);
 //    XtSetValues(dialog, args, 2);
@@ -206,20 +206,20 @@ void ShufflePopUp()
     XawDialogAddButton(dialog, _("cancel"), ShuffleCallback, (XtPointer) dialog);
     XawDialogAddButton(dialog, _("random"), ShuffleCallback, (XtPointer) dialog);
     XawDialogAddButton(dialog, _("off"), ShuffleCallback, (XtPointer) dialog);
-    
+
     XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "ShufflePopDown");
-    
+
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
 		  &x, &y, &win_x, &win_y, &mask);
-    
+
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
     XtSetValues(popup, args, 2);
-    
+
     XtPopup(popup, XtGrabExclusive);
     shuffleUp = True;
-    
+
     edit = XtNameToWidget(dialog, "*value");
 
     XtSetKeyboardFocus(popup, edit);
@@ -261,12 +261,12 @@ void TimeControlCallback(w, client_data, call_data)
     String name, txt;
     Widget w2;
     Arg args[16];
-    char buf[80];
+    char buf[MSG_SIZ];
     int j;
 
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
-    
+
     if (strcmp(name, _("classical")) == 0) {
 	if(tcInc == 0) return;
 	j=0;
@@ -281,7 +281,7 @@ void TimeControlCallback(w, client_data, call_data)
 	    XtGetValues(tcData, args, j);
 	    tcIncrement = 0; sscanf(name, "%d", &tcIncrement);
 	}
-	sprintf(buf, "%d", tcMoves);
+	snprintf(buf, MSG_SIZ,  "%d", tcMoves);
 	j=0;
 	XtSetArg(args[j], XtNstring, buf); j++;
 	XtSetValues(tcData, args, j);
@@ -302,7 +302,7 @@ void TimeControlCallback(w, client_data, call_data)
 	    XtGetValues(tcData, args, j);
 	    tcMoves = appData.movesPerSession; sscanf(name, "%d", &tcMoves);
 	}
-	sprintf(buf, "%d", tcIncrement);
+	snprintf(buf, MSG_SIZ,  "%d", tcIncrement);
 	j=0;
 	XtSetArg(args[j], XtNstring, buf); j++;
 	XtSetValues(tcData, args, j);
@@ -369,10 +369,10 @@ void TimeControlCallback(w, client_data, call_data)
 	}
 	XtSetArg(args[0], XtNstring, &txt);
 	XtGetValues(tcOdds1, args, 1);
-	appData.firstTimeOdds = first.timeOdds 
+	appData.firstTimeOdds = first.timeOdds
 		= (sscanf(txt, "%d", &j) == 1 && j > 0) ? j : 1;
 	XtGetValues(tcOdds2, args, 1);
-	appData.secondTimeOdds = second.timeOdds 
+	appData.secondTimeOdds = second.timeOdds
 		= (sscanf(txt, "%d", &j) == 1 && j > 0) ? j : 1;
 
 	Reset(True, True);
@@ -389,12 +389,12 @@ void TimeControlPopUp()
     int x, y, i, j;
     int win_x, win_y;
     unsigned int mask;
-    char def[80];
-    
+    char def[MSG_SIZ];
+
     tcInc = searchTime > 0 ? 2 : (appData.timeIncrement >= 0);
     tcMoves = appData.movesPerSession; tcIncrement = appData.timeIncrement;
     if(!tcInc) tcIncrement = 0;
-    sprintf(def, "%d", tcInc ? tcIncrement : tcMoves);
+    snprintf(def, MSG_SIZ,  "%d", tcInc ? tcIncrement : tcMoves);
 
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
@@ -402,15 +402,15 @@ void TimeControlPopUp()
     TimeControlShell = popup =
       XtCreatePopupShell(_("TimeControl Menu"), transientShellWidgetClass,
 			 shellWidget, args, i);
-    
+
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
 			    layoutArgs, XtNumber(layoutArgs));
-  
+
     form =
       XtCreateManagedWidget(layoutName, formWidgetClass, layout,
 			    formArgs, XtNumber(formArgs));
-  
+
     j = 0;
 //    XtSetArg(args[j], XtNwidth,     (XtArgVal) 300); j++;
 //    XtSetArg(args[j], XtNheight,    (XtArgVal) 85); j++;
@@ -532,7 +532,7 @@ void TimeControlPopUp()
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
     XtSetArg(args[j], XtNstate, tcInc==0); j++;
     b_clas= XtCreateManagedWidget(_("classical"), toggleWidgetClass,
-				   form, args, j);   
+				   form, args, j);
     XtAddCallback(b_clas, XtNcallback, TimeControlCallback, (XtPointer) 0);
 
     j=0;
@@ -545,7 +545,7 @@ void TimeControlPopUp()
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
     XtSetArg(args[j], XtNstate, tcInc==1); j++;
     b_inc = XtCreateManagedWidget(_("incremental"), toggleWidgetClass,
-				   form, args, j);   
+				   form, args, j);
     XtAddCallback(b_inc, XtNcallback, TimeControlCallback, (XtPointer) 0);
 
     j=0;
@@ -558,7 +558,7 @@ void TimeControlPopUp()
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
     XtSetArg(args[j], XtNstate, tcInc==2); j++;
     b_inc = XtCreateManagedWidget(_("fixed time"), toggleWidgetClass,
-				   form, args, j);   
+				   form, args, j);
     XtAddCallback(b_inc, XtNcallback, TimeControlCallback, (XtPointer) 0);
 
     j=0;
@@ -569,7 +569,7 @@ void TimeControlPopUp()
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     b_ok= XtCreateManagedWidget(_(" OK "), commandWidgetClass,
-				   form, args, j);   
+				   form, args, j);
     XtAddCallback(b_ok, XtNcallback, TimeControlCallback, (XtPointer) 0);
 
     j=0;
@@ -580,22 +580,22 @@ void TimeControlPopUp()
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     b_cancel= XtCreateManagedWidget(_("cancel"), commandWidgetClass,
-				   form, args, j);   
+				   form, args, j);
     XtAddCallback(b_cancel, XtNcallback, TimeControlPopDown, (XtPointer) 0);
 
     XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "TimeControlPopDown");
-    
+
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
 		  &x, &y, &win_x, &win_y, &mask);
-    
+
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
     XtSetValues(popup, args, 2);
-    
+
     XtPopup(popup, XtGrabExclusive);
     TimeControlUp = True;
-    
+
     previous = NULL;
     SetFocus(tcTime, popup, (XEvent*) NULL, False);
 //    XtSetKeyboardFocus(popup, tcTime);
@@ -648,10 +648,10 @@ void EngineCallback(w, client_data, call_data)
     Arg args[16];
     char buf[80];
     int j;
-    
+
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
-    
+
     if (strcmp(name, _("OK")) == 0) {
 	// read all switches
 	appData.periodicUpdates = ReadToggle(w1);
@@ -663,7 +663,7 @@ void EngineCallback(w, client_data, call_data)
 	appData.materialDraws = ReadToggle(w7);
 	appData.trivialDraws  = ReadToggle(w8);
 
-	// adjust setting in other menu for duplicates 
+	// adjust setting in other menu for duplicates
 	// (perhaps duplicates should be removed from general Option Menu?)
 //	XtSetArg(args[0], XtNleftBitmap, appData.showThinking ? xMarkPixmap : None);
 //	XtSetValues(XtNameToWidget(menuBarWidget,
@@ -674,7 +674,7 @@ void EngineCallback(w, client_data, call_data)
 	XtGetValues(engDrawMoves, args, 1);
 	if(sscanf(name, "%d", &j) == 1) appData.adjudicateDrawMoves = j;
 	XtGetValues(engThreshold, args, 1);
-	if(sscanf(name, "%d", &j) == 1) 
+	if(sscanf(name, "%d", &j) == 1)
 		adjudicateLossThreshold = appData.adjudicateLossThreshold = -j; // inverted!
 	XtGetValues(engRule, args, 1);
 	if(sscanf(name, "%d", &j) == 1) appData.ruleMoves = j;
@@ -690,17 +690,17 @@ void EngineCallback(w, client_data, call_data)
 void EnginePopUp()
 {
     Arg args[16];
-    Widget popup, layout, form, edit, b_ok, b_cancel, b_clas, b_inc, s1; 
+    Widget popup, layout, form, edit, b_ok, b_cancel, b_clas, b_inc, s1;
     Window root, child;
     int x, y, i, j, width;
     int win_x, win_y;
     unsigned int mask;
-    char def[80];
-    
+    char def[MSG_SIZ];
+
     tcInc = (appData.timeIncrement >= 0);
     tcMoves = appData.movesPerSession; tcIncrement = appData.timeIncrement;
     if(!tcInc) tcIncrement = 0;
-    sprintf(def, "%d", tcInc ? tcIncrement : tcMoves);
+    snprintf(def, MSG_SIZ,  "%d", tcInc ? tcIncrement : tcMoves);
 
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
@@ -708,15 +708,15 @@ void EnginePopUp()
     EngineShell = popup =
       XtCreatePopupShell(_("Adjudications"), transientShellWidgetClass,
 			 shellWidget, args, i);
-    
+
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
 			    layoutArgs, XtNumber(layoutArgs));
-  
+
     form =
       XtCreateManagedWidget(layoutName, formWidgetClass, layout,
 			    formArgs, XtNumber(formArgs));
-  
+
     j = 0;
 //    XtSetArg(args[j], XtNwidth,     (XtArgVal) 250); j++;
 //    XtSetArg(args[j], XtNheight,    (XtArgVal) 400); j++;
@@ -769,7 +769,7 @@ void EnginePopUp()
     XtSetArg(args[1], XtNborderWidth, (XtArgVal) 0);
     XtSetValues(s1, args, 2);
 
-    sprintf(def, "%d", appData.adjudicateDrawMoves);
+    snprintf(def, MSG_SIZ,  "%d", appData.adjudicateDrawMoves);
     j= 0;
     XtSetArg(args[j], XtNborderWidth, 1); j++;
     XtSetArg(args[j], XtNfromVert, w8); j++;
@@ -801,7 +801,7 @@ void EnginePopUp()
 //    XtSetArg(args[j], XtNheight, 20);  j++;
     tcMess1 = XtCreateManagedWidget("TCtext", labelWidgetClass, form, args, j);
 
-    sprintf(def, "%d", -appData.adjudicateLossThreshold); // inverted!
+    snprintf(def, MSG_SIZ,  "%d", -appData.adjudicateLossThreshold); // inverted!
     j= 0;
     XtSetArg(args[j], XtNborderWidth, 1); j++;
     XtSetArg(args[j], XtNfromVert, engDrawMoves); j++;
@@ -833,7 +833,7 @@ void EnginePopUp()
 //    XtSetArg(args[j], XtNheight, 20);  j++;
     tcMess2 = XtCreateManagedWidget("MPStext", labelWidgetClass, form, args, j);
 
-    sprintf(def, "%d", appData.ruleMoves);
+    snprintf(def, MSG_SIZ,  "%d", appData.ruleMoves);
     j= 0;
     XtSetArg(args[j], XtNborderWidth, 1); j++;
     XtSetArg(args[j], XtNfromVert, engThreshold); j++;
@@ -865,7 +865,7 @@ void EnginePopUp()
 //    XtSetArg(args[j], XtNheight, 20);  j++;
     tcMess1 = XtCreateManagedWidget("TCtext", labelWidgetClass, form, args, j);
 
-    sprintf(def, "%d", appData.drawRepeats);
+    snprintf(def, MSG_SIZ,  "%d", appData.drawRepeats);
     j= 0;
     XtSetArg(args[j], XtNborderWidth, 1); j++;
     XtSetArg(args[j], XtNfromVert, engRule); j++;
@@ -904,7 +904,7 @@ void EnginePopUp()
     XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_ok= XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);   
+    b_ok= XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
     XtAddCallback(b_ok, XtNcallback, EngineCallback, (XtPointer) 0);
 
     j=0;
@@ -915,22 +915,22 @@ void EnginePopUp()
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     b_cancel= XtCreateManagedWidget(_("cancel"), commandWidgetClass,
-				   form, args, j);   
+				   form, args, j);
     XtAddCallback(b_cancel, XtNcallback, EnginePopDown, (XtPointer) 0);
 
     XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "EnginePopDown");
-    
+
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
 		  &x, &y, &win_x, &win_y, &mask);
-    
+
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
     XtSetValues(popup, args, 2);
-    
+
     XtPopup(popup, XtGrabExclusive);
     EngineUp = True;
-    
+
     previous = NULL;
     SetFocus(engThreshold, popup, (XEvent*) NULL, False);
 }
@@ -1006,27 +1006,27 @@ void NewVariantCallback(w, client_data, call_data)
     String name;
     Widget w2;
     Arg args[16];
-    char buf[80];
+    char buf[MSG_SIZ];
     VariantClass v;
-    
+
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
-    
+
     if (strcmp(name, _("  OK  ")) == 0) {
 	int nr = (intptr_t) XawToggleGetCurrent(buttonDesc[0].handle) - 1;
 	if(nr < 0) return;
 	v = buttonDesc[nr].variant;
-	if(!appData.noChessProgram) { 
+	if(!appData.noChessProgram) {
 	    char *name = VariantName(v), buf[MSG_SIZ];
 	    if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
 		/* [HGM] in protocol 2 we check if variant is suported by engine */
-		sprintf(buf, _("Variant %s not supported by %s"), name, first.tidy);
+	      snprintf(buf, MSG_SIZ,  _("Variant %s not supported by %s"), name, first.tidy);
 		DisplayError(buf, 0);
 //		NewVariantPopDown();
 		return; /* ignore OK if first engine does not support it */
 	    } else
 	    if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
-		sprintf(buf, _("Warning: second engine (%s) does not support this!"), second.tidy);
+	      snprintf(buf, MSG_SIZ,  _("Warning: second engine (%s) does not support this!"), second.tidy);
 		DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
 	    }
 	}
@@ -1061,15 +1061,15 @@ void NewVariantPopUp()
     NewVariantShell = popup =
       XtCreatePopupShell(_("NewVariant Menu"), transientShellWidgetClass,
 			 shellWidget, args, i);
-    
+
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
 			    layoutArgs, XtNumber(layoutArgs));
-  
+
     form =
       XtCreateManagedWidget("form", formWidgetClass, layout,
 			    formArgs, XtNumber(formArgs));
-  
+
     for(i = 0; buttonDesc[i].name != NULL; i++) {
 	Pixel buttonColor;
 	if (!appData.monoMode) {
@@ -1082,7 +1082,7 @@ void NewVariantPopUp()
 		buttonColor = *(Pixel *) vTo.addr;
 	    }
 	}
-    
+
 	j = 0;
 	XtSetArg(args[j], XtNradioGroup, last); j++;
 	XtSetArg(args[j], XtNwidth, 125); j++;
@@ -1105,7 +1105,7 @@ void NewVariantPopUp()
     XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_cancel= XtCreateManagedWidget(_("CANCEL"), commandWidgetClass, form, args, j);   
+    b_cancel= XtCreateManagedWidget(_("CANCEL"), commandWidgetClass, form, args, j);
     XtAddCallback(b_cancel, XtNcallback, NewVariantPopDown, (XtPointer) 0);
 
     j=0;
@@ -1117,7 +1117,7 @@ void NewVariantPopUp()
     XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_ok= XtCreateManagedWidget(_("  OK  "), commandWidgetClass, form, args, j);   
+    b_ok= XtCreateManagedWidget(_("  OK  "), commandWidgetClass, form, args, j);
     XtAddCallback(b_ok, XtNcallback, NewVariantCallback, (XtPointer) 0);
 
     j=0;
@@ -1136,14 +1136,14 @@ void NewVariantPopUp()
 
 	    XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "NewVariantPopDown");
-    
+
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
 		  &x, &y, &win_x, &win_y, &mask);
-    
+
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
     XtSetValues(popup, args, 2);
-    
+
     XtPopup(popup, XtGrabExclusive);
     NewVariantUp = True;
 }
@@ -1195,10 +1195,10 @@ void UciCallback(w, client_data, call_data)
     Arg args[16];
     char buf[80];
     int oldCores = appData.smpCores, ponder = 0;
-    
+
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
-    
+
     if (strcmp(name, _("OK")) == 0) {
 	int nr, i, j; String name;
 	for(i=0; i<6; i++) {
@@ -1208,7 +1208,7 @@ void UciCallback(w, client_data, call_data)
 		if(name)
 		    *(char**) controlDesc[i].ptr = strdup(name);
 	    } else {
-		if(sscanf(name, "%d", &j) == 1) 
+		if(sscanf(name, "%d", &j) == 1)
 		    *(int*) controlDesc[i].ptr = j;
 	    }
 	}
@@ -1221,7 +1221,7 @@ void UciCallback(w, client_data, call_data)
 	XtSetArg(args[0], XtNstate, &ponder);
 	XtGetValues(w4, args, 1);
 
-	// adjust setting in other menu for duplicates 
+	// adjust setting in other menu for duplicates
 	// (perhaps duplicates should be removed from general Option Menu?)
 	XtSetArg(args[0], XtNleftBitmap, ponder ? xMarkPixmap : None);
 	XtSetValues(XtNameToWidget(menuBarWidget,
@@ -1248,24 +1248,24 @@ void UciPopUp()
     int x, y, i, j;
     int win_x, win_y;
     unsigned int mask;
-    char def[80];
-    
+    char def[MSG_SIZ];
+
     i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
 //    XtSetArg(args[i], XtNwidth, 300); i++;
     UciShell = popup =
       XtCreatePopupShell(_("Engine Settings"), transientShellWidgetClass,
 			 shellWidget, args, i);
-    
+
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
 			    layoutArgs, XtNumber(layoutArgs));
-  
-    
+
+
     form =
       XtCreateManagedWidget("form", formWidgetClass, layout,
 			    formArgs, XtNumber(formArgs));
-  
+
     j = 0;
     XtSetArg(args[j], XtNtop, XtChainTop);  j++;
     XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
@@ -1291,10 +1291,10 @@ void UciPopUp()
 	XtSetArg(args[j], XtNwidth, i&1 ? 245 : 50); j++;
 	XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
 	if(i&1) {
-	    XtSetArg(args[j], XtNstring, * (char**) controlDesc[i].ptr ? 
+	    XtSetArg(args[j], XtNstring, * (char**) controlDesc[i].ptr ?
 					 * (char**) controlDesc[i].ptr : ""); j++;
 	} else {
-	    sprintf(def, "%d", * (int*) controlDesc[i].ptr);
+	  snprintf(def, MSG_SIZ,  "%d", * (int*) controlDesc[i].ptr);
 	    XtSetArg(args[j], XtNstring, def); j++;
 	}
 	XtSetArg(args[j], XtNfromHoriz, upperLeft); j++;
@@ -1310,7 +1310,7 @@ void UciPopUp()
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     XtSetArg(args[j], XtNstate, appData.ponderNextMove);  j++;
-    w4 = XtCreateManagedWidget(_("Ponder"), toggleWidgetClass, form, args, j);   
+    w4 = XtCreateManagedWidget(_("Ponder"), toggleWidgetClass, form, args, j);
 
     j=0;
     XtSetArg(args[j], XtNfromVert, last);  j++;
@@ -1318,41 +1318,41 @@ void UciPopUp()
     XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
     XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
     XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);   
+    b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
     XtAddCallback(b_ok, XtNcallback, UciCallback, (XtPointer) 0);
 
     XtSetArg(args[j], XtNfromHoriz, b_ok);  j++;
-    b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);   
+    b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
     XtAddCallback(b_cancel, XtNcallback, UciPopDown, (XtPointer) 0);
 
     j = 5;
     XtSetArg(args[j], XtNfromHoriz, upperLeft);  j++;
     XtSetArg(args[j], XtNstate, appData.usePolyglotBook);  j++;
-    w1 = XtCreateManagedWidget(_(" use book "), toggleWidgetClass, form, args, j);   
+    w1 = XtCreateManagedWidget(_(" use book "), toggleWidgetClass, form, args, j);
 //    XtAddCallback(w1, XtNcallback, UciCallback, (XtPointer) 0);
 
     j = 5;
     XtSetArg(args[j], XtNfromHoriz, w1);  j++;
     XtSetArg(args[j], XtNstate, appData.firstHasOwnBookUCI);  j++;
-    w2 = XtCreateManagedWidget(_("own book 1"), toggleWidgetClass, form, args, j);   
+    w2 = XtCreateManagedWidget(_("own book 1"), toggleWidgetClass, form, args, j);
 //    XtAddCallback(w2, XtNcallback, UciCallback, (XtPointer) 0);
 
     j = 5;
     XtSetArg(args[j], XtNfromHoriz, w2);  j++;
     XtSetArg(args[j], XtNstate, appData.secondHasOwnBookUCI);  j++;
-    w3 = XtCreateManagedWidget(_("own book 2"), toggleWidgetClass, form, args, j);   
+    w3 = XtCreateManagedWidget(_("own book 2"), toggleWidgetClass, form, args, j);
 //    XtAddCallback(w3, XtNcallback, UciCallback, (XtPointer) 0);
 
     XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "UciPopDown");
-    
+
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
 		  &x, &y, &win_x, &win_y, &mask);
-    
+
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
     XtSetValues(popup, args, 2);
-    
+
     XtPopup(popup, XtGrabExclusive);
     UciUp = True;
 
@@ -1397,10 +1397,10 @@ void SpinCallback(w, client_data, call_data)
     char buf[MSG_SIZ];
     int i, j;
     int data = (intptr_t) client_data;
-    
+
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
-    
+
     j = 0;
     XtSetArg(args[0], XtNstring, &val);
     XtGetValues(currentCps->option[data].handle, args, 1);
@@ -1411,7 +1411,7 @@ void SpinCallback(w, client_data, call_data)
     if (strcmp(name, "-") == 0) {
 	if(--j < currentCps->option[data].min) return;
     } else return;
-    sprintf(buf, "%d", j);
+    snprintf(buf, MSG_SIZ,  "%d", j);
     XtSetArg(args[0], XtNstring, buf);
     XtSetValues(currentCps->option[data].handle, args, 1);
 }
@@ -1426,10 +1426,10 @@ void SettingsCallback(w, client_data, call_data)
     char buf[MSG_SIZ];
     int i, j;
     int data = (intptr_t) client_data;
-    
+
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
-    
+
     if (strcmp(name, _("cancel")) == 0) {
         SettingsPopDown();
         return;
@@ -1444,7 +1444,7 @@ void SettingsCallback(w, client_data, call_data)
 		    XtGetValues(currentCps->option[i].handle, args, 1);
 		    if(strcmp(currentCps->option[i].textValue, val)) {
 		      safeStrCpy(currentCps->option[i].textValue, val, sizeof(currentCps->option[i].textValue)/sizeof(currentCps->option[i].textValue[0]));
-		      sprintf(buf, "option %s=%s\n", currentCps->option[i].name, val);
+		      snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentCps->option[i].name, val);
 		      SendToProgram(buf, currentCps);
 		    }
 		    break;
@@ -1456,7 +1456,7 @@ void SettingsCallback(w, client_data, call_data)
 		    if(j < currentCps->option[i].min) j = currentCps->option[i].min;
 		    if(currentCps->option[i].value != j) {
 			currentCps->option[i].value = j;
-			sprintf(buf, "option %s=%d\n", currentCps->option[i].name, j);
+			snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentCps->option[i].name, j);
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
@@ -1466,14 +1466,14 @@ void SettingsCallback(w, client_data, call_data)
 		    XtGetValues(currentCps->option[i].handle, args, 1);
 		    if(currentCps->option[i].value != j) {
 			currentCps->option[i].value = j;
-			sprintf(buf, "option %s=%d\n", currentCps->option[i].name, j);
+			snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentCps->option[i].name, j);
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
 		case ComboBox:
 		    if(currentCps->option[i].value != values[i]) {
 			currentCps->option[i].value = values[i];
-			sprintf(buf, "option %s=%s\n", currentCps->option[i].name, 
+			snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentCps->option[i].name,
 				((char**)currentCps->option[i].textValue)[values[i]]);
 			SendToProgram(buf, currentCps);
 		    }
@@ -1481,13 +1481,13 @@ void SettingsCallback(w, client_data, call_data)
 	    }
 	}
 	if(data) { // send save-button command to engine
-	    sprintf(buf, "option %s\n", name);
-	    SendToProgram(buf, currentCps);
+	  snprintf(buf, MSG_SIZ,  "option %s\n", name);
+	  SendToProgram(buf, currentCps);
 	}
         SettingsPopDown();
         return;
     }
-    sprintf(buf, "option %s\n", name);
+    snprintf(buf, MSG_SIZ,  "option %s\n", name);
     SendToProgram(buf, currentCps);
 }
 
@@ -1528,7 +1528,7 @@ void CreateComboPopup(parent, name, n, mb)
 			  (caddr_t)(intptr_t) (256*n+i));
 	i++;
     }
-}	
+}
 
 void SettingsPopUp(ChessProgramState *cps)
 {
@@ -1538,7 +1538,7 @@ void SettingsPopUp(ChessProgramState *cps)
     int x, y, i, j, height, width, h, c;
     int win_x, win_y, maxWidth, maxTextWidth;
     unsigned int mask;
-    char def[80], *p, *q;
+    char def[MSG_SIZ], *p, *q;
     static char pane[6] = "paneX";
     Widget texts[100], forelast = NULL, anchor, widest;
 
@@ -1553,7 +1553,7 @@ void SettingsPopUp(ChessProgramState *cps)
     SettingsShell = popup =
       XtCreatePopupShell(_("Settings Menu"), transientShellWidgetClass,
 			 shellWidget, args, i);
-    
+
     layout =
       XtCreateManagedWidget(layoutName, formWidgetClass, popup,
 			    layoutArgs, XtNumber(layoutArgs));
@@ -1566,7 +1566,7 @@ void SettingsPopUp(ChessProgramState *cps)
     XtSetArg(args[j], XtNfromHoriz, leftMargin);  j++;
     XtSetValues(form, args, j);
     leftMargin = form;
- 
+
     last = widest = NULL; anchor = forelast;
     for(h=0; h<height; h++) {
 	forelast = last;
@@ -1574,14 +1574,14 @@ void SettingsPopUp(ChessProgramState *cps)
         if(i >= cps->nrOptions) break;
 	switch(cps->option[i].type) {
 	  case Spin:
-	    sprintf(def, "%d", cps->option[i].value);
+	    snprintf(def, MSG_SIZ,  "%d", cps->option[i].value);
 	  case TextBox:
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
 	    texts[h] =
-	    dialog = XtCreateManagedWidget(cps->option[i].name, labelWidgetClass, form, args, j);   
+	    dialog = XtCreateManagedWidget(cps->option[i].name, labelWidgetClass, form, args, j);
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
@@ -1596,7 +1596,7 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
 	    edit = last;
 	    cps->option[i].handle = (void*)
-		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));   
+		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));
 	    XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup);
 	    if(cps->option[i].type == TextBox) break;
 
@@ -1625,8 +1625,8 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNwidth, 10);  j++;
 	    XtSetArg(args[j], XtNheight, 10);  j++;
 	    XtSetArg(args[j], XtNstate, cps->option[i].value);  j++;
-	    cps->option[i].handle = (void*) 
-		(dialog = XtCreateManagedWidget(" ", toggleWidgetClass, form, args, j));   
+	    cps->option[i].handle = (void*)
+		(dialog = XtCreateManagedWidget(" ", toggleWidgetClass, form, args, j));
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
@@ -1639,8 +1639,8 @@ void SettingsPopUp(ChessProgramState *cps)
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNstate, cps->option[i].value);  j++;
-	    cps->option[i].handle = (void*) 
-		(dialog = last = XtCreateManagedWidget(cps->option[i].name, commandWidgetClass, form, args, j));   
+	    cps->option[i].handle = (void*)
+		(dialog = last = XtCreateManagedWidget(cps->option[i].name, commandWidgetClass, form, args, j));
 	    XtAddCallback(last, XtNcallback, SettingsCallback,
 			  (XtPointer)(intptr_t) (cps->option[i].type == SaveButton));
 	    break;
@@ -1657,8 +1657,8 @@ void SettingsPopUp(ChessProgramState *cps)
 	    XtSetArg(args[j], XtNwidth, 100);  j++;
 	    XtSetArg(args[j], XtNmenuName, XtNewString(cps->option[i].name));  j++;
 	    XtSetArg(args[j], XtNlabel, ((char**)cps->option[i].textValue)[cps->option[i].value]);  j++;
-	    cps->option[i].handle = (void*) 
-		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));   
+	    cps->option[i].handle = (void*)
+		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));
 	    CreateComboPopup(last, cps->option[i].name, i, (char **) cps->option[i].textValue);
 	    values[i] = cps->option[i].value;
 	    break;
@@ -1708,23 +1708,23 @@ void SettingsPopUp(ChessProgramState *cps)
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     XtSetArg(args[j], XtNfromHoriz, widest ? widest : dialog);  j++;
-    b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);   
+    b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
     XtAddCallback(b_ok, XtNcallback, SettingsCallback, (XtPointer) 0);
 
     XtSetArg(args[j-1], XtNfromHoriz, b_ok);
-    b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);   
+    b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
     XtAddCallback(b_cancel, XtNcallback, SettingsPopDown, (XtPointer) 0);
 
     XtRealizeWidget(popup);
     CatchDeleteWindow(popup, "SettingsPopDown");
-    
+
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
 		  &x, &y, &win_x, &win_y, &mask);
-    
+
     XtSetArg(args[0], XtNx, x - 10);
     XtSetArg(args[1], XtNy, y - 30);
     XtSetValues(popup, args, 2);
-    
+
     XtPopup(popup, XtGrabExclusive);
     SettingsUp = True;
 

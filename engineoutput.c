@@ -349,7 +349,7 @@ static void UpdateControls( EngineOutputData * ed )
 //    int isPondering = FALSE;
 
     char s_label[MAX_NAME_LENGTH + 32];
-    
+
     char * name = ed->name;
 
     /* Label */
@@ -402,7 +402,7 @@ static void UpdateControls( EngineOutputData * ed )
             strncpy( mov, ed->hint, sizeof(mov) );
             mov[ sizeof(mov)-1 ] = '\0';
 
-            sprintf( buf, "[%d] %d/%d: %s [%02d:%02d:%02d]", ed->depth, ed->an_move_index,
+            snprintf( buf, sizeof(buf)/sizeof(buf[0]), "[%d] %d/%d: %s [%02d:%02d:%02d]", ed->depth, ed->an_move_index,
 			ed->an_move_count, mov, time_mins / 60, time_mins % 60, time_secs % 60 );
         }
 
@@ -421,10 +421,10 @@ static void UpdateControls( EngineOutputData * ed )
         unsigned long nps_100 = ed->nodes / ed->time;
 
         if( nps_100 < 100000 ) {
-            sprintf( s_label, "NPS: %lu", nps_100 * 100 );
+	  snprintf( s_label, sizeof(s_label)/sizeof(s_label[0]), "NPS: %lu", nps_100 * 100 );
         }
         else {
-            sprintf( s_label, "NPS: %.1fk", nps_100 / 10.0 );
+	  snprintf( s_label, sizeof(s_label)/sizeof(s_label[0]), "NPS: %.1fk", nps_100 / 10.0 );
         }
     }
 
@@ -442,26 +442,28 @@ static void UpdateControls( EngineOutputData * ed )
 
         /* Nodes */
         if( ed->nodes < 1000000 ) {
-            sprintf( s_nodes, u64Display, ed->nodes );
+            snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), u64Display, ed->nodes );
         }
         else {
-            sprintf( s_nodes, "%.1fM", u64ToDouble(ed->nodes) / 1000000.0 );
+            snprintf( s_nodes, sizeof(s_nodes)/sizeof(s_nodes[0]), "%.1fM", u64ToDouble(ed->nodes) / 1000000.0 );
         }
 
         /* Score */
         if( ed->score > 0 ) {
-            sprintf( s_score, "+%.2f", ed->score / 100.0 );
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f", ed->score / 100.0 );
         }
         else {
-            sprintf( s_score, "%.2f", ed->score / 100.0 );
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "%.2f", ed->score / 100.0 );
         }
 
         /* Time */
-        sprintf( s_time, "%d:%02d.%02d", time_secs / 60, time_secs % 60, time_cent );
+        snprintf( s_time, sizeof(s_time)/sizeof(s_time[0]), "%d:%02d.%02d", time_secs / 60, time_secs % 60, time_cent );
 
         /* Put all together... */
-	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0) sprintf( buf, "%3d\t", ed->depth ); else 
-	sprintf( buf, "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
+	if(ed->nodes == 0 && ed->score == 0 && ed->time == 0)
+	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%3d\t", ed->depth );
+	else
+	  snprintf( buf, sizeof(buf)/sizeof(buf[0]), "%3d\t%s\t%s\t%s\t", ed->depth, s_score, s_nodes, s_time );
 
         /* Add PV */
         buflen = strlen(buf);

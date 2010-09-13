@@ -2,7 +2,7 @@
  * args.c -- Option parsing and saving for X and Windows versions of XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
- * Massachusetts. 
+ * Massachusetts.
  *
  * Enhancements Copyright 1992-2001, 2002, 2003, 2004, 2005, 2006,
  * 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
@@ -49,16 +49,16 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.  *
  *
  *------------------------------------------------------------------------
- ** See the file ChangeLog for a revision history.  
+ ** See the file ChangeLog for a revision history.
 */
 
 // Note: this file is not a normal header, but contains executable code
 // for #inclusion in winboard.c and xboard.c, rather than separate compilation,
-// so that it can make use of the proper context of #defined symbols and 
+// so that it can make use of the proper context of #defined symbols and
 // declarations in those files.
 
 typedef enum {
-  ArgString, ArgInt, ArgFloat, ArgBoolean, ArgTrue, ArgFalse, ArgNone, 
+  ArgString, ArgInt, ArgFloat, ArgBoolean, ArgTrue, ArgFalse, ArgNone,
   ArgColor, ArgAttribs, ArgFilename, ArgBoardSize, ArgFont, ArgCommSettings,
   ArgSettingsFilename,
   ArgX, ArgY, ArgZ // [HGM] placement: for window-placement options stored relative to main window
@@ -129,7 +129,7 @@ typedef char GetFunc(void *getClosure);
 void ParseArgs(GetFunc get, void *cl);
 
 // [HGM] this is an exact duplicate of something in winboard.c. Move to backend.c?
-char *defaultTextAttribs[] = 
+char *defaultTextAttribs[] =
 {
   COLOR_SHOUT, COLOR_SSHOUT, COLOR_CHANNEL1, COLOR_CHANNEL, COLOR_KIBITZ,
   COLOR_TELL, COLOR_CHALLENGE, COLOR_REQUEST, COLOR_SEEK, COLOR_NORMAL,
@@ -238,7 +238,7 @@ ArgDescriptor argDescriptors[] = {
   { "xtelnet", ArgFalse, (void *) &appData.useTelnet, FALSE, INVALID },
   { "-telnet", ArgFalse, (void *) &appData.useTelnet, FALSE, INVALID },
   { "telnetProgram", ArgFilename, (void *) &appData.telnetProgram, FALSE, (ArgIniType) TELNET_PROGRAM },
-  { "internetChessserverHelper", ArgFilename, (void *) &appData.icsHelper, 
+  { "internetChessserverHelper", ArgFilename, (void *) &appData.icsHelper,
 	FALSE, INVALID }, // for XB
   { "icshelper", ArgFilename, (void *) &appData.icsHelper, FALSE, (ArgIniType) "" },
   { "seekGraph", ArgBoolean, (void *) &appData.seekGraph, TRUE, (ArgIniType) FALSE },
@@ -307,7 +307,7 @@ ArgDescriptor argDescriptors[] = {
   { "popup", ArgTrue, (void *) &appData.popupMoveErrors, FALSE, INVALID },
   { "xpopup", ArgFalse, (void *) &appData.popupMoveErrors, FALSE, INVALID },
   { "-popup", ArgFalse, (void *) &appData.popupMoveErrors, FALSE, INVALID },
-  { "popUpErrors", ArgBoolean, (void *) &appData.popupMoveErrors, 
+  { "popUpErrors", ArgBoolean, (void *) &appData.popupMoveErrors,
     FALSE, INVALID }, /* only so that old WinBoard.ini files from betas can be read */
   { "clockFont", ArgFont, (void *) CLOCK_FONT, TRUE, INVALID },
   { "messageFont", ArgFont, (void *) MESSAGE_FONT, !XBOARD, INVALID },
@@ -540,9 +540,9 @@ ArgDescriptor argDescriptors[] = {
   { "polyglotDir", ArgFilename, (void *) &appData.polyglotDir, TRUE, (ArgIniType) "" },
   { "usePolyglotBook", ArgBoolean, (void *) &appData.usePolyglotBook, TRUE, (ArgIniType) FALSE },
   { "polyglotBook", ArgFilename, (void *) &appData.polyglotBook, TRUE, (ArgIniType) "" },
-  { "bookDepth", ArgInt, (void *) &appData.bookDepth, TRUE, (ArgIniType) 12 }, 
-  { "bookVariation", ArgInt, (void *) &appData.bookStrength, TRUE, (ArgIniType) 50 }, 
-  { "defaultHashSize", ArgInt, (void *) &appData.defaultHashSize, TRUE, (ArgIniType) 64 }, 
+  { "bookDepth", ArgInt, (void *) &appData.bookDepth, TRUE, (ArgIniType) 12 },
+  { "bookVariation", ArgInt, (void *) &appData.bookStrength, TRUE, (ArgIniType) 50 },
+  { "defaultHashSize", ArgInt, (void *) &appData.defaultHashSize, TRUE, (ArgIniType) 64 },
   { "defaultCacheSizeEGTB", ArgInt, (void *) &appData.defaultCacheSizeEGTB, TRUE, (ArgIniType) 4 },
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
   { "language", ArgFilename, (void *) &appData.language, TRUE, (ArgIniType) "" },
@@ -709,8 +709,12 @@ void
 ExitArgError(char *msg, char *badArg)
 {
   char buf[MSG_SIZ];
+  int len;
 
-  sprintf(buf, "%s %s", msg, badArg);
+  len = snprintf(buf,MSG_SIZ, "%s %s", msg, badArg);
+  if( (len > MSG_SIZ) && appData.debugMode )
+    fprintf(debugFP, "ExitArgError: buffer truncated. Input: msg=%s badArg=%s\n", msg, badArg);
+
   DisplayFatalError(buf, 0, 2);
   exit(2);
 }
@@ -751,13 +755,19 @@ Boolean
 ParseSettingsFile(char *name, char **addr)
 {
   FILE *f;
-  int ok; char buf[MSG_SIZ], fullname[MSG_SIZ];
+  int ok,len;
+  char buf[MSG_SIZ], fullname[MSG_SIZ];
+
 
   ok = MySearchPath(installDir, name, fullname);
-  if(!ok && strchr(name, '.') == NULL) { // [HGM] append default file-name extension '.ini' when needed
-    sprintf(buf, "%s.ini", name);
-    ok = MySearchPath(installDir, buf, fullname);
-  }
+  if(!ok && strchr(name, '.') == NULL)
+    { // append default file-name extension '.ini' when needed
+      len = snprintf(buf,MSG_SIZ, "%s.ini", name);
+      if( (len > MSG_SIZ) && appData.debugMode )
+	fprintf(debugFP, "ParseSettingsFile: buffer truncated. Input: name=%s \n",name);
+
+      ok = MySearchPath(installDir, buf, fullname);
+    }
   if (ok) {
     f = fopen(fullname, "r");
     if (f != NULL) {
@@ -843,7 +853,7 @@ ParseArgs(GetFunc get, void *cl)
 	case NULLCHAR:
 	  start = NULLCHAR;
 	  break;
-	  
+
 	case '}':
 	  ch = get(cl);
 	  start = NULLCHAR;
@@ -854,7 +864,7 @@ ParseArgs(GetFunc get, void *cl)
 	  ch = get(cl);
 	  break;
 	}
-      }	  
+      }
     } else if (ch == '\'' || ch == '"') {
       // Quoting with ' ' or " ", with \ as escape character.
       // Inconvenient for long strings that may contain Windows filenames.
@@ -947,7 +957,7 @@ ParseArgs(GetFunc get, void *cl)
       break;
 
     case ArgX:
-      *(int *) ad->argLoc = ValidateInt(argValue) + wpMain.x; // [HGM] placement: translate stored relative to absolute 
+      *(int *) ad->argLoc = ValidateInt(argValue) + wpMain.x; // [HGM] placement: translate stored relative to absolute
       break;
 
     case ArgY:
@@ -956,7 +966,7 @@ ParseArgs(GetFunc get, void *cl)
 
     case ArgZ:
       *(int *) ad->argLoc = ValidateInt(argValue);
-      EnsureOnScreen(&wpMain.x, &wpMain.y, minX, minY); 
+      EnsureOnScreen(&wpMain.x, &wpMain.y, minX, minY);
       break;
 
     case ArgFloat:
@@ -1005,7 +1015,7 @@ ParseArgs(GetFunc get, void *cl)
 	ParseTextAttribs(cc, argValue); // [HGM] wrapper for platform independency
       }
       break;
-      
+
     case ArgBoardSize:
       ParseBoardSize(ad->argLoc, argValue);
       break;
@@ -1084,7 +1094,7 @@ ParseIcsTextMenu(char *icsTextMenuString)
       p = t + 1;
     }
     e++;
-  } 
+  }
 }
 
 void
@@ -1175,22 +1185,34 @@ InitAppData(char *lpCmdLine)
       char *p = StrStr(appData.firstChessProgram, "WBopt");
       static char *f = "first";
       char buf[MSG_SIZ], *q = buf;
-      if(p != NULL) { // engine command line contains WinBoard options
-          sprintf(buf, p+6, f, f, f, f, f, f, f, f, f, f); // replace %s in them by "first"
+      int len;
+
+      if(p != NULL)
+	{ // engine command line contains WinBoard options
+          len = snprintf(buf, MSG_SIZ, p+6, f, f, f, f, f, f, f, f, f, f); // replace %s in them by "first"
+	  if( (len > MSG_SIZ) && appData.debugMode )
+	    fprintf(debugFP, "InitAppData: buffer truncated.\n");
+
           ParseArgs(StringGet, &q);
           p[-1] = 0; // cut them offengine command line
-      }
+	}
   }
   // now do same for second chess program
   if(appData.secondChessProgram != NULL) {
       char *p = StrStr(appData.secondChessProgram, "WBopt");
       static char *s = "second";
       char buf[MSG_SIZ], *q = buf;
-      if(p != NULL) { // engine command line contains WinBoard options
-          sprintf(buf, p+6, s, s, s, s, s, s, s, s, s, s); // replace %s in them by "first"
+      int len;
+
+      if(p != NULL)
+	{ // engine command line contains WinBoard options
+          len = snprintf(buf,MSG_SIZ, p+6, s, s, s, s, s, s, s, s, s, s); // replace %s in them by "first"
+	  if( (len > MSG_SIZ) && appData.debugMode )
+	    fprintf(debugFP, "InitAppData: buffer truncated.\n");
+
           ParseArgs(StringGet, &q);
           p[-1] = 0; // cut them offengine command line
-      }
+	}
   }
 
   /* Propagate options that affect others */
@@ -1203,7 +1225,7 @@ InitAppData(char *lpCmdLine)
   if ((!appData.noChessProgram && !chessProgram && !appData.icsActive) ||
       (appData.icsActive && *appData.icsHost == NULLCHAR) ||
       (chessProgram && (*appData.firstChessProgram == NULLCHAR ||
-                        *appData.secondChessProgram == NULLCHAR))) 
+                        *appData.secondChessProgram == NULLCHAR)))
 		PopUpStartupDialog();
 
   /* Make sure save files land in the right (?) directory */
@@ -1325,7 +1347,7 @@ SaveSettings(char* name)
       fprintf(f, OPTCHAR "%s" SEPCHAR "%g\n", ad->argName, *(float *)ad->argLoc);
       break;
     case ArgBoolean:
-      fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, 
+      fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName,
 	(*(Boolean *)ad->argLoc) ? "true" : "false");
       break;
     case ArgTrue:
@@ -1368,6 +1390,7 @@ GetArgValue(char *name)
 { // retrieve (as text) current value of string or int argument given by name
   // (this is used for maing the values available in the adapter command)
   ArgDescriptor *ad;
+  int len;
 
   for (ad = argDescriptors; ad->argName != NULL; ad++)
     if (strcmp(ad->argName, name) == 0) break;
@@ -1378,12 +1401,19 @@ GetArgValue(char *name)
     case ArgString:
     case ArgFilename:
       strncpy(name, *(char**) ad->argLoc, MSG_SIZ);
+
       return TRUE;
     case ArgInt:
-      sprintf(name, "%d", *(int*) ad->argLoc);
+      len = snprintf(name, MSG_SIZ, "%d", *(int*) ad->argLoc);
+      if( (len > MSG_SIZ) && appData.debugMode )
+	fprintf(debugFP, "GetArgValue: buffer truncated.\n");
+
       return TRUE;
     case ArgBoolean:
-      sprintf(name, "%s", *(Boolean*) ad->argLoc ? "true" : "false");
+      len = snprintf(name, MSG_SIZ, "%s", *(Boolean*) ad->argLoc ? "true" : "false");
+      if( (len > MSG_SIZ) && appData.debugMode )
+	fprintf(debugFP, "GetArgValue: buffer truncated.\n");
+
       return TRUE;
     default: ;
   }

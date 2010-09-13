@@ -92,7 +92,7 @@ char *squareToNum[] = {"naught", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 char *ordinals[] = {"zeroth", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "nineth"};
 
 char *pieceToName[] = {
-		"White Pawn", "White Knight", "White Bishop", "White Rook", "White Queen", 
+		"White Pawn", "White Knight", "White Bishop", "White Rook", "White Queen",
 		"White Guard", "White Elephant", "White Arch Bishop", "White Chancellor",
 		"White General", "White Man", "White Cannon", "White Night Rider",
 		"White Crowned Bishop", "White Crowned Rook", "White Grass Hopper", "White Veteran",
@@ -108,13 +108,13 @@ char *pieceToName[] = {
 	};
 
 char *pieceTypeName[] = {
-		"Pawn", "Knight", "Bishop", "Rook", "Queen", 
+		"Pawn", "Knight", "Bishop", "Rook", "Queen",
 		"Guard", "Elephant", "Arch Bishop", "Chancellor",
 		"General", "Man", "Cannon", "Night Rider",
 		"Crowned Bishop", "Crowned Rook", "Grass Hopper", "Veteran",
 		"Falcon", "Amazon", "Snake", "Unicorn",
 		"King",
-		"Pawn", "Knight", "Bishop", "Rook", "Queen", 
+		"Pawn", "Knight", "Bishop", "Rook", "Queen",
 		"Guard", "Elephant", "Arch Bishop", "Chancellor",
 		"General", "Man", "Cannon", "Night Rider",
 		"Crowned Bishop", "Crowned Rook", "Grass Hopper", "Veteran",
@@ -230,14 +230,14 @@ AdaptMenu()
 	helpMenuInfo.cbSize = sizeof(helpMenuInfo);
 	menuMain = GetMenu(hwndMain);
 	menuJAWS = CreatePopupMenu();
-	
+
 	for(i=0; menuItemJAWS[i].name; i++) {
-	    if(menuItemJAWS[i].name[0] == '-') 
+	    if(menuItemJAWS[i].name[0] == '-')
 		 AppendMenu(menuJAWS, MF_SEPARATOR, (UINT_PTR) 0, NULL);
-	    else AppendMenu(menuJAWS, MF_ENABLED|MF_STRING, 
+	    else AppendMenu(menuJAWS, MF_ENABLED|MF_STRING,
 			(UINT_PTR) menuItemJAWS[i].code, (LPCTSTR) menuItemJAWS[i].name);
 	}
-	InsertMenu(menuMain, 5, MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING, 
+	InsertMenu(menuMain, 5, MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING,
 		(UINT_PTR) menuJAWS, "&JAWS");
 	oldMenuItemState[6] = oldMenuItemState[5];
 	DrawMenuBar(hwndMain);
@@ -248,7 +248,7 @@ InitJAWS()
 {	// to be called at beginning of WinMain, after InitApplication and InitInstance
 	HINSTANCE hApi = LoadLibrary("jfwapi32.dll");
 	if(!hApi) {
-		DisplayInformation("Missing jfwapi32.dll");	   
+		DisplayInformation("Missing jfwapi32.dll");
 		return (FALSE);
 	}
 
@@ -331,7 +331,7 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(currentPiece != EmptySquare) {
 			char buf[MSG_SIZ];
 			n = boards[currentMove][fromY][1];
-			sprintf(buf, "%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
+			snprintf(buf, MSG_SIZ, "%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
 			SayString(buf, TRUE);
 		}
 	} else
@@ -340,7 +340,7 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(currentPiece != EmptySquare) {
 			char buf[MSG_SIZ];
 			n = boards[currentMove][fromY][BOARD_WIDTH-2];
-			sprintf(buf, "%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
+			snprintf(buf, MSG)SIZ,"%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
 			SayString(buf, TRUE);
 		}
 	} else
@@ -350,8 +350,8 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		ynum = SquareToNum(fromY);
 		if(currentPiece != EmptySquare) {
 //			SayString(piece[0] == 'W' ? "white" : "black", TRUE);
-			sprintf(buf, "%s %s %s", xchar, ynum, piece);
-		} else sprintf(buf, "%s %s", xchar, ynum);
+		  snprintf(buf, MSG_SIZ, "%s %s %s", xchar, ynum, piece);
+		} else snprintf(buf, MSG_SIZ, "%s %s", xchar, ynum);
 		SayString(buf, TRUE);
 	}
 	return;
@@ -481,15 +481,15 @@ PossibleAttacked()
 VOID
 ReadRow()
 {
-	ChessSquare currentpiece; 
+	ChessSquare currentpiece;
 	char *piece, *xchar, *ynum ;
 	int xPos, count=0;
 	ynum = SquareToNum(fromY);
-	
+
 	if(fromY < 0) return;
 
 	for (xPos=BOARD_LEFT; xPos<BOARD_RGHT; xPos++) {
-		currentpiece = boards[currentMove][fromY][xPos];	
+		currentpiece = boards[currentMove][fromY][xPos];
 		if(currentpiece != EmptySquare) {
 			piece = PieceToName(currentpiece,1);
 			xchar = SquareToChar(xPos);
@@ -509,15 +509,15 @@ ReadRow()
 VOID
 ReadColumn()
 {
-	ChessSquare currentpiece; 
+	ChessSquare currentpiece;
 	char *piece, *xchar, *ynum ;
 	int yPos, count=0;
 	xchar = SquareToChar(fromX);
-	
+
 	if(fromX < 0) return;
 
 	for (yPos=0; yPos<BOARD_HEIGHT; yPos++) {
-		currentpiece = boards[currentMove][yPos][fromX];	
+		currentpiece = boards[currentMove][yPos][fromX];
 		if(currentpiece != EmptySquare) {
 			piece = PieceToName(currentpiece,1);
 			ynum = SquareToNum(yPos);
@@ -536,10 +536,10 @@ ReadColumn()
 VOID
 SayUpperDiagnols()
 {
-	ChessSquare currentpiece; 
+	ChessSquare currentpiece;
 	char *piece, *xchar, *ynum ;
 	int yPos, xPos;
-	
+
 	if(fromX < 0 || fromY < 0) return;
 
 	if(fromX < BOARD_RGHT-1 && fromY < BOARD_HEIGHT-1) {
@@ -547,7 +547,7 @@ SayUpperDiagnols()
 		yPos = fromY+1;
 		xPos = fromX+1;
 		while(yPos<BOARD_HEIGHT && xPos<BOARD_RGHT) {
-			currentpiece = boards[currentMove][yPos][xPos];	
+			currentpiece = boards[currentMove][yPos][xPos];
 			piece = PieceToName(currentpiece,1);
 			xchar = SquareToChar(xPos);
 			ynum = SquareToNum(yPos);
@@ -565,7 +565,7 @@ SayUpperDiagnols()
 		yPos = fromY+1;
 		xPos = fromX-1;
 		while(yPos<BOARD_HEIGHT && xPos>=BOARD_LEFT) {
-			currentpiece = boards[currentMove][yPos][xPos];	
+			currentpiece = boards[currentMove][yPos][xPos];
 			piece = PieceToName(currentpiece,1);
 			xchar = SquareToChar(xPos);
 			ynum = SquareToNum(yPos);
@@ -582,10 +582,10 @@ SayUpperDiagnols()
 VOID
 SayLowerDiagnols()
 {
-	ChessSquare currentpiece; 
+	ChessSquare currentpiece;
 	char *piece, *xchar, *ynum ;
 	int yPos, xPos;
-	
+
 	if(fromX < 0 || fromY < 0) return;
 
 	if(fromX < BOARD_RGHT-1 && fromY > 0) {
@@ -593,7 +593,7 @@ SayLowerDiagnols()
 		yPos = fromY-1;
 		xPos = fromX+1;
 		while(yPos>=0 && xPos<BOARD_RGHT) {
-			currentpiece = boards[currentMove][yPos][xPos];	
+			currentpiece = boards[currentMove][yPos][xPos];
 			piece = PieceToName(currentpiece,1);
 			xchar = SquareToChar(xPos);
 			ynum = SquareToNum(yPos);
@@ -611,7 +611,7 @@ SayLowerDiagnols()
 		yPos = fromY-1;
 		xPos = fromX-1;
 		while(yPos>=0 && xPos>=BOARD_LEFT) {
-			currentpiece = boards[currentMove][yPos][xPos];	
+			currentpiece = boards[currentMove][yPos][xPos];
 			piece = PieceToName(currentpiece,1);
 			xchar = SquareToChar(xPos);
 			ynum = SquareToNum(yPos);
@@ -628,11 +628,11 @@ SayLowerDiagnols()
 VOID
 SayKnightMoves()
 {
-	ChessSquare currentpiece, oldpiece; 
+	ChessSquare currentpiece, oldpiece;
 	char *piece, *xchar, *ynum ;
 
 	oldpiece = boards[currentMove][fromY][fromX];
-	if(oldpiece == WhiteKnight || oldpiece == BlackKnight) 
+	if(oldpiece == WhiteKnight || oldpiece == BlackKnight)
 		SayString("The possible squares a Knight could move to are", FALSE);
 	else
 		SayString("The squares a Knight could possibly attack from are", FALSE);
@@ -666,7 +666,7 @@ SayKnightMoves()
 			SayString(piece, FALSE);
 		}
 	}
-	
+
 	if (fromY+1 < BOARD_HEIGHT && fromX+2 < BOARD_RGHT) {
 		currentpiece = boards[currentMove][fromY+1][fromX+2];
 		if(((oldpiece == WhiteKnight) && (currentpiece > WhiteKing))
@@ -681,7 +681,7 @@ SayKnightMoves()
 			SayString(piece, FALSE);
 		}
 	}
-	
+
 	if (fromY-1 >= 0 && fromX+2 < BOARD_RGHT) {
 		currentpiece = boards[currentMove][fromY-1][fromX+2];
 		if(((oldpiece == WhiteKnight) && (currentpiece > WhiteKing))
@@ -696,7 +696,7 @@ SayKnightMoves()
 			SayString(piece, FALSE);
 		}
 	}
-	
+
 	if (fromY-2 >= 0 && fromX+1 < BOARD_RGHT) {
 		currentpiece = boards[currentMove][fromY-2][fromX+1];
 		if(((oldpiece == WhiteKnight) && (currentpiece > WhiteKing))
@@ -711,7 +711,7 @@ SayKnightMoves()
 			SayString(piece, FALSE);
 		}
 	}
-	
+
 	if (fromY-2 >= 0 && fromX-1 >= BOARD_LEFT) {
 		currentpiece = boards[currentMove][fromY-2][fromX-1];
 		if(((oldpiece == WhiteKnight) && (currentpiece > WhiteKing))
@@ -726,7 +726,7 @@ SayKnightMoves()
 			SayString(piece, FALSE);
 		}
 	}
-	
+
 	if (fromY-1 >= 0 && fromX-2 >= BOARD_LEFT) {
 		currentpiece = boards[currentMove][fromY-1][fromX-2];
 		if(((oldpiece == WhiteKnight) && (currentpiece > WhiteKing))
@@ -741,7 +741,7 @@ SayKnightMoves()
 			SayString(piece, FALSE);
 		}
 	}
-	
+
 	if (fromY+1 < BOARD_HEIGHT && fromX-2 >= BOARD_LEFT) {
 		currentpiece = boards[currentMove][fromY+1][fromX-2];
 		if(((oldpiece == WhiteKnight) && (currentpiece > WhiteKing))
@@ -761,7 +761,7 @@ SayKnightMoves()
 VOID
 SayPieces(ChessSquare p)
 {
-	ChessSquare currentpiece;  
+	ChessSquare currentpiece;
 	char *piece, *xchar, *ynum ;
 	int yPos, xPos, count = 0;
 	char buf[50];
@@ -769,13 +769,13 @@ SayPieces(ChessSquare p)
 	if(p == WhitePlay)   SayString("White pieces", FALSE); else
 	if(p == BlackPlay)   SayString("Black pieces", FALSE); else
 	if(p == EmptySquare) SayString("Pieces", FALSE); else {
-		sprintf(buf, "%ss", PieceToName(p,1));
+	  snprintf(buf, sizeof(buf)/sizeof(buf[0]),"%ss", PieceToName(p,1));
 		SayString(buf, FALSE);
 	}
 	SayString("are located", FALSE);
 	for(yPos=0; yPos<BOARD_HEIGHT; yPos++) {
 		for(xPos=BOARD_LEFT; xPos<BOARD_RGHT; xPos++) {
-			currentpiece = boards[currentMove][yPos][xPos];	
+			currentpiece = boards[currentMove][yPos][xPos];
 			if(p == BlackPlay && currentpiece >= BlackPawn && currentpiece <= BlackKing ||
 			   p == WhitePlay && currentpiece >= WhitePawn && currentpiece <= WhiteKing   )
 				piece = PieceToName(currentpiece,0);
@@ -784,7 +784,7 @@ SayPieces(ChessSquare p)
 			else if(p == currentpiece)
 				piece = NULL;
 			else continue;
-				
+
 				if(count == 0) SayString("at", FALSE);
 				xchar = SquareToChar(xPos);
 				ynum = SquareToNum(yPos);
@@ -804,7 +804,7 @@ SayCurrentPos()
 	char *piece, *xchar, *ynum ;
 	if(fromX <  BOARD_LEFT) { SayString("You strayed into the white holdings", FALSE); return; }
 	if(fromX >= BOARD_RGHT) { SayString("You strayed into the black holdings", FALSE); return; }
-	currentpiece = boards[currentMove][fromY][fromX];	
+	currentpiece = boards[currentMove][fromY][fromX];
 	piece = PieceToName(currentpiece,1);
 	ynum = SquareToNum(fromY);
 	xchar = SquareToChar(fromX);
@@ -814,7 +814,7 @@ SayCurrentPos()
 	SayString(piece, FALSE);
 	if(((fromX-BOARD_LEFT) ^ fromY)&1)
 		SayString("on a light square",FALSE);
-	else 
+	else
 		SayString("on a dark square",FALSE);
 
 	PossibleAttacked();
@@ -827,28 +827,32 @@ SayAllBoard()
 	int Xpos, Ypos;
 	ChessSquare currentpiece;
 	char *piece, *ynum ;
-	
+
 	if(gameInfo.holdingsWidth) {
 		int first = 0;
 		for(Ypos=0; Ypos<gameInfo.holdingsSize; Ypos++) {
 			int n = boards[currentMove][Ypos][BOARD_WIDTH-2];
-			if(n) {  char buf[MSG_SIZ];
-				if(!first++) SayString("white holds", FALSE);
-				currentpiece = boards[currentMove][Ypos][BOARD_WIDTH-1];	
-				piece = PieceToName(currentpiece,0);
-				sprintf(buf, "%d %s%s", n, piece, (n==1 ? "" : "s") );
-				SayString(buf, FALSE);
+			if(n) {
+			  char buf[MSG_SIZ];
+			  if(!first++)
+			    SayString("white holds", FALSE);
+			  currentpiece = boards[currentMove][Ypos][BOARD_WIDTH-1];
+			  piece = PieceToName(currentpiece,0);
+			  snprintf(buf, MSG_SIZ,"%d %s%s", n, piece, (n==1 ? "" : "s") );
+			  SayString(buf, FALSE);
 			}
 		}
 		first = 0;
 		for(Ypos=BOARD_HEIGHT-1; Ypos>=BOARD_HEIGHT - gameInfo.holdingsSize; Ypos--) {
 			int n = boards[currentMove][Ypos][1];
-			if(n) {  char buf[MSG_SIZ];
-				if(!first++) SayString("black holds", FALSE);
-				currentpiece = boards[currentMove][Ypos][0];	
-				piece = PieceToName(currentpiece,0);
-				sprintf(buf, "%d %s%s", n, piece, (n==1 ? "" : "s") );
-				SayString(buf, FALSE);
+			if(n) {
+			  char buf[MSG_SIZ];
+			  if(!first++)
+			    SayString("black holds", FALSE);
+			  currentpiece = boards[currentMove][Ypos][0];
+			  piece = PieceToName(currentpiece,0);
+			  snprintf(buf, MSG_SIZ, "%d %s%s", n, piece, (n==1 ? "" : "s") );
+			  SayString(buf, FALSE);
 			}
 		}
 	}
@@ -858,16 +862,17 @@ SayAllBoard()
 		SayString(ynum, FALSE);
 		SayString("rank", FALSE);
 		for(Xpos=BOARD_LEFT; Xpos<BOARD_RGHT; Xpos++) {
-			currentpiece = boards[currentMove][Ypos][Xpos];	
+			currentpiece = boards[currentMove][Ypos][Xpos];
 			if(currentpiece != EmptySquare) {
 				int count = 0;
 				char buf[50];
 				piece = PieceToName(currentpiece,1);
 				while(Xpos < BOARD_RGHT && boards[currentMove][Ypos][Xpos] == currentpiece)
 					Xpos++, count++;
-				if(count > 1) { 
-					sprintf(buf, "%d %ss", count, piece);
-				} else	sprintf(buf, "%s", piece);
+				if(count > 1)
+				  snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%d %ss", count, piece);
+				else
+				  snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%s", piece);
 				Xpos--;
 				SayString(buf, FALSE);
 			} else {
@@ -877,9 +882,9 @@ SayAllBoard()
 				if(Xpos == BOARD_RGHT && oldX == BOARD_LEFT)
 					SayString("all", FALSE);
 				else{
-				    if(count > 1) { 
+				    if(count > 1) {
 					char buf[10];
-					sprintf(buf, "%d", count);
+					snprintf(buf, sizeof(buf)/sizeof(buf[0]),"%d", count);
 					SayString(buf, FALSE);
 				    }
 				    Xpos--;
@@ -888,7 +893,7 @@ SayAllBoard()
 			}
 		}
 	}
-	
+
 }
 
 VOID
@@ -903,12 +908,12 @@ SayWhosTurn()
 			SayString("It is your opponents turn", FALSE);
 		else	SayString("It is your turn", FALSE);
 	} else {
-		if(WhiteOnMove(currentMove)) 
+		if(WhiteOnMove(currentMove))
 			SayString("White is on move here", FALSE);
 		else	SayString("Black is on move here", FALSE);
 	}
 }
-	
+
 extern char *commentList[];
 
 VOID
@@ -947,7 +952,7 @@ SayMachineMove(int evenIfDuplicate)
 				    c = 'W'; break;
 				  case IcsPlayingBlack:
 				  case MachinePlaysBlack:
-				    c = 'B'; 
+				    c = 'B';
 				  default:
 				    break;
 				}
@@ -955,7 +960,7 @@ SayMachineMove(int evenIfDuplicate)
 			    if(c != lastMover && !evenIfDuplicate) return; // line is thinking output of future move, ignore.
 			    if(2*moveNr - (dotCount < 2) == previousMove)
 				return; // do not repeat same move; likely ponder output
-			    sprintf(buf, "score %s %d at %d ply", 
+			    snprintf(buf, MSG_SIZ, "score %s %d at %d ply",
 					score > 0 ? "plus" : score < 0 ? "minus" : "",
 					(int) (fabs(score)*100+0.5),
 					depth );
@@ -981,16 +986,16 @@ SayMachineMove(int evenIfDuplicate)
 
 		n = 2*moveNr - (dotCount < 2);
 
-		if(previousMove != 2*moveNr + (dotCount > 1) || evenIfDuplicate) { 
+		if(previousMove != 2*moveNr + (dotCount > 1) || evenIfDuplicate) {
 		    char number[20];
 		    previousMove = 2*moveNr + (dotCount > 1); // remember move nr of move last spoken
-		    sprintf(number, "%d", moveNr);
+		    snprintf(number, sizeof(number)/sizeof(number[0]),"%d", moveNr);
 
 		    yPos = CoordToNum(messageText[len-1]);  /* turn char coords to ints */
 		    xPos = CoordToNum(messageText[len-2]);
 		    if(xPos < 0 || xPos > 11) return; // prevent crashes if no coord string available to speak
 		    if(yPos < 0 || yPos > 9)  return;
-		    currentpiece = boards[n][yPos][xPos];	
+		    currentpiece = boards[n][yPos][xPos];
 		    piece = PieceToName(currentpiece,0);
 		    ynum = SquareToNum(yPos);
 		    xchar = SquareToChar(xPos);
@@ -1044,8 +1049,8 @@ SayMachineMove(int evenIfDuplicate)
 	        if(StrStr(messageText, " 1/2-1/2")) p = "game ends in a draw";
 	        if(comment[0]) {
 		    if(p) {
-			if(!StrCaseStr(comment, "draw") && 
-			   !StrCaseStr(comment, "white") && 
+			if(!StrCaseStr(comment, "draw") &&
+			   !StrCaseStr(comment, "white") &&
 			   !StrCaseStr(comment, "black") ) {
 				SayString(p, FALSE);
 				SayString("due to", FALSE);
@@ -1074,11 +1079,11 @@ SayClockTime()
 	suppressClocks = 1; // if user is using alt+T command, no reason to display them
 	if(abs(lastWhiteTime - whiteTimeRemaining) < 1000 && abs(lastBlackTime - blackTimeRemaining) < 1000)
 		suppressClocks = 0; // back on after two requests in rapid succession
-	sprintf(buf1, "%s", TimeString(whiteTimeRemaining));
+	snprintf(buf1, sizeof(buf1)/sizeof(buf1[0]),"%s", TimeString(whiteTimeRemaining));
 	str1 = buf1;
 	SayString("White clock", FALSE);
 	SayString(str1, FALSE);
-	sprintf(buf2, "%s", TimeString(blackTimeRemaining));
+	snprintf(buf2, sizeof(buf2)/sizeof(buf2[0]), "%s", TimeString(blackTimeRemaining));
 	str2 = buf2;
 	SayString("Black clock", FALSE);
 	SayString(str2, FALSE);
@@ -1101,7 +1106,7 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	ChessSquare currentpiece;
 	char *piece;
-	
+
 	static BOOLEAN sameAgain = FALSE;
 	switch (message) {
 	case WM_KEYDOWN:
@@ -1112,20 +1117,20 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		else if(oldFromX != -1) {
-			
+
 			ChessSquare pdown, pup;
       pdown = boards[currentMove][oldFromY][oldFromX];
       pup = boards[currentMove][fromY][fromX];
-		
+
 		if (gameMode == EditPosition ||
 			!((WhitePawn <= pdown && pdown <= WhiteKing &&
 				 WhitePawn <= pup && pup <= WhiteKing) ||
 				(BlackPawn <= pdown && pdown <= BlackKing &&
 				 BlackPawn <= pup && pup <= BlackKing))) {
 			/* EditPosition, empty square, or different color piece;
-			click-click move is possible */		
+			click-click move is possible */
 			char promoChoice = NULLCHAR;
-		
+
 			if (HasPromotionChoice(oldFromX, oldFromY, fromX, fromY, &promoChoice)) {
 				if (appData.alwaysPromoteToQueen) {
 					UserMoveEvent(oldFromX, oldFromY, fromX, fromY, 'q');
@@ -1134,7 +1139,7 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 					toX = fromX; toY = fromY; fromX = oldFromX; fromY = oldFromY;
 					PromotionPopup(hwnd);
 					fromX = toX; fromY = toY;
-				}	
+				}
 			}
 			else {
 				UserMoveEvent(oldFromX, oldFromY, fromX, fromY, promoChoice);
@@ -1142,13 +1147,13 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		oldFromX = oldFromY = -1;
 		break;
 		}
-		
+
 		}
 		/* First downclick, or restart on a square with same color piece */
 		if (OKToStartUserMove(fromX, fromY)) {
 		oldFromX = fromX;
 		oldFromY = fromY;
-		currentpiece = boards[currentMove][fromY][fromX];	
+		currentpiece = boards[currentMove][fromY][fromX];
 		piece = PieceToName(currentpiece,1);
 		SayString(piece, FALSE);
 		SayString("selected", FALSE);
@@ -1164,7 +1169,7 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       if (sameAgain) {
 	/* Clicked same square twice: abort click-click move */
 			oldFromX = oldFromY = -1;
-			currentpiece = boards[currentMove][fromY][fromX];	
+			currentpiece = boards[currentMove][fromY][fromX];
 			piece = PieceToName(currentpiece,0);
 			SayString(piece, FALSE);
 			SayString("unselected", FALSE);

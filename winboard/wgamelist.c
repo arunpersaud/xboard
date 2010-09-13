@@ -66,7 +66,7 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
     struct GameListStats dummy;
 
     /* Initialize stats (use a dummy variable if caller not interested in them) */
-    if( stats == NULL ) { 
+    if( stats == NULL ) {
         stats = &dummy;
     }
 
@@ -124,7 +124,7 @@ static int GameListUpdateTitle( HWND hDlg, char * pszTitle, int item_count, int 
 {
     char buf[256];
 
-    sprintf( buf, _("%s - %d/%d games"), pszTitle, item_count, item_total );
+    snprintf( buf, sizeof(buf)/sizeof(buf[0]),_("%s - %d/%d games"), pszTitle, item_count, item_total );
 
     if( stats != 0 ) {
         sprintf( buf+strlen(buf), " (%d-%d-%d)", stats->white_wins, stats->black_wins, stats->drawn );
@@ -153,7 +153,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
   static SnapData sd;
 
   switch (message) {
-  case WM_INITDIALOG: 
+  case WM_INITDIALOG:
     Translate(hDlg, DLG_GameList);
     GetWindowText( hDlg, szDlgTitle, sizeof(szDlgTitle) );
     szDlgTitle[ sizeof(szDlgTitle)-1 ] = '\0';
@@ -203,13 +203,13 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 			      newSizeX, newSizeY);
 	sizeX = newSizeX;
 	sizeY = newSizeY;
-      } else 
+      } else
         GetActualPlacement( gameListDialog, &wpGameList );
 
     }
       GameListUpdateTitle( hDlg, _("Game List"), count, ((ListGame *) gameList.tailPred)->number, &stats ); // [HGM] always update title
     return FALSE;
-    
+
   case WM_SIZE:
     newSizeX = LOWORD(lParam);
     newSizeY = HIWORD(lParam);
@@ -230,7 +230,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 
   case WM_EXITSIZEMOVE:
     return OnExitSizeMove( &sd, hDlg, wParam, lParam );
-  
+
   case WM_GETMINMAXINFO:
     /* Prevent resizing window too small */
     mmi = (MINMAXINFO *) lParam;
@@ -239,7 +239,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     break;
 
   case WM_COMMAND:
-      /* 
+      /*
         [AS]
         If <Enter> is pressed while editing the filter, it's better to apply
         the filter rather than selecting the current game.
@@ -270,7 +270,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 	return TRUE;
       }
       break; /* load the game*/
-      
+
     case OPT_GameListNext:
       nItem = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
       nItem++;
@@ -281,7 +281,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       }
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, nItem, 0);
       break; /* load the game*/
-      
+
     case OPT_GameListPrev:
       nItem = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
       nItem--;
@@ -297,7 +297,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     case IDC_GameListDoFilter:
         {
             char filter[MAX_FILTER_LENGTH+1];
-            
+
             if( GetDlgItemText( hDlg, IDC_GameListFilter, filter, sizeof(filter) ) >= 0 ) {
                 filter[ sizeof(filter)-1 ] = '\0';
                 count = GameListToListBox( hDlg, TRUE, filter, &stats );
@@ -311,13 +311,13 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     case OPT_GameListClose:
       GameListPopDown();
       return TRUE;
-      
+
     case OPT_GameListText:
       switch (HIWORD(wParam)) {
       case LBN_DBLCLK:
 	nItem = SendMessage((HWND) lParam, LB_GETCURSEL, 0, 0);
 	break; /* load the game*/
-	
+
       default:
 	return FALSE;
       }
@@ -376,7 +376,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 VOID GameListPopUp(FILE *fp, char *filename)
 {
   FARPROC lpProc;
-  
+
   gameFile = fp;
   if (gameFileName != filename) {
     if (gameFileName) free(gameFileName);
@@ -407,7 +407,7 @@ VOID GameListPopDown(void)
 VOID GameListHighlight(int index)
 {
   if (gameListDialog == NULL) return;
-  SendDlgItemMessage(gameListDialog, OPT_GameListText, 
+  SendDlgItemMessage(gameListDialog, OPT_GameListText,
     LB_SETCURSEL, index - 1, 0);
 }
 

@@ -435,7 +435,7 @@ char * GameListLine( int number, GameInfo * gameInfo )
             break;
         case GLT_WHITE_ELO:
             if( gameInfo->whiteRating > 0 )
-                sprintf( buf, "%d", gameInfo->whiteRating );
+	      sprintf( buf,  "%d", gameInfo->whiteRating );
             else
 	      safeStrCpy( buf, "?" , 2*MSG_SIZ);
             break;

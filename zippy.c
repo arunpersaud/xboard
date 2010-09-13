@@ -422,7 +422,7 @@ int ZippyControl(buf, i)
 	    (gameMode == IcsPlayingBlack &&
 	     StrCaseCmp(player, gameInfo.white) == 0)) {
 
-	  sprintf(reply, "%ssay This computer does not play Crafty clones\n%sabort\n%s+noplay %s\n",
+	  snprintf(reply, MSG_SIZ, "%ssay This computer does not play Crafty clones\n%sabort\n%s+noplay %s\n",
 		  ics_prefix, ics_prefix, ics_prefix, player);
 	  SendToICS(reply);
 	}
@@ -452,17 +452,17 @@ int ZippyControl(buf, i)
 	 looking_at(buf, i, "* tells you: [automatic message] I chose you"))) {
 	player = StripHighlightAndTitle(star_match[0]);
 	if (appData.zippyBughouse > 1 && first.initDone) {
-	    sprintf(reply, "%spartner %s\n", ics_prefix, player);
+	    snprintf(reply, MSG_SIZ,"%spartner %s\n", ics_prefix, player);
 	    SendToICS(reply);
 	    if (strcmp(zippyPartner, player) != 0) {
 	      safeStrCpy(zippyPartner, player, sizeof(zippyPartner)/sizeof(zippyPartner[0]));
 	      SendToProgram(reply + strlen(ics_prefix), &first);
 	    }
 	} else if (appData.zippyBughouse > 0) {
-	    sprintf(reply, "%sdecline %s\n", ics_prefix, player);
+	    snprintf(reply, MSG_SIZ, "%sdecline %s\n", ics_prefix, player);
 	    SendToICS(reply);
 	} else {
-	    sprintf(reply, "%stell %s This computer cannot play bughouse\n",
+	  snprintf(reply, MSG_SIZ, "%stell %s This computer cannot play bughouse\n",
 		    ics_prefix, player);
 	    SendToICS(reply);
 	}
@@ -472,7 +472,7 @@ int ZippyControl(buf, i)
     if (appData.zippyPlay && appData.zippyBughouse && first.initDone &&
 	looking_at(buf, i, "* agrees to be your partner")) {
 	player = StripHighlightAndTitle(star_match[0]);
-	sprintf(reply, "partner %s\n", player);
+	snprintf(reply, MSG_SIZ, "partner %s\n", player);
 	if (strcmp(zippyPartner, player) != 0) {
 	  safeStrCpy(zippyPartner, player, sizeof(zippyPartner)/sizeof(zippyPartner[0]));
 	  SendToProgram(reply, &first);
@@ -507,10 +507,10 @@ int ZippyControl(buf, i)
 	player = StripHighlightAndTitle(star_match[0]);
 	if (strcmp(zippyPartner, player) != 0) {
 	  safeStrCpy(zippyPartner, player, sizeof(zippyPartner)/sizeof(zippyPartner[0]));
-	  sprintf(reply, "partner %s\n", player);
+	  snprintf(reply, MSG_SIZ, "partner %s\n", player);
 	  SendToProgram(reply, &first);
 	}
-	sprintf(reply, "ptell %s\n", star_match[1]);
+	snprintf(reply, MSG_SIZ, "ptell %s\n", star_match[1]);
 	SendToProgram(reply, &first);
 	return TRUE;
     }
@@ -538,7 +538,7 @@ int ZippyControl(buf, i)
 		    strlen(appData.zippyWrongPassword)) == 0) {
 	    p = star_match[1] + strlen(appData.zippyWrongPassword);
 	    while (*p == ' ') p++;
-	    sprintf(reply, "wrong %s\n", player);
+	    snprintf(reply, MSG_SIZ, "wrong %s\n", player);
 	    SendToICS(reply);
 	} else if (appData.zippyBughouse && first.initDone &&
 		   strcmp(player, zippyPartner) == 0) {
@@ -547,12 +547,12 @@ int ZippyControl(buf, i)
 	    SendToProgram("\n", &first);
 	} else if (strncmp(star_match[1], HI, 6) == 0) {
 	    extern char* programVersion;
-	    sprintf(reply, "%stell %s %s\n",
+	    snprintf(reply, MSG_SIZ, "%stell %s %s\n",
 		    ics_prefix, player, programVersion);
 	    SendToICS(reply);
 	} else if (strncmp(star_match[1], "W0W!! ", 6) == 0) {
 	    extern char* programVersion;
-	    sprintf(reply, "%stell %s %s\n", ics_prefix,
+	    snprintf(reply, MSG_SIZ, "%stell %s %s\n", ics_prefix,
 		    player, programVersion);
 	    SendToICS(reply);
 	} else if (appData.zippyTalk && (((unsigned) random() % 10) < 9)) {
@@ -573,7 +573,7 @@ int ZippyControl(buf, i)
 
     if (looking_at(buf, i, "* spoofs you:")) {
         player = StripHighlightAndTitle(star_match[0]);
-        sprintf(reply, "spoofedby %s\n", player);
+        snprintf(reply, MSG_SIZ, "spoofedby %s\n", player);
         SendToICS(reply);
     }
 
@@ -598,7 +598,7 @@ int ZippyConverse(buf, i)
 	    return TRUE;
 	} else if (appData.zippyPinhead[0] != NULLCHAR &&
 		   StrCaseStr(star_match[1], appData.zippyPinhead) != NULL) {
-	    sprintf(reply, "insult %s\n", player);
+	  snprintf(reply, MSG_SIZ, "insult %s\n", player);
 	    SendToICS(reply);
 	} else if (ZippyCalled(star_match[1])) {
 	    Speak("shout", NULL);
@@ -693,7 +693,7 @@ int ZippyConverse(buf, i)
 	 atoi(star_match[0]) != 0) ||
 	looking_at(buf, i, "* has left a message for you") ||
 	looking_at(buf, i, "* just sent you a message")) {
-        sprintf(reply, "%smessages\n%sclearmessages *\n",
+      snprintf(reply, MSG_SIZ, "%smessages\n%sclearmessages *\n",
 		ics_prefix, ics_prefix);
 	SendToICS(reply);
 	return TRUE;
@@ -703,7 +703,7 @@ int ZippyConverse(buf, i)
 	if (((unsigned) random() % 3) == 0) {
 	    char *player = StripHighlightAndTitle(star_match[0]);
 	    safeStrCpy(lastgreet, player, sizeof(lastgreet)/sizeof(lastgreet[0]));
-	    sprintf(reply, "greet %s\n", player);
+	    snprintf(reply, MSG_SIZ, "greet %s\n", player);
 	    SendToICS(reply);
 	    Speak("tell", player);
 	}
@@ -712,7 +712,7 @@ int ZippyConverse(buf, i)
     if (looking_at(buf, i, "Notification: * has departed")) {
 	if (((unsigned) random() % 3) == 0) {
 	    char *player = StripHighlightAndTitle(star_match[0]);
-	    sprintf(reply, "farewell %s\n", player);
+	    snprintf(reply, MSG_SIZ, "farewell %s\n", player);
 	    SendToICS(reply);
 	}
     }
@@ -720,7 +720,7 @@ int ZippyConverse(buf, i)
     if (looking_at(buf, i, "Not sent -- * is censoring you")) {
 	char *player = StripHighlightAndTitle(star_match[0]);
 	if (strcmp(player, lastgreet) == 0) {
-	    sprintf(reply, "%s-notify %s\n", ics_prefix, player);
+	  snprintf(reply, MSG_SIZ, "%s-notify %s\n", ics_prefix, player);
 	    SendToICS(reply);
 	}
     }
@@ -793,7 +793,7 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
        easier to use the ICS formula feature instead. */
 
     if (variant == VariantLoadable) {
-        sprintf(buf,
+      snprintf(buf, MSG_SIZ,
 	 "%stell %s This computer can't play wild type %s\n%sdecline %s\n",
 		ics_prefix, opponent, swild, ics_prefix, opponent);
 	SendToICS(buf);
@@ -802,7 +802,7 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
     if (StrStr(appData.zippyVariants, varname) == NULL ||
               ((i=first.protocolVersion) != 1 && StrStr(first.variants, varname) == NULL) /* [HGM] zippyvar */
                                                           ) {
-        sprintf(buf,
+      snprintf(buf, MSG_SIZ,
 	 "%stell %s This computer can't play %s [%s], only %s\n%sdecline %s\n",
 		ics_prefix, opponent, swild, varname,
                 i ? first.variants : appData.zippyVariants,                               /* [HGM] zippyvar */
@@ -824,7 +824,7 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
 	strcmp(opponent, zippyLastOpp) == 0 &&
 	zippyConsecGames >= appData.zippyMaxGames &&
 	difftime(time(0), zippyLastGameEnd) < appData.zippyReplayTimeout) {
-      sprintf(buf, "%stell %s Sorry, you have just played %d consecutive games against %s.  To give others a chance, please wait %d seconds or until someone else has played.\n%sdecline %s\n",
+      snprintf(buf, MSG_SIZ,  "%stell %s Sorry, you have just played %d consecutive games against %s.  To give others a chance, please wait %d seconds or until someone else has played.\n%sdecline %s\n",
 	      ics_prefix, opponent, zippyConsecGames, ics_handle,
 	      appData.zippyReplayTimeout, ics_prefix, opponent);
       SendToICS(buf);
@@ -834,7 +834,7 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
     /* [HGM] aborter: opponent is cheater that aborts games he doesn't like on first move. Make him wait */
     if (strcmp(opponent, zippyOffender) == 0 &&
 	difftime(time(0), zippyLastGameEnd) < appData.zippyReplayTimeout) {
-      sprintf(buf, "%stell %s Sorry, your previous game against %s was rather short. "
+      snprintf(buf, MSG_SIZ,  "%stell %s Sorry, your previous game against %s was rather short. "
 		   " It will wait %d seconds to see if a tougher opponent comes along.\n%sdecline %s\n",
 	      ics_prefix, opponent, ics_handle,
 	      appData.zippyReplayTimeout, ics_prefix, opponent);
@@ -844,13 +844,13 @@ void ZippyHandleChallenge(srated, swild, sbase, sincrement, opponent)
 
     /* Engine not yet initialized or still thinking about last game? */
     if (!first.initDone || first.lastPing != first.lastPong) {
-      sprintf(buf, "%stell %s I'm not quite ready for a new game yet; try again soon.\n%sdecline %s\n",
+      snprintf(buf, MSG_SIZ,  "%stell %s I'm not quite ready for a new game yet; try again soon.\n%sdecline %s\n",
 	      ics_prefix, opponent, ics_prefix, opponent);
       SendToICS(buf);
       return;
     }
 
-    sprintf(buf, "%saccept %s\n", ics_prefix, opponent);
+    snprintf(buf, MSG_SIZ, "%saccept %s\n", ics_prefix, opponent);
     SendToICS(buf);
     if (appData.zippyTalk) {
       Speak("tell", opponent);
@@ -999,7 +999,7 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 
     /* Send the variant command if needed */
     if (gameInfo.variant != VariantNormal) {
-      sprintf(buf, "variant %s\n", VariantName(gameInfo.variant));
+      snprintf(buf, MSG_SIZ,  "variant %s\n", VariantName(gameInfo.variant));
       SendToProgram(buf, &first);
     }
 
@@ -1010,7 +1010,7 @@ void ZippyFirstBoard(moveNum, basetime, increment)
       sentPos = TRUE;
     }
 
-    sprintf(buf, "level 0 %d %d\n", basetime, increment);
+    snprintf(buf, MSG_SIZ,  "level 0 %d %d\n", basetime, increment);
     SendToProgram(buf, &first);
 
     /* Count consecutive games from one opponent */
@@ -1038,11 +1038,11 @@ void ZippyFirstBoard(moveNum, basetime, increment)
     firstMove = FALSE;
     if (gameMode == IcsPlayingWhite) {
         if (first.sendName) {
-	  sprintf(buf, "name %s\n", gameInfo.black);
+	  snprintf(buf, MSG_SIZ,  "name %s\n", gameInfo.black);
 	  SendToProgram(buf, &first);
 	}
 	safeStrCpy(ics_handle, gameInfo.white, MSG_SIZ);
-	sprintf(buf, "rating %d %d\n", w, b);
+	snprintf(buf, MSG_SIZ,  "rating %d %d\n", w, b);
 	SendToProgram(buf, &first);
 	if (sentPos) {
 	    /* Position sent above, engine is in force mode */
@@ -1089,11 +1089,11 @@ void ZippyFirstBoard(moveNum, basetime, increment)
 	}
     } else if (gameMode == IcsPlayingBlack) {
         if (first.sendName) {
-	  sprintf(buf, "name %s\n", gameInfo.white);
+	  snprintf(buf, MSG_SIZ,  "name %s\n", gameInfo.white);
 	  SendToProgram(buf, &first);
 	}
 	safeStrCpy(ics_handle, gameInfo.black, MSG_SIZ);
-	sprintf(buf, "rating %d %d\n", b, w);
+	snprintf(buf, MSG_SIZ,  "rating %d %d\n", b, w);
 	SendToProgram(buf, &first);
 	if (sentPos) {
 	    /* Position sent above, engine is in force mode */
@@ -1148,7 +1148,7 @@ ZippyHoldings(white_holding, black_holding, new_piece)
 {
     char buf[MSG_SIZ];
     if (gameMode != IcsPlayingBlack && gameMode != IcsPlayingWhite) return;
-    sprintf(buf, "holding [%s] [%s] %s\n",
+    snprintf(buf, MSG_SIZ,  "holding [%s] [%s] %s\n",
 	    white_holding, black_holding, new_piece);
     SendToProgram(buf, &first);
 }
