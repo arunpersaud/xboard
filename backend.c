@@ -8324,7 +8324,6 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 
     /* [HGM] compute & store e.p. status and castling rights for new position */
     /* we can always do that 'in place', now pointers to these rights are passed to ApplyMove */
-    { int i;
 
       if(gameInfo.variant == VariantBerolina) berolina = EP_BEROLIN_A;
       oldEP = (signed char)board[EP_STATUS];
@@ -8332,6 +8331,16 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 
       if( board[toY][toX] != EmptySquare ) 
            board[EP_STATUS] = EP_CAPTURE;  
+
+  /* [HGM] In Shatranj and Courier all promotions are to Ferz */
+  if((gameInfo.variant==VariantShatranj || gameInfo.variant==VariantCourier || gameInfo.variant == VariantMakruk)
+       && promoChar != 0) promoChar = PieceToChar(WhiteFerz);
+         
+  if (fromY == DROP_RANK) {
+	/* must be first */
+        piece = board[toY][toX] = (ChessSquare) fromX;
+  } else {
+      int i;
 
       if( board[fromY][fromX] == WhitePawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
@@ -8364,18 +8373,8 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
              ) board[CASTLING][i] = NoRights; // revoke for moved or captured piece
        }
 
-    }
+     if (fromX == toX && fromY == toY) return;
 
-  /* [HGM] In Shatranj and Courier all promotions are to Ferz */
-  if((gameInfo.variant==VariantShatranj || gameInfo.variant==VariantCourier || gameInfo.variant == VariantMakruk)
-       && promoChar != 0) promoChar = PieceToChar(WhiteFerz);
-         
-  if (fromX == toX && fromY == toY) return;
-
-  if (fromY == DROP_RANK) {
-	/* must be first */
-        piece = board[toY][toX] = (ChessSquare) fromX;
-  } else {
      piece = board[fromY][fromX]; /* [HGM] remember, for Shogi promotion */
      king = piece < (int) BlackPawn ? WhiteKing : BlackKing; /* [HGM] Knightmate simplify testing for castling */
      if(gameInfo.variant == VariantKnightmate)
