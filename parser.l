@@ -328,6 +328,62 @@ extern void CopyBoard P((Board to, Board from));
     return (int) result;
 }
 
+[A-L][0-9][xX:-]?[A-L][0-9]      {
+    /*
+     * Simple algebraic move, in capitals
+     * [HGM] Engine moves are received in this format, with lower-case promoChar!
+     */
+    int skip = 0;
+    ChessMove result;
+
+    if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
+
+    /* remove the [xX:-] */
+    if ((yytext[2] == 'x') || (yytext[2] == 'X') ||
+	(yytext[2] == '-') || (yytext[2] == ':')) skip = 1;
+
+    currentMoveString[0] = yytext[0]+32;
+    currentMoveString[1] = yytext[1];
+    currentMoveString[2] = yytext[2+skip]+32;
+    currentMoveString[3] = yytext[3+skip];
+    currentMoveString[4] = NULLCHAR;
+
+    /* [HGM] do not allow values beyond board size */
+    if(currentMoveString[1] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[1] - ONE <  0            ||
+       currentMoveString[0] - AAA >= BOARD_RGHT   ||
+       currentMoveString[3] - ONE >= BOARD_HEIGHT ||
+       currentMoveString[3] - ONE <  0            ||
+       currentMoveString[2] - AAA >= BOARD_RGHT   ||
+       currentMoveString[0] - AAA <  BOARD_LEFT   ||
+       currentMoveString[2] - AAA <  BOARD_LEFT     )
+      return ImpossibleMove;
+
+    result = LegalityTest(boards[yyboardindex],
+			  PosFlags(yyboardindex)&~F_MANDATORY_CAPTURE, // [HGM] losers: might think we can e.p.!
+                          currentMoveString[1] - ONE,
+                          currentMoveString[0] - AAA,
+                          currentMoveString[3] - ONE,
+                          currentMoveString[2] - AAA,
+			  currentMoveString[4]);
+
+    if (currentMoveString[4] == NULLCHAR &&
+        (result == WhitePromotionKnight || result == BlackPromotionKnight ||
+         result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
+        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
+            currentMoveString[4] = PieceToChar(BlackFerz);
+        else if(gameInfo.variant == VariantGreat)
+            currentMoveString[4] = PieceToChar(BlackMan);
+        else
+            currentMoveString[4] = PieceToChar(BlackQueen);
+	currentMoveString[5] = NULLCHAR;
+    } else if(appData.testLegality && // strip off unnecessary and false promo characters
+       !(result == WhitePromotionQueen  || result == BlackPromotionQueen ||
+         result == WhiteNonPromotion    || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
+
+    return (int) result;
+}
+
 [a-l][0-9]((=?\(?[A-Za-z]\)?)|=)?       {
     /*
      * Pawn move, possibly with promotion
