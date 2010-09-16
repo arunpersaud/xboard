@@ -1219,6 +1219,15 @@ int MateTest(board, flags)
     if (cl.count > 0) {
 	return inCheck ? MT_CHECK : MT_NONE;
     } else {
+        if(gameInfo.holdingsWidth && gameInfo.variant != VariantSuper || gameInfo.variant != VariantGreat) { // drop game
+            int r, f, n, holdings = flags & F_WHITE_ON_MOVE ? BOARD_WIDTH-1 : 0;
+            for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) if(board[r][f] == EmptySquare) // all empty squares
+                for(n=0; n<BOARD_HEIGHT; n++) // all pieces in hand
+                    if(board[n][holdings] != EmptySquare) {
+                        int moveType = LegalDrop(board, flags, board[n][holdings], r, f);
+                        if(moveType == WhiteDrop || moveType == BlackDrop) return MT_CHECK; // we can resolve check by legal drop
+                    }
+        }
 	if(gameInfo.variant == VariantSuicide) // [HGM] losers: always stalemate, since no check, but result varies
 		return myPieces == hisPieces ? MT_STALEMATE :
 					myPieces > hisPieces ? MT_STAINMATE : MT_STEALMATE;

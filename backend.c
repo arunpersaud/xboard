@@ -6666,8 +6666,7 @@ Adjudicate(ChessProgramState *cps)
 	ChessProgramState *engineOpponent = (gameMode == TwoMachinesPlay ? cps->other : (cps ? NULL : &first));
 	Boolean canAdjudicate = !appData.icsActive;
 
-	// most tests only when we understand the game, i.e. legality-checking on, and (for the time being) no piece drops
-	if(gameInfo.holdingsSize == 0 || gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
+	// most tests only when we understand the game, i.e. legality-checking on
 	    if( appData.testLegality )
 	    {   /* [HGM] Some more adjudications for obstinate engines */
 		int nrW, nrB, bishopColor, staleW, staleB, nr[EmptySquare+1], i;
@@ -6819,7 +6818,6 @@ Adjudicate(ChessProgramState *cps)
                      }
                 } else moveCount = 6;
 	    }
-	}
 	  
 	if (appData.debugMode) { int i;
 	    fprintf(debugFP, "repeat test fmm=%d bmm=%d ep=%d, reps=%d\n",
