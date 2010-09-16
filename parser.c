@@ -2838,7 +2838,7 @@ case 11:
 YY_RULE_SETUP
 #line 826 "parser.l"
 {
-    /* Bughouse piece drop.  No legality checking for now. */
+    /* Bughouse piece drop. */
     currentMoveString[1] = '@';
     currentMoveString[2] = yytext[2];
     currentMoveString[3] = yytext[3];
@@ -2854,11 +2854,11 @@ YY_RULE_SETUP
 
     if (WhiteOnMove(yyboardindex)) {
 	currentMoveString[0] = ToUpper(yytext[0]);
-	return (int) WhiteDrop;
     } else {
 	currentMoveString[0] = ToLower(yytext[0]);
-	return (int) BlackDrop;
     }
+    return LegalityTest(boards[yyboardindex], PosFlags(yyboardindex), DROP_RANK, // [HGM] does drops now too
+                        CharToPiece(currentMoveString[0]), currentMoveString[3] - ONE, currentMoveString[2] - AAA, NULLCHAR);
 }
 	YY_BREAK
 case 12:

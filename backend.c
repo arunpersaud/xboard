@@ -895,7 +895,7 @@ InitBackEnd1()
       case VariantGothic:     /* [HGM] should work */
       case VariantCapablanca: /* [HGM] should work */
       case VariantCourier:    /* [HGM] initial forced moves not implemented */
-      case VariantShogi:      /* [HGM] drops not tested for legality */
+      case VariantShogi:      /* [HGM] could still mate with pawn drop */
       case VariantKnightmate: /* [HGM] should work */
       case VariantCylinder:   /* [HGM] untested */
       case VariantFalcon:     /* [HGM] untested */
@@ -5996,7 +5996,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	   fromX = fromX ? WhitePawn : BlackPawn; // first piece type in selected holdings
 	   while(PieceToChar(fromX) == '.' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) fromX++; 
          fromY = DROP_RANK;
-    } else
+    }
 
     /* [HGM] always test for legality, to get promotion info */
     moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
@@ -7164,9 +7164,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
         /* to make sure an illegal e.p. capture does not slip through,   */
         /* to cause a forfeit on a justified illegal-move complaint      */
         /* of the opponent.                                              */
-        if( gameMode==TwoMachinesPlay && appData.testLegality
-            && fromY != DROP_RANK /* [HGM] temporary; should still add legality test for drops */
-                                                              ) {
+        if( gameMode==TwoMachinesPlay && appData.testLegality ) {
            ChessMove moveType;
            moveType = LegalityTest(boards[forwardMostMove], PosFlags(forwardMostMove),
                              fromY, fromX, toY, toX, promoChar);

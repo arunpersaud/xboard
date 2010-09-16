@@ -987,7 +987,7 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
 	}
 	board[rt][ft] = board[rf][ff];
 	board[rf][ff] = EmptySquare;
-    }
+    } else board[rt][ft] = ff; // [HGM] drop
 
     /* For compatibility with ICS wild 9, we scan the board in the
        order a1, a2, a3, ... b1, b2, ..., h8 to find the first king,
@@ -1022,11 +1022,44 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
 	} else {
 	    board[rt][ft] = captured;
 	}
-    }
+    } else board[rt][ft] = EmptySquare; // [HGM] drop
 
     return cl.fking < BOARD_RGHT ? cl.check : 1000; // [HGM] atomic: return 1000 if we have no king
 }
 
+ChessMove LegalDrop(board, flags, piece, rt, ft)
+     Board board;
+     int flags;
+     ChessSquare piece;
+     int rt, ft;
+{   // [HGM] put drop legality testing in separate routine for clarity
+    int n;
+if(appData.debugMode) fprintf(debugFP, "LegalDrop: %d @ %d,%d)\n", piece, ft, rt);
+    if(board[rt][ft] != EmptySquare) return ImpossibleMove; // must drop to empty square
+    n = PieceToNumber(piece);
+    if(gameInfo.holdingsWidth == 0 || (flags & F_WHITE_ON_MOVE ? board[n][BOARD_WIDTH-1] : board[BOARD_HEIGHT-1-n][0]) != piece)
+        return ImpossibleMove; // piece not available
+    if(gameInfo.variant == VariantShogi) { // in Shogi lots of drops are forbidden!
+        if((piece == WhitePawn || piece == WhiteQueen) && rt == BOARD_HEIGHT-1 ||
+           (piece == BlackPawn || piece == BlackQueen) && rt == 0 ||
+            piece == WhiteKnight && rt > BOARD_HEIGHT-3 ||
+            piece == BlackKnight && rt < 2 ) return IllegalMove; // e.g. where dropped piece has no moves
+        if(piece == WhitePawn || piece == BlackPawn) {
+            int r;
+            for(r=1; r<BOARD_HEIGHT-1; r++)
+                if(board[r][ft] == piece) return IllegalMove; // or there already is a Pawn in file
+            // should still test if we mate with this Pawn
+        }
+    } else {
+        if( (piece == WhitePawn || piece == BlackPawn) &&
+            (rt == 0 || rt == BOARD_HEIGHT -1 ) )
+            return IllegalMove; /* no pawn drops on 1st/8th */
+    }
+if(appData.debugMode) fprintf(debugFP, "LegalDrop: %d @ %d,%d)\n", piece, ft, rt);
+    if (!(flags & F_IGNORE_CHECK) &&
+	CheckTest(board, flags, DROP_RANK, piece, rt, ft, FALSE) ) return IllegalMove;
+    return flags & F_WHITE_ON_MOVE ? WhiteDrop : BlackDrop;
+}
 
 extern void LegalityTestCallback P((Board board, int flags, ChessMove kind,
 				    int rf, int ff, int rt, int ft,
@@ -1055,7 +1088,10 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
      int flags;
      int rf, ff, rt, ft, promoChar;
 {
-    LegalityTestClosure cl; ChessSquare piece = board[rf][ff], *castlingRights = board[CASTLING];
+    LegalityTestClosure cl; ChessSquare piece, *castlingRights = board[CASTLING];
+
+    if(rf == DROP_RANK) return LegalDrop(board, flags, ff, rt, ft);
+    piece = board[rf][ff];
     
     if (appData.debugMode) {
         int i;

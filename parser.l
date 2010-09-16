@@ -824,7 +824,7 @@ extern void CopyBoard P((Board to, Board from));
 }
 
 [A-Z][@*][a-l][0-9] {
-    /* Bughouse piece drop.  No legality checking for now. */
+    /* Bughouse piece drop. */
     currentMoveString[1] = '@';
     currentMoveString[2] = yytext[2];
     currentMoveString[3] = yytext[3];
@@ -840,11 +840,11 @@ extern void CopyBoard P((Board to, Board from));
 
     if (WhiteOnMove(yyboardindex)) {
 	currentMoveString[0] = ToUpper(yytext[0]);
-	return (int) WhiteDrop;
     } else {
 	currentMoveString[0] = ToLower(yytext[0]);
-	return (int) BlackDrop;
     }
+    return LegalityTest(boards[yyboardindex], PosFlags(yyboardindex), DROP_RANK, // [HGM] does drops now too
+                        CharToPiece(currentMoveString[0]), currentMoveString[3] - ONE, currentMoveString[2] - AAA, NULLCHAR);
 }
 
 [Rr]esign(s|ed)?  {
