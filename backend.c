@@ -5841,11 +5841,10 @@ int lastLoadGameUseList = FALSE;
 char lastLoadGameTitle[MSG_SIZ], lastLoadPositionTitle[MSG_SIZ];
 ChessMove lastLoadGameStart = (ChessMove) 0;
 
-ChessMove
-UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
+void
+UserMoveEvent(fromX, fromY, toX, toY, promoChar)
      int fromX, fromY, toX, toY;
      int promoChar;
-     Boolean captureOwn;
 {
     ChessMove moveType;
     ChessSquare pdown, pup;
@@ -5870,13 +5869,13 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
       case IcsIdle:
 	/* We switched into a game mode where moves are not accepted,
            perhaps while the mouse button was down. */
-        return ImpossibleMove;
+        return;
 
       case MachinePlaysWhite:
 	/* User is moving for Black */
 	if (WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is White's turn"));
-            return ImpossibleMove;
+            return;
 	}
 	break;
 
@@ -5884,7 +5883,7 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	/* User is moving for White */
 	if (!WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is Black's turn"));
-            return ImpossibleMove;
+            return;
 	}
 	break;
 
@@ -5898,13 +5897,13 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	    /* User is moving for Black */
 	    if (WhiteOnMove(currentMove)) {
 		DisplayMoveError(_("It is White's turn"));
-                return ImpossibleMove;
+                return;
 	    }
 	} else {
 	    /* User is moving for White */
 	    if (!WhiteOnMove(currentMove)) {
 		DisplayMoveError(_("It is Black's turn"));
-                return ImpossibleMove;
+                return;
 	    }
 	}
 	break;
@@ -5926,7 +5925,7 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
 	    }
-            return ImpossibleMove;
+            return;
 	}
 	break;
 
@@ -5947,7 +5946,7 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 			    "fromY %d, toX %d, toY %d\n",
 			    fromX, fromY, toX, toY);
 	    }
-            return ImpossibleMove;
+            return;
 	}
 	break;
 
@@ -5959,7 +5958,8 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 	   click-click move is possible */
 	if (toX == -2 || toY == -2) {
 	    boards[0][fromY][fromX] = EmptySquare;
-	    return AmbiguousMove;
+	    DrawPosition(FALSE, boards[currentMove]);
+	    return;
 	} else if (toX >= 0 && toY >= 0) {
 	    boards[0][toY][toX] = boards[0][fromY][fromX];
 	    if(fromX == BOARD_LEFT-2) { // handle 'moves' out of holdings
@@ -5975,29 +5975,28 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
 		}
 	    } else
 	    boards[0][fromY][fromX] = EmptySquare;
-	    return AmbiguousMove;
+	    DrawPosition(FALSE, boards[currentMove]);
+	    return;
 	}
-        return ImpossibleMove;
+        return;
     }
 
-    if(toX < 0 || toY < 0) return ImpossibleMove;
+    if(toX < 0 || toY < 0) return;
     pdown = boards[currentMove][fromY][fromX];
     pup = boards[currentMove][toY][toX];
 
-    /* [HGM] If move started in holdings, it means a drop */
+    /* [HGM] If move started in holdings, it means a drop. Convert to standard form */
     if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) { 
-         if( pup != EmptySquare ) return ImpossibleMove;
-         if(appData.testLegality) {
-             /* it would be more logical if LegalityTest() also figured out
-              * which drops are legal. For now we forbid pawns on back rank.
-              * Shogi is on its own here...
-              */
-             if( (pdown == WhitePawn || pdown == BlackPawn) &&
-                 (toY == 0 || toY == BOARD_HEIGHT -1 ) )
-                 return(ImpossibleMove); /* no pawn drops on 1st/8th */
-         }
-         return WhiteDrop; /* Not needed to specify white or black yet */
-    }
+         if( pup != EmptySquare ) return;
+         moveType = WhiteOnMove(currentMove) ? WhiteDrop : BlackDrop;
+	   if(appData.debugMode) fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n", 
+		moveType, currentMove, fromX, fromY, boards[currentMove][fromY][fromX]);
+	   // holdings might not be sent yet in ICS play; we have to figure out which piece belongs here
+	   if(fromX == 0) fromY = BOARD_HEIGHT-1 - fromY; // black holdings upside-down
+	   fromX = fromX ? WhitePawn : BlackPawn; // first piece type in selected holdings
+	   while(PieceToChar(fromX) == '.' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) fromX++; 
+         fromY = DROP_RANK;
+    } else
 
     /* [HGM] always test for legality, to get promotion info */
     moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
@@ -6006,18 +6005,11 @@ UserMoveTest(fromX, fromY, toX, toY, promoChar, captureOwn)
     if (appData.testLegality) {
 	if (moveType == IllegalMove || moveType == ImpossibleMove) {
 	    DisplayMoveError(_("Illegal move"));
-            return ImpossibleMove;
+            return;
 	}
     }
 
-    return moveType;
-    /* [HGM] <popupFix> in stead of calling FinishMove directly, this
-       function is made into one that returns an OK move type if FinishMove
-       should be called. This to give the calling driver routine the
-       opportunity to finish the userMove input with a promotion popup,
-       without bothering the user with this for invalid or illegal moves */
-
-/*    FinishMove(moveType, fromX, fromY, toX, toY, promoChar); */
+    FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
 /* Common tail of UserMoveEvent and DropMenuEvent */
@@ -6043,18 +6035,6 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
        move type in caller when we know the move is a legal promotion */
     if(moveType == NormalMove && promoChar)
         moveType = PromoCharToMoveType(WhiteOnMove(currentMove), promoChar);
-
-    /* [HGM] convert drag-and-drop piece drops to standard form */
-    if( (fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) && fromY != DROP_RANK ){
-         moveType = WhiteOnMove(currentMove) ? WhiteDrop : BlackDrop;
-	   if(appData.debugMode) fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n", 
-		moveType, currentMove, fromX, fromY, boards[currentMove][fromY][fromX]);
-	   // holdings might not be sent yet in ICS play; we have to figure out which piece belongs here
-	   if(fromX == 0) fromY = BOARD_HEIGHT-1 - fromY; // black holdings upside-down
-	   fromX = fromX ? WhitePawn : BlackPawn; // first piece type in selected holdings
-	   while(PieceToChar(fromX) == '.' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) fromX++; 
-         fromY = DROP_RANK;
-    }
 
     /* [HGM] <popupFix> The following if has been moved here from
        UserMoveEvent(). Because it seemed to belong here (why not allow
@@ -6210,28 +6190,6 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 	HandleMachineMove(bookMove, &first);
   }
   return 1;
-}
-
-void
-UserMoveEvent(fromX, fromY, toX, toY, promoChar)
-     int fromX, fromY, toX, toY;
-     int promoChar;
-{
-    /* [HGM] This routine was added to allow calling of its two logical
-       parts from other modules in the old way. Before, UserMoveEvent()
-       automatically called FinishMove() if the move was OK, and returned
-       otherwise. I separated the two, in order to make it possible to
-       slip a promotion popup in between. But that it always needs two
-       calls, to the first part, (now called UserMoveTest() ), and to
-       FinishMove if the first part succeeded. Calls that do not need
-       to do anything in between, can call this routine the old way. 
-    */
-    ChessMove moveType = UserMoveTest(fromX, fromY, toX, toY, promoChar, FALSE);
-if(appData.debugMode) fprintf(debugFP, "moveType 4 = %d, promochar = %x\n", moveType, promoChar);
-    if(moveType == AmbiguousMove)
-	DrawPosition(FALSE, boards[currentMove]);
-    else if(moveType != ImpossibleMove && moveType != Comment)
-        FinishMove(moveType, fromX, fromY, toX, toY, promoChar);
 }
 
 void
