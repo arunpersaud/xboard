@@ -310,9 +310,9 @@ extern void CopyBoard P((Board to, Board from));
                           currentMoveString[2] - AAA,
 			  currentMoveString[4]);
 
-    if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotionKnight || result == BlackPromotionKnight ||
-         result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
+    if (currentMoveString[4] == NULLCHAR) {
+      if(result == WhitePromotionKnight || result == BlackPromotionKnight ||
+         result == WhitePromotionQueen  || result == BlackPromotionQueen) {
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             currentMoveString[4] = PieceToChar(BlackFerz);
         else if(gameInfo.variant == VariantGreat)
@@ -320,7 +320,10 @@ extern void CopyBoard P((Board to, Board from));
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
-    }
+      }
+    } else if(appData.testLegality && // strip off unnecessary and false promo characters
+       !(result == WhitePromotionQueen  || result == BlackPromotionQueen ||
+         result == WhiteNonPromotion    || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
 
     return (int) result;
 }

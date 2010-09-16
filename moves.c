@@ -180,7 +180,7 @@ ChessMove PromoCharToMoveType(whiteOnMove, promoChar)
 {	/* [HGM] made dependent on CharToPiece to alow alternate piece letters */
 	ChessSquare piece = CharToPiece(whiteOnMove ? ToUpper(promoChar) : ToLower(promoChar) );
 
-
+	if(promoChar == '=') return whiteOnMove ? WhiteNonPromotion : BlackNonPromotion;
 	if(promoChar == NULLCHAR) return NormalMove;
 
 	switch(piece) {
@@ -1097,7 +1097,7 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
                          piece == WhiteKnight && rt > BOARD_HEIGHT-3) /* promotion mandatory */
                              cl.kind = promoChar == '=' ? IllegalMove : WhitePromotionKnight;
                     else /* promotion optional, default is promote */
-                             cl.kind = promoChar == '=' ? NormalMove  : WhitePromotionQueen;
+                             cl.kind = promoChar == '=' ? WhiteNonPromotion : WhitePromotionQueen;
                    
                 } else cl.kind = (promoChar == NULLCHAR || promoChar == 'x' || promoChar == '=') ?
                                             NormalMove : IllegalMove;
@@ -1107,7 +1107,7 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
                          piece == BlackKnight && rt < 2 ) /* promotion obligatory */
                              cl.kind = promoChar == '=' ? IllegalMove : BlackPromotionKnight;
                     else /* promotion optional, default is promote */
-                             cl.kind = promoChar == '=' ? NormalMove  : BlackPromotionQueen;
+                             cl.kind = promoChar == '=' ? BlackNonPromotion : BlackPromotionQueen;
 
                 } else cl.kind = (promoChar == NULLCHAR || promoChar == 'x' || promoChar == '=') ?
                                             NormalMove : IllegalMove;

@@ -4575,6 +4575,10 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY)
       /* POP Fabien */
 	sprintf(user_move, "o-o-o\n");
 	break;
+      case WhiteNonPromotion:
+      case BlackNonPromotion:
+        sprintf(user_move, "%c%c%c%c=\n", AAA + fromX, ONE + fromY, AAA + toX, ONE + toY);
+        break;
       case WhitePromotionQueen:
       case BlackPromotionQueen:
       case WhitePromotionRook:
@@ -4803,6 +4807,8 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
       case BlackPromotionKnight:
       case WhitePromotionKing:
       case BlackPromotionKing:
+      case WhiteNonPromotion:
+      case BlackNonPromotion:
       case NormalMove:
       case WhiteCapturesEnPassant:
       case BlackCapturesEnPassant:
@@ -8170,6 +8176,8 @@ ParseGameHistory(game)
 	  case BlackPromotionKnight:
 	  case WhitePromotionKing:
 	  case BlackPromotionKing:
+	  case WhiteNonPromotion:
+	  case BlackNonPromotion:
 	  case NormalMove:
 	  case WhiteCapturesEnPassant:
 	  case BlackCapturesEnPassant:
@@ -9646,6 +9654,8 @@ LoadGameOneMove(readAhead)
       case BlackPromotionKnight:
       case WhitePromotionKing:
       case BlackPromotionKing:
+      case WhiteNonPromotion:
+      case BlackNonPromotion:
       case NormalMove:
       case WhiteKingSideCastle:
       case WhiteQueenSideCastle:
