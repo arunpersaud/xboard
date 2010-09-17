@@ -369,6 +369,7 @@ typedef enum {
 }
 
 typedef struct {
+    char *language;
 #if !defined(_amigados)
     char *whitePieceColor;
     char *blackPieceColor;

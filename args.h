@@ -545,6 +545,7 @@ ArgDescriptor argDescriptors[] = {
   { "defaultHashSize", ArgInt, (void *) &appData.defaultHashSize, TRUE, (ArgIniType) 64 }, 
   { "defaultCacheSizeEGTB", ArgInt, (void *) &appData.defaultCacheSizeEGTB, TRUE, (ArgIniType) 4 },
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
+  { "language", ArgFilename, (void *) &appData.language, TRUE, (ArgIniType) "" },
 
   /* [HGM] board-size, adjudication and misc. options */
   { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },
