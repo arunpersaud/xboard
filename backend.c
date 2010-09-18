@@ -14864,12 +14864,12 @@ ParseFEN(board, blackPlaysFirst, fen)
     while(*p==' ') p++;
     if( gameInfo.holdingsWidth && p[-1] == '/' || *p == '[') {
         if(*p == '[') p++;
-        if(*p == '-' ) *p++; /* empty holdings */ else {
+        if(*p == '-' ) p++; /* empty holdings */ else {
             if( !gameInfo.holdingsWidth ) return FALSE; /* no room to put holdings! */
             /* if we would allow FEN reading to set board size, we would   */
             /* have to add holdings and shift the board read so far here   */
             while( (piece = CharToPiece(*p) ) != EmptySquare ) {
-                *p++;
+                p++;
                 if((int) piece >= (int) BlackPawn ) {
                     i = (int)piece - (int)BlackPawn;
 		    i = PieceToNumber((ChessSquare)i);
@@ -14885,7 +14885,7 @@ ParseFEN(board, blackPlaysFirst, fen)
                 }
             }
         }
-        if(*p == ']') *p++;
+        if(*p == ']') p++;
     }
 
     while(*p == ' ') p++;
@@ -15020,7 +15020,7 @@ ParseFEN(board, blackPlaysFirst, fen)
          char c = *p++ - AAA;
 
          if(c < BOARD_LEFT || c >= BOARD_RGHT) return TRUE;
-         if(*p >= '0' && *p <='9') *p++;
+         if(*p >= '0' && *p <='9') p++;
          board[EP_STATUS] = c;
       }
     }
@@ -15219,11 +15219,11 @@ PopTail(Boolean annotate)
 	if(annotate) {
 		int cnt = 10;
 		if(!WhiteOnMove(currentMove))
-		  snprintf(buf, sizeof(buf)/sizeof(buf[0]),"(%d...", currentMove+2>>1);
+		  snprintf(buf, sizeof(buf)/sizeof(buf[0]),"(%d...", (currentMove+2)>>1);
 		else safeStrCpy(buf, "(", sizeof(buf)/sizeof(buf[0]));
 		for(i=currentMove; i<forwardMostMove; i++) {
 			if(WhiteOnMove(i))
-			  snprintf(moveBuf, sizeof(moveBuf)/sizeof(moveBuf[0]), " %d. %s", i+2>>1, SavePart(parseList[i]));
+			  snprintf(moveBuf, sizeof(moveBuf)/sizeof(moveBuf[0]), " %d. %s", (i+2)>>1, SavePart(parseList[i]));
 			else snprintf(moveBuf, sizeof(moveBuf)/sizeof(moveBuf[0])," %s", SavePart(parseList[i]));
 			strcat(buf, moveBuf);
 			if(commentList[i]) { strcat(buf, " "); strcat(buf, commentList[i]); }

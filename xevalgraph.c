@@ -84,15 +84,6 @@ extern char *getenv();
 
 #include <X11/xpm.h>
 
-// [HGM] pixmaps of some ICONS used in the engine-outut window
-#include "pixmaps/WHITE_14.xpm"
-#include "pixmaps/BLACK_14.xpm"
-#include "pixmaps/CLEAR_14.xpm"
-#include "pixmaps/UNKNOWN_14.xpm"
-#include "pixmaps/THINKING_14.xpm"
-#include "pixmaps/PONDER_14.xpm"
-#include "pixmaps/ANALYZING_14.xpm"
-
 #ifdef SNAP
 #include "wsnap.h"
 #endif
@@ -138,14 +129,15 @@ static HDC hdcPB = NULL;
 static HBITMAP hbmPB = NULL;
 #endif
 
-// [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end) 
+// [HGM] front-end, added as wrapper to avoid use of LineTo and MoveToEx in other routines (so they can be back-end)
 void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
 {
-static curX, curY;
-    if(penType != PEN_NONE)
-      XDrawLine(yDisplay, eGraphWindow, pens[penType], curX, curY, x, y);
-    if(lastX != NULL) { *lastX = curX; *lastY = curY; }
-    curX = x; curY = y;
+  static int curX, curY;
+
+  if(penType != PEN_NONE)
+    XDrawLine(yDisplay, eGraphWindow, pens[penType], curX, curY, x, y);
+  if(lastX != NULL) { *lastX = curX; *lastY = curY; }
+  curX = x; curY = y;
 }
 
 // front-end wrapper for drawing functions to do rectangles
@@ -225,19 +217,15 @@ static void DisplayEvalGraph()
 }
 
 static void InitializeEvalGraph()
-{ int i;    XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
-      | GCBackground | GCFunction | GCPlaneMask;
-    XGCValues gc_values;
-//    GC copyInvertedGC;
-
-    pens[PEN_BLACK]     = CreateGC(1, "black", "black", LineSolid);
-    pens[PEN_DOTTED]    = CreateGC(1, "#A0A0A0", "#A0A0A0", LineOnOffDash);
-    pens[PEN_BLUEDOTTED] = CreateGC(1, "#0000FF", "#0000FF", LineOnOffDash);
-    pens[PEN_BOLD]      = CreateGC(3, crWhite, crWhite, LineSolid);
-    pens[PEN_BOLD+1]    = CreateGC(3, crBlack, crBlack, LineSolid);
-    hbrHist[0] = CreateGC(3, crWhite, crWhite, LineSolid);
-    hbrHist[1] = CreateGC(3, crBlack, crBlack, LineSolid);
-    hbrHist[2] = CreateGC(3, "#E0E0F0", "#E0E0F0", LineSolid);; // background (a bit blueish, for contrst with yellow curve)
+{
+  pens[PEN_BLACK]      = CreateGC(1, "black", "black", LineSolid);
+  pens[PEN_DOTTED]     = CreateGC(1, "#A0A0A0", "#A0A0A0", LineOnOffDash);
+  pens[PEN_BLUEDOTTED] = CreateGC(1, "#0000FF", "#0000FF", LineOnOffDash);
+  pens[PEN_BOLD]       = CreateGC(3, crWhite, crWhite, LineSolid);
+  pens[PEN_BOLD+1]     = CreateGC(3, crBlack, crBlack, LineSolid);
+  hbrHist[0] = CreateGC(3, crWhite, crWhite, LineSolid);
+  hbrHist[1] = CreateGC(3, crBlack, crBlack, LineSolid);
+  hbrHist[2] = CreateGC(3, "#E0E0F0", "#E0E0F0", LineSolid);; // background (a bit blueish, for contrst with yellow curve)
 }
 
 void EvalClick(widget, unused, event)
@@ -279,7 +267,7 @@ Widget EvalGraphCreate(name)
      char *name;
 {
     Arg args[16];
-    Widget shell, layout, form, form2, edit;
+    Widget shell, layout, form;
     Dimension bw_width, bw_height;
     int j;
 
@@ -293,7 +281,7 @@ Widget EvalGraphCreate(name)
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
     shell =
-#if TOPLEVEL 
+#if TOPLEVEL
      XtCreatePopupShell(name, topLevelShellWidgetClass,
 #else
       XtCreatePopupShell(name, transientShellWidgetClass,
@@ -324,8 +312,6 @@ Widget EvalGraphCreate(name)
     if (evalGraphX == -1) {
 	int xx, yy;
 	Window junk;
-	Dimension pw_height;
-	Dimension ew_height;
 	evalGraphH = bw_height/4;
 	evalGraphW = bw_width-16;
 
@@ -354,7 +340,6 @@ Widget EvalGraphCreate(name)
     XtSetArg(args[j], XtNx, evalGraphX);  j++;
     XtSetArg(args[j], XtNy, evalGraphY);  j++;
     XtSetValues(shell, args, j);
-//    XtSetKeyboardFocus(shell, edit);
 
     yDisplay = XtDisplay(shell);
     eGraphWindow = XtWindow(form);
@@ -366,12 +351,11 @@ Widget EvalGraphCreate(name)
     return shell;
 }
 
-void 
+void
 EvalGraphPopUp()
 {
     Arg args[16];
     int j;
-    Widget edit;
     static int  needInit = TRUE;
     static char *title = _("Evaluation graph");
 

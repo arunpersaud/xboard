@@ -259,7 +259,6 @@ void TimeControlCallback(w, client_data, call_data)
      XtPointer client_data, call_data;
 {
     String name, txt;
-    Widget w2;
     Arg args[16];
     char buf[MSG_SIZ];
     int j;
@@ -324,7 +323,7 @@ void TimeControlCallback(w, client_data, call_data)
         return;
     }
     if (strcmp(name, _(" OK ")) == 0) {
-	int inc, mps, tc, ok;
+	int inc, mps, ok;
 	XtSetArg(args[0], XtNstring, &txt);
 	XtGetValues(tcData, args, 1);
 	switch(tcInc) {
@@ -384,7 +383,7 @@ void TimeControlCallback(w, client_data, call_data)
 void TimeControlPopUp()
 {
     Arg args[16];
-    Widget popup, layout, form, edit, b_ok, b_cancel, b_clas, b_inc, mess;
+    Widget popup, layout, form,  b_ok, b_cancel, b_clas, b_inc, mess;
     Window root, child;
     int x, y, i, j;
     int win_x, win_y;
@@ -644,9 +643,7 @@ void EngineCallback(w, client_data, call_data)
      XtPointer client_data, call_data;
 {
     String name;
-    Widget s2;
     Arg args[16];
-    char buf[80];
     int j;
 
     XtSetArg(args[0], XtNlabel, &name);
@@ -690,7 +687,7 @@ void EngineCallback(w, client_data, call_data)
 void EnginePopUp()
 {
     Arg args[16];
-    Widget popup, layout, form, edit, b_ok, b_cancel, b_clas, b_inc, s1;
+    Widget popup, layout, form,  b_ok, b_cancel,  s1;
     Window root, child;
     int x, y, i, j, width;
     int win_x, win_y;
@@ -1004,9 +1001,7 @@ void NewVariantCallback(w, client_data, call_data)
      XtPointer client_data, call_data;
 {
     String name;
-    Widget w2;
     Arg args[16];
-    char buf[MSG_SIZ];
     VariantClass v;
 
     XtSetArg(args[0], XtNlabel, &name);
@@ -1046,12 +1041,11 @@ void NewVariantCallback(w, client_data, call_data)
 void NewVariantPopUp()
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit, form, last = NULL, b_ok, b_cancel;
+    Widget popup, layout, form, last = NULL, b_ok, b_cancel;
     Window root, child;
     int x, y, i, j;
     int win_x, win_y;
     unsigned int mask;
-    char def[80];
     XrmValue vFrom, vTo;
 
     i = 0;
@@ -1193,14 +1187,13 @@ void UciCallback(w, client_data, call_data)
 {
     String name;
     Arg args[16];
-    char buf[80];
     int oldCores = appData.smpCores, ponder = 0;
 
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
 
     if (strcmp(name, _("OK")) == 0) {
-	int nr, i, j; String name;
+	int i, j; String name;
 	for(i=0; i<6; i++) {
 	    XtSetArg(args[0], XtNstring, &name);
 	    XtGetValues(controlDesc[i].handle, args, 1);
@@ -1243,7 +1236,7 @@ void UciCallback(w, client_data, call_data)
 void UciPopUp()
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit, form, b_ok, b_cancel, last = NULL, new, upperLeft;
+    Widget popup, layout, form, b_ok, b_cancel, last = NULL, new, upperLeft;
     Window root, child;
     int x, y, i, j;
     int win_x, win_y;
@@ -1392,10 +1385,9 @@ void SpinCallback(w, client_data, call_data)
      XtPointer client_data, call_data;
 {
     String name, val;
-    Widget w2;
     Arg args[16];
     char buf[MSG_SIZ];
-    int i, j;
+    int j;
     int data = (intptr_t) client_data;
 
     XtSetArg(args[0], XtNlabel, &name);
@@ -1421,7 +1413,6 @@ void SettingsCallback(w, client_data, call_data)
      XtPointer client_data, call_data;
 {
     String name, val;
-    Widget w2;
     Arg args[16];
     char buf[MSG_SIZ];
     int i, j;
@@ -1435,8 +1426,6 @@ void SettingsCallback(w, client_data, call_data)
         return;
     }
     if (strcmp(name, _("OK")) == 0 || data) { // save buttons imply OK
-	int nr;
-
 	for(i=0; i<currentCps->nrOptions; i++) { // send all options that had to be OK-ed to engine
 	    switch(currentCps->option[i].type) {
 		case TextBox:
@@ -1478,6 +1467,10 @@ void SettingsCallback(w, client_data, call_data)
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
+	    default:
+	      if( appData.debugMode )
+		fprintf(debugFP, "SettingsPopUp: unexpected case in switch.\n");
+	      break;
 	    }
 	}
 	if(data) { // send save-button command to engine
@@ -1530,15 +1523,16 @@ void CreateComboPopup(parent, name, n, mb)
     }
 }
 
-void SettingsPopUp(ChessProgramState *cps)
+void
+SettingsPopUp(ChessProgramState *cps)
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit=NULL, form, oldform, last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
+    Widget popup, layout, dialog, edit=NULL, form,  last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
     Window root, child;
     int x, y, i, j, height, width, h, c;
     int win_x, win_y, maxWidth, maxTextWidth;
     unsigned int mask;
-    char def[MSG_SIZ], *p, *q;
+    char def[MSG_SIZ];
     static char pane[6] = "paneX";
     Widget texts[100], forelast = NULL, anchor, widest;
 
@@ -1662,6 +1656,10 @@ void SettingsPopUp(ChessProgramState *cps)
 	    CreateComboPopup(last, cps->option[i].name, i, (char **) cps->option[i].textValue);
 	    values[i] = cps->option[i].value;
 	    break;
+	default:
+	  if( appData.debugMode )
+	    fprintf(debugFP, "SettingsPopUp: unexpected case in switch.\n");
+	  break;
 	}
     }
 

@@ -223,6 +223,9 @@ void EvalGraphPopUp P((void));
 void EvalGraphPopDown P((void));
 Boolean EvalGraphIsUp P((void));
 int  EvalGraphDialogExists P((void));
+
+/* these are in xhistory.c  */
 Boolean MoveHistoryIsUp P((void));
+void HistoryPopUp P((void));
 
 #endif

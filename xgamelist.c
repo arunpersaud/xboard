@@ -184,7 +184,7 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
     XtSetArg(args[j], XtNforceColumns, True);  j++;
     XtSetArg(args[j], XtNverticalList, True);  j++;
-    listwidg = 
+    listwidg =
       XtCreateManagedWidget("list", listWidgetClass, viewport, args, j);
     XawListHighlight(listwidg, 0);
     XtAugmentTranslations(listwidg,
@@ -357,14 +357,13 @@ GameListPrepare()
 
 static void
 GameListReplace()
-{   // [HGM] filter: put in separate routine, to make callable from call-back
-    Arg args[16];
-    int j;
-    Widget listwidg;
+{
+  // filter: put in separate routine, to make callable from call-back
+  Widget listwidg;
 
-	listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-	XawListChange(listwidg, glc->strings, 0, 0, True);
-	XawListHighlight(listwidg, 0);
+  listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
+  XawListChange(listwidg, glc->strings, 0, 0, True);
+  XawListHighlight(listwidg, 0);
 }
 
 void
@@ -434,9 +433,7 @@ GameListPopUp(fp, filename)
      char *filename;
 {
     Arg args[16];
-    int j, nstrings;
-    Widget listwidg;
-    ListGame *lg;
+    int j;
     char **st;
 
     if (glc == NULL) {
@@ -461,7 +458,7 @@ GameListPopUp(fp, filename)
 
 
     if (glc->shell == NULL) {
-	glc->shell = GameListCreate(filename, GameListCallback, glc); 
+	glc->shell = GameListCreate(filename, GameListCallback, glc);
     } else {
         GameListReplace(); // [HGM] filter: code put in separate routine
 	j = 0;
@@ -538,7 +535,7 @@ LoadSelectedProc(w, event, prms, nprms)
     index = rs->list_index;
     if (index < 0) return;
     if(direction != 0) {
-	index += direction; 
+	index += direction;
 	if(direction == -2) index = 0;
 	if(direction == 2) index = listLength-1;
 	if(index < 0 || index >= listLength) return;
@@ -655,14 +652,12 @@ void GLT_DeSelectList()
 void
 GameListOptionsPopDown()
 {
-    Arg args[16];
-    int j;
+  if (gameListOptShell == NULL) return;
 
-    if (gameListOptShell == NULL) return;
-    XtPopdown(gameListOptShell);
-    XtDestroyWidget(gameListOptShell);
-    gameListOptShell = 0;
-    XtSetKeyboardFocus(shellWidget, formWidget);
+  XtPopdown(gameListOptShell);
+  XtDestroyWidget(gameListOptShell);
+  gameListOptShell = 0;
+  XtSetKeyboardFocus(shellWidget, formWidget);
 }
 
 void
@@ -822,15 +817,10 @@ GameListOptionsCreate()
 void
 GameListOptionsPopUp(Widget w, XEvent *event, String *prms, Cardinal *nprms)
 {
-    Arg args[16];
-    int j, nstrings;
-    Widget listwidg;
+  if (gameListOptShell == NULL)
+    gameListOptShell = GameListOptionsCreate();
 
-    if (gameListOptShell == NULL) {
-	gameListOptShell = GameListOptionsCreate(); 
-    }
-
-    XtPopup(gameListOptShell, XtGrabNone);
+  XtPopup(gameListOptShell, XtGrabNone);
 }
 
 

@@ -191,6 +191,7 @@ extern char *getenv();
 
 #include "frontend.h"
 #include "backend.h"
+#include "backendz.h"
 #include "moves.h"
 #include "xboard.h"
 #include "childio.h"
@@ -1450,7 +1451,7 @@ SetCommPortDefaults()
 void
 SaveFontArg(FILE *f, ArgDescriptor *ad)
 {
-  char *name, buf[MSG_SIZ];
+  char *name;
   int i, n = (int)ad->argLoc;
   switch(n) {
     case 0: // CLOCK_FONT
@@ -5136,13 +5137,6 @@ void FileNamePopUp(label, def, proc, openMode)
      FileProc proc;
      char *openMode;
 {
-    Arg args[16];
-    Widget popup, layout, dialog, edit;
-    Window root, child;
-    int x, y, i;
-    int win_x, win_y;
-    unsigned int mask;
-
     fileProc = proc;		/* I can't see a way not */
     fileOpenMode = openMode;	/*   to use globals here */
     {   // [HGM] use file-selector dialog stolen from Ghostview
@@ -5150,8 +5144,8 @@ void FileNamePopUp(label, def, proc, openMode)
 	int index; // this is not supported yet
 	FILE *f;
 	if(f = XsraSelFile(shellWidget, label, NULL, NULL, "could not open: ",
-	    def, openMode, NULL, &name))
-		(void) (*fileProc)(f, index=0, name);
+			   def, openMode, NULL, &name))
+	  (void) (*fileProc)(f, index=0, name);
     }
 }
 
@@ -8941,14 +8935,15 @@ int get_term_width()
     return default_width;
 }
 
-void update_ics_width()
+void
+update_ics_width()
 {
-    static int old_width = 0;
-    int new_width = get_term_width();
+  static int old_width = 0;
+  int new_width = get_term_width();
 
-    if (old_width != new_width)
-       ics_printf("set width %d\n", new_width);
-    old_width = new_width;
+  if (old_width != new_width)
+    ics_printf("set width %d\n", new_width);
+  old_width = new_width;
 }
 
 void NotifyFrontendLogin()

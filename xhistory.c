@@ -67,6 +67,7 @@ extern char *getenv();
 #include "xboard.h"
 #include "xhistory.h"
 #include "gettext.h"
+#include "xevalgraph.h"
 
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)

@@ -157,13 +157,12 @@ void ReadIcon(char *pixData[], int iconNr)
 				       &(icons[iconNr]),
 				       NULL, NULL /*&attr*/)) != 0) {
 	  fprintf(stderr, _("Error %d loading icon image\n"), r);
-	  exit(1); 
-	}	
+	  exit(1);
+	}
 }
 
 static void InitializeEngineOutput()
-{ int i;
-
+{
         ReadIcon(WHITE_14,   nColorWhite);
         ReadIcon(BLACK_14,   nColorBlack);
         ReadIcon(UNKNOWN_14, nColorUnknown);
@@ -175,7 +174,7 @@ static void InitializeEngineOutput()
 }
 
 void DoSetWindowText(int which, int field, char *s_label)
-{ 
+{
 	Arg arg;
 
 	XtSetArg(arg, XtNlabel, (XtArgVal) s_label);
@@ -184,9 +183,10 @@ void DoSetWindowText(int which, int field, char *s_label)
 
 void InsertIntoMemo( int which, char * text, int where )
 {
-	Arg arg; XawTextBlock t; Widget edit;
+	XawTextBlock t;
+	Widget edit;
 
-	/* the backend adds \r\n, which is needed for winboard, 
+	/* the backend adds \r\n, which is needed for winboard,
 	 * for xboard we delete them again over here */
 	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
 
@@ -211,14 +211,12 @@ void SetIcon( int which, int field, int nIcon )
 }
 
 void DoClearMemo(int which)
-{ 
-    Arg args[16];
-    int j;
+{
     Widget edit;
 
-	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
-	XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-	XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
+    edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
+    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
+    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
 }
 
 // cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
@@ -240,7 +238,7 @@ void
 SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {	// [HGM] pv: translate click to PV line, and load it for display
 	String val;
-	int start, end, memo, j;
+	int start, end;
 	XawTextPosition index, dummy;
 	int x, y;
 	Arg arg;
@@ -286,7 +284,7 @@ void CopyMemoProc(w, event, prms, nprms)
 {
     if(appData.pasteSelection) return;
     if (selected_fen_position) free(selected_fen_position);
-    XtGetSelectionValue(menuBarWidget, 
+    XtGetSelectionValue(menuBarWidget,
       XA_PRIMARY, XA_STRING,
       /* (XtSelectionCallbackProc) */ MemoCB,
       NULL, /* client_data passed to PastePositionCB */
@@ -410,7 +408,7 @@ Widget EngineOutputCreate(name, text)
      char *name, *text;
 {
     Arg args[16];
-    Widget shell, layout, form, form2, edit;
+    Widget shell, layout, form, form2;
     Dimension bw_width, bw_height;
     int j;
 
@@ -424,7 +422,7 @@ Widget EngineOutputCreate(name, text)
     j = 0;
     XtSetArg(args[j], XtNresizable, True);  j++;
     shell =
-#if TOPLEVEL 
+#if TOPLEVEL
      XtCreatePopupShell(name, topLevelShellWidgetClass,
 #else
       XtCreatePopupShell(name, transientShellWidgetClass,
@@ -465,8 +463,7 @@ Widget EngineOutputCreate(name, text)
     if (engineOutputX == -1) {
 	int xx, yy;
 	Window junk;
-	Dimension pw_height;
-	Dimension ew_height;
+
 	engineOutputH = bw_height/2;
 	engineOutputW = bw_width-16;
 
@@ -495,7 +492,6 @@ Widget EngineOutputCreate(name, text)
     XtSetArg(args[j], XtNx, engineOutputX);  j++;
     XtSetArg(args[j], XtNy, engineOutputY);  j++;
     XtSetValues(shell, args, j);
-//    XtSetKeyboardFocus(shell, edit);
 
     return shell;
 }
@@ -537,7 +533,7 @@ void ResizeWindowControls(mode)
     }
 }
 
-void 
+void
 EngineOutputPopUp()
 {
     Arg args[16];
