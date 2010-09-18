@@ -100,7 +100,7 @@ typedef struct {
   { "Dinky",    29, 1, 15, 9,  11, 1, 0, 480 }, \
   { "Teeny",    25, 1, 12, 8,  11, 1, 1, 480 }, \
   { "Tiny",     21, 1, 12, 8,  11, 1, 1, 0 }, \
-  { NULL, 0, 0, 0, 0, 0, 0 } }
+  {   NULL,      0, 0,  0, 0,   0, 0, 0, 0 } }
 
 #define BORDER_X_OFFSET 3
 #define BORDER_Y_OFFSET 27
