@@ -3538,7 +3538,7 @@ read_from_ics(isr, closure, data, count, error)
 		/*           [4] is " *" or empty (don't care). */
 		int gamenum = atoi(star_match[0]);
 		char *whitename, *blackname, *why, *endtoken;
-		ChessMove endtype = (ChessMove) 0;
+		ChessMove endtype = EndOfFile;
 
 		if (tkind == 0) {
 		  whitename = star_match[1];
@@ -4899,7 +4899,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
 
       case AmbiguousMove:
       case ImpossibleMove:
-      case (ChessMove) 0:	/* end of file */
+      case EndOfFile:
       case ElapsedTime:
       case Comment:
       case PGNTag:
@@ -5875,7 +5875,7 @@ FILE *lastLoadGameFP = NULL, *lastLoadPositionFP = NULL;
 int lastLoadGameNumber = 0, lastLoadPositionNumber = 0;
 int lastLoadGameUseList = FALSE;
 char lastLoadGameTitle[MSG_SIZ], lastLoadPositionTitle[MSG_SIZ];
-ChessMove lastLoadGameStart = (ChessMove) 0;
+ChessMove lastLoadGameStart = EndOfFile;
 
 void
 UserMoveEvent(fromX, fromY, toX, toY, promoChar)
@@ -6803,7 +6803,7 @@ Adjudicate(ChessProgramState *cps)
 		    case EP_WINS:
 			result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins; break;
 		    default:
-			result = (ChessMove) 0;
+			result = EndOfFile;
 		}
                 if(canAdjudicate && appData.checkMates && result) { // [HGM] mates: adjudicate finished games if requested
 		    if(engineOpponent)
@@ -8208,7 +8208,7 @@ ParseGameHistory(game)
   }
 	    DisplayError(buf, 0);
 	    return;
-	  case (ChessMove) 0:	/* end of file */
+	  case EndOfFile:
 	    if (boardIndex < backwardMostMove) {
 		/* Oops, gap.  How did that happen? */
 		DisplayError(_("Gap in move list"), 0);
@@ -9466,7 +9466,7 @@ Reset(redraw, init)
     gotPremove = FALSE;
     alarmSounded = FALSE;
 
-    GameEnds((ChessMove) 0, NULL, GE_PLAYER);
+    GameEnds(EndOfFile, NULL, GE_PLAYER);
     if(appData.serverMovesName != NULL) {
         /* [HGM] prepare to make moves file for broadcasting */
         clock_t t = clock();
@@ -9591,7 +9591,7 @@ LoadGameOneMove(readAhead)
     }
 
     yyboardindex = forwardMostMove;
-    if (readAhead != (ChessMove)0) {
+    if (readAhead != EndOfFile) {
       moveType = readAhead;
     } else {
       if (gameFileFP == NULL)
@@ -9679,7 +9679,7 @@ LoadGameOneMove(readAhead)
 	}
 	break;
 
-      case (ChessMove) 0:	/* end of file */
+      case EndOfFile:
 	if (appData.debugMode)
 	  fprintf(debugFP, "Parser hit end of file\n");
 	switch (MateTest(boards[currentMove], PosFlags(currentMove)) ) {
@@ -9707,7 +9707,7 @@ LoadGameOneMove(readAhead)
 	    if (appData.debugMode)
 	      fprintf(debugFP, "Parser ignoring: '%s' (%d)\n",
 		      yy_text, (int) moveType);
-	    return LoadGameOneMove((ChessMove)0); /* tail recursion */
+	    return LoadGameOneMove(EndOfFile); /* tail recursion */
 	}
 	/* else fall thru */
 
@@ -9742,7 +9742,7 @@ LoadGameOneMove(readAhead)
 	if (appData.debugMode)
 	  fprintf(debugFP, "Parser ignoring: '%s' (%d)\n",
 		  yy_text, (int) moveType);
-	return LoadGameOneMove((ChessMove)0); /* tail recursion */
+	return LoadGameOneMove(EndOfFile); /* tail recursion */
 
       case IllegalMove:
 	if (appData.testLegality) {
@@ -10088,12 +10088,12 @@ LoadGame(f, gameNumber, title, useList)
      * 5-4-02: Let's try being more lenient and allowing a game to
      * start with an unnumbered move.  Does that break anything?
      */
-    cm = lastLoadGameStart = (ChessMove) 0;
+    cm = lastLoadGameStart = EndOfFile;
     while (gn > 0) {
 	yyboardindex = forwardMostMove;
 	cm = (ChessMove) yylex();
 	switch (cm) {
-	  case (ChessMove) 0:
+	  case EndOfFile:
 	    if (cmailMsgLoaded) {
 		nCmailGames = CMAIL_MAX_GAMES - gn;
 	    } else {
@@ -10115,7 +10115,7 @@ LoadGame(f, gameNumber, title, useList)
 	      case PGNTag:
 		break;
 	      case MoveNumberOne:
-	      case (ChessMove) 0:
+	      case EndOfFile:
 		gn--;		/* count this game */
 		lastLoadGameStart = cm;
 		break;
@@ -10130,7 +10130,7 @@ LoadGame(f, gameNumber, title, useList)
 	      case GNUChessGame:
 	      case PGNTag:
 	      case MoveNumberOne:
-	      case (ChessMove) 0:
+	      case EndOfFile:
 		gn--;		/* count this game */
 		lastLoadGameStart = cm;
 		break;
@@ -10165,7 +10165,7 @@ LoadGame(f, gameNumber, title, useList)
 	  case NormalMove:
 	    /* Only a NormalMove can be at the start of a game
 	     * without a position diagram. */
-	    if (lastLoadGameStart == (ChessMove) 0) {
+	    if (lastLoadGameStart == EndOfFile ) {
 	      gn--;
 	      lastLoadGameStart = MoveNumberOne;
 	    }
@@ -10185,10 +10185,10 @@ LoadGame(f, gameNumber, title, useList)
 	    yyboardindex = forwardMostMove;
 	    cm = (ChessMove) yylex();
 
-	    if (cm == (ChessMove) 0 ||
+	    if (cm == EndOfFile ||
 		cm == GNUChessGame || cm == XBoardGame) {
 		/* Empty game; pretend end-of-file and handle later */
-		cm = (ChessMove) 0;
+		cm = EndOfFile;
 		break;
 	    }
 
@@ -10372,7 +10372,7 @@ LoadGame(f, gameNumber, title, useList)
 	cm = (ChessMove) yylex();
     }
 
-    if ((cm == (ChessMove) 0 && lastLoadGameStart != (ChessMove) 0) ||
+    if ((cm == EndOfFile && lastLoadGameStart != EndOfFile ) ||
 	cm == WhiteWins || cm == BlackWins ||
 	cm == GameIsDrawn || cm == GameUnfinished) {
 	DisplayMessage("", _("No moves in game"));
@@ -10409,7 +10409,7 @@ LoadGame(f, gameNumber, title, useList)
 	LoadGameOneMove(cm);
 
     /* load the remaining moves from the file */
-    while (LoadGameOneMove((ChessMove)0)) {
+    while (LoadGameOneMove(EndOfFile)) {
       timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
       timeRemaining[1][forwardMostMove] = blackTimeRemaining;
     }
@@ -11992,7 +11992,7 @@ EditGameEvent()
 	SendToProgram("force\n", &first);
 	break;
       case TwoMachinesPlay:
-	GameEnds((ChessMove) 0, NULL, GE_PLAYER);
+	GameEnds(EndOfFile, NULL, GE_PLAYER);
 	ResurrectChessProgram();
 	SetUserThinkingEnables();
 	break;

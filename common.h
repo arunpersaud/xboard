@@ -250,7 +250,8 @@ typedef enum {
 typedef ChessSquare Board[BOARD_RANKS][BOARD_FILES];
 
 typedef enum {
-    WhiteKingSideCastle = 1, WhiteQueenSideCastle,
+    EndOfFile = 0,
+    WhiteKingSideCastle, WhiteQueenSideCastle,
     WhiteKingSideCastleWild, WhiteQueenSideCastleWild,
     WhiteHSideCastleFR, WhiteASideCastleFR, 
     BlackKingSideCastle, BlackQueenSideCastle,
