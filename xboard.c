@@ -4489,7 +4489,7 @@ void XDrawPosition(w, repaint, board)
     if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
 
     if (board == NULL) {
-	if (!lastBoardValid) return;
+	if (!lastBoardValid[nr]) return;
 	board = lastBoard[nr];
     }
     if (!lastBoardValid[nr] || (nr == 0 && lastFlipView != flipView)) {
