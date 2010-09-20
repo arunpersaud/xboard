@@ -32,6 +32,7 @@ AC_INIT([xboard],[master-20100806],[bug-xboard@gnu.org])
 
 dnl| need this to be able to compile some files in a subdir (filebrowser)
 AM_INIT_AUTOMAKE([subdir-objects])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 
 AC_CONFIG_HEADERS([config.h])
 
