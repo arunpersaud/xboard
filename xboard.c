@@ -1585,6 +1585,7 @@ void
 PopUpStartupDialog()
 {  // start menu not implemented in XBoard
 }
+
 char *
 ConvertToLine(int argc, char **argv)
 {
@@ -1592,15 +1593,17 @@ ConvertToLine(int argc, char **argv)
   int i;
 
   line[0] = NULLCHAR;
-  for(i=1; i<argc; i++) {
-    if( (strchr(argv[i], ' ') || strchr(argv[i], '\n') ||strchr(argv[i], '\t') )
-	&& argv[i][0] != '{' )
-      snprintf(buf, sizeof(buf)/sizeof(buf[0]), "{%s} ", argv[i]);
-    else
-      snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%s ", argv[i]);
-    strcat(line, buf);
-  }
-    line[strlen(line)-1] = NULLCHAR;
+  for(i=1; i<argc; i++)
+    {
+      if( (strchr(argv[i], ' ') || strchr(argv[i], '\n') ||strchr(argv[i], '\t') )
+	  && argv[i][0] != '{' )
+	snprintf(buf, sizeof(buf)/sizeof(buf[0]), "{%s} ", argv[i]);
+      else
+	snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%s ", argv[i]);
+      strncat(line, buf, 128*1024 - strlen(line) - 1 );
+    }
+
+  line[strlen(line)-1] = NULLCHAR;
   return line;
 }
 
@@ -2648,11 +2651,12 @@ ICSInitScript()
 	p = getenv("HOME");
 	if (p != NULL) {
 	  safeStrCpy(buf, p, sizeof(buf)/sizeof(buf[0]) );
-	  strcat(buf, "/");
-	  strcat(buf, appData.icsLogon);
+	  strncat(buf, "/", MSG_SIZ - strlen(buf) - 1);
+	  strncat(buf, appData.icsLogon,  MSG_SIZ - strlen(buf) - 1);
 	  f = fopen(buf, "r");
 	}
     }
+
     if (f != NULL)
       ProcessICSInitScript(f);
 }
@@ -3560,11 +3564,11 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
 
     if (*appData.bitmapDirectory != NULLCHAR) {
       safeStrCpy(fullname, appData.bitmapDirectory, sizeof(fullname)/sizeof(fullname[0]) );
-	strcat(fullname, "/");
-	strcat(fullname, name);
-	errcode = XReadBitmapFile(xDisplay, xBoardWindow, fullname,
-				  &w, &h, pm, &x_hot, &y_hot);
-    fprintf(stderr, "load %s\n", name);
+      strncat(fullname, "/", MSG_SIZ - strlen(fullname) - 1);
+      strncat(fullname, name, MSG_SIZ - strlen(fullname) - 1);
+      errcode = XReadBitmapFile(xDisplay, xBoardWindow, fullname,
+				&w, &h, pm, &x_hot, &y_hot);
+      fprintf(stderr, "load %s\n", name);
 	if (errcode != BitmapSuccess) {
 	    switch (errcode) {
 	      case BitmapOpenFailed:
@@ -3682,7 +3686,7 @@ Widget CreateMenuBar(mb)
 
     while (mb->name != NULL) {
         safeStrCpy(menuName, "menu", sizeof(menuName)/sizeof(menuName[0]) );
-	strcat(menuName, mb->name);
+	strncat(menuName, mb->name, MSG_SIZ - strlen(menuName) - 1);
 	j = 0;
 	XtSetArg(args[j], XtNmenuName, XtNewString(menuName));  j++;
 	if (tinyLayout) {
@@ -7274,9 +7278,9 @@ void AskQuestionReplyAction(w, event, prms, nprms)
 
     reply = XawDialogGetValueString(w = XtParent(w));
     safeStrCpy(buf, pendingReplyPrefix, sizeof(buf)/sizeof(buf[0]) );
-    if (*buf) strcat(buf, " ");
-    strcat(buf, reply);
-    strcat(buf, "\n");
+    if (*buf) strncat(buf, " ", MSG_SIZ - strlen(buf) - 1);
+    strncat(buf, reply, MSG_SIZ - strlen(buf) - 1);
+    strncat(buf, "\n",  MSG_SIZ - strlen(buf) - 1);
     OutputToProcess(pendingReplyPR, buf, strlen(buf), &err);
     AskQuestionPopDown();
 
