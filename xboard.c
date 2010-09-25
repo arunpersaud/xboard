@@ -2642,23 +2642,33 @@ CmailSigHandlerCallBack(isr, closure, message, count, error)
 void
 ICSInitScript()
 {
-    FILE *f;
-    char buf[MSG_SIZ];
-    char *p;
+  /* try to open the icsLogon script, either in the location given
+   * or in the users HOME directory
+   */
 
-    f = fopen(appData.icsLogon, "r");
-    if (f == NULL) {
-	p = getenv("HOME");
-	if (p != NULL) {
-	  safeStrCpy(buf, p, sizeof(buf)/sizeof(buf[0]) );
+  FILE *f;
+  char buf[MSG_SIZ];
+  char *homedir;
+
+  f = fopen(appData.icsLogon, "r");
+  if (f == NULL)
+    {
+      homedir = getenv("HOME");
+      if (homedir != NULL)
+	{
+	  safeStrCpy(buf, homedir, sizeof(buf)/sizeof(buf[0]) );
 	  strncat(buf, "/", MSG_SIZ - strlen(buf) - 1);
 	  strncat(buf, appData.icsLogon,  MSG_SIZ - strlen(buf) - 1);
 	  f = fopen(buf, "r");
 	}
     }
 
-    if (f != NULL)
-      ProcessICSInitScript(f);
+  if (f != NULL)
+    ProcessICSInitScript(f);
+  else
+    printf("Warning: Couldn't open icsLogon file (checked %s and %s).\n", appData.icsLogon, buf);
+
+  return;
 }
 
 void
