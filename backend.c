@@ -158,8 +158,7 @@ void read_from_ics P((InputSourceRef isr, VOIDSTAR closure,
 void ics_printf P((char *format, ...));
 void SendToICS P((char *s));
 void SendToICSDelayed P((char *s, long msdelay));
-void SendMoveToICS P((ChessMove moveType, int fromX, int fromY,
-		      int toX, int toY));
+void SendMoveToICS P((ChessMove moveType, int fromX, int fromY, int toX, int toY, char promoChar));
 void HandleMachineMove P((char *message, ChessProgramState *cps));
 int AutoPlayOneMove P((void));
 int LoadGameOneMove P((ChessMove readAhead));
@@ -4543,9 +4542,10 @@ SendMoveToProgram(moveNum, cps)
 }
 
 void
-SendMoveToICS(moveType, fromX, fromY, toX, toY)
+SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
      ChessMove moveType;
      int fromX, fromY, toX, toY;
+     char promoChar;
 {
     char user_move[MSG_SIZ];
 
@@ -4604,7 +4604,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY)
         else
             sprintf(user_move, "%c%c%c%c=%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY,
-		PieceToChar(PromoPiece(moveType)));
+		promoChar);
 	break;
       case WhiteDrop:
       case BlackDrop:
@@ -6122,10 +6122,10 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
       if(userOfferedDraw && (signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
         SendToICS(ics_prefix); // [HGM] drawclaim: send caim and move on one line for FICS
 	SendToICS("draw ");
-        SendMoveToICS(moveType, fromX, fromY, toX, toY);
+        SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar);
       }
       // also send plain move, in case ICS does not understand atomic claims
-      SendMoveToICS(moveType, fromX, fromY, toX, toY);
+      SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar);
       ics_user_moved = 1;
     }
   } else {
@@ -7252,9 +7252,9 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	  if(cps->offeredDraw && (signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
 		SendToICS(ics_prefix); // [HGM] drawclaim: send caim and move on one line for FICS
 		SendToICS("draw ");
-		SendMoveToICS(moveType, fromX, fromY, toX, toY);
+		SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar);
 	  }
-	  SendMoveToICS(moveType, fromX, fromY, toX, toY);
+	  SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar);
 	  ics_user_moved = 1;
 	  if(appData.autoKibitz && !appData.icsEngineAnalyze ) { /* [HGM] kibitz: send most-recent PV info to ICS */
 		char buf[3*MSG_SIZ];
