@@ -549,9 +549,9 @@ ArgDescriptor argDescriptors[] = {
 
   /* [HGM] board-size, adjudication and misc. options */
   { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },
-  { "boardWidth", ArgInt, (void *) &appData.NrFiles, TRUE, (ArgIniType) -1 },
-  { "boardHeight", ArgInt, (void *) &appData.NrRanks, TRUE, (ArgIniType) -1 },
-  { "holdingsSize", ArgInt, (void *) &appData.holdingsSize, TRUE, (ArgIniType) -1 },
+  { "boardWidth", ArgInt, (void *) &appData.NrFiles, FALSE, (ArgIniType) -1 },
+  { "boardHeight", ArgInt, (void *) &appData.NrRanks, FALSE, (ArgIniType) -1 },
+  { "holdingsSize", ArgInt, (void *) &appData.holdingsSize, FALSE, (ArgIniType) -1 },
   { "defaultMatchGames", ArgInt, (void *) &appData.defaultMatchGames, TRUE, (ArgIniType) 10 },
   { "matchPause", ArgInt, (void *) &appData.matchPause, TRUE, (ArgIniType) 10000 },
   { "pieceToCharTable", ArgString, (void *) &appData.pieceToCharTable, FALSE, INVALID },
