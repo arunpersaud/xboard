@@ -5585,7 +5585,7 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 
     piece = boards[currentMove][fromY][fromX];
     if(gameInfo.variant == VariantShogi) {
-        promotionZoneSize = 3;
+        promotionZoneSize = BOARD_HEIGHT/3;
         highestPromotingPiece = (int)WhiteFerz;
     } else if(gameInfo.variant == VariantMakruk) {
         promotionZoneSize = 3;

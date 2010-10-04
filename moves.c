@@ -1128,7 +1128,7 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
                     cl.kind = IllegalMove;
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
-                     (rf > BOARD_HEIGHT-4 || rt > BOARD_HEIGHT-4) ) {
+                     (rf >= BOARD_HEIGHT-(BOARD_HEIGHT/3) || rt >= BOARD_HEIGHT-(BOARD_HEIGHT/3)) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && rt > BOARD_HEIGHT-2 ||
                          piece == WhiteKnight && rt > BOARD_HEIGHT-3) /* promotion mandatory */
                              cl.kind = promoChar == '=' ? IllegalMove : WhitePromotionKnight;
@@ -1138,7 +1138,7 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
                 } else cl.kind = (promoChar == NULLCHAR || promoChar == 'x' || promoChar == '=') ?
                                             NormalMove : IllegalMove;
             } else {
-                if( (int) piece < (int) BlackWazir && (rf < 3 || rt < 3) ) {
+                if( (int) piece < (int) BlackWazir && (rf < BOARD_HEIGHT/3 || rt < BOARD_HEIGHT/3) ) {
                     if( (piece == BlackPawn || piece == BlackQueen) && rt < 1 ||
                          piece == BlackKnight && rt < 2 ) /* promotion obligatory */
                              cl.kind = promoChar == '=' ? IllegalMove : BlackPromotionKnight;
@@ -1326,7 +1326,7 @@ void Disambiguate(board, flags, closure)
                     closure->kind = IllegalMove;
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
-                     (closure->rf > BOARD_HEIGHT-4 || closure->rt > BOARD_HEIGHT-4) ) {
+                     (closure->rf >= BOARD_HEIGHT-(BOARD_HEIGHT/3) || closure->rt >= BOARD_HEIGHT-(BOARD_HEIGHT/3)) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && closure->rt > BOARD_HEIGHT-2 ||
                          piece == WhiteKnight && closure->rt > BOARD_HEIGHT-3) /* promotion mandatory */
                              closure->kind = c == '=' ? IllegalMove : WhitePromotionKnight;
@@ -1336,7 +1336,7 @@ void Disambiguate(board, flags, closure)
                 } else closure->kind = (c == NULLCHAR || c == 'x' || c == '=') ?
                                             NormalMove : IllegalMove;
             } else {
-                if( (int) piece < (int) BlackWazir && (closure->rf < 3 || closure->rt < 3) ) {
+                if( (int) piece < (int) BlackWazir && (closure->rf < BOARD_HEIGHT/3 || closure->rt < BOARD_HEIGHT/3) ) {
                     if( (piece == BlackPawn || piece == BlackQueen) && closure->rt < 1 ||
                          piece == BlackKnight && closure->rt < 2 ) /* promotion obligatory */
                              closure->kind = c == '=' ? IllegalMove : BlackPromotionKnight;
@@ -1594,7 +1594,7 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
             /* [HGM] in Shogi non-pawns can promote */
             if(flags & F_WHITE_ON_MOVE) {
                 if( (int) cl.piece < (int) WhiteWazir &&
-                     (rf > BOARD_HEIGHT-4 || rt > BOARD_HEIGHT-4) ) {
+                     (rf >= BOARD_HEIGHT-(BOARD_HEIGHT/3) || rt >= BOARD_HEIGHT-(BOARD_HEIGHT/3)) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && rt > BOARD_HEIGHT-2 ||
                          piece == WhiteKnight && rt > BOARD_HEIGHT-3) /* promotion mandatory */
                              cl.kind = promoChar == '=' ? IllegalMove : WhitePromotionKnight;
@@ -1603,7 +1603,7 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
                 } else cl.kind = (promoChar == NULLCHAR || promoChar == 'x' || promoChar == '=') ?
                                             NormalMove : IllegalMove;
             } else {
-                if( (int) cl.piece < (int) BlackWazir && (rf < 3 || rt < 3) ) {
+                if( (int) cl.piece < (int) BlackWazir && (rf < BOARD_HEIGHT/3 || rt < BOARD_HEIGHT/3) ) {
                     if( (piece == BlackPawn || piece == BlackQueen) && rt < 1 ||
                          piece == BlackKnight && rt < 2 ) /* promotion obligatory */
                              cl.kind = promoChar == '=' ? IllegalMove : BlackPromotionKnight;
