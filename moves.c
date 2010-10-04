@@ -1521,6 +1521,7 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
 	/* Use style "O-O" (oh-oh) for PGN compatibility */
 	else if (rf == rt &&
 	    rf == ((piece == WhiteKing) ? 0 : BOARD_HEIGHT-1) &&
+            (ft - ff > 1 || ff - ft > 1) &&  // No castling if legal King move (on narrow boards!)
             ((ff == BOARD_WIDTH>>1 && (ft == BOARD_LEFT+2 || ft == BOARD_RGHT-2)) ||
              (ff == (BOARD_WIDTH-1)>>1 && (ft == BOARD_LEFT+1 || ft == BOARD_RGHT-3)))) {
             if(ft==BOARD_LEFT+1 || ft==BOARD_RGHT-2)
