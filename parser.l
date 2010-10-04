@@ -251,9 +251,15 @@ extern void CopyBoard P((Board to, Board from));
 			  currentMoveString[4]);
 
     if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotionKnight || result == BlackPromotionKnight ||
-         result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
-        currentMoveString[4] = PieceToChar(BlackQueen);
+        (result == WhitePromotion  || result == BlackPromotion)) {
+        if(gameInfo.variant == VariantCourier || gameInfo.variant == VariantShatranj)
+            currentMoveString[4] = PieceToChar(BlackFerz);
+        else if(gameInfo.variant == VariantGreat)
+            currentMoveString[4] = PieceToChar(BlackMan);
+        else if(gameInfo.variant == VariantShogi)
+            currentMoveString[4] = '+';
+        else
+            currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
     }
 
@@ -311,19 +317,20 @@ extern void CopyBoard P((Board to, Board from));
 			  currentMoveString[4]);
 
     if (currentMoveString[4] == NULLCHAR) {
-      if(result == WhitePromotionKnight || result == BlackPromotionKnight ||
-         result == WhitePromotionQueen  || result == BlackPromotionQueen) {
+      if(result == WhitePromotion  || result == BlackPromotion) {
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             currentMoveString[4] = PieceToChar(BlackFerz);
         else if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
+        else if(gameInfo.variant == VariantShogi)
+            currentMoveString[4] = '+'; // Queen might not be defined in mini variants!
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
       }
     } else if(appData.testLegality && // strip off unnecessary and false promo characters
-       !(result == WhitePromotionQueen  || result == BlackPromotionQueen ||
-         result == WhiteNonPromotion    || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
+       !(result == WhitePromotion  || result == BlackPromotion ||
+         result == WhiteNonPromotion || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
 
     return (int) result;
 }
@@ -368,8 +375,7 @@ extern void CopyBoard P((Board to, Board from));
 			  currentMoveString[4]);
 
     if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotionKnight || result == BlackPromotionKnight ||
-         result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
+        (result == WhitePromotion  || result == BlackPromotion)) {
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             currentMoveString[4] = PieceToChar(BlackFerz);
         else if(gameInfo.variant == VariantGreat)
@@ -377,9 +383,7 @@ extern void CopyBoard P((Board to, Board from));
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
-    } else if(appData.testLegality && // strip off unnecessary and false promo characters
-       !(result == WhitePromotionQueen  || result == BlackPromotionQueen ||
-         result == WhiteNonPromotion    || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
+    }
 
     return (int) result;
 }
@@ -552,8 +556,7 @@ extern void CopyBoard P((Board to, Board from));
 			  currentMoveString[4]);
 
     if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotionQueen  || result == BlackPromotionQueen ||
-         result == WhitePromotionKnight || result == BlackPromotionKnight)) {
+        (result == WhitePromotion  || result == BlackPromotion)) {
         currentMoveString[4] = PieceToChar(BlackQueen);
 	// [HGM] shatranj: take care of variants without Queen
 	if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
@@ -746,6 +749,7 @@ extern void CopyBoard P((Board to, Board from));
 	}
     }
     if(PosFlags(0) & F_FRC_TYPE_CASTLING) {
+
         if (WhiteOnMove(yyboardindex)) {
             ff = initialRights[2];
             ft = initialRights[1];

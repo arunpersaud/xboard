@@ -2236,9 +2236,15 @@ YY_RULE_SETUP
 			  currentMoveString[4]);
 
     if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotionKnight || result == BlackPromotionKnight ||
-         result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
-        currentMoveString[4] = PieceToChar(BlackQueen);
+        (result == WhitePromotion  || result == BlackPromotion)) {
+        if(gameInfo.variant == VariantCourier || gameInfo.variant == VariantShatranj)
+            currentMoveString[4] = PieceToChar(BlackFerz);
+        else if(gameInfo.variant == VariantGreat)
+            currentMoveString[4] = PieceToChar(BlackMan);
+        else if(gameInfo.variant == VariantShogi)
+            currentMoveString[4] = '+';
+        else
+            currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
     }
 
@@ -2247,7 +2253,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 263 "parser.l"
+#line 269 "parser.l"
 {
     /*
      * Simple algebraic move, possibly with promotion
@@ -2299,26 +2305,27 @@ YY_RULE_SETUP
 			  currentMoveString[4]);
 
     if (currentMoveString[4] == NULLCHAR) {
-      if(result == WhitePromotionKnight || result == BlackPromotionKnight ||
-         result == WhitePromotionQueen  || result == BlackPromotionQueen) {
+      if(result == WhitePromotion  || result == BlackPromotion) {
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             currentMoveString[4] = PieceToChar(BlackFerz);
         else if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
+        else if(gameInfo.variant == VariantShogi)
+            currentMoveString[4] = '+'; // Queen might not be defined in mini variants!
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
       }
     } else if(appData.testLegality && // strip off unnecessary and false promo characters
-       !(result == WhitePromotionQueen  || result == BlackPromotionQueen ||
-         result == WhiteNonPromotion    || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
+       !(result == WhitePromotion  || result == BlackPromotion ||
+         result == WhiteNonPromotion || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
 
     return (int) result;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 331 "parser.l"
+#line 338 "parser.l"
 {
     /*
      * Simple algebraic move, in capitals
@@ -2359,8 +2366,7 @@ YY_RULE_SETUP
 			  currentMoveString[4]);
 
     if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotionKnight || result == BlackPromotionKnight ||
-         result == WhitePromotionQueen  || result == BlackPromotionQueen)) {
+        (result == WhitePromotion  || result == BlackPromotion)) {
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             currentMoveString[4] = PieceToChar(BlackFerz);
         else if(gameInfo.variant == VariantGreat)
@@ -2368,16 +2374,14 @@ YY_RULE_SETUP
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
 	currentMoveString[5] = NULLCHAR;
-    } else if(appData.testLegality && // strip off unnecessary and false promo characters
-       !(result == WhitePromotionQueen  || result == BlackPromotionQueen ||
-         result == WhiteNonPromotion    || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
+    }
 
     return (int) result;
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 387 "parser.l"
+#line 391 "parser.l"
 {
     /*
      * Pawn move, possibly with promotion
@@ -2423,7 +2427,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 431 "parser.l"
+#line 435 "parser.l"
 {
     /*
      * Pawn capture, possibly with promotion, possibly ambiguous
@@ -2479,7 +2483,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 484 "parser.l"
+#line 488 "parser.l"
 {
     /*
      * unambiguously abbreviated Pawn capture, possibly with promotion
@@ -2551,8 +2555,7 @@ YY_RULE_SETUP
 			  currentMoveString[4]);
 
     if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotionQueen  || result == BlackPromotionQueen ||
-         result == WhitePromotionKnight || result == BlackPromotionKnight)) {
+        (result == WhitePromotion  || result == BlackPromotion)) {
         currentMoveString[4] = PieceToChar(BlackQueen);
 	// [HGM] shatranj: take care of variants without Queen
 	if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
@@ -2597,7 +2600,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 599 "parser.l"
+#line 602 "parser.l"
 {
     /*
      * piece move, possibly ambiguous
@@ -2656,7 +2659,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 655 "parser.l"
+#line 658 "parser.l"
 {
     /*
      * piece move with rank or file disambiguator
@@ -2719,7 +2722,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 715 "parser.l"
+#line 718 "parser.l"
 {
     int rf, ff, rt, ft;
 
@@ -2754,6 +2757,7 @@ YY_RULE_SETUP
 	}
     }
     if(PosFlags(0) & F_FRC_TYPE_CASTLING) {
+
         if (WhiteOnMove(yyboardindex)) {
             ff = initialRights[2];
             ft = initialRights[1];
@@ -2778,7 +2782,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 771 "parser.l"
+#line 775 "parser.l"
 {
     int rf, ff, rt, ft;
 
@@ -2836,7 +2840,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 826 "parser.l"
+#line 830 "parser.l"
 {
     /* Bughouse piece drop. */
     currentMoveString[1] = '@';
@@ -2863,7 +2867,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 850 "parser.l"
+#line 854 "parser.l"
 {
     if (WhiteOnMove(yyboardindex))
       return (int) BlackWins;
@@ -2873,35 +2877,35 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 857 "parser.l"
+#line 861 "parser.l"
 {
     return (int) (ToUpper(yytext[0]) == 'W' ? BlackWins : WhiteWins);
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 861 "parser.l"
+#line 865 "parser.l"
 {
     return (int) GameUnfinished;
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 865 "parser.l"
+#line 869 "parser.l"
 {
     return (int) GameIsDrawn;
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 869 "parser.l"
+#line 873 "parser.l"
 {
     return (int) GameIsDrawn;
 }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 873 "parser.l"
+#line 877 "parser.l"
 {
     if (WhiteOnMove(yyboardindex))
       return (int) BlackWins;
@@ -2911,7 +2915,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 880 "parser.l"
+#line 884 "parser.l"
 {
     if (WhiteOnMove(yyboardindex))
       return (int) BlackWins;
@@ -2921,56 +2925,56 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 887 "parser.l"
+#line 891 "parser.l"
 {
     return (int) GameIsDrawn;
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 891 "parser.l"
+#line 895 "parser.l"
 {
     return (int) GameIsDrawn;
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 895 "parser.l"
+#line 899 "parser.l"
 { 
     return (int) (ToUpper(yytext[0]) == 'W' ? WhiteWins : BlackWins);
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 899 "parser.l"
+#line 903 "parser.l"
 { 
     return (int) (ToUpper(yytext[0]) == 'W' ? BlackWins : WhiteWins);
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 903 "parser.l"
+#line 907 "parser.l"
 { 
     return (int) WhiteWins;
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 907 "parser.l"
+#line 911 "parser.l"
 { 
     return (int) BlackWins;
 }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 911 "parser.l"
+#line 915 "parser.l"
 {
     return (int) GameIsDrawn;
 }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 915 "parser.l"
+#line 919 "parser.l"
 {
     return (int) GameUnfinished;
 }
@@ -2978,7 +2982,7 @@ YY_RULE_SETUP
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 919 "parser.l"
+#line 923 "parser.l"
 {
     /* move numbers */
     if ((yyleng == 1) && (yytext[0] == '1'))
@@ -2987,7 +2991,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 925 "parser.l"
+#line 929 "parser.l"
 {
     /* elapsed time indication, e.g. (0:12) or {10:21.071} */ 
     return (int) ElapsedTime;
@@ -2996,7 +3000,7 @@ YY_RULE_SETUP
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 930 "parser.l"
+#line 934 "parser.l"
 {
     /* position diagram enclosed in [-- --] */
     return (int) PositionDiagram;
@@ -3008,7 +3012,7 @@ case 30:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 935 "parser.l"
+#line 939 "parser.l"
 {
     /* position diagram enclosed in {-- --} */
     return (int) PositionDiagram;
@@ -3017,14 +3021,14 @@ YY_RULE_SETUP
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 940 "parser.l"
+#line 944 "parser.l"
 {
     return (int) PGNTag;
 }    
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 944 "parser.l"
+#line 948 "parser.l"
 {
     return (int) GNUChessGame;
 }
@@ -3035,14 +3039,14 @@ case 33:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 948 "parser.l"
+#line 952 "parser.l"
 {
     return (int) XBoardGame;
 }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 952 "parser.l"
+#line 956 "parser.l"
 {				/* numeric annotation glyph */
     return (int) NAG;
 }
@@ -3050,7 +3054,7 @@ YY_RULE_SETUP
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-#line 956 "parser.l"
+#line 960 "parser.l"
 {        			/* anything in {} */
     return (int) Comment; 
 }
@@ -3060,7 +3064,7 @@ case 36:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 960 "parser.l"
+#line 964 "parser.l"
 {                                          /* ; to end of line */
     return (int) Comment;
 }
@@ -3068,7 +3072,7 @@ YY_RULE_SETUP
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-#line 964 "parser.l"
+#line 968 "parser.l"
 {        			/* anything in [] */
     return (int) Comment; 
 }
@@ -3076,7 +3080,7 @@ YY_RULE_SETUP
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 968 "parser.l"
+#line 972 "parser.l"
 { /* very nested () */
     return (int) Comment; 
 }
@@ -3084,7 +3088,7 @@ YY_RULE_SETUP
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 972 "parser.l"
+#line 976 "parser.l"
 { 				/* >=2 chars in () */
     return (int) Comment; 
 }       
@@ -3092,14 +3096,14 @@ YY_RULE_SETUP
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 976 "parser.l"
+#line 980 "parser.l"
 {
         /* Skip mail headers */
 }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 980 "parser.l"
+#line 984 "parser.l"
 {
         /* Skip random words */
 }
@@ -3107,17 +3111,17 @@ YY_RULE_SETUP
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 984 "parser.l"
+#line 988 "parser.l"
 {
         /* Skip everything else */
 }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 988 "parser.l"
+#line 992 "parser.l"
 ECHO;
 	YY_BREAK
-#line 3121 "parser.c"
+#line 3125 "parser.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -4092,7 +4096,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 988 "parser.l"
+#line 992 "parser.l"
 
 
 

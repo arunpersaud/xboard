@@ -4579,20 +4579,8 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
       case BlackNonPromotion:
         sprintf(user_move, "%c%c%c%c=\n", AAA + fromX, ONE + fromY, AAA + toX, ONE + toY);
         break;
-      case WhitePromotionQueen:
-      case BlackPromotionQueen:
-      case WhitePromotionRook:
-      case BlackPromotionRook:
-      case WhitePromotionBishop:
-      case BlackPromotionBishop:
-      case WhitePromotionKnight:
-      case BlackPromotionKnight:
-      case WhitePromotionKing:
-      case BlackPromotionKing:
-      case WhitePromotionChancellor:
-      case BlackPromotionChancellor:
-      case WhitePromotionArchbishop:
-      case BlackPromotionArchbishop:
+      case WhitePromotion:
+      case BlackPromotion:
         if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             sprintf(user_move, "%c%c%c%c=%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY,
@@ -4793,20 +4781,8 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
     *moveType = yylexstr(moveNum, move, yy_textstr, sizeof yy_textstr);
 
     switch (*moveType) {
-      case WhitePromotionChancellor:
-      case BlackPromotionChancellor:
-      case WhitePromotionArchbishop:
-      case BlackPromotionArchbishop:
-      case WhitePromotionQueen:
-      case BlackPromotionQueen:
-      case WhitePromotionRook:
-      case BlackPromotionRook:
-      case WhitePromotionBishop:
-      case BlackPromotionBishop:
-      case WhitePromotionKnight:
-      case BlackPromotionKnight:
-      case WhitePromotionKing:
-      case BlackPromotionKing:
+      case WhitePromotion:
+      case BlackPromotion:
       case WhiteNonPromotion:
       case BlackNonPromotion:
       case NormalMove:
@@ -5649,8 +5625,7 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
     if(appData.testLegality && !premove) {
 	moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
 			fromY, fromX, toY, toX, NULLCHAR);
-	if(moveType != WhitePromotionQueen && moveType  != BlackPromotionQueen &&
-	   moveType != WhitePromotionKnight && moveType != BlackPromotionKnight)
+	if(moveType != WhitePromotion && moveType  != BlackPromotion)
 	    return FALSE;
     }
 
@@ -5803,8 +5778,7 @@ OnlyMove(int *x, int *y, Boolean captures) {
     Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
     if( cl.kind == NormalMove ||
 	cl.kind == AmbiguousMove && captures && cl.captures == 1 ||
-	cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen ||
-	cl.kind == WhitePromotionKnight || cl.kind == BlackPromotionKnight ||
+	cl.kind == WhitePromotion || cl.kind == BlackPromotion ||
 	cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) {
       fromX = cl.ff;
       fromY = cl.rf;
@@ -5822,8 +5796,7 @@ OnlyMove(int *x, int *y, Boolean captures) {
     Disambiguate(boards[currentMove], PosFlags(currentMove), &cl);
     if( cl.kind == NormalMove ||
 	cl.kind == AmbiguousMove && captures && cl.captures == 1 ||
-	cl.kind == WhitePromotionQueen || cl.kind == BlackPromotionQueen ||
-	cl.kind == WhitePromotionKnight || cl.kind == BlackPromotionKnight ||
+	cl.kind == WhitePromotion || cl.kind == BlackPromotion ||
 	cl.kind == WhiteCapturesEnPassant || cl.kind == BlackCapturesEnPassant) {
       fromX = cl.ff;
       fromY = cl.rf;
@@ -6034,7 +6007,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
     /* [HGM] <popupFix> kludge to avoid having to know the exact promotion
        move type in caller when we know the move is a legal promotion */
     if(moveType == NormalMove && promoChar)
-        moveType = PromoCharToMoveType(WhiteOnMove(currentMove), promoChar);
+        moveType = WhiteOnMove(currentMove) ? WhitePromotion : BlackPromotion;
 
     /* [HGM] <popupFix> The following if has been moved here from
        UserMoveEvent(). Because it seemed to belong here (why not allow
@@ -8116,20 +8089,8 @@ ParseGameHistory(game)
     fprintf(debugFP, "board L=%d, R=%d, H=%d, holdings=%d\n", BOARD_LEFT, BOARD_RGHT, BOARD_HEIGHT, gameInfo.holdingsWidth);
     setbuf(debugFP, NULL);
   }
-          case WhitePromotionChancellor:
-          case BlackPromotionChancellor:
-          case WhitePromotionArchbishop:
-          case BlackPromotionArchbishop:
-	  case WhitePromotionQueen:
-	  case BlackPromotionQueen:
-	  case WhitePromotionRook:
-	  case BlackPromotionRook:
-	  case WhitePromotionBishop:
-	  case BlackPromotionBishop:
-	  case WhitePromotionKnight:
-	  case BlackPromotionKnight:
-	  case WhitePromotionKing:
-	  case BlackPromotionKing:
+	  case WhitePromotion:
+	  case BlackPromotion:
 	  case WhiteNonPromotion:
 	  case BlackNonPromotion:
 	  case NormalMove:
@@ -8474,10 +8435,6 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 	board[toY][toX] = board[fromY][fromX];
 	board[fromY][fromX] = EmptySquare;
     }
-
-    /* [HGM] now we promote for Shogi, if needed */
-    if(gameInfo.variant == VariantShogi && promoChar == 'q')
-        board[toY][toX] = (ChessSquare) (PROMOTED piece);
   }
 
     if (gameInfo.holdingsWidth != 0) {
@@ -8553,11 +8510,12 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 	board[toY][toX] = EmptySquare;
       }
     }
-    if(gameInfo.variant == VariantShogi && promoChar != NULLCHAR && promoChar != '=') {
-        /* [HGM] Shogi promotions */
+    if(promoChar == '+') {
+        /* [HGM] Shogi-style promotions, to piece implied by original (Might overwrite orinary Pawn promotion) */
         board[toY][toX] = (ChessSquare) (PROMOTED piece);
+    } else if(!appData.testLegality) { // without legality testing, unconditionally believe promoChar
+        board[toY][toX] = CharToPiece(promoChar);
     }
-
     if((gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) 
 		&& promoChar != NULLCHAR && gameInfo.holdingsSize) { 
 	// [HGM] superchess: take promotion piece out of holdings
@@ -9591,22 +9549,8 @@ LoadGameOneMove(readAhead)
 
       case WhiteCapturesEnPassant:
       case BlackCapturesEnPassant:
-      case WhitePromotionChancellor:
-      case BlackPromotionChancellor:
-      case WhitePromotionArchbishop:
-      case BlackPromotionArchbishop:
-      case WhitePromotionCentaur:
-      case BlackPromotionCentaur:
-      case WhitePromotionQueen:
-      case BlackPromotionQueen:
-      case WhitePromotionRook:
-      case BlackPromotionRook:
-      case WhitePromotionBishop:
-      case BlackPromotionBishop:
-      case WhitePromotionKnight:
-      case BlackPromotionKnight:
-      case WhitePromotionKing:
-      case BlackPromotionKing:
+      case WhitePromotion:
+      case BlackPromotion:
       case WhiteNonPromotion:
       case BlackNonPromotion:
       case NormalMove:
