@@ -440,9 +440,10 @@ TimeMark lastNodeCountTime;
 long lastNodeCount=0;
 int have_sent_ICS_logon = 0;
 int movesPerSession;
-long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement;
+int suddenDeath, whiteStartMove, blackStartMove; /* [HGM] for implementation of 'any per time' sessions, as in first part of byoyomi TC */
+long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement, lastWhite, lastBlack;
 long timeControl_2; /* [AS] Allow separate time controls */
-char *fullTimeControlString = NULL; /* [HGM] secondary TC: merge of MPS, TC and inc */
+char *fullTimeControlString = NULL, *nextSession, *whiteTC, *blackTC; /* [HGM] secondary TC: merge of MPS, TC and inc */
 long timeRemaining[2][MAX_MOVES];
 int matchGame = 0;
 TimeMark programStartTime;
@@ -970,46 +971,55 @@ int NextTimeControlFromString( char ** str, long * value )
     return result;
 }
 
-int NextSessionFromString( char ** str, int *moves, long * tc, long *inc)
-{   /* [HGM] routine added to read '+moves/time' for secondary time control */
-    int result = -1; long temp, temp2;
+int NextSessionFromString( char ** str, int *moves, long * tc, long *inc, int *incType)
+{   /* [HGM] routine added to read '+moves/time' for secondary time control. */
+    int result = -1, type = 0; long temp, temp2;
 
-    if(**str != '+') return -1; // old params remain in force!
+    if(**str != ':') return -1; // old params remain in force!
     (*str)++;
-    if( NextTimeControlFromString( str, &temp ) ) return -1;
+    if(**str == '*') type = *(*str)++, temp = 0; // sandclock TC
+    if( NextIntegerFromString( str, &temp ) ) return -1;
+    if(type) { *moves = 0; *tc = temp * 500; *inc = temp * 1000; *incType = '*'; return 0; }
 
     if(**str != '/') {
         /* time only: incremental or sudden-death time control */
         if(**str == '+') { /* increment follows; read it */
             (*str)++;
+            if(**str == '!') type = *(*str)++; // Bronstein TC
             if(result = NextIntegerFromString( str, &temp2)) return -1;
             *inc = temp2 * 1000;
         } else *inc = 0;
-        *moves = 0; *tc = temp * 1000; 
+        *moves = 0; *tc = temp * 1000; *incType = type;
         return 0;
-    } else if(temp % 60 != 0) return -1;     /* moves was given as min:sec */
+    }
 
     (*str)++; /* classical time control */
-    result = NextTimeControlFromString( str, &temp2);
+    result = NextIntegerFromString( str, &temp2); // NOTE: already converted to seconds by ParseTimeControl()
+
     if(result == 0) {
-        *moves = temp/60;
+        *moves = temp;
         *tc    = temp2 * 1000;
         *inc   = 0;
+        *incType = type;
     }
     return result;
 }
 
-int GetTimeQuota(int movenr)
+int GetTimeQuota(int movenr, int lastUsed, char *tcString)
 {   /* [HGM] get time to add from the multi-session time-control string */
-    int moves=1; /* kludge to force reading of first session */
+    int incType, moves=1; /* kludge to force reading of first session */
     long time, increment;
-    char *s = fullTimeControlString;
+    char *s = tcString;
 
-    if(appData.debugMode) fprintf(debugFP, "TC string = '%s'\n", fullTimeControlString);
+    if(!*s) return 0; // empty TC string means we ran out of the last sudden-death version
+    if(appData.debugMode) fprintf(debugFP, "TC string = '%s'\n", tcString);
     do {
-        if(moves) NextSessionFromString(&s, &moves, &time, &increment);
+        if(moves) NextSessionFromString(&s, &moves, &time, &increment, &incType);
+        nextSession = s; suddenDeath = moves == 0 && increment == 0;
         if(appData.debugMode) fprintf(debugFP, "mps=%d tc=%d inc=%d\n", moves, (int) time, (int) increment);
         if(movenr == -1) return time;    /* last move before new session     */
+        if(incType == '*') increment = 0; else // for sandclock, time is added while not thinking
+        if(incType == '!' && lastUsed < increment) increment = lastUsed;
         if(!moves) return increment;     /* current session is incremental   */
         if(movenr >= 0) movenr -= moves; /* we already finished this session */
     } while(movenr >= -1);               /* try again for next session       */
@@ -1025,19 +1035,22 @@ ParseTimeControl(tc, ti, mps)
 {
   long tc1;
   long tc2;
-  char buf[MSG_SIZ];
+  char buf[MSG_SIZ], buf2[MSG_SIZ], *mytc = tc;
+  int min, sec=0;
   
   if(ti >= 0 && !strchr(tc, '+') && !strchr(tc, '/') ) mps = 0;
+  if(!strchr(tc, '+') && !strchr(tc, '/') && sscanf(tc, "%d:%d", &min, &sec) >= 1)
+      sprintf(mytc=buf2, "%d", 60*min+sec); // convert 'classical' min:sec tc string to seconds
   if(ti > 0) {
     if(mps)
-      sprintf(buf, "+%d/%s+%d", mps, tc, ti);
-    else sprintf(buf, "+%s+%d", tc, ti);
+      sprintf(buf, ":%d/%s+%d", mps, mytc, ti);
+    else sprintf(buf, ":%s+%d", mytc, ti);
   } else {
     if(mps)
-             sprintf(buf, "+%d/%s", mps, tc);
-    else sprintf(buf, "+%s", tc);
+             sprintf(buf, ":%d/%s", mps, mytc);
+    else sprintf(buf, ":%s", mytc);
   }
-  fullTimeControlString = StrSave(buf);
+  fullTimeControlString = StrSave(buf); // this should now be in PGN format
   
   if( NextTimeControlFromString( &tc, &tc1 ) != 0 ) {
     return FALSE;
@@ -14058,15 +14071,20 @@ CheckTimeControl()
     /*
      * add time to clocks when time control is achieved ([HGM] now also used for increment)
      */
-    if ( !WhiteOnMove(forwardMostMove) )
+    if ( !WhiteOnMove(forwardMostMove) ) {
 	/* White made time control */
-        whiteTimeRemaining += GetTimeQuota((forwardMostMove-1)/2)
+        lastWhite -= whiteTimeRemaining; // [HGM] contains start time, socalculate thinking time
+        whiteTimeRemaining += GetTimeQuota((forwardMostMove-whiteStartMove-1)/2, lastWhite, whiteTC)
         /* [HGM] time odds: correct new time quota for time odds! */
                                             / WhitePlayer()->timeOdds;
-      else
+        lastBlack = blackTimeRemaining; // [HGM] leave absolute time (after quota), so next switch we can us it to calculate thinking time
+    } else {
+        lastBlack -= blackTimeRemaining;
 	/* Black made time control */
-        blackTimeRemaining += GetTimeQuota((forwardMostMove-1)/2)
+        blackTimeRemaining += GetTimeQuota((forwardMostMove-blackStartMove-1)/2, lastBlack, blackTC)
                                             / WhitePlayer()->other->timeOdds;
+        lastWhite = whiteTimeRemaining;
+    }
 }
 
 void
@@ -14182,13 +14200,15 @@ ResetClocks()
 	whiteTimeRemaining = 1000*searchTime / WhitePlayer()->timeOdds;
 	blackTimeRemaining = 1000*searchTime / WhitePlayer()->other->timeOdds;
     } else { /* [HGM] correct new time quote for time odds */
-        whiteTimeRemaining = GetTimeQuota(-1) / WhitePlayer()->timeOdds;
-        blackTimeRemaining = GetTimeQuota(-1) / WhitePlayer()->other->timeOdds;
+        whiteTC = blackTC = fullTimeControlString;
+        whiteTimeRemaining = GetTimeQuota(-1, 0, whiteTC) / WhitePlayer()->timeOdds;
+        blackTimeRemaining = GetTimeQuota(-1, 0, blackTC) / WhitePlayer()->other->timeOdds;
     }
     if (whiteFlag || blackFlag) {
 	DisplayTitle("");
 	whiteFlag = blackFlag = FALSE;
     }
+    lastWhite = lastBlack = whiteStartMove = blackStartMove = 0;
     DisplayBothClocks();
 }
 
@@ -14216,15 +14236,28 @@ DecrementClocks()
     if (WhiteOnMove(forwardMostMove)) {
 	if(whiteNPS >= 0) lastTickLength = 0;
 	timeRemaining = whiteTimeRemaining -= lastTickLength;
+        if(timeRemaining < 0) {
+            GetTimeQuota((forwardMostMove-whiteStartMove-1)/2, 0, whiteTC); // sets suddenDeath & nextSession;
+            if(suddenDeath) { // [HGM] if we run out of a non-last incremental session, go to the next
+                whiteStartMove = forwardMostMove; whiteTC = nextSession;
+                lastWhite= timeRemaining = whiteTimeRemaining += GetTimeQuota(-1, 0, whiteTC);
+            }
+        }
 	DisplayWhiteClock(whiteTimeRemaining - fudge,
 			  WhiteOnMove(currentMove < forwardMostMove ? currentMove : forwardMostMove));
     } else {
 	if(blackNPS >= 0) lastTickLength = 0;
 	timeRemaining = blackTimeRemaining -= lastTickLength;
+        if(timeRemaining < 0) { // [HGM] if we run out of a non-last incremental session, go to the next
+            GetTimeQuota((forwardMostMove-blackStartMove-1)/2, 0, blackTC);
+            if(suddenDeath) {
+                blackStartMove = forwardMostMove;
+                lastBlack = timeRemaining = blackTimeRemaining += GetTimeQuota(-1, 0, blackTC=nextSession);
+            }
+        }
 	DisplayBlackClock(blackTimeRemaining - fudge,
 			  !WhiteOnMove(currentMove < forwardMostMove ? currentMove : forwardMostMove));
     }
-
     if (CheckFlags()) return;
 	
     tickStartTM = now;
