@@ -385,7 +385,7 @@ typedef struct {
     int premoveHighlightColor;
 #endif
     int movesPerSession;
-    int timeIncrement;
+    float timeIncrement;
     char *initString;
     char *secondInitString;
     char *firstComputerString;

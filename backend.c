@@ -1027,6 +1027,13 @@ int NextSessionFromString( char ** str, int *moves, long * tc, long *inc, int *i
             if(**str == '!') type = *(*str)++; // Bronstein TC
             if(result = NextIntegerFromString( str, &temp2)) return -1;
             *inc = temp2 * 1000;
+            if(**str == '.') { // read fraction of increment
+                char *start = ++(*str);
+                if(result = NextIntegerFromString( str, &temp2)) return -1;
+                temp2 *= 1000;
+                while(start++ < *str) temp2 /= 10;
+                *inc += temp2;
+            }
         } else *inc = 0;
         *moves = 0; *tc = temp * 1000; *incType = type;
         return 0;
@@ -1069,7 +1076,7 @@ int GetTimeQuota(int movenr, int lastUsed, char *tcString)
 int
 ParseTimeControl(tc, ti, mps)
      char *tc;
-     int ti;
+     float ti;
      int mps;
 {
   long tc1;
@@ -1084,9 +1091,9 @@ ParseTimeControl(tc, ti, mps)
   if(ti > 0) {
 
     if(mps)
-      snprintf(buf, MSG_SIZ, ":%d/%s+%d", mps, mytc, ti);
+      snprintf(buf, MSG_SIZ, ":%d/%s+%g", mps, mytc, ti);
     else 
-      snprintf(buf, MSG_SIZ, ":%s+%d", mytc, ti);
+      snprintf(buf, MSG_SIZ, ":%s+%g", mytc, ti);
   } else {
     if(mps)
       snprintf(buf, MSG_SIZ, ":%d/%s", mps, mytc);
@@ -13539,9 +13546,9 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
 	/* Note old gnuchess bug -- minutes:seconds used to not work.
 	   Fixed in later versions, but still avoid :seconds
 	   when seconds is 0. */
-	snprintf(buf, MSG_SIZ, "level %d %ld %d\n", mps, tc/60000, inc/1000);
+	snprintf(buf, MSG_SIZ, "level %d %ld %g\n", mps, tc/60000, inc/1000);
       } else {
-	snprintf(buf, MSG_SIZ, "level %d %ld:%02d %d\n", mps, tc/60000,
+	snprintf(buf, MSG_SIZ, "level %d %ld:%02d %g\n", mps, tc/60000,
 		 seconds, inc/1000);
       }
     }

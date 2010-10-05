@@ -217,8 +217,8 @@ ArgDescriptor argDescriptors[] = {
   { "td", ArgFloat, (void *) &appData.timeDelay, FALSE, INVALID },
   { "timeControl", ArgString, (void *) &appData.timeControl, TRUE, (ArgIniType) TIME_CONTROL },
   { "tc", ArgString, (void *) &appData.timeControl, FALSE, INVALID },
-  { "timeIncrement", ArgInt, (void *) &appData.timeIncrement, TRUE, (ArgIniType) TIME_INCREMENT },
-  { "inc", ArgInt, (void *) &appData.timeIncrement, FALSE, INVALID },
+  { "timeIncrement", ArgFloat, (void *) &appData.timeIncrement, TRUE, INVALID },
+  { "inc", ArgFloat, (void *) &appData.timeIncrement, FALSE, INVALID },
   { "internetChessServerMode", ArgBoolean, (void *) &appData.icsActive, FALSE, INVALID },
   { "ics", ArgTrue, (void *) &appData.icsActive, FALSE, (ArgIniType) FALSE },
   { "xics", ArgFalse, (void *) &appData.icsActive, FALSE, INVALID },
@@ -1158,6 +1158,7 @@ InitAppData(char *lpCmdLine)
 
   // float: casting to int is not harmless, so default cannot be contained in table
   appData.timeDelay = TIME_DELAY;
+  appData.timeIncrement = TIME_INCREMENT;
 
   // some complex, platform-dependent stuff that could not be handled from table
   SetDefaultTextAttribs();

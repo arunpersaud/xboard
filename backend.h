@@ -189,7 +189,7 @@ void AdjustClock P((Boolean which, int dir));
 void DisplayBothClocks P((void));
 void EditPositionMenuEvent P((ChessSquare selection, int x, int y));
 void DropMenuEvent P((ChessSquare selection, int x, int y));
-int ParseTimeControl P((char *tc, int ti, int mps));
+int ParseTimeControl P((char *tc, float ti, int mps));
 void EscapeExpand(char *p, char *q);
 void ProcessICSInitScript P((FILE * f));
 void EditCommentEvent P((void));
