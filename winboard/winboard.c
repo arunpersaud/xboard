@@ -332,7 +332,7 @@ int dialogItems[][40] = {
 
 static char languageBuf[50000], *foreign[1000], *english[1000], *languageFile[MSG_SIZ];
 static int lastChecked;
-static char oldLanguage[MSG_SIZ], *menuText[10][25];
+static char oldLanguage[MSG_SIZ], *menuText[10][30];
 extern int tinyLayout;
 extern char * menuBarText[][8];
 
