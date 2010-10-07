@@ -499,7 +499,7 @@ char *ProbeBook(int moveNr, char *book)
         entries[count++] = entry;
     }
     if(appData.bookStrength != 50) { // transform weights
-        double power, maxWeight = 0.0;
+        double power = 0, maxWeight = 0.0;
         if(appData.bookStrength) power = (100.-appData.bookStrength)/appData.bookStrength;
         for(i=0; i<count; i++) if(entries[i].weight > maxWeight) maxWeight = entries[i].weight;
         for(i=0; i<count; i++){
