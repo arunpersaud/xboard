@@ -925,7 +925,7 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  return TRUE; /* treat as _("Cancel") if first engine does not support it */
 	} else
 	if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
-	  snprintf(buf, MSG_SIZ, r_("Warning: second engine (%s) does not support this!"), second.tidy);
+	  snprintf(buf, MSG_SIZ, _("Warning: second engine (%s) does not support this!"), second.tidy);
 	  DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
 	}
       }
@@ -1534,7 +1534,7 @@ CopyFont(MyFont *dest, const MyFont *src)
   dest->mfp.underline = src->mfp.underline;
   dest->mfp.strikeout = src->mfp.strikeout;
   dest->mfp.charset   = src->mfp.charset;
-  lsafeStrCpy(dest->mfp.faceName, src->mfp.faceName, sizeof(dest->mfp.faceName)/sizeof(dest->mfp.faceName[0]) );
+  safeStrCpy(dest->mfp.faceName, src->mfp.faceName, sizeof(dest->mfp.faceName)/sizeof(dest->mfp.faceName[0]) );
   CreateFontInMF(dest);
 }
 
