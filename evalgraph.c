@@ -50,6 +50,7 @@ ChessProgramStats_Move * currPvInfo;
 int currFirst = 0;
 int currLast = 0;
 int currCurrent = -1;
+int range = 1;
 
 int nWidthPB = 0;
 int nHeightPB = 0;
@@ -93,23 +94,23 @@ static int GetPvScore( int index )
 */
 static int GetValueY( int value )
 {
-    if( value < -700 ) value = -700;
-    if( value > +700 ) value = +700;
+    if( value < -range*700 ) value = -range*700;
+    if( value > +range*700 ) value = +range*700;
 
-    return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / 1400.0);
+    return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / (1400.*range));
 }
 
 // the brush selection is made part of the DrawLine, by passing a style argument
 // the wrapper for doing the text output makes this back-end
 static void DrawAxisSegmentHoriz( int value, Boolean drawValue )
 {
-    int y = GetValueY( value*100 );
+    int y = GetValueY( range*value*100 );
 
     if( drawValue ) {
         char buf[MSG_SIZ], *b = buf;
 
         if( value > 0 ) *b++ = '+';
-	sprintf(b, "%d", value);
+	sprintf(b, "%d", range*value);
 
 	DrawEvalText(buf, strlen(buf), y);
     }
@@ -328,6 +329,8 @@ int GetMoveIndexFromPoint( int x, int y )
 // init and display part split of so they can be moved to front end
 void PaintEvalGraph( void )
 {
+    VariantClass v = gameInfo.variant;
+    range = (gameInfo.holdingsWidth && v != VariantSuper && v != VariantGreat) ? 2 : 1; // [HGM] double range in drop games
     /* Draw */
     DrawRectangle(0, 0, nWidthPB, nHeightPB, 2, FILLED);
     DrawAxis();
