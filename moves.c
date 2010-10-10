@@ -1034,8 +1034,12 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
             ChessSquare piece = board[rf][ff];
 
             if(promoChar == PieceToChar(BlackQueen)) promoChar = NULLCHAR; /* [HGM] Kludge */
-            if(promoChar != NULLCHAR && promoChar != '+' && promoChar != '=' &&
-               ToUpper(PieceToChar(PROMOTED piece)) != ToUpper(promoChar) )
+            if(promoChar == 'd' && (piece == WhiteRook   || piece == BlackRook)   ||
+               promoChar == 'h' && (piece == WhiteBishop || piece == BlackBishop) ||
+               promoChar == 'g' && (piece <= WhiteFerz || piece <= BlackFerz && piece >= BlackPawn) )
+                  promoChar = '+'; // allowed ICS notations
+if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promoChar : '-');
+            if(promoChar != NULLCHAR && promoChar != '+' && promoChar != '=')
                     cl.kind = IllegalMove;
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
@@ -1045,9 +1049,7 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
                              cl.kind = promoChar == '=' ? IllegalMove : WhitePromotion;
                     else /* promotion optional, default is promote */
                              cl.kind = promoChar == '=' ? WhiteNonPromotion : WhitePromotion;
-
-                } else cl.kind = (promoChar == NULLCHAR || promoChar == 'x' || promoChar == '=') ?
-                                            NormalMove : IllegalMove;
+                } else cl.kind = (promoChar == NULLCHAR || promoChar == '=') ? NormalMove : IllegalMove;
             } else {
                 if( (int) piece < (int) BlackWazir && (rf < BOARD_HEIGHT/3 || rt < BOARD_HEIGHT/3) ) {
                     if( (piece == BlackPawn || piece == BlackQueen) && rt < 1 ||
@@ -1230,9 +1232,12 @@ void Disambiguate(board, flags, closure)
         /* [HGM] Shogi promotions. On input, '=' means defer, NULL promote. Afterwards, c is set to '+' for promotions, NULL other */
         if(closure->rfIn != DROP_RANK && closure->kind == NormalMove) {
             ChessSquare piece = closure->piece;
-            if(c != NULLCHAR && c != '+' && c != '=' &&
-               ToUpper(PieceToChar(PROMOTED piece)) != ToUpper(c) )
-                    closure->kind = IllegalMove; // the only allowed cases are '+', '=' and the promoted partner.
+            if (c == 'd' && (piece == WhiteRook   || piece == BlackRook)   ||
+                c == 'h' && (piece == WhiteBishop || piece == BlackBishop) ||
+                c == 'g' && (piece <= WhiteFerz || piece <= BlackFerz && piece >= BlackPawn) )
+                   c = '+'; // allowed ICS notations
+            if(c != NULLCHAR && c != '+' && c != '=')
+                    closure->kind = IllegalMove; // the only allowed cases are '+', '='.
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
                      (closure->rf >= BOARD_HEIGHT-(BOARD_HEIGHT/3) || closure->rt >= BOARD_HEIGHT-(BOARD_HEIGHT/3)) ) {

@@ -4684,7 +4684,7 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
 	break;
       case WhiteNonPromotion:
       case BlackNonPromotion:
-        sprintf(user_move, "%c%c%c%c=\n", AAA + fromX, ONE + fromY, AAA + toX, ONE + toY);
+        sprintf(user_move, "%c%c%c%c==\n", AAA + fromX, ONE + fromY, AAA + toX, ONE + toY);
         break;
       case WhitePromotion:
       case BlackPromotion:

@@ -236,6 +236,7 @@ extern void CopyBoard P((Board to, Board from));
 
     piece = boards[yyboardindex]
       [currentMoveString[1] - ONE][currentMoveString[0] - AAA];
+    if(PieceToChar(piece) == '+' && appData.icsActive) promoted = 1, yytext[skip3] = PieceToChar(DEMOTED piece); // trust ICS
     if(promoted) piece = (ChessSquare) (DEMOTED piece);
     c = PieceToChar(piece);
     if(c == '~') c = PieceToChar((ChessSquare) (DEMOTED piece));
