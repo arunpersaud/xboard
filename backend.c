@@ -4008,7 +4008,7 @@ ParseBoard12(string)
     }
 
    if (gameInfo.boardHeight != ranks || gameInfo.boardWidth != files ||
-					weird && (int)gameInfo.variant <= (int)VariantShogi) {
+					weird && (int)gameInfo.variant < (int)VariantShogi) {
      /* [HGM] We seem to have switched variant unexpectedly
       * Try to guess new variant from board size
       */
