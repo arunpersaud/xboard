@@ -495,6 +495,7 @@ typedef struct {
     char *soundIcsLoss;
     char *soundIcsDraw;
     char *soundIcsUnfinished;
+    Boolean disguise;        /* [HGM] Promoted Pawns look like pieces in bughouse */
     Boolean reuseFirst;
     Boolean reuseSecond;
     Boolean animateDragging; /* If True, animate mouse dragging of pieces */

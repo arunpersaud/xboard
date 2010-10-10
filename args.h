@@ -453,6 +453,7 @@ ArgDescriptor argDescriptors[] = {
   { "soundIcsDraw", ArgFilename, (void *) &appData.soundIcsDraw, TRUE, (ArgIniType) "" },
   { "soundIcsUnfinished", ArgFilename, (void *) &appData.soundIcsUnfinished, TRUE, (ArgIniType) "" },
   { "soundIcsAlarm", ArgFilename, (void *) &appData.soundIcsAlarm, TRUE, (ArgIniType) "" },
+  { "disguisePromotedPieces", ArgBoolean, (void *) &appData.disguise, TRUE, (ArgIniType) TRUE },
   { "reuseFirst", ArgBoolean, (void *) &appData.reuseFirst, FALSE, (ArgIniType) TRUE },
   { "reuse", ArgTrue, (void *) &appData.reuseFirst, FALSE, INVALID },
   { "xreuse", ArgFalse, (void *) &appData.reuseFirst, FALSE, INVALID },

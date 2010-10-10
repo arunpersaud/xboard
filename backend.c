@@ -4337,6 +4337,8 @@ ParseBoard12(string)
 	  //                 So we parse the long-algebraic move string in stead of the SAN move
 	  int valid; char buf[MSG_SIZ], *prom;
 
+	  if(gameInfo.variant == VariantShogi && !strchr(move_str, '=') && !strchr(move_str, '@'))
+		strcat(move_str, "="); // if ICS does not say 'promote' on non-drop, we defer.
 	  // str looks something like "Q/a1-a2"; kill the slash
 	  if(str[1] == '/')
 	    snprintf(buf, MSG_SIZ,"%c%s", str[0], str+2);
@@ -4375,8 +4377,24 @@ ParseBoard12(string)
 	    strcat(parseList[moveNum - 1], " ");
 	    strcat(parseList[moveNum - 1], elapsed_time);
 	    /* currentMoveString is set as a side-effect of ParseOneMove */
+	    if(gameInfo.variant == VariantShogi && currentMoveString[4]) currentMoveString[4] = '+';
 	    safeStrCpy(moveList[moveNum - 1], currentMoveString, sizeof(moveList[moveNum - 1])/sizeof(moveList[moveNum - 1][0]));
 	    strcat(moveList[moveNum - 1], "\n");
+
+            if(gameInfo.holdingsWidth && !appData.disguise) // inherit info that ICS does not give from previous board
+              for(k=0; k<ranks; k++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++) {
+                ChessSquare old, new = boards[moveNum][k][j];
+                  if(fromY == DROP_RANK && k==toY && j==toX) continue; // dropped pieces always stand for themselves
+                  old = (k==toY && j==toX) ? boards[moveNum-1][fromY][fromX] : boards[moveNum-1][k][j]; // trace back mover
+                  if(old == new) continue;
+                  if(old == PROMOTED new) boards[moveNum][k][j] = old; // prevent promoted pieces to revert to primordial ones
+                  else if(new == WhiteWazir || new == BlackWazir) {
+                      if(old < WhiteCannon || old >= BlackPawn && old < BlackCannon)
+                           boards[moveNum][k][j] = PROMOTED old; // choose correct type of Gold in promotion
+                      else boards[moveNum][k][j] = old; // preserve type of Gold
+                  } else if((old == WhitePawn || old == BlackPawn) && new != EmptySquare) // Pawn promotions (but not e.p.capture!)
+                      boards[moveNum][k][j] = PROMOTED new; // use non-primordial representation of chosen piece
+              }
 	  } else {
 	    /* Move from ICS was illegal!?  Punt. */
 	    if (appData.debugMode) {
@@ -4685,14 +4703,16 @@ SendMoveToICS(moveType, fromX, fromY, toX, toY, promoChar)
 	break;
       case WhiteDrop:
       case BlackDrop:
+      drop:
 	snprintf(user_move, MSG_SIZ, "%c@%c%c\n",
-		ToUpper(PieceToChar((ChessSquare) fromX)),
-                AAA + toX, ONE + toY);
+		 ToUpper(PieceToChar((ChessSquare) fromX)),
+		 AAA + toX, ONE + toY);
 	break;
+      case IllegalMove:  /* could be a variant we don't quite understand */
+        if(fromY == DROP_RANK) goto drop; // We need 'IllegalDrop' move type?
       case NormalMove:
       case WhiteCapturesEnPassant:
       case BlackCapturesEnPassant:
-      case IllegalMove:  /* could be a variant we don't quite understand */
 	snprintf(user_move, MSG_SIZ,"%c%c%c%c\n",
                 AAA + fromX, ONE + fromY, AAA + toX, ONE + toY);
 	break;
