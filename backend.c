@@ -14313,7 +14313,7 @@ DecrementClocks()
     if (WhiteOnMove(forwardMostMove)) {
 	if(whiteNPS >= 0) lastTickLength = 0;
 	timeRemaining = whiteTimeRemaining -= lastTickLength;
-        if(timeRemaining < 0) {
+        if(timeRemaining < 0 && !appData.icsActive) {
             GetTimeQuota((forwardMostMove-whiteStartMove-1)/2, 0, whiteTC); // sets suddenDeath & nextSession;
             if(suddenDeath) { // [HGM] if we run out of a non-last incremental session, go to the next
                 whiteStartMove = forwardMostMove; whiteTC = nextSession;
@@ -14325,7 +14325,7 @@ DecrementClocks()
     } else {
 	if(blackNPS >= 0) lastTickLength = 0;
 	timeRemaining = blackTimeRemaining -= lastTickLength;
-        if(timeRemaining < 0) { // [HGM] if we run out of a non-last incremental session, go to the next
+        if(timeRemaining < 0 && !appData.icsActive) { // [HGM] if we run out of a non-last incremental session, go to the next
             GetTimeQuota((forwardMostMove-blackStartMove-1)/2, 0, blackTC);
             if(suddenDeath) {
                 blackStartMove = forwardMostMove;
