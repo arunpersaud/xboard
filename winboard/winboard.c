@@ -2459,7 +2459,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   pieceBitmap[2][WhiteBishop] = DoLoadBitmap(hInst, "b", squareSize, "w");
   pieceBitmap[2][WhiteRook] = DoLoadBitmap(hInst, "r", squareSize, "w");
   pieceBitmap[2][WhiteKing] = DoLoadBitmap(hInst, "k", squareSize, "w");
-  if( !strcmp(appData.variant, "shogi") && (squareSize==72 || squareSize==49)) {
+  if( gameInfo.variant == VariantShogi && (squareSize==72 || squareSize==49)) {
     // in Shogi, Hijack the unused Queen for Lance
     pieceBitmap[0][WhiteQueen] = DoLoadBitmap(hInst, "l", squareSize, "s");
     pieceBitmap[1][WhiteQueen] = DoLoadBitmap(hInst, "l", squareSize, "o");
