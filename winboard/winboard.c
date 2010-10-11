@@ -383,7 +383,7 @@ T_(char *s)
 {   // return the translation of the given string
     // efficiency can be improved a lot...
     int i=0;
-if(appData.debugMode) fprintf(debugFP, "T_(%s)\n", s);
+//if(appData.debugMode) fprintf(debugFP, "T_(%s)\n", s);
     if(!barbaric) return s;
     if(!s) return ""; // sanity
     while(english[i]) {
@@ -404,7 +404,7 @@ Translate(HWND hDlg, int dialogID)
     if(dialogItems[i][0] != dialogID) return; // unknown dialog, should not happen
     GetWindowText( hDlg, buf, MSG_SIZ );
     s = T_(buf);
-if(appData.debugMode) fprintf(debugFP, "WindowText '%s' -> '%s'\n", buf, s);
+//if(appData.debugMode) fprintf(debugFP, "WindowText '%s' -> '%s'\n", buf, s);
     if(strcmp(buf, s)) SetWindowText(hDlg, s); // replace by translated string (if different)
     for(j=1; k=dialogItems[i][j]; j++) { // translate all listed dialog items
         GetDlgItemText(hDlg, k, buf, MSG_SIZ);
