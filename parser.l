@@ -600,7 +600,7 @@ extern void CopyBoard P((Board to, Board from));
       return (int) IllegalMove;
 }
 
-"+"?[A-Z][xX:-]?[a-l][0-9]=?  {
+"+"?[A-Z][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|=)?  {
     /*
      * piece move, possibly ambiguous
      */
@@ -629,7 +629,7 @@ extern void CopyBoard P((Board to, Board from));
     cl.promoCharIn = NULLCHAR;
 
     if(yyleng-skip > 3) /* [HGM] can have Shogi-style promotion */
-        cl.promoCharIn = yytext[yyleng-1];
+        cl.promoCharIn = yytext[yyleng-1-(yytext[yyleng-1]==')')];
 
     if (appData.debugMode) {
         fprintf(debugFP, "Parser Qa1: yyleng=%d,  %d(%d,%d)-(%d,%d) = %d (%c)\n",
@@ -656,7 +656,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) cl.kind;
 }
 
-"+"?[A-Z][a-l0-9][xX:-]?[a-l][0-9]=?   {
+"+"?[A-Z][a-l0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|=)?   {
     /*
      * piece move with rank or file disambiguator
      */
@@ -695,7 +695,7 @@ extern void CopyBoard P((Board to, Board from));
     cl.promoCharIn = NULLCHAR;
 
     if(yyleng-skip > 4) /* [HGM] can have Shogi-style promotion */
-        cl.promoCharIn = yytext[yyleng-1];
+        cl.promoCharIn = yytext[yyleng-1-(yytext[yyleng-1]==')')];
 
     /* [HGM] do not allow values beyond board size */
     if(cl.rtIn >= BOARD_HEIGHT ||
