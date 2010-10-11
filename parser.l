@@ -828,7 +828,7 @@ extern void CopyBoard P((Board to, Board from));
 			      rf, ff, rt, ft, NULLCHAR);
 }
 
-[A-Z][@*][a-l][0-9] {
+[A-Za-z][@*][a-l][0-9] {
     /* Bughouse piece drop. */
     currentMoveString[1] = '@';
     currentMoveString[2] = yytext[2];
