@@ -523,6 +523,7 @@ typedef struct {
     int secondProtocolVersion;
     Boolean showButtonBar;
     Boolean icsEngineAnalyze; 
+    Boolean variations;         /* [HGM] enable variation-tree walking */
 
     /* [AS] New properties (down to the "ZIPPY" part) */
     Boolean firstScoreIsAbsolute;  /* If true, engine score is always from white side */

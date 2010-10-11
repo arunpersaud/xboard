@@ -185,6 +185,7 @@ ArgDescriptor argDescriptors[] = {
   { "fd", ArgFilename, (void *) &appData.firstDirectory, FALSE, INVALID },
   { "secondDirectory", ArgFilename, (void *) &appData.secondDirectory, FALSE, (ArgIniType) SECOND_DIRECTORY },
   { "sd", ArgFilename, (void *) &appData.secondDirectory, FALSE, INVALID },
+  { "variations", ArgBoolean, (void *) &appData.variations, TRUE, (ArgIniType) FALSE },
 
   /* some options only used by the XBoard front end, and ignored in WinBoard         */
   /* Their saving is controlled by XBOARD, which in WinBoard is defined as FALSE */

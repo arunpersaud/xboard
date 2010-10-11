@@ -6161,7 +6161,8 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
      the previous line in Analysis Mode */
   if ((gameMode == AnalyzeMode || gameMode == EditGame)
 				&& currentMove < forwardMostMove) {
-    PushTail(currentMove, forwardMostMove); // [HGM] vari: save tail of game
+    if(appData.variations) PushTail(currentMove, forwardMostMove); // [HGM] vari: save tail of game
+    else forwardMostMove = currentMove;
   }
 
   /* If we need the chess program but it's dead, restart it */
