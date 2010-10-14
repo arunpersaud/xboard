@@ -1092,16 +1092,16 @@ ParseTimeControl(tc, ti, mps)
 
     if(mps)
       snprintf(buf, MSG_SIZ, ":%d/%s+%g", mps, mytc, ti);
-    else 
+    else
       snprintf(buf, MSG_SIZ, ":%s+%g", mytc, ti);
   } else {
     if(mps)
       snprintf(buf, MSG_SIZ, ":%d/%s", mps, mytc);
-    else 
+    else
       snprintf(buf, MSG_SIZ, ":%s", mytc);
   }
   fullTimeControlString = StrSave(buf); // this should now be in PGN format
-  
+
   if( NextTimeControlFromString( &tc, &tc1 ) != 0 ) {
     return FALSE;
   }
@@ -3119,17 +3119,25 @@ read_from_ics(isr, closure, data, count, error)
 	    if (!have_sent_ICS_logon && looking_at(buf, &i, "login:")) {
 		ICSInitScript();
 		have_sent_ICS_logon = 1;
-		sending_ICS_password = 0; // in case we come back to login
-		sending_ICS_login = 1; 
+		/* if we don't send the login/password via icsLogon, use special readline
+		   code for it */
+		if (strlen(appData.icsLogon)==0)
+		  {
+		    sending_ICS_password = 0; // in case we come back to login
+		    sending_ICS_login = 1;
+		  };
 		continue;
 	    }
 	    /* need to shadow the password */
 	    if (!sending_ICS_password && looking_at(buf, &i, "password:")) {
-	      sending_ICS_password = 1;
+	      /* if we don't send the login/password via icsLogon, use special readline
+		 code for it */
+	      if (strlen(appData.icsLogon)==0)
+		sending_ICS_password = 1;
 	      continue;
 	    }
-	      
-	    if (ics_getting_history != H_GETTING_MOVES /*smpos kludge*/ && 
+
+	    if (ics_getting_history != H_GETTING_MOVES /*smpos kludge*/ &&
 		(looking_at(buf, &i, "\n<12> ") ||
 		 looking_at(buf, &i, "<12> "))) {
 		loggedOn = TRUE;
@@ -6040,15 +6048,15 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
     pup = boards[currentMove][toY][toX];
 
     /* [HGM] If move started in holdings, it means a drop. Convert to standard form */
-    if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) { 
+    if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) {
          if( pup != EmptySquare ) return;
          moveType = WhiteOnMove(currentMove) ? WhiteDrop : BlackDrop;
-	   if(appData.debugMode) fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n", 
+	   if(appData.debugMode) fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n",
 		moveType, currentMove, fromX, fromY, boards[currentMove][fromY][fromX]);
 	   // holdings might not be sent yet in ICS play; we have to figure out which piece belongs here
 	   if(fromX == 0) fromY = BOARD_HEIGHT-1 - fromY; // black holdings upside-down
 	   fromX = fromX ? WhitePawn : BlackPawn; // first piece type in selected holdings
-	   while(PieceToChar(fromX) == '.' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) fromX++; 
+	   while(PieceToChar(fromX) == '.' || PieceToNumber(fromX) != fromY && fromX != (int) EmptySquare) fromX++;
          fromY = DROP_RANK;
     }
 
@@ -8330,7 +8338,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
   /* [HGM] In Shatranj and Courier all promotions are to Ferz */
   if((gameInfo.variant==VariantShatranj || gameInfo.variant==VariantCourier || gameInfo.variant == VariantMakruk)
        && promoChar != 0) promoChar = PieceToChar(WhiteFerz);
-         
+
   if (fromY == DROP_RANK) {
 	/* must be first */
         piece = board[toY][toX] = (ChessSquare) fromX;
@@ -8596,8 +8604,8 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
     } else if(!appData.testLegality) { // without legality testing, unconditionally believe promoChar
         board[toY][toX] = CharToPiece(promoChar);
     }
-    if((gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) 
-		&& promoChar != NULLCHAR && gameInfo.holdingsSize) { 
+    if((gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat)
+		&& promoChar != NULLCHAR && gameInfo.holdingsSize) {
 	// [HGM] superchess: take promotion piece out of holdings
 	int k = PieceToNumber(CharToPiece(ToUpper(promoChar)));
 	if((int)piece < (int)BlackPawn) { // determine stm from piece color
