@@ -4215,6 +4215,7 @@ static void colorDrawPieceImage(piece, square_color, x, y, dest)
 	}
 	break;
     }
+    if(appData.upsideDown && flipView) kind ^= 2; // swap white and black pieces
     XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
 	      dest, wlPieceGC, 0, 0,
 	      squareSize, squareSize, x, y);
@@ -8742,6 +8743,7 @@ OverlayPiece(piece, clip, outline,  dest)
       kind = 0;
     else
       kind = 2;
+    if(appData.upsideDown && flipView) kind ^= 2;
     XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
 	      dest, clip,
 	      0, 0, squareSize, squareSize,
