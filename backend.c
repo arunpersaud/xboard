@@ -1083,7 +1083,6 @@ ParseTimeControl(tc, ti, mps)
   long tc2;
   char buf[MSG_SIZ], buf2[MSG_SIZ], *mytc = tc;
   int min, sec=0;
-  int len;
 
   if(ti >= 0 && !strchr(tc, '+') && !strchr(tc, '/') ) mps = 0;
   if(!strchr(tc, '+') && !strchr(tc, '/') && sscanf(tc, "%d:%d", &min, &sec) >= 1)
@@ -13575,10 +13574,10 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
 	/* Note old gnuchess bug -- minutes:seconds used to not work.
 	   Fixed in later versions, but still avoid :seconds
 	   when seconds is 0. */
-	snprintf(buf, MSG_SIZ, "level %d %ld %g\n", mps, tc/60000, inc/1000);
+	snprintf(buf, MSG_SIZ, "level %d %ld %g\n", mps, tc/60000, inc/1000.);
       } else {
 	snprintf(buf, MSG_SIZ, "level %d %ld:%02d %g\n", mps, tc/60000,
-		 seconds, inc/1000);
+		 seconds, inc/1000.);
       }
     }
     SendToProgram(buf, cps);
