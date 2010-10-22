@@ -449,6 +449,7 @@ int adjudicateLossPlies = 6;
 char white_holding[64], black_holding[64];
 TimeMark lastNodeCountTime;
 long lastNodeCount=0;
+int shiftKey; // [HGM] set by mouse handler
 
 int have_sent_ICS_logon = 0;
 int sending_ICS_login    = 0;
@@ -6160,7 +6161,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
      the previous line in Analysis Mode */
   if ((gameMode == AnalyzeMode || gameMode == EditGame)
 				&& currentMove < forwardMostMove) {
-    if(appData.variations) PushTail(currentMove, forwardMostMove); // [HGM] vari: save tail of game
+    if(appData.variations && shiftKey) PushTail(currentMove, forwardMostMove); // [HGM] vari: save tail of game
     else forwardMostMove = currentMove;
   }
 

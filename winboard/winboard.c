@@ -4073,6 +4073,8 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     x = BOARD_WIDTH - 1 - x;
   }
 
+  shiftKey = GetKeyState(VK_SHIFT) < 0; // [HGM] remember last shift status
+
   switch (message) {
   case WM_LBUTTONDOWN:
       if (PtInRect((LPRECT) &whiteRect, pt)) {
@@ -6366,6 +6368,7 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND:
     switch (LOWORD(wParam)) {
     case IDOK:
+      shiftKey = GetKeyState(VK_SHIFT) < 0; // [HGM] remember last shift status
       GetDlgItemText(hDlg, OPT_Move, move, sizeof(move));
       { int n; Board board;
 	// [HGM] FENedit

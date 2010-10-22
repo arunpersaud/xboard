@@ -1079,8 +1079,9 @@ char globalTranslations[] =
                                 \"Send to second chess program:\",,2) \n";
 
 char boardTranslations[] =
-   "<Btn1Down>: HandleUserMove() \n \
-   <Btn1Up>: HandleUserMove() \n \
+   "<Btn1Down>: HandleUserMove(0) \n \
+   Shift<Btn1Up>: HandleUserMove(1) \n \
+   <Btn1Up>: HandleUserMove(0) \n \
    <Btn1Motion>: AnimateUserMove() \n \
    <Btn3Motion>: HandlePV() \n \
    <Btn3Up>: PieceMenuPopup(menuB) \n \
@@ -4651,6 +4652,7 @@ void HandleUserMove(w, event, prms, nprms)
      Cardinal *nprms;
 {
     if (w != boardWidget || errorExitStatus != -1) return;
+    if(nprms) shiftKey = !strcmp(prms[0], "1");
 
     if (promotionUp) {
 	if (event->type == ButtonPress) {
