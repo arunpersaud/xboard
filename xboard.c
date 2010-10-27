@@ -248,6 +248,7 @@ RETSIGTYPE TermSizeSigHandler P((int sig));
 void CreateGCs P((void));
 void CreateXIMPieces P((void));
 void CreateXPMPieces P((void));
+void CreateXPMBoard P((char *s, int n));
 void CreatePieces P((void));
 void CreatePieceMenus P((void));
 Widget CreateMenuBar P((Menu *mb));
@@ -562,7 +563,8 @@ Pixmap pieceBitmap2[2][(int)BlackPawn+4];       /* [HGM] pieces */
 Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD actually used*/
 Pixmap xpmPieceBitmap2[4][(int)BlackPawn+4];	/* LL, LD, DL, DD set to select from */
 Pixmap xpmLightSquare, xpmDarkSquare, xpmJailSquare;
-int useImages, useImageSqs;
+Pixmap xpmBoardBitmap[2];
+int useImages, useImageSqs, useTexture, textureW[2], textureH[2];
 XImage *ximPieceBitmap[4][(int)BlackPawn+4];	/* LL, LD, DL, DD */
 Pixmap ximMaskPm[(int)BlackPawn];               /* clipmasks, used for XIM pieces */
 Pixmap ximMaskPm2[(int)BlackPawn+4];            /* clipmasks, used for XIM pieces */
@@ -2543,6 +2545,8 @@ XBoard square size (hint): %d\n\
       CreatePieces();
     } else {
       CreateXPMPieces();
+      CreateXPMBoard(appData.liteBackTextureFile, 1);
+      CreateXPMBoard(appData.darkBackTextureFile, 0);
     }
 #else
     CreateXIMPieces();
@@ -3400,6 +3404,16 @@ void CreateXIMPieces()
 }
 
 #if HAVE_LIBXPM
+void CreateXPMBoard(char *s, int kind)
+{
+    XpmAttributes attr;
+    attr.valuemask = 0;
+    if(s == NULL || *s == 0 || *s == '*') return;
+    if (XpmReadFileToPixmap(xDisplay, xBoardWindow, s, &(xpmBoardBitmap[kind]), NULL, &attr) == 0) {
+	useTexture |= kind + 1; textureW[kind] = attr.width; textureH[kind] = attr.height;
+    }
+}
+
 void CreateXPMPieces()
 {
     int piece, kind, r;
@@ -4066,11 +4080,34 @@ ClearPremoveHighlights()
   SetPremoveHighlights(-1, -1, -1, -1);
 }
 
-static void BlankSquare(x, y, color, piece, dest)
-     int x, y, color;
+static int CutOutSquare(x, y, x0, y0, kind)
+     int x, y, *x0, *y0, kind;
+{
+    int W = BOARD_WIDTH, H = BOARD_HEIGHT;
+    int nx = x/(squareSize + lineGap), ny = y/(squareSize + lineGap);
+    *x0 = 0; *y0 = 0;
+    if(textureW[kind] < squareSize || textureH[kind] < squareSize) return 0;
+    if(textureW[kind] < W*squareSize)
+	*x0 = (textureW[kind] - squareSize) * nx/(W-1);
+    else
+	*x0 = textureW[kind]*nx / W + (textureW[kind] - W*squareSize) / (2*W);
+    if(textureH[kind] < H*squareSize)
+	*y0 = (textureH[kind] - squareSize) * ny/(H-1);
+    else
+	*y0 = textureH[kind]*ny / H + (textureH[kind] - H*squareSize) / (2*H);
+    return 1;
+}
+
+static void BlankSquare(x, y, color, piece, dest, fac)
+     int x, y, color, fac;
      ChessSquare piece;
      Drawable dest;
-{
+{   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
+    int x0, y0;
+    if (useImages && color != 2 && (useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
+	XCopyArea(xDisplay, xpmBoardBitmap[color], dest, wlPieceGC, x0, y0,
+		  squareSize, squareSize, x*fac, y*fac);
+    } else
     if (useImages && useImageSqs) {
 	Pixmap pm;
 	switch (color) {
@@ -4086,7 +4123,7 @@ static void BlankSquare(x, y, color, piece, dest)
 	    break;
 	}
 	XCopyArea(xDisplay, pm, dest, wlPieceGC, 0, 0,
-		  squareSize, squareSize, x, y);
+		  squareSize, squareSize, x*fac, y*fac);
     } else {
 	GC gc;
 	switch (color) {
@@ -4101,7 +4138,7 @@ static void BlankSquare(x, y, color, piece, dest)
 	    gc = jailSquareGC;
 	    break;
 	}
-	XFillRectangle(xDisplay, dest, gc, x, y, squareSize, squareSize);
+	XFillRectangle(xDisplay, dest, gc, x*fac, y*fac, squareSize, squareSize);
     }
 }
 
@@ -4194,7 +4231,7 @@ static void colorDrawPieceImage(piece, square_color, x, y, dest)
      int square_color, x, y;
      Drawable dest;
 {
-    int kind;
+    int kind, p = piece;
 
     switch (square_color) {
       case 1: /* light */
@@ -4217,6 +4254,14 @@ static void colorDrawPieceImage(piece, square_color, x, y, dest)
 	break;
     }
     if(appData.upsideDown && flipView) kind ^= 2; // swap white and black pieces
+    if(useTexture & square_color+1) {
+        BlankSquare(x, y, square_color, piece, dest, 1); // erase previous contents with background
+	XSetClipMask(xDisplay, wlPieceGC, xpmMask[p]);
+	XSetClipOrigin(xDisplay, wlPieceGC, x, y);
+	XCopyArea(xDisplay, xpmPieceBitmap[kind][piece], dest, wlPieceGC, 0, 0, squareSize, squareSize, x, y);
+	XSetClipMask(xDisplay, wlPieceGC, None);
+	XSetClipOrigin(xDisplay, wlPieceGC, 0, 0);
+    } else
     XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
 	      dest, wlPieceGC, 0, 0,
 	      squareSize, squareSize, x, y);
@@ -4298,7 +4343,7 @@ void DrawSquare(row, column, piece, do_flash)
                  column == BOARD_LEFT-1 ||  column == BOARD_RGHT
               || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
 	          || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
-			BlankSquare(x, y, 2, EmptySquare, xBoardWindow);
+			BlankSquare(x, y, 2, EmptySquare, xBoardWindow, 1);
 
 			// [HGM] print piece counts next to holdings
 			string[1] = NULLCHAR;
@@ -4330,7 +4375,7 @@ void DrawSquare(row, column, piece, do_flash)
 			}
     } else {
 	    if (piece == EmptySquare || appData.blindfold) {
-			BlankSquare(x, y, square_color, piece, xBoardWindow);
+			BlankSquare(x, y, square_color, piece, xBoardWindow, 1);
 	    } else {
 			drawfunc = ChooseDrawFunc();
 			if (do_flash && appData.flashCount > 0) {
@@ -4340,7 +4385,7 @@ void DrawSquare(row, column, piece, do_flash)
 					XSync(xDisplay, False);
 					do_flash_delay(flash_delay);
 
-					BlankSquare(x, y, square_color, piece, xBoardWindow);
+					BlankSquare(x, y, square_color, piece, xBoardWindow, 1);
 					XSync(xDisplay, False);
 					do_flash_delay(flash_delay);
 			    }
@@ -8765,7 +8810,7 @@ BeginAnimation(anim, piece, startColor, start)
   Pixmap mask;
 
   /* The old buffer is initialised with the start square (empty) */
-  BlankSquare(0, 0, startColor, EmptySquare, anim->saveBuf);
+  BlankSquare(start->x, start->y, startColor, EmptySquare, anim->saveBuf, 0);
   anim->prevFrame = *start;
 
   /* The piece will be drawn using its own bitmap as a matte	*/
@@ -9049,7 +9094,7 @@ DrawDragPiece ()
      it's being dragged around the board. So we erase the square
      that the piece is on and draw it at the last known drag point. */
   BlankSquare(player.startSquare.x, player.startSquare.y,
-		player.startColor, EmptySquare, xBoardWindow);
+		player.startColor, EmptySquare, xBoardWindow, 1);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
   damage[0][player.startBoardY][player.startBoardX] = TRUE;
 }
