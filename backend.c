@@ -5875,6 +5875,8 @@ OnlyMove(int *x, int *y, Boolean captures) {
       case IcsPlayingBlack:
 	if(WhiteOnMove(currentMove)) return FALSE;
 	break;
+      case EditGame:
+        break;
       default:
 	return FALSE;
     }
