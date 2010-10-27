@@ -1969,6 +1969,7 @@ XBoard square size (hint): %d\n\
 	    fprintf(stderr, _("Closest %s size: %d\n"), IMAGE_EXT, squareSize);
 	}
     }
+    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
 
     /* [HR] height treated separately (hacked) */
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
