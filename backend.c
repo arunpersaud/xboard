@@ -5721,6 +5721,11 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 	*promoChoice = PieceToChar(BlackFerz);  // no choice
 	return FALSE;
     }
+    // no sense asking what we must promote to if it is going to explode...
+    if(gameInfo.variant == VariantAtomic && boards[currentMove][toY][toX] != EmptySquare) {
+	*promoChoice = PieceToChar(BlackQueen); // Queen as good as any
+	return FALSE;
+    }
     if(autoQueen) { // predetermined
 	if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantLosers)
 	     *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
