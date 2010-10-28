@@ -9658,17 +9658,17 @@ AnimateMove(board, fromX, fromY, toX, toY)
   ScreenSquare(fromX, fromY, &start);
   ScreenSquare(toX, toY, &finish);
 
-  /* All pieces except knights move in straight line */
-  if (piece != WhiteKnight && piece != BlackKnight) {
+  /* All moves except knight jumps move in straight line */
+  if (!(abs(fromX-toX) == 1 && abs(fromY-toY) == 2 || abs(fromX-toX) == 2 && abs(fromY-toY) == 1)) {
     mid.x = start.x + (finish.x - start.x) / 2;
     mid.y = start.y + (finish.y - start.y) / 2;
   } else {
-    /* Knight: make diagonal movement then straight */
+    /* Knight: make straight movement then diagonal */
     if (abs(toY - fromY) < abs(toX - fromX)) {
        mid.x = start.x + (finish.x - start.x) / 2;
-       mid.y = finish.y;
+       mid.y = start.y;
      } else {
-       mid.x = finish.x;
+       mid.x = start.x;
        mid.y = start.y + (finish.y - start.y) / 2;
      }
   }

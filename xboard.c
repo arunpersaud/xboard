@@ -8947,7 +8947,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
 #if DONT_HOP
   hop = FALSE;
 #else
-  hop = (piece == WhiteKnight || piece == BlackKnight);
+  hop = abs(fromX-toX) == 1 && abs(fromY-toY) == 2 || abs(fromX-toX) == 2 && abs(fromY-toY) == 1;
 #endif
 
   if (appData.debugMode) {
@@ -8959,12 +8959,12 @@ AnimateMove(board, fromX, fromY, toX, toY)
   ScreenSquare(toX, toY, &finish, &endColor);
 
   if (hop) {
-    /* Knight: make diagonal movement then straight */
+    /* Knight: make straight movement then diagonal */
     if (abs(toY - fromY) < abs(toX - fromX)) {
        mid.x = start.x + (finish.x - start.x) / 2;
-       mid.y = finish.y;
+       mid.y = start.y;
      } else {
-       mid.x = finish.x;
+       mid.x = start.x;
        mid.y = start.y + (finish.y - start.y) / 2;
      }
   } else {
