@@ -286,6 +286,7 @@ extern char* StripHighlightAndTitle P((char *));  /* returns static data */
 extern void ics_update_width P((int new_width));
 extern Boolean set_cont_sequence P((char *new_seq));
 extern int wrap P((char *dest, char *src, int count, int width, int *lp));
+int Explode P((Board board, int fromX, int fromY, int toX, int toY));
 
 typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton,
 		   SaveButton, FileName, PathName, Slider, Message } Control;

@@ -8916,6 +8916,29 @@ FrameSequence(anim, piece, startColor, start, finish, frames, nFrames)
   EndAnimation(anim, finish);
 }
 
+void
+AnimateAtomicCapture(Board board, int fromX, int fromY, int toX, int toY)
+{
+    int i, x, y;
+    ChessSquare piece = board[fromY][toY];
+    board[fromY][toY] = EmptySquare;
+    DrawPosition(FALSE, board);
+    if (flipView) {
+	x = lineGap + ((BOARD_WIDTH-1)-toX) * (squareSize + lineGap);
+	y = lineGap + toY * (squareSize + lineGap);
+    } else {
+	x = lineGap + toX * (squareSize + lineGap);
+	y = lineGap + ((BOARD_HEIGHT-1)-toY) * (squareSize + lineGap);
+    }
+    for(i=1; i<4*kFactor; i++) {
+	int r = squareSize * 9 * i/(20*kFactor - 5);
+	XFillArc(xDisplay, xBoardWindow, highlineGC,
+		x + squareSize/2 - r, y+squareSize/2 - r, 2*r, 2*r, 0, 64*360);
+	FrameDelay(appData.animSpeed);
+    }
+    board[fromY][toY] = piece;
+}
+
 /* Main control logic for deciding what to animate and how */
 
 void
@@ -8978,6 +9001,11 @@ AnimateMove(board, fromX, fromY, toX, toY)
   else
     Tween(&start, &mid, &finish, kFactor, frames, &nFrames);
   FrameSequence(&game, piece, startColor, &start, &finish, frames, nFrames);
+  if(Explode(board, fromX, fromY, toX, toY)) { // mark as damaged
+    int i,j;
+    for(i=0; i<BOARD_WIDTH; i++) for(j=0; j<BOARD_HEIGHT; j++)
+      if((i-toX)*(i-toX) + (j-toY)*(j-toY) < 6) damage[0][j][i] = True;
+  }
 
   /* Be sure end square is redrawn */
   damage[0][toY][toX] = True;

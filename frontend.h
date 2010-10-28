@@ -191,6 +191,7 @@ void ClearHighlights P((void));
 void SetPremoveHighlights P((int fromX, int fromY, int toX, int toY));
 void ClearPremoveHighlights P((void));
 
+void AnimateAtomicCapture P((Board board, int fromX, int fromY, int toX, int toY));
 void ShutDownFrontEnd P((void));
 void BoardToTop P((void));
 void AnimateMove P((Board board, int fromX, int fromY, int toX, int toY));

@@ -6319,6 +6319,20 @@ MarkTargetSquares(int clear)
   DrawPosition(TRUE, NULL);
 }
 
+int
+Explode(Board board, int fromX, int fromY, int toX, int toY)
+{
+    if(gameInfo.variant == VariantAtomic &&
+       (board[toY][toX] != EmptySquare ||                     // capture?
+        toX != fromX && (board[fromY][fromX] == WhitePawn ||  // e.p. ?
+                         board[fromY][fromX] == BlackPawn   )
+      )) {
+        AnimateAtomicCapture(board, fromX, fromY, toX, toY);
+        return TRUE;
+    }
+    return FALSE;
+}
+
 void LeftClick(ClickType clickType, int xPix, int yPix)
 {
     int x, y;
@@ -6529,9 +6543,13 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	}
 	PromotionPopUp();
     } else {
+	int oldMove = currentMove;
 	UserMoveEvent(fromX, fromY, toX, toY, promoChoice);
 	if (!appData.highlightLastMove || gotPremove) ClearHighlights();
 	if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
+	if(saveAnimate && !appData.animate && currentMove != oldMove && // drag-move was performed
+	   Explode(boards[currentMove-1], fromX, fromY, toX, toY))
+	    DrawPosition(TRUE, boards[currentMove]);
 	fromX = fromY = -1;
     }
     appData.animate = saveAnimate;

@@ -105,7 +105,6 @@ void DisplayHoldingsCount(HDC hdc, int x, int y, int align, int copyNumber);
 VOID NewVariantPopup(HWND hwnd);
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
 		   /*char*/int promoChar));
-void AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames);
 void DisplayMove P((int moveNumber));
 Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
 void ChatPopUp P((char *s));
@@ -3667,6 +3666,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
   if(explodeInfo.radius) { // [HGM] atomic
 	HBRUSH oldBrush;
 	int x, y, r=(explodeInfo.radius * squareSize)/100;
+        ChessSquare piece = board[explodeInfo.fromY][explodeInfo.fromX];
         board[explodeInfo.fromY][explodeInfo.fromX] = EmptySquare; // suppress display of capturer
 	SquareToPos(explodeInfo.toY, explodeInfo.toX, &x, &y);
 	x += squareSize/2;
@@ -3679,6 +3679,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	DrawHighlightsOnDC(hdcmem, &highlightInfo, HIGHLIGHT_PEN);
 	DrawHighlightsOnDC(hdcmem, &premoveHighlightInfo, PREMOVE_PEN);
 	DrawBoardOnDC(hdcmem, board, tmphdc);
+        board[explodeInfo.fromY][explodeInfo.fromX] = piece;
 	oldBrush = SelectObject(hdcmem, explodeBrush);
 	Ellipse(hdcmem, x-r, y-r, x+r, y+r);
 	SelectObject(hdcmem, oldBrush);
@@ -9616,25 +9617,25 @@ static void Tween( POINT * start, POINT * mid, POINT * finish, int factor,
      POINT frames[], int * nFrames);
 
 
+#define kFactor 4
+
 void
-AnimateAtomicCapture(int fromX, int fromY, int toX, int toY, int nFrames)
+AnimateAtomicCapture(Board board, int fromX, int fromY, int toX, int toY)
 {	// [HGM] atomic: animate blast wave
 	int i;
-if(appData.debugMode) fprintf(debugFP, "exploding (%d,%d)\n", toX, toY);
+
 	explodeInfo.fromX = fromX;
 	explodeInfo.fromY = fromY;
 	explodeInfo.toX = toX;
 	explodeInfo.toY = toY;
-	for(i=1; i<nFrames; i++) {
-	    explodeInfo.radius = (i*180)/(nFrames-1);
-	    DrawPosition(FALSE, NULL);
+	for(i=1; i<4*kFactor; i++) {
+	    explodeInfo.radius = (i*180)/(4*kFactor-1);
+	    DrawPosition(FALSE, board);
 	    Sleep(appData.animSpeed);
 	}
 	explodeInfo.radius = 0;
-	DrawPosition(TRUE, NULL);
+	DrawPosition(TRUE, board);
 }
-
-#define kFactor 4
 
 void
 AnimateMove(board, fromX, fromY, toX, toY)
@@ -9694,9 +9695,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
   animInfo.pos = finish;
   DrawPosition(FALSE, NULL);
   animInfo.piece = EmptySquare;
-  if(gameInfo.variant == VariantAtomic && 
-     (board[toY][toX] != EmptySquare || fromX != toX && (piece == WhitePawn || piece == BlackPawn) ) )
-	AnimateAtomicCapture(fromX, fromY, toX, toY, 2*nFrames);
+  Explode(board, fromX, fromY, toX, toY);
 }
 
 /*      Convert board position to corner of screen rect and color       */
