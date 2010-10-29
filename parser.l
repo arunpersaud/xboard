@@ -66,7 +66,7 @@
  * Ranks can be 0-9. The parser returns 0 for off-board files and ranks.
  * For an unknown piece (as mover or promotion piece) it returns
  * IllegalMove, like it does when the piece doesn't match.
- * Promotions can now also be appended Shogi-style, a bare '=' or '+',
+ * Promotions can now also be appended Shogi-style, a bare '=' or '^',
  * and this is then returned as promotion character. The piece indicator
  * can be prefixed by a '+' to indicate it is a promoted piece.
  */
@@ -178,7 +178,7 @@ extern void CopyBoard P((Board to, Board from));
 %}
 %%
 
-"+"?[A-Z][/]?[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|=)? {
+"+"?[A-Z][/]?[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=^])? {
     /*
      * Fully-qualified algebraic move, possibly with promotion
      */
@@ -216,8 +216,6 @@ extern void CopyBoard P((Board to, Board from));
             c = currentMoveString[4] = ToLower(yytext[yyleng-1]);
 	}
 	currentMoveString[5] = NULLCHAR;
-        if(c != '=' && c != '+' && CharToPiece(c) == EmptySquare)
-            return IllegalMove; /* [HGM] promotion to invalid piece */
     }
 
     if (appData.debugMode) {
@@ -251,23 +249,25 @@ extern void CopyBoard P((Board to, Board from));
                           currentMoveString[2] - AAA,
 			  currentMoveString[4]);
 
-    if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotion  || result == BlackPromotion)) {
+    if (currentMoveString[4] == NULLCHAR) {
+      if(result == WhitePromotion  || result == BlackPromotion) {
         if(gameInfo.variant == VariantCourier || gameInfo.variant == VariantShatranj)
             currentMoveString[4] = PieceToChar(BlackFerz);
         else if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
         else if(gameInfo.variant == VariantShogi)
-            currentMoveString[4] = '+';
+            currentMoveString[4] = '^';
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
-	currentMoveString[5] = NULLCHAR;
+      } else if(result == WhiteNonPromotion  || result == BlackNonPromotion)
+            currentMoveString[4] = '=';
+      currentMoveString[5] = NULLCHAR;
     }
 
     return (int) result;
 }
 
-[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Za-z]\)?)|=)?      {
+[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Za-z]\)?)|[=^])?      {
     /*
      * Simple algebraic move, possibly with promotion
      * [HGM] Engine moves are received in this format, with lower-case promoChar!
@@ -294,8 +294,6 @@ extern void CopyBoard P((Board to, Board from));
             c = currentMoveString[4] = ToLower(yytext[yyleng-1]);
 	}
 	currentMoveString[5] = NULLCHAR;
-        if(c != '=' && c != '+' && CharToPiece(c) == EmptySquare)
-            return IllegalMove;
     }
 
     /* [HGM] do not allow values beyond board size */
@@ -324,11 +322,12 @@ extern void CopyBoard P((Board to, Board from));
         else if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
         else if(gameInfo.variant == VariantShogi)
-            currentMoveString[4] = '+'; // Queen might not be defined in mini variants!
+            currentMoveString[4] = '^'; // Queen might not be defined in mini variants!
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
-	currentMoveString[5] = NULLCHAR;
-      }
+      } else if(result == WhiteNonPromotion  || result == BlackNonPromotion)
+            currentMoveString[4] = '=';
+      currentMoveString[5] = NULLCHAR;
     } else if(appData.testLegality && // strip off unnecessary and false promo characters
        !(result == WhitePromotion  || result == BlackPromotion ||
          result == WhiteNonPromotion || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
@@ -339,7 +338,7 @@ extern void CopyBoard P((Board to, Board from));
 [A-L][0-9][xX:-]?[A-L][0-9]      {
     /*
      * Simple algebraic move, in capitals
-     * [HGM] Engine moves are received in this format, with lower-case promoChar!
+     * [HGM] Some Xiangqi engines use this format ('ICCS notation'). So no promotions!
      */
     int skip = 0;
     ChessMove result;
@@ -375,21 +374,10 @@ extern void CopyBoard P((Board to, Board from));
                           currentMoveString[2] - AAA,
 			  currentMoveString[4]);
 
-    if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotion  || result == BlackPromotion)) {
-        if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
-            currentMoveString[4] = PieceToChar(BlackFerz);
-        else if(gameInfo.variant == VariantGreat)
-            currentMoveString[4] = PieceToChar(BlackMan);
-        else
-            currentMoveString[4] = PieceToChar(BlackQueen);
-	currentMoveString[5] = NULLCHAR;
-    }
-
     return (int) result;
 }
 
-[a-l][0-9]((=?\(?[A-Za-z]\)?)|=)?       {
+[a-l][0-9]((=?\(?[A-Za-z]\)?)|[=^])?       {
     /*
      * Pawn move, possibly with promotion
      */
@@ -415,10 +403,6 @@ extern void CopyBoard P((Board to, Board from));
        cl.ffIn >= BOARD_RGHT   ||
        cl.ftIn <  BOARD_LEFT     )
       return ImpossibleMove;
-
-    if(c != '=' && c != '+' && c != NULLCHAR && CharToPiece(c) == EmptySquare)
-      return IllegalMove;
-
 
     Disambiguate(boards[yyboardindex], PosFlags(yyboardindex), &cl);
 
@@ -471,9 +455,6 @@ extern void CopyBoard P((Board to, Board from));
        cl.ftIn <  BOARD_LEFT     )
       return ImpossibleMove;
 
-    if(c != '=' && c != '+' && c != NULLCHAR && CharToPiece(c) == EmptySquare)
-      return IllegalMove;
-
     Disambiguate(boards[yyboardindex], PosFlags(yyboardindex), &cl);
 
     currentMoveString[0] = cl.ff + AAA;
@@ -486,7 +467,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) cl.kind;
 }
 
-[a-l][xX:]?[a-l][0-9]((=?\(?[A-Z]\)?)|ep|"e.p."|=)? {
+[a-l][xX:]?[a-l][0-9]((=?\(?[A-Z]\)?)|ep|"e.p."|[=^])? {
     /*
      * unambiguously abbreviated Pawn capture, possibly with promotion
      */
@@ -542,8 +523,8 @@ extern void CopyBoard P((Board to, Board from));
 	else
           c = currentMoveString[4] = ToLower(yytext[yyleng-1]);
 	currentMoveString[5] = NULLCHAR;
-        if(c != '=' && c != '+' && CharToPiece(c) == EmptySquare)
-            return IllegalMove;
+        if(c != '=' && c != '^' && CharToPiece(c) == EmptySquare)
+            return ImpossibleMove;
     } else {
 	currentMoveString[4] = NULLCHAR;
     }
@@ -556,15 +537,19 @@ extern void CopyBoard P((Board to, Board from));
                           currentMoveString[2] - AAA,
 			  currentMoveString[4]);
 
-    if (currentMoveString[4] == NULLCHAR &&
-        (result == WhitePromotion  || result == BlackPromotion)) {
+    if (currentMoveString[4] == NULLCHAR) {
+      if(result == WhitePromotion  || result == BlackPromotion) {
         currentMoveString[4] = PieceToChar(BlackQueen);
 	// [HGM] shatranj: take care of variants without Queen
 	if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
             currentMoveString[4] = PieceToChar(BlackFerz);
 	if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
-	currentMoveString[5] = NULLCHAR;
+	if(gameInfo.variant == VariantShogi)
+            currentMoveString[4] = '^';
+      } else if(result == WhiteNonPromotion  || result == BlackNonPromotion)
+            currentMoveString[4] = '=';
+      currentMoveString[5] = NULLCHAR;
     }
 
     if (result != IllegalMove) return (int) result;
@@ -600,7 +585,7 @@ extern void CopyBoard P((Board to, Board from));
       return (int) IllegalMove;
 }
 
-"+"?[A-Z][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|=)?  {
+"+"?[A-Z][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=^])?  {
     /*
      * piece move, possibly ambiguous
      */
@@ -656,7 +641,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) cl.kind;
 }
 
-"+"?[A-Z][a-l0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|=)?   {
+"+"?[A-Z][a-l0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=^])?   {
     /*
      * piece move with rank or file disambiguator
      */

@@ -4318,7 +4318,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       promoChar = gameInfo.variant == VariantSuper ? PieceToChar(BlackSilver) : PieceToChar(BlackKing);
       break;
     case PB_Queen:
-      promoChar = gameInfo.variant == VariantShogi ? '+' : PieceToChar(BlackQueen);
+      promoChar = gameInfo.variant == VariantShogi ? '^' : PieceToChar(BlackQueen);
       break;
     case PB_Rook:
       promoChar = PieceToChar(BlackRook);

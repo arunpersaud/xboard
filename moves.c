@@ -1037,28 +1037,27 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
             if(promoChar == 'd' && (piece == WhiteRook   || piece == BlackRook)   ||
                promoChar == 'h' && (piece == WhiteBishop || piece == BlackBishop) ||
                promoChar == 'g' && (piece <= WhiteFerz || piece <= BlackFerz && piece >= BlackPawn) )
-                  promoChar = '+'; // allowed ICS notations
+                  promoChar = '^'; // allowed ICS notations
 if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promoChar : '-');
-            if(promoChar != NULLCHAR && promoChar != '+' && promoChar != '=')
-                    cl.kind = IllegalMove;
+            if(promoChar != NULLCHAR && promoChar != '^' && promoChar != '=')
+                return CharToPiece(promoChar) == EmptySquare ? ImpossibleMove : IllegalMove;
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
                      (rf >= BOARD_HEIGHT*2/3 || rt >= BOARD_HEIGHT*2/3) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && rt > BOARD_HEIGHT-2 ||
                          piece == WhiteKnight && rt > BOARD_HEIGHT-3) /* promotion mandatory */
-                             cl.kind = promoChar == '=' ? IllegalMove : WhitePromotion;
-                    else /* promotion optional, default is promote */
-                             cl.kind = promoChar == '=' ? WhiteNonPromotion : WhitePromotion;
-                } else cl.kind = (promoChar == NULLCHAR || promoChar == '=') ? NormalMove : IllegalMove;
+                       cl.kind = promoChar == '=' ? IllegalMove : WhitePromotion;
+                    else /* promotion optional, default is defer */
+                       cl.kind = promoChar == '^' ? WhitePromotion : WhiteNonPromotion;
+                } else cl.kind = promoChar == '^' ? IllegalMove : NormalMove;
             } else {
                 if( (int) piece < (int) BlackWazir && (rf < BOARD_HEIGHT/3 || rt < BOARD_HEIGHT/3) ) {
                     if( (piece == BlackPawn || piece == BlackQueen) && rt < 1 ||
                          piece == BlackKnight && rt < 2 ) /* promotion obligatory */
-                             cl.kind = promoChar == '=' ? IllegalMove : BlackPromotion;
-                    else /* promotion optional, default is promote */
-                             cl.kind = promoChar == '=' ? BlackNonPromotion : BlackPromotion;
-
-                } else cl.kind = (promoChar == NULLCHAR || promoChar == '=') ? NormalMove : IllegalMove;
+                       cl.kind = promoChar == '=' ? IllegalMove : BlackPromotion;
+                    else /* promotion optional, default is defer */
+                       cl.kind = promoChar == '^' ? BlackPromotion : BlackNonPromotion;
+                } else cl.kind = promoChar == '^' ? IllegalMove : NormalMove;
             }
         }
     } else
@@ -1229,42 +1228,50 @@ void Disambiguate(board, flags, closure)
 
     if (c == 'x') c = NULLCHAR; // get rid of any 'x' (which should never happen?)
     if(gameInfo.variant == VariantShogi) {
-        /* [HGM] Shogi promotions. On input, '=' means defer, NULL promote. Afterwards, c is set to '+' for promotions, NULL other */
+        /* [HGM] Shogi promotions. On input, '=' means defer, '^' promote. Afterwards, c is set to '+' for promotions, NULL other */
         if(closure->rfIn != DROP_RANK && closure->kind == NormalMove) {
             ChessSquare piece = closure->piece;
             if (c == 'd' && (piece == WhiteRook   || piece == BlackRook)   ||
                 c == 'h' && (piece == WhiteBishop || piece == BlackBishop) ||
                 c == 'g' && (piece <= WhiteFerz || piece <= BlackFerz && piece >= BlackPawn) )
-                   c = '+'; // allowed ICS notations
-            if(c != NULLCHAR && c != '+' && c != '=')
-                    closure->kind = IllegalMove; // the only allowed cases are '+', '='.
+                   c = '^'; // allowed ICS notations
+            if(c != NULLCHAR && c != '^' && c != '=') closure->kind = IllegalMove; // otherwise specifying a piece is illegal
             else if(flags & F_WHITE_ON_MOVE) {
                 if( (int) piece < (int) WhiteWazir &&
                      (closure->rf >= BOARD_HEIGHT-(BOARD_HEIGHT/3) || closure->rt >= BOARD_HEIGHT-(BOARD_HEIGHT/3)) ) {
                     if( (piece == WhitePawn || piece == WhiteQueen) && closure->rt > BOARD_HEIGHT-2 ||
                          piece == WhiteKnight && closure->rt > BOARD_HEIGHT-3) /* promotion mandatory */
-                             closure->kind = c == '=' ? IllegalMove : WhitePromotion;
-                    else /* promotion optional, default is promote */
-                             closure->kind = c == '=' ? WhiteNonPromotion  : WhitePromotion;
-                } else closure->kind = (c == NULLCHAR || c == '=') ? NormalMove : IllegalMove;
+                       closure->kind = c == '=' ? IllegalMove : WhitePromotion;
+                    else /* promotion optional, default is defer */
+                       closure->kind = c == '^' ? WhitePromotion : WhiteNonPromotion; 
+                } else closure->kind = c == '^' ? IllegalMove : NormalMove;
             } else {
                 if( (int) piece < (int) BlackWazir && (closure->rf < BOARD_HEIGHT/3 || closure->rt < BOARD_HEIGHT/3) ) {
                     if( (piece == BlackPawn || piece == BlackQueen) && closure->rt < 1 ||
                          piece == BlackKnight && closure->rt < 2 ) /* promotion obligatory */
-                             closure->kind = c == '=' ? IllegalMove : BlackPromotion;
-                    else /* promotion optional, default is promote */
-                             closure->kind = c == '=' ? BlackNonPromotion  : BlackPromotion;
-                } else closure->kind = (c == NULLCHAR || c == '=') ? NormalMove : IllegalMove;
+                       closure->kind = c == '=' ? IllegalMove : BlackPromotion;
+                    else /* promotion optional, default is defer */
+                       closure->kind = c == '^' ? BlackPromotion : BlackNonPromotion;
+                } else closure->kind = c == '^' ? IllegalMove : NormalMove;
             }
         }
-        c = (closure->kind == WhitePromotion || closure->kind == BlackPromotion) ? '+' : NULLCHAR;
+        if(closure->kind == WhitePromotion || closure->kind == BlackPromotion) c = '^'; else
+        if(closure->kind == WhiteNonPromotion || closure->kind == BlackNonPromotion) c = '=';
     } else
     if (closure->kind == WhitePromotion || closure->kind == BlackPromotion) {
-        if(c == NULLCHAR) c = 'q'; // even in Shatranj, Courier, Makruk, as Apply move corrects this to Ferz (how messy!)
+        if(c == NULLCHAR) { // missing promoChar on mandatory promotion; use default for variant
+            if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
+                c = PieceToChar(BlackFerz);
+            else if(gameInfo.variant == VariantGreat)
+                c = PieceToChar(BlackMan);
+            else
+                c = PieceToChar(BlackQueen);
+        } else if(c == '=') closure->kind = IllegalMove; // no deferral outside Shogi
     } else if (c != NULLCHAR) closure->kind = IllegalMove;
 
     closure->promoChar = ToLower(c); // this can be NULLCHAR! Note we keep original promoChar even if illegal.
-    if(c != '+' && c != NULLCHAR && CharToPiece(c) == EmptySquare) closure->kind = ImpossibleMove; // but we cannot handle non-existing piece types!
+    if(c != '^' && c != '=' && c != NULLCHAR && CharToPiece(c) == EmptySquare)
+	closure->kind = ImpossibleMove; // but we cannot handle non-existing piece types!
     if (closure->count > 1) {
 	closure->kind = AmbiguousMove;
     }
@@ -1492,43 +1499,12 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
         if(rt+ONE <= '9')
            *outp++ = rt + ONE;
         else { *outp++ = (rt+ONE-'0')/10 + '0';*outp++ = (rt+ONE-'0')%10 + '0'; }
-	*outp = NULLCHAR;
         if (gameInfo.variant == VariantShogi) {
             /* [HGM] in Shogi non-pawns can promote */
-            if(flags & F_WHITE_ON_MOVE) {
-                if( (int) cl.piece < (int) WhiteWazir &&
-                     (rf >= BOARD_HEIGHT-(BOARD_HEIGHT/3) || rt >= BOARD_HEIGHT-(BOARD_HEIGHT/3)) ) {
-                    if( (piece == WhitePawn || piece == WhiteQueen) && rt > BOARD_HEIGHT-2 ||
-                         piece == WhiteKnight && rt > BOARD_HEIGHT-3) /* promotion mandatory */
-                             cl.kind = promoChar == '=' ? IllegalMove : WhitePromotion;
-                    else cl.kind =  WhitePromotion; /* promotion optional */
-                } else cl.kind = (promoChar == NULLCHAR || promoChar == 'x' || promoChar == '=') ?
-                                            NormalMove : IllegalMove;
-            } else {
-                if( (int) cl.piece < (int) BlackWazir && (rf < BOARD_HEIGHT/3 || rt < BOARD_HEIGHT/3) ) {
-                    if( (piece == BlackPawn || piece == BlackQueen) && rt < 1 ||
-                         piece == BlackKnight && rt < 2 ) /* promotion obligatory */
-                             cl.kind = promoChar == '=' ? IllegalMove : BlackPromotion;
-                    else cl.kind =  BlackPromotion; /* promotion optional */
-                } else cl.kind = (promoChar == NULLCHAR || promoChar == 'x' || promoChar == '=') ?
-                                            NormalMove : IllegalMove;
-            }
-            if(cl.kind == WhitePromotion || cl.kind == BlackPromotion) {
-                /* for optional promotions append '+' or '=' */
-                if(promoChar == '=') {
-                    *outp++ = '=';
-                    cl.kind = NormalMove;
-                } else *outp++ = '+';
-                *outp = NULLCHAR;
-            } else if(cl.kind == IllegalMove) {
-                /* Illegal move specifies any given promotion */
-                if(promoChar != NULLCHAR && promoChar != 'x') {
-                    *outp++ = '=';
-                    *outp++ = ToUpper(promoChar);
-                    *outp = NULLCHAR;
-                }
-            }
+            if(promoChar == '^') promoChar = '+';
+            *outp++ = promoChar; // Don't bother to correct move type, return value is never used!
         }
+	*outp = NULLCHAR;
         return cl.kind;
 
       /* [HGM] Always long notation for fairies we don't know */

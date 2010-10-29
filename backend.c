@@ -4377,7 +4377,7 @@ ParseBoard12(string)
 	    strcat(parseList[moveNum - 1], " ");
 	    strcat(parseList[moveNum - 1], elapsed_time);
 	    /* currentMoveString is set as a side-effect of ParseOneMove */
-	    if(gameInfo.variant == VariantShogi && currentMoveString[4]) currentMoveString[4] = '+';
+	    if(gameInfo.variant == VariantShogi && currentMoveString[4]) currentMoveString[4] = '^';
 	    safeStrCpy(moveList[moveNum - 1], currentMoveString, sizeof(moveList[moveNum - 1])/sizeof(moveList[moveNum - 1][0]));
 	    strcat(moveList[moveNum - 1], "\n");
 
@@ -4804,7 +4804,7 @@ CoordsToComputerAlgebraic(rf, ff, rt, ft, promoChar, move)
                     AAA + ff, ONE + rf, AAA + ft, ONE + rt);
 	} else {
 	    sprintf(move, "%c%c%c%c%c\n",
-                    AAA + ff, ONE + rf, AAA + ft, ONE + rt, promoChar);
+                    AAA + ff, ONE + rf, AAA + ft, ONE + rt, promoChar == '^' ? '+' : promoChar);
 	}
     }
 }
@@ -4884,10 +4884,16 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
      int *fromX, *fromY, *toX, *toY;
      char *promoChar;
 {
-    if (appData.debugMode) {
-        fprintf(debugFP, "move to parse: %s\n", move);
+    char moveCopy[20], *p = moveCopy;
+    strncpy(moveCopy, move, 20); // make a copy of move to preprocess it
+    if(gameInfo.variant == VariantShogi) {
+        while(*p && *p != ' ') p++;
+        if(p[-1] == '+') p[-1] = '^'; // in Shogi '+' is promotion, distinguish from check
     }
-    *moveType = yylexstr(moveNum, move, yy_textstr, sizeof yy_textstr);
+    if (appData.debugMode) {
+        fprintf(debugFP, "move to parse: %s\n", moveCopy);
+    }
+    *moveType = yylexstr(moveNum, moveCopy, yy_textstr, sizeof yy_textstr);
 
     switch (*moveType) {
       case WhitePromotion:
@@ -5694,14 +5700,14 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 	    if(toY == 0 && piece == BlackPawn ||
 	       toY == 0 && piece == BlackQueen ||
 	       toY <= 1 && piece == BlackKnight) {
-		*promoChoice = '+';
+		*promoChoice = '^';
 		return FALSE;
 	    }
 	} else {
 	    if(toY == BOARD_HEIGHT-1 && piece == WhitePawn ||
 	       toY == BOARD_HEIGHT-1 && piece == WhiteQueen ||
 	       toY >= BOARD_HEIGHT-2 && piece == WhiteKnight) {
-		*promoChoice = '+';
+		*promoChoice = '^';
 		return FALSE;
 	    }
 	}
@@ -5738,7 +5744,7 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 	      gameMode == IcsPlayingBlack &&  WhiteOnMove(currentMove);
     if(appData.testLegality && !premove) {
 	moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
-			fromY, fromX, toY, toX, NULLCHAR);
+			fromY, fromX, toY, toX, gameInfo.variant == VariantShogi ? '^' : NULLCHAR);
 	if(moveType != WhitePromotion && moveType  != BlackPromotion)
 	    return FALSE;
     }
@@ -8644,7 +8650,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 	board[toY][toX] = EmptySquare;
       }
     }
-    if(promoChar == '+') {
+    if(promoChar == '^') {
         /* [HGM] Shogi-style promotions, to piece implied by original (Might overwrite orinary Pawn promotion) */
         board[toY][toX] = (ChessSquare) (PROMOTED piece);
     } else if(!appData.testLegality) { // without legality testing, unconditionally believe promoChar
