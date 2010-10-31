@@ -8378,10 +8378,6 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
       if( board[toY][toX] != EmptySquare )
            board[EP_STATUS] = EP_CAPTURE;
 
-  /* [HGM] In Shatranj and Courier all promotions are to Ferz */
-  if((gameInfo.variant==VariantShatranj || gameInfo.variant==VariantCourier || gameInfo.variant == VariantMakruk)
-       && promoChar != 0) promoChar = PieceToChar(WhiteFerz);
-
   if (fromY == DROP_RANK) {
 	/* must be first */
         piece = board[toY][toX] = (ChessSquare) fromX;
