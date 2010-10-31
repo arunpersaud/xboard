@@ -418,6 +418,13 @@ void GenPseudoLegal(board, flags, callback, closure)
                           && !SameColor(board[rf][ff], board[rt][ft]))
                                callback(board, flags, NormalMove,
                                         rf, ff, rt, ft, closure);
+                      if(gameInfo.variant != VariantFairy && gameInfo.variant != VariantGreat) continue;
+                      rt = rf + rs; // in unknown variant we assume Modern Elephant, which can also do one step
+                      ft = ff + fs;
+                      if (!(rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT)
+                          && !SameColor(board[rf][ff], board[rt][ft]))
+                               callback(board, flags, NormalMove,
+                                        rf, ff, rt, ft, closure);
 		  }
                 break;
 
@@ -477,6 +484,19 @@ void GenPseudoLegal(board, flags, callback, closure)
               }
               break;
 
+            /* Make Dragon-King Dababba & Rook-like outside Shogi, for better disambiguation in variant Fairy */
+	    case WhiteDragon:
+	    case BlackDragon:
+              for (d = 0; d <= 1; d++) // Dababba moves that Rook cannot do
+                for (s = -2; s <= 2; s += 4) {
+		      rt = rf + s * d;
+		      ft = ff + s * (1 - d);
+                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT || board[rf+rt>>1][ff+ft>>1] == EmptySquare) continue;
+		      if (SameColor(board[rf][ff], board[rt][ft])) continue;
+		      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+		  }
+              goto doRook;
+              
             /* Shogi Dragon King has to continue as Ferz after Rook moves */
             case SHOGI WhiteDragon:
             case SHOGI BlackDragon:
@@ -492,6 +512,7 @@ void GenPseudoLegal(board, flags, callback, closure)
             case SHOGI BlackRook:
 	    case WhiteRook:
 	    case BlackRook:
+          doRook:
               for (d = 0; d <= 1; d++)
                 for (s = -1; s <= 1; s += 2)
 		  for (i = 1;; i++) {
