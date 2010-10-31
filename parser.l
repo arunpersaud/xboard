@@ -66,7 +66,7 @@
  * Ranks can be 0-9. The parser returns 0 for off-board files and ranks.
  * For an unknown piece (as mover or promotion piece) it returns
  * IllegalMove, like it does when the piece doesn't match.
- * Promotions can now also be appended Shogi-style, a bare '=' or '^',
+ * Promotions can now also be appended Shogi-style, a bare '=' or '+',
  * and this is then returned as promotion character. The piece indicator
  * can be prefixed by a '+' to indicate it is a promoted piece.
  */
@@ -178,7 +178,7 @@ extern void CopyBoard P((Board to, Board from));
 %}
 %%
 
-"+"?[A-Z][/]?[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=^])? {
+"+"?[A-Z][/]?[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=+])? {
     /*
      * Fully-qualified algebraic move, possibly with promotion
      */
@@ -215,6 +215,7 @@ extern void CopyBoard P((Board to, Board from));
 	} else {
             c = currentMoveString[4] = ToLower(yytext[yyleng-1]);
 	}
+        if(c == '+' && gameInfo.variant != VariantShogi) c = currentMoveString[4] = NULLCHAR; // + means check outside Shogi
 	currentMoveString[5] = NULLCHAR;
     }
 
@@ -256,7 +257,7 @@ extern void CopyBoard P((Board to, Board from));
         else if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
         else if(gameInfo.variant == VariantShogi)
-            currentMoveString[4] = '^';
+            currentMoveString[4] = '+';
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
       } else if(result == WhiteNonPromotion  || result == BlackNonPromotion)
@@ -267,7 +268,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) result;
 }
 
-[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Za-z]\)?)|[=^])?      {
+[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Za-z]\)?)|[=+])?      {
     /*
      * Simple algebraic move, possibly with promotion
      * [HGM] Engine moves are received in this format, with lower-case promoChar!
@@ -293,6 +294,7 @@ extern void CopyBoard P((Board to, Board from));
 	} else {
             c = currentMoveString[4] = ToLower(yytext[yyleng-1]);
 	}
+        if(c == '+' && gameInfo.variant != VariantShogi) c = currentMoveString[4] = NULLCHAR; // + means check outside Shogi
 	currentMoveString[5] = NULLCHAR;
     }
 
@@ -322,7 +324,7 @@ extern void CopyBoard P((Board to, Board from));
         else if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
         else if(gameInfo.variant == VariantShogi)
-            currentMoveString[4] = '^'; // Queen might not be defined in mini variants!
+            currentMoveString[4] = '+'; // Queen might not be defined in mini variants!
         else
             currentMoveString[4] = PieceToChar(BlackQueen);
       } else if(result == WhiteNonPromotion  || result == BlackNonPromotion)
@@ -377,7 +379,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) result;
 }
 
-[a-l][0-9]((=?\(?[A-Za-z]\)?)|[=^])?       {
+[a-l][0-9]((=?\(?[A-Za-z]\)?)|[=+])?       {
     /*
      * Pawn move, possibly with promotion
      */
@@ -395,7 +397,8 @@ extern void CopyBoard P((Board to, Board from));
     cl.ffIn = yytext[0] - AAA;
     cl.rtIn = yytext[1] - ONE;
     cl.ftIn = yytext[0] - AAA;
-    c = cl.promoCharIn = ToLower(yytext[2+skip]);
+    cl.promoCharIn = ToLower(yytext[2+skip]);
+    if(cl.promoCharIn == '+' && gameInfo.variant != VariantShogi) cl.promoCharIn = NULLCHAR; // + means check outside Shogi
 
     /* [HGM] do not allow values beyond board size */
     if(cl.rtIn >= BOARD_HEIGHT ||
@@ -446,7 +449,8 @@ extern void CopyBoard P((Board to, Board from));
     cl.ffIn = yytext[0] - AAA;
     cl.rtIn = -1;
     cl.ftIn = yytext[1+skip1] - AAA;
-    c = cl.promoCharIn = yytext[2+skip1+skip2];
+    cl.promoCharIn = yytext[2+skip1+skip2];
+    if(cl.promoCharIn == '+' && gameInfo.variant != VariantShogi) cl.promoCharIn = NULLCHAR; // + means check outside Shogi
 
     /* [HGM] do not allow values beyond board size */
     if(cl.ffIn >= BOARD_RGHT  ||
@@ -467,7 +471,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) cl.kind;
 }
 
-[a-l][xX:]?[a-l][0-9]((=?\(?[A-Z]\)?)|ep|"e.p."|[=^])? {
+[a-l][xX:]?[a-l][0-9]((=?\(?[A-Z]\)?)|ep|"e.p."|[=+])? {
     /*
      * unambiguously abbreviated Pawn capture, possibly with promotion
      */
@@ -523,8 +527,9 @@ extern void CopyBoard P((Board to, Board from));
 	else
           c = currentMoveString[4] = ToLower(yytext[yyleng-1]);
 	currentMoveString[5] = NULLCHAR;
-        if(c != '=' && c != '^' && CharToPiece(c) == EmptySquare)
+        if(c != '=' && c != '+' && CharToPiece(c) == EmptySquare)
             return ImpossibleMove;
+        if(c == '+' && gameInfo.variant != VariantShogi) c = currentMoveString[4] = NULLCHAR; // + means check outside Shogi
     } else {
 	currentMoveString[4] = NULLCHAR;
     }
@@ -546,7 +551,7 @@ extern void CopyBoard P((Board to, Board from));
 	if(gameInfo.variant == VariantGreat)
             currentMoveString[4] = PieceToChar(BlackMan);
 	if(gameInfo.variant == VariantShogi)
-            currentMoveString[4] = '^';
+            currentMoveString[4] = '+';
       } else if(result == WhiteNonPromotion  || result == BlackNonPromotion)
             currentMoveString[4] = '=';
       currentMoveString[5] = NULLCHAR;
@@ -585,7 +590,7 @@ extern void CopyBoard P((Board to, Board from));
       return (int) IllegalMove;
 }
 
-"+"?[A-Z][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=^])?  {
+"+"?[A-Z][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=+])?  {
     /*
      * piece move, possibly ambiguous
      */
@@ -613,8 +618,9 @@ extern void CopyBoard P((Board to, Board from));
     cl.ftIn = yytext[1+skip] - AAA;
     cl.promoCharIn = NULLCHAR;
 
-    if(yyleng-skip > 3) /* [HGM] can have Shogi-style promotion */
+    if(yyleng-skip > 3 && gameInfo.variant == VariantShogi) /* [HGM] can have Shogi-style promotion */
         cl.promoCharIn = yytext[yyleng-1-(yytext[yyleng-1]==')')];
+    if(cl.promoCharIn == '+' && gameInfo.variant != VariantShogi) cl.promoCharIn = NULLCHAR; // + means check outside Shogi
 
     if (appData.debugMode) {
         fprintf(debugFP, "Parser Qa1: yyleng=%d,  %d(%d,%d)-(%d,%d) = %d (%c)\n",
@@ -641,7 +647,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) cl.kind;
 }
 
-"+"?[A-Z][a-l0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=^])?   {
+"+"?[A-Z][a-l0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=+])?   {
     /*
      * piece move with rank or file disambiguator
      */
@@ -681,6 +687,7 @@ extern void CopyBoard P((Board to, Board from));
 
     if(yyleng-skip > 4) /* [HGM] can have Shogi-style promotion */
         cl.promoCharIn = yytext[yyleng-1-(yytext[yyleng-1]==')')];
+    if(cl.promoCharIn == '+' && gameInfo.variant != VariantShogi) cl.promoCharIn = NULLCHAR; // + means check outside Shogi
 
     /* [HGM] do not allow values beyond board size */
     if(cl.rtIn >= BOARD_HEIGHT ||

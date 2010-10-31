@@ -5431,7 +5431,7 @@ void PromotionCallback(w, client_data, call_data)
     } else if (strcmp(name, _("Knight")) == 0) {
 	promoChar = 'n';
     } else if (strcmp(name, _("Promote")) == 0) {
-	promoChar = '^';
+	promoChar = '+';
     } else if (strcmp(name, _("Defer")) == 0) {
 	promoChar = '=';
     } else {
