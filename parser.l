@@ -527,8 +527,6 @@ extern void CopyBoard P((Board to, Board from));
 	else
           c = currentMoveString[4] = ToLower(yytext[yyleng-1]);
 	currentMoveString[5] = NULLCHAR;
-        if(c != '=' && c != '+' && CharToPiece(c) == EmptySquare)
-            return ImpossibleMove;
         if(c == '+' && gameInfo.variant != VariantShogi) c = currentMoveString[4] = NULLCHAR; // + means check outside Shogi
     } else {
 	currentMoveString[4] = NULLCHAR;
