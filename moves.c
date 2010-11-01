@@ -1085,7 +1085,8 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
     if (promoChar != NULLCHAR) {
 	if(promoChar == '=') cl.kind = IllegalMove; else // [HGM] shogi: no deferred promotion outside Shogi
 	if (cl.kind == WhitePromotion || cl.kind == BlackPromotion) {
-	    if(CharToPiece(promoChar) == EmptySquare) cl.kind = ImpossibleMove; // non-existing piece
+	    if(CharToPiece(flags & F_WHITE_ON_MOVE ? ToUpper(promoChar) : ToLower(promoChar)) == EmptySquare)
+                cl.kind = ImpossibleMove; // non-existing piece
 	} else {
 	    cl.kind = IllegalMove;
 	}
@@ -1291,7 +1292,7 @@ void Disambiguate(board, flags, closure)
     } else if (c != NULLCHAR) closure->kind = IllegalMove;
 
     closure->promoChar = ToLower(c); // this can be NULLCHAR! Note we keep original promoChar even if illegal.
-    if(c != '+' && c != '=' && c != NULLCHAR && CharToPiece(c) == EmptySquare)
+    if(c != '+' && c != '=' && c != NULLCHAR && CharToPiece(flags & F_WHITE_ON_MOVE ? ToUpper(c) : ToLower(c)) == EmptySquare)
 	closure->kind = ImpossibleMove; // but we cannot handle non-existing piece types!
     if (closure->count > 1) {
 	closure->kind = AmbiguousMove;
