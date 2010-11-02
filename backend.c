@@ -13803,6 +13803,20 @@ ParseOption(Option *opt, ChessProgramState *cps)
 	if(p && (p == cps->optionSettings || p[-1] == ',')) {
 	  snprintf(buf, MSG_SIZ, "option %s", p);
 		if(p = strstr(buf, ",")) *p = 0;
+		if(q = strchr(buf, '=')) switch(opt->type) {
+		    case ComboBox:
+			for(n=0; n<opt->max; n++)
+			    if(!strcmp(((char**)opt->textValue)[n], q+1)) opt->value = n;
+			break;
+		    case TextBox:
+			safeStrCpy(opt->textValue, q+1, MSG_SIZ - (opt->textValue - opt->name));
+			break;
+		    case Spin:
+		    case CheckBox:
+			opt->value = atoi(q+1);
+		    default:
+			break;
+		}
 		strcat(buf, "\n");
 		SendToProgram(buf, cps);
 	}
