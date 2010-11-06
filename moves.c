@@ -1337,7 +1337,7 @@ void CoordsToAlgebraicCallback(board, flags, kind, rf, ff, rt, ft, closure)
     register CoordsToAlgebraicClosure *cl =
       (CoordsToAlgebraicClosure *) closure;
 
-    if (rt == cl->rt && ft == cl->ft &&
+    if ((rt == cl->rt && ft == cl->ft || rt == rf && ft == ff) && // [HGM] null move matches any toSquare
         (board[rf][ff] == cl->piece
          || PieceToChar(board[rf][ff]) == '~' &&
             (ChessSquare) (DEMOTED board[rf][ff]) == cl->piece)
@@ -1527,14 +1527,7 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
         }
 	*outp = NULLCHAR;
         return cl.kind;
-
-      /* [HGM] Always long notation for fairies we don't know */
-      case WhiteFalcon:
-      case BlackFalcon:
-      case WhiteLance:
-      case BlackLance:
-      case WhiteGrasshopper:
-      case BlackGrasshopper:
+	
       case EmptySquare:
 	/* Moving a nonexistent piece */
 	break;
