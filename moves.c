@@ -622,12 +622,42 @@ void GenPseudoLegal(board, flags, callback, closure)
                     }
 		  }
 	      break;
+
+	    // Use Lance as Berolina / Spartan Pawn.
+	    case WhiteLance:
+	      if (rf < BOARD_HEIGHT-1 && BlackPiece(board[rf + 1][ff]))
+		  callback(board, flags,
+			   rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotion : NormalMove,
+			   rf, ff, rf + 1, ff, closure);
+	      for (s = -1; s <= 1; s += 2) {
+	          if (rf < BOARD_HEIGHT-1 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT && board[rf + 1][ff + s] == EmptySquare)
+		      callback(board, flags, 
+			       rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotion : NormalMove,
+			       rf, ff, rf + 1, ff + s, closure);
+	          if (rf == 1 && ff + 2*s >= BOARD_LEFT && ff + 2*s < BOARD_RGHT && board[3][ff + 2*s] == EmptySquare )
+		      callback(board, flags, NormalMove, rf, ff, 3, ff + 2*s, closure);
+	      }
+	      break;
+		
+	    case BlackLance:
+	      if (rf > 0 && WhitePiece(board[rf - 1][ff]))
+		  callback(board, flags,
+			   rf <= promoRank ? BlackPromotion : NormalMove,
+			   rf, ff, rf - 1, ff, closure);
+	      for (s = -1; s <= 1; s += 2) {
+	          if (rf > 0 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT && board[rf - 1][ff + s] == EmptySquare)
+		      callback(board, flags, 
+			       rf <= promoRank ? BlackPromotion : NormalMove,
+			       rf, ff, rf - 1, ff + s, closure);
+	          if (rf == BOARD_HEIGHT-2 && ff + 2*s >= BOARD_LEFT && ff + 2*s < BOARD_RGHT && board[rf-2][ff + 2*s] == EmptySquare )
+		      callback(board, flags, NormalMove, rf, ff, rf-2, ff + 2*s, closure);
+	      }
+            break;
+
 	    case WhiteFalcon: // [HGM] wild: for wildcards, self-capture symbolizes move to anywhere
 	    case BlackFalcon:
 	    case WhiteCobra:
 	    case BlackCobra:
-	    case WhiteLance:
-	    case BlackLance:
 	      callback(board, flags, NormalMove, rf, ff, rf, ff, closure);
 	      break;
 
@@ -1030,11 +1060,10 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
         for(i=0; i<6; i++) fprintf(debugFP, "%d ", castlingRights[i]);
         fprintf(debugFP, "Legality test? %c%c%c%c\n", ff+AAA, rf+ONE, ft+AAA, rt+ONE);
     }
-    /* [HGM] Lance, Cobra and Falcon are wildcard pieces; consider all their moves legal */
+    /* [HGM] Cobra and Falcon are wildcard pieces; consider all their moves legal */
     /* (perhaps we should disallow moves that obviously leave us in check?)              */
     if(piece == WhiteFalcon || piece == BlackFalcon ||
-       piece == WhiteCobra  || piece == BlackCobra  ||
-       piece == WhiteLance  || piece == BlackLance)
+       piece == WhiteCobra  || piece == BlackCobra)
         return CheckTest(board, flags, rf, ff, rt, ft, FALSE) ? IllegalMove : NormalMove;
 
     cl.rf = rf;
@@ -1188,8 +1217,7 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
 
     // [HGM] wild: for wild-card pieces rt and rf are dummies
     if(piece == WhiteFalcon || piece == BlackFalcon ||
-       piece == WhiteCobra  || piece == BlackCobra  ||
-       piece == WhiteLance  || piece == BlackLance)
+       piece == WhiteCobra  || piece == BlackCobra)
         wildCard = TRUE;
 
     if ((cl->pieceIn == EmptySquare || cl->pieceIn == board[rf][ff]
