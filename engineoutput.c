@@ -70,6 +70,7 @@ static void UpdateControls( EngineOutputData * ed );
 static int  lastDepth[2] = { -1, -1 };
 static int  lastForwardMostMove[2] = { -1, -1 };
 static int  engineState[2] = { -1, -1 };
+static char lastLine[2][MSG_SIZ];
 
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
@@ -163,7 +164,13 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
         clearMemo = TRUE;
     }
 
-    if( clearMemo ) { DoClearMemo(which); nrVariations[which] = 0; }
+    if( clearMemo ) {
+        DoClearMemo(which); nrVariations[which] = 0;
+        if(appData.ponderNextMove && lastLine[which][0]) {
+            InsertIntoMemo( which, lastLine[which], 0 );
+            InsertIntoMemo( which, "\n", 0 );
+        }
+    }
 
     /* Update */
     lastDepth[which] = depth == 1 && ed.nodes == 0 ? 0 : depth; // [HGM] info-line kudge
@@ -476,6 +483,7 @@ static void UpdateControls( EngineOutputData * ed )
 
         /* Update memo */
         InsertIntoMemo( ed->which, buf, InsertionPoint(strlen(buf), ed) );
+        strncpy(lastLine[ed->which], buf, MSG_SIZ);
     }
 
     /* Colors */
