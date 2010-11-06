@@ -584,8 +584,12 @@ extern void CopyBoard P((Board to, Board from));
 
     if (result == WhiteCapturesEnPassant || result == BlackCapturesEnPassant)
       return (int) result;
-    else
+    else { // [HGM] all very nice, but this messed up the input move that we might want to accept with legality testing off...
+      if (WhiteOnMove(yyboardindex)) // undo the damage
+	     currentMoveString[1]--,  currentMoveString[3]--;
+	else currentMoveString[1]++,  currentMoveString[3]++;
       return (int) IllegalMove;
+    }
 }
 
 "+"?[A-Z][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=+])?  {
