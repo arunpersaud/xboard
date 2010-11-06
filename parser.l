@@ -294,7 +294,7 @@ extern void CopyBoard P((Board to, Board from));
 	} else {
             c = currentMoveString[4] = ToLower(yytext[yyleng-1]);
 	}
-        if(c == '+' && gameInfo.variant != VariantShogi) c = currentMoveString[4] = NULLCHAR; // + means check outside Shogi
+        if(c == '+' && gameInfo.variant != VariantShogi) currentMoveString[4] = NULLCHAR; // + means check outside Shogi
 	currentMoveString[5] = NULLCHAR;
     }
 
@@ -384,7 +384,7 @@ extern void CopyBoard P((Board to, Board from));
      * Pawn move, possibly with promotion
      */
     DisambiguateClosure cl;
-    int skip = 0; char c;
+    int skip = 0;
 
     if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
 
@@ -425,7 +425,7 @@ extern void CopyBoard P((Board to, Board from));
      * Pawn capture, possibly with promotion, possibly ambiguous
      */
     DisambiguateClosure cl;
-    int skip1 = 0, skip2 = 0; char c;
+    int skip1 = 0, skip2 = 0;
 
     if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
 
