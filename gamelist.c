@@ -225,7 +225,7 @@ int GameListBuild(f)
     do {
         yyboardindex = 0;
 	offset = yyoffset();
-	cm = (ChessMove) yylex();
+	cm = (ChessMove) Myylex();
 	switch (cm) {
 	  case GNUChessGame:
 	    if ((error = GameListNewGame(&currentListGame))) {
@@ -280,7 +280,7 @@ int GameListBuild(f)
 	    do {
 		yyboardindex = 1;
 		offset = yyoffset();
-		cm = (ChessMove) yylex();
+		cm = (ChessMove) Myylex();
 		if (cm == PGNTag) {
 		    ParsePGNTag(yy_text, &currentListGame->gameInfo);
 		}

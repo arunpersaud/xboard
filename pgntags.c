@@ -250,7 +250,7 @@ ReplaceTags(tags, gameInfo)
     yynewstr(tags);
     for (;;) {
 	yyboardindex = 0;
-	moveType = (ChessMove) yylex();
+	moveType = (ChessMove) Myylex();
 	if (moveType == (ChessMove) 0) {
 	    break;
 	} else if (moveType == PGNTag) {

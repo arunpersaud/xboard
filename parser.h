@@ -53,7 +53,7 @@
 
 extern void yynewfile P((FILE *f));
 extern void yynewstr P((char *s));
-extern int yylex P((void));
+extern int Myylex P((void)); // [HGM] yylex now globally invisible, all calls must use wrapper
 extern ChessMove yylexstr P((int boardIndex, char *s, char *buf, int buflen));
 extern char currentMoveString[];
 extern int yyboardindex;

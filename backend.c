@@ -8222,7 +8222,7 @@ ParseGameHistory(game)
     yynewstr(game);
     for (;;) {
 	yyboardindex = boardIndex;
-	moveType = (ChessMove) yylex();
+	moveType = (ChessMove) Myylex();
 	switch (moveType) {
 	  case IllegalMove:		/* maybe suicide chess, etc. */
   if (appData.debugMode) {
@@ -9671,7 +9671,7 @@ LoadGameOneMove(readAhead)
     } else {
       if (gameFileFP == NULL)
 	  return FALSE;
-      moveType = (ChessMove) yylex();
+      moveType = (ChessMove) Myylex();
     }
 
     done = FALSE;
@@ -10166,7 +10166,7 @@ LoadGame(f, gameNumber, title, useList)
     cm = lastLoadGameStart = EndOfFile;
     while (gn > 0) {
 	yyboardindex = forwardMostMove;
-	cm = (ChessMove) yylex();
+	cm = (ChessMove) Myylex();
 	switch (cm) {
 	  case EndOfFile:
 	    if (cmailMsgLoaded) {
@@ -10219,7 +10219,7 @@ LoadGame(f, gameNumber, title, useList)
 	    if (gn > 0) {
 		do {
 		    yyboardindex = forwardMostMove;
-		    cm = (ChessMove) yylex();
+		    cm = (ChessMove) Myylex();
 		} while (cm == PGNTag || cm == Comment);
 	    }
 	    break;
@@ -10258,7 +10258,7 @@ LoadGame(f, gameNumber, title, useList)
 	/* Skip any header junk before position diagram and/or move 1 */
 	for (;;) {
 	    yyboardindex = forwardMostMove;
-	    cm = (ChessMove) yylex();
+	    cm = (ChessMove) Myylex();
 
 	    if (cm == EndOfFile ||
 		cm == GNUChessGame || cm == XBoardGame) {
@@ -10331,7 +10331,7 @@ LoadGame(f, gameNumber, title, useList)
 	}
 
 	yyboardindex = forwardMostMove;
-	cm = (ChessMove) yylex();
+	cm = (ChessMove) Myylex();
 
 	/* Handle comments interspersed among the tags */
 	while (cm == Comment) {
@@ -10341,7 +10341,7 @@ LoadGame(f, gameNumber, title, useList)
 	    p = yy_text;
 	    AppendComment(currentMove, p, FALSE);
 	    yyboardindex = forwardMostMove;
-	    cm = (ChessMove) yylex();
+	    cm = (ChessMove) Myylex();
 	}
     }
 
@@ -10418,7 +10418,7 @@ LoadGame(f, gameNumber, title, useList)
 	    }
 	}
 	yyboardindex = forwardMostMove;
-	cm = (ChessMove) yylex();
+	cm = (ChessMove) Myylex();
     }
 
     if (first.pr == NoProc) {
@@ -10444,7 +10444,7 @@ LoadGame(f, gameNumber, title, useList)
 	p = yy_text;
 	AppendComment(currentMove, p, FALSE);
 	yyboardindex = forwardMostMove;
-	cm = (ChessMove) yylex();
+	cm = (ChessMove) Myylex();
     }
 
     if ((cm == EndOfFile && lastLoadGameStart != EndOfFile ) ||

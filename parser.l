@@ -911,10 +911,11 @@ extern void CopyBoard P((Board to, Board from));
     return (int) GameUnfinished;
 }
 
-[1-9][0-9]*/"."?[ \t\n]*[a-lNnPpRrBQqKACFEWDGHOo]    {
+[1-9][0-9]*/"."?[ \t\n]*[a-lnprqoA-Z+]    {
     /* move numbers */
     if ((yyleng == 1) && (yytext[0] == '1'))
       return (int) MoveNumberOne;
+    else return (int) Nothing; // [HGM] make sure something is returned, for gathering parsed text
 }
 
 \([0-9]+:[0-9][0-9](\.[0-9]+)?\)|\{[0-9]+:[0-9][0-9](\.[0-9]+)?\} {
@@ -960,24 +961,24 @@ extern void CopyBoard P((Board to, Board from));
     return (int) Comment; 
 }
 
-\([^()]*(\([^()]*(\([^()]*(\([^()]*\)[^()]*)*\)[^()]*)*\)[^()]*)+[^()]*\)  { /* very nested () */
-    return (int) Comment; 
+\(  {                               /* Opening parentheses */
+    return (int) Open; 
 }
 
-\([^)][^)]+\)   { 				/* >=2 chars in () */
-    return (int) Comment; 
+\)   { 				      /* closing parentheses */
+    return (int) Close; 
 }       
 
 ^[-a-zA-Z0-9]+:" ".*(\n[ \t]+.*)*  {
-        /* Skip mail headers */
+    return (int) Nothing;                 /* Skip mail headers */
 }
 
 [a-zA-Z0-9'-]+			{
-        /* Skip random words */
+    return (int) Nothing;                 /* Skip random words */
 }
 
 .|\n				{
-        /* Skip everything else */
+    return (int) Nothing;                 /* Skip everything else */
 }
 
 %%
@@ -1158,7 +1159,7 @@ ChessMove yylexstr(boardIndex, s, text, len)
     yy_switch_to_buffer(buffer);
 #endif /*FLEX_SCANNER*/
 
-    ret = (ChessMove) yylex();
+    ret = (ChessMove) Myylex();
      strncpy(text, yy_text, len-1); // [HGM] vari: yy_text is not available to caller after buffer switch ?!?
      text[len-1] = NULLCHAR;
 
@@ -1170,4 +1171,24 @@ ChessMove yylexstr(boardIndex, s, text, len)
     StringToLex = oldStringToLex;
 
     return ret;
+}
+
+int Myylex()
+{   // [HGM] wrapper for yylex, which treats nesting of parentheses
+    int symbol, nestingLevel = 0, i=0;
+    char *p;
+    static char buf[256*MSG_SIZ];
+    buf[0] = NULLCHAR;
+    do { // eat away anything not at level 0
+        symbol = yylex();
+        if(symbol == Open) nestingLevel++;
+        if(nestingLevel) { // save all parsed text between (and including) the ()
+            for(p=yytext; *p && i<256*MSG_SIZ-2;) buf[i++] = *p++;
+            buf[i] = NULLCHAR;
+        }
+        if(symbol == 0) break; // ran into EOF
+        if(symbol == Close) symbol = Comment, nestingLevel--;
+    } while(nestingLevel || symbol == Nothing);
+    yy_text = buf[0] ? buf : (char*)yytext;
+    return symbol;
 }

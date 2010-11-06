@@ -263,7 +263,7 @@ typedef enum {
     WhiteDrop, BlackDrop, 
     NormalMove, AmbiguousMove, IllegalMove, ImpossibleMove,
     WhiteWins, BlackWins, GameIsDrawn, GameUnfinished,
-    GNUChessGame, XBoardGame, MoveNumberOne, 
+    GNUChessGame, XBoardGame, MoveNumberOne, Open, Close, Nothing,
     Comment, PositionDiagram, ElapsedTime, PGNTag, NAG
   } ChessMove;
 
