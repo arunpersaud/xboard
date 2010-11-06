@@ -1542,13 +1542,19 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
        a piece of the same color.
     */
     outp = out;
+    c = 0;
     if (piece != EmptySquare && piece != WhitePawn && piece != BlackPawn) {
+	int r, f;
+      for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<=BOARD_RGHT; f++)
+ 		c += (board[r][f] == piece); // count on-board pieces of given type
 	*outp++ = ToUpper(PieceToChar(piece));
     }
+  if(c != 1) { // [HGM] but if there is only one piece of the mentioned type, no from-square, thank you!
     *outp++ = ff + AAA;
     if(rf+ONE <= '9')
        *outp++ = rf + ONE;
     else { *outp++ = (rf+ONE-'0')/10 + '0';*outp++ = (rf+ONE-'0')%10 + '0'; }
+  }
     if (board[rt][ft] != EmptySquare) *outp++ = 'x';
     *outp++ = ft + AAA;
     if(rt+ONE <= '9')
