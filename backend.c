@@ -7457,6 +7457,15 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
       return; // [HGM] This return was missing, causing option features to be recognized as non-compliant commands!
     }
 
+    if (!appData.testLegality && !strncmp(message, "setup ", 6)) { // [HGM] allow first engine to define opening position
+      int dummy, s=6; char buf[MSG_SIZ];
+      if(appData.icsActive || forwardMostMove != 0 || cps != &first || startedFromSetupPosition) return;
+      if(sscanf(message, "setup (%s", buf) == 1) s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
+      ParseFEN(boards[0], &dummy, message+s);
+      DrawPosition(TRUE, boards[0]);
+      startedFromSetupPosition = TRUE;
+      return;
+    }
     /* [HGM] Allow engine to set up a position. Don't ask me why one would
      * want this, I was asked to put it in, and obliged.
      */
@@ -11900,6 +11909,10 @@ TwoMachinesEvent P((void))
     DisplayMessage("", "");
     InitChessProgram(&second, FALSE);
     SendToProgram("force\n", &second);
+    if(first.lastPing != first.lastPong) { // [HGM] wait till we are sure first engine has set up position
+      ScheduleDelayedEvent(TwoMachinesEvent, 10);
+      return;
+    }
     if (startedFromSetupPosition) {
 	SendBoard(&second, backwardMostMove);
     if (appData.debugMode) {
