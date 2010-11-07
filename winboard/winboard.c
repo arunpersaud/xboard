@@ -186,6 +186,7 @@ COLORREF lightSquareColor, darkSquareColor, whitePieceColor,
 HPALETTE hPal;
 ColorClass currentColorClass;
 
+static HWND savedHwnd;
 HWND hCommPort = NULL;    /* currently open comm port */
 static HWND hwndPause;    /* pause button */
 static HBITMAP pieceBitmap[3][(int) BlackPawn]; /* [HGM] nr of bitmaps referred to bP in stead of wK */
@@ -5052,6 +5053,8 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_Engine2Options:
+      savedHwnd = hwnd;
+      if(WaitForSecond(SettingsMenuIfReady)) break;
       EngineOptionsPopup(hwnd, &second);
       break;
 
@@ -9762,4 +9765,10 @@ HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
     MoveHistorySet( movelist, first, last, current, pvInfoList );
 
     EvalGraphSet( first, last, current, pvInfoList );
+}
+
+void
+SettingsPopUp(ChessProgramState *cps)
+{     // [HGM] wrapper needed because handles must not be passed through back-end
+      EngineOptionsPopup(savedHwnd, cps);
 }

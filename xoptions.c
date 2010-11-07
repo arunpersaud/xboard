@@ -1745,6 +1745,7 @@ void SecondSettingsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+   if(WaitForSecond(SettingsMenuIfReady)) return;
    SettingsPopUp(&second);
 }
 

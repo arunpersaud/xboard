@@ -206,6 +206,8 @@ void AnalyzeModeEvent P((void));
 void AnalyzeFileEvent P((void));
 void InitPosition P((int redraw));
 void NewSettingEvent P((int option, int *feature, char *command, int value));
+int WaitForSecond P((DelayedEventCallback x));
+void SettingsMenuIfReady P((void));
 void DoEcho P((void));
 void DontEcho P((void));
 void TidyProgramName P((char *prog, char *host, char *buf));
@@ -396,5 +398,6 @@ extern int shuffleOpenings;
 extern ChessProgramStats programStats;
 extern int opponentKibitzes; // used by wengineo.c
 extern int errorExitStatus;
+void SettingsPopUp P((ChessProgramState *cps)); // [HGM] really in front-end, but CPS not known in frontend.h
 
 #endif /* _BACKEND */

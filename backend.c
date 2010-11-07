@@ -11853,6 +11853,37 @@ DisplayTwoMachinesTitle()
 }
 
 void
+SettingsMenuIfReady()
+{
+  if (second.lastPing != second.lastPong) {
+    DisplayMessage("", _("Waiting for second chess program"));
+    ScheduleDelayedEvent(SettingsMenuIfReady, 10); // [HGM] fast: lowered from 1000
+    return;
+  }
+  ThawUI();
+  DisplayMessage("", "");
+  SettingsPopUp(&second);
+}
+
+int
+WaitForSecond(DelayedEventCallback retry)
+{
+    if (second.pr == NULL) {
+	StartChessProgram(&second);
+	if (second.protocolVersion == 1) {
+	  retry();
+	} else {
+	  /* kludge: allow timeout for initial "feature" command */
+	  FreezeUI();
+	  DisplayMessage("", _("Starting second chess program"));
+	  ScheduleDelayedEvent(retry, FEATURE_TIMEOUT);
+	}
+	return 1;
+    }
+    return 0;
+}
+
+void
 TwoMachinesEvent P((void))
 {
     int i;
@@ -11894,18 +11925,7 @@ TwoMachinesEvent P((void))
     TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
     ResurrectChessProgram();	/* in case first program isn't running */
 
-    if (second.pr == NULL) {
-	StartChessProgram(&second);
-	if (second.protocolVersion == 1) {
-	  TwoMachinesEventIfReady();
-	} else {
-	  /* kludge: allow timeout for initial "feature" command */
-	  FreezeUI();
-	  DisplayMessage("", _("Starting second chess program"));
-	  ScheduleDelayedEvent(TwoMachinesEventIfReady, FEATURE_TIMEOUT);
-	}
-	return;
-    }
+    if(WaitForSecond(TwoMachinesEventIfReady)) return;
     DisplayMessage("", "");
     InitChessProgram(&second, FALSE);
     SendToProgram("force\n", &second);
@@ -13844,6 +13864,7 @@ FeatureDone(cps, val)
 {
   DelayedEventCallback cb = GetDelayedEvent();
   if ((cb == InitBackEnd3 && cps == &first) ||
+      (cb == SettingsMenuIfReady && cps == &second) ||
       (cb == TwoMachinesEventIfReady && cps == &second)) {
     CancelDelayedEvent();
     ScheduleDelayedEvent(cb, val ? 1 : 3600000);
