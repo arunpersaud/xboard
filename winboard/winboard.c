@@ -6802,6 +6802,7 @@ CommandX(HWND hwnd, char *command, BOOLEAN getname, BOOLEAN immediate)
     SendMessage(hwnd, EM_GETSELTEXT, 0, (LPARAM) name);
   }
   if (immediate) {
+    if(strstr(command, "%s")) snprintf(buf, MSG_SIZ, command, name); else
     snprintf(buf, MSG_SIZ, "%s %s", command, name);
     SetWindowText(hInput, buf);
     SendMessage(hInput, WM_CHAR, '\r', 0);
