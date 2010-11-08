@@ -13328,7 +13328,7 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
     } else {
 	commentList[index] = (char *) malloc(len + 6); // perhaps wastes 4...
 	if(addBraces)
-	  safeStrCpy(commentList[index], "{\n", sizeof(commentList[index])/sizeof(commentList[index][0]));
+	  safeStrCpy(commentList[index], "{\n", 3);
 	else commentList[index][0] = NULLCHAR;
 	strcat(commentList[index], text);
 	strcat(commentList[index], "\n");

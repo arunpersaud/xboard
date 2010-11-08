@@ -234,10 +234,10 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
 	    strncpy(hist->white[i/2+1], movelist[i], p-movelist[i]);
 	    hist->white[i/2+1][p-movelist[i]] = NULLCHAR;
 	  } else {
-	    safeStrCpy(hist->white[i/2+1],movelist[i], sizeof(hist->white[i/2+1])/sizeof(hist->white[i/2+1][0]));
+	    safeStrCpy(hist->white[i/2+1],movelist[i], MOVE_LEN);
 	  }
 	} else {
-	  safeStrCpy(hist->white[i/2+1],dots, sizeof(hist->white[i/2+1])/sizeof(hist->white[i/2+1][0]));
+	  safeStrCpy(hist->white[i/2+1],dots, MOVE_LEN);
       	}
       } else {
 	if(movelist[i][0]) {
@@ -246,14 +246,14 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
 	    strncpy(hist->black[i/2+1], movelist[i], p-movelist[i]);
 	    hist->black[i/2+1][p-movelist[i]] = NULLCHAR;
 	  } else {
-	    safeStrCpy(hist->black[i/2+1],movelist[i], sizeof(hist->black[i/2+1])/sizeof(hist->black[i/2+1][0]));
+	    safeStrCpy(hist->black[i/2+1],movelist[i], MOVE_LEN);
 	  }
 	} else {
-	  safeStrCpy(hist->black[i/2+1],"", sizeof(hist->black[i/2+1])/sizeof(hist->black[i/2+1][0]));
+	  safeStrCpy(hist->black[i/2+1],"", MOVE_LEN);
       	}
       }
     }
-    safeStrCpy(hist->black[last/2+1],"", sizeof(hist->black[last/2+1])/sizeof(hist->black[last/2+1][0]));
+    safeStrCpy(hist->black[last/2+1],"", MOVE_LEN);
     b=first/2;
     m=(last+3)/2-b;
     XawFormDoLayout(hist->vbox, False);
@@ -405,8 +405,8 @@ Widget HistoryCreate()
     CatchDeleteWindow(hist->sh, "HistoryPopDown");
 
     for(i=1;i<hist->aNr;i++){
-      safeStrCpy(hist->white[i],dots, sizeof(hist->white[i])/sizeof(hist->white[i][0]));
-      safeStrCpy(hist->black[i],"", sizeof(hist->black[i])/sizeof(hist->black[i][0]));
+      safeStrCpy(hist->white[i],dots, MOVE_LEN);
+      safeStrCpy(hist->black[i],"", MOVE_LEN);
      }
 
     if(wpMoveHistory.width > 0) {

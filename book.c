@@ -445,13 +445,13 @@ void move_to_string(char move_s[6], uint16 move)
     // correct FRC-style castlings in variant normal. 
     // [HGM] This is buggy code! e1h1 could very well be a normal R or Q move.
     if(!strcmp(move_s,"e1h1")){
-      safeStrCpy(move_s,"e1g1", sizeof(move_s)/sizeof(move_s[0]));
+      safeStrCpy(move_s,"e1g1", 6);
     }else  if(!strcmp(move_s,"e1a1")){
-      safeStrCpy(move_s,"e1c1", sizeof(move_s)/sizeof(move_s[0]));
+      safeStrCpy(move_s,"e1c1", 6);
     }else  if(!strcmp(move_s,"e8h8")){
-      safeStrCpy(move_s,"e8g8", sizeof(move_s)/sizeof(move_s[0]));
+      safeStrCpy(move_s,"e8g8", 6);
     }else  if(!strcmp(move_s,"e8a8")){
-      safeStrCpy(move_s,"e8c8", sizeof(move_s)/sizeof(move_s[0]));
+      safeStrCpy(move_s,"e8c8", 6);
     }
 }
 

@@ -5815,7 +5815,7 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
      * automatically call XtFree on the value returned.  So have to
      * make a copy of it allocated with XtMalloc */
     selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
-    safeStrCpy(selection_tmp, selected_fen_position, sizeof(selection_tmp)/sizeof(selection_tmp[0]) );
+    safeStrCpy(selection_tmp, selected_fen_position, strlen(selected_fen_position)+16 );
 
     *value_return=selection_tmp;
     *length_return=strlen(selection_tmp);
