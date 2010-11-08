@@ -188,7 +188,7 @@ CopyTextToClipboard(char *text)
     GlobalFree(hGlobalMem);
     return FALSE;
   }
-  safeStrCpy(lpGlobalMem, text, sizeof(lpGlobalMem)/sizeof(lpGlobalMem[0]) );
+  safeStrCpy(lpGlobalMem, text, 1<<20);
   if (appData.debugMode) {
     lockCount = GlobalFlags(hGlobalMem) & GMEM_LOCKCOUNT;
     fprintf(debugFP, "CopyTextToClipboard(): lock count %d\n", lockCount);
@@ -347,7 +347,7 @@ PasteTextFromClipboard(char **text)
     CloseClipboard();
     return FALSE;
   }
-  safeStrCpy(*text, lpClipMem, sizeof(*text)/sizeof(*text[0]) );
+  safeStrCpy(*text, lpClipMem, 1<<20 );
   if (appData.debugMode) {
     lockCount = GlobalFlags(hClipMem) & GMEM_LOCKCOUNT;
     fprintf(debugFP, "PasteTextFromClipboard(): lock count %d\n", lockCount);

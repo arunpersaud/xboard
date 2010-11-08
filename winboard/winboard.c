@@ -5710,12 +5710,12 @@ OpenFileDialog(HWND hwnd, char *write, char *defName, char *defExt, // [HGM] dia
 
   if (fileName == NULL) fileName = buf1;
   if (defName == NULL) {
-    safeStrCpy(fileName, "*.", sizeof(fileName)/sizeof(fileName[0]) );
+    safeStrCpy(fileName, "*.", 3 );
     strcat(fileName, defExt);
   } else {
-    safeStrCpy(fileName, defName, sizeof(fileName)/sizeof(fileName[0]) );
+    safeStrCpy(fileName, defName, MSG_SIZ );
   }
-    if (fileTitle) safeStrCpy(fileTitle, "", sizeof(fileTitle)/sizeof(fileTitle[0]) );
+    if (fileTitle) safeStrCpy(fileTitle, "", MSG_SIZ );
   if (number) *number = 0;
 
   openFileName.lStructSize       = sizeof(OPENFILENAME);

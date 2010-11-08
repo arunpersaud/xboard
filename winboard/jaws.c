@@ -340,7 +340,7 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(currentPiece != EmptySquare) {
 			char buf[MSG_SIZ];
 			n = boards[currentMove][fromY][BOARD_WIDTH-2];
-			snprintf(buf, MSG)SIZ,"%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
+			snprintf(buf, MSG_SIZ,"%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
 			SayString(buf, TRUE);
 		}
 	} else
