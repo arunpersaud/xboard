@@ -311,23 +311,19 @@ char marker[BOARD_RANKS][BOARD_FILES]; /* [HGM] marks for target squares */
 
 char*
 safeStrCpy( char *dst, const char *src, size_t count )
-{
-  /* see for example: https://buildsecurityin.us-cert.gov/bsi-rules/home/g1/854-BSI.html
-   *
-   * usage:   safeStrCpy( stringA, stringB, sizeof(stringA)/sizeof(stringA[0]);
-   */
-
+{ // [HGM] made safe
+  int i;
   assert( dst != NULL );
   assert( src != NULL );
   assert( count > 0 );
 
-  strncpy( dst, src, count );
-  if(  dst[ count-1 ] != '\0' )
+  for(i=0; i<count; i++) if((dst[i] = src[i]) == NULLCHAR) break;
+  if(  i == count-1 && dst[i] != NULLCHAR)
     {
+      dst[ count-1 ] = '\0'; // make sure incomplete copy still null-terminated
       if(appData.debugMode)
       printf("safeStrCpy: copying %s into %s didn't work, not enough space %d\n",src,dst,count);
     }
-  dst[ count-1 ] = '\0';
 
   return dst;
 }
