@@ -7488,13 +7488,15 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
      * Look for communication commands
      */
     if (!strncmp(message, "telluser ", 9)) {
-	EscapeExpand(message+9, message+9); // [HGM] esc: allow escape sequences in popup box
+	if(message[9] == '\\' && message[10] == '\\')
+	    EscapeExpand(message+9, message+11); // [HGM] esc: allow escape sequences in popup box
 	DisplayNote(message + 9);
 	return;
     }
     if (!strncmp(message, "tellusererror ", 14)) {
 	cps->userError = 1;
-	EscapeExpand(message+14, message+14); // [HGM] esc: allow escape sequences in popup box
+	if(message[14] == '\\' && message[15] == '\\')
+	    EscapeExpand(message+14, message+16); // [HGM] esc: allow escape sequences in popup box
 	DisplayError(message + 14, 0);
 	return;
     }
