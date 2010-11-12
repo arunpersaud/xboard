@@ -13560,6 +13560,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
 		   sscanf(message, "error %c", &c)!=1 && sscanf(message, "illegal %c", &c)!=1 &&
 		   sscanf(message, "tell%c", &c)!=1   && sscanf(message, "0-1 %c", &c)!=1 &&
 		   sscanf(message, "1-0 %c", &c)!=1   && sscanf(message, "1/2-1/2 %c", &c)!=1 &&
+		   sscanf(message, "setboard %c", &c)!=1   && sscanf(message, "setup %c", &c)!=1 &&
 		   sscanf(message, "hint: %c", &c)!=1 && 
 		   sscanf(message, "pong %c", &c)!=1   && start != '#')	{
 		    quote = appData.engineComments == 2 ? "# " : "### NON-COMPLIANT! ### ";
