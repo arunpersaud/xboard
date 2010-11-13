@@ -6439,8 +6439,9 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		MarkTargetSquares(0);
 		DragPieceBegin(xPix, yPix);
 	    }
-	    return;
 	   }
+	   if(x == fromX && y == fromY) return; // if OnlyMove altered (x,y) we go on
+	   second = FALSE; 
 	}
 	// ignore clicks on holdings
 	if(x < BOARD_LEFT || x >= BOARD_RGHT) return;
