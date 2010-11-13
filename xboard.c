@@ -1731,6 +1731,10 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 	   xpmPieceBitmap[i][(int)WhiteMarshall] = xpmPieceBitmap2[i][(int)WhiteSilver];
 	}
 #endif
+	if(gameInfo.variant == VariantSChess && (squareSize == 49 || squareSize == 72)) {
+	   xpmPieceBitmap[i][(int)WhiteAngel]    = xpmPieceBitmap2[i][(int)WhiteFalcon];
+	   xpmPieceBitmap[i][(int)WhiteMarshall] = xpmPieceBitmap2[i][(int)WhiteAlfil];
+	}
 #if !HAVE_LIBXPM
 	// [HGM] why are thee ximMasks used at all? the ximPieceBitmaps seem to be never used!
 	for(p=0; p<=(int)WhiteKing; p++)
@@ -1747,6 +1751,10 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
            ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[(int)WhiteSilver];
 	}
 #endif
+	if(gameInfo.variant == VariantSChess && (squareSize == 49 || squareSize == 72)) {
+           ximMaskPm[(int)WhiteAngel]    = ximMaskPm2[(int)WhiteFalcon];
+           ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[(int)WhiteAlfil];
+	}
 #endif
       }
     } else {
@@ -1766,6 +1774,10 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 	   pieceBitmap[i][(int)WhiteMarshall] = pieceBitmap2[i][(int)WhiteSilver];
 	}
 #endif
+	if(gameInfo.variant == VariantSChess && (squareSize == 49 || squareSize == 72)) {
+	   pieceBitmap[i][(int)WhiteAngel]    = pieceBitmap2[i][(int)WhiteFalcon];
+	   pieceBitmap[i][(int)WhiteMarshall] = pieceBitmap2[i][(int)WhiteAlfil];
+	}
       }
     }
 #if HAVE_LIBXPM

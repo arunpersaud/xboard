@@ -2486,14 +2486,24 @@ InitDrawingSizes(BoardSize boardSize, int flags)
       pieceBitmap[1][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "o");
       pieceBitmap[2][WhiteLance] = DoLoadBitmap(hInst, "l", squareSize, "w");
     } else { // Smirf-like
-      pieceBitmap[0][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "s");
-      pieceBitmap[1][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "o");
-      pieceBitmap[2][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "w");
+      if(gameInfo.variant == VariantSChess) {
+        pieceBitmap[0][WhiteAngel] = DoLoadBitmap(hInst, "v", squareSize, "s");
+        pieceBitmap[1][WhiteAngel] = DoLoadBitmap(hInst, "v", squareSize, "o");
+        pieceBitmap[2][WhiteAngel] = DoLoadBitmap(hInst, "v", squareSize, "w");
+      } else {
+        pieceBitmap[0][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "s");
+        pieceBitmap[1][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "o");
+        pieceBitmap[2][WhiteAngel] = DoLoadBitmap(hInst, "aa", squareSize, "w");
+      }
     }
     if(gameInfo.variant == VariantGothic) { // Vortex-like
       pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "cv", squareSize, "s");
       pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "cv", squareSize, "o");
       pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "cv", squareSize, "w");
+    } else if(gameInfo.variant == VariantSChess && (squareSize == 49 || squareSize == 72)) {
+      pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "e", squareSize, "s");
+      pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "e", squareSize, "o");
+      pieceBitmap[2][WhiteMarshall] = DoLoadBitmap(hInst, "e", squareSize, "w");
     } else { // WinBoard standard
       pieceBitmap[0][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "s");
       pieceBitmap[1][WhiteMarshall] = DoLoadBitmap(hInst, "c", squareSize, "o");
