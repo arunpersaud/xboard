@@ -306,7 +306,7 @@ int dialogItems[][40] = {
   OPT_VariantBughouse, OPT_VariantTwilight, OPT_VariantShogi, OPT_VariantSuper,
   OPT_VariantKnightmate, OPT_VariantBerolina, OPT_VariantCylinder, OPT_VariantFairy,
   OPT_VariantMakruk, OPT_VariantGothic, OPT_VariantCapablanca, OPT_VariantJanus,
-  OPT_VariantCRC, OPT_VariantFalcon, OPT_VariantCourier, OPT_VariantGreat,
+  OPT_VariantCRC, OPT_VariantFalcon, OPT_VariantCourier, OPT_VariantGreat, OPT_VariantSChess,
   OPT_VariantShatranj, OPT_VariantXiangqi, GPB_Variant, GPB_Board, IDC_Height,
   IDC_Width, IDC_Hand, IDC_Pieces, IDC_Def }, 
 { DLG_Fonts, IDOK, IDCANCEL, OPT_ChooseClockFont, OPT_ChooseMessageFont,

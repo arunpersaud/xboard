@@ -957,6 +957,7 @@ InitBackEnd1()
       case VariantJanus:      /* should work */
       case VariantSuper:      /* experimental */
       case VariantGreat:      /* experimental, requires legality testing to be off */
+      case VariantSChess:     /* S-Chess, should work */
 	break;
       }
     }

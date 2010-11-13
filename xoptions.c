@@ -966,6 +966,7 @@ struct NewVarButton buttonDesc[] = {
     {N_("give-away"),         "#FFFFBF", 0, VariantGiveaway},
     {N_("losers"),            "#FFFFBF", 0, VariantLosers},
     {N_("fairy"),             "#BFBFBF", 0, VariantFairy},
+    {N_("Seirawan"),          "#FFBFBF", 0, VariantSChess},
     {N_("Superchess"),        "#FFBFBF", 0, VariantSuper},
     {N_("crazyhouse"),        "#FFBFBF", 0, VariantCrazyhouse},
     {N_("bughouse"),          "#FFBFBF", 0, VariantBughouse},

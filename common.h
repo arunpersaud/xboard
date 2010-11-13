@@ -319,6 +319,7 @@ typedef enum {
     VariantGreat,
     VariantTwilight,
     VariantMakruk,
+    VariantSChess,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
 
@@ -362,6 +363,7 @@ typedef enum {
   "great",\
   "twilight",\
   "makruk",\
+  "seirawan",\
   "unknown" \
 }
 

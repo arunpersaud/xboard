@@ -712,7 +712,9 @@ BEGIN
                     50,10
     CONTROL         "&Shatranj",OPT_VariantShatranj,"Button",BS_AUTORADIOBUTTON,134,
                     84,50,10
-    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,134,94,50,
+    CONTROL         "Seira&wan",OPT_VariantSChess,"Button",BS_AUTORADIOBUTTON,134,94,50,
+                    10
+    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,134,104,50,
                     10
     GROUPBOX        "Variant",GPB_Variant,4,4,185,115
     LTEXT           "Board size:",GPB_Board,10,135,40,8
