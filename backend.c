@@ -5349,12 +5349,12 @@ InitPosition(redraw)
     if(startVariant == gameInfo.variant) // [HGM] nicks: enable nicknames in original variant
          SetCharTable(pieceNickName, appData.pieceNickNames);
     else SetCharTable(pieceNickName, "............");
+    pieces = FIDEArray;
 
     switch (gameInfo.variant) {
     case VariantFischeRandom:
       shuffleOpenings = TRUE;
     default:
-      pieces = FIDEArray;
       break;
     case VariantShatranj:
       pieces = ShatranjArray;
@@ -5381,6 +5381,10 @@ InitPosition(redraw)
       pieces = GothicArray;
       gameInfo.boardWidth = 10;
       SetCharTable(pieceToChar, "PNBRQ..ACKpnbrq..ack");
+      break;
+    case VariantSChess:
+      SetCharTable(pieceToChar, "PNBRQ..HEKpnbrq..hek");
+      gameInfo.holdingsSize = 7;
       break;
     case VariantJanus:
       pieces = JanusArray;
@@ -5537,6 +5541,14 @@ InitPosition(redraw)
 	initialPosition[PieceToNumber(WhiteMan)][BOARD_WIDTH-2] = 9;
 	initialPosition[BOARD_HEIGHT-1-PieceToNumber(WhiteMan)][0] = BlackMan;
 	initialPosition[BOARD_HEIGHT-1-PieceToNumber(WhiteMan)][1] = 9;
+     }
+     if( gameInfo.variant == VariantSChess ) {
+      initialPosition[1][0] = BlackMarshall;
+      initialPosition[2][0] = BlackAngel;
+      initialPosition[6][BOARD_WIDTH-1] = WhiteMarshall;
+      initialPosition[5][BOARD_WIDTH-1] = WhiteAngel;
+      initialPosition[1][1] = initialPosition[2][1] = 
+      initialPosition[6][BOARD_WIDTH-2] = initialPosition[5][BOARD_WIDTH-2] = 1;
      }
   if (appData.debugMode) {
     fprintf(debugFP, "shuffleOpenings = %d\n", shuffleOpenings);
@@ -8433,21 +8445,21 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
          king += (int) WhiteUnicorn - (int) WhiteKing;
 
     /* Code added by Tord: */
-    /* FRC castling assumed when king captures friendly rook. */
-    if (board[fromY][fromX] == WhiteKing &&
-	     board[toY][toX] == WhiteRook) {
+    /* FRC castling assumed when king captures friendly rook. [HGM] or RxK for S-Chess */
+    if (board[fromY][fromX] == WhiteKing && board[toY][toX] == WhiteRook ||
+        board[fromY][fromX] == WhiteRook && board[toY][toX] == WhiteKing) {
       board[fromY][fromX] = EmptySquare;
       board[toY][toX] = EmptySquare;
-      if(toX > fromX) {
+      if((toX > fromX) != (piece == WhiteRook)) {
         board[0][BOARD_RGHT-2] = WhiteKing; board[0][BOARD_RGHT-3] = WhiteRook;
       } else {
         board[0][BOARD_LEFT+2] = WhiteKing; board[0][BOARD_LEFT+3] = WhiteRook;
       }
-    } else if (board[fromY][fromX] == BlackKing &&
-	       board[toY][toX] == BlackRook) {
+    } else if (board[fromY][fromX] == BlackKing && board[toY][toX] == BlackRook ||
+               board[fromY][fromX] == BlackRook && board[toY][toX] == BlackKing) {
       board[fromY][fromX] = EmptySquare;
       board[toY][toX] = EmptySquare;
-      if(toX > fromX) {
+      if((toX > fromX) != (piece == BlackRook)) {
         board[BOARD_HEIGHT-1][BOARD_RGHT-2] = BlackKing; board[BOARD_HEIGHT-1][BOARD_RGHT-3] = BlackRook;
       } else {
         board[BOARD_HEIGHT-1][BOARD_LEFT+2] = BlackKing; board[BOARD_HEIGHT-1][BOARD_LEFT+3] = BlackRook;
@@ -8580,10 +8592,11 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
       /* [HGM] OK, so I have written it. Holdings are stored in the */
       /* penultimate board files, so they are automaticlly stored   */
       /* in the game history.                                       */
-      if (fromY == DROP_RANK) {
+      if (fromY == DROP_RANK || gameInfo.variant == VariantSChess
+                                && promoChar && piece != WhitePawn && piece != BlackPawn) {
         /* Delete from holdings, by decreasing count */
         /* and erasing image if necessary            */
-        p = (int) fromX;
+        p = fromY == DROP_RANK ? (int) fromX : CharToPiece(piece > BlackPawn ? ToLower(promoChar) : ToUpper(promoChar));
         if(p < (int) BlackPawn) { /* white drop */
              p -= (int)WhitePawn;
 		 p = PieceToNumber((ChessSquare)p);
@@ -8603,7 +8616,7 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
         }
       }
       if (captured != EmptySquare && gameInfo.holdingsSize > 0
-          && gameInfo.variant != VariantBughouse        ) {
+          && gameInfo.variant != VariantBughouse && gameInfo.variant != VariantSChess        ) {
         /* [HGM] holdings: Add to holdings, if holdings exist */
 	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat) {
 		// [HGM] superchess: suppress flipping color of captured pieces by reverse pre-flip
@@ -8647,6 +8660,9 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 	board[toY][toX] = EmptySquare;
       }
     }
+    if(gameInfo.variant == VariantSChess && promoChar != NULLCHAR && promoChar != '=' && piece != WhitePawn && piece != BlackPawn) {
+        board[fromY][fromX] = CharToPiece(piece < BlackPawn ? ToUpper(promoChar) : ToLower(promoChar)); // S-Chess gating
+    } else
     if(promoChar == '+') {
         /* [HGM] Shogi-style promotions, to piece implied by original (Might overwrite orinary Pawn promotion) */
         board[toY][toX] = (ChessSquare) (PROMOTED piece);

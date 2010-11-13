@@ -727,7 +727,7 @@ int GenLegal(board, flags, callback, closure)
      VOIDSTAR closure;
 {
     GenLegalClosure cl;
-    int ff, ft, k, left, right;
+    int ff, ft, k, left, right, swap;
     int ignoreCheck = (flags & F_IGNORE_CHECK) != 0;
     ChessSquare wKing = WhiteKing, bKing = BlackKing, *castlingRights = board[CASTLING];
 
@@ -824,10 +824,11 @@ int GenLegal(board, flags, callback, closure)
 	}
     }
 
-  if(flags & F_FRC_TYPE_CASTLING) {
+  if((swap = gameInfo.variant == VariantSChess) || flags & F_FRC_TYPE_CASTLING) {
 
     /* generate all potential FRC castling moves (KxR), ignoring flags */
     /* [HGM] test if the Rooks we find have castling rights */
+    /* In S-Chess we generate RxK for allowed castlings, for gating at Rook square */
 
 
     if ((flags & F_WHITE_ON_MOVE) != 0) {
@@ -846,7 +847,7 @@ int GenLegal(board, flags, callback, closure)
             for(k=left; k<right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = NoRights;
             if(ft != NoRights && board[0][ft] == WhiteRook)
-                callback(board, flags, WhiteHSideCastleFR, 0, ff, 0, ft, closure);
+                callback(board, flags, WhiteHSideCastleFR, 0, swap ? ft : ff, 0, swap ? ff : ft, closure);
 
             ft = castlingRights[1]; /* Rook file if we have A-side rights */
             left  = BOARD_LEFT+2;
@@ -858,7 +859,7 @@ int GenLegal(board, flags, callback, closure)
             for(k=left+1; k<=right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, 0, ff, 0, k, FALSE)) ft = NoRights;
             if(ft != NoRights && board[0][ft] == WhiteRook)
-                callback(board, flags, WhiteASideCastleFR, 0, ff, 0, ft, closure);
+                callback(board, flags, WhiteASideCastleFR, 0, swap ? ft : ff, 0, swap ? ff : ft, closure);
         }
     } else {
         ff = castlingRights[5]; /* King file if we have any rights */
@@ -872,7 +873,7 @@ int GenLegal(board, flags, callback, closure)
             for(k=left; k<right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = NoRights;
             if(ft != NoRights && board[BOARD_HEIGHT-1][ft] == BlackRook)
-                callback(board, flags, BlackHSideCastleFR, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
+                callback(board, flags, BlackHSideCastleFR, BOARD_HEIGHT-1, swap ? ft : ff, BOARD_HEIGHT-1, swap ? ff : ft, closure);
 
             ft = castlingRights[4]; /* Rook file if we have A-side rights */
             left  = BOARD_LEFT+2;
@@ -884,7 +885,7 @@ int GenLegal(board, flags, callback, closure)
             for(k=left+1; k<=right && ft != NoRights; k++) /* then if not checked */
                 if(!ignoreCheck && CheckTest(board, flags, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, k, FALSE)) ft = NoRights;
             if(ft != NoRights && board[BOARD_HEIGHT-1][ft] == BlackRook)
-                callback(board, flags, BlackASideCastleFR, BOARD_HEIGHT-1, ff, BOARD_HEIGHT-1, ft, closure);
+                callback(board, flags, BlackASideCastleFR, BOARD_HEIGHT-1, swap ? ft : ff, BOARD_HEIGHT-1, swap ? ff : ft, closure);
         }
     }
 
@@ -1078,6 +1079,15 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
 	return(IllegalMove); // [HGM] losers: if there are legal captures, non-capts are illegal
 
     if(promoChar == 'x') promoChar = NULLCHAR; // [HGM] is this ever the case?
+    if(gameInfo.variant == VariantSChess && promoChar && promoChar != '=' && board[rf][ff] != WhitePawn && board[rf][ff] != BlackPawn) {
+        if(board[rf][ff] < BlackPawn) { // white
+            if(rf != 0) return IllegalMove; // must be on back rank
+            if(board[PieceToNumber(CharToPiece(ToUpper(promoChar)))][BOARD_WIDTH-2] == 0) return ImpossibleMove;// must be in stock
+        } else {
+            if(rf != BOARD_HEIGHT-1) return IllegalMove;
+            if(board[BOARD_HEIGHT-1-PieceToNumber(CharToPiece(ToLower(promoChar)))][1] == 0) return ImpossibleMove;
+        }
+    } else
     if(gameInfo.variant == VariantShogi) {
         /* [HGM] Shogi promotions. '=' means defer */
         if(rf != DROP_RANK && cl.kind == NormalMove) {
@@ -1277,6 +1287,15 @@ void Disambiguate(board, flags, closure)
     }
 
     if (c == 'x') c = NULLCHAR; // get rid of any 'x' (which should never happen?)
+    if(gameInfo.variant == VariantSChess && c && c != '=' && closure->piece != WhitePawn && closure->piece != BlackPawn) {
+        if(closure->piece < BlackPawn) { // white
+            if(closure->rf != 0) closure->kind = IllegalMove; // must be on back rank
+            if(board[PieceToNumber(CharToPiece(ToUpper(c)))][BOARD_WIDTH-2] == 0) closure->kind = ImpossibleMove;// must be in stock
+        } else {
+            if(closure->rf != BOARD_HEIGHT-1) closure->kind = IllegalMove;
+            if(board[BOARD_HEIGHT-1-PieceToNumber(CharToPiece(ToLower(c)))][1] == 0) closure->kind = ImpossibleMove;
+        }
+    } else
     if(gameInfo.variant == VariantShogi) {
         /* [HGM] Shogi promotions. On input, '=' means defer, '+' promote. Afterwards, c is set to '+' for promotions, NULL other */
         if(closure->rfIn != DROP_RANK && closure->kind == NormalMove) {
@@ -1484,9 +1503,9 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
             ((ff == BOARD_WIDTH>>1 && (ft == BOARD_LEFT+2 || ft == BOARD_RGHT-2)) ||
              (ff == (BOARD_WIDTH-1)>>1 && (ft == BOARD_LEFT+1 || ft == BOARD_RGHT-3)))) {
             if(ft==BOARD_LEFT+1 || ft==BOARD_RGHT-2)
-	      safeStrCpy(out, "O-O", MOVE_LEN);
+	      snprintf(out, MOVE_LEN, "O-O%c%c", promoChar ? '/' : 0, ToUpper(promoChar));
             else
-	      safeStrCpy(out, "O-O-O", MOVE_LEN);
+	      snprintf(out, MOVE_LEN, "O-O-O%c%c", promoChar ? '/' : 0, ToUpper(promoChar));
 
 	    /* This notation is always unambiguous, unless there are
 	       kings on both the d and e files, with "wild castling"
@@ -1552,6 +1571,10 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
         if (gameInfo.variant == VariantShogi) {
             /* [HGM] in Shogi non-pawns can promote */
             *outp++ = promoChar; // Don't bother to correct move type, return value is never used!
+        }
+        else if (gameInfo.variant == VariantSChess && promoChar) { // and in S-Chess we have gating
+            *outp++ = '/';
+            *outp++ = ToUpper(promoChar);
         }
 	*outp = NULLCHAR;
         return cl.kind;
