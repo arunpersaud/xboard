@@ -1239,7 +1239,7 @@ void DisambiguateCallback(board, flags, kind, rf, ff, rt, ft, closure)
 	  cl->ft = wildCard ? cl->ftIn : ft;
 	  cl->kind = kind;
 	}
-	cl->captures += (board[cl->rt][cl->ft] != EmptySquare); // [HGM] oneclick: count captures
+	cl->captures += (board[rt][ft] != EmptySquare); // [HGM] oneclick: count captures
     }
 }
 
