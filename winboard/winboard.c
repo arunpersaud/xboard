@@ -3505,7 +3505,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
             if(--board[dragInfo.from.y][dragInfo.from.x-1] == 0 )
         board[dragInfo.from.y][dragInfo.from.x] = EmptySquare;
     } else 
-        board[dragInfo.from.y][dragInfo.from.x] = EmptySquare;
+        board[dragInfo.from.y][dragInfo.from.x] = gatingPiece;
   }
 
   /* Figure out which squares need updating by comparing the 

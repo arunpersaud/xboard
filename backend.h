@@ -274,6 +274,7 @@ typedef struct _ListGame {
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;
  
+extern ChessSquare gatingPiece;
 extern List gameList;
 void ClearGameInfo P((GameInfo *));
 int GameListBuild P((FILE *));

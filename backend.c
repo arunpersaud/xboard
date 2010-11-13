@@ -6340,6 +6340,8 @@ Explode(Board board, int fromX, int fromY, int toX, int toY)
     return FALSE;
 }
 
+ChessSquare gatingPiece = EmptySquare; // exported to front-end, for dragging
+
 void LeftClick(ClickType clickType, int xPix, int yPix)
 {
     int x, y;
@@ -6396,6 +6398,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     autoQueen = appData.alwaysPromoteToQueen;
 
     if (fromX == -1) {
+      gatingPiece = EmptySquare;
       if(!appData.oneClick || !OnlyMove(&x, &y, FALSE)) {
 	if (clickType == Press) {
 	    /* First square */
@@ -6429,7 +6432,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	/* Check if clicking again on the same color piece */
 	fromP = boards[currentMove][fromY][fromX];
 	toP = boards[currentMove][y][x];
-	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom;
+	frc = gameInfo.variant == VariantFischeRandom || gameInfo.variant == VariantCapaRandom || gameInfo.variant == VariantSChess;
  	if ((WhitePawn <= fromP && fromP <= WhiteKing &&
 	     WhitePawn <= toP && toP <= WhiteKing &&
 	     !(fromP == WhiteKing && toP == WhiteRook && frc) &&
@@ -6447,6 +6450,11 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		ClearHighlights();
 	    }
 	    if (OKToStartUserMove(x, y)) {
+		if(gameInfo.variant == VariantSChess && // S-Chess: back-rank piece selected after holdings means gating
+		  (fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) &&
+               y == (toP < BlackPawn ? 0 : BOARD_HEIGHT-1))
+                 gatingPiece = boards[currentMove][fromY][fromX];
+		else gatingPiece = EmptySquare;
 		fromX = x;
 		fromY = y; dragging = 1;
 		MarkTargetSquares(0);
@@ -6470,6 +6478,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    /* Second up/down in same square; just abort move */
 	    second = 0;
 	    fromX = fromY = -1;
+	    gatingPiece = EmptySquare;
 	    ClearHighlights();
 	    gotPremove = 0;
 	    ClearPremoveHighlights();
@@ -6533,6 +6542,8 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 
     // off-board moves should not be highlighted
     if(x < 0 || y < 0) ClearHighlights();
+
+    if(gatingPiece != EmptySquare) promoChoice = ToLower(PieceToChar(gatingPiece));
 
     if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice)) {
 	SetHighlights(fromX, fromY, toX, toY);

@@ -9048,6 +9048,17 @@ DragPieceBegin(x, y)
            XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
 	             corner.x, corner.y, squareSize, squareSize,
 	             0, 0); // [HGM] zh: unstack in stead of grab
+           if(gatingPiece != EmptySquare) {
+               /* Kludge alert: When gating we want the introduced
+                  piece to appear on the from square. To generate an
+                  image of it, we draw it on the board, copy the image,
+                  and draw the original piece again. */
+               ChessSquare piece = boards[currentMove][boardY][boardX];
+               DrawSquare(boardY, boardX, gatingPiece, 0);
+               XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
+	             corner.x, corner.y, squareSize, squareSize, 0, 0);
+               DrawSquare(boardY, boardX, piece, 0);
+           }
 	damage[0][boardY][boardX] = True;
     } else {
 	player.dragActive = False;
