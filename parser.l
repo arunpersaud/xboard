@@ -178,7 +178,7 @@ extern void CopyBoard P((Board to, Board from));
 %}
 %%
 
-"+"?[A-Z][/]?[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=+])? {
+"+"?[A-Z][/]?[a-l][0-9][xX:-]?[a-l][0-9](([=/]?\(?[A-Z]\)?)|[=+])? {
     /*
      * Fully-qualified algebraic move, possibly with promotion
      */
@@ -268,7 +268,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) result;
 }
 
-[a-l][0-9][xX:-]?[a-l][0-9]((=?\(?[A-Za-z]\)?)|[=+])?      {
+[a-l][0-9][xX:-]?[a-l][0-9](([=/]?\(?[A-Za-z]\)?)|[=+])?      {
     /*
      * Simple algebraic move, possibly with promotion
      * [HGM] Engine moves are received in this format, with lower-case promoChar!
@@ -330,7 +330,7 @@ extern void CopyBoard P((Board to, Board from));
       } else if(result == WhiteNonPromotion  || result == BlackNonPromotion)
             currentMoveString[4] = '=';
       currentMoveString[5] = NULLCHAR;
-    } else if(appData.testLegality && // strip off unnecessary and false promo characters
+    } else if(appData.testLegality && gameInfo.variant != VariantSChess && // strip off unnecessary and false promo characters
        !(result == WhitePromotion  || result == BlackPromotion ||
          result == WhiteNonPromotion || result == BlackNonPromotion)) currentMoveString[4] = NULLCHAR;
 
@@ -592,7 +592,7 @@ extern void CopyBoard P((Board to, Board from));
     }
 }
 
-"+"?[A-Z][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=+])?  {
+"+"?[A-Z][xX:-]?[a-l][0-9](([=/]?\(?[A-Z]\)?)|[=+])?  {
     /*
      * piece move, possibly ambiguous
      */
@@ -620,7 +620,7 @@ extern void CopyBoard P((Board to, Board from));
     cl.ftIn = yytext[1+skip] - AAA;
     cl.promoCharIn = NULLCHAR;
 
-    if(yyleng-skip > 3 && gameInfo.variant == VariantShogi) /* [HGM] can have Shogi-style promotion */
+    if(yyleng-skip > 3 && (gameInfo.variant == VariantShogi || gameInfo.variant == VariantSChess)) /* [HGM] can have Shogi-style promotion */
         cl.promoCharIn = yytext[yyleng-1-(yytext[yyleng-1]==')')];
     if(cl.promoCharIn == '+' && gameInfo.variant != VariantShogi) cl.promoCharIn = NULLCHAR; // + means check outside Shogi
 
@@ -649,7 +649,7 @@ extern void CopyBoard P((Board to, Board from));
     return (int) cl.kind;
 }
 
-"+"?[A-Z][a-l0-9][xX:-]?[a-l][0-9]((=?\(?[A-Z]\)?)|[=+])?   {
+"+"?[A-Z][a-l0-9][xX:-]?[a-l][0-9](([=/]?\(?[A-Z]\)?)|[=+])?   {
     /*
      * piece move with rank or file disambiguator
      */
@@ -687,7 +687,7 @@ extern void CopyBoard P((Board to, Board from));
     cl.ftIn = yytext[2+skip] - AAA;
     cl.promoCharIn = NULLCHAR;
 
-    if(yyleng-skip > 4) /* [HGM] can have Shogi-style promotion */
+    if(yyleng-skip > 4 && (gameInfo.variant == VariantShogi || gameInfo.variant == VariantSChess)) /* [HGM] can have Shogi-style promotion */
         cl.promoCharIn = yytext[yyleng-1-(yytext[yyleng-1]==')')];
     if(cl.promoCharIn == '+' && gameInfo.variant != VariantShogi) cl.promoCharIn = NULLCHAR; // + means check outside Shogi
 
