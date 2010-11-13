@@ -6518,7 +6518,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     }
 
     // off-board moves should not be highlighted
-    if(x < 0 || x < 0) ClearHighlights();
+    if(x < 0 || y < 0) ClearHighlights();
 
     if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice)) {
 	SetHighlights(fromX, fromY, toX, toY);
