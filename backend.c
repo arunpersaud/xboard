@@ -6399,8 +6399,14 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 
     if (fromX == -1) {
       gatingPiece = EmptySquare;
+      if (clickType != Press) {
+	if(dragging) { // [HGM] from-square must have been reset due to game end since last press
+	    DragPieceEnd(xPix, yPix); dragging = 0;
+	    DrawPosition(FALSE, NULL);
+	}
+	return;
+      }
       if(!appData.oneClick || !OnlyMove(&x, &y, FALSE)) {
-	if (clickType == Press) {
 	    /* First square */
 	    if (OKToStartUserMove(x, y)) {
 		fromX = x;
@@ -6412,12 +6418,8 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		    SetHighlights(x, y, -1, -1);
 		}
 	    }
-	} else if(dragging) { // [HGM] from-square must have been reset due to game end since last press
-	    DragPieceEnd(xPix, yPix); dragging = 0;
-	    DrawPosition(FALSE, NULL);
+	    return;
 	}
-	return;
-      }
     }
 
     /* fromX != -1 */
