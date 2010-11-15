@@ -7621,7 +7621,7 @@ ExpandPathName(path)
 	}
 	else {
 	  safeStrCpy(buf, s+1, sizeof(buf)/sizeof(buf[0]) );
-	  *strchr(buf, '/') = 0;
+	  { char *p; if(p = strchr(buf, '/')) *p = 0; }
 	  pwd = getpwnam(buf);
 	  if (!pwd)
 	    {
