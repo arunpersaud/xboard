@@ -3855,7 +3855,7 @@ ParseBoard12(string)
     int j, k, n, moveNum, white_stren, black_stren, white_time, black_time, takeback;
     int double_push, castle_ws, castle_wl, castle_bs, castle_bl, irrev_count;
     char to_play, board_chars[200];
-    char move_str[500], str[500], elapsed_time[500];
+    char move_str[MSG_SIZ], str[MSG_SIZ], elapsed_time[MSG_SIZ];
     char black[32], white[32];
     Board board;
     int prevMove = currentMove;
@@ -3896,7 +3896,7 @@ ParseBoard12(string)
 	       &ticking);
 
     if (n < 21) {
-        snprintf(str, sizeof(str), _("Failed to parse board string:\n\"%s\""), string);
+        snprintf(str, MSG_SIZ, _("Failed to parse board string:\n\"%s\""), string);
 	DisplayError(str, 0);
 	return;
     }
@@ -4345,7 +4345,7 @@ ParseBoard12(string)
 	  if(!appData.testLegality && move_str[1] != '@') { // drops never ambiguous (parser chokes on long form!)
 		if(appData.debugMode)
 			fprintf(debugFP, "replaced ICS move '%s' by '%s'\n", move_str, buf);
-		safeStrCpy(move_str, buf, sizeof(move_str)/sizeof(move_str[0]));
+		safeStrCpy(move_str, buf, MSG_SIZ);
           }
 	  valid = ParseOneMove(move_str, moveNum - 1, &moveType,
 				&fromX, &fromY, &toX, &toY, &promoChar)
