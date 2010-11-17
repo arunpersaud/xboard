@@ -13373,7 +13373,7 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
 	while(commentList[index][oldlen-1] ==  '\n')
 	  commentList[index][--oldlen] = NULLCHAR;
 	commentList[index] = (char *) malloc(oldlen + len + 6); // might waste 4
-	safeStrCpy(commentList[index], old, oldlen);
+	safeStrCpy(commentList[index], old, oldlen + len + 6);
 	free(old);
 	// [HGM] braces: join "{A\n}\n" + "{\nB}" as "{A\nB\n}"
 	if(commentList[index][oldlen-1] == '}' && (text[0] == '{' || addBraces)) {
