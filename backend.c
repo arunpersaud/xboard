@@ -318,11 +318,11 @@ safeStrCpy( char *dst, const char *src, size_t count )
   assert( count > 0 );
 
   for(i=0; i<count; i++) if((dst[i] = src[i]) == NULLCHAR) break;
-  if(  i == count-1 && dst[i] != NULLCHAR)
+  if(  i == count && dst[count-1] != NULLCHAR)
     {
       dst[ count-1 ] = '\0'; // make sure incomplete copy still null-terminated
       if(appData.debugMode)
-      printf("safeStrCpy: copying %s into %s didn't work, not enough space %d\n",src,dst,count);
+      fprintf(debugFP, "safeStrCpy: copying %s into %s didn't work, not enough space %d\n",src,dst,count);
     }
 
   return dst;
