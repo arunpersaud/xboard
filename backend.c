@@ -8419,6 +8419,9 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
   } else {
       int i;
 
+      if( board[fromY][fromX] == WhiteLance || board[fromY][fromX] == BlackLance ) {
+           if( gameInfo.variant == VariantFairy ) board[EP_STATUS] = EP_PAWN_MOVE; // Lance in fairy is Pawn-like
+      } else
       if( board[fromY][fromX] == WhitePawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
 	       board[EP_STATUS] = EP_PAWN_MOVE;
