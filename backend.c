@@ -522,8 +522,8 @@ ChessSquare  KnightmateArray[2][BOARD_FILES] = {
 ChessSquare fairyArray[2][BOARD_FILES] = { /* [HGM] Queen side differs from King side */
     { WhiteRook, WhiteKnight, WhiteBishop, WhiteQueen,
         WhiteKing, WhiteBishop, WhiteKnight, WhiteRook },
-    { BlackLance, BlackAlfil, BlackMarshall, BlackAngel,
-	BlackKing, BlackMarshall, BlackAlfil, BlackLance }
+    { BlackCardinal, BlackAlfil, BlackMarshall, BlackAngel,
+	BlackKing, BlackMarshall, BlackAlfil, BlackCardinal }
 };
 
 ChessSquare ShatranjArray[2][BOARD_FILES] = { /* [HGM] (movGen knows about Shatranj Q and P) */
