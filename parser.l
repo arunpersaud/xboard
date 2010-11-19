@@ -823,6 +823,9 @@ extern void CopyBoard P((Board to, Board from));
 }
 
 [A-Za-z][@*][a-l][0-9] {
+
+    if (yyskipmoves) return (int) AmbiguousMove; /* not disambiguated */
+
     /* Bughouse piece drop. */
     currentMoveString[1] = '@';
     currentMoveString[2] = yytext[2];
