@@ -635,8 +635,25 @@ void GenPseudoLegal(board, flags, callback, closure)
 		  }
 	      break;
 
+	    Amazon:
+	      /* First do Bishop,then continue like Chancellor */
+	      for (rs = -1; rs <= 1; rs += 2)
+                for (fs = -1; fs <= 1; fs += 2)
+		  for (i = 1;; i++) {
+		      rt = rf + (i * rs);
+		      ft = ff + (i * fs);
+                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) break;
+		      if (SameColor(board[rf][ff], board[rt][ft])) break;
+		      callback(board, flags, NormalMove,
+			       rf, ff, rt, ft, closure);
+		      if (board[rt][ft] != EmptySquare) break;
+		  }
+	      m++;
+	      goto doRook;
+
 	    // Use Lance as Berolina / Spartan Pawn.
 	    case WhiteLance:
+	      if(gameInfo.variant == VariantSuper) goto Amazon;
 	      if (rf < BOARD_HEIGHT-1 && BlackPiece(board[rf + 1][ff]))
 		  callback(board, flags,
 			   rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotion : NormalMove,
@@ -652,6 +669,7 @@ void GenPseudoLegal(board, flags, callback, closure)
 	      break;
 		
 	    case BlackLance:
+	      if(gameInfo.variant == VariantSuper) goto Amazon;
 	      if (rf > 0 && WhitePiece(board[rf - 1][ff]))
 		  callback(board, flags,
 			   rf <= promoRank ? BlackPromotion : NormalMove,
