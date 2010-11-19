@@ -428,6 +428,18 @@ void GenPseudoLegal(board, flags, callback, closure)
 		  }
                 break;
 
+            /* Make Dragon-Horse also do Dababba moves outside Shogi, for better disambiguation in variant Fairy */
+	    case WhiteCardinal:
+	    case BlackCardinal:
+              for (d = 0; d <= 1; d++) // Dababba moves that Rook cannot do
+                for (s = -2; s <= 2; s += 4) {
+		      rt = rf + s * d;
+		      ft = ff + s * (1 - d);
+                      if (rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT) continue;
+		      if (SameColor(board[rf][ff], board[rt][ft])) continue;
+		      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
+		  }
+
             /* Shogi Dragon Horse has to continue with Wazir after Bishop */
             case SHOGI WhiteCardinal:
             case SHOGI BlackCardinal:
