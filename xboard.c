@@ -8180,8 +8180,7 @@ DoInputCallback(closure, source, xid)
 	  
 	  /* read from stdin */
 	  rl_callback_read_char(); 
-
-	  /* redisplay the current line, check special case for login and password */
+	  /* redisplay the current line */
 	  if(sending_ICS_password)
 	    {
 	      int i; char buf[MSG_SIZ];
