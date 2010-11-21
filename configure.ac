@@ -61,6 +61,7 @@ AH_TEMPLATE([USE_XAW3D],[template])
 AH_TEMPLATE([X_LOCALE],[template])
 
 
+
 if test -z "$CFLAGS" ; then
 dnl| Prevent the next macro from setting CFLAGS to -g
   CFLAGS=" "
@@ -161,28 +162,6 @@ if test "$xaw_headers" = "no" ; then
    exit 1
 
 fi
-
-
-dnl | test for readline
-AC_ARG_WITH([readline],
-	    [AS_HELP_STRING([--with-readline],
-        	            [support fancy command line editing @<:@default=yes@:>@])
-	    ],
-            [],
-	    [with_readline=yes])
-          
-LIBREADLINE=
-AS_IF([test "x$with_readline" != xno],
-      [AC_CHECK_LIB([readline], [main],
-                    [AC_SUBST([LIBREADLINE], ["-lreadline "])
-                     AC_DEFINE([HAVE_LIBREADLINE], [1],
-                               [Define if you have libreadline])
-                    ],
-                    [if test "x$with_readline" != xyes; then
-                     AC_MSG_FAILURE(
-                     [--with-readline was given, but test for readline failed])
-               	     fi
-              	    ], "")])
 
 
 AC_CANONICAL_HOST
@@ -462,7 +441,6 @@ echo "        infodir:         $infodir   (info files will go here)"
 echo "        sysconfdir:      $sysconfdir   (xboard.conf will go here)"
 echo ""
 echo "        Xaw3d:           $with_xaw3d"
-echo "        readline:        $with_readline"
 echo ""
 echo "        xpm:             $enable_xpm"
 echo "        ptys:            $enable_ptys"

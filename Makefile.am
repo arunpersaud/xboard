@@ -30,7 +30,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 filebrowser/draw.c filebrowser/path.c \
 		 filebrowser/dir.c filebrowser/xstat.h \
 		 $(ZPY)
-xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBREADLINE@
+xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@
 
 EXTRA_DIST = pixmaps bitmaps winboard sounds filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
