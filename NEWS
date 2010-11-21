@@ -1,3 +1,91 @@
+** Version 4.5.0 (not yet released)**
+
+ *
+
+** Version 4.4.4 **
+
+ * Repair exit-popup deadlock patch
+ * Fix bug in sending "usermove" when forcing book moves
+ * Let move parser return ImpossibleMove for off-board moves
+ * Prevent engine stall on perpetual-chase evasion
+ * Pop down old tags on loadng new game in WinBoard
+ * Fix game end during dragging
+ * Repair animate dragging
+ * Fix bug in sending cores command to engine
+ * Fix parsing of SAN shogi promotions
+ * Fix variant switch on PGN loading
+ * Allow -flipBlack to work with font-based piece rendering
+ * Allow font-based piece rendering in board sizes below petite
+ * Fix WinBoard game-list title
+ * Fix deadlock in match-result display
+ * Fix regression in colorization of zippy-matched commands
+ * Fix zippy handling of draw offers from ICS
+ * Make some more zippy code obey the --disable-zippy flag
+ * Remove unnecessary double equals from configure.ac.
+ * Cut board squares out of texture bitmap more cleverly
+
+** Version 4.4.3 **
+
+ * Add variant Makruk
+ * Implement castling for variant CRC
+ * Extensive bugfix of -autoKibitz
+ * Accept <Enter> for changing chat partner
+ * Change opening array -variant fairy
+ * Send continuation lines to chat box they belong to
+ * Use -keepAlive option to determine connection health
+ * Fix of ancient WinBoard bug: check value of int options
+ * Fix bug for incommensurate time odds
+ * Fix piece-to-char table -variant fairy
+ * Fix TwoKings ICS castling-rights bug
+ * Fix reading castling rights FEN in knightmate and twokings
+ * Fix OO-castling in FRC after pasting FEN
+ * Fix bug in display of logos
+ * Fix highlighting bug in XBoard
+ * Match handles with multiple titles for channel Chat Boxes
+ * Make WinBoard makefiles use parser.c in XBoard directory
+ * Added missing sounds files to be able to compile on windows
+ * Added logo files for xboard
+ * Bugfix stale first-click
+ * Fix copying of WB Chat Window contents
+ * Fix XB crash on giving keyboard focus to non-text widget
+ * Bugfix copying from Chat Box, own lines
+ * Fix 'mamer bug' in Chat Boxes
+ * Fix copying of kibitzed lines from WB Engine-Output window
+ * Do not recognize non-ICS variants from PGN event tag
+ * Remake programVersion string after receiving engine features
+ * Set keyboard focus at startup to board window
+ * Fix window-position upset on failing engine start in WinBoard
+ * Allow lower-case promochar in moves of type h8=Q
+ * Small bugfixed for JAWS version
+ * Small bugfixes
+
+** Version 4.4.2 **
+
+ * add Winboard source files into tar-ball
+ * remove trailing \r in xboard output
+ * double buffer size to prevent overflow
+ * fix problem with empty string in -firstNeedsNoncompliantFEN
+ * updates makefiles to include dependency on config.h
+ * correctly apply some check boxes from the option menu
+ * score sign in analysis mode
+ * fix for bug #28077: xboard needs to link against x11
+ * fix castling rights when copying FEN to clipboard (again)
+ * fixed some outstanding pixmaps
+ * fix the irritating wandering off of the MoveHistory window in XBoard on opening/closing.
+ * use xtell for talking to handles, but tell for talking into a channel.
+ * fix bug in bughouse drop menu
+ * removing some rather verbose debug messages that seem no longer needed.
+ * fix engine-sync on move-number type-in bug
+ * fix declaration of engineOutputDialogUp
+ * fix double start of zippy engine after switch to gothic
+ * the last move before the time control now gets its time listed in the PGN
+ * fix casting rights after FEN pasting
+ * fix crash on engine crash
+ * fixed build on openbsd
+ * cleaned up some debug messages and typos
+ * removed files that should only be in the windboard directory
+ * added missing library for build on OS X
+
 ** Version 4.4.1 **
    
  * added chat windows to keep track of multiple conversations (WinBoard only)

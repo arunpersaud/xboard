@@ -1,3 +1,421 @@
+** Version 4.5.0 **
+
+(git shortlog --no-merges v4.4.4..HEAD, removed duplicated from earlier versions due to cherry-picking)
+
+Arun Persaud (24):
+      fixed prototype for AppendComment
+      clean-up
+      fixed Makefile.am to handle config file correctly
+      new developer release
+      fixed hardcoded location of config file for xboard
+      fixed compiler warning for file-browser code
+      Revert "Repair settings-file name"
+      removed some garbage from configure.ac that got added a while ago
+      fixed internationalization for winboard
+      security fix: replaced strcpy with safeStrCpy from backend.c
+      security fix: replaced sprintf with snprintf
+      sizedefaults has 9 members, the last line of the array (NULL) only set 7.
+      cleaned up -Wall warnings (apart from settings some parentheses)
+      added new case for (Chessmove) 0 in common.h
+      bugfix: missing array index
+      add option for silent builds
+      security fix: replaced some strcat with strncat
+      added warning if icsLogon file couldn't be opened
+      adding gnu-readline support
+      fixed some typos that were introduced during the sprintf->snprintf changes
+      bugfix: fixed readline support with icslogon option
+      fixed buffer size for snprintf
+      Revert "bugfix: fixed readline support with icslogon option"
+      Revert "adding gnu-readline support"
+
+Eric Mullins (1):
+      Changes needed to compile master branch.
+
+H.G. Muller (258):
+      add fixed time per move to the WinBoard time-control menu dialog
+      let the clocks run in -searchTime mode
+      Some code refactoring and cleanup; one small bug fix
+      Integrate castling and e.p. rights into board array; bugfix for EditPosition
+      fix for new way of saving castling and e.p. information
+      variation-support patch
+      This patch gives a better handling of comments in PGN files, and adds the variation as comment to the main line on using Revert in local mode.
+      fix castling rights when copying FEN to clipboard
+      improve thinking-output for mulit-variant
+      refactoring of engineoutput
+      refactoring evalgraph code
+      1st step for moving option parsing from winboard to the backend
+      2nd step for moving option parsing from winboard to the backend
+      same argDescriptor parsing for Xboard and Winbaord
+      fix window positioning
+      use linux style options for config file and add a system config file for XBoard
+      restoring windows (EngineOutput and MoveHistory) on startup
+      A better and more flexible way of invoking Polyglot
+      improves the XBoard handling of the engine command line
+      implements the eval-graph window for XBoard
+      Suppress saving font settings.
+      Correct XBoard default debug file name
+      Delete old indirection settings-file code
+      Make WinBoard defaults for -fd and -sd equal to "." rather than empty strings.
+      Change format of -adapterCommand.
+      Fix NoncompliantFEN defaults.
+      Fix default castling rights on reading incomplete FEN
+      Implement castling in -variant caparandom
+      Fix castling rule assignment in shuffle games
+      Let XBoard print version with argument --version or -v
+      Improve layout of Engine #N Settings dialog
+      Allow popup-less (fatal) exit of engine after tellusererror
+      Allow Ctrl-C copying from EngineOutput window text to clipboard
+      Harmonize declarations of XBoard and WinBoard
+      Newly lexed winboard/parser.c
+      Display PV on right-clicking board
+      Display PV right-clicked from EngineOutput window
+      Indicate squares a lifted piece can legally move to
+      Allow editing of holdings in EditPosition mode
+      Fix new args parsing of -lowTimeWarningColor
+      Docs update for new features
+      Fix omission in castling refactoring for ICS received boards
+      Fix reading FEN castling rights for knightmate and twokings
+      Fix parsing of O-O and O-O-O after FEN pasting in FRC
+      Fix bug in XBoard PV display
+      Add fixed-time/move button in XBoard time-control dialog
+      Refactoring of move-history code
+      Convert to DOS line endings
+      Port game-list filtering to XBoard
+      Move duplicat gamelist code to backend
+      Allow <Enter> to apply filter in XB GameList filter edit
+      Use arrow keys in XBoard GameList for entry selection
+      Refactoring of adjudication code
+      Also adjudicate after user move
+      Also allow user to claim by offering draw before his move
+      Send FICS atomic claim to ICS if move creates draw after offer
+      Use FICS atomic draw claim for sending move in zippy mode
+      Fix width of filter field in XBoard GameList
+      Save fonts in XBoard settings file per boardSize
+      Fix bug in edit-position of holdings
+      Fix of ancient WB bug: test integer option values for validity
+      Refactoring of game-list-options dialog
+      Game-List options dialog for XBoard
+      Merge gamelistopt sources into gamelist source files
+      Right-click refactoring, step I
+      Right-click refactoring: step II
+      Right-click refactoring: step III
+      Remove stray dot from WinBoard makefiles
+      Repair damage to -autoKibitz done by FICS atomic zippy claim
+      Shorten autoKibitz confirmation on FICS
+      Implement SeekGraph in XBoard
+      Dynamic Seek Graph
+      Use right mouse button to view seek ads
+      Use squares for computer seek ads
+      One-click moves
+      Fix error that compiler does not notice
+      Add promotions and e.p. to oneClickMove
+      Let second click on piece make only capture, with -oneClickMove
+      Observe a game in the background while playing
+      Do not pop down Seek Graph on on-dot click
+      Match handles with multiple titles for channel Chat Boxes
+      Capture holdings of background observed gamer
+      Allow recalling history in ICS input box with arrow keys
+      Interface XBoard to GhostView file-browser dialog
+      Fix right-edge spillover of Seek-Graph dots in WinBoard
+      Allow ICS context menu to pop up a Chat Box on clicking handle
+      Pop up ICS text menu with default item under mouse pointer
+      Seek-Graph bugfix: disappearing output in ICS console
+      Bugfix smart capture
+      Handle display of PV that starts with other move than played
+      Add upload of game to ICS for examining
+      Make WB Chat Boxes wrap and handle URLs
+      Allow arrow keys in WB Chat Box to access command history
+      Make Chat Windows pseudo-tabbed
+      Add -chatBoxes option to open Chat Boxes at startup
+      Allow WB Chat Box to be dedicated to shouts and 'it'
+      Let the sounds sound on receiving a message in a Chat Box
+      Add option -shuffleOpenings
+      Add Annotate item in Step menu
+      Support playing through PGN variation comments
+      Let yy_text determine progress of PV parsing
+      Newly lexed parser in XBoard directory
+      Don't disturb background observe when receiving new piece
+      Insert autoKibitz continuation lines at end of line
+      Allow walking a kibitzed PV
+      Fix copying of kibitzed info in Engine-Output window
+      Put newly opened Chat Box on top
+      Repair settings-file name
+      Repair background-observe patch
+      Use side-by-side boards to display background game
+      Create space in WinBoard ICS-options dialog
+      Put new options in WB ICS-options dialog
+      Group Chat Boxes with console in stead of board window
+      Add option Display Logo in WB general-options menu
+      Fix display of uninitialized boards in background observe
+      Print seconds with 2 digits in backgroundObserve status line
+      Redraw second board on expose events
+      Mark non-compliant lines of engine in debug file
+      Add kibitzes and c-shouts Chat Box
+      Also capture (numeric) whispers of players for -autoKibitz
+      Add -autokibitz checkbox to UCI-options menu dialog
+      Display PV from Engine-Output window (XBoard)
+      Fix handling username change during game
+      Paint highlights on dual board (WB)
+      Update XBoard docs
+      Allow loading of PGN variations in XBoard
+      Allow adjustment of clocks in any mode with shift+click
+      Update WinBoard html help
+      Update WinBoard RTF docs
+      Change name of Global Settings menu item to Common Engine Settings
+      Let WinBoard recognize ~ in settings file name as HOMEPATH
+      Prevent <Esc> closing chat box
+      Fix disabling of Chat Box navigation buttons
+      Let Chat Boxes pop up above console, rather than on top of it
+      Fix crash on switching to ICS xiangqi game
+      Suppress background observe for boards with own game number
+      Allow any %ENVIRONMENTVAR% in WB settings file name rather than ~
+      Fix rep-draw recognition
+      Allow escape sequences in telluser(error) messages
+      Fix typos in html help file
+      Update README file
+      Alter XBoard key bindings to mimic WinBoard
+      Fix engine stall on perpetual-check evasion
+      Reverse mousewheel action
+      Repair score printing with -serverMoves option
+      Fix e.p. bug in xiangqi with -serverMoves option
+      Ignore checks in 50-move count for Xiangqi
+      Remove font settings from master settings file
+      Adjudicate Xiangqi material draws with Advisor-less Cannons
+      Remove misspelled prototype
+      Remove duplicate testing for cores feature
+      Fix oneClickMove bug
+      Refactoring of material-draws adjudication code
+      Add string option /pieceNickNames
+      Define /firstUCI and /secondUCI as synonyms for /fUCI, /sUCI
+      Suggest default file name in browser dialog
+      Fix erors when compiling with --disable-zippy
+      Add some book-control options
+      Allow match to be started from WB menu
+      Tricked by the grossnes
+      Add -colorNickNames option
+      Improved patch for expansion of WB settings-file name
+      Fix some MSVC compile errors
+      Update .dev files
+      Trivial-draws recognition improved in Xiangqi
+      Do not exit after match when match started from menu
+      Mark XBoard result messages for internationalization
+      Make the ID of all WB dialog items unique
+      Internationalization for WinBoard
+      Do not translate game-end messages in PGN
+      Add some forgotten translation hooks
+      Update docs
+      Update WB translation template
+      Make WB run-time language switch possible from menu
+      Fix JAWS bug saying side to move in ICS play
+      Prevent transmission of spurious promo char to other engine
+      Allow parsing of upper-case machine moves
+      Fix silent bug in drop moves
+      Revert splitting of UserMoveEvent
+      Extend legality testing to drop moves
+      Extend mate test to drop games
+      Strip DOS line endings from parser.l
+      Make board-size overrule options volatile
+      Make Shogi promotion zone board-size dependent
+      Suppress spurious use of SAN castling in mini variants
+      Pass promoChar to SendMoveToICS
+      Remove promotion-piece encoding from ChessMove type
+      Enhance multi-session TC clock handling
+      Allow -timeIncrement to be a float
+      Fix menu translation bug
+      Fix uninitialized variable in book code
+      Change evalgraph scale in drop games
+      Limit multi-session clock handling to non-ICS games
+      Inherit promoted-info that ICS does not give from previous board
+      Adapt WinBoard to Shogi implementation on Variant ICS
+      Fix WinBoard Lance bug
+      Fix bug in ICS variant switch for Shogi
+      Allow lower-case piece indicator in drop-move notation
+      Allow full promotion suffixes on SAN piece moves
+      Add option -variations to control variation-tree walking
+      Disable some very verbose debug printing
+      Implement -flipBlack in XBoard
+      Add set of shogi pixmaps for XBoard
+      Fix merging bug
+      Make starting new variation dependent on shift key
+      Complete WB (western) bitmaps for Shogi at size 33
+      Implement board textures in XBoard
+      The -overrideLineGap option is made to work in XBoard
+      Provide some sample board-texture pixmaps
+      Make -flipBlack and -allWhite option volatile
+      Let -oneClickMove also work in EditGame mode
+      Make Knight hop first straight, then diagonal
+      Suppress promotion popup if piece will explode
+      Animate piece explosions in drag-drop moves and in XB
+      Make deferral default in Shogi promotions
+      Fix spurious promotions with legality testing off
+      Bugfix for safeStrCpy patch for XBoard
+      Bugfix safeStrCpy patch, WinBoard
+      Augment moves of some fairy pieces
+      Delete some stale promotion code
+      Add the actual size-33 Shogi bitmaps
+      Remove validity test on promochar from parser
+      Make test for valid promotion piece color-dependent
+      Remember values set by -firstOptions, -secondOptions
+      Restrict use of a2a3 kludge
+      Implement setup (engine-GUI) command
+      Allow arbitrary nesting of sub-variations in PGN input
+      Fix some warnings
+      Use normal SAN for wildcard pieces
+      Use SAN even on illegal moves
+      Give Lance moves of Berolina Pawn
+      Keep last PV while clearing engine-output display
+      Fix bug in parsing illegal Pawn captures
+      Newly lexed parser.c
+      Let Engine #2 Settings start second engine
+      Allow clicked name internal to the icsMenu command string
+      Make safeStrCpy safe
+      Restrict use of escape expansion
+      List Hint with compliant commands
+      List some undocumented commands as compliant
+      Fix mouse-driver buglet
+      Fix one-click bug
+      Fix acceptance of null-move with legality testing off
+      Add -variant seirawan to menu
+      Implement variant seirawan
+      Implement entering gating moves with mouse
+      Use Falcon and Alfil as built-ins for Seirawan chess
+      Accept Seirawan-style gating suffixes
+      Fix one-click moving on up-click
+      Fix home-dir crash
+      Fix default holdings size for variant seirawan
+      Fix safeStrCpy
+      Fix safety crash when appending comments
+      Define moves for Dragon Horse outside Shogi
+      Make yyskipmoves also suppress examining of drop moves
+      Change representation of Bede in variant fairy initial position
+      Give Lance moves of Amazon in variant super
+      Make Hoplite moves irreversible in Spartan Chess
+
+** Version 4.4.4 **
+
+(git shortlog --no-merges v4.4.3...HEAD)
+
+Arun Persaud (1):
+      updated version number to indicate development on 4.4.4
+
+Clint Adams (1):
+      Remove unnecessary double equals from configure.ac.
+
+H.G. Muller (18):
+      Let move parser return ImpossibleMove for off-board moves
+      Prevent engine stall on perpetual-chase evasion
+      Fix bug in sending "usermove" when forcing book moves
+      Pop down old tags on loadng new game in WinBoard
+      Fix game end during dragging
+      Repair animate dragging
+      Fix bug in sending cores command to engine
+      Fix parsing of SAN shogi promotions
+      Fix variant switch on PGN loading
+      Cut board squares out of texture bitmap more cleverly
+      Allow -flipBlack to work with font-based piece rendering
+      Allow font-based piece rendering in board sizes below petite
+      Fix WinBoard game-list title
+      Fix deadlock in match-result display
+      Fix regression in colorization of zippy-matched commands
+      Fix zippy handling of draw offers from ICS
+      Make some more zippy code obey the --disable-zippy flag
+      Repair exit-popup deadlock patch
+
+
+** Version 4.4.3 **
+
+(git shortlog --no-merges v4.4.2...HEAD)
+
+Arun Persaud (11):
+      updated to unstable version number
+      added missing sounds files to be able to compile on windows
+      new developer release
+      update year in copyright info
+      DOS line endings and 644 mode for woptions.c
+      updated files (AUTHORS, Changelog, etc) for new release
+      new developer release
+      added logo files for xboard
+      new developer release
+      updated winboard/parser.c
+      release of version 4.4.3
+
+H.G. Muller (40):
+      Implement castling for variant CRC
+      Chmod 644
+      Bugfix legality null move in parsing with -testLegality off
+      Fix bug for incommensurate time odds
+      Make WinBoard makefiles use parser.c in XBoard directory
+      Fix piece-to-char table -variant fairy
+      Fix TwoKings ICS castling-rights bug
+      Fix reading castling rights FEN in knightmate and twokings
+      Fix OO-castling in FRC after pasting FEN
+      Accept <Enter> for changing chat partner
+      Use -keepAlive option to determine connection health
+      Fix of ancient WinBoard bug: check value of int options
+      Fix bug in display of logos
+      Remove stray dot from WinBoard makefiles
+      Fix u64 format for cygwin
+      Send continuation lines to chat box they belong to
+      Fix highlighting bug in XBoard
+      Extensive bugfix of -autoKibitz
+      Remove race condition in clock switching
+      Add variant Makruk
+      Change opening array -variant fairy
+      Match handles with multiple titles for channel Chat Boxes
+      Bugfix stale first-click
+      Start insertion point at end of text edits in XB dialogs
+      Fix copying of WB Chat Window contents
+      Bugfix of autoKibitz and Chat suppression in ICS window
+      Fix XB crash on giving keyboard focus to non-text widget
+      Bugfix copying from Chat Box, own lines
+      Fix 'mamer bug' in Chat Boxes
+      Make signedness of castling rights explicit in function arguments
+      Fix copying of kibitzed lines from WB Engine-Output window
+      Do not recognize non-ICS variants from PGN event tag
+      Remake programVersion string after receiving engine features
+      Set keyboard focus at startup to board window
+      Fix window-position upset on failing engine start in WinBoard
+      Fix info lines being used as normal thinking output
+      Correct error in texi file
+      Allow lower-case promochar in moves of type h8=Q
+      Fix Alt+M JAWS command in Two-Machines mode
+      Fix JAWS piece drop cursor, and streamline some sentences
+
+** Version 4.4.2 **
+
+(git shortlog --no-merges v4.4.1...HEAD)
+
+Arun Persaud (7):
+      updated version number to unstable
+      added missing library for build on OS X
+      add Winboard source files into tar-ball
+      removed files that should only be in the windboard directory
+      fixed build on openbsd
+      new developer release
+      fix for bug #28077: xboard needs to link against x11
+
+H.G. Muller (19):
+      cleaned up some debug messages and typos
+      fix crash on engine crash
+      fix casting rights after FEN pasting
+      the last move before the time control now gets its time listed in the PGN
+      fix double start of zippy engine after switch to gothic
+      fix declaration of engineOutputDialogUp
+      fix engine-sync on move-number type-in bug
+      removing some rather verbose debug messages that seem no longer needed.
+      fix bug in bughouse drop menu
+      use xtell for talking to handles, but tell for talking into a channel.
+      fix the irritating wandering off of the MoveHistory window in XBoard on opening/closing.
+      fixed some outstanding pixmaps
+      Fix castling rights when copying FEN to clipboard (again)
+      score sign in analysis mode
+      correctly apply some check boxes from the option menu
+      updates makefiles to include dependency on config.h
+      fix problem with empty string in -firstNeedsNoncompliantFEN
+      double buffer size to prevent overflow
+      remove trailing \r in xboard output
+
+
 ** Version 4.4.1 **
 
 (git shortlog --no-merges vold...vnew)
