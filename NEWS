@@ -87,7 +87,7 @@
  * added missing library for build on OS X
 
 ** Version 4.4.1 **
-   
+
  * added chat windows to keep track of multiple conversations (WinBoard only)
  * allow the result comment as a display item in the game list
  * added a "Mute All Sounds" item in the WinBoard Options menu
@@ -97,16 +97,16 @@
  * replaces analysispopup with engineoutputpopup in xboard
  * allow copy/paste position and game to use clipboard (xboard)
  * updated several bitmaps (xboard)
- * Made the beep sounds for JAWS board navigation configurable 
+ * Made the beep sounds for JAWS board navigation configurable
    through command-line options
- * added the result comment to the game-list tags when the game 
+ * added the result comment to the game-list tags when the game
    list is exported to the clipboard
  * updated RTF docs
  * fixed premove problem
- * fixed engine did not start playing when out of GUI book on second 
+ * fixed engine did not start playing when out of GUI book on second
    move with white
  * fix bug using opening books (file were not closed)
- * fixed crash when opening Engine #1 Settings when there were no 
+ * fixed crash when opening Engine #1 Settings when there were no
    text-edit options in the dialog
  * fixed loading of games from command lines, fixes cmail bug
  * fix joining lines split by ICS and resizing terminal window when using ICS
@@ -118,14 +118,14 @@
  * fix for edit-position "moves" being sent by XBoard to the engine
  * bugfix for protocol extensions: egtbpath -> egtpath
  * fix bug in parser
- * further bugfixes:  #8847, #10990, #27427, #27642, 
-   #27666, #27667, #27668, #27715, #27751, #27760, 
+ * further bugfixes:  #8847, #10990, #27427, #27642,
+   #27666, #27667, #27668, #27715, #27751, #27760,
    #27772, #27799, #27826 and several small ones
  * use "make distcheck" to generate tar-balls
  * prepared a system to internationalize winboard menus
  * improved mouse handler
  * rewrote wevalgraph for better frontend/backend separation
- * code cleanup 
+ * code cleanup
 
 ** Version 4.4.0 **
 
@@ -180,7 +180,7 @@ New menu items
 
 General Enhancements:
 * WinBoard engines can now also use the Polyglot opening book (implemented as general GUI book)
-* New WB-protocol commands memory, cores and egtpath make interactive setting of these parameters 
+* New WB-protocol commands memory, cores and egtpath make interactive setting of these parameters
   possible on WB engines
 * New Polyglot is available that relays the interactive setting of these parameters to UCI engines
 * Match mode suports an auto-increment mode, so that all games or positions from a file can be played
@@ -199,7 +199,7 @@ It mainly contains developments on WinBoard. Nevertheless, an attempt
 has been started to back-port the enormous number of improvements that
 have been made to WinBoard since the Linux and Windows developments branched
 to xboard. This is reflected by the source tree now having the same format
-as that of xboard 4.2.7, including all the xboard sources. 
+as that of xboard 4.2.7, including all the xboard sources.
 
 An enormous amount of work still has to be done to make the xboard version
 fully equivalent to WinBoard, especially on user-interface side. As a modest
@@ -211,10 +211,10 @@ xboard bitmaps directory. Other quick patches include the coloring of the
 board squares (for xiangqi and holdings), and some code in the user-move
 handling to suppress all moves into or out of the area between board and
 holdings in crazyhouse, and the treatment of king-captures-own-piece
-as a possibly valid move (for FRC castling). This should make it possible 
+as a possibly valid move (for FRC castling). This should make it possible
 to run xboard with the new back-end files without too much inconvenience.
 
-New xboard command-line options have been added to make the added back-end 
+New xboard command-line options have been added to make the added back-end
 features available. The include the new variants (as argument of the old
 -variant option), -boardWidth, -boardHeight and -holdingsSize. Be sure
 to call xboard with "-boardSize middling" or "-boardSize bulky" if you
@@ -256,37 +256,37 @@ Bugs can be reported in the WinBoard forum.
 
 Compared to version 4.3.13 described below, this version features
 
-New command-line options: 
-/autoKibitz (for relaying the PV info of the engine to the ICS) 
-/userName="..." (for setting the name of the Human player, also as menu) 
-/engineDebugOutput=N (controlling the writing of engine output to debug file) 
-/firstNPS=N (for time management by node count or CPU time) 
-/secondNPS=N (likewise for the other engine) 
+New command-line options:
+/autoKibitz (for relaying the PV info of the engine to the ICS)
+/userName="..." (for setting the name of the Human player, also as menu)
+/engineDebugOutput=N (controlling the writing of engine output to debug file)
+/firstNPS=N (for time management by node count or CPU time)
+/secondNPS=N (likewise for the other engine)
 
-New Menu items 
-+ Enter Username (same as /userName command-line option) 
-+ Save Diagram (for saving the Chessboard display as bitmap file) 
-+ Machine Both (not implemented yet, but menu item already provided) 
-+ New-Variant menu adds CRC, Janus and Berolina (the latter only with legality testing off!) 
-+ Any variant can be played from a shuffled opening setup 
+New Menu items
++ Enter Username (same as /userName command-line option)
++ Save Diagram (for saving the Chessboard display as bitmap file)
++ Machine Both (not implemented yet, but menu item already provided)
++ New-Variant menu adds CRC, Janus and Berolina (the latter only with legality testing off!)
++ Any variant can be played from a shuffled opening setup
 
-Bugfixes: 
-* Problems with switching the variant in ICS zippy mode solved 
-* In ICS observing mode game history is now fully accessible 
-* Moves are not fed to engine in zippy mode, when observing a game from a variant unknown to the engine 
+Bugfixes:
+* Problems with switching the variant in ICS zippy mode solved
+* In ICS observing mode game history is now fully accessible
+* Moves are not fed to engine in zippy mode, when observing a game from a variant unknown to the engine
 * a problem with loading PGN of FRC games with move disambiguation and initial castling rights was fixed.
 * A bug in the clock display that made previous versions of WinBoard crash for tiny displays is fixed
 
-General enhancements: 
-* variant name displayed in title bar in ICS mode, when not 'normal' 
-* when receiving a challenge in ICS zippy mode, it is checked if the engine supports the variant (/zippyVariants="..." can still be used to limit the allowed variants, and for protocol-1 engines is still the only thing to go on) 
-* when loading a game from a PGN file, WB automatically switches to the variant specified in the PGN tags 
+General enhancements:
+* variant name displayed in title bar in ICS mode, when not 'normal'
+* when receiving a challenge in ICS zippy mode, it is checked if the engine supports the variant (/zippyVariants="..." can still be used to limit the allowed variants, and for protocol-1 engines is still the only thing to go on)
+* when loading a game from a PGN file, WB automatically switches to the variant specified in the PGN tags
 * when starting from a loaded position (using /loadPositionFile), this position will be used on subsequent 'New Game' commands as well (until we switch variant)
 
 New is also that the source tree is now brought back in the original WinBoard 4.2.7 format, including
 xboard source files. Note, however, that the xboard sources are from an older date, and I did not test
 if they still compile together with the much newer backend sources. I did add code in xboard.c to recognize
-the new command-line options I added since then, and in so far they are back-end options that should be enough 
+the new command-line options I added since then, and in so far they are back-end options that should be enough
 to make them work. This is completely untested, though; I did not even try to compile it. Last time anyone
 built a working xboard.exe from this was at a stage where WinBoard did have adjustable board size, allowing
 it to play Xiangqi. But no crazyhouse holdings yet.
@@ -298,7 +298,7 @@ This version of WinBoard_F fixes several bugs in 4.3.12, and also addse a few ne
 The new features include:
 - some more fairy pieces, so that each side now has 22 piece types in stead of 17,
 making most fairy pieces available in board size "petite" (next to "bulky" and "middling"),
-making the ArchBishop and Chancellor, as well as one wildcard piece (the Lance) available in all 
+making the ArchBishop and Chancellor, as well as one wildcard piece (the Lance) available in all
 sizes from "petite" to "bulky".
 - The FRC support is fully fixed, both in local and ICS mode.
 - A mechanism is provided for safe draw claiming in cases where a 3-fold repetition woud occur only
@@ -323,7 +323,7 @@ of adjudication of engine-engine games, improved Crazyhouse support,
 and allowing variants with non-conventional pieces and or board
 sizes. (All option are shown here with their default values):
 
-/variant=normal 
+/variant=normal
 This (already existing) option has been expanded with
 several new variants, involving non-conventional pieces and deviating
 board sizes. The board size is automatically adapted to the selected
@@ -331,14 +331,14 @@ variant, unless explicitly overruled (see below). The new variants are
 (with default board size, files x ranks, in parentheses):
 
 variant name    Game           board     description
-knightmate    Knightmate        (8x8)  Variant where the King moves as a Knight, and vice versa 
-capablanca    Capablanca Chess (10x8)  Variant featuring Archbishop and Chancellor as new pieces 
-gothic        Gothic Chess     (10x8)  Same as Capablanca, with a more interesting opening position 
-courier       Courier Chess    (12x8)  a Medieval form that combines elements of Shatranj and modern Chess 
-shogi         Shogi             (9x9)  Japanese Chess 
-xiangqi       Xiangqi          (9x10)  Chinese Chess 
-fairy         Fairy Chess       (8x8)  Variant were you can use all pieces of other variants together 
- 
+knightmate    Knightmate        (8x8)  Variant where the King moves as a Knight, and vice versa
+capablanca    Capablanca Chess (10x8)  Variant featuring Archbishop and Chancellor as new pieces
+gothic        Gothic Chess     (10x8)  Same as Capablanca, with a more interesting opening position
+courier       Courier Chess    (12x8)  a Medieval form that combines elements of Shatranj and modern Chess
+shogi         Shogi             (9x9)  Japanese Chess
+xiangqi       Xiangqi          (9x10)  Chinese Chess
+fairy         Fairy Chess       (8x8)  Variant were you can use all pieces of other variants together
+
 The variant can be set from the newly added "File -> New Variant..."
 sub-menu.  Extra board files are indicated by the letters i, j, k, l,
 ... For boards with more than 9 ranks, the counting starts at zero!
@@ -358,7 +358,7 @@ the movement of all pieces occurring in Capablanca Chess (of which
 FIDE Chess is a subset), Shatranj, Courier, Xiangqi and 9x9 Shogi, so
 that these games can be played with legality testing enabled.
 
-/pieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk" 
+/pieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk"
 Each piece that WinBoard knows (in its legality test) has a letter
 associated with it, by which it will be referred to in FEN or PGN. The
 default assignment can be overruled with this option. The value has to
@@ -369,24 +369,24 @@ King. (This is the piece that moves as an orthodox King; note that
 Nightmate and Xiangqi have a different royal piece.) All letters
 before it will be assigned to the other pieces in the order:
 
-P Pawn                 (move often depends on variant) 
-N Knight               (move subtly different in Xiangqi (where it is written as H) or Shogi) 
-B Bishop 
-R Rook 
-Q Queen                (Lance L in Shogi) 
-F Ferz/General         (The Shatranj 'Queen' and Xiangqi 'Adviser', used for Silver General S in Shogi.) 
-W Wazir/GrandVizer     (Gold General G in Shogi, in Xiangqi it is royal and denoted by K) 
-E Alfil/Elephant       (Moves subtly different in Xiangqi vs Shatranj/Courier) 
+P Pawn                 (move often depends on variant)
+N Knight               (move subtly different in Xiangqi (where it is written as H) or Shogi)
+B Bishop
+R Rook
+Q Queen                (Lance L in Shogi)
+F Ferz/General         (The Shatranj 'Queen' and Xiangqi 'Adviser', used for Silver General S in Shogi.)
+W Wazir/GrandVizer     (Gold General G in Shogi, in Xiangqi it is royal and denoted by K)
+E Alfil/Elephant       (Moves subtly different in Xiangqi vs Shatranj/Courier)
 M Commoner/Man
-O Cannon/Pao 
-U Unicorn              (representation of Royal Knight in Knightmate, used as promoted Pawn in Shogi) 
-H Nightrider           (Promoted Knight in Shogi and CrazyHouse) 
-A Archbishop/Cardinal  (Promoted Bishop in Shogi and CrazyHouse) 
-C Chancellor/Marshall  (Promoted Rook   in Shogi and CrazyHouse) 
-G Grasshopper          (Promoted Queen in Crazyhouse, promoted Lance in Shogi) 
-S                      (Promoted Silver in Shogi) 
-K King 
- 
+O Cannon/Pao
+U Unicorn              (representation of Royal Knight in Knightmate, used as promoted Pawn in Shogi)
+H Nightrider           (Promoted Knight in Shogi and CrazyHouse)
+A Archbishop/Cardinal  (Promoted Bishop in Shogi and CrazyHouse)
+C Chancellor/Marshall  (Promoted Rook   in Shogi and CrazyHouse)
+G Grasshopper          (Promoted Queen in Crazyhouse, promoted Lance in Shogi)
+S                      (Promoted Silver in Shogi)
+K King
+
 Pieces that are not mentioned (because the argument has less than 34
 characters) will remain disabled. Mentioned pieces can be disabled by
 assigning them a '.' (period). They are then not recognized in FEN or
@@ -416,7 +416,7 @@ this piece is not disabled or a promoted version of a normal piece),
 and leaves only the options YES / NO in Shogi. In Xiangqi there are no
 promotions.
 
-/fontPieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk" 
+/fontPieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk"
 This option is similar to /pieceToCharTable, but sets the font
 character that is used to display the piece on the screen (when
 font-based rendering is in use), rather than in the FEN or PGN. The
@@ -433,19 +433,19 @@ fairy pieces.
 Traditional Shogi bitmaps are only included for size "moderate". For
 other sizes you must depend on font-based rendering.
 
-/detectMate=TRUE 
-/testClaim=TRUE 
-/materialDraws=TRUE 
-/trivialDraws=FALSE 
-/ruleMoves=51 
-/repeatsToDraw=6 
+/detectMate=TRUE
+/testClaim=TRUE
+/materialDraws=TRUE
+/trivialDraws=FALSE
+/ruleMoves=51
+/repeatsToDraw=6
 The option /materialDraws=TRUE causes games with insufficient mating
 material to be adjudicated immediately as draws, in case the engines
 would not claim these draws. This applies to KK, KNK and KBK.  The
 option /trivialDraws adjudicates KNNK, KBKB, KNKN, KBKN, KRKR and KQKQ
 to draws after 3 moves (to allow for a quick tactical win). Note that
 in KQKQ this might not be sound, but that problem would disappear once
-bitbase probing is implemented.  
+bitbase probing is implemented.
 
 Clocks
 The flag-fell condition is now indicated as '(!)' behind the displayed
@@ -467,7 +467,7 @@ the latter was requested (through ticking "extended PGN info" in
 
 This Winboard supports the following new options (shown here with their default values):
 
-/variant=normal 
+/variant=normal
 This (already existing) option has been expanded with several new
 variants, involving non-conventional pieces and deviating board
 sizes. The board size is automatically adapted to the selected
@@ -475,15 +475,15 @@ variant, unless explicitly overruled (see below). The new variants are
 (with default board size, files x ranks, in parentheses):
 
 variant name    Game           board     description
-knightmate    Knightmate        (8x8)  Variant where the King moves as a Knight, and vice versa 
-capablanca    Capablanca Chess (10x8)  Variant featuring Archbishop and Chancellor as new pieces 
-gothic        Gothic Chess     (10x8)  Same as Capablanca, with a more interesting opening position 
-courier       Courier Chess    (12x8)  a Medieval form that combines elements of Shatranj and modern Chess 
-shogi         Shogi             (9x9)  Japanese Chess 
-xiangqi       Xiangqi          (9x10)  Chinese Chess 
-fairy         Fairy Chess       (8x8)  Variant were you can use all pieces of other variants together 
- 
-The variant can be set from the newly added "File -> New Variant..." sub-menu. 
+knightmate    Knightmate        (8x8)  Variant where the King moves as a Knight, and vice versa
+capablanca    Capablanca Chess (10x8)  Variant featuring Archbishop and Chancellor as new pieces
+gothic        Gothic Chess     (10x8)  Same as Capablanca, with a more interesting opening position
+courier       Courier Chess    (12x8)  a Medieval form that combines elements of Shatranj and modern Chess
+shogi         Shogi             (9x9)  Japanese Chess
+xiangqi       Xiangqi          (9x10)  Chinese Chess
+fairy         Fairy Chess       (8x8)  Variant were you can use all pieces of other variants together
+
+The variant can be set from the newly added "File -> New Variant..." sub-menu.
 Extra board files are indicated by the letters i, j, k, l, ... For
 boards with more than 9 ranks, the counting starts at zero! Non-FIDE
 pieces will be referred to in FENs and PGN by letters that depend on
@@ -500,7 +500,7 @@ movement of all pieces occurring in Capablanca Chess (of which FIDE
 Chess is a subset), Shatranj, Courier, Xiangqi and 9x9 Shogi, so that
 these games can be played with legality testing enabled.
 
-/pieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk" 
+/pieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk"
 Each piece that WinBoard knows (in its legality test) has a letter
 associated with it, by which it will be referred to in FEN or PGN. The
 default assignment can be overruled with this option. The value has to
@@ -511,24 +511,24 @@ King. (This is the piece that moves as an orthodox King; note that
 Nightmate and Xiangqi have a different royal piece.) All letters
 before it will be assigned to the other pieces in the order:
 
-P Pawn                 (move often depends on variant) 
-N Knight               (move subtly different in Xiangqi (where it is written as H) or Shogi) 
-B Bishop 
-R Rook 
-Q Queen                (Lance L in Shogi) 
-F Ferz/General         (Silver General S in Shogi) 
-W Wazir/GrandVizer     (Gold General G in Shogi, in Xiangqi it is royal and denoted by K) 
-E Alfil/Elephant       (Moves subtly different in Xiangqi vs Shatranj/Courier) 
-M Commoner/Man 
-O Cannon/Pao 
-U Unicorn              (representation of Royal Knight in Knightmate, used as promoted Pawn in Shogi) 
-H Nightrider           (Promoted Knight in Shogi and CrazyHouse) 
-A Archbishop/Cardinal  (Promoted Bishop in Shogi and CrazyHouse) 
-C Chancellor/Marshall  (Promoted Rook   in Shogi and CrazyHouse) 
-G Grasshopper          (Promoted Queen in Crazyhouse, promoted Lance in Shogi) 
-S                      (Promoted Silver in Shogi) 
-K King 
- 
+P Pawn                 (move often depends on variant)
+N Knight               (move subtly different in Xiangqi (where it is written as H) or Shogi)
+B Bishop
+R Rook
+Q Queen                (Lance L in Shogi)
+F Ferz/General         (Silver General S in Shogi)
+W Wazir/GrandVizer     (Gold General G in Shogi, in Xiangqi it is royal and denoted by K)
+E Alfil/Elephant       (Moves subtly different in Xiangqi vs Shatranj/Courier)
+M Commoner/Man
+O Cannon/Pao
+U Unicorn              (representation of Royal Knight in Knightmate, used as promoted Pawn in Shogi)
+H Nightrider           (Promoted Knight in Shogi and CrazyHouse)
+A Archbishop/Cardinal  (Promoted Bishop in Shogi and CrazyHouse)
+C Chancellor/Marshall  (Promoted Rook   in Shogi and CrazyHouse)
+G Grasshopper          (Promoted Queen in Crazyhouse, promoted Lance in Shogi)
+S                      (Promoted Silver in Shogi)
+K King
+
 Pieces that are not mentioned (because the argument has less than 34
 characters) will remain disabled. Mentioned pieces can be disabled by
 assigning them a '.' (period). They are then not recognized in FEN or
@@ -554,7 +554,7 @@ and Chancellor in Capablanca and Gothic, (or in fact in any game where
 this piece is not disabled), and leaves only the options YES / NO in
 Shogi. In Xiangqi there are no promotions.
 
-/alphaRank=FALSE 
+/alphaRank=FALSE
 This option does not seem to work for reading PGN files. Saving works
 fine. For now, using it is not recommended. In the future it might be
 redefined as only affecting engine-engine communication, .
@@ -581,7 +581,7 @@ the latter was requested (through ticking 'extended PGN info' in
 This Winboard supports the following new options (shown here with
 their default values):
 
-/variant=normal 
+/variant=normal
 This (already existing) option has been expanded with several new
 variants, involving non-conventional pieces and deviating board
 sizes. The board size is automatically adapted to the selected
@@ -589,15 +589,15 @@ variant, unless explicitly overruled (see below). The new variants are
 (with default board size, files x ranks, in parentheses):
 
 variant name    Game           board     description
-knightmate    Knightmate        (8x8)  Variant where the King moves as a Knight, and vice versa 
-capablanca    Capablanca Chess (10x8)  Variant featuring Archbishop and Chancellor as new pieces 
-gothic        Gothic Chess     (10x8)  Same as Capablanca, with a more interesting opening position 
-courier       Courier Chess    (12x8)  a Medieval form that combines elements of Shatranj and modern Chess 
-shogi         Shogi             (9x9)  Japanese Chess 
-xiangqi       Xiangqi          (9x10)  Chinese Chess 
-fairy         Fairy Chess       (8x8)  Variant were you can use all pieces of other variants together 
- 
-The variant can be set from the newly added "File -> New Variant..." sub-menu. 
+knightmate    Knightmate        (8x8)  Variant where the King moves as a Knight, and vice versa
+capablanca    Capablanca Chess (10x8)  Variant featuring Archbishop and Chancellor as new pieces
+gothic        Gothic Chess     (10x8)  Same as Capablanca, with a more interesting opening position
+courier       Courier Chess    (12x8)  a Medieval form that combines elements of Shatranj and modern Chess
+shogi         Shogi             (9x9)  Japanese Chess
+xiangqi       Xiangqi          (9x10)  Chinese Chess
+fairy         Fairy Chess       (8x8)  Variant were you can use all pieces of other variants together
+
+The variant can be set from the newly added "File -> New Variant..." sub-menu.
 Extra board files are indicated by the letters i, j, k, l, ... For
 boards with more than 9 ranks, the counting starts at zero! Non-FIDE
 pieces will be referred to in FENs and PGN by letters that depend on
@@ -614,7 +614,7 @@ movement of all pieces occurring in Capablanca Chess (of which FIDE
 Chess is a subset), Shatranj, Courier, Xiangqi and 9x9 Shogi, so that
 these games can be played with legality testing enabled.
 
-/pieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk" 
+/pieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk"
 Each piece that WinBoard knows (in its legality test) has a letter
 associated with it, by which it will be referred to in FEN or PGN. The
 default assignment can be overruled with this option. The value has to
@@ -625,24 +625,24 @@ King. (This is the piece that moves as an orthodox King; note that
 Nightmate and Xiangqi have a different royal piece.) All letters
 before it will be assigned to the other pieces in the order:
 
-P Pawn                 (move often depends on variant) 
-N Knight               (move subtly different in Xiangqi (where it is written as H) or Shogi) 
-B Bishop 
-R Rook 
-Q Queen                (Lance L in Shogi) 
-F Ferz/General         (Silver General S in Shogi) 
-W Wazir/GrandVizer     (Gold General G in Shogi, in Xiangqi it is royal and denoted by K) 
-E Alfil/Elephant       (Moves subtly different in Xiangqi vs Shatranj/Courier) 
-M Commoner/Man 
-O Cannon/Pao 
-U Unicorn              (representation of Royal Knight in Knightmate, used as promoted Pawn in Shogi) 
-H Nightrider           (Promoted Knight in Shogi and CrazyHouse) 
-A Archbishop/Cardinal  (Promoted Bishop in Shogi and CrazyHouse) 
-C Chancellor/Marshall  (Promoted Rook   in Shogi and CrazyHouse) 
-G Grasshopper          (Promoted Queen in Crazyhouse, promoted Lance in Shogi) 
-S                      (Promoted Silver in Shogi) 
-K King 
- 
+P Pawn                 (move often depends on variant)
+N Knight               (move subtly different in Xiangqi (where it is written as H) or Shogi)
+B Bishop
+R Rook
+Q Queen                (Lance L in Shogi)
+F Ferz/General         (Silver General S in Shogi)
+W Wazir/GrandVizer     (Gold General G in Shogi, in Xiangqi it is royal and denoted by K)
+E Alfil/Elephant       (Moves subtly different in Xiangqi vs Shatranj/Courier)
+M Commoner/Man
+O Cannon/Pao
+U Unicorn              (representation of Royal Knight in Knightmate, used as promoted Pawn in Shogi)
+H Nightrider           (Promoted Knight in Shogi and CrazyHouse)
+A Archbishop/Cardinal  (Promoted Bishop in Shogi and CrazyHouse)
+C Chancellor/Marshall  (Promoted Rook   in Shogi and CrazyHouse)
+G Grasshopper          (Promoted Queen in Crazyhouse, promoted Lance in Shogi)
+S                      (Promoted Silver in Shogi)
+K King
+
 Pieces that are not mentioned (because the argument has less than 34
 characters) will remain disabled. Mentioned pieces can be disabled by
 assigning them a '.' (period). They are then not recognized in FEN or
@@ -668,7 +668,7 @@ and Chancellor in Capablanca and Gothic, (or in fact in any game where
 this piece is not disabled), and leaves only the options YES / NO in
 Shogi. In Xiangqi there are no promotions.
 
-/fontPieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk" 
+/fontPieceToCharTable="PNBRQFWEMOUHACGSKpnbrqfwemouhacgsk"
 This option is similar to /pieceToCharTable, but sets the font
 character that is used to display the piece on the screen (when
 font-based rendering is in use), rather than in the FEN or PGN. The
@@ -678,7 +678,7 @@ are also used to represent the promoted versions of PNBRQF, in games
 like Crazyhouse and Shogi, where the promotion has to be undone on
 capture.
 
-/boardWidth=-1 /boardHeight=-1 
+/boardWidth=-1 /boardHeight=-1
 Set a number of files and ranks of the playing board to a value that
 will override the defaults for the variant that is selected. A value
 of -1 means the variant default board size will be used for the
@@ -688,7 +688,7 @@ sub-menu, where they are reset to the default -1 is you OK the chosen
 variant without typing something to overrule it. These parameters are
 saved in the winboard.ini file. (But unless you saved while a variant
 with board-size override was selected, they will always be saved as
--1.)  
+-1.)
 A variant with a non-standard board size will be communicated to the
 engine(s) with the board size prefixed to the variant name,
 e.g. "variant 12x8_capablanca". In protocol 2 the engine must first
@@ -696,7 +696,7 @@ enable this feature by sending "boardsizeFxR" amongst the accepted
 variants, where F is the maximum number of files, and R the maximum
 number of ranks, as decimal numbers.
 
-/holdingsSize=-1 
+/holdingsSize=-1
 Set the size of the holdings for dropable pieces to a value that will
 override the default for the variant that is selected. A value of -1
 means the variant default holdings size will be used for that
@@ -722,7 +722,7 @@ protocol 2 the engine should enable this feature by sending
 "holdingsH" amongst the variant names, where H is the maximum
 acceptable holdings size as a decimal number.
 
-/alphaRank=FALSE 
+/alphaRank=FALSE
 When this parameter is true, a-h are converted to 1-9, and vice versa,
 in all move output and input (to PGN files or SAN move display as well
 as in communication with the engine). This might be useful for Shogi,
@@ -753,12 +753,12 @@ display of the 'black' native piece bitmaps, as would be needed for
 Shogi. For now it can be set from the "Options -> Board..." sub-menu,
 and it is saved in the winboard.ini file, but it is ignored.
 
-/detectMate=TRUE 
-/testClaim=TRUE 
-/materialDraws=TRUE 
-/trivialDraws=FALSE 
-/ruleMoves=51 
-/repeatsToDraw=6 
+/detectMate=TRUE
+/testClaim=TRUE
+/materialDraws=TRUE
+/trivialDraws=FALSE
+/ruleMoves=51
+/repeatsToDraw=6
 These are all options that only affect engine-engine play, and can be
 set from the "Options -> Engine..." sub-menu. They are all related to
 adjudication of games by the GUI. Legality checking must be switched
@@ -825,15 +825,15 @@ winboard.rc
 
 and some bitmaps for piece symbols
 
-I made modifications in the following areas: 
+I made modifications in the following areas:
 
-1) Adjudication and claim verification 
-2) Fairy pieces and board sizes other than 8x8 
-3) Miscellaneous 
+1) Adjudication and claim verification
+2) Fairy pieces and board sizes other than 8x8
+3) Miscellaneous
 
-Miscellaneous 
+Miscellaneous
 
-/matchPause=10000 
+/matchPause=10000
 is an option to set the length of the pause between two games of a
 match. The value is in msec, default value is 10000 (I will present
 all newly implemented options with their default value as example). Be
@@ -842,17 +842,17 @@ too small, but might still be puking output, which then will interfere
 with the next game. But the fixed value of 10 sec of the old Winboard
 seemed like overdoing it.
 
-Time info in PGN 
+Time info in PGN
 When you ask for the PV-info to be stored in the PGN (a Winboard_x
 option), it now also stores the time spent on the move with it.
 
-Flag fell 
+Flag fell
 In engine-engine games the messge "white/black/both" flag(s) fell" no
 longer appears in the window caption, but as an exclamation point
 behind the clock time. (To prevent the annoying overwriting of the
 normal header line).
 
-Adjudications and Claim verification. 
+Adjudications and Claim verification.
 
 These functions are only present in engine-engine games, and only if
 legality-testing is switched on. (The latter will be typically
@@ -860,38 +860,38 @@ switched off in games with bizarre rules, which the GUI doesn't know,
 and in that case the GUI can never have an opinion on the outcome of a
 game.)
 
-Illegal-move forfeit 
+Illegal-move forfeit
 As soon as one of the engines plays an illegal move, it forfeits the
 game. This feature was already present, but it should be 100% reliable
 now, as it also takes e.p. and castling rights into account, rather
 than erring on the safe side.
 
-Illegal-move claim 
+Illegal-move claim
 From the above, it follows that any illegal-move claims by an engine
 must be false, and will result in forfeiting the game. (In Winboard_x
 this message is ignored, causing the game or match to hang.)
 
-Checkmate adjudication 
+Checkmate adjudication
 As soon as one of the engines does a move that results in checkmate,
 the GUI declares the game won, without waiting for the engine to claim
 it.
 
-Insufficient mating material 
+Insufficient mating material
 As soon as the material on the board has shrunk to KK, KNK or KBK, the
 game is declared draw.
 
-/adjudicateLossThreshold=0 
+/adjudicateLossThreshold=0
 This option was already present in Winboard_x, (to declare a game lost
 for which both engines agree for 3 moves that the score is below the
 given threshold), but a non-zero value is now also used to enable the
 following adjudications. If you only want the latter, just make the
 threshold impossibly low (-40000 will usually do the trick).
 
-Trivial draws 
+Trivial draws
 If we are 3 moves into a KQKQ, KRKR, KBKB KBKN or KNKN end-game, the
 game is adjudicated as draw.
 
-/repeatsToDraw=6 
+/repeatsToDraw=6
 When the specified number of repeats occurs, the game is adjudicated
 draw. Should keep track of e.p. and castling rights. This does not
 require legality-testing to be switched on. The engines retain the
@@ -899,12 +899,12 @@ legal right to claim after a 3-fold repetition, though. If you set
 this parameter to 3 or less, they will never get the chance. Better
 not set it to 1 or less.
 
-/ruleMoves=51 
+/ruleMoves=51
 After the given number of full moves without capture or Pawn move, the
 game is adjudicated draw. Even without legality testing. The engines
 retain the legal right to claim after 50 moves.
 
-/testClaims=FALSE 
+/testClaims=FALSE
 When enabled, this option verifies all result claims made by the
 engines, and overrules the claim if it is false (forfeiting the game
 for the claimer). An engine can still safely claim a win for its
@@ -915,16 +915,16 @@ insufficient-material rules. Win claims are always considered false,
 as the GUI adjudicates checkmates (and stalemates) before any engine
 can claim them.
 
-Fairy-Chess support 
+Fairy-Chess support
 
-/boardWidth=8 
+/boardWidth=8
 Sets the number of files on the board. The additional files are named
 i, j, k, l... in PGN, and should be indicated this way in
 communicating moves to and from the engine. Currently works upto
 12. No guarantees on how the rest of the display (clocks, etc.) looks
 if you make this number < 8.
 
-/boardHeight=8 
+/boardHeight=8
 Sets the number of ranks. Extra ranks are numbered 9, 10, 11... in
 PGN. This is so far largely untested, and unlikely to work for
 double-digit ranks. Displaying boards with upto 12 ranks seems to
@@ -934,7 +934,7 @@ engine. To avoid such problems as much as possible, in boards with
 more than 9 ranks the counting of ranks will start at zero rather than
 one!
 
-/fontPieceToCharTable="......." 
+/fontPieceToCharTable="......."
 This paramater, controlling the mapping of font symbols to piece
 types, was already present in Winboard_x. The default is dependent on
 the font selected with the /renderPiecesWithFont option. It can now
@@ -949,7 +949,7 @@ two symbols you give for each color are always Queen and King, the
 others are assigned in the order Pawn, Knight, ... Pieces that do not
 get a symbol assigned will remain invisible.
 
-fairy-FEN support 
+fairy-FEN support
 The letters ACDEFGHMOW are accepted in FENs in addition to the regular
 PNBRQK,(and of course the lower case versions for black), and are
 passed to the engine in a setboard or edit menu.  Double-digit skips
@@ -985,7 +985,7 @@ always to Ferz. In Capablanca Chess the ArchBishop and Chancellor also
 appear as choices in the promotion popup box.
 
 
-/variant="normal" 
+/variant="normal"
 Several new variants names are added (replacing "variant31" upto
 "variant36"). They affect the initial position. (Board size has to be
 set separately.) They are: courier (a Medieval predecessor of modern
