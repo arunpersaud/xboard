@@ -34,7 +34,7 @@ xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@
 
 EXTRA_DIST = pixmaps bitmaps winboard sounds filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
-	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm readme_HGM.txt zippy.README
+	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README
 
 DISTCLEANFILES = stamp-h
 
