@@ -343,8 +343,8 @@ void TagsPopUp(tags, msg)
 
     tagsUp = True;
     j = 0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Edit Tags"),
+    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"),
 		args, j);
 }
 
@@ -376,7 +376,7 @@ void EditTagsPopUp(tags)
     editTagsUp = True;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Edit Tags"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"),
 		args, j);
 }
 
@@ -402,7 +402,7 @@ void TagsPopDown()
     tagsUp = editTagsUp = False;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Edit Tags"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"),
 		args, j);
 }
 

@@ -381,7 +381,7 @@ EvalGraphPopUp()
 
     j=0;
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Evaluation Graph"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Evaluation Graph"),
 		args, j);
 
     evalGraphDialogUp = True;
@@ -408,7 +408,7 @@ void EvalGraphPopDown()
     XSync(xDisplay, False);
     j=0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Evaluation Graph"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Evaluation Graph"),
 		args, j);
 
     evalGraphDialogUp = False;

@@ -123,7 +123,7 @@ HistoryPopDown(w, client_data, call_data)
   }
   j=0;
   XtSetArg(args[j], XtNleftBitmap, None); j++;
-  XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Move History"),
+  XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Move History"),
 		args, j);
 }
 
@@ -442,7 +442,7 @@ HistoryPopUp()
 
   j=0;
   XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-  XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Move History"),
+  XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Move History"),
 		args, j);
   hist->Up=True;
 }

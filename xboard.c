@@ -595,27 +595,59 @@ MenuItem fileMenu[] = {
     {N_("New Variant ..."), NewVariantProc},      // [HGM] variant: not functional yet
     {"----", NothingProc},
     {N_("Load Game"), LoadGameProc},
-    {N_("Load Next Game"), LoadNextGameProc},
-    {N_("Load Previous Game"), LoadPrevGameProc},
-    {N_("Reload Same Game"), ReloadGameProc},
-    {N_("Save Game"), SaveGameProc},
-    {"----", NothingProc},
-    {N_("Copy Game"), CopyGameProc},
-    {N_("Paste Game"), PasteGameProc},
-    {"----", NothingProc},
     {N_("Load Position"), LoadPositionProc},
-    {N_("Load Next Position"), LoadNextPositionProc},
-    {N_("Load Previous Position"), LoadPrevPositionProc},
-    {N_("Reload Same Position"), ReloadPositionProc},
-    {N_("Save Position"), SavePositionProc},
+//    {N_("Load Next Game"), LoadNextGameProc},
+//    {N_("Load Previous Game"), LoadPrevGameProc},
+//    {N_("Reload Same Game"), ReloadGameProc},
     {"----", NothingProc},
-    {N_("Copy Position"), CopyPositionProc},
-    {N_("Paste Position"), PastePositionProc},
+//    {N_("Load Next Position"), LoadNextPositionProc},
+//    {N_("Load Previous Position"), LoadPrevPositionProc},
+//    {N_("Reload Same Position"), ReloadPositionProc},
+    {N_("Save Game"), SaveGameProc},
+    {N_("Save Position"), SavePositionProc},
     {"----", NothingProc},
     {N_("Mail Move"), MailMoveProc},
     {N_("Reload CMail Message"), ReloadCmailMsgProc},
     {"----", NothingProc},
     {N_("Exit"), QuitProc},
+    {NULL, NULL}
+};
+
+MenuItem editMenu[] = {
+    {N_("Copy Game"), CopyGameProc},
+    {N_("Copy Position"), CopyPositionProc},
+    {"----", NothingProc},
+    {N_("Paste Game"), PasteGameProc},
+    {N_("Paste Position"), PastePositionProc},
+    {"----", NothingProc},
+    {N_("Edit Game"), EditGameProc},
+    {N_("Edit Position"), EditPositionProc},
+    {"----", NothingProc},
+    {N_("Edit Tags"), EditTagsProc},
+    {N_("Edit Comment"), EditCommentProc},
+    {"----", NothingProc},
+    {N_("Revert"), RevertProc},
+    {N_("Annotate"), AnnotateProc},
+    {N_("Truncate Game"), TruncateGameProc},
+    {"----", NothingProc},
+    {N_("Backward"), BackwardProc},
+    {N_("Forward"), ForwardProc},
+    {N_("Back to Start"), ToStartProc},
+    {N_("Forward to End"), ToEndProc},
+    {NULL, NULL}
+};
+
+MenuItem viewMenu[] = {
+    {N_("Flip View"), FlipViewProc},
+    {"----", NothingProc},
+    {N_("Show Engine Output"), EngineOutputProc},
+    {N_("Show Evaluation Graph"), EvalGraphProc},
+    {N_("Show Game List"), ShowGameListProc},
+    {N_("Show Move History"), HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
+    {"----", NothingProc},
+    {N_("Show Tags"), EditTagsProc},
+    {N_("Show Comments"), EditCommentProc},
+    {N_("ICS Input Box"), IcsInputBoxProc},
     {NULL, NULL}
 };
 
@@ -625,19 +657,11 @@ MenuItem modeMenu[] = {
     {N_("Two Machines"), TwoMachinesProc},
     {N_("Analysis Mode"), AnalyzeModeProc},
     {N_("Analyze File"), AnalyzeFileProc },
-    {N_("ICS Client"), IcsClientProc},
     {N_("Edit Game"), EditGameProc},
     {N_("Edit Position"), EditPositionProc},
     {N_("Training"), TrainingProc},
+    {N_("ICS Client"), IcsClientProc},
     {"----", NothingProc},
-    {N_("Show Engine Output"), EngineOutputProc},
-    {N_("Show Evaluation Graph"), EvalGraphProc},
-    {N_("Show Game List"), ShowGameListProc},
-    {N_("Show Move History"), HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
-    {"----", NothingProc},
-    {N_("Edit Tags"), EditTagsProc},
-    {N_("Edit Comment"), EditCommentProc},
-    {N_("ICS Input Box"), IcsInputBoxProc},
     {N_("Pause"), PauseProc},
     {NULL, NULL}
 };
@@ -663,14 +687,9 @@ MenuItem actionMenu[] = {
     {NULL, NULL}
 };
 
-MenuItem stepMenu[] = {
-    {N_("Backward"), BackwardProc},
-    {N_("Forward"), ForwardProc},
-    {N_("Back to Start"), ToStartProc},
-    {N_("Forward to End"), ToEndProc},
-    {N_("Revert"), RevertProc},
-    {N_("Annotate"), AnnotateProc},
-    {N_("Truncate Game"), TruncateGameProc},
+MenuItem engineMenu[] = {
+    {N_("Engine #1 Settings"), FirstSettingsProc},
+    {N_("Engine #2 Settings"), SecondSettingsProc},
     {"----", NothingProc},
     {N_("Move Now"), MoveNowProc},
     {N_("Retract Move"), RetractMoveProc},
@@ -678,13 +697,9 @@ MenuItem stepMenu[] = {
 };
 
 MenuItem optionsMenu[] = {
-    {N_("Flip View"), FlipViewProc},
-    {"----", NothingProc},
-    {N_("Adjudications ..."), EngineMenuProc},
-    {N_("General Settings ..."), UciMenuProc},
-    {N_("Engine #1 Settings ..."), FirstSettingsProc},
-    {N_("Engine #2 Settings ..."), SecondSettingsProc},
     {N_("Time Control ..."), TimeControlProc},
+    {N_("Common Engine ..."), UciMenuProc},
+    {N_("Adjudications ..."), EngineMenuProc},
     {N_("Game List ..."), GameListOptionsPopUp},
     {"----", NothingProc},
     {N_("Always Queen"), AlwaysQueenProc},
@@ -734,9 +749,11 @@ MenuItem helpMenu[] = {
 
 Menu menuBar[] = {
     {N_("File"), fileMenu},
+    {N_("Edit"), editMenu},
+    {N_("View"), viewMenu},
     {N_("Mode"), modeMenu},
     {N_("Action"), actionMenu},
-    {N_("Step"), stepMenu},
+    {N_("Engine"), engineMenu},
     {N_("Options"), optionsMenu},
     {N_("Help"), helpMenu},
     {NULL, NULL}
@@ -2709,15 +2726,15 @@ GreyRevert(grey)
 {
     Widget w;
     if (!menuBarWidget) return;
-    w = XtNameToWidget(menuBarWidget, "menuStep.Revert");
+    w = XtNameToWidget(menuBarWidget, "menuEdit.Revert");
     if (w == NULL) {
-      DisplayError("menuStep.Revert", 0);
+      DisplayError("menuEdit.Revert", 0);
     } else {
       XtSetSensitive(w, !grey);
     }
-    w = XtNameToWidget(menuBarWidget, "menuStep.Annotate");
+    w = XtNameToWidget(menuBarWidget, "menuEdit.Annotate");
     if (w == NULL) {
-      DisplayError("menuStep.Annotate", 0);
+      DisplayError("menuEdit.Annotate", 0);
     } else {
       XtSetSensitive(w, !grey);
     }
@@ -2751,12 +2768,14 @@ Enables icsEnables[] = {
 #ifndef ZIPPY
     { "menuHelp.Hint", False },
     { "menuHelp.Book", False },
-    { "menuStep.Move Now", False },
+    { "menuEngine.Move Now", False },
     { "menuOptions.Periodic Updates", False },
     { "menuOptions.Hide Thinking", False },
     { "menuOptions.Ponder Next Move", False },
+    { "menuEngine.Engine #1 Settings", False },
 #endif
-    { "menuStep.Annotate", False },
+    { "menuEngine.Engine #2 Settings", False },
+    { "menuEdit.Annotate", False },
     { NULL, False }
 };
 
@@ -2769,12 +2788,14 @@ Enables ncpEnables[] = {
     { "menuMode.Analyze File", False },
     { "menuMode.Two Machines", False },
     { "menuMode.ICS Client", False },
-    { "menuMode.ICS Input Box", False },
+    { "menuView.ICS Input Box", False },
     { "Action", False },
-    { "menuStep.Revert", False },
-    { "menuStep.Annotate", False },
-    { "menuStep.Move Now", False },
-    { "menuStep.Retract Move", False },
+    { "menuEdit.Revert", False },
+    { "menuEdit.Annotate", False },
+    { "menuEngine.Engine #1 Settings", False },
+    { "menuEngine.Engine #2 Settings", False },
+    { "menuEngine.Move Now", False },
+    { "menuEngine.Retract Move", False },
     { "menuOptions.Auto Comment", False },
     { "menuOptions.Auto Flag", False },
     { "menuOptions.Auto Flip View", False },
@@ -2794,7 +2815,7 @@ Enables ncpEnables[] = {
 
 Enables gnuEnables[] = {
     { "menuMode.ICS Client", False },
-    { "menuMode.ICS Input Box", False },
+    { "menuView.ICS Input Box", False },
     { "menuAction.Accept", False },
     { "menuAction.Decline", False },
     { "menuAction.Rematch", False },
@@ -2802,8 +2823,8 @@ Enables gnuEnables[] = {
     { "menuAction.Stop Examining", False },
     { "menuAction.Stop Observing", False },
     { "menuAction.Upload to Examine", False },
-    { "menuStep.Revert", False },
-    { "menuStep.Annotate", False },
+    { "menuEdit.Revert", False },
+    { "menuEdit.Annotate", False },
     { "menuOptions.Auto Comment", False },
     { "menuOptions.Auto Observe", False },
     { "menuOptions.Auto Raise Board", False },
@@ -2836,60 +2857,60 @@ Enables cmailEnables[] = {
 Enables trainingOnEnables[] = {
   { "menuMode.Edit Comment", False },
   { "menuMode.Pause", False },
-  { "menuStep.Forward", False },
-  { "menuStep.Backward", False },
-  { "menuStep.Forward to End", False },
-  { "menuStep.Back to Start", False },
-  { "menuStep.Move Now", False },
-  { "menuStep.Truncate Game", False },
+  { "menuEdit.Forward", False },
+  { "menuEdit.Backward", False },
+  { "menuEdit.Forward to End", False },
+  { "menuEdit.Back to Start", False },
+  { "menuEngine.Move Now", False },
+  { "menuEdit.Truncate Game", False },
   { NULL, False }
 };
 
 Enables trainingOffEnables[] = {
   { "menuMode.Edit Comment", True },
   { "menuMode.Pause", True },
-  { "menuStep.Forward", True },
-  { "menuStep.Backward", True },
-  { "menuStep.Forward to End", True },
-  { "menuStep.Back to Start", True },
-  { "menuStep.Move Now", True },
-  { "menuStep.Truncate Game", True },
+  { "menuEdit.Forward", True },
+  { "menuEdit.Backward", True },
+  { "menuEdit.Forward to End", True },
+  { "menuEdit.Back to Start", True },
+  { "menuEngine.Move Now", True },
+  { "menuEdit.Truncate Game", True },
   { NULL, False }
 };
 
 Enables machineThinkingEnables[] = {
   { "menuFile.Load Game", False },
-  { "menuFile.Load Next Game", False },
-  { "menuFile.Load Previous Game", False },
-  { "menuFile.Reload Same Game", False },
-  { "menuFile.Paste Game", False },
+//  { "menuFile.Load Next Game", False },
+//  { "menuFile.Load Previous Game", False },
+//  { "menuFile.Reload Same Game", False },
+  { "menuEdit.Paste Game", False },
   { "menuFile.Load Position", False },
-  { "menuFile.Load Next Position", False },
-  { "menuFile.Load Previous Position", False },
-  { "menuFile.Reload Same Position", False },
-  { "menuFile.Paste Position", False },
+//  { "menuFile.Load Next Position", False },
+//  { "menuFile.Load Previous Position", False },
+//  { "menuFile.Reload Same Position", False },
+  { "menuEdit.Paste Position", False },
   { "menuMode.Machine White", False },
   { "menuMode.Machine Black", False },
   { "menuMode.Two Machines", False },
-  { "menuStep.Retract Move", False },
+  { "menuEngine.Retract Move", False },
   { NULL, False }
 };
 
 Enables userThinkingEnables[] = {
   { "menuFile.Load Game", True },
-  { "menuFile.Load Next Game", True },
-  { "menuFile.Load Previous Game", True },
-  { "menuFile.Reload Same Game", True },
-  { "menuFile.Paste Game", True },
+//  { "menuFile.Load Next Game", True },
+//  { "menuFile.Load Previous Game", True },
+//  { "menuFile.Reload Same Game", True },
+  { "menuEdit.Paste Game", True },
   { "menuFile.Load Position", True },
-  { "menuFile.Load Next Position", True },
-  { "menuFile.Load Previous Position", True },
-  { "menuFile.Reload Same Position", True },
-  { "menuFile.Paste Position", True },
+//  { "menuFile.Load Next Position", True },
+//  { "menuFile.Load Previous Position", True },
+//  { "menuFile.Reload Same Position", True },
+  { "menuEdit.Paste Position", True },
   { "menuMode.Machine White", True },
   { "menuMode.Machine Black", True },
   { "menuMode.Two Machines", True },
-  { "menuStep.Retract Move", True },
+  { "menuEngine.Retract Move", True },
   { NULL, False }
 };
 
@@ -4568,7 +4589,7 @@ void XDrawPosition(w, repaint, board)
     }
     if (!lastBoardValid[nr] || (nr == 0 && lastFlipView != flipView)) {
 	XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flip View"),
+	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Flip View"),
 		    args, 1);
     }
 
@@ -5016,7 +5037,9 @@ void EditCommentPopUp(index, title, text)
     editUp = True;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Edit Comment"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"),
+		args, j);
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"),
 		args, j);
 }
 
@@ -5065,7 +5088,9 @@ void EditCommentPopDown()
     editUp = False;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Edit Comment"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"),
+		args, j);
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"),
 		args, j);
 }
 
@@ -5102,7 +5127,7 @@ void ICSInputBoxPopUp()
     ICSInputBoxUp = True;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.ICS Input Box"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.ICS Input Box"),
 		args, j);
 }
 
@@ -5134,7 +5159,7 @@ void ICSInputBoxPopDown()
     ICSInputBoxUp = False;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.ICS Input Box"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.ICS Input Box"),
 		args, j);
 }
 

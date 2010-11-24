@@ -571,7 +571,7 @@ EngineOutputPopUp()
 
     j=0;
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Engine Output"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
 		args, j);
 
     engineOutputDialogUp = True;
@@ -599,7 +599,7 @@ void EngineOutputPopDown()
     XSync(xDisplay, False);
     j=0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Engine Output"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
 		args, j);
 
     engineOutputDialogUp = False;

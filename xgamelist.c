@@ -471,7 +471,7 @@ GameListPopUp(fp, filename)
     glc->up = True;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Game List"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
 		args, j);
 }
 
@@ -514,7 +514,7 @@ ShowGameListProc(w, event, prms, nprms)
     glc->up = True;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Game List"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
 		args, j);
 }
 
@@ -595,7 +595,7 @@ GameListPopDown()
     glc->up = False;
     j = 0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Show Game List"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
 		args, j);
 }
 
