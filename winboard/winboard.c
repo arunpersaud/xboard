@@ -334,7 +334,7 @@ static char languageBuf[50000], *foreign[1000], *english[1000], *languageFile[MS
 static int lastChecked;
 static char oldLanguage[MSG_SIZ], *menuText[10][30];
 extern int tinyLayout;
-extern char * menuBarText[][8];
+extern char * menuBarText[][10];
 
 void
 LoadLanguageFile(char *name)
@@ -549,10 +549,10 @@ MyButtonDesc buttonDesc[N_BUTTONS] =
 };
 
 int tinyLayout = 0, smallLayout = 0;
-#define MENU_BAR_ITEMS 7
+#define MENU_BAR_ITEMS 9
 char *menuBarText[2][MENU_BAR_ITEMS+1] = {
-  { N_("&File"), N_("&Mode"), N_("&Action"), N_("&Step"), N_("&Options"), N_("&Help"), NULL },
-  { N_("&F"), N_("&M"), N_("&A"), N_("&S"), N_("&O"), N_("&H"), NULL },
+  { N_("&File"), N_("&Edit"), N_("&View"), N_("&Mode"), N_("&Action"), N_("E&ngine"), N_("&Options"), N_("&Help"), NULL },
+  { N_("&F"), N_("&E"), N_("&V"), N_("&M"), N_("&A"), N_("&N"), N_("&O"), N_("&H"), NULL },
 };
 
 

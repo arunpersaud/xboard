@@ -1106,54 +1106,82 @@ BEGIN
         MENUITEM "New Variant...\tAlt+Shift+V",  IDM_NewVariant
         MENUITEM SEPARATOR
         MENUITEM "&Load Game...\tCtrl-O",       IDM_LoadGame
-        MENUITEM "Load &Next Game\tAlt+PgDn",   IDM_LoadNextGame
-        MENUITEM "Load &Previous Game\tAlt+PgUp", IDM_LoadPrevGame
-        MENUITEM "&Reload Same Game",           IDM_ReloadGame
-        MENUITEM "&Save Game...\tCtrl-S",       IDM_SaveGame
-        MENUITEM SEPARATOR
-        MENUITEM "&Copy Game To Clipboard\tCtrl+C", IDM_CopyGame
-        MENUITEM "Paste Game &From Clipboard\tCtrl+V", IDM_PasteGame
-        MENUITEM SEPARATOR
-        MENUITEM "Copy Game List to Clipboard", IDM_CopyGameListToClipboard
-        MENUITEM SEPARATOR
         MENUITEM "L&oad Position...\tCtrl+Shift+O", IDM_LoadPosition
-        MENUITEM "Load N&ext Position\tAlt+Shift+PgDn", IDM_LoadNextPosition
-        MENUITEM "Load Pre&vious Position\tAlt+Shift+PgUp", 
-                                                IDM_LoadPrevPosition
-        MENUITEM "Reload Sa&me Position",       IDM_ReloadPosition
-        MENUITEM "S&ave Position...\tCtrl+Shift+S",IDM_SavePosition
-        MENUITEM "Save &Diagram...",            IDM_SaveDiagram
+//        MENUITEM "Load &Next Game\tAlt+PgDn",   IDM_LoadNextGame
+//        MENUITEM "Load &Previous Game\tAlt+PgUp", IDM_LoadPrevGame
+//        MENUITEM "&Reload Same Game",           IDM_ReloadGame
+//        MENUITEM "Load N&ext Position\tAlt+Shift+PgDn", IDM_LoadNextPosition
+//        MENUITEM "Load Pre&vious Position\tAlt+Shift+PgUp", 
+//                                                IDM_LoadPrevPosition
+//        MENUITEM "Reload Sa&me Position",       IDM_ReloadPosition
         MENUITEM SEPARATOR
+        MENUITEM "&Save Game...\tCtrl-S",       IDM_SaveGame
+        MENUITEM "S&ave Position...\tCtrl+Shift+S",IDM_SavePosition
+        MENUITEM SEPARATOR
+        MENUITEM "Save as &Diagram...",         IDM_SaveDiagram
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDM_Exit
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Copy Game To Clipboard\tCtrl+C", IDM_CopyGame
         MENUITEM "Cop&y Position To Clipboard\tCtrl+Shift+C", 
                                                 IDM_CopyPosition
+        MENUITEM "Copy Game List to Clipboard", IDM_CopyGameListToClipboard
+        MENUITEM SEPARATOR
+        MENUITEM "Paste Game &From Clipboard\tCtrl+V", IDM_PasteGame
         MENUITEM "Pas&te Position From Clipboard\tCtrl+Shift+V", 
                                                 IDM_PasteAny
         MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       IDM_Exit
+        MENUITEM "Edit &Game\tCtrl+E",          IDM_EditGame
+        MENUITEM "&Edit Position\tShift+Ctrl+E",IDM_EditPosition
+        MENUITEM SEPARATOR
+        MENUITEM "Edit &Tags...",               IDM_EditTags
+        MENUITEM "Edit &Comment...",            IDM_EditComment
+        MENUITEM "Enter &Username...",          IDM_TypeInName
+        MENUITEM SEPARATOR
+        MENUITEM "Re&vert",                     IDM_Revert
+        MENUITEM "&Annotate",                   IDM_Annotate
+        MENUITEM "&Truncate Game",              IDM_TruncateGame
+        MENUITEM SEPARATOR
+        MENUITEM "&Backward\tAlt+Left",         IDM_Backward
+        MENUITEM "&Forward\tAlt+Right",         IDM_Forward
+        MENUITEM "Back to &Start\tAlt+Home",    IDM_ToStart
+        MENUITEM "Forward to &End\tAlt+End",    IDM_ToEnd
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Flip &View\tF2",              IDM_FlipView
+        MENUITEM "Swap &Clocks",                IDM_FlipClock
+        MENUITEM SEPARATOR
+        MENUITEM "Show Engine &Output\tAlt+Shift+O",  IDM_ShowEngineOutput
+        MENUITEM "Show Move History\tAlt+Shift+H",    IDM_ShowMoveHistory
+        MENUITEM "Show Evaluation Graph\tAlt+Shift+E",IDM_ShowEvalGraph
+        MENUITEM "Show Game &List\tAlt+Shift+G",      IDM_ShowGameList
+        MENUITEM "Open New Chat Window",        IDM_NewChat
+        MENUITEM "T&ype In Move...\tAlt+I",     IDM_TypeInMove
+        MENUITEM SEPARATOR
+        MENUITEM "Show &Tags...",               IDM_EditTags
+        MENUITEM "Show &Comments...",           IDM_EditComment
+        MENUITEM SEPARATOR
+        MENUITEM "Game List...",                IDM_GameListOptions
+        MENUITEM "&Board...",                   IDM_BoardOptions
+        MENUITEM "&Fonts...",                   IDM_Fonts
     END
     POPUP "&Mode"
     BEGIN
         MENUITEM "Machine &White\tCtrl+W",      IDM_MachineWhite
         MENUITEM "Machine &Black\tCtrl+B",      IDM_MachineBlack
         MENUITEM "Two &Machines\tCtrl+T",       IDM_TwoMachines
-        MENUITEM "Machine Both",                IDM_MachineBoth
-        MENUITEM "Machine Matc&h",              IDM_Match
+//        MENUITEM "Machine Both",                IDM_MachineBoth
         MENUITEM "&Analysis Mode\tCtrl+A",      IDM_AnalysisMode
-        MENUITEM "Analyze &File\tCtrl+F",       IDM_AnalyzeFile
-        MENUITEM "&ICS Client",                 IDM_IcsClient
+//        MENUITEM "Analyze &File\tCtrl+F",       IDM_AnalyzeFile
         MENUITEM "Edit &Game\tCtrl+E",          IDM_EditGame
         MENUITEM "&Edit Position\tShift+Ctrl+E",IDM_EditPosition
         MENUITEM "Trai&ning",                   IDM_Training, GRAYED
+        MENUITEM "&ICS Client",                 IDM_IcsClient
         MENUITEM SEPARATOR
-        MENUITEM "Show Engine &Output\tAlt+Shift+O",  IDM_ShowEngineOutput
-        MENUITEM "Show Evaluation Graph\tAlt+Shift+E",IDM_ShowEvalGraph
-        MENUITEM "Show Game &List\tAlt+Shift+G",      IDM_ShowGameList
-        MENUITEM "Show Move History\tAlt+Shift+H",    IDM_ShowMoveHistory
-        MENUITEM "Open Chat Window",            IDM_NewChat
-        MENUITEM SEPARATOR
-        MENUITEM "Edit &Tags...",               IDM_EditTags
-        MENUITEM "Edit &Comment...",            IDM_EditComment
-        MENUITEM "Enter &Username...",          IDM_TypeInName
+        MENUITEM "Machine Matc&h",              IDM_Match
         MENUITEM "&Pause\tPause",               IDM_Pause
     END
     POPUP "&Action"
@@ -1176,42 +1204,34 @@ BEGIN
         MENUITEM "Adjudicate to &Black",        IDM_UserAdjudication_Black
         MENUITEM "Adjudicate &Draw",            IDM_UserAdjudication_Draw
     END
-    POPUP "&Step"
+    POPUP "E&ngine"
     BEGIN
-        MENUITEM "T&ype In Move...\tAlt+I",     IDM_TypeInMove
         MENUITEM SEPARATOR
-        MENUITEM "&Backward\tAlt+Left",         IDM_Backward
-        MENUITEM "&Forward\tAlt+Right",         IDM_Forward
-        MENUITEM "Back to &Start\tAlt+Home",    IDM_ToStart
-        MENUITEM "Forward to &End\tAlt+End",    IDM_ToEnd
-        MENUITEM "Re&vert",                     IDM_Revert
-        MENUITEM "&Annotate",                   IDM_Annotate
-        MENUITEM "&Truncate Game",              IDM_TruncateGame
+        MENUITEM "Engine #1 Settings...",       IDM_Engine1Options
+        MENUITEM "Engine #2 Settings...",       IDM_Engine2Options
+        MENUITEM SEPARATOR
+        MENUITEM "&Hint...",                    IDM_Hint
+        MENUITEM "&Book...",                    IDM_Book
         MENUITEM SEPARATOR
         MENUITEM "&Move Now\tCtrl+M",           IDM_MoveNow
         MENUITEM "&Retract Move\tCtrl+X",       IDM_RetractMove
     END
     POPUP "&Options"
     BEGIN
-        MENUITEM "Flip &View\tF2",              IDM_FlipView
-        MENUITEM "Swap &Clocks",                IDM_FlipClock
         MENUITEM "&Mute all Sounds",            IDM_MuteSounds
         MENUITEM SEPARATOR
         MENUITEM "&General...",                 IDM_GeneralOptions
-        MENUITEM "&Board...",                   IDM_BoardOptions
-        MENUITEM "Adjudications...\tAlt+Shift+J",IDM_EnginePlayOptions
+        MENUITEM "&Time Control...\tAlt+Shift+T",IDM_TimeControl
         MENUITEM "Common Engine...\tAlt+Shift+U",IDM_OptionsUCI
-        MENUITEM "Engine #1 Settings...",       IDM_Engine1Options
-        MENUITEM "Engine #2 Settings...",       IDM_Engine2Options
-        MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
-        MENUITEM "&Fonts...",                   IDM_Fonts
-        MENUITEM "Soun&ds...",                  IDM_Sounds
-        MENUITEM "Game List...",                IDM_GameListOptions
+        MENUITEM "Adjudications...\tAlt+Shift+J",IDM_EnginePlayOptions
         MENUITEM SEPARATOR
-        MENUITEM "Comm&unications...",          IDM_CommPort
         MENUITEM "&Load Game...\tAlt+Shift+L",  IDM_LoadOptions
         MENUITEM "&Save Game...\tAlt+Shift+S",  IDM_SaveOptions
-        MENUITEM "&Time Control...\tAlt+Shift+T",IDM_TimeControl
+        MENUITEM "Game List...",                IDM_GameListOptions
+        MENUITEM SEPARATOR
+        MENUITEM "Soun&ds...",                  IDM_Sounds
+        MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
+        MENUITEM "Comm&unications...",          IDM_CommPort
         MENUITEM SEPARATOR
         MENUITEM "Save Settings &Now",          IDM_SaveSettings
         MENUITEM "Save Settings on E&xit",      IDM_SaveSettingsOnExit
@@ -1221,9 +1241,6 @@ BEGIN
         MENUITEM "Help &Contents\tF1",          IDM_HELPCONTENTS
         MENUITEM "Help &Index",                 IDM_HELPSEARCH
         MENUITEM "How to &Use Help",            IDM_HELPHELP
-        MENUITEM SEPARATOR
-        MENUITEM "&Hint...",                    IDM_Hint
-        MENUITEM "&Book...",                    IDM_Book
         MENUITEM SEPARATOR
         MENUITEM "&About WinBoard",             IDM_ABOUT
     END
