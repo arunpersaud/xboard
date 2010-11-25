@@ -60,6 +60,7 @@ MENUS:
 "Cop&y Position To Clipboard\tCtrl+Shift+C" === ""
 "Pas&te Position From Clipboard\tCtrl+Shift+V" === ""
 "E&xit" === ""
+"&Quit" === ""
 
 "Machine &White\tCtrl+W" === ""
 "Machine &Black\tCtrl+B" === ""
@@ -902,6 +903,7 @@ backend.c
 "No response from ICS" === ""
 "You cannot do this while you are playing or observing" === ""
 "Click in holdings to choose piece" === ""
+"You can only start a match from the initial position." === ""
 
 END-OF-GAME MESSAGES (should they be translated?)
 ## I think that only for visualization and not for PGN, as PGN files are shared all around the world

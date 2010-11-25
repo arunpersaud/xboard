@@ -4828,7 +4828,9 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_Match: // [HGM] match: flows into next case, after setting Match Mode and nr of Games
-      if(gameMode != BeginningOfGame) break; // allow menu item to remain enabled for better mode highligting
+      if(gameMode != BeginningOfGame) { // allow menu item to remain enabled for better mode highligting
+        DisplayError(_("You can only start a match from the initial position."), 0); break;
+      }
       matchMode = 2;// distinguish from command-line-triggered case (matchMode=1)
       appData.matchGames = appData.defaultMatchGames;
       matchGame = 1;
