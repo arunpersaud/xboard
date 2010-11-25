@@ -13287,7 +13287,13 @@ ReplaceComment(index, text)
      char *text;
 {
     int len;
+    char *p;
+    float score;
 
+    if(index && sscanf(text, "%f/%d", &score, &len) == 2 && 
+       pvInfoList[index-1].depth == len &&
+       pvInfoList[index-1].score == (int) (score*100 + 0.5) &&
+       (p = strchr(text, '\n'))) text = p; // [HGM] strip off first line with PV info, if any
     while (*text == '\n') text++;
     len = strlen(text);
     while (len > 0 && text[len - 1] == '\n') len--;
