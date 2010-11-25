@@ -1175,7 +1175,7 @@ BEGIN
         MENUITEM "Two &Machines\tCtrl+T",       IDM_TwoMachines
 //        MENUITEM "Machine Both",                IDM_MachineBoth
         MENUITEM "&Analysis Mode\tCtrl+A",      IDM_AnalysisMode
-//        MENUITEM "Analyze &File\tCtrl+F",       IDM_AnalyzeFile
+        MENUITEM "Analyze &File\tCtrl+F",       IDM_AnalyzeFile
         MENUITEM "Edit &Game\tCtrl+E",          IDM_EditGame
         MENUITEM "&Edit Position\tShift+Ctrl+E",IDM_EditPosition
         MENUITEM "Trai&ning",                   IDM_Training, GRAYED
