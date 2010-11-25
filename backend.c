@@ -9606,7 +9606,7 @@ AutoPlayGameLoop()
 	  return;
 	if (matchMode || appData.timeDelay == 0)
 	  continue;
-	if (appData.timeDelay < 0 || gameMode == AnalyzeFile)
+	if (appData.timeDelay < 0)
 	  return;
 	StartLoadGameTimer((long)(1000.0 * appData.timeDelay));
 	break;
@@ -9623,10 +9623,18 @@ AutoPlayOneMove()
       fprintf(debugFP, "AutoPlayOneMove(): current %d\n", currentMove);
     }
 
-    if (gameMode != PlayFromGameFile)
+    if (gameMode != PlayFromGameFile && gameMode != AnalyzeFile)
       return FALSE;
 
+    if (gameMode == AnalyzeFile && currentMove > backwardMostMove) {
+      pvInfoList[currentMove].depth = programStats.depth;
+      pvInfoList[currentMove].score = programStats.score;
+      pvInfoList[currentMove].time  = 0;
+      if(currentMove < forwardMostMove) AppendComment(currentMove+1, lastPV[0], 2);
+    }
+
     if (currentMove >= forwardMostMove) {
+      if(gameMode == AnalyzeFile) { ExitAnalyzeMode(); SendToProgram("force\n", &first); }
       gameMode = EditGame;
       ModeHighlight();
 
@@ -13367,24 +13375,24 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
 	safeStrCpy(commentList[index], old, oldlen + len + 6);
 	free(old);
 	// [HGM] braces: join "{A\n}\n" + "{\nB}" as "{A\nB\n}"
-	if(commentList[index][oldlen-1] == '}' && (text[0] == '{' || addBraces)) {
-	  if(addBraces) addBraces = FALSE; else { text++; len--; }
+	if(commentList[index][oldlen-1] == '}' && (text[0] == '{' || addBraces == TRUE)) {
+	  if(addBraces == TRUE) addBraces = FALSE; else { text++; len--; }
 	  while (*text == '\n') { text++; len--; }
 	  commentList[index][--oldlen] = NULLCHAR;
       }
-	if(addBraces) strcat(commentList[index], "\n{\n");
+	if(addBraces) strcat(commentList[index], addBraces == 2 ? "\n(" : "\n{\n");
 	else          strcat(commentList[index], "\n");
 	strcat(commentList[index], text);
-	if(addBraces) strcat(commentList[index], "\n}\n");
+	if(addBraces) strcat(commentList[index], addBraces == 2 ? ")\n" : "\n}\n");
 	else          strcat(commentList[index], "\n");
     } else {
 	commentList[index] = (char *) malloc(len + 6); // perhaps wastes 4...
 	if(addBraces)
-	  safeStrCpy(commentList[index], "{\n", 3);
+	  safeStrCpy(commentList[index], addBraces == 2 ? "(" : "{\n", 3);
 	else commentList[index][0] = NULLCHAR;
 	strcat(commentList[index], text);
-	strcat(commentList[index], "\n");
-	if(addBraces) strcat(commentList[index], "}\n");
+	strcat(commentList[index], addBraces == 2 ? ")\n" : "\n");
+	if(addBraces == TRUE) strcat(commentList[index], "}\n");
     }
 }
 
