@@ -640,16 +640,16 @@ MenuItem editMenu[] = {
 };
 
 MenuItem viewMenu[] = {
-    {"Flip View",             "Flip View", FlipViewProc},
+    {"Flip View",        "Flip View", FlipViewProc},
     {"----", NULL, NothingProc},
-    {"Show Engine Output",    "Show Engine Output", EngineOutputProc},
-    {"Show Evaluation Graph", "Show Evaluation Graph", EvalGraphProc},
-    {"Show Game List",        "Show Game List", ShowGameListProc},
-    {"Show Move History",     "Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
+    {"Engine Output",    "Show Engine Output", EngineOutputProc},
+    {"Evaluation Graph", "Show Evaluation Graph", EvalGraphProc},
+    {"Game List",        "Show Game List", ShowGameListProc},
+    {"Move History",     "Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
     {"----", NULL, NothingProc},
-    {"Show Tags",             "Show Tags", EditTagsProc},
-    {"Show Comments",         "Show Comments", EditCommentProc},
-    {"ICS Input Box",         "ICS Input Box", IcsInputBoxProc},
+    {"Tags",             "Show Tags", EditTagsProc},
+    {"Comments",         "Show Comments", EditCommentProc},
+    {"ICS Input Box",    "ICS Input Box", IcsInputBoxProc},
     {NULL, NULL, NULL}
 };
 
@@ -674,7 +674,7 @@ MenuItem actionMenu[] = {
     {"Rematch",   "Rematch", RematchProc},
     {"----", NULL, NothingProc},
     {"Call Flag", "Call Flag", CallFlagProc},
-    {"Draw", "Draw", DrawProc},
+    {"Draw",      "Draw", DrawProc},
     {"Adjourn",   "Adjourn", AdjournProc},
     {"Abort",     "Abort", AbortProc},
     {"Resign",    "Resign", ResignProc},
@@ -690,8 +690,8 @@ MenuItem actionMenu[] = {
 };
 
 MenuItem engineMenu[] = {
-    {"Engine #1 Settings", "Engine #1 Settings", FirstSettingsProc},
-    {"Engine #2 Settings", "Engine #2 Settings", SecondSettingsProc},
+    {"Engine #1 Settings ...", "Engine #1 Settings", FirstSettingsProc},
+    {"Engine #2 Settings ...", "Engine #2 Settings", SecondSettingsProc},
     {"----", NULL, NothingProc},
     {"Move Now",     "Move Now", MoveNowProc},
     {"Retract Move", "Retract Move", RetractMoveProc},
@@ -699,10 +699,10 @@ MenuItem engineMenu[] = {
 };
 
 MenuItem optionsMenu[] = {
-    {"Time Control ...",  "Time Control ...", TimeControlProc},
-    {"Common Engine ...", "Common Engine ...", UciMenuProc},
-    {"Adjudications ...", "Adjudications ...", EngineMenuProc},
-    {"Game List ...",     "Game List ...", GameListOptionsPopUp},
+    {"Time Control ...",  "Time Control", TimeControlProc},
+    {"Common Engine ...", "Common Engine", UciMenuProc},
+    {"Adjudications ...", "Adjudications", EngineMenuProc},
+    {"Game List ...",     "Game List", GameListOptionsPopUp},
     {"----", NULL, NothingProc},
     {"Always Queen",     "Always Queen", AlwaysQueenProc},
     {"Animate Dragging", "Animate Dragging", AnimateDraggingProc},
