@@ -1043,6 +1043,8 @@ if(appData.debugMode) fprintf(debugFP, "LegalDrop: %d @ %d,%d)\n", piece, ft, rt
                 if(board[r][ft] == piece) return IllegalMove; // or there already is a Pawn in file
             // should still test if we mate with this Pawn
         }
+    } else if(gameInfo.variant == VariantSChess) { // only back-rank drops
+        if (rt != (piece < BlackPawn ? 0 : BOARD_HEIGHT-1)) return IllegalMove;
     } else {
         if( (piece == WhitePawn || piece == BlackPawn) &&
             (rt == 0 || rt == BOARD_HEIGHT -1 ) )
