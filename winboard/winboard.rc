@@ -212,8 +212,6 @@ BEGIN
     PUSHBUTTON      "K&night",PB_Knight,139,23,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&King",PB_King,4,4,40,14,NOT WS_TABSTOP
     PUSHBUTTON      "&Cancel",IDCANCEL,139,4,40,14,WS_GROUP
-    LTEXT           "      YES",IDC_Yes,6,25,36,10
-    LTEXT           "       NO",IDC_No,141,25,36,10
     LTEXT           "C&entaur",IDC_Centaur,12,6,25,10
 END
 

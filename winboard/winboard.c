@@ -4307,12 +4307,11 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     ShowWindow(GetDlgItem(hDlg, PB_Bishop), 
        gameInfo.variant != VariantShogi ?
 	       SW_SHOW : SW_HIDE);
-    ShowWindow(GetDlgItem(hDlg, IDC_Yes), 
-       gameInfo.variant == VariantShogi ?
-	       SW_SHOW : SW_HIDE);
-    ShowWindow(GetDlgItem(hDlg, IDC_No), 
-       gameInfo.variant == VariantShogi ?
-	       SW_SHOW : SW_HIDE);
+    if(gameInfo.variant == VariantShogi) {
+        SetDlgItemText(hDlg, PB_Queen, "YES");
+        SetDlgItemText(hDlg, PB_Knight, "NO");
+        SetWindowText(hDlg, "Promote?");
+    }
     ShowWindow(GetDlgItem(hDlg, IDC_Centaur), 
        gameInfo.variant == VariantSuper ?
 	       SW_SHOW : SW_HIDE);
