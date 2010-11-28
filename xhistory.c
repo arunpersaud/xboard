@@ -224,6 +224,7 @@ HistoryFill()
 
 void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
   int i,b,m;
+  Widget scroll;
   if(hist){
     if(last >= hist->aNr) HistoryAlloc(last+_LL_);
     for(i=0;i<last;i++) {
@@ -274,6 +275,13 @@ void HistorySet(char movelist[][2*MOVE_LEN],int first,int last,int current){
       XawListUnhighlight(hist->mvw);
       if(current) XawListHighlight(hist->mvb, current/2+1);
       else XawListUnhighlight(hist->mvb);
+    }
+    if(scroll = XtNameToWidget(hist->sh, "*form.viewport.vertical")) { // [HGM] always scroll to bottom
+      static char *params[3] = { "", "Forward", "FullLength" };
+      static XEvent event;
+      XtCallActionProc(scroll, "StartScroll", &event, params+1, 1);
+      XtCallActionProc(scroll, "NotifyScroll", &event, params+2, 1);
+      XtCallActionProc(scroll, "EndScroll", &event, params, 0);
     }
   }
   EvalGraphSet( first, last, current, pvInfoList ); // piggy-backed
