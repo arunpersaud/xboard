@@ -1159,8 +1159,8 @@ BEGIN
         MENUITEM "Open &New Chat Window",       IDM_NewChat
         MENUITEM "Type In &Move...\tAlt+I",     IDM_TypeInMove
         MENUITEM SEPARATOR
-        MENUITEM "&Tags",                       IDM_EditTags
-        MENUITEM "&Comments",                   IDM_EditComment
+        MENUITEM "&Tags",                       IDM_Tags
+        MENUITEM "&Comments",                   IDM_Comment
         MENUITEM SEPARATOR
         MENUITEM "&Game List Tags...",          IDM_GameListOptions
         MENUITEM "&Board...",                   IDM_BoardOptions

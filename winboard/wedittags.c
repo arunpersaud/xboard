@@ -171,7 +171,7 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 VOID TagsPopDown(void)
 {
   if (editTagsDialog) ShowWindow(editTagsDialog, SW_HIDE);
-  CheckMenuItem(GetMenu(hwndMain), IDM_EditTags, MF_UNCHECKED);
+  CheckMenuItem(GetMenu(hwndMain), IDM_Tags, MF_UNCHECKED);
   editTagsUp = FALSE;
 }
 
@@ -201,7 +201,7 @@ VOID EitherTagsPopUp(char *tags, char *msg, BOOLEAN edit)
   editTagsText = p;
   canEditTags = edit;
   
-  CheckMenuItem(GetMenu(hwndMain), IDM_EditTags, MF_CHECKED);
+  CheckMenuItem(GetMenu(hwndMain), IDM_Tags, MF_CHECKED);
   if (editTagsDialog) {
     SendMessage(editTagsDialog, WM_INITDIALOG, 0, 0);
     ShowWindow(editTagsDialog, SW_SHOW);

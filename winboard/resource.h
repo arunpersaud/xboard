@@ -51,6 +51,8 @@
 #define IDM_AboutGame                   167
 #define IDM_ShowGameList                170
 #define IDM_EditTags                    171
+#define IDM_Tags                        172
+#define IDM_Comment                     173
 #define IDM_Debug                       174
 #define IDM_AnalysisMode                177
 #define IDM_AnalyzeFile                 178

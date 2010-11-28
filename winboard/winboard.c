@@ -4920,10 +4920,12 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_EditTags:
+    case IDM_Tags:
       EditTagsProc();
       break;
 
     case IDM_EditComment:
+    case IDM_Comment:
       if (commentUp && editComment) {
 	CommentPopDown();
       } else {
@@ -6323,7 +6325,7 @@ EitherCommentPopUp(int index, char *title, char *str, BOOLEAN edit)
   FARPROC lpProc;
   char *p, *q;
 
-  CheckMenuItem(GetMenu(hwndMain), IDM_EditComment, edit ? MF_CHECKED : MF_UNCHECKED);
+  CheckMenuItem(GetMenu(hwndMain), IDM_Comment, edit ? MF_CHECKED : MF_UNCHECKED);
 
   if (str == NULL) str = "";
   p = (char *) malloc(2 * strlen(str) + 2);
@@ -7809,6 +7811,7 @@ Enables ncpEnables[] = {
 
 Enables trainingOnEnables[] = {
   { IDM_EditComment, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Comment, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Pause, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Forward, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Backward, MF_BYCOMMAND|MF_GRAYED },
@@ -7821,6 +7824,7 @@ Enables trainingOnEnables[] = {
 
 Enables trainingOffEnables[] = {
   { IDM_EditComment, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Comment, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Pause, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Forward, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Backward, MF_BYCOMMAND|MF_ENABLED },
@@ -8518,7 +8522,7 @@ CommentPopUp(char *title, char *str)
 VOID
 CommentPopDown(void)
 {
-  CheckMenuItem(GetMenu(hwndMain), IDM_EditComment, MF_UNCHECKED);
+  CheckMenuItem(GetMenu(hwndMain), IDM_Comment, MF_UNCHECKED);
   if (commentDialog) {
     ShowWindow(commentDialog, SW_HIDE);
   }
