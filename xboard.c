@@ -1060,6 +1060,8 @@ char globalTranslations[] =
    :Meta<Key>Right: ForwardProc() \n \
    :Meta<Key>Home: ToStartProc() \n \
    :Meta<Key>Left: BackwardProc() \n \
+   :<Key>Home: RevertProc() \n \
+   :<Key>End: TruncateGameProc() \n \
    :Ctrl<Key>m: MoveNowProc() \n \
    :Ctrl<Key>x: RetractMoveProc() \n \
    :Meta<Key>J: EngineMenuProc() \n \
