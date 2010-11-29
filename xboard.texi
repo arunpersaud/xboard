@@ -858,6 +858,10 @@ of them is behind more than a user-adjustable score threshold.
 For the latter adjudication to work, XBoard should be able to properly understand
 the engine's scores. To facilitate the latter, you can inform xboard here if
 the engines report scores from the viewpoint of white, or from that of their own color.
+@item Game List
+@cindex Game List Tags, Menu Item
+Pops up a dialog where you can select the PGN tags that should appear
+on the lines in the game list, and their order.
 @item Always Queen
 @cindex Always Queen, Menu Item
 If this option is off, XBoard brings up a dialog
