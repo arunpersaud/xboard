@@ -614,8 +614,13 @@ When you select this menu item, a pop-up window appears
 and asks for a file name to load.
 If the file contains multiple games, another pop up appears that lets
 you select which game you wish to analyze.
-After a game is loaded, use the XBoard arrow buttons to step
-forwards/backwards through the game and watch the analysis.
+After a game is loaded, XBoard will start auto-playing the game,
+while the engine is analyzing the current position.
+The game will be annotated with the results of these analyses.
+In particlar, the score and depth will be added as a comment,
+and the PV will be added as a variation.
+The time the engine spends on analyzing each move can be controlled
+through the command-line option @samp{-timeDelay}.
 Note: Some chess engines do not support Analysis mode.
 @item Edit Game
 Duplicate of the item in the Edit menu.
@@ -2008,10 +2013,10 @@ default: 0 (no rewind).
 @item -td or -timeDelay seconds
 @cindex td, option
 @cindex timeDelay, option
-Time delay between moves during @samp{Load Game}. Fractional seconds
-are allowed; try @samp{-td 0.4}. A time delay value of -1 tells
-XBoard not to step through game files automatically. Default: 1
-second.
+Time delay between moves during @samp{Load Game} or @samp{Analyze File}. 
+Fractional seconds are allowed; try @samp{-td 0.4}. 
+A time delay value of -1 tells
+XBoard not to step through game files automatically. Default: 1 second.
 @item -sgf or -saveGameFile file
 @cindex sgf, option
 @cindex saveGameFile, option
