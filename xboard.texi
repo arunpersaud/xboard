@@ -193,7 +193,7 @@ feature to work.
 @item New Game
 @cindex New Game, Menu Item
 Resets XBoard and the chess engine to the beginning of a new chess
-game. The @kbd{r} key is a keyboard equivalent. In Internet Chess
+game. The @kbd{Ctrl-N} key is a keyboard equivalent. In Internet Chess
 Server mode, clears the current state of XBoard, then
 resynchronizes with the ICS by sending a refresh command. If you want to
 stop playing, observing, or examining an ICS game, use an
@@ -215,14 +215,15 @@ or select a new variant.
 @cindex New variant, Menu Item
 Allows you to select a new chess variant in non-ICS mode. 
 (In ICS play, the ICS is responsible for deciding which variant will be played,
-and XBoard adapts automatically.) If you play with an engine, the engine must
+and XBoard adapts automatically.)  The shifted @kbd{Alt+V} key is a 
+keyboard equivalent. If you play with an engine, the engine must
 be able to play the selected variant, or the command will be ignored.
 XBoard supports all major variants, such as xiangqi, shogi, chess, chess960,
 Capablanca Chess, shatranj, crazyhouse, bughouse.
 (But not every board size has built-in bitmaps for un-orthodox pieces!)
 @item Load Game
 @cindex Load Game, Menu Item
-Plays a game from a record file. The @kbd{g} key is a keyboard equivalent.
+Plays a game from a record file. The @kbd{Ctrl-O} key is a keyboard equivalent.
 A pop-up dialog prompts you for the file name. If the file contains more
 than one game, a second pop-up dialog
 displays a list of games (with information drawn from their PGN tags, if
@@ -261,11 +262,11 @@ that the Internet Chess Servers put there when saving variant ("wild") games.
 @item Load Next Game
 @cindex Load Next Game, Menu Item
 Loads the next game from the last game record file you loaded.
-The shifted @kbd{N} key is a keyboard equivalent.
+The @kbd{Alt+PgDn} key is a keyboard equivalent.
 @item Load Previous Game
 @cindex Load Previous Game, Menu Item
 Loads the previous game from the last game record file you
-loaded.  The shifted @kbd{P} key is a keyboard equivalent.
+loaded.  The @kbd{Alt+PgUp} key is a keyboard equivalent.
 Not available if the last game was loaded from a pipe.
 @item Reload Same Game
 @cindex Reload Same Game, Menu Item
@@ -274,6 +275,7 @@ Not available if the last game was loaded from a pipe.
 @item Save Game
 @cindex Save Game, Menu Item
 Appends a record of the current game to a file.
+The @kbd{Ctrl-S} key is a keyboard equivalent.
 A pop-up dialog
 prompts you for the file name. If the game did not begin with
 the standard starting position, the game file includes the
@@ -288,7 +290,8 @@ this is a nonstandard extension to PGN.
 @item Copy Game
 @cindex Copy Game, Menu Item
 Copies a record of the current game to an internal clipboard in PGN
-format and sets the X selection to the game text.  The game can be
+format and sets the X selection to the game text. The @kbd{Ctrl-C} 
+key is a keyboard equivalent. The game can be
 pasted to another application (such as a text editor or another copy
 of XBoard) using that application's paste command.  In many X
 applications, such as xterm and emacs, the middle mouse button can be
@@ -296,11 +299,12 @@ used for pasting; in XBoard, you must use the Paste Game command.
 @item Paste Game
 @cindex Paste Game, Menu Item
 Interprets the current X selection as a game record and loads it, as
-with Load Game.
+with Load Game. The @kbd{Ctrl-V} key is a keyboard equivalent.
 @item Load Position
 @cindex Load Position, Menu Item
 Sets up a position from a position file.  A pop-up dialog prompts
-you for the file name. If the file contains more than one saved
+you for the file name.  The shifted @kbd{Ctrl-O} key is a keyboard 
+equivalent. If the file contains more than one saved
 position, and you want to load the Nth one, type the number N
 after the file name, separated by a space. Position files must
 be in FEN (Forsythe-Edwards notation), or in the format that the
@@ -308,10 +312,12 @@ Save Position command writes when oldSaveStyle is turned on.
 @item Load Next Position
 @cindex Load Next Position, Menu Item
 Loads the next position from the last position file you loaded.
+The shifted @kbd{Alt+PgDn} key is a keyboard equivalent.
 @item Load Previous Position
 @cindex Load Previous Position, Menu Item
 Loads the previous position from the last position file you
-loaded.  Not available if the last position was loaded from a pipe.
+loaded. The shifted @kbd{Alt+PgUp} key is a keyboard equivalent.
+Not available if the last position was loaded from a pipe.
 @item Reload Same Position
 @cindex Reload Same Position, Menu Item
 Reloads the last position you loaded.
@@ -319,8 +325,8 @@ Not available if the last position was loaded from a pipe.
 @item Save Position
 @cindex Save Game, Menu Item
 Appends a diagram of the current position to a file.
-A pop-up dialog
-prompts you for the file name. Positions are saved in
+The shifted @kbd{Ctrl+S} key is a keyboard equivalent. 
+A pop-up dialog prompts you for the file name. Positions are saved in
 FEN (Forsythe-Edwards notation) format unless the @code{oldSaveStyle}
 option is true, in which case they are saved in an older,
 human-readable format that is specific to XBoard. Both formats
@@ -328,7 +334,8 @@ can be read back by the @samp{Load Position} command.
 @item Copy Position
 @cindex Copy Position, Menu Item
 Copies the current position to an internal clipboard in FEN format and
-sets the X selection to the position text.  The position can be pasted
+sets the X selection to the position text. The shifted @kbd{Ctrl-C} key 
+is a keyboard equivalent.  The position can be pasted
 to another application (such as a text editor or another copy of
 XBoard) using that application's paste command.  In many X
 applications, such as xterm and emacs, the middle mouse button can be
@@ -336,7 +343,7 @@ used for pasting; in XBoard, you must use the Paste Position command.
 @item Paste Position
 @cindex Paste Position, Menu Item
 Interprets the current X selection as a FEN position and loads it, as
-with Load Position.
+with Load Position. The shifted @kbd{Ctrl-V} key is a keyboard equivalent.
 @item Mail Move
 @itemx Reload CMail Message
 @cindex Mail Move, Menu Item
@@ -344,7 +351,7 @@ with Load Position.
 See @ref{CMail}.
 @item Exit
 @cindex Exit, Menu Item
-Exits from XBoard. The shifted @kbd{Q} key is a keyboard equivalent.
+Exits from XBoard. The @kbd{Ctrl-Q} key is a keyboard equivalent.
 @end table
 
 @node Mode Menu
@@ -354,17 +361,21 @@ Exits from XBoard. The shifted @kbd{Q} key is a keyboard equivalent.
 @table @asis
 @item Machine White
 @cindex Machine White, Menu Item
-Tells the chess engine to play White.
+Tells the chess engine to play White. 
+The @kbd{Ctrl-W} key is a keyboard equivalent.
 @item Machine Black
 @cindex Machine Black, Menu Item
 Tells the chess engine to play Black.
+The @kbd{Ctrl-B} key is a keyboard equivalent.
 @item Two Machines
 @cindex Two Machines, Menu Item
 Plays a game between two chess engines.
+The @kbd{Ctrl-T} key is a keyboard equivalent.
 @item Analysis Mode
 @cindex Analysis Mode, Menu Item
 XBoard tells the chess engine to start analyzing the current game/position
 and shows you the analysis as you move pieces around.
+The @kbd{Ctrl-A} key is a keyboard equivalent.
 Note: Some chess engines do not support Analysis mode.
 
 To set up a position to analyze, you do the following:
@@ -385,7 +396,8 @@ the positions as they occur in the observed game.
 @item Analyze File
 @cindex Analyze File, Menu Item
 This option lets you load a game from a file (PGN, XBoard format, etc.)
-and analyze it. When you select this menu item, a pop-up window appears
+and analyze it. The @kbd{Ctrl-F} key is a keyboard equivalent.
+When you select this menu item, a pop-up window appears
 and asks for a file name to load.
 If the file contains multiple games, another pop up appears that lets
 you select which game you wish to analyze.
@@ -420,7 +432,7 @@ have special functions in this mode; see below.
 @cindex Edit Game, Menu Item
 Allows you to make moves for both Black and White, and to change
 moves after backing up with the @samp{Backward} command. The clocks do
-not run.
+not run. The @kbd{Ctrl-E} key is a keyboard equivalent.
 
 In chess engine mode, the chess engine continues to check moves for legality
 but does not participate in the game. You can bring the chess engine
@@ -435,6 +447,7 @@ against yourself.
 @item Edit Position
 @cindex Edit Position, Menu Item
 Lets you set up an arbitrary board position.
+The shifted @kbd{Ctrl-E} key is a keyboard equivalent.
 Use mouse button 1 to drag pieces to new squares, or to delete a piece
 by dragging it off the board or dragging an empty square on top of it.
 To drop a new piece on a square, press mouse button 2 or 3 over the
@@ -464,7 +477,7 @@ selecting @samp{Load Game} from the File menu).  While XBoard is in
 @item Show Engine Output
 @cindex Show Engine Output, Menu Item
 Shows or hides a window in which the thinking output of any loaded engines
-is displayed.
+is displayed. The shifted @kbd{Alt+O} key is a keyboard equivalent.
 XBoard will display lines of thinking output of the same depth ordered by score, 
 (highest score on top), rather than in the order the engine produced them. 
 Usually this amounts to the same, as a normal engine search will only find new PV 
@@ -477,15 +490,18 @@ and can still be deduced from the time or node count printed with the line.
 @item Show Evaluation Graph
 @cindex Show Evaluation Graph, Menu Item
 Shows or hides a window which displays a graph of how the engine score(s)
-evolved as a function of the move number. Clicking on the graph will bring
+evolved as a function of the move number. 
+The shifted @kbd{Alt+G} key is a keyboard equivalent.
+Clicking on the graph will bring
 the corresponding position in the board display.
 @item Show Game List
 @cindex Show Game List, Menu Item
 Shows or hides the list of games generated by the last @samp{Load Game}
-command.
+command. The shifted @kbd{Alt+L} key is a keyboard equivalent.
 @item Show Move History
 @cindex Show Move History, Menu Item
 Shows or hides a list of moves of the current game.
+The shifted @kbd{Alt+H} key is a keyboard equivalent.
 This list allows you to move the display to any earlier position in the game
 by clicking on the corresponding move.
 @item Edit Tags
@@ -536,7 +552,7 @@ in with your typing as it would in the main terminal window.
 Pauses updates to the board, and if you are playing against a chess engine,
 also pauses your clock. To continue, select @samp{Pause} again, and the
 display will automatically update to the latest position.
-The @samp{P} button and keyboard @kbd{p} key are equivalents.
+The @samp{P} button and keyboard @kbd{Pause} key are equivalents.
 
 If you select Pause when you are playing against a chess engine and
 it is not your move, the chess engine's clock
@@ -564,46 +580,54 @@ resume automatic loading by selecting @samp{Pause} again.
 @table @asis
 @item Accept
 @cindex Accept, Menu Item
-Accepts a pending match offer. If there is more than one offer
+Accepts a pending match offer. 
+The @kbd{F3} key is a keyboard equivalent.
+If there is more than one offer
 pending, you will have to type in a more specific command
 instead of using this menu choice.
 @item Decline
 @cindex Decline, Menu Item
-Declines a pending offer (match, draw, adjourn, etc.). If there
+Declines a pending offer (match, draw, adjourn, etc.).
+The @kbd{F4} key is a keyboard equivalent. If there
 is more than one offer pending, you will have to type in a more
 specific command instead of using this menu choice.
 @item Call Flag
 @cindex Call Flag, Menu Item
 Calls your opponent's flag, claiming a win on time, or claiming
-a draw if you are both out of time. You can also call your
-opponent's flag by clicking on his clock or by pressing the
-keyboard @kbd{t} key.
+a draw if you are both out of time. 
+The @kbd{F5} key is a keyboard equivalent.
+You can also call your
+opponent's flag by clicking on his clock.
 @item Draw
 @cindex Draw, Menu Item
 Offers a draw to your opponent, accepts a pending draw offer
 from your opponent, or claims a draw by repetition or the 50-move
-rule, as appropriate. The @kbd{d} key is a keyboard equivalent.
+rule, as appropriate. The @kbd{F6} key is a keyboard equivalent.
 @item Adjourn
 @cindex Adjourn, Menu Item
 Asks your opponent to agree to adjourning the current game, or
 agrees to a pending adjournment offer from your opponent.
+The @kbd{F7} key is a keyboard equivalent.
 @item Abort
 @cindex Abort, Menu Item
 Asks your opponent to agree to aborting the current game, or
-agrees to a pending abort offer from your opponent. An aborted
+agrees to a pending abort offer from your opponent.
+The @kbd{F8} key is a keyboard equivalent. An aborted
 game ends immediately without affecting either player's rating.
 @item Resign
 @cindex Resign, Menu Item
-Resigns the game to your opponent. The shifted @kbd{R} key is a
+Resigns the game to your opponent. The @kbd{F9} key is a
 keyboard equivalent.
 @item Stop Observing
 @cindex Stop Observing, Menu Item
 Ends your participation in observing a game, by issuing the ICS
 observe command with no arguments. ICS mode only.
+The @kbd{F10} key is a keyboard equivalent.
 @item Stop Examining
 @cindex Stop Examining, Menu Item
 Ends your participation in examining a game, by issuing the ICS
 unexamine command. ICS mode only.
+The @kbd{F11} key is a keyboard equivalent.
 @item Upload to Examine
 @cindex Upload to Examine, Menu Item
 Create an examined game of the proper variant on the ICS,
@@ -631,7 +655,7 @@ by the comment "user adjudication".
 @cindex Backward, Menu Item
 @cindex <, Button
 Steps backward through a series of remembered moves.
-The @samp{[<]} button and the @kbd{b} key are equivalents,
+The @samp{[<]} button and the @kbd{Alt+LeftArrow} key are equivalents,
 as is turning the mouse wheel towards you.
 In addition, pressing the Control key steps back one move, and releasing
 it steps forward again.
@@ -654,7 +678,7 @@ view.
 @cindex >, Button
 Steps forward through a series of remembered moves (undoing the
 effect of @samp{Backward}) or forward through a game file. The
-@samp{[>]} button and the @kbd{f} key are equivalents,
+@samp{[>]} button and the @kbd{Alt+RightArrow} key are equivalents,
 as is turning the mouse wheel away from you.
 
 If you are examining an ICS game, the behavior of Forward
@@ -668,7 +692,7 @@ you paused.
 @cindex Back to Start, Menu Item
 @cindex <<, Button
 Jumps backward to the first remembered position in the game.
-The @samp{[<<]} button and the shifted @kbd{B} key are equivalents.
+The @samp{[<<]} button and the @kbd{Alt+Home} key are equivalents.
 
 In most modes, Back to Start only lets you look back at old
 positions; it does not retract moves. This is the case if you
@@ -688,7 +712,7 @@ to Start} only backs up your local view.
 @cindex Forward to End, Menu Item
 @cindex >>, Button
 Jumps forward to the last remembered position in the game. The
-@samp{[>>]} button and the shifted @kbd{F} key are equivalents.
+@samp{[>>]} button and the @kbd{Alt+End} key are equivalents.
 
 If you are examining an ICS game, the behavior of @samp{Forward to
 End} depends on whether XBoard is in Pause mode. If Pause mode
@@ -720,14 +744,17 @@ to the original move where you deviated.
 Note that such 'variation comments' can be played out on the board again
 (also when they were loaded from file)
 by clicking them in the comment window.
+The @kbd{Home} key is a keyboard equivalent.
 @item Truncate Game
 @cindex Truncate Game, Menu Item
 Discards all remembered moves of the game beyond the current
 position. Puts XBoard into @samp{Edit Game} mode if it was not there
 already.
+The @kbd{End} key is a keyboard equivalent.
 @item Move Now
 @cindex Move Now, Menu Item
 Forces the chess engine to move immediately. Chess engine mode only.
+The @kbd{Ctrl-M} key is a keyboard equivalent.
 @item Retract Move
 @cindex Retract Move, Menu Item
 Retracts your last move. In chess engine mode, you can do this only
@@ -735,6 +762,7 @@ after the chess engine has replied to your move; if the chess engine is still
 thinking, use @samp{Move Now} first. In ICS mode, @samp{Retract Move}
 issues the command @samp{takeback 1} or @samp{takeback 2}
 depending on whether it is your opponent's move or yours.
+The @kbd{Ctrl-X} key is a keyboard equivalent.
 @end table
 
 @node Options Menu
@@ -746,11 +774,12 @@ depending on whether it is your opponent's move or yours.
 @cindex Flip View, Menu Item
 Inverts your view of the chess board for the duration of the
 current game. Starting a new game returns the board to normal.
-The @kbd{v} key is a keyboard equivalent.
+The @kbd{F2} key is a keyboard equivalent.
 @item Adjudications
 @cindex Adjudications, Menu Item
 Pops up a sub-menu where you can enable or disable various adjudications
 that XBoard can perform in engine-engine games.
+The shifted @kbd{Alt+J} key is a keyboard equivalent.
 You can instruct XBoard to detect and terminate the game on checkmate
 or stalemate, even if the engines would not do so, to verify engine
 result claims (forfeiting engines that make false claims), rather than
@@ -781,6 +810,7 @@ book that XBoard consults for any position a playing engine gets in.
 It then forces the engine to play the book move, rather than to think up its own,
 if that position is found in the book.
 The book can switched on and off independently for either engine.
+The shifted @kbd{Alt+U} key is a keyboard equivalent.
 @item Engine #N Settings
 @cindex Engine Settings, Menu Item
 @cindex Engine #1 Settings, Menu Item
@@ -809,12 +839,14 @@ Also allows specification of time-odds factors for one or both engines.
 If an engine is given a time-odds factor N, all time quota it gets, 
 be it at the beginning of a session or through the time increment or
 fixed time per move, will be divided by N.
+The shifted @kbd{Alt+T} key is a keyboard equivalent.
 @item Always Queen
 @cindex Always Queen, Menu Item
 If this option is off, XBoard brings up a dialog
 box whenever you move a pawn to the last rank, asking what piece
 you want to promote it to. If the option is true, your pawns are
 always promoted to queens. Your opponent can still under-promote.
+The shifted @kbd{Ctrl-Q} key is a keyboard equivalent.
 @item Animate Dragging
 @cindex Animate Dragging, Menu Item
 If Animate Dragging is on, while you are dragging a piece with the
@@ -829,6 +861,7 @@ piece is shown moving from the old square to the new square when the
 move is completed (unless the move was already animated by Animate Dragging).
 If Animate Moving is off, a moved piece instantly disappears from its
 old square and reappears on its new square when the move is complete.
+The shifted @kbd{Ctrl-A} key is a keyboard equivalent.
 @item Auto Comment
 @cindex Auto Comment, Menu Item
 If this option is on, any remarks made on ICS while you are observing or
@@ -843,11 +876,12 @@ If this option is on and one player runs out of time
 before the other,
 XBoard
 will automatically call his flag, claiming a win on time.
+The shifted @kbd{Ctrl-F} key is a keyboard equivalent.
 In ICS mode, Auto Flag will only call your opponent's flag, not yours,
 and the ICS may award you a draw instead of a win if you have
 insufficient mating material.  In local chess engine mode,
 XBoard
-may call either player's flag and will not take material into account.
+may call either player's flag and will not take material into account (?).
 @item Auto Flip View
 @cindex Auto Flip View, Menu Item
 If the Auto Flip View option is on when you start a game, the board
@@ -971,6 +1005,7 @@ on, the Analysis Window will be updated every two seconds.
 If this option is off, the chess engine will think only when it is on
 move.  If the option is on, the engine will also think while waiting
 for you to make your move.
+The shifted @kbd{Ctrl-P} key is a keyboard equivalent.
 @item Popup Exit Message
 @cindex Popup Exit Message, Menu Item
 If this option is on, when XBoard wants to display a message just
@@ -1017,10 +1052,12 @@ behind) the chess engine thinks it is. In matches between two
 machines, the score is prefixed by @samp{W} or @samp{B} to indicate
 whether it is showing White's thinking or Black's, and only the thinking
 of the engine that is on move is shown.
+The shifted @kbd{Ctrl-H} key is a keyboard equivalent.
 @item Test Legality
 @cindex Test Legality, Menu Item
 If this option is on, XBoard tests whether the moves you try to make
 with the mouse are legal and refuses to let you make an illegal move.
+The shifted @kbd{Ctrl-L} key is a keyboard equivalent.
 Moves loaded from a file with @samp{Load Game} are also checked.  If
 the option is off, all moves are accepted, but if a local chess engine
 or the ICS is active, they will still reject illegal moves.  Turning
@@ -1064,7 +1101,8 @@ working directory, or have been installed by the @samp{make install}
 command when you built XBoard.
 @item Man XBoard
 @cindex Man XBoard, Menu Item
-Displays the XBoard documentation in man page format.  For this
+Displays the XBoard documentation in man page format.
+The @kbd{F1} key is a keyboard equivalent.  For this
 feature to work, the file @file{xboard.6} must have been installed by
 the @samp{make install} command when you built XBoard, and the
 directory it was placed in must be on the search path for your
@@ -1092,7 +1130,7 @@ Shows the current XBoard version number.
 @cindex Shortcut keys
 @table @asis
 @item Iconize
-Pressing the @kbd{i} or @kbd{c} key iconizes XBoard. The graphical
+Pressing the @kbd{-} key iconizes XBoard. The graphical
 icon displays a white knight if it is White's move, or a black knight
 if it is Black's move. If your X window manager displays only text
 icons, not graphical ones, check its documentation; there is probably
