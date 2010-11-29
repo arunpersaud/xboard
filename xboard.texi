@@ -177,9 +177,11 @@ feature to work.
 
 @menu
 * File Menu::       Accessing external games and positions.
+* Edit Menu::       Altering games, positions, PGN tags or comments.
+* View Menu::       Controlling XBoard's shape and looks.
 * Mode Menu::       Selecting XBoard's mode.
 * Action Menu::     Talking to the chess engine or ICS opponents.
-* Step Menu::       Controlling the game.
+* Engine Menu::     Controlling settings and actions of the engine(s).
 * Options Menu::    User preferences.
 * Help Menu::       Getting help.
 * Keys::            Other shortcut keys.
@@ -259,19 +261,15 @@ variant FENs appropriately.
 There is also a heuristic to 
 recognize chess variants from the Event tag, by looking for the strings
 that the Internet Chess Servers put there when saving variant ("wild") games.
-@item Load Next Game
-@cindex Load Next Game, Menu Item
-Loads the next game from the last game record file you loaded.
-The @kbd{Alt+PgDn} key is a keyboard equivalent.
-@item Load Previous Game
-@cindex Load Previous Game, Menu Item
-Loads the previous game from the last game record file you
-loaded.  The @kbd{Alt+PgUp} key is a keyboard equivalent.
-Not available if the last game was loaded from a pipe.
-@item Reload Same Game
-@cindex Reload Same Game, Menu Item
-Reloads the last game you loaded.
-Not available if the last game was loaded from a pipe.
+@item Load Position
+@cindex Load Position, Menu Item
+Sets up a position from a position file.  A pop-up dialog prompts
+you for the file name.  The shifted @kbd{Ctrl-O} key is a keyboard 
+equivalent. If the file contains more than one saved
+position, and you want to load the Nth one, type the number N
+after the file name, separated by a space. Position files must
+be in FEN (Forsythe-Edwards notation), or in the format that the
+Save Position command writes when oldSaveStyle is turned on.
 @item Save Game
 @cindex Save Game, Menu Item
 Appends a record of the current game to a file.
@@ -287,6 +285,30 @@ read back by the @samp{Load Game} command.
 Notation of the form @samp{P@@f7}
 is accepted for piece-drops in bughouse games;
 this is a nonstandard extension to PGN.
+@item Save Position
+@cindex Save Position, Menu Item
+Appends a diagram of the current position to a file.
+The shifted @kbd{Ctrl+S} key is a keyboard equivalent. 
+A pop-up dialog prompts you for the file name. Positions are saved in
+FEN (Forsythe-Edwards notation) format unless the @code{oldSaveStyle}
+option is true, in which case they are saved in an older,
+human-readable format that is specific to XBoard. Both formats
+can be read back by the @samp{Load Position} command.
+@item Mail Move
+@itemx Reload CMail Message
+@cindex Mail Move, Menu Item
+@cindex Reload CMail Message, Menu Item
+See @ref{CMail}.
+@item Exit
+@cindex Exit, Menu Item
+Exits from XBoard. The @kbd{Ctrl-Q} key is a keyboard equivalent.
+@end table
+
+@node Edit Menu
+@section Edit Menu
+@cindex Menu, Edit
+@cindex Edit Menu
+@table @asis
 @item Copy Game
 @cindex Copy Game, Menu Item
 Copies a record of the current game to an internal clipboard in PGN
@@ -296,41 +318,6 @@ pasted to another application (such as a text editor or another copy
 of XBoard) using that application's paste command.  In many X
 applications, such as xterm and emacs, the middle mouse button can be
 used for pasting; in XBoard, you must use the Paste Game command.
-@item Paste Game
-@cindex Paste Game, Menu Item
-Interprets the current X selection as a game record and loads it, as
-with Load Game. The @kbd{Ctrl-V} key is a keyboard equivalent.
-@item Load Position
-@cindex Load Position, Menu Item
-Sets up a position from a position file.  A pop-up dialog prompts
-you for the file name.  The shifted @kbd{Ctrl-O} key is a keyboard 
-equivalent. If the file contains more than one saved
-position, and you want to load the Nth one, type the number N
-after the file name, separated by a space. Position files must
-be in FEN (Forsythe-Edwards notation), or in the format that the
-Save Position command writes when oldSaveStyle is turned on.
-@item Load Next Position
-@cindex Load Next Position, Menu Item
-Loads the next position from the last position file you loaded.
-The shifted @kbd{Alt+PgDn} key is a keyboard equivalent.
-@item Load Previous Position
-@cindex Load Previous Position, Menu Item
-Loads the previous position from the last position file you
-loaded. The shifted @kbd{Alt+PgUp} key is a keyboard equivalent.
-Not available if the last position was loaded from a pipe.
-@item Reload Same Position
-@cindex Reload Same Position, Menu Item
-Reloads the last position you loaded.
-Not available if the last position was loaded from a pipe.
-@item Save Position
-@cindex Save Game, Menu Item
-Appends a diagram of the current position to a file.
-The shifted @kbd{Ctrl+S} key is a keyboard equivalent. 
-A pop-up dialog prompts you for the file name. Positions are saved in
-FEN (Forsythe-Edwards notation) format unless the @code{oldSaveStyle}
-option is true, in which case they are saved in an older,
-human-readable format that is specific to XBoard. Both formats
-can be read back by the @samp{Load Position} command.
 @item Copy Position
 @cindex Copy Position, Menu Item
 Copies the current position to an internal clipboard in FEN format and
@@ -340,18 +327,244 @@ to another application (such as a text editor or another copy of
 XBoard) using that application's paste command.  In many X
 applications, such as xterm and emacs, the middle mouse button can be
 used for pasting; in XBoard, you must use the Paste Position command.
+@item Paste Game
+@cindex Paste Game, Menu Item
+Interprets the current X selection as a game record and loads it, as
+with Load Game. The @kbd{Ctrl-V} key is a keyboard equivalent.
 @item Paste Position
 @cindex Paste Position, Menu Item
 Interprets the current X selection as a FEN position and loads it, as
 with Load Position. The shifted @kbd{Ctrl-V} key is a keyboard equivalent.
-@item Mail Move
-@itemx Reload CMail Message
-@cindex Mail Move, Menu Item
-@cindex Reload CMail Message, Menu Item
-See @ref{CMail}.
-@item Exit
-@cindex Exit, Menu Item
-Exits from XBoard. The @kbd{Ctrl-Q} key is a keyboard equivalent.
+@item Edit Game
+@cindex Edit Game, Menu Item
+Allows you to make moves for both Black and White, and to change
+moves after backing up with the @samp{Backward} command. The clocks do
+not run. The @kbd{Ctrl-E} key is a keyboard equivalent.
+
+In chess engine mode, the chess engine continues to check moves for legality
+but does not participate in the game. You can bring the chess engine
+into the game by selecting @samp{Machine White}, @samp{Machine Black},
+or @samp{Two Machines}.
+
+In ICS mode, the moves are not sent to the ICS: @samp{Edit Game} takes
+XBoard out of ICS Client mode and lets you edit games locally.
+If you want to edit games on ICS in a way that other ICS users
+can see, use the ICS @kbd{examine} command or start an ICS match
+against yourself.
+@item Edit Position
+@cindex Edit Position, Menu Item
+Lets you set up an arbitrary board position.
+The shifted @kbd{Ctrl-E} key is a keyboard equivalent.
+Use mouse button 1 to drag pieces to new squares, or to delete a piece
+by dragging it off the board or dragging an empty square on top of it.
+To drop a new piece on a square, press mouse button 2 or 3 over the
+square. This brings up a menu of white pieces (button 2) or
+black pieces (button 3). Additional menu choices let you empty the
+square or clear the board. You can set the side to play next by
+clicking on the word White or Black at the top of the screen.
+Selecting @samp{Edit Position} causes XBoard to discard
+all remembered moves in the current game.
+
+In ICS mode, changes made to the position by @samp{Edit Position} are
+not sent to the ICS: @samp{Edit Position} takes XBoard out of
+@samp{ICS Client} mode and lets you edit positions locally. If you want to
+edit positions on ICS in a way that other ICS users can see, use
+the ICS @kbd{examine} command, or start an ICS match against yourself.
+(See also the ICS Client topic above.)
+@item Edit Tags
+@cindex Edit Tags, Menu Item
+Lets you edit the PGN (portable game notation)
+tags for the current game. After editing, the tags must still conform to
+the PGN tag syntax:
+
+@example
+<tag-section> ::= <tag-pair> <tag-section>
+                        <empty>
+<tag-pair> ::= [ <tag-name> <tag-value> ]
+<tag-name> ::= <identifier>
+<tag-value> ::= <string>
+@end example
+@noindent
+See the PGN Standard for full details. Here is an example:
+
+@example
+[Event "Portoroz Interzonal"]
+[Site "Portoroz, Yugoslavia"]
+[Date "1958.08.16"]
+[Round "8"]
+[White "Robert J. Fischer"]
+[Black "Bent Larsen"]
+[Result "1-0"]
+@end example
+@noindent
+Any characters that do not match this syntax are silently ignored. Note that
+the PGN standard requires all games to have at least the seven tags shown
+above. Any that you omit will be filled in by XBoard
+with @samp{?} (unknown value), or @samp{-} (inapplicable value).
+@item Edit Comment
+@cindex Edit Comment, Menu Item
+Adds or modifies a comment on the current position. Comments are
+saved by @samp{Save Game} and are displayed by @samp{Load Game},
+@samp{Forward}, and @samp{Backward}.
+@item Revert
+@itemx Annotate
+@cindex Revert, Menu Item
+@cindex Annotate, Menu Item
+If you are examining an ICS game and Pause mode is off, issues
+the ICS command @samp{revert}.
+In local mode, when you were editing or analyzing a game, 
+and have been entering a number of moves by hand, starting from 
+a position not at the end of the game, 
+the revert command restores the game to the variation you started from. 
+This can be applied recursively, 
+so that you can analyze variations on variations; 
+each time you create a new variation by entering an alternative move, 
+the current variation will be shelved. 
+Revert allows you to return to the most recently shelved variation.
+The difference between Revert and Annotate is that with the latter,
+the variation you had been entering and are now abandoning
+is currently added as a comment 
+(in PGN variation syntax, i.e. between parentheses)
+to the original move where you deviated.
+Note that such 'variation comments' can be played out on the board again
+(also when they were loaded from file)
+by clicking them in the comment window.
+The @kbd{Home} key is a keyboard equivalent.
+@item Truncate Game
+@cindex Truncate Game, Menu Item
+Discards all remembered moves of the game beyond the current
+position. Puts XBoard into @samp{Edit Game} mode if it was not there
+already.
+The @kbd{End} key is a keyboard equivalent.
+@item Backward
+@cindex Backward, Menu Item
+@cindex <, Button
+Steps backward through a series of remembered moves.
+The @samp{[<]} button and the @kbd{Alt+LeftArrow} key are equivalents,
+as is turning the mouse wheel towards you.
+In addition, pressing the Control key steps back one move, and releasing
+it steps forward again.
+
+In most modes, @samp{Backward} only lets you look back at old positions;
+it does not retract moves. This is the case if you are playing against
+a chess engine, playing or observing a game on an ICS, or loading a game.
+If you select @samp{Backward} in any of these situations, you will not
+be allowed to make a different move. Use @samp{Retract Move} or
+@samp{Edit Game} if you want to change past moves.
+
+If you are examining an ICS game, the behavior of @samp{Backward}
+depends on whether XBoard is in Pause mode. If Pause mode is
+off, @samp{Backward} issues the ICS backward command, which backs up
+everyone's view of the game and allows you to make a different
+move. If Pause mode is on, @samp{Backward} only backs up your local
+view.
+@item Forward
+@cindex Forward, Menu Item
+@cindex >, Button
+Steps forward through a series of remembered moves (undoing the
+effect of @samp{Backward}) or forward through a game file. The
+@samp{[>]} button and the @kbd{Alt+RightArrow} key are equivalents,
+as is turning the mouse wheel away from you.
+
+If you are examining an ICS game, the behavior of Forward
+depends on whether XBoard is in Pause mode. If Pause mode is
+off, @samp{Forward} issues the ICS forward command, which moves
+everyone's view of the game forward along the current line. If
+Pause mode is on, @samp{Forward} only moves your local view forward,
+and it will not go past the position that the game was in when
+you paused.
+@item Back to Start
+@cindex Back to Start, Menu Item
+@cindex <<, Button
+Jumps backward to the first remembered position in the game.
+The @samp{[<<]} button and the @kbd{Alt+Home} key are equivalents.
+
+In most modes, Back to Start only lets you look back at old
+positions; it does not retract moves. This is the case if you
+are playing against a local chess engine, playing or observing a game on
+a chess server, or loading a game. If you select @samp{Back to Start} in any
+of these situations, you will not be allowed to make different
+moves. Use @samp{Retract Move} or @samp{Edit Game} if you want to change past
+moves; or use Reset to start a new game.
+
+If you are examining an ICS game, the behavior of @samp{Back to
+Start} depends on whether XBoard is in Pause mode. If Pause mode
+is off, @samp{Back to Start} issues the ICS @samp{backward 999999}
+command, which backs up everyone's view of the game to the start and
+allows you to make different moves. If Pause mode is on, @samp{Back
+to Start} only backs up your local view.
+@item Forward to End
+@cindex Forward to End, Menu Item
+@cindex >>, Button
+Jumps forward to the last remembered position in the game. The
+@samp{[>>]} button and the @kbd{Alt+End} key are equivalents.
+
+If you are examining an ICS game, the behavior of @samp{Forward to
+End} depends on whether XBoard is in Pause mode. If Pause mode
+is off, @samp{Forward to End} issues the ICS @samp{forward 999999}
+command, which moves everyone's view of the game forward to the end of
+the current line. If Pause mode is on, @samp{Forward to End} only moves
+your local view forward, and it will not go past the position
+that the game was in when you paused.
+@end table
+
+@node View Menu
+@section View Menu
+@cindex Menu, View
+@cindex View Menu
+@table @asis
+@item Flip View
+@cindex Flip View, Menu Item
+Inverts your view of the chess board for the duration of the
+current game. Starting a new game returns the board to normal.
+The @kbd{F2} key is a keyboard equivalent.
+@item Show Engine Output
+@cindex Show Engine Output, Menu Item
+Shows or hides a window in which the thinking output of any loaded engines
+is displayed. The shifted @kbd{Alt+O} key is a keyboard equivalent.
+XBoard will display lines of thinking output of the same depth ordered by score, 
+(highest score on top), rather than in the order the engine produced them. 
+Usually this amounts to the same, as a normal engine search will only find new PV 
+(and emit it as thinking output) 
+when it searches a move with a higher score than the previous variation. 
+But when the engine is in multi-variation mode this needs not always be true, 
+and it is more convenient for someone analyzing games to see the moves sorted by score. 
+The order in which the engine found them is only of interest to the engine author, 
+and can still be deduced from the time or node count printed with the line.
+@item Show Move History
+@cindex Show Move History, Menu Item
+Shows or hides a list of moves of the current game.
+The shifted @kbd{Alt+H} key is a keyboard equivalent.
+This list allows you to move the display to any earlier position in the game
+by clicking on the corresponding move.
+@item Show Evaluation Graph
+@cindex Show Evaluation Graph, Menu Item
+Shows or hides a window which displays a graph of how the engine score(s)
+evolved as a function of the move number. 
+The shifted @kbd{Alt+G} key is a keyboard equivalent.
+Clicking on the graph will bring
+the corresponding position in the board display.
+@item Show Game List
+@cindex Show Game List, Menu Item
+Shows or hides the list of games generated by the last @samp{Load Game}
+command. The shifted @kbd{Alt+L} key is a keyboard equivalent.
+@item Tags
+@cindex Tags, Menu Item
+Pops up a window which shows the PGN (portable game notation)
+tags for the current game. 
+For now this is a duplicate of the @samp{Edit Tags} item in the @samp{Edit} menu.
+@item Comments
+@cindex Comments, Menu Item
+Pops up a window which shows any comments to or variations on the current move.
+For now this is a duplicate of the @samp{Edit Comment} item in the @samp{Edit} menu.
+@item ICS Input Box
+@cindex ICS Input Box, Menu Item
+If this option is set in ICS mode,
+XBoard
+creates an extra window that you can use for typing in ICS commands.
+The input box is especially useful if you want to type in something long or do
+some editing on your input, because output from ICS doesn't get mixed
+in with your typing as it would in the main terminal window.
 @end table
 
 @node Mode Menu
@@ -404,6 +617,23 @@ you select which game you wish to analyze.
 After a game is loaded, use the XBoard arrow buttons to step
 forwards/backwards through the game and watch the analysis.
 Note: Some chess engines do not support Analysis mode.
+@item Edit Game
+Duplicate of the item in the Edit menu.
+Note that @samp{Edit Game} is the idle mode of XBoard, and can be used
+to get you out of other modes. E.g. to stop analyzing, stop a game
+between two engines or stop editing a position.
+@item Edit Position
+Duplicate of the item in the Edit menu.
+@item Training
+@cindex Training, Menu Item
+Training mode lets you interactively guess the moves of a game for one
+of the players. You guess the next move of the game by playing the
+move on the board. If the move played matches the next move of the
+game, the move is accepted and the opponent's response is auto-played.
+If the move played is incorrect, an error message is displayed.  You
+can select this mode only while loading a game (that is, after
+selecting @samp{Load Game} from the File menu).  While XBoard is in 
+@samp{Training} mode, the navigation buttons are disabled.
 @item ICS Client
 @cindex ICS Client, Menu Item
 This is the normal mode when XBoard
@@ -428,125 +658,6 @@ drag pieces to arbitrary squares while examining on ICC, but you can
 do so in @kbd{bsetup} mode on FICS.  In addition, the menu commands
 @samp{Forward}, @samp{Backward}, @samp{Pause}, and @samp{Stop Examining}
 have special functions in this mode; see below.
-@item Edit Game
-@cindex Edit Game, Menu Item
-Allows you to make moves for both Black and White, and to change
-moves after backing up with the @samp{Backward} command. The clocks do
-not run. The @kbd{Ctrl-E} key is a keyboard equivalent.
-
-In chess engine mode, the chess engine continues to check moves for legality
-but does not participate in the game. You can bring the chess engine
-into the game by selecting @samp{Machine White}, @samp{Machine Black},
-or @samp{Two Machines}.
-
-In ICS mode, the moves are not sent to the ICS: @samp{Edit Game} takes
-XBoard out of ICS Client mode and lets you edit games locally.
-If you want to edit games on ICS in a way that other ICS users
-can see, use the ICS @kbd{examine} command or start an ICS match
-against yourself.
-@item Edit Position
-@cindex Edit Position, Menu Item
-Lets you set up an arbitrary board position.
-The shifted @kbd{Ctrl-E} key is a keyboard equivalent.
-Use mouse button 1 to drag pieces to new squares, or to delete a piece
-by dragging it off the board or dragging an empty square on top of it.
-To drop a new piece on a square, press mouse button 2 or 3 over the
-square. This brings up a menu of white pieces (button 2) or
-black pieces (button 3). Additional menu choices let you empty the
-square or clear the board. You can set the side to play next by
-clicking on the word White or Black at the top of the screen.
-Selecting @samp{Edit Position} causes XBoard to discard
-all remembered moves in the current game.
-
-In ICS mode, changes made to the position by @samp{Edit Position} are
-not sent to the ICS: @samp{Edit Position} takes XBoard out of
-@samp{ICS Client} mode and lets you edit positions locally. If you want to
-edit positions on ICS in a way that other ICS users can see, use
-the ICS @kbd{examine} command, or start an ICS match against yourself.
-(See also the ICS Client topic above.)
-@item Training
-@cindex Training, Menu Item
-Training mode lets you interactively guess the moves of a game for one
-of the players. You guess the next move of the game by playing the
-move on the board. If the move played matches the next move of the
-game, the move is accepted and the opponent's response is auto-played.
-If the move played is incorrect, an error message is displayed.  You
-can select this mode only while loading a game (that is, after
-selecting @samp{Load Game} from the File menu).  While XBoard is in 
-@samp{Training} mode, the navigation buttons are disabled.
-@item Show Engine Output
-@cindex Show Engine Output, Menu Item
-Shows or hides a window in which the thinking output of any loaded engines
-is displayed. The shifted @kbd{Alt+O} key is a keyboard equivalent.
-XBoard will display lines of thinking output of the same depth ordered by score, 
-(highest score on top), rather than in the order the engine produced them. 
-Usually this amounts to the same, as a normal engine search will only find new PV 
-(and emit it as thinking output) 
-when it searches a move with a higher score than the previous variation. 
-But when the engine is in multi-variation mode this needs not always be true, 
-and it is more convenient for someone analyzing games to see the moves sorted by score. 
-The order in which the engine found them is only of interest to the engine author, 
-and can still be deduced from the time or node count printed with the line.
-@item Show Evaluation Graph
-@cindex Show Evaluation Graph, Menu Item
-Shows or hides a window which displays a graph of how the engine score(s)
-evolved as a function of the move number. 
-The shifted @kbd{Alt+G} key is a keyboard equivalent.
-Clicking on the graph will bring
-the corresponding position in the board display.
-@item Show Game List
-@cindex Show Game List, Menu Item
-Shows or hides the list of games generated by the last @samp{Load Game}
-command. The shifted @kbd{Alt+L} key is a keyboard equivalent.
-@item Show Move History
-@cindex Show Move History, Menu Item
-Shows or hides a list of moves of the current game.
-The shifted @kbd{Alt+H} key is a keyboard equivalent.
-This list allows you to move the display to any earlier position in the game
-by clicking on the corresponding move.
-@item Edit Tags
-@cindex Edit Tags, Menu Item
-Lets you edit the PGN (portable game notation)
-tags for the current game. After editing, the tags must still conform to
-the PGN tag syntax:
-
-@example
-<tag-section> ::= <tag-pair> <tag-section>
-                        <empty>
-<tag-pair> ::= [ <tag-name> <tag-value> ]
-<tag-name> ::= <identifier>
-<tag-value> ::= <string>
-@end example
-@noindent
-See the PGN Standard for full details. Here is an example:
-
-@example
-[Event "Portoroz Interzonal"]
-[Site "Portoroz, Yugoslavia"]
-[Date "1958.08.16"]
-[Round "8"]
-[White "Robert J. Fischer"]
-[Black "Bent Larsen"]
-[Result "1-0"]
-@end example
-@noindent
-Any characters that do not match this syntax are silently ignored. Note that
-the PGN standard requires all games to have at least the seven tags shown
-above. Any that you omit will be filled in by XBoard
-with @samp{?} (unknown value), or @samp{-} (inapplicable value).
-@item Edit Comment
-@cindex Edit Comment, Menu Item
-Adds or modifies a comment on the current position. Comments are
-saved by @samp{Save Game} and are displayed by @samp{Load Game},
-@samp{Forward}, and @samp{Backward}.
-@item ICS Input Box
-@cindex ICS Input Box, Menu Item
-If this option is set in ICS mode,
-XBoard
-creates an extra window that you can use for typing in ICS commands.
-The input box is especially useful if you want to type in something long or do
-some editing on your input, because output from ICS doesn't get mixed
-in with your typing as it would in the main terminal window.
 @item Pause
 @cindex Pause, Menu Item
 Pauses updates to the board, and if you are playing against a chess engine,
@@ -646,111 +757,42 @@ The PGN file of the game will accompany the result string
 by the comment "user adjudication".
 @end table
 
-@node Step Menu
-@section Step Menu
-@cindex Step Menu
-@cindex Menu, Step
+@node Engine Menu
+@section Engine Menu
+@cindex Engine Menu
+@cindex Menu, Engine
 @table @asis
-@item Backward
-@cindex Backward, Menu Item
-@cindex <, Button
-Steps backward through a series of remembered moves.
-The @samp{[<]} button and the @kbd{Alt+LeftArrow} key are equivalents,
-as is turning the mouse wheel towards you.
-In addition, pressing the Control key steps back one move, and releasing
-it steps forward again.
-
-In most modes, @samp{Backward} only lets you look back at old positions;
-it does not retract moves. This is the case if you are playing against
-a chess engine, playing or observing a game on an ICS, or loading a game.
-If you select @samp{Backward} in any of these situations, you will not
-be allowed to make a different move. Use @samp{Retract Move} or
-@samp{Edit Game} if you want to change past moves.
-
-If you are examining an ICS game, the behavior of @samp{Backward}
-depends on whether XBoard is in Pause mode. If Pause mode is
-off, @samp{Backward} issues the ICS backward command, which backs up
-everyone's view of the game and allows you to make a different
-move. If Pause mode is on, @samp{Backward} only backs up your local
-view.
-@item Forward
-@cindex Forward, Menu Item
-@cindex >, Button
-Steps forward through a series of remembered moves (undoing the
-effect of @samp{Backward}) or forward through a game file. The
-@samp{[>]} button and the @kbd{Alt+RightArrow} key are equivalents,
-as is turning the mouse wheel away from you.
-
-If you are examining an ICS game, the behavior of Forward
-depends on whether XBoard is in Pause mode. If Pause mode is
-off, @samp{Forward} issues the ICS forward command, which moves
-everyone's view of the game forward along the current line. If
-Pause mode is on, @samp{Forward} only moves your local view forward,
-and it will not go past the position that the game was in when
-you paused.
-@item Back to Start
-@cindex Back to Start, Menu Item
-@cindex <<, Button
-Jumps backward to the first remembered position in the game.
-The @samp{[<<]} button and the @kbd{Alt+Home} key are equivalents.
-
-In most modes, Back to Start only lets you look back at old
-positions; it does not retract moves. This is the case if you
-are playing against a local chess engine, playing or observing a game on
-a chess server, or loading a game. If you select @samp{Back to Start} in any
-of these situations, you will not be allowed to make different
-moves. Use @samp{Retract Move} or @samp{Edit Game} if you want to change past
-moves; or use Reset to start a new game.
-
-If you are examining an ICS game, the behavior of @samp{Back to
-Start} depends on whether XBoard is in Pause mode. If Pause mode
-is off, @samp{Back to Start} issues the ICS @samp{backward 999999}
-command, which backs up everyone's view of the game to the start and
-allows you to make different moves. If Pause mode is on, @samp{Back
-to Start} only backs up your local view.
-@item Forward to End
-@cindex Forward to End, Menu Item
-@cindex >>, Button
-Jumps forward to the last remembered position in the game. The
-@samp{[>>]} button and the @kbd{Alt+End} key are equivalents.
-
-If you are examining an ICS game, the behavior of @samp{Forward to
-End} depends on whether XBoard is in Pause mode. If Pause mode
-is off, @samp{Forward to End} issues the ICS @samp{forward 999999}
-command, which moves everyone's view of the game forward to the end of
-the current line. If Pause mode is on, @samp{Forward to End} only moves
-your local view forward, and it will not go past the position
-that the game was in when you paused.
-@item Revert
-@itemx Annotate
-@cindex Revert, Menu Item
-@cindex Annotate, Menu Item
-If you are examining an ICS game and Pause mode is off, issues
-the ICS command @samp{revert}.
-In local mode, when you were editing or analyzing a game, 
-and have been entering a number of moves by hand, starting from 
-a position not at the end of the game, 
-the revert command restores the game to the variation you started from. 
-This can be applied recursively, 
-so that you can analyze variations on variations; 
-each time you create a new variation by entering an alternative move, 
-the current variation will be shelved. 
-Revert allows you to return to the most recently shelved variation.
-The difference between Revert and Annotate is that with the latter,
-the variation you had been entering and are now abandoning
-is currently added as a comment 
-(in PGN variation syntax, i.e. between parentheses)
-to the original move where you deviated.
-Note that such 'variation comments' can be played out on the board again
-(also when they were loaded from file)
-by clicking them in the comment window.
-The @kbd{Home} key is a keyboard equivalent.
-@item Truncate Game
-@cindex Truncate Game, Menu Item
-Discards all remembered moves of the game beyond the current
-position. Puts XBoard into @samp{Edit Game} mode if it was not there
-already.
-The @kbd{End} key is a keyboard equivalent.
+@item Engine #N Settings
+@cindex Engine Settings, Menu Item
+@cindex Engine #1 Settings, Menu Item
+@cindex Engine #2 Settings, Menu Item
+Pop up a menu dialog to alter the settings specific to the applicable engine.
+(The second engine is only accessible once it has been used in Two-Machines mode.)
+For each parameter the engine allows to be set,
+a control element will appear in this dialog that can be used to alter the value.
+Depending on the type of parameter (text string, number, multiple choice,
+on/off switch, instantaneous signal) the appropriate control will appear,
+with a description next to it.
+XBoard has no idea what these values mean; it just passes them on to the engine.
+How this dialog looks is completely determined by the engine,
+and XBoard just passes it on to the user.
+Many engines do not have any parameters that can be set by the user,
+and in that case the dialog will be empty (except for the OK and cancel buttons).
+UCI engines usually have many parameters. (But these are only visible with
+a sufficiently modern version of the Polyglot adapter needed to run UCI engines,
+e.g. Polyglot 1.4.55b.) For native XBoard engines this is less common.
+@item Hint
+@cindex Hint, Menu Item
+Displays a move hint from the chess engine.
+@item Book
+@cindex Book, Menu Item
+Displays a list of possible moves from the chess engine's opening
+book.  The exact format depends on what chess engine you are using.
+With GNU Chess 4, the first column gives moves, the second column
+gives one possible response for each move, and the third column shows
+the number of lines in the book that include the move from the first
+column. If you select this option and nothing happens, the chess
+engine is out of its book or does not support this feature.
 @item Move Now
 @cindex Move Now, Menu Item
 Forces the chess engine to move immediately. Chess engine mode only.
@@ -770,11 +812,30 @@ The @kbd{Ctrl-X} key is a keyboard equivalent.
 @cindex Menu, Options
 @cindex Options Menu
 @table @asis
-@item Flip View
-@cindex Flip View, Menu Item
-Inverts your view of the chess board for the duration of the
-current game. Starting a new game returns the board to normal.
-The @kbd{F2} key is a keyboard equivalent.
+@item Time Control
+@cindex Time Control, Menu Item
+Pops up a sub-menu where you can set the time-control parameters interactively.
+Allows you to select classical or incremental time controls,
+set the moves per session, session duration, and time increment.
+Also allows specification of time-odds factors for one or both engines.
+If an engine is given a time-odds factor N, all time quota it gets, 
+be it at the beginning of a session or through the time increment or
+fixed time per move, will be divided by N.
+The shifted @kbd{Alt+T} key is a keyboard equivalent.
+@item Common Engine
+@cindex Common Engine, Menu Item
+Pops up a sub-menu where you can set some engine parameters common to most engines,
+such as hash-table size, tablebase cache size, maximum number of processors
+that SMP engines can use, and where to find the Polyglot adapter needed
+to run UCI engines under XBoard. The feature that allows setting of these parameters on
+engines is new since XBoard 4.3.15, so not many XBoard/WinBoard engines respond
+to it yet, but UCI engines should.
+It is also possible to specify a GUI opening book here, i.e. an opening
+book that XBoard consults for any position a playing engine gets in.
+It then forces the engine to play the book move, rather than to think up its own,
+if that position is found in the book.
+The book can switched on and off independently for either engine.
+The shifted @kbd{Alt+U} key is a keyboard equivalent.
 @item Adjudications
 @cindex Adjudications, Menu Item
 Pops up a sub-menu where you can enable or disable various adjudications
@@ -797,49 +858,6 @@ of them is behind more than a user-adjustable score threshold.
 For the latter adjudication to work, XBoard should be able to properly understand
 the engine's scores. To facilitate the latter, you can inform xboard here if
 the engines report scores from the viewpoint of white, or from that of their own color.
-@item General Settings
-@cindex General Settings, Menu Item
-Pops up a sub-menu where you can set some engine parameters common to most engines,
-such as hash-table size, tablebase cache size, maximum number of processors
-that SMP engines can use, and where to find the Polyglot adapter needed
-to run UCI engines under XBoard. The feature that allows setting of these parameters on
-engines is new since XBoard 4.3.15, so not many XBoard/WinBoard engines respond
-to it yet, but UCI engines should.
-It is also possible to specify a GUI opening book here, i.e. an opening
-book that XBoard consults for any position a playing engine gets in.
-It then forces the engine to play the book move, rather than to think up its own,
-if that position is found in the book.
-The book can switched on and off independently for either engine.
-The shifted @kbd{Alt+U} key is a keyboard equivalent.
-@item Engine #N Settings
-@cindex Engine Settings, Menu Item
-@cindex Engine #1 Settings, Menu Item
-@cindex Engine #2 Settings, Menu Item
-Pop up a menu dialog to alter the settings specific to the applicable engine.
-(The second engine is only accessible once it has been used in Two-Machines mode.)
-For each parameter the engine allows to be set,
-a control element will appear in this dialog that can be used to alter the value.
-Depending on the type of parameter (text string, number, multiple choice,
-on/off switch, instantaneous signal) the appropriate control will appear,
-with a description next to it.
-XBoard has no idea what these values mean; it just passes them on to the engine.
-How this dialog looks is completely determined by the engine,
-and XBoard just passes it on to the user.
-Many engines do not have any parameters that can be set by the user,
-and in that case the dialog will be empty (except for the OK and cancel buttons).
-UCI engines usually have many parameters. (But these are only visible with
-a sufficiently modern version of the Polyglot adapter needed to run UCI engines,
-e.g. Polyglot 1.4.55b.) For native XBoard engines this is less common.
-@item Time Control
-@cindex Time Control, Menu Item
-Pops up a sub-menu where you can set the time-control parameters interactively.
-Allows you to select classical or incremental time controls,
-set the moves per session, session duration, and time increment.
-Also allows specification of time-odds factors for one or both engines.
-If an engine is given a time-odds factor N, all time quota it gets, 
-be it at the beginning of a session or through the time increment or
-fixed time per move, will be divided by N.
-The shifted @kbd{Alt+T} key is a keyboard equivalent.
 @item Always Queen
 @cindex Always Queen, Menu Item
 If this option is off, XBoard brings up a dialog
@@ -1107,18 +1125,6 @@ feature to work, the file @file{xboard.6} must have been installed by
 the @samp{make install} command when you built XBoard, and the
 directory it was placed in must be on the search path for your
 system's @samp{man} command.
-@item Hint
-@cindex Hint, Menu Item
-Displays a move hint from the chess engine.
-@item Book
-@cindex Book, Menu Item
-Displays a list of possible moves from the chess engine's opening
-book.  The exact format depends on what chess engine you are using.
-With GNU Chess 4, the first column gives moves, the second column
-gives one possible response for each move, and the third column shows
-the number of lines in the book that include the move from the first
-column. If you select this option and nothing happens, the chess
-engine is out of its book or does not support this feature.
 @item About XBoard
 @cindex About XBoard, Menu Item
 Shows the current XBoard version number.
@@ -1137,6 +1143,32 @@ icons, not graphical ones, check its documentation; there is probably
 a way to enable graphical icons.  If you get black and white reversed,
 we would like to hear about it; see @ref{Problems} below for
 instructions on how to report this problem.
+@item Load Next Game
+@cindex Load Next Game, Menu Item
+Loads the next game from the last game record file you loaded.
+The @kbd{Alt+PgDn} key is a keyboard equivalent.
+@item Load Previous Game
+@cindex Load Previous Game, Menu Item
+Loads the previous game from the last game record file you
+loaded.  The @kbd{Alt+PgUp} key is a keyboard equivalent.
+Not available if the last game was loaded from a pipe.
+@item Reload Same Game
+@cindex Reload Same Game, Menu Item
+Reloads the last game you loaded.
+Not available if the last game was loaded from a pipe.
+@item Load Next Position
+@cindex Load Next Position, Menu Item
+Loads the next position from the last position file you loaded.
+The shifted @kbd{Alt+PgDn} key is a keyboard equivalent.
+@item Load Previous Position
+@cindex Load Previous Position, Menu Item
+Loads the previous position from the last position file you
+loaded. The shifted @kbd{Alt+PgUp} key is a keyboard equivalent.
+Not available if the last position was loaded from a pipe.
+@item Reload Same Position
+@cindex Reload Same Position, Menu Item
+Reloads the last position you loaded.
+Not available if the last position was loaded from a pipe.
 @end table
 
 You can add or remove shortcut keys using the X resources
@@ -2709,8 +2741,8 @@ to review a recently completed game
 Some special XBoard features are activated when you are
 in examine mode on ICS.  See the descriptions of the menu commands
 @samp{Forward}, @samp{Backward}, @samp{Pause}, @samp{ICS Client}, 
-and @samp{Stop Examining} on the @ref{Step Menu}, @ref{Mode Menu}, and
-@ref{Options Menu}.
+and @samp{Stop Examining} on the @ref{Edit Menu}, @ref{Mode Menu}, and
+@ref{Action Menu}.
 
 @node Firewalls
 @chapter Firewalls
