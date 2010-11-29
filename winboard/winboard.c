@@ -2952,7 +2952,7 @@ VOID RebuildTextureSquareInfo()
 
 /* [AS] Arrow highlighting support */
 
-static int A_WIDTH = 5; /* Width of arrow body */
+static double A_WIDTH = 5; /* Width of arrow body */
 
 #define A_HEIGHT_FACTOR 6   /* Length of arrow "point", relative to body width */
 #define A_WIDTH_FACTOR  3   /* Width of arrow "point", relative to body width */
@@ -2976,50 +2976,50 @@ VOID DrawArrowBetweenPoints( HDC hdc, int s_x, int s_y, int d_x, int d_y )
     if( d_x == s_x ) {
         int h = (d_y > s_y) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
 
-        arrow[0].x = s_x + A_WIDTH;
+        arrow[0].x = s_x + A_WIDTH + 0.5;
         arrow[0].y = s_y;
 
-        arrow[1].x = s_x + A_WIDTH;
+        arrow[1].x = s_x + A_WIDTH + 0.5;
         arrow[1].y = d_y - h;
 
-        arrow[2].x = s_x + A_WIDTH*A_WIDTH_FACTOR;
+        arrow[2].x = arrow[1].x + A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
         arrow[2].y = d_y - h;
 
         arrow[3].x = d_x;
         arrow[3].y = d_y;
 
-        arrow[4].x = s_x - A_WIDTH*A_WIDTH_FACTOR;
-        arrow[4].y = d_y - h;
-
-        arrow[5].x = s_x - A_WIDTH;
+        arrow[5].x = arrow[1].x - 2*A_WIDTH + 0.5;
         arrow[5].y = d_y - h;
 
-        arrow[6].x = s_x - A_WIDTH;
+        arrow[4].x = arrow[5].x - A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
+        arrow[4].y = d_y - h;
+
+        arrow[6].x = arrow[1].x - 2*A_WIDTH + 0.5;
         arrow[6].y = s_y;
     }
     else if( d_y == s_y ) {
         int w = (d_x > s_x) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
 
         arrow[0].x = s_x;
-        arrow[0].y = s_y + A_WIDTH;
+        arrow[0].y = s_y + A_WIDTH + 0.5;
 
         arrow[1].x = d_x - w;
-        arrow[1].y = s_y + A_WIDTH;
+        arrow[1].y = s_y + A_WIDTH + 0.5;
 
         arrow[2].x = d_x - w;
-        arrow[2].y = s_y + A_WIDTH*A_WIDTH_FACTOR;
+        arrow[2].y = arrow[1].y + A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
 
         arrow[3].x = d_x;
         arrow[3].y = d_y;
 
-        arrow[4].x = d_x - w;
-        arrow[4].y = s_y - A_WIDTH*A_WIDTH_FACTOR;
-
         arrow[5].x = d_x - w;
-        arrow[5].y = s_y - A_WIDTH;
+        arrow[5].y = arrow[1].y - 2*A_WIDTH + 0.5;
+
+        arrow[4].x = d_x - w;
+        arrow[4].y = arrow[5].y - A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
 
         arrow[6].x = s_x;
-        arrow[6].y = s_y - A_WIDTH;
+        arrow[6].y = arrow[1].y - 2*A_WIDTH + 0.5;
     }
     else {
         /* [AS] Needed a lot of paper for this! :-) */
@@ -3036,8 +3036,8 @@ VOID DrawArrowBetweenPoints( HDC hdc, int s_x, int s_y, int d_x, int d_y )
         arrow[0].x = Round(x - j);
         arrow[0].y = Round(y + j*dx);
 
-        arrow[1].x = Round(x + j);
-        arrow[1].y = Round(y - j*dx);
+        arrow[1].x = Round(arrow[0].x + 2*j);   // [HGM] prevent width to be affected by rounding twice
+        arrow[1].y = Round(arrow[0].y - 2*j*dx);
 
         if( d_x > s_x ) {
             x = (double) d_x - k;
@@ -3048,20 +3048,22 @@ VOID DrawArrowBetweenPoints( HDC hdc, int s_x, int s_y, int d_x, int d_y )
             y = (double) d_y + k*dy;
         }
 
-        arrow[2].x = Round(x + j);
-        arrow[2].y = Round(y - j*dx);
+        x = Round(x); y = Round(y); // [HGM] make sure width of shaft is rounded the same way on both ends
 
-        arrow[3].x = Round(x + j*A_WIDTH_FACTOR);
-        arrow[3].y = Round(y - j*A_WIDTH_FACTOR*dx);
+        arrow[6].x = Round(x - j);
+        arrow[6].y = Round(y + j*dx);
+
+        arrow[2].x = Round(arrow[6].x + 2*j);
+        arrow[2].y = Round(arrow[6].y - 2*j*dx);
+
+        arrow[3].x = Round(arrow[2].x + j*(A_WIDTH_FACTOR-1));
+        arrow[3].y = Round(arrow[2].y - j*(A_WIDTH_FACTOR-1)*dx);
 
         arrow[4].x = d_x;
         arrow[4].y = d_y;
 
-        arrow[5].x = Round(x - j*A_WIDTH_FACTOR);
-        arrow[5].y = Round(y + j*A_WIDTH_FACTOR*dx);
-
-        arrow[6].x = Round(x - j);
-        arrow[6].y = Round(y + j*dx);
+        arrow[5].x = Round(arrow[6].x - j*(A_WIDTH_FACTOR-1));
+        arrow[5].y = Round(arrow[6].y + j*(A_WIDTH_FACTOR-1)*dx);
     }
 
     Polygon( hdc, arrow, 7 );
@@ -3086,20 +3088,20 @@ VOID DrawArrowBetweenSquares( HDC hdc, int s_col, int s_row, int d_col, int d_ro
     SquareToPos( d_row, d_col, &d_x, &d_y);
 
     if( d_y > s_y ) {
-        d_y += squareSize / 4;
+        d_y += squareSize / 2 - squareSize / 4; // [HGM] round towards same centers on all sides!
     }
     else if( d_y < s_y ) {
-        d_y += 3 * squareSize / 4;
+        d_y += squareSize / 2 + squareSize / 4;
     }
     else {
         d_y += squareSize / 2;
     }
 
     if( d_x > s_x ) {
-        d_x += squareSize / 4;
+        d_x += squareSize / 2 - squareSize / 4;
     }
     else if( d_x < s_x ) {
-        d_x += 3 * squareSize / 4;
+        d_x += squareSize / 2 + squareSize / 4;
     }
     else {
         d_x += squareSize / 2;
@@ -3109,7 +3111,7 @@ VOID DrawArrowBetweenSquares( HDC hdc, int s_col, int s_row, int d_col, int d_ro
     s_y += squareSize / 2;
 
     /* Adjust width */
-    A_WIDTH = squareSize / 14;
+    A_WIDTH = squareSize / 14.; //[HGM] make float
 
     /* Draw */
     stLB.lbStyle = BS_SOLID;
