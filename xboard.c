@@ -692,6 +692,9 @@ MenuItem engineMenu[] = {
     {N_("Engine #1 Settings ..."), "Engine #1 Settings", FirstSettingsProc},
     {N_("Engine #2 Settings ..."), "Engine #2 Settings", SecondSettingsProc},
     {"----", NULL, NothingProc},
+    {N_("Hint"), "Hint", HintProc},
+    {N_("Book"), "Book", BookProc},
+    {"----", NULL, NothingProc},
     {N_("Move Now     Ctrl+M"),     "Move Now", MoveNowProc},
     {N_("Retract Move  Ctrl+X"), "Retract Move", RetractMoveProc},
     {NULL, NULL, NULL}
@@ -740,9 +743,6 @@ MenuItem optionsMenu[] = {
 MenuItem helpMenu[] = {
     {N_("Info XBoard"),     "Info XBoard", InfoProc},
     {N_("Man XBoard   F1"), "Man XBoard", ManProc},
-    {"----", NULL, NothingProc},
-    {N_("Hint"), "Hint", HintProc},
-    {N_("Book"), "Book", BookProc},
     {"----", NULL, NothingProc},
     {N_("About XBoard"), "About XBoard", AboutProc},
     {NULL, NULL, NULL}
@@ -2769,8 +2769,8 @@ Enables icsEnables[] = {
     { "menuMode.Analyze File", False },
     { "menuMode.Two Machines", False },
 #ifndef ZIPPY
-    { "menuHelp.Hint", False },
-    { "menuHelp.Book", False },
+    { "menuEngine.Hint", False },
+    { "menuEngine.Book", False },
     { "menuEngine.Move Now", False },
     { "menuOptions.Periodic Updates", False },
     { "menuOptions.Hide Thinking", False },
@@ -2811,8 +2811,8 @@ Enables ncpEnables[] = {
     { "menuOptions.Hide Thinking", False },
     { "menuOptions.Periodic Updates", False },
     { "menuOptions.Ponder Next Move", False },
-    { "menuHelp.Hint", False },
-    { "menuHelp.Book", False },
+    { "menuEngine.Hint", False },
+    { "menuEngine.Book", False },
     { NULL, False }
 };
 
