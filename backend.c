@@ -13413,7 +13413,7 @@ static char * FindStr( char * text, char * sub_text )
 /* [HGM] PV time: and then remove it, to prevent it appearing twice */
 char *GetInfoFromComment( int index, char * text )
 {
-    char * sep = text;
+    char * sep = text, *p;
 
     if( text != NULL && index > 0 ) {
         int score = 0;
@@ -13451,11 +13451,20 @@ char *GetInfoFromComment( int index, char * text )
                 return text;
             }
 
+            p = text;
+            if(p[1] == '(') { // comment starts with PV
+               p = strchr(p, ')'); // locate end of PV
+               if(p == NULL || sep < p+5) return text;
+               // at this point we have something like "{(.*) +0.23/6 ..."
+               p = text; while(*++p != ')') p[-1] = *p; p[-1] = ')';
+               *p = '\n'; while(*p == ' ' || *p == '\n') p++; *--p = '{';
+               // we now moved the brace to behind the PV: "(.*) {+0.23/6 ..."
+            }
             time = -1; sec = -1; deci = -1;
-            if( sscanf( text+1, "%d.%d/%d %d:%d", &score, &score_lo, &depth, &time, &sec ) != 5 &&
-		sscanf( text+1, "%d.%d/%d %d.%d", &score, &score_lo, &depth, &time, &deci ) != 5 &&
-                sscanf( text+1, "%d.%d/%d %d", &score, &score_lo, &depth, &time ) != 4 &&
-                sscanf( text+1, "%d.%d/%d", &score, &score_lo, &depth ) != 3   ) {
+            if( sscanf( p+1, "%d.%d/%d %d:%d", &score, &score_lo, &depth, &time, &sec ) != 5 &&
+		sscanf( p+1, "%d.%d/%d %d.%d", &score, &score_lo, &depth, &time, &deci ) != 5 &&
+                sscanf( p+1, "%d.%d/%d %d", &score, &score_lo, &depth, &time ) != 4 &&
+                sscanf( p+1, "%d.%d/%d", &score, &score_lo, &depth ) != 3   ) {
                 return text;
             }
 
@@ -13471,7 +13480,7 @@ char *GetInfoFromComment( int index, char * text )
             /* [HGM] PV time: now locate end of PV info */
             while( *++sep >= '0' && *sep <= '9'); // strip depth
             if(time >= 0)
-            while( *++sep >= '0' && *sep <= '9'); // strip time
+            while( *++sep >= '0' && *sep <= '9' || *sep == '\n'); // strip time
             if(sec >= 0)
             while( *++sep >= '0' && *sep <= '9'); // strip seconds
             if(deci >= 0)
@@ -13491,6 +13500,7 @@ char *GetInfoFromComment( int index, char * text )
         pvInfoList[index-1].score = score;
         pvInfoList[index-1].time  = 10*time; // centi-sec
         if(*sep == '}') *sep = 0; else *--sep = '{';
+        if(p != text) { while(*p++ = *sep++); sep = text; } // squeeze out space between PV and comment, and return both
     }
     return sep;
 }
