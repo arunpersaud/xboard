@@ -8340,6 +8340,7 @@ ParseGameHistory(game)
 		if (q != NULL) *q = NULLCHAR;
 		p++;
 	    }
+	    while(q = strchr(p, '\n')) *q = ' '; // [HGM] crush linefeeds in result message
 	    gameInfo.resultDetails = StrSave(p);
 	    continue;
 	}
@@ -9767,6 +9768,7 @@ LoadGameOneMove(readAhead)
 	    if (q != NULL) *q = NULLCHAR;
 	    p++;
 	}
+	while(q = strchr(p, '\n')) *q = ' '; // [HGM] crush linefeeds in result message
 	GameEnds(moveType, p, GE_FILE);
 	done = TRUE;
 	if (cmailMsgLoaded) {
