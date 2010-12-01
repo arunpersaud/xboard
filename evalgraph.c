@@ -330,7 +330,7 @@ int GetMoveIndexFromPoint( int x, int y )
 void PaintEvalGraph( void )
 {
     VariantClass v = gameInfo.variant;
-    range = (gameInfo.holdingsWidth && v != VariantSuper && v != VariantGreat) ? 2 : 1; // [HGM] double range in drop games
+    range = (gameInfo.holdingsWidth && v != VariantSuper && v != VariantGreat && v != VariantSChess) ? 2 : 1; // [HGM] double range in drop games
     /* Draw */
     DrawRectangle(0, 0, nWidthPB, nHeightPB, 2, FILLED);
     DrawAxis();
