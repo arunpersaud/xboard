@@ -7447,7 +7447,7 @@ DisplayAClock(HDC hdc, int timeRemaining, int highlight,
 	     rect, str, strlen(str), NULL);
   if(logoHeight > 0 && appData.clockMode) {
       RECT r;
-      snprintf(buf, sizeof(buf)/sizeof(buf[0]), "%s %s", buf+strlen(color)+2, flagFell);
+      str += strlen(color)+2;
       r.top = rect->top + logoHeight/2;
       r.left = rect->left;
       r.right = rect->right;
