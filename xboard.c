@@ -3998,7 +3998,7 @@ static void drawHighlight(file, rank, gc)
 {
     int x, y;
 
-    if (lineGap == 0 || appData.blindfold) return;
+    if (lineGap == 0) return;
 
     if (flipView) {
 	x = lineGap/2 + ((BOARD_WIDTH-1)-file) *
