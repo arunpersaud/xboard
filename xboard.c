@@ -60,6 +60,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pwd.h>
+#include <math.h>
 
 #if !OMIT_SOCKETS
 # if HAVE_SYS_SOCKET_H
@@ -471,6 +472,9 @@ void SettingsPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
 int CopyMemoProc P(());
+void DrawArrowHighlight P((int fromX, int fromY, int toX,int toY));
+Boolean IsDrawArrowEnabled P(());
+
 /*
 * XBoard depends on Xt R4 or higher
 */
@@ -4601,6 +4605,7 @@ void XDrawPosition(w, repaint, board)
      * but this causes a very distracting flicker.
      */
 
+    if ( lineGap && IsDrawArrowEnabled()) repaint = True;
     if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
 
 	/* If too much changes (begin observing new game, etc.), don't
@@ -4665,6 +4670,7 @@ void XDrawPosition(w, repaint, board)
     if (hi2X >= 0 && hi2Y >= 0) {
       drawHighlight(hi2X, hi2Y, highlineGC);
     }
+    DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y);
   }
     /* If piece being dragged around board, must redraw that too */
     DrawDragPiece();
@@ -9092,4 +9098,200 @@ update_ics_width()
 void NotifyFrontendLogin()
 {
     update_ics_width();
+}
+
+/* [AS] Arrow highlighting support */
+
+static double A_WIDTH = 5; /* Width of arrow body */
+
+#define A_HEIGHT_FACTOR 6   /* Length of arrow "point", relative to body width */
+#define A_WIDTH_FACTOR  3   /* Width of arrow "point", relative to body width */
+
+static double Sqr( double x )
+{
+    return x*x;
+}
+
+static int Round( double x )
+{
+    return (int) (x + 0.5);
+}
+
+void SquareToPos(int rank, int file, int *x, int *y)
+{
+    if (flipView) {
+	*x = lineGap + ((BOARD_WIDTH-1)-file) * (squareSize + lineGap);
+	*y = lineGap + rank * (squareSize + lineGap);
+    } else {
+	*x = lineGap + file * (squareSize + lineGap);
+	*y = lineGap + ((BOARD_HEIGHT-1)-rank) * (squareSize + lineGap);
+    }
+}
+
+/* Draw an arrow between two points using current settings */
+void DrawArrowBetweenPoints( int s_x, int s_y, int d_x, int d_y )
+{
+    XPoint arrow[7];
+    double dx, dy, j, k, x, y;
+
+    if( d_x == s_x ) {
+        int h = (d_y > s_y) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
+
+        arrow[0].x = s_x + A_WIDTH + 0.5;
+        arrow[0].y = s_y;
+
+        arrow[1].x = s_x + A_WIDTH + 0.5;
+        arrow[1].y = d_y - h;
+
+        arrow[2].x = arrow[1].x + A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
+        arrow[2].y = d_y - h;
+
+        arrow[3].x = d_x;
+        arrow[3].y = d_y;
+
+        arrow[5].x = arrow[1].x - 2*A_WIDTH + 0.5;
+        arrow[5].y = d_y - h;
+
+        arrow[4].x = arrow[5].x - A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
+        arrow[4].y = d_y - h;
+
+        arrow[6].x = arrow[1].x - 2*A_WIDTH + 0.5;
+        arrow[6].y = s_y;
+    }
+    else if( d_y == s_y ) {
+        int w = (d_x > s_x) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
+
+        arrow[0].x = s_x;
+        arrow[0].y = s_y + A_WIDTH + 0.5;
+
+        arrow[1].x = d_x - w;
+        arrow[1].y = s_y + A_WIDTH + 0.5;
+
+        arrow[2].x = d_x - w;
+        arrow[2].y = arrow[1].y + A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
+
+        arrow[3].x = d_x;
+        arrow[3].y = d_y;
+
+        arrow[5].x = d_x - w;
+        arrow[5].y = arrow[1].y - 2*A_WIDTH + 0.5;
+
+        arrow[4].x = d_x - w;
+        arrow[4].y = arrow[5].y - A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
+
+        arrow[6].x = s_x;
+        arrow[6].y = arrow[1].y - 2*A_WIDTH + 0.5;
+    }
+    else {
+        /* [AS] Needed a lot of paper for this! :-) */
+        dy = (double) (d_y - s_y) / (double) (d_x - s_x);
+        dx = (double) (s_x - d_x) / (double) (s_y - d_y);
+
+        j = sqrt( Sqr(A_WIDTH) / (1.0 + Sqr(dx)) );
+
+        k = sqrt( Sqr(A_WIDTH*A_HEIGHT_FACTOR) / (1.0 + Sqr(dy)) );
+
+        x = s_x;
+        y = s_y;
+
+        arrow[0].x = Round(x - j);
+        arrow[0].y = Round(y + j*dx);
+
+        arrow[1].x = Round(arrow[0].x + 2*j);   // [HGM] prevent width to be affected by rounding twice
+        arrow[1].y = Round(arrow[0].y - 2*j*dx);
+
+        if( d_x > s_x ) {
+            x = (double) d_x - k;
+            y = (double) d_y - k*dy;
+        }
+        else {
+            x = (double) d_x + k;
+            y = (double) d_y + k*dy;
+        }
+
+        x = Round(x); y = Round(y); // [HGM] make sure width of shaft is rounded the same way on both ends
+
+        arrow[6].x = Round(x - j);
+        arrow[6].y = Round(y + j*dx);
+
+        arrow[2].x = Round(arrow[6].x + 2*j);
+        arrow[2].y = Round(arrow[6].y - 2*j*dx);
+
+        arrow[3].x = Round(arrow[2].x + j*(A_WIDTH_FACTOR-1));
+        arrow[3].y = Round(arrow[2].y - j*(A_WIDTH_FACTOR-1)*dx);
+
+        arrow[4].x = d_x;
+        arrow[4].y = d_y;
+
+        arrow[5].x = Round(arrow[6].x - j*(A_WIDTH_FACTOR-1));
+        arrow[5].y = Round(arrow[6].y + j*(A_WIDTH_FACTOR-1)*dx);
+    }
+
+    XFillPolygon(xDisplay, xBoardWindow, highlineGC, arrow, 7, Nonconvex, CoordModeOrigin);
+//    Polygon( hdc, arrow, 7 );
+}
+
+/* [AS] Draw an arrow between two squares */
+void DrawArrowBetweenSquares( int s_col, int s_row, int d_col, int d_row )
+{
+    int s_x, s_y, d_x, d_y, hor, vert, i;
+
+    if( s_col == d_col && s_row == d_row ) {
+        return;
+    }
+
+    /* Get source and destination points */
+    SquareToPos( s_row, s_col, &s_x, &s_y);
+    SquareToPos( d_row, d_col, &d_x, &d_y);
+
+    if( d_y > s_y ) {
+        d_y += squareSize / 2 - squareSize / 4; // [HGM] round towards same centers on all sides!
+    }
+    else if( d_y < s_y ) {
+        d_y += squareSize / 2 + squareSize / 4;
+    }
+    else {
+        d_y += squareSize / 2;
+    }
+
+    if( d_x > s_x ) {
+        d_x += squareSize / 2 - squareSize / 4;
+    }
+    else if( d_x < s_x ) {
+        d_x += squareSize / 2 + squareSize / 4;
+    }
+    else {
+        d_x += squareSize / 2;
+    }
+
+    s_x += squareSize / 2;
+    s_y += squareSize / 2;
+
+    /* Adjust width */
+    A_WIDTH = squareSize / 14.; //[HGM] make float
+
+    DrawArrowBetweenPoints( s_x, s_y, d_x, d_y );
+
+    if(lineGap == 0) {
+        // this is a good idea, but it only works when lineGap == 0, because 'damage' on grid lines is not repaired
+        hor = 64*s_col + 32; vert = 64*s_row + 32;
+        for(i=0; i<= 64; i++) {
+            damage[0][vert+6>>6][hor+6>>6] = True;
+            damage[0][vert-6>>6][hor+6>>6] = True;
+            damage[0][vert+6>>6][hor-6>>6] = True;
+            damage[0][vert-6>>6][hor-6>>6] = True;
+            hor += d_col - s_col; vert += d_row - s_row;
+        }
+    }
+}
+
+Boolean IsDrawArrowEnabled()
+{
+    return appData.highlightMoveWithArrow && squareSize >= 32;
+}
+
+void DrawArrowHighlight(int fromX, int fromY, int toX,int toY)
+{
+    if( IsDrawArrowEnabled() && fromX >= 0 && fromY >= 0 && toX >= 0 && toY >= 0)
+        DrawArrowBetweenSquares(fromX, fromY, toX, toY);
 }
