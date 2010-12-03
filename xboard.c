@@ -410,10 +410,11 @@ void HighlightDraggingProc P((Widget w, XEvent *event, String *prms,
 			      Cardinal *nprms));
 void HighlightLastMoveProc P((Widget w, XEvent *event, String *prms,
 			      Cardinal *nprms));
+void HighlightArrowProc P((Widget w, XEvent *event, String *prms,
+			      Cardinal *nprms));
 void MoveSoundProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void IcsAlarmProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void OldSaveStyleProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
+void OneClickProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void PeriodicUpdatesProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void PonderNextMoveProc P((Widget w, XEvent *event, String *prms,
@@ -726,9 +727,10 @@ MenuItem optionsMenu[] = {
     {N_("Highlight Dragging"),    "Highlight Dragging", HighlightDraggingProc},
 #endif
     {N_("Highlight Last Move"),   "Highlight Last Move", HighlightLastMoveProc},
+    {N_("Highlight With Arrow"),  "Arrow", HighlightArrowProc},
     {N_("Move Sound"),            "Move Sound", MoveSoundProc},
     {N_("ICS Alarm"),             "ICS Alarm", IcsAlarmProc},
-    {N_("Old Save Style"),        "Old Save Style", OldSaveStyleProc},
+    {N_("One-Click Moving"),      "OneClick", OneClickProc},
     {N_("Periodic Updates"),      "Periodic Updates", PeriodicUpdatesProc},
     {N_("Ponder Next Move  Ctrl+Shift+P"), "Ponder Next Move", PonderNextMoveProc},
     {N_("Popup Exit Message"),    "Popup Exit Message", PopupExitMessageProc},
@@ -976,7 +978,6 @@ XtActionsRec boardActions[] = {
     { "HighlightLastMoveProc", HighlightLastMoveProc },
     { "IcsAlarmProc", IcsAlarmProc },
     { "MoveSoundProc", MoveSoundProc },
-    { "OldSaveStyleProc", OldSaveStyleProc },
     { "PeriodicUpdatesProc", PeriodicUpdatesProc },
     { "PonderNextMoveProc", PonderNextMoveProc },
     { "PopupExitMessageProc", PopupExitMessageProc },
@@ -2465,6 +2466,11 @@ XBoard square size (hint): %d\n\
 				   "menuOptions.Highlight Last Move"),
 		    args, 1);
     }
+    if (appData.highlightMoveWithArrow) {
+	XtSetValues(XtNameToWidget(menuBarWidget,
+				   "menuOptions.Arrow"),
+		    args, 1);
+    }
     if (appData.icsAlarm) {
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.ICS Alarm"),
 		    args, 1);
@@ -2473,9 +2479,9 @@ XBoard square size (hint): %d\n\
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
 		    args, 1);
     }
-    if (appData.oldSaveStyle) {
+    if (appData.oneClick) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Old Save Style"), args, 1);
+				   "menuOptions.OneClick"), args, 1);
     }
     if (appData.periodicUpdates) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
@@ -6791,6 +6797,25 @@ void HighlightLastMoveProc(w, event, prms, nprms)
 			       "menuOptions.Highlight Last Move"), args, 1);
 }
 
+void HighlightArrowProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    Arg args[16];
+
+    appData.highlightMoveWithArrow = !appData.highlightMoveWithArrow;
+
+    if (appData.highlightMoveWithArrow) {
+	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+    } else {
+	XtSetArg(args[0], XtNleftBitmap, None);
+    }
+    XtSetValues(XtNameToWidget(menuBarWidget,
+			       "menuOptions.Arrow"), args, 1);
+}
+
 void IcsAlarmProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6829,8 +6854,7 @@ void MoveSoundProc(w, event, prms, nprms)
 		args, 1);
 }
 
-
-void OldSaveStyleProc(w, event, prms, nprms)
+void OneClickProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
      String *prms;
@@ -6838,14 +6862,14 @@ void OldSaveStyleProc(w, event, prms, nprms)
 {
     Arg args[16];
 
-    appData.oldSaveStyle = !appData.oldSaveStyle;
+    appData.oneClick = !appData.oneClick;
 
-    if (appData.oldSaveStyle) {
+    if (appData.oneClick) {
 	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Old Save Style"),
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.OneClick"),
 		args, 1);
 }
 
