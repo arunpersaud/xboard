@@ -11641,7 +11641,7 @@ void
 EditTagsEvent()
 {
     char *tags = PGNTags(&gameInfo);
-    EditTagsPopUp(tags);
+    EditTagsPopUp(tags, NULL);
     free(tags);
 }
 

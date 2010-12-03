@@ -4921,6 +4921,18 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       ShowGameListProc();
       break;
 
+    case IDM_EditProgs1:
+      EditTagsPopUp(firstChessProgramNames, &firstChessProgramNames);
+      break;
+
+    case IDM_EditProgs2:
+      EditTagsPopUp(secondChessProgramNames, &secondChessProgramNames);
+      break;
+
+    case IDM_EditServers:
+      EditTagsPopUp(icsNames, &icsNames);
+      break;
+
     case IDM_EditTags:
     case IDM_Tags:
       EditTagsProc();

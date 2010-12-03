@@ -1204,6 +1204,8 @@ BEGIN
     END
     POPUP "E&ngine"
     BEGIN
+        MENUITEM "Install 1st...",              IDM_EditProgs1
+        MENUITEM "Install 2nd...",              IDM_EditProgs2
         MENUITEM SEPARATOR
         MENUITEM "Engine #&1 Settings...",       IDM_Engine1Options
         MENUITEM "Engine #&2 Settings...",       IDM_Engine2Options
@@ -1229,6 +1231,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Soun&ds...",                  IDM_Sounds
         MENUITEM "&ICS...",                     IDM_IcsOptions, GRAYED
+        MENUITEM "Add ICS...",                  IDM_EditServers
         MENUITEM "Comm&unications...",          IDM_CommPort
         MENUITEM SEPARATOR
         MENUITEM "Save Settings &Now",          IDM_SaveSettings

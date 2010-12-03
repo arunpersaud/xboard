@@ -42,7 +42,7 @@
 #define _(s) T_(s)
 
 /* Module globals */
-static char *editTagsText;
+static char *editTagsText, **resPtr;
 BOOL editTagsUp = FALSE;
 BOOL canEditTags = FALSE;
 
@@ -122,12 +122,13 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	GetWindowText(hwndText, str, len + 1);
 	p = q = str;
 	while (*q) {
-	  if (*q == '\r'|| *q == '\n')
+	  if (*q == '\r')
 	    q++;
 	  else
 	    *p++ = *q++;
 	}
 	*p = NULLCHAR;
+        if(resPtr) *resPtr = strdup(str), err = 0; else
 	err = ReplaceTags(str, &gameInfo);
 	if (err) DisplayError(_("Error replacing tags."), err);
 
@@ -221,8 +222,9 @@ VOID TagsPopUp(char *tags, char *msg)
   SetActiveWindow(hwnd);
 }
 
-VOID EditTagsPopUp(char *tags)
+VOID EditTagsPopUp(char *tags, char **dest)
 {
+  resPtr = dest;
   EitherTagsPopUp(tags, "", TRUE);
 }
 

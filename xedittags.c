@@ -349,8 +349,9 @@ void TagsPopUp(tags, msg)
 }
 
 
-void EditTagsPopUp(tags)
+void EditTagsPopUp(tags, dest)
      char *tags;
+     char **dest;
 {
     Widget textw;
     Arg args[16];
