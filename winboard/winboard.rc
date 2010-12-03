@@ -1131,8 +1131,8 @@ BEGIN
         MENUITEM "P&aste Position From Clipboard\tCtrl+Shift+V", 
                                                 IDM_PasteAny
         MENUITEM SEPARATOR
-        MENUITEM "&Edit Game\tCtrl+E",          IDM_EditGame
-        MENUITEM "E&dit Position\tCtrl+Shift+E",IDM_EditPosition
+        MENUITEM "&Edit Game\tCtrl+E",          IDM_EditGame2
+        MENUITEM "E&dit Position\tCtrl+Shift+E",IDM_EditPosition2
         MENUITEM SEPARATOR
         MENUITEM "Edit Ta&gs...",               IDM_EditTags
         MENUITEM "Edit &Comment...",            IDM_EditComment

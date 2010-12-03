@@ -31,6 +31,8 @@
 #define IDM_TimeControl                 131
 #define IDM_LoadOptions                 132
 #define IDM_SaveOptions                 133
+#define IDM_EditGame2                   134
+#define IDM_EditPosition2               135
 #define IDM_CommPort                    147
 #define IDM_EditComment                 148
 #define IDM_LoadNextGame                149

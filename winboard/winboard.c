@@ -4904,11 +4904,13 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_EditGame:
+    case IDM_EditGame2:
       EditGameEvent();
       SAY("edit game");
       break;
 
     case IDM_EditPosition:
+    case IDM_EditPosition2:
       EditPositionEvent();
       SAY("enter a FEN string or setup a position on the board using the control R pop up menu");
       break;
