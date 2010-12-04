@@ -33,7 +33,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@
 
 EXTRA_DIST = pixmaps bitmaps winboard sounds filebrowser/README \
-	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man \
+	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README
 
 DISTCLEANFILES = stamp-h
@@ -50,6 +50,9 @@ icondir = $(datadir)/icons/hicolor/48x48/apps
 dist_icon_DATA = xboard.png
 svgicondir = $(datadir)/icons/hicolor/scalable/apps
 dist_svgicon_DATA = xboard.svg
+
+Applicationsdir = $(datadir)/applications
+Applications_DATA = xboard.desktop
 
 
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
