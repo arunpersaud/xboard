@@ -1,3 +1,4 @@
+### if we are compiling with ZIPPY we need some extra source files
 
 if ZIPPY
   ZPY = zippy.c zippy.h
@@ -38,22 +39,51 @@ EXTRA_DIST = pixmaps bitmaps winboard sounds filebrowser/README \
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"'
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' -DBITMAPDIR='"$(datadir)/games/xboard/bitmaps/"'
 
 info_TEXINFOS =  xboard.texi
 xboard_TEXINFOS =  copyright.texi 
 man6_MANS = xboard.man
 
+
+### config file
+
 dist_sysconf_DATA = xboard.conf
+
+
+### icon files
 
 icondir = $(datadir)/icons/hicolor/48x48/apps
 dist_icon_DATA = xboard.png
 svgicondir = $(datadir)/icons/hicolor/scalable/apps
 dist_svgicon_DATA = xboard.svg
 
+
+### desktop files for KDE and gnome
+
 Applicationsdir = $(datadir)/applications
 Applications_DATA = xboard.desktop
 
+
+### directory and files to be used as bitmaps
+
+bitmapdir = $(datadir)/games/xboard/
+dist_bitmap_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
+
+
+### set correct dir in xboard.conf
+
+edit = sed -e 's|@bitmapdir[@]|$(bitmapdir)|g'
+
+xboard.conf: Makefile $(srcdir)/xboard.conf.in
+	rm -f $@ $@.tmp
+	srcdir=''
+	test -f ./$@.in || srcdir=$(srcdir)/;
+	$(edit) $${srcdir}$@.in >$@.tmp
+	mv $@.tmp $@
+
+
+### the man page depends on several files, so we add a special rule
 
 xboard.man: xboard.texi copyright.texi gpl.texinfo version.texi
 	$(srcdir)/texi2man $(srcdir)/xboard.texi > xboard.man || (rm -f xboard.man ; false)
