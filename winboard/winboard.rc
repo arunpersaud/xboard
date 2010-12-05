@@ -71,36 +71,36 @@ BEGIN
     LTEXT           "Within number of minutes:",OPT_TCtext2,113,54,81,8,NOT 
                     WS_GROUP
     EDITTEXT        OPT_TCTime,197,52,32,12,ES_AUTOHSCROLL
-    LTEXT           "Initial number of minutes:",OPT_TCitext1,15,89,106,8,NOT 
+    LTEXT           "Initial number of minutes:",OPT_TCitext1,15,89,126,8,NOT 
                     WS_GROUP
-    EDITTEXT        OPT_TCTime2,127,87,32,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "Plus number of seconds per move:",OPT_TCitext2,15,105,109,8,NOT 
+    EDITTEXT        OPT_TCTime2,147,87,32,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Plus number of seconds per move:",OPT_TCitext2,15,105,129,8,NOT 
                     WS_GROUP
-    EDITTEXT        OPT_TCInc,127,103,32,12,ES_AUTOHSCROLL
-    LTEXT           "Maximum seconds per move:",OPT_TCftext,15,142,109,8,NOT 
+    EDITTEXT        OPT_TCInc,147,103,32,12,ES_AUTOHSCROLL
+    LTEXT           "Maximum seconds per move:",OPT_TCftext,15,142,129,8,NOT 
                     WS_GROUP
-    EDITTEXT        OPT_TCFixed,127,140,32,12,ES_AUTOHSCROLL
+    EDITTEXT        OPT_TCFixed,147,140,32,12,ES_AUTOHSCROLL
     LTEXT           "",OPT_TCitext3,185,148,67,8,NOT WS_GROUP
     LTEXT           "Time-Odds Factors:",GPB_Factors,6,158,150,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCOdds1,47,171,32,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "Engine #1:",IDC_Factor1,6,173,40,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCOdds2,127,171,32,12,ES_AUTOHSCROLL
-    LTEXT           "Engine #2:",IDC_Factor2,86,173,40,8,NOT WS_GROUP
-    PUSHBUTTON      "OK",IDOK,29,190,40,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,85,190,40,14
+    EDITTEXT        OPT_TCOdds1,57,171,32,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Engine #1:",IDC_Factor1,6,173,50,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds2,147,171,32,12,ES_AUTOHSCROLL
+    LTEXT           "Engine #2:",IDC_Factor2,96,173,50,8,NOT WS_GROUP
+    PUSHBUTTON      "OK",IDOK,139,190,40,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,195,190,40,14
 END
 
-DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 136, 55
+DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 166, 55
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Load Game Options"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "Load games with automatic stepping",OPT_Autostep,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,130,10
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,160,10
     EDITTEXT        OPT_ASTimeDelay,16,16,28,14,ES_AUTOHSCROLL
-    LTEXT           "seconds per move",OPT_AStext1,46,20,60,8,NOT WS_GROUP
-    PUSHBUTTON      "OK",IDOK,26,36,50,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,82,36,50,14
+    LTEXT           "seconds per move",OPT_AStext1,46,20,90,8,NOT WS_GROUP
+    PUSHBUTTON      "OK",IDOK,56,36,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,112,36,50,14
 END
 
 DLG_SaveOptions DIALOG DISCARDABLE  6, 17, 178, 119
@@ -109,9 +109,9 @@ CAPTION "Save Game Options"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "Save games automatically",OPT_Autosave,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,97,10
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,157,10
     CONTROL         "Prompt for filename",OPT_AVPrompt,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,18,75,10
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,18,150,10
     CONTROL         "To file:",OPT_AVToFile,"Button",BS_AUTORADIOBUTTON,16,
                     32,36,10
     EDITTEXT        OPT_AVFilename,54,30,97,14,ES_AUTOHSCROLL
@@ -121,7 +121,7 @@ BEGIN
                     60,39,10
     CONTROL         "Old",OPT_Old,"Button",BS_AUTORADIOBUTTON,54,60,114,10
     CONTROL         "Save out of book info in PGN",OPT_OutOfBookInfo,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,82,109,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,82,169,10
     PUSHBUTTON      "OK",IDOK,68,100,50,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,124,100,50,14
 END
@@ -331,35 +331,35 @@ BEGIN
     ICON            32514,IDC_STATIC,4,4,20,20
 END
 
-DLG_Startup DIALOG DISCARDABLE  0, 0, 276, 159
+DLG_Startup DIALOG DISCARDABLE  0, 0, 326, 159
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "WinBoard Startup"
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "What would you like to do?",IDC_Welcome,4,4,211,56
+    GROUPBOX        "What would you like to do?",IDC_Welcome,4,4,318,56
     CONTROL         "&Play against a chess engine or match two engines",
                     OPT_ChessEngine,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
-                    WS_TABSTOP,8,17,193,10
+                    WS_TABSTOP,8,17,310,10
     CONTROL         "&Use an Internet Chess Server",OPT_ChessServer,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,30,193,10
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,30,310,10
     CONTROL         "Just &view or edit game files",OPT_View,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,43,193,10
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,43,310,10
     LTEXT           "Specify Chess &Engines:",IDC_SPECIFY_ENG_STATIC,11,63,
                     102,10
-    COMBOBOX        OPT_ChessEngineName,17,74,194,129,CBS_DROPDOWN | 
+    COMBOBOX        OPT_ChessEngineName,17,74,244,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        OPT_SecondChessEngineName,17,92,194,129,CBS_DROPDOWN | 
+    COMBOBOX        OPT_SecondChessEngineName,17,92,244,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Specify Chess &Server:",IDC_SPECIFY_SERVER_STATIC,11,
                     108,102,10
-    COMBOBOX        OPT_ChessServerName,17,122,194,129,CBS_DROPDOWN | 
+    COMBOBOX        OPT_ChessServerName,17,122,244,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
     CONTROL         "&Additional options",OPT_AnyAdditional,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,11,142,71,10
-    EDITTEXT        OPT_AdditionalOptions,85,142,187,13,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,222,4,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,222,21,50,14
-    PUSHBUTTON      "&Help",IDM_HELPCONTENTS,222,38,50,14
+                    BS_AUTOCHECKBOX | WS_TABSTOP,11,142,91,10
+    EDITTEXT        OPT_AdditionalOptions,105,142,215,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,272,73,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,272,91,50,14
+    PUSHBUTTON      "&Help",IDM_HELPCONTENTS,272,109,50,14
 END
 
 DLG_IndexNumber DIALOG DISCARDABLE  0, 0, 236, 18
@@ -390,86 +390,86 @@ BEGIN
     EDITTEXT        OPT_Name,4,4,86,13,ES_AUTOHSCROLL
 END
 
-DLG_Sound DIALOG DISCARDABLE  0, 0, 242, 105
+DLG_Sound DIALOG DISCARDABLE  0, 0, 262, 105
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Sounds"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "&Event:",IDC_Event,4,7,26,9
-    COMBOBOX        CBO_Sounds,30,4,208,110,CBS_DROPDOWNLIST | WS_VSCROLL | 
+    LTEXT           "&Event:",IDC_Event,4,7,46,9
+    COMBOBOX        CBO_Sounds,50,4,208,110,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
 //    GROUPBOX        "sound type",IDC_STATIC,8,18,66,62
     CONTROL         "&No sound",OPT_NoSound,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,12,22,47,10
     CONTROL         "&Default beep",OPT_DefaultBeep,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,12,36,57,10
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,12,36,83,10
     CONTROL         "&Built-in sound:",OPT_BuiltInSound,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,12,51,60,10
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,12,51,83,10
     CONTROL         "&WAV file:",OPT_WavFile,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,12,66,45,10
-    COMBOBOX        OPT_BuiltInSoundName,76,48,103,109,CBS_DROPDOWNLIST | 
+                    WS_TABSTOP,12,66,83,10
+    COMBOBOX        OPT_BuiltInSoundName,96,48,103,109,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP | WS_GROUP
-    EDITTEXT        OPT_WavFileName,76,65,103,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "B&rowse...",OPT_BrowseSound,188,64,50,14
+    EDITTEXT        OPT_WavFileName,96,65,103,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "B&rowse...",OPT_BrowseSound,208,64,50,14
     PUSHBUTTON      "Defaults",OPT_DefaultSounds,6,86,50,14
-    DEFPUSHBUTTON   "OK",IDOK,132,86,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,188,86,50,14
-    PUSHBUTTON      "&Play",OPT_PlaySound,188,47,50,14
+    DEFPUSHBUTTON   "OK",IDOK,152,86,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,208,86,50,14
+    PUSHBUTTON      "&Play",OPT_PlaySound,208,47,50,14
 END
 
-DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 250, 197
+DLG_GeneralOptions DIALOG DISCARDABLE  0, 0, 300, 197
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,110,178,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,166,178,50,14
+    DEFPUSHBUTTON   "OK",IDOK,180,178,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,236,178,50,14
     CONTROL         "Always on &Top",OPT_AlwaysOnTop,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,6,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,6,151,10
     CONTROL         "Highlight Last &Move",OPT_HighlightLastMove,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,6,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,6,151,10
     CONTROL         "Always &Queen            Ctrl+Shift+Q",OPT_AlwaysQueen,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,4,20,126,10
+                    WS_TABSTOP,4,20,151,10
     CONTROL         "Periodic &Updates",OPT_PeriodicUpdates,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,20,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,20,151,10
     CONTROL         "Animate &Dragging",OPT_AnimateDragging,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,34,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,34,151,10
     CONTROL         "Ponder &Next Move  Ctrl+Shift+P",OPT_PonderNextMove,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,34,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,34,151,10
     CONTROL         "&Animate Moving         Ctrl+Shift+A",OPT_AnimateMoving,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,48,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,48,151,10
     CONTROL         "&Popup Exit Message",OPT_PopupExitMessage,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,48,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,48,151,10
     CONTROL         "Auto &Flag                   Ctrl+Shift+F",OPT_AutoFlag,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,4,62,126,10
+                    WS_TABSTOP,4,62,151,10
     CONTROL         "Popup Move &Errors",OPT_PopupMoveErrors,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,62,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,62,151,10
     CONTROL         "Auto Flip &View",OPT_AutoFlipView,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,76,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,76,151,10
     CONTROL         "Show Butt&on Bar",OPT_ShowButtonBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,76,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,76,151,10
     CONTROL         "Auto &Raise Board",OPT_AutoRaiseBoard,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,90,71,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,90,151,10
     CONTROL         "Show &Coordinates",OPT_ShowCoordinates,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,90,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,90,151,10
     CONTROL         "&Blindfold",OPT_Blindfold,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,4,104,126,10
+                    WS_TABSTOP,4,104,151,10
     CONTROL         "&Send Engine Think",OPT_ShowThinking,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,104,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,104,151,10
     CONTROL         "Highlight Dra&gging",OPT_HighlightDragging,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,118,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,118,151,10
     CONTROL         "Test &Legality            Ctrl+Shift+L",OPT_TestLegality,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,118,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,118,151,10
     CONTROL         "E&xtended PGN Info    Ctrl+Shift+X",OPT_SaveExtPGN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,4,132,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,132,151,10
     CONTROL         "&Hide Thinking          Ctrl+Shift+H",OPT_HideThinkFromHuman,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,132,126,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,156,132,151,10
     CONTROL         "&Info in Move History   Ctrl+Shift+I",OPT_ExtraInfoInMoveHistory,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,146,126,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,146,151,10
     CONTROL         "Highlight with Arro&w",OPT_HighlightMoveArrow,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,145,126,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,146,151,10
     CONTROL         "Displa&y Logos",OPT_AutoLogo,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,160,126,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,160,151,10
 END
 
 DLG_IcsOptions DIALOGEX 0, 0, 302, 268
@@ -480,39 +480,39 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,194,250,50,15
     PUSHBUTTON      "Cancel",IDCANCEL,248,250,50,15
     CONTROL         "&Auto Comment",OPT_AutoComment,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,12,63,8
+                    WS_TABSTOP,10,12,73,8
     CONTROL         "&Auto Kibitz",OPT_AutoKibitz,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,84,12,63,8
+                    WS_TABSTOP,94,12,73,8
     CONTROL         "Auto &Observe",OPT_AutoObserve,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,25,63,8
+                    WS_TABSTOP,10,25,150,8
     CONTROL         "&Get Move List",OPT_GetMoveList,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,10,38,63,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,38,150,8
     CONTROL         "&Local Line Editing",OPT_LocalLineEditing,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,10,51,84,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,51,150,8
     CONTROL         "&Quiet Play",OPT_QuietPlay,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,64,63,8
+                    WS_TABSTOP,10,64,150,8
     CONTROL         "See&k Graph",OPT_SeekGraph,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,77,63,8
+                    WS_TABSTOP,10,77,73,8
     CONTROL         "auto-&Refresh",OPT_AutoRefresh,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,84,77,63,8
+                    WS_TABSTOP,94,77,73,8
     CONTROL         "Bckgnd Obser&ve",OPT_BgObserve,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,90,68,8
+                    WS_TABSTOP,10,90,73,8
     CONTROL         "&Dual Board",OPT_DualBoard,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,84,90,63,8
+                    WS_TABSTOP,94,90,73,8
     CONTROL         "&Premove",OPT_Premove,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,160,12,46,10
+                    WS_TABSTOP,180,12,117,10
     CONTROL         "&White first move",OPT_PremoveWhite,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,26,67,10
-    EDITTEXT        OPT_PremoveWhiteText,236,22,25,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,180,26,67,10
+    EDITTEXT        OPT_PremoveWhiteText,256,22,25,14,ES_AUTOHSCROLL
     CONTROL         "&Black first move",OPT_PremoveBlack,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,40,66,10
-    EDITTEXT        OPT_PremoveBlackText,236,38,25,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,180,40,66,10
+    EDITTEXT        OPT_PremoveBlackText,256,38,25,14,ES_AUTOHSCROLL
     CONTROL         "One-Click &Move",OPT_SmartMove,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,160,54,100,10
+                    WS_TABSTOP,180,54,117,10
     CONTROL         "&Sound alarm at",OPT_IcsAlarm,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,160,85,63,10
-    EDITTEXT        OPT_IcsAlarmTime,236,81,26,14,ES_AUTOHSCROLL
-    LTEXT           "seconds",IDC_Sec,264,85,28,8
+                    WS_TABSTOP,180,85,63,10
+    EDITTEXT        OPT_IcsAlarmTime,244,81,18,14,ES_AUTOHSCROLL
+    LTEXT           "seconds",IDC_Sec,264,85,33,8
     PUSHBUTTON      "Choose...",OPT_ChooseShoutColor,97,114,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseSShoutColor,97,134,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseChannel1Color,97,154,45,15
@@ -559,12 +559,12 @@ BEGIN
     LTEXT           "Startup &Chat Boxes:",IDC_Boxes,4,251,65,8
     EDITTEXT        OPT_StartupChatBoxes,72,249,90,14,ES_AUTOHSCROLL
     GROUPBOX        "Interaction Colors",GPB_Colors,4,103,294,140
-    GROUPBOX        "Premove",GPB_Premove,154,0,144,69
-    GROUPBOX        "General",GPB_General,4,0,146,101
-    GROUPBOX        "Alarm",GPB_Alarm,154,71,144,30
+    GROUPBOX        "Premove",GPB_Premove,174,0,124,69
+    GROUPBOX        "General",GPB_General,4,0,166,101
+    GROUPBOX        "Alarm",GPB_Alarm,174,71,124,30
 END
 
-DLG_BoardOptions DIALOG DISCARDABLE  0, 0, 194, 250
+DLG_BoardOptions DIALOG DISCARDABLE  0, 0, 224, 250
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Board Options"
 FONT 8, "MS Sans Serif"
@@ -574,39 +574,39 @@ BEGIN
     CONTROL         "&Tiny",OPT_SizeTiny,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,9,14,50,10
     CONTROL         "T&eeny",OPT_SizeTeeny,"Button",BS_AUTORADIOBUTTON,9,24,
-                    50,10
+                    60,10
     CONTROL         "&Dinky",OPT_SizeDinky,"Button",BS_AUTORADIOBUTTON,9,34,
-                    50,10
+                    60,10
     CONTROL         "&Petite",OPT_SizePetite,"Button",BS_AUTORADIOBUTTON,9,
-                    44,50,10
-    CONTROL         "Sl&im",OPT_SizeSlim,"Button",BS_AUTORADIOBUTTON,9,54,50,
+                    44,60,10
+    CONTROL         "Sl&im",OPT_SizeSlim,"Button",BS_AUTORADIOBUTTON,9,54,60,
                     10
     CONTROL         "&Small",OPT_SizeSmall,"Button",BS_AUTORADIOBUTTON,9,64,
-                    50,10
+                    60,10
     CONTROL         "Medi&ocre",OPT_SizeMediocre,"Button",BS_AUTORADIOBUTTON,
-                    70,14,50,10
+                    80,14,60,10
     CONTROL         "&Middling",OPT_SizeMiddling,"Button",BS_AUTORADIOBUTTON,
-                    70,24,50,10
+                    80,24,60,10
     CONTROL         "&Average",OPT_SizeAverage,"Button",BS_AUTORADIOBUTTON,
-                    70,34,50,10
+                    80,34,60,10
     CONTROL         "Mode&rate",OPT_SizeModerate,"Button",BS_AUTORADIOBUTTON,
-                    70,44,50,10
-    CONTROL         "Medi&um",OPT_SizeMedium,"Button",BS_AUTORADIOBUTTON,70,
-                    54,50,10
-    CONTROL         "Bul&ky",OPT_SizeBulky,"Button",BS_AUTORADIOBUTTON,70,64,
-                    50,10
-    CONTROL         "&Large",OPT_SizeLarge,"Button",BS_AUTORADIOBUTTON,134,
-                    14,50,10
-    CONTROL         "&Big",OPT_SizeBig,"Button",BS_AUTORADIOBUTTON,134,24,50,
+                    80,44,60,10
+    CONTROL         "Medi&um",OPT_SizeMedium,"Button",BS_AUTORADIOBUTTON,80,
+                    54,60,10
+    CONTROL         "Bul&ky",OPT_SizeBulky,"Button",BS_AUTORADIOBUTTON,80,64,
+                    60,10
+    CONTROL         "&Large",OPT_SizeLarge,"Button",BS_AUTORADIOBUTTON,154,
+                    14,60,10
+    CONTROL         "&Big",OPT_SizeBig,"Button",BS_AUTORADIOBUTTON,154,24,60,
                     10
-    CONTROL         "&Huge",OPT_SizeHuge,"Button",BS_AUTORADIOBUTTON,134,34,
-                    50,10
-    CONTROL         "&Giant",OPT_SizeGiant,"Button",BS_AUTORADIOBUTTON,134,
-                    44,50,10
+    CONTROL         "&Huge",OPT_SizeHuge,"Button",BS_AUTORADIOBUTTON,154,34,
+                    60,10
+    CONTROL         "&Giant",OPT_SizeGiant,"Button",BS_AUTORADIOBUTTON,154,
+                    44,60,10
     CONTROL         "&Colossal",OPT_SizeColossal,"Button",BS_AUTORADIOBUTTON,
-                    134,54,50,10
+                    154,54,60,10
     CONTROL         "Tita&nic",OPT_SizeTitanic,"Button",BS_AUTORADIOBUTTON,
-                    134,64,50,10
+                    154,64,60,10
     PUSHBUTTON      "...",OPT_ChooseLightSquareColor,110,94,20,15
     PUSHBUTTON      "...",OPT_ChooseDarkSquareColor,110,112,20,15
     PUSHBUTTON      "...",OPT_ChooseWhitePieceColor,110,130,20,15
@@ -616,9 +616,9 @@ BEGIN
     CONTROL         "Monochrome",OPT_Monochrome,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,210,64,10
     CONTROL         "All White",OPT_AllWhite,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,140,180,53,10
+                    WS_TABSTOP,140,180,73,10
     CONTROL         "Flip Black",OPT_UpsideDown,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,140,192,53,10
+                    WS_TABSTOP,140,192,73,10
     PUSHBUTTON      "Defaults",OPT_DefaultBoardColors,80,206,50,15
     EDITTEXT        OPT_DarkSquareColor,80,112,25,15,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
@@ -630,7 +630,7 @@ BEGIN
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
     EDITTEXT        OPT_HighlightSquareColor,80,166,25,15,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
-    GROUPBOX        "Colors",IDC_STATIC,4,84,185,142
+    GROUPBOX        "Colors",GPB_Colors,4,84,215,142
     EDITTEXT        OPT_PremoveHighlightColor,80,184,25,15,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
     LTEXT           "Light Squares",IDC_Light,10,98,60,10
@@ -639,81 +639,81 @@ BEGIN
     LTEXT           "Black Pieces",IDC_Black,10,152,60,10
     LTEXT           "Square Highlights",IDC_High,10,170,60,10
     LTEXT           "Premove Highlights",IDC_PreHigh,10,188,70,10
-    GROUPBOX        "Size",GPB_Size,4,4,185,75
+    GROUPBOX        "Size",GPB_Size,4,4,215,75
     EDITTEXT        OPT_SampleLightSquare,144,96,39,36,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
     EDITTEXT        OPT_SampleDarkSquare,144,138,39,36,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
 END
 
-DLG_NewVariant DIALOG DISCARDABLE  0, 0, 194, 250
+DLG_NewVariant DIALOG DISCARDABLE  0, 0, 224, 250
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Variants"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,84,232,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,140,232,50,14
+    DEFPUSHBUTTON   "OK",IDOK,114,232,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,170,232,50,14
     CONTROL         "&normal",OPT_VariantNormal,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,9,14,50,10
+                    WS_GROUP | WS_TABSTOP,9,14,70,10
     CONTROL         "&FRC",OPT_VariantFRC,"Button",BS_AUTORADIOBUTTON,9,
-                    24,50,10
+                    24,70,10
     CONTROL         "&wildcastle",OPT_VariantWildcastle,"Button",BS_AUTORADIOBUTTON,9,34,
                     50,10
     CONTROL         "&nocastle",OPT_VariantNocastle,"Button",BS_AUTORADIOBUTTON,9,
-                    44,50,10
+                    44,70,10
     CONTROL         "&losers",OPT_VariantLosers,"Button",BS_AUTORADIOBUTTON,
-                    9,54,50,10
+                    9,54,70,10
     CONTROL         "&giveaway",OPT_VariantGiveaway,"Button",BS_AUTORADIOBUTTON,
-                    9,64,50,10
+                    9,64,70,10
     CONTROL         "s&uicide",OPT_VariantSuicide,"Button",BS_AUTORADIOBUTTON,
-                    9,74,50,10
+                    9,74,70,10
     CONTROL         "&3Check",OPT_Variant3Check,"Button",BS_AUTORADIOBUTTON,9,84,
-                    50,10
+                    70,10
     CONTROL         "&twokings",OPT_VariantTwoKings,"Button",BS_AUTORADIOBUTTON,9,94,
-                    50,10
+                    70,10
     CONTROL         "&atomic",OPT_VariantAtomic,"Button",BS_AUTORADIOBUTTON,
-                    9,104,50,10
-    CONTROL         "cra&zyhouse",OPT_VariantCrazyhouse,"Button",BS_AUTORADIOBUTTON,70,14,
-                    50,10
-    CONTROL         "&bughouse",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,70,24,50,
+                    9,104,70,10
+    CONTROL         "cra&zyhouse",OPT_VariantCrazyhouse,"Button",BS_AUTORADIOBUTTON,80,14,
+                    70,10
+    CONTROL         "&bughouse",OPT_VariantBughouse,"Button",BS_AUTORADIOBUTTON,80,24,70,
                     10
-    CONTROL         "&Twilight",OPT_VariantTwilight,"Button",BS_AUTORADIOBUTTON,70,34,50,
+    CONTROL         "&Twilight",OPT_VariantTwilight,"Button",BS_AUTORADIOBUTTON,80,34,70,
                     10
-    CONTROL         "&shogi",OPT_VariantShogi,"Button",BS_AUTORADIOBUTTON,70,
-                    44,50,10
-    CONTROL         "su&per",OPT_VariantSuper,"Button",BS_AUTORADIOBUTTON,70,
-                    54,50,10
+    CONTROL         "&shogi",OPT_VariantShogi,"Button",BS_AUTORADIOBUTTON,80,
+                    44,70,10
+    CONTROL         "su&per",OPT_VariantSuper,"Button",BS_AUTORADIOBUTTON,80,
+                    54,70,10
     CONTROL         "&knightmate",OPT_VariantKnightmate,"Button",BS_AUTORADIOBUTTON,
-                    70,64,50,10
-    CONTROL         "&Berolina",OPT_VariantBerolina,"Button",BS_AUTORADIOBUTTON,70,74,
-                    50,10
-    CONTROL         "c&ylinder",OPT_VariantCylinder,"Button",BS_AUTORADIOBUTTON,70,
-                    84,50,10
-    CONTROL         "&fairy",OPT_VariantFairy,"Button",BS_AUTORADIOBUTTON,70,
-                    94,50,10
-    CONTROL         "&makruk",OPT_VariantMakruk,"Button",BS_AUTORADIOBUTTON,70,
-                    104,50,10
-    CONTROL         "&gothic",OPT_VariantGothic,"Button",BS_AUTORADIOBUTTON,134,14,
-                    50,10
-    CONTROL         "&capablanca",OPT_VariantCapablanca,"Button",BS_AUTORADIOBUTTON,134,
-                    24,50,10
-    CONTROL         "&Janus",OPT_VariantJanus,"Button",BS_AUTORADIOBUTTON,134,34,
-                    50,10
-    CONTROL         "&CRC",OPT_VariantCRC,"Button",BS_AUTORADIOBUTTON,134,44,
-                    50,10
-    CONTROL         "&Falcon",OPT_VariantFalcon,"Button",BS_AUTORADIOBUTTON,134,
-                    54,50,10
-    CONTROL         "cou&rier",OPT_VariantCourier,"Button",BS_AUTORADIOBUTTON,134,64,
-                    50,10
-    CONTROL         "&Great",OPT_VariantGreat,"Button",BS_AUTORADIOBUTTON,134,74,
-                    50,10
-    CONTROL         "&Shatranj",OPT_VariantShatranj,"Button",BS_AUTORADIOBUTTON,134,
-                    84,50,10
-    CONTROL         "Seira&wan",OPT_VariantSChess,"Button",BS_AUTORADIOBUTTON,134,94,50,
+                    80,64,70,10
+    CONTROL         "&Berolina",OPT_VariantBerolina,"Button",BS_AUTORADIOBUTTON,80,74,
+                    70,10
+    CONTROL         "c&ylinder",OPT_VariantCylinder,"Button",BS_AUTORADIOBUTTON,80,
+                    84,70,10
+    CONTROL         "&fairy",OPT_VariantFairy,"Button",BS_AUTORADIOBUTTON,80,
+                    94,70,10
+    CONTROL         "&makruk",OPT_VariantMakruk,"Button",BS_AUTORADIOBUTTON,80,
+                    104,70,10
+    CONTROL         "&gothic",OPT_VariantGothic,"Button",BS_AUTORADIOBUTTON,154,14,
+                    70,10
+    CONTROL         "&capablanca",OPT_VariantCapablanca,"Button",BS_AUTORADIOBUTTON,154,
+                    24,70,10
+    CONTROL         "&Janus",OPT_VariantJanus,"Button",BS_AUTORADIOBUTTON,154,34,
+                    70,10
+    CONTROL         "&CRC",OPT_VariantCRC,"Button",BS_AUTORADIOBUTTON,154,44,
+                    70,10
+    CONTROL         "&Falcon",OPT_VariantFalcon,"Button",BS_AUTORADIOBUTTON,154,
+                    54,70,10
+    CONTROL         "cou&rier",OPT_VariantCourier,"Button",BS_AUTORADIOBUTTON,154,64,
+                    70,10
+    CONTROL         "&Great",OPT_VariantGreat,"Button",BS_AUTORADIOBUTTON,154,74,
+                    70,10
+    CONTROL         "&Shatranj",OPT_VariantShatranj,"Button",BS_AUTORADIOBUTTON,154,
+                    84,70,10
+    CONTROL         "Seira&wan",OPT_VariantSChess,"Button",BS_AUTORADIOBUTTON,154,94,70,
                     10
-    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,134,104,50,
+    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,154,104,70,
                     10
-    GROUPBOX        "Variant",GPB_Variant,4,4,185,115
+    GROUPBOX        "Variant",GPB_Variant,4,4,215,115
     LTEXT           "Board size:",GPB_Board,10,135,40,8
     EDITTEXT        IDC_Ranks,60,131,14,14,ES_AUTOHSCROLL
     LTEXT           "ranks",IDC_Height,77,135,22,8
@@ -722,7 +722,7 @@ BEGIN
     LTEXT           "Holdings with room for:",IDC_Hand,10,153,90,8
     EDITTEXT        IDC_Holdings,93,149,14,14,ES_AUTOHSCROLL
     LTEXT           "pieces",IDC_Pieces,110,153,22,8
-    LTEXT           "('-1' means defaults for selected variant)",IDC_Def,10,171,150,8
+    LTEXT           "('-1' means defaults for selected variant)",IDC_Def,10,171,210,8
 END
 
 DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 226
@@ -741,29 +741,29 @@ BEGIN
     PUSHBUTTON      "Choose...",OPT_ChooseMoveHistoryFont,212,174,45,15
     PUSHBUTTON      "&Defaults",OPT_DefaultFonts,3,208,50,15
     CONTROL         "",OPT_SampleCoordFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,59,140,20
+                    WS_DISABLED | WS_BORDER,77,59,130,20
     CONTROL         "",OPT_SampleTagFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,97,140,20
+                    WS_DISABLED | WS_BORDER,77,97,130,20
     CONTROL         "",OPT_SampleCommentsFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,121,140,20
+                    WS_DISABLED | WS_BORDER,77,121,130,20
     CONTROL         "",OPT_SampleConsoleFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,145,140,20
-    LTEXT           "Clocks",OPT_ClockFont,13,16,45,10,NOT WS_GROUP
-    LTEXT           "Messages",OPT_MessageFont,13,40,45,10,NOT WS_GROUP
-    LTEXT           "Coordinates",OPT_CoordFont,13,64,45,10,NOT WS_GROUP
-    LTEXT           "Tags",OPT_EditTagsFont,13,102,45,10,NOT WS_GROUP
-    LTEXT           "Comments",OPT_CommentsFont,13,126,45,10,NOT WS_GROUP
-    LTEXT           "I C S Interaction",OPT_MessageFont5,13,150,50,10,NOT 
+                    WS_DISABLED | WS_BORDER,77,145,130,20
+    LTEXT           "Clocks",OPT_ClockFont,13,16,63,10,NOT WS_GROUP
+    LTEXT           "Messages",OPT_MessageFont,13,40,63,10,NOT WS_GROUP
+    LTEXT           "Coordinates",OPT_CoordFont,13,64,63,10,NOT WS_GROUP
+    LTEXT           "Tags",OPT_EditTagsFont,13,102,63,10,NOT WS_GROUP
+    LTEXT           "Comments",OPT_CommentsFont,13,126,63,10,NOT WS_GROUP
+    LTEXT           "I C S Interaction",OPT_MessageFont5,13,150,63,10,NOT 
                     WS_GROUP
     CONTROL         "",OPT_SampleClockFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,11,140,20
+                    WS_DISABLED | WS_BORDER,77,11,130,20
     CONTROL         "",OPT_SampleMessageFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,35,140,20
+                    WS_DISABLED | WS_BORDER,77,35,130,20
     GROUPBOX        "Current Board Size",GPB_Current,3,1,259,83
     GROUPBOX        "All Board Sizes",GPB_All,3,87,259,109
     CONTROL         "",OPT_SampleMoveHistoryFont,"RICHEDIT",ES_READONLY | 
-                    WS_DISABLED | WS_BORDER,67,170,140,20
-    LTEXT           "Move History, Engine Output",OPT_MessageFont6,13,171,50,20,NOT 
+                    WS_DISABLED | WS_BORDER,77,170,130,20
+    LTEXT           "Move History, Engine Output",OPT_MessageFont6,13,171,63,20,NOT 
                     WS_GROUP
 END
 
@@ -779,21 +779,21 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,122,28,50,14
 END
 
-DLG_GameListOptions DIALOG DISCARDABLE  0, 0, 206, 150
+DLG_GameListOptions DIALOG DISCARDABLE  0, 0, 218, 150
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Game List Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "PGN &Tags:",IDC_GLT,2,2,36,8
-    LISTBOX         IDC_GameListTags,2,12,158,112,LBS_USETABSTOPS | 
+    LTEXT           "PGN &Tags:",IDC_GLT,2,2,158,8
+    LISTBOX         IDC_GameListTags,2,12,153,112,LBS_USETABSTOPS | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "&Up",IDC_GLT_Up,164,12,38,14
-    PUSHBUTTON      "&Down",IDC_GLT_Down,164,30,38,14
-    PUSHBUTTON      "Default",IDC_GLT_Restore,164,92,38,14
-    PUSHBUTTON      "Factory",IDC_GLT_Default,164,110,38,14
-    DEFPUSHBUTTON   "OK",IDOK,96,132,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,152,132,50,14
-    LTEXT           "Restore to:",IDC_GLT_RestoreTo,164,80,36,8
+    PUSHBUTTON      "&Up",IDC_GLT_Up,164,12,50,14
+    PUSHBUTTON      "&Down",IDC_GLT_Down,164,30,50,14
+    PUSHBUTTON      "Default",IDC_GLT_Restore,164,92,50,14
+    PUSHBUTTON      "Factory",IDC_GLT_Default,164,110,50,14
+    DEFPUSHBUTTON   "OK",IDOK,108,132,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,164,132,50,14
+    LTEXT           "Restore to:",IDC_GLT_RestoreTo,159,80,58,8
 END
 
 DLG_MoveHistory DIALOGEX 0, 0, 225, 130
@@ -859,89 +859,89 @@ BEGIN
                     WS_BORDER | WS_TABSTOP,3,90,284,13
 END
 
-DLG_EnginePlayOptions DIALOG DISCARDABLE  0, 0, 208, 202
+DLG_EnginePlayOptions DIALOG DISCARDABLE  0, 0, 248, 202
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Adjudications"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "Ponder Next Move",IDC_EpPonder,"Button",BS_AUTOCHECKBOX |
-                    WS_TABSTOP,4,4,75,10
+                    WS_TABSTOP,4,4,240,10
     CONTROL         "Enable and Show Thinking (recommended)",
                     IDC_EpShowThinking,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    4,16,152,10
+                    4,16,240,10
     CONTROL         "Hide Thinking when Playing against Human",
                     IDC_EpHideThinkingHuman,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,4,28,153,10
+                    WS_TABSTOP,4,28,240,10
     CONTROL         "Periodic Updates (for Analysis Mode)",
                     IDC_EpPeriodicUpdates,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,4,40,131,10
-    GROUPBOX        "Adjudications in non-ICS games",GPB_Adjudications,4,56,200,98
-    LTEXT           "Adjudicate draw after:",IDC_Draw,10,72,70,8
-    EDITTEXT        IDC_EpDrawMoveCount,116,68,40,14,ES_AUTOHSCROLL
-    LTEXT           "moves",IDC_Moves,158,72,22,8
-    LTEXT           "Win/loss adjudication threshold:",IDC_Threshold,10,90,102,
+                    WS_TABSTOP,4,40,240,10
+    GROUPBOX        "Adjudications in non-ICS games",GPB_Adjudications,4,56,240,98
+    LTEXT           "Adjudicate draw after:",IDC_Draw,10,72,124,8
+    EDITTEXT        IDC_EpDrawMoveCount,136,68,40,14,ES_AUTOHSCROLL
+    LTEXT           "moves",IDC_Moves,178,72,22,8
+    LTEXT           "Win/loss adjudication threshold:",IDC_Threshold,10,90,124,
                     8
-    EDITTEXT        IDC_EpAdjudicationThreshold,116,86,40,14,ES_AUTOHSCROLL
-    LTEXT           "centipawns",IDC_Centi,158,90,37,8
+    EDITTEXT        IDC_EpAdjudicationThreshold,136,86,40,14,ES_AUTOHSCROLL
+    LTEXT           "centipawns",IDC_Centi,178,90,65,8
     CONTROL         "&Verify Engine Claims",IDC_TestClaims,"Button",BS_AUTOCHECKBOX |
-                    WS_TABSTOP,10,108,100,10
+                    WS_TABSTOP,10,108,119,10
     CONTROL         "Detect &Mates",
                     IDC_DetectMates,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    10,118,100,10
+                    10,118,119,10
     CONTROL         "Draw if &Insufficient Material",
                     IDC_MaterialDraws,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,128,100,10
+                    WS_TABSTOP,10,128,119,10
     CONTROL         "Adjudicate &Trivial Draws",
                     IDC_TrivialDraws,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,138,100,10
-    GROUPBOX        "Apply",GPB_Apply,115,102,81,47
-    EDITTEXT        IDC_RuleMoves,120,113,20,14,ES_AUTOHSCROLL
-    LTEXT           "-move rule",IDC_Rule,142,117,35,8
-    EDITTEXT        IDC_DrawRepeats,120,130,20,14,ES_AUTOHSCROLL
-    LTEXT           "-fold repeats",IDC_Repeats,142,134,50,8
+                    WS_TABSTOP,10,138,119,10
+    GROUPBOX        "Apply",GPB_Apply,130,102,106,47
+    EDITTEXT        IDC_RuleMoves,135,113,20,14,ES_AUTOHSCROLL
+    LTEXT           "-move rule",IDC_Rule,157,117,75,8
+    EDITTEXT        IDC_DrawRepeats,135,130,20,14,ES_AUTOHSCROLL
+    LTEXT           "-fold repeats",IDC_Repeats,157,134,75,8
     CONTROL         "Engine #1 Score is Absolute",
                     IDC_ScoreAbs1,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,156,120,10
+                    WS_TABSTOP,10,156,140,10
     CONTROL         "Engine #2 Score is Absolute",
                     IDC_ScoreAbs2,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,168,120,10
-    DEFPUSHBUTTON   "OK",IDOK,98,185,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,154,185,50,14
+                    WS_TABSTOP,10,168,140,10
+    DEFPUSHBUTTON   "OK",IDOK,138,185,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,194,185,50,14
 END
 
-DLG_OptionsUCI DIALOG DISCARDABLE  0, 0, 228, 160
+DLG_OptionsUCI DIALOG DISCARDABLE  0, 0, 248, 160
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Common Engine Settings"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Polyglot Directory:",IDC_PolyDir,2,8,58,8
-    EDITTEXT        IDC_PolyglotDir,62,4,140,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BrowseForPolyglotDir,206,4,17,14
-    LTEXT           "Hash Size (MB):",IDC_Hash,2,26,52,8
-    EDITTEXT        IDC_HashSize,62,22,40,14,ES_AUTOHSCROLL
-    LTEXT           "EGTB Path:",IDC_Path,2,44,39,8
-    EDITTEXT        IDC_PathToEGTB,62,40,140,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BrowseForEGTB,206,40,17,14
-    LTEXT           "EGTB Size (MB):",IDC_Cache,2,62,54,8
-    EDITTEXT        IDC_SizeOfEGTB,62,58,40,14,ES_AUTOHSCROLL
+    LTEXT           "Polyglot Directory:",IDC_PolyDir,2,8,78,8
+    EDITTEXT        IDC_PolyglotDir,82,4,140,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BrowseForPolyglotDir,226,4,17,14
+    LTEXT           "Hash Size (MB):",IDC_Hash,2,26,78,8
+    EDITTEXT        IDC_HashSize,82,22,40,14,ES_AUTOHSCROLL
+    LTEXT           "EGTB Path:",IDC_Path,2,44,78,8
+    EDITTEXT        IDC_PathToEGTB,82,40,140,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BrowseForEGTB,226,40,17,14
+    LTEXT           "EGTB Size (MB):",IDC_Cache,2,62,78,8
+    EDITTEXT        IDC_SizeOfEGTB,82,58,40,14,ES_AUTOHSCROLL
     CONTROL         "Use Book:",IDC_UseBook,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,2,80,49,10
-    EDITTEXT        IDC_BookFile,62,76,140,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BrowseForBook,206,76,17,14
-    LTEXT           "Max nr of CPUs:",IDC_CPU,106,26,52,8
-    EDITTEXT        IDC_Cores,162,22,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_BookFile,82,76,140,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BrowseForBook,226,76,17,14
+    LTEXT           "Max nr of CPUs:",IDC_CPU,126,26,60,8
+    EDITTEXT        IDC_Cores,187,22,35,14,ES_AUTOHSCROLL
     CONTROL         "First has Own Book",IDC_OwnBook1,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,2,94,100,10
     CONTROL         "Second has Own Book",IDC_OwnBook2,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,2,107,100,10
-    LTEXT           "Book Depth:",IDC_Depth,106,98,52,8
-    EDITTEXT        IDC_BookDep,162,94,40,14,ES_AUTOHSCROLL
-    LTEXT           "Book Variation:",IDC_Variation,106,116,52,8
-    EDITTEXT        IDC_BookStr,162,112,40,14,ES_AUTOHSCROLL
+    LTEXT           "Book Depth:",IDC_Depth,126,98,60,8
+    EDITTEXT        IDC_BookDep,187,94,35,14,ES_AUTOHSCROLL
+    LTEXT           "Book Variation:",IDC_Variation,126,116,60,8
+    EDITTEXT        IDC_BookStr,187,112,35,14,ES_AUTOHSCROLL
     LTEXT           "Default Match Games:",IDC_DefGames,2,135,72,8
-    EDITTEXT        IDC_Games,76,131,28,14,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,118,142,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,174,142,50,14
+    EDITTEXT        IDC_Games,82,131,28,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,128,142,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,194,142,50,14
 END
 
 DLG_Null DIALOG DISCARDABLE  0, 0, 186, 50
