@@ -521,8 +521,8 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
     // add butons at the bottom of dialog window
     y += 13*(nr>>1)+5;
 
-    AddControl(x+275, y+18*(buttonRows-1), 25, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, IDOK-2000);
-    AddControl(x+235, y+18*(buttonRows-1), 35, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, IDCANCEL-2000);
+    AddControl(x+225, y+18*(buttonRows-1), 30, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, IDOK-2000);
+    AddControl(x+260, y+18*(buttonRows-1), 40, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, IDCANCEL-2000);
     for(i=0; i<buttons; i++) {
 	AddControl(x+70*(i%4)+5, y+18*(i/4), 65, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 2*(nr+i));
 	layoutList[nr+i] = buttonList[i];
