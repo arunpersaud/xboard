@@ -884,6 +884,8 @@ SetUserLogo()
 	    snprintf(oldUserName, MSG_SIZ, "logos\\%s.bmp", curName);
 		userLogo = LoadImage( 0, oldUserName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
 		safeStrCpy(oldUserName, curName, sizeof(oldUserName)/sizeof(oldUserName[0]) );
+		if(userLogo == NULL)
+		    userLogo = LoadImage( 0, "logos\\dummy.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
 	  }
     }
 }
