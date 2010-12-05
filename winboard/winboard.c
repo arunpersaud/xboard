@@ -398,13 +398,11 @@ Translate(HWND hDlg, int dialogID)
 {   // translate all text items in the given dialog
     int i=0, j, k;
     char buf[MSG_SIZ], *s;
-//if(appData.debugMode) fprintf(debugFP, "Translate(%d)\n", dialogID);
     if(!barbaric) return;
     while(dialogItems[i][0] && dialogItems[i][0] != dialogID) i++; // find the dialog description
     if(dialogItems[i][0] != dialogID) return; // unknown dialog, should not happen
     GetWindowText( hDlg, buf, MSG_SIZ );
     s = T_(buf);
-//if(appData.debugMode) fprintf(debugFP, "WindowText '%s' -> '%s'\n", buf, s);
     if(strcmp(buf, s)) SetWindowText(hDlg, s); // replace by translated string (if different)
     for(j=1; k=dialogItems[i][j]; j++) { // translate all listed dialog items
         GetDlgItemText(hDlg, k, buf, MSG_SIZ);
@@ -414,10 +412,35 @@ Translate(HWND hDlg, int dialogID)
     }
 }
 
+HMENU
+TranslateOneMenu(int i, HMENU subMenu)
+{
+    int j;
+    static MENUITEMINFO info;
+
+    info.cbSize = sizeof(MENUITEMINFO);
+    info.fMask = MIIM_STATE | MIIM_TYPE;
+          for(j=GetMenuItemCount(subMenu)-1; j>=0; j--){
+            char buf[MSG_SIZ];
+            info.dwTypeData = buf;
+            info.cch = sizeof(buf);
+            GetMenuItemInfo(subMenu, j, TRUE, &info);
+            if(i < 10) {
+                if(menuText[i][j]) safeStrCpy(buf, menuText[i][j], sizeof(buf)/sizeof(buf[0]) );
+                else menuText[i][j] = strdup(buf); // remember original on first change
+            }
+            if(buf[0] == NULLCHAR) continue;
+            info.dwTypeData = T_(buf);
+            info.cch = strlen(buf)+1;
+            SetMenuItemInfo(subMenu, j, TRUE, &info);
+          }
+    return subMenu;
+}
+
 void
 TranslateMenus(int addLanguage)
 {
-    int i, j;
+    int i;
     WIN32_FIND_DATA fileData;
     HANDLE hFind;
 #define IDM_English 1895
@@ -427,20 +450,7 @@ TranslateMenus(int addLanguage)
           HMENU subMenu = GetSubMenu(mainMenu, i);
           ModifyMenu(mainMenu, i, MF_STRING|MF_BYPOSITION|MF_POPUP|EnableMenuItem(mainMenu, i, MF_BYPOSITION),
                                                                   (UINT) subMenu, T_(menuBarText[tinyLayout][i]));
-          for(j=GetMenuItemCount(subMenu)-1; j>=0; j--){
-            char buf[MSG_SIZ];
-            UINT k = GetMenuItemID(subMenu, j);
-	      if(menuText[i][j])
-		safeStrCpy(buf, menuText[i][j], sizeof(buf)/sizeof(buf[0]) ); else {
-                GetMenuString(subMenu, j, buf, MSG_SIZ, MF_BYPOSITION);
-                menuText[i][j] = strdup(buf); // remember original on first change
-            }
-            if(buf[0] == NULLCHAR) continue;
-//fprintf(debugFP, "menu(%d,%d) = %s (%08x, %08x) %d\n", i, j, buf, mainMenu, subMenu, k);
-            ModifyMenu(subMenu, j, MF_STRING|MF_BYPOSITION
-                                   |CheckMenuItem(subMenu, j, MF_BYPOSITION)
-                                   |EnableMenuItem(subMenu, j, MF_BYPOSITION), k, T_(buf));
-          }
+          TranslateOneMenu(i, subMenu);
         }
         DrawMenuBar(hwndMain);
     }
@@ -5806,6 +5816,7 @@ MenuPopup(HWND hwnd, POINT pt, HMENU hmenu, UINT def)
    * menu that TrackPopupMenu displays.
    */
   hmenuTrackPopup = GetSubMenu(hmenu, 0);
+  TranslateOneMenu(10, hmenuTrackPopup);
 
   SetMenuDefaultItem(hmenuTrackPopup, def, FALSE);
 
