@@ -282,7 +282,7 @@ int dialogItems[][40] = {
   OPT_AutoFlipView, OPT_ShowButtonBar, OPT_AutoRaiseBoard, OPT_ShowCoordinates,
   OPT_Blindfold, OPT_ShowThinking, OPT_HighlightDragging, OPT_TestLegality,
   OPT_SaveExtPGN, OPT_HideThinkFromHuman, OPT_ExtraInfoInMoveHistory,
-  OPT_HighlightMoveArrow, OPT_AutoLogo }, 
+  OPT_HighlightMoveArrow, OPT_AutoLogo ,OPT_SmartMove }, 
 { DLG_IcsOptions, IDOK, IDCANCEL, OPT_AutoComment, OPT_AutoKibitz, OPT_AutoObserve,
   OPT_GetMoveList, OPT_LocalLineEditing, OPT_QuietPlay, OPT_SeekGraph, OPT_AutoRefresh,
   OPT_BgObserve, OPT_DualBoard, OPT_Premove, OPT_PremoveWhite, OPT_PremoveBlack,

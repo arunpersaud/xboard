@@ -470,6 +470,8 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,146,151,10
     CONTROL         "Displa&y Logos",OPT_AutoLogo,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,160,151,10
+    CONTROL         "One-Click Move",OPT_SmartMove,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,160,151,10
 END
 
 DLG_IcsOptions DIALOGEX 0, 0, 302, 268

@@ -187,6 +187,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     CHECK_BOX(OPT_ExtraInfoInMoveHistory, appData.showEvalInMoveHistory);
     CHECK_BOX(OPT_HighlightMoveArrow, appData.highlightMoveWithArrow);
     CHECK_BOX(OPT_AutoLogo, appData.autoLogo); // [HGM] logo
+    CHECK_BOX(OPT_SmartMove, appData.oneClick); // [HGM] one-click
 
 #undef CHECK_BOX
 
@@ -235,6 +236,7 @@ GeneralOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.testLegality         = IS_CHECKED(OPT_TestLegality);
       appData.highlightMoveWithArrow=IS_CHECKED(OPT_HighlightMoveArrow);
       appData.autoLogo             =IS_CHECKED(OPT_AutoLogo); // [HGM] logo
+      appData.oneClick             =IS_CHECKED(OPT_SmartMove); // [HGM] one-click
 
 #undef IS_CHECKED
 
