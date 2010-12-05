@@ -248,7 +248,7 @@ Boolean barbaric; // flag indicating if translation is needed
 #define ABOUTBOX2 -1
 
 int dialogItems[][40] = {
-{ ABOUTBOX, IDOK, 400 }, 
+{ ABOUTBOX, IDOK, OPT_MESS, 400 }, 
 { DLG_TimeControl, IDC_Babble, OPT_TCUseMoves, OPT_TCUseInc, OPT_TCUseFixed, 
   OPT_TCtext1, OPT_TCtext2, OPT_TCitext1, OPT_TCitext2, OPT_TCftext, GPB_Factors,   IDC_Factor1, IDC_Factor2, IDOK, IDCANCEL }, 
 { DLG_LoadOptions, OPT_Autostep, OPT_AStext1, IDOK, IDCANCEL }, 

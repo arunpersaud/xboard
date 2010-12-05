@@ -50,8 +50,7 @@ BEGIN
     LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,5,160,8
     LTEXT           "Enhancements Copyright 2005\r\nAlessandro Scotti",
                     IDC_STATIC,6,65,120,24
-    LTEXT           "",
-                    OPT_MESS,6,85,120,16
+    LTEXT           "      ", OPT_MESS,6,85,120,16
 END
 
 DLG_TimeControl DIALOG DISCARDABLE  6, 18, 263, 212
