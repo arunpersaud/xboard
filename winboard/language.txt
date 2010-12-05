@@ -14,16 +14,13 @@
 ## TRANSLATION OF FOR EXAMPLE
 ##   24-ago-2010. Juan Pérez (j@xyz.p). Corrected translation for xyzzy.
 
-## Not very clear how to write comments, so I used ##
-## find them scattered around this translation
-
 ## Notes for translators (can be deleted from he file after translation):
-##   Just write the trnslations between the second pair of quotes
+##   Just write the translations between the second pair of quotes
 ##   Things like %s, %d and %c must be preserved in the original order
 ##   Empty translated strings will be ignored, so there is no reason
 ##   to delete those for which you don't know a translation,
-##   and you can start testing everything imemdiately.
-##   Simply rename the file LANGUAGE.lng, and WinBoard should see it,
+##   and you can start testing everything immediately.
+##   Simply rename this file to LANGUAGE.lng, and WinBoard should see it,
 ##   and allow you to use the option /language=LANGUAGE.
 ##   You are encouraged to call up the corresponding WinBoard dialog while
 ##   working on the translation, to see in which context the strings are used.
@@ -33,6 +30,14 @@
 ##   a different dialog! For this reason you will only see an 'OK' in the
 ##   About Box. After you translated it there, this translation will be used
 ##   for all other dialogs as well.
+## o Use ## for comments, to make iteasy to find them scattered throughout the translation
+## o Careful with temptation of direct translation, by example 'movimiento' for 'move' when 'jugada' is better.
+## o Try to use short phrases, more text doesn't imply more clearness.
+## o Check that your translation is right, does it mean what it does?
+## o Test your translation, check every dialog.
+## o For standard chess names check Wikipedia for confirmation.
+## o For menus, assign shortcuts (character &) until you finish the translation.
+##   preferably it should be unique in the applicable menu, so it depends on translation of other items!
 
 winboard.rc
 
@@ -44,17 +49,18 @@ MENUS:
 "New Sh&uffle Game..." === ""
 "New &Variant...\tAlt+Shift+V" === ""
 "&Load Game...\tCtrl-O" === ""
-"Load &Next Game\tAlt+PgDn" === ""
-"Load &Previous Game\tAlt+PgUp" === ""
-"&Reload Same Game" === ""
 "&Save Game...\tCtrl-S" === ""
 "L&oad Position...\tCtrl+Shift+O" === ""
-"Load N&ext Position\tAlt+Shift+PgDn" === ""
-"Load Pre&vious Position\tAlt+Shift+PgUp" === ""
-"Reload Sa&me Position" === ""
 "S&ave Position...\tCtrl+Shift+S" === ""
 "Save as &Diagram..." === ""
 "&Quit" === ""
+## Next six currently not used
+"Load &Next Game\tAlt+PgDn" === ""
+"Load &Previous Game\tAlt+PgUp" === ""
+"&Reload Same Game" === ""
+"Load N&ext Position\tAlt+Shift+PgDn" === ""
+"Load Pre&vious Position\tAlt+Shift+PgUp" === ""
+"Reload Sa&me Position" === ""
 
 "&Copy Game To Clipboard\tCtrl+C" === ""
 "C&opy Position To Clipboard\tCtrl+Shift+C" === ""
@@ -116,6 +122,8 @@ MENUS:
 "Adjudicate to &Black" === ""
 "Adjudicate &Draw" === ""
 
+"Install 1st..." === ""
+"Install 2nd..." === ""
 "Engine #&1 Settings..." === ""
 "Engine #&2 Settings..." === ""
 "&Hint..." === ""
@@ -133,6 +141,7 @@ MENUS:
 "G&ame List..." === ""
 "Soun&ds..." === ""
 "&ICS..." === ""
+"Add ICS..." === ""
 "Comm&unications..." === ""
 "Save Settings &Now" === ""
 "Save Settings on E&xit" === ""
@@ -186,11 +195,14 @@ ABOUTBOX
 "Enhancements Copyright 1992-2010  Free Software Foundation" === ""
 "Enhancements Copyright 2005\r\nAlessandro Scotti" === ""
 ## What happened with H.G.Muller? [He sold his copyrights to FSF for $1]
+## The following string of 6 spaces can be translated to an acknowledgement of the translator,
+## like "Traducción por Óscar Toledo G.".
+"      " === ""
 "WinBoard 0.0.0" === ""
 
 ABOUTBOX2
 
-## Weird, it is needed? [Not really. It is a built-in 'Easter Egg' joke.]
+## Weird, it is needed? [Normally not. It is a built-in 'Easter Egg' joke.]
 "galactic" === ""
 
 TIME CONTROL DIALOG
@@ -231,8 +243,8 @@ SAVE OPTIONS DIALOG
 "Save out of book info in PGN" === ""
 
 1536
+## This dialog is only used in some older Windows versions, so you might not be ableto test it.
 
-## Not tested, I could not locate it (old file manager?) [On some older Windows this is used]
 "Open" === ""
 "File &Name:" === ""
 "&Directories:" === ""
@@ -243,6 +255,7 @@ SAVE OPTIONS DIALOG
 "&Index number:" === ""
 
 COMMPORT
+## Always disabled if you are not actually using an ICS through a comport, so difficult to test.
 
 "Communication Port Settings" === ""
 "Net&work..." === ""
@@ -262,6 +275,8 @@ EDIT COMMENT
 PROMOTION POPUP
 
 "Promote to:" === ""
+## next used in Shogi as promotion-popup header
+"Promote?" === ""
 "Promotion" === ""
 "&Queen" === ""
 "&Rook" === ""
@@ -272,8 +287,8 @@ PROMOTION POPUP
 
 "Chance&llor" === ""
 "&Archbishop" === ""
-"      YES" === ""
-"       NO" === ""
+"YES" === ""
+"NO" === ""
 "C&entaur" === ""
 
 GAME LIST
@@ -312,7 +327,7 @@ COLORIZE
 
 QUESTION
 
-## next one might also be just a programmer's joke...
+## next one seems only a placeholder, and never appears? [might also be just a programmer's joke...]
 "Enter a chess engine command or just type something stupid that will completely screw things up." === ""
 "Question" === ""
 "Enter" === ""
@@ -355,7 +370,7 @@ SOUND DIALOG
 "&Defaults" === ""
 
 GENERAL OPTIONS DIALOG
-## pliece keep the indication of the accelerator keys for the same keystroke
+## pleace keep the indication of the accelerator keys for the same keystroke
 ## Note: finely tuned spaces to align keys at right
 
 "General Options" === ""
@@ -383,6 +398,7 @@ GENERAL OPTIONS DIALOG
 "E&xtended PGN Info    Ctrl+Shift+X" === ""
 "Highlight with Arro&w" === ""
 "Displa&y Logos" === ""
+"One-Click Move" === ""
 
 ICS OPTIONS
 
@@ -399,7 +415,6 @@ ICS OPTIONS
 "seconds" === ""
 "Choose..." === ""
 "Do &not colorize messages" === ""
-
 "&Auto Kibitz" === ""
 "Auto Kibit&z" === ""
 "See&k Graph" === ""
@@ -413,8 +428,8 @@ ICS OPTIONS
 "General" === ""
 
 BOARD OPTIONS
-(NOTE: AllWhite uses the white (outline-style) piece bitmaps for both sides
-       FlipBlack draws the black pieces upside down)
+## (NOTE: AllWhite uses the white (outline-style) piece bitmaps for both sides
+##        FlipBlack draws the black pieces upside down)
 
 "Board Options" === ""
 "Defaults" === ""
@@ -425,16 +440,13 @@ BOARD OPTIONS
 "Square Highlights" === ""
 "Premove Highlights" === ""
 "Monochrome" === ""
-
-## Needed for these two string
 "All White" === ""
 "Flip Black" === ""
-
 "Size" === ""
 
 BOARD SIZES (translate as number?)
 ## Don't put numbers, or nobody will translate them. [True. But do we really want them translated?]
-## This is a space for imagination.
+## This is a space for imagination!
 "&Tiny" === ""
 "T&eeny" === ""
 "&Dinky" === ""
@@ -487,7 +499,7 @@ ADJUDICATIONS DIALOG
 "Draw if &Insufficient Material" === ""
 "Adjudicate &Trivial Draws" === ""
 "Apply" === ""
-## next 2 are suffixed to a textedit containing a number (50 or 3)
+## next 2 are suffixed to a text-edit containing a number (50 or 3)
 "-move rule" === ""
 "-fold repeats" === ""
 "Engine #1 Score is Absolute" === ""
@@ -509,7 +521,7 @@ COMMON ENGINE DIALOG
 "Default Match Games:" === ""
 
 NEW-VARIANT DIALOG
-(NOTE: the 'holdings' are the pieces standing next to the board ('in hand')
+## (NOTE: the 'holdings' are the pieces standing next to the board ('in hand')
 
 "Variants" === ""
 "Variant" === ""
@@ -518,8 +530,6 @@ NEW-VARIANT DIALOG
 "files" === ""
 "Holdings with room for:" === ""
 "pieces" === ""
-
-## Make it wider
 "('-1' means defaults for selected variant)" === ""
 
 VARIANT NAMES: 
@@ -701,6 +711,7 @@ wclipbrd.c
 
 woptions.c
 
+## For now, do NOT translate sound names, because WinBoard will no longer recognize them
 "Move" === ""
 "Bell" === ""
 "ICS Alarm" === ""
@@ -717,6 +728,8 @@ woptions.c
 "Challenge" === ""
 "Request" === ""
 "Seek" === ""
+## end of sound names
+
 "Browse for Sound File" === ""
 "Can't parse com port settings" === ""
 "Option Error" === ""
@@ -770,6 +783,7 @@ backend.c
 
 "bad timeControl option %s" === ""
 "bad searchTime option %s" === ""
+## following to will appear in combinationslike "first engine" 
 "first" === ""
 "second" === ""
 "protocol version %d not supported" === ""
@@ -806,7 +820,7 @@ backend.c
 "Error gathering move list: extra board" === ""
 "Illegal move \"%s\" from ICS" === ""
 "Couldn't parse move \"%s\" from ICS" === ""
-## 'say' is important? [Indeed: it is an ICS command and must remain untranslated]
+## The leading 'say' is used as ICS command here, and should NOT be translated. Only the message behind it.
 "say Internal error; bad moveType %d (%d,%d-%d,%d)" === ""
 "You are playing Black" === ""
 "You are playing White" === ""
@@ -816,7 +830,7 @@ backend.c
 "Illegal move" === ""
 "End of game" === ""
 "Incorrect move" === ""
-## next 6: Indicate that second %s is 'first' or 'second'. Or I'm wrong? [correct]
+## next 6: Second (first 3) or first (other) '%s' will be substituted for 'first' or 'second'.
 "Illegal move \"%s\" from %s machine" === ""
 "Illegal move \"%s\" (rejected by %s chess program)" === ""
 "Failed to start %s chess program %s on %s: %s\n" === ""
@@ -916,7 +930,7 @@ backend.c
 
 END-OF-GAME MESSAGES (should they be translated?)
 ## I think that only for visualization and not for PGN, as PGN files are shared all around the world
-## [OK, I adapted the source that way]
+## [OK, I adapted the source that way. So please translate.]
 
 "Game aborted" === ""
 "White wins on time" === ""
