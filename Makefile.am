@@ -35,7 +35,8 @@ xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@
 
 EXTRA_DIST = pixmaps bitmaps winboard sounds filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
-	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README
+	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
+	xboard.conf.in
 
 DISTCLEANFILES = stamp-h
 
@@ -48,7 +49,7 @@ man6_MANS = xboard.man
 
 ### config file
 
-dist_sysconf_DATA = xboard.conf
+sysconf_DATA = xboard.conf
 
 
 ### icon files
@@ -76,12 +77,13 @@ dist_bitmap_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
 edit = sed -e 's|@bitmapdir[@]|$(bitmapdir)|g'
 
 xboard.conf: Makefile $(srcdir)/xboard.conf.in
-	rm -f $@ $@.tmp
-	srcdir=''
-	test -f ./$@.in || srcdir=$(srcdir)/;
-	$(edit) $${srcdir}$@.in >$@.tmp
-	mv $@.tmp $@
+	@echo '  'GEN '  ' $@;
+	@rm -f $@ $@.tmp
+	@$(edit) $(srcdir)/$@.in >$@.tmp
+	@mv $@.tmp $@
 
+distclean-local:
+	-rm -f xboard.conf
 
 ### the man page depends on several files, so we add a special rule
 
