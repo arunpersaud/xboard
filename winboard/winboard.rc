@@ -422,8 +422,6 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,180,178,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,236,178,50,14
     CONTROL         "Always on &Top",OPT_AlwaysOnTop,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,4,6,151,10
     CONTROL         "Highlight Last &Move",OPT_HighlightLastMove,"Button",
@@ -472,6 +470,8 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,160,151,10
     CONTROL         "One-Click Move",OPT_SmartMove,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,160,151,10
+    DEFPUSHBUTTON   "OK",IDOK,180,178,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,236,178,50,14
 END
 
 DLG_IcsOptions DIALOGEX 0, 0, 302, 268
@@ -571,8 +571,6 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Board Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,84,232,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,140,232,50,14
     CONTROL         "&Tiny",OPT_SizeTiny,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,9,14,50,10
     CONTROL         "T&eeny",OPT_SizeTeeny,"Button",BS_AUTORADIOBUTTON,9,24,
@@ -646,6 +644,8 @@ BEGIN
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
     EDITTEXT        OPT_SampleDarkSquare,144,138,39,36,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,84,232,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,140,232,50,14
 END
 
 DLG_NewVariant DIALOG DISCARDABLE  0, 0, 224, 250
@@ -653,8 +653,6 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Variants"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,114,232,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,170,232,50,14
     CONTROL         "&normal",OPT_VariantNormal,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,9,14,70,10
     CONTROL         "&FRC",OPT_VariantFRC,"Button",BS_AUTORADIOBUTTON,9,
@@ -725,6 +723,8 @@ BEGIN
     EDITTEXT        IDC_Holdings,93,149,14,14,ES_AUTOHSCROLL
     LTEXT           "pieces",IDC_Pieces,110,153,22,8
     LTEXT           "('-1' means defaults for selected variant)",IDC_Def,10,171,210,8
+    DEFPUSHBUTTON   "OK",IDOK,114,232,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,170,232,50,14
 END
 
 DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 226
