@@ -45,7 +45,7 @@ MENUS:
 ## Pleace keep the accelerator-key indications on the menu items, and keep 
 ## the keystrokes the same (for now). (Alt, Ctrl and Shift can be translated.)
 
-"New &Game\tCtrl-N" === ""
+"&New Game\tCtrl-N" === ""
 "New Sh&uffle Game..." === ""
 "New &Variant...\tAlt+Shift+V" === ""
 "&Load Game...\tCtrl-O" === ""
@@ -163,13 +163,17 @@ MENUS:
 ## rather than litteral translations of the English names!
 "Archbishop" === ""
 "Chancellor" === ""
-## Next 2 Xiangqi (Chinese Chess) pieces. Google for 'Xiangqi' in the target language to get the stndard translation.
+## Next 2 Xiangqi (Chinese Chess) pieces. Google for 'Xiangqi' in the target language to get the standard translation.
 "Elephant" === ""
 "Cannon" === ""
 "Empty Square" === ""
 "Black" === ""
 "Demote" === ""
 "Clear Board    " === ""
+## Next 3: Shogi pieces.
+"Gold" === ""
+"Silver" === ""
+"Lance" === ""
 
 "Drop" === ""
 
@@ -233,7 +237,7 @@ LOAD OPTIONS DIALOG
 SAVE OPTIONS DIALOG
 
 "Save Game Options" === ""
-"Save Style" === ""
+"Save As: " === ""
 "Save games automatically" === ""
 "Prompt for filename" === ""
 "To file:" === ""
@@ -612,7 +616,7 @@ winboard.c
 "E&ngine" === ""
 "&Options" === ""
 "&Help" === ""
-"You can only start a match from the initial position" === ""
+"You can only start a match from the initial position." === ""
 "Font name too long:" === ""
 "Font point size missing:" === ""
 "Can't parse color name %s" === ""
@@ -892,7 +896,7 @@ backend.c
 "Still need to make moves for games %s\n" === ""
 "Edit comment" === ""
 "Edit comment on %d.%s%s" === ""
-"Starting analysis mode...\nIf this message stays up, your chess program does not support analysis." ===  "Comenzando modo de análisis...\nSi este mensaje permanece, su programa de ajedrez no admite análisis."
+"Starting analysis mode...\nIf this message stays up, your chess program does not support analysis." ===  ""
 "It is not White's turn" === ""
 "It is not Black's turn" === ""
 "Wait until your turn,\nor select Move Now" === ""
@@ -964,4 +968,5 @@ END-OF-GAME MESSAGES (should they be translated?)
 "False win claim: '%s'" === ""
 "False draw claim: '%s'" === ""
 "xboard exit" === ""
+
 
