@@ -162,15 +162,20 @@ PSAYSTRING RealSayString;
 
 VOID SayString(char *mess, BOOL flag)
 { // for debug file
-	char buf[8000], *p;
+	static char buf[8000], *p;
+        int l = strlen(buf);
 	if(appData.debugMode) fprintf(debugFP, "SAY '%s'\n", mess);
-	safeStrCpy(buf, mess, sizeof(buf)/sizeof(buf[0]));
+        if(l) buf[l++] = ' '; // separate by space from previous
+	safeStrCpy(buf+l, mess, 8000-1-l); // buffer
+        if(!flag) return; // wait for flush
 	if(p = StrCaseStr(buf, "Xboard adjudication:")) {
 		int i;
 		for(i=19; i>1; i--) p[i] = p[i-1];
 		p[1] = ' ';
 	}
-	RealSayString(buf, flag);
+	RealSayString(buf, !strcmp(mess, " ")); // kludge to indicate flushing of interruptable speach
+	if(appData.debugMode) fprintf(debugFP, "SPEAK '%s'\n", buf);
+	buf[0] = NULLCHAR;
 }
 
 //static int fromX = 0, fromY = 0;
@@ -332,8 +337,9 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			char buf[MSG_SIZ];
 			n = boards[currentMove][fromY][1];
 			snprintf(buf, MSG_SIZ, "%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
-			SayString(buf, TRUE);
+			SayString(buf, FALSE);
 		}
+		SayString(" ", TRUE);
 	} else
 	if(fromX == BOARD_RGHT + 1) {
 		SayString("white holdings", FALSE);
@@ -341,18 +347,19 @@ KeyboardEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			char buf[MSG_SIZ];
 			n = boards[currentMove][fromY][BOARD_WIDTH-2];
 			snprintf(buf, MSG_SIZ,"%d %s%s", n, PieceToName(currentPiece,0), n == 1 ? "" : "s");
-			SayString(buf, TRUE);
+			SayString(buf, FALSE);
 		}
+		SayString(" ", TRUE);
 	} else
 	if(fromX >= BOARD_LEFT && fromX < BOARD_RGHT) {
 		char buf[MSG_SIZ];
 		xchar = SquareToChar(fromX);
 		ynum = SquareToNum(fromY);
 		if(currentPiece != EmptySquare) {
-//			SayString(piece[0] == 'W' ? "white" : "black", TRUE);
 		  snprintf(buf, MSG_SIZ, "%s %s %s", xchar, ynum, piece);
 		} else snprintf(buf, MSG_SIZ, "%s %s", xchar, ynum);
-		SayString(buf, TRUE);
+		SayString(buf, FALSE);
+		SayString(" ", TRUE);
 	}
 	return;
 }
@@ -414,7 +421,7 @@ PossibleAttackMove()
 
 //if(appData.debugMode) fprintf(debugFP, "PossibleAttackMove %d %d %d %d\n", fromX, fromY, oldFromX, oldFromY);
 	if(fromY < 0 || fromY >= BOARD_HEIGHT) return;
-	if(fromX < BOARD_LEFT || fromX >= BOARD_RGHT) { SayString("holdings",FALSE); return; }
+	if(fromX < BOARD_LEFT || fromX >= BOARD_RGHT) { SayString("holdings",TRUE); return; }
 
 	piece = boards[currentMove][fromY][fromX];
 	if(piece == EmptySquare) { // if square is empty, try to substitute selected piece
@@ -425,7 +432,7 @@ PossibleAttackMove()
 		SayString("Your", FALSE);
 		SayString(PieceToName(piece, 0), FALSE);
 		SayString("would have", FALSE);
-	    } else { SayString("You must select a piece first", FALSE); return; }
+	    } else { SayString("You must select a piece first", TRUE); return; }
 	}
 
 	victim = boards[currentMove][fromY][fromX];
@@ -437,6 +444,7 @@ PossibleAttackMove()
 	cl.count = 0; cl.rf = fromY; cl.ff = fromX; cl.rt = cl.ft = -1;
 	GenLegal(boards[currentMove], PosFlags(currentMove + swapColor), ReadCallback, (VOIDSTAR) &cl);
 	if(cl.count == 0) SayString("None", FALSE);
+	SayString("", TRUE); // flush
 	boards[currentMove][fromY][fromX] = victim; // repair
 
 	if( removedSelectedPiece ) boards[currentMove][oldFromY][oldFromX] = piece;
@@ -450,7 +458,7 @@ PossibleAttacked()
 	ChessSquare piece = EmptySquare, victim;
 
 	if(fromY < 0 || fromY >= BOARD_HEIGHT) return;
-	if(fromX < BOARD_LEFT || fromX >= BOARD_RGHT) { SayString("holdings",FALSE); return; }
+	if(fromX < BOARD_LEFT || fromX >= BOARD_RGHT) { SayString("holdings",TRUE); return; }
 
 	if(oldFromX >= 0 && oldFromY >= 0) { // if piece is selected, remove it
 		piece = boards[currentMove][oldFromY][oldFromX];
@@ -471,6 +479,7 @@ PossibleAttacked()
 	cl.count = 0; cl.rt = fromY; cl.ft = fromX; cl.rf = cl.ff = -1;
 	GenLegal(boards[currentMove], PosFlags(currentMove), ReadCallback, (VOIDSTAR) &cl);
 	if(cl.count == 0) SayString("None", FALSE);
+	SayString("", TRUE); // flush
 	boards[currentMove][fromY][fromX] = victim; // put back original occupant
 
 	if(oldFromX >= 0 && oldFromY >= 0) { // put back possibl selected piece
@@ -504,6 +513,7 @@ ReadRow()
 		SayString(ynum, FALSE);
 		SayString("empty", FALSE);
 	}
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -531,6 +541,7 @@ ReadColumn()
 		SayString(xchar, FALSE);
 		SayString("file empty", FALSE);
 	}
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -577,6 +588,7 @@ SayUpperDiagnols()
 		}
 	}
 	else SayString("There is no squares to your upper left", FALSE);
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -623,6 +635,7 @@ SayLowerDiagnols()
 		}
 	}
 	else SayString("There is no squares to your lower left", FALSE);
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -756,6 +769,7 @@ SayKnightMoves()
 			SayString(piece, FALSE);
 		}
 	}
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -795,6 +809,7 @@ SayPieces(ChessSquare p)
 		}
 	}
 	if(count == 0) SayString("nowhere", FALSE);
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -818,7 +833,7 @@ SayCurrentPos()
 		SayString("on a dark square",FALSE);
 
 	PossibleAttacked();
-	return;
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -893,7 +908,7 @@ SayAllBoard()
 			}
 		}
 	}
-
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -912,6 +927,7 @@ SayWhosTurn()
 			SayString("White is on move here", FALSE);
 		else	SayString("Black is on move here", FALSE);
 	}
+	SayString("", TRUE); // flush
 }
 
 extern char *commentList[];
@@ -1067,6 +1083,7 @@ SayMachineMove(int evenIfDuplicate)
 		SayString(messageText, FALSE);
 	    }
 
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -1089,6 +1106,7 @@ SayClockTime()
 	SayString(str2, FALSE);
 	lastWhiteTime = whiteTimeRemaining;
 	lastBlackTime = blackTimeRemaining;
+	SayString("", TRUE); // flush
 }
 
 VOID
@@ -1098,6 +1116,7 @@ Toggle(Boolean *b, char *mess)
 	SayString(mess, FALSE);
 	SayString("is now", FALSE);
 	SayString(*b ? "on" : "off", FALSE);
+	SayString("", TRUE); // flush
 }
 
 /* handles keyboard moves in a click-click fashion */
@@ -1156,7 +1175,7 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		currentpiece = boards[currentMove][fromY][fromX];
 		piece = PieceToName(currentpiece,1);
 		SayString(piece, FALSE);
-		SayString("selected", FALSE);
+		SayString("selected", TRUE);
 		}
 		else {
 		oldFromX = oldFromY = -1;
@@ -1172,7 +1191,7 @@ KeyboardMove(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			currentpiece = boards[currentMove][fromY][fromX];
 			piece = PieceToName(currentpiece,0);
 			SayString(piece, FALSE);
-			SayString("unselected", FALSE);
+			SayString("unselected", TRUE);
 			}
 		}
 	}
@@ -1217,7 +1236,7 @@ NiceTime(int x)
     case '\020': /* ctrl P */\
       { char buf[MSG_SIZ];\
 	if(GetWindowText(hwnd, buf, MSG_SIZ-1))\
-		SayString(buf, FALSE);\
+		SayString(buf, TRUE);\
       }\
       return 0;\
 
@@ -1373,7 +1392,7 @@ NiceTime(int x)
 #define JAWS_COPYRIGHT \
 	SetDlgItemText(hDlg, OPT_MESS, "Auditory/Keyboard Enhancements  By:  Ed Rodriguez (sort of)");
 
-#define SAY(S) SayString((S), FALSE)
+#define SAY(S) SayString((S), TRUE)
 
 #define SAYMACHINEMOVE() SayMachineMove(0)
 
