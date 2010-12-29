@@ -714,11 +714,11 @@ BEGIN
     CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,154,104,70,
                     10
     GROUPBOX        "Variant",GPB_Variant,4,4,215,115
-    LTEXT           "Board size:",GPB_Board,10,135,40,8
-    EDITTEXT        IDC_Ranks,60,131,14,14,ES_AUTOHSCROLL
+    LTEXT           "Board size:",GPB_Board,10,135,40,8,WS_TABSTOP
     LTEXT           "ranks",IDC_Height,77,135,22,8
-    EDITTEXT        IDC_Files,116,131,14,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_Ranks,60,131,14,14,ES_AUTOHSCROLL
     LTEXT           "files",IDC_Width,133,135,37,8
+    EDITTEXT        IDC_Files,116,131,14,14,ES_AUTOHSCROLL
     LTEXT           "Holdings with room for:",IDC_Hand,10,153,90,8
     EDITTEXT        IDC_Holdings,93,149,14,14,ES_AUTOHSCROLL
     LTEXT           "pieces",IDC_Pieces,110,153,22,8
