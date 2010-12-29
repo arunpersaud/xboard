@@ -766,6 +766,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   }
 
   JAWS_INIT
+  TranslateMenus(1);
 
 //  InitCommonControlsEx(&ex);
   InitCommonControls();
@@ -1060,7 +1061,6 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
 
   InitDrawingSizes(boardSize, 0);
-  TranslateMenus(1);
   InitMenuChecks();
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
 
