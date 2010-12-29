@@ -1136,7 +1136,7 @@ BEGIN
         MENUITEM "E&dit Position\tCtrl+Shift+E",IDM_EditPosition2
         MENUITEM SEPARATOR
         MENUITEM "Edit Ta&gs...",               IDM_EditTags
-        MENUITEM "Edit &Comment...",            IDM_EditComment
+        MENUITEM "Edit Co&mment...",            IDM_EditComment
         MENUITEM "Enter &Username...",          IDM_TypeInName
         MENUITEM SEPARATOR
         MENUITEM "&Revert\tHome",               IDM_Revert
