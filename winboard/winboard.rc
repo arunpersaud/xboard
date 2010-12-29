@@ -572,7 +572,7 @@ CAPTION "Board Options"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "&Tiny",OPT_SizeTiny,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,9,14,50,10
+                    WS_GROUP,9,14,50,10
     CONTROL         "T&eeny",OPT_SizeTeeny,"Button",BS_AUTORADIOBUTTON,9,24,
                     60,10
     CONTROL         "&Dinky",OPT_SizeDinky,"Button",BS_AUTORADIOBUTTON,9,34,
@@ -654,7 +654,7 @@ CAPTION "Variants"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "&normal",OPT_VariantNormal,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,9,14,70,10
+                    WS_GROUP,9,14,70,10
     CONTROL         "&FRC",OPT_VariantFRC,"Button",BS_AUTORADIOBUTTON,9,
                     24,70,10
     CONTROL         "&wildcastle",OPT_VariantWildcastle,"Button",BS_AUTORADIOBUTTON,9,34,
