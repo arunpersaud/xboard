@@ -166,7 +166,7 @@ VOID SayString(char *mess, BOOL flag)
         int l = strlen(buf);
 	if(appData.debugMode) fprintf(debugFP, "SAY '%s'\n", mess);
         if(l) buf[l++] = ' '; // separate by space from previous
-	safeStrCpy(buf+l, mess, 8000-1-l); // buffer
+	safeStrCpy(buf+l, _(mess), 8000-1-l); // buffer
         if(!flag) return; // wait for flush
 	if(p = StrCaseStr(buf, "Xboard adjudication:")) {
 		int i;
@@ -240,7 +240,7 @@ AdaptMenu()
 	    if(menuItemJAWS[i].name[0] == '-')
 		 AppendMenu(menuJAWS, MF_SEPARATOR, (UINT_PTR) 0, NULL);
 	    else AppendMenu(menuJAWS, MF_ENABLED|MF_STRING,
-			(UINT_PTR) menuItemJAWS[i].code, (LPCTSTR) menuItemJAWS[i].name);
+			(UINT_PTR) menuItemJAWS[i].code, (LPCTSTR) _(menuItemJAWS[i].name));
 	}
 	InsertMenu(menuMain, 7, MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING,
 		(UINT_PTR) menuJAWS, "&JAWS");
