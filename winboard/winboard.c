@@ -6901,7 +6901,8 @@ ConsoleTextSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       SendMessage(hInput, message, wParam, lParam);
     }
     return 0;
-   } // [HGM] navigate: for Ctrl+R, flow into nex case (moved up here) to summon up menu
+   } // [HGM] navigate: for Ctrl+R, flow into next case (moved up here) to summon up menu
+   lParam = -1;
   case WM_RBUTTONDOWN:
     if (!(GetKeyState(VK_SHIFT) & ~1)) {
       /* Move selection here if it was empty */
@@ -6910,7 +6911,7 @@ ConsoleTextSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       pt.y = HIWORD(lParam);
       SendMessage(hwnd, EM_EXGETSEL, 0, (LPARAM)&sel);
       if (sel.cpMin == sel.cpMax) {
-        sel.cpMin = SendMessage(hwnd, EM_CHARFROMPOS, 0, (LPARAM)&pt); /*doc is wrong*/
+        if(lParam != -1) sel.cpMin = SendMessage(hwnd, EM_CHARFROMPOS, 0, (LPARAM)&pt); /*doc is wrong*/
 	sel.cpMax = sel.cpMin;
 	SendMessage(hwnd, EM_EXSETSEL, 0, (LPARAM)&sel);
       }
