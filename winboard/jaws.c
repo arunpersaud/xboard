@@ -237,9 +237,9 @@ AdaptMenu()
 	    else AppendMenu(menuJAWS, MF_ENABLED|MF_STRING,
 			(UINT_PTR) menuItemJAWS[i].code, (LPCTSTR) menuItemJAWS[i].name);
 	}
-	InsertMenu(menuMain, 5, MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING,
+	InsertMenu(menuMain, 7, MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING,
 		(UINT_PTR) menuJAWS, "&JAWS");
-	oldMenuItemState[6] = oldMenuItemState[5];
+	oldMenuItemState[8] = oldMenuItemState[7];
 	DrawMenuBar(hwndMain);
 }
 
@@ -264,8 +264,8 @@ InitJAWS()
 		int i;
 
 		AdaptMenu();
-		menuBarText[0][5] = "&JAWS";
-		for(i=0; i<7; i++) menuBarText[1][i] = menuBarText[0][i];
+		menuBarText[0][8] = menuBarText[0][7]; menuBarText[0][7] = "&JAWS";
+		for(i=0; i<9; i++) menuBarText[1][i] = menuBarText[0][i];
 	}
 
 	hAccelJAWS = CreateAcceleratorTable(acceleratorsJAWS, 14);
