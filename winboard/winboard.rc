@@ -822,16 +822,16 @@ EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "Engine output"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Engine #1",IDC_EngineLabel1,14,2,84,8
     RTEXT           "NPS",IDC_Engine1_NPS,206,2,57,8
+    LTEXT           "Engine #1",IDC_EngineLabel1,14,2,84,8
     CONTROL         "",IDC_EngineMemo1,"RICHEDIT",ES_MULTILINE | 
                     ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_BORDER | WS_VSCROLL | 
                     WS_HSCROLL | WS_TABSTOP,0,10,262,72
     LTEXT           "Engine #2",IDC_EngineLabel2,15,84,103,8
-    RTEXT           "NPS",IDC_Engine2_NPS,210,84,55,8
     CONTROL         "",IDC_EngineMemo2,"RICHEDIT",ES_MULTILINE | 
                     ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_BORDER | WS_VSCROLL | 
                     WS_HSCROLL | WS_TABSTOP,2,92,262,74
+    RTEXT           "NPS",IDC_Engine2_NPS,210,84,55,8
     ICON            IDI_UNKNOWN_14,IDC_Color1,2,4,20,20,SS_REALSIZEIMAGE
     ICON            IDI_UNKNOWN_14,IDC_Color2,4,84,20,20
     LTEXT           "Static",IDC_StateData1,120,2,83,8
