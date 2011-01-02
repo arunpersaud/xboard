@@ -4991,6 +4991,9 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
     moveList[endPV-1][1] = fromY + ONE;
     moveList[endPV-1][2] = toX + AAA;
     moveList[endPV-1][3] = toY + ONE;
+    moveList[endPV-1][4] = promoChar;
+    moveList[endPV-1][5] = NULLCHAR;
+    strncat(moveList[endPV-1], "\n", MOVE_LEN);
     if(storeComments)
 	CoordsToAlgebraic(boards[endPV - 1],
 			     PosFlags(endPV - 1),
