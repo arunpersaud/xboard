@@ -1474,14 +1474,14 @@ END
 NO_ALT ACCELERATORS MOVEABLE PURE 
 BEGIN
     VK_DELETE,      IDM_RetractMove,        VIRTKEY, NOINVERT
+    VK_INSERT,      IDM_MoveNow,            VIRTKEY, NOINVERT
+#ifndef JAWS
     VK_END,         IDM_TruncateGame,       VIRTKEY, NOINVERT
     VK_HOME,        IDM_Revert,             VIRTKEY, NOINVERT
-    VK_INSERT,      IDM_MoveNow,            VIRTKEY, NOINVERT
     VK_NEXT,        IDM_LoadNextGame,       VIRTKEY, NOINVERT
     VK_NEXT,        IDM_LoadNextPosition,   VIRTKEY, SHIFT, NOINVERT
     VK_PRIOR,       IDM_LoadPrevGame,       VIRTKEY, NOINVERT
     VK_PRIOR,       IDM_LoadPrevPosition,   VIRTKEY, SHIFT, NOINVERT
-#ifndef JAWS
     VK_LEFT,        IDM_Backward,           VIRTKEY, NOINVERT
     VK_RIGHT,       IDM_Forward,            VIRTKEY, NOINVERT
     VK_DOWN,        IDM_ToEnd,              VIRTKEY, NOINVERT
