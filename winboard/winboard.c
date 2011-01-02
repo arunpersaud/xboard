@@ -6255,7 +6255,7 @@ CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	sizeY = newSizeY;
       }
     }
-    SendDlgItemMessage( hDlg, OPT_CommentText, EM_SETEVENTMASK, 0, ENM_MOUSEEVENTS );
+    SendDlgItemMessage( hDlg, OPT_CommentText, EM_SETEVENTMASK, 0, ENM_MOUSEEVENTS | ENM_KEYEVENTS );
     return FALSE;
 
   case WM_COMMAND: /* message: received a command */
@@ -6304,13 +6304,19 @@ CommentDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         if( wParam == OPT_CommentText ) {
             MSGFILTER * lpMF = (MSGFILTER *) lParam;
 
-            if( lpMF->msg == WM_RBUTTONDOWN && (lpMF->wParam & (MK_CONTROL | MK_SHIFT)) == 0 ) {
+            if( lpMF->msg == WM_RBUTTONDOWN && (lpMF->wParam & (MK_CONTROL | MK_SHIFT)) == 0 ||
+                lpMF->msg == WM_CHAR && lpMF->wParam == '\022' ) {
                 POINTL pt;
                 LRESULT index;
 
                 pt.x = LOWORD( lpMF->lParam );
                 pt.y = HIWORD( lpMF->lParam );
 
+                if(lpMF->msg == WM_CHAR) {
+                        CHARRANGE sel;
+                        SendDlgItemMessage( hDlg, OPT_CommentText, EM_EXGETSEL, 0, (LPARAM) &sel );
+                        index = sel.cpMin;
+                } else
                 index = SendDlgItemMessage( hDlg, OPT_CommentText, EM_CHARFROMPOS, 0, (LPARAM) &pt );
 
 		hwndText = GetDlgItem(hDlg, OPT_CommentText); // cloned from above
