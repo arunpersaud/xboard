@@ -6414,6 +6414,7 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND:
     switch (LOWORD(wParam)) {
     case IDOK:
+
       shiftKey = GetKeyState(VK_SHIFT) < 0; // [HGM] remember last shift status
       GetDlgItemText(hDlg, OPT_Move, move, sizeof(move));
       { int n; Board board;

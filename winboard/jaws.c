@@ -1275,6 +1275,7 @@ NiceTime(int x)
 			KeyboardEvent(hwnd, message, wParam, lParam);\
 			break;\
 		case VK_SPACE:\
+                        shiftKey = GetKeyState(VK_SHIFT) < 0;\
 			KeyboardMove(hwnd, message, wParam, lParam);\
 			break;\
 		}\
