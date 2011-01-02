@@ -921,6 +921,8 @@ BEGIN
     PUSHBUTTON      "...",IDC_BrowseForPolyglotDir,226,4,17,14
     LTEXT           "Hash Size (MB):",IDC_Hash,2,26,78,8
     EDITTEXT        IDC_HashSize,82,22,40,14,ES_AUTOHSCROLL
+    LTEXT           "Max nr of CPUs:",IDC_CPU,126,26,60,8
+    EDITTEXT        IDC_Cores,187,22,35,14,ES_AUTOHSCROLL
     LTEXT           "EGTB Path:",IDC_Path,2,44,78,8
     EDITTEXT        IDC_PathToEGTB,82,40,140,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BrowseForEGTB,226,40,17,14
@@ -930,8 +932,6 @@ BEGIN
                     WS_TABSTOP,2,80,49,10
     EDITTEXT        IDC_BookFile,82,76,140,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BrowseForBook,226,76,17,14
-    LTEXT           "Max nr of CPUs:",IDC_CPU,126,26,60,8
-    EDITTEXT        IDC_Cores,187,22,35,14,ES_AUTOHSCROLL
     CONTROL         "First has Own Book",IDC_OwnBook1,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,2,94,100,10
     CONTROL         "Second has Own Book",IDC_OwnBook2,"Button",BS_AUTOCHECKBOX | 
