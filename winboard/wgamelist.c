@@ -359,8 +359,8 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
             CmailLoadGame(gameFile, nItem + 1, gameFileName, TRUE);
         }
         else {
-	    SetFocus(hwndMain); // [HGM] automatic focus switch
             LoadGame(gameFile, nItem + 1, gameFileName, TRUE);
+	    SetFocus(hwndMain); // [HGM] automatic focus switch
         }
     }
 
