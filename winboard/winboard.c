@@ -4299,6 +4299,7 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     Translate(hDlg, DLG_PromotionKing);
     ShowWindow(GetDlgItem(hDlg, PB_King), 
       (!appData.testLegality || gameInfo.variant == VariantSuicide ||
+       gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
        gameInfo.variant == VariantGiveaway || gameInfo.variant == VariantSuper ) ?
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Only allow C & A promotions if these pieces are defined */
@@ -4346,9 +4347,11 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case PB_Rook:
       promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteRook : BlackRook));
+      if(gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove)) promoChar = PieceToChar(BlackDragon);
       break;
     case PB_Bishop:
       promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteBishop : BlackBishop));
+      if(gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove)) promoChar = PieceToChar(BlackAlfil);
       break;
     case PB_Chancellor:
       promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteMarshall : BlackMarshall));

@@ -550,6 +550,7 @@ VARIANT NAMES:
 "cra&zyhouse" === ""
 "&bughouse" === ""
 "&Twilight" === ""
+"Sp&artan" === ""
 "&shogi" === ""
 "su&per" === ""
 "&knightmate" === ""

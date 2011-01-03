@@ -182,6 +182,7 @@ void GenPseudoLegal(board, flags, callback, closure)
     for (rf = 0; rf < BOARD_HEIGHT; rf++)
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
           ChessSquare piece;
+          int rookRange = 1000;
 
 	  if (flags & F_WHITE_ON_MOVE) {
 	      if (!WhitePiece(board[rf][ff])) continue;
@@ -418,7 +419,7 @@ void GenPseudoLegal(board, flags, callback, closure)
                           && !SameColor(board[rf][ff], board[rt][ft]))
                                callback(board, flags, NormalMove,
                                         rf, ff, rt, ft, closure);
-                      if(gameInfo.variant != VariantFairy && gameInfo.variant != VariantGreat) continue;
+                      if(gameInfo.variant == VariantShatranj && gameInfo.variant == VariantCourier) continue; // classical Alfil
                       rt = rf + rs; // in unknown variant we assume Modern Elephant, which can also do one step
                       ft = ff + fs;
                       if (!(rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT)
@@ -426,6 +427,12 @@ void GenPseudoLegal(board, flags, callback, closure)
                                callback(board, flags, NormalMove,
                                         rf, ff, rt, ft, closure);
 		  }
+                if(gameInfo.variant == VariantSpartan)
+                   for(fs = -1; fs <= 1; fs += 2) {
+                      ft = ff + fs;
+                      if (!(ft < BOARD_LEFT || ft >= BOARD_RGHT) && board[rf][ft] == EmptySquare)
+                               callback(board, flags, NormalMove, rf, ff, rf, ft, closure);
+                   }
                 break;
 
             /* Make Dragon-Horse also do Dababba moves outside Shogi, for better disambiguation in variant Fairy */
@@ -507,6 +514,7 @@ void GenPseudoLegal(board, flags, callback, closure)
 		      if (SameColor(board[rf][ff], board[rt][ft])) continue;
 		      callback(board, flags, NormalMove, rf, ff, rt, ft, closure);
 		  }
+              if(gameInfo.variant == VariantSpartan) rookRange = 2; // in Spartan Chess restrict range to modern Dababba
               goto doRook;
               
             /* Shogi Dragon King has to continue as Ferz after Rook moves */
@@ -518,6 +526,7 @@ void GenPseudoLegal(board, flags, callback, closure)
             case WhiteMarshall:
             case BlackMarshall:
               m++;
+              m += (gameInfo.variant == VariantSpartan); // in Spartan Chess Chancellor is used for Dragon King.
 
             /* Shogi Rooks are ordinary Rooks */
             case SHOGI WhiteRook:
@@ -534,7 +543,7 @@ void GenPseudoLegal(board, flags, callback, closure)
 		      if (SameColor(board[rf][ff], board[rt][ft])) break;
 		      callback(board, flags, NormalMove,
 			       rf, ff, rt, ft, closure);
-		      if (board[rt][ft] != EmptySquare) break;
+		      if (board[rt][ft] != EmptySquare || i == rookRange) break;
 		  }
                 if(m==1) goto mounted;
                 if(m==2) goto finishSilver;
@@ -985,7 +994,6 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
     /* For compatibility with ICS wild 9, we scan the board in the
        order a1, a2, a3, ... b1, b2, ..., h8 to find the first king,
        and we test only whether that one is in check. */
-    cl.check = 0;
     for (cl.fking = BOARD_LEFT+0; cl.fking < BOARD_RGHT; cl.fking++)
 	for (cl.rking = 0; cl.rking < BOARD_HEIGHT; cl.rking++) {
           if (board[cl.rking][cl.fking] == king) {
@@ -999,9 +1007,10 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
                       board[i][cl.fking] == (dir>0 ? BlackWazir : WhiteWazir) )
                           cl.check++;
               }
-
+	      cl.check = 0;
 	      GenPseudoLegal(board, flags ^ F_WHITE_ON_MOVE, CheckTestCallback, (VOIDSTAR) &cl);
-	      goto undo_move;  /* 2-level break */
+	      if(gameInfo.variant != VariantSpartan || cl.check == 0) // in Spartan Chess go on to test if other King is checked too
+	         goto undo_move;  /* 2-level break */
 	  }
       }
 

@@ -5369,6 +5369,16 @@ void PromotionPopUp()
 				   layout, args, j);
 
   if(gameInfo.variant != VariantShogi) {
+   if(gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove)) {
+      XawDialogAddButton(dialog, _("Warlord"), PromotionCallback,
+			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("General"), PromotionCallback,
+			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("Lieutenant"), PromotionCallback,
+			 (XtPointer) dialog);
+      XawDialogAddButton(dialog, _("Captain"), PromotionCallback,
+			 (XtPointer) dialog);
+    } else {
     XawDialogAddButton(dialog, _("Queen"), PromotionCallback,
 		       (XtPointer) dialog);
     XawDialogAddButton(dialog, _("Rook"), PromotionCallback,
@@ -5377,7 +5387,9 @@ void PromotionPopUp()
 		       (XtPointer) dialog);
     XawDialogAddButton(dialog, _("Knight"), PromotionCallback,
 		       (XtPointer) dialog);
+    }
     if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
+        gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
         gameInfo.variant == VariantGiveaway) {
       XawDialogAddButton(dialog, _("King"), PromotionCallback,
 			 (XtPointer) dialog);

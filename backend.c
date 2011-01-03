@@ -516,6 +516,13 @@ ChessSquare  KnightmateArray[2][BOARD_FILES] = {
         BlackUnicorn, BlackBishop, BlackMan, BlackRook }
 };
 
+ChessSquare SpartanArray[2][BOARD_FILES] = {
+    { WhiteRook, WhiteKnight, WhiteBishop, WhiteQueen,
+        WhiteKing, WhiteBishop, WhiteKnight, WhiteRook },
+    { BlackAlfil, BlackMarshall, BlackKing, BlackDragon,
+        BlackDragon, BlackKing, BlackAngel, BlackAlfil }
+};
+
 ChessSquare fairyArray[2][BOARD_FILES] = { /* [HGM] Queen side differs from King side */
     { WhiteRook, WhiteKnight, WhiteBishop, WhiteQueen,
         WhiteKing, WhiteBishop, WhiteKnight, WhiteRook },
@@ -955,6 +962,7 @@ InitBackEnd1()
       case VariantSuper:      /* experimental */
       case VariantGreat:      /* experimental, requires legality testing to be off */
       case VariantSChess:     /* S-Chess, should work */
+      case VariantSpartan:    /* should work */
 	break;
       }
     }
@@ -5413,6 +5421,10 @@ InitPosition(redraw)
       pieces = KnightmateArray;
       SetCharTable(pieceToChar, "P.BRQ.....M.........K.p.brq.....m.........k.");
       break;
+    case VariantSpartan:
+      pieces = SpartanArray;
+      SetCharTable(pieceToChar, "PNBRQ................K......lwg.....c...h..k");
+      break;
     case VariantFairy:
       pieces = fairyArray;
       SetCharTable(pieceToChar, "PNBRQFEACWMOHIJGDVLSUKpnbrqfeacwmohijgdvlsuk");
@@ -5483,7 +5495,7 @@ InitPosition(redraw)
         if(j < BOARD_LEFT || j >= BOARD_RGHT || overrule) continue;
         initialPosition[0][j] = pieces[0][j-gameInfo.holdingsWidth];
         initialPosition[pawnRow][j] = WhitePawn;
-        initialPosition[BOARD_HEIGHT-pawnRow-1][j] = BlackPawn;
+        initialPosition[BOARD_HEIGHT-pawnRow-1][j] = gameInfo.variant == VariantSpartan ? BlackLance : BlackPawn;
         if(gameInfo.variant == VariantXiangqi) {
             if(j&1) {
                 initialPosition[pawnRow][j] =

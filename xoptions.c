@@ -982,6 +982,7 @@ struct NewVarButton buttonDesc[] = {
 #ifdef FALCON
     {N_("Falcon (10x8)"),     "#BFBFFF", 0, VariantFalcon},
 #endif
+    {N_("Spartan"),           "#FF0000", 0, VariantSpartan},
     {NULL,                0, 0, (VariantClass) 0}
 };
 
