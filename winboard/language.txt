@@ -782,7 +782,11 @@ wsettings.c
 
 "%s Engine Settings (%s)" === ""
 "OK" === ""
-"Cancel" === ""
+"Cancel" === """Chat Window %s"
+
+wchat.c
+
+"Cancel" === """Chat Window %s"
 
 backend.c
 

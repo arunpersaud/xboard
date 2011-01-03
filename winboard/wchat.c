@@ -62,6 +62,7 @@ extern HWND ChatDialog;
 
 extern HINSTANCE hInst;
 extern HWND hwndConsole;
+extern char ics_handle[];
 
 extern WindowPlacement wpChat[MAX_CHAT];
 extern WindowPlacement wpConsole;
@@ -193,7 +194,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	if(partner<0) {
 		for(i=0; i<MAX_CHAT; i++) if(chatHandle[i] == NULL) { partner = i; break; }
 	        chatHandle[partner] = hDlg;
-		snprintf(buf, MSG_SIZ, "Chat Window %s", first.tidy);
+		snprintf(buf, MSG_SIZ, T_("Chat Window %s"), ics_handle[0] ? ics_handle : first.tidy);
 		SetWindowText(hDlg, buf);
         }
 	for(i=0; i<MAX_CHAT; i++) if(chatHandle[i]) {
