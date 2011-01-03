@@ -4303,15 +4303,15 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Only allow C & A promotions if these pieces are defined */
     ShowWindow(GetDlgItem(hDlg, PB_Archbishop),
-       ((PieceToChar(WhiteAngel) >= 'A' &&
+       ((PieceToChar(WhiteAngel) >= 'A' && WhiteOnMove(currentMove) &&
          PieceToChar(WhiteAngel) != '~') ||
-        (PieceToChar(BlackAngel) >= 'A' &&
+        (PieceToChar(BlackAngel) >= 'A' && !WhiteOnMove(currentMove) &&
          PieceToChar(BlackAngel) != '~')   ) ?
 	       SW_SHOW : SW_HIDE);
     ShowWindow(GetDlgItem(hDlg, PB_Chancellor), 
-       ((PieceToChar(WhiteMarshall) >= 'A' &&
+       ((PieceToChar(WhiteMarshall) >= 'A' && WhiteOnMove(currentMove) &&
          PieceToChar(WhiteMarshall) != '~') ||
-        (PieceToChar(BlackMarshall) >= 'A' &&
+        (PieceToChar(BlackMarshall) >= 'A' && !WhiteOnMove(currentMove) &&
          PieceToChar(BlackMarshall) != '~')   ) ?
 	       SW_SHOW : SW_HIDE);
     /* [HGM] Hide B & R button in Shogi, use Q as promote, N as defer */
@@ -4342,31 +4342,28 @@ Promotion(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       promoChar = gameInfo.variant == VariantSuper ? PieceToChar(BlackSilver) : PieceToChar(BlackKing);
       break;
     case PB_Queen:
-      promoChar = gameInfo.variant == VariantShogi ? '+' : PieceToChar(BlackQueen);
+      promoChar = gameInfo.variant == VariantShogi ? '+' : ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteQueen : BlackQueen));
       break;
     case PB_Rook:
-      promoChar = PieceToChar(BlackRook);
+      promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteRook : BlackRook));
       break;
     case PB_Bishop:
-      promoChar = PieceToChar(BlackBishop);
+      promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteBishop : BlackBishop));
       break;
     case PB_Chancellor:
-      promoChar = PieceToChar(BlackMarshall);
+      promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteMarshall : BlackMarshall));
       break;
     case PB_Archbishop:
-      promoChar = PieceToChar(BlackAngel);
+      promoChar = ToLower(PieceToChar(WhiteOnMove(currentMove) ? WhiteAngel : BlackAngel));
       break;
     case PB_Knight:
-      promoChar = gameInfo.variant == VariantShogi ? '=' : PieceToChar(BlackKnight);
+      promoChar = gameInfo.variant == VariantShogi ? '=' : PieceToChar(WhiteOnMove(currentMove) ? WhiteKnight : BlackKnight);
       break;
     default:
       return FALSE;
     }
+    if(promoChar == '.') return FALSE; // invalid piece chosen 
     EndDialog(hDlg, TRUE); /* Exit the dialog */
-    /* [HGM] <popupFix> Call FinishMove rather than UserMoveEvent, as we
-       only show the popup when we are already sure the move is valid or
-       legal. We pass a faulty move type, but the kludge is that FinishMove
-       will figure out it is a promotion from the promoChar. */
     UserMoveEvent(fromX, fromY, toX, toY, promoChar);
     fromX = fromY = -1;
     if (!appData.highlightLastMove) {
