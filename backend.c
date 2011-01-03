@@ -5668,6 +5668,12 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
         promotionZoneSize = 3;
     }
 
+    // Treat Lance as Pawn when it is not representing Amazon
+    if(gameInfo.variant != VariantSuper) {
+        if(piece == WhiteLance) piece = WhitePawn; else
+        if(piece == BlackLance) piece = BlackPawn;
+    }
+
     // next weed out all moves that do not touch the promotion zone at all
     if((int)piece >= BlackPawn) {
         if(toY >= promotionZoneSize && fromY >= promotionZoneSize)
@@ -8482,9 +8488,9 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
         board[toY][toX] = king;
         board[toY][toX+1] = board[fromY][BOARD_LEFT];
         board[fromY][BOARD_LEFT] = EmptySquare;
-    } else if (board[fromY][fromX] == WhitePawn
+    } else if ((board[fromY][fromX] == WhitePawn && gameInfo.variant != VariantXiangqi ||
+                board[fromY][fromX] == WhiteLance && gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi)
                && toY >= BOARD_HEIGHT-promoRank
-               && gameInfo.variant != VariantXiangqi
                ) {
 	/* white pawn promotion */
         board[toY][toX] = CharToPiece(ToUpper(promoChar));
@@ -8546,9 +8552,9 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
 	board[toY][toX] = BlackKing;
 	board[fromY][0] = EmptySquare;
 	board[toY][2] = BlackRook;
-    } else if (board[fromY][fromX] == BlackPawn
+    } else if ((board[fromY][fromX] == BlackPawn && gameInfo.variant != VariantXiangqi ||
+                board[fromY][fromX] == BlackLance && gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi)
 	       && toY < promoRank
-               && gameInfo.variant != VariantXiangqi
                ) {
 	/* black pawn promotion */
 	board[toY][toX] = CharToPiece(ToLower(promoChar));

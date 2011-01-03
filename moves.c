@@ -1604,6 +1604,11 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
             /* [HGM] in Shogi non-pawns can promote */
             *outp++ = promoChar; // Don't bother to correct move type, return value is never used!
         }
+        else if (gameInfo.variant != VariantSuper && promoChar && 
+                 (piece == WhiteLance || piece == BlackLance) ) { // Lance sometimes represents Pawn
+            *outp++ = '=';
+            *outp++ = ToUpper(promoChar);
+        }
         else if (gameInfo.variant == VariantSChess && promoChar) { // and in S-Chess we have gating
             *outp++ = '/';
             *outp++ = ToUpper(promoChar);
