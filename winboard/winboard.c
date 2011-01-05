@@ -6875,6 +6875,7 @@ ConsoleTextSubclass(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   switch (message) {
   case WM_KEYDOWN:
     if (!(GetKeyState(VK_CONTROL) & ~1)) break;
+    if(wParam=='R') return 0;
     switch (wParam) {
     case VK_PRIOR:
       SendMessage(hwnd, EM_LINESCROLL, 0, -999999);
