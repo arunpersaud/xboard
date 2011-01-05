@@ -5303,8 +5303,8 @@ InitPosition(redraw)
     int i, j, pawnRow, overrule,
     oldx = gameInfo.boardWidth,
     oldy = gameInfo.boardHeight,
-    oldh = gameInfo.holdingsWidth,
-    oldv = gameInfo.variant;
+    oldh = gameInfo.holdingsWidth;
+    static int oldv;
 
     if(appData.icsActive) shuffleOpenings = FALSE; // [HGM] shuffle: in ICS mode, only shuffle on ICS request
 
@@ -5566,18 +5566,12 @@ InitPosition(redraw)
 
     if(oldx != gameInfo.boardWidth ||
        oldy != gameInfo.boardHeight ||
+       oldv != gameInfo.variant ||
        oldh != gameInfo.holdingsWidth
-#ifdef GOTHIC
-       || oldv == VariantGothic ||        // For licensing popups
-       gameInfo.variant == VariantGothic
-#endif
-#ifdef FALCON
-       || oldv == VariantFalcon ||
-       gameInfo.variant == VariantFalcon
-#endif
                                          )
             InitDrawingSizes(-2 ,0);
 
+    oldv = gameInfo.variant;
     if (redraw)
       DrawPosition(TRUE, boards[currentMove]);
 }
