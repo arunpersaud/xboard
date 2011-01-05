@@ -620,7 +620,7 @@ extern void CopyBoard P((Board to, Board from));
     cl.ftIn = yytext[1+skip] - AAA;
     cl.promoCharIn = NULLCHAR;
 
-    if(yyleng-skip > 3 && (gameInfo.variant == VariantShogi || gameInfo.variant == VariantSChess)) /* [HGM] can have Shogi-style promotion */
+    if(yyleng-skip > 3) /* [HGM] in some variants pieces promote */
         cl.promoCharIn = yytext[yyleng-1-(yytext[yyleng-1]==')')];
     if(cl.promoCharIn == '+' && gameInfo.variant != VariantShogi) cl.promoCharIn = NULLCHAR; // + means check outside Shogi
 
@@ -687,7 +687,7 @@ extern void CopyBoard P((Board to, Board from));
     cl.ftIn = yytext[2+skip] - AAA;
     cl.promoCharIn = NULLCHAR;
 
-    if(yyleng-skip > 4 && (gameInfo.variant == VariantShogi || gameInfo.variant == VariantSChess)) /* [HGM] can have Shogi-style promotion */
+    if(yyleng-skip > 4) /* [HGM] in some variants pieces promote */
         cl.promoCharIn = yytext[yyleng-1-(yytext[yyleng-1]==')')];
     if(cl.promoCharIn == '+' && gameInfo.variant != VariantShogi) cl.promoCharIn = NULLCHAR; // + means check outside Shogi
 
