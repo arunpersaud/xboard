@@ -9453,6 +9453,13 @@ GameEnds(result, resultDetails, whosays)
 		     first.matchWins, second.matchWins,
 		     appData.matchGames - (first.matchWins + second.matchWins));
 	    popupRequested++; // [HGM] crash: postpone to after resetting endingGame
+	    if (appData.firstPlaysBlack) { // [HGM] match: back to original for next match
+		first.twoMachinesColor = "black\n";
+		second.twoMachinesColor = "white\n";
+	    } else {
+		first.twoMachinesColor = "white\n";
+		second.twoMachinesColor = "black\n";
+	    }
 	}
     }
     if ((gameMode == AnalyzeMode || gameMode == AnalyzeFile) &&
