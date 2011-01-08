@@ -7369,7 +7369,11 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
             }
         }
 
-	if(Adjudicate(cps)) return; // [HGM] adjudicate: for all automatic game ends
+	if(Adjudicate(cps)) {
+	    DrawPosition(FALSE, boards[currentMove = forwardMostMove-1]);
+	    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+	    return; // [HGM] adjudicate: for all automatic game ends
+	}
 
 #if ZIPPY
 	if ((gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack) &&
