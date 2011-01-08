@@ -723,10 +723,15 @@ void GenLegalCallback(board, flags, kind, rf, ff, rt, ft, closure)
 {
     register GenLegalClosure *cl = (GenLegalClosure *) closure;
 
-    if (!(flags & F_IGNORE_CHECK) &&
-	CheckTest(board, flags, rf, ff, rt, ft,
+    if (!(flags & F_IGNORE_CHECK) ) {
+      int check, promo = (gameInfo.variant == VariantSpartan && kind == BlackPromotion);
+      if(promo) board[rf][ff] = BlackKing; // [HGM] spartan: promote to King before check-test
+	check = CheckTest(board, flags, rf, ff, rt, ft,
 		  kind == WhiteCapturesEnPassant ||
-		  kind == BlackCapturesEnPassant)) return;
+		  kind == BlackCapturesEnPassant);
+	if(promo) board[rf][ff] = BlackLance;
+      if(check) return;
+    }
     if (flags & F_ATOMIC_CAPTURE) {
       if (board[rt][ft] != EmptySquare ||
 	  kind == WhiteCapturesEnPassant || kind == BlackCapturesEnPassant) {
@@ -1167,6 +1172,8 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
 	if (cl.kind == WhitePromotion || cl.kind == BlackPromotion) {
 	    if(CharToPiece(flags & F_WHITE_ON_MOVE ? ToUpper(promoChar) : ToLower(promoChar)) == EmptySquare)
                 cl.kind = ImpossibleMove; // non-existing piece
+	    if(gameInfo.variant == VariantSpartan && cl.kind == BlackPromotion && promoChar != PieceToChar(BlackKing) &&
+	       CheckTest(board, flags, rf, ff, rt, ft, FALSE)) cl.kind = IllegalMove; // [HGM] spartan: only promotion to King was possible
 	} else {
 	    cl.kind = IllegalMove;
 	}
