@@ -7691,6 +7691,13 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	    gameMode = EditGame;
 	    ModeHighlight();
 	}
+        /* [HGM] illegal-move claim should forfeit game when Xboard */
+        /* only passes fully legal moves                            */
+        if( appData.testLegality && gameMode == TwoMachinesPlay ) {
+            GameEnds( cps->twoMachinesColor[0] == 'w' ? BlackWins : WhiteWins,
+                                "False illegal-move claim", GE_XBOARD );
+            return; // do not take back move we tested as valid
+        }
 	currentMove = forwardMostMove-1;
 	DisplayMove(currentMove-1); /* before DisplayMoveError */
 	SwitchClocks(forwardMostMove-1); // [HGM] race
@@ -7699,13 +7706,6 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		parseList[currentMove], cps->which);
 	DisplayMoveError(buf1);
 	DrawPosition(FALSE, boards[currentMove]);
-
-        /* [HGM] illegal-move claim should forfeit game when Xboard */
-        /* only passes fully legal moves                            */
-        if( appData.testLegality && gameMode == TwoMachinesPlay ) {
-            GameEnds( cps->twoMachinesColor[0] == 'w' ? BlackWins : WhiteWins,
-                                "False illegal-move claim", GE_XBOARD );
-        }
 	return;
     }
     if (strncmp(message, "time", 4) == 0 && StrStr(message, "Illegal")) {
