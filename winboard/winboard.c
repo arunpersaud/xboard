@@ -4847,6 +4847,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       matchMode = 2;// distinguish from command-line-triggered case (matchMode=1)
       appData.matchGames = appData.defaultMatchGames;
       matchGame = 1;
+      first.matchWins = second.matchWins = 0;
 
     case IDM_TwoMachines:
       TwoMachinesEvent();
