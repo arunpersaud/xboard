@@ -14545,15 +14545,15 @@ SwitchClocks(int newMoveNr)
 	    if(blackNPS >= 0) lastTickLength = 0;
 	    blackTimeRemaining -= lastTickLength;
            /* [HGM] PGNtime: save time for PGN file if engine did not give it */
-//         if(pvInfoList[forwardMostMove-1].time == -1)
-                 pvInfoList[forwardMostMove-1].time =               // use GUI time
+//         if(pvInfoList[forwardMostMove].time == -1)
+                 pvInfoList[forwardMostMove].time =               // use GUI time
                       (timeRemaining[1][forwardMostMove-1] - blackTimeRemaining)/10;
 	} else {
 	   if(whiteNPS >= 0) lastTickLength = 0;
 	   whiteTimeRemaining -= lastTickLength;
            /* [HGM] PGNtime: save time for PGN file if engine did not give it */
-//         if(pvInfoList[forwardMostMove-1].time == -1)
-                 pvInfoList[forwardMostMove-1].time =
+//         if(pvInfoList[forwardMostMove].time == -1)
+                 pvInfoList[forwardMostMove].time =
                       (timeRemaining[0][forwardMostMove-1] - whiteTimeRemaining)/10;
 	}
 	flagged = CheckFlags();
