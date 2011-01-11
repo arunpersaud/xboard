@@ -1170,10 +1170,23 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
     if (promoChar != NULLCHAR) {
 	if(promoChar == '=') cl.kind = IllegalMove; else // [HGM] shogi: no deferred promotion outside Shogi
 	if (cl.kind == WhitePromotion || cl.kind == BlackPromotion) {
-	    if(CharToPiece(flags & F_WHITE_ON_MOVE ? ToUpper(promoChar) : ToLower(promoChar)) == EmptySquare)
+	    ChessSquare piece = CharToPiece(flags & F_WHITE_ON_MOVE ? ToUpper(promoChar) : ToLower(promoChar));
+	    if(piece == EmptySquare)
                 cl.kind = ImpossibleMove; // non-existing piece
-	    if(gameInfo.variant == VariantSpartan && cl.kind == BlackPromotion && promoChar != PieceToChar(BlackKing) &&
-	       CheckTest(board, flags, rf, ff, rt, ft, FALSE)) cl.kind = IllegalMove; // [HGM] spartan: only promotion to King was possible
+	    if(gameInfo.variant == VariantSpartan && cl.kind == BlackPromotion ) {
+		if(promoChar != PieceToChar(BlackKing)) {
+		    if(CheckTest(board, flags, rf, ff, rt, ft, FALSE)) cl.kind = IllegalMove; // [HGM] spartan: only promotion to King was possible
+		    if(piece == BlackLance) cl.kind = ImpossibleMove;
+		} else { // promotion to King allowed only if we do not haave two yet
+		    int r, f, kings = 0;
+		    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) kings += (board[r][f] == BlackKing);
+		    if(kings == 2) cl.kind = IllegalMove;
+		}
+	    } else if(piece == WhitePawn || piece == BlackPawn) cl.kind = ImpossibleMove; // cannot stay Pawn in any variant
+	    else if((piece == WhiteUnicorn || piece == BlackUnicorn) && gameInfo.variant == VariantKnightmate)
+             cl.kind = IllegalMove; // promotion to Royal Knight not allowed
+	    else if((piece == WhiteKing || piece == BlackKing) && gameInfo.variant != VariantSuicide && gameInfo.variant != VariantGiveaway)
+             cl.kind = IllegalMove; // promotion to King usually not allowed
 	} else {
 	    cl.kind = IllegalMove;
 	}
