@@ -3394,6 +3394,48 @@ DrawLogoOnDC(HDC hdc, RECT logoRect, HBITMAP logo)
   DeleteDC(tmphdc);
 }
 
+VOID
+DisplayLogos()
+{
+  if(logoHeight) {
+	HDC hdc = GetDC(hwndMain);
+	HBITMAP whiteLogo = (HBITMAP) first.programLogo, blackLogo = (HBITMAP) second.programLogo;
+	if(appData.autoLogo) {
+	  
+	  switch(gameMode) { // pick logos based on game mode
+	    case IcsObserving:
+		whiteLogo = second.programLogo; // ICS logo
+		blackLogo = second.programLogo;
+	    default:
+		break;
+	    case IcsPlayingWhite:
+		if(!appData.zippyPlay) whiteLogo = userLogo;
+		blackLogo = second.programLogo; // ICS logo
+		break;
+	    case IcsPlayingBlack:
+		whiteLogo = second.programLogo; // ICS logo
+		blackLogo = appData.zippyPlay ? first.programLogo : userLogo;
+		break;
+	    case TwoMachinesPlay:
+	        if(first.twoMachinesColor[0] == 'b') {
+		    whiteLogo = second.programLogo;
+		    blackLogo = first.programLogo;
+		}
+		break;
+	    case MachinePlaysWhite:
+		blackLogo = userLogo;
+		break;
+	    case MachinePlaysBlack:
+		whiteLogo = userLogo;
+		blackLogo = first.programLogo;
+	  }
+	}
+	DrawLogoOnDC(hdc, leftLogoRect, flipClock ? blackLogo : whiteLogo);
+	DrawLogoOnDC(hdc, rightLogoRect, flipClock ? whiteLogo : blackLogo);
+	ReleaseDC(hwndMain, hdc);
+  }
+}
+
 static HDC hdcSeek;
 
 // [HGM] seekgraph
@@ -3732,41 +3774,6 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	}
     }
   }
-  if(logoHeight) {
-	HBITMAP whiteLogo = (HBITMAP) first.programLogo, blackLogo = (HBITMAP) second.programLogo;
-	if(appData.autoLogo) {
-	  
-	  switch(gameMode) { // pick logos based on game mode
-	    case IcsObserving:
-		whiteLogo = second.programLogo; // ICS logo
-		blackLogo = second.programLogo;
-	    default:
-		break;
-	    case IcsPlayingWhite:
-		if(!appData.zippyPlay) whiteLogo = userLogo;
-		blackLogo = second.programLogo; // ICS logo
-		break;
-	    case IcsPlayingBlack:
-		whiteLogo = second.programLogo; // ICS logo
-		blackLogo = appData.zippyPlay ? first.programLogo : userLogo;
-		break;
-	    case TwoMachinesPlay:
-	        if(first.twoMachinesColor[0] == 'b') {
-		    whiteLogo = second.programLogo;
-		    blackLogo = first.programLogo;
-		}
-		break;
-	    case MachinePlaysWhite:
-		blackLogo = userLogo;
-		break;
-	    case MachinePlaysBlack:
-		whiteLogo = userLogo;
-		blackLogo = first.programLogo;
-	  }
-	}
-	DrawLogoOnDC(hdc, leftLogoRect, flipClock ? blackLogo : whiteLogo);
-	DrawLogoOnDC(hdc, rightLogoRect, flipClock ? whiteLogo : blackLogo);
-  }
 
   if( appData.highlightMoveWithArrow ) {
     DrawArrowHighlight(hdcmem);
@@ -3981,6 +3988,7 @@ PaintProc(HWND hwnd)
 		 &messageRect, messageText, strlen(messageText), NULL);
       SelectObject(hdc, oldFont);
       DisplayBothClocks();
+      DisplayLogos();
     }
     EndPaint(hwnd,&ps);
   }
@@ -5068,7 +5076,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_FlipClock:
       flipClock = !flipClock;
       DisplayBothClocks();
-      DrawPosition(FALSE, NULL);
+      DisplayLogos();
       break;
 
     case IDM_MuteSounds:
@@ -8020,6 +8028,7 @@ ModeHighlight()
                        MF_BYCOMMAND|MF_UNCHECKED);
        }
   }
+  DisplayLogos(); // [HGM] logos: mode change could have altered logos
 }
 
 VOID
