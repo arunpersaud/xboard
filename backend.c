@@ -8422,7 +8422,8 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
       int i;
 
       if( board[fromY][fromX] == WhiteLance || board[fromY][fromX] == BlackLance ) {
-           if( gameInfo.variant == VariantFairy ) board[EP_STATUS] = EP_PAWN_MOVE; // Lance in fairy is Pawn-like
+           if( gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi )
+               board[EP_STATUS] = EP_PAWN_MOVE; // Lance is Pawn-like in most variants
       } else
       if( board[fromY][fromX] == WhitePawn ) {
            if(fromY != toY) // [HGM] Xiangqi sideway Pawn moves should not count as 50-move breakers
