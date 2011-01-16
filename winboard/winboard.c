@@ -6456,8 +6456,6 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	if(!ok && move[0] >= 'a') { move[0] += 'A' - 'a'; ok = 2; } // [HGM] try also capitalized
 	if (ok==1 || ok && ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
 	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar)) {
-	  if (gameMode != Training)
-	      forwardMostMove = currentMove;
 	  UserMoveEvent(fromX, fromY, toX, toY, promoChar);	
 	} else {
 	  DisplayMoveError(_("Could not parse move"));
