@@ -7330,11 +7330,6 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
 	if (cps->sendTime == 2) cps->sendTime = 1;
 	if (cps->offeredDraw) cps->offeredDraw--;
 
-	/* currentMoveString is set as a side-effect of ParseOneMove */
-	safeStrCpy(machineMove, currentMoveString, sizeof(machineMove)/sizeof(machineMove[0]));
-	strcat(machineMove, "\n");
-	safeStrCpy(moveList[forwardMostMove], machineMove, sizeof(moveList[forwardMostMove])/sizeof(moveList[forwardMostMove][0]));
-
         /* [AS] Save move info*/
         pvInfoList[ forwardMostMove ].score = programStats.score;
         pvInfoList[ forwardMostMove ].depth = programStats.depth;
@@ -9930,8 +9925,6 @@ LoadGameOneMove(readAhead)
 	return FALSE;
     } else {
 	/* currentMoveString is set as a side-effect of yylex */
-	strcat(currentMoveString, "\n");
-	safeStrCpy(moveList[forwardMostMove], currentMoveString, sizeof(moveList[forwardMostMove])/sizeof(moveList[forwardMostMove][0]));
 
 	thinkOutput[0] = NULLCHAR;
 	MakeMove(fromX, fromY, toX, toY, promoChar);
