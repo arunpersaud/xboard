@@ -845,6 +845,8 @@ extern void CopyBoard P((Board to, Board from));
     } else {
 	currentMoveString[0] = ToLower(yytext[0]);
     }
+    if(CharToPiece(currentMoveString[0]) == EmptySquare) return ImpossibleMove; // Unknown piece;
+
     return LegalityTest(boards[yyboardindex], PosFlags(yyboardindex), DROP_RANK, // [HGM] does drops now too
                         CharToPiece(currentMoveString[0]), currentMoveString[3] - ONE, currentMoveString[2] - AAA, NULLCHAR);
 }
