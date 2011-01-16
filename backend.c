@@ -5985,6 +5985,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
       case BeginningOfGame:
       case AnalyzeMode:
       case Training:
+	if(fromY == DROP_RANK) break; // [HGM] drop moves (entered through move type-in) are automatically assigned to side-to-move
 	if ((int) boards[currentMove][fromY][fromX] >= (int) BlackPawn &&
             (int) boards[currentMove][fromY][fromX] < (int) EmptySquare) {
 	    /* User is moving for Black */
@@ -6079,7 +6080,7 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
     pup = boards[currentMove][toY][toX];
 
     /* [HGM] If move started in holdings, it means a drop. Convert to standard form */
-    if( fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) { 
+    if( (fromX == BOARD_LEFT-2 || fromX == BOARD_RGHT+1) && fromY != DROP_RANK ) {
          if( pup != EmptySquare ) return;
          moveType = WhiteOnMove(currentMove) ? WhiteDrop : BlackDrop;
 	   if(appData.debugMode) fprintf(debugFP, "Drop move %d, curr=%d, x=%d,y=%d, p=%d\n", 
