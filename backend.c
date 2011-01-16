@@ -6243,6 +6243,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 
   switch (gameMode) {
   case EditGame:
+    if(appData.testLegality)
     switch (MateTest(boards[currentMove], PosFlags(currentMove)) ) {
     case MT_NONE:
     case MT_CHECK:
