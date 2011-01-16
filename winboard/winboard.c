@@ -7851,6 +7851,7 @@ Enables ncpEnables[] = {
   { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Sounds, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 
@@ -8034,8 +8035,8 @@ SetICSMode()
 {
   HMENU hmenu = GetMenu(hwndMain);
   SetMenuEnables(hmenu, icsEnables);
-  EnableMenuItem(GetSubMenu(hmenu, OPTIONS_POS), ICS_POS,
-    MF_BYPOSITION|MF_ENABLED);
+  EnableMenuItem(GetSubMenu(hmenu, OPTIONS_POS), IDM_IcsOptions,
+    MF_BYCOMMAND|MF_ENABLED);
 #if ZIPPY
   if (appData.zippyPlay) {
     SetMenuEnables(hmenu, zippyEnables);
@@ -8057,8 +8058,6 @@ SetNCPMode()
 {
   HMENU hmenu = GetMenu(hwndMain);
   SetMenuEnables(hmenu, ncpEnables);
-  EnableMenuItem(GetSubMenu(hmenu, OPTIONS_POS), SOUNDS_POS,
-    MF_BYPOSITION|MF_GRAYED);
     DrawMenuBar(hwndMain);
 }
 
