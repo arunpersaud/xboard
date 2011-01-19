@@ -4112,23 +4112,9 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   switch (message) {
   case WM_LBUTTONDOWN:
       if (PtInRect((LPRECT) &whiteRect, pt)) {
-        if (gameMode == EditPosition) {
-	  SetWhiteToPlayEvent();
-        } else if (gameMode == EditGame || GetKeyState(VK_SHIFT) < 0) {
-          AdjustClock(flipClock, -1);
-	} else if (gameMode == IcsPlayingBlack ||
-		   gameMode == MachinePlaysWhite) {
-	  CallFlagEvent();
-        }
+        ClockClick(flipClock);
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
-	if (gameMode == EditPosition) {
-	  SetBlackToPlayEvent();
-        } else if (gameMode == EditGame || GetKeyState(VK_SHIFT) < 0) {
-          AdjustClock(!flipClock, -1);
-	} else if (gameMode == IcsPlayingWhite ||
-		   gameMode == MachinePlaysBlack) {
-	  CallFlagEvent();
-	}
+	ClockClick(!flipClock);
       }
       dragInfo.start.x = dragInfo.start.y = -1;
       dragInfo.from = dragInfo.start;

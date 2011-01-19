@@ -12616,6 +12616,30 @@ CallFlagEvent()
 }
 
 void
+ClockClick(int which)
+{	// [HGM] code moved to back-end from winboard.c
+	if(which) { // black clock
+	  if (gameMode == EditPosition || gameMode == IcsExamining) {
+	    SetBlackToPlayEvent();
+	  } else if (gameMode == EditGame || shiftKey) {
+	    AdjustClock(which, -1);
+	  } else if (gameMode == IcsPlayingWhite ||
+	             gameMode == MachinePlaysBlack) {
+	    CallFlagEvent();
+	  }
+	} else { // white clock
+	  if (gameMode == EditPosition || gameMode == IcsExamining) {
+	    SetWhiteToPlayEvent();
+	  } else if (gameMode == EditGame || shiftKey) {
+	    AdjustClock(which, -1);
+	  } else if (gameMode == IcsPlayingBlack ||
+	           gameMode == MachinePlaysWhite) {
+	    CallFlagEvent();
+	  }
+	}
+}
+
+void
 DrawEvent()
 {
     /* Offer draw or accept pending draw offer from opponent */

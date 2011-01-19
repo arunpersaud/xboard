@@ -3955,11 +3955,7 @@ void WhiteClock(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    if (gameMode == EditPosition || gameMode == IcsExamining) {
-	SetWhiteToPlayEvent();
-    } else if (gameMode == IcsPlayingBlack || gameMode == MachinePlaysWhite) {
-	CallFlagEvent();
-    }
+    ClockClick(0);
 }
 
 void BlackClock(w, event, prms, nprms)
@@ -3968,11 +3964,7 @@ void BlackClock(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    if (gameMode == EditPosition || gameMode == IcsExamining) {
-	SetBlackToPlayEvent();
-    } else if (gameMode == IcsPlayingWhite || gameMode == MachinePlaysBlack) {
-	CallFlagEvent();
-    }
+    ClockClick(1);
 }
 
 

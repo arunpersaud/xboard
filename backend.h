@@ -162,6 +162,7 @@ void MoveNowEvent P((void));
 void TruncateGameEvent P((void));
 void PauseEvent P((void));
 void CallFlagEvent P((void));
+void ClockClick P((int which));
 void AcceptEvent P((void));
 void DeclineEvent P((void));
 void RematchEvent P((void));
