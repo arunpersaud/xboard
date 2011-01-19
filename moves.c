@@ -1500,6 +1500,7 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
     CoordsToAlgebraicClosure cl;
 
     if (rf == DROP_RANK) {
+	if(ff == EmptySquare) { strncpy(outp, "--",3); return NormalMove; } // [HGM] pass
 	/* Bughouse piece drop */
 	*outp++ = ToUpper(PieceToChar((ChessSquare) ff));
 	*outp++ = '@';

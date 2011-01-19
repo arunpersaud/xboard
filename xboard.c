@@ -1130,8 +1130,12 @@ char boardTranslations[] =
    Any<Btn3Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD) \
                  PieceMenuPopup(menuB) \n";
 
-char whiteTranslations[] = "<BtnDown>: WhiteClock()\n";
-char blackTranslations[] = "<BtnDown>: BlackClock()\n";
+char whiteTranslations[] =
+   "Shift<BtnDown>: WhiteClock(1)\n \
+   <BtnDown>: WhiteClock(0)\n";
+char blackTranslations[] =
+   "Shift<BtnDown>: BlackClock(1)\n \
+   <BtnDown>: BlackClock(0)\n";
 
 char ICSInputTranslations[] =
     "<Key>Up: UpKeyProc() \n "
@@ -4141,6 +4145,7 @@ void WhiteClock(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+    shiftKey = prms[0][0] & 1;
     ClockClick(0);
 }
 
@@ -4150,6 +4155,7 @@ void BlackClock(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+    shiftKey = prms[0][0] & 1;
     ClockClick(1);
 }
 

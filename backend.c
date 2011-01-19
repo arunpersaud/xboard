@@ -4861,6 +4861,11 @@ SendMoveToProgram(moveNum, cps)
 {
     char buf[MSG_SIZ];
 
+    if(moveList[moveNum][1] == '@' && moveList[moveNum][0] == '@') {
+	// null move in variant where engine does not understand it (for analysis purposes)
+	SendBoard(cps, moveNum + 1); // send position after move in stead.
+	return;
+    }
     if (cps->useUsermove) {
       SendToProgram("usermove ", cps);
     }
@@ -4901,6 +4906,7 @@ SendMoveToProgram(moveNum, cps)
       } else
       if(BOARD_HEIGHT > 10) { // [HGM] big: convert ranks to double-digit where needed
 	if(moveList[moveNum][1] == '@' && (BOARD_HEIGHT < 16 || moveList[moveNum][0] <= 'Z')) { // drop move
+	  if(moveList[moveNum][0]== '@') snprintf(buf, MSG_SIZ, "@@@@\n"); else
 	  snprintf(buf, MSG_SIZ, "%c@%c%d%s", moveList[moveNum][0],
 					      moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
 	} else
@@ -5076,6 +5082,7 @@ CoordsToComputerAlgebraic(rf, ff, rt, ft, promoChar, move)
      char move[7];
 {
     if (rf == DROP_RANK) {
+      if(ff == EmptySquare) sprintf(move, "@@@@\n"); else // [HGM] pass
       sprintf(move, "%c@%c%c\n",
                 ToUpper(PieceToChar((ChessSquare) ff)), AAA + ft, ONE + rt);
     } else {
@@ -6527,6 +6534,9 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
     /* [HGM] always test for legality, to get promotion info */
     moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
                                          fromY, fromX, toY, toX, promoChar);
+
+    if(fromY == DROP_RANK && fromX == EmptySquare && (gameMode == AnalyzeMode || gameMode == EditGame)) moveType = NormalMove;
+
     /* [HGM] but possibly ignore an IllegalMove result */
     if (appData.testLegality) {
 	if (moveType == IllegalMove || moveType == ImpossibleMove) {
@@ -6668,6 +6678,9 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 	 // [HGM] book: if program might be playing, let it use book
 	bookHit = SendMoveToBookUser(forwardMostMove-1, &first, FALSE);
 	first.maybeThinking = TRUE;
+    } else if(fromY == DROP_RANK && fromX == EmptySquare) {
+	if(!first.useSetboard) SendToProgram("undo\n", &first); // kludge to change stm in engines that do not support setboard
+	SendBoard(&first, currentMove+1);
     } else SendMoveToProgram(forwardMostMove-1, &first);
     if (currentMove == cmailOldMove + 1) {
       cmailMoveType[lastLoadGameNumber - 1] = CMAIL_MOVE;
@@ -9006,14 +9019,18 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
       oldEP = (signed char)board[EP_STATUS];
       board[EP_STATUS] = EP_NONE;
 
-      if( board[toY][toX] != EmptySquare )
-           board[EP_STATUS] = EP_CAPTURE;
-
   if (fromY == DROP_RANK) {
 	/* must be first */
+        if(fromX == EmptySquare) { // [HGM] pass: empty drop encodes null move; nothing to change.
+	    board[EP_STATUS] = EP_CAPTURE; // null move considered irreversible
+	    return;
+	}
         piece = board[toY][toX] = (ChessSquare) fromX;
   } else {
       int i;
+
+      if( board[toY][toX] != EmptySquare )
+           board[EP_STATUS] = EP_CAPTURE;
 
       if( board[fromY][fromX] == WhiteLance || board[fromY][fromX] == BlackLance ) {
            if( gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi )
@@ -13559,7 +13576,9 @@ ClockClick(int which)
 	  if (gameMode == EditPosition || gameMode == IcsExamining) {
 	    if(!appData.pieceMenu && blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetBlackToPlayEvent();
-	  } else if (gameMode == EditGame || shiftKey) {
+	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame) && !blackFlag && WhiteOnMove(currentMove)) {
+          UserMoveEvent((int)EmptySquare, DROP_RANK, 0, 0, 0); // [HGM] multi-move: if not out of time, enters null move
+	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
 	  } else if (gameMode == IcsPlayingWhite ||
 	             gameMode == MachinePlaysBlack) {
@@ -13569,7 +13588,9 @@ ClockClick(int which)
 	  if (gameMode == EditPosition || gameMode == IcsExamining) {
 	    if(!appData.pieceMenu && !blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetWhiteToPlayEvent();
-	  } else if (gameMode == EditGame || shiftKey) {
+	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame) && !whiteFlag && !WhiteOnMove(currentMove)) {
+          UserMoveEvent((int)EmptySquare, DROP_RANK, 0, 0, 0); // [HGM] multi-move
+	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
 	  } else if (gameMode == IcsPlayingBlack ||
 	           gameMode == MachinePlaysWhite) {
@@ -13846,6 +13867,16 @@ BackwardInner(target)
     if (gameMode == EditGame || gameMode==AnalyzeMode ||
 	gameMode == PlayFromGameFile || gameMode == AnalyzeFile) {
 	while (currentMove > target) {
+	    if(moveList[currentMove-1][1] == '@' && moveList[currentMove-1][0] == '@') {
+		// null move cannot be undone. Reload program with move history before it.
+		int i;
+		for(i=target; i>backwardMostMove; i--) { // seek back to start or previous null move
+		    if(moveList[i-1][1] == '@' && moveList[i-1][0] == '@') break;
+		}
+		SendBoard(&first, i); 
+		for(currentMove=i; currentMove<target; currentMove++) SendMoveToProgram(currentMove, &first);
+		break;
+	    }
 	    SendToProgram("undo\n", &first);
 	    currentMove--;
 	}

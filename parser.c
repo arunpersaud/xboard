@@ -489,6 +489,10 @@ badMove:// we failed to find algebraic move
 	    *p = oldp; // we might need to re-match the skipped stuff
 	}
 
+	if(Match("@@@@", p) || Match("--", p) || Match("Z0", p) || Match("pass", p) || Match("null", p)) {
+	    strncpy(currentMoveString, "@@@@", 5);
+	    return yyboardindex & F_WHITE_ON_MOVE ? WhiteDrop : BlackDrop;
+	}
 
 	// ********* Efficient skipping of (mostly) alphabetic chatter **********
 	while(isdigit(**p) || isalpha(**p) || **p == '-') (*p)++;
