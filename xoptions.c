@@ -973,12 +973,12 @@ struct NewVarButton buttonDesc[] = {
     {N_("shogi (9x9)"),       "#BFFFFF", 0, VariantShogi},
     {N_("xiangqi (9x10)"),    "#BFFFFF", 0, VariantXiangqi},
     {N_("courier (12x8)"),    "#BFFFBF", 0, VariantCourier},
-    {N_("janus (10x8)"),      "#BFBFFF", 0, VariantJanus},
     {N_("Capablanca (10x8)"), "#BFBFFF", 0, VariantCapablanca},
-    {N_("CRC (10x8)"),        "#BFBFFF", 0, VariantCapaRandom},
 #ifdef GOTHIC
     {N_("Gothic (10x8)"),     "#BFBFFF", 0, VariantGothic},
 #endif
+    {N_("janus (10x8)"),      "#BFBFFF", 0, VariantJanus},
+    {N_("CRC (10x8)"),        "#BFBFFF", 0, VariantCapaRandom},
 #ifdef FALCON
     {N_("Falcon (10x8)"),     "#BFBFFF", 0, VariantFalcon},
 #endif
@@ -1088,6 +1088,7 @@ void NewVariantPopUp()
 	XtSetArg(args[j], XtNradioData, i+1); j++;
 	XtSetArg(args[j], XtNbackground, buttonColor); j++;
 	XtSetArg(args[j], XtNstate, gameInfo.variant == buttonDesc[i].variant); j++;
+	XtSetArg(args[j], XtNsensitive, appData.noChessProgram || strstr(first.variants, VariantName(buttonDesc[i].variant))); j++;
 	buttonDesc[i].handle = last =
 	    XtCreateManagedWidget(buttonDesc[i].name, toggleWidgetClass, form, args, j);
     }

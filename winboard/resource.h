@@ -499,6 +499,7 @@
 #define OPT_VariantTwilight             1528
 #define OPT_VariantMakruk               1529
 #define OPT_VariantSChess               1530
+#define OPT_VariantSpartan              1531
 #define IDC_Files                       1550
 #define IDC_Ranks                       1551
 #define IDC_Holdings                    1552

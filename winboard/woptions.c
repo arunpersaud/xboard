@@ -756,40 +756,71 @@ BoardOptionsPopup(HWND hwnd)
   FreeProcInstance(lpProc);
 }
 
+int radioButton[] = {
+    OPT_VariantNormal,
+    -1, // Loadable
+    OPT_VariantWildcastle,
+    OPT_VariantNocastle,
+    OPT_VariantFRC,
+    OPT_VariantBughouse,
+    OPT_VariantCrazyhouse,
+    OPT_VariantLosers,
+    OPT_VariantSuicide,
+    OPT_VariantGiveaway,
+    OPT_VariantTwoKings,
+    -1, //Kriegspiel
+    OPT_VariantAtomic,
+    OPT_Variant3Check,
+    OPT_VariantShatranj,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    OPT_VariantShogi,
+    OPT_VariantXiangqi,
+    OPT_VariantCourier,
+    OPT_VariantGothic,
+    OPT_VariantCapablanca,
+    OPT_VariantKnightmate,
+    OPT_VariantFairy,        
+    OPT_VariantCylinder,
+    OPT_VariantFalcon,
+    OPT_VariantCRC,
+    OPT_VariantBerolina,
+    OPT_VariantJanus,
+    OPT_VariantSuper,
+    OPT_VariantGreat,
+    -1, // Twilight,
+    OPT_VariantMakruk,
+    OPT_VariantSChess,
+    OPT_VariantSpartan, // Spartan
+    -2 // sentinel
+};
+
 VariantClass
 VariantWhichRadio(HWND hDlg)
 {
-  return (IsDlgButtonChecked(hDlg, OPT_VariantFairy) ? VariantFairy :
-         (IsDlgButtonChecked(hDlg, OPT_VariantGothic) ? VariantGothic :
-         (IsDlgButtonChecked(hDlg, OPT_VariantCrazyhouse) ? VariantCrazyhouse :
-         (IsDlgButtonChecked(hDlg, OPT_VariantBughouse) ? VariantBughouse :
-         (IsDlgButtonChecked(hDlg, OPT_VariantCourier) ? VariantCourier :
-         (IsDlgButtonChecked(hDlg, OPT_VariantShatranj) ? VariantShatranj :
-         (IsDlgButtonChecked(hDlg, OPT_VariantShogi) ? VariantShogi :
-         (IsDlgButtonChecked(hDlg, OPT_VariantXiangqi) ? VariantXiangqi :
-         (IsDlgButtonChecked(hDlg, OPT_VariantCapablanca) ? VariantCapablanca :
-         (IsDlgButtonChecked(hDlg, OPT_VariantTwoKings) ? VariantTwoKings :
-         (IsDlgButtonChecked(hDlg, OPT_VariantKnightmate) ? VariantKnightmate :
-         (IsDlgButtonChecked(hDlg, OPT_VariantLosers) ? VariantLosers :
-         (IsDlgButtonChecked(hDlg, OPT_VariantSuicide) ? VariantSuicide :
-         (IsDlgButtonChecked(hDlg, OPT_VariantAtomic) ? VariantAtomic :
-         (IsDlgButtonChecked(hDlg, OPT_VariantShatranj) ? VariantShatranj :
-         (IsDlgButtonChecked(hDlg, OPT_VariantFRC) ? VariantFischeRandom :
-         (IsDlgButtonChecked(hDlg, OPT_VariantCylinder) ? VariantCylinder :
-         (IsDlgButtonChecked(hDlg, OPT_VariantFalcon) ? VariantFalcon :
-         (IsDlgButtonChecked(hDlg, OPT_VariantCRC) ? VariantCapaRandom :
-         (IsDlgButtonChecked(hDlg, OPT_VariantSuper) ? VariantSuper :
-         (IsDlgButtonChecked(hDlg, OPT_VariantBerolina) ? VariantBerolina :
-         (IsDlgButtonChecked(hDlg, OPT_VariantJanus) ? VariantJanus :
-         (IsDlgButtonChecked(hDlg, OPT_VariantWildcastle) ? VariantWildCastle :
-         (IsDlgButtonChecked(hDlg, OPT_VariantNocastle) ? VariantNoCastle :
-         (IsDlgButtonChecked(hDlg, OPT_Variant3Check) ? Variant3Check :
-         (IsDlgButtonChecked(hDlg, OPT_VariantGreat) ? VariantGreat :
-         (IsDlgButtonChecked(hDlg, OPT_VariantGiveaway) ? VariantGiveaway :
-         (IsDlgButtonChecked(hDlg, OPT_VariantTwilight) ? VariantSpartan :
-         (IsDlgButtonChecked(hDlg, OPT_VariantMakruk) ? VariantMakruk :
-         (IsDlgButtonChecked(hDlg, OPT_VariantSChess) ? VariantSChess :
-          VariantNormal ))))))))))))))))))))))))))))));
+  int i=0, j;
+  while((j = radioButton[i++]) != -2) {
+	if(j == -1) continue; // no menu button
+ 	if(IsDlgButtonChecked(hDlg, j)) return (VariantClass) i-1;
+  }
+  return gameInfo.variant; // If no button checked, keep old
+}
+
+void
+VariantShowRadio(HWND hDlg)
+{
+  int i=0, j;
+  CheckDlgButton(hDlg, radioButton[gameInfo.variant], TRUE);
+  while((j = radioButton[i++]) != -2) {
+	if(j == -1) continue; // no menu button
+	EnableWindow(GetDlgItem(hDlg, j), appData.noChessProgram || strstr(first.variants, VariantName(i-1)));
+  }
 }
 
 LRESULT CALLBACK
@@ -803,100 +834,9 @@ NewVariantDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* Center the dialog over the application window */
     CenterWindow (hDlg, GetWindow (hDlg, GW_OWNER));
     Translate(hDlg, DLG_NewVariant);
+
     /* Initialize the dialog items */
-    switch (gameInfo.variant) {
-    case VariantNormal:
-      CheckDlgButton(hDlg, OPT_VariantNormal, TRUE);
-      break;
-    case VariantCrazyhouse:
-      CheckDlgButton(hDlg, OPT_VariantCrazyhouse, TRUE);
-      break;
-    case VariantBughouse:
-      CheckDlgButton(hDlg, OPT_VariantBughouse, TRUE);
-      break;
-    case VariantShogi:
-      CheckDlgButton(hDlg, OPT_VariantShogi, TRUE);
-      break;
-    case VariantXiangqi:
-      CheckDlgButton(hDlg, OPT_VariantXiangqi, TRUE);
-      break;
-    case VariantCapablanca:
-      CheckDlgButton(hDlg, OPT_VariantCapablanca, TRUE);
-      break;
-    case VariantGothic:
-      CheckDlgButton(hDlg, OPT_VariantGothic, TRUE);
-      break;
-    case VariantCourier:
-      CheckDlgButton(hDlg, OPT_VariantCourier, TRUE);
-      break;
-    case VariantKnightmate:
-      CheckDlgButton(hDlg, OPT_VariantKnightmate, TRUE);
-      break;
-    case VariantTwoKings:
-      CheckDlgButton(hDlg, OPT_VariantTwoKings, TRUE);
-      break;
-    case VariantFairy:
-      CheckDlgButton(hDlg, OPT_VariantFairy, TRUE);
-      break;
-    case VariantAtomic:
-      CheckDlgButton(hDlg, OPT_VariantAtomic, TRUE);
-      break;
-    case VariantSuicide:
-      CheckDlgButton(hDlg, OPT_VariantSuicide, TRUE);
-      break;
-    case VariantLosers:
-      CheckDlgButton(hDlg, OPT_VariantLosers, TRUE);
-      break;
-    case VariantShatranj:
-      CheckDlgButton(hDlg, OPT_VariantShatranj, TRUE);
-      break;
-    case VariantFischeRandom:
-      CheckDlgButton(hDlg, OPT_VariantFRC, TRUE);
-      break;
-    case VariantCapaRandom:
-      CheckDlgButton(hDlg, OPT_VariantCRC, TRUE);
-      break;
-    case VariantFalcon:
-      CheckDlgButton(hDlg, OPT_VariantFalcon, TRUE);
-      break;
-    case VariantCylinder:
-      CheckDlgButton(hDlg, OPT_VariantCylinder, TRUE);
-      break;
-    case Variant3Check:
-      CheckDlgButton(hDlg, OPT_Variant3Check, TRUE);
-      break;
-    case VariantSuper:
-      CheckDlgButton(hDlg, OPT_VariantSuper, TRUE);
-      break;
-    case VariantBerolina:
-      CheckDlgButton(hDlg, OPT_VariantBerolina, TRUE);
-      break;
-    case VariantJanus:
-      CheckDlgButton(hDlg, OPT_VariantJanus, TRUE);
-      break;
-    case VariantWildCastle:
-      CheckDlgButton(hDlg, OPT_VariantWildcastle, TRUE);
-      break;
-    case VariantNoCastle:
-      CheckDlgButton(hDlg, OPT_VariantNocastle, TRUE);
-      break;
-    case VariantGreat:
-      CheckDlgButton(hDlg, OPT_VariantGreat, TRUE);
-      break;
-    case VariantGiveaway:
-      CheckDlgButton(hDlg, OPT_VariantGiveaway, TRUE);
-      break;
-    case VariantSpartan:
-      CheckDlgButton(hDlg, OPT_VariantTwilight, TRUE);
-      break;
-    case VariantMakruk:
-      CheckDlgButton(hDlg, OPT_VariantMakruk, TRUE);
-      break;
-    case VariantSChess:
-      CheckDlgButton(hDlg, OPT_VariantSChess, TRUE);
-      break;
-    default: ;
-    }
+    VariantShowRadio(hDlg);
 
     SetDlgItemInt( hDlg, IDC_Files, -1, TRUE );
     SendDlgItemMessage( hDlg, IDC_Files, EM_SETSEL, 0, -1 );
