@@ -1109,9 +1109,9 @@ BEGIN
 //        MENUITEM "Load &Next Game\tAlt+PgDn",   IDM_LoadNextGame
 //        MENUITEM "Load &Previous Game\tAlt+PgUp", IDM_LoadPrevGame
 //        MENUITEM "&Reload Same Game",           IDM_ReloadGame
-//        MENUITEM "Load N&ext Position\tAlt+Shift+PgDn", IDM_LoadNextPosition
-//        MENUITEM "Load Pre&vious Position\tAlt+Shift+PgUp", 
-//                                                IDM_LoadPrevPosition
+        MENUITEM "Load N&ext Position\tAlt+Shift+PgDn", IDM_LoadNextPosition
+        MENUITEM "Load Pre&vious Position\tAlt+Shift+PgUp", 
+                                                IDM_LoadPrevPosition
 //        MENUITEM "Reload Sa&me Position",       IDM_ReloadPosition
         MENUITEM SEPARATOR
         MENUITEM "&Save Game...\tCtrl-S",       IDM_SaveGame

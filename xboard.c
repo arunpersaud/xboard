@@ -606,9 +606,9 @@ MenuItem fileMenu[] = {
 //    {N_("Load Next Game"), "Load Next Game", LoadNextGameProc},
 //    {N_("Load Previous Game"), "Load Previous Game", LoadPrevGameProc},
 //    {N_("Reload Same Game"), "Reload Same Game", ReloadGameProc},
+    {N_("Next Position     Shift+PgDn"), "Load Next Position", LoadNextPositionProc},
+    {N_("Prev Position     Shift+PgUp"), "Load Previous Position", LoadPrevPositionProc},
     {"----", NULL, NothingProc},
-//    {N_("Load Next Position"), "Load Next Position", LoadNextPositionProc},
-//    {N_("Load Previous Position"), "Load Previous Position", LoadPrevPositionProc},
 //    {N_("Reload Same Position"), "Reload Same Position", ReloadPositionProc},
     {N_("Save Game       Ctrl+S"),        "Save Game", SaveGameProc},
     {N_("Save Position    Ctrl+Shift+S"), "Save Position", SavePositionProc},
@@ -1032,8 +1032,8 @@ char globalTranslations[] =
    :Ctrl<Key>c: CopyGameProc() \n \
    :Ctrl<Key>v: PasteGameProc() \n \
    :Ctrl<Key>O: LoadPositionProc() \n \
-   :Shift Meta<Key>Next: LoadNextPositionProc() \n \
-   :Shift Meta<Key>Prior: LoadPrevPositionProc() \n \
+   :Shift<Key>Next: LoadNextPositionProc() \n \
+   :Shift<Key>Prior: LoadPrevPositionProc() \n \
    :Ctrl<Key>S: SavePositionProc() \n \
    :Ctrl<Key>C: CopyPositionProc() \n \
    :Ctrl<Key>V: PastePositionProc() \n \
