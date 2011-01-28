@@ -1194,7 +1194,7 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
 		    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) kings += (board[r][f] == BlackKing);
 		    if(kings == 2) cl.kind = IllegalMove;
 		}
-	    } else if(piece == WhitePawn || piece == BlackPawn) cl.kind = ImpossibleMove; // cannot stay Pawn in any variant
+	    } else if(piece == WhitePawn || piece == BlackPawn) cl.kind = IllegalMove; // cannot stay Pawn in any variant
 	    else if((piece == WhiteUnicorn || piece == BlackUnicorn) && gameInfo.variant == VariantKnightmate)
              cl.kind = IllegalMove; // promotion to Royal Knight not allowed
 	    else if((piece == WhiteKing || piece == BlackKing) && gameInfo.variant != VariantSuicide && gameInfo.variant != VariantGiveaway)
