@@ -251,8 +251,6 @@ XBoard will shelve the current line, and load the the selected variation,
 so you can step through it.
 You can later revert to the previous line with the @samp{Revert} command.
 This way you can walk quite complex varation trees with XBoard.
-(The XBoard PGN parser is currenty limited to three nested levels of variations
-on top of the main game, however.)
 The nonstandard PGN tag [Variant "varname"] functions similarly to
 the -variant command-line option (see below), allowing games in certain chess
 variants to be loaded.  
@@ -270,6 +268,15 @@ position, and you want to load the Nth one, type the number N
 after the file name, separated by a space. Position files must
 be in FEN (Forsythe-Edwards notation), or in the format that the
 Save Position command writes when oldSaveStyle is turned on.
+@item Load Next Position
+@cindex Load Next Position, Menu Item
+Loads the next position from the last position file you loaded.
+The shifted @kbd{PgDn} key is a keyboard equivalent.
+@item Load Previous Position
+@cindex Load Previous Position, Menu Item
+Loads the previous position from the last position file you
+loaded. The shifted @kbd{PgUp} key is a keyboard equivalent.
+Not available if the last position was loaded from a pipe.
 @item Save Game
 @cindex Save Game, Menu Item
 Appends a record of the current game to a file.
@@ -410,26 +417,26 @@ saved by @samp{Save Game} and are displayed by @samp{Load Game},
 @itemx Annotate
 @cindex Revert, Menu Item
 @cindex Annotate, Menu Item
-If you are examining an ICS game and Pause mode is off, issues
-the ICS command @samp{revert}.
+If you are examining an ICS game and Pause mode is off,
+Revert issues the ICS command @samp{revert}.
 In local mode, when you were editing or analyzing a game, 
-and have been entering a number of moves by hand, starting from 
-a position not at the end of the game, 
-the revert command restores the game to the variation you started from. 
+and the @code{-variations} command-line option is switched on,
+you can start a new variation by holding the Shift key down while
+entering a move not at the end of the game.
+Variations can also become the currently displayed line by
+clicking a PGN variation displayed in the Comment window.
 This can be applied recursively, 
 so that you can analyze variations on variations; 
-each time you create a new variation by entering an alternative move, 
+each time you create a new variation by entering an alternative move
+with Shift pressed, or select a new one from the Comment window,
 the current variation will be shelved. 
-Revert allows you to return to the most recently shelved variation.
-The difference between Revert and Annotate is that with the latter,
-the variation you had been entering and are now abandoning
-is currently added as a comment 
+@samp{Revert} allows you to return to the most recently shelved variation.
+The difference between @samp{Revert} and @samp{Annotate}
+is that with the latter,
+the variation you are now abandoning will be added as a comment 
 (in PGN variation syntax, i.e. between parentheses)
-to the original move where you deviated.
-Note that such 'variation comments' can be played out on the board again
-(also when they were loaded from file)
-by clicking them in the comment window.
-The @kbd{Home} key is a keyboard equivalent.
+to the original move where you deviated, for later recalling.
+The @kbd{Home} key is a keyboard equivalent to @samp{Revert}.
 @item Truncate Game
 @cindex Truncate Game, Menu Item
 Discards all remembered moves of the game beyond the current
@@ -987,6 +994,11 @@ If Highlight Last Move is on, after a move is made, the starting and
 ending squares remain highlighted. In addition, after you use Backward
 or Back to Start, the starting and ending squares of the last move to
 be unmade are highlighted.
+@item Highlight with Arrow
+@cindex Highlight with Arrow, Menu Item
+Causes the highlighting described in Highlight Last Move to be done
+by drawing an arrow between the highlighted squares,
+so that it is visible even when the width of the grid lines is set to zero.
 @item Move Sound
 @cindex Move Sound, Menu Item
 If this option is on, XBoard alerts you by playing a sound
@@ -1012,14 +1024,18 @@ alarm will sound each time the clock counts down to the icsAlarmTime.
 By default, the alarm sound is the terminal bell, but on some systems
 you can change it to a sound file using the soundIcsAlarm option; see
 below.
-@item Old Save Style
-@cindex Old Save Style, Menu Item
-If this option is off, XBoard saves games in PGN
-(portable game notation) and positions in FEN (Forsythe-Edwards
-notation).  If the option is on, a save style that is compatible
-with older versions of XBoard is used instead.
-The old position style is more human-readable
-than FEN; the old game style has no particular advantages.
+@item One-Click Moving
+@cindex One-Click Moving, Menu Item
+If this option is on, XBoard does not wait for you to click both the
+from- and the to-square, or drag the piece, but performs a move as soon
+as it is uniqely specified.
+This applies to clicking an own piece that only has a single legal move,
+clicking an empty square or opponent piece where only one of your pieces
+can move (or capture) to.
+Furthermore, a double-click on a piece that can only make a single capture
+will cause that capture to be made.
+Promoting a Pawn by clicking its to-square will suppress the promotion
+popup, and make it promote to Queen.
 @item Periodic Updates
 @cindex Periodic Updates, Menu Item
 If this option is off (or if
@@ -1165,15 +1181,6 @@ Not available if the last game was loaded from a pipe.
 @cindex Reload Same Game, Menu Item
 Reloads the last game you loaded.
 Not available if the last game was loaded from a pipe.
-@item Load Next Position
-@cindex Load Next Position, Menu Item
-Loads the next position from the last position file you loaded.
-The shifted @kbd{Alt+PgDn} key is a keyboard equivalent.
-@item Load Previous Position
-@cindex Load Previous Position, Menu Item
-Loads the previous position from the last position file you
-loaded. The shifted @kbd{Alt+PgUp} key is a keyboard equivalent.
-Not available if the last position was loaded from a pipe.
 @item Reload Same Position
 @cindex Reload Same Position, Menu Item
 Reloads the last position you loaded.
@@ -1816,7 +1823,7 @@ or from-square, when only a single legal move to or from that square
 is possible.
 Double-clicking a piece (or clicking an already selected piece)
 will instruct that piece to make the only capture it can legally do.
-Defaut: false.
+Default: false.
 @item -moves/-xmoves or -getMoveList true/false
 @cindex moves, option
 @cindex getMoveList, option
@@ -1972,6 +1979,12 @@ xboard*soundIcsAlarm: alarm.wav
 This option allows you to emulate old behavior, 
 where the right mouse button brings up the (now deprecated) drop menu 
 rather than displaying the position at the end of the principal variation. 
+Default: False.
+@item -variations true|false
+@cindex variations, option
+When this option is on, you can start new variations in Edit Game or
+Analyze mode by holding the Shift key down while entering a move.
+When it is off, the Shift key will be ignored.
 Default: False.
 @end table
 
@@ -2263,6 +2276,10 @@ Defaults:  flashCount=0 (no flashing), flashRate=5.
 @cindex highlight, option
 @cindex highlightLastMove, option
 Sets the Highlight Last Move menu option. @xref{Options Menu}. Default: false.
+@item -highlightMoveWithArrow true/false
+@cindex highlight Arrow, option
+@cindex highlightMoveWithArrow, option
+Sets the Highlight with Arrow menu option. @xref{Options Menu}. Default: false.
 @item -blind/-xblind or -blindfold true/false
 @cindex blind, option
 @cindex blindfold, option
@@ -2523,6 +2540,7 @@ cylinder      Pieces wrap around the board edge
 knightmate    King moves as Knight, and vice versa 
 super         Superchess (shuffle variant with 4 exo-pieces)
 makruk        Thai Chess (shatranj-like, P promotes on 6th rank)
+spartan       Spartan Chess (black has unorthodox pieces)
 fairy         A catchall variant in which all piece types 
               known to XBoard can participate (8x8)
 unknown       Catchall for other unknown variants
@@ -2948,10 +2966,6 @@ which can be a variant that uses piece drops.
 You can load and edit games that contain piece drops. 
 The (obsolete) piece menus are not active, 
 but you can perform piece drops by dragging pieces from the holdings.
-Edit Position mode does not allow you to edit the crazyhouse holdings properly. 
-You cannot drag pieces to the holding, and using the popup menu to put pieces 
-there does not adapt the holding counts and leads to an inconsistent state. 
-Set up crazyhouse positions by loading / pasting a bFEN, from there you can set the holdings.
 Fischer Random castling is fully understood. 
 You can enter castlings by dragging the King on top of your Rook. 
 You can probably also play Fischer Random successfully on ICS by typing 
