@@ -1,7 +1,7 @@
 /*
  * xevalgraph.h
  *
- * Copyright 2010 Free Software Foundation, Inc.
+ * Copyright 2010, 2011 Free Software Foundation, Inc.
  *
  * ------------------------------------------------------------------------
  *

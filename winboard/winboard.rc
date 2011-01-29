@@ -44,7 +44,7 @@ BEGIN
     LTEXT           "Chessboard for Windows",400,25,15,121,8
     LTEXT           "Copyright 1991 Digital Equipment Corporation",201,6,34,
                     149,8
-    LTEXT           "Enhancements Copyright 1992-2010  Free Software Foundation",
+    LTEXT           "Enhancements Copyright 1992-2011  Free Software Foundation",
                     OPT_TCtext1,6,45,121,17
     CONTROL         "",OPT_TCTime,"Static",SS_BLACKRECT,4,28,159,1
     LTEXT           "WinBoard 0.0.0",ABOUTBOX_Version,25,5,160,8

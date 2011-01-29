@@ -3,7 +3,7 @@
  *
  * Author: H.G.Muller (August 2009)
  *
- * Copyright 2009, 2010 Free Software Foundation, Inc.
+ * Copyright 2009, 2010, 2011 Free Software Foundation, Inc.
  *
  * ------------------------------------------------------------------------
  *
