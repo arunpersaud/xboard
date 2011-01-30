@@ -1,7 +1,791 @@
 ChangeLog for XBoard/WinBoard
 -----------------------------
 
-(latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vnew vold)
+(latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
+
+2011-01-29 19:59:11 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Clean up fishy patch
+
+None of the ShowMove() calls in Adjudicate() was working, because when
+this code was taken out of HandleMachineMove() it was taken outside the
+scope of the local fromX, fromY etc. there, so that it started using the
+global variables from the mouse driver. As these usually contain -1,
+this suppressed move animation and highlighting. All these calls have
+now been removed, and ShowMove() is called after a positive return (from
+HandleMachineMove(), so within the correct scope).
+This improves the previous fix, which led to some flicker, because the
+erroneous ShowMove() calls did draw the new board (instantly), wich in
+the fishy patch was then immediately overwritten by the old position, to
+start animation. This drawing of the old position is now no longer
+needed either.
+
+2011-01-29 13:36:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update RTF file
+
+The RTF file is adapted to the new menu organization.
+
+2011-01-29 13:31:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file
+
+The highlight-with-arrow and one-click-move menu items are described.
+The highlightMoveWithArrow and variations option are described.
+Load Next /Previous Position descriptions are moved to File menu.
+The description for entering variations is updated (using Shift key).
+The remark that editing holdings is impossible is removed.
+Spartan Chess is added to the list of supported variants.
+
+2011-01-28 18:35:48 -0800 Arun Persaud <arun@nubati.net>:
+Updated copyright notice to 2011
+
+
+2011-01-24 15:01:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Greyout unavailable variants in New Variant dialog
+
+The WB radio-button code is refactored to be driven from a list (which
+must be kept in phase with the variant definitions in common.h!). It now
+also checks if the first engine supports the variant, and greys out the
+item if it isn't. XB now also makes this check. Slight re-ordering of
+10x8 variants there, to have the more common on top.
+If no radio button is selected, keep old variant even on OK.
+
+2011-01-19 11:10:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Move clock-click code to back-end
+
+Some duplicated (or should-be-duplicated) code for handling clicks on
+the clocks from the XBoard and WinBoard front-ends was merged and
+relocated to the back-end, so it can be shared. Noticeable was that
+XBoard allowed turn change in ICS examine mode by clock clicking,
+while WinBoard did not. WB, on the other hand, allowed clock adjustment.
+
+2011-01-16 23:15:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix legality testing of drop moves
+
+Drops of noexistent pieces (i.e. with a piece indicator letter that is
+not corresponding to any defined piece) are now parsed as
+ImpossibleMove, rather than IllegalMove, so they are also rejected with
+legality testing off.
+
+2011-01-17 00:28:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix WB Sound Options greyout and remove some grossness
+
+The sound and ICS Options menu items in WB were accessed 'by position',
+with fixed defined positions (always messing up any reorganization of
+the menus when you forgot to redefine the position constants in
+winboard.h). And not only that, but for completely mysterious reasons,
+the greying of the sound item greyed out the game-list options (above
+it) in stead when it was defined as 9, and the ICS options (below it)
+when it was 10 !!!. Now they are addressed 'by command' (and the
+position definitions are removed), which fixes things.
+
+2011-01-25 21:35:10 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Re-instate load next/prev position menu items
+
+As positions do not use something similar to the game list, these are
+still useful. For some reason I could not get Alt+Shift+PgUp/Dn to work,
+so I settled for Shift+PgUp/Dn.
+
+2011-01-16 21:56:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove superfluous copying of machine move
+
+There was explicit code in HandleMachineMove() and FinishMove() to put
+the move in the moveList, while MakeMove() already does this later in a
+more reliable way by calling CoordsToComputerAlgebraic(). This
+superfluous code is removed now.
+
+2011-01-16 21:44:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix spurious mate test in Edit Game mode
+
+When entering a game, it was terminated by the mate test even when
+legality checking was switched off (so that mates might not be reliably
+recognized). The mate test is now made dependent on legality testing.
+
+2011-01-16 21:37:16 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix type-in of drop moves
+
+Drop moves entered through the move type-in already come in the (piece,
+DROP_RANK, x, y) format, rather than having a holdings from square. This
+caused UserMoveEvent to consider them illegal when testing if the
+piecewas of the side to move, and when this was fixed, to recognize
+Knight drops as coming from between board and holdings (and thus
+illegal).
+
+2011-01-16 21:31:42 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix move type-in truncating game
+
+Starting a new variation by keeping Shift pressed did not work when
+OK'ing the move type-in, because there was some code ther that truncated
+the game. While this could be safely left to UserMoveEvent, which it
+calls, as the situation is not different from entering moves through the
+mouse.
+
+2011-01-11 16:12:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix legality testing for promotions
+
+Turns out WB has never tested for the legality of the chosen promotion
+piece, and would allow promotion to King innorml chess even with
+legality testing on (when entered through the keyboard)! Now strict
+testing is done, outlawing Pawns and Kings (or Unicorns in
+Knightmate). Only in suicide / giveaway Kings are stillallowed, and in
+spartan a black King if you do not have two yet.(And promotion
+toLnce,representing Hoplite Pawn,is forbidden there.)
+
+2011-01-11 11:34:07 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Reset 50-move counter on all pawn-like Lance moves
+
+Now the Lance represents a Pawn-like piece not only in variant fairy,
+but anywhere outside Shogi / Superchess, its moves should also reset the
+50-move counter in those cases. Especially important for Spartan Chess,
+where the Lance actually participates.
+
+2011-01-11 11:18:15 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix logo repainting
+
+The logos were not repainted when the main window was moved out of the
+display area, and then back into view. The reason for this is
+unknown, as the PaintProc calls HDCDrawPosition, which was calling
+DrawLogoOnDC. But the logos were not drawn, (or on an expose event
+sometimes half drawn!) despite the fact that the rest of the board was.
+The drawing of logos now has been decoupled from drawing the board,
+and has been moved to a separate routine DisplayLogos() (in analogy to
+DisplayBothClocks()). This is cleaner anyway, as the logos usually do
+not change when the board does. So apart from in PaintProc, it has only
+to be called when the mode changes (ModeHighlight()) or on swap clocks.
+This seems to fix the problem.
+
+2011-01-10 20:36:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix time in PGN info
+
+Saving of the thinking time in the PGN was broken by the patch that
+removed the race condition in the clock switching, because that moved
+the incrementing of forwardMostMove to behind the code that used fmm to
+index pvInfoList. As a result the time was stored in the slot for the
+opponent's previous move. The value is corrected now.
+
+2011-01-09 00:24:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fishy fix
+
+The move that delivers checkmate in two-machines mode is not animated
+when adjudication is on. There then also is no highlighting of this move
+Redrawing the board and calling ShowMove fixes it. Which is rather
+strange, because ShowMove was already called in Adjudicate (when it
+adjudicates), before GameEnds. For reasons that are not understood this
+call to ShowMove() (which calls AnimateMove()) is not effective.
+
+2011-01-09 00:21:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Reset machine colors after match
+
+The colors each engine playse are set to the originals after the last
+match game, so that a new match or two-machines game will not have
+swapped colors.
+
+2011-01-09 00:15:18 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Reset win/loss counters before match
+
+The win/loss counters were not reset, because the code counted on them
+being initialized to zero. But with matches startable from the menu,
+this is no longer true after the first match.
+
+2011-01-09 00:08:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Show move that causes false illegal-move claim
+
+Without claim testing XBoard takes back moves that an engine objects to.
+But when the engine is forfeited for a false claim, the move should of
+course stay. So the claim test is moved to before the take-back.
+
+2011-01-09 00:05:38 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Spartan promotion to King
+
+Promotions toKing were refused when in check, because XBoard thought
+they would not resolve the check. Now the promotion is actually
+performed before doing the check test.
+
+2011-01-05 17:31:37 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix WB font-based piece rendering on variant switch
+
+The piece bitmaps were only created from the font characters when the
+number of ranks or files changed, because it was done in
+InitDrawingSizes(). This caused missing pieces when changing to a
+variant on the same board that used other pieces. Now InitDrawingSizes()
+is called for any variant switch.
+
+2011-01-05 17:25:11 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix right-alignment pproblem in WB ICS window
+
+Use of Ctrl-R to summon the context menu still trickled through to the
+default text-edit window routine, and caused right-alignment. This was
+because the text-edit reacts on keyDown rather than the character event.
+KeyDown of R with Ctrl pressed is now also intercepted and ignored.
+
+2011-01-03 13:04:56 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix chat window title
+
+The title was using the engine name, rather than the ICS handle, which
+did not work outside zippy mode. Now it only uses the engine name when
+no ICS handle is known. The titleis now also subjected to translation.
+
+2011-01-03 12:50:54 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix spurious reading of old game title by JAWS
+
+Because focus was switched to the board window before loading the
+selected game from the game list, the titlebar still contained the
+name of the previously loaded game, which would spontaneously be read by
+JAWS. Now the focus switch is done after loading the new game (which
+updates the window title.)
+
+2011-01-03 12:37:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add variant Spartan Chess
+
+In the WB menu it takes the place of the defunct Twilight Chess item.
+The setup routine needed patching for setting up Lances in stead of
+Pawns for black, the check test had to be adapted to handle duple check,
+Alfil and Dragon moves were fine tuned in this variant to make the exact
+moves, and the promotion popup was adapted to show King and interpret
+Rook and Bishop as Dragon and Alfil for black. The Alfil now always
+moves as Modern Elephant except in Shatranj and Courier.
+
+2011-01-03 12:23:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix mate test
+
+Due to a bug in logical operators drops were tried for mate evasions
+even in non-drop games, which broke it in Superchess and Great Shatranj,
+and wasted CPU time in other variants.
+
+2011-01-05 17:19:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix promotion suffixon disambiguated piece moves
+
+The promotion suffixon piecemoves that needed disambiguation was not
+passedon to the back-end in most variants. Now it is passed on in any
+variant.
+
+2011-01-03 12:08:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix promotion of Pawn-like Lance
+
+In variants where the Lance is used to represent an unorthodox Pawn, it
+must promote when it reaches last rank. With legality testing on,
+however, the promoChar was ignored in ApplyMove in this case. The
+promotion suffix also was not appended in SAN moves.
+
+2011-01-03 11:57:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix WB promotion popup
+
+The promotion popup did not work properly in variants where black did
+not use the pieces that white wanted to promote to. Now the character
+for the selected piece is taken from the piece encodings of the side to
+move. In addition, selection of undefined pieces is ignored.
+
+2011-01-02 14:17:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bug in parsing variations
+
+The moves parsed from a variation were stored in the moveList without
+appended linefeed. This caused errors if the variation extended to
+beyond the end of the main line,into a hitherto unused part of the move
+list, as the linefeed was then not there from the overwritten move. As a
+result moves sent to the engine were concatenated, triggering
+illegal-move messages and bringing the engine out of phase.
+
+2011-01-02 14:11:45 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Define Ctrl-R as right-click in WB Comment dialog
+
+To allow JAWS users to load a variation through the keyboard, Ctrl-R is
+equated to a right click at the position of the caret or selection.
+
+2011-01-02 14:10:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow starting a variation from keyboard entry in WB-JAWS
+
+The status of the shift key is remembered when space is pressed to
+select a board square.
+
+2011-01-02 14:06:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Disable some accelerators in JAWS version
+
+Single-key accelerators that could result in irreversible data loss are
+undesirable, because the risk of accidentally pushing them is too large.
+So the non-Alt duplicates of next/previous game/position are disabled,
+as are Home and End for Revert and Truncate Game. JAWS users will have
+to rely on the menus for those functions.
+
+2011-01-02 13:59:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Group engine-output memos with engine names
+
+The engine names are now defined just before the text edits, so that
+JAWS 11 will read the engine name when the memo for the output of that
+engine is selected. (JAWS 10 will still read the NPS, as it reads in
+geometrical order.)
+
+2011-01-02 13:55:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put nr CPU earlier in tab cycle of WB Common Engine dialog
+
+By defining the max CPU control after hash size, the tabbing steps
+through the controls in geometrical (and logical) order, rather than
+having the max CPU in between the book controls.
+
+2010-12-29 23:47:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update WB language template file
+
+
+2010-12-29 23:41:27 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Subject JAWS menu and spoken strings to translation
+
+
+2010-12-29 23:37:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let JAWS SayString buffer full sentence
+
+The meaning of the flag parameter of SayString was changed to indicate
+buffering of flushing. On flushing a message of a single space is used
+as a kludge to indicate interruptability. Calls to force flushing where
+added everywhere.
+
+2010-12-29 23:32:54 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Adapt JAWS menu to new menu organization
+
+The menus did not correspondto the texts after translation of the main
+menu bar.
+
+2010-12-29 23:18:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Translate menus after creation of JAWS menu
+
+
+2010-12-29 23:07:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ICS context menu for JAWS
+
+The Ctrl+R key did select text at the mouse pointer in stead of at the
+curser, now that up and down-click were combined.
+
+2010-12-29 23:04:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Reorganize order of WB New Variant dialog controls
+
+The definitions are re-ordered so that at least JAWS 11 will speak the
+board-size elements properly.
+
+2010-12-29 22:57:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix order of elements in WB time-control dialog
+
+Someleading texts were defined after the text edit they referred to,so
+that JAWS 11 associated them to the wrong one. A tab stop was added to
+the time-odds label, to make JAWS speak it.
+
+2010-12-29 22:51:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Change tabbing order in WB sounds dialog
+
+The 'Play' button now gets focus immediately after the controls for
+selecting the sound, rather than at the end of the dialog (after OK).
+
+2010-12-29 22:47:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove tab stops on first radio button of WB dialogs
+
+The New Variant and Board dialogs had a tab stop on the first radio
+button,so that tabbing toit would automatically select variant
+normal or size tiny. Now it tabs straight to the current size, without
+changing anything. (Important for JAWS users.)
+
+2010-12-29 22:45:23 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put OK/Cancel last in tab cycle of some WB dialogs
+
+
+2010-12-29 22:29:37 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix duplicate menu character for Edit Comment
+
+Edit Comment did have the same shortcut character as Copy Game. Changed
+to m now.
+
+2010-12-11 11:18:56 -0800 Arun Persaud <arun@nubati.net>:
+fixed automake process: xboard.conf couldn't be generated if $srcdir was not the current directory
+
+
+2010-12-11 09:50:48 -0800 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2010-12-05 18:01:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Subject WB context menus to translation
+
+The innerloopof the menu translation has been made into a separate
+routine. This now uses GetMenuItemInfo() in stead of ModifyMenu() to
+better preserve menu breaks. Menu #10 is used for context menus (from
+the routine that pops them up), and for this number the orignal texts
+are not saved in menuText. (This is not needed, because the menu is
+created everytime anew from the resource data.)
+
+2010-12-05 15:00:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update translation template
+
+Add the new menu items; add some notes.
+
+2010-12-05 14:04:46 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Resize buttons in WB engine-settings dialog
+
+The OK and cancel buttons were to narrow for most translations, and were
+a non-standard order as well.
+
+2010-12-05 13:56:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add one-click move control to WB general-options dialog
+
+This is a duplicate of the one in the ICS options dialog, but the latter
+is inaccessible in non-ICS modes, and one-click move is now
+alsoavailable in engine mode.
+
+2010-12-05 13:51:20 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Create space in dialogs for translation
+
+The translated texts often did not fit, because controls were defined
+needlessly small (when there was empty space between them). In these
+cases they have been enlarged to consume all available space. Some
+dialogs are made wider.
+
+2010-12-05 13:47:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add handle for translator acknowledgement
+
+An empty string is printed in the about box, which can be 'translated'
+to a message acknowledging the translator.
+
+2010-12-05 13:43:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Use default logo for user
+
+When no logo with the name of the current user is found, use dummy.bmp.
+
+2010-12-05 15:46:34 -0800 Arun Persaud <arun@nubati.net>:
+added rlwrap tip to FAQ
+
+
+2010-12-03 23:24:06 -0800 Arun Persaud <arun@nubati.net>:
+replace hard coded paths with path from configure script
+
+use $datadir and subdirectories to store some data files. Also make files in xboard.conf use correct path.
+
+2010-12-03 23:02:09 -0800 Arun Persaud <arun@nubati.net>:
+fixed a typo in the configure script output
+
+
+2010-12-03 21:46:00 -0800 Arun Persaud <arun@nubati.net>:
+added a desktop file
+
+taken from the openSUSE project
+
+2010-12-03 22:44:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Edit Game/Position checkmarking in WinBoard
+
+Because the entries in Edit and Mode menu were pure duplicats, the
+entries in the wrong menu (Edit) were checkmarked while active. By
+defining different IDs for those in the Edit menu, those in the Mode
+menu are checkmarked again.
+
+2010-12-03 10:07:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add XBoard menu items for arrow highlight and one-click move
+
+These items are put in the options menu; the 'Old Save Style' item is
+removed.
+
+2010-12-03 09:27:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Provide menus for editing WinBoard engine and server lists
+
+The Edit Tags dialog in the WB front-end is adapted to act as a general
+edit for string variables, by giving it an extra parameter to indicate
+where to store the edited result. Menu items are added to invoke this
+dialog for editing the /first, /secondChessProgramNames and /icsNames
+options. This solves the problem that people would have to edit an ini
+file that they can no longer locate (because the %APPDATA% folder has
+different names and locations in the various Windows versions, and is
+often a hidden folder on top of that).
+There is a slight memory leak here, as the memory for the previous
+value of the altered string option is not freed.
+
+2010-12-02 16:18:53 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure arrow highlighting as default in XBoard
+
+Set -highlightMoveWithArrow true in the xboard.conf file, and specify a
+lineGap of 0 to make that efficient (and the wood theme even nicer).
+
+2010-12-02 15:56:46 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Port highlighting with arrow to XBoard
+
+Unfortuntely this duplicates a fair amount of code in the front end.
+Removing the arrow is done by a total repaint if there is a non-zero
+lineGap, because the clever algorithm for selective redrawing (based
+on damage) that XBoard uses does not repair damage to the grid lines.
+For lineGap=0, however, (for which the arrow is mainly intended) the
+damage mechanism is used, and the damaged squares are determined by
+tracing out the arrow in 64 steps, and marking all squares in the
+neighborhood as damaged.
+
+2010-12-02 15:55:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Strip CR from xboard.c
+
+
+2010-12-02 14:21:24 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let user decide if he wants highlights in blindfold mode
+
+Remove the automaticsuppression ofhighlighting.
+
+2010-12-02 00:24:43 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix fag-fell marker with logos on
+
+The flag-fell marker "(!)" that is displayed in the clock in WinBoard in
+two-machines mode was printed twice when the clock was split over two
+lines (as with logos on).
+
+2010-12-01 18:57:57 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Also exempt variant seirawan from eval-scale doubling
+
+It is not really a drop game, so a scale from -7 to 7 in the eval graph
+is good enough (like variants great and super).
+
+2010-12-01 10:33:13 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure EGTB cache size in adapterCommand
+
+The hash size, nr of CPUs and EGTB path are transferred through the WB
+protocol interface commands memory, cores and egtpath. But there is no
+WB command for detailing the EGTB cache size. So the value of the
+command-line option -defaultCacheSizeEGTB has to be sent to Polyglot
+through its startup command to make it known to UCI engines.
+
+2010-11-30 22:46:16 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Move Hint and Book items to Engine menu in XBoard
+
+
+2010-11-30 22:17:24 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Correct the key bindings fo view menu in texi file
+
+The mentioned bindings for Game List and Eval Graph were wrong.
+
+2010-11-30 21:25:07 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix sub-variation display with negative score
+
+The test if the displayed score was the pvInfo score failed for negative
+scores, because floats are truncated towards zero. So the previous fix
+of spurious score/depth info was not working when the score was
+negative.
+
+2010-11-30 18:27:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Peel PV out of comment
+
+Arena stores engine PVs not in variation format, but within both braces
+and parentheses, before the score/depth info. This caused XBoard to
+overlook the score/depth info, (frustrating, e.g., the eval graph),
+while the PV would not be accessible for walking it as a variation.
+The routine that extracts the score/depth from a comment now has
+been made more clever, to recognize a leadin PV in the comment, and then
+place it in front of the comment as variation (by moving the opening
+brace to behind it). For some reason it does not work if the PV and
+score/depth were separated by a newline, but this happens quite rarely.
+
+2010-11-30 18:23:12 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow line-straddling result comments
+
+Some GUIs (in particular Arena) do not have the decency to keep the
+result comment on a single line. In this case the parser rules would not
+recognize it, and treat it as a normal comment, plus an undetailed PGN
+result. The rules are now fixed to allow linefeeds in the comment, and
+between comment and PGN result. To correctly process the comment further
+(e.g. in game-list lines) the linefeeds are replaced by spaces in the
+back-end routines that do use the result comment.
+
+2010-11-30 12:22:32 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Write key bindings in XBoard menus
+
+Unfortunately tabs are not understood in menu texts, so fine-tuning
+through spaces is necessary to get some sort of ragged alignment.
+
+2010-11-29 18:01:38 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure XBoard to use wood board texture by default
+
+The texture pixmaps are sought in /usr/share/games/xboard, with names
+wood_l.pm and wood_d.xpm. I guess the " make install" should be adapted
+to put them there. XBoard is resitent to non-existence of the files,
+btw. It simply ignores the arguments in that case.
+
+2010-11-29 17:48:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure -inc as volatile option in XBoard
+
+XBoard users are not used to options being persistent, and thus have
+many scripts assuming the timeIncrement is -1 when they don't specify it
+on the command line, and want to specify -mps. But a persistent -inc of
+0 fom a preious session would then force their -mps to zero, causing
+big-time confusion.
+
+2010-11-29 17:36:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make WinBoard clocks translation-proof
+
+With logos on, the splitting of the clock over two lines assumed the
+lengths of the words "white" and "black" would always be 5. Used strlen.
+
+2010-11-29 14:57:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve drawing of highlight arrow
+
+A diagonal arrow sometimes had a notch in the shaft because of
+independent rounding of the starting and ending point coordinates.
+Furthermore the width of the shaft was unnecessary variable(as a
+function of direction) because half the width was rounded and then used
+twice. Now rounding of end-points is always done towards a fixed grid
+of square centers, which keeps diagonals purely diagonal, and one side
+of the shaft is drawn relative to the other side, after the
+position of the latter has been rounded, so any rounding error affects
+the shaft width only once.
+
+2010-11-29 10:25:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Alter descriptionof Analyze File menu item
+
+This menu item has been given a new function, so a new description was
+needed.
+
+2010-11-29 10:15:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add description of Game List Options in texi file
+
+
+2010-11-29 09:58:00 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file for new menu organization
+
+The descriptions are shuffled around and organized into sections
+corresponding to the new main menus. Where necessary the name of the
+items was changed to their new names. The items removed from the File
+menu (the next/previous/same stuff) are nowmoved to the section "other
+shortcut keys", as the key bindings for some of them are still active.
+
+2010-11-29 09:06:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Update info on key bindings in texi file
+
+The texi file was still listing the old XBoard key bindings. Where
+necessary this is now changed to the new (WinBoard) bindings, and all
+the new bindings were added.
+
+2010-11-29 09:04:53 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Add XBoard key bindings for Revert and Truncate
+
+Use Home key as accelerator for Revert, End for Truncate, as in WinBoard.
+
+2010-11-28 23:12:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Divorce the Edit and Show Tags/Comment menu items
+
+In WinBoard the items in the Edit and View menu for Tags and Comment now
+have different IDs, so they can be independently controlled. Only the
+items in the View menu are check-marked. The items still do the same.
+
+2010-11-28 23:08:26 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Alter WinBoard menu text
+
+The texts are slightly adapted, mostly by choosing more convenient
+tabbing characters for the new menu organization. The translation
+template is updated accordingly.
+
+2010-11-28 20:24:46 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let move-history window scroll to bottom after adding move
+
+By activating the scrollbar of the viewport through XtCallActionProc
+the move-history window is scrolled to the bottom.
+
+2010-11-27 14:38:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Shogi promotion popup
+
+The texts were adapted to shogi by printing new text items over the
+Queen and Knight buttons, but these did not alwys cover it. Now the text
+on the buttons is changed as it should be. Also the window title is
+adapted.
+
+2010-11-26 11:22:06 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Apply gettext macros to menu texts
+
+Now texts and references are separated, the texts in the tables can be
+decorated with the N_() macro, so that the _() macro no longer has to be
+applied when they are used. (This makes the texts appear in the .po
+files.)
+
+2010-11-26 11:12:58 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Adapt some XBoard menu texts
+
+The "Show" prefix is removed from the "View" menu items, as this seems
+implied. An ellipsis is added to the Engine #N Settings items, which
+could not be there before, because periods in a menu name would break
+any reference to it. For some other names the ellipsis was deleted.
+(These were not refered to, but who knows what we will do in the future.)
+
+2010-11-26 11:03:35 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Separate menu text from menu name in XBoard
+
+The text string in the menu-definition tables was used both for the menu
+text, as well as for referencing the items from the code (for enabing or
+checkmarking). Now these can be defined separately, so that altering the
+menu texts is possible without breaing any references to the item.
+(Moving them to another menu would still break XBoard, though!)
+Currently the texts and names are still the same.
+
+2010-11-26 10:48:54 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Bugfix XBoard menu translation
+
+The gettext macro N_() was applied to the menu definition tables, but
+this would break any translation, as these items are both used as menu
+texts as well as reference for enabling and checkmarking. The routines
+that create the menus already apply _() dynamically to these items when
+they are used as menu texts.
+
+2010-11-26 10:10:55 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Restrict drops in variant seirawan to back rank
+
+Drops aren't really llowed at all in Seirawan Ches, but there exists an
+engine that supports a variant where drops on the back-rank are allowed.
+
+2010-11-25 19:44:37 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Let Analyze File annotate the loaded game
+
+By not suppressing the auto-play loop in AnalyzeFle mode, we step
+through the game while the engine is analyzing, and store the PV info
+that the engine produces, as well as the full PV (as variation comment)
+with each move.
+
+2010-11-25 19:41:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Revive Analyze File menu item in WB
+
+We will keep this menu after all, becase it can be given a new meaning.
+
+2010-11-25 19:31:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix spurious scores in comments
+
+The comment popup is also used to display engine PV info, but when the
+contents of the window is written back when we select a variation,
+it was treated as a real comment. This is fixed now by checing in
+ReplaceComment() if the comment starts with the PV info, and if so,
+ignore the latter. This solves the problem, but I guess the real bug is
+that selecting a variation tries to write the comment even if it did not
+change.
+
+2010-11-25 19:26:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Display error for wrong use of Machine Match
+
+
+2010-11-24 13:30:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Reorganize XBoard menus
+
+
+2010-11-24 11:02:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Reorganize WinBoard menus
+
+New main menus Edit, View and Engine are added; the step menu
+disappears. The menu items are redistributed over the new menus.
+Sometimes duplicates are created. No adaptation of short-cut characters
+as made yet (as this affects translation).
+
+2010-11-20 20:20:27 -0800 Arun Persaud <arun@nubati.net>:
+removed trailing whitespaces from NEWS
+
+
+2010-11-20 20:19:30 -0800 Arun Persaud <arun@nubati.net>:
+merged readme_HGM.txt into the NEWS file
+
+seems like a better place for the release notes, although those releases where not officially part of GNU, but the NEWS file already covers similar releases, so it might as well cover all of them.
+
+2010-11-20 18:24:19 -0800 Arun Persaud <arun@nubati.net>:
+typo in date of developer release
+
+but will leave the tagged version as it is, since it's still a unique version number
+
+2010-11-20 18:11:01 -0800 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2010-11-20 18:12:41 -0800 Arun Persaud <arun@nubati.net>:
+added latest version of parser.c
+
+
+2010-11-20 18:05:56 -0800 Arun Persaud <arun@nubati.net>:
+updated Changelog, etc for developer release
 
 
 2010-11-20 16:22:00 -0800 Arun Persaud <arun@nubati.net>:

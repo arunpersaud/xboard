@@ -2,7 +2,7 @@
 
 (git shortlog --no-merges v4.4.4..HEAD, removed duplicated from earlier versions due to cherry-picking)
 
-Arun Persaud (24):
+Arun Persaud (38):
       fixed prototype for AppendComment
       clean-up
       fixed Makefile.am to handle config file correctly
@@ -27,11 +27,26 @@ Arun Persaud (24):
       fixed buffer size for snprintf
       Revert "bugfix: fixed readline support with icslogon option"
       Revert "adding gnu-readline support"
+      added latest version of parser.c
+      new developer release
+      typo in date of developer release
+      merged readme_HGM.txt into the NEWS file
+      removed trailing whitespaces from NEWS
+      added a desktop file
+      fixed a typo in the configure script output
+      replace hard coded paths with path from configure script
+      added rlwrap tip to FAQ
+      new developer release
+      fixed automake process: xboard.conf couldn't be generated if $srcdir was not the current directory
+      Updated copyright notice to 2011
+      release of version 4.5.0
+      updated parser.c form parser.l
+
 
 Eric Mullins (1):
       Changes needed to compile master branch.
 
-H.G. Muller (258):
+H.G. Muller (353):
       add fixed time per move to the WinBoard time-control menu dialog
       let the clocks run in -searchTime mode
       Some code refactoring and cleanup; one small bug fix
@@ -290,6 +305,101 @@ H.G. Muller (258):
       Change representation of Bede in variant fairy initial position
       Give Lance moves of Amazon in variant super
       Make Hoplite moves irreversible in Spartan Chess
+      Reorganize WinBoard menus
+      Reorganize XBoard menus
+      Display error for wrong use of Machine Match
+      Fix spurious scores in comments
+      Revive Analyze File menu item in WB
+      Let Analyze File annotate the loaded game
+      Restrict drops in variant seirawan to back rank
+      Bugfix XBoard menu translation
+      Separate menu text from menu name in XBoard
+      Adapt some XBoard menu texts
+      Apply gettext macros to menu texts
+      Fix Shogi promotion popup
+      Let move-history window scroll to bottom after adding move
+      Alter WinBoard menu text
+      Divorce the Edit and Show Tags/Comment menu items
+      Add XBoard key bindings for Revert and Truncate
+      Update info on key bindings in texi file
+      Update texi file for new menu organization
+      Add description of Game List Options in texi file
+      Alter descriptionof Analyze File menu item
+      Improve drawing of highlight arrow
+      Make WinBoard clocks translation-proof
+      Configure -inc as volatile option in XBoard
+      Configure XBoard to use wood board texture by default
+      Write key bindings in XBoard menus
+      Allow line-straddling result comments
+      Peel PV out of comment
+      Fix sub-variation display with negative score
+      Correct the key bindings fo view menu in texi file
+      Move Hint and Book items to Engine menu in XBoard
+      Configure EGTB cache size in adapterCommand
+      Also exempt variant seirawan from eval-scale doubling
+      Fix fag-fell marker with logos on
+      Let user decide if he wants highlights in blindfold mode
+      Strip CR from xboard.c
+      Port highlighting with arrow to XBoard
+      Configure arrow highlighting as default in XBoard
+      Provide menus for editing WinBoard engine and server lists
+      Add XBoard menu items for arrow highlight and one-click move
+      Fix Edit Game/Position checkmarking in WinBoard
+      Use default logo for user
+      Add handle for translator acknowledgement
+      Create space in dialogs for translation
+      Add one-click move control to WB general-options dialog
+      Resize buttons in WB engine-settings dialog
+      Update translation template
+      Subject WB context menus to translation
+      Fix duplicate menu character for Edit Comment
+      Put OK/Cancel last in tab cycle of some WB dialogs
+      Remove tab stops on first radio button of WB dialogs
+      Change tabbing order in WB sounds dialog
+      Fix order of elements in WB time-control dialog
+      Reorganize order of WB New Variant dialog controls
+      Fix ICS context menu for JAWS
+      Translate menus after creation of JAWS menu
+      Adapt JAWS menu to new menu organization
+      Let JAWS SayString buffer full sentence
+      Subject JAWS menu and spoken strings to translation
+      Update WB language template file
+      Put nr CPU earlier in tab cycle of WB Common Engine dialog
+      Group engine-output memos with engine names
+      Disable some accelerators in JAWS version
+      Allow starting a variation from keyboard entry in WB-JAWS
+      Define Ctrl-R as right-click in WB Comment dialog
+      Fix bug in parsing variations
+      Fix WB promotion popup
+      Fix promotion of Pawn-like Lance
+      Fix promotion suffixon disambiguated piece moves
+      Fix mate test
+      Add variant Spartan Chess
+      Fix spurious reading of old game title by JAWS
+      Fix chat window title
+      Fix right-alignment pproblem in WB ICS window
+      Fix WB font-based piece rendering on variant switch
+      Fix Spartan promotion to King
+      Show move that causes false illegal-move claim
+      Reset win/loss counters before match
+      Reset machine colors after match
+      Fishy fix
+      Fix time in PGN info
+      Fix logo repainting
+      Reset 50-move counter on all pawn-like Lance moves
+      Fix legality testing for promotions
+      Fix move type-in truncating game
+      Fix type-in of drop moves
+      Fix spurious mate test in Edit Game mode
+      Remove superfluous copying of machine move
+      Re-instate load next/prev position menu items
+      Fix WB Sound Options greyout and remove some grossness
+      Fix legality testing of drop moves
+      Move clock-click code to back-end
+      Greyout unavailable variants in New Variant dialog
+      Update texi file
+      Update RTF file
+      Clean up fishy patch
 
 ** Version 4.4.4 **
 

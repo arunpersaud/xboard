@@ -3,48 +3,60 @@
 (git diff -b --stat --summary -M v4.4.4 HEAD)
 
  AUTHORS                              |   16 +-
- ChangeLog                            |  632 ------
- DIFFSTAT                             |  180 --
- Makefile.am                          |   18 +-
- NEWS                                 |   85 -
+ COPYRIGHT                            |    2 +-
+ ChangeLog                            | 2326 +++++++++++++++++++--
+ DIFFSTAT                             |  271 +++-
+ FAQ.html                             |   15 +
+ Makefile.am                          |   55 +-
+ NEWS                                 |  818 +++++++-
  README                               |    8 +-
- SHORTLOG                             |  125 --
+ SHORTLOG                             |  293 +++
  args.h                               | 1425 +++++++++++++
- backend.c                            | 3811 ++++++++++++++++++++++------------
- backend.h                            |   45 +-
+ autogen.sh                           |    2 +-
+ backend.c                            | 3916 ++++++++++++++++++++++------------
+ backend.h                            |   48 +-
+ backendz.h                           |    2 +-
+ bitmaps/bitmaps.h                    |    2 +-
  book.c                               |   39 +-
- childio.c                            |    7 +-
+ childio.c                            |    9 +-
+ childio.h                            |    2 +-
  cmail.in                             |    2 +-
- common.h                             |  112 +-
+ common.h                             |  118 +-
  config.rpath                         |    2 +-
- configure.ac                         |   15 +-
+ configure.ac                         |   20 +-
+ copyright.texi                       |    2 +-
  engineoutput.c                       |  518 +++++
  engineoutput.h                       |   69 +
  evalgraph.c                          |  339 +++
  evalgraph.h                          |   60 +
  filebrowser/README                   |    3 +
  filebrowser/dir.c                    |  163 ++
- filebrowser/draw.c                   |  935 +++++++++
+ filebrowser/draw.c                   |  935 ++++++++
  filebrowser/path.c                   |  917 ++++++++
  filebrowser/selfile.c                |  756 +++++++
  filebrowser/selfile.h                |  149 ++
  filebrowser/xstat.h                  |   23 +
- frontend.h                           |   31 +
- gamelist.c                           |  184 ++-
+ frontend.h                           |   35 +-
+ gamelist.c                           |  186 ++-
+ gettext.h                            |    2 +-
  history.c                            |  246 +++
- moves.c                              |  620 +++---
- moves.h                              |   18 +-
- winboard/parser.c => parser.c        | 2704 ++++++++++++------------
- parser.h                             |    7 +-
- parser.l                             |  218 ++-
- pgntags.c                            |   24 +-
+ lists.c                              |    2 +-
+ lists.h                              |    2 +-
+ moves.c                              |  666 ++++---
+ moves.h                              |   20 +-
+ winboard/parser.c => parser.c        | 2669 ++++++++++++-----------
+ parser.h                             |    9 +-
+ parser.l                             |  228 ++-
+ pgntags.c                            |   26 +-
  pixmaps/convert.c                    |   29 +-
- pixmaps/marble_d.xpm                 |  238 +++
+ pixmaps/marble_d.xpm                 |  238 ++
  pixmaps/marble_l.xpm                 |  359 ++++
+ pixmaps/pixmaps.h                    |    2 +-
  pixmaps/wood_d.xpm                   |  239 +++
  pixmaps/wood_l.xpm                   |  192 ++
  pixmaps/xqboard.xpm                  |  498 +++++
  pixmaps/xqwood.xpm                   |  597 ++++++
+ readme_HGM.txt                       |  411 ----
  shogipixmaps/add64.xpm               |   73 +
  shogipixmaps/adl64.xpm               |   73 +
  shogipixmaps/ald64.xpm               |   73 +
@@ -117,8 +129,8 @@
  winboard/bitmaps/ws33o.bmp           |  Bin 0 -> 326 bytes
  winboard/bitmaps/ws33s.bmp           |  Bin 0 -> 326 bytes
  winboard/config.h                    |    6 +-
- winboard/defaults.h                  |    9 +-
- winboard/help.c                      |    2 +-
+ winboard/defaults.h                  |   11 +-
+ winboard/help.c                      |    4 +-
  winboard/help/html/01.htm            |    8 +-
  winboard/help/html/03.htm            |    2 +-
  winboard/help/html/04.htm            |   35 +-
@@ -130,47 +142,56 @@
  winboard/help/html/15.htm            |   16 +-
  winboard/help/html/16.htm            |   19 +-
  winboard/help/html/18.htm            |   12 +-
+ winboard/help/html/24.htm            |    2 +-
  winboard/help/winboard.chm           |  Bin 79031 -> 86507 bytes
  winboard/help/winboard.hhk           |  138 ++-
  winboard/help/winboard.hhp           |   13 +-
- winboard/jaws.c                      |   69 +-
- winboard/language.txt                | 1390 +++++++++----
+ winboard/jaws.c                      |  131 +-
+ winboard/language.txt                | 1425 +++++++++----
  winboard/makefile.gcc                |   38 +-
  winboard/makefile.ms                 |   34 +-
- winboard/resource.h                  |   79 +
- winboard/wchat.c                     |  162 ++-
- winboard/wclipbrd.c                  |   63 +-
- winboard/wedittags.c                 |   28 +-
+ winboard/resource.h                  |   87 +
+ winboard/wchat.c                     |  165 ++-
+ winboard/wclipbrd.c                  |   65 +-
+ winboard/wclipbrd.h                  |    2 +-
+ winboard/wedittags.c                 |   42 +-
  winboard/wengineo.c                  |  856 --------
  winboard/wengineoutput.c             |  436 ++++
  winboard/wevalgraph.c                |  359 +---
- winboard/wgamelist.c                 |   93 +-
+ winboard/wgamelist.c                 |   97 +-
  winboard/wgamelist.h                 |   28 -
  winboard/whistory.c                  |  264 +--
- winboard/winboard.c                  | 3135 ++++++++++------------------
+ winboard/winboard.c                  | 3449 +++++++++++-------------------
  winboard/winboard.dsp                |   18 +-
- winboard/winboard.h                  |   53 +-
- winboard/winboard.rc                 |  255 ++-
- winboard/winboard.rtf                | 1408 +++++++------
+ winboard/winboard.h                  |   57 +-
+ winboard/winboard.rc                 |  776 ++++----
+ winboard/winboard.rtf                | 1719 ++++++++-------
  winboard/wlayout.c                   |    3 +-
- winboard/woptions.c                  |  242 ++-
- winboard/wsettings.c                 |   24 +-
- xboard.c                             | 2250 +++++++++------------
- xboard.conf                          |   68 +
- xboard.h                             |   24 +-
- xboard.texi                          |  265 +++-
- xedittags.h                          |    1 +
- xengineoutput.c                      |  591 ++-----
+ winboard/woptions.c                  |  424 ++--
+ winboard/woptions.h                  |    2 +-
+ winboard/wsettings.c                 |   28 +-
+ winboard/wsockerr.c                  |    2 +-
+ winboard/wsockerr.h                  |    2 +-
+ xboard.c                             | 2912 ++++++++++++-------------
+ xboard.conf.in                       |   77 +
+ xboard.desktop                       |  154 ++
+ xboard.h                             |   26 +-
+ xboard.texi                          |  960 ++++++---
+ xedittags.c                          |   13 +-
+ xedittags.h                          |    3 +-
+ xengineoutput.c                      |  597 ++----
  xevalgraph.c                         |  456 ++++
  winboard/wedittags.h => xevalgraph.h |   14 +-
- xgamelist.c                          |  405 ++++-
- xgamelist.h                          |    3 +
- xhistory.c                           |   62 +-
- xhistory.h                           |    2 +
- xoptions.c                           |  235 ++-
- zic2xpm.c                            |   17 +-
- zippy.c                              |   86 +-
- 168 files changed, 23932 insertions(+), 11303 deletions(-)
+ xgamelist.c                          |  413 ++++-
+ xgamelist.h                          |    5 +-
+ xhistory.c                           |   76 +-
+ xhistory.h                           |    4 +-
+ xoptions.c                           |  243 ++-
+ zic2xpm.c                            |   19 +-
+ zic2xpm.man                          |    2 +-
+ zippy.c                              |   88 +-
+ zippy.h                              |    2 +-
+ 189 files changed, 29433 insertions(+), 12188 deletions(-)
  create mode 100644 args.h
  create mode 100644 engineoutput.c
  create mode 100644 engineoutput.h
@@ -192,6 +213,7 @@
  create mode 100644 pixmaps/wood_l.xpm
  create mode 100644 pixmaps/xqboard.xpm
  create mode 100644 pixmaps/xqwood.xpm
+ delete mode 100644 readme_HGM.txt
  create mode 100644 shogipixmaps/add64.xpm
  create mode 100644 shogipixmaps/adl64.xpm
  create mode 100644 shogipixmaps/ald64.xpm
@@ -263,7 +285,8 @@
  delete mode 100644 winboard/wengineo.c
  create mode 100644 winboard/wengineoutput.c
  delete mode 100644 winboard/wgamelist.h
- create mode 100644 xboard.conf
+ create mode 100644 xboard.conf.in
+ create mode 100644 xboard.desktop
  create mode 100644 xevalgraph.c
  rename winboard/wedittags.h => xevalgraph.h (74%)
 

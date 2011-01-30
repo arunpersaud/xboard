@@ -1,6 +1,50 @@
-** Version 4.5.0 (not yet released)**
+** Version 4.5.0 **
 
- *
+   (see http://www.gnu.org/software/xboard/whats_new/4.5.0/ for more details)
+
+    General
+    -------
+    * User specific settings files
+    * More logical (and standard) menu structure
+    * Translation into other languages (WB)
+    * Walking the PV of an engine
+    * Exploring variations
+    * Playing through PGN variations
+    * Annotating a game with analysis results
+    * Editing Comments
+    * Controlling move choice of the GUI book
+    * Keeping the clock in sync in tournaments
+    * Starting an engine match from the menu
+    * Fixed thinking time per move
+    * Improved multi-PV support
+    * Where your pieces can move to
+    * Editing crazyhouse holdings
+    * Thai Chess (Makruk) and Seirawan Chess
+    * Non-compliant FEN and SAN input
+    * Improved Xiangqi adjudications
+    * Allowing engines to setup a position
+
+    Merging XBoard & WinBoard
+    ------------------------------
+    * Evaluation graph (XB)
+    * Settings file (XB)
+    * Filtering the game list (XB)
+    * Game-List options dialog (XB)
+    * Recalling the ICS input history (XB)
+    * Aribtrary board textures (XB)
+    * Highlight arrow (XB)
+
+    ICS-client Enhancements
+    -----------------------
+    * Maintaining a healty ICS connection
+    * Claiming a draw after your move
+    * ICS seek graph
+    * One-click moving
+    * Observing your bughouse partner
+    * Improved Chat-Box interface (WB)
+    * Uploading games to an ICS
+    * Side-by-side boards
+
 
 ** Version 4.4.4 **
 
