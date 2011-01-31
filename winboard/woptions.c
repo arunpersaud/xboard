@@ -807,7 +807,8 @@ VariantWhichRadio(HWND hDlg)
   int i=0, j;
   while((j = radioButton[i++]) != -2) {
 	if(j == -1) continue; // no menu button
- 	if(IsDlgButtonChecked(hDlg, j)) return (VariantClass) i-1;
+	if(IsDlgButtonChecked(hDlg, j) &&
+	   (appData.noChessProgram || strstr(first.variants, VariantName(i-1)))) return (VariantClass) i-1;
   }
   return gameInfo.variant; // If no button checked, keep old
 }
