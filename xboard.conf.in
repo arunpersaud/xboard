@@ -26,7 +26,7 @@
 -bitmapDirectory ""
 -liteBackTextureFile  "@bitmapdir@wood_l.xpm"
 -darkBackTextureFile  "@bitmapdir@wood_d.xpm"
--overrideLineGap 0
+-overrideLineGap 1
 -highlightMoveWithArrow true
 ;
 ; Behavior
