@@ -45,11 +45,47 @@ are playing a bughouse game on an Internet Chess Server, a list of the
 off-board pieces that each player has available is shown in the window
 title after the player's name; in addition, the piece menus show the
 number of pieces available of each type. From version 4.3.14 on, it is
-also possible in crazyhouse, bughouse or shogi to dag and drop pieces
-to the board from the holdings squares displayed next to the board.
+also possible in crazyhouse, bughouse or shogi to drag and drop pieces
+to the board from the holdings squares displayed next to the board. 
+This latter method for dropping pieces during a game is preferred,
+and the piece-drop menu is now deprecated (except for editing a position). 
+Although the old behavior can still be selected through a command-line
+option, the default function of the right mouse button is to display
+the position the chess program thinks it will end up in,
+while moving the mouse vertically with this button pressed will step
+through the principal variation to show how this position will be
+reached. 
+Lines of play displayed in the engine-output window an similarly
+be played out on the board, by right-clicking on them.
 
-   <p>All other XBoard commands are available from the menu bar. The most
-frequently used commands also have shortcut keys or on-screen buttons.
+   <p>When connected to an ICS, it is possible to call up a graphical
+representation of players seeking a game in stead of the chess board,
+when the latter is not in use
+(i.e. when you are not playing or observing). 
+Left-clicking the display area will switch between this 'seek graph'
+and the chess board. 
+Hovering the mouse pointer over a dot will show the details of the
+seek ad in the message field above the board. 
+Left-clicking the dot will challenge that player. 
+Right-clicking a dot will 'push it to the back',
+to reveal any dots that were hidden behind it. 
+Right-clicking off dots will refresh the graph.
+
+   <p>Most other XBoard commands are available from the menu bar. The most
+frequently used commands also have shortcut keys or on-screen buttons. 
+Some rarely used parameters can only be set through options on the
+command line used to invoke XBoard.
+
+   <p>XBoard uses a settings file, in which it can remember any changes to
+the settings that are made through menus or command-line options,
+so they will still apply when you restart XBoard for another session. 
+The settings can be saved into this file automatically when XBoard exits,
+or on explicit request of the user. 
+The default name for the settings file is /etc/xboard/xboard.conf,
+but in a standard install this file is only used as a master settings
+file that determines the system-wide default settings,
+and defers reading and writing of user settings to a user-specific
+file like ~/.xboardrc in the user's home directory.
 
    <p>When XBoard is iconized, its graphical icon is a white knight if
 it is White's turn to move, a black knight if it is Black's turn.  See
@@ -58,12 +94,14 @@ feature to work.
 
 <ul class="menu">
 <li><a accesskey="1" href="File-Menu.html#File-Menu">File Menu</a>:        Accessing external games and positions. 
-<li><a accesskey="2" href="Mode-Menu.html#Mode-Menu">Mode Menu</a>:        Selecting XBoard's mode. 
-<li><a accesskey="3" href="Action-Menu.html#Action-Menu">Action Menu</a>:      Talking to the chess engine or ICS opponents. 
-<li><a accesskey="4" href="Step-Menu.html#Step-Menu">Step Menu</a>:        Controlling the game. 
-<li><a accesskey="5" href="Options-Menu.html#Options-Menu">Options Menu</a>:     User preferences. 
-<li><a accesskey="6" href="Help-Menu.html#Help-Menu">Help Menu</a>:        Getting help. 
-<li><a accesskey="7" href="Keys.html#Keys">Keys</a>:             Other shortcut keys. 
+<li><a accesskey="2" href="Edit-Menu.html#Edit-Menu">Edit Menu</a>:        Altering games, positions, PGN tags or comments. 
+<li><a accesskey="3" href="View-Menu.html#View-Menu">View Menu</a>:        Controlling XBoard's shape and looks. 
+<li><a accesskey="4" href="Mode-Menu.html#Mode-Menu">Mode Menu</a>:        Selecting XBoard's mode. 
+<li><a accesskey="5" href="Action-Menu.html#Action-Menu">Action Menu</a>:      Talking to the chess engine or ICS opponents. 
+<li><a accesskey="6" href="Engine-Menu.html#Engine-Menu">Engine Menu</a>:      Controlling settings and actions of the engine(s). 
+<li><a accesskey="7" href="Options-Menu.html#Options-Menu">Options Menu</a>:     User preferences. 
+<li><a accesskey="8" href="Help-Menu.html#Help-Menu">Help Menu</a>:        Getting help. 
+<li><a accesskey="9" href="Keys.html#Keys">Keys</a>:             Other shortcut keys. 
 </ul>
 
    </body></html>

@@ -34,12 +34,12 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <h3 class="section">3.3 ICS options</h3>
 
-<p><a name="index-ICS-options-191"></a><a name="index-Options_002c-ICS-192"></a>
+<p><a name="index-ICS-options-210"></a><a name="index-Options_002c-ICS-211"></a>
      <dl>
-<dt>-ics/-xics or -internetChessServerMode true/false<dd><a name="index-ics_002c-option-193"></a><a name="index-internetChessServerMode_002c-option-194"></a>Connect with an Internet Chess Server to play chess against its
+<dt>-ics/-xics or -internetChessServerMode true/false<dd><a name="index-ics_002c-option-212"></a><a name="index-internetChessServerMode_002c-option-213"></a>Connect with an Internet Chess Server to play chess against its
 other users, observe games they are playing, or review games
 that have recently finished. Default: false. 
-<br><dt>-icshost or -internetChessServerHost host<dd><a name="index-icshost_002c-option-195"></a><a name="index-internetChessServerHost_002c-option-196"></a>The Internet host name or address of the chess server to connect
+<br><dt>-icshost or -internetChessServerHost host<dd><a name="index-icshost_002c-option-214"></a><a name="index-internetChessServerHost_002c-option-215"></a>The Internet host name or address of the chess server to connect
 to when in ICS mode. Default: <code>chessclub.com</code>. 
 Another popular chess server to try is <code>freechess.org</code>. 
 If your site doesn't have a working Internet name server, try
@@ -47,15 +47,15 @@ specifying the host address in numeric form.
 You may also need
 to specify the numeric address when using the icshelper option
 with timestamp or timeseal (see below). 
-<br><dt>-icsport or -internetChessServerPort port-number<dd><a name="index-icsport_002c-option-197"></a><a name="index-internetChessServerPort_002c-option-198"></a>The port number to use when connecting to a chess server in ICS
+<br><dt>-icsport or -internetChessServerPort port-number<dd><a name="index-icsport_002c-option-216"></a><a name="index-internetChessServerPort_002c-option-217"></a>The port number to use when connecting to a chess server in ICS
 mode. Default: 5000. 
-<br><dt>-icshelper or -internetChessServerHelper prog-name<dd><a name="index-icshelper_002c-option-199"></a><a name="index-internetChessServerHelper_002c-option-200"></a>An external helper program used to communicate with the chess server. 
+<br><dt>-icshelper or -internetChessServerHelper prog-name<dd><a name="index-icshelper_002c-option-218"></a><a name="index-internetChessServerHelper_002c-option-219"></a>An external helper program used to communicate with the chess server. 
 You would set it to "timestamp" for ICC (chessclub.com) or
 "timeseal" for FICS (freechess.org), after
 obtaining the correct version of timestamp or timeseal for your
 computer.  See "help timestamp" on ICC and "help timeseal" on FICS. 
 This option is shorthand for <code>-useTelnet -telnetProgram program</code>. 
-<br><dt>-telnet/-xtelnet or -useTelnet true/false<dd><a name="index-telnet_002c-option-201"></a><a name="index-useTelnet_002c-option-202"></a>This option is poorly named; it should be called useHelper. 
+<br><dt>-telnet/-xtelnet or -useTelnet true/false<dd><a name="index-telnet_002c-option-220"></a><a name="index-useTelnet_002c-option-221"></a>This option is poorly named; it should be called useHelper. 
 If set to true, it instructs XBoard to run an external
 program to communicate with the Internet Chess Server. 
 The program to use is given by the telnetProgram option. 
@@ -63,21 +63,21 @@ If the option is
 false (the default), XBoard opens a TCP socket and uses its own
 internal implementation of the telnet protocol to communicate with the
 ICS. See <a href="Firewalls.html#Firewalls">Firewalls</a>. 
-<br><dt>-telnetProgram prog-name<dd><a name="index-telnetProgram_002c-option-203"></a>This option is poorly named; it should be called helperProgram. 
+<br><dt>-telnetProgram prog-name<dd><a name="index-telnetProgram_002c-option-222"></a>This option is poorly named; it should be called helperProgram. 
 It gives the name of the telnet program to be used with
 the <code>gateway</code> and <code>useTelnet</code> options.  The default is
 <samp><span class="file">telnet</span></samp>. The telnet program is invoked with the value of
 <code>internetChessServerHost</code> as its first argument and the value
 of <code>internetChessServerPort</code> as its second argument. 
 See <a href="Firewalls.html#Firewalls">Firewalls</a>. 
-<br><dt>-gateway host-name<dd><a name="index-gateway_002c-option-204"></a>If this option is set to a host name, XBoard communicates with the
+<br><dt>-gateway host-name<dd><a name="index-gateway_002c-option-223"></a>If this option is set to a host name, XBoard communicates with the
 Internet Chess Server by using <samp><span class="file">rsh</span></samp> to run
 the <code>telnetProgram</code> on the given host,
 instead of using its own internal implementation
 of the telnet protocol. You can substitute a different remote shell
 program for <samp><span class="file">rsh</span></samp> using the <code>remoteShell</code> option described below. 
 See <a href="Firewalls.html#Firewalls">Firewalls</a>. 
-<br><dt>-internetChessServerCommPort or -icscomm dev-name<dd><a name="index-internetChessServerCommPort_002c-option-205"></a><a name="index-icscomm_002c-option-206"></a>If this option is set, XBoard communicates with the ICS through
+<br><dt>-internetChessServerCommPort or -icscomm dev-name<dd><a name="index-internetChessServerCommPort_002c-option-224"></a><a name="index-icscomm_002c-option-225"></a>If this option is set, XBoard communicates with the ICS through
 the given character I/O device instead of opening a TCP connection. 
 Use this option if your system does not have any kind of
 Internet connection itself (not even a SLIP or PPP connection),
@@ -120,7 +120,7 @@ Then telnet to ICS, using a command like
 <kbd>telnet chessclub.com 5000</kbd>. 
 Important: See the paragraph below about extra echoes,
 in <a href="Limitations.html#Limitations">Limitations</a>. 
-<br><dt>-icslogon or -internetChessServerLogonScript file-name<dd><a name="index-icslogon_002c-option-207"></a><a name="index-internetChessServerLogonScript_002c-option-208"></a><a name="index-g_t_002eicsrc-209"></a>Whenever XBoard connects to the Internet Chess Server,
+<br><dt>-icslogon or -internetChessServerLogonScript file-name<dd><a name="index-icslogon_002c-option-226"></a><a name="index-internetChessServerLogonScript_002c-option-227"></a><a name="index-g_t_002eicsrc-228"></a>Whenever XBoard connects to the Internet Chess Server,
 if it finds a file with the name given in this option, it feeds the
 file's contents to the ICS as commands. The default file name
 is <samp><span class="file">.icsrc</span></samp>. 
@@ -128,34 +128,75 @@ Usually the first two lines of the file should be
 your ICS user name and password. 
 The file can be either in $CHESSDIR, in XBoard's working
 directory if CHESSDIR is not set, or in your home directory. 
-<br><dt>-msLoginDelay delay<dd><a name="index-msLoginDelay_002c-option-210"></a>If you experience trouble logging on to an ICS when using the
+<br><dt>-msLoginDelay delay<dd><a name="index-msLoginDelay_002c-option-229"></a>If you experience trouble logging on to an ICS when using the
 <code>-icslogon</code> option, inserting some delay between characters
 of the logon script may help. This option adds <code>delay</code>
 milliseconds of delay between characters. Good values to try
 are 100 and 250. 
-<br><dt>-icsinput/-xicsinput or -internetChessServerInputBox true/false<dd><a name="index-icsinput_002c-option-211"></a><a name="index-internetChessServerInputBox_002c-option-212"></a>Sets the ICS Input Box menu option. See <a href="Mode-Menu.html#Mode-Menu">Mode Menu</a>. Default: false. 
-<br><dt>-autocomm/-xautocomm or -autoComment true/false<dd><a name="index-autocomm_002c-option-213"></a><a name="index-autoComment_002c-option-214"></a>Sets the Auto Comment menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
-<br><dt>-autoflag/-xautoflag or -autoCallFlag true/false<dd><a name="index-autoflag_002c-option-215"></a><a name="index-autoCallFlag_002c-option-216"></a>Sets the Auto Flag menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
-<br><dt>-autobs/-xautobs or -autoObserve true/false<dd><a name="index-autobs_002c-option-217"></a><a name="index-autoObserve_002c-option-218"></a>Sets the Auto Observe menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
-<br><dt>-autoKibitz<dd><a name="index-autoKibitz_002c-option-219"></a>Enables kibitzing of the engines last thinking output (depth, score, time, speed, PV)
+<br><dt>-icsinput/-xicsinput or -internetChessServerInputBox true/false<dd><a name="index-icsinput_002c-option-230"></a><a name="index-internetChessServerInputBox_002c-option-231"></a>Sets the ICS Input Box menu option. See <a href="Mode-Menu.html#Mode-Menu">Mode Menu</a>. Default: false. 
+<br><dt>-autocomm/-xautocomm or -autoComment true/false<dd><a name="index-autocomm_002c-option-232"></a><a name="index-autoComment_002c-option-233"></a>Sets the Auto Comment menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
+<br><dt>-autoflag/-xautoflag or -autoCallFlag true/false<dd><a name="index-autoflag_002c-option-234"></a><a name="index-autoCallFlag_002c-option-235"></a>Sets the Auto Flag menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
+<br><dt>-autobs/-xautobs or -autoObserve true/false<dd><a name="index-autobs_002c-option-236"></a><a name="index-autoObserve_002c-option-237"></a>Sets the Auto Observe menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
+<br><dt>-autoKibitz<dd><a name="index-autoKibitz_002c-option-238"></a>Enables kibitzing of the engines last thinking output (depth, score, time, speed, PV)
 before it moved
 to the ICS, in zippy mode. The option <code>showThinking</code> must be switched on for
 this option to work. 
 Also diverts similar kibitz information of an opponent engine that is playing you
 through the ICS to the engine-output window, as if the engine was playing locally. 
-<br><dt>-moves/-xmoves or -getMoveList true/false<dd><a name="index-moves_002c-option-220"></a><a name="index-getMoveList_002c-option-221"></a>Sets the Get Move List menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
-<br><dt>-alarm/-xalarm or -icsAlarm true/false<dd><a name="index-alarm_002c-option-222"></a><a name="index-icsAlarm_002c-option-223"></a>Sets the ICS Alarm menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
-<br><dt>-icsAlarmTime ms<dd><a name="index-icsAlarmTime_002c-option-224"></a>Sets the time in milliseconds for the ICS Alarm menu option. 
+<br><dt>-seekGraph true/false or -sg<dd><a name="index-seekGraph_002c-option-239"></a><a name="index-sg_002c-option-240"></a>Enables displaying of the seek graph by left-clicking the board when
+you are logged on to an ICS and currently idle. 
+The seek graph show all players currently seeking games on the ICS,
+plotted according to their rating and the time control of the game they seek,
+in three different colors (for rated, unrated and wild games). 
+Computer ads are displayed as squares, human ads are dots. 
+Default: false. 
+<br><dt>-autoRefresh true/false<dd><a name="index-autoRefresh_002c-option-241"></a>Enables automatic updating of the seek graph,
+by having the ICS send a running update of all newly placed
+and removed seek ads. 
+This consumes a substantial amount of communication bandwidth,
+and is only supported for FICS and ICC. 
+Default: false. 
+<br><dt>-backgroundObserve true/false<dd><a name="index-backgroundObserve_002c-option-242"></a>When true, boards sent to you by the ICS from other games while you are playing
+(e.g. because you are observing them)
+will not be automatically displayed. 
+Only a summary of time left and material of both players will appear
+in the message field above the board. 
+XBoard will remember the last board it has received this way,
+and will display it in stead of the position in your own game
+when you press the right mouse button. 
+No other information is stored on such games observed in the background;
+you cannot save such a game later, or step through its moves. 
+This feature is provided solely for the benefit of bughouse players,
+to enable them to peek at their partner's game without the need
+to logon twice. 
+Default: false. 
+<br><dt>-dualBoard true/false<dd><a name="index-dualBoard_002c-option-243"></a>In combination with -backgroundObserve true, this option will display
+the board of the background game side by side with that of your own game,
+so you can have it in view permanently. 
+Any board or holdings info coming in will be displayed on the secondary
+board immediately. 
+This feature is still experimental and largely unfinished. 
+There is no animation or highlighting of moves on the secondary board. 
+Default: false. 
+<br><dt>-oneClickMove true/false<dd><a name="index-oneClickMove_002c-option-244"></a>When set, this option allows you to enter moves by only clicking the to-
+or from-square, when only a single legal move to or from that square
+is possible. 
+Double-clicking a piece (or clicking an already selected piece)
+will instruct that piece to make the only capture it can legally do. 
+Default: false. 
+<br><dt>-moves/-xmoves or -getMoveList true/false<dd><a name="index-moves_002c-option-245"></a><a name="index-getMoveList_002c-option-246"></a>Sets the Get Move List menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: true. 
+<br><dt>-alarm/-xalarm or -icsAlarm true/false<dd><a name="index-alarm_002c-option-247"></a><a name="index-icsAlarm_002c-option-248"></a>Sets the ICS Alarm menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
+<br><dt>-icsAlarmTime ms<dd><a name="index-icsAlarmTime_002c-option-249"></a>Sets the time in milliseconds for the ICS Alarm menu option. 
 See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: 5000. 
-<br><dt>lowTimeWarning true/false<dd><a name="index-lowTimeWarning_002c-option-225"></a>Controls a color change of the board as a warning your time is running out. 
+<br><dt>lowTimeWarning true/false<dd><a name="index-lowTimeWarning_002c-option-250"></a>Controls a color change of the board as a warning your time is running out. 
 See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
-<br><dt>-pre/-xpre \fRor\fB -premove true/false<dd><a name="index-pre_002c-option-226"></a><a name="index-premove_002c-option-227"></a>Sets the Premove menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
-<br><dt>-quiet/-xquiet or -quietPlay true/false<dd><a name="index-quiet_002c-option-228"></a><a name="index-quietPlay_002c-option-229"></a>Sets the Quiet Play menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
-<br><dt>-colorizeMessages or -colorize<dd><a name="index-Colors-230"></a><a name="index-colorize_002c-option-231"></a>Setting colorizeMessages
+<br><dt>-pre/-xpre \fRor\fB -premove true/false<dd><a name="index-pre_002c-option-251"></a><a name="index-premove_002c-option-252"></a>Sets the Premove menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
+<br><dt>-quiet/-xquiet or -quietPlay true/false<dd><a name="index-quiet_002c-option-253"></a><a name="index-quietPlay_002c-option-254"></a>Sets the Quiet Play menu option.  See <a href="Options-Menu.html#Options-Menu">Options Menu</a>.  Default: false. 
+<br><dt>-colorizeMessages or -colorize<dd><a name="index-Colors-255"></a><a name="index-colorize_002c-option-256"></a>Setting colorizeMessages
 to true tells XBoard to colorize the messages received from
 the ICS.  Colorization works only if your xterm
 supports ISO 6429 escape sequences for changing text colors. 
-<br><dt>-colorShout foreground,background,bold<dt>-colorSShout foreground,background,bold<dt>-colorChannel1 foreground,background,bold<dt>-colorChannel foreground,background,bold<dt>-colorKibitz foreground,background,bold<dt>-colorTell foreground,background,bold<dt>-colorChallege foreground,background,bold<dt>-colorRequest foreground,background,bold<dt>-colorSeek foreground,background,bold<dt>-colorNormal foreground,background,bold<dd><a name="index-Colors-232"></a><a name="index-colorShout_002c-option-233"></a><a name="index-colorSShout_002c-option-234"></a><a name="index-colorChannel1_002c-option-235"></a><a name="index-colorChannel_002c-option-236"></a><a name="index-colorKibitz_002c-option-237"></a><a name="index-colorTell_002c-option-238"></a><a name="index-colorChallenge_002c-option-239"></a><a name="index-colorRequest_002c-option-240"></a><a name="index-colorSeek_002c-option-241"></a><a name="index-colorNormal_002c-option-242"></a>These options set the colors used when colorizing ICS messages. 
+<br><dt>-colorShout foreground,background,bold<dt>-colorSShout foreground,background,bold<dt>-colorChannel1 foreground,background,bold<dt>-colorChannel foreground,background,bold<dt>-colorKibitz foreground,background,bold<dt>-colorTell foreground,background,bold<dt>-colorChallege foreground,background,bold<dt>-colorRequest foreground,background,bold<dt>-colorSeek foreground,background,bold<dt>-colorNormal foreground,background,bold<dd><a name="index-Colors-257"></a><a name="index-colorShout_002c-option-258"></a><a name="index-colorSShout_002c-option-259"></a><a name="index-colorChannel1_002c-option-260"></a><a name="index-colorChannel_002c-option-261"></a><a name="index-colorKibitz_002c-option-262"></a><a name="index-colorTell_002c-option-263"></a><a name="index-colorChallenge_002c-option-264"></a><a name="index-colorRequest_002c-option-265"></a><a name="index-colorSeek_002c-option-266"></a><a name="index-colorNormal_002c-option-267"></a>These options set the colors used when colorizing ICS messages. 
 All ICS messages are grouped into one of these categories:
 shout, sshout, channel 1, other channel, kibitz, tell, challenge,
 request (including abort, adjourn, draw, pause, and takeback), or
@@ -183,22 +224,22 @@ them if you turn <code>-colorize</code> on without specifying your own colors.
           xboard*colorSeek: blue
           xboard*colorNormal: default
 </pre>
-     <br><dt>-soundProgram progname<dd><a name="index-soundProgram_002c-option-243"></a><a name="index-Sounds-244"></a>If this option is set to a sound-playing program that is installed and
+     <br><dt>-soundProgram progname<dd><a name="index-soundProgram_002c-option-268"></a><a name="index-Sounds-269"></a>If this option is set to a sound-playing program that is installed and
 working on your system, XBoard can play sound files when certain
 events occur, listed below.  The default program name is "play".  If
 any of the sound options is set to "$", the event rings the terminal
 bell by sending a ^G character to standard output, instead of playing
 a sound file.  If an option is set to the empty string "", no sound is
 played for that event. 
-<br><dt>-soundShout filename<dt>-soundSShout filename<dt>-soundChannel filename<dt>-soundKibitz filename<dt>-soundTell filename<dt>-soundChallenge filename<dt>-soundRequest filename<dt>-soundSeek filename<dd><a name="index-soundShout_002c-option-245"></a><a name="index-soundSShout_002c-option-246"></a><a name="index-soundChannel_002c-option-247"></a><a name="index-soundKibitz_002c-option-248"></a><a name="index-soundTell_002c-option-249"></a><a name="index-soundChallenge_002c-option-250"></a><a name="index-soundRequest_002c-option-251"></a><a name="index-soundSeek_002c-option-252"></a>These sounds are triggered in the same way as the colorization events
+<br><dt>-soundShout filename<dt>-soundSShout filename<dt>-soundChannel filename<dt>-soundKibitz filename<dt>-soundTell filename<dt>-soundChallenge filename<dt>-soundRequest filename<dt>-soundSeek filename<dd><a name="index-soundShout_002c-option-270"></a><a name="index-soundSShout_002c-option-271"></a><a name="index-soundChannel_002c-option-272"></a><a name="index-soundKibitz_002c-option-273"></a><a name="index-soundTell_002c-option-274"></a><a name="index-soundChallenge_002c-option-275"></a><a name="index-soundRequest_002c-option-276"></a><a name="index-soundSeek_002c-option-277"></a>These sounds are triggered in the same way as the colorization events
 described above.  They all default to "", no sound.  They are played
 only if the colorizeMessages is on. 
-<br><dt>-soundMove filename<dd><a name="index-soundMove_002c-option-253"></a>This sound is used by the Move Sound menu option.  Default: "$". 
-<br><dt>-soundIcsAlarm filename<dd><a name="index-soundIcsAlarm_002c-option-254"></a>This sound is used by the ICS Alarm menu option.  Default: "$". 
-<br><dt>-soundIcsWin filename<dd><a name="index-soundIcsWin_002c-option-255"></a>This sound is played when you win an ICS game.  Default: "" (no sound). 
-<br><dt>-soundIcsLoss filename<dd><a name="index-soundIcsLoss_002c-option-256"></a>This sound is played when you lose an ICS game.  Default: "" (no sound). 
-<br><dt>-soundIcsDraw filename<dd><a name="index-soundIcsDraw_002c-option-257"></a>This sound is played when you draw an ICS game.  Default: "" (no sound). 
-<br><dt>-soundIcsUnfinished filename<dd><a name="index-soundIcsUnfinished_002c-option-258"></a>This sound is played when an ICS game that you are participating in is
+<br><dt>-soundMove filename<dd><a name="index-soundMove_002c-option-278"></a>This sound is used by the Move Sound menu option.  Default: "$". 
+<br><dt>-soundIcsAlarm filename<dd><a name="index-soundIcsAlarm_002c-option-279"></a>This sound is used by the ICS Alarm menu option.  Default: "$". 
+<br><dt>-soundIcsWin filename<dd><a name="index-soundIcsWin_002c-option-280"></a>This sound is played when you win an ICS game.  Default: "" (no sound). 
+<br><dt>-soundIcsLoss filename<dd><a name="index-soundIcsLoss_002c-option-281"></a>This sound is played when you lose an ICS game.  Default: "" (no sound). 
+<br><dt>-soundIcsDraw filename<dd><a name="index-soundIcsDraw_002c-option-282"></a>This sound is played when you draw an ICS game.  Default: "" (no sound). 
+<br><dt>-soundIcsUnfinished filename<dd><a name="index-soundIcsUnfinished_002c-option-283"></a>This sound is played when an ICS game that you are participating in is
 aborted, adjourned, or otherwise ends inconclusively.  Default: "" (no
 sound).
 
@@ -220,7 +261,15 @@ sound).
           xboard*soundIcsUnfinished: unfinished.wav
           xboard*soundIcsAlarm: alarm.wav
 </pre>
-     </dl>
+     <br><dt>-dropMenu true|false<dd><a name="index-dropMenu_002c-option-284"></a>This option allows you to emulate old behavior,
+where the right mouse button brings up the (now deprecated) drop menu
+rather than displaying the position at the end of the principal variation. 
+Default: False. 
+<br><dt>-variations true|false<dd><a name="index-variations_002c-option-285"></a>When this option is on, you can start new variations in Edit Game or
+Analyze mode by holding the Shift key down while entering a move. 
+When it is off, the Shift key will be ignored. 
+Default: False. 
+</dl>
 
    </body></html>
 

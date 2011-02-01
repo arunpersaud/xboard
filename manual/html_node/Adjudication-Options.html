@@ -34,35 +34,35 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <h3 class="section">3.6 Adjudication Options</h3>
 
-<p><a name="index-Options_002c-adjudication-351"></a>
+<p><a name="index-Options_002c-adjudication-385"></a>
      <dl>
-<dt>-adjudicateLossThreshold n<dd><a name="index-adjudicateLossThreshold_002c-option-352"></a>If the given value is non-zero, XBoard adjudicates the game as a loss
+<dt>-adjudicateLossThreshold n<dd><a name="index-adjudicateLossThreshold_002c-option-386"></a>If the given value is non-zero, XBoard adjudicates the game as a loss
 if both engines agree for a duration of 6 consecutive ply that the score
 is below the given score threshold for that engine. Make sure the score
 is interpreted properly by XBoard,
 using <code>-firstScoreAbs</code> and <code>-secondScoreAbs</code> if needed. 
 Default: 0 (no adjudication)
-<br><dt>-adjudicateDrawMoves n<dd><a name="index-adjudicateDrawMoves_002c-option-353"></a>If the given value is non-zero, XBoard adjudicates the game as a draw
+<br><dt>-adjudicateDrawMoves n<dd><a name="index-adjudicateDrawMoves_002c-option-387"></a>If the given value is non-zero, XBoard adjudicates the game as a draw
 if after the given number of moves it was not yet decided. Default: 0 (no adjudication)
-<br><dt>-checkMates true/false<dd><a name="index-checkMates_002c-option-354"></a>If this option is set, XBoard detects all checkmates and stalemates,
+<br><dt>-checkMates true/false<dd><a name="index-checkMates_002c-option-388"></a>If this option is set, XBoard detects all checkmates and stalemates,
 and ends the game as soon as they occur. 
 Legality-testing must be switched on for this option to work. 
 Default: true
-<br><dt>-testClaims true/false<dd><a name="index-testClaims_002c-option-355"></a>If this option is set, XBoard verifies all result claims made by engines,
+<br><dt>-testClaims true/false<dd><a name="index-testClaims_002c-option-389"></a>If this option is set, XBoard verifies all result claims made by engines,
 and those who send false claims will forfeit the game because of it. 
 Legality-testing must be switched on for this option to work. Default: true
-<br><dt>-materialDraws true/false<dd><a name="index-materialDraws_002c-option-356"></a>If this option is set, XBoard adjudicates games as draws when there is
+<br><dt>-materialDraws true/false<dd><a name="index-materialDraws_002c-option-390"></a>If this option is set, XBoard adjudicates games as draws when there is
 no sufficient material left to inflict a checkmate. 
 This applies to KBKB with like bishops (any number, actually), and to KBK, KNK and KK. 
 Legality-testing must be switched on for this option to work. Default: true
-<br><dt>-trivialDraws true/false<dd><a name="index-trivialDraws_002c-option-357"></a>If this option is set, XBoard adjudicates games as draws that cannot be
+<br><dt>-trivialDraws true/false<dd><a name="index-trivialDraws_002c-option-391"></a>If this option is set, XBoard adjudicates games as draws that cannot be
 usually won without opponent cooperation. This applies to KBKB with unlike bishops,
 and to KBKN, KNKN, KNNK, KRKR and KQKQ. The draw is called after 6 ply into these end-games,
 to allow quick mates that can occur in some exceptional positions to be found by the engines. 
 KQKQ does not really belong in this category, and might be taken out in the future. 
 (When bitbase-based adjudications are implemented.) 
 Legality-testing must be on for this option to work. Default: false
-<br><dt>-ruleMoves n<dd><a name="index-ruleMoves_002c-option-358"></a>If the given value is non-zero, XBoard adjudicates the game as a draw after the given
+<br><dt>-ruleMoves n<dd><a name="index-ruleMoves_002c-option-392"></a>If the given value is non-zero, XBoard adjudicates the game as a draw after the given
 number of consecutive reversible moves. Engine draw claims are always accepted after 50 moves,
 irrespective of the given value of n. 
 <br><dt>-repeatsToDraw n<dd>If the given value is non-zero, xboard adjudicates the game as a draw if a position

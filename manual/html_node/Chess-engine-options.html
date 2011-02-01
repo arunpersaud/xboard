@@ -32,36 +32,36 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 
 <h3 class="section">3.1 Chess Engine Options</h3>
 
-<p><a name="index-options_002c-Chess-engine-113"></a><a name="index-Chess-engine-options-114"></a>
+<p><a name="index-options_002c-Chess-engine-131"></a><a name="index-Chess-engine-options-132"></a>
      <dl>
-<dt>-tc or -timeControl minutes[:seconds]<dd><a name="index-tc_002c-option-115"></a><a name="index-timeControl_002c-option-116"></a>Each player begins with his clock set to the <code>timeControl</code> period. 
+<dt>-tc or -timeControl minutes[:seconds]<dd><a name="index-tc_002c-option-133"></a><a name="index-timeControl_002c-option-134"></a>Each player begins with his clock set to the <code>timeControl</code> period. 
 Default: 5 minutes. 
 The additional options <code>movesPerSession</code> and <code>timeIncrement</code>
 are mutually exclusive. 
-<br><dt>-mps or -movesPerSession moves<dd><a name="index-mps_002c-option-117"></a><a name="index-movesPerSession_002c-option-118"></a>When both players have made <code>movesPerSession</code> moves, a
+<br><dt>-mps or -movesPerSession moves<dd><a name="index-mps_002c-option-135"></a><a name="index-movesPerSession_002c-option-136"></a>When both players have made <code>movesPerSession</code> moves, a
 new <code>timeControl</code> period is added to both clocks.  Default: 40 moves. 
-<br><dt>-inc or -timeIncrement seconds<dd><a name="index-inc_002c-option-119"></a><a name="index-timeIncrement_002c-option-120"></a>If this option is specified, <code>movesPerSession</code> is ignored. 
+<br><dt>-inc or -timeIncrement seconds<dd><a name="index-inc_002c-option-137"></a><a name="index-timeIncrement_002c-option-138"></a>If this option is specified, <code>movesPerSession</code> is ignored. 
 Instead, after each player's move, <code>timeIncrement</code> seconds are
 added to his clock. 
 Use &lsquo;<samp><span class="samp">-inc 0</span></samp>&rsquo; if you want to require the entire
 game to be played in one <code>timeControl</code> period, with no increment. 
 Default: -1, which specifies <code>movesPerSession</code> mode. 
-<br><dt>-clock/-xclock or -clockMode true/false<dd><a name="index-clock_002c-option-121"></a><a name="index-clockMode_002c-option-122"></a>Determines whether or not to display the chess clocks. If clockMode is
+<br><dt>-clock/-xclock or -clockMode true/false<dd><a name="index-clock_002c-option-139"></a><a name="index-clockMode_002c-option-140"></a>Determines whether or not to display the chess clocks. If clockMode is
 false, the clocks are not shown, but the side that is to play next
 is still highlighted. Also, unless <code>searchTime</code>
 is set, the chess engine still keeps track of the clock time and uses it to
 determine how fast to make its moves. 
-<br><dt>-st or -searchTime minutes[:seconds]<dd><a name="index-st_002c-option-123"></a><a name="index-searchTime_002c-option-124"></a>Tells the chess engine to spend at most the given amount of time
+<br><dt>-st or -searchTime minutes[:seconds]<dd><a name="index-st_002c-option-141"></a><a name="index-searchTime_002c-option-142"></a>Tells the chess engine to spend at most the given amount of time
 searching for each of its moves. Without this option, the chess engine
 chooses its search time based on the number of moves and amount
 of time remaining until the next time control. 
 Setting this option also sets clockMode to false. 
-<br><dt>-depth or -searchDepth number<dd><a name="index-sd_002c-option-125"></a><a name="index-searchDepth_002c-option-126"></a>Tells the chess engine to look ahead at most the given number of moves
+<br><dt>-depth or -searchDepth number<dd><a name="index-sd_002c-option-143"></a><a name="index-searchDepth_002c-option-144"></a>Tells the chess engine to look ahead at most the given number of moves
 when searching for a move to make. Without this option, the chess
 engine chooses its search depth based on the number of moves and
 amount of time remaining until the next time control.  With the option,
 the engine will cut off its search early if it reaches the specified depth. 
-<br><dt>-firstNPS number<dt>-secondNPS number<dd><a name="index-firstNPS_002c-option-127"></a><a name="index-secondNPS_002c-option-128"></a>Tells the chess engine to use an internal time standard based on its node count,
+<br><dt>-firstNPS number<dt>-secondNPS number<dd><a name="index-firstNPS_002c-option-145"></a><a name="index-secondNPS_002c-option-146"></a>Tells the chess engine to use an internal time standard based on its node count,
 rather then wall-clock time, to make its timing decisions. 
 The time in virtual seconds should be obtained by dividing the node count
 through the given number, like the number was a rate in nodes per second. 
@@ -74,16 +74,16 @@ can provide fairer conditions for engine-engine matches on heavily loaded machin
 or with very fast games (where the wall clock is too inaccurate). 
 <code>showThinking</code> must be on for this option to work. Default: -1 (off). 
 Not many engines might support this yet! 
-<br><dt>-firstTimeOdds factor<dt>-secondTimeOdds factor<dd><a name="index-firstTimeOdds_002c-option-129"></a><a name="index-secondTimeOdds_002c-option-130"></a>Reduces the time given to the mentioned engine by the given factor. 
+<br><dt>-firstTimeOdds factor<dt>-secondTimeOdds factor<dd><a name="index-firstTimeOdds_002c-option-147"></a><a name="index-secondTimeOdds_002c-option-148"></a>Reduces the time given to the mentioned engine by the given factor. 
 If pondering is off, the effect is indistinguishable from what would happen
 if the engine was running on an n-times slower machine. Default: 1. 
-<br><dt>-timeOddsMode mode<dd><a name="index-timeOddsMode_002c-option-131"></a>This option determines how the case is handled where both engines have a time-odds handicap. 
+<br><dt>-timeOddsMode mode<dd><a name="index-timeOddsMode_002c-option-149"></a>This option determines how the case is handled where both engines have a time-odds handicap. 
 If mode=1, the engine that gets the most time will always get the nominal time,
 as specified by the time-control options, and its opponent's time is renormalized accordingly. 
 If mode=0, both play with reduced time. Default: 0. 
 <br><dt>-hideThinkingFromHuman true/false<dd>Controls the Hide Thinking option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
 (Replaces the Show-Thinking option of older xboard versions.) 
-<br><dt>-thinking/-xthinking or -showThinking true/false<dd><a name="index-thinking_002c-option-132"></a><a name="index-showThinking_002c-option-133"></a>Forces the engine to send thinking output to xboard. 
+<br><dt>-thinking/-xthinking or -showThinking true/false<dd><a name="index-thinking_002c-option-150"></a><a name="index-showThinking_002c-option-151"></a>Forces the engine to send thinking output to xboard. 
 Used to be the only way to control if thinking output was displayed
 in older xboard versions,
 but as the thinking output in xboard 4.3 is also used for several other
@@ -91,10 +91,10 @@ purposes (adjudication, storing in PGN file) the display of it is now controlled
 by the new option Hide Thinking. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: false. 
 (But if xboard needs the thinking output for some purpose,
 it makes the engine send it despite the setting of this option.) 
-<br><dt>-ponder/-xponder or -ponderNextMove true/false<dd><a name="index-ponder_002c-option-134"></a><a name="index-ponderNextMove_002c-option-135"></a>Sets the Ponder Next Move menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
+<br><dt>-ponder/-xponder or -ponderNextMove true/false<dd><a name="index-ponder_002c-option-152"></a><a name="index-ponderNextMove_002c-option-153"></a>Sets the Ponder Next Move menu option. See <a href="Options-Menu.html#Options-Menu">Options Menu</a>. Default: true. 
 <br><dt>-smpCores number<dd>Specifies the maximum number of CPUs an SMP engine is allowed to use. 
 Only works for engines that support the XBoard/WinBoard-protocol cores feature. 
-<br><dt>-mg or -matchGames n<dd><a name="index-mg_002c-option-136"></a><a name="index-matchGames_002c-option-137"></a>Automatically runs an n-game match between two chess engines,
+<br><dt>-mg or -matchGames n<dd><a name="index-mg_002c-option-154"></a><a name="index-matchGames_002c-option-155"></a>Automatically runs an n-game match between two chess engines,
 with alternating colors. 
 If the <code>loadGameFile</code> or <code>loadPositionFile</code> option is set,
 XBoard
@@ -105,35 +105,35 @@ match is appended to the specified file. If the <code>savePositionFile</code>
 option is set, the final position reached in each game of the match is appended
 to the specified file. When the match is over, XBoard
 displays the match score and exits. Default: 0 (do not run a match). 
-<br><dt>-mm/-xmm or -matchMode true/false<dd><a name="index-mm_002c-option-138"></a><a name="index-matchMode_002c-option-139"></a>Setting <code>matchMode</code> to true is equivalent to setting
+<br><dt>-mm/-xmm or -matchMode true/false<dd><a name="index-mm_002c-option-156"></a><a name="index-matchMode_002c-option-157"></a>Setting <code>matchMode</code> to true is equivalent to setting
 <code>matchGames</code> to 1. 
-<br><dt>-sameColorGames n<dd><a name="index-sameColorGames_002c-option-140"></a>Automatically runs an n-game match between two chess engines,
+<br><dt>-sameColorGames n<dd><a name="index-sameColorGames_002c-option-158"></a>Automatically runs an n-game match between two chess engines,
 without alternating colors. 
 Otherwise the same applies as for the &lsquo;<samp><span class="samp">-matchGames</span></samp>&rsquo; option,
 over which it takes precedence if both are specified. (See there.) 
 Default: 0 (do not run a match). 
-<br><dt>-fcp or -firstChessProgram program<dd><a name="index-fcp_002c-option-141"></a><a name="index-firstChessProgram_002c-option-142"></a>Name of first chess engine. 
+<br><dt>-fcp or -firstChessProgram program<dd><a name="index-fcp_002c-option-159"></a><a name="index-firstChessProgram_002c-option-160"></a>Name of first chess engine. 
 Default: <samp><span class="file">Fairy-Max</span></samp>. 
-<br><dt>-scp or -secondChessProgram program<dd><a name="index-scp_002c-option-143"></a><a name="index-secondChessProgram_002c-option-144"></a>Name of second chess engine, if needed. 
+<br><dt>-scp or -secondChessProgram program<dd><a name="index-scp_002c-option-161"></a><a name="index-secondChessProgram_002c-option-162"></a>Name of second chess engine, if needed. 
 A second chess engine is started only in Two Machines (match) mode. 
 Default: <samp><span class="file">Fairy-Max</span></samp>. 
-<br><dt>-fb/-xfb or -firstPlaysBlack true/false<dd><a name="index-fb_002c-option-145"></a><a name="index-firstPlaysBlack_002c-option-146"></a>In games between two chess engines, firstChessProgram normally plays
+<br><dt>-fb/-xfb or -firstPlaysBlack true/false<dd><a name="index-fb_002c-option-163"></a><a name="index-firstPlaysBlack_002c-option-164"></a>In games between two chess engines, firstChessProgram normally plays
 white.  If this option is true, firstChessProgram plays black.  In a
 multi-game match, this option affects the colors only for the first
 game; they still alternate in subsequent games. 
-<br><dt>-fh or -firstHost host<dt>-sh or -secondHost host<dd><a name="index-fh_002c-option-147"></a><a name="index-firstHost_002c-option-148"></a><a name="index-sh_002c-option-149"></a><a name="index-secondHost_002c-option-150"></a>Hosts on which the chess engines are to run. The default for
+<br><dt>-fh or -firstHost host<dt>-sh or -secondHost host<dd><a name="index-fh_002c-option-165"></a><a name="index-firstHost_002c-option-166"></a><a name="index-sh_002c-option-167"></a><a name="index-secondHost_002c-option-168"></a>Hosts on which the chess engines are to run. The default for
 each is <samp><span class="file">localhost</span></samp>. If you specify another host, XBoard
 uses <samp><span class="file">rsh</span></samp> to run the chess engine there. (You can substitute a
 different remote shell program for rsh using the <code>remoteShell</code>
 option described below.) 
-<br><dt>-fd or -firstDirectory dir<dt>-sd or -secondDirectory dir<dd><a name="index-fd_002c-option-151"></a><a name="index-firstDirectory_002c-option-152"></a><a name="index-sd_002c-option-153"></a><a name="index-secondDirectory_002c-option-154"></a>Working directories in which the chess engines are to be run. 
+<br><dt>-fd or -firstDirectory dir<dt>-sd or -secondDirectory dir<dd><a name="index-fd_002c-option-169"></a><a name="index-firstDirectory_002c-option-170"></a><a name="index-sd_002c-option-171"></a><a name="index-secondDirectory_002c-option-172"></a>Working directories in which the chess engines are to be run. 
 The default is "", which means to run the chess engine
 in the same working directory as XBoard
 itself.  (See the CHESSDIR environment variable.) 
 This option is effective only when the chess engine is being run
 on the local host; it does not work if the engine is run remotely
 using the -fh or -sh option. 
-<br><dt>-initString string<dt>-secondInitString string<dd><a name="index-initString_002c-option-155"></a><a name="index-secondInitString_002c-option-156"></a>The string that is sent to initialize each chess engine for a new game. 
+<br><dt>-initString string<dt>-secondInitString string<dd><a name="index-initString_002c-option-173"></a><a name="index-secondInitString_002c-option-174"></a>The string that is sent to initialize each chess engine for a new game. 
 Default:
 
      <pre class="example">          new
@@ -160,11 +160,11 @@ and always (or never) randomize.
 
      <p>You can also try adding other commands to the initString; see the
 documentation of the chess engine you are using for details. 
-<br><dt>-firstComputerString string<dt>-secondComputerString string<dd><a name="index-firstComputerString_002c-option-157"></a><a name="index-secondComputerString_002c-option-158"></a>The string that is sent to the chess engine if its opponent is another
+<br><dt>-firstComputerString string<dt>-secondComputerString string<dd><a name="index-firstComputerString_002c-option-175"></a><a name="index-secondComputerString_002c-option-176"></a>The string that is sent to the chess engine if its opponent is another
 computer chess engine.  The default is &lsquo;<samp><span class="samp">computer\n</span></samp>&rsquo;.  Probably the
 only useful alternative is the empty string (&lsquo;<samp></samp>&rsquo;), which keeps the
 engine from knowing that it is playing another computer. 
-<br><dt>-reuse/-xreuse or -reuseFirst true/false<dt>-reuse2/-xreuse2 or -reuseSecond true/false<dd><a name="index-reuse_002c-option-159"></a><a name="index-reuseFirst_002c-option-160"></a><a name="index-reuse2_002c-option-161"></a><a name="index-reuseSecond_002c-option-162"></a>If the option is false,
+<br><dt>-reuse/-xreuse or -reuseFirst true/false<dt>-reuse2/-xreuse2 or -reuseSecond true/false<dd><a name="index-reuse_002c-option-177"></a><a name="index-reuseFirst_002c-option-178"></a><a name="index-reuse2_002c-option-179"></a><a name="index-reuseSecond_002c-option-180"></a>If the option is false,
 XBoard kills off the chess engine after every game and starts
 it again for the next game. 
 If the option is true (the default),
@@ -172,26 +172,26 @@ XBoard starts the chess engine only once
 and uses it repeatedly to play multiple games. 
 Some old chess engines may not work properly when
 reuse is turned on, but otherwise games will start faster if it is left on. 
-<br><dt>-firstProtocolVersion version-number<dt>-secondProtocolVersion version-number<dd><a name="index-firstProtocolVersion_002c-option-163"></a><a name="index-secondProtocolVersion_002c-option-164"></a>This option specifies which version of the chess engine communication
+<br><dt>-firstProtocolVersion version-number<dt>-secondProtocolVersion version-number<dd><a name="index-firstProtocolVersion_002c-option-181"></a><a name="index-secondProtocolVersion_002c-option-182"></a>This option specifies which version of the chess engine communication
 protocol to use.  By default, version-number is 2.  In version 1, the
 "protover" command is not sent to the engine; since version 1 is a
 subset of version 2, nothing else changes.  Other values for
 version-number are not supported. 
-<br><dt>-firstScoreAbs true/false<dt>-secondScoreAbs true/false<dd><a name="index-firstScoreAbs_002c-option-165"></a><a name="index-secondScoreAbs_002c-option-166"></a>If this option is set, the score reported by the engine is taken to be
+<br><dt>-firstScoreAbs true/false<dt>-secondScoreAbs true/false<dd><a name="index-firstScoreAbs_002c-option-183"></a><a name="index-secondScoreAbs_002c-option-184"></a>If this option is set, the score reported by the engine is taken to be
 that in favor of white, even when the engine plays black. 
 Important when XBoard uses the score for adjudications, or in PGN reporting. 
-<br><dt>-niceEngines priority<dd><a name="index-niceEngines_002c-option-167"></a>This option allows you to lower the priority of the engine processes,
+<br><dt>-niceEngines priority<dd><a name="index-niceEngines_002c-option-185"></a>This option allows you to lower the priority of the engine processes,
 so that the generally insatiable hunger for CPU time of chess engines does not interfere so much
 with smooth operation of XBoard (or the rest of your system). 
 Negative values could increase the engine priority, which is not recommended. 
-<br><dt>-firstOptions string<dt>-secondOptions string<dd><a name="index-firstOptions_002c-option-168"></a><a name="index-secondOptions_002c-option-169"></a>The given string is a comma-separated list of (option name=option value) pairs,
+<br><dt>-firstOptions string<dt>-secondOptions string<dd><a name="index-firstOptions_002c-option-186"></a><a name="index-secondOptions_002c-option-187"></a>The given string is a comma-separated list of (option name=option value) pairs,
 like the following example: "style=Karpov,blunder rate=0". 
 If an option announced by the engine at startup through the feature commands of the XBoard/WinBoard protocol
 matches one of the option names (i.e. "style" or "blunder rate"),
 it would be set to the given value (i.e. "Karpov" or 0)
 through a corresponding option command to the engine. 
 This provided that the type of the value (text or numeric) matches as well. 
-<br><dt>-firstNeedsNoncompliantFEN string<dt>-secondNeedsNoncompliantFEN string<dd><a name="index-firstNeedsNoncompliantFEN_002c-option-170"></a><a name="index-secondNeedsNoncompliantFEN_002c-option-171"></a>The castling rights and e.p. fields of the FEN sent to the mentioned engine
+<br><dt>-firstNeedsNoncompliantFEN string<dt>-secondNeedsNoncompliantFEN string<dd><a name="index-firstNeedsNoncompliantFEN_002c-option-188"></a><a name="index-secondNeedsNoncompliantFEN_002c-option-189"></a>The castling rights and e.p. fields of the FEN sent to the mentioned engine
 with the setboard command will be replaced by the given string. This can for
 instance be used to run engines that do not understand Chess960 FENs in
 variant fischerandom, to make them at least understand the opening position,
@@ -201,6 +201,10 @@ castling and e.p. fields in variants that do not have castling or e.p.
 (shatranj, courier, xiangqi, shogi) so that XBoard would normally omit them
 (string = "- -"), or to add variant-specific fields that are not yet supported by XBoard
 (e.g. to indicate the number of checks in 3check). 
+<br><dt>-shuffleOpenings<dd><a name="index-shuffleOpenings_002c-option-190"></a>Forces shuffling of the opening setup in variants that normally have a fixed initial position. 
+Shufflings are symmetric for black and white, and exempt King and Rooks in variants
+with normal castling. 
+Remains in force until a new variant is selected. 
 </dl>
 
    </body></html>
