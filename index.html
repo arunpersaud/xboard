@@ -61,11 +61,55 @@ also be done at the same places as for XBoard (see below).</p>
 <p> Starting from 4.5.0 we will summarize the latest changes at <a href="whats_new.html">these</a> webpages. You can also find information about the next upcoming release here.
 Have a look, try it out (download links below) and let us know what you think.</p>
 
-<h3>Testers needed</h3>
-<p> Our next versions will have some major <a href="whats_new/4.5.0/News-4.5.0.html">improvements</a> and we are always looking for people who are willing to test those and give us feedback or new ideas. If you are interested, please send an email to our list at <a href="mailto:xboard-devel@gnu.org">&lt;xboard-devel@gnu.org&gt;</a> or just try out the program and reports bugs either to the email list or to the bug-tracker (see <a href="#download">below</a> for links).</p>
+<h3>Help needed</h3>
 
-<h3>GTK developer needed</h3>
+<p>We can always need more people to help out with XBoard/Winboard. Have a look at the following list in case you are interested:</p>
+
+<h4>Testers </h4>
+<p> We are always looking for people who are willing to test the latest new features and give us feedback or new ideas. If you are interested, please send an email to our list at <a href="mailto:xboard-devel@gnu.org">&lt;xboard-devel@gnu.org&gt;</a> or just try out the program and reports bugs either to the email list or to the bug-tracker (see <a href="#download">below</a> for links).</p>
+
+<h4>GTK developer needed</h4>
 <p> We are also working on merging Winboard and XBoard back into one version using a cross platform GTK-front end. This will help us clean up the code and make things like internationalization easier. Progress is slow though, so if you know want to help out there are lots of things waiting to be done. Email the <a href="mailto:xboard-devel@gnu.org">mailing list</a> for more information. </p>
+
+<h4>EPD test-suite capability</h4>
+<p>A sort of match mode where one engine automatically does a number of 'games',
+(using a position file filled with EPDs as starting positions),
+except that each 'game' lasts only for one move, and the 'result' is then computed
+by XBoard depending on if this move was the correct solution specified in the EPD.</p>
+
+<h4>Multi-board ICS mode</h4>
+<p>Implement a slave mode where XBoard forks itself, connecting a pipe between
+what normally would be the ICS socket of the child, and a new output channel
+of the parent, so that the parent can forward board and move lists belonging to
+a specific game to the slave dedicated to display it.</p>
+
+<h4>Allow run-time loading / unloading of engines</h4>
+<p>A tricky issue, because in the current code initializing the engine is intertwined
+with initializing XBoard. And the whole idea is to be able to switch engine without
+losing your current settings or indeed your current game. So it will require some
+good thought about which options need to be reset (like -fd, for sure), and which
+should be kept.</p>
+
+<h4>Implement a tournament manager in XBoard</h4>
+<p>Currently XBoard supports only two-player matches. If run-time changing of the
+engine becomes possible, it wold be nice if people could also perform automatic
+round-robins or gauntlets between a group of engines.</p>
+
+<h4>Processing of engine PVs before display</h4>
+<p>Currently XBoard just displays what the engine prints for PV in its thinking output
+literally. Which often means long algebraic. It would be nice if the user can choose
+the display format, so it can be SAN or even some other format (e.g. descriptive
+notation or some specific Xangqi or Shogi format), possibly through invoking an
+external processor.</p>
+
+<h4>Update the documentation</h4>
+<p>The documentation could need some updates. In our effort to merge
+Winboard and XBoard back together, we also want to merge the RTF file
+back into the XBoard texinfo file.  This will take some effort though,
+since the two versions still differ in several areas and this would
+need to be highlighted. The benefit would be though that we could
+prepare a much better and up to date Windows documentation.
+</p>
 
 <h3><a name="download"></a>Downloading XBoard</h3>
 
