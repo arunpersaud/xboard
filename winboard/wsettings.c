@@ -419,10 +419,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		if(j < 0) break;
 		if( activeCps->option[j].type  == SaveButton)
 		     GetOptionValues(hDlg, activeCps);
-		else if( activeCps->option[j].type  == ResetButton) {
-		     ClearOptions(activeCps);
-		     EndDialog( hDlg, 0 );
-		} else if( activeCps->option[j].type  != Button) break;
+		else if( activeCps->option[j].type  != Button) break;
 		snprintf(buf, MSG_SIZ, "option %s\n", activeCps->option[j].name);
 		SendToProgram(buf, activeCps);
 	    }

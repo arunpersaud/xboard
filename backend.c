@@ -13908,8 +13908,6 @@ ParseOption(Option *opt, ChessProgramState *cps)
 	    opt->type = Button;
 	} else if(p = strstr(opt->name, " -save")) {
 	    opt->type = SaveButton;
-	} else if(p = strstr(opt->name, " -reset")) {
-	    opt->type = ResetButton;
 	} else return FALSE;
 	*p = 0; // terminate option name
 	// now look if the command-line options define a setting for this engine option.
