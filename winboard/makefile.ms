@@ -101,7 +101,7 @@ backend.obj: ../backend.c config.h ../common.h ../frontend.h ../backend.h \
 
 parser.obj: ../parser.c config.h ../common.h ../backend.h ../parser.h \
         ../frontend.h ../moves.h ../lists.h
-        $(CC) $(CFLAGS) parser.c
+        $(CC) $(CFLAGS) ../parser.c
 
 book.obj: ../book.c ../common.h ../backend.h ../lists.h
         $(CC) $(CFLAGS) ../book.c
@@ -147,7 +147,7 @@ whistory.obj: whistory.c config.h ../common.h ../frontend.h ../backend.h \
 
 history.obj: ../history.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h
-        $(CC) $(CFLAGS) whistory.c
+        $(CC) $(CFLAGS) ../history.c
 
 wevalgraph.obj: wevalgraph.c config.h ../common.h ../frontend.h ../backend.h \
 	../lists.h winboard.h resource.h wsnap.h

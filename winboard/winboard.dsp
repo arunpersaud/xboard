@@ -174,6 +174,10 @@ SOURCE=.\help.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\history.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\lists.c
 # End Source File
 # Begin Source File
@@ -182,7 +186,7 @@ SOURCE=..\moves.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\parser.c
+SOURCE=..\parser.c
 # End Source File
 # Begin Source File
 
