@@ -2223,7 +2223,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
   }
 
   if (tinyLayout != oldTinyLayout) {
-    long style = GetWindowLong(hwndMain, GWL_STYLE);
+    long style = GetWindowLongPtr(hwndMain, GWL_STYLE);
     if (tinyLayout) {
       style &= ~WS_SYSMENU;
       InsertMenu(hmenu, IDM_Exit, MF_BYCOMMAND, IDM_Minimize,
@@ -2232,7 +2232,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
       style |= WS_SYSMENU;
       RemoveMenu(hmenu, IDM_Minimize, MF_BYCOMMAND);
     }
-    SetWindowLong(hwndMain, GWL_STYLE, style);
+    SetWindowLongPtr(hwndMain, GWL_STYLE, style);
 
     for (i=0; menuBarText[tinyLayout][i]; i++) {
       ModifyMenu(hmenu, i, MF_STRING|MF_BYPOSITION|MF_POPUP, 
@@ -2381,7 +2381,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
 		     boardRect.right - BUTTON_WIDTH*(N_BUTTONS-i),
 		     messageRect.top, BUTTON_WIDTH, messageSize.cy, hwndMain,
 		     (HMENU) buttonDesc[i].id,
-		     (HINSTANCE) GetWindowLong(hwndMain, GWL_HINSTANCE), NULL);
+		     (HINSTANCE) GetWindowLongPtr(hwndMain, GWLP_HINSTANCE), NULL);
       if (tinyLayout) {
 	SendMessage(buttonDesc[i].hwnd, WM_SETFONT, 
 		    (WPARAM)font[boardSize][MESSAGE_FONT]->hf,
@@ -2390,7 +2390,7 @@ InitDrawingSizes(BoardSize boardSize, int flags)
       if (buttonDesc[i].id == IDM_Pause)
 	hwndPause = buttonDesc[i].hwnd;
       buttonDesc[i].wndproc = (WNDPROC)
-	SetWindowLong(buttonDesc[i].hwnd, GWL_WNDPROC, (LONG) ButtonProc);
+	SetWindowLongPtr(buttonDesc[i].hwnd, GWLP_WNDPROC, (LONG_PTR) ButtonProc);
     }
   }
   if (gridPen != NULL) DeleteObject(gridPen);
@@ -4240,7 +4240,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK
 ButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  int id = GetWindowLong(hwnd, GWL_ID);
+  int id = GetWindowLongPtr(hwnd, GWLP_ID);
   int i, dir;
 
   for (i=0; i<N_BUTTONS; i++) {
@@ -4470,11 +4470,11 @@ void UpdateICSWidth(HWND hText)
     LONG old_width, new_width;
 
     new_width = get_term_width(hText, FALSE);
-    old_width = GetWindowLong(hText, GWL_USERDATA);
+    old_width = GetWindowLongPtr(hText, GWLP_USERDATA);
     if (new_width != old_width)
     {
         ics_update_width(new_width);
-        SetWindowLong(hText, GWL_USERDATA, new_width);
+        SetWindowLongPtr(hText, GWLP_USERDATA, new_width);
     }
 }
 
@@ -7189,10 +7189,10 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     hwndConsole = hDlg;
     SetFocus(hInput);
     consoleTextWindowProc = (WNDPROC)
-      SetWindowLong(hText, GWL_WNDPROC, (LONG) ConsoleTextSubclass);
+      SetWindowLongPtr(hText, GWLP_WNDPROC, (LONG_PTR) ConsoleTextSubclass);
     SendMessage(hText, EM_SETBKGNDCOLOR, FALSE, consoleBackgroundColor);
     consoleInputWindowProc = (WNDPROC)
-      SetWindowLong(hInput, GWL_WNDPROC, (LONG) ConsoleInputSubclass);
+      SetWindowLongPtr(hInput, GWLP_WNDPROC, (LONG_PTR) ConsoleInputSubclass);
     SendMessage(hInput, EM_SETBKGNDCOLOR, FALSE, consoleBackgroundColor);
     Colorize(ColorNormal, TRUE);
     SendMessage(hInput, EM_SETCHARFORMAT, SCF_ALL, (LPARAM) &consoleCF);
@@ -7238,7 +7238,7 @@ ConsoleWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
    wMask = (WORD) SendMessage(hText, EM_GETEVENTMASK, 0, 0L);
    SendMessage(hText, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
    SendMessage(hText, EM_AUTOURLDETECT, TRUE, 0L);
-   SetWindowLong(hText, GWL_USERDATA, 79); // initialize the text window's width
+   SetWindowLongPtr(hText, GWLP_USERDATA, 79); // initialize the text window's width
 
     return FALSE;
 

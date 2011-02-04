@@ -221,7 +221,7 @@ LRESULT CALLBACK ChatProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	SendMessage(hMemo, EM_SETEVENTMASK, 0, wMask | ENM_LINK);
 	SendMessage(hMemo, EM_AUTOURLDETECT, TRUE, 0L);
 	chatInputWindowProc = (WNDPROC) // cloned from ConsoleWndProc(). Assume they all share same proc.
-	      SetWindowLong(GetDlgItem(hDlg, OPT_ChatInput), GWL_WNDPROC, (LONG) InterceptArrowKeys);
+	      SetWindowLongPtr(GetDlgItem(hDlg, OPT_ChatInput), GWLP_WNDPROC, (LONG_PTR) InterceptArrowKeys);
         return FALSE;
 
     case WM_NOTIFY:
