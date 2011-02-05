@@ -25,6 +25,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h> /* for qsort */
+#include "../config.h" /* to check for dirent.h */
 
 #ifdef SEL_FILE_IGNORE_CASE
 #include <ctype.h>
@@ -32,18 +34,14 @@
 
 #include "selfile.h"
 
-#if defined(SVR4) || defined(SYSV) || defined(USG) || defined(__osf__)
+#ifdef HAVE_DIRENT_H
 #include <dirent.h>
-#else /* defined(SVR4) || defined(SYSV) || defined(USG) */
+#else
 #include <sys/dir.h>
 #define dirent direct
-#endif /* defined(SVR4) || defined(SYSV) || defined(USG) */
+#endif
 
 #include <sys/stat.h>
-
-#if defined(SVR4) || defined(SYSV) || defined(USG)
-extern void qsort();
-#endif /* defined(SVR4) || defined(SYSV) || defined(USG) */
 
 #ifdef SEL_FILE_IGNORE_CASE
 int
@@ -147,11 +145,7 @@ SFgetDir(dir)
 		i++;
 	}
 
-#if defined(SVR4) || defined(SYSV) || defined(USG)
-	qsort((char *) result, (unsigned) i, sizeof(SFEntry), SFcompareEntries);
-#else /* defined(SVR4) || defined(SYSV) || defined(USG) */
-	qsort((char *) result, i, sizeof(SFEntry), SFcompareEntries);
-#endif /* defined(SVR4) || defined(SYSV) || defined(USG) */
+	qsort((char *) result, (size_t) i, sizeof(SFEntry), SFcompareEntries);
 
 	dir->entries = result;
 	dir->nEntries = i;

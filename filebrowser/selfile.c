@@ -61,6 +61,16 @@ extern int errno;
 #include <X11/Xaw/Cardinals.h>
 
 #include "selfile.h"
+#include "xstat.h"
+
+/* added missing prototypes */
+extern void SFdrawList(int,int);
+extern void SFinitFont();
+extern void SFcreateGC();
+extern int SFchdir(char *);
+extern void SFupdatePath();
+extern void SFsetText(char *);
+extern char SFstatChar(struct stat*);
 
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 1024
@@ -146,7 +156,7 @@ SFexposeList(w, n, event, cont)
 		return;
 	}
 
-	SFdrawList(n, SF_DO_NOT_SCROLL);
+	SFdrawList((int)n, SF_DO_NOT_SCROLL);
 }
 
 /* ARGSUSED */

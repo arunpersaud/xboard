@@ -38,6 +38,11 @@
 #endif
 #define ABS(x) (((x) < 0) ? (-(x)) : (x))
 
+/* added missing prototypes */
+extern char SFstatChar(struct stat*);
+extern int SFchdir(char *);
+void SFvSliderMovedCallback(Widget, int, int);
+
 typedef struct {
 	char *fontname;
 } TextData, *textPtr;
@@ -639,20 +644,6 @@ SFmotionList(w, n, event)
 
 /* ARGSUSED */
 void
-SFvFloatSliderMovedCallback(w, n, fnew)
-	Widget	w;
-	int	n;
-	float	*fnew;
-{
-	int	new;
-
-	new = (*fnew) * SFdirs[SFdirPtr + n].nEntries;
-
-	SFvSliderMovedCallback(w, n, new);
-}
-
-/* ARGSUSED */
-void
 SFvSliderMovedCallback(w, n, new)
 	Widget	w;
 	int	n;
@@ -736,6 +727,21 @@ SFvSliderMovedCallback(w, n, new)
 		SFdrawStrings(win, dir, 0, SFlistSize - 1);
 	}
 }
+
+/* ARGSUSED */
+void
+SFvFloatSliderMovedCallback(w, n, fnew)
+	Widget	w;
+	int	n;
+	float	*fnew;
+{
+	int	new;
+
+	new = (*fnew) * SFdirs[SFdirPtr + n].nEntries;
+
+	SFvSliderMovedCallback(w, n, new);
+}
+
 
 /* ARGSUSED */
 void

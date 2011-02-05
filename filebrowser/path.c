@@ -25,6 +25,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h> /* for qsort */
+#include "../config.h"
 
 #ifdef SEL_FILE_IGNORE_CASE
 #include <ctype.h>
@@ -40,11 +42,17 @@
 #define MAXPATHLEN 1024
 #endif /* ndef MAXPATHLEN */
 
-
-#if defined(SVR4) || defined(SYSV) || defined(USG)
+#ifdef HAS_DIRENT_H
 extern uid_t getuid();
-extern void qsort();
-#endif /* defined(SVR4) || defined(SYSV) || defined(USG) */
+#endif /* def HAS_DIRENT_H */
+
+/* added missing prototypes */
+extern void SFtextChanged();
+extern int SFgetDir(SFDir *);
+extern void SFdrawLists(int);
+extern void SFdrawList(int, int);
+extern void SFclearList(int, int);
+extern void SFmotionList(Widget, int, XMotionEvent*);
 
 typedef struct {
 	char	*name;
@@ -179,6 +187,23 @@ SFstrncmp(p, q, n)
 	return c1 - c2;
 }
 #endif /* def SEL_FILE_IGNORE_CASE */
+
+void
+SFsetText(path)
+	char	*path;
+{
+	XawTextBlock	text;
+
+	text.firstPos = 0;
+	text.length = strlen(path);
+	text.ptr = path;
+	text.format = FMT8BIT;
+
+	XawTextReplace(selFileField, 0, strlen(SFtextBuffer), &text);
+	XawTextSetInsertionPoint(selFileField, strlen(SFtextBuffer));
+
+	return;
+}
 
 static void
 SFreplaceText(dir, str)
@@ -451,13 +476,8 @@ SFgetHomeDirs()
 	SFhomeDir.beginSelection	= -1		;
 	SFhomeDir.endSelection		= -1		;
 
-#if defined(SVR4) || defined(SYSV) || defined(USG)
-	qsort((char *) entries, (unsigned)i, sizeof(SFEntry), SFcompareEntries);
-	qsort((char *) SFlogins, (unsigned)i, sizeof(SFLogin), SFcompareLogins);
-#else /* defined(SVR4) || defined(SYSV) || defined(USG) */
-	qsort((char *) entries, i, sizeof(SFEntry), SFcompareEntries);
-	qsort((char *) SFlogins, i, sizeof(SFLogin), SFcompareLogins);
-#endif /* defined(SVR4) || defined(SYSV) || defined(USG) */
+	qsort((char *) entries, (size_t)i, sizeof(SFEntry), SFcompareEntries);
+	qsort((char *) SFlogins, (size_t)i, sizeof(SFLogin), SFcompareLogins);
 
 	for (i--; i >= 0; i--) {
 		(void) strcat(entries[i].real, "/");
@@ -686,23 +706,6 @@ SFupdatePath()
 	return;
 }
 
-void
-SFsetText(path)
-	char	*path;
-{
-	XawTextBlock	text;
-
-	text.firstPos = 0;
-	text.length = strlen(path);
-	text.ptr = path;
-	text.format = FMT8BIT;
-
-	XawTextReplace(selFileField, 0, strlen(SFtextBuffer), &text);
-	XawTextSetInsertionPoint(selFileField, strlen(SFtextBuffer));
-
-	return;
-}
-
 /* ARGSUSED */
 void
 SFbuttonPressList(w, n, event)
@@ -734,7 +737,7 @@ SFbuttonReleaseList(w, n, event)
 			dir,
 			dir->entries[dir->vOrigin + SFcurrentInvert[n]].shown
 		);
-		SFmotionList(w, n, event);
+		SFmotionList(w, n, (XMotionEvent *) event);
 	}
 }
 
@@ -810,6 +813,25 @@ SFcheckDir(n, dir)
 	}
 
 	return 0;
+}
+
+/* Return a single character describing what kind of file STATBUF is.  */
+
+char
+SFstatChar (statBuf)
+	struct stat *statBuf;
+{
+	if (S_ISDIR (statBuf->st_mode)) {
+		return '/';
+	} else if (S_ISREG (statBuf->st_mode)) {
+	  return S_ISXXX (statBuf->st_mode) ? '*' : ' ';
+#ifdef S_ISSOCK
+	} else if (S_ISSOCK (statBuf->st_mode)) {
+		return '=';
+#endif /* S_ISSOCK */
+	} else {
+		return ' ';
+	}
 }
 
 static int
@@ -895,23 +917,4 @@ SFdirModTimer(cl, id)
 
 	SFdirModTimerId = XtAppAddTimeOut(SFapp, (unsigned long) 1000,
 		SFdirModTimer, (XtPointer) NULL);
-}
-
-/* Return a single character describing what kind of file STATBUF is.  */
-
-char
-SFstatChar (statBuf)
-	struct stat *statBuf;
-{
-	if (S_ISDIR (statBuf->st_mode)) {
-		return '/';
-	} else if (S_ISREG (statBuf->st_mode)) {
-	  return S_ISXXX (statBuf->st_mode) ? '*' : ' ';
-#ifdef S_ISSOCK
-	} else if (S_ISSOCK (statBuf->st_mode)) {
-		return '=';
-#endif /* S_ISSOCK */
-	} else {
-		return ' ';
-	}
 }
