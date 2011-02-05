@@ -59,6 +59,7 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #include <signal.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>
