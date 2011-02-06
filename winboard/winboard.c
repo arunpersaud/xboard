@@ -4705,7 +4705,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       f = OpenFileDialog(hwnd, "wb", defName,
 			 "bmp",
 			 DIAGRAM_FILT,
-			 "Save Diagram to File", NULL, fileTitle, NULL);
+			 _("Save Diagram to File"), NULL, fileTitle, NULL);
       if (f != NULL) {
 	SaveDiagram(f);
       }
