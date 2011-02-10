@@ -133,34 +133,31 @@ fi
 
 dnl | test if user wants ot use Xaw3d headers
 AC_ARG_WITH([Xaw3d],
-            [AS_HELP_STRING([--with-Xaw3d],
-                            [use Xaw3d instead of Xaw])],
-            [with_xaw3d=yes],
-            [with_xaw3d=no])
+            [AS_HELP_STRING([--with-Xaw3d],[use Xaw3d instead of Xaw])],
+            [],
+            [with_Xaw3d=no])
 
 XAW_LIBS=
-AS_IF([test "x$with_xaw3d" != xno],
+AS_IF([test x"$with_Xaw3d" != x"no"],
       [AC_CHECK_LIB([Xaw3d], 
                     [XawTextReplace],
-                    [AC_SUBST([XAW_LIBS], 
-                              ["-lXaw3d"])
+                    [AC_SUBST([XAW_LIBS],["-lXaw3d"])
                      AC_DEFINE([USE_XAW3D], [1],
                                [Define if you want to use Xaw3d])],
                     [AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes")
 		     AC_MSG_FAILURE(
       		               [--with-Xaw3d was given, but test for Xaw3d failed])],
 			       [-lXaw])])
-if test "$with_xaw3d" = "no" ; then
+if test x"$with_Xaw3d" = x"no" ; then
    XAW_LIBS="-lXaw"
 fi
 AC_SUBST(XAW_LIBS)
 
 dnl | end Xaw3d test
 
-if test "$xaw_headers" = "no" ; then
+if test x"$xaw_headers" = x"no" ; then
    echo Xaw headers not found 
    exit 1
-
 fi
 
 
@@ -441,7 +438,7 @@ echo "                                    (bitmaps will go in \$datadir/games/xb
 echo "        infodir:         $infodir   (info files will go here)"
 echo "        sysconfdir:      $sysconfdir   (xboard.conf will go here)"
 echo ""
-echo "        Xaw3d:           $with_xaw3d"
+echo "        Xaw3d:           $with_Xaw3d"
 echo ""
 echo "        xpm:             $enable_xpm"
 echo "        ptys:            $enable_ptys"
