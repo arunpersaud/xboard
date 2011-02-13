@@ -1003,6 +1003,7 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
     for (cl.fking = BOARD_LEFT+0; cl.fking < BOARD_RGHT; cl.fking++)
 	for (cl.rking = 0; cl.rking < BOARD_HEIGHT; cl.rking++) {
           if (board[cl.rking][cl.fking] == king) {
+	      cl.check = 0;
               if(gameInfo.variant == VariantXiangqi) {
                   /* [HGM] In Xiangqi opposing Kings means check as well */
                   int i, dir;
@@ -1013,7 +1014,6 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
                       board[i][cl.fking] == (dir>0 ? BlackWazir : WhiteWazir) )
                           cl.check++;
               }
-	      cl.check = 0;
 	      GenPseudoLegal(board, flags ^ F_WHITE_ON_MOVE, CheckTestCallback, (VOIDSTAR) &cl);
 	      if(gameInfo.variant != VariantSpartan || cl.check == 0) // in Spartan Chess go on to test if other King is checked too
 	         goto undo_move;  /* 2-level break */
