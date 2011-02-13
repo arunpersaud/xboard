@@ -8892,7 +8892,7 @@ InitChessProgram(cps, setup)
       if( gameInfo.variant == VariantBughouse || gameInfo.variant == VariantCrazyhouse )
            overruled = gameInfo.boardWidth != 8 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 5;
       if( gameInfo.variant == VariantCapablanca || gameInfo.variant == VariantCapaRandom ||
-                               gameInfo.variant == VariantGothic  || gameInfo.variant == VariantFalcon )
+          gameInfo.variant == VariantGothic || gameInfo.variant == VariantFalcon || gameInfo.variant == VariantJanus )
            overruled = gameInfo.boardWidth != 10 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
       if( gameInfo.variant == VariantCourier )
            overruled = gameInfo.boardWidth != 12 || gameInfo.boardHeight != 8 || gameInfo.holdingsSize != 0;
