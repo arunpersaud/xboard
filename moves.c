@@ -419,7 +419,8 @@ void GenPseudoLegal(board, flags, callback, closure)
                           && !SameColor(board[rf][ff], board[rt][ft]))
                                callback(board, flags, NormalMove,
                                         rf, ff, rt, ft, closure);
-                      if(gameInfo.variant == VariantShatranj && gameInfo.variant == VariantCourier) continue; // classical Alfil
+                      if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier
+                                                             || gameInfo.variant == VariantXiangqi) continue; // classical Alfil
                       rt = rf + rs; // in unknown variant we assume Modern Elephant, which can also do one step
                       ft = ff + fs;
                       if (!(rt < 0 || rt >= BOARD_HEIGHT || ft < BOARD_LEFT || ft >= BOARD_RGHT)
