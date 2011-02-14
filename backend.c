@@ -6188,7 +6188,10 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 
   MakeMove(fromX, fromY, toX, toY, promoChar); /*updates forwardMostMove*/
 
-  if(Adjudicate(NULL)) return 1; // [HGM] adjudicate: take care of automtic game end
+  if(Adjudicate(NULL)) { // [HGM] adjudicate: take care of automatic game end
+    ShowMove(fromX, fromY, toX, toY); /*updates currentMove*/
+    return 1;
+  }
 
   if (gameMode == BeginningOfGame) {
     if (appData.noChessProgram) {
