@@ -345,6 +345,7 @@ LoadLanguageFile(char *name)
 
     if(!name || name[0] == NULLCHAR) return;
       snprintf(buf, MSG_SIZ, "%s%s", name, strchr(name, '.') ? "" : ".lng"); // auto-append lng extension
+    appData.language = oldLanguage;
     if(!strcmp(buf, oldLanguage)) { barbaric = 1; return; } // this language already loaded; just switch on
     if((f = fopen(buf, "r")) == NULL) return;
     while((k = fgetc(f)) != EOF) {
@@ -443,7 +444,7 @@ TranslateMenus(int addLanguage)
     int i;
     WIN32_FIND_DATA fileData;
     HANDLE hFind;
-#define IDM_English 1895
+#define IDM_English 1970
     if(1) {
         HMENU mainMenu = GetMenu(hwndMain);
         for (i=GetMenuItemCount(mainMenu)-1; i>=0; i--) {
@@ -5383,7 +5384,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_English:
-      barbaric = 0;
+      barbaric = 0; appData.language = "";
       TranslateMenus(0);
       CheckMenuItem(GetMenu(hwndMain), lastChecked, MF_BYCOMMAND|MF_UNCHECKED);
       CheckMenuItem(GetMenu(hwndMain), IDM_English, MF_BYCOMMAND|MF_CHECKED);
@@ -5391,7 +5392,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     default:
-      if(wmId > IDM_English && wmId < IDM_English+5) {
+      if(wmId > IDM_English && wmId < IDM_English+20) {
           LoadLanguageFile(languageFile[wmId - IDM_English - 1]);
           TranslateMenus(0);
           CheckMenuItem(GetMenu(hwndMain), lastChecked, MF_BYCOMMAND|MF_UNCHECKED);
