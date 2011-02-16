@@ -2861,7 +2861,7 @@ read_from_ics(isr, closure, data, count, error)
 
 		if(channel >= 0) // channel broadcast; look if there is a chatbox for this channel
 		for(p=0; p<MAX_CHAT; p++) {
-		    if(channel == atoi(chatPartner[p])) {
+		    if(chatPartner[p][0] >= '0' && chatPartner[p][0] <= '9' && channel == atoi(chatPartner[p])) {
 		    talker[0] = '['; strcat(talker, "] ");
 		    Colorize(channel == 1 ? ColorChannel1 : ColorChannel, FALSE);
 		    chattingPartner = p; break;
