@@ -24,6 +24,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include "config.h"
 #include "help.h"
 
 FILE *debugFP;
