@@ -131,12 +131,15 @@ if test "$xt" = "no" ; then
    exit 1
 fi
 
-dnl | test if user wants ot use Xaw3d headers
+dnl | test if user wants ot use Xaw3d or Xaw
+
+dnl | add configure option for Xaw3d
 AC_ARG_WITH([Xaw3d],
             [AS_HELP_STRING([--with-Xaw3d],[use Xaw3d instead of Xaw])],
             [],
             [with_Xaw3d=no])
 
+dnl | check availability of Xaw3d
 XAW_LIBS=
 AS_IF([test x"$with_Xaw3d" != x"no"],
       [AC_CHECK_LIB([Xaw3d], 
@@ -144,21 +147,19 @@ AS_IF([test x"$with_Xaw3d" != x"no"],
                     [AC_SUBST([XAW_LIBS],["-lXaw3d"])
                      AC_DEFINE([USE_XAW3D], [1],
                                [Define if you want to use Xaw3d])],
-                    [AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes")
-		     AC_MSG_FAILURE(
-      		               [--with-Xaw3d was given, but test for Xaw3d failed])],
+                    [AC_MSG_ERROR([--with-Xaw3d was given, but test for Xaw3d failed. Make sure that you have Xaw3d installed, else you might want to try the configure option --without-Xaw3d])],
 			       [-lXaw])])
+dnl | no Xaw3d, check for Xaw
 if test x"$with_Xaw3d" = x"no" ; then
+   AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes", xaw_headers="no")
+   if test x"$xaw_headers" = x"no" ; then
+      AC_MSG_ERROR([Xaw headers not found. Please install the Xaw package and headers.])
+   fi
    XAW_LIBS="-lXaw"
 fi
 AC_SUBST(XAW_LIBS)
 
-dnl | end Xaw3d test
-
-if test x"$xaw_headers" = x"no" ; then
-   echo Xaw headers not found 
-   exit 1
-fi
+dnl | end Xaw/Xaw3d test
 
 
 AC_CANONICAL_HOST
