@@ -1,3 +1,29 @@
+** Version 4.5.1 **
+
+(git diff -b --stat --summary -M v4.5.0 HEAD)
+
+ Makefile.am                |    2 +-
+ backend.c                  |   11 +++--
+ childio.c                  |    1 +
+ configure.ac               |   38 ++++++++---------
+ filebrowser/dir.c          |   18 +++-----
+ filebrowser/draw.c         |   34 +++++++++------
+ filebrowser/path.c         |   99 ++++++++++++++++++++++---------------------
+ filebrowser/selfile.c      |   12 +++++-
+ moves.c                    |    5 +-
+ winboard/help.c            |    1 +
+ winboard/help/html/01.htm  |    2 +-
+ winboard/help/html/02.htm  |   14 ++++++-
+ winboard/help/winboard.chm |  Bin 86507 -> 86883 bytes
+ winboard/makefile.ms       |    4 +-
+ winboard/wchat.c           |    2 +-
+ winboard/winboard.c        |   29 +++++++------
+ winboard/winboard.dsp      |    6 ++-
+ winboard/woptions.c        |    3 +-
+ winboard/wsettings.c       |    5 +--
+ 19 files changed, 158 insertions(+), 128 deletions(-)
+
+
 ** Version 4.5.0 **
 
 (git diff -b --stat --summary -M v4.4.4 HEAD)

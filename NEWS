@@ -1,3 +1,35 @@
+** Version 4.5.1 **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.5.1/ )
+
+ * bugfixes:
+   * Revert "Implement -reset option feature in WinBoard"
+   * Fix deselection of greyed-out variant button (WB)
+   * Put warning in HTML help
+   * Fix unmarked translation
+   * Fix Alfil bug
+   * Fix variant janus size prefix
+   * Fix Xiangqi King facing
+   * Fix showing of user move after adjudication
+   * Make language choice from menu persistent
+   * Fix ICS channel 0
+
+ * fixed packaging issues:
+   * add DIFFSTAT and SHORTLOG to tar-ball
+   * added history.c to the tar-ball. Needed for Winboard
+
+ * fixed compiler warnings/errors:
+   * added missing header file for sprintf
+   * added missing #includes and missing prototypes to filebrowser
+   * Fix MSVC compilability
+   * Fix 64-bit Windows compilability
+   * Fix MSVC snprintf problem
+
+ * fixed configure problems:
+   * fixed configure script to correctly detect Xaw3d library
+   * updated configure.ac to check for Xaw header files
+
+
 ** Version 4.5.0 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.5.0/ for more details)

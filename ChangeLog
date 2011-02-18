@@ -3,6 +3,148 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2011-02-17 15:40:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix MSVC snprintf problem
+
+In MSVC snprintf has to be redefined as _snprintf, and this happens
+conditionally in config.c. But the latter was not #included in help.c.
+
+2011-02-16 19:41:27 -0800 Arun Persaud <apersaud@lbl.gov>:
+updated configure.ac to check for Xaw header files
+
+check for Xaw header files when --without-Xaw3d was given. Before the test was
+only done when Xaw3d was specified, but could not be found.
+
+If Xaw3d or Xaw can't be found, print a hopefully useful error message and exit the configure script.
+
+2011-02-16 12:03:22 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ICS channel 0
+
+Channel 0 messages were not displayed in the console, because the test
+for channel number considered every non-numeric or non-existent handle
+in a chatbox to be zero. So the messages were diverted to a non-exsting
+chatbox. Now it test first for the handle to start with a digit.
+
+2011-02-15 19:13:33 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make language choice from menu persistent
+
+Set appData.language to the chosen language file, or empty if English is
+chosen, so that the choice is saved with the settings. Increase the
+number of possible language choices from 5 to 20. (After all, we already
+have 7 now!)
+
+2011-02-14 11:09:24 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix showing of user move after adjudication
+
+The correction of the fishy patch (removing ShowMove() from Adjudicate())
+had broken the adjudication of user moves (that actually did work before
+the fishy patch, because there the gobal fromX/Y and toX/Y do contain
+the correct values for the move to be shown). An entered move that led
+to adjudication (like a checkmate) now was not displayed at all. Adding
+an extra ShowMove() after (successful) return of Adudicate() solves it.
+
+2011-02-13 23:49:44 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Xiangqi King facing
+
+The Spartan patch had broken the CheckTest for Xiangqi, because cl.check
+was cleared after the King-facing test, rather than before it.
+
+2011-02-13 22:30:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix variant janus size prefix
+
+The default board size of Janus Chess was not consistently taken to be
+10x8, which resulted the name to be sent as 10x8+0_janus to the engine.
+
+2011-02-13 12:18:52 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Alfil bug
+
+The test for Alfil (suppressing single steps on the Elephant) contained
+a wrong logical operator, so that it could never be active. It also
+failed to include Xiangqi as variant with traditional Alfil. This led to
+one-step moves of the Elephant in these variants, and false check or
+unreliable mate detections.
+
+Fix move of Xiangqi Elephant
+
+2011-02-09 23:19:09 -0800 Arun Persaud <apersaud@lbl.gov>:
+fixed configure script to correctly detect Xaw3d library
+
+
+2011-02-06 22:07:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix unmarked translation
+
+The file-browser wndowtitle in WB was not marked for translation.
+
+2011-02-04 10:27:49 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Put warning in HTML help
+
+A warning is added that the help file is not yet updated for the new
+menu organzation.
+
+2011-02-04 10:22:29 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix 64-bit Windows compilability
+
+The API interface for Set/GetWindowLong has been changed for 64-bit
+Windows, both in the name of the call as in the arguments.
+
+2011-02-04 10:21:06 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix MSVC compilability
+
+Both the makefile and the project file had to be adapted for the new
+source file history.c, and the new location of parser.c.
+
+2011-02-05 10:11:58 -0800 Arun Persaud <apersaud@lbl.gov>:
+added missing #includes and missing prototypes to filebrowser
+
+thanks to Max Funk for reporting. Now using HAVE_DIRENT_H.
+
+Also cleaned up missing prototypes and some casts.
+
+2011-02-05 09:21:48 -0800 Arun Persaud <apersaud@lbl.gov>:
+added missing header file for sprintf
+
+
+2011-02-03 08:50:50 -0800 Arun Persaud <apersaud@lbl.gov>:
+added history.c to the tar-ball. Needed for Winboard
+
+
+2011-01-31 23:03:05 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix deselection of greyed-out variant button (WB)
+
+In Windows a disabled radiobutton refuses to deselect when you select
+another (enabled) button from the group. There are then 2 buttons
+checked, and the code to readout the buttons took the first one. Now it
+is changed to take the first enabled one.
+
+2011-02-03 08:28:15 -0800 Arun Persaud <apersaud@lbl.gov>:
+Revert "Implement -reset option feature in WinBoard"
+
+This reverts commit efecf86cd9b54072c6a2f38d62f1d775e69c545b.
+
+picked the wrong commit from HGM's git tree.
+
+2011-02-01 22:01:12 -0800 Arun Persaud <apersaud@lbl.gov>:
+add DIFFSTAT and SHORTLOG to tar-ball
+
+was only in the v4.4.x branch and not in master
+
+2011-01-30 09:52:15 -0800 Arun Persaud <arun@nubati.net>:
+release of version 4.5.0
+
+2011-02-01 07:41:04 -0800 Arun Persaud <apersaud@lbl.gov>:
+changed size of borders around squares from 0 to 1 as a default
+
+this way highlights show up again.
+
+2011-01-29 20:11:30 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement -reset option feature in WinBoard
+
+2011-01-30 10:12:08 -0800 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
+2011-01-30 09:56:39 -0800 Arun Persaud <arun@nubati.net>:
+updated parser.c form parser.l
+
 2011-01-29 19:59:11 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
 Clean up fishy patch
 
