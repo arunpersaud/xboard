@@ -3299,6 +3299,8 @@ void loadXIM(xim, xmask, filename, dest, mask)
 	}
     }
 
+    fclose(fp);
+
     /* create Pixmap of piece */
     *dest = XCreatePixmap(xDisplay, DefaultRootWindow(xDisplay),
 			  w, h, xim->depth);
@@ -4980,9 +4982,9 @@ Widget MiscCreate(name, text, mutable, callback, lines)
     XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
 			  RootWindowOfScreen(XtScreen(shellWidget)),
 			  (bw_width - w) / 2, 0 - h / 2, &xx, &yy, &junk);
-#endif /*!NOTDEF*/
     x = xx;
     y = yy;
+#endif /*!NOTDEF*/
     if (y < 0) y = 0; /*avoid positioning top offscreen*/
 
     j = 0;
@@ -5945,6 +5947,7 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
     rewind(f);
     selection_tmp = XtMalloc(len + 1);
     count = fread(selection_tmp, 1, len, f);
+    fclose(f);
     if (len != count) {
       XtFree(selection_tmp);
       return False;
