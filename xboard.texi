@@ -1561,15 +1561,15 @@ Indicates if the mentioned engine executable file is an UCI engine,
 and should be run with the aid of the Polyglot adapter rather than directly. 
 Xboard will then pass the other UCI options and engine name to Polyglot 
 through a .ini temporary file created for the purpose.
-@item -PolyglotDir filename
-@cindex PolyglotDir, option
-Gives the name of the directory in which the Polyglot adapter for UCI engines expects its files.
+@item -polyglotDir filename
+@cindex polyglotDir, option
+Gives the name of the directory in which the Polyglot adapter for UCI engines resides.
 Default: "/usr/local/share/polyglot".
 @item -usePolyglotBook true/false
 @cindex usePolyglotBook, option
 Specifies if the Polyglot book should be used.
-@item -PolyglotBook filename
-@cindex PolyglotBook, option
+@item -polyglotBook filename
+@cindex polyglotBook, option
 Gives the filename of the opening book that Polyglot should use. 
 From XBoard 4.3.15 on, native XBoard/WinBoard engines will also use the opening book specified here, 
 provided the @code{usePolyglotBook} option is set to true,
