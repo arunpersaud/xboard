@@ -2,7 +2,7 @@
 
 (git shortlog --no-merges v4.5.0..HEAD)
 
-Arun Persaud (7):
+Arun Persaud (9):
       add DIFFSTAT and SHORTLOG to tar-ball
       Revert "Implement -reset option feature in WinBoard"
       added history.c to the tar-ball. Needed for Winboard
@@ -10,8 +10,10 @@ Arun Persaud (7):
       added missing #includes and missing prototypes to filebrowser
       fixed configure script to correctly detect Xaw3d library
       updated configure.ac to check for Xaw header files
+      updated Changelog, NEWS, etc.
+      new developer release
 
-H.G. Muller (12):
+H.G. Muller (14):
       Fix deselection of greyed-out variant button (WB)
       Fix MSVC compilability
       Fix 64-bit Windows compilability
@@ -24,6 +26,8 @@ H.G. Muller (12):
       Make language choice from menu persistent
       Fix ICS channel 0
       Fix MSVC snprintf problem
+      Fix some resource leaks
+      Fix two typos in option names in texi file
 
 ** Version 4.5.0 **
 

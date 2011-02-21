@@ -3,6 +3,26 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2011-02-20 20:36:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix two typos in option names in texi file
+
+Polyglot was capitalyzed
+
+2011-02-20 00:03:19 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix some resource leaks
+
+Some files were opened not closed in XBoard, when loading XIM images
+(which I doubt anyone ever does) but also when copying the clipboard
+(which has the potential of being done very often). There was also some
+code that would not work if conditional code which is permanently
+disabled would be enabled.
+
+2011-02-17 20:17:04 -0800 Arun Persaud <apersaud@lbl.gov>:
+new developer release
+
+2011-02-17 20:14:38 -0800 Arun Persaud <apersaud@lbl.gov>:
+updated Changelog, NEWS, etc.
+
 2011-02-17 15:40:02 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix MSVC snprintf problem
 

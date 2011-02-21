@@ -13,6 +13,7 @@
    * Fix showing of user move after adjudication
    * Make language choice from menu persistent
    * Fix ICS channel 0
+   * Fix some resource leaks
 
  * fixed packaging issues:
    * add DIFFSTAT and SHORTLOG to tar-ball
@@ -28,6 +29,9 @@
  * fixed configure problems:
    * fixed configure script to correctly detect Xaw3d library
    * updated configure.ac to check for Xaw header files
+
+ * misc:
+   * Fix two typos in option names in texi file
 
 
 ** Version 4.5.0 **
