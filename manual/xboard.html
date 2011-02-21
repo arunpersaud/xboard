@@ -38,7 +38,7 @@ user interface to chess engines (such as GNU Chess), the
 Internet Chess Servers,
 electronic mail correspondence chess, or your own collection of saved games.
 
-   <p>This manual documents version 4.5.0 of XBoard.
+   <p>This manual documents version 4.5.1 of XBoard.
 
 <ul class="menu">
 <li><a accesskey="1" href="#Major-modes">Major modes</a>:      The main things XBoard can do. 
@@ -1322,10 +1322,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Options">Options</a>
 and should be run with the aid of the Polyglot adapter rather than directly. 
 Xboard will then pass the other UCI options and engine name to Polyglot
 through a .ini temporary file created for the purpose. 
-<br><dt>-PolyglotDir filename<dd><a name="index-PolyglotDir_002c-option-197"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines expects its files. 
+<br><dt>-polyglotDir filename<dd><a name="index-polyglotDir_002c-option-197"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines resides. 
 Default: "/usr/local/share/polyglot". 
 <br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-198"></a>Specifies if the Polyglot book should be used. 
-<br><dt>-PolyglotBook filename<dd><a name="index-PolyglotBook_002c-option-199"></a>Gives the filename of the opening book that Polyglot should use. 
+<br><dt>-polyglotBook filename<dd><a name="index-polyglotBook_002c-option-199"></a>Gives the filename of the opening book that Polyglot should use. 
 From XBoard 4.3.15 on, native XBoard/WinBoard engines will also use the opening book specified here,
 provided the <code>usePolyglotBook</code> option is set to true,
 and the option <code>firstHasOwnBookUCI</code> or <code>secondHasOwnBookUCI</code> applying to the engine
@@ -3923,8 +3923,8 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#index-pieceToSquareTable_002c-option-403">pieceToSquareTable, option</a>: <a href="#Other-options">Other options</a></li>
 <li><a href="#index-pixmap_002c-option-368">pixmap, option</a>: <a href="#User-interface-options">User interface options</a></li>
 <li><a href="#index-pixmapDirectory_002c-option-369">pixmapDirectory, option</a>: <a href="#User-interface-options">User interface options</a></li>
-<li><a href="#index-PolyglotBook_002c-option-199">PolyglotBook, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
-<li><a href="#index-PolyglotDir_002c-option-197">PolyglotDir, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
+<li><a href="#index-polyglotBook_002c-option-199">polyglotBook, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
+<li><a href="#index-polyglotDir_002c-option-197">polyglotDir, option</a>: <a href="#UCI-_002b-WB-Engine-Settings">UCI + WB Engine Settings</a></li>
 <li><a href="#index-Ponder-Next-Move_002c-Menu-Item-108">Ponder Next Move, Menu Item</a>: <a href="#Options-Menu">Options Menu</a></li>
 <li><a href="#index-ponder_002c-option-152">ponder, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
 <li><a href="#index-ponderNextMove_002c-option-153">ponderNextMove, option</a>: <a href="#Chess-engine-options">Chess engine options</a></li>
