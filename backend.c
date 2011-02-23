@@ -13728,7 +13728,7 @@ SendTimeControl(cps, mps, tc, inc, sd, st)
       SendToProgram(buf, cps);
     }
 
-    if(cps->nps > 0) { /* [HGM] nps */
+    if(cps->nps >= 0) { /* [HGM] nps */
 	if(cps->supportsNPS == FALSE)
 	  cps->nps = -1; // don't use if engine explicitly says not supported!
 	else {
