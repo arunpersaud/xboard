@@ -737,8 +737,8 @@ InitBackEnd1()
     /* [AS] Adjudication threshold */
     adjudicateLossThreshold = appData.adjudicateLossThreshold;
 
-    first.which = _("first");
-    second.which = _("second");
+    first.which = "first";
+    second.which = "second";
     first.maybeThinking = second.maybeThinking = FALSE;
     first.pr = second.pr = NoProc;
     first.isr = second.isr = NULL;
@@ -7266,7 +7266,7 @@ FakeBookMove: // [HGM] book: we jump here to simulate machine moves after book h
                               &fromX, &fromY, &toX, &toY, &promoChar)) {
 	    /* Machine move could not be parsed; ignore it. */
 	  snprintf(buf1, MSG_SIZ*10, _("Illegal move \"%s\" from %s machine"),
-		    machineMove, cps->which);
+		    machineMove, _(cps->which));
 	    DisplayError(buf1, 0);
             snprintf(buf1, MSG_SIZ*10, "Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d",
                     machineMove, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, moveType);
@@ -7696,7 +7696,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	SwitchClocks(forwardMostMove-1); // [HGM] race
 	DisplayBothClocks();
 	snprintf(buf1, 10*MSG_SIZ, _("Illegal move \"%s\" (rejected by %s chess program)"),
-		parseList[currentMove], cps->which);
+		parseList[currentMove], _(cps->which));
 	DisplayMoveError(buf1);
 	DrawPosition(FALSE, boards[currentMove]);
 	return;
@@ -7721,7 +7721,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
 	cps->maybeThinking = FALSE;
 	snprintf(buf1, sizeof(buf1), _("Failed to start %s chess program %s on %s: %s\n"),
-		cps->which, cps->program, cps->host, message);
+		_(cps->which), cps->program, cps->host, message);
 	RemoveInputSource(cps->isr);
 	DisplayFatalError(buf1, 0, 1);
 	return;
@@ -7744,7 +7744,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		/* Hint move could not be parsed!? */
 	      snprintf(buf2, sizeof(buf2),
 			_("Illegal hint move \"%s\"\nfrom %s chess program"),
-			buf1, cps->which);
+			buf1, _(cps->which));
 		DisplayError(buf2, 0);
 	    }
 	} else {
@@ -13566,11 +13566,11 @@ SendToProgram(message, cps)
     outCount = OutputToProcess(cps->pr, message, count, &error);
     if (outCount < count && !exiting
                          && !endingGame) { /* [HGM] crash: to not hang GameEnds() writing to deceased engines */
-      snprintf(buf, MSG_SIZ, _("Error writing to %s chess program"), cps->which);
+      snprintf(buf, MSG_SIZ, _("Error writing to %s chess program"), _(cps->which));
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
             if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
                 gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
-                snprintf(buf, MSG_SIZ, "%s program exits in draw position (%s)", cps->which, cps->program);
+                snprintf(buf, MSG_SIZ, _("%s program exits in draw position (%s)"), _(cps->which), cps->program);
             } else {
                 gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
             }
@@ -13596,11 +13596,11 @@ ReceiveFromProgram(isr, closure, message, count, error)
     if (count <= 0) {
 	if (count == 0) {
 	    snprintf(buf, MSG_SIZ, _("Error: %s chess program (%s) exited unexpectedly"),
-		    cps->which, cps->program);
+		    _(cps->which), cps->program);
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
                 if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
                     gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
-                    snprintf(buf, MSG_SIZ, _("%s program exits in draw position (%s)"), cps->which, cps->program);
+                    snprintf(buf, MSG_SIZ, _("%s program exits in draw position (%s)"), _(cps->which), cps->program);
                 } else {
                     gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
                 }
@@ -13610,7 +13610,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
 	    if(!cps->userError || !appData.popupExitMessage) DisplayFatalError(buf, 0, 1); else errorExitStatus = 1;
 	} else {
 	    snprintf(buf, MSG_SIZ, _("Error reading from %s chess program (%s)"),
-		    cps->which, cps->program);
+		    _(cps->which), cps->program);
 	    RemoveInputSource(cps->isr);
 
             /* [AS] Program is misbehaving badly... kill it */
@@ -14021,7 +14021,7 @@ ParseFeatures(args, cps)
 	}
 	if(cps->nrOptions >= MAX_OPTIONS) {
 	    cps->nrOptions--;
-	    snprintf(buf, MSG_SIZ, "%s engine has too many options\n", cps->which);
+	    snprintf(buf, MSG_SIZ, _("%s engine has too many options\n"), _(cps->which));
 	    DisplayError(buf, 0);
 	}
 	continue;
