@@ -461,7 +461,6 @@ void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
 void ShufflePopDown P(());
-void EnginePopDown P(());
 void UciPopDown P(());
 void TimeControlPopDown P(());
 void NewVariantPopDown P(());
@@ -1005,8 +1004,6 @@ XtActionsRec boardActions[] = {
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "ShufflePopDown", (XtActionProc) ShufflePopDown },
-    { "EnginePopDown", (XtActionProc) EnginePopDown },
-    { "UciPopDown", (XtActionProc) UciPopDown },
     { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
     { "NewVariantPopDown", (XtActionProc) NewVariantPopDown },
     { "SettingsPopDown", (XtActionProc) SettingsPopDown },

@@ -616,337 +616,7 @@ void TimeControlProc(w, event, prms, nprms)
    TimeControlPopUp();
 }
 
-//--------------------------- Engine-Options Menu Popup ----------------------------------
-int EngineUp;
-Widget EngineShell;
-extern int adjudicateLossThreshold;
-
-Widget engDrawMoves, engThreshold, engRule, engRepeat;
-
-void EnginePopDown()
-{
-    if (!EngineUp) return;
-    previous = NULL;
-    XtPopdown(EngineShell);
-    XtDestroyWidget(EngineShell);
-    EngineUp = False;
-    ModeHighlight();
-}
-
-int ReadToggle(Widget w)
-{
-    Arg args; Boolean res;
-
-    XtSetArg(args, XtNstate, &res);
-    XtGetValues(w, &args, 1);
-
-    return res;
-}
-
 Widget w1, w2, w3, w4, w5, w6, w7, w8;
-
-void EngineCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-    int j;
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("OK")) == 0) {
-	// read all switches
-	appData.periodicUpdates = ReadToggle(w1);
-//	appData.hideThinkingFromHuman = ReadToggle(w2);
-	first.scoreIsAbsolute  = appData.firstScoreIsAbsolute  = ReadToggle(w3);
-	second.scoreIsAbsolute = appData.secondScoreIsAbsolute = ReadToggle(w4);
-	appData.testClaims    = ReadToggle(w5);
-	appData.checkMates    = ReadToggle(w6);
-	appData.materialDraws = ReadToggle(w7);
-	appData.trivialDraws  = ReadToggle(w8);
-
-	// adjust setting in other menu for duplicates
-	// (perhaps duplicates should be removed from general Option Menu?)
-//	XtSetArg(args[0], XtNleftBitmap, appData.showThinking ? xMarkPixmap : None);
-//	XtSetValues(XtNameToWidget(menuBarWidget,
-//				   "menuOptions.Show Thinking"), args, 1);
-
-	// read out numeric controls, simply ignore bad formats for now
-	XtSetArg(args[0], XtNstring, &name);
-	XtGetValues(engDrawMoves, args, 1);
-	if(sscanf(name, "%d", &j) == 1) appData.adjudicateDrawMoves = j;
-	XtGetValues(engThreshold, args, 1);
-	if(sscanf(name, "%d", &j) == 1)
-		adjudicateLossThreshold = appData.adjudicateLossThreshold = -j; // inverted!
-	XtGetValues(engRule, args, 1);
-	if(sscanf(name, "%d", &j) == 1) appData.ruleMoves = j;
-	XtGetValues(engRepeat, args, 1);
-	if(sscanf(name, "%d", &j) == 1) appData.drawRepeats = j;
-
-        EnginePopDown();
-	ShowThinkingEvent(); // [HGM] thinking: score adjudication might need thinking output
-        return;
-    }
-}
-
-void EnginePopUp()
-{
-    Arg args[16];
-    Widget popup, layout, form,  b_ok, b_cancel,  s1;
-    Window root, child;
-    int x, y, i, j, width;
-    int win_x, win_y;
-    unsigned int mask;
-    char def[MSG_SIZ];
-
-    tcInc = (appData.timeIncrement >= 0);
-    tcMoves = appData.movesPerSession; tcIncrement = appData.timeIncrement;
-    if(!tcInc) tcIncrement = 0;
-    snprintf(def, MSG_SIZ,  "%d", tcInc ? tcIncrement : tcMoves);
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-//    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    EngineShell = popup =
-      XtCreatePopupShell(_("Adjudications"), transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    form =
-      XtCreateManagedWidget(layoutName, formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-
-    j = 0;
-//    XtSetArg(args[j], XtNwidth,     (XtArgVal) 250); j++;
-//    XtSetArg(args[j], XtNheight,    (XtArgVal) 400); j++;
-//    XtSetValues(popup, args, j);
-
-    j = 0;
-//    XtSetArg(args[j], XtNwidth,       (XtArgVal) 250); j++;
-//    XtSetArg(args[j], XtNheight,      (XtArgVal) 20); j++;
-    XtSetArg(args[j], XtNleft,        (XtArgVal) XtChainLeft); j++;
-    XtSetArg(args[j], XtNright,       (XtArgVal) XtChainRight); j++;
-    XtSetArg(args[j], XtNstate,       appData.periodicUpdates); j++;
-//    XtSetArg(args[j], XtNjustify,     (XtArgVal) XtJustifyLeft); j++;
-    w1 = XtCreateManagedWidget(_("Periodic Updates (Analysis Mode)"), toggleWidgetClass, form, args, j);
-
-    XtSetArg(args[j], XtNwidth,       (XtArgVal) &width);
-    XtGetValues(w1, &args[j], 1);
-
-//    XtSetArg(args[j-1], XtNfromVert,  (XtArgVal) w1);
-//    XtSetArg(args[j-3], XtNstate,       appData.hideThinkingFromHuman);
-//    w2 = XtCreateManagedWidget(_("Hide Thinking from Human"), toggleWidgetClass, form, args, j);
-
-    XtSetArg(args[j], XtNwidth,       (XtArgVal) width); j++;
-    XtSetArg(args[j-2], XtNstate,     appData.firstScoreIsAbsolute);
-    XtSetArg(args[j], XtNfromVert,    (XtArgVal) w1); j++;
-    w3 = XtCreateManagedWidget(_("Engine #1 Score is Absolute"), toggleWidgetClass, form, args, j);
-
-    XtSetArg(args[j-1], XtNfromVert,  (XtArgVal) w3);
-    XtSetArg(args[j-3], XtNstate,       appData.secondScoreIsAbsolute);
-    w4 = XtCreateManagedWidget(_("Engine #2 Score is Absolute"), toggleWidgetClass, form, args, j);
-
-    s1 = XtCreateManagedWidget(_("\nAdjudications in non-ICS games:"), labelWidgetClass, form, args, 3);
-
-    XtSetArg(args[j-1], XtNfromVert,  (XtArgVal) s1);
-    XtSetArg(args[j-3], XtNstate,       appData.testClaims);
-    w5 = XtCreateManagedWidget(_("Verify Engine Result Claims"), toggleWidgetClass, form, args, j);
-
-    XtSetArg(args[j-1], XtNfromVert,  (XtArgVal) w5);
-    XtSetArg(args[j-3], XtNstate,       appData.checkMates);
-    w6 = XtCreateManagedWidget(_("Detect All Mates"), toggleWidgetClass, form, args, j);
-
-    XtSetArg(args[j-1], XtNfromVert,  (XtArgVal) w6);
-    XtSetArg(args[j-3], XtNstate,       appData.materialDraws);
-    w7 = XtCreateManagedWidget(_("Draw when Insuff. Mating Material"), toggleWidgetClass, form, args, j);
-
-    XtSetArg(args[j-1], XtNfromVert,  (XtArgVal) w7);
-    XtSetArg(args[j-3], XtNstate,       appData.trivialDraws);
-    w8 = XtCreateManagedWidget(_("Adjudicate Trivial Draws"), toggleWidgetClass, form, args, j);
-
-    XtSetArg(args[0], XtNfromVert,  (XtArgVal) w4);
-    XtSetArg(args[1], XtNborderWidth, (XtArgVal) 0);
-    XtSetValues(s1, args, 2);
-
-    snprintf(def, MSG_SIZ,  "%d", appData.adjudicateDrawMoves);
-    j= 0;
-    XtSetArg(args[j], XtNborderWidth, 1); j++;
-    XtSetArg(args[j], XtNfromVert, w8); j++;
-    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    XtSetArg(args[j], XtNstring, def);  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth,  60);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    engDrawMoves = XtCreateManagedWidget("Length", asciiTextWidgetClass, form, args, j);
-    XtAddEventHandler(engDrawMoves, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-
-    j= 0;
-    XtSetArg(args[j], XtNlabel, _(" moves maximum, then draw")); j++;
-    XtSetArg(args[j], XtNjustify,     (XtArgVal) XtJustifyLeft); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNfromVert, w8); j++;
-    XtSetArg(args[j], XtNfromHoriz, engDrawMoves); j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-//    XtSetArg(args[j], XtNwidth,  170);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    tcMess1 = XtCreateManagedWidget("TCtext", labelWidgetClass, form, args, j);
-
-    snprintf(def, MSG_SIZ,  "%d", -appData.adjudicateLossThreshold); // inverted!
-    j= 0;
-    XtSetArg(args[j], XtNborderWidth, 1); j++;
-    XtSetArg(args[j], XtNfromVert, engDrawMoves); j++;
-    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    XtSetArg(args[j], XtNstring, def);  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth,  60);  j++;
-    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
-    engThreshold = XtCreateManagedWidget("Threshold", asciiTextWidgetClass, form, args, j);
-    XtAddEventHandler(engThreshold, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-
-    j= 0;
-    XtSetArg(args[j], XtNlabel, _("-centiPawn lead is win")); j++;
-    XtSetArg(args[j], XtNjustify, XtJustifyLeft); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNfromVert, engDrawMoves); j++;
-    XtSetArg(args[j], XtNfromHoriz, engThreshold); j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-//    XtSetArg(args[j], XtNwidth,  150);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    tcMess2 = XtCreateManagedWidget("MPStext", labelWidgetClass, form, args, j);
-
-    snprintf(def, MSG_SIZ,  "%d", appData.ruleMoves);
-    j= 0;
-    XtSetArg(args[j], XtNborderWidth, 1); j++;
-    XtSetArg(args[j], XtNfromVert, engThreshold); j++;
-    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    XtSetArg(args[j], XtNstring, def);  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth,  30);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    engRule = XtCreateManagedWidget("Rule", asciiTextWidgetClass, form, args, j);
-    XtAddEventHandler(engRule, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-
-    j= 0;
-    XtSetArg(args[j], XtNlabel, _("-move rule applied")); j++;
-    XtSetArg(args[j], XtNjustify,     (XtArgVal) XtJustifyLeft); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNfromVert, engThreshold); j++;
-    XtSetArg(args[j], XtNfromHoriz, engRule); j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-//    XtSetArg(args[j], XtNwidth,  130);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    tcMess1 = XtCreateManagedWidget("TCtext", labelWidgetClass, form, args, j);
-
-    snprintf(def, MSG_SIZ,  "%d", appData.drawRepeats);
-    j= 0;
-    XtSetArg(args[j], XtNborderWidth, 1); j++;
-    XtSetArg(args[j], XtNfromVert, engRule); j++;
-    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    XtSetArg(args[j], XtNstring, def);  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth,  30);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    engRepeat = XtCreateManagedWidget("Repeats", asciiTextWidgetClass, form, args, j);
-    XtAddEventHandler(engRepeat, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-
-    j= 0;
-    XtSetArg(args[j], XtNlabel, _("-fold repeat is draw")); j++;
-    XtSetArg(args[j], XtNjustify, XtJustifyLeft); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNfromVert, engRule); j++;
-    XtSetArg(args[j], XtNfromHoriz, engRepeat); j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-//    XtSetArg(args[j], XtNwidth,  130);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    tcMess2 = XtCreateManagedWidget("MPStext", labelWidgetClass, form, args, j);
-
-    j=0;
-    XtSetArg(args[j], XtNfromVert, engRepeat);  j++;
-    XtSetArg(args[j], XtNfromHoriz, tcMess2);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_ok= XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_ok, XtNcallback, EngineCallback, (XtPointer) 0);
-
-    j=0;
-    XtSetArg(args[j], XtNfromVert, engRepeat);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_ok);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_cancel= XtCreateManagedWidget(_("cancel"), commandWidgetClass,
-				   form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, EnginePopDown, (XtPointer) 0);
-
-    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "EnginePopDown");
-
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    EngineUp = True;
-
-    previous = NULL;
-    SetFocus(engThreshold, popup, (XEvent*) NULL, False);
-}
-
-void EngineMenuProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-   EnginePopUp();
-}
 
 //--------------------------- New-Variant Menu PopUp -----------------------------------
 struct NewVarButton {
@@ -1784,6 +1454,20 @@ void CreateXPMBoard P((char *s, int kind));
 void CreateXPMPieces P((void));
 void GenericReadout();
 
+Option adjudicationOptions[] = {
+{ 0, 0,    0, NULL, (void*) &appData.checkMates, "", NULL, CheckBox, _("Detect all Mates") },
+{ 0, 0,    0, NULL, (void*) &appData.testClaims, "", NULL, CheckBox, _("Verify Engine Result Claims") },
+{ 0, 0,    0, NULL, (void*) &appData.materialDraws, "", NULL, CheckBox, _("Draw if Insufficient Mating Material") },
+{ 0, 0,    0, NULL, (void*) &appData.trivialDraws, "", NULL, CheckBox, _("Adjudicate Trivial Draws (3-Move Delay)") },
+{ 0, 0,  100, NULL, (void*) &appData.ruleMoves, "", NULL, Spin, _("N-Move Rule:") },
+{ 0, 0,    6, NULL, (void*) &appData.drawRepeats, "", NULL, Spin, _("N-fold Repeats:") },
+{ 0, 0, 1000, NULL, (void*) &appData.adjudicateDrawMoves, "", NULL, Spin, _("Draw after N Moves Total:") },
+{ 0,-5000, 0, NULL, (void*) &appData.adjudicateLossThreshold, "", NULL, Spin, _("Win / Loss Threshold:") },
+{ 0, 0,    0, NULL, (void*) &first.scoreIsAbsolute, "", NULL, CheckBox, _("Negate Score of Engine #1") },
+{ 0, 0,    0, NULL, (void*) &second.scoreIsAbsolute, "", NULL, CheckBox, _("Negate Score of Engine #2") },
+{ 0, 1,    0, NULL, NULL, "", NULL, EndMark , "" }
+};
+
 void IcsOptionsOK(int n)
 {
     ParseIcsTextColors();
@@ -2411,6 +2095,14 @@ void BoardOptionsProc(w, event, prms, nprms)
    GenericPopUp(boardOptions, _("Board Options"));
 }
 
+void EngineMenuProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games");
+}
 //---------------------------- Chat Windows ----------------------------------------------
 
 void OutputChatMessage(int partner, char *mess)
