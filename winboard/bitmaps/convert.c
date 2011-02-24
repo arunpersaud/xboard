@@ -48,6 +48,7 @@ main(int argc, char **argv)
 			*p++ = d;
 		}
 	}
+	fclose(f);
 
 	name = argv[1];
 	for(i=0; argv[1][i]; i++) if(argv[1][i] == '\\') name = argv[1]+i+1;
