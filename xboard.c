@@ -346,6 +346,8 @@ void AnalyzeFileProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void TwoMachinesProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
+void MatchProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void MatchOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void IcsClientProc P((Widget w, XEvent *event, String *prms,
 		      Cardinal *nprms));
 void EditGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -665,6 +667,7 @@ MenuItem modeMenu[] = {
     {N_("Training"),      "Training", TrainingProc},
     {N_("ICS Client"),    "ICS Client", IcsClientProc},
     {"----", NULL, NothingProc},
+    {N_("Machine Match"),         "Machine Match", MatchProc},
     {N_("Pause               Pause"),         "Pause", PauseProc},
     {NULL, NULL, NULL}
 };
@@ -711,6 +714,7 @@ MenuItem optionsMenu[] = {
     {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", UciMenuProc},
     {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", EngineMenuProc},
     {N_("ICS ..."),    "ICS", IcsOptionsProc},
+    {N_("Match ..."), "Match", MatchOptionsProc},
     {N_("Load Game ..."),    "Load Game", LoadOptionsProc},
     {N_("Save Game ..."),    "Save Game", SaveOptionsProc},
 //    {N_(" ..."),    "", OptionsProc},
@@ -2762,6 +2766,7 @@ Enables icsEnables[] = {
     { "menuMode.Analysis Mode", False },
     { "menuMode.Analyze File", False },
     { "menuMode.Two Machines", False },
+    { "menuMode.Machine Match", False },
 #ifndef ZIPPY
     { "menuEngine.Hint", False },
     { "menuEngine.Book", False },
@@ -2786,6 +2791,7 @@ Enables ncpEnables[] = {
     { "menuMode.Analysis Mode", False },
     { "menuMode.Analyze File", False },
     { "menuMode.Two Machines", False },
+    { "menuMode.Machine Match", False },
     { "menuMode.ICS Client", False },
     { "menuView.ICS Input Box", False },
     { "Action", False },
@@ -2884,6 +2890,7 @@ Enables machineThinkingEnables[] = {
   { "menuMode.Machine White", False },
   { "menuMode.Machine Black", False },
   { "menuMode.Two Machines", False },
+  { "menuMode.Machine Match", False },
   { "menuEngine.Retract Move", False },
   { NULL, False }
 };
@@ -2902,6 +2909,7 @@ Enables userThinkingEnables[] = {
   { "menuMode.Machine White", True },
   { "menuMode.Machine Black", True },
   { "menuMode.Two Machines", True },
+  { "menuMode.Machine Match", True },
   { "menuEngine.Retract Move", True },
   { NULL, False }
 };
@@ -6188,6 +6196,20 @@ void TwoMachinesProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+    TwoMachinesEvent();
+}
+
+void MatchProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    if(gameMode != BeginningOfGame) { DisplayError(_("You can only start a match from the initial position."), 0); return; }
+    matchMode = 2; // This is back-end, really
+    appData.matchGames = appData.defaultMatchGames;
+    matchGame = 1;
+    first.matchWins = second.matchWins = 0;
     TwoMachinesEvent();
 }
 

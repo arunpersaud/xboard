@@ -1017,8 +1017,6 @@ void SecondSettingsProc(w, event, prms, nprms)
 
 // cloned from Engine Settings dialog
 
-#define CURR -2000000000 /* indicates control should start at actual value of target */
-
 typedef void ButtonCallback(int n);
 
 char *trialSound;
@@ -1029,6 +1027,17 @@ void CreateGCs P((int redo));
 void CreateXPMBoard P((char *s, int kind));
 void CreateXPMPieces P((void));
 void GenericReadout();
+
+Option matchOptions[] = {
+{ 0,  2, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, _("Default Number of Games in Match:") },
+{ 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, _("Pause between Match Games (msec):") },
+{ 0,  0,          0, NULL, (void*) &appData.loadGameFile, "", NULL, FileName, _("Game File with Opening Lines:") },
+{ 0, -2, 1000000000, NULL, (void*) &appData.loadGameIndex, "", NULL, Spin, _("Game Number (-1 or -2 = Auto-Increment):") },
+{ 0,  0,          0, NULL, (void*) &appData.loadPositionFile, "", NULL, FileName, _("File with Start Positions:") },
+{ 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, _("Position Number (-1 or -2 = Auto-Increment):") },
+{ 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, _("Rewind Index after this many Games (0 = never):") },
+{ 0, 0, 0, NULL, NULL, "", NULL, EndMark , "" }
+};
 
 void GeneralOptionsOK(int n)
 {
@@ -1848,6 +1857,15 @@ void OptionsProc(w, event, prms, nprms)
 {
    oldPonder = appData.ponderNextMove;
    GenericPopUp(generalOptions, _("General Options"));
+}
+
+void MatchOptionsProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   GenericPopUp(matchOptions, _("Match Options"));
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
