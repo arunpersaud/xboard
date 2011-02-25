@@ -4605,8 +4605,11 @@ void XDrawPosition(w, repaint, board)
      * but this causes a very distracting flicker.
      */
 
-    if ( lineGap && IsDrawArrowEnabled()) repaint = True;
     if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
+
+	if ( lineGap && IsDrawArrowEnabled())
+	    XDrawSegments(xDisplay, xBoardWindow, lineGC,
+			gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
 
 	/* If too much changes (begin observing new game, etc.), don't
 	   do flashing */
@@ -9303,16 +9306,13 @@ void DrawArrowBetweenSquares( int s_col, int s_row, int d_col, int d_row )
 
     DrawArrowBetweenPoints( s_x, s_y, d_x, d_y );
 
-    if(lineGap == 0) {
-        // this is a good idea, but it only works when lineGap == 0, because 'damage' on grid lines is not repaired
-        hor = 64*s_col + 32; vert = 64*s_row + 32;
-        for(i=0; i<= 64; i++) {
+    hor = 64*s_col + 32; vert = 64*s_row + 32;
+    for(i=0; i<= 64; i++) {
             damage[0][vert+6>>6][hor+6>>6] = True;
             damage[0][vert-6>>6][hor+6>>6] = True;
             damage[0][vert+6>>6][hor-6>>6] = True;
             damage[0][vert-6>>6][hor-6>>6] = True;
             hor += d_col - s_col; vert += d_row - s_row;
-        }
     }
 }
 
