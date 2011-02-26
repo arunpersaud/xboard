@@ -4263,7 +4263,7 @@ static void colorDrawPieceImage(piece, square_color, x, y, dest)
 	}
 	break;
     }
-    if(appData.upsideDown && flipView) kind ^= 2; // swap white and black pieces
+    if(appData.upsideDown && flipView) { kind ^= 2; p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
     if(useTexture & square_color+1) {
         BlankSquare(x, y, square_color, piece, dest, 1); // erase previous contents with background
 	XSetClipMask(xDisplay, wlPieceGC, xpmMask[p]);
@@ -8769,6 +8769,7 @@ BeginAnimation(anim, piece, startColor, start)
 {
   Pixmap mask;
 
+  if(appData.upsideDown && flipView) piece += piece < BlackPawn ? BlackPawn : -BlackPawn;
   /* The old buffer is initialised with the start square (empty) */
   BlankSquare(start->x, start->y, startColor, EmptySquare, anim->saveBuf, 0);
   anim->prevFrame = *start;
