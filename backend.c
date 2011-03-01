@@ -10421,6 +10421,7 @@ LoadGame(f, gameNumber, title, useList)
             for (i = BOARD_HEIGHT - 1; i >= 0; i--)
               for (j = BOARD_LEFT; j < BOARD_RGHT; p++)
 		switch (*p) {
+		  case '{':
 		  case '[':
 		  case '-':
 		  case ' ':

@@ -126,6 +126,7 @@ ChessSquare CharToPiece(c)
      int c;
 {
      int i;
+     if(c == '.') return EmptySquare;
      for(i=0; i< (int) EmptySquare; i++)
           if(pieceNickName[i] == c) return (ChessSquare) i;
      for(i=0; i< (int) EmptySquare; i++)
