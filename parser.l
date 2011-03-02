@@ -756,7 +756,7 @@ extern void CopyBoard P((Board to, Board from));
         {
           fprintf(debugFP, "Parser FRC long %d %d\n", ff, ft);
         };
-        if(ff == NoRights || ft == NoRights) return 0;
+        if(ff == NoRights || ft == NoRights) return ImpossibleMove;
     }
     sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
     if (appData.debugMode) {
@@ -810,7 +810,7 @@ extern void CopyBoard P((Board to, Board from));
     if (appData.debugMode) {
         fprintf(debugFP, "Parser FRC short %d %d\n", ff, ft);
     }
-        if(ff == NoRights || ft == NoRights) return 0;
+        if(ff == NoRights || ft == NoRights) return ImpossibleMove;
     }
     sprintf(currentMoveString, "%c%c%c%c",ff+AAA,rf+ONE,ft+AAA,rt+ONE);
     if (appData.debugMode) {
