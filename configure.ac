@@ -75,14 +75,6 @@ AC_PROG_CPP
 AC_ISC_POSIX
 AC_PROG_INSTALL
 
-AC_PROG_LEX
-if test "$LEX" != flex; then
-  LEX="$SHELL $missing_dir/missing flex"
-  AC_SUBST([LEX_OUTPUT_ROOT], [lex.yy])
-  AC_SUBST([LEXLIB], [''])
-fi
-
-
 AC_CHECK_PROGS(RSH, remsh rsh, rsh)
 AC_CHECK_PROGS(MINFO, makeinfo, makeinfo_not_found)
 if test "$MINFO" = makeinfo_not_found ; then

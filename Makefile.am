@@ -16,7 +16,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 gettext.h  \
 		 lists.c lists.h \
 		 moves.c moves.h \
-		 parser.l parser.h \
+		 parser.c parser.h \
 		 pgntags.c \
 	  	 uci.c \
 	 	 xboard.c xboard.h args.h \
