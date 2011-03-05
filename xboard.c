@@ -454,6 +454,7 @@ void UciMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void OptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void IcsTextProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -646,6 +647,7 @@ MenuItem viewMenu[] = {
     {N_("Move History       Alt+Shift+H"),   "Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
     {N_("Evaluation Graph  Alt+Shift+E"),    "Show Evaluation Graph", EvalGraphProc},
     {N_("Game List            Alt+Shift+G"), "Show Game List", ShowGameListProc},
+    {N_("ICS text menu"), "ICStex", IcsTextProc},
     {"----", NULL, NothingProc},
     {N_("Tags"),             "Show Tags", EditTagsProc},
     {N_("Comments"),         "Show Comments", EditCommentProc},
@@ -2793,6 +2795,7 @@ Enables ncpEnables[] = {
     { "menuMode.Two Machines", False },
     { "menuMode.Machine Match", False },
     { "menuMode.ICS Client", False },
+    { "menuView.ICStex", False },
     { "menuView.ICS Input Box", False },
     { "Action", False },
     { "menuEdit.Revert", False },
@@ -2801,10 +2804,10 @@ Enables ncpEnables[] = {
     { "menuEngine.Engine #2 Settings", False },
     { "menuEngine.Move Now", False },
     { "menuEngine.Retract Move", False },
+    { "menuOptions.ICS", False },
 #ifndef OPTIONSDIALOG
     { "menuOptions.Auto Flag", False },
     { "menuOptions.Auto Flip View", False },
-    { "menuOptions.ICS", False },
 //    { "menuOptions.ICS Alarm", False },
     { "menuOptions.Move Sound", False },
     { "menuOptions.Hide Thinking", False },
@@ -2818,6 +2821,7 @@ Enables ncpEnables[] = {
 
 Enables gnuEnables[] = {
     { "menuMode.ICS Client", False },
+    { "menuView.ICStex", False },
     { "menuView.ICS Input Box", False },
     { "menuAction.Accept", False },
     { "menuAction.Decline", False },
