@@ -50,6 +50,7 @@ extern char *getenv();
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
+#include <X11/Xatom.h>
 #include <X11/Xaw/Dialog.h>
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/List.h>
@@ -1665,6 +1666,87 @@ void MatchOptionsProc(w, event, prms, nprms)
    GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 
+Option textOptions[100];
+extern char *icsTextMenuString;
+void PutText P((char *text, int pos));
+
+SendString(char *p)
+{
+    char buf[MSG_SIZ], *q;
+    if(q = strstr(p, "$input")) {
+	if(!shellUp[4]) return;
+	strncpy(buf, p, MSG_SIZ);
+	strncpy(buf + (q-p), q+6, MSG_SIZ-(q-p));
+	PutText(buf, q-p);
+	return;
+    }
+    snprintf(buf, MSG_SIZ, "%s\n", p);
+    SendToICS(buf);
+}
+
+/* function called when the data to Paste is ready */
+static void
+SendTextCB(Widget w, XtPointer client_data, Atom *selection,
+	   Atom *type, XtPointer value, unsigned long *len, int *format)
+{
+  char buf[MSG_SIZ], *p = (char*) textOptions[(int) client_data].choice, *name = (char*) value, *q;
+  if (value==NULL || *len==0) return; /* nothing selected, abort */
+  name[*len]='\0';
+  strncpy(buf, p, MSG_SIZ);
+  q = strstr(p, "$name");
+  snprintf(buf + (q-p), MSG_SIZ -(q-p), "%s%s", name, q+5);
+  SendString(buf);
+  XtFree(value);
+}
+
+void SendText(int n)
+{
+    char *p = (char*) textOptions[n].choice;
+    if(strstr(p, "$name")) {
+	XtGetSelectionValue(menuBarWidget,
+	  XA_PRIMARY, XA_STRING,
+	  /* (XtSelectionCallbackProc) */ SendTextCB,
+	  (XtPointer) n, /* client_data passed to PastePositionCB */
+	  CurrentTime
+	);
+    } else SendString(p);
+}
+
+void IcsTextProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   int i=0, j;
+   char *p, *q, *r;
+   if((p = icsTextMenuString) == NULL) return;
+   do {
+	q = r = p; while(*p && *p != ';') p++;
+	for(j=0; j<p-q; j++) textOptions[i].name[j] = *r++;
+	textOptions[i].name[j++] = 0;
+	if(!*p) break;
+	if(*++p == '\n') p++; // optional linefeed after button-text terminating semicolon
+	q = p;
+	textOptions[i].choice = (char**) (r = textOptions[i].name + j);
+	while(*p && (*p != ';' || p[1] != '\n')) textOptions[i].name[j++] = *p++;
+	textOptions[i].name[j++] = 0;
+	if(*p) p += 2;
+	textOptions[i].max = 135;
+	textOptions[i].min = i&1;
+	textOptions[i].handle = NULL;
+	textOptions[i].target = &SendText;
+	textOptions[i].textValue = strstr(r, "$input") ? "#80FF80" : strstr(r, "$name") ? "#FF8080" : "#FFFFFF";
+	textOptions[i].type = Button;
+   } while(++i < 99 && *p);
+   if(i == 0) return;
+   textOptions[i].type = EndMark;
+   textOptions[i].target = NULL;
+   textOptions[i].min = 2;
+   MarkMenu("menuView.ICStex", 3);
+   GenericPopUp(textOptions, _("ICS text menu"), 3);
+}
+
 extern char ICSInputTranslations[];
 char *icsText;
 
@@ -1673,15 +1755,28 @@ Option boxOptions[] = {
 {   0,  3,    0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
-void InputBoxPopup()
+void PutText(char *text, int pos)
 {
     Widget edit;
     Arg args[16];
+    char buf[MSG_SIZ], *p;
 
-    if(shells[4]) { // if already exists, clear content
-	XtSetArg(args[0], XtNstring, "");
-	XtSetValues(boxOptions[0].handle, args, 1);
+    if(strstr(text, "$add ") == text) {
+	XtSetArg(args[0], XtNstring, &p);
+	XtGetValues(boxOptions[0].handle, args, 1);
+	snprintf(buf, MSG_SIZ, "%s%s", p, text+5); text = buf;
+	pos += strlen(p) - 5;
     }
+    XtSetArg(args[0], XtNstring, text);
+    XtSetValues(boxOptions[0].handle, args, 1);
+    XtSetArg(args[0], XtNinsertPosition, pos);
+    XtSetValues(boxOptions[0].handle, args, 1);
+//    SetFocus(boxOptions[0].handle, shells[4], NULL, False); // No idea why this does not work, and the following is needed:
+    XSetInputFocus(xDisplay, XtWindow(boxOptions[0].handle), RevertToPointerRoot, CurrentTime);
+}
+
+void InputBoxPopup()
+{
     MarkMenu("menuView.ICS Input Box", 4);
     if(GenericPopUp(boxOptions, _("ICS input box"), 4))
 	XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(ICSInputTranslations));
