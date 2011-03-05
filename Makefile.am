@@ -68,7 +68,7 @@ Applications_DATA = xboard.desktop
 
 ### directory and files to be used as bitmaps
 
-bitmapdir = $(datadir)/games/xboard/
+bitmapdir = $(datadir)/games/xboard
 dist_bitmap_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
 
 
