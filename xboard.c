@@ -466,6 +466,7 @@ void GameListOptionsPopDown P(());
 void ShufflePopDown P(());
 void TimeControlPopDown P(());
 void SettingsPopDown P(());
+void GenericPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
 int CopyMemoProc P(());
@@ -1017,6 +1018,7 @@ XtActionsRec boardActions[] = {
     { "ShufflePopDown", (XtActionProc) ShufflePopDown },
     { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
     { "SettingsPopDown", (XtActionProc) SettingsPopDown },
+    { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
 };
 

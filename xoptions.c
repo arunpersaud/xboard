@@ -92,6 +92,7 @@ extern Window xBoardWindow;
 extern Arg layoutArgs[2], formArgs[2];
 Pixel timerForegroundPixel, timerBackgroundPixel;
 extern int searchTime;
+extern Atom wm_delete_window;
 extern int lineGap;
 
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
@@ -1027,6 +1028,57 @@ void CreateGCs P((int redo));
 void CreateXPMBoard P((char *s, int kind));
 void CreateXPMPieces P((void));
 void GenericReadout();
+Widget shells[10];
+Widget marked[10];
+Boolean shellUp[10];
+WindowPlacement *wp[10];
+Option *dialogOptions[10];
+
+void MarkMenu(char *item, int dlgNr)
+{
+    Arg args[2];
+    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+    XtSetValues(marked[dlgNr] = XtNameToWidget(menuBarWidget, item), args, 1);
+}
+
+int PopDown(int n)
+{
+    int j;
+    Arg args[10];
+    Dimension windowH, windowW; Position windowX, windowY;
+    if (!shellUp[n]) return 0;
+    if(n && wp[n]) { // remember position
+	j = 0;
+	XtSetArg(args[j], XtNx, &windowX); j++;
+	XtSetArg(args[j], XtNy, &windowY); j++;
+	XtSetArg(args[j], XtNheight, &windowH); j++;
+	XtSetArg(args[j], XtNwidth, &windowW); j++;
+	XtGetValues(shells[n], args, j);
+	wp[n]->x = windowX;
+	wp[n]->x = windowY;
+	wp[n]->width  = windowW;
+	wp[n]->height = windowH;
+    }
+    previous = NULL;
+    XtPopdown(shells[n]);
+    if(n == 0) XtDestroyWidget(shells[n]);
+    shellUp[n] = False;
+    if(marked[n]) {
+	XtSetArg(args[0], XtNleftBitmap, None);
+	XtSetValues(marked[n], args, 1);
+    }
+    return 1;
+}
+
+void GenericPopDown(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    int n;
+    PopDown(prms[0][0] - '0');
+}
 
 Option matchOptions[] = {
 { 0,  2, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, _("Default Number of Games in Match:") },
@@ -1101,7 +1153,7 @@ void Pick(int n)
 	appData.pieceNickNames = "";
 	appData.colorNickNames = "";
 	Reset(True, True);
-        SettingsPopDown();
+        PopDown(0);
         return;
 }
 
@@ -1489,24 +1541,26 @@ void GenericCallback(w, client_data, call_data)
     int i, j;
     int data = (intptr_t) client_data;
 
+    currentOption = dialogOptions[data>>16]; data &= 0xFFFF;
+
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
 
     if (strcmp(name, _("cancel")) == 0) {
-        SettingsPopDown();
+        PopDown(data);
         return;
     }
     if (strcmp(name, _("OK")) == 0) { // save buttons imply OK
         GenericReadout();
-        SettingsPopDown();
+        PopDown(data);
         return;
     }
     if(currentOption[data].textValue);
     ((ButtonCallback*) currentOption[data].target)(data);
 }
 
-void
-GenericPopUp(Option *option, char *title)
+int
+GenericPopUp(Option *option, char *title, int dlgNr)
 {
     Arg args[16];
     Widget popup, layout, dialog, edit=NULL, form,  last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
@@ -1518,15 +1572,23 @@ GenericPopUp(Option *option, char *title)
     static char pane[6] = "paneX";
     Widget texts[100], forelast = NULL, anchor, widest, lastrow = NULL;
 
-    currentOption = option; // make available to callback
+    if(shellUp[dlgNr]) return 0; // already up
+    if(dlgNr && shells[dlgNr]) {
+	XtPopup(shells[dlgNr], XtGrabNone);
+	shellUp[dlgNr] = True;
+	return 0;
+    }
+
+    dialogOptions[dlgNr] = option; // make available to callback
     // kludge: fake address of a ChessProgramState struct that contains the options, so Spin and Combo callbacks work on it
+    // WARNING: this kludge does not work for persistent dialogs, so that these cannot have spin or combo controls!
     currentCps = (ChessProgramState *) ((char *) option - ((char *)&first.option - (char *)&first));
 
 //    if(cps->nrOptions > 50) width = 4; else if(cps->nrOptions>24) width = 2; else width = 1;
 //    height = cps->nrOptions / width + 1;
      i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
-    SettingsShell = popup =
+    popup = shells[dlgNr] =
       XtCreatePopupShell(title, transientShellWidgetClass,
 			 shellWidget, args, i);
 
@@ -1577,7 +1639,13 @@ GenericPopUp(Option *option, char *title)
 	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
 	    XtSetArg(args[j], XtNborderWidth, 1); j++;
 	    XtSetArg(args[j], XtNwidth, w); j++;
-	    if(option[i].type == TextBox && option[i].min) XtSetArg(args[j], XtNheight, option[i].min); j++;
+	    if(option[i].type == TextBox && option[i].min) {
+		XtSetArg(args[j], XtNheight, option[i].min); j++;
+		if(option[i].value & 1) { XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++; }
+		if(option[i].value & 2) { XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollAlways);  j++; }
+		if(option[i].value & 4) { XtSetArg(args[j], XtNautoFill, True);  j++; }
+		if(option[i].value & 8) { XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++; }
+	    }
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
 	    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
@@ -1660,7 +1728,7 @@ GenericPopUp(Option *option, char *title)
 		(dialog = last = XtCreateManagedWidget(option[i].name, commandWidgetClass, form, args, j));
 	    if(option[i].target == NULL) SetColor( *(char**) option[i-1].target, last); else
 	    XtAddCallback(last, XtNcallback, GenericCallback,
-			  (XtPointer)(intptr_t) i);
+			  (XtPointer)(intptr_t) i + (dlgNr<<16));
 	    if(option[i].textValue) SetColor( option[i].textValue, last);
 	    forelast = lastrow; // next button can go on same row
 	    break;
@@ -1749,16 +1817,17 @@ GenericPopUp(Option *option, char *title)
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer) 0);
+    XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer) dlgNr);
 
     XtSetArg(args[0], XtNfromHoriz, b_ok);
     b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, SettingsPopDown, (XtPointer) 0);
+    XtAddCallback(b_cancel, XtNcallback, GenericCallback, (XtPointer) dlgNr);
   }
 
     XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "SettingsPopDown");
-
+    XSetWMProtocols(xDisplay, XtWindow(popup), &wm_delete_window, 1);
+    snprintf(def, MSG_SIZ, "<Message>WM_PROTOCOLS: GenericPopDown(\"%d\") \n", dlgNr);
+    XtAugmentTranslations(popup, XtParseTranslationTable(def));
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
 		  &x, &y, &win_x, &win_y, &mask);
 
@@ -1766,11 +1835,19 @@ GenericPopUp(Option *option, char *title)
     XtSetArg(args[1], XtNy, y - 30);
     XtSetValues(popup, args, 2);
 
-    XtPopup(popup, XtGrabExclusive);
-    SettingsUp = True;
-
+    XtPopup(popup, dlgNr ? XtGrabNone : XtGrabExclusive);
+    shellUp[dlgNr] = True;
     previous = NULL;
     if(textField)SetFocus(textField, popup, (XEvent*) NULL, False);
+    if(dlgNr && wp[dlgNr] && wp[dlgNr]->width > 0) { // if persistent window-info available, reposition
+	j = 0;
+	XtSetArg(args[j], XtNheight, (Dimension) (wp[dlgNr]->height));  j++;
+	XtSetArg(args[j], XtNwidth,  (Dimension) (wp[dlgNr]->width));  j++;
+	XtSetArg(args[j], XtNx, (Position) (wp[dlgNr]->x));  j++;
+	XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
+	XtSetValues(popup, args, j);
+    }
+    return 1;
 }
 
 
@@ -1780,7 +1857,7 @@ void IcsOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(icsOptions, _("ICS Options"));
+   GenericPopUp(icsOptions, _("ICS Options"), 0);
 }
 
 void LoadOptionsProc(w, event, prms, nprms)
@@ -1789,7 +1866,7 @@ void LoadOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(loadOptions, _("Load Game Options"));
+   GenericPopUp(loadOptions, _("Load Game Options"), 0);
 }
 
 void SaveOptionsProc(w, event, prms, nprms)
@@ -1798,7 +1875,7 @@ void SaveOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(saveOptions, _("Save Game Options"));
+   GenericPopUp(saveOptions, _("Save Game Options"), 0);
 }
 
 void SoundOptionsProc(w, event, prms, nprms)
@@ -1808,7 +1885,7 @@ void SoundOptionsProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    soundFiles[2] = "*";
-   GenericPopUp(soundOptions, _("Sound Options"));
+   GenericPopUp(soundOptions, _("Sound Options"), 0);
 }
 
 void BoardOptionsProc(w, event, prms, nprms)
@@ -1817,7 +1894,7 @@ void BoardOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(boardOptions, _("Board Options"));
+   GenericPopUp(boardOptions, _("Board Options"), 0);
 }
 
 void EngineMenuProc(w, event, prms, nprms)
@@ -1826,7 +1903,7 @@ void EngineMenuProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games");
+   GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
 }
 
 void UciMenuProc(w, event, prms, nprms)
@@ -1837,7 +1914,7 @@ void UciMenuProc(w, event, prms, nprms)
 {
    oldCores = appData.smpCores;
    oldPonder = appData.ponderNextMove;
-   GenericPopUp(commonEngineOptions, _("Common Engine Settings"));
+   GenericPopUp(commonEngineOptions, _("Common Engine Settings"), 0);
 }
 
 void NewVariantProc(w, event, prms, nprms)
@@ -1846,7 +1923,7 @@ void NewVariantProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(variantDescriptors, _("New Variant"));
+   GenericPopUp(variantDescriptors, _("New Variant"), 0);
 }
 
 void OptionsProc(w, event, prms, nprms)
@@ -1856,7 +1933,7 @@ void OptionsProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    oldPonder = appData.ponderNextMove;
-   GenericPopUp(generalOptions, _("General Options"));
+   GenericPopUp(generalOptions, _("General Options"), 0);
 }
 
 void MatchOptionsProc(w, event, prms, nprms)
@@ -1865,7 +1942,7 @@ void MatchOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(matchOptions, _("Match Options"));
+   GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
