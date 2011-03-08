@@ -1564,7 +1564,7 @@ through a .ini temporary file created for the purpose.
 @item -polyglotDir filename
 @cindex polyglotDir, option
 Gives the name of the directory in which the Polyglot adapter for UCI engines resides.
-Default: "/usr/local/share/polyglot".
+Default: "".
 @item -usePolyglotBook true/false
 @cindex usePolyglotBook, option
 Specifies if the Polyglot book should be used.
@@ -1576,7 +1576,7 @@ provided the @code{usePolyglotBook} option is set to true,
 and the option @code{firstHasOwnBookUCI} or @code{secondHasOwnBookUCI} applying to the engine
 is set to false.
 The engine will be kept in force mode as long as the current position is in book, 
-and XBoard will select the book moves for it. Default "".
+and XBoard will select the book moves for it. Default: "".
 @item -fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false
 @itemx -sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false
 @cindex fNoOwnBookUCI, option
