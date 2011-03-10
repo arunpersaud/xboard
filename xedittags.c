@@ -95,257 +95,13 @@ extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
 extern int squareSize;
 extern Pixmap xMarkPixmap;
-extern char *layoutName;
 
 Position tagsX = -1, tagsY = -1;
-int tagsUp = False, editTagsUp = False;
-Widget tagsShell, editTagsShell;
-
-static Arg layoutArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNdefaultDistance, 0 }
-};
-
-void TagsCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-    int j;
-
-    j = 0;
-    XtSetArg(args[j], XtNlabel, &name);  j++;
-    XtGetValues(w, args, j);
-
-    if (strcmp(name, _("close")) == 0) {
-	TagsPopDown();
-    } else if (strcmp(name, _("edit")) == 0) {
-	TagsPopDown();
-	EditTagsEvent();
-    }
-}
-
-
-void EditTagsCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name, val;
-    Arg args[16];
-    int j;
-    Widget textw;
-
-    j = 0;
-    XtSetArg(args[j], XtNlabel, &name);  j++;
-    XtGetValues(w, args, j);
-
-    if (strcmp(name, _("ok")) == 0) {
-	textw = XtNameToWidget(editTagsShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, &val); j++;
-	XtGetValues(textw, args, j);
-	ReplaceTags(val, &gameInfo);
-	TagsPopDown();
-    } else if (strcmp(name, _("cancel")) == 0) {
-	TagsPopDown();
-    } else if (strcmp(name, _("clear")) == 0) {
-	textw = XtNameToWidget(editTagsShell, "*form.text");
-	XtCallActionProc(textw, "select-all", NULL, NULL, 0);
-	XtCallActionProc(textw, "kill-selection", NULL, NULL, 0);
-    }
-}
-
-Widget TagsCreate(name, text, msg, mutable, callback)
-     char *name, *text, *msg;
-     int /*Boolean*/ mutable;
-     XtCallbackProc callback;
-{
-    Arg args[16];
-    Widget shell, form, textw, msgw, layout;
-    Widget b_ok, b_cancel, b_close, b_edit, b;
-    Dimension bw_width, pw_width;
-    Dimension pw_height;
-    int j, xx, yy;
-    Window junk;
-
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &bw_width);  j++;
-    XtGetValues(boardWidget, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-#if TOPLEVEL
-    shell =
-      XtCreatePopupShell(name, topLevelShellWidgetClass,
-			 shellWidget, args, j);
-#else
-    shell =
-      XtCreatePopupShell(name, transientShellWidgetClass,
-			 shellWidget, args, j);
-#endif
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-			    layoutArgs, XtNumber(layoutArgs));
-    j = 0;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout, args, j);
-
-    j = 0;
-    if (mutable) {
-	XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-	XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    }
-    XtSetArg(args[j], XtNstring, text);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtRubber);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth, bw_width/2);  j++;
-    XtSetArg(args[j], XtNheight, bw_width/3);  j++;
-    /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-    XtSetArg(args[j], XtNautoFill, False);  j++;
-    textw =
-      XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
-
-    if (cmailMsgLoaded && !mutable) {
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, textw);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainRight); j++;
-	XtSetArg(args[j], XtNborderWidth, 0); j++;
-	XtSetArg(args[j], XtNjustify, XtJustifyLeft); j++;
-	XtSetArg(args[j], XtNlabel, msg); j++;
-	msgw =
-	  XtCreateManagedWidget("msg", labelWidgetClass, form, args, j);
-    } else {
-	msgw = textw;
-    }
-    if (mutable) {
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, msgw);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_ok = b =
-	  XtCreateManagedWidget(_("ok"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_ok, XtNcallback, callback, (XtPointer) 0);
-
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, msgw);  j++;
-	XtSetArg(args[j], XtNfromHoriz, b);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_cancel = b =
-	  XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_cancel, XtNcallback, callback, (XtPointer) 0);
-
-    } else {
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, msgw);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_close = b =
-	  XtCreateManagedWidget(_("close"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_close, XtNcallback, callback, (XtPointer) 0);
-
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, msgw);  j++;
-	XtSetArg(args[j], XtNfromHoriz, b);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_edit = b =
-	  XtCreateManagedWidget(_("edit"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_edit, XtNcallback, callback, (XtPointer) 0);
-    }
-
-    XtRealizeWidget(shell);
-    CatchDeleteWindow(shell, "TagsPopDown");
-
-    if (tagsX == -1) {
-	j = 0;
-	XtSetArg(args[j], XtNwidth, &bw_width);  j++;
-	XtGetValues(boardWidget, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNwidth, &pw_width);  j++;
-	XtSetArg(args[j], XtNheight, &pw_height);  j++;
-	XtGetValues(shell, args, j);
-
-#ifdef NOTDEF
-	/* This code seems to tickle an X bug if it is executed too soon
-	   after xboard starts up.  The coordinates get transformed as if
-	   the main window was positioned at (0, 0).
-	   */
-	XtTranslateCoords(boardWidget, (bw_width - pw_width) / 2,
-			  0 - pw_height + squareSize / 3, &x, &y);
-#else
-	XTranslateCoordinates(xDisplay, XtWindow(boardWidget),
-			      RootWindowOfScreen(XtScreen(boardWidget)),
-			      (bw_width - pw_width) / 2,
-			      0 - pw_height + squareSize / 3, &xx, &yy, &junk);
-	tagsX = xx;
-	tagsY = yy;
-#endif
-	if (tagsY < 0) tagsY = 0; /*avoid positioning top offscreen*/
-    }
-    j = 0;
-    XtSetArg(args[j], XtNx, tagsX - appData.borderXoffset);  j++;
-    XtSetArg(args[j], XtNy, tagsY - appData.borderYoffset);  j++;
-    XtSetValues(shell, args, j);
-    XtSetKeyboardFocus(shell, textw);
-
-    return shell;
-}
-
 
 void TagsPopUp(tags, msg)
      char *tags, *msg;
 {
-    Arg args[16];
-    int j;
-    Widget textw, msgw;
-
-    if (editTagsUp) TagsPopDown();
-    if (tagsShell == NULL) {
-	tagsShell =
-	  TagsCreate(_("Tags"), tags, msg, False, TagsCallback);
-    } else {
-	textw = XtNameToWidget(tagsShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, tags); j++;
-	XtSetValues(textw, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) "Tags");  j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) _("Tags"));  j++;
-	XtSetValues(tagsShell, args, j);
-	msgw = XtNameToWidget(tagsShell, "*form.msg");
-	if (msgw) {
-	    j = 0;
-	    XtSetArg(args[j], XtNlabel, msg); j++;
-	    XtSetValues(msgw, args, j);
-	}
-    }
-
-    XtPopup(tagsShell, XtGrabNone);
-    XSync(xDisplay, False);
-
-    tagsUp = True;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"),
-		args, j);
+    NewTagsPopup(tags, cmailMsgLoaded ? msg : NULL);
 }
 
 
@@ -353,58 +109,12 @@ void EditTagsPopUp(tags, dest)
      char *tags;
      char **dest;
 {
-    Widget textw;
-    Arg args[16];
-    int j;
-
-    if (tagsUp) TagsPopDown();
-    if (editTagsShell == NULL) {
-	editTagsShell =
-	  TagsCreate(_("Edit tags"), tags, NULL, True, EditTagsCallback); 
-    } else {
-	textw = XtNameToWidget(editTagsShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, tags); j++;
-	XtSetValues(textw, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) "Edit Tags");  j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) _("Edit Tags"));  j++;
-	XtSetValues(editTagsShell, args, j);
-    }
-
-    XtPopup(editTagsShell, XtGrabNone);
-
-    editTagsUp = True;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"),
-		args, j);
+    NewTagsPopup(tags, NULL);
 }
 
 void TagsPopDown()
 {
-    Arg args[16];
-    int j;
-    Widget w;
-
-    if (tagsUp) {
-	w = tagsShell;
-    } else if (editTagsUp) {
-	w = editTagsShell;
-    } else {
-	return;
-    }
-    j = 0;
-    XtSetArg(args[j], XtNx, &tagsX); j++;
-    XtSetArg(args[j], XtNy, &tagsY); j++;
-    XtGetValues(w, args, j);
-    XtPopdown(w);
-    XSync(xDisplay, False);
-    tagsUp = editTagsUp = False;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"),
-		args, j);
+    PopDown(2);
 }
 
 void
@@ -414,9 +124,12 @@ EditTagsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    if (tagsUp) TagsPopDown();
-    if (editTagsUp) {
-	TagsPopDown();
+    Arg args[5];
+    int j;
+    if (PopDown(2)) {
+	j = 0;
+	XtSetArg(args[j], XtNleftBitmap, None); j++;
+	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"), args, j);
     } else {
 	EditTagsEvent();
     }

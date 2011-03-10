@@ -1533,7 +1533,7 @@ ParseCommPortSettings(char *s)
 }
 
 extern Widget engineOutputShell;
-extern Widget tagsShell, editTagsShell;
+
 void
 GetActualPlacement(Widget wg, WindowPlacement *wp)
 {
@@ -1565,10 +1565,6 @@ GetWindowCoords()
   if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
-  if(commentShell) GetActualPlacement(commentShell, &wpComment);
-  else             GetActualPlacement(editShell,    &wpComment);
-  if(tagsShell) GetActualPlacement(tagsShell, &wpTags);
-  else      GetActualPlacement(editTagsShell, &wpTags);
 }
 
 void

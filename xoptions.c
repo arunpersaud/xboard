@@ -1846,6 +1846,43 @@ void NewCommentPopup(char *title, char *text, int index)
 	XtOverrideTranslations(commentOptions[0].handle, XtParseTranslationTable(commentTranslations));
 }
 
+static char *tagsText, *msgText;
+
+void NewTagsCallback(int n)
+{
+    ReplaceTags(tagsText, &gameInfo);
+}
+
+void changeTags(int n)
+{
+    Arg args[16];
+    XtSetArg(args[0], XtNstring, &tagsText);
+    XtGetValues(currentOption[0].handle, args, 1);
+    ReplaceTags(tagsText, &gameInfo);
+}
+
+Option tagsOptions[] = {
+{ 0xD, 200, 250, NULL, (void*) &tagsText, "", NULL, TextBox, "" },
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label,  "" },
+{   0,  0,    0, NULL, (void*) &changeTags, NULL, NULL, Button, "save changes" },
+{   0,  1,    0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }
+};
+
+void NewTagsPopup(char *text, char *msg)
+{
+    Widget edit;
+    Arg args[16];
+
+    if(shells[2]) { // if already exists, alter title and content
+	XtSetArg(args[0], XtNstring, text);
+	XtSetValues(tagsOptions[0].handle, args, 1);
+    }
+    tagsText = text;
+    tagsOptions[1].textValue = msg;
+    MarkMenu("menuView.Show Tags", 2);
+    GenericPopUp(tagsOptions, _("Tags"), 2);
+}
+
 extern char ICSInputTranslations[];
 char *icsText;
 
