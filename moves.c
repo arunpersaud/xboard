@@ -179,7 +179,7 @@ void GenPseudoLegal(board, flags, callback, closure, filter)
     int rf, ff;
     int i, j, d, s, fs, rs, rt, ft, m;
     int epfile = (signed char)board[EP_STATUS]; // [HGM] gamestate: extract ep status from board
-    int promoRank = gameInfo.variant == VariantMakruk ? 3 : 1;
+    int promoRank = gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand ? 3 : 1;
 
     for (rf = 0; rf < BOARD_HEIGHT; rf++)
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
@@ -228,12 +228,12 @@ void GenPseudoLegal(board, flags, callback, closure, filter)
 			   rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotion : NormalMove,
 			   rf, ff, rf + 1, ff, closure);
 	      }
-	      if (rf == 1 && board[2][ff] == EmptySquare &&
+	      if (rf <= (BOARD_HEIGHT>>1)-3 && board[rf+1][ff] == EmptySquare && // [HGM] grand: also on 3rd rank on 10-board
                   gameInfo.variant != VariantShatranj && /* [HGM] */
                   gameInfo.variant != VariantCourier  && /* [HGM] */
-                  board[3][ff] == EmptySquare ) {
+                  board[rf+2][ff] == EmptySquare ) {
                       callback(board, flags, NormalMove,
-                               rf, ff, 3, ff, closure);
+                               rf, ff, rf+2, ff, closure);
 	      }
 	      for (s = -1; s <= 1; s += 2) {
                   if (rf < BOARD_HEIGHT-1 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
@@ -243,13 +243,13 @@ void GenPseudoLegal(board, flags, callback, closure, filter)
 			       rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotion : NormalMove,
 			       rf, ff, rf + 1, ff + s, closure);
 		  }
-		  if (rf == BOARD_HEIGHT-4) {
+		  if (rf >= BOARD_HEIGHT+1>>1) {// [HGM] grand: 4th & 5th rank on 10-board
                       if (ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
-			  (epfile == ff + s || epfile == EP_UNKNOWN) &&
-                          board[BOARD_HEIGHT-4][ff + s] == BlackPawn &&
-                          board[BOARD_HEIGHT-3][ff + s] == EmptySquare) {
+			  (epfile == ff + s || epfile == EP_UNKNOWN) && rf < BOARD_HEIGHT-3 &&
+                          board[rf][ff + s] == BlackPawn &&
+                          board[rf+1][ff + s] == EmptySquare) {
 			  callback(board, flags, WhiteCapturesEnPassant,
-				   rf, ff, 5, ff + s, closure);
+				   rf, ff, rf+1, ff + s, closure);
 		      }
 		  }
 	      }
@@ -278,12 +278,12 @@ void GenPseudoLegal(board, flags, callback, closure, filter)
 			   rf <= promoRank ? BlackPromotion : NormalMove,
 			   rf, ff, rf - 1, ff, closure);
 	      }
-	      if (rf == BOARD_HEIGHT-2 && board[BOARD_HEIGHT-3][ff] == EmptySquare &&
+	      if (rf >= (BOARD_HEIGHT+1>>1)+2 && board[rf-1][ff] == EmptySquare && // [HGM] grand
                   gameInfo.variant != VariantShatranj && /* [HGM] */
                   gameInfo.variant != VariantCourier  && /* [HGM] */
-		  board[BOARD_HEIGHT-4][ff] == EmptySquare) {
+		  board[rf-2][ff] == EmptySquare) {
 		  callback(board, flags, NormalMove,
-			   rf, ff, BOARD_HEIGHT-4, ff, closure);
+			   rf, ff, rf-2, ff, closure);
 	      }
 	      for (s = -1; s <= 1; s += 2) {
                   if (rf > 0 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
@@ -293,13 +293,13 @@ void GenPseudoLegal(board, flags, callback, closure, filter)
 			       rf <= promoRank ? BlackPromotion : NormalMove,
 			       rf, ff, rf - 1, ff + s, closure);
 		  }
-		  if (rf == 3) {
+		  if (rf < BOARD_HEIGHT>>1) {
                       if (ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
-			  (epfile == ff + s || epfile == EP_UNKNOWN) &&
-			  board[3][ff + s] == WhitePawn &&
-			  board[2][ff + s] == EmptySquare) {
+			  (epfile == ff + s || epfile == EP_UNKNOWN) && rf > 2 &&
+			  board[rf][ff + s] == WhitePawn &&
+			  board[rf-1][ff + s] == EmptySquare) {
 			  callback(board, flags, BlackCapturesEnPassant,
-				   rf, ff, 2, ff + s, closure);
+				   rf, ff, rf-1, ff + s, closure);
 		      }
 		  }
 	      }
@@ -1194,7 +1194,8 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
 		    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) kings += (board[r][f] == BlackKing);
 		    if(kings == 2) cl.kind = IllegalMove;
 		}
-	    } else if(piece == WhitePawn || piece == BlackPawn) cl.kind = IllegalMove; // cannot stay Pawn in any variant
+	    } else if(piece == WhitePawn && rt == BOARD_HEIGHT-1 ||
+			  piece == BlackPawn && rt == 0) cl.kind = IllegalMove; // cannot stay Pawn on last rank in any variant
 	    else if((piece == WhiteUnicorn || piece == BlackUnicorn) && gameInfo.variant == VariantKnightmate)
              cl.kind = IllegalMove; // promotion to Royal Knight not allowed
 	    else if((piece == WhiteKing || piece == BlackKing) && gameInfo.variant != VariantSuicide && gameInfo.variant != VariantGiveaway)
@@ -1262,7 +1263,8 @@ int MateTest(board, flags)
     if (cl.count > 0) {
 	return inCheck ? MT_CHECK : MT_NONE;
     } else {
-        if(gameInfo.holdingsWidth && gameInfo.variant != VariantSuper && gameInfo.variant != VariantGreat) { // drop game
+        if(gameInfo.holdingsWidth && gameInfo.variant != VariantSuper && gameInfo.variant != VariantGreat
+                                                                      && gameInfo.variant != VariantGrand) { // drop game
             int r, f, n, holdings = flags & F_WHITE_ON_MOVE ? BOARD_WIDTH-1 : 0;
             for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) if(board[r][f] == EmptySquare) // all empty squares
                 for(n=0; n<BOARD_HEIGHT; n++) // all pieces in hand
@@ -1408,6 +1410,8 @@ void Disambiguate(board, flags, closure)
                 c = PieceToChar(BlackFerz);
             else if(gameInfo.variant == VariantGreat)
                 c = PieceToChar(BlackMan);
+            else if(gameInfo.variant == VariantGrand)
+		    closure->kind = closure->rt != 0 && closure->rt != BOARD_HEIGHT-1 ? NormalMove : AmbiguousMove; // no default in Grand Chess
             else
                 c = PieceToChar(BlackQueen);
         } else if(c == '=') closure->kind = IllegalMove; // no deferral outside Shogi

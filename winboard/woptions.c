@@ -819,6 +819,7 @@ int radioButton[] = {
     -1, // Twilight,
     OPT_VariantMakruk,
     OPT_VariantSChess,
+    OPT_VariantGrand,
     OPT_VariantSpartan, // Spartan
     -2 // sentinel
 };

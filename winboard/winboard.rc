@@ -711,7 +711,9 @@ BEGIN
                     84,70,10
     CONTROL         "Seira&wan",OPT_VariantSChess,"Button",BS_AUTORADIOBUTTON,154,94,70,
                     10
-    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,154,104,70,
+    CONTROL         "&Grand",OPT_VariantGrand,"Button",BS_AUTORADIOBUTTON,154,104,70,
+                    10
+    CONTROL         "&xiangqi",OPT_VariantXiangqi,"Button",BS_AUTORADIOBUTTON,154,114,70,
                     10
     GROUPBOX        "Variant",GPB_Variant,4,4,215,125
     LTEXT           "Board size:",GPB_Board,10,165,40,8,WS_TABSTOP
