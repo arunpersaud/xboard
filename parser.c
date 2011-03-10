@@ -44,6 +44,7 @@ int ReadLine()
 {   // Read one line from the input file, and append to the buffer
     char c, *start = inPtr;
     if(fromString) return 0; // parsing string, so the end is a hard end
+    if(!inputFile) return 0;
     while((c = fgetc(inputFile)) != EOF) {
 	*inPtr++ = c;
 	if(c == '\n') { *inPtr = NULLCHAR; return 1; }
@@ -521,12 +522,16 @@ void yynewfile (FILE *f)
 {   // prepare parse buffer for reading file
     inputFile = f;
     inPtr = parsePtr = inputBuf;
+    fromString = 0;
     lastChar = '\n';
     *inPtr = NULLCHAR; // make sure we will start by reading a line
 }
 
 void yynewstr P((char *s))
 {
+    parsePtr = s;
+    inputFile = NULL;
+    fromString = 1;
 }
 
 int yylex()
