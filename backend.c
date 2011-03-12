@@ -4368,7 +4368,8 @@ ParseBoard12(string)
 	    safeStrCpy(moveList[moveNum - 1], currentMoveString, sizeof(moveList[moveNum - 1])/sizeof(moveList[moveNum - 1][0]));
 	    strcat(moveList[moveNum - 1], "\n");
 
-            if(gameInfo.holdingsWidth && !appData.disguise) // inherit info that ICS does not give from previous board
+            if(gameInfo.holdingsWidth && !appData.disguise && gameInfo.variant != VariantSuper
+                                 && gameInfo.variant != VariantGreat) // inherit info that ICS does not give from previous board
               for(k=0; k<ranks; k++) for(j=BOARD_LEFT; j<BOARD_RGHT; j++) {
                 ChessSquare old, new = boards[moveNum][k][j];
                   if(fromY == DROP_RANK && k==toY && j==toX) continue; // dropped pieces always stand for themselves
