@@ -242,7 +242,8 @@ if(appData.debugMode)fprintf(debugFP, "trial %d,%d,%d,%d  type %d%d%d%d\n", coor
 		return ImpossibleMove; // for now treat as invalid
 	    }
 	    // fxg stuff, but also things like 0-0, 0-1 and 1-0
-	    if(!piece && type[1] == NOTHING && type[0] == ALPHABETIC && type[2] == ALPHABETIC) {
+	    if(!piece && type[1] == NOTHING && type[0] == ALPHABETIC && type[2] == ALPHABETIC
+		 && (coord[0] != 14 || coord[2] != 14) /* reserve oo for castling! */ ) {
 		piece = 'P'; n = 4; // kludge alert: fake full to-square
 	    }
 	}
