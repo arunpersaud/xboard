@@ -727,6 +727,7 @@ void CreateComboPopup(parent, name, n, mb)
 
 typedef void ButtonCallback(int n);
 
+extern WindowPlacement wpComment, wpTags;
 char *trialSound;
 static int oldCores, oldPonder;
 int MakeColors P((void));
@@ -737,7 +738,7 @@ void GenericReadout();
 Widget shells[10];
 Widget marked[10];
 Boolean shellUp[10];
-WindowPlacement *wp[10];
+WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags };
 Option *dialogOptions[10];
 
 void MarkMenu(char *item, int dlgNr)

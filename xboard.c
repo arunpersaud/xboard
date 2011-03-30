@@ -537,6 +537,9 @@ WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
 WindowPlacement wpTags;
 
+extern Widget shells[];
+extern Boolean shellUp[];
+
 #define SOLID 0
 #define OUTLINE 1
 Pixmap pieceBitmap[2][(int)BlackPawn];
@@ -1565,6 +1568,8 @@ GetWindowCoords()
   if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
+  if(shellUp[1]) GetActualPlacement(shells[1], &wpComment);
+  if(shellUp[2]) GetActualPlacement(shells[2], &wpTags);
 }
 
 void
