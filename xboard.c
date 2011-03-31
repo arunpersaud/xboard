@@ -4935,100 +4935,6 @@ Widget CommentCreate(name, text, mutable, callback, lines)
     return shell;
 }
 
-/* Used for analysis window and ICS input window */
-Widget MiscCreate(name, text, mutable, callback, lines)
-     char *name, *text;
-     int /*Boolean*/ mutable;
-     XtCallbackProc callback;
-     int lines;
-{
-    Arg args[16];
-    Widget shell, layout, form, edit;
-    Position x, y;
-    Dimension bw_width, pw_height, ew_height, w, h;
-    int j;
-    int xx, yy;
-    Window junk;
-
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-#if TOPLEVEL
-    shell =
-      XtCreatePopupShell(name, topLevelShellWidgetClass,
-			 shellWidget, args, j);
-#else
-    shell =
-      XtCreatePopupShell(name, transientShellWidgetClass,
-			 shellWidget, args, j);
-#endif
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-			    layoutArgs, XtNumber(layoutArgs));
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-
-    j = 0;
-    if (mutable) {
-	XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-	XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    }
-    XtSetArg(args[j], XtNstring, text);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-    XtSetArg(args[j], XtNautoFill, True);  j++;
-    XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
-    edit =
-      XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
-
-    XtRealizeWidget(shell);
-
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &bw_width);  j++;
-    XtGetValues(boardWidget, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNheight, &ew_height);  j++;
-    XtGetValues(edit, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNheight, &pw_height);  j++;
-    XtGetValues(shell, args, j);
-    h = pw_height + (lines - 1) * ew_height;
-    w = bw_width - 16;
-
-    XSync(xDisplay, False);
-#ifdef NOTDEF
-    /* This code seems to tickle an X bug if it is executed too soon
-       after xboard starts up.  The coordinates get transformed as if
-       the main window was positioned at (0, 0).
-    */
-    XtTranslateCoords(shellWidget, (bw_width - w) / 2, 0 - h / 2, &x, &y);
-#else  /*!NOTDEF*/
-    XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			  RootWindowOfScreen(XtScreen(shellWidget)),
-			  (bw_width - w) / 2, 0 - h / 2, &xx, &yy, &junk);
-    x = xx;
-    y = yy;
-#endif /*!NOTDEF*/
-    if (y < 0) y = 0; /*avoid positioning top offscreen*/
-
-    j = 0;
-    XtSetArg(args[j], XtNheight, h);  j++;
-    XtSetArg(args[j], XtNwidth, w);  j++;
-    XtSetArg(args[j], XtNx, x);  j++;
-    XtSetArg(args[j], XtNy, y);  j++;
-    XtSetValues(shell, args, j);
-
-    return shell;
-}
-
-
 static int savedIndex;  /* gross that this is global */
 
 void CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
@@ -5136,40 +5042,10 @@ void EditCommentPopDown()
 
 void ICSInputBoxPopUp()
 {
-    Widget edit;
-    Arg args[16];
-    int j;
-    char *title = _("ICS Input");
-    XtTranslations tr;
-
-    if (ICSInputShell == NULL) {
-	ICSInputShell = MiscCreate(title, "", True, NULL, 1);
-	tr = XtParseTranslationTable(ICSInputTranslations);
-	edit = XtNameToWidget(ICSInputShell, "*form.text");
-	XtOverrideTranslations(edit, tr);
-	XtRealizeWidget(ICSInputShell);
-	CatchDeleteWindow(ICSInputShell, "ICSInputBoxPopDown");
-
-    } else {
-	edit = XtNameToWidget(ICSInputShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, ""); j++;
-	XtSetValues(edit, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) title);   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) title);      j++;
-	XtSetValues(ICSInputShell, args, j);
-    }
-
-    XtPopup(ICSInputShell, XtGrabNone);
-    XtSetKeyboardFocus(ICSInputShell, edit);
-
-    ICSInputBoxUp = True;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.ICS Input Box"),
-		args, j);
+    InputBoxPopup();
 }
+
+extern Option boxOptions[];
 
 void ICSInputSendText()
 {
@@ -5178,7 +5054,7 @@ void ICSInputSendText()
     Arg args[16];
     String val;
 
-    edit = XtNameToWidget(ICSInputShell, "*form.text");
+    edit = boxOptions[0].handle;
     j = 0;
     XtSetArg(args[j], XtNstring, &val); j++;
     XtGetValues(edit, args, j);
@@ -5190,17 +5066,7 @@ void ICSInputSendText()
 
 void ICSInputBoxPopDown()
 {
-    Arg args[16];
-    int j;
-
-    if (!ICSInputBoxUp) return;
-    j = 0;
-    XtPopdown(ICSInputShell);
-    ICSInputBoxUp = False;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.ICS Input Box"),
-		args, j);
+    PopDown(4);
 }
 
 void CommentPopUp(title, text)
@@ -6268,11 +6134,7 @@ void IcsInputBoxProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    if (ICSInputBoxUp) {
-	ICSInputBoxPopDown();
-    } else {
-	ICSInputBoxPopUp();
-    }
+    if (!PopDown(4)) ICSInputBoxPopUp();
 }
 
 void AcceptProc(w, event, prms, nprms)
@@ -6380,7 +6242,7 @@ void EnterKeyProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    if (ICSInputBoxUp == True)
+    if (shellUp[4] == True)
       ICSInputSendText();
 }
 
@@ -6396,8 +6258,8 @@ void UpKeyProc(w, event, prms, nprms)
     String val;
     XawTextBlock t;
 
-    if (!ICSInputBoxUp) return;
-    edit = XtNameToWidget(ICSInputShell, "*form.text");
+    if (!shellUp[4]) return;
+    edit = boxOptions[0].handle;
     j = 0;
     XtSetArg(args[j], XtNstring, &val); j++;
     XtGetValues(edit, args, j);
@@ -6421,8 +6283,8 @@ void DownKeyProc(w, event, prms, nprms)
     String val;
     XawTextBlock t;
 
-    if (!ICSInputBoxUp) return;
-    edit = XtNameToWidget(ICSInputShell, "*form.text");
+    if (!shellUp[4]) return;
+    edit = boxOptions[0].handle;
     val = NextInHistory();
     XtCallActionProc(edit, "select-all", NULL, NULL, 0);
     XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);

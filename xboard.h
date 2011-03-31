@@ -118,6 +118,8 @@ typedef struct {
 
 typedef int (*FileProc) P((FILE *f, int n, char *title));
 void CatchDeleteWindow(Widget w, String procname);
+extern Widget shells[];
+extern Boolean shellUp[];
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */
 
