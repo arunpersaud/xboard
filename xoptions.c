@@ -1665,6 +1665,28 @@ void MatchOptionsProc(w, event, prms, nprms)
    GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 
+extern char ICSInputTranslations[];
+char *icsText;
+
+Option boxOptions[] = {
+{   0, 20,  400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
+{   0,  3,    0, NULL, NULL, "", NULL, EndMark , "" }
+};
+
+void InputBoxPopup()
+{
+    Widget edit;
+    Arg args[16];
+
+    if(shells[4]) { // if already exists, clear content
+	XtSetArg(args[0], XtNstring, "");
+	XtSetValues(boxOptions[0].handle, args, 1);
+    }
+    MarkMenu("menuView.ICS Input Box", 4);
+    if(GenericPopUp(boxOptions, _("ICS input box"), 4))
+	XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(ICSInputTranslations));
+}
+
 void
 SettingsPopUp(ChessProgramState *cps)
 {
