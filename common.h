@@ -403,6 +403,7 @@ typedef struct {
     char *firstHost;
     char *secondHost;
     char *bitmapDirectory;
+    char *soundDirectory;
     char *remoteShell;
     char *remoteUser;
     float timeDelay;

@@ -1776,6 +1776,7 @@ void SecondSettingsProc(w, event, prms, nprms)
 
 typedef void ButtonCallback(int n);
 
+char *trialSound;
 static Option *currentOption;
 int MakeColors P((void));
 void CreateGCs P((int redo));
@@ -1837,6 +1838,71 @@ Option saveOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.oldSaveStyle, "", NULL, CheckBox, _("Old Save Style (as opposed to PGN)") },
 { 0, 0, 0, NULL, (void*) &appData.saveExtendedInfoInPGN, "", NULL, CheckBox, _("Save Score/Depth Info in PGN") },
 { 0, 0, 0, NULL, (void*) &appData.saveOutOfBookInfo, "", NULL, CheckBox, _("Save Out-of-Book Info in PGN           ") },
+{ 0, 1, 0, NULL, NULL, "", NULL, EndMark , "" }
+};
+
+char *soundNames[] = {
+	N_("No Sound"),
+	N_("Default Beep"),
+	N_("Above WAV File"),
+	N_("Ching"),
+	N_("Click"),
+	N_("Ding"),
+	N_("Gong"),
+	N_("Laser"),
+	N_("Penalty"),
+	N_("Phone"),
+	N_("Thud"),
+	N_("Challenge"),
+	N_("Tell"),
+	NULL,
+	N_("User File")
+};
+
+char *soundFiles[] = { // sound files corresponding to above names
+	"",
+	"$",
+	"*", // kludge alert: as first thing in the dialog readout this is replaced with the user-given .WAV filename
+	"ching.wav",
+	"click.wav",
+	"ding1.wav",
+	"gong.wav",
+	"laser.wav",
+	"penalty.wav",
+	"phone.wav",
+	"thud.wav",
+	"challenge.wav",
+	"tell.wav",
+	NULL,
+	NULL
+};
+
+void Test(int n)
+{
+    if(soundFiles[values[3]]) PlaySound(soundFiles[values[3]]);
+}
+
+Option soundOptions[] = {
+{ 0, 0, 0, NULL, (void*) &appData.soundProgram, "", NULL, TextBox, _("Sound Program:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundDirectory, "", NULL, PathName, _("Sounds Directory:") },
+{ 0, 0, 0, NULL, (void*) (soundFiles+2) /* kludge! */, "", NULL, FileName, _("User WAV File:") },
+{ 0, 0, 0, NULL, (void*) &trialSound, (char*) soundNames, soundFiles, ComboBox, _("Try-Out Sound:") },
+{ 0, 1, 0, NULL, (void*) &Test, NULL, NULL, Button, _("Play") },
+{ 0, 0, 0, NULL, (void*) &appData.soundMove, (char*) soundNames, soundFiles, ComboBox, _("Move:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundIcsWin, (char*) soundNames, soundFiles, ComboBox, _("Win:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundIcsLoss, (char*) soundNames, soundFiles, ComboBox, _("Lose:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundIcsDraw, (char*) soundNames, soundFiles, ComboBox, _("Draw:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundIcsUnfinished, (char*) soundNames, soundFiles, ComboBox, _("Unfinished:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundIcsAlarm, (char*) soundNames, soundFiles, ComboBox, _("Alarm:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundShout, (char*) soundNames, soundFiles, ComboBox, _("Shout:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundSShout, (char*) soundNames, soundFiles, ComboBox, _("S-Shout:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundChannel, (char*) soundNames, soundFiles, ComboBox, _("Channel:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundChannel1, (char*) soundNames, soundFiles, ComboBox, _("Channel 1:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundTell, (char*) soundNames, soundFiles, ComboBox, _("Tell:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundKibitz, (char*) soundNames, soundFiles, ComboBox, _("Kibitz:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundChallenge, (char*) soundNames, soundFiles, ComboBox, _("Challenge:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundRequest, (char*) soundNames, soundFiles, ComboBox, _("Request:") },
+{ 0, 0, 0, NULL, (void*) &appData.soundSeek, (char*) soundNames, soundFiles, ComboBox, _("Seek:") },
 { 0, 1, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
@@ -2324,6 +2390,16 @@ void SaveOptionsProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    GenericPopUp(saveOptions, _("Save Game Options"));
+}
+
+void SoundOptionsProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   soundFiles[2] = "*";
+   GenericPopUp(soundOptions, _("Sound Options"));
 }
 
 void BoardOptionsProc(w, event, prms, nprms)
