@@ -206,6 +206,7 @@ ArgDescriptor argDescriptors[] = {
   { "pixmap", ArgFilename, (void *) &appData.pixmapDirectory, FALSE, INVALID },
   { "bitmapDirectory", ArgFilename, (void *) &appData.bitmapDirectory, XBOARD, (ArgIniType) "" },
   { "bm", ArgFilename, (void *) &appData.bitmapDirectory, FALSE, INVALID },
+  { "soundDirectory", ArgFilename, (void *) &appData.soundDirectory, XBOARD, (ArgIniType) "" },
   { "msLoginDelay", ArgInt, (void *) &appData.msLoginDelay, XBOARD, (ArgIniType) MS_LOGIN_DELAY },
   { "pasteSelection", ArgBoolean, (void *) &appData.pasteSelection, XBOARD, (ArgIniType) FALSE },
 

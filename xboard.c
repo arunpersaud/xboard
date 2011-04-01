@@ -454,8 +454,9 @@ void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BoardOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void IcsOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void SoundOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void BoardOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
@@ -712,6 +713,7 @@ MenuItem optionsMenu[] = {
     {N_("Save Game ..."),    "Save Game", SaveOptionsProc},
 //    {N_(" ..."),    "", OptionsProc},
     {N_("Game List ..."),    "Game List", GameListOptionsPopUp},
+    {N_("Sounds ..."),    "Sounds", SoundOptionsProc},
     {"----", NULL, NothingProc},
     {N_("Always Queen        Ctrl+Shift+Q"),   "Always Queen", AlwaysQueenProc},
     {N_("Animate Dragging"), "Animate Dragging", AnimateDraggingProc},
@@ -7402,7 +7404,9 @@ PlaySound(name)
     putc(BELLCHAR, stderr);
   } else {
     char buf[2048];
-    snprintf(buf, sizeof(buf), "%s '%s' &", appData.soundProgram, name);
+    char *prefix = "", *sep = "";
+    if(!strchr(name, '/')) { prefix = appData.soundDirectory; sep = "/"; }
+    snprintf(buf, sizeof(buf), "%s '%s%s%s' &", appData.soundProgram, prefix, sep, name);
     system(buf);
   }
 }
