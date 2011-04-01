@@ -242,7 +242,7 @@ FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *fail
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
-void CreateGCs P((void));
+void CreateGCs P((int redo));
 void CreateXIMPieces P((void));
 void CreateXPMPieces P((void));
 void CreateXPMBoard P((char *s, int n));
@@ -454,6 +454,7 @@ void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void BoardOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
@@ -647,6 +648,9 @@ MenuItem viewMenu[] = {
     {N_("Tags"),             "Show Tags", EditTagsProc},
     {N_("Comments"),         "Show Comments", EditCommentProc},
     {N_("ICS Input Box"),    "ICS Input Box", IcsInputBoxProc},
+    {"----", NULL, NothingProc},
+    {N_("Board..."),          "Board Options", BoardOptionsProc},
+    {N_("Game List Tags..."), "Game List", GameListOptionsPopUp},
     {NULL, NULL, NULL}
 };
 
@@ -1650,6 +1654,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     XtSetArg(args[0], XtNdefaultDistance, &sep);
     XtGetValues(formWidget, args, 1);
 
+    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
     CreateGrid();
@@ -1776,6 +1781,104 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
 #endif
 }
 #endif
+
+void ParseIcsTextColors()
+{   // [HGM] tken out of main(), so it can be called from ICS-Options dialog
+    if (parse_cpair(ColorShout, appData.colorShout) < 0 ||
+	parse_cpair(ColorSShout, appData.colorSShout) < 0 ||
+	parse_cpair(ColorChannel1, appData.colorChannel1) < 0  ||
+	parse_cpair(ColorChannel, appData.colorChannel) < 0  ||
+	parse_cpair(ColorKibitz, appData.colorKibitz) < 0 ||
+	parse_cpair(ColorTell, appData.colorTell) < 0 ||
+	parse_cpair(ColorChallenge, appData.colorChallenge) < 0  ||
+	parse_cpair(ColorRequest, appData.colorRequest) < 0  ||
+	parse_cpair(ColorSeek, appData.colorSeek) < 0  ||
+	parse_cpair(ColorNormal, appData.colorNormal) < 0)
+      {
+	  if (appData.colorize) {
+	      fprintf(stderr,
+		      _("%s: can't parse color names; disabling colorization\n"),
+		      programName);
+	  }
+	  appData.colorize = FALSE;
+      }
+}
+
+int MakeColors()
+{   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
+    XrmValue vFrom, vTo;
+    int forceMono = False;
+
+    if (!appData.monoMode) {
+	vFrom.addr = (caddr_t) appData.lightSquareColor;
+	vFrom.size = strlen(appData.lightSquareColor);
+	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	if (vTo.addr == NULL) {
+	  appData.monoMode = True;
+	  forceMono = True;
+	} else {
+	  lightSquareColor = *(Pixel *) vTo.addr;
+	}
+    }
+    if (!appData.monoMode) {
+	vFrom.addr = (caddr_t) appData.darkSquareColor;
+	vFrom.size = strlen(appData.darkSquareColor);
+	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	if (vTo.addr == NULL) {
+	  appData.monoMode = True;
+	  forceMono = True;
+	} else {
+	  darkSquareColor = *(Pixel *) vTo.addr;
+	}
+    }
+    if (!appData.monoMode) {
+	vFrom.addr = (caddr_t) appData.whitePieceColor;
+	vFrom.size = strlen(appData.whitePieceColor);
+	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	if (vTo.addr == NULL) {
+	  appData.monoMode = True;
+	  forceMono = True;
+	} else {
+	  whitePieceColor = *(Pixel *) vTo.addr;
+	}
+    }
+    if (!appData.monoMode) {
+	vFrom.addr = (caddr_t) appData.blackPieceColor;
+	vFrom.size = strlen(appData.blackPieceColor);
+	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	if (vTo.addr == NULL) {
+	  appData.monoMode = True;
+	  forceMono = True;
+	} else {
+	  blackPieceColor = *(Pixel *) vTo.addr;
+	}
+    }
+
+    if (!appData.monoMode) {
+	vFrom.addr = (caddr_t) appData.highlightSquareColor;
+	vFrom.size = strlen(appData.highlightSquareColor);
+	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	if (vTo.addr == NULL) {
+	  appData.monoMode = True;
+	  forceMono = True;
+	} else {
+	  highlightSquareColor = *(Pixel *) vTo.addr;
+	}
+    }
+
+    if (!appData.monoMode) {
+	vFrom.addr = (caddr_t) appData.premoveHighlightColor;
+	vFrom.size = strlen(appData.premoveHighlightColor);
+	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
+	if (vTo.addr == NULL) {
+	  appData.monoMode = True;
+	  forceMono = True;
+	} else {
+	  premoveHighlightColor = *(Pixel *) vTo.addr;
+	}
+    }
+    return forceMono;
+}
 
 int
 main(argc, argv)
@@ -2011,74 +2114,7 @@ XBoard square size (hint): %d\n\
       appData.monoMode = True;
     }
 
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.lightSquareColor;
-	vFrom.size = strlen(appData.lightSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  lightSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.darkSquareColor;
-	vFrom.size = strlen(appData.darkSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  darkSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.whitePieceColor;
-	vFrom.size = strlen(appData.whitePieceColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  whitePieceColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.blackPieceColor;
-	vFrom.size = strlen(appData.blackPieceColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  blackPieceColor = *(Pixel *) vTo.addr;
-	}
-    }
-
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.highlightSquareColor;
-	vFrom.size = strlen(appData.highlightSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  highlightSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.premoveHighlightColor;
-	vFrom.size = strlen(appData.premoveHighlightColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  premoveHighlightColor = *(Pixel *) vTo.addr;
-	}
-    }
+    forceMono = MakeColors();
 
     if (forceMono) {
       fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
@@ -2105,24 +2141,7 @@ XBoard square size (hint): %d\n\
 		(unsigned long) XBlackPixel(xDisplay, xScreen));
     }
 
-    if (parse_cpair(ColorShout, appData.colorShout) < 0 ||
-	parse_cpair(ColorSShout, appData.colorSShout) < 0 ||
-	parse_cpair(ColorChannel1, appData.colorChannel1) < 0  ||
-	parse_cpair(ColorChannel, appData.colorChannel) < 0  ||
-	parse_cpair(ColorKibitz, appData.colorKibitz) < 0 ||
-	parse_cpair(ColorTell, appData.colorTell) < 0 ||
-	parse_cpair(ColorChallenge, appData.colorChallenge) < 0  ||
-	parse_cpair(ColorRequest, appData.colorRequest) < 0  ||
-	parse_cpair(ColorSeek, appData.colorSeek) < 0  ||
-	parse_cpair(ColorNormal, appData.colorNormal) < 0)
-      {
-	  if (appData.colorize) {
-	      fprintf(stderr,
-		      _("%s: can't parse color names; disabling colorization\n"),
-		      programName);
-	  }
-	  appData.colorize = FALSE;
-      }
+    ParseIcsTextColors();
     textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
     textColors[ColorNone].attr = 0;
 
@@ -2509,7 +2528,7 @@ XBoard square size (hint): %d\n\
 
     CatchDeleteWindow(shellWidget, "QuitProc");
 
-    CreateGCs();
+    CreateGCs(False);
     CreateGrid();
 #if HAVE_LIBXPM
     if (appData.bitmapDirectory[0] != NULLCHAR) {
@@ -3087,7 +3106,31 @@ FindFont(pattern, targetPxlSize)
     return p;
 }
 
-void CreateGCs()
+void DeleteGCs()
+{   // [HGM] deletes GCs that are to be remade, to prevent resource leak;
+    // must be called before all non-first callse to CreateGCs()
+    XtReleaseGC(shellWidget, highlineGC);
+    XtReleaseGC(shellWidget, lightSquareGC);
+    XtReleaseGC(shellWidget, darkSquareGC);
+    if (appData.monoMode) {
+	if (DefaultDepth(xDisplay, xScreen) == 1) {
+	    XtReleaseGC(shellWidget, wbPieceGC);
+	} else {
+	    XtReleaseGC(shellWidget, bwPieceGC);
+	}
+    } else {
+	XtReleaseGC(shellWidget, prelineGC);
+	XtReleaseGC(shellWidget, jailSquareGC);
+	XtReleaseGC(shellWidget, wdPieceGC);
+	XtReleaseGC(shellWidget, wlPieceGC);
+	XtReleaseGC(shellWidget, wjPieceGC);
+	XtReleaseGC(shellWidget, bdPieceGC);
+	XtReleaseGC(shellWidget, blPieceGC);
+	XtReleaseGC(shellWidget, bjPieceGC);
+    }
+}
+
+void CreateGCs(int redo)
 {
     XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
       | GCBackground | GCFunction | GCPlaneMask;
@@ -3099,6 +3142,9 @@ void CreateGCs()
     gc_values.line_style = LineSolid;
     gc_values.function = GXcopy;
 
+  if(redo) {
+    DeleteGCs(); // called a second time; clean up old GCs first
+  } else { // [HGM] grid and font GCs created on first call only
     gc_values.foreground = XBlackPixel(xDisplay, xScreen);
     gc_values.background = XBlackPixel(xDisplay, xScreen);
     lineGC = XtGetGC(shellWidget, value_mask, &gc_values);
@@ -3108,12 +3154,12 @@ void CreateGCs()
     coordGC = XtGetGC(shellWidget, value_mask, &gc_values);
     XSetFont(xDisplay, coordGC, coordFontID);
 
-    // [HGM] make font for holdings counts (white on black0
+    // [HGM] make font for holdings counts (white on black)
     gc_values.foreground = XWhitePixel(xDisplay, xScreen);
     gc_values.background = XBlackPixel(xDisplay, xScreen);
     countGC = XtGetGC(shellWidget, value_mask, &gc_values);
     XSetFont(xDisplay, countGC, countFontID);
-
+  }
     if (appData.monoMode) {
 	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
 	gc_values.background = XWhitePixel(xDisplay, xScreen);
@@ -3367,9 +3413,21 @@ void CreateXPMBoard(char *s, int kind)
 {
     XpmAttributes attr;
     attr.valuemask = 0;
-    if(s == NULL || *s == 0 || *s == '*') return;
+    if(s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
     if (XpmReadFileToPixmap(xDisplay, xBoardWindow, s, &(xpmBoardBitmap[kind]), NULL, &attr) == 0) {
 	useTexture |= kind + 1; textureW[kind] = attr.width; textureH[kind] = attr.height;
+    }
+}
+
+void FreeXPMPieces()
+{   // [HGM] to prevent resoucre leak on calling CreaeXPMPieces() a second time,
+    // thisroutine has to be called t free the old piece pixmaps
+    int piece, kind;
+    for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++)
+	for (kind=0; kind<4; kind++) XFreePixmap(xDisplay, xpmPieceBitmap2[kind][piece]);
+    if(useImageSqs) {
+	XFreePixmap(xDisplay, xpmLightSquare);
+	XFreePixmap(xDisplay, xpmDarkSquare);
     }
 }
 
@@ -3381,6 +3439,9 @@ void CreateXPMPieces()
     XpmAttributes attr;
     static char *xpmkind[] = { "ll", "ld", "dl", "dd" };
     XpmColorSymbol symbols[4];
+    static int redo = False;
+
+    if(redo) FreeXPMPieces(); else redo = 1;
 
     /* The XSynchronize calls were copied from CreatePieces.
        Not sure if needed, but can't hurt */

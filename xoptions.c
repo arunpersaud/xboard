@@ -92,6 +92,7 @@ extern Window xBoardWindow;
 extern Arg layoutArgs[2], formArgs[2];
 Pixel timerForegroundPixel, timerBackgroundPixel;
 extern int searchTime;
+extern int lineGap;
 
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
@@ -1776,6 +1777,10 @@ void SecondSettingsProc(w, event, prms, nprms)
 typedef void ButtonCallback(int n);
 
 static Option *currentOption;
+int MakeColors P((void));
+void CreateGCs P((int redo));
+void CreateXPMBoard P((char *s, int kind));
+void CreateXPMPieces P((void));
 void GenericReadout();
 
 Option loadOptions[] = {
@@ -1797,7 +1802,7 @@ Option saveOptions[] = {
 { 0, 1, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
-SetColor(char *colorName, Widget box)
+void SetColor(char *colorName, Widget box)
 {
 	Arg args[5];
 	Pixel buttonColor;
@@ -1818,7 +1823,7 @@ SetColor(char *colorName, Widget box)
 
 void AdjustColor(int i)
 {
-    int n = currentOption[i].max, col, j, r, g, b, step = 10;
+    int n = currentOption[i].value, col, j, r, g, b, step = 10;
     char *s, buf[MSG_SIZ]; // color string
     Arg args[5];
     XtSetArg(args[0], XtNstring, &s);
@@ -1840,6 +1845,65 @@ void AdjustColor(int i)
     XtSetArg(args[0], XtNstring, buf);
     XtSetValues(currentOption[i-n-1].handle, args, 1);
 }
+
+void BoardOptionsOK(int n)
+{
+    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
+    MakeColors(); CreateGCs(True);
+    CreateXPMPieces();
+    CreateXPMBoard(appData.liteBackTextureFile, 1);
+    CreateXPMBoard(appData.darkBackTextureFile, 0);
+    InitDrawingSizes(-1, 0);
+    DrawPosition(True, NULL);
+}
+
+Option boardOptions[] = {
+{ 0,   0, 70, NULL, (void*) &appData.whitePieceColor, "", NULL, TextBox, _("White Piece Color:") },
+{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{ 0,   0, 70, NULL, (void*) &appData.blackPieceColor, "", NULL, TextBox, _("Black Piece Color:") },
+{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{ 0,   0, 70, NULL, (void*) &appData.lightSquareColor, "", NULL, TextBox, _("Light Square Color:") },
+{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{ 0,   0, 70, NULL, (void*) &appData.darkSquareColor, "", NULL, TextBox, _("Dark Square Color:") },
+{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{ 0,   0, 70, NULL, (void*) &appData.highlightSquareColor, "", NULL, TextBox, _("Highlight Color:") },
+{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{ 0,   0, 70, NULL, (void*) &appData.premoveHighlightColor, "", NULL, TextBox, _("Premove Highlight Color:") },
+{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
+{    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
+{    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{ 0, 0, 0, NULL, (void*) &appData.upsideDown, "", NULL, CheckBox, _("Flip Pieces Shogi Style") },
+{ 0, 0, 0, NULL, (void*) &appData.allWhite, "", NULL, CheckBox, _("Use Outline Pieces for Black") },
+{ 0, 0, 0, NULL, (void*) &appData.monoMode, "", NULL, CheckBox, _("Mono Mode") },
+{ 0,-1, 5, NULL, (void*) &appData.overrideLineGap, "", NULL, Spin, _("Line Gap ( -1 = default for board size):") },
+{ 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, "", NULL, FileName, _("Light-Squares Texture File:") },
+{ 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, "", NULL, FileName, _("Dark-Squares Texture File:") },
+{ 0, 0, 0, NULL, (void*) &appData.bitmapDirectory, "", NULL, PathName, _("Directory with Bitmap Pieces:") },
+{ 0, 0, 0, NULL, (void*) &appData.pixmapDirectory, "", NULL, PathName, _("Directory with Pixmap Pieces:") },
+{ 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
+};
 
 void GenericReadout()
 {
@@ -2213,6 +2277,15 @@ void SaveOptionsProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    GenericPopUp(saveOptions, _("Save Game Options"));
+}
+
+void BoardOptionsProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   GenericPopUp(boardOptions, _("Board Options"));
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
