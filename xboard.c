@@ -455,6 +455,7 @@ void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BoardOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void IcsOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
@@ -706,6 +707,7 @@ MenuItem optionsMenu[] = {
     {N_("Time Control ...       Alt+Shift+T"), "Time Control", TimeControlProc},
     {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", UciMenuProc},
     {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", EngineMenuProc},
+    {N_("ICS ..."),    "ICS", IcsOptionsProc},
     {N_("Load Game ..."),    "Load Game", LoadOptionsProc},
     {N_("Save Game ..."),    "Save Game", SaveOptionsProc},
 //    {N_(" ..."),    "", OptionsProc},
@@ -2782,6 +2784,7 @@ Enables ncpEnables[] = {
     { "menuEngine.Retract Move", False },
     { "menuOptions.Auto Flag", False },
     { "menuOptions.Auto Flip View", False },
+    { "menuOptions.ICS", False },
 //    { "menuOptions.ICS Alarm", False },
     { "menuOptions.Move Sound", False },
     { "menuOptions.Hide Thinking", False },
@@ -2804,6 +2807,7 @@ Enables gnuEnables[] = {
     { "menuAction.Upload to Examine", False },
     { "menuEdit.Revert", False },
     { "menuEdit.Annotate", False },
+    { "menuOptions.ICS", False },
 
     /* The next two options rely on SetCmailMode being called *after*    */
     /* SetGNUMode so that when GNU is being used to give hints these     */
