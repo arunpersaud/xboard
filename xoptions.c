@@ -616,221 +616,6 @@ void TimeControlProc(w, event, prms, nprms)
    TimeControlPopUp();
 }
 
-Widget w1, w2, w3, w4, w5, w6, w7, w8;
-
-//--------------------------- New-Variant Menu PopUp -----------------------------------
-struct NewVarButton {
-  char   *name;
-  char *color;
-  Widget handle;
-  VariantClass variant;
-};
-
-struct NewVarButton buttonDesc[] = {
-    {N_("normal"),            "#FFFFFF", 0, VariantNormal},
-    {N_("FRC"),               "#FFFFFF", 0, VariantFischeRandom},
-    {N_("wild castle"),       "#FFFFFF", 0, VariantWildCastle},
-    {N_("no castle"),         "#FFFFFF", 0, VariantNoCastle},
-    {N_("knightmate"),        "#FFFFFF", 0, VariantKnightmate},
-    {N_("berolina"),          "#FFFFFF", 0, VariantBerolina},
-    {N_("cylinder"),          "#FFFFFF", 0, VariantCylinder},
-    {N_("shatranj"),          "#FFFFFF", 0, VariantShatranj},
-    {N_("makruk"),            "#FFFFFF", 0, VariantMakruk},
-    {N_("atomic"),            "#FFFFFF", 0, VariantAtomic},
-    {N_("two kings"),         "#FFFFFF", 0, VariantTwoKings},
-    {N_("3-checks"),          "#FFFFFF", 0, Variant3Check},
-    {N_("suicide"),           "#FFFFBF", 0, VariantSuicide},
-    {N_("give-away"),         "#FFFFBF", 0, VariantGiveaway},
-    {N_("losers"),            "#FFFFBF", 0, VariantLosers},
-    {N_("fairy"),             "#BFBFBF", 0, VariantFairy},
-    {N_("Seirawan"),          "#FFBFBF", 0, VariantSChess},
-    {N_("Superchess"),        "#FFBFBF", 0, VariantSuper},
-    {N_("crazyhouse"),        "#FFBFBF", 0, VariantCrazyhouse},
-    {N_("bughouse"),          "#FFBFBF", 0, VariantBughouse},
-    {N_("shogi (9x9)"),       "#BFFFFF", 0, VariantShogi},
-    {N_("xiangqi (9x10)"),    "#BFFFFF", 0, VariantXiangqi},
-    {N_("courier (12x8)"),    "#BFFFBF", 0, VariantCourier},
-    {N_("Capablanca (10x8)"), "#BFBFFF", 0, VariantCapablanca},
-#ifdef GOTHIC
-    {N_("Gothic (10x8)"),     "#BFBFFF", 0, VariantGothic},
-#endif
-    {N_("janus (10x8)"),      "#BFBFFF", 0, VariantJanus},
-    {N_("CRC (10x8)"),        "#BFBFFF", 0, VariantCapaRandom},
-#ifdef FALCON
-    {N_("Falcon (10x8)"),     "#BFBFFF", 0, VariantFalcon},
-#endif
-    {N_("Spartan"),           "#FF0000", 0, VariantSpartan},
-    {NULL,                0, 0, (VariantClass) 0}
-};
-
-int NewVariantUp;
-Widget NewVariantShell;
-
-void NewVariantPopDown()
-{
-    if (!NewVariantUp) return;
-    XtPopdown(NewVariantShell);
-    XtDestroyWidget(NewVariantShell);
-    NewVariantUp = False;
-    ModeHighlight();
-}
-
-void NewVariantCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-    VariantClass v;
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("  OK  ")) == 0) {
-	int nr = (intptr_t) XawToggleGetCurrent(buttonDesc[0].handle) - 1;
-	if(nr < 0) return;
-	v = buttonDesc[nr].variant;
-	if(!appData.noChessProgram) {
-	    char *name = VariantName(v), buf[MSG_SIZ];
-	    if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
-		/* [HGM] in protocol 2 we check if variant is suported by engine */
-	      snprintf(buf, MSG_SIZ,  _("Variant %s not supported by %s"), name, first.tidy);
-		DisplayError(buf, 0);
-//		NewVariantPopDown();
-		return; /* ignore OK if first engine does not support it */
-	    } else
-	    if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
-	      snprintf(buf, MSG_SIZ,  _("Warning: second engine (%s) does not support this!"), second.tidy);
-		DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
-	    }
-	}
-
-	gameInfo.variant = v;
-	appData.variant = VariantName(v);
-
-	shuffleOpenings = FALSE; /* [HGM] shuffle: possible shuffle reset when we switch */
-	startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
-	appData.pieceToCharTable = NULL;
-	Reset(True, True);
-        NewVariantPopDown();
-        return;
-    }
-}
-
-void NewVariantPopUp()
-{
-    Arg args[16];
-    Widget popup, layout, form, last = NULL, b_ok, b_cancel;
-    Window root, child;
-    int x, y, i, j;
-    int win_x, win_y;
-    unsigned int mask;
-    XrmValue vFrom, vTo;
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-//    XtSetArg(args[i], XtNwidth, 250); i++;
-//    XtSetArg(args[i], XtNheight, 300); i++;
-    NewVariantShell = popup =
-      XtCreatePopupShell(_("NewVariant Menu"), transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-
-    for(i = 0; buttonDesc[i].name != NULL; i++) {
-	Pixel buttonColor;
-	if (!appData.monoMode) {
-	    vFrom.addr = (caddr_t) buttonDesc[i].color;
-	    vFrom.size = strlen(buttonDesc[i].color);
-	    XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	    if (vTo.addr == NULL) {
-	  	buttonColor = (Pixel) -1;
-	    } else {
-		buttonColor = *(Pixel *) vTo.addr;
-	    }
-	}
-
-	j = 0;
-	XtSetArg(args[j], XtNradioGroup, last); j++;
-	XtSetArg(args[j], XtNwidth, 125); j++;
-//	XtSetArg(args[j], XtNheight, 16); j++;
-	XtSetArg(args[j], XtNfromVert, i == 15 ? NULL : last); j++;
-	XtSetArg(args[j], XtNfromHoriz, i < 15 ? NULL : buttonDesc[i-15].handle); j++;
-	XtSetArg(args[j], XtNradioData, i+1); j++;
-	XtSetArg(args[j], XtNbackground, buttonColor); j++;
-	XtSetArg(args[j], XtNstate, gameInfo.variant == buttonDesc[i].variant); j++;
-	XtSetArg(args[j], XtNsensitive, appData.noChessProgram || strstr(first.variants, VariantName(buttonDesc[i].variant))); j++;
-	buttonDesc[i].handle = last =
-	    XtCreateManagedWidget(buttonDesc[i].name, toggleWidgetClass, form, args, j);
-    }
-
-    j=0;
-    XtSetArg(args[j], XtNfromVert, buttonDesc[12].handle);  j++;
-    XtSetArg(args[j], XtNfromHoriz, buttonDesc[12].handle);  j++;
-    XtSetArg(args[j], XtNheight, 35); j++;
-//    XtSetArg(args[j], XtNwidth, 60); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_cancel= XtCreateManagedWidget(_("CANCEL"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, NewVariantPopDown, (XtPointer) 0);
-
-    j=0;
-    XtSetArg(args[j], XtNfromHoriz, b_cancel);  j++;
-    XtSetArg(args[j], XtNfromVert, buttonDesc[12].handle);  j++;
-    XtSetArg(args[j], XtNheight, 35); j++;
-//    XtSetArg(args[j], XtNwidth, 60); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_ok= XtCreateManagedWidget(_("  OK  "), commandWidgetClass, form, args, j);
-    XtAddCallback(b_ok, XtNcallback, NewVariantCallback, (XtPointer) 0);
-
-    j=0;
-    XtSetArg(args[j], XtNfromVert, buttonDesc[14].handle);  j++;
-//    XtSetArg(args[j], XtNheight, 70); j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNlabel, _("WARNING: variants with un-orthodox\n"
-				  "pieces only have built-in bitmaps\n"
-				  "for -boardSize middling, bulky and\n"
-				  "petite, and substitute king or amazon\n"
-				  "for missing bitmaps. (See manual.)")); j++;
-    XtCreateManagedWidget("warning", labelWidgetClass, form, args, j);
-
-	    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "NewVariantPopDown");
-
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    NewVariantUp = True;
-}
-
-void NewVariantProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-   NewVariantPopUp();
-}
-
 //--------------------------- Engine-specific options menu ----------------------------------
 
 int SettingsUp;
@@ -1243,6 +1028,81 @@ void CreateXPMBoard P((char *s, int kind));
 void CreateXPMPieces P((void));
 void GenericReadout();
 
+void Pick(int n)
+{
+	VariantClass v = currentOption[n].value;
+	if(!appData.noChessProgram) {
+	    char *name = VariantName(v), buf[MSG_SIZ];
+	    if (first.protocolVersion > 1 && StrStr(first.variants, name) == NULL) {
+		/* [HGM] in protocol 2 we check if variant is suported by engine */
+	      snprintf(buf, MSG_SIZ,  _("Variant %s not supported by %s"), name, first.tidy);
+		DisplayError(buf, 0);
+		return; /* ignore OK if first engine does not support it */
+	    } else
+	    if (second.initDone && second.protocolVersion > 1 && StrStr(second.variants, name) == NULL) {
+	      snprintf(buf, MSG_SIZ,  _("Warning: second engine (%s) does not support this!"), second.tidy);
+		DisplayError(buf, 0);   /* use of second engine is optional; only warn user */
+	    }
+	}
+
+	GenericReadout(); // make sure ranks and file settings are read
+
+	gameInfo.variant = v;
+	appData.variant = VariantName(v);
+
+	shuffleOpenings = FALSE; /* [HGM] shuffle: possible shuffle reset when we switch */
+	startedFromPositionFile = FALSE; /* [HGM] loadPos: no longer valid in new variant */
+	appData.pieceToCharTable = NULL;
+	appData.pieceNickNames = "";
+	appData.colorNickNames = "";
+	Reset(True, True);
+        SettingsPopDown();
+        return;
+}
+
+Option variantDescriptors[] = {
+{ VariantNormal, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("normal")},
+{ VariantFairy, 1, 135, NULL, (void*) &Pick, "#BFBFBF", NULL, Button, N_("fairy")},
+{ VariantFischeRandom, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("FRC")},
+{ VariantSChess, 1, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("Seirawan")},
+{ VariantWildCastle, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("wild castle")},
+{ VariantSuper, 1, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("Superchess")},
+{ VariantNoCastle, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("no castle")},
+{ VariantCrazyhouse, 1, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("crazyhouse")},
+{ VariantKnightmate, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("knightmate")},
+{ VariantBughouse, 1, 135, NULL, (void*) &Pick, "#FFBFBF", NULL, Button, N_("bughouse")},
+{ VariantBerolina, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("berolina")},
+{ VariantShogi, 1, 135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("shogi (9x9)")},
+{ VariantCylinder, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("cylinder")},
+{ VariantXiangqi, 1, 135, NULL, (void*) &Pick, "#BFFFFF", NULL, Button, N_("xiangqi (9x10)")},
+{ VariantShatranj, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("shatranj")},
+{ VariantCourier, 1, 135, NULL, (void*) &Pick, "#BFFFBF", NULL, Button, N_("courier (12x8)")},
+{ VariantMakruk, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("makruk")},
+{ VariantGreat, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Great Shatranj (10x8)")},
+{ VariantAtomic, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("atomic")},
+{ VariantCapablanca, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Capablanca (10x8)")},
+{ VariantTwoKings, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("two kings")},
+{ VariantGothic, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Gothic (10x8)")},
+{ Variant3Check, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("3-checks")},
+{ VariantJanus, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("janus (10x8)")},
+{ VariantSuicide, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("suicide")},
+{ VariantCapaRandom, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("CRC (10x8)")},
+{ VariantGiveaway, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("give-away")},
+{ VariantSpartan, 1, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
+{ VariantLosers, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("losers")},
+{ 0, 0, 0, NULL, NULL, NULL, NULL, Label, _("Board size ( -1 = default for selected variant):")},
+{ 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.NrRanks, "", NULL, Spin, N_("Number of Board Ranks:") },
+{ 0, -1, BOARD_FILES, NULL, (void*) &appData.NrFiles, "", NULL, Spin, N_("Number of Board Files:") },
+{ 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.holdingsSize, "", NULL, Spin, N_("Holdings Size:") },
+{ 0, 0, 0, NULL, NULL, NULL, NULL, Label,
+				_("WARNING: variants with un-orthodox\n"
+				  "pieces only have built-in bitmaps\n"
+				  "for -boardSize middling, bulky and\n"
+				  "petite, and substitute king or amazon\n"
+				  "for missing bitmaps. (See manual.)")},
+{ 0, 2, 0, NULL, NULL, "", NULL, EndMark , "" }
+};
+
 void CommonOptionsOK(int n)
 {
 	int newPonder = appData.ponderNextMove;
@@ -1596,6 +1456,7 @@ void GenericCallback(w, client_data, call_data)
         SettingsPopDown();
         return;
     }
+    if(currentOption[data].textValue);
     ((ButtonCallback*) currentOption[data].target)(data);
 }
 
@@ -1932,6 +1793,15 @@ void UciMenuProc(w, event, prms, nprms)
    oldCores = appData.smpCores;
    oldPonder = appData.ponderNextMove;
    GenericPopUp(commonEngineOptions, _("Common Engine Settings"));
+}
+
+void NewVariantProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   GenericPopUp(variantDescriptors, _("New Variant"));
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
