@@ -283,8 +283,6 @@ void CommentClick P((Widget w, XEvent * event,
 		   String * params, Cardinal * nParams));
 void CommentPopUp P((char *title, char *label));
 void CommentPopDown P((void));
-void CommentCallback P((Widget w, XtPointer client_data,
-			XtPointer call_data));
 void ICSInputBoxPopUp P((void));
 void ICSInputBoxPopDown P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
@@ -302,9 +300,6 @@ void AskQuestionPopDown P((void));
 void PromotionPopDown P((void));
 void PromotionCallback P((Widget w, XtPointer client_data,
 			  XtPointer call_data));
-void EditCommentPopDown P((void));
-void EditCommentCallback P((Widget w, XtPointer client_data,
-			    XtPointer call_data));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
 void ResetProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -520,7 +515,7 @@ int squareSize, smallLayout = 0, tinyLayout = 0,
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
   ICSInputBoxUp = False, askQuestionUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
-  editUp = False, errorUp = False, errorExitStatus = -1, lineGap, defaultLineGap;
+  errorUp = False, errorExitStatus = -1, lineGap, defaultLineGap;
 Pixel timerForegroundPixel, timerBackgroundPixel;
 Pixel buttonForegroundPixel, buttonBackgroundPixel;
 char *chessDir, *programName, *programVersion,
@@ -1004,7 +999,6 @@ XtActionsRec boardActions[] = {
     { "NothingProc", NothingProc },
     { "CommentClick", (XtActionProc) CommentClick },
     { "CommentPopDown", (XtActionProc) CommentPopDown },
-    { "EditCommentPopDown", (XtActionProc) EditCommentPopDown },
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
@@ -2714,7 +2708,6 @@ void
 ResetFrontEnd()
 {
     CommentPopDown();
-    EditCommentPopDown();
     TagsPopDown();
     return;
 }
@@ -4780,170 +4773,6 @@ void HandlePV (Widget w, XEvent * event,
     MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 }
 
-Widget CommentCreate(name, text, mutable, callback, lines)
-     char *name, *text;
-     int /*Boolean*/ mutable;
-     XtCallbackProc callback;
-     int lines;
-{
-    Arg args[16];
-    Widget shell, layout, form, edit, b_ok, b_cancel, b_clear, b_close, b_edit;
-    Dimension bw_width;
-    int j;
-
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &bw_width);  j++;
-    XtGetValues(boardWidget, args, j);
-
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-#if TOPLEVEL
-    shell =
-      XtCreatePopupShell(name, topLevelShellWidgetClass,
-			 shellWidget, args, j);
-#else
-    shell =
-      XtCreatePopupShell(name, transientShellWidgetClass,
-			 shellWidget, args, j);
-#endif
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shell,
-			    layoutArgs, XtNumber(layoutArgs));
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-
-    j = 0;
-    if (mutable) {
-	XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-	XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    }
-    XtSetArg(args[j], XtNstring, text);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth, bw_width);  j++; /*force wider than buttons*/
-    /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-    XtSetArg(args[j], XtNautoFill, True);  j++;
-    XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
-    edit =
-      XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
-    XtOverrideTranslations(edit, XtParseTranslationTable(commentTranslations));
-
-    if (mutable) {
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, edit);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_ok =
-	  XtCreateManagedWidget(_("ok"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_ok, XtNcallback, callback, (XtPointer) 0);
-
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, edit);  j++;
-	XtSetArg(args[j], XtNfromHoriz, b_ok);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_cancel =
-	  XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_cancel, XtNcallback, callback, (XtPointer) 0);
-
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, edit);  j++;
-	XtSetArg(args[j], XtNfromHoriz, b_cancel);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_clear =
-	  XtCreateManagedWidget(_("clear"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_clear, XtNcallback, callback, (XtPointer) 0);
-    } else {
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, edit);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_close =
-	  XtCreateManagedWidget(_("close"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_close, XtNcallback, callback, (XtPointer) 0);
-
-	j = 0;
-	XtSetArg(args[j], XtNfromVert, edit);  j++;
-	XtSetArg(args[j], XtNfromHoriz, b_close);  j++;
-	XtSetArg(args[j], XtNtop, XtChainBottom); j++;
-	XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
-	XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	b_edit =
-	  XtCreateManagedWidget(_("edit"), commandWidgetClass, form, args, j);
-	XtAddCallback(b_edit, XtNcallback, callback, (XtPointer) 0);
-    }
-
-    XtRealizeWidget(shell);
-
-    if (commentX == -1) {
-	int xx, yy;
-	Window junk;
-	Dimension pw_height;
-	Dimension ew_height;
-
-	j = 0;
-	XtSetArg(args[j], XtNheight, &ew_height);  j++;
-	XtGetValues(edit, args, j);
-
-	j = 0;
-	XtSetArg(args[j], XtNheight, &pw_height);  j++;
-	XtGetValues(shell, args, j);
-	commentH = pw_height + (lines - 1) * ew_height;
-	commentW = bw_width - 16;
-
-	XSync(xDisplay, False);
-#ifdef NOTDEF
-	/* This code seems to tickle an X bug if it is executed too soon
-	   after xboard starts up.  The coordinates get transformed as if
-	   the main window was positioned at (0, 0).
-	   */
-	XtTranslateCoords(shellWidget,
-			  (bw_width - commentW) / 2, 0 - commentH / 2,
-			  &commentX, &commentY);
-#else  /*!NOTDEF*/
-        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			      RootWindowOfScreen(XtScreen(shellWidget)),
-			      (bw_width - commentW) / 2, 0 - commentH / 2,
-			      &xx, &yy, &junk);
-	commentX = xx;
-	commentY = yy;
-#endif /*!NOTDEF*/
-	if (commentY < 0) commentY = 0; /*avoid positioning top offscreen*/
-    }
-
-    if(wpComment.width > 0) {
-      commentX = wpComment.x;
-      commentY = wpComment.y;
-      commentW = wpComment.width;
-      commentH = wpComment.height;
-    }
-
-    j = 0;
-    XtSetArg(args[j], XtNheight, commentH);  j++;
-    XtSetArg(args[j], XtNwidth, commentW);  j++;
-    XtSetArg(args[j], XtNx, commentX);  j++;
-    XtSetArg(args[j], XtNy, commentY);  j++;
-    XtSetValues(shell, args, j);
-    XtSetKeyboardFocus(shell, edit);
-
-    return shell;
-}
-
 static int savedIndex;  /* gross that this is global */
 
 void CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
@@ -4964,89 +4793,9 @@ void EditCommentPopUp(index, title, text)
      int index;
      char *title, *text;
 {
-    Widget edit;
-    Arg args[16];
-    int j;
-
     savedIndex = index;
     if (text == NULL) text = "";
-
-    if (editShell == NULL) {
-	editShell =
-	  CommentCreate(title, text, True, EditCommentCallback, 4);
-	XtRealizeWidget(editShell);
-	CatchDeleteWindow(editShell, "EditCommentPopDown");
-    } else {
-	edit = XtNameToWidget(editShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, text); j++;
-	XtSetValues(edit, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) title);   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) title);      j++;
-	XtSetValues(editShell, args, j);
-    }
-
-    XtPopup(editShell, XtGrabNone);
-
-    editUp = True;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"),
-		args, j);
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"),
-		args, j);
-}
-
-void EditCommentCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name, val;
-    Arg args[16];
-    int j;
-    Widget edit;
-
-    j = 0;
-    XtSetArg(args[j], XtNlabel, &name);  j++;
-    XtGetValues(w, args, j);
-
-    if (strcmp(name, _("ok")) == 0) {
-	edit = XtNameToWidget(editShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, &val); j++;
-	XtGetValues(edit, args, j);
-	ReplaceComment(savedIndex, val);
-	EditCommentPopDown();
-    } else if (strcmp(name, _("cancel")) == 0) {
-	EditCommentPopDown();
-    } else if (strcmp(name, _("clear")) == 0) {
-	edit = XtNameToWidget(editShell, "*form.text");
-	XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-	XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
-    }
-}
-
-void EditCommentPopDown()
-{
-    Arg args[16];
-    int j;
-
-    if (!editUp) return;
-    j = 0;
-    XtSetArg(args[j], XtNx, &commentX); j++;
-    XtSetArg(args[j], XtNy, &commentY); j++;
-    XtSetArg(args[j], XtNheight, &commentH); j++;
-    XtSetArg(args[j], XtNwidth, &commentW); j++;
-    XtGetValues(editShell, args, j);
-    XtPopdown(editShell);
-    editUp = False;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"),
-		args, j);
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"),
-		args, j);
+    NewCommentPopup(title, text, index);
 }
 
 void ICSInputBoxPopUp()
@@ -5081,69 +4830,13 @@ void ICSInputBoxPopDown()
 void CommentPopUp(title, text)
      char *title, *text;
 {
-    Arg args[16];
-    int j;
-    Widget edit;
-
     savedIndex = currentMove; // [HGM] vari
-    if (commentShell == NULL) {
-	commentShell =
-	  CommentCreate(title, text, False, CommentCallback, 4);
-	XtRealizeWidget(commentShell);
-	CatchDeleteWindow(commentShell, "CommentPopDown");
-    } else {
-	edit = XtNameToWidget(commentShell, "*form.text");
-	j = 0;
-	XtSetArg(args[j], XtNstring, text); j++;
-	XtSetValues(edit, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) title);   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) title);      j++;
-	XtSetValues(commentShell, args, j);
-    }
-
-    XtPopup(commentShell, XtGrabNone);
-    XSync(xDisplay, False);
-
-    commentUp = True;
+    NewCommentPopup(title, text, currentMove);
 }
-
-void CommentCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-    int j;
-
-    j = 0;
-    XtSetArg(args[j], XtNlabel, &name);  j++;
-    XtGetValues(w, args, j);
-
-    if (strcmp(name, _("close")) == 0) {
-	CommentPopDown();
-    } else if (strcmp(name, _("edit")) == 0) {
-	CommentPopDown();
-	EditCommentEvent();
-    }
-}
-
 
 void CommentPopDown()
 {
-    Arg args[16];
-    int j;
-
-    if (!commentUp) return;
-    j = 0;
-    XtSetArg(args[j], XtNx, &commentX); j++;
-    XtSetArg(args[j], XtNy, &commentY); j++;
-    XtSetArg(args[j], XtNwidth, &commentW); j++;
-    XtSetArg(args[j], XtNheight, &commentH); j++;
-    XtGetValues(commentShell, args, j);
-    XtPopdown(commentShell);
-    XSync(xDisplay, False);
-    commentUp = False;
+    PopDown(1);
 }
 
 void FileNamePopUp(label, def, filter, proc, openMode)
@@ -6133,11 +5826,15 @@ void EditCommentProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    if (editUp) {
-	EditCommentPopDown();
-    } else {
+    Arg args[5];
+    int j;
+    if (PopDown(1)) { // popdown succesful
+	j = 0;
+	XtSetArg(args[j], XtNleftBitmap, None); j++;
+	XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"), args, j);
+	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"), args, j);
+    } else // was not up
 	EditCommentEvent();
-    }
 }
 
 void IcsInputBoxProc(w, event, prms, nprms)

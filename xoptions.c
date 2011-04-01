@@ -1327,7 +1327,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     static char pane[6] = "paneX";
     Widget texts[100], forelast = NULL, anchor, widest, lastrow = NULL;
 
-    if(shellUp[dlgNr]) return 0; // already up
+    if(shellUp[dlgNr]) return 0; // already up		
     if(dlgNr && shells[dlgNr]) {
 	XtPopup(shells[dlgNr], XtGrabNone);
 	shellUp[dlgNr] = True;
@@ -1795,6 +1795,55 @@ void IcsTextProc(w, event, prms, nprms)
    textOptions[i].min = 2;
    MarkMenu("menuView.ICStex", 3);
    GenericPopUp(textOptions, _("ICS text menu"), 3);
+}
+
+static char *commentText;
+static int commentIndex;
+void ClearComment P((int n));
+extern char commentTranslations[];
+
+void NewComCallback(int n)
+{
+    ReplaceComment(commentIndex, commentText);
+}
+
+void SaveChanges(int n)
+{
+    Arg args[16];
+    XtSetArg(args[0], XtNstring, &commentText);
+    XtGetValues(currentOption[0].handle, args, 1);
+    ReplaceComment(commentIndex, commentText);
+}
+
+Option commentOptions[] = {
+{ 0xD, 200, 300, NULL, (void*) &commentText, "", NULL, TextBox, "" },
+{   0,  0,    0, NULL, (void*) &ClearComment, NULL, NULL, Button, "clear" },
+{   0,  1,    0, NULL, (void*) &SaveChanges, NULL, NULL, Button, "save changes" },
+{   0,  1,    0, NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
+};
+
+void ClearComment(int n)
+{
+    XtCallActionProc(commentOptions[0].handle, "select-all", NULL, NULL, 0);
+    XtCallActionProc(commentOptions[0].handle, "kill-selection", NULL, NULL, 0);
+}
+
+void NewCommentPopup(char *title, char *text, int index)
+{
+    Widget edit;
+    Arg args[16];
+
+    if(shells[1]) { // if already exists, alter title and content
+	XtSetArg(args[0], XtNtitle, title);
+	XtSetValues(shells[1], args, 1);
+	XtSetArg(args[0], XtNstring, text);
+	XtSetValues(commentOptions[0].handle, args, 1);
+    }
+    commentText = text;
+    commentIndex = index;
+    MarkMenu("menuView.Show Comments", 1);
+    if(GenericPopUp(commentOptions, title, 1))
+	XtOverrideTranslations(commentOptions[0].handle, XtParseTranslationTable(commentTranslations));
 }
 
 extern char ICSInputTranslations[];
