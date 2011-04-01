@@ -450,6 +450,7 @@ void ShuffleMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void EngineMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UciMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void OptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -702,6 +703,10 @@ MenuItem engineMenu[] = {
 };
 
 MenuItem optionsMenu[] = {
+#define OPTIONSDIALOG
+#ifdef OPTIONSDIALOG
+    {N_("General ..."), "General", OptionsProc},
+#endif
     {N_("Time Control ...       Alt+Shift+T"), "Time Control", TimeControlProc},
     {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", UciMenuProc},
     {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", EngineMenuProc},
@@ -712,6 +717,7 @@ MenuItem optionsMenu[] = {
     {N_("Game List ..."),    "Game List", GameListOptionsPopUp},
     {N_("Sounds ..."),    "Sounds", SoundOptionsProc},
     {"----", NULL, NothingProc},
+#ifndef OPTIONSDIALOG
     {N_("Always Queen        Ctrl+Shift+Q"),   "Always Queen", AlwaysQueenProc},
     {N_("Animate Dragging"), "Animate Dragging", AnimateDraggingProc},
     {N_("Animate Moving      Ctrl+Shift+A"),   "Animate Moving", AnimateMovingProc},
@@ -736,6 +742,7 @@ MenuItem optionsMenu[] = {
     {N_("Hide Thinking        Ctrl+Shift+H"),   "Hide Thinking", HideThinkingProc},
     {N_("Test Legality          Ctrl+Shift+L"), "Test Legality", TestLegalityProc},
     {"----", NULL, NothingProc},
+#endif
     {N_("Save Settings Now"),     "Save Settings Now", SaveSettingsProc},
     {N_("Save Settings on Exit"), "Save Settings on Exit", SaveOnExitProc},
     {NULL, NULL, NULL}
@@ -954,6 +961,9 @@ XtActionsRec boardActions[] = {
     { "EngineMenuProc", (XtActionProc) EngineMenuProc },
     { "UciMenuProc", (XtActionProc) UciMenuProc },
     { "TimeControlProc", (XtActionProc) TimeControlProc },
+    { "FlipViewProc", FlipViewProc },
+    { "PonderNextMoveProc", PonderNextMoveProc },
+#ifndef OPTIONSDIALOG
     { "AlwaysQueenProc", AlwaysQueenProc },
     { "AnimateDraggingProc", AnimateDraggingProc },
     { "AnimateMovingProc", AnimateMovingProc },
@@ -961,7 +971,6 @@ XtActionsRec boardActions[] = {
     { "AutoflipProc", AutoflipProc },
     { "BlindfoldProc", BlindfoldProc },
     { "FlashMovesProc", FlashMovesProc },
-    { "FlipViewProc", FlipViewProc },
 #if HIGHDRAG
     { "HighlightDraggingProc", HighlightDraggingProc },
 #endif
@@ -969,7 +978,6 @@ XtActionsRec boardActions[] = {
 //    { "IcsAlarmProc", IcsAlarmProc },
     { "MoveSoundProc", MoveSoundProc },
     { "PeriodicUpdatesProc", PeriodicUpdatesProc },
-    { "PonderNextMoveProc", PonderNextMoveProc },
     { "PopupExitMessageProc", PopupExitMessageProc },
     { "PopupMoveErrorsProc", PopupMoveErrorsProc },
 //    { "PremoveProc", PremoveProc },
@@ -977,6 +985,7 @@ XtActionsRec boardActions[] = {
     { "ShowThinkingProc", ShowThinkingProc },
     { "HideThinkingProc", HideThinkingProc },
     { "TestLegalityProc", TestLegalityProc },
+#endif
     { "SaveSettingsProc", SaveSettingsProc },
     { "SaveOnExitProc", SaveOnExitProc },
     { "InfoProc", InfoProc },
@@ -1057,12 +1066,16 @@ char globalTranslations[] =
    :Meta<Key>J: EngineMenuProc() \n \
    :Meta<Key>U: UciMenuProc() \n \
    :Meta<Key>T: TimeControlProc() \n \
+   :Ctrl<Key>P: PonderNextMoveProc() \n "
+#ifndef OPTIONSDIALOG
+    "\
    :Ctrl<Key>Q: AlwaysQueenProc() \n \
    :Ctrl<Key>F: AutoflagProc() \n \
    :Ctrl<Key>A: AnimateMovingProc() \n \
-   :Ctrl<Key>P: PonderNextMoveProc() \n \
    :Ctrl<Key>L: TestLegalityProc() \n \
-   :Ctrl<Key>H: HideThinkingProc() \n \
+   :Ctrl<Key>H: HideThinkingProc() \n "
+#endif
+   "\
    :<Key>-: Iconify() \n \
    :<Key>F1: ManProc() \n \
    :<Key>F2: FlipViewProc() \n \
@@ -2397,6 +2410,7 @@ XBoard square size (hint): %d\n\
     ReadBitmap(&xMarkPixmap, "checkmark.bm",
 	       checkmark_bits, checkmark_width, checkmark_height);
     XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+#ifndef OPTIONSDIALOG
     if (appData.alwaysPromoteToQueen) {
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
 		    args, 1);
@@ -2488,6 +2502,7 @@ XBoard square size (hint): %d\n\
 	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Test Legality"),
 		    args, 1);
     }
+#endif
     if (saveSettingsOnExit) {
 	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
 		    args, 1);
@@ -2751,9 +2766,11 @@ Enables icsEnables[] = {
     { "menuEngine.Hint", False },
     { "menuEngine.Book", False },
     { "menuEngine.Move Now", False },
+#ifndef OPTIONSDIALOG
     { "menuOptions.Periodic Updates", False },
     { "menuOptions.Hide Thinking", False },
     { "menuOptions.Ponder Next Move", False },
+#endif
     { "menuEngine.Engine #1 Settings", False },
 #endif
     { "menuEngine.Engine #2 Settings", False },
@@ -2778,6 +2795,7 @@ Enables ncpEnables[] = {
     { "menuEngine.Engine #2 Settings", False },
     { "menuEngine.Move Now", False },
     { "menuEngine.Retract Move", False },
+#ifndef OPTIONSDIALOG
     { "menuOptions.Auto Flag", False },
     { "menuOptions.Auto Flip View", False },
     { "menuOptions.ICS", False },
@@ -2786,6 +2804,7 @@ Enables ncpEnables[] = {
     { "menuOptions.Hide Thinking", False },
     { "menuOptions.Periodic Updates", False },
     { "menuOptions.Ponder Next Move", False },
+#endif
     { "menuEngine.Hint", False },
     { "menuEngine.Book", False },
     { NULL, False }
@@ -4390,9 +4409,9 @@ void DrawSquare(row, column, piece, do_flash)
 			BlankSquare(x, y, square_color, piece, xBoardWindow, 1);
 	    } else {
 			drawfunc = ChooseDrawFunc();
+
 			if (do_flash && appData.flashCount > 0) {
 			    for (i=0; i<appData.flashCount; ++i) {
-
 					drawfunc(piece, square_color, x, y, xBoardWindow);
 					XSync(xDisplay, False);
 					do_flash_delay(flash_delay);
@@ -4491,7 +4510,6 @@ static int too_many_diffs(b1, b2)
 	    }
 	}
     }
-
     return 0;
 }
 
@@ -6134,8 +6152,10 @@ void AnalyzeModeProc(w, event, prms, nprms)
         if (appData.debugMode)
             fprintf(debugFP, _("ICS engine analyze starting... \n"));
     }
+#ifndef OPTIONSDIALOG
     if (!appData.showThinking)
       ShowThinkingProc(w,event,prms,nprms);
+#endif
 
     AnalyzeModeEvent();
 }
@@ -6153,10 +6173,10 @@ void AnalyzeFileProc(w, event, prms, nprms)
       return;
     }
     Reset(FALSE, TRUE);
-
+#ifndef OPTIONSDIALOG
     if (!appData.showThinking)
       ShowThinkingProc(w,event,prms,nprms);
-
+#endif
     AnalyzeFileEvent();
     FileNamePopUp(_("File to analyze"), "", LoadGamePopUp, "rb");
     AnalysisPeriodicEvent(1);
@@ -6500,7 +6520,37 @@ void MoveNowProc(w, event, prms, nprms)
     MoveNowEvent();
 }
 
+void FlipViewProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    flipView = !flipView;
+    DrawPosition(True, NULL);
+}
 
+void PonderNextMoveProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    Arg args[16];
+
+    PonderNextMoveEvent(!appData.ponderNextMove);
+#ifndef OPTIONSDIALOG
+    if (appData.ponderNextMove) {
+	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+    } else {
+	XtSetArg(args[0], XtNleftBitmap, None);
+    }
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Ponder Next Move"),
+		args, 1);
+#endif
+}
+
+#ifndef OPTIONSDIALOG
 void AlwaysQueenProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6662,16 +6712,6 @@ void FlashMovesProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void FlipViewProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    flipView = !flipView;
-    DrawPosition(True, NULL);
-}
-
 #if HIGHDRAG
 void HighlightDraggingProc(w, event, prms, nprms)
      Widget w;
@@ -6809,25 +6849,6 @@ void PeriodicUpdatesProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void PonderNextMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    PonderNextMoveEvent(!appData.ponderNextMove);
-
-    if (appData.ponderNextMove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Ponder Next Move"),
-		args, 1);
-}
-
 void PopupExitMessageProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6937,6 +6958,7 @@ void HideThinkingProc(w, event, prms, nprms)
     XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
 		args, 1);
 }
+#endif
 
 void SaveOnExitProc(w, event, prms, nprms)
      Widget w;
