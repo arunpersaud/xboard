@@ -831,218 +831,6 @@ void NewVariantProc(w, event, prms, nprms)
    NewVariantPopUp();
 }
 
-//--------------------------- UCI Menu Popup ------------------------------------------
-int UciUp;
-Widget UciShell;
-
-struct UciControl {
-  char *name;
-  Widget handle;
-  void *ptr;
-};
-
-struct UciControl controlDesc[] = {
-  {N_("maximum nr of CPUs:"), 0, &appData.smpCores},
-  {N_("Polyglot Directory:"), 0, &appData.polyglotDir},
-  {N_("Hash Size (MB):"),     0, &appData.defaultHashSize},
-  {N_("EGTB Path:"),          0, &appData.defaultPathEGTB},
-  {N_("EGTB Cache (MB):"),    0, &appData.defaultCacheSizeEGTB},
-  {N_("Polyglot Book:"),      0, &appData.polyglotBook},
-  {NULL, 0, NULL},
-};
-
-void UciPopDown()
-{
-    if (!UciUp) return;
-    previous = NULL;
-    XtPopdown(UciShell);
-    XtDestroyWidget(UciShell);
-    UciUp = False;
-    ModeHighlight();
-}
-
-void UciCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-    int oldCores = appData.smpCores, ponder = 0;
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("OK")) == 0) {
-	int i, j; String name;
-	for(i=0; i<6; i++) {
-	    XtSetArg(args[0], XtNstring, &name);
-	    XtGetValues(controlDesc[i].handle, args, 1);
-	    if(i&1) {
-		if(name)
-		    *(char**) controlDesc[i].ptr = strdup(name);
-	    } else {
-		if(sscanf(name, "%d", &j) == 1)
-		    *(int*) controlDesc[i].ptr = j;
-	    }
-	}
-	XtSetArg(args[0], XtNstate, &appData.usePolyglotBook);
-	XtGetValues(w1, args, 1);
-	XtSetArg(args[0], XtNstate, &appData.firstHasOwnBookUCI);
-	XtGetValues(w2, args, 1);
-	XtSetArg(args[0], XtNstate, &appData.secondHasOwnBookUCI);
-	XtGetValues(w3, args, 1);
-	XtSetArg(args[0], XtNstate, &ponder);
-	XtGetValues(w4, args, 1);
-
-	// adjust setting in other menu for duplicates
-	// (perhaps duplicates should be removed from general Option Menu?)
-	XtSetArg(args[0], XtNleftBitmap, ponder ? xMarkPixmap : None);
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Ponder Next Move"), args, 1);
-
-	// make sure changes are sent to first engine by re-initializing it
-	// if it was already started pre-emptively at end of previous game
-	if(gameMode == BeginningOfGame) Reset(True, True); else {
-	    // Some changed setting need immediate sending always.
-	    PonderNextMoveEvent(ponder);
-	    if(oldCores != appData.smpCores)
-		NewSettingEvent(False, &(first.maxCores), "cores", appData.smpCores);
-      }
-      UciPopDown();
-      return;
-    }
-}
-
-void UciPopUp()
-{
-    Arg args[16];
-    Widget popup, layout, form, b_ok, b_cancel, last = NULL, new, upperLeft;
-    Window root, child;
-    int x, y, i, j;
-    int win_x, win_y;
-    unsigned int mask;
-    char def[MSG_SIZ];
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-//    XtSetArg(args[i], XtNwidth, 300); i++;
-    UciShell = popup =
-      XtCreatePopupShell(_("Engine Settings"), transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
-
-    form =
-      XtCreateManagedWidget("form", formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-
-    j = 0;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-//    XtSetArg(args[j], XtNheight, 20); j++;
-    for(i = 0; controlDesc[i].name != NULL; i++) {
-	j = 3;
-	XtSetArg(args[j], XtNfromVert, last); j++;
-//	XtSetArg(args[j], XtNwidth, 130); j++;
-	XtSetArg(args[j], XtNjustify, XtJustifyLeft); j++;
-	XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-	XtSetArg(args[j], XtNborderWidth, 0); j++;
-	new = XtCreateManagedWidget(controlDesc[i].name, labelWidgetClass, form, args, j);
-	if(i==0) upperLeft = new;
-
-	j = 4;
-	XtSetArg(args[j], XtNborderWidth, 1); j++;
-	XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-	XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-	XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-	XtSetArg(args[j], XtNright, XtChainRight);  j++;
-	XtSetArg(args[j], XtNresizable, True);  j++;
-	XtSetArg(args[j], XtNwidth, i&1 ? 245 : 50); j++;
-	XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
-	if(i&1) {
-	    XtSetArg(args[j], XtNstring, * (char**) controlDesc[i].ptr ?
-					 * (char**) controlDesc[i].ptr : ""); j++;
-	} else {
-	  snprintf(def, MSG_SIZ,  "%d", * (int*) controlDesc[i].ptr);
-	    XtSetArg(args[j], XtNstring, def); j++;
-	}
-	XtSetArg(args[j], XtNfromHoriz, upperLeft); j++;
-	controlDesc[i].handle = last =
-	    XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
-	XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-    }
-
-    j=0;
-    XtSetArg(args[j], XtNfromHoriz, controlDesc[0].handle);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNstate, appData.ponderNextMove);  j++;
-    w4 = XtCreateManagedWidget(_("Ponder"), toggleWidgetClass, form, args, j);
-
-    j=0;
-    XtSetArg(args[j], XtNfromVert, last);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_ok, XtNcallback, UciCallback, (XtPointer) 0);
-
-    XtSetArg(args[j], XtNfromHoriz, b_ok);  j++;
-    b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, UciPopDown, (XtPointer) 0);
-
-    j = 5;
-    XtSetArg(args[j], XtNfromHoriz, upperLeft);  j++;
-    XtSetArg(args[j], XtNstate, appData.usePolyglotBook);  j++;
-    w1 = XtCreateManagedWidget(_(" use book "), toggleWidgetClass, form, args, j);
-//    XtAddCallback(w1, XtNcallback, UciCallback, (XtPointer) 0);
-
-    j = 5;
-    XtSetArg(args[j], XtNfromHoriz, w1);  j++;
-    XtSetArg(args[j], XtNstate, appData.firstHasOwnBookUCI);  j++;
-    w2 = XtCreateManagedWidget(_("own book 1"), toggleWidgetClass, form, args, j);
-//    XtAddCallback(w2, XtNcallback, UciCallback, (XtPointer) 0);
-
-    j = 5;
-    XtSetArg(args[j], XtNfromHoriz, w2);  j++;
-    XtSetArg(args[j], XtNstate, appData.secondHasOwnBookUCI);  j++;
-    w3 = XtCreateManagedWidget(_("own book 2"), toggleWidgetClass, form, args, j);
-//    XtAddCallback(w3, XtNcallback, UciCallback, (XtPointer) 0);
-
-    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "UciPopDown");
-
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    UciUp = True;
-
-    previous = NULL;
-    SetFocus(controlDesc[2].handle, popup, (XEvent*) NULL, False);
-//    XtSetKeyboardFocus(popup, controlDesc[1].handle);
-}
-
-void UciMenuProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-   UciPopUp();
-}
-
 //--------------------------- Engine-specific options menu ----------------------------------
 
 int SettingsUp;
@@ -1448,11 +1236,42 @@ typedef void ButtonCallback(int n);
 
 char *trialSound;
 static Option *currentOption;
+static int oldCores, oldPonder;
 int MakeColors P((void));
 void CreateGCs P((int redo));
 void CreateXPMBoard P((char *s, int kind));
 void CreateXPMPieces P((void));
 void GenericReadout();
+
+void CommonOptionsOK(int n)
+{
+	int newPonder = appData.ponderNextMove;
+	// make sure changes are sent to first engine by re-initializing it
+	// if it was already started pre-emptively at end of previous game
+	if(gameMode == BeginningOfGame) Reset(True, True); else {
+	    // Some changed setting need immediate sending always.
+	    if(oldCores != appData.smpCores)
+		NewSettingEvent(False, &(first.maxCores), "cores", appData.smpCores);
+	    appData.ponderNextMove = oldPonder;
+	    PonderNextMoveEvent(newPonder);
+	}
+}
+
+Option commonEngineOptions[] = {
+{ 0,     0, 0, NULL, (void*) &appData.ponderNextMove, "", NULL, CheckBox, _("Ponder Next Move") },
+{ 0,  0, 1000, NULL, (void*) &appData.smpCores, "", NULL, Spin, _("Maximum Number of CPUs per Engine:") },
+{ 0,     0, 0, NULL, (void*) &appData.polyglotDir, "", NULL, PathName, _("Polygot Directory:") },
+{ 0, 0, 16000, NULL, (void*) &appData.defaultHashSize, "", NULL, Spin, _("Hash-Table Size (MB):") },
+{ 0,     0, 0, NULL, (void*) &appData.defaultPathEGTB, "", NULL, PathName, _("Nalimov EGTB Path:") },
+{ 0,  0, 1000, NULL, (void*) &appData.defaultCacheSizeEGTB, "", NULL, Spin, _("EGTB Cache Size (MB):") },
+{ 0,     0, 0, NULL, (void*) &appData.usePolyglotBook, "", NULL, CheckBox, _("Use GUI Book") },
+{ 0,     0, 0, NULL, (void*) &appData.polyglotBook, "", NULL, FileName, _("Opening-Book Filename:") },
+{ 0,   0, 100, NULL, (void*) &appData.bookDepth, "", NULL, Spin, _("Book Depth (moves):") },
+{ 0,   0, 100, NULL, (void*) &appData.bookStrength, "", NULL, Spin, _("Book Variety (0) vs. Strength (100):") },
+{ 0,     0, 0, NULL, (void*) &appData.firstHasOwnBookUCI, "", NULL, CheckBox, _("Engine #1 Has Own Book") },
+{ 0,     0, 0, NULL, (void*) &appData.secondHasOwnBookUCI, "", NULL, CheckBox, _("Engine #2 Has Own Book          ") },
+{ 0,     1, 0, NULL, (void*) &CommonOptionsOK, "", NULL, EndMark , "" }
+};
 
 Option adjudicationOptions[] = {
 { 0, 0,    0, NULL, (void*) &appData.checkMates, "", NULL, CheckBox, _("Detect all Mates") },
@@ -2103,6 +1922,18 @@ void EngineMenuProc(w, event, prms, nprms)
 {
    GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games");
 }
+
+void UciMenuProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   oldCores = appData.smpCores;
+   oldPonder = appData.ponderNextMove;
+   GenericPopUp(commonEngineOptions, _("Common Engine Settings"));
+}
+
 //---------------------------- Chat Windows ----------------------------------------------
 
 void OutputChatMessage(int partner, char *mess)
