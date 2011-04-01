@@ -1017,6 +1017,8 @@ void SecondSettingsProc(w, event, prms, nprms)
 
 // cloned from Engine Settings dialog
 
+#define CURR -2000000000 /* indicates control should start at actual value of target */
+
 typedef void ButtonCallback(int n);
 
 char *trialSound;
@@ -1027,6 +1029,40 @@ void CreateGCs P((int redo));
 void CreateXPMBoard P((char *s, int kind));
 void CreateXPMPieces P((void));
 void GenericReadout();
+
+void GeneralOptionsOK(int n)
+{
+	int newPonder = appData.ponderNextMove;
+	appData.ponderNextMove = oldPonder;
+	PonderNextMoveEvent(newPonder);
+}
+
+Option generalOptions[] = {
+{ 0,  0, 0, NULL, (void*) &appData.alwaysPromoteToQueen, "", NULL, CheckBox, _("Always Queen") },
+{ 0,  0, 0, NULL, (void*) &appData.animateDragging, "", NULL, CheckBox, _("Animate Dragging") },
+{ 0,  0, 0, NULL, (void*) &appData.animate, "", NULL, CheckBox, _("Animate Moving") },
+{ 0,  0, 0, NULL, (void*) &appData.autoCallFlag, "", NULL, CheckBox, _("Auto Flag") },
+{ 0,  0, 0, NULL, (void*) &appData.autoFlipView, "", NULL, CheckBox, _("Auto Flip View") },
+{ 0,  0, 0, NULL, (void*) &appData.blindfold, "", NULL, CheckBox, _("Blindfold") },
+{ 0,  0, 0, NULL, (void*) &appData.dropMenu, "", NULL, CheckBox, _("Drop Menu") },
+{ 0,  0, 0, NULL, (void*) &appData.highlightDragging, "", NULL, CheckBox, _("Highlight Dragging (Show Move Targets)") },
+{ 0,  0, 0, NULL, (void*) &appData.highlightLastMove, "", NULL, CheckBox, _("Highlight Last Move") },
+{ 0,  0, 0, NULL, (void*) &appData.highlightMoveWithArrow, "", NULL, CheckBox, _("Highlight with Arrow") },
+{ 0,  0, 0, NULL, (void*) &appData.ringBellAfterMoves, "", NULL, CheckBox, _("Move Sound") },
+{ 0,  0, 0, NULL, (void*) &appData.oneClick, "", NULL, CheckBox, _("One-Click Moving") },
+{ 0,  0, 0, NULL, (void*) &appData.periodicUpdates, "", NULL, CheckBox, _("Periodic Updates (in Analysis Mode)") },
+{ 0,  0, 0, NULL, (void*) &appData.ponderNextMove, "", NULL, CheckBox, _("Ponder Next Move") },
+{ 0,  0, 0, NULL, (void*) &appData.popupExitMessage, "", NULL, CheckBox, _("Popup Exit Messages") },
+{ 0,  0, 0, NULL, (void*) &appData.popupMoveErrors, "", NULL, CheckBox, _("Popup Move Errors") },
+{ 0,  0, 0, NULL, (void*) &appData.showCoords, "", NULL, CheckBox, _("Show Coordinates") },
+{ 0,  0, 0, NULL, (void*) &appData.markers, "", NULL, CheckBox, _("Show Target Squares") },
+{ 0,  0, 0, NULL, (void*) &appData.hideThinkingFromHuman, "", NULL, CheckBox, _("Hide Thinking from Human") },
+{ 0,  0, 0, NULL, (void*) &appData.testLegality, "", NULL, CheckBox, _("Test Legality") },
+{ 0, 0, 10, NULL, (void*) &appData.flashCount, "", NULL, Spin, _("Flash Moves (0 = no flashing):") },
+{ 0, 1, 10, NULL, (void*) &appData.flashRate, "", NULL, Spin, _("Flash Rate (high = fast):") },
+{ 0, 5, 100,NULL, (void*) &appData.animSpeed, "", NULL, Spin, _("Animation Speed (high = slow):") },
+{ 0,  0, 0, NULL, (void*) &GeneralOptionsOK, "", NULL, EndMark , "" }
+};
 
 void Pick(int n)
 {
@@ -1802,6 +1838,16 @@ void NewVariantProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    GenericPopUp(variantDescriptors, _("New Variant"));
+}
+
+void OptionsProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   oldPonder = appData.ponderNextMove;
+   GenericPopUp(generalOptions, _("General Options"));
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
