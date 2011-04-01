@@ -292,14 +292,15 @@ extern Boolean set_cont_sequence P((char *new_seq));
 extern int wrap P((char *dest, char *src, int count, int width, int *lp));
 int Explode P((Board board, int fromX, int fromY, int toX, int toY));
 
-typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton,
-		   SaveButton, FileName, PathName, Slider, Message } Control;
+typedef enum { CheckBox, ComboBox, TextBox, Button, Spin, ResetButton, SaveButton,
+		 FileName, PathName, Slider, Message, Fractional, Label, Break, EndMark } Control;
 
 typedef struct _OPT {   // [HGM] options: descriptor of UCI-style option
     int value;          // current setting, starts as default
     int min;
     int max;
     void *handle;       // for use by front end
+    void *target;       // for use by front end
     char *textValue;    // points to beginning of text value in name field
     char **choice;      // points to array of combo choices in cps->combo
     Control type;
