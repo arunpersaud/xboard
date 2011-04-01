@@ -461,7 +461,6 @@ void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
 void ShufflePopDown P(());
-void UciPopDown P(());
 void TimeControlPopDown P(());
 void NewVariantPopDown P(());
 void SettingsPopDown P(());
