@@ -392,20 +392,12 @@ void AnimateDraggingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void AnimateMovingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
-void AutocommProc P((Widget w, XEvent *event, String *prms,
-		     Cardinal *nprms));
 void AutoflagProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AutoflipProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AutobsProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void AutoraiseProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AutosaveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BlindfoldProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FlashMovesProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
 void FlipViewProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void GetMoveListProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
 void HighlightDraggingProc P((Widget w, XEvent *event, String *prms,
 			      Cardinal *nprms));
 void HighlightLastMoveProc P((Widget w, XEvent *event, String *prms,
@@ -413,7 +405,7 @@ void HighlightLastMoveProc P((Widget w, XEvent *event, String *prms,
 void HighlightArrowProc P((Widget w, XEvent *event, String *prms,
 			      Cardinal *nprms));
 void MoveSoundProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void IcsAlarmProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+//void IcsAlarmProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void OneClickProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void PeriodicUpdatesProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
@@ -423,8 +415,7 @@ void PopupMoveErrorsProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void PopupExitMessageProc P((Widget w, XEvent *event, String *prms,
 			     Cardinal *nprms));
-void PremoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void QuietPlayProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+//void PremoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ShowCoordsProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
 void ShowThinkingProc P((Widget w, XEvent *event, String *prms,
@@ -463,6 +454,8 @@ void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
 void ShufflePopDown P(());
 void EnginePopDown P(());
@@ -709,34 +702,31 @@ MenuItem optionsMenu[] = {
     {N_("Time Control ...       Alt+Shift+T"), "Time Control", TimeControlProc},
     {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", UciMenuProc},
     {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", EngineMenuProc},
+    {N_("Load Game ..."),    "Load Game", LoadOptionsProc},
+    {N_("Save Game ..."),    "Save Game", SaveOptionsProc},
+//    {N_(" ..."),    "", OptionsProc},
     {N_("Game List ..."),    "Game List", GameListOptionsPopUp},
     {"----", NULL, NothingProc},
     {N_("Always Queen        Ctrl+Shift+Q"),   "Always Queen", AlwaysQueenProc},
     {N_("Animate Dragging"), "Animate Dragging", AnimateDraggingProc},
     {N_("Animate Moving      Ctrl+Shift+A"),   "Animate Moving", AnimateMovingProc},
-    {N_("Auto Comment"),     "Auto Comment", AutocommProc},
     {N_("Auto Flag               Ctrl+Shift+F"), "Auto Flag", AutoflagProc},
     {N_("Auto Flip View"),   "Auto Flip View", AutoflipProc},
-    {N_("Auto Observe"),     "Auto Observe", AutobsProc},
-    {N_("Auto Raise Board"), "Auto Raise Board", AutoraiseProc},
-    {N_("Auto Save"),        "Auto Save", AutosaveProc},
     {N_("Blindfold"),        "Blindfold", BlindfoldProc},
     {N_("Flash Moves"),      "Flash Moves", FlashMovesProc},
-    {N_("Get Move List"),    "Get Move List", GetMoveListProc},
 #if HIGHDRAG
     {N_("Highlight Dragging"),    "Highlight Dragging", HighlightDraggingProc},
 #endif
     {N_("Highlight Last Move"),   "Highlight Last Move", HighlightLastMoveProc},
     {N_("Highlight With Arrow"),  "Arrow", HighlightArrowProc},
     {N_("Move Sound"),            "Move Sound", MoveSoundProc},
-    {N_("ICS Alarm"),             "ICS Alarm", IcsAlarmProc},
+//    {N_("ICS Alarm"),             "ICS Alarm", IcsAlarmProc},
     {N_("One-Click Moving"),      "OneClick", OneClickProc},
     {N_("Periodic Updates"),      "Periodic Updates", PeriodicUpdatesProc},
     {N_("Ponder Next Move  Ctrl+Shift+P"), "Ponder Next Move", PonderNextMoveProc},
     {N_("Popup Exit Message"),    "Popup Exit Message", PopupExitMessageProc},
     {N_("Popup Move Errors"),     "Popup Move Errors", PopupMoveErrorsProc},
-    {N_("Premove"),               "Premove", PremoveProc},
-    {N_("Quiet Play"),            "Quiet Play", QuietPlayProc},
+//    {N_("Premove"),               "Premove", PremoveProc},
     {N_("Show Coords"),           "Show Coords", ShowCoordsProc},
     {N_("Hide Thinking        Ctrl+Shift+H"),   "Hide Thinking", HideThinkingProc},
     {N_("Test Legality          Ctrl+Shift+L"), "Test Legality", TestLegalityProc},
@@ -928,7 +918,6 @@ XtActionsRec boardActions[] = {
     { "ShowMoveListProc", HistoryShowProc},
     { "EditTagsProc", EditCommentProc },
     { "EditCommentProc", EditCommentProc },
-    { "IcsAlarmProc", IcsAlarmProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
     { "PauseProc", PauseProc },
     { "AcceptProc", AcceptProc },
@@ -965,25 +954,20 @@ XtActionsRec boardActions[] = {
     { "AnimateMovingProc", AnimateMovingProc },
     { "AutoflagProc", AutoflagProc },
     { "AutoflipProc", AutoflipProc },
-    { "AutobsProc", AutobsProc },
-    { "AutoraiseProc", AutoraiseProc },
-    { "AutosaveProc", AutosaveProc },
     { "BlindfoldProc", BlindfoldProc },
     { "FlashMovesProc", FlashMovesProc },
     { "FlipViewProc", FlipViewProc },
-    { "GetMoveListProc", GetMoveListProc },
 #if HIGHDRAG
     { "HighlightDraggingProc", HighlightDraggingProc },
 #endif
     { "HighlightLastMoveProc", HighlightLastMoveProc },
-    { "IcsAlarmProc", IcsAlarmProc },
+//    { "IcsAlarmProc", IcsAlarmProc },
     { "MoveSoundProc", MoveSoundProc },
     { "PeriodicUpdatesProc", PeriodicUpdatesProc },
     { "PonderNextMoveProc", PonderNextMoveProc },
     { "PopupExitMessageProc", PopupExitMessageProc },
     { "PopupMoveErrorsProc", PopupMoveErrorsProc },
-    { "PremoveProc", PremoveProc },
-    { "QuietPlayProc", QuietPlayProc },
+//    { "PremoveProc", PremoveProc },
     { "ShowCoordsProc", ShowCoordsProc },
     { "ShowThinkingProc", ShowThinkingProc },
     { "HideThinkingProc", HideThinkingProc },
@@ -2409,10 +2393,6 @@ XBoard square size (hint): %d\n\
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
 		    args, 1);
     }
-    if (appData.autoComment) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Comment"),
-		    args, 1);
-    }
     if (appData.autoCallFlag) {
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
 		    args, 1);
@@ -2421,26 +2401,6 @@ XBoard square size (hint): %d\n\
 	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Auto Flip View"),
 		    args, 1);
     }
-    if (appData.autoObserve) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Observe"),
-		    args, 1);
-    }
-    if (appData.autoRaiseBoard) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Auto Raise Board"), args, 1);
-    }
-    if (appData.autoSaveGames) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Save"),
-		    args, 1);
-    }
-    if (appData.saveGameFile[0] != NULLCHAR) {
-	/* Can't turn this off from menu */
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Save"),
-		    args, 1);
-	XtSetSensitive(XtNameToWidget(menuBarWidget, "menuOptions.Auto Save"),
-		       False);
-
-    }
     if (appData.blindfold) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
 				   "menuOptions.Blindfold"), args, 1);
@@ -2448,10 +2408,6 @@ XBoard square size (hint): %d\n\
     if (appData.flashCount > 0) {
 	XtSetValues(XtNameToWidget(menuBarWidget,
 				   "menuOptions.Flash Moves"),
-		    args, 1);
-    }
-    if (appData.getMoveList) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Get Move List"),
 		    args, 1);
     }
 #if HIGHDRAG
@@ -2471,10 +2427,10 @@ XBoard square size (hint): %d\n\
 				   "menuOptions.Arrow"),
 		    args, 1);
     }
-    if (appData.icsAlarm) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.ICS Alarm"),
-		    args, 1);
-    }
+//    if (appData.icsAlarm) {
+//	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.ICS Alarm"),
+//		    args, 1);
+//    }
     if (appData.ringBellAfterMoves) {
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
 		    args, 1);
@@ -2499,14 +2455,10 @@ XBoard square size (hint): %d\n\
 	XtSetValues(XtNameToWidget(menuBarWidget,
 				   "menuOptions.Popup Move Errors"), args, 1);
     }
-    if (appData.premove) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Premove"), args, 1);
-    }
-    if (appData.quietPlay) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Quiet Play"), args, 1);
-    }
+//    if (appData.premove) {
+//	XtSetValues(XtNameToWidget(menuBarWidget,
+//				   "menuOptions.Premove"), args, 1);
+//    }
     if (appData.showCoords) {
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
 		    args, 1);
@@ -2809,15 +2761,10 @@ Enables ncpEnables[] = {
     { "menuEngine.Engine #2 Settings", False },
     { "menuEngine.Move Now", False },
     { "menuEngine.Retract Move", False },
-    { "menuOptions.Auto Comment", False },
     { "menuOptions.Auto Flag", False },
     { "menuOptions.Auto Flip View", False },
-    { "menuOptions.Auto Observe", False },
-    { "menuOptions.Auto Raise Board", False },
-    { "menuOptions.Get Move List", False },
-    { "menuOptions.ICS Alarm", False },
+//    { "menuOptions.ICS Alarm", False },
     { "menuOptions.Move Sound", False },
-    { "menuOptions.Quiet Play", False },
     { "menuOptions.Hide Thinking", False },
     { "menuOptions.Periodic Updates", False },
     { "menuOptions.Ponder Next Move", False },
@@ -2838,12 +2785,6 @@ Enables gnuEnables[] = {
     { "menuAction.Upload to Examine", False },
     { "menuEdit.Revert", False },
     { "menuEdit.Annotate", False },
-    { "menuOptions.Auto Comment", False },
-    { "menuOptions.Auto Observe", False },
-    { "menuOptions.Auto Raise Board", False },
-    { "menuOptions.Get Move List", False },
-    { "menuOptions.Premove", False },
-    { "menuOptions.Quiet Play", False },
 
     /* The next two options rely on SetCmailMode being called *after*    */
     /* SetGNUMode so that when GNU is being used to give hints these     */
@@ -6558,26 +6499,6 @@ void AnimateMovingProc(w, event, prms, nprms)
 		args, 1);
 }
 
-void AutocommProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoComment = !appData.autoComment;
-
-    if (appData.autoComment) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Comment"),
-		args, 1);
-}
-
-
 void AutoflagProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6613,63 +6534,6 @@ void AutoflipProc(w, event, prms, nprms)
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
     XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flip View"),
-		args, 1);
-}
-
-void AutobsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoObserve = !appData.autoObserve;
-
-    if (appData.autoObserve) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Observe"),
-		args, 1);
-}
-
-void AutoraiseProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoRaiseBoard = !appData.autoRaiseBoard;
-
-    if (appData.autoRaiseBoard) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Raise Board"),
-		args, 1);
-}
-
-void AutosaveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.autoSaveGames = !appData.autoSaveGames;
-
-    if (appData.autoSaveGames) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Save"),
 		args, 1);
 }
 
@@ -6747,26 +6611,6 @@ void FlipViewProc(w, event, prms, nprms)
     DrawPosition(True, NULL);
 }
 
-void GetMoveListProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.getMoveList = !appData.getMoveList;
-
-    if (appData.getMoveList) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-	GetMoveListEvent();
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Get Move List"),
-		args, 1);
-}
-
 #if HIGHDRAG
 void HighlightDraggingProc(w, event, prms, nprms)
      Widget w;
@@ -6826,6 +6670,7 @@ void HighlightArrowProc(w, event, prms, nprms)
 			       "menuOptions.Arrow"), args, 1);
 }
 
+#if 0
 void IcsAlarmProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6844,6 +6689,7 @@ void IcsAlarmProc(w, event, prms, nprms)
     XtSetValues(XtNameToWidget(menuBarWidget,
 			       "menuOptions.ICS Alarm"), args, 1);
 }
+#endif
 
 void MoveSoundProc(w, event, prms, nprms)
      Widget w;
@@ -6959,6 +6805,7 @@ void PopupMoveErrorsProc(w, event, prms, nprms)
 		args, 1);
 }
 
+#if 0
 void PremoveProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6977,25 +6824,7 @@ void PremoveProc(w, event, prms, nprms)
     XtSetValues(XtNameToWidget(menuBarWidget,
 			       "menuOptions.Premove"), args, 1);
 }
-
-void QuietPlayProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.quietPlay = !appData.quietPlay;
-
-    if (appData.quietPlay) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Quiet Play"),
-		args, 1);
-}
+#endif
 
 void ShowCoordsProc(w, event, prms, nprms)
      Widget w;
