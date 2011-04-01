@@ -1783,6 +1783,44 @@ void CreateXPMBoard P((char *s, int kind));
 void CreateXPMPieces P((void));
 void GenericReadout();
 
+void IcsOptionsOK(int n)
+{
+    ParseIcsTextColors();
+}
+
+Option icsOptions[] = {
+{ 0, 0, 0, NULL, (void*) &appData.autoKibitz, "",  NULL, CheckBox, _("Auto-Kibitz") },
+{ 0, 0, 0, NULL, (void*) &appData.autoComment, "", NULL, CheckBox, _("Auto-Comment") },
+{ 0, 0, 0, NULL, (void*) &appData.autoObserve, "", NULL, CheckBox, _("Auto-Observe") },
+{ 0, 0, 0, NULL, (void*) &appData.autoRaiseBoard, "", NULL, CheckBox, _("Auto-Raise Board") },
+{ 0, 0, 0, NULL, (void*) &appData.bgObserve, "",   NULL, CheckBox, _("Background Observe while Playing") },
+{ 0, 0, 0, NULL, (void*) &appData.dualBoard, "",   NULL, CheckBox, _("Dual Board for Background-Observed Game") },
+{ 0, 0, 0, NULL, (void*) &appData.getMoveList, "", NULL, CheckBox, _("Get Move List") },
+{ 0, 0, 0, NULL, (void*) &appData.quietPlay, "",   NULL, CheckBox, _("Quiet Play") },
+{ 0, 0, 0, NULL, (void*) &appData.seekGraph, "",   NULL, CheckBox, _("Seek Graph") },
+{ 0, 0, 0, NULL, (void*) &appData.autoRefresh, "", NULL, CheckBox, _("Auto-Refresh Seek Graph") },
+{ 0, 0, 0, NULL, (void*) &appData.premove, "",     NULL, CheckBox, _("Premove") },
+{ 0, 0, 0, NULL, (void*) &appData.premoveWhite, "", NULL, CheckBox, _("Premove for White") },
+{ 0, 0, 0, NULL, (void*) &appData.premoveWhiteText, "", NULL, TextBox, _("First White Move:") },
+{ 0, 0, 0, NULL, (void*) &appData.premoveBlack, "", NULL, CheckBox, _("Premove for Black") },
+{ 0, 0, 0, NULL, (void*) &appData.premoveBlackText, "", NULL, TextBox, _("First Black Move:") },
+{ 0, 0, 0, NULL, NULL, NULL, NULL, Break, "" },
+{ 0, 0, 0, NULL, (void*) &appData.icsAlarm, "", NULL, CheckBox, _("Alarm") },
+{ 0, 0, 100000000, NULL, (void*) &appData.icsAlarmTime, "", NULL, Spin, _("Alarm Time (msec):") },
+//{ 0, 0, 0, NULL, (void*) &appData.chatBoxes, "", NULL, TextBox, _("Startup Chat Boxes:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorize, "", NULL, CheckBox, _("Colorize Messages") },
+{ 0, 0, 0, NULL, (void*) &appData.colorShout, "", NULL, TextBox, _("Shout Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorSShout, "", NULL, TextBox, _("S-Shout Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorChannel1, "", NULL, TextBox, _("Channel #1 Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorChannel, "", NULL, TextBox, _("Other Channel Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorKibitz, "", NULL, TextBox, _("Kibitz Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorTell, "", NULL, TextBox, _("Tell Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorChallenge, "", NULL, TextBox, _("Challenge Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorRequest, "", NULL, TextBox, _("Request Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &appData.colorSeek, "", NULL, TextBox, _("Seek Text Colors:") },
+{ 0, 0, 0, NULL, (void*) &IcsOptionsOK, "", NULL, EndMark , "" }
+};
+
 Option loadOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.autoDisplayTags, "", NULL, CheckBox, _("Auto-Display Tags") },
 { 0, 0, 0, NULL, (void*) &appData.autoDisplayComment, "", NULL, CheckBox, _("Auto-Display Comment") },
@@ -2260,6 +2298,15 @@ GenericPopUp(Option *option, char *title)
     if(textField)SetFocus(textField, popup, (XEvent*) NULL, False);
 }
 
+
+void IcsOptionsProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   GenericPopUp(icsOptions, _("ICS Options"));
+}
 
 void LoadOptionsProc(w, event, prms, nprms)
      Widget w;
