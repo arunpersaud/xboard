@@ -623,6 +623,7 @@ int SettingsUp;
 Widget SettingsShell;
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
+static Option *currentOption;
 
 void SettingsPopDown()
 {
@@ -649,28 +650,28 @@ void SpinCallback(w, client_data, call_data)
 
     j = 0;
     XtSetArg(args[0], XtNstring, &val);
-    XtGetValues(currentCps->option[data].handle, args, 1);
+    XtGetValues(currentOption[data].handle, args, 1);
     sscanf(val, "%d", &j);
     if (strcmp(name, "browse") == 0) {
-	if(XsraSelFile(SettingsShell, currentCps->option[data].name, NULL, NULL, "", "", 
-			 	  currentCps->option[data].type == PathName ? "p" : "f", NULL, &p)) {
+	if(XsraSelFile(SettingsShell, currentOption[data].name, NULL, NULL, "", "", 
+			 	  currentOption[data].type == PathName ? "p" : "f", NULL, &p)) {
 		int len = strlen(p);
 		if(len && p[len-1] == '/') p[len-1] = NULLCHAR;
 		XtSetArg(args[0], XtNstring, p);
-		XtSetValues(currentCps->option[data].handle, args, 1);
+		XtSetValues(currentOption[data].handle, args, 1);
 	}
-	SetFocus(currentCps->option[data].handle, SettingsShell, (XEvent*) NULL, False);
+	SetFocus(currentOption[data].handle, SettingsShell, (XEvent*) NULL, False);
 	return;
     } else
     if (strcmp(name, "+") == 0) {
-	if(++j > currentCps->option[data].max) return;
+	if(++j > currentOption[data].max) return;
     } else
     if (strcmp(name, "-") == 0) {
-	if(--j < currentCps->option[data].min) return;
+	if(--j < currentOption[data].min) return;
     } else return;
     snprintf(buf, MSG_SIZ,  "%d", j);
     XtSetArg(args[0], XtNstring, buf);
-    XtSetValues(currentCps->option[data].handle, args, 1);
+    XtSetValues(currentOption[data].handle, args, 1);
 }
 
 void SettingsCallback(w, client_data, call_data)
@@ -692,43 +693,43 @@ void SettingsCallback(w, client_data, call_data)
     }
     if (strcmp(name, _("OK")) == 0 || data) { // save buttons imply OK
 	for(i=0; i<currentCps->nrOptions; i++) { // send all options that had to be OK-ed to engine
-	    switch(currentCps->option[i].type) {
+	    switch(currentOption[i].type) {
 		case TextBox:
 		    XtSetArg(args[0], XtNstring, &val);
-		    XtGetValues(currentCps->option[i].handle, args, 1);
-		    if(strcmp(currentCps->option[i].textValue, val)) {
-		      safeStrCpy(currentCps->option[i].textValue, val, MSG_SIZ - (currentCps->option[i].textValue - currentCps->option[i].name) );
-		      snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentCps->option[i].name, val);
+		    XtGetValues(currentOption[i].handle, args, 1);
+		    if(strcmp(currentOption[i].textValue, val)) {
+		      safeStrCpy(currentOption[i].textValue, val, MSG_SIZ - (currentOption[i].textValue - currentOption[i].name) );
+		      snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name, val);
 		      SendToProgram(buf, currentCps);
 		    }
 		    break;
 		case Spin:
 		    XtSetArg(args[0], XtNstring, &val);
-		    XtGetValues(currentCps->option[i].handle, args, 1);
+		    XtGetValues(currentOption[i].handle, args, 1);
 		    sscanf(val, "%d", &j);
-		    if(j > currentCps->option[i].max) j = currentCps->option[i].max;
-		    if(j < currentCps->option[i].min) j = currentCps->option[i].min;
-		    if(currentCps->option[i].value != j) {
-			currentCps->option[i].value = j;
-			snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentCps->option[i].name, j);
+		    if(j > currentOption[i].max) j = currentOption[i].max;
+		    if(j < currentOption[i].min) j = currentOption[i].min;
+		    if(currentOption[i].value != j) {
+			currentOption[i].value = j;
+			snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentOption[i].name, j);
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
 		case CheckBox:
 		    j = 0;
 		    XtSetArg(args[0], XtNstate, &j);
-		    XtGetValues(currentCps->option[i].handle, args, 1);
-		    if(currentCps->option[i].value != j) {
-			currentCps->option[i].value = j;
-			snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentCps->option[i].name, j);
+		    XtGetValues(currentOption[i].handle, args, 1);
+		    if(currentOption[i].value != j) {
+			currentOption[i].value = j;
+			snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentOption[i].name, j);
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
 		case ComboBox:
-		    if(currentCps->option[i].value != values[i]) {
-			currentCps->option[i].value = values[i];
-			snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentCps->option[i].name,
-				((char**)currentCps->option[i].textValue)[values[i]]);
+		    if(currentOption[i].value != values[i]) {
+			currentOption[i].value = values[i];
+			snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name,
+				((char**)currentOption[i].textValue)[values[i]]);
 			SendToProgram(buf, currentCps);
 		    }
 		    break;
@@ -759,8 +760,8 @@ void ComboSelect(w, addr, index) // callback for all combo items
     int j = 255 & (intptr_t) addr;
 
     values[i] = j; // store in temporary, for transfer at OK
-    XtSetArg(args[0], XtNlabel, ((char**)currentCps->option[i].textValue)[j]);
-    XtSetValues(currentCps->option[i].handle, args, 1);
+    XtSetArg(args[0], XtNlabel, ((char**)currentOption[i].textValue)[j]);
+    XtSetValues(currentOption[i].handle, args, 1);
 }
 
 void CreateComboPopup(parent, name, n, mb)
@@ -803,7 +804,7 @@ SettingsPopUp(ChessProgramState *cps)
 
     // to do: start up second engine if needed
     if(!cps->initDone || !cps->nrOptions) return; // nothing to be done
-    currentCps = cps;
+    currentCps = cps; currentOption = cps->option;
 
     if(cps->nrOptions > 50) width = 4; else if(cps->nrOptions>24) width = 2; else width = 1;
     height = cps->nrOptions / width + 1;
@@ -1021,7 +1022,6 @@ void SecondSettingsProc(w, event, prms, nprms)
 typedef void ButtonCallback(int n);
 
 char *trialSound;
-static Option *currentOption;
 static int oldCores, oldPonder;
 int MakeColors P((void));
 void CreateGCs P((int redo));
@@ -1067,6 +1067,7 @@ int PopDown(int n)
 	XtSetArg(args[0], XtNleftBitmap, None);
 	XtSetValues(marked[n], args, 1);
     }
+    if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
     return 1;
 }
 
@@ -1474,7 +1475,7 @@ void GenericReadout()
     int i, j;
     String name, val;
     Arg args[16];
-    char buf[MSG_SIZ];
+    char buf[MSG_SIZ], **dest;
     float x;
 	for(i=0; ; i++) { // send all options that had to be OK-ed to engine
 	    switch(currentOption[i].type) {
@@ -1483,9 +1484,13 @@ void GenericReadout()
 		case PathName:
 		    XtSetArg(args[0], XtNstring, &val);
 		    XtGetValues(currentOption[i].handle, args, 1);
-		    if(*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val)) {
-			safeStrCpy(currentOption[i].name + 100, val, MSG_SIZ-100); // text value kept in pivate storage for each option
-			*(char**) currentOption[i].target = currentOption[i].name + 100; // option gets to point to that
+		    dest = currentCps ? &(currentOption[i].textValue) : (char**) currentOption[i].target;
+		    if(*dest == NULL || strcmp(*dest, val)) {
+			if(currentCps) {
+			    snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name, val);
+			    SendToProgram(buf, currentCps);
+			} else *dest = currentOption[i].name + 100; // option gets to point to private storage;
+			safeStrCpy(*dest, val, MSG_SIZ - (*dest - currentOption[i].name)); // copy text there
 		    }
 		    break;
 		case Spin:
@@ -1497,7 +1502,10 @@ void GenericReadout()
 		    if(x < currentOption[i].min) x = currentOption[i].min;
 		    if(currentOption[i].value != x) {
 			currentOption[i].value = x;
-			if(currentOption[i].type == Spin) *(int*) currentOption[i].target = x;
+			if(currentCps) { // engines never have float options, so no decimals!
+			    snprintf(buf, MSG_SIZ,  "option %s=%.0f\n", currentOption[i].name, x);
+			    SendToProgram(buf, currentCps);
+			} else if(currentOption[i].type == Spin) *(int*) currentOption[i].target = x;
 			else *(float*) currentOption[i].target = x;
 		    }
 		    break;
@@ -1507,12 +1515,21 @@ void GenericReadout()
 		    XtGetValues(currentOption[i].handle, args, 1);
 		    if(currentOption[i].value != j) {
 			currentOption[i].value = j;
-			*(Boolean*) currentOption[i].target = j;
+			if(currentCps) {
+			    snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentOption[i].name, j);
+			    SendToProgram(buf, currentCps);
+			} else *(Boolean*) currentOption[i].target = j;
 		    }
 		    break;
 		case ComboBox:
 		    val = ((char**)currentOption[i].choice)[values[i]];
-		    if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
+		    if(currentCps) {
+			if(currentOption[i].value == values[i]) break; // not changed
+			currentOption[i].value = values[i];
+			snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name,
+				((char**)currentOption[i].textValue)[values[i]]);
+			SendToProgram(buf, currentCps);
+		    } else if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
 		      if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
 		      *(char**) currentOption[i].target = strdup(val);
 		    }
@@ -1524,6 +1541,7 @@ void GenericReadout()
 	    default:
 		printf("GenericReadout: unexpected case in switch.\n");
 		case Button:
+		case SaveButton:
 		case Label:
 	      break;
 	    }
@@ -1555,8 +1573,11 @@ void GenericCallback(w, client_data, call_data)
         PopDown(data);
         return;
     }
-    if(currentOption[data].textValue);
-    ((ButtonCallback*) currentOption[data].target)(data);
+    if(currentCps) {
+	if(currentOption[data].type == SaveButton) GenericReadout();
+	snprintf(buf, MSG_SIZ,  "option %s\n", name);
+	SendToProgram(buf, currentCps);
+    } else ((ButtonCallback*) currentOption[data].target)(data);
 }
 
 int
@@ -1580,12 +1601,17 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     }
 
     dialogOptions[dlgNr] = option; // make available to callback
-    // kludge: fake address of a ChessProgramState struct that contains the options, so Spin and Combo callbacks work on it
+    // post currentOption globally, so Spin and Combo callbacks can already use it
     // WARNING: this kludge does not work for persistent dialogs, so that these cannot have spin or combo controls!
-    currentCps = (ChessProgramState *) ((char *) option - ((char *)&first.option - (char *)&first));
+    currentOption = option;
 
-//    if(cps->nrOptions > 50) width = 4; else if(cps->nrOptions>24) width = 2; else width = 1;
-//    height = cps->nrOptions / width + 1;
+    if(currentCps) { // Settings popup for engine: format through heuristic
+	int n = currentCps->nrOptions;
+	if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
+	height = n / width + 1;
+	if(currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton) currentOption[n].min = 1; // OK on same line
+	currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
+    }
      i = 0;
     XtSetArg(args[i], XtNresizable, True); i++;
     popup = shells[dlgNr] =
@@ -1617,7 +1643,8 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    option[i].value = *(float*)option[i].target;
 	    goto tBox;
 	  case Spin:
-	    snprintf(def, MSG_SIZ,  "%d", option[i].value = *(int*)option[i].target);
+	    if(!currentCps) option[i].value = *(int*)option[i].target;
+	    snprintf(def, MSG_SIZ,  "%d", option[i].value);
 	  case TextBox:
 	  case FileName:
 	  case PathName:
@@ -1652,8 +1679,9 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
 	    XtSetArg(args[j], XtNright, XtChainRight);  j++;
 	    XtSetArg(args[j], XtNresizable, True);  j++;
-	    XtSetArg(args[j], XtNstring, option[i].type==Spin || option[i].type==Fractional ? def : *(char**)option[i].target);  j++;
 	    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
+	    XtSetArg(args[j], XtNstring, option[i].type==Spin || option[i].type==Fractional ? def : 
+				currentCps ? option[i].textValue : *(char**)option[i].target);  j++;
 	    edit = last;
 	    option[i].handle = (void*)
 		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));
@@ -1692,13 +1720,14 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 			  (XtPointer)(intptr_t) i);
 	    break;
 	  case CheckBox:
+	    if(!currentCps) option[i].value = *(Boolean*)option[i].target;
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNwidth, 10);  j++;
 	    XtSetArg(args[j], XtNheight, 10);  j++;
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNstate, option[i].value = *(Boolean*)option[i].target);  j++;
+	    XtSetArg(args[j], XtNstate, option[i].value);  j++;
 	    option[i].handle = (void*)
 		(dialog = XtCreateManagedWidget(" ", toggleWidgetClass, form, args, j));
 	  case Label:
@@ -1713,6 +1742,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
 	    last = XtCreateManagedWidget(msg, labelWidgetClass, form, args, j);
 	    break;
+	  case SaveButton:
 	  case Button:
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, option[i].min & 1 ? lastrow : last);  j++;
@@ -1726,7 +1756,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    }
 	    option[i].handle = (void*)
 		(dialog = last = XtCreateManagedWidget(option[i].name, commandWidgetClass, form, args, j));
-	    if(option[i].target == NULL) SetColor( *(char**) option[i-1].target, last); else
+	    if(option[i].target == NULL && !currentCps) SetColor( *(char**) option[i-1].target, last); else
 	    XtAddCallback(last, XtNcallback, GenericCallback,
 			  (XtPointer)(intptr_t) i + (dlgNr<<16));
 	    if(option[i].textValue) SetColor( option[i].textValue, last);
@@ -1741,9 +1771,11 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
 	    texts[h] = dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
 
-	    for(j=0; option[i].choice[j]; j++)
+	    if(currentCps) option[i].choice = (char**) option[i].textValue; else {
+	      for(j=0; option[i].choice[j]; j++)
 		if(*(char**)option[i].target && !strcmp(*(char**)option[i].target, option[i].choice[j])) break;
-	    option[i].value = j + (option[i].choice[j] == NULL);
+	      option[i].value = j + (option[i].choice[j] == NULL);
+	    }
 
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
