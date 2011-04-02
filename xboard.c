@@ -465,7 +465,6 @@ void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void GameListOptionsPopDown P(());
 void ShufflePopDown P(());
 void TimeControlPopDown P(());
-void SettingsPopDown P(());
 void GenericPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
@@ -1017,7 +1016,6 @@ XtActionsRec boardActions[] = {
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "ShufflePopDown", (XtActionProc) ShufflePopDown },
     { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
-    { "SettingsPopDown", (XtActionProc) SettingsPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
 };
