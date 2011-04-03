@@ -139,6 +139,8 @@ XtIntervalId SFdirModTimerId;
 
 int (*SFfunc)();
 
+Boolean SFpathFlag; // [HGM]
+
 static char *oneLineTextEditTranslations = "\
 	<Key>Return:	redraw-display()\n\
 	Ctrl<Key>M:	redraw-display()\n\
@@ -676,6 +678,12 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 		cancel = "Cancel";
 	}
 
+	if(SFpathFlag != (mode && mode[0] == 'p')) { // [HGM] ignore everything that is not a directory
+		if(SFdirs) XtFree(SFdirs);
+		SFdirs = NULL; // kludge to throw away all cached info
+		SFpathFlag = !SFpathFlag;
+	}
+
 	if (firstTime) {
 		firstTime = 0;
 		SFdisplay = XtDisplay(toplevel);
@@ -749,6 +757,10 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 			break;
 		case SEL_FILE_OK:
 			*name_return = SFgetText();
+			if(mode && (mode[0] == 'p' || mode[0] == 'f')) { // [HGM] for use in file-option browse button
+				SFprepareToReturn();
+				return stderr;
+			}
 			if (fp = SFopenFile(*name_return, mode,
 					    prompt, failed)) {
 				SFprepareToReturn();
