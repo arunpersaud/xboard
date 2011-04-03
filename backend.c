@@ -13883,11 +13883,11 @@ ParseOption(Option *opt, ChessProgramState *cps)
 	} else if((p = strstr(opt->name, " -file "))) {
 	    // for now -file is a synonym for -string, to already provide compatibility with future polyglots
 	    opt->textValue = p+7;
-	    opt->type = TextBox; // FileName;
+	    opt->type = FileName; // FileName;
 	} else if((p = strstr(opt->name, " -path "))) {
 	    // for now -file is a synonym for -string, to already provide compatibility with future polyglots
 	    opt->textValue = p+7;
-	    opt->type = TextBox; // PathName;
+	    opt->type = PathName; // PathName;
 	} else if(p = strstr(opt->name, " -check ")) {
 	    if(sscanf(p, " -check %d", &def) < 1) return FALSE;
 	    opt->value = (def != 0);

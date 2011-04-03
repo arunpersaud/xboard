@@ -59,6 +59,7 @@ PrintOpt(int i, int right, ChessProgramState *cps)
 	    case ResetButton:
 		fprintf(debugFP, "[ %26.26s ]", opt.name);
 	    case Message:
+	    default:
 		break;
 	}
     }
@@ -99,6 +100,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 		case PathName:
 		case Slider:
 		case Spin: stop++;
+		default:
 		case Message: ; // cannot happen
 	    }
 	    nextOption++;
@@ -107,7 +109,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	if(!stop)
 	    nextType = Button; // kudge to flush remaining checks and combos undistorted
 	// Take a new line if a spin follows combos or checks, or when we encounter a textbox
-	if((combos+checks || nextType == TextBox) && layout&1) {
+	if((combos+checks || nextType == TextBox || nextType == FileName || nextType == PathName) && layout&1) {
 	    layoutList[layout++] = -1;
 	}
 	// The last check or combo before a spin will be put on the same line as that spin (prefix)
@@ -119,7 +121,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	}
 	// if a combo is followed by a textbox, it must stay at the end of the combo/checks list to appear
 	// immediately above the textbox, so treat it as check. (A check would automatically be and remain there.)
-	if(nextType == TextBox && lastType == ComboBox)
+	if((nextType == TextBox || nextType == FileName || nextType == PathName) && lastType == ComboBox)
 	    checkList[checks++] = comboList[--combos];
 	// Now append the checks behind the (remaining) combos to treat them as one group
 	for(i=0; i< checks; i++)
@@ -137,7 +139,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	    layoutList[layout++] = -1;
 	    layoutList[layout++] = comboList[2*right];
 	}
-	if(nextType == TextBox) {
+	if(nextType == TextBox || nextType == FileName || nextType == PathName) {
 	    // A textBox is double width, so must be left-adjusted, and the right column remains empty
 	    breaks[layout/2] = lastType == Button ? 0 : 100;
 	    layoutList[layout++] = -1;
@@ -259,6 +261,8 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps)
 		SetDlgItemInt( hDlg, 2001+2*i, cps->option[j].value, TRUE );
 		break;
 	    case TextBox:
+	    case FileName:
+	    case PathName:
 		SetDlgItemText( hDlg, 2001+2*i, cps->option[j].textValue );
 		break;
 	    case CheckBox:
@@ -409,13 +413,19 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		          ofn.lpstrFilter = filter;
 		          ofn.lpstrFile = buf;
 		          ofn.nMaxFile = sizeof(buf);
-		          ofn.lpstrTitle = _("Choose Book");
+		          ofn.lpstrTitle = _("Choose File");
 		          ofn.Flags = OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
 
 		          if( GetOpenFileName( &ofn ) ) {
 		              SetDlgItemText( hDlg, i+3, buf );
 		          }
+		} else
+		if(j == -3) {
+		    if( BrowseForFolder( _("Choose Folder:"), buf ) ) {
+			SetDlgItemText( hDlg, i+3, buf );
+		    }
 		}
+      return TRUE;
 		if(j < 0) break;
 		if( activeCps->option[j].type  == SaveButton)
 		     GetOptionValues(hDlg, activeCps);
@@ -460,17 +470,16 @@ void AddOption(int x, int y, Control type, int i)
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
 	    AddControl(x+95, y, 50, 11, 0x0081, ES_AUTOHSCROLL | ES_NUMBER | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
 	    break;
-//	case TextBox:
+	case TextBox:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
 	    AddControl(x+95, y, 190, 11, 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
 	    break;
-	case TextBox:  // For now all text edits get a browse button, as long as -file and -path options are not yet implemented
 	case FileName:
 	case PathName:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
 	    AddControl(x+95, y, 180, 11, 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
 	    AddControl(x+275, y, 20, 12, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i-2);
-	    layoutList[i/2-1] = -2;
+	    layoutList[i/2-1] = -2 - (type == PathName);
 	    break;
 	case CheckBox:
 	    AddControl(x, y, 145, 11, 0x0080, BS_AUTOCHECKBOX | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i);
@@ -484,6 +493,7 @@ void AddOption(int x, int y, Control type, int i)
 	case SaveButton:
 	    AddControl(x-2, y, 65, 13, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, i);
 	case Message:
+	default:
 	    break;
     }
 
