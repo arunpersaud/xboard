@@ -80,6 +80,8 @@ extern char *getenv();
 #endif
 
 extern void SendToProgram P((char *message, ChessProgramState *cps));
+FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
+		char *init_path, char *mode, int (*show_entry)(), char **name_return));
 
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
@@ -1393,7 +1395,7 @@ void SpinCallback(w, client_data, call_data)
 {
     String name, val;
     Arg args[16];
-    char buf[MSG_SIZ];
+    char buf[MSG_SIZ], *p;
     int j;
     int data = (intptr_t) client_data;
 
@@ -1404,6 +1406,17 @@ void SpinCallback(w, client_data, call_data)
     XtSetArg(args[0], XtNstring, &val);
     XtGetValues(currentCps->option[data].handle, args, 1);
     sscanf(val, "%d", &j);
+    if (strcmp(name, "browse") == 0) {
+	if(XsraSelFile(SettingsShell, currentCps->option[data].name, NULL, NULL, "", "", 
+			 	  currentCps->option[data].type == PathName ? "p" : "f", NULL, &p)) {
+		int len = strlen(p);
+		if(len && p[len-1] == '/') p[len-1] = NULLCHAR;
+		XtSetArg(args[0], XtNstring, p);
+		XtSetValues(currentCps->option[data].handle, args, 1);
+	}
+	SetFocus(currentCps->option[data].handle, SettingsShell, (XEvent*) NULL, False);
+	return;
+    } else
     if (strcmp(name, "+") == 0) {
 	if(++j > currentCps->option[data].max) return;
     } else
@@ -1775,8 +1788,8 @@ Option loadOptions[] = {
 
 Option saveOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.autoSaveGames, "", NULL, CheckBox, _("Auto-Save Games") },
-{ 0, 0, 0, NULL, (void*) &appData.saveGameFile, "", NULL, TextBox,  _("Save Games on File:") },
-{ 0, 0, 0, NULL, (void*) &appData.savePositionFile, "", NULL, TextBox,  _("Save Final Positions on File:") },
+{ 0, 0, 0, NULL, (void*) &appData.saveGameFile, "", NULL, FileName,  _("Save Games on File:") },
+{ 0, 0, 0, NULL, (void*) &appData.savePositionFile, "", NULL, FileName,  _("Save Final Positions on File:") },
 { 0, 0, 0, NULL, (void*) &appData.pgnEventHeader, "", NULL, TextBox,  _("PGN Event Header:") },
 { 0, 0, 0, NULL, (void*) &appData.oldSaveStyle, "", NULL, CheckBox, _("Old Save Style (as opposed to PGN)") },
 { 0, 0, 0, NULL, (void*) &appData.saveExtendedInfoInPGN, "", NULL, CheckBox, _("Save Score/Depth Info in PGN") },
@@ -1838,6 +1851,8 @@ void GenericReadout()
 	for(i=0; ; i++) { // send all options that had to be OK-ed to engine
 	    switch(currentOption[i].type) {
 		case TextBox:
+		case FileName:
+		case PathName:
 		    XtSetArg(args[0], XtNstring, &val);
 		    XtGetValues(currentOption[i].handle, args, 1);
 		    if(*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val)) {
@@ -1919,7 +1934,7 @@ GenericPopUp(Option *option, char *title)
     Arg args[16];
     Widget popup, layout, dialog, edit=NULL, form,  last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
     Window root, child;
-    int x, y, i, j, height=999, width=1, h, c;
+    int x, y, i, j, height=999, width=1, h, c, w;
     int win_x, win_y, maxWidth, maxTextWidth;
     unsigned int mask;
     char def[MSG_SIZ], *msg;
@@ -1965,6 +1980,8 @@ GenericPopUp(Option *option, char *title)
 	  case Spin:
 	    snprintf(def, MSG_SIZ,  "%d", option[i].value = *(int*)option[i].target);
 	  case TextBox:
+	  case FileName:
+	  case PathName:
           tBox:
 	    if(option[i].name[0]) {
 	    j=0;
@@ -1976,11 +1993,13 @@ GenericPopUp(Option *option, char *title)
 	    texts[h] =
 	    dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
 	    } else texts[h] = dialog = NULL;
+	    w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
+	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, last);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
 	    XtSetArg(args[j], XtNborderWidth, 1); j++;
-	    XtSetArg(args[j], XtNwidth, option[i].type != TextBox ? 70 : option[i].max ? option[i].max : 205); j++;
+	    XtSetArg(args[j], XtNwidth, w); j++;
 	    if(option[i].type == TextBox && option[i].min) XtSetArg(args[j], XtNheight, option[i].min); j++;
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
@@ -1995,19 +2014,26 @@ GenericPopUp(Option *option, char *title)
 		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));
 	    XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup);
 
-	    if(option[i].type != Spin) break;
+	    if(option[i].type == TextBox || option[i].type == Fractional) break;
 
 	    // add increment and decrement controls for spin
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, edit);  j++;
 	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
-	    XtSetArg(args[j], XtNheight, 10);  j++;
-	    XtSetArg(args[j], XtNwidth, 20);  j++;
 	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
 	    XtSetArg(args[j], XtNright, XtChainRight); j++;
-	    edit = XtCreateManagedWidget("+", commandWidgetClass, form, args, j);
+	    if(option[i].type == FileName || option[i].type == PathName) {
+		w = 50; msg = "browse";
+	    } else {
+		XtSetArg(args[j], XtNheight, 10);  j++;
+		w = 20; msg = "+";
+	    }
+	    XtSetArg(args[j], XtNwidth, w);  j++;
+	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
 	    XtAddCallback(edit, XtNcallback, SpinCallback,
 			  (XtPointer)(intptr_t) i);
+
+	    if(option[i].type != Spin) break;
 
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, edit);  j++;
@@ -2101,7 +2127,8 @@ GenericPopUp(Option *option, char *title)
     for(h=0; h<height; h++) {
 	i = h + c*height;
 	if(option[i].type == EndMark) break;
-	if(option[i].type == Spin || option[i].type == TextBox || option[i].type == ComboBox) {
+	if(option[i].type == Spin || option[i].type == TextBox || option[i].type == ComboBox
+				  || option[i].type == PathName || option[i].type == FileName) {
 	    Dimension w;
 	    if(!texts[h]) continue;
 	    j=0;
@@ -2128,7 +2155,7 @@ GenericPopUp(Option *option, char *title)
 	    XtSetArg(args[j], XtNwidth, maxWidth);  j++;
 	    XtSetValues(texts[h], args, j);
 	} else
-	if(option[i].type == TextBox || option[i].type == ComboBox) {
+	if(option[i].type == TextBox || option[i].type == ComboBox || option[i].type == PathName || option[i].type == FileName) {
 	    XtSetArg(args[j], XtNwidth, maxTextWidth);  j++;
 	    XtSetValues(texts[h], args, j);
 	}
