@@ -147,3 +147,6 @@ extern char SFstatChar();
 extern XtIntervalId SFdirModTimerId;
 
 extern int (*SFfunc)();
+
+extern Boolean SFpathFlag; // [HGM]
+

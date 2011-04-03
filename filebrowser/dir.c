@@ -142,6 +142,10 @@ SFgetDir(dir)
 			maxChars = len;
 		}
 		result[i].shown = result[i].real;
+		if(SFpathFlag) { // [HGM] only show directories
+			struct stat statBuf;
+			if (stat(str, &statBuf) || SFstatChar(&statBuf) != '/') continue;
+		}
 		i++;
 	}
 
