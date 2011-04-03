@@ -97,14 +97,18 @@ static Widget previous = NULL;
 
 void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
 {
-    Arg args;
+    Arg args[2];
+    char *s;
 
     if(previous) {
-	XtSetArg(args, XtNdisplayCaret, False);
-	XtSetValues(previous, &args, 1);
+	XtSetArg(args[0], XtNdisplayCaret, False);
+	XtSetValues(previous, args, 1);
     }
-    XtSetArg(args, XtNdisplayCaret, True);
-    XtSetValues(w, &args, 1);
+    XtSetArg(args[0], XtNstring, &s);
+    XtGetValues(w, args, 1);
+    XtSetArg(args[0], XtNdisplayCaret, True);
+    XtSetArg(args[1], XtNinsertPosition, strlen(s));
+    XtSetValues(w, args, 2);
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
 }
