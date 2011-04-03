@@ -133,6 +133,7 @@ BOOLEAN MyLoadSound(MySound *ms);
 BOOLEAN MyPlaySound(MySound *ms);
 VOID ExitArgError(char *msg, char *badArg);
 void SaveSettings(char* name);
+BOOL BrowseForFolder( const char * title, char * path );
 
 /* Constants */
 
