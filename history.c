@@ -28,7 +28,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#if HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 #include <string.h>
 
 #include "common.h"

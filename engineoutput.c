@@ -28,7 +28,10 @@
 #include "config.h"
 
 #include <stdio.h>
+
+#if HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 
 #if STDC_HEADERS
 # include <stdlib.h>
