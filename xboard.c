@@ -520,7 +520,7 @@ int squareSize, smallLayout = 0, tinyLayout = 0,
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
   ICSInputBoxUp = False, askQuestionUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
-  editUp = False, errorUp = False, errorExitStatus = -1, lineGap;
+  editUp = False, errorUp = False, errorExitStatus = -1, lineGap, defaultLineGap;
 Pixel timerForegroundPixel, timerBackgroundPixel;
 Pixel buttonForegroundPixel, buttonBackgroundPixel;
 char *chessDir, *programName, *programVersion,
@@ -2086,6 +2086,7 @@ XBoard square size (hint): %d\n\
 	    fprintf(stderr, _("Closest %s size: %d\n"), IMAGE_EXT, squareSize);
 	}
     }
+    defaultLineGap = lineGap;
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
 
     /* [HR] height treated separately (hacked) */
@@ -3143,6 +3144,7 @@ void DeleteGCs()
     XtReleaseGC(shellWidget, highlineGC);
     XtReleaseGC(shellWidget, lightSquareGC);
     XtReleaseGC(shellWidget, darkSquareGC);
+    XtReleaseGC(shellWidget, lineGC);
     if (appData.monoMode) {
 	if (DefaultDepth(xDisplay, xScreen) == 1) {
 	    XtReleaseGC(shellWidget, wbPieceGC);
@@ -3177,10 +3179,6 @@ void CreateGCs(int redo)
     DeleteGCs(); // called a second time; clean up old GCs first
   } else { // [HGM] grid and font GCs created on first call only
     gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-    gc_values.background = XBlackPixel(xDisplay, xScreen);
-    lineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-    gc_values.foreground = XBlackPixel(xDisplay, xScreen);
     gc_values.background = XWhitePixel(xDisplay, xScreen);
     coordGC = XtGetGC(shellWidget, value_mask, &gc_values);
     XSetFont(xDisplay, coordGC, coordFontID);
@@ -3191,6 +3189,10 @@ void CreateGCs(int redo)
     countGC = XtGetGC(shellWidget, value_mask, &gc_values);
     XSetFont(xDisplay, countGC, countFontID);
   }
+    gc_values.foreground = XBlackPixel(xDisplay, xScreen);
+    gc_values.background = XBlackPixel(xDisplay, xScreen);
+    lineGC = XtGetGC(shellWidget, value_mask, &gc_values);
+
     if (appData.monoMode) {
 	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
 	gc_values.background = XWhitePixel(xDisplay, xScreen);

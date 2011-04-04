@@ -1102,7 +1102,8 @@ void AdjustColor(int i)
 
 void BoardOptionsOK(int n)
 {
-    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
+    extern int defaultLineGap;
+    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
     MakeColors(); CreateGCs(True);
     CreateXPMPieces();
     CreateXPMBoard(appData.liteBackTextureFile, 1);
