@@ -3441,6 +3441,8 @@ void CreateXIMPieces()
     XSynchronize(xDisplay, False); /* Work-around for xlib/xt buffering bug */
 }
 
+static VariantClass oldVariant = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
+
 #if HAVE_LIBXPM
 void CreateXPMBoard(char *s, int kind)
 {
@@ -3599,6 +3601,7 @@ void CreateXPMPieces()
 	xpmJailSquare = xpmLightSquare;
 	fprintf(stderr, _("Done.\n"));
     }
+    oldVariant = -1; // kludge to force re-makig of animation masks
     XSynchronize(xDisplay, False); /* Work-around for xlib/xt
 				      buffering bug */
 }
@@ -8271,11 +8274,10 @@ InitAnimState (anim, info)
 static void
 CreateAnimVars ()
 {
-  static VariantClass old = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
   XWindowAttributes info;
 
-  if (xpmDone && gameInfo.variant == old) return;
-  if(xpmDone) old = gameInfo.variant; // first time pieces might not be created yet
+  if (xpmDone && gameInfo.variant == oldVariant) return;
+  if(xpmDone) oldVariant = gameInfo.variant; // first time pieces might not be created yet
   XGetWindowAttributes(xDisplay, xBoardWindow, &info);
 
   InitAnimState(&game, &info);
