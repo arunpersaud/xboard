@@ -24,8 +24,8 @@
 -fontSizeTolerance 4
 -pixmapDirectory ""
 -bitmapDirectory ""
--liteBackTextureFile  "@bitmapdir@wood_l.xpm"
--darkBackTextureFile  "@bitmapdir@wood_d.xpm"
+-liteBackTextureFile  "@bitmapdir@/wood_l.xpm"
+-darkBackTextureFile  "@bitmapdir@/wood_d.xpm"
 -overrideLineGap 1
 -highlightMoveWithArrow true
 ;
