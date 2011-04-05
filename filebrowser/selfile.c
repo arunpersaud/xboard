@@ -85,12 +85,15 @@ int SFstatus = SEL_FILE_NULL;
 char
 	SFstartDir[MAXPATHLEN],
 	SFcurrentPath[MAXPATHLEN],
+	SFlastPath[MAXPATHLEN],
 	SFcurrentDir[MAXPATHLEN];
 
 Widget
 	selFile,
 	selFileCancel,
 	selFileField,
+	selFileMess,
+	filterField,
 	selFileForm,
 	selFileHScroll,
 	selFileHScrolls[3],
@@ -135,6 +138,8 @@ int SFpathScrollWidth, SFvScrollHeight, SFhScrollWidth;
 
 char SFtextBuffer[MAXPATHLEN];
 
+char SFfilterBuffer[MAXPATHLEN];
+
 XtIntervalId SFdirModTimerId;
 
 int (*SFfunc)();
@@ -161,6 +166,13 @@ SFexposeList(w, n, event, cont)
 	SFdrawList((int)(intptr_t)n, SF_DO_NOT_SCROLL);
 }
 
+void
+SFpurge()
+{
+	if(SFdirs) XtFree((XtPointer) SFdirs);
+	SFdirs = NULL; // kludge to throw away all cached info
+}
+
 /* ARGSUSED */
 static void
 SFmodVerifyCallback(w, client_data, event, cont)
@@ -173,11 +185,30 @@ SFmodVerifyCallback(w, client_data, event, cont)
 
 	if (
 		(XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1) &&
-		((*buf) == '\r')
+		((*buf) == '\r' || *buf == 033)
 	) {
-		SFstatus = SEL_FILE_OK;
+		if(client_data) {
+		    Arg args[10]; char *p;
+		    if(*buf == 033) { // [HGM] esc in filter: restore and give focus to path
+			XtSetArg(args[0], XtNstring, SFfilterBuffer);
+			XtSetValues(filterField, args, 1);
+			XtSetKeyboardFocus(selFileForm, selFileField);
+			SFstatus = SEL_FILE_TEXT;
+			return;
+		    } else
+		    if(!SFpathFlag) // [HGM] cr: fetch current extenson filter
+		    {   
+			XtSetArg(args[0], XtNstring, &p);
+			XtGetValues(filterField, args, 1);
+			if(strcmp(SFfilterBuffer, p)) SFpurge();
+			strncpy(SFfilterBuffer, p, 40);
+			SFstatus = SEL_FILE_TEXT;
+		    }
+		    return;
+		}
+		SFstatus = (*buf == 033 ? SEL_FILE_CANCEL : SEL_FILE_OK);
 	} else {
-		SFstatus = SEL_FILE_TEXT;
+		if(!client_data) SFstatus = SEL_FILE_TEXT;
 	}
 }
 
@@ -230,6 +261,11 @@ static char *wmDeleteWindowTranslation = "\
 static XtActionsRec actions[] = {
 	{"SelFileDismiss",	SFdismissAction},
 };
+
+void SFsetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
+{
+    XtSetKeyboardFocus((Widget) data, w);
+}
 
 static void
 SFcreateWidgets(toplevel, prompt, ok, cancel)
@@ -337,7 +373,7 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 	XtSetArg(arglist[i], XtNborderColor, SFfore);			i++;
 
 	XtSetArg(arglist[i], XtNfromVert, selFilePrompt);		i++;
-	XtSetArg(arglist[i], XtNvertDistance, 10);			i++;
+	XtSetArg(arglist[i], XtNvertDistance, 5);			i++;
 	XtSetArg(arglist[i], XtNresizable, True);			i++;
 	XtSetArg(arglist[i], XtNtop, XtChainTop);			i++;
 	XtSetArg(arglist[i], XtNbottom, XtChainTop);			i++;
@@ -354,15 +390,51 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 
 	XtOverrideTranslations(selFileField,
 		XtParseTranslationTable(oneLineTextEditTranslations));
-	XtSetKeyboardFocus(selFileForm, selFileField);
+	XtAddEventHandler(selFileField, ButtonPressMask, False, SFsetFocus, (XtPointer) selFileForm);
+
+	i = 0;
+	XtSetArg(arglist[i], XtNlabel, "Filter on extensions:");	i++;
+	XtSetArg(arglist[i], XtNvertDistance, 5);			i++;
+	XtSetArg(arglist[i], XtNfromVert, selFileField);		i++;
+	XtSetArg(arglist[i], XtNresizable, True);			i++;
+	XtSetArg(arglist[i], XtNtop, XtChainTop);			i++;
+	XtSetArg(arglist[i], XtNbottom, XtChainTop);			i++;
+	XtSetArg(arglist[i], XtNleft, XtChainLeft);			i++;
+	XtSetArg(arglist[i], XtNright, XtChainLeft);			i++;
+	XtSetArg(arglist[i], XtNborderWidth, 0);			i++;
+	selFileMess = XtCreateManagedWidget("selFileMess",
+		labelWidgetClass, selFileForm, arglist, i);
+
+	i = 0;
+	XtSetArg(arglist[i], XtNwidth, NR * listWidth + (NR - 1) * listSpacing + 4);
+									i++;
+	XtSetArg(arglist[i], XtNborderColor, SFfore);			i++;
+	XtSetArg(arglist[i], XtNvertDistance, 5);			i++;
+	XtSetArg(arglist[i], XtNfromVert, selFileMess);			i++;
+	XtSetArg(arglist[i], XtNresizable, True);			i++;
+	XtSetArg(arglist[i], XtNtop, XtChainTop);			i++;
+	XtSetArg(arglist[i], XtNbottom, XtChainTop);			i++;
+	XtSetArg(arglist[i], XtNleft, XtChainLeft);			i++;
+	XtSetArg(arglist[i], XtNright, XtChainLeft);			i++;
+	XtSetArg(arglist[i], XtNlength, MAXPATHLEN);			i++;
+	XtSetArg(arglist[i], XtNeditType, XawtextEdit);			i++;
+	XtSetArg(arglist[i], XtNwrap, XawtextWrapWord);			i++;
+	XtSetArg(arglist[i], XtNresize, XawtextResizeHeight);		i++;
+	XtSetArg(arglist[i], XtNuseStringInPlace, False);		i++;
+	filterField = XtCreateManagedWidget("filterField",
+		asciiTextWidgetClass, selFileForm, arglist, i);
+
+	XtOverrideTranslations(filterField,
+		XtParseTranslationTable(oneLineTextEditTranslations));
+	XtAddEventHandler(filterField, ButtonPressMask, False, SFsetFocus, (XtPointer) selFileForm);
 
 	i = 0;
 	XtSetArg(arglist[i], XtNorientation, XtorientHorizontal);	i++;
 	XtSetArg(arglist[i], XtNwidth, SFpathScrollWidth);		i++;
 	XtSetArg(arglist[i], XtNheight, scrollThickness);		i++;
 	XtSetArg(arglist[i], XtNborderColor, SFfore);			i++;
-	XtSetArg(arglist[i], XtNfromVert, selFileField);		i++;
-	XtSetArg(arglist[i], XtNvertDistance, 30);			i++;
+	XtSetArg(arglist[i], XtNfromVert, filterField);			i++;
+	XtSetArg(arglist[i], XtNvertDistance, 10);			i++;
 	XtSetArg(arglist[i], XtNtop, XtChainTop);			i++;
 	XtSetArg(arglist[i], XtNbottom, XtChainTop);			i++;
 	XtSetArg(arglist[i], XtNleft, XtChainLeft);			i++;
@@ -498,6 +570,7 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 
 	XDefineCursor(SFdisplay, XtWindow(selFileForm), xtermCursor);
 	XDefineCursor(SFdisplay, XtWindow(selFileField), xtermCursor);
+	XDefineCursor(SFdisplay, XtWindow(filterField), xtermCursor);
 
 	for (n = 0; n < NR; n++) {
 		XDefineCursor(SFdisplay, XtWindow(selFileLists[n]),
@@ -523,6 +596,9 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 
 	XtAddEventHandler(selFileField, KeyPressMask, False,
 		SFmodVerifyCallback, (XtPointer) NULL);
+	XtAddEventHandler(filterField, KeyReleaseMask, False,
+		SFmodVerifyCallback, (XtPointer) 1);
+	XtSetKeyboardFocus(selFileForm, selFileField);
 
 	SFapp = XtWidgetToApplicationContext(selFile);
 
@@ -649,13 +725,14 @@ SFprepareToReturn()
 
 FILE *
 XsraSelFile(toplevel, prompt, ok, cancel, failed,
-	    init_path, mode, show_entry, name_return)
+	    init_path, filter, mode, show_entry, name_return)
 	Widget		toplevel;
 	char		*prompt;
 	char		*ok;
 	char		*cancel;
 	char		*failed;
 	char		*init_path;
+	char		*filter;
 	char		*mode;
 	int		(*show_entry)();
 	char		**name_return;
@@ -678,10 +755,9 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 		cancel = "Cancel";
 	}
 
-	if(SFpathFlag != (mode && mode[0] == 'p')) { // [HGM] ignore everything that is not a directory
-		if(SFdirs) XtFree(SFdirs);
-		SFdirs = NULL; // kludge to throw away all cached info
-		SFpathFlag = !SFpathFlag;
+	if(SFpathFlag != (mode && mode[0] == 'p') || strcmp(SFfilterBuffer, filter)) {
+		SFpurge();
+		SFpathFlag = (mode && mode[0] == 'p'); // [HGM] ignore everything that is not a directory
 	}
 
 	if (firstTime) {
@@ -702,6 +778,13 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 		XtSetArg(arglist[i], XtNlabel, cancel);			i++;
 		XtSetValues(selFileCancel, arglist, i);
 	}
+
+	i = 0;
+	XtSetArg(arglist[i], XtNstring, filter);			i++;
+	XtSetValues(filterField, arglist, i);
+
+	safeStrCpy(SFfilterBuffer, filter, MAXPATHLEN);
+	safeStrCpy(SFlastPath, SFtextBuffer, MAXPATHLEN); // remember for cancel
 
 	SFpositionWidget(selFile);
 	XtMapWidget(selFile);
@@ -770,6 +853,7 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 			break;
 		case SEL_FILE_CANCEL:
 			SFprepareToReturn();
+			SFsetText(SFlastPath);
 			return NULL;
 		case SEL_FILE_NULL:
 			break;

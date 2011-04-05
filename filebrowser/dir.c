@@ -128,6 +128,7 @@ SFgetDir(dir)
 #endif /* ndef S_IFLNK */
 
 	while (dp = readdir(dirp)) {
+		struct stat statBuf;
 		if (i >= alloc) {
 			alloc = 2 * (alloc + 1);
 			result = (SFEntry *) XtRealloc((char *) result,
@@ -143,8 +144,16 @@ SFgetDir(dir)
 		}
 		result[i].shown = result[i].real;
 		if(SFpathFlag) { // [HGM] only show directories
-			struct stat statBuf;
 			if (stat(str, &statBuf) || SFstatChar(&statBuf) != '/') continue;
+		} else if(SFfilterBuffer[0]) { // [HGM] filter on extension
+		    char *p = SFfilterBuffer, match, *q;
+		    match = !(stat(str, &statBuf) || SFstatChar(&statBuf) != '/');
+		    do {
+			if(q = strchr(p, ' ')) *q = 0;
+			if(strstr(str, p)) match++;
+			if(q) *q = ' ';
+		    } while(q && (p = q+1));
+		    if(!match) continue;
 		}
 		i++;
 	}

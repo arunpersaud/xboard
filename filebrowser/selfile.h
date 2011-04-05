@@ -70,6 +70,7 @@ extern Widget
 		selFile,
 		selFileCancel,
 		selFileField,
+		filterField,
 		selFileForm,
 		selFileHScroll,
 		selFileHScrolls[],
@@ -135,6 +136,8 @@ extern XtAppContext SFapp;
 extern int SFpathScrollWidth, SFvScrollHeight, SFhScrollWidth;
 
 extern char SFtextBuffer[];
+
+extern char SFfilterBuffer[];
 
 extern int SFbuttonPressed;
 

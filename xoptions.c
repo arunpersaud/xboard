@@ -82,7 +82,7 @@ extern char *getenv();
 
 extern void SendToProgram P((char *message, ChessProgramState *cps));
 FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
-		char *init_path, char *mode, int (*show_entry)(), char **name_return));
+		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
 
 extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
 extern Display *xDisplay;
@@ -643,7 +643,11 @@ void SpinCallback(w, client_data, call_data)
     XtGetValues(currentOption[data].handle, args, 1);
     sscanf(val, "%d", &j);
     if (strcmp(name, "browse") == 0) {
-	if(XsraSelFile(shells[0], currentOption[data].name, NULL, NULL, "", "", 
+	char *q, *r;
+	XtSetArg(args[0], XtNstring, &q);
+	XtGetValues(currentOption[data].handle, args, 1);
+	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
+	if(XsraSelFile(shells[0], currentOption[data].name, NULL, NULL, "", "", r,
 			 	  currentOption[data].type == PathName ? "p" : "f", NULL, &p)) {
 		int len = strlen(p);
 		if(len && p[len-1] == '/') p[len-1] = NULLCHAR;

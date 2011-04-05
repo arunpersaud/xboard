@@ -238,7 +238,7 @@ typedef struct {
 
 int main P((int argc, char **argv));
 FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
-		char *init_path, char *mode, int (*show_entry)(), char **name_return));
+		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
@@ -287,7 +287,7 @@ void CommentCallback P((Widget w, XtPointer client_data,
 			XtPointer call_data));
 void ICSInputBoxPopUp P((void));
 void ICSInputBoxPopDown P((void));
-void FileNamePopUp P((char *label, char *def,
+void FileNamePopUp P((char *label, char *def, char *filter,
 		      FileProc proc, char *openMode));
 void FileNamePopDown P((void));
 void FileNameCallback P((Widget w, XtPointer client_data,
@@ -5146,9 +5146,10 @@ void CommentPopDown()
     commentUp = False;
 }
 
-void FileNamePopUp(label, def, proc, openMode)
+void FileNamePopUp(label, def, filter, proc, openMode)
      char *label;
      char *def;
+     char *filter;
      FileProc proc;
      char *openMode;
 {
@@ -5159,7 +5160,7 @@ void FileNamePopUp(label, def, proc, openMode)
 	int index; // this is not supported yet
 	FILE *f;
 	if(f = XsraSelFile(shellWidget, label, NULL, NULL, "could not open: ",
-			   def, openMode, NULL, &name))
+			   (def[0] ? def : NULL), filter, openMode, NULL, &name))
 	  (void) (*fileProc)(f, index=0, name);
     }
 }
@@ -5623,7 +5624,7 @@ void LoadGameProc(w, event, prms, nprms)
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp(_("Load game file name?"), "", LoadGamePopUp, "rb");
+    FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb");
 }
 
 void LoadNextGameProc(w, event, prms, nprms)
@@ -5689,7 +5690,7 @@ void LoadPositionProc(w, event, prms, nprms)
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp(_("Load position file name?"), "", LoadPosition, "rb");
+    FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb");
 }
 
 void SaveGameProc(w, event, prms, nprms)
@@ -5700,6 +5701,7 @@ void SaveGameProc(w, event, prms, nprms)
 {
     FileNamePopUp(_("Save game file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
+		  appData.oldSaveStyle ? ".game" : ".pgn",
 		  SaveGame, "a");
 }
 
@@ -5711,6 +5713,7 @@ void SavePositionProc(w, event, prms, nprms)
 {
     FileNamePopUp(_("Save position file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
+		  appData.oldSaveStyle ? ".pos" : ".fen",
 		  SavePosition, "a");
 }
 
@@ -6061,7 +6064,7 @@ void AnalyzeFileProc(w, event, prms, nprms)
       ShowThinkingProc(w,event,prms,nprms);
 #endif
     AnalyzeFileEvent();
-    FileNamePopUp(_("File to analyze"), "", LoadGamePopUp, "rb");
+    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
     AnalysisPeriodicEvent(1);
 }
 
