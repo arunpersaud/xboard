@@ -26,10 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if HAVE_MALLOC_H
-  #include <malloc.h>
-#endif
-
 #include "common.h"
 #include "backend.h"
 Boolean GetArgValue(char *a);				
