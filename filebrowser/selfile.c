@@ -156,7 +156,7 @@ SFexposeList(w, n, event, cont)
 		return;
 	}
 
-	SFdrawList((int)n, SF_DO_NOT_SCROLL);
+	SFdrawList((int)(intptr_t)n, SF_DO_NOT_SCROLL);
 }
 
 /* ARGSUSED */
@@ -428,9 +428,9 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 			scrollbarWidgetClass, selFileLists[n], arglist, i);
 
 		XtAddCallback(selFileVScrolls[n], XtNjumpProc,
-			SFvFloatSliderMovedCallback, (XtPointer) n);
+			SFvFloatSliderMovedCallback, (XtPointer)(intptr_t) n);
 		XtAddCallback(selFileVScrolls[n], XtNscrollProc,
-			SFvAreaSelectedCallback, (XtPointer) n);
+			SFvAreaSelectedCallback, (XtPointer)(intptr_t) n);
 
 		i = 0;
 
@@ -445,9 +445,9 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 			scrollbarWidgetClass, selFileLists[n], arglist, i);
 
 		XtAddCallback(selFileHScrolls[n], XtNjumpProc,
-			SFhSliderMovedCallback, (XtPointer) n);
+			SFhSliderMovedCallback, (XtPointer)(intptr_t) n);
 		XtAddCallback(selFileHScrolls[n], XtNscrollProc,
-			SFhAreaSelectedCallback, (XtPointer) n);
+			SFhAreaSelectedCallback, (XtPointer)(intptr_t) n);
 	}
 
 	i = 0;
@@ -506,17 +506,17 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 
 	for (n = 0; n < NR; n++) {
 		XtAddEventHandler(selFileLists[n], ExposureMask, True,
-			SFexposeList, (XtPointer) n);
+			SFexposeList, (XtPointer)(intptr_t) n);
 		XtAddEventHandler(selFileLists[n], EnterWindowMask, False,
-			SFenterList, (XtPointer) n);
+			SFenterList, (XtPointer)(intptr_t) n);
 		XtAddEventHandler(selFileLists[n], LeaveWindowMask, False,
-			SFleaveList, (XtPointer) n);
+			SFleaveList, (XtPointer)(intptr_t) n);
 		XtAddEventHandler(selFileLists[n], PointerMotionMask, False,
-			SFmotionList, (XtPointer) n);
+			SFmotionList, (XtPointer)(intptr_t) n);
 		XtAddEventHandler(selFileLists[n], ButtonPressMask, False,
-			SFbuttonPressList, (XtPointer) n);
+			SFbuttonPressList, (XtPointer)(intptr_t) n);
 		XtAddEventHandler(selFileLists[n], ButtonReleaseMask, False,
-			SFbuttonReleaseList, (XtPointer) n);
+			SFbuttonReleaseList, (XtPointer)(intptr_t) n);
 	}
 
 	XtAddEventHandler(selFileField, KeyPressMask, False,
