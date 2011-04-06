@@ -625,6 +625,18 @@ ChessProgramState *currentCps;
 static Option *currentOption;
 extern Widget shells[];
 
+void CheckCallback(Widget ww, XtPointer data, XEvent *event, Boolean *b)
+{
+    Widget w = currentOption[(int)(intptr_t)data].handle;
+    Boolean s;
+    Arg args[16];
+
+    XtSetArg(args[0], XtNstate, &s);
+    XtGetValues(w, args, 1);
+    XtSetArg(args[0], XtNstate, !s);
+    XtSetValues(w, args, 1);
+}
+
 void SpinCallback(w, client_data, call_data)
      Widget w;
      XtPointer client_data, call_data;
@@ -666,6 +678,7 @@ void SpinCallback(w, client_data, call_data)
     snprintf(buf, MSG_SIZ,  "%d", j);
     XtSetArg(args[0], XtNstring, buf);
     XtSetValues(currentOption[data].handle, args, 1);
+    SetFocus(currentOption[data].handle, shells[0], NULL, False);
 }
 
 void ComboSelect(w, addr, index) // callback for all combo items
@@ -1079,29 +1092,54 @@ void SetColor(char *colorName, Widget box)
 	XtSetValues(box, args, 1);
 }
 
-void AdjustColor(int i)
+void SetColorText(int n, char *buf)
 {
-    int n = currentOption[i].value, col, j, r, g, b, step = 10;
+    Arg args[5];
+    XtSetArg(args[0], XtNstring, buf);
+    XtSetValues(currentOption[n-1].handle, args, 1);
+    SetFocus(currentOption[n-1].handle, shells[0], NULL, False);
+    SetColor(buf, currentOption[n].handle);
+}
+
+void DefColor(int n)
+{
+    SetColorText(n, (char*) currentOption[n].choice);
+}
+
+void RefreshColor(int source, int n)
+{
+    int col, j, r, g, b, step = 10;
     char *s, buf[MSG_SIZ]; // color string
     Arg args[5];
     XtSetArg(args[0], XtNstring, &s);
-    XtGetValues(currentOption[i-n-1].handle, args, 1);
+    XtGetValues(currentOption[source].handle, args, 1);
     if(sscanf(s, "#%x", &col) != 1) return;   // malformed
     b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
     switch(n) {
-	case 1: g -= 0x100*step; b -= step; break;
-	case 2: r -= 0x10000*step; b -= step; break;
-	case 3: g -= 0x100*step; r -= 0x10000*step; break;
-	case 4: r += 0x10000*step; g += 0x100*step; b += step; break;
+	case 1: r += 0x10000*step;break;
+	case 2: g += 0x100*step;  break;
+	case 3: b += step;        break;
+	case 4: r -= 0x10000*step; g -= 0x100*step; b -= step; break;
     }
     if(r < 0) r = 0; if(g < 0) g = 0; if(b < 0) b = 0;
     if(r > 0xFF0000) r = 0xFF0000; if(g > 0xFF00) g = 0xFF00; if(b > 0xFF) b = 0xFF;
     col = r | g | b;
     snprintf(buf, MSG_SIZ, "#%06x", col);
     for(j=1; j<7; j++) if(buf[j] >= 'a') buf[j] -= 32; // capitalize
-    SetColor(buf, currentOption[i-n].handle);
-    XtSetArg(args[0], XtNstring, buf);
-    XtSetValues(currentOption[i-n-1].handle, args, 1);
+    SetColorText(source+1, buf);
+}
+
+void ColorChanged(Widget w, XtPointer data, XEvent *event, Boolean *b)
+{
+    char buf[10];
+    if ( (XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1) && *buf == '\r' )
+	RefreshColor((int)(intptr_t) data, 0);
+}
+
+void AdjustColor(int i)
+{
+    int n = currentOption[i].value;
+    RefreshColor(i-n-1, n);
 }
 
 void BoardOptionsOK(int n)
@@ -1118,42 +1156,42 @@ void BoardOptionsOK(int n)
 
 Option boardOptions[] = {
 { 0,   0, 70, NULL, (void*) &appData.whitePieceColor, "", NULL, TextBox, _("White Piece Color:") },
-{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{ 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#FFFFCC", Button, "      " },
 {    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
 {    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
 { 0,   0, 70, NULL, (void*) &appData.blackPieceColor, "", NULL, TextBox, _("Black Piece Color:") },
-{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{ 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#202020", Button, "      " },
 {    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
 {    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
 { 0,   0, 70, NULL, (void*) &appData.lightSquareColor, "", NULL, TextBox, _("Light Square Color:") },
-{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{ 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#C8C365", Button, "      " },
 {    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
 {    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
 { 0,   0, 70, NULL, (void*) &appData.darkSquareColor, "", NULL, TextBox, _("Dark Square Color:") },
-{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{ 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#77A26D", Button, "      " },
 {    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
 {    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
 { 0,   0, 70, NULL, (void*) &appData.highlightSquareColor, "", NULL, TextBox, _("Highlight Color:") },
-{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{ 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#FFFF00", Button, "      " },
 {    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
 {    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
 { 0,   0, 70, NULL, (void*) &appData.premoveHighlightColor, "", NULL, TextBox, _("Premove Highlight Color:") },
-{ 1000, 1, 0, NULL, NULL, NULL, NULL, Button, "      " },
+{ 1000, 1, 0, NULL, (void*) &DefColor, NULL, (char**) "#FF0000", Button, "      " },
 {    1, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "R" },
 {    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
-{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "W" },
-{ 0, 0, 0, NULL, (void*) &appData.upsideDown, "", NULL, CheckBox, _("Flip Pieces Shogi Style") },
+{    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
+{ 0, 0, 0, NULL, (void*) &appData.upsideDown, "", NULL, CheckBox, _("Flip Pieces Shogi Style        (Colored buttons restore default)") },
 { 0, 0, 0, NULL, (void*) &appData.allWhite, "", NULL, CheckBox, _("Use Outline Pieces for Black") },
 { 0, 0, 0, NULL, (void*) &appData.monoMode, "", NULL, CheckBox, _("Mono Mode") },
 { 0,-1, 5, NULL, (void*) &appData.overrideLineGap, "", NULL, Spin, _("Line Gap ( -1 = default for board size):") },
@@ -1274,6 +1312,8 @@ void GenericCallback(w, client_data, call_data)
     } else ((ButtonCallback*) currentOption[data].target)(data);
 }
 
+static char *oneLiner  = "<Key>Return:	redraw-display()\n";
+
 int
 GenericPopUp(Option *option, char *title, int dlgNr)
 {
@@ -1380,6 +1420,8 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    option[i].handle = (void*)
 		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));
 	    XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup);
+	    if(option[i].min == 0 || option[i].type != TextBox)
+		XtOverrideTranslations(last, XtParseTranslationTable(oneLiner));
 
 	    if(option[i].type == TextBox || option[i].type == Fractional) break;
 
@@ -1397,8 +1439,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    }
 	    XtSetArg(args[j], XtNwidth, w);  j++;
 	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
-	    XtAddCallback(edit, XtNcallback, SpinCallback,
-			  (XtPointer)(intptr_t) i);
+	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
 
 	    if(option[i].type != Spin) break;
 
@@ -1410,8 +1451,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
 	    XtSetArg(args[j], XtNright, XtChainRight); j++;
 	    last = XtCreateManagedWidget("-", commandWidgetClass, form, args, j);
-	    XtAddCallback(last, XtNcallback, SpinCallback,
-			  (XtPointer)(intptr_t) i);
+	    XtAddCallback(last, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
 	    break;
 	  case CheckBox:
 	    if(!currentCps) option[i].value = *(Boolean*)option[i].target;
@@ -1435,6 +1475,8 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
 	    last = XtCreateManagedWidget(msg, labelWidgetClass, form, args, j);
+	    if(option[i].type == CheckBox)
+		XtAddEventHandler(last, ButtonPressMask, False, CheckCallback, (XtPointer)(intptr_t) i);
 	    break;
 	  case SaveButton:
 	  case Button:
@@ -1450,7 +1492,10 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    }
 	    option[i].handle = (void*)
 		(dialog = last = XtCreateManagedWidget(option[i].name, commandWidgetClass, form, args, j));
-	    if(option[i].target == NULL && !currentCps) SetColor( *(char**) option[i-1].target, last); else
+	    if(option[i].choice && !currentCps) {
+		SetColor( *(char**) option[i-1].target, last);
+		XtAddEventHandler(option[i-1].handle, KeyReleaseMask, False, ColorChanged, (XtPointer)(intptr_t) i-1);
+	    }
 	    XtAddCallback(last, XtNcallback, GenericCallback,
 			  (XtPointer)(intptr_t) i + (dlgNr<<16));
 	    if(option[i].textValue) SetColor( option[i].textValue, last);
@@ -1543,11 +1588,11 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     XtSetArg(args[j], XtNleft, XtChainRight);  j++;
     XtSetArg(args[j], XtNright, XtChainRight);  j++;
     b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer) dlgNr);
+    XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer)(intptr_t) dlgNr + (dlgNr<<16));
 
     XtSetArg(args[0], XtNfromHoriz, b_ok);
     b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, GenericCallback, (XtPointer) dlgNr);
+    XtAddCallback(b_cancel, XtNcallback, GenericCallback, (XtPointer)(intptr_t) dlgNr);
   }
 
     XtRealizeWidget(popup);
@@ -1694,7 +1739,7 @@ static void
 SendTextCB(Widget w, XtPointer client_data, Atom *selection,
 	   Atom *type, XtPointer value, unsigned long *len, int *format)
 {
-  char buf[MSG_SIZ], *p = (char*) textOptions[(int) client_data].choice, *name = (char*) value, *q;
+  char buf[MSG_SIZ], *p = (char*) textOptions[(int)(intptr_t) client_data].choice, *name = (char*) value, *q;
   if (value==NULL || *len==0) return; /* nothing selected, abort */
   name[*len]='\0';
   strncpy(buf, p, MSG_SIZ);
@@ -1711,7 +1756,7 @@ void SendText(int n)
 	XtGetSelectionValue(menuBarWidget,
 	  XA_PRIMARY, XA_STRING,
 	  /* (XtSelectionCallbackProc) */ SendTextCB,
-	  (XtPointer) n, /* client_data passed to PastePositionCB */
+	  (XtPointer) (intptr_t) n, /* client_data passed to PastePositionCB */
 	  CurrentTime
 	);
     } else SendString(p);
