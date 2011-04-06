@@ -657,6 +657,7 @@ typedef struct {
     Boolean dropMenu;   /* [HGM] pv        */
     Boolean markers;    /* [HGM] markers   */
     Boolean pieceMenu;
+    Boolean sweepSelect;
 } AppData, *AppDataPtr;
 
 /*  PGN tags (for showing in the game list) */

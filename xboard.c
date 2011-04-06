@@ -4766,6 +4766,8 @@ void HandleUserMove(w, event, prms, nprms)
 void AnimateUserMove (Widget w, XEvent * event,
 		      String * params, Cardinal * nParams)
 {
+    extern ChessSquare promoSweep;
+    if(promoSweep != EmptySquare && appData.sweepSelect) PromoScroll(event->xmotion.x, event->xmotion.y); else
     DragPieceMove(event->xmotion.x, event->xmotion.y);
 }
 

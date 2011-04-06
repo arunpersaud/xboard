@@ -268,6 +268,7 @@ extern int chatCount;
 int chattingPartner;
 char marker[BOARD_RANKS][BOARD_FILES]; /* [HGM] marks for target squares */
 ChessSquare pieceSweep = EmptySquare;
+ChessSquare promoSweep = EmptySquare;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -4813,6 +4814,44 @@ ProcessICSInitScript(f)
 
 
 void
+Sweep(int step)
+{
+    ChessSquare piece = boards[currentMove][toY][toX];
+    ChessSquare king = WhiteKing, pawn = WhitePawn, last = promoSweep;
+    if(gameInfo.variant == VariantKnightmate) king = WhiteUnicorn;
+    if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway) king = EmptySquare;
+    if(promoSweep >= BlackPawn) king = WHITE_TO_BLACK king, pawn = WHITE_TO_BLACK pawn;
+    if(gameInfo.variant == VariantSpartan && pawn == BlackPawn) pawn = BlackLance, king = EmptySquare;
+    if(gameInfo.variant == VariantShogi) pawn = EmptySquare;
+    do {
+	promoSweep += step;
+	if(promoSweep == EmptySquare) promoSweep = BlackPawn; // wrap
+	else if((int)promoSweep == -1) promoSweep = WhiteKing;
+	else if(promoSweep == BlackPawn && step > 0) promoSweep = WhitePawn;
+	else if(promoSweep == WhiteKing && step < 0) promoSweep = BlackKing;
+	if(!step) step = 1;
+    } while(promoSweep == king || promoSweep == pawn || PieceToChar(promoSweep) == '.'
+		|| gameInfo.variant == VariantShogi && promoSweep != PROMOTED last && last != PROMOTED promoSweep && last != promoSweep);
+    boards[currentMove][toY][toX] = promoSweep;
+    DrawPosition(FALSE, boards[currentMove]);
+    boards[currentMove][toY][toX] = piece;
+}
+
+static int lastX, lastY;
+
+void PromoScroll(int x, int y)
+{
+  int step = 0;
+  if(abs(x - lastX) < 7 && abs(y - lastY) < 7) return;
+  if( y > lastY + 2 ) step = -1; else if(y < lastY - 2) step = 1;
+  if(!step) return;
+  lastX = x; lastY = y;
+
+  if(promoSweep == EmptySquare) return;
+  Sweep(step);
+}
+
+void
 NextPiece(int step)
 {
     ChessSquare piece = boards[currentMove][toY][toX];
@@ -5032,8 +5071,6 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
                        moveList[currentMove-1][2]-AAA, moveList[currentMove-1][3]-ONE);
   DrawPosition(TRUE, boards[currentMove]);
 }
-
-static int lastX, lastY;
 
 Boolean
 LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
@@ -5752,6 +5789,10 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
     // give caller the default choice even if we will not make it
     if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway)
 	 *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
+    else if(gameInfo.variant == VariantSpartan)
+	 *promoChoice = ToLower(PieceToChar(toY ? WhiteQueen : BlackAngel));
+    else if(gameInfo.variant == VariantShogi)
+	 *promoChoice = '+';
     else *promoChoice = PieceToChar(BlackQueen);
     if(autoQueen) return FALSE; // predetermined
 
@@ -6387,6 +6428,18 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	x = BOARD_WIDTH - 1 - x;
     }
 
+    if(promoSweep != EmptySquare) {
+	char promoChar = ToLower(PieceToChar(promoSweep));
+	if(gameInfo.variant == VariantShogi) promoChar = promoSweep == boards[currentMove][fromY][fromX] ? '=' : '+';
+	saveAnimate = appData.animate; appData.animate = FALSE;
+	UserMoveEvent(fromX, fromY, toX, toY, promoChar);
+	appData.animate = saveAnimate;
+	promoSweep = EmptySquare;
+	DrawPosition(FALSE, boards[currentMove]);
+	fromX = fromY = -1;
+	return;
+    }
+
     if(promotionChoice) { // we are waiting for a click to indicate promotion piece
 	if(clickType == Release) return; // ignore upclick of click-click destination
 	promotionChoice = FALSE; // only one chance: if click not OK it is interpreted as cancel
@@ -6582,7 +6635,13 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    DisplayMessage("Click in holdings to choose piece", "");
 	    return;
 	}
-	PromotionPopUp();
+	if(appData.sweepSelect && clickType == Press) {
+	     lastX = xPix; lastY = yPix;
+	     ChessSquare piece = boards[currentMove][fromY][fromX];
+	     promoSweep = CharToPiece((piece >= BlackPawn ? ToLower : ToUpper)(promoChoice));
+	     if(promoChoice == '+') promoSweep = PROMOTED piece;
+	     Sweep(0);
+	} else PromotionPopUp();
     } else {
 	int oldMove = currentMove;
 	UserMoveEvent(fromX, fromY, toX, toY, promoChoice);
