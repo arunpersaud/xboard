@@ -267,6 +267,7 @@ char chatPartner[MAX_CHAT][MSG_SIZ]; /* [HGM] chat: list of chatting partners */
 extern int chatCount;
 int chattingPartner;
 char marker[BOARD_RANKS][BOARD_FILES]; /* [HGM] marks for target squares */
+ChessSquare pieceSweep = EmptySquare;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -4811,6 +4812,20 @@ ProcessICSInitScript(f)
 }
 
 
+void
+NextPiece(int step)
+{
+    ChessSquare piece = boards[currentMove][toY][toX];
+    do {
+	pieceSweep += step;
+	if(pieceSweep == EmptySquare) pieceSweep = WhitePawn; // wrap
+	if((int)pieceSweep == -1) pieceSweep = BlackKing;
+	if(!step) step = 1;
+    } while(PieceToChar(pieceSweep) == '.');
+    boards[currentMove][toY][toX] = pieceSweep;
+    DrawPosition(FALSE, boards[currentMove]);
+    boards[currentMove][toY][toX] = piece;
+}
 /* [HGM] Shogi move preprocessor: swap digits for letters, vice versa */
 void
 AlphaRank(char *move, int n)
@@ -5063,15 +5078,18 @@ UnLoadPV()
 void
 MovePV(int x, int y, int h)
 { // step through PV based on mouse coordinates (called on mouse move)
-  int margin = h>>3, step = 0;
+  int margin = h>>3, step = 0, dist;
 
-  if(endPV < 0) return;
   // we must somehow check if right button is still down (might be released off board!)
-  if(y < margin && (abs(x - lastX) > 6 || abs(y - lastY) > 6)) step = 1; else
-  if(y > h - margin && (abs(x - lastX) > 6 || abs(y - lastY) > 6)) step = -1; else
-  if( y > lastY + 6 ) step = -1; else if(y < lastY - 6) step = 1;
+  if(abs(x - lastX) < 7 && abs(y - lastY) < 7) return;
+  if( y > lastY + 2 ) step = -1; else if(y < lastY - 2) step = 1;
   if(!step) return;
   lastX = x; lastY = y;
+
+  if(pieceSweep != EmptySquare) { NextPiece(step); return; }
+  if(endPV < 0) return;
+  if(y < margin) step = 1; else
+  if(y > h - margin) step = -1;
   if(currentMove + step > endPV || currentMove + step < forwardMostMove) step = 0;
   currentMove += step;
   if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
@@ -5731,12 +5749,11 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 	*promoChoice = PieceToChar(BlackQueen); // Queen as good as any
 	return FALSE;
     }
-    if(autoQueen) { // predetermined
-	if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantLosers)
-	     *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
-	else *promoChoice = PieceToChar(BlackQueen);
-	return FALSE;
-    }
+    // give caller the default choice even if we will not make it
+    if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway)
+	 *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
+    else *promoChoice = PieceToChar(BlackQueen);
+    if(autoQueen) return FALSE; // predetermined
 
     // suppress promotion popup on illegal moves that are not premoves
     premove = gameMode == IcsPlayingWhite && !WhiteOnMove(currentMove) ||
@@ -6613,7 +6630,12 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 
     xSqr = EventToSquare(x, BOARD_WIDTH);
     ySqr = EventToSquare(y, BOARD_HEIGHT);
-    if (action == Release) UnLoadPV(); // [HGM] pv
+    if (action == Release) {
+	if(pieceSweep != EmptySquare) {
+	    EditPositionMenuEvent(pieceSweep, toX, toY);
+	    pieceSweep = EmptySquare;
+	} else UnLoadPV(); // [HGM] pv
+    }
     if (action != Press) return -2; // return code to be ignored
     switch (gameMode) {
       case IcsExamining:
@@ -6621,8 +6643,12 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
       case EditPosition:
 	if (xSqr == BOARD_LEFT-1 || xSqr == BOARD_RGHT) return -1;
 	if (xSqr < 0 || ySqr < 0) return -1;
-	whichMenu = 0; // edit-position menu
-	break;
+	if(appData.pieceMenu) { whichMenu = 0; break; } // edit-position menu
+	pieceSweep = shiftKey ? BlackPawn : WhitePawn;  // [HGM] sweep: prepare selecting piece by mouse sweep
+	toX = xSqr; toY = ySqr; lastX = x, lastY = y;
+	if(flipView) toX = BOARD_WIDTH - 1 - toX; else toY = BOARD_HEIGHT - 1 - toY;
+	NextPiece(0);
+	return -2;
       case IcsObserving:
 	if(!appData.icsEngineAnalyze) return -1;
       case IcsPlayingWhite:
@@ -12614,6 +12640,7 @@ ClockClick(int which)
 {	// [HGM] code moved to back-end from winboard.c
 	if(which) { // black clock
 	  if (gameMode == EditPosition || gameMode == IcsExamining) {
+	    if(!appData.pieceMenu && blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetBlackToPlayEvent();
 	  } else if (gameMode == EditGame || shiftKey) {
 	    AdjustClock(which, -1);
@@ -12623,6 +12650,7 @@ ClockClick(int which)
 	  }
 	} else { // white clock
 	  if (gameMode == EditPosition || gameMode == IcsExamining) {
+	    if(!appData.pieceMenu && !blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetWhiteToPlayEvent();
 	  } else if (gameMode == EditGame || shiftKey) {
 	    AdjustClock(which, -1);

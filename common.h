@@ -656,6 +656,7 @@ typedef struct {
     int nrVariations;   /* [HGM] multivar  */
     Boolean dropMenu;   /* [HGM] pv        */
     Boolean markers;    /* [HGM] markers   */
+    Boolean pieceMenu;
 } AppData, *AppDataPtr;
 
 /*  PGN tags (for showing in the game list) */

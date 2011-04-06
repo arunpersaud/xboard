@@ -211,6 +211,7 @@ ArgDescriptor argDescriptors[] = {
   { "pasteSelection", ArgBoolean, (void *) &appData.pasteSelection, XBOARD, (ArgIniType) FALSE },
 
   { "dropMenu", ArgBoolean, (void *) &appData.dropMenu, TRUE, (ArgIniType) FALSE },
+  { "pieceMenu", ArgBoolean, (void *) &appData.pieceMenu, TRUE, (ArgIniType) TRUE },
   { "remoteShell", ArgFilename, (void *) &appData.remoteShell, FALSE, (ArgIniType) REMOTE_SHELL },
   { "rsh", ArgFilename, (void *) &appData.remoteShell, FALSE, INVALID },
   { "remoteUser", ArgString, (void *) &appData.remoteUser, FALSE, INVALID },
