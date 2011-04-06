@@ -1009,7 +1009,7 @@ ParseArgs(GetFunc get, void *cl)
       break;
 
     case ArgColor:
-      ParseColor((int)ad->argLoc, argValue);
+      ParseColor((int)(intptr_t)ad->argLoc, argValue);
       break;
 
     case ArgAttribs: {
@@ -1023,7 +1023,7 @@ ParseArgs(GetFunc get, void *cl)
       break;
 
     case ArgFont:
-      ParseFont(argValue, (int)ad->argLoc);
+      ParseFont(argValue, (int)(intptr_t)ad->argLoc);
       break;
 
     case ArgCommSettings:
@@ -1119,13 +1119,13 @@ SetDefaultsFromList()
         case ArgBoolean:
         case ArgTrue:
         case ArgFalse:
-          *(Boolean *) argDescriptors[i].argLoc = (int)argDescriptors[i].defaultValue;
+          *(Boolean *) argDescriptors[i].argLoc = (int)(intptr_t)argDescriptors[i].defaultValue;
           break;
         case ArgInt:
         case ArgX:
         case ArgY:
         case ArgZ:
-          *(int *) argDescriptors[i].argLoc = (int)argDescriptors[i].defaultValue;
+          *(int *) argDescriptors[i].argLoc = (int)(intptr_t)argDescriptors[i].defaultValue;
           break;
         case ArgString:
         case ArgFilename:
@@ -1133,10 +1133,10 @@ SetDefaultsFromList()
           *(char **) argDescriptors[i].argLoc = (char *)argDescriptors[i].defaultValue;
           break;
         case ArgBoardSize:
-          *(int *) argDescriptors[i].argLoc = (int)argDescriptors[i].defaultValue;
+          *(int *) argDescriptors[i].argLoc = (int)(intptr_t)argDescriptors[i].defaultValue;
           break;
         case ArgColor:
-          ParseColor((int)argDescriptors[i].argLoc, (char*)argDescriptors[i].defaultValue);
+          ParseColor((int)(intptr_t)argDescriptors[i].argLoc, (char*)argDescriptors[i].defaultValue);
           break;
         case ArgFloat: // floats cannot be casted to int without precision loss
         default: ; // some arg types cannot be initialized through table

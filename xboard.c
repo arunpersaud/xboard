@@ -1480,7 +1480,7 @@ void
 SaveFontArg(FILE *f, ArgDescriptor *ad)
 {
   char *name;
-  int i, n = (int)ad->argLoc;
+  int i, n = (int)(intptr_t)ad->argLoc;
   switch(n) {
     case 0: // CLOCK_FONT
 	name = appData.clockFont;
@@ -1512,14 +1512,14 @@ ExportSounds()
 void
 SaveAttribsArg(FILE *f, ArgDescriptor *ad)
 {	// here the "argLoc" defines a table index. It could have contained the 'ta' pointer itself, though
-	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, (&appData.colorShout)[(int)ad->argLoc]);
+	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, (&appData.colorShout)[(int)(intptr_t)ad->argLoc]);
 }
 
 void
 SaveColor(FILE *f, ArgDescriptor *ad)
 {	// in WinBoard the color is an int and has to be converted to text. In X it would be a string already?
-	if(colorVariable[(int)ad->argLoc])
-	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, *(char**)colorVariable[(int)ad->argLoc]);
+	if(colorVariable[(int)(intptr_t)ad->argLoc])
+	fprintf(f, OPTCHAR "%s" SEPCHAR "%s\n", ad->argName, *(char**)colorVariable[(int)(intptr_t)ad->argLoc]);
 }
 
 void

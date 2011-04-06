@@ -505,7 +505,7 @@ SFscrollTimer(p, id)
 	int	save;
 	int     n;
 
-        n = (int) p;
+        n = (int)(intptr_t) p;
 
 	dir = &(SFdirs[SFdirPtr + n]);
 	save = dir->vOrigin;
@@ -535,7 +535,7 @@ SFscrollTimer(p, id)
 
 	if (SFbuttonPressed) {
 		SFscrollTimerId = XtAppAddTimeOut(SFapp,
-			SFscrollTimerInterval(), SFscrollTimer, (XtPointer) n);
+			SFscrollTimerInterval(), SFscrollTimer, (XtPointer)(intptr_t) n);
 	}
 }
 
@@ -576,7 +576,7 @@ SFnewInvertEntry(n, event)
 				SFscrollTimerAdded = 1;
 				SFscrollTimerId = XtAppAddTimeOut(SFapp,
 					SFscrollTimerInterval(), SFscrollTimer,
-					(XtPointer) n);
+					(XtPointer)(intptr_t) n);
 			}
 		}
 
