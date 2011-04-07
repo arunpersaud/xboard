@@ -2829,7 +2829,7 @@ VOID EnginePlayOptionsPopup(HWND hwnd)
  * UCI Options Dialog functions
  *
 \*---------------------------------------------------------------------------*/
-static BOOL BrowseForFolder( const char * title, char * path )
+BOOL BrowseForFolder( const char * title, char * path )
 {
     BOOL result = FALSE;
     BROWSEINFO bi;
