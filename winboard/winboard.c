@@ -4084,6 +4084,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   static int recursive = 0;
   HMENU hmenu;
   BOOLEAN forceFullRepaint = IsFullRepaintPreferrable(); /* [AS] */
+  extern ChessSquare promoSweep;
 
   if (recursive) {
     if (message == WM_MBUTTONUP) {
@@ -4135,6 +4136,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   case WM_MOUSEMOVE:
     if(SeekGraphClick(Press, pt.x - boardRect.left, pt.y - boardRect.top, 1)) break;
+    if(promoSweep != EmptySquare && appData.sweepSelect) { PromoScroll(pt.x - boardRect.left, pt.y - boardRect.top); break; }
     MovePV(pt.x - boardRect.left, pt.y - boardRect.top, boardRect.bottom - boardRect.top);
     if ((appData.animateDragging || appData.highlightDragging)
 	&& (wParam & MK_LBUTTON)
