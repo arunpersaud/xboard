@@ -4822,16 +4822,17 @@ Sweep(int step)
     if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway) king = EmptySquare;
     if(promoSweep >= BlackPawn) king = WHITE_TO_BLACK king, pawn = WHITE_TO_BLACK pawn;
     if(gameInfo.variant == VariantSpartan && pawn == BlackPawn) pawn = BlackLance, king = EmptySquare;
-    if(gameInfo.variant == VariantShogi) pawn = EmptySquare;
+    if(toY != BOARD_HEIGHT-1 && toY != 0) pawn = EmptySquare;
     do {
-	promoSweep += step;
+	promoSweep -= step;
 	if(promoSweep == EmptySquare) promoSweep = BlackPawn; // wrap
 	else if((int)promoSweep == -1) promoSweep = WhiteKing;
-	else if(promoSweep == BlackPawn && step > 0) promoSweep = WhitePawn;
-	else if(promoSweep == WhiteKing && step < 0) promoSweep = BlackKing;
+	else if(promoSweep == BlackPawn && step < 0) promoSweep = WhitePawn;
+	else if(promoSweep == WhiteKing && step > 0) promoSweep = BlackKing;
 	if(!step) step = 1;
-    } while(promoSweep == king || promoSweep == pawn || PieceToChar(promoSweep) == '.'
-		|| gameInfo.variant == VariantShogi && promoSweep != PROMOTED last && last != PROMOTED promoSweep && last != promoSweep);
+    } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
+	    appData.testLegality && (promoSweep == king ||
+	    gameInfo.variant == VariantShogi && promoSweep != PROMOTED last && last != PROMOTED promoSweep && last != promoSweep));
     boards[currentMove][toY][toX] = promoSweep;
     DrawPosition(FALSE, boards[currentMove]);
     boards[currentMove][toY][toX] = piece;
@@ -4856,10 +4857,10 @@ NextPiece(int step)
 {
     ChessSquare piece = boards[currentMove][toY][toX];
     do {
-	pieceSweep += step;
+	pieceSweep -= step;
 	if(pieceSweep == EmptySquare) pieceSweep = WhitePawn; // wrap
 	if((int)pieceSweep == -1) pieceSweep = BlackKing;
-	if(!step) step = 1;
+	if(!step) step = -1;
     } while(PieceToChar(pieceSweep) == '.');
     boards[currentMove][toY][toX] = pieceSweep;
     DrawPosition(FALSE, boards[currentMove]);
@@ -5793,7 +5794,8 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 	 *promoChoice = ToLower(PieceToChar(toY ? WhiteQueen : BlackAngel));
     else if(gameInfo.variant == VariantShogi)
 	 *promoChoice = '+';
-    else *promoChoice = PieceToChar(BlackQueen);
+    else *promoChoice =  ToLower(PieceToChar(toY ? WhiteQueen : BlackQueen));
+    if(*promoChoice == '.') *promoChoice = ToLower(PieceToChar(piece)); // safety catch, to make sure promoChoice is a defined piece
     if(autoQueen) return FALSE; // predetermined
 
     // suppress promotion popup on illegal moves that are not premoves
