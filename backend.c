@@ -268,7 +268,8 @@ extern int chatCount;
 int chattingPartner;
 char marker[BOARD_RANKS][BOARD_FILES]; /* [HGM] marks for target squares */
 ChessSquare pieceSweep = EmptySquare;
-ChessSquare promoSweep = EmptySquare;
+ChessSquare promoSweep = EmptySquare, defaultPromoChoice, savePiece = EmptySquare;
+int promoDefaultAltered;
 
 /* States for ics_getting_history */
 #define H_FALSE 0
@@ -4813,10 +4814,13 @@ ProcessICSInitScript(f)
 }
 
 
+static int lastX, lastY, selectFlag, dragging, sweepX, sweepY;
+static ChessSquare substitute = EmptySquare;
+static char defaultPromoChar;
+
 void
 Sweep(int step)
 {
-    ChessSquare piece = boards[currentMove][toY][toX];
     ChessSquare king = WhiteKing, pawn = WhitePawn, last = promoSweep;
     if(gameInfo.variant == VariantKnightmate) king = WhiteUnicorn;
     if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway) king = EmptySquare;
@@ -4833,23 +4837,30 @@ Sweep(int step)
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
 	    appData.testLegality && (promoSweep == king ||
 	    gameInfo.variant == VariantShogi && promoSweep != PROMOTED last && last != PROMOTED promoSweep && last != promoSweep));
-    boards[currentMove][toY][toX] = promoSweep;
+    boards[currentMove][sweepY][sweepX] = promoSweep;
     DrawPosition(FALSE, boards[currentMove]);
-    boards[currentMove][toY][toX] = piece;
 }
 
-static int lastX, lastY;
-
-void PromoScroll(int x, int y)
+int PromoScroll(int x, int y)
 {
   int step = 0;
-  if(abs(x - lastX) < 7 && abs(y - lastY) < 7) return;
+  if(promoSweep == EmptySquare || !appData.sweepSelect) return FALSE;
+  if(!selectFlag) {
+	if(y - lastY < 4 && lastY - y < 4) return FALSE; // assume dragging until significant distance
+	if(substitute != EmptySquare && ((promoSweep >= BlackPawn) == flipView ? y <= lastY : y >= lastY)) { // we started dragging
+	    defaultPromoChar = ToLower(PieceToChar(promoSweep));   // fix choice
+	    promoSweep = EmptySquare;
+	    return FALSE;
+	}
+	DragPieceEnd(x, y); dragging = 0;
+	selectFlag = 1; // we committed to sweep-selecting
+  }
+  if(abs(x - lastX) < 7 && abs(y - lastY) < 7) return TRUE;
   if( y > lastY + 2 ) step = -1; else if(y < lastY - 2) step = 1;
-  if(!step) return;
+  if(!step) return TRUE;
   lastX = x; lastY = y;
-
-  if(promoSweep == EmptySquare) return;
   Sweep(step);
+  return TRUE;
 }
 
 void
@@ -5704,6 +5715,21 @@ SendBoard(cps, moveNum)
     setboardSpoiledMachineBlack = 0; /* [HGM] assume WB 4.2.7 already solves this after sending setboard */
 }
 
+ChessSquare
+DefaultPromoChoice(int white)
+{
+    ChessSquare result;
+    if(gameInfo.variant == VariantShatranj || gameInfo.variant == VariantCourier || gameInfo.variant == VariantMakruk)
+	result = WhiteFerz; // no choice
+    else if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway)
+	result= WhiteKing; // in Suicide Q is the last thing we want
+    else if(gameInfo.variant == VariantSpartan)
+	result = white ? WhiteQueen : WhiteAngel;
+    else result = WhiteQueen;
+    if(!white) result = WHITE_TO_BLACK result;
+    return result;
+}
+
 static int autoQueen; // [HGM] oneclick
 
 int
@@ -5787,15 +5813,14 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
 	*promoChoice = PieceToChar(BlackQueen); // Queen as good as any
 	return FALSE;
     }
+    // with sweep-selection we take the selected default
+    if(appData.sweepSelect) {
+	*promoChoice = defaultPromoChar;
+	return FALSE;
+    }
     // give caller the default choice even if we will not make it
-    if(gameInfo.variant == VariantSuicide || gameInfo.variant == VariantGiveaway)
-	 *promoChoice = PieceToChar(BlackKing); // in Suicide Q is the last thing we want
-    else if(gameInfo.variant == VariantSpartan)
-	 *promoChoice = ToLower(PieceToChar(toY ? WhiteQueen : BlackAngel));
-    else if(gameInfo.variant == VariantShogi)
-	 *promoChoice = '+';
-    else *promoChoice =  ToLower(PieceToChar(toY ? WhiteQueen : BlackQueen));
-    if(*promoChoice == '.') *promoChoice = ToLower(PieceToChar(piece)); // safety catch, to make sure promoChoice is a defined piece
+    *promoChoice = ToLower(PieceToChar(defaultPromoChoice));
+    if(gameInfo.variant == VariantShogi) *promoChoice = '+';
     if(autoQueen) return FALSE; // predetermined
 
     // suppress promotion popup on illegal moves that are not premoves
@@ -6337,6 +6362,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
   }
 
   userOfferedDraw = FALSE; // [HGM] drawclaim: after move made, and tested for claimable draw
+  promoDefaultAltered = FALSE; // [HGM] fall back on default choice
 
   if(bookHit) { // [HGM] book: simulate book reply
 	static char bookMove[MSG_SIZ]; // a bit generous?
@@ -6405,12 +6431,22 @@ Explode(Board board, int fromX, int fromY, int toX, int toY)
 
 ChessSquare gatingPiece = EmptySquare; // exported to front-end, for dragging
 
+int CanPromote(ChessSquare piece, int y)
+{
+	return (piece == BlackPawn && y == 1 ||
+		piece == WhitePawn && y == BOARD_HEIGHT-2 ||
+		gameInfo.variant != VariantSuper && 
+			(piece == BlackLance && y == 1 ||
+			 piece == WhiteLance && y == BOARD_HEIGHT-2) );
+}
+
 void LeftClick(ClickType clickType, int xPix, int yPix)
 {
-    int x, y;
+    int x, y, canPromote;
     Boolean saveAnimate;
-    static int second = 0, promotionChoice = 0, dragging = 0;
+    static int second = 0, promotionChoice = 0;
     char promoChoice = NULLCHAR;
+    ChessSquare piece;
 
     if(appData.seekGraph && appData.icsActive && loggedOn &&
 	(gameMode == BeginningOfGame || gameMode == IcsIdle)) {
@@ -6430,16 +6466,22 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	x = BOARD_WIDTH - 1 - x;
     }
 
-    if(promoSweep != EmptySquare) {
-	char promoChar = ToLower(PieceToChar(promoSweep));
-	if(gameInfo.variant == VariantShogi) promoChar = promoSweep == boards[currentMove][fromY][fromX] ? '=' : '+';
-	saveAnimate = appData.animate; appData.animate = FALSE;
-	UserMoveEvent(fromX, fromY, toX, toY, promoChar);
-	appData.animate = saveAnimate;
-	promoSweep = EmptySquare;
+    if(promoSweep != EmptySquare) { // up-click during sweep-select of promo-piece
+	defaultPromoChar = ToLower(PieceToChar(defaultPromoChoice = promoSweep));
+	if(gameInfo.variant == VariantShogi) defaultPromoChar = (promoSweep == boards[currentMove][fromY][fromX] ? '=' : '+');
+	promoSweep = EmptySquare;   // terminate sweep
+	promoDefaultAltered = TRUE;
+	if(savePiece != EmptySquare) {
+	    boards[currentMove][sweepY][sweepX] = savePiece; savePiece = EmptySquare;
+	    clickType = Press; x = toX; y = toY; // fake up-click on to-square to finish one-click move
+	} else x = fromX, y = fromY;             // and fake up-click on same square otherwise
+    }
+
+    if(substitute != EmptySquare) {
+	boards[currentMove][fromY][fromX] = substitute;
+	substitute = EmptySquare;
+	DragPieceEnd(xPix, yPix); dragging = 0;
 	DrawPosition(FALSE, boards[currentMove]);
-	fromX = fromY = -1;
-	return;
     }
 
     if(promotionChoice) { // we are waiting for a click to indicate promotion piece
@@ -6470,6 +6512,15 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
               || x == BOARD_RGHT+1 && y >= gameInfo.holdingsSize) )
 	return;
 
+    if(clickType == Press && fromX == x && fromY == y && promoDefaultAltered)
+	fromX = fromY = -1; // second click on piece after altering default treated as first click
+
+   if(!promoDefaultAltered) { // determine default promotion piece, based on the side the user is moving for
+	int side = (gameMode == IcsPlayingWhite || gameMode == MachinePlaysBlack ||
+		    gameMode != MachinePlaysWhite && gameMode != IcsPlayingBlack && WhiteOnMove(currentMove));
+	defaultPromoChoice = DefaultPromoChoice(side);
+   }
+
     autoQueen = appData.alwaysPromoteToQueen;
 
     if (fromX == -1) {
@@ -6481,13 +6532,26 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	}
 	return;
       }
-      if(!appData.oneClick || !OnlyMove(&x, &y, FALSE)) {
+      if(appData.oneClick && OnlyMove(&x, &y, FALSE)) {
+	    if(appData.sweepSelect && CanPromote(boards[currentMove][fromY][fromX], fromY)) {
+		promoSweep = defaultPromoChoice;
+		savePiece = boards[currentMove][sweepY = toY = y][sweepX = toX = x];
+		selectFlag = 0; lastX = xPix; lastY = yPix;
+		Sweep(0); // Pawn that is going to promote: preview promotion piece
+		return;
+	    }
+      } else {
 	    /* First square */
 	    if (OKToStartUserMove(x, y)) {
-		fromX = x;
-		fromY = y;
+		sweepX = fromX = x;
+		sweepY = fromY = y;
 		second = 0;
 		MarkTargetSquares(0);
+		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][y][x], y)) {
+		    promoSweep = defaultPromoChoice;
+		    substitute = piece; selectFlag = 0; lastX = xPix; lastY = yPix;
+		    Sweep(0); // Pawn that is going to promote: preview promotion piece
+		}
 		DragPieceBegin(xPix, yPix); dragging = 1;
 		if (appData.highlightDragging) {
 		    SetHighlights(x, y, -1, -1);
@@ -6520,6 +6584,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	     !(fromP == BlackKing && toP == BlackRook && frc))) {
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
+	    promoDefaultAltered = FALSE;
 	   if(!second || appData.oneClick && !OnlyMove(&x, &y, TRUE)) {
 	    if (appData.highlightDragging) {
 		SetHighlights(x, y, -1, -1);
@@ -6532,9 +6597,14 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
                y == (toP < BlackPawn ? 0 : BOARD_HEIGHT-1))
                  gatingPiece = boards[currentMove][fromY][fromX];
 		else gatingPiece = EmptySquare;
-		fromX = x;
-		fromY = y; dragging = 1;
+		sweepX = fromX = x;
+		sweepY = fromY = y; dragging = 1;
 		MarkTargetSquares(0);
+		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][y][x], y)) {
+		    promoSweep = defaultPromoChoice;
+		    substitute = piece; selectFlag = 0; lastX = xPix; lastY = yPix;
+		    Sweep(0); // Pawn that is going to promote: preview promotion piece
+		}
 		DragPieceBegin(xPix, yPix);
 	    }
 	   }
@@ -6640,9 +6710,10 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	if(appData.sweepSelect && clickType == Press) {
 	     lastX = xPix; lastY = yPix;
 	     ChessSquare piece = boards[currentMove][fromY][fromX];
-	     promoSweep = CharToPiece((piece >= BlackPawn ? ToLower : ToUpper)(promoChoice));
-	     if(promoChoice == '+') promoSweep = PROMOTED piece;
-	     Sweep(0);
+	     promoSweep = defaultPromoChoice;
+	     if(gameInfo.variant == VariantShogi) promoSweep = PROMOTED piece;
+	     sweepX = toX; sweepY = toY;
+	     selectFlag = 1; Sweep(0);
 	} else PromotionPopUp();
     } else {
 	int oldMove = currentMove;
