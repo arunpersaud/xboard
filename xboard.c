@@ -8534,6 +8534,16 @@ DragPieceBegin(x, y)
     }
 }
 
+void
+ChangeDragPiece(ChessSquare piece)
+{
+  Pixmap mask;
+  player.dragPiece = piece;
+  /* The piece will be drawn using its own bitmap as a matte	*/
+  SelectGCMask(piece, &player.pieceGC, &player.outlineGC, &mask);
+  XSetClipMask(xDisplay, player.pieceGC, mask);
+}
+
 static void
 DragPieceMove(x, y)
      int x; int y;

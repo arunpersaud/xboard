@@ -198,6 +198,7 @@ void AnimateMove P((Board board, int fromX, int fromY, int toX, int toY));
 void HistorySet P((char movelist[][2*MOVE_LEN], int first, int last, int current));
 void FreezeUI P((void));
 void ThawUI P((void));
+void ChangeDragPiece P((ChessSquare piece));
 extern char *programName;
 extern int commentUp;
 

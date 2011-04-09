@@ -123,9 +123,10 @@ typedef struct {
   POINT pos;      /* window coordinates of current pos */
   POINT lastpos;  /* window coordinates of last pos - used for clipping */
   POINT from;     /* board coordinates of the piece's orig pos */
+  ChessSquare piece;
 } DragInfo;
 
-static DragInfo dragInfo = { {-1,-1}, {-1,-1}, {-1,-1}, {-1,-1} };
+static DragInfo dragInfo = { {-1,-1}, {-1,-1}, {-1,-1}, {-1,-1}, EmptySquare };
 
 typedef struct {
   POINT sq[2];	  /* board coordinates of from, to squares */
@@ -3796,8 +3797,8 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
     board[dragInfo.from.y][dragInfo.from.x] = dragged_piece;
     x = dragInfo.pos.x - squareSize / 2;
     y = dragInfo.pos.y - squareSize / 2;
-    DrawPieceOnDC(hdcmem, dragged_piece,
-		  ((int) dragged_piece < (int) BlackPawn), 
+    DrawPieceOnDC(hdcmem, dragInfo.piece,
+		  ((int) dragInfo.piece < (int) BlackPawn), 
                   (dragInfo.from.y + dragInfo.from.x) % 2, x, y, tmphdc);
   }   
   
@@ -4063,6 +4064,7 @@ void DragPieceBegin(int x, int y)
       dragInfo.lastpos.y = boardRect.top + y;
       dragInfo.from.x = fromX;
       dragInfo.from.y = fromY;
+      dragInfo.piece = boards[currentMove][fromY][fromX];
       dragInfo.start = dragInfo.from;
       SetCapture(hwndMain);
 }
@@ -4075,6 +4077,11 @@ void DragPieceEnd(int x, int y)
     dragInfo.pos = dragInfo.lastpos = dragInfo.start;
 }
 
+void ChangeDragPiece(ChessSquare piece)
+{
+    dragInfo.piece = piece;
+}
+
 /* Event handler for mouse messages */
 VOID
 MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -4084,7 +4091,6 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   static int recursive = 0;
   HMENU hmenu;
   BOOLEAN forceFullRepaint = IsFullRepaintPreferrable(); /* [AS] */
-  extern ChessSquare promoSweep;
 
   if (recursive) {
     if (message == WM_MBUTTONUP) {
@@ -4136,7 +4142,7 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   case WM_MOUSEMOVE:
     if(SeekGraphClick(Press, pt.x - boardRect.left, pt.y - boardRect.top, 1)) break;
-    if(promoSweep != EmptySquare && appData.sweepSelect) { PromoScroll(pt.x - boardRect.left, pt.y - boardRect.top); break; }
+    if(PromoScroll(pt.x - boardRect.left, pt.y - boardRect.top)) break;
     MovePV(pt.x - boardRect.left, pt.y - boardRect.top, boardRect.bottom - boardRect.top);
     if ((appData.animateDragging || appData.highlightDragging)
 	&& (wParam & MK_LBUTTON)

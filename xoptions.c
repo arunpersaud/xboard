@@ -807,7 +807,7 @@ void GeneralOptionsOK(int n)
 }
 
 Option generalOptions[] = {
-{ 0,  0, 0, NULL, (void*) &appData.alwaysPromoteToQueen, "", NULL, CheckBox, _("Always Queen") },
+{ 0,  0, 0, NULL, (void*) &appData.sweepSelect, "", NULL, CheckBox, _("Almost Always Queen (Detour Under-Promote)") },
 { 0,  0, 0, NULL, (void*) &appData.animateDragging, "", NULL, CheckBox, _("Animate Dragging") },
 { 0,  0, 0, NULL, (void*) &appData.animate, "", NULL, CheckBox, _("Animate Moving") },
 { 0,  0, 0, NULL, (void*) &appData.autoCallFlag, "", NULL, CheckBox, _("Auto Flag") },

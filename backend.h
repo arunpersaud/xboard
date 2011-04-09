@@ -228,6 +228,7 @@ Boolean LoadPV P((int x, int y));
 Boolean LoadMultiPV P((int x, int y, char *buf, int index, int *start, int *end));
 void UnLoadPV P(());
 void MovePV P((int x, int y, int h));
+int PromoScroll P((int x, int y));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));
