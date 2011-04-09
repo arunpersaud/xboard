@@ -496,7 +496,6 @@ char * GameListLineFull( int number, GameInfo * gameInfo )
 
     return ret;
 }
-
 // --------------------------------------- Game-List options dialog --------------------------------------
 
 // back-end

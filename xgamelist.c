@@ -618,6 +618,35 @@ GameListIsUp()
     return glc && glc->up;
 }
 
+int SaveGameListAsText(FILE *f)
+{
+    ListGame * lg = (ListGame *) gameList.head;
+    int nItem;
+
+    if( ((ListGame *) gameList.tailPred)->number <= 0 ) {
+        DisplayError("Game list not loaded or empty", 0);
+        return False;
+    }
+
+    /* Copy the list into the global memory block */
+    if( f != NULL ) {
+ 
+        lg = (ListGame *) gameList.head;
+
+        for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){
+            char * st = GameListLineFull(lg->number, &lg->gameInfo);
+	    char *line = GameListLine(lg->number, &lg->gameInfo);
+	    if(filterString[0] == NULLCHAR || SearchPattern( line, filterString ) )
+	            fprintf( f, "%s\n", st );
+	    free(st); free(line);
+            lg = (ListGame *) lg->node.succ;
+        }
+
+        fclose(f);
+	return True;
+    }
+    return False;
+}
 //--------------------------------- Game-List options dialog ------------------------------------------
 
 Widget gameListOptShell, listwidg;

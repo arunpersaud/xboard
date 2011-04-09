@@ -322,6 +322,7 @@ void CopyPositionProc P((Widget w, XEvent *event, String *prms,
 void PastePositionProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
 void CopyGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void CopyGameListProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void PasteGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SaveGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SavePositionProc P((Widget w, XEvent *event,
@@ -618,6 +619,7 @@ MenuItem fileMenu[] = {
 MenuItem editMenu[] = {
     {N_("Copy Game    Ctrl+C"),        "Copy Game", CopyGameProc},
     {N_("Copy Position Ctrl+Shift+C"), "Copy Position", CopyPositionProc},
+    {N_("Copy Game List"),        "Copy Game List", CopyGameListProc},
     {"----", NULL, NothingProc},
     {N_("Paste Game    Ctrl+V"),        "Paste Game", PasteGameProc},
     {N_("Paste Position Ctrl+Shift+V"), "Paste Position", PastePositionProc},
@@ -913,6 +915,7 @@ XtActionsRec boardActions[] = {
     { "CopyPositionProc", CopyPositionProc },
     { "PastePositionProc", PastePositionProc },
     { "CopyGameProc", CopyGameProc },
+    { "CopyGameListProc", CopyGameListProc },
     { "PasteGameProc", PasteGameProc },
     { "SaveGameProc", SaveGameProc },
     { "SavePositionProc", SavePositionProc },
@@ -5581,19 +5584,9 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
   }
 }
 
-/* note: when called from menu all parameters are NULL, so no clue what the
- * Widget which was clicked on was, or what the click event was
- */
-void CopyGameProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
+void CopySomething()
 {
   int ret;
-
-  ret = SaveGameToFile(gameCopyFilename, FALSE);
-  if (!ret) return;
 
   /*
    * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
@@ -5610,6 +5603,33 @@ void CopyGameProc(w, event, prms, nprms)
 		 SendGameSelection,
 		 NULL/* lose_ownership_proc */ ,
 		 NULL/* transfer_done_proc */);
+}
+
+/* note: when called from menu all parameters are NULL, so no clue what the
+ * Widget which was clicked on was, or what the click event was
+ */
+void CopyGameProc(w, event, prms, nprms)
+  Widget w;
+  XEvent *event;
+  String *prms;
+  Cardinal *nprms;
+{
+  int ret;
+
+  ret = SaveGameToFile(gameCopyFilename, FALSE);
+  if (!ret) return;
+
+  CopySomething();
+}
+
+void CopyGameListProc(w, event, prms, nprms)
+  Widget w;
+  XEvent *event;
+  String *prms;
+  Cardinal *nprms;
+{
+  if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
+  CopySomething();
 }
 
 /* function called when the data to Paste is ready */
