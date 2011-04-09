@@ -1275,6 +1275,7 @@ void GenericReadout()
 		case Button:
 		case SaveButton:
 		case Label:
+		case Break:
 	      break;
 	    }
 	    if(currentOption[i].type == EndMark) break;
@@ -1492,7 +1493,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    }
 	    option[i].handle = (void*)
 		(dialog = last = XtCreateManagedWidget(option[i].name, commandWidgetClass, form, args, j));
-	    if(option[i].choice && !currentCps) {
+	    if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) {
 		SetColor( *(char**) option[i-1].target, last);
 		XtAddEventHandler(option[i-1].handle, KeyReleaseMask, False, ColorChanged, (XtPointer)(intptr_t) i-1);
 	    }
@@ -1801,7 +1802,7 @@ extern char ICSInputTranslations[];
 char *icsText;
 
 Option boxOptions[] = {
-{   0, 20,  400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
+{   0, 30,  400, NULL, (void*) &icsText, "", NULL, TextBox, "" },
 {   0,  3,    0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
