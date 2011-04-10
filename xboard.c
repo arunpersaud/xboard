@@ -6084,11 +6084,8 @@ void MatchProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     if(gameMode != BeginningOfGame) { DisplayError(_("You can only start a match from the initial position."), 0); return; }
-    matchMode = 2; // This is back-end, really
     appData.matchGames = appData.defaultMatchGames;
-    matchGame = 1;
-    first.matchWins = second.matchWins = 0;
-    TwoMachinesEvent();
+    MatchEvent(2);
 }
 
 void IcsClientProc(w, event, prms, nprms)

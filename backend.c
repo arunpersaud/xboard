@@ -1173,6 +1173,40 @@ InitBackEnd2()
 }
 
 void
+MatchEvent(int mode)
+{	// [HGM] moved out of InitBackend3, to make it callable when match starts through menu
+	/* Set up machine vs. machine match */
+	if (appData.noChessProgram) {
+	    DisplayFatalError(_("Can't have a match with no chess programs"),
+			      0, 2);
+	    return;
+	}
+	matchMode = mode;
+	matchGame = 1;
+	if (*appData.loadGameFile != NULLCHAR) {
+	    int index = appData.loadGameIndex; // [HGM] autoinc
+	    if(index<0) lastIndex = index = 1;
+	    if (!LoadGameFromFile(appData.loadGameFile,
+				  index,
+				  appData.loadGameFile, FALSE)) {
+		DisplayFatalError(_("Bad game file"), 0, 1);
+		return;
+	    }
+	} else if (*appData.loadPositionFile != NULLCHAR) {
+	    int index = appData.loadPositionIndex; // [HGM] autoinc
+	    if(index<0) lastIndex = index = 1;
+	    if (!LoadPositionFromFile(appData.loadPositionFile,
+				      index,
+				      appData.loadPositionFile)) {
+		DisplayFatalError(_("Bad position file"), 0, 1);
+		return;
+	    }
+	}
+	first.matchWins = second.matchWins = 0; // [HGM] match: needed in later matches
+	TwoMachinesEvent();
+}
+
+void
 InitBackEnd3 P((void))
 {
     GameMode initialMode;
@@ -1258,34 +1292,7 @@ InitBackEnd3 P((void))
     }
 
     if (appData.matchMode) {
-	/* Set up machine vs. machine match */
-	if (appData.noChessProgram) {
-	    DisplayFatalError(_("Can't have a match with no chess programs"),
-			      0, 2);
-	    return;
-	}
-	matchMode = TRUE;
-	matchGame = 1;
-	if (*appData.loadGameFile != NULLCHAR) {
-	    int index = appData.loadGameIndex; // [HGM] autoinc
-	    if(index<0) lastIndex = index = 1;
-	    if (!LoadGameFromFile(appData.loadGameFile,
-				  index,
-				  appData.loadGameFile, FALSE)) {
-		DisplayFatalError(_("Bad game file"), 0, 1);
-		return;
-	    }
-	} else if (*appData.loadPositionFile != NULLCHAR) {
-	    int index = appData.loadPositionIndex; // [HGM] autoinc
-	    if(index<0) lastIndex = index = 1;
-	    if (!LoadPositionFromFile(appData.loadPositionFile,
-				      index,
-				      appData.loadPositionFile)) {
-		DisplayFatalError(_("Bad position file"), 0, 1);
-		return;
-	    }
-	}
-	TwoMachinesEvent();
+	MatchEvent(TRUE);
     } else if (*appData.cmailGameName != NULLCHAR) {
 	/* Set up cmail mode */
 	ReloadCmailMsgEvent(TRUE);
