@@ -1,3 +1,23 @@
+** Version 4.5.2 (not yet released) **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.5.2/ )
+
+   * reworked many option dialogs
+   * Fix nps bug
+   * Fix flipBlack option XBoard with board texture
+   * Fix two bugs in reading position diagram
+   * Fix parsing bug of FRC castling
+   * Fix bugs in FRC castling rights
+   * Fix display of promotion piece in ICS superchess
+   * Fix linegap option in board dialog
+   * Fix animation masks on changing piece pixmaps
+   * Fix crash on opening ICS Text Menu
+   * Fix path browsing in WinBoard
+   * Fix use of game/position file in first match game
+   * Fix build on Mac OS X
+   * some minor bug fixes
+   * code cleanup (e.g. 64 bit warnings, removed malloc.h)
+
 ** Version 4.5.1 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.5.1/ )
