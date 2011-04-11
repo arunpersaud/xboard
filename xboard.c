@@ -261,6 +261,7 @@ void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
+void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((Widget w, XEvent * event,
@@ -365,6 +366,7 @@ void ResignProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjuWhiteProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjuBlackProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AdjuDrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -950,6 +952,7 @@ XtActionsRec boardActions[] = {
     { "AdjuWhiteProc", AdjuWhiteProc },
     { "AdjuBlackProc", AdjuBlackProc },
     { "AdjuDrawProc", AdjuDrawProc },
+    { "TypeInProc", TypeInProc },
     { "EnterKeyProc", EnterKeyProc },
     { "UpKeyProc", UpKeyProc },
     { "DownKeyProc", DownKeyProc },
@@ -2581,6 +2584,8 @@ XBoard square size (hint): %d\n\
     XtAddEventHandler(boardWidget, ExposureMask|PointerMotionMask, False,
 		      (XtEventHandler) EventProc, NULL);
     /* end why */
+    XtAddEventHandler(formWidget, KeyPressMask, False,
+		      (XtEventHandler) MoveTypeInProc, NULL);
 
     /* [AS] Restore layout */
     if( wpMoveHistory.visible ) {
