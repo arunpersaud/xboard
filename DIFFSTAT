@@ -1,3 +1,57 @@
+** Version master 20110411 (not an official release, includes changes from 4.5.2)
+
+(git diff -b --stat --summary -M v4.5.2.20110410 HEAD)
+
+ Makefile.am         |    2 +-
+ args.h              |    2 +
+ backend.c           |  173 ++-
+ backend.h           |    1 +
+ common.h            |    2 +
+ configure.ac        |   10 +-
+ frontend.h          |    1 +
+ gamelist.c          |    1 -
+ parser.c            | 4617 ++++++---------------------------------------------
+ parser.l            | 1203 --------------
+ winboard/config.h   |    6 +-
+ winboard/winboard.c |   14 +-
+ xboard.c            |  392 +----
+ xedittags.c         |  305 +----
+ xgamelist.c         |   29 +
+ xoptions.c          |   91 +-
+ 16 files changed, 833 insertions(+), 6016 deletions(-)
+ delete mode 100644 parser.l
+
+** Version 4.5.2 (not yet released) **
+
+(git diff -b --stat --summary -M v4.5.1 HEAD)
+
+ Makefile.am                |    2 +-
+ args.h                     |   13 +-
+ backend.c                  |   97 ++--
+ backend.h                  |    6 +-
+ common.h                   |    1 +
+ configure.ac               |    2 +-
+ engineoutput.c             |    1 -
+ filebrowser/dir.c          |   13 +
+ filebrowser/draw.c         |    6 +-
+ filebrowser/selfile.c      |  134 +++-
+ filebrowser/selfile.h      |    6 +
+ history.c                  |    1 -
+ moves.c                    |    1 +
+ parser.l                   |    4 +-
+ uci.c                      |    4 -
+ winboard/bitmaps/convert.c |    1 +
+ winboard/winboard.c        |    5 +-
+ winboard/winboard.h        |    1 +
+ winboard/woptions.c        |    2 +-
+ winboard/wsettings.c       |   24 +-
+ xboard.c                   |  817 ++++++++-------------
+ xboard.conf.in             |   33 +-
+ xboard.h                   |    2 +
+ xboard.texi                |    4 +-
+ xoptions.c                 | 1785 +++++++++++++++++++++++---------------------
+ 25 files changed, 1522 insertions(+), 1443 deletions(-)
+
 ** Version 4.5.1 **
 
 (git diff -b --stat --summary -M v4.5.0 HEAD)

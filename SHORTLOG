@@ -1,3 +1,75 @@
+** Version master 20110411 (not an official release, includes changes from 4.5.2)
+
+(git log --pretty=short --cherry-pick master...v4.5.x^   |git shortlog --no-merges)
+
+Arun Persaud (1):
+      removed parser.l from build process, also removed flex dependency from configure
+
+H.G. Muller (13):
+      New parser, written in C
+      Implement yynewstr entry point in new parser
+      Fix o-o castling in new parser
+      Implement Edit-Comment window through generic popup
+      Redo Tags dialog
+      Remember Tags and Comment dialog coordinates
+      Implement sweep selection as alternative for the piece menu
+      Implement sweep selection of promotion piece
+      Fixes to sweep selection
+      Make sweep-select promotions work in WinBoard
+      Alternative sweep promotions
+      Third method of sweep selection
+      Implement Copy Game List menu item for XBoard
+
+** Version 4.5.2 (not yet released) **
+
+(git shortlog --no-merges v4.5.1..HEAD)
+
+Arun Persaud (6):
+      Fix "make install" on Os X10.6.6 (removed a "/")
+      fixed wrong default for polyglotDir mentioned in docs.
+      Fix bug introduced in commit 89b4744: removed a "/" and forgot to add it in the config file
+      check if malloc.h is present before including it
+      removed check and #includes for malloc.h, since it's not needed
+      fixed 64 bit warnings by casting integers to intptr_t before casting to int
+
+H.G. Muller (33):
+      Fix nps bug
+      Fix unintended translation in debug file
+      Improve repairing damage of arrow highlight XBoard
+      Fix flipBlack option XBoard with board texture
+      Fix two bugs in reading position diagram
+      Fix parsing bug of FRC castling
+      Fix bugs in FRC castling rights
+      Fix display of promotion piece in ICS superchess
+      Put insertion point at end of text on SetFocus
+      Add file-browser option to just return name
+      Make generic XBoard popup, and implement 2 dialogs
+      Add browse button to generic popup
+      Add board dialog XBoard
+      Add ICS options dialog
+      Make sounds dialog for XBoard
+      Redo adjudications dialog through generic popup
+      Redo common-engine dialog with generic popup
+      Redo new-variant dialog with generic popup
+      Create General-Options dialog
+      Implement Machine Match menu item and options dialog
+      Make generic dialog popup reentrant
+      Merge SettingsPopUp into GenericPopUp
+      Let generic popup generate Engine Settings dialog
+      Activate -path and -file options
+      Redo ICS input box with generic popup
+      Make a kind of ICS text menu in XBoard as a dialog
+      Fix linegap option in board dialog
+      Fix animation masks on changing piece pixmaps
+      Let file browser filter on extension
+      Refinements to generic popup and color picker
+      Fix crash on opening ICS Text Menu
+      Fix path browsing in WinBoard
+      Fix use of game/position file in first match game
+
+Kamil Blank (1):
+      Added missing fclose()
+
 ** Version 4.5.1 **
 
 (git shortlog --no-merges v4.5.0..HEAD)

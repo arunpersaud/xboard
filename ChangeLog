@@ -3,6 +3,466 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2011-04-10 20:32:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix use of game/position file in first match game
+
+When a match was started from the menu, it was not paying attention to
+game and position files. (Later games were.) The code that handled this
+in the initialization when a match is started through the command line
+was made into a routine MatchEvent, which can be called from the menu
+proc too.
+
+2011-04-09 20:55:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on opening ICS Text Menu
+
+The patch for the color defaults had broken the ICS Text Menu.
+
+2011-04-09 19:22:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Copy Game List menu item for XBoard
+
+Some WinBoard code was cloned for this.
+
+2011-04-09 11:42:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Third method of sweep selection
+
+This method sweeps through the possible promotion choices for the piece
+that is being dragged, as long as you drag a 7th-rank Pawn backwards. On
+draggin such a Pawn forwards, it immediately shows it as the piece you
+are going to promote to.
+
+2011-04-08 23:39:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Alternative sweep promotions
+
+The sweep takes place on the from-square here.
+
+2011-04-07 23:21:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make sweep-select promotions work in WinBoard
+
+The mouse-move handler had to be connected to the PromoScroll back-end
+routine.
+
+2011-04-07 23:19:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix path browsing in WinBoard
+
+The routine BrowseForFolder was still declared as static in woptions.c,
+while it was used from wsettings.c.
+
+2011-04-07 11:14:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fixes to sweep selection
+
+
+2011-04-06 23:47:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement sweep selection of promotion piece
+
+When the option -sweepPromotions is true, a click-click promotion move
+will first display the default choice (usually Queen) on the promotion
+square. While you have the mouse button still down, you can change the
+piece by moving the mouse vertically.
+
+2011-04-06 21:20:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement sweep selection as alternative for the piece menu
+
+When the option -pieceMenu is off, the piece menu will no longer appear
+on right-clicks in Edit Position mode. In stead a Pawn of the chosen
+color will appear immediately in the clicked square, and vertical
+movement of the mouse with the right button down will cycle through
+all other pieces defined in the pieceToCharTable of the current variant.
+  Setting the side to move is acheived by clicking the correspondig
+clock. Clear board can be effected by clicking the clock of the side
+that already has the move.
+
+2011-03-30 18:17:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remember Tags and Comment dialog coordinates
+
+The save-settings code now uses the shell and shellUp arrays from the
+GenericPopUp to read out the window coordinates for Tags and Comment
+window. Pointers used by GenericPopUp are set topoint to the
+corresponding WindowPlacement structs.
+
+2011-03-10 19:21:59 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo Tags dialog
+
+The generic popup is used for generating the Tags / EditTags popups.
+The tags popup use a 'label' field to display the cmail message
+
+2011-04-01 13:43:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Edit-Comment window through generic popup
+
+The Edit Comment and Comment popups are combined into one, that can
+always be edited (similar to WinBoard). It uses shell number 1.
+(Number 0 is for all transient dialogs.) A save-changes button is added.
+The positioning is not implemented yet.
+
+2011-04-06 10:56:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Refinements to generic popup and color picker
+
+*) The text part of a checkbox can now be clicked to toggle the option.
+*) Typing <Enter> in single-line text edits is ignored
+*) Using a spin button now sets focus to the affected text edit, with
+the insert position at the end.
+*) Using the sample field or an RGB button sets focus to the
+corresponding text edit, with the insert position at the end.
+*) The adjust buttons now work in reverse, with a D button for "darker".
+*) Editing a color field causes the sample field to update to the new
+color when you type <Enter>.
+*) The color pickers now define a default color, which can be instated
+by clicking on the sample field.
+*) Fix some 64-bit pointer warnings
+
+2011-04-05 17:05:39 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let file browser filter on extension
+
+A new text field is added in the file-browse dialog, to hold (space-
+separated) extensions, on which the filenames are then filtered. This
+field is initialized by the caller, depending on what we need the file
+for, but can be changed by the user. (Directories are always displayed!)
+  Changes in the extension field  become effective after typing a return
+in it. Escape typed in the extension field gives focus to the filename
+field, and restores the contents. Escape in the filename field cancels
+the dialog, return ther OKs it. The extension filter of the browser is
+initialized to the extension (if any) of the file currently in the text
+edit you are browsing for.
+  When re-opening the file browser from the XBoard File menu, and there
+is no suggested filename, it will now start with the last succesfully
+opened name as suggestion. Calling the browser with a NULL argument
+for the suggested filename requests that (unlike calling with an empty
+string, which will start it in the current directory). To make this
+work smoothly, the filebrowser saves the last used name on entry, so it
+can be restored on cancel, so that a cancelled browse session really
+erases all memory of it.
+
+2011-04-04 19:26:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix animation masks on changing piece pixmaps
+
+The animation masks were not remade when new pieces were loaded
+interactively through the board-options dialog.
+
+2011-04-04 19:09:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix linegap option in board dialog
+
+The lineGC was not recalculated, so the grid lines stayed the same
+thickness. In addition, setting the line-gap override to -1 now
+retrieves the original line gap that belongs to the current board size.
+
+2011-03-05 23:27:48 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make a kind of ICS text menu in XBoard as a dialog
+
+The dialog with buttons can be opened from the View menu. It is
+configured by the option -icsMenu; a default setting for this is
+included in the master settings file.
+  The commands specified by the -icsMenu can now contain $name and $input
+keywords, which will be replaced by the current primary selection, or
+text the user types, respectively. Commands that contain $name will not
+be sent when the current selection is empty. Commands that do not
+contain $input will be sent to the ICS immediately; otherwise they will
+be placed in the ICS Input Box, with the cursor at the point of the
+$input, and input focus given to the Input Box, so the user can start
+typing. When a command is prefixed by "$add " it will be appended to the
+existing ICS Input Box contents, rather than replace it.
+  The items now have to be separated by ";\n", and button text from
+command by ';' (with optional linefeed). This allows configuring of
+multi-line commands, as a single linefeed no longer has special
+sigificance.
+
+2011-03-31 13:36:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo ICS input box with generic popup
+
+This box is just a single text edit, but the complexity is in the added
+callbacks. These callbacks remain in xboard.c, and were altered to
+access the edit through the option.handle field.
+
+2011-04-03 12:54:51 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Activate -path and -file options
+
+In XBoard the generic popup was prepared for this. In WinBoard, for
+-path options the BrowseFolder routine is used, and had to be made
+global (prototype in winboard.h).
+
+2011-04-02 18:40:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let generic popup generate Engine Settings dialog
+
+
+2011-04-02 18:36:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Merge SettingsPopUp into GenericPopUp
+
+Based on currentCps the values read from the dialog are sent to the
+engine, or stored into the option.target in the callback, and fetched
+from the option.target in the PopUp. The currentCps is cleared in the
+generic popdown of a transient dialog.
+
+2011-03-06 10:11:06 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Make generic dialog popup reentrant
+
+To allow persistent dialogs to be implemented through the generic popup,
+it must be possible to have several dialogs open at the same time, and
+thus make sure the popdowns under the cacel or close-window button know
+which one to pop down. To this end an array shells[] is created that
+takes over the function of settingsShell, and GenericPopUp gets an extra
+parameter telling it which element to use for storing the dialog shell.
+This number is then also passed to the callbacks that trigger popdown.
+This was a bit nasty for the CatchDeleteWindow stuff, which passes user
+data to the callback as text strings.
+Keep a separate up/down indicator, so that shell widgets can be kept
+for persistent dialogs. Also keep a currentOption per dialog type.
+  The coordinates and size of the window is read out and stored in a
+WindowPlacement structure, (if one is specified for that dialog), when
+the dialog is popped down. When initialized the structure is also used
+to set the window parameters when the dialog is created. (The idea being
+that the structure was saved in the settings file.)
+  The routine MarkMenu checkmarks a given menu item, and logs it for the
+given dialog type, so that a later popdown automatically unchecks is.
+
+2011-02-25 12:14:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Machine Match menu item and options dialog
+
+An item to start a match from the menu is added, similar to what
+WinBoard has. (The code is duplicated, so I guess it should be moved to
+the back-end now, as MachineMatchEvent(), but it was tiny.) A dialog in
+the Options menu was added with the aid of the generic popup, and allows
+the user to set the load Game / Position File and Index.
+
+2011-04-01 14:54:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Create General-Options dialog
+
+The generic popup is used to implement a General-Options dialog, which
+contains all Boolaen options that used to be set directly from the main
+Options menu, plus a spin option for the flash count and flash rate.
+The corresponing options are removed from the main Options menu, but the
+whole thing is made conditional on a compiler switch OPTIONSDIALOG.
+The dialog needs an OK callback for sending an altered ponder-state to
+the engine. (Why isn't this option disabled in -ncp mode, btw?)
+A spin control is added to adjust -animateSpeed between 5 and 100.
+Add dropMenu and showTargetSquares item as well.
+
+2011-04-01 18:16:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo new-variant dialog with generic popup
+
+Some special code was added in GenericPopUp() to force buttons of the
+type needed in the New Variant dialog (wide, colored, greyed-out on
+variant type). The dialog was implemented with these, and callbacks for
+the buttons directly exit the dialog, without the need for OK. New spin
+controls are added to the dialog for adjusting the board format.
+
+2011-04-01 14:48:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo common-engine dialog with generic popup
+
+The ponder option was removed, as it is already in the main Options
+menu, and would require nastiness in the OK callback. Added book options
+in common-engine dialog.
+
+2011-02-24 13:32:01 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo adjudications dialog through generic popup
+
+We dropped the periodic-updates option, as it is already in the main
+Option menu.
+
+2011-04-01 21:56:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make sounds dialog for XBoard
+
+This uses the combo boxes. A 'play' button isimplemented for a test
+sound. A sound directory is introduced, and can be set through the
+dialog. A default setting for -soundDirectory is added to xboard.conf.
+
+2011-04-01 23:11:29 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add ICS options dialog
+
+
+2011-04-01 21:52:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add board dialog XBoard
+
+The GenericPopUp() is used to implement a dialog for board options. The
+board dialog needs to trigger redraw and redefinition of the
+colors, through an OK callback. Color-pickers are used for the 6 basic
+color settings.
+  To allow changing board settings during the session (i.e. from a menu
+dialog), the routines to allocate resources have to free the resources
+for the previous settings first. This patch take care of XtCreateGCs(),
+preventing re-creation of resources that are unchangeable (such as the
+grid color), and calling XtReleastGC() on GCs that can be changed.
+To prevent resource leaks the old pixmaps are deleted before making new
+ones on second or later calls of CreateXPMPieces().
+
+2011-04-03 11:39:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add browse button to generic popup
+
+Options of type FileName and PathName cause a browse button to be added
+behind the text field. The SpinCallback is used to handle the
+button presses, and invokes the file browser dialog to obtain a
+filename, which is then copied to the text field.
+
+2011-04-01 21:49:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make generic XBoard popup, and implement 2 dialogs
+
+The Engine-Settings dialog of XBoard was cloned to work on predefined
+lists of (XBoard) options, rather than engine options. An extra field
+was added to the Option struct, to hold a pointer to the XBoard variable
+that should hold the option setting, so on OK'ing the dialog the altered
+values can be copied there. Not usable for options which should trigger
+an action (like redraw, or sending something to the engine).
+A Load Game, Save Game and ICS Options dialog were then defined by
+tables fed to GenericPopUp(). Options set from these dialogs were removed
+from the main Option menu, which removes a lot of code from xboard.c
+(for checkmarking, disabling the menu items).
+  A button defined in the GenericPopUp can attain the color indicated
+by a previous text field, and add a callback to change the color in a
+spin-like manner (but using R G B W in stead of + - butons).
+The EndMark option can specify a callback, to be used on OK.
+A non-zero max field in the Option descriptor will be used to set the
+width of ComboBox, TextBox and Button optons.
+The elements are chained such that extra space goes fully into the input
+fields. A label type is added for clarifying texts that would not fit in
+the option names. A break-type (pseudo-)option is added. Make OK and
+cancel button suppressable in generic popup (by 2 bit of the option.min
+field).
+
+2011-04-03 11:34:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add file-browser option to just return name
+
+By passing mode "f" the file browser dialog will not open the selected
+file at all, so it can be used to retreive the name for the benefit of a
+file-browser button to a -file option. A mode "p" will limit the
+selection to directories only, to browse for a path.
+
+2011-04-03 13:15:17 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Put insertion point at end of text on SetFocus
+
+
+2011-04-05 23:47:34 -0700 Arun Persaud <apersaud@lbl.gov>:
+fixed 64 bit warnings by casting integers to intptr_t before casting to int
+
+
+2011-04-05 23:24:24 -0700 Arun Persaud <apersaud@lbl.gov>:
+removed check and #includes for malloc.h, since it's not needed
+
+hopefully this doesn't break things on non-linux systems. OS X seems to be ok, not sure about others ;)
+
+2011-04-03 20:23:49 -0700 Arun Persaud <apersaud@lbl.gov>:
+check if malloc.h is present before including it
+
+OS X 10.6 doesn't have malloc.h, so it complained.
+
+2011-04-03 20:01:36 -0700 Arun Persaud <apersaud@lbl.gov>:
+Fix bug introduced in commit 89b4744: removed a "/" and forgot to add it in the config file
+
+removed a "/" to make OS X happy, but forgot to add the "/" again in the xboard.conf.in file
+
+2011-03-12 14:08:50 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix display of promotion piece in ICS superchess
+
+In Great Shatranj and Superchess promoted Pawns were displayed as shadow
+piece because these variants had holdings, while captured pieces should
+go back into the holdings unchanged, rather than reverted to Pawns.
+
+2011-03-13 14:09:14 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix o-o castling in new parser
+
+The non-compliant notation of castling with lower-case 'o' should be
+preferred over the non-compliant interpretation of moving a Pawn along
+the o-file. Not doing so breaks ICS play, as ICS use o-o and o-o-o for
+castling! So an exception is now made for the o-file in the 'fxg'
+case.
+
+2011-03-10 19:27:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement yynewstr entry point in new parser
+
+This entry point, used for parsing an ICS move list, was forgotten, and
+was still an empty routine. This made XBoard crash when observing an ICS
+game.
+
+2011-03-07 23:11:00 -0800 Arun Persaud <apersaud@lbl.gov>:
+fixed wrong default for polyglotDir mentioned in docs.
+
+Thanks to Hans Aberg for reporting it.
+
+2011-03-05 12:39:01 -0800 Arun Persaud <apersaud@lbl.gov>:
+Fix "make install" on Os X10.6.6 (removed a "/")
+
+seems like an extra "/" made "make install" unhappy
+
+2011-03-03 21:19:05 -0800 Arun Persaud <apersaud@lbl.gov>:
+removed parser.l from build process, also removed flex dependency from configure
+
+
+2011-03-02 22:14:57 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+New parser, written in C
+
+A new parser was written to replace the flex-generated one. Immediate
+improvements are that it understand double-digit rank numbers, and Shogi
+coordinates. No changes were made in the Makefile yet to reflect the
+new, flexless building procedure.
+
+2011-03-02 22:23:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix bugs in FRC castling rights
+
+When parsing a castling move in FRC when no rights existed, the parser
+returned 0 (= EndOfFile) rather than ImpossibleMove. The recognition of
+the absence of rights was not adapted to the new encoding NoRights in
+stead of -1.
+
+2011-03-01 23:42:34 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parsing bug of FRC castling
+
+The code that was supposed to intercept castling when no rights existed
+in FRC was not adapted to the new encoding for this by NoRights, rather
+than -1, and furthermore returned 0 (= EndOfFile) rather than
+ImpossibleMove. Not sure if the former would manifest itself in any
+way, but the latter seems bad.
+
+2011-03-01 23:32:25 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix two bugs in reading position diagram
+
+When reading a game without FEN tag, a position diagram is used to set
+the initial position. This calls CharToPiece() with a '.' as argument,
+because that is the position-diagram way to indicate empty squares.
+altered CharToPiece() over time this would be recognized as the first
+undefined piece or, more recently, the first piece without nickName,
+which is a white Pawn. Now it returns EmptySquare again in that case.
+A second problem was that for position diagrams in braces the brace was
+not in the list of ignored characters, and would cause the reading to
+get out of phase, so that the side to move was not recognized.
+
+2011-02-26 21:12:08 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix flipBlack option XBoard with board texture
+
+In XBoard -flipBlack is implemented by swapping white and black pieces,
+because the Shogi bitmaps from XShogi are made that way. But the mask
+used to cut out the whole in the board texture to fit the piece was not
+swapped, both when drawing static pieces, as well as during animation.
+
+2011-02-25 14:38:21 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve repairing damage of arrow highlight XBoard
+
+With line gap the highlight arrow necessitated redrawing of the entire
+board, to repair damage on the grid. This interfered with flashing of
+pieces, which was only done on selective redraws. In stead of forcing a
+total repaint we now just redraw the grid lines.
+
+2011-02-23 16:41:36 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix unintended translation in debug file
+
+The words "first" and "second" (cps->which) were sometimes used in
+context that should definitely not be translated. (e.g. the indicator
+for which engine printed/got the line in the debug file.) So translation
+is now deferred to all uses in popups.
+
+2011-02-23 16:29:12 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix nps bug
+
+The nps settingwas tested for being > 0 in stead of >=0, so that the
+case of CPU time was not properly handled.
+
+2011-02-24 19:06:27 +0100 Kamil Blank <caceel@gmail.com>:
+Added missing fclose()
+
+(tiny change)
+Signed-off-by: Arun Persaud <apersaud@lbl.gov>
+
+2011-02-20 16:12:19 -0800 Arun Persaud <apersaud@lbl.gov>:
+release of version 4.5.1
+
+2011-02-20 16:10:16 -0800 Arun Persaud <apersaud@lbl.gov>:
+updated Changelog, NEWS, etc.
+
 2011-02-20 20:36:28 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix two typos in option names in texi file
 
