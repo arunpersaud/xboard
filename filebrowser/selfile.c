@@ -267,6 +267,14 @@ void SFsetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
     XtSetKeyboardFocus((Widget) data, w);
 }
 
+void SFwheelProc(Widget w, XtPointer data, XEvent *event, Boolean *b)
+{   // [HGM] mouse-wheel callback scrolls lists
+    int dir, n = (intptr_t) data;
+    if(event->xbutton.button == Button4) dir = -2; // kludge to indicate relative motion
+    if(event->xbutton.button == Button5) dir = -1;
+    SFvSliderMovedCallback(w, n, dir);
+}
+
 static void
 SFcreateWidgets(toplevel, prompt, ok, cancel)
 	Widget	toplevel;
@@ -522,6 +530,9 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 			SFhSliderMovedCallback, (XtPointer)(intptr_t) n);
 		XtAddCallback(selFileHScrolls[n], XtNscrollProc,
 			SFhAreaSelectedCallback, (XtPointer)(intptr_t) n);
+
+		XtAddEventHandler(selFileVScrolls[n], ButtonPressMask, False,
+			SFwheelProc, (XtPointer)(intptr_t) n); // [HGM] couplemouse wheel to v-scroll
 	}
 
 	i = 0;

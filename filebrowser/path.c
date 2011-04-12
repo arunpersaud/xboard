@@ -77,6 +77,8 @@ static SFLogin *SFlogins;
 
 static int SFtwiddle = 0;
 
+void SFsetText(char *path);
+
 int
 SFchdir(path)
 	char	*path;
@@ -713,6 +715,10 @@ SFbuttonPressList(w, n, event)
 	int			n;
 	XButtonPressedEvent	*event;
 {
+	int dir = 0;
+	if(event->button == Button4) dir = -2; // kludge to indicate relative motion
+	if(event->button == Button5) dir = -1;
+	if(dir) SFvSliderMovedCallback(w, n, dir); else
 	SFbuttonPressed = 1;
 }
 
@@ -725,6 +731,7 @@ SFbuttonReleaseList(w, n, event)
 {
 	SFDir	*dir;
 
+	if(event->button == Button4 || event->button == Button5) return; // [HGM] mouse wheel does not select
 	SFbuttonPressed = 0;
 
 	if (SFcurrentInvert[n] != -1) {

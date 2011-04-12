@@ -655,7 +655,10 @@ SFvSliderMovedCallback(w, n, new)
 
 	dir = &(SFdirs[SFdirPtr + n]);
 
+
 	old = dir->vOrigin;
+	if(new == -1) new = old + 1; else if(new == -2) new = old - 1; // [HGM] indicates scroll direction on mousewheel event
+	if(new < 0 || new > dir->nEntries - SFlistSize) return;
 	dir->vOrigin = new;
 
 	if (old == new) {
