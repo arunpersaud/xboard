@@ -206,6 +206,8 @@ void ExitAnalyzeMode P((void));
 void AnalyzeModeEvent P((void));
 void AnalyzeFileEvent P((void));
 void MatchEvent P((int mode));
+void TypeInEvent P((char first));
+void TypeInDoneEvent P((char *move));
 void InitPosition P((int redraw));
 void NewSettingEvent P((int option, int *feature, char *command, int value));
 int WaitForSecond P((DelayedEventCallback x));

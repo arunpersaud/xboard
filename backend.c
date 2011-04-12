@@ -14280,6 +14280,55 @@ AskQuestionEvent(title, question, replyPrefix, which)
 }
 
 void
+TypeInEvent(char firstChar)
+{
+    if ((gameMode == BeginningOfGame && !appData.icsActive) || 
+        gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack ||
+	gameMode == AnalyzeMode || gameMode == EditGame || 
+	gameMode == EditPosition || gameMode == IcsExamining ||
+	gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
+	isdigit(firstChar) && // [HGM] movenum: allow typing in of move nr in 'passive' modes
+		( gameMode == AnalyzeFile || gameMode == PlayFromGameFile ||
+		  gameMode == IcsObserving || gameMode == TwoMachinesPlay    ) ||
+	gameMode == Training) PopUpMoveDialog(firstChar);
+}
+
+void
+TypeInDoneEvent(char *move)
+{
+	Board board;
+	int n, fromX, fromY, toX, toY;
+	char promoChar;
+	ChessMove moveType;
+
+	// [HGM] FENedit
+	if(gameMode == EditPosition && ParseFEN(board, &n, move) ) {
+		EditPositionPasteFEN(move);
+		return;
+	}
+	// [HGM] movenum: allow move number to be typed in any mode
+	if(sscanf(move, "%d", &n) == 1 && n != 0 ) {
+	  ToNrEvent(2*n-1);
+	  return;
+	}
+
+      if (gameMode != EditGame && currentMove != forwardMostMove && 
+	gameMode != Training) {
+	DisplayMoveError(_("Displayed move is not current"));
+      } else {
+	int ok = ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
+	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
+	if(!ok && move[0] >= 'a') { move[0] += 'A' - 'a'; ok = 2; } // [HGM] try also capitalized
+	if (ok==1 || ok && ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
+	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar)) {
+	  UserMoveEvent(fromX, fromY, toX, toY, promoChar);	
+	} else {
+	  DisplayMoveError(_("Could not parse move"));
+	}
+      }
+}
+
+void
 DisplayMove(moveNumber)
      int moveNumber;
 {

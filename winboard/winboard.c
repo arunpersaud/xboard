@@ -653,7 +653,6 @@ LRESULT CALLBACK
   StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 VOID APIENTRY MenuPopup(HWND hwnd, POINT pt, HMENU hmenu, UINT def);
 void ParseIcsTextMenu(char *icsTextMenuString);
-VOID PopUpMoveDialog(char firstchar);
 VOID PopUpNameDialog(char firstchar);
 VOID UpdateSampleText(HWND hDlg, int id, MyColorizeAttribs *mca);
 
@@ -4280,7 +4279,7 @@ ButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	SendMessage(h, WM_CHAR, wParam, lParam);
 	return TRUE;
       } else if (isalpha((char)wParam) || isdigit((char)wParam)){
-	PopUpMoveDialog((char)wParam);
+	TypeInEvent((char)wParam);
       }
       break;
     }
@@ -4589,7 +4588,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	SendMessage(h, message, wParam, lParam);
     } else if(lParam != KF_REPEAT) {
 	if (isalpha((char)wParam) || isdigit((char)wParam)) {
-		PopUpMoveDialog((char)wParam);
+		TypeInEvent((char)wParam);
 	} else if((char)wParam == 003) CopyGameToClipboard();
 	 else if((char)wParam == 026) PasteGameOrFENFromClipboard();
     }
@@ -5013,7 +5012,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_TypeInMove:
-      PopUpMoveDialog('\000');
+      TypeInEvent('\000');
       break;
 
     case IDM_TypeInName:
@@ -6404,9 +6403,6 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   char move[MSG_SIZ];
   HWND hInput;
-  ChessMove moveType;
-  int fromX, fromY, toX, toY;
-  char promoChar;
 
   switch (message) {
   case WM_INITDIALOG:
@@ -6426,35 +6422,7 @@ TypeInMoveDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
       shiftKey = GetKeyState(VK_SHIFT) < 0; // [HGM] remember last shift status
       GetDlgItemText(hDlg, OPT_Move, move, sizeof(move));
-      { int n; Board board;
-	// [HGM] FENedit
-	if(gameMode == EditPosition && ParseFEN(board, &n, move) ) {
-		EditPositionPasteFEN(move);
-		EndDialog(hDlg, TRUE);
-		return TRUE;
-	}
-	// [HGM] movenum: allow move number to be typed in any mode
-	if(sscanf(move, "%d", &n) == 1 && n != 0 ) {
-	  ToNrEvent(2*n-1);
-	  EndDialog(hDlg, TRUE);
-	  return TRUE;
-	}
-      }
-      if (gameMode != EditGame && currentMove != forwardMostMove && 
-	gameMode != Training) {
-	DisplayMoveError(_("Displayed move is not current"));
-      } else {
-//	GetDlgItemText(hDlg, OPT_Move, move, sizeof(move)); // moved upstream
-	int ok = ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
-	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
-	if(!ok && move[0] >= 'a') { move[0] += 'A' - 'a'; ok = 2; } // [HGM] try also capitalized
-	if (ok==1 || ok && ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
-	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar)) {
-	  UserMoveEvent(fromX, fromY, toX, toY, promoChar);	
-	} else {
-	  DisplayMoveError(_("Could not parse move"));
-	}
-      }
+      TypeInDoneEvent(move);
       EndDialog(hDlg, TRUE);
       return TRUE;
     case IDCANCEL:
@@ -6472,21 +6440,11 @@ VOID
 PopUpMoveDialog(char firstchar)
 {
     FARPROC lpProc;
-    
-    if ((gameMode == BeginningOfGame && !appData.icsActive) || 
-        gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack ||
-	gameMode == AnalyzeMode || gameMode == EditGame || 
-	gameMode == EditPosition || gameMode == IcsExamining ||
-	gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
-	isdigit(firstchar) && // [HGM] movenum: allow typing in of move nr in 'passive' modes
-		( gameMode == AnalyzeFile || gameMode == PlayFromGameFile ||
-		  gameMode == IcsObserving || gameMode == TwoMachinesPlay    ) ||
-	gameMode == Training) {
+
       lpProc = MakeProcInstance((FARPROC)TypeInMoveDialog, hInst);
       DialogBoxParam(hInst, MAKEINTRESOURCE(DLG_TypeInMove),
 	hwndMain, (DLGPROC)lpProc, (LPARAM)firstchar);
       FreeProcInstance(lpProc);
-    }
 }
 
 /*---------------------------------------------------------------------------*\

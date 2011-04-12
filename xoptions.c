@@ -1926,70 +1926,27 @@ void TypeInProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Widget edit;
-    int j, fromX, fromY, toX, toY;
-    Arg args[16];
+    Arg args[2];
     String val;
-    char *move, promoChar;
-    ChessMove moveType;
 
-    if(prms[0][0] == '0') PopDown(0); // escape hit
-    edit = boxOptions[0].handle;
-    j = 0;
-    XtSetArg(args[j], XtNstring, &val); j++;
-    XtGetValues(edit, args, j);
-      move = val;
-      { int n; Board board;
-	// [HGM] FENedit
-	if(gameMode == EditPosition && ParseFEN(board, &n, move) ) {
-		EditPositionPasteFEN(move);
-		PopDown(0);
-		return;
-	}
-	// [HGM] movenum: allow move number to be typed in any mode
-	if(sscanf(move, "%d", &n) == 1 && n != 0 ) {
-	  ToNrEvent(2*n-1);
-	  PopDown(0);
-	  return;
-	}
-      }
-      if (gameMode != EditGame && currentMove != forwardMostMove && 
-	gameMode != Training) {
-	DisplayMoveError(_("Displayed move is not current"));
-      } else {
-	int ok = ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
-	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
-	if(!ok && move[0] >= 'a') { move[0] += 'A' - 'a'; ok = 2; } // [HGM] try also capitalized
-	if (ok==1 || ok && ParseOneMove(move, gameMode == EditPosition ? blackPlaysFirst : currentMove, 
-	  &moveType, &fromX, &fromY, &toX, &toY, &promoChar)) {
-	  UserMoveEvent(fromX, fromY, toX, toY, promoChar);	
-	} else {
-	  DisplayMoveError(_("Could not parse move"));
-	}
-      }
-      PopDown(0);
+    if(prms[0][0] == '1') {
+	XtSetArg(args[0], XtNstring, &val);
+	XtGetValues(boxOptions[0].handle, args, 1);
+	TypeInDoneEvent((char*)val);
+    }
+    PopDown(0);
 }
 
 char moveTypeInTranslations[] =
     "<Key>Return: TypeInProc(1) \n"
     "<Key>Escape: TypeInProc(0) \n";
 
-void MoveTypeInPopup(char firstchar)
+void PopUpMoveDialog(char firstchar)
 {
     static char buf[2];
-    if ((gameMode == BeginningOfGame && !appData.icsActive) || 
-        gameMode == MachinePlaysWhite || gameMode == MachinePlaysBlack ||
-	gameMode == AnalyzeMode || gameMode == EditGame || 
-	gameMode == EditPosition || gameMode == IcsExamining ||
-	gameMode == IcsPlayingWhite || gameMode == IcsPlayingBlack ||
-	isdigit(firstchar) && // [HGM] movenum: allow typing in of move nr in 'passive' modes
-		( gameMode == AnalyzeFile || gameMode == PlayFromGameFile ||
-		  gameMode == IcsObserving || gameMode == TwoMachinesPlay    ) ||
-	gameMode == Training) {
-	    buf[0]= firstchar; icsText = buf;
-	    if(GenericPopUp(boxOptions, _("Type a move"), 0))
-		XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(moveTypeInTranslations));
-	}
+    buf[0] = firstchar; icsText = buf;
+    if(GenericPopUp(boxOptions, _("Type a move"), 0))
+	XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(moveTypeInTranslations));
 }
 
 void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
@@ -2001,9 +1958,8 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
     XQueryKeymap(xDisplay,keys);
     metaL = XKeysymToKeycode(xDisplay, XK_Meta_L);
     metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
-//{int i; for(i=0;i<32;i++)printf("%02x",keys[i]);printf("\n");}
     if ( n == 1 && *buf > 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) // printable, no alt
-	MoveTypeInPopup(*buf);
+	PopUpMoveDialog(*buf);
 
 }
 
