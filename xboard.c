@@ -1509,7 +1509,7 @@ SaveFontArg(FILE *f, ArgDescriptor *ad)
 	break;
   }
   for(i=0; i<MAX_SIZE; i++) if(fontValid[n][i]) // [HGM] font: store all standard fonts
-    fprintf(f, OPTCHAR "%s" SEPCHAR "size%d:%s\n", ad->argName, i, fontTable[n][i]);
+    fprintf(f, OPTCHAR "%s" SEPCHAR "\"size%d:%s\"\n", ad->argName, i, fontTable[n][i]);
 }
 
 void
@@ -3062,7 +3062,6 @@ FindFont(pattern, targetPxlSize)
     char *def_string, *base_fnt_lst, strInt[3];
     XFontSet fntSet;
     XFontStruct **fnt_list;
-
     base_fnt_lst = calloc(1, strlen(pattern) + 3);
     snprintf(strInt, sizeof(strInt)/sizeof(strInt[0]), "%d", targetPxlSize);
     p = strstr(pattern, "--");
