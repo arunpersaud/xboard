@@ -855,8 +855,8 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 				SFprepareToReturn();
 				return stderr;
 			}
-			if (fp = SFopenFile(*name_return, mode,
-					    prompt, failed)) {
+			if ((*name_return)[strlen(*name_return)-1] != '/' &&         // [HGM] refuse directories
+			    (fp = SFopenFile(*name_return, mode, prompt, failed))) {
 				SFprepareToReturn();
 				return fp;
 			}
