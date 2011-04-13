@@ -2622,7 +2622,8 @@ XBoard square size (hint): %d\n\
     }
     gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
     InitPosition(TRUE);
-    XtSetKeyboardFocus(shellWidget, formWidget);
+//    XtSetKeyboardFocus(shellWidget, formWidget);
+    XSetInputFocus(xDisplay, XtWindow(formWidget), RevertToPointerRoot, CurrentTime);
 
     XtAppMainLoop(appContext);
     if (appData.debugMode) fclose(debugFP); // [DM] debug
