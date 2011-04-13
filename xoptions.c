@@ -1236,13 +1236,14 @@ void GenericReadout()
 		    sscanf(val, "%f", &x);
 		    if(x > currentOption[i].max) x = currentOption[i].max;
 		    if(x < currentOption[i].min) x = currentOption[i].min;
-		    if(currentOption[i].value != x) {
+		    if(currentOption[i].type == Fractional)
+			*(float*) currentOption[i].target = x; // engines never have float options!
+		    else if(currentOption[i].value != x) {
 			currentOption[i].value = x;
-			if(currentCps) { // engines never have float options, so no decimals!
+			if(currentCps) {
 			    snprintf(buf, MSG_SIZ,  "option %s=%.0f\n", currentOption[i].name, x);
 			    SendToProgram(buf, currentCps);
-			} else if(currentOption[i].type == Spin) *(int*) currentOption[i].target = x;
-			else *(float*) currentOption[i].target = x;
+			} else *(int*) currentOption[i].target = x;
 		    }
 		    break;
 		case CheckBox:
