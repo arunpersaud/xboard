@@ -624,6 +624,7 @@ int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
 static Option *currentOption;
 extern Widget shells[];
+static Boolean browserUp;
 
 void CheckCallback(Widget ww, XtPointer data, XEvent *event, Boolean *b)
 {
@@ -659,6 +660,7 @@ void SpinCallback(w, client_data, call_data)
 	XtSetArg(args[0], XtNstring, &q);
 	XtGetValues(currentOption[data].handle, args, 1);
 	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
+	browserUp = True;
 	if(XsraSelFile(shells[0], currentOption[data].name, NULL, NULL, "", "", r,
 			 	  currentOption[data].type == PathName ? "p" : "f", NULL, &p)) {
 		int len = strlen(p);
@@ -666,6 +668,7 @@ void SpinCallback(w, client_data, call_data)
 		XtSetArg(args[0], XtNstring, p);
 		XtSetValues(currentOption[data].handle, args, 1);
 	}
+	browserUp = False;
 	SetFocus(currentOption[data].handle, shells[0], (XEvent*) NULL, False);
 	return;
     } else
@@ -785,6 +788,7 @@ void GenericPopDown(w, event, prms, nprms)
      Cardinal *nprms;
 {
     int n;
+    if(browserUp) return; // prevent closing dialog when it has an open file-browse daughter
     PopDown(prms[0][0] - '0');
 }
 
