@@ -730,6 +730,7 @@ SFbuttonReleaseList(w, n, event)
 	XButtonReleasedEvent	*event;
 {
 	SFDir	*dir;
+	static int lastClick;
 
 	if(event->button == Button4 || event->button == Button5) return; // [HGM] mouse wheel does not select
 	SFbuttonPressed = 0;
@@ -745,7 +746,9 @@ SFbuttonReleaseList(w, n, event)
 			dir->entries[dir->vOrigin + SFcurrentInvert[n]].shown
 		);
 		SFmotionList(w, n, (XMotionEvent *) event);
+		if(lastClick == 256*n + SFcurrentInvert[n]) SFstatus = SEL_FILE_OK; // [HGM] double click implies OK
 	}
+	lastClick = 256*n + SFcurrentInvert[n];
 }
 
 static int
