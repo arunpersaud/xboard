@@ -623,7 +623,7 @@ int SaveGameListAsText(FILE *f)
     ListGame * lg = (ListGame *) gameList.head;
     int nItem;
 
-    if( ((ListGame *) gameList.tailPred)->number <= 0 ) {
+    if( !glc || ((ListGame *) gameList.tailPred)->number <= 0 ) {
         DisplayError("Game list not loaded or empty", 0);
         return False;
     }
