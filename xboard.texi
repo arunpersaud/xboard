@@ -58,6 +58,7 @@ This manual documents version @value{VERSION} of XBoard.
 
 @menu
 * Major modes::     The main things XBoard can do.
+* Basic operation:: Mouse and keyboard functions.
 * Menus::           Menus, buttons, and keys.
 * Options::         Command options supported by XBoard.
 * Chess Servers::   Using XBoard with an Internet Chess Server (ICS).
@@ -113,32 +114,29 @@ works with the cmail program. See @ref{CMail} below for
 instructions.
 @end table
 
-@node Menus
-@chapter Menus, buttons, and keys
-@cindex Menus
+@node Basic operation
+@chapter Basic operation
+@cindex Basic operation
 
 To move a piece, you can drag it with the left mouse button, or you
 can click the left mouse button once on the piece, then once more on
-the destination square.  To drop a new piece on a square (when
-applicable), press the middle or the right mouse button over the
-square and select from the pop-up menu.  In cases where you can drop
-either a white or black piece, use the middle button (or shift+right)
-for white and the right button (or shift+middle) for black.  When you
-are playing a bughouse game on an Internet Chess Server, a list of the
-off-board pieces that each player has available is shown in the window
-title after the player's name; in addition, the piece menus show the
-number of pieces available of each type. From version 4.3.14 on, it is
-also possible in crazyhouse, bughouse or shogi to drag and drop pieces
-to the board from the holdings squares displayed next to the board.
-This latter method for dropping pieces during a game is preferred,
-and the piece-drop menu is now deprecated (except for editing a position).
-Although the old behavior can still be selected through a command-line
-option, the default function of the right mouse button is to display
-the position the chess program thinks it will end up in,
-while moving the mouse vertically with this button pressed will step
-through the principal variation to show how this position will be 
-reached.
-Lines of play displayed in the engine-output window an similarly
+the destination square. In crazyhouse, bughouse or shogi you can
+drag and drop pieces to the board from the holdings squares 
+displayed next to the board.
+Old behavior, where right-clicking a square brings up a menu
+where you can select what piece to drop on it can still be 
+selected through a command-line option.
+But only in Edit Position mode right clicking a square is still used to
+put a piece on it, and the piece to drop is selected by sweeping
+the mouse vertically with the button held down.
+
+The default function of the right mouse button in other modes is 
+to display the position the chess program thinks it will end up in.
+While moving the mouse vertically with this button pressed 
+XBoard will step through the principal variation to show how 
+this position will be reached.
+Lines of play displayed in the engine-output window,
+or PGN variations in the comment window can similarly
 be played out on the board, by right-clicking on them.
 
 When connected to an ICS, it is possible to call up a graphical
@@ -174,6 +172,10 @@ When XBoard is iconized, its graphical icon is a white knight if
 it is White's turn to move, a black knight if it is Black's turn.  See
 Iconize in @ref{Keys} below if you have problems getting this
 feature to work.
+
+@node Menus
+@chapter Menus, buttons, and keys
+@cindex Menus
 
 @menu
 * File Menu::       Accessing external games and positions.
