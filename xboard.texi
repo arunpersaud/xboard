@@ -154,6 +154,14 @@ Right-clicking off dots will refresh the graph.
 
 Most other XBoard commands are available from the menu bar. The most
 frequently used commands also have shortcut keys or on-screen buttons.
+These shortcut keystrokes are mostly non-printable characters.
+Typing a letter or digit while the board window has focus
+will bring up a type-in box with the typed letter already in it.
+You can use that to type a move in siuations where it is your
+turn to enter a move,
+type a move number to call up the position after that move
+in the display,
+or, in Edit Position mode, type a FEN.
 Some rarely used parameters can only be set through options on the
 command line used to invoke XBoard.
 
