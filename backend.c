@@ -6445,7 +6445,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 {
     int x, y;
     Boolean saveAnimate;
-    static int second = 0, promotionChoice = 0;
+    static int second = 0, promotionChoice = 0, clearFlag = 0;
     char promoChoice = NULLCHAR;
     ChessSquare piece;
 
@@ -6602,6 +6602,14 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 
     if (clickType == Release && x == fromX && y == fromY) {
 	DragPieceEnd(xPix, yPix); dragging = 0;
+	if(clearFlag) {
+	    // a deferred attempt to click-click move an empty square on top of a piece
+	    boards[currentMove][y][x] = EmptySquare;
+	    ClearHighlights();
+	    DrawPosition(FALSE, boards[currentMove]);
+	    fromX = fromY = -1; clearFlag = 0;
+	    return;
+	}
 	if (appData.animateDragging) {
 	    /* Undo animation damage if any */
 	    DrawPosition(FALSE, NULL);
@@ -6621,12 +6629,20 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	return;
     }
 
+    clearFlag = 0;
+
     /* we now have a different from- and (possibly off-board) to-square */
     /* Completed move */
     toX = x;
     toY = y;
     saveAnimate = appData.animate;
     if (clickType == Press) {
+	if(gameMode == EditPosition && boards[currentMove][fromY][fromX] == EmptySquare) {
+	    // must be Edit Position mode with empty-square selected
+	    fromX = x; fromY = y; DragPieceBegin(xPix, yPix); dragging = 1; // consider this a new attempt to drag
+	    if(x >= BOARD_LEFT && x < BOARD_RGHT) clearFlag = 1; // and defer click-click move of empty-square to up-click
+	    return;
+	}
 	/* Finish clickclick move */
 	if (appData.animate || appData.highlightLastMove) {
 	    SetHighlights(fromX, fromY, toX, toY);
