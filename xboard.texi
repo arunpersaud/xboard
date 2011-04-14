@@ -999,13 +999,23 @@ is a good place for this; see @ref{ICS options}.)
 @cindex General Options, Menu Item
 The following items to set option values appear in the dialog
 summoned by the general Options menu item.
-@itemx Always Queen
-@cindex Always Queen, Menu Item
-If this option is off, XBoard brings up a dialog
+@itemx Almost Always Queen
+@cindex Almost Always Queen, Menu Item
+If this option is on, 7th-rank pawns automatically change into
+Queens when you pick them up,
+and when you drag them to the promotion square and release them there,
+they will promote to that.
+But when you drag such a pawn backwards first,
+its identity will start to cycle through the other available pieces.
+This will continue ntil you start to move it forward;
+this will then fix the identity of the piece,
+so that you can safely put it down on the promotion square.
+If this option is off, what happens depends on the
+option @code{alwaysPromoteToQueen},
+which would force promotion to Queen when true.
+Otherwise XBoard would bring up a dialog
 box whenever you move a pawn to the last rank, asking what piece
-you want to promote it to. If the option is true, your pawns are
-always promoted to queens. Your opponent can still under-promote.
-The shifted @kbd{Ctrl-Q} key is a keyboard equivalent.
+you want to promote to.
 @itemx Animate Dragging
 @cindex Animate Dragging, Menu Item
 If Animate Dragging is on, while you are dragging a piece with the
@@ -1088,7 +1098,8 @@ can move (or capture) to.
 Furthermore, a double-click on a piece that can only make a single capture
 will cause that capture to be made.
 Promoting a Pawn by clicking its to-square will suppress the promotion
-popup, and make it promote to Queen.
+popup or other methods for selecting an under-promotion, 
+and make it promote to Queen.
 @itemx Periodic Updates
 @cindex Periodic Updates, Menu Item
 If this option is off (or if
@@ -2353,6 +2364,10 @@ Sets the Popup Move Errors menu option.  @xref{Options Menu}. Default: false.
 @cindex queen, option
 @cindex alwaysPromoteToQueen, option
 Sets the Always Queen menu option.  @xref{Options Menu}.  Default: false.
+@item -sweepPromotions true/false
+@cindex sweepPromotion, option
+Sets the Almost Always Promote to Queen menu option.  
+@xref{Options Menu}.  Default: false.
 @item -legal/-xlegal or -testLegality true/false
 @cindex legal, option
 @cindex testLegality, option
