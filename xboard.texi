@@ -376,10 +376,21 @@ The shifted @kbd{Ctrl-E} key is a keyboard equivalent.
 Use mouse button 1 to drag pieces to new squares, or to delete a piece
 by dragging it off the board or dragging an empty square on top of it.
 To drop a new piece on a square, press mouse button 2 or 3 over the
-square. This brings up a menu of white pieces (button 2) or
-black pieces (button 3). Additional menu choices let you empty the
-square or clear the board. You can set the side to play next by
-clicking on the word White or Black at the top of the screen.
+square.
+This puts a white or black pawn in the square, respectively,
+but you can change that to any other piece type by dragging the
+mouse down before you release the button.
+You will then see the piece on the originally clicked square
+cycle through the available pieces
+(including those of opposite color),
+and can release the button when you see the piece you want.
+To alter the side to move, you can click the clock 
+(the words White and Black above the board)
+of the side you want to give the move to.
+To clear the board you can click the clock of the side that
+alread has the move (which is highlighted in black).
+The old behavior with a piece menu can still be configured
+with the aid of the @code{pieceMenu} option.
 Selecting @samp{Edit Position} causes XBoard to discard
 all remembered moves in the current game.
 
@@ -2156,6 +2167,17 @@ This option allows you to emulate old behavior,
 where the right mouse button brings up the (now deprecated) drop menu 
 rather than displaying the position at the end of the principal variation. 
 Default: False.
+@item -pieceMenu true|false
+@cindex pieceMenu, option
+This option allows you to emulate old behavior, 
+where the right mouse button brings up the (now deprecated) piece menu
+in Edit Position mode.
+From this menu you can select the piece to put on the square you
+clicked to bring up the menu,
+or select items such as @kbd{clear board}.
+You can also @kbd{promote} or @kbd{demote} a clicked piece to convert
+it into an unorthodox piece that is not directly in the menu,
+or give the move to @kbd{black} or @kbd{white}.
 @item -variations true|false
 @cindex variations, option
 When this option is on, you can start new variations in Edit Game or
