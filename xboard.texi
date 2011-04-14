@@ -345,6 +345,13 @@ to another application (such as a text editor or another copy of
 XBoard) using that application's paste command.  In many X
 applications, such as xterm and emacs, the middle mouse button can be
 used for pasting; in XBoard, you must use the Paste Position command.
+@item Copy Game List
+@cindex Copy Game List, Menu Item
+Copies the current game list to the clipboard,
+and sets the X selection to this text.
+A format of comma-separated double-quoted strings is used,
+including all tags,
+so it can be easily imported into spread-sheet programs.
 @item Paste Game
 @cindex Paste Game, Menu Item
 Interprets the current X selection as a game record and loads it, as
