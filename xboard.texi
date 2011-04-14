@@ -224,7 +224,16 @@ keyboard equivalent. If you play with an engine, the engine must
 be able to play the selected variant, or the command will be ignored.
 XBoard supports all major variants, such as xiangqi, shogi, chess, chess960,
 Capablanca Chess, shatranj, crazyhouse, bughouse.
-(But not every board size has built-in bitmaps for un-orthodox pieces!)
+But not every board size has built-in bitmaps for un-orthodox pieces!
+Only sizes bulky (72) and middling (49) have all pieces,
+while size petite (33) has most.
+These sizes would have to be set at startup through the @code{size}
+command-line option when you start up XBoard for such variants to be playable.
+
+You can overrule the default board format of the selected variant,
+(e.g. to play suicide chess on a 6 x 6 board),
+in this dialog, but normally you would not do that, 
+and leave them at '-1', which means 'default'.
 @item Load Game
 @cindex Load Game, Menu Item
 Plays a game from a record file. The @kbd{Ctrl-O} key is a keyboard equivalent.
@@ -574,6 +583,18 @@ creates an extra window that you can use for typing in ICS commands.
 The input box is especially useful if you want to type in something long or do
 some editing on your input, because output from ICS doesn't get mixed
 in with your typing as it would in the main terminal window.
+@item Board
+@cindex Board, Menu Item
+Summons a dialog where you can customaize the look of the chess board.
+Here you can specify the directory from which piece images should be taken,
+when you don't want to use the built-in piece images
+(see @code{pixmapDirectory} and @code{bitmapDirectory} options),
+an external pixmap to be used for the board squares
+(@code{liteBackTextureFile} and @code{darkBackTextureFile} options),
+and square and piece colors for the built-ins.
+@item Game List Tags
+@cindex Game List Tags, Menu Item
+a duplicate of the Game List dialog in the Options menu.
 @end table
 
 @node Mode Menu
@@ -672,6 +693,11 @@ drag pieces to arbitrary squares while examining on ICC, but you can
 do so in @kbd{bsetup} mode on FICS.  In addition, the menu commands
 @samp{Forward}, @samp{Backward}, @samp{Pause}, and @samp{Stop Examining}
 have special functions in this mode; see below.
+@item Machine Match
+@cindex Machine match, Menu Item
+Starts a match between two chess programs,
+with a number of games and other parameters set through
+the @samp{Match Options} menu dialog.
 @item Pause
 @cindex Pause, Menu Item
 Pauses updates to the board, and if you are playing against a chess engine,
@@ -844,11 +870,21 @@ that SMP engines can use, and where to find the Polyglot adapter needed
 to run UCI engines under XBoard. The feature that allows setting of these parameters on
 engines is new since XBoard 4.3.15, so not many XBoard/WinBoard engines respond
 to it yet, but UCI engines should.
+
 It is also possible to specify a GUI opening book here, i.e. an opening
 book that XBoard consults for any position a playing engine gets in.
 It then forces the engine to play the book move, rather than to think up its own,
 if that position is found in the book.
 The book can switched on and off independently for either engine.
+The way book moves are chosen can be influenced through the settings of
+book depth and variety.
+After both sides have played more moves than the specified depth,
+the book will no longer be consulted.
+When the variety is set to 50, moves will be played with the probability
+specified in the book.
+When set to 0, only the move(s) with the highest probability will be played.
+When set to 100, all listed moves will be played with equal pobability.
+Other settings interpolate between that.
 The shifted @kbd{Alt+U} key is a keyboard equivalent.
 @item Adjudications
 @cindex Adjudications, Menu Item
@@ -872,25 +908,101 @@ of them is behind more than a user-adjustable score threshold.
 For the latter adjudication to work, XBoard should be able to properly understand
 the engine's scores. To facilitate the latter, you can inform xboard here if
 the engines report scores from the viewpoint of white, or from that of their own color.
+@item Match Game Options
+@cindex Match Game Options, Menu Item
+Summons a dialog where you can set options important for playing automatic 
+matches between two chess programs 
+(e.g. by using the @samp{Machine Match} menu item in the @samp{Mode} menu).
+You can specify the number of games such a match should last,
+and the duration of the pause between games
+(important for some older engines to not have the last move of a previous
+game be given when the next game has already started).
+You can also specify a file with opening lines, or a file with initial positions
+(the @code{loadGameFile} and @code{loadPositionFile} options),
+and the number of the game or position to use from these files.
+Values -1 and -2 of this 'index' convey a special meaning,
+namely that XBoard should automatically step through all lines or positions
+in these files.
+With -1 such stepping is done every game; with -2 every two games,
+so that each line or position is played with both colors before stepping
+to the next one.
+You can have XBoard automatically rewind to the first line or position
+in the file after the index reaches a certain vaue,
+which you can also specify here.
+@item Load Game Options
+@cindex Load Game Options, Menu Item
+Summons a dialog where you can set the @code{autoDisplayComment} and 
+@code{autoDisplayTags} options, (which control popups when viewing loaded games),
+and specify the rate at which loaded games are auto-played,
+in seconds per move (which can be a fractional number, like 1.6).
+@item Save Game Options
+@cindex ave Game Options, Menu Item
+Summons a dialog where you can specify the files on which XBoard should
+automtically save any played or entered games, 
+(the @code{saveGameFile} option), 
+or the final position of such games (the @code{savePositionfile} option).
+You can also select 'auto-save' without a file name,
+in which case XBoard will prompt the user for a file name after each game.
+You can also set the default value for the PGN Event tag that will
+be used for each new game you start.
+Various options for the format of the game can be specified as well,
+such as whether scores and depths of engine games should be saved as comments,
+and if a tag with info about the score with which the engine came out of book
+should be included.
+For Chess, always set the format to PGN, rather than "old save stye"!
 @item Game List
 @cindex Game List Tags, Menu Item
 Pops up a dialog where you can select the PGN tags that should appear
 on the lines in the game list, and their order.
-@item Always Queen
+@item Sound Options
+@cindex Sound Options, Menu Item
+Summons a dialog where you can specify the sounds that should accompany
+various events that can occur XBoard.
+Most events are only relevant to ICS play, 
+but the move sound is an important exception.
+For each event listed in the dialog, 
+you can select a standard sound from a menu.
+You can also select a user-supplied sound file,
+by typing its name into the designated text-edit field first,
+and then selecting "Above WAV File" from the menu for the event.
+A dummy event has been provided for trying out the sounds with the
+"play" button next to it.
+The directory with standard sounds, and the external program for playing
+the sounds can be specified too, but normally you would not touch these
+once XBoard is properly installed.
+@itemx Move Sound
+@cindex Move Sound, Menu Item
+When a move sound other than 'None' is selected, 
+XBoard alerts you by playing a sound
+after each of your opponent's moves (or after every
+move if you are observing a game on the Internet Chess Server).
+The sound is not played after moves you make or moves read from a
+saved game file.
+If you turn on this option when using XBoard with the Internet
+Chess Server, you will probably want to give the
+@kbd{set bell 0}
+command to the ICS, since otherwise the ICS will ring the terminal bell
+after every move (not just yours). (The @file{.icsrc} file
+is a good place for this; see @ref{ICS options}.)
+@item General Options
+@cindex General Options, Menu Item
+The following items to set option values appear in the dialog
+summoned by the general Options menu item.
+@itemx Always Queen
 @cindex Always Queen, Menu Item
 If this option is off, XBoard brings up a dialog
 box whenever you move a pawn to the last rank, asking what piece
 you want to promote it to. If the option is true, your pawns are
 always promoted to queens. Your opponent can still under-promote.
 The shifted @kbd{Ctrl-Q} key is a keyboard equivalent.
-@item Animate Dragging
+@itemx Animate Dragging
 @cindex Animate Dragging, Menu Item
 If Animate Dragging is on, while you are dragging a piece with the
 mouse, an image of the piece follows the mouse cursor.
 If Animate Dragging is off, there is no visual feedback while you are
 dragging a piece, but if Animate Moving is on, the move will be
 animated when it is complete. 
-@item Animate Moving
+@itemx Animate Moving
 @cindex Animate Moving, Menu Item
 If Animate Moving is on, all piece moves are animated.  An image of the
 piece is shown moving from the old square to the new square when the
@@ -898,15 +1010,7 @@ move is completed (unless the move was already animated by Animate Dragging).
 If Animate Moving is off, a moved piece instantly disappears from its
 old square and reappears on its new square when the move is complete.
 The shifted @kbd{Ctrl-A} key is a keyboard equivalent.
-@item Auto Comment
-@cindex Auto Comment, Menu Item
-If this option is on, any remarks made on ICS while you are observing or
-playing a game are recorded as a comment on the current move.  This includes
-remarks made with the ICS commands @kbd{say}, @kbd{tell}, @kbd{whisper},
-and @kbd{kibitz}.
-Limitation: remarks that you type yourself are not recognized;
-XBoard scans only the output from ICS, not the input you type to it.
-@item Auto Flag
+@itemx Auto Flag
 @cindex Auto Flag, Menu Item
 If this option is on and one player runs out of time
 before the other,
@@ -918,12 +1022,149 @@ and the ICS may award you a draw instead of a win if you have
 insufficient mating material.  In local chess engine mode,
 XBoard
 may call either player's flag and will not take material into account (?).
-@item Auto Flip View
+@itemx Auto Flip View
 @cindex Auto Flip View, Menu Item
 If the Auto Flip View option is on when you start a game, the board
 will be automatically oriented so that your pawns move from the bottom
 of the window towards the top.
-@item Auto Observe
+
+If you are playing a game on an ICS, the board is always
+oriented at the start of the game so that your pawns move from
+the bottom of the window towards the top. Otherwise, the starting
+orientation is determined by the @code{flipView} command line option;
+if it is false (the default), White's pawns move from bottom to top
+at the start of each game; if it is true, Black's pawns move from
+bottom to top. @xref{User interface options}.
+@itemx Blindfold
+@cindex Blindfold, Menu Item
+If this option is on, XBoard displays the board as usual but does
+not display pieces or move highlights.  You can still move in the
+usual way (with the mouse or by typing moves in ICS mode), even though
+the pieces are invisible.
+@itemx Drop Menu
+@cindex Drop Menu, Menu Item
+Controls if right-clicking the board in crazyhouse / bughouse
+will pop up a menu to drop a piece on the clicked square
+(old, deprecated behavior)
+or allow you to step through an engine PV
+(new, recommended behavior).
+@itemx Highlight Dragging
+@cindex Highlight Dragging, Menu Item
+If Highlight Dragging is on, and the option -showTargetSquares is also on
+in the settings file, all squares a piece that is 'picked up' with the mouse
+can legally move to are highighted with a fat colored dot in the
+highlightColor (non-captures) or premoveHighlightColor (captures).
+Legality testing must be on for XBoard to know how the piece moves.
+@itemx Highlight Last Move
+@cindex Highlight Last Move, Menu Item
+If Highlight Last Move is on, after a move is made, the starting and
+ending squares remain highlighted. In addition, after you use Backward
+or Back to Start, the starting and ending squares of the last move to
+be unmade are highlighted.
+@itemx Highlight with Arrow
+@cindex Highlight with Arrow, Menu Item
+Causes the highlighting described in Highlight Last Move to be done
+by drawing an arrow between the highlighted squares,
+so that it is visible even when the width of the grid lines is set to zero.
+@itemx One-Click Moving
+@cindex One-Click Moving, Menu Item
+If this option is on, XBoard does not wait for you to click both the
+from- and the to-square, or drag the piece, but performs a move as soon
+as it is uniqely specified.
+This applies to clicking an own piece that only has a single legal move,
+clicking an empty square or opponent piece where only one of your pieces
+can move (or capture) to.
+Furthermore, a double-click on a piece that can only make a single capture
+will cause that capture to be made.
+Promoting a Pawn by clicking its to-square will suppress the promotion
+popup, and make it promote to Queen.
+@itemx Periodic Updates
+@cindex Periodic Updates, Menu Item
+If this option is off (or if
+you are using a chess engine that does not support periodic updates),
+the analysis window
+will only be updated when the analysis changes. If this option is
+on, the Analysis Window will be updated every two seconds.
+@itemx Ponder Next Move
+@cindex Ponder Next Move, Menu Item
+If this option is off, the chess engine will think only when it is on
+move.  If the option is on, the engine will also think while waiting
+for you to make your move.
+The shifted @kbd{Ctrl-P} key is a keyboard equivalent.
+@itemx Popup Exit Message
+@cindex Popup Exit Message, Menu Item
+If this option is on, when XBoard wants to display a message just
+before exiting, it brings up a modal dialog box and waits for you to
+click OK before exiting.  If the option is off, XBoard prints the
+message to standard error (the terminal) and exits immediately.
+@itemx Popup Move Errors
+@cindex Popup Move Errors, Menu Item
+If this option is off, when you make an error in moving (such as
+attempting an illegal move or moving the wrong color piece), the
+error message is displayed in the message area.  If the option is
+on, move errors are displayed in small pop-up windows like other errors.
+You can dismiss an error pop-up either by clicking its OK button or by
+clicking anywhere on the board, including down-clicking to start a move.
+@itemx Show Coords
+@cindex Show Coords, Menu Item
+If this option is on, XBoard displays algebraic coordinates
+along the board's left and bottom edges.
+@itemx Hide Thinking
+@cindex Hide Thinking, Menu Item
+If this option is off, the chess engine's notion of the score and best
+line of play from the current position is displayed as it is
+thinking. The score indicates how many pawns ahead (or if negative,
+behind) the chess engine thinks it is. In matches between two
+machines, the score is prefixed by @samp{W} or @samp{B} to indicate
+whether it is showing White's thinking or Black's, and only the thinking
+of the engine that is on move is shown.
+The shifted @kbd{Ctrl-H} key is a keyboard equivalent.
+@itemx Test Legality
+@cindex Test Legality, Menu Item
+If this option is on, XBoard tests whether the moves you try to make
+with the mouse are legal and refuses to let you make an illegal move.
+The shifted @kbd{Ctrl-L} key is a keyboard equivalent.
+Moves loaded from a file with @samp{Load Game} are also checked.  If
+the option is off, all moves are accepted, but if a local chess engine
+or the ICS is active, they will still reject illegal moves.  Turning
+off this option is useful if you are playing a chess variant with
+rules that XBoard does not understand.  (Bughouse, suicide, and wild
+variants where the king may castle after starting on the d file are
+generally supported with Test Legality on.)
+@itemx Flash Moves
+@itemx Flash Rate
+@cindex Flash Moves, Menu Item
+@cindex Flash Rate, Menu Item
+If this option is non-zero, whenever a move is completed, 
+the moved piece flashes the specified number of times.
+The flash-rate setting determines how rapidly this flashing occurs.
+@itemx Animation Speed
+@cindex Animation Speed, Menu Item
+Determines the duration (in msec) of an animation step,
+when @samp{Animate Moving} is swiched on.
+
+@item ICS Options
+@cindex ICS Options, Menu Item
+The following options occur in a dialog summoned by the 
+ICS Options menu item.
+@itemx Auto Kibitz
+@cindex Auto Kibitz, Menu Item
+Setting this option when playingwith or aginst a chess program on an ICS
+will cause the last line of thinking output of the engine before its move
+to be sent to the ICS in a kibitz command.
+In addition, any kibitz message received through the ICS from
+an opponent chess program will be diverted to the engine-output window,
+(and suppressed in the console),
+where you can play through its PV by right-clicking it.
+@itemx Auto Comment
+@cindex Auto Comment, Menu Item
+If this option is on, any remarks made on ICS while you are observing or
+playing a game are recorded as a comment on the current move.  This includes
+remarks made with the ICS commands @kbd{say}, @kbd{tell}, @kbd{whisper},
+and @kbd{kibitz}.
+Limitation: remarks that you type yourself are not recognized;
+XBoard scans only the output from ICS, not the input you type to it.
+@itemx Auto Observe
 @cindex Auto Observe, Menu Item
 If this option is on and you add a player to your @code{gnotify}
 list on ICS, XBoard will automatically observe all of that
@@ -938,11 +1179,11 @@ your ICS
 variable is set to 0, or if the ICS you are using does not 
 properly support observing from Black's point of view,
 you will see the game from White's point of view.
-@item Auto Raise Board
+@itemx Auto Raise Board
 @cindex Auto Raise Board, Menu Item
 If this option is on, whenever a new game begins, the chessboard window
 is deiconized (if necessary) and raised to the top of the stack of windows.
-@item Auto Save
+@itemx Auto Save
 @cindex Auto Save, Menu Item
 If this option is true, at the end of every game XBoard prompts
 you for a file name and appends a record of the game to the file
@@ -950,26 +1191,20 @@ you specify.
 Disabled if the @code{saveGameFile} command-line
 option is set, as in that case all games are saved to the specified file.
 @xref{Load and Save options}.
-@item Blindfold
-@cindex Blindfold, Menu Item
-If this option is on, XBoard displays the board as usual but does
-not display pieces or move highlights.  You can still move in the
-usual way (with the mouse or by typing moves in ICS mode), even though
-the pieces are invisible.
-@item Flash Moves
-@cindex Flash Moves, Menu Item
-If this option is on, whenever a move is completed, the moved piece flashes.
-The number of times to flash is set by the flashCount command-line
-option; it defaults to 3 if Flash Moves is first turned on from the menu.
-
-If you are playing a game on an ICS, the board is always
-oriented at the start of the game so that your pawns move from
-the bottom of the window towards the top. Otherwise, the starting
-orientation is determined by the @code{flipView} command line option;
-if it is false (the default), White's pawns move from bottom to top
-at the start of each game; if it is true, Black's pawns move from
-bottom to top. @xref{User interface options}.
-@item Get Move List
+@itemx Background Observe
+@cindex Background Observe, Menu Item
+Setting this option will make XBoard suppress display of any boards
+from observed games while you are playing.
+In stead the last such board will be remembered,
+and shown to you when you right-click the board.
+This allows you to peek at your bughouse partner's game when you want,
+without disturbing your own game too much.
+@itemx Dual Board
+@cindex Dual Board, Menu Item
+Setting this option in combination with @samp{Background Observe}
+will display boards of observed games while you are playing
+on a second board next to that of your own game.
+@itemx Get Move List
 @cindex Get Move List, Menu Item
 If this option is on, whenever XBoard
 receives the first board of a new ICS game (or a different game from
@@ -983,90 +1218,35 @@ to keep from wasting time and network bandwidth fetching the move lists over
 and over.
 When you turn this option on from the menu, XBoard
 immediately fetches the move list of the current game (if any).
-@item Highlight Dragging
-@cindex Highlight Dragging, Menu Item
-If Highlight Dragging is on, and the option -showTargetSquares is also on
-in the settings file, all squares a piece that is 'picked up' with the mouse
-can legally move to are highighted with a fat colored dot in the
-highlightColor (non-captures) or premoveHighlightColor (captures).
-Legality testing must be on for XBoard to know how the piece moves.
-@item Highlight Last Move
-@cindex Highlight Last Move, Menu Item
-If Highlight Last Move is on, after a move is made, the starting and
-ending squares remain highlighted. In addition, after you use Backward
-or Back to Start, the starting and ending squares of the last move to
-be unmade are highlighted.
-@item Highlight with Arrow
-@cindex Highlight with Arrow, Menu Item
-Causes the highlighting described in Highlight Last Move to be done
-by drawing an arrow between the highlighted squares,
-so that it is visible even when the width of the grid lines is set to zero.
-@item Move Sound
-@cindex Move Sound, Menu Item
-If this option is on, XBoard alerts you by playing a sound
-after each of your opponent's moves (or after every
-move if you are observing a game on the Internet Chess Server).
-The sound is not played after moves you make or moves read from a
-saved game file. By default, the
-sound is the terminal bell, but on some systems you can change it
-to a sound file using the soundMove option; see below.
-
-If you turn on this option when using XBoard with the Internet
-Chess Server, you will probably want to give the
-@kbd{set bell 0}
-command to the ICS, since otherwise the ICS will ring the terminal bell
-after every move (not just yours). (The @file{.icsrc} file
-is a good place for this; see @ref{ICS options}.)
-@item ICS Alarm
-@cindex ICS Alarm, Menu Item
-When this option is on, an alarm sound is played when your clock
-counts down to the icsAlarmTime (by default, 5 seconds) in an ICS
-game.  For games with time controls that include an increment, the
-alarm will sound each time the clock counts down to the icsAlarmTime.
-By default, the alarm sound is the terminal bell, but on some systems
-you can change it to a sound file using the soundIcsAlarm option; see
-below.
-@item One-Click Moving
-@cindex One-Click Moving, Menu Item
-If this option is on, XBoard does not wait for you to click both the
-from- and the to-square, or drag the piece, but performs a move as soon
-as it is uniqely specified.
-This applies to clicking an own piece that only has a single legal move,
-clicking an empty square or opponent piece where only one of your pieces
-can move (or capture) to.
-Furthermore, a double-click on a piece that can only make a single capture
-will cause that capture to be made.
-Promoting a Pawn by clicking its to-square will suppress the promotion
-popup, and make it promote to Queen.
-@item Periodic Updates
-@cindex Periodic Updates, Menu Item
-If this option is off (or if
-you are using a chess engine that does not support periodic updates),
-the analysis window
-will only be updated when the analysis changes. If this option is
-on, the Analysis Window will be updated every two seconds.
-@item Ponder Next Move
-@cindex Ponder Next Move, Menu Item
-If this option is off, the chess engine will think only when it is on
-move.  If the option is on, the engine will also think while waiting
-for you to make your move.
-The shifted @kbd{Ctrl-P} key is a keyboard equivalent.
-@item Popup Exit Message
-@cindex Popup Exit Message, Menu Item
-If this option is on, when XBoard wants to display a message just
-before exiting, it brings up a modal dialog box and waits for you to
-click OK before exiting.  If the option is off, XBoard prints the
-message to standard error (the terminal) and exits immediately.
-@item Popup Move Errors
-@cindex Popup Move Errors, Menu Item
-If this option is off, when you make an error in moving (such as
-attempting an illegal move or moving the wrong color piece), the
-error message is displayed in the message area.  If the option is
-on, move errors are displayed in small pop-up windows like other errors.
-You can dismiss an error pop-up either by clicking its OK button or by
-clicking anywhere on the board, including down-clicking to start a move.
-@item Premove
+@itemx Quiet Play
+@cindex Quiet Play, Menu Item
+If this option is on, XBoard will automatically issue an ICS
+@kbd{set shout 0}
+command whenever you start a game and a
+@kbd{set shout 1}
+command whenever you finish one.  Thus, you will not be distracted
+by shouts from other ICS users while playing.
+@itemx Seek Graph
+@cindex Seek Graph, Menu Item
+Setting this option will cause XBoard to display an graph of
+currently active seek ads when you left-click the board
+while idle and logged on to an ICS.
+@itemx Auto-Refresh Seek Graph
+@cindex Auto-Refresh Seek Graph, Menu Item
+In combination with the @samp{Seek Graph} option this
+will cause automatic update of the seek graph while it is up.
+This only works on FICS and ICS,
+and requires a lot of bandwidth on a busy server.
+@itemx Premove
+@itemx Premove White
+@itemx Premove Black
+@itemx First White Move
+@itemx First Black Move
 @cindex Premove, Menu Item
+@cindex Premove White, Menu Item
+@cindex Premove Black, Menu Item
+@cindex First White Move, Menu Item
+@cindex First Black Move, Menu Item
 If this option is on while playing a game on an ICS, you can register
 your next planned move before it is your turn.  Move the piece with
 the mouse in the ordinary way, and the starting and ending squares
@@ -1076,40 +1256,29 @@ ICS immediately; if not, it will be ignored and you can make a
 different move.  If you change your mind about your premove, either
 make a different move, or double-click on any piece to cancel the move
 entirely.
-@item Quiet Play
-@cindex Quiet Play, Menu Item
-If this option is on, XBoard will automatically issue an ICS
-@kbd{set shout 0}
-command whenever you start a game and a
-@kbd{set shout 1}
-command whenever you finish one.  Thus, you will not be distracted
-by shouts from other ICS users while playing.
-@item Show Coords
-@cindex Show Coords, Menu Item
-If this option is on, XBoard displays algebraic coordinates
-along the board's left and bottom edges.
-@item Hide Thinking
-@cindex Hide Thinking, Menu Item
-If this option is off, the chess engine's notion of the score and best
-line of play from the current position is displayed as it is
-thinking. The score indicates how many pawns ahead (or if negative,
-behind) the chess engine thinks it is. In matches between two
-machines, the score is prefixed by @samp{W} or @samp{B} to indicate
-whether it is showing White's thinking or Black's, and only the thinking
-of the engine that is on move is shown.
-The shifted @kbd{Ctrl-H} key is a keyboard equivalent.
-@item Test Legality
-@cindex Test Legality, Menu Item
-If this option is on, XBoard tests whether the moves you try to make
-with the mouse are legal and refuses to let you make an illegal move.
-The shifted @kbd{Ctrl-L} key is a keyboard equivalent.
-Moves loaded from a file with @samp{Load Game} are also checked.  If
-the option is off, all moves are accepted, but if a local chess engine
-or the ICS is active, they will still reject illegal moves.  Turning
-off this option is useful if you are playing a chess variant with
-rules that XBoard does not understand.  (Bughouse, suicide, and wild
-variants where the king may castle after starting on the d file are
-generally supported with Test Legality on.)
+
+You can also enter premoves for the first white and black moves
+of the game.
+@itemx ICS Alarm
+@itemx ICS Alarm Time
+@cindex ICS Alarm, Menu Item
+@cindex ICS Alarm Time, Menu Item
+When this option is on, an alarm sound is played when your clock
+counts down to the icsAlarmTime in an ICS game.
+(By default, the time is 5 seconds, but you can pecify other values
+with the Alarm Time spin control.) 
+For games with time controls that include an increment, the
+alarm will sound each time the clock counts down to the icsAlarmTime.
+By default, the alarm sound is the terminal bell, but on some systems
+you can change it to a sound file using the soundIcsAlarm option; see
+below.
+@itemx Colorize Messages
+@cindex Colorize Messages, Menu Item
+Ticking this options causes various types of ICS messages do be
+displayed with different foreground or background colors in the console.
+The colors can be individually selected for each type,
+through the accompanying text edits.
+
 @item Save Settings Now
 @cindex Save Settings Now, Menu Item
 Selecting this menu item causes the current XBoard settings to be
@@ -1917,6 +2086,11 @@ any of the sound options is set to "$", the event rings the terminal
 bell by sending a ^G character to standard output, instead of playing
 a sound file.  If an option is set to the empty string "", no sound is
 played for that event.
+@item -soundDirectory directoryname
+@cindex soundDirectory, option
+@cindex Sounds
+This option specifies where XBoard will look for sound files,
+when these are not given as an absolute path name.
 @item -soundShout filename
 @itemx -soundSShout filename
 @itemx -soundChannel filename
