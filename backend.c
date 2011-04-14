@@ -6541,7 +6541,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		if (appData.highlightDragging) {
 		    SetHighlights(fromX, fromY, -1, -1);
 		}
-	    }
+	    } else fromX = fromY = -1;
 	    return;
 	}
     }
