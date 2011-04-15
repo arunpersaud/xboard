@@ -12084,6 +12084,7 @@ TwoMachinesEvent P((void))
     char buf[MSG_SIZ];
     ChessProgramState *onmove;
     char *bookHit = NULL;
+    static int stalling = 0;
 
     if (appData.noChessProgram) return;
 
@@ -12120,13 +12121,23 @@ TwoMachinesEvent P((void))
     ResurrectChessProgram();	/* in case first program isn't running */
 
     if(WaitForSecond(TwoMachinesEventIfReady)) return;
-    DisplayMessage("", "");
-    InitChessProgram(&second, FALSE);
-    SendToProgram("force\n", &second);
     if(first.lastPing != first.lastPong) { // [HGM] wait till we are sure first engine has set up position
+      DisplayMessage("", _("Waiting for first chess program"));
       ScheduleDelayedEvent(TwoMachinesEvent, 10);
       return;
     }
+    if(!stalling) {
+      InitChessProgram(&second, FALSE);
+      SendToProgram("force\n", &second);
+    }
+    if(second.lastPing != second.lastPong) { // [HGM] second engine might have to reallocate hash
+      if(!stalling) DisplayMessage("", _("Waiting for second chess program"));
+      stalling = 1;
+      ScheduleDelayedEvent(TwoMachinesEvent, 10);
+      return;
+    }
+    stalling = 0;
+    DisplayMessage("", "");
     if (startedFromSetupPosition) {
 	SendBoard(&second, backwardMostMove);
     if (appData.debugMode) {
