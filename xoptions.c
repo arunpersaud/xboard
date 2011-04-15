@@ -734,8 +734,7 @@ char *trialSound;
 static int oldCores, oldPonder;
 int MakeColors P((void));
 void CreateGCs P((int redo));
-void CreateXPMBoard P((char *s, int kind));
-void CreateXPMPieces P((void));
+void CreateAnyPieces P((void));
 void GenericReadout();
 Widget shells[10];
 Widget marked[10];
@@ -1148,12 +1147,11 @@ void AdjustColor(int i)
 
 void BoardOptionsOK(int n)
 {
-    extern int defaultLineGap;
+    extern int defaultLineGap, useImages, useImageSqs;
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
+    useImages = useImageSqs = 0;
     MakeColors(); CreateGCs(True);
-    CreateXPMPieces();
-    CreateXPMBoard(appData.liteBackTextureFile, 1);
-    CreateXPMBoard(appData.darkBackTextureFile, 0);
+    CreateAnyPieces();
     InitDrawingSizes(-1, 0);
     DrawPosition(True, NULL);
 }

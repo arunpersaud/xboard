@@ -243,6 +243,7 @@ RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
 void CreateGCs P((int redo));
+void CreateAnyPieces P((void));
 void CreateXIMPieces P((void));
 void CreateXPMPieces P((void));
 void CreateXPMBoard P((char *s, int n));
@@ -1897,6 +1898,28 @@ int MakeColors()
     return forceMono;
 }
 
+void
+CreateAnyPieces()
+{   // [HGM] taken out of main
+#if HAVE_LIBXPM
+    if (appData.monoMode && // [HGM] no sense to go on to certain doom
+       (appData.bitmapDirectory == NULL || appData.bitmapDirectory[0] == NULLCHAR))
+	    appData.bitmapDirectory = DEF_BITMAP_DIR;
+
+    if (appData.bitmapDirectory[0] != NULLCHAR) {
+      CreatePieces();
+    } else {
+      CreateXPMPieces();
+      CreateXPMBoard(appData.liteBackTextureFile, 1);
+      CreateXPMBoard(appData.darkBackTextureFile, 0);
+    }
+#else
+    CreateXIMPieces();
+    /* Create regular pieces */
+    if (!useImages) CreatePieces();
+#endif
+}
+
 int
 main(argc, argv)
      int argc;
@@ -2137,10 +2160,7 @@ XBoard square size (hint): %d\n\
     if (forceMono) {
       fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	      programName);
-
-      if (appData.bitmapDirectory == NULL ||
-	      appData.bitmapDirectory[0] == NULLCHAR)
-	    appData.bitmapDirectory = DEF_BITMAP_DIR;
+	appData.monoMode = True;
     }
 
     if (appData.lowTimeWarning && !appData.monoMode) {
@@ -2550,19 +2570,7 @@ XBoard square size (hint): %d\n\
 
     CreateGCs(False);
     CreateGrid();
-#if HAVE_LIBXPM
-    if (appData.bitmapDirectory[0] != NULLCHAR) {
-      CreatePieces();
-    } else {
-      CreateXPMPieces();
-      CreateXPMBoard(appData.liteBackTextureFile, 1);
-      CreateXPMBoard(appData.darkBackTextureFile, 0);
-    }
-#else
-    CreateXIMPieces();
-    /* Create regular pieces */
-    if (!useImages) CreatePieces();
-#endif
+    CreateAnyPieces();
 
     CreatePieceMenus();
 
@@ -8285,8 +8293,7 @@ CreateAnimVars ()
 
   /* For XPM pieces, we need bitmaps to use as masks. */
   if (useImages)
-    CreateAnimMasks(info.depth);
-   xpmDone = 1;
+    CreateAnimMasks(info.depth), xpmDone = 1;
 }
 
 #ifndef HAVE_USLEEP
