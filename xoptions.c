@@ -1197,7 +1197,7 @@ Option boardOptions[] = {
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
 {    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
 { 0, 0, 0, NULL, (void*) &appData.upsideDown, "", NULL, CheckBox, _("Flip Pieces Shogi Style        (Colored buttons restore default)") },
-{ 0, 0, 0, NULL, (void*) &appData.allWhite, "", NULL, CheckBox, _("Use Outline Pieces for Black") },
+//{ 0, 0, 0, NULL, (void*) &appData.allWhite, "", NULL, CheckBox, _("Use Outline Pieces for Black") },
 { 0, 0, 0, NULL, (void*) &appData.monoMode, "", NULL, CheckBox, _("Mono Mode") },
 { 0,-1, 5, NULL, (void*) &appData.overrideLineGap, "", NULL, Spin, _("Line Gap ( -1 = default for board size):") },
 { 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, "", NULL, FileName, _("Light-Squares Texture File:") },
