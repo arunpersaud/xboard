@@ -1585,7 +1585,19 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 
   if(!(option[i].min & 2)) {
     j=0;
-    if(option[i].min & 1) { XtSetArg(args[j], XtNfromHoriz, last); last = forelast; } else
+    if(option[i].min & 1) {
+	for(j=i-1; option[j+1].min&1 && option[j].type == Button; j--) {
+	    XtSetArg(args[0], XtNtop, XtChainBottom);
+	    XtSetArg(args[1], XtNbottom, XtChainBottom);
+	    XtSetValues(option[j].handle, args, 2);
+	}
+	if(option[j].type == TextBox && option[j].name[0] == NULLCHAR) {
+	    XtSetArg(args[0], XtNbottom, XtChainBottom);
+	    XtSetValues(option[j].handle, args, 1);
+	}
+	j = 0;
+	XtSetArg(args[j], XtNfromHoriz, last); last = forelast;
+    } else
     XtSetArg(args[j], XtNfromHoriz, widest ? widest : dialog);  j++;
     XtSetArg(args[j], XtNfromVert, anchor ? anchor : last);  j++;
     XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
@@ -1862,13 +1874,13 @@ void changeTags(int n)
 {
     Arg args[16];
     XtSetArg(args[0], XtNstring, &tagsText);
-    XtGetValues(currentOption[0].handle, args, 1);
+    XtGetValues(currentOption[1].handle, args, 1);
     ReplaceTags(tagsText, &gameInfo);
 }
 
 Option tagsOptions[] = {
-{ 0xD, 200, 250, NULL, (void*) &tagsText, "", NULL, TextBox, "" },
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label,  "" },
+{ 0xD, 200, 250, NULL, (void*) &tagsText, "", NULL, TextBox, "" },
 {   0,  0,    0, NULL, (void*) &changeTags, NULL, NULL, Button, "save changes" },
 {   0,  1,    0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }
 };
@@ -1880,10 +1892,10 @@ void NewTagsPopup(char *text, char *msg)
 
     if(shells[2]) { // if already exists, alter title and content
 	XtSetArg(args[0], XtNstring, text);
-	XtSetValues(tagsOptions[0].handle, args, 1);
+	XtSetValues(tagsOptions[1].handle, args, 1);
     }
     tagsText = text;
-    tagsOptions[1].textValue = msg;
+    tagsOptions[0].textValue = msg;
     MarkMenu("menuView.Show Tags", 2);
     GenericPopUp(tagsOptions, _("Tags"), 2);
 }
