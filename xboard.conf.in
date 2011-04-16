@@ -32,7 +32,7 @@
 ; Behavior
 ;
 -soundProgram "aplay -q"
--soundDirectory "@pixmapsdir@/sounds"
+-soundDirectory "@soundsdir@"
 -pasteSelection false
 -keepLineBreaksICS false
 -timeDelay 1
