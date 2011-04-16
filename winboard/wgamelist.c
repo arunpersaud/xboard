@@ -208,6 +208,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
 
     }
       GameListUpdateTitle( hDlg, _("Game List"), count, ((ListGame *) gameList.tailPred)->number, &stats ); // [HGM] always update title
+    GameListHighlight(lastLoadGameNumber);
     return FALSE;
 
   case WM_SIZE:

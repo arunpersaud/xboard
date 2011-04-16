@@ -516,6 +516,7 @@ ShowGameListProc(w, event, prms, nprms)
     XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
     XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
 		args, j);
+    GameListHighlight(lastLoadGameNumber);
 }
 
 void

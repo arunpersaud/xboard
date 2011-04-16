@@ -281,6 +281,7 @@ typedef struct _ListGame {
  
 extern ChessSquare gatingPiece;
 extern List gameList;
+extern int lastLoadGameNumber;
 void ClearGameInfo P((GameInfo *));
 int GameListBuild P((FILE *));
 void GameListInitGameInfo P((GameInfo *));
