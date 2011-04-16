@@ -24,15 +24,15 @@
 -fontSizeTolerance 4
 -pixmapDirectory ""
 -bitmapDirectory ""
--liteBackTextureFile  "@bitmapdir@/wood_l.xpm"
--darkBackTextureFile  "@bitmapdir@/wood_d.xpm"
+-liteBackTextureFile  "@pixmapsdir@/wood_l.xpm"
+-darkBackTextureFile  "@pixmapsdir@/wood_d.xpm"
 -overrideLineGap 1
 -highlightMoveWithArrow true
 ;
 ; Behavior
 ;
 -soundProgram "aplay -q"
--soundDirectory @bitmapdir@/sounds
+-soundDirectory "@pixmapsdir@/sounds"
 -pasteSelection false
 -keepLineBreaksICS false
 -timeDelay 1
