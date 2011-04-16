@@ -66,15 +66,15 @@ Applicationsdir = $(datadir)/applications
 Applications_DATA = xboard.desktop
 
 
-### directory and files to be used as bitmaps
+### directory and files for pixmaps
 
-bitmapdir = $(datadir)/games/xboard
-dist_bitmap_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
+pixmapsdir = $(datadir)/games/xboard/pixmaps/default
+dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
 
 
 ### set correct dir in xboard.conf
 
-edit = sed -e 's|@bitmapdir[@]|$(bitmapdir)|g'
+edit = sed -e 's|@pixmapsdir[@]|$(pixmapsdir)|g'
 
 xboard.conf: Makefile $(srcdir)/xboard.conf.in
 	@echo '  'GEN '  ' $@;
