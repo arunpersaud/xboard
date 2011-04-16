@@ -3842,11 +3842,11 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	 boardRect.bottom - boardRect.top,
 	 tmphdc, boardRect.left, boardRect.top, SRCCOPY);
   if(saveDiagFlag) { 
-    BITMAP b; int i, j=0, m, w, wb, fac=0; char pData[1000000]; 
+    BITMAP b; int i, j=0, m, w, wb, fac=0; char *pData; 
     BITMAPINFOHEADER bih; int color[16], nrColors=0;
 
     GetObject(bufferBitmap, sizeof(b), &b);
-    if(b.bmWidthBytes*b.bmHeight <= 990000) {
+    if(pData = malloc(b.bmWidthBytes*b.bmHeight + 10000)) {
 	bih.biSize = sizeof(BITMAPINFOHEADER);
 	bih.biWidth = b.bmWidth;
 	bih.biHeight = b.bmHeight;
@@ -3910,6 +3910,7 @@ HDCDrawPosition(HDC hdc, BOOLEAN repaint, Board board)
 	// write bitmap data
 	for(i=0; i<wb*(b.bmHeight - boardRect.top + OUTER_MARGIN); i++) 
 		fputc(pData[i], diagFile);
+	free(pData);
      }
   }
 
@@ -3946,11 +3947,8 @@ SaveDiagram(f)
 {
     saveDiagFlag = 1; diagFile = f;
     HDCDrawPosition(NULL, TRUE, NULL);
-
     saveDiagFlag = 0;
 
-//    if(f != NULL) fprintf(f, "Sorry, but this feature is still in preparation\n");
-    
     fclose(f);
     return TRUE;
 }
