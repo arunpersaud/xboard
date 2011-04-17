@@ -33,6 +33,10 @@
 ;
 -soundProgram "aplay -q"
 -soundDirectory "@soundsdir@"
+-soundTell phone.wav
+-soundChallenge gong.wav
+-soundMove woodthunk.wav
+-soundIcsAlarm penalty.wav
 -pasteSelection false
 -keepLineBreaksICS false
 -timeDelay 1
