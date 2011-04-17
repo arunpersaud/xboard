@@ -143,14 +143,10 @@ dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
 
 ### directory and files for sound files
 
-soundsdir = $(datadir)/games/xboard/sounds/default
+soundsdir = $(datadir)/games/xboard/sounds
 dist_sounds_DATA = \
-  sounds/alarm.wav      sounds/cymbal.wav    sounds/kibitz.wav   sounds/pop2.wav     sounds/slap.wav    sounds/unfinished.wav \
-  sounds/challenge.wav  sounds/ding1.wav     sounds/laser.wav    sounds/pop.wav      sounds/squeak.wav  sounds/whipcrak.wav \
-  sounds/channel1.wav   sounds/draw.wav      sounds/lose.wav     sounds/README       sounds/sshout.wav  sounds/win.wav \
-  sounds/channel.wav    sounds/drip.wav      sounds/move.wav     sounds/request.wav  sounds/swish.wav   sounds/woodthunk.wav \
-  sounds/ching.wav      sounds/gong.wav      sounds/penalty.wav  sounds/seek.wav     sounds/tell.wav \
-  sounds/click.wav      sounds/honkhonk.wav  sounds/phone.wav    sounds/shout.wav    sounds/thud.wav
+  sounds/cymbal.wav     sounds/pop2.wav   sounds/slap.wav     sounds/ding1.wav      sounds/laser.wav \
+  sounds/woodthunk.wav  sounds/gong.wav   sounds/penalty.wav  sounds/honkhonk.wav   sounds/phone.wav
 
 
 ### set correct dir in xboard.conf
