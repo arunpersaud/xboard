@@ -736,7 +736,7 @@ static int oldCores, oldPonder;
 int MakeColors P((void));
 void CreateGCs P((int redo));
 void CreateAnyPieces P((void));
-void GenericReadout();
+void GenericReadout P((int selected));
 Widget shells[10];
 Widget marked[10];
 Boolean shellUp[10];
@@ -853,7 +853,7 @@ void Pick(int n)
 	    }
 	}
 
-	GenericReadout(); // make sure ranks and file settings are read
+	GenericReadout(-1); // make sure ranks and file settings are read
 
 	gameInfo.variant = v;
 	appData.variant = VariantName(v);
@@ -1050,6 +1050,7 @@ char *soundFiles[] = { // sound files corresponding to above names
 
 void Test(int n)
 {
+    GenericReadout(2);
     if(soundFiles[values[3]]) PlaySound(soundFiles[values[3]]);
 }
 
@@ -1205,7 +1206,7 @@ Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 
-void GenericReadout()
+void GenericReadout(int selected)
 {
     int i, j;
     String name, val;
@@ -1213,6 +1214,7 @@ void GenericReadout()
     char buf[MSG_SIZ], **dest;
     float x;
 	for(i=0; ; i++) { // send all options that had to be OK-ed to engine
+	    if(selected >= 0) { if(i < selected) continue; else if(i > selected) break; }
 	    switch(currentOption[i].type) {
 		case TextBox:
 		case FileName:
@@ -1306,12 +1308,12 @@ void GenericCallback(w, client_data, call_data)
         return;
     }
     if (strcmp(name, _("OK")) == 0) { // save buttons imply OK
-        GenericReadout();
+        GenericReadout(-1);
         PopDown(data);
         return;
     }
     if(currentCps) {
-	if(currentOption[data].type == SaveButton) GenericReadout();
+	if(currentOption[data].type == SaveButton) GenericReadout(-1);
 	snprintf(buf, MSG_SIZ,  "option %s\n", name);
 	SendToProgram(buf, currentCps);
     } else ((ButtonCallback*) currentOption[data].target)(data);
