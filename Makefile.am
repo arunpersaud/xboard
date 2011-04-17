@@ -96,12 +96,12 @@ dist_bitmaps_DATA = \
   bitmaps/b116s.bm   bitmaps/d54s.bm        bitmaps/k37s.bm          bitmaps/n45s.bm   bitmaps/q129s.bm  bitmaps/r87s.bm \
   bitmaps/b129o.bm   bitmaps/d58o.bm        bitmaps/k40o.bm          bitmaps/n49o.bm   bitmaps/q21o.bm   bitmaps/r95o.bm \
   bitmaps/b129s.bm   bitmaps/d58s.bm        bitmaps/k40s.bm          bitmaps/n49s.bm   bitmaps/q21s.bm   bitmaps/r95s.bm \
-  bitmaps/b21o.bm    bitmaps/d64o.bm        bitmaps/k45o.bm          bitmaps/n54o.bm   bitmaps/q25o.bm   bitmaps/README.bitmaps \
+  bitmaps/b21o.bm    bitmaps/d64o.bm        bitmaps/k45o.bm          bitmaps/n54o.bm   bitmaps/q25o.bm \
   bitmaps/b21s.bm    bitmaps/d64s.bm        bitmaps/k45s.bm          bitmaps/n54s.bm   bitmaps/q25s.bm   bitmaps/s49o.bm \
   bitmaps/b25o.bm    bitmaps/d72o.bm        bitmaps/k49o.bm          bitmaps/n58o.bm   bitmaps/q29o.bm   bitmaps/s49s.bm \
   bitmaps/b25s.bm    bitmaps/d72s.bm        bitmaps/k49s.bm          bitmaps/n58s.bm   bitmaps/q29s.bm   bitmaps/s72o.bm \
-  bitmaps/b29o.bm    bitmaps/dopkbm1.sh     bitmaps/k54o.bm          bitmaps/n64o.bm   bitmaps/q33o.bm   bitmaps/s72s.bm \
-  bitmaps/b29s.bm    bitmaps/dopkbm.sh      bitmaps/k54s.bm          bitmaps/n64s.bm   bitmaps/q33s.bm   bitmaps/test.c \
+  bitmaps/b29o.bm    bitmaps/k54o.bm        bitmaps/n64o.bm          bitmaps/q33o.bm   bitmaps/s72s.bm \
+  bitmaps/b29s.bm    bitmaps/k54s.bm        bitmaps/n64s.bm          bitmaps/q33s.bm \
   bitmaps/b33o.bm    bitmaps/e33o.bm        bitmaps/k58o.bm          bitmaps/n72o.bm   bitmaps/q37o.bm   bitmaps/u49o.bm \
   bitmaps/b33s.bm    bitmaps/e33s.bm        bitmaps/k58s.bm          bitmaps/n72s.bm   bitmaps/q37s.bm   bitmaps/u49s.bm \
   bitmaps/b37o.bm    bitmaps/e49o.bm        bitmaps/k64o.bm          bitmaps/n80o.bm   bitmaps/q40o.bm   bitmaps/u72o.bm \
@@ -126,13 +126,13 @@ dist_bitmaps_DATA = \
   bitmaps/b87s.bm    bitmaps/h49s.bm        bitmaps/l49s.bm          bitmaps/p21s.bm   bitmaps/q95s.bm   bitmaps/wn49s.bm \
   bitmaps/b95o.bm    bitmaps/h72o.bm        bitmaps/l54o.bm          bitmaps/p25o.bm   bitmaps/r108o.bm  bitmaps/wn72o.bm \
   bitmaps/b95s.bm    bitmaps/h72s.bm        bitmaps/l54s.bm          bitmaps/p25s.bm   bitmaps/r108s.bm  bitmaps/wn72s.bm \
-  bitmaps/bitmaps.h  bitmaps/i33o.bm        bitmaps/l58o.bm          bitmaps/p29o.bm   bitmaps/r116o.bm  bitmaps/wp49o.bm \
+  bitmaps/i33o.bm    bitmaps/l58o.bm        bitmaps/p29o.bm          bitmaps/r116o.bm  bitmaps/wp49o.bm \
   bitmaps/c33o.bm    bitmaps/i33s.bm        bitmaps/l58s.bm          bitmaps/p29s.bm   bitmaps/r116s.bm  bitmaps/wp49s.bm \
   bitmaps/c33s.bm    bitmaps/i49o.bm        bitmaps/l64o.bm          bitmaps/p33o.bm   bitmaps/r129o.bm  bitmaps/wp72o.bm \
   bitmaps/c37o.bm    bitmaps/i49s.bm        bitmaps/l64s.bm          bitmaps/p33s.bm   bitmaps/r129s.bm  bitmaps/wp72s.bm \
   bitmaps/c37s.bm    bitmaps/i72o.bm        bitmaps/l72o.bm          bitmaps/p37o.bm   bitmaps/r21o.bm   bitmaps/ws49o.bm \
   bitmaps/c40o.bm    bitmaps/i72s.bm        bitmaps/l72s.bm          bitmaps/p37s.bm   bitmaps/r21s.bm   bitmaps/ws49s.bm \
-  bitmaps/c40s.bm    bitmaps/icon_b.bm      bitmaps/m33o.bm          bitmaps/p40o.bm   bitmaps/r25o.bm   bitmaps/ws72o.bm \
+  bitmaps/c40s.bm    bitmaps/m33o.bm        bitmaps/p40o.bm          bitmaps/r25o.bm   bitmaps/ws72o.bm \
   bitmaps/c45o.bm    bitmaps/icon_black.bm  bitmaps/m33s.bm          bitmaps/p40s.bm   bitmaps/r25s.bm   bitmaps/ws72s.bm
 
 ### directory and files for pixmaps
