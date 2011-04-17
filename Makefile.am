@@ -137,7 +137,7 @@ dist_bitmaps_DATA = \
 
 ### directory and files for pixmaps
 
-pixmapsdir = $(datadir)/games/xboard/pixmaps/default
+pixmapsdir = $(datadir)/games/xboard/pixmaps/textures
 dist_pixmaps_DATA = pixmaps/wood_d.xpm pixmaps/wood_l.xpm
 
 
