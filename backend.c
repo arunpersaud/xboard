@@ -693,6 +693,24 @@ CommonEngineInit()
 }
 
 void
+UnloadEngine(ChessProgramState *cps)
+{
+	/* Kill off first chess program */
+	if (cps->isr != NULL)
+	  RemoveInputSource(cps->isr);
+	cps->isr = NULL;
+
+	if (cps->pr != NoProc) {
+	    ExitAnalyzeMode();
+            DoSleep( appData.delayBeforeQuit );
+	    SendToProgram("quit\n", cps);
+            DoSleep( appData.delayAfterQuit );
+	    DestroyChildProcess(cps->pr, cps->useSigterm);
+	}
+	cps->pr = NoProc;
+}
+
+void
 ClearOptions(ChessProgramState *cps)
 {
     int i;
