@@ -2790,8 +2790,8 @@ Enables icsEnables[] = {
     { "menuOptions.Hide Thinking", False },
     { "menuOptions.Ponder Next Move", False },
 #endif
-    { "menuEngine.Engine #1 Settings", False },
 #endif
+    { "menuEngine.Engine #1 Settings", False },
     { "menuEngine.Engine #2 Settings", False },
     { "menuEdit.Annotate", False },
     { NULL, False }
@@ -2935,8 +2935,10 @@ void SetICSMode()
   SetMenuEnables(icsEnables);
 
 #if ZIPPY
-  if (appData.zippyPlay && !appData.noChessProgram)   /* [DM] icsEngineAnalyze */
+  if (appData.zippyPlay && !appData.noChessProgram) { /* [DM] icsEngineAnalyze */
      XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
+     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuEngine.Engine #1 Settings"), True);
+  }
 #endif
 }
 

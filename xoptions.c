@@ -1993,7 +1993,7 @@ void FirstSettingsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   SettingsPopUp(&first);
+    SettingsPopUp(&first);
 }
 
 void SecondSettingsProc(w, event, prms, nprms)
