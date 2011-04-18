@@ -369,6 +369,8 @@ typedef enum {
   "unknown" \
 }
 
+#define ENGINES 2
+
 typedef struct {
     char *language;
 #if !defined(_amigados)
@@ -390,18 +392,13 @@ typedef struct {
 #endif
     int movesPerSession;
     float timeIncrement;
-    char *initString;
-    char *secondInitString;
-    char *firstComputerString;
-    char *secondComputerString;
-    char *firstChessProgram;
-    char *secondChessProgram;
-    char *firstDirectory;
-    char *secondDirectory;
+    char *engInitString[ENGINES];
+    char *computerString[ENGINES];
+    char *chessProgram[ENGINES];
+    char *directory[ENGINES];
     Boolean firstPlaysBlack;
     Boolean noChessProgram;
-    char *firstHost;
-    char *secondHost;
+    char *host[ENGINES];
     char *bitmapDirectory;
     char *soundDirectory;
     char *remoteShell;
@@ -501,8 +498,7 @@ typedef struct {
     char *soundIcsDraw;
     char *soundIcsUnfinished;
     Boolean disguise;        /* [HGM] Promoted Pawns look like pieces in bughouse */
-    Boolean reuseFirst;
-    Boolean reuseSecond;
+    Boolean reuse[ENGINES];
     Boolean animateDragging; /* If True, animate mouse dragging of pieces */
     Boolean animate;	/* If True, animate non-mouse moves */
     int animSpeed;	/* Delay in milliseconds between animation frames */
@@ -524,15 +520,13 @@ typedef struct {
     char *initialMode;
     char *variant;
     char *chatBoxes;
-    int firstProtocolVersion;
-    int secondProtocolVersion;
+    int protocolVersion[ENGINES];
     Boolean showButtonBar;
     Boolean icsEngineAnalyze; 
     Boolean variations;         /* [HGM] enable variation-tree walking */
 
     /* [AS] New properties (down to the "ZIPPY" part) */
-    Boolean firstScoreIsAbsolute;  /* If true, engine score is always from white side */
-    Boolean secondScoreIsAbsolute; /* If true, engine score is always from white side */
+    Boolean scoreIsAbsolute[ENGINES];  /* If true, engine score is always from white side */
     Boolean saveExtendedInfoInPGN; /* If true, saved PGN games contain extended info */
     Boolean hideThinkingFromHuman; /* If true, program thinking is generated but not displayed in human/computer matches */
     char * liteBackTextureFile; /* Name of texture bitmap for lite squares */
@@ -566,10 +560,8 @@ typedef struct {
     int adjudicateDrawMoves;
     Boolean autoDisplayComment;
     Boolean autoDisplayTags;
-    Boolean firstIsUCI;
-    Boolean secondIsUCI;
-    Boolean firstHasOwnBookUCI;
-    Boolean secondHasOwnBookUCI;
+    Boolean isUCI[ENGINES];
+    Boolean hasOwnBookUCI[ENGINES];
     char * adapterCommand;
     char * polyglotDir;
     Boolean usePolyglotBook;
@@ -624,13 +616,10 @@ typedef struct {
     char *serverMovesName;
     Boolean suppressLoadMoves;
     int serverPause;
-    int firstTimeOdds;
-    int secondTimeOdds;
+    int timeOdds[ENGINES];
     int timeOddsMode;
-    int firstAccumulateTC;
-    int secondAccumulateTC;
-    int firstNPS;
-    int secondNPS;
+    int accumulateTC[ENGINES];
+    int NPS[ENGINES];
     Boolean autoKibitz;
     int engineComments;
     char *userName;
@@ -639,14 +628,11 @@ typedef struct {
     int smpCores;       /* [HGM] SMP       */
     char *egtFormats;
     int niceEngines;    /* [HGM] nice      */
-    char *firstLogo;    /* [HGM] logo      */
-    char *secondLogo;
+    char *logo[ENGINES];/* [HGM] logo      */
     Boolean autoLogo;
     Boolean noGUI;      /* [HGM] fast: suppress all display updates */
-    char *firstOptions; /* [HGM] options   */
-    char *secondOptions;
-    char *fenOverride1;
-    char *fenOverride2;
+    char *engOptions[ENGINES]; /* [HGM] options   */
+    char *fenOverride[ENGINES];
     Boolean keepAlive;  /* [HGM] alive     */
     Boolean forceIllegal;/*[HGM] illegal   */
     Boolean noJoin;     /* [HGM] join      */
@@ -737,6 +723,41 @@ extern WindowPlacement wpTags;
 extern int chatCount;
 extern char chatPartner[MAX_CHAT][MSG_SIZ];
 
+// [HGM] for now we use the kludge to redefine all the unstructured options by their array counterpart
+//       in due time we would have to make the actual substitutions all through the source
+
+#define firstInitString       engInitString[0]
+#define secondInitString      engInitString[1]
+#define firstComputerString   computerString[0]
+#define secondComputerString  computerString[1]
+#define firstChessProgram     chessProgram[0]
+#define secondChessProgram    chessProgram[1]
+#define firstDirectory        directory[0]
+#define secondDirectory       directory[1]
+#define firstProtocolVersion  protocolVersion[0]
+#define secondProtocolVersion protocolVersion[1]
+#define firstScoreIsAbsolute  scoreIsAbsolute[0]
+#define secondScoreIsAbsolute scoreIsAbsolute[1]
+#define firstHasOwnBookUCI    hasOwnBookUCI[0]
+#define secondHasOwnBookUCI   hasOwnBookUCI[1]
+#define firstTimeOdds         timeOdds[0]
+#define secondTimeOdds        timeOdds[1]
+#define firstAccumulateTC     accumulateTC[0]
+#define secondAccumulateTC    accumulateTC[1]
+#define firstHost    host[0]
+#define secondHost   host[1]
+#define reuseFirst   reuse[0]
+#define reuseSecond  reuse[1]
+#define firstIsUCI   isUCI[0]
+#define secondIsUCI  isUCI[1]
+#define firstNPS     NPS[0]
+#define secondNPS    NPS[1]
+#define firstLogo    logo[0]
+#define secondLogo   logo[1]
+#define fenOverride1 fenOverride[0]
+#define fenOverride2 fenOverride[1]
+#define firstOptions      engOptions[0]
+#define secondOptions     engOptions[1]
 
 #endif
 

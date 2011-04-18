@@ -1979,8 +1979,8 @@ main(argc, argv)
 
     { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
 	static char buf[MSG_SIZ];
-	EscapeExpand(buf, appData.initString);
-	appData.initString = strdup(buf);
+	EscapeExpand(buf, appData.firstInitString);
+	appData.firstInitString = strdup(buf);
 	EscapeExpand(buf, appData.secondInitString);
 	appData.secondInitString = strdup(buf);
 	EscapeExpand(buf, appData.firstComputerString);
