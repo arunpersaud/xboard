@@ -210,7 +210,6 @@ void TypeInEvent P((char first));
 void TypeInDoneEvent P((char *move));
 void InitPosition P((int redraw));
 void NewSettingEvent P((int option, int *feature, char *command, int value));
-int WaitForSecond P((DelayedEventCallback x));
 void SettingsMenuIfReady P((void));
 void DoEcho P((void));
 void DontEcho P((void));
@@ -407,5 +406,6 @@ extern ChessProgramStats programStats;
 extern int opponentKibitzes; // used by wengineo.c
 extern int errorExitStatus;
 void SettingsPopUp P((ChessProgramState *cps)); // [HGM] really in front-end, but CPS not known in frontend.h
+int WaitForEngine P((ChessProgramState *cps, DelayedEventCallback x));
 
 #endif /* _BACKEND */

@@ -5095,7 +5095,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_Engine2Options:
       savedHwnd = hwnd;
-      if(WaitForSecond(SettingsMenuIfReady)) break;
+      if(WaitForEngine(&second, SettingsMenuIfReady)) break;
       EngineOptionsPopup(hwnd, &second);
       break;
 

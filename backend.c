@@ -12077,16 +12077,18 @@ SettingsMenuIfReady()
 }
 
 int
-WaitForSecond(DelayedEventCallback retry)
+WaitForEngine(ChessProgramState *cps, DelayedEventCallback retry)
 {
-    if (second.pr == NULL) {
-	StartChessProgram(&second);
-	if (second.protocolVersion == 1) {
+    char buf[MSG_SIZ];
+    if (cps->pr == NULL) {
+	StartChessProgram(cps);
+	if (cps->protocolVersion == 1) {
 	  retry();
 	} else {
 	  /* kludge: allow timeout for initial "feature" command */
 	  FreezeUI();
-	  DisplayMessage("", _("Starting second chess program"));
+	  snprintf(buf, MSG_SIZ, _("Starting %s chess program"), cps->which);
+	  DisplayMessage("", buf);
 	  ScheduleDelayedEvent(retry, FEATURE_TIMEOUT);
 	}
 	return 1;
@@ -12137,7 +12139,7 @@ TwoMachinesEvent P((void))
     TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
     ResurrectChessProgram();	/* in case first program isn't running */
 
-    if(WaitForSecond(TwoMachinesEventIfReady)) return;
+    if(WaitForEngine(&second, TwoMachinesEventIfReady)) return;
     if(first.lastPing != first.lastPong) { // [HGM] wait till we are sure first engine has set up position
       DisplayMessage("", _("Waiting for first chess program"));
       ScheduleDelayedEvent(TwoMachinesEvent, 10);
