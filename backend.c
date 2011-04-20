@@ -1320,6 +1320,12 @@ InitBackEnd3 P((void))
     DisplayMessage("", "");
     if (StrCaseCmp(appData.initialMode, "") == 0) {
       initialMode = BeginningOfGame;
+      if(!appData.icsActive && appData.noChessProgram) { // [HGM] could be fall-back
+        gameMode = MachinePlaysBlack; // "Machine Black" might have been implicitly highlighted
+        ModeHighlight(); // make sure XBoard knows it is highlighted, so it will un-highlight it
+        gameMode = BeginningOfGame; // in case BeginningOfGame now means "Edit Position"
+        ModeHighlight();
+      }
     } else if (StrCaseCmp(appData.initialMode, "TwoMachines") == 0) {
       initialMode = TwoMachinesPlay;
     } else if (StrCaseCmp(appData.initialMode, "AnalyzeFile") == 0) {
@@ -7927,7 +7933,10 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	snprintf(buf1, sizeof(buf1), _("Failed to start %s chess program %s on %s: %s\n"),
 		_(cps->which), cps->program, cps->host, message);
 	RemoveInputSource(cps->isr);
-	DisplayFatalError(buf1, 0, 1);
+	if(appData.icsActive) DisplayFatalError(buf1, 0, 1); else {
+	    if(cps == &first) appData.noChessProgram = TRUE;
+	    DisplayError(buf1, 0);
+	}
 	return;
     }
 
@@ -13786,6 +13795,7 @@ SendToProgram(message, cps)
     outCount = OutputToProcess(cps->pr, message, count, &error);
     if (outCount < count && !exiting
                          && !endingGame) { /* [HGM] crash: to not hang GameEnds() writing to deceased engines */
+      if(!cps->initDone) return; // [HGM] should not generate fatal error during engine load
       snprintf(buf, MSG_SIZ, _("Error writing to %s chess program"), _(cps->which));
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
             if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
