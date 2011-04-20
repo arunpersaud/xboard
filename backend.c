@@ -811,6 +811,40 @@ InitEngine(ChessProgramState *cps, int n)
     InitEngineUCI( installDir, cps );  // [HGM] moved here from winboard.c, to make available in xboard
 }
 
+ChessProgramState *savCps;
+
+void
+LoadEngine()
+{
+    int i;
+    if(WaitForEngine(savCps, LoadEngine)) return;
+    CommonEngineInit(); // recalculate time odds
+    if(gameInfo.variant != StringToVariant(appData.variant)) {
+	// we changed variant when loading the engine; this forces us to reset
+	Reset(TRUE, savCps != &first);
+	EditGameEvent(); // for consistency with other path, as Reset changes mode
+    }
+    InitChessProgram(savCps, FALSE);
+    SendToProgram("force\n", savCps);
+    DisplayMessage("", "");
+    if (startedFromSetupPosition) SendBoard(savCps, backwardMostMove);
+    for (i = backwardMostMove; i < forwardMostMove; i++) SendMoveToProgram(i, savCps);
+    ThawUI();
+    SetGNUMode();
+}
+
+void
+ReplaceEngine(ChessProgramState *cps, int n)
+{
+    EditGameEvent();
+    UnloadEngine(cps);
+    appData.noChessProgram = False;
+    appData.clockMode = True;
+    InitEngine(cps, n);
+    savCps = cps; // parameter to LoadEngine passed as globals, to allow scheduled calling :-(
+    LoadEngine();
+}
+
 void
 InitBackEnd1()
 {
@@ -14133,6 +14167,7 @@ FeatureDone(cps, val)
   DelayedEventCallback cb = GetDelayedEvent();
   if ((cb == InitBackEnd3 && cps == &first) ||
       (cb == SettingsMenuIfReady && cps == &second) ||
+      (cb == LoadEngine) ||
       (cb == TwoMachinesEventIfReady && cps == &second)) {
     CancelDelayedEvent();
     ScheduleDelayedEvent(cb, val ? 1 : 3600000);

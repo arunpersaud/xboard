@@ -454,6 +454,7 @@ void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void OptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void IcsTextProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void LoadEngineProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -699,6 +700,8 @@ MenuItem actionMenu[] = {
 };
 
 MenuItem engineMenu[] = {
+    {N_("Load New Engine ..."), "Load Engine", LoadEngineProc},
+    {"----", NULL, NothingProc},
     {N_("Engine #1 Settings ..."), "Engine #1 Settings", FirstSettingsProc},
     {N_("Engine #2 Settings ..."), "Engine #2 Settings", SecondSettingsProc},
     {"----", NULL, NothingProc},
@@ -2793,6 +2796,7 @@ Enables icsEnables[] = {
 #endif
     { "menuEngine.Engine #1 Settings", False },
     { "menuEngine.Engine #2 Settings", False },
+    { "menuEngine.Load Engine", False },
     { "menuEdit.Annotate", False },
     { NULL, False }
 };
@@ -2852,6 +2856,20 @@ Enables gnuEnables[] = {
 
     { "menuFile.Mail Move", False },
     { "menuFile.Reload CMail Message", False },
+    // [HGM] The following have been added to make a switch from ncp to GNU mode possible
+    { "menuMode.Machine White", True },
+    { "menuMode.Machine Black", True },
+    { "menuMode.Analysis Mode", True },
+    { "menuMode.Analyze File", True },
+    { "menuMode.Two Machines", True },
+    { "menuMode.Machine Match", True },
+    { "menuEngine.Engine #1 Settings", True },
+    { "menuEngine.Engine #2 Settings", True },
+    { "menuEngine.Hint", True },
+    { "menuEngine.Book", True },
+    { "menuEngine.Move Now", True },
+    { "menuEngine.Retract Move", True },
+    { "Action", True },
     { NULL, False }
 };
 

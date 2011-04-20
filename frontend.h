@@ -83,6 +83,7 @@ void DisplayNote P((String message));
 void AskQuestion P((String title, String question, String replyPrefix,
 		    ProcRef pr));
 void DisplayIcsInteractionTitle P((String title));
+void ParseArgsFromString P((char *p));
 void DrawPosition P((int fullRedraw, Board board));
 void ResetFrontEnd P((void));
 void NotifyFrontendLogin P((void));

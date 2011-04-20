@@ -2006,6 +2006,132 @@ void SecondSettingsProc(w, event, prms, nprms)
    SettingsPopUp(&second);
 }
 
+char *engineName, *engineDir, *engineChoice, *engineLine;
+Boolean isUCI, hasBook, storeVariant, v1, addToList;
+extern Option installOptions[];
+extern char *firstChessProgramNames;
+char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
+char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
+
+void NamesToList(char *names)
+{
+    char buf[MSG_SIZ], *p, *q;
+    int i=1;
+    while(*names) {
+	p = names; q = buf;
+	while(*p && *p != '\n') *q++ = *p++;
+	*q = 0;
+	if(engineList[i]) free(engineList[i]);
+	engineList[i] = strdup(buf);
+	if(*p == '\n') p++;
+	TidyProgramName(engineList[i], "localhost", buf);
+	if(engineMnemonic[i]) free(engineMnemonic[i]);
+	if(q = strstr(engineList[i], " -variant ")) {
+	    strcat(buf, "(");
+	    sscanf(q + 10, "%s", buf + strlen(buf));
+	    strcat(buf, ")");
+	}
+	engineMnemonic[i] = strdup(buf);
+	names = p; i++;
+    }
+    engineList[i] = NULL;
+}
+
+// following implemented as macro to avoid type limitations
+#define SWAP(item, temp) temp = appData.item[0]; appData.item[0] = appData.item[n]; appData.item[n] = temp;
+
+void SwapEngines(int n)
+{   // swap settings for first engine and other engine (so far only some selected options)
+    int h;
+    char *p;
+    if(n == 0) return;
+    SWAP(directory, p)
+    SWAP(chessProgram, p)
+    SWAP(isUCI, h)
+    SWAP(hasOwnBookUCI, h)
+    SWAP(protocolVersion, h)
+    SWAP(reuse, h)
+    SWAP(scoreIsAbsolute, h)
+    SWAP(timeOdds, h)
+}
+
+void Load(ChessProgramState *cps, int i)
+{
+    char *p, *q, buf[MSG_SIZ];
+    if(engineLine[0]) { // an engine was selected from the combo box
+	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
+	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
+	ParseArgsFromString(buf);
+	SwapEngines(i);
+	ReplaceEngine(cps, i);
+	return;
+    }
+    p = engineName;
+    while(q = strchr(p, '/')) p = q+1;
+    if(*p== NULLCHAR) return;
+    appData.chessProgram[i] = strdup(p);
+    if(engineDir[0] != NULLCHAR)
+	appData.directory[i] = engineDir;
+    else if(p != engineName) { // derive directory from engine path, when not given
+	p[-1] = 0;
+	appData.directory[i] = strdup(engineName);
+	p[-1] = '/';
+    } else appData.directory[i] = ".";
+    appData.isUCI[i] = isUCI;
+    appData.protocolVersion[i] = v1 ? 1 : PROTOVER;
+    appData.hasOwnBookUCI[i] = hasBook;
+    if(addToList) {
+	int len;
+	q = firstChessProgramNames;
+	snprintf(buf, MSG_SIZ, "\"%s\" -fd \"%s\"%s%s%s%s%s\n", p, appData.directory[i], 
+			v1 ? " -firstProtocolVersion 1" : "",
+			hasBook ? "" : " -fNoOwnBookUCI",
+			isUCI ? " -fUCI" : "",
+			storeVariant ? " -variant " : "",
+			storeVariant ? VariantName(gameInfo.variant) : "");
+printf("new line: %s", buf);
+	firstChessProgramNames = malloc(len = strlen(q) + strlen(buf) + 1);
+	snprintf(firstChessProgramNames, len, "%s%s", q, buf);
+	if(q) 	free(q);
+    }
+    ReplaceEngine(cps, i);
+}
+
+void InstallOK(int n)
+{
+    PopDown(0); // early popdown, to allow FreezeUI to instate grab
+    if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
+}
+
+Option installOptions[] = {
+{   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
+{   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("Engine Directory:") },
+{   0,  0,    0, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine Command:") },
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("(Directory will be derived from engine path when empty)") },
+{   0,  0,    0, NULL, (void*) &isUCI, NULL, NULL, CheckBox, N_("UCI") },
+{   0,  0,    0, NULL, (void*) &v1, NULL, NULL, CheckBox, N_("WB protocol v1 (do not wait for engine features)") },
+{   0,  0,    0, NULL, (void*) &hasBook, NULL, NULL, CheckBox, N_("Must not use GUI book") },
+{   0,  0,    0, NULL, (void*) &addToList, NULL, NULL, CheckBox, N_("Add this engine to the list") },
+{   0,  0,    0, NULL, (void*) &storeVariant, NULL, NULL, CheckBox, N_("Force current variant with this engine") },
+{   0,  0,    0, NULL, (void*) &engineChoice, (char*) engineNr, engineNr, ComboBox, N_("Load mentioned engine as") },
+{   0,  1,    0, NULL, (void*) &InstallOK, "", NULL, EndMark , "" }
+};
+
+void LoadEngineProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   isUCI = addToList = storeVariant = v1 = False; hasBook = True; // defaults
+   engineDir = ""; 
+   if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
+   if(engineLine)   free(engineLine);   engineLine = strdup("");
+   NamesToList(firstChessProgramNames);
+   GenericPopUp(installOptions, _("Load engine"), 0);
+}
+
 //---------------------------- Chat Windows ----------------------------------------------
 
 void OutputChatMessage(int partner, char *mess)

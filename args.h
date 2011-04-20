@@ -1043,6 +1043,12 @@ ParseArgs(GetFunc get, void *cl)
 }
 
 void
+ParseArgsFromString(char *p)
+{
+    ParseArgs(StringGet, &p);
+}
+
+void
 ParseIcsTextMenu(char *icsTextMenuString)
 {
 //  int flags = 0;
