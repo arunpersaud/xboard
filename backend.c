@@ -659,6 +659,141 @@ ClearProgramStats()
 }
 
 void
+CommonEngineInit()
+{   // [HGM] moved some code here from InitBackend1 that has to be done after both engines have contributed their settings
+    if (appData.firstPlaysBlack) {
+	first.twoMachinesColor = "black\n";
+	second.twoMachinesColor = "white\n";
+    } else {
+	first.twoMachinesColor = "white\n";
+	second.twoMachinesColor = "black\n";
+    }
+
+    first.other = &second;
+    second.other = &first;
+
+    { float norm = 1;
+        if(appData.timeOddsMode) {
+            norm = appData.timeOdds[0];
+            if(norm > appData.timeOdds[1]) norm = appData.timeOdds[1];
+        }
+        first.timeOdds  = appData.timeOdds[0]/norm;
+        second.timeOdds = appData.timeOdds[1]/norm;
+    }
+
+    if(programVersion) free(programVersion);
+    if (appData.noChessProgram) {
+	programVersion = (char*) malloc(5 + strlen(PACKAGE_STRING));
+	sprintf(programVersion, "%s", PACKAGE_STRING);
+    } else {
+      /* [HGM] tidy: use tidy name, in stead of full pathname (which was probably a bug due to / vs \ ) */
+      programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
+      sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
+    }
+}
+
+void
+ClearOptions(ChessProgramState *cps)
+{
+    int i;
+    cps->nrOptions = cps->comboCnt = 0;
+    for(i=0; i<MAX_OPTIONS; i++) {
+	cps->option[i].min = cps->option[i].max = cps->option[i].value = 0;
+	cps->option[i].textValue = 0;
+    }
+}
+
+char *engineNames[] = {
+"first",
+"second"
+};
+
+InitEngine(ChessProgramState *cps, int n)
+{   // [HGM] all engine initialiation put in a function that does one engine
+
+    ClearOptions(cps);
+
+    cps->which = engineNames[n];
+    cps->maybeThinking = FALSE;
+    cps->pr = NoProc;
+    cps->isr = NULL;
+    cps->sendTime = 2;
+    cps->sendDrawOffers = 1;
+
+    cps->program = appData.chessProgram[n];
+    cps->host = appData.host[n];
+    cps->dir = appData.directory[n];
+    cps->initString = appData.engInitString[n];
+    cps->computerString = appData.computerString[n];
+    cps->useSigint  = TRUE;
+    cps->useSigterm = TRUE;
+    cps->reuse = appData.reuse[n];
+    cps->nps = appData.NPS[n];   // [HGM] nps: copy nodes per second
+    cps->useSetboard = FALSE;
+    cps->useSAN = FALSE;
+    cps->usePing = FALSE;
+    cps->lastPing = 0;
+    cps->lastPong = 0;
+    cps->usePlayother = FALSE;
+    cps->useColors = TRUE;
+    cps->useUsermove = FALSE;
+    cps->sendICS = FALSE;
+    cps->sendName = appData.icsActive;
+    cps->sdKludge = FALSE;
+    cps->stKludge = FALSE;
+    TidyProgramName(cps->program, cps->host, cps->tidy);
+    cps->matchWins = 0;
+    safeStrCpy(cps->variants, appData.variant, MSG_SIZ);
+    cps->analysisSupport = 2; /* detect */
+    cps->analyzing = FALSE;
+    cps->initDone = FALSE;
+
+    /* New features added by Tord: */
+    cps->useFEN960 = FALSE;
+    cps->useOOCastle = TRUE;
+    /* End of new features added by Tord. */
+    cps->fenOverride  = appData.fenOverride[n];
+
+    /* [HGM] time odds: set factor for each machine */
+    cps->timeOdds  = appData.timeOdds[n];
+
+    /* [HGM] secondary TC: how to handle sessions that do not fit in 'level'*/
+    cps->accumulateTC = appData.accumulateTC[n];
+    cps->maxNrOfSessions = 1;
+
+    /* [HGM] debug */
+    cps->debug = FALSE;
+    cps->supportsNPS = UNKNOWN;
+
+    /* [HGM] options */
+    cps->optionSettings  = appData.engOptions[n];
+
+    cps->scoreIsAbsolute = appData.scoreIsAbsolute[n]; /* [AS] */
+    cps->isUCI = appData.isUCI[n]; /* [AS] */
+    cps->hasOwnBookUCI = appData.hasOwnBookUCI[n]; /* [AS] */
+
+    if (appData.protocolVersion[n] > PROTOVER
+	|| appData.protocolVersion[n] < 1)
+      {
+	char buf[MSG_SIZ];
+	int len;
+
+	len = snprintf(buf, MSG_SIZ, _("protocol version %d not supported"),
+		       appData.protocolVersion[n]);
+	if( (len > MSG_SIZ) && appData.debugMode )
+	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
+
+	DisplayFatalError(buf, 0, 2);
+      }
+    else
+      {
+	cps->protocolVersion = appData.protocolVersion[n];
+      }
+
+    InitEngineUCI( installDir, cps );  // [HGM] moved here from winboard.c, to make available in xboard
+}
+
+void
 InitBackEnd1()
 {
     int matched, min, sec;
@@ -740,137 +875,12 @@ InitBackEnd1()
     /* [AS] Adjudication threshold */
     adjudicateLossThreshold = appData.adjudicateLossThreshold;
 
-    first.which = "first";
-    second.which = "second";
-    first.maybeThinking = second.maybeThinking = FALSE;
-    first.pr = second.pr = NoProc;
-    first.isr = second.isr = NULL;
-    first.sendTime = second.sendTime = 2;
-    first.sendDrawOffers = 1;
-    if (appData.firstPlaysBlack) {
-	first.twoMachinesColor = "black\n";
-	second.twoMachinesColor = "white\n";
-    } else {
-	first.twoMachinesColor = "white\n";
-	second.twoMachinesColor = "black\n";
-    }
-    first.program = appData.firstChessProgram;
-    second.program = appData.secondChessProgram;
-    first.host = appData.firstHost;
-    second.host = appData.secondHost;
-    first.dir = appData.firstDirectory;
-    second.dir = appData.secondDirectory;
-    first.other = &second;
-    second.other = &first;
-    first.initString = appData.initString;
-    second.initString = appData.secondInitString;
-    first.computerString = appData.firstComputerString;
-    second.computerString = appData.secondComputerString;
-    first.useSigint = second.useSigint = TRUE;
-    first.useSigterm = second.useSigterm = TRUE;
-    first.reuse = appData.reuseFirst;
-    second.reuse = appData.reuseSecond;
-    first.nps = appData.firstNPS;   // [HGM] nps: copy nodes per second
-    second.nps = appData.secondNPS;
-    first.useSetboard = second.useSetboard = FALSE;
-    first.useSAN = second.useSAN = FALSE;
-    first.usePing = second.usePing = FALSE;
-    first.lastPing = second.lastPing = 0;
-    first.lastPong = second.lastPong = 0;
-    first.usePlayother = second.usePlayother = FALSE;
-    first.useColors = second.useColors = TRUE;
-    first.useUsermove = second.useUsermove = FALSE;
-    first.sendICS = second.sendICS = FALSE;
-    first.sendName = second.sendName = appData.icsActive;
-    first.sdKludge = second.sdKludge = FALSE;
-    first.stKludge = second.stKludge = FALSE;
-    TidyProgramName(first.program, first.host, first.tidy);
-    TidyProgramName(second.program, second.host, second.tidy);
-    first.matchWins = second.matchWins = 0;
-    safeStrCpy(first.variants, appData.variant, sizeof(first.variants)/sizeof(first.variants[0]));
-    safeStrCpy(second.variants, appData.variant,sizeof(second.variants)/sizeof(second.variants[0]));
-    first.analysisSupport = second.analysisSupport = 2; /* detect */
-    first.analyzing = second.analyzing = FALSE;
-    first.initDone = second.initDone = FALSE;
-
-    /* New features added by Tord: */
-    first.useFEN960 = FALSE; second.useFEN960 = FALSE;
-    first.useOOCastle = TRUE; second.useOOCastle = TRUE;
-    /* End of new features added by Tord. */
-    first.fenOverride  = appData.fenOverride1;
-    second.fenOverride = appData.fenOverride2;
-
-    /* [HGM] time odds: set factor for each machine */
-    first.timeOdds  = appData.firstTimeOdds;
-    second.timeOdds = appData.secondTimeOdds;
-    { float norm = 1;
-        if(appData.timeOddsMode) {
-            norm = first.timeOdds;
-            if(norm > second.timeOdds) norm = second.timeOdds;
-        }
-        first.timeOdds /= norm;
-        second.timeOdds /= norm;
-    }
-
-    /* [HGM] secondary TC: how to handle sessions that do not fit in 'level'*/
-    first.accumulateTC = appData.firstAccumulateTC;
-    second.accumulateTC = appData.secondAccumulateTC;
-    first.maxNrOfSessions = second.maxNrOfSessions = 1;
-
-    /* [HGM] debug */
-    first.debug = second.debug = FALSE;
-    first.supportsNPS = second.supportsNPS = UNKNOWN;
-
-    /* [HGM] options */
-    first.optionSettings  = appData.firstOptions;
-    second.optionSettings = appData.secondOptions;
-
-    first.scoreIsAbsolute = appData.firstScoreIsAbsolute; /* [AS] */
-    second.scoreIsAbsolute = appData.secondScoreIsAbsolute; /* [AS] */
-    first.isUCI = appData.firstIsUCI; /* [AS] */
-    second.isUCI = appData.secondIsUCI; /* [AS] */
-    first.hasOwnBookUCI = appData.firstHasOwnBookUCI; /* [AS] */
-    second.hasOwnBookUCI = appData.secondHasOwnBookUCI; /* [AS] */
-
-    if (appData.firstProtocolVersion > PROTOVER
-	|| appData.firstProtocolVersion < 1)
-      {
-	char buf[MSG_SIZ];
-	int len;
-
-	len = snprintf(buf, MSG_SIZ, _("protocol version %d not supported"),
-		       appData.firstProtocolVersion);
-	if( (len > MSG_SIZ) && appData.debugMode )
-	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
-
-	DisplayFatalError(buf, 0, 2);
-      }
-    else
-      {
-	first.protocolVersion = appData.firstProtocolVersion;
-      }
-
-    if (appData.secondProtocolVersion > PROTOVER
-	|| appData.secondProtocolVersion < 1)
-      {
-	char buf[MSG_SIZ];
-	int len;
-
-	len = snprintf(buf, MSG_SIZ, _("protocol version %d not supported"),
-		       appData.secondProtocolVersion);
-	if( (len > MSG_SIZ) && appData.debugMode )
-	  fprintf(debugFP, "InitBackEnd1: buffer truncated.\n");
-
-	DisplayFatalError(buf, 0, 2);
-      }
-    else
-      {
-	second.protocolVersion = appData.secondProtocolVersion;
-      }
+    InitEngine(&first, 0);
+    InitEngine(&second, 1);
+    CommonEngineInit();
 
     if (appData.icsActive) {
         appData.clockMode = TRUE;  /* changes dynamically in ICS mode */
-//    } else if (*appData.searchTime != NULLCHAR || appData.noChessProgram) {
     } else if (appData.noChessProgram) { // [HGM] st: searchTime mode now also is clockMode
 	appData.clockMode = FALSE;
 	first.sendTime = second.sendTime = 0;
@@ -885,15 +895,6 @@ InitBackEnd1()
       ZippyInit();
     }
 #endif
-
-    if (appData.noChessProgram) {
-	programVersion = (char*) malloc(5 + strlen(PACKAGE_STRING));
-	sprintf(programVersion, "%s", PACKAGE_STRING);
-    } else {
-      /* [HGM] tidy: use tidy name, in stead of full pathname (which was probably a bug due to / vs \ ) */
-      programVersion = (char*) malloc(8 + strlen(PACKAGE_STRING) + strlen(first.tidy));
-      sprintf(programVersion, "%s + %s", PACKAGE_STRING, first.tidy);
-    }
 
     if (!appData.icsActive) {
       char buf[MSG_SIZ];
@@ -970,8 +971,6 @@ InitBackEnd1()
       }
     }
 
-    InitEngineUCI( installDir, &first );  // [HGM] moved here from winboard.c, to make available in xboard
-    InitEngineUCI( installDir, &second );
 }
 
 int NextIntegerFromString( char ** str, long * value )
