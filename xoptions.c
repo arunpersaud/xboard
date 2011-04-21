@@ -602,10 +602,13 @@ void TimeControlProc(w, event, prms, nprms)
 
 //--------------------------- Engine-specific options menu ----------------------------------
 
+typedef void ButtonCallback(int n);
+
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
 static Option *currentOption;
 static Boolean browserUp;
+ButtonCallback *comboCallback;
 
 void CheckCallback(Widget ww, XtPointer data, XEvent *event, Boolean *b)
 {
@@ -677,6 +680,8 @@ void ComboSelect(w, addr, index) // callback for all combo items
     values[i] = j; // store in temporary, for transfer at OK
     XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
     XtSetValues(currentOption[i].handle, args, 1);
+
+    if(currentOption[i].min & 1 && !currentCps && comboCallback) (comboCallback)(i);
 }
 
 void CreateComboPopup(parent, name, n, mb)
@@ -709,8 +714,6 @@ void CreateComboPopup(parent, name, n, mb)
 //----------------------------Generic dialog --------------------------------------------
 
 // cloned from Engine Settings dialog (and later merged with it)
-
-typedef void ButtonCallback(int n);
 
 extern WindowPlacement wpComment, wpTags;
 char *trialSound;
