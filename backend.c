@@ -1231,6 +1231,38 @@ InitBackEnd2()
     }
 }
 
+int
+CalculateIndex(int index, int gameNr)
+{   // [HGM] autoinc: absolute way to determine load index from game number (taking auto-inc and rewind into account)
+    int res;
+    if(index > 0) return index; // fixed nmber
+    if(index == 0) return 1;
+    res = (index == -1 ? gameNr : (gameNr-1)/2 + 1); // autoinc
+    if(appData.rewindIndex > 0) res = (res-1) % appData.rewindIndex + 1; // rewind
+    return res;
+}
+
+int
+LoadGameOrPosition(int gameNr)
+{   // [HGM] taken out of MatchEvent and NextMatchGame (to combine it)
+    if (*appData.loadGameFile != NULLCHAR) {
+	if (!LoadGameFromFile(appData.loadGameFile,
+		CalculateIndex(appData.loadGameIndex, gameNr),
+			      appData.loadGameFile, FALSE)) {
+	    DisplayFatalError(_("Bad game file"), 0, 1);
+	    return 0;
+	}
+    } else if (*appData.loadPositionFile != NULLCHAR) {
+	if (!LoadPositionFromFile(appData.loadPositionFile,
+		CalculateIndex(appData.loadPositionIndex, gameNr),
+				  appData.loadPositionFile)) {
+	    DisplayFatalError(_("Bad position file"), 0, 1);
+	    return 0;
+	}
+    }
+    return 1;
+}
+
 void
 MatchEvent(int mode)
 {	// [HGM] moved out of InitBackend3, to make it callable when match starts through menu
@@ -1242,25 +1274,7 @@ MatchEvent(int mode)
 	}
 	matchMode = mode;
 	matchGame = 1;
-	if (*appData.loadGameFile != NULLCHAR) {
-	    int index = appData.loadGameIndex; // [HGM] autoinc
-	    if(index<0) lastIndex = index = 1;
-	    if (!LoadGameFromFile(appData.loadGameFile,
-				  index,
-				  appData.loadGameFile, FALSE)) {
-		DisplayFatalError(_("Bad game file"), 0, 1);
-		return;
-	    }
-	} else if (*appData.loadPositionFile != NULLCHAR) {
-	    int index = appData.loadPositionIndex; // [HGM] autoinc
-	    if(index<0) lastIndex = index = 1;
-	    if (!LoadPositionFromFile(appData.loadPositionFile,
-				      index,
-				      appData.loadPositionFile)) {
-		DisplayFatalError(_("Bad position file"), 0, 1);
-		return;
-	    }
-	}
+	if(!LoadGameOrPositionFile(1)) return;
 	first.matchWins = second.matchWins = 0; // [HGM] match: needed in later matches
 	TwoMachinesEvent();
 }
@@ -9233,7 +9247,6 @@ StartChessProgram(cps)
     }
 }
 
-
 void
 TwoMachinesEventIfReady P((void))
 {
@@ -9254,27 +9267,8 @@ TwoMachinesEventIfReady P((void))
 void
 NextMatchGame P((void))
 {
-    int index; /* [HGM] autoinc: step load index during match */
     Reset(FALSE, TRUE);
-    if (*appData.loadGameFile != NULLCHAR) {
-	index = appData.loadGameIndex;
-	if(index < 0) { // [HGM] autoinc
-	    lastIndex = index = (index == -2 && first.twoMachinesColor[0] == 'b') ? lastIndex : lastIndex+1;
-	    if(appData.rewindIndex > 0 && index > appData.rewindIndex) lastIndex = index = 1;
-	}
-	LoadGameFromFile(appData.loadGameFile,
-			 index,
-			 appData.loadGameFile, FALSE);
-    } else if (*appData.loadPositionFile != NULLCHAR) {
-	index = appData.loadPositionIndex;
-	if(index < 0) { // [HGM] autoinc
-	    lastIndex = index = (index == -2 && first.twoMachinesColor[0] == 'b') ? lastIndex : lastIndex+1;
-	    if(appData.rewindIndex > 0 && index > appData.rewindIndex) lastIndex = index = 1;
-	}
-	LoadPositionFromFile(appData.loadPositionFile,
-			     index,
-			     appData.loadPositionFile);
-    }
+    LoadGameOrPosition(matchGame);
     TwoMachinesEventIfReady();
 }
 
