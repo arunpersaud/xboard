@@ -3797,10 +3797,10 @@ void CreateMenuBarPopup(parent, name, mb)
     mi = mb->mi;
     while (mi->string != NULL) {
 	if (strcmp(mi->string, "----") == 0) {
-	    entry = XtCreateManagedWidget(mi->string, smeLineObjectClass,
+	  entry = XtCreateManagedWidget(_(mi->string), smeLineObjectClass,
 					  menu, args, j);
 	} else {
-          XtSetArg(args[j], XtNlabel, XtNewString(mi->string));
+          XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string)));
 	    entry = XtCreateManagedWidget(mi->ref, smeBSBObjectClass,
 					  menu, args, j+1);
 	    XtAddCallback(entry, XtNcallback,
@@ -3838,7 +3838,7 @@ Widget CreateMenuBar(mb)
 	    XtSetArg(args[j], XtNlabel, XtNewString(shortName)); j++;
 	}
       else {
-          XtSetArg(args[j], XtNlabel, XtNewString(mb->name)); j++;
+	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
       }
 
 	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
