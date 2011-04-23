@@ -1,5 +1,0 @@
-     ../xboard.c \
-     ../xedittags.c \
-     ../xgamelist.c \
-     ../xhistory.c \
-     ../backend.c

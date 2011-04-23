@@ -1,5 +1,8 @@
+backend.c
 xboard.c
 xedittags.c
+xengineoutput.c
+xevalgraph.c
 xgamelist.c
 xhistory.c
-backend.c
+xoptions.c
