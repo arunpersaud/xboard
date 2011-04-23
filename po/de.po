@@ -7,433 +7,582 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: XBoard 4.2.7\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-01 20:00+0200\n"
-"PO-Revision-Date: 2009-04-09 21:17-0700\n"
+"Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
+"POT-Creation-Date: 2011-04-22 21:15-0700\n"
+"PO-Revision-Date: 2011-04-22 21:40-0700\n"
 "Last-Translator: Arun Persaud <arun@nubati.net>\n"
 "Language-Team: German\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: xboard.c:514
-msgid "Reset Game"
-msgstr "Spiel zurücksetzen"
-
-#: xboard.c:516
-msgid "Load Game"
-msgstr "Spiel laden"
-
-#: xboard.c:517
-msgid "Load Next Game"
-msgstr "Nächstes Spiel laden"
-
-#: xboard.c:518
-msgid "Load Previous Game"
-msgstr "Vorheriges Spiel laden"
-
-#: xboard.c:519
-msgid "Reload Same Game"
-msgstr "Spiel erneut laden"
-
-#: xboard.c:520
-msgid "Save Game"
-msgstr "Spiel speichern"
-
-#: xboard.c:522
-msgid "Copy Game"
-msgstr "Spiel kopieren"
-
-#: xboard.c:523
-msgid "Paste Game"
-msgstr "Spiel einfügen"
-
-#: xboard.c:525
-msgid "Load Position"
-msgstr "Stellung laden"
-
-#: xboard.c:526
-msgid "Load Next Position"
-msgstr "Nächste Stellung laden"
-
-#: xboard.c:527
-msgid "Load Previous Position"
-msgstr "Vorherige Stellung laden"
-
-#: xboard.c:528
-msgid "Reload Same Position"
-msgstr "Stellung erneut laden"
-
-#: xboard.c:529
-msgid "Save Position"
-msgstr "Stellung speichern"
-
-#: xboard.c:531
-msgid "Copy Position"
-msgstr "Stellung kopieren"
-
-#: xboard.c:532
-msgid "Paste Position"
-msgstr "Stellung einfügen"
-
-#: xboard.c:534
-msgid "Mail Move"
-msgstr "Verschicke Zug"
-
-#: xboard.c:535
-msgid "Reload CMail Message"
-msgstr "CMail Nachricht erneut laden"
-
-#: xboard.c:537
-msgid "Exit"
-msgstr "Beenden"
-
-#: xboard.c:542
-msgid "Machine White"
-msgstr "Computer weiß"
-
-#: xboard.c:543
-msgid "Machine Black"
-msgstr "Computer schwarz"
-
-#: xboard.c:544
-msgid "Two Machines"
-msgstr "Zwei Computer"
-
-#: xboard.c:545
-msgid "Analysis Mode"
-msgstr "Analyse-Modus"
-
-#: xboard.c:546
-msgid "Analyze File"
-msgstr "Datei analyzieren"
-
-#: xboard.c:547
-msgid "ICS Client"
-msgstr ""
-
-#: xboard.c:548
-msgid "Edit Game"
-msgstr "Spiel bearbeiten"
-
-#: xboard.c:549
-msgid "Edit Position"
-msgstr "Stellung bearbeiten"
-
-#: xboard.c:550
-msgid "Training"
-msgstr "Training"
-
-#: xboard.c:552
-msgid "Show Game List"
-msgstr "Spielliste anzeigen"
-
-#: xboard.c:553
-msgid "Show Move List"
-msgstr "Züge anzeigen"
-
-#: xboard.c:554 xedittags.c:393
-msgid "Edit Tags"
-msgstr "Markierung bearbeiten"
-
-#: xboard.c:555
-msgid "Edit Comment"
-msgstr "Kommentar bearbeiten"
-
-#: xboard.c:556
-msgid "ICS Input Box"
-msgstr "ICS Eingabefeld"
-
-#: xboard.c:557
-msgid "Pause"
-msgstr "Pause"
-
-#: xboard.c:562
-msgid "Accept"
-msgstr "Annehmen"
-
-#: xboard.c:563
-msgid "Decline"
-msgstr "Ablehnen"
-
-#: xboard.c:564
-msgid "Rematch"
-msgstr ""
-
-#: xboard.c:566
-msgid "Call Flag"
-msgstr "Zeit reklamieren"
-
-#: xboard.c:567
-msgid "Draw"
-msgstr "Remi"
-
-#: xboard.c:568
-msgid "Adjourn"
-msgstr "Aussetzen"
-
-#: xboard.c:569
-msgid "Abort"
-msgstr "Abbrechen"
-
-#: xboard.c:570
-msgid "Resign"
-msgstr "Aufgeben"
-
-#: xboard.c:572
-msgid "Stop Observing"
-msgstr "Beobachtung beenden"
-
-#: xboard.c:573
-msgid "Stop Examining"
-msgstr "Untersuchung beenden"
-
-#: xboard.c:578
-msgid "Backward"
-msgstr "Zurück"
-
-#: xboard.c:579
-msgid "Forward"
-msgstr "Vorwärts"
-
-#: xboard.c:580
-msgid "Back to Start"
-msgstr "Zurück zum Anfang"
-
-#: xboard.c:581
-msgid "Forward to End"
-msgstr "Vorwärts zum Ende"
-
-#: xboard.c:582
-msgid "Revert"
-msgstr ""
-
-#: xboard.c:583
-msgid "Truncate Game"
-msgstr ""
-
-#: xboard.c:585
-msgid "Move Now"
-msgstr "Jetzt ziehen"
-
-#: xboard.c:586
-msgid "Retract Move"
-msgstr "Zug zurücknehmen"
-
-#: xboard.c:591
-msgid "Always Queen"
-msgstr "Immer Königin"
-
-#: xboard.c:592
-msgid "Animate Dragging"
-msgstr "Ziehen animieren"
-
-#: xboard.c:593
-msgid "Animate Moving"
-msgstr "Züge animieren"
-
-#: xboard.c:594
-msgid "Auto Comment"
-msgstr ""
-
-#: xboard.c:595
-msgid "Auto Flag"
-msgstr "Zeit automatisch reklamieren"
-
-#: xboard.c:596
-msgid "Auto Flip View"
-msgstr "Brett automatisch drehen"
-
-#: xboard.c:597
-msgid "Auto Observe"
-msgstr ""
-
-#: xboard.c:598
-msgid "Auto Raise Board"
-msgstr ""
-
-#: xboard.c:599
-msgid "Auto Save"
-msgstr "Automatisch speichern"
-
 #: xboard.c:600
-msgid "Blindfold"
-msgstr ""
+msgid "New Game        Ctrl+N"
+msgstr "Neues Spiel Ctrl+N"
 
 #: xboard.c:601
-msgid "Flash Moves"
+msgid "New Shuffle Game ..."
 msgstr ""
 
 #: xboard.c:602
-msgid "Flip View"
-msgstr "Brett drehen"
-
-#: xboard.c:603
-msgid "Get Move List"
+msgid "New Variant ...   Alt+Shift+V"
 msgstr ""
+
+#: xboard.c:604
+msgid "Load Game       Ctrl+O"
+msgstr "Spiel Laden   Ctrl+O"
 
 #: xboard.c:605
-msgid "Highlight Dragging"
-msgstr ""
-
-#: xboard.c:607
-msgid "Highlight Last Move"
-msgstr ""
-
-#: xboard.c:608
-msgid "Move Sound"
-msgstr ""
+#, fuzzy
+msgid "Load Position    Ctrl+Shift+O"
+msgstr "Stellung laden"
 
 #: xboard.c:609
-msgid "ICS Alarm"
-msgstr "ICS-Alarm"
+msgid "Next Position     Shift+PgDn"
+msgstr ""
 
 #: xboard.c:610
-msgid "Old Save Style"
+msgid "Prev Position     Shift+PgUp"
 msgstr ""
-
-#: xboard.c:611
-msgid "Periodic Updates"
-msgstr ""
-
-#: xboard.c:612
-msgid "Ponder Next Move"
-msgstr "Nächsten Zug abwägen"
 
 #: xboard.c:613
-msgid "Popup Exit Message"
+msgid "Save Game       Ctrl+S"
 msgstr ""
 
 #: xboard.c:614
-msgid "Popup Move Errors"
-msgstr ""
-
-#: xboard.c:615
-msgid "Premove"
-msgstr ""
+msgid "Save Position    Ctrl+Shift+S"
+msgstr "Stellung speichern Ctrl+Shift+S"
 
 #: xboard.c:616
-msgid "Quiet Play"
-msgstr ""
+msgid "Mail Move"
+msgstr "Verschicke Zug"
 
 #: xboard.c:617
-msgid "Show Coords"
-msgstr "Zeige Koordinaten"
-
-#: xboard.c:618
-msgid "Show Thinking"
-msgstr ""
+msgid "Reload CMail Message"
+msgstr "CMail Nachricht erneut laden"
 
 #: xboard.c:619
-msgid "Test Legality"
-msgstr ""
+msgid "Quit                 Ctr+Q"
+msgstr "Beenden   Ctrl+Q"
 
 #: xboard.c:624
-msgid "Info XBoard"
-msgstr "Info XBoard"
+msgid "Copy Game    Ctrl+C"
+msgstr "Spiel kopieren  Ctrl+C"
 
 #: xboard.c:625
-msgid "Man XBoard"
-msgstr "Man XBoard"
+#, fuzzy
+msgid "Copy Position Ctrl+Shift+C"
+msgstr "Stellung kopieren"
 
-#: xboard.c:627
-msgid "Hint"
-msgstr "Hinweiss"
+#: xboard.c:626
+#, fuzzy
+msgid "Copy Game List"
+msgstr "Spielliste anzeigen"
 
 #: xboard.c:628
-msgid "Book"
-msgstr "Buch"
+#, fuzzy
+msgid "Paste Game    Ctrl+V"
+msgstr "Spiel einfügen"
 
-#: xboard.c:630 xboard.c:6746
-msgid "About XBoard"
-msgstr "Über XBoard"
+#: xboard.c:629
+#, fuzzy
+msgid "Paste Position Ctrl+Shift+V"
+msgstr "Stellung einfügen"
 
-#: xboard.c:635
-msgid "File"
-msgstr "Datei"
+#: xboard.c:631
+#, fuzzy
+msgid "Edit Game      Ctrl+E"
+msgstr "Spiel bearbeiten"
+
+#: xboard.c:632
+#, fuzzy
+msgid "Edit Position   Ctrl+Shift+E"
+msgstr "Stellung bearbeiten"
+
+#: xboard.c:633
+msgid "Edit Tags"
+msgstr "Markierung bearbeiten"
+
+#: xboard.c:634
+msgid "Edit Comment"
+msgstr "Kommentar bearbeiten"
 
 #: xboard.c:636
-msgid "Mode"
+msgid "Revert              Home"
 msgstr ""
 
 #: xboard.c:637
+msgid "Annotate"
+msgstr ""
+
+#: xboard.c:638
+msgid "Truncate Game  End"
+msgstr ""
+
+#: xboard.c:640
+msgid "Backward         Alt+Left"
+msgstr ""
+
+#: xboard.c:641
+msgid "Forward           Alt+Right"
+msgstr ""
+
+#: xboard.c:642
+#, fuzzy
+msgid "Back to Start     Alt+Home"
+msgstr "Zurück zum Anfang"
+
+#: xboard.c:643
+#, fuzzy
+msgid "Forward to End Alt+End"
+msgstr "Vorwärts zum Ende"
+
+#: xboard.c:648
+msgid "Flip View             F2"
+msgstr ""
+
+#: xboard.c:650
+msgid "Engine Output      Alt+Shift+O"
+msgstr ""
+
+#: xboard.c:651
+msgid "Move History       Alt+Shift+H"
+msgstr ""
+
+#: xboard.c:652
+msgid "Evaluation Graph  Alt+Shift+E"
+msgstr ""
+
+#: xboard.c:653
+msgid "Game List            Alt+Shift+G"
+msgstr ""
+
+#: xboard.c:654
+msgid "ICS text menu"
+msgstr ""
+
+#: xboard.c:656
+msgid "Tags"
+msgstr ""
+
+#: xboard.c:657
+#, fuzzy
+msgid "Comments"
+msgstr "Kommentar bearbeiten"
+
+#: xboard.c:658
+msgid "ICS Input Box"
+msgstr "ICS Eingabefeld"
+
+#: xboard.c:660
+msgid "Board..."
+msgstr ""
+
+#: xboard.c:661
+msgid "Game List Tags..."
+msgstr ""
+
+#: xboard.c:666
+#, fuzzy
+msgid "Machine White  Ctrl+W"
+msgstr "Computer weiß"
+
+#: xboard.c:667
+#, fuzzy
+msgid "Machine Black  Ctrl+B"
+msgstr "Computer schwarz"
+
+#: xboard.c:668
+#, fuzzy
+msgid "Two Machines   Ctrl+T"
+msgstr "Zwei Computer"
+
+#: xboard.c:669
+#, fuzzy
+msgid "Analysis Mode  Ctrl+A"
+msgstr "Analyse-Modus"
+
+#: xboard.c:670
+#, fuzzy
+msgid "Analyze File      Ctrl+F"
+msgstr "Datei analyzieren"
+
+#: xboard.c:671
+msgid "Edit Game         Ctrl+E"
+msgstr ""
+
+#: xboard.c:672
+msgid "Edit Position      Ctrl+Shift+E"
+msgstr ""
+
+#: xboard.c:673
+msgid "Training"
+msgstr "Training"
+
+#: xboard.c:674
+msgid "ICS Client"
+msgstr ""
+
+#: xboard.c:676
+#, fuzzy
+msgid "Machine Match"
+msgstr "Computer schwarz"
+
+#: xboard.c:677
+msgid "Pause               Pause"
+msgstr ""
+
+#: xboard.c:682
+msgid "Accept             F3"
+msgstr ""
+
+#: xboard.c:683
+msgid "Decline            F4"
+msgstr ""
+
+#: xboard.c:684
+msgid "Rematch           F12"
+msgstr ""
+
+#: xboard.c:686
+#, fuzzy
+msgid "Call Flag          F5"
+msgstr "Zeit reklamieren"
+
+#: xboard.c:687
+msgid "Draw                F6"
+msgstr ""
+
+#: xboard.c:688
+msgid "Adjourn            F7"
+msgstr ""
+
+#: xboard.c:689
+msgid "Abort                F8"
+msgstr ""
+
+#: xboard.c:690
+msgid "Resign              F9"
+msgstr ""
+
+#: xboard.c:692
+#, fuzzy
+msgid "Stop Observing  F10"
+msgstr "Beobachtung beenden"
+
+#: xboard.c:693
+#, fuzzy
+msgid "Stop Examining  F11"
+msgstr "Untersuchung beenden"
+
+#: xboard.c:694
+msgid "Upload to Examine"
+msgstr ""
+
+#: xboard.c:696
+msgid "Adjudicate to White"
+msgstr ""
+
+#: xboard.c:697
+msgid "Adjudicate to Black"
+msgstr ""
+
+#: xboard.c:698
+msgid "Adjudicate Draw"
+msgstr ""
+
+#: xboard.c:703
+msgid "Load New Engine ..."
+msgstr ""
+
+#: xboard.c:705
+msgid "Engine #1 Settings ..."
+msgstr ""
+
+#: xboard.c:706
+msgid "Engine #2 Settings ..."
+msgstr ""
+
+#: xboard.c:708
+msgid "Hint"
+msgstr "Hinweiss"
+
+#: xboard.c:709
+msgid "Book"
+msgstr "Buch"
+
+#: xboard.c:711
+msgid "Move Now     Ctrl+M"
+msgstr ""
+
+#: xboard.c:712
+#, fuzzy
+msgid "Retract Move  Ctrl+X"
+msgstr "Zug zurücknehmen"
+
+#: xboard.c:719
+msgid "General ..."
+msgstr ""
+
+#: xboard.c:721
+msgid "Time Control ...       Alt+Shift+T"
+msgstr ""
+
+#: xboard.c:722
+msgid "Common Engine ...  Alt+Shift+U"
+msgstr ""
+
+#: xboard.c:723
+msgid "Adjudications ...      Alt+Shift+J"
+msgstr ""
+
+#: xboard.c:724
+msgid "ICS ..."
+msgstr ""
+
+#: xboard.c:725
+msgid "Match ..."
+msgstr ""
+
+#: xboard.c:726
+#, fuzzy
+msgid "Load Game ..."
+msgstr "Spiel laden"
+
+#: xboard.c:727
+#, fuzzy
+msgid "Save Game ..."
+msgstr "Spiel speichern"
+
+#: xboard.c:729
+#, fuzzy
+msgid "Game List ..."
+msgstr "Spielliste anzeigen"
+
+#: xboard.c:730
+msgid "Sounds ..."
+msgstr ""
+
+#: xboard.c:733
+msgid "Always Queen        Ctrl+Shift+Q"
+msgstr ""
+
+#: xboard.c:734
+msgid "Animate Dragging"
+msgstr "Ziehen animieren"
+
+#: xboard.c:735
+#, fuzzy
+msgid "Animate Moving      Ctrl+Shift+A"
+msgstr "Züge animieren"
+
+#: xboard.c:736
+msgid "Auto Flag               Ctrl+Shift+F"
+msgstr ""
+
+#: xboard.c:737
+msgid "Auto Flip View"
+msgstr "Brett automatisch drehen"
+
+#: xboard.c:738
+msgid "Blindfold"
+msgstr ""
+
+#: xboard.c:739
+msgid "Flash Moves"
+msgstr ""
+
+#: xboard.c:741
+msgid "Highlight Dragging"
+msgstr ""
+
+#: xboard.c:743
+msgid "Highlight Last Move"
+msgstr ""
+
+#: xboard.c:744
+msgid "Highlight With Arrow"
+msgstr ""
+
+#: xboard.c:745
+msgid "Move Sound"
+msgstr ""
+
+#: xboard.c:747
+#, fuzzy
+msgid "One-Click Moving"
+msgstr "Züge animieren"
+
+#: xboard.c:748
+msgid "Periodic Updates"
+msgstr ""
+
+#: xboard.c:749
+#, fuzzy
+msgid "Ponder Next Move  Ctrl+Shift+P"
+msgstr "Nächsten Zug abwägen"
+
+#: xboard.c:750
+msgid "Popup Exit Message"
+msgstr ""
+
+#: xboard.c:751
+msgid "Popup Move Errors"
+msgstr ""
+
+#: xboard.c:753
+msgid "Show Coords"
+msgstr "Zeige Koordinaten"
+
+#: xboard.c:754
+msgid "Hide Thinking        Ctrl+Shift+H"
+msgstr ""
+
+#: xboard.c:755
+msgid "Test Legality          Ctrl+Shift+L"
+msgstr ""
+
+#: xboard.c:758
+msgid "Save Settings Now"
+msgstr ""
+
+#: xboard.c:759
+msgid "Save Settings on Exit"
+msgstr ""
+
+#: xboard.c:764
+msgid "Info XBoard"
+msgstr "Info XBoard"
+
+#: xboard.c:765
+#, fuzzy
+msgid "Man XBoard   F1"
+msgstr "Man XBoard"
+
+#: xboard.c:767 xboard.c:6702
+msgid "About XBoard"
+msgstr "Über XBoard"
+
+#: xboard.c:772
+msgid "File"
+msgstr "Datei"
+
+#: xboard.c:773
+#, fuzzy
+msgid "Edit"
+msgstr "Spiel bearbeiten"
+
+#: xboard.c:774
+#, fuzzy
+msgid "View"
+msgstr "Brett drehen"
+
+#: xboard.c:775
+msgid "Mode"
+msgstr ""
+
+#: xboard.c:776
 msgid "Action"
 msgstr "Aktion"
 
-#: xboard.c:638
-msgid "Step"
-msgstr "Züge"
+#: xboard.c:777
+msgid "Engine"
+msgstr ""
 
-#: xboard.c:639
+#: xboard.c:778
 msgid "Options"
 msgstr "Optionen"
 
-#: xboard.c:640
+#: xboard.c:779
 msgid "Help"
 msgstr "Hilfe"
 
-#. Label on pause button
-#: xboard.c:646
-msgid "P"
-msgstr "P"
-
-#: xboard.c:658 xboard.c:7440
+#: xboard.c:795 xboard.c:7441
 msgid "White"
 msgstr "Weiss"
 
-#: xboard.c:658 xboard.c:660 xboard.c:675
+#: xboard.c:795 xboard.c:799 xboard.c:818
 msgid "Pawn"
 msgstr "Bauer"
 
-#: xboard.c:658 xboard.c:660 xboard.c:675 xboard.c:5218 xboard.c:5277
+#: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5021 xboard.c:5097
 msgid "Knight"
 msgstr "Springer"
 
-#: xboard.c:658 xboard.c:660 xboard.c:675 xboard.c:5216
+#: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5019
 msgid "Bishop"
 msgstr "Läufer"
 
-#: xboard.c:658 xboard.c:660 xboard.c:675 xboard.c:5214
+#: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5017
 msgid "Rook"
 msgstr "Turm"
 
-#: xboard.c:659 xboard.c:661 xboard.c:675 xboard.c:5212
+#: xboard.c:796 xboard.c:800 xboard.c:818 xboard.c:5015
 msgid "Queen"
 msgstr "Königin"
 
-#: xboard.c:659 xboard.c:661 xboard.c:5222
+#: xboard.c:796 xboard.c:800 xboard.c:5027
 msgid "King"
 msgstr "König"
 
-#: xboard.c:659 xboard.c:661
+#: xboard.c:796 xboard.c:800
+msgid "Elephant"
+msgstr ""
+
+#: xboard.c:796 xboard.c:800
+msgid "Cannon"
+msgstr ""
+
+#: xboard.c:797 xboard.c:801 xboard.c:5033
+#, fuzzy
+msgid "Archbishop"
+msgstr "Läufer"
+
+#: xboard.c:797 xboard.c:801 xboard.c:5035
+#, fuzzy
+msgid "Chancellor"
+msgstr "abbrechen"
+
+#: xboard.c:797 xboard.c:801 xboard.c:5040 xboard.c:5099
+#, fuzzy
+msgid "Promote"
+msgstr "Umwandlung"
+
+#: xboard.c:797 xboard.c:801
+msgid "Demote"
+msgstr ""
+
+#: xboard.c:798 xboard.c:802
 msgid "Empty square"
 msgstr "Leeres Feld"
 
-#: xboard.c:659 xboard.c:661
+#: xboard.c:798 xboard.c:802
 msgid "Clear board"
 msgstr ""
 
-#: xboard.c:660 xboard.c:7454
+#: xboard.c:799 xboard.c:7457
 msgid "Black"
 msgstr "Schwarz"
 
-#: xboard.c:1666
+#: xboard.c:1191
 #, c-format
 msgid "%s: Can't access XPM directory %s\n"
 msgstr "%s: XPM-Ordner nicht erreichbar %s\n"
 
-#: xboard.c:1689
+#: xboard.c:1214
 #, c-format
 msgid "Available `%s' sizes:\n"
 msgstr "Mögliche »%s« Größen:\n"
 
-#: xboard.c:1725
+#: xboard.c:1250
 #, c-format
 msgid "Error: No `%s' files!\n"
 msgstr "Fehler: Keine »%s« Datein!\n"
 
-#: xboard.c:1741
+#: xboard.c:1266
+#, c-format
 msgid ""
 "Warning: No DIR structure found on this system --\n"
 "         Unable to autosize for XPM/XIM pieces.\n"
@@ -441,142 +590,152 @@ msgid ""
 "   Include system type & operating system in message.\n"
 msgstr ""
 
-#: xboard.c:1802
+#: xboard.c:1327
 #, c-format
 msgid "%s: unrecognized color %s\n"
 msgstr "%s: nicht erkannte Farbe %s\n"
 
-#: xboard.c:1812
+#: xboard.c:1337
 #, c-format
 msgid "%s: can't parse foreground color in `%s'\n"
 msgstr ""
 
-#: xboard.c:1883
+#: xboard.c:1717 xboard.c:2426
 #, c-format
-msgid "%s: unrecognized argument %s\n"
-msgstr "%s: nicht erkanntes Argument %s\n"
+msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
+msgstr "%s: titleWidget Geometriefehler %d %d %d %d %d\n"
 
-#: xboard.c:1892
+#: xboard.c:1822
+#, c-format
+msgid "%s: can't parse color names; disabling colorization\n"
+msgstr ""
+
+#: xboard.c:1999
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr "%s: cd zu CHESSDIR funktioniert nicht: "
 
-#: xboard.c:1928
+#: xboard.c:2008
+#, fuzzy, c-format
+msgid "Failed to open file '%s'\n"
+msgstr "Fehler beim Öffnen der Datei"
+
+#: xboard.c:2017
+msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
+msgstr ""
+
+#: xboard.c:2040
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr "%s: falsche boardSize Syntax %s\n"
 
-#: xboard.c:1964
+#: xboard.c:2077
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr ""
 
-#: xboard.c:1982
+#: xboard.c:2102
 #, c-format
 msgid "Error expanding path name \"%s\"\n"
 msgstr ""
 
-#: xboard.c:1987
+#: xboard.c:2107
 #, c-format
 msgid ""
 "XBoard square size (hint): %d\n"
 "%s fulldir:%s:\n"
 msgstr ""
 
-#: xboard.c:1993
+#: xboard.c:2113
 #, c-format
 msgid "Closest %s size: %d\n"
 msgstr "Nächste %s Größe: %d\n"
 
-#: xboard.c:2105
+#: xboard.c:2165
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr "%s: nicht genügend Farben vorhanden; versuche monochrom Modus\n"
 
-#: xboard.c:2110
+#: xboard.c:2181
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
 msgstr ""
 
-#: xboard.c:2128
-#, c-format
-msgid "%s: can't parse color names; disabling colorization\n"
-msgstr ""
-
-#: xboard.c:2308 xboard.c:2318
+#: xboard.c:2392 xboard.c:2402
 #, c-format
 msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
 msgstr "%s: messageWidget Geometriefehler %d %d %d %d %d\n"
 
-#: xboard.c:2339
+#: xboard.c:3107
 #, c-format
-msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
-msgstr "%s: titleWidget Geometriefehler %d %d %d %d %d\n"
-
-#: xboard.c:2909
 msgid "Unable to create font set.\n"
 msgstr "Nicht in der Lage Schriftsatz zu generieren.\n"
 
-#: xboard.c:2917
+#: xboard.c:3115
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr "%s: keine Schriften stimmen mit Muster %s überein\n"
 
-#: xboard.c:2960
+#: xboard.c:3158
 #, c-format
 msgid ""
 "resolved %s at pixel size %d\n"
 "  to %s\n"
 msgstr ""
 
-#: xboard.c:3084
+#: xboard.c:3316
 #, c-format
 msgid "%s: error loading XIM!\n"
 msgstr "%s: Fehler beim Laden von XIM!\n"
 
-#: xboard.c:3176
+#: xboard.c:3413
 msgid "XIM pieces cannot be used in monochrome mode"
 msgstr "XIM Figuren können nicht im Monochrom-modus benutzt werden"
 
-#: xboard.c:3180
+#: xboard.c:3417
+#, c-format
 msgid ""
 "\n"
 "Loading XIMs...\n"
 msgstr ""
 
-#: xboard.c:3194 xboard.c:3215 xboard.c:3222 xboard.c:3313 xboard.c:3334
-#: xboard.c:3345
+#: xboard.c:3432 xboard.c:3455 xboard.c:3462 xboard.c:3575 xboard.c:3612
+#: xboard.c:3623
 #, c-format
 msgid "(File:%s:) "
 msgstr "(Datei:%s) "
 
-#: xboard.c:3210 xboard.c:3327
+#: xboard.c:3450 xboard.c:3605
+#, c-format
 msgid "light square "
 msgstr "weisses Feld "
 
-#: xboard.c:3218 xboard.c:3341
+#: xboard.c:3458 xboard.c:3619
+#, c-format
 msgid "dark square "
 msgstr "schwarze Feld "
 
-#: xboard.c:3229 xboard.c:3354
+#: xboard.c:3469 xboard.c:3632
+#, c-format
 msgid "Done.\n"
 msgstr "Fertig.\n"
 
-#: xboard.c:3271
+#: xboard.c:3530
 msgid "XPM pieces cannot be used in monochrome mode"
 msgstr "XPM Figuren können nicht im Monochrom-modus benutzt werden"
 
-#: xboard.c:3281
+#: xboard.c:3540
 #, c-format
 msgid "No builtin XPM pieces of size %d\n"
 msgstr "Keine XPM-Figuren der Größe %d vorhanden\n"
 
-#: xboard.c:3291
+#: xboard.c:3550
 #, c-format
 msgid "Error %d loading XPM image \"%s\"\n"
 msgstr "Fehler %d beim Laden von XPM-Bild »%s«\n"
 
-#: xboard.c:3302
+#: xboard.c:3563
+#, c-format
 msgid ""
 "\n"
 "Loading XPMs...\n"
@@ -584,580 +743,687 @@ msgstr ""
 "\n"
 "Lade XPMs…\n"
 
-#: xboard.c:3318 xboard.c:3338 xboard.c:3349
+#: xboard.c:3586
+#, fuzzy, c-format
+msgid "(Replace by File:%s:) "
+msgstr "(Datei:%s) "
+
+#: xboard.c:3593 xboard.c:3616 xboard.c:3627
 #, c-format
 msgid "Error %d loading XPM file \"%s\"\n"
 msgstr ""
 
-#: xboard.c:3431
+#: xboard.c:3717
 #, c-format
 msgid "Can't open bitmap file %s"
 msgstr "Bitmap file %s kann nicht geöffnet werden"
 
-#: xboard.c:3434
+#: xboard.c:3720
 #, c-format
 msgid "Invalid bitmap in file %s"
 msgstr "Ungültiges Bitmap in Datei %s"
 
-#: xboard.c:3437
+#: xboard.c:3723
 #, c-format
 msgid "Ran out of memory reading bitmap file %s"
 msgstr ""
 
-#: xboard.c:3441
+#: xboard.c:3727
 #, c-format
 msgid "Unknown XReadBitmapFile error %d on file %s"
 msgstr "Unbekannter XReadBitmapFile-Fehler %d bei Datei %s"
 
-#: xboard.c:3445
+#: xboard.c:3731
 #, c-format
 msgid "%s: %s...using built-in\n"
 msgstr ""
 
-#: xboard.c:3449
+#: xboard.c:3735
 #, c-format
 msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
 msgstr ""
 
-#: xboard.c:3456
-#, c-format
-msgid "%s: No built-in bitmap for %s; giving up\n"
-msgstr ""
-
-#: xboard.c:3652
+#: xboard.c:3938
 msgid "Drop"
 msgstr ""
 
-#: xboard.c:4573 xboard.c:4576 xboard.c:4832 xboard.c:5078 xboard.c:5087
-#: xboard.c:5340 xedittags.c:150 xedittags.c:248
-msgid "ok"
-msgstr "Ok"
-
-#: xboard.c:4587 xboard.c:4590 xboard.c:4839 xboard.c:5082 xboard.c:5088
-#: xboard.c:5127 xboard.c:5225 xboard.c:5273 xboard.c:7014 xboard.c:7055
-#: xedittags.c:157 xedittags.c:259
+#: xboard.c:4919 xboard.c:5045 xboard.c:5093 xboard.c:6997 xboard.c:7038
+#: xgamelist.c:716 xgamelist.c:824
 msgid "cancel"
 msgstr "abbrechen"
 
-#: xboard.c:4601 xboard.c:4604 xboard.c:4841 xedittags.c:159
-msgid "clear"
-msgstr ""
-
-#: xboard.c:4614 xboard.c:4617 xboard.c:5008 xedittags.c:128 xedittags.c:282
-#: xgamelist.c:226 xgamelist.c:292
-msgid "close"
-msgstr "schließen"
-
-#: xboard.c:4628 xboard.c:4631 xboard.c:5010 xedittags.c:130 xedittags.c:293
-msgid "edit"
-msgstr ""
-
-#: xboard.c:4873
-msgid "ICS Input"
-msgstr ""
-
-#: xboard.c:5062
-msgid "File name prompt"
-msgstr ""
-
-#: xboard.c:5164 xboard.c:6864 xboard.c:6878
+#: xboard.c:4956 xboard.c:6847 xboard.c:6861
 msgid "Error"
 msgstr "Fehler"
 
-#: xboard.c:5164
+#: xboard.c:4956
 msgid "Can't open file"
 msgstr "Datei kann nicht geöffnet werden"
 
-#: xboard.c:5169
+#: xboard.c:4961
 msgid "Failed to open file"
 msgstr "Fehler beim Öffnen der Datei"
 
-#: xboard.c:5198
+#: xboard.c:4990
 msgid "Promotion"
 msgstr "Umwandlung"
 
-#: xboard.c:5207
-msgid "Promote pawn to what?"
+#: xboard.c:4999
+#, fuzzy
+msgid "Promote to what?"
 msgstr "In Was soll der Bauer umgewandelt werden?"
 
-#: xboard.c:5525 backend.c:5699
+#: xboard.c:5006
+msgid "Warlord"
+msgstr ""
+
+#: xboard.c:5008
+msgid "General"
+msgstr ""
+
+#: xboard.c:5010
+msgid "Lieutenant"
+msgstr ""
+
+#: xboard.c:5012
+msgid "Captain"
+msgstr ""
+
+#: xboard.c:5042 xboard.c:5101
+msgid "Defer"
+msgstr ""
+
+#: xboard.c:5164
+msgid "ok"
+msgstr "Ok"
+
+#: xboard.c:5338 backend.c:10170
 msgid "Cannot build game list"
 msgstr ""
 
-#: xboard.c:5546
+#: xboard.c:5359
 msgid "Load game file name?"
 msgstr ""
 
-#: xboard.c:5612
+#: xboard.c:5425
 msgid "Load position file name?"
 msgstr ""
 
-#: xboard.c:5621
+#: xboard.c:5434
 msgid "Save game file name?"
 msgstr ""
 
-#: xboard.c:5632
+#: xboard.c:5446
 msgid "Save position file name?"
 msgstr ""
 
-#: xboard.c:5804
+#: xboard.c:5679
 msgid "Can't open temp file"
 msgstr ""
 
-#: xboard.c:5885 xboard.c:5903
+#: xboard.c:5762 xboard.c:5806 backend.c:7842
 #, c-format
 msgid "%s does not support analysis"
 msgstr ""
 
-#: xboard.c:5913
+#: xboard.c:5769
+#, fuzzy, c-format
+msgid "You are not observing a game"
+msgstr "Sie haben noch keinen Zug gemacht"
+
+#: xboard.c:5774
+#, c-format
+msgid "Found unexpected active ICS engine analyze \n"
+msgstr ""
+
+#: xboard.c:5788
+#, c-format
+msgid "ICS engine analyze starting... \n"
+msgstr ""
+
+#: xboard.c:5816
 msgid "File to analyze"
 msgstr ""
 
-#: xboard.c:6901
+#: xboard.c:5835
+msgid "You can only start a match from the initial position."
+msgstr ""
+
+#: xboard.c:6884
 msgid "Fatal Error"
 msgstr ""
 
-#: xboard.c:6901
+#: xboard.c:6884
 msgid "Exiting"
 msgstr ""
 
-#: xboard.c:6911
+#: xboard.c:6894
 msgid "Information"
 msgstr ""
 
-#: xboard.c:6918
+#: xboard.c:6901
 msgid "Note"
 msgstr ""
 
-#: xboard.c:6968
+#: xboard.c:6951
 #, c-format
 msgid "AskQuestionProc needed 4 parameters, got %d\n"
 msgstr ""
 
-#: xboard.c:7001
+#: xboard.c:6984
 msgid "Error writing to chess program"
 msgstr ""
 
-#: xboard.c:7053
+#: xboard.c:7036
 msgid "enter"
 msgstr ""
 
-#: xboard.c:7166 backend.c:1323
+#: xboard.c:7151 backend.c:2000
 msgid "Error writing to display"
 msgstr ""
 
-#: xboard.c:7239
+#: xboard.c:7225
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
 msgstr ""
 
-#: xboard.c:7594
+#: xboard.c:7619
 msgid "Socket support is not configured in"
 msgstr ""
 
-#: xboard.c:7696
+#: xboard.c:7721
 msgid "internal rcmd not implemented for Unix"
 msgstr ""
 
-#: xboard.c:8422
+#: xboard.c:8495
 #, c-format
 msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 msgstr ""
 
-#: xboard.c:8423
+#: xboard.c:8496
 #, c-format
 msgid "AnimateMove: piece %d slides from %d,%d to %d,%d \n"
 msgstr ""
 
-#: xedittags.c:346 xedittags.c:354
-msgid "Tags"
-msgstr ""
-
-#: xedittags.c:385
-msgid "Edit tags"
-msgstr ""
-
-#: xgamelist.c:193 xgamelist.c:298
+#: xgamelist.c:200 xgamelist.c:392
 msgid "load"
 msgstr ""
 
-#: xgamelist.c:204 xgamelist.c:311
+#: xgamelist.c:211 xgamelist.c:405
 msgid "prev"
 msgstr ""
 
-#: xgamelist.c:215 xgamelist.c:304
+#: xgamelist.c:222 xgamelist.c:398
 msgid "next"
 msgstr ""
 
-#: xgamelist.c:301
+#: xgamelist.c:233 xgamelist.c:386
+msgid "close"
+msgstr "schließen"
+
+#: xgamelist.c:245
+msgid "Filter:"
+msgstr ""
+
+#: xgamelist.c:263
+msgid "filtertext"
+msgstr ""
+
+#: xgamelist.c:276 xgamelist.c:412
+msgid "apply"
+msgstr ""
+
+#: xgamelist.c:395
 msgid "No game selected"
 msgstr ""
 
-#: xgamelist.c:307
+#: xgamelist.c:401
 msgid "Can't go forward any further"
 msgstr ""
 
-#: xgamelist.c:314 backend.c:5833 backend.c:6292
+#: xgamelist.c:408 backend.c:10304 backend.c:10782
 msgid "Can't back up any further"
 msgstr ""
 
-#: xgamelist.c:415
+#: xgamelist.c:506
 msgid "There is no game list"
 msgstr ""
 
-#: xhistory.c:156
+#: xgamelist.c:710 xgamelist.c:835
+msgid "OK"
+msgstr ""
+
+#: xgamelist.c:724
+msgid "No tag selected"
+msgstr ""
+
+#: xgamelist.c:728 xgamelist.c:813
+msgid "down"
+msgstr ""
+
+#: xgamelist.c:733 xgamelist.c:802
+msgid "up"
+msgstr ""
+
+#: xgamelist.c:738 xgamelist.c:791
+msgid "factory"
+msgstr ""
+
+#: xhistory.c:163
+#, c-format
 msgid "White "
 msgstr "Weiss"
 
-#: xhistory.c:157
+#: xhistory.c:164
+#, c-format
 msgid "Black "
 msgstr "Schwarz"
 
-#: xhistory.c:347 xhistory.c:351
+#: xhistory.c:310 xhistory.c:314
 msgid "Move list"
 msgstr ""
 
-#: xhistory.c:445
+#: xhistory.c:406
 msgid "Close"
 msgstr "Schließen"
 
-#: backend.c:468
-#, c-format
-msgid "bad timeControl option %s"
-msgstr ""
-
-#: backend.c:483
-#, c-format
-msgid "bad searchTime option %s"
-msgstr ""
-
-#: backend.c:542 backend.c:552
+#: backend.c:799
 #, c-format
 msgid "protocol version %d not supported"
 msgstr ""
 
-#: backend.c:603
+#: backend.c:907
+#, c-format
+msgid "bad timeControl option %s"
+msgstr ""
+
+#: backend.c:922
+#, c-format
+msgid "bad searchTime option %s"
+msgstr ""
+
+#: backend.c:964
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr ""
 
-#: backend.c:618
+#: backend.c:982
 #, c-format
 msgid "Unknown variant name %s"
 msgstr ""
 
-#: backend.c:705
+#: backend.c:1224
+#, fuzzy
+msgid "Starting chess program"
+msgstr "Starte zweites Schachprogramm"
+
+#: backend.c:1234
+msgid "Can't have a match with no chess programs"
+msgstr ""
+
+#: backend.c:1246
+msgid "Bad game file"
+msgstr ""
+
+#: backend.c:1255
+msgid "Bad position file"
+msgstr ""
+
+#: backend.c:1287
 #, c-format
 msgid "Could not open comm port %s"
 msgstr ""
 
-#: backend.c:708
+#: backend.c:1290
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr ""
 
-#: backend.c:753
+#: backend.c:1346
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr ""
 
-#: backend.c:761
-msgid "Can't have a match with no chess programs"
-msgstr ""
-
-#: backend.c:771
-msgid "Bad game file"
-msgstr ""
-
-#: backend.c:778
-msgid "Bad position file"
-msgstr ""
-
-#: backend.c:790
+#: backend.c:1363
 msgid "AnalyzeFile mode requires a game file"
 msgstr ""
 
-#: backend.c:805
+#: backend.c:1390
 msgid "Analysis mode requires a chess engine"
 msgstr ""
 
-#: backend.c:809
+#: backend.c:1394
 msgid "Analysis mode does not work with ICS mode"
 msgstr ""
 
-#: backend.c:819
+#: backend.c:1405
 msgid "MachineWhite mode requires a chess engine"
 msgstr ""
 
-#: backend.c:824
+#: backend.c:1410
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr ""
 
-#: backend.c:831
+#: backend.c:1417
 msgid "MachineBlack mode requires a chess engine"
 msgstr ""
 
-#: backend.c:836
+#: backend.c:1422
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr ""
 
-#: backend.c:843
+#: backend.c:1429
 msgid "TwoMachines mode requires a chess engine"
 msgstr ""
 
-#: backend.c:848
+#: backend.c:1434
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr ""
 
-#: backend.c:859
+#: backend.c:1445
 msgid "Training mode requires a game file"
 msgstr ""
 
-#: backend.c:1007 backend.c:1029 backend.c:1054 backend.c:1409
+#: backend.c:1606 backend.c:1650 backend.c:1675 backend.c:2086
 msgid "Error writing to ICS"
 msgstr ""
 
-#: backend.c:1011
+#: backend.c:1610
 msgid "Error reading from keyboard"
 msgstr ""
 
-#: backend.c:1014
+#: backend.c:1613
 msgid "Got end of file from keyboard"
 msgstr ""
 
-#: backend.c:1258
+#: backend.c:1924
+#, c-format
+msgid "Unknown wild type %d"
+msgstr ""
+
+#: backend.c:1935
 #, c-format
 msgid "recognized '%s' (%d) as variant %s\n"
 msgstr ""
 
-#: backend.c:2000
+#: backend.c:2745
+#, c-format
+msgid "your opponent kibitzes: %s"
+msgstr ""
+
+#: backend.c:3263
 msgid "Error gathering move list: two headers"
 msgstr ""
 
-#: backend.c:2014
+#: backend.c:3277
 #, c-format
 msgid "Ratings from header: W %d, B %d\n"
 msgstr ""
 
-#: backend.c:2047
+#: backend.c:3310
 msgid "Error gathering move list: nested"
 msgstr ""
 
-#: backend.c:2556
+#: backend.c:3542
+msgid "Illegal move (rejected by ICS)"
+msgstr ""
+
+#: backend.c:3879
 msgid "Connection closed by ICS"
 msgstr ""
 
-#: backend.c:2558
+#: backend.c:3881
 msgid "Error reading from ICS"
 msgstr ""
 
-#: backend.c:2606
+#: backend.c:3932
 #, c-format
 msgid "Parsing board: %s\n"
 msgstr ""
 
-#: backend.c:2618
+#: backend.c:3956
 #, c-format
 msgid ""
 "Failed to parse board string:\n"
 "\"%s\""
 msgstr ""
 
-#: backend.c:2627 backend.c:4811
+#: backend.c:3965 backend.c:8959
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr ""
 
-#: backend.c:2689
+#: backend.c:4059
 msgid "Error gathering move list: extra board"
 msgstr ""
 
-#: backend.c:2936 backend.c:2958
+#: backend.c:4479 backend.c:4501
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
 msgstr ""
 
-#: backend.c:3391
+#: backend.c:4716
+#, c-format
+msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
+msgstr ""
+
+#: backend.c:5601
+msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
+msgstr ""
+
+#: backend.c:5948
 msgid "You are playing Black"
 msgstr "Sie spielen Schwarz"
 
-#: backend.c:3400 backend.c:3431
+#: backend.c:5957 backend.c:5982
 msgid "You are playing White"
 msgstr "Sie spielen Weiß"
 
-#: backend.c:3407 backend.c:3439 backend.c:3504 backend.c:3526 backend.c:3542
-#: backend.c:7925
+#: backend.c:5964 backend.c:5990 backend.c:6109 backend.c:6132 backend.c:6148
+#: backend.c:12716
 msgid "It is White's turn"
 msgstr "Weiß ist am Zug"
 
-#: backend.c:3411 backend.c:3443 backend.c:3512 backend.c:3532 backend.c:3563
-#: backend.c:7917
+#: backend.c:5968 backend.c:5994 backend.c:6117 backend.c:6138 backend.c:6169
+#: backend.c:12708
 msgid "It is Black's turn"
 msgstr "Schwarz ist am Zug"
 
-#: backend.c:3454
+#: backend.c:6006
 msgid "Displayed position is not current"
 msgstr ""
 
-#: backend.c:3602
+#: backend.c:6240
 msgid "Illegal move"
 msgstr "Ungültiger Zug"
 
-#: backend.c:3636
+#: backend.c:6303
 msgid "End of game"
 msgstr "Ende des Spiels"
 
-#: backend.c:3639
+#: backend.c:6306
 msgid "Incorrect move"
 msgstr ""
 
-#: backend.c:3858
+#: backend.c:6596
+msgid "Pull pawn backwards to under-promote"
+msgstr ""
+
+#: backend.c:7478
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr ""
 
-#: backend.c:4099
+#: backend.c:7701
+msgid "Bad FEN received from engine"
+msgstr ""
+
+#: backend.c:7908
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr ""
 
-#: backend.c:4124
+#: backend.c:7933
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr ""
 
-#: backend.c:4147
+#: backend.c:7954
+#, fuzzy, c-format
+msgid "Hint: %s"
+msgstr "Hinweiss"
+
+#: backend.c:7959
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
 "from %s chess program"
 msgstr ""
 
-#: backend.c:4322
+#: backend.c:8134
+msgid "Machine accepts your draw offer"
+msgstr ""
+
+#: backend.c:8137
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
 
-#: backend.c:4578
+#: backend.c:8500
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr ""
 
-#: backend.c:4583
+#: backend.c:8510
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr ""
 
-#: backend.c:4589
+#: backend.c:8521
 msgid "Gap in move list"
 msgstr ""
 
-#: backend.c:4890
+#: backend.c:9097
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr ""
 
-#: backend.c:5242
+#: backend.c:9211
+#, c-format
+msgid "Startup failure on '%s'"
+msgstr ""
+
+#: backend.c:9234 backend.c:12187
+#, fuzzy
+msgid "Waiting for first chess program"
+msgstr "Starte zweites Schachprogramm"
+
+#: backend.c:9239 backend.c:12113 backend.c:12196
+#, fuzzy
+msgid "Waiting for second chess program"
+msgstr "Starte zweites Schachprogramm"
+
+#: backend.c:9658
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr ""
 
-#: backend.c:5628
-#, c-format
-msgid "Ambiguous move: %d.%s%s"
-msgstr ""
-
-#: backend.c:5639
+#: backend.c:10081 backend.c:10112
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr ""
 
-#: backend.c:5687 backend.c:6314 backend.c:6507 backend.c:6733
+#: backend.c:10101
+#, c-format
+msgid "Ambiguous move: %d.%s%s"
+msgstr ""
+
+#: backend.c:10158 backend.c:10804 backend.c:10994 backend.c:11356
 #, c-format
 msgid "Can't open \"%s\""
 msgstr ""
 
-#: backend.c:5788
+#: backend.c:10259
 msgid "No more games in this message"
 msgstr ""
 
-#: backend.c:5829
+#: backend.c:10300
 msgid "No game has been loaded yet"
 msgstr ""
 
-#: backend.c:5888
+#: backend.c:10360
 msgid "Game number out of range"
 msgstr ""
 
-#: backend.c:5899
+#: backend.c:10371
 msgid "Can't seek on game file"
 msgstr ""
 
-#: backend.c:5958
+#: backend.c:10429
 msgid "Game not found in file"
 msgstr "Spiel in Datei nicht gefunden"
 
-#: backend.c:6075 backend.c:6404
+#: backend.c:10557 backend.c:10884
 msgid "Bad FEN position in file"
 msgstr ""
 
-#: backend.c:6218
+#: backend.c:10707
 msgid "No moves in game"
 msgstr "Keine Züge in dem Spiel"
 
-#: backend.c:6288
+#: backend.c:10778
 msgid "No position has been loaded yet"
 msgstr ""
 
-#: backend.c:6355 backend.c:6366
+#: backend.c:10845 backend.c:10856
 msgid "Can't seek on position file"
 msgstr ""
 
-#: backend.c:6373 backend.c:6395
+#: backend.c:10863 backend.c:10875
 msgid "Position not found in file"
 msgstr ""
 
-#: backend.c:6436
+#: backend.c:10916
 msgid "Black to play"
 msgstr "Schwarz am Zug"
 
-#: backend.c:6439
+#: backend.c:10919
 msgid "White to play"
 msgstr "Weiß am Zug"
 
-#: backend.c:6863
+#: backend.c:11487
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
 msgstr ""
 
-#: backend.c:6868
+#: backend.c:11492
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
 msgstr ""
 
-#: backend.c:6873
+#: backend.c:11497
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
 msgstr ""
 
-#: backend.c:6921
+#: backend.c:11544
 msgid "You have not made a move yet"
 msgstr "Sie haben noch keinen Zug gemacht"
 
-#: backend.c:6942
+#: backend.c:11565
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
 msgstr ""
 
-#: backend.c:6947
+#: backend.c:11570
 msgid "No unfinished games"
 msgstr ""
 
-#: backend.c:6953
+#: backend.c:11576
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -1167,169 +1433,268 @@ msgid ""
 "on the command line."
 msgstr ""
 
-#: backend.c:6968
+#: backend.c:11591
 msgid "Failed to invoke cmail"
 msgstr ""
 
-#: backend.c:7030
+#: backend.c:11653
+#, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr ""
 
-#: backend.c:7053
+#: backend.c:11675
+#, c-format
 msgid "Still need to make move for game\n"
 msgstr ""
 
-#: backend.c:7058
+#: backend.c:11679
+#, c-format
 msgid "Still need to make moves for both games\n"
 msgstr ""
 
-#: backend.c:7063
+#: backend.c:11683
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr ""
 
-#: backend.c:7071
+#: backend.c:11690
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr ""
 
-#: backend.c:7077
+#: backend.c:11696
+#, c-format
 msgid "No unfinished games\n"
 msgstr ""
 
-#: backend.c:7079
+#: backend.c:11698
+#, c-format
 msgid "Ready to send mail\n"
 msgstr ""
 
-#: backend.c:7085
+#: backend.c:11703
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr ""
 
-#: backend.c:7237
+#: backend.c:11857
 msgid "Edit comment"
 msgstr ""
 
-#: backend.c:7239
+#: backend.c:11859
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr ""
 
-#: backend.c:7270 backend.c:7297
-msgid "Analysis"
-msgstr "Analyse"
-
-#: backend.c:7271 backend.c:7298
-msgid ""
-"Starting analysis mode...\n"
-"If this message stays up, your chess program does not support analysis."
-msgstr ""
-
-#: backend.c:7330
+#: backend.c:11951
 msgid "It is not White's turn"
 msgstr "Weiß ist nicht am Zug"
 
-#: backend.c:7393
+#: backend.c:12032
 msgid "It is not Black's turn"
 msgstr "Schwarz ist nicht am Zug"
 
-#: backend.c:7474 backend.c:8405
+#: backend.c:12133
+#, fuzzy, c-format
+msgid "Starting %s chess program"
+msgstr "Starte zweites Schachprogramm"
+
+#: backend.c:12159 backend.c:13227
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
 msgstr ""
 
-#: backend.c:7506
-msgid "Starting second chess program"
-msgstr "Starte zweites Schachprogramm"
-
-#: backend.c:7571
+#: backend.c:12278
 msgid "Training mode off"
 msgstr "Trainier-Modus aus"
 
-#: backend.c:7579
+#: backend.c:12286
 msgid "Training mode on"
 msgstr "Trainier-Modus ein"
 
-#: backend.c:7582
+#: backend.c:12289
 msgid "Already at end of game"
 msgstr ""
 
-#: backend.c:7663
+#: backend.c:12370
 msgid "Warning: You are still playing a game"
 msgstr ""
 
-#: backend.c:7666
+#: backend.c:12373
 msgid "Warning: You are still observing a game"
 msgstr ""
 
-#: backend.c:7669
+#: backend.c:12376
 msgid "Warning: You are still examining a game"
 msgstr ""
 
-#: backend.c:7942
+#: backend.c:12450
+msgid "Close ICS engine analyze..."
+msgstr ""
+
+#: backend.c:12733
 msgid "That square is occupied"
 msgstr ""
 
-#: backend.c:7966 backend.c:7992
+#: backend.c:12757 backend.c:12783
 msgid "There is no pending offer on this move"
 msgstr ""
 
-#: backend.c:8028 backend.c:8039
+#: backend.c:12819 backend.c:12830
 msgid "Your opponent is not out of time"
 msgstr ""
 
-#: backend.c:8074
+#: backend.c:12892
 msgid "You must make your move before offering a draw"
 msgstr ""
 
-#: backend.c:8387
+#: backend.c:13209
 msgid "You are not examining a game"
 msgstr ""
 
-#: backend.c:8391
+#: backend.c:13213
 msgid "You can't revert while pausing"
 msgstr ""
 
-#: backend.c:8445 backend.c:8452
+#: backend.c:13267 backend.c:13274
 msgid "It is your turn"
 msgstr "Sie sind am Zug"
 
-#: backend.c:8502 backend.c:8509 backend.c:8528 backend.c:8535
+#: backend.c:13325 backend.c:13332 backend.c:13351 backend.c:13358
 msgid "Wait until your turn"
 msgstr "Warten Sie bis Sie am Zug sind"
 
-#: backend.c:8514
+#: backend.c:13337
 msgid "No hint available"
 msgstr ""
 
-#: backend.c:8820
+#: backend.c:13799
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr ""
 
-#: backend.c:8841
+#: backend.c:13803 backend.c:13833
+#, c-format
+msgid "%s program exits in draw position (%s)"
+msgstr ""
+
+#: backend.c:13828
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr ""
 
-#: backend.c:8847
+#: backend.c:13842
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr ""
 
-#: backend.c:9350 backend.c:9372
+#: backend.c:14255
+#, c-format
+msgid "%s engine has too many options\n"
+msgstr ""
+
+#: backend.c:14408
+msgid "Displayed move is not current"
+msgstr ""
+
+#: backend.c:14417
+msgid "Could not parse move"
+msgstr ""
+
+#: backend.c:14556 backend.c:14578
 msgid "Both flags fell"
 msgstr ""
 
-#: backend.c:9352
+#: backend.c:14558
 msgid "White's flag fell"
 msgstr ""
 
-#: backend.c:9374
+#: backend.c:14580
 msgid "Black's flag fell"
 msgstr ""
 
-#: backend.c:9972
+#: backend.c:15520
 msgid "Bad FEN position in clipboard"
 msgstr ""
+
+#~ msgid "Reset Game"
+#~ msgstr "Spiel zurücksetzen"
+
+#~ msgid "Load Next Game"
+#~ msgstr "Nächstes Spiel laden"
+
+#~ msgid "Load Previous Game"
+#~ msgstr "Vorheriges Spiel laden"
+
+#~ msgid "Reload Same Game"
+#~ msgstr "Spiel erneut laden"
+
+#~ msgid "Load Next Position"
+#~ msgstr "Nächste Stellung laden"
+
+#~ msgid "Load Previous Position"
+#~ msgstr "Vorherige Stellung laden"
+
+#~ msgid "Reload Same Position"
+#~ msgstr "Stellung erneut laden"
+
+#~ msgid "Exit"
+#~ msgstr "Beenden"
+
+#~ msgid "Show Move List"
+#~ msgstr "Züge anzeigen"
+
+#~ msgid "Pause"
+#~ msgstr "Pause"
+
+#~ msgid "Accept"
+#~ msgstr "Annehmen"
+
+#~ msgid "Decline"
+#~ msgstr "Ablehnen"
+
+#~ msgid "Draw"
+#~ msgstr "Remi"
+
+#~ msgid "Adjourn"
+#~ msgstr "Aussetzen"
+
+#~ msgid "Abort"
+#~ msgstr "Abbrechen"
+
+#~ msgid "Resign"
+#~ msgstr "Aufgeben"
+
+#~ msgid "Backward"
+#~ msgstr "Zurück"
+
+#~ msgid "Forward"
+#~ msgstr "Vorwärts"
+
+#~ msgid "Move Now"
+#~ msgstr "Jetzt ziehen"
+
+#~ msgid "Always Queen"
+#~ msgstr "Immer Königin"
+
+#~ msgid "Auto Flag"
+#~ msgstr "Zeit automatisch reklamieren"
+
+#~ msgid "Auto Save"
+#~ msgstr "Automatisch speichern"
+
+#~ msgid "ICS Alarm"
+#~ msgstr "ICS-Alarm"
+
+#~ msgid "Step"
+#~ msgstr "Züge"
+
+#~ msgid "P"
+#~ msgstr "P"
+
+#~ msgid "%s: unrecognized argument %s\n"
+#~ msgstr "%s: nicht erkanntes Argument %s\n"
+
+#~ msgid "Analysis"
+#~ msgstr "Analyse"
