@@ -540,11 +540,11 @@ EngineOutputPopUp()
     int j;
     Widget edit;
     static int  needInit = TRUE;
-    static char *title = _("Engine output"), *text = _("This feature is experimental");
+    static char *title = N_("Engine output"), *text = N_("This feature is experimental");
 
     if (engineOutputShell == NULL) {
 	engineOutputShell =
-	  EngineOutputCreate(title, text);
+	  EngineOutputCreate(_(title), _(text));
 	XtRealizeWidget(engineOutputShell);
 	CatchDeleteWindow(engineOutputShell, "EngineOutputPopDown");
 	if( needInit ) {
@@ -561,8 +561,8 @@ EngineOutputPopUp()
 	XtSetArg(args[j], XtNstring, text); j++;
 	XtSetValues(edit, args, j);
 	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) title);   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) title);      j++;
+	XtSetArg(args[j], XtNiconName, (XtArgVal) _(title));   j++;
+	XtSetArg(args[j], XtNtitle, (XtArgVal) _(title));      j++;
 	XtSetValues(engineOutputShell, args, j);
     }
 

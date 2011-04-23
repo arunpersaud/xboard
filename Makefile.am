@@ -31,16 +31,20 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 filebrowser/draw.c filebrowser/path.c \
 		 filebrowser/dir.c filebrowser/xstat.h \
 		 $(ZPY)
-xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@
-
+SUBDIRS = po
+xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@
 EXTRA_DIST = pixmaps bitmaps sounds winboard filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
-	xboard.conf.in SHORTLOG DIFFSTAT history.c
+	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' -DBITMAPDIR='"$(datadir)/games/xboard/bitmaps/default"'
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
+	    -DBITMAPDIR='"$(datadir)/games/xboard/bitmaps/default"' \
+	    -DLOCALEDIR='"$(localedir)"'
+
+ACLOCAL_AMFLAGS = -I m4
 
 info_TEXINFOS =  xboard.texi
 xboard_TEXINFOS =  copyright.texi 

@@ -357,12 +357,12 @@ EvalGraphPopUp()
     Arg args[16];
     int j;
     static int  needInit = TRUE;
-    static char *title = _("Evaluation graph");
+    static char *title = N_("Evaluation graph");
 
     if (evalGraphShell == NULL) {
 
 	evalGraphShell =
-	  EvalGraphCreate(title);
+	  EvalGraphCreate(_(title));
 	XtRealizeWidget(evalGraphShell);
 	CatchDeleteWindow(evalGraphShell, "EvalGraphPopDown");
 	if( needInit ) {
@@ -371,8 +371,8 @@ EvalGraphPopUp()
 	}
     } else {
 	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) title);   j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) title);      j++;
+	XtSetArg(args[j], XtNiconName, (XtArgVal) _(title));   j++;
+	XtSetArg(args[j], XtNtitle, (XtArgVal) _(title));      j++;
 	XtSetValues(evalGraphShell, args, j);
     }
 

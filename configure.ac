@@ -75,6 +75,10 @@ AC_PROG_CPP
 AC_ISC_POSIX
 AC_PROG_INSTALL
 
+dnl| add gettext support
+AM_GNU_GETTEXT_VERSION(0.18.1)
+AM_GNU_GETTEXT([external])
+
 AC_CHECK_PROGS(RSH, remsh rsh, rsh)
 AC_CHECK_PROGS(MINFO, makeinfo, makeinfo_not_found)
 if test "$MINFO" = makeinfo_not_found ; then
@@ -413,7 +417,7 @@ AC_SUBST(X_CFLAGS)
 AC_SUBST(X_LIBS)
 
 
-AC_CONFIG_FILES([Makefile cmail])
+AC_CONFIG_FILES([Makefile cmail po/Makefile.in])
 AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])
 AC_CONFIG_COMMANDS([chmod-cmail],[chmod 755 cmail])
 AC_OUTPUT
@@ -430,6 +434,8 @@ echo "        datadir:         $datadir   (icons will go in \$datadir/icons/hico
 echo "                                    (bitmaps will go in \$datadir/games/xboard/...)"
 echo "        infodir:         $infodir   (info files will go here)"
 echo "        sysconfdir:      $sysconfdir   (xboard.conf will go here)"
+echo ""
+echo "        NLS support:     $USE_NLS"
 echo ""
 echo "        Xaw3d:           $with_Xaw3d"
 echo ""
