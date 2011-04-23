@@ -4,11 +4,12 @@
 # This file is distributed under the same license as the XBoard package.
 # A. Alper Atýcý <alper_atici@yahoo.com>, 2003.
 #
+#: xoptions.c:326
 msgid ""
 msgstr ""
 "Project-Id-Version: XBoard 4.2.7\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2011-04-22 21:15-0700\n"
+"POT-Creation-Date: 2011-04-23 09:01-0700\n"
 "PO-Revision-Date: 2003-12-26 16:38+0200\n"
 "Last-Translator: A. Alper Atýcý <alper_atici@yahoo.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -17,6 +18,611 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-9\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#: backend.c:799
+#, c-format
+msgid "protocol version %d not supported"
+msgstr ""
+
+#: backend.c:907
+#, c-format
+msgid "bad timeControl option %s"
+msgstr ""
+
+#: backend.c:922
+#, c-format
+msgid "bad searchTime option %s"
+msgstr ""
+
+#: backend.c:964
+#, c-format
+msgid "Variant %s supported only in ICS mode"
+msgstr ""
+
+#: backend.c:982
+#, c-format
+msgid "Unknown variant name %s"
+msgstr ""
+
+#: backend.c:1224
+msgid "Starting chess program"
+msgstr ""
+
+#: backend.c:1234
+msgid "Can't have a match with no chess programs"
+msgstr ""
+
+#: backend.c:1246
+msgid "Bad game file"
+msgstr ""
+
+#: backend.c:1255
+msgid "Bad position file"
+msgstr ""
+
+#: backend.c:1287
+#, c-format
+msgid "Could not open comm port %s"
+msgstr ""
+
+#: backend.c:1290
+#, c-format
+msgid "Could not connect to host %s, port %s"
+msgstr ""
+
+#: backend.c:1346
+#, c-format
+msgid "Unknown initialMode %s"
+msgstr ""
+
+#: backend.c:1363
+msgid "AnalyzeFile mode requires a game file"
+msgstr ""
+
+#: backend.c:1390
+msgid "Analysis mode requires a chess engine"
+msgstr ""
+
+#: backend.c:1394
+msgid "Analysis mode does not work with ICS mode"
+msgstr ""
+
+#: backend.c:1405
+msgid "MachineWhite mode requires a chess engine"
+msgstr ""
+
+#: backend.c:1410
+msgid "MachineWhite mode does not work with ICS mode"
+msgstr ""
+
+#: backend.c:1417
+msgid "MachineBlack mode requires a chess engine"
+msgstr ""
+
+#: backend.c:1422
+msgid "MachineBlack mode does not work with ICS mode"
+msgstr ""
+
+#: backend.c:1429
+msgid "TwoMachines mode requires a chess engine"
+msgstr ""
+
+#: backend.c:1434
+msgid "TwoMachines mode does not work with ICS mode"
+msgstr ""
+
+#: backend.c:1445
+msgid "Training mode requires a game file"
+msgstr ""
+
+#: backend.c:1606 backend.c:1650 backend.c:1675 backend.c:2086
+msgid "Error writing to ICS"
+msgstr ""
+
+#: backend.c:1610
+msgid "Error reading from keyboard"
+msgstr ""
+
+#: backend.c:1613
+msgid "Got end of file from keyboard"
+msgstr ""
+
+#: backend.c:1924
+#, c-format
+msgid "Unknown wild type %d"
+msgstr ""
+
+#: backend.c:1935
+#, c-format
+msgid "recognized '%s' (%d) as variant %s\n"
+msgstr ""
+
+#: backend.c:2000 xboard.c:7151
+msgid "Error writing to display"
+msgstr ""
+
+#: backend.c:2745
+#, c-format
+msgid "your opponent kibitzes: %s"
+msgstr ""
+
+#: backend.c:3263
+msgid "Error gathering move list: two headers"
+msgstr ""
+
+#: backend.c:3277
+#, c-format
+msgid "Ratings from header: W %d, B %d\n"
+msgstr ""
+
+#: backend.c:3310
+msgid "Error gathering move list: nested"
+msgstr ""
+
+#: backend.c:3542
+msgid "Illegal move (rejected by ICS)"
+msgstr ""
+
+#: backend.c:3879
+msgid "Connection closed by ICS"
+msgstr ""
+
+#: backend.c:3881
+msgid "Error reading from ICS"
+msgstr ""
+
+#: backend.c:3932
+#, c-format
+msgid "Parsing board: %s\n"
+msgstr ""
+
+#: backend.c:3956
+#, c-format
+msgid ""
+"Failed to parse board string:\n"
+"\"%s\""
+msgstr ""
+
+#: backend.c:3965 backend.c:8959
+msgid "Game too long; increase MAX_MOVES and recompile"
+msgstr ""
+
+#: backend.c:4059
+msgid "Error gathering move list: extra board"
+msgstr ""
+
+#: backend.c:4479 backend.c:4501
+#, c-format
+msgid "Couldn't parse move \"%s\" from ICS"
+msgstr ""
+
+#: backend.c:4716
+#, c-format
+msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
+msgstr ""
+
+#: backend.c:5601
+msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
+msgstr ""
+
+#: backend.c:5948
+msgid "You are playing Black"
+msgstr "Siz Siyah'sýnýz"
+
+#: backend.c:5957 backend.c:5982
+msgid "You are playing White"
+msgstr "Siz Beyaz'sýnýz"
+
+#: backend.c:5964 backend.c:5990 backend.c:6109 backend.c:6132 backend.c:6148
+#: backend.c:12716
+msgid "It is White's turn"
+msgstr "Sýra Beyaz'da"
+
+#: backend.c:5968 backend.c:5994 backend.c:6117 backend.c:6138 backend.c:6169
+#: backend.c:12708
+msgid "It is Black's turn"
+msgstr "Sýra Siyah'ta"
+
+#: backend.c:6006
+msgid "Displayed position is not current"
+msgstr ""
+
+#: backend.c:6240
+msgid "Illegal move"
+msgstr "Geçersiz hamle"
+
+#: backend.c:6303
+msgid "End of game"
+msgstr "Oyun sonu"
+
+#: backend.c:6306
+msgid "Incorrect move"
+msgstr "Yanlýþ hamle"
+
+#: backend.c:6596
+msgid "Pull pawn backwards to under-promote"
+msgstr ""
+
+#: backend.c:7478
+#, c-format
+msgid "Illegal move \"%s\" from %s machine"
+msgstr ""
+
+#: backend.c:7701
+msgid "Bad FEN received from engine"
+msgstr ""
+
+#: backend.c:7842 xboard.c:5762 xboard.c:5806
+#, c-format
+msgid "%s does not support analysis"
+msgstr ""
+
+#: backend.c:7908
+#, c-format
+msgid "Illegal move \"%s\" (rejected by %s chess program)"
+msgstr ""
+
+#: backend.c:7933
+#, c-format
+msgid "Failed to start %s chess program %s on %s: %s\n"
+msgstr ""
+
+#: backend.c:7954
+#, fuzzy, c-format
+msgid "Hint: %s"
+msgstr "Ýpucu"
+
+#: backend.c:7959
+#, c-format
+msgid ""
+"Illegal hint move \"%s\"\n"
+"from %s chess program"
+msgstr ""
+
+#: backend.c:8134
+msgid "Machine accepts your draw offer"
+msgstr ""
+
+#: backend.c:8137
+msgid ""
+"Machine offers a draw\n"
+"Select Action / Draw to agree"
+msgstr ""
+
+#: backend.c:8500
+#, c-format
+msgid "Ambiguous move in ICS output: \"%s\""
+msgstr ""
+
+#: backend.c:8510
+#, c-format
+msgid "Illegal move in ICS output: \"%s\""
+msgstr ""
+
+#: backend.c:8521
+msgid "Gap in move list"
+msgstr ""
+
+#: backend.c:9097 xoptions.c:846
+#, c-format
+msgid "Variant %s not supported by %s"
+msgstr ""
+
+#: backend.c:9211
+#, c-format
+msgid "Startup failure on '%s'"
+msgstr ""
+
+#: backend.c:9234 backend.c:12187
+msgid "Waiting for first chess program"
+msgstr ""
+
+#: backend.c:9239 backend.c:12113 backend.c:12196
+msgid "Waiting for second chess program"
+msgstr ""
+
+#: backend.c:9658
+#, c-format
+msgid "Match %s vs. %s: final score %d-%d-%d"
+msgstr ""
+
+#: backend.c:10081 backend.c:10112
+#, c-format
+msgid "Illegal move: %d.%s%s"
+msgstr ""
+
+#: backend.c:10101
+#, c-format
+msgid "Ambiguous move: %d.%s%s"
+msgstr ""
+
+#: backend.c:10158 backend.c:10804 backend.c:10994 backend.c:11356
+#, c-format
+msgid "Can't open \"%s\""
+msgstr ""
+
+#: backend.c:10170 xboard.c:5338
+msgid "Cannot build game list"
+msgstr ""
+
+#: backend.c:10259
+msgid "No more games in this message"
+msgstr ""
+
+#: backend.c:10300
+msgid "No game has been loaded yet"
+msgstr ""
+
+#: backend.c:10304 backend.c:10782 xgamelist.c:408
+msgid "Can't back up any further"
+msgstr ""
+
+#: backend.c:10360
+msgid "Game number out of range"
+msgstr ""
+
+#: backend.c:10371
+msgid "Can't seek on game file"
+msgstr ""
+
+#: backend.c:10429
+msgid "Game not found in file"
+msgstr ""
+
+#: backend.c:10557 backend.c:10884
+msgid "Bad FEN position in file"
+msgstr ""
+
+#: backend.c:10707
+msgid "No moves in game"
+msgstr ""
+
+#: backend.c:10778
+msgid "No position has been loaded yet"
+msgstr ""
+
+#: backend.c:10845 backend.c:10856
+msgid "Can't seek on position file"
+msgstr ""
+
+#: backend.c:10863 backend.c:10875
+msgid "Position not found in file"
+msgstr ""
+
+#: backend.c:10916
+msgid "Black to play"
+msgstr ""
+
+#: backend.c:10919
+msgid "White to play"
+msgstr ""
+
+#: backend.c:11487
+msgid ""
+"You have edited the game history.\n"
+"Use Reload Same Game and make your move again."
+msgstr ""
+
+#: backend.c:11492
+msgid ""
+"You have entered too many moves.\n"
+"Back up to the correct position and try again."
+msgstr ""
+
+#: backend.c:11497
+msgid ""
+"Displayed position is not current.\n"
+"Step forward to the correct position and try again."
+msgstr ""
+
+#: backend.c:11544
+msgid "You have not made a move yet"
+msgstr ""
+
+#: backend.c:11565
+msgid ""
+"The cmail message is not loaded.\n"
+"Use Reload CMail Message and make your move again."
+msgstr ""
+
+#: backend.c:11570
+msgid "No unfinished games"
+msgstr ""
+
+#: backend.c:11576
+#, c-format
+msgid ""
+"You have already mailed a move.\n"
+"Wait until a move arrives from your opponent.\n"
+"To resend the same move, type\n"
+"\"cmail -remail -game %s\"\n"
+"on the command line."
+msgstr ""
+
+#: backend.c:11591
+msgid "Failed to invoke cmail"
+msgstr ""
+
+#: backend.c:11653
+#, c-format
+msgid "Waiting for reply from opponent\n"
+msgstr ""
+
+#: backend.c:11675
+#, c-format
+msgid "Still need to make move for game\n"
+msgstr ""
+
+#: backend.c:11679
+#, c-format
+msgid "Still need to make moves for both games\n"
+msgstr ""
+
+#: backend.c:11683
+#, c-format
+msgid "Still need to make moves for all %d games\n"
+msgstr ""
+
+#: backend.c:11690
+#, c-format
+msgid "Still need to make a move for game %s\n"
+msgstr ""
+
+#: backend.c:11696
+#, c-format
+msgid "No unfinished games\n"
+msgstr ""
+
+#: backend.c:11698
+#, c-format
+msgid "Ready to send mail\n"
+msgstr ""
+
+#: backend.c:11703
+#, c-format
+msgid "Still need to make moves for games %s\n"
+msgstr ""
+
+#: backend.c:11857
+msgid "Edit comment"
+msgstr ""
+
+#: backend.c:11859
+#, c-format
+msgid "Edit comment on %d.%s%s"
+msgstr ""
+
+#: backend.c:11951
+msgid "It is not White's turn"
+msgstr ""
+
+#: backend.c:12032
+msgid "It is not Black's turn"
+msgstr ""
+
+#: backend.c:12133
+#, c-format
+msgid "Starting %s chess program"
+msgstr ""
+
+#: backend.c:12159 backend.c:13227
+msgid ""
+"Wait until your turn,\n"
+"or select Move Now"
+msgstr ""
+
+#: backend.c:12278
+msgid "Training mode off"
+msgstr ""
+
+#: backend.c:12286
+msgid "Training mode on"
+msgstr ""
+
+#: backend.c:12289
+msgid "Already at end of game"
+msgstr ""
+
+#: backend.c:12370
+msgid "Warning: You are still playing a game"
+msgstr ""
+
+#: backend.c:12373
+msgid "Warning: You are still observing a game"
+msgstr ""
+
+#: backend.c:12376
+msgid "Warning: You are still examining a game"
+msgstr ""
+
+#: backend.c:12450
+msgid "Close ICS engine analyze..."
+msgstr ""
+
+#: backend.c:12733
+msgid "That square is occupied"
+msgstr ""
+
+#: backend.c:12757 backend.c:12783
+msgid "There is no pending offer on this move"
+msgstr ""
+
+#: backend.c:12819 backend.c:12830
+msgid "Your opponent is not out of time"
+msgstr ""
+
+#: backend.c:12892
+msgid "You must make your move before offering a draw"
+msgstr ""
+
+#: backend.c:13209
+msgid "You are not examining a game"
+msgstr ""
+
+#: backend.c:13213
+msgid "You can't revert while pausing"
+msgstr ""
+
+#: backend.c:13267 backend.c:13274
+msgid "It is your turn"
+msgstr ""
+
+#: backend.c:13325 backend.c:13332 backend.c:13351 backend.c:13358
+msgid "Wait until your turn"
+msgstr ""
+
+#: backend.c:13337
+msgid "No hint available"
+msgstr ""
+
+#: backend.c:13799
+#, c-format
+msgid "Error writing to %s chess program"
+msgstr ""
+
+#: backend.c:13803 backend.c:13833
+#, c-format
+msgid "%s program exits in draw position (%s)"
+msgstr ""
+
+#: backend.c:13828
+#, c-format
+msgid "Error: %s chess program (%s) exited unexpectedly"
+msgstr ""
+
+#: backend.c:13842
+#, c-format
+msgid "Error reading from %s chess program (%s)"
+msgstr ""
+
+#: backend.c:14255
+#, c-format
+msgid "%s engine has too many options\n"
+msgstr ""
+
+#: backend.c:14408
+msgid "Displayed move is not current"
+msgstr ""
+
+#: backend.c:14417
+msgid "Could not parse move"
+msgstr ""
+
+#: backend.c:14556 backend.c:14578
+msgid "Both flags fell"
+msgstr "Berabere"
+
+#: backend.c:14558
+msgid "White's flag fell"
+msgstr "Beyaz Þah mat"
+
+#: backend.c:14580
+msgid "Black's flag fell"
+msgstr "Siyah Þah mat"
+
+#: backend.c:15520
+msgid "Bad FEN position in clipboard"
+msgstr ""
 
 #: xboard.c:600
 msgid "New Game        Ctrl+N"
@@ -161,11 +767,11 @@ msgstr ""
 msgid "Game List            Alt+Shift+G"
 msgstr ""
 
-#: xboard.c:654
+#: xboard.c:654 xoptions.c:1816
 msgid "ICS text menu"
 msgstr ""
 
-#: xboard.c:656
+#: xboard.c:656 xoptions.c:1902
 msgid "Tags"
 msgstr ""
 
@@ -368,7 +974,7 @@ msgstr ""
 msgid "Always Queen        Ctrl+Shift+Q"
 msgstr ""
 
-#: xboard.c:734
+#: xboard.c:734 xoptions.c:814
 msgid "Animate Dragging"
 msgstr ""
 
@@ -380,11 +986,11 @@ msgstr ""
 msgid "Auto Flag               Ctrl+Shift+F"
 msgstr ""
 
-#: xboard.c:737
+#: xboard.c:737 xoptions.c:817
 msgid "Auto Flip View"
 msgstr ""
 
-#: xboard.c:738
+#: xboard.c:738 xoptions.c:818
 msgid "Blindfold"
 msgstr "Tahtayý Görmeden"
 
@@ -396,7 +1002,7 @@ msgstr ""
 msgid "Highlight Dragging"
 msgstr ""
 
-#: xboard.c:743
+#: xboard.c:743 xoptions.c:821
 msgid "Highlight Last Move"
 msgstr ""
 
@@ -404,11 +1010,11 @@ msgstr ""
 msgid "Highlight With Arrow"
 msgstr ""
 
-#: xboard.c:745
+#: xboard.c:745 xoptions.c:823
 msgid "Move Sound"
 msgstr ""
 
-#: xboard.c:747
+#: xboard.c:747 xoptions.c:824
 msgid "One-Click Moving"
 msgstr ""
 
@@ -424,7 +1030,7 @@ msgstr ""
 msgid "Popup Exit Message"
 msgstr ""
 
-#: xboard.c:751
+#: xboard.c:751 xoptions.c:828
 msgid "Popup Move Errors"
 msgstr ""
 
@@ -781,7 +1387,8 @@ msgid "Drop"
 msgstr ""
 
 #: xboard.c:4919 xboard.c:5045 xboard.c:5093 xboard.c:6997 xboard.c:7038
-#: xgamelist.c:716 xgamelist.c:824
+#: xgamelist.c:716 xgamelist.c:824 xoptions.c:148 xoptions.c:215
+#: xoptions.c:590 xoptions.c:1306 xoptions.c:1613
 msgid "cancel"
 msgstr "iptal"
 
@@ -826,13 +1433,9 @@ msgstr ""
 msgid "Defer"
 msgstr ""
 
-#: xboard.c:5164
+#: xboard.c:5164 xoptions.c:164 xoptions.c:214
 msgid "ok"
 msgstr "tamam"
-
-#: xboard.c:5338 backend.c:10170
-msgid "Cannot build game list"
-msgstr ""
 
 #: xboard.c:5359
 msgid "Load game file name?"
@@ -852,11 +1455,6 @@ msgstr ""
 
 #: xboard.c:5679
 msgid "Can't open temp file"
-msgstr ""
-
-#: xboard.c:5762 xboard.c:5806 backend.c:7842
-#, c-format
-msgid "%s does not support analysis"
 msgstr ""
 
 #: xboard.c:5769
@@ -911,10 +1509,6 @@ msgstr ""
 msgid "enter"
 msgstr "gir"
 
-#: xboard.c:7151 backend.c:2000
-msgid "Error writing to display"
-msgstr ""
-
 #: xboard.c:7225
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
@@ -936,6 +1530,27 @@ msgstr ""
 #: xboard.c:8496
 #, c-format
 msgid "AnimateMove: piece %d slides from %d,%d to %d,%d \n"
+msgstr ""
+
+#: xengineoutput.c:159
+#, c-format
+msgid "Error %d loading icon image\n"
+msgstr ""
+
+#: xengineoutput.c:364
+msgid "NPS"
+msgstr ""
+
+#: xengineoutput.c:543
+msgid "Engine output"
+msgstr ""
+
+#: xengineoutput.c:543
+msgid "This feature is experimental"
+msgstr ""
+
+#: xevalgraph.c:360
+msgid "Evaluation graph"
 msgstr ""
 
 #: xgamelist.c:200 xgamelist.c:392
@@ -974,15 +1589,11 @@ msgstr ""
 msgid "Can't go forward any further"
 msgstr ""
 
-#: xgamelist.c:408 backend.c:10304 backend.c:10782
-msgid "Can't back up any further"
-msgstr ""
-
 #: xgamelist.c:506
 msgid "There is no game list"
 msgstr ""
 
-#: xgamelist.c:710 xgamelist.c:835
+#: xgamelist.c:710 xgamelist.c:835 xoptions.c:1310 xoptions.c:1609
 msgid "OK"
 msgstr ""
 
@@ -1020,599 +1631,882 @@ msgstr "Hamle listesi"
 msgid "Close"
 msgstr "Kapat"
 
-#: backend.c:799
+#: xoptions.c:152 xoptions.c:217
+msgid "off"
+msgstr ""
+
+#: xoptions.c:158 xoptions.c:216
+msgid "random"
+msgstr ""
+
+#: xoptions.c:195
+msgid "New Shuffle Game"
+msgstr ""
+
+#: xoptions.c:204
+msgid "Start-position number:"
+msgstr ""
+
+#: xoptions.c:207
+msgid "Shuffle"
+msgstr ""
+
+#: xoptions.c:278 xoptions.c:542
+msgid "classical"
+msgstr ""
+
+#: xoptions.c:281 xoptions.c:444
+msgid "minutes for each"
+msgstr ""
+
+#: xoptions.c:284
+msgid "moves"
+msgstr ""
+
+#: xoptions.c:299 xoptions.c:555
+msgid "incremental"
+msgstr ""
+
+#: xoptions.c:302
+msgid "minutes, plus"
+msgstr ""
+
+#: xoptions.c:305 xoptions.c:473
+msgid "sec/move"
+msgstr ""
+
+#: xoptions.c:320 xoptions.c:568
+msgid "fixed time"
+msgstr ""
+
+#: xoptions.c:323
+msgid "sec/move (max)"
+msgstr ""
+
+#: xoptions.c:334 xoptions.c:579
+msgid " OK "
+msgstr ""
+
+#: xoptions.c:362 xoptions.c:370
+msgid "Bad Time-Control String"
+msgstr ""
+
+#: xoptions.c:411
+msgid "TimeControl Menu"
+msgstr ""
+
+#: xoptions.c:444
+msgid "sec/move (max)   "
+msgstr ""
+
+#: xoptions.c:444
+msgid "   minutes, plus   "
+msgstr ""
+
+#: xoptions.c:473
+#, fuzzy
+msgid "             "
+msgstr "Terk et"
+
+#: xoptions.c:473
+msgid "moves     "
+msgstr ""
+
+#: xoptions.c:522
+msgid "Engine #1 and #2 Time-Odds Factors"
+msgstr ""
+
+#: xoptions.c:795
+msgid "Default Number of Games in Match:"
+msgstr ""
+
+#: xoptions.c:796
+msgid "Pause between Match Games (msec):"
+msgstr ""
+
+#: xoptions.c:797
+msgid "Game File with Opening Lines:"
+msgstr ""
+
+#: xoptions.c:798
+msgid "Game Number (-1 or -2 = Auto-Increment):"
+msgstr ""
+
+#: xoptions.c:799
+msgid "File with Start Positions:"
+msgstr ""
+
+#: xoptions.c:800
+msgid "Position Number (-1 or -2 = Auto-Increment):"
+msgstr ""
+
+#: xoptions.c:801
+msgid "Rewind Index after this many Games (0 = never):"
+msgstr ""
+
+#: xoptions.c:813
+msgid "Almost Always Queen (Detour Under-Promote)"
+msgstr ""
+
+#: xoptions.c:815
+msgid "Animate Moving"
+msgstr ""
+
+#: xoptions.c:816
+msgid "Auto Flag"
+msgstr ""
+
+#: xoptions.c:819
+msgid "Drop Menu"
+msgstr ""
+
+#: xoptions.c:820
+msgid "Highlight Dragging (Show Move Targets)"
+msgstr ""
+
+#: xoptions.c:822
+msgid "Highlight with Arrow"
+msgstr ""
+
+#: xoptions.c:825
+msgid "Periodic Updates (in Analysis Mode)"
+msgstr ""
+
+#: xoptions.c:826 xoptions.c:929
+#, fuzzy
+msgid "Ponder Next Move"
+msgstr "Sonraki Oyunu Yükle"
+
+#: xoptions.c:827
+msgid "Popup Exit Messages"
+msgstr ""
+
+#: xoptions.c:829
+msgid "Show Coordinates"
+msgstr ""
+
+#: xoptions.c:830
+msgid "Show Target Squares"
+msgstr ""
+
+#: xoptions.c:831
+msgid "Hide Thinking from Human"
+msgstr ""
+
+#: xoptions.c:832
+msgid "Test Legality"
+msgstr ""
+
+#: xoptions.c:833
+msgid "Flash Moves (0 = no flashing):"
+msgstr ""
+
+#: xoptions.c:834
+msgid "Flash Rate (high = fast):"
+msgstr ""
+
+#: xoptions.c:835
+msgid "Animation Speed (high = slow):"
+msgstr ""
+
+#: xoptions.c:851
 #, c-format
-msgid "protocol version %d not supported"
+msgid "Warning: second engine (%s) does not support this!"
 msgstr ""
 
-#: backend.c:907
-#, c-format
-msgid "bad timeControl option %s"
+#: xoptions.c:872
+msgid "normal"
 msgstr ""
 
-#: backend.c:922
-#, c-format
-msgid "bad searchTime option %s"
+#: xoptions.c:873
+msgid "fairy"
 msgstr ""
 
-#: backend.c:964
-#, c-format
-msgid "Variant %s supported only in ICS mode"
+#: xoptions.c:874
+msgid "FRC"
 msgstr ""
 
-#: backend.c:982
-#, c-format
-msgid "Unknown variant name %s"
+#: xoptions.c:875
+msgid "Seirawan"
 msgstr ""
 
-#: backend.c:1224
-msgid "Starting chess program"
+#: xoptions.c:876
+msgid "wild castle"
 msgstr ""
 
-#: backend.c:1234
-msgid "Can't have a match with no chess programs"
+#: xoptions.c:877
+msgid "Superchess"
 msgstr ""
 
-#: backend.c:1246
-msgid "Bad game file"
+#: xoptions.c:878
+msgid "no castle"
 msgstr ""
 
-#: backend.c:1255
-msgid "Bad position file"
+#: xoptions.c:879
+msgid "crazyhouse"
 msgstr ""
 
-#: backend.c:1287
-#, c-format
-msgid "Could not open comm port %s"
+#: xoptions.c:880
+#, fuzzy
+msgid "knightmate"
+msgstr "At"
+
+#: xoptions.c:881
+msgid "bughouse"
 msgstr ""
 
-#: backend.c:1290
-#, c-format
-msgid "Could not connect to host %s, port %s"
+#: xoptions.c:882
+msgid "berolina"
 msgstr ""
 
-#: backend.c:1346
-#, c-format
-msgid "Unknown initialMode %s"
+#: xoptions.c:883
+msgid "shogi (9x9)"
 msgstr ""
 
-#: backend.c:1363
-msgid "AnalyzeFile mode requires a game file"
+#: xoptions.c:884
+msgid "cylinder"
 msgstr ""
 
-#: backend.c:1390
-msgid "Analysis mode requires a chess engine"
+#: xoptions.c:885
+msgid "xiangqi (9x10)"
 msgstr ""
 
-#: backend.c:1394
-msgid "Analysis mode does not work with ICS mode"
+#: xoptions.c:886
+msgid "shatranj"
 msgstr ""
 
-#: backend.c:1405
-msgid "MachineWhite mode requires a chess engine"
+#: xoptions.c:887
+msgid "courier (12x8)"
 msgstr ""
 
-#: backend.c:1410
-msgid "MachineWhite mode does not work with ICS mode"
+#: xoptions.c:888
+msgid "makruk"
 msgstr ""
 
-#: backend.c:1417
-msgid "MachineBlack mode requires a chess engine"
+#: xoptions.c:889
+msgid "Great Shatranj (10x8)"
 msgstr ""
 
-#: backend.c:1422
-msgid "MachineBlack mode does not work with ICS mode"
+#: xoptions.c:890
+msgid "atomic"
 msgstr ""
 
-#: backend.c:1429
-msgid "TwoMachines mode requires a chess engine"
+#: xoptions.c:891
+msgid "Capablanca (10x8)"
 msgstr ""
 
-#: backend.c:1434
-msgid "TwoMachines mode does not work with ICS mode"
+#: xoptions.c:892
+msgid "two kings"
 msgstr ""
 
-#: backend.c:1445
-msgid "Training mode requires a game file"
+#: xoptions.c:893
+msgid "Gothic (10x8)"
 msgstr ""
 
-#: backend.c:1606 backend.c:1650 backend.c:1675 backend.c:2086
-msgid "Error writing to ICS"
+#: xoptions.c:894
+msgid "3-checks"
 msgstr ""
 
-#: backend.c:1610
-msgid "Error reading from keyboard"
+#: xoptions.c:895
+msgid "janus (10x8)"
 msgstr ""
 
-#: backend.c:1613
-msgid "Got end of file from keyboard"
+#: xoptions.c:896
+msgid "suicide"
 msgstr ""
 
-#: backend.c:1924
-#, c-format
-msgid "Unknown wild type %d"
+#: xoptions.c:897
+msgid "CRC (10x8)"
 msgstr ""
 
-#: backend.c:1935
-#, c-format
-msgid "recognized '%s' (%d) as variant %s\n"
+#: xoptions.c:898
+msgid "give-away"
 msgstr ""
 
-#: backend.c:2745
-#, c-format
-msgid "your opponent kibitzes: %s"
+#: xoptions.c:899
+msgid "Spartan"
 msgstr ""
 
-#: backend.c:3263
-msgid "Error gathering move list: two headers"
+#: xoptions.c:900
+#, fuzzy
+msgid "losers"
+msgstr "kapat"
+
+#: xoptions.c:901
+msgid "Board size ( -1 = default for selected variant):"
 msgstr ""
 
-#: backend.c:3277
-#, c-format
-msgid "Ratings from header: W %d, B %d\n"
+#: xoptions.c:902
+msgid "Number of Board Ranks:"
 msgstr ""
 
-#: backend.c:3310
-msgid "Error gathering move list: nested"
+#: xoptions.c:903
+msgid "Number of Board Files:"
 msgstr ""
 
-#: backend.c:3542
-msgid "Illegal move (rejected by ICS)"
+#: xoptions.c:904
+msgid "Holdings Size:"
 msgstr ""
 
-#: backend.c:3879
-msgid "Connection closed by ICS"
-msgstr ""
-
-#: backend.c:3881
-msgid "Error reading from ICS"
-msgstr ""
-
-#: backend.c:3932
-#, c-format
-msgid "Parsing board: %s\n"
-msgstr ""
-
-#: backend.c:3956
-#, c-format
+#: xoptions.c:906
 msgid ""
-"Failed to parse board string:\n"
-"\"%s\""
+"WARNING: variants with un-orthodox\n"
+"pieces only have built-in bitmaps\n"
+"for -boardSize middling, bulky and\n"
+"petite, and substitute king or amazon\n"
+"for missing bitmaps. (See manual.)"
 msgstr ""
 
-#: backend.c:3965 backend.c:8959
-msgid "Game too long; increase MAX_MOVES and recompile"
+#: xoptions.c:930
+msgid "Maximum Number of CPUs per Engine:"
 msgstr ""
 
-#: backend.c:4059
-msgid "Error gathering move list: extra board"
+#: xoptions.c:931
+msgid "Polygot Directory:"
 msgstr ""
 
-#: backend.c:4479 backend.c:4501
-#, c-format
-msgid "Couldn't parse move \"%s\" from ICS"
+#: xoptions.c:932
+msgid "Hash-Table Size (MB):"
 msgstr ""
 
-#: backend.c:4716
-#, c-format
-msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
+#: xoptions.c:933
+msgid "Nalimov EGTB Path:"
 msgstr ""
 
-#: backend.c:5601
-msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
+#: xoptions.c:934
+msgid "EGTB Cache Size (MB):"
 msgstr ""
 
-#: backend.c:5948
-msgid "You are playing Black"
-msgstr "Siz Siyah'sýnýz"
-
-#: backend.c:5957 backend.c:5982
-msgid "You are playing White"
-msgstr "Siz Beyaz'sýnýz"
-
-#: backend.c:5964 backend.c:5990 backend.c:6109 backend.c:6132 backend.c:6148
-#: backend.c:12716
-msgid "It is White's turn"
-msgstr "Sýra Beyaz'da"
-
-#: backend.c:5968 backend.c:5994 backend.c:6117 backend.c:6138 backend.c:6169
-#: backend.c:12708
-msgid "It is Black's turn"
-msgstr "Sýra Siyah'ta"
-
-#: backend.c:6006
-msgid "Displayed position is not current"
+#: xoptions.c:935
+msgid "Use GUI Book"
 msgstr ""
 
-#: backend.c:6240
-msgid "Illegal move"
-msgstr "Geçersiz hamle"
-
-#: backend.c:6303
-msgid "End of game"
-msgstr "Oyun sonu"
-
-#: backend.c:6306
-msgid "Incorrect move"
-msgstr "Yanlýþ hamle"
-
-#: backend.c:6596
-msgid "Pull pawn backwards to under-promote"
+#: xoptions.c:936
+msgid "Opening-Book Filename:"
 msgstr ""
 
-#: backend.c:7478
-#, c-format
-msgid "Illegal move \"%s\" from %s machine"
+#: xoptions.c:937
+msgid "Book Depth (moves):"
 msgstr ""
 
-#: backend.c:7701
-msgid "Bad FEN received from engine"
+#: xoptions.c:938
+msgid "Book Variety (0) vs. Strength (100):"
 msgstr ""
 
-#: backend.c:7908
-#, c-format
-msgid "Illegal move \"%s\" (rejected by %s chess program)"
+#: xoptions.c:939
+msgid "Engine #1 Has Own Book"
 msgstr ""
 
-#: backend.c:7933
-#, c-format
-msgid "Failed to start %s chess program %s on %s: %s\n"
+#: xoptions.c:940
+msgid "Engine #2 Has Own Book          "
 msgstr ""
 
-#: backend.c:7954
-#, fuzzy, c-format
-msgid "Hint: %s"
-msgstr "Ýpucu"
+#: xoptions.c:945
+msgid "Detect all Mates"
+msgstr ""
 
-#: backend.c:7959
-#, c-format
+#: xoptions.c:946
+msgid "Verify Engine Result Claims"
+msgstr ""
+
+#: xoptions.c:947
+msgid "Draw if Insufficient Mating Material"
+msgstr ""
+
+#: xoptions.c:948
+msgid "Adjudicate Trivial Draws (3-Move Delay)"
+msgstr ""
+
+#: xoptions.c:949
+msgid "N-Move Rule:"
+msgstr ""
+
+#: xoptions.c:950
+msgid "N-fold Repeats:"
+msgstr ""
+
+#: xoptions.c:951
+msgid "Draw after N Moves Total:"
+msgstr ""
+
+#: xoptions.c:952
+msgid "Win / Loss Threshold:"
+msgstr ""
+
+#: xoptions.c:953
+msgid "Negate Score of Engine #1"
+msgstr ""
+
+#: xoptions.c:954
+msgid "Negate Score of Engine #2"
+msgstr ""
+
+#: xoptions.c:964
+msgid "Auto-Kibitz"
+msgstr ""
+
+#: xoptions.c:965
+msgid "Auto-Comment"
+msgstr ""
+
+#: xoptions.c:966
+msgid "Auto-Observe"
+msgstr ""
+
+#: xoptions.c:967
+#, fuzzy
+msgid "Auto-Raise Board"
+msgstr "XBoard Hakkýnda"
+
+#: xoptions.c:968
+msgid "Background Observe while Playing"
+msgstr ""
+
+#: xoptions.c:969
+msgid "Dual Board for Background-Observed Game"
+msgstr ""
+
+#: xoptions.c:970
+#, fuzzy
+msgid "Get Move List"
+msgstr "Hamle Listesini Göster"
+
+#: xoptions.c:971
+msgid "Quiet Play"
+msgstr ""
+
+#: xoptions.c:972
+msgid "Seek Graph"
+msgstr ""
+
+#: xoptions.c:973
+msgid "Auto-Refresh Seek Graph"
+msgstr ""
+
+#: xoptions.c:974
+msgid "Premove"
+msgstr ""
+
+#: xoptions.c:975
+msgid "Premove for White"
+msgstr ""
+
+#: xoptions.c:976
+msgid "First White Move:"
+msgstr ""
+
+#: xoptions.c:977
+msgid "Premove for Black"
+msgstr ""
+
+#: xoptions.c:978
+msgid "First Black Move:"
+msgstr ""
+
+#: xoptions.c:980
+msgid "Alarm"
+msgstr ""
+
+#: xoptions.c:981
+msgid "Alarm Time (msec):"
+msgstr ""
+
+#: xoptions.c:983
+msgid "Colorize Messages"
+msgstr ""
+
+#: xoptions.c:984
+msgid "Shout Text Colors:"
+msgstr ""
+
+#: xoptions.c:985
+msgid "S-Shout Text Colors:"
+msgstr ""
+
+#: xoptions.c:986
+msgid "Channel #1 Text Colors:"
+msgstr ""
+
+#: xoptions.c:987
+msgid "Other Channel Text Colors:"
+msgstr ""
+
+#: xoptions.c:988
+msgid "Kibitz Text Colors:"
+msgstr ""
+
+#: xoptions.c:989
+msgid "Tell Text Colors:"
+msgstr ""
+
+#: xoptions.c:990
+msgid "Challenge Text Colors:"
+msgstr ""
+
+#: xoptions.c:991
+msgid "Request Text Colors:"
+msgstr ""
+
+#: xoptions.c:992
+msgid "Seek Text Colors:"
+msgstr ""
+
+#: xoptions.c:997
+msgid "Auto-Display Tags"
+msgstr ""
+
+#: xoptions.c:998
+msgid "Auto-Display Comment"
+msgstr ""
+
+#: xoptions.c:999
 msgid ""
-"Illegal hint move \"%s\"\n"
-"from %s chess program"
+"Auto-Play speed of loaded games\n"
+"(0 = instant, -1 = off):"
 msgstr ""
 
-#: backend.c:8134
-msgid "Machine accepts your draw offer"
+#: xoptions.c:1000
+msgid "Seconds per Move:"
 msgstr ""
 
-#: backend.c:8137
-msgid ""
-"Machine offers a draw\n"
-"Select Action / Draw to agree"
-msgstr ""
-
-#: backend.c:8500
-#, c-format
-msgid "Ambiguous move in ICS output: \"%s\""
-msgstr ""
-
-#: backend.c:8510
-#, c-format
-msgid "Illegal move in ICS output: \"%s\""
-msgstr ""
-
-#: backend.c:8521
-msgid "Gap in move list"
-msgstr ""
-
-#: backend.c:9097
-#, c-format
-msgid "Variant %s not supported by %s"
-msgstr ""
-
-#: backend.c:9211
-#, c-format
-msgid "Startup failure on '%s'"
-msgstr ""
-
-#: backend.c:9234 backend.c:12187
-msgid "Waiting for first chess program"
-msgstr ""
-
-#: backend.c:9239 backend.c:12113 backend.c:12196
-msgid "Waiting for second chess program"
-msgstr ""
-
-#: backend.c:9658
-#, c-format
-msgid "Match %s vs. %s: final score %d-%d-%d"
-msgstr ""
-
-#: backend.c:10081 backend.c:10112
-#, c-format
-msgid "Illegal move: %d.%s%s"
-msgstr ""
-
-#: backend.c:10101
-#, c-format
-msgid "Ambiguous move: %d.%s%s"
-msgstr ""
-
-#: backend.c:10158 backend.c:10804 backend.c:10994 backend.c:11356
-#, c-format
-msgid "Can't open \"%s\""
-msgstr ""
-
-#: backend.c:10259
-msgid "No more games in this message"
-msgstr ""
-
-#: backend.c:10300
-msgid "No game has been loaded yet"
-msgstr ""
-
-#: backend.c:10360
-msgid "Game number out of range"
-msgstr ""
-
-#: backend.c:10371
-msgid "Can't seek on game file"
-msgstr ""
-
-#: backend.c:10429
-msgid "Game not found in file"
-msgstr ""
-
-#: backend.c:10557 backend.c:10884
-msgid "Bad FEN position in file"
-msgstr ""
-
-#: backend.c:10707
-msgid "No moves in game"
-msgstr ""
-
-#: backend.c:10778
-msgid "No position has been loaded yet"
-msgstr ""
-
-#: backend.c:10845 backend.c:10856
-msgid "Can't seek on position file"
-msgstr ""
+#: xoptions.c:1005
+#, fuzzy
+msgid "Auto-Save Games"
+msgstr "Oyunu Kaydet"
 
-#: backend.c:10863 backend.c:10875
-msgid "Position not found in file"
-msgstr ""
-
-#: backend.c:10916
-msgid "Black to play"
-msgstr ""
-
-#: backend.c:10919
-msgid "White to play"
-msgstr ""
-
-#: backend.c:11487
-msgid ""
-"You have edited the game history.\n"
-"Use Reload Same Game and make your move again."
-msgstr ""
-
-#: backend.c:11492
-msgid ""
-"You have entered too many moves.\n"
-"Back up to the correct position and try again."
-msgstr ""
-
-#: backend.c:11497
-msgid ""
-"Displayed position is not current.\n"
-"Step forward to the correct position and try again."
-msgstr ""
-
-#: backend.c:11544
-msgid "You have not made a move yet"
-msgstr ""
-
-#: backend.c:11565
-msgid ""
-"The cmail message is not loaded.\n"
-"Use Reload CMail Message and make your move again."
-msgstr ""
-
-#: backend.c:11570
-msgid "No unfinished games"
-msgstr ""
-
-#: backend.c:11576
-#, c-format
-msgid ""
-"You have already mailed a move.\n"
-"Wait until a move arrives from your opponent.\n"
-"To resend the same move, type\n"
-"\"cmail -remail -game %s\"\n"
-"on the command line."
-msgstr ""
-
-#: backend.c:11591
-msgid "Failed to invoke cmail"
-msgstr ""
+#: xoptions.c:1006
+#, fuzzy
+msgid "Save Games on File:"
+msgstr "Oyunu Kaydet"
 
-#: backend.c:11653
-#, c-format
-msgid "Waiting for reply from opponent\n"
+#: xoptions.c:1007
+msgid "Save Final Positions on File:"
 msgstr ""
 
-#: backend.c:11675
-#, c-format
-msgid "Still need to make move for game\n"
+#: xoptions.c:1008
+msgid "PGN Event Header:"
 msgstr ""
 
-#: backend.c:11679
-#, c-format
-msgid "Still need to make moves for both games\n"
+#: xoptions.c:1009
+msgid "Old Save Style (as opposed to PGN)"
 msgstr ""
 
-#: backend.c:11683
-#, c-format
-msgid "Still need to make moves for all %d games\n"
+#: xoptions.c:1010
+msgid "Save Score/Depth Info in PGN"
 msgstr ""
 
-#: backend.c:11690
-#, c-format
-msgid "Still need to make a move for game %s\n"
+#: xoptions.c:1011
+msgid "Save Out-of-Book Info in PGN           "
 msgstr ""
 
-#: backend.c:11696
-#, c-format
-msgid "No unfinished games\n"
+#: xoptions.c:1016
+msgid "No Sound"
 msgstr ""
 
-#: backend.c:11698
-#, c-format
-msgid "Ready to send mail\n"
+#: xoptions.c:1017
+msgid "Default Beep"
 msgstr ""
 
-#: backend.c:11703
-#, c-format
-msgid "Still need to make moves for games %s\n"
+#: xoptions.c:1018
+msgid "Above WAV File"
 msgstr ""
 
-#: backend.c:11857
-msgid "Edit comment"
+#: xoptions.c:1019
+msgid "Car Horn"
 msgstr ""
 
-#: backend.c:11859
-#, c-format
-msgid "Edit comment on %d.%s%s"
+#: xoptions.c:1020
+msgid "Cymbal"
 msgstr ""
 
-#: backend.c:11951
-msgid "It is not White's turn"
+#: xoptions.c:1021
+msgid "Ding"
 msgstr ""
 
-#: backend.c:12032
-msgid "It is not Black's turn"
+#: xoptions.c:1022
+msgid "Gong"
 msgstr ""
 
-#: backend.c:12133
-#, c-format
-msgid "Starting %s chess program"
+#: xoptions.c:1023
+msgid "Laser"
 msgstr ""
 
-#: backend.c:12159 backend.c:13227
-msgid ""
-"Wait until your turn,\n"
-"or select Move Now"
+#: xoptions.c:1024
+msgid "Penalty"
 msgstr ""
 
-#: backend.c:12278
-msgid "Training mode off"
+#: xoptions.c:1025
+msgid "Phone"
 msgstr ""
 
-#: backend.c:12286
-msgid "Training mode on"
+#: xoptions.c:1026
+msgid "Pop"
 msgstr ""
 
-#: backend.c:12289
-msgid "Already at end of game"
+#: xoptions.c:1027
+msgid "Slap"
 msgstr ""
 
-#: backend.c:12370
-msgid "Warning: You are still playing a game"
+#: xoptions.c:1028
+msgid "Wood Thunk"
 msgstr ""
 
-#: backend.c:12373
-msgid "Warning: You are still observing a game"
-msgstr ""
-
-#: backend.c:12376
-msgid "Warning: You are still examining a game"
-msgstr ""
-
-#: backend.c:12450
-msgid "Close ICS engine analyze..."
-msgstr ""
-
-#: backend.c:12733
-msgid "That square is occupied"
-msgstr ""
-
-#: backend.c:12757 backend.c:12783
-msgid "There is no pending offer on this move"
-msgstr ""
-
-#: backend.c:12819 backend.c:12830
-msgid "Your opponent is not out of time"
-msgstr ""
-
-#: backend.c:12892
-msgid "You must make your move before offering a draw"
-msgstr ""
-
-#: backend.c:13209
-msgid "You are not examining a game"
-msgstr ""
-
-#: backend.c:13213
-msgid "You can't revert while pausing"
-msgstr ""
-
-#: backend.c:13267 backend.c:13274
-msgid "It is your turn"
-msgstr ""
-
-#: backend.c:13325 backend.c:13332 backend.c:13351 backend.c:13358
-msgid "Wait until your turn"
-msgstr ""
+#: xoptions.c:1030
+#, fuzzy
+msgid "User File"
+msgstr "Dosya"
 
-#: backend.c:13337
-msgid "No hint available"
+#: xoptions.c:1058
+msgid "Sound Program:"
 msgstr ""
 
-#: backend.c:13799
-#, c-format
-msgid "Error writing to %s chess program"
+#: xoptions.c:1059
+msgid "Sounds Directory:"
 msgstr ""
 
-#: backend.c:13803 backend.c:13833
-#, c-format
-msgid "%s program exits in draw position (%s)"
+#: xoptions.c:1060
+msgid "User WAV File:"
 msgstr ""
 
-#: backend.c:13828
-#, c-format
-msgid "Error: %s chess program (%s) exited unexpectedly"
+#: xoptions.c:1061
+msgid "Try-Out Sound:"
 msgstr ""
 
-#: backend.c:13842
-#, c-format
-msgid "Error reading from %s chess program (%s)"
+#: xoptions.c:1062
+msgid "Play"
 msgstr ""
 
-#: backend.c:14255
-#, c-format
-msgid "%s engine has too many options\n"
+#: xoptions.c:1063
+msgid "Move:"
 msgstr ""
 
-#: backend.c:14408
-msgid "Displayed move is not current"
+#: xoptions.c:1064
+msgid "Win:"
 msgstr ""
 
-#: backend.c:14417
-msgid "Could not parse move"
+#: xoptions.c:1065
+msgid "Lose:"
 msgstr ""
 
-#: backend.c:14556 backend.c:14578
-msgid "Both flags fell"
+#: xoptions.c:1066
+#, fuzzy
+msgid "Draw:"
 msgstr "Berabere"
 
-#: backend.c:14558
-msgid "White's flag fell"
-msgstr "Beyaz Þah mat"
+#: xoptions.c:1067
+msgid "Unfinished:"
+msgstr ""
 
-#: backend.c:14580
-msgid "Black's flag fell"
-msgstr "Siyah Þah mat"
+#: xoptions.c:1068
+msgid "Alarm:"
+msgstr ""
 
-#: backend.c:15520
-msgid "Bad FEN position in clipboard"
+#: xoptions.c:1069
+msgid "Shout:"
+msgstr ""
+
+#: xoptions.c:1070
+msgid "S-Shout:"
+msgstr ""
+
+#: xoptions.c:1071
+#, fuzzy
+msgid "Channel:"
+msgstr "iptal"
+
+#: xoptions.c:1072
+#, fuzzy
+msgid "Channel 1:"
+msgstr "iptal"
+
+#: xoptions.c:1073
+msgid "Tell:"
+msgstr ""
+
+#: xoptions.c:1074
+msgid "Kibitz:"
+msgstr ""
+
+#: xoptions.c:1075
+msgid "Challenge:"
+msgstr ""
+
+#: xoptions.c:1076
+msgid "Request:"
+msgstr ""
+
+#: xoptions.c:1077
+msgid "Seek:"
+msgstr ""
+
+#: xoptions.c:1162
+msgid "White Piece Color:"
+msgstr ""
+
+#: xoptions.c:1168
+msgid "Black Piece Color:"
+msgstr ""
+
+#: xoptions.c:1174
+msgid "Light Square Color:"
+msgstr ""
+
+#: xoptions.c:1180
+msgid "Dark Square Color:"
+msgstr ""
+
+#: xoptions.c:1186
+msgid "Highlight Color:"
+msgstr ""
+
+#: xoptions.c:1192
+msgid "Premove Highlight Color:"
+msgstr ""
+
+#: xoptions.c:1198
+msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
+msgstr ""
+
+#: xoptions.c:1200
+#, fuzzy
+msgid "Mono Mode"
+msgstr "Kip"
+
+#: xoptions.c:1201
+msgid "Line Gap ( -1 = default for board size):"
+msgstr ""
+
+#: xoptions.c:1202
+msgid "Light-Squares Texture File:"
+msgstr ""
+
+#: xoptions.c:1203
+msgid "Dark-Squares Texture File:"
+msgstr ""
+
+#: xoptions.c:1204
+msgid "Directory with Bitmap Pieces:"
+msgstr ""
+
+#: xoptions.c:1205
+msgid "Directory with Pixmap Pieces:"
+msgstr ""
+
+#: xoptions.c:1650
+#, fuzzy
+msgid "ICS Options"
+msgstr "Seçenekler"
+
+#: xoptions.c:1659
+#, fuzzy
+msgid "Load Game Options"
+msgstr "Oyun Yükle"
+
+#: xoptions.c:1668
+#, fuzzy
+msgid "Save Game Options"
+msgstr "Oyunu Kaydet"
+
+#: xoptions.c:1678
+#, fuzzy
+msgid "Sound Options"
+msgstr "Seçenekler"
+
+#: xoptions.c:1687
+#, fuzzy
+msgid "Board Options"
+msgstr "Seçenekler"
+
+#: xoptions.c:1707
+msgid "Common Engine Settings"
+msgstr ""
+
+#: xoptions.c:1716
+msgid "New Variant"
+msgstr ""
+
+#: xoptions.c:1726
+#, fuzzy
+msgid "General Options"
+msgstr "Seçenekler"
+
+#: xoptions.c:1735
+#, fuzzy
+msgid "Match Options"
+msgstr "Seçenekler"
+
+#: xoptions.c:1936
+#, fuzzy
+msgid "ICS input box"
+msgstr "ICS Ýstemcisi"
+
+#: xoptions.c:1965
+#, fuzzy
+msgid "Type a move"
+msgstr "Geçersiz hamle"
+
+#: xoptions.c:1987
+msgid "Engine Settings"
+msgstr ""
+
+#: xoptions.c:2013
+msgid "First Engine"
+msgstr ""
+
+#: xoptions.c:2013
+msgid "Second Engine"
+msgstr ""
+
+#: xoptions.c:2107
+msgid "Select engine from list:"
+msgstr ""
+
+#: xoptions.c:2108
+msgid "or specify one below:"
+msgstr ""
+
+#: xoptions.c:2109
+msgid "Engine Directory:"
+msgstr ""
+
+#: xoptions.c:2110
+msgid "Engine Command:"
+msgstr ""
+
+#: xoptions.c:2111
+msgid "(Directory will be derived from engine path when empty)"
+msgstr ""
+
+#: xoptions.c:2112
+msgid "UCI"
+msgstr ""
+
+#: xoptions.c:2113
+msgid "WB protocol v1 (do not wait for engine features)"
+msgstr ""
+
+#: xoptions.c:2114
+msgid "Must not use GUI book"
+msgstr ""
+
+#: xoptions.c:2115
+msgid "Add this engine to the list"
+msgstr ""
+
+#: xoptions.c:2116
+msgid "Force current variant with this engine"
+msgstr ""
+
+#: xoptions.c:2117
+msgid "Load mentioned engine as"
+msgstr ""
+
+#: xoptions.c:2132
+msgid "Load engine"
 msgstr ""
 
 #~ msgid "Reset Game"
 #~ msgstr "Oyunu Sýfýrla"
-
-#~ msgid "Load Next Game"
-#~ msgstr "Sonraki Oyunu Yükle"
 
 #~ msgid "Load Previous Game"
 #~ msgstr "Önceki Oyunu Yükle"
@@ -1632,9 +2526,6 @@ msgstr ""
 #~ msgid "Exit"
 #~ msgstr "Çýk"
 
-#~ msgid "Show Move List"
-#~ msgstr "Hamle Listesini Göster"
-
 #~ msgid "Pause"
 #~ msgstr "Duraklat"
 
@@ -1643,9 +2534,6 @@ msgstr ""
 
 #~ msgid "Decline"
 #~ msgstr "Red et"
-
-#~ msgid "Draw"
-#~ msgstr "Berabere"
 
 #~ msgid "Adjourn"
 #~ msgstr "Ertele"
