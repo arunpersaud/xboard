@@ -1266,8 +1266,8 @@ xpm_closest_to(dirname, size, ext)
     fprintf(stderr, _("\
 Warning: No DIR structure found on this system --\n\
          Unable to autosize for XPM/XIM pieces.\n\
-   Please report this error to frankm@hiwaay.net.\n\
-   Include system type & operating system in message.\n"));
+   Please report this error to %s.\n\
+   Include system type & operating system in message.\n"), PACKAGE_BUGREPORT););
     return size;
 }
 #endif /* HAVE_DIR_STRUCT */
