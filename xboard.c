@@ -6764,6 +6764,8 @@ void DisplayMessage(message, extMessage)
 	};
     };
 
+    safeStrCpy(lastMsg, message, MSG_SIZ); // [HGM] make available
+
   /* need to test if messageWidget already exists, since this function
      can also be called during the startup, if for example a Xresource
      is not set up correctly */

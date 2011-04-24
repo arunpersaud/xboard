@@ -8115,6 +8115,7 @@ DisplayMessage(char *str1, char *str2)
     strncat(messageText, str2, len);
   }
   messageText[MESSAGE_TEXT_MAX - 1] = NULLCHAR;
+  safeStrCpy(lastMsg, messageText, MSG_SIZ);
 
   if (hwndMain == NULL || IsIconic(hwndMain)) return;
 

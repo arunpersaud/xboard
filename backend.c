@@ -270,6 +270,7 @@ char chatPartner[MAX_CHAT][MSG_SIZ]; /* [HGM] chat: list of chatting partners */
 extern int chatCount;
 int chattingPartner;
 char marker[BOARD_RANKS][BOARD_FILES]; /* [HGM] marks for target squares */
+char lastMsg[MSG_SIZ];
 ChessSquare pieceSweep = EmptySquare;
 ChessSquare promoSweep = EmptySquare, defaultPromoChoice;
 int promoDefaultAltered;
@@ -10991,6 +10992,7 @@ SaveGameToFile(filename, append)
 {
     FILE *f;
     char buf[MSG_SIZ];
+    int result;
 
     if (strcmp(filename, "-") == 0) {
 	return SaveGame(stdout, 0, NULL);
@@ -11001,7 +11003,14 @@ SaveGameToFile(filename, append)
 	    DisplayError(buf, errno);
 	    return FALSE;
 	} else {
-	    return SaveGame(f, 0, NULL);
+	    safeStrCpy(buf, lastMsg, MSG_SIZ);
+	    DisplayMessage(_("Waiting for access to save file"), "");
+	    flock(fileno(f), LOCK_EX); // [HGM] lock: lock file while we are writing
+	    DisplayMessage(_("Saving game"), "");
+	    if(lseek(fileno(f), 0, SEEK_END) == -1) DisplayError("Bad Seek", errno);     // better safe than sorry...
+	    result = SaveGame(f, 0, NULL);
+	    DisplayMessage(buf, "");
+	    return result;
 	}
     }
 }
@@ -11363,7 +11372,13 @@ SavePositionToFile(filename)
 	    DisplayError(buf, errno);
 	    return FALSE;
 	} else {
+	    safeStrCpy(buf, lastMsg, MSG_SIZ);
+	    DisplayMessage(_("Waiting for access to save file"), "");
+	    flock(fileno(f), LOCK_EX); // [HGM] lock
+	    DisplayMessage(_("Saving position"), "");
+	    lseek(fileno(f), 0, SEEK_END);     // better safe than sorry...
 	    SavePosition(f, 0, NULL);
+	    DisplayMessage(buf, "");
 	    return TRUE;
 	}
     }
