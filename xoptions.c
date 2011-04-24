@@ -1332,7 +1332,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	int n = currentCps->nrOptions;
 	if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
 	height = n / width + 1;
-	if(currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton) currentOption[n].min = 1; // OK on same line
+	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = 1; // OK on same line
 	currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }
      i = 0;
@@ -2066,7 +2066,8 @@ void Load(ChessProgramState *cps, int i)
     if(addToList) {
 	int len;
 	q = firstChessProgramNames;
-	snprintf(buf, MSG_SIZ, "\"%s\" -fd \"%s\"%s%s%s%s%s\n", p, appData.directory[i], 
+	if(nickName[0]) snprintf(buf, MSG_SIZ, "\"%s\" -fcp ", nickName); else buf[0] = NULLCHAR;
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), "\"%s\" -fd \"%s\"%s%s%s%s%s\n", p, appData.directory[i], 
 			v1 ? " -firstProtocolVersion 1" : "",
 			hasBook ? "" : " -fNoOwnBookUCI",
 			isUCI ? " -fUCI" : "",
@@ -2089,6 +2090,7 @@ void InstallOK(int n)
 Option installOptions[] = {
 {   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
+{   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
 {   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("Engine Directory:") },
 {   0,  0,    0, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine Command:") },
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("(Directory will be derived from engine path when empty)") },
@@ -2108,7 +2110,7 @@ void LoadEngineProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    isUCI = addToList = storeVariant = v1 = False; hasBook = True; // defaults
-   engineDir = ""; 
+   engineDir = nickName = ""; 
    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
    if(engineLine)   free(engineLine);   engineLine = strdup("");
    NamesToList(firstChessProgramNames);
