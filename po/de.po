@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: XBoard 4.2.7\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2011-04-23 09:01-0700\n"
-"PO-Revision-Date: 2011-04-23 10:49-0700\n"
+"PO-Revision-Date: 2011-04-24 12:00-0700\n"
 "Last-Translator: Arun Persaud <arun@nubati.net>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -166,7 +166,7 @@ msgstr "Illegaler Zug (abgelehnt vom ICS)"
 
 #: backend.c:3879
 msgid "Connection closed by ICS"
-msgstr "Verbindung vom ICS beendet"
+msgstr "Verbindung zum ICS beendet"
 
 #: backend.c:3881
 msgid "Error reading from ICS"
@@ -845,7 +845,7 @@ msgstr "Schachprogramm Partie"
 
 #: xboard.c:677
 msgid "Pause               Pause"
-msgstr ""
+msgstr "Pause       Pause"
 
 #: xboard.c:682
 msgid "Accept             F3"
@@ -1029,11 +1029,11 @@ msgstr "Nächsten Zug abwägen  Strg+Umschalt+P"
 
 #: xboard.c:750
 msgid "Popup Exit Message"
-msgstr ""
+msgstr "Dialogfenster für Nachricht beim Beenden"
 
 #: xboard.c:751 xoptions.c:828
 msgid "Popup Move Errors"
-msgstr ""
+msgstr "Dialogfenster für Zugfehler"
 
 #: xboard.c:753
 msgid "Show Coords"
@@ -1145,11 +1145,11 @@ msgstr "Kanlzer"
 
 #: xboard.c:797 xboard.c:801 xboard.c:5040 xboard.c:5099
 msgid "Promote"
-msgstr "Umwandlung"
+msgstr "umwandlung"
 
 #: xboard.c:797 xboard.c:801
 msgid "Demote"
-msgstr ""
+msgstr "degradieren"
 
 #: xboard.c:798 xboard.c:802
 msgid "Empty square"
@@ -1195,7 +1195,7 @@ msgstr "%s: nicht erkannte Farbe %s\n"
 #: xboard.c:1337
 #, c-format
 msgid "%s: can't parse foreground color in `%s'\n"
-msgstr ""
+msgstr "%s: Kann Vordergrundfarbe in '%s' nicht parsen\n"
 
 #: xboard.c:1717 xboard.c:2426
 #, c-format
@@ -1205,7 +1205,7 @@ msgstr "%s: titleWidget Geometriefehler %d %d %d %d %d\n"
 #: xboard.c:1822
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
-msgstr ""
+msgstr "%s: kann Farbname nicht parsen; deaktiere Farben\n"
 
 #: xboard.c:1999
 #, c-format
@@ -1220,6 +1220,8 @@ msgstr "Fehler beim Öffnen der Datei '%s'\n"
 #: xboard.c:2017
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
+"Kompiliere erneut mit größeren BOARD_RANKS oder BOARD_FILES, um diese Größe "
+"zu unterstützen"
 
 #: xboard.c:2040
 #, c-format
@@ -1229,12 +1231,12 @@ msgstr "%s: falsche boardSize Syntax %s\n"
 #: xboard.c:2077
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
-msgstr ""
+msgstr "%s: unbekannter Name fuer boardSize %s\n"
 
 #: xboard.c:2102
 #, c-format
 msgid "Error expanding path name \"%s\"\n"
-msgstr ""
+msgstr "Fehler beim Expandieren des Pfadnamens \"%s\"\n"
 
 #: xboard.c:2107
 #, c-format
@@ -1242,6 +1244,8 @@ msgid ""
 "XBoard square size (hint): %d\n"
 "%s fulldir:%s:\n"
 msgstr ""
+"XBoard Feldgröße (Hinweis): %d\n"
+"%s voller Pfad: %s\n"
 
 #: xboard.c:2113
 #, c-format
@@ -1256,7 +1260,7 @@ msgstr "%s: nicht genügend Farben vorhanden; versuche monochrom Modus\n"
 #: xboard.c:2181
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
-msgstr ""
+msgstr "weißes Pixel = 0x%lx, schwarzes Pixel = 0x%lx\n"
 
 #: xboard.c:2392 xboard.c:2402
 #, c-format
@@ -1279,6 +1283,8 @@ msgid ""
 "resolved %s at pixel size %d\n"
 "  to %s\n"
 msgstr ""
+"F\"ur  %s mit Pixelgröße %d\n"
+" verwende %s\n"
 
 #: xboard.c:3316
 #, c-format
@@ -1295,6 +1301,8 @@ msgid ""
 "\n"
 "Loading XIMs...\n"
 msgstr ""
+"\n"
+"Lade XIMs...\n"
 
 #: xboard.c:3432 xboard.c:3455 xboard.c:3462 xboard.c:3575 xboard.c:3612
 #: xboard.c:3623
@@ -1348,7 +1356,7 @@ msgstr "(Ersetze mit Datei:%s:) "
 #: xboard.c:3593 xboard.c:3616 xboard.c:3627
 #, c-format
 msgid "Error %d loading XPM file \"%s\"\n"
-msgstr ""
+msgstr "Fehler %d beim Laden der XPM-Datei \"%s\"\n"
 
 #: xboard.c:3717
 #, c-format
@@ -1363,7 +1371,7 @@ msgstr "Ungültiges Bitmap in Datei %s"
 #: xboard.c:3723
 #, c-format
 msgid "Ran out of memory reading bitmap file %s"
-msgstr ""
+msgstr "Nicht genug Speicher, um Bitmapdatei %s zu laden"
 
 #: xboard.c:3727
 #, c-format
@@ -1373,16 +1381,16 @@ msgstr "Unbekannter XReadBitmapFile-Fehler %d bei Datei %s"
 #: xboard.c:3731
 #, c-format
 msgid "%s: %s...using built-in\n"
-msgstr ""
+msgstr "%s: %s ... benutze integrierte\n"
 
 #: xboard.c:3735
 #, c-format
 msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
-msgstr ""
+msgstr "%s: Bitmap %s ist %dx%d und nicht %dx%d... benutze integrierte\n"
 
 #: xboard.c:3938
 msgid "Drop"
-msgstr ""
+msgstr "Absetzen"
 
 #: xboard.c:4919 xboard.c:5045 xboard.c:5093 xboard.c:6997 xboard.c:7038
 #: xgamelist.c:716 xgamelist.c:824 xoptions.c:148 xoptions.c:215
@@ -1412,23 +1420,23 @@ msgstr "In Was soll umgewandelt werden?"
 
 #: xboard.c:5006
 msgid "Warlord"
-msgstr ""
+msgstr "Kriegsherr"
 
 #: xboard.c:5008
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: xboard.c:5010
 msgid "Lieutenant"
-msgstr ""
+msgstr "Leutnant"
 
 #: xboard.c:5012
 msgid "Captain"
-msgstr ""
+msgstr "Kapitän"
 
 #: xboard.c:5042 xboard.c:5101
 msgid "Defer"
-msgstr ""
+msgstr "vertagen"
 
 #: xboard.c:5164 xoptions.c:164 xoptions.c:214
 msgid "ok"
@@ -1436,23 +1444,23 @@ msgstr "Ok"
 
 #: xboard.c:5359
 msgid "Load game file name?"
-msgstr ""
+msgstr "Lade Partiedatei mit Namen?"
 
 #: xboard.c:5425
 msgid "Load position file name?"
-msgstr ""
+msgstr "Lade Stellungsdatei mit Namen?"
 
 #: xboard.c:5434
 msgid "Save game file name?"
-msgstr ""
+msgstr "Speichere Partiedatei mit Namen?"
 
 #: xboard.c:5446
 msgid "Save position file name?"
-msgstr ""
+msgstr "Speicher Stellungsdatei mit Namen?"
 
 #: xboard.c:5679
 msgid "Can't open temp file"
-msgstr ""
+msgstr "Kann temporäre Datei nicht öffnen"
 
 #: xboard.c:5769
 #, c-format
@@ -1462,72 +1470,72 @@ msgstr "Sie schauen keiner Partie zu"
 #: xboard.c:5774
 #, c-format
 msgid "Found unexpected active ICS engine analyze \n"
-msgstr ""
+msgstr "Habe unerwartete aktive ICS Analyse vom Schachprogramm gefunden\n"
 
 #: xboard.c:5788
 #, c-format
 msgid "ICS engine analyze starting... \n"
-msgstr ""
+msgstr "Schachprogramm started ICS Analyse...\n"
 
 #: xboard.c:5816
 msgid "File to analyze"
-msgstr ""
+msgstr "Datei zum Analysieren"
 
 #: xboard.c:5835
 msgid "You can only start a match from the initial position."
-msgstr ""
+msgstr "Sie können eine Partie nur von der Startaufstellunge starten."
 
 #: xboard.c:6884
 msgid "Fatal Error"
-msgstr ""
+msgstr "Schwerwiegender Fehler"
 
 #: xboard.c:6884
 msgid "Exiting"
-msgstr ""
+msgstr "Beende"
 
 #: xboard.c:6894
 msgid "Information"
-msgstr ""
+msgstr "Information"
 
 #: xboard.c:6901
 msgid "Note"
-msgstr ""
+msgstr "Notiz"
 
 #: xboard.c:6951
 #, c-format
 msgid "AskQuestionProc needed 4 parameters, got %d\n"
-msgstr ""
+msgstr "AskQuestionProc braucht 4 Parameter, habe %d erhlaten\n"
 
 #: xboard.c:6984
 msgid "Error writing to chess program"
-msgstr ""
+msgstr "Fehler beim Schreiben zum Schachprogramm"
 
 #: xboard.c:7036
 msgid "enter"
-msgstr ""
+msgstr "Eingabe"
 
 #: xboard.c:7225
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
-msgstr ""
+msgstr "FEHLER: unbekannter Benutzer %s (im Pfad %s)\n"
 
 #: xboard.c:7619
 msgid "Socket support is not configured in"
-msgstr ""
+msgstr "Socketunterstützung ist nicht konfiguriert"
 
 #: xboard.c:7721
 msgid "internal rcmd not implemented for Unix"
-msgstr ""
+msgstr "Interes rcmd ist in UNIX nicht implementiert"
 
 #: xboard.c:8495
 #, c-format
 msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
-msgstr ""
+msgstr "Animiere Züge: Figur %d hüpft von %d,%d zu %d,%d\n"
 
 #: xboard.c:8496
 #, c-format
 msgid "AnimateMove: piece %d slides from %d,%d to %d,%d \n"
-msgstr ""
+msgstr "Animiere Züge: Figur %d gleitet von %d,%d zu %d,%d\n"
 
 #: xengineoutput.c:159
 #, c-format
@@ -1536,31 +1544,31 @@ msgstr "Fehler %d beim Laden von Icon\n"
 
 #: xengineoutput.c:364
 msgid "NPS"
-msgstr ""
+msgstr "NPS"
 
 #: xengineoutput.c:543
 msgid "Engine output"
-msgstr ""
+msgstr "Schachprogrammausgabe"
 
 #: xengineoutput.c:543
 msgid "This feature is experimental"
-msgstr ""
+msgstr "Dieses Feature is experimentell"
 
 #: xevalgraph.c:360
 msgid "Evaluation graph"
-msgstr ""
+msgstr "Auswertungsgraph"
 
 #: xgamelist.c:200 xgamelist.c:392
 msgid "load"
-msgstr ""
+msgstr "lade"
 
 #: xgamelist.c:211 xgamelist.c:405
 msgid "prev"
-msgstr ""
+msgstr "vorh."
 
 #: xgamelist.c:222 xgamelist.c:398
 msgid "next"
-msgstr ""
+msgstr "nächste"
 
 #: xgamelist.c:233 xgamelist.c:386
 msgid "close"
@@ -1568,47 +1576,47 @@ msgstr "schließen"
 
 #: xgamelist.c:245
 msgid "Filter:"
-msgstr ""
+msgstr "Filter:"
 
 #: xgamelist.c:263
 msgid "filtertext"
-msgstr ""
+msgstr "Filtertext"
 
 #: xgamelist.c:276 xgamelist.c:412
 msgid "apply"
-msgstr ""
+msgstr "anwenden"
 
 #: xgamelist.c:395
 msgid "No game selected"
-msgstr ""
+msgstr "Keine Partie selektiert"
 
 #: xgamelist.c:401
 msgid "Can't go forward any further"
-msgstr ""
+msgstr "Kann nicht weiter vorwärts gehen"
 
 #: xgamelist.c:506
 msgid "There is no game list"
-msgstr ""
+msgstr "Partieliste existiert nicht"
 
 #: xgamelist.c:710 xgamelist.c:835 xoptions.c:1310 xoptions.c:1609
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: xgamelist.c:724
 msgid "No tag selected"
-msgstr ""
+msgstr "Keine Markierung selektiert"
 
 #: xgamelist.c:728 xgamelist.c:813
 msgid "down"
-msgstr ""
+msgstr "herunter"
 
 #: xgamelist.c:733 xgamelist.c:802
 msgid "up"
-msgstr ""
+msgstr "hoch"
 
 #: xgamelist.c:738 xgamelist.c:791
 msgid "factory"
-msgstr ""
+msgstr "Fabrik"
 
 #: xhistory.c:163
 #, c-format
@@ -1622,7 +1630,7 @@ msgstr "Schwarz"
 
 #: xhistory.c:310 xhistory.c:314
 msgid "Move list"
-msgstr ""
+msgstr "Zugliste"
 
 #: xhistory.c:406
 msgid "Close"
@@ -1630,39 +1638,39 @@ msgstr "Schließen"
 
 #: xoptions.c:152 xoptions.c:217
 msgid "off"
-msgstr ""
+msgstr "aus"
 
 #: xoptions.c:158 xoptions.c:216
 msgid "random"
-msgstr ""
+msgstr "zufällig"
 
 #: xoptions.c:195
 msgid "New Shuffle Game"
-msgstr ""
+msgstr "Neue Shuffle-Partie"
 
 #: xoptions.c:204
 msgid "Start-position number:"
-msgstr ""
+msgstr "Startposition-Nummer:"
 
 #: xoptions.c:207
 msgid "Shuffle"
-msgstr ""
+msgstr "Shuffle"
 
 #: xoptions.c:278 xoptions.c:542
 msgid "classical"
-msgstr ""
+msgstr "klassisch"
 
 #: xoptions.c:281 xoptions.c:444
 msgid "minutes for each"
-msgstr ""
+msgstr "Minuten pro"
 
 #: xoptions.c:284
 msgid "moves"
-msgstr ""
+msgstr "Züge"
 
 #: xoptions.c:299 xoptions.c:555
 msgid "incremental"
-msgstr ""
+msgstr "Zuwachs"
 
 #: xoptions.c:302
 msgid "minutes, plus"
