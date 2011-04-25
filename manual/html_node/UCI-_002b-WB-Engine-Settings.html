@@ -33,35 +33,35 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Options.html#Options">Options</a>
 <hr>
 </div>
 
-<h3 class="section">3.2 UCI + WB Engine Settings</h3>
+<h3 class="section">4.2 UCI + WB Engine Settings</h3>
 
-<p><a name="index-Engine-Settings-191"></a><a name="index-Settings_002c-Engine-192"></a>
+<p><a name="index-Engine-Settings-215"></a><a name="index-Settings_002c-Engine-216"></a>
      <dl>
-<dt>-fUCI or -firstIsUCI true/false<dt>-sUCI or -secondIsUCI true/false<dd><a name="index-fUCI_002c-option-193"></a><a name="index-sUCI_002c-option-194"></a><a name="index-firstIsUCI_002c-option-195"></a><a name="index-secondIsUCI_002c-option-196"></a>Indicates if the mentioned engine executable file is an UCI engine,
+<dt>-fUCI or -firstIsUCI true/false<dt>-sUCI or -secondIsUCI true/false<dd><a name="index-fUCI_002c-option-217"></a><a name="index-sUCI_002c-option-218"></a><a name="index-firstIsUCI_002c-option-219"></a><a name="index-secondIsUCI_002c-option-220"></a>Indicates if the mentioned engine executable file is an UCI engine,
 and should be run with the aid of the Polyglot adapter rather than directly. 
 Xboard will then pass the other UCI options and engine name to Polyglot
 through a .ini temporary file created for the purpose. 
-<br><dt>-polyglotDir filename<dd><a name="index-polyglotDir_002c-option-197"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines resides. 
-Default: "/usr/local/share/polyglot". 
-<br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-198"></a>Specifies if the Polyglot book should be used. 
-<br><dt>-polyglotBook filename<dd><a name="index-polyglotBook_002c-option-199"></a>Gives the filename of the opening book that Polyglot should use. 
+<br><dt>-polyglotDir filename<dd><a name="index-polyglotDir_002c-option-221"></a>Gives the name of the directory in which the Polyglot adapter for UCI engines resides. 
+Default: "". 
+<br><dt>-usePolyglotBook true/false<dd><a name="index-usePolyglotBook_002c-option-222"></a>Specifies if the Polyglot book should be used. 
+<br><dt>-polyglotBook filename<dd><a name="index-polyglotBook_002c-option-223"></a>Gives the filename of the opening book that Polyglot should use. 
 From XBoard 4.3.15 on, native XBoard/WinBoard engines will also use the opening book specified here,
 provided the <code>usePolyglotBook</code> option is set to true,
 and the option <code>firstHasOwnBookUCI</code> or <code>secondHasOwnBookUCI</code> applying to the engine
 is set to false. 
 The engine will be kept in force mode as long as the current position is in book,
-and XBoard will select the book moves for it. Default "". 
-<br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-200"></a><a name="index-sNoOwnBookUCI_002c-option-201"></a><a name="index-firstHasOwnBookUCI_002c-option-202"></a><a name="index-secondHasOwnBookUCI_002c-option-203"></a><a name="index-firstXBook_002c-option-204"></a><a name="index-secondXBook_002c-option-205"></a>Indicates if the mentioned engine has its own opening book it should play from,
+and XBoard will select the book moves for it. Default: "". 
+<br><dt>-fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false<dt>-sNoOwnBookUCI or -secondXBook or -secondHasOwnBookUCI true/false<dd><a name="index-fNoOwnBookUCI_002c-option-224"></a><a name="index-sNoOwnBookUCI_002c-option-225"></a><a name="index-firstHasOwnBookUCI_002c-option-226"></a><a name="index-secondHasOwnBookUCI_002c-option-227"></a><a name="index-firstXBook_002c-option-228"></a><a name="index-secondXBook_002c-option-229"></a>Indicates if the mentioned engine has its own opening book it should play from,
 rather than using the external book through XBoard. Default: false. 
-<br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-206"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
+<br><dt>-defaultHashSize n<dd><a name="index-defaultHashSize_002c-option-230"></a>Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size
 this number is also used to calculate the memory setting of XBoard/WinBoard engines,
 for those that support the memory feature of the XBoard/WinBoard protocol. Default: 64. 
-<br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-207"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
+<br><dt>-defaultCacheSizeEGTB n<dd><a name="index-defaultCacheSizeEGTB_002c-option-231"></a>Sets the size of the EGTB cache to n MegaBytes. Together with the hash-table size
 this number is also used to calculate the memory setting of XBoard/WinBoard engines,
 for those that support the memory feature of the XBoard/WinBoard protocol. Default: 4. 
-<br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-208"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
+<br><dt>-defaultPathEGTB filename<dd><a name="index-defaultPathEGTB_002c-option-232"></a>Gives the name of the directory where the end-game tablebases are installed, for UCI engines. 
 Default: "/usr/local/share/egtb". 
-<br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-209"></a>Specifies which end-game tables are installed on the computer, and where. 
+<br><dt>-egtFormats string<dd><a name="index-egtFormats_002c-option-233"></a>Specifies which end-game tables are installed on the computer, and where. 
 The argument is a comma-separated list of format specifications,
 each specification consisting of a format name, a colon, and a directory path name,
 e.g. "nalimov:/usr/local/share/egtb". 
