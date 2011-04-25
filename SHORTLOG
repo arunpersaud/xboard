@@ -1,16 +1,23 @@
-** Version 4.5.2 (not yet released) **
+** Version 4.5.2 **
 
 (git shortlog --no-merges v4.5.1..HEAD)
 
-Arun Persaud (6):
+Arun Persaud (13):
       Fix "make install" on Os X10.6.6 (removed a "/")
       fixed wrong default for polyglotDir mentioned in docs.
       Fix bug introduced in commit 89b4744: removed a "/" and forgot to add it in the config file
       check if malloc.h is present before including it
       removed check and #includes for malloc.h, since it's not needed
       fixed 64 bit warnings by casting integers to intptr_t before casting to int
+      updated Changelog, NEWS, etc.
+      new developer release
+      configure: renamed bitmapdir to pixmapsdir, since it installed only pixmaps. also changed name of default dir
+      configure: added install of sounds in .../games/xboard/sounds/default
+      configure: added install directory for bitmaps files: .../games/xboard/bitmaps/default/
+      configure: enable silent rules by default
+      new developer release
 
-H.G. Muller (33):
+H.G. Muller (57):
       Fix nps bug
       Fix unintended translation in debug file
       Improve repairing damage of arrow highlight XBoard
@@ -44,6 +51,30 @@ H.G. Muller (33):
       Fix crash on opening ICS Text Menu
       Fix path browsing in WinBoard
       Fix use of game/position file in first match game
+      Fix saving of XBoard fonts with spaces in name
+      Fix game-list highight error when filtered (WB)
+      Fix startup focus of board window
+      Fix crash on closing dialogs in wrong order
+      Fix changing of float setting by generic popup
+      Couple mouse wheel to v-scrolls in file browser
+      Let double-click select file in file browser
+      Block selection of a directory when file is needed
+      Reorganize texi description
+      Update texi file
+      Remove outline-pieces option from board-options dialog
+      Fix running of clock during hash allocation engine
+      Fix switching between pixmap and bitmap pieces
+      Fix size limit on 'save as diagram'
+      Fix gamelist highlight
+      Make user wav file available for try-out in sound dialog
+      Change default sounds in Xboard menu
+      Configure some default sounds
+      Remove some bitmaps from install
+      Limit install of sound files to those in menu
+      Change texture-install directory to pixmaps/textures
+      Fix crash on using Engine #1 Settings in ICS non-zippy mode
+      Fix shogipixmaps
+      Fix gettext macros in option dialogs
 
 Kamil Blank (1):
       Added missing fclose()

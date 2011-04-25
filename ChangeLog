@@ -2,6 +2,199 @@ ChangeLog for XBoard/WinBoard
 -----------------------------
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
+
+2011-04-19 15:15:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix gettext macros in option dialogs
+
+The strings in the tables were using _() in stead of N_().
+
+2011-04-19 15:07:31 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix shogipixmaps
+
+Some pixmaps forptomoted pieces had wrong background color, others had a
+wrong name (so the one with the correct name was missing).
+
+2011-04-19 08:27:38 -0700 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2011-04-18 20:58:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on using Engine #1 Settings in ICS non-zippy mode
+
+If XBoard is compiled with zippy the Engine #1 Settings menu was not
+grayed out even when you don't run in zippy mode, and using it would
+then crash XBoard.
+
+2011-04-17 19:12:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Change texture-install directory to pixmaps/textures
+
+
+2011-04-17 17:36:32 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Limit install of sound files to those in menu
+
+The sounds directory is set to .../xboard/sounds, and only ten
+sounds are kept (all non-spoken).
+
+2011-04-17 17:27:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove some bitmaps from install
+
+Some files in the bitmaps source directory need not be installed,
+because they are there only to be linked to the binary in a build
+without LIBXPM, are README files or conversion programs. I left only the
+stuff that is in a Debian binary package in .../xboard/bitmaps.xchess.
+
+2011-04-17 16:34:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure some default sounds
+
+The move sound is set to Wood Thunk; the sounds for tell and challenge
+events to Phone and Gong, respectively.
+
+2011-04-17 16:17:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Change default sounds in Xboard menu
+
+All spoken sounds are removed now. Thud, Click and Ching are replaced by
+Wood Thunk, Slap and Cymbal; Car Horn and Pop are added.
+
+2011-04-16 10:36:31 -0700 Arun Persaud <apersaud@lbl.gov>:
+configure: enable silent rules by default
+
+
+2011-04-16 10:28:16 -0700 Arun Persaud <apersaud@lbl.gov>:
+configure: added install directory for bitmaps files: .../games/xboard/bitmaps/default/
+
+
+2011-04-16 10:25:33 -0700 Arun Persaud <apersaud@lbl.gov>:
+configure: added install of sounds in .../games/xboard/sounds/default
+
+
+2011-04-16 09:54:26 -0700 Arun Persaud <apersaud@lbl.gov>:
+configure: renamed bitmapdir to pixmapsdir, since it installed only pixmaps. also changed name of default dir
+
+pixmaps will now be installed under .../games/xboard/pixmaps/default/
+
+2011-04-17 12:46:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make user wav file available for try-out in sound dialog
+
+The GenericReadout was adapted to be able to read a single selected
+value, so that the callback to the 'play' button in the sounds dialog
+could get the name of the 'user WAV file' without accepting all settings
+for the other sounds (which should only happen on 'OK', and might still
+be cancelled in stead).
+
+2011-04-16 13:40:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix gamelist highlight
+
+Reopening the gamelist should highlight the current game.
+
+2011-04-16 10:25:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix size limit on 'save as diagram'
+
+In stead of a fixed-size buffer the diagram-save code now uses an
+allocated buffer with size calculated from the bitmap parameters to
+retreive the bitmap data, so it should work for all sizes.
+
+2011-04-15 19:18:46 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix switching between pixmap and bitmap pieces
+
+There were still several flags that had to be reset when redoing the
+graphics initialization. The Debian patch to use a default bitmap
+directory when none is given but monoMode is selected or forced, is
+moved to a more sensible place, so that it does not disturb matters when
+compiled without LIBXPM (when we do have built-in bitmaps).
+
+2011-04-15 15:41:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix running of clock during hash allocation engine
+
+In TwoMachinesEvent we now wait for the second engine to acknowledge the
+'ping' after 'new', to make sure it is done allocating hash in reaction
+to the preceding 'memory' command, before the clock for the game is
+started.
+
+2011-04-15 15:47:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove outline-pieces option from board-options dialog
+
+This option does not exist in XBoard (yet).
+
+2011-04-14 15:59:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file
+
+Descriptions of the new XBoard menu dialogs are included in the docs.
+
+2011-04-14 21:06:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Reorganize texi description
+
+
+2011-04-13 13:14:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Block selection of a directory when file is needed
+
+When we are not browsing merely to obtain a name to put in a text edit,
+but really must return an open file pointer, selection of a directory
+(ending in '/') can no longer be OK'ed in the file browser. (XBoard
+tends to segfault when offered garbage for game or position file...)
+
+2011-04-13 12:23:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let double-click select file in file browser
+
+A second click on the already selected entry now has the same effect as
+pressing the OK button.
+
+2011-04-12 17:06:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Couple mouse wheel to v-scrolls in file browser
+
+A newly added mouse-wheel event handler was made to call the v-scroll
+callback routines with parameters to step one entry. The button-press
+handler for the lists themselves was also made to intercept the wheel
+events (buttons 4 and 5), to prevent they would select an entry, and
+make them scroll in stead as well.
+
+2011-04-13 11:15:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix changing of float setting by generic popup
+
+Changing a float setting (so far the only one is in the Load Options
+dalog) did not always work, because the old value was clipped to (int),
+so that changing it back to an integer value might erroneously conclude
+there was no change.
+
+2011-04-13 16:15:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on closing dialogs in wrong order
+
+When a menu dialog was closed when it still had an open file-browse
+daughter, which could be done through the system menu X on the title
+bar, later closing of the file browser caused a crash. This is solved by
+keeping track of the fact that there is such a daughter through a global
+flag, and ignoring the pop-down command if there is one.
+
+2011-04-13 16:33:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix startup focus of board window
+
+When there were open auxiliary windows, these would have focus on
+starting up XBoard. The XtSetKeyboardFocus call added in XBoard main()
+was ineffective in curing that. It has now been replaced by a call to
+XSetInputFocus, which does do the job. By giving input focus to the form
+widget, rather than the board widget, XBoard will be immediately
+sensitive to all key bindings.
+
+2011-04-13 15:48:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix game-list highight error when filtered (WB)
+
+When the gamelist was filtered, the game that was highlingted was the
+n-th game in the list rather than the n-th game in the file, when the
+latter was loaded (and n did not exceed the number of filtered games).
+This is fixed now by searching for the line in the listbox that starts
+with the game number n, rather than taking the n-th line.
+
+2011-04-12 10:13:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix saving of XBoard fonts with spaces in name
+
+SaveFontArg now prints quotes around the saved font string, so that the
+general option-argument parser doesnot stop at the first space it sees.
+
+2011-04-10 22:50:32 -0700 Arun Persaud <apersaud@lbl.gov>:
+new developer release
+
+2011-04-10 22:47:59 -0700 Arun Persaud <apersaud@lbl.gov>:
+updated Changelog, NEWS, etc.
+
 2011-04-10 20:32:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix use of game/position file in first match game
 
