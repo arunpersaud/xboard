@@ -30,18 +30,18 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Menus.html#Menus">Menus</a>
 <hr>
 </div>
 
-<h3 class="section">2.1 File Menu</h3>
+<h3 class="section">3.1 File Menu</h3>
 
-<p><a name="index-File-Menu-4"></a><a name="index-Menu_002c-File-5"></a>
+<p><a name="index-File-Menu-5"></a><a name="index-Menu_002c-File-6"></a>
      <dl>
-<dt>New Game<dd><a name="index-New-Game_002c-Menu-Item-6"></a>Resets XBoard and the chess engine to the beginning of a new chess
+<dt>New Game<dd><a name="index-New-Game_002c-Menu-Item-7"></a>Resets XBoard and the chess engine to the beginning of a new chess
 game. The <kbd>Ctrl-N</kbd> key is a keyboard equivalent. In Internet Chess
 Server mode, clears the current state of XBoard, then
 resynchronizes with the ICS by sending a refresh command. If you want to
 stop playing, observing, or examining an ICS game, use an
 appropriate command from the Action menu, not &lsquo;<samp><span class="samp">New Game</span></samp>&rsquo;. 
 See <a href="Action-Menu.html#Action-Menu">Action Menu</a>. 
-<br><dt>New Shuffle Game<dd><a name="index-New-Shuffle-Game_002c-Menu-Item-7"></a>Similar to &lsquo;<samp><span class="samp">New Game</span></samp>&rsquo;, but allows you to specify a particular initial position
+<br><dt>New Shuffle Game<dd><a name="index-New-Shuffle-Game_002c-Menu-Item-8"></a>Similar to &lsquo;<samp><span class="samp">New Game</span></samp>&rsquo;, but allows you to specify a particular initial position
 (according to a standardized numbering system)
 in chess variants which use randomized opening positions (e.g. Chess960). 
 The selected opening position will persistently be chosen on any following
@@ -51,15 +51,24 @@ Using this menu item in variants that normally do not shuffle their opening posi
 does cause these variants to become shuffle variants until you use the
 &lsquo;<samp><span class="samp">New Shuffle Game</span></samp>&rsquo; menu to explicitly switch the randomization off,
 or select a new variant. 
-<br><dt>New Variant<dd><a name="index-New-variant_002c-Menu-Item-8"></a>Allows you to select a new chess variant in non-ICS mode. 
+<br><dt>New Variant<dd><a name="index-New-variant_002c-Menu-Item-9"></a>Allows you to select a new chess variant in non-ICS mode. 
 (In ICS play, the ICS is responsible for deciding which variant will be played,
 and XBoard adapts automatically.)  The shifted <kbd>Alt+V</kbd> key is a
 keyboard equivalent. If you play with an engine, the engine must
 be able to play the selected variant, or the command will be ignored. 
 XBoard supports all major variants, such as xiangqi, shogi, chess, chess960,
 Capablanca Chess, shatranj, crazyhouse, bughouse. 
-(But not every board size has built-in bitmaps for un-orthodox pieces!) 
-<br><dt>Load Game<dd><a name="index-Load-Game_002c-Menu-Item-9"></a>Plays a game from a record file. The <kbd>Ctrl-O</kbd> key is a keyboard equivalent. 
+But not every board size has built-in bitmaps for un-orthodox pieces! 
+Only sizes bulky (72) and middling (49) have all pieces,
+while size petite (33) has most. 
+These sizes would have to be set at startup through the <code>size</code>
+command-line option when you start up XBoard for such variants to be playable.
+
+     <p>You can overrule the default board format of the selected variant,
+(e.g. to play suicide chess on a 6 x 6 board),
+in this dialog, but normally you would not do that,
+and leave them at '-1', which means 'default'. 
+<br><dt>Load Game<dd><a name="index-Load-Game_002c-Menu-Item-10"></a>Plays a game from a record file. The <kbd>Ctrl-O</kbd> key is a keyboard equivalent. 
 A pop-up dialog prompts you for the file name. If the file contains more
 than one game, a second pop-up dialog
 displays a list of games (with information drawn from their PGN tags, if
@@ -93,19 +102,19 @@ variant FENs appropriately.
 There is also a heuristic to
 recognize chess variants from the Event tag, by looking for the strings
 that the Internet Chess Servers put there when saving variant ("wild") games. 
-<br><dt>Load Position<dd><a name="index-Load-Position_002c-Menu-Item-10"></a>Sets up a position from a position file.  A pop-up dialog prompts
+<br><dt>Load Position<dd><a name="index-Load-Position_002c-Menu-Item-11"></a>Sets up a position from a position file.  A pop-up dialog prompts
 you for the file name.  The shifted <kbd>Ctrl-O</kbd> key is a keyboard
 equivalent. If the file contains more than one saved
 position, and you want to load the Nth one, type the number N
 after the file name, separated by a space. Position files must
 be in FEN (Forsythe-Edwards notation), or in the format that the
 Save Position command writes when oldSaveStyle is turned on. 
-<br><dt>Load Next Position<dd><a name="index-Load-Next-Position_002c-Menu-Item-11"></a>Loads the next position from the last position file you loaded. 
+<br><dt>Load Next Position<dd><a name="index-Load-Next-Position_002c-Menu-Item-12"></a>Loads the next position from the last position file you loaded. 
 The shifted <kbd>PgDn</kbd> key is a keyboard equivalent. 
-<br><dt>Load Previous Position<dd><a name="index-Load-Previous-Position_002c-Menu-Item-12"></a>Loads the previous position from the last position file you
+<br><dt>Load Previous Position<dd><a name="index-Load-Previous-Position_002c-Menu-Item-13"></a>Loads the previous position from the last position file you
 loaded. The shifted <kbd>PgUp</kbd> key is a keyboard equivalent. 
 Not available if the last position was loaded from a pipe. 
-<br><dt>Save Game<dd><a name="index-Save-Game_002c-Menu-Item-13"></a>Appends a record of the current game to a file. 
+<br><dt>Save Game<dd><a name="index-Save-Game_002c-Menu-Item-14"></a>Appends a record of the current game to a file. 
 The <kbd>Ctrl-S</kbd> key is a keyboard equivalent. 
 A pop-up dialog
 prompts you for the file name. If the game did not begin with
@@ -118,15 +127,15 @@ read back by the &lsquo;<samp><span class="samp">Load Game</span></samp>&rsquo; 
 Notation of the form &lsquo;<samp><span class="samp">P@f7</span></samp>&rsquo;
 is accepted for piece-drops in bughouse games;
 this is a nonstandard extension to PGN. 
-<br><dt>Save Position<dd><a name="index-Save-Position_002c-Menu-Item-14"></a>Appends a diagram of the current position to a file. 
+<br><dt>Save Position<dd><a name="index-Save-Position_002c-Menu-Item-15"></a>Appends a diagram of the current position to a file. 
 The shifted <kbd>Ctrl+S</kbd> key is a keyboard equivalent. 
 A pop-up dialog prompts you for the file name. Positions are saved in
 FEN (Forsythe-Edwards notation) format unless the <code>oldSaveStyle</code>
 option is true, in which case they are saved in an older,
 human-readable format that is specific to XBoard. Both formats
 can be read back by the &lsquo;<samp><span class="samp">Load Position</span></samp>&rsquo; command. 
-<br><dt>Mail Move<dt>Reload CMail Message<dd><a name="index-Mail-Move_002c-Menu-Item-15"></a><a name="index-Reload-CMail-Message_002c-Menu-Item-16"></a>See <a href="CMail.html#CMail">CMail</a>. 
-<br><dt>Exit<dd><a name="index-Exit_002c-Menu-Item-17"></a>Exits from XBoard. The <kbd>Ctrl-Q</kbd> key is a keyboard equivalent. 
+<br><dt>Mail Move<dt>Reload CMail Message<dd><a name="index-Mail-Move_002c-Menu-Item-16"></a><a name="index-Reload-CMail-Message_002c-Menu-Item-17"></a>See <a href="CMail.html#CMail">CMail</a>. 
+<br><dt>Exit<dd><a name="index-Exit_002c-Menu-Item-18"></a>Exits from XBoard. The <kbd>Ctrl-Q</kbd> key is a keyboard equivalent. 
 </dl>
 
    </body></html>
