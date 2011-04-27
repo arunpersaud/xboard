@@ -694,7 +694,7 @@ void ComboSelect(w, addr, index) // callback for all combo items
     int j = 255 & (intptr_t) addr;
 
     values[i] = j; // store in temporary, for transfer at OK
-    XtSetArg(args[0], XtNlabel, ((char**)currentOption[i].textValue)[j]);
+    XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
     XtSetValues(currentOption[i].handle, args, 1);
 }
 
@@ -712,6 +712,7 @@ void CreateComboPopup(parent, name, n, mb)
 			      parent, NULL, 0);
     j = 0;
     XtSetArg(args[j], XtNwidth, 100);  j++;
+    XtSetArg(args[j], XtNlabel, _(mb[i]));  j++;
 //    XtSetArg(args[j], XtNright, XtChainRight);  j++;
     while (mb[i] != NULL) {
 	    entry = XtCreateManagedWidget(mb[i], smeBSBObjectClass,
@@ -1397,6 +1398,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
 	    texts[h] =
 	    dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
 	    } else texts[h] = dialog = NULL;
@@ -1439,7 +1441,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
 	    XtSetArg(args[j], XtNright, XtChainRight); j++;
 	    if(option[i].type == FileName || option[i].type == PathName) {
-		w = 50; msg = "browse";
+		w = 50; msg = _("browse");
 	    } else {
 		XtSetArg(args[j], XtNheight, 10);  j++;
 		w = 20; msg = "+";
@@ -1481,6 +1483,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+	    XtSetArg(args[j], XtNlabel, _(msg));  j++;
 	    last = XtCreateManagedWidget(msg, labelWidgetClass, form, args, j);
 	    if(option[i].type == CheckBox)
 		XtAddEventHandler(last, ButtonPressMask, False, CheckCallback, (XtPointer)(intptr_t) i);
@@ -1489,6 +1492,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	  case Button:
 	    j=0;
 	    XtSetArg(args[j], XtNfromVert, option[i].min & 1 ? lastrow : last);  j++;
+	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
 	    if(option[i].min & 1) { XtSetArg(args[j], XtNfromHoriz, last);  j++; }
 	    else  { XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast; }
 	    if(option[i].max) XtSetArg(args[j], XtNwidth, option[i].max);  j++;
@@ -1515,6 +1519,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
 	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
+	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
 	    texts[h] = dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
 
 	    if(currentCps) option[i].choice = (char**) option[i].textValue; else {
@@ -1529,7 +1534,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNwidth, option[i].max && !currentCps ? option[i].max : 100);  j++;
 	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
 	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
-	    XtSetArg(args[j], XtNlabel, ((char**)option[i].textValue)[option[i].value]);  j++;
+	    XtSetArg(args[j], XtNlabel, _(((char**)option[i].textValue)[option[i].value]));  j++;
 	    option[i].handle = (void*)
 		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));
 	    CreateComboPopup(last, option[i].name, i, (char **) option[i].textValue);
