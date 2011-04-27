@@ -87,9 +87,6 @@ $(PROJ).hlp : $(PROJ).rtf
 $(PROJ).res: $(PROJ).rc $(PROJ).h resource.h config.h
     $(RC) $(CF) -r -fo $(PROJ).res $(PROJ).rc
 
-../parser.c: ../parser.l
-    $(FLEX) -o../parser.c -L ../parser.l
-
 winboard.obj: winboard.c config.h winboard.h ../common.h ../frontend.h \
         ../backend.h ../moves.h defaults.h resource.h wclipbrd.h \
         wsockerr.h woptions.h wsnap.h ../lists.h help.h ../args.h
