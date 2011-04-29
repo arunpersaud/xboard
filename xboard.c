@@ -2798,6 +2798,7 @@ Enables icsEnables[] = {
     { "menuEngine.Engine #2 Settings", False },
     { "menuEngine.Load Engine", False },
     { "menuEdit.Annotate", False },
+    { "menuOptions.Match", False },
     { NULL, False }
 };
 
