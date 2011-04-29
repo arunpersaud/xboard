@@ -425,7 +425,6 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 			SetDlgItemText( hDlg, i+3, buf );
 		    }
 		}
-      return TRUE;
 		if(j < 0) break;
 		if( activeCps->option[j].type  == SaveButton)
 		     GetOptionValues(hDlg, activeCps);
