@@ -32,8 +32,6 @@
 #include <ctype.h>
 #endif /* def SEL_FILE_IGNORE_CASE */
 
-#include "selfile.h"
-
 #ifdef HAVE_DIRENT_H
 #include <dirent.h>
 #else
@@ -42,6 +40,8 @@
 #endif
 
 #include <sys/stat.h>
+
+#include "selfile.h"
 
 #ifdef SEL_FILE_IGNORE_CASE
 int

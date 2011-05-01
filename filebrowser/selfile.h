@@ -153,3 +153,20 @@ extern int (*SFfunc)();
 
 extern Boolean SFpathFlag; // [HGM]
 
+/* added missing prototypes */
+char SFstatChar(struct stat *);
+int  SFchdir(char *);
+void SFvSliderMovedCallback(Widget, int, int);
+void SFdrawList(int,int);
+void SFdrawLists(int);
+void SFinitFont();
+void SFcreateGC();
+void SFupdatePath();
+void SFsetText(char *);
+void SFtextChanged();
+int  SFgetDir(SFDir *);
+void SFclearList(int, int);
+void SFmotionList(Widget, int, XMotionEvent*);
+
+
+

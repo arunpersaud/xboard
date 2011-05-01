@@ -25,8 +25,8 @@
  */
 
 #include <stdio.h>
-#include "selfile.h"
 #include "xstat.h"
+#include "selfile.h"
 #include <X11/StringDefs.h>
 #include <X11/Xaw/Scrollbar.h>
 #include <X11/Xaw/Cardinals.h>
@@ -37,11 +37,6 @@
 #undef ABS
 #endif
 #define ABS(x) (((x) < 0) ? (-(x)) : (x))
-
-/* added missing prototypes */
-extern char SFstatChar(struct stat*);
-extern int SFchdir(char *);
-void SFvSliderMovedCallback(Widget, int, int);
 
 typedef struct {
 	char *fontname;

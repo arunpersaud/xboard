@@ -34,8 +34,8 @@
 
 #include <X11/Xos.h>
 #include <pwd.h>
-#include "selfile.h"
 #include "xstat.h"
+#include "selfile.h"
 #include <X11/Xaw/Scrollbar.h>
 
 #ifndef MAXPATHLEN
@@ -45,14 +45,6 @@
 #ifdef HAS_DIRENT_H
 extern uid_t getuid();
 #endif /* def HAS_DIRENT_H */
-
-/* added missing prototypes */
-extern void SFtextChanged();
-extern int SFgetDir(SFDir *);
-extern void SFdrawLists(int);
-extern void SFdrawList(int, int);
-extern void SFclearList(int, int);
-extern void SFmotionList(Widget, int, XMotionEvent*);
 
 typedef struct {
 	char	*name;
