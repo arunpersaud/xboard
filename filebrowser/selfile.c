@@ -60,17 +60,8 @@ extern int errno;
 #include <X11/Xaw/Label.h>
 #include <X11/Xaw/Cardinals.h>
 
-#include "selfile.h"
 #include "xstat.h"
-
-/* added missing prototypes */
-extern void SFdrawList(int,int);
-extern void SFinitFont();
-extern void SFcreateGC();
-extern int SFchdir(char *);
-extern void SFupdatePath();
-extern void SFsetText(char *);
-extern char SFstatChar(struct stat*);
+#include "selfile.h"
 
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 1024
@@ -598,7 +589,7 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 		XtAddEventHandler(selFileLists[n], LeaveWindowMask, False,
 			SFleaveList, (XtPointer)(intptr_t) n);
 		XtAddEventHandler(selFileLists[n], PointerMotionMask, False,
-			SFmotionList, (XtPointer)(intptr_t) n);
+			(XtEventHandler) SFmotionList, (XtPointer)(intptr_t) n);
 		XtAddEventHandler(selFileLists[n], ButtonPressMask, False,
 			SFbuttonPressList, (XtPointer)(intptr_t) n);
 		XtAddEventHandler(selFileLists[n], ButtonReleaseMask, False,
