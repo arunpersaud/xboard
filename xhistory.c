@@ -79,12 +79,6 @@ extern char *getenv();
 
 #define _LL_ 100
 
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, historyShell;
-extern Display *xDisplay;
-extern int squareSize;
-extern Pixmap xMarkPixmap;
-extern char *layoutName;
-
 struct History{
   String *Nr,*white,*black;
   int     aNr;  /* space actually alocated */

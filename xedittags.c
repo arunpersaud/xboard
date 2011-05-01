@@ -91,20 +91,9 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
-extern Display *xDisplay;
-extern int squareSize;
-extern Pixmap xMarkPixmap;
-extern char *layoutName;
-
 Position tagsX = -1, tagsY = -1;
 int tagsUp = False, editTagsUp = False;
 Widget tagsShell, editTagsShell;
-
-static Arg layoutArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNdefaultDistance, 0 }
-};
 
 void TagsCallback(w, client_data, call_data)
      Widget w;
