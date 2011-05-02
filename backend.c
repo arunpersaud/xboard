@@ -2983,9 +2983,9 @@ read_from_ics(isr, closure, data, count, error)
 		}
 	    } // [HGM] chat: end of patch
 
+          backup = i;
 	    if (appData.zippyTalk || appData.zippyPlay) {
                 /* [DM] Backup address for color zippy lines */
-                backup = i;
 #if ZIPPY
                if (loggedOn == TRUE)
                        if (ZippyControl(buf, &backup) || ZippyConverse(buf, &backup) ||
@@ -3149,6 +3149,8 @@ read_from_ics(isr, closure, data, count, error)
 		    }
 		    continue;
 	    }
+
+          if(i < backup) { i = backup; continue; } // [HGM] for if ZippyControl matches, but the colorie code doesn't
 
 	    if (looking_at(buf, &i, "\\   ")) {
 		if (prevColor != ColorNormal) {
