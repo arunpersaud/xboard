@@ -7618,50 +7618,40 @@ int OpenTCP(host, port, pr)
 #if OMIT_SOCKETS
     DisplayFatalError(_("Socket support is not configured in"), 0, 2);
 #else  /* !OMIT_SOCKETS */
+    struct addrinfo hints;
+    struct addrinfo *ais, *ai;
+    int error;
     int s;
-    struct sockaddr_in sa;
-    struct hostent     *hp;
-    unsigned short uport;
     ChildProc *cp;
 
-    if ((s = socket(AF_INET, SOCK_STREAM, 6)) < 0) {
-	return errno;
-    }
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
 
-    memset((char *) &sa, (int)0, sizeof(struct sockaddr_in));
-    sa.sin_family = AF_INET;
-    sa.sin_addr.s_addr = INADDR_ANY;
-    uport = (unsigned short) 0;
-    sa.sin_port = htons(uport);
-    if (bind(s, (struct sockaddr *) &sa, sizeof(struct sockaddr_in)) < 0) {
-	return errno;
+    error = getaddrinfo(host, port, &hints, &ais);
+    if (error != 0) {
+      /* a getaddrinfo error is not an errno, so can't return it */
+      fprintf(debugFP, "getaddrinfo(%s, %s): %s\n",
+	      host, port, gai_strerror(error));
+      return ENOENT;
     }
-
-    memset((char *) &sa, (int)0, sizeof(struct sockaddr_in));
-    if (!(hp = gethostbyname(host))) {
-	int b0, b1, b2, b3;
-	if (sscanf(host, "%d.%d.%d.%d", &b0, &b1, &b2, &b3) == 4) {
-	    hp = (struct hostent *) calloc(1, sizeof(struct hostent));
-	    hp->h_addrtype = AF_INET;
-	    hp->h_length = 4;
-	    hp->h_addr_list = (char **) calloc(2, sizeof(char *));
-	    hp->h_addr_list[0] = (char *) malloc(4);
-	    hp->h_addr_list[0][0] = b0;
-	    hp->h_addr_list[0][1] = b1;
-	    hp->h_addr_list[0][2] = b2;
-	    hp->h_addr_list[0][3] = b3;
-	} else {
-	    return ENOENT;
-	}
+     
+    for (ai = ais; ai != NULL; ai = ai->ai_next) {
+      if ((s = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) < 0) {
+	error = errno;
+	continue;
+      }
+      if (connect(s, ai->ai_addr, ai->ai_addrlen) < 0) {
+	error = errno;
+	continue;
+      }
+      error = 0;
+      break;
     }
-    sa.sin_family = hp->h_addrtype;
-    uport = (unsigned short) atoi(port);
-    sa.sin_port = htons(uport);
-    memcpy((char *) &sa.sin_addr, hp->h_addr, hp->h_length);
+    freeaddrinfo(ais);
 
-    if (connect(s, (struct sockaddr *) &sa,
-		sizeof(struct sockaddr_in)) < 0) {
-	return errno;
+    if (error != 0) {
+      return error;
     }
 
     cp = (ChildProc *) calloc(1, sizeof(ChildProc));
@@ -7670,7 +7660,6 @@ int OpenTCP(host, port, pr)
     cp->fdFrom = s;
     cp->fdTo = s;
     *pr = (ProcRef) cp;
-
 #endif /* !OMIT_SOCKETS */
 
     return 0;
