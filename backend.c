@@ -232,6 +232,7 @@ int EngineOutputIsUp();
 void InitDrawingSizes(int x, int y);
 void NextMatchGame P((void));
 int NextTourneyGame P((int nr, int *swap));
+int Pairing P((int nr, int nPlayers, int *w, int *b, int *sync));
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -7036,6 +7037,50 @@ void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cp
     SetProgramStats( &stats );
 }
 
+#define MAXPLAYERS 500
+
+char *
+TourneyStandings(int display)
+{
+    int i, w, b, color, wScore, bScore, dummy, nr=0, nPlayers=0;
+    int score[MAXPLAYERS], ranking[MAXPLAYERS], points[MAXPLAYERS], games[MAXPLAYERS];
+    char result, *p, *names[MAXPLAYERS];
+
+    names[0] = p = strdup(appData.participants);
+    while(p = strchr(p, '\n')) *p++ = NULLCHAR, names[++nPlayers] = p; // count participants
+
+    for(i=0; i<nPlayers; i++) score[i] = games[i] = 0;
+
+    while(result = appData.results[nr]) {
+	color = Pairing(nr, nPlayers, &w, &b, &dummy);
+	if(!(color ^ matchGame & 1)) { dummy = w; w = b; b = dummy; }
+	wScore = bScore = 0;
+	switch(result) {
+	  case '+': wScore = 2; break;
+	  case '-': bScore = 2; break;
+	  case '=': wScore = bScore = 1; break;
+	  case ' ':
+	  case '*': return NULL; // tourney not finished
+	}
+	score[w] += wScore;
+	score[b] += bScore;
+	games[w]++;
+	games[b]++;
+	nr++;
+    }
+    if(appData.tourneyType > 0) nPlayers = appData.tourneyType; // in gauntlet, list only gauntlet engine(s)
+    for(w=0; w<nPlayers; w++) {
+	bScore = -1;
+	for(i=0; i<nPlayers; i++) if(score[i] > bScore) bScore = score[i], b = i;
+	ranking[w] = b; points[w] = bScore; score[b] = -2;
+    }
+    p = malloc(nPlayers*34+1);
+    for(w=0; w<nPlayers && w<display; w++)
+	sprintf(p+34*w, "%2d. %5.1f/%-3d %-19.19s\n", w+1, points[w]/2., games[ranking[w]], names[ranking[w]]);
+    free(names[0]);
+    return p;
+}
+
 void
 Count(Board board, int pCnt[], int *nW, int *nB, int *wStale, int *bStale, int *bishopColor)
 {	// count all piece types
@@ -9631,7 +9676,7 @@ GameEnds(result, resultDetails, whosays)
 {
     GameMode nextGameMode;
     int isIcsGame;
-    char buf[MSG_SIZ], popupRequested = 0, forceUnload;
+    char buf[MSG_SIZ], popupRequested = 0, *ranking = NULL;
 
     if(endingGame) return; /* [HGM] crash: forbid recursion */
     endingGame = 1;
@@ -9961,7 +10006,7 @@ GameEnds(result, resultDetails, whosays)
 	if(waitingForGame) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
 	if(appData.tourneyFile[0]){ // [HGM] we are in a tourney; update tourney file with game result
 	    ReserveGame(nextGame, resChar); // sets nextGame
-	    if(nextGame > appData.matchGames) appData.tourneyFile[0] = 0; // tourney is done
+	    if(nextGame > appData.matchGames) appData.tourneyFile[0] = 0, ranking = TourneyStandings(3); // tourney is done
 	} else roundNr = nextGame = matchGame + 1; // normal match, just increment; round equals matchGame
 
 	if (nextGame <= appData.matchGames) {
@@ -9994,10 +10039,11 @@ GameEnds(result, resultDetails, whosays)
     ModeHighlight();
     endingGame = 0;  /* [HGM] crash */
     if(popupRequested) { // [HGM] crash: this calls GameEnds recursively through ExitEvent! Make it a harmless tail recursion.
-      if(matchMode == TRUE) DisplayFatalError(buf, 0, 0); else {
+      if(matchMode == TRUE) DisplayFatalError(ranking ? ranking : buf, 0, 0); else {
 	matchMode = FALSE; appData.matchGames = matchGame = roundNr = 0;
-	DisplayNote(buf);
+	DisplayNote(ranking ? ranking : buf);
       }
+      if(ranking) free(ranking);
     }
 }
 
