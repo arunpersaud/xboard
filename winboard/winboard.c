@@ -73,6 +73,7 @@
 #include <richedit.h>
 #include <mmsystem.h>
 #include <ctype.h>
+#include <io.h>
 
 #if __GNUC__
 #include <errno.h>
@@ -9782,4 +9783,20 @@ void
 SettingsPopUp(ChessProgramState *cps)
 {     // [HGM] wrapper needed because handles must not be passed through back-end
       EngineOptionsPopup(savedHwnd, cps);
+}
+
+int flock(int fid, int code)
+{
+    HANDLE hFile = (HANDLE) _get_osfhandle(fid);
+    OVERLAPPED ov;
+    ov.hEvent = NULL;
+    ov.Offset = 0;
+    ov.OffsetHigh = 0;
+    switch(code) {
+      case 1: LockFileEx(hFile, LOCKFILE_EXCLUSIVE_LOCK, 0, 1024, 0, &ov); break;   // LOCK_SH
+      case 2: LockFileEx(hFile, LOCKFILE_EXCLUSIVE_LOCK, 0, 1024, 0, &ov); break;   // LOCK_EX
+      case 3: UnlockFileEx(hFile, 0, 1024, 0, &ov); break; // LOCK_UN
+      default: return -1;
+    }
+    return 0;
 }

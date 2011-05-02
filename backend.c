@@ -57,6 +57,9 @@
 
 #define DoSleep( n ) if( (n) != 0 ) Sleep( (n) );
 
+int flock(int f, int code);
+#define LOCK_EX 2
+
 #else
 
 #define DoSleep( n ) if( (n) >= 0) sleep(n)
