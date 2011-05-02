@@ -326,8 +326,8 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 // read out all controls, and if value is altered, remember it and send it to the engine
 {
     HANDLE hwndCombo;
-    int i, k, new=0, changed=0;
-    char **choices, newText[MSG_SIZ], buf[MSG_SIZ];
+    int i, k, new=0, changed=0, len;
+    char **choices, newText[MSG_SIZ], buf[MSG_SIZ], *text;
     BOOL success;
 
     for(i=0; i<layout; i++) {
@@ -346,11 +346,15 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 	    case TextBox:
 	    case FileName:
 	    case PathName:
-		success = GetDlgItemText( hDlg, 2001+2*i, newText, MSG_SIZ - strlen(optionList[j].name) - 9 );
+		if(cps) len = MSG_SIZ - strlen(optionList[j].name) - 9, text = newText;
+		else    len = GetWindowTextLength(GetDlgItem(hDlg, 2001+2*i)) + 1, text = (char*) malloc(len);
+		success = GetDlgItemText( hDlg, 2001+2*i, text, len );
 		if(!success) break;
 		if(!cps) {
+		    char *p;
 		    if(*(char**)optionList[j].target) free(*(char**)optionList[j].target);
-		    *(char**)optionList[j].target = strdup(newText);
+		    *(char**)optionList[j].target = p = text;
+		    while(*p++ = *text++) if(p[-1] == '\r') p--; // crush CR
 		    break;
 		}
 		changed = strcmp(optionList[j].textValue, newText) != 0;
