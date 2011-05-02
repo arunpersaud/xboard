@@ -1,3 +1,10 @@
+** Version 4.5.2a (Winboard only)  **
+
+(git diff -b --stat --summary -M v4.5.2 HEAD)
+
+ winboard/wsettings.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
 ** Version 4.5.2  **
 
 (git diff -b --stat --summary -M v4.5.1 HEAD)

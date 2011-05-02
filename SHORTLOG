@@ -1,3 +1,10 @@
+** Version 4.5.2a (Winboard only)**
+
+(git shortlog --no-merges v4.5.2..HEAD)
+
+H.G. Muller (1):
+      Fix Engine Settings button options in WinBoard
+
 ** Version 4.5.2 **
 
 (git shortlog --no-merges v4.5.1..HEAD)

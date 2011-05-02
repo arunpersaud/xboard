@@ -3,6 +3,19 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2011-04-29 23:23:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Engine Settings button options in WinBoard
+
+Due to a leftover statement from debugging the -file and -path options
+patch, the buttons were broke.
+
+2011-04-25 00:06:09 -0700 Arun Persaud <arun@nubati.net>:
+release of version 4.5.2
+
+
+2011-04-25 00:04:33 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
 2011-04-19 15:15:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix gettext macros in option dialogs
 
