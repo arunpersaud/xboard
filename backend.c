@@ -841,6 +841,7 @@ ReplaceEngine(ChessProgramState *cps, int n)
     appData.noChessProgram = False;
     appData.clockMode = True;
     InitEngine(cps, n);
+    if(n) return; // only startup first engine immediately; second can wait
     savCps = cps; // parameter to LoadEngine passed as globals, to allow scheduled calling :-(
     LoadEngine();
 }
