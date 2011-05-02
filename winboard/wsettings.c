@@ -644,6 +644,7 @@ void LoadEnginePopUp(HWND hwnd)
     if(nickName)     free(nickName);     nickName = strdup("");
     if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
     if(engineLine)   free(engineLine);   engineLine = strdup("");
+    if(engineName)   free(engineName);   engineName = strdup("");
     NamesToList(firstChessProgramNames, engineList, engineMnemonic);
     while(engineList[n]) n++; installOptions[0].max = n;
     snprintf(title, MSG_SIZ, _("Load Engine"));
