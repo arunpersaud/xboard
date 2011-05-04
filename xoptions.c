@@ -775,15 +775,49 @@ void GenericPopDown(w, event, prms, nprms)
     PopDown(prms[0][0] - '0');
 }
 
+char *engineName, *engineDir, *engineChoice, *engineLine;
+Boolean isUCI, hasBook, storeVariant, v1, addToList;
+extern Option installOptions[], matchOptions[];
+char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
+char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
+
+void AddToTourney(int n)
+{
+    Arg args[2];
+    char *p, *val, buf[10000];
+    XawTextBlock t;
+
+    GenericReadout(4);  // selected engine
+    t.ptr = engineChoice; t.firstPos = 0; t.length = strlen(engineChoice); t.format = XawFmt8Bit;
+    XawTextReplace(matchOptions[3].handle, 9999, 9999, &t);
+    t.ptr = "\n"; t.length = 1;
+    XawTextReplace(matchOptions[3].handle, 9999, 9999, &t);
+}
+
+void MatchOK(int n)
+{
+    if(appData.participants && appData.participants[0]) free(appData.participants);
+    appData.participants = strdup(engineName);
+    PopDown(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
+    if(CreateTourney(appData.tourneyFile)) MatchEvent(2); // start tourney
+}
+
 Option matchOptions[] = {
-{ 0,  2, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Default Number of Games in Match:") },
+{ 0,  0,          0, NULL, (void*) &appData.tourneyFile, "", NULL, FileName, N_("Tournament file:") },
+{ 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round    (for concurrent playing of a single") },
+{ 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle      tourney with multiple XBoards)") },
+{ 0xD, 150,       0, NULL, (void*) &engineName, "", NULL, TextBox, "Tourney participants:" },
+{ 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
+{ 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
+{ 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles:") },
+{ 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Default Number of Games in Match (or Pairing):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Match Games (msec):") },
 { 0,  0,          0, NULL, (void*) &appData.loadGameFile, "", NULL, FileName, N_("Game File with Opening Lines:") },
 { 0, -2, 1000000000, NULL, (void*) &appData.loadGameIndex, "", NULL, Spin, N_("Game Number (-1 or -2 = Auto-Increment):") },
 { 0,  0,          0, NULL, (void*) &appData.loadPositionFile, "", NULL, FileName, N_("File with Start Positions:") },
 { 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, N_("Position Number (-1 or -2 = Auto-Increment):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind Index after this many Games (0 = never):") },
-{ 0, 0, 0, NULL, NULL, "", NULL, EndMark , "" }
+{ 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
 void GeneralOptionsOK(int n)
@@ -1719,6 +1753,8 @@ void MatchOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+   NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+   comboCallback = &AddToTourney;
    GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 
@@ -1990,98 +2026,6 @@ void SecondSettingsProc(w, event, prms, nprms)
    SettingsPopUp(&second);
 }
 
-char *engineName, *engineDir, *engineChoice, *engineLine;
-Boolean isUCI, hasBook, storeVariant, v1, addToList;
-extern Option installOptions[];
-extern char *firstChessProgramNames;
-char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
-char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
-
-void NamesToList(char *names)
-{
-    char buf[MSG_SIZ], *p, *q;
-    int i=1;
-    while(*names) {
-	p = names; q = buf;
-	while(*p && *p != '\n') *q++ = *p++;
-	*q = 0;
-	if(engineList[i]) free(engineList[i]);
-	engineList[i] = strdup(buf);
-	if(*p == '\n') p++;
-	TidyProgramName(engineList[i], "localhost", buf);
-	if(engineMnemonic[i]) free(engineMnemonic[i]);
-	if(q = strstr(engineList[i], " -variant ")) {
-	    strcat(buf, "(");
-	    sscanf(q + 10, "%s", buf + strlen(buf));
-	    strcat(buf, ")");
-	}
-	engineMnemonic[i] = strdup(buf);
-	names = p; i++;
-    }
-    engineList[i] = NULL;
-}
-
-// following implemented as macro to avoid type limitations
-#define SWAP(item, temp) temp = appData.item[0]; appData.item[0] = appData.item[n]; appData.item[n] = temp;
-
-void SwapEngines(int n)
-{   // swap settings for first engine and other engine (so far only some selected options)
-    int h;
-    char *p;
-    if(n == 0) return;
-    SWAP(directory, p)
-    SWAP(chessProgram, p)
-    SWAP(isUCI, h)
-    SWAP(hasOwnBookUCI, h)
-    SWAP(protocolVersion, h)
-    SWAP(reuse, h)
-    SWAP(scoreIsAbsolute, h)
-    SWAP(timeOdds, h)
-}
-
-void Load(ChessProgramState *cps, int i)
-{
-    char *p, *q, buf[MSG_SIZ];
-    if(engineLine[0]) { // an engine was selected from the combo box
-	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
-	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
-	ParseArgsFromString(buf);
-	SwapEngines(i);
-	ReplaceEngine(cps, i);
-	return;
-    }
-    p = engineName;
-    while(q = strchr(p, '/')) p = q+1;
-    if(*p== NULLCHAR) return;
-    appData.chessProgram[i] = strdup(p);
-    if(engineDir[0] != NULLCHAR)
-	appData.directory[i] = engineDir;
-    else if(p != engineName) { // derive directory from engine path, when not given
-	p[-1] = 0;
-	appData.directory[i] = strdup(engineName);
-	p[-1] = '/';
-    } else appData.directory[i] = ".";
-    appData.isUCI[i] = isUCI;
-    appData.protocolVersion[i] = v1 ? 1 : PROTOVER;
-    appData.hasOwnBookUCI[i] = hasBook;
-    if(addToList) {
-	int len;
-	q = firstChessProgramNames;
-	if(nickName[0]) snprintf(buf, MSG_SIZ, "\"%s\" -fcp ", nickName); else buf[0] = NULLCHAR;
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), "\"%s\" -fd \"%s\"%s%s%s%s%s\n", p, appData.directory[i], 
-			v1 ? " -firstProtocolVersion 1" : "",
-			hasBook ? "" : " -fNoOwnBookUCI",
-			isUCI ? " -fUCI" : "",
-			storeVariant ? " -variant " : "",
-			storeVariant ? VariantName(gameInfo.variant) : "");
-printf("new line: %s", buf);
-	firstChessProgramNames = malloc(len = strlen(q) + strlen(buf) + 1);
-	snprintf(firstChessProgramNames, len, "%s%s", q, buf);
-	if(q) 	free(q);
-    }
-    ReplaceEngine(cps, i);
-}
-
 void InstallOK(int n)
 {
     PopDown(0); // early popdown, to allow FreezeUI to instate grab
@@ -2114,7 +2058,7 @@ void LoadEngineProc(w, event, prms, nprms)
    engineDir = nickName = ""; 
    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
    if(engineLine)   free(engineLine);   engineLine = strdup("");
-   NamesToList(firstChessProgramNames);
+   NamesToList(firstChessProgramNames, engineList, engineMnemonic);
    GenericPopUp(installOptions, _("Load engine"), 0);
 }
 

@@ -290,6 +290,9 @@ char *GameListLine P((int, GameInfo *));
 char * GameListLineFull P(( int, GameInfo *));
 void GLT_TagsToList P(( char * tags ));
 void GLT_ParseList P((void));
+void NamesToList P((char *name, char **engines, char **mnemonics));
+int CreateTourney P((char *name));
+void SwapEngines P((int n));
 
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
@@ -409,5 +412,6 @@ extern int opponentKibitzes; // used by wengineo.c
 extern int errorExitStatus;
 void SettingsPopUp P((ChessProgramState *cps)); // [HGM] really in front-end, but CPS not known in frontend.h
 int WaitForEngine P((ChessProgramState *cps, DelayedEventCallback x));
+void Load P((ChessProgramState *cps, int n));
 
 #endif /* _BACKEND */

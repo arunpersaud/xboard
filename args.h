@@ -552,6 +552,19 @@ ArgDescriptor argDescriptors[] = {
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
   { "language", ArgFilename, (void *) &appData.language, TRUE, (ArgIniType) "" },
 
+  // [HGM] tournament options
+  { "tourney", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },
+  { "tf", ArgFilename, (void *) &appData.tourneyFile, FALSE, INVALID },
+  { "processes", ArgString, (void *) &appData.processes, FALSE, (ArgIniType) "        " },
+  { "participants", ArgString, (void *) &appData.participants, FALSE, (ArgIniType) "" },
+  { "tourneyType", ArgInt, (void *) &appData.tourneyType, FALSE, (ArgIniType) 0 },
+  { "tt", ArgInt, (void *) &appData.tourneyType, FALSE, INVALID },
+  { "tourneyCycles", ArgInt, (void *) &appData.tourneyCycles, FALSE, (ArgIniType) 1 },
+  { "cy", ArgInt, (void *) &appData.tourneyCycles, FALSE, INVALID },
+  { "results", ArgString, (void *) &appData.results, FALSE, (ArgIniType) "" },
+  { "syncAfterRound", ArgBoolean, (void *) &appData.roundSync, FALSE, (ArgIniType) FALSE },
+  { "syncAfterCycle", ArgBoolean, (void *) &appData.cycleSync, FALSE, (ArgIniType) TRUE },
+
   /* [HGM] board-size, adjudication and misc. options */
   { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },
   { "boardWidth", ArgInt, (void *) &appData.NrFiles, FALSE, (ArgIniType) -1 },
@@ -817,10 +830,8 @@ ParseArgs(GetFunc get, void *cl)
 	ch = get(cl);
       }
       *q = NULLCHAR;
-
       for (ad = argDescriptors; ad->argName != NULL; ad++)
 	if (strcmp(ad->argName, argName + 1) == 0) break;
-
       if (ad->argName == NULL)
 	ExitArgError("Unrecognized argument", argName);
 
@@ -1046,6 +1057,12 @@ void
 ParseArgsFromString(char *p)
 {
     ParseArgs(StringGet, &p);
+}
+
+void
+ParseArgsFromFile(FILE *f)
+{
+    ParseArgs(FileGet, f);
 }
 
 void

@@ -644,6 +644,15 @@ typedef struct {
     Boolean markers;    /* [HGM] markers   */
     Boolean pieceMenu;
     Boolean sweepSelect;
+
+    char *tourneyFile;
+    char *processes;
+    char *results;
+    char *participants;
+    int tourneyType;
+    int tourneyCycles;
+    Boolean roundSync;
+    Boolean cycleSync;
 } AppData, *AppDataPtr;
 
 /*  PGN tags (for showing in the game list) */

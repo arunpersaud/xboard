@@ -59,10 +59,12 @@
 
 int flock(int f, int code);
 #define LOCK_EX 2
+#define SLASH '\\'
 
 #else
 
 #define DoSleep( n ) if( (n) >= 0) sleep(n)
+#define SLASH '/'
 
 #endif
 
@@ -191,7 +193,7 @@ void SendTimeControl P((ChessProgramState *cps,
 char *TimeControlTagValue P((void));
 void Attention P((ChessProgramState *cps));
 void FeedMovesToProgram P((ChessProgramState *cps, int upto));
-void ResurrectChessProgram P((void));
+int ResurrectChessProgram P((void));
 void DisplayComment P((int moveNumber, char *text));
 void DisplayMove P((int moveNumber));
 
@@ -228,6 +230,8 @@ void OutputKibitz(int window, char *text);
 int PerpetualChase(int first, int last);
 int EngineOutputIsUp();
 void InitDrawingSizes(int x, int y);
+void NextMatchGame P((void));
+int NextTourneyGame P((int nr, int *swap));
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -461,8 +465,9 @@ long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement, lastWhi
 long timeControl_2; /* [AS] Allow separate time controls */
 char *fullTimeControlString = NULL, *nextSession, *whiteTC, *blackTC; /* [HGM] secondary TC: merge of MPS, TC and inc */
 long timeRemaining[2][MAX_MOVES];
-int matchGame = 0;
-TimeMark programStartTime;
+int matchGame = 0, nextGame = 0, roundNr = 0;
+Boolean waitingForGame = FALSE;
+TimeMark programStartTime, pauseStart;
 char ics_handle[MSG_SIZ];
 int have_set_title = 0;
 
@@ -712,6 +717,7 @@ UnloadEngine(ChessProgramState *cps)
 	    DestroyChildProcess(cps->pr, cps->useSigterm);
 	}
 	cps->pr = NoProc;
+	if(appData.debugMode) fprintf(debugFP, "Unload %s\n", cps->which);
 }
 
 void
@@ -730,6 +736,7 @@ char *engineNames[] = {
 "second"
 };
 
+void
 InitEngine(ChessProgramState *cps, int n)
 {   // [HGM] all engine initialiation put in a function that does one engine
 
@@ -842,12 +849,59 @@ ReplaceEngine(ChessProgramState *cps, int n)
 {
     EditGameEvent();
     UnloadEngine(cps);
-    appData.noChessProgram = False;
-    appData.clockMode = True;
+    appData.noChessProgram = FALSE;
+    appData.clockMode = TRUE;
     InitEngine(cps, n);
     if(n) return; // only startup first engine immediately; second can wait
     savCps = cps; // parameter to LoadEngine passed as globals, to allow scheduled calling :-(
     LoadEngine();
+}
+
+extern char *engineName, *engineDir, *engineChoice, *engineLine, *nickName;
+extern Boolean isUCI, hasBook, storeVariant, v1, addToList;
+
+void Load(ChessProgramState *cps, int i)
+{
+    char *p, *q, buf[MSG_SIZ];
+    if(engineLine[0]) { // an engine was selected from the combo box
+	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
+	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
+	ParseArgsFromString("-firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1");
+	ParseArgsFromString(buf);
+	SwapEngines(i);
+	ReplaceEngine(cps, i);
+	return;
+    }
+    p = engineName;
+    while(q = strchr(p, SLASH)) p = q+1;
+    if(*p== NULLCHAR) return;
+    appData.chessProgram[i] = strdup(p);
+    if(engineDir[0] != NULLCHAR)
+	appData.directory[i] = engineDir;
+    else if(p != engineName) { // derive directory from engine path, when not given
+	p[-1] = 0;
+	appData.directory[i] = strdup(engineName);
+	p[-1] = '/';
+    } else appData.directory[i] = ".";
+    appData.isUCI[i] = isUCI;
+    appData.protocolVersion[i] = v1 ? 1 : PROTOVER;
+    appData.hasOwnBookUCI[i] = hasBook;
+    if(addToList) {
+	int len;
+	q = firstChessProgramNames;
+	if(nickName[0]) snprintf(buf, MSG_SIZ, "\"%s\" -fcp ", nickName); else buf[0] = NULLCHAR;
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), "\"%s\" -fd \"%s\"%s%s%s%s%s\n", p, appData.directory[i], 
+			v1 ? " -firstProtocolVersion 1" : "",
+			hasBook ? "" : " -fNoOwnBookUCI",
+			isUCI ? " -fUCI" : "",
+			storeVariant ? " -variant " : "",
+			storeVariant ? VariantName(gameInfo.variant) : "");
+fprintf(debugFP, "new line: %s", buf);
+	firstChessProgramNames = malloc(len = strlen(q) + strlen(buf) + 1);
+	snprintf(firstChessProgramNames, len, "%s%s", q, buf);
+	if(q) 	free(q);
+    }
+    ReplaceEngine(cps, i);
 }
 
 void
@@ -860,6 +914,7 @@ InitBackEnd1()
 
     GetTimeMark(&programStartTime);
     srandom((programStartTime.ms + 1000*programStartTime.sec)*0x1001001); // [HGM] book: makes sure random is unpredictabe to msec level
+    pauseStart = programStartTime; pauseStart.sec -= 100; // [HGM] matchpause: fake a pause that has long since ended
 
     ClearProgramStats();
     programStats.ok_to_send = 1;
@@ -1264,19 +1319,73 @@ LoadGameOrPosition(int gameNr)
 }
 
 void
+ReserveGame(int gameNr, char resChar)
+{
+    FILE *tf = fopen(appData.tourneyFile, "r+");
+    char *p, *q, c, buf[MSG_SIZ];
+    if(tf == NULL) { nextGame = appData.matchGames + 1; return; } // kludge to terminate match
+    safeStrCpy(buf, lastMsg, MSG_SIZ);
+    DisplayMessage(_("Pick new game"), "");
+    flock(fileno(tf), LOCK_EX); // lock the tourney file while we are messing with it
+    ParseArgsFromFile(tf);
+    p = q = appData.results;
+    if(appData.debugMode) {
+      char *r = appData.participants;
+      fprintf(debugFP, "results = '%s'\n", p);
+      while(*r) fprintf(debugFP, *r >= ' ' ? "%c" : "\\%03o", *r), r++;
+      fprintf(debugFP, "\n");
+    }
+    while(*q && *q != ' ') q++; // get first un-played game (could be beyond end!)
+    nextGame = q - p;
+    q = malloc(strlen(p) + 2); // could be arbitrary long, but allow to extend by one!
+    safeStrCpy(q, p, strlen(p) + 2);
+    if(gameNr >= 0) q[gameNr] = resChar; // replace '*' with result
+    if(appData.debugMode) fprintf(debugFP, "pick next game from '%s': %d\n", q, nextGame);
+    if(nextGame <= appData.matchGames && resChar != ' ') { // already reserve next game, if tourney not yet done
+	if(q[nextGame] == NULLCHAR) q[nextGame+1] = NULLCHAR; // append one char
+	q[nextGame] = '*';
+    }
+    fseek(tf, -(strlen(p)+4), SEEK_END);
+    c = fgetc(tf);
+    if(c != '"') // depending on DOS or Unix line endings we can be one off
+	 fseek(tf, -(strlen(p)+2), SEEK_END);
+    else fseek(tf, -(strlen(p)+3), SEEK_END);
+    fprintf(tf, "%s\"\n", q); fclose(tf); // update, and flush by closing
+    DisplayMessage(buf, "");
+    free(p); appData.results = q;
+    if(nextGame <= appData.matchGames && resChar != ' ' &&
+       (gameNr < 0 || nextGame / appData.defaultMatchGames != gameNr / appData.defaultMatchGames)) {
+	UnloadEngine(&first);  // next game belongs to other pairing;
+	UnloadEngine(&second); // already unload the engines, so TwoMachinesEvent will load new ones.
+    }
+}
+
+void
 MatchEvent(int mode)
 {	// [HGM] moved out of InitBackend3, to make it callable when match starts through menu
+	int dummy;
 	/* Set up machine vs. machine match */
-	if (appData.noChessProgram) {
+	nextGame = 0;
+	NextTourneyGame(0, &dummy); // sets appData.matchGames if this is tourney, to make sure ReserveGame knows it
+	if(appData.tourneyFile[0]) {
+	    ReserveGame(-1, 0);
+	    if(nextGame > appData.matchGames) {
+		char buf[MSG_SIZ];
+		snprintf(buf, MSG_SIZ, _("All games in tourney '%s' are already played or playing"), appData.tourneyFile);
+		DisplayError(buf, 0);
+		appData.tourneyFile[0] = 0;
+		return;
+	    }
+	} else
+	if (appData.noChessProgram) {  // [HGM] in tourney engines are loaded automatically
 	    DisplayFatalError(_("Can't have a match with no chess programs"),
 			      0, 2);
 	    return;
 	}
 	matchMode = mode;
-	matchGame = 1;
-	if(!LoadGameOrPositionFile(1)) return;
+	matchGame = roundNr = 1;
 	first.matchWins = second.matchWins = 0; // [HGM] match: needed in later matches
-	TwoMachinesEvent();
+	NextMatchGame();
 }
 
 void
@@ -1371,6 +1480,13 @@ InitBackEnd3 P((void))
     }
 
     if (appData.matchMode) {
+	if(appData.tourneyFile[0]) { // start tourney from command line
+	    FILE *f;
+	    if(f = fopen(appData.tourneyFile, "r")) {
+		ParseArgsFromFile(f); // make sure tourney parmeters re known
+		fclose(f);
+	    } else appData.tourneyFile[0] = NULLCHAR; // for now ignore bad tourney file
+	}
 	MatchEvent(TRUE);
     } else if (*appData.cmailGameName != NULLCHAR) {
 	/* Set up cmail mode */
@@ -9250,26 +9366,222 @@ StartChessProgram(cps)
 void
 TwoMachinesEventIfReady P((void))
 {
+  static int curMess = 0;
   if (first.lastPing != first.lastPong) {
-    DisplayMessage("", _("Waiting for first chess program"));
+    if(curMess != 1) DisplayMessage("", _("Waiting for first chess program")); curMess = 1;
     ScheduleDelayedEvent(TwoMachinesEventIfReady, 10); // [HGM] fast: lowered from 1000
     return;
   }
   if (second.lastPing != second.lastPong) {
-    DisplayMessage("", _("Waiting for second chess program"));
+    if(curMess != 2) DisplayMessage("", _("Waiting for second chess program")); curMess = 2;
     ScheduleDelayedEvent(TwoMachinesEventIfReady, 10); // [HGM] fast: lowered from 1000
     return;
   }
+  DisplayMessage("", ""); curMess = 0;
   ThawUI();
   TwoMachinesEvent();
 }
 
-void
-NextMatchGame P((void))
+int
+CreateTourney(char *name)
 {
-    Reset(FALSE, TRUE);
-    LoadGameOrPosition(matchGame);
-    TwoMachinesEventIfReady();
+	FILE *f;
+	if(name[0] == NULLCHAR) return 0;
+	f = fopen(appData.tourneyFile, "r");
+	if(f) { // file exists
+	    ParseArgsFromFile(f); // parse it
+	} else {
+	    f = fopen(appData.tourneyFile, "w");
+	    if(f == NULL) { DisplayError("Could not write on tourney file", 0); return 0; } else {
+		// create a file with tournament description
+		fprintf(f, "-participants {%s}\n", appData.participants);
+		fprintf(f, "-tourneyType %d\n", appData.tourneyType);
+		fprintf(f, "-tourneyCycles %d\n", appData.tourneyCycles);
+		fprintf(f, "-defaultMatchGames %d\n", appData.defaultMatchGames);
+		fprintf(f, "-syncAfterRound %s\n", appData.roundSync ? "true" : "false");
+		fprintf(f, "-syncAfterCycle %s\n", appData.cycleSync ? "true" : "false");
+		fprintf(f, "-saveGameFile \"%s\"\n", appData.saveGameFile);
+		fprintf(f, "-loadGameFile \"%s\"\n", appData.loadGameFile);
+		fprintf(f, "-loadGameIndex %d\n", appData.loadGameIndex);
+		fprintf(f, "-loadPositionFile \"%s\"\n", appData.loadPositionFile);
+		fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
+		fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
+		fprintf(f, "-results \"\"\n");
+	    }
+	}
+	fclose(f);
+	appData.noChessProgram = FALSE;
+	appData.clockMode = TRUE;
+	SetGNUMode();
+	return 1;
+}
+
+#define MAXENGINES 1000
+char *command[MAXENGINES], *mnemonic[MAXENGINES];
+
+void NamesToList(char *names, char **engineList, char **engineMnemonic)
+{
+    char buf[MSG_SIZ], *p, *q;
+    int i=1;
+    while(*names) {
+	p = names; q = buf;
+	while(*p && *p != '\n') *q++ = *p++;
+	*q = 0;
+	if(engineList[i]) free(engineList[i]);
+	engineList[i] = strdup(buf);
+	if(*p == '\n') p++;
+	TidyProgramName(engineList[i], "localhost", buf);
+	if(engineMnemonic[i]) free(engineMnemonic[i]);
+	if((q = strstr(engineList[i]+2, "variant")) && q[-2]== ' ' && (q[-1]=='/' || q[-1]=='-') && (q[7]==' ' || q[7]=='=')) {
+	    strcat(buf, " (");
+	    sscanf(q + 8, "%s", buf + strlen(buf));
+	    strcat(buf, ")");
+	}
+	engineMnemonic[i] = strdup(buf);
+	names = p; i++;
+      if(i > MAXENGINES - 2) break;
+    }
+    engineList[i] = NULL;
+}
+
+// following implemented as macro to avoid type limitations
+#define SWAP(item, temp) temp = appData.item[0]; appData.item[0] = appData.item[n]; appData.item[n] = temp;
+
+void SwapEngines(int n)
+{   // swap settings for first engine and other engine (so far only some selected options)
+    int h;
+    char *p;
+    if(n == 0) return;
+    SWAP(directory, p)
+    SWAP(chessProgram, p)
+    SWAP(isUCI, h)
+    SWAP(hasOwnBookUCI, h)
+    SWAP(protocolVersion, h)
+    SWAP(reuse, h)
+    SWAP(scoreIsAbsolute, h)
+    SWAP(timeOdds, h)
+    SWAP(logo, p)
+}
+
+void
+SetPlayer(int player)
+{   // [HGM] find the engine line of the partcipant given by number, and parse its options.
+    int i;
+    char buf[MSG_SIZ], *engineName, *p = appData.participants;
+    static char resetOptions[] = "-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 -firstOptions \"\" "
+				 "-firstNeedsNoncompliantFEN false -firstNPS -1";
+    for(i=0; i<player; i++) p = strchr(p, '\n') + 1;
+    engineName = strdup(p); if(p = strchr(engineName, '\n')) *p = NULLCHAR;
+    for(i=1; command[i]; i++) if(!strcmp(mnemonic[i], engineName)) break;
+    if(mnemonic[i]) {
+	snprintf(buf, MSG_SIZ, "-fcp %s", command[i]);
+	ParseArgsFromString(resetOptions);
+	ParseArgsFromString(buf);
+    }
+    free(engineName);
+}
+
+int
+Pairing(int nr, int nPlayers, int *whitePlayer, int *blackPlayer, int *syncInterval)
+{   // determine players from game number
+    int curCycle, curRound, curPairing, gamesPerCycle, gamesPerRound, roundsPerCycle, pairingsPerRound;
+
+    if(appData.tourneyType == 0) {
+	roundsPerCycle = (nPlayers - 1) | 1;
+	pairingsPerRound = nPlayers / 2;
+    } else if(appData.tourneyType > 0) {
+	roundsPerCycle = nPlayers - appData.tourneyType;
+	pairingsPerRound = appData.tourneyType;
+    }
+    gamesPerRound = pairingsPerRound * appData.defaultMatchGames;
+    gamesPerCycle = gamesPerRound * roundsPerCycle;
+    appData.matchGames = gamesPerCycle * appData.tourneyCycles - 1; // fake like all games are one big match
+    curCycle = nr / gamesPerCycle; nr %= gamesPerCycle;
+    curRound = nr / gamesPerRound; nr %= gamesPerRound;
+    curPairing = nr / appData.defaultMatchGames; nr %= appData.defaultMatchGames;
+    matchGame = nr + curCycle * appData.defaultMatchGames + 1; // fake game nr that loads correct game or position from file
+    roundNr = (curCycle * roundsPerCycle + curRound) * appData.defaultMatchGames + nr + 1;
+
+    if(appData.cycleSync) *syncInterval = gamesPerCycle;
+    if(appData.roundSync) *syncInterval = gamesPerRound;
+
+    if(appData.debugMode) fprintf(debugFP, "cycle=%d, round=%d, pairing=%d curGame=%d\n", curCycle, curRound, curPairing, matchGame);
+
+    if(appData.tourneyType == 0) {
+	if(curPairing == (nPlayers-1)/2 ) {
+	    *whitePlayer = curRound;
+	    *blackPlayer = nPlayers - 1; // this is the 'bye' when nPlayer is odd
+	} else {
+	    *whitePlayer = curRound - pairingsPerRound + curPairing;
+	    if(*whitePlayer < 0) *whitePlayer += nPlayers-1+(nPlayers&1);
+	    *blackPlayer = curRound + pairingsPerRound - curPairing;
+	    if(*blackPlayer >= nPlayers-1+(nPlayers&1)) *blackPlayer -= nPlayers-1+(nPlayers&1);
+	}
+    } else if(appData.tourneyType > 0) {
+	*whitePlayer = curPairing;
+	*blackPlayer = curRound + appData.tourneyType;
+    }
+
+    // take care of white/black alternation per round. 
+    // For cycles and games this is already taken care of by default, derived from matchGame!
+    return curRound & 1;
+}
+
+int
+NextTourneyGame(int nr, int *swapColors)
+{   // !!!major kludge!!! fiddle appData settings to get everything in order for next tourney game
+    char *p, *q;
+    int whitePlayer, blackPlayer, firstBusy=1000000000, syncInterval = 0, nPlayers=0;
+    FILE *tf;
+    if(appData.tourneyFile[0] == NULLCHAR) return 1; // no tourney, always allow next game
+    tf = fopen(appData.tourneyFile, "r");
+    if(tf == NULL) { DisplayFatalError(_("Bad tournament file"), 0, 1); return 0; }
+    ParseArgsFromFile(tf); fclose(tf);
+
+    p = appData.participants;
+    while(p = strchr(p, '\n')) p++, nPlayers++; // count participants
+    *swapColors = Pairing(nr, nPlayers, &whitePlayer, &blackPlayer, &syncInterval);
+
+    if(syncInterval) {
+	p = q = appData.results;
+	while(*q) if(*q++ == '*' || q[-1] == ' ') { firstBusy = q - p - 1; break; }
+	if(firstBusy/syncInterval < (nextGame/syncInterval)) {
+	    DisplayMessage(_("Waiting for other game(s)"),"");
+	    waitingForGame = TRUE;
+	    ScheduleDelayedEvent(NextMatchGame, 1000); // wait for all games of previous round to finish
+	    return 0;
+	}
+	waitingForGame = FALSE;
+    }
+
+    if(first.pr != NoProc) return 1; // engines already loaded
+
+    // redefine engines, engine dir, etc.
+    NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
+    SetPlayer(whitePlayer); // find white player amongst it, and parse its engine line
+    SwapEngines(1);
+    SetPlayer(blackPlayer); // find black player amongst it, and parse its engine line
+    SwapEngines(1);         // and make that valid for second engine by swapping
+    InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.
+    InitEngine(&second, 1);
+    CommonEngineInit();     // after this TwoMachinesEvent will create correct engine processes
+    return 1;
+}
+
+void
+NextMatchGame()
+{   // performs game initialization that does not invoke engines, and then tries to start the game
+    int firstWhite, swapColors = 0;
+    if(!NextTourneyGame(nextGame, &swapColors)) return; // this sets matchGame, -fcp / -scp and other options for next game, if needed
+    firstWhite = appData.firstPlaysBlack ^ (matchGame & 1 | appData.sameColorGames > 1); // non-incremental default
+    firstWhite ^= swapColors; // reverses if NextTourneyGame says we are in an odd round
+    first.twoMachinesColor =  firstWhite ? "white\n" : "black\n";   // perform actual color assignement
+    second.twoMachinesColor = firstWhite ? "black\n" : "white\n";
+    appData.noChessProgram = (first.pr == NoProc); // kludge to prevent Reset from starting up chess program
+    Reset(FALSE, first.pr != NoProc);
+    appData.noChessProgram = FALSE;
+    if(!LoadGameOrPosition(matchGame)) return; // setup game; abort when bad game/pos file
+    TwoMachinesEvent();
 }
 
 void UserAdjudicationEvent( int result )
@@ -9319,7 +9631,7 @@ GameEnds(result, resultDetails, whosays)
 {
     GameMode nextGameMode;
     int isIcsGame;
-    char buf[MSG_SIZ], popupRequested = 0;
+    char buf[MSG_SIZ], popupRequested = 0, forceUnload;
 
     if(endingGame) return; /* [HGM] crash: forbid recursion */
     endingGame = 1;
@@ -9621,9 +9933,11 @@ GameEnds(result, resultDetails, whosays)
 	second.pr = NoProc;
     }
 
-    if (matchMode && gameMode == TwoMachinesPlay) {
+    if (matchMode && (gameMode == TwoMachinesPlay || waitingForGame && exiting)) {
+	char resChar = '=';
         switch (result) {
 	case WhiteWins:
+	  resChar = '+';
 	  if (first.twoMachinesColor[0] == 'w') {
 	    first.matchWins++;
 	  } else {
@@ -9631,27 +9945,30 @@ GameEnds(result, resultDetails, whosays)
 	  }
 	  break;
 	case BlackWins:
+	  resChar = '-';
 	  if (first.twoMachinesColor[0] == 'b') {
 	    first.matchWins++;
 	  } else {
 	    second.matchWins++;
 	  }
 	  break;
+	case GameUnfinished:
+	  resChar = ' ';
 	default:
 	  break;
 	}
-	if (matchGame < appData.matchGames) {
-	    char *tmp;
-	    if(appData.sameColorGames <= 1) { /* [HGM] alternate: suppress color swap */
-		tmp = first.twoMachinesColor;
-		first.twoMachinesColor = second.twoMachinesColor;
-		second.twoMachinesColor = tmp;
-	    }
+
+	if(waitingForGame) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
+	if(appData.tourneyFile[0]){ // [HGM] we are in a tourney; update tourney file with game result
+	    ReserveGame(nextGame, resChar); // sets nextGame
+	    if(nextGame > appData.matchGames) appData.tourneyFile[0] = 0; // tourney is done
+	} else roundNr = nextGame = matchGame + 1; // normal match, just increment; round equals matchGame
+
+	if (nextGame <= appData.matchGames) {
 	    gameMode = nextGameMode;
-	    matchGame++;
-            if(appData.matchPause>10000 || appData.matchPause<10)
-                appData.matchPause = 10000; /* [HGM] make pause adjustable */
-            ScheduleDelayedEvent(NextMatchGame, appData.matchPause);
+	    matchGame = nextGame; // this will be overruled in tourney mode!
+	    GetTimeMark(&pauseStart); // [HGM] matchpause: stipulate a pause
+            ScheduleDelayedEvent(NextMatchGame, 10); // but start game immediately (as it will wait out the pause itself)
 	    endingGame = 0; /* [HGM] crash */
 	    return;
 	} else {
@@ -9678,7 +9995,7 @@ GameEnds(result, resultDetails, whosays)
     endingGame = 0;  /* [HGM] crash */
     if(popupRequested) { // [HGM] crash: this calls GameEnds recursively through ExitEvent! Make it a harmless tail recursion.
       if(matchMode == TRUE) DisplayFatalError(buf, 0, 0); else {
-	matchMode = FALSE; appData.matchGames = matchGame = 0;
+	matchMode = FALSE; appData.matchGames = matchGame = roundNr = 0;
 	DisplayNote(buf);
       }
     }
@@ -9719,15 +10036,23 @@ FeedMovesToProgram(cps, upto)
 }
 
 
-void
+int
 ResurrectChessProgram()
 {
      /* The chess program may have exited.
 	If so, restart it and feed it all the moves made so far. */
+    static int doInit = 0;
 
-    if (appData.noChessProgram || first.pr != NoProc) return;
+    if (appData.noChessProgram) return 1;
 
-    StartChessProgram(&first);
+    if(matchMode && appData.tourneyFile[0]) { // [HGM] tourney: make sure we get features after engine replacement. (Should we always do this?)
+	if(WaitForEngine(&first, TwoMachinesEventIfReady)) { doInit = 1; return 0; } // request to do init on next visit
+	if(!doInit) return 1; // this replaces testing first.pr != NoProc, which is true when we get here, but first time no reason to abort
+	doInit = 0; // we fell through (first time after starting the engine); make sure it doesn't happen again
+    } else {
+	if (first.pr != NoProc) return 1;
+	StartChessProgram(&first);
+    }
     InitChessProgram(&first, FALSE);
     FeedMovesToProgram(&first, currentMove);
 
@@ -9744,6 +10069,7 @@ ResurrectChessProgram()
       SendToProgram("analyze\n", &first);
       first.analyzing = TRUE;
     }
+    return 1;
 }
 
 /*
@@ -9817,6 +10143,7 @@ Reset(redraw, init)
     ResetClocks();
     timeRemaining[0][0] = whiteTimeRemaining;
     timeRemaining[1][0] = blackTimeRemaining;
+
     if (first.pr == NULL) {
 	StartChessProgram(&first);
     }
@@ -12162,6 +12489,8 @@ TwoMachinesEvent P((void))
     ChessProgramState *onmove;
     char *bookHit = NULL;
     static int stalling = 0;
+    TimeMark now;
+    long wait;
 
     if (appData.noChessProgram) return;
 
@@ -12195,23 +12524,28 @@ TwoMachinesEvent P((void))
 
 //    forwardMostMove = currentMove;
     TruncateGame(); // [HGM] vari: MachineWhite and MachineBlack do this...
-    ResurrectChessProgram();	/* in case first program isn't running */
 
-    if(WaitForEngine(&second, TwoMachinesEventIfReady)) return;
+    if(!ResurrectChessProgram()) return;   /* in case first program isn't running (unbalances its ping due to InitChessProgram!) */
+
+    if(WaitForEngine(&second, TwoMachinesEventIfReady)) return; // (if needed:) started up second engine, so wait for features
     if(first.lastPing != first.lastPong) { // [HGM] wait till we are sure first engine has set up position
-      DisplayMessage("", _("Waiting for first chess program"));
-      ScheduleDelayedEvent(TwoMachinesEvent, 10);
+      ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
       return;
     }
     if(!stalling) {
-      InitChessProgram(&second, FALSE);
+      InitChessProgram(&second, FALSE); // unbalances ping of second engine
       SendToProgram("force\n", &second);
-    }
-    if(second.lastPing != second.lastPong) { // [HGM] second engine might have to reallocate hash
-      if(!stalling) DisplayMessage("", _("Waiting for second chess program"));
       stalling = 1;
-      ScheduleDelayedEvent(TwoMachinesEvent, 10);
+      ScheduleDelayedEvent(TwoMachinesEventIfReady, 10);
       return;
+    }
+    GetTimeMark(&now); // [HGM] matchpause: implement match pause after engine load
+    if(appData.matchPause>10000 || appData.matchPause<10)
+                appData.matchPause = 10000; /* [HGM] make pause adjustable */
+    wait = SubtractTimeMarks(&now, &pauseStart);
+    if(wait < appData.matchPause) {
+	ScheduleDelayedEvent(TwoMachinesEventIfReady, appData.matchPause - wait);
+	return;
     }
     stalling = 0;
     DisplayMessage("", "");
@@ -12236,7 +12570,7 @@ TwoMachinesEvent P((void))
     } else {
 	onmove = &second;
     }
-
+    if(appData.debugMode) fprintf(debugFP, "New game (%d): %s-%s (%c)\n", matchGame, first.tidy, second.tidy, first.twoMachinesColor[0]);
     SendToProgram(first.computerString, &first);
     if (first.sendName) {
       snprintf(buf, MSG_SIZ, "name %s\n", second.tidy);
@@ -13516,9 +13850,9 @@ SetGameInfo()
 	gameInfo.event = StrSave( appData.pgnEventHeader );
 	gameInfo.site = StrSave(HostName());
 	gameInfo.date = PGNDate();
-	if (matchGame > 0) {
+	if (roundNr > 0) {
 	    char buf[MSG_SIZ];
-	    snprintf(buf, MSG_SIZ, "%d", matchGame);
+	    snprintf(buf, MSG_SIZ, "%d", roundNr);
 	    gameInfo.round = StrSave(buf);
 	} else {
 	    gameInfo.round = StrSave("-");
@@ -13814,13 +14148,17 @@ SendToProgram(message, cps)
       snprintf(buf, MSG_SIZ, _("Error writing to %s chess program"), _(cps->which));
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
             if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
-                gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
                 snprintf(buf, MSG_SIZ, _("%s program exits in draw position (%s)"), _(cps->which), cps->program);
+		if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(GameIsDrawn, buf, GE_XBOARD); return; }
+                gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
             } else {
-                gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
+                ChessMove res = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
+		if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(res, buf, GE_XBOARD); return; }
+                gameInfo.result = res;
             }
             gameInfo.resultDetails = StrSave(buf);
         }
+	if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; return; }
         if(!cps->userError || !appData.popupExitMessage) DisplayFatalError(buf, error, 1); else errorExitStatus = 1;
     }
 }
@@ -13840,18 +14178,22 @@ ReceiveFromProgram(isr, closure, message, count, error)
     if (isr != cps->isr) return; /* Killed intentionally */
     if (count <= 0) {
 	if (count == 0) {
+	    RemoveInputSource(cps->isr);
 	    snprintf(buf, MSG_SIZ, _("Error: %s chess program (%s) exited unexpectedly"),
 		    _(cps->which), cps->program);
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
                 if((signed char)boards[forwardMostMove][EP_STATUS] <= EP_DRAWS) {
-                    gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
                     snprintf(buf, MSG_SIZ, _("%s program exits in draw position (%s)"), _(cps->which), cps->program);
+		    if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(GameIsDrawn, buf, GE_XBOARD); return; }
+                    gameInfo.result = GameIsDrawn; /* [HGM] accept exit as draw claim */
                 } else {
-                    gameInfo.result = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
+                    ChessMove res = cps->twoMachinesColor[0]=='w' ? BlackWins : WhiteWins;
+		    if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; GameEnds(res, buf, GE_XBOARD); return; }
+                    gameInfo.result = res;
                 }
                 gameInfo.resultDetails = StrSave(buf);
             }
-	    RemoveInputSource(cps->isr);
+	    if(matchMode && appData.tourneyFile[0]) { cps->pr = NoProc; return; }
 	    if(!cps->userError || !appData.popupExitMessage) DisplayFatalError(buf, 0, 1); else errorExitStatus = 1;
 	} else {
 	    snprintf(buf, MSG_SIZ, _("Error reading from %s chess program (%s)"),
@@ -14193,7 +14535,7 @@ FeatureDone(cps, val)
   if ((cb == InitBackEnd3 && cps == &first) ||
       (cb == SettingsMenuIfReady && cps == &second) ||
       (cb == LoadEngine) ||
-      (cb == TwoMachinesEventIfReady && cps == &second)) {
+      (cb == TwoMachinesEventIfReady)) {
     CancelDelayedEvent();
     ScheduleDelayedEvent(cb, val ? 1 : 3600000);
   }
