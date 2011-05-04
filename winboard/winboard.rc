@@ -1225,6 +1225,7 @@ BEGIN
         MENUITEM "&Time Control...\tAlt+Shift+T",IDM_TimeControl
         MENUITEM "Common &Engine...\tAlt+Shift+U",IDM_OptionsUCI
         MENUITEM "Ad&judications...\tAlt+Shift+J",IDM_EnginePlayOptions
+        MENUITEM "Tournament...",               IDM_Tourney
         MENUITEM SEPARATOR
         MENUITEM "&Load Game...\tAlt+Shift+L",  IDM_LoadOptions
         MENUITEM "&Save Game...\tAlt+Shift+S",  IDM_SaveOptions

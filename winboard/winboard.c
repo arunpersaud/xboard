@@ -4944,6 +4944,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_EditProgs2:
      LoadEnginePopUp(hwndMain);
+//      EditTagsPopUp(secondChessProgramNames, &secondChessProgramNames);
       break;
 
     case IDM_EditServers:
@@ -5104,6 +5105,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case IDM_OptionsUCI:
       UciOptionsPopup(hwnd);
+      break;
+
+    case IDM_Tourney:
+      TourneyPopup(hwnd);
       break;
 
     case IDM_IcsOptions:
@@ -7750,6 +7755,22 @@ Enables gnuEnables[] = {
   { IDM_Revert, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Annotate, MF_BYCOMMAND|MF_GRAYED },
   { IDM_NewChat, MF_BYCOMMAND|MF_GRAYED },
+
+  // Needed to switch from ncp to GNU mode on Engine Load
+  { ACTION_POS, MF_BYPOSITION|MF_ENABLED },
+  { IDM_MachineWhite, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_MachineBlack, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_TwoMachines, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Match, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_AnalysisMode, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_AnalyzeFile, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Engine1Options, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Engine2Options, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_TimeControl, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_RetractMove, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_MoveNow, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Hint, MF_BYCOMMAND|MF_ENABLED },
+  { IDM_Book, MF_BYCOMMAND|MF_ENABLED },
   { -1, -1 }
 };
 
@@ -7767,10 +7788,12 @@ Enables icsEnables[] = {
   { IDM_MoveNow, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Hint, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Book, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_EditProgs2, MF_BYCOMMAND|MF_GRAYED },
   { IDM_IcsOptions, MF_BYCOMMAND|MF_ENABLED },
   { IDM_Engine1Options, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Engine2Options, MF_BYCOMMAND|MF_GRAYED },
   { IDM_Annotate, MF_BYCOMMAND|MF_GRAYED },
+  { IDM_Tourney, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
 };
 

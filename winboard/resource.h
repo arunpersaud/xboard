@@ -538,6 +538,7 @@
 #define OPT_MESS                        1818
 #define IDM_Engine1Options		1890
 #define IDM_Engine2Options		1891
+#define IDM_Tourney			1894
 #define IDC_STATIC                      -1
 // static strings that were made dynamic to allow run-time translation
 #define IDC_Babble			1900

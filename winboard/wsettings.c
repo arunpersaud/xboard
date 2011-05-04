@@ -12,6 +12,7 @@
 #include "config.h"
 
 #include <windows.h>
+#include <Windowsx.h>
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
@@ -42,6 +43,7 @@ ChessProgramState *activeCps;
 Option *activeList;
 void InstallOK P((void));
 typedef void ButtonCallback(HWND h);
+ButtonCallback *comboCallback;
 
 void
 PrintOpt(int i, int right, Option *optionList)
@@ -160,6 +162,10 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	    breaks[layout/2] = lastType == Button ? 0 : 100;
 	    layoutList[layout++] = -1;
 	    layoutList[layout++] = nextOption - 1;
+	    for(i=optionList[nextOption-1].min; i>0; i--) { // extra high text edit
+		layoutList[layout++] = -1;
+		layoutList[layout++] = -1;
+	    }
 	} else if(nextType == Spin) {
 	    // A spin will go in the next available position (right to left!). If it had to be prefixed with
 	    // a check or combo, this next position must be to the right, and the prefix goes left to it.
@@ -407,12 +413,12 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
         case IDOK:
 	    GetOptionValues(hDlg, activeCps, activeList);
             EndDialog( hDlg, 0 );
-	    activeCps = NULL;
+	    comboCallback = NULL; activeCps = NULL;
             return TRUE;
 
         case IDCANCEL:
             EndDialog( hDlg, 1 );
-	    activeCps = NULL;
+	    comboCallback = NULL; activeCps = NULL;
             return TRUE;
 
 	default:
@@ -422,15 +428,9 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		j = layoutList[(i - 2000)/2];
 		if(j == -2) {
 		          char filter[] =
-				"All files\0*.*\0BIN Files\0*.bin\0LOG Files\0*.log\0INI Files\0*.ini\0\0";
-/*
-{
-		              'A','l','l',' ','F','i','l','e','s', 0,
-		              '*','.','*', 0,
-		              'B','I','N',' ','F','i','l','e','s', 0,
-		              '*','.','b','i','n', 0,
-		              0 };
-*/
+				"All files\0*.*\0Game files\0*.pgn;*.gam\0Position files\0*.fen;*.epd;*.pos\0"
+				"EXE files\0*.exe\0Tournament files (*.trn)\0*.trn\0"
+				"BIN Files\0*.bin\0LOG Files\0*.log\0INI Files\0*.ini\0\0";
 		          OPENFILENAME ofn;
 
 		          safeStrCpy( buf, "" , sizeof( buf)/sizeof( buf[0]) );
@@ -441,6 +441,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		          ofn.hwndOwner = hDlg;
 		          ofn.hInstance = hInst;
 		          ofn.lpstrFilter = filter;
+			  ofn.nFilterIndex      = 1L + (activeCps ? 0 : activeList[layoutList[(i-2000)/2+1]].max);
 		          ofn.lpstrFile = buf;
 		          ofn.nMaxFile = sizeof(buf);
 		          ofn.lpstrTitle = _("Choose File");
@@ -456,6 +457,10 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		    }
 		}
 		if(j < 0) break;
+		if(comboCallback && activeList[j].type == ComboBox && HIWORD(wParam) == CBN_SELCHANGE) {
+		    (*comboCallback)(hDlg);
+		    break;
+		} else
 		if( activeList[j].type  == SaveButton)
 		     GetOptionValues(hDlg, activeCps, activeList);
 		else if( activeList[j].type  != Button) break;
@@ -492,6 +497,7 @@ void AddControl(int x, int y, int w, int h, int type, int style, int n)
 
 void AddOption(int x, int y, Control type, int i)
 {
+    int extra;
 
     switch(type) {
 	case Slider:
@@ -501,7 +507,9 @@ void AddOption(int x, int y, Control type, int i)
 	    break;
 	case TextBox:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
-	    AddControl(x+95, y, 200, 11, 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
+	    extra = 13*activeList[layoutList[i/2]].min;
+	    AddControl(x+95, y, 200, 11+extra, 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP | 
+								(extra ? ES_MULTILINE | WS_VSCROLL :0), i+1);
 	    break;
 	case Label:
 	    extra = activeList[layoutList[i/2]].value;
@@ -650,4 +658,60 @@ void LoadEnginePopUp(HWND hwnd)
     snprintf(title, MSG_SIZ, _("Load Engine"));
 
     GenericPopup(hwnd, installOptions);
+}
+
+Boolean autoinc, twice;
+
+void MatchOK()
+{
+    if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1);
+    if(appData.participants) free(appData.participants);
+    appData.participants = strdup(engineName);
+    if(CreateTourney(appData.tourneyFile)) MatchEvent(2); 
+//	ScheduleDelayedEvent(MatchEvent(2), 10); // start tourney
+}
+
+Option tourneyOptions[] = {
+  { 0,  0,          4, NULL, (void*) &appData.tourneyFile, "", NULL, FileName, N_("Tournament file:") },
+  { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
+  { 0xD, 7,         0, NULL, (void*) &engineName, "", NULL, TextBox, "Tourney participants:" },
+  { 0, -1,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0=RR, 1=gauntlet):") },
+  { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
+  { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles:") },
+  { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round") },
+  { 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Games per Match / Pairing:") },
+  { 0,  0,          1, NULL, (void*) &appData.loadGameFile, "", NULL, FileName, N_("Game File with Opening Lines:") },
+  { 0, -2, 1000000000, NULL, (void*) &appData.loadGameIndex, "", NULL, Spin, N_("Game Number:") },
+  { 0,  0,          2, NULL, (void*) &appData.loadPositionFile, "", NULL, FileName, N_("File with Start Positions:") },
+  { 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, N_("Position Number:") },
+  { 0,  0,          0, NULL, (void*) &autoinc, "", NULL, CheckBox, N_("Step through lines/positions in file") },
+  { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind after (0 = never):") },
+  { 0,  0,          0, NULL, (void*) &twice, "", NULL, CheckBox, N_("Use each line/position twice") },
+  { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Games (ms):") },
+  { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
+};
+
+void AddToTourney(HWND hDlg)
+{
+    char buf[MSG_SIZ];
+//    GetDlgItemText( hDlg, 2001+2*3, buf, MSG_SIZ-3 ); // this gives the previous selection !!!
+//    strncat(buf, "\r\n", MSG_SIZ);
+    int i = ComboBox_GetCurSel(GetDlgItem(hDlg, 2001+2*3));
+    snprintf(buf, MSG_SIZ, "%s\r\n", engineMnemonic[i+1]);
+    SendMessage( GetDlgItem(hDlg, 2001+2*5), EM_SETSEL, 0, 0 );
+    SendMessage( GetDlgItem(hDlg, 2001+2*5), EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) buf );
+}
+
+void TourneyPopup(HWND hwnd)
+{
+    int n=0;
+
+    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+    comboCallback = &AddToTourney;
+    autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
+    twice = TRUE;
+    while(engineList[n]) n++; tourneyOptions[1].max = n-1;
+    snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
+
+    GenericPopup(hwnd, tourneyOptions);
 }
