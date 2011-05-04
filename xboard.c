@@ -3986,7 +3986,7 @@ void PieceMenuPopup(w, event, params, num_params)
      String *params;
      Cardinal *num_params;
 {
-    String whichMenu; int menuNr;
+    String whichMenu; int menuNr = -2;
     shiftKey = strcmp(params[0], "menuW"); // used to indicate black
     if (event->type == ButtonRelease)
         menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);

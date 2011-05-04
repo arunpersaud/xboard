@@ -119,7 +119,7 @@ typedef struct {
 typedef int (*FileProc) P((FILE *f, int n, char *title));
 
 int PopDown P((int n));
-int InpuBoxPopUp P((void));
+void InputBoxPopup P((void));
 void CatchDeleteWindow(Widget w, String procname);
 void PlaySound P((char *name));
 void ParseIcsTextColors P((void));

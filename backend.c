@@ -325,7 +325,7 @@ safeStrCpy( char *dst, const char *src, size_t count )
     {
       dst[ count-1 ] = '\0'; // make sure incomplete copy still null-terminated
       if(appData.debugMode)
-      fprintf(debugFP, "safeStrCpy: copying %s into %s didn't work, not enough space %d\n",src,dst,count);
+      fprintf(debugFP, "safeStrCpy: copying %s into %s didn't work, not enough space %d\n",src,dst, (int)count);
     }
 
   return dst;

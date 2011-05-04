@@ -196,7 +196,7 @@ void GenPseudoLegal(board, flags, callback, closure)
           if(gameInfo.variant == VariantShogi)
                  piece = (ChessSquare) ( SHOGI piece );
 
-          switch (piece) {
+          switch ((int)piece) {
             /* case EmptySquare: [HGM] this is nonsense, and conflicts with Shogi cases */
 	    default:
 	      /* can't happen ([HGM] except for faries...) */
@@ -1703,11 +1703,11 @@ typedef struct {
 int preyStackPointer, chaseStackPointer;
 
 struct {
-char rf, ff, rt, ft;
+unsigned char rf, ff, rt, ft;
 } chaseStack[100];
 
 struct {
-char rank, file;
+unsigned char rank, file;
 } preyStack[100];
 
 
