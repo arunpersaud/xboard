@@ -102,6 +102,7 @@ typedef struct {
 IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
 
 int junk;
+Boolean singleList;
 
 void EnsureOnScreen(int *x, int *y, int minX, int minY);
 char StringGet(void *getClosure);
@@ -479,10 +480,11 @@ ArgDescriptor argDescriptors[] = {
   { "-cp", ArgFalse, (void *) &chessProgram, FALSE, INVALID },
   { "icsMenu", ArgString, (void *) &icsTextMenuString, TRUE, (ArgIniType) ICS_TEXT_MENU_DEFAULT },
   { "icsNames", ArgString, (void *) &icsNames, TRUE, (ArgIniType) ICS_NAMES },
+  { "singleEngineList", ArgBoolean, (void *) &singleList, !XBOARD, (ArgIniType) FALSE },
   { "firstChessProgramNames", ArgString, (void *) &firstChessProgramNames,
     TRUE, (ArgIniType) FCP_NAMES },
   { "secondChessProgramNames", ArgString, (void *) &secondChessProgramNames,
-    TRUE, (ArgIniType) SCP_NAMES },
+    !XBOARD, (ArgIniType) SCP_NAMES },
   { "initialMode", ArgString, (void *) &appData.initialMode, FALSE, (ArgIniType) "" },
   { "mode", ArgString, (void *) &appData.initialMode, FALSE, INVALID },
   { "variant", ArgString, (void *) &appData.variant, FALSE, (ArgIniType) "normal" },

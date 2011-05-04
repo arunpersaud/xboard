@@ -6071,8 +6071,8 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	          appData.firstChessProgram, "fd", appData.firstDirectory,
 		  firstChessProgramNames);
     InitEngineBox(hDlg, GetDlgItem(hDlg, OPT_SecondChessEngineName),
-	          appData.secondChessProgram, "sd", appData.secondDirectory,
-		  secondChessProgramNames);
+	          appData.secondChessProgram, singleList ? "fd" : "sd", appData.secondDirectory,
+		  singleList ? firstChessProgramNames : secondChessProgramNames); //[HGM] single: use first list in second combo
     hwndCombo = GetDlgItem(hDlg, OPT_ChessServerName);
     InitComboStringsFromOption(hwndCombo, icsNames);    
       snprintf(buf, MSG_SIZ, "%s /icsport=%s", appData.icsHost, appData.icsPort);
@@ -6109,10 +6109,12 @@ StartupDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	GetDlgItemText(hDlg, OPT_ChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
         p = buf;
 	ParseArgs(StringGet, &p);
-	safeStrCpy(buf, "/scp=", sizeof(buf)/sizeof(buf[0]) );
+	safeStrCpy(buf, singleList ? "/fcp=" : "/scp=", sizeof(buf)/sizeof(buf[0]) );
 	GetDlgItemText(hDlg, OPT_SecondChessEngineName, buf + strlen(buf), sizeof(buf) - strlen(buf));
         p = buf;
+	SwapEngines(singleList); // temporarily swap first and second, to load a second 'first', ...
 	ParseArgs(StringGet, &p);
+	SwapEngines(singleList); // ... and then make it 'second'
 	appData.noChessProgram = FALSE;
 	appData.icsActive = FALSE;
       } else if (IsDlgButtonChecked(hDlg, OPT_ChessServer)) {
