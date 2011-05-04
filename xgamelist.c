@@ -408,12 +408,16 @@ GameListCallback(w, client_data, call_data)
         if(GameListPrepare()) GameListReplace(); // crashes on empty list...
         return;
     }
+#if 0
     index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
     } else {
 	LoadGame(glc->fp, index + 1, glc->filename, True);
     }
+#else
+    printf("This code should have been unreachable. Please report bug!\n");
+#endif
 }
 
 void

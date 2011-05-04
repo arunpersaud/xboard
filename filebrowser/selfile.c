@@ -785,8 +785,8 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 	XtSetArg(arglist[i], XtNstring, filter);			i++;
 	XtSetValues(filterField, arglist, i);
 
-	safeStrCpy(SFfilterBuffer, filter, MAXPATHLEN);
-	safeStrCpy(SFlastPath, SFtextBuffer, MAXPATHLEN); // remember for cancel
+	strncpy(SFfilterBuffer, filter, MAXPATHLEN-1);
+	strncpy(SFlastPath, SFtextBuffer, MAXPATHLEN-1); // remember for cancel
 
 	SFpositionWidget(selFile);
 	XtMapWidget(selFile);
