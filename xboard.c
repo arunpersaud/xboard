@@ -2925,7 +2925,7 @@ Enables machineThinkingEnables[] = {
   { "menuMode.Machine White", False },
   { "menuMode.Machine Black", False },
   { "menuMode.Two Machines", False },
-  { "menuMode.Machine Match", False },
+//  { "menuMode.Machine Match", False },
   { "menuEngine.Retract Move", False },
   { NULL, False }
 };
@@ -2944,7 +2944,7 @@ Enables userThinkingEnables[] = {
   { "menuMode.Machine White", True },
   { "menuMode.Machine Black", True },
   { "menuMode.Two Machines", True },
-  { "menuMode.Machine Match", True },
+//  { "menuMode.Machine Match", True },
   { "menuEngine.Retract Move", True },
   { NULL, False }
 };
@@ -5308,6 +5308,8 @@ void ModeHighlight()
 	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
     }
     oldmode = gameMode;
+    XtSetArg(args[0], XtNleftBitmap, matchMode && matchGame < appData.matchGames ? xMarkPixmap : None);
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Machine Match"), args, 1);
 
     /* Maybe all the enables should be handled here, not just this one */
     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Training"),
@@ -5833,8 +5835,6 @@ void MatchProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    if(gameMode != BeginningOfGame) { DisplayError(_("You can only start a match from the initial position."), 0); return; }
-    appData.matchGames = appData.defaultMatchGames;
     MatchEvent(2);
 }
 

@@ -1365,6 +1365,16 @@ void
 MatchEvent(int mode)
 {	// [HGM] moved out of InitBackend3, to make it callable when match starts through menu
 	int dummy;
+	if(matchMode) { // already in match mode: switch it off
+	    appData.matchGames = matchGame; // kludge to let match terminate after next game.
+	    ModeHighlight(); // kludgey way to remove checkmark...
+	    return;
+	}
+	if(gameMode != BeginningOfGame) {
+	    DisplayError(_("You can only start a match from the initial position."), 0);
+	    return;
+	}
+	appData.matchGames = appData.defaultMatchGames;
 	/* Set up machine vs. machine match */
 	nextGame = 0;
 	NextTourneyGame(0, &dummy); // sets appData.matchGames if this is tourney, to make sure ReserveGame knows it

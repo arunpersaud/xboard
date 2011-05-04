@@ -4842,10 +4842,6 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_Match: // [HGM] match: flows into next case, after setting Match Mode and nr of Games
-      if(gameMode != BeginningOfGame) { // allow menu item to remain enabled for better mode highligting
-        DisplayError(_("You can only start a match from the initial position."), 0); break;
-      }
-      appData.matchGames = appData.defaultMatchGames;
       MatchEvent(2); // distinguish from command-line-triggered case (matchMode=1)
       break;
 
@@ -7858,7 +7854,7 @@ Enables machineThinkingEnables[] = {
   { IDM_MachineWhite, MF_BYCOMMAND|MF_GRAYED },
   { IDM_MachineBlack, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TwoMachines, MF_BYCOMMAND|MF_GRAYED },
-  { IDM_Match, MF_BYCOMMAND|MF_GRAYED },
+//  { IDM_Match, MF_BYCOMMAND|MF_GRAYED },
   { IDM_TypeInMove, MF_BYCOMMAND|MF_GRAYED },
   { IDM_RetractMove, MF_BYCOMMAND|MF_GRAYED },
   { -1, -1 }
@@ -7878,7 +7874,7 @@ Enables userThinkingEnables[] = {
   { IDM_MachineWhite, MF_BYCOMMAND|MF_ENABLED },
   { IDM_MachineBlack, MF_BYCOMMAND|MF_ENABLED },
   { IDM_TwoMachines, MF_BYCOMMAND|MF_ENABLED },
-  { IDM_Match, MF_BYCOMMAND|MF_ENABLED },
+//  { IDM_Match, MF_BYCOMMAND|MF_ENABLED },
   { IDM_TypeInMove, MF_BYCOMMAND|MF_ENABLED },
   { IDM_RetractMove, MF_BYCOMMAND|MF_ENABLED },
   { -1, -1 }
@@ -7890,6 +7886,12 @@ Enables userThinkingEnables[] = {
  *  Functions appear in same order as prototypes in frontend.h.
  * 
 \*---------------------------------------------------------------------------*/
+VOID
+CheckMark(UINT item, int state)
+{
+    if(item) CheckMenuItem(GetMenu(hwndMain), item, MF_BYCOMMAND|state);
+}
+
 VOID
 ModeHighlight()
 {
@@ -7920,7 +7922,7 @@ ModeHighlight()
     nowChecked = IDM_MachineWhite;
     break;
   case TwoMachinesPlay:
-    nowChecked = matchMode ? IDM_Match : IDM_TwoMachines; // [HGM] match
+    nowChecked = IDM_TwoMachines;
     break;
   case AnalyzeMode:
     nowChecked = IDM_AnalysisMode;
@@ -7951,12 +7953,9 @@ ModeHighlight()
     nowChecked = 0;
     break;
   }
-  if (prevChecked != 0)
-    (void) CheckMenuItem(GetMenu(hwndMain),
-			 prevChecked, MF_BYCOMMAND|MF_UNCHECKED);
-  if (nowChecked != 0)
-    (void) CheckMenuItem(GetMenu(hwndMain),
-			 nowChecked, MF_BYCOMMAND|MF_CHECKED);
+  CheckMark(prevChecked, MF_UNCHECKED);
+  CheckMark(nowChecked, MF_CHECKED);
+  CheckMark(IDM_Match, matchMode && matchGame < appData.matchGames ? MF_CHECKED : MF_UNCHECKED);
 
   if (nowChecked == IDM_LoadGame || nowChecked == IDM_Training) {
     (void) EnableMenuItem(GetMenu(hwndMain), IDM_Training, 
@@ -7971,11 +7970,9 @@ ModeHighlight()
   /* [DM] icsEngineAnalyze - Do a sceure check too */
   if (appData.icsActive) {
        if (appData.icsEngineAnalyze) {
-               (void) CheckMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
-                       MF_BYCOMMAND|MF_CHECKED);
+               CheckMark(IDM_AnalysisMode, MF_CHECKED);
        } else {
-               (void) CheckMenuItem(GetMenu(hwndMain), IDM_AnalysisMode,
-                       MF_BYCOMMAND|MF_UNCHECKED);
+               CheckMark(IDM_AnalysisMode, MF_UNCHECKED);
        }
   }
   DisplayLogos(); // [HGM] logos: mode change could have altered logos
