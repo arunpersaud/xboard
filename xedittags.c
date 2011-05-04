@@ -91,11 +91,6 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
-extern Display *xDisplay;
-extern int squareSize;
-extern Pixmap xMarkPixmap;
-
 Position tagsX = -1, tagsY = -1;
 
 void TagsPopUp(tags, msg)

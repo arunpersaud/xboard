@@ -117,9 +117,38 @@ typedef struct {
 #define COLOR_BKGD              "white"
 
 typedef int (*FileProc) P((FILE *f, int n, char *title));
+
+int PopDown P((int n));
+int InpuBoxPopUp P((void));
 void CatchDeleteWindow(Widget w, String procname);
+void PlaySound P((char *name));
+void ParseIcsTextColors P((void));
+void InitDrawingSizes P((int i, int j));
+void SendToICS P((char *buf));
+void SendToProgram P((char *message, ChessProgramState *cps));
+FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
+		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
+
 extern Widget shells[];
 extern Boolean shellUp[];
+extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell, historyShell;
+extern Display *xDisplay;
+extern Window xBoardWindow;
+extern int squareSize;
+extern Pixmap xMarkPixmap, wIconPixmap, bIconPixmap;
+extern char *layoutName;
+extern Arg layoutArgs[2], formArgs[2], messageArgs[4];
+extern Pixel timerForegroundPixel, timerBackgroundPixel;
+extern int searchTime;
+extern Atom wm_delete_window;
+extern int squareSize, lineGap, defaultLineGap, useImages, useImageSqs;
+extern int shuffleOpenings;
+extern int startedFromPositionFile;
+extern char *icsTextMenuString;
+extern char ICSInputTranslations[];
+extern char *selected_fen_position;
+extern GC coordGC;
+
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */
 

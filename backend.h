@@ -278,6 +278,7 @@ typedef struct _ListGame {
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;
  
+extern int opponentKibitzes;
 extern ChessSquare gatingPiece;
 extern List gameList;
 extern int lastLoadGameNumber;

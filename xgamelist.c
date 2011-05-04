@@ -93,12 +93,6 @@ extern char *getenv();
 
 void SetFocus P((Widget w, XtPointer data, XEvent *event, Boolean *b));
 
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell;
-extern Display *xDisplay;
-extern int squareSize;
-extern Pixmap xMarkPixmap;
-extern char *layoutName;
-
 static Widget filterText;
 static char filterString[MSG_SIZ];
 static int listLength;
@@ -125,11 +119,6 @@ typedef struct {
     char **strings;
 } GameListClosure;
 static GameListClosure *glc = NULL;
-
-static Arg layoutArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNdefaultDistance, 0 }
-};
 
 Widget
 GameListCreate(name, callback, client_data)

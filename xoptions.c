@@ -80,22 +80,6 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-extern void SendToProgram P((char *message, ChessProgramState *cps));
-FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
-		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
-
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
-extern Display *xDisplay;
-extern int squareSize;
-extern Pixmap xMarkPixmap;
-extern char *layoutName;
-extern Window xBoardWindow;
-extern Arg layoutArgs[2], formArgs[2];
-Pixel timerForegroundPixel, timerBackgroundPixel;
-extern int searchTime;
-extern Atom wm_delete_window;
-extern int lineGap;
-
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
 static Widget previous = NULL;
@@ -119,8 +103,6 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
 }
 
 //--------------------------- New Shuffle Game --------------------------------------------
-extern int shuffleOpenings;
-extern int startedFromPositionFile;
 int shuffleUp;
 Widget shuffleShell;
 
@@ -332,7 +314,7 @@ void TimeControlCallback(w, client_data, call_data)
         return;
     }
     if (strcmp(name, _(" OK ")) == 0) {
-	int inc, mps, ok;
+	int inc, mps, ok=0;
 	XtSetArg(args[0], XtNstring, &txt);
 	XtGetValues(tcData, args, 1);
 	switch(tcInc) {
@@ -623,7 +605,6 @@ void TimeControlProc(w, event, prms, nprms)
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
 static Option *currentOption;
-extern Widget shells[];
 static Boolean browserUp;
 
 void CheckCallback(Widget ww, XtPointer data, XEvent *event, Boolean *b)
@@ -787,7 +768,6 @@ void GenericPopDown(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    int n;
     if(browserUp) return; // prevent closing dialog when it has an open file-browse daughter
     PopDown(prms[0][0] - '0');
 }
@@ -1093,7 +1073,7 @@ void SetColor(char *colorName, Widget box)
 	    } else {
 		buttonColor = *(Pixel *) vTo.addr;
 	    }
-	}
+	} else buttonColor = (Pixel) 0;
 	XtSetArg(args[0], XtNbackground, buttonColor);;
 	XtSetValues(box, args, 1);
 }
@@ -1150,7 +1130,6 @@ void AdjustColor(int i)
 
 void BoardOptionsOK(int n)
 {
-    extern int defaultLineGap, useImages, useImageSqs;
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
     useImages = useImageSqs = 0;
     MakeColors(); CreateGCs(True);
@@ -1210,7 +1189,7 @@ Option boardOptions[] = {
 void GenericReadout(int selected)
 {
     int i, j;
-    String name, val;
+    String val;
     Arg args[16];
     char buf[MSG_SIZ], **dest;
     float x;
@@ -1293,10 +1272,9 @@ void GenericCallback(w, client_data, call_data)
      Widget w;
      XtPointer client_data, call_data;
 {
-    String name, val;
+    String name;
     Arg args[16];
     char buf[MSG_SIZ];
-    int i, j;
     int data = (intptr_t) client_data;
 
     currentOption = dialogOptions[data>>16]; data &= 0xFFFF;
@@ -1326,7 +1304,7 @@ int
 GenericPopUp(Option *option, char *title, int dlgNr)
 {
     Arg args[16];
-    Widget popup, layout, dialog, edit=NULL, form,  last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
+    Widget popup, layout, dialog=NULL, edit=NULL, form,  last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
     Window root, child;
     int x, y, i, j, height=999, width=1, h, c, w;
     int win_x, win_y, maxWidth, maxTextWidth;
@@ -1741,10 +1719,9 @@ void MatchOptionsProc(w, event, prms, nprms)
 }
 
 Option textOptions[100];
-extern char *icsTextMenuString;
 void PutText P((char *text, int pos));
 
-SendString(char *p)
+void SendString(char *p)
 {
     char buf[MSG_SIZ], *q;
     if(q = strstr(p, "$input")) {
@@ -1907,7 +1884,6 @@ void NewTagsPopup(char *text, char *msg)
     GenericPopUp(tagsOptions, _("Tags"), 2);
 }
 
-extern char ICSInputTranslations[];
 char *icsText;
 
 Option boxOptions[] = {
@@ -1917,7 +1893,6 @@ Option boxOptions[] = {
 
 void PutText(char *text, int pos)
 {
-    Widget edit;
     Arg args[16];
     char buf[MSG_SIZ], *p;
 

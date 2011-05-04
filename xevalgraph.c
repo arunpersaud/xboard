@@ -90,22 +90,8 @@ extern char *getenv();
 
 #define _LL_ 100
 
-// imports from xboard.c
-extern Widget formWidget, shellWidget, boardWidget, menuBarWidget;
-extern Display *xDisplay;
-extern Window xBoardWindow;
-extern int squareSize;
-extern Pixmap xMarkPixmap, wIconPixmap, bIconPixmap;
-extern char *layoutName;
-
 Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 Widget outputField[2][7]; // [HGM] front-end array to translate output field to window handle
-
-/* Imports from backend.c */
-
-/* Imports from xboard.c */
-extern Arg layoutArgs[2], formArgs[2], messageArgs[4];
-extern GC coordGC;
 
 //extern WindowPlacement wpEvalGraph;
 
