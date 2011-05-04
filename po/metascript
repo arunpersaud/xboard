@@ -1,0 +1,125 @@
+1,$g/Translation by /s/.$//
+1,$g/Translation by /s/^/ === /
+1,$v/ === /d
+1,$g/"[^"]*$/s//"/
+1,$g/Translation by /s/^.*Translation by \([^(]*\)/1,$g\/FULL NAME <EMAIL@ADDRESS>\/s\/\/\1\//
+1,$g/&/s///g
+1,$g/\\t/s//  */
+1,$g/\\t/s//   /
+1,$g/\\/s//\\\\/g
+1,$g/\//s//\\\//g
+1,$g/Ctrl-/s//Ctrl+/g
+1,$g/\.\.\./s// *\\.*/
+1,$g/"      "/s/^.*=== "\(.*\)"$/1,$g\/# FIRST AUTHOR\/s\/FIRST AUTHOR.*$\/\1, 2010\//
+1,$g/    *\(Ctrl+[^"]*\)" === "/s/^"\(.*\)" === "\(.*\)"$/"\1" === "\2"\
+"\1" ====== "\2"/
+1,$g/======/s/   [^"]*//g
+1,$g/======/s//===/
+1,$g/    *\(Ctrl+[^"]*\)" === "/s// *\1" === "/
+1,$g/ [^ ]* Clipboard/s///
+1,$g/  \*Alt+Shift+L/s///
+1,$g/  \*Alt+Shift+S/s///
+/"Cancel"/t.
+s//"cancel"/
+/"OK"/t.
+s//"ok"/
+/with Arrow/t.
+s//With Arrow/
+1,$g/One-Click Move/s//One-Click Moving/
+/Show Coordinates/t.
+s//Show Coords/
+/Test Legality/t.
+s/Test[^"]*"/Test Legality"/
+1,$g/WinBoard/s//XBoard/g
+1,$g/Empty Square/s//Empty square/
+1,$g/Clear Board */s//Clear board/
+1,$g/Filter/s//&:/
+1,$g/"Down"/s//"down"/
+1,$g/"Up"/s//"up"/
+1,$g/Factory/s//factory/
+1,$g/No game list/s//There is no game list/
+1,$g/when Playing against/s//from/
+1,$g/Exit Messages/s//Exit Message/
+1,$g/Auto Raise/s//Auto-Raise/
+1,$g/Auto Obs/s//Auto-Obs/
+1,$g/Auto Com/s//Auto-Com/
+1,$g/Auto Disp/s//Auto-Disp/
+1,$g/Auto Raise/s//Auto-Raise/
+1,$g/auto-Refresh/s//Auto-Refresh Seek Graph/
+1,$g/Random/s//random/
+1,$g/Start Position Number/s//Start-position number/
+1,$g/"seconds per move"/s//"sec\\\/move"/
+1,$g/TimeControl Menu/s//Time Control/
+1,$g/Time-Odds Factors:/s//Engine #1 and #2 Time-Odds Factors/
+1,$g/Default Match Games:/s//Default Number of Games in Match:/
+/"Highlight Dragging"/t.
+s//"Highlight Dragging (Show Move Targets)"/
+/Popup Exit Message/t.
+s//&s/
+1,$g/for Analysis Mode/s/for/in/
+1,$g/Max nr of CPUs:/s//Maximum Number of CPUs per Engine:/
+1,$g/Hash Size (MB)/s//Hash-Table Size (MB)/
+1,$g/EGTB Path:/s//Nalimov EGTB Path:/
+1,$g/EGTB Size (MB):/s//EGTB Cache Size (MB):/
+1,$g/Book Depth:/s//Book Depth (moves):/
+1,$g/Book Variation:/s//Book Variety (0) vs. Strength (100):/
+1,$g/First has Own Book/s//Engine #1 Has Own Book/
+1,$g/Second has Own Book/s//Engine #2 Has Own Book/
+1,$g/Detect Mates/s//Detect all Mates/
+1,$g/Verify Engine Claims/s//Verify Engine Result Claims/
+1,$g/Draw if Insufficient Material/s//Draw if Insufficient Mating Material/
+1,$g/Adjudicate Trivial Draws/s//Adjudicate Trivial Draws (3-Move Delay)/
+1,$g/Adjudicate draw after:/s//Draw after N Moves Total:/
+1,$g/Win\\\/loss adjudication threshold:/s//Win \\\/ Loss Threshold:/
+1,$g/Engine #1 Score is Absolute/s//Negate Score of Engine #1/
+1,$g/Engine #2 Score is Absolute/s//Negate Score of Engine #2/
+1,$g/Save out of book info in PGN/s//Save Out-of-Book Info in PGN/
+1,$g/Default beep/s//Default Beep/
+1,$g/No sound/s//No Sound/
+1,$g/Light Pieces/s//White Piece Color:/
+1,$g/Black Pieces/s//Black Piece Color:/
+1,$g/Light Squares/s//Light Square Color:/
+1,$g/Dark Squares/s//Dark Square Color:/
+1,$g/Square Highlights/s//Highlight Color:/
+1,$g/Premove Highlights/s//Premove Highlight Color:/
+1,$g/Monochrome/s//Mono Mode/
+1,$g/"Sounds"/s//"Sound Options"/
+1,$g/"Variants"/s//"New Variant"/
+1,$g/"Quit"/s//"Quit                 Ctr+Q"/
+1,$g/"Evaluation Graph"/s//"Evaluation graph"/
+1,$g/"Auto Kibitz"/s//"Auto-Kibitz"/
+1,$g/"Bckgnd Observe"/s//"Background Observe while Playing"/
+1,$g/"Dual Board"/s//"Dual Board for Background-Observed Game"/
+1,$g/"White first move"/s//"First White Move:"/
+1,$g/"Black first move"/s//"First Black Move:"/
+/^"White"/t.
+s/White/& /
+s/"$/ "/
+/^"Black"/t.
+s/Black/& /
+s/"$/ "/
+1,$g/ === /s/$/\//
+1,$g/ === /s/^/1,$g\//
+1,$g/ === /s//\/s\/=== ""$\/=== /
+1i
+1,$g/^msgstr/-,.j
+1,$g/^msgid/s/msgstr ""$/ === ""/
+.
+$a
+1,$g/msgstr ""/s//\
+&/
+1,$g/ === /s//\
+msgstr /
+1,3c
+# XBoard -- a graphical chessboard for X
+# Copyright (C) 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
+# Enhancements Copyright (C) 1992-98 Free Software Foundation, Inc.
+# This file is distributed under the same license as the XBoard package.
+@@@@@@
+w
+q
+.
+1,$g/@@@@@@/s//./
+w script
+q
+
