@@ -955,6 +955,24 @@ EnsureOnScreen(int *x, int *y, int minX, int minY)
   if (*y < minY) *y = minY;
 }
 
+VOID
+LoadLogo(ChessProgramState *cps, int n)
+{
+  if( appData.logo[n] && appData.logo[n][0] != NULLCHAR) {
+      cps->programLogo = LoadImage( 0, appData.logo[n], IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+
+      if (cps->programLogo == NULL && appData.debugMode) {
+          fprintf( debugFP, "Unable to load logo bitmap '%s'\n", appData.logo[n] );
+      }
+  } else if(appData.autoLogo) {
+      if(appData.firstDirectory && appData.directory[n][0]) {
+	char buf[MSG_SIZ];
+	  snprintf(buf, MSG_SIZ, "%s/logo.bmp", appData.directory[n]);
+	cps->programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
+      }
+  }
+}
+
 BOOL
 InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 {
@@ -1010,19 +1028,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
 
   /* [HGM] logo: Load logos if specified (must be done before InitDrawingSizes) */
-  if( appData.firstLogo && appData.firstLogo[0] != NULLCHAR) {
-      first.programLogo = LoadImage( 0, appData.firstLogo, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
-
-      if (first.programLogo == NULL && appData.debugMode) {
-          fprintf( debugFP, "Unable to load logo bitmap '%s'\n", appData.firstLogo );
-      }
-  } else if(appData.autoLogo) {
-      if(appData.firstDirectory && appData.firstDirectory[0]) {
-	char buf[MSG_SIZ];
-	  snprintf(buf, MSG_SIZ, "%s/logo.bmp", appData.firstDirectory);
-	first.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
-      }
-  }
+  LoadLogo(&first, 0);
 
   if( appData.secondLogo && appData.secondLogo[0] != NULLCHAR) {
       second.programLogo = LoadImage( 0, appData.secondLogo, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
@@ -8877,6 +8883,9 @@ StartChildProcess(char *cmdLine, char *dir, ProcRef *pr)
    * dir relative to the directory WinBoard loaded from. */
   GetCurrentDirectory(MSG_SIZ, buf);
   SetCurrentDirectory(installDir);
+  // kludgey way to update logos in tourney, as long as back-end can't do it
+  if(!strcmp(cmdLine, first.program)) LoadLogo(&first, 0); else
+  if(!strcmp(cmdLine, second.program)) LoadLogo(&second, 1);
   SetCurrentDirectory(dir);
 
   /* Now create the child process. */
