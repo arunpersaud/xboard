@@ -4943,7 +4943,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case IDM_EditProgs2:
-      EditTagsPopUp(secondChessProgramNames, &secondChessProgramNames);
+     LoadEnginePopUp(hwndMain);
       break;
 
     case IDM_EditServers:

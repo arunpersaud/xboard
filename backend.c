@@ -858,12 +858,13 @@ ReplaceEngine(ChessProgramState *cps, int n)
     LoadEngine();
 }
 
-extern char *engineName, *engineDir, *engineChoice, *engineLine, *nickName;
+extern char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
 extern Boolean isUCI, hasBook, storeVariant, v1, addToList;
 
-void Load(ChessProgramState *cps, int i)
+void
+Load(ChessProgramState *cps, int i)
 {
-    char *p, *q, buf[MSG_SIZ];
+    char *p, *q, buf[MSG_SIZ], command[MSG_SIZ];
     if(engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
@@ -875,15 +876,19 @@ void Load(ChessProgramState *cps, int i)
     }
     p = engineName;
     while(q = strchr(p, SLASH)) p = q+1;
-    if(*p== NULLCHAR) return;
-    appData.chessProgram[i] = strdup(p);
+    if(*p== NULLCHAR) { DisplayError(_("You did not give an engine executable"), 0); return; }
     if(engineDir[0] != NULLCHAR)
 	appData.directory[i] = engineDir;
     else if(p != engineName) { // derive directory from engine path, when not given
 	p[-1] = 0;
 	appData.directory[i] = strdup(engineName);
-	p[-1] = '/';
+	p[-1] = SLASH;
     } else appData.directory[i] = ".";
+    if(params[0]) {
+	snprintf(command, MSG_SIZ, "%s %s", p, params);
+	p = command;
+    }
+    appData.chessProgram[i] = strdup(p);
     appData.isUCI[i] = isUCI;
     appData.protocolVersion[i] = v1 ? 1 : PROTOVER;
     appData.hasOwnBookUCI[i] = hasBook;
@@ -897,7 +902,6 @@ void Load(ChessProgramState *cps, int i)
 			isUCI ? " -fUCI" : "",
 			storeVariant ? " -variant " : "",
 			storeVariant ? VariantName(gameInfo.variant) : "");
-fprintf(debugFP, "new line: %s", buf);
 	firstChessProgramNames = malloc(len = strlen(q) + strlen(buf) + 1);
 	snprintf(firstChessProgramNames, len, "%s%s", q, buf);
 	if(q) 	free(q);

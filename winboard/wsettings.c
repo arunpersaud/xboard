@@ -21,6 +21,7 @@
 #include "backendz.h"
 
 #define _(s) T_(s)
+#define N_(s) s
 
 int layoutList[2*MAX_OPTIONS];
 int checkList[2*MAX_OPTIONS];
@@ -30,14 +31,25 @@ int boxList[2*MAX_OPTIONS];
 int groupNameList[2*MAX_OPTIONS];
 int breaks[MAX_OPTIONS];
 int checks, combos, buttons, layout, groups;
+char title[MSG_SIZ];
+char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
+Boolean isUCI, hasBook, storeVariant, v1, addToList;
+extern Option installOptions[], matchOptions[];
+char *engineNr[] = { N_("First"), N_("Second"), NULL };
+char *engineList[1000] = {" "}, *engineMnemonic[1000] = {""};
+void (*okFunc)();
+ChessProgramState *activeCps;
+Option *activeList;
+void InstallOK P((void));
+typedef void ButtonCallback(HWND h);
 
 void
-PrintOpt(int i, int right, ChessProgramState *cps)
+PrintOpt(int i, int right, Option *optionList)
 {
     if(i<0) {
 	if(!right) fprintf(debugFP, "%30s", "");
     } else {
-	Option opt = cps->option[i];
+	Option opt = optionList[i];
 	switch(opt.type) {
 	    case Slider:
 	    case Spin:
@@ -47,6 +59,9 @@ PrintOpt(int i, int right, ChessProgramState *cps)
 	    case FileName:
 	    case PathName:
 		fprintf(debugFP, "%20.20s [______________________________________]", opt.name);
+		break;
+	    case Label:
+		fprintf(debugFP, "%41.41s", opt.name);
 		break;
 	    case CheckBox:
 		fprintf(debugFP, "[x] %-26.25s", opt.name);
@@ -67,13 +82,13 @@ PrintOpt(int i, int right, ChessProgramState *cps)
 }
 
 void
-CreateOptionDialogTest(int *list, int nr, ChessProgramState *cps)
+CreateOptionDialogTest(int *list, int nr, Option *optionList)
 {
     int line;
 
     for(line = 0; line < nr; line+=2) {
-	PrintOpt(list[line+1], 0, cps);
-	PrintOpt(list[line], 1, cps);
+	PrintOpt(list[line+1], 0, optionList);
+	PrintOpt(list[line], 1, optionList);
     }
 }
 
@@ -99,6 +114,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 		case FileName:
 		case PathName:
 		case Slider:
+		case Label:
 		case Spin: stop++;
 		default:
 		case Message: ; // cannot happen
@@ -109,7 +125,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	if(!stop)
 	    nextType = Button; // kudge to flush remaining checks and combos undistorted
 	// Take a new line if a spin follows combos or checks, or when we encounter a textbox
-	if((combos+checks || nextType == TextBox || nextType == FileName || nextType == PathName) && layout&1) {
+	if((combos+checks || nextType == TextBox || nextType == FileName || nextType == PathName || nextType == Label) && layout&1) {
 	    layoutList[layout++] = -1;
 	}
 	// The last check or combo before a spin will be put on the same line as that spin (prefix)
@@ -139,7 +155,7 @@ LayoutOptions(int firstOption, int endOption, char *groupName, Option *optionLis
 	    layoutList[layout++] = -1;
 	    layoutList[layout++] = comboList[2*right];
 	}
-	if(nextType == TextBox || nextType == FileName || nextType == PathName) {
+	if(nextType == TextBox || nextType == FileName || nextType == PathName || nextType == Label) {
 	    // A textBox is double width, so must be left-adjusted, and the right column remains empty
 	    breaks[layout/2] = lastType == Button ? 0 : 100;
 	    layoutList[layout++] = -1;
@@ -173,44 +189,46 @@ EndMatch(char *s1, char *s2)
 }
 
 void
-DesignOptionDialog(ChessProgramState *cps)
+DesignOptionDialog(int nrOpt, Option *optionList)
 {
     int k=0, n=0;
     char buf[MSG_SIZ];
 
     layout = 0;
     buttons = groups = 0;
-    while(k < cps->nrOptions) { // k steps through 'solitary' options
+    while(k < nrOpt) { // k steps through 'solitary' options
 	// look if we hit a group of options having names that start with the same word
 	int groupSize = 1, groupNameLength = 50;
-	sscanf(cps->option[k].name, "%s", buf); // get first word of option name
-	while(k + groupSize < cps->nrOptions &&
-	      strstr(cps->option[k+groupSize].name, buf) == cps->option[k+groupSize].name) {
+	sscanf(optionList[k].name, "%s", buf); // get first word of option name
+	while(k + groupSize < nrOpt &&
+	      strstr(optionList[k+groupSize].name, buf) == optionList[k+groupSize].name) {
 		int j;
 		for(j=0; j<groupNameLength; j++) // determine common initial part of option names
-		    if( cps->option[k].name[j] != cps->option[k+groupSize].name[j]) break;
+		    if( optionList[k].name[j] != optionList[k+groupSize].name[j]) break;
 		groupNameLength = j;
 		groupSize++;
 
 	}
 	if(groupSize > 3) {
 		// We found a group to terminates the current section
-		LayoutOptions(n, k, "", cps->option); // flush all solitary options appearing before the group
+		LayoutOptions(n, k, "", optionList); // flush all solitary options appearing before the group
 		groupNameList[groups] = groupNameLength;
 		boxList[groups++] = layout; // group start in even entries
-		LayoutOptions(k, k+groupSize, buf, cps->option); // flush the group
+		LayoutOptions(k, k+groupSize, buf, optionList); // flush the group
 		boxList[groups++] = layout; // group end in odd entries
 		k = n = k + groupSize;
 	} else k += groupSize; // small groups are grouped with the solitary options
     }
-    if(n != k) LayoutOptions(n, k, "", cps->option); // flush remaining solitary options
+    if(n != k) LayoutOptions(n, k, "", optionList); // flush remaining solitary options
     // decide if and where we break into two column pairs
 
     // Emit buttons and add OK and cancel
 //    for(k=0; k<buttons; k++) layoutList[layout++] = buttonList[k];
-    // Create the dialog window
-    if(appData.debugMode) CreateOptionDialogTest(layoutList, layout, cps);
-//    CreateOptionDialog(layoutList, layout, cps);
+ 
+   // Create the dialog window
+    if(appData.debugMode) CreateOptionDialogTest(layoutList, layout, optionList);
+//    CreateOptionDialog(layoutList, layout, optionList);
+    if(!activeCps) okFunc = optionList[nrOpt].target;
 }
 
 #include <windows.h>
@@ -238,44 +256,42 @@ struct {
     0x0000, 0x0000, L"Engine #1 Settings ", 8, L"MS Sans Serif"
 };
 
-ChessProgramState *activeCps;
-
 void
-SetOptionValues(HWND hDlg, ChessProgramState *cps)
+SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 // Put all current option values in controls, and write option names next to them
 {
     HANDLE hwndCombo;
     int i, k;
-    char **choices, title[MSG_SIZ], *name;
+    char **choices, *name;
 
     for(i=0; i<layout+buttons; i++) {
 	int j=layoutList[i];
 	if(j == -2) SetDlgItemText( hDlg, 2000+2*i, ". . ." );
 	if(j<0) continue;
-	name = cps->option[j].name;
+	name = optionList[j].name;
 	if(strstr(name, "Polyglot ") == name) name += 9;
 	SetDlgItemText( hDlg, 2000+2*i, name );
-//if(appData.debugMode) fprintf(debugFP, "# %s = %d\n",cps->option[j].name, cps->option[j].value );
-	switch(cps->option[j].type) {
+//if(appData.debugMode) fprintf(debugFP, "# %s = %d\n",optionList[j].name, optionList[j].value );
+	switch(optionList[j].type) {
 	    case Spin:
-		SetDlgItemInt( hDlg, 2001+2*i, cps->option[j].value, TRUE );
+		SetDlgItemInt( hDlg, 2001+2*i, cps ? optionList[j].value : *(int*)optionList[j].target, TRUE );
 		break;
 	    case TextBox:
 	    case FileName:
 	    case PathName:
-		SetDlgItemText( hDlg, 2001+2*i, cps->option[j].textValue );
+		SetDlgItemText( hDlg, 2001+2*i, cps ? optionList[j].textValue : *(char**)optionList[j].target );
 		break;
 	    case CheckBox:
-		CheckDlgButton( hDlg, 2000+2*i, cps->option[j].value != 0);
+		CheckDlgButton( hDlg, 2000+2*i, (cps ? optionList[j].value : *(Boolean*)optionList[j].target) != 0);
 		break;
 	    case ComboBox:
-		choices = (char**) cps->option[j].textValue;
+		choices = (char**) optionList[j].textValue;
 		hwndCombo = GetDlgItem(hDlg, 2001+2*i);
 		SendMessage(hwndCombo, CB_RESETCONTENT, 0, 0);
-		for(k=0; k<cps->option[j].max; k++) {
+		for(k=0; k<optionList[j].max; k++) {
 		    SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM) choices[k]);
 		}
-		SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) -1, (LPARAM) choices[cps->option[j].value]);
+		SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM) -1, (LPARAM) choices[optionList[j].value]);
 		break;
 	    case Button:
 	    case SaveButton:
@@ -285,7 +301,6 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps)
     }
     SetDlgItemText( hDlg, IDOK, _("OK") );
     SetDlgItemText( hDlg, IDCANCEL, _("Cancel") );
-    snprintf(title, MSG_SIZ, _("%s Engine Settings (%s)"), T_(cps->which), cps->tidy);
     title[0] &= ~32; // capitalize
     SetWindowText( hDlg, title);
     for(i=0; i<groups; i+=2) {
@@ -293,7 +308,7 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps)
 	id = k = boxList[i];
 	if(layoutList[k] < 0) k++;
 	if(layoutList[k] < 0) continue;
-	for(p=0; p<groupNameList[i]; p++) buf[p] = cps->option[layoutList[k]].name[p];
+	for(p=0; p<groupNameList[i]; p++) buf[p] = optionList[layoutList[k]].name[p];
 	buf[p] = 0;
 	SetDlgItemText( hDlg, 2000+2*(id+MAX_OPTIONS), buf );
     }
@@ -301,7 +316,7 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps)
 
 
 void
-GetOptionValues(HWND hDlg, ChessProgramState *cps)
+GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 // read out all controls, and if value is altered, remember it and send it to the engine
 {
     HANDLE hwndCombo;
@@ -312,50 +327,63 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps)
     for(i=0; i<layout; i++) {
 	int j=layoutList[i];
 	if(j<0) continue;
-	switch(cps->option[j].type) {
+	switch(optionList[j].type) {
 	    case Spin:
 		new = GetDlgItemInt( hDlg, 2001+2*i, &success, TRUE );
 		if(!success) break;
-		if(new < cps->option[j].min) new = cps->option[j].min;
-		if(new > cps->option[j].max) new = cps->option[j].max;
-		changed = 2*(cps->option[j].value != new);
-		cps->option[j].value = new;
+		if(new < optionList[j].min) new = optionList[j].min;
+		if(new > optionList[j].max) new = optionList[j].max;
+		if(!cps) { *(int*)optionList[j].target = new; break; }
+		changed = 2*(optionList[j].value != new);
+		optionList[j].value = new;
 		break;
 	    case TextBox:
 	    case FileName:
 	    case PathName:
-		success = GetDlgItemText( hDlg, 2001+2*i, newText, MSG_SIZ - strlen(cps->option[j].name) - 9 );
+		success = GetDlgItemText( hDlg, 2001+2*i, newText, MSG_SIZ - strlen(optionList[j].name) - 9 );
 		if(!success) break;
-		changed = strcmp(cps->option[j].textValue, newText) != 0;
-		safeStrCpy(cps->option[j].textValue, newText, MSG_SIZ - (cps->option[j].textValue - cps->option[j].name) );
+		if(!cps) {
+		    if(*(char**)optionList[j].target) free(*(char**)optionList[j].target);
+		    *(char**)optionList[j].target = strdup(newText);
+		    break;
+		}
+		changed = strcmp(optionList[j].textValue, newText) != 0;
+		safeStrCpy(optionList[j].textValue, newText, MSG_SIZ - (optionList[j].textValue - optionList[j].name) );
 		break;
 	    case CheckBox:
 		new = IsDlgButtonChecked( hDlg, 2000+2*i );
-		changed = 2*(cps->option[j].value != new);
-		cps->option[j].value = new;
+		if(!cps) { *(Boolean*)optionList[j].target = new; break; }
+		changed = 2*(optionList[j].value != new);
+		optionList[j].value = new;
 		break;
 	    case ComboBox:
-		choices = (char**) cps->option[j].textValue;
+		choices = (char**) optionList[j].textValue;
 		hwndCombo = GetDlgItem(hDlg, 2001+2*i);
 		success = GetDlgItemText( hDlg, 2001+2*i, newText, MSG_SIZ );
 		if(!success) break;
 		new = -1;
-		for(k=0; k<cps->option[j].max; k++) {
+		for(k=0; k<optionList[j].max; k++) {
 		    if(!strcmp(choices[k], newText)) new = k;
 		}
-		changed = new >= 0 && (cps->option[j].value != new);
-		if(changed) cps->option[j].value = new;
+		if(!cps && new) {
+		    if(*(char**)optionList[j].target) free(*(char**)optionList[j].target);
+		    *(char**)optionList[j].target = strdup(optionList[j].choice[new]);
+		    break;
+		}
+		changed = new >= 0 && (optionList[j].value != new);
+		if(changed) optionList[j].value = new;
 		break;
 	    case Button:
 	    default:
 		break; // are treated instantly, so they have been sent already
 	}
 	if(changed == 2)
-	  snprintf(buf, MSG_SIZ, "option %s=%d\n", cps->option[j].name, new); else
+	  snprintf(buf, MSG_SIZ, "option %s=%d\n", optionList[j].name, new); else
 	if(changed == 1)
-	  snprintf(buf, MSG_SIZ, "option %s=%s\n", cps->option[j].name, newText);
+	  snprintf(buf, MSG_SIZ, "option %s=%s\n", optionList[j].name, newText);
 	if(changed) SendToProgram(buf, cps);
     }
+    if(!cps && okFunc) ((ButtonCallback*) okFunc)(0);
 }
 
 LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -368,7 +396,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
     case WM_INITDIALOG:
 
 //        CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
-	SetOptionValues(hDlg, activeCps);
+	SetOptionValues(hDlg, activeCps, activeList);
 
 //        SetFocus(GetDlgItem(hDlg, IDC_NFG_Edit));
 
@@ -377,12 +405,14 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
     case WM_COMMAND:
         switch( LOWORD(wParam) ) {
         case IDOK:
-	    GetOptionValues(hDlg, activeCps);
+	    GetOptionValues(hDlg, activeCps, activeList);
             EndDialog( hDlg, 0 );
+	    activeCps = NULL;
             return TRUE;
 
         case IDCANCEL:
             EndDialog( hDlg, 1 );
+	    activeCps = NULL;
             return TRUE;
 
 	default:
@@ -426,10 +456,10 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		    }
 		}
 		if(j < 0) break;
-		if( activeCps->option[j].type  == SaveButton)
-		     GetOptionValues(hDlg, activeCps);
-		else if( activeCps->option[j].type  != Button) break;
-		snprintf(buf, MSG_SIZ, "option %s\n", activeCps->option[j].name);
+		if( activeList[j].type  == SaveButton)
+		     GetOptionValues(hDlg, activeCps, activeList);
+		else if( activeList[j].type  != Button) break;
+		snprintf(buf, MSG_SIZ, "option %s\n", activeList[j].name);
 		SendToProgram(buf, activeCps);
 	    }
 	    break;
@@ -471,7 +501,11 @@ void AddOption(int x, int y, Control type, int i)
 	    break;
 	case TextBox:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
-	    AddControl(x+95, y, 190, 11, 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
+	    AddControl(x+95, y, 200, 11, 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
+	    break;
+	case Label:
+	    extra = activeList[layoutList[i/2]].value;
+	    AddControl(x+extra, y+1, 290-extra, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
 	    break;
 	case FileName:
 	case PathName:
@@ -485,7 +519,8 @@ void AddOption(int x, int y, Control type, int i)
 	    break;
 	case ComboBox:
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
-	    AddControl(x+95, y-1, 50, 500, 0x0085, CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i+1);
+	    AddControl(x+95, y-1, !activeCps && x<10 ? 120 : 50, 500, 0x0085,
+			CBS_AUTOHSCROLL | CBS_DROPDOWN | WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_VSCROLL, i+1);
 	    break;
 	case Button:
 	case ResetButton:
@@ -499,7 +534,7 @@ void AddOption(int x, int y, Control type, int i)
 }
 
 void
-CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
+CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 {
     int i, j, x=1, y=0, buttonRows, breakPoint = -1, k=0;
 
@@ -521,7 +556,7 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
 	}
 	j = layoutList[i];
 	if(j >= 0)
-	    AddOption(x+155-150*(i&1), y+13*(i>>1)+5, cps->option[j].type, 2*i);
+	    AddOption(x+155-150*(i&1), y+13*(i>>1)+5, optionList[j].type, 2*i);
 	if(k < groups && i+1 == boxList[k+1]) {
 	    k += 2; y += 4;
 	}
@@ -536,7 +571,7 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
 	AddControl(x+70*(i%4)+5, y+18*(i/4), 65, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 2*(nr+i));
 	layoutList[nr+i] = buttonList[i];
     }
-    template.title[8] = cps == &first ? '1' :  '2';
+    template.title[8] = optionList == first.option ? '1' :  '2';
     template.header.cy = y += 18*buttonRows+2;
     template.header.style &= ~WS_VSCROLL;
 }
@@ -546,9 +581,10 @@ EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
 {
     FARPROC lpProc = MakeProcInstance( (FARPROC) SettingsProc, hInst );
 
-    activeCps = cps;
-    DesignOptionDialog(cps);
-    CreateDialogTemplate(layoutList, layout, cps);
+    activeCps = cps; activeList = cps->option;
+    snprintf(title, MSG_SIZ, _("%s Engine Settings (%s)"), T_(cps->which), cps->tidy);
+    DesignOptionDialog(cps->nrOptions, cps->option);
+    CreateDialogTemplate(layoutList, layout, cps->option);
 
 
     DialogBoxIndirect( hInst, &template.header, hwnd, (DLGPROC)lpProc );
@@ -558,4 +594,59 @@ EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
     return;
 }
 
+void InstallOK()
+{
+    if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
+}
 
+Option installOptions[] = {
+  {   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
+  {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
+  {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
+  {   0,  0,    3, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine Executable:") },
+  {   0,  0,    0, NULL, (void*) &params, NULL, NULL, TextBox, N_("Engine command-line Parameters:") },
+  {   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("Engine Directory:") },
+  {  95,  0,    0, NULL, NULL, NULL, NULL, Label, N_("(Directory will be derived from engine path when empty)") },
+  {   0,  0,    0, NULL, (void*) &isUCI, NULL, NULL, CheckBox, N_("UCI") },
+  {   0,  0,    0, NULL, (void*) &v1, NULL, NULL, CheckBox, N_("WB protocol v1 (skip waiting for features)") },
+  {   0,  0,    0, NULL, (void*) &addToList, NULL, NULL, CheckBox, N_("Add this engine to the list") },
+  {   0,  0,    0, NULL, (void*) &hasBook, NULL, NULL, CheckBox, N_("Must not use GUI book") },
+  {   0,  0,    0, NULL, (void*) &storeVariant, NULL, NULL, CheckBox, N_("Force current variant with this engine") },
+  {   0,  0,    2, NULL, (void*) &engineChoice, (char*) engineNr, engineNr, ComboBox, N_("Load mentioned engine as") },
+  {   0,  1,    0, NULL, (void*) &InstallOK, "", NULL, EndMark , "" }
+};
+
+void
+GenericPopup(HWND hwnd, Option *optionList)
+{
+    FARPROC lpProc = MakeProcInstance( (FARPROC) SettingsProc, hInst );
+    int n=0;
+
+    while(optionList[n].type != EndMark) n++;
+    activeCps = NULL; activeList = optionList;
+    DesignOptionDialog(n, optionList);
+    CreateDialogTemplate(layoutList, layout, optionList);
+
+    DialogBoxIndirect( hInst, &template.header, hwnd, (DLGPROC)lpProc );
+
+    FreeProcInstance(lpProc);
+
+    return;
+}
+
+void LoadEnginePopUp(HWND hwnd)
+{
+    int n=0;
+
+    isUCI = addToList = storeVariant = v1 = FALSE; hasBook = TRUE; // defaults
+    if(engineDir)    free(engineDir);    engineDir = strdup("");
+    if(params)       free(params);       params = strdup("");
+    if(nickName)     free(nickName);     nickName = strdup("");
+    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
+    if(engineLine)   free(engineLine);   engineLine = strdup("");
+    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
+    while(engineList[n]) n++; installOptions[0].max = n;
+    snprintf(title, MSG_SIZ, _("Load Engine"));
+
+    GenericPopup(hwnd, installOptions);
+}

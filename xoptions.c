@@ -775,7 +775,7 @@ void GenericPopDown(w, event, prms, nprms)
     PopDown(prms[0][0] - '0');
 }
 
-char *engineName, *engineDir, *engineChoice, *engineLine;
+char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
 Boolean isUCI, hasBook, storeVariant, v1, addToList;
 extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
@@ -2055,7 +2055,7 @@ void LoadEngineProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    isUCI = addToList = storeVariant = v1 = False; hasBook = True; // defaults
-   engineDir = nickName = ""; 
+   engineDir = nickName = params = ""; 
    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
    if(engineLine)   free(engineLine);   engineLine = strdup("");
    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
