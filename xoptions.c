@@ -1243,7 +1243,10 @@ void GenericReadout(int selected)
 			if(currentCps) {
 			    snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name, val);
 			    SendToProgram(buf, currentCps);
-			} else *dest = currentOption[i].name + 100; // option gets to point to private storage;
+			} else {
+			    if(*dest) free(*dest);
+			    *dest = malloc(strlen(val)+1);
+			}
 			safeStrCpy(*dest, val, MSG_SIZ - (*dest - currentOption[i].name)); // copy text there
 		    }
 		    break;
@@ -1880,7 +1883,7 @@ void NewCommentPopup(char *title, char *text, int index)
 	XtSetArg(args[0], XtNstring, text);
 	XtSetValues(commentOptions[0].handle, args, 1);
     }
-    commentText = text;
+    if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
     MarkMenu("menuView.Show Comments", 1);
     if(GenericPopUp(commentOptions, title, 1))
@@ -1918,7 +1921,7 @@ void NewTagsPopup(char *text, char *msg)
 	XtSetArg(args[0], XtNstring, text);
 	XtSetValues(tagsOptions[1].handle, args, 1);
     }
-    tagsText = text;
+    if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].textValue = msg;
     MarkMenu("menuView.Show Tags", 2);
     GenericPopUp(tagsOptions, _("Tags"), 2);
@@ -2055,9 +2058,11 @@ void LoadEngineProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    isUCI = addToList = storeVariant = v1 = False; hasBook = True; // defaults
-   engineDir = nickName = params = ""; 
    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
    if(engineLine)   free(engineLine);   engineLine = strdup("");
+   if(engineDir)    free(engineDir);    engineDir = strdup("");
+   if(nickName)     free(nickName);     nickName = strdup("");
+   if(params)       free(params);       params = strdup("");
    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
    GenericPopUp(installOptions, _("Load engine"), 0);
 }
