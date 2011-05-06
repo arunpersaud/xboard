@@ -7085,7 +7085,7 @@ TourneyStandings(int display)
 	  case '-': bScore = 2; break;
 	  case '=': wScore = bScore = 1; break;
 	  case ' ':
-	  case '*': return NULL; // tourney not finished
+	  case '*': return strdup("busy"); // tourney not finished
 	}
 	score[w] += wScore;
 	score[b] += bScore;
@@ -10064,9 +10064,16 @@ GameEnds(result, resultDetails, whosays)
     ModeHighlight();
     endingGame = 0;  /* [HGM] crash */
     if(popupRequested) { // [HGM] crash: this calls GameEnds recursively through ExitEvent! Make it a harmless tail recursion.
-      if(matchMode == TRUE) DisplayFatalError(ranking ? ranking : buf, 0, 0); else {
-	matchMode = FALSE; appData.matchGames = matchGame = roundNr = 0;
-	DisplayNote(ranking ? ranking : buf);
+	if(matchMode == TRUE) { // match through command line: exit with or without popup
+	    if(ranking) {
+		if(strcmp(ranking, "busy")) DisplayFatalError(ranking, 0, 0);
+		else ExitEvent(0);
+	    } else DisplayFatalError(buf, 0, 0);
+	} else { // match through menu; just stop, with or without popup
+	    matchMode = FALSE; appData.matchGames = matchGame = roundNr = 0;
+	    if(ranking){
+		if(strcmp(ranking, "busy")) DisplayNote(ranking);
+	    } else DisplayNote(buf);
       }
       if(ranking) free(ranking);
     }
