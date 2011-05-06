@@ -249,6 +249,7 @@ char *SendMoveToBookUser P((int nr, ChessProgramState *cps, int initial)); // [H
 void ics_update_width P((int new_width));
 extern char installDir[MSG_SIZ];
 VariantClass startVariant; /* [HGM] nicks: initial variant */
+Boolean abortMatch;
 
 extern int tinyLayout, smallLayout;
 ChessProgramStats programStats;
@@ -1372,14 +1373,16 @@ MatchEvent(int mode)
 {	// [HGM] moved out of InitBackend3, to make it callable when match starts through menu
 	int dummy;
 	if(matchMode) { // already in match mode: switch it off
-	    appData.matchGames = matchGame; // kludge to let match terminate after next game.
+	    abortMatch = TRUE;
+	    appData.matchGames = appData.tourneyFile[0] ? nextGame: matchGame; // kludge to let match terminate after next game.
 	    ModeHighlight(); // kludgey way to remove checkmark...
 	    return;
 	}
-	if(gameMode != BeginningOfGame) {
-	    DisplayError(_("You can only start a match from the initial position."), 0);
-	    return;
-	}
+//	if(gameMode != BeginningOfGame) {
+//	    DisplayError(_("You can only start a match from the initial position."), 0);
+//	    return;
+//	}
+	abortMatch = FALSE;
 	appData.matchGames = appData.defaultMatchGames;
 	/* Set up machine vs. machine match */
 	nextGame = 0;
@@ -10026,12 +10029,12 @@ GameEnds(result, resultDetails, whosays)
 	}
 
 	if(waitingForGame) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
-	if(appData.tourneyFile[0]){ // [HGM] we are in a tourney; update tourney file with game result
+	if(appData.tourneyFile[0] && !abortMatch){ // [HGM] we are in a tourney; update tourney file with game result
 	    ReserveGame(nextGame, resChar); // sets nextGame
 	    if(nextGame > appData.matchGames) appData.tourneyFile[0] = 0, ranking = TourneyStandings(3); // tourney is done
 	} else roundNr = nextGame = matchGame + 1; // normal match, just increment; round equals matchGame
 
-	if (nextGame <= appData.matchGames) {
+	if (nextGame <= appData.matchGames && !abortMatch) {
 	    gameMode = nextGameMode;
 	    matchGame = nextGame; // this will be overruled in tourney mode!
 	    GetTimeMark(&pauseStart); // [HGM] matchpause: stipulate a pause
