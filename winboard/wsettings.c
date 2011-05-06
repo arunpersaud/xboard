@@ -396,10 +396,12 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
     if(!cps && okFunc) ((ButtonCallback*) okFunc)(0);
 }
 
+char *defaultExt[] = { NULL, "pgn", "fen", "exe", "trn", "bin", "log", "ini" };
+
 LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     char buf[MSG_SIZ];
-    int i, j;
+    int i, j, ext;
 
     switch( message )
     {
@@ -445,7 +447,8 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		          ofn.hwndOwner = hDlg;
 		          ofn.hInstance = hInst;
 		          ofn.lpstrFilter = filter;
-			  ofn.nFilterIndex      = 1L + (activeCps ? 0 : activeList[layoutList[(i-2000)/2+1]].max);
+			  ofn.nFilterIndex      = 1L + (ext = activeCps ? 0 : activeList[layoutList[(i-2000)/2+1]].max);
+			  ofn.lpstrDefExt       = defaultExt[ext];
 		          ofn.lpstrFile = buf;
 		          ofn.nMaxFile = sizeof(buf);
 		          ofn.lpstrTitle = _("Choose File");
