@@ -332,7 +332,8 @@ LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
     case WM_NOTIFY:
         if( wParam == IDC_EngineMemo1 || wParam == IDC_EngineMemo2 ) {
             MSGFILTER * lpMF = (MSGFILTER *) lParam;
-            if( lpMF->msg == WM_RBUTTONDOWN && (lpMF->wParam & (MK_CONTROL | MK_SHIFT)) == 0 ) {
+            if( lpMF->msg == WM_RBUTTONDOWN && (lpMF->wParam & (MK_CONTROL)) == 0 ) {
+		shiftKey = (lpMF->wParam & MK_SHIFT) != 0; // [HGM] remember last shift status
                 currentPV = (wParam == IDC_EngineMemo2);
                 GetMemoLine(hDlg, LOWORD(lpMF->lParam), HIWORD(lpMF->lParam));
             }

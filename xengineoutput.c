@@ -215,7 +215,8 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b); // from xopt
 char memoTranslations[] =
 ":Ctrl<Key>c: CopyMemoProc() \n \
 <Btn3Motion>: HandlePV() \n \
-<Btn3Down>: select-start() SelectPV() \n \
+Shift<Btn3Down>: select-start() SelectPV(1) \n \
+Any<Btn3Down>: select-start() SelectPV(0) \n \
 <Btn3Up>: extend-end() StopPV() \n";
 
 void
@@ -232,6 +233,7 @@ SelectPV (Widget w, XEvent * event, String * params, Cardinal * nParams)
 	XawTextGetSelectionPos(w, &index, &dummy);
 	XtSetArg(arg, XtNstring, &val);
 	XtGetValues(w, &arg, 1);
+	shiftKey = strcmp(params[0], "0");
 	if(LoadMultiPV(x, y, val, index, &start, &end)) {
 	    XawTextSetSelection( outputField[currentPV][nMemo], start, end );
 	    highTextStart[currentPV] = start; highTextEnd[currentPV] = end;

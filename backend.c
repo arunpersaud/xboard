@@ -5244,7 +5244,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
 Boolean pushed = FALSE;
 
 void
-ParsePV(char *pv, Boolean storeComments)
+ParsePV(char *pv, Boolean storeComments, Boolean atEnd)
 { // Parse a string of PV moves, and append to current game, behind forwardMostMove
   int fromX, fromY, toX, toY; char promoChar;
   ChessMove moveType;
@@ -5308,7 +5308,7 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
     else
 	parseList[endPV-1][0] = NULLCHAR;
   } while(valid);
-  currentMove = endPV;
+  currentMove = (atEnd || endPV == forwardMostMove) ? endPV : forwardMostMove + 1;
   if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
   SetPremoveHighlights(moveList[currentMove-1][0]-AAA, moveList[currentMove-1][1]-ONE,
                        moveList[currentMove-1][2]-AAA, moveList[currentMove-1][3]-ONE);
@@ -5331,7 +5331,7 @@ LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
 	do{ while(buf[index] && buf[index] != '\n') index++;
 	} while(buf[index] == '\n' && buf[index+1] == '\\' && buf[index+2] == ' ' && index++); // join kibitzed PV continuation line
 	buf[index] = 0;
-	ParsePV(buf+startPV, FALSE);
+	ParsePV(buf+startPV, FALSE, !shiftKey);
 	*start = startPV; *end = index-1;
 	return TRUE;
 }
@@ -5341,15 +5341,23 @@ LoadPV(int x, int y)
 { // called on right mouse click to load PV
   int which = gameMode == TwoMachinesPlay && (WhiteOnMove(forwardMostMove) == (second.twoMachinesColor[0] == 'w'));
   lastX = x; lastY = y;
-  ParsePV(lastPV[which], FALSE); // load the PV of the thinking engine in the boards array.
+  ParsePV(lastPV[which], FALSE, TRUE); // load the PV of the thinking engine in the boards array.
   return TRUE;
 }
 
 void
 UnLoadPV()
 {
+  int oldFMM = forwardMostMove; // N.B.: this was currentMove before PV was loaded!
   if(endPV < 0) return;
   endPV = -1;
+  if(shiftKey && gameMode == AnalyzeMode) {
+	if(pushed) storedGames--; // abandon shelved tail of original game
+	pushed = FALSE;
+	forwardMostMove = currentMove;
+	currentMove = oldFMM;
+	ToNrEvent(forwardMostMove);
+  }
   currentMove = forwardMostMove;
   if(pushed) { PopInner(0); pushed = FALSE; } // restore shelved game contnuation
   ClearPremoveHighlights();
@@ -16248,7 +16256,7 @@ LoadVariation(int index, char *text)
 	PushTail(currentMove, forwardMostMove); // shelve main variation. This truncates game
 	// kludge: use ParsePV() to append variation to game
 	move = currentMove;
-	ParsePV(start, TRUE);
+	ParsePV(start, TRUE, TRUE);
 	forwardMostMove = endPV; endPV = -1; currentMove = move; // cleanup what ParsePV did
 	ClearPremoveHighlights();
 	CommentPopDown();
