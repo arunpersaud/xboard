@@ -812,6 +812,7 @@ Option matchOptions[] = {
 { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles:") },
 { 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Default Number of Games in Match (or Pairing):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Match Games (msec):") },
+{ 0,  0,          0, NULL, (void*) &appData.saveGameFile, "", NULL, FileName, N_("Save Tourney Games on:") },
 { 0,  0,          0, NULL, (void*) &appData.loadGameFile, "", NULL, FileName, N_("Game File with Opening Lines:") },
 { 0, -2, 1000000000, NULL, (void*) &appData.loadGameIndex, "", NULL, Spin, N_("Game Number (-1 or -2 = Auto-Increment):") },
 { 0,  0,          0, NULL, (void*) &appData.loadPositionFile, "", NULL, FileName, N_("File with Start Positions:") },
