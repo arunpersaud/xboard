@@ -644,6 +644,8 @@ void SpinCallback(w, client_data, call_data)
 	XtSetArg(args[0], XtNstring, &q);
 	XtGetValues(currentOption[data].handle, args, 1);
 	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
+	if(!strcmp(r, "") && !currentCps && currentOption[data].type == FileName && currentOption[data].textValue)
+		r = currentOption[data].textValue;
 	browserUp = True;
 	if(XsraSelFile(shells[0], currentOption[data].name, NULL, NULL, "", "", r,
 			 	  currentOption[data].type == PathName ? "p" : "f", NULL, &p)) {
@@ -803,7 +805,7 @@ void MatchOK(int n)
 }
 
 Option matchOptions[] = {
-{ 0,  0,          0, NULL, (void*) &appData.tourneyFile, "", NULL, FileName, N_("Tournament file:") },
+{ 0,  0,          0, NULL, (void*) &appData.tourneyFile, ".trn", NULL, FileName, N_("Tournament file:") },
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round    (for concurrent playing of a single") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle      tourney with multiple XBoards)") },
 { 0xD, 150,       0, NULL, (void*) &engineName, "", NULL, TextBox, "Tourney participants:" },
@@ -812,10 +814,10 @@ Option matchOptions[] = {
 { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles:") },
 { 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Default Number of Games in Match (or Pairing):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Match Games (msec):") },
-{ 0,  0,          0, NULL, (void*) &appData.saveGameFile, "", NULL, FileName, N_("Save Tourney Games on:") },
-{ 0,  0,          0, NULL, (void*) &appData.loadGameFile, "", NULL, FileName, N_("Game File with Opening Lines:") },
+{ 0,  0,          0, NULL, (void*) &appData.saveGameFile, ".pgn", NULL, FileName, N_("Save Tourney Games on:") },
+{ 0,  0,          0, NULL, (void*) &appData.loadGameFile, ".pgn", NULL, FileName, N_("Game File with Opening Lines:") },
 { 0, -2, 1000000000, NULL, (void*) &appData.loadGameIndex, "", NULL, Spin, N_("Game Number (-1 or -2 = Auto-Increment):") },
-{ 0,  0,          0, NULL, (void*) &appData.loadPositionFile, "", NULL, FileName, N_("File with Start Positions:") },
+{ 0,  0,          0, NULL, (void*) &appData.loadPositionFile, ".fen", NULL, FileName, N_("File with Start Positions:") },
 { 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, N_("Position Number (-1 or -2 = Auto-Increment):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind Index after this many Games (0 = never):") },
 { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
@@ -952,7 +954,7 @@ Option commonEngineOptions[] = {
 { 0,     0, 0, NULL, (void*) &appData.defaultPathEGTB, "", NULL, PathName, N_("Nalimov EGTB Path:") },
 { 0,  0, 1000, NULL, (void*) &appData.defaultCacheSizeEGTB, "", NULL, Spin, N_("EGTB Cache Size (MB):") },
 { 0,     0, 0, NULL, (void*) &appData.usePolyglotBook, "", NULL, CheckBox, N_("Use GUI Book") },
-{ 0,     0, 0, NULL, (void*) &appData.polyglotBook, "", NULL, FileName, N_("Opening-Book Filename:") },
+{ 0,     0, 0, NULL, (void*) &appData.polyglotBook, ".bin", NULL, FileName, N_("Opening-Book Filename:") },
 { 0,   0, 100, NULL, (void*) &appData.bookDepth, "", NULL, Spin, N_("Book Depth (moves):") },
 { 0,   0, 100, NULL, (void*) &appData.bookStrength, "", NULL, Spin, N_("Book Variety (0) vs. Strength (100):") },
 { 0,     0, 0, NULL, (void*) &appData.firstHasOwnBookUCI, "", NULL, CheckBox, N_("Engine #1 Has Own Book") },
@@ -1022,8 +1024,8 @@ Option loadOptions[] = {
 
 Option saveOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.autoSaveGames, "", NULL, CheckBox, N_("Auto-Save Games") },
-{ 0, 0, 0, NULL, (void*) &appData.saveGameFile, "", NULL, FileName,  N_("Save Games on File:") },
-{ 0, 0, 0, NULL, (void*) &appData.savePositionFile, "", NULL, FileName,  N_("Save Final Positions on File:") },
+{ 0, 0, 0, NULL, (void*) &appData.saveGameFile, ".pgn", NULL, FileName,  N_("Save Games on File:") },
+{ 0, 0, 0, NULL, (void*) &appData.savePositionFile, ".fen", NULL, FileName,  N_("Save Final Positions on File:") },
 { 0, 0, 0, NULL, (void*) &appData.pgnEventHeader, "", NULL, TextBox,  N_("PGN Event Header:") },
 { 0, 0, 0, NULL, (void*) &appData.oldSaveStyle, "", NULL, CheckBox, N_("Old Save Style (as opposed to PGN)") },
 { 0, 0, 0, NULL, (void*) &appData.saveExtendedInfoInPGN, "", NULL, CheckBox, N_("Save Score/Depth Info in PGN") },
@@ -1076,7 +1078,7 @@ void Test(int n)
 Option soundOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.soundProgram, "", NULL, TextBox, N_("Sound Program:") },
 { 0, 0, 0, NULL, (void*) &appData.soundDirectory, "", NULL, PathName, N_("Sounds Directory:") },
-{ 0, 0, 0, NULL, (void*) (soundFiles+2) /* kludge! */, "", NULL, FileName, N_("User WAV File:") },
+{ 0, 0, 0, NULL, (void*) (soundFiles+2) /* kludge! */, ".wav", NULL, FileName, N_("User WAV File:") },
 { 0, 0, 0, NULL, (void*) &trialSound, (char*) soundNames, soundFiles, ComboBox, N_("Try-Out Sound:") },
 { 0, 1, 0, NULL, (void*) &Test, NULL, NULL, Button, N_("Play") },
 { 0, 0, 0, NULL, (void*) &appData.soundMove, (char*) soundNames, soundFiles, ComboBox, N_("Move:") },
@@ -1217,8 +1219,8 @@ Option boardOptions[] = {
 //{ 0, 0, 0, NULL, (void*) &appData.allWhite, "", NULL, CheckBox, N_("Use Outline Pieces for Black") },
 { 0, 0, 0, NULL, (void*) &appData.monoMode, "", NULL, CheckBox, N_("Mono Mode") },
 { 0,-1, 5, NULL, (void*) &appData.overrideLineGap, "", NULL, Spin, N_("Line Gap ( -1 = default for board size):") },
-{ 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, "", NULL, FileName, N_("Light-Squares Texture File:") },
-{ 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, "", NULL, FileName, N_("Dark-Squares Texture File:") },
+{ 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, ".xpm", NULL, FileName, N_("Light-Squares Texture File:") },
+{ 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, ".xpm", NULL, FileName, N_("Dark-Squares Texture File:") },
 { 0, 0, 0, NULL, (void*) &appData.bitmapDirectory, "", NULL, PathName, N_("Directory with Bitmap Pieces:") },
 { 0, 0, 0, NULL, (void*) &appData.pixmapDirectory, "", NULL, PathName, N_("Directory with Pixmap Pieces:") },
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
