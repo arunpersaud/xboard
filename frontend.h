@@ -109,6 +109,7 @@ void EchoOn P((void));
 void EchoOff P((void));
 void Raw P((void));
 void Colorize P((ColorClass cc, int continuation));
+char *InterpretFileName P((char *name, char *dir));
 
 char *UserName P((void));
 char *HostName P((void));
@@ -172,6 +173,7 @@ void GLT_AddToList( char *name );
 Boolean GLT_GetFromList( int index, char *name );
 
 extern char lpUserGLT[];
+extern char homeDir[];
 
 /* these are in wgamelist.c */
 void GameListPopUp P((FILE *fp, char *filename));

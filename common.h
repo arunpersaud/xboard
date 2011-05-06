@@ -732,6 +732,10 @@ extern WindowPlacement wpTags;
 extern int chatCount;
 extern char chatPartner[MAX_CHAT][MSG_SIZ];
 
+// [HGM] generally useful macros; there are way too many memory leaks...
+#define FREE(x) if(x) free(x)
+#define ASSIGN(x, y) if(x) free(x); x = strdup(y)
+
 // [HGM] for now we use the kludge to redefine all the unstructured options by their array counterpart
 //       in due time we would have to make the actual substitutions all through the source
 

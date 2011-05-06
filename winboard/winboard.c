@@ -156,6 +156,7 @@ char *programName;
 char *settingsFileName;
 Boolean saveSettingsOnExit;
 char installDir[MSG_SIZ];
+char homeDir[MSG_SIZ];
 int errorExitStatus;
 
 BoardSize boardSize;
@@ -989,6 +990,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   } else {
     GetCurrentDirectory(MSG_SIZ, installDir);
   }
+  safeStrCpy(homeDir, installDir, MSG_SIZ);
   gameInfo.boardWidth = gameInfo.boardHeight = 8; // [HGM] won't have open window otherwise
   screenWidth = screenHeight = 1000; // [HGM] placement: kludge to allow calling EnsureOnScreen from InitAppData
   InitAppData(lpCmdLine);      /* Get run-time parameters */

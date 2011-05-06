@@ -135,6 +135,28 @@ VOID SetLoadOptionEnables(HWND hDlg);
 VOID SetSaveOptionEnables(HWND hDlg);
 VOID SetTimeControlEnables(HWND hDlg);
 
+char *
+InterpretFileName(char *buf, char *homeDir)
+{ // [HGM] file name relative to homeDir. (Taken out of SafeOptionsDialog, because it is generally useful)
+  char *result = NULL;
+  if ((isalpha(buf[0]) && buf[1] == ':') ||
+    (buf[0] == '\\' && buf[1] == '\\')) {
+    return strdup(buf);
+  } else {
+    char buf2[MSG_SIZ], buf3[MSG_SIZ];
+    char *dummy;
+    GetCurrentDirectory(MSG_SIZ, buf3);
+    SetCurrentDirectory(homeDir);
+    if (GetFullPathName(buf, MSG_SIZ, buf2, &dummy)) {
+      result = strdup(buf2);
+    } else {
+      result = strdup(buf);
+    }
+    SetCurrentDirectory(buf3);
+  }
+  return result;
+}
+
 /*---------------------------------------------------------------------------*\
  *
  * General Options Dialog functions
@@ -2494,7 +2516,7 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       if (IsDlgButtonChecked(hDlg, OPT_Autosave)) {
 	appData.autoSaveGames = TRUE;
 	if (IsDlgButtonChecked(hDlg, OPT_AVPrompt)) {
-	  appData.saveGameFile = "";
+	  ASSIGN(appData.saveGameFile, ""); // [HGM] make sure value is ALWAYS in allocated memory
 	} else /*if (IsDlgButtonChecked(hDlg, OPT_AVToFile))*/ {
 	  GetDlgItemText(hDlg, OPT_AVFilename, buf, MSG_SIZ);
 	  if (*buf == NULLCHAR) {
@@ -2502,25 +2524,12 @@ SaveOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		       _("Option Error"), MB_OK|MB_ICONEXCLAMATION);
 	    return FALSE;
 	  }
-	  if ((isalpha(buf[0]) && buf[1] == ':') ||
-	    (buf[0] == '\\' && buf[1] == '\\')) {
-	    appData.saveGameFile = strdup(buf);
-	  } else {
-	    char buf2[MSG_SIZ], buf3[MSG_SIZ];
-	    char *dummy;
-	    GetCurrentDirectory(MSG_SIZ, buf3);
-	    SetCurrentDirectory(installDir);
-	    if (GetFullPathName(buf, MSG_SIZ, buf2, &dummy)) {
-	      appData.saveGameFile = strdup(buf2);
-	    } else {
-	      appData.saveGameFile = strdup(buf);
-	    }
-	    SetCurrentDirectory(buf3);
-	  }
+	  FREE(appData.saveGameFile);
+	  appData.saveGameFile = InterpretFileName(buf, homeDir);
 	}
       } else {
 	appData.autoSaveGames = FALSE;
-	appData.saveGameFile = "";
+	ASSIGN(appData.saveGameFile, "");
       }
       appData.oldSaveStyle = IsDlgButtonChecked(hDlg, OPT_Old);
       appData.saveOutOfBookInfo = IsDlgButtonChecked( hDlg, OPT_OutOfBookInfo );

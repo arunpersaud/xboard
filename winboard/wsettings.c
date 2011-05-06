@@ -352,8 +352,9 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 		if(!success) break;
 		if(!cps) {
 		    char *p;
-		    if(*(char**)optionList[j].target) free(*(char**)optionList[j].target);
-		    *(char**)optionList[j].target = p = text;
+		    p = (optionList[j].type != FileName ? strdup(text) : InterpretFileName(text, homeDir)); // all files relative to homeDir!
+		    FREE(*(char**)optionList[j].target); *(char**)optionList[j].target = p;
+		    free(text); text = p;
 		    while(*p++ = *text++) if(p[-1] == '\r') p--; // crush CR
 		    break;
 		}

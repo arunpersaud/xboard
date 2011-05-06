@@ -792,7 +792,7 @@ ParseSettingsFile(char *name, char **addr)
     f = fopen(fullname, "r");
     if (f != NULL) {
       if (addr != NULL) {
-	    *addr = strdup(fullname);
+	    ASSIGN(*addr, fullname);
       }
       ParseArgs(FileGet, f);
       fclose(f);
@@ -993,7 +993,7 @@ ParseArgs(GetFunc get, void *cl)
 
     case ArgString:
     case ArgFilename:
-      *(char **) ad->argLoc = strdup(argValue);
+      ASSIGN(*(char **) ad->argLoc, argValue);
       break;
 
     case ArgSettingsFilename:
@@ -1158,7 +1158,8 @@ SetDefaultsFromList()
         case ArgString:
         case ArgFilename:
         case ArgSettingsFilename:
-          *(char **) argDescriptors[i].argLoc = (char *)argDescriptors[i].defaultValue;
+          if((char *)argDescriptors[i].defaultValue)
+          *(char **) argDescriptors[i].argLoc = strdup((char *)argDescriptors[i].defaultValue);
           break;
         case ArgBoardSize:
           *(int *) argDescriptors[i].argLoc = (int)(intptr_t)argDescriptors[i].defaultValue;
