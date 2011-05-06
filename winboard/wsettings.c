@@ -705,7 +705,7 @@ void AddToTourney(HWND hDlg)
 //    strncat(buf, "\r\n", MSG_SIZ);
     int i = ComboBox_GetCurSel(GetDlgItem(hDlg, 2001+2*3));
     snprintf(buf, MSG_SIZ, "%s\r\n", engineMnemonic[i+1]);
-    SendMessage( GetDlgItem(hDlg, 2001+2*5), EM_SETSEL, 0, 0 );
+    SendMessage( GetDlgItem(hDlg, 2001+2*5), EM_SETSEL, 99999, 99999 );
     SendMessage( GetDlgItem(hDlg, 2001+2*5), EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) buf );
 }
 
