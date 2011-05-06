@@ -134,6 +134,8 @@ BOOLEAN MyPlaySound(MySound *ms);
 VOID ExitArgError(char *msg, char *badArg);
 void SaveSettings(char* name);
 BOOL BrowseForFolder( const char * title, char * path );
+VOID TourneyPopup();
+VOID LoadEnginePopUp();
 
 /* Constants */
 
