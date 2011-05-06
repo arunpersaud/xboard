@@ -778,7 +778,7 @@ void GenericPopDown(w, event, prms, nprms)
 }
 
 char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
-Boolean isUCI, hasBook, storeVariant, v1, addToList;
+Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
 char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
@@ -2042,6 +2042,7 @@ Option installOptions[] = {
 {   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
 {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
+{   0,  0,    0, NULL, (void*) &useNick, NULL, NULL, CheckBox, N_("Use nickname in PGN player tags of engine-engine games") },
 {   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("Engine Directory:") },
 {   0,  0,    0, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine Command:") },
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("(Directory will be derived from engine path when empty)") },
@@ -2060,7 +2061,7 @@ void LoadEngineProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   isUCI = addToList = storeVariant = v1 = False; hasBook = True; // defaults
+   isUCI = addToList = storeVariant = v1 = useNick = False; hasBook = True; // defaults
    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
    if(engineLine)   free(engineLine);   engineLine = strdup("");
    if(engineDir)    free(engineDir);    engineDir = strdup("");

@@ -609,6 +609,10 @@ ArgDescriptor argDescriptors[] = {
   { "icstype", ArgInt, (void *) &ics_type, FALSE, INVALID },
   { "forceIllegalMoves", ArgTrue, (void *) &appData.forceIllegal, FALSE, INVALID },
   { "showTargetSquares", ArgBoolean, (void *) &appData.markers, TRUE, FALSE },
+  { "firstPgnName", ArgString, (void *) &appData.pgnName[0], FALSE, (ArgIniType) "" },
+  { "fn", ArgString, (void *) &appData.pgnName[0], FALSE, INVALID },
+  { "secondPgnName", ArgString, (void *) &appData.pgnName[1], FALSE, (ArgIniType) "" },
+  { "sn", ArgString, (void *) &appData.pgnName[1], FALSE, INVALID },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

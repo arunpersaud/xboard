@@ -862,7 +862,7 @@ ReplaceEngine(ChessProgramState *cps, int n)
 }
 
 extern char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
-extern Boolean isUCI, hasBook, storeVariant, v1, addToList;
+extern Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 
 void
 Load(ChessProgramState *cps, int i)
@@ -871,7 +871,7 @@ Load(ChessProgramState *cps, int i)
     if(engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
-	ParseArgsFromString("-firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1");
+	ParseArgsFromString("-firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 -fn \"\"");
 	ParseArgsFromString(buf);
 	SwapEngines(i);
 	ReplaceEngine(cps, i);
@@ -895,11 +895,16 @@ Load(ChessProgramState *cps, int i)
     appData.isUCI[i] = isUCI;
     appData.protocolVersion[i] = v1 ? 1 : PROTOVER;
     appData.hasOwnBookUCI[i] = hasBook;
+    if(!nickName[0]) useNick = FALSE;
+    if(useNick) ASSIGN(appData.pgnName[i], nickName);
     if(addToList) {
 	int len;
 	q = firstChessProgramNames;
 	if(nickName[0]) snprintf(buf, MSG_SIZ, "\"%s\" -fcp ", nickName); else buf[0] = NULLCHAR;
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), "\"%s\" -fd \"%s\"%s%s%s%s%s\n", p, appData.directory[i], 
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), "\"%s\" -fd \"%s\"%s%s%s%s%s%s%s%s\n", p, appData.directory[i], 
+			useNick ? " -fn \"" : "",
+			useNick ? nickName : "",
+			useNick ? "\"" : "",
 			v1 ? " -firstProtocolVersion 1" : "",
 			hasBook ? "" : " -fNoOwnBookUCI",
 			isUCI ? " -fUCI" : "",
@@ -9544,6 +9549,7 @@ void SwapEngines(int n)
     SWAP(scoreIsAbsolute, h)
     SWAP(timeOdds, h)
     SWAP(logo, p)
+    SWAP(pgnName, p)
 }
 
 void
@@ -9552,7 +9558,7 @@ SetPlayer(int player)
     int i;
     char buf[MSG_SIZ], *engineName, *p = appData.participants;
     static char resetOptions[] = "-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 -firstOptions \"\" "
-				 "-firstNeedsNoncompliantFEN false -firstNPS -1";
+				 "-firstNeedsNoncompliantFEN false -firstNPS -1 -fn \"\"";
     for(i=0; i<player; i++) p = strchr(p, '\n') + 1;
     engineName = strdup(p); if(p = strchr(engineName, '\n')) *p = NULLCHAR;
     for(i=1; command[i]; i++) if(!strcmp(mnemonic[i], engineName)) break;
@@ -13950,11 +13956,11 @@ SetGameInfo()
 	    gameInfo.round = StrSave("-");
 	}
 	if (first.twoMachinesColor[0] == 'w') {
-	    gameInfo.white = StrSave(first.tidy);
-	    gameInfo.black = StrSave(second.tidy);
+	    gameInfo.white = StrSave(appData.pgnName[0][0] ? appData.pgnName[0] : first.tidy);
+	    gameInfo.black = StrSave(appData.pgnName[1][0] ? appData.pgnName[1] : second.tidy);
 	} else {
-	    gameInfo.white = StrSave(second.tidy);
-	    gameInfo.black = StrSave(first.tidy);
+	    gameInfo.white = StrSave(appData.pgnName[1][0] ? appData.pgnName[1] : second.tidy);
+	    gameInfo.black = StrSave(appData.pgnName[0][0] ? appData.pgnName[0] : first.tidy);
 	}
 	gameInfo.timeControl = TimeControlTagValue();
 	break;

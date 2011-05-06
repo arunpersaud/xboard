@@ -34,7 +34,7 @@ int breaks[MAX_OPTIONS];
 int checks, combos, buttons, layout, groups;
 char title[MSG_SIZ];
 char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
-Boolean isUCI, hasBook, storeVariant, v1, addToList;
+Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First"), N_("Second"), NULL };
 char *engineList[1000] = {" "}, *engineMnemonic[1000] = {""};
@@ -619,6 +619,7 @@ Option installOptions[] = {
   {   0,  0,    0, NULL, (void*) &engineLine, (char*) engineMnemonic, engineList, ComboBox, N_("Select engine from list:") },
   {   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("or specify one below:") },
   {   0,  0,    0, NULL, (void*) &nickName, NULL, NULL, TextBox, N_("Nickname (optional):") },
+  {   0,  0,    0, NULL, (void*) &useNick, NULL, NULL, CheckBox, N_("Use nickname in PGN tag") },
   {   0,  0,    3, NULL, (void*) &engineName, NULL, NULL, FileName, N_("Engine Executable:") },
   {   0,  0,    0, NULL, (void*) &params, NULL, NULL, TextBox, N_("Engine command-line Parameters:") },
   {   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("Engine Directory:") },
@@ -654,7 +655,7 @@ void LoadEnginePopUp(HWND hwnd)
 {
     int n=0;
 
-    isUCI = addToList = storeVariant = v1 = FALSE; hasBook = TRUE; // defaults
+    isUCI = addToList = storeVariant = v1 = useNick = FALSE; hasBook = TRUE; // defaults
     if(engineDir)    free(engineDir);    engineDir = strdup("");
     if(params)       free(params);       params = strdup("");
     if(nickName)     free(nickName);     nickName = strdup("");
