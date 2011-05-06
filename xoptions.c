@@ -1860,9 +1860,9 @@ void SaveChanges(int n)
 }
 
 Option commentOptions[] = {
-{ 0xD, 200, 300, NULL, (void*) &commentText, "", NULL, TextBox, "" },
-{   0,  0,    0, NULL, (void*) &ClearComment, NULL, NULL, Button, "clear" },
-{   0,  1,    0, NULL, (void*) &SaveChanges, NULL, NULL, Button, "save changes" },
+{ 0xD, 200, 250, NULL, (void*) &commentText, "", NULL, TextBox, "" },
+{   0,  0,   50, NULL, (void*) &ClearComment, NULL, NULL, Button, "clear" },
+{   0,  1,  100, NULL, (void*) &SaveChanges, NULL, NULL, Button, "save changes" },
 {   0,  1,    0, NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
 };
 
@@ -1907,8 +1907,8 @@ void changeTags(int n)
 
 Option tagsOptions[] = {
 {   0,  0,    0, NULL, NULL, NULL, NULL, Label,  "" },
-{ 0xD, 200, 250, NULL, (void*) &tagsText, "", NULL, TextBox, "" },
-{   0,  0,    0, NULL, (void*) &changeTags, NULL, NULL, Button, "save changes" },
+{ 0xD, 200, 200, NULL, (void*) &tagsText, "", NULL, TextBox, "" },
+{   0,  0,  100, NULL, (void*) &changeTags, NULL, NULL, Button, "save changes" },
 {   0,  1,    0, NULL, (void*) &NewTagsCallback, "", NULL, EndMark , "" }
 };
 
