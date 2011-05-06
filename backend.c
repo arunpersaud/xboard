@@ -913,9 +913,39 @@ Load(ChessProgramState *cps, int i)
 }
 
 void
-InitBackEnd1()
+InitTimeControls()
 {
     int matched, min, sec;
+    /*
+     * Parse timeControl resource
+     */
+    if (!ParseTimeControl(appData.timeControl, appData.timeIncrement,
+			  appData.movesPerSession)) {
+	char buf[MSG_SIZ];
+	snprintf(buf, sizeof(buf), _("bad timeControl option %s"), appData.timeControl);
+	DisplayFatalError(buf, 0, 2);
+    }
+
+    /*
+     * Parse searchTime resource
+     */
+    if (*appData.searchTime != NULLCHAR) {
+	matched = sscanf(appData.searchTime, "%d:%d", &min, &sec);
+	if (matched == 1) {
+	    searchTime = min * 60;
+	} else if (matched == 2) {
+	    searchTime = min * 60 + sec;
+	} else {
+	    char buf[MSG_SIZ];
+	    snprintf(buf, sizeof(buf), _("bad searchTime option %s"), appData.searchTime);
+	    DisplayFatalError(buf, 0, 2);
+	}
+    }
+}
+
+void
+InitBackEnd1()
+{
 
     ShowThinkingEvent(); // [HGM] thinking: make sure post/nopost state is set according to options
     startVariant = StringToVariant(appData.variant); // [HGM] nicks: remember original variant
@@ -966,31 +996,7 @@ InitBackEnd1()
         }
     }
 
-    /*
-     * Parse timeControl resource
-     */
-    if (!ParseTimeControl(appData.timeControl, appData.timeIncrement,
-			  appData.movesPerSession)) {
-	char buf[MSG_SIZ];
-	snprintf(buf, sizeof(buf), _("bad timeControl option %s"), appData.timeControl);
-	DisplayFatalError(buf, 0, 2);
-    }
-
-    /*
-     * Parse searchTime resource
-     */
-    if (*appData.searchTime != NULLCHAR) {
-	matched = sscanf(appData.searchTime, "%d:%d", &min, &sec);
-	if (matched == 1) {
-	    searchTime = min * 60;
-	} else if (matched == 2) {
-	    searchTime = min * 60 + sec;
-	} else {
-	    char buf[MSG_SIZ];
-	    snprintf(buf, sizeof(buf), _("bad searchTime option %s"), appData.searchTime);
-	    DisplayFatalError(buf, 0, 2);
-	}
-    }
+    InitTimeControls();
 
     /* [AS] Adjudication threshold */
     adjudicateLossThreshold = appData.adjudicateLossThreshold;
@@ -9476,6 +9482,13 @@ CreateTourney(char *name)
 		fprintf(f, "-loadPositionFile \"%s\"\n", appData.loadPositionFile);
 		fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
 		fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
+		if(searchTime > 0)
+			fprintf(f, "-searchTime \"%s\"\n", appData.searchTime);
+		else {
+			fprintf(f, "-mps %d\n", appData.movesPerSession);
+			fprintf(f, "-tc %s\n", appData.timeControl);
+			fprintf(f, "-inc %.2f\n", appData.timeIncrement);
+		}
 		fprintf(f, "-results \"\"\n");
 	    }
 	}
@@ -9607,6 +9620,7 @@ NextTourneyGame(int nr, int *swapColors)
     tf = fopen(appData.tourneyFile, "r");
     if(tf == NULL) { DisplayFatalError(_("Bad tournament file"), 0, 1); return 0; }
     ParseArgsFromFile(tf); fclose(tf);
+    InitTimeControls(); // TC might be altered from tourney file
 
     p = appData.participants;
     while(p = strchr(p, '\n')) p++, nPlayers++; // count participants
