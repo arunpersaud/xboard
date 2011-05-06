@@ -1137,6 +1137,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Edit Ta&gs...",               IDM_EditTags
         MENUITEM "Edit Co&mment...",            IDM_EditComment
+        MENUITEM "Edit Boo&k...",               IDM_EditBook
         MENUITEM "Enter &Username...",          IDM_TypeInName
         MENUITEM SEPARATOR
         MENUITEM "&Revert\tHome",               IDM_Revert

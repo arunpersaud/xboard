@@ -455,25 +455,22 @@ void move_to_string(char move_s[6], uint16 move)
     }
 }
 
-char *ProbeBook(int moveNr, char *book)
-{
+int GetBookMoves(int moveNr, char *book, entry_t entries[])
+{   // retrieve all entries for given position from book in 'entries', return number.
     FILE *f;
     entry_t entry;
     int offset;
     uint64 key;
-    entry_t entries[MOVE_BUF];
-    int count=0;
-    int ret, i, j;
-    static char move_s[6];
-    int total_weight;
+    int count;
+    int ret;
 
-    if(book == NULL || moveNr >= 2*appData.bookDepth) return NULL; 
-//    if(gameInfo.variant != VariantNormal) return NULL; // Zobrist scheme only works for normal Chess, so far
+    if(book == NULL || moveNr >= 2*appData.bookDepth) return -1; 
+//    if(gameInfo.variant != VariantNormal) return -1; // Zobrist scheme only works for normal Chess, so far
     f=fopen(book,"rb");
     if(!f){
-        DisplayError("Polyglot book not valid", 0);
+	DisplayError("Polyglot book not valid", 0);
 	appData.usePolyglotBook = FALSE;
-        return NULL;
+	return -1;
     }
 
     key = hash(moveNr);
@@ -482,7 +479,7 @@ char *ProbeBook(int moveNr, char *book)
     offset=find_key(f, key, &entry);
     if(entry.key != key) {
 	  fclose(f);
-	  return NULL;
+	  return FALSE;
     }
     entries[0] = entry;
     count=1;
@@ -498,6 +495,20 @@ char *ProbeBook(int moveNr, char *book)
         if(count == MOVE_BUF) break;
         entries[count++] = entry;
     }
+    fclose(f);
+    return count;
+}
+
+char *ProbeBook(int moveNr, char *book)
+{   // 
+    entry_t entries[MOVE_BUF];
+    int count;
+    int i, j;
+    static char move_s[6];
+    int total_weight;
+
+    if((count = GetBookMoves(moveNr, book, entries)) <= 0) return NULL; // no book, or no hit
+
     if(appData.bookStrength != 50) { // transform weights
         double power = 0, maxWeight = 0.0;
         if(appData.bookStrength) power = (100.-appData.bookStrength)/appData.bookStrength;
@@ -522,6 +533,126 @@ char *ProbeBook(int moveNr, char *book)
     move_to_string(move_s, entries[i].move);
     if(appData.debugMode) fprintf(debugFP, "book move field = %d\n", entries[i].move);
 
-    fclose(f);
     return move_s;
+}
+
+extern char yy_textstr[];
+entry_t lastEntries[MOVE_BUF];
+
+char *MovesToText(int count, entry_t *entries)
+{
+	int i, totalWeight = 0;
+	char algMove[6];
+	char *p = (char*) malloc(30*count+1);
+	for(i=0; i<count; i++) totalWeight += entries[i].weight;
+	*p = 0;
+	for(i=0; i<count; i++) {
+	    move_to_string(algMove, entries[i].move);
+	    snprintf(p+strlen(p), 30, "%5.1f%% %5d %s\n", 100*entries[i].weight/(totalWeight+0.001), entries[i].weight, algMove);
+//lastEntries[i] = entries[i];
+	}
+	return p;
+}
+
+int TextToMoves(char *text, int moveNum, entry_t *entries)
+{
+	int i, w, count=0;
+      uint64 hashKey = hash(moveNum);
+	int  fromX, fromY, toX, toY, to, from;
+	ChessMove  moveType;
+	char promoChar, valid;
+	float dummy;
+	int width = BOARD_RGHT - BOARD_LEFT;
+
+	while((i=sscanf(text, "%f%%%d", &dummy, &w))==2 || (i=sscanf(text, "%d", &w))==1) {
+	    if(i == 2) text = strchr(text, '%') + 1;  // skip percentage
+	    if(w == 1) text = strstr(text, "1 ") + 2; // skip weight that could be recognized as move number one
+	    valid = ParseOneMove(text, moveNum, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
+	    text = strstr(text, yy_textstr) + strlen(yy_textstr); // skip what we parsed
+	    if(!valid || moveType != NormalMove) continue;
+	    to = toX + toY * width;
+	    from = fromX + fromY * width;
+	    // TODO: promotions, drops
+	    entries[count].move = to + from * width * BOARD_HEIGHT;
+	    entries[count].key  = hashKey;
+	    entries[count].weight = w;
+	    entries[count].learn  = 0; //TODO: learn value?
+	    count++;
+	}
+	return count;
+}
+
+Boolean bookUp;
+int currentCount;
+
+Boolean DisplayBook(int moveNr)
+{
+    entry_t entries[MOVE_BUF];
+    int count;
+    char *p;
+    if(!bookUp) return FALSE;
+    count = currentCount = GetBookMoves(moveNr, appData.polyglotBook, entries);
+    if(count < 0) return FALSE;
+    p = MovesToText(count, entries);
+    EditTagsPopUp(p, NULL);
+    free(p);
+    return TRUE;
+}
+
+void EditBookEvent()
+{
+      bookUp = TRUE;
+	bookUp = DisplayBook(currentMove);
+}
+
+void int_to_file(FILE *f, int l, uint64 r)
+{
+    int i;
+    for(i=l-1;i>=0;i--) fputc(r>>8*i & 255, f);
+}
+
+void entry_to_file(FILE *f, entry_t *entry)
+{
+    int_to_file(f,8,entry->key);
+    int_to_file(f,2,entry->move);
+    int_to_file(f,2,entry->weight);
+    int_to_file(f,4,entry->learn);
+}
+
+char buf1[4096], buf2[4096];
+
+void SaveToBook(char *text)
+{
+    entry_t entries[MOVE_BUF], entry;
+    int count = TextToMoves(text, currentMove, entries);
+    int offset, i, len1=0, len2, readpos=0, writepos=0;
+    FILE *f;
+    if(!count) return;
+    f=fopen(appData.polyglotBook, "rb+");
+    if(!f){	DisplayError("Polyglot book not valid", 0); return; }
+    offset=find_key(f, entries[0].key, &entry);
+    if(entries[0].key != entry.key) {
+	  DisplayError("Hash keys are different", 0);
+	  fclose(f);
+	  return;
+    }
+    if(count != currentCount) {
+	readpos = 16*(offset + currentCount);
+	writepos = 16*(offset + count);
+	fseek(f, readpos, SEEK_SET);
+	readpos += len1 = fread(buf1, 1, 4096 - 16*currentCount, f); // salvage some entries immediately behind change
+    }
+    fseek(f, 16*(offset), SEEK_SET);
+    for(i=0; i<count; i++) entry_to_file(f, entries + i); // save the change
+    if(count != currentCount) {
+	do {
+	    for(i=0; i<len1; i++) buf2[i] = buf1[i]; len2 = len1;
+	    fseek(f, readpos, SEEK_SET);
+	    readpos += len1 = fread(buf1, 1, 4096, f);
+	    fseek(f, writepos, SEEK_SET);
+	    fwrite(buf2, 1, len2, f);
+	    writepos += len2;
+	} while(len1);
+    }
+    fclose(f);
 }

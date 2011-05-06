@@ -73,6 +73,10 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     EnableWindow(GetDlgItem(hDlg, OPT_TagsCancel), canEditTags);
     EnableWindow(GetDlgItem(hDlg, OPT_EditTags), !canEditTags);
     SendMessage(hwndText, EM_SETREADONLY, !canEditTags, 0);
+    if (bookUp) {
+      SetWindowText(hDlg, _("Edit Book"));
+      SetFocus(hwndText);
+    } else
     if (canEditTags) {
       SetWindowText(hDlg, _("Edit Tags"));
       SetFocus(hwndText);
@@ -127,8 +131,9 @@ EditTagsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  else
 	    *p++ = *q++;
 	}
-	*p = NULLCHAR;
-        if(resPtr) *resPtr = strdup(str), err = 0; else
+	*p = NULLCHAR; err = 0;
+        if(resPtr) *resPtr = strdup(str); else
+	if(bookUp) SaveToBook(str); else
 	err = ReplaceTags(str, &gameInfo);
 	if (err) DisplayError(_("Error replacing tags."), err);
 
@@ -173,7 +178,7 @@ VOID TagsPopDown(void)
 {
   if (editTagsDialog) ShowWindow(editTagsDialog, SW_HIDE);
   CheckMenuItem(GetMenu(hwndMain), IDM_Tags, MF_UNCHECKED);
-  editTagsUp = FALSE;
+  editTagsUp = bookUp = FALSE;
 }
 
 
@@ -230,7 +235,7 @@ VOID EditTagsPopUp(char *tags, char **dest)
 
 VOID EditTagsProc()
 {
-  if (editTagsUp) {
+  if (editTagsUp && !bookUp) {
     TagsPopDown();
   } else {
     EditTagsEvent();

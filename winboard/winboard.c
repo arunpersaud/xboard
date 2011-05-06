@@ -4958,6 +4958,10 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       EditTagsProc();
       break;
 
+    case IDM_EditBook:
+      EditBookEvent();
+      break;
+
     case IDM_EditComment:
     case IDM_Comment:
       if (commentUp && editComment) {

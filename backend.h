@@ -111,6 +111,7 @@ extern ProcRef firstProgramPR, secondProgramPR;
 extern Board boards[];
 extern char marker[BOARD_RANKS][BOARD_FILES];
 extern char lastMsg[MSG_SIZ];
+extern Boolean bookUp;
 
 char *CmailMsg P((void));
 /* Tord: Added the useFEN960 parameter in PositionToFEN() below */
@@ -232,6 +233,9 @@ Boolean LoadMultiPV P((int x, int y, char *buf, int index, int *start, int *end)
 void UnLoadPV P(());
 void MovePV P((int x, int y, int h));
 int PromoScroll P((int x, int y));
+void EditBookEvent P((void));
+Boolean DisplayBook P((int moveNr));
+void SaveToBook P((char *text));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));
