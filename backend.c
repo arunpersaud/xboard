@@ -864,6 +864,10 @@ ReplaceEngine(ChessProgramState *cps, int n)
 extern char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
 extern Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 
+static char resetOptions[] = 
+	"-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 "
+	"-firstOptions \"\" -firstNPS -1 -fn \"\"";
+
 void
 Load(ChessProgramState *cps, int i)
 {
@@ -871,7 +875,7 @@ Load(ChessProgramState *cps, int i)
     if(engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
-	ParseArgsFromString("-firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 -fn \"\"");
+	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL;
 	ParseArgsFromString(buf);
 	SwapEngines(i);
 	ReplaceEngine(cps, i);
@@ -9557,14 +9561,12 @@ SetPlayer(int player)
 {   // [HGM] find the engine line of the partcipant given by number, and parse its options.
     int i;
     char buf[MSG_SIZ], *engineName, *p = appData.participants;
-    static char resetOptions[] = "-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 -firstOptions \"\" "
-				 "-firstNeedsNoncompliantFEN false -firstNPS -1 -fn \"\"";
     for(i=0; i<player; i++) p = strchr(p, '\n') + 1;
     engineName = strdup(p); if(p = strchr(engineName, '\n')) *p = NULLCHAR;
     for(i=1; command[i]; i++) if(!strcmp(mnemonic[i], engineName)) break;
     if(mnemonic[i]) {
 	snprintf(buf, MSG_SIZ, "-fcp %s", command[i]);
-	ParseArgsFromString(resetOptions);
+	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL;
 	ParseArgsFromString(buf);
     }
     free(engineName);
