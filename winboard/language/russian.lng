@@ -1,0 +1,993 @@
+## WinBoard 4.5.1 language file
+## Encoding: Win-1251
+## Win-1251 should be set as the default encoding for nonunicode programs (on WinXP)
+##
+## Russian/Русский
+## v1.0 beta 1
+##
+## Translation by Hr. Burunduk (2011.04.14)
+## Based on the WinBoard 4.2.6 translation by A.V.Serdiukov (А.В.Сердюков, 2003)
+##
+##
+## If you revise this, please insert your date, name and description.
+## Изменив этот файл, добавьте, пожалуйста, дату, ваше имя и описание.
+## For example:
+## Например:
+##   24-ago-2010. Juan Perez (j@xyz.p). Corrected translation for xyzzy.
+
+## Notes for translators (can be deleted from he file after translation):
+##   Just write the translations between the second pair of quotes
+##   Things like %s, %d and %c must be preserved in the original order
+##   Empty translated strings will be ignored, so there is no reason
+##   to delete those for which you don't know a translation,
+##   and you can start testing everything immediately.
+##   Simply rename this file to LANGUAGE.lng, and WinBoard should see it,
+##   and allow you to use the option /language=LANGUAGE.
+##   You are encouraged to call up the corresponding WinBoard dialog while
+##   working on the translation, to see in which context the strings are used.
+##   This is why the strings below are sorted by dialog
+##
+##   Of duplicats, only the first occurrence will be used, even if it was in
+##   a different dialog! For this reason you will only see an 'OK' in the
+##   About Box. After you translated it there, this translation will be used
+##   for all other dialogs as well.
+## o Use ## for comments, to make iteasy to find them scattered throughout the translation
+## o Careful with temptation of direct translation, by example 'movimiento' for 'move' when 'jugada' is better.
+## o Try to use short phrases, more text doesn't imply more clearness.
+## o Check that your translation is right, does it mean what it does?
+## o Test your translation, check every dialog.
+## o For standard chess names check Wikipedia for confirmation.
+## o For menus, assign shortcuts (character &) until you finish the translation.
+##   preferably it should be unique in the applicable menu, so it depends on translation of other items!
+
+winboard.rc
+
+MENUS:
+## Pleace keep the accelerator-key indications on the menu items, and keep 
+## the keystrokes the same (for now). (Alt, Ctrl and Shift can be translated.)
+
+"&New Game\tCtrl-N" === "&Новая партия\tCtrl-N"
+"New Sh&uffle Game..." === "Новая в сме&шанные шахматы..."
+"New &Variant...\tAlt+Shift+V" === "Новый &вариант...\tAlt+Shift+V"
+"&Load Game...\tCtrl-O" === "&Загрузить партию...\tCtrl-O"
+"&Save Game...\tCtrl-S" === "&Сохранить партию...\tCtrl-S"
+"L&oad Position...\tCtrl+Shift+O" === "З&агрузить позицию...\tCtrl+Shift+O"
+"S&ave Position...\tCtrl+Shift+S" === "С&охранить позицию...\tCtrl+Shift+S"
+"Save as &Diagram..." === "Сохранить &диаграмму..."
+"&Quit" === "В&ыход"
+## Next six currently not used
+"Load &Next Game\tAlt+PgDn" === "Загрузить с&ледующую партию\tAlt+PgDn""
+"Load &Previous Game\tAlt+PgUp" === "Загрузить п&редыдущую партию\tAlt+PgUp"
+"&Reload Same Game" === "&Перезагрузить партию"
+"Load N&ext Position\tAlt+Shift+PgDn" === "Загрузи&ть следующую позицию\tAlt+Shift+PgDn"
+"Load Pre&vious Position\tAlt+Shift+PgUp" === "Загрузит&ь предыдущую позицию\tAlt+Shift+PgUp"
+"Reload Sa&me Position" === "П&ерезагрузить позицию"
+
+"&Copy Game To Clipboard\tCtrl+C" === "&Копировать партию\tCtrl+C"
+"C&opy Position To Clipboard\tCtrl+Shift+C" === "К&опировать позицию\tCtrl+Shift+C"
+"Copy Game List to Clipboard" === "Копировать &список партий"
+"&Paste Game From Clipboard\tCtrl+V" === "&Вставить партию\tCtrl+V"
+"P&aste Position From Clipboard\tCtrl+Shift+V" === "Вст&авить позицию\tCtrl+Shift+V"
+"&Edit Game\tCtrl+E" === "&Править партию\tCtrl+E"
+"E&dit Position\tCtrl+Shift+E" === "П&равить позицию\tCtrl+Shift+E"
+"Edit Ta&gs..." === "Прав&ить описание..."
+"Edit Co&mment..." === "Прави&ть комментарий..."
+"Enter &Username..." === "И&мя пользователя..."
+"&Revert\tHome" === "Вер&нуться\tHome"
+"&Annotate" === "Записат&ь и вернуться"
+"&Truncate Game\tEnd" === "От&бросить последующие ходы\tEnd"
+"&Backward\tAlt+Left" === "На&зад\tAlt+Left"
+"&Forward\tAlt+Right" === "Впере&д\tAlt+Right"
+"Back to &Start\tAlt+Home" === "В на&чало\tAlt+Home"
+"For&ward to End\tAlt+End" === "В коне&ц\tAlt+End"
+
+"Flip &View\tF2" === "Ра&звернуть доску\tF2"
+"&Swap Clocks" === "Поменять &местами часы"
+"Engine &Output\tAlt+Shift+O" === "&Вывод движка\tAlt+Shift+O"
+"Move &History\tAlt+Shift+H" === "Список &ходов\tAlt+Shift+H"
+"Evaluation &Graph\tAlt+Shift+E" === "&График оценки\tAlt+Shift+E"
+"Game &List\tAlt+Shift+G" === "&Список партий\tAlt+Shift+G"
+"Open &New Chat Window" === "Открыть новое окно &чата"
+"Type In &Move...\tAlt+I" === "Вв&ести ход...\tAlt+I"
+"&Tags" === "&Описание"
+"&Comments" === "&Комментарии"
+"&Game List Tags..." === "Содер&жание списка партий..."
+"&Board..." === "&Доска..."
+"&Fonts..." === "&Шрифты..."
+
+"Machine &White\tCtrl+W" === "Компьютер &белыми\tCtrl+W"
+"Machine &Black\tCtrl+B" === "Компьютер &черными\tCtrl+B"
+"&Two Machines\tCtrl+T" === "&Два движка\tCtrl+T"
+"Machine Both" === "Движок против &себя"
+"&Analysis Mode\tCtrl+A" === "&Анализ\tCtrl+A"
+"Analyze &File\tCtrl+F" === "Анализировать &файл\tCtrl+F"
+"&Edit Game\tCtrl+E" === "&Править партию\tCtrl+E"
+"E&dit Position\tCtrl+Shift+E" === "П&равить позицию\tCtrl+Shift+E"
+"Trai&ning" === "&Тренировка"
+"&ICS Client" === "&Клиент ICS"
+"&Machine Match" === "Начать &матч движков"
+"&Pause\tPause" === "Пау&за"
+
+"&Accept\tF3" === "&Принять\tF3"
+"D&ecline\tF4" === "&Отклонить\tF4"
+"Re&match\tF12" === "Пере&играть\tF12"
+"Call &Flag\tF5" === "Про&верить время\tF5"
+"&Draw\tF6" === "Ничь&я\tF6"
+"Ad&journ\tF7" === "От&ложить\tF7"
+"A&bort\tF8" === "Пр&ервать\tF8"
+"&Resign\tF9" === "&Сдаться\tF9"
+"Stop &Observing\tF10" === "Прекратить &наблюдение за игрой\tF10"
+"Stop E&xamining\tF11" === "Прекратить и&зучение партии\tF11"
+"&Upload to Examine" === "За&грузить на сервер для изучения"
+"Adjudicate to &White" === "Присудить победу &белым"
+"Adjudicate to &Black" === "Присудить победу &черным"
+"Adjudicate &Draw" === "Присудить ничь&ю"
+
+"Install 1st..." === "1-й &список запуска..."
+"Install 2nd..." === "2-й с&писок запуска..."
+"Engine #&1 Settings..." === "Настройки движка &1..."
+"Engine #&2 Settings..." === "Настройки движка &2..."
+"&Hint..." === "Подска&зка..."
+"&Book..." === "&Книга..."
+"&Move Now\tCtrl+M" === "Делай &ход!\tCtrl+M"
+"&Retract Move\tCtrl+X" === "Взять ход &назад\tCtrl+X"
+
+"&Mute all Sounds" === "Отключить &звук"
+"&General..." === "&Общие..."
+"&Time Control...\tAlt+Shift+T" === "Контроль &времени...\tAlt+Shift+T"
+"Common &Engine...\tAlt+Shift+U" === "О&бщие для движков...\tAlt+Shift+U"
+"Ad&judications...\tAlt+Shift+J" === "&Присуждение...\tAlt+Shift+J"
+"&Load Game...\tAlt+Shift+L" === "За&грузка...\tAlt+Shift+L"
+"&Save Game...\tAlt+Shift+S" === "&Сохранение...\tAlt+Shift+S"
+"G&ame List..." === "Сп&исок партий..."
+"Soun&ds..." === "Зву&ки..."
+"&ICS..." === "&ICS..."
+"Add ICS..." === "Добави&ть ICS..."
+"Comm&unications..." === "Сооб&щения..."
+"Save Settings &Now" === "Со&хранить настройки сейчас"
+"Save Settings on E&xit" === "Сохранять настройки при в&ыходе"
+
+"Help &Contents\tF1" === "&Содержание\tF1"
+"Help &Index" === "&Указатель"
+"How to &Use Help" === "Об &использовании справки"
+"&About WinBoard" === "О &программе WinBoard"
+
+"White" === "Белые"
+"Promote" === "Превратить"
+"Pawn" === "Пешка"
+"Knight" === "Конь"
+"Bishop" === "Слон"
+"Rook" === "Ладья"
+"Queen" === "Ферзь"
+"King" === "Король"
+## The next 2 are pieces for Capablanca Chess. Use the names from the Wikipedia entry for this,
+## rather than litteral translations of the English names!
+"Archbishop" === "Архиепископ"
+"Chancellor" === "Канцлер"
+## Next 2 Xiangqi (Chinese Chess) pieces. Google for 'Xiangqi' in the target language to get the standard translation.
+"Elephant" === "Слон (стар.)"
+"Cannon" === "Пушка"
+"Empty Square" === "Пустое поле"
+"Black" === "Черные"
+"Demote" === "Разжаловать"
+"Clear Board    " === "Очистить доску"
+## Next 3: Shogi pieces.
+"Gold" === "Золото"
+"Silver" === "Серебро"
+"Lance" === "Копье"
+
+"Drop" === "Выставить"
+
+"Cop&y and Paste" === "Скопировать и вставить"
+"&Copy" === "Копировать"
+"&Paste" === "Вставить"
+
+"&Undo" === "Отменить"
+"Cu&t" === "Вырезать"
+"&Copy" === "Копировать"
+"&Paste" === "Вставить"
+"Select &All" === "Выбрать все"
+
+DIALOGS:
+
+ABOUTBOX
+
+## Pehaps copyright notices best left untranslated?
+"About WinBoard" === "О программе WinBoard"
+"OK" === "OK"
+"Chessboard for Windows" === "Шахматная доска для Windows"
+"Copyright 1991 Digital Equipment Corporation" === ""
+"Enhancements Copyright 1992-2011  Free Software Foundation" === ""
+"Enhancements Copyright 2005\r\nAlessandro Scotti" === ""
+## What happened with H.G.Muller? [He sold his copyrights to FSF for $1]
+## The following string of 6 spaces can be translated to an acknowledgement of the translator,
+## like "Traduccion por Oscar Toledo G.".
+"      " === "Перевод: А.В.Сердюков (2003), Hr.Burunduk (2011)"
+"WinBoard 0.0.0" === ""
+
+ABOUTBOX2
+
+## Weird, it is needed? [Normally not. It is a built-in 'Easter Egg' joke.]
+## It's a "galactic software ltd." bitmap, no need to translate.
+"galactic" === ""
+
+TIME CONTROL DIALOG
+
+"Time Control" === "Контроль времени"
+"Conventional chess clock" === "Обычные шахматные часы"
+"Incremental clock" === "С добавлением времени"
+"Cancel" === "Отмена"
+
+## Next is there really only for the benefit of blind users of the JAWS version...
+"Use arrow keys to specify which clock setting type, then press tab to alter values." === "Выберите тип часов клавишами курсора, нажмите tab и введите время."
+"Fixed time per move" === "Фиксированное время"
+"Number of moves:" === "Число ходов:"
+"Within number of minutes:" === "Время в минутах:"
+"Initial number of minutes:" === "Начальное время, минут:"
+"Plus number of seconds per move:" === "Плюс секунд за ход:"
+"Maximum seconds per move:" === "Секунд на ход не более:"
+"Time-Odds Factors:" === "Фактор времени движков:"
+"Engine #1:" === "для 1-го:"
+"Engine #2:" === "для 2-го:"
+
+LOAD OPTIONS DIALOG
+
+"Load Game Options" === "Параметры загрузки"
+"Load games with automatic stepping" === "Показать партию с задержкой"
+"seconds per move" === "сек. на ход"
+
+SAVE OPTIONS DIALOG
+
+"Save Game Options" === "Настройки сохранения"
+"Save As: " === "Сохранить как: "
+"Save games automatically" === "Сохранять партии автоматически"
+"Prompt for filename" === "Запрашивать имя файла"
+"To file:" === "В файл:"
+"PGN" === "PGN"
+"Old" === "Старый"
+"Browse..." === "Обзор..."
+"Save out of book info in PGN" === "Запись о выходе из книги в PGN"
+
+1536
+## This dialog is only used in some older Windows versions, so you might not be ableto test it.
+
+"Open" === "Открыть"
+"File &Name:" === "Имя файла:"
+"&Directories:" === "Каталоги:"
+"List Files of &Type:" === "Тип файлов:"
+"Dri&ves:" === "Диски:"
+"&Help" === "&Справка"
+
+"&Index number:" === "Номер:"
+
+COMMPORT
+## Always disabled if you are not actually using an ICS through a comport, so difficult to test.
+
+"Communication Port Settings" === "Настройки COM-порта"
+"Net&work..." === "Сеть..."
+"&Port:" === "Порт:"
+"Data &Rate:" === "Скорость:"
+"Data &Bits:" === "Биты данных:"
+"P&arity:" === "Четность:"
+"&Stop Bits:" === "Стоп-биты:"
+"F&low:" === "Поток:"
+
+EDIT COMMENT
+
+"Edit Comment" === "Правка комментария"
+"&Clear" === "&Очистить"
+"&Edit" === "&Правка"
+
+PROMOTION POPUP
+
+"Promote to:" === "Превращение"
+## next used in Shogi as promotion-popup header
+"Promote?" === "Превратить?"
+"Promotion" === "Превращение"
+"&Queen" === "&Ферзь"
+"&Rook" === "&Ладья"
+"&Bishop" === "&Слон"
+"K&night" === "&Конь"
+"&King" === "Ко&роль"
+"&Cancel" === "&Отмена"
+
+"Chance&llor" === "Ка&нцлер"
+"&Archbishop" === "&Архиепископ"
+"YES" === "Да"
+"NO" === "Нет"
+"C&entaur" === "К&ентавр"
+
+GAME LIST
+
+"Game List" === "Список партий"
+"&Load" === "Вы&брать"
+"&Prev" === "Предыдущая"
+"&Next" === "Следующая"
+"&Close" === "&Закрыть"
+"Filter" === "Фильтр"
+
+EDIT TAGS
+
+"Edit Tags" === "Правка описания"
+
+ERROR
+
+"ICS Interaction" === "Соединения с ICS"
+"Dialog" === "Диалог"
+"Error" === "Ошибка"
+## I don't think the next will really appear ever.
+"Sorry Charlie" === "Прости, друг!"
+
+COLORIZE
+
+"I C S Interaction Colors" === "Цвета сообщений ICS"
+"Interaction Colors" === "Цвета сообщений"
+"Premove" === "Предварительный ход"
+"Alarm" === "Звонок"
+"Colors" === "Цвета"
+"&Choose Color..." === "Выберите цвет"
+"&Bold" === "Полужирный"
+"&Italic" === "Курсив"
+"&Underline" === "Подчеркнутый"
+"&Strikeout" === "Зачеркнутый"
+
+QUESTION
+
+## next one seems only a placeholder, and never appears? [might also be just a programmer's joke...]
+"Enter a chess engine command or just type something stupid that will completely screw things up." === "Введите команду для шахматной программы или просто какую-нибудь чепуху, чтобы окончательно сбить ее с толку."
+"Question" === "Вопрос"
+"Enter" === "Ввод"
+
+STARTUP DIALOG
+
+"WinBoard Startup" === "Запуск WinBoard"
+"What would you like to do?" === "Режим работы с программой"
+"&Play against a chess engine or match two engines" === "&Игра против компьютера или партия двух движков"
+"&Use an Internet Chess Server" === "&Подключение к шахматному серверу"
+"Just &view or edit game files" === "Про&смотр и редактирование файлов"
+"Specify Chess &Engines:" === "Выберите движки"
+"Specify Chess &Server:" === "Выберите сервер"
+"&Additional options" === "&Добавить параметры"
+
+INDEX (IN FILE-BROWSE DIALOG)
+
+"Inde&x number:" === "Номер:"
+
+MOVE TYPE-IN
+
+"Type in a move" === "Введите ход"
+
+USER-NAME TYPE-IN
+
+"Type in your name" === "Введите ваше имя"
+
+SOUND DIALOG
+
+"Sounds" === "Звуки"
+
+"&Event:" === "Событие"
+"&No sound" === "Без звука"
+"&Default beep" === "Простой сигнал"
+"&Built-in sound:" === "Встроенный звук:"
+"&WAV file:" === "WAV-файл"
+
+"B&rowse..." === "Обзор..."
+"&Play" === "Послушать"
+"&Defaults" === "Сбросить"
+
+GENERAL OPTIONS DIALOG
+## pleace keep the indication of the accelerator keys for the same keystroke
+## Note: finely tuned spaces to align keys at right
+
+"General Options" === "Общие настройки"
+"Always on &Top" === "Поверх всех окон"
+"Always &Queen            Ctrl+Shift+Q" === "Всегда в ферзя                           CS+Q"
+"Animate &Dragging" === "Анимация перетаскивания"
+"&Animate Moving         Ctrl+Shift+A" === "Анимация ходов                          CS+A"
+"Auto &Flag                   Ctrl+Shift+F" === "Проверять время                        CS+F"
+"Auto Flip &View" === "Авторазворот доски"
+"Auto &Raise Board" === "Раскрывать доску"
+"&Blindfold" === "Невидимые фигуры"
+"Highlight Dra&gging" === "Выделять при перетаскивании"
+"Highlight Last &Move" === "Выделять последний ход"
+"Periodic &Updates" === "Периодически обновлять"
+"Ponder &Next Move  Ctrl+Shift+P" === "Думать всегда                            CS+P"
+"&Popup Exit Message" === "Сообщение при выходе"
+"Popup Move &Errors" === "Сообщать о неправильном ходе"
+"Show Butt&on Bar" === "Панель управления"
+"Show &Coordinates" === "Показывать координаты"
+"&Show Thinking" === "Показывать вывод движка"
+"Test &Legality            Ctrl+Shift+L" === "Проверять правильность хода CS+L"
+"&Hide Thinking          Ctrl+Shift+H" === "Скрыть главный вариант          CS+H"
+"&Info in Move History   Ctrl+Shift+I" === "Больше данных в списке ходов CS+I"
+"&Send Engine Think" === "Показывать вывод движка"
+"E&xtended PGN Info    Ctrl+Shift+X" === "Больше данных в PGN               CS+X"
+"Highlight with Arro&w" === "Выделять стрелкой"
+"Displa&y Logos" === "Показывать эмблемы"
+"One-Click Move" === "Ход одним щелчком"
+
+ICS OPTIONS
+
+"ICS Options" === "Настройки соединения с ICS"
+"&Auto Comment" === "Комментарии"
+"Auto &Observe" === "Следить за игрой"
+"&Get Move List" === "Запрашивать запись ходов"
+"&Local Line Editing" === "Редактирование команд"
+"&Quiet Play" === "Спокойная игра"
+"&Premove" === "Предварительный ход"
+"&White first move" === "1-й ход белых"
+"&Black first move" === "1-й ход черных"
+"&Sound alarm at" === "Звонок за"
+"seconds" === "сек."
+"Choose..." === "Выбрать..."
+"Do &not colorize messages" === "Не выделять сообщения"
+"&Auto Kibitz" === ""
+"Auto Kibit&z" === ""
+"See&k Graph" === "График поиска"
+"auto-&Refresh" === "Автообновление"
+"Bckgnd Obser&ve" === "Следить в фоне"
+"&Dual Board" === "Двойная доска"
+"One-Click &Move" === "Ход одним щелчком"
+"Background..." === "Цвет фона..."
+"&Defaults..." === "Сбросить"
+"Startup &Chat Boxes:" === "Окна чата (ч/з ;):"
+"General" === "Общие"
+
+BOARD OPTIONS
+## (NOTE: AllWhite uses the white (outline-style) piece bitmaps for both sides
+##        FlipBlack draws the black pieces upside down)
+
+"Board Options" === "Настройки доски"
+"Defaults" === "Сбросить"
+"Light Squares" === "Белые поля"
+"Dark Squares" === "Черные поля"
+"White Pieces" === "Белые фигуры"
+"Black Pieces" === "Черные фигуры"
+"Square Highlights" === "Выделенное поле"
+"Premove Highlights" === "Предварит. ход"
+"Monochrome" === "Монохромная"
+"All White" === "Черный контур"
+"Flip Black" === "Черные на ушах"
+"Size" === "Размер"
+
+BOARD SIZES
+## Don't put numbers, or nobody will translate them. [True. But do we really want them translated?]
+## This is a space for imagination!
+"&Tiny" === "Крошечная"
+"T&eeny" === "Изящная"
+"&Dinky" === "Миниатюрная"
+"&Petite" === "Игрушечная"
+"Sl&im" === "Компактная"
+"&Small" === "Маленькая"
+"Medi&ocre" === "Небольшая"
+"&Middling" === "Сносная"
+"&Average" === "Средняя"
+"Mode&rate" === "Скромная"
+"Medi&um" === "Умеренная"
+"Bul&ky" === "Разумная"
+"&Large" === "Крупная"
+"&Big" === "Большая"
+"&Huge" === "Огромная"
+"&Giant" === "Громадная"
+"&Colossal" === "Гигантская"
+"Tita&nic" === "Исполинская"
+
+FONTS
+
+"Fonts" === "Шрифты"
+"Current Board Size" === "Текущий размер доски"
+"All Board Sizes" === "Все размеры доски"
+"&Revert to Defaults" === "По умолчанию"
+"Clocks" === "Часы"
+"Messages" === "Сообщения"
+"Coordinates" === "Координаты"
+"Tags" === "Описания"
+"Comments" === "Комментарии"
+"I C S Interaction" === "Соединения с ICS"
+
+"&Color..." === "Цвет..."
+"Move History, Engine Output" === "Список ходов, вывод движка"
+
+ADJUDICATIONS DIALOG
+
+"Adjudications" === "Присуждение"
+"Ponder Next Move" === "Думать всегда"
+"Enable and Show Thinking (recommended)" === "Показывать вывод движка (рекомендуется)"
+"Hide Thinking when Playing against Human" === "Скрывать вывод движка в игре против человека"
+"Periodic Updates (for Analysis Mode)" === "Периодически обновлять (в режиме анализа)"
+"Adjudications in non-ICS games" === "Присуждение в партиях не через ICS"
+"Adjudicate draw after:" === "Присудить ничью после"
+"moves" === "ходов"
+"Win/loss adjudication threshold:" === "Победа/поражение при перевесе в"
+"centipawns" === "сотых пешки"
+"&Verify Engine Claims" === "Проверять требования движка"
+"Detect &Mates" === "Определять мат"
+"Draw if &Insufficient Material" === "Ничья при нехватке материала"
+"Adjudicate &Trivial Draws" === "Ничья в технич. окончаниях"
+"Apply" === "Применить правило"
+## next 2 are suffixed to a text-edit containing a number (50 or 3)
+"-move rule" === "обратимых ходов"
+"-fold repeats" === "-кратного повтора"
+"Engine #1 Score is Absolute" === "Оценка движка 1 - абсолютная"
+"Engine #2 Score is Absolute" === "Оценка движка 2 - абсолютная"
+
+COMMON ENGINE DIALOG
+
+"Common Engine Settings" === "Общие настройки движков"
+"Polyglot Directory:" === "Polyglot в каталоге:"
+"Hash Size (MB):" === "Размер хеша (МБ):"
+"EGTB Path:" === "Путь к ЭБД:"
+"EGTB Size (MB):" === "Кеш ЭБД (МБ):"
+"Use Book:" === "Книга:"
+"Max nr of CPUs:" === "Max число CPU:"
+"First has Own Book" === "Своя книга у движка 1"
+"Second has Own Book" === "Своя книга у движка 2"
+"Book Depth:" === "Глубина книги:"
+"Book Variation:" === "Варьирование:"
+"Default Match Games:" === "Партий в матче:"
+
+NEW-VARIANT DIALOG
+## (NOTE: the 'holdings' are the pieces standing next to the board ('in hand')
+
+"Variants" === "Варианты"
+"Variant" === "Вариант"
+"Board size:" === "Размер доски"
+## Рядов, горизонтали не влезли.
+"ranks" === "рядов"
+"files" === "столбцов"
+"Holdings with room for:" === "Резерв на:"
+"pieces" === "фигур"
+"('-1' means defaults for selected variant)" === "'-1' - по умолчанию для этого варианта"
+
+VARIANT NAMES: 
+"&normal" === "обычные"
+"&FRC" === "Фишера (960)"
+"&wildcastle" === ""
+"&nocastle" === ""
+"&losers" === "поддавки (мат)"
+"&giveaway" === "поддавки"
+"s&uicide" === ""
+"&3Check" === "3 шаха"
+"&twokings" === ""
+"&atomic" === "атомные"
+"cra&zyhouse" === ""
+"&bughouse" === "шведки"
+"&Twilight" === ""
+"Sp&artan" === ""
+"&shogi" === "сёги"
+"su&per" === ""
+"&knightmate" === ""
+"&Berolina" === ""
+"c&ylinder" === "цилиндрические"
+"&fairy" === ""
+"&makruk" === "макрук"
+"&gothic" === ""
+"&capablanca" === "Капабланки"
+"&Janus" === "Янус"
+"&CRC" === ""
+"&Falcon" === ""
+"cou&rier" === ""
+"&Great" === "великие"
+"&Shatranj" === "шатрандж"
+"Seira&wan" === "Сейравана"
+"&xiangqi" === "сянци"
+
+NEW SHUFFLE GAME
+
+"New Shuffle Game" === "Партия в смешанные шахматы"
+"&Start Position Number:" === "Номер позиции:"
+"Random" === "Случайно"
+
+GAME-LIST OPTIONS DIALOG
+
+"Game List Options" === "Содержание списка партий"
+"PGN &Tags:" === "Описания PGN выше черты будут показаны:"
+"&Up" === "Вверх"
+"&Down" === "Вниз"
+"Default" === "Сбросить"
+"Factory" === "Стандарт"
+"Restore to:" === " "
+
+MOVE HISTORY WINDOW
+
+"Move History" === "Список ходов"
+
+EVALUATION GRAPH
+
+"Evaluation Graph" === "Оценка позиции"
+
+ENGINE OUTPUT WINDOW
+
+"Engine output" === "Вывод движка"
+"Engine #1" === "Движок 1"
+"NPS" === "NPS (Узл./сек.)"
+"Engine #2" === "Движок 2"
+
+CHAT BOXES
+
+"Chat Window" === "Окно чата"
+"Chat partner:" === "Собеседник:"
+"Clear" === "Сброс"
+"Send" === "Отпр."
+
+winboard.c
+
+"&File" === "&Файл"
+"&Edit" === "&Правка"
+"&View" === "&Вид"
+"&Mode" === "&Режим"
+"&Action" === "&Игра"
+"&Step" === "&Шаг"
+"E&ngine" === "&Движок"
+"&Options" === "&Настройки"
+"&Help" === "&Справка"
+
+## One-letter menu for small board sizes
+"&F" === "&Ф"
+"&E" === "&П"
+"&V" === "&В"
+"&M" === "&Р"
+"&A" === "&И"
+"&N" === "&Д"
+"&O" === "&Н"
+"&H" === "&?"
+
+"You can only start a match from the initial position." === "Матч можно начинать только с исходной позиции."
+"Font name too long:" === "Слишком длинное название шрифта:"
+"Font point size missing:" === "Не указан размер шрифта:"
+"Can't parse color name %s" === "Неизвестный цвет %s"
+"Unrecognized board size value" === "Неизвестный размер доски"
+"Unrecognized argument" === "Неизвестный параметр"
+"No value provided for argument" === "Не задано значение параметра"
+"Incomplete \\ escape in value for" === "Незаконченное выражение \\ в"
+"Failed to open indirection file" === "Не удалось открыть добавочный INI-файл"
+"Unrecognized boolean argument value" === "Неизвестное значение логического параметра"
+"Unrecognized argument" === "Неизвестный параметр"
+"Too many colors" === "Слишком много цветов"
+"&Minimize\tCtrl+F4" === "Свернуть\tCtrl+F4"
+"White: %s" === "Белые: %s"
+"We only care about the height here" === "Здесь важна только высота"
+"Cannot build game list" === "Не удалось создать список партий"
+"Load Game from File" === "Загрузить партию из файла"
+"Load Position from File" === "Загрузить позицию из файла"
+"Save Game to File" === "Сохранить партию в файл"
+"Save Diagram to File" === "Сохранить диаграмму в файл"
+"Save Position to File" === "Сохранить позицию в файл"
+"%s does not support analysis" === "%s не поддерживает режим анализа"
+"Analyze Game from File" === "Анализировать партию из файла"
+"Unable to activate help" === "Невозможно открыть справку"
+"Send to chess program:" === "Команда для шахматной программы:"
+"Send to second chess program:" === "Команда для второй шахматной программы:"
+"Direct Command" === "Командная строка"
+"Error loading sound %s" === "Ошибка загрузки файла звука %s"
+"Error playing sound %s" === "Ошибка воспроизведения звука %s"
+"File open failed" === "Ошибка открытия файла"
+"Internal error in file dialog box" === "Внутренняя ошибка в диалоговом окне файла"
+"Option Error" === "Неправильная настройка"
+"Choose an option, or cancel to exit" === "Выберите опцию или нажмите \"отмену\" для выхода"
+"Unable to activate help" === "Невозможно открыть справку"
+"Displayed move is not current" === "Позиция не отвечает положению в игре"
+"Could not parse move" === "Невозможно интерпретировать ход"
+"%s:\nError code %d" === "%s:\nКод ошибки %d"
+"Error" === "Ошибка"
+"Fatal Error" === "Неисправимая ошибка"
+"Exiting" === "Выход"
+"%s:\nError code %d" === "%s:\nКод ошибки %d"
+"Note" === "Примечание"
+"Error writing to chess program" === "Ошибка подключения к шахматной программе"
+"User" === "Пользователь"
+"Unknown" === "Неизвестно"
+"White" === "Белые"
+"Black" === "Черные"
+"Save Game to File" === "Сохранить партию в файл"
+"Not implemented" === "Не реализовано"
+
+"Shout Text" === "Shout"
+"SShout/CShout" === ""
+"Channel 1 Text" === "Channel 1"
+"Channel Text" === "Channel"
+"Kibitz Text" === "Kibitz"
+"Tell Text" === "Tell"
+"Challenge Text" === "Challenge"
+"Request Text" === "Request"
+"Seek Text" === "Seek"
+"Normal Text" === "Простой текст"
+"None" === "Никакой"
+"Pawn" === "Пешка"
+"Knight" === "Конь"
+"Bishop" === "Слон"
+"Rook" === "Ладья"
+"Queen" === "Ферзь"
+"Information" === "Информация"
+
+wclipbrd.c
+
+"Unable to convert position to FEN." === "Невозможно преобразовать позицию в формат FEN."
+"Unable to copy FEN to clipboard." === "Невозможно скопировать позицию (FEN) в буфер обмена."
+"Cannot create temporary file name." === "Не могу создать имя временного файла."
+"Cannot open temporary file." === "Не могу открыть временный файл."
+"Cannot write to temporary file." === "Не могу записать во временный файл."
+"Cannot reopen temporary file." === "Не могу переоткрыть временный файл."
+"Cannot determine size of file." === "Не могу определить размер файла."
+"Cannot allocate clipboard buffer." === "Нет памяти для открытия буфера обмена"
+"Cannot read from temporary file." === "Не могу прочитать временный файл."
+"Error reading from temporary file." === "Ошибка чтения временного файла."
+"Cannot copy text to clipboard" === "Невозможно скопировать текст в буфер обмена."
+"Unable to allocate memory for clipboard." === "Недостаточно памяти для буфера обмена."
+"Unable to lock clipboard memory." === "Невозможно заблокировать память буфера обмена."
+"Cannot unlock clipboard memory." === "Невозможно разблокировать память буфера обмена."
+"Cannot open clipboard." === "Не могу открыть буфер обмена."
+"Cannot empty clipboard." === "Невозможно освободить буфер обмена."
+"Cannot copy text to clipboard." === "Невозможно скопировать текст в буфер обмена."
+"Cannot close clipboard." === "Не могу закрыть буфер обмена."
+"Unable to paste FEN from clipboard." === "Невозможно вставить позицию (FEN) из буфера обмена."
+"Unable to create temporary file." === "Невозможно создать временный файл."
+"Error writing to temporary file." === "Ошибка записи во временный файл."
+"Unable to open clipboard." === "Невозможно открыть буфер обмена."
+"No text in clipboard." === "Нет текста в буфере обмена."
+"Unable to lock clipboard memory." === "Невозможно заблокировать память буфера обмена."
+"Unable to allocate memory for text string." === "Недостаточно памяти для текстовой строки."
+"Unable to unlock clipboard memory." === "Невозможно разблокировать память буфера обмена."
+"Unable to close clipboard." === "Не могу закрыть буфер обмена."
+
+woptions.c
+
+## For now, do NOT translate sound names, because WinBoard will no longer recognize them
+"Move" === ""
+"Bell" === ""
+"ICS Alarm" === ""
+"ICS Win" === ""
+"ICS Loss" === ""
+"ICS Draw" === ""
+"ICS Unfinished" === ""
+"Shout" === ""
+"SShout/CShout" === ""
+"Channel 1" === ""
+"Channel" === ""
+"Kibitz" === ""
+"Tell" === ""
+"Challenge" === ""
+"Request" === ""
+"Seek" === ""
+## end of sound names
+
+"Browse for Sound File" === "Выберите звуковой файл"
+"Can't parse com port settings" === "Не удалось интерпретировать настройки COM-порта."
+"Option Error" === "Неправильная настройка"
+"Invalid data rate" === "Некорректная скорость подключения."
+"Option Error" === "Неправильная настройка"
+"Failed to set comm port state;\r\ninvalid options?" === "Ошибка инициализации COM-порта;\r\nнеправильно заданы параметры?"
+"Failed to set comm port state" === "Не удалось инициализировать COM-порт."
+"Invalid load game step rate" === "Неправильная задержка показа ходов."
+"Invalid save game file name" === "Неправильное имя файла"
+"Browse for Auto Save File" === "Выберите файл автосохранения"
+"Invalid moves per time control" === "Неправильно задано число контрольных ходов"
+"Invalid minutes per time control" === "Неправильно задано количество контрольных минут"
+"Invalid increment" === "Неправильно задано добавочное время за сделанный ход"
+"Invalid initial time" === "Неправильно задано начальное время"
+"Changing time control during a game is not implemented" === "Невозможно изменить установки контроля времени в ходе игры"
+
+"Variant %s not supported by %s" === "Вариант %s не поддерживается %s"
+"Warning: second engine (%s) does not support this!" === "Предупреждение: второй движок (%s) не поддерживает это!"
+"Invalid  Alarm Time" === "Неверно задано время звонка ICS"
+"Invalid max time per move" === "Неверно задан максимум времени на ход"
+"Invalid time-odds factor" === "Неверно задан фактор времени"
+"Choose Folder" === "Выберите каталог"
+"Choose Book" === "Выберите книгу"
+"Choose Polyglot Directory" === "Выберите каталог с Polyglot"
+"Choose EGTB Directory:" === "Выберите каталог с эндшпильными базами:"
+"Polyglot was not found in the specified folder!" === "Polyglot не найден в указанном каталоге!"
+
+wgamelist.c
+
+"No game selected" === "Выберите партию из списка"
+"Can't go forward any further" === "Достигнут конец списка"
+"Can't back up any further" === "Достигнуто начало списка"
+"No game list" === "Нет списка партий"
+"Game List" === "Список партий"
+"Game list not loaded or empty" === "Список партий не загружен или пуст"
+"%s - %d/%d games" === "%s - %d/%d партий"
+
+wedittags.c
+
+"Edit Tags" === "Правка описания"
+"Tags" === "Описание"
+"Error replacing tags." === "Невозможно исправить описание."
+
+wsettings.c
+
+"%s Engine Settings (%s)" === "Настройки движка %s (%s)"
+"OK" === "OK"
+"Cancel" === "Отмена"
+
+wchat.c
+
+"Chat Window %s" === "Окно чата %s"
+
+backend.c
+
+"bad timeControl option %s" === "timeControl: неверный параметр %s"
+"bad searchTime option %s" === "searchTime: неверный параметр %s"
+## following to will appear in combinationslike "first engine" 
+"first" === "1"
+"second" === "2"
+"protocol version %d not supported" === "версия протокола %d не поддерживается"
+"Variant %s supported only in ICS mode" === "Вариант %s поддерживается только в режиме ICS"
+"Unknown variant name %s" === "Неизвестный вариант %s"
+"Starting chess program" === "Запускается шахматная программа"
+"Could not open comm port %s" === "Не могу открыть COM-порт %s"
+"Could not connect to host %s, port %s" === "Не могу установить связь с %s, порт %s"
+"Unknown initialMode %s" === "initialMode: неизвестный режим %s"
+"Can't have a match with no chess programs" === "Не подключено ни одной шахматной программы"
+"Bad game file" === "Неправильный формат файла"
+"Bad position file" === "Неправильный формат файла позиции"
+"AnalyzeFile mode requires a game file" === "Режим анализа: не указан файл для анализа"
+"Analysis mode requires a chess engine" === "Для анализа необходима шахматная программа"
+"Analysis mode does not work with ICS mode" === "Режим анализа не совместим с режимом ICS"
+"MachineWhite mode requires a chess engine" === "В режиме \"Компьютер белыми\" нужна шахматная программа"
+"MachineWhite mode does not work with ICS mode" === "Режим \"Компьютер белыми\" не совместим с режимом ICS"
+"MachineBlack mode requires a chess engine" === "В режиме \"Компьютер черными\" нужна шахматная программа (движок)"
+"MachineBlack mode does not work with ICS mode" === "Режим \"Компьютер черными\" не совместим с режимом ICS"
+"TwoMachines mode does not work with ICS mode" === "Режим \"Два движка\" не совместим с режимом ICS"
+"TwoMachines mode requires a chess engine" === "В режиме \"Два движка\" нужна шахматная программа"
+"Training mode requires a game file" === "Для тренировки необходимо загрузить шахматную партию из файла"
+"Error writing to ICS" === "Ошибка записи на вход сервера ICS"
+"Error reading from keyboard" === "Ошибка клавиатуры"
+"Got end of file from keyboard" === "Получен символ конца файла с клавиатуры"
+"Error writing to ICS" === "Ошибка записи на вход сервера ICS"
+"Error writing to display" === "Ошибка записи на дисплей"
+"Error gathering move list: two headers" === "Ошибка чтения списка ходов: два заголовка"
+"Error gathering move list: nested" === "Ошибка чтения списка ходов: вложенные списки"
+"Connection closed by ICS" === "Сервер ICS разорвал соединение"
+"Error reading from ICS" === "Ошибка чтения с сервера ICS"
+"Failed to parse board string:\n\"%s\"" === "Ошибка разбора строки:\n\"%s\""
+"Game too long; increase MAX_MOVES and recompile" === "Слишком длинная партия: увеличьте значение MAX_MOVES и перекомпилируйте программу"
+"Error gathering move list: extra board" === "Ошибка чтения списка ходов: лишняя доска"
+"Illegal move \"%s\" from ICS" === "Неправильный ход "%s" получен с сервера ICS"
+"Couldn't parse move \"%s\" from ICS" === "Странный ход "%s" получен с сервера ICS"
+## The leading 'say' is used as ICS command here, and should NOT be translated. Only the message behind it.
+"say Internal error; bad moveType %d (%d,%d-%d,%d)" === ""
+"You are playing Black" === "Вы играете черными"
+"You are playing White" === "Вы играете белыми"
+"It is White's turn" === "Ход белых"
+"It is Black's turn" === "Ход черных"
+"Displayed position is not current" === "Показанная позиция не соответствует положению в игре"
+"Illegal move" === "Неправильный ход"
+"End of game" === "Сыгран последний записанный ход"
+"Incorrect move" === "Неверный ход"
+## next 6: Second (first 3) or first (other) '%s' will be substituted for 'first' or 'second'.
+"Illegal move \"%s\" from %s machine" === "Неправильный ход \"%s\" пытается выполнить движок %s"
+"Illegal move \"%s\" (rejected by %s chess program)" === "Неправильный ход \"%s\" (не принят движком %s)"
+"Failed to start %s chess program %s on %s: %s\n" === "Не удалось запустить %s движок %s на %s: %s\n"
+"Error writing to %s chess program" === "Ошибка записи на вход движка %s"
+"Error: %s chess program (%s) exited unexpectedly" === "Ошибка: движок %s (%s) завершил работу"
+"Error reading from %s chess program (%s)" === "Ошибка чтения с выхода движка %s (%s)"
+"Forfeit due to illegal move" === "Штраф за неправильный ход"
+"%s does not support analysis" === "%s не поддерживает режим анализа"
+"Hint: %s" === "Подсказка: %s"
+"Machine accepts your draw offer" === "Компьютер согласился на ничью"
+"Machine offers a draw\nSelect Action / Draw to agree" === "Компьютер предлагает ничью.\nЧтобы согласиться, выберите в меню Игра/Ничья"
+"%s (only move)" === "%s (единственный ход)"
+"Ambiguous move in ICS output: \"%s\"" === "Неоднозначный ход с сервера ICS: \"%s\""
+"Illegal move in ICS output: \"%s\"" === "Неправильный ход с сервера ICS: \"%s\""
+"Gap in move list" === "Пропуск в записи ходов"
+"Game too long; increase MAX_MOVES and recompile" === "Слишком длинная партия: увеличьте значение MAX_MOVES и перекомпилируйте программу"
+"Variant %s not supported by %s" === "Вариант %s не поддерживается %s"
+"Startup failure on '%s'" === "Ошибка при запуске программы '%s'"
+"Waiting for first chess program" === "Ждем первую шахматную программу"
+"Waiting for second chess program" === "Ждем вторую шахматную программу"
+"Match %s vs. %s: final score %d-%d-%d" === "Матч %s против %s: финальный результат %d-%d-%d"
+"Stalemate" === "Пат"
+"Illegal move: %d.%s%s" === "Неправильный ход: %d.%s%s"
+"Ambiguous move: %d.%s%s" === "Неоднозначный ход: %d.%s%s"
+"Can't open \"%s\"" === "Не могу открыть файл \"%s\""
+"Cannot build game list" === "Ошибка построения списка шахматных партий"
+"No more games in this message" === "В этом сообщении больше нет шахматных партий"
+"No game has been loaded yet" === "Нет загруженных шахматных партий"
+"Can't back up any further" === "Достигнуто начало списка"
+"Game number out of range" === "Номер партии - вне диапазона"
+"Can't seek on game file" === "Поиск в файлах записей партий не предусмотрен"
+"Game not found in file" === "Партия не найдена в файле"
+"Bad FEN position in file" === "Неправильная позиция формата FEN в файле"
+"No moves in game" === "Нет записанных ходов"
+"No position has been loaded yet" === "Нет загруженных позиций"
+"Can't back up any further" === "Достигнуто начало списка"
+"Can't open \"%s\"" === "Не могу открыть файл \"%s\""
+"Can't seek on position file" === "Поиск в файлах позиций не предусмотрен"
+"Position not found in file" === "Позиция не найдена в файле"
+"Bad FEN position in file" === "Неправильная позиция формата FEN в файле"
+"Black to play" === "Ход черных"
+"White to play" === "Ход белых"
+"Can't open \"%s\"" === "Не могу открыть файл \"%s\""
+"You have edited the game history.\nUse Reload Same Game and make your move again." === "Вы изменили запись шахматной партии.\nВыберите \"Перезагрузить партию\" и повторите ход еще раз."
+"You have entered too many moves.\nBack up to the correct position and try again." === "Вы ввели слишком много ходов.\nВернитесь назад к правильной позиции и попытайтесь еще раз."
+"Displayed position is not current.\nStep forward to the correct position and try again." === "Показанная позиция не соответствует положению в игре.\nПройдите вперед к правильной позиции и попытайтесь еще раз."
+"You have not made a move yet" === "Вы еще не сделали ход"
+"The cmail message is not loaded.\nUse Reload CMail Message and make your move again." === "Сообщение CMail не загружено.\nВыберите \"Reload CMail Message\" и повторите ход еще раз."
+"No unfinished games" === "Нет неоконченных партий"
+"You have already mailed a move.\nWait until a move arrives from your opponent.\nTo resend the same move, type\n\"cmail -remail -game %s\"\non the command line." === "Вы уже отослали ход.\nПодождите ответного хода соперника.\nДля повторной отправки хода введите:\n\"cmail -remail -game %s\"\nв командной строке."
+"Failed to invoke cmail" === "Ошибка запуска cmail"
+"Waiting for reply from opponent\n" === "Ожидание ответного хода\n"
+"Still need to make move for game\n" === "Все еще ваша очередь ходить в этой партии\n"
+"Still need to make moves for both games\n" === "Все еще ваша очередь ходить в обеих партиях\n"
+"Still need to make moves for all %d games\n" === "Все еще ваш ход во всех %d партиях\n"
+"Still need to make a move for game %s\n" === "Все еще ваш ход в партии %s\n"
+"No unfinished games\n" === "Нет неоконченных партий\n"
+"Ready to send mail\n" === "Можно отсылать почту\n"
+"Still need to make moves for games %s\n" === "Все еще ваша очередь ходить в партиях %s\n"
+"Edit comment" === "Правка комментария"
+"Edit comment on %d.%s%s" === "Правка комментария к %d.%s%s"
+"Starting analysis mode...If this message stays up, your chess program does not support analysis." ===  "Приступаем к анализу...\nЕсли это сообщение не исчезает, вероятно, ваша шахматная программа не поддерживает режим анализа"
+"It is not White's turn" === "Сейчас не ход белых"
+"It is not Black's turn" === "Сейчас не ход черных"
+"Wait until your turn,\nor select Move Now" === "Подождите своей очереди ходить,\nили выберите в меню \"Делай ход\""
+"Starting second chess program" === "Запускается вторая шахматная программа"
+"Training mode off" === "Тренировка окончена"
+"Training mode on" === "Тренировка"
+"Already at end of game" === "Сыграны все ходы данной партии"
+"Warning: You are still playing a game" === "Предупреждение: вы все еще продолжаете играть"
+"Warning: You are still observing a game" === "Предупреждение: вы все еще наблюдаете за игрой"
+"Warning: You are still examining a game" === "Предупреждение: вы все еще изучаете игру"
+"It is Black's turn" === "Ход черных"
+"It is White's turn" === "Ход белых"
+"That square is occupied" === "Это поле занято"
+"There is no pending offer on this move" === "К данному ходу никаких предложений не сделано"
+"Your opponent is not out of time" === "У вашего соперника еще есть время"
+"Black offers a draw" === "Черные предлагают ничью"
+"White offers a draw" === "Белые предлагают ничью"
+"You must make your move before offering a draw" === "Вы должны сделать свой ход прежде, чем предлагать ничью"
+"You are not examining a game" === "Не включен режим изучения шахматных партий"
+"You can't revert while pausing" === "Нельзя вернуться к началу пока выбрана \"Пауза\""
+"Wait until your turn,\nor select Move Now" === "Подождите своей очереди ходить,\nили выберите в меню \"Делай ход\""
+"It is your turn" === "Ваш ход"
+"Wait until your turn" === "Подождите своей очереди ходить"
+"No hint available" === "Подсказок нет"
+"Analysis (%s)" === "Анализ (%s)"
+"Comment" === "Комментарий"
+"Comment on %d.%s%s" === "Комментарий к %d.%s%s"
+"Both flags fell" === "У обоих игроков время вышло"
+"White's flag fell" === "У белых упал флажок"
+"Black's flag fell" === "У черных упал флажок"
+"Bad FEN position in clipboard" === "Позиция в буфере обмена не соответствует формату FEN"
+"No response from ICS" === "Сервер ICS не отвечает"
+"You cannot do this while you are playing or observing" === "Это действие невыполнимо во время игры или наблюдения"
+"Click in holdings to choose piece" === "Чтобы выбрать фигуру из резерва, щелкните по ней"
+
+END-OF-GAME MESSAGES (should they be translated?)
+## I think that only for visualization and not for PGN, as PGN files are shared all around the world
+## [OK, I adapted the source that way. So please translate.]
+
+"Game aborted" === "Партия прервана"
+"White wins on time" === "Белые выиграли по времени"
+"Black wins on time" === "Черные выиграли по времени"
+"Both players ran out of time" === "У обоих игроков закончилось время"
+"White resigns" === "Белые сдались"
+"Black resigns" === "Черные сдались"
+"White mates" === "Белые дают мат"
+"Black mates" === "Черные дают мат"
+"Draw" === "Ничья"
+"Draw agreed" === "Ничья по соглашению"
+"Xboard adjudication: King destroyed" === "Присуждено Xboard: король уничтожен"
+"Xboard adjudication: Bare king" === "Присуждено Xboard: голый король"
+"Xboard adjudication: 3rd check" === "Присуждено Xboard: третий шах"
+"Xboard adjudication: Stalemate" === "Присуждено Xboard: пат"
+"Xboard adjudication: Checkmate" === "Присуждено Xboard: мат"
+"Xboard adjudication: Insufficient mating material" === "Присуждено Xboard: недостаточно материала"
+"Xboard adjudication: Trivial draw" === "Присуждено Xboard: ничья в техническом окончании"
+"XBoard adjudication: repetition draw" === "Присуждено Xboard: ничья из-за повторения"
+"Xboard adjudication: perpetual checking" === "Присуждено Xboard: вечный шах"
+"Xboard adjudication: perpetual chasing" === "Присуждено Xboard: вечное преследование"
+"Xboard adjudication: 50-move rule" === "Присуждено Xboard: правило 50 ходов"
+"Draw claim: 50-move rule" === "Требование ничьей: правило 50 ходов"
+"Draw claim: 3-fold repetition" === "Требование ничьей: трехкратное повторение"
+"Draw claim: insufficient mating material" === "Требование ничьей: недостаточно материала"
+"Xboard adjudication: long game" === "Присуждено Xboard: долгая игра"
+"Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d" === "Xboard: Проигрыш из-за неверного хода: %s (%c%c%c%c) res=%d"
+"Xboard: Forfeit due to illegal move: %s (%c%c%c%c)%c" === "Xboard: Проигрыш из-за неправильного хода: %s (%c%c%c%c)%c"
+"Xboard adjudication" === "Присуждено Xboard"
+"User adjudication" === "Присуждено пользователем"
+"False win claim: '%s'" === "Ошибочное требование победы: '%s'"
+"False draw claim: '%s'" === "Ошибочное требование ничьей: '%s'"
+"xboard exit" === "Выход из Xboard"
+
+

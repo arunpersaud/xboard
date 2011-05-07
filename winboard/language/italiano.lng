@@ -1,0 +1,975 @@
+## WinBoard 4.5.0 language file
+##
+## Italian / Italiano
+## v1.0 beta 1
+##
+## Translation by Giorgio Medeot (09-nov-2010)
+## Traduzione di Giorgio Medeot
+## WEB ADDRESS OF TRANSLATOR
+##
+## If you revise this, please insert your date, name and description.
+## Se modificate questo file, inserite la data, il vostro nome e la descrizione della modifica
+##
+## For example:
+## Per esempio:
+##   24-ago-2010. Juan Pérez (j@xyz.p). Corrected translation for xyzzy.
+
+## Notes for translators (can be deleted from the file after translation):
+##   Just write the translations between the second pair of quotes
+##   Things like %s, %d and %c must be preserved in the original order
+##   Empty translated strings will be ignored, so there is no reason
+##   to delete those for which you don't know a translation,
+##   and you can start testing everything immediately.
+##   Simply rename this file to LANGUAGE.lng, and WinBoard should see it,
+##   and allow you to use the option /language=LANGUAGE.
+##   You are encouraged to call up the corresponding WinBoard dialog while
+##   working on the translation, to see in which context the strings are used.
+##   This is why the strings below are sorted by dialog
+##
+##   Of duplicats, only the first occurrence will be used, even if it was in
+##   a different dialog! For this reason you will only see an 'OK' in the
+##   About Box. After you translated it there, this translation will be used
+##   for all other dialogs as well.
+## o Use ## for comments, to make it easy to find them scattered throughout the translation
+## o Careful with temptation of direct translation, by example 'movimiento' for 'move' when 'jugada' is better.
+## o Try to use short phrases, more text doesn't imply more clearness.
+## o Check that your translation is right, does it mean what it does?
+## o Test your translation, check every dialog.
+## o For standard chess names check Wikipedia for confirmation.
+## o For menus, assign shortcuts (character &) until you finish the translation.
+##   preferably it should be unique in the applicable menu, so it depends on translation of other items!
+
+"      " === "Traduzione di Giorgio Medeot"
+
+winboard.rc
+
+MENUS:
+## Pleace keep the accelerator-key indications on the menu items, and keep 
+## the keystrokes the same (for now). (Alt, Ctrl and Shift can be translated.)
+
+"&New Game\tCtrl-N" === "&Nuova partita\tCtrl-N"
+"New Sh&uffle Game..." === "Nuova partita Shu&ffle..."
+"New &Variant...\tAlt+Shift+V" === "Nuova &variante...\tAlt+Shift+V"
+"&Load Game...\tCtrl-O" === "&Apri partita da file...\tCtrl-O"
+"&Save Game...\tCtrl-S" === "&Salva partita...\tCtrl-S"
+"L&oad Position...\tCtrl+Shift+O" === "Apri &posizione da file...\tCtrl+Shift+O"
+"S&ave Position...\tCtrl+Shift+S" === "&Salva posizione...\tCtrl+Shift+S"
+"Save as &Diagram..." === "Salva come &immagine..."
+"&Quit" === "&Esci"
+## Next six currently not used
+"Load &Next Game\tAlt+PgDn" === "Partita successiva\tAlt+PgDn"
+"Load &Previous Game\tAlt+PgUp" === "Partita precedente\tAlt+PgUp"
+"&Reload Same Game" === "Riapri partita corrente"
+"Load N&ext Position\tAlt+Shift+PgDn" === "Posizione successiva\tAlt+Shift+PgDn"
+"Load Pre&vious Position\tAlt+Shift+PgUp" === "Posizione precedente\tAlt+Shift+PgUp"
+"Reload Sa&me Position" === "Riapri posizione corrente"
+
+"&Copy Game To Clipboard\tCtrl+C" === "&Copia partita\tCtrl+C"
+"C&opy Position To Clipboard\tCtrl+Shift+C" === "&Copia posizione\tCtrl+Shift+C"
+"Copy Game List to Clipboard" === "Copia &lista partite"
+"&Paste Game From Clipboard\tCtrl+V" === "&Incolla partita\tCtrl+V"
+"P&aste Position From Clipboard\tCtrl+Shift+V" === "&Incolla posizione\tCtrl+Shift+V"
+"&Edit Game\tCtrl+E" === "&Modifica partita\tCtrl+E"
+"E&dit Position\tCtrl+Shift+E" === "&Modifica posizione\tCtrl+Shift+E"
+"Edit Ta&gs..." === "Mo&difica informazioni partita..."
+"Edit Co&mment..." === "Mo&difica commento..."
+"Enter &Username..." === "Inserisci nome &utente..."
+"&Revert\tHome" === "&Ripristina\tHome"
+"&Annotate" === "A&nnota"
+"&Truncate Game\tEnd" === "Tr&onca la partita\tEnd"
+"&Backward\tAlt+Left" === "&Indietro\tAlt+Left"
+"&Forward\tAlt+Right" === "&Avanti\tAlt+Right"
+"Back to &Start\tAlt+Home" === "&Torna all'inizio\tAlt+Home"
+"For&ward to End\tAlt+End" === "Vai alla &fine\tAlt+End"
+
+"Flip &View\tF2" === "&Ruota la scacchiera\tF2"
+"&Swap Clocks" === "Scambia gli &orologi"
+"Engine &Output\tAlt+Shift+O" === "&Output del motore di gioco\tAlt+Shift+O"
+"Move &History\tAlt+Shift+H" === "Lista &mosse\tAlt+Shift+H"
+"Evaluation &Graph\tAlt+Shift+E" === "&Grafico della valutazione\tAlt+Shift+E"
+"Game &List\tAlt+Shift+G" === "&Lista partite\tAlt+Shift+G"
+"Open &New Chat Window" === "Apri nuova Chat"
+"Type In &Move...\tAlt+I" === "&Digita mossa...\tAlt+I"
+"&Tags" === "&Informazioni partita"
+"&Comments" === "&Commenti"
+"&Game List Tags..." === "Impostazioni &lista partite..."
+"&Board..." === "&Scacchiera..."
+"&Fonts..." === "&Fonts..."
+
+"Machine &White\tCtrl+W" === "&Bianco al motore di gioco\tCtrl+W"
+"Machine &Black\tCtrl+B" === "&Nero al motore di gioco\tCtrl+B"
+"&Two Machines\tCtrl+T" === "Mo&tore di gioco 1 vs 2\tCtrl+T"
+"Machine Both" === "Osserva motore di gioco"
+"&Analysis Mode\tCtrl+A" === "&Avvia analisi\tCtrl+A"
+"Analyze &File\tCtrl+F" === "Analizza &file\tCtrl+F"
+"&Edit Game\tCtrl+E" === "Mo&difica partita\tCtrl+E"
+"E&dit Position\tCtrl+Shift+E" === "Mo&difica posizione\tCtrl+Shift+E"
+"Trai&ning" === "Allenamento"
+"&ICS Client" === "Connetti ad un &ICS"
+"&Machine Match" === "Matc&h tra i motori di gioco"
+"&Pause\tPause" === "&Pausa\tPause"
+
+"&Accept\tF3" === "&Accetta\tF3"
+"D&ecline\tF4" === "&Declina\tF4"
+"Re&match\tF12" === "&Rigioca\tF12"
+"Call &Flag\tF5" === "Chiama il &Tempo\tF5"
+"&Draw\tF6" === "&Offri Patta\tF6"
+"Ad&journ\tF7" === "A&ggiorna\tF7"
+"A&bort\tF8" === "&Interrompi\tF8"
+"&Resign\tF9" === "Abband&ona\tF9"
+"Stop &Observing\tF10" === "Smetti di o&sservare\tF10"
+"Stop E&xamining\tF11" === "Smetti di &esaminare\tF11"
+"&Upload to Examine" === "&Carica su ICS per esaminare"
+"Adjudicate to &White" === "Aggiudica al &Bianco"
+"Adjudicate to &Black" === "Aggiudica al &Nero"
+"Adjudicate &Draw" === "Aggiudica come &Patta"
+
+"Install 1st..." === "Installa motore 1..."
+"Install 2nd..." === "Installa motore 2..."
+"Engine #&1 Settings..." === "Impostazioni motore &1"
+"Engine #&2 Settings..." === "Impostazioni motore &2"
+"&Hint..." === "&Suggerimento..."
+"&Book..." === "&Libro delle aperture..."
+"&Move Now\tCtrl+M" === "&Muovi subito\tCtrl+M"
+"&Retract Move\tCtrl+X" === "&Annulla mossa\tCtrl+X"
+
+"&Mute all Sounds" === "Modalità silen&ziosa"
+"&General..." === "&Generali..."
+"&Time Control...\tAlt+Shift+T" === "Controllo &Tempo...\tAlt+Shift+T"
+"Common &Engine...\tAlt+Shift+U" === "&Motori di gioco...\tAlt+Shift+U"
+"Ad&judications...\tAlt+Shift+J" === "&Aggiudicazioni...\tAlt+Shift+J"
+"&Load Game...\tAlt+Shift+L" === "Apertura &partita...\tAlt+Shift+L"
+"&Save Game...\tAlt+Shift+S" === "Sal&vataggio partita...\tAlt+Shift+S"
+"G&ame List..." === "&Lista partite..."
+"Soun&ds..." === "Suo&ni..."
+"&ICS..." === "&ICS..."
+"Add ICS..." === "Aggiungi ICS..."
+"Comm&unications..." === "&Comunicazioni..."
+"Save Settings &Now" === "&Salva impostazioni"
+"Save Settings on E&xit" === "Salva impostazioni all'&uscita"
+
+"Help &Contents\tF1" === "&Guida in linea\tF1"
+"Help &Index" === "&Indice della Guida"
+"How to &Use Help" === "&Utilizzo della Guida"
+"&About WinBoard" === "Informazioni su &Winboard"
+
+"White" === "Bianco"
+"Promote" === "Promuovi"
+"Pawn" === "Pedone"
+"Knight" === "Cavallo"
+"Bishop" === "Alfiere"
+"Rook" === "Torre"
+"Queen" === "Donna"
+"King" === "Re"
+## The next 2 are pieces for Capablanca Chess. Use the names from the Wikipedia entry for this,
+## rather than litteral translations of the English names!
+"Archbishop" === "Arcivescovo"
+"Chancellor" === "Cancelliere"
+## Next 2 are Xiangqi (Chinese Chess) pieces. Google for 'Xiangqi' in the target language to get the standard translation.
+"Elephant" === "Elefante"
+"Cannon" === "Cannone"
+## Next 3 are Shogi (Japanese Chess) pieces. Google for 'Shogi' in the target language to get the standard translation.
+"Lance" === "Lancia"
+"Silver" === "Generale Argento"
+"Gold" === "Generale Oro"
+"Empty Square" === "Casa vuota"
+"Black" === "Nero"
+"Demote" === "Degrada"
+"Clear Board    " === "Svuota scacchiera"
+
+"Drop" === "Paracadutaggio"
+
+"Cop&y and Paste" === "Co&pia e Incolla"
+"&Copy" === "&Copia"
+"&Paste" === "&Incolla"
+
+"&Undo" === "&Annulla"
+"Cu&t" === "&Taglia"
+"&Copy" === "&Copia"
+"&Paste" === "&Incolla"
+"Select &All" === "&Seleziona tutto"
+
+DIALOGS:
+
+ABOUTBOX
+
+## Perhaps copyright notices best left untranslated?
+"About WinBoard" === "Informazioni su Winboard"
+"OK" === "OK"
+"Chessboard for Windows" === "Interfaccia per gli Scacchi e varianti per Windows"
+"Copyright 1991 Digital Equipment Corporation" === "Copyright (C) 1991 Digital Equipment Corporation"
+"Enhancements Copyright 1992-2010  Free Software Foundation" === "Modifiche Copyright (C) 1992-2010 Free Software Foundation"
+"Enhancements Copyright 2005\r\nAlessandro Scotti" === "Modifiche Copyright (C) 2005\r\nAlessandro Scotti"
+## What happened with H.G.Muller? [He sold his copyrights to FSF for $1]
+## The following string of 6 spaces can be translated to an acknowledgement of the translator,
+## like "Traducción por Óscar Toledo G.".
+"      " === "Traduzione italiana di Giorgio Medeot"
+"WinBoard 0.0.0" === "WinBoard 4.5.0"
+
+ABOUTBOX2
+
+## Weird, is it needed? [Normally not. It is a built-in 'Easter Egg' joke.]
+"galactic" === "galattico
+
+TIME CONTROL DIALOG
+
+"Time Control" === "Controllo Tempo"
+"Conventional chess clock" === "Orologio tradizionale"
+"Incremental clock" === "Orologio con incremento"
+"Cancel" === "Cancella"
+
+## Next is there really only for the benefit of blind users of the JAWS version...
+"Use arrow keys to specify which clock setting type, then press tab to alter values." === "Usa le frecce per specificare quale tipo di orologio utilizzare, poi premi il tasto tabulazione per modificare i valori."
+"Fixed time per move" === "Tempo per mossa fisso"
+"Number of moves:" === "Mosse:"
+"Within number of minutes:" === "In minuti:"
+"Initial number of minutes:" === "Tempo iniziale in minuti:"
+"Plus number of seconds per move:" === "Secondi aggiuntivi per mossa:"
+"Maximum seconds per move:" === "Secondi per mossa:"
+"Time-Odds Factors:" === "Riduci il tempo di un fattore:"
+"Engine #1:" === "Motore 1:"
+"Engine #2:" === "Motore 2:"
+
+LOAD OPTIONS DIALOG
+
+"Load Game Options" === "Impostazioni apertura partita"
+"Load games with automatic stepping" === "Apri partite attivando replay automatico"
+"seconds per move" === "secondi per mossa"
+
+SAVE OPTIONS DIALOG
+
+"Save Game Options" === "Impostazioni salvataggio partita"
+##"Save Style" === "Tipo file: "
+"Save As: " === "Tipo file: "
+"Save games automatically" === "Salva automaticamente"
+"Prompt for filename" === "Chiedi sempre dove salvare"
+"To file:" === "Salva in:"
+"PGN" === ""
+"Old" === "Formato Winboard 3.x"
+"Browse..." === "Sfoglia..."
+"Save out of book info in PGN" === "Salva informazioni 'out of book' nel PGN"
+
+1536
+## This dialog is only used in some older Windows versions, so you might not be able to test it.
+
+"Open" === "Apri file"
+"File &Name:" === "&Nome file:"
+"&Directories:" === "Cerca &in:"
+"List Files of &Type:" === "&Tipo file:"
+"Dri&ves:" === "&Unità:"
+"&Help" === "&Aiuto"
+
+"&Index number:" === "I&ndice:"
+
+COMMPORT
+## Always disabled if you are not actually using an ICS through a comport, so difficult to test.
+
+"Communication Port Settings" === "Impostazioni porta di comunicazione"
+"Net&work..." === "Re&te..."
+"&Port:" === "&Porta:"
+"Data &Rate:" === "Data &rate:"
+"Data &Bits:" === "Data &bits:"
+"P&arity:" === "P&arità:"
+"&Stop Bits:" === "&Stop bits"
+"F&low:" === "F&lusso"
+
+EDIT COMMENT
+
+"Edit Comment" === "Modifica commento"
+"&Clear" === "&Cancella"
+"&Edit" === "&Modifica"
+
+PROMOTION POPUP
+
+"Promote to:" === "Promuovi a:"
+## next used in Shogi as promotion-popup header
+"Promote?" === "Promuovi?"
+"Promotion" === "Promozione"
+"&Queen" === "&Donna"
+"&Rook" === "&Torre"
+"&Bishop" === "&Alfiere"
+"K&night" === "&Cavallo"
+"&King" === "&Re"
+"&Cancel" === "&Cancella"
+
+"Chance&llor" === "&Cancelliere"
+"&Archbishop" === "&Arcivescovo"
+"YES" === "SI"
+"NO" === "NO"
+"C&entaur" === "&Centauro"
+
+GAME LIST
+
+"Game List" === "Lista partite"
+"&Load" === "&Apri"
+"&Prev" === "&Prec"
+"&Next" === "&Succ"
+"&Close" === "&Chiudi"
+"Filter" === "Filtro"
+
+EDIT TAGS
+
+"Edit Tags" === "Modifica informazioni"
+
+ERROR
+
+"ICS Interaction" === "Console ICS"
+"Dialog" === "Dialogo"
+"Error" === "Errore"
+## I don't think the next will really appear ever.
+"Sorry Charlie" === "Spiacente Ciccio"
+
+COLORIZE
+
+"I C S Interaction Colors" === "Colori Console ICS"
+"Interaction Colors" === "Colori Console"
+"Premove" === "Premossa"
+"Alarm" === "Allarme"
+"Colors" === "Colori"
+"&Choose Color..." === "Scegli &colori"
+"&Bold" === "&Grassetto"
+"&Italic" === "&Corsivo"
+"&Underline" === "&Sottolineato"
+"&Strikeout" === "&Barrato"
+
+QUESTION
+
+## next one seems only a placeholder, and never appears? [might also be just a programmer's joke...]
+"Enter a chess engine command or just type something stupid that will completely screw things up." === "Digita un comando per il motore di gioco"
+"Question" === "Comando diretto"
+"Enter" === "Invia"
+
+STARTUP DIALOG
+
+"WinBoard Startup" === "Avvio di Winboard"
+"What would you like to do?" === "Selezionare una delle seguenti azioni:"
+"&Play against a chess engine or match two engines" === "&Partita contro un motore di gioco o match tra due motori"
+"&Use an Internet Chess Server" === "&Connetti ad un Internet Chess Server"
+"Just &view or edit game files" === "&Apri o modifica una partita su file"
+"Specify Chess &Engines:" === "Specificare &motore di gioco:"
+"Specify Chess &Server:" === "Specificare indirizzo &ICS:"
+"&Additional options" === "&Opzioni aggiuntive:"
+
+INDEX (IN FILE-BROWSE DIALOG)
+
+"Inde&x number:" === "I&ndice:"
+
+MOVE TYPE-IN
+
+"Type in a move" === "Digita una mossa"
+
+USER-NAME TYPE-IN
+
+"Type in your name" === "Inserisci il tuo nome"
+
+SOUND DIALOG
+
+"Sounds" === "Impostazioni suoni"
+
+"&Event:" === "&Evento:"
+"&No sound" === "&Silenzioso"
+"&Default beep" === "&Beep"
+"&Built-in sound:" === "Suoni &predefiniti:"
+"&WAV file:" === "&File WAV:"
+
+"B&rowse..." === "&Apri..."
+"&Play" === "A&scolta"
+"&Defaults" === "&Default"
+
+GENERAL OPTIONS DIALOG
+## please keep the indication of the accelerator keys for the same keystroke
+## Note: finely tuned spaces to align keys at right
+
+"General Options" === "Impostazioni generali"
+"Always on &Top" === "Sempre in &primo piano"
+"Always &Queen            Ctrl+Shift+Q" === "Promuovi a &Donna                    Ctrl+Shift+Q"
+"Animate &Dragging" === "&Trascinamento animato"
+"&Animate Moving         Ctrl+Shift+A" === "&Mosse animate                          Ctrl+Shift+A"
+"Auto &Flag                   Ctrl+Shift+F" === "Aggiudica sul &tempo                  Ctrl+Shift+F"
+"Auto Flip &View" === "Ruota &vista automaticamente"
+"Auto &Raise Board" === "Porta in p&rimo piano"
+"&Blindfold" === "Alla &cieca"
+"Highlight Dra&gging" === "Eviden&zia trascinamento"
+"Highlight Last &Move" === "&Evidenzia l'ultima mossa"
+"Periodic &Updates" === "&Aggiornamenti continui"
+"Ponder &Next Move  Ctrl+Shift+P" === "Pe&nsa sul mio tempo             Ctrl+Shift+P"
+"&Popup Exit Message" === "C&hiedi conferma alla chiusura"
+"Popup Move &Errors" === "Mostra pop&up per mosse errate"
+"Show Butt&on Bar" === "Mostra &barra dei pulsanti"
+"Show &Coordinates" === "Mostra c&oordinate"
+"&Show Thinking" === "Mo&stra output del motore"
+"Test &Legality            Ctrl+Shift+L" === "Verifica mosse i&llegali             Ctrl+Shift+L"
+"&Hide Thinking          Ctrl+Shift+H" === "N&ascondi analisi                    Ctrl+Shift+H"
+"&Info in Move History   Ctrl+Shift+I" === "&Informazioni nella Lista mosse   Ctrl+Shift+I"
+"&Send Engine Think" === "Invia l'output del &motore di gioco"
+"E&xtended PGN Info    Ctrl+Shift+X" === "&Informazioni PGN estese           Ctrl+Shift+X"
+"Highlight with Arro&w" === "Evidenzia con una &freccia"
+"Displa&y Logos" === "Mostra i &loghi"
+"One-Click Move" === "Muovi con click &singolo"
+
+ICS OPTIONS
+
+"ICS Options" === "Impostazioni ICS"
+"&Auto Comment" === "&Commenti automatici"
+"Auto &Observe" === "&Osserva automaticamente"
+"&Get Move List" === "Scarica lista &mosse"
+"&Local Line Editing" === "Modifiche in &locale"
+"&Quiet Play" === "Non &disturbare durante il gioco"
+"&Premove" === "&Premosse"
+"&White first move" === "1° mossa &Bianco"
+"&Black first move" === "1° mossa &Nero"
+"&Sound alarm at" === "Avvi&sa a"
+"seconds" === "secondi"
+"Choose..." === "Scegli..."
+"Do &not colorize messages" === "Non colorare i &messaggi"
+"&Auto Kibitz" === "&Auto Kibitz"
+"Auto Kibit&z" === "Auto Kibit&z"
+"See&k Graph" === "Grafico delle &richieste"
+"auto-&Refresh" === "Auto a&ggiorna"
+"Bckgnd Obser&ve" === "&Osserva in bckgnd"
+"&Dual Board" === "Doppia &scacchiera"
+"One-Click &Move" === "&Mossa con click singolo"
+"Background..." === "Sfondo..."
+"&Defaults..." === "&Default..."
+"Startup &Chat Boxes:" === "Apri &Chat all'avvio:"
+"General" === "Generali"
+
+BOARD OPTIONS
+## (NOTE: AllWhite uses the white (outline-style) piece bitmaps for both sides
+##        FlipBlack draws the black pieces upside down)
+
+"Board Options" === "Impostazioni scacchiera"
+"Defaults" === "Default"
+"Light Squares" === "Case bianche"
+"Dark Squares" === "Case nere"
+"White Pieces" === "Pezzi bianchi"
+"Black Pieces" === "Pezzi neri"
+"Square Highlights" === "Case evidenziate"
+"Premove Highlights" === "Premosse evidenziate"
+"Monochrome" === "Monocromatico"
+"All White" === "Neri a colore pieno"
+"Flip Black" === "Neri capovolti"
+"Size" === "Dimensioni"
+
+BOARD SIZES (translate as number?)
+## Don't put numbers, or nobody will translate them. [True. But do we really want them translated?]
+## This is a space for imagination!
+"&Tiny" === "&Minima"
+"T&eeny" === "&Scricciola"
+"&Dinky" === "&Minuscola"
+"&Petite" === "&Piccina"
+"Sl&im" === "&Ridotta"
+"&Small" === "&Piccola"
+"Medi&ocre" === "&Contenuta"
+"&Middling" === "&Modesta"
+"&Average" === "&Usuale"
+"Mode&rate" === "&Moderata"
+"Medi&um" === "&Media"
+"Bul&ky" === "&Ampia"
+"&Large" === "&Estesa"
+"&Big" === "&Grande"
+"&Huge" === "&Imponente"
+"&Giant" === "&Gigantesca"
+"&Colossal" === "&Colossale"
+"Tita&nic" === "&Titanica"
+
+FONTS
+
+"Fonts" === "Font"
+"Current Board Size" === "Dmensione scacchiera corrente"
+"All Board Sizes" === "Impostazioni globali"
+"&Revert to Defaults" === "Valori di &default"
+"Clocks" === "Orologi"
+"Messages" === "Messaggi"
+"Coordinates" === "Coordinate"
+"Tags" === "Tags"
+"Comments" === "Commenti"
+"I C S Interaction" === "Console ICS"
+
+"&Color..." === "&Colori..."
+"Move History, Engine Output" === "Lista mosse,\noutput motore"
+
+ADJUDICATIONS DIALOG
+
+"Adjudications" === "Impostazioni aggiudicazioni"
+"Ponder Next Move" === "Pensa sul mio tempo"
+"Enable and Show Thinking (recommended)" === "Abilita e mostra output del motore (raccomandato)"
+"Hide Thinking when Playing against Human" === "Nascondi l'output del motore se gioca contro un uomo"
+"Periodic Updates (for Analysis Mode)" === "Aggiornamenti continui (per Modalità di analisi)"
+"Adjudications in non-ICS games" === "Aggiudicazioni in partite non ICS"
+"Adjudicate draw after:" === "Aggiudica patta dopo:"
+"moves" === "mosse"
+"Win/loss adjudication threshold:" === "Limite per aggiudicare vinta/persa:"
+"centipawns" === "centipawn"
+"&Verify Engine Claims" === "&Verifica gli annunci del motore"
+"Detect &Mates" === "Individua scacco &matto"
+"Draw if &Insufficient Material" === "Patta per materiale &insufficiente"
+"Adjudicate &Trivial Draws" === "Aggiudica patte &triviali"
+"Apply" === "Applica regole"
+## next 2 are suffixed to a text-edit containing a number (50 or 3)
+"-move rule" === "mosse irreversibili"
+"-fold repeats" === "ripetizioni di posizione"
+"Engine #1 Score is Absolute" === "Output motore 1 sempre riferito al Bianco"
+"Engine #2 Score is Absolute" === "Output motore 2 sempre riferito al Bianco"
+
+COMMON ENGINE DIALOG
+
+"Common Engine Settings" === "Impostazioni motori di gioco"
+"Polyglot Directory:" === "Cartella Polyglot:"
+"Hash Size (MB):" === "Dimensione Hash [MB]:"
+"EGTB Path:" === "Cartella EGTB:"
+"EGTB Size (MB):" === "Dimensione EGTB [MB]:"
+"Use Book:" === "Libro aperture:"
+"Max nr of CPUs:" === "Num max di CPU:"
+"First has Own Book" === "Libro proprio per motore 1"
+"Second has Own Book" === "Libro proprio per motore 2"
+"Book Depth:" === "Profondità Libro:"
+"Book Variation:" === "Varianti Libro:"
+"Default Match Games:" === "Partite per match:"
+
+NEW-VARIANT DIALOG
+## (NOTE: the 'holdings' are the pieces standing next to the board ('in hand')
+
+"Variants" === "Varianti di gioco"
+"Variant" === "Variante"
+"Board size:" === "Scacchiera:"
+"ranks" === "traverse"
+"files" === "colonne"
+"Holdings with room for:" === "Num max di pezzi in mano"
+"pieces" === "pezzi"
+"('-1' means defaults for selected variant)" === "('-1' per il default della variante selezionata)"
+
+VARIANT NAMES: 
+"&normal" === "&Normale"
+"&FRC" === "&FRC"
+"&wildcastle" === "&Wildcastle"
+"&nocastle" === "&Nocastle"
+"&losers" === "&Losers"
+"&giveaway" === "&Giveaway"
+"s&uicide" === "S&uicide"
+"&3Check" === "&3Check"
+"&twokings" === "&Twokings"
+"&atomic" === "&Atomic"
+"cra&zyhouse" === "Cra&zyhouse"
+"&bughouse" === "&Bughouse"
+"&Twilight" === "&Twilight"
+"&shogi" === "&Shogi"
+"su&per" === "Su&per"
+"&knightmate" === "&Knightmate"
+"&Berolina" === "&Berolina"
+"c&ylinder" === "&Cilindrici"
+"&fairy" === "&Fairy"
+"&makruk" === "&Makruk"
+"&gothic" === "&Gothic"
+"&capablanca" === "&Capablanca"
+"&Janus" === "&Janus"
+"&CRC" === "&CRC"
+"&Falcon" === "&Falcon"
+"cou&rier" === "Cou&rier"
+"&Great" === "&Great"
+"&Shatranj" === "&Shatranj"
+"&xiangqi" === "&Xiangqi"
+
+NEW SHUFFLE GAME
+
+"New Shuffle Game" === "Partita Shuffle"
+"&Start Position Number:" === "Disposizione iniziale:"
+"Random" === "Casuale"
+
+GAME-LIST OPTIONS DIALOG
+
+"Game List Options" === "Impostazioni lista partite"
+"PGN &Tags:" === "&Informazioni PGN:"
+"&Up" === "Muovi &su"
+"&Down" === "Muovi &giu"
+"Default" === "Default"
+"Factory" === "Fabbrica"
+"Restore to:" === "Reimposta:"
+
+MOVE HISTORY WINDOW
+
+"Move History" === "Lista mosse"
+
+EVALUATION GRAPH
+
+"Evaluation Graph" === "Grafico della valutazione"
+
+ENGINE OUTPUT WINDOW
+
+"Engine output" === "Output del motore di gioco"
+"Engine #1" === "Motore 1"
+"NPS" === ""
+"Engine #2" === "Motore 2"
+
+CHAT BOXES
+
+"Chat Window" === "Finestra della Chat"
+"Chat partner:" === "Compagno di chat:"
+"Clear" === "Cancella"
+"Send" === "Invia"
+
+winboard.c
+
+"&File" === "&File"
+"&Edit" === "&Modifica"
+"&View" === "&Visualizza"
+"&Mode" === "&Modalità"
+"&Action" === "&Azioni"
+"&Step" === "&Avanzamento"
+"E&ngine" === "&Motore"
+"&Options" === "&Impostazioni"
+"&Help" === "&Aiuto"
+"You can only start a match from the initial position." === "Un match può essere avviato solo dalla posizione iniziale."
+"Font name too long:" === "Nome del font troppo lungo:"
+"Font point size missing:" === "Dimensione del font mancante:"
+"Can't parse color name %s" === "Impossibile leggere nome del colore %s"
+"Unrecognized board size value" === "Dimensione scacchiera non riconosciuta"
+"Unrecognized argument" === "Argomento non riconosciuto"
+"No value provided for argument" === "Valore mancante per l'argomento"
+"Incomplete \\ escape in value for" === "Escape \\ incompleto nel valore per"
+"Failed to open indirection file" === "Apertura fallita per il file di reindirizzamneto"
+"Unrecognized boolean argument value" === "Valore non valido per argomento booleano"
+"Unrecognized argument" === "Argomento non riconosciuto"
+"Too many colors" === "Troppi colori"
+"&Minimize\tCtrl+F4" === "&Minimizza\tCtrl+F4"
+"White: %s" === "Bianco: %s"
+"We only care about the height here" === "Qui solo l'altezza è significativa"
+"Cannot build game list" === "Impossibile costruire lista delle partite"
+"Load Game from File" === "Apri partita da file"
+"Load Position from File" === "Apri posizione da file"
+"Save Game to File" === "Salva partita"
+"Save Position to File" === "Salva posizione"
+"%s does not support analysis" === "%s non supporta l'analisi"
+"Analyze Game from File" === "Analizza partita da file"
+"Unable to activate help" === "Impossibile aprire file della guida"
+"Send to chess program:" === "Invia al motore di gioco:"
+"Send to second chess program:" === "Invia al secondo motore di gioco"
+"Direct Command" === "Comando diretto"
+"Error loading sound %s" === "Errore nell'apertura del suono %s"
+"Error playing sound %s" === "Errore nella riproduzione del suono %s"
+"File open failed" === "Apertura file fallita"
+"Internal error in file dialog box" === "Errore interno nella finestra di dialogo apertura file"
+"Option Error" === "Errore nelle opzioni"
+"Choose an option, or cancel to exit" === "Scegli un'opzione o premi Cancella per uscire"
+"Unable to activate help" === "Impossibile aprire file della guida"
+"Displayed move is not current" === "La mossa mostrata non è quella corrente"
+"Could not parse move" === "Impossibile leggere mossa"
+"%s:\nError code %d" === "%s:\nCodice errore %d"
+"Error" === "Errore"
+"Fatal Error" === "Errore fatale"
+"Exiting" === "Chiusura in corso"
+"%s:\nError code %d" === "%s:\nCodice errore %d"
+"Note" === "Nota"
+"Error writing to chess program" === "Errore in scrittura sul motore di gioco"
+"User" === "Utente"
+"Unknown" === "Sconosciuto"
+"White" === "Bianco"
+"Black" === "Nero"
+"Save Game to File" === "Salva partita"
+"Not implemented" === "Non implementato"
+
+"Shout Text" === "Testo Shout"
+"SShout/CShout" === ""
+"Channel 1 Text" === "Testo Canale 1"
+"Channel Text" === "Testo Canale"
+"Kibitz Text" === "Testo Kibitz"
+"Tell Text" === "Testo Tell"
+"Challenge Text" === "Testo Challenge"
+"Request Text" === "Testo Richiesta"
+"Seek Text" === "Testo Seek"
+"Normal Text" === "Testo normale"
+"None" === "Nessuno"
+"Pawn" === "Pedone"
+"Knight" === "Cavallo"
+"Bishop" === "Alfiere"
+"Rook" === "Torre"
+"Queen" === "Donna"
+"Information" === "Informazione"
+
+wclipbrd.c
+
+"Unable to convert position to FEN." === "Impossibile convertire posizione in FEN."
+"Unable to copy FEN to clipboard." === "Impossibile copiare FEN negli Appunti."
+"Cannot create temporary file name." === "Impossibile creare nome file temporaneo."
+"Cannot open temporary file." === "Impossibile aprire file temporaneo."
+"Cannot write to temporary file." === "Impossibile scrivere su file temporaneo."
+"Cannot reopen temporary file." === "Impossibile riaprire file temporaneo."
+"Cannot determine size of file." === "Impossibile determinare la dimensione del file."
+"Cannot allocate clipboard buffer." === "Impossibile allocare il buffer per gli Appunti."
+"Cannot read from temporary file." === "Impossibile leggere da file temporaneo."
+"Error reading from temporary file." === "Errore in lettura da file temporaneo."
+"Cannot copy text to clipboard" === "Impossibile copiare il testo negli Appunti"
+"Unable to allocate memory for clipboard." === "Impossibile allocare la memoria per gli Appunti."
+"Unable to lock clipboard memory." === "Impossibile riservare la memoria per gli Appunti."
+"Cannot unlock clipboard memory." === "Impossibile rilasciare la memoria per gli Appunti."
+"Cannot open clipboard." === "Impossibile aprire gli Appunti."
+"Cannot empty clipboard." === "Impossibile svuotare gli Appunti"
+"Cannot copy text to clipboard." === "Impossibile copiare il testo negli Appunti."
+"Cannot close clipboard." === "Impossibile chiudere gli Appunti."
+"Unable to paste FEN from clipboard." === "Impossibile incollare FEN dagli Appunti."
+"Unable to create temporary file." === "Impossibile creare file temporaneo."
+"Error writing to temporary file." === "Errore in scrittura su file temporaneo."
+"Unable to open clipboard." === "Impossibile aprire gli Appunti."
+"No text in clipboard." === "NEssun testo negli Appunti."
+"Unable to lock clipboard memory." === "Impossibile riservare la memoria per gli Appunti."
+"Unable to allocate memory for text string." === "Impossibile allocare la memoria per il testo."
+"Unable to unlock clipboard memory." === "Impossibile rilasciare la memoria per gli Appunti."
+"Unable to close clipboard." === "Impossibile chiudere gli Appunti."
+
+woptions.c
+
+## For now, do NOT translate sound names, because WinBoard will no longer recognize them
+"Move" === ""
+"Bell" === ""
+"ICS Alarm" === ""
+"ICS Win" === ""
+"ICS Loss" === ""
+"ICS Draw" === ""
+"ICS Unfinished" === ""
+"Shout" === ""
+"SShout/CShout" === ""
+"Channel 1" === ""
+"Channel" === ""
+"Kibitz" === ""
+"Tell" === ""
+"Challenge" === ""
+"Request" === ""
+"Seek" === ""
+## end of sound names
+
+"Browse for Sound File" === "Sfoglia..."
+"Can't parse com port settings" === "Impossibile leggere le impostazioni per la porta COM"
+"Option Error" === "Errore nelle impostazioni"
+"Invalid data rate" === "Data Rate non valido"
+"Option Error" === "Errore nelle impostazioni"
+"Failed to set comm port state;\r\ninvalid options?" === "Settaggio della porta COM fallito;\r\nimpostazioni non valide?"
+"Failed to set comm port state" === "Settaggio dello stato della porta COM fallito"
+"Invalid load game step rate" === "Velocità replay partita non valida"
+"Invalid save game file name" === "Nome file per salvataggio partita non valido"
+"Browse for Auto Save File" === "Sfoglia nome file Salvataggio Automatico"
+"Invalid moves per time control" === "Numero mosse per sessione non valido"
+"Invalid minutes per time control" === "Valore minuti per sessione non valido"
+"Invalid increment" === "Valore incremento non valido"
+"Invalid initial time" === "Valore tempo iniziale non valido"
+"Changing time control during a game is not implemented" === "La possibilità di modificare il controllo di tempo durante la partita non è implementata"
+
+"Variant %s not supported by %s" === "La variante %s non è supportata da %s"
+"Warning: second engine (%s) does not support this!" === "Attenzione: il secondo motore di gioco (%s) non supporta questa azione!"
+"Invalid ICS Alarm Time" === "Valore per allarme controllo tempo ICS non valido"
+"Invalid max time per move" === "Valore tempo massimo per mossa non valido"
+"Invalid time-odds factor" === "Fattore di riduzione del tempo non valido"
+"Choose Folder" === "Scegli cartella"
+"Choose Book" === "Scegli Libro aperture"
+"Choose Polyglot Directory" === "Scegli cartella Polyglot"
+"Choose EGTB Directory:" === "Scegli cartella EGTB:"
+"Polyglot was not found in the specified folder!" === "Polyglot non è stato trovato nella cartella specificata!"
+
+wgamelist.c
+
+"No game selected" === "Nessuna partita selezionata"
+"Can't go forward any further" === "Impossibile avanzare oltre"
+"Can't back up any further" === "Impossibile tornare più indietro"
+"No game list" === "Nessuna lista partite"
+"Game List" === "Lista partite"
+"Game list not loaded or empty" === "Lista partite vuota o non caricata"
+"%s - %d/%d games" === "%s - %d/%d partite"
+
+wedittags.c
+
+"Edit Tags" === "Modifica informazioni"
+"Tags" === "Campi"
+"Error replacing tags." === "Errore nella sostituzione dei campi"
+
+wsettings.c
+
+"%s Engine Settings (%s)" === "Impostazioni %s motore di gioco (%s)"
+"OK" === "OK"
+"Cancel" === "Cancella"
+
+backend.c
+
+"bad timeControl option %s" === "Opzione timeControl non corretta: %s"
+"bad searchTime option %s" === "Opzione searchTime non corretta: %s"
+## following to will appear in combinations like "first engine" 
+"first" === "primo"
+"second" === "secondo"
+"protocol version %d not supported" === "Versione %d del protocollo non supportata"
+"Variant %s supported only in ICS mode" === "La variante %s è supportata solo in modalità ICS"
+"Unknown variant name %s" === "Nome di variante sconosciuto: %s"
+"Starting chess program" === "Avvio del motore di gioco"
+"Could not open comm port %s" === "Apertura della porta comm %s fallita"
+"Could not connect to host %s, port %s" === "Connessione all'host %s, porta %s fallita"
+"Unknown initialMode %s" === "Valore per initialMode non riconosciuto: %s"
+"Can't have a match with no chess programs" === "Impossibile avviare un match senza specificare alcun motore di gioco"
+"Bad game file" === "File partita non riconosciuto"
+"Bad position file" === "File posizione non riconosciuto"
+"AnalyzeFile mode requires a game file" === "La modalità 'Analizza file' richiede un file partita"
+"Analysis mode requires a chess engine" === "La modalità Analisi richiede un motore di gioco"
+"Analysis mode does not work with ICS mode" === "La funzione di Analisi non è disponibile in modalità ICS"
+"MachineWhite mode requires a chess engine" === "La modalità 'Bianco al motore di gioco' richiede almeno un motore"
+"MachineWhite mode does not work with ICS mode" === "La funzione 'Bianco al motore di gioco' non è disponibile in modalità ICS"
+"MachineBlack mode requires a chess engine" === "La modalità 'Nero al motore di gioco' richiede almeno un motore"
+"MachineBlack mode does not work with ICS mode" === "La funzione 'Nero al motore di gioco' non è disponibile in modalità ICS"
+"TwoMachines mode does not work with ICS mode" === "La funzione 'Motore di gioco 1 vs 2' non è disponibile in modalità ICS"
+"TwoMachines mode requires a chess engine" === "La modalità 'Motore di gioco 1 vs 2' richiede almeno un motore di gioco"
+"Training mode requires a game file" === "La modalità Allenamento richiede un file partita"
+"Error writing to ICS" === "Errore in scrittura sull'ICS"
+"Error reading from keyboard" === "Errore in lettura da tastiera"
+"Got end of file from keyboard" === "Ricevuto carattere di Fine file (EOF) dalla tastiera"
+"Error writing to ICS" === "Errore in scrittura sull'ICS"
+"Error writing to display" === "Errore in scrittura sul display"
+"Error gathering move list: two headers" === "Errore nella lettura della lista mosse: sono presenti due intestazioni"
+"Error gathering move list: nested" === "Errore nella lettura della lista mosse: mosse annidate"
+"Connection closed by ICS" === "Connessione chiusa dal'ICS"
+"Error reading from ICS" === "Errore in lettura dall'ICS"
+"Failed to parse board string:\n\"%s\"" === "Lettura della descrizione posizione fallita:\n\"%s\""
+"Game too long; increase MAX_MOVES and recompile" === "Partita troppo lunga; incrementare il valore di MAX_MOVES e ricompilare"
+"Error gathering move list: extra board" === "Errore nela lettura della lista mosse: è presente una posizione in più"
+"Illegal move \"%s\" from ICS" === "Mossa illegale dall'ICS: \"%s\""
+"Couldn't parse move \"%s\" from ICS" === "Impossibile interpretare la mossa dall'ICS: \"%s\""
+## The leading 'say' is used as ICS command here, and should NOT be translated. Only the message behind it.
+"say Internal error; bad moveType %d (%d,%d-%d,%d)" === "say Errore interno; moveType malformato %d (%d,%d-%d,%d)"
+"You are playing Black" === "Stai giocando con il Nero"
+"You are playing White" === "Stai giocando con il Bianco"
+"It is White's turn" === "Il tratto è al Bianco"
+"It is Black's turn" === "Il tratto è al Nero"
+"Displayed position is not current" === "La posizione mostrata non è quella corrente"
+"Illegal move" === "Mossa illegale"
+"End of game" === "Termine della partita"
+"Incorrect move" === "Mossa non corretta"
+## next 6: Second (first 3) or first (other) '%s' will be substituted for 'first' or 'second'.
+"Illegal move \"%s\" from %s machine" === "Mossa illegale \"%s\" dal %s motore di gioco"
+"Illegal move \"%s\" (rejected by %s chess program)" === "Mossa illegale \"%s\" (rifiutata dal %s motore di gioco)"
+"Failed to start %s chess program %s on %s: %s\n" === "Avvio del %s motore di gioco %s su %s fallito: %s\n"
+"Error writing to %s chess program" === "Errore in scrittura sul %s motore di gioco"
+"Error: %s chess program (%s) exited unexpectedly" === "Errore: il %s motore di gioco (%s) è terminato in maniera inaspettata"
+"Error reading from %s chess program (%s)" === "Errore in lettura dal %s motore di gioco (%s)"
+"Forfeit due to illegal move" === "Forfeit decretato per mossa illegale"
+"%s does not support analysis" === "%s non supporta la modalità di analisi"
+"Hint: %s" === "Suggerimento: %s"
+"Machine accepts your draw offer" === "Il motore di gioco accetta la tua offerta di patta"
+"Machine offers a draw\nSelect Action / Draw to agree" === "Il motore di gioco offre la patta\nPer accettare seleziona il menù Azioni / Offri Patta"
+"%s (only move)" === "%s (unica mossa)"
+"Ambiguous move in ICS output: \"%s\"" === "Mossa ambigua nell'output dell'ICS: \"%s\""
+"Illegal move in ICS output: \"%s\"" === "Mossa illegale nell'output dell'ICS: \"%s\""
+"Gap in move list" === "Mosse mancanti nella lista mosse"
+"Game too long; increase MAX_MOVES and recompile" === "Partita troppo lunga; incrementare il valore di MAX_MOVES e ricompilare"
+"Variant %s not supported by %s" === "La variante %s non è supportata da %s"
+"Startup failure on '%s'" === "Avvio di '%s' fallito"
+"Waiting for first chess program" === "In attesa del primo motore di gioco"
+"Waiting for second chess program" === "In attesa del secondo motore di gioco"
+"Match %s vs. %s: final score %d-%d-%d" === "Match %s vs %s: punteggio finale %d-%d-%d"
+"Stalemate" === "Stallo"
+"Illegal move: %d.%s%s" === "Mossa illegale: %d.%s%s"
+"Ambiguous move: %d.%s%s" === "Mossa ambigua: %d.%s%s"
+"Can't open \"%s\"" === "Impossibile aprire \"%s\""
+"Cannot build game list" === "Impossibile costruire la lista partite"
+"No more games in this message" === "In questo messaggio non sono presenti altre partite"
+"No game has been loaded yet" === "Non è ancora stata caricata nessuna partita"
+"Can't back up any further" === "Impossibile risalire oltre"
+"Game number out of range" === "Indice superiore al numero di partite"
+"Can't seek on game file" === "Impossibile effettuare la ricerca nel file di partita"
+"Game not found in file" === "Partita non trovata nel file"
+"Bad FEN position in file" === "Stringa FEN di posizione scorretta nel file"
+"No moves in game" === "Partita senza mosse"
+"No position has been loaded yet" === "Non è ancora stata caricata nessuna posizione"
+"Can't back up any further" === "Impossibile risalire oltre"
+"Can't open \"%s\"" === "Impossibile aprire \"%s\""
+"Can't seek on position file" === "Impossibile effettuare la ricerca nel file di posizione"
+"Position not found in file" === "Posizione non trovata nel file"
+"Bad FEN position in file" === "Stringa FEN di posizione scorretta nel file"
+"Black to play" === "Il tratto è al Nero"
+"White to play" === "Il tratto è al Bianco"
+"Can't open \"%s\"" === "Impossibile aprire \"%s\""
+"You have edited the game history.\nUse Reload Same Game and make your move again." === "La lista mosse è stata modificata.\nUtilizzare 'Riapri partita corrente' e ripetere la mossa"
+"You have entered too many moves.\nBack up to the correct position and try again." === "Sono state immesse troppe mosse.\nRitornare alla posizione corretta e riprovare."
+"Displayed position is not current.\nStep forward to the correct position and try again." === "La posizione mostrata non è quella corrente.\nAvanzare fino alla posizione corretta e riprovare."
+"You have not made a move yet" === "Non hai ancora fatto alcuna mossa"
+"The cmail message is not loaded.\nUse Reload CMail Message and make your move again." === "Il messaggio cmail non è stato caricato.\Utilizzare 'Ricarica Messaggio CMail e reimmettere la mossa."
+"No unfinished games" === "Non è presente nessuna partita non terminata"
+"You have already mailed a move.\nWait until a move arrives from your opponent.\nTo resend the same move, type\n\"cmail -remail -game %s\"\non the command line." === "E' già stata postata una mossa.\nAttendere sino a quando non viene inviata una mossa dall'avversario.\nPer reinviare la stessa mossa, digitare\n\"cmail -remail -game %s\"\nsulla riga di comando."
+"Failed to invoke cmail" === "Impossibile aprire l'applicazione cmail"
+"Waiting for reply from opponent\n" === "In attesa di risposta dall'avversario\n"
+"Still need to make move for game\n" === "Occorre ancora eseguire la mossa per la partita\n"
+"Still need to make moves for both games\n" === "Occorre ancora eseguire mosse per entrambe le partite\n"
+"Still need to make moves for all %d games\n" === "Occorre ancora eseguire mosse per tutte le %d partite\n"
+"Still need to make a move for game %s\n" === "Occorre ancora eseguire una mossa per la partita %s\n"
+"No unfinished games\n" === "Non è presente nessuna partita non terminata"
+"Ready to send mail\n" === "Pronto all'invio della posta\n"
+"Still need to make moves for games %s\n" === "Occorre ancora eseguire mosse per le partite %s\n"
+"Edit comment" === "Modifica commento"
+"Edit comment on %d.%s%s" === "Modifica commento a %d.%s%s"
+##"Starting analysis mode...\nIf this message stays up, your chess program does not support analysis." ===  "Comenzando modo de análisis...\nSi este mensaje permanece, su programa de ajedrez no admite análisis."
+"Starting analysis mode...\nIf this message stays up, your chess program does not support analysis." ===  "Avvio della modalità di analisi...\nSe questo messaggio rimane visibile, il motore di gioco non supporta la modalità di analisi."
+"It is not White's turn" === "Il tratto non è al Bianco"
+"It is not Black's turn" === "Il tratto non è al Nero"
+"Wait until your turn,\nor select Move Now" === "Attendi il tuo turno,\noppure seleziona 'Muovi subito'"
+"Starting second chess program" === "Avvio del secondo motore di gioco"
+"Training mode off" === "Modalità Allenamento disattivata"
+"Training mode on" === "Modalità Allenamento attivata"
+"Already at end of game" === "Già alla fine della partita"
+"Warning: You are still playing a game" === "Avviso: Stai ancora giocando una partita"
+"Warning: You are still observing a game" === "Avviso: Stai ancora osservando una partita"
+"Warning: You are still examining a game" === "Avviso: Stai ancora esaminando una partita"
+"It is Black's turn" === "Il tratto è al Nero"
+"It is White's turn" === "Il tratto è al Bianco"
+"That square is occupied" === "La casa è già occupata"
+"There is no pending offer on this move" === "Non vi è alcuna offerta pendente a questa mossa"
+"Your opponent is not out of time" === "Il tuo avversario non ha ancora esaurito il proprio tempo"
+"Black offers a draw" === "Il Nero offre la patta"
+"White offers a draw" === "Il Bianco ofre la patta"
+"You must make your move before offering a draw" === "Devi eseguire la tua mossa prima di offrire la patta"
+"You are not examining a game" === "Non stai esaminando alcuna partita"
+"You can't revert while pausing" === "Non è possibile ripristinare mentre la pausa è attiva"
+"Wait until your turn,\nor select Move Now" === "Attendi il tuo turno,\noppure seleziona 'Muovi subito'"
+"It is your turn" === "E' il tuo turno"
+"Wait until your turn" === "Attendi il tuo turno"
+"No hint available" === "Nessun suggerimento disponibile"
+"Analysis (%s)" === "Analisi (%s)"
+"Comment" === "Commento"
+"Comment on %d.%s%s" === "Commento a %d.%s%s"
+"Both flags fell" === "Tempo esaurito per entrambi"
+"White's flag fell" === "Tempo esaurito per il Bianco"
+"Black's fell" === "Tempo esaurito per il Nero"
+"Bad FEN position in clipboard" === "Stringa FEN di posizione scorretta negli Appunti"
+"No response from ICS" === "Nessuna risposta dall'ICS"
+"You cannot do this while you are playing or observing" === "Questa operazione non può essere eseguita mentre si sta giocando o osservando una partita"
+"Click in holdings to choose piece" === "Cliccare sui pezzi 'in mano' per sceglierne uno"
+
+END-OF-GAME MESSAGES (should they be translated?)
+## I think that only for visualization and not for PGN, as PGN files are shared all around the world
+## [OK, I adapted the source that way. So please translate.]
+
+"Game aborted" === "Partita abortita"
+"White wins on time" === "Il Bianco vince sul tempo"
+"Black wins on time" === "Il Nero vince sul tempo"
+"Both players ran out of time" === "Tempo esaurito per entrambi i giocatori"
+"White resigns" === "Il Bianco abbandona"
+"Black resigns" === "Il Nero abbandona"
+"White mates" === "Il Bianco matta"
+"Black mates" === "Il Nero matta"
+"Draw" === "Patta"
+"Draw agreed" === "Patta concordata"
+"Xboard adjudication: King destroyed" === "Aggiudicazione di Xboard: Re distrutto"
+"Xboard adjudication: Bare king" === "Aggiudicazione di Xboard: Resta solo il re"
+"Xboard adjudication: 3rd check" === "Aggiudicazione di Xboard: Terzo scacco"
+"Xboard adjudication: Stalemate" === "Aggiudicazione di Xboard: Stallo"
+"Xboard adjudication: Checkmate" === "Aggiudicazione di Xboard: Scacco matto"
+"Xboard adjudication: Insufficient mating material" === "Aggiudicazione di Xboard: Materiale insufficiente"
+"Xboard adjudication: Trivial draw" === "Aggiudicazione di Xboard: Patta triviale"
+"XBoard adjudication: repetition draw" === "Aggiudicazione di Xboard: Patta per ripetizione"
+"Xboard adjudication: perpetual checking" === "Aggiudicazione di Xboard: Scacco perpetuo"
+"Xboard adjudication: perpetual chasing" === "Aggiudicazione di Xboard: Minaccia perpetua"
+"Xboard adjudication: 50-move rule" === "Aggiudicazione di Xboard: Regola delle 50 mosse"
+"Draw claim: 50-move rule" === "Patta dichiarata: Regola delle 50 mosse"
+"Draw claim: 3-fold repetition" === "Patta dichiarata: Terza ripetizione"
+"Draw claim: insufficient mating material" === "Patta dichiarata: Materiale insufficiente"
+"Xboard adjudication: long game" === "Aggiudicazione di Xboard: Partita lunga"
+"Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d" === "Xboard: Forfeit decretato per mossa non valida: %s (%c%c%c%c) res=%d"
+"Xboard: Forfeit due to illegal move: %s (%c%c%c%c)%c" === "Xboard: Forfeit decretato per mossa illegale: %s (%c%c%c%c)%c"
+"Xboard adjudication" === "Aggiudicazione di Xboard"
+"User adjudication" === "Aggiudicazione dell'utente"
+"False win claim: '%s'" === "Falsa dichiarazione di vittoria: '%s'"
+"False draw claim: '%s'" === "Falsa dichiarazione di patta: '%s'"
+"xboard exit" === "Chiusura di Xboard"
+
