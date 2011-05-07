@@ -506,6 +506,8 @@ ChessMove savedResult[MAX_VARIATIONS];
 
 void PushTail P((int firstMove, int lastMove));
 Boolean PopTail P((Boolean annotate));
+void PushInner P((int firstMove, int lastMove));
+void PopInner P((Boolean annotate));
 void CleanupTail P((void));
 
 ChessSquare  FIDEArray[2][BOARD_FILES] = {
@@ -5221,6 +5223,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
     }
 }
 
+Boolean pushed = FALSE;
 
 void
 ParsePV(char *pv, Boolean storeComments)
@@ -5230,6 +5233,10 @@ ParsePV(char *pv, Boolean storeComments)
   Boolean valid;
   int nr = 0;
 
+  if (gameMode == AnalyzeMode && currentMove < forwardMostMove) {
+    PushInner(currentMove, forwardMostMove); // [HGM] engine might not be thinking on forwardMost position!
+    pushed = TRUE;
+  }
   endPV = forwardMostMove;
   do {
     while(*pv == ' ' || *pv == '\n' || *pv == '\t') pv++; // must still read away whitespace
@@ -5326,6 +5333,7 @@ UnLoadPV()
   if(endPV < 0) return;
   endPV = -1;
   currentMove = forwardMostMove;
+  if(pushed) { PopInner(0); pushed = FALSE; } // restore shelved game contnuation
   ClearPremoveHighlights();
   DrawPosition(TRUE, boards[currentMove]);
 }
@@ -16059,15 +16067,9 @@ int wrap(char *dest, char *src, int count, int width, int *lp)
 // [HGM] vari: routines for shelving variations
 
 void
-PushTail(int firstMove, int lastMove)
+PushInner(int firstMove, int lastMove)
 {
 	int i, j, nrMoves = lastMove - firstMove;
-
-	if(appData.icsActive) { // only in local mode
-		forwardMostMove = currentMove; // mimic old ICS behavior
-		return;
-	}
-	if(storedGames >= MAX_VARIATIONS-1) return;
 
 	// push current tail of game on stack
 	savedResult[storedGames] = gameInfo.result;
@@ -16093,18 +16095,26 @@ PushTail(int firstMove, int lastMove)
 
 	storedGames++;
 	forwardMostMove = firstMove; // truncate game so we can start variation
+}
+
+void
+PushTail(int firstMove, int lastMove)
+{
+	if(appData.icsActive) { // only in local mode
+		forwardMostMove = currentMove; // mimic old ICS behavior
+		return;
+	}
+	if(storedGames >= MAX_VARIATIONS-2) return; // leave one for PV-walk
+
+	PushInner(firstMove, lastMove);
 	if(storedGames == 1) GreyRevert(FALSE);
 }
 
-Boolean
-PopTail(Boolean annotate)
+void
+PopInner(Boolean annotate)
 {
 	int i, j, nrMoves;
 	char buf[8000], moveBuf[20];
-
-	if(appData.icsActive) return FALSE; // only in local mode
-	if(!storedGames) return FALSE; // sanity
-	CommentPopDown(); // make sure no stale variation comments to the destroyed line can remain open
 
 	storedGames--;
 	ToNrEvent(savedFirst[storedGames]); // sets currentMove
@@ -16145,6 +16155,17 @@ PopTail(Boolean annotate)
       }
 	gameInfo.resultDetails = savedDetails[storedGames];
 	forwardMostMove = currentMove + nrMoves;
+}
+
+Boolean
+PopTail(Boolean annotate)
+{
+	if(appData.icsActive) return FALSE; // only in local mode
+	if(!storedGames) return FALSE; // sanity
+	CommentPopDown(); // make sure no stale variation comments to the destroyed line can remain open
+
+	PopInner(annotate);
+
 	if(storedGames == 0) GreyRevert(TRUE);
 	return TRUE;
 }
