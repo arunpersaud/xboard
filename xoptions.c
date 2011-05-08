@@ -88,6 +88,7 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
 {
     Arg args[2];
     char *s;
+    int j;
 
     if(previous) {
 	XtSetArg(args[0], XtNdisplayCaret, False);
@@ -95,9 +96,10 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
     }
     XtSetArg(args[0], XtNstring, &s);
     XtGetValues(w, args, 1);
+    j = 1;
     XtSetArg(args[0], XtNdisplayCaret, True);
-    XtSetArg(args[1], XtNinsertPosition, strlen(s));
-    XtSetValues(w, args, 2);
+    if(!strchr(s, '\n')) XtSetArg(args[1], XtNinsertPosition, strlen(s)), j++;
+    XtSetValues(w, args, j);
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
 }
