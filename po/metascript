@@ -120,6 +120,6 @@ w
 q
 .
 1,$g/@@@@@@/s//./
-w script
+w lng2po-helper-script
 q
 
