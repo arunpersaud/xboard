@@ -5315,22 +5315,41 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
   DrawPosition(TRUE, boards[currentMove]);
 }
 
+int
+MultiPV(ChessProgramState *cps)
+{	// check if engine supports MultiPV, and if so, return the nmber of the option that sets it
+	int i;
+	for(i=0; i<cps->nrOptions; i++)
+	    if(!strcmp(cps->option[i].name, "MultiPV") && cps->option[i].type == Spin)
+		return i;
+	return -1;
+}
+
 Boolean
 LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
 {
-	int startPV;
-	char *p;
+	int startPV, multi, lineStart, origIndex = index;
+	char *p, buf2[MSG_SIZ];
 
 	if(index < 0 || index >= strlen(buf)) return FALSE; // sanity
 	lastX = x; lastY = y;
 	while(index > 0 && buf[index-1] != '\n') index--; // beginning of line
-	startPV = index;
+	lineStart = startPV = index;
 	while(buf[index] != '\n') if(buf[index++] == '\t') startPV = index;
 	if(index == startPV && (p = StrCaseStr(buf+index, "PV="))) startPV = p - buf + 3;
 	index = startPV;
 	do{ while(buf[index] && buf[index] != '\n') index++;
 	} while(buf[index] == '\n' && buf[index+1] == '\\' && buf[index+2] == ' ' && index++); // join kibitzed PV continuation line
 	buf[index] = 0;
+	if(lineStart == 0 && gameMode == AnalyzeMode && (multi = MultiPV(&first)) >= 0) {
+		int n = first.option[multi].value;
+		if(origIndex < 10) { if(n>1) n--; } else if(origIndex > index - 6) n++;
+		snprintf(buf2, MSG_SIZ, "option MultiPV=%d\n", n);
+		if(first.option[multi].value != n) SendToProgram(buf2, &first);
+		first.option[multi].value = n;
+		*start = *end = 0;
+		return TRUE;
+	}
 	ParsePV(buf+startPV, FALSE, !shiftKey);
 	*start = startPV; *end = index-1;
 	return TRUE;

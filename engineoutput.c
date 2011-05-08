@@ -70,6 +70,7 @@ static int  lastDepth[2] = { -1, -1 };
 static int  lastForwardMostMove[2] = { -1, -1 };
 static int  engineState[2] = { -1, -1 };
 static char lastLine[2][MSG_SIZ];
+static char header[MSG_SIZ];
 
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
@@ -111,8 +112,7 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
 {
     EngineOutputData ed;
     int clearMemo = FALSE;
-    int which;
-    int depth;
+    int which, depth, multi;
 
     if( stats == 0 ) {
         SetEngineState( 0, STATE_IDLE, "" );
@@ -171,6 +171,12 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
 
     if( clearMemo ) {
         DoClearMemo(which); nrVariations[which] = 0;
+        header[0] = NULLCHAR;
+        if(gameMode == AnalyzeMode && (multi = MultiPV(&first)) >= 0) {
+            snprintf(header, MSG_SIZ, "\t\t\t\tfewer / Multi-PV setting = %d / more\n",
+                                       first.option[multi].value);
+            InsertIntoMemo( which, header, 0);
+        } else
         if(appData.ponderNextMove && lastLine[which][0]) {
             InsertIntoMemo( which, lastLine[which], 0 );
             InsertIntoMemo( which, "\n", 0 );
@@ -345,7 +351,7 @@ static int InsertionPoint( int len, EngineOutputData * ed )
 		scores[n] = newScore;
 	}
 	nrVariations[n] += 2;
-      return offs;
+      return offs + (gameMode == AnalyzeMode)*strlen(header);
 }
 
 
