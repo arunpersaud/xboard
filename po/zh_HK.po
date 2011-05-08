@@ -1,0 +1,2456 @@
+# XBoard -- a graphical chessboard for X
+# Copyright (C) 1991 by Digital Equipment Corporation, Maynard, Massachusetts.
+# Enhancements Copyright (C) 1992-98 Free Software Foundation, Inc.
+# This file is distributed under the same license as the XBoard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: xoptions.c:326
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GNU xboard master-20110411\n"
+"Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
+"POT-Creation-Date: 2011-04-23 09:01-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: backend.c:799
+#, c-format
+msgid "protocol version %d not supported"
+msgstr "³q°T¨ó©wª©¥» %d ¤£³Q¤ä«ù"
+
+#: backend.c:907
+#, c-format
+msgid "bad timeControl option %s"
+msgstr "«Dªkªº\"timeControl\"(®É¶¡±±¨î)¿ï¶µ %s"
+
+#: backend.c:922
+#, c-format
+msgid "bad searchTime option %s"
+msgstr "«Dªkªº\"searchTime\"(·j´M®É¶¡)¿ï¶µ %s"
+
+#: backend.c:964
+#, c-format
+msgid "Variant %s supported only in ICS mode"
+msgstr "ÅÜÅé %s ¥u¦bICS¼Ò¦¡¤U¤ä«ù"
+
+#: backend.c:982
+#, c-format
+msgid "Unknown variant name %s"
+msgstr "¥¼ª¾ªºÅÜÅé¦W %s"
+
+#: backend.c:1224
+msgid "Starting chess program"
+msgstr "±Ò°Ê°ê»Ú¶H´Ñµ{¦¡"
+
+#: backend.c:1234
+msgid "Can't have a match with no chess programs"
+msgstr "¨S¦³¶H´Ñµ{¦¡®ÉµLªk¶i¦æ¤ñÁÉ"
+
+#: backend.c:1246
+msgid "Bad game file"
+msgstr "´Ñ§½ÀÉ®×¿ù»~"
+
+#: backend.c:1255
+msgid "Bad position file"
+msgstr "½L­±ÀÉ®×¿ù»~"
+
+#: backend.c:1287
+#, c-format
+msgid "Could not open comm port %s"
+msgstr "µLªk¥´¶}³q°T³s±µ°ð %s"
+
+#: backend.c:1290
+#, c-format
+msgid "Could not connect to host %s, port %s"
+msgstr "µLªk³s±µ¥D¾÷ %s ³s±µ°ð %s"
+
+#: backend.c:1346
+#, c-format
+msgid "Unknown initialMode %s"
+msgstr "¥¼ª¾ªº\"initialMode\"(ªì©l¼Ò¦¡)¿ï¶µ %s"
+
+#: backend.c:1363
+msgid "AnalyzeFile mode requires a game file"
+msgstr "\"AnalyzeFile\"(¤ÀªRÀÉ®×)¼Ò¦¡¥²¶·«ü©w¤@­Ó´Ñ§½ÀÉ®×"
+
+#: backend.c:1390
+msgid "Analysis mode requires a chess engine"
+msgstr "\"Analysis\"(¤ÀªR)¼Ò¦¡¥²¶·±Ò°Ê°ê»Ú¶H´Ñ¤ÞÀº"
+
+#: backend.c:1394
+msgid "Analysis mode does not work with ICS mode"
+msgstr "\"Analysis\"(¤ÀªR)¼Ò¦¡µLªk¦bICS¼Ò¦¡¤U¤u§@"
+
+#: backend.c:1405
+msgid "MachineWhite mode requires a chess engine"
+msgstr "\"MachineWhite\"(¹q¸£°õ¬õ)¼Ò¦¡¥²¶·±Ò°Ê°ê»Ú¶H´Ñ¤ÞÀº"
+
+#: backend.c:1410
+msgid "MachineWhite mode does not work with ICS mode"
+msgstr "\"MachineWhite\"(¹q¸£°õ¬õ)¼Ò¦¡µLªk¦bICS¼Ò¦¡¤U¹B¦æ"
+
+#: backend.c:1417
+msgid "MachineBlack mode requires a chess engine"
+msgstr "\"MachineBlack\"(¹q¸£°õ¶Â)¼Ò¦¡¥²¶·±Ò°Ê°ê»Ú¶H´Ñ¤ÞÀº"
+
+#: backend.c:1422
+msgid "MachineBlack mode does not work with ICS mode"
+msgstr "\"MachineBlack\"(¹q¸£°õ¶Â)¼Ò¦¡µLªk¦bICS¼Ò¦¡¤U¹B¦æ"
+
+#: backend.c:1429
+msgid "TwoMachines mode requires a chess engine"
+msgstr "\"TwoMachines\"(¤ÀªR)¼Ò¦¡¥²¶·±Ò°Ê°ê»Ú¶H´Ñ¤ÞÀº"
+
+#: backend.c:1434
+msgid "TwoMachines mode does not work with ICS mode"
+msgstr "\"TwoMachines\"(¹q¸£¹ï«Ù)¼Ò¦¡µLªk¦bICS¼Ò¦¡¤U¹B¦æ"
+
+#: backend.c:1445
+msgid "Training mode requires a game file"
+msgstr "\"Training\"(°V½m)¼Ò¦¡¥²¶·«ü©w¤@­Ó´Ñ§½ÀÉ®×"
+
+#: backend.c:1606 backend.c:1650 backend.c:1675 backend.c:2086
+msgid "Error writing to ICS"
+msgstr "µo°e°T®§µ¹ICS®É¥X¿ù"
+
+#: backend.c:1610
+msgid "Error reading from keyboard"
+msgstr "Åª¨úÁä½L®É¥X¿ù"
+
+#: backend.c:1613
+msgid "Got end of file from keyboard"
+msgstr "Åª¨úÁä½L®É¹J¨ìÀÉ®×§À"
+
+#: backend.c:1924
+#, c-format
+msgid "Unknown wild type %d"
+msgstr ""
+
+#: backend.c:1935
+#, c-format
+msgid "recognized '%s' (%d) as variant %s\n"
+msgstr ""
+
+#: backend.c:2000 xboard.c:7151
+msgid "Error writing to display"
+msgstr "µo°e°T®§µ¹Åã¥Ü¾¹®É¥X¿ù"
+
+#: backend.c:2745
+#, c-format
+msgid "your opponent kibitzes: %s"
+msgstr ""
+
+#: backend.c:3263
+msgid "Error gathering move list: two headers"
+msgstr "Åª¨úµÛªk®É¥X¿ù¡A¥X²{¨â­Ó¶}ÀY"
+
+#: backend.c:3277
+#, c-format
+msgid "Ratings from header: W %d, B %d\n"
+msgstr ""
+
+#: backend.c:3310
+msgid "Error gathering move list: nested"
+msgstr "Åª¨úµÛªk®É¥X¿ù¡A±_ª¬¿ù»~"
+
+#: backend.c:3542
+msgid "Illegal move (rejected by ICS)"
+msgstr ""
+
+#: backend.c:3879
+msgid "Connection closed by ICS"
+msgstr "³s±µ³QICSÃö³¬"
+
+#: backend.c:3881
+msgid "Error reading from ICS"
+msgstr "Åª¨úICS°T®§®É¥X¿ù"
+
+#: backend.c:3932
+#, c-format
+msgid "Parsing board: %s\n"
+msgstr ""
+
+#: backend.c:3956
+#, c-format
+msgid ""
+"Failed to parse board string:\n"
+"\"%s\""
+msgstr ""
+
+#: backend.c:3965 backend.c:8959
+msgid "Game too long; increase MAX_MOVES and recompile"
+msgstr "´Ñ§½¤Óªø¡A»Ý­n¼W¥[\"MAX_MOVES\"¨Ã­«·s½sÄ¶"
+
+#: backend.c:4059
+msgid "Error gathering move list: extra board"
+msgstr "Åª¨úµÛªk®É¥X¿ù¡A¶W¥X´Ñ½L"
+
+#: backend.c:4479 backend.c:4501
+#, c-format
+msgid "Couldn't parse move \"%s\" from ICS"
+msgstr "µLªk¸ÑªR±qICSÅª¨ìªºµÛªk\"%s\""
+
+#: backend.c:4716
+#, c-format
+msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
+msgstr "say ¤º³¡¿ù»~¡A«Dªkªº\"moveType\"(µÛªkÃþ«¬) %d (%d,%d-%d,%d)"
+
+#: backend.c:5601
+msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
+msgstr ""
+
+#: backend.c:5948
+msgid "You are playing Black"
+msgstr "§A¦b°õ¶Â"
+
+#: backend.c:5957 backend.c:5982
+msgid "You are playing White"
+msgstr "§A¦b°õ¬õ"
+
+#: backend.c:5964 backend.c:5990 backend.c:6109 backend.c:6132 backend.c:6148
+#: backend.c:12716
+msgid "It is White's turn"
+msgstr "½ü¨ì¬õ¤è¨«´Ñ"
+
+#: backend.c:5968 backend.c:5994 backend.c:6117 backend.c:6138 backend.c:6169
+#: backend.c:12708
+msgid "It is Black's turn"
+msgstr "½ü¨ì¶Â¤è¨«´Ñ"
+
+#: backend.c:6006
+msgid "Displayed position is not current"
+msgstr "Åã¥Üªº½L­±¤£¬O·í«e½L­±"
+
+#: backend.c:6240
+msgid "Illegal move"
+msgstr "µÛªk¿ù»~"
+
+#: backend.c:6303
+msgid "End of game"
+msgstr "´Ñ§½µ²§ô"
+
+#: backend.c:6306
+msgid "Incorrect move"
+msgstr "µÛªk¿ù»~"
+
+#: backend.c:6596
+msgid "Pull pawn backwards to under-promote"
+msgstr ""
+
+#: backend.c:7478
+#, c-format
+msgid "Illegal move \"%s\" from %s machine"
+msgstr "±q%s¾÷¾¹Åª¨ì¤£¦XªkµÛªk\"%s\""
+
+#: backend.c:7701
+msgid "Bad FEN received from engine"
+msgstr ""
+
+#: backend.c:7842 xboard.c:5762 xboard.c:5806
+#, c-format
+msgid "%s does not support analysis"
+msgstr "%s ¤£¤ä«ù¤ÀªR¥\¯à"
+
+#: backend.c:7908
+#, c-format
+msgid "Illegal move \"%s\" (rejected by %s chess program)"
+msgstr "¤£¦XªkµÛªk\"%s\" (%s°ê»Ú¶H´Ñµ{¦¡©Úµ´±µ¨ü¸ÓµÛªk)"
+
+#: backend.c:7933
+#, c-format
+msgid "Failed to start %s chess program %s on %s: %s\n"
+msgstr "µLªk±Ò°Ê%s°ê»Ú¶H´Ñµ{¦¡ %s(¦b¥D¾÷ %s ¤W)¡A%s\n"
+
+#: backend.c:7954
+#, c-format
+msgid "Hint: %s"
+msgstr "´£¥Ü %s"
+
+#: backend.c:7959
+#, c-format
+msgid ""
+"Illegal hint move \"%s\"\n"
+"from %s chess program"
+msgstr ""
+
+#: backend.c:8134
+msgid "Machine accepts your draw offer"
+msgstr "¹q¸£¦P·N©M´Ñ"
+
+#: backend.c:8137
+msgid ""
+"Machine offers a draw\n"
+"Select Action / Draw to agree"
+msgstr ""
+
+#: backend.c:8500
+#, c-format
+msgid "Ambiguous move in ICS output: \"%s\""
+msgstr "ICS¿é¥X¤£©ú½TªºµÛªk\"%s\""
+
+#: backend.c:8510
+#, c-format
+msgid "Illegal move in ICS output: \"%s\""
+msgstr "ICS¿é¥X¤£©ú½TªºµÛªk\"%s\""
+
+#: backend.c:8521
+msgid "Gap in move list"
+msgstr "µÛªkÂ_¶}"
+
+#: backend.c:9097 xoptions.c:846
+#, c-format
+msgid "Variant %s not supported by %s"
+msgstr "ÅÜÅé %s ¤£³Q %s ©Ò¤ä«ù"
+
+#: backend.c:9211
+#, c-format
+msgid "Startup failure on '%s'"
+msgstr "µLªk±Ò°Ê'%s'"
+
+#: backend.c:9234 backend.c:12187
+msgid "Waiting for first chess program"
+msgstr "µ¥«Ý²Ä¤@­Ó°ê»Ú¶H´Ñµ{¦¡"
+
+#: backend.c:9239 backend.c:12113 backend.c:12196
+msgid "Waiting for second chess program"
+msgstr "µ¥«Ý²Ä¤G­Ó°ê»Ú¶H´Ñµ{¦¡"
+
+#: backend.c:9658
+#, c-format
+msgid "Match %s vs. %s: final score %d-%d-%d"
+msgstr "¤ñÁÉ %s vs. %s: ³Ì²×¤ñ¤À %d-%d-%d"
+
+#: backend.c:10081 backend.c:10112
+#, c-format
+msgid "Illegal move: %d.%s%s"
+msgstr "¤£¦XªkµÛªk %d.%s%s"
+
+#: backend.c:10101
+#, c-format
+msgid "Ambiguous move: %d.%s%s"
+msgstr "¤£©ú½TªºµÛªk %d.%s%s"
+
+#: backend.c:10158 backend.c:10804 backend.c:10994 backend.c:11356
+#, c-format
+msgid "Can't open \"%s\""
+msgstr "µLªk¥´¶}\"%s\""
+
+#: backend.c:10170 xboard.c:5338
+msgid "Cannot build game list"
+msgstr "µLªk«Ø¥ß´Ñ§½¦Cªí"
+
+#: backend.c:10259
+msgid "No more games in this message"
+msgstr "³o±ø°T®§¤£¥]§t§ó¦hªº´Ñ§½"
+
+#: backend.c:10300
+msgid "No game has been loaded yet"
+msgstr "©|¥¼¦³´Ñ§½¸ü¤J"
+
+#: backend.c:10304 backend.c:10782 xgamelist.c:408
+msgid "Can't back up any further"
+msgstr "µLªk¦A«á°h¤F"
+
+#: backend.c:10360
+msgid "Game number out of range"
+msgstr "´Ñ§½¼Æ¶q¶W¥X½d³ò"
+
+#: backend.c:10371
+msgid "Can't seek on game file"
+msgstr "µLªk·j´M´Ñ§½ÀÉ®×"
+
+#: backend.c:10429
+msgid "Game not found in file"
+msgstr "ÀÉ®×¤¤¨S¦³§ä¨ì´Ñ§½"
+
+#: backend.c:10557 backend.c:10884
+msgid "Bad FEN position in file"
+msgstr "ÀÉ®×¤¤ªºFEN½L­±¿ù»~"
+
+#: backend.c:10707
+msgid "No moves in game"
+msgstr  "´Ñ§½¤¤¨S¦³µÛªk"
+
+#: backend.c:10778
+msgid "No position has been loaded yet"
+msgstr "©|¥¼¦³½L­±¸ü¤J"
+
+#: backend.c:10845 backend.c:10856
+msgid "Can't seek on position file"
+msgstr "µLªk·j´M½L­±ÀÉ®×"
+
+#: backend.c:10863 backend.c:10875
+msgid "Position not found in file"
+msgstr "ÀÉ®×¤¤¨S¦³§ä¨ì½L­±"
+
+#: backend.c:10916
+msgid "Black to play"
+msgstr "½ü¨ì¶Â¤è¨«´Ñ"
+
+#: backend.c:10919
+msgid "White to play"
+msgstr "½ü¨ì¬õ¤è¨«´Ñ"
+
+#: backend.c:11487
+msgid ""
+"You have edited the game history.\n"
+"Use Reload Same Game and make your move again."
+msgstr ""
+
+#: backend.c:11492
+msgid ""
+"You have entered too many moves.\n"
+"Back up to the correct position and try again."
+msgstr ""
+
+#: backend.c:11497
+msgid ""
+"Displayed position is not current.\n"
+"Step forward to the correct position and try again."
+msgstr ""
+
+#: backend.c:11544
+msgid "You have not made a move yet"
+msgstr "§A©|¥¼¨«´Ñ"
+
+#: backend.c:11565
+msgid ""
+"The cmail message is not loaded.\n"
+"Use Reload CMail Message and make your move again."
+msgstr ""
+
+#: backend.c:11570
+msgid "No unfinished games"
+msgstr "¤£¦s¦b¥¼§¹¦¨´Ñ§½"
+
+#: backend.c:11576
+#, c-format
+msgid ""
+"You have already mailed a move.\n"
+"Wait until a move arrives from your opponent.\n"
+"To resend the same move, type\n"
+"\"cmail -remail -game %s\"\n"
+"on the command line."
+msgstr ""
+
+#: backend.c:11591
+msgid "Failed to invoke cmail"
+msgstr "©I¥scmail¥¢±Ñ"
+
+#: backend.c:11653
+#, c-format
+msgid "Waiting for reply from opponent\n"
+msgstr "µ¥«Ý¹ï¤â¦^À³\n"
+
+#: backend.c:11675
+#, c-format
+msgid "Still need to make move for game\n"
+msgstr "¥»´Ñ§½¤´»Ý¨«´Ñ\n"
+
+#: backend.c:11679
+#, c-format
+msgid "Still need to make moves for both games\n"
+msgstr "¨â´Ñ§½¬Ò¤´»Ý¨«´Ñ\n"
+
+#: backend.c:11683
+#, c-format
+msgid "Still need to make moves for all %d games\n"
+msgstr "©Ò¦³ %d ´Ñ§½¬Ò¤´»Ý¨«´Ñ\n"
+
+#: backend.c:11690
+#, c-format
+msgid "Still need to make a move for game %s\n"
+msgstr "´Ñ§½ %s ¤´»Ý¨«´Ñ\n"
+
+#: backend.c:11696
+#, c-format
+msgid "No unfinished games\n"
+msgstr "¤£¦s¦b¥¼§¹¦¨´Ñ§½\n"
+
+#: backend.c:11698
+#, c-format
+msgid "Ready to send mail\n"
+msgstr "·Ç³Æ°e«H´Nºü\n"
+
+#: backend.c:11703
+#, c-format
+msgid "Still need to make moves for games %s\n"
+msgstr "´Ñ§½ %s ¤´»Ý¨«´Ñ\n"
+
+#: backend.c:11857
+msgid "Edit comment"
+msgstr "½s¿èµù¸Ñ"
+
+#: backend.c:11859
+#, c-format
+msgid "Edit comment on %d.%s%s"
+msgstr "½s¿èµù¸Ñ %d.%s%s"
+
+#: backend.c:11951
+msgid "It is not White's turn"
+msgstr "¨S¦³½ü¨ì¬õ¤è¨«´Ñ"
+
+#: backend.c:12032
+msgid "It is not Black's turn"
+msgstr "¨S¦³½ü¨ì¶Â¤è¨«´Ñ"
+
+#: backend.c:12133
+#, c-format
+msgid "Starting %s chess program"
+msgstr ""
+
+#: backend.c:12159 backend.c:13227
+msgid ""
+"Wait until your turn,\n"
+"or select Move Now"
+msgstr ""
+
+#: backend.c:12278
+msgid "Training mode off"
+msgstr "°V½m¼Ò¦¡¤wÃö³¬"
+
+#: backend.c:12286
+msgid "Training mode on"
+msgstr "°V½m¼Ò¦¡¤w¥´¶}"
+
+#: backend.c:12289
+msgid "Already at end of game"
+msgstr "´Ñ§½¤w¸gµ²§ô"
+
+#: backend.c:12370
+msgid "Warning: You are still playing a game"
+msgstr "ª`·N¡G§A¥¿¦b¶i¦æ´Ñ§½"
+
+#: backend.c:12373
+msgid "Warning: You are still observing a game"
+msgstr "ª`·N¡G§A¥¿¦bÆ[´Ñ´Ñ§½"
+
+#: backend.c:12376
+msgid "Warning: You are still examining a game"
+msgstr "ª`·N¡G§A¥¿¦b¬ã¨s´Ñ§½"
+
+#: backend.c:12450
+msgid "Close ICS engine analyze..."
+msgstr ""
+
+#: backend.c:12733
+msgid "That square is occupied"
+msgstr "®æ¤l¤w¦³´Ñ¤l"
+
+#: backend.c:12757 backend.c:12783
+msgid "There is no pending offer on this move"
+msgstr "¸ÓµÛªk¨S¦³«Ý©wªº´£Ä³"
+
+#: backend.c:12819 backend.c:12830
+msgid "Your opponent is not out of time"
+msgstr "¹ï¤â¨S¦³¶W®É"
+
+#: backend.c:12892
+msgid "You must make your move before offering a draw"
+msgstr "¥²¶·¨«§¹´Ñ¤~¯à´£©M"
+
+#: backend.c:13209
+msgid "You are not examining a game"
+msgstr "¨S¦³¤ÀªR´Ñ§½"
+
+#: backend.c:13213
+msgid "You can't revert while pausing"
+msgstr "¼È°±®É¤£¯à´_­ì´Ñ§½"
+
+#: backend.c:13267 backend.c:13274
+msgid "It is your turn"
+msgstr "½ü¨ì§A¨«´Ñ"
+
+#: backend.c:13325 backend.c:13332 backend.c:13351 backend.c:13358
+msgid "Wait until your turn"
+msgstr "µ¥«Ý¹ï¤â¨«´Ñ"
+
+#: backend.c:13337
+msgid "No hint available"
+msgstr "¨S¦³¥i¥Îªº´£¥Ü"
+
+#: backend.c:13799
+#, c-format
+msgid "Error writing to %s chess program"
+msgstr "µo°e°T®§¨ì%s°ê»Ú¶H´Ñµ{¦¡®É¥X¿ù"
+
+#: backend.c:13803 backend.c:13833
+#, c-format
+msgid "%s program exits in draw position (%s)"
+msgstr ""
+
+#: backend.c:13828
+#, c-format
+msgid "Error: %s chess program (%s) exited unexpectedly"
+msgstr "¿ù»~¡G%s°ê»Ú¶H´Ñµ{¦¡(%s)²§±`²×¤î"
+
+#: backend.c:13842
+#, c-format
+msgid "Error reading from %s chess program (%s)"
+msgstr "±q%s°ê»Ú¶H´Ñµ{¦¡(%s)±µ¦¬°T®§®É¥X¿ù"
+
+#: backend.c:14255
+#, c-format
+msgid "%s engine has too many options\n"
+msgstr ""
+
+#: backend.c:14408
+msgid "Displayed move is not current"
+msgstr "Åã¥ÜªºµÛªk¤£¬O·í«eµÛªk"
+
+#: backend.c:14417
+msgid "Could not parse move"
+msgstr "µLªk¸ÑªRµÛªk"
+
+#: backend.c:14556 backend.c:14578
+msgid "Both flags fell"
+msgstr "Âù¤è³£¶W®É¤F"
+
+#: backend.c:14558
+msgid "White's flag fell"
+msgstr "¬õ¤è¶W®É"
+
+#: backend.c:14580
+msgid "Black's flag fell"
+msgstr "¶Â¤è¶W®É"
+
+#: backend.c:15520
+msgid "Bad FEN position in clipboard"
+msgstr "°Å¶KÃ¯ªºFEN½L­±¿ù»~"
+
+#: xboard.c:600
+msgid "New Game        Ctrl+N"
+msgstr "¶}·s´Ñ§½(N)   Ctrl+N"
+
+#: xboard.c:601
+msgid "New Shuffle Game ..."
+msgstr "¬~µP¹CÀ¸(u)..."
+
+#: xboard.c:602
+msgid "New Variant ...   Alt+Shift+V"
+msgstr "·sÅÜºØ(V)...   Alt+Shift+V"
+
+#: xboard.c:604
+msgid "Load Game       Ctrl+O"
+msgstr "¸ü¤J´Ñ§½(L)...   Ctrl+O"
+
+#: xboard.c:605
+msgid "Load Position    Ctrl+Shift+O"
+msgstr "¸ü¤J§½­±(O)...   Ctrl+Shift+O"
+
+#: xboard.c:609
+msgid "Next Position     Shift+PgDn"
+msgstr ""
+
+#: xboard.c:610
+msgid "Prev Position     Shift+PgUp"
+msgstr ""
+
+#: xboard.c:613
+msgid "Save Game       Ctrl+S"
+msgstr "Àx¦s´Ñ§½(S)...   Ctrl+S"
+
+#: xboard.c:614
+msgid "Save Position    Ctrl+Shift+S"
+msgstr "Àx¦s§½­±(A)...   Ctrl+Shift+S"
+
+#: xboard.c:616
+msgid "Mail Move"
+msgstr ""
+
+#: xboard.c:617
+msgid "Reload CMail Message"
+msgstr ""
+
+#: xboard.c:619
+msgid "Quit                 Ctr+Q"
+msgstr "Â÷¶}(Q)"
+
+#: xboard.c:624
+msgid "Copy Game    Ctrl+C"
+msgstr "½Æ»s´Ñ§½¨ì°Å¶KÃ¯(C)   Ctrl+C"
+
+#: xboard.c:625
+msgid "Copy Position Ctrl+Shift+C"
+msgstr "½Æ»s§½­±¨ì°Å¶KÃ¯(Y)   Ctrl+Shift+C"
+
+#: xboard.c:626
+msgid "Copy Game List"
+msgstr "½Æ»s¹CÀ¸¦Cªí¨ì°Å¶KÃ¯"
+
+#: xboard.c:628
+msgid "Paste Game    Ctrl+V"
+msgstr "¶K¤W´Ñ§½¦Û°Å¶KÃ¯(P)   Ctrl+V"
+
+#: xboard.c:629
+msgid "Paste Position Ctrl+Shift+V"
+msgstr "±q°Å¶KÃ¯¶K¤W§½­±(T)   Ctrl+Shift+V"
+
+#: xboard.c:631
+msgid "Edit Game      Ctrl+E"
+msgstr "½s¿è´Ñ§½(E)   Ctrl+E"
+
+#: xboard.c:632
+msgid "Edit Position   Ctrl+Shift+E"
+msgstr "½s¿è§½­±(d)   Ctrl+Shift+E"
+
+#: xboard.c:633
+msgid "Edit Tags"
+msgstr "½s¿è¼ÐÅÒ(T)"
+
+#: xboard.c:634
+msgid "Edit Comment"
+msgstr "½s¿èµù¸Ñ(C)..."
+
+#: xboard.c:636
+msgid "Revert              Home"
+msgstr "«ì´_(V)"
+
+#: xboard.c:637
+msgid "Annotate"
+msgstr "µù¸Ñ(A)"
+
+#: xboard.c:638
+msgid "Truncate Game  End"
+msgstr "ºIÂ_«á­±ªºµÛªk(T)"
+
+#: xboard.c:640
+msgid "Backward         Alt+Left"
+msgstr "¤U¤@µÛ(B)   Alt+Left"
+
+#: xboard.c:641
+msgid "Forward           Alt+Right"
+msgstr "¤W¤@µÛ(F)   Alt+Right"
+
+#: xboard.c:642
+msgid "Back to Start     Alt+Home"
+msgstr "°_©l§½­±(S)   Alt+Home"
+
+#: xboard.c:643
+msgid "Forward to End Alt+End"
+msgstr "³Ì«á§½­±(E)   Alt+End"
+
+#: xboard.c:648
+msgid "Flip View             F2"
+msgstr "Â½Âà´Ñ½L(V)   F2"
+
+#: xboard.c:650
+msgid "Engine Output      Alt+Shift+O"
+msgstr "Åã¥Ü¤ÞÀº¿é¥X   Alt+Shift+O"
+
+#: xboard.c:651
+msgid "Move History       Alt+Shift+H"
+msgstr "Åã¥Ü¾ú¥vµÛªk   Alt+Shift+H"
+
+#: xboard.c:652
+msgid "Evaluation Graph  Alt+Shift+E"
+msgstr "Åã¥Üµû»ù¹Ï   Alt+Shift+E"
+
+#: xboard.c:653
+msgid "Game List            Alt+Shift+G"
+msgstr "Åã¥Ü´Ñ§½¦Cªí(L)   Alt+Shift+G"
+
+#: xboard.c:654 xoptions.c:1816
+msgid "ICS text menu"
+msgstr ""
+
+#: xboard.c:656 xoptions.c:1902
+msgid "Tags"
+msgstr "½s¿è¼ÐÅÒ(T)"
+
+#: xboard.c:657
+msgid "Comments"
+msgstr "½s¿èµù¸Ñ(C) *.*"
+
+#: xboard.c:658
+msgid "ICS Input Box"
+msgstr ""
+
+#: xboard.c:660
+msgid "Board..."
+msgstr "´Ñ½L¿ï¶µ(B)..."
+
+#: xboard.c:661
+msgid "Game List Tags..."
+msgstr "¹CÀ¸¦Cªí..."
+
+#: xboard.c:666
+msgid "Machine White  Ctrl+W"
+msgstr "¹q¸£°õ¬õ(W)   Ctrl+W"
+
+#: xboard.c:667
+msgid "Machine Black  Ctrl+B"
+msgstr "¹q¸£°õ¶Â(B)   Ctrl+B"
+
+#: xboard.c:668
+msgid "Two Machines   Ctrl+T"
+msgstr "¹q¸£¹ï«Ù(M)   Ctrl+T"
+
+#: xboard.c:669
+msgid "Analysis Mode  Ctrl+A"
+msgstr "¤ÀªR¼Ò¦¡(A)   Ctrl+A"
+
+#: xboard.c:670
+msgid "Analyze File      Ctrl+F"
+msgstr "¤ÀªRÀÉ®×(F)   Ctrl+F"
+
+#: xboard.c:671
+msgid "Edit Game         Ctrl+E"
+msgstr "½s¿è´Ñ§½(E)   Ctrl+E"
+
+#: xboard.c:672
+msgid "Edit Position      Ctrl+Shift+E"
+msgstr "½s¿è§½­±(d)   Ctrl+Shift+E"
+
+#: xboard.c:673
+msgid "Training"
+msgstr "°V½m(N)"
+
+#: xboard.c:674
+msgid "ICS Client"
+msgstr "ICS«È¤áºÝ"
+
+#: xboard.c:676
+msgid "Machine Match"
+msgstr "¹q¸£¤ñÁÉ(M)"
+
+#: xboard.c:677
+msgid "Pause               Pause"
+msgstr "¼È°±(P)   Pause"
+
+#: xboard.c:682
+msgid "Accept             F3"
+msgstr "±µ¨ü(A)   F3"
+
+#: xboard.c:683
+msgid "Decline            F4"
+msgstr "©Úµ´(C)   F4"
+
+#: xboard.c:684
+msgid "Rematch           F12"
+msgstr "­«ÁÉ(M)   F12"
+
+#: xboard.c:686
+msgid "Call Flag          F5"
+msgstr "¶W®É§P­t(F)   F5"
+
+#: xboard.c:687
+msgid "Draw                F6"
+msgstr "´£©M(D)   F6"
+
+#: xboard.c:688
+msgid "Adjourn            F7"
+msgstr "«Ê½L(J)   F7"
+
+#: xboard.c:689
+msgid "Abort                F8"
+msgstr "¤¤¤î(B)   F8"
+
+#: xboard.c:690
+msgid "Resign              F9"
+msgstr "»{¿é(R)   F9"
+
+#: xboard.c:692
+msgid "Stop Observing  F10"
+msgstr "°±¤îÆ[´Ñ(O)   F10"
+
+#: xboard.c:693
+msgid "Stop Examining  F11"
+msgstr "°±¤î¬ã¨s(X)   F11"
+
+#: xboard.c:694
+msgid "Upload to Examine"
+msgstr "¤W¶ÇÀË¬d(U)"
+
+#: xboard.c:696
+msgid "Adjudicate to White"
+msgstr "µô¨M¬õÄ¹ (W)"
+
+#: xboard.c:697
+msgid "Adjudicate to Black"
+msgstr "µô¨M¶ÂÄ¹ (B)"
+
+#: xboard.c:698
+msgid "Adjudicate Draw"
+msgstr "´£½Ð¥òµô(D)"
+
+#: xboard.c:703
+msgid "Load New Engine ..."
+msgstr ""
+
+#: xboard.c:705
+msgid "Engine #1 Settings ..."
+msgstr "¤ÞÀº #1 ³]©w"
+
+#: xboard.c:706
+msgid "Engine #2 Settings ..."
+msgstr "¤ÞÀº #2 ³]©w"
+
+#: xboard.c:708
+msgid "Hint"
+msgstr "´£¥Ü(H)..."
+
+#: xboard.c:709
+msgid "Book"
+msgstr "¶}§½®w(B)..."
+
+#: xboard.c:711
+msgid "Move Now     Ctrl+M"
+msgstr "¥ß§Y¨«´Ñ(M)   Ctrl+M"
+
+#: xboard.c:712
+msgid "Retract Move  Ctrl+X"
+msgstr "®¬´Ñ(R)   Ctrl+X"
+
+#: xboard.c:719
+msgid "General ..."
+msgstr "¤@¯ë¿ï¶µ(G)..."
+
+#: xboard.c:721
+msgid "Time Control ...       Alt+Shift+T"
+msgstr "®É¶¡³]©w(T)...   Alt+Shift+T"
+
+#: xboard.c:722
+msgid "Common Engine ...  Alt+Shift+U"
+msgstr "³q¥Î¤ÞÀº³]©w(E)...   Alt+Shift+U"
+
+#: xboard.c:723
+msgid "Adjudications ...      Alt+Shift+J"
+msgstr "§P¨M(j)...   Alt+Shift+J"
+
+#: xboard.c:724
+msgid "ICS ..."
+msgstr "ICS¿ï¶µ..."
+
+#: xboard.c:725
+msgid "Match ..."
+msgstr ""
+
+#: xboard.c:726
+msgid "Load Game ..."
+msgstr "¸ü¤J´Ñ§½¿ï¶µ(L)...   Alt+Shift+L"
+
+#: xboard.c:727
+msgid "Save Game ..."
+msgstr "Àx¦s´Ñ§½¿ï¶µ(S)...   Alt+Shift+S"
+
+#: xboard.c:729
+msgid "Game List ..."
+msgstr "¹CÀ¸¦Cªí..."
+
+#: xboard.c:730
+msgid "Sounds ..."
+msgstr "Án­µ¿ï¶µ(D)..."
+
+#: xboard.c:733
+msgid "Always Queen        Ctrl+Shift+Q"
+msgstr "Á`¬O¤ÉÅÜ¬°¬Ó¦Z(Q) Ctrl+Shift+Q"
+
+#: xboard.c:734 xoptions.c:814
+msgid "Animate Dragging"
+msgstr "°Êµe©ì¦²(D)"
+
+#: xboard.c:735
+msgid "Animate Moving      Ctrl+Shift+A"
+msgstr "°Êµe¨«´Ñ(A)     Ctrl+Shift+A"
+
+#: xboard.c:736
+msgid "Auto Flag               Ctrl+Shift+F"
+msgstr "¦Û°Ê¶W®É§P­t(F) Ctrl+Shift+F"
+
+#: xboard.c:737 xoptions.c:817
+msgid "Auto Flip View"
+msgstr "¦Û°ÊÂ½Âà´Ñ½L(V)"
+
+#: xboard.c:738 xoptions.c:818
+msgid "Blindfold"
+msgstr "ª¼´Ñ(B)"
+
+#: xboard.c:739
+msgid "Flash Moves"
+msgstr ""
+
+#: xboard.c:741
+msgid "Highlight Dragging"
+msgstr "©ì¦²¿ô¥Ø´£¥Ü(H)"
+
+#: xboard.c:743 xoptions.c:821
+msgid "Highlight Last Move"
+msgstr "¼Ð°O¤W¤@µÛªk(M)"
+
+#: xboard.c:744
+msgid "Highlight With Arrow"
+msgstr "¥Î½bÀY¬ð¥X²¾°Ê"
+
+#: xboard.c:745 xoptions.c:823
+msgid "Move Sound"
+msgstr ""
+
+#: xboard.c:747 xoptions.c:824
+msgid "One-Click Moving"
+msgstr "³æÀ»²¾°Ê(M)"
+
+#: xboard.c:748
+msgid "Periodic Updates"
+msgstr "©w´Á§ó·s(U)"
+
+#: xboard.c:749
+msgid "Ponder Next Move  Ctrl+Shift+P"
+msgstr "¦P¨B«ä¦Ò(N)  Ctrl+Shift+P"
+
+#: xboard.c:750
+msgid "Popup Exit Message"
+msgstr "Â÷¶}®É´£¥Ü(P)"
+
+#: xboard.c:751 xoptions.c:828
+msgid "Popup Move Errors"
+msgstr "´£¥Ü¿ù»~µÛªk(E)"
+
+#: xboard.c:753
+msgid "Show Coords"
+msgstr "Åã¥Ü§¤¼Ð(C)"
+
+#: xboard.c:754
+msgid "Hide Thinking        Ctrl+Shift+H"
+msgstr "ÁôÂÃ¤ÞÀº«ä¦Ò Ctrl+Shift+H"
+
+#: xboard.c:755
+msgid "Test Legality          Ctrl+Shift+L"
+msgstr "ÀË¬dµÛªk¦X²z©Ê(L) Cl+Sh+L"
+
+#: xboard.c:758
+msgid "Save Settings Now"
+msgstr "¥ß§YÀx¦s³]©w(N)"
+
+#: xboard.c:759
+msgid "Save Settings on Exit"
+msgstr "Â÷¶}®ÉÀx¦s³]©w(X)"
+
+#: xboard.c:764
+msgid "Info XBoard"
+msgstr ""
+
+#: xboard.c:765
+msgid "Man XBoard   F1"
+msgstr ""
+
+#: xboard.c:767 xboard.c:6702
+msgid "About XBoard"
+msgstr "Ãö©óXBoard(A)"
+
+#: xboard.c:772
+msgid "File"
+msgstr "ÀÉ®×(F)"
+
+#: xboard.c:773
+msgid "Edit"
+msgstr "½s¿è(E)"
+
+#: xboard.c:774
+msgid "View"
+msgstr ""
+
+#: xboard.c:775
+msgid "Mode"
+msgstr "¼Ò¦¡(M)"
+
+#: xboard.c:776
+msgid "Action"
+msgstr "¦æ¬°(A)"
+
+#: xboard.c:777
+msgid "Engine"
+msgstr ""
+
+#: xboard.c:778
+msgid "Options"
+msgstr "¿ï¶µ(O)"
+
+#: xboard.c:779
+msgid "Help"
+msgstr "»¡©ú(H)"
+
+#: xboard.c:795 xboard.c:7441
+msgid "White"
+msgstr "¬õ¤è"
+
+#: xboard.c:795 xboard.c:799 xboard.c:818
+msgid "Pawn"
+msgstr "§L"
+
+#: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5021 xboard.c:5097
+msgid "Knight"
+msgstr "°¨"
+
+#: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5019
+msgid "Bishop"
+msgstr "¶H"
+
+#: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5017
+msgid "Rook"
+msgstr "¨®"
+
+#: xboard.c:796 xboard.c:800 xboard.c:818 xboard.c:5015
+msgid "Queen"
+msgstr "¦Z"
+
+#: xboard.c:796 xboard.c:800 xboard.c:5027
+msgid "King"
+msgstr "¤ý"
+
+#: xboard.c:796 xboard.c:800
+msgid "Elephant"
+msgstr "¶H"
+
+#: xboard.c:796 xboard.c:800
+msgid "Cannon"
+msgstr "¬¶"
+
+#: xboard.c:797 xboard.c:801 xboard.c:5033
+msgid "Archbishop"
+msgstr "°ê®v"
+
+#: xboard.c:797 xboard.c:801 xboard.c:5035
+msgid "Chancellor"
+msgstr "®_¬Û"
+
+#: xboard.c:797 xboard.c:801 xboard.c:5040 xboard.c:5099
+msgid "Promote"
+msgstr "¤ÉÅÜ"
+
+#: xboard.c:797 xboard.c:801
+msgid "Demote"
+msgstr "­°¯Å"
+
+#: xboard.c:798 xboard.c:802
+msgid "Empty square"
+msgstr "²MªÅ®æ¤l"
+
+#: xboard.c:798 xboard.c:802
+msgid "Clear board"
+msgstr "²MªÅ´Ñ½L"
+
+#: xboard.c:799 xboard.c:7457
+msgid "Black"
+msgstr "¶Â¤è"
+
+#: xboard.c:1191
+#, c-format
+msgid "%s: Can't access XPM directory %s\n"
+msgstr ""
+
+#: xboard.c:1214
+#, c-format
+msgid "Available `%s' sizes:\n"
+msgstr ""
+
+#: xboard.c:1250
+#, c-format
+msgid "Error: No `%s' files!\n"
+msgstr ""
+
+#: xboard.c:1266
+#, c-format
+msgid ""
+"Warning: No DIR structure found on this system --\n"
+"         Unable to autosize for XPM/XIM pieces.\n"
+"   Please report this error to frankm@hiwaay.net.\n"
+"   Include system type & operating system in message.\n"
+msgstr ""
+
+#: xboard.c:1327
+#, c-format
+msgid "%s: unrecognized color %s\n"
+msgstr ""
+
+#: xboard.c:1337
+#, c-format
+msgid "%s: can't parse foreground color in `%s'\n"
+msgstr ""
+
+#: xboard.c:1717 xboard.c:2426
+#, c-format
+msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
+msgstr ""
+
+#: xboard.c:1822
+#, c-format
+msgid "%s: can't parse color names; disabling colorization\n"
+msgstr ""
+
+#: xboard.c:1999
+#, c-format
+msgid "%s: can't cd to CHESSDIR: "
+msgstr ""
+
+#: xboard.c:2008
+#, c-format
+msgid "Failed to open file '%s'\n"
+msgstr ""
+
+#: xboard.c:2017
+msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
+msgstr ""
+
+#: xboard.c:2040
+#, c-format
+msgid "%s: bad boardSize syntax %s\n"
+msgstr ""
+
+#: xboard.c:2077
+#, c-format
+msgid "%s: unrecognized boardSize name %s\n"
+msgstr ""
+
+#: xboard.c:2102
+#, c-format
+msgid "Error expanding path name \"%s\"\n"
+msgstr ""
+
+#: xboard.c:2107
+#, c-format
+msgid ""
+"XBoard square size (hint): %d\n"
+"%s fulldir:%s:\n"
+msgstr ""
+
+#: xboard.c:2113
+#, c-format
+msgid "Closest %s size: %d\n"
+msgstr ""
+
+#: xboard.c:2165
+#, c-format
+msgid "%s: too few colors available; trying monochrome mode\n"
+msgstr ""
+
+#: xboard.c:2181
+#, c-format
+msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
+msgstr ""
+
+#: xboard.c:2392 xboard.c:2402
+#, c-format
+msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
+msgstr ""
+
+#: xboard.c:3107
+#, c-format
+msgid "Unable to create font set.\n"
+msgstr ""
+
+#: xboard.c:3115
+#, c-format
+msgid "%s: no fonts match pattern %s\n"
+msgstr ""
+
+#: xboard.c:3158
+#, c-format
+msgid ""
+"resolved %s at pixel size %d\n"
+"  to %s\n"
+msgstr ""
+
+#: xboard.c:3316
+#, c-format
+msgid "%s: error loading XIM!\n"
+msgstr ""
+
+#: xboard.c:3413
+msgid "XIM pieces cannot be used in monochrome mode"
+msgstr ""
+
+#: xboard.c:3417
+#, c-format
+msgid ""
+"\n"
+"Loading XIMs...\n"
+msgstr ""
+
+#: xboard.c:3432 xboard.c:3455 xboard.c:3462 xboard.c:3575 xboard.c:3612
+#: xboard.c:3623
+#, c-format
+msgid "(File:%s:) "
+msgstr ""
+
+#: xboard.c:3450 xboard.c:3605
+#, c-format
+msgid "light square "
+msgstr ""
+
+#: xboard.c:3458 xboard.c:3619
+#, c-format
+msgid "dark square "
+msgstr ""
+
+#: xboard.c:3469 xboard.c:3632
+#, c-format
+msgid "Done.\n"
+msgstr ""
+
+#: xboard.c:3530
+msgid "XPM pieces cannot be used in monochrome mode"
+msgstr ""
+
+#: xboard.c:3540
+#, c-format
+msgid "No builtin XPM pieces of size %d\n"
+msgstr ""
+
+#: xboard.c:3550
+#, c-format
+msgid "Error %d loading XPM image \"%s\"\n"
+msgstr ""
+
+#: xboard.c:3563
+#, c-format
+msgid ""
+"\n"
+"Loading XPMs...\n"
+msgstr ""
+
+#: xboard.c:3586
+#, c-format
+msgid "(Replace by File:%s:) "
+msgstr ""
+
+#: xboard.c:3593 xboard.c:3616 xboard.c:3627
+#, c-format
+msgid "Error %d loading XPM file \"%s\"\n"
+msgstr ""
+
+#: xboard.c:3717
+#, c-format
+msgid "Can't open bitmap file %s"
+msgstr ""
+
+#: xboard.c:3720
+#, c-format
+msgid "Invalid bitmap in file %s"
+msgstr ""
+
+#: xboard.c:3723
+#, c-format
+msgid "Ran out of memory reading bitmap file %s"
+msgstr ""
+
+#: xboard.c:3727
+#, c-format
+msgid "Unknown XReadBitmapFile error %d on file %s"
+msgstr ""
+
+#: xboard.c:3731
+#, c-format
+msgid "%s: %s...using built-in\n"
+msgstr ""
+
+#: xboard.c:3735
+#, c-format
+msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
+msgstr ""
+
+#: xboard.c:3938
+msgid "Drop"
+msgstr "¨ú®ø"
+
+#: xboard.c:4919 xboard.c:5045 xboard.c:5093 xboard.c:6997 xboard.c:7038
+#: xgamelist.c:716 xgamelist.c:824 xoptions.c:148 xoptions.c:215
+#: xoptions.c:590 xoptions.c:1306 xoptions.c:1613
+msgid "cancel"
+msgstr "¨ú®ø(C)"
+
+#: xboard.c:4956 xboard.c:6847 xboard.c:6861
+msgid "Error"
+msgstr "¿ù»~"
+
+#: xboard.c:4956
+msgid "Can't open file"
+msgstr ""
+
+#: xboard.c:4961
+msgid "Failed to open file"
+msgstr ""
+
+#: xboard.c:4990
+msgid "Promotion"
+msgstr "¤ÉÅÜ"
+
+#: xboard.c:4999
+msgid "Promote to what?"
+msgstr ""
+
+#: xboard.c:5006
+msgid "Warlord"
+msgstr ""
+
+#: xboard.c:5008
+msgid "General"
+msgstr "¤@¯ë¿ï¶µ(G)..."
+
+#: xboard.c:5010
+msgid "Lieutenant"
+msgstr ""
+
+#: xboard.c:5012
+msgid "Captain"
+msgstr ""
+
+#: xboard.c:5042 xboard.c:5101
+msgid "Defer"
+msgstr ""
+
+#: xboard.c:5164 xoptions.c:164 xoptions.c:214
+msgid "ok"
+msgstr "½T©w"
+
+#: xboard.c:5359
+msgid "Load game file name?"
+msgstr ""
+
+#: xboard.c:5425
+msgid "Load position file name?"
+msgstr ""
+
+#: xboard.c:5434
+msgid "Save game file name?"
+msgstr ""
+
+#: xboard.c:5446
+msgid "Save position file name?"
+msgstr ""
+
+#: xboard.c:5679
+msgid "Can't open temp file"
+msgstr ""
+
+#: xboard.c:5769
+#, c-format
+msgid "You are not observing a game"
+msgstr ""
+
+#: xboard.c:5774
+#, c-format
+msgid "Found unexpected active ICS engine analyze \n"
+msgstr ""
+
+#: xboard.c:5788
+#, c-format
+msgid "ICS engine analyze starting... \n"
+msgstr ""
+
+#: xboard.c:5816
+msgid "File to analyze"
+msgstr ""
+
+#: xboard.c:5835
+msgid "You can only start a match from the initial position."
+msgstr ""
+
+#: xboard.c:6884
+msgid "Fatal Error"
+msgstr "ÄY­«¿ù»~"
+
+#: xboard.c:6884
+msgid "Exiting"
+msgstr "Â÷¶}"
+
+#: xboard.c:6894
+msgid "Information"
+msgstr "¸ê°T"
+
+#: xboard.c:6901
+msgid "Note"
+msgstr "µù¸Ñ"
+
+#: xboard.c:6951
+#, c-format
+msgid "AskQuestionProc needed 4 parameters, got %d\n"
+msgstr ""
+
+#: xboard.c:6984
+msgid "Error writing to chess program"
+msgstr "µo°e°T®§µ¹°ê»Ú¶H´Ñµ{¦¡®É¥X¿ù"
+
+#: xboard.c:7036
+msgid "enter"
+msgstr ""
+
+#: xboard.c:7225
+#, c-format
+msgid "ERROR: Unknown user %s (in path %s)\n"
+msgstr ""
+
+#: xboard.c:7619
+msgid "Socket support is not configured in"
+msgstr ""
+
+#: xboard.c:7721
+msgid "internal rcmd not implemented for Unix"
+msgstr ""
+
+#: xboard.c:8495
+#, c-format
+msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
+msgstr ""
+
+#: xboard.c:8496
+#, c-format
+msgid "AnimateMove: piece %d slides from %d,%d to %d,%d \n"
+msgstr ""
+
+#: xengineoutput.c:159
+#, c-format
+msgid "Error %d loading icon image\n"
+msgstr ""
+
+#: xengineoutput.c:364
+msgid "NPS"
+msgstr "NPS"
+
+#: xengineoutput.c:543
+msgid "Engine output"
+msgstr "¤ÞÀº¿é¥X"
+
+#: xengineoutput.c:543
+msgid "This feature is experimental"
+msgstr ""
+
+#: xevalgraph.c:360
+msgid "Evaluation graph"
+msgstr "¼f§½¹Ï"
+
+#: xgamelist.c:200 xgamelist.c:392
+msgid "load"
+msgstr ""
+
+#: xgamelist.c:211 xgamelist.c:405
+msgid "prev"
+msgstr ""
+
+#: xgamelist.c:222 xgamelist.c:398
+msgid "next"
+msgstr ""
+
+#: xgamelist.c:233 xgamelist.c:386
+msgid "close"
+msgstr ""
+
+#: xgamelist.c:245
+msgid "Filter:"
+msgstr "¹LÂo¾¹"
+
+#: xgamelist.c:263
+msgid "filtertext"
+msgstr ""
+
+#: xgamelist.c:276 xgamelist.c:412
+msgid "apply"
+msgstr ""
+
+#: xgamelist.c:395
+msgid "No game selected"
+msgstr "¨S¦³¿ï¤¤´Ñ§½"
+
+#: xgamelist.c:401
+msgid "Can't go forward any further"
+msgstr "µLªk¦A«e¶i¤F"
+
+#: xgamelist.c:506
+msgid "There is no game list"
+msgstr "¨S¦³´Ñ§½¦Cªí"
+
+#: xgamelist.c:710 xgamelist.c:835 xoptions.c:1310 xoptions.c:1609
+msgid "OK"
+msgstr "½T©w"
+
+#: xgamelist.c:724
+msgid "No tag selected"
+msgstr ""
+
+#: xgamelist.c:728 xgamelist.c:813
+msgid "down"
+msgstr "¦V¤U"
+
+#: xgamelist.c:733 xgamelist.c:802
+msgid "up"
+msgstr "¦V¤W"
+
+#: xgamelist.c:738 xgamelist.c:791
+msgid "factory"
+msgstr ""
+
+#: xhistory.c:163
+#, c-format
+msgid "White "
+msgstr "¬õ¤è "
+
+#: xhistory.c:164
+#, c-format
+msgid "Black "
+msgstr "¶Â¤è "
+
+#: xhistory.c:310 xhistory.c:314
+msgid "Move list"
+msgstr ""
+
+#: xhistory.c:406
+msgid "Close"
+msgstr "Ãö³¬(C)"
+
+#: xoptions.c:152 xoptions.c:217
+msgid "off"
+msgstr ""
+
+#: xoptions.c:158 xoptions.c:216
+msgid "random"
+msgstr "ÀH¾÷"
+
+#: xoptions.c:195
+msgid "New Shuffle Game"
+msgstr "¬~µP¹CÀ¸(u)..."
+
+#: xoptions.c:204
+msgid "Start-position number:"
+msgstr "±Ò°Ê¦ì¸m¸¹½X(S)"
+
+#: xoptions.c:207
+msgid "Shuffle"
+msgstr ""
+
+#: xoptions.c:278 xoptions.c:542
+msgid "classical"
+msgstr ""
+
+#: xoptions.c:281 xoptions.c:444
+msgid "minutes for each"
+msgstr ""
+
+#: xoptions.c:284
+msgid "moves"
+msgstr "µÛªk"
+
+#: xoptions.c:299 xoptions.c:555
+msgid "incremental"
+msgstr ""
+
+#: xoptions.c:302
+msgid "minutes, plus"
+msgstr ""
+
+#: xoptions.c:305 xoptions.c:473
+msgid "sec/move"
+msgstr "¨C¨«¤@¨B¥["
+
+#: xoptions.c:320 xoptions.c:568
+msgid "fixed time"
+msgstr ""
+
+#: xoptions.c:323
+msgid "sec/move (max)"
+msgstr ""
+
+#: xoptions.c:334 xoptions.c:579
+msgid " OK "
+msgstr ""
+
+#: xoptions.c:362 xoptions.c:370
+msgid "Bad Time-Control String"
+msgstr ""
+
+#: xoptions.c:411
+msgid "TimeControl Menu"
+msgstr ""
+
+#: xoptions.c:444
+msgid "sec/move (max)   "
+msgstr ""
+
+#: xoptions.c:444
+msgid "   minutes, plus   "
+msgstr ""
+
+#: xoptions.c:473
+msgid "             "
+msgstr ""
+
+#: xoptions.c:473
+msgid "moves     "
+msgstr ""
+
+#: xoptions.c:522
+msgid "Engine #1 and #2 Time-Odds Factors"
+msgstr "®É¶¡­¿¼Æ"
+
+#: xoptions.c:795
+msgid "Default Number of Games in Match:"
+msgstr "¹w³]¤ñÁÉ¹ï§½¼Æ"
+
+#: xoptions.c:796
+msgid "Pause between Match Games (msec):"
+msgstr ""
+
+#: xoptions.c:797
+msgid "Game File with Opening Lines:"
+msgstr ""
+
+#: xoptions.c:798
+msgid "Game Number (-1 or -2 = Auto-Increment):"
+msgstr ""
+
+#: xoptions.c:799
+msgid "File with Start Positions:"
+msgstr ""
+
+#: xoptions.c:800
+msgid "Position Number (-1 or -2 = Auto-Increment):"
+msgstr ""
+
+#: xoptions.c:801
+msgid "Rewind Index after this many Games (0 = never):"
+msgstr ""
+
+#: xoptions.c:813
+msgid "Almost Always Queen (Detour Under-Promote)"
+msgstr ""
+
+#: xoptions.c:815
+msgid "Animate Moving"
+msgstr "°Êµe¨«´Ñ(A)"
+
+#: xoptions.c:816
+msgid "Auto Flag"
+msgstr "¦Û°Ê¶W®É§P­t(F) Ctrl+Shift+F"
+
+#: xoptions.c:819
+msgid "Drop Menu"
+msgstr ""
+
+#: xoptions.c:820
+msgid "Highlight Dragging (Show Move Targets)"
+msgstr "©ì¦²¿ô¥Ø´£¥Ü(H)"
+
+#: xoptions.c:822
+msgid "Highlight with Arrow"
+msgstr "¥Î½bÀY¬ð¥X²¾°Ê"
+
+#: xoptions.c:825
+msgid "Periodic Updates (in Analysis Mode)"
+msgstr "©w´Á§ó·s(¤ÀªR¼Ò¦¡)"
+
+#: xoptions.c:826 xoptions.c:929
+msgid "Ponder Next Move"
+msgstr "¦P¨B«ä¦Ò(N)"
+
+#: xoptions.c:827
+msgid "Popup Exit Messages"
+msgstr "Â÷¶}®É´£¥Ü(P)"
+
+#: xoptions.c:829
+msgid "Show Coordinates"
+msgstr "Åã¥Ü§¤¼Ð(C)"
+
+#: xoptions.c:830
+msgid "Show Target Squares"
+msgstr ""
+
+#: xoptions.c:831
+msgid "Hide Thinking from Human"
+msgstr "»P¤H¹ï«Ù®ÉÁôÂÃ«ä¦Ò²Ó¸`"
+
+#: xoptions.c:832
+msgid "Test Legality"
+msgstr "ÀË¬dµÛªk¦X²z©Ê(L) Cl+Sh+L"
+
+#: xoptions.c:833
+msgid "Flash Moves (0 = no flashing):"
+msgstr ""
+
+#: xoptions.c:834
+msgid "Flash Rate (high = fast):"
+msgstr ""
+
+#: xoptions.c:835
+msgid "Animation Speed (high = slow):"
+msgstr ""
+
+#: xoptions.c:851
+#, c-format
+msgid "Warning: second engine (%s) does not support this!"
+msgstr "Äµ§i: ²Ä¤G­Ó¤ÞÀº(%s) ¤£¤ä«ù¦¹!"
+
+#: xoptions.c:872
+msgid "normal"
+msgstr ""
+
+#: xoptions.c:873
+msgid "fairy"
+msgstr ""
+
+#: xoptions.c:874
+msgid "FRC"
+msgstr ""
+
+#: xoptions.c:875
+msgid "Seirawan"
+msgstr ""
+
+#: xoptions.c:876
+msgid "wild castle"
+msgstr ""
+
+#: xoptions.c:877
+msgid "Superchess"
+msgstr ""
+
+#: xoptions.c:878
+msgid "no castle"
+msgstr ""
+
+#: xoptions.c:879
+msgid "crazyhouse"
+msgstr ""
+
+#: xoptions.c:880
+msgid "knightmate"
+msgstr ""
+
+#: xoptions.c:881
+msgid "bughouse"
+msgstr ""
+
+#: xoptions.c:882
+msgid "berolina"
+msgstr ""
+
+#: xoptions.c:883
+msgid "shogi (9x9)"
+msgstr ""
+
+#: xoptions.c:884
+msgid "cylinder"
+msgstr ""
+
+#: xoptions.c:885
+msgid "xiangqi (9x10)"
+msgstr ""
+
+#: xoptions.c:886
+msgid "shatranj"
+msgstr ""
+
+#: xoptions.c:887
+msgid "courier (12x8)"
+msgstr ""
+
+#: xoptions.c:888
+msgid "makruk"
+msgstr ""
+
+#: xoptions.c:889
+msgid "Great Shatranj (10x8)"
+msgstr ""
+
+#: xoptions.c:890
+msgid "atomic"
+msgstr ""
+
+#: xoptions.c:891
+msgid "Capablanca (10x8)"
+msgstr ""
+
+#: xoptions.c:892
+msgid "two kings"
+msgstr ""
+
+#: xoptions.c:893
+msgid "Gothic (10x8)"
+msgstr ""
+
+#: xoptions.c:894
+msgid "3-checks"
+msgstr ""
+
+#: xoptions.c:895
+msgid "janus (10x8)"
+msgstr ""
+
+#: xoptions.c:896
+msgid "suicide"
+msgstr ""
+
+#: xoptions.c:897
+msgid "CRC (10x8)"
+msgstr ""
+
+#: xoptions.c:898
+msgid "give-away"
+msgstr ""
+
+#: xoptions.c:899
+msgid "Spartan"
+msgstr ""
+
+#: xoptions.c:900
+msgid "losers"
+msgstr ""
+
+#: xoptions.c:901
+msgid "Board size ( -1 = default for selected variant):"
+msgstr ""
+
+#: xoptions.c:902
+msgid "Number of Board Ranks:"
+msgstr ""
+
+#: xoptions.c:903
+msgid "Number of Board Files:"
+msgstr ""
+
+#: xoptions.c:904
+msgid "Holdings Size:"
+msgstr ""
+
+#: xoptions.c:906
+msgid ""
+"WARNING: variants with un-orthodox\n"
+"pieces only have built-in bitmaps\n"
+"for -boardSize middling, bulky and\n"
+"petite, and substitute king or amazon\n"
+"for missing bitmaps. (See manual.)"
+msgstr ""
+
+#: xoptions.c:930
+msgid "Maximum Number of CPUs per Engine:"
+msgstr "³Ì¤jCPU¼Æ"
+
+#: xoptions.c:931
+msgid "Polygot Directory:"
+msgstr ""
+
+#: xoptions.c:932
+msgid "Hash-Table Size (MB):"
+msgstr "Âø´êªí¤j¤p(MB)"
+
+#: xoptions.c:933
+msgid "Nalimov EGTB Path:"
+msgstr "EGTB ¸ô®|"
+
+#: xoptions.c:934
+msgid "EGTB Cache Size (MB):"
+msgstr "EGTB ¤j¤p(MB)"
+
+#: xoptions.c:935
+msgid "Use GUI Book"
+msgstr ""
+
+#: xoptions.c:936
+msgid "Opening-Book Filename:"
+msgstr ""
+
+#: xoptions.c:937
+msgid "Book Depth (moves):"
+msgstr "®wµÛªk²`«×"
+
+#: xoptions.c:938
+msgid "Book Variety (0) vs. Strength (100):"
+msgstr "®wÅÜ¨Ò"
+
+#: xoptions.c:939
+msgid "Engine #1 Has Own Book"
+msgstr "¤ÞÀº1¦³¦Û¥Î®w"
+
+#: xoptions.c:940
+msgid "Engine #2 Has Own Book          "
+msgstr ""
+
+#: xoptions.c:945
+msgid "Detect all Mates"
+msgstr "ÀË´ú±N±þ(M)"
+
+#: xoptions.c:946
+msgid "Verify Engine Result Claims"
+msgstr "ÅçÃÒ¤ÞÀºÁn©ú(V)"
+
+#: xoptions.c:947
+msgid "Draw if Insufficient Mating Material"
+msgstr "¤l¤O¤£¨¬®É§P©M(I)"
+
+#: xoptions.c:948
+msgid "Adjudicate Trivial Draws (3-Move Delay)"
+msgstr "Â²©ö©M´Ñ§P¨M(T)"
+
+#: xoptions.c:949
+msgid "N-Move Rule:"
+msgstr ""
+
+#: xoptions.c:950
+msgid "N-fold Repeats:"
+msgstr ""
+
+#: xoptions.c:951
+msgid "Draw after N Moves Total:"
+msgstr "´XµÛ«á§P©M"
+
+#: xoptions.c:952
+msgid "Win / Loss Threshold:"
+msgstr "¿é/Ä¹§P¨MªùÂe"
+
+#: xoptions.c:953
+msgid "Negate Score of Engine #1"
+msgstr "¤ÞÀº #1 ¬Oµ´¹ï¤À¼Æ"
+
+#: xoptions.c:954
+msgid "Negate Score of Engine #2"
+msgstr "¤ÞÀº #2 ¬Oµ´¹ï¤À¼Æ"
+
+#: xoptions.c:964
+msgid "Auto-Kibitz"
+msgstr "¦Û°Ê\"kibitz\"(A)"
+
+#: xoptions.c:965
+msgid "Auto-Comment"
+msgstr "¦Û°Êµù¸Ñ(A)"
+
+#: xoptions.c:966
+msgid "Auto-Observe"
+msgstr "¦Û°ÊÆ[´Ñ(O)"
+
+#: xoptions.c:967
+msgid "Auto-Raise Board"
+msgstr "¦Û°Ê§ïÅÜ´Ñ½L¤j¤p(R)"
+
+#: xoptions.c:968
+msgid "Background Observe while Playing"
+msgstr "­I´ºÆ[¹î(v)"
+
+#: xoptions.c:969
+msgid "Dual Board for Background-Observed Game"
+msgstr "Âù´Ñ½L(D)"
+
+#: xoptions.c:970
+msgid "Get Move List"
+msgstr "¨ú±oµÛªk¦Cªí(G)"
+
+#: xoptions.c:971
+msgid "Quiet Play"
+msgstr "¸¨¤lµLÁn(Q)"
+
+#: xoptions.c:972
+msgid "Seek Graph"
+msgstr "¥i¿ï¹ï¤â¹Ïªí(k)"
+
+#: xoptions.c:973
+msgid "Auto-Refresh Seek Graph"
+msgstr "¦Û°Ê¨ê·s¹Ïªí(R)"
+
+#: xoptions.c:974
+msgid "Premove"
+msgstr "¹w¥ý¨«´Ñ(P)"
+
+#: xoptions.c:975
+msgid "Premove for White"
+msgstr ""
+
+#: xoptions.c:976
+msgid "First White Move:"
+msgstr "¬õ¤è¥ý¨«(W)"
+
+#: xoptions.c:977
+msgid "Premove for Black"
+msgstr ""
+
+#: xoptions.c:978
+msgid "First Black Move:"
+msgstr "¶Â¤è¥ý¨«(B)"
+
+#: xoptions.c:980
+msgid "Alarm"
+msgstr "´£¥Ü"
+
+#: xoptions.c:981
+msgid "Alarm Time (msec):"
+msgstr ""
+
+#: xoptions.c:983
+msgid "Colorize Messages"
+msgstr ""
+
+#: xoptions.c:984
+msgid "Shout Text Colors:"
+msgstr ""
+
+#: xoptions.c:985
+msgid "S-Shout Text Colors:"
+msgstr ""
+
+#: xoptions.c:986
+msgid "Channel #1 Text Colors:"
+msgstr ""
+
+#: xoptions.c:987
+msgid "Other Channel Text Colors:"
+msgstr ""
+
+#: xoptions.c:988
+msgid "Kibitz Text Colors:"
+msgstr ""
+
+#: xoptions.c:989
+msgid "Tell Text Colors:"
+msgstr ""
+
+#: xoptions.c:990
+msgid "Challenge Text Colors:"
+msgstr ""
+
+#: xoptions.c:991
+msgid "Request Text Colors:"
+msgstr ""
+
+#: xoptions.c:992
+msgid "Seek Text Colors:"
+msgstr ""
+
+#: xoptions.c:997
+msgid "Auto-Display Tags"
+msgstr ""
+
+#: xoptions.c:998
+msgid "Auto-Display Comment"
+msgstr ""
+
+#: xoptions.c:999
+msgid ""
+"Auto-Play speed of loaded games\n"
+"(0 = instant, -1 = off):"
+msgstr ""
+
+#: xoptions.c:1000
+msgid "Seconds per Move:"
+msgstr ""
+
+#: xoptions.c:1005
+msgid "Auto-Save Games"
+msgstr ""
+
+#: xoptions.c:1006
+msgid "Save Games on File:"
+msgstr ""
+
+#: xoptions.c:1007
+msgid "Save Final Positions on File:"
+msgstr ""
+
+#: xoptions.c:1008
+msgid "PGN Event Header:"
+msgstr ""
+
+#: xoptions.c:1009
+msgid "Old Save Style (as opposed to PGN)"
+msgstr ""
+
+#: xoptions.c:1010
+msgid "Save Score/Depth Info in PGN"
+msgstr ""
+
+#: xoptions.c:1011
+msgid "Save Out-of-Book Info in PGN           "
+msgstr ""
+
+#: xoptions.c:1016
+msgid "No Sound"
+msgstr "µLÁn"
+
+#: xoptions.c:1017
+msgid "Default Beep"
+msgstr "¹w³]Án­µ"
+
+#: xoptions.c:1018
+msgid "Above WAV File"
+msgstr ""
+
+#: xoptions.c:1019
+msgid "Car Horn"
+msgstr ""
+
+#: xoptions.c:1020
+msgid "Cymbal"
+msgstr ""
+
+#: xoptions.c:1021
+msgid "Ding"
+msgstr ""
+
+#: xoptions.c:1022
+msgid "Gong"
+msgstr ""
+
+#: xoptions.c:1023
+msgid "Laser"
+msgstr ""
+
+#: xoptions.c:1024
+msgid "Penalty"
+msgstr ""
+
+#: xoptions.c:1025
+msgid "Phone"
+msgstr ""
+
+#: xoptions.c:1026
+msgid "Pop"
+msgstr ""
+
+#: xoptions.c:1027
+msgid "Slap"
+msgstr ""
+
+#: xoptions.c:1028
+msgid "Wood Thunk"
+msgstr ""
+
+#: xoptions.c:1030
+msgid "User File"
+msgstr ""
+
+#: xoptions.c:1058
+msgid "Sound Program:"
+msgstr ""
+
+#: xoptions.c:1059
+msgid "Sounds Directory:"
+msgstr ""
+
+#: xoptions.c:1060
+msgid "User WAV File:"
+msgstr ""
+
+#: xoptions.c:1061
+msgid "Try-Out Sound:"
+msgstr ""
+
+#: xoptions.c:1062
+msgid "Play"
+msgstr "¼½©ñ"
+
+#: xoptions.c:1063
+msgid "Move:"
+msgstr ""
+
+#: xoptions.c:1064
+msgid "Win:"
+msgstr ""
+
+#: xoptions.c:1065
+msgid "Lose:"
+msgstr ""
+
+#: xoptions.c:1066
+msgid "Draw:"
+msgstr ""
+
+#: xoptions.c:1067
+msgid "Unfinished:"
+msgstr ""
+
+#: xoptions.c:1068
+msgid "Alarm:"
+msgstr ""
+
+#: xoptions.c:1069
+msgid "Shout:"
+msgstr ""
+
+#: xoptions.c:1070
+msgid "S-Shout:"
+msgstr ""
+
+#: xoptions.c:1071
+msgid "Channel:"
+msgstr ""
+
+#: xoptions.c:1072
+msgid "Channel 1:"
+msgstr ""
+
+#: xoptions.c:1073
+msgid "Tell:"
+msgstr ""
+
+#: xoptions.c:1074
+msgid "Kibitz:"
+msgstr ""
+
+#: xoptions.c:1075
+msgid "Challenge:"
+msgstr ""
+
+#: xoptions.c:1076
+msgid "Request:"
+msgstr ""
+
+#: xoptions.c:1077
+msgid "Seek:"
+msgstr ""
+
+#: xoptions.c:1162
+msgid "White Piece Color:"
+msgstr ""
+
+#: xoptions.c:1168
+msgid "Black Piece Color:"
+msgstr "¶Â¤l"
+
+#: xoptions.c:1174
+msgid "Light Square Color:"
+msgstr "¥Õ®æ"
+
+#: xoptions.c:1180
+msgid "Dark Square Color:"
+msgstr "¶Â®æ"
+
+#: xoptions.c:1186
+msgid "Highlight Color:"
+msgstr "®æ¤l¼Ð°O"
+
+#: xoptions.c:1192
+msgid "Premove Highlight Color:"
+msgstr "¹w¥ý¨«´Ñ¼Ð°O"
+
+#: xoptions.c:1198
+msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
+msgstr ""
+
+#: xoptions.c:1200
+msgid "Mono Mode"
+msgstr "¶Â¥Õ"
+
+#: xoptions.c:1201
+msgid "Line Gap ( -1 = default for board size):"
+msgstr ""
+
+#: xoptions.c:1202
+msgid "Light-Squares Texture File:"
+msgstr ""
+
+#: xoptions.c:1203
+msgid "Dark-Squares Texture File:"
+msgstr ""
+
+#: xoptions.c:1204
+msgid "Directory with Bitmap Pieces:"
+msgstr ""
+
+#: xoptions.c:1205
+msgid "Directory with Pixmap Pieces:"
+msgstr ""
+
+#: xoptions.c:1650
+msgid "ICS Options"
+msgstr "ICS³]©w"
+
+#: xoptions.c:1659
+msgid "Load Game Options"
+msgstr "¸ü¤J´Ñ§½¿ï¶µ"
+
+#: xoptions.c:1668
+msgid "Save Game Options"
+msgstr "Àx¦s´Ñ§½¿ï¶µ"
+
+#: xoptions.c:1678
+msgid "Sound Options"
+msgstr "Án­µ"
+
+#: xoptions.c:1687
+msgid "Board Options"
+msgstr "´Ñ½L¿ï¶µ"
+
+#: xoptions.c:1707
+msgid "Common Engine Settings"
+msgstr "³q¥Î¤ÞÀº³]©w"
+
+#: xoptions.c:1716
+msgid "New Variant"
+msgstr "ÅÜºØ"
+
+#: xoptions.c:1726
+msgid "General Options"
+msgstr "¤@¯ë¿ï¶µ"
+
+#: xoptions.c:1735
+msgid "Match Options"
+msgstr ""
+
+#: xoptions.c:1936
+msgid "ICS input box"
+msgstr ""
+
+#: xoptions.c:1965
+msgid "Type a move"
+msgstr ""
+
+#: xoptions.c:1987
+msgid "Engine Settings"
+msgstr ""
+
+#: xoptions.c:2013
+msgid "First Engine"
+msgstr ""
+
+#: xoptions.c:2013
+msgid "Second Engine"
+msgstr ""
+
+#: xoptions.c:2107
+msgid "Select engine from list:"
+msgstr ""
+
+#: xoptions.c:2108
+msgid "or specify one below:"
+msgstr ""
+
+#: xoptions.c:2109
+msgid "Engine Directory:"
+msgstr ""
+
+#: xoptions.c:2110
+msgid "Engine Command:"
+msgstr ""
+
+#: xoptions.c:2111
+msgid "(Directory will be derived from engine path when empty)"
+msgstr ""
+
+#: xoptions.c:2112
+msgid "UCI"
+msgstr ""
+
+#: xoptions.c:2113
+msgid "WB protocol v1 (do not wait for engine features)"
+msgstr ""
+
+#: xoptions.c:2114
+msgid "Must not use GUI book"
+msgstr ""
+
+#: xoptions.c:2115
+msgid "Add this engine to the list"
+msgstr ""
+
+#: xoptions.c:2116
+msgid "Force current variant with this engine"
+msgstr ""
+
+#: xoptions.c:2117
+msgid "Load mentioned engine as"
+msgstr ""
+
+#: xoptions.c:2132
+msgid "Load engine"
+msgstr ""
