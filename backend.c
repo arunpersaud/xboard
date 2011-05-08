@@ -5293,12 +5293,6 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
     endPV++;
     CopyBoard(boards[endPV], boards[endPV-1]);
     ApplyMove(fromX, fromY, toX, toY, promoChar, boards[endPV]);
-    moveList[endPV-1][0] = fromX + AAA;
-    moveList[endPV-1][1] = fromY + ONE;
-    moveList[endPV-1][2] = toX + AAA;
-    moveList[endPV-1][3] = toY + ONE;
-    moveList[endPV-1][4] = promoChar;
-    moveList[endPV-1][5] = NULLCHAR;
     CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar, moveList[endPV - 1]);
     strncat(moveList[endPV-1], "\n", MOVE_LEN);
     CoordsToAlgebraic(boards[endPV - 1],
@@ -5315,7 +5309,7 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
 
 int
 MultiPV(ChessProgramState *cps)
-{	// check if engine supports MultiPV, and if so, return the nmber of the option that sets it
+{	// check if engine supports MultiPV, and if so, return the number of the option that sets it
 	int i;
 	for(i=0; i<cps->nrOptions; i++)
 	    if(!strcmp(cps->option[i].name, "MultiPV") && cps->option[i].type == Spin)
@@ -5348,7 +5342,7 @@ LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
 		*start = *end = 0;
 		return TRUE;
 	}
-	ParsePV(buf+startPV, FALSE, !shiftKey);
+	ParsePV(buf+startPV, FALSE, gameMode != AnalyzeMode);
 	*start = startPV; *end = index-1;
 	return TRUE;
 }
@@ -5368,15 +5362,22 @@ UnLoadPV()
   int oldFMM = forwardMostMove; // N.B.: this was currentMove before PV was loaded!
   if(endPV < 0) return;
   endPV = -1;
-  if(shiftKey && gameMode == AnalyzeMode) {
-	if(pushed) storedGames--; // abandon shelved tail of original game
+  if(gameMode == AnalyzeMode && currentMove > forwardMostMove) {
+	Boolean saveAnimate = appData.animate;
+	if(pushed) {
+	    if(shiftKey && storedGames < MAX_VARIATIONS-2) { // wants to start variation, and there is space
+		if(storedGames == 1) GreyRevert(FALSE);      // we already pushed the tail, so just make it official
+	    } else storedGames--; // abandon shelved tail of original game
+	}
 	pushed = FALSE;
 	forwardMostMove = currentMove;
 	currentMove = oldFMM;
+	appData.animate = FALSE;
 	ToNrEvent(forwardMostMove);
+	appData.animate = saveAnimate;
   }
   currentMove = forwardMostMove;
-  if(pushed) { PopInner(0); pushed = FALSE; } // restore shelved game contnuation
+  if(pushed) { PopInner(0); pushed = FALSE; } // restore shelved game continuation
   ClearPremoveHighlights();
   DrawPosition(TRUE, boards[currentMove]);
 }
