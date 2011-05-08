@@ -3,6 +3,680 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2011-05-07 18:44:24 -0700 Arun Persaud <arun@nubati.net>:
+added translations generated via lng2po from all winboard languages
+
+2011-05-07 18:40:23 -0700 Arun Persaud <arun@nubati.net>:
+lng2po.sh: added command line options, GPL header
+
+also use a temporary file generated with mktemp instead of a hard coded one
+
+2011-05-07 17:53:10 -0700 Arun Persaud <arun@nubati.net>:
+fixed access rights to winboard language files (644 instead of 655)
+
+2011-05-07 14:55:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Import WinBoard language files into git
+
+2011-05-06 23:14:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let Shift+RightClick on PV actually play the PV moves
+
+2011-05-06 18:06:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make book-edit function WB
+
+The tags dialog is used to display the GUI book moves from the current
+position, and will be updated when you step or move to another one.
+The edited move list (with weights) can be written back to the book.
+
+2011-05-07 16:21:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix resetting engine options
+
+Not all options were reset, and -needsNonCompliantFEN was 'reset'
+to a completely wrong value, so that bad FENs would be sent.
+
+2011-05-06 18:51:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -first/secondPgnName option
+
+This option replaces the tidy name of the engine in the PGN player tags
+of engine-engine games. In WinBoard engines can be installed with this
+option through a checkbox in the Load Engine dialog.
+
+2011-05-06 23:31:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let XB generic popup define default file extensions
+
+
+2011-05-06 18:25:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Save time-control settings in tourney file
+
+Because parsing the options and storing them in appData is not enough,
+the time-control code setting the internally used parameters from the
+appData info in InitBackend was made into a subroutine, and also caled
+after parsing the tourney file.
+
+2011-05-06 20:40:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Put saveGameFile in tournament dialog
+
+
+2011-05-06 19:17:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Plug memory leak, filenames relative to installDir
+
+String options are consistently freed now, before assigning a new value
+to them through strdup. The init code now even does use strdup when
+setting defaults. This is important for optionslike -lgf, which are not
+saved in the settings file, and thus are usually left with their
+default. When a dialog to set them then uses free, this causes a crash.
+When setting the defaults uses strdup, ParseArgs can already free them.
+This plugs an important memory leak, as ParseArgs in now called to parse
+the tourney file before every tourney game (twice!), and the lists of
+participants and results in it can be quite long.  Macros are defined in
+common.h to make the code look simpler.
+  Filenames entered through the generic popup are now interpreted
+relative to the WinBoard installation folder, just as the saveGameFile
+already was. The code handling the atter was made into a subroutine for
+this.
+
+2011-05-06 22:02:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add WB new popup prototypes
+
+
+2011-05-06 18:58:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add partcipants at bottom in tourney dialog (WB)
+
+
+2011-05-06 18:56:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix range of tourneyType spin WB
+
+
+2011-05-06 18:15:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix exit popup in tourney mode
+
+Only the instance finishing the last tourney game will cause a popup
+with final standings. As long as there are still busy games, it exits or
+switches back to idle mode silently.
+
+2011-05-06 18:11:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix stopping of match in tourney mode
+
+
+2011-05-06 18:59:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add default extension in file browser
+
+
+2011-05-06 22:37:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve sizing of comment and tags dialogs
+
+There seems to be a bug in Xaw for the sizing of buttons; they get
+unpredicatble and weird sizes when the size is not explicitly set,
+possibly stretching the initial width of a dialog to rediculous values.
+Sizing back to a remembered value from the settings file then makes
+buttons overlapand text edits shrink to almost nothing. To prevent that
+we now define exlicit sizes for the buttons in tags and comment popups.
+
+2011-05-06 21:00:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix generic combobox bug
+
+The patch placing gettext markers was done wrong, setting the
+translated menu text outside the loop, so all entries became the same.
+
+2011-05-07 14:23:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix PV walking in analysis mode
+
+ParsePV assumed that the PV would always have been produced by an engin
+thinking about the final position of the game (or the one before it). In
+analysismode, however, the engine can be analysing positions internal to
+the game, and the PV would be considered invalid. This is fixed by
+cutting of the tail off the game (shelving it in variation fashion)
+before starting the PV walk, and reverting afterwards.
+  For this the PushTail and PopTail routines had to be split into an
+'inner' part, doing the pushing and popping, and an outer part, handling
+menu graying and popdowns (which is undesirable in in this application).
+
+2011-05-03 00:24:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Lift length-limit on text-edits in WB generic popup
+
+
+2011-05-04 13:53:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Lift limitation of text length in generic dialog XB
+
+All string options should now point to allocated memory, as strdup /
+free is consistently used on them. This is OK for values received from
+ParseArgs, but for non-arg intermediate variables that must receive strg
+values, such as in the comment and tags popups, strdup has to be used to
+initialize those.
+
+2011-05-04 14:53:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Tournament Options dialog WinBoard
+
+The file browser now can select on extension WB generic dialogs,
+with a default based on the option.max value of the option for which it
+browses. A textBox can be forced to be multiline by putting the number
+of extra lines in option.min.
+
+2011-05-04 15:30:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make option to draw second engine from first list
+
+
+2011-05-03 00:17:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix error message on engine load
+
+
+2011-05-04 15:09:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Load Engine dialog in WinBoard
+
+The Load Engine dialog is implemented for WinBoard, and is invoked by
+the menu item Engine->Load, which formerly was Install 2nd. Install 1st
+is renamed 'Edit Engine List'. Unlike in XBoard, the dialog has separate
+fields for the engine executale and its parameters.
+  The dialog is implemented by converting the Engine Settings popup into
+a generic dialog generator.
+
+2011-05-04 13:43:06 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Load new logo on engine change WinBoard
+
+Picking the logo for the first engine is made into a subroutine. The
+code for picking the logo of the first engine was made into a subrroutne
+for this. We use the kludge to recognize the engine by its command line
+when starting a new engine process.
+
+2011-05-04 13:36:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow switching off match mode through menu
+
+The Machine Match menu item is now checkmarked, and no longer grayed
+during a match, and clicking it while a match is running will terminate
+the match after the current game. To not be left with hanging
+checkmarks, the checkmark is already removed duringthe last match game
+(which is logically equivalent to ordinary Two Machines mode anyway).
+
+2011-05-03 00:14:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Calculate and display tourney result
+
+
+2011-05-04 18:42:13 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Tournament Manager
+
+New command-line options are added to specify the tourney: -tourneyType
+(-tt), -tourneyCycles (-cy), -participants, -syncAfterRound,
+-syncAfterCycle, -results, to be saved on a -tourneyFile (-tf), but
+otherwise volatile. When a tourneyFile is specified during a match,
+a new routine NextTourneyGame is called from NextMatchGame before every
+game, to decide the pairing, and unload and redefine the engines, when
+needed. The XBoard Match Options dialog can be used to set the options
+and create the tournament file.
+  Actual loading of new engines is done by TwoMachinesEvent, which is
+now modified to also wait for the feature timeout of the first engine.
+Waiting for the matchPause is now also implemented there, after waiting
+for the engines (so they can be started during the pause).
+  Pairings and color assignment is now all done in an absolute
+(non-incremental) way, based on a new global game-number variable
+nextGame, which takes over the function of matchGame in a tourney. The
+latter is now used to count games between the same players, so it can be
+still used to derive the load-file indexes (again in absolute fashion).
+  The next game to play is already picked in GameEnd, so it can be
+decided if there is a game to be scheduled, or if we can terminate.
+
+2011-05-04 15:42:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Display note in stead of empty engine-settings dialog XB
+
+
+2011-04-24 18:02:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on empty Engine Settings dialog
+
+The generic popup was not foolproof against this.
+
+2011-04-22 12:47:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Refactor code for loading games and positions in match
+
+The code in NextMatchGame and MatchEvent was nearly the same,
+(MatchEvent did a little more error checking, but that is never
+harmful), and could be combined. In stead of determining the load index
+incrementally, it is now calculated in an absolute way from the game
+number, so it can be used more easily in tournament mode.
+
+2011-04-21 22:37:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add callback possibility to combobox selection
+
+
+2011-04-24 17:15:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Lock game an position file during writing
+
+The use of flock() on the file desctiptor of the opened stream should
+guarantee multiple XBoard instances, saving on the same file, will not
+interleave their PGN games or FEN positions.
+
+2011-04-27 17:05:06 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove building rule for parser.c from WB makefiles
+
+
+2011-04-29 16:58:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Engine Settings buttons in WinBoard
+
+This was broken by a leftover statement from debugging the -file/-path
+patch.
+
+2011-05-02 13:38:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement flock in WinBoard
+
+This system function seems unknown in a MinGW compile, so it is
+implemented with the aid of file byte-range locking, using a lock on the
+first 1024 bytes of the file as a semaphore.
+
+2011-04-29 23:06:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix grayout XB Match Options in ICS mode
+
+
+2011-05-03 00:22:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Delay loading of second engine until it is used
+
+
+2011-05-02 15:00:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix zippy bughouse partner bug
+
+The patchs to subject Zippy messages to coloriation was faulty, because
+there were messages recognized by zippy that were not colorized, and
+such messages would then not be 'read away' after zippy recognition
+(except for the first character). As a result the messages were
+processed over and over again.
+
+2011-05-04 10:59:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Silence more rpm warnings
+
+
+2011-05-01 20:33:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix warnings XBoard file browser
+
+All the prototypes have been moved to selfile.h, to force uniformity.
+The order of the #include files xstat.h and selfile.h had to be
+swapped, to make sure 'struct stat' is a nown type atthe time of
+prototype declaration. The event handler SFmotionList is considered
+wrong type because of its third argument (XMotionEvent in stead of
+XEvent), and had to be casted to (XtEventHandler) when passed to
+XtAddEventHandler.
+
+2011-05-04 10:56:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix some warnings and header-file improvement
+
+Ther were lot of 'extern' declarations in the x-files, so called
+'imports from xboard.c', (sometimes backend.c) which logically belonged
+in xboard.h (backend.h) to ensure their uniform definition. These have
+now been moved there. Some prototypes have been added in xboard.h as
+well, for functions that needed calling from xoptions.c.
+
+2011-05-04 10:50:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Create conversion tools for language files
+
+A shell script "lng2po.sh" is provided, to apply the translation given
+in a WinBoard .lng file to "xboard.pot", in order to generate a
+"language.po" file containing translations for all strings for which
+the .lng file had a translation. It makes use of a file "metascript",
+which is the ed script used to turn the .lng file in an ed script to
+turn the .pot into .po. For example, the command "./lng2po.sh
+espa?ol.lng" will create a file "language.po", which can be renamed to
+"es.po".
+****************************** WARNING ********************************
+  Note that the lng2po script does a "recode" that assumes the given
+.lng file is encoded in latin-1. This means it canot be used without
+modification for the Vietnamese and Chinese translation; you would have
+to replace latin-1 by the applicable encoding first (CP1258 / BG2312 /
+BIG5).
+
+2011-04-27 22:04:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Put gettext markers in generic dialog creator
+
+This is done by adding extra XtNstring argumentsto the widget gcreaton,
+so the displayed name can be different fromthe widget name.
+
+2011-05-01 19:56:38 -0700 Tim Mann <tim@tim-mann.org>:
+Use getaddrinfo instead of gethostbyname.  Hopefully this makes us compatible with IPv6 and with hosts that have more than one IP address.  However, I don't know of any chess servers that have either of those properties, so I couldn't test that.  I did test that xboard still works with freechess.org and chessclub.com and that it gives an error message for invalid host names.
+
+
+2011-04-24 11:18:28 -0700 Arun Persaud <arun@nubati.net>:
+updated German translation
+
+
+2011-04-24 11:17:43 -0700 Arun Persaud <arun@nubati.net>:
+replaced hardcoded email address with generic PACKAGE_BUGREPORT
+
+
+2011-04-23 10:51:57 -0700 Arun Persaud <arun@nubati.net>:
+updated po-files; updated german translation
+
+
+2011-04-23 10:51:02 -0700 Arun Persaud <arun@nubati.net>:
+updated list of files that include translation strings; updated pot-file
+
+
+2011-04-22 21:50:58 -0700 Arun Persaud <arun@nubati.net>:
+marked more strings for gettext that were only marked with N_()
+
+they need to be marked again with _() when they are used to get the translated string
+
+2011-04-22 21:39:22 -0700 Arun Persaud <arun@nubati.net>:
+updated translation files
+
+
+2011-04-22 21:37:22 -0700 Arun Persaud <arun@nubati.net>:
+added/fixed i18n support via gettext to xboard
+
+this was already added a long time ago, but now it's added again to
+autoconf. Also fixed some compile errors that showed up.
+
+2011-04-20 10:27:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make engine startup error non-fatal
+
+When engine startup fails, do not generate a fatal error, but swicth
+back to -ncp mode. Write on broken pipe errors had to be suppressed for
+this.
+
+2011-04-20 14:35:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make engine loadable during session
+
+A "Load Engine ..." menu item is added to the Engine menu, which pops
+up a dialog where one can replace the first or second engine by a new
+one, without destroying the game state. Switching from -ncp to engine
+mode needed activation of some menu items in SetGNUMode, and
+re-enabling clockMode. It was also important that noChessProgram is
+cleared before re-initializing the ChessProgramState.
+  The Load-Engine dialog can select from the list of installed
+engines, and also add a newly specified engine to this list. In this
+case it saves the directory, hasBook, and isUCI info with the engine,
+and optionally the current variant. When loading an engine with a
+specified variant, it resets the game and switches to the new variant.
+
+2011-04-18 15:56:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Generalize WaitForSecond to WaitForEngine
+
+
+2011-04-18 15:46:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add UnloadEngine routine
+
+
+2011-04-20 13:45:51 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Put engine initialization code in per-engine function
+
+Initializing of the ChessProgramStates first and second from the
+option settings in appData is now done by separate calls to the same
+routine. Clearing of options is added to the initialization. This is
+needed when reloading an engine. This is done in a separate routine,
+which could also be called on -reset options.
+
+2011-04-18 13:21:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Bring structure in appData engine options
+
+All options in appData that came in pairs for both engines are replaced
+by arrays of ENGINES (=2, for now) elements. The use of the named
+appData field that are replaced in the source is replaced by use of the
+corresponding array element, by #define directives in common.h, awaiting
+their replacement.
+
+2011-04-19 15:15:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix gettext macros in option dialogs
+
+The strings in the tables were using _() in stead of N_().
+
+2011-04-18 20:58:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on using Engine #1 Settings in ICS non-zippy mode
+
+If XBoard is compiled with zippy the Engine #1 Settings menu was not
+grayed out even when you don't run in zippy mode, and using it would
+then crash XBoard.
+
+2011-04-19 15:07:31 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix shogipixmaps
+
+Some pixmaps forptomoted pieces had wrong background color, others had a
+wrong name (so the one with the correct name was missing).
+
+2011-04-17 19:12:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Change texture-install directory to pixmaps/textures
+
+
+2011-04-17 17:36:32 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Limit install of sound files to those in menu
+
+The sounds directory is set to .../xboard/sounds, and only ten
+sounds are kept (all non-spoken).
+
+2011-04-17 17:27:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove some bitmaps from install
+
+Some files in the bitmaps source directory need not be installed,
+because they are there only to be linked to the binary in a build
+without LIBXPM, are README files or conversion programs. I left only the
+stuff that is in a Debian binary package in .../xboard/bitmaps.xchess.
+
+2011-04-17 16:34:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Configure some default sounds
+
+The move sound is set to Wood Thunk; the sounds for tell and challenge
+events to Phone and Gong, respectively.
+
+2011-04-17 16:17:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Change default sounds in Xboard menu
+
+All spoken sounds are removed now. Thud, Click and Ching are replaced by
+Wood Thunk, Slap and Cymbal; Car Horn and Pop are added.
+
+2011-04-17 12:46:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make user wav file available for try-out in sound dialog
+
+The GenericReadout was adapted to be able to read a single selected
+value, so that the callback to the 'play' button in the sounds dialog
+could get the name of the 'user WAV file' without accepting all settings
+for the other sounds (which should only happen on 'OK', and might still
+be cancelled in stead).
+
+2011-04-16 10:36:31 -0700 Arun Persaud <apersaud@lbl.gov>:
+configure: enable silent rules by default
+
+
+2011-04-16 10:28:16 -0700 Arun Persaud <apersaud@lbl.gov>:
+configure: added install directory for bitmaps files: .../games/xboard/bitmaps/default/
+
+
+2011-04-16 10:25:33 -0700 Arun Persaud <apersaud@lbl.gov>:
+configure: added install of sounds in .../games/xboard/sounds/default
+
+
+2011-04-16 09:54:26 -0700 Arun Persaud <apersaud@lbl.gov>:
+configure: renamed bitmapdir to pixmapsdir, since it installed only pixmaps. also changed name of default dir
+
+pixmaps will now be installed under .../games/xboard/pixmaps/default/
+
+2011-04-16 13:40:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix gamelist highlight
+
+Reopening the gamelist should highlight the current game.
+
+2011-04-16 10:25:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix size limit on 'save as diagram'
+
+In stead of a fixed-size buffer the diagram-save code now uses an
+allocated buffer with size calculated from the bitmap parameters to
+retreive the bitmap data, so it should work for all sizes.
+
+2011-04-15 22:04:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix chaining of bottom-row dialog buttons
+
+The OK & cancel buttons are chained to the bottom. This patch makes sure
+that other buttons appearing in the same row (as in the tags and
+comment dialogs) will be chained that way too, so that they will behave
+the same on vertical sizing. The bottom of a full-width text-edit above
+it will be chained to bottom too. To make this work in the tags dialog,
+the (optional) cmail-message field had to be put above the tags memo.
+
+2011-04-15 19:18:46 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix switching between pixmap and bitmap pieces
+
+There were still several flags that had to be reset when redoing the
+graphics initialization. The Debian patch to use a default bitmap
+directory when none is given but monoMode is selected or forced, is
+moved to a more sensible place, so that it does not disturb matters when
+compiled without LIBXPM (when we do have built-in bitmaps).
+
+2011-04-15 15:47:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove outline-pieces option from board-options dialog
+
+This option does not exist in XBoard (yet).
+
+2011-04-15 15:41:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix running of clock during hash allocation engine
+
+In TwoMachinesEvent we now wait for the second engine to acknowledge the
+'ping' after 'new', to make sure it is done allocating hash in reaction
+to the preceding 'memory' command, before the clock for the game is
+started.
+
+2011-04-14 21:42:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Describe move type-in in texi file
+
+
+2011-04-14 20:34:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Describe Copy Game List menu item in texi file
+
+
+2011-04-14 20:30:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Describe -sweepPromotions in texi file
+
+The new method for selection promotion piece, and the -sweepPromotions
+option are described in the texi file.
+
+2011-04-14 20:14:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Describe -pieceMenu option in texi file
+
+The sweep method for selecting a piece in Edit-Position mode is
+explained, as well as the -pieceMenu option.
+
+2011-04-14 15:59:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file
+
+Descriptions of the new XBoard menu dialogs are included in the docs.
+
+2011-04-14 21:06:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Reorganize texi description
+
+
+2011-04-14 12:31:15 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix sweep-promotions patch
+
+Setting of the from square was moved to before OKtoStartUserMove in the
+LeftClick handler, to make sure we could test the promotion possiblity
+when OnlyMove() would have altered (x,y) to be no longer the from
+square. But this setting of fromX, fromY hung on also if the move was
+not OK, so you could effectively select opponent pieces and empty
+squares. The from-square is now set back to undefined when it is not OK
+to move the piece you clicked.
+
+2011-04-14 11:56:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Alter treatment of moves with empty squares
+
+In Edit Position mode one can move empty squares, and use them to
+'capture' pieces as a means to clear their square. But this often leads
+to unintended disappearence of pieces one wants to grab for dragging, if
+a previous click had inadvertantly left an empty square selected: the
+click on the piece is then seen as the to-click of a click-click move.
+  This patch treats to-clicks of moves with an empty-square differently
+from other to-clicks: Rather than performing the move (in this case
+clearing of the to-square) on the down-click, it defers that to the
+up-click, and only does it if that up-click is in the same square. This
+allows the user to grab the piece on the down-click, and drag it to
+another square, if that is what he wanted to do, without being disturbed
+by sudden implosion of the piece he tried to grab.
+  If the to-square is in the holdings, grabbing the piece is the only
+action, as moves of empty squares into the holdings are forbidden anyway.
+
+2011-04-13 13:14:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Block selection of a directory when file is needed
+
+When we are not browsing merely to obtain a name to put in a text edit,
+but really must return an open file pointer, selection of a directory
+(ending in '/') can no longer be OK'ed in the file browser. (XBoard
+tends to segfault when offered garbage for game or position file...)
+
+2011-04-13 12:23:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let double-click select file in file browser
+
+A second click on the already selected entry now has the same effect as
+pressing the OK button.
+
+2011-04-12 17:06:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Couple mouse wheel to v-scrolls in file browser
+
+A newly added mouse-wheel event handler was made to call the v-scroll
+callback routines with parameters to step one entry. The button-press
+handler for the lists themselves was also made to intercept the wheel
+events (buttons 4 and 5), to prevent they would select an entry, and
+make them scroll in stead as well.
+
+2011-04-13 11:41:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash copying game list when there is none
+
+
+2011-04-13 11:15:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix changing of float setting by generic popup
+
+Changing a float setting (so far the only one is in the Load Options
+dalog) did not always work, because the old value was clipped to (int),
+so that changing it back to an integer value might erroneously conclude
+there was no change.
+
+2011-04-13 16:15:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on closing dialogs in wrong order
+
+When a menu dialog was closed when it still had an open file-browse
+daughter, which could be done through the system menu X on the title
+bar, later closing of the file browser caused a crash. This is solved by
+keeping track of the fact that there is such a daughter through a global
+flag, and ignoring the pop-down command if there is one.
+
+2011-04-13 16:33:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix startup focus of board window
+
+When there were open auxiliary windows, these would have focus on
+starting up XBoard. The XtSetKeyboardFocus call added in XBoard main()
+was ineffective in curing that. It has now been replaced by a call to
+XSetInputFocus, which does do the job. By giving input focus to the form
+widget, rather than the board widget, XBoard will be immediately
+sensitive to all key bindings.
+
+2011-04-13 15:48:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix game-list highight error when filtered (WB)
+
+When the gamelist was filtered, the game that was highlingted was the
+n-th game in the list rather than the n-th game in the file, when the
+latter was loaded (and n did not exceed the number of filtered games).
+This is fixed now by searching for the line in the listbox that starts
+with the game number n, rather than taking the n-th line.
+
+2011-04-12 19:20:46 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Refactor move type-in code
+
+Common code between XBoard and WinBoard was moved to the back-end
+creating TypeInEvent() and TypeInDoneEvent() routines.
+
+2011-04-12 10:13:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix saving of XBoard fonts with spaces in name
+
+SaveFontArg now prints quotes around the saved font string, so that the
+general option-argument parser doesnot stop at the first space it sees.
+
+2011-04-11 20:48:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement move type-in for XBoard
+
+By adding an event handler to the main window for key presses, users can
+now type moves when the board has focus, like in WinBoard. The typed
+character appears as first character in the type-in box that willpop up.
+Enter and Escape close the box; finishing the typing of the move enters
+it. Like in WinBoard it is also possible to type a move number (to go
+there) or (in Edit Position mode) a FEN.
+
+2011-04-11 20:59:44 -0700 Arun Persaud <apersaud@lbl.gov>:
+new developer release
+
+tried to keep the v4.5.x branch developed already separated in the NEWS file, as well as DIFFSTAT and SHORTLOG.
+The Changelog is just the one from master.
+
+2011-04-10 22:47:59 -0700 Arun Persaud <apersaud@lbl.gov>:
+updated Changelog, NEWS, etc.
+
 2011-04-10 20:32:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix use of game/position file in first match game
 

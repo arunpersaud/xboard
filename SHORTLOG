@@ -2,10 +2,29 @@
 
 (git log --pretty=short --cherry-pick master...v4.5.x^   |git shortlog --no-merges)
 
-Arun Persaud (1):
+Arun Persaud (20):
       removed parser.l from build process, also removed flex dependency from configure
+      updated Changelog, NEWS, etc.
+      new developer release
+      updated Changelog, NEWS, etc.
+      new developer release
+      new developer release
+      added/fixed i18n support via gettext to xboard
+      updated translation files
+      marked more strings for gettext that were only marked with N_()
+      updated list of files that include translation strings; updated pot-file
+      updated po-files; updated german translation
+      replaced hardcoded email address with generic PACKAGE_BUGREPORT
+      updated German translation
+      updated Changelog, NEWS, etc.
+      release of version 4.5.2
+      updated Changelog, NEWS, etc.
+      release of version 4.5.2a
+      fixed access rights to winboard language files (644 instead of 655)
+      lng2po.sh: added command line options, GPL header
+      added translations generated via lng2po from all winboard languages
 
-H.G. Muller (13):
+H.G. Muller (77):
       New parser, written in C
       Implement yynewstr entry point in new parser
       Fix o-o castling in new parser
@@ -19,20 +38,94 @@ H.G. Muller (13):
       Alternative sweep promotions
       Third method of sweep selection
       Implement Copy Game List menu item for XBoard
+      Implement move type-in for XBoard
+      Refactor move type-in code
+      Fix crash copying game list when there is none
+      Alter treatment of moves with empty squares
+      Fix sweep-promotions patch
+      Update texi file
+      Describe -pieceMenu option in texi file
+      Describe -sweepPromotions in texi file
+      Describe Copy Game List menu item in texi file
+      Describe move type-in in texi file
+      Update texi file
+      Fix chaining of bottom-row dialog buttons
+      Fix gettext macros in option dialogs
+      Bring structure in appData engine options
+      Put engine initialization code in per-engine function
+      Add UnloadEngine routine
+      Generalize WaitForSecond to WaitForEngine
+      Make engine loadable during session
+      Make engine startup error non-fatal
+      Fix gettext macros in option dialogs
+      Fix some warnings and header-file improvement
+      Put gettext markers in generic dialog creator
+      Fix zippy-partner bug
+      Create conversion tools for language files
+      Fix some warnings and header-file improvement
+      Silence more rpm warnings
+      Fix zippy bughouse partner bug
+      Delay loading of second engine until it is used
+      Fix grayout XB Match Options in ICS mode
+      Implement flock in WinBoard
+      Remove building rule for parser.c from WB makefiles
+      Lock game an position file during writing
+      Add callback possibility to combobox selection
+      Refactor code for loading games and positions in match
+      Fix crash on empty Engine Settings dialog
+      Display note in stead of empty engine-settings dialog XB
+      Implement Tournament Manager
+      Calculate and display tourney result
+      Allow switching off match mode through menu
+      Load new logo on engine change WinBoard
+      Implement Load Engine dialog in WinBoard
+      Fix error message on engine load
+      Make option to draw second engine from first list
+      Implement Tournament Options dialog WinBoard
+      Lift limitation of text length in generic dialog XB
+      Lift length-limit on text-edits in WB generic popup
+      Fix PV walking in analysis mode
+      Fix generic combobox bug
+      Improve sizing of comment and tags dialogs
+      Add default extension in file browser
+      Fix stopping of match in tourney mode
+      Fix exit popup in tourney mode
+      Fix range of tourneyType spin WB
+      Add partcipants at bottom in tourney dialog (WB)
+      Add WB new popup prototypes
+      Plug memory leak, filenames relative to installDir
+      Put saveGameFile in tournament dialog
+      Save time-control settings in tourney file
+      Let XB generic popup define default file extensions
+      Add -first/secondPgnName option
+      Fix resetting engine options
+      Make book-edit function WB
+      Let Shift+RightClick on PV actually play the PV moves
+      Import WinBoard language files into git
 
-** Version 4.5.2 (not yet released) **
+Tim Mann (1):
+      Use getaddrinfo instead of gethostbyname.
+
+** Version 4.5.2 **
 
 (git shortlog --no-merges v4.5.1..HEAD)
 
-Arun Persaud (6):
+Arun Persaud (13):
       Fix "make install" on Os X10.6.6 (removed a "/")
       fixed wrong default for polyglotDir mentioned in docs.
       Fix bug introduced in commit 89b4744: removed a "/" and forgot to add it in the config file
       check if malloc.h is present before including it
       removed check and #includes for malloc.h, since it's not needed
       fixed 64 bit warnings by casting integers to intptr_t before casting to int
+      updated Changelog, NEWS, etc.
+      new developer release
+      configure: renamed bitmapdir to pixmapsdir, since it installed only pixmaps. also changed name of default dir
+      configure: added install of sounds in .../games/xboard/sounds/default
+      configure: added install directory for bitmaps files: .../games/xboard/bitmaps/default/
+      configure: enable silent rules by default
+      new developer release
 
-H.G. Muller (33):
+H.G. Muller (57):
       Fix nps bug
       Fix unintended translation in debug file
       Improve repairing damage of arrow highlight XBoard
@@ -66,6 +159,30 @@ H.G. Muller (33):
       Fix crash on opening ICS Text Menu
       Fix path browsing in WinBoard
       Fix use of game/position file in first match game
+      Fix saving of XBoard fonts with spaces in name
+      Fix game-list highight error when filtered (WB)
+      Fix startup focus of board window
+      Fix crash on closing dialogs in wrong order
+      Fix changing of float setting by generic popup
+      Couple mouse wheel to v-scrolls in file browser
+      Let double-click select file in file browser
+      Block selection of a directory when file is needed
+      Reorganize texi description
+      Update texi file
+      Remove outline-pieces option from board-options dialog
+      Fix running of clock during hash allocation engine
+      Fix switching between pixmap and bitmap pieces
+      Fix size limit on 'save as diagram'
+      Fix gamelist highlight
+      Make user wav file available for try-out in sound dialog
+      Change default sounds in Xboard menu
+      Configure some default sounds
+      Remove some bitmaps from install
+      Limit install of sound files to those in menu
+      Change texture-install directory to pixmaps/textures
+      Fix crash on using Engine #1 Settings in ICS non-zippy mode
+      Fix shogipixmaps
+      Fix gettext macros in option dialogs
 
 Kamil Blank (1):
       Added missing fclose()

@@ -1,56 +1,187 @@
-** Version master 20110411 (not an official release, includes changes from 4.5.2)
+** Version master 20110507 (not an official release, includes changes from 4.5.2)
 
-(git diff -b --stat --summary -M v4.5.2.20110410 HEAD)
+(git diff -b --stat --summary -M v4.5.2 HEAD)
 
- Makefile.am         |    2 +-
- args.h              |    2 +
- backend.c           |  173 ++-
- backend.h           |    1 +
- common.h            |    2 +
- configure.ac        |   10 +-
- frontend.h          |    1 +
- gamelist.c          |    1 -
- parser.c            | 4617 ++++++---------------------------------------------
- parser.l            | 1203 --------------
- winboard/config.h   |    6 +-
- winboard/winboard.c |   14 +-
- xboard.c            |  392 +----
- xedittags.c         |  305 +----
- xgamelist.c         |   29 +
- xoptions.c          |   91 +-
- 16 files changed, 833 insertions(+), 6016 deletions(-)
+ ABOUT-NLS                           | 1282 ++++++++++
+ ChangeLog                           |  278 +--
+ DIFFSTAT                            |   79 +-
+ Makefile.am                         |   14 +-
+ NEWS                                |   18 +-
+ SHORTLOG                            |   59 +-
+ args.h                              |   48 +-
+ backend.c                           | 1344 ++++++++---
+ backend.h                           |   15 +-
+ book.c                              |  155 ++-
+ common.h                            |  101 +-
+ config.rpath                        |  280 ++-
+ configure.ac                        |   16 +-
+ filebrowser/dir.c                   |    4 +-
+ filebrowser/draw.c                  |    7 +-
+ filebrowser/path.c                  |   10 +-
+ filebrowser/selfile.c               |   17 +-
+ filebrowser/selfile.h               |   17 +
+ frontend.h                          |    7 +
+ gamelist.c                          |    1 -
+ gettext.h                           |  262 ++-
+ m4/gettext.m4                       |  383 +++
+ m4/iconv.m4                         |  214 ++
+ m4/lib-ld.m4                        |  110 +
+ m4/lib-link.m4                      |  774 ++++++
+ m4/lib-prefix.m4                    |  224 ++
+ m4/nls.m4                           |   32 +
+ m4/po.m4                            |  449 ++++
+ m4/progtest.m4                      |   92 +
+ moves.c                             |    6 +-
+ parser.c                            | 4617 ++++-------------------------------
+ parser.l                            | 1203 ---------
+ po/LINGUAS                          |    2 +-
+ po/Makefile.in.in                   |  160 +-
+ po/Makevars.template                |   41 +
+ po/POTFILES.in                      |    5 +-
+ po/Rules-quot                       |   47 +
+ po/boldquot.sed                     |   10 +
+ po/de.po                            | 2705 +++++++++++++++------
+ po/en@boldquot.header               |   25 +
+ po/en@quot.header                   |   22 +
+ po/es.po                            | 2456 +++++++++++++++++++
+ po/insert-header.sin                |   23 +
+ po/it.po                            | 2456 +++++++++++++++++++
+ po/lng2po.sh                        |   96 +
+ po/metascript                       |  125 +
+ po/quot.sed                         |    6 +
+ po/ru.po                            | 2456 +++++++++++++++++++
+ po/tr.po                            | 2548 ++++++++++++++-----
+ po/vi.po                            | 2456 +++++++++++++++++++
+ po/xboard.pot                       | 2560 ++++++++++++++------
+ po/zh_CN.po                         | 2456 +++++++++++++++++++
+ po/zh_HK.po                         | 2456 +++++++++++++++++++
+ po/zh_TW.po                         | 2456 +++++++++++++++++++
+ winboard/config.h                   |    6 +-
+ winboard/language/chinese(simp).lng |  786 ++++++
+ winboard/language/chinese(trad).lng |  784 ++++++
+ winboard/language/deutsch.lng       |  970 ++++++++
+ winboard/language/italiano.lng      |  975 ++++++++
+ winboard/language/russian.lng       |  993 ++++++++
+ winboard/language/spanish.lng       |  952 ++++++++
+ winboard/language/vietnamese.lng    |  972 ++++++++
+ winboard/makefile.gcc               |    7 -
+ winboard/makefile.ms                |    3 -
+ winboard/resource.h                 |    2 +
+ winboard/wedittags.c                |   13 +-
+ winboard/wengineoutput.c            |    3 +-
+ winboard/winboard.c                 |  189 +-
+ winboard/winboard.h                 |    2 +
+ winboard/winboard.rc                |    6 +-
+ winboard/woptions.c                 |   43 +-
+ winboard/wsettings.c                |  319 ++-
+ xboard.c                            |  507 +---
+ xboard.h                            |   29 +
+ xboard.texi                         |   79 +-
+ xedittags.c                         |  310 +---
+ xengineoutput.c                     |   28 +-
+ xevalgraph.c                        |   22 +-
+ xgamelist.c                         |   44 +-
+ xhistory.c                          |    6 -
+ xoptions.c                          |  313 ++-
+ 81 files changed, 36761 insertions(+), 9287 deletions(-)
+ create mode 100644 ABOUT-NLS
+ create mode 100644 m4/gettext.m4
+ create mode 100644 m4/iconv.m4
+ create mode 100644 m4/lib-ld.m4
+ create mode 100644 m4/lib-link.m4
+ create mode 100644 m4/lib-prefix.m4
+ create mode 100644 m4/nls.m4
+ create mode 100644 m4/po.m4
+ create mode 100644 m4/progtest.m4
  delete mode 100644 parser.l
+ mode change 100755 => 100644 po/Makefile.in.in
+ create mode 100644 po/Makevars.template
+ create mode 100644 po/Rules-quot
+ create mode 100644 po/boldquot.sed
+ create mode 100644 po/en@boldquot.header
+ create mode 100644 po/en@quot.header
+ create mode 100644 po/es.po
+ create mode 100644 po/insert-header.sin
+ create mode 100644 po/it.po
+ create mode 100755 po/lng2po.sh
+ create mode 100644 po/metascript
+ create mode 100644 po/quot.sed
+ mode change 100755 => 100644 po/remove-potcdate.sin
+ create mode 100644 po/ru.po
+ create mode 100644 po/vi.po
+ mode change 100755 => 100644 po/xboard.pot
+ create mode 100644 po/zh_CN.po
+ create mode 100644 po/zh_HK.po
+ create mode 100644 po/zh_TW.po
+ create mode 100644 winboard/language/chinese(simp).lng
+ create mode 100644 winboard/language/chinese(trad).lng
+ create mode 100644 winboard/language/deutsch.lng
+ create mode 100644 winboard/language/italiano.lng
+ create mode 100644 winboard/language/russian.lng
+ create mode 100644 winboard/language/spanish.lng
+ create mode 100644 winboard/language/vietnamese.lng
 
-** Version 4.5.2 (not yet released) **
+
+** Version 4.5.2  **
 
 (git diff -b --stat --summary -M v4.5.1 HEAD)
 
- Makefile.am                |    2 +-
+ ChangeLog                  |  361 +++++++++
+ DIFFSTAT                   |   31 +
+ Makefile.am                |   92 +++-
+ NEWS                       |   20 +
+ SHORTLOG                   |   50 ++
  args.h                     |   13 +-
- backend.c                  |   97 ++--
- backend.h                  |    6 +-
+ backend.c                  |  112 ++--
+ backend.h                  |    7 +-
  common.h                   |    1 +
- configure.ac               |    2 +-
+ configure.ac               |    6 +-
  engineoutput.c             |    1 -
  filebrowser/dir.c          |   13 +
- filebrowser/draw.c         |    6 +-
- filebrowser/selfile.c      |  134 +++-
+ filebrowser/draw.c         |    9 +-
+ filebrowser/path.c         |   10 +
+ filebrowser/selfile.c      |  149 ++++-
  filebrowser/selfile.h      |    6 +
  history.c                  |    1 -
  moves.c                    |    1 +
  parser.l                   |    4 +-
+ shogipixmaps/add64.xpm     |   73 --
+ shogipixmaps/adl64.xpm     |   73 --
+ shogipixmaps/ald64.xpm     |   73 --
+ shogipixmaps/all64.xpm     |   73 --
+ shogipixmaps/ddd64.xpm     |   73 --
+ shogipixmaps/ddl64.xpm     |   73 --
+ shogipixmaps/dld64.xpm     |   73 --
+ shogipixmaps/dll64.xpm     |   73 --
+ shogipixmaps/qdd64.xpm     |    2 +-
+ shogipixmaps/qdl64.xpm     |    2 +-
+ shogipixmaps/qld64.xpm     |    2 +-
+ shogipixmaps/qll64.xpm     |  112 ++--
+ shogipixmaps/wldd64.xpm    |    2 +-
+ shogipixmaps/wldl64.xpm    |    2 +-
  uci.c                      |    4 -
  winboard/bitmaps/convert.c |    1 +
- winboard/winboard.c        |    5 +-
+ winboard/config.h          |    6 +-
+ winboard/wgamelist.c       |    9 +-
+ winboard/winboard.c        |   13 +-
  winboard/winboard.h        |    1 +
  winboard/woptions.c        |    2 +-
  winboard/wsettings.c       |   24 +-
- xboard.c                   |  817 ++++++++-------------
- xboard.conf.in             |   33 +-
+ xboard.c                   |  962 ++++++++++--------------
+ xboard.conf.in             |   37 +-
  xboard.h                   |    2 +
- xboard.texi                |    4 +-
- xoptions.c                 | 1785 +++++++++++++++++++++++---------------------
- 25 files changed, 1522 insertions(+), 1443 deletions(-)
+ xboard.texi                |  467 ++++++++----
+ xgamelist.c                |    1 +
+ xoptions.c                 | 1790 +++++++++++++++++++++++---------------------
+ 47 files changed, 2591 insertions(+), 2321 deletions(-)
+ delete mode 100644 shogipixmaps/add64.xpm
+ delete mode 100644 shogipixmaps/adl64.xpm
+ delete mode 100644 shogipixmaps/ald64.xpm
+ delete mode 100644 shogipixmaps/all64.xpm
+ delete mode 100644 shogipixmaps/ddd64.xpm
+ delete mode 100644 shogipixmaps/ddl64.xpm
+ delete mode 100644 shogipixmaps/dld64.xpm
+ delete mode 100644 shogipixmaps/dll64.xpm
 
 ** Version 4.5.1 **
 

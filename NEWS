@@ -1,27 +1,37 @@
-** Version master 20110411 (not an official release, includes changes from 4.5.2)
+** Version master 20110507 (not an official release)
 
-   * removed flex generated parser
+  * Main new features
+   * i18n support via gettext in XBoard, more languages in Winboard
    * implement new promotion dialog/method (experimental)
+   * implement move type-in for XBoard
+   * engines can be loaded/switch while running
    * new tag dialog
    * copy game list menu item for XBoard
+   * added tournament manager
+  * bugfixes
+   * lots of them
+  * code changes
+   * fixed compiler warnings
+   * removed flex generated parser
 
-** Version 4.5.2 (not yet released) **
+** Version 4.5.2  **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.5.2/ )
 
-   * reworked many option dialogs
+  * Main new feature:
+   * Added many option dialogs and reworked some of the old ones
+
+  * bugfixes, packaging and install:
    * Fix nps bug
    * Fix flipBlack option XBoard with board texture
    * Fix two bugs in reading position diagram
    * Fix parsing bug of FRC castling
    * Fix bugs in FRC castling rights
    * Fix display of promotion piece in ICS superchess
-   * Fix linegap option in board dialog
-   * Fix animation masks on changing piece pixmaps
-   * Fix crash on opening ICS Text Menu
    * Fix path browsing in WinBoard
    * Fix use of game/position file in first match game
    * Fix build on Mac OS X
+   * install bitmaps and sounds during "make install"
    * some minor bug fixes
    * code cleanup (e.g. 64 bit warnings, removed malloc.h)
 
