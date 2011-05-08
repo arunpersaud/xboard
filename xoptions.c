@@ -1517,7 +1517,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
 	    if(option[i].min & 1) { XtSetArg(args[j], XtNfromHoriz, last);  j++; }
 	    else  { XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast; }
-	    if(option[i].max) XtSetArg(args[j], XtNwidth, option[i].max);  j++;
+	    if(option[i].max) { XtSetArg(args[j], XtNwidth, option[i].max);  j++; }
 	    if(option[i].textValue) { // special for buttons of New Variant dialog
 		XtSetArg(args[j], XtNsensitive, appData.noChessProgram || option[i].value < 0
 					 || strstr(first.variants, VariantName(option[i].value))); j++;
