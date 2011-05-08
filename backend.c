@@ -5299,14 +5299,12 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
     moveList[endPV-1][3] = toY + ONE;
     moveList[endPV-1][4] = promoChar;
     moveList[endPV-1][5] = NULLCHAR;
+    CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar, moveList[endPV - 1]);
     strncat(moveList[endPV-1], "\n", MOVE_LEN);
-    if(storeComments)
-	CoordsToAlgebraic(boards[endPV - 1],
+    CoordsToAlgebraic(boards[endPV - 1],
 			     PosFlags(endPV - 1),
 			     fromY, fromX, toY, toX, promoChar,
 			     parseList[endPV - 1]);
-    else
-	parseList[endPV-1][0] = NULLCHAR;
   } while(valid);
   currentMove = (atEnd || endPV == forwardMostMove) ? endPV : forwardMostMove + 1;
   if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
