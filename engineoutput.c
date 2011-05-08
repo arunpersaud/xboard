@@ -154,8 +154,14 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
         ed.name = second.tidy;
     }
 
+    if( ed.pv != 0 && ed.pv[0] == ' ' ) {
+        if( strncmp( ed.pv, " no PV", 6 ) == 0 ) { /* Hack on hack! :-O */
+            ed.pv = "";
+        }
+    }
+
     /* Clear memo if needed */
-    if( lastDepth[which] > depth || (lastDepth[which] == depth && depth <= 1) ) {
+    if( lastDepth[which] > depth || (lastDepth[which] == depth && depth <= 1 && ed.pv[0]) ) { // no reason to clear if we won't add line
         clearMemo = TRUE;
     }
 
@@ -174,12 +180,6 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
     /* Update */
     lastDepth[which] = depth == 1 && ed.nodes == 0 ? 0 : depth; // [HGM] info-line kudge
     lastForwardMostMove[which] = forwardMostMove;
-
-    if( ed.pv != 0 && ed.pv[0] == ' ' ) {
-        if( strncmp( ed.pv, " no PV", 6 ) == 0 ) { /* Hack on hack! :-O */
-            ed.pv = "";
-        }
-    }
 
     UpdateControls( &ed );
 }
