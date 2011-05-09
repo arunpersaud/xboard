@@ -655,7 +655,7 @@ void LoadEnginePopUp(HWND hwnd)
 {
     int n=0;
 
-    isUCI = addToList = storeVariant = v1 = useNick = FALSE; hasBook = TRUE; // defaults
+    isUCI = storeVariant = v1 = useNick = FALSE; addToList = hasBook = TRUE; // defaults
     if(engineDir)    free(engineDir);    engineDir = strdup("");
     if(params)       free(params);       params = strdup("");
     if(nickName)     free(nickName);     nickName = strdup("");

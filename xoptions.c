@@ -2063,7 +2063,7 @@ void LoadEngineProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   isUCI = addToList = storeVariant = v1 = useNick = False; hasBook = True; // defaults
+   isUCI = storeVariant = v1 = useNick = False; addToList = hasBook = True; // defaults
    if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
    if(engineLine)   free(engineLine);   engineLine = strdup("");
    if(engineDir)    free(engineDir);    engineDir = strdup("");
