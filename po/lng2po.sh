@@ -74,8 +74,8 @@ else
     fi
 fi
 
-if [ -e winboard/language/$INPUT ]; then
-    INPUT=winboard/language/$INPUT
+if [ -e ../winboard/language/$INPUT ]; then
+    INPUT=../winboard/language/$INPUT
 fi
 
 if [ -e $INPUT ]; then
