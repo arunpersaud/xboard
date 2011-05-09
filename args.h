@@ -103,6 +103,7 @@ IcsTextMenuEntry icsTextMenuEntry[ICS_TEXT_MENU_SIZE];
 
 int junk;
 Boolean singleList;
+char *homeDir;
 
 void EnsureOnScreen(int *x, int *y, int minX, int minY);
 char StringGet(void *getClosure);
@@ -553,6 +554,7 @@ ArgDescriptor argDescriptors[] = {
   { "defaultCacheSizeEGTB", ArgInt, (void *) &appData.defaultCacheSizeEGTB, TRUE, (ArgIniType) 4 },
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
   { "language", ArgFilename, (void *) &appData.language, TRUE, (ArgIniType) "" },
+  { "userFileDirectory", ArgFilename, (void *) &homeDir, FALSE, (ArgIniType) installDir },
 
   // [HGM] tournament options
   { "tourney", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },

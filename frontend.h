@@ -173,7 +173,7 @@ void GLT_AddToList( char *name );
 Boolean GLT_GetFromList( int index, char *name );
 
 extern char lpUserGLT[];
-extern char homeDir[];
+extern char *homeDir;
 
 /* these are in wgamelist.c */
 void GameListPopUp P((FILE *fp, char *filename));
