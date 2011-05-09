@@ -463,6 +463,7 @@ void SoundOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void BoardOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void EditBookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
 void ShufflePopDown P(());
 void TimeControlPopDown P(());
@@ -632,6 +633,7 @@ MenuItem editMenu[] = {
     {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", EditPositionProc},
     {N_("Edit Tags"),                    "Edit Tags", EditTagsProc},
     {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
+    {N_("Edit Book"),                    "Edit Book", EditBookProc},
     {"----", NULL, NothingProc},
     {N_("Revert              Home"), "Revert", RevertProc},
     {N_("Annotate"),                 "Annotate", AnnotateProc},
@@ -942,6 +944,7 @@ XtActionsRec boardActions[] = {
     { "ShowGameListProc", ShowGameListProc },
     { "ShowMoveListProc", HistoryShowProc},
     { "EditTagsProc", EditCommentProc },
+    { "EditBookProc", EditBookProc },
     { "EditCommentProc", EditCommentProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
     { "PauseProc", PauseProc },

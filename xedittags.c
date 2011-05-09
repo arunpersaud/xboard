@@ -110,6 +110,7 @@ void EditTagsPopUp(tags, dest)
 void TagsPopDown()
 {
     PopDown(2);
+    bookUp = False;
 }
 
 void
@@ -121,7 +122,7 @@ EditTagsProc(w, event, prms, nprms)
 {
     Arg args[5];
     int j;
-    if (PopDown(2)) {
+    if (!bookUp && PopDown(2)) {
 	j = 0;
 	XtSetArg(args[j], XtNleftBitmap, None); j++;
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"), args, j);

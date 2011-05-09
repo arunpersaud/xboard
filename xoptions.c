@@ -1907,6 +1907,7 @@ void changeTags(int n)
     Arg args[16];
     XtSetArg(args[0], XtNstring, &tagsText);
     XtGetValues(currentOption[1].handle, args, 1);
+    if(bookUp) SaveToBook(tagsText); else
     ReplaceTags(tagsText, &gameInfo);
 }
 
@@ -1921,15 +1922,18 @@ void NewTagsPopup(char *text, char *msg)
 {
     Widget edit;
     Arg args[16];
+    char *title = bookUp ? _("Edit book") : _("Tags");
 
     if(shells[2]) { // if already exists, alter title and content
 	XtSetArg(args[0], XtNstring, text);
 	XtSetValues(tagsOptions[1].handle, args, 1);
+	XtSetArg(args[0], XtNtitle, title);
+	XtSetValues(shells[2], args, 1);
     }
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].textValue = msg;
     MarkMenu("menuView.Show Tags", 2);
-    GenericPopUp(tagsOptions, _("Tags"), 2);
+    GenericPopUp(tagsOptions, title, 2);
 }
 
 char *icsText;
@@ -2071,6 +2075,15 @@ void LoadEngineProc(w, event, prms, nprms)
    if(params)       free(params);       params = strdup("");
    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
    GenericPopUp(installOptions, _("Load engine"), 0);
+}
+
+void EditBookProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    EditBookEvent();
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
