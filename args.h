@@ -613,6 +613,7 @@ ArgDescriptor argDescriptors[] = {
   { "fn", ArgString, (void *) &appData.pgnName[0], FALSE, INVALID },
   { "secondPgnName", ArgString, (void *) &appData.pgnName[1], FALSE, (ArgIniType) "" },
   { "sn", ArgString, (void *) &appData.pgnName[1], FALSE, INVALID },
+  { "absoluteAnalysisScores", ArgBoolean, (void *) &appData.whitePOV, TRUE, FALSE },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

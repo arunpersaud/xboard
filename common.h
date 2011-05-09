@@ -645,6 +645,7 @@ typedef struct {
     Boolean markers;    /* [HGM] markers   */
     Boolean pieceMenu;
     Boolean sweepSelect;
+    Boolean whitePOV;
 
     char *tourneyFile;
     char *processes;

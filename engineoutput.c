@@ -173,8 +173,8 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
         DoClearMemo(which); nrVariations[which] = 0;
         header[0] = NULLCHAR;
         if(gameMode == AnalyzeMode && (multi = MultiPV(&first)) >= 0) {
-            snprintf(header, MSG_SIZ, "\t\t\t\tfewer / Multi-PV setting = %d / more\n",
-                                       first.option[multi].value);
+            snprintf(header, MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
+                                       appData.whitePOV ? "white" : "mover", first.option[multi].value);
             InsertIntoMemo( which, header, 0);
         } else
         if(appData.ponderNextMove && lastLine[which][0]) {
@@ -361,7 +361,7 @@ static void UpdateControls( EngineOutputData * ed )
 //    int isPondering = FALSE;
 
     char s_label[MAX_NAME_LENGTH + 32];
-
+    int h;
     char * name = ed->name;
 
     /* Label */
@@ -461,11 +461,12 @@ static void UpdateControls( EngineOutputData * ed )
         }
 
         /* Score */
-        if( ed->score > 0 ) {
-	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f", ed->score / 100.0 );
+        h = (gameMode == AnalyzeMode && appData.whitePOV && !WhiteOnMove(currentMove) ? -1 : 1) * ed->score;
+        if( h > 0 ) {
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f", h / 100.0 );
         }
         else {
-	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "%.2f", ed->score / 100.0 );
+	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "%.2f", h / 100.0 );
         }
 
         /* Time */

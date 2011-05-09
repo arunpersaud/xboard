@@ -5335,12 +5335,12 @@ LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
 	buf[index] = 0;
 	if(lineStart == 0 && gameMode == AnalyzeMode && (multi = MultiPV(&first)) >= 0) {
 		int n = first.option[multi].value;
-		if(origIndex < 10) { if(n>1) n--; } else if(origIndex > index - 6) n++;
+		if(origIndex > 17 && origIndex < 24) { if(n>1) n--; } else if(origIndex > index - 6) n++;
 		snprintf(buf2, MSG_SIZ, "option MultiPV=%d\n", n);
 		if(first.option[multi].value != n) SendToProgram(buf2, &first);
 		first.option[multi].value = n;
 		*start = *end = 0;
-		return TRUE;
+		return FALSE;
 	}
 	ParsePV(buf+startPV, FALSE, gameMode != AnalyzeMode);
 	*start = startPV; *end = index-1;
