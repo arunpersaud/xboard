@@ -58,7 +58,8 @@ typedef struct {
     uint64 key;	
     uint16 move;
     uint16 weight;
-    uint32 learn;
+    uint16 learnPoints;
+    uint16 learnCount;
 } entry_t;
 
 entry_t entry_none = {
@@ -371,9 +372,12 @@ int entry_from_file(FILE *f, entry_t *entry)
     ret=int_from_file(f,2,&r);
     if(ret) return 1;
     entry->weight=r;
-    ret=int_from_file(f,4,&r);
+    ret=int_from_file(f,2,&r);
     if(ret) return 1;
-    entry->learn=r;
+    entry->learnCount=r;
+    ret=int_from_file(f,2,&r);
+    if(ret) return 1;
+    entry->learnPoints=r;
     return 0;
 }
 
@@ -547,8 +551,13 @@ char *MovesToText(int count, entry_t *entries)
 	for(i=0; i<count; i++) totalWeight += entries[i].weight;
 	*p = 0;
 	for(i=0; i<count; i++) {
+	    char buf[MSG_SIZ];
 	    move_to_string(algMove, entries[i].move);
-	    snprintf(p+strlen(p), 30, "%5.1f%% %5d %s\n", 100*entries[i].weight/(totalWeight+0.001), entries[i].weight, algMove);
+	    buf[0] = NULLCHAR;
+	    if(entries[i].learnCount || entries[i].learnPoints)
+		snprintf(buf, MSG_SIZ, " {%d/%d}", entries[i].learnPoints, entries[i].learnCount);
+	    snprintf(p+strlen(p), 30, "%5.1f%% %5d %s%s\n", 100*entries[i].weight/(totalWeight+0.001),
+					entries[i].weight, algMove, buf);
 //lastEntries[i] = entries[i];
 	}
 	return p;
@@ -570,13 +579,18 @@ int TextToMoves(char *text, int moveNum, entry_t *entries)
 	    valid = ParseOneMove(text, moveNum, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
 	    text = strstr(text, yy_textstr) + strlen(yy_textstr); // skip what we parsed
 	    if(!valid || moveType != NormalMove) continue;
+	    if(*text == ' ' && sscanf(text+1, "{%d/%d}", &entries[count].learnPoints, &entries[count].learnCount) == 2) {
+		text = strchr(text+1, '}') + 1;
+	    } else {
+		entries[count].learnPoints = 0;
+		entries[count].learnCount  = 0;
+	    }
 	    to = toX + toY * width;
 	    from = fromX + fromY * width;
 	    // TODO: promotions, drops
 	    entries[count].move = to + from * width * BOARD_HEIGHT;
 	    entries[count].key  = hashKey;
 	    entries[count].weight = w;
-	    entries[count].learn  = 0; //TODO: learn value?
 	    count++;
 	}
 	return count;
@@ -616,7 +630,8 @@ void entry_to_file(FILE *f, entry_t *entry)
     int_to_file(f,8,entry->key);
     int_to_file(f,2,entry->move);
     int_to_file(f,2,entry->weight);
-    int_to_file(f,4,entry->learn);
+    int_to_file(f,2,entry->learnCount);
+    int_to_file(f,2,entry->learnPoints);
 }
 
 char buf1[4096], buf2[4096];
