@@ -587,8 +587,10 @@ int TextToMoves(char *text, int moveNum, entry_t *entries)
 	    }
 	    to = toX + toY * width;
 	    from = fromX + fromY * width;
-	    // TODO: promotions, drops
-	    entries[count].move = to + from * width * BOARD_HEIGHT;
+	    for(i=0; promote_pieces[i]; i++) if(promote_pieces[i] == promoChar) break;
+	    if(!promote_pieces[i]) i = 0;
+	    if(fromY == DROP_RANK) i = 8, from = ToUpper(PieceToChar(fromX)) - '@';
+	    entries[count].move = to + (i * width * BOARD_HEIGHT + from) * width * BOARD_HEIGHT;
 	    entries[count].key  = hashKey;
 	    entries[count].weight = w;
 	    count++;
