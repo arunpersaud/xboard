@@ -276,17 +276,21 @@ uint64 *RandomTurn      =Random64+780;
 uint64 hash(int moveNr)
 {
     int r, f, p_enc, squareNr, pieceGroup;
-    uint64 key=0, Zobrist;
+    uint64 key=0, holdingsKey=0, Zobrist;
 
-    for(f=BOARD_LEFT; f<BOARD_RGHT; f++){
+    for(f=0; f<BOARD_WIDTH; f++){
         for(r=0; r<BOARD_HEIGHT;r++){
             ChessSquare p = boards[moveNr][r][f];
+	    if(f == BOARD_LEFT-1 || f == BOARD_RGHT) continue; // between board and holdings
             if(p != EmptySquare){
 		    int j = (int)p;
 		    j -= (j >= (int)BlackPawn) ? (int)BlackPawn :(int)WhitePawn;
 		    if(j > (int)WhiteQueen) j++;  // make space for King
 		    if(j > (int) WhiteKing) j = (int)WhiteQueen + 1;
 		    p_enc = 2*j + ((int)p < (int)BlackPawn);
+		    // holdings squares get nmbers immediately after board; first left, then right holdings
+		    if(f == BOARD_LEFT-2) squareNr = (BOARD_RGHT - BOARD_LEFT)*BOARD_HEIGHT + r; else
+		    if(f == BOARD_RGHT+1) squareNr = (BOARD_RGHT - BOARD_LEFT + 1)*BOARD_HEIGHT + r; else
 		    squareNr = (BOARD_RGHT - BOARD_LEFT)*r + (f - BOARD_LEFT);
 		    // note that in normal Chess squareNr < 64 and p_enc < 12. The following code
 		    // maps other pieces and squares in this range, and then modify the corresponding
@@ -306,11 +310,13 @@ uint64 hash(int moveNr)
 				break;
 		    }
 		    if(squareNr >= 64) Zobrist = (Zobrist << 8) ^ (Zobrist >> 56);
+		    // holdings have separate (additive) key, to encode presence of multiple pieces on same square
+		    if(f == BOARD_LEFT-2) holdingsKey += Zobrist * boards[moveNr][r][f+1]; else
+		    if(f == BOARD_RGHT+1) holdingsKey += Zobrist * boards[moveNr][r][f-1]; else
                 key ^= Zobrist;
             }
         }
     }
-    // Holdings not implemented yet!
 
     if(boards[moveNr][CASTLING][2] != NoRights) {
 	if(boards[moveNr][CASTLING][0] != NoRights) key^=RandomCastle[0];
@@ -341,7 +347,7 @@ uint64 hash(int moveNr)
     if(WhiteOnMove(moveNr)){
         key^=RandomTurn[0];
     }
-    return key;
+    return key + holdingsKey;
 }
 
 #define MOVE_BUF 100
