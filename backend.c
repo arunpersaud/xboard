@@ -796,7 +796,11 @@ InitEngine(ChessProgramState *cps, int n)
 
     /* [HGM] debug */
     cps->debug = FALSE;
+
     cps->supportsNPS = UNKNOWN;
+    cps->memSize = FALSE;
+    cps->maxCores = FALSE;
+    cps->egtFormats[0] = NULLCHAR;
 
     /* [HGM] options */
     cps->optionSettings  = appData.engOptions[n];
