@@ -915,7 +915,7 @@ Load(ChessProgramState *cps, int i)
 			useNick ? "\"" : "",
 			v1 ? " -firstProtocolVersion 1" : "",
 			hasBook ? "" : " -fNoOwnBookUCI",
-			isUCI ? " -fUCI" : "",
+			isUCI ? (isUCI == TRUE ? " -fUCI" : gameInfo.variant == VariantShogi ? " -fUSI" : " -fUCCI") : "",
 			storeVariant ? " -variant " : "",
 			storeVariant ? VariantName(gameInfo.variant) : "");
 	firstChessProgramNames = malloc(len = strlen(q) + strlen(buf) + 1);

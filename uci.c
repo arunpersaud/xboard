@@ -36,6 +36,7 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
         char *p, *q;
         char polyglotCommand[MSG_SIZ];
 
+        if(cps->isUCI == 2) p = appData.ucciAdapter; else
         p = appData.adapterCommand;
         q = polyglotCommand;
         while(*p) {

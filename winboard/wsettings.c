@@ -34,7 +34,7 @@ int breaks[MAX_OPTIONS];
 int checks, combos, buttons, layout, groups;
 char title[MSG_SIZ];
 char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
-Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
+Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick, isUCCI;
 extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First"), N_("Second"), NULL };
 char *engineList[1000] = {" "}, *engineMnemonic[1000] = {""};
@@ -612,6 +612,7 @@ EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
 
 void InstallOK()
 {
+    if(isUCCI) isUCI = 2;
     if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
 }
 
@@ -625,6 +626,7 @@ Option installOptions[] = {
   {   0,  0,    0, NULL, (void*) &engineDir, NULL, NULL, PathName, N_("directory:") },
   {  95,  0,    0, NULL, NULL, NULL, NULL, Label, N_("(Directory will be derived from engine path when empty)") },
   {   0,  0,    0, NULL, (void*) &isUCI, NULL, NULL, CheckBox, N_("UCI") },
+  {   0,  0,    0, NULL, (void*) &isUCCI, NULL, NULL, CheckBox, N_("UCCI / USI (uses specified /uxiAdapter)") },
   {   0,  0,    0, NULL, (void*) &v1, NULL, NULL, CheckBox, N_("WB protocol v1 (skip waiting for features)") },
   {   0,  0,    0, NULL, (void*) &addToList, NULL, NULL, CheckBox, N_("Add this engine to the list") },
   {   0,  0,    0, NULL, (void*) &hasBook, NULL, NULL, CheckBox, N_("Must not use GUI book") },
@@ -655,7 +657,7 @@ void LoadEnginePopUp(HWND hwnd)
 {
     int n=0;
 
-    isUCI = storeVariant = v1 = useNick = FALSE; addToList = hasBook = TRUE; // defaults
+    isUCI = isUCCI = storeVariant = v1 = useNick = FALSE; addToList = hasBook = TRUE; // defaults
     if(engineDir)    free(engineDir);    engineDir = strdup("");
     if(params)       free(params);       params = strdup("");
     if(nickName)     free(nickName);     nickName = strdup("");

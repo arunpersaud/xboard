@@ -564,6 +564,7 @@ typedef struct {
     Boolean isUCI[ENGINES];
     Boolean hasOwnBookUCI[ENGINES];
     char * adapterCommand;
+    char * ucciAdapter;
     char * polyglotDir;
     Boolean usePolyglotBook;
     char * polyglotBook;

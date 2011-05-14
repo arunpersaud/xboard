@@ -60,7 +60,7 @@
 typedef enum {
   ArgString, ArgInt, ArgFloat, ArgBoolean, ArgTrue, ArgFalse, ArgNone,
   ArgColor, ArgAttribs, ArgFilename, ArgBoardSize, ArgFont, ArgCommSettings,
-  ArgSettingsFilename,
+  ArgSettingsFilename, ArgTwo,
   ArgX, ArgY, ArgZ // [HGM] placement: for window-placement options stored relative to main window
 } ArgType;
 
@@ -537,6 +537,10 @@ ArgDescriptor argDescriptors[] = {
   { "firstUCI", ArgTrue, (void *) &appData.firstIsUCI, FALSE, INVALID },
   { "secondIsUCI", ArgBoolean, (void *) &appData.secondIsUCI, FALSE, (ArgIniType) FALSE },
   { "sUCI", ArgTrue, (void *) &appData.secondIsUCI, FALSE, INVALID },
+  { "fUCCI", ArgTwo, (void *) &appData.firstIsUCI, FALSE, INVALID },
+  { "sUCCI", ArgTwo, (void *) &appData.secondIsUCI, FALSE, INVALID },
+  { "fUSI", ArgTwo, (void *) &appData.firstIsUCI, FALSE, INVALID },
+  { "sUSI", ArgTwo, (void *) &appData.secondIsUCI, FALSE, INVALID },
   { "secondUCI", ArgTrue, (void *) &appData.secondIsUCI, FALSE, INVALID },
   { "firstHasOwnBookUCI", ArgBoolean, (void *) &appData.firstHasOwnBookUCI, FALSE, (ArgIniType) TRUE },
   { "fNoOwnBookUCI", ArgFalse, (void *) &appData.firstHasOwnBookUCI, FALSE, INVALID },
@@ -545,6 +549,7 @@ ArgDescriptor argDescriptors[] = {
   { "sNoOwnBookUCI", ArgFalse, (void *) &appData.secondHasOwnBookUCI, FALSE, INVALID },
   { "secondXBook", ArgFalse, (void *) &appData.secondHasOwnBookUCI, FALSE, INVALID },
   { "adapterCommand", ArgFilename, (void *) &appData.adapterCommand, TRUE, (ArgIniType) "polyglot -noini -ec \"%fcp\" -ed \"%fd\"" },
+  { "uxiAdapter", ArgFilename, (void *) &appData.ucciAdapter, TRUE, (ArgIniType) "" },
   { "polyglotDir", ArgFilename, (void *) &appData.polyglotDir, TRUE, (ArgIniType) "" },
   { "usePolyglotBook", ArgBoolean, (void *) &appData.usePolyglotBook, TRUE, (ArgIniType) FALSE },
   { "polyglotBook", ArgFilename, (void *) &appData.polyglotBook, TRUE, (ArgIniType) "" },
@@ -854,6 +859,10 @@ ParseArgs(GetFunc get, void *cl)
       strncpy(argName, ad->argName,sizeof(argName)/sizeof(argName[0]));
     }
 
+    if (ad->argType == ArgTwo) { // [HGM] kludgey arg type, not suitable for saving
+      *(Boolean *) ad->argLoc = 2;
+      continue;
+    }
     if (ad->argType == ArgTrue) {
       *(Boolean *) ad->argLoc = TRUE;
       continue;
