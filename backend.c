@@ -7574,8 +7574,23 @@ char *SendMoveToBookUser(int moveNr, ChessProgramState *cps, int initial)
     if(bookHit) {
 	// after a book hit we never send 'go', and the code after the call to this routine
 	// has '&& !bookHit' added to suppress potential sending there (based on 'firstMove').
-	char buf[MSG_SIZ];
-	snprintf(buf, MSG_SIZ, "%s%s\n", (cps->useUsermove ? "usermove " : ""), bookHit); // force book move into program supposed to play it
+	char buf[MSG_SIZ], *move = bookHit;
+	if(cps->useSAN) {
+	    int fromX, fromY, toX, toY;
+	    char promoChar;
+	    ChessMove moveType;
+	    move = buf + 30;
+	    if (ParseOneMove(bookHit, forwardMostMove, &moveType,
+				 &fromX, &fromY, &toX, &toY, &promoChar)) {
+		(void) CoordsToAlgebraic(boards[forwardMostMove],
+				    PosFlags(forwardMostMove),
+				    fromY, fromX, toY, toX, promoChar, move);
+	    } else {
+		if(appData.debugMode) fprintf(debugFP, "Book move could not be parsed\n");
+		bookHit = NULL;
+	    }
+	}
+	snprintf(buf, MSG_SIZ, "%s%s\n", (cps->useUsermove ? "usermove " : ""), move); // force book move into program supposed to play it
 	SendToProgram(buf, cps);
 	if(!initial) firstMove = FALSE; // normally we would clear the firstMove condition after return & sending 'go'
     } else if(initial) { // 'go' was needed irrespective of firstMove, and it has to be done in this routine
