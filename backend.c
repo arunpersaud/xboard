@@ -9477,9 +9477,14 @@ StartChessProgram(cps)
 
     if (err != 0) {
       snprintf(buf, MSG_SIZ, _("Startup failure on '%s'"), cps->program);
-	DisplayFatalError(buf, err, 1);
-	cps->pr = NoProc;
-	cps->isr = NULL;
+	DisplayError(buf, err); // [HGM] bit of a rough kludge: ignore failure, (which XBoard would do anyway), and let I/O discover it
+	if(cps != &first) return;
+	appData.noChessProgram = TRUE;
+	ThawUI();
+	SetNCPMode();
+//	DisplayFatalError(buf, err, 1);
+//	cps->pr = NoProc;
+//	cps->isr = NULL;
 	return;
     }
 
