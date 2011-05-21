@@ -143,14 +143,16 @@ know).</p>
 
 <p>It would be great if people would like to help in the developing process. We can use all kinds of help, from people who just use the software and have a feature request (send them to developer mailing list), to people who can update/check the documentation and especially people who test development versions (send problems to the developer mailing list). </p>
 
+<p>At the <a href="http://download.opensuse.org/repositories/home:/apersaud:/xboard">openSUSE Build Server</a> we provide packages that can be installed in parallel to the normal xboard version. To do this the programs are renamed to xboardnext (latest from the v4.5.x branch in git) and xboardgit (latest version from the master branch in git).</p>
+
 <p>At the moment we have three developer versions:</p>
 
 <ul>
 <li>A snapshot of the v4.5.x branch: <a href="ftp://alpha.gnu.org/gnu/xboard/"> (4.5.2 is the latest, so nothing new here) </a>. <br />
-This will become version 4.5.3. Precompiled packaged versions are/will be available for <a href="http://download.opensuse.org/repositories/home:/apersaud/">openSUSE </a>, <a href="http://packages.debian.org/experimental/xboard">debian</a> and <a href="http://hgm.nubati.net/ ">Windows</a>.
+This will become version 4.5.3. Precompiled packaged versions are/will be available for <a href="http://download.opensuse.org/repositories/home:/apersaud:/xboard">openSUSE (can be installed parallel to the normal xboard package)</a>, <a href="http://packages.debian.org/experimental/xboard">debian</a> and <a href="http://hgm.nubati.net/ ">Windows</a>.
 
 <li>A snapshot of the master branch: <a href="ftp://alpha.gnu.org/gnu/xboard/"> master-20110507 </a>. <br />
-The master branch includes the development for v4.5.x and also has some more experimental features that need more testing and/or debugging. Precompiled packaged versions are available for <a href="http://download.opensuse.org/repositories/home:/apersaud/">openSUSE </a>, <a href="http://packages.debian.org/experimental/xboard">debian</a> and <a href="http://hgm.nubati.net/WinBoard-4.5.0.exe ">Windows</a>.
+The master branch includes the development for v4.5.x and also has some more experimental features that need more testing and/or debugging. Precompiled packaged versions are available for <a href="http://download.opensuse.org/repositories/home:/apersaud:/xboard/">openSUSE (can be installed parallel to the normal xboard package)</a>, <a href="http://packages.debian.org/experimental/xboard">debian</a> and <a href="http://hgm.nubati.net/WinBoard-4.5.0.exe ">Windows</a>.
 
 </li>
 <li>A snapshot of the gtk branch: <a href="ftp://alpha.gnu.org/gnu/xboard/">gtk-20100806</a>. <br />
@@ -160,10 +162,10 @@ The master branch includes the development for v4.5.x and also has some more exp
 <h5>How to build the development version</h5>
 
 <h6>git version</h6>
-<p> After cloning the git-repository, do ./autogen.sh, ./configure and then a make.</p>
+<p> After cloning the git-repository, run ./autogen.sh, ./configure and then make and make install.</p>
 
 <h6>tar-balls</h6>
-<p> Unpack the tar ball and do ./configure followed by make.</p>
+<p> Unpack the tar ball and do ./configure followed by make and make install.</p>
 
 
 <p>For development sources and other information, please see
@@ -319,7 +321,7 @@ href="/server/standards/README.translations.html">Translations
 README</a> for information on coordinating and submitting translations
 of this article.</p>
 
-<p>Copyright &copy; 2009 Free Software Foundation, Inc.</p>
+<p>Copyright &copy; 2009,2010,2011 Free Software Foundation, Inc.</p>
 
 <p>Verbatim copying and distribution of this entire article are
 permitted worldwide, without royalty, in any medium, provided this
