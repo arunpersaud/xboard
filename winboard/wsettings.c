@@ -262,6 +262,17 @@ struct {
     0x0000, 0x0000, L"Engine #1 Settings ", 8, L"MS Sans Serif"
 };
 
+char *
+AddCR(char *s)
+{
+    char *p=s, *q;
+    int n=0;
+    while(p = strchr(p, '\n')) p++, n++; // count linefeeds
+    p = q = malloc(strlen(s) + n + 1);
+    while(*p++ = *s++) if(p[-1] == '\n') p[-1] = '\r', *p++ = '\n';
+    return q;
+}
+
 void
 SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 // Put all current option values in controls, and write option names next to them
@@ -285,7 +296,9 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 	    case TextBox:
 	    case FileName:
 	    case PathName:
-		SetDlgItemText( hDlg, 2001+2*i, cps ? optionList[j].textValue : *(char**)optionList[j].target );
+		name = AddCR(cps ? optionList[j].textValue : *(char**)optionList[j].target); // stupid CR...
+		SetDlgItemText( hDlg, 2001+2*i, name);
+		free(name);
 		break;
 	    case CheckBox:
 		CheckDlgButton( hDlg, 2000+2*i, (cps ? optionList[j].value : *(Boolean*)optionList[j].target) != 0);
@@ -517,7 +530,7 @@ void AddOption(int x, int y, Control type, int i)
 	    AddControl(x, y+1, 95, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
 	    extra = 13*activeList[layoutList[i/2]].min;
 	    AddControl(x+95, y, 200, 11+extra, 0x0081, ES_AUTOHSCROLL | WS_BORDER | WS_VISIBLE | WS_CHILD | WS_TABSTOP | 
-								(extra ? ES_MULTILINE | WS_VSCROLL :0), i+1);
+								(extra ? ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL :0), i+1);
 	    break;
 	case Label:
 	    extra = activeList[layoutList[i/2]].value;
