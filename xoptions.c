@@ -816,7 +816,7 @@ Option matchOptions[] = {
 { 0xD, 150,       0, NULL, (void*) &engineName, "", NULL, TextBox, "Tourney participants:" },
 { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
 { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0 = round-robin, 1 = gauntlet):") },
-{ 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles:") },
+{ 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles (or Swiss rounds):") },
 { 0,  1, 1000000000, NULL, (void*) &appData.defaultMatchGames, "", NULL, Spin, N_("Default Number of Games in Match (or Pairing):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Match Games (msec):") },
 { 0,  0,          0, NULL, (void*) &appData.saveGameFile, ".pgn", NULL, FileName, N_("Save Tourney Games on:") },
@@ -1770,6 +1770,7 @@ void MatchOptionsProc(w, event, prms, nprms)
 {
    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
    comboCallback = &AddToTourney;
+   matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 

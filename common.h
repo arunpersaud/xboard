@@ -631,6 +631,7 @@ typedef struct {
     char *egtFormats;
     int niceEngines;    /* [HGM] nice      */
     char *logo[ENGINES];/* [HGM] logo      */
+    char *pairingEngine;/* [HGM] pairing   */
     Boolean autoLogo;
     Boolean noGUI;      /* [HGM] fast: suppress all display updates */
     char *engOptions[ENGINES]; /* [HGM] options   */

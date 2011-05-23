@@ -418,7 +418,7 @@ char cmailMove[CMAIL_MAX_GAMES][MOVE_LEN], cmailMsg[MSG_SIZ];
 char bookOutput[MSG_SIZ*10], thinkOutput[MSG_SIZ*10], lastHint[MSG_SIZ];
 char thinkOutput1[MSG_SIZ*10];
 
-ChessProgramState first, second;
+ChessProgramState first, second, pairing;
 
 /* premove variables */
 int premoveToX = 0;
@@ -1019,6 +1019,13 @@ InitBackEnd1()
     InitEngine(&second, 1);
     CommonEngineInit();
 
+    pairing.which = "pairing"; // pairing engine
+    pairing.pr = NoProc;
+    pairing.isr = NULL;
+    pairing.program = appData.pairingEngine;
+    pairing.host = "localhost";
+    pairing.dir = ".";
+
     if (appData.icsActive) {
         appData.clockMode = TRUE;  /* changes dynamically in ICS mode */
     } else if (appData.noChessProgram) { // [HGM] st: searchTime mode now also is clockMode
@@ -1406,7 +1413,7 @@ MatchEvent(int mode)
 	appData.matchGames = appData.defaultMatchGames;
 	/* Set up machine vs. machine match */
 	nextGame = 0;
-	NextTourneyGame(0, &dummy); // sets appData.matchGames if this is tourney, to make sure ReserveGame knows it
+	NextTourneyGame(-1, &dummy); // sets appData.matchGames if this is tourney, to make sure ReserveGame knows it
 	if(appData.tourneyFile[0]) {
 	    ReserveGame(-1, 0);
 	    if(nextGame > appData.matchGames) {
@@ -7132,6 +7139,8 @@ TourneyStandings(int display)
     int score[MAXPLAYERS], ranking[MAXPLAYERS], points[MAXPLAYERS], games[MAXPLAYERS];
     char result, *p, *names[MAXPLAYERS];
 
+    if(appData.tourneyType < 0) return strdup("Swiss tourney finished"); // standings of Swiss yet TODO
+
     names[0] = p = strdup(appData.participants);
     while(p = strchr(p, '\n')) *p++ = NULLCHAR, names[++nPlayers] = p; // count participants
 
@@ -7630,6 +7639,8 @@ void DeferredBookMove(void)
 	HandleMachineMove(savedMessage, savedState);
 }
 
+static int savedWhitePlayer, savedBlackPlayer, pairingReceived;
+
 void
 HandleMachineMove(message, cps)
      char *message;
@@ -7643,6 +7654,14 @@ HandleMachineMove(message, cps)
     char *p;
     int machineWhite;
     char *bookHit;
+
+    if(cps == &pairing && sscanf(message, "%d-%d", &savedWhitePlayer, &savedBlackPlayer) == 2) {
+	// [HGM] pairing: Mega-hack! Pairing engine also uses this routine (so it could give other WB commands).
+	if(savedWhitePlayer == 0 || savedBlackPlayer == 0) return;
+	pairingReceived = 1;
+	NextMatchGame();
+	return; // Skim the pairing messages here.
+    }
 
     cps->userError = 0;
 
@@ -9664,7 +9683,7 @@ SetPlayer(int player)
 int
 Pairing(int nr, int nPlayers, int *whitePlayer, int *blackPlayer, int *syncInterval)
 {   // determine players from game number
-    int curCycle, curRound, curPairing, gamesPerCycle, gamesPerRound, roundsPerCycle, pairingsPerRound;
+    int curCycle, curRound, curPairing, gamesPerCycle, gamesPerRound, roundsPerCycle=1, pairingsPerRound=1;
 
     if(appData.tourneyType == 0) {
 	roundsPerCycle = (nPlayers - 1) | 1;
@@ -9711,7 +9730,7 @@ int
 NextTourneyGame(int nr, int *swapColors)
 {   // !!!major kludge!!! fiddle appData settings to get everything in order for next tourney game
     char *p, *q;
-    int whitePlayer, blackPlayer, firstBusy=1000000000, syncInterval = 0, nPlayers=0;
+    int whitePlayer, blackPlayer, firstBusy=1000000000, syncInterval = 0, nPlayers;
     FILE *tf;
     if(appData.tourneyFile[0] == NULLCHAR) return 1; // no tourney, always allow next game
     tf = fopen(appData.tourneyFile, "r");
@@ -9719,9 +9738,24 @@ NextTourneyGame(int nr, int *swapColors)
     ParseArgsFromFile(tf); fclose(tf);
     InitTimeControls(); // TC might be altered from tourney file
 
-    p = appData.participants;
-    while(p = strchr(p, '\n')) p++, nPlayers++; // count participants
-    *swapColors = Pairing(nr, nPlayers, &whitePlayer, &blackPlayer, &syncInterval);
+    nPlayers = CountPlayers(appData.participants); // count participants
+    if(appData.tourneyType < 0 && appData.pairingEngine[0]) {
+	if(nr>=0 && !pairingReceived) {
+	    char buf[1<<16];
+	    if(pairing.pr == NoProc) StartChessProgram(&pairing);
+	    snprintf(buf, 1<<16, "results %d %s\n", nPlayers, appData.results);
+	    SendToProgram(buf, &pairing);
+	    snprintf(buf, 1<<16, "pairing %d\n", nr+1);
+	    SendToProgram(buf, &pairing);
+	    return 0; // wait for pairing engine to answer (which causes NextTourneyGame to be called again...
+	}
+	pairingReceived = 0;                              // ... so we continue here 
+	syncInterval = nPlayers/2; *swapColors = 0;
+	appData.matchGames = appData.tourneyCycles * syncInterval - 1;
+	whitePlayer = savedWhitePlayer-1; blackPlayer = savedBlackPlayer-1;
+	matchGame = 1; roundNr = nr / syncInterval + 1;
+    } else
+    *swapColors = Pairing(nr<0 ? 0 : nr, nPlayers, &whitePlayer, &blackPlayer, &syncInterval);
 
     if(syncInterval) {
 	p = q = appData.results;
@@ -12309,6 +12343,9 @@ ExitEvent(status)
     if (second.isr != NULL) {
 	RemoveInputSource(second.isr);
     }
+
+    if (pairing.pr != NoProc) SendToProgram("quit\n", &pairing);
+    if (pairing.isr != NULL) RemoveInputSource(pairing.isr);
 
     ShutDownFrontEnd();
     exit(status);

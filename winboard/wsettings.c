@@ -686,11 +686,12 @@ void LoadEnginePopUp(HWND hwnd)
     GenericPopup(hwnd, installOptions);
 }
 
-Boolean autoinc, twice;
+Boolean autoinc, twice, swiss;
 
 int MatchOK()
 {
     if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1);
+    if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
     if(CreateTourney(appData.tourneyFile)) MatchEvent(2); else return 0;
     return 1;
 }
@@ -702,6 +703,7 @@ Option tourneyOptions[] = {
   { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
   { 0xD, 7,         0, NULL, (void*) &appData.participants, "", NULL, TextBox, "Tourney participants:" },
   { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0=RR, 1=gauntlet):") },
+  { 0,  0,          0, NULL, (void*) &swiss, "", NULL, CheckBox, N_("Use Swiss pairing engine (cycles = rounds)") },
   { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
   { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles:") },
   { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round") },
@@ -737,9 +739,10 @@ void TourneyPopup(HWND hwnd)
     NamesToList(firstChessProgramNames, engineList, engineMnemonic);
     comboCallback = &AddToTourney;
     autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
-    twice = TRUE;
+    twice = TRUE; swiss = appData.tourneyType < 0;
     while(engineList[n]) n++; tourneyOptions[3].max = n-1;
     snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
+    if(appData.pairingEngine[0]) tourneyOptions[5].min = -19;
 
     GenericPopup(hwnd, tourneyOptions);
 }
