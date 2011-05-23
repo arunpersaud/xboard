@@ -233,6 +233,7 @@ void InitDrawingSizes(int x, int y);
 void NextMatchGame P((void));
 int NextTourneyGame P((int nr, int *swap));
 int Pairing P((int nr, int nPlayers, int *w, int *b, int *sync));
+FILE *WriteTourneyFile P((char *results));
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -1410,6 +1411,21 @@ MatchEvent(int mode)
 	    ReserveGame(-1, 0);
 	    if(nextGame > appData.matchGames) {
 		char buf[MSG_SIZ];
+		if(strchr(appData.results, '*') == NULL) {
+		    FILE *f;
+		    appData.tourneyCycles++;
+		    if(f = WriteTourneyFile(appData.results)) { // make a tourney file with increased number of cycles
+			fclose(f);
+			NextTourneyGame(-1, &dummy);
+			ReserveGame(-1, 0);
+			if(nextGame <= appData.matchGames) {
+			    DisplayNote(_("You restarted an already completed tourney\nOne more cycle will now be added to it\nGames commence in 10 sec"));
+			    matchMode = mode;
+			    ScheduleDelayedEvent(NextMatchGame, 10000);
+			    return;
+			}
+		    }
+		}
 		snprintf(buf, MSG_SIZ, _("All games in tourney '%s' are already played or playing"), appData.tourneyFile);
 		DisplayError(buf, 0);
 		appData.tourneyFile[0] = 0;
@@ -9519,38 +9535,60 @@ TwoMachinesEventIfReady P((void))
 }
 
 int
+CountPlayers(char *p)
+{
+    int n = 0;
+    while(p = strchr(p, '\n')) p++, n++; // count participants
+    return n;
+}
+
+FILE *
+WriteTourneyFile(char *results)
+{   // write tournament parameters on tourneyFile; on success return the stream pointer for closing
+    FILE *f = fopen(appData.tourneyFile, "w");
+    if(f == NULL) DisplayError(_("Could not write on tourney file"), 0); else {
+	// create a file with tournament description
+	fprintf(f, "-participants {%s}\n", appData.participants);
+	fprintf(f, "-tourneyType %d\n", appData.tourneyType);
+	fprintf(f, "-tourneyCycles %d\n", appData.tourneyCycles);
+	fprintf(f, "-defaultMatchGames %d\n", appData.defaultMatchGames);
+	fprintf(f, "-syncAfterRound %s\n", appData.roundSync ? "true" : "false");
+	fprintf(f, "-syncAfterCycle %s\n", appData.cycleSync ? "true" : "false");
+	fprintf(f, "-saveGameFile \"%s\"\n", appData.saveGameFile);
+	fprintf(f, "-loadGameFile \"%s\"\n", appData.loadGameFile);
+	fprintf(f, "-loadGameIndex %d\n", appData.loadGameIndex);
+	fprintf(f, "-loadPositionFile \"%s\"\n", appData.loadPositionFile);
+	fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
+	fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
+	if(searchTime > 0)
+		fprintf(f, "-searchTime \"%s\"\n", appData.searchTime);
+	else {
+		fprintf(f, "-mps %d\n", appData.movesPerSession);
+		fprintf(f, "-tc %s\n", appData.timeControl);
+		fprintf(f, "-inc %.2f\n", appData.timeIncrement);
+	}
+	fprintf(f, "-results \"%s\"\n", results);
+    }
+    return f;
+}
+
+int
 CreateTourney(char *name)
 {
 	FILE *f;
-	if(name[0] == NULLCHAR) return 0;
+	if(name[0] == NULLCHAR) {
+	    DisplayError(_("You must supply a tournament file,\nfor storing the tourney progress"), 0);
+	    return 0;
+	}
 	f = fopen(appData.tourneyFile, "r");
 	if(f) { // file exists
 	    ParseArgsFromFile(f); // parse it
 	} else {
-	    f = fopen(appData.tourneyFile, "w");
-	    if(f == NULL) { DisplayError("Could not write on tourney file", 0); return 0; } else {
-		// create a file with tournament description
-		fprintf(f, "-participants {%s}\n", appData.participants);
-		fprintf(f, "-tourneyType %d\n", appData.tourneyType);
-		fprintf(f, "-tourneyCycles %d\n", appData.tourneyCycles);
-		fprintf(f, "-defaultMatchGames %d\n", appData.defaultMatchGames);
-		fprintf(f, "-syncAfterRound %s\n", appData.roundSync ? "true" : "false");
-		fprintf(f, "-syncAfterCycle %s\n", appData.cycleSync ? "true" : "false");
-		fprintf(f, "-saveGameFile \"%s\"\n", appData.saveGameFile);
-		fprintf(f, "-loadGameFile \"%s\"\n", appData.loadGameFile);
-		fprintf(f, "-loadGameIndex %d\n", appData.loadGameIndex);
-		fprintf(f, "-loadPositionFile \"%s\"\n", appData.loadPositionFile);
-		fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
-		fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
-		if(searchTime > 0)
-			fprintf(f, "-searchTime \"%s\"\n", appData.searchTime);
-		else {
-			fprintf(f, "-mps %d\n", appData.movesPerSession);
-			fprintf(f, "-tc %s\n", appData.timeControl);
-			fprintf(f, "-inc %.2f\n", appData.timeIncrement);
-		}
-		fprintf(f, "-results \"\"\n");
+	    if(CountPlayers(appData.participants) < appData.tourneyType + (!appData.tourneyType) + 1) {
+		DisplayError(_("Not enough participants"), 0);
+		return 0;
 	    }
+	    if((f = WriteTourneyFile("")) == NULL) return 0;
 	}
 	fclose(f);
 	appData.noChessProgram = FALSE;
@@ -14333,6 +14371,7 @@ ReceiveFromProgram(isr, closure, message, count, error)
     if (count <= 0) {
 	if (count == 0) {
 	    RemoveInputSource(cps->isr);
+	    if(!cps->initDone) return; // [HGM] should not generate fatal error during engine load
 	    snprintf(buf, MSG_SIZ, _("Error: %s chess program (%s) exited unexpectedly"),
 		    _(cps->which), cps->program);
         if(gameInfo.resultDetails==NULL) { /* [HGM] crash: if game in progress, give reason for abort */
