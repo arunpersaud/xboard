@@ -1066,6 +1066,7 @@ ParseArgs(GetFunc get, void *cl)
     case ArgNone:
       ExitArgError("Unrecognized argument", argValue);
       break;
+    case ArgTwo:
     case ArgTrue:
     case ArgFalse: ;
     }
@@ -1162,6 +1163,7 @@ SetDefaultsFromList()
     if(argDescriptors[i].defaultValue != INVALID)
       switch(argDescriptors[i].argType) {
         case ArgBoolean:
+        case ArgTwo:
         case ArgTrue:
         case ArgFalse:
           *(Boolean *) argDescriptors[i].argLoc = (int)(intptr_t)argDescriptors[i].defaultValue;
@@ -1427,6 +1429,7 @@ SaveSettings(char* name)
       break;
     case ArgCommSettings:
       PrintCommPortSettings(f, ad->argName);
+    case ArgTwo:
     case ArgNone:
     case ArgSettingsFilename: ;
     }
