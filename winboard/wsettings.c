@@ -41,8 +41,8 @@ char *engineList[1000] = {" "}, *engineMnemonic[1000] = {""};
 void (*okFunc)();
 ChessProgramState *activeCps;
 Option *activeList;
-void InstallOK P((void));
-typedef void ButtonCallback(HWND h);
+int InstallOK P((void));
+typedef int ButtonCallback(HWND h);
 ButtonCallback *comboCallback;
 
 void
@@ -334,7 +334,7 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 }
 
 
-void
+int
 GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 // read out all controls, and if value is altered, remember it and send it to the engine
 {
@@ -407,7 +407,8 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 	  snprintf(buf, MSG_SIZ, "option %s=%s\n", optionList[j].name, newText);
 	if(changed) SendToProgram(buf, cps);
     }
-    if(!cps && okFunc) ((ButtonCallback*) okFunc)(0);
+    if(!cps && okFunc) return ((ButtonCallback*) okFunc)(0);
+    return 1;
 }
 
 char *defaultExt[] = { NULL, "pgn", "fen", "exe", "trn", "bin", "log", "ini" };
@@ -431,7 +432,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
     case WM_COMMAND:
         switch( LOWORD(wParam) ) {
         case IDOK:
-	    GetOptionValues(hDlg, activeCps, activeList);
+	    if(!GetOptionValues(hDlg, activeCps, activeList)) return FALSE;
             EndDialog( hDlg, 0 );
 	    comboCallback = NULL; activeCps = NULL;
             return TRUE;
@@ -623,10 +624,11 @@ EngineOptionsPopup(HWND hwnd, ChessProgramState *cps)
     return;
 }
 
-void InstallOK()
+int InstallOK()
 {
     if(isUCCI) isUCI = 2;
     if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
+    return 1;
 }
 
 Option installOptions[] = {
@@ -686,19 +688,19 @@ void LoadEnginePopUp(HWND hwnd)
 
 Boolean autoinc, twice;
 
-void MatchOK()
+int MatchOK()
 {
     if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1);
-    if(appData.participants) free(appData.participants);
-    appData.participants = strdup(engineName);
-    if(CreateTourney(appData.tourneyFile)) MatchEvent(2); 
-//	ScheduleDelayedEvent(MatchEvent(2), 10); // start tourney
+    if(CreateTourney(appData.tourneyFile)) MatchEvent(2); else return 0;
+    return 1;
 }
 
 Option tourneyOptions[] = {
   { 0,  0,          4, NULL, (void*) &appData.tourneyFile, "", NULL, FileName, N_("Tournament file:") },
+  { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("If you specify an existing file, the rest of this dialog will be ignored.") },
+  { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("Otherwise, the file will be created, with the settings you specify below:") },
   { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
-  { 0xD, 7,         0, NULL, (void*) &engineName, "", NULL, TextBox, "Tourney participants:" },
+  { 0xD, 7,         0, NULL, (void*) &appData.participants, "", NULL, TextBox, "Tourney participants:" },
   { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0=RR, 1=gauntlet):") },
   { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
   { 0,  1, 1000000000, NULL, (void*) &appData.tourneyCycles, "", NULL, Spin, N_("Number of tourney cycles:") },
@@ -716,15 +718,16 @@ Option tourneyOptions[] = {
   { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
-void AddToTourney(HWND hDlg)
+int AddToTourney(HWND hDlg)
 {
     char buf[MSG_SIZ];
-//    GetDlgItemText( hDlg, 2001+2*3, buf, MSG_SIZ-3 ); // this gives the previous selection !!!
+//    GetDlgItemText( hDlg, 2001+2*7, buf, MSG_SIZ-3 ); // this gives the previous selection !!!
 //    strncat(buf, "\r\n", MSG_SIZ);
-    int i = ComboBox_GetCurSel(GetDlgItem(hDlg, 2001+2*3));
+    int i = ComboBox_GetCurSel(GetDlgItem(hDlg, 2001+2*7));
     snprintf(buf, MSG_SIZ, "%s\r\n", engineMnemonic[i+1]);
-    SendMessage( GetDlgItem(hDlg, 2001+2*5), EM_SETSEL, 99999, 99999 );
-    SendMessage( GetDlgItem(hDlg, 2001+2*5), EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) buf );
+    SendMessage( GetDlgItem(hDlg, 2001+2*9), EM_SETSEL, 99999, 99999 );
+    SendMessage( GetDlgItem(hDlg, 2001+2*9), EM_REPLACESEL, (WPARAM) FALSE, (LPARAM) buf );
+    return 0;
 }
 
 void TourneyPopup(HWND hwnd)
@@ -735,7 +738,7 @@ void TourneyPopup(HWND hwnd)
     comboCallback = &AddToTourney;
     autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
     twice = TRUE;
-    while(engineList[n]) n++; tourneyOptions[1].max = n-1;
+    while(engineList[n]) n++; tourneyOptions[3].max = n-1;
     snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
 
     GenericPopup(hwnd, tourneyOptions);

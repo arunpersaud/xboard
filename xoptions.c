@@ -605,6 +605,7 @@ void TimeControlProc(w, event, prms, nprms)
 //--------------------------- Engine-specific options menu ----------------------------------
 
 typedef void ButtonCallback(int n);
+typedef int OKCallback(int n);
 
 int values[MAX_OPTIONS];
 ChessProgramState *currentCps;
@@ -725,7 +726,7 @@ static int oldCores, oldPonder;
 int MakeColors P((void));
 void CreateGCs P((int redo));
 void CreateAnyPieces P((void));
-void GenericReadout P((int selected));
+int GenericReadout P((int selected));
 Widget shells[10];
 Widget marked[10];
 Boolean shellUp[10];
@@ -798,12 +799,14 @@ void AddToTourney(int n)
     XawTextReplace(matchOptions[3].handle, 9999, 9999, &t);
 }
 
-void MatchOK(int n)
+int MatchOK(int n)
 {
     if(appData.participants && appData.participants[0]) free(appData.participants);
     appData.participants = strdup(engineName);
+    if(!CreateTourney(appData.tourneyFile)) return 0;
     PopDown(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
-    if(CreateTourney(appData.tourneyFile)) MatchEvent(2); // start tourney
+    MatchEvent(2); // start tourney
+    return 1;
 }
 
 Option matchOptions[] = {
@@ -825,11 +828,12 @@ Option matchOptions[] = {
 { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
-void GeneralOptionsOK(int n)
+int GeneralOptionsOK(int n)
 {
 	int newPonder = appData.ponderNextMove;
 	appData.ponderNextMove = oldPonder;
 	PonderNextMoveEvent(newPonder);
+	return 1;
 }
 
 Option generalOptions[] = {
@@ -934,7 +938,7 @@ Option variantDescriptors[] = {
 { 0, 2, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
-void CommonOptionsOK(int n)
+int CommonOptionsOK(int n)
 {
 	int newPonder = appData.ponderNextMove;
 	// make sure changes are sent to first engine by re-initializing it
@@ -946,6 +950,7 @@ void CommonOptionsOK(int n)
 	    appData.ponderNextMove = oldPonder;
 	    PonderNextMoveEvent(newPonder);
 	}
+	return 1;
 }
 
 Option commonEngineOptions[] = {
@@ -978,9 +983,10 @@ Option adjudicationOptions[] = {
 { 0, 1,    0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
-void IcsOptionsOK(int n)
+int IcsOptionsOK(int n)
 {
     ParseIcsTextColors();
+    return 1;
 }
 
 Option icsOptions[] = {
@@ -1170,7 +1176,7 @@ void AdjustColor(int i)
     RefreshColor(i-n-1, n);
 }
 
-void BoardOptionsOK(int n)
+int BoardOptionsOK(int n)
 {
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
     useImages = useImageSqs = 0;
@@ -1178,6 +1184,7 @@ void BoardOptionsOK(int n)
     CreateAnyPieces();
     InitDrawingSizes(-1, 0);
     DrawPosition(True, NULL);
+    return 1;
 }
 
 Option boardOptions[] = {
@@ -1228,9 +1235,9 @@ Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 
-void GenericReadout(int selected)
+int GenericReadout(int selected)
 {
-    int i, j;
+    int i, j, res=1;
     String val;
     Arg args[16];
     char buf[MSG_SIZ], **dest;
@@ -1299,7 +1306,7 @@ void GenericReadout(int selected)
 		    break;
 		case EndMark:
 		    if(currentOption[i].target) // callback for implementing necessary actions on OK (like redraw)
-			((ButtonCallback*) currentOption[i].target)(i);
+			res = ((OKCallback*) currentOption[i].target)(i);
 		    break;
 	    default:
 		printf("GenericReadout: unexpected case in switch.\n");
@@ -1311,6 +1318,7 @@ void GenericReadout(int selected)
 	    }
 	    if(currentOption[i].type == EndMark) break;
 	}
+	return res;
 }
 
 void GenericCallback(w, client_data, call_data)
@@ -1332,8 +1340,7 @@ void GenericCallback(w, client_data, call_data)
         return;
     }
     if (strcmp(name, _("OK")) == 0) { // save buttons imply OK
-        GenericReadout(-1);
-        PopDown(data);
+        if(GenericReadout(-1)) PopDown(data);
         return;
     }
     if(currentCps) {
@@ -1851,9 +1858,10 @@ static int commentIndex;
 void ClearComment P((int n));
 extern char commentTranslations[];
 
-void NewComCallback(int n)
+int NewComCallback(int n)
 {
     ReplaceComment(commentIndex, commentText);
+    return 1;
 }
 
 void SaveChanges(int n)
@@ -1897,9 +1905,10 @@ void NewCommentPopup(char *title, char *text, int index)
 
 static char *tagsText, *msgText;
 
-void NewTagsCallback(int n)
+int NewTagsCallback(int n)
 {
     ReplaceTags(tagsText, &gameInfo);
+    return 1;
 }
 
 void changeTags(int n)
@@ -2038,10 +2047,11 @@ void SecondSettingsProc(w, event, prms, nprms)
    SettingsPopUp(&second);
 }
 
-void InstallOK(int n)
+int InstallOK(int n)
 {
     PopDown(0); // early popdown, to allow FreezeUI to instate grab
     if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
+    return 1;
 }
 
 Option installOptions[] = {
