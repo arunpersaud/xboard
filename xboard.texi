@@ -2418,7 +2418,7 @@ The value @code{n1} gives the piece size, @code{n2} the width of the
 black border
 between squares, @code{n3} the desired size for the 
 clockFont, @code{n4} the desired size for the coordFont,
-@code{n5} the desired size for the default font,
+@code{n5} the desired size for the messageFont,
 @code{n6} the smallLayout flag (0 or 1), 
 and @code{n7} the tinyLayout flag (0 or 1).  
 All dimensions are in pixels.
@@ -2527,9 +2527,9 @@ is true. If the option value is a pattern that does not specify
 the font size, XBoard tries to choose an appropriate font for
 the board size being used.
 Default: -*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*.
-@item -font font
-@cindex font, option
-@cindex Font
+@item -messageFont font
+@cindex messageFont, option
+@cindex Font, message
 The font used for popup dialogs, menus, comments, etc.
 If the option value is a pattern that does not specify
 the font size, XBoard tries to choose an appropriate font for

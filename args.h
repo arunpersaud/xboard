@@ -316,8 +316,8 @@ ArgDescriptor argDescriptors[] = {
   { "popUpErrors", ArgBoolean, (void *) &appData.popupMoveErrors,
     FALSE, INVALID }, /* only so that old WinBoard.ini files from betas can be read */
   { "clockFont", ArgFont, (void *) CLOCK_FONT, TRUE, INVALID },
-  { "messageFont", ArgFont, (void *) MESSAGE_FONT, !XBOARD, INVALID },
-  { "font", ArgFont, (void *) MESSAGE_FONT, XBOARD, INVALID },
+  { "messageFont", ArgFont, (void *) MESSAGE_FONT, TRUE, INVALID },
+  { "font", ArgFont, (void *) MESSAGE_FONT, FALSE, INVALID }, /* only so that old .xboardrc files will parse. -font does not work from the command line because it is captured by the X libraries. */
   { "coordFont", ArgFont, (void *) COORD_FONT, TRUE, INVALID },
   { "tagsFont", ArgFont, (void *) EDITTAGS_FONT, TRUE, INVALID },
   { "commentFont", ArgFont, (void *) COMMENT_FONT, TRUE, INVALID },

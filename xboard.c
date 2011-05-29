@@ -251,7 +251,12 @@ void CreatePieces P((void));
 void CreatePieceMenus P((void));
 Widget CreateMenuBar P((Menu *mb));
 Widget CreateButtonBar P ((MenuItem *mi));
+#if ENABLE_NLS
+char *InsertPxlSize P((char *pattern, int targetPxlSize));
+XFontSet CreateFontSet P((char *base_fnt_lst));
+#else
 char *FindFont P((char *pattern, int targetPxlSize));
+#endif
 void PieceMenuPopup P((Widget w, XEvent *event,
 		       String *params, Cardinal *num_params));
 static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
@@ -499,8 +504,14 @@ int hOffset; // [HGM] dual
 XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
 XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
-Font clockFontID, coordFontID, countFontID;
-XFontStruct *clockFontStruct, *coordFontStruct, *countFontStruct;
+#if ENABLE_NLS
+XFontSet fontSet, clockFontSet;
+#else
+Font clockFontID;
+XFontStruct *clockFontStruct;
+#endif
+Font coordFontID, countFontID;
+XFontStruct *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
 char *layoutName;
 char *oldICSInteractionTitle;
@@ -1417,7 +1428,7 @@ colorVariable[] = {
 // [HGM] font: keep a font for each square size, even non-stndard ones
 #define NUM_SIZES 18
 #define MAX_SIZE 130
-Boolean fontSet[NUM_FONTS], fontValid[NUM_FONTS][MAX_SIZE];
+Boolean fontIsSet[NUM_FONTS], fontValid[NUM_FONTS][MAX_SIZE];
 char *fontTable[NUM_FONTS][MAX_SIZE];
 
 void
@@ -1446,7 +1457,7 @@ ParseFont(char *name, int number)
     default:
       return;
   }
-  fontSet[number] = True; // [HGM] font: indicate a font was specified (not from settings file)
+  fontIsSet[number] = True; // [HGM] font: indicate a font was specified (not from settings file)
 }
 
 void
@@ -2091,11 +2102,11 @@ main(argc, argv)
 	tinyLayout = szd->tinyLayout;
 	// [HGM] font: use defaults from settings file if available and not overruled
     }
-    if(!fontSet[CLOCK_FONT] && fontValid[CLOCK_FONT][squareSize])
+    if(!fontIsSet[CLOCK_FONT] && fontValid[CLOCK_FONT][squareSize])
 	appData.clockFont = fontTable[CLOCK_FONT][squareSize];
-    if(!fontSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
+    if(!fontIsSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
 	appData.font = fontTable[MESSAGE_FONT][squareSize];
-    if(!fontSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
+    if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
 	appData.coordFont = fontTable[COORD_FONT][squareSize];
 
     /* Now, using squareSize as a hint, find a good XPM/XIM set size */
@@ -2141,19 +2152,33 @@ XBoard square size (hint): %d\n\
     /*
      * Determine what fonts to use.
      */
+#if ENABLE_NLS
+    appData.font = InsertPxlSize(appData.font, fontPxlSize);
+    appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
+    appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
+    fontSet = CreateFontSet(appData.font);
+    clockFontSet = CreateFontSet(appData.clockFont);
+#else
+    appData.font = FindFont(appData.font, fontPxlSize);
     appData.clockFont = FindFont(appData.clockFont, clockFontPxlSize);
+    appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
     clockFontID = XLoadFont(xDisplay, appData.clockFont);
     clockFontStruct = XQueryFont(xDisplay, clockFontID);
-    appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
+#endif
     coordFontID = XLoadFont(xDisplay, appData.coordFont);
     coordFontStruct = XQueryFont(xDisplay, coordFontID);
-    appData.font = FindFont(appData.font, fontPxlSize);
     countFontID = XLoadFont(xDisplay, appData.coordFont); // [HGM] holdings
     countFontStruct = XQueryFont(xDisplay, countFontID);
-//    appData.font = FindFont(appData.font, fontPxlSize);
 
     xdb = XtDatabase(xDisplay);
+#if ENABLE_NLS
+    XrmPutLineResource(&xdb, "*international: True");
+    vTo.size = sizeof(XFontSet);
+    vTo.addr = (XtPointer) &fontSet;
+    XrmPutResource(&xdb, "*fontSet", XtRFontSet, &vTo);
+#else
     XrmPutStringResource(&xdb, "*font", appData.font);
+#endif
 
     /*
      * Detect if there are not enough colors available and adapt.
@@ -2223,7 +2248,11 @@ XBoard square size (hint): %d\n\
     widgetList[j++] = whiteTimerWidget =
       XtCreateWidget("whiteTime", labelWidgetClass,
 		     formWidget, timerArgs, XtNumber(timerArgs));
+#if ENABLE_NLS
+    XtSetArg(args[0], XtNfontSet, clockFontSet);
+#else
     XtSetArg(args[0], XtNfont, clockFontStruct);
+#endif
     XtSetArg(args[1], XtNtop,    XtChainTop);
     XtSetArg(args[2], XtNbottom, XtChainTop);
     XtSetValues(whiteTimerWidget, args, 3);
@@ -2231,7 +2260,11 @@ XBoard square size (hint): %d\n\
     widgetList[j++] = blackTimerWidget =
       XtCreateWidget("blackTime", labelWidgetClass,
 		     formWidget, timerArgs, XtNumber(timerArgs));
+#if ENABLE_NLS
+    XtSetArg(args[0], XtNfontSet, clockFontSet);
+#else
     XtSetArg(args[0], XtNfont, clockFontStruct);
+#endif
     XtSetArg(args[1], XtNtop,    XtChainTop);
     XtSetArg(args[2], XtNbottom, XtChainTop);
     XtSetValues(blackTimerWidget, args, 3);
@@ -3072,6 +3105,52 @@ NextInHistory()
 
 #define Abs(n) ((n)<0 ? -(n) : (n))
 
+#ifdef ENABLE_NLS
+char *
+InsertPxlSize(pattern, targetPxlSize)
+     char *pattern;
+     int targetPxlSize;
+{
+    char *base_fnt_lst, strInt[3], *p;
+
+    base_fnt_lst = calloc(1, strlen(pattern) + 3);
+    snprintf(strInt, sizeof(strInt)/sizeof(strInt[0]), "%d", targetPxlSize);
+    p = strstr(pattern, "--");
+    if (p == NULL) {
+      /* Can't insert size; use string as-is */
+      return pattern;
+    }
+    strncpy(base_fnt_lst, pattern, p - pattern + 2);
+    strcat(base_fnt_lst, strInt);
+    strcat(base_fnt_lst, strchr(p + 2, '-'));
+    return base_fnt_lst;
+}
+
+XFontSet
+CreateFontSet(base_fnt_lst)
+     char *base_fnt_lst;
+{
+    XFontSet fntSet;
+    char **missing_list;
+    int missing_count;
+    char *def_string;
+
+    fntSet = XCreateFontSet(xDisplay, base_fnt_lst,
+			    &missing_list, &missing_count, &def_string);
+    if (missing_count > 0 && appData.debugMode) {
+      int i;
+      for (i = 0; i < missing_count; i++) {
+	fprintf(debugFP, _("Missing charset %s for %s (usually harmless)\n"),
+		missing_list[i], base_fnt_lst);
+      }
+    }
+    if (fntSet == NULL) {
+      fprintf(stderr, _("Unable to create font set for %s.\n"), base_fnt_lst);
+      exit(2);
+    }
+    return fntSet;
+}
+#else // not ENABLE_NLS
 /*
  * Find a font that matches "pattern" that is as close as
  * possible to the targetPxlSize.  Prefer fonts that are k
@@ -3089,38 +3168,12 @@ FindFont(pattern, targetPxlSize)
     char **fonts, *p, *best, *scalable, *scalableTail;
     int i, j, nfonts, minerr, err, pxlSize;
 
-#ifdef ENABLE_NLS
-    char **missing_list;
-    int missing_count;
-    char *def_string, *base_fnt_lst, strInt[3];
-    XFontSet fntSet;
-    XFontStruct **fnt_list;
-    base_fnt_lst = calloc(1, strlen(pattern) + 3);
-    snprintf(strInt, sizeof(strInt)/sizeof(strInt[0]), "%d", targetPxlSize);
-    p = strstr(pattern, "--");
-    strncpy(base_fnt_lst, pattern, p - pattern + 2);
-    strcat(base_fnt_lst, strInt);
-    strcat(base_fnt_lst, strchr(p + 2, '-'));
-
-    if ((fntSet = XCreateFontSet(xDisplay,
-                                 base_fnt_lst,
-                                 &missing_list,
-                                 &missing_count,
-                                 &def_string)) == NULL) {
-
-       fprintf(stderr, _("Unable to create font set.\n"));
-       exit (2);
-    }
-
-    nfonts = XFontsOfFontSet(fntSet, &fnt_list, &fonts);
-#else
     fonts = XListFonts(xDisplay, pattern, 999999, &nfonts);
     if (nfonts < 1) {
 	fprintf(stderr, _("%s: no fonts match pattern %s\n"),
 		programName, pattern);
 	exit(2);
     }
-#endif
 
     best = fonts[0];
     scalable = NULL;
@@ -3162,15 +3215,10 @@ FindFont(pattern, targetPxlSize)
         fprintf(debugFP, _("resolved %s at pixel size %d\n  to %s\n"),
 		pattern, targetPxlSize, p);
     }
-#ifdef ENABLE_NLS
-    if (missing_count > 0)
-       XFreeStringList(missing_list);
-    XFreeFontSet(xDisplay, fntSet);
-#else
-     XFreeFontNames(fonts);
-#endif
+    XFreeFontNames(fonts);
     return p;
 }
+#endif
 
 void DeleteGCs()
 {   // [HGM] deletes GCs that are to be remade, to prevent resource leak;
