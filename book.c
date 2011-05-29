@@ -585,7 +585,7 @@ int TextToMoves(char *text, int moveNum, entry_t *entries)
 	    valid = ParseOneMove(text, moveNum, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
 	    text = strstr(text, yy_textstr) + strlen(yy_textstr); // skip what we parsed
 	    if(!valid || moveType != NormalMove) continue;
-	    if(*text == ' ' && sscanf(text+1, "{%d/%d}", &entries[count].learnPoints, &entries[count].learnCount) == 2) {
+	    if(*text == ' ' && sscanf(text+1, "{%hd/%hd}", &entries[count].learnPoints, &entries[count].learnCount) == 2) {
 		text = strchr(text+1, '}') + 1;
 	    } else {
 		entries[count].learnPoints = 0;
