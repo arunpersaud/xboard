@@ -55,12 +55,18 @@
 #define INFOFILE     "xboard.info"
 #define MANPAGE      "xboard.6"
 #if ENABLE_NLS
-#define CLOCK_FONT_NAME         "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*,"\
-  "-misc-fixed-bold-r-normal--*-*-*-*-*-*-*-*"
-#define COORD_FONT_NAME         "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*," \
-  "-misc-fixed-bold-r-normal--*-*-*-*-*-*-*-*"
-#define DEFAULT_FONT_NAME       "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,"\
-  "-misc-fixed-medium-r-normal--*-*-*-*-*-*-*-*"
+#define CLOCK_FONT_NAME \
+  "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*," \
+  "-misc-fixed-bold-r-normal--*-*-*-*-*-*-*-*," \
+  "-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
+#define COORD_FONT_NAME \
+  "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*," \
+  "-misc-fixed-bold-r-normal--*-*-*-*-*-*-*-*," \
+  "-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
+#define DEFAULT_FONT_NAME \
+  "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*," \
+  "-misc-fixed-medium-r-normal--*-*-*-*-*-*-*-*," \
+  "-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
 #else
 #define CLOCK_FONT_NAME         "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
 #define COORD_FONT_NAME         "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
