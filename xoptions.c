@@ -307,7 +307,7 @@ void TimeControlCallback(w, client_data, call_data)
 	XtSetArg(args[j], XtNlabel, _("sec/move (max)")); j++;
 	XtSetValues(tcMess1, args, j);
 	j=0;
-	XtSetArg(args[j], XtNlabel, _("")); j++;
+	XtSetArg(args[j], XtNlabel, ""); j++;
 	XtSetValues(tcMess2, args, j);
 	j=0;
 	XtSetArg(args[j], XtNstring, ""); j++;
