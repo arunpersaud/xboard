@@ -142,6 +142,10 @@ extern char *getenv();
 # endif
 #endif
 
+#if ENABLE_NLS
+#include <locale.h>
+#endif
+
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
@@ -814,7 +818,7 @@ String pieceMenuStrings[2][PIECE_MENU_SIZE] = {
       N_("Archbishop"), N_("Chancellor"), "----", N_("Promote"), N_("Demote"),
       N_("Empty square"), N_("Clear board") }
 };
-/* must be in same order as PieceMenuStrings! */
+/* must be in same order as pieceMenuStrings! */
 ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
     { WhitePlay, (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
 	WhiteRook, WhiteQueen, WhiteKing, (ChessSquare) 0, WhiteAlfil,
@@ -830,7 +834,7 @@ ChessSquare pieceMenuTranslation[2][PIECE_MENU_SIZE] = {
 String dropMenuStrings[DROP_MENU_SIZE] = {
     "----", N_("Pawn"), N_("Knight"), N_("Bishop"), N_("Rook"), N_("Queen")
   };
-/* must be in same order as PieceMenuStrings! */
+/* must be in same order as dropMenuStrings! */
 ChessSquare dropMenuTranslation[DROP_MENU_SIZE] = {
     (ChessSquare) 0, WhitePawn, WhiteKnight, WhiteBishop,
     WhiteRook, WhiteQueen
@@ -2025,6 +2029,12 @@ main(argc, argv)
         setbuf(debugFP, NULL);
     }
 
+#if ENABLE_NLS
+    if (appData.debugMode) {
+      fprintf(debugFP, "locale = %s\n", setlocale(LC_ALL, NULL));
+    }
+#endif
+
     /* [HGM,HR] make sure board size is acceptable */
     if(appData.NrFiles > BOARD_FILES ||
        appData.NrRanks > BOARD_RANKS   )
@@ -2158,17 +2168,26 @@ XBoard square size (hint): %d\n\
     appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
     fontSet = CreateFontSet(appData.font);
     clockFontSet = CreateFontSet(appData.clockFont);
+    {
+      /* For the coordFont, use the 0th font of the fontset. */
+      XFontSet coordFontSet = CreateFontSet(appData.coordFont);
+      XFontStruct **font_struct_list;
+      char **font_name_list;
+      XFontsOfFontSet(coordFontSet, &font_struct_list, &font_name_list);
+      coordFontID = XLoadFont(xDisplay, font_name_list[0]);
+      coordFontStruct = XQueryFont(xDisplay, coordFontID);
+    }
 #else
     appData.font = FindFont(appData.font, fontPxlSize);
     appData.clockFont = FindFont(appData.clockFont, clockFontPxlSize);
     appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
     clockFontID = XLoadFont(xDisplay, appData.clockFont);
     clockFontStruct = XQueryFont(xDisplay, clockFontID);
-#endif
     coordFontID = XLoadFont(xDisplay, appData.coordFont);
     coordFontStruct = XQueryFont(xDisplay, coordFontID);
-    countFontID = XLoadFont(xDisplay, appData.coordFont); // [HGM] holdings
-    countFontStruct = XQueryFont(xDisplay, countFontID);
+#endif
+    countFontID = coordFontID;  // [HGM] holdings
+    countFontStruct = coordFontStruct;
 
     xdb = XtDatabase(xDisplay);
 #if ENABLE_NLS
@@ -3111,18 +3130,51 @@ InsertPxlSize(pattern, targetPxlSize)
      char *pattern;
      int targetPxlSize;
 {
-    char *base_fnt_lst, strInt[3], *p;
+    char *base_fnt_lst, strInt[12], *p, *q;
+    int alternatives, i, len, strIntLen;
 
-    base_fnt_lst = calloc(1, strlen(pattern) + 3);
-    snprintf(strInt, sizeof(strInt)/sizeof(strInt[0]), "%d", targetPxlSize);
-    p = strstr(pattern, "--");
-    if (p == NULL) {
-      /* Can't insert size; use string as-is */
-      return pattern;
+    /*
+     * Replace the "*" (if present) in the pixel-size slot of each
+     * alternative with the targetPxlSize.
+     */
+    p = pattern;
+    alternatives = 1;
+    while ((p = strchr(p, ',')) != NULL) {
+      alternatives++;
+      p++;
     }
-    strncpy(base_fnt_lst, pattern, p - pattern + 2);
-    strcat(base_fnt_lst, strInt);
-    strcat(base_fnt_lst, strchr(p + 2, '-'));
+    snprintf(strInt, sizeof(strInt), "%d", targetPxlSize);
+    strIntLen = strlen(strInt);
+    base_fnt_lst = calloc(1, strlen(pattern) + strIntLen * alternatives + 1);
+
+    p = pattern;
+    q = base_fnt_lst;
+    while (alternatives--) {
+      char *comma = strchr(p, ',');
+      for (i=0; i<14; i++) {
+	char *hyphen = strchr(p, '-');
+	if (!hyphen) break;
+	if (comma && hyphen > comma) break;
+	len = hyphen + 1 - p;
+	if (i == 7 && *p == '*' && len == 2) {
+	  p += len;
+	  memcpy(q, strInt, strIntLen);
+	  q += strIntLen;
+	  *q++ = '-';
+	} else {
+	  memcpy(q, p, len);
+	  p += len;
+	  q += len;
+	}
+      }
+      if (!comma) break;
+      len = comma + 1 - p;
+      memcpy(q, p, len);
+      p += len;
+      q += len;
+    }
+    strcpy(q, p);
+
     return base_fnt_lst;
 }
 
@@ -3137,11 +3189,22 @@ CreateFontSet(base_fnt_lst)
 
     fntSet = XCreateFontSet(xDisplay, base_fnt_lst,
 			    &missing_list, &missing_count, &def_string);
-    if (missing_count > 0 && appData.debugMode) {
-      int i;
+    if (appData.debugMode) {
+      int i, count;
+      XFontStruct **font_struct_list;
+      char **font_name_list;
+      fprintf(debugFP, "Requested font set for list %s\n", base_fnt_lst);
+      if (fntSet) {
+	fprintf(debugFP, " got list %s, locale %s\n",
+		XBaseFontNameListOfFontSet(fntSet),
+		XLocaleOfFontSet(fntSet));
+	count = XFontsOfFontSet(fntSet, &font_struct_list, &font_name_list);
+	for (i = 0; i < count; i++) {
+	  fprintf(debugFP, " got charset %s\n", font_name_list[i]);
+	}
+      }
       for (i = 0; i < missing_count; i++) {
-	fprintf(debugFP, _("Missing charset %s for %s (usually harmless)\n"),
-		missing_list[i], base_fnt_lst);
+	fprintf(debugFP, " missing charset %s\n", missing_list[i]);
       }
     }
     if (fntSet == NULL) {
