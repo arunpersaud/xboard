@@ -16,7 +16,7 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: backend.c:799
@@ -471,7 +471,7 @@ msgstr "Occorre ancora eseguire una mossa per la partita %s\n"
 #: backend.c:11696
 #, c-format
 msgid "No unfinished games\n"
-msgstr "Non è presente nessuna partita non terminata"
+msgstr "Non è presente nessuna partita non terminata\n"
 
 #: backend.c:11698
 #, c-format

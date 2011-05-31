@@ -16,7 +16,7 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: backend.c:814
@@ -207,7 +207,7 @@ msgstr "Ошибка чтения списка ходов: лишняя доск
 #: backend.c:4651 backend.c:4673
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
-msgstr "Странный ход "%s" получен с сервера ICS"
+msgstr "Странный ход \"%s\" получен с сервера ICS"
 
 #: backend.c:4888
 #, c-format

@@ -16,7 +16,7 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: backend.c:814
@@ -659,7 +659,7 @@ msgstr ""
 
 #: xboard.c:600
 msgid "New Game        Ctrl+N"
-msgstr "Ván Mới   Ctrl+N"
+msgstr "Ván Mới   Ctrl+N"
 
 #: xboard.c:601
 msgid "New Shuffle Game ..."
@@ -667,15 +667,15 @@ msgstr "Tráo Bên..."
 
 #: xboard.c:602
 msgid "New Variant ...   Alt+Shift+V"
-msgstr "Biến Mới...   Alt+Shift+V"
+msgstr "Biến Mới...   Alt+Shift+V"
 
 #: xboard.c:604
 msgid "Load Game       Ctrl+O"
-msgstr "Tải Ván Cờ...   Ctrl+O"
+msgstr "Tải Ván Cờ...   Ctrl+O"
 
 #: xboard.c:605
 msgid "Load Position    Ctrl+Shift+O"
-msgstr "Tải Thế Cờ...   Ctrl+Shift+O"
+msgstr "Tải Thế Cờ...   Ctrl+Shift+O"
 
 #: xboard.c:609
 msgid "Next Position     Shift+PgDn"
@@ -687,11 +687,11 @@ msgstr ""
 
 #: xboard.c:613
 msgid "Save Game       Ctrl+S"
-msgstr "Lưu Ván Cờ...   Ctrl+S"
+msgstr "Lưu Ván Cờ...   Ctrl+S"
 
 #: xboard.c:614
 msgid "Save Position    Ctrl+Shift+S"
-msgstr "Lưu Thế Cờ...   Ctrl+Shift+S"
+msgstr "Lưu Thế Cờ...   Ctrl+Shift+S"
 
 #: xboard.c:616
 msgid "Mail Move"
@@ -707,87 +707,87 @@ msgstr "Thoát"
 
 #: xboard.c:624
 msgid "Copy Game    Ctrl+C"
-msgstr "Chép Ván Cờ Vào Clipboard   Ctrl+C"
+msgstr "Chép Ván Cờ Vào Clipboard   Ctrl+C"
 
 #: xboard.c:625
 msgid "Copy Position Ctrl+Shift+C"
-msgstr "Chép Thế Cờ Vào Clipboard   Ctrl+Shift+C"
+msgstr "Chép Thế Cờ Vào Clipboard   Ctrl+Shift+C"
 
 #: xboard.c:626
 msgid "Copy Game List"
-msgstr "Copy Danh Sách Các Ván Cờ Vào Clipboard"
+msgstr "Copy Danh Sách Các Ván Cờ Vào Clipboard"
 
 #: xboard.c:628
 msgid "Paste Game    Ctrl+V"
-msgstr "Dán Ván Cờ Từ Clipboard   Ctrl+V"
+msgstr "Dán Ván Cờ Từ Clipboard   Ctrl+V"
 
 #: xboard.c:629
 msgid "Paste Position Ctrl+Shift+V"
-msgstr "Dán Thế Cờ Từ Clipboard   Ctrl+Shift+V"
+msgstr "Dán Thế Cờ Từ Clipboard   Ctrl+Shift+V"
 
 #: xboard.c:631
 msgid "Edit Game      Ctrl+E"
-msgstr "Soạn Ván Cờ   Ctrl+E"
+msgstr "Soạn Ván Cờ   Ctrl+E"
 
 #: xboard.c:632
 msgid "Edit Position   Ctrl+Shift+E"
-msgstr "Soạn Thế Cờ   Ctrl+Shift+E"
+msgstr "Soạn Thế Cờ   Ctrl+Shift+E"
 
 #: xboard.c:633
 msgid "Edit Tags"
-msgstr "Soạn Các Thẻ..."
+msgstr "Soạn Các Thẻ..."
 
 #: xboard.c:634
 msgid "Edit Comment"
-msgstr "Soạn Bình Chú..."
+msgstr "Soạn Bình Chú..."
 
 #: xboard.c:636
 msgid "Revert              Home"
-msgstr "Ngược Lại   Home"
+msgstr "Ngược Lại   Home"
 
 #: xboard.c:637
 msgid "Annotate"
-msgstr "Chú Giải"
+msgstr "Chú Giải"
 
 #: xboard.c:638
 msgid "Truncate Game  End"
-msgstr "Cắt Ngắn Ván Cờ   End"
+msgstr "Cắt Ngắn Ván Cờ   End"
 
 #: xboard.c:640
 msgid "Backward         Alt+Left"
-msgstr "Quay Trở Lại   Alt+Left"
+msgstr "Quay Trở Lại   Alt+Left"
 
 #: xboard.c:641
 msgid "Forward           Alt+Right"
-msgstr "Đi Tiếp   Alt+Right"
+msgstr "Đi Tiếp   Alt+Right"
 
 #: xboard.c:642
 msgid "Back to Start     Alt+Home"
-msgstr "Quay Lại Đến Đầu   Alt+Home"
+msgstr "Quay Lại Đến Đầu   Alt+Home"
 
 #: xboard.c:643
 msgid "Forward to End Alt+End"
-msgstr "Đi Tiếp Tới Cuối   Alt+End"
+msgstr "Đi Tiếp Tới Cuối   Alt+End"
 
 #: xboard.c:648
 msgid "Flip View             F2"
-msgstr "Lật Ngược Bàn Cờ   F2"
+msgstr "Lật Ngược Bàn Cờ   F2"
 
 #: xboard.c:650
 msgid "Engine Output      Alt+Shift+O"
-msgstr "In Ra Của Các Chương Trình Cờ   Alt+Shift+O"
+msgstr "In Ra Của Các Chương Trình Cờ   Alt+Shift+O"
 
 #: xboard.c:651
 msgid "Move History       Alt+Shift+H"
-msgstr "Các Nước Đi   Alt+Shift+H"
+msgstr "Các Nước Đi   Alt+Shift+H"
 
 #: xboard.c:652
 msgid "Evaluation Graph  Alt+Shift+E"
-msgstr "Đồ Thị Lượng Giá   Alt+Shift+E"
+msgstr "Đồ Thị Lượng Giá   Alt+Shift+E"
 
 #: xboard.c:653
 msgid "Game List            Alt+Shift+G"
-msgstr "Danh Sách Các Ván Cờ   Alt+Shift+G"
+msgstr "Danh Sách Các Ván Cờ   Alt+Shift+G"
 
 #: xboard.c:654 xoptions.c:1844
 msgid "ICS text menu"
@@ -795,11 +795,11 @@ msgstr ""
 
 #: xboard.c:656 xoptions.c:1930
 msgid "Tags"
-msgstr "Các Thẻ"
+msgstr "Các Thẻ"
 
 #: xboard.c:657
 msgid "Comments"
-msgstr "Bình Chú"
+msgstr "Bình Chú"
 
 #: xboard.c:658
 msgid "ICS Input Box"
@@ -807,15 +807,15 @@ msgstr ""
 
 #: xboard.c:660
 msgid "Board..."
-msgstr "Bàn Cờ..."
+msgstr "Bàn Cờ..."
 
 #: xboard.c:661
 msgid "Game List Tags..."
-msgstr "Các Thẻ của Danh Sách Ván Cờ"
+msgstr "Các Thẻ của Danh Sách Ván Cờ"
 
 #: xboard.c:666
 msgid "Machine White  Ctrl+W"
-msgstr "Máy Chơi Bên Trắng   Ctrl+W"
+msgstr "Máy Chơi Bên Trắng   Ctrl+W"
 
 #: xboard.c:667
 msgid "Machine Black  Ctrl+B"
@@ -823,11 +823,11 @@ msgstr "Máy Chơi Bên Đen   Ctrl+B"
 
 #: xboard.c:668
 msgid "Two Machines   Ctrl+T"
-msgstr "Máy Chơi Cả Hai Bên   Ctrl+T"
+msgstr "Máy Chơi Cả Hai Bên   Ctrl+T"
 
 #: xboard.c:669
 msgid "Analysis Mode  Ctrl+A"
-msgstr "Chế Độ Phân Tích   Ctrl+A"
+msgstr "Chế Độ Phân Tích   Ctrl+A"
 
 #: xboard.c:670
 msgid "Analyze File      Ctrl+F"
@@ -835,47 +835,47 @@ msgstr "Phân Tích File   Ctrl+F"
 
 #: xboard.c:671
 msgid "Edit Game         Ctrl+E"
-msgstr "Soạn Ván Cờ   Ctrl+E"
+msgstr "Soạn Ván Cờ   Ctrl+E"
 
 #: xboard.c:672
 msgid "Edit Position      Ctrl+Shift+E"
-msgstr "Soạn Thế Cờ   Ctrl+Shift+E"
+msgstr "Soạn Thế Cờ   Ctrl+Shift+E"
 
 #: xboard.c:673
 msgid "Training"
-msgstr "Đang Dậy Máy"
+msgstr "Đang Dậy Máy"
 
 #: xboard.c:674
 msgid "ICS Client"
-msgstr "Kết Nối Chơi Với Máy Chủ ICS"
+msgstr "Kết Nối Chơi Với Máy Chủ ICS"
 
 #: xboard.c:676
 msgid "Machine Match"
-msgstr "Trận Đấu Với Máy"
+msgstr "Trận Đấu Với Máy"
 
 #: xboard.c:677
 msgid "Pause               Pause"
-msgstr "Tạm Dừng   Pause"
+msgstr "Tạm Dừng   Pause"
 
 #: xboard.c:682
 msgid "Accept             F3"
-msgstr "Chấp Nhận   F3"
+msgstr "Chấp Nhận   F3"
 
 #: xboard.c:683
 msgid "Decline            F4"
-msgstr "Từ Chối   F4"
+msgstr "Từ Chối   F4"
 
 #: xboard.c:684
 msgid "Rematch           F12"
-msgstr "Chơi Ván Nữa   F12"
+msgstr "Chơi Ván Nữa   F12"
 
 #: xboard.c:686
 msgid "Call Flag          F5"
-msgstr "Đặt Cờ   F5"
+msgstr "Đặt Cờ   F5"
 
 #: xboard.c:687
 msgid "Draw                F6"
-msgstr "Hòa   F6"
+msgstr "Hòa   F6"
 
 #: xboard.c:688
 msgid "Adjourn            F7"
@@ -883,35 +883,35 @@ msgstr "   F7"
 
 #: xboard.c:689
 msgid "Abort                F8"
-msgstr "Bỏ   F8"
+msgstr "Bỏ   F8"
 
 #: xboard.c:690
 msgid "Resign              F9"
-msgstr "Nhận Thua   F9"
+msgstr "Nhận Thua   F9"
 
 #: xboard.c:692
 msgid "Stop Observing  F10"
-msgstr "Ngừng Xem"
+msgstr "Ngừng Xem"
 
 #: xboard.c:693
 msgid "Stop Examining  F11"
-msgstr "Ngừng Thử"
+msgstr "Ngừng Thử"
 
 #: xboard.c:694
 msgid "Upload to Examine"
-msgstr "Tải Để "
+msgstr "Tải Để "
 
 #: xboard.c:696
 msgid "Adjudicate to White"
-msgstr "Phân Xử Trắng Thắng"
+msgstr "Phân Xử Trắng Thắng"
 
 #: xboard.c:697
 msgid "Adjudicate to Black"
-msgstr "Phân Xử Đen Thắng"
+msgstr "Phân Xử Đen Thắng"
 
 #: xboard.c:698
 msgid "Adjudicate Draw"
-msgstr "Phân Xử Hòa"
+msgstr "Phân Xử Hòa"
 
 #: xboard.c:703
 msgid "Load New Engine ..."
@@ -919,27 +919,27 @@ msgstr ""
 
 #: xboard.c:705
 msgid "Engine #1 Settings ..."
-msgstr "Đặt Tham Số Cho Chương Trình Chơi 1..."
+msgstr "Đặt Tham Số Cho Chương Trình Chơi 1..."
 
 #: xboard.c:706
 msgid "Engine #2 Settings ..."
-msgstr "Đặt Tham Số Cho Chương Trình Chơi 2..."
+msgstr "Đặt Tham Số Cho Chương Trình Chơi 2..."
 
 #: xboard.c:708
 msgid "Hint"
-msgstr "Gợi Ý..."
+msgstr "Gợi Ý..."
 
 #: xboard.c:709
 msgid "Book"
-msgstr "Cẩm Nang Khai Cuộc..."
+msgstr "Cẩm Nang Khai Cuộc..."
 
 #: xboard.c:711
 msgid "Move Now     Ctrl+M"
-msgstr "Phải Đi Ngay   Ctrl+M"
+msgstr "Phải Đi Ngay   Ctrl+M"
 
 #: xboard.c:712
 msgid "Retract Move  Ctrl+X"
-msgstr "Hoãn Nước Đi Vừa Rồi   Ctrl+X"
+msgstr "Hoãn Nước Đi Vừa Rồi   Ctrl+X"
 
 #: xboard.c:719
 msgid "General ..."
@@ -947,15 +947,15 @@ msgstr "Chung..."
 
 #: xboard.c:721
 msgid "Time Control ...       Alt+Shift+T"
-msgstr "Đặt Thời Gian...   Alt+Shift+T"
+msgstr "Đặt Thời Gian...   Alt+Shift+T"
 
 #: xboard.c:722
 msgid "Common Engine ...  Alt+Shift+U"
-msgstr "Chương Trình Cờ Chung...   Alt+Shift+U"
+msgstr "Chương Trình Cờ Chung...   Alt+Shift+U"
 
 #: xboard.c:723
 msgid "Adjudications ...      Alt+Shift+J"
-msgstr "Phân Xử Kết Quả...   Alt+Shift+J"
+msgstr "Phân Xử Kết Quả...   Alt+Shift+J"
 
 #: xboard.c:724
 msgid "ICS ..."
@@ -967,15 +967,15 @@ msgstr ""
 
 #: xboard.c:726
 msgid "Load Game ..."
-msgstr "Tải Ván Cờ...   Alt+Shift+L"
+msgstr "Tải Ván Cờ...   Alt+Shift+L"
 
 #: xboard.c:727
 msgid "Save Game ..."
-msgstr "Lưu Ván Cờ...   Alt+Shift+S"
+msgstr "Lưu Ván Cờ...   Alt+Shift+S"
 
 #: xboard.c:729
 msgid "Game List ..."
-msgstr "Danh Sách Ván Cờ"
+msgstr "Danh Sách Ván Cờ"
 
 #: xboard.c:730
 msgid "Sounds ..."
@@ -983,7 +983,7 @@ msgstr "Âm Thanh"
 
 #: xboard.c:733
 msgid "Always Queen        Ctrl+Shift+Q"
-msgstr "Luôn Là Hoàng Hậu     Ctrl+Shift+Q"
+msgstr "Luôn Là Hoàng Hậu     Ctrl+Shift+Q"
 
 #: xboard.c:734 xoptions.c:835
 msgid "Animate Dragging"
@@ -995,11 +995,11 @@ msgstr ""
 
 #: xboard.c:736
 msgid "Auto Flag               Ctrl+Shift+F"
-msgstr "Tự Động Đặt Cờ"
+msgstr "Tự Động Đặt Cờ"
 
 #: xboard.c:737 xoptions.c:838
 msgid "Auto Flip View"
-msgstr "Tự Động Xoay Bàn Cờ"
+msgstr "Tự Động Xoay Bàn Cờ"
 
 #: xboard.c:738 xoptions.c:839
 msgid "Blindfold"
@@ -1011,15 +1011,15 @@ msgstr ""
 
 #: xboard.c:741
 msgid "Highlight Dragging"
-msgstr "Đánh Dấu Khi Đang Kéo Quân Cờ"
+msgstr "Đánh Dấu Khi Đang Kéo Quân Cờ"
 
 #: xboard.c:743 xoptions.c:842
 msgid "Highlight Last Move"
-msgstr "Đánh Dấu Nước Cuối"
+msgstr "Đánh Dấu Nước Cuối"
 
 #: xboard.c:744
 msgid "Highlight With Arrow"
-msgstr "Đánh Dấu Với Mũi Tên"
+msgstr "Đánh Dấu Với Mũi Tên"
 
 #: xboard.c:745 xoptions.c:844
 msgid "Move Sound"
@@ -1027,43 +1027,43 @@ msgstr ""
 
 #: xboard.c:747 xoptions.c:845
 msgid "One-Click Moving"
-msgstr "Đi Quân Với Chỉ Một Bấm"
+msgstr "Đi Quân Với Chỉ Một Bấm"
 
 #: xboard.c:748
 msgid "Periodic Updates"
-msgstr "Cập Nhật Theo Chu Kỳ"
+msgstr "Cập Nhật Theo Chu Kỳ"
 
 #: xboard.c:749
 msgid "Ponder Next Move  Ctrl+Shift+P"
-msgstr "Tiếp Tục Tính Trước"
+msgstr "Tiếp Tục Tính Trước"
 
 #: xboard.c:750
 msgid "Popup Exit Message"
-msgstr "Bật Cửa Sổ Thoát Chương trình"
+msgstr "Bật Cửa Sổ Thoát Chương trình"
 
 #: xboard.c:751 xoptions.c:849
 msgid "Popup Move Errors"
-msgstr "Bật Cửa Sổ Lỗi Nước Đi"
+msgstr "Bật Cửa Sổ Lỗi Nước Đi"
 
 #: xboard.c:753
 msgid "Show Coords"
-msgstr "Hiện Tọa Độ"
+msgstr "Hiện Tọa Độ"
 
 #: xboard.c:754
 msgid "Hide Thinking        Ctrl+Shift+H"
-msgstr "Ẩn Suy Nghĩ"
+msgstr "Ẩn Suy Nghĩ"
 
 #: xboard.c:755
 msgid "Test Legality          Ctrl+Shift+L"
-msgstr "Kiểm Tra Hợp Lệ"
+msgstr "Kiểm Tra Hợp Lệ"
 
 #: xboard.c:758
 msgid "Save Settings Now"
-msgstr "Lưu Các Tham Số Ngay"
+msgstr "Lưu Các Tham Số Ngay"
 
 #: xboard.c:759
 msgid "Save Settings on Exit"
-msgstr "Lưu Các Tham Số Khi Kết Thúc"
+msgstr "Lưu Các Tham Số Khi Kết Thúc"
 
 #: xboard.c:764
 msgid "Info XBoard"
@@ -1075,7 +1075,7 @@ msgstr ""
 
 #: xboard.c:767 xboard.c:6703
 msgid "About XBoard"
-msgstr "Thông Tin Về XBoard"
+msgstr "Thông Tin Về XBoard"
 
 #: xboard.c:772
 msgid "File"
@@ -1083,7 +1083,7 @@ msgstr ""
 
 #: xboard.c:773
 msgid "Edit"
-msgstr "Soạn"
+msgstr "Soạn"
 
 #: xboard.c:774
 msgid "View"
@@ -1107,23 +1107,23 @@ msgstr ""
 
 #: xboard.c:779
 msgid "Help"
-msgstr "Hướng Dẫn"
+msgstr "Hướng Dẫn"
 
 #: xboard.c:795 xboard.c:7444
 msgid "White"
-msgstr "Trắng"
+msgstr "Trắng"
 
 #: xboard.c:795 xboard.c:799 xboard.c:818
 msgid "Pawn"
-msgstr "Tốt"
+msgstr "Tốt"
 
 #: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5022 xboard.c:5098
 msgid "Knight"
-msgstr "Mã"
+msgstr "Mã"
 
 #: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5020
 msgid "Bishop"
-msgstr "Tượng"
+msgstr "Tượng"
 
 #: xboard.c:795 xboard.c:799 xboard.c:818 xboard.c:5018
 msgid "Rook"
@@ -1131,7 +1131,7 @@ msgstr "Xe"
 
 #: xboard.c:796 xboard.c:800 xboard.c:818 xboard.c:5016
 msgid "Queen"
-msgstr "Hoàng Hậu"
+msgstr "Hoàng Hậu"
 
 #: xboard.c:796 xboard.c:800 xboard.c:5028
 msgid "King"
@@ -1139,7 +1139,7 @@ msgstr "Vua"
 
 #: xboard.c:796 xboard.c:800
 msgid "Elephant"
-msgstr "Tượng"
+msgstr "Tượng"
 
 #: xboard.c:796 xboard.c:800
 msgid "Cannon"
@@ -1147,7 +1147,7 @@ msgstr "Pháo"
 
 #: xboard.c:797 xboard.c:801 xboard.c:5034
 msgid "Archbishop"
-msgstr "Sĩ"
+msgstr "Sĩ"
 
 #: xboard.c:797 xboard.c:801 xboard.c:5036
 msgid "Chancellor"
@@ -1155,7 +1155,7 @@ msgstr "Xe"
 
 #: xboard.c:797 xboard.c:801 xboard.c:5041 xboard.c:5100
 msgid "Promote"
-msgstr "Phong Cấp"
+msgstr "Phong Cấp"
 
 #: xboard.c:797 xboard.c:801
 msgid "Demote"
@@ -1163,11 +1163,11 @@ msgstr ""
 
 #: xboard.c:798 xboard.c:802
 msgid "Empty square"
-msgstr "Ô Trống"
+msgstr "Ô Trống"
 
 #: xboard.c:798 xboard.c:802
 msgid "Clear board"
-msgstr "Xóa Bàn Cờ"
+msgstr "Xóa Bàn Cờ"
 
 #: xboard.c:799 xboard.c:7460
 msgid "Black"
@@ -1390,13 +1390,13 @@ msgstr ""
 
 #: xboard.c:3939
 msgid "Drop"
-msgstr "Đứt"
+msgstr "Đứt"
 
 #: xboard.c:4920 xboard.c:5046 xboard.c:5094 xboard.c:7000 xboard.c:7041
 #: xgamelist.c:709 xgamelist.c:817 xoptions.c:130 xoptions.c:197
 #: xoptions.c:572 xoptions.c:1328 xoptions.c:1640
 msgid "cancel"
-msgstr "Bỏ"
+msgstr "Bỏ"
 
 #: xboard.c:4957 xboard.c:6850 xboard.c:6864
 msgid "Error"
@@ -1412,7 +1412,7 @@ msgstr ""
 
 #: xboard.c:4991
 msgid "Promotion"
-msgstr "Phong cấp"
+msgstr "Phong cấp"
 
 #: xboard.c:5000
 msgid "Promote to what?"
@@ -1440,7 +1440,7 @@ msgstr ""
 
 #: xboard.c:5165 xoptions.c:146 xoptions.c:196
 msgid "ok"
-msgstr "Được"
+msgstr "Được"
 
 #: xboard.c:5362
 msgid "Load game file name?"
@@ -1572,7 +1572,7 @@ msgstr ""
 
 #: xgamelist.c:234
 msgid "Filter:"
-msgstr "Lọc"
+msgstr "Lọc"
 
 #: xgamelist.c:252
 msgid "filtertext"
@@ -1596,7 +1596,7 @@ msgstr ""
 
 #: xgamelist.c:703 xgamelist.c:828 xoptions.c:1332 xoptions.c:1636
 msgid "OK"
-msgstr "Được"
+msgstr "Được"
 
 #: xgamelist.c:717
 msgid "No tag selected"
@@ -1674,7 +1674,7 @@ msgstr ""
 
 #: xoptions.c:287 xoptions.c:455
 msgid "sec/move"
-msgstr "số giây mỗi nước"
+msgstr "số giây mỗi nước"
 
 #: xoptions.c:302 xoptions.c:550
 msgid "fixed time"
@@ -1714,7 +1714,7 @@ msgstr ""
 
 #: xoptions.c:504
 msgid "Engine #1 and #2 Time-Odds Factors"
-msgstr "Hệ số thời gian lẻ"
+msgstr "Hệ số thời gian lẻ"
 
 #: xoptions.c:783
 msgid "First Engine"
@@ -1790,7 +1790,7 @@ msgstr ""
 
 #: xoptions.c:837
 msgid "Auto Flag"
-msgstr "Tự Động Đặt Cờ"
+msgstr "Tự Động Đặt Cờ"
 
 #: xoptions.c:840
 msgid "Drop Menu"
@@ -1798,11 +1798,11 @@ msgstr ""
 
 #: xoptions.c:841
 msgid "Highlight Dragging (Show Move Targets)"
-msgstr "Đánh Dấu Khi Đang Kéo Quân Cờ"
+msgstr "Đánh Dấu Khi Đang Kéo Quân Cờ"
 
 #: xoptions.c:843
 msgid "Highlight with Arrow"
-msgstr "Đánh Dấu Với Mũi Tên"
+msgstr "Đánh Dấu Với Mũi Tên"
 
 #: xoptions.c:846
 msgid "Periodic Updates (in Analysis Mode)"
@@ -1814,11 +1814,11 @@ msgstr ""
 
 #: xoptions.c:848
 msgid "Popup Exit Messages"
-msgstr "Bật Cửa Sổ Thoát Chương trình"
+msgstr "Bật Cửa Sổ Thoát Chương trình"
 
 #: xoptions.c:850
 msgid "Show Coordinates"
-msgstr "Hiện Tọa Độ"
+msgstr "Hiện Tọa Độ"
 
 #: xoptions.c:851
 msgid "Show Target Squares"
@@ -1830,7 +1830,7 @@ msgstr ""
 
 #: xoptions.c:853
 msgid "Test Legality"
-msgstr "Kiểm Tra Hợp Lệ"
+msgstr "Kiểm Tra Hợp Lệ"
 
 #: xoptions.c:854
 msgid "Flash Moves (0 = no flashing):"
@@ -2088,7 +2088,7 @@ msgstr ""
 
 #: xoptions.c:988
 msgid "Auto-Raise Board"
-msgstr "Tự Động Hiện Bàn Cờ"
+msgstr "Tự Động Hiện Bàn Cờ"
 
 #: xoptions.c:989
 msgid "Background Observe while Playing"
@@ -2234,7 +2234,7 @@ msgstr "Không âm thanh"
 
 #: xoptions.c:1038
 msgid "Default Beep"
-msgstr "Tiếng tút ngầm định"
+msgstr "Tiếng tút ngầm định"
 
 #: xoptions.c:1039
 msgid "Above WAV File"
@@ -2430,11 +2430,11 @@ msgstr ""
 
 #: xoptions.c:1686
 msgid "Load Game Options"
-msgstr "Các Lựa Chọn Tải Ván Cờ"
+msgstr "Các Lựa Chọn Tải Ván Cờ"
 
 #: xoptions.c:1695
 msgid "Save Game Options"
-msgstr "Các Lựa Chọn Lưu Ván Cờ"
+msgstr "Các Lựa Chọn Lưu Ván Cờ"
 
 #: xoptions.c:1705
 msgid "Sound Options"
@@ -2454,7 +2454,7 @@ msgstr ""
 
 #: xoptions.c:1753
 msgid "General Options"
-msgstr "Các Lựa Chọn Chung"
+msgstr "Các Lựa Chọn Chung"
 
 #: xoptions.c:1764
 msgid "Match Options"
