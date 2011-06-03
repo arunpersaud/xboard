@@ -62,6 +62,11 @@
 #include <pwd.h>
 #include <math.h>
 
+#include <gtk/gtk.h>
+#include <gdk/gdk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
+
+
 #if !OMIT_SOCKETS
 # if HAVE_SYS_SOCKET_H
 #  include <sys/socket.h>
@@ -298,7 +303,6 @@ void ICSInputBoxPopUp P((void));
 void ICSInputBoxPopDown P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
 		      FileProc proc, char *openMode));
-void FileNamePopDown P((void));
 void FileNameCallback P((Widget w, XtPointer client_data,
 			 XtPointer call_data));
 void FileNameAction P((Widget w, XEvent *event,
@@ -1031,7 +1035,6 @@ XtActionsRec boardActions[] = {
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
-    { "FileNamePopDown", (XtActionProc) FileNamePopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
@@ -1964,6 +1967,11 @@ main(argc, argv)
 	exit(0);
     }
 
+    /* set up GTK */
+    gtk_init (&argc, &argv);
+
+
+
     programName = strrchr(argv[0], '/');
     if (programName == NULL)
       programName = argv[0];
@@ -2687,7 +2695,30 @@ XBoard square size (hint): %d\n\
 //    XtSetKeyboardFocus(shellWidget, formWidget);
     XSetInputFocus(xDisplay, XtWindow(formWidget), RevertToPointerRoot, CurrentTime);
 
-    XtAppMainLoop(appContext);
+    //    XtAppMainLoop(appContext);
+    do {
+      XEvent event;
+      XtInputMask mask;
+
+
+      //from http://webcache.googleusercontent.com/search?q=cache:bxvBe4k9I8YJ:www.phy.bnl.gov/~bviren/dayabay/offline/external-trunk/OpenMotif/openmotif-2.3.0/lib/Xm/CutPaste.c+XtAppNextEvent+non+blocking&cd=6&hl=en&ct=clnk&gl=us&client=firefox-a&source=www.google.com
+
+      while (!(mask = XtAppPending(appContext)))
+        ;  /* Busy waiting - so that we don't lose our lock */
+      if (mask & XtIMXEvent) { /* We have an XEvent */
+        /* Get the event since we know its there.
+         * Note that XtAppNextEvent would also process
+         * timers/alternate inputs.
+         */
+        XtAppNextEvent(appContext, &event); /* no blocking */
+        XtDispatchEvent(&event); /* Process it */
+      }
+      else /* not an XEvent, process it */
+        XtAppProcessEvent(appContext, mask); /* non blocking */
+
+      gtk_main_iteration_do(FALSE);
+    } while(XtAppGetExitFlag(appContext) == FALSE);
+
     if (appData.debugMode) fclose(debugFP); // [DM] debug
     return 0;
 }
@@ -3114,7 +3145,7 @@ NextInHistory()
 {
   if (histP == histIn) return NULL;
   histP = (histP + 1) % HISTORY_SIZE;
-  return history[histP];   
+  return history[histP];
 }
 // end of borrowed code
 
@@ -4996,26 +5027,47 @@ void FileNamePopUp(label, def, filter, proc, openMode)
      FileProc proc;
      char *openMode;
 {
-    fileProc = proc;		/* I can't see a way not */
-    fileOpenMode = openMode;	/*   to use globals here */
-    {   // [HGM] use file-selector dialog stolen from Ghostview
-	char *name;
-	int index; // this is not supported yet
-	FILE *f;
-	if(f = XsraSelFile(shellWidget, label, NULL, NULL, "could not open: ",
-			   (def[0] ? def : NULL), filter, openMode, NULL, &name))
-	  (void) (*fileProc)(f, index=0, name);
-    }
+  /* TODO:
+   *   implement look for certain file types
+   *   use save/load button depending on what function is calling
+   */
+
+  GtkWidget *dialog;
+
+  dialog = gtk_file_chooser_dialog_new (label,
+                                        NULL,
+                                        GTK_FILE_CHOOSER_ACTION_OPEN,
+                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                        NULL);
+  if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+      FILE *f;
+
+      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+
+      //see loadgamepopup
+      f = fopen(filename, openMode);
+      if (f == NULL)
+        {
+          DisplayError(_("Failed to open file"), errno);
+        }
+      else
+        {
+          /* TODO add indec */
+          (*proc)(f, 0, filename);
+        }
+      g_free (filename);
+    };
+
+  gtk_widget_destroy (dialog);
+  ModeHighlight();
+
+  return;
+
 }
 
-void FileNamePopDown()
-{
-    if (!filenameUp) return;
-    XtPopdown(fileNameShell);
-    XtDestroyWidget(fileNameShell);
-    filenameUp = False;
-    ModeHighlight();
-}
 
 void FileNameCallback(w, client_data, call_data)
      Widget w;
@@ -5027,10 +5079,10 @@ void FileNameCallback(w, client_data, call_data)
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
 
-    if (strcmp(name, _("cancel")) == 0) {
-        FileNamePopDown();
-        return;
-    }
+    //    if (strcmp(name, _("cancel")) == 0) {
+    //  FileNamePopDown();
+    //    return;
+    //}
 
     FileNameAction(w, NULL, NULL, NULL);
 }
@@ -7748,7 +7800,7 @@ int OpenTCP(host, port, pr)
 	      host, port, gai_strerror(error));
       return ENOENT;
     }
-     
+
     for (ai = ais; ai != NULL; ai = ai->ai_next) {
       if ((s = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) < 0) {
 	error = errno;

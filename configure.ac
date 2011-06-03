@@ -91,6 +91,11 @@ AC_SUBST(NROFFFLAGS)
 AC_PATH_PROGS(AWKPATH, awk mawk gawk nawk)
 AC_PATH_PROGS(PERLPATH, perl)
 
+PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.12.0 gmodule-export-2.0 ])
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+
+
 AC_HEADER_STDC
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
@@ -408,6 +413,21 @@ enable_sigint=$enableval
 ],
 [enable_sigint="yes"
 AC_DEFINE(ATTENTION, 1)])
+
+
+AC_ARG_ENABLE(enable_warnings, AC_HELP_STRING(--enable-warnings, [enable compiler warnings. [[default=no]]]
+))
+AC_MSG_CHECKING([if compiler warnings is to be enabled])
+if test "$enable_warnings" != "yes"; then
+  enable_warnings="no"
+fi
+AC_MSG_RESULT($enable_warnings)
+
+if test "$enable_warnings" = "yes"; then
+    CFLAGS="$CFLAGS -DGDK_PIXBUF_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -Wunused-function -Wunused-label -Wunused-value -Wunused-variable "
+fi
+
+
 
 
 dnl | save all information for X in X_LIBS, also add the libraries themself
