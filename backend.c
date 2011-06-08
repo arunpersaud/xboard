@@ -6700,6 +6700,15 @@ void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cp
 }
 
 void
+ClearEngineOutputPane(int which)
+{
+    static FrontEndProgramStats dummyStats;
+    dummyStats.which = which;
+    dummyStats.pv = "#";
+    SetProgramStats( &dummyStats );
+}
+
+void
 Count(Board board, int pCnt[], int *nW, int *nB, int *wStale, int *bStale, int *bishopColor)
 {	// count all piece types
 	int p, f, r;
@@ -8991,6 +9000,7 @@ InitChessProgram(cps, setup)
       SendToProgram(buf, cps);
     }
     cps->initDone = TRUE;
+    ClearEngineOutputPane(cps == &second);
 }
 
 
