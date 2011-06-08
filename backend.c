@@ -876,7 +876,7 @@ static char resetOptions[] =
 void
 Load(ChessProgramState *cps, int i)
 {
-    char *p, *q, buf[MSG_SIZ], command[MSG_SIZ];
+    char *p, *q, buf[MSG_SIZ], command[MSG_SIZ], buf2[MSG_SIZ];
     if(engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
@@ -896,6 +896,7 @@ Load(ChessProgramState *cps, int i)
 	appData.directory[i] = strdup(engineName);
 	p[-1] = SLASH;
     } else appData.directory[i] = ".";
+    if(strchr(p, ' ') && !strchr(p, '"')) snprintf(buf2, MSG_SIZ, "\"%s\"", p), p = buf2; // quote if it contains spaces
     if(params[0]) {
 	snprintf(command, MSG_SIZ, "%s %s", p, params);
 	p = command;
@@ -908,9 +909,12 @@ Load(ChessProgramState *cps, int i)
     if(useNick) ASSIGN(appData.pgnName[i], nickName);
     if(addToList) {
 	int len;
+	char quote;
 	q = firstChessProgramNames;
 	if(nickName[0]) snprintf(buf, MSG_SIZ, "\"%s\" -fcp ", nickName); else buf[0] = NULLCHAR;
-	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), "\"%s\" -fd \"%s\"%s%s%s%s%s%s%s%s\n", p, appData.directory[i], 
+	quote = strchr(p, '"') ? '\'' : '"'; // use single quotes around engine command if it contains double quotes
+	snprintf(buf+strlen(buf), MSG_SIZ-strlen(buf), "%c%s%c -fd \"%s\"%s%s%s%s%s%s%s%s\n",
+			quote, p, quote, appData.directory[i], 
 			useNick ? " -fn \"" : "",
 			useNick ? nickName : "",
 			useNick ? "\"" : "",
