@@ -1410,7 +1410,7 @@ MatchEvent(int mode)
 //	    return;
 //	}
 	abortMatch = FALSE;
-	appData.matchGames = appData.defaultMatchGames;
+	if(mode == 2) appData.matchGames = appData.defaultMatchGames;
 	/* Set up machine vs. machine match */
 	nextGame = 0;
 	NextTourneyGame(-1, &dummy); // sets appData.matchGames if this is tourney, to make sure ReserveGame knows it
