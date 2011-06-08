@@ -9746,9 +9746,9 @@ Pairing(int nr, int nPlayers, int *whitePlayer, int *blackPlayer, int *syncInter
 	    *whitePlayer = curRound;
 	    *blackPlayer = nPlayers - 1; // this is the 'bye' when nPlayer is odd
 	} else {
-	    *whitePlayer = curRound - pairingsPerRound + curPairing;
+	    *whitePlayer = curRound - (nPlayers-1)/2 + curPairing;
 	    if(*whitePlayer < 0) *whitePlayer += nPlayers-1+(nPlayers&1);
-	    *blackPlayer = curRound + pairingsPerRound - curPairing;
+	    *blackPlayer = curRound + (nPlayers-1)/2 - curPairing;
 	    if(*blackPlayer >= nPlayers-1+(nPlayers&1)) *blackPlayer -= nPlayers-1+(nPlayers&1);
 	}
     } else if(appData.tourneyType > 0) {
