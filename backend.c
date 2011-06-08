@@ -10260,6 +10260,7 @@ GameEnds(result, resultDetails, whosays)
     if(popupRequested) { // [HGM] crash: this calls GameEnds recursively through ExitEvent! Make it a harmless tail recursion.
 	if(matchMode == TRUE) { // match through command line: exit with or without popup
 	    if(ranking) {
+		ToNrEvent(forwardMostMove);
 		if(strcmp(ranking, "busy")) DisplayFatalError(ranking, 0, 0);
 		else ExitEvent(0);
 	    } else DisplayFatalError(buf, 0, 0);
