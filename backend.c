@@ -7661,7 +7661,10 @@ HandleMachineMove(message, cps)
 
     if(cps == &pairing && sscanf(message, "%d-%d", &savedWhitePlayer, &savedBlackPlayer) == 2) {
 	// [HGM] pairing: Mega-hack! Pairing engine also uses this routine (so it could give other WB commands).
-	if(savedWhitePlayer == 0 || savedBlackPlayer == 0) return;
+	if(savedWhitePlayer == 0 || savedBlackPlayer == 0) {
+	    DisplayError(_("Invalid pairing from pairing engine"), 0);
+	    return;
+	}
 	pairingReceived = 1;
 	NextMatchGame();
 	return; // Skim the pairing messages here.
