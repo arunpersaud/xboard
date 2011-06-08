@@ -12691,6 +12691,12 @@ DisplayTwoMachinesTitle()
 {
     char buf[MSG_SIZ];
     if (appData.matchGames > 0) {
+        if(appData.tourneyFile[0]) {
+	  snprintf(buf, MSG_SIZ, "%s vs. %s (%d/%d%s)",
+		   gameInfo.white, gameInfo.black,
+		   nextGame+1, appData.matchGames+1,
+		   appData.tourneyType>0 ? "gt" : appData.tourneyType<0 ? "sw" : "rr");
+        } else 
         if (first.twoMachinesColor[0] == 'w') {
 	  snprintf(buf, MSG_SIZ, "%s vs. %s (%d-%d-%d)",
 		   gameInfo.white, gameInfo.black,
