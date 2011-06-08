@@ -9487,7 +9487,10 @@ GameEnds(result, resultDetails, whosays)
     ModeHighlight();
     endingGame = 0;  /* [HGM] crash */
     if(popupRequested) { // [HGM] crash: this calls GameEnds recursively through ExitEvent! Make it a harmless tail recursion.
-      if(matchMode == TRUE) DisplayFatalError(buf, 0, 0); else {
+      if(matchMode == TRUE) { // match through command line: exit with popup
+	ToNrEvent(forwardMostMove);
+	DisplayFatalError(buf, 0, 0);
+      } else { // match through menu; just stop, with popup
 	matchMode = FALSE; appData.matchGames = matchGame = 0;
 	DisplayNote(buf);
       }
