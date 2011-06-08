@@ -47,7 +47,7 @@ void InitEngineUCI( const char * iniDir, ChessProgramState * cps )
               *s++ = cps == &first ? 'f' : 's';
               p++;
             }
-            while(*p >= '0' && *p) *s++ = *p++; // copy option name
+            while(isdigit(*p) || isalpha(*p)) *s++ = *p++; // copy option name
             *s = NULLCHAR;
             if(cps == &second) { // change options for first into those for second engine
               if(strstr(buf, "first") == buf) sprintf(argName, "second%s", buf+5); else
