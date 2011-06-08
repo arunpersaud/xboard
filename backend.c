@@ -1550,6 +1550,8 @@ InitBackEnd3 P((void))
 	    if(f = fopen(appData.tourneyFile, "r")) {
 		ParseArgsFromFile(f); // make sure tourney parmeters re known
 		fclose(f);
+		appData.clockMode = TRUE;
+		SetGNUMode();
 	    } else appData.tourneyFile[0] = NULLCHAR; // for now ignore bad tourney file
 	}
 	MatchEvent(TRUE);
