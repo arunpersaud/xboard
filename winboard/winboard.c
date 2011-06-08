@@ -889,16 +889,19 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 void
 SetUserLogo()
 {   // update user logo if necessary
-    static char oldUserName[MSG_SIZ], *curName;
+    static char oldUserName[MSG_SIZ], dir[MSG_SIZ], *curName;
 
     if(appData.autoLogo) {
 	  curName = UserName();
 	  if(strcmp(curName, oldUserName)) {
-	    snprintf(oldUserName, MSG_SIZ, "logos\\%s.bmp", curName);
+		GetCurrentDirectory(MSG_SIZ, dir);
+		SetCurrentDirectory(installDir);
+		snprintf(oldUserName, MSG_SIZ, "logos\\%s.bmp", curName);
 		userLogo = LoadImage( 0, oldUserName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
 		safeStrCpy(oldUserName, curName, sizeof(oldUserName)/sizeof(oldUserName[0]) );
 		if(userLogo == NULL)
 		    userLogo = LoadImage( 0, "logos\\dummy.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
+		SetCurrentDirectory(dir); /* return to prev directory */
 	  }
     }
 }
@@ -956,8 +959,11 @@ EnsureOnScreen(int *x, int *y, int minX, int minY)
 }
 
 VOID
-LoadLogo(ChessProgramState *cps, int n)
+LoadLogo(ChessProgramState *cps, int n, Boolean ics)
 {
+  char buf[MSG_SIZ], dir[MSG_SIZ];
+  GetCurrentDirectory(MSG_SIZ, dir);
+  SetCurrentDirectory(installDir);
   if( appData.logo[n] && appData.logo[n][0] != NULLCHAR) {
       cps->programLogo = LoadImage( 0, appData.logo[n], IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
 
@@ -965,12 +971,16 @@ LoadLogo(ChessProgramState *cps, int n)
           fprintf( debugFP, "Unable to load logo bitmap '%s'\n", appData.logo[n] );
       }
   } else if(appData.autoLogo) {
-      if(appData.firstDirectory && appData.directory[n][0]) {
-	char buf[MSG_SIZ];
-	  snprintf(buf, MSG_SIZ, "%s/logo.bmp", appData.directory[n]);
-	cps->programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
+      if(ics) { // [HGM] logo: in ICS mode second can be used for ICS
+	sprintf(buf, "logos\\%s.bmp", appData.icsHost);
+	cps->programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+      } else
+      if(appData.directory[n] && appData.directory[n][0]) {
+        SetCurrentDirectory(appData.directory[n]);
+	cps->programLogo = LoadImage( 0, "logo.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
       }
   }
+  SetCurrentDirectory(dir); /* return to prev directory */
 }
 
 BOOL
@@ -1028,25 +1038,8 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   }
 
   /* [HGM] logo: Load logos if specified (must be done before InitDrawingSizes) */
-  LoadLogo(&first, 0);
-
-  if( appData.secondLogo && appData.secondLogo[0] != NULLCHAR) {
-      second.programLogo = LoadImage( 0, appData.secondLogo, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
-
-      if (second.programLogo == NULL && appData.debugMode) {
-          fprintf( debugFP, "Unable to load logo bitmap '%s'\n", appData.secondLogo );
-      }
-  } else if(appData.autoLogo) {
-      char buf[MSG_SIZ];
-      if(appData.icsActive) { // [HGM] logo: in ICS mode second can be used for ICS
-	snprintf(buf, MSG_SIZ, "logos\\%s.bmp", appData.icsHost);
-	second.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
-      } else
-      if(appData.secondDirectory && appData.secondDirectory[0]) {
-	snprintf(buf, MSG_SIZ, "%s\\logo.bmp", appData.secondDirectory);
-	second.programLogo = LoadImage( 0, buf, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );	
-      }
-  }
+  LoadLogo(&first, 0, FALSE);
+  LoadLogo(&second, 1, appData.icsActive);
 
   SetUserLogo();
 
@@ -3386,7 +3379,10 @@ DrawLogoOnDC(HDC hdc, RECT logoRect, HBITMAP logo)
   HBITMAP hbm;
   int w = 100, h = 50;
 
-  if(logo == NULL) return;
+  if(logo == NULL) {
+    if(!logoHeight) return;
+    FillRect( hdc, &logoRect, whitePieceBrush );
+  }
 //  GetClientRect(hwndMain, &Rect);
 //  bufferBitmap = CreateCompatibleBitmap(hdc, Rect.right-Rect.left+1,
 //					Rect.bottom-Rect.top+1);
@@ -3442,6 +3438,15 @@ DisplayLogos()
 	DrawLogoOnDC(hdc, rightLogoRect, flipClock ? whiteLogo : blackLogo);
 	ReleaseDC(hwndMain, hdc);
   }
+}
+
+void
+UpdateLogos(int display)
+{ // called after loading new engine(s), in tourney or from menu
+  LoadLogo(&first, 0, FALSE);
+  LoadLogo(&second, 1, appData.icsActive);
+  InitDrawingSizes(-2, 0); // adapt layout of board window to presence/absence of logos
+  if(display) DisplayLogos();
 }
 
 static HDC hdcSeek;
@@ -8912,9 +8917,6 @@ StartChildProcess(char *cmdLine, char *dir, ProcRef *pr)
    * dir relative to the directory WinBoard loaded from. */
   GetCurrentDirectory(MSG_SIZ, buf);
   SetCurrentDirectory(installDir);
-  // kludgey way to update logos in tourney, as long as back-end can't do it
-  if(!strcmp(cmdLine, first.program)) LoadLogo(&first, 0); else
-  if(!strcmp(cmdLine, second.program)) LoadLogo(&second, 1);
   SetCurrentDirectory(dir);
 
   /* Now create the child process. */

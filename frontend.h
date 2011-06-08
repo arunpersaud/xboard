@@ -119,6 +119,7 @@ int StopClockTimer P((void));
 void StartClockTimer P((long millisec));
 void DisplayWhiteClock P((long timeRemaining, int highlight));
 void DisplayBlackClock P((long timeRemaining, int highlight));
+void UpdateLogos P((int display));
 
 int LoadGameTimerRunning P((void));
 int StopLoadGameTimer P((void));

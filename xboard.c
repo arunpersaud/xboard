@@ -9001,3 +9001,9 @@ void DrawArrowHighlight(int fromX, int fromY, int toX,int toY)
     if( IsDrawArrowEnabled() && fromX >= 0 && fromY >= 0 && toX >= 0 && toY >= 0)
         DrawArrowBetweenSquares(fromX, fromY, toX, toY);
 }
+
+void UpdateLogos(int displ)
+{
+    return; // no logos in XBoard yet
+}
+

@@ -861,6 +861,7 @@ ReplaceEngine(ChessProgramState *cps, int n)
     appData.noChessProgram = FALSE;
     appData.clockMode = TRUE;
     InitEngine(cps, n);
+    UpdateLogos(TRUE);
     if(n) return; // only startup first engine immediately; second can wait
     savCps = cps; // parameter to LoadEngine passed as globals, to allow scheduled calling :-(
     LoadEngine();
@@ -9838,6 +9839,7 @@ NextTourneyGame(int nr, int *swapColors)
     InitEngine(&first, 0);  // initialize ChessProgramStates based on new settings.
     InitEngine(&second, 1);
     CommonEngineInit();     // after this TwoMachinesEvent will create correct engine processes
+    UpdateLogos(FALSE);     // leave display to ModeHiglight()
     return 1;
 }
 
@@ -12854,7 +12856,7 @@ TwoMachinesEvent P((void))
 
     gameMode = TwoMachinesPlay;
     pausing = FALSE;
-    ModeHighlight();
+    ModeHighlight(); // [HGM] logo: this triggers display update of logos
     SetGameInfo();
     DisplayTwoMachinesTitle();
     firstMove = TRUE;
