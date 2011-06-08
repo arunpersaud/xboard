@@ -9779,22 +9779,7 @@ NextTourneyGame(int nr, int *swapColors)
     InitTimeControls(); // TC might be altered from tourney file
 
     nPlayers = CountPlayers(appData.participants); // count participants
-    if(appData.tourneyType < 0 && appData.pairingEngine[0]) {
-	if(nr>=0 && !pairingReceived) {
-	    char buf[1<<16];
-	    if(pairing.pr == NoProc) StartChessProgram(&pairing);
-	    snprintf(buf, 1<<16, "results %d %s\n", nPlayers, appData.results);
-	    SendToProgram(buf, &pairing);
-	    snprintf(buf, 1<<16, "pairing %d\n", nr+1);
-	    SendToProgram(buf, &pairing);
-	    return 0; // wait for pairing engine to answer (which causes NextTourneyGame to be called again...
-	}
-	pairingReceived = 0;                              // ... so we continue here 
-	syncInterval = nPlayers/2; *swapColors = 0;
-	appData.matchGames = appData.tourneyCycles * syncInterval - 1;
-	whitePlayer = savedWhitePlayer-1; blackPlayer = savedBlackPlayer-1;
-	matchGame = 1; roundNr = nr / syncInterval + 1;
-    } else
+    if(appData.tourneyType < 0) syncInterval = nPlayers/2; else
     *swapColors = Pairing(nr<0 ? 0 : nr, nPlayers, &whitePlayer, &blackPlayer, &syncInterval);
 
     if(syncInterval) {
@@ -9807,6 +9792,29 @@ NextTourneyGame(int nr, int *swapColors)
 	    return 0;
 	}
 	waitingForGame = FALSE;
+    }
+
+    if(appData.tourneyType < 0) {
+	if(nr>=0 && !pairingReceived) {
+	    char buf[1<<16];
+	    if(pairing.pr == NoProc) {
+		if(!appData.pairingEngine[0]) {
+		    DisplayFatalError(_("No pairing engine specified"), 0, 1);
+		    return 0;
+		}
+		StartChessProgram(&pairing); // starts the pairing engine
+	    }
+	    snprintf(buf, 1<<16, "results %d %s\n", nPlayers, appData.results);
+	    SendToProgram(buf, &pairing);
+	    snprintf(buf, 1<<16, "pairing %d\n", nr+1);
+	    SendToProgram(buf, &pairing);
+	    return 0; // wait for pairing engine to answer (which causes NextTourneyGame to be called again...
+	}
+	pairingReceived = 0;                              // ... so we continue here 
+	*swapColors = 0;
+	appData.matchGames = appData.tourneyCycles * syncInterval - 1;
+	whitePlayer = savedWhitePlayer-1; blackPlayer = savedBlackPlayer-1;
+	matchGame = 1; roundNr = nr / syncInterval + 1;
     }
 
     if(first.pr != NoProc) return 1; // engines already loaded
