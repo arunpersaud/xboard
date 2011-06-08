@@ -622,6 +622,7 @@ ArgDescriptor argDescriptors[] = {
   { "sn", ArgString, (void *) &appData.pgnName[1], FALSE, INVALID },
   { "absoluteAnalysisScores", ArgBoolean, (void *) &appData.whitePOV, TRUE, FALSE },
   { "pairingEngine", ArgFilename, (void *) &appData.pairingEngine, TRUE, "" },
+  { "defaultTourneyName", ArgFilename, (void *) &appData.defName, TRUE, "" },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

@@ -9553,6 +9553,35 @@ TwoMachinesEventIfReady P((void))
   TwoMachinesEvent();
 }
 
+char *
+MakeName(char *template)
+{
+    time_t clock;
+    struct tm *tm;
+    static char buf[MSG_SIZ];
+    char *p = buf;
+    int i;
+
+    clock = time((time_t *)NULL);
+    tm = localtime(&clock);
+
+    while(*p++ = *template++) if(p[-1] == '%') {
+	switch(*template++) {
+	  case 0:   *p = 0; return buf;
+	  case 'Y': i = tm->tm_year+1900; break;
+	  case 'y': i = tm->tm_year-100; break;
+	  case 'M': i = tm->tm_mon+1; break;
+	  case 'd': i = tm->tm_mday; break;
+	  case 'h': i = tm->tm_hour; break;
+	  case 'm': i = tm->tm_min; break;
+	  case 's': i = tm->tm_sec; break;
+	  default:  i = 0;
+	}
+	snprintf(p-1, MSG_SIZ-10 - (p - buf), "%02d", i); p += strlen(p);
+    }
+    return buf;
+}
+
 int
 CountPlayers(char *p)
 {
@@ -9596,17 +9625,21 @@ CreateTourney(char *name)
 {
 	FILE *f;
 	if(name[0] == NULLCHAR) {
-	    DisplayError(_("You must supply a tournament file,\nfor storing the tourney progress"), 0);
+	    if(appData.participants[0])
+		DisplayError(_("You must supply a tournament file,\nfor storing the tourney progress"), 0);
 	    return 0;
 	}
-	f = fopen(appData.tourneyFile, "r");
+	f = fopen(name, "r");
 	if(f) { // file exists
+	    ASSIGN(appData.tourneyFile, name);
 	    ParseArgsFromFile(f); // parse it
 	} else {
-	    if(CountPlayers(appData.participants) < appData.tourneyType + (!appData.tourneyType) + 1) {
+	    if(!appData.participants[0]) return 0; // ignore tourney file if non-existing & no participants
+	    if(CountPlayers(appData.participants) < (appData.tourneyType>0 ? appData.tourneyType+1 : 2)) {
 		DisplayError(_("Not enough participants"), 0);
 		return 0;
 	    }
+	    ASSIGN(appData.tourneyFile, name);
 	    if((f = WriteTourneyFile("")) == NULL) return 0;
 	}
 	fclose(f);

@@ -780,7 +780,7 @@ void GenericPopDown(w, event, prms, nprms)
     PopDown(prms[0][0] - '0');
 }
 
-char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params;
+char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params, *tfName;
 Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
@@ -803,14 +803,14 @@ int MatchOK(int n)
 {
     if(appData.participants && appData.participants[0]) free(appData.participants);
     appData.participants = strdup(engineName);
-    if(!CreateTourney(appData.tourneyFile)) return 0;
+    if(!CreateTourney(tfName)) return !appData.participants[0];
     PopDown(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
     MatchEvent(2); // start tourney
     return 1;
 }
 
 Option matchOptions[] = {
-{ 0,  0,          0, NULL, (void*) &appData.tourneyFile, ".trn", NULL, FileName, N_("Tournament file:") },
+{ 0,  0,          0, NULL, (void*) &tfName, ".trn", NULL, FileName, N_("Tournament file:") },
 { 0,  0,          0, NULL, (void*) &appData.roundSync, "", NULL, CheckBox, N_("Sync after round    (for concurrent playing of a single") },
 { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle      tourney with multiple XBoards)") },
 { 0xD, 150,       0, NULL, (void*) &engineName, "", NULL, TextBox, "Tourney participants:" },
@@ -1771,6 +1771,7 @@ void MatchOptionsProc(w, event, prms, nprms)
    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
    comboCallback = &AddToTourney;
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
+   ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
    GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 

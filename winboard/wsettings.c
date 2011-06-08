@@ -362,7 +362,7 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 		if(cps) len = MSG_SIZ - strlen(optionList[j].name) - 9, text = newText;
 		else    len = GetWindowTextLength(GetDlgItem(hDlg, 2001+2*i)) + 1, text = (char*) malloc(len);
 		success = GetDlgItemText( hDlg, 2001+2*i, text, len );
-		if(!success) break;
+		if(!success) text[0] = NULLCHAR; // empty string can be valid input
 		if(!cps) {
 		    char *p;
 		    p = (optionList[j].type != FileName ? strdup(text) : InterpretFileName(text, homeDir)); // all files relative to homeDir!
@@ -687,17 +687,18 @@ void LoadEnginePopUp(HWND hwnd)
 }
 
 Boolean autoinc, twice, swiss;
+char *tfName;
 
 int MatchOK()
 {
     if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1);
     if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
-    if(CreateTourney(appData.tourneyFile)) MatchEvent(2); else return 0;
+    if(CreateTourney(tfName)) MatchEvent(2); else return !appData.participants[0];
     return 1;
 }
 
 Option tourneyOptions[] = {
-  { 0,  0,          4, NULL, (void*) &appData.tourneyFile, "", NULL, FileName, N_("Tournament file:") },
+  { 0,  0,          4, NULL, (void*) &tfName, "", NULL, FileName, N_("Tournament file:") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("If you specify an existing file, the rest of this dialog will be ignored.") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("Otherwise, the file will be created, with the settings you specify below:") },
   { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
@@ -742,7 +743,7 @@ void TourneyPopup(HWND hwnd)
     twice = TRUE; swiss = appData.tourneyType < 0;
     while(engineList[n]) n++; tourneyOptions[3].max = n-1;
     snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
-    if(appData.pairingEngine[0]) tourneyOptions[5].min = -19;
+    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
 
     GenericPopup(hwnd, tourneyOptions);
 }

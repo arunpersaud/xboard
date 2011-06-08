@@ -48,6 +48,7 @@
 -msLoginDelay 0
 -delayBeforeQuit 0
 -delayAfterQuit 0
+-defaultTourneyName "Tourney_%y%M%d_%h%m.trn"
 ;
 ; PGN format & Game List
 ;

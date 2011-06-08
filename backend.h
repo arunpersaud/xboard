@@ -296,6 +296,7 @@ void GLT_TagsToList P(( char * tags ));
 void GLT_ParseList P((void));
 void NamesToList P((char *name, char **engines, char **mnemonics));
 int CreateTourney P((char *name));
+char *MakeName P((char *templ));
 void SwapEngines P((int n));
 
 extern char* StripHighlight P((char *));  /* returns static data */

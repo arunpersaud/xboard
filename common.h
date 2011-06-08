@@ -650,6 +650,7 @@ typedef struct {
     Boolean whitePOV;
 
     char *tourneyFile;
+    char *defName;
     char *processes;
     char *results;
     char *participants;
