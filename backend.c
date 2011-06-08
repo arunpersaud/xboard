@@ -7135,6 +7135,15 @@ void SendProgramStatsToFrontend( ChessProgramState * cps, ChessProgramStats * cp
     SetProgramStats( &stats );
 }
 
+void
+ClearEngineOutputPane(int which)
+{
+    static FrontEndProgramStats dummyStats;
+    dummyStats.which = which;
+    dummyStats.pv = "#";
+    SetProgramStats( &dummyStats );
+}
+
 #define MAXPLAYERS 500
 
 char *
@@ -9489,6 +9498,7 @@ InitChessProgram(cps, setup)
       SendToProgram(buf, cps);
     }
     cps->initDone = TRUE;
+    ClearEngineOutputPane(cps == &second);
 }
 
 
