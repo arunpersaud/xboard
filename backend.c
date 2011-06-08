@@ -7154,6 +7154,8 @@ TourneyStandings(int display)
     int score[MAXPLAYERS], ranking[MAXPLAYERS], points[MAXPLAYERS], games[MAXPLAYERS];
     char result, *p, *names[MAXPLAYERS];
 
+    if(appData.tourneyType < 0 && !strchr(appData.results, '*'))
+	return strdup(_("Swiss tourney finished")); // standings of Swiss yet TODO
     names[0] = p = strdup(appData.participants);
     while(p = strchr(p, '\n')) *p++ = NULLCHAR, names[++nPlayers] = p; // count participants
 
@@ -7176,7 +7178,6 @@ TourneyStandings(int display)
 	games[b]++;
 	nr++;
     }
-    if(appData.tourneyType < 0) return strdup("Swiss tourney finished"); // standings of Swiss yet TODO
     if(appData.tourneyType > 0) nPlayers = appData.tourneyType; // in gauntlet, list only gauntlet engine(s)
     for(w=0; w<nPlayers; w++) {
 	bScore = -1;
@@ -9658,6 +9659,7 @@ CreateTourney(char *name)
 		return 0;
 	    }
 	    ASSIGN(appData.tourneyFile, name);
+	    if(appData.tourneyType < 0) appData.defaultMatchGames = 1; // Swiss forces games/pairing = 1
 	    if((f = WriteTourneyFile("")) == NULL) return 0;
 	}
 	fclose(f);
@@ -10278,6 +10280,7 @@ GameEnds(result, resultDetails, whosays)
 	    } else DisplayFatalError(buf, 0, 0);
 	} else { // match through menu; just stop, with or without popup
 	    matchMode = FALSE; appData.matchGames = matchGame = roundNr = 0;
+	    ModeHighlight();
 	    if(ranking){
 		if(strcmp(ranking, "busy")) DisplayNote(ranking);
 	    } else DisplayNote(buf);
