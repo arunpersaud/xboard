@@ -1380,7 +1380,7 @@ ReserveGame(int gameNr, char resChar)
     safeStrCpy(q, p, strlen(p) + 2);
     if(gameNr >= 0) q[gameNr] = resChar; // replace '*' with result
     if(appData.debugMode) fprintf(debugFP, "pick next game from '%s': %d\n", q, nextGame);
-    if(nextGame <= appData.matchGames && resChar != ' ') { // already reserve next game, if tourney not yet done
+    if(nextGame <= appData.matchGames && resChar != ' ' && !abortMatch) { // reserve next game if tourney not yet done
 	if(q[nextGame] == NULLCHAR) q[nextGame+1] = NULLCHAR; // append one char
 	q[nextGame] = '*';
     }
@@ -1392,7 +1392,7 @@ ReserveGame(int gameNr, char resChar)
     fprintf(tf, "%s\"\n", q); fclose(tf); // update, and flush by closing
     DisplayMessage(buf, "");
     free(p); appData.results = q;
-    if(nextGame <= appData.matchGames && resChar != ' ' &&
+    if(nextGame <= appData.matchGames && resChar != ' ' && !abortMatch &&
        (gameNr < 0 || nextGame / appData.defaultMatchGames != gameNr / appData.defaultMatchGames)) {
 	UnloadEngine(&first);  // next game belongs to other pairing;
 	UnloadEngine(&second); // already unload the engines, so TwoMachinesEvent will load new ones.
@@ -1405,8 +1405,7 @@ MatchEvent(int mode)
 	int dummy;
 	if(matchMode) { // already in match mode: switch it off
 	    abortMatch = TRUE;
-	    appData.matchGames = appData.tourneyFile[0] ? nextGame: matchGame; // kludge to let match terminate after next game.
-	    ModeHighlight(); // kludgey way to remove checkmark...
+	    if(!appData.tourneyFile[0]) appData.matchGames = matchGame; // kludge to let match terminate after next game.
 	    return;
 	}
 //	if(gameMode != BeginningOfGame) {
@@ -7143,8 +7142,6 @@ TourneyStandings(int display)
     int score[MAXPLAYERS], ranking[MAXPLAYERS], points[MAXPLAYERS], games[MAXPLAYERS];
     char result, *p, *names[MAXPLAYERS];
 
-    if(appData.tourneyType < 0) return strdup("Swiss tourney finished"); // standings of Swiss yet TODO
-
     names[0] = p = strdup(appData.participants);
     while(p = strchr(p, '\n')) *p++ = NULLCHAR, names[++nPlayers] = p; // count participants
 
@@ -7167,6 +7164,7 @@ TourneyStandings(int display)
 	games[b]++;
 	nr++;
     }
+    if(appData.tourneyType < 0) return strdup("Swiss tourney finished"); // standings of Swiss yet TODO
     if(appData.tourneyType > 0) nPlayers = appData.tourneyType; // in gauntlet, list only gauntlet engine(s)
     for(w=0; w<nPlayers; w++) {
 	bScore = -1;
@@ -10211,9 +10209,10 @@ GameEnds(result, resultDetails, whosays)
 	}
 
 	if(waitingForGame) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
-	if(appData.tourneyFile[0] && !abortMatch){ // [HGM] we are in a tourney; update tourney file with game result
+	if(appData.tourneyFile[0]){ // [HGM] we are in a tourney; update tourney file with game result
 	    ReserveGame(nextGame, resChar); // sets nextGame
 	    if(nextGame > appData.matchGames) appData.tourneyFile[0] = 0, ranking = TourneyStandings(3); // tourney is done
+	    else ranking = strdup("busy"); //suppress popup when aborted but not finished
 	} else roundNr = nextGame = matchGame + 1; // normal match, just increment; round equals matchGame
 
 	if (nextGame <= appData.matchGames && !abortMatch) {
