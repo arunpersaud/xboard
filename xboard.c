@@ -474,7 +474,6 @@ void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EditBookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopDown P(());
-void TimeControlPopDown P(());
 void GenericPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
@@ -1040,7 +1039,6 @@ XtActionsRec boardActions[] = {
     { "HistoryPopDown", (XtActionProc) HistoryPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
-    { "TimeControlPopDown", (XtActionProc) TimeControlPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
 };

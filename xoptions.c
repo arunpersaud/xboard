@@ -104,378 +104,6 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
     previous = w;
 }
 
-//--------------------------- Time-Control Menu Popup ----------------------------------
-int TimeControlUp;
-Widget TimeControlShell;
-int tcInc;
-Widget tcMess1, tcMess2, tcData, tcTime, tcOdds1, tcOdds2;
-int tcIncrement, tcMoves;
-
-void TimeControlPopDown()
-{
-    if (!TimeControlUp) return;
-    previous = NULL;
-    XtPopdown(TimeControlShell);
-    XtDestroyWidget(TimeControlShell);
-    TimeControlUp = False;
-    ModeHighlight();
-}
-
-void TimeControlCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name, txt;
-    Arg args[16];
-    char buf[MSG_SIZ];
-    int j;
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("classical")) == 0) {
-	if(tcInc == 0) return;
-	j=0;
-	XtSetArg(args[j], XtNlabel, _("minutes for each")); j++;
-	XtSetValues(tcMess1, args, j);
-	j=0;
-	XtSetArg(args[j], XtNlabel, _("moves")); j++;
-	XtSetValues(tcMess2, args, j);
-	if(tcInc == 1) {
-	    j=0;
-	    XtSetArg(args[j], XtNstring, &name); j++;
-	    XtGetValues(tcData, args, j);
-	    tcIncrement = 0; sscanf(name, "%d", &tcIncrement);
-	}
-	snprintf(buf, MSG_SIZ,  "%d", tcMoves);
-	j=0;
-	XtSetArg(args[j], XtNstring, buf); j++;
-	XtSetValues(tcData, args, j);
-	tcInc = 0;
-        return;
-    }
-    if (strcmp(name, _("incremental")) == 0) {
-	if(tcInc == 1) return;
-	j=0;
-	XtSetArg(args[j], XtNlabel, _("minutes, plus")); j++;
-	XtSetValues(tcMess1, args, j);
-	j=0;
-	XtSetArg(args[j], XtNlabel, _("sec/move")); j++;
-	XtSetValues(tcMess2, args, j);
-	if(tcInc == 0) {
-	    j=0;
-	    XtSetArg(args[j], XtNstring, &name); j++;
-	    XtGetValues(tcData, args, j);
-	    tcMoves = appData.movesPerSession; sscanf(name, "%d", &tcMoves);
-	}
-	snprintf(buf, MSG_SIZ,  "%d", tcIncrement);
-	j=0;
-	XtSetArg(args[j], XtNstring, buf); j++;
-	XtSetValues(tcData, args, j);
-	tcInc = 1;
-        return;
-    }
-    if (strcmp(name, _("fixed time")) == 0) {
-	if(tcInc == 2) return;
-	j=0;
-	XtSetArg(args[j], XtNlabel, _("sec/move (max)")); j++;
-	XtSetValues(tcMess1, args, j);
-	j=0;
-	XtSetArg(args[j], XtNlabel, ""); j++;
-	XtSetValues(tcMess2, args, j);
-	j=0;
-	XtSetArg(args[j], XtNstring, ""); j++;
-	XtSetValues(tcData, args, j);
-	tcInc = 2;
-        return;
-    }
-    if (strcmp(name, _(" OK ")) == 0) {
-	int inc, mps, ok=0;
-	XtSetArg(args[0], XtNstring, &txt);
-	XtGetValues(tcData, args, 1);
-	switch(tcInc) {
-	  case 1:
-	    ok = sscanf(txt, "%d", &inc); mps = 0;
-	    if(!ok && txt[0] == 0) { inc = 0; ok = 1; } // accept empty string as zero
-	    ok &= (inc >= 0);
-	    break;
-	  case 0:
-	    ok = sscanf(txt, "%d", &mps); inc = -1;
-	    ok &= (mps > 0);
-	    break;
-	  case 2:
-	    ok = 1; inc = -1; mps = 40;
-	}
-	if(ok != 1) {
-	    XtSetArg(args[0], XtNstring, ""); // erase any offending input
-	    XtSetValues(tcData, args, 1);
-	    return;
-	}
-	XtSetArg(args[0], XtNstring, &txt);
-	XtGetValues(tcTime, args, 1);
-	if(tcInc == 2) {
-	    if(sscanf(txt, "%d", &inc) != 1) {
-		XtSetArg(args[0], XtNstring, ""); // erase any offending input
-		XtSetValues(tcTime, args, 1);
-		DisplayError(_("Bad Time-Control String"), 0);
-		return;
-	    }
-	    searchTime = inc;
-	} else {
-	    if(!ParseTimeControl(txt, inc, mps)) {
-		XtSetArg(args[0], XtNstring, ""); // erase any offending input
-		XtSetValues(tcTime, args, 1);
-		DisplayError(_("Bad Time-Control String"), 0);
-		return;
-	    }
-	    searchTime = 0;
-	    appData.movesPerSession = mps;
-	    appData.timeIncrement = inc;
-	    appData.timeControl = strdup(txt);
-	}
-	XtSetArg(args[0], XtNstring, &txt);
-	XtGetValues(tcOdds1, args, 1);
-	appData.firstTimeOdds = first.timeOdds
-		= (sscanf(txt, "%d", &j) == 1 && j > 0) ? j : 1;
-	XtGetValues(tcOdds2, args, 1);
-	appData.secondTimeOdds = second.timeOdds
-		= (sscanf(txt, "%d", &j) == 1 && j > 0) ? j : 1;
-
-	Reset(True, True);
-        TimeControlPopDown();
-        return;
-    }
-}
-
-void TimeControlPopUp()
-{
-    Arg args[16];
-    Widget popup, layout, form,  b_ok, b_cancel, b_clas, b_inc, mess;
-    Window root, child;
-    int x, y, i, j;
-    int win_x, win_y;
-    unsigned int mask;
-    char def[MSG_SIZ];
-
-    tcInc = searchTime > 0 ? 2 : (appData.timeIncrement >= 0);
-    tcMoves = appData.movesPerSession; tcIncrement = appData.timeIncrement;
-    if(!tcInc) tcIncrement = 0;
-    snprintf(def, MSG_SIZ,  "%d", tcInc ? tcIncrement : tcMoves);
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-//    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    TimeControlShell = popup =
-      XtCreatePopupShell(_("TimeControl Menu"), transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    form =
-      XtCreateManagedWidget(layoutName, formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-
-    j = 0;
-//    XtSetArg(args[j], XtNwidth,     (XtArgVal) 300); j++;
-//    XtSetArg(args[j], XtNheight,    (XtArgVal) 85); j++;
-    XtSetValues(popup, args, j);
-
-    j= 0;
-    XtSetArg(args[j], XtNborderWidth, 1); j++;
-    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    XtSetArg(args[j], XtNstring, appData.timeControl);  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth,  85);  j++;
-    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
-    tcTime = XtCreateManagedWidget("TC", asciiTextWidgetClass, form, args, j);
-    XtAddEventHandler(tcTime, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-
-    j= 0;
-    XtSetArg(args[j], XtNlabel, tcInc ? tcInc == 2 ? _("sec/move (max)   ") : _("   minutes, plus   ") : _("minutes for each")); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNfromHoriz, tcTime); j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-  //  XtSetArg(args[j], XtNwidth,  100);  j++;
-  //  XtSetArg(args[j], XtNheight, 20);  j++;
-    tcMess1 = XtCreateManagedWidget("TCtext", labelWidgetClass, form, args, j);
-
-    j= 0;
-    XtSetArg(args[j], XtNborderWidth, 1); j++;
-    XtSetArg(args[j], XtNfromHoriz, tcMess1); j++;
-    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    XtSetArg(args[j], XtNstring, def);  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth,  40);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    tcData = XtCreateManagedWidget("MPS", asciiTextWidgetClass, form, args, j);
-    XtAddEventHandler(tcData, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-
-    j= 0;
-    XtSetArg(args[j], XtNlabel, tcInc ? tcInc == 2 ? _("             ") : _("sec/move") : _("moves     ")); j++;
-    XtSetArg(args[j], XtNjustify, XtJustifyLeft); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNfromHoriz, tcData); j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-//    XtSetArg(args[j], XtNwidth,  80);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    tcMess2 = XtCreateManagedWidget("MPStext", labelWidgetClass,
-				   form, args, j);
-
-    j= 0;
-    XtSetArg(args[j], XtNborderWidth, 1); j++;
-    XtSetArg(args[j], XtNfromVert, tcTime); j++;
-    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    XtSetArg(args[j], XtNstring, "1");  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth,  40);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    tcOdds1 = XtCreateManagedWidget("Odds1", asciiTextWidgetClass, form, args, j);
-    XtAddEventHandler(tcOdds1, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-
-    j= 0;
-    XtSetArg(args[j], XtNborderWidth, 1); j++;
-    XtSetArg(args[j], XtNfromVert, tcTime); j++;
-    XtSetArg(args[j], XtNfromHoriz, tcOdds1); j++;
-    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    XtSetArg(args[j], XtNstring, "1");  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth,  40);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    tcOdds2 = XtCreateManagedWidget("Odds2", asciiTextWidgetClass, form, args, j);
-    XtAddEventHandler(tcOdds2, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-
-    j= 0;
-    XtSetArg(args[j], XtNlabel, _("Engine #1 and #2 Time-Odds Factors")); j++;
-    XtSetArg(args[j], XtNjustify, XtJustifyLeft); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNfromVert, tcTime); j++;
-    XtSetArg(args[j], XtNfromHoriz, tcOdds2); j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainTop);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-//    XtSetArg(args[j], XtNwidth,  200);  j++;
-//    XtSetArg(args[j], XtNheight, 20);  j++;
-    mess = XtCreateManagedWidget("Oddstext", labelWidgetClass,
-				   form, args, j);
-    j=0;
-    XtSetArg(args[j], XtNfromVert, tcOdds1);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNstate, tcInc==0); j++;
-    b_clas= XtCreateManagedWidget(_("classical"), toggleWidgetClass,
-				   form, args, j);
-    XtAddCallback(b_clas, XtNcallback, TimeControlCallback, (XtPointer) 0);
-
-    j=0;
-    XtSetArg(args[j], XtNradioGroup, b_clas); j++;
-    XtSetArg(args[j], XtNfromVert, tcOdds1);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_clas);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNstate, tcInc==1); j++;
-    b_inc = XtCreateManagedWidget(_("incremental"), toggleWidgetClass,
-				   form, args, j);
-    XtAddCallback(b_inc, XtNcallback, TimeControlCallback, (XtPointer) 0);
-
-    j=0;
-    XtSetArg(args[j], XtNradioGroup, b_inc); j++;
-    XtSetArg(args[j], XtNfromVert, tcOdds1);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_inc);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNstate, tcInc==2); j++;
-    b_inc = XtCreateManagedWidget(_("fixed time"), toggleWidgetClass,
-				   form, args, j);
-    XtAddCallback(b_inc, XtNcallback, TimeControlCallback, (XtPointer) 0);
-
-    j=0;
-    XtSetArg(args[j], XtNfromVert, tcOdds1);  j++;
-    XtSetArg(args[j], XtNfromHoriz, tcData);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_ok= XtCreateManagedWidget(_(" OK "), commandWidgetClass,
-				   form, args, j);
-    XtAddCallback(b_ok, XtNcallback, TimeControlCallback, (XtPointer) 0);
-
-    j=0;
-    XtSetArg(args[j], XtNfromVert, tcOdds1);  j++;
-    XtSetArg(args[j], XtNfromHoriz, b_ok);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_cancel= XtCreateManagedWidget(_("cancel"), commandWidgetClass,
-				   form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, TimeControlPopDown, (XtPointer) 0);
-
-    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "TimeControlPopDown");
-
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    TimeControlUp = True;
-
-    previous = NULL;
-    SetFocus(tcTime, popup, (XEvent*) NULL, False);
-//    XtSetKeyboardFocus(popup, tcTime);
-}
-
-void TimeControlProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-   TimeControlPopUp();
-}
-
 //--------------------------- Engine-specific options menu ----------------------------------
 
 typedef void ButtonCallback(int n);
@@ -2009,6 +1637,94 @@ void ShuffleMenuProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
+}
+
+int tmpMoves, tmpTc, tmpInc, tmpOdds1, tmpOdds2, tcType;
+
+void ShowTC(int n)
+{
+}
+
+void SetTcType P((int n));
+
+char *Value(int n)
+{
+	static char buf[MSG_SIZ];
+	snprintf(buf, MSG_SIZ, "%d", n);
+	return buf;
+}
+
+int TcOK(int n)
+{
+    char *tc;
+    if(tcType == 0 && tmpMoves <= 0) return 0;
+    if(tcType == 2 && tmpInc <= 0) return 0;
+    GetWidgetText(&currentOption[4], &tc); // get original text, in case it is min:sec
+    switch(tcType) {
+      case 0:
+	if(!ParseTimeControl(tc, -1, tmpMoves)) return 0;
+	appData.movesPerSession = tmpMoves;
+	ASSIGN(appData.timeControl, tc);
+	appData.timeIncrement = -1;
+	break;
+      case 1:
+	if(!ParseTimeControl(tc, tmpInc, 0)) return 0;
+	ASSIGN(appData.timeControl, tc);
+	appData.timeIncrement = tmpInc;
+	break;
+      case 2:
+	searchTime = tmpInc;
+    }
+    appData.firstTimeOdds = first.timeOdds = tmpOdds1;
+    appData.secondTimeOdds = second.timeOdds = tmpOdds2;
+    Reset(True, True);
+    return 1;
+}
+
+Option tcOptions[] = {
+{   0,  0,    0, NULL, (void*) &SetTcType, NULL, NULL, Button, N_("classical") },
+{   0,  1,    0, NULL, (void*) &SetTcType, NULL, NULL, Button, N_("incremental") },
+{   0,  1,    0, NULL, (void*) &SetTcType, NULL, NULL, Button, N_("fixed max") },
+{   0,  0,  200, NULL, (void*) &tmpMoves, NULL, NULL, Spin, N_("Moves per session:") },
+{   0,  0,10000, NULL, (void*) &tmpTc, NULL, NULL, Spin, N_("Initial time (min):") },
+{   0, 0, 10000, NULL, (void*) &tmpInc, NULL, NULL, Spin, N_("Increment or max (sec/move):") },
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label, N_("Time-Odds factors:") },
+{   0,  1, 1000, NULL, (void*) &tmpOdds1, NULL, NULL, Spin, N_("Engine #1") },
+{   0,  1, 1000, NULL, (void*) &tmpOdds2, NULL, NULL, Spin, N_("Engine #2 / Human") },
+{   0,  0,    0, NULL, (void*) &TcOK, "", NULL, EndMark , "" }
+};
+
+void SetTcType(int n)
+{
+    switch(tcType = n) {
+      case 0:
+	SetWidgetText(&tcOptions[3], Value(tmpMoves), 0);
+	SetWidgetText(&tcOptions[4], Value(tmpTc), 0);
+	SetWidgetText(&tcOptions[5], _("Unused"), 0);
+	break;
+      case 1:
+	SetWidgetText(&tcOptions[3], _("Unused"), 0);
+	SetWidgetText(&tcOptions[4], Value(tmpTc), 0);
+	SetWidgetText(&tcOptions[5], Value(tmpInc), 0);
+	break;
+      case 2:
+	SetWidgetText(&tcOptions[3], _("Unused"), 0);
+	SetWidgetText(&tcOptions[4], _("Unused"), 0);
+	SetWidgetText(&tcOptions[5], Value(tmpInc), 0);
+    }
+}
+
+void TimeControlProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+   tmpMoves = appData.movesPerSession;
+   tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;
+   tmpOdds1 = tmpOdds2 = 1; tcType = 0;
+   tmpTc = atoi(appData.timeControl);
+   GenericPopUp(tcOptions, _("Time Control"), 0);
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
