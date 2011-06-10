@@ -487,6 +487,28 @@ static Option *currentOption;
 static Boolean browserUp;
 ButtonCallback *comboCallback;
 
+void GetWidgetText(Option *opt, char **buf)
+{
+    Arg arg;
+    XtSetArg(arg, XtNstring, buf);
+    XtGetValues(opt->handle, &arg, 1);
+}
+
+void SetWidgetText(Option *opt, char *buf, int n)
+{
+    Arg arg;
+    XtSetArg(arg, XtNstring, buf);
+    XtSetValues(opt->handle, &arg, 1);
+    SetFocus(opt->handle, shells[n], NULL, False);
+}
+
+void SetWidgetState(Option *opt, int state)
+{
+    Arg arg;
+    XtSetArg(arg, XtNstate, state);
+    XtSetValues(opt->handle, &arg, 1);
+}
+
 void CheckCallback(Widget ww, XtPointer data, XEvent *event, Boolean *b)
 {
     Widget w = currentOption[(int)(intptr_t)data].handle;
@@ -495,8 +517,7 @@ void CheckCallback(Widget ww, XtPointer data, XEvent *event, Boolean *b)
 
     XtSetArg(args[0], XtNstate, &s);
     XtGetValues(w, args, 1);
-    XtSetArg(args[0], XtNstate, !s);
-    XtSetValues(w, args, 1);
+    SetWidgetState(&currentOption[(int)(intptr_t)data], !s);
 }
 
 void SpinCallback(w, client_data, call_data)
@@ -512,14 +533,10 @@ void SpinCallback(w, client_data, call_data)
     XtSetArg(args[0], XtNlabel, &name);
     XtGetValues(w, args, 1);
 
-    j = 0;
-    XtSetArg(args[0], XtNstring, &val);
-    XtGetValues(currentOption[data].handle, args, 1);
+    GetWidgetText(&currentOption[data], &val);
     sscanf(val, "%d", &j);
     if (strcmp(name, "browse") == 0) {
-	char *q, *r;
-	XtSetArg(args[0], XtNstring, &q);
-	XtGetValues(currentOption[data].handle, args, 1);
+	char *q=val, *r;
 	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
 	if(!strcmp(r, "") && !currentCps && currentOption[data].type == FileName && currentOption[data].textValue)
 		r = currentOption[data].textValue;
@@ -542,9 +559,7 @@ void SpinCallback(w, client_data, call_data)
 	if(--j < currentOption[data].min) return;
     } else return;
     snprintf(buf, MSG_SIZ,  "%d", j);
-    XtSetArg(args[0], XtNstring, buf);
-    XtSetValues(currentOption[data].handle, args, 1);
-    SetFocus(currentOption[data].handle, shells[0], NULL, False);
+    SetWidgetText(&currentOption[data], buf, 0);
 }
 
 void ComboSelect(w, addr, index) // callback for all combo items
@@ -660,17 +675,19 @@ extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
 char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
 
+void AddLine(Option *opt, char *s)
+{
+    XawTextBlock t;
+    t.ptr = s; t.firstPos = 0; t.length = strlen(s); t.format = XawFmt8Bit;
+    XawTextReplace(opt->handle, 9999, 9999, &t);
+    t.ptr = "\n"; t.length = 1;
+    XawTextReplace(opt->handle, 9999, 9999, &t);
+}
+
 void AddToTourney(int n)
 {
-    Arg args[2];
-    char *p, *val, buf[10000];
-    XawTextBlock t;
-
     GenericReadout(4);  // selected engine
-    t.ptr = engineChoice; t.firstPos = 0; t.length = strlen(engineChoice); t.format = XawFmt8Bit;
-    XawTextReplace(matchOptions[3].handle, 9999, 9999, &t);
-    t.ptr = "\n"; t.length = 1;
-    XawTextReplace(matchOptions[3].handle, 9999, 9999, &t);
+    AddLine(&matchOptions[3], engineChoice);
 }
 
 int MatchOK(int n)
@@ -981,7 +998,7 @@ Option soundOptions[] = {
 { 0, 1, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
-void SetColor(char *colorName, Widget box)
+void SetColor(char *colorName, Option *box)
 {
 	Arg args[5];
 	Pixel buttonColor;
@@ -997,16 +1014,13 @@ void SetColor(char *colorName, Widget box)
 	    }
 	} else buttonColor = (Pixel) 0;
 	XtSetArg(args[0], XtNbackground, buttonColor);;
-	XtSetValues(box, args, 1);
+	XtSetValues(box->handle, args, 1);
 }
 
 void SetColorText(int n, char *buf)
 {
-    Arg args[5];
-    XtSetArg(args[0], XtNstring, buf);
-    XtSetValues(currentOption[n-1].handle, args, 1);
-    SetFocus(currentOption[n-1].handle, shells[0], NULL, False);
-    SetColor(buf, currentOption[n].handle);
+    SetWidgetText(&currentOption[n-1], buf, 0);
+    SetColor(buf, &currentOption[n]);
 }
 
 void DefColor(int n)
@@ -1019,8 +1033,7 @@ void RefreshColor(int source, int n)
     int col, j, r, g, b, step = 10;
     char *s, buf[MSG_SIZ]; // color string
     Arg args[5];
-    XtSetArg(args[0], XtNstring, &s);
-    XtGetValues(currentOption[source].handle, args, 1);
+    GetWidgetText(&currentOption[source], &s);
     if(sscanf(s, "#%x", &col) != 1) return;   // malformed
     b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
     switch(n) {
@@ -1409,12 +1422,12 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	    option[i].handle = (void*)
 		(dialog = last = XtCreateManagedWidget(option[i].name, commandWidgetClass, form, args, j));
 	    if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) {
-		SetColor( *(char**) option[i-1].target, last);
+		SetColor( *(char**) option[i-1].target, &option[i]);
 		XtAddEventHandler(option[i-1].handle, KeyReleaseMask, False, ColorChanged, (XtPointer)(intptr_t) i-1);
 	    }
 	    XtAddCallback(last, XtNcallback, GenericCallback,
 			  (XtPointer)(intptr_t) i + (dlgNr<<16));
-	    if(option[i].textValue) SetColor( option[i].textValue, last);
+	    if(option[i].textValue) SetColor( option[i].textValue, &option[i]);
 	    forelast = lastrow; // next button can go on same row
 	    break;
 	  case ComboBox:
@@ -1742,9 +1755,7 @@ int NewComCallback(int n)
 
 void SaveChanges(int n)
 {
-    Arg args[16];
-    XtSetArg(args[0], XtNstring, &commentText);
-    XtGetValues(currentOption[0].handle, args, 1);
+    GetWidgetText(&currentOption[0], &commentText);
     ReplaceComment(commentIndex, commentText);
 }
 
@@ -1769,8 +1780,7 @@ void NewCommentPopup(char *title, char *text, int index)
     if(shells[1]) { // if already exists, alter title and content
 	XtSetArg(args[0], XtNtitle, title);
 	XtSetValues(shells[1], args, 1);
-	XtSetArg(args[0], XtNstring, text);
-	XtSetValues(commentOptions[0].handle, args, 1);
+	SetWidgetText(&commentOptions[0], text, 1);
     }
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
@@ -1789,9 +1799,7 @@ int NewTagsCallback(int n)
 
 void changeTags(int n)
 {
-    Arg args[16];
-    XtSetArg(args[0], XtNstring, &tagsText);
-    XtGetValues(currentOption[1].handle, args, 1);
+    GetWidgetText(&currentOption[1], &tagsText);
     if(bookUp) SaveToBook(tagsText); else
     ReplaceTags(tagsText, &gameInfo);
 }
@@ -1810,8 +1818,7 @@ void NewTagsPopup(char *text, char *msg)
     char *title = bookUp ? _("Edit book") : _("Tags");
 
     if(shells[2]) { // if already exists, alter title and content
-	XtSetArg(args[0], XtNstring, text);
-	XtSetValues(tagsOptions[1].handle, args, 1);
+	SetWidgetText(&tagsOptions[1], text, 2);
 	XtSetArg(args[0], XtNtitle, title);
 	XtSetValues(shells[2], args, 1);
     }
@@ -1834,13 +1841,11 @@ void PutText(char *text, int pos)
     char buf[MSG_SIZ], *p;
 
     if(strstr(text, "$add ") == text) {
-	XtSetArg(args[0], XtNstring, &p);
-	XtGetValues(boxOptions[0].handle, args, 1);
+	GetWidgetText(&boxOptions[0], &p);
 	snprintf(buf, MSG_SIZ, "%s%s", p, text+5); text = buf;
 	pos += strlen(p) - 5;
     }
-    XtSetArg(args[0], XtNstring, text);
-    XtSetValues(boxOptions[0].handle, args, 1);
+    SetWidgetText(&boxOptions[0], text, 4);
     XtSetArg(args[0], XtNinsertPosition, pos);
     XtSetValues(boxOptions[0].handle, args, 1);
 //    SetFocus(boxOptions[0].handle, shells[4], NULL, False); // No idea why this does not work, and the following is needed:
@@ -1864,8 +1869,7 @@ void TypeInProc(w, event, prms, nprms)
     String val;
 
     if(prms[0][0] == '1') {
-	XtSetArg(args[0], XtNstring, &val);
-	XtGetValues(boxOptions[0].handle, args, 1);
+	GetWidgetText(&boxOptions[0], &val);
 	TypeInDoneEvent((char*)val);
     }
     PopDown(0);
@@ -1982,7 +1986,7 @@ int ShuffleOK(int n)
 
 Option shuffleOptions[] = {
 {   0,  0,   50, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, "shuffle" },
-{ 0,-1,1000000000, NULL, (void*) &appData.defaultFrcPosition, "", NULL, Spin, N_("Start-position number:") },
+{ 0,-1,2000000000, NULL, (void*) &appData.defaultFrcPosition, "", NULL, Spin, N_("Start-position number:") },
 {   0,  0,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, "randomize" },
 {   0,  1,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, "pick fixed" },
 {   0,  1,    0, NULL, (void*) &ShuffleOK, "", NULL, EndMark , "" }
@@ -1990,14 +1994,12 @@ Option shuffleOptions[] = {
 
 void SetRandom(int n)
 {
-    int r = n==2 ? -1 : rand();
+    int r = n==2 ? -1 : rand() & (1<<30)-1;
     char buf[MSG_SIZ];
     Arg args[2];
     snprintf(buf, MSG_SIZ,  "%d", r);
-    XtSetArg(args[0],XtNstring, buf);
-    XtSetValues(shuffleOptions[1].handle, args, 1);
-    XtSetArg(args[0],XtNstate, True);
-    XtSetValues(shuffleOptions[0].handle, args, 1);
+    SetWidgetText(&shuffleOptions[1], buf, 0);
+    SetWidgetState(&shuffleOptions[0], True);
 }
 
 void ShuffleMenuProc(w, event, prms, nprms)
