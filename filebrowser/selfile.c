@@ -74,10 +74,10 @@ extern char *getwd();
 int SFstatus = SEL_FILE_NULL;
 
 char
-	SFstartDir[MAXPATHLEN],
-	SFcurrentPath[MAXPATHLEN],
-	SFlastPath[MAXPATHLEN],
-	SFcurrentDir[MAXPATHLEN];
+	SFstartDir[MAXPATHLEN+1],
+	SFcurrentPath[MAXPATHLEN+1],
+	SFlastPath[MAXPATHLEN+1],
+	SFcurrentDir[MAXPATHLEN+1];
 
 Widget
 	selFile,
@@ -127,9 +127,9 @@ XtAppContext SFapp;
 
 int SFpathScrollWidth, SFvScrollHeight, SFhScrollWidth;
 
-char SFtextBuffer[MAXPATHLEN];
+char SFtextBuffer[MAXPATHLEN+1];
 
-char SFfilterBuffer[MAXPATHLEN];
+char SFfilterBuffer[MAXPATHLEN+1];
 
 XtIntervalId SFdirModTimerId;
 
@@ -383,7 +383,6 @@ SFcreateWidgets(toplevel, prompt, ok, cancel)
 	XtSetArg(arglist[i], XtNeditType, XawtextEdit);			i++;
 	XtSetArg(arglist[i], XtNwrap, XawtextWrapWord);			i++;
 	XtSetArg(arglist[i], XtNresize, XawtextResizeHeight);		i++;
-	XtSetArg(arglist[i], XtNuseStringInPlace, True);		i++;
 	selFileField = XtCreateManagedWidget("selFileField",
 		asciiTextWidgetClass, selFileForm, arglist, i);
 
@@ -679,8 +678,35 @@ SFopenFile(name, mode, prompt, failed)
 }
 
 void
+SFupdateTextBuffer()
+{
+	Arg arglist[2];
+	int i;
+	char *v;
+
+	i = 0;
+	XtSetArg(arglist[i], XtNstring, &v);  i++;
+	XtGetValues(selFileField, arglist, i);
+	strncpy(SFtextBuffer, v, MAXPATHLEN);
+}
+
+void
+SFsetText(path)
+	char	*path;
+{
+	Arg arglist[2];
+	int i;
+
+	i = 0;
+	XtSetArg(arglist[i], XtNstring, path);  i++;
+	XtSetValues(selFileField, arglist, i);
+	XawTextSetInsertionPoint(selFileField, strlen(path));
+}
+
+void
 SFtextChanged()
 {
+	SFupdateTextBuffer();
 
 	if ((SFtextBuffer[0] == '/') || (SFtextBuffer[0] == '~')) {
 	  (void) strncpy(SFcurrentPath, SFtextBuffer, MAXPATHLEN);
@@ -786,6 +812,7 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 	XtSetValues(filterField, arglist, i);
 
 	strncpy(SFfilterBuffer, filter, MAXPATHLEN-1);
+	SFupdateTextBuffer();
 	strncpy(SFlastPath, SFtextBuffer, MAXPATHLEN-1); // remember for cancel
 
 	SFpositionWidget(selFile);
@@ -861,4 +888,5 @@ XsraSelFile(toplevel, prompt, ok, cancel, failed,
 			break;
 		}
 	}
+
 }

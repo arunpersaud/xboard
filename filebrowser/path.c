@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h> /* for qsort */
-#include "../config.h"
+#include "config.h"
 
 #ifdef SEL_FILE_IGNORE_CASE
 #include <ctype.h>
@@ -181,23 +181,6 @@ SFstrncmp(p, q, n)
 	return c1 - c2;
 }
 #endif /* def SEL_FILE_IGNORE_CASE */
-
-void
-SFsetText(path)
-	char	*path;
-{
-	XawTextBlock	text;
-
-	text.firstPos = 0;
-	text.length = strlen(path);
-	text.ptr = path;
-	text.format = FMT8BIT;
-
-	XawTextReplace(selFileField, 0, strlen(SFtextBuffer), &text);
-	XawTextSetInsertionPoint(selFileField, strlen(SFtextBuffer));
-
-	return;
-}
 
 static void
 SFreplaceText(dir, str)

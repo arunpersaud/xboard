@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h> /* for qsort */
-#include "../config.h" /* to check for dirent.h */
+#include "config.h" /* to check for dirent.h */
 
 #ifdef SEL_FILE_IGNORE_CASE
 #include <ctype.h>

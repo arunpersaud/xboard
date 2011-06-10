@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include "xstat.h"
 #include "selfile.h"
+#include "config.h"
 #include <X11/StringDefs.h>
 #include <X11/Xaw/Scrollbar.h>
 #include <X11/Xaw/Cardinals.h>
@@ -53,7 +54,11 @@ static XtResource textResources[] = {
 		XtOffset(textPtr, fontname), XtRString, SF_DEFAULT_FONT},
 };
 
+#if ENABLE_NLS
+extern XFontSet fontSet; //XXX should really be in a .h file
+#else
 static XFontStruct *SFfont;
+#endif
 
 static int SFcurrentListY;
 
@@ -62,6 +67,12 @@ static XtIntervalId SFscrollTimerId;
 void
 SFinitFont()
 {
+#if ENABLE_NLS
+	XFontSetExtents *fse = XExtentsOfFontSet(fontSet);
+	SFcharWidth = fse->max_logical_extent.width;
+	SFcharAscent = -fse->max_logical_extent.y;
+	SFcharHeight = fse->max_logical_extent.height;
+#else
 	TextData	*data;
 
 	data = XtNew(TextData);
@@ -85,6 +96,7 @@ SFinitFont()
 	SFcharWidth = (SFfont->max_bounds.width + SFfont->min_bounds.width) / 2;
 	SFcharAscent = SFfont->max_bounds.ascent;
 	SFcharHeight = SFcharAscent + SFfont->max_bounds.descent;
+#endif
 	return;
 }
 
@@ -125,7 +137,9 @@ SFcreateGC()
 
 	gcValues.foreground = SFfore;
 	gcValues.background = SFback;
+#if !ENABLE_NLS
 	gcValues.font = SFfont->fid;
+#endif
 
 	SFtextGC = XCreateGC(
 		SFdisplay,
@@ -133,7 +147,9 @@ SFcreateGC()
 		(unsigned long)
 			GCForeground		|
 			GCBackground		|
+#if !ENABLE_NLS
 			GCFont			|
+#endif
 			0,
 		&gcValues
 	);
@@ -355,6 +371,18 @@ SFdrawStrings(w, dir, from, to)
 				continue;
 			}
 		}
+#if ENABLE_NLS
+		XmbDrawImageString(
+			SFdisplay,
+			w,
+			fontSet,
+			SFtextGC,
+			x,
+			SFtextYoffset + i * SFentryHeight,
+			entry->shown,
+			strlen(entry->shown)
+		);
+#else
 		XDrawImageString(
 			SFdisplay,
 			w,
@@ -364,6 +392,7 @@ SFdrawStrings(w, dir, from, to)
 			entry->shown,
 			strlen(entry->shown)
 		);
+#endif
 		if (dir->vOrigin + i == dir->beginSelection) {
 			XDrawLine(
 				SFdisplay,
@@ -419,6 +448,18 @@ SFdrawList(n, doScroll)
 	if (SFdirPtr + (3-NR) + n < SFdirEnd) {
 		dir = &(SFdirs[SFdirPtr + n + (3-NR)]);
 		w = XtWindow(selFileLists[n]);
+#if ENABLE_NLS
+		XmbDrawImageString(
+			SFdisplay,
+			w,
+			fontSet,
+			SFtextGC,
+			SFtextX - dir->hOrigin * SFcharWidth,
+			SFlineToTextV + SFaboveAndBelowText + SFcharAscent,
+			dir->dir,
+			strlen(dir->dir)
+		);
+#else
 		XDrawImageString(
 			SFdisplay,
 			w,
@@ -428,6 +469,7 @@ SFdrawList(n, doScroll)
 			dir->dir,
 			strlen(dir->dir)
 		);
+#endif
 		SFdrawStrings(w, dir, 0, SFlistSize - 1);
 	}
 	return;
