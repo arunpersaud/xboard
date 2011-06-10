@@ -104,132 +104,6 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
     previous = w;
 }
 
-//--------------------------- New Shuffle Game --------------------------------------------
-int shuffleUp;
-Widget shuffleShell;
-
-void ShufflePopDown()
-{
-    if (!shuffleUp) return;
-    XtPopdown(shuffleShell);
-    XtDestroyWidget(shuffleShell);
-    shuffleUp = False;
-    ModeHighlight();
-}
-
-void ShuffleCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Widget w2;
-    Arg args[16];
-    char buf[MSG_SIZ];
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("cancel")) == 0) {
-        ShufflePopDown();
-        return;
-    }
-    if (strcmp(name, _("off")) == 0) {
-        ShufflePopDown();
-	shuffleOpenings = False; // [HGM] should be moved to New Variant menu, once we have it!
-	ResetGameEvent();
-        return;
-    }
-    if (strcmp(name, _("random")) == 0) {
-      snprintf(buf, MSG_SIZ,  "%d", rand());
-	XtSetArg(args[0],XtNvalue, buf); // erase bad (non-numeric) value
-	XtSetValues(XtParent(w), args, 1);
-        return;
-    }
-    if (strcmp(name, _("ok")) == 0) {
-	int nr; String name;
-        name = XawDialogGetValueString(w2 = XtParent(w));
-	if(sscanf(name ,"%d",&nr) != 1) {
-	  snprintf(buf, MSG_SIZ,  "%d", appData.defaultFrcPosition);
-	    XtSetArg(args[0],XtNvalue, buf); // erase bad (non-numeric) value
-	    XtSetValues(w2, args, 1);
-	    return;
-	}
-	appData.defaultFrcPosition = nr;
-	shuffleOpenings = True;
-        ShufflePopDown();
-	ResetGameEvent();
-        return;
-    }
-}
-
-void ShufflePopUp()
-{
-    Arg args[16];
-    Widget popup, layout, dialog, edit;
-    Window root, child;
-    int x, y, i;
-    int win_x, win_y;
-    unsigned int mask;
-    char def[MSG_SIZ];
-
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    shuffleShell = popup =
-      XtCreatePopupShell(_("New Shuffle Game"), transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    snprintf(def, MSG_SIZ,  "%d\n", appData.defaultFrcPosition);
-    i = 0;
-    XtSetArg(args[i], XtNlabel, _("Start-position number:")); i++;
-    XtSetArg(args[i], XtNvalue, def); i++;
-    XtSetArg(args[i], XtNborderWidth, 0); i++;
-    dialog = XtCreateManagedWidget(_("Shuffle"), dialogWidgetClass,
-				   layout, args, i);
-
-//    XtSetArg(args[0], XtNeditType, XawtextEdit);  // [HGM] can't get edit to work decently
-//    XtSetArg(args[1], XtNuseStringInPlace, False);
-//    XtSetValues(dialog, args, 2);
-
-    XawDialogAddButton(dialog, _("ok"), ShuffleCallback, (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("cancel"), ShuffleCallback, (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("random"), ShuffleCallback, (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("off"), ShuffleCallback, (XtPointer) dialog);
-
-    XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "ShufflePopDown");
-
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, XtGrabExclusive);
-    shuffleUp = True;
-
-    edit = XtNameToWidget(dialog, "*value");
-
-    XtSetKeyboardFocus(popup, edit);
-}
-
-void ShuffleMenuProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-//    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
-//	Reset(FALSE, TRUE);
-//    }
-    ShufflePopUp();
-}
-
 //--------------------------- Time-Control Menu Popup ----------------------------------
 int TimeControlUp;
 Widget TimeControlShell;
@@ -2096,6 +1970,43 @@ void EditBookProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     EditBookEvent();
+}
+
+void SetRandom P((int n));
+
+int ShuffleOK(int n)
+{
+    ResetGameEvent();
+    return 1;
+}
+
+Option shuffleOptions[] = {
+{   0,  0,   50, NULL, (void*) &shuffleOpenings, NULL, NULL, CheckBox, "shuffle" },
+{ 0,-1,1000000000, NULL, (void*) &appData.defaultFrcPosition, "", NULL, Spin, N_("Start-position number:") },
+{   0,  0,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, "randomize" },
+{   0,  1,    0, NULL, (void*) &SetRandom, NULL, NULL, Button, "pick fixed" },
+{   0,  1,    0, NULL, (void*) &ShuffleOK, "", NULL, EndMark , "" }
+};
+
+void SetRandom(int n)
+{
+    int r = n==2 ? -1 : rand();
+    char buf[MSG_SIZ];
+    Arg args[2];
+    snprintf(buf, MSG_SIZ,  "%d", r);
+    XtSetArg(args[0],XtNstring, buf);
+    XtSetValues(shuffleOptions[1].handle, args, 1);
+    XtSetArg(args[0],XtNstate, True);
+    XtSetValues(shuffleOptions[0].handle, args, 1);
+}
+
+void ShuffleMenuProc(w, event, prms, nprms)
+     Widget w;
+     XEvent *event;
+     String *prms;
+     Cardinal *nprms;
+{
+    GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
