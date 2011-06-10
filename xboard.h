@@ -157,7 +157,6 @@ extern Pixel timerForegroundPixel, timerBackgroundPixel;
 extern int searchTime;
 extern Atom wm_delete_window;
 extern int squareSize, lineGap, defaultLineGap, useImages, useImageSqs;
-extern int shuffleOpenings;
 extern int startedFromPositionFile;
 extern char *icsTextMenuString;
 extern char ICSInputTranslations[];

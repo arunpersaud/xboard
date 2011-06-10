@@ -493,7 +493,7 @@ int   nrCastlingRights; // For TwoKings, or to implement castling-unknown status
 int   initialRulePlies, FENrulePlies;
 FILE  *serverMoves = NULL; // next two for broadcasting (/serverMoves option)
 int loadFlag = 0;
-int shuffleOpenings;
+Boolean shuffleOpenings;
 int mute; // mute all sounds
 
 // [HGM] vari: next 12 to save and restore variations
