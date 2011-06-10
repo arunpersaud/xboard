@@ -401,7 +401,7 @@ typedef struct {
 } ChessProgramStats;
 
 extern ChessProgramStats_Move pvInfoList[MAX_MOVES];
-extern int shuffleOpenings;
+extern Boolean shuffleOpenings;
 extern ChessProgramStats programStats;
 extern int opponentKibitzes; // used by wengineo.c
 extern int errorExitStatus;
