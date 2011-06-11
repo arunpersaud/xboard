@@ -245,6 +245,9 @@ typedef struct {
     MenuItem *mi;
 } Menu;
 
+/* will the file chooser dialog be used for opening or saving? */
+typedef enum {OPEN, SAVE} FileAction;
+
 int main P((int argc, char **argv));
 FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
 		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
@@ -302,7 +305,7 @@ void CommentPopDown P((void));
 void ICSInputBoxPopUp P((void));
 void ICSInputBoxPopDown P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
-		      FileProc proc, char *openMode));
+		      FileProc proc, char *openMode, FileAction action));
 void FileNameCallback P((Widget w, XtPointer client_data,
 			 XtPointer call_data));
 void FileNameAction P((Widget w, XEvent *event,
@@ -2700,22 +2703,16 @@ XBoard square size (hint): %d\n\
       XEvent event;
       XtInputMask mask;
 
-
-      //from http://webcache.googleusercontent.com/search?q=cache:bxvBe4k9I8YJ:www.phy.bnl.gov/~bviren/dayabay/offline/external-trunk/OpenMotif/openmotif-2.3.0/lib/Xm/CutPaste.c+XtAppNextEvent+non+blocking&cd=6&hl=en&ct=clnk&gl=us&client=firefox-a&source=www.google.com
-
       while (!(mask = XtAppPending(appContext)))
-        ;  /* Busy waiting - so that we don't lose our lock */
-      if (mask & XtIMXEvent) { /* We have an XEvent */
-        /* Get the event since we know its there.
-         * Note that XtAppNextEvent would also process
-         * timers/alternate inputs.
-         */
+	usleep(50);
+      if (mask & XtIMXEvent) {
         XtAppNextEvent(appContext, &event); /* no blocking */
         XtDispatchEvent(&event); /* Process it */
       }
       else /* not an XEvent, process it */
         XtAppProcessEvent(appContext, mask); /* non blocking */
 
+      /* check for GTK events and process them */
       gtk_main_iteration_do(FALSE);
     } while(XtAppGetExitFlag(appContext) == FALSE);
 
@@ -5020,12 +5017,13 @@ void CommentPopDown()
     PopDown(1);
 }
 
-void FileNamePopUp(label, def, filter, proc, openMode)
+void FileNamePopUp(label, def, filter, proc, openMode, action)
      char *label;
      char *def;
      char *filter;
      FileProc proc;
      char *openMode;
+     FileAction action;
 {
   /* TODO:
    *   implement look for certain file types
@@ -5033,13 +5031,61 @@ void FileNamePopUp(label, def, filter, proc, openMode)
    */
 
   GtkWidget *dialog;
+  GtkFileFilter *gtkfilter;
+  GtkFileFilter *gtkfilter_all;
+  char space[] = " ";
+  char fileext[10]="";
+  char *result = NULL;
+  char *cp;
 
-  dialog = gtk_file_chooser_dialog_new (label,
-                                        NULL,
-                                        GTK_FILE_CHOOSER_ACTION_OPEN,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-                                        NULL);
+  /* make a copy of the filter string, so that strtok can work with it*/
+  cp = strndup(filter,strlen(filter));
+
+  /* add filters for file extensions */
+  gtkfilter = gtk_file_filter_new();
+  gtkfilter_all = gtk_file_filter_new();
+
+  /* one filter to show everything */
+  gtk_file_filter_add_pattern(gtkfilter_all, "*.*");
+  gtk_file_filter_set_name (gtkfilter_all, "All Files");
+
+  /* add filter if present */
+  result = strtok(cp, space);
+  while( result != NULL  ) {
+    snprintf(fileext,10,"*%s",result);
+    result = strtok( NULL, space );
+  };
+
+  /* second filter to only show what's useful */
+  gtk_file_filter_set_name (gtkfilter,filter);
+
+
+  if (action==OPEN)
+    {
+      dialog = gtk_file_chooser_dialog_new (label,
+					    NULL,
+					    GTK_FILE_CHOOSER_ACTION_OPEN,
+					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					    NULL);
+    }
+  else
+    {
+      dialog = gtk_file_chooser_dialog_new (label,
+					    NULL,
+					    GTK_FILE_CHOOSER_ACTION_SAVE,
+					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					    GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+					    NULL);
+      gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER (dialog),TRUE);
+    }
+
+  /* add filters */
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter_all);
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+  /* activate filter */
+  gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
     {
       char *filename;
@@ -5064,6 +5110,7 @@ void FileNamePopUp(label, def, filter, proc, openMode)
   gtk_widget_destroy (dialog);
   ModeHighlight();
 
+  free(cp);
   return;
 
 }
@@ -5521,7 +5568,7 @@ void LoadGameProc(w, event, prms, nprms)
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb");
+    FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb", OPEN);
 }
 
 void LoadNextGameProc(w, event, prms, nprms)
@@ -5587,7 +5634,7 @@ void LoadPositionProc(w, event, prms, nprms)
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
     }
-    FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb");
+    FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb", OPEN);
 }
 
 void SaveGameProc(w, event, prms, nprms)
@@ -5599,7 +5646,7 @@ void SaveGameProc(w, event, prms, nprms)
     FileNamePopUp(_("Save game file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
 		  appData.oldSaveStyle ? ".game" : ".pgn",
-		  SaveGame, "a");
+		  SaveGame, "a",SAVE);
 }
 
 void SavePositionProc(w, event, prms, nprms)
@@ -5611,7 +5658,7 @@ void SavePositionProc(w, event, prms, nprms)
     FileNamePopUp(_("Save position file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
 		  appData.oldSaveStyle ? ".pos" : ".fen",
-		  SavePosition, "a");
+		  SavePosition, "a",SAVE);
 }
 
 void ReloadCmailMsgProc(w, event, prms, nprms)
@@ -5978,7 +6025,7 @@ void AnalyzeFileProc(w, event, prms, nprms)
       ShowThinkingProc(w,event,prms,nprms);
 #endif
     AnalyzeFileEvent();
-    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
+    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb",OPEN);
     AnalysisPeriodicEvent(1);
 }
 
