@@ -34,10 +34,13 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@
 
+gladedir = $(datadir)/glade
+glade_DATA =  gtk/evalgraph.glade
+
 EXTRA_DIST = pixmaps bitmaps sounds winboard filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
-	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS
+	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS $(glade_DATA)
 
 DISTCLEANFILES = stamp-h
 
