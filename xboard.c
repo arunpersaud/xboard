@@ -2702,9 +2702,10 @@ XBoard square size (hint): %d\n\
     do {
       XEvent event;
       XtInputMask mask;
+      int i;
 
       while (!(mask = XtAppPending(appContext)))
-	usleep(50);
+	usleep(10);
       if (mask & XtIMXEvent) {
         XtAppNextEvent(appContext, &event); /* no blocking */
         XtDispatchEvent(&event); /* Process it */
@@ -2713,7 +2714,8 @@ XBoard square size (hint): %d\n\
         XtAppProcessEvent(appContext, mask); /* non blocking */
 
       /* check for GTK events and process them */
-      gtk_main_iteration_do(FALSE);
+      for (i=0;i<10;i++)
+	gtk_main_iteration_do(FALSE);
     } while(XtAppGetExitFlag(appContext) == FALSE);
 
     if (appData.debugMode) fclose(debugFP); // [DM] debug
