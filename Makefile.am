@@ -34,7 +34,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@
 
-gladedir = $(datadir)/glade
+gladedir = $(datadir)/games/xboard/ui
 glade_DATA =  gtk/evalgraph.glade
 
 EXTRA_DIST = pixmaps bitmaps sounds winboard filebrowser/README \
@@ -46,6 +46,7 @@ DISTCLEANFILES = stamp-h
 
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
 	    -DBITMAPDIR='"$(datadir)/games/xboard/bitmaps/default"' \
+	    -DGLADEDIR='"$(gladedir)"' \
 	    -DLOCALEDIR='"$(localedir)"'  @GTK_CFLAGS@
 
 ACLOCAL_AMFLAGS = -I m4

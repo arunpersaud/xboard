@@ -36,6 +36,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <glib.h>
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
@@ -231,7 +232,7 @@ gboolean EvalGraphEventProc(widget, event)
   int index;
   gdouble x,y;
 
-  if (!EvalGraphIsUp()) return;
+  if (!EvalGraphIsUp()) return FALSE;
 
   switch(event->type)
     {
@@ -262,6 +263,8 @@ gboolean EvalGraphEventProc(widget, event)
 	ToNrEvent( index + 1 );
       }
       break;
+    default:
+      break;
     };
 
   return FALSE;
@@ -271,14 +274,33 @@ gboolean EvalGraphEventProc(widget, event)
 void EvalGraphCreate()
 {
   GtkBuilder *builder=NULL;
+  char *filename;
 
   Arg args[16];
   Dimension bw_width, bw_height;
   int j;
 
+
+
   builder = gtk_builder_new ();
   GError *gtkerror=NULL;
-  if(!gtk_builder_add_from_file (builder, "gtk/evalgraph.glade", &gtkerror))
+
+  /* try opening the ui file either in the current directory or in the installed directory */
+  filename = g_build_filename ("gtk/evalgraph.glade", NULL);
+  if (g_file_test (filename, G_FILE_TEST_EXISTS) == FALSE)
+    {
+      g_free(filename);
+
+      filename = g_build_filename (GLADEDIR,"evalgraph.glade", NULL);
+      if (g_file_test (filename, G_FILE_TEST_EXISTS) == FALSE)
+	{
+	  g_free(filename);
+	  printf ("Error: can not find ui-file for evalgraph\n");
+	  return;
+	}
+    }
+
+  if(! gtk_builder_add_from_file (builder, filename, &gtkerror) )
     {
       if(gtkerror)
 	printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
@@ -332,7 +354,6 @@ void
 EvalGraphPopUp()
 {
   static int  needInit = TRUE;
-  int w, h, posx, posy;
 
   if (GUI_EvalGraph == NULL)
     EvalGraphCreate();
