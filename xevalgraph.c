@@ -257,7 +257,6 @@ gboolean EvalGraphEventProc(widget, event)
       y = ((GdkEventButton*)event)->y;
 
       index = GetMoveIndexFromPoint( x,y );
-      printf ("DEBUG: button pressed at %f %f\n",x,y);
 
       if( index >= 0 && index < currLast ) {
 	ToNrEvent( index + 1 );
