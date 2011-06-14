@@ -85,6 +85,7 @@ typedef struct {
 typedef struct {
   char* name;
   void* data;
+  int flag; // [HGM] needed to indicate if data was malloc'ed or not
 } MySound;
 
 typedef struct {
