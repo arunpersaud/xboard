@@ -711,7 +711,7 @@ ArgDescriptor argDescriptorIndirection =
 { "", ArgSettingsFilename, (void *) NULL, FALSE };
 
 void
-ExitArgError(char *msg, char *badArg)
+ExitArgError(char *msg, char *badArg, Boolean quit)
 {
   char buf[MSG_SIZ];
   int len;
@@ -720,6 +720,7 @@ ExitArgError(char *msg, char *badArg)
   if( (len > MSG_SIZ) && appData.debugMode )
     fprintf(debugFP, "ExitArgError: buffer truncated. Input: msg=%s badArg=%s\n", msg, badArg);
 
+  if(!quit) { printf("%s in settings file\n", buf); return; } // DisplayError does not work yet at this stage...
   DisplayFatalError(buf, 0, 2);
   exit(2);
 }
@@ -729,7 +730,7 @@ ValidateInt(char *s)
 {
   char *p = s;
   if(*p == '-' || *p == '+') p++;
-  while(*p) if(!isdigit(*p++)) ExitArgError("Bad integer value", s);
+  while(*p) if(!isdigit(*p++)) ExitArgError("Bad integer value", s, TRUE);
   return atoi(s);
 }
 
@@ -821,9 +822,11 @@ ParseArgs(GetFunc get, void *cl)
       for (ad = argDescriptors; ad->argName != NULL; ad++)
 	if (strcmp(ad->argName, argName + 1) == 0) break;
 
-      if (ad->argName == NULL)
-	ExitArgError("Unrecognized argument", argName);
-
+      if (ad->argName == NULL) {
+	ExitArgError("Unrecognized argument", argName, get != &FileGet); // [HGM] make unknown argument non-fatal
+	while (ch != '\n' && ch != NULLCHAR) ch = get(cl); // but skip rest of line it is on
+	continue; // so that when it is in a settings file, it is the only setting that will be purged from it
+      }
     } else if (ch == '@') {
       /* Indirection file */
       ad = &argDescriptorIndirection;
@@ -845,7 +848,7 @@ ParseArgs(GetFunc get, void *cl)
 
     while (ch == ' ' || ch == '=' || ch == ':' || ch == '\t') ch = get(cl);
     if (ch == NULLCHAR || ch == '\n') {
-      ExitArgError("No value provided for argument", argName);
+      ExitArgError("No value provided for argument", argName, TRUE);
     }
     q = argValue;
     if (ch == '{') {
@@ -905,7 +908,7 @@ ParseArgs(GetFunc get, void *cl)
 	  ch = get(cl);
 	  switch (ch) {
 	  case NULLCHAR:
-	    ExitArgError("Incomplete \\ escape in value for", argName);
+	    ExitArgError("Incomplete \\ escape in value for", argName, TRUE);
 	    break;
 	  case 'n':
 	    *q++ = '\n';
@@ -989,7 +992,7 @@ ParseArgs(GetFunc get, void *cl)
 	} else {
 	  if (ad->argLoc != NULL) {
 	  } else {
-	    ExitArgError("Failed to open indirection file", argValue);
+	    ExitArgError("Failed to open indirection file", argValue, TRUE);
 	  }
 	}
       }
@@ -1006,7 +1009,7 @@ ParseArgs(GetFunc get, void *cl)
 	*(Boolean *) ad->argLoc = FALSE;
 	break;
       default:
-	ExitArgError("Unrecognized boolean argument value", argValue);
+	ExitArgError("Unrecognized boolean argument value", argValue, TRUE);
 	break;
       }
       break;
@@ -1034,7 +1037,7 @@ ParseArgs(GetFunc get, void *cl)
       break;
 
     case ArgNone:
-      ExitArgError("Unrecognized argument", argValue);
+      ExitArgError("Unrecognized argument", argValue, TRUE);
       break;
     case ArgTrue:
     case ArgFalse: ;
