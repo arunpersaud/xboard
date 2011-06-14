@@ -1629,7 +1629,7 @@ ConvertToLine(int argc, char **argv)
   line[0] = NULLCHAR;
   for(i=1; i<argc; i++)
     {
-      if( (strchr(argv[i], ' ') || strchr(argv[i], '\n') ||strchr(argv[i], '\t') )
+      if( (strchr(argv[i], ' ') || strchr(argv[i], '\n') ||strchr(argv[i], '\t') || argv[i][0] == NULLCHAR)
 	  && argv[i][0] != '{' )
 	snprintf(buf, sizeof(buf)/sizeof(buf[0]), "{%s} ", argv[i]);
       else
