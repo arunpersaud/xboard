@@ -217,7 +217,7 @@ ArgDescriptor argDescriptors[] = {
   { "sweepPromotions", ArgBoolean, (void *) &appData.sweepSelect, TRUE, (ArgIniType) FALSE },
   { "remoteShell", ArgFilename, (void *) &appData.remoteShell, FALSE, (ArgIniType) REMOTE_SHELL },
   { "rsh", ArgFilename, (void *) &appData.remoteShell, FALSE, INVALID },
-  { "remoteUser", ArgString, (void *) &appData.remoteUser, FALSE, INVALID },
+  { "remoteUser", ArgString, (void *) &appData.remoteUser, FALSE, (ArgIniType) "" },
   { "ruser", ArgString, (void *) &appData.remoteUser, FALSE, INVALID },
   { "timeDelay", ArgFloat, (void *) &appData.timeDelay, TRUE, INVALID },
   { "td", ArgFloat, (void *) &appData.timeDelay, FALSE, INVALID },
