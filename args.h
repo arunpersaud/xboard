@@ -564,9 +564,8 @@ ArgDescriptor argDescriptors[] = {
   { "userFileDirectory", ArgFilename, (void *) &homeDir, FALSE, (ArgIniType) installDir },
 
   // [HGM] tournament options
-  { "tourney", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },
+  { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },
   { "tf", ArgFilename, (void *) &appData.tourneyFile, FALSE, INVALID },
-  { "processes", ArgString, (void *) &appData.processes, FALSE, (ArgIniType) "        " },
   { "participants", ArgString, (void *) &appData.participants, FALSE, (ArgIniType) "" },
   { "tourneyType", ArgInt, (void *) &appData.tourneyType, FALSE, (ArgIniType) 0 },
   { "tt", ArgInt, (void *) &appData.tourneyType, FALSE, INVALID },
