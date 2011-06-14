@@ -5597,7 +5597,7 @@ MyLoadSound(MySound *ms)
   struct stat st;
   FILE *f;
 
-  if (ms->data) free(ms->data);
+  if (ms->data && ms->flag) free(ms->data);
   ms->data = NULL;
 
   switch (ms->name[0]) {
@@ -5618,6 +5618,7 @@ MyLoadSound(MySound *ms)
       HANDLE h = FindResource(hInst, ms->name + 1, "WAVE");
       if (h == NULL) break;
       ms->data = (void *)LoadResource(hInst, h);
+      ms->flag = 0; // not maloced, so cannot be freed!
       if (h == NULL) break;
       ok = TRUE;
     }
@@ -5628,6 +5629,7 @@ MyLoadSound(MySound *ms)
     if (f == NULL) break;
     if (fstat(fileno(f), &st) < 0) break;
     ms->data = malloc(st.st_size);
+    ms->flag = 1;
     if (fread(ms->data, st.st_size, 1, f) < 1) break;
     fclose(f);
     ok = TRUE;
