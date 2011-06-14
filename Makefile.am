@@ -35,7 +35,8 @@ SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@
 
 gladedir = $(datadir)/games/xboard/ui
-glade_DATA =  gtk/evalgraph.glade
+glade_DATA = gtk/evalgraph.glade \
+	     gtk/gamelist.glade
 
 EXTRA_DIST = pixmaps bitmaps sounds winboard filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
