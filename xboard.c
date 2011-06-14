@@ -6898,20 +6898,55 @@ void AboutProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    char buf[MSG_SIZ];
+  GtkWidget *about;
+  char buf[MSG_SIZ];
+
+  const gchar *authors[] = {
+    "Wayne Christopher",
+    "Chris Sears",
+    "Dan Sears",
+    "Tim Mann <tim@tim-mann.org>",
+    "John Chanak",
+    "Evan Welsh <Evan.Welsh@msdw.com>",
+    "Elmar Bartel <bartel@informatik.tu-muenchen.de>",
+    "Jochen Wiedmann",
+    "Frank McIngvale",
+    "Hugh Fisher <Hugh.Fisher@cs.anu.edu.au>",
+    "Allessandro Scotti",
+    "H.G. Muller <h.g.muller AT hccnet DOT nl>",
+    "Arun Persaud <arun@nubati.net>",
+    "Eric Mullins <emwine AT earthlink DOT net>",
+    NULL};
+
+  /* create about window */
+  about = gtk_about_dialog_new();
+
+  /* fill in some information */
 #if ZIPPY
-    char *zippy = " (with Zippy code)";
+  char *zippy = " (with Zippy code)";
 #else
-    char *zippy = "";
+  char *zippy = "";
 #endif
-    snprintf(buf, sizeof(buf), "%s%s\n\n%s\n%s\n%s\n\n%s%s\n%s",
-	    programVersion, zippy,
-	    "Copyright 1991 Digital Equipment Corporation",
-	    "Enhancements Copyright 1992-2009 Free Software Foundation",
-	    "Enhancements Copyright 2005 Alessandro Scotti",
-	    PACKAGE, " is free software and carries NO WARRANTY;",
-	    "see the file COPYING for more information.");
-    ErrorPopUp(_("About XBoard"), buf, FALSE);
+
+  sprintf(buf, "%s%s",  programVersion, zippy);
+
+  gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),buf);
+
+  gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about),
+                                 "Copyright 1991 Digital Equipment Corporation\n"
+                                 "Enhancements Copyright 1992-2009 Free Software Foundation\n"
+                                 "Enhancements Copyright 2005 Alessandro Scotti");
+  gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),"http://www.gnu.org/software/xboard/");
+  gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about),authors);
+  gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(about),
+					  " Translation project (http://translationproject.org)\n");
+
+  /* show widget, destroy on close */
+  gtk_widget_show_all( about );
+  gtk_dialog_run(GTK_DIALOG (about));
+  gtk_widget_destroy(about);
+
+  return;
 }
 
 void DebugProc(w, event, prms, nprms)
