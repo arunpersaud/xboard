@@ -469,6 +469,8 @@ ArgDescriptor argDescriptors[] = {
   { "comPortSettings", ArgCommSettings, (void *) /*&dcb*/ 0, TRUE, INVALID },
   { "settingsFile", ArgSettingsFilename, (void *) &settingsFileName, FALSE, (ArgIniType) SETTINGS_FILE },
   { "ini", ArgSettingsFilename, (void *) &settingsFileName, FALSE, INVALID },
+  { "at", ArgSettingsFilename, (void *) NULL, FALSE, INVALID },
+  { "opt", ArgSettingsFilename, (void *) NULL, FALSE, INVALID },
   { "saveSettingsFile", ArgFilename, (void *) &settingsFileName, FALSE, INVALID },
   { "saveSettingsOnExit", ArgBoolean, (void *) &saveSettingsOnExit, TRUE, (ArgIniType) TRUE },
   { "chessProgram", ArgBoolean, (void *) &chessProgram, FALSE, (ArgIniType) FALSE },
