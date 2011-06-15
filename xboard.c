@@ -5027,40 +5027,35 @@ void FileNamePopUp(label, def, filter, proc, openMode, action)
      char *openMode;
      FileAction action;
 {
-  /* TODO:
-   *   implement look for certain file types
-   *   use save/load button depending on what function is calling
-   */
-
-  GtkWidget *dialog;
+  GtkWidget     *dialog;
   GtkFileFilter *gtkfilter;
   GtkFileFilter *gtkfilter_all;
-  char space[] = " ";
-  char fileext[10]="";
-  char *result = NULL;
+  char space[]     = " ";
+  char fileext[10] = "";
+  char *result     = NULL;
   char *cp;
 
   /* make a copy of the filter string, so that strtok can work with it*/
   cp = strndup(filter,strlen(filter));
 
   /* add filters for file extensions */
-  gtkfilter = gtk_file_filter_new();
+  gtkfilter     = gtk_file_filter_new();
   gtkfilter_all = gtk_file_filter_new();
 
   /* one filter to show everything */
   gtk_file_filter_add_pattern(gtkfilter_all, "*.*");
-  gtk_file_filter_set_name (gtkfilter_all, "All Files");
+  gtk_file_filter_set_name   (gtkfilter_all, "All Files");
 
   /* add filter if present */
   result = strtok(cp, space);
   while( result != NULL  ) {
     snprintf(fileext,10,"*%s",result);
     result = strtok( NULL, space );
+    gtk_file_filter_add_pattern(gtkfilter, fileext);
   };
 
   /* second filter to only show what's useful */
   gtk_file_filter_set_name (gtkfilter,filter);
-
 
   if (action==OPEN)
     {
