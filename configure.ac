@@ -91,7 +91,7 @@ AC_SUBST(NROFFFLAGS)
 AC_PATH_PROGS(AWKPATH, awk mawk gawk nawk)
 AC_PATH_PROGS(PERLPATH, perl)
 
-PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.12.0 gmodule-export-2.0 ])
+PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.16.0 gmodule-export-2.0 ])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
