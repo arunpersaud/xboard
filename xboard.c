@@ -2705,7 +2705,7 @@ XBoard square size (hint): %d\n\
       int i;
 
       while (!(mask = XtAppPending(appContext)))
-	usleep(10);
+	poll(NULL,0,100);
       if (mask & XtIMXEvent) {
         XtAppNextEvent(appContext, &event); /* no blocking */
         XtDispatchEvent(&event); /* Process it */
