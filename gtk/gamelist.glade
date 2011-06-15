@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.20"/>
+  <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
-  <object class="GtkListStore" id="GameListStore">
-    <columns>
-      <!-- column-name Number -->
-      <column type="gint"/>
-      <!-- column-name Location -->
-      <column type="gchararray"/>
-      <!-- column-name White -->
-      <column type="gchararray"/>
-      <!-- column-name Black -->
-      <column type="gchararray"/>
-      <!-- column-name Result -->
-      <column type="gchararray"/>
-      <!-- column-name Date -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
   <object class="GtkWindow" id="GameList">
     <child>
       <object class="GtkVBox" id="GameListVBox">
@@ -205,5 +189,21 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkListStore" id="GameListStore">
+    <columns>
+      <!-- column-name Number -->
+      <column type="gint"/>
+      <!-- column-name Location -->
+      <column type="gchararray"/>
+      <!-- column-name White -->
+      <column type="gchararray"/>
+      <!-- column-name Black -->
+      <column type="gchararray"/>
+      <!-- column-name Result -->
+      <column type="gchararray"/>
+      <!-- column-name Date -->
+      <column type="gchararray"/>
+    </columns>
   </object>
 </interface>
