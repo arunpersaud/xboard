@@ -5074,7 +5074,7 @@ void FileNamePopUp(label, def, filter, proc, openMode, action)
 					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					    GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 					    NULL);
-      gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER (dialog),TRUE);
+      //gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER (dialog),TRUE);
     }
 
   /* add filters */
