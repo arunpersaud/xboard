@@ -1568,7 +1568,7 @@ GetWindowCoords()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
   GetActualPlacement(shellWidget, &wpMain);
-  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
+  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput);
   if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
@@ -6093,8 +6093,6 @@ void MatchProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    if(gameMode != BeginningOfGame) { DisplayError(_("You can only start a match from the initial position."), 0); return; }
-    appData.matchGames = appData.defaultMatchGames;
     MatchEvent(2);
 }
 
