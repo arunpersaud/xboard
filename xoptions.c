@@ -98,7 +98,7 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
     XtGetValues(w, args, 1);
     j = 1;
     XtSetArg(args[0], XtNdisplayCaret, True);
-    if(!strchr(s, '\n')) XtSetArg(args[1], XtNinsertPosition, strlen(s)), j++;
+    if(!strchr(s, '\n') && strlen(s) < 80) XtSetArg(args[1], XtNinsertPosition, strlen(s)), j++;
     XtSetValues(w, args, j);
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
@@ -237,7 +237,7 @@ void CreateComboPopup(parent, name, n, mb)
 
 // cloned from Engine Settings dialog (and later merged with it)
 
-extern WindowPlacement wpComment, wpTags;
+extern WindowPlacement wpComment, wpTags, wpMoveHistory;
 char *trialSound;
 static int oldCores, oldPonder;
 int MakeColors P((void));
@@ -247,7 +247,7 @@ int GenericReadout P((int selected));
 Widget shells[10];
 Widget marked[10];
 Boolean shellUp[10];
-WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags };
+WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory };
 Option *dialogOptions[10];
 
 void MarkMenu(char *item, int dlgNr)
@@ -303,13 +303,17 @@ extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
 char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
 
-void AddLine(Option *opt, char *s)
+void AppendText(Option *opt, char *s)
 {
     XawTextBlock t;
     t.ptr = s; t.firstPos = 0; t.length = strlen(s); t.format = XawFmt8Bit;
     XawTextReplace(opt->handle, 9999, 9999, &t);
-    t.ptr = "\n"; t.length = 1;
-    XawTextReplace(opt->handle, 9999, 9999, &t);
+}
+
+void AddLine(Option *opt, char *s)
+{
+    AppendText(opt, s);
+    AppendText(opt, "\n");
 }
 
 void AddToTourney(int n)
@@ -1394,10 +1398,15 @@ Option commentOptions[] = {
 {   0,  1,    0, NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
 };
 
+void ClearTextWidget(Option *opt)
+{
+    XtCallActionProc(opt->handle, "select-all", NULL, NULL, 0);
+    XtCallActionProc(opt->handle, "kill-selection", NULL, NULL, 0);
+}
+
 void ClearComment(int n)
 {
-    XtCallActionProc(commentOptions[0].handle, "select-all", NULL, NULL, 0);
-    XtCallActionProc(commentOptions[0].handle, "kill-selection", NULL, NULL, 0);
+    ClearTextWidget(&commentOptions[0]);
 }
 
 void NewCommentPopup(char *title, char *text, int index)
