@@ -225,6 +225,7 @@ void OutputKibitz(int window, char *text);
 int PerpetualChase(int first, int last);
 int EngineOutputIsUp();
 void InitDrawingSizes(int x, int y);
+void DisplayTwoMachinesTitle P(());
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -9470,6 +9471,7 @@ GameEnds(result, resultDetails, whosays)
 		     first.tidy, second.tidy,
 		     first.matchWins, second.matchWins,
 		     appData.matchGames - (first.matchWins + second.matchWins));
+	    matchGame++; DisplayTwoMachinesTitle(); // [HGM] update result in window title
 	    popupRequested++; // [HGM] crash: postpone to after resetting endingGame
 	    if (appData.firstPlaysBlack) { // [HGM] match: back to original for next match
 		first.twoMachinesColor = "black\n";
