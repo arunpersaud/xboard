@@ -120,122 +120,45 @@ char gameListTranslations[] =
 char filterTranslations[] =
   "<Key>Return: SetFilterProc() \n";
 
-typedef struct {
-    Widget shell;
-    Position x, y;
-    Dimension w, h;
-    Boolean up;
-    FILE *fp;
-    char *filename;
-    char **strings;
-} GameListClosure;
-static GameListClosure *glc = NULL;
-
-Widget
-GameListCreate(name, callback, client_data)
-     char *name;
-     XtCallbackProc callback;
-     XtPointer client_data;
-{
-    Arg args[16];
-    Widget shell, form, viewport, listwidg, layout, label;
-    Widget b_load, b_loadprev, b_loadnext, b_close, b_filter;
-    Dimension fw_width;
-    int j;
-    GameListClosure *glc = (GameListClosure *) client_data;
-
-
-    if(wpGameList.width > 0) {
-	glc->x = wpGameList.x;
-	glc->y = wpGameList.y;
-	glc->w = wpGameList.width;
-	glc->h = wpGameList.height;
-    }
-
-    if (glc->x == -1) {
-	Position y1;
-	Dimension h1;
-	int xx, yy;
-	Window junk;
-
-	j = 0;
-	XtSetArg(args[j], XtNheight, &h1); j++;
-	XtSetArg(args[j], XtNy, &y1); j++;
-	XtGetValues(boardWidget, args, j);
-	glc->w = fw_width * 3/4;
-	glc->h = squareSize * 3;
-
-	XSync(xDisplay, False);
-#ifdef NOTDEF
-	/* This code seems to tickle an X bug if it is executed too soon
-	   after xboard starts up.  The coordinates get transformed as if
-	   the main window was positioned at (0, 0).
-	*/
-	XtTranslateCoords(shellWidget, (fw_width - glc->w) / 2,
-			  y1 + (h1 - glc->h + appData.borderYoffset) / 2,
-			  &glc->x, &glc->y);
-#else /*!NOTDEF*/
-        XTranslateCoordinates(xDisplay, XtWindow(shellWidget),
-			      RootWindowOfScreen(XtScreen(shellWidget)),
-			      (fw_width - glc->w) / 2,
-			      y1 + (h1 - glc->h + appData.borderYoffset) / 2,
-			      &xx, &yy, &junk);
-	glc->x = xx;
-	glc->y = yy;
-#endif /*!NOTDEF*/
-	if (glc->y < 0) glc->y = 0; /*avoid positioning top offscreen*/
-    }
-    j = 0;
-    XtSetArg(args[j], XtNheight, glc->h);  j++;
-    XtSetArg(args[j], XtNwidth, glc->w);  j++;
-    XtSetArg(args[j], XtNx, glc->x - appData.borderXoffset);  j++;
-    XtSetArg(args[j], XtNy, glc->y - appData.borderYoffset);  j++;
-    XtSetValues(shell, args, j);
-
-    XtRealizeWidget(shell);
-    CatchDeleteWindow(shell, "GameListPopDown");
-    XtSetKeyboardFocus(shell, listwidg);
-
-    return shell;
-}
-
 static int
 GameListPrepare()
-{   // [HGM] filter: put in separate routine, to make callable from call-back
-    int nstrings;
-    ListGame *lg;
-    char **st, *line;
-
-    return;
-
-    nstrings = ((ListGame *) gameList.tailPred)->number;
-    glc->strings = (char **) malloc((nstrings + 1) * sizeof(char *));
-    st = glc->strings;
-    lg = (ListGame *) gameList.head;
-    listLength = 0;
-    while (nstrings--) {
-	line = GameListLine(lg->number, &lg->gameInfo);
-	if(filterString[0] == NULLCHAR || SearchPattern( line, filterString ) ) {
-	    *st++ = line; // [HGM] filter: make adding line conditional
-	    listLength++;
-	}
-	lg = (ListGame *) lg->node.succ;
-     }
-    *st = NULL;
-    return listLength;
-}
-
-static void
-GameListReplace()
 {
-  // filter: put in separate routine, to make callable from call-back
-  Widget listwidg;
+  int  i=0,nstrings;
+  ListGame *lg;
+  GtkTreeIter iter;
 
-  return;
+  if(LIST_GameListStore==NULL) return 0;
 
-  listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-  XawListChange(listwidg, glc->strings, 0, 0, True);
-  XawListHighlight(listwidg, 0);
+  /* first clear everything, do we need this? */
+  gtk_list_store_clear(LIST_GameListStore);
+
+  /* fill list with information */
+  lg = (ListGame *) gameList.head;
+  nstrings = ((ListGame *) gameList.tailPred)->number;
+  while (nstrings--)
+    {
+      GameInfo *gameInfo = &(lg->gameInfo);
+      char *event = (gameInfo->event && strcmp(gameInfo->event, "?") != 0) ?
+	gameInfo->event : gameInfo->site ? gameInfo->site : "?";
+      char *white = gameInfo->white ? gameInfo->white : "?";
+      char *black = gameInfo->black ? gameInfo->black : "?";
+      char *date = gameInfo->date ? gameInfo->date : "?";
+
+      gtk_list_store_append (LIST_GameListStore, &iter);
+      gtk_list_store_set (LIST_GameListStore, &iter,
+			  0, lg->number,
+//                          1, StrSave(filename),
+                          1, event,
+                          2, white,
+			  /*                          3, fp,*/
+			  3, black,
+			  4, PGNResult(gameInfo->result),
+			  5, date,
+                          -1);
+      lg = (ListGame *) lg->node.succ;
+      i++;
+    }
+  return i;
 }
 
 void
@@ -247,60 +170,59 @@ GameListCallback(w, client_data, call_data)
     Arg args[16];
     int j;
     Widget listwidg;
-    GameListClosure *glc = (GameListClosure *) client_data;
     XawListReturnStruct *rs;
     int index;
 
-    j = 0;
-    XtSetArg(args[j], XtNlabel, &name);  j++;
-    XtGetValues(w, args, j);
-
-    if (strcmp(name, _("close")) == 0) {
-	GameListPopDown();
-	return;
-    }
-    listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-    rs = XawListShowCurrent(listwidg);
-    if (strcmp(name, _("load")) == 0) {
-	index = rs->list_index;
-	if (index < 0) {
-	    DisplayError(_("No game selected"), 0);
-	    return;
-	}
-    } else if (strcmp(name, _("next")) == 0) {
-	index = rs->list_index + 1;
-	if (index >= listLength) {
-	    DisplayError(_("Can't go forward any further"), 0);
-	    return;
-	}
-	XawListHighlight(listwidg, index);
-    } else if (strcmp(name, _("prev")) == 0) {
-	index = rs->list_index - 1;
-	if (index < 0) {
-	    DisplayError(_("Can't back up any further"), 0);
-	    return;
-	}
-	XawListHighlight(listwidg, index);
-    } else if (strcmp(name, _("apply")) == 0) {
-        String name;
-        j = 0;
-        XtSetArg(args[j], XtNstring, &name);  j++;
-	XtGetValues(filterText, args, j);
-        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-	XawListHighlight(listwidg, 0);
-        if(GameListPrepare()) GameListReplace(); // crashes on empty list...
-        return;
-    }
-#if 0
-    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
-    if (cmailMsgLoaded) {
-	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
-    } else {
-	LoadGame(glc->fp, index + 1, glc->filename, True);
-    }
-#else
-    printf("This code should have been unreachable. Please report bug!\n");
-#endif
+//    j = 0;
+//    XtSetArg(args[j], XtNlabel, &name);  j++;
+//    XtGetValues(w, args, j);
+//
+//    if (strcmp(name, _("close")) == 0) {
+//	GameListPopDown();
+//	return;
+//    }
+//    listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
+//    rs = XawListShowCurrent(listwidg);
+//    if (strcmp(name, _("load")) == 0) {
+//	index = rs->list_index;
+//	if (index < 0) {
+//	    DisplayError(_("No game selected"), 0);
+//	    return;
+//	}
+//    } else if (strcmp(name, _("next")) == 0) {
+//	index = rs->list_index + 1;
+//	if (index >= listLength) {
+//	    DisplayError(_("Can't go forward any further"), 0);
+//	    return;
+//	}
+//	XawListHighlight(listwidg, index);
+//    } else if (strcmp(name, _("prev")) == 0) {
+//	index = rs->list_index - 1;
+//	if (index < 0) {
+//	    DisplayError(_("Can't back up any further"), 0);
+//	    return;
+//	}
+//	XawListHighlight(listwidg, index);
+//    } else if (strcmp(name, _("apply")) == 0) {
+//        String name;
+//        j = 0;
+//        XtSetArg(args[j], XtNstring, &name);  j++;
+//	XtGetValues(filterText, args, j);
+//        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
+//	XawListHighlight(listwidg, 0);
+//        GameListPrepare();
+//        return;
+//    }
+//#if 0
+//    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
+//    if (cmailMsgLoaded) {
+//	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
+//    } else {
+//	LoadGame(glc->fp, index + 1, glc->filename, True);
+//    }
+//#else
+//    printf("This code should have been unreachable. Please report bug!\n");
+//#endif
 }
 
 void
@@ -308,16 +230,8 @@ GameListPopUp(fp, filename)
      FILE *fp;
      char *filename;
 {
-    Arg args[16];
-    int j;
-  char **st;
-
-  GtkTreeIter iter;
-  int  i=0,nstrings;
-  ListGame *lg;
   GtkBuilder *builder=NULL;
   char *gladefilename;
-
 
   builder = gtk_builder_new ();
   GError *gtkerror=NULL;
@@ -363,79 +277,30 @@ GameListPopUp(fp, filename)
   /* make it so that only one item can be selected and is selected the whole time*/
   gtk_tree_selection_set_mode(SEL_GameList,GTK_SELECTION_BROWSE);
 
-  /* first clear everything, do we need this? */
-  gtk_list_store_clear(LIST_GameListStore);
+  gtk_window_set_title(GTK_WINDOW(GUI_GameList),filename);
 
-  /* fill list with information */
-  lg = (ListGame *) gameList.head;
-  nstrings = ((ListGame *) gameList.tailPred)->number;
-  while (nstrings--)
+  GameListPrepare();
+
+  /* set old window size and position if available */
+  if(wpGameList.width > 0)
     {
-      GameInfo *gameInfo = &(lg->gameInfo);
-      char *event = (gameInfo->event && strcmp(gameInfo->event, "?") != 0) ?
-	gameInfo->event : gameInfo->site ? gameInfo->site : "?";
-      char *white = gameInfo->white ? gameInfo->white : "?";
-      char *black = gameInfo->black ? gameInfo->black : "?";
-      char *date = gameInfo->date ? gameInfo->date : "?";
+      gtk_window_set_default_size(GTK_WINDOW(GUI_GameList), wpGameList.width, wpGameList.height);
 
-      gtk_list_store_append (LIST_GameListStore, &iter);
-      gtk_list_store_set (LIST_GameListStore, &iter,
-			  0, lg->number,
-//                          1, StrSave(filename),
-                          1, event,
-                          2, white,
-			  /*                          3, fp,*/
-			  3, black,
-			  4, PGNResult(gameInfo->result),
-			  5, date,
-                          -1);
-      lg = (ListGame *) lg->node.succ;
+      gtk_window_move   ( GTK_WINDOW(GUI_GameList), wpGameList.x, wpGameList.y);
+      gtk_window_resize ( GTK_WINDOW(GUI_GameList), wpGameList.width, wpGameList.height);
+    }
+  else
+    {
+      gtk_window_set_default_size(GTK_WINDOW(GUI_GameList), squareSize*6, squareSize*3);
+
+      gtk_window_resize ( GTK_WINDOW(GUI_GameList), squareSize*6, squareSize*3);
     }
 
   /* show widget and focus*/
   gtk_window_present(GTK_WINDOW(GUI_GameList));
 
+  /* GTK-TODO mark gamelist is menu as active */
   return;
-
-    if (glc == NULL) {
-	glc = (GameListClosure *) calloc(1, sizeof(GameListClosure));
-	glc->x = glc->y = -1;
-    }
-
-    if (glc->strings != NULL) {
-	st = glc->strings;
-	while (*st) {
-	    free(*st++);
-	}
-	free(glc->strings);
-    }
-
-    GameListPrepare(); // [HGM] filter: code put in separate routine
-
-    glc->fp = fp;
-
-    if (glc->filename != NULL) free(glc->filename);
-    glc->filename = StrSave(filename);
-
-
-    if (glc->shell == NULL) {
-	glc->shell = GameListCreate(filename, GameListCallback, glc);
-    } else {
-        GameListReplace(); // [HGM] filter: code put in separate routine
-	j = 0;
-	XtSetArg(args[j], XtNiconName, (XtArgVal) filename);  j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) filename);  j++;
-	XtSetValues(glc->shell, args, j);
-    }
-
-    XtPopup(glc->shell, XtGrabNone);
-    glc->up = True;
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
-		args, j);
-
-    /* GTK-TODO mark gamelist is menu as active */
 }
 
 void
@@ -476,7 +341,7 @@ ShowGameListProc(w, event, prms, nprms)
     if(lastLoadGameNumber)
       GameListHighlight(lastLoadGameNumber);
 
-    /* GTK-TODO mark gamelist is menu as active */
+    /* GTK-TODO mark gamelist in menu as active */
     return;
 }
 
@@ -491,25 +356,25 @@ LoadSelectedProc(w, event, prms, nprms)
     XawListReturnStruct *rs;
     int index, direction = atoi(prms[0]);
 
-    if (glc == NULL) return;
-    listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-    rs = XawListShowCurrent(listwidg);
-    index = rs->list_index;
-    if (index < 0) return;
-    if(direction != 0) {
-	index += direction;
-	if(direction == -2) index = 0;
-	if(direction == 2) index = listLength-1;
-	if(index < 0 || index >= listLength) return;
-	XawListHighlight(listwidg, index);
-	return;
-    }
-    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
-    if (cmailMsgLoaded) {
-	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
-    } else {
-	LoadGame(glc->fp, index + 1, glc->filename, True);
-    }
+//    if (glc == NULL) return;
+//    listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
+//    rs = XawListShowCurrent(listwidg);
+//    index = rs->list_index;
+//    if (index < 0) return;
+//    if(direction != 0) {
+//	index += direction;
+//	if(direction == -2) index = 0;
+//	if(direction == 2) index = listLength-1;
+//	if(index < 0 || index >= listLength) return;
+//	XawListHighlight(listwidg, index);
+//	return;
+//    }
+//    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
+//    if (cmailMsgLoaded) {
+//	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
+//    } else {
+//	LoadGame(glc->fp, index + 1, glc->filename, True);
+//    }
 }
 
 void
@@ -519,20 +384,20 @@ SetFilterProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-	Arg args[16];
-        String name;
-	Widget list;
-        int j = 0;
-        XtSetArg(args[j], XtNstring, &name);  j++;
-	XtGetValues(filterText, args, j);
-        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-        if(GameListPrepare()) GameListReplace(); // crashes on empty list...
-	list = XtNameToWidget(glc->shell, "*form.viewport.list");
-	XawListHighlight(list, 0);
-        j = 0;
-	XtSetArg(args[j], XtNdisplayCaret, False); j++;
-	XtSetValues(filterText, args, j);
-	XtSetKeyboardFocus(glc->shell, list);
+//	Arg args[16];
+//        String name;
+//	Widget list;
+//        int j = 0;
+//        XtSetArg(args[j], XtNstring, &name);  j++;
+//	XtGetValues(filterText, args, j);
+//        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
+//        GameListPrepare();
+//	list = XtNameToWidget(glc->shell, "*form.viewport.list");
+//	XawListHighlight(list, 0);
+//        j = 0;
+//	XtSetArg(args[j], XtNdisplayCaret, False); j++;
+//	XtSetValues(filterText, args, j);
+//	XtSetKeyboardFocus(glc->shell, list);
 }
 
 void
@@ -541,34 +406,28 @@ GameListPopDown()
     Arg args[16];
     int j;
 
-    if(GUI_GameList==NULL) return;
+    gint w,h,x,y;
+
+    if(GUI_GameList == NULL) return;
+
+    /* lets save the position and size*/
+    gtk_window_get_position(GTK_WINDOW(GUI_GameList),&x,&y);
+    gtk_window_get_size(GTK_WINDOW(GUI_GameList),&w,&h);
+
+    wpGameList.x = x;
+    wpGameList.y = y;
+    wpGameList.width  = w;
+    wpGameList.height = h;
 
     gtk_widget_hide (GUI_GameList);
-    return;
-
-    if (glc == NULL) return;
-    j = 0;
-    XtSetArg(args[j], XtNx, &glc->x); j++;
-    XtSetArg(args[j], XtNy, &glc->y); j++;
-    XtSetArg(args[j], XtNheight, &glc->h); j++;
-    XtSetArg(args[j], XtNwidth, &glc->w); j++;
-    XtGetValues(glc->shell, args, j);
-
-    /* remember position */
-    wpGameList.x = glc->x - 4;
-    wpGameList.y = glc->y - 23;
-    wpGameList.width = glc->w;
-    wpGameList.height = glc->h;
-
-    XtPopdown(glc->shell);
-    XtSetKeyboardFocus(shellWidget, formWidget);
-    glc->up = False;
-    j = 0;
 
     /* GTK-TODO mark as down in menu bar */
+    j = 0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
     XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
 		args, j);
+
+    return;
 }
 
 void
@@ -599,11 +458,11 @@ int SaveGameListAsText(FILE *f)
     ListGame * lg = (ListGame *) gameList.head;
     int nItem;
 
-    if( !glc || ((ListGame *) gameList.tailPred)->number <= 0 ) {
-        DisplayError("Game list not loaded or empty", 0);
-        return False;
-    }
-
+//    if( !glc || ((ListGame *) gameList.tailPred)->number <= 0 ) {
+//        DisplayError("Game list not loaded or empty", 0);
+//        return False;
+//    }
+//
     /* Copy the list into the global memory block */
     if( f != NULL ) {
 

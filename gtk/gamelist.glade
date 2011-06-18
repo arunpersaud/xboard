@@ -2,22 +2,6 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
-  <object class="GtkListStore" id="GameListStore">
-    <columns>
-      <!-- column-name Number -->
-      <column type="gint"/>
-      <!-- column-name Location -->
-      <column type="gchararray"/>
-      <!-- column-name White -->
-      <column type="gchararray"/>
-      <!-- column-name Black -->
-      <column type="gchararray"/>
-      <!-- column-name Result -->
-      <column type="gchararray"/>
-      <!-- column-name Date -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
   <object class="GtkWindow" id="GameList">
     <child>
       <object class="GtkScrolledWindow" id="scrolledwindow1">
@@ -29,6 +13,7 @@
           <object class="GtkTreeView" id="GameListView">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK</property>
             <property name="model">GameListStore</property>
             <property name="headers_clickable">False</property>
             <property name="rules_hint">True</property>
@@ -128,5 +113,21 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkListStore" id="GameListStore">
+    <columns>
+      <!-- column-name Number -->
+      <column type="gint"/>
+      <!-- column-name Location -->
+      <column type="gchararray"/>
+      <!-- column-name White -->
+      <column type="gchararray"/>
+      <!-- column-name Black -->
+      <column type="gchararray"/>
+      <!-- column-name Result -->
+      <column type="gchararray"/>
+      <!-- column-name Date -->
+      <column type="gchararray"/>
+    </columns>
   </object>
 </interface>
