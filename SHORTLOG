@@ -2,7 +2,7 @@
 
 (git log --pretty=short --cherry-pick master...v4.5.x^   |git shortlog --no-merges)
 
-Arun Persaud (20):
+Arun Persaud (26):
       removed parser.l from build process, also removed flex dependency from configure
       updated Changelog, NEWS, etc.
       new developer release
@@ -23,8 +23,14 @@ Arun Persaud (20):
       fixed access rights to winboard language files (644 instead of 655)
       lng2po.sh: added command line options, GPL header
       added translations generated via lng2po from all winboard languages
+      deactivated new languages for the moment...
+      updated ChangeLog, NEWS, etc.
+      new developer release
+      updated xboard.pot with released version
+      translation: added new Ukrainian PO file from the TP
+      translation: activated Ukrainian translation
 
-H.G. Muller (77):
+H.G. Muller (134):
       New parser, written in C
       Implement yynewstr entry point in new parser
       Fix o-o castling in new parser
@@ -102,9 +108,76 @@ H.G. Muller (77):
       Make book-edit function WB
       Let Shift+RightClick on PV actually play the PV moves
       Import WinBoard language files into git
+      No clearing of Engine-Output memos on stat01
+      Allow changing MultiPV setting from Engine-Output window
+      Fix button sizing in generic popup
+      Fix vscrolling in XBoard Engine-Output window
+      Let ParsePV always generate SAN move
+      Automatically play moves of clicked PV in analyze mode
+      Add option -absoluteAnalysisScores
+      Add -userFileDirectory option
+      Make 'add to list' default in Load Engine dialog
+      Improve WB Load Engine dialog texts
+      Implement Edit Book in XBoard
+      Recode some po files
+      Adapt default directory of lng2po
+      Include learn info in book edit
+      Alow promotions and drops in book-editing
+      Take account of holdings in book key
+      Fix initialization of engine state
+      Obey san feature when sending book moves
+      Add secondry adapter command for UCCI or USI
+      Make engine startup failure non-fatal in WinBoard
+      Let mentioning completed tourney file add one cycle
+      Fix CR in multi-line WinBoard text-edits
+      Allow generic dialog to ignore OK
+      Add Swiss tourneys through pairing engine
+      Fix ArgTwo warnings
+      Fix layout tournament Load Engine dialog WB
+      Fix -matchGames option
+      Improve Tournament dialog layout WB
+      Let XBoard propose name of tourney file
+      Print sensible window title during tourneys
+      Improve quoting of engine name on install
+      Fix interrupting tournament
+      Fix round-robin schedule
+      Fix clock mode in tourney starting from -ncp mode
+      Give error popup when pairing engine fails
+      Fix concurrency in Swiss tourneys
+      Fix display of last move of last match game
+      Clear Engine-Output pane when initializing engine
+      Fix parameter handling in adapter command
+      Fix display of logos
+      Fix crash at end of Swiss tourney
+      Fix type of shuffleOpenings
+      Redo New Shuffle Game dialog with generic popup
+      Some refactoring in xoptions.c to separate out front-end
+      Redo Time Control dialog with generic popup
+      Add icon to WB for tournament files
+      Update WB docs for tourney manager
+      Fix crash on switching sound in Vista
+      Fix empty-string option values in XBoard
+      Add -at and -opt options as alternative for @
+      Fix default of -remoteUser
+      Change long form of -tf option to -tourneyFile
+      Make non-existing opton in settings file non-fatal
+      Remove stray else
+      Redo Move History with generic popup in WinBoard style
+      Make WB generic popup translatable
+      Update window itle after last game of match
 
-Tim Mann (1):
-      Use getaddrinfo instead of gethostbyname.
+Tim Mann (9):
+      Use getaddrinfo instead of gethostbyname.  Hopefully this makes us compatible with IPv6 and with hosts that have more than one IP address.  However, I don't know of any chess servers that have either of those properties, so I couldn't test that.  I did test that xboard still works with freechess.org and chessclub.com and that it gives an error message for invalid host names.
+      Fix a size mismatch in scanf.  Untested, but the code could not have
+      Move "hide thinking" option into alphabetical order.
+      Fix display of international characters outside the ASCII range.
+      Added "misc-fixed" as a fallback font to handle locales where
+      Add a final wildcard default for fonts.  This gives XCreateFontSet
+      The empty string can't be translated and it causes the gettext
+      Fixed small bugs in several .po files, enabling these translations to
+      Internationalize the file browser.
+
+
 
 ** Version 4.5.2 **
 
