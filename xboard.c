@@ -7224,6 +7224,12 @@ PlayAlarmSound()
 }
 
 void
+PlayTellSound()
+{
+  PlaySound(appData.soundTell);
+}
+
+void
 EchoOn()
 {
     system("stty echo");

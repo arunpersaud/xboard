@@ -8604,6 +8604,12 @@ PlayAlarmSound()
   MyPlaySound(&sounds[(int)SoundAlarm]);
 }
 
+VOID
+PlayTellSound()
+{
+  MyPlaySound(&textAttribs[ColorTell].sound);
+}
+
 
 VOID
 EchoOn()

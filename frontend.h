@@ -105,6 +105,7 @@ void PlayIcsLossSound P((void));
 void PlayIcsDrawSound P((void));
 void PlayIcsUnfinishedSound P((void));
 void PlayAlarmSound P((void));
+void PlayTellSound P((void));
 void EchoOn P((void));
 void EchoOff P((void));
 void Raw P((void));

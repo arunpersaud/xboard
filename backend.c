@@ -8038,6 +8038,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
     if (!strncmp(message, "telluser ", 9)) {
 	if(message[9] == '\\' && message[10] == '\\')
 	    EscapeExpand(message+9, message+11); // [HGM] esc: allow escape sequences in popup box
+	PlayTellSound();
 	DisplayNote(message + 9);
 	return;
     }
@@ -8045,6 +8046,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	cps->userError = 1;
 	if(message[14] == '\\' && message[15] == '\\')
 	    EscapeExpand(message+14, message+16); // [HGM] esc: allow escape sequences in popup box
+	PlayTellSound();
 	DisplayError(message + 14, 0);
 	return;
     }
