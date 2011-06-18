@@ -234,6 +234,7 @@ void NextMatchGame P((void));
 int NextTourneyGame P((int nr, int *swap));
 int Pairing P((int nr, int nPlayers, int *w, int *b, int *sync));
 FILE *WriteTourneyFile P((char *results));
+void DisplayTwoMachinesTitle P(());
 
 #ifdef WIN32
        extern void ConsoleCreate();
@@ -10255,6 +10256,7 @@ GameEnds(result, resultDetails, whosays)
 		     first.tidy, second.tidy,
 		     first.matchWins, second.matchWins,
 		     appData.matchGames - (first.matchWins + second.matchWins));
+	    if(!appData.tourneyFile[0]) matchGame++, DisplayTwoMachinesTitle(); // [HGM] update result in window title
 	    popupRequested++; // [HGM] crash: postpone to after resetting endingGame
 	    if (appData.firstPlaysBlack) { // [HGM] match: back to original for next match
 		first.twoMachinesColor = "black\n";
