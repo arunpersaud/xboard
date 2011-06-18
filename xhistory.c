@@ -101,7 +101,7 @@ void ScrollToCurrent(int caretPos)
     Arg args[10];
     char *s;
     GetWidgetText(&historyOptions[0], &s);
-    if(caretPos < 0) caretPos = strlen(s);
+    if(caretPos < 0 || caretPos > strlen(s)) caretPos = strlen(s);
     XtSetArg(args[0], XtNdisplayCaret, False);
     XtSetArg(args[1], XtNinsertPosition, caretPos); // this triggers scrolling in Xaw
     XtSetValues(historyOptions[0].handle, args, 2);

@@ -174,7 +174,7 @@ void MemoContentUpdated()
 {
     int caretPos;
 
-    DoHighlight( lastCurrent, FALSE );
+    if(lastCurrent <= currLast) DoHighlight( lastCurrent, FALSE );
     DoHighlight( currCurrent, TRUE );
 
     lastFirst = currFirst;
