@@ -285,7 +285,7 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 	int j=layoutList[i];
 	if(j == -2) SetDlgItemText( hDlg, 2000+2*i, ". . ." );
 	if(j<0) continue;
-	name = optionList[j].name;
+	name = cps ? optionList[j].name : _(optionList[j].name);
 	if(strstr(name, "Polyglot ") == name) name += 9;
 	SetDlgItemText( hDlg, 2000+2*i, name );
 //if(appData.debugMode) fprintf(debugFP, "# %s = %d\n",optionList[j].name, optionList[j].value );
@@ -702,7 +702,7 @@ Option tourneyOptions[] = {
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("If you specify an existing file, the rest of this dialog will be ignored.") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("Otherwise, the file will be created, with the settings you specify below:") },
   { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
-  { 0xD, 7,         0, NULL, (void*) &appData.participants, "", NULL, TextBox, "Tourney participants:" },
+  { 0xD, 7,         0, NULL, (void*) &appData.participants, "", NULL, TextBox, N_("Tourney participants:") },
   { 0,  0,          0, NULL, (void*) &swiss, "", NULL, CheckBox, N_("Use Swiss pairing engine (cycles = rounds)") },
   { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0=RR, 1=gauntlet):") },
   { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },
