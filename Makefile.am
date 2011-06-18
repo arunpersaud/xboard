@@ -14,6 +14,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 frontend.h \
 	  	 gamelist.c \
 	 	 gettext.h  \
+		 gtk_helper.c gtk_helper.h \
 		 lists.c lists.h \
 		 moves.c moves.h \
 		 parser.c parser.h \

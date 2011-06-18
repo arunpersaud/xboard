@@ -1,7 +1,7 @@
 /*
- * xgamelist.h -- Game list window, part of X front end for XBoard
+ * gtk_helper.h -- helper functions for the GTK frontend of XBoard
  *
- * Copyright 1995, 2009, 2010, 2011 Free Software Foundation, Inc.
+ * Copyright 2011 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
  *
  * GNU XBoard is free software: you can redistribute it and/or modify
@@ -20,15 +20,13 @@
  *------------------------------------------------------------------------
  ** See the file ChangeLog for a revision history.  */
 
-#ifndef _XGAMEL_H
-#define _XGAMEL_H 1
+#ifndef _GTK_HELPER_H
+#define _GTK_HELPER_H 1
 
-void ShowGameListProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void LoadSelectedProc P((GtkTreeView *treeview, GtkTreePath *path,
-			 GtkTreeViewColumn *col, gpointer userdata));
-void SetFilterProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
+gchar *get_glade_filename       P((char *filename));
+void   save_window_placement    P((GtkWindow *window,  WindowPlacement *placement));
+void   restore_window_placement P((GtkWindow *window,  WindowPlacement *placement));
 
-extern Widget gameListShell;
-#endif /* _XGAMEL_H */
+#endif
+
+

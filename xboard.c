@@ -933,7 +933,7 @@ XtActionsRec boardActions[] = {
     { "LoadGameProc", LoadGameProc },
     { "LoadNextGameProc", LoadNextGameProc },
     { "LoadPrevGameProc", LoadPrevGameProc },
-    { "LoadSelectedProc", LoadSelectedProc },
+//    { "LoadSelectedProc", LoadSelectedProc },
     { "SetFilterProc", SetFilterProc },
     { "ReloadGameProc", ReloadGameProc },
     { "LoadPositionProc", LoadPositionProc },

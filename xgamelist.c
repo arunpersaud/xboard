@@ -46,8 +46,6 @@ extern char *getenv();
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <glib.h>
-
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
@@ -87,6 +85,7 @@ extern char *getenv();
 #include "xboard.h"
 #include "xgamelist.h"
 #include "gettext.h"
+#include "gtk_helper.h"
 
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)
@@ -103,20 +102,23 @@ static Widget filterText;
 static char filterString[MSG_SIZ];
 static int listLength;
 
-static GtkWidget *GUI_GameList=NULL;
-static GtkTreeView *GUI_GameListView=NULL;
-static GtkListStore *LIST_GameListStore=NULL;
+static GtkWidget        *GUI_GameList=NULL;
+static GtkTreeView      *GUI_GameListView=NULL;
+static GtkListStore     *LIST_GameListStore=NULL;
 static GtkTreeSelection *SEL_GameList=NULL;
 
-char gameListTranslations[] =
-  "<Btn1Up>(2): LoadSelectedProc(0) \n \
-   <Key>Home: LoadSelectedProc(-2) \n \
-   <Key>End: LoadSelectedProc(2) \n \
-   <Key>Up: LoadSelectedProc(-1) \n \
-   <Key>Down: LoadSelectedProc(1) \n \
-   <Key>Left: LoadSelectedProc(-1) \n \
-   <Key>Right: LoadSelectedProc(1) \n \
-   <Key>Return: LoadSelectedProc(0) \n";
+static FILE *GameListFp=NULL;
+static char *GameListFilename=NULL;
+
+//char gameListTranslations[] =
+//  "<Btn1Up>(2): LoadSelectedProc(0) \n \
+//   <Key>Home: LoadSelectedProc(-2) \n \
+//   <Key>End: LoadSelectedProc(2) \n \
+//   <Key>Up: LoadSelectedProc(-1) \n \
+//   <Key>Down: LoadSelectedProc(1) \n \
+//   <Key>Left: LoadSelectedProc(-1) \n \
+//   <Key>Right: LoadSelectedProc(1) \n \
+//   <Key>Return: LoadSelectedProc(0) \n";
 char filterTranslations[] =
   "<Key>Return: SetFilterProc() \n";
 
@@ -147,10 +149,8 @@ GameListPrepare()
       gtk_list_store_append (LIST_GameListStore, &iter);
       gtk_list_store_set (LIST_GameListStore, &iter,
 			  0, lg->number,
-//                          1, StrSave(filename),
                           1, event,
                           2, white,
-			  /*                          3, fp,*/
 			  3, black,
 			  4, PGNResult(gameInfo->result),
 			  5, date,
@@ -231,31 +231,15 @@ GameListPopUp(fp, filename)
      char *filename;
 {
   GtkBuilder *builder=NULL;
-  char *gladefilename;
+  gchar *gladefilename;
 
   builder = gtk_builder_new ();
   GError *gtkerror=NULL;
 
-  /* try opening the ui file either in the current directory or in the installed directory */
-  filename = g_build_filename ("gtk/gamelist.glade", NULL);
-  if (g_file_test (filename, G_FILE_TEST_EXISTS) == FALSE)
-    {
-      g_free(filename);
-
-      filename = g_build_filename (GLADEDIR,"gamelist.glade", NULL);
-      if (g_file_test (filename, G_FILE_TEST_EXISTS) == FALSE)
-	{
-	  g_free(filename);
-	  printf ("Error: can not find ui-file for gamelist\n");
-	  return;
-	}
-    }
-
-  if(! gtk_builder_add_from_file (builder, filename, &gtkerror) )
-    {
-      if(gtkerror)
-	printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
-    }
+  gladefilename = get_glade_filename ("gamelist.glade");
+  if(! gtk_builder_add_from_file (builder, gladefilename, &gtkerror) )
+    if(gtkerror)
+      printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
 
   /* need a reference to the window */
   GUI_GameList = GTK_WIDGET (gtk_builder_get_object (builder, "GameList"));
@@ -280,19 +264,18 @@ GameListPopUp(fp, filename)
   gtk_window_set_title(GTK_WINDOW(GUI_GameList),filename);
 
   GameListPrepare();
+  /* remember the filename, needed for callback */
+  GameListFp=fp;
+  if(GameListFilename)
+    free(GameListFilename);
+  GameListFilename = strdup(filename);
 
   /* set old window size and position if available */
   if(wpGameList.width > 0)
-    {
-      gtk_window_set_default_size(GTK_WINDOW(GUI_GameList), wpGameList.width, wpGameList.height);
-
-      gtk_window_move   ( GTK_WINDOW(GUI_GameList), wpGameList.x, wpGameList.y);
-      gtk_window_resize ( GTK_WINDOW(GUI_GameList), wpGameList.width, wpGameList.height);
-    }
-  else
+    restore_window_placement(GTK_WINDOW(GUI_GameList), &wpGameList);
+  else /* set some defaults */
     {
       gtk_window_set_default_size(GTK_WINDOW(GUI_GameList), squareSize*6, squareSize*3);
-
       gtk_window_resize ( GTK_WINDOW(GUI_GameList), squareSize*6, squareSize*3);
     }
 
@@ -346,16 +329,42 @@ ShowGameListProc(w, event, prms, nprms)
 }
 
 void
-LoadSelectedProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
+LoadSelectedProc (GtkTreeView        *treeview,
+		  GtkTreePath        *path,
+		  GtkTreeViewColumn  *col,
+		  gpointer            userdata)
 {
-    Widget listwidg;
-    XawListReturnStruct *rs;
-    int index, direction = atoi(prms[0]);
+  GtkTreeModel *model;
+  GtkTreeIter   iter;
 
+  model = gtk_tree_view_get_model(treeview);
+
+  if (gtk_tree_model_get_iter(model, &iter, path))
+    {
+      gint nr;
+
+      gtk_tree_model_get(model, &iter, 0, &nr, -1);
+
+      if (cmailMsgLoaded)
+	CmailLoadGame(GameListFp, nr, GameListFilename, True);
+      else
+	LoadGame(GameListFp, nr, GameListFilename, True);
+    }
+
+  return;
+}
+
+//void
+//LoadSelectedProc(w, event, prms, nprms)
+//     Widget w;
+//     XEvent *event;
+//     String *prms;
+//     Cardinal *nprms;
+//{
+//    Widget listwidg;
+//    XawListReturnStruct *rs;
+//    int index, direction = atoi(prms[0]);
+//
 //    if (glc == NULL) return;
 //    listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
 //    rs = XawListShowCurrent(listwidg);
@@ -375,7 +384,7 @@ LoadSelectedProc(w, event, prms, nprms)
 //    } else {
 //	LoadGame(glc->fp, index + 1, glc->filename, True);
 //    }
-}
+//}
 
 void
 SetFilterProc(w, event, prms, nprms)
@@ -406,19 +415,10 @@ GameListPopDown()
     Arg args[16];
     int j;
 
-    gint w,h,x,y;
-
     if(GUI_GameList == NULL) return;
 
     /* lets save the position and size*/
-    gtk_window_get_position(GTK_WINDOW(GUI_GameList),&x,&y);
-    gtk_window_get_size(GTK_WINDOW(GUI_GameList),&w,&h);
-
-    wpGameList.x = x;
-    wpGameList.y = y;
-    wpGameList.width  = w;
-    wpGameList.height = h;
-
+    save_window_placement(GTK_WINDOW(GUI_GameList), &wpGameList);
     gtk_widget_hide (GUI_GameList);
 
     /* GTK-TODO mark as down in menu bar */
@@ -458,11 +458,11 @@ int SaveGameListAsText(FILE *f)
     ListGame * lg = (ListGame *) gameList.head;
     int nItem;
 
-//    if( !glc || ((ListGame *) gameList.tailPred)->number <= 0 ) {
-//        DisplayError("Game list not loaded or empty", 0);
-//        return False;
-//    }
-//
+    if( ((ListGame *) gameList.tailPred)->number <= 0 ) {
+      DisplayError("Game list not loaded or empty", 0);
+      return False;
+    }
+
     /* Copy the list into the global memory block */
     if( f != NULL ) {
 

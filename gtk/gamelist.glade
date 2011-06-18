@@ -2,6 +2,22 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
+  <object class="GtkListStore" id="GameListStore">
+    <columns>
+      <!-- column-name Number -->
+      <column type="gint"/>
+      <!-- column-name Location -->
+      <column type="gchararray"/>
+      <!-- column-name White -->
+      <column type="gchararray"/>
+      <!-- column-name Black -->
+      <column type="gchararray"/>
+      <!-- column-name Result -->
+      <column type="gchararray"/>
+      <!-- column-name Date -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="GameList">
     <child>
       <object class="GtkScrolledWindow" id="scrolledwindow1">
@@ -19,6 +35,7 @@
             <property name="rules_hint">True</property>
             <property name="search_column">0</property>
             <property name="enable_grid_lines">horizontal</property>
+            <signal name="row-activated" handler="LoadSelectedProc" swapped="no"/>
             <child>
               <object class="GtkTreeViewColumn" id="treeviewcolumnNumber">
                 <property name="resizable">True</property>
@@ -113,21 +130,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkListStore" id="GameListStore">
-    <columns>
-      <!-- column-name Number -->
-      <column type="gint"/>
-      <!-- column-name Location -->
-      <column type="gchararray"/>
-      <!-- column-name White -->
-      <column type="gchararray"/>
-      <!-- column-name Black -->
-      <column type="gchararray"/>
-      <!-- column-name Result -->
-      <column type="gchararray"/>
-      <!-- column-name Date -->
-      <column type="gchararray"/>
-    </columns>
   </object>
 </interface>

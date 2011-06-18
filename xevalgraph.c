@@ -36,7 +36,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <glib.h>
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
@@ -63,12 +62,10 @@
 #include "xboard.h"
 #include "evalgraph.h"
 #include "gettext.h"
+#include "gtk_helper.h"
 
 char *crWhite = "#FFFFB0";
 char *crBlack = "#AD5D3D";
-
-Position evalGraphX = -1, evalGraphY = -1;
-Dimension evalGraphW, evalGraphH;
 
 GtkWidget *GUI_EvalGraph=NULL;
 GtkWidget *GUI_EvalGraphDrawingArea=NULL;
@@ -269,7 +266,6 @@ gboolean EvalGraphEventProc(widget, event)
   return FALSE;
 }
 
-
 void EvalGraphCreate()
 {
   GtkBuilder *builder=NULL;
@@ -279,25 +275,10 @@ void EvalGraphCreate()
   Dimension bw_width, bw_height;
   int j;
 
-
-
   builder = gtk_builder_new ();
   GError *gtkerror=NULL;
 
-  /* try opening the ui file either in the current directory or in the installed directory */
-  filename = g_build_filename ("gtk/evalgraph.glade", NULL);
-  if (g_file_test (filename, G_FILE_TEST_EXISTS) == FALSE)
-    {
-      g_free(filename);
-
-      filename = g_build_filename (GLADEDIR,"evalgraph.glade", NULL);
-      if (g_file_test (filename, G_FILE_TEST_EXISTS) == FALSE)
-	{
-	  g_free(filename);
-	  printf ("Error: can not find ui-file for evalgraph\n");
-	  return;
-	}
-    }
+  filename = get_glade_filename ("evalgraph.glade");
 
   if(! gtk_builder_add_from_file (builder, filename, &gtkerror) )
     {
@@ -328,23 +309,15 @@ void EvalGraphCreate()
    * At the moment it gets open relative to the top left corner */
 
   if(wpEvalGraph.width > 0)
+    restore_window_placement(GTK_WINDOW(GUI_EvalGraph), &wpEvalGraph);
+  else /* set some defaults */
     {
-      evalGraphW = wpEvalGraph.width;
-      evalGraphH = wpEvalGraph.height;
-      evalGraphX = wpEvalGraph.x;
-      evalGraphY = wpEvalGraph.y;
+      gint w = bw_width-16;
+      gint h = bw_height/4;
+
+      gtk_window_set_default_size(GTK_WINDOW(GUI_EvalGraph), w, h);
+      gtk_window_resize ( GTK_WINDOW(GUI_EvalGraph), w,h);
     }
-
-  if (evalGraphX == -1)
-    {
-      evalGraphH = bw_height/4;
-      evalGraphW = bw_width-16;
-    }
-
-  gtk_window_set_default_size(GTK_WINDOW(GUI_EvalGraph), evalGraphW, evalGraphH);
-
-  gtk_window_move   ( GTK_WINDOW(GUI_EvalGraph), evalGraphX, evalGraphY);
-  gtk_window_resize ( GTK_WINDOW(GUI_EvalGraph), evalGraphW, evalGraphH);
 
   return;
 }
@@ -369,7 +342,10 @@ void EvalGraphPopDown()
 {
   gtk_widget_hide (GUI_EvalGraph);
   evalGraphDialogUp = False;
-  // TODO: mark evalgraph window in menu as down?
+
+  save_window_placement(GTK_WINDOW(GUI_EvalGraph), &wpEvalGraph);
+
+  // GTK-TODO: mark evalgraph window in menu as down?
   return;
 }
 
