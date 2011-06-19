@@ -6718,7 +6718,7 @@ MarkTargetSquares(int clear)
     for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) marker[y][x] = 0;
   } else {
     int capt = 0;
-    GenLegal(boards[currentMove], PosFlags(currentMove), Mark, (void*) marker);
+    GenLegal(boards[currentMove], PosFlags(currentMove), Mark, (void*) marker, EmptySquare);
     if(PosFlags(0) & F_MANDATORY_CAPTURE) {
       for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) if(marker[y][x]>1) capt++;
       if(capt)

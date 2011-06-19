@@ -105,7 +105,7 @@ typedef void (*MoveCallback) P((Board board, int flags, ChessMove kind,
    Promotion moves generated are to Queen only.
 */
 extern void GenPseudoLegal P((Board board, int flags,
-			      MoveCallback callback, VOIDSTAR closure));
+			      MoveCallback callback, VOIDSTAR closure, ChessSquare filter));
 
 /* Like GenPseudoLegal, but include castling moves and (unless 
    F_IGNORE_CHECK is set in the flags) omit moves that would leave the
@@ -114,7 +114,7 @@ extern void GenPseudoLegal P((Board board, int flags,
    on move is currently in check and F_IGNORE_CHECK is not set.
 */
 extern int GenLegal P((Board board, int flags,
-			MoveCallback callback, VOIDSTAR closure));
+			MoveCallback callback, VOIDSTAR closure, ChessSquare filter));
 
 /* If the player on move were to move from (rf, ff) to (rt, ft), would
    he leave himself in check?  Or if rf == -1, is the player on move
