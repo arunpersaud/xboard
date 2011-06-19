@@ -5276,6 +5276,7 @@ ParseOneMove(move, moveNum, moveType, fromX, fromY, toX, toY, promoChar)
 }
 
 Boolean pushed = FALSE;
+char *lastParseAttempt;
 
 void
 ParsePV(char *pv, Boolean storeComments, Boolean atEnd)
@@ -5293,6 +5294,7 @@ ParsePV(char *pv, Boolean storeComments, Boolean atEnd)
   do {
     while(*pv == ' ' || *pv == '\n' || *pv == '\t') pv++; // must still read away whitespace
     if(nr == 0 && !storeComments && *pv == '(') pv++; // first (ponder) move can be in parentheses
+    lastParseAttempt = pv;
     valid = ParseOneMove(pv, endPV, &moveType, &fromX, &fromY, &toX, &toY, &promoChar);
 if(appData.debugMode){
 fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, fromY+ONE, toX+AAA, toY+ONE, yy_textstr, pv);
@@ -5334,6 +5336,7 @@ fprintf(debugFP,"parsePV: %d %c%c%c%c yy='%s'\nPV = '%s'\n", valid, fromX+AAA, f
 			     fromY, fromX, toY, toX, promoChar,
 			     parseList[endPV - 1]);
   } while(valid);
+  if(atEnd == 2) return; // used hidden, for PV conversion
   currentMove = (atEnd || endPV == forwardMostMove) ? endPV : forwardMostMove + 1;
   if(currentMove == forwardMostMove) ClearPremoveHighlights(); else
   SetPremoveHighlights(moveList[currentMove-1][0]-AAA, moveList[currentMove-1][1]-ONE,
@@ -5379,6 +5382,25 @@ LoadMultiPV(int x, int y, char *buf, int index, int *start, int *end)
 	ParsePV(buf+startPV, FALSE, gameMode != AnalyzeMode);
 	*start = startPV; *end = index-1;
 	return TRUE;
+}
+
+char *
+PvToSAN(char *pv)
+{
+	static char buf[10*MSG_SIZ];
+	int i, k=0, savedEnd=endPV;
+	*buf = NULLCHAR;
+	if(forwardMostMove < endPV) PushInner(forwardMostMove, endPV);
+	ParsePV(pv, FALSE, 2); // this appends PV to game, suppressing any display of it
+	for(i = forwardMostMove; i<endPV; i++){
+	    if(i&1) snprintf(buf+k, 10*MSG_SIZ-k, "%s ", parseList[i]);
+	    else    snprintf(buf+k, 10*MSG_SIZ-k, "%d. %s ", i/2 + 1, parseList[i]);
+	    k += strlen(buf+k);
+	}
+	snprintf(buf+k, 10*MSG_SIZ-k, "%s", lastParseAttempt); // if we ran into stuff that could not be parsed, print it verbatim
+	if(forwardMostMove < savedEnd) PopInner(0);
+	endPV = savedEnd;
+	return buf;
 }
 
 Boolean
@@ -7667,7 +7689,7 @@ HandleMachineMove(message, cps)
     int fromX, fromY, toX, toY;
     ChessMove moveType;
     char promoChar;
-    char *p;
+    char *p, *pv=buf1;
     int machineWhite;
     char *bookHit;
 
@@ -8524,6 +8546,7 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                     curscore = -curscore;
                 }
 
+		if(appData.pvSAN[cps==&second]) pv = PvToSAN(buf1);
 
 		tempStats.depth = plylev;
 		tempStats.nodes = nodes;
@@ -8545,15 +8568,15 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 		}
 
 		/* Buffer overflow protection */
-		if (buf1[0] != NULLCHAR) {
-		    if (strlen(buf1) >= sizeof(tempStats.movelist)
+		if (pv[0] != NULLCHAR) {
+		    if (strlen(pv) >= sizeof(tempStats.movelist)
 			&& appData.debugMode) {
 			fprintf(debugFP,
 				"PV is too long; using the first %u bytes.\n",
 				(unsigned) sizeof(tempStats.movelist) - 1);
 		    }
 
-                    safeStrCpy( tempStats.movelist, buf1, sizeof(tempStats.movelist)/sizeof(tempStats.movelist[0]) );
+                    safeStrCpy( tempStats.movelist, pv, sizeof(tempStats.movelist)/sizeof(tempStats.movelist[0]) );
 		} else {
 		    sprintf(tempStats.movelist, " no PV\n");
 		}
@@ -8590,14 +8613,14 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
                 if( buf1[0] != NULLCHAR ) {
                     unsigned max_len = sizeof(thinkOutput) - strlen(thinkOutput) - 1;
 
-                    if( strlen(buf1) > max_len ) {
+                    if( strlen(pv) > max_len ) {
 			if( appData.debugMode) {
 			    fprintf(debugFP,"PV is too long for thinkOutput, truncating.\n");
                         }
-                        buf1[max_len+1] = '\0';
+                        pv[max_len+1] = '\0';
                     }
 
-                    strcat( thinkOutput, buf1 );
+                    strcat( thinkOutput, pv);
                 }
 
                 if (currentMove == forwardMostMove || gameMode == AnalyzeMode
@@ -9718,6 +9741,7 @@ void SwapEngines(int n)
     SWAP(timeOdds, h)
     SWAP(logo, p)
     SWAP(pgnName, p)
+    SWAP(pvSAN, h)
 }
 
 void

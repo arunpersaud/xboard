@@ -622,6 +622,8 @@ ArgDescriptor argDescriptors[] = {
   { "secondPgnName", ArgString, (void *) &appData.pgnName[1], FALSE, (ArgIniType) "" },
   { "sn", ArgString, (void *) &appData.pgnName[1], FALSE, INVALID },
   { "absoluteAnalysisScores", ArgBoolean, (void *) &appData.whitePOV, TRUE, FALSE },
+  { "fSAN", ArgTrue, (void *) &appData.pvSAN[0], FALSE, FALSE },
+  { "sSAN", ArgTrue, (void *) &appData.pvSAN[1], FALSE, FALSE },
   { "pairingEngine", ArgFilename, (void *) &appData.pairingEngine, TRUE, "" },
   { "defaultTourneyName", ArgFilename, (void *) &appData.defName, TRUE, "" },
 
