@@ -63,7 +63,7 @@ void RefreshMemoContent P((void));
 void MemoContentUpdated P((void));
 void FindMoveByCharIndex P(( int char_index ));
 
-void AppendText P((Option *opt, char *s));
+int AppendText P((Option *opt, char *s));
 int GenericPopUp P((Option *option, char *title, int dlgNr));
 void MarkMenu P((char *item, int dlgNr));
 void GetWidgetText P((Option *opt, char **buf));
@@ -76,8 +76,8 @@ extern Boolean shellUp[10];
 
 void HighlightMove( int from, int to, Boolean highlight )
 {
-    if(!highlight) from = to = 0;
-    XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
+    if(highlight)
+	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
 }
 
 void ClearHistoryMemo()
@@ -90,20 +90,25 @@ void ClearHistoryMemo()
 int AppendToHistoryMemo( char * text, int bold, int colorNr )
 {
     Arg args[10];
-    char *s;
-    GetWidgetText(&historyOptions[0], &s);
-    AppendText(&historyOptions[0], text); // for now ignore bold & color stuff, as Xaw cannot handle that
-    return strlen(s);
+    return AppendText(&historyOptions[0], text); // for now ignore bold & color stuff, as Xaw cannot handle that
 }
 
 void ScrollToCurrent(int caretPos)
 {
     Arg args[10];
     char *s;
+    int len;
     GetWidgetText(&historyOptions[0], &s);
-    if(caretPos < 0 || caretPos > strlen(s)) caretPos = strlen(s);
-    XtSetArg(args[0], XtNdisplayCaret, False);
-    XtSetArg(args[1], XtNinsertPosition, caretPos); // this triggers scrolling in Xaw
+    len = strlen(s);
+    if(caretPos < 0 || caretPos > len) caretPos = len;
+    if(caretPos > len-30) { // scroll to end, which causes no flicker
+      static XEvent event;
+      XtCallActionProc(historyOptions[0].handle, "end-of-file", &event, NULL, 0);
+      return;
+    }
+    // the following leads to a very annoying flicker, even when no scrolling is done at all.
+    XtSetArg(args[0], XtNinsertPosition, caretPos); // this triggers scrolling in Xaw
+    XtSetArg(args[1], XtNdisplayCaret, False);
     XtSetValues(historyOptions[0].handle, args, 2);
 }
 

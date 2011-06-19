@@ -303,11 +303,16 @@ extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
 char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
 
-void AppendText(Option *opt, char *s)
+int AppendText(Option *opt, char *s)
 {
     XawTextBlock t;
+    char *v;
+    int len;
+    GetWidgetText(opt, &v);
+    len = strlen(v);
     t.ptr = s; t.firstPos = 0; t.length = strlen(s); t.format = XawFmt8Bit;
-    XawTextReplace(opt->handle, 9999, 9999, &t);
+    XawTextReplace(opt->handle, len, len, &t);
+    return len;
 }
 
 void AddLine(Option *opt, char *s)
@@ -1401,8 +1406,11 @@ Option commentOptions[] = {
 
 void ClearTextWidget(Option *opt)
 {
-    XtCallActionProc(opt->handle, "select-all", NULL, NULL, 0);
-    XtCallActionProc(opt->handle, "kill-selection", NULL, NULL, 0);
+//    XtCallActionProc(opt->handle, "select-all", NULL, NULL, 0);
+//    XtCallActionProc(opt->handle, "kill-selection", NULL, NULL, 0);
+    Arg arg;
+    XtSetArg(arg, XtNstring, ""); // clear without disturbing selection!
+    XtSetValues(opt->handle, &arg, 1);
 }
 
 void ClearComment(int n)

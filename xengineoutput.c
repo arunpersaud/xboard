@@ -198,11 +198,12 @@ void SetIcon( int which, int field, int nIcon )
 
 void DoClearMemo(int which)
 {
-    Widget edit;
-
-    edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
-    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
+    Widget edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
+    Arg arg;
+//    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
+//    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
+    XtSetArg(arg, XtNstring, ""); // clear without disturbing selection!
+    XtSetValues(edit, &arg, 1);
 }
 
 // cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
