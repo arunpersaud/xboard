@@ -1231,7 +1231,7 @@ ParseFontName(char *name, MyFontParams *mfp)
   q = strchr(p, ':');
   if (q) {
     if (q - p >= sizeof(mfp->faceName))
-      ExitArgError(_("Font name too long:"), name);
+      ExitArgError(_("Font name too long:"), name, TRUE);
     memcpy(mfp->faceName, p, q - p);
     mfp->faceName[q - p] = NULLCHAR;
     p = q + 1;
@@ -1240,12 +1240,12 @@ ParseFontName(char *name, MyFontParams *mfp)
     while (*p && !isdigit(*p)) {
       *q++ = *p++;
       if (q - mfp->faceName >= sizeof(mfp->faceName))
-	ExitArgError(_("Font name too long:"), name);
+	ExitArgError(_("Font name too long:"), name, TRUE);
     }
     while (q > mfp->faceName && q[-1] == ' ') q--;
     *q = NULLCHAR;
   }
-  if (!*p) ExitArgError(_("Font point size missing:"), name);
+  if (!*p) ExitArgError(_("Font point size missing:"), name, TRUE);
   mfp->pointSize = (float) atof(p);
   mfp->bold = (strchr(p, 'b') != NULL);
   mfp->italic = (strchr(p, 'i') != NULL);
@@ -1351,7 +1351,7 @@ ParseBoardSize(void *addr, char *name)
     }
     bs++;
   }
-  ExitArgError(_("Unrecognized board size value"), name);
+  ExitArgError(_("Unrecognized board size value"), name, TRUE);
 }
 
 void

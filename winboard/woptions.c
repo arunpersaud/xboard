@@ -2133,7 +2133,7 @@ ParseCommSettings(char *arg, DCB *dcb)
   if (cd->label == NULL) goto cant_parse;
   return;
 cant_parse:
-    ExitArgError(_("Can't parse com port settings"), arg);
+    ExitArgError(_("Can't parse com port settings"), arg, TRUE);
 }
 
 
