@@ -450,6 +450,16 @@ with @samp{?} (unknown value), or @samp{-} (inapplicable value).
 Adds or modifies a comment on the current position. Comments are
 saved by @samp{Save Game} and are displayed by @samp{Load Game},
 @samp{Forward}, and @samp{Backward}.
+@item Edit Book
+@cindex Edit Book, Menu Item
+Pops up a window listing the moves available in the GUI book 
+(specified in the @samp{Common Engine Settings} dialog) 
+from the currently displayed position, 
+together with their weights and (optionally in braces) learn info. 
+You can then edit this list, and the new list will be stored
+back into the book when you press OK.
+Note that the listed percentages are neither used, nor updated when 
+you change the weights; they are just there as an optical aid.
 @item Revert
 @itemx Annotate
 @cindex Revert, Menu Item
@@ -828,6 +838,35 @@ by the comment "user adjudication".
 @cindex Engine Menu
 @cindex Menu, Engine
 @table @asis
+@item Load Engine
+@cindex Load Engine, Menu Item
+Pops up a dialog where you can select or specify an engine to be loaded.
+You will always have to indicate whether you want to load the engine 
+as first or second engine, through the ‘Load menitioned engine as’ 
+combobox at the bottom of the dialog. 
+You can even replace engines during a game, without disturbing that game.
+(Beware that after loading an engine, XBoard will always be in Edit Game mode, 
+so you will have to tell the new engine what to do before it does anything!)
+When you select an already installed engine from the ‘Select Engine from List’ combobox, 
+all other fields of the dialog will be ignored. 
+In other cases, you have to specify the engine executable, 
+possible arguments on the engine command line 
+(if the engine docs say the engine needs any), 
+and the directory where the engine should look for its files
+(if this cannot be deduced automatically from the specification of the engine executable). 
+You will also have specify (with the aid of checkboxes) if the engine is UCI. 
+If ‘Add this engine to the list’ is ticked (which it is by default), 
+the engine will be added to the list of installed engines in your settings file, 
+so that next time you can select it from the combobox. 
+You can also specify a ‘nickname’, 
+under which the engine will then appear in that combobox, 
+and even choose to use that nickname for it in PGN files for engine-engine games. 
+The info you supply with the checkboxes whether the engine should use GUI book, 
+or (for variant engines) automatically switch to the current variant when loaded, 
+will also be included in the list. 
+For obsolete XBoard engines, which would normally take a long delay to load 
+because XBoard is waiting for a response they will not give, 
+you can tick ‘WB protocol v1’ to speed up the loading process. 
 @item Engine #N Settings
 @cindex Engine Settings, Menu Item
 @cindex Engine #1 Settings, Menu Item
@@ -955,6 +994,99 @@ to the next one.
 You can have XBoard automatically rewind to the first line or position
 in the file after the index reaches a certain vaue,
 which you can also specify here.
+
+
+@item Match
+@cindex Match, Menu Item
+@itemx Tournament file
+@cindex Tournament file, Menu item
+To run a tournament, XBoard needs a file to record its progress, 
+to resume the tourney when it is interrupted.
+When you want to conduct anything more complex than a simple 
+two-player match with the currently loaded engines, 
+(i.e. when you select a list of participants), 
+you must not leave this field blank. 
+When you enter the name of an existing tournament file, 
+XBoard will ignore all other input specified in the dialog, 
+and will take them from that tournament file.
+This resumes an interrupted tournament, or adds another XBoard
+agent playing games for it to those that are already doing so.
+Specifying a not-yet-existing file will cause XBoard to create it, 
+according to the tournament parameters specified in the rest of the dialog, 
+before it starts the tournament on ‘OK’. 
+Provided that you specify participants; 
+without participants no tournament file will be made, but other entered values 
+(e.g. for the file with opening positions) will take effect. 
+Default: configured by the @code{defaultTourneyName} option.
+@itemx Sync after round
+@itemx Sync after cycle
+@cindex Sync after round, Menu Item
+@cindex Sync after cycle, Menu Item
+The sync options, when on, will cause WinBoard to refrain from starting games 
+of the next round or cycle before all games of the previous round or cycle are finished.
+This guarantees correct ordering in the games file,
+even when multiple XBoard instances are concurrently playing games for the same tourney.
+Default: sync after cycle, but not after round.
+@itemx Select Engine
+@itemx Tourney participants
+@cindex Select Engine, Menu Item
+@cindex Tourney participants, Menu Item
+With the Select Engine combobox you can pick an engine from your list 
+of installed engines in the settings file, to be added to the tournament. 
+The engines selected so far will be listed in the ‘Tourney participants’ memo. 
+The latter is a normal text edit, so you can use normal text-editing functions 
+to delete engines you selected by accident, or change their order. 
+Do not type names yourself there, because names that do not exactly match 
+one of the names from the combobox will lead to undefined behavior.
+@itemx Tourney type
+@cindex Tourney type, Menu Item
+Here you can specify the type of tournament you want. 
+XBoard’s intrinsic tournament manager support round-robins (type = 0), 
+where each participant plays every other participant, and (multi-)gauntlets, 
+where one (or a few) so-called ‘gauntlet engines’ play an independent set of opponents. 
+In the latter case, you specify the number of gauntlet engines. 
+E.g. if you specified 10 engine, and tourney type = 2, 
+the first 2 engines each play the remaining 8. 
+A value of -1 instructs XBoard to play Swiss; for this to work an external
+pairing engine must be specified through the @code{pairingEngine} option.
+Each Swiss round will be concidered a tourney cycle in that case.
+Default:0
+@itemx Number of tourney cycles
+@itemx Default number of Games
+@cindex Number of tourney cycles, Menu Item
+@cindex Default number of Games, Menu Item
+You can specify tourneys where every two opponents play each other multiple times. 
+Such multiple games can be played in a row, 
+as specified by the ‘number of games per pairing’, 
+or by repeating the entire tournament schedule a number of times 
+(specified by the ‘number of tourney cycles’). 
+The total number of times two engine meet will be the product of these two. 
+Default is 1 cycle; 
+the number of games per pairing is the same as the default number of match games, 
+stored in your settings file through the @code{defaultMatchGames} option.
+@itemx Save Tourney Games
+@cindex Save Tourney Games, Menu Item
+File where the tournament games are saved
+(duplicate of the item in the @samp{Save Game Options}).
+@itemx Game File with Opening Lines
+@itemx File with Start Positions
+@itemx Game Number
+@itemx Position Number
+@itemx Rewind Index after
+@cindex Game File with Opening Lines, Menu Item
+@cindex File with Start Positions, Menu Item
+@itemx Game Number, Menu Item
+@itemx Position Number, Menu Item
+@itemx Rewind Index after, Menu Item
+These items optionally specify the file with move sequences or board positions the tourney 
+games should start from.
+The corresponding numbers specify the number of the game or position in the file.
+Here a value -1 means automatical stepping through all games on the file,
+-2 automatic stepping every two games.
+The Rewind-Index parameter causes a stepping index to reset to one after reaching
+a specified value.
+Default: No game or position file will be used. The default index if such a file is used is 1.
+
 @item Load Game Options
 @cindex Load Game Options, Menu Item
 Summons a dialog where you can set the @code{autoDisplayComment} and 
@@ -1820,6 +1952,80 @@ xboard will relay the path name for this format to the engine through an egtpath
 One egtpath command for each matching format will be sent. 
 Popular formats are "nalimov" DTM tablebases and "scorpio" bitbases.
 Default: "".
+@inem -firstChessProgramNames={names}
+This option lets you customize the drop-down list of chess engine names 
+that appears in the @samp{Load Engine} and @{Match Options} dialog. 
+It consists of a list of strings, one per line. 
+When an engine is loaded, the corresponding line is prefixed with "-fcp ",
+and processed like it appeared on the command line.
+That means that apart from the engine command,
+it can contain any list of XBoard options you want to use with this engine.
+(Commonly used options here are -fd, -firstXBook, -fUCI, -variant.)
+
+The value of this option is gradually built as you load new engines
+through the @samp{Load Engine} menu dialog, with @{Add to list} ticked. 
+To change it, edit your settings file with a plain text editor.
+@end table
+
+@node Tournament Options
+@section Tournament Options
+@cindex Tournament Options
+@cindex Options, Tournament
+@table @asis
+@item -tf filename or -tourneyFile filename
+@cindex tf, option
+@cindex tourneyFile, option
+Specifies the name of the tournament file used in match mode 
+to conduct a multi-player tournament. 
+This file is a special settings file, 
+which stores the description of the tournament (including progress info), 
+through normal options (e.g. for time control, load and save files), 
+and through some special-purpose options listed below.
+@item -tt number or -tourneyType number
+@cindex tt, option
+@cindex tourneyType, option
+Specifies the type of tourney: 0 = round-robin, 
+N>0 = (multi-)gauntlet with N gauntlet engines, 
+-1 = Swiss through external pairing engine. 
+Volatile option, but stored in tourney file.
+@item -cy number or -tourneyCycles number
+@cindex cy, option
+@cindex tourneyCycles, option
+Specifies the number of cycles in a tourney. 
+Volatile option, but stored in tourney file.
+@item -participants list
+@cindex participants, option
+The list is a multi-line text string that specifies engines 
+occurring in the @code{firstChesProgramNames} list 
+in the settings file by their (implied or explicitly given) nicknames, 
+one engine per line. 
+The mentioned engines will play in the tourney. 
+Volatile option, but stored in tourney file.
+@item -results string
+@cindex results, option
+The string of +=- characters lists the result of all played games in a toruney. 
+Games currently playing are listed as *, 
+while a space indicates a game that is not yet played or playing . 
+Volatile option, but stored in tourney file.
+@item -defaultTourneyName string
+@cindex defaultTourneyName, option
+Specifies the name of the tournament file XBoard should propose 
+when the @samp{Match Options} dialog is opened. 
+Any %y, %M, %d, %h, %m, %s in the string are replaced by the current 
+year, month, day of the month, hours, minutes, seconds of the current time, 
+respectively, as two-digit number. 
+A %Y would be replaced by the year as 4-digit number. Default: empty string.
+@item -pairingEngine filename
+@cindex pairingEngine, option
+Specifies the external program to be used to pair the participants in Swiss tourneys. 
+XBoard communicates with this engine in the same way as it communicates with Chess engines. 
+The only commands sent to the pairing engine are “results N string”, 
+(where N is the number of participants, 
+and string the results so far in the format of the results option), 
+and “pairing N”, (where N is the number of the tourney game). 
+To the latter the pairing engine should answer with “A-B”, 
+where A and B are participant numbers (in the range 1-N). 
+(There should be no reply to the results command.) Default: empty string.
 @end table
 
 @node ICS options
@@ -2357,7 +2563,7 @@ These and most other standard Xt options are accepted.
 @item -noGUI
 @cindex noGUI, option
 Suppresses all GUI functions of XBoard 
-(to speed up automated ultra-fast engine-engine games, which you don�t want to watch). 
+(to speed up automated ultra-fast engine-engine games, which you dont want to watch). 
 There will be no board or clock updates, no printing of moves, 
 and no update of the icon on the task bar in this mode.
 @item -movesound/-xmovesound or -ringBellAfterMoves true/false
@@ -2512,6 +2718,15 @@ Sets the Highlight with Arrow menu option. @xref{Options Menu}. Default: false.
 @cindex blind, option
 @cindex blindfold, option
 Sets the Blindfold menu option.  @xref{Options Menu}.  Default: false.
+@item fSAN
+@itemx sSAN
+@cindex fSAN, option
+@cindex sSAN, option
+Causes the PV in thinking output of the mentioned engine to be converted 
+to SAN before it is further processed.
+Warning: this might lose engine output not understood by the parser,
+and uses a lot of CPU power.
+Default: the PV is displayed exactly as the engine produced it.
 @item -clockFont font
 @cindex clockFont, option
 @cindex Font, clock
