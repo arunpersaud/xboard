@@ -2693,6 +2693,8 @@ XBoard square size (hint): %d\n\
     return 0;
 }
 
+static Boolean noEcho;
+
 void
 ShutDownFrontEnd()
 {
@@ -2702,6 +2704,7 @@ ShutDownFrontEnd()
     if (saveSettingsOnExit) SaveSettings(settingsFileName);
     unlink(gameCopyFilename);
     unlink(gamePasteFilename);
+    if(noEcho) EchoOn();
 }
 
 RETSIGTYPE TermSizeSigHandler(int sig)
@@ -7233,12 +7236,14 @@ void
 EchoOn()
 {
     system("stty echo");
+    noEcho = False;
 }
 
 void
 EchoOff()
 {
     system("stty -echo");
+    noEcho = True;
 }
 
 void
