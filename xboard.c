@@ -506,8 +506,9 @@ Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
-  menuBarWidget, buttonBarWidget, editShell, errorShell, analysisShell,
+  menuBarWidget, buttonBarWidget, editShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
+GtkWidget *errorShell = NULL;
 Widget historyShell, evalGraphShell, gameListShell;
 int hOffset; // [HGM] dual
 XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
@@ -2704,7 +2705,7 @@ XBoard square size (hint): %d\n\
       XtInputMask mask;
       int i;
 
-      while (!(mask = XtAppPending(appContext)))
+      while (!(mask = XtAppPending(appContext)) && !gtk_events_pending())
 	poll(NULL,0,100);
       if (mask & XtIMXEvent) {
         XtAppNextEvent(appContext, &event); /* no blocking */
@@ -5319,92 +5320,62 @@ void PromotionCallback(w, client_data, call_data)
 }
 
 
-void ErrorCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
+void ErrorCallback(w, event, data)
+     GtkWidget *w;
+     GdkEvent  *event;
+     gpointer  data;
+{    
     errorUp = False;
-    XtPopdown(w = XtParent(XtParent(XtParent(w))));
-    XtDestroyWidget(w);
-    if (errorExitStatus != -1) ExitEvent(errorExitStatus);
+    gtk_widget_destroy (w);
+    errorShell = NULL;    
 }
 
 
 void ErrorPopDown()
-{
+{   
     if (!errorUp) return;
-    errorUp = False;
-    XtPopdown(errorShell);
-    XtDestroyWidget(errorShell);
-    if (errorExitStatus != -1) ExitEvent(errorExitStatus);
+    errorUp = False;   
+    if (errorShell != NULL)
+      {
+        gtk_widget_destroy (errorShell);        
+        errorShell = NULL;
+      }
 }
 
 void ErrorPopUp(title, label, modal)
      char *title, *label;
      int modal;
 {
-    Arg args[16];
-    Widget dialog, layout;
-    Position x, y;
-    int xx, yy;
-    Window junk;
-    Dimension bw_width, pw_width;
-    Dimension pw_height;
-    int i;
+    int msgtype;
 
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True);  i++;
-    XtSetArg(args[i], XtNtitle, title); i++;
-    errorShell =
-      XtCreatePopupShell("errorpopup", transientShellWidgetClass,
-			 shellWidget, args, i);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, errorShell,
-			    layoutArgs, XtNumber(layoutArgs));
+    if (strcmp(title, "Fatal Error") == 0 || strcmp(title, "Exiting") == 0)             
+      msgtype = GTK_MESSAGE_ERROR;   /* Fatal error message */      
+    else if (strcmp (title, "Error") == 0)       
+      msgtype = GTK_MESSAGE_WARNING; /* Nonfatal warning message */       
+    else        
+      msgtype = GTK_MESSAGE_INFO;    /* Informational message */      
 
-    i = 0;
-    XtSetArg(args[i], XtNlabel, label); i++;
-    XtSetArg(args[i], XtNborderWidth, 0); i++;
-    dialog = XtCreateManagedWidget("dialog", dialogWidgetClass,
-				   layout, args, i);
-
-    XawDialogAddButton(dialog, _("ok"), ErrorCallback, (XtPointer) dialog);
-
-    XtRealizeWidget(errorShell);
-    CatchDeleteWindow(errorShell, "ErrorPopDown");
-
-    i = 0;
-    XtSetArg(args[i], XtNwidth, &bw_width);  i++;
-    XtGetValues(boardWidget, args, i);
-    i = 0;
-    XtSetArg(args[i], XtNwidth, &pw_width);  i++;
-    XtSetArg(args[i], XtNheight, &pw_height);  i++;
-    XtGetValues(errorShell, args, i);
-
-#ifdef NOTDEF
-    /* This code seems to tickle an X bug if it is executed too soon
-       after xboard starts up.  The coordinates get transformed as if
-       the main window was positioned at (0, 0).
-       */
-    XtTranslateCoords(boardWidget, (bw_width - pw_width) / 2,
-		      0 - pw_height + squareSize / 3, &x, &y);
-#else
-    XTranslateCoordinates(xDisplay, XtWindow(boardWidget),
-			  RootWindowOfScreen(XtScreen(boardWidget)),
-			  (bw_width - pw_width) / 2,
-			  0 - pw_height + squareSize / 3, &xx, &yy, &junk);
-    x = xx;
-    y = yy;
-#endif
-    if (y < 0) y = 0; /*avoid positioning top offscreen*/
-
-    i = 0;
-    XtSetArg(args[i], XtNx, x);  i++;
-    XtSetArg(args[i], XtNy, y);  i++;
-    XtSetValues(errorShell, args, i);
-
+    /* set main_application_window to null since we don't have a main
+       GtkWindow yet (main window is still Xt). */   
+    errorShell = gtk_message_dialog_new(NULL,
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+            msgtype,
+            GTK_BUTTONS_OK,
+            label);
+    gtk_window_set_title (GTK_WINDOW(errorShell), title);
+    gtk_widget_show (errorShell);
     errorUp = True;
-    XtPopup(errorShell, modal ? XtGrabExclusive : XtGrabNone);
+    if (modal)
+      {        
+        gtk_dialog_run (GTK_DIALOG(errorShell));
+        gtk_widget_destroy (errorShell);
+        errorShell = NULL;
+        errorUp = False;
+      }
+    else            
+      g_signal_connect (errorShell, "response",
+                        G_CALLBACK (ErrorCallback),
+                        errorShell);             
 }
 
 /* Disable all user input other than deleting the window */
