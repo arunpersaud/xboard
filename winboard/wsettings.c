@@ -535,7 +535,7 @@ void AddOption(int x, int y, Control type, int i)
 	    break;
 	case Label:
 	    extra = activeList[layoutList[i/2]].value;
-	    AddControl(x+extra, y+1, 290-extra, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
+	    AddControl(x+extra, y+1, 290-extra, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i);
 	    break;
 	case FileName:
 	case PathName:
@@ -566,7 +566,7 @@ void AddOption(int x, int y, Control type, int i)
 void
 CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 {
-    int i, j, x=1, y=0, buttonRows, breakPoint = -1, k=0;
+    int i, ii, j, x=1, y=0, buttonRows, breakPoint = -1, k=0;
 
     template.header.cdit = 0;
     template.header.cx = 307;
@@ -576,21 +576,22 @@ CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 	template.header.cx = 625;
     }
 
-    for(i=0; i<nr; i++) {
-	if(k < groups && i == boxList[k]) {
+    for(ii=0; ii<nr; ii++) {
+	i = ii^1; if(i == nr) i = ii; // if two on one line, swap order of treatment, to get good (left to right) tabbing order.
+	if(k < groups && ii == boxList[k]) {
 	    y += 10;
 	    AddControl(x+2, y+13*(i>>1)-2, 301, 13*(boxList[k+1]-boxList[k]>>1)+8,
 						0x0082, WS_VISIBLE | WS_CHILD | SS_BLACKFRAME, 2400);
 	    AddControl(x+60, y+13*(i>>1)-6, 10*groupNameList[k]/3, 10,
-						0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, 2*(i+MAX_OPTIONS));
+						0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, 2*(ii+MAX_OPTIONS));
 	}
 	j = layoutList[i];
 	if(j >= 0)
 	    AddOption(x+155-150*(i&1), y+13*(i>>1)+5, optionList[j].type, 2*i);
-	if(k < groups && i+1 == boxList[k+1]) {
+	if(k < groups && ii+1 == boxList[k+1]) {
 	    k += 2; y += 4;
 	}
-	if(i+1 == breakPoint) { x += 318; y = -13*(breakPoint>>1); }
+	if(ii+1 == breakPoint) { x += 318; y = -13*(breakPoint>>1); }
     }
     // add butons at the bottom of dialog window
     y += 13*(nr>>1)+5;
