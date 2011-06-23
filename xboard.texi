@@ -930,6 +930,10 @@ The @kbd{Ctrl-X} key is a keyboard equivalent.
 @cindex General Options, Menu Item
 The following items to set option values appear in the dialog
 summoned by the general Options menu item.
+@itemx Absolute Analysis Scores
+@cindex Absolute Analysis Scores, Menu Item
+Controls if scores on the Engine Output window during analysis
+will be printed from the white or the side-to-move point-of-view.
 @itemx Almost Always Queen
 @cindex Almost Always Queen, Menu Item
 If this option is on, 7th-rank pawns automatically change into
