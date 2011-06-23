@@ -370,7 +370,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 //        CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
 	SetOptionValues(hDlg, activeCps);
 
-//        SetFocus(GetDlgItem(hDlg, IDC_NFG_Edit));
+        SetFocus(GetDlgItem(hDlg, IDCANCEL));
 
         break;
 
@@ -490,7 +490,7 @@ void AddOption(int x, int y, Control type, int i)
 	case Button:
 	case ResetButton:
 	case SaveButton:
-	    AddControl(x-2, y, 65, 13, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, i);
+	    AddControl(x-2, y, 65, 13, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i);
 	case Message:
 	default:
 	    break;
@@ -530,12 +530,12 @@ CreateDialogTemplate(int *layoutList, int nr, ChessProgramState *cps)
     // add butons at the bottom of dialog window
     y += 13*(nr>>1)+5;
 
-    AddControl(x+225, y+18*(buttonRows-1), 30, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, IDOK-2000);
-    AddControl(x+260, y+18*(buttonRows-1), 40, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, IDCANCEL-2000);
     for(i=0; i<buttons; i++) {
-	AddControl(x+70*(i%4)+5, y+18*(i/4), 65, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 2*(nr+i));
+	AddControl(x+70*(i%4)+5, y+18*(i/4), 65, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, 2*(nr+i));
 	layoutList[nr+i] = buttonList[i];
     }
+    AddControl(x+225, y+18*(buttonRows-1), 30, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, IDOK-2000);
+    AddControl(x+260, y+18*(buttonRows-1), 40, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, IDCANCEL-2000);
     template.title[8] = cps == &first ? '1' :  '2';
     template.header.cy = y += 18*buttonRows+2;
     template.header.style &= ~WS_VSCROLL;
