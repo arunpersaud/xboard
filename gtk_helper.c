@@ -44,7 +44,7 @@ gchar* get_glade_filename(filename)
       g_free(gladefilename);
 
       gladefilename = g_build_filename (GLADEDIR,filename, NULL);
-      if (g_file_test (filename, G_FILE_TEST_EXISTS) == FALSE)
+      if (g_file_test (gladefilename, G_FILE_TEST_EXISTS) == FALSE)
 	{
 	  g_free(gladefilename);
 	  printf ("Error: can not find ui-file for %s\n",filename);
