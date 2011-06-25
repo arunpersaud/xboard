@@ -30,6 +30,8 @@
 #include <errno.h>
 #include <sys/types.h>
 
+#include <gtk/gtk.h>
+
 #if STDC_HEADERS
 # include <stdlib.h>
 # include <string.h>
@@ -868,6 +870,111 @@ void GenericCallback(w, client_data, call_data)
 static char *oneLiner  = "<Key>Return:	redraw-display()\n";
 
 int
+GenericPopUpGTK(Option *option, char *title, int dlgNr)
+{    
+    GtkWidget *dialog = NULL;
+    gint       response;
+    GtkWidget *label;
+    GtkWidget *box;
+    GtkWidget *checkbutton;
+    GtkWidget *entry;
+    GtkWidget *hbox;
+    GtkWidget *ok_button;
+    int i, j;
+    char def[MSG_SIZ];
+    float x;
+    String val;
+
+    dialog = gtk_dialog_new_with_buttons( title,
+                                      NULL,
+                                      GTK_DIALOG_MODAL,                                             
+                                      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+                                      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+                                      NULL );
+    
+    box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
+    gtk_box_set_spacing(GTK_BOX(box), 10);    
+
+    for (i=0;option[i].type != EndMark;i++) {        
+        switch(option[i].type) {
+          case Fractional:           
+	    snprintf(def, MSG_SIZ,  "%.2f", *(float*)option[i].target);
+	    option[i].value = *(float*)option[i].target;
+            goto tBox;            
+     	  case PathName:
+          tBox:
+            label = gtk_label_new(option[i].name);
+            /* Left Justify */
+            gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+
+            entry = gtk_entry_new();
+            gtk_entry_set_text (GTK_ENTRY (entry), def);            
+
+            hbox = gtk_hbox_new (FALSE, 0);
+            gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
+            gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
+
+            gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+                        hbox, TRUE, TRUE, 0);
+            option[i].handle = (void*)entry;		
+            break;
+          case CheckBox:
+            checkbutton = gtk_check_button_new_with_label(option[i].name);
+            option[i].value = *(Boolean*)option[i].target;
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);            
+            gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+                        checkbutton, TRUE, TRUE, 0);           
+            option[i].handle = (void *)checkbutton;
+            break; 
+	  case Label:            
+            label = gtk_label_new(option[i].name);
+            /* Left Justify */
+            gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+            gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+                        label, TRUE, TRUE, 0);           
+	    break;
+	default:
+	    printf("GenericPopUp: unexpected case in switch.\n");
+	    break;
+	}        
+    }
+ 
+    /* Show dialog */
+    gtk_widget_show_all( dialog );
+
+    /* Run dialog */    
+    response = gtk_dialog_run( GTK_DIALOG( dialog ) );    
+    if (response == GTK_RESPONSE_ACCEPT)
+      {
+        for (i=0;option[i].type != EndMark;i++) {             
+            switch(option[i].type) {
+              case Fractional:
+                entry = option[i].handle;                
+                val = (String)gtk_entry_get_text (GTK_ENTRY (entry));                
+                sscanf(val, "%f", &x);  
+                if(x > option[i].max) x = option[i].max;
+		if(x < option[i].min) x = option[i].min;
+                if(option[i].value != x)
+                   *(float*) option[i].target = x;		
+                break;
+              case CheckBox:               
+                checkbutton = option[i].handle;
+                j = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton));                
+                if (option[i].value != j)
+                  *(Boolean*)option[i].target = j;               
+                break;
+              case Label:
+                break;
+            default:
+	      printf("GenericPopUp: unexpected case in switch.\n");
+	      break;
+	    }
+        }   
+      }   
+    gtk_widget_destroy( dialog );   
+}
+
+int
 GenericPopUp(Option *option, char *title, int dlgNr)
 {
     Arg args[16];
@@ -1207,7 +1314,8 @@ void LoadOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(loadOptions, _("Load Game Options"), 0);
+   //GenericPopUp(loadOptions, _("Load Game Options"), 0);
+   GenericPopUpGTK(loadOptions, _("Load Game Options"), 0);
 }
 
 void SaveOptionsProc(w, event, prms, nprms)
