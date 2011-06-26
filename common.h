@@ -320,6 +320,7 @@ typedef enum {
     VariantTwilight,
     VariantMakruk,
     VariantSChess,
+    VariantGrand,
     VariantSpartan,
     VariantUnknown       /* Catchall for other unknown variants */
 } VariantClass;
@@ -365,6 +366,7 @@ typedef enum {
   "twilight",\
   "makruk",\
   "seirawan",\
+  "grand",\
   "spartan",\
   "unknown" \
 }
@@ -648,6 +650,7 @@ typedef struct {
     Boolean pieceMenu;
     Boolean sweepSelect;
     Boolean whitePOV;
+    Boolean pvSAN[ENGINES];
 
     char *tourneyFile;
     char *defName;

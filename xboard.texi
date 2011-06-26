@@ -123,9 +123,10 @@ can click the left mouse button once on the piece, then once more on
 the destination square. In crazyhouse, bughouse or shogi you can
 drag and drop pieces to the board from the holdings squares 
 displayed next to the board.
+
 Old behavior, where right-clicking a square brings up a menu
 where you can select what piece to drop on it can still be 
-selected through a command-line option.
+selected through the @samp{Drop Menu} option.
 But only in Edit Position mode right clicking a square is still used to
 put a piece on it, and the piece to drop is selected by sweeping
 the mouse vertically with the button held down.
@@ -138,6 +139,11 @@ this position will be reached.
 Lines of play displayed in the engine-output window,
 or PGN variations in the comment window can similarly
 be played out on the board, by right-clicking on them.
+Only in Analysis mode, when you walk along a PV, 
+releasing the mouse button will forward the game upto that point,
+like you entered all previous PV moves.
+As the display of the PV in that case starts after the first move
+a simple right-click will play the move the engine indicates.
 
 When connected to an ICS, it is possible to call up a graphical
 representation of players seeking a game in stead of the chess board,
@@ -450,6 +456,16 @@ with @samp{?} (unknown value), or @samp{-} (inapplicable value).
 Adds or modifies a comment on the current position. Comments are
 saved by @samp{Save Game} and are displayed by @samp{Load Game},
 @samp{Forward}, and @samp{Backward}.
+@item Edit Book
+@cindex Edit Book, Menu Item
+Pops up a window listing the moves available in the GUI book 
+(specified in the @samp{Common Engine Settings} dialog) 
+from the currently displayed position, 
+together with their weights and (optionally in braces) learn info. 
+You can then edit this list, and the new list will be stored
+back into the book when you press OK.
+Note that the listed percentages are neither used, nor updated when 
+you change the weights; they are just there as an optical aid.
 @item Revert
 @itemx Annotate
 @cindex Revert, Menu Item
@@ -724,6 +740,8 @@ have special functions in this mode; see below.
 Starts a match between two chess programs,
 with a number of games and other parameters set through
 the @samp{Match Options} menu dialog.
+When a match is already running, selecting this item will make
+XBoard drop out of match mode after the current game finishes.
 @item Pause
 @cindex Pause, Menu Item
 Pauses updates to the board, and if you are playing against a chess engine,
@@ -828,6 +846,36 @@ by the comment "user adjudication".
 @cindex Engine Menu
 @cindex Menu, Engine
 @table @asis
+@item Load Engine
+@cindex Load Engine, Menu Item
+Pops up a dialog where you can select or specify an engine to be loaded.
+You will always have to indicate whether you want to load the engine 
+as first or second engine, through the ‘Load menitioned engine as’ 
+drop-down list at the bottom of the dialog. 
+You can even replace engines during a game, without disturbing that game.
+(Beware that after loading an engine, XBoard will always be in Edit Game mode, 
+so you will have to tell the new engine what to do before it does anything!)
+When you select an already installed engine from the ‘Select Engine from List’ 
+drop-down list, 
+all other fields of the dialog will be ignored. 
+In other cases, you have to specify the engine executable, 
+possible arguments on the engine command line 
+(if the engine docs say the engine needs any), 
+and the directory where the engine should look for its files
+(if this cannot be deduced automatically from the specification of the engine executable). 
+You will also have specify (with the aid of checkboxes) if the engine is UCI. 
+If ‘Add this engine to the list’ is ticked (which it is by default), 
+the engine will be added to the list of installed engines in your settings file, 
+so that next time you can select it from the drop-down list. 
+You can also specify a ‘nickname’, 
+under which the engine will then appear in that drop-down list, 
+and even choose to use that nickname for it in PGN files for engine-engine games. 
+The info you supply with the checkboxes whether the engine should use GUI book, 
+or (for variant engines) automatically switch to the current variant when loaded, 
+will also be included in the list. 
+For obsolete XBoard engines, which would normally take a long delay to load 
+because XBoard is waiting for a response they will not give, 
+you can tick ‘WB protocol v1’ to speed up the loading process. 
 @item Engine #N Settings
 @cindex Engine Settings, Menu Item
 @cindex Engine #1 Settings, Menu Item
@@ -878,142 +926,14 @@ The @kbd{Ctrl-X} key is a keyboard equivalent.
 @cindex Menu, Options
 @cindex Options Menu
 @table @asis
-@item Time Control
-@cindex Time Control, Menu Item
-Pops up a sub-menu where you can set the time-control parameters interactively.
-Allows you to select classical or incremental time controls,
-set the moves per session, session duration, and time increment.
-Also allows specification of time-odds factors for one or both engines.
-If an engine is given a time-odds factor N, all time quota it gets, 
-be it at the beginning of a session or through the time increment or
-fixed time per move, will be divided by N.
-The shifted @kbd{Alt+T} key is a keyboard equivalent.
-@item Common Engine
-@cindex Common Engine, Menu Item
-Pops up a sub-menu where you can set some engine parameters common to most engines,
-such as hash-table size, tablebase cache size, maximum number of processors
-that SMP engines can use, and where to find the Polyglot adapter needed
-to run UCI engines under XBoard. The feature that allows setting of these parameters on
-engines is new since XBoard 4.3.15, so not many XBoard/WinBoard engines respond
-to it yet, but UCI engines should.
-
-It is also possible to specify a GUI opening book here, i.e. an opening
-book that XBoard consults for any position a playing engine gets in.
-It then forces the engine to play the book move, rather than to think up its own,
-if that position is found in the book.
-The book can switched on and off independently for either engine.
-The way book moves are chosen can be influenced through the settings of
-book depth and variety.
-After both sides have played more moves than the specified depth,
-the book will no longer be consulted.
-When the variety is set to 50, moves will be played with the probability
-specified in the book.
-When set to 0, only the move(s) with the highest probability will be played.
-When set to 100, all listed moves will be played with equal pobability.
-Other settings interpolate between that.
-The shifted @kbd{Alt+U} key is a keyboard equivalent.
-@item Adjudications
-@cindex Adjudications, Menu Item
-Pops up a sub-menu where you can enable or disable various adjudications
-that XBoard can perform in engine-engine games.
-The shifted @kbd{Alt+J} key is a keyboard equivalent.
-You can instruct XBoard to detect and terminate the game on checkmate
-or stalemate, even if the engines would not do so, to verify engine
-result claims (forfeiting engines that make false claims), rather than
-naively following the engine, to declare draw on positions
-which can never be won for lack of mating material, (e.g. KBK),
-or which are impossible to win unless the opponent seeks its own demise 
-(e.g. KBKN).
-For these adjudications to work, @samp{Test Legality} should be switched on.
-It is also possible to instruct XBoard to enforce a 50-move or 3-fold-repeat
-rule and automatically declare draw (after a user-adjustable number of moves
-or repeats) even if the engines are prepared to go on.
-It is also possible to have XBoard declare draw on games that seem to drag on 
-forever, or adjudicate a loss if both engines agree (for 3 consecutive moves) that one
-of them is behind more than a user-adjustable score threshold.
-For the latter adjudication to work, XBoard should be able to properly understand
-the engine's scores. To facilitate the latter, you can inform xboard here if
-the engines report scores from the viewpoint of white, or from that of their own color.
-@item Match Game Options
-@cindex Match Game Options, Menu Item
-Summons a dialog where you can set options important for playing automatic 
-matches between two chess programs 
-(e.g. by using the @samp{Machine Match} menu item in the @samp{Mode} menu).
-You can specify the number of games such a match should last,
-and the duration of the pause between games
-(important for some older engines to not have the last move of a previous
-game be given when the next game has already started).
-You can also specify a file with opening lines, or a file with initial positions
-(the @code{loadGameFile} and @code{loadPositionFile} options),
-and the number of the game or position to use from these files.
-Values -1 and -2 of this 'index' convey a special meaning,
-namely that XBoard should automatically step through all lines or positions
-in these files.
-With -1 such stepping is done every game; with -2 every two games,
-so that each line or position is played with both colors before stepping
-to the next one.
-You can have XBoard automatically rewind to the first line or position
-in the file after the index reaches a certain vaue,
-which you can also specify here.
-@item Load Game Options
-@cindex Load Game Options, Menu Item
-Summons a dialog where you can set the @code{autoDisplayComment} and 
-@code{autoDisplayTags} options, (which control popups when viewing loaded games),
-and specify the rate at which loaded games are auto-played,
-in seconds per move (which can be a fractional number, like 1.6).
-@item Save Game Options
-@cindex ave Game Options, Menu Item
-Summons a dialog where you can specify the files on which XBoard should
-automtically save any played or entered games, 
-(the @code{saveGameFile} option), 
-or the final position of such games (the @code{savePositionfile} option).
-You can also select 'auto-save' without a file name,
-in which case XBoard will prompt the user for a file name after each game.
-You can also set the default value for the PGN Event tag that will
-be used for each new game you start.
-Various options for the format of the game can be specified as well,
-such as whether scores and depths of engine games should be saved as comments,
-and if a tag with info about the score with which the engine came out of book
-should be included.
-For Chess, always set the format to PGN, rather than "old save stye"!
-@item Game List
-@cindex Game List Tags, Menu Item
-Pops up a dialog where you can select the PGN tags that should appear
-on the lines in the game list, and their order.
-@item Sound Options
-@cindex Sound Options, Menu Item
-Summons a dialog where you can specify the sounds that should accompany
-various events that can occur XBoard.
-Most events are only relevant to ICS play, 
-but the move sound is an important exception.
-For each event listed in the dialog, 
-you can select a standard sound from a menu.
-You can also select a user-supplied sound file,
-by typing its name into the designated text-edit field first,
-and then selecting "Above WAV File" from the menu for the event.
-A dummy event has been provided for trying out the sounds with the
-"play" button next to it.
-The directory with standard sounds, and the external program for playing
-the sounds can be specified too, but normally you would not touch these
-once XBoard is properly installed.
-@itemx Move Sound
-@cindex Move Sound, Menu Item
-When a move sound other than 'None' is selected, 
-XBoard alerts you by playing a sound
-after each of your opponent's moves (or after every
-move if you are observing a game on the Internet Chess Server).
-The sound is not played after moves you make or moves read from a
-saved game file.
-If you turn on this option when using XBoard with the Internet
-Chess Server, you will probably want to give the
-@kbd{set bell 0}
-command to the ICS, since otherwise the ICS will ring the terminal bell
-after every move (not just yours). (The @file{.icsrc} file
-is a good place for this; see @ref{ICS options}.)
 @item General Options
 @cindex General Options, Menu Item
 The following items to set option values appear in the dialog
 summoned by the general Options menu item.
+@itemx Absolute Analysis Scores
+@cindex Absolute Analysis Scores, Menu Item
+Controls if scores on the Engine Output window during analysis
+will be printed from the white or the side-to-move point-of-view.
 @itemx Almost Always Queen
 @cindex Almost Always Queen, Menu Item
 If this option is on, 7th-rank pawns automatically change into
@@ -1022,8 +942,8 @@ and when you drag them to the promotion square and release them there,
 they will promote to that.
 But when you drag such a pawn backwards first,
 its identity will start to cycle through the other available pieces.
-This will continue ntil you start to move it forward;
-this will then fix the identity of the piece,
+This will continue until you start to move it forward;
+at which point the identity of the piece will be fixed,
 so that you can safely put it down on the promotion square.
 If this option is off, what happens depends on the
 option @code{alwaysPromoteToQueen},
@@ -1084,6 +1004,16 @@ will pop up a menu to drop a piece on the clicked square
 (old, deprecated behavior)
 or allow you to step through an engine PV
 (new, recommended behavior).
+@itemx Hide Thinking
+@cindex Hide Thinking, Menu Item
+If this option is off, the chess engine's notion of the score and best
+line of play from the current position is displayed as it is
+thinking. The score indicates how many pawns ahead (or if negative,
+behind) the chess engine thinks it is. In matches between two
+machines, the score is prefixed by @samp{W} or @samp{B} to indicate
+whether it is showing White's thinking or Black's, and only the thinking
+of the engine that is on move is shown.
+The shifted @kbd{Ctrl-H} key is a keyboard equivalent.
 @itemx Highlight Dragging
 @cindex Highlight Dragging, Menu Item
 If Highlight Dragging is on, and the option -showTargetSquares is also on
@@ -1102,6 +1032,16 @@ be unmade are highlighted.
 Causes the highlighting described in Highlight Last Move to be done
 by drawing an arrow between the highlighted squares,
 so that it is visible even when the width of the grid lines is set to zero.
+@itemx Move Sound
+@cindex Move Sound, Menu Item
+Enables the sounding of an audible signal when the computer performs a move.
+For the selection of the sound, see @samp{Sound Options}.
+If you turn on this option when using XBoard with the Internet
+Chess Server, you will probably want to give the
+@kbd{set bell 0}
+command to the ICS, since otherwise the ICS will ring the terminal bell
+after every move (not just yours). (The @file{.icsrc} file
+is a good place for this; see @ref{ICS options}.)
 @itemx One-Click Moving
 @cindex One-Click Moving, Menu Item
 If this option is on, XBoard does not wait for you to click both the
@@ -1142,20 +1082,18 @@ error message is displayed in the message area.  If the option is
 on, move errors are displayed in small pop-up windows like other errors.
 You can dismiss an error pop-up either by clicking its OK button or by
 clicking anywhere on the board, including down-clicking to start a move.
+@itemx Scores in Move List
+@cindex Scores in Move List, Menu Item
+If this option is on, XBoard will display the depth and score
+of engine moves in the Move List, in the format of a PGN comment.
 @itemx Show Coords
 @cindex Show Coords, Menu Item
 If this option is on, XBoard displays algebraic coordinates
 along the board's left and bottom edges.
-@itemx Hide Thinking
-@cindex Hide Thinking, Menu Item
-If this option is off, the chess engine's notion of the score and best
-line of play from the current position is displayed as it is
-thinking. The score indicates how many pawns ahead (or if negative,
-behind) the chess engine thinks it is. In matches between two
-machines, the score is prefixed by @samp{W} or @samp{B} to indicate
-whether it is showing White's thinking or Black's, and only the thinking
-of the engine that is on move is shown.
-The shifted @kbd{Ctrl-H} key is a keyboard equivalent.
+@itemx Show Target Squares
+@cindex Show Target Squares, Menu Item
+This option must be on for the @samp{Highlight Dragging} described
+above to work.
 @itemx Test Legality
 @cindex Test Legality, Menu Item
 If this option is on, XBoard tests whether the moves you try to make
@@ -1179,6 +1117,62 @@ The flash-rate setting determines how rapidly this flashing occurs.
 @cindex Animation Speed, Menu Item
 Determines the duration (in msec) of an animation step,
 when @samp{Animate Moving} is swiched on.
+@item Time Control
+@cindex Time Control, Menu Item
+Pops up a sub-menu where you can set the time-control parameters interactively.
+Allows you to select classical or incremental time controls,
+set the moves per session, session duration, and time increment.
+Also allows specification of time-odds factors for one or both engines.
+If an engine is given a time-odds factor N, all time quota it gets, 
+be it at the beginning of a session or through the time increment or
+fixed time per move, will be divided by N.
+The shifted @kbd{Alt+T} key is a keyboard equivalent.
+@item Common Engine
+@cindex Common Engine, Menu Item
+Pops up a sub-menu where you can set some engine parameters common to most engines,
+such as hash-table size, tablebase cache size, maximum number of processors
+that SMP engines can use, and where to find the Polyglot adapter needed
+to run UCI engines under XBoard. The feature that allows setting of these parameters on
+engines is new since XBoard 4.3.15, so not many XBoard/WinBoard engines respond
+to it yet, but UCI engines should.
+
+It is also possible to specify a GUI opening book here, i.e. an opening
+book that XBoard consults for any position a playing engine gets in.
+It then forces the engine to play the book move, rather than to think up its own,
+if that position is found in the book.
+The book can switched on and off independently for either engine.
+The way book moves are chosen can be influenced through the settings of
+book depth and variety.
+After both sides have played more moves than the specified depth,
+the book will no longer be consulted.
+When the variety is set to 50, moves will be played with the probability
+specified in the book.
+When set to 0, only the move(s) with the highest probability will be played.
+When set to 100, all listed moves will be played with equal pobability.
+Other settings interpolate between that.
+The shifted @kbd{Alt+U} key is a keyboard equivalent.
+@item Adjudications
+@cindex Adjudications, Menu Item
+Pops up a sub-menu where you can enable or disable various adjudications
+that XBoard can perform in engine-engine games.
+The shifted @kbd{Alt+J} key is a keyboard equivalent.
+You can instruct XBoard to detect and terminate the game on checkmate
+or stalemate, even if the engines would not do so, to verify engine
+result claims (forfeiting engines that make false claims), rather than
+naively following the engine, to declare draw on positions
+which can never be won for lack of mating material, (e.g. KBK),
+or which are impossible to win unless the opponent seeks its own demise 
+(e.g. KBKN).
+For these adjudications to work, @samp{Test Legality} should be switched on.
+It is also possible to instruct XBoard to enforce a 50-move or 3-fold-repeat
+rule and automatically declare draw (after a user-adjustable number of moves
+or repeats) even if the engines are prepared to go on.
+It is also possible to have XBoard declare draw on games that seem to drag on 
+forever, or adjudicate a loss if both engines agree (for 3 consecutive moves) that one
+of them is behind more than a user-adjustable score threshold.
+For the latter adjudication to work, XBoard should be able to properly understand
+the engine's scores. To facilitate the latter, you can inform xboard here if
+the engines report scores from the viewpoint of white, or from that of their own color.
 
 @item ICS Options
 @cindex ICS Options, Menu Item
@@ -1315,6 +1309,150 @@ Ticking this options causes various types of ICS messages do be
 displayed with different foreground or background colors in the console.
 The colors can be individually selected for each type,
 through the accompanying text edits.
+
+@item Match Options
+@cindex Match Options, Menu Item
+Summons a dialog where you can set options important for playing automatic 
+matches between two chess programs 
+(e.g. by using the @samp{Machine Match} menu item in the @samp{Mode} menu).
+@itemx Tournament file
+@cindex Tournament file, Menu item
+To run a tournament, XBoard needs a file to record its progress, 
+to resume the tourney when it is interrupted.
+When you want to conduct anything more complex than a simple 
+two-player match with the currently loaded engines, 
+(i.e. when you select a list of participants), 
+you must not leave this field blank. 
+When you enter the name of an existing tournament file, 
+XBoard will ignore all other input specified in the dialog, 
+and will take them from that tournament file.
+This resumes an interrupted tournament, or adds another XBoard
+agent playing games for it to those that are already doing so.
+Specifying a not-yet-existing file will cause XBoard to create it, 
+according to the tournament parameters specified in the rest of the dialog, 
+before it starts the tournament on ‘OK’. 
+Provided that you specify participants; 
+without participants no tournament file will be made, but other entered values 
+(e.g. for the file with opening positions) will take effect. 
+Default: configured by the @code{defaultTourneyName} option.
+@itemx Sync after round
+@itemx Sync after cycle
+@cindex Sync after round, Menu Item
+@cindex Sync after cycle, Menu Item
+The sync options, when on, will cause WinBoard to refrain from starting games 
+of the next round or cycle before all games of the previous round or cycle are finished.
+This guarantees correct ordering in the games file,
+even when multiple XBoard instances are concurrently playing games for the same tourney.
+Default: sync after cycle, but not after round.
+@itemx Select Engine
+@itemx Tourney participants
+@cindex Select Engine, Menu Item
+@cindex Tourney participants, Menu Item
+With the Select Engine drop-down list you can pick an engine from your list 
+of installed engines in the settings file, to be added to the tournament. 
+The engines selected so far will be listed in the ‘Tourney participants’ memo. 
+The latter is a normal text edit, so you can use normal text-editing functions 
+to delete engines you selected by accident, or change their order. 
+Do not type names yourself there, because names that do not exactly match 
+one of the names from the drop-down list will lead to undefined behavior.
+@itemx Tourney type
+@cindex Tourney type, Menu Item
+Here you can specify the type of tournament you want. 
+XBoard’s intrinsic tournament manager support round-robins (type = 0), 
+where each participant plays every other participant, and (multi-)gauntlets, 
+where one (or a few) so-called ‘gauntlet engines’ play an independent set of opponents. 
+In the latter case, you specify the number of gauntlet engines. 
+E.g. if you specified 10 engine, and tourney type = 2, 
+the first 2 engines each play the remaining 8. 
+A value of -1 instructs XBoard to play Swiss; for this to work an external
+pairing engine must be specified through the @code{pairingEngine} option.
+Each Swiss round will be concidered a tourney cycle in that case.
+Default:0
+@itemx Number of tourney cycles
+@itemx Default number of Games
+@cindex Number of tourney cycles, Menu Item
+@cindex Default number of Games, Menu Item
+You can specify tourneys where every two opponents play each other multiple times. 
+Such multiple games can be played in a row, 
+as specified by the ‘number of games per pairing’, 
+or by repeating the entire tournament schedule a number of times 
+(specified by the ‘number of tourney cycles’). 
+The total number of times two engine meet will be the product of these two. 
+Default is 1 cycle; 
+the number of games per pairing is the same as the default number of match games, 
+stored in your settings file through the @code{defaultMatchGames} option.
+@itemx Save Tourney Games
+@cindex Save Tourney Games, Menu Item
+File where the tournament games are saved
+(duplicate of the item in the @samp{Save Game Options}).
+@itemx Game File with Opening Lines
+@itemx File with Start Positions
+@itemx Game Number
+@itemx Position Number
+@itemx Rewind Index after
+@cindex Game File with Opening Lines, Menu Item
+@cindex File with Start Positions, Menu Item
+@itemx Game Number, Menu Item
+@itemx Position Number, Menu Item
+@itemx Rewind Index after, Menu Item
+These items optionally specify the file with move sequences or board positions the tourney 
+games should start from.
+The corresponding numbers specify the number of the game or position in the file.
+Here a value -1 means automatical stepping through all games on the file,
+-2 automatic stepping every two games.
+The Rewind-Index parameter causes a stepping index to reset to one after reaching
+a specified value.
+Default: No game or position file will be used. The default index if such a file is used is 1.
+
+@item Load Game Options
+@cindex Load Game Options, Menu Item
+Summons a dialog where you can set the @code{autoDisplayComment} and 
+@code{autoDisplayTags} options, (which control popups when viewing loaded games),
+and specify the rate at which loaded games are auto-played,
+in seconds per move (which can be a fractional number, like 1.6).
+@item Save Game Options
+@cindex ave Game Options, Menu Item
+Summons a dialog where you can specify the files on which XBoard should
+automtically save any played or entered games, 
+(the @code{saveGameFile} option), 
+or the final position of such games (the @code{savePositionfile} option).
+You can also select 'auto-save' without a file name,
+in which case XBoard will prompt the user for a file name after each game.
+You can also set the default value for the PGN Event tag that will
+be used for each new game you start.
+Various options for the format of the game can be specified as well,
+such as whether scores and depths of engine games should be saved as comments,
+and if a tag with info about the score with which the engine came out of book
+should be included.
+For Chess, always set the format to PGN, rather than "old save stye"!
+
+@item Game List
+@cindex Game List Tags, Menu Item
+Pops up a dialog where you can select the PGN tags that should appear
+on the lines in the game list, and their order.
+
+@item Sound Options
+@cindex Sound Options, Menu Item
+Summons a dialog where you can specify the sounds that should accompany
+various events that can occur XBoard.
+Most events are only relevant to ICS play, 
+but the move sound is an important exception.
+For each event listed in the dialog, 
+you can select a standard sound from a menu.
+You can also select a user-supplied sound file,
+by typing its name into the designated text-edit field first,
+and then selecting "Above WAV File" from the menu for the event.
+A dummy event has been provided for trying out the sounds with the
+"play" button next to it.
+The directory with standard sounds, and the external program for playing
+the sounds can be specified too, but normally you would not touch these
+once XBoard is properly installed.
+When a move sound other than 'None' is selected, 
+XBoard alerts you by playing that sound
+after each of your opponent's moves (or after every
+move if you are observing a game on the Internet Chess Server).
+The sound is not played after moves you make or moves read from a
+saved game file.
 
 @item Save Settings Now
 @cindex Save Settings Now, Menu Item
@@ -1468,6 +1606,7 @@ true or false (@samp{XBoard*longOptionName: true}).
 @menu
 * Chess engine options::        Controlling the chess engine.
 * UCI + WB Engine Settings::    Setting some very common engine parameters
+* Tournament options::          Running tournaments and matches between engines.
 * ICS options::                 Connecting to and using ICS.
 * Load and Save options::       Input/output options.
 * User interface options::      Look and feel options.
@@ -1768,21 +1907,50 @@ Remains in force until a new variant is selected.
 Indicates if the mentioned engine executable file is an UCI engine, 
 and should be run with the aid of the Polyglot adapter rather than directly. 
 Xboard will then pass the other UCI options and engine name to Polyglot 
-through a .ini temporary file created for the purpose.
+on its command line, according to the option @code{adapterCommand}.
+@item -fUCCI
+@itemx -sUCCI
+@itemx -fUSI
+@itemx -sUSI
+@cindex fUCCI, option
+@cindex sUCCI, option
+@cindex fUSI, option
+@cindex sUSI, option
+Options similar to @code{fUCI} and @code{sUCI}, except that they
+use the indicated engine with the protocol adapter specified in
+the @samp{uxiAdapter} option.
+This can then be configured for running an UCCI or USI adapter,
+as the need arises.
+@item -adapterCommand string
+@cindex adapterCommand, option
+The string conatins the command that should be issued by XBoard
+to start an engine that is accompanied by the @code{fUCI} option.
+Any identifier following a percent sign in the command (e.g. %fcp)
+will be considered the name of an XBoard option, and be replaced
+by the value of that option at the time the engine is started.
+For starting the second engine, any leading "f" or "first" in
+the option name will first be replaced by "s" or "second",
+before finding its value.
+Default: 'polyglot -noini -ec "%fcp" -ed "%fd"'
+@item -uxiAdapter string
+@cindex uxiAdapter, option
+Similar to @code{adapterCommand}, but used for engines accompanied
+by the @code{fUCCI} or @code{fUSI} option, so you can configure
+XBoard to be ready to handle more than one flavor of non-native protocols.
+Default: ""
 @item -polyglotDir filename
 @cindex polyglotDir, option
 Gives the name of the directory in which the Polyglot adapter for UCI engines resides.
 Default: "".
 @item -usePolyglotBook true/false
 @cindex usePolyglotBook, option
-Specifies if the Polyglot book should be used.
+Specifies if the Polyglot book should be used as GUI book.
 @item -polyglotBook filename
 @cindex polyglotBook, option
-Gives the filename of the opening book that Polyglot should use. 
-From XBoard 4.3.15 on, native XBoard/WinBoard engines will also use the opening book specified here, 
-provided the @code{usePolyglotBook} option is set to true,
-and the option @code{firstHasOwnBookUCI} or @code{secondHasOwnBookUCI} applying to the engine
-is set to false.
+Gives the filename of the opening book.
+The book is only used when the @code{usePolyglotBook} option is set to true,
+and the option @code{firstHasOwnBookUCI} or @code{secondHasOwnBookUCI} 
+applying to the engine is set to false.
 The engine will be kept in force mode as long as the current position is in book, 
 and XBoard will select the book moves for it. Default: "".
 @item -fNoOwnBookUCI or -firstXBook or -firstHasOwnBookUCI true/false
@@ -1795,6 +1963,17 @@ and XBoard will select the book moves for it. Default: "".
 @cindex secondXBook, option
 Indicates if the mentioned engine has its own opening book it should play from,
 rather than using the external book through XBoard. Default: false.
+@item -fn string or -firstPgnName string
+@itemx -sn string or -secondPgnName string
+@cindex firstPgnName string, option
+@cindex secondPgnName string, option
+@cindex fn string, option
+@cindex sn string, option
+Indicates the name that should be used for the engine in PGN tags of
+engine-engine games.
+Intended to allow you to install verions of the same engine with different settings, 
+and still distinguish them.
+Default: "". 
 @item -defaultHashSize n
 @cindex defaultHashSize, option
 Sets the size of the hash table to n MegaBytes. Together with the EGTB cache size 
@@ -1820,6 +1999,80 @@ xboard will relay the path name for this format to the engine through an egtpath
 One egtpath command for each matching format will be sent. 
 Popular formats are "nalimov" DTM tablebases and "scorpio" bitbases.
 Default: "".
+@item -firstChessProgramNames=@{names@}
+This option lets you customize the drop-down list of chess engine names 
+that appears in the @samp{Load Engine} and @samp{Match Options} dialog. 
+It consists of a list of strings, one per line. 
+When an engine is loaded, the corresponding line is prefixed with "-fcp ",
+and processed like it appeared on the command line.
+That means that apart from the engine command,
+it can contain any list of XBoard options you want to use with this engine.
+(Commonly used options here are -fd, -firstXBook, -fUCI, -variant.)
+
+The value of this option is gradually built as you load new engines
+through the @samp{Load Engine} menu dialog, with @samp{Add to list} ticked. 
+To change it, edit your settings file with a plain text editor.
+@end table
+
+@node Tournament options
+@section Tournament options
+@cindex Tournament Options
+@cindex Options, Tournament
+@table @asis
+@item -tf filename or -tourneyFile filename
+@cindex tf, option
+@cindex tourneyFile, option
+Specifies the name of the tournament file used in match mode 
+to conduct a multi-player tournament. 
+This file is a special settings file, 
+which stores the description of the tournament (including progress info), 
+through normal options (e.g. for time control, load and save files), 
+and through some special-purpose options listed below.
+@item -tt number or -tourneyType number
+@cindex tt, option
+@cindex tourneyType, option
+Specifies the type of tourney: 0 = round-robin, 
+N>0 = (multi-)gauntlet with N gauntlet engines, 
+-1 = Swiss through external pairing engine. 
+Volatile option, but stored in tourney file.
+@item -cy number or -tourneyCycles number
+@cindex cy, option
+@cindex tourneyCycles, option
+Specifies the number of cycles in a tourney. 
+Volatile option, but stored in tourney file.
+@item -participants list
+@cindex participants, option
+The list is a multi-line text string that specifies engines 
+occurring in the @code{firstChesProgramNames} list 
+in the settings file by their (implied or explicitly given) nicknames, 
+one engine per line. 
+The mentioned engines will play in the tourney. 
+Volatile option, but stored in tourney file.
+@item -results string
+@cindex results, option
+The string of +=- characters lists the result of all played games in a toruney. 
+Games currently playing are listed as *, 
+while a space indicates a game that is not yet played or playing . 
+Volatile option, but stored in tourney file.
+@item -defaultTourneyName string
+@cindex defaultTourneyName, option
+Specifies the name of the tournament file XBoard should propose 
+when the @samp{Match Options} dialog is opened. 
+Any %y, %M, %d, %h, %m, %s in the string are replaced by the current 
+year, month, day of the month, hours, minutes, seconds of the current time, 
+respectively, as two-digit number. 
+A %Y would be replaced by the year as 4-digit number. Default: empty string.
+@item -pairingEngine filename
+@cindex pairingEngine, option
+Specifies the external program to be used to pair the participants in Swiss tourneys. 
+XBoard communicates with this engine in the same way as it communicates with Chess engines. 
+The only commands sent to the pairing engine are “results N string”, 
+(where N is the number of participants, 
+and string the results so far in the format of the results option), 
+and “pairing N”, (where N is the number of the tourney game). 
+To the latter the pairing engine should answer with “A-B”, 
+where A and B are participant numbers (in the range 1-N). 
+(There should be no reply to the results command.) Default: empty string.
 @end table
 
 @node ICS options
@@ -2187,29 +2440,6 @@ xboard*soundIcsDraw: draw.wav
 xboard*soundIcsUnfinished: unfinished.wav
 xboard*soundIcsAlarm: alarm.wav
 @end example
-@item -dropMenu true|false
-@cindex dropMenu, option
-This option allows you to emulate old behavior, 
-where the right mouse button brings up the (now deprecated) drop menu 
-rather than displaying the position at the end of the principal variation. 
-Default: False.
-@item -pieceMenu true|false
-@cindex pieceMenu, option
-This option allows you to emulate old behavior, 
-where the right mouse button brings up the (now deprecated) piece menu
-in Edit Position mode.
-From this menu you can select the piece to put on the square you
-clicked to bring up the menu,
-or select items such as @kbd{clear board}.
-You can also @kbd{promote} or @kbd{demote} a clicked piece to convert
-it into an unorthodox piece that is not directly in the menu,
-or give the move to @kbd{black} or @kbd{white}.
-@item -variations true|false
-@cindex variations, option
-When this option is on, you can start new variations in Edit Game or
-Analyze mode by holding the Shift key down while entering a move.
-When it is off, the Shift key will be ignored.
-Default: False.
 @end table
 
 @node Load and Save options
@@ -2357,7 +2587,7 @@ These and most other standard Xt options are accepted.
 @item -noGUI
 @cindex noGUI, option
 Suppresses all GUI functions of XBoard 
-(to speed up automated ultra-fast engine-engine games, which you don�t want to watch). 
+(to speed up automated ultra-fast engine-engine games, which you dont want to watch). 
 There will be no board or clock updates, no printing of moves, 
 and no update of the icon on the task bar in this mode.
 @item -movesound/-xmovesound or -ringBellAfterMoves true/false
@@ -2381,7 +2611,7 @@ Sets the Popup Move Errors menu option.  @xref{Options Menu}. Default: false.
 Sets the Always Queen menu option.  @xref{Options Menu}.  Default: false.
 @item -sweepPromotions true/false
 @cindex sweepPromotion, option
-Sets the Almost Always Promote to Queen menu option.  
+Sets the @samp{Almost Always Promote to Queen} menu option.  
 @xref{Options Menu}.  Default: false.
 @item -legal/-xlegal or -testLegality true/false
 @cindex legal, option
@@ -2512,6 +2742,15 @@ Sets the Highlight with Arrow menu option. @xref{Options Menu}. Default: false.
 @cindex blind, option
 @cindex blindfold, option
 Sets the Blindfold menu option.  @xref{Options Menu}.  Default: false.
+@item fSAN
+@itemx sSAN
+@cindex fSAN, option
+@cindex sSAN, option
+Causes the PV in thinking output of the mentioned engine to be converted 
+to SAN before it is further processed.
+Warning: this might lose engine output not understood by the parser,
+and uses a lot of CPU power.
+Default: the PV is displayed exactly as the engine produced it.
 @item -clockFont font
 @cindex clockFont, option
 @cindex Font, clock
@@ -2656,6 +2895,35 @@ loaded game.  Default: true.
 If this option is set to true, the Paste Position and Paste Game
 options paste from the currently selected text.  If false, they paste
 from the clipboard.  Default: false.
+@item -dropMenu true|false
+@cindex dropMenu, option
+This option allows you to emulate old behavior, 
+where the right mouse button brings up the (now deprecated) drop menu 
+rather than displaying the position at the end of the principal variation. 
+Default: False.
+@item -pieceMenu true|false
+@cindex pieceMenu, option
+This option allows you to emulate old behavior, 
+where the right mouse button brings up the (now deprecated) piece menu
+in Edit Position mode.
+From this menu you can select the piece to put on the square you
+clicked to bring up the menu,
+or select items such as @kbd{clear board}.
+You can also @kbd{promote} or @kbd{demote} a clicked piece to convert
+it into an unorthodox piece that is not directly in the menu,
+or give the move to @kbd{black} or @kbd{white}.
+@item -variations true|false
+@cindex variations, option
+When this option is on, you can start new variations in Edit Game or
+Analyze mode by holding the Shift key down while entering a move.
+When it is off, the Shift key will be ignored.
+Default: False.
+@item -absoluteAnalysisScores true|false
+@cindex absoluteAnalysisScores, option
+When true, scores on the Engine Output window during analysis
+will be printed from the white point-of-view, rather than the
+side-to-move point-of-view.
+Default: False.
 @end table
 
 @node Adjudication Options

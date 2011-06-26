@@ -26,7 +26,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xengineoutput.c \
 		 evalgraph.c evalgraph.h xevalgraph.c xevalgraph.h\
 	 	 xgamelist.c xgamelist.h\
-		 xhistory.c  xhistory.h \
+		 history.c xhistory.c xhistory.h \
 		 xoptions.c \
 		 filebrowser/selfile.c filebrowser/selfile.h \
 		 filebrowser/draw.c filebrowser/path.c \

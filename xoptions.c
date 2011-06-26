@@ -100,7 +100,7 @@ void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
     XtGetValues(w, args, 1);
     j = 1;
     XtSetArg(args[0], XtNdisplayCaret, True);
-    if(!strchr(s, '\n')) XtSetArg(args[1], XtNinsertPosition, strlen(s)), j++;
+    if(!strchr(s, '\n') && strlen(s) < 80) XtSetArg(args[1], XtNinsertPosition, strlen(s)), j++;
     XtSetValues(w, args, j);
     XtSetKeyboardFocus((Widget) data, w);
     previous = w;
@@ -239,7 +239,7 @@ void CreateComboPopup(parent, name, n, mb)
 
 // cloned from Engine Settings dialog (and later merged with it)
 
-extern WindowPlacement wpComment, wpTags;
+extern WindowPlacement wpComment, wpTags, wpMoveHistory;
 char *trialSound;
 static int oldCores, oldPonder;
 int MakeColors P((void));
@@ -249,7 +249,7 @@ int GenericReadout P((int selected));
 Widget shells[10];
 Widget marked[10];
 Boolean shellUp[10];
-WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags };
+WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory };
 Option *dialogOptions[10];
 
 void MarkMenu(char *item, int dlgNr)
@@ -305,13 +305,22 @@ extern Option installOptions[], matchOptions[];
 char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
 char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
 
-void AddLine(Option *opt, char *s)
+int AppendText(Option *opt, char *s)
 {
     XawTextBlock t;
+    char *v;
+    int len;
+    GetWidgetText(opt, &v);
+    len = strlen(v);
     t.ptr = s; t.firstPos = 0; t.length = strlen(s); t.format = XawFmt8Bit;
-    XawTextReplace(opt->handle, 9999, 9999, &t);
-    t.ptr = "\n"; t.length = 1;
-    XawTextReplace(opt->handle, 9999, 9999, &t);
+    XawTextReplace(opt->handle, len, len, &t);
+    return len;
+}
+
+void AddLine(Option *opt, char *s)
+{
+    AppendText(opt, s);
+    AppendText(opt, "\n");
 }
 
 void AddToTourney(int n)
@@ -358,6 +367,7 @@ int GeneralOptionsOK(int n)
 }
 
 Option generalOptions[] = {
+{ 0,  0, 0, NULL, (void*) &appData.whitePOV, "", NULL, CheckBox, N_("Absolute Analysis Scores") },
 { 0,  0, 0, NULL, (void*) &appData.sweepSelect, "", NULL, CheckBox, N_("Almost Always Queen (Detour Under-Promote)") },
 { 0,  0, 0, NULL, (void*) &appData.animateDragging, "", NULL, CheckBox, N_("Animate Dragging") },
 { 0,  0, 0, NULL, (void*) &appData.animate, "", NULL, CheckBox, N_("Animate Moving") },
@@ -375,6 +385,7 @@ Option generalOptions[] = {
 { 0,  0, 0, NULL, (void*) &appData.ponderNextMove, "", NULL, CheckBox, N_("Ponder Next Move") },
 { 0,  0, 0, NULL, (void*) &appData.popupExitMessage, "", NULL, CheckBox, N_("Popup Exit Messages") },
 { 0,  0, 0, NULL, (void*) &appData.popupMoveErrors, "", NULL, CheckBox, N_("Popup Move Errors") },
+{ 0,  0, 0, NULL, (void*) &appData.showEvalInMoveHistory, "", NULL, CheckBox, N_("Scores in Move List") },
 { 0,  0, 0, NULL, (void*) &appData.showCoords, "", NULL, CheckBox, N_("Show Coordinates") },
 { 0,  0, 0, NULL, (void*) &appData.markers, "", NULL, CheckBox, N_("Show Target Squares") },
 { 0,  0, 0, NULL, (void*) &appData.testLegality, "", NULL, CheckBox, N_("Test Legality") },
@@ -444,8 +455,9 @@ Option variantDescriptors[] = {
 { VariantSuicide, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("suicide")},
 { VariantCapaRandom, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("CRC (10x8)")},
 { VariantGiveaway, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("give-away")},
-{ VariantSpartan, 1, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
+{ VariantGrand, 1, 135, NULL, (void*) &Pick, "#5070FF", NULL, Button, N_("grand (10x10)")},
 { VariantLosers, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("losers")},
+{ VariantSpartan, 1, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
 { 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size ( -1 = default for selected variant):")},
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.NrRanks, "", NULL, Spin, N_("Number of Board Ranks:") },
 { 0, -1, BOARD_FILES, NULL, (void*) &appData.NrFiles, "", NULL, Spin, N_("Number of Board Files:") },
@@ -1502,10 +1514,18 @@ Option commentOptions[] = {
 {   0,  1,    0, NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
 };
 
+void ClearTextWidget(Option *opt)
+{
+//    XtCallActionProc(opt->handle, "select-all", NULL, NULL, 0);
+//    XtCallActionProc(opt->handle, "kill-selection", NULL, NULL, 0);
+    Arg arg;
+    XtSetArg(arg, XtNstring, ""); // clear without disturbing selection!
+    XtSetValues(opt->handle, &arg, 1);
+}
+
 void ClearComment(int n)
 {
-    XtCallActionProc(commentOptions[0].handle, "select-all", NULL, NULL, 0);
-    XtCallActionProc(commentOptions[0].handle, "kill-selection", NULL, NULL, 0);
+    ClearTextWidget(&commentOptions[0]);
 }
 
 void NewCommentPopup(char *title, char *text, int index)

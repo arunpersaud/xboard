@@ -819,6 +819,7 @@ int radioButton[] = {
     -1, // Twilight,
     OPT_VariantMakruk,
     OPT_VariantSChess,
+    OPT_VariantGrand,
     OPT_VariantSpartan, // Spartan
     -2 // sentinel
 };
@@ -2133,7 +2134,7 @@ ParseCommSettings(char *arg, DCB *dcb)
   if (cd->label == NULL) goto cant_parse;
   return;
 cant_parse:
-    ExitArgError(_("Can't parse com port settings"), arg);
+    ExitArgError(_("Can't parse com port settings"), arg, TRUE);
 }
 
 
