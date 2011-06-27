@@ -869,22 +869,75 @@ void GenericCallback(w, client_data, call_data)
 
 static char *oneLiner  = "<Key>Return:	redraw-display()\n";
 
+void Browse(GtkWidget *widget, gpointer gdata)
+{
+    GtkWidget *entry;
+    GtkWidget *dialog;
+    GtkFileFilter *gtkfilter;
+    GtkFileFilter *gtkfilter_all;
+    int data = (intptr_t) gdata;
+  
+    gtkfilter     = gtk_file_filter_new();
+    gtkfilter_all = gtk_file_filter_new();
+
+    char fileext[10] = "*";
+
+    dialog = gtk_file_chooser_dialog_new ("Open File",
+                      NULL,
+                      GTK_FILE_CHOOSER_ACTION_OPEN,
+                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                      NULL);
+
+    /* one filter to show everything */
+    gtk_file_filter_add_pattern(gtkfilter_all, "*.*");
+    gtk_file_filter_set_name   (gtkfilter_all, "All Files");
+
+    /* filter for specific filetypes e.g. pgn or fen */    
+    strcat(fileext, currentOption[data].textValue);    
+    gtk_file_filter_add_pattern(gtkfilter, fileext);
+    gtk_file_filter_set_name (gtkfilter, currentOption[data].textValue);
+
+    /* add filters */
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter_all);
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+    /* activate filter */
+    gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+
+    if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+      {
+        char *filename;
+        filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));             
+        entry = currentOption[data].handle;
+        gtk_entry_set_text (GTK_ENTRY (entry), filename);        
+        g_free (filename);
+
+      }
+    gtk_widget_destroy (dialog);
+}
+
 int
 GenericPopUpGTK(Option *option, char *title, int dlgNr)
 {    
     GtkWidget *dialog = NULL;
-    gint       response;
+    gint       response, w;
     GtkWidget *label;
     GtkWidget *box;
     GtkWidget *checkbutton;
     GtkWidget *entry;
     GtkWidget *hbox;
     GtkWidget *ok_button;
-    int i, j;
-    char def[MSG_SIZ];
+    GtkWidget *button;
+    GtkWidget *table;
+
+    int i, j, arraysize;
+    char def[MSG_SIZ], **dest;
     float x;
     String val;
 
+    dialogOptions[dlgNr] = option; // make available to callback
+    currentOption = option;
+    
     dialog = gtk_dialog_new_with_buttons( title,
                                       NULL,
                                       GTK_DIALOG_MODAL,                                             
@@ -893,51 +946,78 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                                       NULL );
     
     box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
-    gtk_box_set_spacing(GTK_BOX(box), 10);    
+    gtk_box_set_spacing(GTK_BOX(box), 5);    
+
+    arraysize = 0;
+    for (i=0;option[i].type != EndMark;i++) {
+        arraysize++;   
+    }
+
+    table = gtk_table_new(arraysize, 3, FALSE);    
 
     for (i=0;option[i].type != EndMark;i++) {        
         switch(option[i].type) {
           case Fractional:           
 	    snprintf(def, MSG_SIZ,  "%.2f", *(float*)option[i].target);
 	    option[i].value = *(float*)option[i].target;
-            goto tBox;            
+            goto tBox;
+          case TextBox:
+	  case FileName:            
      	  case PathName:
           tBox:
             label = gtk_label_new(option[i].name);
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 
-            entry = gtk_entry_new();
-            gtk_entry_set_text (GTK_ENTRY (entry), def);            
+            entry = gtk_entry_new();            
+     
+            gtk_entry_set_text (GTK_ENTRY (entry), option[i].type==Spin || option[i].type==Fractional ? def :
+                            *(char**)option[i].target);            
 
-            hbox = gtk_hbox_new (FALSE, 0);
-            gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
-            gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
+            w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
+	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 
-            gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
-                        hbox, TRUE, TRUE, 0);
+            //gtk_entry_set_width_chars (GTK_ENTRY (entry), 18);
+            gtk_entry_set_max_length (GTK_ENTRY (entry), w);
+
+            // left, right, top, bottom
+            gtk_table_attach_defaults(GTK_TABLE(table), label, 0, 1, i, i+1);
+            //gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);            
+
+            if (option[i].type == FileName) {
+                gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);
+                button = gtk_button_new_with_label ("Browse");
+                gtk_table_attach_defaults(GTK_TABLE(table), button, 2, 3, i, i+1);
+                g_signal_connect (button, "clicked", G_CALLBACK (Browse), (gpointer)(intptr_t) i);                 
+            }
+            else
+                gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 3, i, i+1); 
+           
             option[i].handle = (void*)entry;		
             break;
           case CheckBox:
             checkbutton = gtk_check_button_new_with_label(option[i].name);
             option[i].value = *(Boolean*)option[i].target;
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);            
-            gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
-                        checkbutton, TRUE, TRUE, 0);           
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);
+            gtk_table_attach_defaults(GTK_TABLE(table), checkbutton, 0, 3, i, i+1);                            
             option[i].handle = (void *)checkbutton;
             break; 
 	  case Label:            
             label = gtk_label_new(option[i].name);
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-            gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
-                        label, TRUE, TRUE, 0);           
+            gtk_table_attach_defaults(GTK_TABLE(table), label, 0, 3, i, i+1);            
 	    break;
 	default:
 	    printf("GenericPopUp: unexpected case in switch.\n");
 	    break;
 	}        
     }
+
+    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+                        table, TRUE, TRUE, 0);    
+
+    //printf("width=%d\n", gtk_entry_get_width_chars (GTK_ENTRY (entry)));
  
     /* Show dialog */
     gtk_widget_show_all( dialog );
@@ -948,6 +1028,18 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
       {
         for (i=0;option[i].type != EndMark;i++) {             
             switch(option[i].type) {
+              case TextBox:
+              case FileName:
+              case PathName:
+                entry = option[i].handle;
+                val = (String)gtk_entry_get_text (GTK_ENTRY (entry));              
+                dest = (char**) option[i].target;
+                if(*dest == NULL || strcmp(*dest, val)) {
+                   if(*dest) free(*dest);
+                   *dest = malloc(strlen(val)+1);
+                   safeStrCpy(*dest, val, strlen(val) + 1);
+                }
+                break;
               case Fractional:
                 entry = option[i].handle;                
                 val = (String)gtk_entry_get_text (GTK_ENTRY (entry));                
@@ -1324,7 +1416,8 @@ void SaveOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(saveOptions, _("Save Game Options"), 0);
+   //GenericPopUp(saveOptions, _("Save Game Options"), 0);
+   GenericPopUpGTK(saveOptions, _("Save Game Options"), 0);
 }
 
 void SoundOptionsProc(w, event, prms, nprms)
