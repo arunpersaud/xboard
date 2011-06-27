@@ -3,6 +3,496 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2011-06-18 12:51:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update window itle after last game of match
+
+The result printed behind player names during a match would still be the one
+without the game, differing from what the popup would show, which looked
+sloppy enough for people to complain about it.
+.
+
+2011-06-18 10:26:31 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make WB generic popup translatable
+
+When used for internal settings (as in the Load Engine and Tournament
+Options dialogs), the option names are now subectto translation.
+
+2011-06-17 21:05:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo Move History with generic popup in WinBoard style
+
+The use of color and boldness to make the move list more readable
+unfortunately cannot work in Xaw; reverse video by selection is used as an alternative to highlight the current move.
+
+2011-06-17 21:19:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove stray else
+
+Due to an erroneous else, the window parameters of Move History were
+not retreived (and thus incorrectly saved) when the Engine Output was up.
+
+2011-06-14 18:47:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make non-existing opton in settings file non-fatal
+
+It is rather difficult to recover from a situaton where the settings
+file contains an unknown option (e.g. because you downgraded to a
+previous version that had fewer options), especially in WinBoard, where
+the user settings file is in a hidden folder, and people might not be
+able to find it, let alone edit it. By just skipping the line with the
+offending option, rather than generating a fatal error, when reading
+from a settings file, such options will be automatically purged from the
+file as soon as you save settings.
+  Small problem is that the user cannot be warned, as the initialization
+has not progressed far enough at this point to generate error popups. In
+XBoard we can at least print to the console, but in WinBoard there is no
+warning at all. But the worst thing that can happen is that new options
+in a settings file of a more advanced version will revert to their
+defaults.
+
+2011-06-14 18:20:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Change long form of -tf option to -tourneyFile
+
+This is a more logical name, and in the WinBoard docs it was already
+described as such. Also remove the -processes option, which in the
+current design of the tourney manager is no longer used.
+
+2011-06-14 18:17:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix default of -remoteUser
+
+This has to be an empty string, rather than NULL, to prevent XBoard from
+segfaulting when the -gateway option is used.
+
+2011-06-14 13:32:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -at and -opt options as alternative for @
+
+Windows XP and Vista shortcuts do not display command lines with @ in
+them correctly, and these optionsprovide a work-around for that.
+
+2011-06-14 12:46:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix empty-string option values in XBoard
+
+
+2011-06-14 12:40:11 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on switching sound in Vista
+
+When choosing a new sound the wave form of the old one was free'ed, but
+because built-in sounds are not really malloc'ed, this led to a crash.
+
+2011-06-14 12:36:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update WB docs for tourney manager
+
+
+2011-06-14 12:35:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add icon to WB for tournament files
+
+
+2011-06-10 16:52:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo Time Control dialog with generic popup
+
+As poor-man's disabling of the unneeded input fields, we print the word
+"Unused" in them.
+
+2011-06-10 14:14:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Some refactoring in xoptions.c to separate out front-end
+
+
+2011-06-10 12:38:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Redo New Shuffle Game dialog with generic popup
+
+The buttons are slightly renamed, and in stead of having an 'off'
+button to clear it, shuffleOpenings now has its own checkbox, which is
+ticked when a fixed or dynamic random is chosen with the buttons.
+
+2011-06-10 11:58:17 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix type of shuffleOpenings
+
+This was a Boolean option, and thus accessed by the args.h code as such,
+while it was declared as an int (and used in backend.c as such). This
+could have led to problems with different endianness.
+
+2011-06-09 23:57:43 -0700 Tim Mann <tim@tim-mann.org>:
+Internationalize the file browser.
+
+The file browser was missed in the previous round of
+internationalization and had gotten broken by setting international =
+True in its widgets.  I got nothing but segfaults trying to set
+international to False in the file browser widget subtree when it was
+True in the main window, so I gave up and did the
+internationalization.  It turned out to be pretty easy.
+
+As a tiny bonus fix, I removed some ../'s from includes, and you can
+now configure and build xboard in a subdirectory again.  This was
+useful for building both --enable-nls and --disable-nls from the same
+sources to compare functionality and make sure both still work.
+
+2011-06-08 20:26:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash at end of Swiss tourney
+
+
+2011-06-08 17:33:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix display of logos
+
+The logo files are now sought relative to the WinBoard install
+directory. Non-existing logos cause clearing of the logo, rather than
+letting the logo of the prevous engine hang. Logo change is requested
+explicitly from the back-end (when an engine is initialized for a new
+game), rather than using the kludge in StartChileProcess. This required
+a dummy UpdateLogos routine in the XBoard front-end.
+
+2011-06-08 18:02:31 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parameter handling in adapter command
+
+A backslash was not considered the end of an option name, which was
+fatal for UCCI2WB, which needs %fd\\%fcp in its command line.
+
+2011-06-08 17:16:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Clear Engine-Output pane when initializing engine
+
+This to prevent output from the previous game hanging there during the
+next game, when the engine that is really playing is in book and
+doesn't produce thinking output there.
+
+2011-06-08 17:20:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix display of last move of last match game
+
+When a game was adjudicated (e.g. because XBoard detected mate) GameEnds
+would trigger an exit if it was the last game of the match, and thus
+never returned, while the ShowMove was called only after return from
+Adjudicate. An extra ToNrEvent is now used in GameEnd in this case to
+cause ShowMove to be called before exiting. (Ugly kludge...)
+
+2011-06-08 17:38:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix concurrency in Swiss tourneys
+
+The pairing engine was consulted for the next round before all games of
+the previous round were finished, if other XBoard instances were still
+playing games. This caused the instances finishing early to stall
+indefinitely. This is fixed by moving the Swiss pairing code to after
+the syncInterval code. The normal pairing code (the call to Pairing)
+must stay before it, because it determines the syncInterval. So ther is
+a bit of tourneyType dependence cluttering up the code here. :-(
+
+2011-06-08 17:27:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Give error popup when pairing engine fails
+
+An invalid pairing now produces an error popup to inform the user, so he
+knows why the tourney stagnates.
+
+2011-06-08 17:24:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix clock mode in tourney starting from -ncp mode
+
+When a tourney started from -ncp mode, which was allowed in MatchEvent,
+because the tourney loads its own engines anyway, the menu enablings and
+clockmode where not restored to their 'GNUMode' state.
+
+2011-06-08 17:11:31 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix round-robin schedule
+
+The first round was played twice, and the formulas used to derive the
+pairing were not even-odd resistant anyway. Both even and odd number of
+participants should work now.
+
+2011-06-08 17:08:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix interrupting tournament
+
+Stopping a tourney by using the Machine Match menu item did not wor
+properly.
+
+2011-06-08 16:57:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve quoting of engine name on install
+
+Rather than always using double quotes for the engine command, the
+engine filename is now double-quoted if it contains spaces (and no
+double-quotes), and the comand is single-quoted if it contains
+double-quotes (and double-quoted otherwise).
+
+2011-06-08 16:49:18 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Print sensible window title during tourneys
+
+Rather than the "(W-L-D)" in the title we now print game number and
+total games, plus indication of the tourney type (rr, gt or sw).
+
+2011-06-08 16:44:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let XBoard propose name of tourney file
+
+Add an option -defaultTourneyName to configure the name that will be
+proposed in the Tournament Options dialog's tournament-file field. The
+option can contain %y, %M, %d, %h, %m, %s for year, month, day, hour,
+mintes, seconds of the curret time in %02d format, or %Y for the year in
+%04d format. Any tournament -file name is ignored when no participants
+are given. Participants without a tourney file remains an error.
+
+2011-06-08 16:30:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve Tournament dialog layout WB
+
+
+2011-06-08 17:05:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix -matchGames option
+
+The new MatchEvent code had broken the -mg option, and used always
+-defaultMatchGames in stead.
+
+2011-05-30 19:55:13 -0700 Tim Mann <tim@tim-mann.org>:
+Fixed small bugs in several .po files, enabling these translations to be used.  They all probably need more work from the translation team. I don't speak any of these languages, but I did some spot checks either from my own knowledge or using Google Translate, and they generally look sane.
+
+- Several files were in utf8 but needed to be marked as such (that is,
+  "CHARSET" changed to "UTF-8").  Affected es.po, it.po, ru.po, vi.po,
+  zh_CN.po, zh_TW.po.
+
+- it.po was missing a \n at the end of one translation.
+
+- ru.po had unescaped double-quote marks in one translation.
+
+- vi.po needed to be normalized to Unicode normalization form C.  With
+  this fix, more characters display correctly, though at least one is
+  still missing in the X core fonts that xboard is able to use.
+  See http://vietunicode.sourceforge.net/ for more about Vietnamese.
+
+- zh_HK.po was written in big5 and then utf8-encoded on top of that,
+  making it unusable.  I stripped off the spurious utf8 encoding and
+  then used recode to convert the file to Unicode properly encoded as
+  utf8.
+
+Unfortunately, I wasn't able to test any of the Chinese translations,
+as I haven't been able to get XCreateFontSet to work in Chinese
+locales with any of the fonts I have installed, even after adding the
+Ubuntu language support packages for both simplified and traditional
+Chinese.  I did spot check a bunch of the translations using Google
+Translate.
+
+I've checked in a couple of tiny Perl scripts that I used to do part
+of the fixups on vi.po and zh_HK.po in case we need them again.
+
+2011-05-30 14:12:53 -0700 Tim Mann <tim@tim-mann.org>:
+The empty string can't be translated and it causes the gettext utilities to complain, so change _("") to "".
+
+
+2011-05-30 13:21:06 -0700 Tim Mann <tim@tim-mann.org>:
+Add a final wildcard default for fonts.  This gives XCreateFontSet more freedom and lets it find fonts for some obscure charsets where fixed-bold or fixed-medium etc. may not have one.
+
+
+2011-05-29 20:14:37 -0700 Tim Mann <tim@tim-mann.org>:
+Added "misc-fixed" as a fallback font to handle locales where adobe-helvetica does not have all the required characters.  The fixed font is ugly but does have a rather complete set of characters, while the helvetica font is missing Cyrillic characters (at least on my distro).  I haven't found a way to get a nicer font that includes Cyrillic to work with XCreateFontSet, but I don't fully understand why.  I'll try to improve things further in the future if I figure out what's all going wrong.
+
+In the process I had to rewrite the code to insert the pixel size into
+a font name (replacing a "*" in that field).  The new code is much
+more general.
+
+2011-05-28 23:55:42 -0700 Arun Persaud <arun@nubati.net>:
+translation: activated Ukrainian translation
+
+
+2011-05-28 23:41:24 -0700 Arun Persaud <arun@nubati.net>:
+translation: added new Ukrainian PO file from the TP
+
+
+2011-05-28 21:07:08 -0700 Tim Mann <tim@tim-mann.org>:
+Fix display of international characters outside the ASCII range.
+
+1) Set Xaw resources required for internationalization --
+   *international and *fontSet.
+
+2) Untangle the new XFontSet-aware code from the old FindFont code.
+   It doesn't make any sense to apply the old (and obsolete) size
+   searching code from FindFont to a font set, which contains fonts
+   that are all the requested size.
+
+3) With these changes, the -font option doesn't work at all when given
+   on the command line.  The -font option actually is parsed by the Xt
+   library, used to set the *font resource, and removed from argv
+   before xboard can see it, so the option didn't really work properly
+   with the new WinBoard-style option framework anyway.  Now that
+   -font is even more broken, I changed the documented name of the
+   option to -messageFont and changed args.h so the option is saved in
+   ~/.xboard as -messageFont.
+
+2011-05-28 21:05:00 -0700 Tim Mann <tim@tim-mann.org>:
+Move "hide thinking" option into alphabetical order.
+
+
+2011-05-28 21:01:25 -0700 Tim Mann <tim@tim-mann.org>:
+Fix a size mismatch in scanf.  Untested, but the code could not have worked properly without this fix -- scanf would have written 32-bit values to 16-bit fields, thus smashing adjacent memory.
+
+
+2011-05-23 19:05:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix layout tournament Load Engine dialog WB
+
+
+2011-05-23 19:03:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ArgTwo warnings
+
+
+2011-05-23 19:00:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Swiss tourneys through pairing engine
+
+An external program can be designated pairing engine through the new
+persistent option -pairingEngine. Defining the option will allow
+tourneytype -1 to be chosen for Swiss. In this case the pairing engine
+will be queried for a pairing before every new match game, by sending it
+the -results string, plus the command 'pairing' + game number.
+
+2011-05-23 17:37:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow generic dialog to ignore OK
+
+The EndMark callback can now suppress popdown of the dialog on OK, when
+it somehow does not like the values entered by the user. In XBoard this
+required all the callbacks to return a value.
+Caveat: A refused OK would still have set all new values given in the
+dialog!
+
+2011-05-23 17:22:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix CR in multi-line WinBoard text-edits
+
+The generic popup did not add CR when strings containing '\n' were
+printed in a multi-line text-edit, thus joining the lines. It was also
+not possible to type a CR in a multi-line text-edit.
+
+2011-05-23 14:16:17 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let mentioning completed tourney file add one cycle
+
+Secifying a tourney file of a fully completed tourney will now resume
+that tourney with another cycle added. When there are still uncomleted
+games in the tourney, the usual error message will appear. There are
+also error popups added for when the user fails to specify a tourney
+file, or gives too few participants.
+
+2011-05-16 11:02:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make engine startup failure non-fatal in WinBoard
+
+Unlike XBoard, which forks first, the parent process WinBoard has direct
+knowledge of a failure to execute the engine command, and used it to
+trigger a fatal error. The code doing this has now been disabled. Only
+in case of a first engine we switch back to -ncp mode in stead, but no
+action is taken to 'bury' the deceased engine process. Like in XBoard,
+errors in writing or reading the pipes will trigger this.
+
+2011-05-14 17:03:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add secondry adapter command for UCCI or USI
+
+The option -uxiAdapter can define a second adapterCommand, which will be
+invoked on encountering the options -fUCCI, -sUCCI and -fUSI, sUCI.
+
+2011-05-14 10:05:11 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Obey san feature when sending book moves
+
+Book moves were always sent in long algebraic, even when the engine had
+said it wanted to receive SAN.
+
+2011-05-14 10:03:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix initialization of engine state
+
+Some of the initialization relied on variables being zero at startup,
+which meant value from the previouly loaded engine hng on after loading
+a new one.
+
+2011-05-11 23:06:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Take account of holdings in book key
+
+The board is numbered by rank, for comptibility with Polyglot format,
+starting at a1. We then continue counting in the holdings 'files', in
+up-rank direction, each holding spanning the full board height (even if
+it is not fully used). Firstthe left (black) holdings, then the right,
+Even in Shogi this limits the square number to < 99, which is below the
+absolute limit of 128 (where we would run out of hash keys).
+
+2011-05-11 22:48:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Alow promotions and drops in book-editing
+
+
+2011-05-11 20:15:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Include learn info in book edit
+
+
+2011-05-09 21:55:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Adapt default directory of lng2po
+
+The path is prefixed with "../" to make it runable from the po directory.
+
+2011-05-09 21:20:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Recode some po files
+
+po files were generated with the aid of lng2po for Russian,
+Vietnamese, Chinese(simp) and Chinese(trad), using encodings CP1251,
+CP1258, GB2312 and BIG5, respectively.
+
+2011-05-09 20:11:32 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Edit Book in XBoard
+
+
+2011-05-09 09:52:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve WB Load Engine dialog texts
+
+
+2011-05-09 09:48:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make 'add to list' default in Load Engine dialog
+
+
+2011-05-09 09:33:39 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -userFileDirectory option
+
+This volatile option is initialized from 'installDir'. It is
+primarily intended for configuration of WinBoard through its master
+settings file, and specifies an alternative place to create saveGameFile
+or look for other user files, in stead of looking in the installDir.
+
+2011-05-09 09:10:47 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add option -absoluteAnalysisScores
+
+This persistent option flips scores in the when black is thinking in
+analysis mode, just before they are printed in the engine-output window.
+
+2011-05-08 17:47:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Automatically play moves of clicked PV in analyze mode
+
+The Shift key now no longer needs to be pressed to play moves from the
+PV in analyze mode (so it could be given back its original meaning of
+starting a variation with the entered moves). In analyze mode the PV
+walk begins after the first move, so a static right-click plays the
+first PV move. To just peek the PV you have to walk to the start of it
+before releasing the mouse button. In other modes the PV walk
+stillstarts at the very end.
+
+2011-05-08 17:07:18 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let ParsePV always generate SAN move
+
+
+2011-05-08 13:53:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix vscrolling in XBoard Engine-Output window
+
+After clicking the memos they scrolled to the bottom, because SetFocus
+put the insertion point at the very end of the text. This behavior is
+now reserved for text-edits containing less than 100 characters.
+
+2011-05-08 13:22:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix button sizing in generic popup
+
+
+2011-05-08 13:02:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow changing MultiPV setting from Engine-Output window
+
+In analyze mode a header line is printed in the first engine-output
+pane, which can be right-clicked to increase or decrease the number of
+PVs. (Only with engines that support the MultiPV option.)
+
+2011-05-08 11:28:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+No clearing of Engine-Output memos on stat01
+
+
+2011-05-07 23:27:50 -0700 Arun Persaud <arun@nubati.net>:
+updated xboard.pot with released version
+
+
+2011-05-07 22:56:53 -0700 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2011-05-07 22:54:29 -0700 Arun Persaud <arun@nubati.net>:
+updated ChangeLog, NEWS, etc.
+
+
+2011-05-07 23:07:46 -0700 Arun Persaud <arun@nubati.net>:
+deactivated new languages for the moment...
+
+po files need some cleanup, probably better to wait until the translation-project looked at them
+
 2011-05-07 18:44:24 -0700 Arun Persaud <arun@nubati.net>:
 added translations generated via lng2po from all winboard languages
 

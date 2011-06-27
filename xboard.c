@@ -480,6 +480,7 @@ void BoardOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms)
 void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EditBookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
 void GenericPopDown P(());
 void update_ics_width P(());
@@ -1043,11 +1044,11 @@ XtActionsRec boardActions[] = {
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
     { "PromotionPopDown", (XtActionProc) PromotionPopDown },
-    { "HistoryPopDown", (XtActionProc) HistoryPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
+    { "SelectMove", (XtActionProc) SelectMove },
 };
 
 char globalTranslations[] =
@@ -1595,8 +1596,8 @@ GetWindowCoords()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
   GetActualPlacement(shellWidget, &wpMain);
-  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput); else
-  if(MoveHistoryIsUp()) GetActualPlacement(historyShell, &wpMoveHistory);
+  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput);
+  if(MoveHistoryIsUp()) GetActualPlacement(shells[7], &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
   if(shellUp[1]) GetActualPlacement(shells[1], &wpComment);
@@ -2723,6 +2724,8 @@ XBoard square size (hint): %d\n\
     return 0;
 }
 
+static Boolean noEcho;
+
 void
 ShutDownFrontEnd()
 {
@@ -2732,6 +2735,7 @@ ShutDownFrontEnd()
     if (saveSettingsOnExit) SaveSettings(settingsFileName);
     unlink(gameCopyFilename);
     unlink(gamePasteFilename);
+    if(noEcho) EchoOn();
 }
 
 RETSIGTYPE TermSizeSigHandler(int sig)
@@ -7325,15 +7329,23 @@ PlayAlarmSound()
 }
 
 void
+PlayTellSound()
+{
+  PlaySound(appData.soundTell);
+}
+
+void
 EchoOn()
 {
     system("stty echo");
+    noEcho = False;
 }
 
 void
 EchoOff()
 {
     system("stty -echo");
+    noEcho = True;
 }
 
 void

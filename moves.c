@@ -169,16 +169,17 @@ int CompareBoards(board1, board2)
    EP_UNKNOWN if we don't know and want to allow all e.p. captures.
    Promotion moves generated are to Queen only.
 */
-void GenPseudoLegal(board, flags, callback, closure)
+void GenPseudoLegal(board, flags, callback, closure, filter)
      Board board;
      int flags;
      MoveCallback callback;
      VOIDSTAR closure;
+     ChessSquare filter; // [HGM] speed: only do moves with this piece type
 {
     int rf, ff;
     int i, j, d, s, fs, rs, rt, ft, m;
     int epfile = (signed char)board[EP_STATUS]; // [HGM] gamestate: extract ep status from board
-    int promoRank = gameInfo.variant == VariantMakruk ? 3 : 1;
+    int promoRank = gameInfo.variant == VariantMakruk || gameInfo.variant == VariantGrand ? 3 : 1;
 
     for (rf = 0; rf < BOARD_HEIGHT; rf++)
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
@@ -193,6 +194,7 @@ void GenPseudoLegal(board, flags, callback, closure)
           m = 0; piece = board[rf][ff];
           if(PieceToChar(piece) == '~')
                  piece = (ChessSquare) ( DEMOTED piece );
+          if(filter != EmptySquare && piece != filter) continue;
           if(gameInfo.variant == VariantShogi)
                  piece = (ChessSquare) ( SHOGI piece );
 
@@ -226,12 +228,12 @@ void GenPseudoLegal(board, flags, callback, closure)
 			   rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotion : NormalMove,
 			   rf, ff, rf + 1, ff, closure);
 	      }
-	      if (rf == 1 && board[2][ff] == EmptySquare &&
+	      if (rf <= (BOARD_HEIGHT>>1)-3 && board[rf+1][ff] == EmptySquare && // [HGM] grand: also on 3rd rank on 10-board
                   gameInfo.variant != VariantShatranj && /* [HGM] */
                   gameInfo.variant != VariantCourier  && /* [HGM] */
-                  board[3][ff] == EmptySquare ) {
+                  board[rf+2][ff] == EmptySquare ) {
                       callback(board, flags, NormalMove,
-                               rf, ff, 3, ff, closure);
+                               rf, ff, rf+2, ff, closure);
 	      }
 	      for (s = -1; s <= 1; s += 2) {
                   if (rf < BOARD_HEIGHT-1 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
@@ -241,13 +243,13 @@ void GenPseudoLegal(board, flags, callback, closure)
 			       rf >= BOARD_HEIGHT-1-promoRank ? WhitePromotion : NormalMove,
 			       rf, ff, rf + 1, ff + s, closure);
 		  }
-		  if (rf == BOARD_HEIGHT-4) {
+		  if (rf >= BOARD_HEIGHT+1>>1) {// [HGM] grand: 4th & 5th rank on 10-board
                       if (ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
-			  (epfile == ff + s || epfile == EP_UNKNOWN) &&
-                          board[BOARD_HEIGHT-4][ff + s] == BlackPawn &&
-                          board[BOARD_HEIGHT-3][ff + s] == EmptySquare) {
+			  (epfile == ff + s || epfile == EP_UNKNOWN) && rf < BOARD_HEIGHT-3 &&
+                          board[rf][ff + s] == BlackPawn &&
+                          board[rf+1][ff + s] == EmptySquare) {
 			  callback(board, flags, WhiteCapturesEnPassant,
-				   rf, ff, 5, ff + s, closure);
+				   rf, ff, rf+1, ff + s, closure);
 		      }
 		  }
 	      }
@@ -276,12 +278,12 @@ void GenPseudoLegal(board, flags, callback, closure)
 			   rf <= promoRank ? BlackPromotion : NormalMove,
 			   rf, ff, rf - 1, ff, closure);
 	      }
-	      if (rf == BOARD_HEIGHT-2 && board[BOARD_HEIGHT-3][ff] == EmptySquare &&
+	      if (rf >= (BOARD_HEIGHT+1>>1)+2 && board[rf-1][ff] == EmptySquare && // [HGM] grand
                   gameInfo.variant != VariantShatranj && /* [HGM] */
                   gameInfo.variant != VariantCourier  && /* [HGM] */
-		  board[BOARD_HEIGHT-4][ff] == EmptySquare) {
+		  board[rf-2][ff] == EmptySquare) {
 		  callback(board, flags, NormalMove,
-			   rf, ff, BOARD_HEIGHT-4, ff, closure);
+			   rf, ff, rf-2, ff, closure);
 	      }
 	      for (s = -1; s <= 1; s += 2) {
                   if (rf > 0 && ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
@@ -291,13 +293,13 @@ void GenPseudoLegal(board, flags, callback, closure)
 			       rf <= promoRank ? BlackPromotion : NormalMove,
 			       rf, ff, rf - 1, ff + s, closure);
 		  }
-		  if (rf == 3) {
+		  if (rf < BOARD_HEIGHT>>1) {
                       if (ff + s >= BOARD_LEFT && ff + s < BOARD_RGHT &&
-			  (epfile == ff + s || epfile == EP_UNKNOWN) &&
-			  board[3][ff + s] == WhitePawn &&
-			  board[2][ff + s] == EmptySquare) {
+			  (epfile == ff + s || epfile == EP_UNKNOWN) && rf > 2 &&
+			  board[rf][ff + s] == WhitePawn &&
+			  board[rf-1][ff + s] == EmptySquare) {
 			  callback(board, flags, BlackCapturesEnPassant,
-				   rf, ff, 2, ff + s, closure);
+				   rf, ff, rf-1, ff + s, closure);
 		      }
 		  }
 	      }
@@ -712,6 +714,8 @@ typedef struct {
     VOIDSTAR cl;
 } GenLegalClosure;
 
+int rFilter, fFilter; // [HGM] speed: sorry, but I get a bit tired of this closure madness
+
 extern void GenLegalCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
 				VOIDSTAR closure));
@@ -724,6 +728,8 @@ void GenLegalCallback(board, flags, kind, rf, ff, rt, ft, closure)
      VOIDSTAR closure;
 {
     register GenLegalClosure *cl = (GenLegalClosure *) closure;
+
+    if(rFilter >= 0 && rFilter != rt || fFilter >= 0 && fFilter != ft) return; // [HGM] speed: ignore moves with wrong to-square
 
     if (!(flags & F_IGNORE_CHECK) ) {
       int check, promo = (gameInfo.variant == VariantSpartan && kind == BlackPromotion);
@@ -766,11 +772,12 @@ typedef struct {
    true if castling is not yet ruled out by a move of the king or
    rook.  Return TRUE if the player on move is currently in check and
    F_IGNORE_CHECK is not set.  [HGM] add castlingRights parameter */
-int GenLegal(board, flags, callback, closure)
+int GenLegal(board, flags, callback, closure, filter)
      Board board;
      int flags;
      MoveCallback callback;
      VOIDSTAR closure;
+     ChessSquare filter;
 {
     GenLegalClosure cl;
     int ff, ft, k, left, right, swap;
@@ -779,7 +786,8 @@ int GenLegal(board, flags, callback, closure)
 
     cl.cb = callback;
     cl.cl = closure;
-    GenPseudoLegal(board, flags, GenLegalCallback, (VOIDSTAR) &cl);
+    if(filter == EmptySquare) rFilter = fFilter = -1; // [HGM] speed: do not filter on square if we do not filter on piece
+    GenPseudoLegal(board, flags, GenLegalCallback, (VOIDSTAR) &cl, filter);
 
     if (!ignoreCheck &&
 	CheckTest(board, flags, -1, -1, -1, -1, FALSE)) return TRUE;
@@ -1015,7 +1023,7 @@ int CheckTest(board, flags, rf, ff, rt, ft, enPassant)
                       board[i][cl.fking] == (dir>0 ? BlackWazir : WhiteWazir) )
                           cl.check++;
               }
-	      GenPseudoLegal(board, flags ^ F_WHITE_ON_MOVE, CheckTestCallback, (VOIDSTAR) &cl);
+	      GenPseudoLegal(board, flags ^ F_WHITE_ON_MOVE, CheckTestCallback, (VOIDSTAR) &cl, EmptySquare);
 	      if(gameInfo.variant != VariantSpartan || cl.check == 0) // in Spartan Chess go on to test if other King is checked too
 	         goto undo_move;  /* 2-level break */
 	  }
@@ -1099,10 +1107,11 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
      int flags;
      int rf, ff, rt, ft, promoChar;
 {
-    LegalityTestClosure cl; ChessSquare piece, *castlingRights = board[CASTLING];
+    LegalityTestClosure cl; ChessSquare piece, filterPiece, *castlingRights = board[CASTLING];
 
     if(rf == DROP_RANK) return LegalDrop(board, flags, ff, rt, ft);
-    piece = board[rf][ff];
+    piece = filterPiece = board[rf][ff];
+    if(PieceToChar(piece) == '~') filterPiece = DEMOTED piece; 
 
     if (appData.debugMode) {
         int i;
@@ -1117,11 +1126,12 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
 
     cl.rf = rf;
     cl.ff = ff;
-    cl.rt = rt;
-    cl.ft = ft;
+    cl.rt = rFilter = rt; // [HGM] speed: filter on to-square
+    cl.ft = fFilter = ft;
     cl.kind = IllegalMove;
     cl.captures = 0; // [HGM] losers: prepare to count legal captures.
-    GenLegal(board, flags, LegalityTestCallback, (VOIDSTAR) &cl);
+    if(flags & F_MANDATORY_CAPTURE) filterPiece = EmptySquare; // [HGM] speed: do not filter in suicide, to find all captures
+    GenLegal(board, flags, LegalityTestCallback, (VOIDSTAR) &cl, filterPiece);
     if((flags & F_MANDATORY_CAPTURE) && cl.captures && board[rt][ft] == EmptySquare
 		&& cl.kind != WhiteCapturesEnPassant && cl.kind != BlackCapturesEnPassant)
 	return(IllegalMove); // [HGM] losers: if there are legal captures, non-capts are illegal
@@ -1184,7 +1194,8 @@ if(appData.debugMode)fprintf(debugFP,"SHOGI promoChar = %c\n", promoChar ? promo
 		    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) kings += (board[r][f] == BlackKing);
 		    if(kings == 2) cl.kind = IllegalMove;
 		}
-	    } else if(piece == WhitePawn || piece == BlackPawn) cl.kind = ImpossibleMove; // cannot stay Pawn in any variant
+	    } else if(piece == WhitePawn && rt == BOARD_HEIGHT-1 ||
+			  piece == BlackPawn && rt == 0) cl.kind = IllegalMove; // cannot stay Pawn on last rank in any variant
 	    else if((piece == WhiteUnicorn || piece == BlackUnicorn) && gameInfo.variant == VariantKnightmate)
              cl.kind = IllegalMove; // promotion to Royal Knight not allowed
 	    else if((piece == WhiteKing || piece == BlackKing) && gameInfo.variant != VariantSuicide && gameInfo.variant != VariantGiveaway)
@@ -1247,12 +1258,13 @@ int MateTest(board, flags)
 		if(myPieces == 1) return MT_BARE;
     }
     cl.count = 0;
-    inCheck = GenLegal(board, flags, MateTestCallback, (VOIDSTAR) &cl);
+    inCheck = GenLegal(board, flags, MateTestCallback, (VOIDSTAR) &cl, EmptySquare);
     // [HGM] 3check: yet to do!
     if (cl.count > 0) {
 	return inCheck ? MT_CHECK : MT_NONE;
     } else {
-        if(gameInfo.holdingsWidth && gameInfo.variant != VariantSuper && gameInfo.variant != VariantGreat) { // drop game
+        if(gameInfo.holdingsWidth && gameInfo.variant != VariantSuper && gameInfo.variant != VariantGreat
+                                                                      && gameInfo.variant != VariantGrand) { // drop game
             int r, f, n, holdings = flags & F_WHITE_ON_MOVE ? BOARD_WIDTH-1 : 0;
             for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) if(board[r][f] == EmptySquare) // all empty squares
                 for(n=0; n<BOARD_HEIGHT; n++) // all pieces in hand
@@ -1331,11 +1343,13 @@ void Disambiguate(board, flags, closure)
                              closure->pieceIn,closure->ffIn,closure->rfIn,closure->ftIn,closure->rtIn,
                              closure->promoCharIn, closure->promoCharIn >= ' ' ? closure->promoCharIn : '-');
     }
-    GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) closure);
+    rFilter = closure->rtIn; // [HGM] speed: only consider moves to given to-square
+    fFilter = closure->ftIn;
+    GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) closure, closure->pieceIn); // [HGM] speed: only pieces of requested type
     if (closure->count == 0) {
 	/* See if it's an illegal move due to check */
         illegal = 1;
-        GenLegal(board, flags|F_IGNORE_CHECK, DisambiguateCallback, (VOIDSTAR) closure);
+        GenLegal(board, flags|F_IGNORE_CHECK, DisambiguateCallback, (VOIDSTAR) closure, closure->pieceIn);
 	if (closure->count == 0) {
 	    /* No, it's not even that */
     if (appData.debugMode) { int i, j;
@@ -1396,6 +1410,8 @@ void Disambiguate(board, flags, closure)
                 c = PieceToChar(BlackFerz);
             else if(gameInfo.variant == VariantGreat)
                 c = PieceToChar(BlackMan);
+            else if(gameInfo.variant == VariantGrand)
+		    closure->kind = closure->rt != 0 && closure->rt != BOARD_HEIGHT-1 ? NormalMove : AmbiguousMove; // no default in Grand Chess
             else
                 c = PieceToChar(BlackQueen);
         } else if(c == '=') closure->kind = IllegalMove; // no deferral outside Shogi
@@ -1586,18 +1602,19 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
 	/* Piece move */
 	cl.rf = rf;
 	cl.ff = ff;
-	cl.rt = rt;
-	cl.ft = ft;
+	cl.rt = rFilter = rt; // [HGM] speed: filter on to-square
+	cl.ft = fFilter = ft;
 	cl.piece = piece;
 	cl.kind = IllegalMove;
 	cl.rank = cl.file = cl.either = 0;
-        GenLegal(board, flags, CoordsToAlgebraicCallback, (VOIDSTAR) &cl);
+        c = PieceToChar(piece) ;
+        GenLegal(board, flags, CoordsToAlgebraicCallback, (VOIDSTAR) &cl, c!='~' ? piece : (DEMOTED piece)); // [HGM] speed
 
 	if (cl.kind == IllegalMove && !(flags&F_IGNORE_CHECK)) {
 	    /* Generate pretty moves for moving into check, but
 	       still return IllegalMove.
 	    */
-            GenLegal(board, flags|F_IGNORE_CHECK, CoordsToAlgebraicCallback, (VOIDSTAR) &cl);
+            GenLegal(board, flags|F_IGNORE_CHECK, CoordsToAlgebraicCallback, (VOIDSTAR) &cl, c!='~' ? piece : (DEMOTED piece));
 	    if (cl.kind == IllegalMove) break;
 	    cl.kind = IllegalMove;
 	}
@@ -1607,7 +1624,6 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
 	   else "N1f3" or "N5xf7",
 	   else "Ng1f3" or "Ng5xf7".
 	*/
-        c = PieceToChar(piece) ;
         if( c == '~' || c == '+') {
            /* [HGM] print nonexistent piece as its demoted version */
            piece = (ChessSquare) (DEMOTED piece);
@@ -1799,7 +1815,7 @@ int PerpetualChase(int first, int last)
         if(appData.debugMode) fprintf(debugFP, "judge position %i\n", i);
 	chaseStackPointer = 0;   // clear stack that is going to hold possible chases
 	// determine all captures possible after the move, and put them on chaseStack
-	GenLegal(boards[i+1], PosFlags(i), AttacksCallback, &cl);
+	GenLegal(boards[i+1], PosFlags(i), AttacksCallback, &cl, EmptySquare);
 	if(appData.debugMode) { int n;
 	    for(n=0; n<chaseStackPointer; n++)
                 fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE,
@@ -1811,7 +1827,7 @@ int PerpetualChase(int first, int last)
 	cl.ff = moveList[i][0]-AAA+BOARD_LEFT;
 	cl.rt = moveList[i][3]-ONE;
 	cl.ft = moveList[i][2]-AAA+BOARD_LEFT;
-	GenLegal(boards[i],   PosFlags(i), ExistingAttacksCallback, &cl);
+	GenLegal(boards[i],   PosFlags(i), ExistingAttacksCallback, &cl, EmptySquare);
 	if(appData.debugMode) { int n;
 	    for(n=0; n<chaseStackPointer; n++)
                 fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE,
@@ -1851,7 +1867,7 @@ int PerpetualChase(int first, int last)
 	    if(appData.debugMode) {
             	fprintf(debugFP, "test if we can recapture %c%c\n", cl.ft+AAA, cl.rt+ONE);
 	    }
-            GenLegal(boards[i+1], PosFlags(i+1), ProtectedCallback, &cl); // try all moves
+            GenLegal(boards[i+1], PosFlags(i+1), ProtectedCallback, &cl, EmptySquare); // try all moves
 	    // unmake the capture
 	    boards[i+1][chaseStack[j].rf][chaseStack[j].ff] = boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
             boards[i+1][chaseStack[j].rt][chaseStack[j].ft] = captured;

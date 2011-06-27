@@ -174,8 +174,7 @@ void MemoContentUpdated()
 {
     int caretPos;
 
-    DoHighlight( lastCurrent, FALSE );
-    DoHighlight( currCurrent, TRUE );
+    if(lastCurrent <= currLast) DoHighlight( lastCurrent, FALSE );
 
     lastFirst = currFirst;
     lastLast = currLast;
@@ -195,6 +194,7 @@ void MemoContentUpdated()
     }
 
     ScrollToCurrent(caretPos);
+    DoHighlight( currCurrent, TRUE ); // [HGM] moved last, because in X some scrolling methods spoil highlighting
 }
 
 // back-end. Must be called as double-click call-back on move-history text edit

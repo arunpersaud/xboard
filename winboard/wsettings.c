@@ -285,7 +285,7 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 	int j=layoutList[i];
 	if(j == -2) SetDlgItemText( hDlg, 2000+2*i, ". . ." );
 	if(j<0) continue;
-	name = optionList[j].name;
+	name = cps ? optionList[j].name : _(optionList[j].name);
 	if(strstr(name, "Polyglot ") == name) name += 9;
 	SetDlgItemText( hDlg, 2000+2*i, name );
 //if(appData.debugMode) fprintf(debugFP, "# %s = %d\n",optionList[j].name, optionList[j].value );
@@ -425,7 +425,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 //        CenterWindow(hDlg, GetWindow(hDlg, GW_OWNER));
 	SetOptionValues(hDlg, activeCps, activeList);
 
-//        SetFocus(GetDlgItem(hDlg, IDC_NFG_Edit));
+        SetFocus(GetDlgItem(hDlg, IDCANCEL));
 
         break;
 
@@ -535,7 +535,7 @@ void AddOption(int x, int y, Control type, int i)
 	    break;
 	case Label:
 	    extra = activeList[layoutList[i/2]].value;
-	    AddControl(x+extra, y+1, 290-extra, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, i);
+	    AddControl(x+extra, y+1, 290-extra, 9, 0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i);
 	    break;
 	case FileName:
 	case PathName:
@@ -555,7 +555,7 @@ void AddOption(int x, int y, Control type, int i)
 	case Button:
 	case ResetButton:
 	case SaveButton:
-	    AddControl(x-2, y, 65, 13, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, i);
+	    AddControl(x-2, y, 65, 13, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, i);
 	case Message:
 	default:
 	    break;
@@ -566,7 +566,7 @@ void AddOption(int x, int y, Control type, int i)
 void
 CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 {
-    int i, j, x=1, y=0, buttonRows, breakPoint = -1, k=0;
+    int i, ii, j, x=1, y=0, buttonRows, breakPoint = -1, k=0;
 
     template.header.cdit = 0;
     template.header.cx = 307;
@@ -576,31 +576,32 @@ CreateDialogTemplate(int *layoutList, int nr, Option *optionList)
 	template.header.cx = 625;
     }
 
-    for(i=0; i<nr; i++) {
-	if(k < groups && i == boxList[k]) {
+    for(ii=0; ii<nr; ii++) {
+	i = ii^1; if(i == nr) i = ii; // if two on one line, swap order of treatment, to get good (left to right) tabbing order.
+	if(k < groups && ii == boxList[k]) {
 	    y += 10;
 	    AddControl(x+2, y+13*(i>>1)-2, 301, 13*(boxList[k+1]-boxList[k]>>1)+8,
 						0x0082, WS_VISIBLE | WS_CHILD | SS_BLACKFRAME, 2400);
 	    AddControl(x+60, y+13*(i>>1)-6, 10*groupNameList[k]/3, 10,
-						0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, 2*(i+MAX_OPTIONS));
+						0x0082, SS_ENDELLIPSIS | WS_VISIBLE | WS_CHILD, 2*(ii+MAX_OPTIONS));
 	}
 	j = layoutList[i];
 	if(j >= 0)
 	    AddOption(x+155-150*(i&1), y+13*(i>>1)+5, optionList[j].type, 2*i);
-	if(k < groups && i+1 == boxList[k+1]) {
+	if(k < groups && ii+1 == boxList[k+1]) {
 	    k += 2; y += 4;
 	}
-	if(i+1 == breakPoint) { x += 318; y = -13*(breakPoint>>1); }
+	if(ii+1 == breakPoint) { x += 318; y = -13*(breakPoint>>1); }
     }
     // add butons at the bottom of dialog window
     y += 13*(nr>>1)+5;
 
-    AddControl(x+225, y+18*(buttonRows-1), 30, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, IDOK-2000);
-    AddControl(x+260, y+18*(buttonRows-1), 40, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, IDCANCEL-2000);
     for(i=0; i<buttons; i++) {
-	AddControl(x+70*(i%4)+5, y+18*(i/4), 65, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD, 2*(nr+i));
+	AddControl(x+70*(i%4)+5, y+18*(i/4), 65, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, 2*(nr+i));
 	layoutList[nr+i] = buttonList[i];
     }
+    AddControl(x+225, y+18*(buttonRows-1), 30, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, IDOK-2000);
+    AddControl(x+260, y+18*(buttonRows-1), 40, 15, 0x0080, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP, IDCANCEL-2000);
     template.title[8] = optionList == first.option ? '1' :  '2';
     template.header.cy = y += 18*buttonRows+2;
     template.header.style &= ~WS_VSCROLL;
@@ -702,7 +703,7 @@ Option tourneyOptions[] = {
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("If you specify an existing file, the rest of this dialog will be ignored.") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("Otherwise, the file will be created, with the settings you specify below:") },
   { 0,  1,          0, NULL, (void*) &engineChoice, (char*) (engineMnemonic+1), (engineMnemonic+1), ComboBox, N_("Select Engine:") },
-  { 0xD, 7,         0, NULL, (void*) &appData.participants, "", NULL, TextBox, "Tourney participants:" },
+  { 0xD, 7,         0, NULL, (void*) &appData.participants, "", NULL, TextBox, N_("Tourney participants:") },
   { 0,  0,          0, NULL, (void*) &swiss, "", NULL, CheckBox, N_("Use Swiss pairing engine (cycles = rounds)") },
   { 0,  0,         10, NULL, (void*) &appData.tourneyType, "", NULL, Spin, N_("Tourney type (0=RR, 1=gauntlet):") },
   { 0,  0,          0, NULL, (void*) &appData.cycleSync, "", NULL, CheckBox, N_("Sync after cycle") },

@@ -36,6 +36,7 @@
 
 #include "common.h"
 #include "backend.h"
+#include "moves.h"
 
 #ifdef _MSC_VER
   typedef unsigned __int64 uint64;
