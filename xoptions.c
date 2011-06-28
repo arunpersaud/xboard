@@ -887,16 +887,23 @@ void Browse(GtkWidget *widget, gpointer gdata)
     GtkWidget *dialog;
     GtkFileFilter *gtkfilter;
     GtkFileFilter *gtkfilter_all;
-    int data = (intptr_t) gdata;
+    int opt_i = (intptr_t) gdata;
+    GtkFileChooserAction fc_action;
   
     gtkfilter     = gtk_file_filter_new();
     gtkfilter_all = gtk_file_filter_new();
 
     char fileext[10] = "*";
 
+    /* select file or folder depending on option_type */
+    if (currentOption[opt_i].type == PathName)
+        fc_action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+    else
+        fc_action = GTK_FILE_CHOOSER_ACTION_OPEN;
+
     dialog = gtk_file_chooser_dialog_new ("Open File",
                       NULL,
-                      GTK_FILE_CHOOSER_ACTION_OPEN,
+                      fc_action,
                       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                       GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
                       NULL);
@@ -904,23 +911,26 @@ void Browse(GtkWidget *widget, gpointer gdata)
     /* one filter to show everything */
     gtk_file_filter_add_pattern(gtkfilter_all, "*.*");
     gtk_file_filter_set_name   (gtkfilter_all, "All Files");
-
-    /* filter for specific filetypes e.g. pgn or fen */    
-    strcat(fileext, currentOption[data].textValue);    
-    gtk_file_filter_add_pattern(gtkfilter, fileext);
-    gtk_file_filter_set_name (gtkfilter, currentOption[data].textValue);
-
-    /* add filters */
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter_all);
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
-    /* activate filter */
-    gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+    gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),gtkfilter_all);
+    
+    /* filter for specific filetypes e.g. pgn or fen */
+    if (currentOption[opt_i].textValue != "")
+      {          
+        strcat(fileext, currentOption[opt_i].textValue);    
+        gtk_file_filter_add_pattern(gtkfilter, fileext);
+        gtk_file_filter_set_name (gtkfilter, currentOption[opt_i].textValue);
+        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+        /* activate filter */
+        gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter);
+      }
+    else
+      gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog),gtkfilter_all);       
 
     if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
       {
         char *filename;
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));             
-        entry = currentOption[data].handle;
+        entry = currentOption[opt_i].handle;
         gtk_entry_set_text (GTK_ENTRY (entry), filename);        
         g_free (filename);
 
@@ -1007,7 +1017,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 gtk_table_attach_defaults(GTK_TABLE(table), spinner, 1, 3, i, i+1);
                 option[i].handle = (void*)spinner;
             }
-            else if (option[i].type == FileName) {
+            else if (option[i].type == FileName || option[i].type == PathName) {
                 gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);
                 button = gtk_button_new_with_label ("Browse");
                 gtk_table_attach_defaults(GTK_TABLE(table), button, 2, 3, i, i+1);
@@ -1489,7 +1499,8 @@ void UciMenuProc(w, event, prms, nprms)
 {
    oldCores = appData.smpCores;
    oldPonder = appData.ponderNextMove;
-   GenericPopUp(commonEngineOptions, _("Common Engine Settings"), 0);
+   //GenericPopUp(commonEngineOptions, _("Common Engine Settings"), 0);
+   GenericPopUpGTK(commonEngineOptions, _("Common Engine Settings"), 0);
 }
 
 void NewVariantProc(w, event, prms, nprms)
