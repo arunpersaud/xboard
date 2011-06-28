@@ -941,6 +941,8 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkWidget *ok_button;
     GtkWidget *button;
     GtkWidget *table;
+    GtkWidget *spinner;    
+    GtkAdjustment *spinner_adj;
 
     int i, j, arraysize;
     char def[MSG_SIZ], **dest;
@@ -973,6 +975,9 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
 	    snprintf(def, MSG_SIZ,  "%.2f", *(float*)option[i].target);
 	    option[i].value = *(float*)option[i].target;
             goto tBox;
+          case Spin:
+            option[i].value = *(int*)option[i].target;
+            snprintf(def, MSG_SIZ,  "%d", option[i].value);
           case TextBox:
 	  case FileName:            
      	  case PathName:
@@ -996,16 +1001,23 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             gtk_table_attach_defaults(GTK_TABLE(table), label, 0, 1, i, i+1);
             //gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);            
 
-            if (option[i].type == FileName) {
+            if (option[i].type == Spin) {                
+                spinner_adj = (GtkAdjustment *) gtk_adjustment_new (option[i].value, option[i].min, option[i].max, 1.0, 0.0, 0.0);
+                spinner = gtk_spin_button_new (spinner_adj, 1.0, 0);
+                gtk_table_attach_defaults(GTK_TABLE(table), spinner, 1, 3, i, i+1);
+                option[i].handle = (void*)spinner;
+            }
+            else if (option[i].type == FileName) {
                 gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);
                 button = gtk_button_new_with_label ("Browse");
                 gtk_table_attach_defaults(GTK_TABLE(table), button, 2, 3, i, i+1);
-                g_signal_connect (button, "clicked", G_CALLBACK (Browse), (gpointer)(intptr_t) i);                 
+                g_signal_connect (button, "clicked", G_CALLBACK (Browse), (gpointer)(intptr_t) i);
+                option[i].handle = (void*)entry;                 
             }
-            else
+            else {
                 gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 3, i, i+1); 
-           
-            option[i].handle = (void*)entry;		
+                option[i].handle = (void*)entry;
+            }            		
             break;
           case CheckBox:
             checkbutton = gtk_check_button_new_with_label(option[i].name);
@@ -1052,14 +1064,23 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                    safeStrCpy(*dest, val, strlen(val) + 1);
                 }
                 break;
+              case Spin:
               case Fractional:
-                entry = option[i].handle;                
-                val = (String)gtk_entry_get_text (GTK_ENTRY (entry));                
-                sscanf(val, "%f", &x);  
+                if (option[i].type == Spin) {
+                   spinner = option[i].handle;
+                   x = gtk_spin_button_get_value (GTK_SPIN_BUTTON(spinner));                   
+                }
+                else {
+                   entry = option[i].handle;                
+                   val = (String)gtk_entry_get_text (GTK_ENTRY (entry));
+                   sscanf(val, "%f", &x);
+                }                  
                 if(x > option[i].max) x = option[i].max;
 		if(x < option[i].min) x = option[i].min;
-                if(option[i].value != x)
-                   *(float*) option[i].target = x;		
+                if(option[i].type == Fractional)
+                    *(float*) option[i].target = x; // engines never have float options!
+                else if(option[i].value != x)
+                    *(int*) option[i].target = x;		
                 break;
               case CheckBox:               
                 checkbutton = option[i].handle;
@@ -1487,7 +1508,8 @@ void OptionsProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    oldPonder = appData.ponderNextMove;
-   GenericPopUp(generalOptions, _("General Options"), 0);
+   //GenericPopUp(generalOptions, _("General Options"), 0);
+   GenericPopUpGTK(generalOptions, _("General Options"), 0);
 }
 
 void MatchOptionsProc(w, event, prms, nprms)
