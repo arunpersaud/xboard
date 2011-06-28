@@ -1488,7 +1488,8 @@ void EngineMenuProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
+   //GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
+   GenericPopUpGTK(adjudicationOptions, "Adjudicate non-ICS Games", 0);
 }
 
 void UciMenuProc(w, event, prms, nprms)
