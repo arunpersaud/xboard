@@ -1680,6 +1680,7 @@ int TcOK(int n)
     if(tcType == 0 && tmpMoves <= 0) return 0;
     if(tcType == 2 && tmpInc <= 0) return 0;
     GetWidgetText(&currentOption[4], &tc); // get original text, in case it is min:sec
+    searchTime = 0;
     switch(tcType) {
       case 0:
 	if(!ParseTimeControl(tc, -1, tmpMoves)) return 0;
