@@ -124,6 +124,22 @@ void GetWidgetText(Option *opt, char **buf)
     XtGetValues(opt->handle, &arg, 1);
 }
 
+void SetSpinValue(Option *opt, int val, int n)
+{    
+    if (opt->type == Spin)
+      {
+        if (val == -1)
+           gtk_widget_set_sensitive(opt->handle, FALSE);
+        else
+          {
+            gtk_widget_set_sensitive(opt->handle, TRUE);      
+            gtk_spin_button_set_value(opt->handle, val);
+          }
+      }
+    else
+      printf("error in SetWidgetText, unknown type %d\n", opt->type);    
+}
+
 void SetWidgetText(Option *opt, char *buf, int n)
 {
     Arg arg;
@@ -881,6 +897,14 @@ void GenericCallback(w, client_data, call_data)
 
 static char *oneLiner  = "<Key>Return:	redraw-display()\n";
 
+void GenericCallbackGTK(GtkWidget *widget, gpointer gdata)
+{    
+    int data = (intptr_t) gdata;   
+
+    currentOption = dialogOptions[data>>16]; data &= 0xFFFF;    
+    ((ButtonCallback*) currentOption[data].target)(data);   
+}
+
 void Browse(GtkWidget *widget, gpointer gdata)
 {
     GtkWidget *entry;
@@ -955,6 +979,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkAdjustment *spinner_adj;
 
     int i, j, arraysize;
+    int res=1;
     char def[MSG_SIZ], **dest;
     float x;
     String val;
@@ -1042,6 +1067,17 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
             gtk_table_attach_defaults(GTK_TABLE(table), label, 0, 3, i, i+1);            
 	    break;
+          case Button:
+            button = gtk_button_new_with_label (option[i].name);
+            if (!(option[i].min & 1)) {
+               hbox = gtk_hbox_new (FALSE, 0);
+               gtk_table_attach_defaults(GTK_TABLE(table), hbox, 0, 3, i, i+1);
+            }
+            gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
+            g_signal_connect (button, "clicked", G_CALLBACK (GenericCallbackGTK), (gpointer)(intptr_t) i + (dlgNr<<16));
+
+            option[i].handle = (void*)button;
+            break;
 	default:
 	    printf("GenericPopUp: unexpected case in switch.\n");
 	    break;
@@ -1060,7 +1096,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     response = gtk_dialog_run( GTK_DIALOG( dialog ) );    
     if (response == GTK_RESPONSE_ACCEPT)
       {
-        for (i=0;option[i].type != EndMark;i++) {             
+        for (i=0;;i++) {             
             switch(option[i].type) {
               case TextBox:
               case FileName:
@@ -1098,12 +1134,20 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 if (option[i].value != j)
                   *(Boolean*)option[i].target = j;               
                 break;
+              case Button:
               case Label:
+                break;
+              case EndMark:
+                //data = (intptr_t) dlgNr + (dlgNr<<16);
+                //currentOption = dialogOptions[data>>16]; data &= 0xFFFF;                
+                if(option[i].target) // callback for implementing necessary actions on OK (like redraw)
+                  res = ((OKCallback*) option[i].target)(i);
                 break;
             default:
 	      printf("GenericPopUp: unexpected case in switch.\n");
 	      break;
 	    }
+        if(option[i].type == EndMark) break;
         }   
       }   
     gtk_widget_destroy( dialog );   
@@ -1911,10 +1955,16 @@ char *Value(int n)
 
 int TcOK(int n)
 {
-    char *tc;
+    char tc[10];
+    int x;
+
     if(tcType == 0 && tmpMoves <= 0) return 0;
     if(tcType == 2 && tmpInc <= 0) return 0;
-    GetWidgetText(&currentOption[4], &tc); // get original text, in case it is min:sec
+
+    /*GetWidgetText(&currentOption[4], &tc); */// get original text, in case it is min:sec
+    /* can't have min:sec on gtk spin button */
+    x = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(currentOption[4].handle));
+    snprintf(tc, 10,  "%d", x);
     switch(tcType) {
       case 0:
 	if(!ParseTimeControl(tc, -1, tmpMoves)) return 0;
@@ -1952,20 +2002,20 @@ Option tcOptions[] = {
 void SetTcType(int n)
 {
     switch(tcType = n) {
-      case 0:
-	SetWidgetText(&tcOptions[3], Value(tmpMoves), 0);
-	SetWidgetText(&tcOptions[4], Value(tmpTc), 0);
-	SetWidgetText(&tcOptions[5], _("Unused"), 0);
+      case 0:        
+	SetSpinValue(&tcOptions[3], tmpMoves, 0);
+	SetSpinValue(&tcOptions[4], tmpTc, 0);
+	SetSpinValue(&tcOptions[5], -1, 0);
 	break;
-      case 1:
-	SetWidgetText(&tcOptions[3], _("Unused"), 0);
-	SetWidgetText(&tcOptions[4], Value(tmpTc), 0);
-	SetWidgetText(&tcOptions[5], Value(tmpInc), 0);
+      case 1:        
+	SetSpinValue(&tcOptions[3], -1, 0);
+	SetSpinValue(&tcOptions[4], tmpTc, 0);
+	SetSpinValue(&tcOptions[5], tmpInc, 0);
 	break;
-      case 2:
-	SetWidgetText(&tcOptions[3], _("Unused"), 0);
-	SetWidgetText(&tcOptions[4], _("Unused"), 0);
-	SetWidgetText(&tcOptions[5], Value(tmpInc), 0);
+      case 2:        
+	SetSpinValue(&tcOptions[3], -1, 0);
+	SetSpinValue(&tcOptions[4], -1, 0);
+	SetSpinValue(&tcOptions[5], tmpInc, 0);
     }
 }
 
@@ -1979,7 +2029,8 @@ void TimeControlProc(w, event, prms, nprms)
    tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;
    tmpOdds1 = tmpOdds2 = 1; tcType = 0;
    tmpTc = atoi(appData.timeControl);
-   GenericPopUp(tcOptions, _("Time Control"), 0);
+   //GenericPopUp(tcOptions, _("Time Control"), 0);
+   GenericPopUpGTK(tcOptions, _("Time Control"), 0);
 }
 
 //---------------------------- Chat Windows ----------------------------------------------
