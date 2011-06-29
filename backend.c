@@ -4899,8 +4899,12 @@ SendMoveToProgram(moveNum, cps)
 	else SendToProgram(moveList[moveNum], cps);
       } else
       if(BOARD_HEIGHT > 10) { // [HGM] big: convert ranks to double-digit where needed
-	snprintf(buf, MSG_SIZ, "%c%d%c%d%s", moveList[moveNum][0], moveList[moveNum][1] - '0',
-					     moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
+	if(moveList[moveNum][1] == '@' && (BOARD_HEIGHT < 16 || moveList[moveNum][0] <= 'Z')) { // drop move
+	  snprintf(buf, MSG_SIZ, "%c@%c%d%s", moveList[moveNum][0],
+					      moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
+	} else
+	  snprintf(buf, MSG_SIZ, "%c%d%c%d%s", moveList[moveNum][0], moveList[moveNum][1] - '0',
+					       moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
 	SendToProgram(buf, cps);
       }
       else SendToProgram(moveList[moveNum], cps);
