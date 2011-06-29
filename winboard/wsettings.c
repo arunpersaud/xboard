@@ -184,6 +184,7 @@ DesignOptionDialog(ChessProgramState *cps)
 	// look if we hit a group of options having names that start with the same word
 	int groupSize = 1, groupNameLength = 50;
 	sscanf(cps->option[k].name, "%s", buf); // get first word of option name
+#ifndef JAWS
 	while(k + groupSize < cps->nrOptions &&
 	      strstr(cps->option[k+groupSize].name, buf) == cps->option[k+groupSize].name) {
 		int j;
@@ -193,6 +194,7 @@ DesignOptionDialog(ChessProgramState *cps)
 		groupSize++;
 
 	}
+#endif
 	if(groupSize > 3) {
 		// We found a group to terminates the current section
 		LayoutOptions(n, k, "", cps->option); // flush all solitary options appearing before the group
@@ -250,10 +252,16 @@ SetOptionValues(HWND hDlg, ChessProgramState *cps)
 
     for(i=0; i<layout+buttons; i++) {
 	int j=layoutList[i];
-	if(j == -2) SetDlgItemText( hDlg, 2000+2*i, ". . ." );
+#ifdef JAWS
+	if(j <= -2) SetDlgItemText( hDlg, 2000+2*i, "browse" );
+#else
+	if(j <= -2) SetDlgItemText( hDlg, 2000+2*i, ". . ." );
+#endif
 	if(j<0) continue;
 	name = cps->option[j].name;
+#ifndef JAWS
 	if(strstr(name, "Polyglot ") == name) name += 9;
+#endif
 	SetDlgItemText( hDlg, 2000+2*i, name );
 //if(appData.debugMode) fprintf(debugFP, "# %s = %d\n",cps->option[j].name, cps->option[j].value );
 	switch(cps->option[j].type) {
