@@ -5882,7 +5882,7 @@ OKToStartUserMove(x, y)
 Boolean
 OnlyMove(int *x, int *y, Boolean captures) {
     DisambiguateClosure cl;
-    if (appData.zippyPlay) return FALSE;
+    if (appData.zippyPlay || !appData.testLegality) return FALSE;
     switch(gameMode) {
       case MachinePlaysBlack:
       case IcsPlayingWhite:
