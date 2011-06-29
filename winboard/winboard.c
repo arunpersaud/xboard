@@ -2692,8 +2692,8 @@ SquareToPos(int row, int column, int * x, int * y)
 VOID
 DrawCoordsOnDC(HDC hdc)
 {
-  static char files[24] = {'0', '1','2','3','4','5','6','7','8','9','0','1','1','0','9','8','7','6','5','4','3','2','1','0'};
-  static char ranks[24] = {'l', 'k','j','i','h','g','f','e','d','c','b','a','a','b','c','d','e','f','g','h','i','j','k','l'};
+  static char files[] = "0123456789012345678901221098765432109876543210";
+  static char ranks[] = "wvutsrqponmlkjihgfedcbaabcdefghijklmnopqrstuvw";
   char str[2] = { NULLCHAR, NULLCHAR };
   int oldMode, oldAlign, x, y, start, i;
   HFONT oldFont;
@@ -2702,7 +2702,7 @@ DrawCoordsOnDC(HDC hdc)
   if (!appData.showCoords)
     return;
 
-  start = flipView ? 1-(ONE!='1') : 23+(ONE!='1')-BOARD_HEIGHT;
+  start = flipView ? 1-(ONE!='1') : 45+(ONE!='1')-BOARD_HEIGHT;
 
   oldBrush = SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   oldMode = SetBkMode(hdc, (appData.monoMode ? OPAQUE : TRANSPARENT));
@@ -2719,7 +2719,7 @@ DrawCoordsOnDC(HDC hdc)
     y += squareSize + lineGap;
   }
 
-  start = flipView ? 12-(BOARD_RGHT-BOARD_LEFT) : 12;
+  start = flipView ? 23-(BOARD_RGHT-BOARD_LEFT) : 23;
 
   SetTextAlign(hdc, TA_RIGHT|TA_BOTTOM);
   for (i = 0; i < BOARD_RGHT - BOARD_LEFT; i++) {
