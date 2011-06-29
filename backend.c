@@ -15821,7 +15821,7 @@ PositionToFEN(move, overrideCastling)
 {
     int i, j, fromX, fromY, toX, toY;
     int whiteToPlay;
-    char buf[128];
+    char buf[MSG_SIZ];
     char *p, *q;
     int emptycount;
     ChessSquare piece;
@@ -15832,6 +15832,7 @@ PositionToFEN(move, overrideCastling)
 
     /* Piece placement data */
     for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
+	if(MSG_SIZ - (p - buf) < BOARD_RGHT - BOARD_LEFT + 20) { *p = 0; return StrSave(buf); }
 	emptycount = 0;
         for (j = BOARD_LEFT; j < BOARD_RGHT; j++) {
 	    if (boards[move][i][j] == EmptySquare) {
