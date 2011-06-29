@@ -4524,7 +4524,7 @@ ParseBoard12(string)
       if (appData.ringBellAfterMoves && /*!ics_user_moved*/ // [HGM] use absolute method to recognize own move
 	    !((gameMode == IcsPlayingWhite) && (!WhiteOnMove(moveNum)) ||
 	      (gameMode == IcsPlayingBlack) &&  (WhiteOnMove(moveNum))   ) ) {
-	if(newMove) RingBell(); else PlayIcsUnfinishedSound();
+	if(newMove || gameMode == IcsExamining) RingBell(); else PlayIcsUnfinishedSound();
       }
     }
 
