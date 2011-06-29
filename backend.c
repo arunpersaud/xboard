@@ -9683,7 +9683,7 @@ WriteTourneyFile(char *results)
 	fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
 	fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
 	if(searchTime > 0)
-		fprintf(f, "-searchTime \"%s\"\n", appData.searchTime);
+		fprintf(f, "-searchTime \"%d:%02d\"\n", searchTime/60, searchTime%60);
 	else {
 		fprintf(f, "-mps %d\n", appData.movesPerSession);
 		fprintf(f, "-tc %s\n", appData.timeControl);
