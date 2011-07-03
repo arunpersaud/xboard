@@ -942,12 +942,12 @@ void Browse(GtkWidget *widget, gpointer gdata)
                       NULL);
 
     /* one filter to show everything */
-    gtk_file_filter_add_pattern(gtkfilter_all, "*.*");
+    gtk_file_filter_add_pattern(gtkfilter_all, "*");
     gtk_file_filter_set_name   (gtkfilter_all, "All Files");
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),gtkfilter_all);
     
     /* filter for specific filetypes e.g. pgn or fen */
-    if (currentOption[opt_i].textValue != "")
+    if (currentOption[opt_i].textValue != "" && currentOption[opt_i].textValue != NULL)    
       {          
         strcat(fileext, currentOption[opt_i].textValue);    
         gtk_file_filter_add_pattern(gtkfilter, fileext);
@@ -1033,8 +1033,10 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
 
             entry = gtk_entry_new();            
      
-            gtk_entry_set_text (GTK_ENTRY (entry), option[i].type==Spin || option[i].type==Fractional ? def :
-                            *(char**)option[i].target);            
+            if (option[i].type==Spin || option[i].type==Fractional)
+                gtk_entry_set_text (GTK_ENTRY (entry), def);
+            else if ( *(char**)option[i].target != NULL )
+                gtk_entry_set_text (GTK_ENTRY (entry), *(char**)option[i].target);            
 
             w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
 	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
@@ -1182,6 +1184,10 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 break;
               case ComboBox:
                  val = ((char**)currentOption[i].choice)[values[i]];
+
+                 /* Fix issue with Load New Engine.. dialog */ 
+                 if (strcmp(val," ") == 0) val = NULL;
+
                  if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
                     if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
                        *(char**) currentOption[i].target = strdup(val);
@@ -1941,7 +1947,8 @@ void LoadEngineProc(w, event, prms, nprms)
    if(nickName)     free(nickName);     nickName = strdup("");
    if(params)       free(params);       params = strdup("");
    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
-   GenericPopUp(installOptions, _("Load engine"), 0);
+   //GenericPopUp(installOptions, _("Load engine"), 0);
+   GenericPopUpGTK(installOptions, _("Load engine"), 0);
 }
 
 void EditBookProc(w, event, prms, nprms)
