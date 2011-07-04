@@ -4067,10 +4067,11 @@ SetupDropMenu(HMENU hmenu)
   }
 }
 
-void DragPieceBegin(int x, int y)
+void DragPieceBegin(int x, int y, Boolean instantly)
 {
       dragInfo.lastpos.x = boardRect.left + x;
       dragInfo.lastpos.y = boardRect.top + y;
+      if(instantly) dragInfo.pos = dragInfo.lastpos;
       dragInfo.from.x = fromX;
       dragInfo.from.y = fromY;
       dragInfo.piece = boards[currentMove][fromY][fromX];

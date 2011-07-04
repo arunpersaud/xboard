@@ -126,7 +126,7 @@ void SetBlackToPlayEvent P((void));
 void UploadGameEvent P((void));
 void InitBackEnd1 P((void));
 void InitBackEnd2 P((void));
-int HasPromotionChoice P((int fromX, int fromY, int toX, int toY, char *choice));
+int HasPromotionChoice P((int fromX, int fromY, int toX, int toY, char *choice, int sweep));
 int InPalace P((int row, int column));
 int PieceForSquare P((int x, int y));
 int OKToStartUserMove P((int x, int y));

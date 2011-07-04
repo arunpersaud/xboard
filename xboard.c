@@ -8644,8 +8644,8 @@ AnimateMove(board, fromX, fromY, toX, toY)
 }
 
 void
-DragPieceBegin(x, y)
-     int x; int y;
+DragPieceBegin(x, y, instantly)
+     int x; int y; Boolean instantly;
 {
     int	 boardX, boardY, color;
     XPoint corner;
