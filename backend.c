@@ -6805,7 +6805,6 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     }
 
     if (clickType == Press) ErrorPopDown();
-    MarkTargetSquares(1);
 
     x = EventToSquare(xPix, BOARD_WIDTH);
     y = EventToSquare(yPix, BOARD_HEIGHT);
@@ -6920,6 +6919,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
 	    promoDefaultAltered = FALSE;
+	    MarkTargetSquares(1);
 	   if(!second || appData.oneClick && !OnlyMove(&x, &y, TRUE)) {
 	    if (appData.highlightDragging) {
 		SetHighlights(x, y, -1, -1);
@@ -6986,6 +6986,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     toX = x;
     toY = y;
     saveAnimate = appData.animate;
+    MarkTargetSquares(1);
     if (clickType == Press) {
 	if(gameMode == EditPosition && boards[currentMove][fromY][fromX] == EmptySquare) {
 	    // must be Edit Position mode with empty-square selected
