@@ -195,6 +195,7 @@ int NextUnit(char **p)
 	piece = separator = promoted = slash = n = 0;
 	for(i=0; i<4; i++) coord[i] = -1, type[i] = NOTHING;
 	if(**p == '+') (*p)++, promoted++;
+	if(**p >= 'a' && **p <= 'z' && (*p)[1]== '@') piece =*(*p)++ + 'A' - 'a'; else
 	if(**p >= 'A' && **p <= 'Z') {
 	     piece = *(*p)++; // Note we could test for 2-byte non-ascii names here
 	     if(**p == '/') slash = *(*p)++;
@@ -579,3 +580,4 @@ ChessMove yylexstr(int boardIndex, char *s, char *buf, int buflen)
     fromString = 0;
     return ret;
 }
+
