@@ -899,7 +899,7 @@ void GenericCallback(w, client_data, call_data)
     }
     if(currentCps) {
 	if(currentOption[data].type == SaveButton) GenericReadout(-1);
-	snprintf(buf, MSG_SIZ,  "option %s\n", name);
+	snprintf(buf, MSG_SIZ,  "option %s\n", name);        
 	SendToProgram(buf, currentCps);
     } else ((ButtonCallback*) currentOption[data].target)(data);
 }
@@ -907,11 +907,19 @@ void GenericCallback(w, client_data, call_data)
 static char *oneLiner  = "<Key>Return:	redraw-display()\n";
 
 void GenericCallbackGTK(GtkWidget *widget, gpointer gdata)
-{    
+{
+    const gchar *name;
+    char buf[MSG_SIZ];    
     int data = (intptr_t) gdata;   
 
-    currentOption = dialogOptions[data>>16]; data &= 0xFFFF;    
-    ((ButtonCallback*) currentOption[data].target)(data);   
+    currentOption = dialogOptions[data>>16]; data &= 0xFFFF;
+
+    if(currentCps) {
+        //if(currentOption[data].type == SaveButton) GenericReadout(-1);
+        name = gtk_button_get_label (GTK_BUTTON(widget));         
+        snprintf(buf, MSG_SIZ,  "option %s\n", name);
+        SendToProgram(buf, currentCps);
+    } else ((ButtonCallback*) currentOption[data].target)(data);   
 }
 
 void Browse(GtkWidget *widget, gpointer gdata)
@@ -988,14 +996,24 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkAdjustment *spinner_adj;
     GtkWidget *combobox;
 
-    int i, j, arraysize;
+    int i, j, arraysize, left, top, height, width;
     int res=1;
     char def[MSG_SIZ], **dest;
+    char buf[MSG_SIZ];
     float x;
     String val;
 
     dialogOptions[dlgNr] = option; // make available to callback
     currentOption = option;
+
+    if(currentCps) { // Settings popup for engine: format through heuristic
+        int n = currentCps->nrOptions;
+        if(!n) { DisplayNote(_("Engine has no options")); return 0; }
+        if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
+        height = n / width + 1;
+        /*if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = 1; // OK on same line */
+        currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
+    }
     
     dialog = gtk_dialog_new_with_buttons( title,
                                       NULL,
@@ -1012,16 +1030,25 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
         arraysize++;   
     }
 
-    table = gtk_table_new(arraysize, 3, FALSE);    
+    table = gtk_table_new(arraysize, 3, FALSE);
+    gtk_table_set_col_spacings(GTK_TABLE(table), 20);
+    left = 0;
+    top = -1;    
 
-    for (i=0;option[i].type != EndMark;i++) {                
+    for (i=0;option[i].type != EndMark;i++) {
+        top++;
+        if (top >= height) {
+            top = 0;
+            left = left + 3;
+            gtk_table_resize(GTK_TABLE(table), height, left + 3);   
+        }                
         switch(option[i].type) {
           case Fractional:           
 	    snprintf(def, MSG_SIZ,  "%.2f", *(float*)option[i].target);
 	    option[i].value = *(float*)option[i].target;
             goto tBox;
           case Spin:
-            option[i].value = *(int*)option[i].target;
+            if(!currentCps) option[i].value = *(int*)option[i].target;
             snprintf(def, MSG_SIZ,  "%d", option[i].value);
           case TextBox:
 	  case FileName:            
@@ -1031,10 +1058,12 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 
-            entry = gtk_entry_new();            
-     
+            entry = gtk_entry_new();
+
             if (option[i].type==Spin || option[i].type==Fractional)
                 gtk_entry_set_text (GTK_ENTRY (entry), def);
+            else if (currentCps)
+                gtk_entry_set_text (GTK_ENTRY (entry), option[i].textValue);
             else if ( *(char**)option[i].target != NULL )
                 gtk_entry_set_text (GTK_ENTRY (entry), *(char**)option[i].target);            
 
@@ -1045,45 +1074,50 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             gtk_entry_set_max_length (GTK_ENTRY (entry), w);
 
             // left, right, top, bottom
-            gtk_table_attach_defaults(GTK_TABLE(table), label, 0, 1, i, i+1);
+            gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
             //gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);            
 
             if (option[i].type == Spin) {                
                 spinner_adj = (GtkAdjustment *) gtk_adjustment_new (option[i].value, option[i].min, option[i].max, 1.0, 0.0, 0.0);
                 spinner = gtk_spin_button_new (spinner_adj, 1.0, 0);
-                gtk_table_attach_defaults(GTK_TABLE(table), spinner, 1, 3, i, i+1);
+                gtk_table_attach_defaults(GTK_TABLE(table), spinner, left+1, left+3, top, top+1);
                 option[i].handle = (void*)spinner;
             }
             else if (option[i].type == FileName || option[i].type == PathName) {
-                gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);
+                gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+2, top, top+1);
                 button = gtk_button_new_with_label ("Browse");
-                gtk_table_attach_defaults(GTK_TABLE(table), button, 2, 3, i, i+1);
+                gtk_table_attach_defaults(GTK_TABLE(table), button, left+2, left+3, top, top+1);
                 g_signal_connect (button, "clicked", G_CALLBACK (Browse), (gpointer)(intptr_t) i);
                 option[i].handle = (void*)entry;                 
             }
             else {
-                gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 3, i, i+1); 
+                gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+3, top, top+1); 
                 option[i].handle = (void*)entry;
             }                        		
             break;
           case CheckBox:
-            checkbutton = gtk_check_button_new_with_label(option[i].name);
-            option[i].value = *(Boolean*)option[i].target;
+            checkbutton = gtk_check_button_new_with_label(option[i].name);            
+            if(!currentCps) option[i].value = *(Boolean*)option[i].target;
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), option[i].value);
-            gtk_table_attach_defaults(GTK_TABLE(table), checkbutton, 0, 3, i, i+1);                            
+            gtk_table_attach_defaults(GTK_TABLE(table), checkbutton, left, left+3, top, top+1);                            
             option[i].handle = (void *)checkbutton;            
             break; 
 	  case Label:            
             label = gtk_label_new(option[i].name);
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-            gtk_table_attach_defaults(GTK_TABLE(table), label, 0, 3, i, i+1);                       
+            gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+3, top, top+1);                       
 	    break;
+          case SaveButton:
           case Button:
             button = gtk_button_new_with_label (option[i].name);            
             if (!(option[i].min & 1)) {               
                hbox = gtk_hbox_new (FALSE, 0);
-               gtk_table_attach_defaults(GTK_TABLE(table), hbox, 0, 3, i, i+1);
+               // if only 1 button then put it in 1st column of table only
+               if ( (arraysize >= (i+1)) && option[i+1].type != Button )
+                   gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+1, top, top+1);
+               else
+                   gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+3, top, top+1);
             }            
             gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);           
             g_signal_connect (button, "clicked", G_CALLBACK (GenericCallbackGTK), (gpointer)(intptr_t) i + (dlgNr<<16));           
@@ -1093,29 +1127,34 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             label = gtk_label_new(option[i].name);
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
-            gtk_table_attach_defaults(GTK_TABLE(table), label, 0, 1, i, i+1);
+            gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
 
             combobox = gtk_combo_box_new_text();            
+
             for(j=0;;j++) {
                if (  ((char **) option[i].textValue)[j] == NULL) break;
                gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), ((char **) option[i].textValue)[j]);                          
             }
-            
-            for(j=0; option[i].choice[j]; j++) {                
-                if(*(char**)option[i].target && !strcmp(*(char**)option[i].target, option[i].choice[j])) break;
+
+            if(currentCps)
+                option[i].choice = (char**) option[i].textValue;
+            else {            
+                for(j=0; option[i].choice[j]; j++) {                
+                    if(*(char**)option[i].target && !strcmp(*(char**)option[i].target, option[i].choice[j])) break;
+                }
+                /* If choice is NULL set to first */
+                if (option[i].choice[j] == NULL)
+                   option[i].value = 0;
+                else 
+                   option[i].value = j;
             }
 
-            /* If choice is NULL set to first */
-            if (option[i].choice[j] == NULL)
-               option[i].value = 0;
-            else 
-               option[i].value = j;             
             //option[i].value = j + (option[i].choice[j] == NULL);            
             gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), option[i].value); 
             
 
             hbox = gtk_hbox_new (FALSE, 0);
-            gtk_table_attach_defaults(GTK_TABLE(table), hbox, 1, 3, i, i+1);
+            gtk_table_attach_defaults(GTK_TABLE(table), hbox, left+1, left+3, top, top+1);
             gtk_box_pack_start (GTK_BOX (hbox), combobox, TRUE, TRUE, 0);
             //gtk_table_attach_defaults(GTK_TABLE(table), combobox, 1, 2, i, i+1);
 
@@ -1147,12 +1186,17 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
               case FileName:
               case PathName:
                 entry = option[i].handle;
-                val = (String)gtk_entry_get_text (GTK_ENTRY (entry));              
-                dest = (char**) option[i].target;
+                val = (String)gtk_entry_get_text (GTK_ENTRY (entry));
+                dest = currentCps ? &(currentOption[i].textValue) : (char**) currentOption[i].target;
                 if(*dest == NULL || strcmp(*dest, val)) {
-                   if(*dest) free(*dest);
-                   *dest = malloc(strlen(val)+1);
-                   safeStrCpy(*dest, val, strlen(val) + 1);
+                    if(currentCps) {
+                        snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name, val);
+                        SendToProgram(buf, currentCps);
+                    } else {
+                        if(*dest) free(*dest);
+                        *dest = malloc(strlen(val)+1);
+                    }
+                    safeStrCpy(*dest, val, MSG_SIZ - (*dest - currentOption[i].name)); // copy text there
                 }
                 break;
               case Spin:
@@ -1170,27 +1214,41 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
 		if(x < option[i].min) x = option[i].min;
                 if(option[i].type == Fractional)
                     *(float*) option[i].target = x; // engines never have float options!
-                else if(option[i].value != x)
-                    *(int*) option[i].target = x;		
+                else if(option[i].value != x) {
+                    currentOption[i].value = x;
+                    if(currentCps) {
+                        snprintf(buf, MSG_SIZ,  "option %s=%.0f\n", currentOption[i].name, x);
+                        SendToProgram(buf, currentCps);
+                    } else *(int*) currentOption[i].target = x;
+                }	
                 break;
               case CheckBox:               
                 checkbutton = option[i].handle;
-                j = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton));                
-                if (option[i].value != j)
-                  *(Boolean*)option[i].target = j;               
+                j = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton));
+                if(currentOption[i].value != j) {
+                    currentOption[i].value = j;
+                    if(currentCps) {
+                        snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentOption[i].name, j);
+                        SendToProgram(buf, currentCps);
+                    } else *(Boolean*) currentOption[i].target = j;
+                }        
                 break;
               case Button:
+              case SaveButton:
               case Label:
                 break;
               case ComboBox:
-                 val = ((char**)currentOption[i].choice)[values[i]];
-
-                 /* Fix issue with Load New Engine.. dialog */ 
-                 if (strcmp(val," ") == 0) val = NULL;
-
-                 if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
-                    if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
-                       *(char**) currentOption[i].target = strdup(val);
+                 val = ((char**)currentOption[i].choice)[values[i]];                 
+                 if (strcmp(val," ") == 0) val = NULL; // Fix issue with Load New Engine.. dialog 
+                 if(currentCps) {
+                     if(currentOption[i].value == values[i]) break; // not changed
+                         currentOption[i].value = values[i];
+                         snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name,
+                                 ((char**)currentOption[i].textValue)[values[i]]);
+                         SendToProgram(buf, currentCps);
+                 } else if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
+                     if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
+                     *(char**) currentOption[i].target = strdup(val);
                  }
                 break;
               case EndMark:                              
@@ -1888,7 +1946,8 @@ void
 SettingsPopUp(ChessProgramState *cps)
 {
    currentCps = cps;
-   GenericPopUp(cps->option, _("Engine Settings"), 0);
+   //GenericPopUp(cps->option, _("Engine Settings"), 0);
+   GenericPopUpGTK(cps->option, _("Engine Settings"), 0);
 }
 
 void FirstSettingsProc(w, event, prms, nprms)
