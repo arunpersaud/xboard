@@ -1979,11 +1979,9 @@ Option shuffleOptions[] = {
 void SetRandom(int n)
 {
     int r = n==2 ? -1 : rand() & (1<<30)-1;
-    char buf[MSG_SIZ];
-    Arg args[2];
-    snprintf(buf, MSG_SIZ,  "%d", r);
-    SetWidgetText(&shuffleOptions[1], buf, 0);
-    SetWidgetState(&shuffleOptions[0], True);
+
+    gtk_spin_button_set_value (shuffleOptions[1].handle, r);  
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(shuffleOptions[0].handle), True);
 }
 
 void ShuffleMenuProc(w, event, prms, nprms)
@@ -1992,7 +1990,8 @@ void ShuffleMenuProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
+    //GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
+    GenericPopUpGTK(shuffleOptions, _("New Shuffle Game"), 0);
 }
 
 int tmpMoves, tmpTc, tmpInc, tmpOdds1, tmpOdds2, tcType;
