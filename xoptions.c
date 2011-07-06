@@ -996,7 +996,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkAdjustment *spinner_adj;
     GtkWidget *combobox;
 
-    int i, j, arraysize, left, top, height, width;
+    int i, j, arraysize, left, top, height=999, width=1;
     int res=1;
     char def[MSG_SIZ], **dest;
     char buf[MSG_SIZ];
