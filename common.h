@@ -650,6 +650,7 @@ typedef struct {
     Boolean pieceMenu;
     Boolean sweepSelect;
     Boolean whitePOV;
+    Boolean scoreWhite;
     Boolean pvSAN[ENGINES];
 
     char *tourneyFile;

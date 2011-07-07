@@ -194,7 +194,7 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
         header[0] = NULLCHAR;
         if(gameMode == AnalyzeMode && (multi = MultiPV(&first)) >= 0) {
             snprintf(header, MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
-                                       appData.whitePOV ? "white" : "mover", first.option[multi].value);
+                                       appData.whitePOV || appData.scoreWhite ? "white" : "mover", first.option[multi].value);
             InsertIntoMemo( which, header, 0);
         } else
         if(appData.ponderNextMove && lastLine[which][0]) {
@@ -481,7 +481,7 @@ static void UpdateControls( EngineOutputData * ed )
         }
 
         /* Score */
-        h = (gameMode == AnalyzeMode && appData.whitePOV && !WhiteOnMove(currentMove) ? -1 : 1) * ed->score;
+        h = ((gameMode == AnalyzeMode && appData.whitePOV || appData.scoreWhite) && !WhiteOnMove(currentMove) ? -1 : 1) * ed->score;
         if( h > 0 ) {
 	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f", h / 100.0 );
         }
