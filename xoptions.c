@@ -1163,7 +1163,9 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             option[i].handle = (void*)combobox;
             values[i] = option[i].value;            
             break;
-
+	  case Break:
+            top = height; // force next option to start in a new column
+            break; 
 	default:
 	    printf("GenericPopUp: unexpected case in switch. i=%d type=%d name=%s.\n", i, option[i].type, option[i].name);
 	    break;
@@ -1236,6 +1238,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
               case Button:
               case SaveButton:
               case Label:
+              case Break:
                 break;
               case ComboBox:
                  val = ((char**)currentOption[i].choice)[values[i]];                 
@@ -1596,7 +1599,8 @@ void IcsOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(icsOptions, _("ICS Options"), 0);
+   //GenericPopUp(icsOptions, _("ICS Options"), 0);
+   GenericPopUpGTK(icsOptions, _("ICS Options"), 0);
 }
 
 void LoadOptionsProc(w, event, prms, nprms)
