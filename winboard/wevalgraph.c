@@ -154,6 +154,7 @@ static VOID DisplayEvalGraph( HWND hWnd, HDC hDC )
 
     // back-end painting; calls back front-end primitives for lines, rectangles and text
     PaintEvalGraph();
+    SetWindowText(hWnd, MakeEvalTitle(T_("Evaluation Graph")));
 
     /* Copy bitmap into destination DC */
     BitBlt( hDC, 0, 0, nWidthPB, nHeightPB, hdcPB, 0, 0, SRCCOPY );

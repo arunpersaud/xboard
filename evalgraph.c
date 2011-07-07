@@ -85,6 +85,19 @@ static int GetPvScore( int index )
     return score;
 }
 
+char* MakeEvalTitle( char * title)
+{
+    int score = currPvInfo[ currCurrent ].score;
+    int depth = currPvInfo[ currCurrent ].depth;
+    static char buf[MSG_SIZ];
+
+    if( depth <=0 ) return title;
+    if( currCurrent & 1 ) score = -score; /* Flip score for black */
+    snprintf(buf, MSG_SIZ, "%s {%s%.2f/%-2d %d}", title, score>0 ? "+" : " ", score/100., depth, (currPvInfo[currCurrent].time+50)/100);
+
+    return buf;
+}
+
 // back-end
 /*
     For a centipawn value, this function returns the height of the corresponding

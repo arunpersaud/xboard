@@ -92,6 +92,7 @@ extern char *getenv();
 
 Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 Widget outputField[2][7]; // [HGM] front-end array to translate output field to window handle
+static char *title = N_("Evaluation graph");
 
 //extern WindowPlacement wpEvalGraph;
 
@@ -198,6 +199,8 @@ static void DisplayEvalGraph()
 
     // back-end painting; calls back front-end primitives for lines, rectangles and text
     PaintEvalGraph();
+    XtSetArg(args[0], XtNtitle, MakeEvalTitle(_(title))); j++;
+    XtSetValues(evalGraphShell, args, 1);
 
     XSync(yDisplay, False);
 }
@@ -343,7 +346,6 @@ EvalGraphPopUp()
     Arg args[16];
     int j;
     static int  needInit = TRUE;
-    static char *title = N_("Evaluation graph");
 
     if (evalGraphShell == NULL) {
 
