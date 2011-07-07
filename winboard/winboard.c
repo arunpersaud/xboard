@@ -9824,6 +9824,8 @@ HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
     MoveHistorySet( movelist, first, last, current, pvInfoList );
 
     EvalGraphSet( first, last, current, pvInfoList );
+
+    MakeEngineOutputTitle();
 }
 
 void

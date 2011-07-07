@@ -66,4 +66,5 @@ void InsertIntoMemo( int which, char * text, int where );
 void DoClearMemo(int which);
 void ResizeWindowControls( int mode );
 int EngineOutputDialogExists();
+void SetEngineOutputTitle( char *title );
 

@@ -274,6 +274,11 @@ void DoSetWindowText(int which, int field, char *s_label)
     SetWindowText( outputField[which][field], s_label );
 }
 
+void SetEngineOutputTitle(char *title)
+{
+    SetWindowText( engineOutputDialog, title );
+}
+
 // This seems pure front end
 LRESULT CALLBACK EngineOutputProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {

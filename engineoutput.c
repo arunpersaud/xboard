@@ -43,6 +43,7 @@
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
+#include "moves.h"
 #include "engineoutput.h"
 
 typedef struct {
@@ -74,6 +75,25 @@ static char header[MSG_SIZ];
 
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
+
+void MakeEngineOutputTitle()
+{
+	static char buf[MSG_SIZ];
+	static char oldTitle[MSG_SIZ];
+	char *title = "Engine Output";
+      extern int initialRulePlies;
+	int count;
+	// figure out value of 50-move counter
+	count = currentMove;
+	while( (signed char)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove ) count--;
+	if( count == backwardMostMove ) count -= initialRulePlies;
+	count += 2*appData.ruleMoves - currentMove;
+	snprintf(buf, MSG_SIZ, "%s (%d ply to draw)", title, count);
+	if(count <= 40) title = buf;
+	if(!strcmp(oldTitle, title)) return;
+	safeStrCpy(oldTitle, title, MSG_SIZ);
+	SetEngineOutputTitle(title);
+}
 
 // back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
 void SetEngineState( int which, int state, char * state_data )

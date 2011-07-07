@@ -167,6 +167,13 @@ void DoSetWindowText(int which, int field, char *s_label)
 	XtSetValues(outputField[which][field], &arg, 1);
 }
 
+void SetEngineOutputTitle(char *title)
+{
+	Arg arg;
+	XtSetArg(arg, XtNtitle, (XtArgVal) title);
+	XtSetValues(engineOutputShell, &arg, 1);
+}
+
 void InsertIntoMemo( int which, char * text, int where )
 {
 	XawTextBlock t;
