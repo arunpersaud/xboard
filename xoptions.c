@@ -215,6 +215,8 @@ void ComboSelectGTK(GtkWidget *widget, gpointer gptr)
     i = (intptr_t)gptr;    
     g = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));    
     values[i] = g; // store in temporary, for transfer at OK
+
+    if(currentOption[i].min & 1 && !currentCps && comboCallback) (comboCallback)(i);
 }
 
 void ComboSelect(w, addr, index) // callback for all combo items
@@ -344,13 +346,34 @@ int AppendText(Option *opt, char *s)
 
 void AddLine(Option *opt, char *s)
 {
-    AppendText(opt, s);
-    AppendText(opt, "\n");
+    GtkTextBuffer *textbuffer;
+    GtkTextIter end;
+
+    /* only used on matchOptions tourney manager at present */    
+    if (opt->type==TextBox && opt->min){
+        textbuffer = opt->handle;       
+        gtk_text_buffer_get_end_iter (textbuffer, &end);
+        gtk_text_buffer_insert(textbuffer, &end, s, -1);
+        gtk_text_buffer_insert(textbuffer, &end, "\n", -1);
+    }
+    else
+        printf("Error in xoptions AddLine - widget not a textbuffer\n");
+
 }
 
 void AddToTourney(int n)
 {
-    GenericReadout(4);  // selected engine
+    String val;
+    int i = 4;
+
+    val = ((char**)currentOption[i].choice)[values[i]];  
+
+    if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
+        if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
+            *(char**) currentOption[i].target = strdup(val);
+    }
+    
+    //GenericReadout(4);  // selected engine
     AddLine(&matchOptions[3], engineChoice);
 }
 
@@ -913,7 +936,7 @@ void GenericCallbackGTK(GtkWidget *widget, gpointer gdata)
     int data = (intptr_t) gdata;   
 
     currentOption = dialogOptions[data>>16]; data &= 0xFFFF;
-
+    
     if(currentCps) {
         //if(currentOption[data].type == SaveButton) GenericReadout(-1);
         name = gtk_button_get_label (GTK_BUTTON(widget));         
@@ -995,6 +1018,10 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkWidget *spinner;    
     GtkAdjustment *spinner_adj;
     GtkWidget *combobox;
+    GtkWidget *textview;
+    GtkTextBuffer *textbuffer;    
+    GtkTextIter start;
+    GtkTextIter end;    
 
     int i, j, arraysize, left, top, height=999, width=1;
     int res=1;
@@ -1057,6 +1084,20 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             label = gtk_label_new(option[i].name);
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+
+            if (option[i].type==TextBox && option[i].min){
+                textview = gtk_text_view_new();
+                textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));                
+                gtk_widget_set_size_request(textview, -1, option[i].min);
+                gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
+                gtk_table_attach_defaults(GTK_TABLE(table), textview, left+1, left+3, top, top+1);
+                if ( *(char**)option[i].target != NULL )
+                    gtk_text_buffer_set_text (textbuffer, *(char**)option[i].target, -1);
+                else
+                    gtk_text_buffer_set_text (textbuffer, "", -1); 
+                option[i].handle = (void*)textbuffer;
+                break; 
+            }
 
             entry = gtk_entry_new();
 
@@ -1187,8 +1228,16 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
               case TextBox:
               case FileName:
               case PathName:
-                entry = option[i].handle;
-                val = (String)gtk_entry_get_text (GTK_ENTRY (entry));
+
+                if (option[i].type==TextBox && option[i].min){
+                    textbuffer = option[i].handle;
+                    gtk_text_buffer_get_start_iter (textbuffer, &start);
+                    gtk_text_buffer_get_end_iter (textbuffer, &end);
+                    val = gtk_text_buffer_get_text (textbuffer, &start, &end, FALSE);                    
+                } else {
+                    entry = option[i].handle;
+                    val = (String)gtk_entry_get_text (GTK_ENTRY (entry));
+                }
                 dest = currentCps ? &(currentOption[i].textValue) : (char**) currentOption[i].target;
                 if(*dest == NULL || strcmp(*dest, val)) {
                     if(currentCps) {
@@ -1242,7 +1291,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 break;
               case ComboBox:
                  val = ((char**)currentOption[i].choice)[values[i]];                 
-                 if (strcmp(val," ") == 0) val = NULL; // Fix issue with Load New Engine.. dialog 
+                 if (val && strcmp(val," ") == 0) val = NULL; // Fix issue with Load New Engine.. dialog 
                  if(currentCps) {
                      if(currentOption[i].value == values[i]) break; // not changed
                          currentOption[i].value = values[i];
@@ -1696,7 +1745,8 @@ void MatchOptionsProc(w, event, prms, nprms)
    comboCallback = &AddToTourney;
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
-   GenericPopUp(matchOptions, _("Match Options"), 0);
+   //GenericPopUp(matchOptions, _("Match Options"), 0);
+   GenericPopUpGTK(matchOptions, _("Match Options"), 0);
 }
 
 Option textOptions[100];
