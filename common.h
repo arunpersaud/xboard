@@ -645,6 +645,8 @@ typedef struct {
     Boolean useInternalWrap; /* use internal wrapping -- noJoin usurps this if set */
     Boolean pasteSelection; /* paste X selection instead of clipboard */
     int nrVariations;   /* [HGM] multivar  */
+    int zoom;           /* [HGM] evalGraph */
+    int evalThreshold;  /* [HGM] evalGraph */
     Boolean dropMenu;   /* [HGM] pv        */
     Boolean markers;    /* [HGM] markers   */
     Boolean pieceMenu;

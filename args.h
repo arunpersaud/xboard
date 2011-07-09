@@ -623,6 +623,8 @@ ArgDescriptor argDescriptors[] = {
   { "sn", ArgString, (void *) &appData.pgnName[1], FALSE, INVALID },
   { "absoluteAnalysisScores", ArgBoolean, (void *) &appData.whitePOV, TRUE, FALSE },
   { "scoreWhite", ArgBoolean, (void *) &appData.scoreWhite, TRUE, FALSE },
+  { "evalZoom", ArgInt, (void *) &appData.zoom, TRUE, (ArgIniType) 1 },
+  { "evalThreshold", ArgInt, (void *) &appData.evalThreshold, TRUE, (ArgIniType) 25 },
   { "fSAN", ArgTrue, (void *) &appData.pvSAN[0], FALSE, FALSE },
   { "sSAN", ArgTrue, (void *) &appData.pvSAN[1], FALSE, FALSE },
   { "pairingEngine", ArgFilename, (void *) &appData.pairingEngine, TRUE, "" },

@@ -109,8 +109,10 @@ static int GetValueY( int value )
 {
     if( value < -range*700 ) value = -range*700;
     if( value > +range*700 ) value = +range*700;
-
-    return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / (1400.*range));
+    if(value > 100*range)  value += appData.zoom * 100 - 100*range; else
+    if(value < -100*range) value -= appData.zoom * 100 - 100*range; else
+	value *= appData.zoom;
+    return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / ((1200. + 200.*appData.zoom)*range));
 }
 
 // the brush selection is made part of the DrawLine, by passing a style argument
@@ -159,7 +161,7 @@ static void DrawHistogram( int x, int y, int width, int value, int side )
 {
     int left, top, right, bottom;
 
-    if( value > -25 && value < +25 ) return;
+    if( value > -appData.evalThreshold*range && value < +appData.evalThreshold*range ) return;
 
     left = x;
     right = left + width + 1;
