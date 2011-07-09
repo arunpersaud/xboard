@@ -212,7 +212,7 @@ LRESULT CALLBACK EvalGraphProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
         ReleaseDC( hDlg, hDC );
         break;
 
-    case WM_LBUTTONDBLCLK:
+    case WM_LBUTTONDOWN:
         if( wParam == 0 || wParam == MK_LBUTTON ) {
             int index = GetMoveIndexFromPoint( LOWORD(lParam), HIWORD(lParam) );
 
