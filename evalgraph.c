@@ -138,18 +138,14 @@ static void DrawAxisSegmentHoriz( int value, Boolean drawValue )
 // the initial brush selection is useless? BkMode needed for dotted line and text
 static void DrawAxis()
 {
-    int cy = nHeightPB / 2;
+    int cy = nHeightPB / 2, space = nHeightPB/(6 + appData.zoom);
     
-//    SelectObject( hdcPB, GetStockObject(NULL_BRUSH) );
-
-//    SetBkMode( hdcPB, TRANSPARENT );
-
     DrawAxisSegmentHoriz( +5, TRUE );
-    DrawAxisSegmentHoriz( +3, FALSE );
-    DrawAxisSegmentHoriz( +1, FALSE );
+    DrawAxisSegmentHoriz( +3, space >= 20 );
+    DrawAxisSegmentHoriz( +1, space >= 20 && space*appData.zoom >= 40 );
     DrawAxisSegmentHoriz(  0, TRUE );
-    DrawAxisSegmentHoriz( -1, FALSE );
-    DrawAxisSegmentHoriz( -3, FALSE );
+    DrawAxisSegmentHoriz( -1, space >= 20 && space*appData.zoom >= 40 );
+    DrawAxisSegmentHoriz( -3, space >= 20 );
     DrawAxisSegmentHoriz( -5, TRUE );
 
     DrawLine( MarginX + MarginW, cy, nWidthPB - MarginW, cy, PEN_BLACK ); // x-axis
