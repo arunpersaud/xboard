@@ -76,20 +76,22 @@ static char header[MSG_SIZ];
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
 
+extern int initialRulePlies;
+
 void MakeEngineOutputTitle()
 {
 	static char buf[MSG_SIZ];
 	static char oldTitle[MSG_SIZ];
 	char *title = "Engine Output";
-      extern int initialRulePlies;
-	int count;
+	int count, rule = 2*appData.ruleMoves;
 	// figure out value of 50-move counter
 	count = currentMove;
 	while( (signed char)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove ) count--;
 	if( count == backwardMostMove ) count -= initialRulePlies;
-	count += 2*appData.ruleMoves - currentMove;
-	snprintf(buf, MSG_SIZ, "%s (%d ply to draw)", title, count);
-	if(count <= 40) title = buf;
+	count = currentMove - count;
+	snprintf(buf, MSG_SIZ, "%s (%d reversible plies)", title, count);
+	if(!rule) rule = 100;
+	if(count >= rule - 40 && !appData.icsActive) title = buf;
 	if(!strcmp(oldTitle, title)) return;
 	safeStrCpy(oldTitle, title, MSG_SIZ);
 	SetEngineOutputTitle(title);
