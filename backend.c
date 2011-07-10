@@ -7136,7 +7136,7 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 	toX = xSqr; toY = ySqr; lastX = x, lastY = y;
 	if(flipView) toX = BOARD_WIDTH - 1 - toX; else toY = BOARD_HEIGHT - 1 - toY;
 	NextPiece(0);
-	return -2;
+	return 2; // grab
       case IcsObserving:
 	if(!appData.icsEngineAnalyze) return -1;
       case IcsPlayingWhite:
