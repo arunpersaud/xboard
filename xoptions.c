@@ -460,7 +460,7 @@ void Pick(int n)
 	    }
 	}
 
-	GenericReadout(-1); // make sure ranks and file settings are read
+	//GenericReadout(-1); // make sure ranks and file settings are read
 
 	gameInfo.variant = v;
 	appData.variant = VariantName(v);
@@ -1198,9 +1198,20 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 gdk_color_parse( *(char**) option[i-1].target, &color );
                 gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
 	    }
+
+            /* set button color on new variant dialog */
+            if(option[i].textValue) {
+                gdk_color_parse( option[i].textValue, &color );
+                gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
+                gtk_widget_set_sensitive(button, appData.noChessProgram || option[i].value < 0
+					 || strstr(first.variants, VariantName(option[i].value)));                 
+            }
             
-            if (!(option[i].min & 1)) {               
-               hbox = gtk_hbox_new (FALSE, 0);
+            if (!(option[i].min & 1)) {
+               if(option[i].textValue) // for new variant dialog give buttons equal space so they line up nicely
+                   hbox = gtk_hbox_new (TRUE, 0);
+               else
+                   hbox = gtk_hbox_new (FALSE, 0);
                // if only 1 button then put it in 1st column of table only
                if ( (arraysize >= (i+1)) && option[i+1].type != Button )
                    gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+1, top, top+1);
@@ -1360,7 +1371,8 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
 	    }
         if(option[i].type == EndMark) break;
         }   
-      }   
+      }
+    if (!dlgNr) currentCps = NULL;   
     gtk_widget_destroy( dialog );   
 }
 
@@ -1768,7 +1780,8 @@ void NewVariantProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(variantDescriptors, _("New Variant"), 0);
+   //GenericPopUp(variantDescriptors, _("New Variant"), 0);
+   GenericPopUpGTK(variantDescriptors, _("New Variant"), 0);
 }
 
 void OptionsProc(w, event, prms, nprms)
