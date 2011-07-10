@@ -707,6 +707,18 @@ void SetColor(char *colorName, Option *box)
 	XtSetValues(box->handle, args, 1);
 }
 
+void SetColorTextGTK(int n, char *buf)
+{
+    GdkColor color;
+
+    /* Update the RGB colour (e.g. #FFFFCC) on the board options */
+    gtk_entry_set_text (GTK_ENTRY (currentOption[n-1].handle), buf);
+
+    /* set the colour of the colour button to the colour that will be used */
+    gdk_color_parse( buf, &color );
+    gtk_widget_modify_bg ( GTK_WIDGET(currentOption[n].handle), GTK_STATE_NORMAL, &color );
+}
+
 void SetColorText(int n, char *buf)
 {
     SetWidgetText(&currentOption[n-1], buf, 0);
@@ -715,7 +727,31 @@ void SetColorText(int n, char *buf)
 
 void DefColor(int n)
 {
-    SetColorText(n, (char*) currentOption[n].choice);
+    //SetColorText(n, (char*) currentOption[n].choice);
+    SetColorTextGTK(n, (char*) currentOption[n].choice);
+}
+
+void RefreshColorGTK(int source, int n)
+{
+    int col, j, r, g, b, step = 10;;
+    const gchar *s;
+    char buf[MSG_SIZ]; // color string
+
+    s = gtk_entry_get_text (GTK_ENTRY (currentOption[source].handle));
+    if(sscanf(s, "#%x", &col) != 1) return;   // malformed
+    b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
+    switch(n) {
+	case 1: r += 0x10000*step;break;
+	case 2: g += 0x100*step;  break;
+	case 3: b += step;        break;
+	case 4: r -= 0x10000*step; g -= 0x100*step; b -= step; break;
+    }
+    if(r < 0) r = 0; if(g < 0) g = 0; if(b < 0) b = 0;
+    if(r > 0xFF0000) r = 0xFF0000; if(g > 0xFF00) g = 0xFF00; if(b > 0xFF) b = 0xFF;
+    col = r | g | b;
+    snprintf(buf, MSG_SIZ, "#%06x", col);
+    for(j=1; j<7; j++) if(buf[j] >= 'a') buf[j] -= 32; // capitalize
+    SetColorTextGTK(source+1, buf);
 }
 
 void RefreshColor(int source, int n)
@@ -750,7 +786,7 @@ void ColorChanged(Widget w, XtPointer data, XEvent *event, Boolean *b)
 void AdjustColor(int i)
 {
     int n = currentOption[i].value;
-    RefreshColor(i-n-1, n);
+    RefreshColorGTK(i-n-1, n);
 }
 
 int BoardOptionsOK(int n)
@@ -1021,7 +1057,8 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkWidget *textview;
     GtkTextBuffer *textbuffer;    
     GtkTextIter start;
-    GtkTextIter end;    
+    GtkTextIter end;
+    GdkColor color;   
 
     int i, j, arraysize, left, top, height=999, width=1;
     int res=1;
@@ -1132,7 +1169,10 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 option[i].handle = (void*)entry;                 
             }
             else {
-                gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+3, top, top+1); 
+                hbox = gtk_hbox_new (FALSE, 0);
+                gtk_table_attach_defaults(GTK_TABLE(table), hbox, left+1, left+3, top, top+1);
+                gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
+                //gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+3, top, top+1); 
                 option[i].handle = (void*)entry;
             }                        		
             break;
@@ -1151,7 +1191,14 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
 	    break;
           case SaveButton:
           case Button:
-            button = gtk_button_new_with_label (option[i].name);            
+            button = gtk_button_new_with_label (option[i].name);
+
+            /* set button color on view board dialog */
+            if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) {
+                gdk_color_parse( *(char**) option[i-1].target, &color );
+                gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color );
+	    }
+            
             if (!(option[i].min & 1)) {               
                hbox = gtk_hbox_new (FALSE, 0);
                // if only 1 button then put it in 1st column of table only
@@ -1689,8 +1736,8 @@ void BoardOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   GenericPopUp(boardOptions, _("Board Options"), 0);
-   //GenericPopUpGTK(boardOptions, _("Board Options"), 0);
+   //GenericPopUp(boardOptions, _("Board Options"), 0);
+   GenericPopUpGTK(boardOptions, _("Board Options"), 0);
 }
 
 void EngineMenuProc(w, event, prms, nprms)
