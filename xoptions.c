@@ -1014,7 +1014,7 @@ void Browse(GtkWidget *widget, gpointer gdata)
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),gtkfilter_all);
     
     /* filter for specific filetypes e.g. pgn or fen */
-    if (currentOption[opt_i].textValue != "" && currentOption[opt_i].textValue != NULL)    
+    if ( (strcmp(currentOption[opt_i].textValue, "") != 0) && currentOption[opt_i].textValue != NULL)    
       {          
         strcat(fileext, currentOption[opt_i].textValue);    
         gtk_file_filter_add_pattern(gtkfilter, fileext);
@@ -1373,7 +1373,8 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
         }   
       }
     if (!dlgNr) currentCps = NULL;   
-    gtk_widget_destroy( dialog );   
+    gtk_widget_destroy( dialog );
+    return 1;   
 }
 
 int
