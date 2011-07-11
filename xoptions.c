@@ -1014,7 +1014,7 @@ void Browse(GtkWidget *widget, gpointer gdata)
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),gtkfilter_all);
     
     /* filter for specific filetypes e.g. pgn or fen */
-    if ( (strcmp(currentOption[opt_i].textValue, "") != 0) && currentOption[opt_i].textValue != NULL)    
+    if (currentOption[opt_i].textValue != NULL && (strcmp(currentOption[opt_i].textValue, "") != 0) )    
       {          
         strcat(fileext, currentOption[opt_i].textValue);    
         gtk_file_filter_add_pattern(gtkfilter, fileext);
