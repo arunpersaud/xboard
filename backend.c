@@ -6744,7 +6744,7 @@ void
 MarkTargetSquares(int clear)
 {
   int x, y;
-  if(!appData.markers || !appData.highlightDragging ||
+  if(!appData.markers || !appData.highlightDragging || appData.icsActive && gameInfo.variant < VariantShogi ||
      !appData.testLegality || gameMode == EditPosition) return;
   if(clear) {
     for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) marker[y][x] = 0;
