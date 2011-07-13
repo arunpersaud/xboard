@@ -847,6 +847,112 @@ Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 
+void GenericReadoutGTK(int selected)
+{
+    GtkWidget *checkbutton;
+    GtkWidget *spinner;
+    GtkWidget *entry;
+    GtkTextBuffer *textbuffer;    
+    GtkTextIter start;
+    GtkTextIter end;
+    String val;
+    char **dest;
+    char buf[MSG_SIZ];
+    float x;
+    int i, j, res=1;
+          
+    for (i=0;;i++) {             
+        switch(currentOption[i].type) {
+          case TextBox:
+          case FileName:
+          case PathName:
+
+            if (currentOption[i].type==TextBox && currentOption[i].min){
+                textbuffer = currentOption[i].handle;
+                gtk_text_buffer_get_start_iter (textbuffer, &start);
+                gtk_text_buffer_get_end_iter (textbuffer, &end);
+                val = gtk_text_buffer_get_text (textbuffer, &start, &end, FALSE);                    
+            } else {
+                entry = currentOption[i].handle;
+                val = (String)gtk_entry_get_text (GTK_ENTRY (entry));
+            }
+            dest = currentCps ? &(currentOption[i].textValue) : (char**) currentOption[i].target;
+            if(*dest == NULL || strcmp(*dest, val)) {
+                if(currentCps) {
+                    snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name, val);
+                    SendToProgram(buf, currentCps);
+                } else {
+                    if(*dest) free(*dest);
+                    *dest = malloc(strlen(val)+1);
+                }
+                safeStrCpy(*dest, val, MSG_SIZ - (*dest - currentOption[i].name)); // copy text there
+            }
+            break;
+          case Spin:
+          case Fractional:
+            if (currentOption[i].type == Spin) {
+               spinner = currentOption[i].handle;
+               x = gtk_spin_button_get_value (GTK_SPIN_BUTTON(spinner));                   
+            }
+            else {
+               entry = currentOption[i].handle;                
+               val = (String)gtk_entry_get_text (GTK_ENTRY (entry));
+               sscanf(val, "%f", &x);
+            }                  
+            if(x > currentOption[i].max) x = currentOption[i].max;
+            if(x < currentOption[i].min) x = currentOption[i].min;
+            if(currentOption[i].type == Fractional)
+                *(float*) currentOption[i].target = x; // engines never have float options!
+            else if(currentOption[i].value != x) {
+                currentOption[i].value = x;
+                if(currentCps) {
+                    snprintf(buf, MSG_SIZ,  "option %s=%.0f\n", currentOption[i].name, x);
+                    SendToProgram(buf, currentCps);
+                } else *(int*) currentOption[i].target = x;
+            }	
+            break;
+          case CheckBox:               
+            checkbutton = currentOption[i].handle;
+            j = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton));
+            if(currentOption[i].value != j) {
+                currentOption[i].value = j;
+                if(currentCps) {
+                    snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentOption[i].name, j);
+                    SendToProgram(buf, currentCps);
+                } else *(Boolean*) currentOption[i].target = j;
+            }        
+            break;
+          case Button:
+          case SaveButton:
+          case Label:
+          case Break:
+            break;
+          case ComboBox:
+             val = ((char**)currentOption[i].choice)[values[i]];                 
+             if (val && strcmp(val," ") == 0) val = NULL; // Fix issue with Load New Engine.. dialog 
+             if(currentCps) {
+                 if(currentOption[i].value == values[i]) break; // not changed
+                     currentOption[i].value = values[i];
+                     snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name,
+                             ((char**)currentOption[i].textValue)[values[i]]);
+                     SendToProgram(buf, currentCps);
+             } else if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
+                 if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
+                 *(char**) currentOption[i].target = strdup(val);
+             }
+            break;
+          case EndMark:                              
+            if(currentOption[i].target) // callback for implementing necessary actions on OK (like redraw)
+              res = ((OKCallback*) currentOption[i].target)(i);
+            break;
+        default:
+            printf("GenericPopUp: unexpected case in switch %d.\n", currentOption[i].type);
+            break;
+        }
+        if(currentOption[i].type == EndMark) break;
+    }       
+}
+
 int GenericReadout(int selected)
 {
     int i, j, res=1;
@@ -964,6 +1070,20 @@ void GenericCallback(w, client_data, call_data)
 
 static char *oneLiner  = "<Key>Return:	redraw-display()\n";
 
+/* GTK callback used when OK/cancel clicked in genericpopup for non-modal dialog */
+void GenericPopUpCallback(w, resptype, data)
+     GtkWidget *w;
+     GtkResponseType  resptype;
+     gpointer  data;
+{
+    int n = (intptr_t) data; /* dialog number dlgnr */
+    
+    if (resptype == GTK_RESPONSE_ACCEPT)
+        GenericReadoutGTK(-1);
+    gtk_widget_destroy (w);
+    shellUp[n] = False;    
+}
+
 void GenericCallbackGTK(GtkWidget *widget, gpointer gdata)
 {
     const gchar *name;
@@ -1053,18 +1173,13 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkAdjustment *spinner_adj;
     GtkWidget *combobox;
     GtkWidget *textview;
-    GtkTextBuffer *textbuffer;    
-    GtkTextIter start;
-    GtkTextIter end;
+    GtkTextBuffer *textbuffer;           
     GdkColor color;   
 
-    int i, j, arraysize, left, top, height=999, width=1;
-    int res=1;
-    char def[MSG_SIZ], **dest;
-    char buf[MSG_SIZ];
-    float x;
-    String val;
+    int i, j, arraysize, left, top, height=999, width=1;    
+    char def[MSG_SIZ];        
 
+    if(shellUp[dlgNr]) return 0; // already up
     dialogOptions[dlgNr] = option; // make available to callback
     currentOption = option;
 
@@ -1079,7 +1194,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     
     dialog = gtk_dialog_new_with_buttons( title,
                                       NULL,
-                                      GTK_DIALOG_MODAL,                                             
+                                      GTK_DIALOG_DESTROY_WITH_PARENT,                                             
                                       GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
                                       GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
                                       NULL );
@@ -1273,106 +1388,22 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                         table, TRUE, TRUE, 0);    
  
     /* Show dialog */
-    gtk_widget_show_all( dialog );
+    gtk_widget_show_all( dialog );    
 
-    /* Run dialog */    
-    response = gtk_dialog_run( GTK_DIALOG( dialog ) );    
-    if (response == GTK_RESPONSE_ACCEPT)
-      {
-        for (i=0;;i++) {             
-            switch(option[i].type) {
-              case TextBox:
-              case FileName:
-              case PathName:
-
-                if (option[i].type==TextBox && option[i].min){
-                    textbuffer = option[i].handle;
-                    gtk_text_buffer_get_start_iter (textbuffer, &start);
-                    gtk_text_buffer_get_end_iter (textbuffer, &end);
-                    val = gtk_text_buffer_get_text (textbuffer, &start, &end, FALSE);                    
-                } else {
-                    entry = option[i].handle;
-                    val = (String)gtk_entry_get_text (GTK_ENTRY (entry));
-                }
-                dest = currentCps ? &(currentOption[i].textValue) : (char**) currentOption[i].target;
-                if(*dest == NULL || strcmp(*dest, val)) {
-                    if(currentCps) {
-                        snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name, val);
-                        SendToProgram(buf, currentCps);
-                    } else {
-                        if(*dest) free(*dest);
-                        *dest = malloc(strlen(val)+1);
-                    }
-                    safeStrCpy(*dest, val, MSG_SIZ - (*dest - currentOption[i].name)); // copy text there
-                }
-                break;
-              case Spin:
-              case Fractional:
-                if (option[i].type == Spin) {
-                   spinner = option[i].handle;
-                   x = gtk_spin_button_get_value (GTK_SPIN_BUTTON(spinner));                   
-                }
-                else {
-                   entry = option[i].handle;                
-                   val = (String)gtk_entry_get_text (GTK_ENTRY (entry));
-                   sscanf(val, "%f", &x);
-                }                  
-                if(x > option[i].max) x = option[i].max;
-		if(x < option[i].min) x = option[i].min;
-                if(option[i].type == Fractional)
-                    *(float*) option[i].target = x; // engines never have float options!
-                else if(option[i].value != x) {
-                    currentOption[i].value = x;
-                    if(currentCps) {
-                        snprintf(buf, MSG_SIZ,  "option %s=%.0f\n", currentOption[i].name, x);
-                        SendToProgram(buf, currentCps);
-                    } else *(int*) currentOption[i].target = x;
-                }	
-                break;
-              case CheckBox:               
-                checkbutton = option[i].handle;
-                j = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton));
-                if(currentOption[i].value != j) {
-                    currentOption[i].value = j;
-                    if(currentCps) {
-                        snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentOption[i].name, j);
-                        SendToProgram(buf, currentCps);
-                    } else *(Boolean*) currentOption[i].target = j;
-                }        
-                break;
-              case Button:
-              case SaveButton:
-              case Label:
-              case Break:
-                break;
-              case ComboBox:
-                 val = ((char**)currentOption[i].choice)[values[i]];                 
-                 if (val && strcmp(val," ") == 0) val = NULL; // Fix issue with Load New Engine.. dialog 
-                 if(currentCps) {
-                     if(currentOption[i].value == values[i]) break; // not changed
-                         currentOption[i].value = values[i];
-                         snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name,
-                                 ((char**)currentOption[i].textValue)[values[i]]);
-                         SendToProgram(buf, currentCps);
-                 } else if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
-                     if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
-                     *(char**) currentOption[i].target = strdup(val);
-                 }
-                break;
-              case EndMark:                              
-                if(option[i].target) // callback for implementing necessary actions on OK (like redraw)
-                  res = ((OKCallback*) option[i].target)(i);
-                break;
-            default:
-	      printf("GenericPopUp: unexpected case in switch %d.\n", option[i].type);
-	      break;
-	    }
-        if(option[i].type == EndMark) break;
-        }   
-      }
-    if (!dlgNr) currentCps = NULL;   
-    gtk_widget_destroy( dialog );
-    return 1;   
+    if (dlgNr) {
+        g_signal_connect (dialog, "response",
+                          G_CALLBACK (GenericPopUpCallback),
+                          (gpointer)(intptr_t) dlgNr);
+        shellUp[dlgNr] = True;
+    }
+    else {
+        /* Modal - Run dialog */    
+        response = gtk_dialog_run( GTK_DIALOG( dialog ) );    
+        if (response == GTK_RESPONSE_ACCEPT) GenericReadoutGTK(-1);
+        if (!dlgNr) currentCps = NULL;   
+        gtk_widget_destroy( dialog );
+    }    
+    return 1;
 }
 
 int
@@ -1791,7 +1822,7 @@ void OptionsProc(w, event, prms, nprms)
 {
    oldPonder = appData.ponderNextMove;
    //GenericPopUp(generalOptions, _("General Options"), 0);
-   GenericPopUpGTK(generalOptions, _("General Options"), 0);
+   GenericPopUpGTK(generalOptions, _("General Options"), 0);   
 }
 
 void MatchOptionsProc(w, event, prms, nprms)
@@ -2048,7 +2079,7 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
     metaL = XKeysymToKeycode(xDisplay, XK_Meta_L);
     metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
     if ( n == 1 && *buf > 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) // printable, no alt
-	PopUpMoveDialog(*buf);
+        PopUpMoveDialog(*buf);
 
 }
 
