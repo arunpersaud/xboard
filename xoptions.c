@@ -757,8 +757,7 @@ void RefreshColorGTK(int source, int n)
 void RefreshColor(int source, int n)
 {
     int col, j, r, g, b, step = 10;
-    char *s, buf[MSG_SIZ]; // color string
-    Arg args[5];
+    char *s, buf[MSG_SIZ]; // color string    
     GetWidgetText(&currentOption[source], &s);
     if(sscanf(s, "#%x", &col) != 1) return;   // malformed
     b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
@@ -1047,8 +1046,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkWidget *box;
     GtkWidget *checkbutton;
     GtkWidget *entry;
-    GtkWidget *hbox;
-    GtkWidget *ok_button;
+    GtkWidget *hbox;    
     GtkWidget *button;
     GtkWidget *table;
     GtkWidget *spinner;    
@@ -1816,7 +1814,7 @@ void PutText P((char *text, int pos));
 void SendString(char *p)
 {
     char buf[MSG_SIZ], *q;
-    if(q = strstr(p, "$input")) {
+    if((q = strstr(p, "$input"))) {
 	if(!shellUp[4]) return;
 	strncpy(buf, p, MSG_SIZ);
 	strncpy(buf + (q-p), q+6, MSG_SIZ-(q-p));
@@ -1929,8 +1927,7 @@ void ClearComment(int n)
 }
 
 void NewCommentPopup(char *title, char *text, int index)
-{
-    Widget edit;
+{    
     Arg args[16];
 
     if(shells[1]) { // if already exists, alter title and content
@@ -1945,7 +1942,7 @@ void NewCommentPopup(char *title, char *text, int index)
 	XtOverrideTranslations(commentOptions[0].handle, XtParseTranslationTable(commentTranslations));
 }
 
-static char *tagsText, *msgText;
+static char *tagsText;
 
 int NewTagsCallback(int n)
 {
@@ -1968,8 +1965,7 @@ Option tagsOptions[] = {
 };
 
 void NewTagsPopup(char *text, char *msg)
-{
-    Widget edit;
+{    
     Arg args[16];
     char *title = bookUp ? _("Edit book") : _("Tags");
 
@@ -2020,8 +2016,7 @@ void TypeInProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{
-    Arg args[2];
+{    
     String val;
 
     if(prms[0][0] == '1') {
@@ -2152,7 +2147,7 @@ Option shuffleOptions[] = {
 
 void SetRandom(int n)
 {
-    int r = n==2 ? -1 : rand() & (1<<30)-1;
+    int r = n==2 ? -1 : rand() & ((1<<30)-1);
 
     gtk_spin_button_set_value (shuffleOptions[1].handle, r);  
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(shuffleOptions[0].handle), True);
