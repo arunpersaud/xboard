@@ -70,6 +70,16 @@ char *crBlack = "#AD5D3D";
 GtkWidget *GUI_EvalGraph=NULL;
 GtkWidget *GUI_EvalGraphDrawingArea=NULL;
 
+#ifdef ENABLE_NLS
+# define  _(s) gettext (s)
+# define N_(s) gettext_noop (s)
+#else
+# define  _(s) (s)
+# define N_(s)  s
+#endif
+
+static char *title = "Evaluation graph";
+
 static int evalGraphDialogUp;
 
 void DrawSegment( int x, int y, int *lastX, int *lastY, int penType )
@@ -215,6 +225,7 @@ void DrawEvalText(char *buf, int cbBuf, int y)
 static void DisplayEvalGraph()
 {
   PaintEvalGraph();
+  gtk_window_set_title(GTK_WINDOW(GUI_EvalGraph),_(title));
   return;
 }
 
