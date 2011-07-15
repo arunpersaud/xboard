@@ -6,15 +6,31 @@
     <columns>
       <!-- column-name Number -->
       <column type="gint"/>
-      <!-- column-name Location -->
+      <!-- column-name Event -->
+      <column type="gchararray"/>
+      <!-- column-name Site -->
+      <column type="gchararray"/>
+      <!-- column-name Date -->
+      <column type="gchararray"/>
+      <!-- column-name Round -->
       <column type="gchararray"/>
       <!-- column-name White -->
       <column type="gchararray"/>
+      <!-- column-name White Elo -->
+      <column type="gint"/>
       <!-- column-name Black -->
       <column type="gchararray"/>
+      <!-- column-name Black Elo -->
+      <column type="gint"/>
       <!-- column-name Result -->
       <column type="gchararray"/>
-      <!-- column-name Date -->
+      <!-- column-name Result Comment-->
+      <column type="gchararray"/>
+      <!-- column-name Time Control -->
+      <column type="gchararray"/>
+      <!-- column-name Variant -->
+      <column type="gchararray"/>
+      <!-- column-name Out of Book -->
       <column type="gchararray"/>
     </columns>
   </object>
