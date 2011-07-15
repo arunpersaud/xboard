@@ -30,7 +30,7 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#include <gtk/gtk.h>
+#include <gtk/gtk.h> 
 
 #if STDC_HEADERS
 # include <stdlib.h>
@@ -272,8 +272,10 @@ static int oldCores, oldPonder;
 int MakeColors P((void));
 void CreateGCs P((int redo));
 void CreateAnyPieces P((void));
+int GenericReadoutGTK P((int selected));
 int GenericReadout P((int selected));
 Widget shells[10];
+GtkWidget *shellsGTK[10];
 Widget marked[10];
 Boolean shellUp[10];
 WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory };
@@ -284,6 +286,15 @@ void MarkMenu(char *item, int dlgNr)
     Arg args[2];
     XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     XtSetValues(marked[dlgNr] = XtNameToWidget(menuBarWidget, item), args, 1);
+}
+
+int PopDownGTK(int n)
+{
+    if (!shellUp[n]) return 0;
+    gtk_widget_destroy(shellsGTK[n]);
+    shellUp[n] = False;
+    if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
+    return 1;
 }
 
 int PopDown(int n)
@@ -382,7 +393,7 @@ int MatchOK(int n)
     if(appData.participants && appData.participants[0]) free(appData.participants);
     appData.participants = strdup(engineName);
     if(!CreateTourney(tfName)) return !appData.participants[0];
-    PopDown(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
+    PopDownGTK(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
     MatchEvent(2); // start tourney
     return 1;
 }
@@ -460,7 +471,7 @@ void Pick(int n)
 	    }
 	}
 
-	//GenericReadout(-1); // make sure ranks and file settings are read
+	GenericReadoutGTK(-1); // make sure ranks and file settings are read
 
 	gameInfo.variant = v;
 	appData.variant = VariantName(v);
@@ -471,7 +482,7 @@ void Pick(int n)
 	appData.pieceNickNames = "";
 	appData.colorNickNames = "";
 	Reset(True, True);
-        PopDown(0);
+        PopDownGTK(0);
         return;
 }
 
@@ -847,7 +858,7 @@ Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 
-void GenericReadoutGTK(int selected)
+int GenericReadoutGTK(int selected)
 {
     GtkWidget *checkbutton;
     GtkWidget *spinner;
@@ -861,13 +872,14 @@ void GenericReadoutGTK(int selected)
     float x;
     int i, j, res=1;
           
-    for (i=0;;i++) {             
+    for (i=0;;i++) {
+        if(selected >= 0) { if(i < selected) continue; else if(i > selected) break; }             
         switch(currentOption[i].type) {
           case TextBox:
           case FileName:
           case PathName:
 
-            if (currentOption[i].type==TextBox && currentOption[i].min){
+            if (currentOption[i].type==TextBox && currentOption[i].min > 80){
                 textbuffer = currentOption[i].handle;
                 gtk_text_buffer_get_start_iter (textbuffer, &start);
                 gtk_text_buffer_get_end_iter (textbuffer, &end);
@@ -950,7 +962,8 @@ void GenericReadoutGTK(int selected)
             break;
         }
         if(currentOption[i].type == EndMark) break;
-    }       
+    }
+    return res;       
 }
 
 int GenericReadout(int selected)
@@ -1071,17 +1084,21 @@ void GenericCallback(w, client_data, call_data)
 static char *oneLiner  = "<Key>Return:	redraw-display()\n";
 
 /* GTK callback used when OK/cancel clicked in genericpopup for non-modal dialog */
-void GenericPopUpCallback(w, resptype, data)
+void GenericPopUpCallback(w, resptype, gdata)
      GtkWidget *w;
      GtkResponseType  resptype;
-     gpointer  data;
+     gpointer  gdata;
 {
-    int n = (intptr_t) data; /* dialog number dlgnr */
-    
-    if (resptype == GTK_RESPONSE_ACCEPT)
-        GenericReadoutGTK(-1);
-    gtk_widget_destroy (w);
-    shellUp[n] = False;    
+    int data = (intptr_t) data; /* dialog number dlgnr */
+
+    /* OK pressed */    
+    if (resptype == GTK_RESPONSE_ACCEPT) {
+        if (GenericReadoutGTK(-1)) PopDownGTK(data);
+        return;
+    }
+
+    /* cancel pressed */
+    PopDownGTK(data);    
 }
 
 void GenericCallbackGTK(GtkWidget *widget, gpointer gdata)
@@ -1161,7 +1178,7 @@ int
 GenericPopUpGTK(Option *option, char *title, int dlgNr)
 {    
     GtkWidget *dialog = NULL;
-    gint       response, w;
+    gint       w;
     GtkWidget *label;
     GtkWidget *box;
     GtkWidget *checkbutton;
@@ -1174,7 +1191,8 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkWidget *combobox;
     GtkWidget *textview;
     GtkTextBuffer *textbuffer;           
-    GdkColor color;   
+    GdkColor color;     
+    GtkWidget *actionarea;
 
     int i, j, arraysize, left, top, height=999, width=1;    
     char def[MSG_SIZ];        
@@ -1190,15 +1208,16 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
         height = n / width + 1;
         /*if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = 1; // OK on same line */
         currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
-    }
-    
+    }    
+
     dialog = gtk_dialog_new_with_buttons( title,
                                       NULL,
-                                      GTK_DIALOG_DESTROY_WITH_PARENT,                                             
+                                      dlgNr ? GTK_DIALOG_DESTROY_WITH_PARENT : GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,                                             
                                       GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
                                       GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-                                      NULL );
-    
+                                      NULL );      
+
+    shellsGTK[dlgNr] = dialog;
     box = gtk_dialog_get_content_area( GTK_DIALOG( dialog ) );
     gtk_box_set_spacing(GTK_BOX(box), 5);    
 
@@ -1235,7 +1254,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 
-            if (option[i].type==TextBox && option[i].min){
+            if (option[i].type==TextBox && option[i].min > 80){
                 textview = gtk_text_view_new();
                 textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));                
                 gtk_widget_set_size_request(textview, -1, option[i].min);
@@ -1265,7 +1284,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             gtk_entry_set_max_length (GTK_ENTRY (entry), w);
 
             // left, right, top, bottom
-            gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
+            if (strcmp(option[i].name, "") != 0) gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
             //gtk_table_attach_defaults(GTK_TABLE(table), entry, 1, 2, i, i+1);            
 
             if (option[i].type == Spin) {                
@@ -1283,7 +1302,10 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             }
             else {
                 hbox = gtk_hbox_new (FALSE, 0);
-                gtk_table_attach_defaults(GTK_TABLE(table), hbox, left+1, left+3, top, top+1);
+                if (strcmp(option[i].name, "") == 0)
+                    gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+3, top, top+1);
+                else
+                    gtk_table_attach_defaults(GTK_TABLE(table), hbox, left+1, left+3, top, top+1);
                 gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
                 //gtk_table_attach_defaults(GTK_TABLE(table), entry, left+1, left+3, top, top+1); 
                 option[i].handle = (void*)entry;
@@ -1386,23 +1408,21 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
 
     gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
                         table, TRUE, TRUE, 0);    
- 
+
     /* Show dialog */
     gtk_widget_show_all( dialog );    
 
-    if (dlgNr) {
-        g_signal_connect (dialog, "response",
-                          G_CALLBACK (GenericPopUpCallback),
-                          (gpointer)(intptr_t) dlgNr);
-        shellUp[dlgNr] = True;
+    /* hide OK/cancel buttons */
+    if((option[i].min & 2)) {
+        actionarea = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
+        gtk_widget_hide(actionarea);
     }
-    else {
-        /* Modal - Run dialog */    
-        response = gtk_dialog_run( GTK_DIALOG( dialog ) );    
-        if (response == GTK_RESPONSE_ACCEPT) GenericReadoutGTK(-1);
-        if (!dlgNr) currentCps = NULL;   
-        gtk_widget_destroy( dialog );
-    }    
+
+    g_signal_connect (dialog, "response",
+                      G_CALLBACK (GenericPopUpCallback),
+                      (gpointer)(intptr_t) dlgNr);
+    shellUp[dlgNr] = True;    
+ 
     return 1;
 }
 
@@ -2061,6 +2081,28 @@ char moveTypeInTranslations[] =
     "<Key>Return: TypeInProc(1) \n"
     "<Key>Escape: TypeInProc(0) \n";
 
+void activateCB(entry, data)
+     GtkEntry *entry;
+     gpointer  data;
+{
+    const gchar *val;
+   
+    val = gtk_entry_get_text(GTK_ENTRY(entry));
+    TypeInDoneEvent((char*)val);    
+    PopDownGTK(0);
+}
+
+void PopUpMoveDialogGTK(char firstchar)
+{    
+    static char buf[2];   
+    buf[0] = firstchar;buf[1]='\0'; icsText = buf;
+    
+    if (!GenericPopUpGTK(boxOptions, _("Type a move"), 0)) return;
+    gtk_editable_set_position(boxOptions[0].handle, 1);
+    g_signal_connect (boxOptions[0].handle, "activate",
+                      G_CALLBACK (activateCB), NULL);                     
+}
+
 void PopUpMoveDialog(char firstchar)
 {
     static char buf[2];
@@ -2079,7 +2121,8 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
     metaL = XKeysymToKeycode(xDisplay, XK_Meta_L);
     metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
     if ( n == 1 && *buf > 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) // printable, no alt
-        PopUpMoveDialog(*buf);
+        //PopUpMoveDialog(*buf);
+        PopUpMoveDialogGTK(*buf);
 
 }
 
@@ -2112,7 +2155,7 @@ void SecondSettingsProc(w, event, prms, nprms)
 
 int InstallOK(int n)
 {
-    PopDown(0); // early popdown, to allow FreezeUI to instate grab
+    PopDownGTK(0); // early popdown, to allow FreezeUI to instate grab
     if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
     return 1;
 }
