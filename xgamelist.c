@@ -1,5 +1,5 @@
 /*
- * xgamelist.c -- Game list window, part of X front end for XBoard
+ * xgamelist.c -- Game list window, part of GTK front end for XBoard
  *
  * Copyright 1995, 2009, 2010, 2011 Free Software Foundation, Inc.
  * ------------------------------------------------------------------------
@@ -142,18 +142,34 @@ GameListPrepare()
       GameInfo *gameInfo = &(lg->gameInfo);
       char *event = (gameInfo->event && strcmp(gameInfo->event, "?") != 0) ?
 	gameInfo->event : gameInfo->site ? gameInfo->site : "?";
+      char *site  = gameInfo->site  ? gameInfo->site : "?";
+      char *date  = gameInfo->date  ? gameInfo->date : "?";
+      char *round = gameInfo->round ? gameInfo->round : "?";
       char *white = gameInfo->white ? gameInfo->white : "?";
       char *black = gameInfo->black ? gameInfo->black : "?";
-      char *date = gameInfo->date ? gameInfo->date : "?";
+      char *timeControl = gameInfo->timeControl ? gameInfo->timeControl : "?";
+      int whiteRating = gameInfo->whiteRating;
+      int blackRating = gameInfo->blackRating;
+      char *outOfBook = gameInfo->outOfBook ? gameInfo->outOfBook : "?";
+      char *resultDetails = gameInfo->resultDetails ? gameInfo->resultDetails : "?";
+      char *variant = VariantName(gameInfo->variant);
 
       gtk_list_store_append (LIST_GameListStore, &iter);
       gtk_list_store_set (LIST_GameListStore, &iter,
 			  0, lg->number,
                           1, event,
-                          2, white,
-			  3, black,
-			  4, PGNResult(gameInfo->result),
-			  5, date,
+			  2, site,
+			  3, date,
+			  4, round,
+                          5, white,
+			  6, whiteRating,
+			  7, black,
+			  8, blackRating,
+			  9, PGNResult(gameInfo->result),
+			  10, resultDetails,
+			  11, timeControl,
+			  12, variant,
+			  13, outOfBook,
                           -1);
       lg = (ListGame *) lg->node.succ;
       i++;

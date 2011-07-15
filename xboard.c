@@ -306,10 +306,6 @@ void ICSInputBoxPopUp P((void));
 void ICSInputBoxPopDown P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
 		      FileProc proc, char *openMode, FileAction action));
-void FileNameCallback P((Widget w, XtPointer client_data,
-			 XtPointer call_data));
-void FileNameAction P((Widget w, XEvent *event,
-		       String *prms, Cardinal *nprms));
 void AskQuestionReplyAction P((Widget w, XEvent *event,
 			  String *prms, Cardinal *nprms));
 void AskQuestionProc P((Widget w, XEvent *event,
@@ -923,7 +919,6 @@ XtActionsRec boardActions[] = {
     { "HandlePV", HandlePV },
     { "SelectPV", SelectPV },
     { "StopPV", StopPV },
-    { "FileNameAction", FileNameAction },
     { "AskQuestionProc", AskQuestionProc },
     { "AskQuestionReplyAction", AskQuestionReplyAction },
     { "PieceMenuPopup", PieceMenuPopup },
@@ -1150,7 +1145,6 @@ char ICSInputTranslations[] =
 char commentTranslations[] = "<Btn3Down>: extend-end() select-start() CommentClick() \n";
 
 String xboardResources[] = {
-    "*fileName*value.translations: #override\\n <Key>Return: FileNameAction()",
     "*question*value.translations: #override\\n <Key>Return: AskQuestionReplyAction()",
     "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
     NULL
@@ -5079,6 +5073,10 @@ void FileNamePopUp(label, def, filter, proc, openMode, action)
 					    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					    GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 					    NULL);
+      /* add filename suggestions */
+      if (strlen(def) > 0 )
+	gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), def);
+
       //gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER (dialog),TRUE);
     }
 
@@ -5115,74 +5113,6 @@ void FileNamePopUp(label, def, filter, proc, openMode, action)
   free(cp);
   return;
 
-}
-
-
-void FileNameCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    //    if (strcmp(name, _("cancel")) == 0) {
-    //  FileNamePopDown();
-    //    return;
-    //}
-
-    FileNameAction(w, NULL, NULL, NULL);
-}
-
-void FileNameAction(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-    String name;
-    FILE *f;
-    char *p, *fullname;
-    int index;
-
-    name = XawDialogGetValueString(w = XtParent(w));
-
-    if ((name != NULL) && (*name != NULLCHAR)) {
-        safeStrCpy(buf, name, sizeof(buf)/sizeof(buf[0]) );
-	XtPopdown(w = XtParent(XtParent(w)));
-	XtDestroyWidget(w);
-	filenameUp = False;
-
-	p = strrchr(buf, ' ');
-	if (p == NULL) {
-	    index = 0;
-	} else {
-	    *p++ = NULLCHAR;
-	    index = atoi(p);
-	}
-	fullname = ExpandPathName(buf);
-	if (!fullname) {
-	    ErrorPopUp(_("Error"), _("Can't open file"), FALSE);
-	}
-	else {
-	    f = fopen(fullname, fileOpenMode);
-	    if (f == NULL) {
-		DisplayError(_("Failed to open file"), errno);
-	    } else {
-		(void) (*fileProc)(f, index, buf);
-	    }
-	}
-	ModeHighlight();
-	return;
-    }
-
-    XtPopdown(w = XtParent(XtParent(w)));
-    XtDestroyWidget(w);
-    filenameUp = False;
-    ModeHighlight();
 }
 
 void PromotionPopUp()
@@ -5328,20 +5258,20 @@ void ErrorCallback(w, event, data)
      GtkWidget *w;
      GdkEvent  *event;
      gpointer  data;
-{    
+{
     errorUp = False;
     gtk_widget_destroy (w);
-    errorShell = NULL;    
+    errorShell = NULL;
 }
 
 
 void ErrorPopDown()
-{   
+{
     if (!errorUp) return;
-    errorUp = False;   
+    errorUp = False;
     if (errorShell != NULL)
       {
-        gtk_widget_destroy (errorShell);        
+        gtk_widget_destroy (errorShell);
         errorShell = NULL;
       }
 }
@@ -5352,15 +5282,15 @@ void ErrorPopUp(title, label, modal)
 {
     int msgtype;
 
-    if (strcmp(title, "Fatal Error") == 0 || strcmp(title, "Exiting") == 0)             
-      msgtype = GTK_MESSAGE_ERROR;   /* Fatal error message */      
-    else if (strcmp (title, "Error") == 0)       
-      msgtype = GTK_MESSAGE_WARNING; /* Nonfatal warning message */       
-    else        
-      msgtype = GTK_MESSAGE_INFO;    /* Informational message */      
+    if (strcmp(title, "Fatal Error") == 0 || strcmp(title, "Exiting") == 0)
+      msgtype = GTK_MESSAGE_ERROR;   /* Fatal error message */
+    else if (strcmp (title, "Error") == 0)
+      msgtype = GTK_MESSAGE_WARNING; /* Nonfatal warning message */
+    else
+      msgtype = GTK_MESSAGE_INFO;    /* Informational message */
 
     /* set main_application_window to null since we don't have a main
-       GtkWindow yet (main window is still Xt). */   
+       GtkWindow yet (main window is still Xt). */
     errorShell = gtk_message_dialog_new(NULL,
             GTK_DIALOG_DESTROY_WITH_PARENT,
             msgtype,
@@ -5370,16 +5300,16 @@ void ErrorPopUp(title, label, modal)
     gtk_widget_show (errorShell);
     errorUp = True;
     if (modal)
-      {        
+      {
         gtk_dialog_run (GTK_DIALOG(errorShell));
         gtk_widget_destroy (errorShell);
         errorShell = NULL;
         errorUp = False;
       }
-    else            
+    else
       g_signal_connect (errorShell, "response",
                         G_CALLBACK (ErrorCallback),
-                        errorShell);             
+                        errorShell);
 }
 
 /* Disable all user input other than deleting the window */
