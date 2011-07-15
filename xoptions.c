@@ -451,6 +451,7 @@ Option generalOptions[] = {
 { 0, 0, 10, NULL, (void*) &appData.flashCount, "", NULL, Spin, N_("Flash Moves (0 = no flashing):") },
 { 0, 1, 10, NULL, (void*) &appData.flashRate, "", NULL, Spin, N_("Flash Rate (high = fast):") },
 { 0, 5, 100,NULL, (void*) &appData.animSpeed, "", NULL, Spin, N_("Animation Speed (high = slow):") },
+{ 0,  1, 5, NULL, (void*) &appData.zoom, "", NULL, Spin, N_("Zoom factor in Evaluation Graph:") },
 { 0,  0, 0, NULL, (void*) &GeneralOptionsOK, "", NULL, EndMark , "" }
 };
 

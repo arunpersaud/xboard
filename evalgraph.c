@@ -85,6 +85,19 @@ static int GetPvScore( int index )
     return score;
 }
 
+char* MakeEvalTitle( char * title)
+{
+    int score = currPvInfo[ currCurrent ].score;
+    int depth = currPvInfo[ currCurrent ].depth;
+    static char buf[MSG_SIZ];
+
+    if( depth <=0 ) return title;
+    if( currCurrent & 1 ) score = -score; /* Flip score for black */
+    snprintf(buf, MSG_SIZ, "%s {%s%.2f/%-2d %d}", title, score>0 ? "+" : " ", score/100., depth, (currPvInfo[currCurrent].time+50)/100);
+
+    return buf;
+}
+
 // back-end
 /*
     For a centipawn value, this function returns the height of the corresponding
@@ -96,8 +109,10 @@ static int GetValueY( int value )
 {
     if( value < -range*700 ) value = -range*700;
     if( value > +range*700 ) value = +range*700;
-
-    return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / (1400.*range));
+    if(value > 100*range)  value += appData.zoom * 100 - 100*range; else
+    if(value < -100*range) value -= appData.zoom * 100 - 100*range; else
+	value *= appData.zoom;
+    return (nHeightPB / 2) - (int)(value * (nHeightPB - 2*MarginH) / ((1200. + 200.*appData.zoom)*range));
 }
 
 // the brush selection is made part of the DrawLine, by passing a style argument
@@ -123,18 +138,14 @@ static void DrawAxisSegmentHoriz( int value, Boolean drawValue )
 // the initial brush selection is useless? BkMode needed for dotted line and text
 static void DrawAxis()
 {
-    int cy = nHeightPB / 2;
+    int cy = nHeightPB / 2, space = nHeightPB/(6 + appData.zoom);
     
-//    SelectObject( hdcPB, GetStockObject(NULL_BRUSH) );
-
-//    SetBkMode( hdcPB, TRANSPARENT );
-
     DrawAxisSegmentHoriz( +5, TRUE );
-    DrawAxisSegmentHoriz( +3, FALSE );
-    DrawAxisSegmentHoriz( +1, FALSE );
+    DrawAxisSegmentHoriz( +3, space >= 20 );
+    DrawAxisSegmentHoriz( +1, space >= 20 && space*appData.zoom >= 40 );
     DrawAxisSegmentHoriz(  0, TRUE );
-    DrawAxisSegmentHoriz( -1, FALSE );
-    DrawAxisSegmentHoriz( -3, FALSE );
+    DrawAxisSegmentHoriz( -1, space >= 20 && space*appData.zoom >= 40 );
+    DrawAxisSegmentHoriz( -3, space >= 20 );
     DrawAxisSegmentHoriz( -5, TRUE );
 
     DrawLine( MarginX + MarginW, cy, nWidthPB - MarginW, cy, PEN_BLACK ); // x-axis
@@ -146,7 +157,7 @@ static void DrawHistogram( int x, int y, int width, int value, int side )
 {
     int left, top, right, bottom;
 
-    if( value > -25 && value < +25 ) return;
+    if( value > -appData.evalThreshold*range && value < +appData.evalThreshold*range ) return;
 
     left = x;
     right = left + width + 1;

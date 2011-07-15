@@ -4899,8 +4899,12 @@ SendMoveToProgram(moveNum, cps)
 	else SendToProgram(moveList[moveNum], cps);
       } else
       if(BOARD_HEIGHT > 10) { // [HGM] big: convert ranks to double-digit where needed
-	snprintf(buf, MSG_SIZ, "%c%d%c%d%s", moveList[moveNum][0], moveList[moveNum][1] - '0',
-					     moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
+	if(moveList[moveNum][1] == '@' && (BOARD_HEIGHT < 16 || moveList[moveNum][0] <= 'Z')) { // drop move
+	  snprintf(buf, MSG_SIZ, "%c@%c%d%s", moveList[moveNum][0],
+					      moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
+	} else
+	  snprintf(buf, MSG_SIZ, "%c%d%c%d%s", moveList[moveNum][0], moveList[moveNum][1] - '0',
+					       moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
 	SendToProgram(buf, cps);
       }
       else SendToProgram(moveList[moveNum], cps);
@@ -6076,7 +6080,7 @@ DefaultPromoChoice(int white)
 static int autoQueen; // [HGM] oneclick
 
 int
-HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
+HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice, int sweepSelect)
 {
     /* [HGM] rewritten IsPromotion to only flag promotions that offer a choice */
     /* [HGM] add Shogi promotions */
@@ -6158,9 +6162,9 @@ HasPromotionChoice(int fromX, int fromY, int toX, int toY, char *promoChoice)
     }
     // give caller the default choice even if we will not make it
     *promoChoice = ToLower(PieceToChar(defaultPromoChoice));
-    if(gameInfo.variant == VariantShogi) *promoChoice = '+';
-    if(appData.sweepSelect && gameInfo.variant != VariantGreat
-			   && gameInfo.variant != VariantShogi
+    if(gameInfo.variant == VariantShogi) *promoChoice = (defaultPromoChoice == piece ? '=' : '+');
+    if(        sweepSelect && gameInfo.variant != VariantGreat
+			   && gameInfo.variant != VariantGrand
 			   && gameInfo.variant != VariantSuper) return FALSE;
     if(autoQueen) return FALSE; // predetermined
 
@@ -6300,7 +6304,7 @@ OKToStartUserMove(x, y)
 Boolean
 OnlyMove(int *x, int *y, Boolean captures) {
     DisambiguateClosure cl;
-    if (appData.zippyPlay) return FALSE;
+    if (appData.zippyPlay || !appData.testLegality) return FALSE;
     switch(gameMode) {
       case MachinePlaysBlack:
       case IcsPlayingWhite:
@@ -6740,7 +6744,7 @@ void
 MarkTargetSquares(int clear)
 {
   int x, y;
-  if(!appData.markers || !appData.highlightDragging ||
+  if(!appData.markers || !appData.highlightDragging || appData.icsActive && gameInfo.variant < VariantShogi ||
      !appData.testLegality || gameMode == EditPosition) return;
   if(clear) {
     for(x=0; x<BOARD_WIDTH; x++) for(y=0; y<BOARD_HEIGHT; y++) marker[y][x] = 0;
@@ -6801,7 +6805,6 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     }
 
     if (clickType == Press) ErrorPopDown();
-    MarkTargetSquares(1);
 
     x = EventToSquare(xPix, BOARD_WIDTH);
     y = EventToSquare(yPix, BOARD_HEIGHT);
@@ -6816,7 +6819,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	defaultPromoChoice = promoSweep;
 	promoSweep = EmptySquare;   // terminate sweep
 	promoDefaultAltered = TRUE;
-	if(!selectFlag) x = fromX, y = fromY; // and fake up-click on same square if we were still selecting
+	if(!selectFlag && (x != toX || y != toY)) x = fromX, y = fromY; // and fake up-click on same square if we were still selecting
     }
 
     if(promotionChoice) { // we are waiting for a click to indicate promotion piece
@@ -6869,7 +6872,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	}
 	return;
       }
-      fromX = x; fromY = y;
+      fromX = x; fromY = y; toX = toY = -1;
       if(!appData.oneClick || !OnlyMove(&x, &y, FALSE) ||
 	 // even if only move, we treat as normal when this would trigger a promotion popup, to allow sweep selection
 	 appData.sweepSelect && CanPromote(boards[currentMove][fromY][fromX], fromY) && originalY != y) {
@@ -6877,7 +6880,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    if (OKToStartUserMove(fromX, fromY)) {
 		second = 0;
 		MarkTargetSquares(0);
-		DragPieceBegin(xPix, yPix); dragging = 1;
+		DragPieceBegin(xPix, yPix, FALSE); dragging = 1;
 		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][fromY][fromX], fromY)) {
 		    promoSweep = defaultPromoChoice;
 		    selectFlag = 0; lastX = xPix; lastY = yPix;
@@ -6916,6 +6919,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 	    /* Clicked again on same color piece -- changed his mind */
 	    second = (x == fromX && y == fromY);
 	    promoDefaultAltered = FALSE;
+	    MarkTargetSquares(1);
 	   if(!second || appData.oneClick && !OnlyMove(&x, &y, TRUE)) {
 	    if (appData.highlightDragging) {
 		SetHighlights(x, y, -1, -1);
@@ -6931,7 +6935,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 		fromX = x;
 		fromY = y; dragging = 1;
 		MarkTargetSquares(0);
-		DragPieceBegin(xPix, yPix);
+		DragPieceBegin(xPix, yPix, FALSE);
 		if(appData.sweepSelect && CanPromote(piece = boards[currentMove][y][x], y)) {
 		    promoSweep = defaultPromoChoice;
 		    selectFlag = 0; lastX = xPix; lastY = yPix;
@@ -6982,11 +6986,23 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
     toX = x;
     toY = y;
     saveAnimate = appData.animate;
+    MarkTargetSquares(1);
     if (clickType == Press) {
 	if(gameMode == EditPosition && boards[currentMove][fromY][fromX] == EmptySquare) {
 	    // must be Edit Position mode with empty-square selected
-	    fromX = x; fromY = y; DragPieceBegin(xPix, yPix); dragging = 1; // consider this a new attempt to drag
+	    fromX = x; fromY = y; DragPieceBegin(xPix, yPix, FALSE); dragging = 1; // consider this a new attempt to drag
 	    if(x >= BOARD_LEFT && x < BOARD_RGHT) clearFlag = 1; // and defer click-click move of empty-square to up-click
+	    return;
+	}
+	if(appData.sweepSelect && HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, FALSE)) {
+	    ChessSquare piece = boards[currentMove][fromY][fromX];
+	    DragPieceBegin(xPix, yPix, TRUE); dragging = 1;
+	    promoSweep = defaultPromoChoice;
+	    if(PieceToChar(PROMOTED piece) == '+') promoSweep = PROMOTED piece;
+	    selectFlag = 0; lastX = xPix; lastY = yPix;
+	    Sweep(0); // Pawn that is going to promote: preview promotion piece
+	    DisplayMessage("", _("Pull pawn backwards to under-promote"));
+	    DrawPosition(FALSE, boards[currentMove]);
 	    return;
 	}
 	/* Finish clickclick move */
@@ -7039,7 +7055,7 @@ void LeftClick(ClickType clickType, int xPix, int yPix)
 
     if(gatingPiece != EmptySquare) promoChoice = ToLower(PieceToChar(gatingPiece));
 
-    if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice)) {
+    if (HasPromotionChoice(fromX, fromY, toX, toY, &promoChoice, appData.sweepSelect)) {
 	SetHighlights(fromX, fromY, toX, toY);
 	if(gameInfo.variant == VariantSuper || gameInfo.variant == VariantGreat || gameInfo.variant == VariantGrand) {
 	    // [HGM] super: promotion to captured piece selected from holdings
@@ -7120,7 +7136,7 @@ int RightClick(ClickType action, int x, int y, int *fromX, int *fromY)
 	toX = xSqr; toY = ySqr; lastX = x, lastY = y;
 	if(flipView) toX = BOARD_WIDTH - 1 - toX; else toY = BOARD_HEIGHT - 1 - toY;
 	NextPiece(0);
-	return -2;
+	return 2; // grab
       case IcsObserving:
 	if(!appData.icsEngineAnalyze) return -1;
       case IcsPlayingWhite:
@@ -9679,7 +9695,7 @@ WriteTourneyFile(char *results)
 	fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
 	fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
 	if(searchTime > 0)
-		fprintf(f, "-searchTime \"%s\"\n", appData.searchTime);
+		fprintf(f, "-searchTime \"%d:%02d\"\n", searchTime/60, searchTime%60);
 	else {
 		fprintf(f, "-mps %d\n", appData.movesPerSession);
 		fprintf(f, "-tc %s\n", appData.timeControl);
@@ -15195,8 +15211,6 @@ DisplayComment(moveNumber, text)
      char *text;
 {
     char title[MSG_SIZ];
-    char buf[8000]; // comment can be long!
-    int score, depth;
 
     if (moveNumber < 0 || parseList[moveNumber][0] == NULLCHAR) {
       safeStrCpy(title, "Comment", sizeof(title)/sizeof(title[0]));
@@ -15204,14 +15218,6 @@ DisplayComment(moveNumber, text)
       snprintf(title,MSG_SIZ, "Comment on %d.%s%s", moveNumber / 2 + 1,
 	      WhiteOnMove(moveNumber) ? " " : ".. ",
 	      parseList[moveNumber]);
-    }
-    // [HGM] PV info: display PV info together with (or as) comment
-    if(moveNumber >= 0 && (depth = pvInfoList[moveNumber].depth) > 0) {
-      if(text == NULL) text = "";
-      score = pvInfoList[moveNumber].score;
-      snprintf(buf,sizeof(buf)/sizeof(buf[0]), "%s%.2f/%d %d\n%s", score>0 ? "+" : "", score/100.,
-	      depth, (pvInfoList[moveNumber].time+50)/100, text);
-      text = buf;
     }
     if (text != NULL && (appData.autoDisplayComment || commentUp))
         CommentPopUp(title, text);
@@ -15817,7 +15823,7 @@ PositionToFEN(move, overrideCastling)
 {
     int i, j, fromX, fromY, toX, toY;
     int whiteToPlay;
-    char buf[128];
+    char buf[MSG_SIZ];
     char *p, *q;
     int emptycount;
     ChessSquare piece;
@@ -15828,6 +15834,7 @@ PositionToFEN(move, overrideCastling)
 
     /* Piece placement data */
     for (i = BOARD_HEIGHT - 1; i >= 0; i--) {
+	if(MSG_SIZ - (p - buf) < BOARD_RGHT - BOARD_LEFT + 20) { *p = 0; return StrSave(buf); }
 	emptycount = 0;
         for (j = BOARD_LEFT; j < BOARD_RGHT; j++) {
 	    if (boards[move][i][j] == EmptySquare) {

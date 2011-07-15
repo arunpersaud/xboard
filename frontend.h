@@ -135,7 +135,7 @@ void CancelDelayedEvent P((void));
 extern int fromX, fromY, toX, toY;
 typedef enum { Press, Release } ClickType;
 void PromotionPopUp P((void));
-void DragPieceBegin P((int x, int y));
+void DragPieceBegin P((int x, int y, Boolean instantly));
 void DragPieceEnd P((int x, int y));
 void LeftClick P((ClickType c, int x, int y));
 int  RightClick P((ClickType c, int x, int y, int *col, int *row));

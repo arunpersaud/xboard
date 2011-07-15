@@ -43,6 +43,7 @@
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
+#include "moves.h"
 #include "engineoutput.h"
 
 typedef struct {
@@ -74,6 +75,27 @@ static char header[MSG_SIZ];
 
 #define MAX_VAR 400
 static int scores[MAX_VAR], textEnd[MAX_VAR], curDepth[2], nrVariations[2];
+
+extern int initialRulePlies;
+
+void MakeEngineOutputTitle()
+{
+	static char buf[MSG_SIZ];
+	static char oldTitle[MSG_SIZ];
+	char *title = "Engine Output";
+	int count, rule = 2*appData.ruleMoves;
+	// figure out value of 50-move counter
+	count = currentMove;
+	while( (signed char)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove ) count--;
+	if( count == backwardMostMove ) count -= initialRulePlies;
+	count = currentMove - count;
+	snprintf(buf, MSG_SIZ, "%s (%d reversible plies)", title, count);
+	if(!rule) rule = 100;
+	if(count >= rule - 40 && !appData.icsActive) title = buf;
+	if(!strcmp(oldTitle, title)) return;
+	safeStrCpy(oldTitle, title, MSG_SIZ);
+	SetEngineOutputTitle(title);
+}
 
 // back end, due to front-end wrapper for SetWindowText, and new SetIcon arguments
 void SetEngineState( int which, int state, char * state_data )
@@ -174,7 +196,7 @@ void SetProgramStats( FrontEndProgramStats * stats ) // now directly called by b
         header[0] = NULLCHAR;
         if(gameMode == AnalyzeMode && (multi = MultiPV(&first)) >= 0) {
             snprintf(header, MSG_SIZ, "\t%s viewpoint\t\tfewer / Multi-PV setting = %d / more\n",
-                                       appData.whitePOV ? "white" : "mover", first.option[multi].value);
+                                       appData.whitePOV || appData.scoreWhite ? "white" : "mover", first.option[multi].value);
             InsertIntoMemo( which, header, 0);
         } else
         if(appData.ponderNextMove && lastLine[which][0]) {
@@ -461,7 +483,7 @@ static void UpdateControls( EngineOutputData * ed )
         }
 
         /* Score */
-        h = (gameMode == AnalyzeMode && appData.whitePOV && !WhiteOnMove(currentMove) ? -1 : 1) * ed->score;
+        h = ((gameMode == AnalyzeMode && appData.whitePOV || appData.scoreWhite) && !WhiteOnMove(currentMove) ? -1 : 1) * ed->score;
         if( h > 0 ) {
 	  snprintf( s_score, sizeof(s_score)/sizeof(s_score[0]), "+%.2f", h / 100.0 );
         }

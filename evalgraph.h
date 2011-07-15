@@ -57,4 +57,5 @@ void DrawEvalText(char *buf, int cbBuf, int y);
 // calls of front-end part into back-end part
 extern int GetMoveIndexFromPoint( int x, int y );
 extern void PaintEvalGraph( void );
+extern char *MakeEvalTitle( char *title );
 
