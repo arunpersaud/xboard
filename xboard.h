@@ -134,6 +134,13 @@ typedef struct {
 typedef int (*FileProc) P((FILE *f, int n, char *title));
 
 int PopDown P((int n));
+void NewTagsPopup P((char *text, char *msg));
+int AppendText P((Option *opt, char *s));
+int GenericPopUp P((Option *option, char *title, int dlgNr));
+void NewCommentPopup P((char *title, char *text, int index));
+void MarkMenu P((char *item, int dlgNr));
+void GetWidgetText P((Option *opt, char **buf));
+void ClearTextWidget P((Option *opt));
 void InputBoxPopup P((void));
 void CatchDeleteWindow(Widget w, String procname);
 void PlaySound P((char *name));

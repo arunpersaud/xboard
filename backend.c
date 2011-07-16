@@ -63,6 +63,7 @@ int flock(int f, int code);
 
 #else
 
+#include <sys/file.h>
 #define DoSleep( n ) if( (n) >= 0) sleep(n)
 #define SLASH '/'
 

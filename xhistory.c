@@ -48,6 +48,8 @@
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
+#include "xhistory.h"
+#include "xboard.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS
@@ -58,19 +60,14 @@
 # define N_(s)  s
 #endif
 
-// templates for calls into back-end
+// templates for calls into back-end (= history.c; should be moved to history.h header shared with it!)
 void RefreshMemoContent P((void));
 void MemoContentUpdated P((void));
 void FindMoveByCharIndex P(( int char_index ));
+void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 
-int AppendText P((Option *opt, char *s));
-int GenericPopUp P((Option *option, char *title, int dlgNr));
-void MarkMenu P((char *item, int dlgNr));
-void GetWidgetText P((Option *opt, char **buf));
-
+// variables in xoptions.c
 extern Option historyOptions[];
-extern Widget shells[10];
-extern Boolean shellUp[10];
 
 // ------------- low-level front-end actions called by MoveHistory back-end -----------------
 
@@ -89,7 +86,6 @@ void ClearHistoryMemo()
 // the colorNr argument says 0 = font-default, 1 = gray
 int AppendToHistoryMemo( char * text, int bold, int colorNr )
 {
-    Arg args[10];
     return AppendText(&historyOptions[0], text); // for now ignore bold & color stuff, as Xaw cannot handle that
 }
 
@@ -170,6 +166,9 @@ HistoryShowProc(w, event, prms, nprms)
 }
 
 // duplicate of code in winboard.c, so an move to back-end!
+void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
+void MakeEngineOutputTitle P(());
+
 void
 HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
 {

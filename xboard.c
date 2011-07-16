@@ -5736,8 +5736,6 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
 
 void CopySomething()
 {
-  int ret;
-
   /*
    * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
    * have a notion of a game that is selected but not copied.
@@ -7746,7 +7744,7 @@ int OpenTCP(host, port, pr)
     struct addrinfo hints;
     struct addrinfo *ais, *ai;
     int error;
-    int s;
+    int s=0;
     ChildProc *cp;
 
     memset(&hints, 0, sizeof(hints));
