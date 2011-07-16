@@ -112,7 +112,7 @@ void SetEngineColorIcon( int which );
 
 Position engineOutputX = -1, engineOutputY = -1;
 Dimension engineOutputW, engineOutputH;
-Widget engineOutputShell = NULL;
+Widget engineOutputShell;
 static int engineOutputDialogUp;
 
 /* Module variables */
@@ -161,18 +161,17 @@ static void InitializeEngineOutput()
 
 void DoSetWindowText(int which, int field, char *s_label)
 {
-	Arg args[16];
+	Arg arg;
 
-	XtSetArg(args[0], XtNlabel, (XtArgVal) s_label);
-	XtSetValues(outputField[which][field], args, 1);
+	XtSetArg(arg, XtNlabel, (XtArgVal) s_label);
+	XtSetValues(outputField[which][field], &arg, 1);
 }
 
 void SetEngineOutputTitle(char *title)
 {
-	Arg args[16];
-	if(engineOutputShell==NULL) return;
-	XtSetArg(args[0], XtNtitle, (XtArgVal) title);
-	XtSetValues(engineOutputShell, args, 1);
+	Arg arg;
+	XtSetArg(arg, XtNtitle, (XtArgVal) title);
+	XtSetValues(engineOutputShell, &arg, 1);
 }
 
 void InsertIntoMemo( int which, char * text, int where )
