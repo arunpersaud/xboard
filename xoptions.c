@@ -1937,7 +1937,8 @@ void IcsTextProc(w, event, prms, nprms)
    textOptions[i].target = NULL;
    textOptions[i].min = 2;
    MarkMenu("menuView.ICStex", 3);
-   GenericPopUp(textOptions, _("ICS text menu"), 3);
+   //GenericPopUp(textOptions, _("ICS text menu"), 3);
+   GenericPopUpGTK(textOptions, _("ICS text menu"), 3);
 }
 
 static char *commentText;
