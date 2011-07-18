@@ -4985,20 +4985,18 @@ void ICSInputBoxPopUp()
 extern Option boxOptions[];
 
 void ICSInputSendText()
-{
-    Widget edit;
-    int j;
-    Arg args[16];
+{    
+    GtkWidget *edit;
     String val;
 
     edit = boxOptions[0].handle;
-    j = 0;
-    XtSetArg(args[j], XtNstring, &val); j++;
-    XtGetValues(edit, args, j);
+    val = (String)gtk_entry_get_text (GTK_ENTRY (edit));
+
     SaveInHistory(val);
     SendMultiLineToICS(val);
-    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
+
+    /* clear the text in the GTKEntry */
+    gtk_entry_buffer_delete_text ( (gtk_entry_get_buffer (GTK_ENTRY(edit))), 0, -1);    
 }
 
 void ICSInputBoxPopDown()

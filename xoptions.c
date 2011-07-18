@@ -30,7 +30,8 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#include <gtk/gtk.h> 
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>  
 
 #if STDC_HEADERS
 # include <stdlib.h>
@@ -290,9 +291,17 @@ void MarkMenu(char *item, int dlgNr)
 
 int PopDownGTK(int n)
 {
+    Arg args[10];
+
     if (!shellUp[n]) return 0;
+    previous = NULL;
     gtk_widget_destroy(shellsGTK[n]);
     shellUp[n] = False;
+    /* remove the mark against item in Xt menu */
+    if(marked[n]) {        
+        XtSetArg(args[0], XtNleftBitmap, None);
+        XtSetValues(marked[n], args, 1);
+    }
     if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
     return 1;
 }
@@ -325,6 +334,17 @@ int PopDown(int n)
     }
     if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
     return 1;
+}
+
+void GenericPopDownGTK(w, event, gdata)
+     GtkWidget *w;
+     GdkEvent  *event;
+     gpointer  gdata; 
+{
+    int data = (intptr_t) gdata; /* dialog number dlgnr */
+
+    if(browserUp) return; // prevent closing dialog when it has an open file-browse daughter
+    PopDownGTK(data);
 }
 
 void GenericPopDown(w, event, prms, nprms)
@@ -1090,7 +1110,7 @@ void GenericPopUpCallback(w, resptype, gdata)
      GtkResponseType  resptype;
      gpointer  gdata;
 {
-    int data = (intptr_t) data; /* dialog number dlgnr */
+    int data = (intptr_t) gdata; /* dialog number dlgnr */
 
     /* OK pressed */    
     if (resptype == GTK_RESPONSE_ACCEPT) {
@@ -1421,6 +1441,9 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
 
     g_signal_connect (dialog, "response",
                       G_CALLBACK (GenericPopUpCallback),
+                      (gpointer)(intptr_t) dlgNr);
+    g_signal_connect (dialog, "delete-event",
+                      G_CALLBACK (GenericPopDownGTK),
                       (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr] = True;    
  
@@ -2057,11 +2080,61 @@ void PutText(char *text, int pos)
     XSetInputFocus(xDisplay, XtWindow(boxOptions[0].handle), RevertToPointerRoot, CurrentTime);
 }
 
+void ICSInputSendText P((void));
+char *PrevInHistory P((char *cmd));
+char *NextInHistory P((void));
+
+gboolean keypressicsCB(w, eventkey, data)
+     GtkWidget *w;
+     GdkEventKey  *eventkey;
+     gpointer  data;
+{
+    GtkEntry *edit;
+    String val;    
+
+    if (!shellUp[4]) return True;
+
+    switch(eventkey-> keyval) {
+      case GDK_KEY_Return:
+        if (shellUp[4] == True)
+            ICSInputSendText(); 
+        break;             
+      case GDK_KEY_Up:                
+        edit = boxOptions[0].handle;
+        val = (String)gtk_entry_get_text (GTK_ENTRY (edit));        
+        val = PrevInHistory(val);        
+        /* clear the text in the GTKEntry */
+        gtk_entry_buffer_delete_text ( (gtk_entry_get_buffer (GTK_ENTRY(edit))), 0, -1);    
+        if(val) {
+            gtk_entry_set_text (GTK_ENTRY (edit), val);
+        }
+        break;
+      case GDK_KEY_Down:        
+        edit = boxOptions[0].handle;
+        val = NextInHistory();
+        /* clear the text in the GTKEntry */
+        gtk_entry_buffer_delete_text ( (gtk_entry_get_buffer (GTK_ENTRY(edit))), 0, -1);    
+        if(val) {
+            gtk_entry_set_text (GTK_ENTRY (edit), val);
+        }
+        break;  
+    default:
+      //printf("keypressicsCB: unexpected case in switch %d.\n", currentOption[i].type);
+      break;
+    }
+
+    return False; /* propagate to default handler */
+
+}
+
 void InputBoxPopup()
 {
     MarkMenu("menuView.ICS Input Box", 4);
-    if(GenericPopUp(boxOptions, _("ICS input box"), 4))
-	XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(ICSInputTranslations));
+    if(!GenericPopUpGTK(boxOptions, _("ICS input box"), 4)) return;   
+    g_signal_connect (boxOptions[0].handle, "key-press-event",
+                      G_CALLBACK (keypressicsCB),
+                      (gpointer)(intptr_t) "1");     
+    //XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(ICSInputTranslations));
 }
 
 void TypeInProc(w, event, prms, nprms)
