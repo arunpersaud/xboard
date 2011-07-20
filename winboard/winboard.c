@@ -303,7 +303,7 @@ int dialogItems[][40] = {
 { DLG_NewVariant, IDOK, IDCANCEL, OPT_VariantNormal, OPT_VariantFRC, OPT_VariantWildcastle,
   OPT_VariantNocastle, OPT_VariantLosers, OPT_VariantGiveaway, OPT_VariantSuicide,
   OPT_Variant3Check, OPT_VariantTwoKings, OPT_VariantAtomic, OPT_VariantCrazyhouse,
-  OPT_VariantBughouse, OPT_VariantTwilight, OPT_VariantShogi, OPT_VariantSuper,
+  OPT_VariantBughouse, OPT_VariantSpartan, OPT_VariantShogi, OPT_VariantSuper,
   OPT_VariantKnightmate, OPT_VariantBerolina, OPT_VariantCylinder, OPT_VariantFairy,
   OPT_VariantMakruk, OPT_VariantGothic, OPT_VariantCapablanca, OPT_VariantJanus,
   OPT_VariantCRC, OPT_VariantFalcon, OPT_VariantCourier, OPT_VariantGreat, OPT_VariantSChess,
