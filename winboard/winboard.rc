@@ -82,10 +82,10 @@ BEGIN
     EDITTEXT        OPT_TCFixed,147,140,32,12,ES_AUTOHSCROLL
     LTEXT           "",OPT_TCitext3,185,148,67,8,NOT WS_GROUP
     LTEXT           "Time-Odds Factors:",GPB_Factors,6,158,150,8,NOT WS_GROUP | WS_TABSTOP
-    LTEXT           "Engine #1:",IDC_Factor1,6,173,40,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCOdds1,47,171,32,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "Engine #2:",IDC_Factor2,86,173,40,8,NOT WS_GROUP
-    EDITTEXT        OPT_TCOdds2,127,171,32,12,ES_AUTOHSCROLL
+    LTEXT           "Engine #1:",IDC_Factor1,6,173,50,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds1,57,171,32,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Engine #2:",IDC_Factor2,96,173,50,8,NOT WS_GROUP
+    EDITTEXT        OPT_TCOdds2,147,171,32,12,ES_AUTOHSCROLL
     PUSHBUTTON      "OK",IDOK,139,190,40,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,195,190,40,14
 END
@@ -103,27 +103,27 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,112,36,50,14
 END
 
-DLG_SaveOptions DIALOG DISCARDABLE  6, 17, 178, 119
+DLG_SaveOptions DIALOG DISCARDABLE  6, 17, 198, 119
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Save Game Options"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "Save games automatically",OPT_Autosave,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,157,10
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,177,10
     CONTROL         "Prompt for filename",OPT_AVPrompt,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,18,150,10
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,18,170,10
     CONTROL         "To file:",OPT_AVToFile,"Button",BS_AUTORADIOBUTTON,16,
-                    32,36,10
-    EDITTEXT        OPT_AVFilename,54,30,97,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",OPT_AVBrowse,156,30,18,14
-    GROUPBOX        "Save As: ",801,4,48,170,28,WS_GROUP
+                    32,56,10
+    EDITTEXT        OPT_AVFilename,74,30,97,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",OPT_AVBrowse,176,30,18,14
+    GROUPBOX        "Save As: ",801,4,48,190,28,WS_GROUP
     CONTROL         "PGN",OPT_PGN,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,8,
                     60,39,10
     CONTROL         "Old",OPT_Old,"Button",BS_AUTORADIOBUTTON,54,60,114,10
     CONTROL         "Save out of book info in PGN",OPT_OutOfBookInfo,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,4,82,169,10
-    PUSHBUTTON      "OK",IDOK,68,100,50,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,124,100,50,14
+    PUSHBUTTON      "OK",IDOK,88,100,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,144,100,50,14
 END
 
 1536 DIALOG DISCARDABLE  36, 24, 264, 134
@@ -345,13 +345,13 @@ BEGIN
     CONTROL         "Just &view or edit game files",OPT_View,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,8,43,310,10
     LTEXT           "Specify Chess &Engines:",IDC_SPECIFY_ENG_STATIC,11,63,
-                    102,10
+                    250,10
     COMBOBOX        OPT_ChessEngineName,17,74,244,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        OPT_SecondChessEngineName,17,92,244,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Specify Chess &Server:",IDC_SPECIFY_SERVER_STATIC,11,
-                    108,102,10
+                    108,250,10
     COMBOBOX        OPT_ChessServerName,17,122,244,129,CBS_DROPDOWN | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
     CONTROL         "&Additional options",OPT_AnyAdditional,"Button",
@@ -929,7 +929,7 @@ BEGIN
     LTEXT           "EGTB Size (MB):",IDC_Cache,2,62,78,8
     EDITTEXT        IDC_SizeOfEGTB,82,58,40,14,ES_AUTOHSCROLL
     CONTROL         "Use Book:",IDC_UseBook,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,2,80,49,10
+                    WS_TABSTOP,2,80,73,10
     EDITTEXT        IDC_BookFile,82,76,140,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BrowseForBook,226,76,17,14
     CONTROL         "First has Own Book",IDC_OwnBook1,"Button",BS_AUTOCHECKBOX | 
