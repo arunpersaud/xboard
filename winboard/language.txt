@@ -100,8 +100,6 @@ MENUS:
 "Machine Both" === ""
 "&Analysis Mode\tCtrl+A" === ""
 "Analyze &File\tCtrl+F" === ""
-"&Edit Game\tCtrl+E" === ""
-"E&dit Position\tCtrl+Shift+E" === ""
 "Trai&ning" === ""
 "&ICS Client" === ""
 "&Machine Match" === ""
@@ -183,8 +181,6 @@ MENUS:
 
 "&Undo" === ""
 "Cu&t" === ""
-"&Copy" === ""
-"&Paste" === ""
 "Select &All" === ""
 
 DIALOGS:
@@ -254,7 +250,6 @@ SAVE OPTIONS DIALOG
 "&Directories:" === ""
 "List Files of &Type:" === ""
 "Dri&ves:" === ""
-"&Help" === ""
 
 "&Index number:" === ""
 
@@ -274,7 +269,6 @@ EDIT COMMENT
 
 "Edit Comment" === ""
 "&Clear" === ""
-"&Edit" === ""
 
 PROMOTION POPUP
 
@@ -627,7 +621,6 @@ winboard.c
 "Incomplete \\ escape in value for" === ""
 "Failed to open indirection file" === ""
 "Unrecognized boolean argument value" === ""
-"Unrecognized argument" === ""
 "Too many colors" === ""
 "&Minimize\tCtrl+F4" === ""
 "White: %s" === ""
@@ -649,21 +642,15 @@ winboard.c
 "Internal error in file dialog box" === ""
 "Option Error" === ""
 "Choose an option, or cancel to exit" === ""
-"Unable to activate help" === ""
 "Displayed move is not current" === ""
 "Could not parse move" === ""
 "%s:\nError code %d" === ""
-"Error" === ""
 "Fatal Error" === ""
 "Exiting" === ""
-"%s:\nError code %d" === ""
 "Note" === ""
 "Error writing to chess program" === ""
 "User" === ""
 "Unknown" === ""
-"White" === ""
-"Black" === ""
-"Save Game to File" === ""
 "Not implemented" === ""
 
 "Shout Text" === ""
@@ -677,11 +664,6 @@ winboard.c
 "Seek Text" === ""
 "Normal Text" === ""
 "None" === ""
-"Pawn" === ""
-"Knight" === ""
-"Bishop" === ""
-"Rook" === ""
-"Queen" === ""
 "Information" === ""
 
 wclipbrd.c
@@ -709,7 +691,6 @@ wclipbrd.c
 "Error writing to temporary file." === ""
 "Unable to open clipboard." === ""
 "No text in clipboard." === ""
-"Unable to lock clipboard memory." === ""
 "Unable to allocate memory for text string." === ""
 "Unable to unlock clipboard memory." === ""
 "Unable to close clipboard." === ""
@@ -737,9 +718,7 @@ woptions.c
 
 "Browse for Sound File" === ""
 "Can't parse com port settings" === ""
-"Option Error" === ""
 "Invalid data rate" === ""
-"Option Error" === ""
 "Failed to set comm port state;\r\ninvalid options?" === ""
 "Failed to set comm port state" === ""
 "Invalid load game step rate" === ""
@@ -768,25 +747,21 @@ wgamelist.c
 "Can't go forward any further" === ""
 "Can't back up any further" === ""
 "No game list" === ""
-"Game List" === ""
 "Game list not loaded or empty" === ""
 "%s - %d/%d games" === ""
 
 wedittags.c
 
-"Edit Tags" === ""
 "Tags" === ""
 "Error replacing tags." === ""
 
 wsettings.c
 
 "%s Engine Settings (%s)" === ""
-"OK" === ""
-"Cancel" === """Chat Window %s"
 
 wchat.c
 
-"Cancel" === """Chat Window %s"
+"Chat Window %s" === ""
 
 backend.c
 
@@ -818,7 +793,6 @@ backend.c
 "Error writing to ICS" === ""
 "Error reading from keyboard" === ""
 "Got end of file from keyboard" === ""
-"Error writing to ICS" === ""
 "Error writing to display" === ""
 "Error gathering move list: two headers" === ""
 "Error gathering move list: nested" === ""
@@ -847,7 +821,6 @@ backend.c
 "Error: %s chess program (%s) exited unexpectedly" === ""
 "Error reading from %s chess program (%s)" === ""
 "Forfeit due to illegal move" === ""
-"%s does not support analysis" === ""
 "Hint: %s" === ""
 "Machine accepts your draw offer" === ""
 "Machine offers a draw\nSelect Action / Draw to agree" === ""
@@ -855,8 +828,6 @@ backend.c
 "Ambiguous move in ICS output: \"%s\"" === ""
 "Illegal move in ICS output: \"%s\"" === ""
 "Gap in move list" === ""
-"Game too long; increase MAX_MOVES and recompile" === ""
-"Variant %s not supported by %s" === ""
 "Startup failure on '%s'" === ""
 "Waiting for first chess program" === ""
 "Waiting for second chess program" === ""
@@ -865,24 +836,18 @@ backend.c
 "Illegal move: %d.%s%s" === ""
 "Ambiguous move: %d.%s%s" === ""
 "Can't open \"%s\"" === ""
-"Cannot build game list" === ""
 "No more games in this message" === ""
 "No game has been loaded yet" === ""
-"Can't back up any further" === ""
 "Game number out of range" === ""
 "Can't seek on game file" === ""
 "Game not found in file" === ""
 "Bad FEN position in file" === ""
 "No moves in game" === ""
 "No position has been loaded yet" === ""
-"Can't back up any further" === ""
-"Can't open \"%s\"" === ""
 "Can't seek on position file" === ""
 "Position not found in file" === ""
-"Bad FEN position in file" === ""
 "Black to play" === ""
 "White to play" === ""
-"Can't open \"%s\"" === ""
 "You have edited the game history.\nUse Reload Same Game and make your move again." === ""
 "You have entered too many moves.\nBack up to the correct position and try again." === ""
 "Displayed position is not current.\nStep forward to the correct position and try again." === ""
@@ -912,8 +877,6 @@ backend.c
 "Warning: You are still playing a game" === ""
 "Warning: You are still observing a game" === ""
 "Warning: You are still examining a game" === ""
-"It is Black's turn" === ""
-"It is White's turn" === ""
 "That square is occupied" === ""
 "There is no pending offer on this move" === ""
 "Your opponent is not out of time" === ""
@@ -922,7 +885,6 @@ backend.c
 "You must make your move before offering a draw" === ""
 "You are not examining a game" === ""
 "You can't revert while pausing" === ""
-"Wait until your turn,\nor select Move Now" === ""
 "It is your turn" === ""
 "Wait until your turn" === ""
 "No hint available" === ""
