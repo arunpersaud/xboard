@@ -1395,7 +1395,7 @@ int NewComCallback(int n)
 
 void SaveChanges(int n)
 {
-    GetWidgetText(&currentOption[0], &commentText);
+    GenericReadout(0);
     ReplaceComment(commentIndex, commentText);
 }
 
@@ -1446,7 +1446,7 @@ int NewTagsCallback(int n)
 
 void changeTags(int n)
 {
-    GetWidgetText(&currentOption[1], &tagsText);
+    GenericReadout(1);
     if(bookUp) SaveToBook(tagsText); else
     ReplaceTags(tagsText, &gameInfo);
 }
