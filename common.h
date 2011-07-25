@@ -180,7 +180,8 @@ int pclose(FILE *);
 #define COMMENT_FONT 4
 #define EDITTAGS_FONT 5
 #define MOVEHISTORY_FONT 6
-#define NUM_FONTS 7
+#define GAMELIST_FONT 7
+#define NUM_FONTS 8
 
 /* Default to no flashing (the "usual" XBoard behavior) */
 #define FLASH_COUNT	0		/* Number of times to flash */

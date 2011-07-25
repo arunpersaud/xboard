@@ -1551,6 +1551,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleCommentsFont, &workFont[COMMENT_FONT]);
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
       SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleGameListFont, &workFont[GAMELIST_FONT]);
       firstPaint = FALSE;
     }
     break;
@@ -1579,6 +1580,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	CopyFont(font[i][CONSOLE_FONT],  &workFont[CONSOLE_FONT]);
 	CopyFont(font[i][COMMENT_FONT],  &workFont[COMMENT_FONT]);
 	CopyFont(font[i][MOVEHISTORY_FONT],  &workFont[MOVEHISTORY_FONT]);
+	CopyFont(font[i][GAMELIST_FONT],  &workFont[GAMELIST_FONT]);
       }
       /* end sad necessity */
 
@@ -1668,6 +1670,11 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
       break;
 
+    case OPT_ChooseGameListFont:
+      MyCreateFont(hDlg, &workFont[GAMELIST_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleGameListFont, &workFont[GAMELIST_FONT]);
+      break;
+
     case OPT_DefaultFonts:
       for (i=0; i<NUM_FONTS; i++) {
 	DeleteObject(&workFont[i].hf);
@@ -1681,6 +1688,7 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleCommentsFont, &workFont[COMMENT_FONT]);
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
       SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
+      SetSampleFontText(hDlg, OPT_SampleGameListFont, &workFont[GAMELIST_FONT]);
       break;
     }
   }

@@ -323,6 +323,7 @@ ArgDescriptor argDescriptors[] = {
   { "commentFont", ArgFont, (void *) COMMENT_FONT, TRUE, INVALID },
   { "icsFont", ArgFont, (void *) CONSOLE_FONT, TRUE, INVALID },
   { "moveHistoryFont", ArgFont, (void *) MOVEHISTORY_FONT, TRUE, INVALID }, /* [AS] */
+  { "gameListFont", ArgFont, (void *) GAMELIST_FONT, TRUE, INVALID }, /* [HGM] */
   { "boardSize", ArgBoardSize, (void *) &boardSize,
     TRUE, (ArgIniType) -1 }, /* must come after all fonts */
   { "size", ArgBoardSize, (void *) &boardSize, FALSE, INVALID },

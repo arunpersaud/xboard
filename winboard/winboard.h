@@ -147,7 +147,8 @@ VOID LoadEnginePopUp();
 #define COMMENT_FONT 4
 #define EDITTAGS_FONT 5
 #define MOVEHISTORY_FONT 6
-#define NUM_FONTS 7
+#define GAMELIST_FONT 7
+#define NUM_FONTS 8
 
 /* Positions of some menu items.  Origin is zero and separator lines count. */
 /* It's gross that these are needed. */

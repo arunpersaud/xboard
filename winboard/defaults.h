@@ -185,6 +185,7 @@
 #define EDITTAGS_FONT_TITANIC  "Courier New:8.0"
 
 #define MOVEHISTORY_FONT_ALL    "MS Sans Serif:8.0"
+#define GAMELIST_FONT_ALL       "MS Sans Serif:8.0"
 
 #define COLOR_SHOUT            "#209000"
 #define COLOR_SSHOUT         "b #289808"

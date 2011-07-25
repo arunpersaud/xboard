@@ -729,13 +729,13 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,170,232,50,14
 END
 
-DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 226
+DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 250
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Fonts"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,156,208,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,212,208,50,14
+    DEFPUSHBUTTON   "OK",IDOK,156,232,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,212,232,50,14
     PUSHBUTTON      "Choose...",OPT_ChooseClockFont,212,15,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseMessageFont,212,39,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseCoordFont,212,63,45,15
@@ -743,7 +743,8 @@ BEGIN
     PUSHBUTTON      "Choose...",OPT_ChooseCommentsFont,212,125,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseConsoleFont,212,149,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseMoveHistoryFont,212,174,45,15
-    PUSHBUTTON      "&Defaults",OPT_DefaultFonts,3,208,50,15
+    PUSHBUTTON      "Choose...",OPT_ChooseGameListFont,212,198,45,15
+    PUSHBUTTON      "&Defaults",OPT_DefaultFonts,3,232,50,15
     CONTROL         "",OPT_SampleCoordFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,77,59,130,20
     CONTROL         "",OPT_SampleTagFont,"RICHEDIT",ES_READONLY | 
@@ -764,10 +765,14 @@ BEGIN
     CONTROL         "",OPT_SampleMessageFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,77,35,130,20
     GROUPBOX        "Current Board Size",GPB_Current,3,1,259,83
-    GROUPBOX        "All Board Sizes",GPB_All,3,87,259,109
+    GROUPBOX        "All Board Sizes",GPB_All,3,87,259,133
     CONTROL         "",OPT_SampleMoveHistoryFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,77,170,130,20
     LTEXT           "Move History, Engine Output",OPT_MessageFont6,13,171,63,20,NOT 
+                    WS_GROUP
+    CONTROL         "",OPT_SampleGameListFont,"RICHEDIT",ES_READONLY | 
+                    WS_DISABLED | WS_BORDER,77,194,130,20
+    LTEXT           "Game List",OPT_MessageFont7,13,199,63,20,NOT 
                     WS_GROUP
 END
 

@@ -166,7 +166,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     hwndText = GetDlgItem(hDlg, OPT_TagsText);
 
     /* Set font */
-    SendDlgItemMessage( hDlg, OPT_GameListText, WM_SETFONT, (WPARAM)font[boardSize][MOVEHISTORY_FONT]->hf, MAKELPARAM(TRUE, 0 ));
+    SendDlgItemMessage( hDlg, OPT_GameListText, WM_SETFONT, (WPARAM)font[boardSize][GAMELIST_FONT]->hf, MAKELPARAM(TRUE, 0 ));
 
     count = GameListToListBox( hDlg, gameListDialog ? TRUE : FALSE, NULL, &stats );
 

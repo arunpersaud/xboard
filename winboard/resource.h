@@ -598,6 +598,9 @@
 #define IDC_Variation			1952
 #define IDC_DefGames			1953
 #define GPB_Variant			1954
+#define OPT_MessageFont7                1955
+#define OPT_SampleGameListFont          1956
+#define OPT_ChooseGameListFont          1957
 
 
 // Next default values for new objects
