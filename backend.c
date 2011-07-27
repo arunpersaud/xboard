@@ -15431,8 +15431,8 @@ PopTail(Boolean annotate)
 	if(!storedGames) return FALSE; // sanity
 	CommentPopDown(); // make sure no stale variation comments to the destroyed line can remain open
 
-	storedGames--;
 	ToNrEvent(savedFirst[storedGames]); // sets currentMove
+	storedGames--;
 	nrMoves = savedLast[storedGames] - currentMove;
 	if(annotate) {
 		int cnt = 10;
@@ -15470,6 +15470,7 @@ PopTail(Boolean annotate)
       }
 	gameInfo.resultDetails = savedDetails[storedGames];
 	forwardMostMove = currentMove + nrMoves;
+	HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
 	if(storedGames == 0) GreyRevert(TRUE);
 	return TRUE;
 }

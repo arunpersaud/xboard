@@ -50,6 +50,7 @@ typedef char MoveHistoryString[ MOVE_LEN*2 ];
 static int lastFirst = 0;
 static int lastLast = 0;
 static int lastCurrent = -1;
+static int lastGames;
 
 static char lastLastMove[ MOVE_LEN ];
 
@@ -79,7 +80,7 @@ static Boolean OnlyCurrentPositionChanged()
         currFirst == lastFirst &&
         currLast == lastLast &&
         currCurrent >= 0 &&
-        TRUE )
+        lastGames == storedGames )
     {
         result = TRUE;
 
@@ -105,7 +106,7 @@ static Boolean OneMoveAppended()
         lastLast == (currLast-1) &&
         lastCurrent == (currCurrent-1) &&
         currCurrent == (currLast-1) &&
-        TRUE )
+        lastGames == storedGames )
     {
         result = TRUE;
     }
@@ -180,6 +181,7 @@ void MemoContentUpdated()
     lastFirst = currFirst;
     lastLast = currLast;
     lastCurrent = currCurrent;
+    lastGames = storedGames;
     lastLastMove[0] = '\0';
 
     if( lastLast > 0 ) {
