@@ -10462,6 +10462,7 @@ Reset(redraw, init)
 		redraw, init, gameMode);
     }
     CleanupTail(); // [HGM] vari: delete any stored variations
+    CommentPopDown(); // [HGM] make sure no comments to the previous game keep hanging on
     pausing = pauseExamInvalid = FALSE;
     startedFromSetupPosition = blackPlaysFirst = FALSE;
     firstMove = TRUE;
