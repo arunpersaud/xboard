@@ -16443,8 +16443,8 @@ PopInner(Boolean annotate)
 	int i, j, nrMoves;
 	char buf[8000], moveBuf[20];
 
-	storedGames--;
-	ToNrEvent(savedFirst[storedGames]); // sets currentMove
+	ToNrEvent(savedFirst[storedGames-1]); // sets currentMove
+	storedGames--; // do this after ToNrEvent, to make sure HistorySet will refresh entire game after PopInner returns
 	nrMoves = savedLast[storedGames] - currentMove;
 	if(annotate) {
 		int cnt = 10;
@@ -16492,6 +16492,7 @@ PopTail(Boolean annotate)
 	CommentPopDown(); // make sure no stale variation comments to the destroyed line can remain open
 
 	PopInner(annotate);
+	HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
 
 	if(storedGames == 0) GreyRevert(TRUE);
 	return TRUE;
