@@ -6231,7 +6231,6 @@ OKToStartUserMove(x, y)
       (int)from_piece < (int)BlackPawn; /* [HGM] can be > King! */
 
     switch (gameMode) {
-      case PlayFromGameFile:
       case AnalyzeFile:
       case TwoMachinesPlay:
       case EndOfGame:
@@ -6259,6 +6258,8 @@ OKToStartUserMove(x, y)
 	}
 	break;
 
+      case PlayFromGameFile:
+	    if(!shiftKey || !appData.variations) return FALSE; // [HGM] allow starting variation in this mode
       case EditGame:
 	if (!white_piece && WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is White's turn"));
@@ -6302,6 +6303,7 @@ OKToStartUserMove(x, y)
     }
     if (currentMove != forwardMostMove && gameMode != AnalyzeMode
 	&& gameMode != EditGame // [HGM] vari: treat as AnalyzeMode
+	&& gameMode != PlayFromGameFile // [HGM] as EditGame, with protected main line
 	&& gameMode != AnalyzeFile && gameMode != Training) {
 	DisplayMoveError(_("Displayed position is not current"));
 	return FALSE;
@@ -6393,7 +6395,6 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
        */
 
     switch (gameMode) {
-      case PlayFromGameFile:
       case AnalyzeFile:
       case TwoMachinesPlay:
       case EndOfGame:
@@ -6419,6 +6420,8 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	}
 	break;
 
+      case PlayFromGameFile:
+	    if(!shiftKey ||!appData.variations) return; // [HGM] only variations
       case EditGame:
       case IcsExamining:
       case BeginningOfGame:
@@ -6613,7 +6616,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 
   /* Ok, now we know that the move is good, so we can kill
      the previous line in Analysis Mode */
-  if ((gameMode == AnalyzeMode || gameMode == EditGame)
+  if ((gameMode == AnalyzeMode || gameMode == EditGame || gameMode == PlayFromGameFile && appData.variations && shiftKey)
 				&& currentMove < forwardMostMove) {
     if(appData.variations && shiftKey) PushTail(currentMove, forwardMostMove); // [HGM] vari: save tail of game
     else forwardMostMove = currentMove;
@@ -10570,8 +10573,8 @@ AutoPlayOneMove()
 
     if (currentMove >= forwardMostMove) {
       if(gameMode == AnalyzeFile) { ExitAnalyzeMode(); SendToProgram("force\n", &first); }
-      gameMode = EditGame;
-      ModeHighlight();
+//      gameMode = EndOfGame;
+//      ModeHighlight();
 
       /* [AS] Clear current move marker at the end of a game */
       /* HistorySet(parseList, backwardMostMove, forwardMostMove, -1); */
@@ -11460,8 +11463,6 @@ LoadGame(f, gameNumber, title, useList)
 
     if (matchMode || appData.timeDelay == 0) {
       ToEndEvent();
-      gameMode = EditGame;
-      ModeHighlight();
     } else if (appData.timeDelay > 0) {
       AutoPlayGameLoop();
     }
@@ -16392,6 +16393,7 @@ int wrap(char *dest, char *src, int count, int width, int *lp)
 }
 
 // [HGM] vari: routines for shelving variations
+Boolean modeRestore = FALSE;
 
 void
 PushInner(int firstMove, int lastMove)
@@ -16435,6 +16437,7 @@ PushTail(int firstMove, int lastMove)
 
 	PushInner(firstMove, lastMove);
 	if(storedGames == 1) GreyRevert(FALSE);
+	if(gameMode == PlayFromGameFile) gameMode = EditGame, modeRestore = TRUE;
 }
 
 void
@@ -16492,9 +16495,10 @@ PopTail(Boolean annotate)
 	CommentPopDown(); // make sure no stale variation comments to the destroyed line can remain open
 
 	PopInner(annotate);
+	if(currentMove < forwardMostMove) ForwardEvent(); else
 	HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
 
-	if(storedGames == 0) GreyRevert(TRUE);
+	if(storedGames == 0) { GreyRevert(TRUE); if(modeRestore) modeRestore = FALSE, gameMode = PlayFromGameFile; }
 	return TRUE;
 }
 
@@ -16521,7 +16525,7 @@ LoadVariation(int index, char *text)
 	char *p = text, *start = NULL, *end = NULL, wait = NULLCHAR;
 	int level = 0, move;
 
-	if(gameMode != EditGame && gameMode != AnalyzeMode) return;
+	if(gameMode != EditGame && gameMode != AnalyzeMode && gameMode != PlayFromGameFile) return;
 	// first find outermost bracketing variation
 	while(*p) { // hope I got this right... Non-nesting {} and [] can screen each other and nesting ()
 	    if(!wait) { // while inside [] pr {}, ignore everyting except matching closing ]}
