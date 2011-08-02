@@ -279,6 +279,7 @@ char *PGNResult P((ChessMove result));
 typedef struct _ListGame {
     ListNode node;
     int number;
+    int position;
     unsigned long offset;   /*  Byte offset of game within file.     */
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;

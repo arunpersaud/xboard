@@ -601,6 +601,17 @@
 #define OPT_MessageFont7                1955
 #define OPT_SampleGameListFont          1956
 #define OPT_ChooseGameListFont          1957
+#define OPT_elo1                        1958
+#define OPT_elo2                        1959
+#define OPT_date                        1960
+#define OPT_elo1t                       1961
+#define OPT_elo2t                       1962
+#define OPT_datet                       1963
+#define OPT_thresholds                  1964
+#define OPT_Exact                       1965
+#define OPT_Subset                      1966
+#define OPT_Struct                      1967
+#define OPT_Material                    1968
 
 
 // Next default values for new objects

@@ -186,7 +186,7 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNleft, XtChainLeft); j++;
     XtSetArg(args[j], XtNright, XtChainLeft); j++;
     b_load =
-      XtCreateManagedWidget(_("load"), commandWidgetClass, form, args, j);
+      XtCreateManagedWidget(_("thresholds"), commandWidgetClass, form, args, j);
     XtAddCallback(b_load, XtNcallback, callback, client_data);
 
     j = 0;
@@ -197,9 +197,9 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNleft, XtChainLeft); j++;
     XtSetArg(args[j], XtNright, XtChainLeft); j++;
     b_loadprev =
-      XtCreateManagedWidget(_("prev"), commandWidgetClass, form, args, j);
+      XtCreateManagedWidget(_("find position"), commandWidgetClass, form, args, j);
     XtAddCallback(b_loadprev, XtNcallback, callback, client_data);
-
+#if 1
     j = 0;
     XtSetArg(args[j], XtNfromVert, viewport);  j++;
     XtSetArg(args[j], XtNfromHoriz, b_loadprev);  j++;
@@ -210,7 +210,9 @@ GameListCreate(name, callback, client_data)
     b_loadnext =
       XtCreateManagedWidget(_("next"), commandWidgetClass, form, args, j);
     XtAddCallback(b_loadnext, XtNcallback, callback, client_data);
-
+#else
+    b_loadnext = b_loadprev;
+#endif
     j = 0;
     XtSetArg(args[j], XtNfromVert, viewport);  j++;
     XtSetArg(args[j], XtNfromHoriz, b_loadnext);  j++;
@@ -240,7 +242,7 @@ GameListCreate(name, callback, client_data)
     XtSetArg(args[j], XtNbottom, XtChainBottom); j++;
     XtSetArg(args[j], XtNleft, XtChainLeft); j++;
     XtSetArg(args[j], XtNright, XtChainRight); j++;
-    XtSetArg(args[j], XtNwidth, fw_width - 225 - squareSize); j++;
+    XtSetArg(args[j], XtNwidth, fw_width - 275 - squareSize); j++;
     XtSetArg(args[j], XtNstring, filterString);  j++;
     XtSetArg(args[j], XtNdisplayCaret, False);  j++;
     XtSetArg(args[j], XtNresizable, True);  j++;
@@ -321,7 +323,7 @@ GameListCreate(name, callback, client_data)
 }
 
 static int
-GameListPrepare()
+GameListPrepare(int byPos)
 {   // [HGM] filter: put in separate routine, to make callable from call-back
     int nstrings;
     ListGame *lg;
@@ -333,11 +335,13 @@ GameListPrepare()
     lg = (ListGame *) gameList.head;
     listLength = 0;
     while (nstrings--) {
+	int pos = -1;
 	line = GameListLine(lg->number, &lg->gameInfo);
-	if(filterString[0] == NULLCHAR || SearchPattern( line, filterString ) ) {
+	if((filterString[0] == NULLCHAR || SearchPattern( line, filterString )) && (!byPos || (pos=GameContainsPosition(glc->fp, lg)) >= 0) ) {
 	    *st++ = line; // [HGM] filter: make adding line conditional
 	    listLength++;
 	}
+	lg->position = pos;
 	lg = (ListGame *) lg->node.succ;
      }
     *st = NULL;
@@ -376,6 +380,14 @@ GameListCallback(w, client_data, call_data)
 	GameListPopDown();
 	return;
     }
+    if (strcmp(name, _("thresholds")) == 0) {
+	LoadOptionsProc();
+	return;
+    }
+    if (strcmp(name, _("find position")) == 0) {
+        if(GameListPrepare(True)) GameListReplace(); // crashes on empty list...
+	return;
+    }
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
     rs = XawListShowCurrent(listwidg);
     if (strcmp(name, _("load")) == 0) {
@@ -405,10 +417,10 @@ GameListCallback(w, client_data, call_data)
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
 	XawListHighlight(listwidg, 0);
-        if(GameListPrepare()) GameListReplace(); // crashes on empty list...
+        if(GameListPrepare(False)) GameListReplace(); // crashes on empty list...
         return;
     }
-#if 0
+#if 1
     index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
@@ -442,7 +454,7 @@ GameListPopUp(fp, filename)
 	free(glc->strings);
     }
 
-    GameListPrepare(); // [HGM] filter: code put in separate routine
+    GameListPrepare(False); // [HGM] filter: code put in separate routine
 
     glc->fp = fp;
 
@@ -558,7 +570,7 @@ SetFilterProc(w, event, prms, nprms)
         XtSetArg(args[j], XtNstring, &name);  j++;
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-        if(GameListPrepare()) GameListReplace(); // crashes on empty list...
+        if(GameListPrepare(False)) GameListReplace(); // crashes on empty list...
 	list = XtNameToWidget(glc->shell, "*form.viewport.list");
 	XawListHighlight(list, 0);
         j = 0;

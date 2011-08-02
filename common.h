@@ -627,6 +627,10 @@ typedef struct {
     int NPS[ENGINES];
     Boolean autoKibitz;
     int engineComments;
+    int eloThreshold1;  /* [HGM] select   */
+    int eloThreshold2;
+    int dateThreshold;
+    int searchMode;
     char *userName;
     int rewindIndex;    /* [HGM] autoinc   */
     int sameColorGames; /* [HGM] alternate */

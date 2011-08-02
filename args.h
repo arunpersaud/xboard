@@ -630,6 +630,10 @@ ArgDescriptor argDescriptors[] = {
   { "sSAN", ArgTrue, (void *) &appData.pvSAN[1], FALSE, FALSE },
   { "pairingEngine", ArgFilename, (void *) &appData.pairingEngine, TRUE, "" },
   { "defaultTourneyName", ArgFilename, (void *) &appData.defName, TRUE, "" },
+  { "eloThresholdAny", ArgInt, (void *) &appData.eloThreshold1, FALSE, (ArgIniType) 0 },
+  { "eloThresholdBoth", ArgInt, (void *) &appData.eloThreshold2, FALSE, (ArgIniType) 0 },
+  { "dateThreshold", ArgInt, (void *) &appData.dateThreshold, FALSE, (ArgIniType) 0 },
+  { "searchMode", ArgInt, (void *) &appData.searchMode, FALSE, (ArgIniType) 1 },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

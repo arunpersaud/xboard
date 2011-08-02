@@ -7374,6 +7374,28 @@ MatingPotential(int pCnt[], int side, int nMine, int nHis, int stale, int bisCol
 }
 
 int
+CompareWithRights(Board b1, Board b2)
+{
+    int rights = 0;
+    if(!CompareBoards(b1, b2)) return FALSE;
+    if(b1[EP_STATUS] != b2[EP_STATUS]) return FALSE;
+    /* compare castling rights */
+    if( b1[CASTLING][2] != b2[CASTLING][2] && (b2[CASTLING][0] != NoRights || b2[CASTLING][1] != NoRights) )
+           rights++; /* King lost rights, while rook still had them */
+    if( b1[CASTLING][2] != NoRights ) { /* king has rights */
+        if( b1[CASTLING][0] != b2[CASTLING][0] || b1[CASTLING][1] != b2[CASTLING][1] )
+           rights++; /* but at least one rook lost them */
+    }
+    if( b1[CASTLING][5] != b1[CASTLING][5] && (b2[CASTLING][3] != NoRights || b2[CASTLING][4] != NoRights) )
+           rights++;
+    if( b1[CASTLING][5] != NoRights ) {
+        if( b1[CASTLING][3] != b2[CASTLING][3] || b1[CASTLING][4] != b2[CASTLING][4] )
+           rights++;
+    }
+    return rights == 0;
+}
+
+int
 Adjudicate(ChessProgramState *cps)
 {	// [HGM] some adjudications useful with buggy engines
 	// [HGM] adjudicate: made into separate routine, which now can be called after every move
@@ -11021,7 +11043,133 @@ ReloadGame(offset)
     }
 }
 
+int keys[EmptySquare+1];
 
+int
+PositionMatches(Board b1, Board b2)
+{
+    int r, f, sum=0;
+    switch(appData.searchMode) {
+	case 1: return CompareWithRights(b1, b2);
+	case 2:
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+		if(b2[r][f] != EmptySquare && b1[r][f] != b2[r][f]) return FALSE;
+	    }
+	    return TRUE;
+	case 3:
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	      if((b2[r][f] == WhitePawn || b2[r][f] == BlackPawn) && b1[r][f] != b2[r][f]) return FALSE;
+		sum += keys[b1[r][f]] - keys[b2[r][f]];
+	    }
+	    return sum==0;
+	case 4:
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+		sum += keys[b1[r][f]] - keys[b2[r][f]];
+	    }
+	    return sum==0;
+    }
+    return TRUE;
+}
+
+GameInfo dummyInfo;
+
+int GameContainsPosition(FILE *f, ListGame *lg)
+{
+    int next, btm=0, plyNr=0, scratch=forwardMostMove+2&~1;
+    int fromX, fromY, toX, toY;
+    char promoChar;
+    static int initDone=FALSE;
+
+    if(!initDone) {
+	for(next = WhitePawn; next<EmptySquare; next++) keys[next] = rand()>>8 ^ rand()<<6 ^rand()<<20;
+	initDone = TRUE;
+    }
+    dummyInfo.variant = VariantNormal;
+    FREE(dummyInfo.fen); dummyInfo.fen = NULL;
+    dummyInfo.whiteRating = 0;
+    dummyInfo.blackRating = 0;
+    FREE(dummyInfo.date); dummyInfo.date = NULL;
+    fseek(f, lg->offset, 0);
+    yynewfile(f);
+    CopyBoard(boards[scratch], initialPosition); // default start position
+    while(1) {
+	yyboardindex = scratch + (plyNr&1);
+      quickFlag = 1;
+	next = Myylex();
+      quickFlag = 0;
+	switch(next) {
+	    case PGNTag:
+		if(plyNr) return -1; // after we have seen moves, any tags will be start of next game
+		ParsePGNTag(yy_text, &dummyInfo);
+	    if(dummyInfo.fen) ParseFEN(boards[scratch], &btm, dummyInfo.fen), free(dummyInfo.fen), dummyInfo.fen = NULL;
+	    default:
+		continue;
+
+	    case XBoardGame:
+	    case GNUChessGame:
+		if(plyNr) return -1; // after we have seen moves, this is for new game
+	      continue;
+
+	    case AmbiguousMove: // we cannot reconstruct the game beyond these two
+	    case ImpossibleMove:
+	    case WhiteWins: // game ends here with these four
+	    case BlackWins:
+	    case GameIsDrawn:
+	    case GameUnfinished:
+		return -1;
+
+	    case IllegalMove:
+		if(appData.testLegality) return -1;
+	    case WhiteCapturesEnPassant:
+	    case BlackCapturesEnPassant:
+	    case WhitePromotion:
+	    case BlackPromotion:
+	    case WhiteNonPromotion:
+	    case BlackNonPromotion:
+	    case NormalMove:
+	    case WhiteKingSideCastle:
+	    case WhiteQueenSideCastle:
+	    case BlackKingSideCastle:
+	    case BlackQueenSideCastle:
+	    case WhiteKingSideCastleWild:
+	    case WhiteQueenSideCastleWild:
+	    case BlackKingSideCastleWild:
+	    case BlackQueenSideCastleWild:
+	    case WhiteHSideCastleFR:
+	    case WhiteASideCastleFR:
+	    case BlackHSideCastleFR:
+	    case BlackASideCastleFR:
+		fromX = currentMoveString[0] - AAA;
+		fromY = currentMoveString[1] - ONE;
+		toX = currentMoveString[2] - AAA;
+		toY = currentMoveString[3] - ONE;
+		promoChar = currentMoveString[4];
+		break;
+	    case WhiteDrop:
+	    case BlackDrop:
+		fromX = next == WhiteDrop ?
+		  (int) CharToPiece(ToUpper(currentMoveString[0])) :
+		  (int) CharToPiece(ToLower(currentMoveString[0]));
+		fromY = DROP_RANK;
+		toX = currentMoveString[2] - AAA;
+		toY = currentMoveString[3] - ONE;
+		break;
+	}
+	// Move encountered; peform it. We need to shuttle between two boards, as even/odd index determines side to move
+	if(plyNr == 0) { // but first figure out variant and initial position
+	    if(dummyInfo.variant != gameInfo.variant) return -1; // wrong variant
+	    if(appData.eloThreshold1 && (dummyInfo.whiteRating < appData.eloThreshold1 && dummyInfo.blackRating < appData.eloThreshold1)) return -1;
+	    if(appData.eloThreshold2 && (dummyInfo.whiteRating < appData.eloThreshold2 || dummyInfo.blackRating < appData.eloThreshold2)) return -1;
+	    if(appData.dateThreshold && (!dummyInfo.date || atoi(dummyInfo.date) < appData.dateThreshold)) return -1;
+	    if(btm) CopyBoard(boards[scratch+1], boards[scratch]), plyNr++;
+	    if(PositionMatches(boards[scratch + plyNr], boards[currentMove])) return plyNr;
+	}
+	CopyBoard(boards[scratch + (plyNr+1&1)], boards[scratch + (plyNr&1)]);
+	plyNr++;
+	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch + (plyNr&1)]);
+	if(PositionMatches(boards[scratch + (plyNr&1)], boards[currentMove])) return plyNr;
+    }
+}
 
 /* Load the nth game from open file f */
 int
@@ -11036,7 +11184,7 @@ LoadGame(f, gameNumber, title, useList)
     int gn = gameNumber;
     ListGame *lg = NULL;
     int numPGNTags = 0;
-    int err;
+    int err, pos = -1;
     GameMode oldGameMode;
     VariantClass oldVariant = gameInfo.variant; /* [HGM] PGNvariant */
 
@@ -11062,6 +11210,7 @@ LoadGame(f, gameNumber, title, useList)
 	if (lg) {
 	    fseek(f, lg->offset, 0);
 	    GameListHighlight(gameNumber);
+	    pos = lg->position;
 	    gn = 1;
 	}
 	else {
@@ -11461,6 +11610,9 @@ LoadGame(f, gameNumber, title, useList)
       AnalyzeFileEvent();
     }
 
+    if (!matchMode && pos >= 0) {
+	ToNrEvent(pos); // [HGM] no autoplay if selected on position
+    } else
     if (matchMode || appData.timeDelay == 0) {
       ToEndEvent();
     } else if (appData.timeDelay > 0) {

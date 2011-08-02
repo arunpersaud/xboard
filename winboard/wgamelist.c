@@ -57,10 +57,11 @@ struct GameListStats
 };
 
 /* [AS] Setup the game list according to the specified filter */
-static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct GameListStats * stats )
+static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct GameListStats * stats, BOOL byPos )
 {
     ListGame * lg = (ListGame *) gameList.head;
     int nItem;
+    char buf[MSG_SIZ];
     BOOL hasFilter = FALSE;
     int count = 0;
     struct GameListStats dummy;
@@ -86,16 +87,23 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
     }
 
     for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){
-        char * st = GameListLine(lg->number, &lg->gameInfo);
+        char * st = NULL;
         BOOL skip = FALSE;
+	int pos = -1;
 
         if( hasFilter ) {
-            if( ! SearchPattern( st, pszFilter ) ) {
-                skip = TRUE;
-            }
+            st = GameListLine(lg->number, &lg->gameInfo);
+	    if( !SearchPattern( st, pszFilter) ) skip = TRUE;
         }
 
+        if( !skip && byPos) {
+            if( (pos = GameContainsPosition(gameFile, lg)) < 0) skip = TRUE;
+        }
+
+	lg->position = pos;
+
         if( ! skip ) {
+            if(!st) st = GameListLine(lg->number, &lg->gameInfo);
             SendDlgItemMessage(hDlg, OPT_GameListText, LB_ADDSTRING, 0, (LPARAM) st);
             count++;
 
@@ -110,7 +118,7 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
                 stats->unfinished++;
         }
 
-        free(st);
+        if(st) free(st);
         lg = (ListGame *) lg->node.succ;
     }
 
@@ -168,7 +176,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
     /* Set font */
     SendDlgItemMessage( hDlg, OPT_GameListText, WM_SETFONT, (WPARAM)font[boardSize][GAMELIST_FONT]->hf, MAKELPARAM(TRUE, 0 ));
 
-    count = GameListToListBox( hDlg, gameListDialog ? TRUE : FALSE, NULL, &stats );
+    count = GameListToListBox( hDlg, gameListDialog ? TRUE : FALSE, NULL, &stats, FALSE	 );
 
     SendDlgItemMessage( hDlg, IDC_GameListFilter, WM_SETTEXT, 0, (LPARAM) "" );
     SendDlgItemMessage( hDlg, IDC_GameListFilter, EM_SETLIMITTEXT, MAX_FILTER_LENGTH, 0 );
@@ -262,8 +270,10 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       /* [AS] End command replacement */
 
     switch (LOWORD(wParam)) {
-    case IDOK:
     case OPT_GameListLoad:
+      LoadOptionsPopup(hDlg);
+      return TRUE;
+    case IDOK:
       nItem = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
       if (nItem < 0) {
 	/* is this possible? */
@@ -283,7 +293,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, nItem, 0);
       break; /* load the game*/
 
-    case OPT_GameListPrev:
+//    case OPT_GameListPrev:
       nItem = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
       nItem--;
       if (nItem < 0) {
@@ -295,13 +305,14 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       break; /* load the game*/
 
     /* [AS] */
+    case OPT_GameListPrev:
     case IDC_GameListDoFilter:
         {
             char filter[MAX_FILTER_LENGTH+1];
 
             if( GetDlgItemText( hDlg, IDC_GameListFilter, filter, sizeof(filter) ) >= 0 ) {
                 filter[ sizeof(filter)-1 ] = '\0';
-                count = GameListToListBox( hDlg, TRUE, filter, &stats );
+                count = GameListToListBox( hDlg, TRUE, filter, &stats, LOWORD(wParam)!=IDC_GameListDoFilter );
                 GameListUpdateTitle( hDlg, _("Game List"), count, ((ListGame *) gameList.tailPred)->number, &stats );
             }
         }

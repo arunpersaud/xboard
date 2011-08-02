@@ -554,12 +554,27 @@ Option icsOptions[] = {
 { 0, 0, 0, NULL, (void*) &IcsOptionsOK, "", NULL, EndMark , "" }
 };
 
+char *modeNames[] = { N_("Exact match"), N_("Shown position is subset"), N_("Same material and Pawn chain"), N_("Same material"), NULL };
+char *modeValues[] = { "1", "2", "3", "4" };
+char *searchMode;
+
+int LoadOptionsOK()
+{
+    appData.searchMode = atoi(searchMode);
+    return 1;
+}
+
 Option loadOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.autoDisplayTags, "", NULL, CheckBox, N_("Auto-Display Tags") },
 { 0, 0, 0, NULL, (void*) &appData.autoDisplayComment, "", NULL, CheckBox, N_("Auto-Display Comment") },
 { 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Auto-Play speed of loaded games\n(0 = instant, -1 = off):") },
 { 0, -1, 10000000, NULL, (void*) &appData.timeDelay, "", NULL, Fractional, N_("Seconds per Move:") },
-{ 0,  0, 0, NULL, NULL, "", NULL, EndMark , "" }
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label,  N_("\nThresholds for position filtering in game list:") },
+{ 0, 0, 5000, NULL, (void*) &appData.eloThreshold1, "", NULL, Spin, N_("Elo of strongest player at least:") },
+{ 0, 0, 5000, NULL, (void*) &appData.eloThreshold2, "", NULL, Spin, N_("Elo of weakest player at least:") },
+{ 0, 0, 5000, NULL, (void*) &appData.dateThreshold, "", NULL, Spin, N_("No games before year:") },
+{ 1, 0, 180, NULL, (void*) &searchMode, (char*) modeNames, modeValues, ComboBox, N_("Seach mode:") },
+{ 0,  0, 0, NULL, (void*) &LoadOptionsOK, "", NULL, EndMark , "" }
 };
 
 Option saveOptions[] = {
@@ -1219,6 +1234,7 @@ void LoadOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+   ASSIGN(searchMode, modeValues[appData.searchMode-1]);
    GenericPopUp(loadOptions, _("Load Game Options"), 0);
 }
 

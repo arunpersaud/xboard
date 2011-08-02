@@ -2391,6 +2391,15 @@ CommPortOptionsPopup(HWND hwnd)
  *
 \*---------------------------------------------------------------------------*/
 
+int
+LoadOptionsWhichRadio(HWND hDlg)
+{
+  return (IsDlgButtonChecked(hDlg, OPT_Exact) ? 1 :
+         (IsDlgButtonChecked(hDlg, OPT_Subset) ? 2 :
+         (IsDlgButtonChecked(hDlg, OPT_Struct) ? 3 :
+         (IsDlgButtonChecked(hDlg, OPT_Material) ? 4 : -1))));
+}
+
 VOID
 SetLoadOptionEnables(HWND hDlg)
 {
@@ -2406,6 +2415,7 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   char buf[MSG_SIZ];
   float fnumber;
+  int ok;
 
   switch (message) {
   case WM_INITDIALOG: /* message: initialize dialog box */
@@ -2421,6 +2431,23 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       CheckDlgButton(hDlg, OPT_Autostep, FALSE);
     }
     SetLoadOptionEnables(hDlg);
+    SetDlgItemInt(hDlg, OPT_elo1, appData.eloThreshold1, FALSE);
+    SetDlgItemInt(hDlg, OPT_elo2, appData.eloThreshold2, FALSE);
+    SetDlgItemInt(hDlg, OPT_date, appData.dateThreshold, FALSE);
+    switch (appData.searchMode) {
+    case 1:
+      CheckDlgButton(hDlg, OPT_Exact, TRUE);
+      break;
+    case 2:
+      CheckDlgButton(hDlg, OPT_Subset, TRUE);
+      break;
+    case 3:
+      CheckDlgButton(hDlg, OPT_Struct, TRUE);
+      break;
+    case 4:
+      CheckDlgButton(hDlg, OPT_Material, TRUE);
+      break;
+    }
     return TRUE;
 
   case WM_COMMAND: /* message: received a command */
@@ -2438,6 +2465,10 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       } else {
 	appData.timeDelay = (float) -1.0;
       }
+      appData.eloThreshold1 = GetDlgItemInt(hDlg, OPT_elo1, &ok, FALSE);
+      appData.eloThreshold2 = GetDlgItemInt(hDlg, OPT_elo2, &ok, FALSE);
+      appData.dateThreshold = GetDlgItemInt(hDlg, OPT_date, &ok, FALSE);
+      appData.searchMode = LoadOptionsWhichRadio(hDlg);
       EndDialog(hDlg, TRUE);
       return TRUE;
 
