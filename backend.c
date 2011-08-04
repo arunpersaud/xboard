@@ -11100,8 +11100,24 @@ int GameContainsPosition(FILE *f, ListGame *lg)
 	switch(next) {
 	    case PGNTag:
 		if(plyNr) return -1; // after we have seen moves, any tags will be start of next game
-		ParsePGNTag(yy_text, &dummyInfo);
-	    if(dummyInfo.fen) ParseFEN(boards[scratch], &btm, dummyInfo.fen), free(dummyInfo.fen), dummyInfo.fen = NULL;
+#if 0
+		ParsePGNTag(yy_text, &dummyInfo); // this has a bad memory leak...
+		if(dummyInfo.fen) ParseFEN(boards[scratch], &btm, dummyInfo.fen), free(dummyInfo.fen), dummyInfo.fen = NULL;
+#else
+		// do it ourselves avoiding malloc
+		{ char *p = yy_text+1, *q;
+		  while(!isdigit(*p) && !isalpha(*p)) p++;
+		  q  = p; while(*p != ' ' && *p != '\t' && *p != '\n') p++;
+		  *p = NULLCHAR;
+		  if(!StrCaseCmp(q, "Date") && (p = strchr(p+1, '"'))) { if(atoi(p+1) < appData.dateThreshold) return -1; } else
+		  if(!StrCaseCmp(q, "Variant")  &&  (p = strchr(p+1, '"'))) dummyInfo.variant = StringToVariant(p+1); else
+		  if(!StrCaseCmp(q, "WhiteElo")  && (p = strchr(p+1, '"'))) dummyInfo.whiteRating = atoi(p+1); else
+		  if(!StrCaseCmp(q, "BlackElo")  && (p = strchr(p+1, '"'))) dummyInfo.blackRating = atoi(p+1); else
+		  if(!StrCaseCmp(q, "WhiteUSCF") && (p = strchr(p+1, '"'))) dummyInfo.whiteRating = atoi(p+1); else
+		  if(!StrCaseCmp(q, "BlackUSCF") && (p = strchr(p+1, '"'))) dummyInfo.blackRating = atoi(p+1); else
+		  if(!StrCaseCmp(q, "FEN")  && (p = strchr(p+1, '"'))) ParseFEN(boards[scratch], &btm, p+1);
+		}
+#endif
 	    default:
 		continue;
 
