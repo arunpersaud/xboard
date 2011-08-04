@@ -214,7 +214,7 @@ int GameListBuild(f)
     ListGame *currentListGame = NULL;
     int error;
     int offset;
-    char lastComment[MSG_SIZ];
+    char lastComment[MSG_SIZ], buf[MSG_SIZ];
 
     GameListFree(&gameList);
     yynewfile(f);
@@ -316,9 +316,12 @@ int GameListBuild(f)
 	  default:
 	    break;
 	}
+	if(gameNumber % 1000 == 0) {
+	    snprintf(buf, MSG_SIZ,"Reading game file (%d)", gameNumber);
+	    DisplayTitle(buf);
+	}
     }
     while (cm != (ChessMove) 0);
-
 
     if (appData.debugMode) {
 	for (currentListGame = (ListGame *) gameList.head;
@@ -333,6 +336,7 @@ int GameListBuild(f)
 
     rewind(f);
     yyskipmoves = FALSE;
+    DisplayTitle("WinBoard");
     return 0;
 }
 

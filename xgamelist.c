@@ -341,9 +341,15 @@ GameListPrepare(int byPos)
 	    *st++ = line; // [HGM] filter: make adding line conditional
 	    listLength++;
 	}
+	if(listLength % 2000 == 0) {
+	    char buf[MSG_SIZ];
+	    snprintf(buf, MSG_SIZ, _("Reading game file (%d)"), listLength);
+	    DisplayTitle(buf);
+	}
 	lg->position = pos;
 	lg = (ListGame *) lg->node.succ;
      }
+     DisplayTitle("WinBoard");
     *st = NULL;
     return listLength;
 }

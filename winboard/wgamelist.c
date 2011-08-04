@@ -91,6 +91,11 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
         BOOL skip = FALSE;
 	int pos = -1;
 
+        if(nItem % 2000 == 0) {
+          snprintf(buf, MSG_SIZ, _("Scanning through games (%d)"), nItem);
+          SetWindowText(hwndMain, buf);
+        }
+
         if( hasFilter ) {
             st = GameListLine(lg->number, &lg->gameInfo);
 	    if( !SearchPattern( st, pszFilter) ) skip = TRUE;
@@ -123,6 +128,7 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
     }
 
     SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, 0, 0);
+    SetWindowText(hwndMain, "WinBoard");
 
     return count;
 }
