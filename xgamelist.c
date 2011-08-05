@@ -95,7 +95,7 @@ void SetFocus P((Widget w, XtPointer data, XEvent *event, Boolean *b));
 
 static Widget filterText;
 static char filterString[MSG_SIZ];
-static int listLength;
+static int listLength, wins, losses, draws;
 
 char gameListTranslations[] =
   "<Btn1Up>(2): LoadSelectedProc(0) \n \
@@ -169,7 +169,7 @@ GameListCreate(name, callback, client_data)
       XtCreateManagedWidget("viewport", viewportWidgetClass, form, args, j);
 
     j = 0;
-    XtSetArg(args[j], XtNlist, glc->strings);  j++;
+//    XtSetArg(args[j], XtNlist, glc->strings);  j++;
     XtSetArg(args[j], XtNdefaultColumns, 1);  j++;
     XtSetArg(args[j], XtNforceColumns, True);  j++;
     XtSetArg(args[j], XtNverticalList, True);  j++;
@@ -329,27 +329,31 @@ GameListPrepare(int byPos)
     ListGame *lg;
     char **st, *line;
 
+    if(st = glc->strings) while(*st) free(*st++);
     nstrings = ((ListGame *) gameList.tailPred)->number;
     glc->strings = (char **) malloc((nstrings + 1) * sizeof(char *));
     st = glc->strings;
     lg = (ListGame *) gameList.head;
-    listLength = 0;
+    listLength = wins = losses = draws = 0;
     while (nstrings--) {
 	int pos = -1;
 	line = GameListLine(lg->number, &lg->gameInfo);
 	if((filterString[0] == NULLCHAR || SearchPattern( line, filterString )) && (!byPos || (pos=GameContainsPosition(glc->fp, lg)) >= 0) ) {
-	    *st++ = line; // [HGM] filter: make adding line conditional
+	    if(listLength < 1500) *st++ = line; // [HGM] filter: make adding line conditional. *** X listboxes have severe size limit ***
 	    listLength++;
+            if( lg->gameInfo.result == WhiteWins ) wins++; else
+            if( lg->gameInfo.result == BlackWins ) losses++; else
+            if( lg->gameInfo.result == GameIsDrawn ) draws++;
 	}
-	if(listLength % 2000 == 0) {
+	if(lg->number % 2000 == 0) {
 	    char buf[MSG_SIZ];
-	    snprintf(buf, MSG_SIZ, _("Reading game file (%d)"), listLength);
+	    snprintf(buf, MSG_SIZ, _("Scanning through games (%d)"), lg->number);
 	    DisplayTitle(buf);
 	}
 	lg->position = pos;
 	lg = (ListGame *) lg->node.succ;
      }
-     DisplayTitle("WinBoard");
+     DisplayTitle("XBoard");
     *st = NULL;
     return listLength;
 }
@@ -359,10 +363,17 @@ GameListReplace()
 {
   // filter: put in separate routine, to make callable from call-back
   Widget listwidg;
+  Arg arg;
+  char buf[MSG_SIZ],*p;
 
   listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
+  XtSetArg(arg, XtNlist, glc->strings);
   XawListChange(listwidg, glc->strings, 0, 0, True);
+  XtSetValues(listwidg, &arg, 1);
   XawListHighlight(listwidg, 0);
+  snprintf(buf, MSG_SIZ, "%s- %d/%d games (%d-%d-%d)", glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
+  XtSetArg(arg, XtNtitle, buf);
+  XtSetValues(glc->shell, &arg, 1);
 }
 
 void
@@ -390,10 +401,6 @@ GameListCallback(w, client_data, call_data)
 	LoadOptionsProc();
 	return;
     }
-    if (strcmp(name, _("find position")) == 0) {
-        if(GameListPrepare(True)) GameListReplace(); // crashes on empty list...
-	return;
-    }
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
     rs = XawListShowCurrent(listwidg);
     if (strcmp(name, _("load")) == 0) {
@@ -416,14 +423,15 @@ GameListCallback(w, client_data, call_data)
 	    return;
 	}
 	XawListHighlight(listwidg, index);
-    } else if (strcmp(name, _("apply")) == 0) {
-        String name;
+    } else if (strcmp(name, _("apply")) == 0 ||
+               strcmp(name, _("find position")) == 0) {
+        String text;
         j = 0;
-        XtSetArg(args[j], XtNstring, &name);  j++;
+        XtSetArg(args[j], XtNstring, &text);  j++;
 	XtGetValues(filterText, args, j);
-        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
+        safeStrCpy(filterString, text, sizeof(filterString)/sizeof(filterString[0]));
 	XawListHighlight(listwidg, 0);
-        if(GameListPrepare(False)) GameListReplace(); // crashes on empty list...
+        if(GameListPrepare(strcmp(name, _("find position")) == 0)) GameListReplace(); // crashes on empty list...
         return;
     }
 #if 1
@@ -452,14 +460,6 @@ GameListPopUp(fp, filename)
 	glc->x = glc->y = -1;
     }
 
-    if (glc->strings != NULL) {
-	st = glc->strings;
-	while (*st) {
-	    free(*st++);
-	}
-	free(glc->strings);
-    }
-
     GameListPrepare(False); // [HGM] filter: code put in separate routine
 
     glc->fp = fp;
@@ -471,12 +471,12 @@ GameListPopUp(fp, filename)
     if (glc->shell == NULL) {
 	glc->shell = GameListCreate(filename, GameListCallback, glc);
     } else {
-        GameListReplace(); // [HGM] filter: code put in separate routine
 	j = 0;
 	XtSetArg(args[j], XtNiconName, (XtArgVal) filename);  j++;
-	XtSetArg(args[j], XtNtitle, (XtArgVal) filename);  j++;
+//	XtSetArg(args[j], XtNtitle, (XtArgVal) filename);  j++;
 	XtSetValues(glc->shell, args, j);
     }
+    GameListReplace(); // [HGM] filter: code put in separate routine, and also called to set title
 
     XtPopup(glc->shell, XtGrabNone);
     glc->up = True;
@@ -541,7 +541,7 @@ LoadSelectedProc(w, event, prms, nprms)
     XawListReturnStruct *rs;
     int index, direction = atoi(prms[0]);
 
-    if (glc == NULL) return;
+    if (glc == NULL || listLength == 0) return;
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
     rs = XawListShowCurrent(listwidg);
     index = rs->list_index;

@@ -6943,6 +6943,7 @@ void DisplayTitle(text)
     XtSetArg(args[i], XtNiconName, (XtArgVal) icon);    i++;
     XtSetArg(args[i], XtNtitle, (XtArgVal) title);      i++;
     XtSetValues(shellWidget, args, i);
+    XSync(xDisplay, False);
 }
 
 

@@ -334,9 +334,9 @@ int GameListBuild(f)
 	}
     }
 
+    DisplayTitle("WinBoard");
     rewind(f);
     yyskipmoves = FALSE;
-    DisplayTitle("WinBoard");
     return 0;
 }
 
