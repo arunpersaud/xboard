@@ -109,6 +109,8 @@ char gameListTranslations[] =
 char filterTranslations[] =
   "<Key>Return: SetFilterProc() \n";
 
+char *dummyList[] = { N_("no games matched your request"), NULL };
+
 typedef struct {
     Widget shell;
     Position x, y;
@@ -367,7 +369,7 @@ GameListReplace()
   char buf[MSG_SIZ],*p;
 
   listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-  XtSetArg(arg, XtNlist, glc->strings);
+  XtSetArg(arg, XtNlist, listLength ? glc->strings : dummyList); // empty list displays message
   XawListChange(listwidg, glc->strings, 0, 0, True);
   XtSetValues(listwidg, &arg, 1);
   XawListHighlight(listwidg, 0);
@@ -431,7 +433,7 @@ GameListCallback(w, client_data, call_data)
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, text, sizeof(filterString)/sizeof(filterString[0]));
 	XawListHighlight(listwidg, 0);
-        if(GameListPrepare(strcmp(name, _("find position")) == 0)) GameListReplace(); // crashes on empty list...
+        GameListPrepare(strcmp(name, _("find position")) == 0); GameListReplace();
         return;
     }
 #if 1
@@ -576,7 +578,7 @@ SetFilterProc(w, event, prms, nprms)
         XtSetArg(args[j], XtNstring, &name);  j++;
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-        if(GameListPrepare(False)) GameListReplace(); // crashes on empty list...
+        GameListPrepare(False); GameListReplace();
 	list = XtNameToWidget(glc->shell, "*form.viewport.list");
 	XawListHighlight(list, 0);
         j = 0;
