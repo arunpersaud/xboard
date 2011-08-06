@@ -5001,6 +5001,14 @@ void CommentPopDown()
     PopDown(1);
 }
 
+static char *openName;
+FILE *openFP;
+
+void DelayedLoad()
+{
+  (void) (*fileProc)(openFP, 0, openName);
+}
+
 void FileNamePopUp(label, def, filter, proc, openMode)
      char *label;
      char *def;
@@ -5011,12 +5019,11 @@ void FileNamePopUp(label, def, filter, proc, openMode)
     fileProc = proc;		/* I can't see a way not */
     fileOpenMode = openMode;	/*   to use globals here */
     {   // [HGM] use file-selector dialog stolen from Ghostview
-	char *name;
 	int index; // this is not supported yet
-	FILE *f;
-	if(f = XsraSelFile(shellWidget, label, NULL, NULL, "could not open: ",
-			   (def[0] ? def : NULL), filter, openMode, NULL, &name))
-	  (void) (*fileProc)(f, index=0, name);
+	if(openFP = XsraSelFile(shellWidget, label, NULL, NULL, "could not open: ",
+			   (def[0] ? def : NULL), filter, openMode, NULL, &openName))
+	  // [HGM] delay to give expose event opportunity to redraw board after browser-dialog popdown before lengthy load starts
+	  ScheduleDelayedEvent(&DelayedLoad, 50);
     }
 }
 
