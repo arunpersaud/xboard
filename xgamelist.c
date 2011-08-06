@@ -95,7 +95,7 @@ void SetFocus P((Widget w, XtPointer data, XEvent *event, Boolean *b));
 
 static Widget filterText;
 static char filterString[MSG_SIZ];
-static int listLength, wins, losses, draws;
+static int listLength, wins, losses, draws, page;
 
 char gameListTranslations[] =
   "<Btn1Up>(2): LoadSelectedProc(0) \n \
@@ -341,7 +341,7 @@ GameListPrepare(int byPos)
 	int pos = -1;
 	line = GameListLine(lg->number, &lg->gameInfo);
 	if((filterString[0] == NULLCHAR || SearchPattern( line, filterString )) && (!byPos || (pos=GameContainsPosition(glc->fp, lg)) >= 0) ) {
-	    if(listLength < 1500) *st++ = line; // [HGM] filter: make adding line conditional. *** X listboxes have severe size limit ***
+            *st++ = line; // [HGM] filter: make adding line conditional.
 	    listLength++;
             if( lg->gameInfo.result == WhiteWins ) wins++; else
             if( lg->gameInfo.result == BlackWins ) losses++; else
@@ -360,17 +360,25 @@ GameListPrepare(int byPos)
     return listLength;
 }
 
+static char *list[1003];
+
 static void
-GameListReplace()
+GameListReplace(int page)
 {
   // filter: put in separate routine, to make callable from call-back
   Widget listwidg;
   Arg arg;
-  char buf[MSG_SIZ],*p;
+  char buf[MSG_SIZ], *p, **st=list;
+  int i;
+
+  if(page) *st++ = _("previous page"); else if(listLength > 1000) *st++ = "";
+  for(i=0; i<1000; i++) if( !(*st++ = glc->strings[page+i]) ) break;
+  if(page + 1000 <= listLength) *st++ = _("next page");
+  *st = NULL;
 
   listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-  XtSetArg(arg, XtNlist, listLength ? glc->strings : dummyList); // empty list displays message
-  XawListChange(listwidg, glc->strings, 0, 0, True);
+  XtSetArg(arg, XtNlist, listLength ? list : dummyList); // empty list displays message
+  XawListChange(listwidg, list, 0, 0, True);
   XtSetValues(listwidg, &arg, 1);
   XawListHighlight(listwidg, 0);
   snprintf(buf, MSG_SIZ, "%s- %d/%d games (%d-%d-%d)", glc->filename, listLength, ((ListGame *) gameList.tailPred)->number, wins, losses, draws);
@@ -413,7 +421,7 @@ GameListCallback(w, client_data, call_data)
 	}
     } else if (strcmp(name, _("next")) == 0) {
 	index = rs->list_index + 1;
-	if (index >= listLength) {
+	if (index >= listLength || !list[index]) {
 	    DisplayError(_("Can't go forward any further"), 0);
 	    return;
 	}
@@ -433,11 +441,11 @@ GameListCallback(w, client_data, call_data)
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, text, sizeof(filterString)/sizeof(filterString[0]));
 	XawListHighlight(listwidg, 0);
-        GameListPrepare(strcmp(name, _("find position")) == 0); GameListReplace();
+        GameListPrepare(strcmp(name, _("find position")) == 0); GameListReplace(0);
         return;
     }
 #if 1
-    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
+    index = atoi(list[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
     } else {
@@ -478,7 +486,8 @@ GameListPopUp(fp, filename)
 //	XtSetArg(args[j], XtNtitle, (XtArgVal) filename);  j++;
 	XtSetValues(glc->shell, args, j);
     }
-    GameListReplace(); // [HGM] filter: code put in separate routine, and also called to set title
+    page = 0;
+    GameListReplace(0); // [HGM] filter: code put in separate routine, and also called to set title
 
     XtPopup(glc->shell, XtGrabNone);
     glc->up = True;
@@ -548,6 +557,18 @@ LoadSelectedProc(w, event, prms, nprms)
     rs = XawListShowCurrent(listwidg);
     index = rs->list_index;
     if (index < 0) return;
+    if(page && index == 0) {
+        page -= 1000;
+        if(page < 0) page = 0; // safety
+        GameListReplace(page);
+	return;
+    }
+    if(index == 1001) {
+        page += 1000;
+        GameListReplace(page);
+	return;
+    }
+
     if(direction != 0) {
 	index += direction;
 	if(direction == -2) index = 0;
@@ -556,7 +577,7 @@ LoadSelectedProc(w, event, prms, nprms)
 	XawListHighlight(listwidg, index);
 	return;
     }
-    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
+    index = atoi(list[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
     } else {
@@ -578,7 +599,7 @@ SetFilterProc(w, event, prms, nprms)
         XtSetArg(args[j], XtNstring, &name);  j++;
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-        GameListPrepare(False); GameListReplace();
+        GameListPrepare(False); GameListReplace(0);
 	list = XtNameToWidget(glc->shell, "*form.viewport.list");
 	XawListHighlight(list, 0);
         j = 0;
@@ -621,7 +642,7 @@ GameListHighlight(index)
     int i=0; char **st;
     if (glc == NULL || !glc->up) return;
     listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-    st = glc->strings;
+    st = list;
     while(*st && atoi(*st)<index) st++,i++;
     XawListHighlight(listwidg, i);
 }
