@@ -121,14 +121,13 @@ SFgetDir(dir)
 	(void) stat(".", &statBuf);
 	dir->mtime = statBuf.st_mtime;
 
-	(void) readdir(dirp);	/* throw away "." */
-
-#ifndef S_IFLNK
-	(void) readdir(dirp);	/* throw away ".." */
-#endif /* ndef S_IFLNK */
-
 	while (dp = readdir(dirp)) {
+
 		struct stat statBuf;
+		if(!strcmp(dp->d_name, ".")) continue; /* Throw away "." */
+		if(!strcmp(dp->d_name, "..")) continue; /* Throw away ".." */
+#ifndef S_IFLNK
+#endif /* ndef S_IFLNK */
 		if (i >= alloc) {
 			alloc = 2 * (alloc + 1);
 			result = (SFEntry *) XtRealloc((char *) result,
