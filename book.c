@@ -580,6 +580,7 @@ int TextToMoves(char *text, int moveNum, entry_t *entries)
 	float dummy;
 	int width = BOARD_RGHT - BOARD_LEFT;
 
+	entries[0].key = hashKey; // make sure key is returned even if no moves
 	while((i=sscanf(text, "%f%%%d", &dummy, &w))==2 || (i=sscanf(text, "%d", &w))==1) {
 	    if(i == 2) text = strchr(text, '%') + 1;  // skip percentage
 	    if(w == 1) text = strstr(text, "1 ") + 2; // skip weight that could be recognized as move number one
@@ -651,11 +652,11 @@ void SaveToBook(char *text)
     int count = TextToMoves(text, currentMove, entries);
     int offset, i, len1=0, len2, readpos=0, writepos=0;
     FILE *f;
-    if(!count) return;
+    if(!count && !currentCount) return;
     f=fopen(appData.polyglotBook, "rb+");
     if(!f){	DisplayError("Polyglot book not valid", 0); return; }
     offset=find_key(f, entries[0].key, &entry);
-    if(entries[0].key != entry.key) {
+    if(entries[0].key != entry.key && currentCount) {
 	  DisplayError("Hash keys are different", 0);
 	  fclose(f);
 	  return;
@@ -680,3 +681,4 @@ void SaveToBook(char *text)
     }
     fclose(f);
 }
+
