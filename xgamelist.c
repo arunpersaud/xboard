@@ -363,6 +363,7 @@ GameListPrepare(int byPos)
 }
 
 static char *list[1003];
+int listEnd;
 
 static void
 GameListReplace(int page)
@@ -374,7 +375,8 @@ GameListReplace(int page)
   int i;
 
   if(page) *st++ = _("previous page"); else if(listLength > 1000) *st++ = "";
-  for(i=0; i<1000; i++) if( !(*st++ = glc->strings[page+i]) ) break;
+  for(i=0; i<1000; i++) if( !(*st++ = glc->strings[page+i]) ) { st--; break; }
+  listEnd = st - list;
   if(page + 1000 <= listLength) *st++ = _("next page");
   *st = NULL;
 
@@ -576,8 +578,8 @@ LoadSelectedProc(w, event, prms, nprms)
 	if(doLoad) direction /= 3;
 	index += direction;
 	if(direction == -2) index = 0;
-	if(direction == 2) index = listLength-1;
-	if(index < 0 || index >= listLength) return;
+	if(direction == 2) index = listEnd-1;
+	if(index < 0 || index >= listEnd) return;
 	XawListHighlight(listwidg, index);
 	if(!doLoad) return;
     }
