@@ -101,6 +101,8 @@ char gameListTranslations[] =
   "<Btn1Up>(2): LoadSelectedProc(0) \n \
    <Key>Home: LoadSelectedProc(-2) \n \
    <Key>End: LoadSelectedProc(2) \n \
+   Ctrl<Key>Up: LoadSelectedProc(-3) \n \
+   Ctrl<Key>Down: LoadSelectedProc(3) \n \
    <Key>Up: LoadSelectedProc(-1) \n \
    <Key>Down: LoadSelectedProc(1) \n \
    <Key>Left: LoadSelectedProc(-1) \n \
@@ -570,18 +572,22 @@ LoadSelectedProc(w, event, prms, nprms)
     }
 
     if(direction != 0) {
+	int doLoad = abs(direction) > 2;
+	if(doLoad) direction /= 3;
 	index += direction;
 	if(direction == -2) index = 0;
 	if(direction == 2) index = listLength-1;
 	if(index < 0 || index >= listLength) return;
 	XawListHighlight(listwidg, index);
-	return;
+	if(!doLoad) return;
     }
     index = atoi(list[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
     } else {
 	LoadGame(glc->fp, index + 1, glc->filename, True);
+	XSync(xDisplay, False);
+	XSetInputFocus(xDisplay, XtWindow(boardWidget), RevertToPointerRoot, CurrentTime);
     }
 }
 

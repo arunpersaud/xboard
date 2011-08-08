@@ -1051,6 +1051,8 @@ char globalTranslations[] =
    :Ctrl<Key>o: LoadGameProc() \n \
    :Meta<Key>Next: LoadNextGameProc() \n \
    :Meta<Key>Prior: LoadPrevGameProc() \n \
+   :Ctrl<Key>Down: LoadSelectedProc(3) \n \
+   :Ctrl<Key>Up: LoadSelectedProc(-3) \n \
    :Ctrl<Key>s: SaveGameProc() \n \
    :Ctrl<Key>c: CopyGameProc() \n \
    :Ctrl<Key>v: PasteGameProc() \n \
