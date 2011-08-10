@@ -234,7 +234,7 @@ void InitDrawingSizes(int x, int y);
 void NextMatchGame P((void));
 int NextTourneyGame P((int nr, int *swap));
 int Pairing P((int nr, int nPlayers, int *w, int *b, int *sync));
-FILE *WriteTourneyFile P((char *results));
+FILE *WriteTourneyFile P((char *results, FILE *f));
 void DisplayTwoMachinesTitle P(());
 
 #ifdef WIN32
@@ -1436,7 +1436,7 @@ MatchEvent(int mode)
 		if(strchr(appData.results, '*') == NULL) {
 		    FILE *f;
 		    appData.tourneyCycles++;
-		    if(f = WriteTourneyFile(appData.results)) { // make a tourney file with increased number of cycles
+		    if(f = WriteTourneyFile(appData.results, NULL)) { // make a tourney file with increased number of cycles
 			fclose(f);
 			NextTourneyGame(-1, &dummy);
 			ReserveGame(-1, 0);
@@ -9720,9 +9720,9 @@ CountPlayers(char *p)
 }
 
 FILE *
-WriteTourneyFile(char *results)
+WriteTourneyFile(char *results, FILE *f)
 {   // write tournament parameters on tourneyFile; on success return the stream pointer for closing
-    FILE *f = fopen(appData.tourneyFile, "w");
+    if(f == NULL) f = fopen(appData.tourneyFile, "w");
     if(f == NULL) DisplayError(_("Could not write on tourney file"), 0); else {
 	// create a file with tournament description
 	fprintf(f, "-participants {%s}\n", appData.participants);
@@ -9749,10 +9749,73 @@ WriteTourneyFile(char *results)
     return f;
 }
 
+#define MAXENGINES 1000
+char *command[MAXENGINES], *mnemonic[MAXENGINES];
+
+void Substitute(char *participants, int expunge)
+{
+    int i, changed, changes=0, nPlayers=0;
+    char *p, *q, *r, buf[MSG_SIZ];
+    if(participants == NULL) return;
+    if(appData.tourneyFile[0] == NULLCHAR) { free(participants); return; }
+    r = p = participants; q = appData.participants;
+    while(*p && *p == *q) {
+	if(*p == '\n') r = p+1, nPlayers++;
+	p++; q++;
+    }
+    if(*p) { // difference
+	while(*p && *p++ != '\n');
+	while(*q && *q++ != '\n');
+      changed = nPlayers;
+	changes = 1 + (strcmp(p, q) != 0);
+    }
+    if(changes == 1) { // a single engine mnemonic was changed
+	q = r; while(*q) nPlayers += (*q++ == '\n');
+	p = buf; while(*r && (*p = *r++) != '\n') p++;
+	*p = NULLCHAR;
+	NamesToList(firstChessProgramNames, command, mnemonic);
+	for(i=1; mnemonic[i]; i++) if(!strcmp(buf, mnemonic[i])) break;
+	if(mnemonic[i]) { // The substitute is valid
+	    FILE *f;
+	    if(appData.tourneyFile[0] && (f = fopen(appData.tourneyFile, "r+")) ) {
+		flock(fileno(f), LOCK_EX);
+		ParseArgsFromFile(f);
+		fseek(f, 0, SEEK_SET);
+		FREE(appData.participants); appData.participants = participants;
+		if(expunge) { // erase results of replaced engine
+		    int len = strlen(appData.results), w, b, dummy;
+		    for(i=0; i<len; i++) {
+			Pairing(i, nPlayers, &w, &b, &dummy);
+			if((w == changed || b == changed) && appData.results[i] == '*') {
+			    DisplayError(_("You cannot replace an engine while it is engaged!\nTerminate its game first."), 0);
+			    fclose(f);
+			    return;
+			}
+		    }
+		    for(i=0; i<len; i++) {
+			Pairing(i, nPlayers, &w, &b, &dummy);
+			if(w == changed || b == changed) appData.results[i] = ' '; // mark as not played
+		    }
+		}
+		WriteTourneyFile(appData.results, f);
+		fclose(f); // release lock
+		return;
+	    }
+	} else DisplayError(_("No engine with the name you gave is installed"), 0);
+    }
+    if(changes == 0) DisplayError(_("First change an engine by editing the participants list\nof the Tournament Options dialog"), 0);
+    if(changes > 1)  DisplayError(_("You can only change one engine at the time"), 0);
+    free(participants);
+    return;
+}
+
 int
 CreateTourney(char *name)
 {
 	FILE *f;
+	if(matchMode && strcmp(name, appData.tourneyFile)) {
+	     ASSIGN(name, appData.tourneyFile); //do not allow change of tourneyfile while playing
+	}
 	if(name[0] == NULLCHAR) {
 	    if(appData.participants[0])
 		DisplayError(_("You must supply a tournament file,\nfor storing the tourney progress"), 0);
@@ -9770,7 +9833,7 @@ CreateTourney(char *name)
 	    }
 	    ASSIGN(appData.tourneyFile, name);
 	    if(appData.tourneyType < 0) appData.defaultMatchGames = 1; // Swiss forces games/pairing = 1
-	    if((f = WriteTourneyFile("")) == NULL) return 0;
+	    if((f = WriteTourneyFile("", NULL)) == NULL) return 0;
 	}
 	fclose(f);
 	appData.noChessProgram = FALSE;
@@ -9778,9 +9841,6 @@ CreateTourney(char *name)
 	SetGNUMode();
 	return 1;
 }
-
-#define MAXENGINES 1000
-char *command[MAXENGINES], *mnemonic[MAXENGINES];
 
 void NamesToList(char *names, char **engineList, char **engineMnemonic)
 {
@@ -9804,7 +9864,7 @@ void NamesToList(char *names, char **engineList, char **engineMnemonic)
 	names = p; i++;
       if(i > MAXENGINES - 2) break;
     }
-    engineList[i] = NULL;
+    engineList[i] = engineMnemonic[i] = NULL;
 }
 
 // following implemented as macro to avoid type limitations

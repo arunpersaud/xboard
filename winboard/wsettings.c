@@ -486,6 +486,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		if( activeList[j].type  == SaveButton)
 		     GetOptionValues(hDlg, activeCps, activeList);
 		else if( activeList[j].type  != Button) break;
+		else if( !activeCps ) { (*(ButtonCallback*) activeList[j].target)(hDlg); break; }
 		snprintf(buf, MSG_SIZ, "option %s\n", activeList[j].name);
 		SendToProgram(buf, activeCps);
 	    }
@@ -694,8 +695,35 @@ int MatchOK()
 {
     if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1);
     if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
-    if(CreateTourney(tfName)) MatchEvent(2); else return !appData.participants[0];
-    return 1;
+    if(CreateTourney(tfName) && !matchMode) { // CreateTourney reloads original settings if file already existed
+	MatchEvent(2);
+	return 1; // close dialog
+    }
+    return matchMode || !appData.participants[0]; // if we failed to create and are not in playing, forbid popdown if there are participants
+}
+
+char *GetParticipants(HWND hDlg)
+{
+    int len = GetWindowTextLength(GetDlgItem(hDlg, 2001+2*9)) + 1;
+    char *participants,*p, *q;
+    if(len < 4) return NULL; // box is empty (enough)
+    participants = (char*) malloc(len);
+    GetDlgItemText(hDlg, 2001+2*9, participants, len );
+    p = q = participants;
+    while(*p++ = *q++) if(p[-1] == '\r') p--;
+    return participants;
+}
+
+void ReplaceParticipant(HWND hDlg)
+{
+    char *participants = GetParticipants(hDlg);
+    Substitute(participants, TRUE);
+}
+	
+void UpgradeParticipant(HWND hDlg)
+{
+    char *participants = GetParticipants(hDlg);
+    Substitute(participants, FALSE);
 }
 
 Option tourneyOptions[] = {
@@ -719,6 +747,8 @@ Option tourneyOptions[] = {
   { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind after (0 = never):") },
   { 0,  0,          0, NULL, (void*) &twice, "", NULL, CheckBox, N_("Use each line/position twice") },
   { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Games (ms):") },
+  { 0,  0,          0, NULL, (void*) &ReplaceParticipant, "", NULL, Button, N_("Replace Engine") },
+  { 0,  0,          0, NULL, (void*) &UpgradeParticipant, "", NULL, Button, N_("Upgrade Engine") },
   { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 

@@ -300,6 +300,7 @@ void NamesToList P((char *name, char **engines, char **mnemonics));
 int CreateTourney P((char *name));
 char *MakeName P((char *templ));
 void SwapEngines P((int n));
+void Substitute P((char *participants, int expunge));
 
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */

@@ -329,12 +329,23 @@ void AddToTourney(int n)
 
 int MatchOK(int n)
 {
-    if(appData.participants && appData.participants[0]) free(appData.participants);
-    appData.participants = strdup(engineName);
-    if(!CreateTourney(tfName)) return !appData.participants[0];
+    ASSIGN(appData.participants, engineName);
+    if(!CreateTourney(tfName) || matchMode) return matchMode || !appData.participants[0];
     PopDown(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
     MatchEvent(2); // start tourney
     return 1;
+}
+
+void ReplaceParticipant()
+{
+    GenericReadout(3);
+    Substitute(strdup(engineName), True);
+}
+
+void UpgradeParticipant()
+{
+    GenericReadout(3);
+    Substitute(strdup(engineName), False);
 }
 
 Option matchOptions[] = {
@@ -353,7 +364,9 @@ Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &appData.loadPositionFile, ".fen", NULL, FileName, N_("File with Start Positions:") },
 { 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, N_("Position Number (-1 or -2 = Auto-Increment):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind Index after this many Games (0 = never):") },
-{ 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
+{ 0,  0,          0, NULL, (void*) &ReplaceParticipant, NULL, NULL, Button, N_("Replace Engine") },
+{ 0,  1,          0, NULL, (void*) &UpgradeParticipant, NULL, NULL, Button, N_("Upgrade Engine") },
+{ 0, 1, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
 int GeneralOptionsOK(int n)
@@ -1315,6 +1328,7 @@ void MatchOptionsProc(w, event, prms, nprms)
    comboCallback = &AddToTourney;
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
+   ASSIGN(engineName, appData.participants);
    GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 
