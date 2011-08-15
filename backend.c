@@ -11318,13 +11318,13 @@ int GameContainsPosition(FILE *f, ListGame *lg)
     if(lg->gameInfo.fen) ParseFEN(boards[scratch], &btm, lg->gameInfo.fen);
     else CopyBoard(boards[scratch], initialPosition); // default start position
     if(lg->moves && !QuickScan( boards[scratch], &moveDatabase[lg->moves] )) return -1; // quick scan rules out it is there
-    if(btm) CopyBoard(boards[scratch+1], boards[scratch]), plyNr++;
-    if(PositionMatches(boards[scratch + plyNr], boards[currentMove])) return plyNr;
+    if(btm) plyNr++;
+    if(PositionMatches(boards[scratch], boards[currentMove])) return plyNr;
     fseek(f, lg->offset, 0);
     yynewfile(f);
     while(1) {
-	yyboardindex = scratch + (plyNr&1);
-	quickFlag = 1;
+	yyboardindex = scratch;
+	quickFlag = plyNr+1;
 	next = Myylex();
 	quickFlag = 0;
 	switch(next) {
@@ -11384,10 +11384,9 @@ int GameContainsPosition(FILE *f, ListGame *lg)
 		break;
 	}
 	// Move encountered; peform it. We need to shuttle between two boards, as even/odd index determines side to move
-	CopyBoard(boards[scratch + (plyNr+1&1)], boards[scratch + (plyNr&1)]);
 	plyNr++;
-	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch + (plyNr&1)]);
-	if(PositionMatches(boards[scratch + (plyNr&1)], boards[currentMove])) return plyNr;
+	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch]);
+	if(PositionMatches(boards[scratch], boards[currentMove])) return plyNr;
     }
 }
 

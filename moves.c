@@ -84,6 +84,7 @@ int BlackPiece(piece)
     return (int) piece >= (int) BlackPawn && (int) piece < (int) EmptySquare;
 }
 
+#if 0
 int SameColor(piece1, piece2)
      ChessSquare piece1, piece2;
 {
@@ -96,6 +97,9 @@ int SameColor(piece1, piece2)
 	    (int) piece2 >= (int) BlackPawn &&
             (int) piece2 <  (int) EmptySquare);
 }
+#else
+#define SameColor(piece1, piece2) (piece1 < EmptySquare && piece2 < EmptySquare && (piece1 < BlackPawn) == (piece2 < BlackPawn))
+#endif
 
 char pieceToChar[] = {
                         'P', 'N', 'B', 'R', 'Q', 'F', 'E', 'A', 'C', 'W', 'M',
@@ -184,13 +188,11 @@ void GenPseudoLegal(board, flags, callback, closure, filter)
     for (rf = 0; rf < BOARD_HEIGHT; rf++)
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
           ChessSquare piece;
-          int rookRange = 1000;
+          int rookRange;
 
-	  if (flags & F_WHITE_ON_MOVE) {
-	      if (!WhitePiece(board[rf][ff])) continue;
-	  } else {
-	      if (!BlackPiece(board[rf][ff])) continue;
-	  }
+	  if(board[rf][ff] == EmptySquare) continue;
+	  if ((flags & F_WHITE_ON_MOVE) != (board[rf][ff] < BlackPawn)) continue; // [HGM] speed: wrong color
+	  rookRange = 1000;
           m = 0; piece = board[rf][ff];
           if(PieceToChar(piece) == '~')
                  piece = (ChessSquare) ( DEMOTED piece );
@@ -1109,6 +1111,7 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
 {
     LegalityTestClosure cl; ChessSquare piece, filterPiece, *castlingRights = board[CASTLING];
 
+    if(quickFlag) flags = flags & ~1 | quickFlag & 1; // [HGM] speed: in quick mode quickFlag specifies side-to-move.
     if(rf == DROP_RANK) return LegalDrop(board, flags, ff, rt, ft);
     piece = filterPiece = board[rf][ff];
     if(PieceToChar(piece) == '~') filterPiece = DEMOTED piece; 
@@ -1335,6 +1338,7 @@ void Disambiguate(board, flags, closure)
 {
     int illegal = 0; char c = closure->promoCharIn;
 
+    if(quickFlag) flags = flags & ~1 | quickFlag & 1; // [HGM] speed: in quick mode quickFlag specifies side-to-move.
     closure->count = closure->captures = 0;
     closure->rf = closure->ff = closure->rt = closure->ft = 0;
     closure->kind = ImpossibleMove;

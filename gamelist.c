@@ -224,13 +224,13 @@ struct {
     GameListFree(&gameList);
     yynewfile(f);
     gameNumber = 0;
-    quickFlag = 1;
 
     lastStart = (ChessMove) 0;
     yyskipmoves = FALSE;
     do {
-        yyboardindex = scratch + (plyNr & 1);
+        yyboardindex = scratch;
 	offset = yyoffset();
+	quickFlag = plyNr + 1;
 	cm = (ChessMove) Myylex();
 	switch (cm) {
 	  case GNUChessGame:
@@ -330,9 +330,8 @@ struct {
 		fromY = currentMoveString[1] - ONE;
 		toX = currentMoveString[2] - AAA;
 		toY = currentMoveString[3] - ONE;
-		CopyBoard(boards[scratch + (plyNr+1&1)], boards[scratch + (plyNr&1)]);
 		plyNr++;
-		ApplyMove(fromX, fromY, toX, toY, currentMoveString[4], boards[scratch + (plyNr&1)]);
+		ApplyMove(fromX, fromY, toX, toY, currentMoveString[4], boards[scratch]);
 		PackMove(fromX, fromY, toX, toY, currentMoveString[4]);
 	    break;
         case WhiteWins: // [HGM] rescom: save last comment as result details
