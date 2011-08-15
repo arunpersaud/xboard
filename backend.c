@@ -11173,6 +11173,130 @@ PositionMatches(Board b1, Board b2)
     return TRUE;
 }
 
+#define Q_PROMO  4
+#define Q_EP     3
+#define Q_WCASTL 2
+#define Q_BCASTL 1
+
+int pieceList[256], quickBoard[256];
+ChessSquare pieceType[256] = { EmptySquare };
+Board soughtBoard, reverseBoard;
+int counts[EmptySquare], soughtCounts[EmptySquare], reverseCounts[EmptySquare], maxSought[EmptySquare], maxReverse[EmptySquare];
+
+typedef struct {
+    unsigned char piece, to;
+} Move;
+
+Move moveDatabase[4000000];
+int movePtr = 0;
+
+void MakePieceList(Board board, int *counts)
+{
+    int r, f, n=Q_PROMO;
+    for(r=0;r<EmptySquare;r++) counts[r] = 0; // piece-type counts
+    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	int sq = f + (r<<4);
+        if(board[r][f] == EmptySquare) quickBoard[sq] = 0; else {
+	    quickBoard[sq] = ++n;
+	    pieceList[n] = sq;
+	    pieceType[n] = board[r][f];
+	    counts[board[r][f]]++;
+	    if(board[r][f] == WhiteKing) pieceList[1] = sq; else
+	    if(board[r][f] == BlackKing) pieceList[2] = sq; // remember where Kings start, for castling
+	}
+    }
+}
+
+void PackMove(int fromX, int fromY, int toX, int toY, char promoChar)
+{
+    int sq = fromX + (fromY<<4);
+    int piece = quickBoard[sq];
+    quickBoard[sq] = 0;
+    moveDatabase[movePtr].to = pieceList[piece] = sq = toX + (toY<<4);
+    if(promoChar) {
+	
+    }
+    moveDatabase[movePtr].piece = piece;
+    quickBoard[sq] = piece;
+    movePtr++;
+}
+
+int PackGame(Board board)
+{
+    moveDatabase[movePtr++].piece = 0; // terminate previous game
+    MakePieceList(board, counts);
+    return movePtr;
+}
+
+int QuickCompare(Board board, int *counts, int *maxCounts)
+{   // compare according to search mode
+    int r, f;
+    switch(appData.searchMode)
+    {
+      case 1: // exact position match
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
+	}
+	return TRUE;
+      case 2: // can have extra material on empty squares
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	    if(board[r][f] == EmptySquare) continue;
+	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
+	}
+	return TRUE;
+      case 3: // material with exact Pawn structure
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	    if(board[r][f] != WhitePawn && board[r][f] != BlackPawn) continue;
+	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
+	} // fall through to material comparison
+      case 4: // exact material
+	for(r=0; r<EmptySquare; r++) if(counts[r] != soughtCounts[r]) return FALSE;
+	return TRUE;
+      case 5: // material range with given imbalance
+	for(r=0; r<EmptySquare; r++) if(counts[r] < soughtCounts[r] || counts[r] > maxCounts[r]) return FALSE;
+      case 6: // material range
+	for(r=0; r<EmptySquare; r++) if(counts[r] < soughtCounts[r] || counts[r] > maxCounts[r]) return FALSE;
+	return TRUE;
+    }
+}
+
+int QuickScan(Board board, Move *move)
+{   // reconstruct game,and compare all positions in it
+    MakePieceList(board, counts);
+    do {
+	int piece = move->piece;
+	int to = move->to, from = pieceList[piece];
+	if(piece <= Q_PROMO) { // special moves encoded by otherwise invalid piece numbers 1-4
+	  if(!piece) return FALSE;
+	  if(piece == Q_PROMO) { // promotion, encoded as (Q_PROMO, to) + (piece, promoType)
+	    piece = (++move)->piece;
+	    from = pieceList[piece];
+	    counts[pieceType[piece]]--;
+	    pieceType[piece] = (ChessSquare) move->to;
+	    counts[move->to]++;
+	  } else if(piece == Q_EP) { // e.p. capture, encoded as (Q_EP, ep-sqr) + (piece, to)
+	    counts[pieceType[quickBoard[to]]]--;
+	    quickBoard[to] = 0;
+	    move++;
+	    continue;
+	  } else if(piece <= Q_BCASTL) { // castling, encoded as (Q_XCASTL, king-to) + (rook, rook-to)
+	    from = pieceList[piece]; // first two elements of pieceList contain initial King positions
+	    piece = quickBoard[from]; // so this must be King
+	    quickBoard[from] = 0;
+	    quickBoard[to] = piece;
+	    pieceList[piece] = to;
+	    continue;
+	  }
+	}
+	if(appData.searchMode > 2) counts[pieceType[quickBoard[to]]]--; // account capture
+	quickBoard[from] = 0;
+	quickBoard[to] = piece;
+	pieceList[piece] = to;
+	if(QuickCompare(soughtBoard, soughtCounts, maxSought)) return TRUE;
+	move++;
+    } while(1);
+}
+
 GameInfo dummyInfo;
 
 int GameContainsPosition(FILE *f, ListGame *lg)
@@ -11182,44 +11306,30 @@ int GameContainsPosition(FILE *f, ListGame *lg)
     char promoChar;
     static int initDone=FALSE;
 
+    // weed out games based on numerical tag comparison
+    if(lg->gameInfo.variant != gameInfo.variant) return -1; // wrong variant
+    if(appData.eloThreshold1 && (lg->gameInfo.whiteRating < appData.eloThreshold1 && lg->gameInfo.blackRating < appData.eloThreshold1)) return -1;
+    if(appData.eloThreshold2 && (lg->gameInfo.whiteRating < appData.eloThreshold2 || lg->gameInfo.blackRating < appData.eloThreshold2)) return -1;
+    if(appData.dateThreshold && (!lg->gameInfo.date || atoi(lg->gameInfo.date) < appData.dateThreshold)) return -1;
     if(!initDone) {
 	for(next = WhitePawn; next<EmptySquare; next++) keys[next] = random()>>8 ^ random()<<6 ^random()<<20;
 	initDone = TRUE;
     }
-    dummyInfo.variant = VariantNormal;
-    FREE(dummyInfo.fen); dummyInfo.fen = NULL;
-    dummyInfo.whiteRating = 0;
-    dummyInfo.blackRating = 0;
-    FREE(dummyInfo.date); dummyInfo.date = NULL;
+    if(lg->gameInfo.fen) ParseFEN(boards[scratch], &btm, lg->gameInfo.fen);
+    else CopyBoard(boards[scratch], initialPosition); // default start position
+    if(lg->moves && !QuickScan( boards[scratch], &moveDatabase[lg->moves] )) return -1; // quick scan rules out it is there
+    if(btm) CopyBoard(boards[scratch+1], boards[scratch]), plyNr++;
+    if(PositionMatches(boards[scratch + plyNr], boards[currentMove])) return plyNr;
     fseek(f, lg->offset, 0);
     yynewfile(f);
-    CopyBoard(boards[scratch], initialPosition); // default start position
     while(1) {
 	yyboardindex = scratch + (plyNr&1);
-      quickFlag = 1;
+	quickFlag = 1;
 	next = Myylex();
-      quickFlag = 0;
+	quickFlag = 0;
 	switch(next) {
 	    case PGNTag:
 		if(plyNr) return -1; // after we have seen moves, any tags will be start of next game
-#if 0
-		ParsePGNTag(yy_text, &dummyInfo); // this has a bad memory leak...
-		if(dummyInfo.fen) ParseFEN(boards[scratch], &btm, dummyInfo.fen), free(dummyInfo.fen), dummyInfo.fen = NULL;
-#else
-		// do it ourselves avoiding malloc
-		{ char *p = yy_text+1, *q;
-		  while(!isdigit(*p) && !isalpha(*p)) p++;
-		  q  = p; while(*p != ' ' && *p != '\t' && *p != '\n') p++;
-		  *p = NULLCHAR;
-		  if(!StrCaseCmp(q, "Date") && (p = strchr(p+1, '"'))) { if(atoi(p+1) < appData.dateThreshold) return -1; } else
-		  if(!StrCaseCmp(q, "Variant")  &&  (p = strchr(p+1, '"'))) dummyInfo.variant = StringToVariant(p+1); else
-		  if(!StrCaseCmp(q, "WhiteElo")  && (p = strchr(p+1, '"'))) dummyInfo.whiteRating = atoi(p+1); else
-		  if(!StrCaseCmp(q, "BlackElo")  && (p = strchr(p+1, '"'))) dummyInfo.blackRating = atoi(p+1); else
-		  if(!StrCaseCmp(q, "WhiteUSCF") && (p = strchr(p+1, '"'))) dummyInfo.whiteRating = atoi(p+1); else
-		  if(!StrCaseCmp(q, "BlackUSCF") && (p = strchr(p+1, '"'))) dummyInfo.blackRating = atoi(p+1); else
-		  if(!StrCaseCmp(q, "FEN")  && (p = strchr(p+1, '"'))) ParseFEN(boards[scratch], &btm, p+1);
-		}
-#endif
 	    default:
 		continue;
 
@@ -11274,14 +11384,6 @@ int GameContainsPosition(FILE *f, ListGame *lg)
 		break;
 	}
 	// Move encountered; peform it. We need to shuttle between two boards, as even/odd index determines side to move
-	if(plyNr == 0) { // but first figure out variant and initial position
-	    if(dummyInfo.variant != gameInfo.variant) return -1; // wrong variant
-	    if(appData.eloThreshold1 && (dummyInfo.whiteRating < appData.eloThreshold1 && dummyInfo.blackRating < appData.eloThreshold1)) return -1;
-	    if(appData.eloThreshold2 && (dummyInfo.whiteRating < appData.eloThreshold2 || dummyInfo.blackRating < appData.eloThreshold2)) return -1;
-	    if(appData.dateThreshold && (!dummyInfo.date || atoi(dummyInfo.date) < appData.dateThreshold)) return -1;
-	    if(btm) CopyBoard(boards[scratch+1], boards[scratch]), plyNr++;
-	    if(PositionMatches(boards[scratch + plyNr], boards[currentMove])) return plyNr;
-	}
 	CopyBoard(boards[scratch + (plyNr+1&1)], boards[scratch + (plyNr&1)]);
 	plyNr++;
 	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch + (plyNr&1)]);

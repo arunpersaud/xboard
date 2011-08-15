@@ -326,12 +326,19 @@ GameListCreate(name, callback, client_data)
     return shell;
 }
 
+extern int soughtCounts[];
+extern Board soughtBoard;
+
 static int
 GameListPrepare(int byPos)
 {   // [HGM] filter: put in separate routine, to make callable from call-back
     int nstrings;
     ListGame *lg;
     char **st, *line;
+struct {
+    long sec;  /* Assuming this is >= 32 bits */
+    int ms;    /* Assuming this is >= 16 bits */
+} t,t2; GetTimeMark(&t);
 
     if(st = glc->strings) while(*st) free(*st++);
     nstrings = ((ListGame *) gameList.tailPred)->number;
@@ -339,6 +346,7 @@ GameListPrepare(int byPos)
     st = glc->strings;
     lg = (ListGame *) gameList.head;
     listLength = wins = losses = draws = 0;
+    if(byPos) MakePieceList(boards[currentMove], soughtCounts), CopyBoard(soughtBoard, boards[currentMove]);
     while (nstrings--) {
 	int pos = -1;
 	line = GameListLine(lg->number, &lg->gameInfo);
@@ -357,6 +365,7 @@ GameListPrepare(int byPos)
 	lg->position = pos;
 	lg = (ListGame *) lg->node.succ;
      }
+GetTimeMark(&t2);printf("GameListPrepare %d msec\n", SubtractTimeMarks(&t2,&t));
      DisplayTitle("XBoard");
     *st = NULL;
     return listLength;

@@ -47,7 +47,9 @@
 /* Variables
  */
 List gameList;
-
+extern Board initialPosition;
+extern int quickFlag;
+extern int movePtr;
 
 /* Local function prototypes
  */
@@ -212,18 +214,22 @@ int GameListBuild(f)
     ChessMove cm, lastStart;
     int gameNumber;
     ListGame *currentListGame = NULL;
-    int error;
+    int error, scratch=100, plyNr=0, fromX, fromY, toX, toY;
     int offset;
     char lastComment[MSG_SIZ], buf[MSG_SIZ];
-
+struct {
+    long sec;  /* Assuming this is >= 32 bits */
+    int ms;    /* Assuming this is >= 16 bits */
+} t,t2; GetTimeMark(&t);
     GameListFree(&gameList);
     yynewfile(f);
     gameNumber = 0;
+    quickFlag = 1;
 
     lastStart = (ChessMove) 0;
     yyskipmoves = FALSE;
     do {
-        yyboardindex = 0;
+        yyboardindex = scratch + (plyNr & 1);
 	offset = yyoffset();
 	cm = (ChessMove) Myylex();
 	switch (cm) {
@@ -285,10 +291,13 @@ int GameListBuild(f)
 		    ParsePGNTag(yy_text, &currentListGame->gameInfo);
 		}
 	    } while (cm == PGNTag || cm == Comment);
-	    break;
+	    if(1) { CopyBoard(boards[scratch], initialPosition); plyNr = 0; currentListGame->moves = PackGame(boards[scratch]); }
+	    if(cm != NormalMove) break;
+	  case IllegalMove:
+		if(appData.testLegality) break;
 	  case NormalMove:
 	    /* Allow the first game to start with an unnumbered move */
-	    yyskipmoves = TRUE;
+	    yyskipmoves = FALSE;
 	    if (lastStart == (ChessMove) 0) {
 	      if ((error = GameListNewGame(&currentListGame))) {
 		rewind(f);
@@ -299,6 +308,32 @@ int GameListBuild(f)
 	      currentListGame->offset = offset;
 	      lastStart = MoveNumberOne;
 	    }
+	  case WhiteCapturesEnPassant:
+	  case BlackCapturesEnPassant:
+	  case WhitePromotion:
+	  case BlackPromotion:
+	  case WhiteNonPromotion:
+	  case BlackNonPromotion:
+	  case WhiteKingSideCastle:
+	  case WhiteQueenSideCastle:
+	  case BlackKingSideCastle:
+	  case BlackQueenSideCastle:
+	  case WhiteKingSideCastleWild:
+	  case WhiteQueenSideCastleWild:
+	  case BlackKingSideCastleWild:
+	  case BlackQueenSideCastleWild:
+	  case WhiteHSideCastleFR:
+	  case WhiteASideCastleFR:
+	  case BlackHSideCastleFR:
+	  case BlackASideCastleFR:
+		fromX = currentMoveString[0] - AAA;
+		fromY = currentMoveString[1] - ONE;
+		toX = currentMoveString[2] - AAA;
+		toY = currentMoveString[3] - ONE;
+		CopyBoard(boards[scratch + (plyNr+1&1)], boards[scratch + (plyNr&1)]);
+		plyNr++;
+		ApplyMove(fromX, fromY, toX, toY, currentMoveString[4], boards[scratch + (plyNr&1)]);
+		PackMove(fromX, fromY, toX, toY, currentMoveString[4]);
 	    break;
         case WhiteWins: // [HGM] rescom: save last comment as result details
         case BlackWins:
@@ -334,7 +369,8 @@ int GameListBuild(f)
 	    PrintPGNTags(debugFP, &currentListGame->gameInfo);
 	}
     }
-
+GetTimeMark(&t2);printf("GameListBuild %d msec\n", SubtractTimeMarks(&t2,&t));
+    quickFlag = 0;
     DisplayTitle("WinBoard");
     rewind(f);
     yyskipmoves = FALSE;
