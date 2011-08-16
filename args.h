@@ -639,6 +639,8 @@ ArgDescriptor argDescriptors[] = {
   { "eloThresholdBoth", ArgInt, (void *) &appData.eloThreshold2, FALSE, (ArgIniType) 0 },
   { "dateThreshold", ArgInt, (void *) &appData.dateThreshold, FALSE, (ArgIniType) 0 },
   { "searchMode", ArgInt, (void *) &appData.searchMode, FALSE, (ArgIniType) 1 },
+  { "stretch", ArgInt, (void *) &appData.stretch, FALSE, (ArgIniType) 1 },
+  { "ignoreColors", ArgBoolean, (void *) &appData.ignoreColors, FALSE, FALSE },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

@@ -346,7 +346,7 @@ struct {
     st = glc->strings;
     lg = (ListGame *) gameList.head;
     listLength = wins = losses = draws = 0;
-    if(byPos) MakePieceList(boards[currentMove], soughtCounts), CopyBoard(soughtBoard, boards[currentMove]);
+    if(byPos) InitSearch();
     while (nstrings--) {
 	int pos = -1;
 	line = GameListLine(lg->number, &lg->gameInfo);

@@ -224,6 +224,7 @@ struct {
     GameListFree(&gameList);
     yynewfile(f);
     gameNumber = 0;
+    movePtr = 0;
 
     lastStart = (ChessMove) 0;
     yyskipmoves = FALSE;
@@ -241,6 +242,7 @@ struct {
 	    }
 	    currentListGame->number = ++gameNumber;
 	    currentListGame->offset = offset;
+	    if(1) { CopyBoard(boards[scratch], initialPosition); plyNr = 0; currentListGame->moves = PackGame(boards[scratch]); }
 	    if (currentListGame->gameInfo.event != NULL) {
 		free(currentListGame->gameInfo.event);
 	    }
@@ -267,6 +269,7 @@ struct {
 		}
 		currentListGame->number = ++gameNumber;
 		currentListGame->offset = offset;
+		if(1) { CopyBoard(boards[scratch], initialPosition); plyNr = 0; currentListGame->moves = PackGame(boards[scratch]); }
 		lastStart = cm;
 		break;
 	      default:
@@ -291,7 +294,13 @@ struct {
 		    ParsePGNTag(yy_text, &currentListGame->gameInfo);
 		}
 	    } while (cm == PGNTag || cm == Comment);
-	    if(1) { CopyBoard(boards[scratch], initialPosition); plyNr = 0; currentListGame->moves = PackGame(boards[scratch]); }
+	    if(1) {
+		int btm=0;
+		if(currentListGame->gameInfo.fen) ParseFEN(boards[scratch], &btm, currentListGame->gameInfo.fen);
+		else CopyBoard(boards[scratch], initialPosition);
+		plyNr = (btm != 0);
+		currentListGame->moves = PackGame(boards[scratch]);
+	    }
 	    if(cm != NormalMove) break;
 	  case IllegalMove:
 		if(appData.testLegality) break;
@@ -306,6 +315,7 @@ struct {
 	      }
 	      currentListGame->number = ++gameNumber;
 	      currentListGame->offset = offset;
+	      if(1) { CopyBoard(boards[scratch], initialPosition); plyNr = 0; currentListGame->moves = PackGame(boards[scratch]); }
 	      lastStart = MoveNumberOne;
 	    }
 	  case WhiteCapturesEnPassant:
@@ -332,7 +342,7 @@ struct {
 		toY = currentMoveString[3] - ONE;
 		plyNr++;
 		ApplyMove(fromX, fromY, toX, toY, currentMoveString[4], boards[scratch]);
-		PackMove(fromX, fromY, toX, toY, currentMoveString[4]);
+		if(currentListGame->moves) PackMove(fromX, fromY, toX, toY, boards[scratch][toY][toX]);
 	    break;
         case WhiteWins: // [HGM] rescom: save last comment as result details
         case BlackWins:
@@ -358,6 +368,8 @@ struct {
     }
     while (cm != (ChessMove) 0);
 
+    if(!currentListGame->moves) DisplayError("Game cache overflowed\nPosition-searching might not work properly", 0);
+
     if (appData.debugMode) {
 	for (currentListGame = (ListGame *) gameList.head;
 	     currentListGame->node.succ;
@@ -370,6 +382,7 @@ struct {
     }
 GetTimeMark(&t2);printf("GameListBuild %d msec\n", SubtractTimeMarks(&t2,&t));
     quickFlag = 0;
+    PackGame(boards[scratch]); // for appending end-of-game marker.
     DisplayTitle("WinBoard");
     rewind(f);
     yyskipmoves = FALSE;

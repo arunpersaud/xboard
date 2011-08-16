@@ -86,6 +86,8 @@ static int GameListToListBox( HWND hDlg, BOOL boReset, char * pszFilter, struct 
         }
     }
 
+    if(byPos) InitSearch();
+
     for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){
         char * st = NULL;
         BOOL skip = FALSE;

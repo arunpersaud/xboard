@@ -11175,20 +11175,22 @@ PositionMatches(Board b1, Board b2)
 
 #define Q_PROMO  4
 #define Q_EP     3
-#define Q_WCASTL 2
-#define Q_BCASTL 1
+#define Q_BCASTL 2
+#define Q_WCASTL 1
 
 int pieceList[256], quickBoard[256];
 ChessSquare pieceType[256] = { EmptySquare };
 Board soughtBoard, reverseBoard;
-int counts[EmptySquare], soughtCounts[EmptySquare], reverseCounts[EmptySquare], maxSought[EmptySquare], maxReverse[EmptySquare];
+int counts[EmptySquare], minSought[EmptySquare], minReverse[EmptySquare], maxSought[EmptySquare], maxReverse[EmptySquare];
+Boolean epOK;
 
 typedef struct {
     unsigned char piece, to;
 } Move;
 
-Move moveDatabase[4000000];
-int movePtr = 0;
+#define DATABASESIZE 10000000 /* good for 100k games */
+Move moveDatabase[DATABASESIZE];
+int movePtr;
 
 void MakePieceList(Board board, int *counts)
 {
@@ -11201,20 +11203,42 @@ void MakePieceList(Board board, int *counts)
 	    pieceList[n] = sq;
 	    pieceType[n] = board[r][f];
 	    counts[board[r][f]]++;
-	    if(board[r][f] == WhiteKing) pieceList[1] = sq; else
-	    if(board[r][f] == BlackKing) pieceList[2] = sq; // remember where Kings start, for castling
+	    if(board[r][f] == WhiteKing) pieceList[1] = n; else
+	    if(board[r][f] == BlackKing) pieceList[2] = n; // remember which are Kings, for castling
 	}
     }
+    epOK = gameInfo.variant != VariantXiangqi && gameInfo.variant != VariantBerolina;
 }
 
-void PackMove(int fromX, int fromY, int toX, int toY, char promoChar)
+void PackMove(int fromX, int fromY, int toX, int toY, ChessSquare promoPiece)
 {
     int sq = fromX + (fromY<<4);
     int piece = quickBoard[sq];
     quickBoard[sq] = 0;
     moveDatabase[movePtr].to = pieceList[piece] = sq = toX + (toY<<4);
-    if(promoChar) {
-	
+    if(piece == pieceList[1] && fromY == toY && (toX > fromX+1 || toX < fromX-1) && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1) {
+	int from = toX>fromX ? BOARD_RGHT-1 : BOARD_LEFT;
+	moveDatabase[movePtr++].piece = Q_WCASTL;
+	quickBoard[sq] = piece;
+	piece = quickBoard[from]; quickBoard[from] = 0;
+	moveDatabase[movePtr].to = pieceList[piece] = sq = toX>fromX ? sq-1 : sq+1;
+    } else
+    if(piece == pieceList[2] && fromY == toY && (toX > fromX+1 || toX < fromX-1) && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1) {
+	int from = (toX>fromX ? BOARD_RGHT-1 : BOARD_LEFT) + (BOARD_HEIGHT-1 <<4);
+	moveDatabase[movePtr++].piece = Q_BCASTL;
+	quickBoard[sq] = piece;
+	piece = quickBoard[from]; quickBoard[from] = 0;
+	moveDatabase[movePtr].to = pieceList[piece] = sq = toX>fromX ? sq-1 : sq+1;
+    } else
+    if(epOK && (pieceType[piece] == WhitePawn || pieceType[piece] == BlackPawn) && fromX != toX && quickBoard[sq] == 0) {
+	quickBoard[(fromY<<4)+toX] = 0;
+	moveDatabase[movePtr].piece = Q_EP;
+	moveDatabase[movePtr++].to = (fromY<<4)+toX;
+	moveDatabase[movePtr].to = sq;
+    } else
+    if(promoPiece != pieceType[piece]) {
+	moveDatabase[movePtr++].piece = Q_PROMO;
+	moveDatabase[movePtr].to = pieceType[piece] = (int) promoPiece;
     }
     moveDatabase[movePtr].piece = piece;
     quickBoard[sq] = piece;
@@ -11223,12 +11247,14 @@ void PackMove(int fromX, int fromY, int toX, int toY, char promoChar)
 
 int PackGame(Board board)
 {
-    moveDatabase[movePtr++].piece = 0; // terminate previous game
+    moveDatabase[movePtr].piece = 0; // terminate previous game
+    if(movePtr > DATABASESIZE - 500) return 0; // gamble on that game will not be more than 250 moves
+    movePtr++;
     MakePieceList(board, counts);
     return movePtr;
 }
 
-int QuickCompare(Board board, int *counts, int *maxCounts)
+int QuickCompare(Board board, int *minCounts, int *maxCounts)
 {   // compare according to search mode
     int r, f;
     switch(appData.searchMode)
@@ -11250,24 +11276,26 @@ int QuickCompare(Board board, int *counts, int *maxCounts)
 	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
 	} // fall through to material comparison
       case 4: // exact material
-	for(r=0; r<EmptySquare; r++) if(counts[r] != soughtCounts[r]) return FALSE;
+	for(r=0; r<EmptySquare; r++) if(counts[r] != maxCounts[r]) return FALSE;
 	return TRUE;
-      case 5: // material range with given imbalance
-	for(r=0; r<EmptySquare; r++) if(counts[r] < soughtCounts[r] || counts[r] > maxCounts[r]) return FALSE;
-      case 6: // material range
-	for(r=0; r<EmptySquare; r++) if(counts[r] < soughtCounts[r] || counts[r] > maxCounts[r]) return FALSE;
+      case 6: // material range with given imbalance
+	for(r=0; r<BlackPawn; r++) if(counts[r] - minCounts[r] != counts[r+BlackPawn] - minCounts[r+BlackPawn]) return FALSE;
+	// fall through to range comparison
+      case 5: // material range
+	for(r=0; r<EmptySquare; r++) if(counts[r] < minCounts[r] || counts[r] > maxCounts[r]) return FALSE;
 	return TRUE;
     }
 }
 
 int QuickScan(Board board, Move *move)
 {   // reconstruct game,and compare all positions in it
+    int cnt=0, stretch=0;
     MakePieceList(board, counts);
     do {
 	int piece = move->piece;
 	int to = move->to, from = pieceList[piece];
 	if(piece <= Q_PROMO) { // special moves encoded by otherwise invalid piece numbers 1-4
-	  if(!piece) return FALSE;
+	  if(!piece) return -1;
 	  if(piece == Q_PROMO) { // promotion, encoded as (Q_PROMO, to) + (piece, promoType)
 	    piece = (++move)->piece;
 	    from = pieceList[piece];
@@ -11280,11 +11308,12 @@ int QuickScan(Board board, Move *move)
 	    move++;
 	    continue;
 	  } else if(piece <= Q_BCASTL) { // castling, encoded as (Q_XCASTL, king-to) + (rook, rook-to)
-	    from = pieceList[piece]; // first two elements of pieceList contain initial King positions
-	    piece = quickBoard[from]; // so this must be King
+	    piece = pieceList[piece]; // first two elements of pieceList contain King numbers
+	    from  = pieceList[piece]; // so this must be King
 	    quickBoard[from] = 0;
 	    quickBoard[to] = piece;
 	    pieceList[piece] = to;
+	    move++;
 	    continue;
 	  }
 	}
@@ -11292,9 +11321,37 @@ int QuickScan(Board board, Move *move)
 	quickBoard[from] = 0;
 	quickBoard[to] = piece;
 	pieceList[piece] = to;
-	if(QuickCompare(soughtBoard, soughtCounts, maxSought)) return TRUE;
+	cnt++;
+	if(QuickCompare(soughtBoard, minSought, maxSought) ||
+	   appData.ignoreColors && QuickCompare(reverseBoard, minReverse, maxReverse)) {
+	    static int lastCounts[EmptySquare+1];
+	    int i;
+	    if(stretch) for(i=0; i<EmptySquare; i++) if(lastCounts[i] != counts[i]) { stretch = 0; break; } // reset if material changes
+	    if(stretch++ == 0) for(i=0; i<EmptySquare; i++) lastCounts[i] = counts[i]; // remember actual material
+	} else stretch = 0;
+	if(stretch && (appData.searchMode == 1 || stretch >= appData.stretch)) return cnt + 1 - stretch;
 	move++;
     } while(1);
+}
+
+InitSearch()
+{
+    int r, f;
+    CopyBoard(soughtBoard, boards[currentMove]);
+    MakePieceList(soughtBoard, maxSought);
+    CopyBoard(reverseBoard, boards[currentMove]);
+    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	int piece = boards[currentMove][BOARD_HEIGHT-1-r][f];
+	if(piece < BlackPawn) piece += BlackPawn; else if(piece < EmptySquare) piece -= BlackPawn; // color-flip
+	reverseBoard[r][f] = piece;
+    }
+    for(r=0; r<6; r++) reverseBoard[CASTLING][r] = boards[currentMove][CASTLING][(r+3)%6];
+    for(r=0; r<BlackPawn; r++) maxReverse[r] = maxSought[r+BlackPawn], maxReverse[r+BlackPawn] = maxSought[r];
+    if(appData.searchMode >= 5) {
+	for(r=BOARD_HEIGHT/2; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) soughtBoard[r][f] = EmptySquare;
+	MakePieceList(soughtBoard, minSought);
+	for(r=0; r<BlackPawn; r++) minReverse[r] = minSought[r+BlackPawn], minReverse[r+BlackPawn] = minSought[r];
+    }
 }
 
 GameInfo dummyInfo;
@@ -11317,7 +11374,10 @@ int GameContainsPosition(FILE *f, ListGame *lg)
     }
     if(lg->gameInfo.fen) ParseFEN(boards[scratch], &btm, lg->gameInfo.fen);
     else CopyBoard(boards[scratch], initialPosition); // default start position
-    if(lg->moves && !QuickScan( boards[scratch], &moveDatabase[lg->moves] )) return -1; // quick scan rules out it is there
+    if(lg->moves) {
+	if((next = QuickScan( boards[scratch], &moveDatabase[lg->moves] )) < 0) return -1; // quick scan rules out it is there
+	if(appData.searchMode >= 4) return next; // for material searches, trust QuickScan.
+    }
     if(btm) plyNr++;
     if(PositionMatches(boards[scratch], boards[currentMove])) return plyNr;
     fseek(f, lg->offset, 0);
@@ -11387,6 +11447,7 @@ int GameContainsPosition(FILE *f, ListGame *lg)
 	plyNr++;
 	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch]);
 	if(PositionMatches(boards[scratch], boards[currentMove])) return plyNr;
+	if(appData.ignoreColors && PositionMatches(boards[scratch], reverseBoard)) return plyNr;
     }
 }
 

@@ -569,8 +569,9 @@ Option icsOptions[] = {
 { 0, 0, 0, NULL, (void*) &IcsOptionsOK, "", NULL, EndMark , "" }
 };
 
-char *modeNames[] = { N_("Exact match"), N_("Shown position is subset"), N_("Same material and Pawn chain"), N_("Same material"), NULL };
-char *modeValues[] = { "1", "2", "3", "4" };
+char *modeNames[] = { N_("Exact position match"), N_("Shown position is subset"), N_("Same material with exactly same Pawn chain"), 
+		      N_("Same material"), N_("Material range (top board half optional)"), N_("Material difference (optional stuff balanced)"), NULL };
+char *modeValues[] = { "1", "2", "3", "4", "5", "6" };
 char *searchMode;
 
 int LoadOptionsOK()
@@ -589,6 +590,8 @@ Option loadOptions[] = {
 { 0, 0, 5000, NULL, (void*) &appData.eloThreshold2, "", NULL, Spin, N_("Elo of weakest player at least:") },
 { 0, 0, 5000, NULL, (void*) &appData.dateThreshold, "", NULL, Spin, N_("No games before year:") },
 { 1, 0, 180, NULL, (void*) &searchMode, (char*) modeNames, modeValues, ComboBox, N_("Seach mode:") },
+{ 0, 0, 0, NULL, (void*) &appData.ignoreColors, "", NULL, CheckBox, N_("Also match reversed colors") },
+{ 0, 1, 50, NULL, (void*) &appData.stretch, "", NULL, Spin, N_("Minimum nr consecutive positions:") },
 { 0,  0, 0, NULL, (void*) &LoadOptionsOK, "", NULL, EndMark , "" }
 };
 

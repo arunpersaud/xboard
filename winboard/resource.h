@@ -612,6 +612,12 @@
 #define OPT_Subset                      1966
 #define OPT_Struct                      1967
 #define OPT_Material                    1968
+#define OPT_Range                       1969
+#define OPT_Difference                  1970
+#define OPT_Stretch                     1971
+#define OPT_Stretcht                    1972
+#define OPT_Reversed                    1973
+#define OPT_SearchMode                  1974
 #define OPT_Bitmaps                     1976
 #define OPT_PieceFont                   1977
 #define OPT_MessageFont8                1978
