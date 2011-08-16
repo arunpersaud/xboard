@@ -87,9 +87,12 @@ static int GetPvScore( int index )
 
 char* MakeEvalTitle( char * title)
 {
-    int score = currPvInfo[ currCurrent ].score;
-    int depth = currPvInfo[ currCurrent ].depth;
+    int score, depth;
     static char buf[MSG_SIZ];
+
+    if( currCurrent <0 ) return title; // currCurrent = -1 crashed WB on start without ini file!
+    score = currPvInfo[ currCurrent ].score;
+    depth = currPvInfo[ currCurrent ].depth;
 
     if( depth <=0 ) return title;
     if( currCurrent & 1 ) score = -score; /* Flip score for black */
