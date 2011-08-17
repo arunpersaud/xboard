@@ -11180,9 +11180,9 @@ PositionMatches(Board b1, Board b2)
 
 int pieceList[256], quickBoard[256];
 ChessSquare pieceType[256] = { EmptySquare };
-Board soughtBoard, reverseBoard;
+Board soughtBoard, reverseBoard, flipBoard, rotateBoard;
 int counts[EmptySquare], minSought[EmptySquare], minReverse[EmptySquare], maxSought[EmptySquare], maxReverse[EmptySquare];
-Boolean epOK;
+Boolean epOK, flipSearch;
 
 typedef struct {
     unsigned char piece, to;
@@ -11323,7 +11323,10 @@ int QuickScan(Board board, Move *move)
 	pieceList[piece] = to;
 	cnt++;
 	if(QuickCompare(soughtBoard, minSought, maxSought) ||
-	   appData.ignoreColors && QuickCompare(reverseBoard, minReverse, maxReverse)) {
+	   appData.ignoreColors && QuickCompare(reverseBoard, minReverse, maxReverse) ||
+	   flipSearch && (QuickCompare(flipBoard, minSought, maxSought) ||
+				appData.ignoreColors && QuickCompare(rotateBoard, minReverse, maxReverse))
+	  ) {
 	    static int lastCounts[EmptySquare+1];
 	    int i;
 	    if(stretch) for(i=0; i<EmptySquare; i++) if(lastCounts[i] != counts[i]) { stretch = 0; break; } // reset if material changes
@@ -11337,6 +11340,7 @@ int QuickScan(Board board, Move *move)
 InitSearch()
 {
     int r, f;
+    flipSearch = FALSE;
     CopyBoard(soughtBoard, boards[currentMove]);
     MakePieceList(soughtBoard, maxSought);
     CopyBoard(reverseBoard, boards[currentMove]);
@@ -11346,6 +11350,20 @@ InitSearch()
 	reverseBoard[r][f] = piece;
     }
     for(r=0; r<6; r++) reverseBoard[CASTLING][r] = boards[currentMove][CASTLING][(r+3)%6];
+    if(appData.findMirror && appData.searchMode <= 3 && (!nrCastlingRights
+		 || (boards[currentMove][CASTLING][2] == NoRights || 
+		     boards[currentMove][CASTLING][0] == NoRights && boards[currentMove][CASTLING][1] == NoRights )
+		 && (boards[currentMove][CASTLING][5] == NoRights || 
+		     boards[currentMove][CASTLING][3] == NoRights && boards[currentMove][CASTLING][4] == NoRights ) )
+      ) {
+	flipSearch = TRUE;
+	CopyBoard(flipBoard, soughtBoard);
+	CopyBoard(rotateBoard, reverseBoard);
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	    flipBoard[r][f]    = soughtBoard[r][BOARD_WIDTH-1-f];
+	    rotateBoard[r][f] = reverseBoard[r][BOARD_WIDTH-1-f];
+	}
+    }
     for(r=0; r<BlackPawn; r++) maxReverse[r] = maxSought[r+BlackPawn], maxReverse[r+BlackPawn] = maxSought[r];
     if(appData.searchMode >= 5) {
 	for(r=BOARD_HEIGHT/2; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) soughtBoard[r][f] = EmptySquare;
@@ -11448,6 +11466,10 @@ int GameContainsPosition(FILE *f, ListGame *lg)
 	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch]);
 	if(PositionMatches(boards[scratch], boards[currentMove])) return plyNr;
 	if(appData.ignoreColors && PositionMatches(boards[scratch], reverseBoard)) return plyNr;
+	if(appData.findMirror) {
+	    if(PositionMatches(boards[scratch], flipBoard)) return plyNr;
+	    if(appData.ignoreColors && PositionMatches(boards[scratch], rotateBoard)) return plyNr;
+	}
     }
 }
 

@@ -618,6 +618,7 @@
 #define OPT_Stretcht                    1972
 #define OPT_Reversed                    1973
 #define OPT_SearchMode                  1974
+#define OPT_Mirror                      1975
 #define OPT_Bitmaps                     1976
 #define OPT_PieceFont                   1977
 #define OPT_MessageFont8                1978

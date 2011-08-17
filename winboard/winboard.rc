@@ -90,7 +90,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,195,190,40,14
 END
 
-DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 170, 248
+DLG_LoadOptions DIALOG DISCARDABLE  10, 18, 170, 261
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Load Game Options"
 FONT 8, "MS Sans Serif"
@@ -123,8 +123,10 @@ BEGIN
     GROUPBOX        "Search Mode: ",OPT_SearchMode,3,126,164,87,WS_GROUP
     CONTROL         "Also match reversed colors",OPT_Reversed,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,214,160,10
-    PUSHBUTTON      "OK",IDOK,56,229,50,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,112,229,50,14
+    CONTROL         "Also match left-right miror image",OPT_Mirror,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,227,160,10
+    PUSHBUTTON      "OK",IDOK,56,242,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,112,242,50,14
 END
 
 DLG_SaveOptions DIALOG DISCARDABLE  6, 17, 178, 119

@@ -641,6 +641,7 @@ ArgDescriptor argDescriptors[] = {
   { "searchMode", ArgInt, (void *) &appData.searchMode, FALSE, (ArgIniType) 1 },
   { "stretch", ArgInt, (void *) &appData.stretch, FALSE, (ArgIniType) 1 },
   { "ignoreColors", ArgBoolean, (void *) &appData.ignoreColors, FALSE, FALSE },
+  { "findMirrorImage", ArgBoolean, (void *) &appData.findMirror, FALSE, FALSE },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },

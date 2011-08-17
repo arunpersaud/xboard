@@ -2482,6 +2482,7 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     SetDlgItemInt(hDlg, OPT_date, appData.dateThreshold, FALSE);
     SetDlgItemInt(hDlg, OPT_Stretch, appData.stretch, FALSE);
     CheckDlgButton(hDlg, OPT_Reversed, appData.ignoreColors);
+    CheckDlgButton(hDlg, OPT_Mirror, appData.findMirror);
     switch (appData.searchMode) {
     case 1:
       CheckDlgButton(hDlg, OPT_Exact, TRUE);
@@ -2525,6 +2526,7 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.stretch = GetDlgItemInt(hDlg, OPT_Stretch, &ok, FALSE);
       appData.searchMode = LoadOptionsWhichRadio(hDlg);
       appData.ignoreColors = IsDlgButtonChecked(hDlg, OPT_Reversed);
+      appData.findMirror   = IsDlgButtonChecked(hDlg, OPT_Mirror);
       EndDialog(hDlg, TRUE);
       return TRUE;
 
