@@ -253,7 +253,7 @@ int dialogItems[][41	] = {
 { ABOUTBOX, IDOK, OPT_MESS, 400 }, 
 { DLG_TimeControl, IDC_Babble, OPT_TCUseMoves, OPT_TCUseInc, OPT_TCUseFixed, 
   OPT_TCtext1, OPT_TCtext2, OPT_TCitext1, OPT_TCitext2, OPT_TCftext, GPB_Factors,   IDC_Factor1, IDC_Factor2, IDOK, IDCANCEL }, 
-{ DLG_LoadOptions, OPT_Autostep, OPT_AStext1, 
+{ DLG_LoadOptions, OPT_Autostep, OPT_AStext1, OPT_Exact, OPT_Subset, OPT_Struct, OPT_Material, 
   OPT_elo1, OPT_elo2, OPT_date, IDOK, IDCANCEL }, 
 { DLG_SaveOptions, OPT_Autosave, OPT_AVPrompt, OPT_AVToFile, OPT_AVBrowse,
   801, OPT_PGN, OPT_Old, OPT_OutOfBookInfo, IDOK, IDCANCEL }, 
