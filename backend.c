@@ -11141,7 +11141,7 @@ int GameContainsPosition(FILE *f, ListGame *lg)
     static int initDone=FALSE;
 
     if(!initDone) {
-	for(next = WhitePawn; next<EmptySquare; next++) keys[next] = rand()>>8 ^ rand()<<6 ^rand()<<20;
+	for(next = WhitePawn; next<EmptySquare; next++) keys[next] = random()>>8 ^ random()<<6 ^random()<<20;
 	initDone = TRUE;
     }
     dummyInfo.variant = VariantNormal;

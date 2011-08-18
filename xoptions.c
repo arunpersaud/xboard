@@ -1670,7 +1670,7 @@ Option shuffleOptions[] = {
 
 void SetRandom(int n)
 {
-    int r = n==2 ? -1 : rand() & (1<<30)-1;
+    int r = n==2 ? -1 : random() & (1<<30)-1;
     char buf[MSG_SIZ];
     snprintf(buf, MSG_SIZ,  "%d", r);
     SetWidgetText(&shuffleOptions[1], buf, 0);
