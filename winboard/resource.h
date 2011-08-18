@@ -612,6 +612,11 @@
 #define OPT_Subset                      1966
 #define OPT_Struct                      1967
 #define OPT_Material                    1968
+#define OPT_Bitmaps                     1976
+#define OPT_PieceFont                   1977
+#define OPT_MessageFont8                1978
+#define OPT_SamplePieceFont             1979
+#define OPT_ChoosePieceFont             1980
 
 
 // Next default values for new objects

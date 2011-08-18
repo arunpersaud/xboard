@@ -630,9 +630,13 @@ BEGIN
     CONTROL         "Monochrome",OPT_Monochrome,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,210,64,10
     CONTROL         "All White",OPT_AllWhite,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,140,180,73,10
+                    WS_TABSTOP,140,179,73,10
     CONTROL         "Flip Black",OPT_UpsideDown,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,140,192,73,10
+                    WS_TABSTOP,140,191,73,10
+    CONTROL         "Use Board Textures",OPT_Bitmaps,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,140,203,73,10
+    CONTROL         "Use Piece Font",OPT_PieceFont,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,140,215,73,10
     PUSHBUTTON      "Defaults",OPT_DefaultBoardColors,80,206,50,15
     EDITTEXT        OPT_DarkSquareColor,80,112,25,15,ES_READONLY | 
                     WS_DISABLED | NOT WS_BORDER | NOT WS_TABSTOP
@@ -743,13 +747,13 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,170,232,50,14
 END
 
-DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 250
+DLG_Fonts DIALOG DISCARDABLE  0, 0, 266, 274
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Fonts"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,156,232,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,212,232,50,14
+    DEFPUSHBUTTON   "OK",IDOK,156,256,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,212,256,50,14
     PUSHBUTTON      "Choose...",OPT_ChooseClockFont,212,15,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseMessageFont,212,39,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseCoordFont,212,63,45,15
@@ -758,7 +762,8 @@ BEGIN
     PUSHBUTTON      "Choose...",OPT_ChooseConsoleFont,212,149,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseMoveHistoryFont,212,174,45,15
     PUSHBUTTON      "Choose...",OPT_ChooseGameListFont,212,198,45,15
-    PUSHBUTTON      "&Defaults",OPT_DefaultFonts,3,232,50,15
+    PUSHBUTTON      "Choose...",OPT_ChoosePieceFont,212,222,45,15
+    PUSHBUTTON      "&Defaults",OPT_DefaultFonts,3,256,50,15
     CONTROL         "",OPT_SampleCoordFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,77,59,130,20
     CONTROL         "",OPT_SampleTagFont,"RICHEDIT",ES_READONLY | 
@@ -779,7 +784,7 @@ BEGIN
     CONTROL         "",OPT_SampleMessageFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,77,35,130,20
     GROUPBOX        "Current Board Size",GPB_Current,3,1,259,83
-    GROUPBOX        "All Board Sizes",GPB_All,3,87,259,133
+    GROUPBOX        "All Board Sizes",GPB_All,3,87,259,157
     CONTROL         "",OPT_SampleMoveHistoryFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,77,170,130,20
     LTEXT           "Move History, Engine Output",OPT_MessageFont6,13,171,63,20,NOT 
@@ -787,6 +792,10 @@ BEGIN
     CONTROL         "",OPT_SampleGameListFont,"RICHEDIT",ES_READONLY | 
                     WS_DISABLED | WS_BORDER,77,194,130,20
     LTEXT           "Game List",OPT_MessageFont7,13,199,63,20,NOT 
+                    WS_GROUP
+    CONTROL         "",OPT_SamplePieceFont,"RICHEDIT", ES_AUTOHSCROLL | 
+                    WS_BORDER,77,218,130,20
+    LTEXT           "Piece Font",OPT_MessageFont8,13,223,63,20,NOT 
                     WS_GROUP
 END
 

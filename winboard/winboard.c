@@ -249,11 +249,11 @@ Boolean barbaric; // flag indicating if translation is needed
 #define ABOUTBOX -1  /* not sure why these are needed */
 #define ABOUTBOX2 -1
 
-int dialogItems[][40] = {
+int dialogItems[][41	] = {
 { ABOUTBOX, IDOK, OPT_MESS, 400 }, 
 { DLG_TimeControl, IDC_Babble, OPT_TCUseMoves, OPT_TCUseInc, OPT_TCUseFixed, 
   OPT_TCtext1, OPT_TCtext2, OPT_TCitext1, OPT_TCitext2, OPT_TCftext, GPB_Factors,   IDC_Factor1, IDC_Factor2, IDOK, IDCANCEL }, 
-{ DLG_LoadOptions, OPT_Autostep, OPT_AStext1, IDOK, IDCANCEL }, 
+{ DLG_LoadOptions, OPT_Autostep, OPT_AStext1, IDOK, IDCANCEL },
 { DLG_SaveOptions, OPT_Autosave, OPT_AVPrompt, OPT_AVToFile, OPT_AVBrowse,
   801, OPT_PGN, OPT_Old, OPT_OutOfBookInfo, IDOK, IDCANCEL }, 
 { 1536, 1090, IDC_Directories, 1089, 1091, IDOK, IDCANCEL, 1038, IDC_IndexNr, 1037 }, 
@@ -301,7 +301,7 @@ int dialogItems[][40] = {
   OPT_ChooseLightSquareColor, OPT_ChooseDarkSquareColor, OPT_ChooseWhitePieceColor,
   OPT_ChooseBlackPieceColor, OPT_ChooseHighlightSquareColor, OPT_ChoosePremoveHighlightColor,
   OPT_Monochrome, OPT_AllWhite, OPT_UpsideDown, OPT_DefaultBoardColors, GPB_Colors,
-  IDC_Light, IDC_Dark, IDC_White, IDC_Black, IDC_High, IDC_PreHigh, GPB_Size }, 
+  IDC_Light, IDC_Dark, IDC_White, IDC_Black, IDC_High, IDC_PreHigh, GPB_Size, OPT_Bitmaps, OPT_PieceFont }, 
 { DLG_NewVariant, IDOK, IDCANCEL, OPT_VariantNormal, OPT_VariantFRC, OPT_VariantWildcastle,
   OPT_VariantNocastle, OPT_VariantLosers, OPT_VariantGiveaway, OPT_VariantSuicide,
   OPT_Variant3Check, OPT_VariantTwoKings, OPT_VariantAtomic, OPT_VariantCrazyhouse,
@@ -313,7 +313,7 @@ int dialogItems[][40] = {
   IDC_Width, IDC_Hand, IDC_Pieces, IDC_Def }, 
 { DLG_Fonts, IDOK, IDCANCEL, OPT_ChooseClockFont, OPT_ChooseMessageFont,
   OPT_ChooseCoordFont, OPT_ChooseTagFont, OPT_ChooseCommentsFont,  OPT_ChooseConsoleFont, OPT_ChooseMoveHistoryFont, OPT_DefaultFonts,
-  OPT_ClockFont, OPT_MessageFont, OPT_CoordFont, OPT_EditTagsFont,
+  OPT_ClockFont, OPT_MessageFont, OPT_CoordFont, OPT_EditTagsFont, OPT_ChoosePieceFont, OPT_MessageFont8,
   OPT_SampleGameListFont, OPT_ChooseGameListFont, OPT_MessageFont7, 
   OPT_CommentsFont, OPT_MessageFont5, GPB_Current, GPB_All, OPT_MessageFont6 }, 
 { DLG_NewGameFRC, IDC_NFG_Label, IDC_NFG_Random, IDOK, IDCANCEL }, 
@@ -984,6 +984,31 @@ LoadLogo(ChessProgramState *cps, int n, Boolean ics)
   SetCurrentDirectory(dir); /* return to prev directory */
 }
 
+VOID
+InitTextures()
+{
+  ZeroMemory( &backTextureSquareInfo, sizeof(backTextureSquareInfo) );
+  backTextureSquareSize = 0; // kludge to force recalculation of texturemode
+  
+  if( appData.liteBackTextureFile && appData.liteBackTextureFile[0] != NULLCHAR && appData.liteBackTextureFile[0] != '*' ) {
+      liteBackTexture = LoadImage( 0, appData.liteBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+      liteBackTextureMode = appData.liteBackTextureMode;
+
+      if (liteBackTexture == NULL && appData.debugMode) {
+          fprintf( debugFP, "Unable to load lite texture bitmap '%s'\n", appData.liteBackTextureFile );
+      }
+  }
+  
+  if( appData.darkBackTextureFile && appData.darkBackTextureFile[0] != NULLCHAR && appData.darkBackTextureFile[0] != '*' ) {
+      darkBackTexture = LoadImage( 0, appData.darkBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
+      darkBackTextureMode = appData.darkBackTextureMode;
+
+      if (darkBackTexture == NULL && appData.debugMode) {
+          fprintf( debugFP, "Unable to load dark texture bitmap '%s'\n", appData.darkBackTextureFile );
+      }
+  }
+}
+
 BOOL
 InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
 {
@@ -1067,25 +1092,7 @@ InitInstance(HINSTANCE hInstance, int nCmdShow, LPSTR lpCmdLine)
   buttonCount = GetSystemMetrics(SM_CMOUSEBUTTONS);
 
   /* [AS] Load textures if specified */
-  ZeroMemory( &backTextureSquareInfo, sizeof(backTextureSquareInfo) );
-  
-  if( appData.liteBackTextureFile && appData.liteBackTextureFile[0] != NULLCHAR && appData.liteBackTextureFile[0] != '*' ) {
-      liteBackTexture = LoadImage( 0, appData.liteBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
-      liteBackTextureMode = appData.liteBackTextureMode;
-
-      if (liteBackTexture == NULL && appData.debugMode) {
-          fprintf( debugFP, "Unable to load lite texture bitmap '%s'\n", appData.liteBackTextureFile );
-      }
-  }
-  
-  if( appData.darkBackTextureFile && appData.darkBackTextureFile[0] != NULLCHAR && appData.darkBackTextureFile[0] != '*' ) {
-      darkBackTexture = LoadImage( 0, appData.darkBackTextureFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE );
-      darkBackTextureMode = appData.darkBackTextureMode;
-
-      if (darkBackTexture == NULL && appData.debugMode) {
-          fprintf( debugFP, "Unable to load dark texture bitmap '%s'\n", appData.darkBackTextureFile );
-      }
-  }
+  InitTextures();
 
   mysrandom( (unsigned) time(NULL) );
 
@@ -1973,7 +1980,8 @@ void CreatePiecesFromFont()
         return;
     }
 
-    if( appData.renderPiecesWithFont == NULL || appData.renderPiecesWithFont[0] == NULLCHAR || appData.renderPiecesWithFont[0] == '*' ) {
+    if( !appData.useFont || appData.renderPiecesWithFont == NULL ||
+            appData.renderPiecesWithFont[0] == NULLCHAR || appData.renderPiecesWithFont[0] == '*' ) {
         fontBitmapSquareSize = -1;
         return;
     }
@@ -3322,7 +3330,7 @@ DrawBoardOnDC(HDC hdc, Board board, HDC tmphdc)
           DrawPieceOnDC(hdc, piece, piece_color, square_color, x, y, tmphdc);
         }
       } 
-      else if( backTextureSquareInfo[row][column].mode > 0 ) {
+      else if( appData.useBitmaps && backTextureSquareInfo[row][column].mode > 0 ) {
           /* [AS] Draw the square using a texture bitmap */
           HBITMAP hbm = SelectObject( texture_hdc, square_color ? liteBackTexture : darkBackTexture );
 	  int r = row, c = column; // [HGM] do not flip board in flipView

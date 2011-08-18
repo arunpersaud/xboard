@@ -3601,7 +3601,7 @@ void CreateXPMBoard(char *s, int kind)
 {
     XpmAttributes attr;
     attr.valuemask = 0;
-    if(s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
+    if(!appData.useBitmaps || s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
     if (XpmReadFileToPixmap(xDisplay, xBoardWindow, s, &(xpmBoardBitmap[kind]), NULL, &attr) == 0) {
 	useTexture |= kind + 1; textureW[kind] = attr.width; textureH[kind] = attr.height;
     }

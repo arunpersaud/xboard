@@ -516,7 +516,7 @@ BoardOptionsWhichRadio(HWND hDlg)
 LRESULT CALLBACK
 BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  static Boolean  mono, white, flip;
+  static Boolean  mono, white, flip, fonts, bitmaps;
   static BoardSize size;
   static COLORREF lsc, dsc, wpc, bpc, hsc, phc;
   static HBITMAP pieces[3];
@@ -593,6 +593,12 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     if (appData.upsideDown)
       CheckDlgButton(hDlg, OPT_UpsideDown, TRUE);
 
+    if (appData.useBitmaps)
+      CheckDlgButton(hDlg, OPT_Bitmaps, TRUE);
+
+    if (appData.useFont)
+      CheckDlgButton(hDlg, OPT_PieceFont, TRUE);
+
     pieces[0] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "s");
     pieces[1] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "w");
     pieces[2] = DoLoadBitmap(hInst, "n", SAMPLE_SQ_SIZE, "o");
@@ -607,6 +613,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     white= appData.allWhite;
     flip = appData.upsideDown;
     size = boardSize;
+    bitmaps = appData.useBitmaps;
+    fonts = appData.useFont;
 
     SetBoardOptionEnables(hDlg);
     return TRUE;
@@ -644,6 +652,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	ChangeBoardSize(size);
       }
 
+      if (bitmaps && !appData.useBitmaps) InitTextures();
+
       if ((mono != appData.monoMode) ||
 	  (lsc  != lightSquareColor) ||
 	  (dsc  != darkSquareColor) ||
@@ -652,6 +662,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  (hsc  != highlightSquareColor) ||
           (flip != appData.upsideDown) ||
           (white != appData.allWhite) ||
+          (fonts != appData.useFont) ||
+          (bitmaps != appData.useBitmaps) ||
 	  (phc  != premoveHighlightColor)) {
 
 	  lightSquareColor = lsc;
@@ -663,6 +675,8 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	  appData.monoMode = mono;
           appData.allWhite = white;
           appData.upsideDown = flip;
+          appData.useFont = fonts;
+          appData.useBitmaps = bitmaps;
 
 	  InitDrawingColors();
 	  InitDrawingSizes(boardSize, 0);
@@ -755,12 +769,18 @@ BoardOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     case OPT_AllWhite:
       white = !white;
-      SetBoardOptionEnables(hDlg);
       break;
 
     case OPT_UpsideDown:
       flip = !flip;
-      SetBoardOptionEnables(hDlg);
+      break;
+
+    case OPT_Bitmaps:
+      bitmaps = !bitmaps;
+      break;
+
+    case OPT_PieceFont:
+      fonts = !fonts;
       break;
     }
     break;
@@ -1434,6 +1454,8 @@ IcsOptionsPopup(HWND hwnd)
  *
 \*---------------------------------------------------------------------------*/
 
+char *string; // sorry
+
 VOID
 SetSampleFontText(HWND hwnd, int id, const MyFont *mf)
 {
@@ -1451,7 +1473,9 @@ SetSampleFontText(HWND hwnd, int id, const MyFont *mf)
 		 mf->mfp.pointSize, mf->mfp.faceName,
 		 mf->mfp.bold ? " bold" : "",
 		 mf->mfp.italic ? " italic" : "");
+ if(id != OPT_SamplePieceFont)
   SetDlgItemText(hwnd, id, buf);
+ else SetDlgItemText(hwnd, id, string);
 
   hControl = GetDlgItem(hwnd, id);
   hdc = GetDC(hControl);
@@ -1488,6 +1512,7 @@ SetSampleFontText(HWND hwnd, int id, const MyFont *mf)
 
   /* format the text in the rich edit control */
   SendMessage(hControl, EM_SETCHARFORMAT, SCF_ALL, (LPARAM) &cf);
+ if(id != OPT_SamplePieceFont)
   SendMessage(hControl, EM_SETRECT, (WPARAM)0, (LPARAM) &rectFormat);
 
   /* clean up */
@@ -1512,8 +1537,9 @@ CopyFont(MyFont *dest, const MyFont *src)
 LRESULT CALLBACK
 FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  static MyFont workFont[NUM_FONTS];
+  static MyFont workFont[NUM_FONTS+1];
   static BOOL firstPaint;
+  static char pieceText[] = "ABCDEFGHIJKLMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz";
   int i;
   RECT rect;
 
@@ -1523,6 +1549,9 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     /* copy the current font settings into a working copy */
     for (i=0; i < NUM_FONTS; i++)
       CopyFont(&workFont[i], font[boardSize][i]);
+    strncpy(workFont[NUM_FONTS].mfp.faceName, appData.renderPiecesWithFont, sizeof(workFont[NUM_FONTS].mfp.faceName));
+    workFont[NUM_FONTS].mfp.pointSize = 16.;
+    workFont[NUM_FONTS].mfp.charset = DEFAULT_CHARSET;
 
     Translate(hDlg, DLG_Fonts);
     if (!appData.icsActive)
@@ -1552,6 +1581,8 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       SetSampleFontText(hDlg, OPT_SampleConsoleFont, &workFont[CONSOLE_FONT]);
       SetSampleFontText(hDlg, OPT_SampleMoveHistoryFont, &workFont[MOVEHISTORY_FONT]);
       SetSampleFontText(hDlg, OPT_SampleGameListFont, &workFont[GAMELIST_FONT]);
+      string = appData.fontToPieceTable;
+      SetSampleFontText(hDlg, OPT_SamplePieceFont, &workFont[NUM_FONTS]);
       firstPaint = FALSE;
     }
     break;
@@ -1566,6 +1597,13 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       /* copy modified settings back to the fonts array */
       for (i=0; i < NUM_FONTS; i++)
 	CopyFont(font[boardSize][i], &workFont[i]);
+
+      { // Make new piece-to-char table
+	char buf[MSG_SIZ];
+	GetDlgItemText(hDlg, OPT_SamplePieceFont, buf, MSG_SIZ);
+	ASSIGN(appData.fontToPieceTable, buf);
+      }
+      ASSIGN(appData.renderPiecesWithFont, workFont[NUM_FONTS].mfp.faceName); // piece font
 
       /* a sad necessity due to the original design of having a separate
        * console font, tags font, and comment font for each board size.  IMHO
@@ -1673,6 +1711,12 @@ FontOptionsDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case OPT_ChooseGameListFont:
       MyCreateFont(hDlg, &workFont[GAMELIST_FONT]);
       SetSampleFontText(hDlg, OPT_SampleGameListFont, &workFont[GAMELIST_FONT]);
+      break;
+
+    case OPT_ChoosePieceFont:
+      MyCreateFont(hDlg, &workFont[NUM_FONTS]);
+      string = pieceText;
+      SetSampleFontText(hDlg, OPT_SamplePieceFont, &workFont[NUM_FONTS]);
       break;
 
     case OPT_DefaultFonts:
