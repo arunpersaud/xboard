@@ -669,6 +669,7 @@ typedef struct {
     char *participants;
     int tourneyType;
     int tourneyCycles;
+    int seedBase;
     Boolean roundSync;
     Boolean cycleSync;
 } AppData, *AppDataPtr;

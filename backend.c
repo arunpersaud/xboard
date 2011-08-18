@@ -981,6 +981,7 @@ InitBackEnd1()
 
     GetTimeMark(&programStartTime);
     srandom((programStartTime.ms + 1000*programStartTime.sec)*0x1001001); // [HGM] book: makes sure random is unpredictabe to msec level
+    appData.seedBase = random() + (random()<<15);
     pauseStart = programStartTime; pauseStart.sec -= 100; // [HGM] matchpause: fake a pause that has long since ended
 
     ClearProgramStats();
@@ -9726,6 +9727,7 @@ WriteTourneyFile(char *results, FILE *f)
     if(f == NULL) DisplayError(_("Could not write on tourney file"), 0); else {
 	// create a file with tournament description
 	fprintf(f, "-participants {%s}\n", appData.participants);
+	fprintf(f, "-seedBase %d\n", appData.seedBase);
 	fprintf(f, "-tourneyType %d\n", appData.tourneyType);
 	fprintf(f, "-tourneyCycles %d\n", appData.tourneyCycles);
 	fprintf(f, "-defaultMatchGames %d\n", appData.defaultMatchGames);
@@ -10026,6 +10028,7 @@ NextMatchGame()
     first.twoMachinesColor =  firstWhite ? "white\n" : "black\n";   // perform actual color assignement
     second.twoMachinesColor = firstWhite ? "black\n" : "white\n";
     appData.noChessProgram = (first.pr == NoProc); // kludge to prevent Reset from starting up chess program
+    if(appData.loadGameIndex == -2) srandom(appData.seedBase + 68163*(nextGame & ~1)); // deterministic seed to force same opening
     Reset(FALSE, first.pr != NoProc);
     appData.noChessProgram = FALSE;
     if(!LoadGameOrPosition(matchGame)) return; // setup game; abort when bad game/pos file

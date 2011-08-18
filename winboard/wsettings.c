@@ -694,6 +694,7 @@ char *tfName;
 int MatchOK()
 {
     if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1);
+    if(!appData.loadGameFile[0]) appData.loadGameIndex = -2*twice; // kludge to pass value of "twice" for use in GUI book
     if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
     if(CreateTourney(tfName) && !matchMode) { // CreateTourney reloads original settings if file already existed
 	MatchEvent(2);
@@ -771,7 +772,7 @@ void TourneyPopup(HWND hwnd)
     NamesToList(firstChessProgramNames, engineList, engineMnemonic);
     comboCallback = &AddToTourney;
     autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
-    twice = TRUE; swiss = appData.tourneyType < 0;
+    twice = FALSE; swiss = appData.tourneyType < 0;
     while(engineList[n]) n++; tourneyOptions[3].max = n-1;
     snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
     ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
