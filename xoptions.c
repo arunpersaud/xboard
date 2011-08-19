@@ -1327,7 +1327,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
 	int n = currentCps->nrOptions;
 	if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
 	height = n / width + 1;
-	if(currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton) currentOption[n].min = 1; // OK on same line
+	if(n && currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton) currentOption[n].min = 1; // OK on same line
 	currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
     }
      i = 0;
