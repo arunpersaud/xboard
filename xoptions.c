@@ -140,7 +140,7 @@ void ShuffleCallback(w, client_data, call_data)
         return;
     }
     if (strcmp(name, _("random")) == 0) {
-      snprintf(buf, MSG_SIZ,  "%d", rand());
+      snprintf(buf, MSG_SIZ,  "%d", (int) random());
 	XtSetArg(args[0],XtNvalue, buf); // erase bad (non-numeric) value
 	XtSetValues(XtParent(w), args, 1);
         return;
