@@ -8918,6 +8918,7 @@ ParseGameHistory(game)
 	    break;
 	  case WhiteDrop:
 	  case BlackDrop:
+	    if(currentMoveString[0] == '@') continue; // no null moves in ICS mode!
 	    fromX = moveType == WhiteDrop ?
 	      (int) CharToPiece(ToUpper(currentMoveString[0])) :
 	    (int) CharToPiece(ToLower(currentMoveString[0]));
