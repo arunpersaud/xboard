@@ -109,6 +109,8 @@ char gameListTranslations[] =
 char filterTranslations[] =
   "<Key>Return: SetFilterProc() \n";
 
+char *dummyList[] = { N_("no games matched your request"), NULL };
+
 typedef struct {
     Widget shell;
     Position x, y;
@@ -351,7 +353,7 @@ GameListReplace()
   Widget listwidg;
 
   listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-  XawListChange(listwidg, glc->strings, 0, 0, True);
+  XawListChange(listwidg, listLength ? glc->strings : dummyList, 0, 0, True);
   XawListHighlight(listwidg, 0);
 }
 
@@ -405,7 +407,7 @@ GameListCallback(w, client_data, call_data)
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
 	XawListHighlight(listwidg, 0);
-        if(GameListPrepare()) GameListReplace(); // crashes on empty list...
+        GameListPrepare(); GameListReplace();
         return;
     }
 #if 0
@@ -536,6 +538,7 @@ LoadSelectedProc(w, event, prms, nprms)
 	XawListHighlight(listwidg, index);
 	return;
     }
+    if(!glc->strings[index]) return;
     index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
     if (cmailMsgLoaded) {
 	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
@@ -558,7 +561,7 @@ SetFilterProc(w, event, prms, nprms)
         XtSetArg(args[j], XtNstring, &name);  j++;
 	XtGetValues(filterText, args, j);
         safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-        if(GameListPrepare()) GameListReplace(); // crashes on empty list...
+        GameListPrepare(); GameListReplace();
 	list = XtNameToWidget(glc->shell, "*form.viewport.list");
 	XawListHighlight(list, 0);
         j = 0;
