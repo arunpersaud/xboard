@@ -11188,9 +11188,11 @@ typedef struct {
     unsigned char piece, to;
 } Move;
 
-#define DATABASESIZE 10000000 /* good for 100k games */
-Move moveDatabase[DATABASESIZE];
-int movePtr;
+#define DSIZE (250000)
+
+Move initialSpace[DSIZE+1000]; // gamble on that game will not be more than 500 moves
+Move *moveDatabase = initialSpace;
+unsigned int movePtr, dataSize = DSIZE;
 
 void MakePieceList(Board board, int *counts)
 {
@@ -11247,8 +11249,23 @@ void PackMove(int fromX, int fromY, int toX, int toY, ChessSquare promoPiece)
 
 int PackGame(Board board)
 {
+    Move *newSpace = NULL;
     moveDatabase[movePtr].piece = 0; // terminate previous game
-    if(movePtr > DATABASESIZE - 500) return 0; // gamble on that game will not be more than 250 moves
+    if(movePtr > dataSize) {
+	if(appData.debugMode) fprintf(debugFP, "move-cache overflow, enlarge to %d MB\n", dataSize/128);
+	dataSize *= 8; // increase size by factor 8 (512KB -> 4MB -> 32MB -> 256MB -> 2GB)
+	if(dataSize) newSpace = (Move*) calloc(8*dataSize + 1000, sizeof(Move));
+	if(newSpace) {
+	    int i;
+	    Move *p = moveDatabase, *q = newSpace;
+	    for(i=0; i<movePtr; i++) *q++ = *p++;    // copy to newly allocated space
+	    if(dataSize > 8*DSIZE) free(moveDatabase); // and free old space (if it was allocated)
+	    moveDatabase = newSpace;
+	} else { // calloc failed, we must be out of memory. Too bad...
+	    dataSize = 0; // prevent calloc events for all subsequent games
+	    return 0;     // and signal this one isn't cached
+	}
+    }
     movePtr++;
     MakePieceList(board, counts);
     return movePtr;
