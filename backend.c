@@ -12881,6 +12881,7 @@ AnalyzeFileEvent()
     StartAnalysisClock();
     GetTimeMark(&lastNodeCountTime);
     lastNodeCount = 0;
+    if(appData.timeDelay > 0) StartLoadGameTimer((long)(1000.0 * appData.timeDelay));
 }
 
 void

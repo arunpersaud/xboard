@@ -683,7 +683,7 @@ MenuItem modeMenu[] = {
     {N_("Machine Black  Ctrl+B"), "Machine Black", MachineBlackProc},
     {N_("Two Machines   Ctrl+T"), "Two Machines", TwoMachinesProc},
     {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", AnalyzeModeProc},
-    {N_("Analyze File      Ctrl+F"), "Analyze File", AnalyzeFileProc },
+    {N_("Analyze Game   Ctrl+G"), "Analyze File", AnalyzeFileProc },
     {N_("Edit Game         Ctrl+E"), "Edit Game", EditGameProc},
     {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", EditPositionProc},
     {N_("Training"),      "Training", TrainingProc},
@@ -1067,7 +1067,7 @@ char globalTranslations[] =
    :Ctrl<Key>b: MachineBlackProc() \n \
    :Ctrl<Key>t: TwoMachinesProc() \n \
    :Ctrl<Key>a: AnalysisModeProc() \n \
-   :Ctrl<Key>f: AnalyzeFileProc() \n \
+   :Ctrl<Key>g: AnalyzeFileProc() \n \
    :Ctrl<Key>e: EditGameProc() \n \
    :Ctrl<Key>E: EditPositionProc() \n \
    :Meta<Key>O: EngineOutputProc() \n \
@@ -5939,13 +5939,13 @@ void AnalyzeFileProc(w, event, prms, nprms)
       DisplayError(buf, 0);
       return;
     }
-    Reset(FALSE, TRUE);
+//    Reset(FALSE, TRUE);
 #ifndef OPTIONSDIALOG
     if (!appData.showThinking)
       ShowThinkingProc(w,event,prms,nprms);
 #endif
     AnalyzeFileEvent();
-    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
+//    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
     AnalysisPeriodicEvent(1);
 }
 

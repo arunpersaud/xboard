@@ -4925,7 +4925,7 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       } else {
 	if (!appData.showThinking) ToggleShowThinking();
 	AnalyzeFileEvent();
-	LoadGameDialog(hwnd, _("Analyze Game from File"));
+//	LoadGameDialog(hwnd, _("Analyze Game from File"));
 	AnalysisPeriodicEvent(1);
       }
       break;
