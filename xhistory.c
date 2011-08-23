@@ -23,7 +23,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
