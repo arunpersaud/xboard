@@ -14738,7 +14738,7 @@ char *GetInfoFromComment( int index, char * text )
             while( *++sep >= '0' && *sep <= '9'); // strip seconds
             if(deci >= 0)
             while( *++sep >= '0' && *sep <= '9'); // strip fractional seconds
-            while(*sep == ' ') sep++;
+            while(*sep == ' ' || *sep == '\n' || *sep == '\r') sep++;
         }
 
         if( depth <= 0 ) {
