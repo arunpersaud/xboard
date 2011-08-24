@@ -907,8 +907,8 @@ Load(ChessProgramState *cps, int i)
 	appData.directory[i] = strdup(engineName);
 	p[-1] = SLASH;
     } else appData.directory[i] = ".";
-    if(strchr(p, ' ') && !strchr(p, '"')) snprintf(buf2, MSG_SIZ, "\"%s\"", p), p = buf2; // quote if it contains spaces
     if(params[0]) {
+	if(strchr(p, ' ') && !strchr(p, '"')) snprintf(buf2, MSG_SIZ, "\"%s\"", p), p = buf2; // quote if it contains spaces
 	snprintf(command, MSG_SIZ, "%s %s", p, params);
 	p = command;
     }
