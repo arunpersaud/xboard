@@ -8268,7 +8268,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	if (StrStr(message, "analyze")) {
 	    cps->analysisSupport = FALSE;
 	    cps->analyzing = FALSE;
-	    Reset(FALSE, TRUE);
+//	    Reset(FALSE, TRUE); // [HGM] this caused discrepancy between display and internal state!
+	    EditGameEvent(); // [HGM] try to preserve loaded game
 	    snprintf(buf2,MSG_SIZ, _("%s does not support analysis"), cps->tidy);
 	    DisplayError(buf2, 0);
 	    return;
