@@ -301,7 +301,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       SendDlgItemMessage(hDlg, OPT_GameListText, LB_SETCURSEL, nItem, 0);
       break; /* load the game*/
 
-//    case OPT_GameListPrev:
+    case OPT_GameListPrev:
       nItem = SendDlgItemMessage(hDlg, OPT_GameListText, LB_GETCURSEL, 0, 0);
       nItem--;
       if (nItem < 0) {
@@ -313,7 +313,7 @@ GameListDialog(HWND hDlg, UINT message,	WPARAM wParam, LPARAM lParam)
       break; /* load the game*/
 
     /* [AS] */
-    case OPT_GameListPrev:
+    case OPT_GameListFind:
     case IDC_GameListDoFilter:
         {
             char filter[MAX_FILTER_LENGTH+1];

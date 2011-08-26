@@ -267,8 +267,9 @@ BEGIN
     LISTBOX         OPT_GameListText,2,2,254,130,LBS_NOINTEGRALHEIGHT | 
                     WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
     PUSHBUTTON      "&Thresholds",OPT_GameListLoad,2,136,40,15
-    PUSHBUTTON      "&Find Position",OPT_GameListPrev,45,136,48,15
+    PUSHBUTTON      "&Find Position",OPT_GameListFind,45,136,48,15
     PUSHBUTTON      "&Close",OPT_GameListClose,96,136,30,15
+    PUSHBUTTON      ">",OPT_GameListNext,129,136,17,15
     PUSHBUTTON      "&Filter",IDC_GameListDoFilter,149,136,25,14
     EDITTEXT        IDC_GameListFilter,178,136,78,14,ES_AUTOHSCROLL
 END
@@ -1530,6 +1531,8 @@ BEGIN
     VK_RIGHT,       IDM_Forward,            VIRTKEY, NOINVERT
     VK_DOWN,        IDM_ToEnd,              VIRTKEY, NOINVERT
     VK_UP,          IDM_ToStart,            VIRTKEY, NOINVERT
+    VK_DOWN,        OPT_GameListNext,       VIRTKEY, CONTROL, NOINVERT
+    VK_UP,          OPT_GameListPrev,       VIRTKEY, CONTROL, NOINVERT
 #endif
 END
 

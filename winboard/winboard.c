@@ -5063,6 +5063,11 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       SetFocus(hwndMain);
       break;
 
+    case OPT_GameListNext: // [HGM] forward these two accelerators to Game List
+    case OPT_GameListPrev:
+      if(gameListDialog) SendMessage(gameListDialog, WM_COMMAND, wmId, 0);
+      break;
+
     case IDM_Revert:
       RevertEvent(FALSE);
       break;

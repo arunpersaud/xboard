@@ -624,6 +624,7 @@
 #define OPT_MessageFont8                1978
 #define OPT_SamplePieceFont             1979
 #define OPT_ChoosePieceFont             1980
+#define OPT_GameListFind                1981
 
 
 // Next default values for new objects
