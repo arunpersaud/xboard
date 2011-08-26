@@ -11182,6 +11182,7 @@ int pieceList[256], quickBoard[256];
 ChessSquare pieceType[256] = { EmptySquare };
 Board soughtBoard, reverseBoard, flipBoard, rotateBoard;
 int counts[EmptySquare], minSought[EmptySquare], minReverse[EmptySquare], maxSought[EmptySquare], maxReverse[EmptySquare];
+int soughtTotal, turn;
 Boolean epOK, flipSearch;
 
 typedef struct {
@@ -11194,9 +11195,9 @@ Move initialSpace[DSIZE+1000]; // gamble on that game will not be more than 500 
 Move *moveDatabase = initialSpace;
 unsigned int movePtr, dataSize = DSIZE;
 
-void MakePieceList(Board board, int *counts)
+int MakePieceList(Board board, int *counts)
 {
-    int r, f, n=Q_PROMO;
+    int r, f, n=Q_PROMO, total=0;
     for(r=0;r<EmptySquare;r++) counts[r] = 0; // piece-type counts
     for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
 	int sq = f + (r<<4);
@@ -11207,9 +11208,11 @@ void MakePieceList(Board board, int *counts)
 	    counts[board[r][f]]++;
 	    if(board[r][f] == WhiteKing) pieceList[1] = n; else
 	    if(board[r][f] == BlackKing) pieceList[2] = n; // remember which are Kings, for castling
+	    total++;
 	}
     }
     epOK = gameInfo.variant != VariantXiangqi && gameInfo.variant != VariantBerolina;
+    return total;
 }
 
 void PackMove(int fromX, int fromY, int toX, int toY, ChessSquare promoPiece)
@@ -11277,6 +11280,7 @@ int QuickCompare(Board board, int *minCounts, int *maxCounts)
     switch(appData.searchMode)
     {
       case 1: // exact position match
+	if(!(turn & board[EP_STATUS-1])) return FALSE; // wrong side to move
 	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
 	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
 	}
@@ -11306,8 +11310,7 @@ int QuickCompare(Board board, int *minCounts, int *maxCounts)
 
 int QuickScan(Board board, Move *move)
 {   // reconstruct game,and compare all positions in it
-    int cnt=0, stretch=0;
-    MakePieceList(board, counts);
+    int cnt=0, stretch=0, total = MakePieceList(board, counts);
     do {
 	int piece = move->piece;
 	int to = move->to, from = pieceList[piece];
@@ -11321,7 +11324,7 @@ int QuickScan(Board board, Move *move)
 	    counts[move->to]++;
 	  } else if(piece == Q_EP) { // e.p. capture, encoded as (Q_EP, ep-sqr) + (piece, to)
 	    counts[pieceType[quickBoard[to]]]--;
-	    quickBoard[to] = 0;
+	    quickBoard[to] = 0; total--;
 	    move++;
 	    continue;
 	  } else if(piece <= Q_BCASTL) { // castling, encoded as (Q_XCASTL, king-to) + (rook, rook-to)
@@ -11335,10 +11338,11 @@ int QuickScan(Board board, Move *move)
 	  }
 	}
 	if(appData.searchMode > 2) counts[pieceType[quickBoard[to]]]--; // account capture
+	if((total -= (quickBoard[to] != 0)) < soughtTotal) return -1; // piece count dropped below what we search for
 	quickBoard[from] = 0;
 	quickBoard[to] = piece;
 	pieceList[piece] = to;
-	cnt++;
+	cnt++; turn ^= 3;
 	if(QuickCompare(soughtBoard, minSought, maxSought) ||
 	   appData.ignoreColors && QuickCompare(reverseBoard, minReverse, maxReverse) ||
 	   flipSearch && (QuickCompare(flipBoard, minSought, maxSought) ||
@@ -11354,18 +11358,21 @@ int QuickScan(Board board, Move *move)
     } while(1);
 }
 
-InitSearch()
+void InitSearch()
 {
     int r, f;
     flipSearch = FALSE;
     CopyBoard(soughtBoard, boards[currentMove]);
-    MakePieceList(soughtBoard, maxSought);
+    soughtTotal = MakePieceList(soughtBoard, maxSought);
+    soughtBoard[EP_STATUS-1] = (currentMove & 1) + 1;
+    if(currentMove == 0 && gameMode == EditPosition) soughtBoard[EP_STATUS-1] = blackPlaysFirst + 1; // (!)
     CopyBoard(reverseBoard, boards[currentMove]);
     for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
 	int piece = boards[currentMove][BOARD_HEIGHT-1-r][f];
 	if(piece < BlackPawn) piece += BlackPawn; else if(piece < EmptySquare) piece -= BlackPawn; // color-flip
 	reverseBoard[r][f] = piece;
     }
+    reverseBoard[EP_STATUS-1] = soughtBoard[EP_STATUS-1] ^ 3; 
     for(r=0; r<6; r++) reverseBoard[CASTLING][r] = boards[currentMove][CASTLING][(r+3)%6];
     if(appData.findMirror && appData.searchMode <= 3 && (!nrCastlingRights
 		 || (boards[currentMove][CASTLING][2] == NoRights || 
@@ -11387,6 +11394,8 @@ InitSearch()
 	MakePieceList(soughtBoard, minSought);
 	for(r=0; r<BlackPawn; r++) minReverse[r] = minSought[r+BlackPawn], minReverse[r+BlackPawn] = minSought[r];
     }
+    if(gameInfo.variant == VariantCrazyhouse || gameInfo.variant == VariantShogi || gameInfo.variant == VariantBughouse)
+	soughtTotal = 0; // in drop games nr of pieces does not fall monotonously
 }
 
 GameInfo dummyInfo;
@@ -11410,6 +11419,7 @@ int GameContainsPosition(FILE *f, ListGame *lg)
     if(lg->gameInfo.fen) ParseFEN(boards[scratch], &btm, lg->gameInfo.fen);
     else CopyBoard(boards[scratch], initialPosition); // default start position
     if(lg->moves) {
+	turn = btm + 1;
 	if((next = QuickScan( boards[scratch], &moveDatabase[lg->moves] )) < 0) return -1; // quick scan rules out it is there
 	if(appData.searchMode >= 4) return next; // for material searches, trust QuickScan.
     }
