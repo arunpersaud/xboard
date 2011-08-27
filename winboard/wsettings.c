@@ -727,6 +727,26 @@ void UpgradeParticipant(HWND hDlg)
     Substitute(participants, FALSE);
 }
 
+void Inspect(HWND hDlg)
+{
+    FILE *f;
+    char name[MSG_SIZ];
+    GetDlgItemText(hDlg, 2001+2*1, name, MSG_SIZ );
+    if(name && name[0] && (f = fopen(name, "r")) ) {
+	char *saveSaveFile;
+	saveSaveFile = appData.saveGameFile; appData.saveGameFile = NULL; // this is a persistent option, protect from change
+	ParseArgsFromFile(f);
+	autoinc = ((appData.loadPositionFile[0] ? appData.loadGameIndex : appData.loadPositionIndex) < 0);
+	twice = ((appData.loadPositionFile[0] ? appData.loadGameIndex : appData.loadPositionIndex) == -2);
+	swiss = appData.tourneyType < 0;
+	SetOptionValues(hDlg, NULL, activeList);
+	FREE(appData.saveGameFile); appData.saveGameFile = saveSaveFile;
+    }
+}
+
+void TimeControlOptionsPopup P((HWND hDlg));
+void UciOptionsPopup P((HWND hDlg));
+
 Option tourneyOptions[] = {
   { 0,  0,          4, NULL, (void*) &tfName, "", NULL, FileName, N_("Tournament file:") },
   { 30, 0,          0, NULL, NULL, NULL, NULL, Label, N_("If you specify an existing file, the rest of this dialog will be ignored.") },
@@ -750,6 +770,9 @@ Option tourneyOptions[] = {
   { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Games (ms):") },
   { 0,  0,          0, NULL, (void*) &ReplaceParticipant, "", NULL, Button, N_("Replace Engine") },
   { 0,  0,          0, NULL, (void*) &UpgradeParticipant, "", NULL, Button, N_("Upgrade Engine") },
+  { 0,  0,          0, NULL, (void*) &TimeControlOptionsPopup, "", NULL, Button, N_("Time Control...") },
+  { 0,  0,          0, NULL, (void*) &UciOptionsPopup, "", NULL, Button, N_("Common Engine...") },
+  { 0,  0,          0, NULL, (void*) &Inspect, "", NULL, Button, N_("Inspect TourneyFile") },
   { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
