@@ -888,7 +888,7 @@ void
 Load(ChessProgramState *cps, int i)
 {
     char *p, *q, buf[MSG_SIZ], command[MSG_SIZ], buf2[MSG_SIZ];
-    if(engineLine[0]) { // an engine was selected from the combo box
+    if(engineLine && engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
 	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL;
