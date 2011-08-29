@@ -1279,8 +1279,15 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 textview = gtk_text_view_new();
                 textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));                
                 gtk_widget_set_size_request(textview, -1, option[i].min);
-                gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
-                gtk_table_attach_defaults(GTK_TABLE(table), textview, left+1, left+3, top, top+1);
+                /* check if label is empty */ 
+                if (strcmp(option[i].name,"") != 0) {
+                    gtk_table_attach_defaults(GTK_TABLE(table), label, left, left+1, top, top+1);
+                    gtk_table_attach_defaults(GTK_TABLE(table), textview, left+1, left+3, top, top+1);
+                }
+                else {
+                    /* no label so let textview occupy all columns */
+                    gtk_table_attach_defaults(GTK_TABLE(table), textview, left, left+3, top, top+1);
+                } 
                 if ( *(char**)option[i].target != NULL )
                     gtk_text_buffer_set_text (textbuffer, *(char**)option[i].target, -1);
                 else
@@ -1977,7 +1984,8 @@ int NewComCallback(int n)
 
 void SaveChanges(int n)
 {
-    GetWidgetText(&currentOption[0], &commentText);
+    //GenericReadout(0);
+    GenericReadoutGTK(0);
     ReplaceComment(commentIndex, commentText);
 }
 
@@ -1999,9 +2007,93 @@ void ClearTextWidget(Option *opt)
 
 void ClearComment(int n)
 {
-    ClearTextWidget(&commentOptions[0]);
+    //ClearTextWidget(&commentOptions[0]);    
+    gtk_text_buffer_set_text (commentOptions[0].handle, "", -1);
 }
 
+gboolean NewCommentCB(w, eventbutton, gptr)
+     GtkWidget *w;
+     GdkEventButton  *eventbutton;
+     gpointer  gptr;
+{
+    GtkTextBuffer *tb;
+ 
+    /* if not a right-click then propagate to default handler  */
+    if (eventbutton->type != GDK_BUTTON_PRESS || eventbutton->button !=3) return False;
+
+    /* get textbuffer */
+    tb = GTK_TEXT_BUFFER(gptr);
+
+    /* user has right clicked in the textbox */
+    /* call CommentClick in xboard.c */
+    CommentClickGTK(tb);
+
+    return True; /* don't propagate right click to default handler */   
+}
+
+void NewCommentPopup(char *title, char *text, int index)
+{    
+    GtkWidget *textview, *dialog, *w;
+    GList *gl, *g;   
+
+/*
+    if(shellsGTK[1]) { // if already exists, alter title and content
+	//XtSetArg(args[0], XtNtitle, title);
+	//XtSetValues(shells[1], args, 1);
+	//SetWidgetText(&commentOptions[0], text, 1);
+    }
+*/
+
+    if(commentText) free(commentText); commentText = strdup(text);
+    commentIndex = index;
+    MarkMenu("menuView.Show Comments", 1);
+
+    if(!GenericPopUpGTK(commentOptions, title, 1)) return;   
+
+    /* Find the dialogs GtkTextView widget */
+    dialog = shellsGTK[1];
+    w = gtk_dialog_get_content_area(GTK_DIALOG( dialog ));
+    if (!GTK_IS_VBOX(w)) {
+        printf("warning - dialog vbox not found\n");
+        return;
+    }    
+
+    /* get gtkTable */
+    gl = gtk_container_get_children(GTK_CONTAINER(w));
+    w = GTK_WIDGET(gl->data);
+    g_list_free(gl);
+    if (!GTK_IS_TABLE(w)) {
+        printf("warning dialog table not found\n");
+        return;
+    }
+
+    gl = gtk_container_get_children(GTK_CONTAINER(w));
+    //listlen = g_list_length(gl);
+    g = gl;
+    w = NULL;
+    while (g) {       
+        w = GTK_WIDGET(g->data);        
+        if (GTK_IS_TEXT_VIEW(w)) break;        
+        g = g->next;
+    }
+    g_list_free(gl);
+
+    if (!w) {
+        printf("warning dialog textview not found\n");
+        return;
+    }    
+
+    /* connect to TextView so we can check for a right-click */
+    g_signal_connect (GTK_TEXT_VIEW(w), "button-press-event",
+                      G_CALLBACK (NewCommentCB),
+                      (gpointer) commentOptions[0].handle);     
+
+    
+    //if(GenericPopUp(commentOptions, title, 1))
+    //	XtOverrideTranslations(commentOptions[0].handle, XtParseTranslationTable(commentTranslations));
+}
+
+/* old Xt version
 void NewCommentPopup(char *title, char *text, int index)
 {    
     Arg args[16];
@@ -2017,6 +2109,7 @@ void NewCommentPopup(char *title, char *text, int index)
     if(GenericPopUp(commentOptions, title, 1))
 	XtOverrideTranslations(commentOptions[0].handle, XtParseTranslationTable(commentTranslations));
 }
+*/
 
 static char *tagsText;
 

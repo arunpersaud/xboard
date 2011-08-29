@@ -4954,6 +4954,27 @@ void HandlePV (Widget w, XEvent * event,
 
 static int savedIndex;  /* gross that this is global */
 
+void CommentClickGTK(tb)
+    GtkTextBuffer *tb;
+{
+    String val;
+    gint index;
+    GtkTextIter start;
+    GtkTextIter end;	
+
+    /* get cursor position into index */
+    g_object_get(tb, "cursor-position", &index, NULL);
+
+    /* get text from textbuffer */
+    gtk_text_buffer_get_start_iter (tb, &start);
+    gtk_text_buffer_get_end_iter (tb, &end);
+    val = gtk_text_buffer_get_text (tb, &start, &end, FALSE); 
+          
+    ReplaceComment(savedIndex, val);
+    if(savedIndex != currentMove) ToNrEvent(savedIndex);
+    LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
+}
+
 void CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
 {
 	String val;
