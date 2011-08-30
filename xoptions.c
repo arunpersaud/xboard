@@ -1572,9 +1572,18 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
     XQueryKeymap(xDisplay,keys);
     metaL = XKeysymToKeycode(xDisplay, XK_Meta_L);
     metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
-    if ( n == 1 && *buf > 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) // printable, no alt
-	PopUpMoveDialog(*buf);
-
+    if ( n == 1 && *buf >= 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) { // printable, no alt
+	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
+	    if(shells[4]) { // box already exists: append to current contents
+		char *p, newText[MSG_SIZ];
+		GetWidgetText(&boxOptions[0], &p);
+		snprintf(newText, MSG_SIZ, "%s%c", p, *buf);
+		SetWidgetText(&boxOptions[0], newText, 4);
+		if(shellUp[4]) XSetInputFocus(xDisplay, XtWindow(boxOptions[0].handle), RevertToPointerRoot, CurrentTime); //why???
+	    } else icsText = buf; // box did not exist: make sure it pops up with char in it
+	    InputBoxPopup();
+	} else PopUpMoveDialog(*buf);
+    }
 }
 
 void
