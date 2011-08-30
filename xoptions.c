@@ -393,18 +393,9 @@ void AddLine(Option *opt, char *s)
 }
 
 void AddToTourney(int n)
-{
-    String val;
-    int i = 4;
-
-    val = ((char**)currentOption[i].choice)[values[i]];  
-
-    if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
-        if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
-            *(char**) currentOption[i].target = strdup(val);
-    }
-    
+{    
     //GenericReadout(4);  // selected engine
+    GenericReadoutGTK(4);  // selected engine
     AddLine(&matchOptions[3], engineChoice);
 }
 
@@ -693,6 +684,7 @@ char *soundFiles[] = { // sound files corresponding to above names
 void Test(int n)
 {    
     //GenericReadout(2);
+    GenericReadoutGTK(2);
     if(soundFiles[values[3]]) PlaySound(soundFiles[values[3]]);
 }
 
@@ -2073,7 +2065,8 @@ void NewCommentPopup(char *title, char *text, int index)
     w = NULL;
     while (g) {       
         w = GTK_WIDGET(g->data);        
-        if (GTK_IS_TEXT_VIEW(w)) break;        
+        if (GTK_IS_TEXT_VIEW(w)) break;
+        w = NULL;        
         g = g->next;
     }
     g_list_free(gl);
@@ -2121,7 +2114,7 @@ int NewTagsCallback(int n)
 
 void changeTags(int n)
 {
-    GetWidgetText(&currentOption[1], &tagsText);
+    GenericReadoutGTK(1);
     if(bookUp) SaveToBook(tagsText); else
     ReplaceTags(tagsText, &gameInfo);
 }
@@ -2137,6 +2130,23 @@ void NewTagsPopup(char *text, char *msg)
 {    
     Arg args[16];
     char *title = bookUp ? _("Edit book") : _("Tags");
+/*
+    if(shellsGTK[2]) { // if already exists, alter title and content
+	SetWidgetText(&tagsOptions[1], text, 2);
+	XtSetArg(args[0], XtNtitle, title);
+	XtSetValues(shells[2], args, 1);
+    }*/
+    if(tagsText) free(tagsText); tagsText = strdup(text);
+    tagsOptions[0].textValue = msg;
+    MarkMenu("menuView.Show Tags", 2);
+    GenericPopUpGTK(tagsOptions, title, 2);
+}
+
+/* old Xt version
+void NewTagsPopup(char *text, char *msg)
+{    
+    Arg args[16];
+    char *title = bookUp ? _("Edit book") : _("Tags");
 
     if(shells[2]) { // if already exists, alter title and content
 	SetWidgetText(&tagsOptions[1], text, 2);
@@ -2148,6 +2158,7 @@ void NewTagsPopup(char *text, char *msg)
     MarkMenu("menuView.Show Tags", 2);
     GenericPopUp(tagsOptions, title, 2);
 }
+*/
 
 char *icsText;
 
