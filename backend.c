@@ -5140,7 +5140,7 @@ int PromoScroll(int x, int y)
   int step = 0;
 
   if(promoSweep == EmptySquare || !appData.sweepSelect) return FALSE;
-  if(abs(x - lastX) < 15 && abs(y - lastY) < 15) return FALSE;
+  if(abs(x - lastX) < 25 && abs(y - lastY) < 25) return FALSE;
   if( y > lastY + 2 ) step = -1; else if(y < lastY - 2) step = 1;
   if(!step) return FALSE;
   lastX = x; lastY = y;
@@ -5468,11 +5468,11 @@ UnLoadPV()
 void
 MovePV(int x, int y, int h)
 { // step through PV based on mouse coordinates (called on mouse move)
-  int margin = h>>3, step = 0;
+  int margin = h>>3, step = 0, threshold = (pieceSweep == EmptySquare ? 10 : 15);
 
   // we must somehow check if right button is still down (might be released off board!)
   if(endPV < 0 && pieceSweep == EmptySquare) return; // needed in XBoard because lastX/Y is shared :-(
-  if(abs(x - lastX) < 7 && abs(y - lastY) < 7) return;
+  if(abs(x - lastX) < threshold && abs(y - lastY) < threshold) return;
   if( y > lastY + 2 ) step = -1; else if(y < lastY - 2) step = 1;
   if(!step) return;
   lastX = x; lastY = y;
