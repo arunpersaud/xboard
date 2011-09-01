@@ -311,9 +311,9 @@ void AskQuestionReplyAction P((Widget w, XEvent *event,
 void AskQuestionProc P((Widget w, XEvent *event,
 			  String *prms, Cardinal *nprms));
 void AskQuestionPopDown P((void));
-void PromotionPopDown P((void));
-void PromotionCallback P((Widget w, XtPointer client_data,
-			  XtPointer call_data));
+void PromotionPopDownGTK P((void));
+void PromotionCallbackGTK P((GtkWidget *w, GtkResponseType resptype,
+                          gpointer gdata));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
 void ResetProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -505,7 +505,7 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, analysisShell,
   ICSInputShell, fileNameShell, askQuestionShell;
-GtkWidget *errorShell = NULL;
+GtkWidget *errorShell = NULL, *promotionShellGTK;
 Widget historyShell, evalGraphShell, gameListShell;
 int hOffset; // [HGM] dual
 XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
@@ -1038,7 +1038,7 @@ XtActionsRec boardActions[] = {
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
-    { "PromotionPopDown", (XtActionProc) PromotionPopDown },
+   // { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
     { "GenericPopDown", (XtActionProc) GenericPopDown },
@@ -4924,9 +4924,10 @@ void HandleUserMove(w, event, prms, nprms)
 
     if (promotionUp) {
 	if (event->type == ButtonPress) {
-	    XtPopdown(promotionShell);
-	    XtDestroyWidget(promotionShell);
-	    promotionUp = False;
+	    //XtPopdown(promotionShell);
+	    //XtDestroyWidget(promotionShell);
+	    //promotionUp = False;
+	    PromotionPopDownGTK();
 	    ClearHighlights();
 	    fromX = fromY = -1;
 	} else {
@@ -5135,119 +5136,104 @@ void FileNamePopUp(label, def, filter, proc, openMode, action)
 }
 
 void PromotionPopUp()
-{
-    Arg args[16];
-    Widget dialog, layout;
-    Position x, y;
-    Dimension bw_width, pw_width;
-    int j;
+{    
+    GtkWidget *label;
+    GtkWidget *content_area;    
+    
+    promotionShellGTK = gtk_dialog_new();
+    gtk_window_set_title(GTK_WINDOW(promotionShellGTK), "Promotion");
 
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &bw_width); j++;
-    XtGetValues(boardWidget, args, j);
+    content_area = gtk_dialog_get_content_area(GTK_DIALOG(promotionShellGTK));
+    label = gtk_label_new(_("Promote to what?"));
+    gtk_container_add(GTK_CONTAINER(content_area), label);
 
-    j = 0;
-    XtSetArg(args[j], XtNresizable, True); j++;
-    XtSetArg(args[j], XtNtitle, XtNewString(_("Promotion"))); j++;
-    promotionShell =
-      XtCreatePopupShell("Promotion", transientShellWidgetClass,
-			 shellWidget, args, j);
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, promotionShell,
-			    layoutArgs, XtNumber(layoutArgs));
-
-    j = 0;
-    XtSetArg(args[j], XtNlabel, _("Promote to what?")); j++;
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    dialog = XtCreateManagedWidget("promotion", dialogWidgetClass,
-				   layout, args, j);
-
-  if(gameInfo.variant != VariantShogi) {
-   if(gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove)) {
-      XawDialogAddButton(dialog, _("Warlord"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("General"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("Lieutenant"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("Captain"), PromotionCallback,
-			 (XtPointer) dialog);
-    } else {
-    XawDialogAddButton(dialog, _("Queen"), PromotionCallback,
-		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("Rook"), PromotionCallback,
-		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("Bishop"), PromotionCallback,
-		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("Knight"), PromotionCallback,
-		       (XtPointer) dialog);
+    if(gameInfo.variant != VariantShogi) {
+        if(gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove)) {
+            gtk_dialog_add_buttons(GTK_DIALOG(promotionShellGTK),
+                           _("Warlord"),  1,
+                           _("General"),   2,
+                           _("Lieutenant"), 3,
+                           _("Captain"), 4,                                                 
+                           NULL);           
+        } else {
+            gtk_dialog_add_buttons(GTK_DIALOG(promotionShellGTK),
+                           _("Queen"),  5,
+                           _("Rook"),   6,
+                           _("Bishop"), 7,
+                           _("Knight"), 8,                                                 
+                           NULL);           
+        }
+        if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
+            gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
+            gameInfo.variant == VariantGiveaway) {
+            gtk_dialog_add_button(GTK_DIALOG(promotionShellGTK), _("King"), 9);         
+        }
+        if(gameInfo.variant == VariantCapablanca ||
+            gameInfo.variant == VariantGothic ||
+            gameInfo.variant == VariantCapaRandom) {
+            gtk_dialog_add_buttons(GTK_DIALOG(promotionShellGTK),
+                           _("Archbishop"),  10,
+                           _("Chancellor"),  11,                                                                    
+                           NULL);          
+        }
+    } else { // [HGM] shogi    
+        gtk_dialog_add_buttons(GTK_DIALOG(promotionShellGTK),
+                           _("Promote"),  12,
+                            _("Defer"),   13,                                                                    
+                           NULL);        
     }
-    if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
-        gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
-        gameInfo.variant == VariantGiveaway) {
-      XawDialogAddButton(dialog, _("King"), PromotionCallback,
-			 (XtPointer) dialog);
-    }
-    if(gameInfo.variant == VariantCapablanca ||
-       gameInfo.variant == VariantGothic ||
-       gameInfo.variant == VariantCapaRandom) {
-      XawDialogAddButton(dialog, _("Archbishop"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("Chancellor"), PromotionCallback,
-			 (XtPointer) dialog);
-    }
-  } else // [HGM] shogi
-  {
-      XawDialogAddButton(dialog, _("Promote"), PromotionCallback,
-			 (XtPointer) dialog);
-      XawDialogAddButton(dialog, _("Defer"), PromotionCallback,
-			 (XtPointer) dialog);
-  }
-    XawDialogAddButton(dialog, _("cancel"), PromotionCallback,
-		       (XtPointer) dialog);
 
-    XtRealizeWidget(promotionShell);
-    CatchDeleteWindow(promotionShell, "PromotionPopDown");
+    gtk_dialog_add_button(GTK_DIALOG(promotionShellGTK), _("cancel"), 14);    
+   
+    gtk_widget_show_all(promotionShellGTK);
 
-    j = 0;
-    XtSetArg(args[j], XtNwidth, &pw_width); j++;
-    XtGetValues(promotionShell, args, j);
+    g_signal_connect (promotionShellGTK, "response",
+                      G_CALLBACK (PromotionCallbackGTK), NULL);
+                     
+    g_signal_connect (promotionShellGTK, "delete-event",
+                      G_CALLBACK (PromotionPopDownGTK), NULL);
 
-    XtTranslateCoords(boardWidget, (bw_width - pw_width) / 2,
-		      lineGap + squareSize/3 +
-		      ((toY == BOARD_HEIGHT-1) ^ (flipView) ?
-		       0 : 6*(squareSize + lineGap)), &x, &y);
-
-    j = 0;
-    XtSetArg(args[j], XtNx, x); j++;
-    XtSetArg(args[j], XtNy, y); j++;
-    XtSetValues(promotionShell, args, j);
-
-    XtPopup(promotionShell, XtGrabNone);
-
-    promotionUp = True;
+    promotionUp = True;               
 }
 
-void PromotionPopDown()
+
+
+void PromotionPopDownGTK()
 {
     if (!promotionUp) return;
-    XtPopdown(promotionShell);
-    XtDestroyWidget(promotionShell);
+    gtk_widget_destroy(GTK_WIDGET(promotionShellGTK));
     promotionUp = False;
 }
 
-void PromotionCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
+void PromotionCallbackGTK(w, resptype, gdata)
+     GtkWidget *w;
+     GtkResponseType  resptype;
+     gpointer  gdata;
 {
-    String name;
-    Arg args[16];
     int promoChar;
+    GtkWidget *button;
+    GList *gl, *g;
+    gint respid;
+    gchar *name;         
 
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
+    /* get list of buttons in the dialog action area */
+    gl = gtk_container_get_children(GTK_CONTAINER(GTK_CONTAINER(gtk_dialog_get_action_area(GTK_DIALOG(w)))));
 
-    PromotionPopDown();
+    /* find the button that was clicked */
+    /* cannot use 'gtk_dialog_get_widget_for_response()' since that requires gtk 2.20
+       and we are targeting 2.16 */
+    while (gl) {  
+        button = GTK_WIDGET(gl->data);
+        respid = gtk_dialog_get_response_for_widget(GTK_DIALOG(w), GTK_WIDGET(button));    
+        if (respid == resptype) {      
+            name = g_strdup(gtk_button_get_label(GTK_BUTTON(button)));
+            break;
+        }           
+        gl = gl->next;
+    }
+    g_list_free(gl);    
+
+    PromotionPopDownGTK();
 
     if (fromX == -1) return;
 
@@ -5263,15 +5249,14 @@ void PromotionCallback(w, client_data, call_data)
 	promoChar = '=';
     } else {
 	promoChar = ToLower(name[0]);
-    }
-
+    }    
+    
     UserMoveEvent(fromX, fromY, toX, toY, promoChar);
 
     if (!appData.highlightLastMove || gotPremove) ClearHighlights();
     if (gotPremove) SetPremoveHighlights(fromX, fromY, toX, toY);
     fromX = fromY = -1;
 }
-
 
 void ErrorCallback(w, event, data)
      GtkWidget *w;
