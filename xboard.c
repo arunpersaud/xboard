@@ -5249,7 +5249,9 @@ void PromotionCallbackGTK(w, resptype, gdata)
 	promoChar = '=';
     } else {
 	promoChar = ToLower(name[0]);
-    }    
+    }
+
+    g_free(name);    
     
     UserMoveEvent(fromX, fromY, toX, toY, promoChar);
 
@@ -6820,6 +6822,7 @@ void AboutProc(w, event, prms, nprms)
     "H.G. Muller <h.g.muller AT hccnet DOT nl>",
     "Arun Persaud <arun@nubati.net>",
     "Eric Mullins <emwine AT earthlink DOT net>",
+    "John Cheetham <developer AT johncheetham DOT com>",
     NULL};
 
   /* create about window */
