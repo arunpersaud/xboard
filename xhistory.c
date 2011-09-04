@@ -25,6 +25,8 @@
 #include <stdlib.h>
 #include <malloc.h>
 
+#include <gtk/gtk.h>
+
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
@@ -67,22 +69,34 @@ int AppendText P((Option *opt, char *s));
 int GenericPopUp P((Option *option, char *title, int dlgNr));
 void MarkMenu P((char *item, int dlgNr));
 void GetWidgetText P((Option *opt, char **buf));
+GtkWidget *GetTextView P((GtkWidget *dialog));
 
 extern Option historyOptions[];
 extern Widget shells[10];
+extern GtkWidget *shellsGTK[10];
 extern Boolean shellUp[10];
 
 // ------------- low-level front-end actions called by MoveHistory back-end -----------------
 
 void HighlightMove( int from, int to, Boolean highlight )
-{
-    if(highlight)
-	XawTextSetSelection( historyOptions[0].handle, from, to ); // for lack of a better method, use selection for highighting
+{    
+    GtkTextIter bound;
+    GtkTextIter insert;
+
+    if (!highlight) return;
+
+    /* for lack of a better method, use selection for highighting */
+    gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(historyOptions[0].handle), &bound);
+    gtk_text_iter_set_offset(&bound, from);
+
+    gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(historyOptions[0].handle), &insert);
+    gtk_text_iter_set_offset(&insert, to);     
+    gtk_text_buffer_select_range(GTK_TEXT_BUFFER(historyOptions[0].handle), &insert, &bound);    
 }
 
 void ClearHistoryMemo()
-{
-    ClearTextWidget(&historyOptions[0]);
+{    
+    ClearTextWidget(historyOptions[0].handle);
 }
 
 // the bold argument says 0 = normal, 1 = bold typeface
@@ -98,35 +112,36 @@ void ScrollToCurrent(int caretPos)
     Arg args[10];
     char *s;
     int len;
-    GetWidgetText(&historyOptions[0], &s);
-    len = strlen(s);
-    if(caretPos < 0 || caretPos > len) caretPos = len;
-    if(caretPos > len-30) { // scroll to end, which causes no flicker
-      static XEvent event;
-      XtCallActionProc(historyOptions[0].handle, "end-of-file", &event, NULL, 0);
-      return;
-    }
-    // the following leads to a very annoying flicker, even when no scrolling is done at all.
-    XtSetArg(args[0], XtNinsertPosition, caretPos); // this triggers scrolling in Xaw
-    XtSetArg(args[1], XtNdisplayCaret, False);
-    XtSetValues(historyOptions[0].handle, args, 2);
+    GtkTextIter iter;
+
+    gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(historyOptions[0].handle), &iter);
+    gtk_text_iter_set_offset(&iter, caretPos);
+    gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(GetTextView(shellsGTK[7])), &iter, 0.1, FALSE, 0.5, 0.5);
+    return;
 }
 
 
 // ------------------------------ callbacks --------------------------
 
 char *historyText;
-char historyTranslations[] =
-"<Btn3Down>: select-start() \n \
-<Btn3Up>: extend-end() SelectMove() \n";
 
 void
-SelectMove (Widget w, XEvent * event, String * params, Cardinal * nParams)
+SelectMove(tb)
+    GtkTextBuffer *tb;
 {
-	XawTextPosition index, dummy;
+    String val;
+    gint index;
+    GtkTextIter start;
+    GtkTextIter end;	
 
-	XawTextGetSelectionPos(w, &index, &dummy);
-	FindMoveByCharIndex( index ); // [HGM] also does the actual moving to it, now
+    /* get cursor position into index */
+    g_object_get(tb, "cursor-position", &index, NULL);
+
+    /* get text from textbuffer */
+    gtk_text_buffer_get_start_iter (tb, &start);
+    gtk_text_buffer_get_end_iter (tb, &end);
+    val = gtk_text_buffer_get_text (tb, &start, &end, FALSE); 
+    FindMoveByCharIndex( index ); // [HGM] also does the actual moving to it, now
 }
 
 Option historyOptions[] = {
@@ -142,15 +157,45 @@ Boolean MoveHistoryIsUp()
 }
 
 Boolean MoveHistoryDialogExists()
+{   
+    return shellsGTK[7] != NULL;
+}
+
+gboolean HistoryPopUpCB(w, eventbutton, gptr)
+     GtkWidget *w;
+     GdkEventButton  *eventbutton;
+     gpointer  gptr;
 {
-    return shells[7] != NULL;
+    GtkTextBuffer *tb;
+ 
+    /* if not a right-click then propagate to default handler  */
+    if (eventbutton->type != GDK_BUTTON_PRESS || eventbutton->button !=3) return False;
+
+    /* get textbuffer */
+    tb = GTK_TEXT_BUFFER(gptr);
+
+    /* user has right clicked in the textbox */
+    /* call CommentClick in xboard.c */
+    SelectMove(tb);
+
+    return True; /* don't propagate right click to default handler */   
 }
 
 void HistoryPopUp()
 {
-    if(GenericPopUp(historyOptions, _("Move list"), 7))
-	XtOverrideTranslations(historyOptions[0].handle, XtParseTranslationTable(historyTranslations));
-    MarkMenu("menuView.Show Move History", 7);
+    GtkWidget *textview, *dialog, *w;
+    GList *gl, *g;   
+
+    if(!GenericPopUpGTK(historyOptions, _("Move list"), 7)) return;    
+
+    /* Find the dialogs GtkTextView widget */
+    textview = GetTextView(shellsGTK[7]);
+    if (!textview) return;
+    g_signal_connect(GTK_TEXT_VIEW(textview), "button-press-event",
+                     G_CALLBACK(HistoryPopUpCB),
+                     (gpointer)historyOptions[0].handle);
+
+    MarkMenu("menuView.Show Move History", 7);     
 }
 
 void

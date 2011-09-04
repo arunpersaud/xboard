@@ -118,6 +118,22 @@ static Option *currentOption;
 static Boolean browserUp;
 ButtonCallback *comboCallback;
 
+void GetWidgetTextGTK(GtkWidget *w, char **buf)
+{        
+    GtkTextIter start;
+    GtkTextIter end;    
+
+    if (GTK_IS_TEXT_BUFFER(w)) {
+        gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(w), &start);
+        gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(w), &end);
+        *buf = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(w), &start, &end, FALSE);
+    }
+    else {
+        printf("error in GetWidgetText, invalid widget\n");
+        buf = NULL; 
+    }
+}
+
 void GetWidgetText(Option *opt, char **buf)
 {
     Arg arg;
@@ -364,14 +380,17 @@ char *engineNr[] = { N_("First Engine"), N_("Second Engine"), NULL };
 char *engineList[100] = {" "}, *engineMnemonic[100] = {""};
 
 int AppendText(Option *opt, char *s)
-{
-    XawTextBlock t;
+{    
     char *v;
     int len;
-    GetWidgetText(opt, &v);
+    GtkTextIter end;    
+  
+    GetWidgetTextGTK(opt->handle, &v);
     len = strlen(v);
-    t.ptr = s; t.firstPos = 0; t.length = strlen(s); t.format = XawFmt8Bit;
-    XawTextReplace(opt->handle, len, len, &t);
+    g_free(v);
+    gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(opt->handle), &end);
+    gtk_text_buffer_insert(opt->handle, &end, s, -1);
+
     return len;
 }
 
@@ -1206,7 +1225,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
     GtkTextBuffer *textbuffer;           
     GdkColor color;     
     GtkWidget *actionarea;
-    GtkWidget *sw;
+    GtkWidget *sw;    
 
     int i, j, arraysize, left, top, height=999, width=1;    
     char def[MSG_SIZ];        
@@ -1268,12 +1287,18 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             /* Left Justify */
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 
+            /* width */
+            w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
+	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
+
             if (option[i].type==TextBox && option[i].min > 80){                
-                textview = gtk_text_view_new();
+                textview = gtk_text_view_new();                
+                gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_WORD);                                
                 /* add textview to scrolled window so we have vertical scroll bar */
                 sw = gtk_scrolled_window_new(NULL, NULL);
                 gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
                 gtk_container_add(GTK_CONTAINER(sw), textview);
+                gtk_widget_set_size_request(GTK_WIDGET(sw), w, -1);
  
                 textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));                
                 gtk_widget_set_size_request(textview, -1, option[i].min);
@@ -1302,9 +1327,6 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                 gtk_entry_set_text (GTK_ENTRY (entry), option[i].textValue);
             else if ( *(char**)option[i].target != NULL )
                 gtk_entry_set_text (GTK_ENTRY (entry), *(char**)option[i].target);            
-
-            w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
-	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
 
             //gtk_entry_set_width_chars (GTK_ENTRY (entry), 18);
             gtk_entry_set_max_length (GTK_ENTRY (entry), w);
@@ -1994,19 +2016,18 @@ Option commentOptions[] = {
 {   0,  1,    0, NULL, (void*) &NewComCallback, "", NULL, EndMark , "" }
 };
 
-void ClearTextWidget(Option *opt)
+void ClearTextWidget(GtkWidget *w)
 {
-//    XtCallActionProc(opt->handle, "select-all", NULL, NULL, 0);
-//    XtCallActionProc(opt->handle, "kill-selection", NULL, NULL, 0);
-    Arg arg;
-    XtSetArg(arg, XtNstring, ""); // clear without disturbing selection!
-    XtSetValues(opt->handle, &arg, 1);
+    if (!GTK_IS_TEXT_BUFFER(w)) {
+        printf("error: ClearTextWidget arg is not a GtkTextBuffer\n");
+        return;
+    }    
+    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(w), "", -1);
 }
 
 void ClearComment(int n)
 {
-    //ClearTextWidget(&commentOptions[0]);    
-    gtk_text_buffer_set_text (commentOptions[0].handle, "", -1);
+    ClearTextWidget(commentOptions[0].handle);    
 }
 
 gboolean NewCommentCB(w, eventbutton, gptr)
