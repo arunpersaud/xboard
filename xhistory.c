@@ -186,7 +186,7 @@ void HistoryPopUp()
     GtkWidget *textview, *dialog, *w;
     GList *gl, *g;   
 
-    if(!GenericPopUpGTK(historyOptions, _("Move list"), 7)) return;    
+    if(!GenericPopUp(historyOptions, _("Move list"), 7)) return;    
 
     /* Find the dialogs GtkTextView widget */
     textview = GetTextView(shellsGTK[7]);

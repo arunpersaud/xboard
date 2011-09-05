@@ -183,49 +183,7 @@ void CheckCallback(Widget ww, XtPointer data, XEvent *event, Boolean *b)
     SetWidgetState(&currentOption[(int)(intptr_t)data], !s);
 }
 
-void SpinCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name, val;
-    Arg args[16];
-    char buf[MSG_SIZ], *p;
-    int j;
-    int data = (intptr_t) client_data;
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    GetWidgetText(&currentOption[data], &val);
-    sscanf(val, "%d", &j);
-    if (strcmp(name, "browse") == 0) {
-	char *q=val, *r;
-	for(r = ""; *q; q++) if(*q == '.') r = q; else if(*q == '/') r = ""; // last dot after last slash
-	if(!strcmp(r, "") && !currentCps && currentOption[data].type == FileName && currentOption[data].textValue)
-		r = currentOption[data].textValue;
-	browserUp = True;
-	if(XsraSelFile(shells[0], currentOption[data].name, NULL, NULL, "", "", r,
-			 	  currentOption[data].type == PathName ? "p" : "f", NULL, &p)) {
-		int len = strlen(p);
-		if(len && p[len-1] == '/') p[len-1] = NULLCHAR;
-		XtSetArg(args[0], XtNstring, p);
-		XtSetValues(currentOption[data].handle, args, 1);
-	}
-	browserUp = False;
-	SetFocus(currentOption[data].handle, shells[0], (XEvent*) NULL, False);
-	return;
-    } else
-    if (strcmp(name, "+") == 0) {
-	if(++j > currentOption[data].max) return;
-    } else
-    if (strcmp(name, "-") == 0) {
-	if(--j < currentOption[data].min) return;
-    } else return;
-    snprintf(buf, MSG_SIZ,  "%d", j);
-    SetWidgetText(&currentOption[data], buf, 0);
-}
-
-void ComboSelectGTK(GtkWidget *widget, gpointer gptr)
+void ComboSelect(GtkWidget *widget, gpointer gptr)
 {
     gint g, i;
 
@@ -234,48 +192,6 @@ void ComboSelectGTK(GtkWidget *widget, gpointer gptr)
     values[i] = g; // store in temporary, for transfer at OK
 
     if(currentOption[i].min & 1 && !currentCps && comboCallback) (comboCallback)(i);
-}
-
-void ComboSelect(w, addr, index) // callback for all combo items
-     Widget w;
-     caddr_t addr;
-     caddr_t index;
-{
-    Arg args[16];
-    int i = ((intptr_t)addr)>>8;
-    int j = 255 & (intptr_t) addr;
-
-    values[i] = j; // store in temporary, for transfer at OK
-    XtSetArg(args[0], XtNlabel, _(((char**)currentOption[i].textValue)[j]));
-    XtSetValues(currentOption[i].handle, args, 1);
-
-    if(currentOption[i].min & 1 && !currentCps && comboCallback) (comboCallback)(i);
-}
-
-void CreateComboPopup(parent, name, n, mb)
-     Widget parent;
-     String name;
-     int n;
-     char *mb[];
-{
-    int i=0, j;
-    Widget menu, entry;
-    Arg args[16];
-
-    menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
-			      parent, NULL, 0);
-    j = 0;
-    XtSetArg(args[j], XtNwidth, 100);  j++;
-//    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    while (mb[i] != NULL) {
-	    XtSetArg(args[j], XtNlabel, _(mb[i]));
-	    entry = XtCreateManagedWidget(mb[i], smeBSBObjectClass,
-					  menu, args, j+1);
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) ComboSelect,
-			  (caddr_t)(intptr_t) (256*n+i));
-	i++;
-    }
 }
 
 
@@ -289,7 +205,6 @@ static int oldCores, oldPonder;
 int MakeColors P((void));
 void CreateGCs P((int redo));
 void CreateAnyPieces P((void));
-int GenericReadoutGTK P((int selected));
 int GenericReadout P((int selected));
 Widget shells[10];
 GtkWidget *shellsGTK[10];
@@ -352,7 +267,7 @@ int PopDown(int n)
     return 1;
 }
 
-void GenericPopDownGTK(w, event, gdata)
+void GenericPopDown(w, event, gdata)
      GtkWidget *w;
      GdkEvent  *event;
      gpointer  gdata; 
@@ -361,16 +276,6 @@ void GenericPopDownGTK(w, event, gdata)
 
     if(browserUp) return; // prevent closing dialog when it has an open file-browse daughter
     PopDownGTK(data);
-}
-
-void GenericPopDown(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if(browserUp) return; // prevent closing dialog when it has an open file-browse daughter
-    PopDown(prms[0][0] - '0');
 }
 
 char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params, *tfName;
@@ -413,8 +318,7 @@ void AddLine(Option *opt, char *s)
 
 void AddToTourney(int n)
 {    
-    //GenericReadout(4);  // selected engine
-    GenericReadoutGTK(4);  // selected engine
+    GenericReadout(4);  // selected engine
     AddLine(&matchOptions[3], engineChoice);
 }
 
@@ -502,7 +406,7 @@ void Pick(int n)
 	    }
 	}
 
-	GenericReadoutGTK(-1); // make sure ranks and file settings are read
+	GenericReadout(-1); // make sure ranks and file settings are read
 
 	gameInfo.variant = v;
 	appData.variant = VariantName(v);
@@ -702,8 +606,7 @@ char *soundFiles[] = { // sound files corresponding to above names
 
 void Test(int n)
 {    
-    //GenericReadout(2);
-    GenericReadoutGTK(2);
+    GenericReadout(2);
     if(soundFiles[values[3]]) PlaySound(soundFiles[values[3]]);
 }
 
@@ -750,7 +653,7 @@ void SetColor(char *colorName, Option *box)
 	XtSetValues(box->handle, args, 1);
 }
 
-void SetColorTextGTK(int n, char *buf)
+void SetColorText(int n, char *buf)
 {
     GdkColor color;
 
@@ -762,19 +665,12 @@ void SetColorTextGTK(int n, char *buf)
     gtk_widget_modify_bg ( GTK_WIDGET(currentOption[n].handle), GTK_STATE_NORMAL, &color );
 }
 
-void SetColorText(int n, char *buf)
-{
-    SetWidgetText(&currentOption[n-1], buf, 0);
-    SetColor(buf, &currentOption[n]);
-}
-
 void DefColor(int n)
-{
-    //SetColorText(n, (char*) currentOption[n].choice);
-    SetColorTextGTK(n, (char*) currentOption[n].choice);
+{    
+    SetColorText(n, (char*) currentOption[n].choice);
 }
 
-void RefreshColorGTK(int source, int n)
+void RefreshColor(int source, int n)
 {
     int col, j, r, g, b, step = 10;;
     const gchar *s;
@@ -794,41 +690,13 @@ void RefreshColorGTK(int source, int n)
     col = r | g | b;
     snprintf(buf, MSG_SIZ, "#%06x", col);
     for(j=1; j<7; j++) if(buf[j] >= 'a') buf[j] -= 32; // capitalize
-    SetColorTextGTK(source+1, buf);
-}
-
-void RefreshColor(int source, int n)
-{
-    int col, j, r, g, b, step = 10;
-    char *s, buf[MSG_SIZ]; // color string    
-    GetWidgetText(&currentOption[source], &s);
-    if(sscanf(s, "#%x", &col) != 1) return;   // malformed
-    b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
-    switch(n) {
-	case 1: r += 0x10000*step;break;
-	case 2: g += 0x100*step;  break;
-	case 3: b += step;        break;
-	case 4: r -= 0x10000*step; g -= 0x100*step; b -= step; break;
-    }
-    if(r < 0) r = 0; if(g < 0) g = 0; if(b < 0) b = 0;
-    if(r > 0xFF0000) r = 0xFF0000; if(g > 0xFF00) g = 0xFF00; if(b > 0xFF) b = 0xFF;
-    col = r | g | b;
-    snprintf(buf, MSG_SIZ, "#%06x", col);
-    for(j=1; j<7; j++) if(buf[j] >= 'a') buf[j] -= 32; // capitalize
     SetColorText(source+1, buf);
-}
-
-void ColorChanged(Widget w, XtPointer data, XEvent *event, Boolean *b)
-{
-    char buf[10];
-    if ( (XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1) && *buf == '\r' )
-	RefreshColor((int)(intptr_t) data, 0);
 }
 
 void AdjustColor(int i)
 {
     int n = currentOption[i].value;
-    RefreshColorGTK(i-n-1, n);
+    RefreshColor(i-n-1, n);
 }
 
 int BoardOptionsOK(int n)
@@ -890,7 +758,7 @@ Option boardOptions[] = {
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 
-int GenericReadoutGTK(int selected)
+int GenericReadout(int selected)
 {
     GtkWidget *checkbutton;
     GtkWidget *spinner;
@@ -998,121 +866,6 @@ int GenericReadoutGTK(int selected)
     return res;       
 }
 
-int GenericReadout(int selected)
-{
-    int i, j, res=1;
-    String val;
-    Arg args[16];
-    char buf[MSG_SIZ], **dest;
-    float x;
-	for(i=0; ; i++) { // send all options that had to be OK-ed to engine
-	    if(selected >= 0) { if(i < selected) continue; else if(i > selected) break; }
-	    switch(currentOption[i].type) {
-		case TextBox:
-		case FileName:
-		case PathName:
-		    XtSetArg(args[0], XtNstring, &val);
-		    XtGetValues(currentOption[i].handle, args, 1);
-		    dest = currentCps ? &(currentOption[i].textValue) : (char**) currentOption[i].target;
-		    if(*dest == NULL || strcmp(*dest, val)) {
-			if(currentCps) {
-			    snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name, val);
-			    SendToProgram(buf, currentCps);
-			} else {
-			    if(*dest) free(*dest);
-			    *dest = malloc(strlen(val)+1);
-			}
-			safeStrCpy(*dest, val, MSG_SIZ - (*dest - currentOption[i].name)); // copy text there
-		    }
-		    break;
-		case Spin:
-		case Fractional:
-		    XtSetArg(args[0], XtNstring, &val);
-		    XtGetValues(currentOption[i].handle, args, 1);
-		    sscanf(val, "%f", &x);
-		    if(x > currentOption[i].max) x = currentOption[i].max;
-		    if(x < currentOption[i].min) x = currentOption[i].min;
-		    if(currentOption[i].type == Fractional)
-			*(float*) currentOption[i].target = x; // engines never have float options!
-		    else if(currentOption[i].value != x) {
-			currentOption[i].value = x;
-			if(currentCps) {
-			    snprintf(buf, MSG_SIZ,  "option %s=%.0f\n", currentOption[i].name, x);
-			    SendToProgram(buf, currentCps);
-			} else *(int*) currentOption[i].target = x;
-		    }
-		    break;
-		case CheckBox:
-		    j = 0;
-		    XtSetArg(args[0], XtNstate, &j);
-		    XtGetValues(currentOption[i].handle, args, 1);
-		    if(currentOption[i].value != j) {
-			currentOption[i].value = j;
-			if(currentCps) {
-			    snprintf(buf, MSG_SIZ,  "option %s=%d\n", currentOption[i].name, j);
-			    SendToProgram(buf, currentCps);
-			} else *(Boolean*) currentOption[i].target = j;
-		    }
-		    break;
-		case ComboBox:
-		    val = ((char**)currentOption[i].choice)[values[i]];
-		    if(currentCps) {
-			if(currentOption[i].value == values[i]) break; // not changed
-			currentOption[i].value = values[i];
-			snprintf(buf, MSG_SIZ,  "option %s=%s\n", currentOption[i].name,
-				((char**)currentOption[i].textValue)[values[i]]);
-			SendToProgram(buf, currentCps);
-		    } else if(val && (*(char**) currentOption[i].target == NULL || strcmp(*(char**) currentOption[i].target, val))) {
-		      if(*(char**) currentOption[i].target) free(*(char**) currentOption[i].target);
-		      *(char**) currentOption[i].target = strdup(val);
-		    }
-		    break;
-		case EndMark:
-		    if(currentOption[i].target) // callback for implementing necessary actions on OK (like redraw)
-			res = ((OKCallback*) currentOption[i].target)(i);
-		    break;
-	    default:
-		printf("GenericReadout: unexpected case in switch.\n");
-		case Button:
-		case SaveButton:
-		case Label:
-		case Break:
-	      break;
-	    }
-	    if(currentOption[i].type == EndMark) break;
-	}
-	return res;
-}
-
-void GenericCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-    char buf[MSG_SIZ];
-    int data = (intptr_t) client_data;
-
-    currentOption = dialogOptions[data>>16]; data &= 0xFFFF;
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("cancel")) == 0) {
-        PopDown(data);
-        return;
-    }
-    if (strcmp(name, _("OK")) == 0) { // save buttons imply OK
-        if(GenericReadout(-1)) PopDown(data);
-        return;
-    }
-    if(currentCps) {
-	if(currentOption[data].type == SaveButton) GenericReadout(-1);
-	snprintf(buf, MSG_SIZ,  "option %s\n", name);        
-	SendToProgram(buf, currentCps);
-    } else ((ButtonCallback*) currentOption[data].target)(data);
-}
-
 static char *oneLiner  = "<Key>Return:	redraw-display()\n";
 
 /* GTK callback used when OK/cancel clicked in genericpopup for non-modal dialog */
@@ -1125,7 +878,7 @@ void GenericPopUpCallback(w, resptype, gdata)
 
     /* OK pressed */    
     if (resptype == GTK_RESPONSE_ACCEPT) {
-        if (GenericReadoutGTK(-1)) PopDownGTK(data);
+        if (GenericReadout(-1)) PopDownGTK(data);
         return;
     }
 
@@ -1133,7 +886,7 @@ void GenericPopUpCallback(w, resptype, gdata)
     PopDownGTK(data);    
 }
 
-void GenericCallbackGTK(GtkWidget *widget, gpointer gdata)
+void GenericCallback(GtkWidget *widget, gpointer gdata)
 {
     const gchar *name;
     char buf[MSG_SIZ];    
@@ -1207,7 +960,7 @@ void Browse(GtkWidget *widget, gpointer gdata)
 }
 
 int
-GenericPopUpGTK(Option *option, char *title, int dlgNr)
+GenericPopUp(Option *option, char *title, int dlgNr)
 {    
     GtkWidget *dialog = NULL;
     gint       w;
@@ -1402,7 +1155,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                    gtk_table_attach_defaults(GTK_TABLE(table), hbox, left, left+3, top, top+1);
             }            
             gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);           
-            g_signal_connect (button, "clicked", G_CALLBACK (GenericCallbackGTK), (gpointer)(intptr_t) i + (dlgNr<<16));           
+            g_signal_connect (button, "clicked", G_CALLBACK (GenericCallback), (gpointer)(intptr_t) i + (dlgNr<<16));           
             option[i].handle = (void*)button;            
             break;  
 	  case ComboBox:
@@ -1440,7 +1193,7 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
             gtk_box_pack_start (GTK_BOX (hbox), combobox, TRUE, TRUE, 0);
             //gtk_table_attach_defaults(GTK_TABLE(table), combobox, 1, 2, i, i+1);
 
-            g_signal_connect(G_OBJECT(combobox), "changed", G_CALLBACK(ComboSelectGTK), (gpointer) (intptr_t) i);
+            g_signal_connect(G_OBJECT(combobox), "changed", G_CALLBACK(ComboSelect), (gpointer) (intptr_t) i);
 
             option[i].handle = (void*)combobox;
             values[i] = option[i].value;            
@@ -1470,334 +1223,10 @@ GenericPopUpGTK(Option *option, char *title, int dlgNr)
                       G_CALLBACK (GenericPopUpCallback),
                       (gpointer)(intptr_t) dlgNr);
     g_signal_connect (dialog, "delete-event",
-                      G_CALLBACK (GenericPopDownGTK),
+                      G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr] = True;    
  
-    return 1;
-}
-
-int
-GenericPopUp(Option *option, char *title, int dlgNr)
-{
-    Arg args[16];
-    Widget popup, layout, dialog=NULL, edit=NULL, form,  last, b_ok, b_cancel, leftMargin = NULL, textField = NULL;
-    Window root, child;
-    int x, y, i, j, height=999, width=1, h, c, w;
-    int win_x, win_y, maxWidth, maxTextWidth;
-    unsigned int mask;
-    char def[MSG_SIZ], *msg;
-    static char pane[6] = "paneX";
-    Widget texts[100], forelast = NULL, anchor, widest, lastrow = NULL;
-
-    if(shellUp[dlgNr]) return 0; // already up		
-    if(dlgNr && shells[dlgNr]) {
-	XtPopup(shells[dlgNr], XtGrabNone);
-	shellUp[dlgNr] = True;
-	return 0;
-    }
-
-    dialogOptions[dlgNr] = option; // make available to callback
-    // post currentOption globally, so Spin and Combo callbacks can already use it
-    // WARNING: this kludge does not work for persistent dialogs, so that these cannot have spin or combo controls!
-    currentOption = option;
-
-    if(currentCps) { // Settings popup for engine: format through heuristic
-	int n = currentCps->nrOptions;
-	if(!n) { DisplayNote(_("Engine has no options")); return 0; }
-	if(n > 50) width = 4; else if(n>24) width = 2; else width = 1;
-	height = n / width + 1;
-	if(n && (currentOption[n-1].type == Button || currentOption[n-1].type == SaveButton)) currentOption[n].min = 1; // OK on same line
-	currentOption[n].type = EndMark; currentOption[n].target = NULL; // delimit list by callback-less end mark
-    }
-     i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-    popup = shells[dlgNr] =
-      XtCreatePopupShell(title, transientShellWidgetClass,
-			 shellWidget, args, i);
-
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
-  for(c=0; c<width; c++) {
-    pane[4] = 'A'+c;
-    form =
-      XtCreateManagedWidget(pane, formWidgetClass, layout,
-			    formArgs, XtNumber(formArgs));
-    j=0;
-    XtSetArg(args[j], XtNfromHoriz, leftMargin);  j++;
-    XtSetValues(form, args, j);
-    leftMargin = form;
-
-    last = widest = NULL; anchor = lastrow;
-    for(h=0; h<height; h++) {
-	i = h + c*height;
-	if(option[i].type == EndMark) break;
-	lastrow = forelast;
-	forelast = last;
-	switch(option[i].type) {
-	  case Fractional:
-	    snprintf(def, MSG_SIZ,  "%.2f", *(float*)option[i].target);
-	    option[i].value = *(float*)option[i].target;
-	    goto tBox;
-	  case Spin:
-	    if(!currentCps) option[i].value = *(int*)option[i].target;
-	    snprintf(def, MSG_SIZ,  "%d", option[i].value);
-	  case TextBox:
-	  case FileName:
-	  case PathName:
-          tBox:
-	    if(option[i].name[0]) {
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
-	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
-	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
-	    texts[h] =
-	    dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
-	    } else texts[h] = dialog = NULL;
-	    w = option[i].type == Spin || option[i].type == Fractional ? 70 : option[i].max ? option[i].max : 205;
-	    if(option[i].type == FileName || option[i].type == PathName) w -= 55;
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
-	    XtSetArg(args[j], XtNborderWidth, 1); j++;
-	    XtSetArg(args[j], XtNwidth, w); j++;
-	    if(option[i].type == TextBox && option[i].min) {
-		XtSetArg(args[j], XtNheight, option[i].min); j++;
-		if(option[i].value & 1) { XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++; }
-		if(option[i].value & 2) { XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollAlways);  j++; }
-		if(option[i].value & 4) { XtSetArg(args[j], XtNautoFill, True);  j++; }
-		if(option[i].value & 8) { XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++; }
-	    }
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-	    XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-	    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-	    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-	    XtSetArg(args[j], XtNresizable, True);  j++;
-	    XtSetArg(args[j], XtNinsertPosition, 9999);  j++;
-	    XtSetArg(args[j], XtNstring, option[i].type==Spin || option[i].type==Fractional ? def : 
-				currentCps ? option[i].textValue : *(char**)option[i].target);  j++;
-	    edit = last;
-	    option[i].handle = (void*)
-		(textField = last = XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j));
-	    XtAddEventHandler(last, ButtonPressMask, False, SetFocus, (XtPointer) popup);
-	    if(option[i].min == 0 || option[i].type != TextBox)
-		XtOverrideTranslations(last, XtParseTranslationTable(oneLiner));
-
-	    if(option[i].type == TextBox || option[i].type == Fractional) break;
-
-	    // add increment and decrement controls for spin
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, edit);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
-	    XtSetArg(args[j], XtNright, XtChainRight); j++;
-	    if(option[i].type == FileName || option[i].type == PathName) {
-		w = 50; msg = _("browse");
-	    } else {
-		XtSetArg(args[j], XtNheight, 10);  j++;
-		w = 20; msg = "+";
-	    }
-	    XtSetArg(args[j], XtNwidth, w);  j++;
-	    edit = XtCreateManagedWidget(msg, commandWidgetClass, form, args, j);
-	    XtAddCallback(edit, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
-
-	    if(option[i].type != Spin) break;
-
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, edit);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, last);  j++;
-	    XtSetArg(args[j], XtNheight, 10);  j++;
-	    XtSetArg(args[j], XtNwidth, 20);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainRight); j++;
-	    XtSetArg(args[j], XtNright, XtChainRight); j++;
-	    last = XtCreateManagedWidget("-", commandWidgetClass, form, args, j);
-	    XtAddCallback(last, XtNcallback, SpinCallback, (XtPointer)(intptr_t) i);
-	    break;
-	  case CheckBox:
-	    if(!currentCps) option[i].value = *(Boolean*)option[i].target;
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNwidth, 10);  j++;
-	    XtSetArg(args[j], XtNheight, 10);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNstate, option[i].value);  j++;
-	    option[i].handle = (void*)
-		(dialog = XtCreateManagedWidget(" ", toggleWidgetClass, form, args, j));
-	  case Label:
-	    msg = option[i].name;
-	    if(*msg == NULLCHAR) msg = option[i].textValue;
-	    if(!msg) break;
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, option[i].type != Label ? dialog : NULL);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
-	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
-	    XtSetArg(args[j], XtNlabel, _(msg));  j++;
-	    last = XtCreateManagedWidget(msg, labelWidgetClass, form, args, j);
-	    if(option[i].type == CheckBox)
-		XtAddEventHandler(last, ButtonPressMask, False, CheckCallback, (XtPointer)(intptr_t) i);
-	    break;
-	  case SaveButton:
-	  case Button:
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, option[i].min & 1 ? lastrow : last);  j++;
-	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
-	    if(option[i].min & 1) { XtSetArg(args[j], XtNfromHoriz, last);  j++; }
-	    else  { XtSetArg(args[j], XtNfromHoriz, NULL);  j++; lastrow = forelast; }
-	    if(option[i].max) { XtSetArg(args[j], XtNwidth, option[i].max);  j++; }
-	    if(option[i].textValue) { // special for buttons of New Variant dialog
-		XtSetArg(args[j], XtNsensitive, appData.noChessProgram || option[i].value < 0
-					 || strstr(first.variants, VariantName(option[i].value))); j++;
-		XtSetArg(args[j], XtNborderWidth, (gameInfo.variant == option[i].value)+1); j++;
-	    }
-	    option[i].handle = (void*)
-		(dialog = last = XtCreateManagedWidget(option[i].name, commandWidgetClass, form, args, j));
-	    if(option[i].choice && ((char*)option[i].choice)[0] == '#' && !currentCps) {
-		SetColor( *(char**) option[i-1].target, &option[i]);
-		XtAddEventHandler(option[i-1].handle, KeyReleaseMask, False, ColorChanged, (XtPointer)(intptr_t) i-1);
-	    }
-	    XtAddCallback(last, XtNcallback, GenericCallback,
-			  (XtPointer)(intptr_t) i + (dlgNr<<16));
-	    if(option[i].textValue) SetColor( option[i].textValue, &option[i]);
-	    forelast = lastrow; // next button can go on same row
-	    break;
-	  case ComboBox:
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNright, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNborderWidth, 0);  j++;
-	    XtSetArg(args[j], XtNjustify, XtJustifyLeft);  j++;
-	    XtSetArg(args[j], XtNlabel, _(option[i].name));  j++;
-	    texts[h] = dialog = XtCreateManagedWidget(option[i].name, labelWidgetClass, form, args, j);
-
-	    if(currentCps) option[i].choice = (char**) option[i].textValue; else {
-	      for(j=0; option[i].choice[j]; j++)
-		if(*(char**)option[i].target && !strcmp(*(char**)option[i].target, option[i].choice[j])) break;
-	      option[i].value = j + (option[i].choice[j] == NULL);
-	    }
-
-	    j=0;
-	    XtSetArg(args[j], XtNfromVert, last);  j++;
-	    XtSetArg(args[j], XtNfromHoriz, dialog);  j++;
-	    XtSetArg(args[j], XtNwidth, option[i].max && !currentCps ? option[i].max : 100);  j++;
-	    XtSetArg(args[j], XtNleft, XtChainLeft); j++;
-	    XtSetArg(args[j], XtNmenuName, XtNewString(option[i].name));  j++;
-	    XtSetArg(args[j], XtNlabel, _(((char**)option[i].textValue)[option[i].value]));  j++;
-	    option[i].handle = (void*)
-		(last = XtCreateManagedWidget(" ", menuButtonWidgetClass, form, args, j));
-	    CreateComboPopup(last, option[i].name, i, (char **) option[i].textValue);
-	    values[i] = option[i].value;
-	    break;
-	  case Break:
-	    width++;
-	    height = i+1;
-	    break;
-	default:
-	    printf("GenericPopUp: unexpected case in switch.\n");
-	    break;
-	}
-    }
-
-    // make an attempt to align all spins and textbox controls
-    maxWidth = maxTextWidth = 0;
-    for(h=0; h<height; h++) {
-	i = h + c*height;
-	if(option[i].type == EndMark) break;
-	if(option[i].type == Spin || option[i].type == TextBox || option[i].type == ComboBox
-				  || option[i].type == PathName || option[i].type == FileName) {
-	    Dimension w;
-	    if(!texts[h]) continue;
-	    j=0;
-	    XtSetArg(args[j], XtNwidth, &w);  j++;
-	    XtGetValues(texts[h], args, j);
-	    if(option[i].type == Spin) {
-		if(w > maxWidth) maxWidth = w;
-		widest = texts[h];
-	    } else {
-		if(w > maxTextWidth) maxTextWidth = w;
-		if(!widest) widest = texts[h];
-	    }
-	}
-    }
-    if(maxTextWidth + 110 < maxWidth)
-	 maxTextWidth = maxWidth - 110;
-    else maxWidth = maxTextWidth + 110;
-    for(h=0; h<height; h++) {
-	i = h + c*height;
-	if(option[i].type == EndMark) break;
-	if(!texts[h]) continue;
-	j=0;
-	if(option[i].type == Spin) {
-	    XtSetArg(args[j], XtNwidth, maxWidth);  j++;
-	    XtSetValues(texts[h], args, j);
-	} else
-	if(option[i].type == TextBox || option[i].type == ComboBox || option[i].type == PathName || option[i].type == FileName) {
-	    XtSetArg(args[j], XtNwidth, maxTextWidth);  j++;
-	    XtSetValues(texts[h], args, j);
-	}
-    }
-  }
-
-  if(!(option[i].min & 2)) {
-    j=0;
-    if(option[i].min & 1) {
-	for(j=i-1; option[j+1].min&1 && option[j].type == Button; j--) {
-	    XtSetArg(args[0], XtNtop, XtChainBottom);
-	    XtSetArg(args[1], XtNbottom, XtChainBottom);
-	    XtSetValues(option[j].handle, args, 2);
-	}
-	if(option[j].type == TextBox && option[j].name[0] == NULLCHAR) {
-	    XtSetArg(args[0], XtNbottom, XtChainBottom);
-	    XtSetValues(option[j].handle, args, 1);
-	}
-	j = 0;
-	XtSetArg(args[j], XtNfromHoriz, last); last = forelast;
-    } else
-    XtSetArg(args[j], XtNfromHoriz, widest ? widest : dialog);  j++;
-    XtSetArg(args[j], XtNfromVert, anchor ? anchor : last);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNtop, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainRight);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    b_ok = XtCreateManagedWidget(_("OK"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_ok, XtNcallback, GenericCallback, (XtPointer)(intptr_t) dlgNr + (dlgNr<<16));
-
-    XtSetArg(args[0], XtNfromHoriz, b_ok);
-    b_cancel = XtCreateManagedWidget(_("cancel"), commandWidgetClass, form, args, j);
-    XtAddCallback(b_cancel, XtNcallback, GenericCallback, (XtPointer)(intptr_t) dlgNr);
-  }
-
-    XtRealizeWidget(popup);
-    XSetWMProtocols(xDisplay, XtWindow(popup), &wm_delete_window, 1);
-    snprintf(def, MSG_SIZ, "<Message>WM_PROTOCOLS: GenericPopDown(\"%d\") \n", dlgNr);
-    XtAugmentTranslations(popup, XtParseTranslationTable(def));
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
-
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
-
-    XtPopup(popup, dlgNr ? XtGrabNone : XtGrabExclusive);
-    shellUp[dlgNr] = True;
-    previous = NULL;
-    if(textField)SetFocus(textField, popup, (XEvent*) NULL, False);
-    if(dlgNr && wp[dlgNr] && wp[dlgNr]->width > 0) { // if persistent window-info available, reposition
-	j = 0;
-	XtSetArg(args[j], XtNheight, (Dimension) (wp[dlgNr]->height));  j++;
-	XtSetArg(args[j], XtNwidth,  (Dimension) (wp[dlgNr]->width));  j++;
-	XtSetArg(args[j], XtNx, (Position) (wp[dlgNr]->x));  j++;
-	XtSetArg(args[j], XtNy, (Position) (wp[dlgNr]->y));  j++;
-	XtSetValues(popup, args, j);
-    }
     return 1;
 }
 
@@ -1807,9 +1236,8 @@ void IcsOptionsProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{
-   //GenericPopUp(icsOptions, _("ICS Options"), 0);
-   GenericPopUpGTK(icsOptions, _("ICS Options"), 0);
+{   
+   GenericPopUp(icsOptions, _("ICS Options"), 0);
 }
 
 void LoadOptionsProc(w, event, prms, nprms)
@@ -1817,9 +1245,8 @@ void LoadOptionsProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{
-   //GenericPopUp(loadOptions, _("Load Game Options"), 0);
-   GenericPopUpGTK(loadOptions, _("Load Game Options"), 0);
+{   
+   GenericPopUp(loadOptions, _("Load Game Options"), 0);
 }
 
 void SaveOptionsProc(w, event, prms, nprms)
@@ -1827,9 +1254,8 @@ void SaveOptionsProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{
-   //GenericPopUp(saveOptions, _("Save Game Options"), 0);
-   GenericPopUpGTK(saveOptions, _("Save Game Options"), 0);
+{   
+   GenericPopUp(saveOptions, _("Save Game Options"), 0);
 }
 
 void SoundOptionsProc(w, event, prms, nprms)
@@ -1838,9 +1264,8 @@ void SoundOptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   soundFiles[2] = "*";
-   //GenericPopUp(soundOptions, _("Sound Options"), 0);
-   GenericPopUpGTK(soundOptions, _("Sound Options"), 0);
+   soundFiles[2] = "*";   
+   GenericPopUp(soundOptions, _("Sound Options"), 0);
 }
 
 void BoardOptionsProc(w, event, prms, nprms)
@@ -1848,9 +1273,8 @@ void BoardOptionsProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{
-   //GenericPopUp(boardOptions, _("Board Options"), 0);
-   GenericPopUpGTK(boardOptions, _("Board Options"), 0);
+{   
+   GenericPopUp(boardOptions, _("Board Options"), 0);
 }
 
 void EngineMenuProc(w, event, prms, nprms)
@@ -1858,9 +1282,8 @@ void EngineMenuProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{
-   //GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
-   GenericPopUpGTK(adjudicationOptions, "Adjudicate non-ICS Games", 0);
+{   
+   GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
 }
 
 void UciMenuProc(w, event, prms, nprms)
@@ -1870,9 +1293,8 @@ void UciMenuProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
    oldCores = appData.smpCores;
-   oldPonder = appData.ponderNextMove;
-   //GenericPopUp(commonEngineOptions, _("Common Engine Settings"), 0);
-   GenericPopUpGTK(commonEngineOptions, _("Common Engine Settings"), 0);
+   oldPonder = appData.ponderNextMove;   
+   GenericPopUp(commonEngineOptions, _("Common Engine Settings"), 0);
 }
 
 void NewVariantProc(w, event, prms, nprms)
@@ -1880,9 +1302,8 @@ void NewVariantProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{
-   //GenericPopUp(variantDescriptors, _("New Variant"), 0);
-   GenericPopUpGTK(variantDescriptors, _("New Variant"), 0);
+{  
+   GenericPopUp(variantDescriptors, _("New Variant"), 0);
 }
 
 void OptionsProc(w, event, prms, nprms)
@@ -1891,9 +1312,8 @@ void OptionsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-   oldPonder = appData.ponderNextMove;
-   //GenericPopUp(generalOptions, _("General Options"), 0);
-   GenericPopUpGTK(generalOptions, _("General Options"), 0);   
+   oldPonder = appData.ponderNextMove;   
+   GenericPopUp(generalOptions, _("General Options"), 0);   
 }
 
 void MatchOptionsProc(w, event, prms, nprms)
@@ -1905,9 +1325,8 @@ void MatchOptionsProc(w, event, prms, nprms)
    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
    comboCallback = &AddToTourney;
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
-   ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
-   //GenericPopUp(matchOptions, _("Match Options"), 0);
-   GenericPopUpGTK(matchOptions, _("Match Options"), 0);
+   ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));   
+   GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 
 Option textOptions[100];
@@ -1986,15 +1405,13 @@ void IcsTextProc(w, event, prms, nprms)
    textOptions[i].type = EndMark;
    textOptions[i].target = NULL;
    textOptions[i].min = 2;
-   MarkMenu("menuView.ICStex", 3);
-   //GenericPopUp(textOptions, _("ICS text menu"), 3);
-   GenericPopUpGTK(textOptions, _("ICS text menu"), 3);
+   MarkMenu("menuView.ICStex", 3);   
+   GenericPopUp(textOptions, _("ICS text menu"), 3);
 }
 
 static char *commentText;
 static int commentIndex;
 void ClearComment P((int n));
-extern char commentTranslations[];
 
 int NewComCallback(int n)
 {
@@ -2003,9 +1420,8 @@ int NewComCallback(int n)
 }
 
 void SaveChanges(int n)
-{
-    //GenericReadout(0);
-    GenericReadoutGTK(0);
+{    
+    GenericReadout(0);
     ReplaceComment(commentIndex, commentText);
 }
 
@@ -2045,7 +1461,7 @@ gboolean NewCommentCB(w, eventbutton, gptr)
 
     /* user has right clicked in the textbox */
     /* call CommentClick in xboard.c */
-    CommentClickGTK(tb);
+    CommentClick(tb);
 
     return True; /* don't propagate right click to default handler */   
 }
@@ -2107,20 +1523,13 @@ GtkWidget *GetTextView(dialog)
 
 void NewCommentPopup(char *title, char *text, int index)
 {    
-    GtkWidget *textview;   
-/*
-    if(shellsGTK[1]) { // if already exists, alter title and content
-	//XtSetArg(args[0], XtNtitle, title);
-	//XtSetValues(shells[1], args, 1);
-	//SetWidgetText(&commentOptions[0], text, 1);
-    }
-*/
+    GtkWidget *textview;
 
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
     MarkMenu("menuView.Show Comments", 1);
 
-    if(!GenericPopUpGTK(commentOptions, title, 1)) return;   
+    if(!GenericPopUp(commentOptions, title, 1)) return;   
 
     textview = GetTextView(shellsGTK[1]);
 
@@ -2129,11 +1538,7 @@ void NewCommentPopup(char *title, char *text, int index)
     /* connect to TextView so we can check for a right-click */
     g_signal_connect (GTK_TEXT_VIEW(textview), "button-press-event",
                       G_CALLBACK (NewCommentCB),
-                      (gpointer) commentOptions[0].handle);     
-
-    
-    //if(GenericPopUp(commentOptions, title, 1))
-    //	XtOverrideTranslations(commentOptions[0].handle, XtParseTranslationTable(commentTranslations));
+                      (gpointer) commentOptions[0].handle);   
 }
 
 static char *tagsText;
@@ -2146,7 +1551,7 @@ int NewTagsCallback(int n)
 
 void changeTags(int n)
 {
-    GenericReadoutGTK(1);
+    GenericReadout(1);
     if(bookUp) SaveToBook(tagsText); else
     ReplaceTags(tagsText, &gameInfo);
 }
@@ -2162,16 +1567,11 @@ void NewTagsPopup(char *text, char *msg)
 {    
     Arg args[16];
     char *title = bookUp ? _("Edit book") : _("Tags");
-/*
-    if(shellsGTK[2]) { // if already exists, alter title and content
-	SetWidgetText(&tagsOptions[1], text, 2);
-	XtSetArg(args[0], XtNtitle, title);
-	XtSetValues(shells[2], args, 1);
-    }*/
+
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].textValue = msg;
     MarkMenu("menuView.Show Tags", 2);
-    GenericPopUpGTK(tagsOptions, title, 2);
+    GenericPopUp(tagsOptions, title, 2);
 }
 
 char *icsText;
@@ -2248,11 +1648,10 @@ gboolean keypressicsCB(w, eventkey, data)
 void InputBoxPopup()
 {
     MarkMenu("menuView.ICS Input Box", 4);
-    if(!GenericPopUpGTK(boxOptions, _("ICS input box"), 4)) return;   
+    if(!GenericPopUp(boxOptions, _("ICS input box"), 4)) return;   
     g_signal_connect (boxOptions[0].handle, "key-press-event",
                       G_CALLBACK (keypressicsCB),
-                      (gpointer)(intptr_t) "1");     
-    //XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(ICSInputTranslations));
+                      (gpointer)(intptr_t) "1");    
 }
 
 void TypeInProc(w, event, prms, nprms)
@@ -2285,23 +1684,15 @@ void activateCB(entry, data)
     PopDownGTK(0);
 }
 
-void PopUpMoveDialogGTK(char firstchar)
+void PopUpMoveDialog(char firstchar)
 {    
     static char buf[2];   
     buf[0] = firstchar;buf[1]='\0'; icsText = buf;
     
-    if (!GenericPopUpGTK(boxOptions, _("Type a move"), 0)) return;
+    if (!GenericPopUp(boxOptions, _("Type a move"), 0)) return;
     gtk_editable_set_position(boxOptions[0].handle, 1);
     g_signal_connect (boxOptions[0].handle, "activate",
                       G_CALLBACK (activateCB), NULL);                     
-}
-
-void PopUpMoveDialog(char firstchar)
-{
-    static char buf[2];
-    buf[0] = firstchar; icsText = buf;
-    if(GenericPopUp(boxOptions, _("Type a move"), 0))
-	XtOverrideTranslations(boxOptions[0].handle, XtParseTranslationTable(moveTypeInTranslations));
 }
 
 void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
@@ -2313,18 +1704,16 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
     XQueryKeymap(xDisplay,keys);
     metaL = XKeysymToKeycode(xDisplay, XK_Meta_L);
     metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
-    if ( n == 1 && *buf > 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) // printable, no alt
-        //PopUpMoveDialog(*buf);
-        PopUpMoveDialogGTK(*buf);
+    if ( n == 1 && *buf > 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) // printable, no alt        
+        PopUpMoveDialog(*buf);
 
 }
 
 void
 SettingsPopUp(ChessProgramState *cps)
 {
-   currentCps = cps;
-   //GenericPopUp(cps->option, _("Engine Settings"), 0);
-   GenericPopUpGTK(cps->option, _("Engine Settings"), 0);
+   currentCps = cps;   
+   GenericPopUp(cps->option, _("Engine Settings"), 0);
 }
 
 void FirstSettingsProc(w, event, prms, nprms)
@@ -2382,9 +1771,8 @@ void LoadEngineProc(w, event, prms, nprms)
    if(engineDir)    free(engineDir);    engineDir = strdup("");
    if(nickName)     free(nickName);     nickName = strdup("");
    if(params)       free(params);       params = strdup("");
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic);
-   //GenericPopUp(installOptions, _("Load engine"), 0);
-   GenericPopUpGTK(installOptions, _("Load engine"), 0);
+   NamesToList(firstChessProgramNames, engineList, engineMnemonic);   
+   GenericPopUp(installOptions, _("Load engine"), 0);
 }
 
 void EditBookProc(w, event, prms, nprms)
@@ -2425,9 +1813,8 @@ void ShuffleMenuProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{
-    //GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
-    GenericPopUpGTK(shuffleOptions, _("New Shuffle Game"), 0);
+{    
+    GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
 }
 
 int tmpMoves, tmpTc, tmpInc, tmpOdds1, tmpOdds2, tcType;
@@ -2520,9 +1907,8 @@ void TimeControlProc(w, event, prms, nprms)
    tmpMoves = appData.movesPerSession;
    tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;
    tmpOdds1 = tmpOdds2 = 1; tcType = 0;
-   tmpTc = atoi(appData.timeControl);
-   //GenericPopUp(tcOptions, _("Time Control"), 0);
-   GenericPopUpGTK(tcOptions, _("Time Control"), 0);
+   tmpTc = atoi(appData.timeControl);   
+   GenericPopUp(tcOptions, _("Time Control"), 0);
 }
 
 //---------------------------- Chat Windows ----------------------------------------------

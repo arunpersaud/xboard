@@ -298,8 +298,6 @@ void DrawPositionProc P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void XDrawPosition P((Widget w, /*Boolean*/int repaint,
 		     Board board));
-void CommentClick P((Widget w, XEvent * event,
-		   String * params, Cardinal * nParams));
 void CommentPopUp P((char *title, char *label));
 void CommentPopDown P((void));
 void ICSInputBoxPopUp P((void));
@@ -311,8 +309,8 @@ void AskQuestionReplyAction P((Widget w, XEvent *event,
 void AskQuestionProc P((Widget w, XEvent *event,
 			  String *prms, Cardinal *nprms));
 void AskQuestionPopDown P((void));
-void PromotionPopDownGTK P((void));
-void PromotionCallbackGTK P((GtkWidget *w, GtkResponseType resptype,
+void PromotionPopDown P((void));
+void PromotionCallback P((GtkWidget *w, GtkResponseType resptype,
                           gpointer gdata));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
 void ResetProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -478,7 +476,7 @@ void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms))
 void EditBookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
-void GenericPopDown P(());
+//void GenericPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
 int CopyMemoProc P(());
@@ -1030,7 +1028,7 @@ XtActionsRec boardActions[] = {
     { "AboutProc", AboutProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
-    { "CommentClick", (XtActionProc) CommentClick },
+    //{ "CommentClick", (XtActionProc) CommentClick },
     { "CommentPopDown", (XtActionProc) CommentPopDown },
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
@@ -1041,7 +1039,7 @@ XtActionsRec boardActions[] = {
    // { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
-    { "GenericPopDown", (XtActionProc) GenericPopDown },
+   // { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
     { "SelectMove", (XtActionProc) SelectMove },
 };
@@ -1139,10 +1137,6 @@ char ICSInputTranslations[] =
     "<Key>Up: UpKeyProc() \n "
     "<Key>Down: DownKeyProc() \n "
     "<Key>Return: EnterKeyProc() \n";
-
-// [HGM] vari: another hideous kludge: call extend-end first so we can be sure select-start works,
-//             as the widget is destroyed before the up-click can call extend-end
-char commentTranslations[] = "<Btn3Down>: extend-end() select-start() CommentClick() \n";
 
 String xboardResources[] = {
     "*question*value.translations: #override\\n <Key>Return: AskQuestionReplyAction()",
@@ -4927,7 +4921,7 @@ void HandleUserMove(w, event, prms, nprms)
 	    //XtPopdown(promotionShell);
 	    //XtDestroyWidget(promotionShell);
 	    //promotionUp = False;
-	    PromotionPopDownGTK();
+	    PromotionPopDown();
 	    ClearHighlights();
 	    fromX = fromY = -1;
 	} else {
@@ -4955,7 +4949,7 @@ void HandlePV (Widget w, XEvent * event,
 
 static int savedIndex;  /* gross that this is global */
 
-void CommentClickGTK(tb)
+void CommentClick(tb)
     GtkTextBuffer *tb;
 {
     String val;
@@ -4974,20 +4968,6 @@ void CommentClickGTK(tb)
     ReplaceComment(savedIndex, val);
     if(savedIndex != currentMove) ToNrEvent(savedIndex);
     LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
-}
-
-void CommentClick (Widget w, XEvent * event, String * params, Cardinal * nParams)
-{
-	String val;
-	XawTextPosition index, dummy;
-	Arg arg;
-
-	XawTextGetSelectionPos(w, &index, &dummy);
-	XtSetArg(arg, XtNstring, &val);
-	XtGetValues(w, &arg, 1);
-	ReplaceComment(savedIndex, val);
-	if(savedIndex != currentMove) ToNrEvent(savedIndex);
-	LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
 }
 
 void EditCommentPopUp(index, title, text)
@@ -5188,24 +5168,22 @@ void PromotionPopUp()
     gtk_widget_show_all(promotionShellGTK);
 
     g_signal_connect (promotionShellGTK, "response",
-                      G_CALLBACK (PromotionCallbackGTK), NULL);
+                      G_CALLBACK (PromotionCallback), NULL);
                      
     g_signal_connect (promotionShellGTK, "delete-event",
-                      G_CALLBACK (PromotionPopDownGTK), NULL);
+                      G_CALLBACK (PromotionPopDown), NULL);
 
     promotionUp = True;               
 }
 
-
-
-void PromotionPopDownGTK()
+void PromotionPopDown()
 {
     if (!promotionUp) return;
     gtk_widget_destroy(GTK_WIDGET(promotionShellGTK));
     promotionUp = False;
 }
 
-void PromotionCallbackGTK(w, resptype, gdata)
+void PromotionCallback(w, resptype, gdata)
      GtkWidget *w;
      GtkResponseType  resptype;
      gpointer  gdata;
@@ -5233,7 +5211,7 @@ void PromotionCallbackGTK(w, resptype, gdata)
     }
     g_list_free(gl);    
 
-    PromotionPopDownGTK();
+    PromotionPopDown();
 
     if (fromX == -1) return;
 
