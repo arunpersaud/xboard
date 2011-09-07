@@ -974,7 +974,7 @@ XtActionsRec boardActions[] = {
     { "AdjuWhiteProc", AdjuWhiteProc },
     { "AdjuBlackProc", AdjuBlackProc },
     { "AdjuDrawProc", AdjuDrawProc },
-    { "TypeInProc", TypeInProc },
+   // { "TypeInProc", TypeInProc },
     { "EnterKeyProc", EnterKeyProc },
     { "UpKeyProc", UpKeyProc },
     { "DownKeyProc", DownKeyProc },

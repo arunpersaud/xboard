@@ -157,6 +157,15 @@ void SetSpinValue(Option *opt, int val, int n)
       printf("error in SetWidgetText, unknown type %d\n", opt->type);    
 }
 
+void SetWidgetTextGTK(GtkWidget *w, char *text)
+{
+    if (!GTK_IS_TEXT_BUFFER(w)) {
+        printf("error: SetWidgetText arg is not a GtkTextBuffer\n");
+        return;
+    }    
+    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(w), text, -1);
+}
+
 void SetWidgetText(Option *opt, char *buf, int n)
 {
     Arg arg;
@@ -220,13 +229,19 @@ void MarkMenu(char *item, int dlgNr)
     XtSetValues(marked[dlgNr] = XtNameToWidget(menuBarWidget, item), args, 1);
 }
 
-int PopDownGTK(int n)
+int PopDown(int n)
 {
-    Arg args[10];
-
+    Arg args[10];    
+    
     if (!shellUp[n]) return 0;
+
     previous = NULL;
-    gtk_widget_destroy(shellsGTK[n]);
+    
+    gtk_widget_hide(shellsGTK[n]);
+    if(n == 0) {
+        gtk_widget_destroy(shellsGTK[n]);
+        shellsGTK[n] = NULL;
+    }    
     shellUp[n] = False;
     /* remove the mark against item in Xt menu */
     if(marked[n]) {        
@@ -237,45 +252,16 @@ int PopDownGTK(int n)
     return 1;
 }
 
-int PopDown(int n)
-{
-    int j;
-    Arg args[10];
-    Dimension windowH, windowW; Position windowX, windowY;
-    if (!shellUp[n]) return 0;
-    if(n && wp[n]) { // remember position
-	j = 0;
-	XtSetArg(args[j], XtNx, &windowX); j++;
-	XtSetArg(args[j], XtNy, &windowY); j++;
-	XtSetArg(args[j], XtNheight, &windowH); j++;
-	XtSetArg(args[j], XtNwidth, &windowW); j++;
-	XtGetValues(shells[n], args, j);
-	wp[n]->x = windowX;
-	wp[n]->x = windowY;
-	wp[n]->width  = windowW;
-	wp[n]->height = windowH;
-    }
-    previous = NULL;
-    XtPopdown(shells[n]);
-    if(n == 0) XtDestroyWidget(shells[n]);
-    shellUp[n] = False;
-    if(marked[n]) {
-	XtSetArg(args[0], XtNleftBitmap, None);
-	XtSetValues(marked[n], args, 1);
-    }
-    if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
-    return 1;
-}
-
-void GenericPopDown(w, event, gdata)
+gboolean GenericPopDown(w, event, gdata)
      GtkWidget *w;
      GdkEvent  *event;
      gpointer  gdata; 
 {
     int data = (intptr_t) gdata; /* dialog number dlgnr */
-
+    
     if(browserUp) return; // prevent closing dialog when it has an open file-browse daughter
-    PopDownGTK(data);
+    PopDown(data);
+    return True; /* don't propagate to default handler */
 }
 
 char *engineName, *engineDir, *engineChoice, *engineLine, *nickName, *params, *tfName;
@@ -327,7 +313,7 @@ int MatchOK(int n)
     if(appData.participants && appData.participants[0]) free(appData.participants);
     appData.participants = strdup(engineName);
     if(!CreateTourney(tfName)) return !appData.participants[0];
-    PopDownGTK(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
+    PopDown(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
     MatchEvent(2); // start tourney
     return 1;
 }
@@ -417,7 +403,7 @@ void Pick(int n)
 	appData.pieceNickNames = "";
 	appData.colorNickNames = "";
 	Reset(True, True);
-        PopDownGTK(0);
+        PopDown(0);
         return;
 }
 
@@ -878,12 +864,12 @@ void GenericPopUpCallback(w, resptype, gdata)
 
     /* OK pressed */    
     if (resptype == GTK_RESPONSE_ACCEPT) {
-        if (GenericReadout(-1)) PopDownGTK(data);
+        if (GenericReadout(-1)) PopDown(data);
         return;
     }
 
     /* cancel pressed */
-    PopDownGTK(data);    
+    PopDown(data);    
 }
 
 void GenericCallback(GtkWidget *widget, gpointer gdata)
@@ -957,6 +943,7 @@ void Browse(GtkWidget *widget, gpointer gdata)
 
       }
     gtk_widget_destroy (dialog);
+    dialog = NULL;
 }
 
 int
@@ -981,10 +968,19 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     GtkWidget *sw;    
 
     int i, j, arraysize, left, top, height=999, width=1;    
-    char def[MSG_SIZ];        
+    char def[MSG_SIZ];
+    
+    if(shellUp[dlgNr]) return 0; // already up   
 
-    if(shellUp[dlgNr]) return 0; // already up
+    if(dlgNr && shellsGTK[dlgNr]) {
+        gtk_widget_show(shellsGTK[dlgNr]);
+        shellUp[dlgNr] = True;
+        return 0;
+    }
+
     dialogOptions[dlgNr] = option; // make available to callback
+    // post currentOption globally, so Spin and Combo callbacks can already use it
+    // WARNING: this kludge does not work for persistent dialogs, so that these cannot have spin or combo controls!
     currentOption = option;
 
     if(currentCps) { // Settings popup for engine: format through heuristic
@@ -1225,7 +1221,8 @@ GenericPopUp(Option *option, char *title, int dlgNr)
     g_signal_connect (dialog, "delete-event",
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
-    shellUp[dlgNr] = True;    
+    shellUp[dlgNr] = True;
+    previous = NULL;    
  
     return 1;
 }
@@ -1525,6 +1522,12 @@ void NewCommentPopup(char *title, char *text, int index)
 {    
     GtkWidget *textview;
 
+    if(shellsGTK[1]) { // if already exists, alter title and content
+        //XtSetArg(args[0], XtNtitle, title);
+        //XtSetValues(shells[1], args, 1);
+        SetWidgetTextGTK(commentOptions[0].handle, text);
+    }
+
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
     MarkMenu("menuView.Show Comments", 1);
@@ -1568,6 +1571,11 @@ void NewTagsPopup(char *text, char *msg)
     Arg args[16];
     char *title = bookUp ? _("Edit book") : _("Tags");
 
+    if(shellsGTK[2]) { // if already exists, alter title and content
+	SetWidgetTextGTK(tagsOptions[1].handle, text);
+	//XtSetArg(args[0], XtNtitle, title);
+	//XtSetValues(shells[2], args, 1);
+    }
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].textValue = msg;
     MarkMenu("menuView.Show Tags", 2);
@@ -1654,25 +1662,6 @@ void InputBoxPopup()
                       (gpointer)(intptr_t) "1");    
 }
 
-void TypeInProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{    
-    String val;
-
-    if(prms[0][0] == '1') {
-	GetWidgetText(&boxOptions[0], &val);
-	TypeInDoneEvent((char*)val);
-    }
-    PopDown(0);
-}
-
-char moveTypeInTranslations[] =
-    "<Key>Return: TypeInProc(1) \n"
-    "<Key>Escape: TypeInProc(0) \n";
-
 void activateCB(entry, data)
      GtkEntry *entry;
      gpointer  data;
@@ -1681,7 +1670,7 @@ void activateCB(entry, data)
    
     val = gtk_entry_get_text(GTK_ENTRY(entry));
     TypeInDoneEvent((char*)val);    
-    PopDownGTK(0);
+    PopDown(0);
 }
 
 void PopUpMoveDialog(char firstchar)
@@ -1737,7 +1726,7 @@ void SecondSettingsProc(w, event, prms, nprms)
 
 int InstallOK(int n)
 {
-    PopDownGTK(0); // early popdown, to allow FreezeUI to instate grab
+    PopDown(0); // early popdown, to allow FreezeUI to instate grab
     if(engineChoice[0] == engineNr[0][0])  Load(&first, 0); else Load(&second, 1);
     return 1;
 }
