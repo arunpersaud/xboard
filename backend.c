@@ -8634,6 +8634,19 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
 		if(appData.pvSAN[cps==&second]) pv = PvToSAN(buf1);
 
+		if(serverMoves && (time > 100 || time == 0 && plylev > 7)) {
+			char buf[MSG_SIZ];
+			FILE *f;
+			snprintf(buf, MSG_SIZ, "%s", appData.serverMovesName);
+			buf[strlen(buf)-1] = gameMode == MachinePlaysWhite ? 'w' :
+			                     gameMode == MachinePlaysBlack ? 'b' : cps->twoMachinesColor[0];
+			if(appData.debugMode) fprintf(debugFP, "write PV on file '%s'\n", buf);
+			if(f = fopen(buf, "w")) { // export PV to applicable PV file
+				fprintf(f, "%5.2f/%-2d %s", curscore/100., plylev, pv);
+				fclose(f);
+			} else DisplayError("failed writing PV", 0);
+		}
+
 		tempStats.depth = plylev;
 		tempStats.nodes = nodes;
 		tempStats.time = time;
@@ -9344,6 +9357,11 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
 {
 //    forwardMostMove++; // [HGM] bare: moved downstream
 
+    (void) CoordsToAlgebraic(boards[forwardMostMove],
+			     PosFlags(forwardMostMove),
+			     fromY, fromX, toY, toX, promoChar,
+			     parseList[forwardMostMove]);
+
     if(serverMoves != NULL) { /* [HGM] write moves on file for broadcasting (should be separate routine, really) */
         int timeLeft; static int lastLoadFlag=0; int king, piece;
         piece = boards[forwardMostMove][fromY][fromX];
@@ -9351,10 +9369,14 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
         if(gameInfo.variant == VariantKnightmate)
             king += (int) WhiteUnicorn - (int) WhiteKing;
         if(forwardMostMove == 0) {
-            if(blackPlaysFirst)
+            if(gameMode == MachinePlaysBlack || gameMode == BeginningOfGame)
+                fprintf(serverMoves, "%s;", UserName());
+            else if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'b')
                 fprintf(serverMoves, "%s;", second.tidy);
             fprintf(serverMoves, "%s;", first.tidy);
-            if(!blackPlaysFirst)
+            if(gameMode == MachinePlaysWhite)
+                fprintf(serverMoves, "%s;", UserName());
+            else if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'w')
                 fprintf(serverMoves, "%s;", second.tidy);
         } else fprintf(serverMoves, loadFlag|lastLoadFlag ? ":" : ";");
         lastLoadFlag = loadFlag;
@@ -9375,13 +9397,18 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
                 fprintf(serverMoves, ":%c%c:%c%c", AAA+fromX, ONE+fromY, AAA+toX, ONE+fromY);
         // promotion suffix
         if(promoChar != NULLCHAR)
-                fprintf(serverMoves, ":%c:%c%c", promoChar, AAA+toX, ONE+toY);
+                fprintf(serverMoves, ":%c:%c%c", ToLower(promoChar), AAA+toX, ONE+toY);
         if(!loadFlag) {
+		char buf[MOVE_LEN*2], *p; int len;
             fprintf(serverMoves, "/%d/%d",
                pvInfoList[forwardMostMove].depth, pvInfoList[forwardMostMove].score);
             if(forwardMostMove+1 & 1) timeLeft = whiteTimeRemaining/1000;
             else                      timeLeft = blackTimeRemaining/1000;
             fprintf(serverMoves, "/%d", timeLeft);
+		strncpy(buf, parseList[forwardMostMove], MOVE_LEN*2);
+		if(p = strchr(buf, '=')) *p = NULLCHAR;
+		len = strlen(buf); if(len > 1 && buf[len-2] != '-') buf[len-2] = NULLCHAR; // strip to-square
+            fprintf(serverMoves, "/%s", buf);
         }
         fflush(serverMoves);
     }
@@ -9409,10 +9436,6 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
     }
     CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar,
 			      moveList[forwardMostMove - 1]);
-    (void) CoordsToAlgebraic(boards[forwardMostMove - 1],
-			     PosFlags(forwardMostMove - 1),
-			     fromY, fromX, toY, toX, promoChar,
-			     parseList[forwardMostMove - 1]);
     switch (MateTest(boards[forwardMostMove], PosFlags(forwardMostMove)) ) {
       case MT_NONE:
       case MT_STALEMATE:
@@ -10220,7 +10243,7 @@ GameEnds(result, resultDetails, whosays)
             if(result==WhiteWins) c = '+';
             if(result==BlackWins) c = '-';
             if(resultDetails != NULL)
-                fprintf(serverMoves, ";%c;%s\n", c, resultDetails);
+                fprintf(serverMoves, ";%c;%s\n", c, resultDetails), fflush(serverMoves);
         }
  	if (resultDetails != NULL) {
 	    gameInfo.result = result;
