@@ -7263,6 +7263,12 @@ EchoOff()
 }
 
 void
+RunCommand(char *buf)
+{
+    system(buf);
+}
+
+void
 Colorize(cc, continuation)
      ColorClass cc;
      int continuation;

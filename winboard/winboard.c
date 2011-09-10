@@ -8853,6 +8853,37 @@ IDLE_PRIORITY_CLASS         0x00000040
         return 0x00000040;
 }
 
+void RunCommand(char *cmdLine)
+{
+  /* Now create the child process. */
+  STARTUPINFO siStartInfo;
+  PROCESS_INFORMATION piProcInfo;
+
+  siStartInfo.cb = sizeof(STARTUPINFO);
+  siStartInfo.lpReserved = NULL;
+  siStartInfo.lpDesktop = NULL;
+  siStartInfo.lpTitle = NULL;
+  siStartInfo.dwFlags = STARTF_USESTDHANDLES;
+  siStartInfo.cbReserved2 = 0;
+  siStartInfo.lpReserved2 = NULL;
+  siStartInfo.hStdInput = NULL;
+  siStartInfo.hStdOutput = NULL;
+  siStartInfo.hStdError = NULL;
+
+  CreateProcess(NULL,
+		cmdLine,	   /* command line */
+		NULL,	   /* process security attributes */
+		NULL,	   /* primary thread security attrs */
+		TRUE,	   /* handles are inherited */
+		DETACHED_PROCESS|CREATE_NEW_PROCESS_GROUP,
+		NULL,	   /* use parent's environment */
+		NULL,
+		&siStartInfo, /* STARTUPINFO pointer */
+		&piProcInfo); /* receives PROCESS_INFORMATION */
+
+  CloseHandle(piProcInfo.hThread);
+}
+
 /* Start a child process running the given program.
    The process's standard output can be read from "from", and its
    standard input can be written to "to".

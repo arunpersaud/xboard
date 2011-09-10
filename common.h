@@ -667,6 +667,7 @@ typedef struct {
     char *processes;
     char *results;
     char *participants;
+    char *afterGame;
     int tourneyType;
     int tourneyCycles;
     int seedBase;

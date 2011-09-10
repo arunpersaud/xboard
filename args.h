@@ -578,6 +578,7 @@ ArgDescriptor argDescriptors[] = {
   { "syncAfterRound", ArgBoolean, (void *) &appData.roundSync, FALSE, (ArgIniType) FALSE },
   { "syncAfterCycle", ArgBoolean, (void *) &appData.cycleSync, FALSE, (ArgIniType) TRUE },
   { "seedBase", ArgInt, (void *) &appData.seedBase, FALSE, (ArgIniType) 1 },
+  { "afterGame", ArgString, (void *) &appData.afterGame, FALSE, INVALID },
 
   /* [HGM] board-size, adjudication and misc. options */
   { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },

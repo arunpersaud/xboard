@@ -10437,6 +10437,7 @@ GameEnds(result, resultDetails, whosays)
 
 	if(waitingForGame) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
 	if(appData.tourneyFile[0]){ // [HGM] we are in a tourney; update tourney file with game result
+	    if(appData.afterGame && appData.afterGame[0]) RunCommand(appData.afterGame);
 	    ReserveGame(nextGame, resChar); // sets nextGame
 	    if(nextGame > appData.matchGames) appData.tourneyFile[0] = 0, ranking = TourneyStandings(3); // tourney is done
 	    else ranking = strdup("busy"); //suppress popup when aborted but not finished
