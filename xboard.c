@@ -7200,6 +7200,7 @@ PlaySound(name)
   } else {
     char buf[2048];
     char *prefix = "", *sep = "";
+    if(appData.soundProgram[0] == NULLCHAR) return;
     if(!strchr(name, '/')) { prefix = appData.soundDirectory; sep = "/"; }
     snprintf(buf, sizeof(buf), "%s '%s%s%s' &", appData.soundProgram, prefix, sep, name);
     system(buf);
