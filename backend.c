@@ -13459,6 +13459,7 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
     if (len == 0) return;
 
     if (commentList[index] != NULL) {
+      Boolean addClosingBrace = addBraces;
 	old = commentList[index];
 	oldlen = strlen(old);
 	while(commentList[index][oldlen-1] ==  '\n')
@@ -13475,7 +13476,7 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
 	if(addBraces) strcat(commentList[index], addBraces == 2 ? "\n(" : "\n{\n");
 	else          strcat(commentList[index], "\n");
 	strcat(commentList[index], text);
-	if(addBraces) strcat(commentList[index], addBraces == 2 ? ")\n" : "\n}\n");
+	if(addClosingBrace) strcat(commentList[index], addClosingBrace == 2 ? ")\n" : "\n}\n");
 	else          strcat(commentList[index], "\n");
     } else {
 	commentList[index] = (char *) malloc(len + 6); // perhaps wastes 4...
