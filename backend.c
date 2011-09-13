@@ -11955,12 +11955,18 @@ SaveGameToFile(filename, append)
 {
     FILE *f;
     char buf[MSG_SIZ];
-    int result;
+    int result, i, t,tot=0;
 
     if (strcmp(filename, "-") == 0) {
 	return SaveGame(stdout, 0, NULL);
     } else {
-	f = fopen(filename, append ? "a" : "w");
+	for(i=0; i<10; i++) { // upto 10 tries
+	     f = fopen(filename, append ? "a" : "w");
+	     if(f && i) fprintf(f, "[Delay \"%d retries, %d msec\"]\n",i,tot);
+	     if(f || errno != 13) break;
+	     DoSleep(t = 5 + random()%11); // wait 5-15 msec
+	     tot += t;
+	}
 	if (f == NULL) {
 	    snprintf(buf, sizeof(buf), _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
