@@ -1662,6 +1662,16 @@ InitBackEnd3 P((void))
     }
 }
 
+void
+HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
+{
+    MoveHistorySet( movelist, first, last, current, pvInfoList );
+
+    EvalGraphSet( first, last, current, pvInfoList );
+
+    MakeEngineOutputTitle();
+}
+
 /*
  * Establish will establish a contact to a remote host.port.
  * Sets icsPR to a ProcRef for a process (or pseudo-process)

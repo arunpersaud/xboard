@@ -200,10 +200,8 @@ BOOL GetActualPlacement( HWND hWnd, WindowPlacement * wp );
 
 VOID MoveHistoryPopUp();
 VOID MoveHistoryPopDown();
-VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo );
 extern HWND moveHistoryDialog;
 
-VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
 VOID EvalGraphPopUp();
 VOID EvalGraphPopDown();
 extern HWND evalGraphDialog;

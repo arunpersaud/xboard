@@ -9866,16 +9866,6 @@ Tween(start, mid, finish, factor, frames, nFrames)
 }
 
 void
-HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
-{
-    MoveHistorySet( movelist, first, last, current, pvInfoList );
-
-    EvalGraphSet( first, last, current, pvInfoList );
-
-    MakeEngineOutputTitle();
-}
-
-void
 SettingsPopUp(ChessProgramState *cps)
 {     // [HGM] wrapper needed because handles must not be passed through back-end
       EngineOptionsPopup(savedHwnd, cps);

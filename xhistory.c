@@ -63,7 +63,6 @@
 void RefreshMemoContent P((void));
 void MemoContentUpdated P((void));
 void FindMoveByCharIndex P(( int char_index ));
-void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
 
 // variables in xoptions.c
 extern Option historyOptions[];
@@ -163,18 +162,3 @@ HistoryShowProc(w, event, prms, nprms)
   } else PopDown(7);
   ToNrEvent(currentMove);
 }
-
-// duplicate of code in winboard.c, so an move to back-end!
-void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
-void MakeEngineOutputTitle P(());
-
-void
-HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
-{
-    MoveHistorySet( movelist, first, last, current, pvInfoList );
-
-    EvalGraphSet( first, last, current, pvInfoList );
-
-    MakeEngineOutputTitle();
-}
-
