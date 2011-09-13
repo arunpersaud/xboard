@@ -137,6 +137,8 @@ void SaveSettings(char* name);
 BOOL BrowseForFolder( const char * title, char * path );
 VOID TourneyPopup();
 VOID LoadEnginePopUp();
+VOID LoadOptionsPopup(HWND hDlg);
+VOID InitTextures();
 
 /* Constants */
 
