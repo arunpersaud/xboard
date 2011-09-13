@@ -55,8 +55,6 @@
 #ifdef WIN32
 #include <windows.h>
 
-#define DoSleep( n ) if( (n) != 0 ) Sleep( (n) );
-
 int flock(int f, int code);
 #define LOCK_EX 2
 #define SLASH '\\'
@@ -64,7 +62,6 @@ int flock(int f, int code);
 #else
 
 #include <sys/file.h>
-#define DoSleep( n ) if( (n) >= 0) sleep(n)
 #define SLASH '/'
 
 #endif

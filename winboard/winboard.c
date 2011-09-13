@@ -9619,6 +9619,12 @@ OutputToProcess(ProcRef pr, char *message, int count, int *outError)
   return outCount;
 }
 
+void
+DoSleep(int n)
+{
+    if(n != 0) Sleep(n);
+}
+
 int
 OutputToProcessDelayed(ProcRef pr, char *message, int count, int *outError,
 		       long msdelay)

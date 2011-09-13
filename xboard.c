@@ -8226,6 +8226,12 @@ FrameDelay (time)
 
 #endif
 
+void
+DoSleep(int n)
+{
+    FrameDelay(n);
+}
+
 /*	Convert board position to corner of screen rect and color	*/
 
 static void
