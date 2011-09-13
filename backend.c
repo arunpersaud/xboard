@@ -168,8 +168,6 @@ int LoadGameOneMove P((ChessMove readAhead));
 int LoadGameFromFile P((char *filename, int n, char *title, int useList));
 int LoadPositionFromFile P((char *filename, int n, char *title));
 int SavePositionToFile P((char *filename));
-void ApplyMove P((int fromX, int fromY, int toX, int toY, int promoChar,
-										Board board));
 void MakeMove P((int fromX, int fromY, int toX, int toY, int promoChar));
 void ShowMove P((int fromX, int fromY, int toX, int toY));
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
@@ -204,7 +202,6 @@ void StopClocks P((void));
 void ResetClocks P((void));
 char *PGNDate P((void));
 void SetGameInfo P((void));
-Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
 int RegisterMove P((void));
 void MakeRegisteredMove P((void));
 void TruncateGame P((void));
