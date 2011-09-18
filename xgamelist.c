@@ -322,6 +322,25 @@ GameListDestroy()
   return;
 }
 
+void ShowGameListProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    if(GUI_GameList)
+      {
+	if(gtk_widget_get_mapped (GUI_GameList))
+	  gtk_widget_hide(GUI_GameList);
+	else
+	  gtk_widget_show(GUI_GameList);
+      }
+
+    if(lastLoadGameNumber)
+      GameListHighlight(lastLoadGameNumber);
+
+    /* GTK-TODO mark gamelist in menu as active */
+    return;
+}
+
 void
 ShowGameListProc(w, event, prms, nprms)
      Widget w;
@@ -695,6 +714,13 @@ GameListOptionsCreate()
     CatchDeleteWindow(shell, "GameListOptionsPopDown");
 
     return shell;
+}
+
+void GameListOptionsPopUpGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    XtPopup(gameListOptShell, XtGrabNone);
 }
 
 void

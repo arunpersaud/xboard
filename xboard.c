@@ -209,6 +209,7 @@ extern char *getenv();
 #include "xhistory.h"
 #include "xedittags.h"
 #include "gettext.h"
+#include "gtk_helper.h"
 
 // must be moved to xengineoutput.h
 
@@ -277,9 +278,12 @@ void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
 		   u_int wreq, u_int hreq));
 void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
+void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
+gboolean EventProcGTK P((GtkWidget *widget, GdkEvent *event, gpointer data));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
+gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEvent *event, gpointer data));
 void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((Widget w, XEvent * event,
@@ -296,6 +300,8 @@ void BlackClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void DrawPositionProc P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
+void GTKDrawPosition P((GtkWidget *w, /*Boolean*/int repaint,
+		     Board board));
 void XDrawPosition P((Widget w, /*Boolean*/int repaint,
 		     Board board));
 void CommentPopUp P((char *title, char *label));
@@ -520,6 +526,34 @@ XFontStruct *coordFontStruct, *countFontStruct;
 XtAppContext appContext;
 char *layoutName;
 char *oldICSInteractionTitle;
+
+/* GTK stuff */
+GtkBuilder      *builder; 
+GtkWidget       *mainwindow;
+GtkWidget       *boardwidgetGTK=NULL;
+GtkWidget       *whiteTimerWidgetGTK;
+GtkWidget       *blackTimerWidgetGTK;
+GtkWidget       *messageWidgetGTK=NULL;
+GtkWidget       *menubarGTK=NULL;
+
+
+GdkPixbuf       *SVGLightSquare=NULL;
+GdkPixbuf       *SVGDarkSquare=NULL;
+GdkPixbuf       *SVGNeutralSquare=NULL;
+
+GdkPixbuf       *SVGWhitePawn=NULL;
+GdkPixbuf       *SVGWhiteKnight=NULL;
+GdkPixbuf       *SVGWhiteBishop=NULL;
+GdkPixbuf       *SVGWhiteRook=NULL;
+GdkPixbuf       *SVGWhiteKing=NULL;
+GdkPixbuf       *SVGWhiteQueen=NULL;
+
+GdkPixbuf       *SVGBlackPawn=NULL;
+GdkPixbuf       *SVGBlackKnight=NULL;
+GdkPixbuf       *SVGBlackBishop=NULL;
+GdkPixbuf       *SVGBlackRook=NULL;
+GdkPixbuf       *SVGBlackKing=NULL;
+GdkPixbuf       *SVGBlackQueen=NULL;
 
 FileProc fileProc;
 char *fileOpenMode;
@@ -1948,6 +1982,8 @@ main(argc, argv)
     char *p;
     XrmDatabase xdb;
     int forceMono = False;
+    char *filename;
+    GError *gtkerror=NULL;
 
     srandom(time(0)); // [HGM] book: make random truly random
 
@@ -2232,6 +2268,58 @@ XBoard square size (hint): %d\n\
     textColors[ColorNone].attr = 0;
 
     XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
+
+
+
+    /* GTK */
+    builder = gtk_builder_new();
+    filename = get_glade_filename ("mainboard.glade");
+    if(! gtk_builder_add_from_file (builder, filename, &gtkerror) )
+      {
+      if(gtkerror)
+        printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
+      }
+
+    //gtk_builder_add_from_file(builder, "mainboard.glade", NULL);
+    /* load square colors */
+    SVGLightSquare   = load_pixbuf("LightSquare.svg",squareSize);
+    SVGDarkSquare    = load_pixbuf("DarkSquare.svg",squareSize);
+    SVGNeutralSquare = load_pixbuf("NeutralSquare.svg",squareSize);
+
+    SVGWhitePawn     = load_pixbuf("WhitePawn.svg",squareSize);
+    SVGWhiteKnight   = load_pixbuf("WhiteKnight.svg",squareSize);
+    SVGWhiteBishop   = load_pixbuf("WhiteBishop.svg",squareSize);
+    SVGWhiteRook     = load_pixbuf("WhiteRook.svg",squareSize);
+    SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg",squareSize);
+    SVGWhiteKing     = load_pixbuf("WhiteKing.svg",squareSize);
+
+    SVGBlackPawn     = load_pixbuf("BlackPawn.svg",squareSize);
+    SVGBlackKnight   = load_pixbuf("BlackKnight.svg",squareSize);
+    SVGBlackBishop   = load_pixbuf("BlackBishop.svg",squareSize);
+    SVGBlackRook     = load_pixbuf("BlackRook.svg",squareSize);
+    SVGBlackQueen    = load_pixbuf("BlackQueen.svg",squareSize);
+    SVGBlackKing     = load_pixbuf("BlackKing.svg",squareSize);
+
+    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));
+    boardwidgetGTK  = GTK_WIDGET(gtk_builder_get_object (builder, "boardwidgetGTK"));
+    if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");
+
+    /* set board bg color to black */
+    GdkColor color;  
+    gdk_color_parse( "#000000", &color );
+    gtk_widget_modify_bg(boardwidgetGTK, GTK_STATE_NORMAL, &color );
+
+    whiteTimerWidgetGTK = GTK_WIDGET(gtk_builder_get_object (builder, "whiteTimerWidgetGTK"));
+    blackTimerWidgetGTK = GTK_WIDGET(gtk_builder_get_object (builder, "blackTimerWidgetGTK"));
+    messageWidgetGTK = GTK_WIDGET(gtk_builder_get_object (builder, "messageWidgetGTK"));
+    menubarGTK  = GTK_WIDGET (gtk_builder_get_object (builder, "MenuBar"));
+
+    gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), boardWidth, boardHeight);
+    gtk_builder_connect_signals(builder, NULL);
+    //g_object_unref (G_OBJECT(builder));
+    gtk_widget_show(mainwindow);
+
+
 
     /*
      * widget hierarchy
@@ -2687,6 +2775,8 @@ XBoard square size (hint): %d\n\
     InitPosition(TRUE);
 //    XtSetKeyboardFocus(shellWidget, formWidget);
     XSetInputFocus(xDisplay, XtWindow(formWidget), RevertToPointerRoot, CurrentTime);
+
+    XtUnmapWidget(shellWidget);
 
     //    XtAppMainLoop(appContext);
     do {
@@ -4311,6 +4401,92 @@ static int CutOutSquare(x, y, x0, y0, kind)
     return 1;
 }
 
+static void BlankSquareGTK(x, y, color, piece, dest, fac)
+     int x, y, color, fac;
+     ChessSquare piece;
+     Drawable dest;
+{   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
+    int x0, y0;
+
+    GdkPixbuf *pb=NULL;
+    cairo_t *cr;
+
+    switch (color) {
+      case 1: /* light */
+        //gc = lightSquareGC;
+        pb = SVGLightSquare;
+        break;
+      case 0: /* dark */
+        pb = SVGDarkSquare;
+        //gc = darkSquareGC;
+        break;
+      case 2: /* neutral */
+        default:
+        pb = SVGNeutralSquare;
+       //gc = jailSquareGC;
+       break;
+    }
+    //XFillRectangle(xDisplay, dest, gc, x*fac, y*fac, squareSize, squareSize);
+    
+    //cr = gdk_cairo_create(GDK_WINDOW(boardwidgetGTK->window));
+    //cairo_set_source_rgb(cr, 0, 0, 0);
+    if (!GTK_IS_WIDGET(boardwidgetGTK)) {
+        printf("boardwidgetGTK not valid\n"); 
+        return;
+    }    
+
+    gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSize, squareSize, GDK_RGB_DITHER_NORMAL, 0, 0);
+    //gdk_draw_pixbuf(cr, NULL, pb, 0, 0, x, y, squareSize, squareSize, GDK_RGB_DITHER_NORMAL, 0, 0);
+    
+    return;
+
+
+    if (useImages && color != 2 && (useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
+	XCopyArea(xDisplay, xpmBoardBitmap[color], dest, wlPieceGC, x0, y0,
+		  squareSize, squareSize, x*fac, y*fac);
+        printf("111\n");
+    } else
+    if (useImages && useImageSqs) {
+	Pixmap pm;
+        printf("222\n");
+	switch (color) {
+	  case 1: /* light */
+	    pm = xpmLightSquare;
+	    break;
+	  case 0: /* dark */
+	    pm = xpmDarkSquare;
+	    break;
+	  case 2: /* neutral */
+	  default:
+	    pm = xpmJailSquare;
+	    break;
+	}
+	XCopyArea(xDisplay, pm, dest, wlPieceGC, 0, 0,
+		  squareSize, squareSize, x*fac, y*fac);
+    } else {
+        printf("333\n");
+	//GC gc;
+        GdkPixbuf *pb;
+	switch (color) {
+	  case 1: /* light */
+	    //gc = lightSquareGC;
+            pb = SVGLightSquare;
+	    break;
+	  case 0: /* dark */
+            pb = SVGDarkSquare;
+	    //gc = darkSquareGC;
+	    break;
+	  case 2: /* neutral */
+	  default:
+            pb = SVGNeutralSquare;
+	    //gc = jailSquareGC;
+	    break;
+	}
+	//XFillRectangle(xDisplay, dest, gc, x*fac, y*fac, squareSize, squareSize);
+        gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSize, squareSize, GDK_RGB_DITHER_NORMAL, 0, 0);
+    }
+}
+
 static void BlankSquare(x, y, color, piece, dest, fac)
      int x, y, color, fac;
      ChessSquare piece;
@@ -4439,6 +4615,109 @@ static void colorDrawPiece(piece, square_color, x, y, dest)
     }
 }
 
+static void colorDrawPieceImageGTK(piece, square_color, x, y, dest)
+     ChessSquare piece;
+     int square_color, x, y;
+     Drawable dest;
+{
+    int kind, p = piece;
+    GdkPixbuf *pb=NULL;
+
+    switch (square_color) {
+      case 1: /* light */
+      case 2: /* neutral */
+      default:
+	if ((int)piece < (int) BlackPawn) {
+	    kind = 0;
+	} else {
+	    kind = 2;
+	    piece -= BlackPawn;
+	}
+	break;
+      case 0: /* dark */
+	if ((int)piece < (int) BlackPawn) {
+	    kind = 1;
+	} else {
+	    kind = 3;
+	    piece -= BlackPawn;
+	}
+	break;
+    }
+    if(appData.upsideDown && flipView) { kind ^= 2; p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
+    if(useTexture & square_color+1) {        
+        BlankSquareGTK(x, y, square_color, piece, dest, 1); // erase previous contents with background        
+/*
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
+    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan, 
+    WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
+    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
+    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
+    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan, 
+    BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
+    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
+    EmptySquare, 
+*/
+        switch (p) {
+          case WhitePawn: 
+            pb = SVGWhitePawn;
+            break;
+          case WhiteKnight: 
+            pb = SVGWhiteKnight;
+            break;
+          case WhiteBishop: 
+            pb = SVGWhiteBishop;
+            break;
+          case WhiteRook: 
+            pb = SVGWhiteRook;
+            break;
+          case WhiteQueen: 
+            pb = SVGWhiteQueen;
+            break;
+          case WhiteKing: 
+            pb = SVGWhiteKing;
+            break;
+
+          case BlackPawn: 
+            pb = SVGBlackPawn;
+            break;
+          case BlackKnight: 
+            pb = SVGBlackKnight;
+            break;
+          case BlackBishop: 
+            pb = SVGBlackBishop;
+            break;
+          case BlackRook: 
+            pb = SVGBlackRook;
+            break;
+          case BlackQueen: 
+            pb = SVGBlackQueen;
+            break;
+          case BlackKing: 
+            pb = SVGBlackKing;
+            break;
+
+          default:
+            if ((int)p < (int) BlackPawn) // white piece 
+                pb = SVGWhiteKing;
+            else
+                pb = SVGBlackKing;
+            break;
+        }
+        //pb = SVGPawn;        
+        if (boardwidgetGTK == NULL) return;  
+        gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSize, squareSize, GDK_RGB_DITHER_NORMAL, 0, 0);        
+	//XSetClipMask(xDisplay, wlPieceGC, xpmMask[p]);
+	//XSetClipOrigin(xDisplay, wlPieceGC, x, y);
+	//XCopyArea(xDisplay, xpmPieceBitmap[kind][piece], dest, wlPieceGC, 0, 0, squareSize, squareSize, x, y);
+	//XSetClipMask(xDisplay, wlPieceGC, None);
+	//XSetClipOrigin(xDisplay, wlPieceGC, 0, 0);
+    } else {
+    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
+	      dest, wlPieceGC, 0, 0,
+	      squareSize, squareSize, x, y);
+    }
+}
+
 static void colorDrawPieceImage(piece, square_color, x, y, dest)
      ChessSquare piece;
      int square_color, x, y;
@@ -4498,6 +4777,25 @@ DrawFunc ChooseDrawFunc()
     }
 }
 
+DrawFunc ChooseDrawFuncGTK()
+{
+    return colorDrawPieceImageGTK;
+/*
+    if (appData.monoMode) {
+	if (DefaultDepth(xDisplay, xScreen) == 1) {
+	    return monoDrawPiece_1bit;
+	} else {
+	    return monoDrawPiece;
+	}
+    } else {
+	if (useImages)
+	  return colorDrawPieceImage;
+	else
+	  return colorDrawPiece;
+    }
+*/
+}
+
 /* [HR] determine square color depending on chess variant. */
 static int SquareColor(row, column)
      int row, column;
@@ -4522,6 +4820,123 @@ static int SquareColor(row, column)
     if(column < BOARD_LEFT || column >= BOARD_RGHT) square_color = 1;
 
     return square_color;
+}
+
+void DrawSquareGTK(row, column, piece, do_flash)
+     int row, column, do_flash;
+     ChessSquare piece;
+{    
+    int square_color, x, y, direction, font_ascent, font_descent;
+    int i;
+    char string[2];
+    XCharStruct overall;
+    DrawFunc drawfunc;
+    int flash_delay;
+
+    /* Calculate delay in milliseconds (2-delays per complete flash) */
+    flash_delay = 500 / appData.flashRate;
+
+    if (flipView) {
+	x = lineGap + ((BOARD_WIDTH-1)-column) *
+	  (squareSize + lineGap);
+	y = lineGap + row * (squareSize + lineGap);
+    } else {
+	x = lineGap + column * (squareSize + lineGap);
+	y = lineGap + ((BOARD_HEIGHT-1)-row) *
+	  (squareSize + lineGap);
+    }
+
+    if(twoBoards && partnerUp) x += hOffset; // [HGM] dual: draw second board
+
+    square_color = SquareColor(row, column);
+
+    if ( // [HGM] holdings: blank out area between board and holdings
+                 column == BOARD_LEFT-1 ||  column == BOARD_RGHT
+              || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
+	          || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
+			BlankSquareGTK(x, y, 2, EmptySquare, xBoardWindow, 1);
+
+			// [HGM] print piece counts next to holdings
+			string[1] = NULLCHAR;
+			if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
+			    string[0] = '0' + piece;
+			    XTextExtents(countFontStruct, string, 1, &direction,
+				 &font_ascent, &font_descent, &overall);
+			    if (appData.monoMode) {
+				XDrawImageString(xDisplay, xBoardWindow, countGC,
+						 x + squareSize - overall.width - 2,
+						 y + font_ascent + 1, string, 1);
+			    } else {
+				XDrawString(xDisplay, xBoardWindow, countGC,
+					    x + squareSize - overall.width - 2,
+					    y + font_ascent + 1, string, 1);
+			    }
+			}
+			if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
+			    string[0] = '0' + piece;
+			    XTextExtents(countFontStruct, string, 1, &direction,
+					 &font_ascent, &font_descent, &overall);
+			    if (appData.monoMode) {
+				XDrawImageString(xDisplay, xBoardWindow, countGC,
+						 x + 2, y + font_ascent + 1, string, 1);
+			    } else {
+				XDrawString(xDisplay, xBoardWindow, countGC,
+					    x + 2, y + font_ascent + 1, string, 1);
+			    }
+			}
+    } else {
+	    if (piece == EmptySquare || appData.blindfold) {
+			BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
+	    } else {
+			drawfunc = ChooseDrawFuncGTK();
+
+			if (do_flash && appData.flashCount > 0) {
+			    for (i=0; i<appData.flashCount; ++i) {
+					drawfunc(piece, square_color, x, y, xBoardWindow);
+					XSync(xDisplay, False);
+					do_flash_delay(flash_delay);
+
+					BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
+					XSync(xDisplay, False);
+					do_flash_delay(flash_delay);
+			    }
+			}
+			drawfunc(piece, square_color, x, y, xBoardWindow);
+    	}
+	}
+
+    string[1] = NULLCHAR;
+    if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
+		&& column >= BOARD_LEFT && column < BOARD_RGHT) {
+	string[0] = 'a' + column - BOARD_LEFT;
+	XTextExtents(coordFontStruct, string, 1, &direction,
+		     &font_ascent, &font_descent, &overall);
+	if (appData.monoMode) {
+	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
+			     x + squareSize - overall.width - 2,
+			     y + squareSize - font_descent - 1, string, 1);
+	} else {
+	    XDrawString(xDisplay, xBoardWindow, coordGC,
+			x + squareSize - overall.width - 2,
+			y + squareSize - font_descent - 1, string, 1);
+	}
+    }
+    if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT)) {
+	string[0] = ONE + row;
+	XTextExtents(coordFontStruct, string, 1, &direction,
+		     &font_ascent, &font_descent, &overall);
+	if (appData.monoMode) {
+	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
+			     x + 2, y + font_ascent + 1, string, 1);
+	} else {
+	    XDrawString(xDisplay, xBoardWindow, coordGC,
+			x + 2, y + font_ascent + 1, string, 1);
+	}
+    }
+    if(!partnerUp && marker[row][column]) {
+	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC,
+		x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
+    }
 }
 
 void DrawSquare(row, column, piece, do_flash)
@@ -4641,6 +5056,23 @@ void DrawSquare(row, column, piece, do_flash)
     }
 }
 
+/* callback for expose event on the main GtkDrawingArea (boardwidgetGTK) */
+/* causes board to be redrawn */
+gboolean EventProcGTK(widget, event, data)
+     GtkWidget *widget;
+     GdkEvent *event;
+     gpointer data;
+{
+    switch (event->type) {
+      case GDK_EXPOSE:
+	if (event->expose.count > 0) return;  // no clipping is done 
+	GTKDrawPosition(widget, True, NULL);
+	break;
+      default:
+	return False;
+    }
+    return False;
+}
 
 /* Why is this needed on some versions of X? */
 void EventProc(widget, unused, event)
@@ -4674,6 +5106,7 @@ void DrawPosition(fullRedraw, board)
      Board board;
 {
     XDrawPosition(boardWidget, fullRedraw, board);
+    GTKDrawPosition(boardwidgetGTK, fullRedraw, board);
 }
 
 /* Returns 1 if there are "too many" differences between b1 and b2
@@ -4773,6 +5206,116 @@ void DrawSeekDot(int x, int y, int colorNr)
 }
 
 static int damage[2][BOARD_RANKS][BOARD_FILES];
+
+void GTKDrawPosition(w, repaint, board)
+     GtkWidget *w;
+     /*Boolean*/int repaint;
+     Board board;
+{
+    int i, j, do_flash;
+    static int lastFlipView = 0;
+    static int lastBoardValid[2] = {0, 0};
+    static Board lastBoard[2];
+    int rrow, rcol;
+    int nr = twoBoards*partnerUp;
+
+    if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
+
+    if (board == NULL) {
+	if (!lastBoardValid[nr]) return;
+	board = lastBoard[nr];
+    }
+    if (!lastBoardValid[nr] || (nr == 0 && lastFlipView != flipView)) {
+	//XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
+	//XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Flip View"),
+	//	    args, 1);
+    }
+
+
+    /*
+     * It would be simpler to clear the window with XClearWindow()
+     * but this causes a very distracting flicker.
+     */
+
+    if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
+
+	if ( lineGap && IsDrawArrowEnabled())
+	    //XDrawSegments(xDisplay, xBoardWindow, lineGC,
+		//	gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
+
+	/* If too much changes (begin observing new game, etc.), don't
+	   do flashing */
+	do_flash = too_many_diffs(board, lastBoard[nr]) ? 0 : 1;
+
+	/* Special check for castling so we don't flash both the king
+	   and the rook (just flash the king). */
+	if (do_flash) {
+	    if (check_castle_draw(board, lastBoard[nr], &rrow, &rcol)) {
+		/* Draw rook with NO flashing. King will be drawn flashing later */
+		DrawSquare(rrow, rcol, board[rrow][rcol], 0);
+		lastBoard[nr][rrow][rcol] = board[rrow][rcol];
+	    }
+	}
+
+	/* First pass -- Draw (newly) empty squares and repair damage.
+	   This prevents you from having a piece show up twice while it
+	   is flashing on its new square */
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++)
+	    if ((board[i][j] != lastBoard[nr][i][j] && board[i][j] == EmptySquare)
+		|| damage[nr][i][j]) {
+		DrawSquareGTK(i, j, board[i][j], 0);
+		damage[nr][i][j] = False;
+	    }
+
+	/* Second pass -- Draw piece(s) in new position and flash them */
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++)
+	    if (board[i][j] != lastBoard[nr][i][j]) {
+		DrawSquareGTK(i, j, board[i][j], do_flash);
+	    }
+    } else {
+	if (lineGap > 0) {
+	  //XDrawSegments(xDisplay, xBoardWindow, lineGC,
+	//		twoBoards & partnerUp ? secondSegments : // [HGM] dual
+	//		gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
+        }
+
+	for (i = 0; i < BOARD_HEIGHT; i++)
+	  for (j = 0; j < BOARD_WIDTH; j++) {
+	      DrawSquareGTK(i, j, board[i][j], 0);
+	      damage[nr][i][j] = False;
+	  }
+    }
+
+    CopyBoard(lastBoard[nr], board);
+    lastBoardValid[nr] = 1;
+  if(nr == 0) { // [HGM] dual: no highlights on second board yet
+    lastFlipView = flipView;
+
+    /* Draw highlights */
+    if (pm1X >= 0 && pm1Y >= 0) {
+      drawHighlight(pm1X, pm1Y, prelineGC);
+    }
+    if (pm2X >= 0 && pm2Y >= 0) {
+      drawHighlight(pm2X, pm2Y, prelineGC);
+    }
+    if (hi1X >= 0 && hi1Y >= 0) {
+      drawHighlight(hi1X, hi1Y, highlineGC);
+    }
+    if (hi2X >= 0 && hi2Y >= 0) {
+      drawHighlight(hi2X, hi2Y, highlineGC);
+    }
+    DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y);
+  }
+    /* If piece being dragged around board, must redraw that too */
+    DrawDragPiece();
+
+    //XSync(xDisplay, False);
+
+
+
+}
 
 /*
  * event handler for redrawing the board
@@ -4907,6 +5450,38 @@ void DrawPositionProc(w, event, prms, nprms)
 //       move, (which will weed out the illegal selfcaptures and moves into the holdings, and flag promotions),
 //       and at the end FinishMove() to perform the move after optional promotion popups.
 //       For now I patched it to allow self-capture with King, and suppress clicks between board and holdings.
+
+gboolean HandleUserMoveGTK(window, event, data)
+     GtkWindow *window;
+     GdkEvent *event;
+     gpointer data;
+{
+    //if (w != boardWidget || errorExitStatus != -1) return;
+    if (errorExitStatus != -1) return;
+    //if(nprms) shiftKey = !strcmp(prms[0], "1");
+
+    if (promotionUp) {	
+        if (event->type == GDK_BUTTON_PRESS) {
+	    //XtPopdown(promotionShell);
+	    //XtDestroyWidget(promotionShell);
+	    //promotionUp = False;
+	    PromotionPopDown();
+	    ClearHighlights();
+	    fromX = fromY = -1;
+	} else {
+	    return False;
+	}
+    }
+
+    // [HGM] mouse: the rest of the mouse handler is moved to the backend, and called here
+    if(event->type == GDK_BUTTON_PRESS)   LeftClick(Press,   (int)event->button.x, (int)event->button.y);
+    if(event->type == GDK_BUTTON_RELEASE) LeftClick(Release, (int)event->button.x, (int)event->button.y);
+
+    //if(event->type == ButtonPress)   LeftClick(Press,   event->xbutton.x, event->xbutton.y);
+    //if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
+    return False;
+}
+
 void HandleUserMove(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5415,6 +5990,13 @@ void ModeHighlight()
 /*
  * Button/menu procedures
  */
+void ResetProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ResetGameEvent();
+}
+
 void ResetProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5443,6 +6025,16 @@ int LoadGamePopUp(f, gameNumber, title)
 	gameNumber = 1;
     }
     return LoadGame(f, gameNumber, title, FALSE);
+}
+
+void LoadGameProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
+	Reset(FALSE, TRUE);
+    }  
+    FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb", OPEN);  
 }
 
 void LoadGameProc(w, event, prms, nprms)
@@ -5484,6 +6076,13 @@ void ReloadGameProc(w, event, prms, nprms)
     ReloadGame(0);
 }
 
+void LoadNextPositionProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ReloadPosition(1);
+}
+
 void LoadNextPositionProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5491,6 +6090,13 @@ void LoadNextPositionProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     ReloadPosition(1);
+}
+
+void LoadPrevPositionProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ReloadPosition(-1);
 }
 
 void LoadPrevPositionProc(w, event, prms, nprms)
@@ -5511,6 +6117,16 @@ void ReloadPositionProc(w, event, prms, nprms)
     ReloadPosition(0);
 }
 
+void LoadPositionProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
+	Reset(FALSE, TRUE);
+    }
+    FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb", OPEN);
+}
+
 void LoadPositionProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5521,6 +6137,16 @@ void LoadPositionProc(w, event, prms, nprms)
 	Reset(FALSE, TRUE);
     }
     FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb", OPEN);
+}
+
+void SaveGameProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    FileNamePopUp(_("Save game file name?"),
+		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
+		  appData.oldSaveStyle ? ".game" : ".pgn",
+		  SaveGame, "a",SAVE);
 }
 
 void SaveGameProc(w, event, prms, nprms)
@@ -5535,6 +6161,16 @@ void SaveGameProc(w, event, prms, nprms)
 		  SaveGame, "a",SAVE);
 }
 
+void SavePositionProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    FileNamePopUp(_("Save position file name?"),
+		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
+		  appData.oldSaveStyle ? ".pos" : ".fen",
+		  SavePosition, "a",SAVE);
+}
+
 void SavePositionProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5547,6 +6183,13 @@ void SavePositionProc(w, event, prms, nprms)
 		  SavePosition, "a",SAVE);
 }
 
+void ReloadCmailMsgProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ReloadCmailMsgEvent(FALSE);
+}
+
 void ReloadCmailMsgProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5554,6 +6197,13 @@ void ReloadCmailMsgProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     ReloadCmailMsgEvent(FALSE);
+}
+
+void MailMoveProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MailMoveEvent();
 }
 
 void MailMoveProc(w, event, prms, nprms)
@@ -5606,6 +6256,31 @@ SendPositionSelection(Widget w, Atom *selection, Atom *target,
   }
 }
 
+void CopyPositionProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    /*
+     * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
+     * have a notion of a position that is selected but not copied.
+     * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
+     */
+    if(gameMode == EditPosition) EditPositionDone(TRUE);
+    if (selected_fen_position) free(selected_fen_position);
+    selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
+    if (!selected_fen_position) return;
+    XtOwnSelection(menuBarWidget, XA_PRIMARY,
+		   CurrentTime,
+		   SendPositionSelection,
+		   NULL/* lose_ownership_proc */ ,
+		   NULL/* transfer_done_proc */);
+    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+		   CurrentTime,
+		   SendPositionSelection,
+		   NULL/* lose_ownership_proc */ ,
+		   NULL/* transfer_done_proc */);
+}
+
 /* note: when called from menu all parameters are NULL, so no clue what the
  * Widget which was clicked on was, or what the click event was
  */
@@ -5646,6 +6321,23 @@ PastePositionCB(Widget w, XtPointer client_data, Atom *selection,
   fenstr[*len]='\0'; /* normally this string is terminated, but be safe */
   EditPositionPasteFEN(fenstr);
   XtFree(value);
+}
+
+void PastePositionProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    XtGetSelectionValue(menuBarWidget,
+      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
+      /* (XtSelectionCallbackProc) */ PastePositionCB,
+      NULL, /* client_data passed to PastePositionCB */
+
+      /* better to use the time field from the event that triggered the
+       * call to this function, but that isn't trivial to get
+       */
+      CurrentTime
+    );
+    return;
 }
 
 /* called when Paste Position button is pressed,
@@ -5736,6 +6428,18 @@ void CopySomething()
 		 NULL/* transfer_done_proc */);
 }
 
+void CopyGameProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  int ret;
+
+  ret = SaveGameToFile(gameCopyFilename, FALSE);
+  if (!ret) return;
+
+  CopySomething();
+}
+
 /* note: when called from menu all parameters are NULL, so no clue what the
  * Widget which was clicked on was, or what the click event was
  */
@@ -5750,6 +6454,14 @@ void CopyGameProc(w, event, prms, nprms)
   ret = SaveGameToFile(gameCopyFilename, FALSE);
   if (!ret) return;
 
+  CopySomething();
+}
+
+void CopyGameListProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
   CopySomething();
 }
 
@@ -5783,6 +6495,23 @@ PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
   LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
 }
 
+void PasteGameProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    XtGetSelectionValue(menuBarWidget,
+      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
+      /* (XtSelectionCallbackProc) */ PasteGameCB,
+      NULL, /* client_data passed to PasteGameCB */
+
+      /* better to use the time field from the event that triggered the
+       * call to this function, but that isn't trivial to get
+       */
+      CurrentTime
+    );
+    return;
+}
+
 /* called when Paste Game button is pressed,
  * all parameters will be NULL */
 void PasteGameProc(w, event, prms, nprms)
@@ -5810,6 +6539,14 @@ void AutoSaveGame()
     SaveGameProc(NULL, NULL, NULL, NULL);
 }
 
+/* exit the application */
+
+void 
+QuitProcGTK(GtkObject *object, gpointer user_data)
+{
+    ExitEvent(0);
+    gtk_main_quit();
+}
 
 void QuitProc(w, event, prms, nprms)
      Widget w;
@@ -5818,6 +6555,13 @@ void QuitProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     ExitEvent(0);
+}
+
+void PauseProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    PauseEvent();
 }
 
 void PauseProc(w, event, prms, nprms)
@@ -5829,6 +6573,12 @@ void PauseProc(w, event, prms, nprms)
     PauseEvent();
 }
 
+void MachineBlackProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MachineBlackEvent();
+}
 
 void MachineBlackProc(w, event, prms, nprms)
      Widget w;
@@ -5839,6 +6589,13 @@ void MachineBlackProc(w, event, prms, nprms)
     MachineBlackEvent();
 }
 
+void MachineWhiteProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MachineWhiteEvent();
+}
+
 void MachineWhiteProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5846,6 +6603,49 @@ void MachineWhiteProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     MachineWhiteEvent();
+}
+
+void AnalyzeModeProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    char buf[MSG_SIZ];
+
+    if (!first.analysisSupport) {
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
+      DisplayError(buf, 0);
+      return;
+    }
+    /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
+    if (appData.icsActive) {
+        if (gameMode != IcsObserving) {
+	  snprintf(buf, MSG_SIZ, _("You are not observing a game"));
+            DisplayError(buf, 0);
+            /* secure check */
+            if (appData.icsEngineAnalyze) {
+                if (appData.debugMode)
+                    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
+                ExitAnalyzeMode();
+                ModeHighlight();
+            }
+            return;
+        }
+        /* if enable, use want disable icsEngineAnalyze */
+        if (appData.icsEngineAnalyze) {
+                ExitAnalyzeMode();
+                ModeHighlight();
+                return;
+        }
+        appData.icsEngineAnalyze = TRUE;
+        if (appData.debugMode)
+            fprintf(debugFP, _("ICS engine analyze starting... \n"));
+    }
+#ifndef OPTIONSDIALOG
+    if (!appData.showThinking)
+      ShowThinkingProc(w,event,prms,nprms);
+#endif
+
+    AnalyzeModeEvent();
 }
 
 void AnalyzeModeProc(w, event, prms, nprms)
@@ -5893,6 +6693,26 @@ void AnalyzeModeProc(w, event, prms, nprms)
     AnalyzeModeEvent();
 }
 
+void AnalyzeFileProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    if (!first.analysisSupport) {
+      char buf[MSG_SIZ];
+      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
+      DisplayError(buf, 0);
+      return;
+    }
+    Reset(FALSE, TRUE);
+#ifndef OPTIONSDIALOG
+    if (!appData.showThinking)
+      ShowThinkingProc(w,event,prms,nprms);
+#endif
+    AnalyzeFileEvent();
+    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb",OPEN);
+    AnalysisPeriodicEvent(1);
+}
+
 void AnalyzeFileProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5915,6 +6735,13 @@ void AnalyzeFileProc(w, event, prms, nprms)
     AnalysisPeriodicEvent(1);
 }
 
+void TwoMachinesProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    TwoMachinesEvent();
+}
+
 void TwoMachinesProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5922,6 +6749,13 @@ void TwoMachinesProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     TwoMachinesEvent();
+}
+
+void MatchProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MatchEvent(2);
 }
 
 void MatchProc(w, event, prms, nprms)
@@ -5933,6 +6767,13 @@ void MatchProc(w, event, prms, nprms)
     MatchEvent(2);
 }
 
+void IcsClientProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    IcsClientEvent();
+}
+
 void IcsClientProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5940,6 +6781,13 @@ void IcsClientProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     IcsClientEvent();
+}
+
+void EditGameProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    EditGameEvent();
 }
 
 void EditGameProc(w, event, prms, nprms)
@@ -5951,6 +6799,13 @@ void EditGameProc(w, event, prms, nprms)
     EditGameEvent();
 }
 
+void EditPositionProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    EditPositionEvent();
+}
+
 void EditPositionProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5960,6 +6815,13 @@ void EditPositionProc(w, event, prms, nprms)
     EditPositionEvent();
 }
 
+void TrainingProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    TrainingEvent();
+}
+
 void TrainingProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5967,6 +6829,21 @@ void TrainingProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     TrainingEvent();
+}
+
+void EditCommentProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    Arg args[5];
+    int j;
+    if (PopDown(1)) { // popdown succesful
+	j = 0;
+	XtSetArg(args[j], XtNleftBitmap, None); j++;
+	XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"), args, j);
+	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"), args, j);
+    } else // was not up
+	EditCommentEvent();
 }
 
 void EditCommentProc(w, event, prms, nprms)
@@ -5986,6 +6863,13 @@ void EditCommentProc(w, event, prms, nprms)
 	EditCommentEvent();
 }
 
+void IcsInputBoxProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    if (!PopDown(4)) ICSInputBoxPopUp();
+}
+
 void IcsInputBoxProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5993,6 +6877,13 @@ void IcsInputBoxProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     if (!PopDown(4)) ICSInputBoxPopUp();
+}
+
+void AcceptProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    AcceptEvent();
 }
 
 void AcceptProc(w, event, prms, nprms)
@@ -6004,6 +6895,13 @@ void AcceptProc(w, event, prms, nprms)
     AcceptEvent();
 }
 
+void DeclineProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    DeclineEvent();
+}
+
 void DeclineProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6011,6 +6909,13 @@ void DeclineProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     DeclineEvent();
+}
+
+void RematchProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    RematchEvent();
 }
 
 void RematchProc(w, event, prms, nprms)
@@ -6022,6 +6927,13 @@ void RematchProc(w, event, prms, nprms)
     RematchEvent();
 }
 
+void CallFlagProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    CallFlagEvent();
+}
+
 void CallFlagProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6029,6 +6941,13 @@ void CallFlagProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     CallFlagEvent();
+}
+
+void DrawProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    DrawEvent();
 }
 
 void DrawProc(w, event, prms, nprms)
@@ -6040,6 +6959,13 @@ void DrawProc(w, event, prms, nprms)
     DrawEvent();
 }
 
+void AbortProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    AbortEvent();
+}
+
 void AbortProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6047,6 +6973,13 @@ void AbortProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     AbortEvent();
+}
+
+void AdjournProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    AdjournEvent();
 }
 
 void AdjournProc(w, event, prms, nprms)
@@ -6058,6 +6991,13 @@ void AdjournProc(w, event, prms, nprms)
     AdjournEvent();
 }
 
+void ResignProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ResignEvent();
+}
+
 void ResignProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6065,6 +7005,13 @@ void ResignProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     ResignEvent();
+}
+
+void AdjuWhiteProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    UserAdjudicationEvent(+1);
 }
 
 void AdjuWhiteProc(w, event, prms, nprms)
@@ -6076,6 +7023,13 @@ void AdjuWhiteProc(w, event, prms, nprms)
     UserAdjudicationEvent(+1);
 }
 
+void AdjuBlackProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    UserAdjudicationEvent(-1);
+}
+
 void AdjuBlackProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6083,6 +7037,13 @@ void AdjuBlackProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     UserAdjudicationEvent(-1);
+}
+
+void AdjuDrawProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    UserAdjudicationEvent(0);
 }
 
 void AdjuDrawProc(w, event, prms, nprms)
@@ -6153,6 +7114,13 @@ void DownKeyProc(w, event, prms, nprms)
     }
 }
 
+void StopObservingProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    StopObservingEvent();
+}
+
 void StopObservingProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6160,6 +7128,13 @@ void StopObservingProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     StopObservingEvent();
+}
+
+void StopExaminingProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    StopExaminingEvent();
 }
 
 void StopExaminingProc(w, event, prms, nprms)
@@ -6171,6 +7146,13 @@ void StopExaminingProc(w, event, prms, nprms)
     StopExaminingEvent();
 }
 
+void UploadProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    UploadGameEvent();
+}
+
 void UploadProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6180,6 +7162,12 @@ void UploadProc(w, event, prms, nprms)
     UploadGameEvent();
 }
 
+void ForwardProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ForwardEvent();
+}
 
 void ForwardProc(w, event, prms, nprms)
      Widget w;
@@ -6190,6 +7178,12 @@ void ForwardProc(w, event, prms, nprms)
     ForwardEvent();
 }
 
+void BackwardProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    BackwardEvent();
+}
 
 void BackwardProc(w, event, prms, nprms)
      Widget w;
@@ -6198,6 +7192,13 @@ void BackwardProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     BackwardEvent();
+}
+
+void ToStartProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ToStartEvent();
 }
 
 void ToStartProc(w, event, prms, nprms)
@@ -6209,6 +7210,13 @@ void ToStartProc(w, event, prms, nprms)
     ToStartEvent();
 }
 
+void ToEndProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    ToEndEvent();
+}
+
 void ToEndProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6216,6 +7224,13 @@ void ToEndProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     ToEndEvent();
+}
+
+void RevertProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    RevertEvent(False);
 }
 
 void RevertProc(w, event, prms, nprms)
@@ -6227,6 +7242,13 @@ void RevertProc(w, event, prms, nprms)
     RevertEvent(False);
 }
 
+void AnnotateProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    RevertEvent(True);
+}
+
 void AnnotateProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6234,6 +7256,13 @@ void AnnotateProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     RevertEvent(True);
+}
+
+void TruncateGameProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    TruncateGameEvent();
 }
 
 void TruncateGameProc(w, event, prms, nprms)
@@ -6244,6 +7273,14 @@ void TruncateGameProc(w, event, prms, nprms)
 {
     TruncateGameEvent();
 }
+
+void RetractMoveProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    RetractMoveEvent();
+}
+
 void RetractMoveProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6253,6 +7290,13 @@ void RetractMoveProc(w, event, prms, nprms)
     RetractMoveEvent();
 }
 
+void MoveNowProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    MoveNowEvent();
+}
+
 void MoveNowProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6260,6 +7304,14 @@ void MoveNowProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     MoveNowEvent();
+}
+
+void FlipViewProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    flipView = !flipView;
+    DrawPosition(True, NULL);
 }
 
 void FlipViewProc(w, event, prms, nprms)
@@ -6702,6 +7754,23 @@ void HideThinkingProc(w, event, prms, nprms)
 }
 #endif
 
+void SaveOnExitProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    Arg args[16];
+
+    saveSettingsOnExit = !saveSettingsOnExit;
+
+    if (saveSettingsOnExit) {
+	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+    } else {
+	XtSetArg(args[0], XtNleftBitmap, None);
+    }
+    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
+		args, 1);
+}
+
 void SaveOnExitProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6721,6 +7790,13 @@ void SaveOnExitProc(w, event, prms, nprms)
 		args, 1);
 }
 
+void SaveSettingsProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    SaveSettings(settingsFileName);
+}
+
 void SaveSettingsProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6728,6 +7804,16 @@ void SaveSettingsProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
      SaveSettings(settingsFileName);
+}
+
+void InfoProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    char buf[MSG_SIZ];
+    snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
+	    INFODIR, INFOFILE);
+    system(buf);
 }
 
 void InfoProc(w, event, prms, nprms)
@@ -6739,6 +7825,20 @@ void InfoProc(w, event, prms, nprms)
     char buf[MSG_SIZ];
     snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
 	    INFODIR, INFOFILE);
+    system(buf);
+}
+
+void ManProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    char buf[MSG_SIZ];
+    String name;
+    //if (nprms && *nprms > 0)
+    //  name = prms[0];
+    //else
+      name = "xboard";
+    snprintf(buf, sizeof(buf), "xterm -e man %s &", name);
     system(buf);
 }
 
@@ -6758,6 +7858,13 @@ void ManProc(w, event, prms, nprms)
     system(buf);
 }
 
+void HintProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    HintEvent();
+}
+
 void HintProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6767,6 +7874,13 @@ void HintProc(w, event, prms, nprms)
     HintEvent();
 }
 
+void BookProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    BookEvent();
+}
+
 void BookProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6774,6 +7888,62 @@ void BookProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     BookEvent();
+}
+
+void AboutProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  GtkWidget *about;
+  char buf[MSG_SIZ];
+
+  const gchar *authors[] = {
+    "Wayne Christopher",
+    "Chris Sears",
+    "Dan Sears",
+    "Tim Mann <tim@tim-mann.org>",
+    "John Chanak",
+    "Evan Welsh <Evan.Welsh@msdw.com>",
+    "Elmar Bartel <bartel@informatik.tu-muenchen.de>",
+    "Jochen Wiedmann",
+    "Frank McIngvale",
+    "Hugh Fisher <Hugh.Fisher@cs.anu.edu.au>",
+    "Allessandro Scotti",
+    "H.G. Muller <h.g.muller AT hccnet DOT nl>",
+    "Arun Persaud <arun@nubati.net>",
+    "Eric Mullins <emwine AT earthlink DOT net>",
+    "John Cheetham <developer AT johncheetham DOT com>",
+    NULL};
+
+  /* create about window */
+  about = gtk_about_dialog_new();
+
+  /* fill in some information */
+#if ZIPPY
+  char *zippy = " (with Zippy code)";
+#else
+  char *zippy = "";
+#endif
+
+  sprintf(buf, "%s%s",  programVersion, zippy);
+
+  gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),buf);
+
+  gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about),
+                                 "Copyright 1991 Digital Equipment Corporation\n"
+                                 "Enhancements Copyright 1992-2009 Free Software Foundation\n"
+                                 "Enhancements Copyright 2005 Alessandro Scotti");
+  gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),"http://www.gnu.org/software/xboard/");
+  gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about),authors);
+  gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(about),
+					  " Translation project (http://translationproject.org)\n");
+
+  /* show widget, destroy on close */
+  gtk_widget_show_all( about );
+  gtk_dialog_run(GTK_DIALOG (about));
+  gtk_widget_destroy(about);
+
+  return;
 }
 
 void AboutProc(w, event, prms, nprms)
@@ -6905,6 +8075,11 @@ void DisplayMessage(message, extMessage)
       XtSetArg(arg, XtNlabel, message);
       XtSetValues(messageWidget, &arg, 1);
     };
+
+  if(messageWidgetGTK)
+    {
+      gtk_label_set_text(GTK_LABEL(messageWidgetGTK), message);      
+    }
 
   return;
 }
@@ -7535,6 +8710,34 @@ StartClockTimer(millisec)
 }
 
 void
+DisplayTimerLabelGTK(w, color, timer, highlight)
+     GtkWidget *w;
+     char *color;
+     long timer;
+     int highlight;
+{
+    char *markup;
+    char bgcolor[10];
+    char fgcolor[10];
+
+    if (highlight) {
+	strcpy(bgcolor, "black");
+        strcpy(fgcolor, "white");
+    } else {
+        strcpy(bgcolor, "white");
+        strcpy(fgcolor, "black");		
+    }
+
+    if (appData.clockMode) {
+        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s: %s</span>", bgcolor, fgcolor, color, TimeString(timer));
+    } else {
+        markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s  </span>", bgcolor, fgcolor, color);
+    }
+    gtk_label_set_markup(GTK_LABEL(w), markup);
+    g_free(markup);    
+}
+
+void
 DisplayTimerLabel(w, color, timer, highlight)
      Widget w;
      char *color;
@@ -7573,6 +8776,15 @@ DisplayTimerLabel(w, color, timer, highlight)
 }
 
 void
+DisplayWhiteClockGTK(timeRemaining, highlight)
+     long timeRemaining;
+     int highlight;
+{
+    if(appData.noGUI) return;
+    DisplayTimerLabelGTK(whiteTimerWidgetGTK, _("White"), timeRemaining, highlight);
+}
+
+void
 DisplayWhiteClock(timeRemaining, highlight)
      long timeRemaining;
      int highlight;
@@ -7580,12 +8792,22 @@ DisplayWhiteClock(timeRemaining, highlight)
     Arg args[16];
 
     if(appData.noGUI) return;
+    DisplayWhiteClockGTK(timeRemaining, highlight);
     DisplayTimerLabel(whiteTimerWidget, _("White"), timeRemaining, highlight);
     if (highlight && iconPixmap == bIconPixmap) {
 	iconPixmap = wIconPixmap;
 	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
 	XtSetValues(shellWidget, args, 1);
     }
+}
+
+void
+DisplayBlackClockGTK(timeRemaining, highlight)
+     long timeRemaining;
+     int highlight;
+{
+    if(appData.noGUI) return;
+    DisplayTimerLabelGTK(blackTimerWidgetGTK, _("Black"), timeRemaining, highlight);
 }
 
 void
@@ -7596,6 +8818,7 @@ DisplayBlackClock(timeRemaining, highlight)
     Arg args[16];
 
     if(appData.noGUI) return;
+    DisplayBlackClockGTK(timeRemaining, highlight);
     DisplayTimerLabel(blackTimerWidget, _("Black"), timeRemaining, highlight);
     if (highlight && iconPixmap == wIconPixmap) {
 	iconPixmap = bIconPixmap;

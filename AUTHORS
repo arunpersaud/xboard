@@ -272,4 +272,5 @@ also: prepared installer files for winboard (not in the tar-ball, but available 
 14. John Cheetham <developer AT johncheetham DOT com>
 
 Changes to convert the GUI from Xt to GTK.
-changes to: AUTHORS, xboard.c, xhistory.c, xoptions.c 
+changes to: AUTHORS, gtk_helper.c, gtk_helper.h, Makefile.am, xboard.c,
+xedittags.c, xhistory.c, xoptions.c 

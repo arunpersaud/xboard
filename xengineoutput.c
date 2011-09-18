@@ -75,6 +75,8 @@ extern char *getenv();
 #include "engineoutput.h"
 #include "gettext.h"
 
+#include <gtk/gtk.h>
+
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)
 # define N_(s) gettext_noop (s)
@@ -609,6 +611,17 @@ int EngineOutputIsUp()
 int EngineOutputDialogExists()
 {
     return engineOutputShell != NULL;
+}
+
+void EngineOutputProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  if (engineOutputDialogUp) {
+    EngineOutputPopDown();
+  } else {
+    EngineOutputPopUp();
+  }
 }
 
 void

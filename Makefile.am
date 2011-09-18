@@ -35,11 +35,14 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@
 
+svgdir = $(datadir)/games/xboard/svg
+
 gladedir = $(datadir)/games/xboard/ui
 glade_DATA = gtk/evalgraph.glade \
-	     gtk/gamelist.glade
+	     gtk/gamelist.glade \
+	     gtk/mainboard.glade
 
-EXTRA_DIST = pixmaps bitmaps sounds winboard filebrowser/README \
+EXTRA_DIST = pixmaps bitmaps svg sounds winboard filebrowser/README \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
 	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS $(glade_DATA)
@@ -49,6 +52,7 @@ DISTCLEANFILES = stamp-h
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
 	    -DBITMAPDIR='"$(datadir)/games/xboard/bitmaps/default"' \
 	    -DGLADEDIR='"$(gladedir)"' \
+	    -DSVGDIR='"$(svgdir)"' \
 	    -DLOCALEDIR='"$(localedir)"'  @GTK_CFLAGS@
 
 ACLOCAL_AMFLAGS = -I m4
@@ -159,6 +163,11 @@ dist_sounds_DATA = \
   sounds/cymbal.wav     sounds/pop2.wav   sounds/slap.wav     sounds/ding1.wav      sounds/laser.wav \
   sounds/woodthunk.wav  sounds/gong.wav   sounds/penalty.wav  sounds/honkhonk.wav   sounds/phone.wav
 
+### files for svg files
+dist_svg_DATA = \
+  svg/BlackBishop.svg     svg/BlackKing.svg     svg/BlackKnight.svg     svg/BlackPawn.svg     svg/BlackQueen.svg \
+  svg/BlackRook.svg       svg/DarkSquare.svg    svg/LightSquare.svg     svg/NeutralSquare.svg svg/WhiteBishop.svg \
+  svg/WhiteKing.svg       svg/WhiteKnight.svg   svg/WhitePawn.svg       svg/WhiteQueen.svg    svg/WhiteRook.svg
 
 ### set correct dir in xboard.conf
 

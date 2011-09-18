@@ -1,0 +1,1116 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="mainwindow">
+    <property name="resizable">False</property>
+    <signal name="destroy" handler="QuitProcGTK"/>
+    <child>
+      <object class="GtkVBox" id="vbox1">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkMenuBar" id="MenuBar">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkMenuItem" id="MenuItemFile">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_File</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="MenuFile">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="newgame">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">New Game</property>
+                        <accelerator key="n" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="ResetProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="newshufflegame">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">New Shuffle Game ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="ShuffleMenuProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="newvariant">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">New Variant ...</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="v" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="NewVariantProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="loadgame">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Load Game</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="LoadGameProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="loadposition">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Load Position</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="o" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="LoadPositionProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="nextposition">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Next Position</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="Page_Down" signal="activate" modifiers="GDK_SHIFT_MASK"/>
+                        <signal name="activate" handler="LoadNextPositionProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="prevposition">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Prev Position</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="Page_Up" signal="activate" modifiers="GDK_SHIFT_MASK"/>
+                        <signal name="activate" handler="LoadPrevPositionProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem3">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="savegame">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Save Game</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="s" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="SaveGameProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="savepositiion">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Save Position</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="s" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="SavePositionProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem4">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="mailmove">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Mail Move</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="MailMoveProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="reloadcmailmessage">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Reload CMail Message</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="ReloadCmailMsgProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem5">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="quit">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Quit</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="QuitProcGTK"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem2">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Edit</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu2">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="copygame">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Copy Game</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="c" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="CopyGameProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="copyposition">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Copy Position</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="c" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="CopyPositionProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="copygamelist">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Copy Game List</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="CopyGameListProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="pastegame">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Paste Game</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="v" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="PasteGameProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="pasteposition">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Paste Position</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="v" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="PastePositionProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem6">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="editgame">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Edit Game</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="e" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="EditGameProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="editposition">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Edit Position</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="e" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="EditPositionProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="edittags">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Edit Tags</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="EditTagsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="editcomment">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Edit Comment</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="EditCommentProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="editbook">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Edit Book</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="EditBookProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem7">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="revert">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Revert</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="Home" signal="activate"/>
+                        <signal name="activate" handler="RevertProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="annotate">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Annotate</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="AnnotateProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="truncategame">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Truncate Game</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="End" signal="activate"/>
+                        <signal name="activate" handler="TruncateGameProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem8">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="backward">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Backward</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="Left" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="BackwardProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="forward">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Forward</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="Right" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="ForwardProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="backtostart">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Back to Start</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="Home" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="ToStartProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="forwardtoend">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Forward to End</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="End" signal="activate" modifiers="GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="ToEndProcGTK"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem3">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_View</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu4">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="flipview">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Flip View</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F2" signal="activate"/>
+                        <signal name="toggled" handler="FlipViewProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem9">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="engineoutput">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Engine Output</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="o" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK"/>
+                        <signal name="toggled" handler="EngineOutputProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="movehistory">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Move History</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="h" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK"/>
+                        <signal name="toggled" handler="HistoryShowProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="evaluationgraph">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Evaluation Graph</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="e" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK"/>
+                        <signal name="toggled" handler="EvalGraphProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="gamelist">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Game List</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="g" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="ShowGameListProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="icstextmenu">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">ICS text menu</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="IcsTextProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem10">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="tags">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Tags</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="EditTagsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="comments">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Comments</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="EditCommentProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="icsinputbox">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">ICS Input Box</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="IcsInputBoxProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem11">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="board">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Board...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="BoardOptionsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="gamelisttags">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Game List Tags</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="GameListOptionsPopUpGTK"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="mode">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Mode</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu5">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="machinewhite">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Machine White</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="w" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="MachineWhiteProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="machineblack">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Machine Black</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="b" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="MachineBlackProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="twomachines">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Two Machines</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="t" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="TwoMachinesProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="analysismode">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Analysis Mode</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="a" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="AnalyzeModeProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="analyzefile">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Analyze File</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="f" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="AnalyzeFileProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="editgam">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Edit Game</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="e" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="EditGameProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="editpositio">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Edit Position</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="e" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="EditPositionProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="training">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Training</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="TrainingProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="icsclient">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">ICS Client</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="IcsClientProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem12">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="machinematch">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Machine Match</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="MatchProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="pause">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Pause</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="Pause" signal="activate"/>
+                        <signal name="activate" handler="PauseProcGTK"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="action">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Action</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu6">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="accept">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Accept</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F3" signal="activate"/>
+                        <signal name="activate" handler="AcceptProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="decline">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Decline</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F4" signal="activate"/>
+                        <signal name="activate" handler="DeclineProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="rematch">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Rematch</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F12" signal="activate"/>
+                        <signal name="activate" handler="RematchProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem13">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="callflag">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Call Flag</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F5" signal="activate"/>
+                        <signal name="activate" handler="CallFlagProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="draw">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Draw</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F6" signal="activate"/>
+                        <signal name="activate" handler="DrawProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="adjourn">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Adjourn</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F7" signal="activate"/>
+                        <signal name="activate" handler="AdjournProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="abort">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Abort</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F8" signal="activate"/>
+                        <signal name="activate" handler="AbortProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="resign">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Resign</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F9" signal="activate"/>
+                        <signal name="activate" handler="ResignProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem14">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="stopobserving">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Stop Observing</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F10" signal="activate"/>
+                        <signal name="activate" handler="StopObservingProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="stopexamining">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Stop Examining</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F11" signal="activate"/>
+                        <signal name="activate" handler="StopExaminingProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="uploadtoexamine">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">Upload to Examine</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="UploadProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem15">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="adjudicatetowhite">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Adjudicate to White</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="AdjuWhiteProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="adjudicatetoblack">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Adjudicate to Black</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="AdjuBlackProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="adjudicatedraw">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Adjudicate Draw</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="AdjuDrawProcGTK"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="engine">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Engine</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu7">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="loadnewengine">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Load New Engine ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="LoadEngineProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem16">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="engine1settings">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Engine #1 Settings ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="FirstSettingsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="engine2settings">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Engine #2 Settings ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="SecondSettingsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem17">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="hint">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Hint</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="HintProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="book">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Book</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="BookProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem18">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="movenow">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Move Now</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="m" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="MoveNowProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="retractmove">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Retract Move</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="x" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="RetractMoveProcGTK"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="options">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Options</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu8">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="general">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">General ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="OptionsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="timecontrol">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Time Control ...</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="t" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="TimeControlProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="commonengine">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Common Engine ...</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="u" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="UciMenuProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="adjudications">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Adjudications ...</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="j" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK"/>
+                        <signal name="activate" handler="EngineMenuProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="ics">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="label" translatable="yes">ICS ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="IcsOptionsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="match">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Match ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="MatchOptionsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="loadgame5">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Load Game ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="LoadOptionsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="savegame5">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Save Game ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="SaveOptionsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="gamelist5">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Game List ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="GameListOptionsPopUpGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="sounds">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Sounds ...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="SoundOptionsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem19">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="savesettingsnow">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Save Settings Now</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="SaveSettingsProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="savesettingsonexit">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Save Settings on Exit</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="SaveOnExitProcGTK"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem4">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Help</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu3">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkMenuItem" id="infoxboard">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Info XBoard</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="InfoProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="manxboard">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Man XBoard</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="F1" signal="activate"/>
+                        <signal name="activate" handler="ManProcGTK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem20">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="aboutxboard">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">About XBoard</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="AboutProcGTK"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="timers">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkLabel" id="whiteTimerWidgetGTK">
+                <property name="visible">True</property>
+                <property name="xalign">0.019999999552965164</property>
+                <property name="label" translatable="yes">&lt;span size="xx-large" weight="heavy" background="black" foreground="white"&gt;White:  6:00&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="blackTimerWidgetGTK">
+                <property name="height_request">15</property>
+                <property name="visible">True</property>
+                <property name="xalign">0.019999999552965164</property>
+                <property name="label" translatable="yes">&lt;span size="xx-large" weight="heavy" background="white"&gt;Black:  6:00&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkLabel" id="messageWidgetGTK">
+                <property name="visible">True</property>
+                <property name="xalign">0.019999999552965164</property>
+                <property name="max_width_chars">30</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkAlignment" id="alignment1">
+                <property name="visible">True</property>
+                <property name="xalign">0.98000001907348633</property>
+                <property name="xscale">0</property>
+                <property name="yscale">0</property>
+                <child>
+                  <object class="GtkHBox" id="hbox2">
+                    <property name="visible">True</property>
+                    <property name="homogeneous">True</property>
+                    <child>
+                      <object class="GtkButton" id="button1">
+                        <property name="label" translatable="yes">&lt;&lt;</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button2">
+                        <property name="label" translatable="yes">&lt;</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button3">
+                        <property name="label" translatable="yes">P</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button4">
+                        <property name="label" translatable="yes">&gt;</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button5">
+                        <property name="label" translatable="yes">&gt;&gt;</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkDrawingArea" id="boardwidgetGTK">
+            <property name="width_request">500</property>
+            <property name="height_request">500</property>
+            <property name="visible">True</property>
+            <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
+            <signal name="button_press_event" handler="HandleUserMoveGTK"/>
+            <signal name="expose_event" handler="EventProcGTK"/>
+            <signal name="button_release_event" handler="HandleUserMoveGTK"/>
+          </object>
+          <packing>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

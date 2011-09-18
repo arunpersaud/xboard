@@ -90,3 +90,49 @@ void restore_window_placement(window, placement)
 
   return;
 }
+
+gchar* get_svg_filename(filename)
+     char *filename;
+{
+  gchar *svgfilename=NULL;
+
+  svgfilename = g_build_filename ("svg/",filename, NULL);
+  if (g_file_test (svgfilename, G_FILE_TEST_EXISTS) == FALSE)
+    {
+      g_free(svgfilename);
+
+      svgfilename = g_build_filename (SVGDIR,filename, NULL);
+      if (g_file_test (svgfilename, G_FILE_TEST_EXISTS) == FALSE)
+	{
+	  g_free(svgfilename);
+	  printf ("Error: can not find svg-file for %s\n",filename);
+	  return NULL;
+	}
+    }
+
+  return svgfilename;
+}
+
+GdkPixbuf *
+load_pixbuf(char *filename,int size)
+{
+  GdkPixbuf *image;
+  gchar *svgfilename;
+
+  /* prepend directory path to filename */
+  /* this will be either "svg/" if running from compile directory */ 
+  /* or "/usr/local/share/games/xboard/svg/" if running installed version */ 
+  svgfilename = get_svg_filename(filename);
+
+  if(size)
+    image = gdk_pixbuf_new_from_file_at_size(svgfilename,size,size,NULL);
+  else
+    image = gdk_pixbuf_new_from_file(svgfilename,NULL);
+
+  if(image == NULL)
+    {
+      printf("Error: couldn't load svg file: %s\n", filename);
+      //exit(EXIT_FAILURE);
+    }
+  return image;
+}

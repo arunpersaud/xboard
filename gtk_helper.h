@@ -26,6 +26,7 @@
 gchar *get_glade_filename       P((char *filename));
 void   save_window_placement    P((GtkWindow *window,  WindowPlacement *placement));
 void   restore_window_placement P((GtkWindow *window,  WindowPlacement *placement));
+GdkPixbuf *load_pixbuf          P((char *filename, int size));
 
 #endif
 

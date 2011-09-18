@@ -198,6 +198,19 @@ void HistoryPopUp()
     MarkMenu("menuView.Show Move History", 7);     
 }
 
+void HistoryShowProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  if (!shellUp[7]) {
+    ASSIGN(historyText, "");
+    HistoryPopUp();
+    RefreshMemoContent();
+    MemoContentUpdated();
+  } else PopDown(7);
+  ToNrEvent(currentMove);
+}
+
 void
 HistoryShowProc(w, event, prms, nprms)
      Widget w;

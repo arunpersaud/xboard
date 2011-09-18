@@ -370,6 +370,16 @@ int EvalGraphDialogExists()
   return GUI_EvalGraph != NULL;
 }
 
+void EvalGraphProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+  if (evalGraphDialogUp)
+    EvalGraphPopDown();
+  else
+    EvalGraphPopUp();
+}
+
 void
 EvalGraphProc(w, event, prms, nprms)
      Widget w;
