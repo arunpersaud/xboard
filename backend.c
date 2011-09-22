@@ -10053,7 +10053,7 @@ NextTourneyGame(int nr, int *swapColors)
 void
 NextMatchGame()
 {   // performs game initialization that does not invoke engines, and then tries to start the game
-    int firstWhite, swapColors = 0;
+    int res, firstWhite, swapColors = 0;
     if(!NextTourneyGame(nextGame, &swapColors)) return; // this sets matchGame, -fcp / -scp and other options for next game, if needed
     firstWhite = appData.firstPlaysBlack ^ (matchGame & 1 | appData.sameColorGames > 1); // non-incremental default
     firstWhite ^= swapColors; // reverses if NextTourneyGame says we are in an odd round
@@ -10062,8 +10062,9 @@ NextMatchGame()
     appData.noChessProgram = (first.pr == NoProc); // kludge to prevent Reset from starting up chess program
     if(appData.loadGameIndex == -2) srandom(appData.seedBase + 68163*(nextGame & ~1)); // deterministic seed to force same opening
     Reset(FALSE, first.pr != NoProc);
-    appData.noChessProgram = FALSE;
-    if(!LoadGameOrPosition(matchGame)) return; // setup game; abort when bad game/pos file
+    res = LoadGameOrPosition(matchGame); // setup game
+    appData.noChessProgram = FALSE; // LoadGameOrPosition might call Reset too!
+    if(!res) return; // abort when bad game/pos file
     TwoMachinesEvent();
 }
 
