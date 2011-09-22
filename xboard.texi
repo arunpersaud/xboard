@@ -2580,9 +2580,11 @@ home directory.
 @item -display
 @itemx -geometry
 @itemx -iconic
+@itemx -name
 @cindex display, option
 @cindex geometry, option
 @cindex iconic, option
+@cindex resource name, option
 These and most other standard Xt options are accepted.
 @item -noGUI
 @cindex noGUI, option
@@ -3615,7 +3617,7 @@ odd number of total games is specified.
 A one-word alias for yourself or your opponent.
 @item -wname <full name>
 @itemx -bname <full name>
-@itemx -name <full name>
+@itemx -myname <full name>
 @itemx -oppname <full name>
 The full name of White, Black, yourself or your opponent.
 @item -wna <net address>
