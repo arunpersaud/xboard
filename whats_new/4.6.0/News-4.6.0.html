@@ -1,0 +1,616 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<title>XBoard News</title>
+</head><body>
+<h1>What is new in WinBoard / XBoard 4.6.0?</h1>
+<table cellpadding="20"><tbody><tr valign="top"><td>
+
+<h3>Engine vs. Engine</h3>
+<ul><li>
+<a href="#tag-C9">Loading and installing engines through the menu</a>
+</li><li>
+<a href="#tag-D1">Running tournaments with more than two partipants</a>
+</li><li>
+<a href="#tag-D2">Stopping a match between two engines</a>
+</li><li>
+<a href="#tag-D10">Replacing a tourney participant</a>
+</li><li>
+<a href="#tag-D9">Playing openings in color-reversed pairs</a>
+</li></ul>
+
+<h3>Interface Improvements</h3>
+<ul><li>
+<a href="#tag-C5">Auto-Queen, and still under-promote?</a>
+</li><li>
+<a href="#tag-D7">Piece fonts and figurine fonts</a>
+</li><li>
+<a href="#tag-D11">Displaying PVs as SAN</a>
+</li><li>
+<a href="#tag-D12">Small scores in the Eval Graph</a>
+</li><li>
+<a href="#tag-D13">How close is the 50-move draw?</a>
+</li><li>
+<a href="#tag-D14">Sign of the engine scores</a>
+</li></ul>
+
+</td><td>
+<h3>Interactive Analysis</h3>
+<ul><li>
+<a href="#tag-D4">Playing moves from the PV</a>
+</li><li>
+<a href="#tag-D5">Rapidly changing the number of PVs</a>
+</li><li>
+<a href="#tag-D6">Setting the other side to move in analysis</a>
+</li><li>
+<a href="#tag-D16">Annotating a game with an engine</a>
+</li></ul>
+
+<h3>Other New Functionality</h3>
+<ul><li>
+<a href="#tag-D8">Searching a position in a PGN file</a>
+</li><li>
+<a href="#tag-D3">Editing the opening book</a>
+</li></ul>
+
+<h3>XBoard -&gt; WinBoard Convergence</h3>
+<ul><li>
+<a href="#tag-A8">Exporting the game list (XB)</a>
+</li><li>
+<a href="#tag-C6">A move type-in box (XB)</a>
+</li><li>
+<a href="#tag-D15">New-style Move History window (XB)</a>
+</li></ul>
+</td><td>
+
+<img src="winboardF.jpg">
+</td></tr></tbody></table>
+
+<table valign="top" cellpadding="20"><tbody><tr><td>
+<img src="CopyGL.png">
+</td><td>
+<h2><a name="tag-A8">Copying the gamelist to the clipboard</a></h2>
+<p>
+The menu entry Copy Game List to Clipboard" so far was missing in XBoard.
+This patch corrects that state of affairs.
+In the Edit menu of XBoard there is now an entry similar to that of
+WinBoard,
+which copies the Game List to the clipboard and primary selection.
+</p><p>
+Like in WinBoard, it copies all selectable fields of each game,
+irrespective of the setting of the game-list options for tag order.
+It uses the same format as WinBoard, a comma-separated list of
+double-quoted strings,
+which makes it easy to import in most spread-sheet programs.
+A difference with the WinBoard implementation is that it does pay
+attention to the Filter field,
+and only includes those games that are displayed in the Game List window
+based on that selection.
+</p>
+</td></tr></tbody></table>
+
+<h2><a name="tag-C5">Detour under-promotion</a></h2>
+<p>
+The promotion popup is a necessary evil.
+It slows you down, but without it, using the option "Always Promote to Queen",
+you can no longer under-promote, which would cost you the occasional game.
+So you have to put up with the popup.
+Or have you?
+</p>
+<table valign="top" cellpadding="20"><tbody><tr><td>
+<p>
+Now XBoard and WinBoard have a new method for entering promotion moves,
+called "detour under-promotion".
+It replaces the option "Always Promote to Queen" in the General Options
+menu dialog.
+(The old option can still be used from the command line,
+when the new one is switched off.)
+It promotes to Queen without asking questions first,
+but still allows you to under-promote to a piece of your choice,
+using only the mouse.
+</p><p>
+The trick is that you can select the piece by not dragging a 7th-rank Pawn
+directly to the promotion square,
+but through a detour, first dragging it "backwards".
+As soon as you start dragging the Pawn it changes into the piece it will
+promote to when you release it.
+Normally this will be Queen (or anyway the default choice for the variant
+you are playing).
+But while you drag it backwards, it cycles through all the options:
+Q -&gt; N -&gt; B -&gt; R -&gt; Q -&gt; N etc.
+As soon as you see the piece-of-choice appear,
+you reverse the direction of dragging to forward.
+This freezes the choice; the piece will not change even if you drag it
+backwards once you have started to drag forward.
+You can then put the piece on the promoton square.
+Or, when you somehow erred, put it back on the from-square,
+and try again.
+In that case it will remember the piece you selected,
+and start with that in stead of Queen.
+So you could also do a click-click move by clicking the to-square,
+or drag it directly forward to it.
+</p>
+</td><td>
+<img src="Detour.png">
+</td></tr></tbody></table>
+
+<h2><a name="tag-C6">Typing in a move</a></h2>
+<p>
+XBoard now has a move type-in just like WinBoard.
+When the board window has focus,
+typing any printable character will pop up a type-in box,
+aready containing the character you typed,
+where you can finish typing a move,
+or a move number.
+The move you type will be played like you entered it with the mouse.
+Typing a move number will make you go to that move,
+like you operated the &lt; or &gt; buttons,
+or clicked the Evaluation Graph.
+</p>
+<table valign="top" cellpadding="20"><tbody><tr><td>
+<p>
+In Edit Position mode, you can also type a FEN.
+In this case the corresponding position will be set upon the board,
+and you will leave Edit Position mode.
+All input has to be terminated by &lt;Enter&gt;,
+which will close the box.
+Hitting &lt;Esc&gt; will close the box ignoring the input.
+</p>
+</td><td>
+<img src="TypeIn.png">
+</td></tr></tbody></table>
+
+<h2><a name="tag-C7">Placing pieces on the board in Edit-Position mode</a></h2>
+<p>
+The Edit Position menu can now be replaced by 'sweep selection'
+of the pieces you want to place, through the option -pieceMenu true|false.
+With sweep selection, right-clicking a square creates a Pawn there
+(because that is the piece you need most of),
+but when you move the mouse before releasing the button,
+the piece on the clicked square will cycle through all available pieces,
+of both colors.
+You release when you see the piece you want.
+A plain right-click will start with a black Pawn,
+pressing the Shift key with it will start with a white Pawn.
+</p><p>
+This manner of placing pieces is especially handy in variants,
+where you might need piece types that are not in the piece menu,
+which can only be obtained by promoting or demoting other pieces.
+It also protects you from placing pieces that do not belong in
+the currently selected variant (as specified by the -pieceToCharTable).
+</p>
+
+<h2><a name="tag-D2">Interrupting a match</a></h2>
+<p>
+The latest release of XBoard added a menu item to start a match.
+But it did not have one to stop a match. 
+The only way to do that was to quit WinBoard, usually causing an unfinished game to appear in the PGN file of saved games.
+This is now corrected.
+During a match, the Machine Match menu item is no longer inactive.
+But clicking it again will cause XBoard to shorten the number of games in the current match
+to the number that has actually been played, including the one in progress.
+So the match will terminate when the current game finishes,
+after which XBoard will either exit (for matches started through the command-line -matchMode option),
+or switch back to Edit Game mode (for matches started from the menu).
+</p>
+
+<table valign="top" cellpadding="20"><tbody><tr><td>
+<img src="LoadEng.png">
+</td><td>
+<h2><a name="tag-C9">Loading a new engine at any time</a></h2>
+<p>
+The engine(s) running under XBoard used to be specified only in advance,
+through -fcp and -scp options on the command line when XBoard is started.
+(WinBoard at least had a startup dialog, where you could select engines
+through a combobox, displaying a list of engines configured in the
+settings file.)
+This experimental patch allows you to change engines during a session,
+(or even during a game!),
+through a new menu dialog.
+</p><p>
+This dialog offers the choice to select an engine from a combobox,
+or specify a new one.
+To do the latter requires you to enter the engine command
+(which in many cases is just the name of an executable file,
+to which you could browse with the aid of the browse button),
+and the type of engine (UCI or WB).
+In Linux, compliant engines don't need specification of a path
+or an engine directory, as they can be run from the command line
+by simply specifying their name.
+So usually you wouldn't have to specify anything for the engine directory.
+If you leave that field empty, and do supply the engine as a path name,
+XBoard will set the directory equal to the one the engine executable was in.
+Check boxes allow you to specify if the engine is UCI or WB v1,
+if it should use the GUI book,
+or if it can only work for a variant.
+</p>
+</td></tr></tbody></table>
+<table cellpadding="10"><tbody><tr><td>
+<p>
+You can also tick a checkbox to have a thus specified engine be added
+to the list of installed engines, which, like in WinBoard,
+is saved in the settings file as the option -firstChessProgramNames.
+Unlike it used to be with the WinBoard Startup dialog, 
+that same list is also used for selecting the second engine, though:
+in the dialog you can specify if you want to replace the first or second
+engine through another combobox.
+(WinBoard now has a new command-line option "-singleEngineList true|false",
+which also allows you to abandon the second list in the Startup dialog as well.)
+When you add an engine to the list, next time it will appear in the
+engine-selection combobox, under its 'tidy' name,
+possibly with the variant for which it works behind it in parantheses.
+It will have remembered the engine type and book-usage options,
+and possibly the variant.
+</p>
+</td><td>
+<pre><img src="EngMenu.png">   <img src="LoadWB.png"></pre>
+</td></tr></tbody></table>
+
+<table valign="top" cellpadding="20"><tbody><tr><td>
+<img src="Tourney.png">
+<pre>
+
+</pre>
+<p>
+WinBoard now also supports this through a similar dialog, shown to the right.
+Due to the inability to accept negative numbers in numeric input fields,
+auto-increment of the game or position index,
+has to be indicated by checkboxes.
+There are also buttons here to directly invoke the Common Engine and Time Control dialogs to enter further settings,
+and to read the parameters of an existing tournament file 
+(first specified in the Tournament File field, e.g. by browsing to it)
+into the dialog, so you could use these for a new tourney as well.
+(Of course you could still change one or more of them before pressing 'OK'.)
+This is very useful if you often play the same gauntlet with a long list ofparticipants,
+to test new versions of your engine.
+</p>
+</td><td>
+<h2><a name="tag-D1">A built-in tournament manager</a></h2>
+<p>
+Xboard now can conduct tournaments more complex than simple two-player matches.
+This works similar to playing a match, except that XBoard will change engines now and then,
+based on tourney parameters stored on a 'tournament file'
+(such as the list of participants, tourney type).
+That file also keeps track of the progress,
+so that starting XBoard with a -tourneyFile left over from an interrupted tournament,
+it will simply resume that tournament, and play it to completion.
+you can even start one (or more) other instance(s) of XBoard with a -tourneyFile that is still in use.
+In that case all the XBoard processes will share the game load, playing several games in parallel.
+</p><p>
+The XBoard Match Options dialog has been extended to allow you to enter the tournament specs.
+Currently you can do round-robins and (multi-)gauntlets.
+Swiss tournaments are implemented through an external pairing engine.
+You can both specify a number of games per pairing (which are played consecutively),
+and a number of 'cycles', i.e. repeats of the entire pairing scheme after all pairings are played.
+When multiple instances of XBoard are working on the same tournament,
+you can make them wait for each other at the end of a round or cycle.
+For a more elaborate description, look <a href="http://hgm.nubati.net/TM.html">here</a>.
+</p>
+<img src="TourneyWB2.png" align="right">
+</td></tr></tbody></table>
+
+<h2><a name="tag-D3">Editing a Polyglot opening book</a></h2>
+<p>
+XBoard now has a very basic facility for editing opening books:
+tuning the move weights, or adding and deleting moves.
+To achieve this a book should be specified in the Common Engine Options
+dialog, in the Polyglot book field.
+(XBoard GUI books are in Polyglot format.)
+After this, you can use the 'Edit Book' item in the 'Edit' menu to edit it.
+Although primitive, this is a very useful feature,
+because XBoard supports many variants,
+and software to edit or otherwise maintain opening books
+for other variants than standard Chess is quite rare.
+</p>
+<table cellpadding="10"><tbody><tr><td>
+<img src="BookMenu.png">
+</td><td>
+<img src="EditBook.png">
+</td><td>
+<p>
+Edit Book will pop up a small window, that contains all moves
+from the current position that are found in the book,
+as a table in text format.
+Each line will display the move weight (as percentage of total,
+and the absolute number),
+and the move.
+You can then alter the weights
+(the percentages are ust to aid the eye;
+they are not really used),
+delete lines,or add lines with new moves in the same format.
+After you are done,
+you can write the information back to the book by clicking 'OK'.
+</p><p>
+As long as the Edit Book window is open,
+its contents will be updated while you step to other positions
+of a loaded game or variation,
+or when you play or retract moves.
+</p>
+</td></tr></tbody></table>
+
+<table cellpadding="10"><tbody><tr><td>
+<h2><a name="tag-D4">Playing PV moves in analysis mode</a></h2>
+<p>
+When the engine is analyzing
+(or at any other time it is thinking, like when playing or pondering)
+you can step through a selected PV it produced
+by right-clicking it in the Engine Output window,
+and moving the mouse.
+But in analysis mode, it is now also possible to add one or more
+of these PV moves to the game you are analysing.
+</p><p></p>
+When you right-click a PV in analysis mode,
+display of the positions along the PV will not start at the end,
+(as is normally done),
+but after the first move.
+You can step through the PV in the usual way,
+by moving the mouse with the right button kept down.
+But when you release that button now,
+the position that was displayed when you released will become the new
+position from which the engine will be analyzing.
+All moves of the PV before that will be added to the stored
+game, starting from the old position the engine was analyzing.
+<p></p><p>
+This means a simple static right-click can be used to
+advance exactly one move along the PV,
+and continue analysis from there.
+But by moving the mouse first, you can follow the PV
+much farther, in one swoop.
+If it was not your intention to make any of the moves at all,
+but you just wanted to have a peek at the PV,
+like right-clicking in other modes would do,
+you can simply move back to the beginning of the PV
+before releasing the mouse button.
+</p><p>
+The Shift key retains its usual meaning for entering moves:
+If you keep it pressed at the time of the right-click,
+for a position not at the end of the game,
+the PV moves will be added as a variation.
+Otherwise the game will be truncated, before adding the moves.
+</p>
+
+<table cellpadding="10"><tbody><tr><td>
+<h2><a name="tag-D5">Quickly adapting the number of printed PVs in analysis mode</a></h2>
+<p>
+The number of PVs printed in multi-PV mode by engines that support
+the option 'MultiPV' can now be conveniently changed by clicking
+on the words 'fewer' or 'more' displayed in the Engine-Output window,
+in Analysis mode.
+The header line printed above the engine output to make this
+possible also specifies if scores are displayed from the white
+or from the side-to-move point of view.
+This can be controlled by the new command-line option
+'-absoluteAnalysisScores true|false'.
+This option has no effect outside Analysis mode.
+</p>
+
+<h2><a name="tag-D13">Displaying the fifty-move counter</a></h2>
+<p>
+The number of plies since the last irreversible move (capture or Pawn push) played in engine games 
+is now displayed in the title bar of the Engine Output window,
+when it gets significantly large.
+This way you can see more easily if the engines are heading for a 50-move draw,
+and how long you will still have to endure it.
+</p>
+</td><td>
+<img src="MultiPV.png">
+</td></tr></tbody></table>
+
+<h2><a name="tag-D6">Null moves in Chess</a></h2>
+<p>
+When analyzing, it is sometimes useful to give the move to the other side as that really has it.
+For instance, if you want to know if there if the last move poses a hidden threat,
+you can let that side move again to reveal his plan.
+In analysis and edit-game mode you can now do such a null move,
+by clicking the clock of the side you want to give the turn to.
+(The old fuction of adjusting the clocks has been abolished,
+because you can do that now in modes where engines play by pressing Shift while clicking on the clock,
+and EditGame mode does not  use the clocks anyway.)
+Pressing Shift while entering the null move will make this move start a variation,
+otherwise it will replace the tail of the current line (as usual).
+A null move will be written as "--" in the PGN file.
+</p>
+
+<table cellpadding="10"><tbody><tr><td>
+<img src="PieceFont.png">
+</td><td>
+<h2><a name="tag-D7">Figurine fonts and piece fonts</a></h2>
+<p>
+The font of the Game List in WinBoard can now be chosen separately from that of Move History and Engine Output,
+so that it becomes possible to choose a figurine font for the latter.
+(This would otherwise completely mess up the Game List.)
+</p><p></p>
+The WinBoard Fonts dialog now also includes the Piece Font, 
+i.e. the font that is used for rendering the pieces on the Chess board,
+which formerly could only be defined by the command-line option /renderPiecesWithFont.
+Because there is no standardization in the way Chess fonts map characters on piece symbols,
+you always have to do this in combination with changing the /fontPieceToCharTable.
+The dialog offers you this opportunity, by allowing you to edit the sample field in the given font,
+so that you can sort the piece symbols of the font into canonical order (PNBRQKpnbrqk),
+so WinBoard knows which character to use for which piece.
+<p>
+</p></td></tr></tbody></table>
+
+<table cellpadding="10"><tbody><tr><td>
+<img src="Figurine.html">
+<br>
+<img src="SelectWB.png">
+</td><td>
+<table cellpadding="10"><tbody><tr><td valign="top">
+<p></p>
+The use of font-based piece rendering and board-texture bitmaps can now also be switched on or off 
+in an easy way from the menu, by new checkboxes in the Board Options dialog.
+These correspond to new command-line options /useBoardTexture and /usePieceFont,
+which suppress the use of these features even if valid bitmap or font names are given.
+Before this could only be acheived by making the names invalid.
+<p></p>
+<img src="PositionWB.png">
+</td><td>
+<img src="UseTexture.png">
+</td></tr></tbody></table>
+
+<h2><a name="tag-D8">Searching a position in a game file</a></h2>
+<p>
+XBoard now supports the possibility to filter games based on the occurrence of a given position,
+just as you could already filter on occurrence of a certain text in the game header.
+To this end there now is a new button in the Game List window, "find position".
+When this button is pressed, the loaded game file will be searched for the position currently shown in the board display,
+and only games containing this position will be dispayed in the Game List.
+(The filter text is also taken into account during such a search.)
+When you then load a game selected this way, auto-play will be suppressed,
+and in stead you will be automatically moved to the sought position.
+Selecting by header text only remains possible through the Filter (WB) / Apply (XB) buttons.
+</p><p>
+Note that searching for a position is a much slower process than searching for a header text,
+because all the games have to be replayed to compare their positions.
+For big files with tens of thousands of games, this could take appreciable time.
+To show progress, messages counting the number of games already processed will be shown in the title bar of the main window.
+XBoard will try to preprocess the games, and cache them in memory in a compressed (2 byte per move) format,
+to speed up subsequent searches through them.
+But if the file is too big, this will not work, and all searches must be conducted from disk.
+</p>
+<img src="Count.png" align="right">
+</td></tr></tbody></table>
+<p>
+Apart for selecting games by position or by an exact text match in the header line,
+you can now also select them by numerical comparison on the rating and date tags.
+Thresholds for rating and year can be set, and only games of higher-rated players
+or from later years will then be selected.
+These thresholds can be set from the Load Game menu dialog,
+as  well as through the (volatile) command-line options
+-eloThresholdAny, -eloThresholdBoth, and -dateThreshold.
+The way positions are searched can also be set in this dialog.
+You can search for an exact match, but also for positions
+that can contain additional material on what are empty squares in the board display,
+or material composition with or without exact Pawn structure.
+There also is a mode in which you can search for material within a specified range,
+where you set up the material that must minimally be present in the lowe board half,
+and what could be present optionally next to that in the upper half.
+You can also require that this optional material should be balanced,
+so that you will only find positions with the same difference in material as what you set up in the lower board half.
+Position searches can be extended to also find horizontally mirrored or color-reversed positions.
+</p>
+
+<h2><a name="tag-D9">Playing openings with reversed colors</a></h2>
+<p>
+The setting "-loadGameIndex -2" to indicate XBoard should take a new opening line from a game file every two games, 
+in a match or tournament between engines,
+is now also effective in combination with the GUI book.
+Provided both engines do use the GUI book, specifying this option
+(through ticking the checkbox "Use each line/position twice" in the Tournament dialog)
+will cause the odd games to be extracted randomly from the book,
+but the following even games then to use exactly the same opening.
+When you play an even number of games per pairing, this game will be between the same two engines,
+so they will play it with the colors reversed.
+This will even work when these two games are played by different XBoard instances working on the same tourney.
+</p>
+
+<table cellpadding="10"><tbody><tr><td>
+<h2><a name="tag-D10">Replacing engines during a tournament</a></h2>
+<p>
+The built-in tournament manager now allows you to replace an engine in a running tournament.
+To this end two buttons have been added in the Tournament dialog.
+The way it works is that you first replace the name of the engine you want to replace
+by the name of the engine you want to replace it with 
+in the Participants list of the Tournament dialog,
+by editing the latter.
+After that you can use one of the buttons to perform the substitution.
+With "Upgrade" the games already played by the replaced engine remain valid,
+and the new engine will only replace it for future games.
+With "Replace" all games of the replaced engine will be voided, and be replayed with the new one.
+You won't even have to stop the tourney to do this,
+as long as the engine you want to erase the games of is not playing at the moment you try to replace it.
+</p>
+</td><td>
+<img src="Replace.png">
+</td></tr></tbody></table>
+
+<h2><a name="tag-D11">Converting PVs to SAN</a></h2>
+<p>
+Some engines show ugly PVs (in the message field above the board, or in the Engine-Output window),
+using long-algebraic notation.
+It is now possible to let XBoard convert PVs to SAN before display, on a per-engine basis,
+through the options -fSAN and -sSAN.
+This does put some extra workload on the GUI, though, having to parse each PV to extract the meaning of each move,
+and then convert it to SAN.
+You would also lose any remarks the engine writes in between its moves.
+So do not use it frivolously.
+</p>
+
+<table cellpadding="10"><tbody><tr><td>
+<img src="Zoom.png">
+</td><td>
+<h2><a name="tag-D12">Zooming in on small scores in the Evaluation Graph</a></h2>
+<p>
+The vertical axis of the Eval Graph always runs from -5 to +5 Pawns,
+(or -15 to +15 in drop games like Crazyhouse or Shogi),
+with ticks at 1, 3 and 5.
+Larger scores are not very interesting, as the game is usually completely decided when they occur
+(and the graph can overshoot the axis to about +/-7 anyway).
+But it makes small scores occurring in the beginning of the game hard to see.
+An additional hindrance was that scores below a certain threshold (0.25 in absolute value)
+were not drawn at all in the graph, for unclear reasons.
+</p>
+</td></tr></tbody></table>
+<p>
+A new option, "-evalZoom N" with integer N, allows you to blow up the range -1 to 1 by the given factor,
+to get better view there.
+Default value is 1, to mimic old behavior, but usually N=3 provides a much nicer view.
+In XBoard the zoom factor can be set from the General Options menu dialog.
+A new option "-evalThreshold S" allows you to alter the score threshold below which drawing is suppressed
+to S centiPawn (default 25 cP).
+The score/depth of the currently displayed move is now printed numerically in the title bar of the Eval Graph,
+and no longer in the Comment popup,
+so you can more easily see them (and won't be bothered by the Comment popup that much anymore).
+</p>
+
+<h2><a name="tag-D14">The point of view of engine scores</a></h2>
+<p>
+Two options have been added to control the point of view of scores.
+With "-absoluteAnalysisScores true|false" you can control whether scores in the Engine-Output window
+will be displayed from a white perspective, or from the perspective of the side to move, in Analysis mode.
+With "-scoreWhite true|false" you can do the same for all modes.
+These options have only effect on printing of the scores,
+not on score-based adjudication, sorting order of multi-PV lines,
+or the Evaluation Graph (which always shows scores from the white perspective).
+</p>
+
+<table cellpadding="10"><tbody><tr><td>
+<h2><a name="tag-D15">New-style move-history window for XBoard</a></h2>
+<p>
+XBoard now has a Move History window similar to that of WinBoard,
+which displays the game in free-format PGN style.
+This means that score-depth info can now be printed in PGN comment style between the moves,
+through the option "-showEvalInMoveHistory true|false",
+wich can also be set from the General Options dialog.
+Of course clicking on the moves will still bring up the corresponding position on the board, as usual.
+Apart from being a step in the XBoard -&gt; WinBoard convergence,
+this "landscape" style Move History is preferred over the old "portrait" format,
+for more natural tiling of the various widows.
+</p>
+</td><td>
+<img src="History.png">
+</td></tr></tbody></table>
+
+<h2><a name="tag-D16">Annotating a game with analysis results</a></h2>
+<p>
+The item "Analyze File" in the Mode menu has been replaced by an item "Analyze Game".
+The original function of "Analyze File" loading a game file and starting analysis on it,
+had already been altered since XBoard 4.5.0.
+It was not really useful, as it did the same as what could also be done
+by first loading a game, and then switching to Analysis Mode.
+In stead it was made to save the analysis results as comments to the moves,
+during the automatic stepping through the loaded game.
+</p><p>
+But it was quite illogical to have an item in the Mode menu that would open a file;
+such items belong in the File menu.
+And being only able to do such annotation on games from files was not very flexible.
+The menu item that now replaces it, "Analyze Game", performs the same kind of annotation,
+(with engine score/depth and PV),
+but now on the game that is already stored, starting from the currently shown position.
+As you can stop the auto-stepping at any time, by switching to another mode,
+this means you can now limit the annotation to any selected part of the game,
+starting where it gets interesting.
+</p>
+
+</td></tr></tbody></table></body></html>
