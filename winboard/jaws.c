@@ -248,16 +248,41 @@ AdaptMenu()
 	DrawMenuBar(hwndMain);
 }
 
+#ifdef NVDA
+
+#include "nvdaController.h"
+
+void
+SayNVDA(char *text, BOOL interrupt)
+{
+	static wchar_t buf[8000];
+        if(interrupt) nvdaController_cancelSpeech();
+	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, text, -1, buf, 8000);
+        nvdaController_speakText(buf);
+}
+
+
+#undef UNICODE
+
+#endif
+
 BOOL
 InitJAWS()
 {	// to be called at beginning of WinMain, after InitApplication and InitInstance
-	HINSTANCE hApi = LoadLibrary("jfwapi32.dll");
-	if(!hApi) {
+#ifdef NVDA
+	RealSayString = (PSAYSTRING) &SayNVDA; // assume NVDA
+	if(nvdaController_testIfRunning()) {  // no NVDA; try JAWS
+#else
+	{
+#endif
+	    HINSTANCE hApi = LoadLibrary("jfwapi32.dll");
+	    if(!hApi) { // no interface to JAWS either
 		DisplayInformation("Missing jfwapi32.dll");
 		return (FALSE);
+	    }
+	    RealSayString = (PSAYSTRING)GetProcAddress(hApi, "JFWSayString");
 	}
 
-	RealSayString = (PSAYSTRING)GetProcAddress(hApi, "JFWSayString");
 	if(!RealSayString) {
 		DisplayInformation("SayString returned a null pointer");
 		return (FALSE);

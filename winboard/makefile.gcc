@@ -18,8 +18,8 @@ compile = @echo "$1"; $(CC) $(CFLAGS) $1
 USE_DEBUG=0
 
 
-# JAWS support?
-JAWS=0
+# JAWS support? (Set to 2 for NVDA support!)
+JAWS=2
 
 
 # set this to 1 unless you don't mind linking with cygwin1.dll
@@ -40,6 +40,9 @@ DEFS = -D_WIN32_IE=0x0300 -DWIN32
 ifeq ($(JAWS),1)
   DEFS += -DJAWS
 endif
+ifeq ($(JAWS),2)
+  DEFS += -DJAWS -DNVDA
+endif
 WARN = -Wall -Wno-char-subscripts -Wno-parentheses
 ARCH =
 ifeq ($(USE_DEBUG),0)
@@ -51,6 +54,9 @@ endif
 CF = -c $(WARN) -pipe $(CFDEBUG) $(DEFS) -I. -I..
 CFLAGS = $(CF) $(ARCH) $(OPTS) $(CFCYG)
 LFLAGS = $(LFCYG) $(CFDEBUG) -fpic -s -mwindows -lwsock32 -lwinmm -lcomctl32
+ifeq ($(JAWS),2)
+  LFLAGS += C:/cygwin/home/fboard/nvda/nvdaControllerClient32.lib
+endif
 
 all: $(PROJ).exe
 
