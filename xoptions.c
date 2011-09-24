@@ -1731,11 +1731,11 @@ gboolean keypressicsCB(w, eventkey, data)
     if (!shellUp[4]) return True;
 
     switch(eventkey-> keyval) {
-      case GDK_KEY_Return:
+      case GDK_Return:
         if (shellUp[4] == True)
             ICSInputSendText(); 
         break;             
-      case GDK_KEY_Up:                
+      case GDK_Up:                
         edit = boxOptions[0].handle;
         val = (String)gtk_entry_get_text (GTK_ENTRY (edit));        
         val = PrevInHistory(val);        
@@ -1745,7 +1745,7 @@ gboolean keypressicsCB(w, eventkey, data)
             gtk_entry_set_text (GTK_ENTRY (edit), val);
         }
         break;
-      case GDK_KEY_Down:        
+      case GDK_Down:        
         edit = boxOptions[0].handle;
         val = NextInHistory();
         /* clear the text in the GTKEntry */

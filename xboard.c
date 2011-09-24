@@ -4367,6 +4367,65 @@ static void do_flash_delay(msec)
     TimeDelay(msec);
 }
 
+#define LINE_TYPE_NORMAL 0
+#define LINE_TYPE_HIGHLIGHT 1
+#define LINE_TYPE_PRE 2
+
+static void
+drawHighlightGTK(file, rank, line_type)
+     int file, rank, line_type;
+{
+  int x, y;
+  cairo_t *cr;
+
+  if (lineGapGTK == 0 || appData.blindfold) return;
+
+  if (flipView)
+    {
+      x = lineGapGTK/2 + ((BOARD_WIDTH-1)-file) *
+	(squareSizeGTK + lineGapGTK);
+      y = lineGapGTK/2 + rank * (squareSizeGTK + lineGapGTK);
+    }
+  else
+    {
+      x = lineGapGTK/2 + file * (squareSizeGTK + lineGapGTK);
+      y = lineGapGTK/2 + ((BOARD_HEIGHT-1)-rank) *
+	(squareSizeGTK + lineGapGTK);
+    }
+
+  /* get a cairo_t */
+  cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
+  /* draw the highlight */
+  cairo_move_to (cr, x, y);
+  cairo_rel_line_to (cr, 0,squareSizeGTK+lineGapGTK);
+  cairo_rel_line_to (cr, squareSizeGTK+lineGapGTK,0);
+  cairo_rel_line_to (cr, 0,-squareSizeGTK-lineGapGTK);
+  cairo_close_path (cr);
+
+  cairo_set_line_width (cr, lineGapGTK);
+  switch(line_type)
+    {
+      /* TODO: use appdata colors */
+    case LINE_TYPE_HIGHLIGHT:
+      cairo_set_source_rgba (cr, 1, 1, 0, 1.0);
+      break;
+    case LINE_TYPE_PRE:
+      cairo_set_source_rgba (cr, 1, 0, 0, 1.0);
+      break;
+    case LINE_TYPE_NORMAL:
+    default:
+      cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
+    }
+
+  cairo_stroke (cr);
+
+  /* free memory */
+  cairo_destroy (cr);
+
+  return;
+}
+
 static void drawHighlight(file, rank, gc)
      int file, rank;
      GC gc;
@@ -4393,9 +4452,52 @@ int hi1X = -1, hi1Y = -1, hi2X = -1, hi2Y = -1;
 int pm1X = -1, pm1Y = -1, pm2X = -1, pm2Y = -1;
 
 void
+SetHighlightsGTK(fromX, fromY, toX, toY)
+     int fromX, fromY, toX, toY;
+{ 
+  if (hi1X != fromX || hi1Y != fromY)
+    {
+      if (hi1X >= 0 && hi1Y >= 0)
+	{
+	  drawHighlightGTK(hi1X, hi1Y, LINE_TYPE_NORMAL);
+	}
+    }
+  if (hi2X != toX || hi2Y != toY)
+    {
+      if (hi2X >= 0 && hi2Y >= 0)
+	{
+	  drawHighlightGTK(hi2X, hi2Y, LINE_TYPE_NORMAL);
+	}
+    }
+  if (hi1X != fromX || hi1Y != fromY)
+    {
+      if (fromX >= 0 && fromY >= 0)
+	{
+	  drawHighlightGTK(fromX, fromY, LINE_TYPE_HIGHLIGHT);
+	}
+    }
+  if (hi2X != toX || hi2Y != toY)
+    {
+      if (toX >= 0 && toY >= 0)
+	{
+	  drawHighlightGTK(toX, toY, LINE_TYPE_HIGHLIGHT);
+	}
+    }
+  hi1X = fromX;
+  hi1Y = fromY;
+  hi2X = toX;
+  hi2Y = toY;
+
+  return;
+}
+
+void
 SetHighlights(fromX, fromY, toX, toY)
      int fromX, fromY, toX, toY;
 {
+
+    SetHighlightsGTK(fromX, fromY, toX, toY);
+
     if (hi1X != fromX || hi1Y != fromY) {
 	if (hi1X >= 0 && hi1Y >= 0) {
 	    drawHighlight(hi1X, hi1Y, lineGC);
@@ -4423,8 +4525,15 @@ SetHighlights(fromX, fromY, toX, toY)
 }
 
 void
+ClearHighlightsGTK()
+{    
+    SetHighlightsGTK(-1, -1, -1, -1);
+}
+
+void
 ClearHighlights()
 {
+    ClearHighlightsGTK();
     SetHighlights(-1, -1, -1, -1);
 }
 
