@@ -83,25 +83,6 @@ what normally would be the ICS socket of the child, and a new output channel
 of the parent, so that the parent can forward board and move lists belonging to
 a specific game to the slave dedicated to display it.</p>
 
-<h4>Allow run-time loading / unloading of engines</h4>
-<p>A tricky issue, because in the current code initializing the engine is intertwined
-with initializing XBoard. And the whole idea is to be able to switch engine without
-losing your current settings or indeed your current game. So it will require some
-good thought about which options need to be reset (like -fd, for sure), and which
-should be kept.</p>
-
-<h4>Implement a tournament manager in XBoard</h4>
-<p>Currently XBoard supports only two-player matches. If run-time changing of the
-engine becomes possible, it wold be nice if people could also perform automatic
-round-robins or gauntlets between a group of engines.</p>
-
-<h4>Processing of engine PVs before display</h4>
-<p>Currently XBoard just displays what the engine prints for PV in its thinking output
-literally. Which often means long algebraic. It would be nice if the user can choose
-the display format, so it can be SAN or even some other format (e.g. descriptive
-notation or some specific Xangqi or Shogi format), possibly through invoking an
-external processor.</p>
-
 <h4>Update the documentation</h4>
 <p>The documentation could need some updates. In our effort to merge
 Winboard and XBoard back together, we also want to merge the RTF file
@@ -122,7 +103,7 @@ all developers have access to it.</p>
 <h4>stable version</h4>
 
 <p>The current stable version
-is: <a href="ftp://ftp.gnu.org/gnu/xboard/">4.5.2a</a></p>
+is: <a href="ftp://ftp.gnu.org/gnu/xboard/">4.5.3</a></p>
 
 <p>It can be found on the main GNU ftp server:
 <a href="http://ftp.gnu.org/gnu/xboard/">http://ftp.gnu.org/gnu/xboard/</a> (via http) and
@@ -154,7 +135,7 @@ know).</p>
 This will become version 4.5.3. <a href="http://packages.debian.org/experimental/xboard">Debian packages</a> of these tar-balls are available.
 </li>
 <li>A snapshot of the master branch: <a href="ftp://alpha.gnu.org/gnu/xboard/"> master-20110822 </a>. <br />
-The master branch includes the development for v4.5.x and also has some more experimental features that need more testing and/or debugging. Precompiled packaged versions are available for <a href="http://packages.debian.org/experimental/xboard">debian</a> and <a href="http://hgm.nubati.net/WinBoard-4.5.0.exe ">Windows</a>. More current versions from the master branch can be downloaded via git or from the Open Build Server (see above).
+The master branch includes the development for v4.5.x and also has some more experimental features that need more testing and/or debugging. Precompiled packaged versions are available for <a href="http://packages.debian.org/experimental/xboard">debian</a> and <a href="http://hgm.nubati.net/WinBoard-4.5TM.exe ">Windows</a>. More current versions from the master branch can be downloaded via git or from the Open Build Server (see above).
 </li>
 <li> New GTK branch in git (no developer release available yet). </li>
 </ul>
@@ -329,7 +310,7 @@ notice, and the copyright notice, are preserved.</p>
 
 <p>Updated:
 <!-- timestamp start -->
-$Date: 2011/08/23 05:53:44 $
+$Date: 2011/09/25 17:50:28 $
 <!-- timestamp end -->
 </p>
 </div>
