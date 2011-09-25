@@ -586,7 +586,7 @@ Boolean chessProgram;
 
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int squareSize, squareSizeGTK, smallLayout = 0, tinyLayout = 0,
-  marginW, marginH, // [HGM] for run-time resizing
+  marginW, marginH, xMargin, yMargin, // [HGM] for run-time resizing
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
   ICSInputBoxUp = False, askQuestionUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
@@ -1723,6 +1723,13 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     XtGeometryResult gres;
     int i;
 
+//    gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK,
+//							   BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK);
+    gtk_widget_set_size_request(GTK_WIDGET(mainwindow), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK + xMargin,
+						       BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK + yMargin);
+    gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK,
+						           BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK);
+
     if(!formWidget) return;
 
     /*
@@ -2354,6 +2361,11 @@ XBoard square size (hint): %d\n\
     
     /* set the minimum size the user can resize the main window to */
     gtk_widget_set_size_request(mainwindow, 402, 314);
+  { gint wx, hx, wb, hb;
+    gtk_widget_get_size_request(GTK_WIDGET(mainwindow), &wx, &hx);
+    gtk_widget_get_size_request(GTK_WIDGET(boardwidgetGTK), &wb, &hb);
+    xMargin = wx - wb; yMargin = hx - hb;
+  }
 
     /*
      * widget hierarchy
@@ -5250,20 +5262,26 @@ gboolean ConfigureProc(widget, event, data)
      gpointer data;
 {   
     gint width, height;
+    int w, h;
 
     gdk_drawable_get_size(boardwidgetGTK->window, &width, &height);    
 
     /* calc squaresize based on previous linegap */
-    squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
+    w = (width - 4) / BOARD_WIDTH;
+    h = (height - 4) / BOARD_HEIGHT;
+    squareSizeGTK = w < h ? w : h;
 
     /* see if linegap changed */
-    if (squareSizeGTK > 108) lineGapGTK = 4;
-    else if (squareSizeGTK > 54) lineGapGTK = 3;
-    else if (squareSizeGTK > 33) lineGapGTK = 2;
+    if (squareSizeGTK > 112) lineGapGTK = 4;
+    else if (squareSizeGTK > 57) lineGapGTK = 3;
+    else if (squareSizeGTK > 35) lineGapGTK = 2;
     else lineGapGTK = 1;
+    if(appData.overrideLineGap >= 0) lineGapGTK = appData.overrideLineGap;
 
     /* recalc squaresize */
-    squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
+    w = (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH;
+    h = (height - lineGapGTK * (BOARD_HEIGHT + 1)) / BOARD_HEIGHT;
+    squareSizeGTK = w < h ? w : h;
 
     /* scale pixbufs to correct size */
     SVGscLightSquare   = gdk_pixbuf_scale_simple(SVGLightSquare, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER); 
