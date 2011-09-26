@@ -534,6 +534,7 @@ char *ProbeBook(int moveNr, char *book)
     for(i=0; i<count; i++){
         total_weight += entries[i].weight;
     }
+    if(total_weight == 0) return NULL; // force book miss rather than playing moves with weight 0.
     j = (random() & 0xFFF) * total_weight >> 12; // create random < total_weight
     total_weight = 0;
     for(i=0; i<count; i++){
