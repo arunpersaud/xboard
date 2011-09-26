@@ -11804,7 +11804,7 @@ LoadPosition(f, positionNumber, title)
     lastLoadPositionFP = f;
     lastLoadPositionNumber = positionNumber;
     safeStrCpy(lastLoadPositionTitle, title, sizeof(lastLoadPositionTitle)/sizeof(lastLoadPositionTitle[0]));
-    if (first.pr == NoProc) {
+    if (first.pr == NoProc && !appData.noChessProgram) {
       StartChessProgram(&first);
       InitChessProgram(&first, FALSE);
     }
@@ -11876,7 +11876,6 @@ LoadPosition(f, positionNumber, title)
     }
     startedFromSetupPosition = TRUE;
 
-    SendToProgram("force\n", &first);
     CopyBoard(boards[0], initial_position);
     if (blackPlaysFirst) {
 	currentMove = forwardMostMove = backwardMostMove = 1;
@@ -11889,7 +11888,10 @@ LoadPosition(f, positionNumber, title)
 	DisplayMessage("", _("White to play"));
     }
     initialRulePlies = FENrulePlies; /* [HGM] copy FEN attributes as well */
-    SendBoard(&first, forwardMostMove);
+    if(first.pr != NoProc) { // [HGM] in tourney-mode a position can be loaded before the chess engine is installed
+	SendToProgram("force\n", &first);
+	SendBoard(&first, forwardMostMove);
+    }
     if (appData.debugMode) {
 int i, j;
   for(i=0;i<2;i++){for(j=0;j<6;j++)fprintf(debugFP, " %d", boards[i][CASTLING][j]);fprintf(debugFP,"\n");}
