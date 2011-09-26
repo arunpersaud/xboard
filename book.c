@@ -468,7 +468,8 @@ void move_to_string(char move_s[6], uint16 move)
 
 int GetBookMoves(int moveNr, char *book, entry_t entries[])
 {   // retrieve all entries for given position from book in 'entries', return number.
-    FILE *f;
+    static FILE *f = NULL;
+    static char curBook[MSG_SIZ];
     entry_t entry;
     int offset;
     uint64 key;
@@ -477,7 +478,11 @@ int GetBookMoves(int moveNr, char *book, entry_t entries[])
 
     if(book == NULL || moveNr >= 2*appData.bookDepth) return -1; 
 //    if(gameInfo.variant != VariantNormal) return -1; // Zobrist scheme only works for normal Chess, so far
-    f=fopen(book,"rb");
+    if(!f || strcmp(book, curBook)){ // keep book file open until book changed
+	strncpy(curBook, book, MSG_SIZ);
+	if(f) fclose(f);
+	f = fopen(book,"rb");
+    }
     if(!f){
 	DisplayError("Polyglot book not valid", 0);
 	appData.usePolyglotBook = FALSE;
@@ -489,7 +494,6 @@ int GetBookMoves(int moveNr, char *book, entry_t entries[])
 
     offset=find_key(f, key, &entry);
     if(entry.key != key) {
-	  fclose(f);
 	  return FALSE;
     }
     entries[0] = entry;
@@ -506,7 +510,6 @@ int GetBookMoves(int moveNr, char *book, entry_t entries[])
         if(count == MOVE_BUF) break;
         entries[count++] = entry;
     }
-    fclose(f);
     return count;
 }
 
