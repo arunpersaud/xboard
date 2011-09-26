@@ -9931,7 +9931,7 @@ SetPlayer(int player)
     for(i=1; command[i]; i++) if(!strcmp(mnemonic[i], engineName)) break;
     if(mnemonic[i]) {
 	snprintf(buf, MSG_SIZ, "-fcp %s", command[i]);
-	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL;
+	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
 	ParseArgsFromString(buf);
     }
     free(engineName);
