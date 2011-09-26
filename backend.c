@@ -9420,9 +9420,8 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
         fflush(serverMoves);
     }
 
-    if (forwardMostMove+1 > framePtr) { // [HGM] vari: do not run into saved variations
-      DisplayFatalError(_("Game too long; increase MAX_MOVES and recompile"),
-			0, 1);
+    if (forwardMostMove+1 > framePtr) { // [HGM] vari: do not run into saved variations..
+	GameEnds(GameUnfinished, _("Game too long; increase MAX_MOVES and recompile"), GE_XBOARD);
       return;
     }
     UnLoadPV(); // [HGM] pv: if we are looking at a PV, abort this
