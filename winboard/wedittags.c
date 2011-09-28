@@ -211,6 +211,7 @@ VOID EitherTagsPopUp(char *tags, char *msg, BOOLEAN edit)
   if (editTagsDialog) {
     SendMessage(editTagsDialog, WM_INITDIALOG, 0, 0);
     ShowWindow(editTagsDialog, SW_SHOW);
+    if(bookUp) SetFocus(hwndMain);
   } else {
     lpProc = MakeProcInstance((FARPROC)EditTagsDialog, hInst);
     CreateDialog(hInst, MAKEINTRESOURCE(DLG_EditTags),
