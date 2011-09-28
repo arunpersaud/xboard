@@ -1665,6 +1665,8 @@ InitBackEnd3 P((void))
 void
 HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
 {
+    DisplayBook(current+1);
+
     MoveHistorySet( movelist, first, last, current, pvInfoList );
 
     EvalGraphSet( first, last, current, pvInfoList );
@@ -9488,7 +9490,6 @@ ShowMove(fromX, fromY, toX, toY)
     DrawPosition(FALSE, boards[currentMove]);
     DisplayBothClocks();
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
-    DisplayBook(currentMove);
 }
 
 void SendEgtPath(ChessProgramState *cps)
@@ -14056,7 +14057,6 @@ ForwardInner(target)
     if ( !matchMode && gameMode != Training) { // [HGM] PV info: routine tests if empty
 	DisplayComment(currentMove - 1, commentList[currentMove]);
     }
-    DisplayBook(currentMove);
 }
 
 
@@ -14169,7 +14169,6 @@ BackwardInner(target)
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
     // [HGM] PV info: routine tests if comment empty
     DisplayComment(currentMove - 1, commentList[currentMove]);
-    DisplayBook(currentMove);
 }
 
 void
