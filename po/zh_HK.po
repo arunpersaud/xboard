@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard master-20110411\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2011-08-22 22:25-0700\n"
+"POT-Creation-Date: 2011-09-29 20:48-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,507 +18,507 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: backend.c:829
+#: backend.c:826
 #, c-format
 msgid "protocol version %d not supported"
 msgstr "通訊協定版本 %d 不被支持"
 
-#: backend.c:902
+#: backend.c:899
 msgid "You did not specify the engine executable"
 msgstr ""
 
-#: backend.c:954
+#: backend.c:951
 #, c-format
 msgid "bad timeControl option %s"
 msgstr "非法的\"timeControl\"(時間控制)選項 %s"
 
-#: backend.c:969
+#: backend.c:966
 #, c-format
 msgid "bad searchTime option %s"
 msgstr "非法的\"searchTime\"(搜尋時間)選項 %s"
 
-#: backend.c:1075
+#: backend.c:1072
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr "變體 %s 只在ICS模式下支持"
 
-#: backend.c:1093
+#: backend.c:1090
 #, c-format
 msgid "Unknown variant name %s"
 msgstr "未知的變體名 %s"
 
-#: backend.c:1336
+#: backend.c:1333
 msgid "Starting chess program"
 msgstr "啟動國際象棋程式"
 
-#: backend.c:1359
+#: backend.c:1356
 msgid "Bad game file"
 msgstr "棋局檔案錯誤"
 
-#: backend.c:1366
+#: backend.c:1363
 msgid "Bad position file"
 msgstr "盤面檔案錯誤"
 
-#: backend.c:1380
+#: backend.c:1377
 msgid "Pick new game"
 msgstr ""
 
-#: backend.c:1445
+#: backend.c:1442
 msgid ""
 "You restarted an already completed tourney\n"
 "One more cycle will now be added to it\n"
 "Games commence in 10 sec"
 msgstr ""
 
-#: backend.c:1452
+#: backend.c:1449
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
 msgstr ""
 
-#: backend.c:1459
+#: backend.c:1456
 msgid "Can't have a match with no chess programs"
 msgstr "沒有象棋程式時無法進行比賽"
 
-#: backend.c:1493
+#: backend.c:1490
 #, c-format
 msgid "Could not open comm port %s"
 msgstr "無法打開通訊連接埠 %s"
 
-#: backend.c:1496
+#: backend.c:1493
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr "無法連接主機 %s 連接埠 %s"
 
-#: backend.c:1552
+#: backend.c:1549
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr "未知的\"initialMode\"(初始模式)選項 %s"
 
-#: backend.c:1578
+#: backend.c:1575
 msgid "AnalyzeFile mode requires a game file"
 msgstr "\"AnalyzeFile\"(分析檔案)模式必須指定一個棋局檔案"
 
-#: backend.c:1605
+#: backend.c:1602
 msgid "Analysis mode requires a chess engine"
 msgstr "\"Analysis\"(分析)模式必須啟動國際象棋引擎"
 
-#: backend.c:1609
+#: backend.c:1606
 msgid "Analysis mode does not work with ICS mode"
 msgstr "\"Analysis\"(分析)模式無法在ICS模式下工作"
 
-#: backend.c:1620
+#: backend.c:1617
 msgid "MachineWhite mode requires a chess engine"
 msgstr "\"MachineWhite\"(電腦執紅)模式必須啟動國際象棋引擎"
 
-#: backend.c:1625
+#: backend.c:1622
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr "\"MachineWhite\"(電腦執紅)模式無法在ICS模式下運行"
 
-#: backend.c:1632
+#: backend.c:1629
 msgid "MachineBlack mode requires a chess engine"
 msgstr "\"MachineBlack\"(電腦執黑)模式必須啟動國際象棋引擎"
 
-#: backend.c:1637
+#: backend.c:1634
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr "\"MachineBlack\"(電腦執黑)模式無法在ICS模式下運行"
 
-#: backend.c:1644
+#: backend.c:1641
 msgid "TwoMachines mode requires a chess engine"
 msgstr "\"TwoMachines\"(分析)模式必須啟動國際象棋引擎"
 
-#: backend.c:1649
+#: backend.c:1646
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr "\"TwoMachines\"(電腦對弈)模式無法在ICS模式下運行"
 
-#: backend.c:1660
+#: backend.c:1657
 msgid "Training mode requires a game file"
 msgstr "\"Training\"(訓練)模式必須指定一個棋局檔案"
 
-#: backend.c:1821 backend.c:1865 backend.c:1890 backend.c:2301
+#: backend.c:1828 backend.c:1872 backend.c:1897 backend.c:2308
 msgid "Error writing to ICS"
 msgstr "發送訊息給ICS時出錯"
 
-#: backend.c:1825
+#: backend.c:1832
 msgid "Error reading from keyboard"
 msgstr "讀取鍵盤時出錯"
 
-#: backend.c:1828
+#: backend.c:1835
 msgid "Got end of file from keyboard"
 msgstr "讀取鍵盤時遇到檔案尾"
 
-#: backend.c:2139
+#: backend.c:2146
 #, c-format
 msgid "Unknown wild type %d"
 msgstr ""
 
-#: backend.c:2150
+#: backend.c:2157
 #, c-format
 msgid "recognized '%s' (%d) as variant %s\n"
 msgstr ""
 
-#: backend.c:2215 xboard.c:7292
+#: backend.c:2222 xboard.c:7299
 msgid "Error writing to display"
 msgstr "發送訊息給顯示器時出錯"
 
-#: backend.c:2960
+#: backend.c:2967
 #, c-format
 msgid "your opponent kibitzes: %s"
 msgstr ""
 
-#: backend.c:3480
+#: backend.c:3487
 msgid "Error gathering move list: two headers"
 msgstr "讀取著法時出錯，出現兩個開頭"
 
-#: backend.c:3494
+#: backend.c:3501
 #, c-format
 msgid "Ratings from header: W %d, B %d\n"
 msgstr ""
 
-#: backend.c:3527
+#: backend.c:3534
 msgid "Error gathering move list: nested"
 msgstr "讀取著法時出錯，巢狀錯誤"
 
-#: backend.c:3759
+#: backend.c:3766
 msgid "Illegal move (rejected by ICS)"
 msgstr ""
 
-#: backend.c:4096
+#: backend.c:4103
 msgid "Connection closed by ICS"
 msgstr "連接被ICS關閉"
 
-#: backend.c:4098
+#: backend.c:4105
 msgid "Error reading from ICS"
 msgstr "讀取ICS訊息時出錯"
 
-#: backend.c:4149
+#: backend.c:4156
 #, c-format
 msgid "Parsing board: %s\n"
 msgstr ""
 
-#: backend.c:4173
+#: backend.c:4180
 #, c-format
 msgid ""
 "Failed to parse board string:\n"
 "\"%s\""
 msgstr ""
 
-#: backend.c:4182 backend.c:9389
+#: backend.c:4189 backend.c:9424
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr "棋局太長，需要增加\"MAX_MOVES\"並重新編譯"
 
-#: backend.c:4276
+#: backend.c:4283
 msgid "Error gathering move list: extra board"
 msgstr "讀取著法時出錯，超出棋盤"
 
-#: backend.c:4696 backend.c:4718
+#: backend.c:4703 backend.c:4725
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
 msgstr "無法解析從ICS讀到的著法\"%s\""
 
-#: backend.c:4948
+#: backend.c:4955
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
 msgstr "say 內部錯誤，非法的\"moveType\"(著法類型) %d (%d,%d-%d,%d)"
 
-#: backend.c:5896
+#: backend.c:5903
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
 msgstr ""
 
-#: backend.c:6248
+#: backend.c:6255
 msgid "You are playing Black"
 msgstr "你在執黑"
 
-#: backend.c:6257 backend.c:6284
+#: backend.c:6264 backend.c:6291
 msgid "You are playing White"
 msgstr "你在執紅"
 
-#: backend.c:6266 backend.c:6292 backend.c:6411 backend.c:6436 backend.c:6452
-#: backend.c:13685
+#: backend.c:6273 backend.c:6299 backend.c:6418 backend.c:6443 backend.c:6459
+#: backend.c:13725
 msgid "It is White's turn"
 msgstr "輪到紅方走棋"
 
-#: backend.c:6270 backend.c:6296 backend.c:6419 backend.c:6442 backend.c:6473
-#: backend.c:13677
+#: backend.c:6277 backend.c:6303 backend.c:6426 backend.c:6449 backend.c:6480
+#: backend.c:13717
 msgid "It is Black's turn"
 msgstr "輪到黑方走棋"
 
-#: backend.c:6309
+#: backend.c:6316
 msgid "Displayed position is not current"
 msgstr "顯示的盤面不是當前盤面"
 
-#: backend.c:6547
+#: backend.c:6554
 msgid "Illegal move"
 msgstr "著法錯誤"
 
-#: backend.c:6610
+#: backend.c:6617
 msgid "End of game"
 msgstr "棋局結束"
 
-#: backend.c:6613
+#: backend.c:6620
 msgid "Incorrect move"
 msgstr "著法錯誤"
 
-#: backend.c:6906 backend.c:7022
+#: backend.c:6913 backend.c:7029
 msgid "Pull pawn backwards to under-promote"
 msgstr ""
 
-#: backend.c:7244
+#: backend.c:7251
 msgid "Swiss tourney finished"
 msgstr ""
 
-#: backend.c:7784
+#: backend.c:7791
 msgid "Invalid pairing from pairing engine"
 msgstr ""
 
-#: backend.c:7906
+#: backend.c:7913
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr "從%s機器讀到不合法著法\"%s\""
 
-#: backend.c:8129
+#: backend.c:8136
 msgid "Bad FEN received from engine"
 msgstr ""
 
-#: backend.c:8272 xboard.c:5894 xboard.c:5938
+#: backend.c:8280 xboard.c:5894 xboard.c:5938
 #, c-format
 msgid "%s does not support analysis"
 msgstr "%s 不支持分析功能"
 
-#: backend.c:8338
+#: backend.c:8346
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr "不合法著法\"%s\" (%s國際象棋程式拒絕接受該著法)"
 
-#: backend.c:8363
+#: backend.c:8371
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr "無法啟動%s國際象棋程式 %s(在主機 %s 上)，%s\n"
 
-#: backend.c:8384
+#: backend.c:8392
 #, c-format
 msgid "Hint: %s"
 msgstr "提示 %s"
 
-#: backend.c:8389
+#: backend.c:8397
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
 "from %s chess program"
 msgstr ""
 
-#: backend.c:8564
+#: backend.c:8572
 msgid "Machine accepts your draw offer"
 msgstr "電腦同意和棋"
 
-#: backend.c:8567
+#: backend.c:8575
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
 
-#: backend.c:8932
+#: backend.c:8953
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr "ICS輸出不明確的著法\"%s\""
 
-#: backend.c:8942
+#: backend.c:8963
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr "ICS輸出不明確的著法\"%s\""
 
-#: backend.c:8953
+#: backend.c:8974
 msgid "Gap in move list"
 msgstr "著法斷開"
 
-#: backend.c:9528 xoptions.c:417
+#: backend.c:9559 xoptions.c:417
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "變體 %s 不被 %s 所支持"
 
-#: backend.c:9645
+#: backend.c:9676
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr "無法啟動'%s'"
 
-#: backend.c:9673
+#: backend.c:9704
 msgid "Waiting for first chess program"
 msgstr "等待第一個國際象棋程式"
 
-#: backend.c:9678 backend.c:13075
+#: backend.c:9709 backend.c:13115
 msgid "Waiting for second chess program"
 msgstr "等待第二個國際象棋程式"
 
-#: backend.c:9728
+#: backend.c:9759
 msgid "Could not write on tourney file"
 msgstr ""
 
-#: backend.c:9793
+#: backend.c:9824
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
 msgstr ""
 
-#: backend.c:9807
+#: backend.c:9838
 msgid "No engine with the name you gave is installed"
 msgstr ""
 
-#: backend.c:9809
+#: backend.c:9840
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
 
-#: backend.c:9810
+#: backend.c:9841
 msgid "You can only change one engine at the time"
 msgstr ""
 
-#: backend.c:9824
+#: backend.c:9855
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
 msgstr ""
 
-#: backend.c:9834
+#: backend.c:9865
 msgid "Not enough participants"
 msgstr ""
 
-#: backend.c:9964
+#: backend.c:9995
 #, fuzzy
 msgid "Bad tournament file"
 msgstr "棋局檔案錯誤"
 
-#: backend.c:9976
+#: backend.c:10007
 #, fuzzy
 msgid "Waiting for other game(s)"
 msgstr "等待第一個國際象棋程式"
 
-#: backend.c:9989
+#: backend.c:10020
 msgid "No pairing engine specified"
 msgstr ""
 
-#: backend.c:10430
+#: backend.c:10463
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr "比賽 %s vs. %s: 最終比分 %d-%d-%d"
 
-#: backend.c:10875 backend.c:10906
+#: backend.c:10908 backend.c:10939
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr "不合法著法 %d.%s%s"
 
-#: backend.c:10895
+#: backend.c:10928
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr "不明確的著法 %d.%s%s"
 
-#: backend.c:10952 backend.c:11742 backend.c:11933 backend.c:12302
+#: backend.c:10985 backend.c:11775 backend.c:11972 backend.c:12341
 #, c-format
 msgid "Can't open \"%s\""
 msgstr "無法打開\"%s\""
 
-#: backend.c:10964 xboard.c:5472
+#: backend.c:10997 xboard.c:5472
 msgid "Cannot build game list"
 msgstr "無法建立棋局列表"
 
-#: backend.c:11053
+#: backend.c:11086
 msgid "No more games in this message"
 msgstr "這條訊息不包含更多的棋局"
 
-#: backend.c:11094
+#: backend.c:11127
 msgid "No game has been loaded yet"
 msgstr "尚未有棋局載入"
 
-#: backend.c:11098 backend.c:11720 xgamelist.c:436
+#: backend.c:11131 backend.c:11753 xgamelist.c:436
 msgid "Can't back up any further"
 msgstr "無法再後退了"
 
-#: backend.c:11297
+#: backend.c:11330
 msgid "Game number out of range"
 msgstr "棋局數量超出範圍"
 
-#: backend.c:11308
+#: backend.c:11341
 msgid "Can't seek on game file"
 msgstr "無法搜尋棋局檔案"
 
-#: backend.c:11366
+#: backend.c:11399
 msgid "Game not found in file"
 msgstr "檔案中沒有找到棋局"
 
-#: backend.c:11494 backend.c:11822
+#: backend.c:11527 backend.c:11855
 msgid "Bad FEN position in file"
 msgstr "檔案中的FEN盤面錯誤"
 
-#: backend.c:11644
+#: backend.c:11677
 msgid "No moves in game"
 msgstr "棋局中沒有著法"
 
-#: backend.c:11716
+#: backend.c:11749
 msgid "No position has been loaded yet"
 msgstr "尚未有盤面載入"
 
-#: backend.c:11783 backend.c:11794
+#: backend.c:11816 backend.c:11827
 msgid "Can't seek on position file"
 msgstr "無法搜尋盤面檔案"
 
-#: backend.c:11801 backend.c:11813
+#: backend.c:11834 backend.c:11846
 msgid "Position not found in file"
 msgstr "檔案中沒有找到盤面"
 
-#: backend.c:11854
+#: backend.c:11887
 msgid "Black to play"
 msgstr "輪到黑方走棋"
 
-#: backend.c:11857
+#: backend.c:11890
 msgid "White to play"
 msgstr "輪到紅方走棋"
 
-#: backend.c:11938 backend.c:12307
+#: backend.c:11977 backend.c:12346
 #, fuzzy
 msgid "Waiting for access to save file"
 msgstr "等待第二個國際象棋程式"
 
-#: backend.c:11940
+#: backend.c:11979
 msgid "Saving game"
 msgstr ""
 
-#: backend.c:12309
+#: backend.c:12348
 #, fuzzy
 msgid "Saving position"
 msgstr "盤面檔案錯誤"
 
-#: backend.c:12439
+#: backend.c:12478
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
 msgstr ""
 
-#: backend.c:12444
+#: backend.c:12483
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
 msgstr ""
 
-#: backend.c:12449
+#: backend.c:12488
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
 msgstr ""
 
-#: backend.c:12496
+#: backend.c:12535
 msgid "You have not made a move yet"
 msgstr "你尚未走棋"
 
-#: backend.c:12517
+#: backend.c:12556
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
 msgstr ""
 
-#: backend.c:12522
+#: backend.c:12561
 msgid "No unfinished games"
 msgstr "不存在未完成棋局"
 
-#: backend.c:12528
+#: backend.c:12567
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -528,188 +528,188 @@ msgid ""
 "on the command line."
 msgstr ""
 
-#: backend.c:12543
+#: backend.c:12582
 msgid "Failed to invoke cmail"
 msgstr "呼叫cmail失敗"
 
-#: backend.c:12605
+#: backend.c:12644
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr "等待對手回應\n"
 
-#: backend.c:12627
+#: backend.c:12666
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr "本棋局仍需走棋\n"
 
-#: backend.c:12631
+#: backend.c:12670
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr "兩棋局皆仍需走棋\n"
 
-#: backend.c:12635
+#: backend.c:12674
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr "所有 %d 棋局皆仍需走棋\n"
 
-#: backend.c:12642
+#: backend.c:12681
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr "棋局 %s 仍需走棋\n"
 
-#: backend.c:12648
+#: backend.c:12687
 #, c-format
 msgid "No unfinished games\n"
 msgstr "不存在未完成棋局\n"
 
-#: backend.c:12650
+#: backend.c:12689
 #, c-format
 msgid "Ready to send mail\n"
 msgstr "準備送信就緒\n"
 
-#: backend.c:12655
+#: backend.c:12694
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr "棋局 %s 仍需走棋\n"
 
-#: backend.c:12812
+#: backend.c:12851
 msgid "Edit comment"
 msgstr "編輯註解"
 
-#: backend.c:12814
+#: backend.c:12853
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr "編輯註解 %d.%s%s"
 
-#: backend.c:12907
+#: backend.c:12947
 msgid "It is not White's turn"
 msgstr "沒有輪到紅方走棋"
 
-#: backend.c:12988
+#: backend.c:13028
 msgid "It is not Black's turn"
 msgstr "沒有輪到黑方走棋"
 
-#: backend.c:13095
+#: backend.c:13135
 #, c-format
 msgid "Starting %s chess program"
 msgstr ""
 
-#: backend.c:13123 backend.c:14212
+#: backend.c:13163 backend.c:14252
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
 msgstr ""
 
-#: backend.c:13247
+#: backend.c:13287
 msgid "Training mode off"
 msgstr "訓練模式已關閉"
 
-#: backend.c:13255
+#: backend.c:13295
 msgid "Training mode on"
 msgstr "訓練模式已打開"
 
-#: backend.c:13258
+#: backend.c:13298
 msgid "Already at end of game"
 msgstr "棋局已經結束"
 
-#: backend.c:13339
+#: backend.c:13379
 msgid "Warning: You are still playing a game"
 msgstr "注意：你正在進行棋局"
 
-#: backend.c:13342
+#: backend.c:13382
 msgid "Warning: You are still observing a game"
 msgstr "注意：你正在觀棋棋局"
 
-#: backend.c:13345
+#: backend.c:13385
 msgid "Warning: You are still examining a game"
 msgstr "注意：你正在研究棋局"
 
-#: backend.c:13419
+#: backend.c:13459
 msgid "Close ICS engine analyze..."
 msgstr ""
 
-#: backend.c:13702
+#: backend.c:13742
 msgid "That square is occupied"
 msgstr "格子已有棋子"
 
-#: backend.c:13726 backend.c:13752
+#: backend.c:13766 backend.c:13792
 msgid "There is no pending offer on this move"
 msgstr "該著法沒有待定的提議"
 
-#: backend.c:13788 backend.c:13799
+#: backend.c:13828 backend.c:13839
 msgid "Your opponent is not out of time"
 msgstr "對手沒有超時"
 
-#: backend.c:13865
+#: backend.c:13905
 msgid "You must make your move before offering a draw"
 msgstr "必須走完棋才能提和"
 
-#: backend.c:14194
+#: backend.c:14234
 msgid "You are not examining a game"
 msgstr "沒有分析棋局"
 
-#: backend.c:14198
+#: backend.c:14238
 msgid "You can't revert while pausing"
 msgstr "暫停時不能復原棋局"
 
-#: backend.c:14252 backend.c:14259
+#: backend.c:14292 backend.c:14299
 msgid "It is your turn"
 msgstr "輪到你走棋"
 
-#: backend.c:14310 backend.c:14317 backend.c:14336 backend.c:14343
+#: backend.c:14350 backend.c:14357 backend.c:14376 backend.c:14383
 msgid "Wait until your turn"
 msgstr "等待對手走棋"
 
-#: backend.c:14322
+#: backend.c:14362
 msgid "No hint available"
 msgstr "沒有可用的提示"
 
-#: backend.c:14784
+#: backend.c:14825
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr "發送訊息到%s國際象棋程式時出錯"
 
-#: backend.c:14787 backend.c:14823
+#: backend.c:14828 backend.c:14864
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr ""
 
-#: backend.c:14819
+#: backend.c:14860
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr "錯誤：%s國際象棋程式(%s)異常終止"
 
-#: backend.c:14836
+#: backend.c:14877
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr "從%s國際象棋程式(%s)接收訊息時出錯"
 
-#: backend.c:15249
+#: backend.c:15290
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr ""
 
-#: backend.c:15402
+#: backend.c:15443
 msgid "Displayed move is not current"
 msgstr "顯示的著法不是當前著法"
 
-#: backend.c:15411
+#: backend.c:15452
 msgid "Could not parse move"
 msgstr "無法解析著法"
 
-#: backend.c:15540 backend.c:15562
+#: backend.c:15581 backend.c:15603
 msgid "Both flags fell"
 msgstr "雙方都超時了"
 
-#: backend.c:15542
+#: backend.c:15583
 msgid "White's flag fell"
 msgstr "紅方超時"
 
-#: backend.c:15564
+#: backend.c:15605
 msgid "Black's flag fell"
 msgstr "黑方超時"
 
-#: backend.c:16505
+#: backend.c:16546
 msgid "Bad FEN position in clipboard"
 msgstr "剪貼簿的FEN盤面錯誤"
 
@@ -891,7 +891,8 @@ msgid "Analysis Mode  Ctrl+A"
 msgstr "分析模式(A)   Ctrl+A"
 
 #: xboard.c:686
-msgid "Analyze File      Ctrl+F"
+#, fuzzy
+msgid "Analyze Game   Ctrl+G"
 msgstr "分析檔案(F)   Ctrl+F"
 
 #: xboard.c:687
@@ -1170,7 +1171,7 @@ msgstr "選項(O)"
 msgid "Help"
 msgstr "說明(H)"
 
-#: xboard.c:811 xboard.c:7582
+#: xboard.c:811 xboard.c:7589
 msgid "White"
 msgstr "紅方"
 
@@ -1230,7 +1231,7 @@ msgstr "清空格子"
 msgid "Clear board"
 msgstr "清空棋盤"
 
-#: xboard.c:815 xboard.c:7598
+#: xboard.c:815 xboard.c:7605
 msgid "Black"
 msgstr "黑方"
 
@@ -1537,10 +1538,6 @@ msgstr ""
 msgid "ICS engine analyze starting... \n"
 msgstr ""
 
-#: xboard.c:5948
-msgid "File to analyze"
-msgstr ""
-
 #: xboard.c:7017
 msgid "Fatal Error"
 msgstr "嚴重錯誤"
@@ -1570,25 +1567,25 @@ msgstr "發送訊息給國際象棋程式時出錯"
 msgid "enter"
 msgstr ""
 
-#: xboard.c:7366
+#: xboard.c:7373
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
 msgstr ""
 
-#: xboard.c:7760
+#: xboard.c:7767
 msgid "Socket support is not configured in"
 msgstr ""
 
-#: xboard.c:7851
+#: xboard.c:7858
 msgid "internal rcmd not implemented for Unix"
 msgstr ""
 
-#: xboard.c:8625
+#: xboard.c:8638
 #, c-format
 msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 msgstr ""
 
-#: xboard.c:8626
+#: xboard.c:8639
 #, c-format
 msgid "AnimateMove: piece %d slides from %d,%d to %d,%d \n"
 msgstr ""
@@ -1700,7 +1697,7 @@ msgstr "向上"
 msgid "factory"
 msgstr ""
 
-#: xhistory.c:146
+#: xhistory.c:145
 msgid "Move list"
 msgstr ""
 
@@ -2533,118 +2530,118 @@ msgstr ""
 msgid "Type a move"
 msgstr ""
 
-#: xoptions.c:1584
+#: xoptions.c:1593
 msgid "Engine Settings"
 msgstr ""
 
-#: xoptions.c:1614
+#: xoptions.c:1623
 msgid "Select engine from list:"
 msgstr ""
 
-#: xoptions.c:1615
+#: xoptions.c:1624
 msgid "or specify one below:"
 msgstr ""
 
-#: xoptions.c:1616
+#: xoptions.c:1625
 msgid "Nickname (optional):"
 msgstr ""
 
-#: xoptions.c:1617
+#: xoptions.c:1626
 msgid "Use nickname in PGN player tags of engine-engine games"
 msgstr ""
 
-#: xoptions.c:1618
+#: xoptions.c:1627
 msgid "Engine Directory:"
 msgstr ""
 
-#: xoptions.c:1619
+#: xoptions.c:1628
 msgid "Engine Command:"
 msgstr ""
 
-#: xoptions.c:1620
+#: xoptions.c:1629
 msgid "(Directory will be derived from engine path when empty)"
 msgstr ""
 
-#: xoptions.c:1621
+#: xoptions.c:1630
 msgid "UCI"
 msgstr ""
 
-#: xoptions.c:1622
+#: xoptions.c:1631
 msgid "WB protocol v1 (do not wait for engine features)"
 msgstr ""
 
-#: xoptions.c:1623
+#: xoptions.c:1632
 msgid "Must not use GUI book"
 msgstr ""
 
-#: xoptions.c:1624
+#: xoptions.c:1633
 msgid "Add this engine to the list"
 msgstr ""
 
-#: xoptions.c:1625
+#: xoptions.c:1634
 msgid "Force current variant with this engine"
 msgstr ""
 
-#: xoptions.c:1626
+#: xoptions.c:1635
 msgid "Load mentioned engine as"
 msgstr ""
 
-#: xoptions.c:1643
+#: xoptions.c:1652
 msgid "Load engine"
 msgstr ""
 
-#: xoptions.c:1665
+#: xoptions.c:1674
 msgid "Start-position number:"
 msgstr "啟動位置號碼(S)"
 
-#: xoptions.c:1686
+#: xoptions.c:1695
 msgid "New Shuffle Game"
 msgstr "洗牌遊戲(u)..."
 
-#: xoptions.c:1733
+#: xoptions.c:1742
 msgid "classical"
 msgstr ""
 
-#: xoptions.c:1734
+#: xoptions.c:1743
 msgid "incremental"
 msgstr ""
 
-#: xoptions.c:1735
+#: xoptions.c:1744
 msgid "fixed max"
 msgstr ""
 
-#: xoptions.c:1736
+#: xoptions.c:1745
 msgid "Moves per session:"
 msgstr ""
 
-#: xoptions.c:1737
+#: xoptions.c:1746
 msgid "Initial time (min):"
 msgstr ""
 
-#: xoptions.c:1738
+#: xoptions.c:1747
 msgid "Increment or max (sec/move):"
 msgstr ""
 
-#: xoptions.c:1739
+#: xoptions.c:1748
 #, fuzzy
 msgid "Time-Odds factors:"
 msgstr "時間倍數"
 
-#: xoptions.c:1740
+#: xoptions.c:1749
 #, fuzzy
 msgid "Engine #1"
 msgstr "引擎輸出"
 
-#: xoptions.c:1741
+#: xoptions.c:1750
 #, fuzzy
 msgid "Engine #2 / Human"
 msgstr "引擎1有自用庫"
 
-#: xoptions.c:1751 xoptions.c:1754 xoptions.c:1759 xoptions.c:1760
+#: xoptions.c:1760 xoptions.c:1763 xoptions.c:1768 xoptions.c:1769
 msgid "Unused"
 msgstr ""
 
-#: xoptions.c:1775
+#: xoptions.c:1784
 msgid "Time Control"
 msgstr ""
 

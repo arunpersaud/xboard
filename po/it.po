@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard master-20110411\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2011-08-22 22:25-0700\n"
+"POT-Creation-Date: 2011-09-29 20:48-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,511 +18,511 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: backend.c:829
+#: backend.c:826
 #, c-format
 msgid "protocol version %d not supported"
 msgstr "Versione %d del protocollo non supportata"
 
-#: backend.c:902
+#: backend.c:899
 msgid "You did not specify the engine executable"
 msgstr ""
 
-#: backend.c:954
+#: backend.c:951
 #, c-format
 msgid "bad timeControl option %s"
 msgstr "Opzione timeControl non corretta: %s"
 
-#: backend.c:969
+#: backend.c:966
 #, c-format
 msgid "bad searchTime option %s"
 msgstr "Opzione searchTime non corretta: %s"
 
-#: backend.c:1075
+#: backend.c:1072
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr "La variante %s è supportata solo in modalità ICS"
 
-#: backend.c:1093
+#: backend.c:1090
 #, c-format
 msgid "Unknown variant name %s"
 msgstr "Nome di variante sconosciuto: %s"
 
-#: backend.c:1336
+#: backend.c:1333
 msgid "Starting chess program"
 msgstr "Avvio del motore di gioco"
 
-#: backend.c:1359
+#: backend.c:1356
 msgid "Bad game file"
 msgstr "File partita non riconosciuto"
 
-#: backend.c:1366
+#: backend.c:1363
 msgid "Bad position file"
 msgstr "File posizione non riconosciuto"
 
-#: backend.c:1380
+#: backend.c:1377
 msgid "Pick new game"
 msgstr ""
 
-#: backend.c:1445
+#: backend.c:1442
 msgid ""
 "You restarted an already completed tourney\n"
 "One more cycle will now be added to it\n"
 "Games commence in 10 sec"
 msgstr ""
 
-#: backend.c:1452
+#: backend.c:1449
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
 msgstr ""
 
-#: backend.c:1459
+#: backend.c:1456
 msgid "Can't have a match with no chess programs"
 msgstr "Impossibile avviare un match senza specificare alcun motore di gioco"
 
-#: backend.c:1493
+#: backend.c:1490
 #, c-format
 msgid "Could not open comm port %s"
 msgstr "Apertura della porta comm %s fallita"
 
-#: backend.c:1496
+#: backend.c:1493
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr "Connessione all'host %s, porta %s fallita"
 
-#: backend.c:1552
+#: backend.c:1549
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr "Valore per initialMode non riconosciuto: %s"
 
-#: backend.c:1578
+#: backend.c:1575
 msgid "AnalyzeFile mode requires a game file"
 msgstr "La modalità 'Analizza file' richiede un file partita"
 
-#: backend.c:1605
+#: backend.c:1602
 msgid "Analysis mode requires a chess engine"
 msgstr "La modalità Analisi richiede un motore di gioco"
 
-#: backend.c:1609
+#: backend.c:1606
 msgid "Analysis mode does not work with ICS mode"
 msgstr "La funzione di Analisi non è disponibile in modalità ICS"
 
-#: backend.c:1620
+#: backend.c:1617
 msgid "MachineWhite mode requires a chess engine"
 msgstr "La modalità 'Bianco al motore di gioco' richiede almeno un motore"
 
-#: backend.c:1625
+#: backend.c:1622
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr ""
 "La funzione 'Bianco al motore di gioco' non è disponibile in modalità ICS"
 
-#: backend.c:1632
+#: backend.c:1629
 msgid "MachineBlack mode requires a chess engine"
 msgstr "La modalità 'Nero al motore di gioco' richiede almeno un motore"
 
-#: backend.c:1637
+#: backend.c:1634
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr ""
 "La funzione 'Nero al motore di gioco' non è disponibile in modalità ICS"
 
-#: backend.c:1644
+#: backend.c:1641
 msgid "TwoMachines mode requires a chess engine"
 msgstr ""
 "La modalità 'Motore di gioco 1 vs 2' richiede almeno un motore di gioco"
 
-#: backend.c:1649
+#: backend.c:1646
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr "La funzione 'Motore di gioco 1 vs 2' non è disponibile in modalità ICS"
 
-#: backend.c:1660
+#: backend.c:1657
 msgid "Training mode requires a game file"
 msgstr "La modalità Allenamento richiede un file partita"
 
-#: backend.c:1821 backend.c:1865 backend.c:1890 backend.c:2301
+#: backend.c:1828 backend.c:1872 backend.c:1897 backend.c:2308
 msgid "Error writing to ICS"
 msgstr "Errore in scrittura sull'ICS"
 
-#: backend.c:1825
+#: backend.c:1832
 msgid "Error reading from keyboard"
 msgstr "Errore in lettura da tastiera"
 
-#: backend.c:1828
+#: backend.c:1835
 msgid "Got end of file from keyboard"
 msgstr "Ricevuto carattere di Fine file (EOF) dalla tastiera"
 
-#: backend.c:2139
+#: backend.c:2146
 #, c-format
 msgid "Unknown wild type %d"
 msgstr ""
 
-#: backend.c:2150
+#: backend.c:2157
 #, c-format
 msgid "recognized '%s' (%d) as variant %s\n"
 msgstr ""
 
-#: backend.c:2215 xboard.c:7292
+#: backend.c:2222 xboard.c:7299
 msgid "Error writing to display"
 msgstr "Errore in scrittura sul display"
 
-#: backend.c:2960
+#: backend.c:2967
 #, c-format
 msgid "your opponent kibitzes: %s"
 msgstr ""
 
-#: backend.c:3480
+#: backend.c:3487
 msgid "Error gathering move list: two headers"
 msgstr "Errore nella lettura della lista mosse: sono presenti due intestazioni"
 
-#: backend.c:3494
+#: backend.c:3501
 #, c-format
 msgid "Ratings from header: W %d, B %d\n"
 msgstr ""
 
-#: backend.c:3527
+#: backend.c:3534
 msgid "Error gathering move list: nested"
 msgstr "Errore nella lettura della lista mosse: mosse annidate"
 
-#: backend.c:3759
+#: backend.c:3766
 msgid "Illegal move (rejected by ICS)"
 msgstr ""
 
-#: backend.c:4096
+#: backend.c:4103
 msgid "Connection closed by ICS"
 msgstr "Connessione chiusa dal'ICS"
 
-#: backend.c:4098
+#: backend.c:4105
 msgid "Error reading from ICS"
 msgstr "Errore in lettura dall'ICS"
 
-#: backend.c:4149
+#: backend.c:4156
 #, c-format
 msgid "Parsing board: %s\n"
 msgstr ""
 
-#: backend.c:4173
+#: backend.c:4180
 #, c-format
 msgid ""
 "Failed to parse board string:\n"
 "\"%s\""
 msgstr ""
 
-#: backend.c:4182 backend.c:9389
+#: backend.c:4189 backend.c:9424
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr ""
 "Partita troppo lunga; incrementare il valore di MAX_MOVES e ricompilare"
 
-#: backend.c:4276
+#: backend.c:4283
 msgid "Error gathering move list: extra board"
 msgstr "Errore nela lettura della lista mosse: è presente una posizione in più"
 
-#: backend.c:4696 backend.c:4718
+#: backend.c:4703 backend.c:4725
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
 msgstr "Impossibile interpretare la mossa dall'ICS: \"%s\""
 
-#: backend.c:4948
+#: backend.c:4955
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
 msgstr "say Errore interno; moveType malformato %d (%d,%d-%d,%d)"
 
-#: backend.c:5896
+#: backend.c:5903
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
 msgstr ""
 
-#: backend.c:6248
+#: backend.c:6255
 msgid "You are playing Black"
 msgstr "Stai giocando con il Nero"
 
-#: backend.c:6257 backend.c:6284
+#: backend.c:6264 backend.c:6291
 msgid "You are playing White"
 msgstr "Stai giocando con il Bianco"
 
-#: backend.c:6266 backend.c:6292 backend.c:6411 backend.c:6436 backend.c:6452
-#: backend.c:13685
+#: backend.c:6273 backend.c:6299 backend.c:6418 backend.c:6443 backend.c:6459
+#: backend.c:13725
 msgid "It is White's turn"
 msgstr "Il tratto è al Bianco"
 
-#: backend.c:6270 backend.c:6296 backend.c:6419 backend.c:6442 backend.c:6473
-#: backend.c:13677
+#: backend.c:6277 backend.c:6303 backend.c:6426 backend.c:6449 backend.c:6480
+#: backend.c:13717
 msgid "It is Black's turn"
 msgstr "Il tratto è al Nero"
 
-#: backend.c:6309
+#: backend.c:6316
 msgid "Displayed position is not current"
 msgstr "La posizione mostrata non è quella corrente"
 
-#: backend.c:6547
+#: backend.c:6554
 msgid "Illegal move"
 msgstr "Mossa illegale"
 
-#: backend.c:6610
+#: backend.c:6617
 msgid "End of game"
 msgstr "Termine della partita"
 
-#: backend.c:6613
+#: backend.c:6620
 msgid "Incorrect move"
 msgstr "Mossa non corretta"
 
-#: backend.c:6906 backend.c:7022
+#: backend.c:6913 backend.c:7029
 msgid "Pull pawn backwards to under-promote"
 msgstr ""
 
-#: backend.c:7244
+#: backend.c:7251
 msgid "Swiss tourney finished"
 msgstr ""
 
-#: backend.c:7784
+#: backend.c:7791
 msgid "Invalid pairing from pairing engine"
 msgstr ""
 
-#: backend.c:7906
+#: backend.c:7913
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr "Mossa illegale \"%s\" dal %s motore di gioco"
 
-#: backend.c:8129
+#: backend.c:8136
 msgid "Bad FEN received from engine"
 msgstr ""
 
-#: backend.c:8272 xboard.c:5894 xboard.c:5938
+#: backend.c:8280 xboard.c:5894 xboard.c:5938
 #, c-format
 msgid "%s does not support analysis"
 msgstr "%s non supporta l'analisi"
 
-#: backend.c:8338
+#: backend.c:8346
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr "Mossa illegale \"%s\" (rifiutata dal %s motore di gioco)"
 
-#: backend.c:8363
+#: backend.c:8371
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr "Avvio del %s motore di gioco %s su %s fallito: %s\n"
 
-#: backend.c:8384
+#: backend.c:8392
 #, c-format
 msgid "Hint: %s"
 msgstr "Suggerimento: %s"
 
-#: backend.c:8389
+#: backend.c:8397
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
 "from %s chess program"
 msgstr ""
 
-#: backend.c:8564
+#: backend.c:8572
 msgid "Machine accepts your draw offer"
 msgstr "Il motore di gioco accetta la tua offerta di patta"
 
-#: backend.c:8567
+#: backend.c:8575
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
 
-#: backend.c:8932
+#: backend.c:8953
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr "Mossa ambigua nell'output dell'ICS: \"%s\""
 
-#: backend.c:8942
+#: backend.c:8963
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr "Mossa illegale nell'output dell'ICS: \"%s\""
 
-#: backend.c:8953
+#: backend.c:8974
 msgid "Gap in move list"
 msgstr "Mosse mancanti nella lista mosse"
 
-#: backend.c:9528 xoptions.c:417
+#: backend.c:9559 xoptions.c:417
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "La variante %s non è supportata da %s"
 
-#: backend.c:9645
+#: backend.c:9676
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr "Avvio di '%s' fallito"
 
-#: backend.c:9673
+#: backend.c:9704
 msgid "Waiting for first chess program"
 msgstr "In attesa del primo motore di gioco"
 
-#: backend.c:9678 backend.c:13075
+#: backend.c:9709 backend.c:13115
 msgid "Waiting for second chess program"
 msgstr "In attesa del secondo motore di gioco"
 
-#: backend.c:9728
+#: backend.c:9759
 msgid "Could not write on tourney file"
 msgstr ""
 
-#: backend.c:9793
+#: backend.c:9824
 msgid ""
 "You cannot replace an engine while it is engaged!\n"
 "Terminate its game first."
 msgstr ""
 
-#: backend.c:9807
+#: backend.c:9838
 msgid "No engine with the name you gave is installed"
 msgstr ""
 
-#: backend.c:9809
+#: backend.c:9840
 msgid ""
 "First change an engine by editing the participants list\n"
 "of the Tournament Options dialog"
 msgstr ""
 
-#: backend.c:9810
+#: backend.c:9841
 msgid "You can only change one engine at the time"
 msgstr ""
 
-#: backend.c:9824
+#: backend.c:9855
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
 msgstr ""
 
-#: backend.c:9834
+#: backend.c:9865
 msgid "Not enough participants"
 msgstr ""
 
-#: backend.c:9964
+#: backend.c:9995
 #, fuzzy
 msgid "Bad tournament file"
 msgstr "File partita non riconosciuto"
 
-#: backend.c:9976
+#: backend.c:10007
 #, fuzzy
 msgid "Waiting for other game(s)"
 msgstr "In attesa del primo motore di gioco"
 
-#: backend.c:9989
+#: backend.c:10020
 msgid "No pairing engine specified"
 msgstr ""
 
-#: backend.c:10430
+#: backend.c:10463
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr "Match %s vs %s: punteggio finale %d-%d-%d"
 
-#: backend.c:10875 backend.c:10906
+#: backend.c:10908 backend.c:10939
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr "Mossa illegale: %d.%s%s"
 
-#: backend.c:10895
+#: backend.c:10928
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr "Mossa ambigua: %d.%s%s"
 
-#: backend.c:10952 backend.c:11742 backend.c:11933 backend.c:12302
+#: backend.c:10985 backend.c:11775 backend.c:11972 backend.c:12341
 #, c-format
 msgid "Can't open \"%s\""
 msgstr "Impossibile aprire \"%s\""
 
-#: backend.c:10964 xboard.c:5472
+#: backend.c:10997 xboard.c:5472
 msgid "Cannot build game list"
 msgstr "Impossibile costruire lista delle partite"
 
-#: backend.c:11053
+#: backend.c:11086
 msgid "No more games in this message"
 msgstr "In questo messaggio non sono presenti altre partite"
 
-#: backend.c:11094
+#: backend.c:11127
 msgid "No game has been loaded yet"
 msgstr "Non è ancora stata caricata nessuna partita"
 
-#: backend.c:11098 backend.c:11720 xgamelist.c:436
+#: backend.c:11131 backend.c:11753 xgamelist.c:436
 msgid "Can't back up any further"
 msgstr "Impossibile tornare più indietro"
 
-#: backend.c:11297
+#: backend.c:11330
 msgid "Game number out of range"
 msgstr "Indice superiore al numero di partite"
 
-#: backend.c:11308
+#: backend.c:11341
 msgid "Can't seek on game file"
 msgstr "Impossibile effettuare la ricerca nel file di partita"
 
-#: backend.c:11366
+#: backend.c:11399
 msgid "Game not found in file"
 msgstr "Partita non trovata nel file"
 
-#: backend.c:11494 backend.c:11822
+#: backend.c:11527 backend.c:11855
 msgid "Bad FEN position in file"
 msgstr "Stringa FEN di posizione scorretta nel file"
 
-#: backend.c:11644
+#: backend.c:11677
 msgid "No moves in game"
 msgstr "Partita senza mosse"
 
-#: backend.c:11716
+#: backend.c:11749
 msgid "No position has been loaded yet"
 msgstr "Non è ancora stata caricata nessuna posizione"
 
-#: backend.c:11783 backend.c:11794
+#: backend.c:11816 backend.c:11827
 msgid "Can't seek on position file"
 msgstr "Impossibile effettuare la ricerca nel file di posizione"
 
-#: backend.c:11801 backend.c:11813
+#: backend.c:11834 backend.c:11846
 msgid "Position not found in file"
 msgstr "Posizione non trovata nel file"
 
-#: backend.c:11854
+#: backend.c:11887
 msgid "Black to play"
 msgstr "Il tratto è al Nero"
 
-#: backend.c:11857
+#: backend.c:11890
 msgid "White to play"
 msgstr "Il tratto è al Bianco"
 
-#: backend.c:11938 backend.c:12307
+#: backend.c:11977 backend.c:12346
 #, fuzzy
 msgid "Waiting for access to save file"
 msgstr "In attesa del secondo motore di gioco"
 
-#: backend.c:11940
+#: backend.c:11979
 msgid "Saving game"
 msgstr ""
 
-#: backend.c:12309
+#: backend.c:12348
 #, fuzzy
 msgid "Saving position"
 msgstr "File posizione non riconosciuto"
 
-#: backend.c:12439
+#: backend.c:12478
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
 msgstr ""
 
-#: backend.c:12444
+#: backend.c:12483
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
 msgstr ""
 
-#: backend.c:12449
+#: backend.c:12488
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
 msgstr ""
 
-#: backend.c:12496
+#: backend.c:12535
 msgid "You have not made a move yet"
 msgstr "Non hai ancora fatto alcuna mossa"
 
-#: backend.c:12517
+#: backend.c:12556
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
 msgstr ""
 
-#: backend.c:12522
+#: backend.c:12561
 msgid "No unfinished games"
 msgstr "Non è presente nessuna partita non terminata"
 
-#: backend.c:12528
+#: backend.c:12567
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -532,188 +532,188 @@ msgid ""
 "on the command line."
 msgstr ""
 
-#: backend.c:12543
+#: backend.c:12582
 msgid "Failed to invoke cmail"
 msgstr "Impossibile aprire l'applicazione cmail"
 
-#: backend.c:12605
+#: backend.c:12644
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr "In attesa di risposta dall'avversario\n"
 
-#: backend.c:12627
+#: backend.c:12666
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr "Occorre ancora eseguire la mossa per la partita\n"
 
-#: backend.c:12631
+#: backend.c:12670
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr "Occorre ancora eseguire mosse per entrambe le partite\n"
 
-#: backend.c:12635
+#: backend.c:12674
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr "Occorre ancora eseguire mosse per tutte le %d partite\n"
 
-#: backend.c:12642
+#: backend.c:12681
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr "Occorre ancora eseguire una mossa per la partita %s\n"
 
-#: backend.c:12648
+#: backend.c:12687
 #, c-format
 msgid "No unfinished games\n"
 msgstr "Non è presente nessuna partita non terminata\n"
 
-#: backend.c:12650
+#: backend.c:12689
 #, c-format
 msgid "Ready to send mail\n"
 msgstr "Pronto all'invio della posta\n"
 
-#: backend.c:12655
+#: backend.c:12694
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr "Occorre ancora eseguire mosse per le partite %s\n"
 
-#: backend.c:12812
+#: backend.c:12851
 msgid "Edit comment"
 msgstr "Modifica commento"
 
-#: backend.c:12814
+#: backend.c:12853
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr "Modifica commento a %d.%s%s"
 
-#: backend.c:12907
+#: backend.c:12947
 msgid "It is not White's turn"
 msgstr "Il tratto non è al Bianco"
 
-#: backend.c:12988
+#: backend.c:13028
 msgid "It is not Black's turn"
 msgstr "Il tratto non è al Nero"
 
-#: backend.c:13095
+#: backend.c:13135
 #, c-format
 msgid "Starting %s chess program"
 msgstr ""
 
-#: backend.c:13123 backend.c:14212
+#: backend.c:13163 backend.c:14252
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
 msgstr ""
 
-#: backend.c:13247
+#: backend.c:13287
 msgid "Training mode off"
 msgstr "Modalità Allenamento disattivata"
 
-#: backend.c:13255
+#: backend.c:13295
 msgid "Training mode on"
 msgstr "Modalità Allenamento attivata"
 
-#: backend.c:13258
+#: backend.c:13298
 msgid "Already at end of game"
 msgstr "Già alla fine della partita"
 
-#: backend.c:13339
+#: backend.c:13379
 msgid "Warning: You are still playing a game"
 msgstr "Avviso: Stai ancora giocando una partita"
 
-#: backend.c:13342
+#: backend.c:13382
 msgid "Warning: You are still observing a game"
 msgstr "Avviso: Stai ancora osservando una partita"
 
-#: backend.c:13345
+#: backend.c:13385
 msgid "Warning: You are still examining a game"
 msgstr "Avviso: Stai ancora esaminando una partita"
 
-#: backend.c:13419
+#: backend.c:13459
 msgid "Close ICS engine analyze..."
 msgstr ""
 
-#: backend.c:13702
+#: backend.c:13742
 msgid "That square is occupied"
 msgstr "La casa è già occupata"
 
-#: backend.c:13726 backend.c:13752
+#: backend.c:13766 backend.c:13792
 msgid "There is no pending offer on this move"
 msgstr "Non vi è alcuna offerta pendente a questa mossa"
 
-#: backend.c:13788 backend.c:13799
+#: backend.c:13828 backend.c:13839
 msgid "Your opponent is not out of time"
 msgstr "Il tuo avversario non ha ancora esaurito il proprio tempo"
 
-#: backend.c:13865
+#: backend.c:13905
 msgid "You must make your move before offering a draw"
 msgstr "Devi eseguire la tua mossa prima di offrire la patta"
 
-#: backend.c:14194
+#: backend.c:14234
 msgid "You are not examining a game"
 msgstr "Non stai esaminando alcuna partita"
 
-#: backend.c:14198
+#: backend.c:14238
 msgid "You can't revert while pausing"
 msgstr "Non è possibile ripristinare mentre la pausa è attiva"
 
-#: backend.c:14252 backend.c:14259
+#: backend.c:14292 backend.c:14299
 msgid "It is your turn"
 msgstr "E' il tuo turno"
 
-#: backend.c:14310 backend.c:14317 backend.c:14336 backend.c:14343
+#: backend.c:14350 backend.c:14357 backend.c:14376 backend.c:14383
 msgid "Wait until your turn"
 msgstr "Attendi il tuo turno"
 
-#: backend.c:14322
+#: backend.c:14362
 msgid "No hint available"
 msgstr "Nessun suggerimento disponibile"
 
-#: backend.c:14784
+#: backend.c:14825
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr "Errore in scrittura sul %s motore di gioco"
 
-#: backend.c:14787 backend.c:14823
+#: backend.c:14828 backend.c:14864
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr ""
 
-#: backend.c:14819
+#: backend.c:14860
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr "Errore: il %s motore di gioco (%s) è terminato in maniera inaspettata"
 
-#: backend.c:14836
+#: backend.c:14877
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr "Errore in lettura dal %s motore di gioco (%s)"
 
-#: backend.c:15249
+#: backend.c:15290
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr ""
 
-#: backend.c:15402
+#: backend.c:15443
 msgid "Displayed move is not current"
 msgstr "La mossa mostrata non è quella corrente"
 
-#: backend.c:15411
+#: backend.c:15452
 msgid "Could not parse move"
 msgstr "Impossibile leggere mossa"
 
-#: backend.c:15540 backend.c:15562
+#: backend.c:15581 backend.c:15603
 msgid "Both flags fell"
 msgstr "Tempo esaurito per entrambi"
 
-#: backend.c:15542
+#: backend.c:15583
 msgid "White's flag fell"
 msgstr "Tempo esaurito per il Bianco"
 
-#: backend.c:15564
+#: backend.c:15605
 msgid "Black's flag fell"
 msgstr ""
 
-#: backend.c:16505
+#: backend.c:16546
 msgid "Bad FEN position in clipboard"
 msgstr "Stringa FEN di posizione scorretta negli Appunti"
 
@@ -895,7 +895,8 @@ msgid "Analysis Mode  Ctrl+A"
 msgstr "Avvia analisi   Ctrl+A"
 
 #: xboard.c:686
-msgid "Analyze File      Ctrl+F"
+#, fuzzy
+msgid "Analyze Game   Ctrl+G"
 msgstr "Analizza file   Ctrl+F"
 
 #: xboard.c:687
@@ -1174,7 +1175,7 @@ msgstr "Impostazioni"
 msgid "Help"
 msgstr "Aiuto"
 
-#: xboard.c:811 xboard.c:7582
+#: xboard.c:811 xboard.c:7589
 msgid "White"
 msgstr "Bianco"
 
@@ -1234,7 +1235,7 @@ msgstr "Casa vuota"
 msgid "Clear board"
 msgstr "Svuota scacchiera"
 
-#: xboard.c:815 xboard.c:7598
+#: xboard.c:815 xboard.c:7605
 msgid "Black"
 msgstr "Nero"
 
@@ -1541,10 +1542,6 @@ msgstr ""
 msgid "ICS engine analyze starting... \n"
 msgstr ""
 
-#: xboard.c:5948
-msgid "File to analyze"
-msgstr ""
-
 #: xboard.c:7017
 msgid "Fatal Error"
 msgstr "Errore fatale"
@@ -1574,25 +1571,25 @@ msgstr "Errore in scrittura sul motore di gioco"
 msgid "enter"
 msgstr ""
 
-#: xboard.c:7366
+#: xboard.c:7373
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
 msgstr ""
 
-#: xboard.c:7760
+#: xboard.c:7767
 msgid "Socket support is not configured in"
 msgstr ""
 
-#: xboard.c:7851
+#: xboard.c:7858
 msgid "internal rcmd not implemented for Unix"
 msgstr ""
 
-#: xboard.c:8625
+#: xboard.c:8638
 #, c-format
 msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 msgstr ""
 
-#: xboard.c:8626
+#: xboard.c:8639
 #, c-format
 msgid "AnimateMove: piece %d slides from %d,%d to %d,%d \n"
 msgstr ""
@@ -1704,7 +1701,7 @@ msgstr "Muovi su"
 msgid "factory"
 msgstr "Fabbrica"
 
-#: xhistory.c:146
+#: xhistory.c:145
 msgid "Move list"
 msgstr ""
 
@@ -2541,118 +2538,118 @@ msgstr ""
 msgid "Type a move"
 msgstr ""
 
-#: xoptions.c:1584
+#: xoptions.c:1593
 msgid "Engine Settings"
 msgstr ""
 
-#: xoptions.c:1614
+#: xoptions.c:1623
 msgid "Select engine from list:"
 msgstr ""
 
-#: xoptions.c:1615
+#: xoptions.c:1624
 msgid "or specify one below:"
 msgstr ""
 
-#: xoptions.c:1616
+#: xoptions.c:1625
 msgid "Nickname (optional):"
 msgstr ""
 
-#: xoptions.c:1617
+#: xoptions.c:1626
 msgid "Use nickname in PGN player tags of engine-engine games"
 msgstr ""
 
-#: xoptions.c:1618
+#: xoptions.c:1627
 msgid "Engine Directory:"
 msgstr ""
 
-#: xoptions.c:1619
+#: xoptions.c:1628
 msgid "Engine Command:"
 msgstr ""
 
-#: xoptions.c:1620
+#: xoptions.c:1629
 msgid "(Directory will be derived from engine path when empty)"
 msgstr ""
 
-#: xoptions.c:1621
+#: xoptions.c:1630
 msgid "UCI"
 msgstr ""
 
-#: xoptions.c:1622
+#: xoptions.c:1631
 msgid "WB protocol v1 (do not wait for engine features)"
 msgstr ""
 
-#: xoptions.c:1623
+#: xoptions.c:1632
 msgid "Must not use GUI book"
 msgstr ""
 
-#: xoptions.c:1624
+#: xoptions.c:1633
 msgid "Add this engine to the list"
 msgstr ""
 
-#: xoptions.c:1625
+#: xoptions.c:1634
 msgid "Force current variant with this engine"
 msgstr ""
 
-#: xoptions.c:1626
+#: xoptions.c:1635
 msgid "Load mentioned engine as"
 msgstr ""
 
-#: xoptions.c:1643
+#: xoptions.c:1652
 msgid "Load engine"
 msgstr ""
 
-#: xoptions.c:1665
+#: xoptions.c:1674
 msgid "Start-position number:"
 msgstr "Disposizione iniziale:"
 
-#: xoptions.c:1686
+#: xoptions.c:1695
 msgid "New Shuffle Game"
 msgstr "Nuova partita Shuffle..."
 
-#: xoptions.c:1733
+#: xoptions.c:1742
 msgid "classical"
 msgstr ""
 
-#: xoptions.c:1734
+#: xoptions.c:1743
 msgid "incremental"
 msgstr ""
 
-#: xoptions.c:1735
+#: xoptions.c:1744
 msgid "fixed max"
 msgstr ""
 
-#: xoptions.c:1736
+#: xoptions.c:1745
 msgid "Moves per session:"
 msgstr ""
 
-#: xoptions.c:1737
+#: xoptions.c:1746
 msgid "Initial time (min):"
 msgstr ""
 
-#: xoptions.c:1738
+#: xoptions.c:1747
 msgid "Increment or max (sec/move):"
 msgstr ""
 
-#: xoptions.c:1739
+#: xoptions.c:1748
 #, fuzzy
 msgid "Time-Odds factors:"
 msgstr "Riduci il tempo di un fattore:"
 
-#: xoptions.c:1740
+#: xoptions.c:1749
 #, fuzzy
 msgid "Engine #1"
 msgstr "Motore"
 
-#: xoptions.c:1741
+#: xoptions.c:1750
 #, fuzzy
 msgid "Engine #2 / Human"
 msgstr "Libro proprio per motore 1"
 
-#: xoptions.c:1751 xoptions.c:1754 xoptions.c:1759 xoptions.c:1760
+#: xoptions.c:1760 xoptions.c:1763 xoptions.c:1768 xoptions.c:1769
 msgid "Unused"
 msgstr ""
 
-#: xoptions.c:1775
+#: xoptions.c:1784
 msgid "Time Control"
 msgstr ""
 
