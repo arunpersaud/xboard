@@ -531,6 +531,7 @@ char *oldICSInteractionTitle;
 GtkBuilder      *builder; 
 GtkWidget       *mainwindow;
 GtkWidget       *boardwidgetGTK=NULL;
+GtkWidget       *aspectframe=NULL;
 GtkWidget       *whiteTimerWidgetGTK;
 GtkWidget       *blackTimerWidgetGTK;
 GtkWidget       *messageWidgetGTK=NULL;
@@ -586,7 +587,7 @@ Boolean chessProgram;
 
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int squareSize, squareSizeGTK, smallLayout = 0, tinyLayout = 0,
-  marginW, marginH, // [HGM] for run-time resizing
+  marginW, marginH, xMargin, yMargin, // [HGM] for run-time resizing
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
   ICSInputBoxUp = False, askQuestionUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
@@ -1721,17 +1722,22 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
     Arg args[16];
     XtGeometryResult gres;
-    int i;
+    int i;    
 
     if(!formWidget) return;
 
+    /* resizes for GTK */
+    gtk_window_resize(GTK_WINDOW(mainwindow), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK + xMargin,
+                                              BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK + yMargin);
+    gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK,
+                                              BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK);   
+    
     /*
      * Enable shell resizing.
      */
     shellArgs[0].value = (XtArgVal) &w;
     shellArgs[1].value = (XtArgVal) &h;
     XtGetValues(shellWidget, shellArgs, 2);
-
     shellArgs[4].value = 3*w; shellArgs[2].value = 10;
     shellArgs[5].value = 2*h; shellArgs[3].value = 10;
     XtSetValues(shellWidget, &shellArgs[2], 4);
@@ -2003,7 +2009,7 @@ main(argc, argv)
     int forceMono = False;
     char *filename;
     GError *gtkerror=NULL;    
-    GtkWidget *aspectframe=NULL;
+    
     gfloat ar; /* board aspect ratio */ 
 
     srandom(time(0)); // [HGM] book: make random truly random
@@ -2171,10 +2177,7 @@ main(argc, argv)
     if(!fontIsSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
 	appData.font = fontTable[MESSAGE_FONT][squareSize];
     if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
-	appData.coordFont = fontTable[COORD_FONT][squareSize];
-
-    squareSizeGTK = squareSize;
-    lineGapGTK = lineGap;
+	appData.coordFont = fontTable[COORD_FONT][squareSize];   
 
     /* Now, using squareSize as a hint, find a good XPM/XIM set size */
     if (strlen(appData.pixmapDirectory) > 0) {
@@ -2196,6 +2199,9 @@ XBoard square size (hint): %d\n\
     }
     defaultLineGap = lineGap;
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
+
+    squareSizeGTK = squareSize;
+    lineGapGTK = lineGap;    
 
     /* [HR] height treated separately (hacked) */
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
@@ -2324,7 +2330,7 @@ XBoard square size (hint): %d\n\
     SVGBlackQueen    = load_pixbuf("BlackQueen.svg",squareSize);
     SVGBlackKing     = load_pixbuf("BlackKing.svg",squareSize);
 
-    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));    
+    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));         
     boardwidgetGTK  = GTK_WIDGET(gtk_builder_get_object (builder, "boardwidgetGTK"));
     if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");
 
@@ -2351,10 +2357,15 @@ XBoard square size (hint): %d\n\
     aspectframe = GTK_WIDGET(gtk_builder_get_object (builder, "boardaspect"));
     ar = (float) BOARD_WIDTH / BOARD_HEIGHT;   
     gtk_aspect_frame_set(GTK_ASPECT_FRAME(aspectframe), 0.5, 0.5, ar, TRUE);
+
     
     /* set the minimum size the user can resize the main window to */
     gtk_widget_set_size_request(mainwindow, 402, 314);
-
+  { gint wx, hx, wb, hb;    
+    gtk_window_get_size(GTK_WINDOW(mainwindow), &wx, &hx);
+    gdk_drawable_get_size(boardwidgetGTK->window, &wb, &hb);    
+    xMargin = wx - wb; yMargin = hx - hb;
+  }
     /*
      * widget hierarchy
      */
@@ -5243,6 +5254,20 @@ void DrawSquare(row, column, piece, do_flash)
     }
 }
 
+/* return linegap based on square size */
+/* called from ConfigureProc in xboard.c and BoardOptionsOK in xoptions.c */
+int GetLineGap()
+{
+    int gap;
+
+    if (squareSizeGTK > 112) gap = 4;
+    else if (squareSizeGTK > 57) gap = 3;
+    else if (squareSizeGTK > 35) gap = 2;
+    else gap = 1;
+
+    return gap;
+}
+
 /* The user has resized the main window so redraw the board with the correct size */
 gboolean ConfigureProc(widget, event, data)
      GtkWidget *widget;
@@ -5250,17 +5275,21 @@ gboolean ConfigureProc(widget, event, data)
      gpointer data;
 {   
     gint width, height;
+    int w, h;
 
     gdk_drawable_get_size(boardwidgetGTK->window, &width, &height);    
 
     /* calc squaresize based on previous linegap */
-    squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
+    //squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
+    w = (width - 4) / BOARD_WIDTH;
+    h = (height - 4) / BOARD_HEIGHT;
+    squareSizeGTK = w < h ? w : h;
 
-    /* see if linegap changed */
-    if (squareSizeGTK > 108) lineGapGTK = 4;
-    else if (squareSizeGTK > 54) lineGapGTK = 3;
-    else if (squareSizeGTK > 33) lineGapGTK = 2;
-    else lineGapGTK = 1;
+    /* calc linegap */
+    if(appData.overrideLineGap >= 0)
+        lineGapGTK = appData.overrideLineGap;
+    else
+        lineGapGTK = GetLineGap();
 
     /* recalc squaresize */
     squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
@@ -5283,7 +5312,7 @@ gboolean ConfigureProc(widget, event, data)
     SVGscBlackRook     = gdk_pixbuf_scale_simple(SVGBlackRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscBlackQueen    = gdk_pixbuf_scale_simple(SVGBlackQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscBlackKing     = gdk_pixbuf_scale_simple(SVGBlackKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-   
+
     return False;
 }
 

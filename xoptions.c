@@ -687,6 +687,11 @@ void AdjustColor(int i)
 
 int BoardOptionsOK(int n)
 {
+    if(appData.overrideLineGap >= 0)
+        lineGapGTK = appData.overrideLineGap;
+    else
+        lineGapGTK = GetLineGap();
+
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
     useImages = useImageSqs = 0;
     MakeColors(); CreateGCs(True);
