@@ -3814,10 +3814,12 @@ Widget CreateMenuBar(mb)
 	strncat(menuName, mb->ref, MSG_SIZ - strlen(menuName) - 1);
 	j = 0;
 	XtSetArg(args[j], XtNmenuName, XtNewString(menuName));  j++;
-	if (tinyLayout) {
-	    char shortName[2];
-            shortName[0] = mb->name[0];
-	    shortName[1] = NULLCHAR;
+	if (tinyLayout || squareSize+lineGap < 45) {
+	    char shortName[20];
+	    int len;
+            strncpy(shortName, mb->name, 20);
+	    len = tinyLayout ? 1 : ((squareSize+lineGap)*BOARD_WIDTH/8. - 10)/7 + 1;
+	    shortName[len] = NULLCHAR;
 	    XtSetArg(args[j], XtNlabel, XtNewString(shortName)); j++;
 	}
       else {
