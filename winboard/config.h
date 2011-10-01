@@ -46,16 +46,16 @@
 #define PACKAGE_NAME "WinBoard"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "WinBoard 4.5.3.20110822"
+#define PACKAGE_STRING "WinBoard 4.5.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "winboard"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.5.3.20110822"
+#define PACKAGE_VERSION "4.5.3"
 
 /* Define the Windows-specific FILE version info.  this *MUST* be four comma separated 16-bit integers */
-#define PACKAGE_FILEVERSION 4,5,2,2
+#define PACKAGE_FILEVERSION 4,5,3,0
 
 #define PTY_ITERATION
 
