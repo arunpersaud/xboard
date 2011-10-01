@@ -1,3 +1,42 @@
+** Version 4.5.3 **
+
+(git diff -b --stat --summary -M v4.5.2a HEAD)
+
+ args.h                |   27 +++++++++++++---------
+ backend.c             |   54 +++++++++++++++++++++++++++++++++++--------
+ backend.h             |    4 ++-
+ book.c                |    1 +
+ configure.ac          |    2 +-
+ engineoutput.c        |   14 +++++-----
+ filebrowser/dir.c     |   13 +++++-----
+ filebrowser/draw.c    |    7 +-----
+ filebrowser/path.c    |   10 +-------
+ filebrowser/selfile.c |   17 +++----------
+ filebrowser/selfile.h |   17 +++++++++++++
+ history.c             |    6 +++-
+ moves.c               |    6 ++--
+ uci.c                 |    2 +-
+ winboard/config.h     |    6 ++--
+ winboard/jaws.c       |   37 +++++++++++++++++++++++++-----
+ winboard/language.txt |   40 +-------------------------------
+ winboard/makefile.gcc |   10 ++++++-
+ winboard/winboard.c   |    6 +++-
+ winboard/winboard.h   |    1 +
+ winboard/winboard.rc  |   32 +++++++++++++-------------
+ winboard/wsettings.c  |   33 +++++++++++++++++---------
+ xboard.c              |   24 ++++++++++++-------
+ xboard.h              |   28 ++++++++++++++++++++++
+ xboard.png            |  Bin 1342 -> 15116 bytes
+ xboard.svg            |   26 ++++++++++++++------
+ xedittags.c           |   11 ---------
+ xengineoutput.c       |   16 -------------
+ xevalgraph.c          |   14 -----------
+ xgamelist.c           |   61 +++++++++++++++++++++++++++++++-----------------
+ xhistory.c            |    6 -----
+ xoptions.c            |   50 +++++++++++-----------------------------
+ 32 files changed, 308 insertions(+), 273 deletions(-)
+
+
 ** Version 4.5.2a (Winboard only)  **
 
 (git diff -b --stat --summary -M v4.5.2 HEAD)

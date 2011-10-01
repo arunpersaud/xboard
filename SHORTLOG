@@ -1,4 +1,57 @@
-** Version 4.5.2a (Winboard only)**
+** Version 4.5.3 **
+
+(git shortlog --no-merges v4.5.2a..HEAD)
+
+Arun Persaud (2):
+      new developer release
+      better contrast for XBoard icon on a dark background
+
+H.G. Muller (43):
+      Fix some warnings and header-file improvement
+      Fix warnings XBoard file browser
+      Fix zippy-partner bug
+      Silence more rpm warnings
+      Add tab stops in WB generic popup
+      Reorder controls in Engine Setings dialog WB
+      Fix Unfinished sound during ICS examining
+      Fix JAWS reading of Engine Settings dialog
+      Create some space in WB dialogs for translations
+      Remove some duplicats from WB language template file
+      Fix translatability of Spartan Chess menu item WB
+      Fix translation of spoken composite messages
+      Popdown Comment window on new game
+      Force Move History refresh after loading/reverting variation
+      Fix crash on empty Engine Settings dialog
+      Display note in stead of empty engine-settings dialog XB
+      Fix generic-popup failure after empty engine-settings dialog
+      No clearing of Engine-Output memos on stat01
+      Fix button sizing in generic popup
+      Fix vscrolling in XBoard Engine-Output window
+      Obey san feature when sending book moves
+      Fix display of last move of last match game
+      Fix parameter handling in adapter command
+      Fix type of shuffleOpenings
+      Fix crash on switching sound in Vista
+      Fix empty-string option values in XBoard
+      Add -at and -opt options as alternative for @
+      Fix default of -remoteUser
+      Make non-existing option in settings file non-fatal
+      Remove stray else
+      Restore echo after ^C in ICS password
+      Don't one-click move when legality testing is off
+      Update window title after last game of match
+      Fix missing files in file browser
+      Fix use of random in XBoard shuffle dialog
+      Better fix of crash on empty game list
+      Implement paging in XBoard Game List
+      Clear Engine-Output pane when initializing engine
+      Fix AppendComment
+      Fix playing sounds when -soundProgram is empty
+      Implement NVDA support in JAWS version
+      Suppress playing of book moves with weight 0
+      Limit width of menu bar in XBoard
+
+** Version 4.5.2a (Winboard only) **
 
 (git shortlog --no-merges v4.5.2..HEAD)
 
