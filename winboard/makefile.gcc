@@ -19,7 +19,7 @@ USE_DEBUG=0
 
 
 # JAWS support? (Set to 2 for NVDA support!)
-JAWS=2
+JAWS=0
 
 
 # set this to 1 unless you don't mind linking with cygwin1.dll
