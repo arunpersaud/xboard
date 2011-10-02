@@ -1113,6 +1113,7 @@
                 <signal name="configure_event" handler="ConfigureProc"/>
                 <signal name="expose_event" handler="EventProcGTK"/>
                 <signal name="button_release_event" handler="HandleUserMoveGTK"/>
+                <signal name="motion_notify_event" handler="AnimateUserMove"/>
               </object>
             </child>
           </object>

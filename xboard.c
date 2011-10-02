@@ -286,8 +286,7 @@ void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEvent *event, gpointer data));
 void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
-void AnimateUserMove P((Widget w, XEvent * event,
-		     String * params, Cardinal * nParams));
+void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
 void HandlePV P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
 void SelectPV P((Widget w, XEvent * event,
@@ -488,6 +487,7 @@ int get_term_width P(());
 int CopyMemoProc P(());
 void DrawArrowHighlight P((int fromX, int fromY, int toX,int toY));
 Boolean IsDrawArrowEnabled P(());
+GdkPixbuf *getPixbuf P((int piece));
 
 /*
 * XBoard depends on Xt R4 or higher
@@ -644,7 +644,7 @@ typedef struct {
 	Pixmap  saveBuf;
 	Pixmap	newBuf;
 	GC	blitGC, pieceGC, outlineGC;
-	XPoint	startSquare, prevFrame, mouseDelta;
+	GdkPoint startSquare, prevFrame, mouseDelta;
 	int	startColor;
 	int	dragPiece;
 	Boolean	dragActive;
@@ -967,7 +967,7 @@ XrmOptionDescRec shellOptions[] = {
 XtActionsRec boardActions[] = {
     { "DrawPosition", DrawPositionProc },
     { "HandleUserMove", HandleUserMove },
-    { "AnimateUserMove", AnimateUserMove },
+    //{ "AnimateUserMove", AnimateUserMove },
     { "HandlePV", HandlePV },
     { "SelectPV", SelectPV },
     { "StopPV", StopPV },
@@ -1172,7 +1172,6 @@ char boardTranslations[] =
    "<Btn1Down>: HandleUserMove(0) \n \
    Shift<Btn1Up>: HandleUserMove(1) \n \
    <Btn1Up>: HandleUserMove(0) \n \
-   <Btn1Motion>: AnimateUserMove() \n \
    <Btn3Motion>: HandlePV() \n \
    <Btn3Up>: PieceMenuPopup(menuB) \n \
    Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
@@ -4013,6 +4012,54 @@ void ReadBitmap(pm, name, bits, wreq, hreq)
     }
 }
 
+void
+DrawGrid(int x, int y, int Nx, int Ny)
+{
+  /* draws a grid starting around Nx, Ny squares starting at x,y */
+  int i,j;
+
+  int x1,x2,y1,y2;
+  cairo_t *cr;
+
+  /* get a cairo_t */
+  cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
+  cairo_set_line_width (cr, lineGapGTK);
+
+  /* TODO: use appdata colors */
+  cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
+
+  /* lines in X */
+  for (i = y; i < MIN(BOARD_HEIGHT,y + Ny+1); i++)
+    {
+      x1 = x * (squareSizeGTK + lineGapGTK);;
+      x2 = lineGapGTK + MIN(BOARD_WIDTH,x + Nx) * (squareSizeGTK + lineGapGTK);
+      y1 = y2 = lineGapGTK / 2 + (i * (squareSizeGTK + lineGapGTK));
+
+      cairo_move_to (cr, x1, y1);
+      cairo_line_to (cr, x2,y2);
+      cairo_stroke (cr);
+    }
+
+  /* lines in Y */
+  for (j = x; j < MIN(BOARD_WIDTH,x + Nx+1) ; j++)
+    {
+      y1 = y * (squareSizeGTK + lineGapGTK);
+      y2 = lineGapGTK + MIN(BOARD_HEIGHT,y + Ny) * (squareSizeGTK + lineGapGTK);
+      x1 = x2  = lineGapGTK / 2 + (j * (squareSizeGTK + lineGapGTK));
+
+      cairo_move_to (cr, x1, y1);
+      cairo_line_to (cr, x2, y2);
+      cairo_stroke (cr);
+    }
+
+  /* free memory */
+  cairo_destroy (cr);
+
+  return;
+}
+
+
 void CreateGridGTK()
 {
     /* draws a grid starting around Nx, Ny squares starting at x,y */
@@ -4844,63 +4891,9 @@ static void colorDrawPieceImageGTK(piece, square_color, x, y, dest)
     if(appData.upsideDown && flipView) { kind ^= 2; p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
     if(useTexture & square_color+1) {        
         BlankSquareGTK(x, y, square_color, piece, dest, 1); // erase previous contents with background        
-/*
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
-    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan, 
-    WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
-    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
-    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
-    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan, 
-    BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
-    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
-    EmptySquare, 
-*/
-        switch (p) {
-          case WhitePawn: 
-            pb = SVGscWhitePawn;
-            break;
-          case WhiteKnight: 
-            pb = SVGscWhiteKnight;
-            break;
-          case WhiteBishop: 
-            pb = SVGscWhiteBishop;
-            break;
-          case WhiteRook: 
-            pb = SVGscWhiteRook;
-            break;
-          case WhiteQueen: 
-            pb = SVGscWhiteQueen;
-            break;
-          case WhiteKing: 
-            pb = SVGscWhiteKing;
-            break;
 
-          case BlackPawn: 
-            pb = SVGscBlackPawn;
-            break;
-          case BlackKnight: 
-            pb = SVGscBlackKnight;
-            break;
-          case BlackBishop: 
-            pb = SVGscBlackBishop;
-            break;
-          case BlackRook: 
-            pb = SVGscBlackRook;
-            break;
-          case BlackQueen: 
-            pb = SVGscBlackQueen;
-            break;
-          case BlackKing: 
-            pb = SVGscBlackKing;
-            break;
+        pb = getPixbuf(p);
 
-          default:
-            if ((int)p < (int) BlackPawn) // white piece 
-                pb = SVGscWhiteKing;
-            else
-                pb = SVGscBlackKing;
-            break;
-        }
         //pb = SVGPawn;        
         if (boardwidgetGTK == NULL) return;  
         gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSizeGTK, squareSizeGTK, GDK_RGB_DITHER_NORMAL, 0, 0);        
@@ -5366,7 +5359,7 @@ void DrawPosition(fullRedraw, board)
      Board board;
 {
     XDrawPosition(boardWidget, fullRedraw, board);
-    GTKDrawPosition(boardwidgetGTK, fullRedraw, board);
+    GTKDrawPosition(boardwidgetGTK, fullRedraw, board);    
 }
 
 /* Returns 1 if there are "too many" differences between b1 and b2
@@ -5465,6 +5458,7 @@ void DrawSeekDot(int x, int y, int colorNr)
 		x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
 }
 
+static int damageGTK[2][BOARD_RANKS][BOARD_FILES];
 static int damage[2][BOARD_RANKS][BOARD_FILES];
 
 void GTKDrawPosition(w, repaint, board)
@@ -5499,7 +5493,7 @@ void GTKDrawPosition(w, repaint, board)
 
     if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
 
-	if ( lineGap && IsDrawArrowEnabled())
+	//if ( lineGap && IsDrawArrowEnabled())
 	    //XDrawSegments(xDisplay, xBoardWindow, lineGC,
 		//	gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
 
@@ -5520,13 +5514,15 @@ void GTKDrawPosition(w, repaint, board)
 	/* First pass -- Draw (newly) empty squares and repair damage.
 	   This prevents you from having a piece show up twice while it
 	   is flashing on its new square */
-	for (i = 0; i < BOARD_HEIGHT; i++)
-	  for (j = 0; j < BOARD_WIDTH; j++)
+	for (i = 0; i < BOARD_HEIGHT; i++) {
+	  for (j = 0; j < BOARD_WIDTH; j++) {
 	    if ((board[i][j] != lastBoard[nr][i][j] && board[i][j] == EmptySquare)
-		|| damage[nr][i][j]) {
+		|| damageGTK[nr][i][j]) {
 		DrawSquareGTK(i, j, board[i][j], 0);
-		damage[nr][i][j] = False;
+		damageGTK[nr][i][j] = False;
 	    }
+          }
+        }
 
 	/* Second pass -- Draw piece(s) in new position and flash them */
 	for (i = 0; i < BOARD_HEIGHT; i++)
@@ -5544,7 +5540,7 @@ void GTKDrawPosition(w, repaint, board)
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++) {
 	      DrawSquareGTK(i, j, board[i][j], 0);
-	      damage[nr][i][j] = False;
+	      damageGTK[nr][i][j] = False;
 	  }
     }
 
@@ -5769,12 +5765,35 @@ void HandleUserMove(w, event, prms, nprms)
     if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
 }
 
+void
+AnimateUserMove (GtkWidget *w, GdkEventMotion *event)
+{
+  int x, y;
+  GdkModifierType state;
+
+  if (event->is_hint)
+    gdk_window_get_pointer (event->window, &x, &y, &state);
+  else
+    {
+      x = event->x;
+      y = event->y;
+      state = event->state;
+    }
+
+  if (state & GDK_BUTTON1_MASK)
+    {
+      DragPieceMove(x, y);
+    }
+}
+
+/*
 void AnimateUserMove (Widget w, XEvent * event,
 		      String * params, Cardinal * nParams)
 {
     if(!PromoScroll(event->xmotion.x, event->xmotion.y))
     DragPieceMove(event->xmotion.x, event->xmotion.y);
 }
+*/
 
 void HandlePV (Widget w, XEvent * event,
 		      String * params, Cardinal * nParams)
@@ -9707,14 +9726,17 @@ FrameDelay (time)
 
 static void
 ScreenSquare(column, row, pt, color)
-     int column; int row; XPoint * pt; int * color;
+     int column;
+     int row;
+     GdkPoint *pt;
+     int *color;
 {
   if (flipView) {
-    pt->x = lineGap + ((BOARD_WIDTH-1)-column) * (squareSize + lineGap);
-    pt->y = lineGap + row * (squareSize + lineGap);
+    pt->x = lineGapGTK + ((BOARD_WIDTH-1)-column) * (squareSizeGTK + lineGapGTK);
+    pt->y = lineGapGTK + row * (squareSizeGTK + lineGapGTK);
   } else {
-    pt->x = lineGap + column * (squareSize + lineGap);
-    pt->y = lineGap + ((BOARD_HEIGHT-1)-row) * (squareSize + lineGap);
+    pt->x = lineGapGTK + column * (squareSizeGTK + lineGapGTK);
+    pt->y = lineGapGTK + ((BOARD_HEIGHT-1)-row) * (squareSizeGTK + lineGapGTK);
   }
   *color = SquareColor(row, column);
 }
@@ -9756,17 +9778,18 @@ SetRect(rect, x, y, width, height)
 
 static Boolean
 Intersect(old, new, size, area, pt)
-     XPoint * old; XPoint * new;
-     int size; XRectangle * area; XPoint * pt;
+     GdkPoint *old; GdkPoint *new;
+     int size; GdkRectangle *area; GdkPoint *pt;
 {
-  if (old->x > new->x + size || new->x > old->x + size ||
-      old->y > new->y + size || new->y > old->y + size) {
-    return False;
-  } else {
-    SetRect(area, Max(new->x - old->x, 0), Max(new->y - old->y, 0),
-            size - abs(old->x - new->x), size - abs(old->y - new->y));
-    pt->x = Max(old->x - new->x, 0);
-    pt->y = Max(old->y - new->y, 0);
+  if (    abs(old->x - new->x) > size
+       || abs(old->y - new->y) > size )
+       return False;
+  else
+    {
+      SetRect(area, Max(new->x - old->x, 0), Max(new->y - old->y, 0),
+	      size - abs(old->x - new->x), size - abs(old->y - new->y));
+      pt->x = Max(old->x - new->x, 0);
+      pt->y = Max(old->y - new->y, 0);
     return True;
   }
 }
@@ -9776,8 +9799,8 @@ Intersect(old, new, size, area, pt)
 
 static void
 CalcUpdateRects(old, new, size, update, nUpdates)
-     XPoint * old; XPoint * new; int size;
-     XRectangle update[]; int * nUpdates;
+     GdkPoint *old; GdkPoint *new; int size;
+     GdkRectangle update[]; int *nUpdates;
 {
   int	     count;
 
@@ -9824,9 +9847,9 @@ CalcUpdateRects(old, new, size, update, nUpdates)
 
 static void
 Tween(start, mid, finish, factor, frames, nFrames)
-     XPoint * start; XPoint * mid;
-     XPoint * finish; int factor;
-     XPoint frames[]; int * nFrames;
+     GdkPoint *start; GdkPoint *mid;
+     GdkPoint *finish; int factor;
+     GdkPoint frames[]; int *nFrames;
 {
   int fraction, n, count;
 
@@ -9856,6 +9879,8 @@ Tween(start, mid, finish, factor, frames, nFrames)
     fraction = fraction * 2;
   }
   *nFrames = count;
+
+  return;
 }
 
 /*	Draw a piece on the screen without disturbing what's there	*/
@@ -9901,8 +9926,90 @@ SelectGCMask(piece, clip, outline, mask)
     *outline = wbPieceGC;
 }
 
+GdkPixbuf *getPixbuf(int piece) {
+    GdkPixbuf *pb=NULL;
+
+/*
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
+    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan, 
+    WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
+    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
+    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
+    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan, 
+    BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
+    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
+    EmptySquare, 
+*/
+
+    switch (piece) {
+      case WhitePawn: 
+        pb = SVGscWhitePawn;
+        break;
+      case WhiteKnight: 
+        pb = SVGscWhiteKnight;
+        break;
+      case WhiteBishop: 
+        pb = SVGscWhiteBishop;
+        break;
+      case WhiteRook: 
+        pb = SVGscWhiteRook;
+        break;
+      case WhiteQueen: 
+        pb = SVGscWhiteQueen;
+        break;
+      case WhiteKing: 
+        pb = SVGscWhiteKing;
+        break;
+
+      case BlackPawn: 
+        pb = SVGscBlackPawn;
+        break;
+      case BlackKnight: 
+        pb = SVGscBlackKnight;
+        break;
+      case BlackBishop: 
+        pb = SVGscBlackBishop;
+        break;
+      case BlackRook: 
+        pb = SVGscBlackRook;
+        break;
+      case BlackQueen: 
+        pb = SVGscBlackQueen;
+        break;
+      case BlackKing: 
+        pb = SVGscBlackKing;
+        break;
+
+      default:
+        if ((int)piece < (int) BlackPawn) // white piece 
+            pb = SVGscWhiteKing;
+        else
+            pb = SVGscBlackKing;
+        break;
+    }
+    return pb;
+}
+
 static void
-OverlayPiece(piece, clip, outline,  dest)
+OverlayPiece(piece, position, dest)
+     ChessSquare piece;
+     GdkPoint *position;
+     Drawable dest;
+{
+    GdkPixbuf *pb=NULL;
+
+    pb = getPixbuf(piece);
+
+  /* draw piece */
+  gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window),NULL,		  
+                  GDK_PIXBUF(pb),0,0,
+		  position->x,position->y,-1,-1,
+		  GDK_RGB_DITHER_NORMAL, 0, 0);
+  return;
+}
+
+static void
+OverlayPiece2(piece, clip, outline,  dest)
      ChessSquare piece; GC clip; GC outline; Drawable dest;
 {
   int	kind;
@@ -9937,7 +10044,7 @@ BeginAnimation(anim, piece, startColor, start)
      AnimState *anim;
      ChessSquare piece;
      int startColor;
-     XPoint * start;
+     GdkPoint * start;
 {
   Pixmap mask;
 
@@ -9954,89 +10061,119 @@ BeginAnimation(anim, piece, startColor, start)
 static void
 AnimationFrame(anim, frame, piece)
      AnimState *anim;
-     XPoint *frame;
+     GdkPoint *frame;
      ChessSquare piece;
 {
-  XRectangle updates[4];
-  XRectangle overlap;
-  XPoint     pt;
-  int	     count, i;
+  GdkPoint *pt;
+  GdkRectangle updates[4];
+  GdkRectangle overlap;
+  int  count, i,x,y;
+  int xb,yb, xoffset,yoffset,sx,sy;
 
-  /* Save what we are about to draw into the new buffer */
-  XCopyArea(xDisplay, xBoardWindow, anim->newBuf, anim->blitGC,
-	    frame->x, frame->y, squareSize, squareSize,
-	    0, 0);
 
-  /* Erase bits of the previous frame */
-  if (Intersect(&anim->prevFrame, frame, squareSize, &overlap, &pt)) {
-    /* Where the new frame overlapped the previous,
-       the contents in newBuf are wrong. */
-    XCopyArea(xDisplay, anim->saveBuf, anim->newBuf, anim->blitGC,
-	      overlap.x, overlap.y,
-	      overlap.width, overlap.height,
-	      pt.x, pt.y);
-    /* Repaint the areas in the old that don't overlap new */
-    CalcUpdateRects(&anim->prevFrame, frame, squareSize, updates, &count);
-    for (i = 0; i < count; i++)
-      XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-		updates[i].x - anim->prevFrame.x,
-		updates[i].y - anim->prevFrame.y,
-		updates[i].width, updates[i].height,
-		updates[i].x, updates[i].y);
-  } else {
-    /* Easy when no overlap */
-    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-		  0, 0, squareSize, squareSize,
-		  anim->prevFrame.x, anim->prevFrame.y);
-  }
+  /* TODO: check lineGap, seems to be not correct   */
 
-  /* Save this frame for next time round */
-  XCopyArea(xDisplay, anim->newBuf, anim->saveBuf, anim->blitGC,
-		0, 0, squareSize, squareSize,
-		0, 0);
+  /* clear pic from last frame */
+
+  /* get coordinates */
+  if(anim->prevFrame.x<0)
+    anim->prevFrame.x += squareSizeGTK;
+  if(anim->prevFrame.y<0)
+    anim->prevFrame.y += squareSizeGTK;
+
+  x = EventToSquare(anim->prevFrame.x, BOARD_WIDTH);
+  y = EventToSquare(anim->prevFrame.y, BOARD_HEIGHT);
+
+  /* for the pieces we need to include flipview */
+  BoardSquare(anim->prevFrame.x,anim->prevFrame.y,&xb,&yb);
+  BoardSquare(anim->startSquare.x,anim->startSquare.y,&sx,&sy);
+
+  /* override the 4 squares that can be affected by a moving piece */
+  if(x>=0 && y>=0 )
+    {
+      DrawGrid(x,y,2,2);
+
+      if (flipView)
+	{
+	  xoffset=-1;
+	  yoffset=+1;
+	}
+      else
+	{
+	  xoffset=+1;
+	  yoffset=-1;
+	}
+
+      /* make sure start square stays empty */
+      if(! (xb==sx && yb==sy) )
+	DrawSquareGTK(yb  ,xb,    boards[currentMove][yb  ][xb  ], 0);
+      else
+	DrawSquareGTK(yb  ,xb,    EmptySquare, 0);
+
+      if(! (xb==sx && yb+yoffset==sy) )
+	DrawSquareGTK(yb+yoffset,xb,    boards[currentMove][yb+yoffset][xb  ], 0);
+      else
+	DrawSquareGTK(yb+yoffset  ,xb,    EmptySquare, 0);
+
+      if(! (xb+xoffset==sx && yb==sy) )
+	DrawSquareGTK(yb  ,xb+xoffset,  boards[currentMove][yb  ][xb+xoffset], 0);
+      else
+	DrawSquareGTK(yb  ,xb+xoffset,  EmptySquare, 0);
+
+      if(! (xb+xoffset==sx && yb+yoffset==sy) )
+	DrawSquareGTK(yb+yoffset,xb+xoffset,  boards[currentMove][yb+yoffset][xb+xoffset], 0);
+      else
+	DrawSquareGTK(yb+yoffset,xb+xoffset,  EmptySquare, 0);
+
+    }
+
+  /* Draw moving piece  */
+  OverlayPiece(piece, frame, xBoardWindow);
+
+  /* remember this position */
   anim->prevFrame = *frame;
-
-  /* Draw piece over original screen contents, not current,
-     and copy entire rect. Wipes out overlapping piece images. */
-  OverlayPiece(piece, anim->pieceGC, anim->outlineGC, anim->newBuf);
-  XCopyArea(xDisplay, anim->newBuf, xBoardWindow, anim->blitGC,
-		0, 0, squareSize, squareSize,
-		frame->x, frame->y);
+  return;
 }
 
 static void
 EndAnimation (anim, finish)
      AnimState *anim;
-     XPoint *finish;
+     GdkPoint *finish;
 {
-  XRectangle updates[4];
-  XRectangle overlap;
-  XPoint     pt;
+  GdkRectangle updates[4];
+  GdkRectangle overlap;
+  GdkPoint     pt;
   int	     count, i;
 
   /* The main code will redraw the final square, so we
      only need to erase the bits that don't overlap.	*/
+
+/*
   if (Intersect(&anim->prevFrame, finish, squareSize, &overlap, &pt)) {
     CalcUpdateRects(&anim->prevFrame, finish, squareSize, updates, &count);
     for (i = 0; i < count; i++)
-      XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-		updates[i].x - anim->prevFrame.x,
-		updates[i].y - anim->prevFrame.y,
-		updates[i].width, updates[i].height,
-		updates[i].x, updates[i].y);
+  //    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
+  //	updates[i].x - anim->prevFrame.x,
+  //		updates[i].y - anim->prevFrame.y,
+  //		updates[i].width, updates[i].height,
+  //		updates[i].x, updates[i].y);
   } else {
-    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
-		0, 0, squareSize, squareSize,
-		anim->prevFrame.x, anim->prevFrame.y);
+//    XCopyArea(xDisplay, anim->saveBuf, xBoardWindow, anim->blitGC,
+//		0, 0, squareSize, squareSize,
+//		anim->prevFrame.x, anim->prevFrame.y);
   }
+*/
+
+
+  return;
 }
 
 static void
 FrameSequence(anim, piece, startColor, start, finish, frames, nFrames)
      AnimState *anim;
      ChessSquare piece; int startColor;
-     XPoint * start; XPoint * finish;
-     XPoint frames[]; int nFrames;
+     GdkPoint *start; GdkPoint *finish;
+     GdkPoint frames[]; int nFrames;
 {
   int n;
 
@@ -10083,8 +10220,8 @@ AnimateMove(board, fromX, fromY, toX, toY)
 {
   ChessSquare piece;
   int hop;
-  XPoint      start, finish, mid;
-  XPoint      frames[kFactor * 2 + 1];
+  GdkPoint      start, finish, mid;
+  GdkPoint      frames[kFactor * 2 + 1];
   int	      nFrames, startColor, endColor;
 
   /* Are we animating? */
@@ -10102,7 +10239,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
 #if DONT_HOP
   hop = FALSE;
 #else
-  hop = abs(fromX-toX) == 1 && abs(fromY-toY) == 2 || abs(fromX-toX) == 2 && abs(fromY-toY) == 1;
+  hop = (piece == WhiteKnight || piece == BlackKnight);
 #endif
 
   if (appData.debugMode) {
@@ -10114,12 +10251,12 @@ AnimateMove(board, fromX, fromY, toX, toY)
   ScreenSquare(toX, toY, &finish, &endColor);
 
   if (hop) {
-    /* Knight: make straight movement then diagonal */
+    /* Knight: make diagonal movement then straight */
     if (abs(toY - fromY) < abs(toX - fromX)) {
        mid.x = start.x + (finish.x - start.x) / 2;
-       mid.y = start.y;
+       mid.y = finish.y;
      } else {
-       mid.x = start.x;
+       mid.x = finish.x;
        mid.y = start.y + (finish.y - start.y) / 2;
      }
   } else {
@@ -10133,14 +10270,11 @@ AnimateMove(board, fromX, fromY, toX, toY)
   else
     Tween(&start, &mid, &finish, kFactor, frames, &nFrames);
   FrameSequence(&game, piece, startColor, &start, &finish, frames, nFrames);
-  if(Explode(board, fromX, fromY, toX, toY)) { // mark as damaged
-    int i,j;
-    for(i=0; i<BOARD_WIDTH; i++) for(j=0; j<BOARD_HEIGHT; j++)
-      if((i-toX)*(i-toX) + (j-toY)*(j-toY) < 6) damage[0][j][i] = True;
-  }
 
   /* Be sure end square is redrawn */
-  damage[0][toY][toX] = True;
+  damageGTK[0][toY][toX] = True;
+
+  return;
 }
 
 void
@@ -10148,7 +10282,7 @@ DragPieceBegin(x, y, instantly)
      int x; int y; Boolean instantly;
 {
     int	 boardX, boardY, color;
-    XPoint corner;
+    GdkPoint corner;
 
     /* Are we animating? */
     if (!appData.animateDragging || appData.blindfold)
@@ -10164,8 +10298,8 @@ DragPieceBegin(x, y, instantly)
     player.startColor   = color;
     /* As soon as we start dragging, the piece will jump slightly to
        be centered over the mouse pointer. */
-    player.mouseDelta.x = squareSize/2;
-    player.mouseDelta.y = squareSize/2;
+    player.mouseDelta.x = squareSizeGTK/2;
+    player.mouseDelta.y = squareSizeGTK/2;
     /* Initialise animation */
     player.dragPiece = PieceForSquare(boardX, boardY);
     /* Sanity check */
@@ -10175,23 +10309,23 @@ DragPieceBegin(x, y, instantly)
 	/* Mark this square as needing to be redrawn. Note that
 	   we don't remove the piece though, since logically (ie
 	   as seen by opponent) the move hasn't been made yet. */
-           if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
-              boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
-           XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
-	             corner.x, corner.y, squareSize, squareSize,
-	             0, 0); // [HGM] zh: unstack in stead of grab
-           if(gatingPiece != EmptySquare) {
-               /* Kludge alert: When gating we want the introduced
-                  piece to appear on the from square. To generate an
-                  image of it, we draw it on the board, copy the image,
-                  and draw the original piece again. */
-               ChessSquare piece = boards[currentMove][boardY][boardX];
-               DrawSquare(boardY, boardX, gatingPiece, 0);
-               XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
-	             corner.x, corner.y, squareSize, squareSize, 0, 0);
-               DrawSquare(boardY, boardX, piece, 0);
-           }
-	damage[0][boardY][boardX] = True;
+           //if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
+           //   boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
+           //XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
+	   //          corner.x, corner.y, squareSize, squareSize,
+	   //          0, 0); // [HGM] zh: unstack in stead of grab
+           //if(gatingPiece != EmptySquare) {
+           //    /* Kludge alert: When gating we want the introduced
+           //       piece to appear on the from square. To generate an
+           //       image of it, we draw it on the board, copy the image,
+           //       and draw the original piece again. */
+           //    ChessSquare piece = boards[currentMove][boardY][boardX];
+           //    DrawSquare(boardY, boardX, gatingPiece, 0);
+           //    XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
+	   //          corner.x, corner.y, squareSize, squareSize, 0, 0);
+           //    DrawSquare(boardY, boardX, piece, 0);
+           //}	
+	damageGTK[0][boardY][boardX] = True;
     } else {
 	player.dragActive = False;
     }
@@ -10211,7 +10345,7 @@ static void
 DragPieceMove(x, y)
      int x; int y;
 {
-    XPoint corner;
+    GdkPoint corner;
 
     /* Are we animating? */
     if (!appData.animateDragging || appData.blindfold)
@@ -10239,7 +10373,7 @@ DragPieceEnd(x, y)
      int x; int y;
 {
     int boardX, boardY, color;
-    XPoint corner;
+    GdkPoint corner;
 
     /* Are we animating? */
     if (!appData.animateDragging || appData.blindfold)
@@ -10254,13 +10388,29 @@ DragPieceEnd(x, y)
     ScreenSquare(boardX, boardY, &corner, &color);
     EndAnimation(&player, &corner);
 
-    /* Be sure end square is redrawn */
-    damage[0][boardY][boardX] = True;
+    /* Be sure end square is redrawn */    
+    //damageGTK[0][boardY][boardX] = True;  
+
+    /* redraw the end square and the 8 squares surrounding it */
+
+    {
+        int i, j;
+        for (i=boardX-1; i < (boardX+2) ; i++) {
+            for (j=boardY-1; j < (boardY+2) ; j++) {
+                /* check square is on board */
+                if (i >= 0 && j >= 0 && i < BOARD_FILES  && j < BOARD_RANKS) {                               
+                    damageGTK[0][j][i] = True;
+                }                
+            }
+        }
+    }
 
     /* This prevents weird things happening with fast successive
        clicks which on my Sun at least can cause motion events
        without corresponding press/release. */
     player.dragActive = False;
+
+    return;
 }
 
 /* Handle expose event while piece being dragged */
@@ -10275,10 +10425,10 @@ DrawDragPiece ()
      so the piece is still in it's original square. But visually
      it's being dragged around the board. So we erase the square
      that the piece is on and draw it at the last known drag point. */
-  BlankSquare(player.startSquare.x, player.startSquare.y,
+  BlankSquareGTK(player.startSquare.x, player.startSquare.y,
 		player.startColor, EmptySquare, xBoardWindow, 1);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
-  damage[0][player.startBoardY][player.startBoardX] = TRUE;
+  damageGTK[0][player.startBoardY][player.startBoardX] = TRUE;
 }
 
 #include <sys/ioctl.h>
