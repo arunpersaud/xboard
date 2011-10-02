@@ -132,7 +132,7 @@ VOID ParseFontName(char *name, MyFontParams *mfp);
 void InitComboStrings(HANDLE hwndCombo, char **cd);
 BOOLEAN MyLoadSound(MySound *ms);
 BOOLEAN MyPlaySound(MySound *ms);
-VOID ExitArgError(char *msg, char *badArg);
+VOID ExitArgError(char *msg, char *badArg, Boolean quit);
 void SaveSettings(char* name);
 BOOL BrowseForFolder( const char * title, char * path );
 
