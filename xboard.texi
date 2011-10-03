@@ -1580,8 +1580,9 @@ ToStartProc, TrainingProc, TruncateGameProc, and TwoMachinesProc.
 
 This section documents the command-line options to XBoard.  You can
 set these options in two ways: by typing them on the shell command
-line you use to start XBoard, or by setting them as X resources
-(typically in your @file{.Xresources} file).  Many of the options
+line you use to start XBoard, or by editing the settings file
+(usually ~/.xboardrc) to alter the value of the setting that was
+saved there.  Some of the options
 cannot be changed while XBoard is running; others set the initial
 state of items that can be changed with the @ref{Options} menu.
 
@@ -1593,15 +1594,6 @@ option on (@samp{-opt}), or the short name preceded by @samp{x} to
 turn the option off (@samp{-xopt}). For options that take strings or
 numbers as values, you can use the long or short option names
 interchangeably.
-
-Each option corresponds to an X resource with the same name, so
-if you like, you can set options in your @file{.Xresources} file
-or in a file named @file{XBoard} in your home directory.
-For options that have two names, the longer one is the name of
-the corresponding X resource; the short name is not recognized.
-To turn a boolean option on or off as an
-X resource, give its long name followed by the value
-true or false (@samp{XBoard*longOptionName: true}).
 
 @menu
 * Chess engine options::        Controlling the chess engine.
