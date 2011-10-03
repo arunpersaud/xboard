@@ -1410,8 +1410,54 @@ Summons a dialog where you can set the @code{autoDisplayComment} and
 @code{autoDisplayTags} options, (which control popups when viewing loaded games),
 and specify the rate at which loaded games are auto-played,
 in seconds per move (which can be a fractional number, like 1.6).
+You can also set search criteria for determining which games
+will be displayed in the Game List for a multi-game file, 
+and thus be eligible for loading:
+@itemx Elo of strongest player
+@itemx Elo of weakest player
+@itemx year
+@cindex Elo of strongest player, Menu Item
+@cindex Elo of weakest player, Menu Item
+@cindex year, Menu Item
+These numeric fields set thresholds (lower limits) on the Elo rating of the mentioned player,
+or the date the game was played.
+Defaults: 0
+@itemx Search mode
+@cindex Search mode, Menu Item
+@cindex find position, Menu Item
+This setting determines which positions in a game will be considered a match
+to the position currently displayed in the board window
+when you press the @samp{find position} button in the Game List.
+You can search for an exact match, 
+a position that has all shown material in the same place, 
+but might contain additional material,
+a position that has all Pawns in the same place,
+but can have the shown material anywhere,
+a position that	can have all shown material anywhere,
+or a position that has material between certain limits anywhere.
+For the latter you have to place the material that must be present
+in the four lowest ranks of the board,
+and optional additional material in the four highest ranks of the board.
+You can request the optional material to be balanced.
+@itemx number of consecutive positions
+@cindex number of consecutive positions, Menu Item
+When you are searching by material, rather than for an exact match,
+this parameter indicates forhowmany consecutive game positions
+the same amount of material must be on the board before it is
+considered a match.
+@itemx Also match reversed colors
+@itemx Also match left-right flipped position
+@cindex Also match reversed colors, Menu Item
+@cindex Also match left-right flipped position, Menu Item
+When looking for matching positions rather than by material,
+these settings determine whether mirror images 
+(in case of a vertical flip in combination with color reversal)
+will be also considered a match.
+The left-right flipping is only useful after all castling rights
+have expired (or in Xiangqi).
+
 @item Save Game Options
-@cindex ave Game Options, Menu Item
+@cindex Save Game Options, Menu Item
 Summons a dialog where you can specify the files on which XBoard should
 automtically save any played or entered games, 
 (the @code{saveGameFile} option), 
@@ -3144,6 +3190,22 @@ Default is the login name on your local computer.
 @cindex delayBeforeQuit, option
 @cindex delayAfterQuit, option
 These options specify how long XBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies.
+@item -searchMode n
+@cindex searchMode, option
+The integer n encodes the mode for the @samp{find position} function.
+Default: 1 (= Exact position match)
+@item -eloThresholdBoth elo
+@itemx -eloThresholdAny elo
+@cindex eloThresholdBoth, option
+@cindex eloThresholdAny, option
+Defines a lower limit for the Elo rating, which has to be surpassed
+before a game will be considered when searching for a board position.
+Default: 0
+@item -dateThreshold year
+@cindex dateThreshold, option
+Only games not played before the given year will be considered when
+searching for a board position
+
 
 @end table
 
