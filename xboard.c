@@ -531,7 +531,7 @@ char *oldICSInteractionTitle;
 GtkBuilder      *builder; 
 GtkWidget       *mainwindow;
 GtkWidget       *boardwidgetGTK=NULL;
-GtkWidget       *aspectframe=NULL;
+GtkWidget       *boardaspect=NULL;
 GtkWidget       *whiteTimerWidgetGTK;
 GtkWidget       *blackTimerWidgetGTK;
 GtkWidget       *messageWidgetGTK=NULL;
@@ -2331,7 +2331,7 @@ XBoard square size (hint): %d\n\
 
     mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));         
     boardwidgetGTK  = GTK_WIDGET(gtk_builder_get_object (builder, "boardwidgetGTK"));
-    if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");
+    if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");    
 
     /* set board bg color to black */
     GdkColor color;  
@@ -2348,15 +2348,14 @@ XBoard square size (hint): %d\n\
     messageWidgetGTK = GTK_WIDGET(gtk_builder_get_object (builder, "messageWidgetGTK"));
     menubarGTK  = GTK_WIDGET (gtk_builder_get_object (builder, "MenuBar"));
 
+    boardaspect = GTK_WIDGET(gtk_builder_get_object (builder, "boardaspect"));
+    ar = (float) BOARD_WIDTH / BOARD_HEIGHT;   
+    gtk_aspect_frame_set(GTK_ASPECT_FRAME(boardaspect), 0.5, 0.5, ar, TRUE);
+
     gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), boardWidth, boardHeight);
     gtk_builder_connect_signals(builder, NULL);
     //g_object_unref (G_OBJECT(builder));
     gtk_widget_show(mainwindow);
-
-    aspectframe = GTK_WIDGET(gtk_builder_get_object (builder, "boardaspect"));
-    ar = (float) BOARD_WIDTH / BOARD_HEIGHT;   
-    gtk_aspect_frame_set(GTK_ASPECT_FRAME(aspectframe), 0.5, 0.5, ar, TRUE);
-
     
     /* set the minimum size the user can resize the main window to */
     gtk_widget_set_size_request(mainwindow, 402, 314);
@@ -5267,16 +5266,18 @@ gboolean ConfigureProc(widget, event, data)
      GdkEvent *event;
      gpointer data;
 {   
-    gint width, height;
+    gint width, height, calcwidth, calcheight;;
     int w, h;
 
-    gdk_drawable_get_size(boardwidgetGTK->window, &width, &height);    
+    gdk_drawable_get_size(boardwidgetGTK->window, &width, &height);
 
     /* calc squaresize based on previous linegap */
     //squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
-    w = (width - 4) / BOARD_WIDTH;
-    h = (height - 4) / BOARD_HEIGHT;
-    squareSizeGTK = w < h ? w : h;
+    w = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
+    h = ( (height - lineGapGTK * (BOARD_HEIGHT + 1)) / BOARD_HEIGHT);
+    //w = (width - 4) / BOARD_WIDTH;
+    //h = (height - 4) / BOARD_HEIGHT;
+    squareSizeGTK = w < h ? w : h;   
 
     /* calc linegap */
     if(appData.overrideLineGap >= 0)
@@ -5285,7 +5286,16 @@ gboolean ConfigureProc(widget, event, data)
         lineGapGTK = GetLineGap();
 
     /* recalc squaresize */
-    squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
+    squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);   
+
+    calcwidth = BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK;
+    calcheight = BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK;    
+
+    /* set the size of boardwidgetGTK GdkWindow to exactly the same as the size of the board */   
+    /* (it may be a few pixels larger since after user resize of main window) */
+    if (calcwidth != width || calcheight != height) {
+        gdk_window_resize(boardwidgetGTK->window, calcwidth,calcheight);        
+    }
 
     /* scale pixbufs to correct size */
     SVGscLightSquare   = gdk_pixbuf_scale_simple(SVGLightSquare, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER); 
@@ -10051,6 +10061,8 @@ BeginAnimation(anim, piece, startColor, start)
   if(appData.upsideDown && flipView) piece += piece < BlackPawn ? BlackPawn : -BlackPawn;
   /* The old buffer is initialised with the start square (empty) */
   BlankSquare(start->x, start->y, startColor, EmptySquare, anim->saveBuf, 0);
+  /* not converted to GTK - causes the clicked on piece to flicker */
+  //BlankSquareGTK(start->x, start->y, startColor, EmptySquare, anim->saveBuf, 0);
   anim->prevFrame = *start;
 
   /* The piece will be drawn using its own bitmap as a matte	*/
@@ -10368,11 +10380,34 @@ DragPieceMove(x, y)
 #endif
 }
 
+/*
+int EventToSquare2(x, limit)
+     int x;
+{ 
+    x -= lineGapGTK;
+    x /= (squareSizeGTK + lineGapGTK);  
+    return x;
+}
+
+static void
+BoardSquare2(x, y, column, row)
+     int x; int y; int * column; int * row;
+{
+  *column = EventToSquare2(x, BOARD_WIDTH);
+  if (flipView && *column >= 0)
+    *column = BOARD_WIDTH - 1 - *column; 
+  *row = EventToSquare2(y, BOARD_HEIGHT);
+  if (!flipView && *row >= 0)
+    *row = BOARD_HEIGHT - 1 - *row; 
+}
+*/
+
 void
 DragPieceEnd(x, y)
      int x; int y;
 {
     int boardX, boardY, color;
+    int i, j;
     GdkPoint corner;
 
     /* Are we animating? */
@@ -10391,19 +10426,34 @@ DragPieceEnd(x, y)
     /* Be sure end square is redrawn */    
     //damageGTK[0][boardY][boardX] = True;  
 
-    /* redraw the end square and the 8 squares surrounding it */
-
-    {
-        int i, j;
-        for (i=boardX-1; i < (boardX+2) ; i++) {
-            for (j=boardY-1; j < (boardY+2) ; j++) {
-                /* check square is on board */
-                if (i >= 0 && j >= 0 && i < BOARD_FILES  && j < BOARD_RANKS) {                               
-                    damageGTK[0][j][i] = True;
-                }                
-            }
+    /* BoardSquare2 routine gets boardX and Y but */
+    /* it doesn't just return -2 or -1 if off board. It returns */
+    /* the row/column which may be negative or greater than */
+    /* BOARD_WIDTH / BOARD_HEIGHT if off board     */
+    /* BoardSquare returns -1 if the user selects on a border boundary */
+    /* and -2 if off the board.
+    
+    //BoardSquare2(x, y, &boardX, &boardXY); 
+           
+    /*
+    for (i=bx-1; i < (bx+2) ; i++) {
+        for (j=by-1; j < (by+2) ; j++) {
+            // check square is on board 
+            if (i >= 0 && j >= 0 && i < BOARD_WIDTH  && j < BOARD_HEIGHT) {                               
+                damageGTK[0][j][i] = True;
+            }                
         }
     }
+   */
+
+    /* kludge to force redraw of all squares on the board */
+    /* This replaces the above selective redrawing around the end square */
+    /* which didn't work 100% of the time */
+    for (i=0; i < BOARD_WIDTH ; i++) {
+        for (j=0; j < BOARD_HEIGHT ; j++) {                            
+            damageGTK[0][j][i] = True;                            
+        }
+    }    
 
     /* This prevents weird things happening with fast successive
        clicks which on my Sun at least can cause motion events
