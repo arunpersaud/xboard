@@ -5368,8 +5368,8 @@ void DrawPosition(fullRedraw, board)
      /*Boolean*/int fullRedraw;
      Board board;
 {
-    XDrawPosition(boardWidget, fullRedraw, board);
-    GTKDrawPosition(boardwidgetGTK, fullRedraw, board);    
+    GTKDrawPosition(boardwidgetGTK, fullRedraw, board);
+    XDrawPosition(boardWidget, fullRedraw, board);        
 }
 
 /* Returns 1 if there are "too many" differences between b1 and b2
@@ -5516,7 +5516,7 @@ void GTKDrawPosition(w, repaint, board)
 	if (do_flash) {
 	    if (check_castle_draw(board, lastBoard[nr], &rrow, &rcol)) {
 		/* Draw rook with NO flashing. King will be drawn flashing later */
-		DrawSquare(rrow, rcol, board[rrow][rcol], 0);
+		DrawSquareGTK(rrow, rcol, board[rrow][rcol], 0);
 		lastBoard[nr][rrow][rcol] = board[rrow][rcol];
 	    }
 	}
@@ -10236,13 +10236,14 @@ AnimateMove(board, fromX, fromY, toX, toY)
   GdkPoint      frames[kFactor * 2 + 1];
   int	      nFrames, startColor, endColor;
 
+
   /* Are we animating? */
   if (!appData.animate || appData.blindfold)
     return;
 
   if(board[toY][toX] == WhiteRook && board[fromY][fromX] == WhiteKing ||
      board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing)
-	return; // [HGM] FRC: no animtion of FRC castlings, as to-square is not true to-square
+	return; // [HGM] FRC: no animtion of FRC castlings, as to-square is not true to-square  
 
   if (fromY < 0 || fromX < 0 || toX < 0 || toY < 0) return;
   piece = board[fromY][fromX];
@@ -10276,10 +10277,13 @@ AnimateMove(board, fromX, fromY, toX, toY)
     mid.y = start.y + (finish.y - start.y) / 2;
   }
 
+  /* These lines commented out since they cause problems with gtk board */
+  /* when animating computers move */
+
   /* Don't use as many frames for very short moves */
-  if (abs(toY - fromY) + abs(toX - fromX) <= 2)
-    Tween(&start, &mid, &finish, kFactor - 1, frames, &nFrames);
-  else
+//if (abs(toY - fromY) + abs(toX - fromX) <= 2)
+//  Tween(&start, &mid, &finish, kFactor - 1, frames, &nFrames);
+//else
     Tween(&start, &mid, &finish, kFactor, frames, &nFrames);
   FrameSequence(&game, piece, startColor, &start, &finish, frames, nFrames);
 
