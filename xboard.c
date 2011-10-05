@@ -558,10 +558,6 @@ GdkPixbuf       *SVGBlackKing=NULL;
 GdkPixbuf       *SVGBlackQueen=NULL;
 
 /* scaled pixbufs */
-GdkPixbuf       *SVGscLightSquare=NULL;
-GdkPixbuf       *SVGscDarkSquare=NULL;
-GdkPixbuf       *SVGscNeutralSquare=NULL;
-
 GdkPixbuf       *SVGscWhitePawn=NULL;
 GdkPixbuf       *SVGscWhiteKnight=NULL;
 GdkPixbuf       *SVGscWhiteBishop=NULL;
@@ -2312,23 +2308,23 @@ XBoard square size (hint): %d\n\
 
     //gtk_builder_add_from_file(builder, "mainboard.glade", NULL);
     /* load square colors */
-    SVGLightSquare   = load_pixbuf("LightSquare.svg",squareSize);
-    SVGDarkSquare    = load_pixbuf("DarkSquare.svg",squareSize);
-    SVGNeutralSquare = load_pixbuf("NeutralSquare.svg",squareSize);
+    SVGLightSquare   = load_pixbuf("LightSquare.svg", 0);
+    SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);
+    SVGNeutralSquare = load_pixbuf("NeutralSquare.svg", 0);
 
-    SVGWhitePawn     = load_pixbuf("WhitePawn.svg",squareSize);
-    SVGWhiteKnight   = load_pixbuf("WhiteKnight.svg",squareSize);
-    SVGWhiteBishop   = load_pixbuf("WhiteBishop.svg",squareSize);
-    SVGWhiteRook     = load_pixbuf("WhiteRook.svg",squareSize);
-    SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg",squareSize);
-    SVGWhiteKing     = load_pixbuf("WhiteKing.svg",squareSize);
+    SVGWhitePawn     = load_pixbuf("WhitePawn.svg", 0);
+    SVGWhiteKnight   = load_pixbuf("WhiteKnight.svg", 0);
+    SVGWhiteBishop   = load_pixbuf("WhiteBishop.svg", 0);
+    SVGWhiteRook     = load_pixbuf("WhiteRook.svg", 0);
+    SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg", 0);
+    SVGWhiteKing     = load_pixbuf("WhiteKing.svg", 0);
 
-    SVGBlackPawn     = load_pixbuf("BlackPawn.svg",squareSize);
-    SVGBlackKnight   = load_pixbuf("BlackKnight.svg",squareSize);
-    SVGBlackBishop   = load_pixbuf("BlackBishop.svg",squareSize);
-    SVGBlackRook     = load_pixbuf("BlackRook.svg",squareSize);
-    SVGBlackQueen    = load_pixbuf("BlackQueen.svg",squareSize);
-    SVGBlackKing     = load_pixbuf("BlackKing.svg",squareSize);
+    SVGBlackPawn     = load_pixbuf("BlackPawn.svg", 0);
+    SVGBlackKnight   = load_pixbuf("BlackKnight.svg", 0);
+    SVGBlackBishop   = load_pixbuf("BlackBishop.svg", 0);
+    SVGBlackRook     = load_pixbuf("BlackRook.svg", 0);
+    SVGBlackQueen    = load_pixbuf("BlackQueen.svg", 0);
+    SVGBlackKing     = load_pixbuf("BlackKing.svg", 0);
 
     mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));         
     boardwidgetGTK  = GTK_WIDGET(gtk_builder_get_object (builder, "boardwidgetGTK"));
@@ -4659,15 +4655,15 @@ static void BlankSquareGTK(x, y, color, piece, dest, fac)
     switch (color) {
       case 1: /* light */
         //gc = lightSquareGC;
-        pb = SVGscLightSquare;
+        pb = SVGLightSquare;
         break;
       case 0: /* dark */
-        pb = SVGscDarkSquare;
+        pb = SVGDarkSquare;
         //gc = darkSquareGC;
         break;
       case 2: /* neutral */
         default:
-        pb = SVGscNeutralSquare;
+        pb = SVGNeutralSquare;
        //gc = jailSquareGC;
        break;
     }
@@ -5299,10 +5295,6 @@ gboolean ConfigureProc(widget, event, data)
     }
 
     /* scale pixbufs to correct size */
-    SVGscLightSquare   = gdk_pixbuf_scale_simple(SVGLightSquare, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER); 
-    SVGscDarkSquare    = gdk_pixbuf_scale_simple(SVGDarkSquare, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscNeutralSquare = gdk_pixbuf_scale_simple(SVGNeutralSquare, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-
     SVGscWhitePawn     = gdk_pixbuf_scale_simple(SVGWhitePawn, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscWhiteKnight   = gdk_pixbuf_scale_simple(SVGWhiteKnight, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscWhiteBishop   = gdk_pixbuf_scale_simple(SVGWhiteBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
