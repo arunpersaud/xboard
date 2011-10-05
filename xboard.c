@@ -10547,6 +10547,17 @@ static int Round( double x )
     return (int) (x + 0.5);
 }
 
+void SquareToPosGTK(int rank, int file, int *x, int *y)
+{
+    if (flipView) {
+	*x = lineGapGTK + ((BOARD_WIDTH-1)-file) * (squareSizeGTK + lineGapGTK);
+	*y = lineGapGTK + rank * (squareSizeGTK + lineGapGTK);
+    } else {
+	*x = lineGapGTK + file * (squareSizeGTK + lineGapGTK);
+	*y = lineGapGTK + ((BOARD_HEIGHT-1)-rank) * (squareSizeGTK + lineGapGTK);
+    }
+}
+
 void SquareToPos(int rank, int file, int *x, int *y)
 {
     if (flipView) {
@@ -10797,34 +10808,34 @@ void DrawArrowBetweenSquaresGTK( int s_col, int s_row, int d_col, int d_row )
     }
 
     /* Get source and destination points */
-    SquareToPos( s_row, s_col, &s_x, &s_y);
-    SquareToPos( d_row, d_col, &d_x, &d_y);
+    SquareToPosGTK( s_row, s_col, &s_x, &s_y);
+    SquareToPosGTK( d_row, d_col, &d_x, &d_y);
 
     if( d_y > s_y ) {
-        d_y += squareSize / 2 - squareSize / 4; // [HGM] round towards same centers on all sides!
+        d_y += squareSizeGTK / 2 - squareSizeGTK / 4; // [HGM] round towards same centers on all sides!
     }
     else if( d_y < s_y ) {
-        d_y += squareSize / 2 + squareSize / 4;
+        d_y += squareSizeGTK / 2 + squareSizeGTK / 4;
     }
     else {
-        d_y += squareSize / 2;
+        d_y += squareSizeGTK / 2;
     }
 
     if( d_x > s_x ) {
-        d_x += squareSize / 2 - squareSize / 4;
+        d_x += squareSizeGTK / 2 - squareSizeGTK / 4;
     }
     else if( d_x < s_x ) {
-        d_x += squareSize / 2 + squareSize / 4;
+        d_x += squareSizeGTK / 2 + squareSizeGTK / 4;
     }
     else {
-        d_x += squareSize / 2;
+        d_x += squareSizeGTK / 2;
     }
 
-    s_x += squareSize / 2;
-    s_y += squareSize / 2;
+    s_x += squareSizeGTK / 2;
+    s_y += squareSizeGTK / 2;
 
     /* Adjust width */
-    A_WIDTH = squareSize / 14.; //[HGM] make float
+    A_WIDTH = squareSizeGTK / 14.; //[HGM] make float
 
     DrawArrowBetweenPointsGTK( s_x, s_y, d_x, d_y );    
 
