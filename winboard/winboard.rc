@@ -95,35 +95,35 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Load Game Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Load games with automatic stepping",OPT_Autostep,"Button",
+    CONTROL         "Load games with &automatic stepping",OPT_Autostep,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,4,160,10
+    LTEXT           "&seconds per move",OPT_AStext1,46,20,90,8,NOT WS_GROUP
     EDITTEXT        OPT_ASTimeDelay,16,16,28,14,ES_AUTOHSCROLL
-    LTEXT           "seconds per move",OPT_AStext1,46,20,90,8,NOT WS_GROUP
     LTEXT           "when filtering game list on position, use thresholds:",OPT_thresholds,4,36,160,8,NOT WS_GROUP
+    LTEXT           "minimum Elo for &best player",OPT_elo1t,46,54,90,8,NOT WS_GROUP
     EDITTEXT        OPT_elo1,16,50,28,14,ES_AUTOHSCROLL
-    LTEXT           "Elo for at least one player",OPT_elo1t,46,54,90,8,NOT WS_GROUP
+    LTEXT           "minimum Elo for &weakest players",OPT_elo2t,46,74,90,8,NOT WS_GROUP
     EDITTEXT        OPT_elo2,16,70,28,14,ES_AUTOHSCROLL
-    LTEXT           "Elo for both players",OPT_elo2t,46,74,90,8,NOT WS_GROUP
+    LTEXT           "or later &year",OPT_datet,46,94,94,8,NOT WS_GROUP
     EDITTEXT        OPT_date,16,90,28,14,ES_AUTOHSCROLL
-    LTEXT           "or later year",OPT_datet,46,94,94,8,NOT WS_GROUP
+    LTEXT           "co&nsecutive positions",OPT_Stretcht,46,114,94,8,NOT WS_GROUP
     EDITTEXT        OPT_Stretch,16,110,28,14,ES_AUTOHSCROLL
-    LTEXT           "consecutive positions",OPT_Stretcht,46,114,94,8,NOT WS_GROUP
-    CONTROL         "Match exact position",OPT_Exact,"Button",
+    CONTROL         "Match exact &position",OPT_Exact,"Button",
                     BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,6,136,159,10
-    CONTROL         "Match if position is subset",OPT_Subset,"Button",
+    CONTROL         "Match if position is s&ubset",OPT_Subset,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,6,149,159,10
-    CONTROL         "Match material with exact pawn structure",OPT_Struct,"Button",
+    CONTROL         "Match material with e&xact pawn structure",OPT_Struct,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,6,162,159,10
-    CONTROL         "Match material",OPT_Material,"Button",
+    CONTROL         "Match &material",OPT_Material,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,6,175,159,10
-    CONTROL         "Material range (upper board-half is optional)",OPT_Range,"Button",
+    CONTROL         "Material &range (upper board-half is optional)",OPT_Range,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,6,188,159,10
-    CONTROL         "Material difference (optional material balanced)",OPT_Difference,"Button",
+    CONTROL         "Material &difference (optional material balanced)",OPT_Difference,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,6,201,159,10
     GROUPBOX        "Search Mode: ",OPT_SearchMode,3,126,164,87,WS_GROUP
-    CONTROL         "Also match reversed colors",OPT_Reversed,"Button",
+    CONTROL         "Also match reversed &colors",OPT_Reversed,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,214,160,10
-    CONTROL         "Also match left-right miror image",OPT_Mirror,"Button",
+    CONTROL         "Also match &left-right mirror image",OPT_Mirror,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,4,227,160,10
     PUSHBUTTON      "OK",IDOK,56,242,50,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,112,242,50,14
