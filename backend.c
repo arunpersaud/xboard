@@ -618,10 +618,10 @@ ChessSquare GothicArray[2][BOARD_FILES] = {
 
 #ifdef FALCON
 ChessSquare FalconArray[2][BOARD_FILES] = {
-    { WhiteRook, WhiteKnight, WhiteBishop, WhiteLance, WhiteQueen,
-        WhiteKing, WhiteLance, WhiteBishop, WhiteKnight, WhiteRook },
-    { BlackRook, BlackKnight, BlackBishop, BlackLance, BlackQueen,
-        BlackKing, BlackLance, BlackBishop, BlackKnight, BlackRook }
+    { WhiteRook, WhiteKnight, WhiteBishop, WhiteFalcon, WhiteQueen,
+        WhiteKing, WhiteFalcon, WhiteBishop, WhiteKnight, WhiteRook },
+    { BlackRook, BlackKnight, BlackBishop, BlackFalcon, BlackQueen,
+        BlackKing, BlackFalcon, BlackBishop, BlackKnight, BlackRook }
 };
 #else // !FALCON
 #define FalconArray CapablancaArray

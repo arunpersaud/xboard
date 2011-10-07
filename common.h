@@ -109,7 +109,7 @@ int pclose(FILE *);
 
 // [HGM] license: Messages that engines must print to satisfy their license requirements for patented variants
 #define GOTHIC "Gothic Chess (see www.GothicChess.com) is licensed under U.S. Patent #6,481,716 by Ed Trice"
-#define NOFALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
+#define FALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
 
 /* [HGM] Some notes about board sizes:
    In games that allow piece drops, the holdings are considered part of the
