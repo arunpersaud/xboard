@@ -278,6 +278,23 @@ uint64 hash(int moveNr)
 {
     int r, f, p_enc, squareNr, pieceGroup;
     uint64 key=0, holdingsKey=0, Zobrist;
+    VariantClass v = gameInfo.variant;
+
+    switch(v) {
+	case VariantNormal:
+	case VariantFischeRandom: // compatible with normal
+	case VariantNoCastle:
+	case VariantXiangqi: // for historic reasons; does never collide anyway because of other King type
+	    break;
+	case VariantGiveaway: // in opening same as suicide
+	    key += VariantSuicide;
+	    break;
+	case VariantGothic: // these are special cases of CRC, and can share book
+	case VariantCapablanca:
+	    v = VariantCapaRandom;
+	default:
+	    key += v; // variant type incorporated in key to allow mixed books without collisions
+    }
 
     for(f=0; f<BOARD_WIDTH; f++){
         for(r=0; r<BOARD_HEIGHT;r++){
