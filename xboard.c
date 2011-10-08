@@ -5549,6 +5549,9 @@ void GTKDrawPosition(w, repaint, board)
 
     CopyBoard(lastBoard[nr], board);
     lastBoardValid[nr] = 1;
+
+    CreateGridGTK();
+
   if(nr == 0) { // [HGM] dual: no highlights on second board yet
     lastFlipView = flipView;
 
@@ -5578,9 +5581,7 @@ void GTKDrawPosition(w, repaint, board)
     /* If piece being dragged around board, must redraw that too */
     DrawDragPiece();
 
-    //XSync(xDisplay, False);
-
-    CreateGridGTK();
+    //XSync(xDisplay, False);    
 
 }
 
@@ -6140,11 +6141,11 @@ void ErrorPopUp(title, label, modal)
 
     /* set main_application_window to null since we don't have a main
        GtkWindow yet (main window is still Xt). */
-    errorShell = gtk_message_dialog_new(NULL,
+    errorShell = gtk_message_dialog_new(GTK_WINDOW(mainwindow),
             GTK_DIALOG_DESTROY_WITH_PARENT,
             msgtype,
             GTK_BUTTONS_OK,
-            label);
+            "%s", label);
     gtk_window_set_title (GTK_WINDOW(errorShell), title);
     gtk_widget_show (errorShell);
     errorUp = True;
@@ -10156,8 +10157,15 @@ EndAnimation (anim, finish)
   GdkRectangle updates[4];
   GdkRectangle overlap;
   GdkPoint     pt;
-  int	     count, i;
+  int	     count, i, j;
 
+  /* kludge to force redraw of all squares on the board */  
+  for (i=0; i < BOARD_WIDTH ; i++) {
+      for (j=0; j < BOARD_HEIGHT ; j++) {                            
+          damageGTK[0][j][i] = True;                            
+      }
+  }
+    
   /* The main code will redraw the final square, so we
      only need to erase the bits that don't overlap.	*/
 
@@ -10385,28 +10393,6 @@ DragPieceMove(x, y)
 #endif
 }
 
-/*
-int EventToSquare2(x, limit)
-     int x;
-{ 
-    x -= lineGapGTK;
-    x /= (squareSizeGTK + lineGapGTK);  
-    return x;
-}
-
-static void
-BoardSquare2(x, y, column, row)
-     int x; int y; int * column; int * row;
-{
-  *column = EventToSquare2(x, BOARD_WIDTH);
-  if (flipView && *column >= 0)
-    *column = BOARD_WIDTH - 1 - *column; 
-  *row = EventToSquare2(y, BOARD_HEIGHT);
-  if (!flipView && *row >= 0)
-    *row = BOARD_HEIGHT - 1 - *row; 
-}
-*/
-
 void
 DragPieceEnd(x, y)
      int x; int y;
@@ -10429,36 +10415,7 @@ DragPieceEnd(x, y)
     EndAnimation(&player, &corner);
 
     /* Be sure end square is redrawn */    
-    //damageGTK[0][boardY][boardX] = True;  
-
-    /* BoardSquare2 routine gets boardX and Y but */
-    /* it doesn't just return -2 or -1 if off board. It returns */
-    /* the row/column which may be negative or greater than */
-    /* BOARD_WIDTH / BOARD_HEIGHT if off board     */
-    /* BoardSquare returns -1 if the user selects on a border boundary */
-    /* and -2 if off the board.
-    
-    //BoardSquare2(x, y, &boardX, &boardXY); 
-           
-    /*
-    for (i=bx-1; i < (bx+2) ; i++) {
-        for (j=by-1; j < (by+2) ; j++) {
-            // check square is on board 
-            if (i >= 0 && j >= 0 && i < BOARD_WIDTH  && j < BOARD_HEIGHT) {                               
-                damageGTK[0][j][i] = True;
-            }                
-        }
-    }
-   */
-
-    /* kludge to force redraw of all squares on the board */
-    /* This replaces the above selective redrawing around the end square */
-    /* which didn't work 100% of the time */
-    for (i=0; i < BOARD_WIDTH ; i++) {
-        for (j=0; j < BOARD_HEIGHT ; j++) {                            
-            damageGTK[0][j][i] = True;                            
-        }
-    }    
+    damageGTK[0][boardY][boardX] = True;
 
     /* This prevents weird things happening with fast successive
        clicks which on my Sun at least can cause motion events

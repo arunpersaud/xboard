@@ -720,7 +720,10 @@ void GameListOptionsPopUpGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    XtPopup(gameListOptShell, XtGrabNone);
+  if (gameListOptShell == NULL)
+    gameListOptShell = GameListOptionsCreate();
+
+  XtPopup(gameListOptShell, XtGrabNone); 
 }
 
 void
