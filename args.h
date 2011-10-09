@@ -562,6 +562,7 @@ ArgDescriptor argDescriptors[] = {
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
   { "language", ArgFilename, (void *) &appData.language, TRUE, (ArgIniType) "" },
   { "userFileDirectory", ArgFilename, (void *) &homeDir, FALSE, (ArgIniType) installDir },
+  { "useBoardTexture", ArgBoolean, (void *) &appData.useBitmaps, TRUE, (ArgIniType) TRUE },
 
   // [HGM] tournament options
   { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },

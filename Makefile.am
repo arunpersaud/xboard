@@ -171,7 +171,7 @@ dist_svg_DATA = \
 
 ### set correct dir in xboard.conf
 
-edit = sed -e 's|@pixmapsdir[@]|$(pixmapsdir)|g' \
+edit = sed -e 's|@svgdir[@]|$(svgdir)|g' \
            -e 's|@soundsdir[@]|$(soundsdir)|g'
 
 xboard.conf: Makefile $(srcdir)/xboard.conf.in

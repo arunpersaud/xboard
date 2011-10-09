@@ -696,6 +696,7 @@ int BoardOptionsOK(int n)
     useImages = useImageSqs = 0;
     MakeColors(); CreateGCs(True);
     CreateAnyPieces();
+    LoadSvgFiles();
     InitDrawingSizes(-1, 0);
     DrawPosition(True, NULL);
     return 1;
@@ -738,14 +739,15 @@ Option boardOptions[] = {
 {    2, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "G" },
 {    3, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "B" },
 {    4, 1, 0, NULL, (void*) &AdjustColor, NULL, NULL, Button, "D" },
-{ 0, 0, 0, NULL, (void*) &appData.upsideDown, "", NULL, CheckBox, N_("Flip Pieces Shogi Style        (Colored buttons restore default)") },
+//{ 0, 0, 0, NULL, (void*) &appData.upsideDown, "", NULL, CheckBox, N_("Flip Pieces Shogi Style        (Colored buttons restore default)") },
 //{ 0, 0, 0, NULL, (void*) &appData.allWhite, "", NULL, CheckBox, N_("Use Outline Pieces for Black") },
-{ 0, 0, 0, NULL, (void*) &appData.monoMode, "", NULL, CheckBox, N_("Mono Mode") },
+//{ 0, 0, 0, NULL, (void*) &appData.monoMode, "", NULL, CheckBox, N_("Mono Mode") },
 { 0,-1, 5, NULL, (void*) &appData.overrideLineGap, "", NULL, Spin, N_("Line Gap ( -1 = default for board size):") },
-{ 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, ".xpm", NULL, FileName, N_("Light-Squares Texture File:") },
-{ 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, ".xpm", NULL, FileName, N_("Dark-Squares Texture File:") },
-{ 0, 0, 0, NULL, (void*) &appData.bitmapDirectory, "", NULL, PathName, N_("Directory with Bitmap Pieces:") },
-{ 0, 0, 0, NULL, (void*) &appData.pixmapDirectory, "", NULL, PathName, N_("Directory with Pixmap Pieces:") },
+{ 0, 0, 0, NULL, (void*) &appData.useBitmaps, "", NULL, CheckBox, N_("Use Board Textures") },
+{ 0, 0, 0, NULL, (void*) &appData.liteBackTextureFile, ".svg", NULL, FileName, N_("Light-Squares Texture File:") },
+{ 0, 0, 0, NULL, (void*) &appData.darkBackTextureFile, ".svg", NULL, FileName, N_("Dark-Squares Texture File:") },
+//{ 0, 0, 0, NULL, (void*) &appData.bitmapDirectory, "", NULL, PathName, N_("Directory with Bitmap Pieces:") },
+//{ 0, 0, 0, NULL, (void*) &appData.pixmapDirectory, "", NULL, PathName, N_("Directory with Pixmap Pieces:") },
 { 0, 0, 0, NULL, (void*) &BoardOptionsOK, "", NULL, EndMark , "" }
 };
 

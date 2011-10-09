@@ -489,6 +489,7 @@ void DrawArrowHighlightGTK P((int fromX, int fromY, int toX,int toY));
 void DrawArrowHighlight P((int fromX, int fromY, int toX,int toY));
 Boolean IsDrawArrowEnabled P(());
 GdkPixbuf *getPixbuf P((int piece));
+void ScalePixbufs P((void));
 
 /*
 * XBoard depends on Xt R4 or higher
@@ -1979,8 +1980,29 @@ CreateAnyPieces()
       CreatePieces();
     } else {
       CreateXPMPieces();
-      CreateXPMBoard(appData.liteBackTextureFile, 1);
-      CreateXPMBoard(appData.darkBackTextureFile, 0);
+
+      char xpmstr[200];
+      void *ptr;
+
+      /* get path to xpm pixmap wood texture files */
+      /* can't use appData.liteBackTextureFileanymore  because that is now */
+      /* used by GTK version to contain path to svg background file */
+      /* this is a temp fix to stop the Xt code segfaulting */
+
+      /* light square xpm texture file */
+      strcpy(xpmstr, SVGDIR);                       //   SVGDIR=/usr/local/share/games/xboard/svg
+      ptr=strstr(xpmstr, "svg");
+      strcpy(ptr, "pixmaps/textures/wood_l.xpm");   //   /usr/local/share/games/xboard/pixmaps/textures/wood_l.xpm
+
+      CreateXPMBoard(xpmstr, 1);
+
+      /* dark square xpm texture file */
+      strcpy(xpmstr, SVGDIR);
+      ptr=strstr(xpmstr, "svg");
+      strcpy(ptr, "pixmaps/textures/wood_d.xpm");  //    /usr/local/share/games/xboardgit/pixmaps/textures/wood_d.xpm
+      
+      CreateXPMBoard(xpmstr, 0);
+      
     }
 #else
     CreateXIMPieces();
@@ -1988,6 +2010,150 @@ CreateAnyPieces()
     if (!useImages) CreatePieces();
 #endif
 }
+
+void SetPieceColor(GdkPixbuf *pb)
+{
+
+    int width, height, rowstride, n_channels;
+    guchar *pixels, *p;
+    int x, y;    
+    int col, r, g, b;
+    guchar blackRGB[3] = {0, 0, 0};          /* RGB for black as used in the pieces in SVG folder */
+    guchar whiteRGB[3] = {0xff, 0xff, 0xcc}; /* RGB for white as used in the pieces in SVG folder */
+
+    /* RGB of new colour held in appData.blackPieceColor */
+    guchar newBlackR;  
+    guchar newBlackG;
+    guchar newBlackB;
+
+    /* RGB of new colour held in appData.whitePieceColor */
+    guchar newWhiteR;  
+    guchar newWhiteG;
+    guchar newWhiteB;   
+
+    n_channels = gdk_pixbuf_get_n_channels(pb);
+    width = gdk_pixbuf_get_width(pb);
+    height = gdk_pixbuf_get_height(pb);
+
+    g_assert(gdk_pixbuf_get_colorspace(pb) == GDK_COLORSPACE_RGB);
+    g_assert(gdk_pixbuf_get_bits_per_sample(pb) == 8);
+    g_assert(gdk_pixbuf_get_has_alpha(pb));
+    g_assert(n_channels == 4);
+
+    rowstride = gdk_pixbuf_get_rowstride(pb);
+    pixels = gdk_pixbuf_get_pixels(pb);    
+
+    /* get RGB of new white colour */ 
+    sscanf(appData.whitePieceColor, "#%x", &col);
+    b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
+    newWhiteB = b;
+    newWhiteG = g >> 8;
+    newWhiteR = r >> 16;
+
+    /* get RGB of new black colour */
+    sscanf(appData.blackPieceColor, "#%x", &col);
+    b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
+    newBlackB = b;
+    newBlackG = g >> 8;
+    newBlackR = r >> 16;   
+        
+    /* change the colors to the new values in the pixbuf */
+    x = y = 0;
+    for (x=0;x<width;x++) {
+        for (y=0;y<height;y++) {
+            p = pixels + y * rowstride + x * n_channels;
+            if (p[0] == blackRGB[0] && p[1] == blackRGB[1] && p[2] == blackRGB[2]) {                   
+                p[0] = newBlackR;
+                p[1] = newBlackG;
+                p[2] = newBlackB;
+            } else if (p[0] == whiteRGB[0] && p[1] == whiteRGB[1] && p[2] == whiteRGB[2]) {
+                p[0] = newWhiteR;
+                p[1] = newWhiteG;
+                p[2] = newWhiteB;
+            }           
+        }
+    }
+}
+
+void LoadSvgFiles()
+{
+    guint32 pixel;    
+    
+    SVGNeutralSquare = load_pixbuf("NeutralSquare.svg", 0);    
+
+    if (appData.useBitmaps) {       
+        
+        /* Load background squares from texture files */
+        /* At the moment these have to be svg files. It will work with other files */
+        /* including xpm files but board resizing will be slow */ 
+
+        /* set up dark square from texture file */        
+        if (appData.darkBackTextureFile != NULL && strstr(appData.darkBackTextureFile, ".svg") != NULL) {                   
+            SVGDarkSquare = gdk_pixbuf_new_from_file(appData.darkBackTextureFile, NULL);            
+        }
+        /* if not set up then load default */
+        if (SVGDarkSquare == NULL) {             
+            SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);                         
+        }
+
+        /* set up light square from texture file */        
+        if (appData.liteBackTextureFile != NULL && strstr(appData.liteBackTextureFile, ".svg") != NULL) {                       
+            SVGLightSquare = gdk_pixbuf_new_from_file(appData.liteBackTextureFile, NULL);            
+        }
+        /* if not set up then load default */
+        if (SVGLightSquare == NULL) {             
+            SVGLightSquare    = load_pixbuf("LightSquare.svg", 0);                        
+        }       
+    }
+    else {        
+        int col;
+
+        SVGLightSquare   = load_pixbuf("LightSquare.svg", 0);
+        SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); 
+
+        sscanf(appData.darkSquareColor, "#%x", &col);
+        col = col << 8;
+        col = col | 0xff; /* add 0xff to the end as alpha to set to opaque */
+        gdk_pixbuf_fill(SVGDarkSquare, col);
+
+        sscanf(appData.lightSquareColor, "#%x", &col);
+        col = col << 8;
+        col = col | 0xff; /* add 0xff to the end as alpha to set to opaque */
+        gdk_pixbuf_fill(SVGLightSquare, col);         
+    }
+
+    SVGWhitePawn     = load_pixbuf("WhitePawn.svg", 0);
+    SVGWhiteKnight   = load_pixbuf("WhiteKnight.svg", 0);
+    SVGWhiteBishop   = load_pixbuf("WhiteBishop.svg", 0);
+    SVGWhiteRook     = load_pixbuf("WhiteRook.svg", 0);
+    SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg", 0);    
+    SVGWhiteKing     = load_pixbuf("WhiteKing.svg", 0);    
+
+    //LoadBlackPieces
+    SVGBlackPawn     = load_pixbuf("BlackPawn.svg", 0);
+    SVGBlackKnight   = load_pixbuf("BlackKnight.svg", 0);
+    SVGBlackBishop   = load_pixbuf("BlackBishop.svg", 0);
+    SVGBlackRook     = load_pixbuf("BlackRook.svg", 0);
+    SVGBlackQueen    = load_pixbuf("BlackQueen.svg", 0);
+    SVGBlackKing     = load_pixbuf("BlackKing.svg", 0);
+
+    SetPieceColor(SVGWhitePawn);
+    SetPieceColor(SVGWhiteKnight);
+    SetPieceColor(SVGWhiteBishop);
+    SetPieceColor(SVGWhiteRook);
+    SetPieceColor(SVGWhiteQueen);
+    SetPieceColor(SVGWhiteKing);
+
+    SetPieceColor(SVGBlackPawn);
+    SetPieceColor(SVGBlackKnight);
+    SetPieceColor(SVGBlackBishop);
+    SetPieceColor(SVGBlackRook);
+    SetPieceColor(SVGBlackQueen);
+    SetPieceColor(SVGBlackKing);
+
+    ScalePixbufs();
+}
+
 
 int
 main(argc, argv)
@@ -2307,24 +2473,8 @@ XBoard square size (hint): %d\n\
       }
 
     //gtk_builder_add_from_file(builder, "mainboard.glade", NULL);
-    /* load square colors */
-    SVGLightSquare   = load_pixbuf("LightSquare.svg", 0);
-    SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);
-    SVGNeutralSquare = load_pixbuf("NeutralSquare.svg", 0);
-
-    SVGWhitePawn     = load_pixbuf("WhitePawn.svg", 0);
-    SVGWhiteKnight   = load_pixbuf("WhiteKnight.svg", 0);
-    SVGWhiteBishop   = load_pixbuf("WhiteBishop.svg", 0);
-    SVGWhiteRook     = load_pixbuf("WhiteRook.svg", 0);
-    SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg", 0);
-    SVGWhiteKing     = load_pixbuf("WhiteKing.svg", 0);
-
-    SVGBlackPawn     = load_pixbuf("BlackPawn.svg", 0);
-    SVGBlackKnight   = load_pixbuf("BlackKnight.svg", 0);
-    SVGBlackBishop   = load_pixbuf("BlackBishop.svg", 0);
-    SVGBlackRook     = load_pixbuf("BlackRook.svg", 0);
-    SVGBlackQueen    = load_pixbuf("BlackQueen.svg", 0);
-    SVGBlackKing     = load_pixbuf("BlackKing.svg", 0);
+    /* load square colors and pieces */
+    LoadSvgFiles();
 
     mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));         
     boardwidgetGTK  = GTK_WIDGET(gtk_builder_get_object (builder, "boardwidgetGTK"));
@@ -3741,7 +3891,7 @@ static VariantClass oldVariant = (VariantClass) -1; // [HGM] pieces: redo every 
 void CreateXPMBoard(char *s, int kind)
 {
     XpmAttributes attr;
-    attr.valuemask = 0;
+    attr.valuemask = 0;    
     if(s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
     if (XpmReadFileToPixmap(xDisplay, xBoardWindow, s, &(xpmBoardBitmap[kind]), NULL, &attr) == 0) {
 	useTexture |= kind + 1; textureW[kind] = attr.width; textureH[kind] = attr.height;
@@ -5257,6 +5407,22 @@ int GetLineGap()
     return gap;
 }
 
+void ScalePixbufs() {
+    SVGscWhitePawn     = gdk_pixbuf_scale_simple(SVGWhitePawn, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscWhiteKnight   = gdk_pixbuf_scale_simple(SVGWhiteKnight, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscWhiteBishop   = gdk_pixbuf_scale_simple(SVGWhiteBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscWhiteRook     = gdk_pixbuf_scale_simple(SVGWhiteRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscWhiteQueen    = gdk_pixbuf_scale_simple(SVGWhiteQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscWhiteKing     = gdk_pixbuf_scale_simple(SVGWhiteKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+
+    SVGscBlackPawn     = gdk_pixbuf_scale_simple(SVGBlackPawn, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscBlackKnight   = gdk_pixbuf_scale_simple(SVGBlackKnight, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscBlackBishop   = gdk_pixbuf_scale_simple(SVGBlackBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscBlackRook     = gdk_pixbuf_scale_simple(SVGBlackRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscBlackQueen    = gdk_pixbuf_scale_simple(SVGBlackQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscBlackKing     = gdk_pixbuf_scale_simple(SVGBlackKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+}
+
 /* The user has resized the main window so redraw the board with the correct size */
 gboolean ConfigureProc(widget, event, data)
      GtkWidget *widget;
@@ -5294,20 +5460,7 @@ gboolean ConfigureProc(widget, event, data)
         gdk_window_resize(boardwidgetGTK->window, calcwidth,calcheight);        
     }
 
-    /* scale pixbufs to correct size */
-    SVGscWhitePawn     = gdk_pixbuf_scale_simple(SVGWhitePawn, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteKnight   = gdk_pixbuf_scale_simple(SVGWhiteKnight, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteBishop   = gdk_pixbuf_scale_simple(SVGWhiteBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteRook     = gdk_pixbuf_scale_simple(SVGWhiteRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteQueen    = gdk_pixbuf_scale_simple(SVGWhiteQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteKing     = gdk_pixbuf_scale_simple(SVGWhiteKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-
-    SVGscBlackPawn     = gdk_pixbuf_scale_simple(SVGBlackPawn, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackKnight   = gdk_pixbuf_scale_simple(SVGBlackKnight, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackBishop   = gdk_pixbuf_scale_simple(SVGBlackBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackRook     = gdk_pixbuf_scale_simple(SVGBlackRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackQueen    = gdk_pixbuf_scale_simple(SVGBlackQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackKing     = gdk_pixbuf_scale_simple(SVGBlackKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    ScalePixbufs(); /* scale pixbufs to correct size */
 
     return False;
 }
