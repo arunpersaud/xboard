@@ -2087,23 +2087,35 @@ void LoadSvgFiles()
         /* At the moment these have to be svg files. It will work with other files */
         /* including xpm files but board resizing will be slow */ 
 
-        /* set up dark square from texture file */        
-        if (appData.darkBackTextureFile != NULL && strstr(appData.darkBackTextureFile, ".svg") != NULL) {                   
-            SVGDarkSquare = gdk_pixbuf_new_from_file(appData.darkBackTextureFile, NULL);            
+        /* set up dark square from texture file */ 
+        if (appData.darkBackTextureFile == NULL) {
+            SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not set - use default
         }
-        /* if not set up then load default */
-        if (SVGDarkSquare == NULL) {             
-            SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);                         
+        else if (strstr(appData.darkBackTextureFile, ".svg") == NULL) {  
+            SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not svg - use default
         }
+        else {
+            // texture file is an svg file - try and load it
+            SVGDarkSquare = gdk_pixbuf_new_from_file(appData.darkBackTextureFile, NULL);
+            if (SVGDarkSquare == NULL) {             
+                SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); // texture file failed to load - use default            
+            }
+        } 
 
-        /* set up light square from texture file */        
-        if (appData.liteBackTextureFile != NULL && strstr(appData.liteBackTextureFile, ".svg") != NULL) {                       
-            SVGLightSquare = gdk_pixbuf_new_from_file(appData.liteBackTextureFile, NULL);            
+        /* set up light square from texture file */ 
+        if (appData.liteBackTextureFile == NULL) {          
+            SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not set - use default
         }
-        /* if not set up then load default */
-        if (SVGLightSquare == NULL) {             
-            SVGLightSquare    = load_pixbuf("LightSquare.svg", 0);                        
-        }       
+        else if (strstr(appData.liteBackTextureFile, ".svg") == NULL) {             
+            SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not svg - use default
+        }
+        else {
+            // texture file is an svg file - try and load it            
+            SVGLightSquare = gdk_pixbuf_new_from_file(appData.liteBackTextureFile, NULL);
+            if (SVGLightSquare == NULL) {                                  
+                SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file failed to load - use default
+            }
+        }         
     }
     else {        
         int col;
@@ -4580,6 +4592,7 @@ drawHighlightGTK(file, rank, line_type)
      int file, rank, line_type;
 {
   int x, y;
+  guint32 col, r, g, b = 0;
   cairo_t *cr;
 
   if (lineGapGTK == 0 || appData.blindfold) return;
@@ -4611,11 +4624,19 @@ drawHighlightGTK(file, rank, line_type)
   switch(line_type)
     {
       /* TODO: use appdata colors */
-    case LINE_TYPE_HIGHLIGHT:
-      cairo_set_source_rgba (cr, 1, 1, 0, 1.0);
+    case LINE_TYPE_HIGHLIGHT:           
+      sscanf(appData.highlightSquareColor, "#%x", &col);     
+      r = (col & 0x00ff0000) >> 16;
+      g = (col & 0x0000ff00) >> 8;
+      b = (col & 0x000000ff);      
+      cairo_set_source_rgba (cr, (gdouble)r, (gdouble)g, (gdouble)b, 1.0);      
       break;
     case LINE_TYPE_PRE:
-      cairo_set_source_rgba (cr, 1, 0, 0, 1.0);
+      sscanf(appData.premoveHighlightColor, "#%x", &col);     
+      r = (col & 0x00ff0000) >> 16;
+      g = (col & 0x0000ff00) >> 8;
+      b = (col & 0x000000ff);      
+      cairo_set_source_rgba (cr, (gdouble)r, (gdouble)g, (gdouble)b, 1.0);      
       break;
     case LINE_TYPE_NORMAL:
     default:
