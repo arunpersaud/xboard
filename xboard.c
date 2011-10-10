@@ -4592,7 +4592,8 @@ drawHighlightGTK(file, rank, line_type)
      int file, rank, line_type;
 {
   int x, y;
-  guint32 col, r, g, b = 0;
+  guint32 col, tmp;
+  gdouble r, g, b = 0.0;
   cairo_t *cr;
 
   if (lineGapGTK == 0 || appData.blindfold) return;
@@ -4622,25 +4623,43 @@ drawHighlightGTK(file, rank, line_type)
 
   cairo_set_line_width (cr, lineGapGTK);
   switch(line_type)
-    {
-      /* TODO: use appdata colors */
+    {      
     case LINE_TYPE_HIGHLIGHT:           
       sscanf(appData.highlightSquareColor, "#%x", &col);     
-      r = (col & 0x00ff0000) >> 16;
-      g = (col & 0x0000ff00) >> 8;
-      b = (col & 0x000000ff);      
-      cairo_set_source_rgba (cr, (gdouble)r, (gdouble)g, (gdouble)b, 1.0);      
+
+      tmp = (col & 0x00ff0000) >> 16;
+      r = (gdouble)tmp;
+      r = r / 255;
+
+      tmp = (col & 0x0000ff00) >> 8;
+      g = (gdouble)tmp;
+      g = g / 255;
+
+      tmp = (col & 0x000000ff);
+      b = (gdouble)tmp;
+      b = b / 255;     
+   
+      cairo_set_source_rgba (cr, r, g, b, 1.0);      
       break;
     case LINE_TYPE_PRE:
       sscanf(appData.premoveHighlightColor, "#%x", &col);     
-      r = (col & 0x00ff0000) >> 16;
-      g = (col & 0x0000ff00) >> 8;
-      b = (col & 0x000000ff);      
-      cairo_set_source_rgba (cr, (gdouble)r, (gdouble)g, (gdouble)b, 1.0);      
+
+      tmp = (col & 0x00ff0000) >> 16;
+      r = (gdouble)tmp;
+      r = r / 255;
+
+      tmp = (col & 0x0000ff00) >> 8;
+      g = (gdouble)tmp;
+      g = g / 255;
+
+      tmp = (col & 0x000000ff);
+      b = (gdouble)tmp;
+      b = b / 255;     
+      cairo_set_source_rgba (cr, r, g, b, 1.0);      
       break;
     case LINE_TYPE_NORMAL:
     default:
-      cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
+      cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
     }
 
   cairo_stroke (cr);
