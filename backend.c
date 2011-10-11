@@ -879,6 +879,7 @@ extern Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 
 static char resetOptions[] = 
 	"-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 "
+	"-firstInitString \"" INIT_STRING "\" -firstComputerString \"" COMPUTER_STRING "\" "
 	"-firstOptions \"\" -firstNPS -1 -fn \"\"";
 
 void
