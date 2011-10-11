@@ -1,0 +1,1041 @@
+## WinBoard language file
+##
+## LANGUAGE NAME IN ENGLISH / TRANSLATED
+## v1.0 beta 1
+##
+## Translation by NAME (DATE)
+## SAME AS ABOVE, TRANSLATED
+## WEB ADDRESS OF TRANSLATOR
+##
+## If you revise this, please insert your date, name and description.
+## TRANSLATION OF MESSAGE ABOVE
+##
+
+TRANSLATION BY 
+11-oct-2011. Dl Silvian Rucsandescu din Iasi. 
+
+##   Of duplicats, only the first occurrence will be used, even if it was in
+##   a different dialog! For this reason you will only see an 'OK' in the
+##   About Box. After you translated it there, this translation will be used
+##   for all other dialogs as well.
+## o Use ## for comments, to make iteasy to find them scattered throughout the translation
+## o Careful with temptation of direct translation, by example 'movimiento' for 'move' when 'jugada' is better.
+## o Try to use short phrases, more text doesn't imply more clearness.
+## o Check that your translation is right, does it mean what it does?
+## o Test your translation, check every dialog.
+## o For standard chess names check Wikipedia for confirmation.
+## o For menus, assign shortcuts (character &) until you finish the translation.
+##   preferably it should be unique in the applicable menu, so it depends on translation of other items!
+
+winboard.rc
+
+MENUS:
+## Pleace keep the accelerator-key indications on the menu items, and keep 
+## the keystrokes the same (for now). (Alt, Ctrl and Shift can be translated.)
+
+"&New Game\tCtrl-N" === "Partida Noua"
+"New Sh&uffle Game..." === "Partida Noua Shuffle"
+"New &Variant...\tAlt+Shift+V" === "Varianta Noua"
+"&Load Game...\tCtrl-O" === "Incarca Partida"
+"&Save Game...\tCtrl-S" === "Salveaza Partida"
+"L&oad Position...\tCtrl+Shift+O" === "Incarca Pozitia"
+"S&ave Position...\tCtrl+Shift+S" === "Salveaza Pozitia"
+"Save as &Diagram..." === "Salveaza ca Diagrama"
+"&Quit" === "Inchide"
+## Next six currently not used
+"Load &Next Game\tAlt+PgDn" === "Incarca Partida Urmatoare"
+"Load &Previous Game\tAlt+PgUp" === "Incarca Partida Precedenta"
+"&Reload Same Game" === "Reincarca Aceeasi Partida"
+"Load N&ext Position\tAlt+Shift+PgDn" === "Incarca Urmatoarea Pozitie"
+"Load Pre&vious Position\tAlt+Shift+PgUp" === "Incarca Precedenta Pozitie"
+"Reload Sa&me Position" === "Reincarca Aceeasi Pozitie"
+
+"&Copy Game To Clipboard\tCtrl+C" === "Copie Partida pe Clipboard"
+"C&opy Position To Clipboard\tCtrl+Shift+C" === "Copie Pozitia pe Clipboard"
+"Copy Game List to Clipboard" === "Copie Lista Partidelor pe Clipboard"
+"&Paste Game From Clipboard\tCtrl+V" === "Copie Partida din Clipboard"
+"P&aste Position From Clipboard\tCtrl+Shift+V" === "Copie Pozitia din Clipboard"
+"&Edit Game\tCtrl+E" === "Editeaza Partida"
+"E&dit Position\tCtrl+Shift+E" === "Editeaza Pozitia"
+"Edit Ta&gs..." === "Editeaza Eticheta"
+"Edit Co&mment..." === "Editeaza Comentariul"
+"Enter &Username..." === "Introdu Nume Utilizator"
+"&Revert\tHome" === "Revenire"
+"&Annotate" === "Adnotare"
+"&Truncate Game\tEnd" === "Scurteaza Partida"
+"&Backward\tAlt+Left" === "Inapoi"
+"&Forward\tAlt+Right" === "Inainte"
+"Back to &Start\tAlt+Home" === "Inapoi la Start"
+"For&ward to End\tAlt+End" === "Inainte la Sfarsit"
+
+"Flip &View\tF2" === "Vizualizare Inversa"
+"&Swap Clocks" === "Schimba Ceasurile"
+"Engine &Output\tAlt+Shift+O" === "Calculatia Motorului"
+"Move &History\tAlt+Shift+H" === "Istoricul Mutarilor"
+"Evaluation &Graph\tAlt+Shift+E" === "Graficul Evaluarii"
+"Game &List\tAlt+Shift+G" === "Lista Partidelor"
+"Open &New Chat Window" === "Deschide Fereastra Noua de Chat"
+"Type In &Move...\tAlt+I" === "Introdu Mutari"
+"&Tags" === "Eticheta"
+"&Comments" === "Comentarii"
+"&Game List Tags..." === "Eticheta Partidei"
+"&Board..." === "Tabla"
+"&Fonts..." === "Fonturi"
+
+"Machine &White\tCtrl+W" === "Motorul la Alb"
+"Machine &Black\tCtrl+B" === "Motorul la Negru"
+"&Two Machines\tCtrl+T" === "Doua Motoare"
+"Machine Both" === "Ambele Motoare"
+"&Analysis Mode\tCtrl+A" === "Modul de Analiza"
+"Analyze &File\tCtrl+F" === "Fisierul de Analizat"
+"&Edit Game\tCtrl+E" === "Editeaza Partida"
+"E&dit Position\tCtrl+Shift+E" === "Editeaza Pozitia"
+"Trai&ning" === "Antrenament"
+"&ICS Client" === "ICS Client"
+"&Machine Match" === "Partida Intre Motoare"
+"&Pause\tPause" === "Pauza"
+
+"&Accept\tF3" === "Accept"
+"D&ecline\tF4" === "Refuz"
+"Re&match\tF12" === "Rejucare"
+"Call &Flag\tF5" === "Caderea Steagului"
+"&Draw\tF6" === "Remiza"
+"Ad&journ\tF7" === "Intrerupere"
+"A&bort\tF8" === "Renunt"
+"&Resign\tF9" === "Cedez"
+"Stop &Observing\tF10" === "Opreste Observarea"
+"Stop E&xamining\tF11" === "Opreste Examinarea"
+"&Upload to Examine" === "Incarca spre Examinare"
+"Adjudicate to &White" === "Adjudecat la Alb"
+"Adjudicate to &Black" === "Adjudecat la Negru"
+"Adjudicate &Draw" === "Adjudecat Remiza"
+
+"Install 1st..." === "Instaleaza motorul 1"
+"Install 2nd..." === "Instaleaza motorul 2"
+"Engine #&1 Settings..." === "Setare Motorul nr 1"
+"Engine #&2 Settings..." === "Setare Motorul nr 2"
+"&Hint..." === "Sugestie"
+"&Book..." === "Carte de Deschideri"
+"&Move Now\tCtrl+M" === "Muta Acum"
+"&Retract Move\tCtrl+X" === "Retrage Mutarea"
+
+"&Mute all Sounds" === "Fara Sunet"
+"&General..." === "Optiuni Generale"
+"&Time Control...\tAlt+Shift+T" === "Controlul Timpului"
+"Common &Engine...\tAlt+Shift+U" === "Setari Comune Enginelor UCI"
+"Ad&judications...\tAlt+Shift+J" === "Adjudecarea"
+"&Load Game...\tAlt+Shift+L" === "Incarca Partida"
+"&Save Game...\tAlt+Shift+S" === "Salveaza Partida"
+"G&ame List..." === "Optiunile Listei de Partide"
+"Soun&ds..." === "Sunetul"
+"&ICS..." === "ICS"
+"Add ICS..." === "Adauga ICS"
+"Comm&unications..." === "Comunicatii"
+"Save Settings &Now" === "Salveaza Setarile Acum"
+"Save Settings on E&xit" === "Salveaza Setarile la Iesire"
+
+"Help &Contents\tF1" === "Continutul Ajutorului"
+"Help &Index" === "Indexul Ajutorului"
+"How to &Use Help" === "Cum se Foloseste Ajutorul"
+"&About WinBoard" === "Despre WinBoard"
+
+"White" === "Albul"
+"Promote" === "Transforma"
+"Pawn" === "Pion"
+"Knight" === "Cal"
+"Bishop" === "Nebun"
+"Rook" === "Tura"
+"Queen" === "Dama"
+"King" === "Rege"
+## The next 2 are pieces for Capablanca Chess. Use the names from the Wikipedia entry for this,
+## rather than litteral translations of the English names!
+"Archbishop" === "Arhiepiscop"
+"Chancellor" === "Cancelar"
+## Next 2 Xiangqi (Chinese Chess) pieces. Google for 'Xiangqi' in the target language to get the standard translation.
+"Elephant" === "Elefant"
+"Cannon" === "Tun"
+"Empty Square" === "Camp Liber"
+"Black" === "Negru"
+"Demote" === "Degradeaza"
+"Clear Board    " === "Curata Tabla"
+## Next 3: Shogi pieces.
+"Gold" === "Aur"
+"Silver" === "Argint"
+"Lance" === "Lancie"
+
+"Drop" === "Cadere"
+
+"Cop&y and Paste" === "Copie si Scrie"
+"&Copy" === "Copie"
+"&Paste" === "Scrie"
+
+"&Undo" === "Revenire"
+"Cu&t" === "Taie"
+"&Copy" === "Copie"
+"&Paste" === "Scrie"
+"Select &All" === "Selecteaza Totul"
+
+DIALOGS:
+
+ABOUTBOX
+
+## Pehaps copyright notices best left untranslated?
+"About WinBoard" === "Despre Winboard"
+"OK" === "OK"
+"Chessboard for Windows" === "WinBoard GUI pentru Windows"
+"Copyright 1991 Digital Equipment Corporation" === ""
+"Enhancements Copyright 1992-2011  Free Software Foundation" === ""
+"Enhancements Copyright 2005\r\nAlessandro Scotti" === ""
+## What happened with H.G.Muller? [He sold his copyrights to FSF for $1]
+## The following string of 6 spaces can be translated to an acknowledgement of the translator,
+## like "Traducción por Óscar Toledo G.".
+"Tradus de Dl Silvian Rucsandescu Iasi" === "Tradus de Dl Silvian Rucsandescu Iasi "
+"WinBoard 0.0.0" === "WinBoard 4.5.3"
+
+ABOUTBOX2
+
+## Weird, it is needed? [Normally not. It is a built-in 'Easter Egg' joke.]
+"galactic" === "galactic"
+
+TIME CONTROL DIALOG
+
+"Time Control" === "Controlul Timpului"
+"Conventional chess clock" === "Ceas Conventional"
+"Incremental clock" === "Ceas cu Incrementare"
+"Cancel" === "Anuleaza"
+
+## Next is there really only for the benefit of blind users of the JAWS version...
+"Use arrow keys to specify which clock setting type, then press tab to alter values." === "Foloseste sagetile pentru a specifica setarile ceasului, apoi apãsaþi butonul pentru a modifica valorile."
+"Fixed time per move" === "Timp fix pe mutare"
+"Number of moves:" === "Numarul de mutari"
+"Within number of minutes:" === "In numarul de minute "
+"Initial number of minutes:" === "Numarul initial de minute"
+"Plus number of seconds per move:" === "Plus numarul de secunde pe mutare"
+"Maximum seconds per move:" === "Maximul de secunde pe mutare"
+"Time-Odds Factors:" === "Timpi Diferiti"
+"Engine #1:" === "Motorul nr 1"
+"Engine #2:" === "Motorul nr 2"
+
+LOAD OPTIONS 
+
+"Load Game Options" === "Incarca Optiunile Partidei"
+"Load games with &automatic stepping" === "Incarca partidele cu rulare automata"
+"&seconds per move" === "secunde pe mutare"
+"when filtering game list on position, use thresholds:" === "cand se filtreaza lista de partide dupa pozitie , foloseste limitele"
+"Search Mode: " === "Modul de Cautare"
+"Match exact &position" === "Cauta pozitia exacta"
+"Match if position is s&ubset" === "Cauta daca pozitia este continuta"
+"Match material with e&xact pawn structure" === "Cauta pozitii cu aceeasi structura de pioni"
+"Match &material" === "Cauta material"
+"Material &range (upper board-half is optional)" === "Gama de material (jumãtatea de sus a tablei este opþionala)"
+"Material &difference (optional material balanced)" === "Diferenta materiala (material optional echilibrat)"
+"Also match reversed &colors" === "Cauta de asemenea culorile inversate"
+"Also match &left-right mirror image" === "Cauta de asemenea imaginea in oglinda stanga-dreapta"
+"minimum Elo for &best player" === "ELO minim pentru cel mai bun jucator"
+"minimum Elo for &weakest players" === "ELO minim pentru cel mai slab jucator"
+"or later &year" === "sau mai tarziu anul"
+"co&nsecutive positions" === "pozitii consecutive"
+ 
+SAVE OPTIONS DIALOG
+
+"Save Game Options" === "Salveaza Optiunile Partidei"
+"Save As: " === "Salveaza ca"
+"Save games automatically" === "Salveaza partidele automat"
+"Prompt for filename" === "Prompter pentru numele fisierului"
+"To file:" === "Spre fisierul"
+"PGN" === "PGN"
+"Old" === "Vechi"
+"Browse..." === "Cauta"
+"Save out of book info in PGN" === "Salveaza iesirea din cartea de deschideri in PGN"
+
+1536
+## This dialog is only used in some older Windows versions, so you might not be ableto test it.
+
+"Open" === "Deschide"
+"File &Name:" === "Denumirea Fisierului"
+"&Directories:" === "Directorul"
+"List Files of &Type:" === "Listeaza Fisierele de Tipul"
+"Dri&ves:" === "Partitia"
+"&Help" === "Ajutor"
+
+"&Index number:" === "Numarul de index"
+
+COMMPORT
+## Always disabled if you are not actually using an ICS through a comport, so difficult to test.
+
+"Communication Port Settings" === "Setarile Portului de Comunicare"
+"Net&work..." === "Reteaua"
+"&Port:" === "Port"
+"Data &Rate:" === "Rata de Transfer a Datelor"
+"Data &Bits:" === "Numarul de Biti ai datelor"
+"P&arity:" === "Paritatea"
+"&Stop Bits:" === "Stop Biti"
+"F&low:" === "Functionare"
+
+EDIT COMMENT
+
+"Edit Comment" === "Editeaza Comentariul"
+"&Clear" === "Sterge"
+"&Edit" === "Editeaza"
+
+PROMOTION POPUP
+
+"Promote to:" === "Transforma in"
+## next used in Shogi as promotion-popup header
+"Promote?" === "Transformi?"
+"Promotion" === "Transformare"
+"&Queen" === "Regina"
+"&Rook" === "Turn"
+"&Bishop" === "Nebun"
+"K&night" === "Cal"
+"&King" === "Rege"
+"&Cancel" === "Anuleaza"
+
+"Chance&llor" === "Cancelar"
+"&Archbishop" === "Arhiepiscop"
+"YES" === "DA"
+"NO" === "NU"
+"C&entaur" === "Centaur"
+
+GAME LIST
+
+"Game List" === "Lista Partidelor"
+"&Load" === "Incarca"
+"&Prev" === "Precedenta"
+"&Next" === "Urmatoarea"
+"&Close" === "Inchide"
+"Filter" === "Filtreaza"
+
+EDIT TAGS
+
+"Edit Tags" === "Editeaza Eticheta"
+
+ERROR
+
+"ICS Interaction" === "Interactiune ICS"
+"Dialog" === "Dialog"
+"Error" === "Eroare"
+## I don't think the next will really appear ever.
+"Sorry Charlie" === "Imi pare rau Charlie"
+
+COLORIZE
+
+"I C S Interaction Colors" === "Interactiunea culorilor I C S"
+"Interaction Colors" === "Interactiunea Culorilor"
+"Premove" === "Mutare Anticipata"
+"Alarm" === "Alarma"
+"Colors" === "Culori"
+"&Choose Color..." === "Alege Culoarea"
+"&Bold" === ""
+"&Italic" === ""
+"&Underline" === "Subliniaza"
+"&Strikeout" === "Barat"
+
+QUESTION
+
+## next one seems only a placeholder, and never appears? [might also be just a programmer's joke...]
+"Enter a chess engine command or just type something stupid that will completely screw things up." === "Abracadabra"
+"Question" === "Intrebare"
+"Enter" === "Introdu"
+
+STARTUP DIALOG
+
+"WinBoard Startup" === "Pornire WinBoard"
+"What would you like to do?" === "Ce aþi dori sã faceþi ?"
+"&Play against a chess engine or match two engines" === "Joaca contra unui motor de sah sau meci inte doua motoare"
+"&Use an Internet Chess Server" === "Foloseste un Server de Sah pe Internet"
+"Just &view or edit game files" === "Vizualizeaza sau editeaza fisierele partidelor"
+"Specify Chess &Engines:" === "Specifica Motoarele de Sah"
+"Specify Chess &Server:" === "Specifica Serverul de Sah"
+"&Additional options" === "Optiuni Suplimentare"
+
+INDEX (IN FILE-BROWSE DIALOG)
+
+"Inde&x number:" === "Numarul de index"
+
+MOVE TYPE-IN
+
+"Type in a move" === "Introdu o mutare"
+
+USER-NAME TYPE-IN
+
+"Type in your name" === "Scrieþi numele Dvs"
+
+SOUND DIALOG
+
+"Sounds" === "Sunetul"
+
+"&Event:" === "Evenimentul"
+"&No sound" === "Fara sunet"
+"&Default beep" === "Bip default"
+"&Built-in sound:" === "Sunetul continut de program "
+"&WAV file:" === "Fisier WAV"
+
+"B&rowse..." === "Cauta"
+"&Play" === "Joaca"
+"&Defaults" === "Defaults"
+
+GENERAL OPTIONS DIALOG
+## pleace keep the indication of the accelerator keys for the same keystroke
+## Note: finely tuned spaces to align keys at right
+
+"General Options" === "Optiuni Generale"
+"Always on &Top" === "Intotdeauna Deasupra"
+"Always &Queen            Ctrl+Shift+Q" === "Intotdeauna Dama"
+"Animate &Dragging" === "Tragere Animata"
+"&Animate Moving         Ctrl+Shift+A" === "Mutare Animata"
+"Auto &Flag                   Ctrl+Shift+F" === "Steag Automat"
+"Auto Flip &View" === "Intoarce Tabla Automat"
+"Auto &Raise Board" === "Fereastra Deasupra"
+"&Blindfold" === "Sah Orb"
+"Highlight Dra&gging" === "Marcheaza campurile de plecare - sosire"
+"Highlight Last &Move" === "Marcheaza ultima mutare"
+"Periodic &Updates" === "Updateuri periodice"
+"Ponder &Next Move  Ctrl+Shift+P" === "Motorul permanent"
+"&Popup Exit Message" === "Afiseaza un mesaj inainte de iesire"
+"Popup Move &Errors" === "Afiseaza un mesaj la mutarile gresite"
+"Show Butt&on Bar" === "Afiseaza bara cu butoanele de comanda"
+"Show &Coordinates" === "Afiseaza coordonatele"
+"&Show Thinking" === "Arata calculatia motorului"
+"Test &Legality            Ctrl+Shift+L" === "Testeaza legalitatea mutarii"
+"&Hide Thinking          Ctrl+Shift+H" === "Ascunde calculatia motorului"
+"&Info in Move History   Ctrl+Shift+I" === "Informatii in lista de mutari"
+"&Send Engine Think" === "Transmite calculatia motorului"
+"E&xtended PGN Info    Ctrl+Shift+X" === "Informatii PGN extinse"
+"Highlight with Arro&w" === "Marcheaza cu sageata"
+"Displa&y Logos" === "Afiseaza logourile motoarelor"
+"One-Click Move" === "Mutare printr-un click"
+
+ICS OPTIONS
+
+"ICS Options" === "Optiunile ICS"
+"&Auto Comment" === "Comentariu Automat"
+"Auto &Observe" === "Observatie Automata"
+"&Get Move List" === "Primeste Lista de Mutari"
+"&Local Line Editing" === "Editarea Liniei Locale"
+"&Quiet Play" === "Joc Tacut"
+"&Premove" === "Mutare Anticipata"
+"&White first move" === "Albul are prima mutare"
+"&Black first move" === "Negrul are prima mutare"
+"&Sound alarm at" === "Suna alarma la"
+"seconds" === "secunde"
+"Choose..." === "Alege"
+"Do &not colorize messages" === "Nu colora mesajele"
+"&Auto Kibitz" === "Auto Kibitz"
+"Auto Kibit&z" === "Auto Kibitz"
+"See&k Graph" === "Cerceteaza Graficul"
+"auto-&Refresh" === "Auto-Refresh"
+"Bckgnd Obser&ve" === "Observare din background"
+"&Dual Board" === "Tabla duala"
+"One-Click &Move" === "Mutare printr-un click"
+"Background..." === "In spate"
+"&Defaults..." === "Implicite"
+"Startup &Chat Boxes:" === "Porneste Boxele de Conversatie"
+"General" === "General"
+
+BOARD OPTIONS
+## (NOTE: AllWhite uses the white (outline-style) piece bitmaps for both sides
+##        FlipBlack draws the black pieces upside down)
+
+"Board Options" === "Optiunile Tablei"
+"Defaults" === "Implicite"
+"Light Squares" === "Campuri deschise"
+"Dark Squares" === "Campuri inchise"
+"White Pieces" === "Piesele Albe"
+"Black Pieces" === "Piesele Negre"
+"Square Highlights" === "Marcheaza Campul"
+"Premove Highlights" === "Marcheaza Anticipata"
+"Monochrome" === "Monocrom"
+"All White" === "Totul Alb"
+"Flip Black" === "Intoarce Negrele"
+"Size" === "Marimea"
+
+BOARD SIZES (translate as number?)
+## Don't put numbers, or nobody will translate them. [True. But do we really want them translated?]
+## This is a space for imagination!
+"&Tiny" === "Foarte Mica"
+"T&eeny" === "Mititica"
+"&Dinky" === "Micuta"
+"&Petite" === "Mica 1"
+"Sl&im" === "Mica 2"
+"&Small" === "Mica"
+"Medi&ocre" === "Nu chiar mica"
+"&Middling" === "Mijlocie"
+"&Average" === "Normala"
+"Mode&rate" === "Moderata"
+"Medi&um" === "Medie"
+"Bul&ky" === "Groasa"
+"&Large" === "Larga"
+"&Big" === "Mare"
+"&Huge" === "Enorma"
+"&Giant" === "Giganta"
+"&Colossal" === "Colosala"
+"Tita&nic" === "Titanica"
+
+FONTS
+
+"Fonts" === "Fonturi"
+"Current Board Size" === "Marimea curenta a Tablei"
+"All Board Sizes" === "Toate marimile Tablei"
+"&Revert to Defaults" === "Revenire la Implicite"
+"Clocks" === "Ceasurile"
+"Messages" === "Mesajele"
+"Coordinates" === "Coordonatele"
+"Tags" === "Etichetele"
+"Comments" === "Comentariile"
+"I C S Interaction" === "Interactiune I C S"
+
+"&Color..." === "Culoarea..."
+"Move History, Engine Output" === "Lista Mutarilor,Calculatia Motorului"
+
+ADJUDICATIONS DIALOG
+
+"Adjudications" === "Adjudecarea"
+"Ponder Next Move" === "Calculeaza Urmatoarea Mutare"
+"Enable and Show Thinking (recommended)" === "Comuteaza si Arata Calculatia (recomandat)"
+"Hide Thinking when Playing against Human" === "Ascunde Calculatia la Jocul contra Oamenilor "
+"Periodic Updates (for Analysis Mode)" === "Updateuri Periodice (pentru Modul de Analiza)"
+"Adjudications in non-ICS games" === "Adjudecarea in partidele non-ICS"
+"Adjudicate draw after:" === "Adjudeca remiza dupa"
+"moves" === "mutari"
+"Win/loss adjudication threshold:" === "limita de adjudecare castig/pierdere"
+"centipawns" === "centipioni"
+"&Verify Engine Claims" === "Verifica Solicitarile Motorului"
+"Detect &Mates" === "Detecteaza Maturile"
+"Draw if &Insufficient Material" === "Remiza daca Materialul este Insuficient"
+"Adjudicate &Trivial Draws" === "Adjudeca Remizele Clare"
+"Apply" === "Aplica"
+## next 2 are suffixed to a text-edit containing a number (50 or 3)
+"-move rule" === "-regula celor 50"
+"-fold repeats" === "-a repetare"
+"Engine #1 Score is Absolute" === "Motorul 1 Scorul este Absolut"
+"Engine #2 Score is Absolute" === "Motorul 2 Scorul este Absolut"
+
+COMMON ENGINE DIALOG
+
+"Common Engine Settings" === "Setari Comune Enginelor UCI"
+"Polyglot Directory:" === "Directorul pt. Polyglot"
+"Hash Size (MB):" === "Marimea Hashului (MB)"
+"EGTB Path:" === "Adresa bazelor de final"
+"EGTB Size (MB):" === "Hashul bazelor de final (MB)"
+"Use Book:" === "Utilizeaza Cartea"
+"Max nr of CPUs:" === "Nr. max. de CPUs"
+"First has Own Book" === "Albul are cartea sa"
+"Second has Own Book" === "Negrul are cartea sa"
+"Book Depth:" === "Profunzimea Cartii"
+"Book Variation:" === "Variatia Cartii"
+"Default Match Games:" === "Meciuri Implicite"
+
+NEW-VARIANT DIALOG
+## (NOTE: the 'holdings' are the pieces standing next to the board ('in hand')
+
+"Variants" === "Variantele de Sah"
+"Variant" === "Varianta"
+"Board size:" === "Marimea tablei"
+"ranks" === "randuri"
+"files" === "coloane"
+"Holdings with room for:" === "Pegatiti-va pentru"
+"pieces" === "piese"
+"('-1' means defaults for selected variant)" === "('-1' inseamna "implicit" pentru varianta selectata)"
+
+VARIANT NAMES: 
+"&normal" === ""
+"&FRC" === ""
+"&wildcastle" === ""
+"&nocastle" === ""
+"&losers" === ""
+"&giveaway" === ""
+"s&uicide" === ""
+"&3Check" === ""
+"&twokings" === ""
+"&atomic" === ""
+"cra&zyhouse" === ""
+"&bughouse" === ""
+"&Twilight" === ""
+"Sp&artan" === ""
+"&shogi" === ""
+"su&per" === ""
+"&knightmate" === ""
+"&Berolina" === ""
+"c&ylinder" === ""
+"&fairy" === ""
+"&makruk" === ""
+"&gothic" === ""
+"&capablanca" === ""
+"&Janus" === ""
+"&CRC" === ""
+"&Falcon" === ""
+"cou&rier" === ""
+"&Great" === ""
+"&Shatranj" === ""
+"&xiangqi" === ""
+
+NEW SHUFFLE GAME
+
+"New Shuffle Game" === "Partida Noua Shuffle"
+"&Start Position Number:" === "Pozitia de Start Numarul"
+"Random" === "La Intamplare"
+
+GAME-LIST OPTIONS DIALOG
+
+"Game List Options" === "Optiunile Listei Partidei"
+"PGN &Tags:" === "PGN si Etichete"
+"&Up" === "Sus"
+"&Down" === "Jos"
+"Default" === "Implicit"
+"Factory" === "Fabrica"
+"Restore to:" === "Restaureaza"
+
+MOVE HISTORY WINDOW
+
+"Move History" === "Istoricul Mutarilor"
+
+EVALUATION GRAPH
+
+"Evaluation Graph" === "Graficul de Evaluare"
+
+ENGINE OUTPUT WINDOW
+
+"Engine output" === "Calculatia Motorului"
+"Engine #1" === "Motorul nr. 1"
+"NPS" === "NPS"
+"Engine #2" === "Motorul nr. 2"
+
+CHAT BOXES
+
+"Chat Window" === "Fereastra de Conversatie"
+"Chat partner:" === "Partenerul de Conversatie"
+"Clear" === "Sterge"
+"Send" === "Trimite"
+
+winboard.c
+
+"&File" === "Fisier"
+"&Edit" === "Editeaza"
+"&View" === "Vizualizare"
+"&Mode" === "Mod"
+"&Action" === "Actiune "
+"&Step" === "Pas"
+"E&ngine" === "Motor"
+"&Options" === "Optiuni"
+"&Help" === "Ajutor"
+"You can only start a match from the initial position." === "Puteti incepe o partida doar din pozitia initiala"
+"Font name too long:" === "Denumirea fontului prea lunga"
+"Font point size missing:" === "Lipseste marimea fontului"
+"Can't parse color name %s" === "Nu poate analiza numele culorii %s"
+"Unrecognized board size value" === "Marimea tablei necunoscuta"
+"Unrecognized argument" === "Argument necunoscut"
+"No value provided for argument" === "Nici o valoare alocata argumentului"
+"Incomplete \\ escape in value for" === "Incomplet \\ pierdere in valoare pentru"
+"Failed to open indirection file" === "Ratata deschiderea fisierului incorect "
+"Unrecognized boolean argument value" === "Valoarea argumentului boolean necunoscuta"
+"Unrecognized argument" === "Argument necunoscut"
+"Too many colors" === "Prea multe culori"
+"&Minimize\tCtrl+F4" === "Micsoreaza"
+"White: %s" === "Albul: %s"
+"We only care about the height here" === "Avem grija doar de inaltime aici"
+"Cannot build game list" === "Nu se poate construi lista de partide"
+"Load Game from File" === "Incarca Partida din Fisierul"
+"Load Position from File" === "Incarca Pozitia din Fisierul"
+"Save Game to File" === "Salveaza Partida in Fisierul"
+"Save Diagram to File" === "Salveaza Diagrama in Fisierul"
+"Save Position to File" === "Salveaza Pozitia in Fisierul"
+"%s does not support analysis" === "%s nu suporta analiza"
+"Analyze Game from File" === "Analizeaza Partida din Fisierul"
+"Unable to activate help" === "Imposibil sa activeze ajutorul"
+"Send to chess program:" === "Trimite programului de sah"
+"Send to second chess program:" === "Trimite programului de sah nr 2"
+"Direct Command" === "Comanda Directa"
+"Error loading sound %s" === "Eroare la incarcarea sunetului %s"
+"Error playing sound %s" === "Eroare la rularea sunetului %s"
+"File open failed" === "Deschiderea fisierului ratata"
+"Internal error in file dialog box" === "Eroare interna in casuta de dialog a fisierului"
+"Option Error" === "Optiunea Eroare"
+"Choose an option, or cancel to exit" === "Alege o optiune, ori anuleaza pentru iesire"
+"Unable to activate help" === "Imposibil de activat ajutorul"
+"Displayed move is not current" === "Mutarea afisata nu este cea curenta"
+"Could not parse move" === "Nu s-a putut interpreta mutarea"
+"%s:\nError code %d" === "%s:\nEroare de cod %d"
+"Error" === "Eroare"
+"Fatal Error" === "Eroare Fatala"
+"Exiting" === "Iesind"
+"%s:\nError code %d" === "%s:\nEroare de cod %d"
+"Note" === "Nota"
+"Error writing to chess program" === "Eroare de scris catre programul de sah"
+"User" === "Utilizator"
+"Unknown" === "Necunoscut"
+"White" === "Albul"
+"Black" === "Negrul"
+"Save Game to File" === "Salveaza Partida in Fisierul"
+"Not implemented" === "Neimplementat"
+
+"Shout Text" === "Text de Iesire"
+"SShout/CShout" === ""
+"Channel 1 Text" === "Text Canal 1"
+"Channel Text" === "Text Canal"
+"Kibitz Text" === "Text Kibitz"
+"Tell Text" === "Spune Textul"
+"Challenge Text" === "Textul pentru Intrecere"
+"Request Text" === "Cerere"
+"Seek Text" === "Textul de Cautare"
+"Normal Text" === "Text Normal"
+"None" === "Nimic"
+"Pawn" === "Pion"
+"Knight" === "Cal"
+"Bishop" === "Nebun"
+"Rook" === "Turn"
+"Queen" === "Dama"
+"Information" === "Informatie"
+
+wclipbrd.c
+
+"Unable to convert position to FEN." === "Imposibil sa transform pozitia in FEN"
+"Unable to copy FEN to clipboard." === "Imposibil sa copii FEN-ul spre clipboard "
+"Cannot create temporary file name." === "Nu pot creia un nume de fisier temporar "
+"Cannot open temporary file." === "Nu pot deschide un fisier temporar"
+"Cannot write to temporary file." === "Nu pot scrie catre un fisier temporar"
+"Cannot reopen temporary file." === "Nu pot redeschide fisierul temporar"
+"Cannot determine size of file." === "Nu pot determina marimea fisierului"
+"Cannot allocate clipboard buffer." === "Nu pot aloca buferul clipboardului"
+"Cannot read from temporary file." === "Nu pot citi din fisierul temporar"
+"Error reading from temporary file." === "Eroare de citire din fisierul temporar"
+"Cannot copy text to clipboard" === "Nu pot copia textul pe clipboard"
+"Unable to allocate memory for clipboard." === "Incapabil sa aloc memorie pentru clipboard"
+"Unable to lock clipboard memory." === "Imposibil sa blochez memoria clipboardului"
+"Cannot unlock clipboard memory." === "Imposibil sa deblochez memoria clipboardului"
+"Cannot open clipboard." === "Nu pot deschide clipboardul"
+"Cannot empty clipboard." === "Nu pot sterge clipboardul"
+"Cannot copy text to clipboard." === "Nu pot copia textul pe clipboard"
+"Cannot close clipboard." === "Nu pot inchide clipboardul"
+"Unable to paste FEN from clipboard." === "Imposibil sa copii FENul din clipboard"
+"Unable to create temporary file." === "Imposibil sa creiez un fisier temporar"
+"Error writing to temporary file." === "Eroare de scris in fisierul temporar"
+"Unable to open clipboard." === "Imposibil sa deschid clipboardul"
+"No text in clipboard." === "Nici un text in clipboard"
+"Unable to lock clipboard memory." === "Imposibil sa blochez memoria clipboardului"
+"Unable to allocate memory for text string." === "Imposibil sa aloc memorie pentru stringul urmator"
+"Unable to unlock clipboard memory." === "Imposibil sa deblochez memoria clipboardului"
+"Unable to close clipboard." === "Imposibil sa inchid clipboardul"
+
+woptions.c
+
+## For now, do NOT translate sound names, because WinBoard will no longer recognize them
+"Move" === ""
+"Bell" === ""
+"ICS Alarm" === ""
+"ICS Win" === ""
+"ICS Loss" === ""
+"ICS Draw" === ""
+"ICS Unfinished" === ""
+"Shout" === ""
+"SShout/CShout" === ""
+"Channel 1" === ""
+"Channel" === ""
+"Kibitz" === ""
+"Tell" === ""
+"Challenge" === ""
+"Request" === ""
+"Seek" === ""
+## end of sound names
+
+"Browse for Sound File" === "Cauta Fisierul de Sunet"
+"Can't parse com port settings" === "Nu se pot analiza setarile portului de comunicare"
+"Option Error" === "Optiunea Eroare"
+"Invalid data rate" === "Rata de date invalida"
+"Option Error" === "Optiunea Eroare"
+"Failed to set comm port state;\r\ninvalid options?" === "Esuat in setarea portului de comunicatii;\r\ninvalid options?"
+"Failed to set comm port state" === "Esuat in setarea portului de comunicatii"
+"Invalid load game step rate" === "Rata de derulare a incarcarii partidei invalida"
+"Invalid save game file name" === "Numele fisierului de salvare a partidei invalid"
+"Browse for Auto Save File" === "Cauta Auto Salvarea Fisierului"
+"Invalid moves per time control" === "Mutari pe timpul de control invalide"
+"Invalid minutes per time control" === "Minute pe timpul de control invalide"
+"Invalid increment" === "Increment invalid"
+"Invalid initial time" === "Timp initial invalid"
+"Changing time control during a game is not implemented" === "Schimbarea timpului de control in timpul partidei nu este implementata"
+
+"Variant %s not supported by %s" === "Varianta %s nu este suportata de %s"
+"Warning: second engine (%s) does not support this!" === "Atentie: al doielea motor (%s) nu suporta aceasta"
+"Invalid ICS Alarm Time" === "Timp de Alarma ICS Invalid"
+"Invalid max time per move" === "Timp maxim pe mutare invalid"
+"Invalid time-odds factor" === "Factorul de diferenta de timp invalid"
+"Choose Folder" === "Alege Folderul"
+"Choose Book" === "Alege Cartea de Deschideri"
+"Choose Polyglot Directory" === "Alege Directorul pentru Polyglot"
+"Choose EGTB Directory:" === "Alege Directorul pentru EGTB"
+"Polyglot was not found in the specified folder!" === "Polyglot nu a fost gasit in directorul specificat!"
+
+wgamelist.c
+
+"No game selected" === "Nici o partida selectata"
+"Can't go forward any further" === "Nu poate merge mai departe"
+"Can't back up any further" === "Nu se poate inapoi mai mult"
+"No game list" === "Fara lista de partide"
+"Game List" === "Lista de Partide"
+"Game list not loaded or empty" === "Lista de partide neincarcata sau goala"
+"%s - %d/%d games" === "%d (%d,%d-%d,%d) partide"
+
+wedittags.c
+
+"Edit Tags" === "Editeaza Eticheta"
+"Tags" === "Eticheta"
+"Error replacing tags." === "Eroare la inlocuirea etichetei"
+
+wsettings.c
+
+"%s Engine Settings (%s)" === "%s Setarile Motorului (%s)"
+"OK" === "OK"
+"Cancel" === "Inchide"
+
+wchat.c
+
+"Chat Window %s" === "Fereastra de Conversatie %s"
+
+backend.c
+
+"bad timeControl option %s" === "optiune incorecta de timp %s"
+"bad searchTime option %s" === "optiune incotecta de timp de cautare %s "
+## following to will appear in combinationslike "first engine" 
+"first" === "primul"
+"second" === "al doielea"
+"protocol version %d not supported" === "versiunea de protocol %d nu este suportata"
+"Variant %s supported only in ICS mode" === "Varianta %s suportata doar in modul ICS"
+"Unknown variant name %s" === "Numele variantei necunoscut %s"
+"Starting chess program" === "Porneste programul de sah"
+"Could not open comm port %s" === "Nu se poate deschide portul de comunicatii %s"
+"Could not connect to host %s, port %s" === "Nu se poate conecta la gazda %s, portul %s"
+"Unknown initialMode %s" === "Modul initial necunoscut %s"
+"Can't have a match with no chess programs" === "Nu putem avea un meci fara programe de sah"
+"Bad game file" === "Fisierul partidei incorect"
+"Bad position file" === "Fisierul pozitiei incorect"
+"AnalyzeFile mode requires a game file" === "Modul AnalizaFisierului cere un fisier de partida"
+"Analysis mode requires a chess engine" === "Modul de analiza cere un motor de sah "
+"Analysis mode does not work with ICS mode" === "Analiza nu lucreaza cu modul ICS"
+"MachineWhite mode requires a chess engine" === "Modul MasinaAlba cere un motor de sah"
+"MachineWhite mode does not work with ICS mode" === "Modul MasinaAlba nu merge cu modul ICS"
+"MachineBlack mode requires a chess engine" === "Modul MasinaNeagra cere un motor de sah"
+"MachineBlack mode does not work with ICS mode" === "Modul MasinaNeagra nu merge cu modul ICS"
+"TwoMachines mode does not work with ICS mode" === "Modul DouaMasini nu merge cu modul ICS"
+"TwoMachines mode requires a chess engine" === "Modul DouaMasini cere un motor de sah"
+"Training mode requires a game file" === "Modul de antrenamernt cere un fisier de partide"
+"Error writing to ICS" === "Eroare de scris catre ICS"
+"Error reading from keyboard" === "Eroare de citit din claviatura"
+"Got end of file from keyboard" === "Scoate textul din claviatura"
+"Error writing to ICS" === "Eroare de scris catre ICS"
+"Error writing to display" === "Eroare de scris catre afisaj"
+"Error gathering move list: two headers" === "Eroare de colectare la lista mutarilor: doua anteturi"
+"Error gathering move list: nested" === "Eroare de colectare la lista mutarilor: imbricate"
+"Connection closed by ICS" === "Conexiune inchisa de ICS"
+"Error reading from ICS" === "Eroare de citire de la ICS"
+"Failed to parse board string:\n\"%s\"" === "Esuat in analiza stringului tablei:\n\"%s\""
+"Game too long; increase MAX_MOVES and recompile" === "Partida prea lunga: mareste MAX_MOVES si recompileaza"
+"Error gathering move list: extra board" === "Eroare colectare lista mutari: extra board"
+"Illegal move \"%s\" from ICS" === "Mutare ilegala \"%s\" de la ICS "
+"Couldn't parse move \"%s\" from ICS" === "Nu se poate analiza mutarea \"%s\" de la ICS"
+## The leading 'say' is used as ICS command here, and should NOT be translated. Only the message behind it.
+"say Internal error; bad moveType %d (%d,%d-%d,%d)" === "Eroare interna :tip de mutare gresit %d (%d,%d-%d,%d)"
+"You are playing Black" === "Tu joci cu Negrul"
+"You are playing White" === "Tu joci cu Albul"
+"It is White's turn" === "Este randul Albului"
+"It is Black's turn" === "Este randul Negrului"
+"Displayed position is not current" === "Pozitia afisata nu este cea curenta"
+"Illegal move" === "Mutare ilegala"
+"End of game" === "Sfarsitul partidei"
+"Incorrect move" === "Mutare incorecta"
+## next 6: Second (first 3) or first (other) '%s' will be substituted for 'first' or 'second'.
+"Illegal move \"%s\" from %s machine" === "Mutare ilegala \"%s\" de la primul calculator"
+"Illegal move \"%s\" (rejected by %s chess program)" === "Mutare ilegala \"%s\" (respinsa de de catre primul program de sah)"
+"Failed to start %s chess program %s on %s: %s\n" === "Esuat in pornirea %s primului program de sah pe %s: %s\n"
+"Error writing to %s chess program" === "Eroare de scris catre primul program de sah"
+"Error: %s chess program (%s) exited unexpectedly" === "Eroare primul program de sah a iesit neasteptat"
+"Error reading from %s chess program (%s)" === "Eroare de citire de la primul program de sah"
+"Forfeit due to illegal move" === "Forfait datorat unei mutari ilegale"
+"%s does not support analysis" === "%s nu suporta analiza"
+"Hint: %s" === "Ajutor: %s"
+"Machine accepts your draw offer" === "Computerul accepta oferta Dvs de remiza"
+"Machine offers a draw\nSelect Action / Draw to agree" === "Computerul ofera o remiza\nSelecteaza Actiunea / Agreati remiza "
+"%s (only move)" === "%s (doar mutarea)"
+"Ambiguous move in ICS output: \"%s\"" === "Mutare ICS ambigua: \"%s\""
+"Illegal move in ICS output: \"%s\"" === "Mutare ICS ilegala: \"%s\""
+"Gap in move list" === "Decalaj in lista de mutari"
+"Game too long; increase MAX_MOVES and recompile" === "Partida prea lunga; mariti MAX_MOVES si recompilati"
+"Variant %s not supported by %s" === "Varianta %s nu este suportata de catre %s"
+"Startup failure on '%s'" === "Start esuat pentru'%s'"
+"Waiting for first chess program" === "Asteptam primul program de sah"
+"Waiting for second chess program" === "Asteptam al doilea program de sah"
+"Match %s vs. %s: final score %d-%d-%d" === "Partida %s vs. %s: scorul final %d-%d-%d"
+"Stalemate" === "Remiza"
+"Illegal move: %d.%s%s" === "Mutare ilegala: %d.%s%s"
+"Ambiguous move: %d.%s%s" === "Mutare ambigua: %d.%s%s"
+"Can't open \"%s\"" === "Nu pot deschide \"%s\""
+"Cannot build game list" === "Nu pot construi lista de partide"
+"No more games in this message" === "Nici o partida in acest mesaj"
+"No game has been loaded yet" === "Nici o partida nu a fost inca incarcata"
+"Can't back up any further" === "Fara revenire la mutari mai departe"
+"Game number out of range" === "Numarul partidei in afara seriei"
+"Can't seek on game file" === "Nu se poate cauta in fisierul partidei"
+"Game not found in file" === "Partida negasita in fisier"
+"Bad FEN position in file" === "FEN incorect in fisier"
+"No moves in game" === "Nu mai sunt mutari in partida"
+"No position has been loaded yet" === "Nici o pozitie nu a fost inca incarcata"
+"Can't back up any further" === "Fara revenire la mutari mai departe"
+"Can't open \"%s\"" === "Nu pot deschide \"%s\""
+"Can't seek on position file" === "Nu se poate cauta in fisierul pozitiei"
+"Position not found in file" === "Pozitie negasita in fisier"
+"Bad FEN position in file" === "FEN incorect in fisier"
+"Black to play" === "Negrul la mutare"
+"White to play" === "Albul la mutare"
+"Can't open \"%s\"" === "Can't open \"%s\""
+"You have edited the game history.\nUse Reload Same Game and make your move again." === "Ai editat istoria partidei.\nFoloseste Reincarca Aceeasi Partida si fa mutarea ta din nou."
+"You have entered too many moves.\nBack up to the correct position and try again." === "Ai introdus prea multe mutari.\nRevino la pozitia corecta si incearca din nou."
+"Displayed position is not current.\nStep forward to the correct position and try again." === "Pozitia afisata nu este curenta.\nMergi inainte spre pozitia corecta si incearca din nou."
+"You have not made a move yet" === "Nu ai facut inca o mutare"
+"The cmail message is not loaded.\nUse Reload CMail Message and make your move again." === "Mesajul de CMail nu este incarcat.\nFoloseste Reincarca Mesajul de CMail si fa mutarea din nou."
+"No unfinished games" === "Nu exista partide neterminate"
+"You have already mailed a move.\nWait until a move arrives from your opponent.\nTo resend the same move, type\n\"cmail -remail -game %s\"\non the command line." === "Ai trimis deja o mutare.\nAsteapta pana o mutare soseste de la oponent.\nPentru a retrimite mutarea,  tipareste\n\"cmail -remail -partida %s\"\nu linia de comanda."
+"Failed to invoke cmail" === "Esuat in invocarea cmail"
+"Waiting for reply from opponent\n" === "Asteptand replica de la oponent\n"
+"Still need to make move for game\n" === "Inca trebuie facuta mutarea pentru partida\n"
+"Still need to make moves for both games\n" === "Inca trebuiesc facute mutarile pentru ambele partide\n"
+"Still need to make moves for all %d games\n" === "Inca trebuiesc facute mutari pentru toate %d partidele\n"
+"Still need to make a move for game %s\n" === "Inca trebuie facuta o mutare pentru partida %s\n"
+"No unfinished games\n" === "Nu exista partide neterminate\n"
+"Ready to send mail\n" === "Gata sa trimit mailul\n"
+"Still need to make moves for games %s\n" === "Inca trebuiesc facute mutari pentru partidele %s\n"
+"Edit comment" === "Editeaza comentariul"
+"Edit comment on %d.%s%s" === "Editeaza comentariul pentru %d.%s%s"
+"Starting analysis mode...\nIf this message stays up, your chess program does not support analysis." ===  "Declansata analiza...\nDaca acest mesaj ramane, programul Dvs de sah nu suporta analiza."
+"It is not White's turn" === "Nu este randul Albului"
+"It is not Black's turn" === "Nu este randul Negrului"
+"Wait until your turn,\nor select Move Now" === "Asteapta pana este randul tau,\sau selecteaza Muta Acum"
+"Starting second chess program" === "Porneste al doilea program de sah"
+"Training mode off" === "Inchide Modul de antrenament"
+"Training mode on" === "Deschide Modul de antrenament"
+"Already at end of game" === "Deja la finalul partidei"
+"Warning: You are still playing a game" === "Atentie: inca joci o partida"
+"Warning: You are still observing a game" === "Atentie: inca observi o partida"
+"Warning: You are still examining a game" === "Atentie: inca examinezi o partida"
+"It is Black's turn" === "Este randul Negrului"
+"It is White's turn" === "Este randul Albului"
+"That square is occupied" === "Acel camp este ocupat"
+"There is no pending offer on this move" === "Nu existã nici o ofertã în curs pe aceastã mutare" 
+"Your opponent is not out of time" === "Adversarul tau nu a depasit timpul"
+"Black offers a draw" === "Negrul ofera o remiza"
+"White offers a draw" === "Albul ofera o remiza"
+"You must make your move before offering a draw" === "Trebuie sa faci o mutare inainte de a oferi o remiza"
+"You are not examining a game" === "Nu examinezi o partida"
+"You can't revert while pausing" === "Nu puteþi reveni în timp ce asteptati"
+"Wait until your turn,\nor select Move Now" === "Asteapta pana iti vine randul,\sau selecteaza Muta Acum"
+"It is your turn" === "Este randul tau"
+"Wait until your turn" === "Asteapta pana este randul tau"
+"No hint available" === "Nici un ajutor disponibil"
+"Analysis (%s)" === "Analiza (%s)"
+"Comment" === "Comentariu"
+"Comment on %d.%s%s" === "Conentariu despre %d.%s%s"
+"Both flags fell" === "Cad ambele steaguri"
+"White's flag fell" === "Cade steagul albului"
+"Black's flag fell" === "Cade steagul negrului"
+"Bad FEN position in clipboard" === "Positie FEN incorecta in clipboard"
+"No response from ICS" === "Niciun raspuns de la ICS"
+"You cannot do this while you are playing or observing" === "Nu poti face asta cand joci sau observi"
+"Click in holdings to choose piece" === "Faceti click pentru a alege piesa"
+
+END-OF-GAME MESSAGES (should they be translated?)
+## I think that only for visualization and not for PGN, as PGN files are shared all around the world
+## [OK, I adapted the source that way. So please translate.]
+
+"Game aborted" === "Partida esuata"
+"White wins on time" === "Albul castiga la timp"
+"Black wins on time" === "Negrul castiga la timp"
+"Both players ran out of time" === "Ambii jucatori au depasit timpul"
+"White resigns" === "Albul cedeaza"
+"Black resigns" === "Negrul cedeaza"
+"White mates" === "Albul da mat"
+"Black mates" === "Negrul da mat"
+"Draw" === "Remiza"
+"Draw agreed" === "Remiza prin intelegere"
+"Xboard adjudication: King destroyed" === "Adjudecare Xboard: Regele distrus"
+"Xboard adjudication: Bare king" === "Rege singur"
+"Xboard adjudication: 3rd check" === "Adjudecare Xboard: al treilea sah"
+"Xboard adjudication: Stalemate" === "Adjudecare Xboard: Pat"
+"Xboard adjudication: Checkmate" === "Adjudecare Xboard: Mat"
+"Xboard adjudication: Insufficient mating material" === "Adjudecare Xboard: material insuficient"
+"Xboard adjudication: Trivial draw" === "Adjudecare Xboard: Remiza banala"
+"XBoard adjudication: repetition draw" === "Adjudecare Xboard: remiza prin repetitie"
+"Xboard adjudication: perpetual checking" === "Adjudecare Xboard: sah etern"
+"Xboard adjudication: perpetual chasing" === "Adjudecare Xboard: alungare continua"
+"Xboard adjudication: 50-move rule" === "Adjudecare Xboard: regula celor 50 de mutari"
+"Draw claim: 50-move rule" === "Cerere de remiza: regula celor 50 de mutari"
+"Draw claim: 3-fold repetition" === "Cerere de remiza: a treia repetitie"
+"Draw claim: insufficient mating material" === "Cerere de remiza: material insuficient pentru mat"
+"Xboard adjudication: long game" === "Adjudecare Xboard: partida lunga"
+"Xboard: Forfeit due to invalid move: %s (%c%c%c%c) res=%d" === "Xboard: Forfait datorat unei mutari ilegale: %s (%c%c%c%c) res=%d"
+"Xboard: Forfeit due to illegal move: %s (%c%c%c%c)%c" === "Xboard: Forfait datoratunei mutari ilegale: %s (%c%c%c%c)%c"
+"Xboard adjudication" === "Adjudecare Xboard"
+"User adjudication" === "Adjudecare utilizator"
+"False win claim: '%s'" === "Cerere de castig falsa: '%s'"
+"False draw claim: '%s'" === "Cerere de remiza falsa: '%s'"
+"xboard exit" === "Iesire Xboard"
+
+
+# NEW STRINGS FOR EXPERIMENTAL TM VERSION:
+
+# MENU
+
+"Edit Boo&k..." === "Editeaza Cartea"
+"Edit Engine List..." === "Editeaza Lista Motoarelor"
+"Load Engine..." === "Incarca Motorul"
+"Tournament..." === "Turneu"
+
+# LOAD ENGINE DIALOG
+
+"First" === "Primul"
+"Second" === "Al doilea"
+"Choose File" === "Alege Fisierul"
+"Choose Folder:" === "Alege Folderul"
+"Select engine from list:" === "Alege motorul din lista"
+"or specify one below:" === "sau specifica unul mai jos"
+"Nickname (optional):" === "Pseudonim (optional)"
+"Use nickname in PGN tag" === "Foloseste pseudonimul in eticheta PGN"
+"Engine (*.exe):" === "Motor (*.exe)"
+"command-line parameters:" === "parametrii liniei de comanda"
+"directory:" === "directorul"
+"(Directory will be derived from engine path when left empty)" === "(Directorul va deriva din adresa motorului cand nu se completeaza)"
+"Add this engine to the list" === "Adauga aceasta engina in lista"
+"Must not use GUI book" === "Trebuie sa nu foloseasca cartea GUIului"
+"UCI" === "UCI"
+"WB protocol v1 (skip waiting for features)" === "WB protocol v1 (sari peste asteptarea caracteristicilor)"
+"UCCI / USI (uses specified /uxiAdapter)" === "UCCI / USI (foloseste specificatele /uxiAdapter)"
+"Force current variant with this engine" === "Forteaza varianta curenta cu acest motor"
+"Load mentioned engine as" === "Incarca Motorul mentionat ca"
+"Load Engine" === "Incarca Motorul"
+
+# TOURNAMENT OPTIONS DIALOG
+
+"Tournament file:" === "Fisierul de turneu"
+"If you specify an existing file, the rest of this dialog will be ignored." === "Daca specificati un fisier existent, restul acestui dialog va fi ignorat."
+"Otherwise, the file will be created, with the settings you specify below:" === "Altfel, fisierul va fi creat, cu setarile pe care le specificati mai jos"
+"Select Engine:" === "Alege Motorul"
+"Use Swiss pairing engine (cycles = rounds)" === "Utilizaþi motorul de asociere elveþian (cicluri = runde)"
+"Tourney type (0=RR, 1=gauntlet):" === "Tipul Turneului (0=RR, 1=gauntlet)"
+"Sync after cycle" === "Sincronizare dupa ciclu"
+"Number of tourney cycles:" === "Numarul de cicluri"
+"Sync after round" === "Sincronizare dupa runda"
+"Games per Match / Pairing:" === "Partide pe Meci/Pereche"
+"File for saving tourney games:" === "Fisier de salvat partidele turneului"
+"Game File with Opening Lines:" === "Fisierul de Partide cu Liniile de Deschidere"
+"Game Number:" === "Partida Numarul"
+"File with Start Positions:" === "Fisier cu Pozitiile de Start"
+"Position Number:" === "Pozitia Numarul"
+"Step through lines/positions in file" === "Mergi printre linii/pozitii in fisier"
+"Rewind after (0 = never):" === "Deruleaza dupa (0 = niciodata)"
+"Use each line/position twice" === "Foloseste fiecare linie/pozitie de doua ori"
+"Pause between Games (ms):" === "Pauza intre Partide (ms)"
+"Tournament and Match Options" === "Optiunile pentru Turneu si Meci"
+"Tourney participants:" === "Participantii la turneu"
+"Replace Engine" === "Inlocuieste Motorul"
+"Upgrade Engine" === "Upgradeaza Motorul"
+"Time Control..." === "Timpul de control"
+"Common Engine..." === "Motor comun"
+"Clone Tourney" === "Turneu de Clone"
+
