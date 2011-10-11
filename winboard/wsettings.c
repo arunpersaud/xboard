@@ -767,6 +767,7 @@ Option tourneyOptions[] = {
   { 0,  0,          0, NULL, (void*) &autoinc, "", NULL, CheckBox, N_("Step through lines/positions in file") },
   { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind after (0 = never):") },
   { 0,  0,          0, NULL, (void*) &twice, "", NULL, CheckBox, N_("Use each line/position twice") },
+  { 0,  0,          0, NULL, (void*) &appData.defNoBook, "", NULL, CheckBox, N_("Make all use GUI book by default") },
   { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Games (ms):") },
   { 0,  0,          0, NULL, (void*) &ReplaceParticipant, "", NULL, Button, N_("Replace Engine") },
   { 0,  0,          0, NULL, (void*) &UpgradeParticipant, "", NULL, Button, N_("Upgrade Engine") },
