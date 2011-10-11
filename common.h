@@ -572,6 +572,7 @@ typedef struct {
     char * ucciAdapter;
     char * polyglotDir;
     Boolean usePolyglotBook;
+    Boolean defNoBook;
     char * polyglotBook;
     int bookDepth;
     int bookStrength;

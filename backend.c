@@ -9772,6 +9772,7 @@ WriteTourneyFile(char *results, FILE *f)
 	fprintf(f, "-loadPositionFile \"%s\"\n", appData.loadPositionFile);
 	fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
 	fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
+	fprintf(f, "-discourageOwnBooks %s\n", appData.defNoBook ? "true" : "false");
 	if(searchTime > 0)
 		fprintf(f, "-searchTime \"%d:%02d\"\n", searchTime/60, searchTime%60);
 	else {
@@ -9934,6 +9935,7 @@ SetPlayer(int player)
     if(mnemonic[i]) {
 	snprintf(buf, MSG_SIZ, "-fcp %s", command[i]);
 	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
+	appData.firstHasOwnBookUCI = !appData.defNoBook;
 	ParseArgsFromString(buf);
     }
     free(engineName);

@@ -364,6 +364,7 @@ Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &appData.loadPositionFile, ".fen", NULL, FileName, N_("File with Start Positions:") },
 { 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, N_("Position Number (-1 or -2 = Auto-Increment):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind Index after this many Games (0 = never):") },
+{ 0,  0,          0, NULL, (void*) &appData.defNoBook, "", NULL, CheckBox, N_("Disable own engine books by default") },
 { 0,  0,          0, NULL, (void*) &ReplaceParticipant, NULL, NULL, Button, N_("Replace Engine") },
 { 0,  1,          0, NULL, (void*) &UpgradeParticipant, NULL, NULL, Button, N_("Upgrade Engine") },
 { 0, 1, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
