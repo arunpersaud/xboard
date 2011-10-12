@@ -76,7 +76,7 @@ AC_ISC_POSIX
 AC_PROG_INSTALL
 
 dnl| add gettext support
-AM_GNU_GETTEXT_VERSION(0.18.1)
+AM_GNU_GETTEXT_VERSION(0.17)
 AM_GNU_GETTEXT([external])
 
 AC_CHECK_PROGS(RSH, remsh rsh, rsh)
