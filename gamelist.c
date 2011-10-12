@@ -304,6 +304,7 @@ int GameListBuild(f)
         case BlackWins:
         case GameIsDrawn:
         case GameUnfinished:
+	    if(!currentListGame) break;
 	    if (currentListGame->gameInfo.resultDetails != NULL) {
 		free(currentListGame->gameInfo.resultDetails);
 	    }
