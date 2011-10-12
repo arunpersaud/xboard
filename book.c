@@ -676,8 +676,10 @@ void SaveToBook(char *text)
     if(count != currentCount) {
 	do {
 	    for(i=0; i<len1; i++) buf2[i] = buf1[i]; len2 = len1;
-	    fseek(f, readpos, SEEK_SET);
-	    readpos += len1 = fread(buf1, 1, 4096, f);
+	    if(readpos > writepos) {
+		fseek(f, readpos, SEEK_SET);
+		readpos += len1 = fread(buf1, 1, 4096, f);
+	    } else len1 = 0; // wrote already past old EOF
 	    fseek(f, writepos, SEEK_SET);
 	    fwrite(buf2, 1, len2, f);
 	    writepos += len2;
