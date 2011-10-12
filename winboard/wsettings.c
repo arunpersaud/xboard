@@ -389,7 +389,7 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 		for(k=0; k<optionList[j].max; k++) {
 		    if(!strcmp(choices[k], newText)) new = k;
 		}
-		if(!cps && new) {
+		if(!cps && new > 0) {
 		    if(*(char**)optionList[j].target) free(*(char**)optionList[j].target);
 		    *(char**)optionList[j].target = strdup(optionList[j].choice[new]);
 		    break;
