@@ -571,6 +571,8 @@ EngineOutputPopUp()
     XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
 		args, j);
 
+    SetCheckMenuItemActive(NULL, 100, True); // set GTK menu item to checked
+
     engineOutputDialogUp = True;
     ShowThinkingEvent(); // [HGM] thinking: might need to prompt engine for thinking output
 }
@@ -598,7 +600,7 @@ void EngineOutputPopDown()
     XtSetArg(args[j], XtNleftBitmap, None); j++;
     XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
 		args, j);
-
+    SetCheckMenuItemActive(NULL, 100, False); // set GTK menu item to unchecked
     engineOutputDialogUp = False;
     ShowThinkingEvent(); // [HGM] thinking: might need to shut off thinking output
 }

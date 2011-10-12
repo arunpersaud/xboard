@@ -190,12 +190,15 @@ void HistoryPopUp()
 
     /* Find the dialogs GtkTextView widget */
     textview = GetTextView(shellsGTK[7]);
+
     if (!textview) return;
+
     g_signal_connect(GTK_TEXT_VIEW(textview), "button-press-event",
                      G_CALLBACK(HistoryPopUpCB),
                      (gpointer)historyOptions[0].handle);
 
-    MarkMenu("menuView.Show Move History", 7);     
+    MarkMenu("menuView.Show Move History", 7);
+    SetCheckMenuItemActive(NULL, 7, True); // set GTK menu item to checked     
 }
 
 void HistoryShowProcGTK(object, user_data)

@@ -297,8 +297,10 @@ GameListPopUp(fp, filename)
 
   /* show widget and focus*/
   gtk_window_present(GTK_WINDOW(GUI_GameList));
+  
+  /* GTK-mark gamelist menu as active */
+  SetCheckMenuItemActive(NULL, 102, True); 
 
-  /* GTK-TODO mark gamelist is menu as active */
   return;
 }
 
@@ -328,16 +330,23 @@ void ShowGameListProcGTK(object, user_data)
 {
     if(GUI_GameList)
       {
-	if(gtk_widget_get_mapped (GUI_GameList))
+	if(gtk_widget_get_mapped (GUI_GameList)) {
 	  gtk_widget_hide(GUI_GameList);
-	else
+          SetCheckMenuItemActive(NULL, 102, False); // set GTK menu item to unchecked
+        }
+	else {
 	  gtk_widget_show(GUI_GameList);
+          SetCheckMenuItemActive(NULL, 102, True); // set GTK menu item to checked
+        }
+      }
+    else
+      {
+          SetCheckMenuItemActive(NULL, 102, False); // set GTK menu item to unchecked
       }
 
     if(lastLoadGameNumber)
       GameListHighlight(lastLoadGameNumber);
-
-    /* GTK-TODO mark gamelist in menu as active */
+    
     return;
 }
 

@@ -270,6 +270,9 @@ gboolean EvalGraphEventProc(widget, event)
 	ToNrEvent( index + 1 );
       }
       break;
+    case GDK_DELETE:
+      SetCheckMenuItemActive(NULL, 101, False); // set GTK menu item to unchecked      
+      break;
     default:
       break;
     };
@@ -338,25 +341,26 @@ EvalGraphPopUp()
 {
   static int  needInit = TRUE;
 
+  SetCheckMenuItemActive(NULL, 101, True); // set GTK menu item to checked
+
   if (GUI_EvalGraph == NULL)
     EvalGraphCreate();
 
   DisplayEvalGraph();
   gtk_widget_show (GUI_EvalGraph);
-  evalGraphDialogUp = True;
-
-  // TODO: mark evalgraph window in menu as up
+  evalGraphDialogUp = True;  
+  
   return;
 }
 
 void EvalGraphPopDown()
 {
+  SetCheckMenuItemActive(NULL, 101, False); // set GTK menu item to unchecked
   gtk_widget_hide (GUI_EvalGraph);
   evalGraphDialogUp = False;
 
-  save_window_placement(GTK_WINDOW(GUI_EvalGraph), &wpEvalGraph);
+  save_window_placement(GTK_WINDOW(GUI_EvalGraph), &wpEvalGraph);  
 
-  // GTK-TODO: mark evalgraph window in menu as down?
   return;
 }
 

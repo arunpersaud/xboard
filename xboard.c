@@ -2514,8 +2514,8 @@ XBoard square size (hint): %d\n\
     gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), boardWidth, boardHeight);
     gtk_builder_connect_signals(builder, NULL);
     //g_object_unref (G_OBJECT(builder));
-    gtk_widget_show(mainwindow);
-    
+    gtk_widget_show(mainwindow);    
+
     /* set the minimum size the user can resize the main window to */
     gtk_widget_set_size_request(mainwindow, 402, 314);
   { gint wx, hx, wb, hb;    
@@ -6504,7 +6504,9 @@ int LoadGamePopUp(f, gameNumber, title)
 		   ((ListGame *) gameList.tailPred)->number > 1) {
 	    GameListPopUp(f, title);
 	    return TRUE;
-	}
+	} else {
+            SetCheckMenuItemActive(NULL, 102, False); // set GTK menu item to unchecked
+        }
 	GameListDestroy();
 	gameNumber = 1;
     }

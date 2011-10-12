@@ -83,6 +83,8 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
+extern GtkBuilder *builder;
+
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
 static Widget previous = NULL;
@@ -229,6 +231,56 @@ void MarkMenu(char *item, int dlgNr)
     XtSetValues(marked[dlgNr] = XtNameToWidget(menuBarWidget, item), args, 1);
 }
 
+void GetMenuItemName(int dlgNr, gchar *name)
+{
+    switch(dlgNr) {
+      case 1: // comment popup
+        strcpy(name, "viewcomments");
+        break;	   
+      case 2: // tags popup
+        strcpy(name, "viewtags");	
+        break;
+      case 3: // ics text menu
+        strcpy(name, "icstextmenu");	
+        break;
+      case 4: // ics input box
+        strcpy(name, "icsinputbox");	
+        break;
+      case 7: // move history
+        strcpy(name, "viewmovehistory");
+        break;	
+      case 100: // engine output 
+        strcpy(name, "viewengineoutput");	
+        break;
+      case 101: // evaluation graph
+        strcpy(name, "viewevaluationgraph");	
+        break;
+      case 102: // gamelist
+        strcpy(name, "viewgamelist");	
+        break;
+      default:        
+        strcpy(name, "");
+        return;        
+    }
+}
+
+/* Sets a check box on (True) or off (False) in the menu */
+void SetCheckMenuItemActive(gchar *name, int menuDlgNr, gboolean active)
+{
+    gchar menuItemName[50];
+
+    if (name != NULL)
+        strcpy(menuItemName, name);
+    else
+        GetMenuItemName(menuDlgNr, menuItemName);
+    
+    if (strcmp(menuItemName, "") == 0) return;
+
+    GtkCheckMenuItem *chk;
+    chk = GTK_CHECK_MENU_ITEM(gtk_builder_get_object(GTK_BUILDER(builder), menuItemName));
+    chk->active = active;   // set the check box without emitting any signals
+}
+
 int PopDown(int n)
 {
     Arg args[10];    
@@ -237,6 +289,9 @@ int PopDown(int n)
 
     previous = NULL;
     
+    // when popping down uncheck the check box of the menu item
+    SetCheckMenuItemActive(NULL, n, False);    
+
     gtk_widget_hide(shellsGTK[n]);
     if(n == 0) {
         gtk_widget_destroy(shellsGTK[n]);
@@ -1484,7 +1539,8 @@ void IcsTextProcGTK(object, user_data)
    textOptions[i].type = EndMark;
    textOptions[i].target = NULL;
    textOptions[i].min = 2;
-   MarkMenu("menuView.ICStex", 3);   
+   MarkMenu("menuView.ICStex", 3);
+   SetCheckMenuItemActive(NULL, 3, True); // set GTK menu item to checked   
    GenericPopUp(textOptions, _("ICS text menu"), 3);
 }
 
@@ -1648,6 +1704,7 @@ void NewCommentPopup(char *title, char *text, int index)
     if(commentText) free(commentText); commentText = strdup(text);
     commentIndex = index;
     MarkMenu("menuView.Show Comments", 1);
+    SetCheckMenuItemActive(NULL, 1, True); // ensure check box is checked on GTK menu item
 
     if(!GenericPopUp(commentOptions, title, 1)) return;   
 
@@ -1696,6 +1753,7 @@ void NewTagsPopup(char *text, char *msg)
     if(tagsText) free(tagsText); tagsText = strdup(text);
     tagsOptions[0].textValue = msg;
     MarkMenu("menuView.Show Tags", 2);
+    SetCheckMenuItemActive(NULL, 2, True); // ensure check box is checked on GTK menu item
     GenericPopUp(tagsOptions, title, 2);
 }
 

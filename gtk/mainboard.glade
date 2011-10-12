@@ -150,7 +150,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menuitem2">
+              <object class="GtkMenuItem" id="Edit">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Edit</property>
                 <property name="use_underline">True</property>
@@ -332,7 +332,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menuitem3">
+              <object class="GtkMenuItem" id="View">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_View</property>
                 <property name="use_underline">True</property>
@@ -354,7 +354,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="engineoutput">
+                      <object class="GtkCheckMenuItem" id="viewengineoutput">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Engine Output</property>
                         <property name="use_underline">True</property>
@@ -363,7 +363,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="movehistory">
+                      <object class="GtkCheckMenuItem" id="viewmovehistory">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Move History</property>
                         <property name="use_underline">True</property>
@@ -372,7 +372,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="evaluationgraph">
+                      <object class="GtkCheckMenuItem" id="viewevaluationgraph">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Evaluation Graph</property>
                         <property name="use_underline">True</property>
@@ -381,7 +381,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="gamelist">
+                      <object class="GtkCheckMenuItem" id="viewgamelist">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Game List</property>
                         <property name="use_underline">True</property>
@@ -390,7 +390,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="icstextmenu">
+                      <object class="GtkCheckMenuItem" id="icstextmenu">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">ICS text menu</property>
@@ -404,7 +404,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="tags">
+                      <object class="GtkCheckMenuItem" id="viewtags">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Tags</property>
                         <property name="use_underline">True</property>
@@ -412,7 +412,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="comments">
+                      <object class="GtkCheckMenuItem" id="viewcomments">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Comments</property>
                         <property name="use_underline">True</property>
@@ -420,7 +420,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="icsinputbox">
+                      <object class="GtkCheckMenuItem" id="icsinputbox">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">ICS Input Box</property>
