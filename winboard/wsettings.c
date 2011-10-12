@@ -741,7 +741,7 @@ void Inspect(HWND hDlg)
 	swiss = appData.tourneyType < 0;
 	SetOptionValues(hDlg, NULL, activeList);
 	FREE(appData.saveGameFile); appData.saveGameFile = saveSaveFile;
-    }
+    } else DisplayError(_("First you must specify an existing tourney file to clone"), 0);
 }
 
 void TimeControlOptionsPopup P((HWND hDlg));
@@ -773,7 +773,7 @@ Option tourneyOptions[] = {
   { 0,  0,          0, NULL, (void*) &UpgradeParticipant, "", NULL, Button, N_("Upgrade Engine") },
   { 0,  0,          0, NULL, (void*) &TimeControlOptionsPopup, "", NULL, Button, N_("Time Control...") },
   { 0,  0,          0, NULL, (void*) &UciOptionsPopup, "", NULL, Button, N_("Common Engine...") },
-  { 0,  0,          0, NULL, (void*) &Inspect, "", NULL, Button, N_("Inspect TourneyFile") },
+  { 0,  0,          0, NULL, (void*) &Inspect, "", NULL, Button, N_("Clone Tourney") },
   { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
