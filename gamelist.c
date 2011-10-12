@@ -342,7 +342,7 @@ struct {
 		toY = currentMoveString[3] - ONE;
 		plyNr++;
 		ApplyMove(fromX, fromY, toX, toY, currentMoveString[4], boards[scratch]);
-		if(currentListGame->moves) PackMove(fromX, fromY, toX, toY, boards[scratch][toY][toX]);
+		if(currentListGame && currentListGame->moves) PackMove(fromX, fromY, toX, toY, boards[scratch][toY][toX]);
 	    break;
         case WhiteWins: // [HGM] rescom: save last comment as result details
         case BlackWins:
@@ -368,6 +368,7 @@ struct {
     }
     while (cm != (ChessMove) 0);
 
+ if(currentListGame) {
     if(!currentListGame->moves) DisplayError("Game cache overflowed\nPosition-searching might not work properly", 0);
 
     if (appData.debugMode) {
@@ -380,6 +381,7 @@ struct {
 	    PrintPGNTags(debugFP, &currentListGame->gameInfo);
 	}
     }
+  }
 GetTimeMark(&t2);printf("GameListBuild %d msec\n", SubtractTimeMarks(&t2,&t));
     quickFlag = 0;
     PackGame(boards[scratch]); // for appending end-of-game marker.
