@@ -84,6 +84,8 @@ void MakeEngineOutputTitle()
 	static char oldTitle[MSG_SIZ];
 	char *title = "Engine Output";
 	int count, rule = 2*appData.ruleMoves;
+
+	if(!EngineOutputIsUp()) return;
 	// figure out value of 50-move counter
 	count = currentMove;
 	while( (signed char)boards[count][EP_STATUS] <= EP_NONE && count > backwardMostMove ) count--;

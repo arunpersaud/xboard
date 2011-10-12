@@ -9,496 +9,516 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU xboard master-20110411\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
-"POT-Creation-Date: 2011-06-20 11:43+0200\n"
+"POT-Creation-Date: 2011-09-29 20:48-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_HK\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 
-#: backend.c:820
+#: backend.c:826
 #, c-format
 msgid "protocol version %d not supported"
 msgstr "通訊協定版本 %d 不被支持"
 
-#: backend.c:893
+#: backend.c:899
 msgid "You did not specify the engine executable"
 msgstr ""
 
-#: backend.c:945
+#: backend.c:951
 #, c-format
 msgid "bad timeControl option %s"
 msgstr "非法的\"timeControl\"(時間控制)選項 %s"
 
-#: backend.c:960
+#: backend.c:966
 #, c-format
 msgid "bad searchTime option %s"
 msgstr "非法的\"searchTime\"(搜尋時間)選項 %s"
 
-#: backend.c:1065
+#: backend.c:1072
 #, c-format
 msgid "Variant %s supported only in ICS mode"
 msgstr "變體 %s 只在ICS模式下支持"
 
-#: backend.c:1083
+#: backend.c:1090
 #, c-format
 msgid "Unknown variant name %s"
 msgstr "未知的變體名 %s"
 
-#: backend.c:1325
+#: backend.c:1333
 msgid "Starting chess program"
 msgstr "啟動國際象棋程式"
 
-#: backend.c:1348
+#: backend.c:1356
 msgid "Bad game file"
 msgstr "棋局檔案錯誤"
 
-#: backend.c:1355
+#: backend.c:1363
 msgid "Bad position file"
 msgstr "盤面檔案錯誤"
 
-#: backend.c:1369
+#: backend.c:1377
 msgid "Pick new game"
 msgstr ""
 
-#: backend.c:1434
+#: backend.c:1442
 msgid ""
 "You restarted an already completed tourney\n"
 "One more cycle will now be added to it\n"
 "Games commence in 10 sec"
 msgstr ""
 
-#: backend.c:1441
+#: backend.c:1449
 #, c-format
 msgid "All games in tourney '%s' are already played or playing"
 msgstr ""
 
-#: backend.c:1448
+#: backend.c:1456
 msgid "Can't have a match with no chess programs"
 msgstr "沒有象棋程式時無法進行比賽"
 
-#: backend.c:1482
+#: backend.c:1490
 #, c-format
 msgid "Could not open comm port %s"
 msgstr "無法打開通訊連接埠 %s"
 
-#: backend.c:1485
+#: backend.c:1493
 #, c-format
 msgid "Could not connect to host %s, port %s"
 msgstr "無法連接主機 %s 連接埠 %s"
 
-#: backend.c:1541
+#: backend.c:1549
 #, c-format
 msgid "Unknown initialMode %s"
 msgstr "未知的\"initialMode\"(初始模式)選項 %s"
 
-#: backend.c:1567
+#: backend.c:1575
 msgid "AnalyzeFile mode requires a game file"
 msgstr "\"AnalyzeFile\"(分析檔案)模式必須指定一個棋局檔案"
 
-#: backend.c:1594
+#: backend.c:1602
 msgid "Analysis mode requires a chess engine"
 msgstr "\"Analysis\"(分析)模式必須啟動國際象棋引擎"
 
-#: backend.c:1598
+#: backend.c:1606
 msgid "Analysis mode does not work with ICS mode"
 msgstr "\"Analysis\"(分析)模式無法在ICS模式下工作"
 
-#: backend.c:1609
+#: backend.c:1617
 msgid "MachineWhite mode requires a chess engine"
 msgstr "\"MachineWhite\"(電腦執紅)模式必須啟動國際象棋引擎"
 
-#: backend.c:1614
+#: backend.c:1622
 msgid "MachineWhite mode does not work with ICS mode"
 msgstr "\"MachineWhite\"(電腦執紅)模式無法在ICS模式下運行"
 
-#: backend.c:1621
+#: backend.c:1629
 msgid "MachineBlack mode requires a chess engine"
 msgstr "\"MachineBlack\"(電腦執黑)模式必須啟動國際象棋引擎"
 
-#: backend.c:1626
+#: backend.c:1634
 msgid "MachineBlack mode does not work with ICS mode"
 msgstr "\"MachineBlack\"(電腦執黑)模式無法在ICS模式下運行"
 
-#: backend.c:1633
+#: backend.c:1641
 msgid "TwoMachines mode requires a chess engine"
 msgstr "\"TwoMachines\"(分析)模式必須啟動國際象棋引擎"
 
-#: backend.c:1638
+#: backend.c:1646
 msgid "TwoMachines mode does not work with ICS mode"
 msgstr "\"TwoMachines\"(電腦對弈)模式無法在ICS模式下運行"
 
-#: backend.c:1649
+#: backend.c:1657
 msgid "Training mode requires a game file"
 msgstr "\"Training\"(訓練)模式必須指定一個棋局檔案"
 
-#: backend.c:1810 backend.c:1854 backend.c:1879 backend.c:2290
+#: backend.c:1828 backend.c:1872 backend.c:1897 backend.c:2308
 msgid "Error writing to ICS"
 msgstr "發送訊息給ICS時出錯"
 
-#: backend.c:1814
+#: backend.c:1832
 msgid "Error reading from keyboard"
 msgstr "讀取鍵盤時出錯"
 
-#: backend.c:1817
+#: backend.c:1835
 msgid "Got end of file from keyboard"
 msgstr "讀取鍵盤時遇到檔案尾"
 
-#: backend.c:2128
+#: backend.c:2146
 #, c-format
 msgid "Unknown wild type %d"
 msgstr ""
 
-#: backend.c:2139
+#: backend.c:2157
 #, c-format
 msgid "recognized '%s' (%d) as variant %s\n"
 msgstr ""
 
-#: backend.c:2204 xboard.c:7271
+#: backend.c:2222 xboard.c:7299
 msgid "Error writing to display"
 msgstr "發送訊息給顯示器時出錯"
 
-#: backend.c:2949
+#: backend.c:2967
 #, c-format
 msgid "your opponent kibitzes: %s"
 msgstr ""
 
-#: backend.c:3469
+#: backend.c:3487
 msgid "Error gathering move list: two headers"
 msgstr "讀取著法時出錯，出現兩個開頭"
 
-#: backend.c:3483
+#: backend.c:3501
 #, c-format
 msgid "Ratings from header: W %d, B %d\n"
 msgstr ""
 
-#: backend.c:3516
+#: backend.c:3534
 msgid "Error gathering move list: nested"
 msgstr "讀取著法時出錯，巢狀錯誤"
 
-#: backend.c:3748
+#: backend.c:3766
 msgid "Illegal move (rejected by ICS)"
 msgstr ""
 
-#: backend.c:4085
+#: backend.c:4103
 msgid "Connection closed by ICS"
 msgstr "連接被ICS關閉"
 
-#: backend.c:4087
+#: backend.c:4105
 msgid "Error reading from ICS"
 msgstr "讀取ICS訊息時出錯"
 
-#: backend.c:4138
+#: backend.c:4156
 #, c-format
 msgid "Parsing board: %s\n"
 msgstr ""
 
-#: backend.c:4162
+#: backend.c:4180
 #, c-format
 msgid ""
 "Failed to parse board string:\n"
 "\"%s\""
 msgstr ""
 
-#: backend.c:4171 backend.c:9305
+#: backend.c:4189 backend.c:9424
 msgid "Game too long; increase MAX_MOVES and recompile"
 msgstr "棋局太長，需要增加\"MAX_MOVES\"並重新編譯"
 
-#: backend.c:4265
+#: backend.c:4283
 msgid "Error gathering move list: extra board"
 msgstr "讀取著法時出錯，超出棋盤"
 
-#: backend.c:4685 backend.c:4707
+#: backend.c:4703 backend.c:4725
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
 msgstr "無法解析從ICS讀到的著法\"%s\""
 
-#: backend.c:4922
+#: backend.c:4955
 #, c-format
 msgid "say Internal error; bad moveType %d (%d,%d-%d,%d)"
 msgstr "say 內部錯誤，非法的\"moveType\"(著法類型) %d (%d,%d-%d,%d)"
 
-#: backend.c:5861
+#: backend.c:5903
 msgid "Recompile to support this BOARD_RANKS or BOARD_FILES!"
 msgstr ""
 
-#: backend.c:6208
+#: backend.c:6255
 msgid "You are playing Black"
 msgstr "你在執黑"
 
-#: backend.c:6217 backend.c:6242
+#: backend.c:6264 backend.c:6291
 msgid "You are playing White"
 msgstr "你在執紅"
 
-#: backend.c:6224 backend.c:6250 backend.c:6369 backend.c:6392 backend.c:6408
-#: backend.c:13391
+#: backend.c:6273 backend.c:6299 backend.c:6418 backend.c:6443 backend.c:6459
+#: backend.c:13725
 msgid "It is White's turn"
 msgstr "輪到紅方走棋"
 
-#: backend.c:6228 backend.c:6254 backend.c:6377 backend.c:6398 backend.c:6429
-#: backend.c:13383
+#: backend.c:6277 backend.c:6303 backend.c:6426 backend.c:6449 backend.c:6480
+#: backend.c:13717
 msgid "It is Black's turn"
 msgstr "輪到黑方走棋"
 
-#: backend.c:6266
+#: backend.c:6316
 msgid "Displayed position is not current"
 msgstr "顯示的盤面不是當前盤面"
 
-#: backend.c:6500
+#: backend.c:6554
 msgid "Illegal move"
 msgstr "著法錯誤"
 
-#: backend.c:6563
+#: backend.c:6617
 msgid "End of game"
 msgstr "棋局結束"
 
-#: backend.c:6566
+#: backend.c:6620
 msgid "Incorrect move"
 msgstr "著法錯誤"
 
-#: backend.c:6856
+#: backend.c:6913 backend.c:7029
 msgid "Pull pawn backwards to under-promote"
 msgstr ""
 
-#: backend.c:7181
+#: backend.c:7251
 msgid "Swiss tourney finished"
 msgstr ""
 
-#: backend.c:7699
+#: backend.c:7791
 msgid "Invalid pairing from pairing engine"
 msgstr ""
 
-#: backend.c:7821
+#: backend.c:7913
 #, c-format
 msgid "Illegal move \"%s\" from %s machine"
 msgstr "從%s機器讀到不合法著法\"%s\""
 
-#: backend.c:8044
+#: backend.c:8136
 msgid "Bad FEN received from engine"
 msgstr ""
 
-#: backend.c:8187 xboard.c:5876 xboard.c:5920
+#: backend.c:8280 xboard.c:5894 xboard.c:5938
 #, c-format
 msgid "%s does not support analysis"
 msgstr "%s 不支持分析功能"
 
-#: backend.c:8253
+#: backend.c:8346
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
 msgstr "不合法著法\"%s\" (%s國際象棋程式拒絕接受該著法)"
 
-#: backend.c:8278
+#: backend.c:8371
 #, c-format
 msgid "Failed to start %s chess program %s on %s: %s\n"
 msgstr "無法啟動%s國際象棋程式 %s(在主機 %s 上)，%s\n"
 
-#: backend.c:8299
+#: backend.c:8392
 #, c-format
 msgid "Hint: %s"
 msgstr "提示 %s"
 
-#: backend.c:8304
+#: backend.c:8397
 #, c-format
 msgid ""
 "Illegal hint move \"%s\"\n"
 "from %s chess program"
 msgstr ""
 
-#: backend.c:8479
+#: backend.c:8572
 msgid "Machine accepts your draw offer"
 msgstr "電腦同意和棋"
 
-#: backend.c:8482
+#: backend.c:8575
 msgid ""
 "Machine offers a draw\n"
 "Select Action / Draw to agree"
 msgstr ""
 
-#: backend.c:8846
+#: backend.c:8953
 #, c-format
 msgid "Ambiguous move in ICS output: \"%s\""
 msgstr "ICS輸出不明確的著法\"%s\""
 
-#: backend.c:8856
+#: backend.c:8963
 #, c-format
 msgid "Illegal move in ICS output: \"%s\""
 msgstr "ICS輸出不明確的著法\"%s\""
 
-#: backend.c:8867
+#: backend.c:8974
 msgid "Gap in move list"
 msgstr "著法斷開"
 
-#: backend.c:9444 xoptions.c:402
+#: backend.c:9559 xoptions.c:417
 #, c-format
 msgid "Variant %s not supported by %s"
 msgstr "變體 %s 不被 %s 所支持"
 
-#: backend.c:9559
+#: backend.c:9676
 #, c-format
 msgid "Startup failure on '%s'"
 msgstr "無法啟動'%s'"
 
-#: backend.c:9587
+#: backend.c:9704
 msgid "Waiting for first chess program"
 msgstr "等待第一個國際象棋程式"
 
-#: backend.c:9592 backend.c:12781
+#: backend.c:9709 backend.c:13115
 msgid "Waiting for second chess program"
 msgstr "等待第二個國際象棋程式"
 
-#: backend.c:9642
+#: backend.c:9759
 msgid "Could not write on tourney file"
 msgstr ""
 
-#: backend.c:9674
+#: backend.c:9824
+msgid ""
+"You cannot replace an engine while it is engaged!\n"
+"Terminate its game first."
+msgstr ""
+
+#: backend.c:9838
+msgid "No engine with the name you gave is installed"
+msgstr ""
+
+#: backend.c:9840
+msgid ""
+"First change an engine by editing the participants list\n"
+"of the Tournament Options dialog"
+msgstr ""
+
+#: backend.c:9841
+msgid "You can only change one engine at the time"
+msgstr ""
+
+#: backend.c:9855
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
 msgstr ""
 
-#: backend.c:9684
+#: backend.c:9865
 msgid "Not enough participants"
 msgstr ""
 
-#: backend.c:9817
+#: backend.c:9995
 #, fuzzy
 msgid "Bad tournament file"
 msgstr "棋局檔案錯誤"
 
-#: backend.c:9829
+#: backend.c:10007
 #, fuzzy
 msgid "Waiting for other game(s)"
 msgstr "等待第一個國際象棋程式"
 
-#: backend.c:9842
+#: backend.c:10020
 msgid "No pairing engine specified"
 msgstr ""
 
-#: backend.c:10281
+#: backend.c:10463
 #, c-format
 msgid "Match %s vs. %s: final score %d-%d-%d"
 msgstr "比賽 %s vs. %s: 最終比分 %d-%d-%d"
 
-#: backend.c:10725 backend.c:10756
+#: backend.c:10908 backend.c:10939
 #, c-format
 msgid "Illegal move: %d.%s%s"
 msgstr "不合法著法 %d.%s%s"
 
-#: backend.c:10745
+#: backend.c:10928
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
 msgstr "不明確的著法 %d.%s%s"
 
-#: backend.c:10802 backend.c:11448 backend.c:11639 backend.c:12008
+#: backend.c:10985 backend.c:11775 backend.c:11972 backend.c:12341
 #, c-format
 msgid "Can't open \"%s\""
 msgstr "無法打開\"%s\""
 
-#: backend.c:10814 xboard.c:5452
+#: backend.c:10997 xboard.c:5472
 msgid "Cannot build game list"
 msgstr "無法建立棋局列表"
 
-#: backend.c:10903
+#: backend.c:11086
 msgid "No more games in this message"
 msgstr "這條訊息不包含更多的棋局"
 
-#: backend.c:10944
+#: backend.c:11127
 msgid "No game has been loaded yet"
 msgstr "尚未有棋局載入"
 
-#: backend.c:10948 backend.c:11426 xgamelist.c:397
+#: backend.c:11131 backend.c:11753 xgamelist.c:436
 msgid "Can't back up any further"
 msgstr "無法再後退了"
 
-#: backend.c:11004
+#: backend.c:11330
 msgid "Game number out of range"
 msgstr "棋局數量超出範圍"
 
-#: backend.c:11015
+#: backend.c:11341
 msgid "Can't seek on game file"
 msgstr "無法搜尋棋局檔案"
 
-#: backend.c:11073
+#: backend.c:11399
 msgid "Game not found in file"
 msgstr "檔案中沒有找到棋局"
 
-#: backend.c:11201 backend.c:11528
+#: backend.c:11527 backend.c:11855
 msgid "Bad FEN position in file"
 msgstr "檔案中的FEN盤面錯誤"
 
-#: backend.c:11351
+#: backend.c:11677
 msgid "No moves in game"
 msgstr "棋局中沒有著法"
 
-#: backend.c:11422
+#: backend.c:11749
 msgid "No position has been loaded yet"
 msgstr "尚未有盤面載入"
 
-#: backend.c:11489 backend.c:11500
+#: backend.c:11816 backend.c:11827
 msgid "Can't seek on position file"
 msgstr "無法搜尋盤面檔案"
 
-#: backend.c:11507 backend.c:11519
+#: backend.c:11834 backend.c:11846
 msgid "Position not found in file"
 msgstr "檔案中沒有找到盤面"
 
-#: backend.c:11560
+#: backend.c:11887
 msgid "Black to play"
 msgstr "輪到黑方走棋"
 
-#: backend.c:11563
+#: backend.c:11890
 msgid "White to play"
 msgstr "輪到紅方走棋"
 
-#: backend.c:11644 backend.c:12013
+#: backend.c:11977 backend.c:12346
 #, fuzzy
 msgid "Waiting for access to save file"
 msgstr "等待第二個國際象棋程式"
 
-#: backend.c:11646
+#: backend.c:11979
 msgid "Saving game"
 msgstr ""
 
-#: backend.c:12015
+#: backend.c:12348
 #, fuzzy
 msgid "Saving position"
 msgstr "盤面檔案錯誤"
 
-#: backend.c:12145
+#: backend.c:12478
 msgid ""
 "You have edited the game history.\n"
 "Use Reload Same Game and make your move again."
 msgstr ""
 
-#: backend.c:12150
+#: backend.c:12483
 msgid ""
 "You have entered too many moves.\n"
 "Back up to the correct position and try again."
 msgstr ""
 
-#: backend.c:12155
+#: backend.c:12488
 msgid ""
 "Displayed position is not current.\n"
 "Step forward to the correct position and try again."
 msgstr ""
 
-#: backend.c:12202
+#: backend.c:12535
 msgid "You have not made a move yet"
 msgstr "你尚未走棋"
 
-#: backend.c:12223
+#: backend.c:12556
 msgid ""
 "The cmail message is not loaded.\n"
 "Use Reload CMail Message and make your move again."
 msgstr ""
 
-#: backend.c:12228
+#: backend.c:12561
 msgid "No unfinished games"
 msgstr "不存在未完成棋局"
 
-#: backend.c:12234
+#: backend.c:12567
 #, c-format
 msgid ""
 "You have already mailed a move.\n"
@@ -508,188 +528,188 @@ msgid ""
 "on the command line."
 msgstr ""
 
-#: backend.c:12249
+#: backend.c:12582
 msgid "Failed to invoke cmail"
 msgstr "呼叫cmail失敗"
 
-#: backend.c:12311
+#: backend.c:12644
 #, c-format
 msgid "Waiting for reply from opponent\n"
 msgstr "等待對手回應\n"
 
-#: backend.c:12333
+#: backend.c:12666
 #, c-format
 msgid "Still need to make move for game\n"
 msgstr "本棋局仍需走棋\n"
 
-#: backend.c:12337
+#: backend.c:12670
 #, c-format
 msgid "Still need to make moves for both games\n"
 msgstr "兩棋局皆仍需走棋\n"
 
-#: backend.c:12341
+#: backend.c:12674
 #, c-format
 msgid "Still need to make moves for all %d games\n"
 msgstr "所有 %d 棋局皆仍需走棋\n"
 
-#: backend.c:12348
+#: backend.c:12681
 #, c-format
 msgid "Still need to make a move for game %s\n"
 msgstr "棋局 %s 仍需走棋\n"
 
-#: backend.c:12354
+#: backend.c:12687
 #, c-format
 msgid "No unfinished games\n"
 msgstr "不存在未完成棋局\n"
 
-#: backend.c:12356
+#: backend.c:12689
 #, c-format
 msgid "Ready to send mail\n"
 msgstr "準備送信就緒\n"
 
-#: backend.c:12361
+#: backend.c:12694
 #, c-format
 msgid "Still need to make moves for games %s\n"
 msgstr "棋局 %s 仍需走棋\n"
 
-#: backend.c:12518
+#: backend.c:12851
 msgid "Edit comment"
 msgstr "編輯註解"
 
-#: backend.c:12520
+#: backend.c:12853
 #, c-format
 msgid "Edit comment on %d.%s%s"
 msgstr "編輯註解 %d.%s%s"
 
-#: backend.c:12613
+#: backend.c:12947
 msgid "It is not White's turn"
 msgstr "沒有輪到紅方走棋"
 
-#: backend.c:12694
+#: backend.c:13028
 msgid "It is not Black's turn"
 msgstr "沒有輪到黑方走棋"
 
-#: backend.c:12801
+#: backend.c:13135
 #, c-format
 msgid "Starting %s chess program"
 msgstr ""
 
-#: backend.c:12829 backend.c:13904
+#: backend.c:13163 backend.c:14252
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
 msgstr ""
 
-#: backend.c:12953
+#: backend.c:13287
 msgid "Training mode off"
 msgstr "訓練模式已關閉"
 
-#: backend.c:12961
+#: backend.c:13295
 msgid "Training mode on"
 msgstr "訓練模式已打開"
 
-#: backend.c:12964
+#: backend.c:13298
 msgid "Already at end of game"
 msgstr "棋局已經結束"
 
-#: backend.c:13045
+#: backend.c:13379
 msgid "Warning: You are still playing a game"
 msgstr "注意：你正在進行棋局"
 
-#: backend.c:13048
+#: backend.c:13382
 msgid "Warning: You are still observing a game"
 msgstr "注意：你正在觀棋棋局"
 
-#: backend.c:13051
+#: backend.c:13385
 msgid "Warning: You are still examining a game"
 msgstr "注意：你正在研究棋局"
 
-#: backend.c:13125
+#: backend.c:13459
 msgid "Close ICS engine analyze..."
 msgstr ""
 
-#: backend.c:13408
+#: backend.c:13742
 msgid "That square is occupied"
 msgstr "格子已有棋子"
 
-#: backend.c:13432 backend.c:13458
+#: backend.c:13766 backend.c:13792
 msgid "There is no pending offer on this move"
 msgstr "該著法沒有待定的提議"
 
-#: backend.c:13494 backend.c:13505
+#: backend.c:13828 backend.c:13839
 msgid "Your opponent is not out of time"
 msgstr "對手沒有超時"
 
-#: backend.c:13567
+#: backend.c:13905
 msgid "You must make your move before offering a draw"
 msgstr "必須走完棋才能提和"
 
-#: backend.c:13886
+#: backend.c:14234
 msgid "You are not examining a game"
 msgstr "沒有分析棋局"
 
-#: backend.c:13890
+#: backend.c:14238
 msgid "You can't revert while pausing"
 msgstr "暫停時不能復原棋局"
 
-#: backend.c:13944 backend.c:13951
+#: backend.c:14292 backend.c:14299
 msgid "It is your turn"
 msgstr "輪到你走棋"
 
-#: backend.c:14002 backend.c:14009 backend.c:14028 backend.c:14035
+#: backend.c:14350 backend.c:14357 backend.c:14376 backend.c:14383
 msgid "Wait until your turn"
 msgstr "等待對手走棋"
 
-#: backend.c:14014
+#: backend.c:14362
 msgid "No hint available"
 msgstr "沒有可用的提示"
 
-#: backend.c:14476
+#: backend.c:14825
 #, c-format
 msgid "Error writing to %s chess program"
 msgstr "發送訊息到%s國際象棋程式時出錯"
 
-#: backend.c:14479 backend.c:14515
+#: backend.c:14828 backend.c:14864
 #, c-format
 msgid "%s program exits in draw position (%s)"
 msgstr ""
 
-#: backend.c:14511
+#: backend.c:14860
 #, c-format
 msgid "Error: %s chess program (%s) exited unexpectedly"
 msgstr "錯誤：%s國際象棋程式(%s)異常終止"
 
-#: backend.c:14528
+#: backend.c:14877
 #, c-format
 msgid "Error reading from %s chess program (%s)"
 msgstr "從%s國際象棋程式(%s)接收訊息時出錯"
 
-#: backend.c:14941
+#: backend.c:15290
 #, c-format
 msgid "%s engine has too many options\n"
 msgstr ""
 
-#: backend.c:15094
+#: backend.c:15443
 msgid "Displayed move is not current"
 msgstr "顯示的著法不是當前著法"
 
-#: backend.c:15103
+#: backend.c:15452
 msgid "Could not parse move"
 msgstr "無法解析著法"
 
-#: backend.c:15242 backend.c:15264
+#: backend.c:15581 backend.c:15603
 msgid "Both flags fell"
 msgstr "雙方都超時了"
 
-#: backend.c:15244
+#: backend.c:15583
 msgid "White's flag fell"
 msgstr "紅方超時"
 
-#: backend.c:15266
+#: backend.c:15605
 msgid "Black's flag fell"
 msgstr "黑方超時"
 
-#: backend.c:16206
+#: backend.c:16546
 msgid "Bad FEN position in clipboard"
 msgstr "剪貼簿的FEN盤面錯誤"
 
@@ -830,11 +850,11 @@ msgstr "顯示評價圖   Alt+Shift+E"
 msgid "Game List            Alt+Shift+G"
 msgstr "顯示棋局列表(L)   Alt+Shift+G"
 
-#: xboard.c:670 xoptions.c:1380
+#: xboard.c:670 xoptions.c:1413
 msgid "ICS text menu"
 msgstr ""
 
-#: xboard.c:672 xoptions.c:1464
+#: xboard.c:672 xoptions.c:1495
 msgid "Tags"
 msgstr "編輯標籤(T)"
 
@@ -871,7 +891,8 @@ msgid "Analysis Mode  Ctrl+A"
 msgstr "分析模式(A)   Ctrl+A"
 
 #: xboard.c:686
-msgid "Analyze File      Ctrl+F"
+#, fuzzy
+msgid "Analyze Game   Ctrl+G"
 msgstr "分析檔案(F)   Ctrl+F"
 
 #: xboard.c:687
@@ -1026,7 +1047,7 @@ msgstr "聲音選項(D)..."
 msgid "Always Queen        Ctrl+Shift+Q"
 msgstr "總是升變為皇后(Q) Ctrl+Shift+Q"
 
-#: xboard.c:750 xoptions.c:369
+#: xboard.c:750 xoptions.c:383
 msgid "Animate Dragging"
 msgstr "動畫拖曳(D)"
 
@@ -1038,11 +1059,11 @@ msgstr "動畫走棋(A)     Ctrl+Shift+A"
 msgid "Auto Flag               Ctrl+Shift+F"
 msgstr "自動超時判負(F) Ctrl+Shift+F"
 
-#: xboard.c:753 xoptions.c:372
+#: xboard.c:753 xoptions.c:386
 msgid "Auto Flip View"
 msgstr "自動翻轉棋盤(V)"
 
-#: xboard.c:754 xoptions.c:373
+#: xboard.c:754 xoptions.c:387
 msgid "Blindfold"
 msgstr "盲棋(B)"
 
@@ -1054,7 +1075,7 @@ msgstr ""
 msgid "Highlight Dragging"
 msgstr "拖曳醒目提示(H)"
 
-#: xboard.c:759 xoptions.c:377
+#: xboard.c:759 xoptions.c:391
 msgid "Highlight Last Move"
 msgstr "標記上一著法(M)"
 
@@ -1062,11 +1083,11 @@ msgstr "標記上一著法(M)"
 msgid "Highlight With Arrow"
 msgstr "用箭頭突出移動"
 
-#: xboard.c:761 xoptions.c:379
+#: xboard.c:761 xoptions.c:393
 msgid "Move Sound"
 msgstr ""
 
-#: xboard.c:763 xoptions.c:380
+#: xboard.c:763 xoptions.c:394
 msgid "One-Click Moving"
 msgstr "單擊移動(M)"
 
@@ -1082,7 +1103,7 @@ msgstr "同步思考(N)  Ctrl+Shift+P"
 msgid "Popup Exit Message"
 msgstr "離開時提示(P)"
 
-#: xboard.c:767 xoptions.c:384
+#: xboard.c:767 xoptions.c:398
 msgid "Popup Move Errors"
 msgstr "提示錯誤著法(E)"
 
@@ -1114,7 +1135,7 @@ msgstr ""
 msgid "Man XBoard   F1"
 msgstr ""
 
-#: xboard.c:783 xboard.c:6814
+#: xboard.c:783 xboard.c:6832
 msgid "About XBoard"
 msgstr "關於XBoard(A)"
 
@@ -1150,7 +1171,7 @@ msgstr "選項(O)"
 msgid "Help"
 msgstr "說明(H)"
 
-#: xboard.c:811 xboard.c:7561
+#: xboard.c:811 xboard.c:7589
 msgid "White"
 msgstr "紅方"
 
@@ -1158,23 +1179,23 @@ msgstr "紅方"
 msgid "Pawn"
 msgstr "兵"
 
-#: xboard.c:811 xboard.c:815 xboard.c:834 xboard.c:5133 xboard.c:5209
+#: xboard.c:811 xboard.c:815 xboard.c:834 xboard.c:5153 xboard.c:5229
 msgid "Knight"
 msgstr "馬"
 
-#: xboard.c:811 xboard.c:815 xboard.c:834 xboard.c:5131
+#: xboard.c:811 xboard.c:815 xboard.c:834 xboard.c:5151
 msgid "Bishop"
 msgstr "象"
 
-#: xboard.c:811 xboard.c:815 xboard.c:834 xboard.c:5129
+#: xboard.c:811 xboard.c:815 xboard.c:834 xboard.c:5149
 msgid "Rook"
 msgstr "車"
 
-#: xboard.c:812 xboard.c:816 xboard.c:834 xboard.c:5127
+#: xboard.c:812 xboard.c:816 xboard.c:834 xboard.c:5147
 msgid "Queen"
 msgstr "后"
 
-#: xboard.c:812 xboard.c:816 xboard.c:5139
+#: xboard.c:812 xboard.c:816 xboard.c:5159
 msgid "King"
 msgstr "王"
 
@@ -1186,15 +1207,15 @@ msgstr "象"
 msgid "Cannon"
 msgstr "炮"
 
-#: xboard.c:813 xboard.c:817 xboard.c:5145
+#: xboard.c:813 xboard.c:817 xboard.c:5165
 msgid "Archbishop"
 msgstr "國師"
 
-#: xboard.c:813 xboard.c:817 xboard.c:5147
+#: xboard.c:813 xboard.c:817 xboard.c:5167
 msgid "Chancellor"
 msgstr "宰相"
 
-#: xboard.c:813 xboard.c:817 xboard.c:5152 xboard.c:5211
+#: xboard.c:813 xboard.c:817 xboard.c:5172 xboard.c:5231
 msgid "Promote"
 msgstr "升變"
 
@@ -1210,26 +1231,26 @@ msgstr "清空格子"
 msgid "Clear board"
 msgstr "清空棋盤"
 
-#: xboard.c:815 xboard.c:7577
+#: xboard.c:815 xboard.c:7605
 msgid "Black"
 msgstr "黑方"
 
-#: xboard.c:1206
+#: xboard.c:1214
 #, c-format
 msgid "%s: Can't access XPM directory %s\n"
 msgstr ""
 
-#: xboard.c:1229
+#: xboard.c:1237
 #, c-format
 msgid "Available `%s' sizes:\n"
 msgstr ""
 
-#: xboard.c:1265
+#: xboard.c:1273
 #, c-format
 msgid "Error: No `%s' files!\n"
 msgstr ""
 
-#: xboard.c:1281
+#: xboard.c:1289
 #, c-format
 msgid ""
 "Warning: No DIR structure found on this system --\n"
@@ -1238,337 +1259,333 @@ msgid ""
 "   Include system type & operating system in message.\n"
 msgstr ""
 
-#: xboard.c:1342
+#: xboard.c:1350
 #, c-format
 msgid "%s: unrecognized color %s\n"
 msgstr ""
 
-#: xboard.c:1352
+#: xboard.c:1360
 #, c-format
 msgid "%s: can't parse foreground color in `%s'\n"
 msgstr ""
 
-#: xboard.c:1732 xboard.c:2478
+#: xboard.c:1740 xboard.c:2486
 #, c-format
 msgid "%s: titleWidget geometry error %d %d %d %d %d\n"
 msgstr ""
 
-#: xboard.c:1837
+#: xboard.c:1845
 #, c-format
 msgid "%s: can't parse color names; disabling colorization\n"
 msgstr ""
 
-#: xboard.c:2014
+#: xboard.c:2022
 #, c-format
 msgid "%s: can't cd to CHESSDIR: "
 msgstr ""
 
-#: xboard.c:2023
+#: xboard.c:2031
 #, c-format
 msgid "Failed to open file '%s'\n"
 msgstr ""
 
-#: xboard.c:2038
+#: xboard.c:2046
 msgid "Recompile with larger BOARD_RANKS or BOARD_FILES to support this size"
 msgstr ""
 
-#: xboard.c:2061
+#: xboard.c:2069
 #, c-format
 msgid "%s: bad boardSize syntax %s\n"
 msgstr ""
 
-#: xboard.c:2098
+#: xboard.c:2106
 #, c-format
 msgid "%s: unrecognized boardSize name %s\n"
 msgstr ""
 
-#: xboard.c:2123
+#: xboard.c:2131
 #, c-format
 msgid "Error expanding path name \"%s\"\n"
 msgstr ""
 
-#: xboard.c:2128
+#: xboard.c:2136
 #, c-format
 msgid ""
 "XBoard square size (hint): %d\n"
 "%s fulldir:%s:\n"
 msgstr ""
 
-#: xboard.c:2134
+#: xboard.c:2142
 #, c-format
 msgid "Closest %s size: %d\n"
 msgstr ""
 
-#: xboard.c:2209
+#: xboard.c:2217
 #, c-format
 msgid "%s: too few colors available; trying monochrome mode\n"
 msgstr ""
 
-#: xboard.c:2225
+#: xboard.c:2233
 #, c-format
 msgid "white pixel = 0x%lx, black pixel = 0x%lx\n"
 msgstr ""
 
-#: xboard.c:2444 xboard.c:2454
+#: xboard.c:2452 xboard.c:2462
 #, c-format
 msgid "%s: messageWidget geometry error %d %d %d %d %d\n"
 msgstr ""
 
-#: xboard.c:3208
+#: xboard.c:3219
 #, c-format
 msgid "Unable to create font set for %s.\n"
 msgstr ""
 
-#: xboard.c:3233
+#: xboard.c:3244
 #, c-format
 msgid "%s: no fonts match pattern %s\n"
 msgstr ""
 
-#: xboard.c:3275
+#: xboard.c:3286
 #, c-format
 msgid ""
 "resolved %s at pixel size %d\n"
 "  to %s\n"
 msgstr ""
 
-#: xboard.c:3428
+#: xboard.c:3439
 #, c-format
 msgid "%s: error loading XIM!\n"
 msgstr ""
 
-#: xboard.c:3525
+#: xboard.c:3536
 msgid "XIM pieces cannot be used in monochrome mode"
 msgstr ""
 
-#: xboard.c:3529
+#: xboard.c:3540
 #, c-format
 msgid ""
 "\n"
 "Loading XIMs...\n"
 msgstr ""
 
-#: xboard.c:3544 xboard.c:3567 xboard.c:3574 xboard.c:3687 xboard.c:3724
-#: xboard.c:3735
+#: xboard.c:3555 xboard.c:3578 xboard.c:3585 xboard.c:3698 xboard.c:3735
+#: xboard.c:3746
 #, c-format
 msgid "(File:%s:) "
 msgstr ""
 
-#: xboard.c:3562 xboard.c:3717
+#: xboard.c:3573 xboard.c:3728
 #, c-format
 msgid "light square "
 msgstr ""
 
-#: xboard.c:3570 xboard.c:3731
+#: xboard.c:3581 xboard.c:3742
 #, c-format
 msgid "dark square "
 msgstr ""
 
-#: xboard.c:3581 xboard.c:3744
+#: xboard.c:3592 xboard.c:3755
 #, c-format
 msgid "Done.\n"
 msgstr ""
 
-#: xboard.c:3642
+#: xboard.c:3653
 msgid "XPM pieces cannot be used in monochrome mode"
 msgstr ""
 
-#: xboard.c:3652
+#: xboard.c:3663
 #, c-format
 msgid "No builtin XPM pieces of size %d\n"
 msgstr ""
 
-#: xboard.c:3662
+#: xboard.c:3673
 #, c-format
 msgid "Error %d loading XPM image \"%s\"\n"
 msgstr ""
 
-#: xboard.c:3675
+#: xboard.c:3686
 #, c-format
 msgid ""
 "\n"
 "Loading XPMs...\n"
 msgstr ""
 
-#: xboard.c:3698
+#: xboard.c:3709
 #, c-format
 msgid "(Replace by File:%s:) "
 msgstr ""
 
-#: xboard.c:3705 xboard.c:3728 xboard.c:3739
+#: xboard.c:3716 xboard.c:3739 xboard.c:3750
 #, c-format
 msgid "Error %d loading XPM file \"%s\"\n"
 msgstr ""
 
-#: xboard.c:3829
+#: xboard.c:3840
 #, c-format
 msgid "Can't open bitmap file %s"
 msgstr ""
 
-#: xboard.c:3832
+#: xboard.c:3843
 #, c-format
 msgid "Invalid bitmap in file %s"
 msgstr ""
 
-#: xboard.c:3835
+#: xboard.c:3846
 #, c-format
 msgid "Ran out of memory reading bitmap file %s"
 msgstr ""
 
-#: xboard.c:3839
+#: xboard.c:3850
 #, c-format
 msgid "Unknown XReadBitmapFile error %d on file %s"
 msgstr ""
 
-#: xboard.c:3843
+#: xboard.c:3854
 #, c-format
 msgid "%s: %s...using built-in\n"
 msgstr ""
 
-#: xboard.c:3847
+#: xboard.c:3858
 #, c-format
 msgid "%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"
 msgstr ""
 
-#: xboard.c:4050
+#: xboard.c:4061
 msgid "Drop"
 msgstr "取消"
 
-#: xboard.c:5031 xboard.c:5157 xboard.c:5205 xboard.c:7111 xboard.c:7152
-#: xgamelist.c:709 xgamelist.c:817 xoptions.c:863 xoptions.c:1174
+#: xboard.c:5051 xboard.c:5177 xboard.c:5225 xboard.c:7130 xboard.c:7171
+#: xgamelist.c:758 xgamelist.c:866 xoptions.c:894 xoptions.c:1205
 msgid "cancel"
 msgstr "取消(C)"
 
-#: xboard.c:5068 xboard.c:6961 xboard.c:6975
+#: xboard.c:5088 xboard.c:6980 xboard.c:6994
 msgid "Error"
 msgstr "錯誤"
 
-#: xboard.c:5068
+#: xboard.c:5088
 msgid "Can't open file"
 msgstr ""
 
-#: xboard.c:5073
+#: xboard.c:5093
 msgid "Failed to open file"
 msgstr ""
 
-#: xboard.c:5102
+#: xboard.c:5122
 msgid "Promotion"
 msgstr "升變"
 
-#: xboard.c:5111
+#: xboard.c:5131
 msgid "Promote to what?"
 msgstr ""
 
-#: xboard.c:5118
+#: xboard.c:5138
 msgid "Warlord"
 msgstr ""
 
-#: xboard.c:5120
+#: xboard.c:5140
 msgid "General"
 msgstr "一般選項(G)..."
 
-#: xboard.c:5122
+#: xboard.c:5142
 msgid "Lieutenant"
 msgstr ""
 
-#: xboard.c:5124
+#: xboard.c:5144
 msgid "Captain"
 msgstr ""
 
-#: xboard.c:5154 xboard.c:5213
+#: xboard.c:5174 xboard.c:5233
 msgid "Defer"
 msgstr ""
 
-#: xboard.c:5276
+#: xboard.c:5296
 msgid "ok"
 msgstr "確定"
 
-#: xboard.c:5473
+#: xboard.c:5493
 msgid "Load game file name?"
 msgstr ""
 
-#: xboard.c:5539
+#: xboard.c:5559
 msgid "Load position file name?"
 msgstr ""
 
-#: xboard.c:5548
+#: xboard.c:5568
 msgid "Save game file name?"
 msgstr ""
 
-#: xboard.c:5560
+#: xboard.c:5580
 msgid "Save position file name?"
 msgstr ""
 
-#: xboard.c:5793
+#: xboard.c:5811
 msgid "Can't open temp file"
 msgstr ""
 
-#: xboard.c:5883
+#: xboard.c:5901
 #, c-format
 msgid "You are not observing a game"
 msgstr ""
 
-#: xboard.c:5888
+#: xboard.c:5906
 #, c-format
 msgid "Found unexpected active ICS engine analyze \n"
 msgstr ""
 
-#: xboard.c:5902
+#: xboard.c:5920
 #, c-format
 msgid "ICS engine analyze starting... \n"
 msgstr ""
 
-#: xboard.c:5930
-msgid "File to analyze"
-msgstr ""
-
-#: xboard.c:6998
+#: xboard.c:7017
 msgid "Fatal Error"
 msgstr "嚴重錯誤"
 
-#: xboard.c:6998
+#: xboard.c:7017
 msgid "Exiting"
 msgstr "離開"
 
-#: xboard.c:7008
+#: xboard.c:7027
 msgid "Information"
 msgstr "資訊"
 
-#: xboard.c:7015
+#: xboard.c:7034
 msgid "Note"
 msgstr "註解"
 
-#: xboard.c:7065
+#: xboard.c:7084
 #, c-format
 msgid "AskQuestionProc needed 4 parameters, got %d\n"
 msgstr ""
 
-#: xboard.c:7098
+#: xboard.c:7117
 msgid "Error writing to chess program"
 msgstr "發送訊息給國際象棋程式時出錯"
 
-#: xboard.c:7150
+#: xboard.c:7169
 msgid "enter"
 msgstr ""
 
-#: xboard.c:7345
+#: xboard.c:7373
 #, c-format
 msgid "ERROR: Unknown user %s (in path %s)\n"
 msgstr ""
 
-#: xboard.c:7739
+#: xboard.c:7767
 msgid "Socket support is not configured in"
 msgstr ""
 
-#: xboard.c:7830
+#: xboard.c:7858
 msgid "internal rcmd not implemented for Unix"
 msgstr ""
 
-#: xboard.c:8604
+#: xboard.c:8638
 #, c-format
 msgid "AnimateMove: piece %d hops from %d,%d to %d,%d \n"
 msgstr ""
 
-#: xboard.c:8605
+#: xboard.c:8639
 #, c-format
 msgid "AnimateMove: piece %d slides from %d,%d to %d,%d \n"
 msgstr ""
@@ -1578,83 +1595,109 @@ msgstr ""
 msgid "Error %d loading icon image\n"
 msgstr ""
 
-#: xengineoutput.c:351
+#: xengineoutput.c:358
 msgid "NPS"
 msgstr "NPS"
 
-#: xengineoutput.c:530
+#: xengineoutput.c:537
 msgid "Engine output"
 msgstr "引擎輸出"
 
-#: xengineoutput.c:530
+#: xengineoutput.c:537
 msgid "This feature is experimental"
 msgstr ""
 
-#: xevalgraph.c:346
+#: xevalgraph.c:95
 msgid "Evaluation graph"
 msgstr "審局圖"
 
-#: xgamelist.c:189 xgamelist.c:381
-msgid "load"
+#: xgamelist.c:114
+msgid "no games matched your request"
 msgstr ""
 
-#: xgamelist.c:200 xgamelist.c:394
-msgid "prev"
+#: xgamelist.c:193 xgamelist.c:414
+msgid "thresholds"
 msgstr ""
 
-#: xgamelist.c:211 xgamelist.c:387
+#: xgamelist.c:204 xgamelist.c:441 xgamelist.c:448
+#, fuzzy
+msgid "find position"
+msgstr "盤面檔案錯誤"
+
+#: xgamelist.c:215 xgamelist.c:426
 msgid "next"
 msgstr ""
 
-#: xgamelist.c:222 xgamelist.c:375
+#: xgamelist.c:228 xgamelist.c:410
 msgid "close"
 msgstr ""
 
-#: xgamelist.c:234
+#: xgamelist.c:240
 msgid "Filter:"
 msgstr "過濾器"
 
-#: xgamelist.c:252
+#: xgamelist.c:258
 msgid "filtertext"
 msgstr ""
 
-#: xgamelist.c:265 xgamelist.c:401
+#: xgamelist.c:271 xgamelist.c:440
 msgid "apply"
 msgstr ""
 
-#: xgamelist.c:384
+#: xgamelist.c:354
+#, c-format
+msgid "Scanning through games (%d)"
+msgstr ""
+
+#: xgamelist.c:377
+msgid "previous page"
+msgstr ""
+
+#: xgamelist.c:380
+msgid "next page"
+msgstr ""
+
+#: xgamelist.c:420
+msgid "load"
+msgstr ""
+
+#: xgamelist.c:423
 msgid "No game selected"
 msgstr "沒有選中棋局"
 
-#: xgamelist.c:390
+#: xgamelist.c:429
 msgid "Can't go forward any further"
 msgstr "無法再前進了"
 
-#: xgamelist.c:499
+#: xgamelist.c:433
+msgid "prev"
+msgstr ""
+
+#: xgamelist.c:532
 msgid "There is no game list"
 msgstr "沒有棋局列表"
 
-#: xgamelist.c:703 xgamelist.c:828 xoptions.c:867 xoptions.c:1170
+#: xgamelist.c:752 xgamelist.c:877 xoptions.c:898 xoptions.c:1201
 msgid "OK"
 msgstr "確定"
 
-#: xgamelist.c:717
+#: xgamelist.c:766
 msgid "No tag selected"
 msgstr ""
 
-#: xgamelist.c:721 xgamelist.c:806
+#: xgamelist.c:770 xgamelist.c:855
 msgid "down"
 msgstr "向下"
 
-#: xgamelist.c:726 xgamelist.c:795
+#: xgamelist.c:775 xgamelist.c:844
 msgid "up"
 msgstr "向上"
 
-#: xgamelist.c:731 xgamelist.c:784
+#: xgamelist.c:780 xgamelist.c:833
 msgid "factory"
 msgstr ""
 
-#: xhistory.c:151
+#: xhistory.c:145
 msgid "Move list"
 msgstr ""
 
@@ -1666,271 +1709,292 @@ msgstr ""
 msgid "Second Engine"
 msgstr ""
 
-#: xoptions.c:341
+#: xoptions.c:352
 msgid "Tournament file:"
 msgstr ""
 
-#: xoptions.c:342
+#: xoptions.c:353
 msgid "Sync after round    (for concurrent playing of a single"
 msgstr ""
 
-#: xoptions.c:343
+#: xoptions.c:354
 msgid "Sync after cycle      tourney with multiple XBoards)"
 msgstr ""
 
-#: xoptions.c:345
+#: xoptions.c:356
 msgid "Select Engine:"
 msgstr ""
 
-#: xoptions.c:346
+#: xoptions.c:357
 msgid "Tourney type (0 = round-robin, 1 = gauntlet):"
 msgstr ""
 
-#: xoptions.c:347
+#: xoptions.c:358
 msgid "Number of tourney cycles (or Swiss rounds):"
 msgstr ""
 
-#: xoptions.c:348
+#: xoptions.c:359
 #, fuzzy
 msgid "Default Number of Games in Match (or Pairing):"
 msgstr "預設比賽對局數"
 
-#: xoptions.c:349
+#: xoptions.c:360
 msgid "Pause between Match Games (msec):"
 msgstr ""
 
-#: xoptions.c:350
+#: xoptions.c:361
 #, fuzzy
 msgid "Save Tourney Games on:"
 msgstr "儲存棋局選項"
 
-#: xoptions.c:351
+#: xoptions.c:362
 msgid "Game File with Opening Lines:"
 msgstr ""
 
-#: xoptions.c:352
+#: xoptions.c:363
 msgid "Game Number (-1 or -2 = Auto-Increment):"
 msgstr ""
 
-#: xoptions.c:353
+#: xoptions.c:364
 msgid "File with Start Positions:"
 msgstr ""
 
-#: xoptions.c:354
+#: xoptions.c:365
 msgid "Position Number (-1 or -2 = Auto-Increment):"
 msgstr ""
 
-#: xoptions.c:355
+#: xoptions.c:366
 msgid "Rewind Index after this many Games (0 = never):"
 msgstr ""
 
+#: xoptions.c:367
+msgid "Replace Engine"
+msgstr ""
+
 #: xoptions.c:368
+msgid "Upgrade Engine"
+msgstr ""
+
+#: xoptions.c:381
+msgid "Absolute Analysis Scores"
+msgstr ""
+
+#: xoptions.c:382
 msgid "Almost Always Queen (Detour Under-Promote)"
 msgstr ""
 
-#: xoptions.c:370
+#: xoptions.c:384
 msgid "Animate Moving"
 msgstr "動畫走棋(A)"
 
-#: xoptions.c:371
+#: xoptions.c:385
 msgid "Auto Flag"
 msgstr "自動超時判負(F) Ctrl+Shift+F"
 
-#: xoptions.c:374
+#: xoptions.c:388
 msgid "Drop Menu"
 msgstr ""
 
-#: xoptions.c:375
+#: xoptions.c:389
 msgid "Hide Thinking from Human"
 msgstr "與人對弈時隱藏思考細節"
 
-#: xoptions.c:376
+#: xoptions.c:390
 msgid "Highlight Dragging (Show Move Targets)"
 msgstr "拖曳醒目提示(H)"
 
-#: xoptions.c:378
+#: xoptions.c:392
 msgid "Highlight with Arrow"
 msgstr "用箭頭突出移動"
 
-#: xoptions.c:381
+#: xoptions.c:395
 msgid "Periodic Updates (in Analysis Mode)"
 msgstr "定期更新(分析模式)"
 
-#: xoptions.c:382 xoptions.c:486
+#: xoptions.c:396 xoptions.c:502
 msgid "Ponder Next Move"
 msgstr "同步思考(N)"
 
-#: xoptions.c:383
+#: xoptions.c:397
 msgid "Popup Exit Messages"
 msgstr "離開時提示(P)"
 
-#: xoptions.c:385
+#: xoptions.c:399
 #, fuzzy
 msgid "Scores in Move List"
 msgstr "取得著法列表(G)"
 
-#: xoptions.c:386
+#: xoptions.c:400
 msgid "Show Coordinates"
 msgstr "顯示坐標(C)"
 
-#: xoptions.c:387
+#: xoptions.c:401
 msgid "Show Target Squares"
 msgstr ""
 
-#: xoptions.c:388
+#: xoptions.c:402
 msgid "Test Legality"
 msgstr "檢查著法合理性(L) Cl+Sh+L"
 
-#: xoptions.c:389
+#: xoptions.c:403
 msgid "Flash Moves (0 = no flashing):"
 msgstr ""
 
-#: xoptions.c:390
+#: xoptions.c:404
 msgid "Flash Rate (high = fast):"
 msgstr ""
 
-#: xoptions.c:391
+#: xoptions.c:405
 msgid "Animation Speed (high = slow):"
 msgstr ""
 
-#: xoptions.c:407
+#: xoptions.c:406
+#, fuzzy
+msgid "Zoom factor in Evaluation Graph:"
+msgstr "審局圖"
+
+#: xoptions.c:422
 #, c-format
 msgid "Warning: second engine (%s) does not support this!"
 msgstr "警告: 第二個引擎(%s) 不支持此!"
 
-#: xoptions.c:428
+#: xoptions.c:443
 msgid "normal"
 msgstr ""
 
-#: xoptions.c:429
+#: xoptions.c:444
 msgid "fairy"
 msgstr ""
 
-#: xoptions.c:430
+#: xoptions.c:445
 msgid "FRC"
 msgstr ""
 
-#: xoptions.c:431
+#: xoptions.c:446
 msgid "Seirawan"
 msgstr ""
 
-#: xoptions.c:432
+#: xoptions.c:447
 msgid "wild castle"
 msgstr ""
 
-#: xoptions.c:433
+#: xoptions.c:448
 msgid "Superchess"
 msgstr ""
 
-#: xoptions.c:434
+#: xoptions.c:449
 msgid "no castle"
 msgstr ""
 
-#: xoptions.c:435
+#: xoptions.c:450
 msgid "crazyhouse"
 msgstr ""
 
-#: xoptions.c:436
+#: xoptions.c:451
 msgid "knightmate"
 msgstr ""
 
-#: xoptions.c:437
+#: xoptions.c:452
 msgid "bughouse"
 msgstr ""
 
-#: xoptions.c:438
+#: xoptions.c:453
 msgid "berolina"
 msgstr ""
 
-#: xoptions.c:439
+#: xoptions.c:454
 msgid "shogi (9x9)"
 msgstr ""
 
-#: xoptions.c:440
+#: xoptions.c:455
 msgid "cylinder"
 msgstr ""
 
-#: xoptions.c:441
+#: xoptions.c:456
 msgid "xiangqi (9x10)"
 msgstr ""
 
-#: xoptions.c:442
+#: xoptions.c:457
 msgid "shatranj"
 msgstr ""
 
-#: xoptions.c:443
+#: xoptions.c:458
 msgid "courier (12x8)"
 msgstr ""
 
-#: xoptions.c:444
+#: xoptions.c:459
 msgid "makruk"
 msgstr ""
 
-#: xoptions.c:445
+#: xoptions.c:460
 msgid "Great Shatranj (10x8)"
 msgstr ""
 
-#: xoptions.c:446
+#: xoptions.c:461
 msgid "atomic"
 msgstr ""
 
-#: xoptions.c:447
+#: xoptions.c:462
 msgid "Capablanca (10x8)"
 msgstr ""
 
-#: xoptions.c:448
+#: xoptions.c:463
 msgid "two kings"
 msgstr ""
 
-#: xoptions.c:449
+#: xoptions.c:464
 msgid "Gothic (10x8)"
 msgstr ""
 
-#: xoptions.c:450
+#: xoptions.c:465
 msgid "3-checks"
 msgstr ""
 
-#: xoptions.c:451
+#: xoptions.c:466
 msgid "janus (10x8)"
 msgstr ""
 
-#: xoptions.c:452
+#: xoptions.c:467
 msgid "suicide"
 msgstr ""
 
-#: xoptions.c:453
+#: xoptions.c:468
 msgid "CRC (10x8)"
 msgstr ""
 
-#: xoptions.c:454
+#: xoptions.c:469
 msgid "give-away"
 msgstr ""
 
-#: xoptions.c:455
-msgid "Spartan"
+#: xoptions.c:470
+msgid "grand (10x10)"
 msgstr ""
 
-#: xoptions.c:456
+#: xoptions.c:471
 msgid "losers"
 msgstr ""
 
-#: xoptions.c:457
+#: xoptions.c:472
+msgid "Spartan"
+msgstr ""
+
+#: xoptions.c:473
 msgid "Board size ( -1 = default for selected variant):"
 msgstr ""
 
-#: xoptions.c:458
+#: xoptions.c:474
 msgid "Number of Board Ranks:"
 msgstr ""
 
-#: xoptions.c:459
+#: xoptions.c:475
 msgid "Number of Board Files:"
 msgstr ""
 
-#: xoptions.c:460
+#: xoptions.c:476
 msgid "Holdings Size:"
 msgstr ""
 
-#: xoptions.c:462
+#: xoptions.c:478
 msgid ""
 "WARNING: variants with un-orthodox\n"
 "pieces only have built-in bitmaps\n"
@@ -1939,602 +2003,645 @@ msgid ""
 "for missing bitmaps. (See manual.)"
 msgstr ""
 
-#: xoptions.c:487
+#: xoptions.c:503
 msgid "Maximum Number of CPUs per Engine:"
 msgstr "最大CPU數"
 
-#: xoptions.c:488
+#: xoptions.c:504
 msgid "Polygot Directory:"
 msgstr ""
 
-#: xoptions.c:489
+#: xoptions.c:505
 msgid "Hash-Table Size (MB):"
 msgstr "雜湊表大小(MB)"
 
-#: xoptions.c:490
+#: xoptions.c:506
 msgid "Nalimov EGTB Path:"
 msgstr "EGTB 路徑"
 
-#: xoptions.c:491
+#: xoptions.c:507
 msgid "EGTB Cache Size (MB):"
 msgstr "EGTB 大小(MB)"
 
-#: xoptions.c:492
+#: xoptions.c:508
 msgid "Use GUI Book"
 msgstr ""
 
-#: xoptions.c:493
+#: xoptions.c:509
 msgid "Opening-Book Filename:"
 msgstr ""
 
-#: xoptions.c:494
+#: xoptions.c:510
 msgid "Book Depth (moves):"
 msgstr "庫著法深度"
 
-#: xoptions.c:495
+#: xoptions.c:511
 msgid "Book Variety (0) vs. Strength (100):"
 msgstr "庫變例"
 
-#: xoptions.c:496
+#: xoptions.c:512
 msgid "Engine #1 Has Own Book"
 msgstr "引擎1有自用庫"
 
-#: xoptions.c:497
+#: xoptions.c:513
 msgid "Engine #2 Has Own Book          "
 msgstr ""
 
-#: xoptions.c:502
+#: xoptions.c:518
 msgid "Detect all Mates"
 msgstr "檢測將殺(M)"
 
-#: xoptions.c:503
+#: xoptions.c:519
 msgid "Verify Engine Result Claims"
 msgstr "驗證引擎聲明(V)"
 
-#: xoptions.c:504
+#: xoptions.c:520
 msgid "Draw if Insufficient Mating Material"
 msgstr "子力不足時判和(I)"
 
-#: xoptions.c:505
+#: xoptions.c:521
 msgid "Adjudicate Trivial Draws (3-Move Delay)"
 msgstr "簡易和棋判決(T)"
 
-#: xoptions.c:506
+#: xoptions.c:522
 msgid "N-Move Rule:"
 msgstr ""
 
-#: xoptions.c:507
+#: xoptions.c:523
 msgid "N-fold Repeats:"
 msgstr ""
 
-#: xoptions.c:508
+#: xoptions.c:524
 msgid "Draw after N Moves Total:"
 msgstr "幾著後判和"
 
-#: xoptions.c:509
+#: xoptions.c:525
 msgid "Win / Loss Threshold:"
 msgstr "輸/贏判決門檻"
 
-#: xoptions.c:510
+#: xoptions.c:526
 msgid "Negate Score of Engine #1"
 msgstr "引擎 #1 是絕對分數"
 
-#: xoptions.c:511
+#: xoptions.c:527
 msgid "Negate Score of Engine #2"
 msgstr "引擎 #2 是絕對分數"
 
-#: xoptions.c:522
+#: xoptions.c:538
 msgid "Auto-Kibitz"
 msgstr "自動\"kibitz\"(A)"
 
-#: xoptions.c:523
+#: xoptions.c:539
 msgid "Auto-Comment"
 msgstr "自動註解(A)"
 
-#: xoptions.c:524
+#: xoptions.c:540
 msgid "Auto-Observe"
 msgstr "自動觀棋(O)"
 
-#: xoptions.c:525
+#: xoptions.c:541
 msgid "Auto-Raise Board"
 msgstr "自動改變棋盤大小(R)"
 
-#: xoptions.c:526
+#: xoptions.c:542
 msgid "Background Observe while Playing"
 msgstr "背景觀察(v)"
 
-#: xoptions.c:527
+#: xoptions.c:543
 msgid "Dual Board for Background-Observed Game"
 msgstr "雙棋盤(D)"
 
-#: xoptions.c:528
+#: xoptions.c:544
 msgid "Get Move List"
 msgstr "取得著法列表(G)"
 
-#: xoptions.c:529
+#: xoptions.c:545
 msgid "Quiet Play"
 msgstr "落子無聲(Q)"
 
-#: xoptions.c:530
+#: xoptions.c:546
 msgid "Seek Graph"
 msgstr "可選對手圖表(k)"
 
-#: xoptions.c:531
+#: xoptions.c:547
 msgid "Auto-Refresh Seek Graph"
 msgstr "自動刷新圖表(R)"
 
-#: xoptions.c:532
+#: xoptions.c:548
 msgid "Premove"
 msgstr "預先走棋(P)"
 
-#: xoptions.c:533
+#: xoptions.c:549
 msgid "Premove for White"
 msgstr ""
 
-#: xoptions.c:534
+#: xoptions.c:550
 msgid "First White Move:"
 msgstr "紅方先走(W)"
 
-#: xoptions.c:535
+#: xoptions.c:551
 msgid "Premove for Black"
 msgstr ""
 
-#: xoptions.c:536
+#: xoptions.c:552
 msgid "First Black Move:"
 msgstr "黑方先走(B)"
 
-#: xoptions.c:538
+#: xoptions.c:554
 msgid "Alarm"
 msgstr "提示"
 
-#: xoptions.c:539
+#: xoptions.c:555
 msgid "Alarm Time (msec):"
 msgstr ""
 
-#: xoptions.c:541
+#: xoptions.c:557
 msgid "Colorize Messages"
 msgstr ""
 
-#: xoptions.c:542
+#: xoptions.c:558
 msgid "Shout Text Colors:"
 msgstr ""
 
-#: xoptions.c:543
+#: xoptions.c:559
 msgid "S-Shout Text Colors:"
 msgstr ""
 
-#: xoptions.c:544
+#: xoptions.c:560
 msgid "Channel #1 Text Colors:"
 msgstr ""
 
-#: xoptions.c:545
+#: xoptions.c:561
 msgid "Other Channel Text Colors:"
 msgstr ""
 
-#: xoptions.c:546
+#: xoptions.c:562
 msgid "Kibitz Text Colors:"
 msgstr ""
 
-#: xoptions.c:547
+#: xoptions.c:563
 msgid "Tell Text Colors:"
 msgstr ""
 
-#: xoptions.c:548
+#: xoptions.c:564
 msgid "Challenge Text Colors:"
 msgstr ""
 
-#: xoptions.c:549
+#: xoptions.c:565
 msgid "Request Text Colors:"
 msgstr ""
 
-#: xoptions.c:550
+#: xoptions.c:566
 msgid "Seek Text Colors:"
 msgstr ""
 
-#: xoptions.c:555
+#: xoptions.c:570
+msgid "Exact match"
+msgstr ""
+
+#: xoptions.c:570
+msgid "Shown position is subset"
+msgstr ""
+
+#: xoptions.c:570
+msgid "Same material and Pawn chain"
+msgstr ""
+
+#: xoptions.c:570
+msgid "Same material"
+msgstr ""
+
+#: xoptions.c:581
 msgid "Auto-Display Tags"
 msgstr ""
 
-#: xoptions.c:556
+#: xoptions.c:582
 msgid "Auto-Display Comment"
 msgstr ""
 
-#: xoptions.c:557
+#: xoptions.c:583
 msgid ""
 "Auto-Play speed of loaded games\n"
 "(0 = instant, -1 = off):"
 msgstr ""
 
-#: xoptions.c:558
+#: xoptions.c:584
 msgid "Seconds per Move:"
 msgstr ""
 
-#: xoptions.c:563
-msgid "Auto-Save Games"
-msgstr ""
-
-#: xoptions.c:564
-msgid "Save Games on File:"
-msgstr ""
-
-#: xoptions.c:565
-msgid "Save Final Positions on File:"
-msgstr ""
-
-#: xoptions.c:566
-msgid "PGN Event Header:"
-msgstr ""
-
-#: xoptions.c:567
-msgid "Old Save Style (as opposed to PGN)"
-msgstr ""
-
-#: xoptions.c:568
-msgid "Save Score/Depth Info in PGN"
-msgstr ""
-
-#: xoptions.c:569
-msgid "Save Out-of-Book Info in PGN           "
-msgstr ""
-
-#: xoptions.c:574
-msgid "No Sound"
-msgstr "無聲"
-
-#: xoptions.c:575
-msgid "Default Beep"
-msgstr "預設聲音"
-
-#: xoptions.c:576
-msgid "Above WAV File"
-msgstr ""
-
-#: xoptions.c:577
-msgid "Car Horn"
-msgstr ""
-
-#: xoptions.c:578
-msgid "Cymbal"
-msgstr ""
-
-#: xoptions.c:579
-msgid "Ding"
-msgstr ""
-
-#: xoptions.c:580
-msgid "Gong"
-msgstr ""
-
-#: xoptions.c:581
-msgid "Laser"
-msgstr ""
-
-#: xoptions.c:582
-msgid "Penalty"
-msgstr ""
-
-#: xoptions.c:583
-msgid "Phone"
-msgstr ""
-
-#: xoptions.c:584
-msgid "Pop"
-msgstr ""
-
 #: xoptions.c:585
-msgid "Slap"
+msgid ""
+"\n"
+"Thresholds for position filtering in game list:"
 msgstr ""
 
 #: xoptions.c:586
-msgid "Wood Thunk"
+msgid "Elo of strongest player at least:"
+msgstr ""
+
+#: xoptions.c:587
+msgid "Elo of weakest player at least:"
 msgstr ""
 
 #: xoptions.c:588
-msgid "User File"
+#, fuzzy
+msgid "No games before year:"
+msgstr "尚未有棋局載入"
+
+#: xoptions.c:589
+msgid "Seach mode:"
+msgstr ""
+
+#: xoptions.c:594
+msgid "Auto-Save Games"
+msgstr ""
+
+#: xoptions.c:595
+msgid "Save Games on File:"
+msgstr ""
+
+#: xoptions.c:596
+msgid "Save Final Positions on File:"
+msgstr ""
+
+#: xoptions.c:597
+msgid "PGN Event Header:"
+msgstr ""
+
+#: xoptions.c:598
+msgid "Old Save Style (as opposed to PGN)"
+msgstr ""
+
+#: xoptions.c:599
+msgid "Save Score/Depth Info in PGN"
+msgstr ""
+
+#: xoptions.c:600
+msgid "Save Out-of-Book Info in PGN           "
+msgstr ""
+
+#: xoptions.c:605
+msgid "No Sound"
+msgstr "無聲"
+
+#: xoptions.c:606
+msgid "Default Beep"
+msgstr "預設聲音"
+
+#: xoptions.c:607
+msgid "Above WAV File"
+msgstr ""
+
+#: xoptions.c:608
+msgid "Car Horn"
+msgstr ""
+
+#: xoptions.c:609
+msgid "Cymbal"
+msgstr ""
+
+#: xoptions.c:610
+msgid "Ding"
+msgstr ""
+
+#: xoptions.c:611
+msgid "Gong"
+msgstr ""
+
+#: xoptions.c:612
+msgid "Laser"
+msgstr ""
+
+#: xoptions.c:613
+msgid "Penalty"
+msgstr ""
+
+#: xoptions.c:614
+msgid "Phone"
+msgstr ""
+
+#: xoptions.c:615
+msgid "Pop"
 msgstr ""
 
 #: xoptions.c:616
-msgid "Sound Program:"
+msgid "Slap"
 msgstr ""
 
 #: xoptions.c:617
-msgid "Sounds Directory:"
-msgstr ""
-
-#: xoptions.c:618
-msgid "User WAV File:"
+msgid "Wood Thunk"
 msgstr ""
 
 #: xoptions.c:619
+msgid "User File"
+msgstr ""
+
+#: xoptions.c:647
+msgid "Sound Program:"
+msgstr ""
+
+#: xoptions.c:648
+msgid "Sounds Directory:"
+msgstr ""
+
+#: xoptions.c:649
+msgid "User WAV File:"
+msgstr ""
+
+#: xoptions.c:650
 msgid "Try-Out Sound:"
 msgstr ""
 
-#: xoptions.c:620
+#: xoptions.c:651
 msgid "Play"
 msgstr "播放"
 
-#: xoptions.c:621
+#: xoptions.c:652
 msgid "Move:"
 msgstr ""
 
-#: xoptions.c:622
+#: xoptions.c:653
 msgid "Win:"
 msgstr ""
 
-#: xoptions.c:623
+#: xoptions.c:654
 msgid "Lose:"
 msgstr ""
 
-#: xoptions.c:624
+#: xoptions.c:655
 msgid "Draw:"
 msgstr ""
 
-#: xoptions.c:625
+#: xoptions.c:656
 msgid "Unfinished:"
 msgstr ""
 
-#: xoptions.c:626
+#: xoptions.c:657
 msgid "Alarm:"
 msgstr ""
 
-#: xoptions.c:627
+#: xoptions.c:658
 msgid "Shout:"
 msgstr ""
 
-#: xoptions.c:628
+#: xoptions.c:659
 msgid "S-Shout:"
 msgstr ""
 
-#: xoptions.c:629
+#: xoptions.c:660
 msgid "Channel:"
 msgstr ""
 
-#: xoptions.c:630
+#: xoptions.c:661
 msgid "Channel 1:"
 msgstr ""
 
-#: xoptions.c:631
+#: xoptions.c:662
 msgid "Tell:"
 msgstr ""
 
-#: xoptions.c:632
+#: xoptions.c:663
 msgid "Kibitz:"
 msgstr ""
 
-#: xoptions.c:633
+#: xoptions.c:664
 msgid "Challenge:"
 msgstr ""
 
-#: xoptions.c:634
+#: xoptions.c:665
 msgid "Request:"
 msgstr ""
 
-#: xoptions.c:635
+#: xoptions.c:666
 msgid "Seek:"
 msgstr ""
 
-#: xoptions.c:716
+#: xoptions.c:746
 msgid "White Piece Color:"
 msgstr ""
 
-#: xoptions.c:722
+#: xoptions.c:752
 msgid "Black Piece Color:"
 msgstr "黑子"
 
-#: xoptions.c:728
+#: xoptions.c:758
 msgid "Light Square Color:"
 msgstr "白格"
 
-#: xoptions.c:734
+#: xoptions.c:764
 msgid "Dark Square Color:"
 msgstr "黑格"
 
-#: xoptions.c:740
+#: xoptions.c:770
 msgid "Highlight Color:"
 msgstr "格子標記"
 
-#: xoptions.c:746
+#: xoptions.c:776
 msgid "Premove Highlight Color:"
 msgstr "預先走棋標記"
 
-#: xoptions.c:752
+#: xoptions.c:782
 msgid "Flip Pieces Shogi Style        (Colored buttons restore default)"
 msgstr ""
 
-#: xoptions.c:754
+#: xoptions.c:784
 msgid "Mono Mode"
 msgstr "黑白"
 
-#: xoptions.c:755
+#: xoptions.c:785
 msgid "Line Gap ( -1 = default for board size):"
 msgstr ""
 
-#: xoptions.c:756
+#: xoptions.c:786
+msgid "Use Board Textures"
+msgstr ""
+
+#: xoptions.c:787
 msgid "Light-Squares Texture File:"
 msgstr ""
 
-#: xoptions.c:757
+#: xoptions.c:788
 msgid "Dark-Squares Texture File:"
 msgstr ""
 
-#: xoptions.c:758
+#: xoptions.c:789
 msgid "Directory with Bitmap Pieces:"
 msgstr ""
 
-#: xoptions.c:759
+#: xoptions.c:790
 msgid "Directory with Pixmap Pieces:"
 msgstr ""
 
-#: xoptions.c:907
+#: xoptions.c:938
 #, fuzzy
 msgid "Engine has no options"
 msgstr "引擎1有自用庫"
 
-#: xoptions.c:1000
+#: xoptions.c:1031
 msgid "browse"
 msgstr ""
 
-#: xoptions.c:1211
+#: xoptions.c:1242
 msgid "ICS Options"
 msgstr "ICS設定"
 
-#: xoptions.c:1220
+#: xoptions.c:1252
 msgid "Load Game Options"
 msgstr "載入棋局選項"
 
-#: xoptions.c:1229
+#: xoptions.c:1261
 msgid "Save Game Options"
 msgstr "儲存棋局選項"
 
-#: xoptions.c:1239
+#: xoptions.c:1271
 msgid "Sound Options"
 msgstr "聲音"
 
-#: xoptions.c:1248
+#: xoptions.c:1280
 msgid "Board Options"
 msgstr "棋盤選項"
 
-#: xoptions.c:1268
+#: xoptions.c:1300
 msgid "Common Engine Settings"
 msgstr "通用引擎設定"
 
-#: xoptions.c:1277
+#: xoptions.c:1309
 msgid "New Variant"
 msgstr "變種"
 
-#: xoptions.c:1287
+#: xoptions.c:1319
 msgid "General Options"
 msgstr "一般選項"
 
-#: xoptions.c:1300
+#: xoptions.c:1333
 msgid "Match Options"
 msgstr ""
 
-#: xoptions.c:1464
+#: xoptions.c:1495
 #, fuzzy
 msgid "Edit book"
 msgstr "編輯(E)"
 
-#: xoptions.c:1504
+#: xoptions.c:1535
 msgid "ICS input box"
 msgstr ""
 
-#: xoptions.c:1532
+#: xoptions.c:1562
 msgid "Type a move"
 msgstr ""
 
-#: xoptions.c:1554
+#: xoptions.c:1593
 msgid "Engine Settings"
 msgstr ""
 
-#: xoptions.c:1584
+#: xoptions.c:1623
 msgid "Select engine from list:"
 msgstr ""
 
-#: xoptions.c:1585
+#: xoptions.c:1624
 msgid "or specify one below:"
 msgstr ""
 
-#: xoptions.c:1586
+#: xoptions.c:1625
 msgid "Nickname (optional):"
 msgstr ""
 
-#: xoptions.c:1587
+#: xoptions.c:1626
 msgid "Use nickname in PGN player tags of engine-engine games"
 msgstr ""
 
-#: xoptions.c:1588
+#: xoptions.c:1627
 msgid "Engine Directory:"
 msgstr ""
 
-#: xoptions.c:1589
+#: xoptions.c:1628
 msgid "Engine Command:"
 msgstr ""
 
-#: xoptions.c:1590
+#: xoptions.c:1629
 msgid "(Directory will be derived from engine path when empty)"
 msgstr ""
 
-#: xoptions.c:1591
+#: xoptions.c:1630
 msgid "UCI"
 msgstr ""
 
-#: xoptions.c:1592
+#: xoptions.c:1631
 msgid "WB protocol v1 (do not wait for engine features)"
 msgstr ""
 
-#: xoptions.c:1593
+#: xoptions.c:1632
 msgid "Must not use GUI book"
 msgstr ""
 
-#: xoptions.c:1594
+#: xoptions.c:1633
 msgid "Add this engine to the list"
 msgstr ""
 
-#: xoptions.c:1595
+#: xoptions.c:1634
 msgid "Force current variant with this engine"
 msgstr ""
 
-#: xoptions.c:1596
+#: xoptions.c:1635
 msgid "Load mentioned engine as"
 msgstr ""
 
-#: xoptions.c:1613
+#: xoptions.c:1652
 msgid "Load engine"
 msgstr ""
 
-#: xoptions.c:1635
+#: xoptions.c:1674
 msgid "Start-position number:"
 msgstr "啟動位置號碼(S)"
 
-#: xoptions.c:1657
+#: xoptions.c:1695
 msgid "New Shuffle Game"
 msgstr "洗牌遊戲(u)..."
 
-#: xoptions.c:1703
+#: xoptions.c:1742
 msgid "classical"
 msgstr ""
 
-#: xoptions.c:1704
+#: xoptions.c:1743
 msgid "incremental"
 msgstr ""
 
-#: xoptions.c:1705
+#: xoptions.c:1744
 msgid "fixed max"
 msgstr ""
 
-#: xoptions.c:1706
+#: xoptions.c:1745
 msgid "Moves per session:"
 msgstr ""
 
-#: xoptions.c:1707
+#: xoptions.c:1746
 msgid "Initial time (min):"
 msgstr ""
 
-#: xoptions.c:1708
+#: xoptions.c:1747
 msgid "Increment or max (sec/move):"
 msgstr ""
 
-#: xoptions.c:1709
+#: xoptions.c:1748
 #, fuzzy
 msgid "Time-Odds factors:"
 msgstr "時間倍數"
 
-#: xoptions.c:1710
+#: xoptions.c:1749
 #, fuzzy
 msgid "Engine #1"
 msgstr "引擎輸出"
 
-#: xoptions.c:1711
+#: xoptions.c:1750
 #, fuzzy
 msgid "Engine #2 / Human"
 msgstr "引擎1有自用庫"
 
-#: xoptions.c:1721 xoptions.c:1724 xoptions.c:1729 xoptions.c:1730
+#: xoptions.c:1760 xoptions.c:1763 xoptions.c:1768 xoptions.c:1769
 msgid "Unused"
 msgstr ""
 
-#: xoptions.c:1745
+#: xoptions.c:1784
 msgid "Time Control"
 msgstr ""
 

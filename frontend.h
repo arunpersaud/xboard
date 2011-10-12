@@ -111,6 +111,7 @@ void EchoOff P((void));
 void Raw P((void));
 void Colorize P((ColorClass cc, int continuation));
 char *InterpretFileName P((char *name, char *dir));
+void DoSleep P((int n));
 
 char *UserName P((void));
 char *HostName P((void));
@@ -143,6 +144,7 @@ int  RightClick P((ClickType c, int x, int y, int *col, int *row));
 int StartChildProcess P((char *cmdLine, char *dir, ProcRef *pr));
 void DestroyChildProcess P((ProcRef pr, int/*boolean*/ signal));
 void InterruptChildProcess P((ProcRef pr));
+void RunCommand P((char *buf));
 
 int OpenTelnet P((char *host, char *port, ProcRef *pr));
 int OpenTCP P((char *host, char *port, ProcRef *pr));

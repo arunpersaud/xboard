@@ -279,10 +279,12 @@ char *PGNResult P((ChessMove result));
 typedef struct _ListGame {
     ListNode node;
     int number;
+    int position;
     unsigned long offset;   /*  Byte offset of game within file.     */
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;
  
+extern int storedGames;
 extern int opponentKibitzes;
 extern ChessSquare gatingPiece;
 extern List gameList;
@@ -298,6 +300,7 @@ void NamesToList P((char *name, char **engines, char **mnemonics));
 int CreateTourney P((char *name));
 char *MakeName P((char *templ));
 void SwapEngines P((int n));
+void Substitute P((char *participants, int expunge));
 
 extern char* StripHighlight P((char *));  /* returns static data */
 extern char* StripHighlightAndTitle P((char *));  /* returns static data */
@@ -419,5 +422,8 @@ void SettingsPopUp P((ChessProgramState *cps)); // [HGM] really in front-end, bu
 int WaitForEngine P((ChessProgramState *cps, DelayedEventCallback x));
 void Load P((ChessProgramState *cps, int n));
 int MultiPV P((ChessProgramState *cps));
+void MoveHistorySet P(( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo ));
+void EvalGraphSet P(( int first, int last, int current, ChessProgramStats_Move * pvInfo ));
+void MakeEngineOutputTitle P((void));
 
 #endif /* _BACKEND */

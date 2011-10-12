@@ -658,6 +658,7 @@ Plays a game between two chess engines.
 The @kbd{Ctrl-T} key is a keyboard equivalent.
 @item Analysis Mode
 @cindex Analysis Mode, Menu Item
+@cindex null move
 XBoard tells the chess engine to start analyzing the current game/position
 and shows you the analysis as you move pieces around.
 The @kbd{Ctrl-A} key is a keyboard equivalent.
@@ -675,18 +676,21 @@ clock to tell XBoard which side moves first.
 
 4. Select Analysis Mode from the Mode Menu to start the analysis.
 
+You can now play legal moves to create follow-up positions for the
+engine to analyze, while the moves will be remembered as a stored game,
+and then step backward through this game to take the moves back.
+Note that you can also click on the clocks to set the opposite
+side to move (adding a so-called @samp{null move} to the game).
+
 The analysis function can also be used when observing games on an ICS
 with an engine loaded (zippy mode); the engine then will analyse
 the positions as they occur in the observed game.
-@item Analyze File
-@cindex Analyze File, Menu Item
-This option lets you load a game from a file (PGN, XBoard format, etc.)
-and analyze it. The @kbd{Ctrl-F} key is a keyboard equivalent.
-When you select this menu item, a pop-up window appears
-and asks for a file name to load.
-If the file contains multiple games, another pop up appears that lets
-you select which game you wish to analyze.
-After a game is loaded, XBoard will start auto-playing the game,
+@item Analyze Game
+@cindex Analyze Game, Menu Item
+This option subjects the currently loaded game to aoutomatic
+analysis by the loaded engine.
+The @kbd{Ctrl-G} key is a keyboard equivalent.
+XBoard will start auto-playing the game from the currently displayed position,
 while the engine is analyzing the current position.
 The game will be annotated with the results of these analyses.
 In particlar, the score and depth will be added as a comment,
@@ -863,9 +867,10 @@ possible arguments on the engine command line
 (if the engine docs say the engine needs any), 
 and the directory where the engine should look for its files
 (if this cannot be deduced automatically from the specification of the engine executable). 
-You will also have specify (with the aid of checkboxes) if the engine is UCI. 
+You will also have to specify (with the aid of checkboxes) if the engine is UCI. 
 If ‘Add this engine to the list’ is ticked (which it is by default), 
 the engine will be added to the list of installed engines in your settings file, 
+(provided you save the settings!),
 so that next time you can select it from the drop-down list. 
 You can also specify a ‘nickname’, 
 under which the engine will then appear in that drop-down list, 
@@ -1117,6 +1122,11 @@ The flash-rate setting determines how rapidly this flashing occurs.
 @cindex Animation Speed, Menu Item
 Determines the duration (in msec) of an animation step,
 when @samp{Animate Moving} is swiched on.
+@itemx Zoom factor in Evaluation Graph
+@cindex Zoom factor in Evaluation Graph, Menu Item
+Sets the valueof the @code{evalZoom} option,
+indicating the factor by which the score interval (-1,1) should be
+blown up on the vertical axis of the Evaluation Graph.
 @item Time Control
 @cindex Time Control, Menu Item
 Pops up a sub-menu where you can set the time-control parameters interactively.
@@ -1318,7 +1328,7 @@ matches between two chess programs
 @itemx Tournament file
 @cindex Tournament file, Menu item
 To run a tournament, XBoard needs a file to record its progress, 
-to resume the tourney when it is interrupted.
+so it can resume the tourney when it is interrupted.
 When you want to conduct anything more complex than a simple 
 two-player match with the currently loaded engines, 
 (i.e. when you select a list of participants), 
@@ -1366,7 +1376,7 @@ E.g. if you specified 10 engine, and tourney type = 2,
 the first 2 engines each play the remaining 8. 
 A value of -1 instructs XBoard to play Swiss; for this to work an external
 pairing engine must be specified through the @code{pairingEngine} option.
-Each Swiss round will be concidered a tourney cycle in that case.
+Each Swiss round will be considered a tourney cycle in that case.
 Default:0
 @itemx Number of tourney cycles
 @itemx Default number of Games
@@ -1398,11 +1408,33 @@ File where the tournament games are saved
 These items optionally specify the file with move sequences or board positions the tourney 
 games should start from.
 The corresponding numbers specify the number of the game or position in the file.
-Here a value -1 means automatical stepping through all games on the file,
+Here a value -1 means automatic stepping through all games on the file,
 -2 automatic stepping every two games.
 The Rewind-Index parameter causes a stepping index to reset to one after reaching
 a specified value.
+A setting of -2 for the game number will also be effective in a tournament without
+specifying a game file, but playing from the GUI book instead.
+In this case the first (odd) games will randomly select from the book,
+but the second (even) games will select the same moves from the book as the previous game.
+(Note this leads to the same opening only if both engines use the GUI book!)
 Default: No game or position file will be used. The default index if such a file is used is 1.
+@itemx Replace Engine
+@itemx Upgrade Engine
+@cindex Replace Engine, Menu Item
+@cindex Upgrade Engine, Menu Item
+With these two buttons you can alter the participants of an already running tournament.
+After opening the Match Options dialog on an XBoard that iw playing fo the tourney,
+you will see all the tourney parameters in the dialog fields.
+You can then replace the name of one engine by that of another
+by editing the @samp{participants} field.
+(But preserve the order of the others!)
+Pressing the button after that will cause the substitution.
+With the @samp{Upgrade Engine} button the substitution will only affect future games.
+With @samp{Replace Engine} all games the substituted engine has already played will
+be invalidated, and they will be replayed with the substitute engine.
+In this latter case the engine must not be playing when you do this,
+but otherwise there is no need to pause the tournament play
+for making a substitution.
 
 @item Load Game Options
 @cindex Load Game Options, Menu Item
@@ -1410,8 +1442,54 @@ Summons a dialog where you can set the @code{autoDisplayComment} and
 @code{autoDisplayTags} options, (which control popups when viewing loaded games),
 and specify the rate at which loaded games are auto-played,
 in seconds per move (which can be a fractional number, like 1.6).
+You can also set search criteria for determining which games
+will be displayed in the Game List for a multi-game file, 
+and thus be eligible for loading:
+@itemx Elo of strongest player
+@itemx Elo of weakest player
+@itemx year
+@cindex Elo of strongest player, Menu Item
+@cindex Elo of weakest player, Menu Item
+@cindex year, Menu Item
+These numeric fields set thresholds (lower limits) on the Elo rating of the mentioned player,
+or the date the game was played.
+Defaults: 0
+@itemx Search mode
+@cindex Search mode, Menu Item
+@cindex find position, Menu Item
+This setting determines which positions in a game will be considered a match
+to the position currently displayed in the board window
+when you press the @samp{find position} button in the Game List.
+You can search for an exact match, 
+a position that has all shown material in the same place, 
+but might contain additional material,
+a position that has all Pawns in the same place,
+but can have the shown material anywhere,
+a position that	can have all shown material anywhere,
+or a position that has material between certain limits anywhere.
+For the latter you have to place the material that must be present
+in the four lowest ranks of the board,
+and optional additional material in the four highest ranks of the board.
+You can request the optional material to be balanced.
+@itemx number of consecutive positions
+@cindex number of consecutive positions, Menu Item
+When you are searching by material, rather than for an exact match,
+this parameter indicates forhowmany consecutive game positions
+the same amount of material must be on the board before it is
+considered a match.
+@itemx Also match reversed colors
+@itemx Also match left-right flipped position
+@cindex Also match reversed colors, Menu Item
+@cindex Also match left-right flipped position, Menu Item
+When looking for matching positions rather than by material,
+these settings determine whether mirror images 
+(in case of a vertical flip in combination with color reversal)
+will be also considered a match.
+The left-right flipping is only useful after all castling rights
+have expired (or in Xiangqi).
+
 @item Save Game Options
-@cindex ave Game Options, Menu Item
+@cindex Save Game Options, Menu Item
 Summons a dialog where you can specify the files on which XBoard should
 automtically save any played or entered games, 
 (the @code{saveGameFile} option), 
@@ -1580,8 +1658,9 @@ ToStartProc, TrainingProc, TruncateGameProc, and TwoMachinesProc.
 
 This section documents the command-line options to XBoard.  You can
 set these options in two ways: by typing them on the shell command
-line you use to start XBoard, or by setting them as X resources
-(typically in your @file{.Xresources} file).  Many of the options
+line you use to start XBoard, or by editing the settings file
+(usually ~/.xboardrc) to alter the value of the setting that was
+saved there.  Some of the options
 cannot be changed while XBoard is running; others set the initial
 state of items that can be changed with the @ref{Options} menu.
 
@@ -1593,15 +1672,6 @@ option on (@samp{-opt}), or the short name preceded by @samp{x} to
 turn the option off (@samp{-xopt}). For options that take strings or
 numbers as values, you can use the long or short option names
 interchangeably.
-
-Each option corresponds to an X resource with the same name, so
-if you like, you can set options in your @file{.Xresources} file
-or in a file named @file{XBoard} in your home directory.
-For options that have two names, the longer one is the name of
-the corresponding X resource; the short name is not recognized.
-To turn a boolean option on or off as an
-X resource, give its long name followed by the value
-true or false (@samp{XBoard*longOptionName: true}).
 
 @menu
 * Chess engine options::        Controlling the chess engine.
@@ -1965,10 +2035,10 @@ Indicates if the mentioned engine has its own opening book it should play from,
 rather than using the external book through XBoard. Default: false.
 @item -fn string or -firstPgnName string
 @itemx -sn string or -secondPgnName string
-@cindex firstPgnName string, option
-@cindex secondPgnName string, option
-@cindex fn string, option
-@cindex sn string, option
+@cindex firstPgnName, option
+@cindex secondPgnName, option
+@cindex fn, option
+@cindex sn, option
 Indicates the name that should be used for the engine in PGN tags of
 engine-engine games.
 Intended to allow you to install verions of the same engine with different settings, 
@@ -2073,6 +2143,19 @@ and “pairing N”, (where N is the number of the tourney game).
 To the latter the pairing engine should answer with “A-B”, 
 where A and B are participant numbers (in the range 1-N). 
 (There should be no reply to the results command.) Default: empty string.
+@item -afterGame string
+@cindex afterGame, option
+When non-empty, the given string will be executed as a system command 
+after each tournament game.
+This can be used, for example, to autmatically run a cross-table generator
+on the PGN file where games are saved, to update the tourney standings.
+Default: ""
+@item -seedBase number
+@cindex seedBase, option
+Used to store the seed of the pseudo-random-number generator in the
+tourneyFile, so that separate instances of XBoard working on the same
+tourney can take coherent 'random' decisions, such as picking an
+opening for a given game number.
 @end table
 
 @node ICS options
@@ -2580,9 +2663,11 @@ home directory.
 @item -display
 @itemx -geometry
 @itemx -iconic
+@itemx -name
 @cindex display, option
 @cindex geometry, option
 @cindex iconic, option
+@cindex resource name, option
 These and most other standard Xt options are accepted.
 @item -noGUI
 @cindex noGUI, option
@@ -2698,6 +2783,15 @@ If this option is False, xboard omits the [<<] [<] [P] [>] [>>] button
 bar from the window, allowing the message line to be wider.  You can
 still get the functions of these buttons using the menus or their keyboard
 shortcuts.  Default: true.
+@item -evalZoom factor
+@cindex evalZoom, option
+The score interval (-1,1) is blown up on the vertical axis of
+the Evaluation Graph by the given factor.
+Default: 1
+@item -evalThreshold n
+@cindex evalThreshold, option
+Score below n (centiPawn) are plotted as 0 in the Evaluation Graph.
+Default: 25
 @item -mono/-xmono or -monoMode true/false
 @cindex mono, option
 @cindex monoMode, option
@@ -2870,6 +2964,18 @@ On a grayscale monitor you might prefer:
 -premoveHighlightColor gray70
 -lowTimeWarningColor   gray70
 @end example
+@item -useBoardTexture true/false
+@itemx -liteBackTextureFile filename
+@itemx -darkBackTextureFile filename
+@cindex useBoardTexture, option
+@cindex liteBackTextureFile, option
+@cindex darkBackTextureFile, option
+Indicate the pixmap files to be used for drawing the board squares, 
+and if they should be used rather than using simple colors.
+The algorithm for cutting squares out of a given bitmap is such that
+the picture is perfectly reproduced when a bitmap the size of
+the complete board is given.
+Default: false and ""
 @item -drag/-xdrag or -animateDragging true/false
 @cindex drag, option
 @cindex animateDragging, option
@@ -2923,6 +3029,11 @@ Default: False.
 When true, scores on the Engine Output window during analysis
 will be printed from the white point-of-view, rather than the
 side-to-move point-of-view.
+Default: False.
+@item -scoreWhite true|false
+@cindex scoreWhite, option
+When true, scores will always be printed from the white point-of-view, 
+rather than the side-to-move point-of-view.
 Default: False.
 @end table
 
@@ -3150,6 +3261,22 @@ Default is the login name on your local computer.
 @cindex delayBeforeQuit, option
 @cindex delayAfterQuit, option
 These options specify how long XBoard has to wait before sending a termination signal to rogue engine processes, that do not want to react to the 'quit' command. The second one determines the pause after killing the engine, to make sure it dies.
+@item -searchMode n
+@cindex searchMode, option
+The integer n encodes the mode for the @samp{find position} function.
+Default: 1 (= Exact position match)
+@item -eloThresholdBoth elo
+@itemx -eloThresholdAny elo
+@cindex eloThresholdBoth, option
+@cindex eloThresholdAny, option
+Defines a lower limit for the Elo rating, which has to be surpassed
+before a game will be considered when searching for a board position.
+Default: 0
+@item -dateThreshold year
+@cindex dateThreshold, option
+Only games not played before the given year will be considered when
+searching for a board position
+
 
 @end table
 
@@ -3615,7 +3742,7 @@ odd number of total games is specified.
 A one-word alias for yourself or your opponent.
 @item -wname <full name>
 @itemx -bname <full name>
-@itemx -name <full name>
+@itemx -myname <full name>
 @itemx -oppname <full name>
 The full name of White, Black, yourself or your opponent.
 @item -wna <net address>

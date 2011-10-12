@@ -73,7 +73,7 @@ int SkipWhite(char **p)
     return *p != start;
 }
 
-int Match(char *pattern, char **ptr)
+inline int Match(char *pattern, char **ptr)
 {
     char *p = pattern, *s = *ptr;
     while(*p && (*p == *s++ || s[-1] == '\r' && *p--)) p++;
@@ -84,7 +84,7 @@ int Match(char *pattern, char **ptr)
     return 0; // no match, no ptr update
 }
 
-int Word(char *pattern, char **p)
+inline int Word(char *pattern, char **p)
 {
     if(Match(pattern, p)) return 1;
     if(*pattern >= 'a' && *pattern <= 'z' && *pattern - **p == 'a' - 'A') { // capitalized
@@ -157,39 +157,6 @@ int NextUnit(char **p)
 	}
 	parseStart = oldp = *p; // remember where we begin
 
-	// Next we do some common symbols where the first character commits us to things that cannot possibly be a move
-	// (but not {} comments, as those force time-consuming matching of PGN results immediately after it)
-
-	// ********* PGN tags ******************************************
-	if(**p == '[') {
-	    oldp = ++(*p);
-	    if(Match("--", p)) { // "[--" could be start of position diagram
-		if(!Scan(']', p) && (*p)[-3] == '-' && (*p)[-2] == '-') return PositionDiagram; 
-		*p = oldp;
-	    }
-	    SkipWhite(p);
-	    if(isdigit(**p) || isalpha(**p)) {
-		do (*p)++; while(isdigit(**p) || isalpha(**p) || **p == '+' ||
-				**p == '-' || **p == '=' || **p == '_' || **p == '#');
-		SkipWhite(p);
-		if(*(*p)++ == '"') {
-		    while(**p != '\n' && (*(*p)++ != '"'|| (*p)[-2] == '\\')); // look for unescaped quote
-		    if((*p)[-1] !='"') { *p = oldp; Scan(']', p); return Comment; } // string closing delimiter missing
-		    SkipWhite(p); if(*(*p)++ == ']') return PGNTag;
-		}
-	    }
-	    Scan(']', p); return Comment;
-	}
-
-
-	// ********* variations (nesting) ******************************
-	if(**p =='(') {
-	    if(RdTime(')', p)) return ElapsedTime;
-	    return Open;
-	}
-	if(**p ==')') { (*p)++; return Close; }
-	if(**p == ';') { while(**p != '\n') (*p)++; return Comment; }
-
 
 	// ********* attempt to recognize a SAN move in the leading non-blank text *****
 	piece = separator = promoted = slash = n = 0;
@@ -247,7 +214,7 @@ if(appData.debugMode)fprintf(debugFP, "trial %d,%d,%d,%d  type %d%d%d%d\n", coor
 		 && (coord[0] != 14 || coord[2] != 14) /* reserve oo for castling! */ ) {
 		piece = 'P'; n = 4; // kludge alert: fake full to-square
 	    }
-	}
+	} else if(n == 1 && type[0] == NUMERIC && coord[0] > 1) { while(**p == '.') (*p)++; return Nothing; } // fast exit for move numbers
 	if(n == 4 && type[2] != type[3] && // we have a valid to-square (kludge: type[3] can be NOTHING on fxg type move)
 		     (piece || !promoted) && // promoted indicator only valid on named piece type
 	             (type[2] == ALPHABETIC || gameInfo.variant == VariantShogi)) { // in Shogi also allow alphabetic rank
@@ -339,10 +306,33 @@ if(appData.debugMode)fprintf(debugFP, "trial %d,%d,%d,%d  type %d%d%d%d\n", coor
 	    }
 	}
 badMove:// we failed to find algebraic move
+	*p = oldp;
 
+
+	// Next we do some common symbols where the first character commits us to things that cannot possibly be a move
+
+	// ********* PGN tags ******************************************
+	if(**p == '[') {
+	    oldp = ++(*p);
+	    if(Match("--", p)) { // "[--" could be start of position diagram
+		if(!Scan(']', p) && (*p)[-3] == '-' && (*p)[-2] == '-') return PositionDiagram; 
+		*p = oldp;
+	    }
+	    SkipWhite(p);
+	    if(isdigit(**p) || isalpha(**p)) {
+		do (*p)++; while(isdigit(**p) || isalpha(**p) || **p == '+' ||
+				**p == '-' || **p == '=' || **p == '_' || **p == '#');
+		SkipWhite(p);
+		if(*(*p)++ == '"') {
+		    while(**p != '\n' && (*(*p)++ != '"'|| (*p)[-2] == '\\')); // look for unescaped quote
+		    if((*p)[-1] !='"') { *p = oldp; Scan(']', p); return Comment; } // string closing delimiter missing
+		    SkipWhite(p); if(*(*p)++ == ']') return PGNTag;
+		}
+	    }
+	    Scan(']', p); return Comment;
+	}
 
 	// ********* SAN Castings *************************************
-	*p = oldp;
 	if(**p == 'O' || **p == 'o' || **p == '0') {
 	    int castlingType = 0;
 	    if(Match("O-O-O", p) || Match("o-o-o", p) || Match("0-0-0", p) || 
@@ -390,6 +380,15 @@ badMove:// we failed to find algebraic move
 			      rf, ff, rt, ft, NULLCHAR);
 	    }
 	}
+
+
+	// ********* variations (nesting) ******************************
+	if(**p =='(') {
+	    if(RdTime(')', p)) return ElapsedTime;
+	    return Open;
+	}
+	if(**p ==')') { (*p)++; return Close; }
+	if(**p == ';') { while(**p != '\n') (*p)++; return Comment; }
 
 
 	// ********* Comments and result messages **********************
@@ -489,6 +488,10 @@ badMove:// we failed to find algebraic move
 	    *p = oldp; // we might need to re-match the skipped stuff
 	}
 
+	if(Match("@@@@", p) || Match("--", p) || Match("Z0", p) || Match("pass", p) || Match("null", p)) {
+	    strncpy(currentMoveString, "@@@@", 5);
+	    return yyboardindex & F_WHITE_ON_MOVE ? WhiteDrop : BlackDrop;
+	}
 
 	// ********* Efficient skipping of (mostly) alphabetic chatter **********
 	while(isdigit(**p) || isalpha(**p) || **p == '-') (*p)++;

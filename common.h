@@ -109,7 +109,7 @@ int pclose(FILE *);
 
 // [HGM] license: Messages that engines must print to satisfy their license requirements for patented variants
 #define GOTHIC "Gothic Chess (see www.GothicChess.com) is licensed under U.S. Patent #6,481,716 by Ed Trice"
-#define NOFALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
+#define FALCON "Falcon Chess (see www.chessvariants.com) is licensed under U.S. Patent #5,690,334 by George W. Duke"
 
 /* [HGM] Some notes about board sizes:
    In games that allow piece drops, the holdings are considered part of the
@@ -180,7 +180,8 @@ int pclose(FILE *);
 #define COMMENT_FONT 4
 #define EDITTAGS_FONT 5
 #define MOVEHISTORY_FONT 6
-#define NUM_FONTS 7
+#define GAMELIST_FONT 7
+#define NUM_FONTS 8
 
 /* Default to no flashing (the "usual" XBoard behavior) */
 #define FLASH_COUNT	0		/* Number of times to flash */
@@ -533,6 +534,7 @@ typedef struct {
     Boolean saveExtendedInfoInPGN; /* If true, saved PGN games contain extended info */
     Boolean hideThinkingFromHuman; /* If true, program thinking is generated but not displayed in human/computer matches */
     Boolean useBitmaps;
+    Boolean useFont;
     char * liteBackTextureFile; /* Name of texture bitmap for lite squares */
     char * darkBackTextureFile; /* Name of texture bitmap for dark squares */
     int liteBackTextureMode;
@@ -570,6 +572,7 @@ typedef struct {
     char * ucciAdapter;
     char * polyglotDir;
     Boolean usePolyglotBook;
+    Boolean defNoBook;
     char * polyglotBook;
     int bookDepth;
     int bookStrength;
@@ -627,6 +630,10 @@ typedef struct {
     int NPS[ENGINES];
     Boolean autoKibitz;
     int engineComments;
+    int eloThreshold1;  /* [HGM] select   */
+    int eloThreshold2;
+    int dateThreshold;
+    int searchMode;
     char *userName;
     int rewindIndex;    /* [HGM] autoinc   */
     int sameColorGames; /* [HGM] alternate */
@@ -661,8 +668,10 @@ typedef struct {
     char *processes;
     char *results;
     char *participants;
+    char *afterGame;
     int tourneyType;
     int tourneyCycles;
+    int seedBase;
     Boolean roundSync;
     Boolean cycleSync;
 } AppData, *AppDataPtr;

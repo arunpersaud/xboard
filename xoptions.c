@@ -365,12 +365,23 @@ void AddToTourney(int n)
 
 int MatchOK(int n)
 {
-    if(appData.participants && appData.participants[0]) free(appData.participants);
-    appData.participants = strdup(engineName);
-    if(!CreateTourney(tfName)) return !appData.participants[0];
+    ASSIGN(appData.participants, engineName);
+    if(!CreateTourney(tfName) || matchMode) return matchMode || !appData.participants[0];
     PopDown(0); // early popdown to prevent FreezeUI called through MatchEvent from causing XtGrab warning
     MatchEvent(2); // start tourney
     return 1;
+}
+
+void ReplaceParticipant()
+{
+    GenericReadout(3);
+    Substitute(strdup(engineName), True);
+}
+
+void UpgradeParticipant()
+{
+    GenericReadout(3);
+    Substitute(strdup(engineName), False);
 }
 
 Option matchOptions[] = {
@@ -389,7 +400,10 @@ Option matchOptions[] = {
 { 0,  0,          0, NULL, (void*) &appData.loadPositionFile, ".fen", NULL, FileName, N_("File with Start Positions:") },
 { 0, -2, 1000000000, NULL, (void*) &appData.loadPositionIndex, "", NULL, Spin, N_("Position Number (-1 or -2 = Auto-Increment):") },
 { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind Index after this many Games (0 = never):") },
-{ 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
+{ 0,  0,          0, NULL, (void*) &appData.defNoBook, "", NULL, CheckBox, N_("Disable own engine books by default") },
+{ 0,  0,          0, NULL, (void*) &ReplaceParticipant, NULL, NULL, Button, N_("Replace Engine") },
+{ 0,  1,          0, NULL, (void*) &UpgradeParticipant, NULL, NULL, Button, N_("Upgrade Engine") },
+{ 0, 1, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
 int GeneralOptionsOK(int n)
@@ -482,17 +496,18 @@ Option variantDescriptors[] = {
 { VariantMakruk, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("makruk")},
 { VariantGreat, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Great Shatranj (10x8)")},
 { VariantAtomic, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("atomic")},
-{ VariantCapablanca, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Capablanca (10x8)")},
+{ VariantFalcon, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("falcon (10x8)")},
 { VariantTwoKings, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("two kings")},
-{ VariantGothic, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Gothic (10x8)")},
+{ VariantCapablanca, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Capablanca (10x8)")},
 { Variant3Check, 0, 135, NULL, (void*) &Pick, "#FFFFFF", NULL, Button, N_("3-checks")},
-{ VariantJanus, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("janus (10x8)")},
+{ VariantGothic, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("Gothic (10x8)")},
 { VariantSuicide, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("suicide")},
-{ VariantCapaRandom, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("CRC (10x8)")},
+{ VariantJanus, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("janus (10x8)")},
 { VariantGiveaway, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("give-away")},
-{ VariantGrand, 1, 135, NULL, (void*) &Pick, "#5070FF", NULL, Button, N_("grand (10x10)")},
+{ VariantCapaRandom, 1, 135, NULL, (void*) &Pick, "#BFBFFF", NULL, Button, N_("CRC (10x8)")},
 { VariantLosers, 0, 135, NULL, (void*) &Pick, "#FFFFBF", NULL, Button, N_("losers")},
-{ VariantSpartan, 1, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
+{ VariantGrand, 1, 135, NULL, (void*) &Pick, "#5070FF", NULL, Button, N_("grand (10x10)")},
+{ VariantSpartan, 0, 135, NULL, (void*) &Pick, "#FF0000", NULL, Button, N_("Spartan")},
 { 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Board size ( -1 = default for selected variant):")},
 { 0, -1, BOARD_RANKS-1, NULL, (void*) &appData.NrRanks, "", NULL, Spin, N_("Number of Board Ranks:") },
 { 0, -1, BOARD_FILES, NULL, (void*) &appData.NrFiles, "", NULL, Spin, N_("Number of Board Files:") },
@@ -590,12 +605,27 @@ Option icsOptions[] = {
 { 0, 0, 0, NULL, (void*) &IcsOptionsOK, "", NULL, EndMark , "" }
 };
 
+char *modeNames[] = { N_("Exact match"), N_("Shown position is subset"), N_("Same material and Pawn chain"), N_("Same material"), NULL };
+char *modeValues[] = { "1", "2", "3", "4" };
+char *searchMode;
+
+int LoadOptionsOK()
+{
+    appData.searchMode = atoi(searchMode);
+    return 1;
+}
+
 Option loadOptions[] = {
 { 0, 0, 0, NULL, (void*) &appData.autoDisplayTags, "", NULL, CheckBox, N_("Auto-Display Tags") },
 { 0, 0, 0, NULL, (void*) &appData.autoDisplayComment, "", NULL, CheckBox, N_("Auto-Display Comment") },
 { 0, 0, 0, NULL, NULL, NULL, NULL, Label, N_("Auto-Play speed of loaded games\n(0 = instant, -1 = off):") },
 { 0, -1, 10000000, NULL, (void*) &appData.timeDelay, "", NULL, Fractional, N_("Seconds per Move:") },
-{ 0,  0, 0, NULL, NULL, "", NULL, EndMark , "" }
+{   0,  0,    0, NULL, NULL, NULL, NULL, Label,  N_("\nThresholds for position filtering in game list:") },
+{ 0, 0, 5000, NULL, (void*) &appData.eloThreshold1, "", NULL, Spin, N_("Elo of strongest player at least:") },
+{ 0, 0, 5000, NULL, (void*) &appData.eloThreshold2, "", NULL, Spin, N_("Elo of weakest player at least:") },
+{ 0, 0, 5000, NULL, (void*) &appData.dateThreshold, "", NULL, Spin, N_("No games before year:") },
+{ 1, 0, 180, NULL, (void*) &searchMode, (char*) modeNames, modeValues, ComboBox, N_("Seach mode:") },
+{ 0,  0, 0, NULL, (void*) &LoadOptionsOK, "", NULL, EndMark , "" }
 };
 
 Option saveOptions[] = {
@@ -1317,7 +1347,8 @@ void LoadOptionsProc(w, event, prms, nprms)
      XEvent *event;
      String *prms;
      Cardinal *nprms;
-{   
+{
+   ASSIGN(searchMode, modeValues[appData.searchMode-1]);
    GenericPopUp(loadOptions, _("Load Game Options"), 0);
 }
 
@@ -1461,7 +1492,8 @@ void MatchOptionsProc(w, event, prms, nprms)
    NamesToList(firstChessProgramNames, engineList, engineMnemonic);
    comboCallback = &AddToTourney;
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
-   ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));   
+   ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
+   ASSIGN(engineName, appData.participants);
    GenericPopUp(matchOptions, _("Match Options"), 0);
 }
 
@@ -1590,7 +1622,7 @@ int NewComCallback(int n)
 }
 
 void SaveChanges(int n)
-{    
+{
     GenericReadout(0);
     ReplaceComment(commentIndex, commentText);
 }
@@ -1845,6 +1877,7 @@ void activateCB(entry, data)
    
     val = gtk_entry_get_text(GTK_ENTRY(entry));
     TypeInDoneEvent((char*)val);    
+
     PopDown(0);
 }
 
@@ -1871,6 +1904,18 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
     if ( n == 1 && *buf > 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) // printable, no alt        
         PopUpMoveDialog(*buf);
 
+//    if ( n == 1 && *buf >= 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) { // printable, no alt
+//	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
+//	    if(shells[4]) { // box already exists: append to current contents
+//		char *p, newText[MSG_SIZ];
+//		GetWidgetText(&boxOptions[0], &p);
+//		snprintf(newText, MSG_SIZ, "%s%c", p, *buf);
+//		SetWidgetText(&boxOptions[0], newText, 4);
+//		if(shellUp[4]) XSetInputFocus(xDisplay, XtWindow(boxOptions[0].handle), RevertToPointerRoot, CurrentTime); //why???
+//	    } else icsText = buf; // box did not exist: make sure it pops up with char in it
+//	    InputBoxPopup();
+//	} else PopUpMoveDialog(*buf);
+//    }
 }
 
 void

@@ -29,6 +29,7 @@ void LoadSelectedProc P((GtkTreeView *treeview, GtkTreePath *path,
 			 GtkTreeViewColumn *col, gpointer userdata));
 void SetFilterProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
+int SaveGameListAsText P((FILE *f));
 
 extern Widget gameListShell;
 #endif /* _XGAMEL_H */

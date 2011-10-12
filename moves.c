@@ -70,7 +70,7 @@ int SameColor P((ChessSquare, ChessSquare));
 int PosFlags(int index);
 
 extern signed char initialRights[BOARD_FILES]; /* [HGM] all rights enabled, set in InitPosition */
-
+int quickFlag;
 
 int WhitePiece(piece)
      ChessSquare piece;
@@ -1345,6 +1345,15 @@ void Disambiguate(board, flags, closure)
     }
     rFilter = closure->rtIn; // [HGM] speed: only consider moves to given to-square
     fFilter = closure->ftIn;
+    if(quickFlag) { // [HGM] speed: try without check test first, because if that is not ambiguous, we are happy
+        GenLegal(board, flags|F_IGNORE_CHECK, DisambiguateCallback, (VOIDSTAR) closure, closure->pieceIn);
+        if(closure->count > 1) { // gamble did not pay off. retry with check test to resolve ambiguity
+            closure->count = closure->captures = 0;
+            closure->rf = closure->ff = closure->rt = closure->ft = 0;
+            closure->kind = ImpossibleMove;
+            GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) closure, closure->pieceIn); // [HGM] speed: only pieces of requested type
+        }
+    } else
     GenLegal(board, flags, DisambiguateCallback, (VOIDSTAR) closure, closure->pieceIn); // [HGM] speed: only pieces of requested type
     if (closure->count == 0) {
 	/* See if it's an illegal move due to check */
@@ -1500,6 +1509,7 @@ ChessMove CoordsToAlgebraic(board, flags, rf, ff, rt, ft, promoChar, out)
     CoordsToAlgebraicClosure cl;
 
     if (rf == DROP_RANK) {
+	if(ff == EmptySquare) { strncpy(outp, "--",3); return NormalMove; } // [HGM] pass
 	/* Bughouse piece drop */
 	*outp++ = ToUpper(PieceToChar((ChessSquare) ff));
 	*outp++ = '@';

@@ -76,6 +76,8 @@ extern char *getenv();
 #include <X11/Xaw/Viewport.h>
 #endif
 
+#include <gtk/gtk.h>
+
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
@@ -83,7 +85,6 @@ extern char *getenv();
 #include "xedittags.h"
 #include "gettext.h"
 
-#include <gtk/gtk.h>
 
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)

@@ -100,7 +100,7 @@ void SetFocus P((Widget w, XtPointer data, XEvent *event, Boolean *b));
 
 static Widget filterText;
 static char filterString[MSG_SIZ];
-static int listLength;
+static int listLength, wins, losses, draws, page;
 
 static GtkWidget        *GUI_GameList=NULL;
 static GtkTreeView      *GUI_GameListView=NULL;
@@ -189,56 +189,6 @@ GameListCallback(w, client_data, call_data)
     XawListReturnStruct *rs;
     int index;
 
-//    j = 0;
-//    XtSetArg(args[j], XtNlabel, &name);  j++;
-//    XtGetValues(w, args, j);
-//
-//    if (strcmp(name, _("close")) == 0) {
-//	GameListPopDown();
-//	return;
-//    }
-//    listwidg = XtNameToWidget(glc->shell, "*form.viewport.list");
-//    rs = XawListShowCurrent(listwidg);
-//    if (strcmp(name, _("load")) == 0) {
-//	index = rs->list_index;
-//	if (index < 0) {
-//	    DisplayError(_("No game selected"), 0);
-//	    return;
-//	}
-//    } else if (strcmp(name, _("next")) == 0) {
-//	index = rs->list_index + 1;
-//	if (index >= listLength) {
-//	    DisplayError(_("Can't go forward any further"), 0);
-//	    return;
-//	}
-//	XawListHighlight(listwidg, index);
-//    } else if (strcmp(name, _("prev")) == 0) {
-//	index = rs->list_index - 1;
-//	if (index < 0) {
-//	    DisplayError(_("Can't back up any further"), 0);
-//	    return;
-//	}
-//	XawListHighlight(listwidg, index);
-//    } else if (strcmp(name, _("apply")) == 0) {
-//        String name;
-//        j = 0;
-//        XtSetArg(args[j], XtNstring, &name);  j++;
-//	XtGetValues(filterText, args, j);
-//        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-//	XawListHighlight(listwidg, 0);
-//        GameListPrepare();
-//        return;
-//    }
-//#if 0
-//    index = atoi(glc->strings[index])-1; // [HGM] filter: read true index from sequence nr of line
-//    if (cmailMsgLoaded) {
-//	CmailLoadGame(glc->fp, index + 1, glc->filename, True);
-//    } else {
-//	LoadGame(glc->fp, index + 1, glc->filename, True);
-//    }
-//#else
-//    printf("This code should have been unreachable. Please report bug!\n");
-//#endif
 }
 
 void
@@ -294,6 +244,8 @@ GameListPopUp(fp, filename)
       gtk_window_set_default_size(GTK_WINDOW(GUI_GameList), squareSize*6, squareSize*3);
       gtk_window_resize ( GTK_WINDOW(GUI_GameList), squareSize*6, squareSize*3);
     }
+    page = 0;
+    //    GameListReplace(0); // [HGM] filter: code put in separate routine, and also called to set title
 
   /* show widget and focus*/
   gtk_window_present(GTK_WINDOW(GUI_GameList));
@@ -444,7 +396,7 @@ SetFilterProc(w, event, prms, nprms)
 //        XtSetArg(args[j], XtNstring, &name);  j++;
 //	XtGetValues(filterText, args, j);
 //        safeStrCpy(filterString, name, sizeof(filterString)/sizeof(filterString[0]));
-//        GameListPrepare();
+//        GameListPrepare(False); GameListReplace(0);
 //	list = XtNameToWidget(glc->shell, "*form.viewport.list");
 //	XawListHighlight(list, 0);
 //        j = 0;
@@ -509,7 +461,6 @@ int SaveGameListAsText(FILE *f)
 
     /* Copy the list into the global memory block */
     if( f != NULL ) {
-
         lg = (ListGame *) gameList.head;
 
         for (nItem = 0; nItem < ((ListGame *) gameList.tailPred)->number; nItem++){

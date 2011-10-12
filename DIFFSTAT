@@ -1,29 +1,33 @@
-** Version master 20110507 (not an official release, includes changes from 4.5.2)
+** Version master 20110822 (not an official release, includes changes from 4.5.2)
 
 (git diff -b --stat --summary -M v4.5.2 HEAD)
 
  ABOUT-NLS                           | 1282 ++++++++++
- ChangeLog                           |  630 +++++-
- DIFFSTAT                            |  124 +
+ ChangeLog                           | 1118 +++++++++-
+ DIFFSTAT                            |  136 +
  Makefile.am                         |   16 +-
  NEWS                                |   16 +
- SHORTLOG                            |  108 +
- args.h                              |   97 +-
- backend.c                           | 1571 ++++++++++---
- backend.h                           |   19 +-
- book.c                              |  192 ++-
- common.h                            |  105 +-
+ SHORTLOG                            |  181 ++
+ args.h                              |  110 +-
+ backend.c                           | 2144 +++++++++++++----
+ backend.h                           |   24 +-
+ book.c                              |  195 ++-
+ common.h                            |  121 +-
  config.rpath                        |  280 ++-
  configure.ac                        |   16 +-
- engineoutput.c                      |   35 +-
- filebrowser/dir.c                   |    6 +-
+ engineoutput.c                      |   59 +-
+ engineoutput.h                      |    1 +
+ evalgraph.c                         |   38 +-
+ evalgraph.h                         |    1 +
+ filebrowser/dir.c                   |   15 +-
  filebrowser/draw.c                  |   49 +-
  filebrowser/path.c                  |   29 +-
  filebrowser/selfile.c               |   59 +-
  filebrowser/selfile.h               |   19 +-
- frontend.h                          |    8 +
- gamelist.c                          |    1 -
+ frontend.h                          |   11 +-
+ gamelist.c                          |    9 +-
  gettext.h                           |  262 ++-
+ history.c                           |   10 +-
  m4/gettext.m4                       |  383 +++
  m4/iconv.m4                         |  214 ++
  m4/lib-ld.m4                        |  110 +
@@ -32,8 +36,9 @@
  m4/nls.m4                           |   32 +
  m4/po.m4                            |  449 ++++
  m4/progtest.m4                      |   92 +
- moves.c                             |    6 +-
- parser.c                            | 4617 ++++-------------------------------
+ moves.c                             |  112 +-
+ moves.h                             |    6 +-
+ parser.c                            | 4630 ++++-------------------------------
  parser.l                            | 1203 ---------
  po/LINGUAS                          |    3 +-
  po/Makefile.in.in                   |  160 +-
@@ -41,57 +46,62 @@
  po/POTFILES.in                      |    5 +-
  po/Rules-quot                       |   47 +
  po/boldquot.sed                     |   10 +
- po/de.po                            | 3036 ++++++++++++++++-------
+ po/de.po                            | 3087 +++++++++++++++++-------
  po/en@boldquot.header               |   25 +
  po/en@quot.header                   |   22 +
- po/es.po                            | 2456 +++++++++++++++++++
+ po/es.po                            | 2558 +++++++++++++++++++
  po/insert-header.sin                |   23 +
- po/it.po                            | 2456 +++++++++++++++++++
+ po/it.po                            | 2566 +++++++++++++++++++
  po/lng2po.sh                        |   96 +
  po/metascript                       |  125 +
  po/normalize.pl                     |   10 +
  po/quot.sed                         |    6 +
- po/ru.po                            | 2529 +++++++++++++++++++
+ po/ru.po                            | 2552 +++++++++++++++++++
  po/strip-bad-utf8.pl                |   14 +
- po/tr.po                            | 2931 ++++++++++++++++------
- po/uk.po                            | 2529 +++++++++++++++++++
- po/vi.po                            | 2529 +++++++++++++++++++
- po/xboard.pot                       | 2611 +++++++++++++++------
- po/zh_CN.po                         | 2529 +++++++++++++++++++
- po/zh_HK.po                         | 2456 +++++++++++++++++++
- po/zh_TW.po                         | 2529 +++++++++++++++++++
- uci.c                               |    3 +-
+ po/tr.po                            | 2641 +++++++++++++++-----
+ po/uk.po                            | 2560 +++++++++++++++++++
+ po/vi.po                            | 2541 +++++++++++++++++++
+ po/xboard.pot                       | 2605 ++++++++++++++------
+ po/zh_CN.po                         | 2550 +++++++++++++++++++
+ po/zh_HK.po                         | 2557 +++++++++++++++++++
+ po/zh_TW.po                         | 2550 +++++++++++++++++++
+ uci.c                               |    4 +-
  winboard/bitmaps/cross.ico          |  Bin 0 -> 766 bytes
  winboard/config.h                   |    6 +-
+ winboard/defaults.h                 |    1 +
  winboard/language/chinese(simp).lng |  786 ++++++
  winboard/language/chinese(trad).lng |  784 ++++++
  winboard/language/deutsch.lng       |  970 ++++++++
  winboard/language/italiano.lng      |  975 ++++++++
  winboard/language/russian.lng       |  993 ++++++++
- winboard/language/spanish.lng       |  952 ++++++++
+ winboard/language/spanish.lng       |  952 +++++++
  winboard/language/vietnamese.lng    |  972 ++++++++
  winboard/makefile.gcc               |    7 -
  winboard/makefile.ms                |    3 -
- winboard/resource.h                 |    2 +
+ winboard/resource.h                 |   22 +
  winboard/wedittags.c                |   13 +-
- winboard/wengineoutput.c            |    3 +-
- winboard/winboard.c                 |  233 +-
- winboard/winboard.h                 |    3 +
- winboard/winboard.rc                |    7 +-
+ winboard/wengineoutput.c            |    8 +-
+ winboard/wevalgraph.c               |    3 +-
+ winboard/wgamelist.c                |   37 +-
+ winboard/winboard.c                 |  356 ++--
+ winboard/winboard.h                 |    8 +-
+ winboard/winboard.rc                |   89 +-
  winboard/winboard.rtf               | 1644 +++++++------
- winboard/woptions.c                 |   43 +-
- winboard/wsettings.c                |  343 ++-
- xboard.c                            |  732 +++----
+ winboard/woptions.c                 |  137 +-
+ winboard/wsettings.c                |  397 +++-
+ xboard.c                            |  779 +++----
  xboard.conf.in                      |    1 +
- xboard.h                            |   43 +
- xboard.texi                         |   87 +-
+ xboard.h                            |   50 +
+ xboard.texi                         |  681 ++++--
  xedittags.c                         |  311 +---
- xengineoutput.c                     |   28 +-
- xevalgraph.c                        |   22 +-
- xgamelist.c                         |   44 +-
- xhistory.c                          |  466 +---
- xoptions.c                          | 1042 ++++-----
- 89 files changed, 42619 insertions(+), 11105 deletions(-)
+ xengineoutput.c                     |   46 +-
+ xevalgraph.c                        |   24 +-
+ xgamelist.c                         |  169 +-
+ xgamelist.h                         |    1 +
+ xhistory.c                          |  469 +---
+ xhistory.h                          |    2 -
+ xoptions.c                          | 1087 ++++-----
+ 99 files changed, 45088 insertions(+), 11483 deletions(-)
  create mode 100644 ABOUT-NLS
  create mode 100644 m4/gettext.m4
  create mode 100644 m4/iconv.m4

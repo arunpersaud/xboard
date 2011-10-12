@@ -389,7 +389,7 @@ GetOptionValues(HWND hDlg, ChessProgramState *cps, Option *optionList)
 		for(k=0; k<optionList[j].max; k++) {
 		    if(!strcmp(choices[k], newText)) new = k;
 		}
-		if(!cps && new) {
+		if(!cps && new > 0) {
 		    if(*(char**)optionList[j].target) free(*(char**)optionList[j].target);
 		    *(char**)optionList[j].target = strdup(optionList[j].choice[new]);
 		    break;
@@ -486,6 +486,7 @@ LRESULT CALLBACK SettingsProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		if( activeList[j].type  == SaveButton)
 		     GetOptionValues(hDlg, activeCps, activeList);
 		else if( activeList[j].type  != Button) break;
+		else if( !activeCps ) { (*(ButtonCallback*) activeList[j].target)(hDlg); break; }
 		snprintf(buf, MSG_SIZ, "option %s\n", activeList[j].name);
 		SendToProgram(buf, activeCps);
 	    }
@@ -693,10 +694,58 @@ char *tfName;
 int MatchOK()
 {
     if(autoinc) appData.loadGameIndex = appData.loadPositionIndex = -(twice + 1);
+    if(!appData.loadGameFile[0]) appData.loadGameIndex = -2*twice; // kludge to pass value of "twice" for use in GUI book
     if(swiss) { appData.defaultMatchGames = 1; appData.tourneyType = -1; }
-    if(CreateTourney(tfName)) MatchEvent(2); else return !appData.participants[0];
-    return 1;
+    if(CreateTourney(tfName) && !matchMode) { // CreateTourney reloads original settings if file already existed
+	MatchEvent(2);
+	return 1; // close dialog
+    }
+    return matchMode || !appData.participants[0]; // if we failed to create and are not in playing, forbid popdown if there are participants
 }
+
+char *GetParticipants(HWND hDlg)
+{
+    int len = GetWindowTextLength(GetDlgItem(hDlg, 2001+2*9)) + 1;
+    char *participants,*p, *q;
+    if(len < 4) return NULL; // box is empty (enough)
+    participants = (char*) malloc(len);
+    GetDlgItemText(hDlg, 2001+2*9, participants, len );
+    p = q = participants;
+    while(*p++ = *q++) if(p[-1] == '\r') p--;
+    return participants;
+}
+
+void ReplaceParticipant(HWND hDlg)
+{
+    char *participants = GetParticipants(hDlg);
+    Substitute(participants, TRUE);
+}
+	
+void UpgradeParticipant(HWND hDlg)
+{
+    char *participants = GetParticipants(hDlg);
+    Substitute(participants, FALSE);
+}
+
+void Inspect(HWND hDlg)
+{
+    FILE *f;
+    char name[MSG_SIZ];
+    GetDlgItemText(hDlg, 2001+2*1, name, MSG_SIZ );
+    if(name && name[0] && (f = fopen(name, "r")) ) {
+	char *saveSaveFile;
+	saveSaveFile = appData.saveGameFile; appData.saveGameFile = NULL; // this is a persistent option, protect from change
+	ParseArgsFromFile(f);
+	autoinc = ((appData.loadPositionFile[0] ? appData.loadGameIndex : appData.loadPositionIndex) < 0);
+	twice = ((appData.loadPositionFile[0] ? appData.loadGameIndex : appData.loadPositionIndex) == -2);
+	swiss = appData.tourneyType < 0;
+	SetOptionValues(hDlg, NULL, activeList);
+	FREE(appData.saveGameFile); appData.saveGameFile = saveSaveFile;
+    } else DisplayError(_("First you must specify an existing tourney file to clone"), 0);
+}
+
+void TimeControlOptionsPopup P((HWND hDlg));
+void UciOptionsPopup P((HWND hDlg));
 
 Option tourneyOptions[] = {
   { 0,  0,          4, NULL, (void*) &tfName, "", NULL, FileName, N_("Tournament file:") },
@@ -718,7 +767,13 @@ Option tourneyOptions[] = {
   { 0,  0,          0, NULL, (void*) &autoinc, "", NULL, CheckBox, N_("Step through lines/positions in file") },
   { 0,  0, 1000000000, NULL, (void*) &appData.rewindIndex, "", NULL, Spin, N_("Rewind after (0 = never):") },
   { 0,  0,          0, NULL, (void*) &twice, "", NULL, CheckBox, N_("Use each line/position twice") },
+  { 0,  0,          0, NULL, (void*) &appData.defNoBook, "", NULL, CheckBox, N_("Make all use GUI book by default") },
   { 0,  0, 1000000000, NULL, (void*) &appData.matchPause, "", NULL, Spin, N_("Pause between Games (ms):") },
+  { 0,  0,          0, NULL, (void*) &ReplaceParticipant, "", NULL, Button, N_("Replace Engine") },
+  { 0,  0,          0, NULL, (void*) &UpgradeParticipant, "", NULL, Button, N_("Upgrade Engine") },
+  { 0,  0,          0, NULL, (void*) &TimeControlOptionsPopup, "", NULL, Button, N_("Time Control...") },
+  { 0,  0,          0, NULL, (void*) &UciOptionsPopup, "", NULL, Button, N_("Common Engine...") },
+  { 0,  0,          0, NULL, (void*) &Inspect, "", NULL, Button, N_("Clone Tourney") },
   { 0, 0, 0, NULL, (void*) &MatchOK, "", NULL, EndMark , "" }
 };
 
@@ -741,7 +796,7 @@ void TourneyPopup(HWND hwnd)
     NamesToList(firstChessProgramNames, engineList, engineMnemonic);
     comboCallback = &AddToTourney;
     autoinc = appData.loadGameIndex < 0 || appData.loadPositionIndex < 0;
-    twice = TRUE; swiss = appData.tourneyType < 0;
+    twice = FALSE; swiss = appData.tourneyType < 0;
     while(engineList[n]) n++; tourneyOptions[3].max = n-1;
     snprintf(title, MSG_SIZ, _("Tournament and Match Options"));
     ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));

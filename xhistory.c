@@ -23,7 +23,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 
 #include <gtk/gtk.h>
 
@@ -50,6 +49,8 @@
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
+#include "xhistory.h"
+#include "xboard.h"
 #include "gettext.h"
 
 #ifdef ENABLE_NLS
@@ -60,7 +61,7 @@
 # define N_(s)  s
 #endif
 
-// templates for calls into back-end
+// templates for calls into back-end (= history.c; should be moved to history.h header shared with it!)
 void RefreshMemoContent P((void));
 void MemoContentUpdated P((void));
 void FindMoveByCharIndex P(( int char_index ));
@@ -103,7 +104,6 @@ void ClearHistoryMemo()
 // the colorNr argument says 0 = font-default, 1 = gray
 int AppendToHistoryMemo( char * text, int bold, int colorNr )
 {
-    Arg args[10];
     return AppendText(&historyOptions[0], text); // for now ignore bold & color stuff, as Xaw cannot handle that
 }
 
@@ -229,15 +229,3 @@ HistoryShowProc(w, event, prms, nprms)
   } else PopDown(7);
   ToNrEvent(currentMove);
 }
-
-// duplicate of code in winboard.c, so an move to back-end!
-void
-HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
-{
-    MoveHistorySet( movelist, first, last, current, pvInfoList );
-
-    EvalGraphSet( first, last, current, pvInfoList );
-
-    MakeEngineOutputTitle();
-}
-

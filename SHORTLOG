@@ -1,8 +1,8 @@
-** Version master 20110411 (not an official release, includes changes from 4.5.2)
+** Version master 20110822 (not an official release, includes changes from 4.5.2)
 
 (git log --pretty=short --cherry-pick master...v4.5.x^   |git shortlog --no-merges)
 
-Arun Persaud (26):
+Arun Persaud (32):
       removed parser.l from build process, also removed flex dependency from configure
       updated Changelog, NEWS, etc.
       new developer release
@@ -29,8 +29,14 @@ Arun Persaud (26):
       updated xboard.pot with released version
       translation: added new Ukrainian PO file from the TP
       translation: activated Ukrainian translation
+      updated Changelog, NEWS, etc.
+      new developer release
+      fixed segfault in xengineoutput
+      Revert "fixed segfault in xengineoutput", fixed in the backend now (from HGM)
+      malloc.h is not needed
+      new developer release
 
-H.G. Muller (134):
+H.G. Muller (210):
       New parser, written in C
       Implement yynewstr entry point in new parser
       Fix o-o castling in new parser
@@ -67,6 +73,7 @@ H.G. Muller (134):
       Fix some warnings and header-file improvement
       Put gettext markers in generic dialog creator
       Fix zippy-partner bug
+      Silence more rpm warnings
       Create conversion tools for language files
       Fix some warnings and header-file improvement
       Silence more rpm warnings
@@ -108,10 +115,8 @@ H.G. Muller (134):
       Make book-edit function WB
       Let Shift+RightClick on PV actually play the PV moves
       Import WinBoard language files into git
-      No clearing of Engine-Output memos on stat01
       Allow changing MultiPV setting from Engine-Output window
       Fix button sizing in generic popup
-      Fix vscrolling in XBoard Engine-Output window
       Let ParsePV always generate SAN move
       Automatically play moves of clicked PV in analyze mode
       Add option -absoluteAnalysisScores
@@ -125,7 +130,6 @@ H.G. Muller (134):
       Alow promotions and drops in book-editing
       Take account of holdings in book key
       Fix initialization of engine state
-      Obey san feature when sending book moves
       Add secondry adapter command for UCCI or USI
       Make engine startup failure non-fatal in WinBoard
       Let mentioning completed tourney file add one cycle
@@ -146,18 +150,13 @@ H.G. Muller (134):
       Fix concurrency in Swiss tourneys
       Fix display of last move of last match game
       Clear Engine-Output pane when initializing engine
-      Fix parameter handling in adapter command
       Fix display of logos
       Fix crash at end of Swiss tourney
-      Fix type of shuffleOpenings
       Redo New Shuffle Game dialog with generic popup
       Some refactoring in xoptions.c to separate out front-end
       Redo Time Control dialog with generic popup
       Add icon to WB for tournament files
       Update WB docs for tourney manager
-      Fix crash on switching sound in Vista
-      Fix empty-string option values in XBoard
-      Add -at and -opt options as alternative for @
       Fix default of -remoteUser
       Change long form of -tf option to -tourneyFile
       Make non-existing opton in settings file non-fatal
@@ -165,6 +164,89 @@ H.G. Muller (134):
       Redo Move History with generic popup in WinBoard style
       Make WB generic popup translatable
       Update window itle after last game of match
+      Add Score in Move List option to general options dialog XB
+      Use sound for ICS tells also with engine telluser popups
+      Fix crash on clearing new Move List window
+      Cure flicker in Move History window, fix highlighting
+      Add -fSAN / -sSAN options
+      Fix compile errors WinBoard
+      Increase efficiency of SAN generation / disambiguation
+      Fix some warnings
+      Update texi file
+      Modified po
+      Fix texi file, and update it further
+      Add Absolute Analysis Scores in Genral Options dialog XB
+      Allow double-digit rank numbers
+      Create some space in WB New Variant dialog
+      Allow promotion to Pawn with legality testing off
+      Implement Grand Chess
+      Add tab stops in WB generic popup
+      Reorder controls in Engine Setings dialog WB
+      Add tab stops in WB generic popup
+      Reorder controls in Engine Setings dialog WB
+      Fix Unfinished sound during ICS examining
+      Fix JAWS reading of Engine Settings dialog
+      Fix drop moves on boards with more than 10 ranks
+      Fix crash on making too-long FEN
+      Fix coords display on large boards
+      Fix resetting searchTime if other TC mode is chosen (XB)
+      Fix writing searchTime in tourneyFile
+      Fix parser.c line endings
+      Let PGN parser accept lower-case piece in drop moves
+      Improve -showTargetSquares on click-click moves
+      Let -sweepPromotions also work for click-click moves
+      Display score/depth in Eval Graph title
+      Print 50-move counter in Engine-Output title
+      Add -scoreWhite option
+      Let WB eval graph react ot single left-click
+      Print reversible plies done in stead of plies to go
+      Improve Eval Graph  with -evalZoom and -evalThreshold
+      Write more labels on score axis of eval graph
+      Put grab on sweep-selecting in Edit Position
+      Disable -showTargetSquares in ICS mode
+      Suppress some XBoard warnings
+      Create some space in WB dialogs for translations
+      Remove some duplicats from WB language template file
+      Fix translatability of Spartan Chess menu item WB
+      Fix translation of spoken composite messages
+      Fix crash on OK after Save Changes in Tags and Comment popup.
+      Force Move History refresh after loading/reverting variation
+      Give WinBoard Game List its own font
+      Allow null move in analysis and edit-game mode
+      Force Move History refresh after loading/reverting variation
+      Allow entry of variations in PlayFromGameFile mode
+      Implement searching games in Game List for a position
+      Parse PGN tags without allocating memory
+      Print progress during load / selection of game
+      Debug position selection
+      Add plain arrows as key binding for stepping forward/backward
+      Better fix of crash on empty game list
+      Fix paging
+      Delay file loading to allow expose event first
+      Speed up parser
+      Allow deletion of last book move
+      Add key bindings for loading next/previous game of list
+      Fix up/down arrows in game list
+      Allow substitution of engines during tournament
+      Fix generic-popup failure after empty engine-settings dialog
+      Fix crash on start without settings file
+      Add -useBoardTexture and -usePieceFont options
+      Translate search texts
+      Fix crash on empty Engine Settings dialog
+      Display note in stead of empty engine-settings dialog XB
+      Fix generic-popup failure after empty engine-settings dialog
+      Fix button sizing in generic popup
+      Fix display of last move of last match game
+      Fix default of -remoteUser
+      Make non-existing option in settings file non-fatal
+      Remove stray else
+      Update window title after last game of match
+      Fix use of random in XBoard shuffle dialog
+      Fix use of random
+      Allow two-games-per-opening to work with book
+      Better fix of crash on empty game list
+      Implement paging in XBoard Game List
+      Fix ICS move-list header mistaken for null moves
 
 Tim Mann (9):
       Use getaddrinfo instead of gethostbyname.  Hopefully this makes us compatible with IPv6 and with hosts that have more than one IP address.  However, I don't know of any chess servers that have either of those properties, so I couldn't test that.  I did test that xboard still works with freechess.org and chessclub.com and that it gives an error message for invalid host names.

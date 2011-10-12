@@ -468,7 +468,8 @@ void move_to_string(char move_s[6], uint16 move)
 
 int GetBookMoves(int moveNr, char *book, entry_t entries[])
 {   // retrieve all entries for given position from book in 'entries', return number.
-    FILE *f;
+    static FILE *f = NULL;
+    static char curBook[MSG_SIZ];
     entry_t entry;
     int offset;
     uint64 key;
@@ -477,7 +478,11 @@ int GetBookMoves(int moveNr, char *book, entry_t entries[])
 
     if(book == NULL || moveNr >= 2*appData.bookDepth) return -1; 
 //    if(gameInfo.variant != VariantNormal) return -1; // Zobrist scheme only works for normal Chess, so far
-    f=fopen(book,"rb");
+    if(!f || strcmp(book, curBook)){ // keep book file open until book changed
+	strncpy(curBook, book, MSG_SIZ);
+	if(f) fclose(f);
+	f = fopen(book,"rb");
+    }
     if(!f){
 	DisplayError("Polyglot book not valid", 0);
 	appData.usePolyglotBook = FALSE;
@@ -489,7 +494,6 @@ int GetBookMoves(int moveNr, char *book, entry_t entries[])
 
     offset=find_key(f, key, &entry);
     if(entry.key != key) {
-	  fclose(f);
 	  return FALSE;
     }
     entries[0] = entry;
@@ -506,7 +510,6 @@ int GetBookMoves(int moveNr, char *book, entry_t entries[])
         if(count == MOVE_BUF) break;
         entries[count++] = entry;
     }
-    fclose(f);
     return count;
 }
 
@@ -534,6 +537,7 @@ char *ProbeBook(int moveNr, char *book)
     for(i=0; i<count; i++){
         total_weight += entries[i].weight;
     }
+    if(total_weight == 0) return NULL; // force book miss rather than playing moves with weight 0.
     j = (random() & 0xFFF) * total_weight >> 12; // create random < total_weight
     total_weight = 0;
     for(i=0; i<count; i++){
@@ -580,6 +584,7 @@ int TextToMoves(char *text, int moveNum, entry_t *entries)
 	float dummy;
 	int width = BOARD_RGHT - BOARD_LEFT;
 
+	entries[0].key = hashKey; // make sure key is returned even if no moves
 	while((i=sscanf(text, "%f%%%d", &dummy, &w))==2 || (i=sscanf(text, "%d", &w))==1) {
 	    if(i == 2) text = strchr(text, '%') + 1;  // skip percentage
 	    if(w == 1) text = strstr(text, "1 ") + 2; // skip weight that could be recognized as move number one
@@ -651,11 +656,11 @@ void SaveToBook(char *text)
     int count = TextToMoves(text, currentMove, entries);
     int offset, i, len1=0, len2, readpos=0, writepos=0;
     FILE *f;
-    if(!count) return;
+    if(!count && !currentCount) return;
     f=fopen(appData.polyglotBook, "rb+");
     if(!f){	DisplayError("Polyglot book not valid", 0); return; }
     offset=find_key(f, entries[0].key, &entry);
-    if(entries[0].key != entry.key) {
+    if(entries[0].key != entry.key && currentCount) {
 	  DisplayError("Hash keys are different", 0);
 	  fclose(f);
 	  return;
@@ -671,8 +676,10 @@ void SaveToBook(char *text)
     if(count != currentCount) {
 	do {
 	    for(i=0; i<len1; i++) buf2[i] = buf1[i]; len2 = len1;
-	    fseek(f, readpos, SEEK_SET);
-	    readpos += len1 = fread(buf1, 1, 4096, f);
+	    if(readpos > writepos) {
+		fseek(f, readpos, SEEK_SET);
+		readpos += len1 = fread(buf1, 1, 4096, f);
+	    } else len1 = 0; // wrote already past old EOF
 	    fseek(f, writepos, SEEK_SET);
 	    fwrite(buf2, 1, len2, f);
 	    writepos += len2;
@@ -680,3 +687,4 @@ void SaveToBook(char *text)
     }
     fclose(f);
 }
+

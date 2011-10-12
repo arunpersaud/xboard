@@ -3,6 +3,528 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+
+2011-08-22 22:09:19 -0700 Arun Persaud <arun@nubati.net>:
+malloc.h is not needed
+
+2011-08-20 22:21:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix ICS move-list header mistaken for null moves
+
+2011-08-18 18:53:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow two-games-per-opening to work with book
+
+A new option -seedBase is added, and written to the tourney file.
+It allows all XBoard instances working on a tourney to generate the same
+'random' openings in a deterministic way, based on this one-time seed
+and the game number. When -loadGameIndex equals -2, it uses the same seed
+for an odd and the following even game.
+
+2011-08-18 18:51:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix use of random
+
+In some places rand() was called explicitly, rather than through the
+(configured) place-holder random().
+
+2011-08-18 17:34:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Translate search texts
+
+
+2011-08-18 10:29:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -useBoardTexture and -usePieceFont options
+
+These options suppress the use of the given texture files or piece fonts
+without relying on the kludge to disable them by prefixing an asterisk
+to the file or font name. Checkboxes have been added to the Board dialog
+to control them. The user can now set piece font in WB font dialog.
+The sample text can be used to specify the -fontPieceToCharTable,
+the font name itself the -renderPiecesWithFont value.
+
+2011-08-16 23:10:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on start without settings file
+
+A primordial -1 in currCurrent caused a crash when WinBoard was started
+without ini filein game-viewer mode.
+
+2011-08-12 12:08:18 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix generic-popup failure after empty engine-settings dialog
+
+The error exit ofthe Engine #N Settings dialog in case of an engine without
+options forgot to clear currentCps, with as a result that the generic popup
+thought every subsequent popup was an empty one, and kept repeating the
+'engine has no options' error message for every dialog.
+
+2011-08-10 11:27:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow substitution of engines during tournament
+
+Two buttons are added in the tournament options dialog, for upgrading
+and for replacing a tourney participant. Lots of tests on the validity
+of the request are done, and if all are passed, the tourney file is
+written with the new participants (and in case of replace) with the
+results of the replaced engines erased from the -results string.
+
+2011-08-08 11:00:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix up/down arrows in game list
+
+
+2011-08-08 10:31:24 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add key bindings for loading next/previous game of list
+
+These bindings are set both for the game list and the board window.
+To make them useful, focus has to be transferred to the board widget
+after loading (it tends to transfer to the tags window), which now
+seems to work, but not always. From the game list the shellWidget
+seems to get focus rather than the board, which is bad as it is not
+sensitive to the key bindings.
+
+2011-08-08 09:58:31 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow deletion of last book move
+
+The book-edit function refused to delete the entiremove list,
+for no good reason. This limitation now has been lifted.
+Also the error message that the key for the current book entries
+is different from that of the currentposition has been suppressed
+if there were no entries found for the current position (so that the
+book is positioned at the next key), so that it is possible to add
+moves from scratch.
+
+2011-08-08 00:19:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Speed up parser
+
+Line numbers > 1, which are common, can exit already during move parsing,
+to save lots of matching on resultsand castlings.
+
+2011-08-07 15:13:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix missing files in file browser
+
+The file browser was throwing away the first two files, assuming
+they were "." and "..". Alas, this is no longer true on every Linux.
+Now we actuallyc compare for these names, before skipping them.
+
+2011-08-06 11:57:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Delay file loading to allow expose event first
+
+
+2011-08-06 09:29:22 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix paging
+
+
+2011-08-05 22:39:41 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Better fix of crash on empty game list
+
+An empty list is now replaced by a list containig a simple message.
+
+2011-08-05 20:31:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add plain arrows as key binding for stepping forward/backward
+
+
+2011-08-05 20:30:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Debug position selection
+
+
+2011-08-04 13:22:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Print progress during load / selection of game
+
+The title bar of themain window is used to display a running count
+of the number of games loaded / searched.
+
+2011-08-04 12:44:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Parse PGN tags without allocating memory
+
+In WinBoard malloc/free did not seem to work when preparing the game list,
+leading to a huge memory list when ParsePGNTag was used. The added code
+parses the required tags in an alternative way as a work-around.
+
+2011-08-02 22:58:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement searching games in Game List for a position
+
+For this it was needed to reconstruct all positions of the games
+without loading them, so they could be compared to the currently
+displayed position. A new routine GameContainsPosition is made for that.
+ In Disambiguate, when the global quickFlag is set, we now do the
+disambiguation ignoring check,and only if this leads to an ambiguous
+move, we repeat it taking check into account to see if that resolves
+the ambiguity. This causes us to miss if unambiguous moves are illegal
+because they put their King in check, but who cares?
+ We now do not make game-list line when not needed. If we do not filter
+by text, but by position, there is no need for preparing the game-list
+line for games that are not selected. All for efficiency.
+
+2011-07-28 20:47:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow entry of variations in PlayFromGameFile mode
+
+Adding variations is more like editing a comment,and not really editing
+the game. Therefore we allow it on loaded games. As soon as we are in a
+variation, we temporarily switch to a (hidden) EditGame mode, restoring
+the original mode when we revert to the main line.
+  We now also stay in PlayFromGameFile mode after loading a game,
+And opening variation (fromtheComment window) in PlayFromGameFile mode
+is also allowed.
+
+2011-07-27 18:47:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Force Move History refresh after loading/reverting variation
+
+The Move History window was not refreshed after switching to or from
+a variation if that variation happened to have the same length as
+the main line. Now a change in storedGames since the previous refresh will
+force a full refresh to avoid this. For this to work, storedGames
+did have to be decremented after ToNrEvent in PopInner, because ToNrEvent
+calls HistorySet before the history is restored, so we don't want
+it to snatch away the full refresh. A call to HistorySet had to be
+added after PopInner is done restoring the move history.
+
+2011-07-27 17:45:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Popdown Comment window on new game
+
+What is in this window cannot possibly remain valid, and can even be harmful.
+
+2011-01-19 11:46:41 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow null move in analysis and edit-game mode
+
+In some games it is allowed to pass your turn. The internal
+representation picked for such a null move is the drop of an empty
+square, (EmptySquare,DROP_RANK,0,0). Computer-algebraic form is "@@@@",
+SAN form is "--", (for compatibility with ChessBase / SCID), and the
+non-compliant forms "null", "pass"and "Z0" are recognized in
+the parser as well. ApplyMove() has to test for this special case
+(to not actually clear a1), and a way to enter the pass for the user had
+to be found (clicking the opponent clock, like in EditPosition mode).
+ The null move is made move irreversible to prevent repetition draws
+spanning null moves being adjudicated.
+  Such entry of null move is now allowed in AnalyzeMode and EditGame mode.
+Because Chess engines will not accept null moves, SendMoveToProgram had
+to be adapted to send not the move, but the position after it in
+case of a null move. This erases the move history in the engine,
+so it will not react to 'undo' for that null move, so BackwardInner
+had to be adapted to test for intervening null moves, and if one is
+found, approach the target from the other side after loading the
+earliest position before it not crossing another null move, and
+then loading the moves upto the target.
+  XBoard clock clicks had to be fixed, to pay attention to the shift key.
+
+2011-07-25 21:58:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Give WinBoard Game List its own font
+
+The font fort he Game List used to be shared with the Engine Output and
+Move History windows, but this made it impossible to use a figurine font
+in the latter two (which displays piece symbols for capitals) without
+messing up the Game List. An option -gameListFont has been added to specify
+the font for the Game List(and save it in the settings file), while a
+control for it is added in the fonts dialog.
+
+2011-07-21 19:02:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on OK after Save Changes in Tags and Comment popup.
+
+The global variables tagsText and commentText were used to pass
+a string obtained from a widget (and thus not malloc'ed), which
+caused a crash when the GenericReadout tried to use those variables
+for the new value. Fixed by using GenericReadout (which does malloc)
+to read out the text,in stead of GetWidgetText.
+
+2011-07-16 09:31:12 -0700 Arun Persaud <arun@nubati.net>:
+Revert "fixed segfault in xengineoutput", fixed in the backend now (from HGM)
+
+This reverts commit 33a0e73843115ff6d4eacaf963a38f2e8b20b295.
+
+2011-07-16 14:53:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress some XBoard warnings
+
+
+2011-07-15 11:21:29 -0700 Arun Persaud <arun@nubati.net>:
+fixed segfault in xengineoutput
+
+
+2011-07-11 20:04:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Disable -showTargetSquares in ICS mode
+
+Help like this is considered cheating on FICS, so it is disabled for
+all 'classical' ICS variants. (For variants eyont Shogi we don't care.)
+
+2011-07-10 21:20:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Put grab on sweep-selecting in Edit Position
+
+A right down-click starting a sweep-selection event did not grab the
+mouse events, so that an up-click outside the window would go
+unnoticed, and the pointer motion stayed coupled to selecting the
+piece until the next click. By returning 2 from the RightClick back-end
+routine we request the grab.
+
+2011-07-09 13:50:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Write more labels on score axis of eval graph
+
+The labels for +/-1 and +/-3 are now also written, provided there is
+enough space.
+
+2011-07-09 13:28:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve Eval Graph  with -evalZoom and -evalThreshold
+
+The score range between -1 and +1 can now be blown up by a factor
+specified through -evalZoom. The threshold below which histogram bars
+are no longer printed (wich used to e hard-coded 25 centi-Pawn) can now
+be set through the -evalThreshold option.
+
+2011-07-09 13:18:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Print reversible plies done in stead of plies to go
+
+Printing the number of plies left to the draw-adjudication point was
+confusing when the N-move rule was set to a non-standard value.
+In stead we now print the number of plies since the last irreversible
+move, so the user can compare it to both the engine claim point (100)
+and the adjudication point he set (which might be beyond 100).
+
+2011-07-09 13:13:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let WB eval graph react ot single left-click
+
+Unlike in XBoard, the WinBoard eval graph awatys had required double-
+clicking to go the the corresponding move, while there really is no
+reason for this, as it is no text edit, and single-clicks have no function
+(like select).
+
+2011-07-07 19:37:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -scoreWhite option
+
+This is similar to -absoluteAnalysisScores, except that it works in
+all modes, and flips the score given by the engines in the engine-output
+window when black is to move.
+
+2011-07-07 19:28:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Print 50-move counter in Engine-Output title
+
+
+2011-07-07 18:50:56 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Display score/depth in Eval Graph title
+
+No longer print it in the comment window.
+
+2011-07-04 11:06:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let -sweepPromotions also work for click-click moves
+
+A click-click promotion no longer causes auto-queening, but the down-click
+on the to-square causes a Queen to stick to the mouse pointer, and then
+allows the user to change it through dragging backwards before releasing it
+with an up-click.
+  In WinBoard this required a slight change in DragPieceBegin, because
+the dragged piece there only was made visible when the mouse pointer
+actually started moving (and dragInfo.pos was set), presumably under the
+assumption that before mouse move the piece was already on the clicked
+square. Which in the case of a to-square was of course not true. (Because
+a piece jumps to the mouse pointer when the click is not centered on a
+square, this gives less jittery static clicks.) So DragPieceBegin has
+been given an extra argument now, to indicate whether it should attach
+the piece to the mouse pointer immediately.
+  To make the click-click sweepPromotions work in Shogi (for which the
+drag-drop sweepPromotions could never work, because it is not clear the
+piece has a posibility to promote when you pick it up), translation of
+the sweep-selected piece to a Shogi promoChar had to e added.
+
+2011-07-04 10:45:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Improve -showTargetSquares on click-click moves
+
+The markers on move targets are now kept when a first click merely
+selects a piece, rather than dragging it elsewhere. The second click
+(by definition on the to-square) then clears the markers.
+
+2011-07-04 11:23:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let PGN parser accept lower-case piece in drop moves
+
+The @ sign prevents amiguity with other notations anyway.
+
+2011-07-04 12:42:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix parser.c line endings
+
+
+2011-06-29 20:29:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix writing searchTime in tourneyFile
+
+This had to be derived from the variable searchTime, which gives it
+in seconds, as appData.searchTime (a string in minutes) is not reliable,
+as it contains the command-line value, which might have been altered
+through the time-control dialog.
+
+2011-06-29 20:25:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix resetting searchTime if other TC mode is chosen (XB)
+
+This fixes a bug in the new time-control dialog.
+
+2011-06-29 14:32:43 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix coords display on large boards
+
+The file indicators can now run upto 'w'. Only the lowest digit
+of the rank number is printed, from a table that is valid to 22.
+
+2011-06-29 13:53:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on making too-long FEN
+
+The buffer for in PositionToFEN was only 128 bytes, which was not enough
+for large boards such as 19x19 Go. It is enlarged to MSG_SIZ(512) now.
+There also is some approximate overflow checking added (but it is not
+fool proof in case there are holdings...)
+
+2011-06-29 13:36:26 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix drop moves on boards with more than 10 ranks
+
+The internal encoding for rank 16 is '@', and thus ambiguous with drop
+moves. They were always printed as 16, breaking drop games on large
+boards. The ambiguity is now solved (for boards with more than 16 ranks)
+by checking if the preceeding letter is upper case, in which case it
+cannot be a fileindicator, but must be a piece, and thus a drop.
+
+2011-06-29 13:29:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Don't one-click move when legality testing is off
+
+
+2011-06-23 21:18:11 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Reorder controls in Engine Setings dialog WB
+
+To get tabbing through the controls in left-to-right order, they are
+now added to the template structure in that order. Also add a tabstop
+to Label options, so that JAWS will read those.
+
+2011-06-23 14:02:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add tab stops in WB generic popup
+
+The WinBoard generic popup did not put tab stops on push buttons,
+including the OK and cancel button, with as a consequence that these were
+skipped when tabbing through the dialog controls. In addition the tabbing
+could not begin before the user selected one of the controls with the mouse.
+  Now all buttons have tab stops, and the cancel button is given focus
+when the dialog pops up.
+
+2011-03-10 20:06:39 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement Grand Chess
+
+Grand Chess requires a lot of exceptional handling similar to Superchess
+and Great Shatran, because it also allows only promotion to a captured
+piece. In addition it shares the enlarged promotion zone with Makruk and
+Shogi, as well as the fact that promotion can be deferred. The 10-rank
+board furthermore required a better generalization of double-pushes and
+e.p. captures. On such a board double puhes are now allowed from 2nd and
+3rd rank, e.p. capture from 5th and 4th.
+
+2011-01-28 19:20:38 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow promotion to Pawn with legality testing off
+
+In stead of ImpossibleMove promotionto Pawn now merely is an
+IllegalMove, so it can be played with legality testing off.
+
+2011-01-24 15:06:17 +0100 H.G. Muller <h.g.muller@hccnet.nl>:
+Create some space in WB New Variant dialog
+
+
+2011-06-20 23:53:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Allow double-digit rank numbers
+
+The parser already understood double-digit numbers on input, and
+CoordsToAlgebraic produced them on otput. This patch also fixes sending
+of the moves to the computer, for which the moveList was used. The latter
+stored 10 as ':', etc,to always get a 4-char move, the characters of which
+were frequently being converted to fromY or toY by adding/subtracting ONE.
+To not break that the one-character encoding of rank number is kept in
+moveList, but in SendMoveToProgram, characters > '9' are converted to
+double digits.
+
+2011-06-23 11:26:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Absolute Analysis Scores in Genral Options dialog XB
+
+
+2011-06-23 11:16:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix texi file, and update it further
+
+
+2011-06-20 12:15:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Modified po
+
+
+2011-06-22 17:51:51 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file
+
+
+2011-06-22 11:02:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Restore echo after ^C in ICS password
+
+
+2011-06-22 10:45:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix some warnings
+
+
+2011-06-19 20:30:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Increase efficiency of SAN generation / disambiguation
+
+**************** Risky patch! **********************
+The algorithm used for disambiguating and generating SAN was extremely
+inefficient, because it generated all pseudo-legal moves from the relevant
+position, and then for each of those did a check test (involving generation
+of all moves of the opponent), before determining if the move matched the
+(proposed or given) SAN move. While it is pointless to generate moves
+with a piece that does not match (let alone checking them for legality).
+And for a piece that matches, it is pointless to test legality of moves
+that do not match the to-square.
+  To speed up the process GenLegal and GenPseudoLegal have been equiped
+with an argument that can indicate the piece type of the required move,
+so they can skip generating moves with other pieces. TestLegality,
+Disambiguate and CoordsToAlgebraic make use of this facility, and set also
+(through global variables rFilter and fFilter) a to-square filter to be
+applied in the GenLegalCallback before it tests the move for legality.
+  This patch is especially tricky for Crazyhouse, where the piece indicated
+in the move might not be the piece actually on the board, because the latter
+is a promoted Pawn, and has to be demoted toits base type before the
+comparison.
+
+2011-06-19 16:18:15 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix compile errors WinBoard
+
+The patch to make non-existing options non-fatal broke WinBoard. All calls
+to ExitArgError from it now supply a third argument TRUE to fix it.
+
+2011-06-19 14:28:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -fSAN / -sSAN options
+
+These options force the PV of the applicable engine to be converted to SAN.
+They make use of the existing ParsePV routine, after shelfing a possible
+PV (from user PV walking) to free the space after the last move.
+Could be costly in terms of CPU usage.
+
+2011-06-19 10:56:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Cure flicker in Move History window, fix highlighting
+
+The highlighting of the current move in the Move List window by selecting
+it did not always work, because some other windows were clearing their text
+widgets by selecting the contents and killing it, thus snatching the
+selection away. This has been changed to setting XtNstring to an empty
+string as a method for clearing without side effects on the selection.
+As a bonus the Engine Output window now also no longer has the black flicker
+on clearing it.
+  In addition, triggering a scroll by setting the insertion point to the
+end of the text caused excessive flicker in the Move List window, apparently
+clearing it and redrawing from scratch, (even if there was no scroll motion),
+to the point where on my slow laptop the move history stayed entirely blank
+during a rapid succession of moves. This has been combatted by using the
+end-of-line action procedure (which does not seem to suffer from this) to put
+the insertion point at the end, when we need to scroll to close to the end.
+
+2011-06-18 23:48:13 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on clearing new Move List window
+
+When a new game started and a previous game had filled the Move List
+window, a crash occurred because an attempt was made to undo the
+highlighting of a no-longer-existing move, and then scrolling to it.
+
+2011-06-18 20:46:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Use sound for ICS tells also with engine telluser popups
+
+The telluser and tellusererror commands now can be assigned a sound.
+
+2011-06-18 20:45:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Score in Move List option to general options dialog XB
+
+Now that we have a WinBoard-style Move History window, this option is
+no longer a no-op in XBoard.
+
+2011-06-18 12:42:41 -0700 Arun Persaud <arun@nubati.net>:
+new developer release
+
+2011-06-18 12:38:32 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
 2011-06-18 12:51:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Update window itle after last game of match
 

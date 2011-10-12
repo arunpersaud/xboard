@@ -137,6 +137,8 @@ void SaveSettings(char* name);
 BOOL BrowseForFolder( const char * title, char * path );
 VOID TourneyPopup();
 VOID LoadEnginePopUp();
+VOID LoadOptionsPopup(HWND hDlg);
+VOID InitTextures();
 
 /* Constants */
 
@@ -147,7 +149,8 @@ VOID LoadEnginePopUp();
 #define COMMENT_FONT 4
 #define EDITTAGS_FONT 5
 #define MOVEHISTORY_FONT 6
-#define NUM_FONTS 7
+#define GAMELIST_FONT 7
+#define NUM_FONTS 8
 
 /* Positions of some menu items.  Origin is zero and separator lines count. */
 /* It's gross that these are needed. */
@@ -199,10 +202,8 @@ BOOL GetActualPlacement( HWND hWnd, WindowPlacement * wp );
 
 VOID MoveHistoryPopUp();
 VOID MoveHistoryPopDown();
-VOID MoveHistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current, ChessProgramStats_Move * pvInfo );
 extern HWND moveHistoryDialog;
 
-VOID EvalGraphSet( int first, int last, int current, ChessProgramStats_Move * pvInfo );
 VOID EvalGraphPopUp();
 VOID EvalGraphPopDown();
 extern HWND evalGraphDialog;

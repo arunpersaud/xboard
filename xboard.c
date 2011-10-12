@@ -737,7 +737,7 @@ MenuItem modeMenu[] = {
     {N_("Machine Black  Ctrl+B"), "Machine Black", MachineBlackProc},
     {N_("Two Machines   Ctrl+T"), "Two Machines", TwoMachinesProc},
     {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", AnalyzeModeProc},
-    {N_("Analyze File      Ctrl+F"), "Analyze File", AnalyzeFileProc },
+    {N_("Analyze Game   Ctrl+G"), "Analyze File", AnalyzeFileProc },
     {N_("Edit Game         Ctrl+E"), "Edit Game", EditGameProc},
     {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", EditPositionProc},
     {N_("Training"),      "Training", TrainingProc},
@@ -1103,6 +1103,8 @@ char globalTranslations[] =
    :Ctrl<Key>o: LoadGameProc() \n \
    :Meta<Key>Next: LoadNextGameProc() \n \
    :Meta<Key>Prior: LoadPrevGameProc() \n \
+   :Ctrl<Key>Down: LoadSelectedProc(3) \n \
+   :Ctrl<Key>Up: LoadSelectedProc(-3) \n \
    :Ctrl<Key>s: SaveGameProc() \n \
    :Ctrl<Key>c: CopyGameProc() \n \
    :Ctrl<Key>v: PasteGameProc() \n \
@@ -1117,7 +1119,7 @@ char globalTranslations[] =
    :Ctrl<Key>b: MachineBlackProc() \n \
    :Ctrl<Key>t: TwoMachinesProc() \n \
    :Ctrl<Key>a: AnalysisModeProc() \n \
-   :Ctrl<Key>f: AnalyzeFileProc() \n \
+   :Ctrl<Key>g: AnalyzeFileProc() \n \
    :Ctrl<Key>e: EditGameProc() \n \
    :Ctrl<Key>E: EditPositionProc() \n \
    :Meta<Key>O: EngineOutputProc() \n \
@@ -1139,6 +1141,8 @@ char globalTranslations[] =
    :Meta<Key>Right: ForwardProc() \n \
    :Meta<Key>Home: ToStartProc() \n \
    :Meta<Key>Left: BackwardProc() \n \
+   :<Key>Left: BackwardProc() \n \
+   :<Key>Right: ForwardProc() \n \
    :<Key>Home: RevertProc() \n \
    :<Key>End: TruncateGameProc() \n \
    :Ctrl<Key>m: MoveNowProc() \n \
@@ -1181,8 +1185,12 @@ char boardTranslations[] =
    Any<Btn3Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD) \
                  PieceMenuPopup(menuB) \n";
 
-char whiteTranslations[] = "<BtnDown>: WhiteClock()\n";
-char blackTranslations[] = "<BtnDown>: BlackClock()\n";
+char whiteTranslations[] =
+   "Shift<BtnDown>: WhiteClock(1)\n \
+   <BtnDown>: WhiteClock(0)\n";
+char blackTranslations[] =
+   "Shift<BtnDown>: BlackClock(1)\n \
+   <BtnDown>: BlackClock(0)\n";
 
 char ICSInputTranslations[] =
     "<Key>Up: UpKeyProc() \n "
@@ -3903,8 +3911,8 @@ static VariantClass oldVariant = (VariantClass) -1; // [HGM] pieces: redo every 
 void CreateXPMBoard(char *s, int kind)
 {
     XpmAttributes attr;
-    attr.valuemask = 0;    
-    if(s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
+    attr.valuemask = 0;
+    if(!appData.useBitmaps || s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
     if (XpmReadFileToPixmap(xDisplay, xBoardWindow, s, &(xpmBoardBitmap[kind]), NULL, &attr) == 0) {
 	useTexture |= kind + 1; textureW[kind] = attr.width; textureH[kind] = attr.height;
     }
@@ -4544,6 +4552,7 @@ void WhiteClock(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+    shiftKey = prms[0][0] & 1;
     ClockClick(0);
 }
 
@@ -4553,6 +4562,7 @@ void BlackClock(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
+    shiftKey = prms[0][0] & 1;
     ClockClick(1);
 }
 
@@ -6895,8 +6905,6 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
 
 void CopySomething()
 {
-  int ret;
-
   /*
    * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
    * have a notion of a game that is selected but not copied.
@@ -7211,13 +7219,13 @@ void AnalyzeFileProc(w, event, prms, nprms)
       DisplayError(buf, 0);
       return;
     }
-    Reset(FALSE, TRUE);
+//    Reset(FALSE, TRUE);
 #ifndef OPTIONSDIALOG
     if (!appData.showThinking)
       ShowThinkingProc(w,event,prms,nprms);
 #endif
     AnalyzeFileEvent();
-    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb",OPEN);
+//    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
     AnalysisPeriodicEvent(1);
 }
 
@@ -8617,6 +8625,7 @@ void DisplayTitle(text)
     XtSetArg(args[i], XtNiconName, (XtArgVal) icon);    i++;
     XtSetArg(args[i], XtNtitle, (XtArgVal) title);      i++;
     XtSetValues(shellWidget, args, i);
+    XSync(xDisplay, False);
 }
 
 
@@ -8862,6 +8871,7 @@ PlaySound(name)
   } else {
     char buf[2048];
     char *prefix = "", *sep = "";
+    if(appData.soundProgram[0] == NULLCHAR) return;
     if(!strchr(name, '/')) { prefix = appData.soundDirectory; sep = "/"; }
     snprintf(buf, sizeof(buf), "%s '%s%s%s' &", appData.soundProgram, prefix, sep, name);
     system(buf);
@@ -8922,6 +8932,12 @@ EchoOff()
 {
     system("stty -echo");
     noEcho = True;
+}
+
+void
+RunCommand(char *buf)
+{
+    system(buf);
 }
 
 void
@@ -9472,7 +9488,7 @@ int OpenTCP(host, port, pr)
     struct addrinfo hints;
     struct addrinfo *ais, *ai;
     int error;
-    int s;
+    int s=0;
     ChildProc *cp;
 
     memset(&hints, 0, sizeof(hints));
@@ -9928,6 +9944,12 @@ FrameDelay (time)
 }
 
 #endif
+
+void
+DoSleep(int n)
+{
+    FrameDelay(n);
+}
 
 /*	Convert board position to corner of screen rect and color	*/
 

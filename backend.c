@@ -55,15 +55,13 @@
 #ifdef WIN32
 #include <windows.h>
 
-#define DoSleep( n ) if( (n) != 0 ) Sleep( (n) );
-
 int flock(int f, int code);
 #define LOCK_EX 2
 #define SLASH '\\'
 
 #else
 
-#define DoSleep( n ) if( (n) >= 0) sleep(n)
+#include <sys/file.h>
 #define SLASH '/'
 
 #endif
@@ -233,7 +231,7 @@ void InitDrawingSizes(int x, int y);
 void NextMatchGame P((void));
 int NextTourneyGame P((int nr, int *swap));
 int Pairing P((int nr, int nPlayers, int *w, int *b, int *sync));
-FILE *WriteTourneyFile P((char *results));
+FILE *WriteTourneyFile P((char *results, FILE *f));
 void DisplayTwoMachinesTitle P(());
 
 #ifdef WIN32
@@ -620,10 +618,10 @@ ChessSquare GothicArray[2][BOARD_FILES] = {
 
 #ifdef FALCON
 ChessSquare FalconArray[2][BOARD_FILES] = {
-    { WhiteRook, WhiteKnight, WhiteBishop, WhiteLance, WhiteQueen,
-        WhiteKing, WhiteLance, WhiteBishop, WhiteKnight, WhiteRook },
-    { BlackRook, BlackKnight, BlackBishop, BlackLance, BlackQueen,
-        BlackKing, BlackLance, BlackBishop, BlackKnight, BlackRook }
+    { WhiteRook, WhiteKnight, WhiteBishop, WhiteFalcon, WhiteQueen,
+        WhiteKing, WhiteFalcon, WhiteBishop, WhiteKnight, WhiteRook },
+    { BlackRook, BlackKnight, BlackBishop, BlackFalcon, BlackQueen,
+        BlackKing, BlackFalcon, BlackBishop, BlackKnight, BlackRook }
 };
 #else // !FALCON
 #define FalconArray CapablancaArray
@@ -881,16 +879,17 @@ extern Boolean isUCI, hasBook, storeVariant, v1, addToList, useNick;
 
 static char resetOptions[] = 
 	"-reuse -firstIsUCI false -firstHasOwnBookUCI true -firstTimeOdds 1 "
+	"-firstInitString \"" INIT_STRING "\" -firstComputerString \"" COMPUTER_STRING "\" "
 	"-firstOptions \"\" -firstNPS -1 -fn \"\"";
 
 void
 Load(ChessProgramState *cps, int i)
 {
     char *p, *q, buf[MSG_SIZ], command[MSG_SIZ], buf2[MSG_SIZ];
-    if(engineLine[0]) { // an engine was selected from the combo box
+    if(engineLine && engineLine[0]) { // an engine was selected from the combo box
 	snprintf(buf, MSG_SIZ, "-fcp %s", engineLine);
 	SwapEngines(i); // kludge to parse -f* / -first* like it is -s* / -second*
-	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL;
+	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
 	ParseArgsFromString(buf);
 	SwapEngines(i);
 	ReplaceEngine(cps, i);
@@ -906,8 +905,8 @@ Load(ChessProgramState *cps, int i)
 	appData.directory[i] = strdup(engineName);
 	p[-1] = SLASH;
     } else appData.directory[i] = ".";
-    if(strchr(p, ' ') && !strchr(p, '"')) snprintf(buf2, MSG_SIZ, "\"%s\"", p), p = buf2; // quote if it contains spaces
     if(params[0]) {
+	if(strchr(p, ' ') && !strchr(p, '"')) snprintf(buf2, MSG_SIZ, "\"%s\"", p), p = buf2; // quote if it contains spaces
 	snprintf(command, MSG_SIZ, "%s %s", p, params);
 	p = command;
     }
@@ -980,6 +979,7 @@ InitBackEnd1()
 
     GetTimeMark(&programStartTime);
     srandom((programStartTime.ms + 1000*programStartTime.sec)*0x1001001); // [HGM] book: makes sure random is unpredictabe to msec level
+    appData.seedBase = random() + (random()<<15);
     pauseStart = programStartTime; pauseStart.sec -= 100; // [HGM] matchpause: fake a pause that has long since ended
 
     ClearProgramStats();
@@ -1435,7 +1435,7 @@ MatchEvent(int mode)
 		if(strchr(appData.results, '*') == NULL) {
 		    FILE *f;
 		    appData.tourneyCycles++;
-		    if(f = WriteTourneyFile(appData.results)) { // make a tourney file with increased number of cycles
+		    if(f = WriteTourneyFile(appData.results, NULL)) { // make a tourney file with increased number of cycles
 			fclose(f);
 			NextTourneyGame(-1, &dummy);
 			ReserveGame(-1, 0);
@@ -1661,6 +1661,18 @@ InitBackEnd3 P((void))
 	  TrainingEvent();
 	}
     }
+}
+
+void
+HistorySet( char movelist[][2*MOVE_LEN], int first, int last, int current )
+{
+    DisplayBook(current+1);
+
+    MoveHistorySet( movelist, first, last, current, pvInfoList );
+
+    EvalGraphSet( first, last, current, pvInfoList );
+
+    MakeEngineOutputTitle();
 }
 
 /*
@@ -4860,6 +4872,11 @@ SendMoveToProgram(moveNum, cps)
 {
     char buf[MSG_SIZ];
 
+    if(moveList[moveNum][1] == '@' && moveList[moveNum][0] == '@') {
+	// null move in variant where engine does not understand it (for analysis purposes)
+	SendBoard(cps, moveNum + 1); // send position after move in stead.
+	return;
+    }
     if (cps->useUsermove) {
       SendToProgram("usermove ", cps);
     }
@@ -4900,6 +4917,7 @@ SendMoveToProgram(moveNum, cps)
       } else
       if(BOARD_HEIGHT > 10) { // [HGM] big: convert ranks to double-digit where needed
 	if(moveList[moveNum][1] == '@' && (BOARD_HEIGHT < 16 || moveList[moveNum][0] <= 'Z')) { // drop move
+	  if(moveList[moveNum][0]== '@') snprintf(buf, MSG_SIZ, "@@@@\n"); else
 	  snprintf(buf, MSG_SIZ, "%c@%c%d%s", moveList[moveNum][0],
 					      moveList[moveNum][2], moveList[moveNum][3] - '0', moveList[moveNum]+4);
 	} else
@@ -5075,6 +5093,7 @@ CoordsToComputerAlgebraic(rf, ff, rt, ft, promoChar, move)
      char move[7];
 {
     if (rf == DROP_RANK) {
+      if(ff == EmptySquare) sprintf(move, "@@@@\n"); else // [HGM] pass
       sprintf(move, "%c@%c%c\n",
                 ToUpper(PieceToChar((ChessSquare) ff)), AAA + ft, ONE + rt);
     } else {
@@ -5131,7 +5150,7 @@ int PromoScroll(int x, int y)
   int step = 0;
 
   if(promoSweep == EmptySquare || !appData.sweepSelect) return FALSE;
-  if(abs(x - lastX) < 15 && abs(y - lastY) < 15) return FALSE;
+  if(abs(x - lastX) < 25 && abs(y - lastY) < 25) return FALSE;
   if( y > lastY + 2 ) step = -1; else if(y < lastY - 2) step = 1;
   if(!step) return FALSE;
   lastX = x; lastY = y;
@@ -5459,11 +5478,11 @@ UnLoadPV()
 void
 MovePV(int x, int y, int h)
 { // step through PV based on mouse coordinates (called on mouse move)
-  int margin = h>>3, step = 0;
+  int margin = h>>3, step = 0, threshold = (pieceSweep == EmptySquare ? 10 : 15);
 
   // we must somehow check if right button is still down (might be released off board!)
   if(endPV < 0 && pieceSweep == EmptySquare) return; // needed in XBoard because lastX/Y is shared :-(
-  if(abs(x - lastX) < 7 && abs(y - lastY) < 7) return;
+  if(abs(x - lastX) < threshold && abs(y - lastY) < threshold) return;
   if( y > lastY + 2 ) step = -1; else if(y < lastY - 2) step = 1;
   if(!step) return;
   lastX = x; lastY = y;
@@ -6223,7 +6242,6 @@ OKToStartUserMove(x, y)
       (int)from_piece < (int)BlackPawn; /* [HGM] can be > King! */
 
     switch (gameMode) {
-      case PlayFromGameFile:
       case AnalyzeFile:
       case TwoMachinesPlay:
       case EndOfGame:
@@ -6251,6 +6269,8 @@ OKToStartUserMove(x, y)
 	}
 	break;
 
+      case PlayFromGameFile:
+	    if(!shiftKey || !appData.variations) return FALSE; // [HGM] allow starting variation in this mode
       case EditGame:
 	if (!white_piece && WhiteOnMove(currentMove)) {
 	    DisplayMoveError(_("It is White's turn"));
@@ -6294,6 +6314,7 @@ OKToStartUserMove(x, y)
     }
     if (currentMove != forwardMostMove && gameMode != AnalyzeMode
 	&& gameMode != EditGame // [HGM] vari: treat as AnalyzeMode
+	&& gameMode != PlayFromGameFile // [HGM] as EditGame, with protected main line
 	&& gameMode != AnalyzeFile && gameMode != Training) {
 	DisplayMoveError(_("Displayed position is not current"));
 	return FALSE;
@@ -6385,7 +6406,6 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
        */
 
     switch (gameMode) {
-      case PlayFromGameFile:
       case AnalyzeFile:
       case TwoMachinesPlay:
       case EndOfGame:
@@ -6411,6 +6431,8 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
 	}
 	break;
 
+      case PlayFromGameFile:
+	    if(!shiftKey ||!appData.variations) return; // [HGM] only variations
       case EditGame:
       case IcsExamining:
       case BeginningOfGame:
@@ -6526,6 +6548,9 @@ UserMoveEvent(fromX, fromY, toX, toY, promoChar)
     /* [HGM] always test for legality, to get promotion info */
     moveType = LegalityTest(boards[currentMove], PosFlags(currentMove),
                                          fromY, fromX, toY, toX, promoChar);
+
+    if(fromY == DROP_RANK && fromX == EmptySquare && (gameMode == AnalyzeMode || gameMode == EditGame)) moveType = NormalMove;
+
     /* [HGM] but possibly ignore an IllegalMove result */
     if (appData.testLegality) {
 	if (moveType == IllegalMove || moveType == ImpossibleMove) {
@@ -6602,7 +6627,7 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 
   /* Ok, now we know that the move is good, so we can kill
      the previous line in Analysis Mode */
-  if ((gameMode == AnalyzeMode || gameMode == EditGame)
+  if ((gameMode == AnalyzeMode || gameMode == EditGame || gameMode == PlayFromGameFile && appData.variations && shiftKey)
 				&& currentMove < forwardMostMove) {
     if(appData.variations && shiftKey) PushTail(currentMove, forwardMostMove); // [HGM] vari: save tail of game
     else forwardMostMove = currentMove;
@@ -6667,6 +6692,9 @@ FinishMove(moveType, fromX, fromY, toX, toY, promoChar)
 	 // [HGM] book: if program might be playing, let it use book
 	bookHit = SendMoveToBookUser(forwardMostMove-1, &first, FALSE);
 	first.maybeThinking = TRUE;
+    } else if(fromY == DROP_RANK && fromX == EmptySquare) {
+	if(!first.useSetboard) SendToProgram("undo\n", &first); // kludge to change stm in engines that do not support setboard
+	SendBoard(&first, currentMove+1);
     } else SendMoveToProgram(forwardMostMove-1, &first);
     if (currentMove == cmailOldMove + 1) {
       cmailMoveType[lastLoadGameNumber - 1] = CMAIL_MOVE;
@@ -7354,6 +7382,28 @@ MatingPotential(int pCnt[], int side, int nMine, int nHis, int stale, int bisCol
 	}
 
 	return TRUE;
+}
+
+int
+CompareWithRights(Board b1, Board b2)
+{
+    int rights = 0;
+    if(!CompareBoards(b1, b2)) return FALSE;
+    if(b1[EP_STATUS] != b2[EP_STATUS]) return FALSE;
+    /* compare castling rights */
+    if( b1[CASTLING][2] != b2[CASTLING][2] && (b2[CASTLING][0] != NoRights || b2[CASTLING][1] != NoRights) )
+           rights++; /* King lost rights, while rook still had them */
+    if( b1[CASTLING][2] != NoRights ) { /* king has rights */
+        if( b1[CASTLING][0] != b2[CASTLING][0] || b1[CASTLING][1] != b2[CASTLING][1] )
+           rights++; /* but at least one rook lost them */
+    }
+    if( b1[CASTLING][5] != b1[CASTLING][5] && (b2[CASTLING][3] != NoRights || b2[CASTLING][4] != NoRights) )
+           rights++;
+    if( b1[CASTLING][5] != NoRights ) {
+        if( b1[CASTLING][3] != b2[CASTLING][3] || b1[CASTLING][4] != b2[CASTLING][4] )
+           rights++;
+    }
+    return rights == 0;
 }
 
 int
@@ -8228,7 +8278,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 	if (StrStr(message, "analyze")) {
 	    cps->analysisSupport = FALSE;
 	    cps->analyzing = FALSE;
-	    Reset(FALSE, TRUE);
+//	    Reset(FALSE, TRUE); // [HGM] this caused discrepancy between display and internal state!
+	    EditGameEvent(); // [HGM] try to preserve loaded game
 	    snprintf(buf2,MSG_SIZ, _("%s does not support analysis"), cps->tidy);
 	    DisplayError(buf2, 0);
 	    return;
@@ -8593,6 +8644,19 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
 		if(appData.pvSAN[cps==&second]) pv = PvToSAN(buf1);
 
+		if(serverMoves && (time > 100 || time == 0 && plylev > 7)) {
+			char buf[MSG_SIZ];
+			FILE *f;
+			snprintf(buf, MSG_SIZ, "%s", appData.serverMovesName);
+			buf[strlen(buf)-1] = gameMode == MachinePlaysWhite ? 'w' :
+			                     gameMode == MachinePlaysBlack ? 'b' : cps->twoMachinesColor[0];
+			if(appData.debugMode) fprintf(debugFP, "write PV on file '%s'\n", buf);
+			if(f = fopen(buf, "w")) { // export PV to applicable PV file
+				fprintf(f, "%5.2f/%-2d %s", curscore/100., plylev, pv);
+				fclose(f);
+			} else DisplayError("failed writing PV", 0);
+		}
+
 		tempStats.depth = plylev;
 		tempStats.nodes = nodes;
 		tempStats.time = time;
@@ -8878,6 +8942,7 @@ ParseGameHistory(game)
 	    break;
 	  case WhiteDrop:
 	  case BlackDrop:
+	    if(currentMoveString[0] == '@') continue; // no null moves in ICS mode!
 	    fromX = moveType == WhiteDrop ?
 	      (int) CharToPiece(ToUpper(currentMoveString[0])) :
 	    (int) CharToPiece(ToLower(currentMoveString[0]));
@@ -9005,14 +9070,18 @@ ApplyMove(fromX, fromY, toX, toY, promoChar, board)
       oldEP = (signed char)board[EP_STATUS];
       board[EP_STATUS] = EP_NONE;
 
-      if( board[toY][toX] != EmptySquare )
-           board[EP_STATUS] = EP_CAPTURE;
-
   if (fromY == DROP_RANK) {
 	/* must be first */
+        if(fromX == EmptySquare) { // [HGM] pass: empty drop encodes null move; nothing to change.
+	    board[EP_STATUS] = EP_CAPTURE; // null move considered irreversible
+	    return;
+	}
         piece = board[toY][toX] = (ChessSquare) fromX;
   } else {
       int i;
+
+      if( board[toY][toX] != EmptySquare )
+           board[EP_STATUS] = EP_CAPTURE;
 
       if( board[fromY][fromX] == WhiteLance || board[fromY][fromX] == BlackLance ) {
            if( gameInfo.variant != VariantSuper && gameInfo.variant != VariantShogi )
@@ -9298,6 +9367,11 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
 {
 //    forwardMostMove++; // [HGM] bare: moved downstream
 
+    (void) CoordsToAlgebraic(boards[forwardMostMove],
+			     PosFlags(forwardMostMove),
+			     fromY, fromX, toY, toX, promoChar,
+			     parseList[forwardMostMove]);
+
     if(serverMoves != NULL) { /* [HGM] write moves on file for broadcasting (should be separate routine, really) */
         int timeLeft; static int lastLoadFlag=0; int king, piece;
         piece = boards[forwardMostMove][fromY][fromX];
@@ -9305,10 +9379,14 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
         if(gameInfo.variant == VariantKnightmate)
             king += (int) WhiteUnicorn - (int) WhiteKing;
         if(forwardMostMove == 0) {
-            if(blackPlaysFirst)
+            if(gameMode == MachinePlaysBlack || gameMode == BeginningOfGame)
+                fprintf(serverMoves, "%s;", UserName());
+            else if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'b')
                 fprintf(serverMoves, "%s;", second.tidy);
             fprintf(serverMoves, "%s;", first.tidy);
-            if(!blackPlaysFirst)
+            if(gameMode == MachinePlaysWhite)
+                fprintf(serverMoves, "%s;", UserName());
+            else if(gameMode == TwoMachinesPlay && first.twoMachinesColor[0] == 'w')
                 fprintf(serverMoves, "%s;", second.tidy);
         } else fprintf(serverMoves, loadFlag|lastLoadFlag ? ":" : ";");
         lastLoadFlag = loadFlag;
@@ -9329,20 +9407,24 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
                 fprintf(serverMoves, ":%c%c:%c%c", AAA+fromX, ONE+fromY, AAA+toX, ONE+fromY);
         // promotion suffix
         if(promoChar != NULLCHAR)
-                fprintf(serverMoves, ":%c:%c%c", promoChar, AAA+toX, ONE+toY);
+                fprintf(serverMoves, ":%c:%c%c", ToLower(promoChar), AAA+toX, ONE+toY);
         if(!loadFlag) {
+		char buf[MOVE_LEN*2], *p; int len;
             fprintf(serverMoves, "/%d/%d",
                pvInfoList[forwardMostMove].depth, pvInfoList[forwardMostMove].score);
             if(forwardMostMove+1 & 1) timeLeft = whiteTimeRemaining/1000;
             else                      timeLeft = blackTimeRemaining/1000;
             fprintf(serverMoves, "/%d", timeLeft);
+		strncpy(buf, parseList[forwardMostMove], MOVE_LEN*2);
+		if(p = strchr(buf, '=')) *p = NULLCHAR;
+		len = strlen(buf); if(len > 1 && buf[len-2] != '-') buf[len-2] = NULLCHAR; // strip to-square
+            fprintf(serverMoves, "/%s", buf);
         }
         fflush(serverMoves);
     }
 
-    if (forwardMostMove+1 > framePtr) { // [HGM] vari: do not run into saved variations
-      DisplayFatalError(_("Game too long; increase MAX_MOVES and recompile"),
-			0, 1);
+    if (forwardMostMove+1 > framePtr) { // [HGM] vari: do not run into saved variations..
+	GameEnds(GameUnfinished, _("Game too long; increase MAX_MOVES and recompile"), GE_XBOARD);
       return;
     }
     UnLoadPV(); // [HGM] pv: if we are looking at a PV, abort this
@@ -9363,10 +9445,6 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
     }
     CoordsToComputerAlgebraic(fromY, fromX, toY, toX, promoChar,
 			      moveList[forwardMostMove - 1]);
-    (void) CoordsToAlgebraic(boards[forwardMostMove - 1],
-			     PosFlags(forwardMostMove - 1),
-			     fromY, fromX, toY, toX, promoChar,
-			     parseList[forwardMostMove - 1]);
     switch (MateTest(boards[forwardMostMove], PosFlags(forwardMostMove)) ) {
       case MT_NONE:
       case MT_STALEMATE:
@@ -9413,7 +9491,6 @@ ShowMove(fromX, fromY, toX, toY)
     DrawPosition(FALSE, boards[currentMove]);
     DisplayBothClocks();
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
-    DisplayBook(currentMove);
 }
 
 void SendEgtPath(ChessProgramState *cps)
@@ -9677,12 +9754,13 @@ CountPlayers(char *p)
 }
 
 FILE *
-WriteTourneyFile(char *results)
+WriteTourneyFile(char *results, FILE *f)
 {   // write tournament parameters on tourneyFile; on success return the stream pointer for closing
-    FILE *f = fopen(appData.tourneyFile, "w");
+    if(f == NULL) f = fopen(appData.tourneyFile, "w");
     if(f == NULL) DisplayError(_("Could not write on tourney file"), 0); else {
 	// create a file with tournament description
 	fprintf(f, "-participants {%s}\n", appData.participants);
+	fprintf(f, "-seedBase %d\n", appData.seedBase);
 	fprintf(f, "-tourneyType %d\n", appData.tourneyType);
 	fprintf(f, "-tourneyCycles %d\n", appData.tourneyCycles);
 	fprintf(f, "-defaultMatchGames %d\n", appData.defaultMatchGames);
@@ -9694,6 +9772,7 @@ WriteTourneyFile(char *results)
 	fprintf(f, "-loadPositionFile \"%s\"\n", appData.loadPositionFile);
 	fprintf(f, "-loadPositionIndex %d\n", appData.loadPositionIndex);
 	fprintf(f, "-rewindIndex %d\n", appData.rewindIndex);
+	fprintf(f, "-discourageOwnBooks %s\n", appData.defNoBook ? "true" : "false");
 	if(searchTime > 0)
 		fprintf(f, "-searchTime \"%d:%02d\"\n", searchTime/60, searchTime%60);
 	else {
@@ -9706,10 +9785,73 @@ WriteTourneyFile(char *results)
     return f;
 }
 
+#define MAXENGINES 1000
+char *command[MAXENGINES], *mnemonic[MAXENGINES];
+
+void Substitute(char *participants, int expunge)
+{
+    int i, changed, changes=0, nPlayers=0;
+    char *p, *q, *r, buf[MSG_SIZ];
+    if(participants == NULL) return;
+    if(appData.tourneyFile[0] == NULLCHAR) { free(participants); return; }
+    r = p = participants; q = appData.participants;
+    while(*p && *p == *q) {
+	if(*p == '\n') r = p+1, nPlayers++;
+	p++; q++;
+    }
+    if(*p) { // difference
+	while(*p && *p++ != '\n');
+	while(*q && *q++ != '\n');
+      changed = nPlayers;
+	changes = 1 + (strcmp(p, q) != 0);
+    }
+    if(changes == 1) { // a single engine mnemonic was changed
+	q = r; while(*q) nPlayers += (*q++ == '\n');
+	p = buf; while(*r && (*p = *r++) != '\n') p++;
+	*p = NULLCHAR;
+	NamesToList(firstChessProgramNames, command, mnemonic);
+	for(i=1; mnemonic[i]; i++) if(!strcmp(buf, mnemonic[i])) break;
+	if(mnemonic[i]) { // The substitute is valid
+	    FILE *f;
+	    if(appData.tourneyFile[0] && (f = fopen(appData.tourneyFile, "r+")) ) {
+		flock(fileno(f), LOCK_EX);
+		ParseArgsFromFile(f);
+		fseek(f, 0, SEEK_SET);
+		FREE(appData.participants); appData.participants = participants;
+		if(expunge) { // erase results of replaced engine
+		    int len = strlen(appData.results), w, b, dummy;
+		    for(i=0; i<len; i++) {
+			Pairing(i, nPlayers, &w, &b, &dummy);
+			if((w == changed || b == changed) && appData.results[i] == '*') {
+			    DisplayError(_("You cannot replace an engine while it is engaged!\nTerminate its game first."), 0);
+			    fclose(f);
+			    return;
+			}
+		    }
+		    for(i=0; i<len; i++) {
+			Pairing(i, nPlayers, &w, &b, &dummy);
+			if(w == changed || b == changed) appData.results[i] = ' '; // mark as not played
+		    }
+		}
+		WriteTourneyFile(appData.results, f);
+		fclose(f); // release lock
+		return;
+	    }
+	} else DisplayError(_("No engine with the name you gave is installed"), 0);
+    }
+    if(changes == 0) DisplayError(_("First change an engine by editing the participants list\nof the Tournament Options dialog"), 0);
+    if(changes > 1)  DisplayError(_("You can only change one engine at the time"), 0);
+    free(participants);
+    return;
+}
+
 int
 CreateTourney(char *name)
 {
 	FILE *f;
+	if(matchMode && strcmp(name, appData.tourneyFile)) {
+	     ASSIGN(name, appData.tourneyFile); //do not allow change of tourneyfile while playing
+	}
 	if(name[0] == NULLCHAR) {
 	    if(appData.participants[0])
 		DisplayError(_("You must supply a tournament file,\nfor storing the tourney progress"), 0);
@@ -9727,7 +9869,7 @@ CreateTourney(char *name)
 	    }
 	    ASSIGN(appData.tourneyFile, name);
 	    if(appData.tourneyType < 0) appData.defaultMatchGames = 1; // Swiss forces games/pairing = 1
-	    if((f = WriteTourneyFile("")) == NULL) return 0;
+	    if((f = WriteTourneyFile("", NULL)) == NULL) return 0;
 	}
 	fclose(f);
 	appData.noChessProgram = FALSE;
@@ -9735,9 +9877,6 @@ CreateTourney(char *name)
 	SetGNUMode();
 	return 1;
 }
-
-#define MAXENGINES 1000
-char *command[MAXENGINES], *mnemonic[MAXENGINES];
 
 void NamesToList(char *names, char **engineList, char **engineMnemonic)
 {
@@ -9761,7 +9900,7 @@ void NamesToList(char *names, char **engineList, char **engineMnemonic)
 	names = p; i++;
       if(i > MAXENGINES - 2) break;
     }
-    engineList[i] = NULL;
+    engineList[i] = engineMnemonic[i] = NULL;
 }
 
 // following implemented as macro to avoid type limitations
@@ -9795,7 +9934,8 @@ SetPlayer(int player)
     for(i=1; command[i]; i++) if(!strcmp(mnemonic[i], engineName)) break;
     if(mnemonic[i]) {
 	snprintf(buf, MSG_SIZ, "-fcp %s", command[i]);
-	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL;
+	ParseArgsFromString(resetOptions); appData.fenOverride[0] = NULL; appData.pvSAN[0] = FALSE;
+	appData.firstHasOwnBookUCI = !appData.defNoBook;
 	ParseArgsFromString(buf);
     }
     free(engineName);
@@ -9916,16 +10056,18 @@ NextTourneyGame(int nr, int *swapColors)
 void
 NextMatchGame()
 {   // performs game initialization that does not invoke engines, and then tries to start the game
-    int firstWhite, swapColors = 0;
+    int res, firstWhite, swapColors = 0;
     if(!NextTourneyGame(nextGame, &swapColors)) return; // this sets matchGame, -fcp / -scp and other options for next game, if needed
     firstWhite = appData.firstPlaysBlack ^ (matchGame & 1 | appData.sameColorGames > 1); // non-incremental default
     firstWhite ^= swapColors; // reverses if NextTourneyGame says we are in an odd round
     first.twoMachinesColor =  firstWhite ? "white\n" : "black\n";   // perform actual color assignement
     second.twoMachinesColor = firstWhite ? "black\n" : "white\n";
     appData.noChessProgram = (first.pr == NoProc); // kludge to prevent Reset from starting up chess program
+    if(appData.loadGameIndex == -2) srandom(appData.seedBase + 68163*(nextGame & ~1)); // deterministic seed to force same opening
     Reset(FALSE, first.pr != NoProc);
-    appData.noChessProgram = FALSE;
-    if(!LoadGameOrPosition(matchGame)) return; // setup game; abort when bad game/pos file
+    res = LoadGameOrPosition(matchGame); // setup game
+    appData.noChessProgram = FALSE; // LoadGameOrPosition might call Reset too!
+    if(!res) return; // abort when bad game/pos file
     TwoMachinesEvent();
 }
 
@@ -10112,7 +10254,7 @@ GameEnds(result, resultDetails, whosays)
             if(result==WhiteWins) c = '+';
             if(result==BlackWins) c = '-';
             if(resultDetails != NULL)
-                fprintf(serverMoves, ";%c;%s\n", c, resultDetails);
+                fprintf(serverMoves, ";%c;%s\n", c, resultDetails), fflush(serverMoves);
         }
  	if (resultDetails != NULL) {
 	    gameInfo.result = result;
@@ -10306,6 +10448,7 @@ GameEnds(result, resultDetails, whosays)
 
 	if(waitingForGame) resChar = ' '; // quit while waiting for round sync: unreserve already reserved game
 	if(appData.tourneyFile[0]){ // [HGM] we are in a tourney; update tourney file with game result
+	    if(appData.afterGame && appData.afterGame[0]) RunCommand(appData.afterGame);
 	    ReserveGame(nextGame, resChar); // sets nextGame
 	    if(nextGame > appData.matchGames) appData.tourneyFile[0] = 0, ranking = TourneyStandings(3); // tourney is done
 	    else ranking = strdup("busy"); //suppress popup when aborted but not finished
@@ -10444,6 +10587,7 @@ Reset(redraw, init)
 		redraw, init, gameMode);
     }
     CleanupTail(); // [HGM] vari: delete any stored variations
+    CommentPopDown(); // [HGM] make sure no comments to the previous game keep hanging on
     pausing = pauseExamInvalid = FALSE;
     startedFromSetupPosition = blackPlaysFirst = FALSE;
     firstMove = TRUE;
@@ -10551,8 +10695,8 @@ AutoPlayOneMove()
 
     if (currentMove >= forwardMostMove) {
       if(gameMode == AnalyzeFile) { ExitAnalyzeMode(); SendToProgram("force\n", &first); }
-      gameMode = EditGame;
-      ModeHighlight();
+//      gameMode = EndOfGame;
+//      ModeHighlight();
 
       /* [AS] Clear current move marker at the end of a game */
       /* HistorySet(parseList, backwardMostMove, forwardMostMove, -1); */
@@ -10999,7 +11143,149 @@ ReloadGame(offset)
     }
 }
 
+int keys[EmptySquare+1];
 
+int
+PositionMatches(Board b1, Board b2)
+{
+    int r, f, sum=0;
+    switch(appData.searchMode) {
+	case 1: return CompareWithRights(b1, b2);
+	case 2:
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+		if(b2[r][f] != EmptySquare && b1[r][f] != b2[r][f]) return FALSE;
+	    }
+	    return TRUE;
+	case 3:
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	      if((b2[r][f] == WhitePawn || b2[r][f] == BlackPawn) && b1[r][f] != b2[r][f]) return FALSE;
+		sum += keys[b1[r][f]] - keys[b2[r][f]];
+	    }
+	    return sum==0;
+	case 4:
+	    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+		sum += keys[b1[r][f]] - keys[b2[r][f]];
+	    }
+	    return sum==0;
+    }
+    return TRUE;
+}
+
+GameInfo dummyInfo;
+
+int GameContainsPosition(FILE *f, ListGame *lg)
+{
+    int next, btm=0, plyNr=0, scratch=forwardMostMove+2&~1;
+    int fromX, fromY, toX, toY;
+    char promoChar;
+    static int initDone=FALSE;
+
+    if(!initDone) {
+	for(next = WhitePawn; next<EmptySquare; next++) keys[next] = random()>>8 ^ random()<<6 ^random()<<20;
+	initDone = TRUE;
+    }
+    dummyInfo.variant = VariantNormal;
+    FREE(dummyInfo.fen); dummyInfo.fen = NULL;
+    dummyInfo.whiteRating = 0;
+    dummyInfo.blackRating = 0;
+    FREE(dummyInfo.date); dummyInfo.date = NULL;
+    fseek(f, lg->offset, 0);
+    yynewfile(f);
+    CopyBoard(boards[scratch], initialPosition); // default start position
+    while(1) {
+	yyboardindex = scratch + (plyNr&1);
+      quickFlag = 1;
+	next = Myylex();
+      quickFlag = 0;
+	switch(next) {
+	    case PGNTag:
+		if(plyNr) return -1; // after we have seen moves, any tags will be start of next game
+#if 0
+		ParsePGNTag(yy_text, &dummyInfo); // this has a bad memory leak...
+		if(dummyInfo.fen) ParseFEN(boards[scratch], &btm, dummyInfo.fen), free(dummyInfo.fen), dummyInfo.fen = NULL;
+#else
+		// do it ourselves avoiding malloc
+		{ char *p = yy_text+1, *q;
+		  while(!isdigit(*p) && !isalpha(*p)) p++;
+		  q  = p; while(*p != ' ' && *p != '\t' && *p != '\n') p++;
+		  *p = NULLCHAR;
+		  if(!StrCaseCmp(q, "Date") && (p = strchr(p+1, '"'))) { if(atoi(p+1) < appData.dateThreshold) return -1; } else
+		  if(!StrCaseCmp(q, "Variant")  &&  (p = strchr(p+1, '"'))) dummyInfo.variant = StringToVariant(p+1); else
+		  if(!StrCaseCmp(q, "WhiteElo")  && (p = strchr(p+1, '"'))) dummyInfo.whiteRating = atoi(p+1); else
+		  if(!StrCaseCmp(q, "BlackElo")  && (p = strchr(p+1, '"'))) dummyInfo.blackRating = atoi(p+1); else
+		  if(!StrCaseCmp(q, "WhiteUSCF") && (p = strchr(p+1, '"'))) dummyInfo.whiteRating = atoi(p+1); else
+		  if(!StrCaseCmp(q, "BlackUSCF") && (p = strchr(p+1, '"'))) dummyInfo.blackRating = atoi(p+1); else
+		  if(!StrCaseCmp(q, "FEN")  && (p = strchr(p+1, '"'))) ParseFEN(boards[scratch], &btm, p+1);
+		}
+#endif
+	    default:
+		continue;
+
+	    case XBoardGame:
+	    case GNUChessGame:
+		if(plyNr) return -1; // after we have seen moves, this is for new game
+	      continue;
+
+	    case AmbiguousMove: // we cannot reconstruct the game beyond these two
+	    case ImpossibleMove:
+	    case WhiteWins: // game ends here with these four
+	    case BlackWins:
+	    case GameIsDrawn:
+	    case GameUnfinished:
+		return -1;
+
+	    case IllegalMove:
+		if(appData.testLegality) return -1;
+	    case WhiteCapturesEnPassant:
+	    case BlackCapturesEnPassant:
+	    case WhitePromotion:
+	    case BlackPromotion:
+	    case WhiteNonPromotion:
+	    case BlackNonPromotion:
+	    case NormalMove:
+	    case WhiteKingSideCastle:
+	    case WhiteQueenSideCastle:
+	    case BlackKingSideCastle:
+	    case BlackQueenSideCastle:
+	    case WhiteKingSideCastleWild:
+	    case WhiteQueenSideCastleWild:
+	    case BlackKingSideCastleWild:
+	    case BlackQueenSideCastleWild:
+	    case WhiteHSideCastleFR:
+	    case WhiteASideCastleFR:
+	    case BlackHSideCastleFR:
+	    case BlackASideCastleFR:
+		fromX = currentMoveString[0] - AAA;
+		fromY = currentMoveString[1] - ONE;
+		toX = currentMoveString[2] - AAA;
+		toY = currentMoveString[3] - ONE;
+		promoChar = currentMoveString[4];
+		break;
+	    case WhiteDrop:
+	    case BlackDrop:
+		fromX = next == WhiteDrop ?
+		  (int) CharToPiece(ToUpper(currentMoveString[0])) :
+		  (int) CharToPiece(ToLower(currentMoveString[0]));
+		fromY = DROP_RANK;
+		toX = currentMoveString[2] - AAA;
+		toY = currentMoveString[3] - ONE;
+		break;
+	}
+	// Move encountered; peform it. We need to shuttle between two boards, as even/odd index determines side to move
+	if(plyNr == 0) { // but first figure out variant and initial position
+	    if(dummyInfo.variant != gameInfo.variant) return -1; // wrong variant
+	    if(appData.eloThreshold1 && (dummyInfo.whiteRating < appData.eloThreshold1 && dummyInfo.blackRating < appData.eloThreshold1)) return -1;
+	    if(appData.eloThreshold2 && (dummyInfo.whiteRating < appData.eloThreshold2 || dummyInfo.blackRating < appData.eloThreshold2)) return -1;
+	    if(appData.dateThreshold && (!dummyInfo.date || atoi(dummyInfo.date) < appData.dateThreshold)) return -1;
+	    if(btm) CopyBoard(boards[scratch+1], boards[scratch]), plyNr++;
+	    if(PositionMatches(boards[scratch + plyNr], boards[currentMove])) return plyNr;
+	}
+	CopyBoard(boards[scratch + (plyNr+1&1)], boards[scratch + (plyNr&1)]);
+	plyNr++;
+	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch + (plyNr&1)]);
+	if(PositionMatches(boards[scratch + (plyNr&1)], boards[currentMove])) return plyNr;
+    }
+}
 
 /* Load the nth game from open file f */
 int
@@ -11014,7 +11300,7 @@ LoadGame(f, gameNumber, title, useList)
     int gn = gameNumber;
     ListGame *lg = NULL;
     int numPGNTags = 0;
-    int err;
+    int err, pos = -1;
     GameMode oldGameMode;
     VariantClass oldVariant = gameInfo.variant; /* [HGM] PGNvariant */
 
@@ -11040,6 +11326,7 @@ LoadGame(f, gameNumber, title, useList)
 	if (lg) {
 	    fseek(f, lg->offset, 0);
 	    GameListHighlight(gameNumber);
+	    pos = lg->position;
 	    gn = 1;
 	}
 	else {
@@ -11439,10 +11726,11 @@ LoadGame(f, gameNumber, title, useList)
       AnalyzeFileEvent();
     }
 
+    if (!matchMode && pos >= 0) {
+	ToNrEvent(pos); // [HGM] no autoplay if selected on position
+    } else
     if (matchMode || appData.timeDelay == 0) {
       ToEndEvent();
-      gameMode = EditGame;
-      ModeHighlight();
     } else if (appData.timeDelay > 0) {
       AutoPlayGameLoop();
     }
@@ -11520,7 +11808,7 @@ LoadPosition(f, positionNumber, title)
     lastLoadPositionFP = f;
     lastLoadPositionNumber = positionNumber;
     safeStrCpy(lastLoadPositionTitle, title, sizeof(lastLoadPositionTitle)/sizeof(lastLoadPositionTitle[0]));
-    if (first.pr == NoProc) {
+    if (first.pr == NoProc && !appData.noChessProgram) {
       StartChessProgram(&first);
       InitChessProgram(&first, FALSE);
     }
@@ -11592,7 +11880,6 @@ LoadPosition(f, positionNumber, title)
     }
     startedFromSetupPosition = TRUE;
 
-    SendToProgram("force\n", &first);
     CopyBoard(boards[0], initial_position);
     if (blackPlaysFirst) {
 	currentMove = forwardMostMove = backwardMostMove = 1;
@@ -11605,7 +11892,10 @@ LoadPosition(f, positionNumber, title)
 	DisplayMessage("", _("White to play"));
     }
     initialRulePlies = FENrulePlies; /* [HGM] copy FEN attributes as well */
-    SendBoard(&first, forwardMostMove);
+    if(first.pr != NoProc) { // [HGM] in tourney-mode a position can be loaded before the chess engine is installed
+	SendToProgram("force\n", &first);
+	SendBoard(&first, forwardMostMove);
+    }
     if (appData.debugMode) {
 int i, j;
   for(i=0;i<2;i++){for(j=0;j<6;j++)fprintf(debugFP, " %d", boards[i][CASTLING][j]);fprintf(debugFP,"\n");}
@@ -11671,12 +11961,18 @@ SaveGameToFile(filename, append)
 {
     FILE *f;
     char buf[MSG_SIZ];
-    int result;
+    int result, i, t,tot=0;
 
     if (strcmp(filename, "-") == 0) {
 	return SaveGame(stdout, 0, NULL);
     } else {
-	f = fopen(filename, append ? "a" : "w");
+	for(i=0; i<10; i++) { // upto 10 tries
+	     f = fopen(filename, append ? "a" : "w");
+	     if(f && i) fprintf(f, "[Delay \"%d retries, %d msec\"]\n",i,tot);
+	     if(f || errno != 13) break;
+	     DoSleep(t = 5 + random()%11); // wait 5-15 msec
+	     tot += t;
+	}
 	if (f == NULL) {
 	    snprintf(buf, sizeof(buf), _("Can't open \"%s\""), filename);
 	    DisplayError(buf, errno);
@@ -12629,6 +12925,7 @@ AnalyzeFileEvent()
     StartAnalysisClock();
     GetTimeMark(&lastNodeCountTime);
     lastNodeCount = 0;
+    if(appData.timeDelay > 0) StartLoadGameTimer((long)(1000.0 * appData.timeDelay));
 }
 
 void
@@ -13558,7 +13855,9 @@ ClockClick(int which)
 	  if (gameMode == EditPosition || gameMode == IcsExamining) {
 	    if(!appData.pieceMenu && blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetBlackToPlayEvent();
-	  } else if (gameMode == EditGame || shiftKey) {
+	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame) && !blackFlag && WhiteOnMove(currentMove)) {
+          UserMoveEvent((int)EmptySquare, DROP_RANK, 0, 0, 0); // [HGM] multi-move: if not out of time, enters null move
+	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
 	  } else if (gameMode == IcsPlayingWhite ||
 	             gameMode == MachinePlaysBlack) {
@@ -13568,7 +13867,9 @@ ClockClick(int which)
 	  if (gameMode == EditPosition || gameMode == IcsExamining) {
 	    if(!appData.pieceMenu && !blackPlaysFirst) EditPositionMenuEvent(ClearBoard, 0, 0);
 	    SetWhiteToPlayEvent();
-	  } else if (gameMode == EditGame || shiftKey) {
+	  } else if ((gameMode == AnalyzeMode || gameMode == EditGame) && !whiteFlag && !WhiteOnMove(currentMove)) {
+          UserMoveEvent((int)EmptySquare, DROP_RANK, 0, 0, 0); // [HGM] multi-move
+	  } else if (shiftKey) {
 	    AdjustClock(which, -1);
 	  } else if (gameMode == IcsPlayingBlack ||
 	           gameMode == MachinePlaysWhite) {
@@ -13759,7 +14060,6 @@ ForwardInner(target)
     if ( !matchMode && gameMode != Training) { // [HGM] PV info: routine tests if empty
 	DisplayComment(currentMove - 1, commentList[currentMove]);
     }
-    DisplayBook(currentMove);
 }
 
 
@@ -13845,6 +14145,16 @@ BackwardInner(target)
     if (gameMode == EditGame || gameMode==AnalyzeMode ||
 	gameMode == PlayFromGameFile || gameMode == AnalyzeFile) {
 	while (currentMove > target) {
+	    if(moveList[currentMove-1][1] == '@' && moveList[currentMove-1][0] == '@') {
+		// null move cannot be undone. Reload program with move history before it.
+		int i;
+		for(i=target; i>backwardMostMove; i--) { // seek back to start or previous null move
+		    if(moveList[i-1][1] == '@' && moveList[i-1][0] == '@') break;
+		}
+		SendBoard(&first, i); 
+		for(currentMove=i; currentMove<target; currentMove++) SendMoveToProgram(currentMove, &first);
+		break;
+	    }
 	    SendToProgram("undo\n", &first);
 	    currentMove--;
 	}
@@ -13862,7 +14172,6 @@ BackwardInner(target)
     HistorySet(parseList,backwardMostMove,forwardMostMove,currentMove-1);
     // [HGM] PV info: routine tests if comment empty
     DisplayComment(currentMove - 1, commentList[currentMove]);
-    DisplayBook(currentMove);
 }
 
 void
@@ -14355,6 +14664,7 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
     if (len == 0) return;
 
     if (commentList[index] != NULL) {
+      Boolean addClosingBrace = addBraces;
 	old = commentList[index];
 	oldlen = strlen(old);
 	while(commentList[index][oldlen-1] ==  '\n')
@@ -14371,7 +14681,7 @@ if(appData.debugMode) fprintf(debugFP, "Append: in='%s' %d\n", text, addBraces);
 	if(addBraces) strcat(commentList[index], addBraces == 2 ? "\n(" : "\n{\n");
 	else          strcat(commentList[index], "\n");
 	strcat(commentList[index], text);
-	if(addBraces) strcat(commentList[index], addBraces == 2 ? ")\n" : "\n}\n");
+	if(addClosingBrace) strcat(commentList[index], addClosingBrace == 2 ? ")\n" : "\n}\n");
 	else          strcat(commentList[index], "\n");
     } else {
 	commentList[index] = (char *) malloc(len + 6); // perhaps wastes 4...
@@ -14471,7 +14781,7 @@ char *GetInfoFromComment( int index, char * text )
             while( *++sep >= '0' && *sep <= '9'); // strip seconds
             if(deci >= 0)
             while( *++sep >= '0' && *sep <= '9'); // strip fractional seconds
-            while(*sep == ' ') sep++;
+            while(*sep == ' ' || *sep == '\n' || *sep == '\r') sep++;
         }
 
         if( depth <= 0 ) {
@@ -16359,6 +16669,7 @@ int wrap(char *dest, char *src, int count, int width, int *lp)
 }
 
 // [HGM] vari: routines for shelving variations
+Boolean modeRestore = FALSE;
 
 void
 PushInner(int firstMove, int lastMove)
@@ -16402,6 +16713,7 @@ PushTail(int firstMove, int lastMove)
 
 	PushInner(firstMove, lastMove);
 	if(storedGames == 1) GreyRevert(FALSE);
+	if(gameMode == PlayFromGameFile) gameMode = EditGame, modeRestore = TRUE;
 }
 
 void
@@ -16410,8 +16722,8 @@ PopInner(Boolean annotate)
 	int i, j, nrMoves;
 	char buf[8000], moveBuf[20];
 
-	storedGames--;
-	ToNrEvent(savedFirst[storedGames]); // sets currentMove
+	ToNrEvent(savedFirst[storedGames-1]); // sets currentMove
+	storedGames--; // do this after ToNrEvent, to make sure HistorySet will refresh entire game after PopInner returns
 	nrMoves = savedLast[storedGames] - currentMove;
 	if(annotate) {
 		int cnt = 10;
@@ -16459,8 +16771,10 @@ PopTail(Boolean annotate)
 	CommentPopDown(); // make sure no stale variation comments to the destroyed line can remain open
 
 	PopInner(annotate);
+	if(currentMove < forwardMostMove) ForwardEvent(); else
+	HistorySet(parseList, backwardMostMove, forwardMostMove, currentMove-1);
 
-	if(storedGames == 0) GreyRevert(TRUE);
+	if(storedGames == 0) { GreyRevert(TRUE); if(modeRestore) modeRestore = FALSE, gameMode = PlayFromGameFile; }
 	return TRUE;
 }
 
@@ -16487,7 +16801,7 @@ LoadVariation(int index, char *text)
 	char *p = text, *start = NULL, *end = NULL, wait = NULLCHAR;
 	int level = 0, move;
 
-	if(gameMode != EditGame && gameMode != AnalyzeMode) return;
+	if(gameMode != EditGame && gameMode != AnalyzeMode && gameMode != PlayFromGameFile) return;
 	// first find outermost bracketing variation
 	while(*p) { // hope I got this right... Non-nesting {} and [] can screen each other and nesting ()
 	    if(!wait) { // while inside [] pr {}, ignore everyting except matching closing ]}

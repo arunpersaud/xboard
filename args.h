@@ -323,6 +323,7 @@ ArgDescriptor argDescriptors[] = {
   { "commentFont", ArgFont, (void *) COMMENT_FONT, TRUE, INVALID },
   { "icsFont", ArgFont, (void *) CONSOLE_FONT, TRUE, INVALID },
   { "moveHistoryFont", ArgFont, (void *) MOVEHISTORY_FONT, TRUE, INVALID }, /* [AS] */
+  { "gameListFont", ArgFont, (void *) GAMELIST_FONT, TRUE, INVALID }, /* [HGM] */
   { "boardSize", ArgBoardSize, (void *) &boardSize,
     TRUE, (ArgIniType) -1 }, /* must come after all fonts */
   { "size", ArgBoardSize, (void *) &boardSize, FALSE, INVALID },
@@ -557,12 +558,14 @@ ArgDescriptor argDescriptors[] = {
   { "polyglotBook", ArgFilename, (void *) &appData.polyglotBook, TRUE, (ArgIniType) "" },
   { "bookDepth", ArgInt, (void *) &appData.bookDepth, TRUE, (ArgIniType) 12 },
   { "bookVariation", ArgInt, (void *) &appData.bookStrength, TRUE, (ArgIniType) 50 },
+  { "discourageOwnBooks", ArgBoolean, (void *) &appData.defNoBook, TRUE, (ArgIniType) FALSE },
   { "defaultHashSize", ArgInt, (void *) &appData.defaultHashSize, TRUE, (ArgIniType) 64 },
   { "defaultCacheSizeEGTB", ArgInt, (void *) &appData.defaultCacheSizeEGTB, TRUE, (ArgIniType) 4 },
   { "defaultPathEGTB", ArgFilename, (void *) &appData.defaultPathEGTB, TRUE, (ArgIniType) "c:\\egtb" },
   { "language", ArgFilename, (void *) &appData.language, TRUE, (ArgIniType) "" },
   { "userFileDirectory", ArgFilename, (void *) &homeDir, FALSE, (ArgIniType) installDir },
-  { "useBoardTexture", ArgBoolean, (void *) &appData.useBitmaps, TRUE, (ArgIniType) TRUE },
+  { "usePieceFont", ArgBoolean, (void *) &appData.useFont, TRUE, (ArgIniType) FALSE },
+  { "useBoardTexture", ArgBoolean, (void *) &appData.useBitmaps, TRUE, (ArgIniType) FALSE },
 
   // [HGM] tournament options
   { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },
@@ -575,6 +578,8 @@ ArgDescriptor argDescriptors[] = {
   { "results", ArgString, (void *) &appData.results, FALSE, (ArgIniType) "" },
   { "syncAfterRound", ArgBoolean, (void *) &appData.roundSync, FALSE, (ArgIniType) FALSE },
   { "syncAfterCycle", ArgBoolean, (void *) &appData.cycleSync, FALSE, (ArgIniType) TRUE },
+  { "seedBase", ArgInt, (void *) &appData.seedBase, FALSE, (ArgIniType) 1 },
+  { "afterGame", ArgString, (void *) &appData.afterGame, FALSE, INVALID },
 
   /* [HGM] board-size, adjudication and misc. options */
   { "oneClickMove", ArgBoolean, (void *) &appData.oneClick, TRUE, (ArgIniType) FALSE },
@@ -630,6 +635,10 @@ ArgDescriptor argDescriptors[] = {
   { "sSAN", ArgTrue, (void *) &appData.pvSAN[1], FALSE, FALSE },
   { "pairingEngine", ArgFilename, (void *) &appData.pairingEngine, TRUE, "" },
   { "defaultTourneyName", ArgFilename, (void *) &appData.defName, TRUE, "" },
+  { "eloThresholdAny", ArgInt, (void *) &appData.eloThreshold1, FALSE, (ArgIniType) 0 },
+  { "eloThresholdBoth", ArgInt, (void *) &appData.eloThreshold2, FALSE, (ArgIniType) 0 },
+  { "dateThreshold", ArgInt, (void *) &appData.dateThreshold, FALSE, (ArgIniType) 0 },
+  { "searchMode", ArgInt, (void *) &appData.searchMode, FALSE, (ArgIniType) 1 },
 
 #if ZIPPY
   { "zippyTalk", ArgBoolean, (void *) &appData.zippyTalk, FALSE, (ArgIniType) ZIPPY_TALK },
