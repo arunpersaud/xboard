@@ -311,7 +311,7 @@ ShowGameListProc(w, event, prms, nprms)
 {
     if(GUI_GameList)
       {
-        if(((GTK_WIDGET_FLAGS(GUI_GameList) & GTK_MAPPED) != 0)) {	
+        if(((GTK_WIDGET_FLAGS(GUI_GameList) & GTK_MAPPED) != 0)) 	
 	  gtk_widget_hide(GUI_GameList);
 	else
 	  gtk_widget_show(GUI_GameList);
