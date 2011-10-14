@@ -30,8 +30,7 @@ dnl| the standard version of xboard.
 dnl| define second argument as VERSION.PATCHLEVEL. e.g. 4.4.0j
 AC_INIT([xboard],[master-20110822],[bug-xboard@gnu.org])
 
-dnl| need this to be able to compile some files in a subdir (filebrowser)
-AM_INIT_AUTOMAKE([subdir-objects])
+AM_INIT_AUTOMAKE()
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_CONFIG_HEADERS([config.h])

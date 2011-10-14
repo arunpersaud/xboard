@@ -28,9 +28,6 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 	 	 xgamelist.c xgamelist.h\
 		 history.c xhistory.c xhistory.h \
 		 xoptions.c \
-		 filebrowser/selfile.c filebrowser/selfile.h \
-		 filebrowser/draw.c filebrowser/path.c \
-		 filebrowser/dir.c filebrowser/xstat.h \
 		 $(ZPY)
 SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@
@@ -42,7 +39,7 @@ glade_DATA = gtk/evalgraph.glade \
 	     gtk/gamelist.glade \
 	     gtk/mainboard.glade
 
-EXTRA_DIST = pixmaps bitmaps svg sounds winboard filebrowser/README \
+EXTRA_DIST = pixmaps bitmaps svg sounds winboard  \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
 	COPYRIGHT FAQ.html engine-intf.html ics-parsing.txt readme.htm zippy.README \
 	xboard.conf.in SHORTLOG DIFFSTAT history.c ABOUT-NLS $(glade_DATA)
