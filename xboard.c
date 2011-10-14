@@ -360,7 +360,6 @@ void AnalyzeFileProc P((Widget w, XEvent *event,
 void TwoMachinesProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void MatchProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void MatchOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void IcsClientProc P((Widget w, XEvent *event, String *prms,
 		      Cardinal *nprms));
 void EditGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -462,23 +461,7 @@ static void CreateAnimVars P((void));
 static void DragPieceMove P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
-void ShuffleMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EngineMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void UciMenuProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TimeControlProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void OptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void NewVariantProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void IcsTextProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void LoadEngineProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void FirstSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SecondSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void IcsOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SoundOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BoardOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void LoadOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SaveOptionsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EditBookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
 //void GenericPopDown P(());
@@ -667,8 +650,8 @@ SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
 MenuItem fileMenu[] = {
     {N_("New Game        Ctrl+N"),        "New Game", ResetProc},
-    {N_("New Shuffle Game ..."),          "New Shuffle Game", ShuffleMenuProc},
-    {N_("New Variant ...   Alt+Shift+V"), "New Variant", NewVariantProc},      // [HGM] variant: not functional yet
+    {N_("New Shuffle Game ..."),          "New Shuffle Game", NothingProc},
+    {N_("New Variant ...   Alt+Shift+V"), "New Variant", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Load Game       Ctrl+O"),        "Load Game", LoadGameProc},
     {N_("Load Position    Ctrl+Shift+O"), "Load Position", LoadPositionProc},
@@ -701,7 +684,7 @@ MenuItem editMenu[] = {
     {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", EditPositionProc},
     {N_("Edit Tags"),                    "Edit Tags", EditTagsProc},
     {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
-    {N_("Edit Book"),                    "Edit Book", EditBookProc},
+    {N_("Edit Book"),                    "Edit Book", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Revert              Home"), "Revert", RevertProc},
     {N_("Annotate"),                 "Annotate", AnnotateProc},
@@ -721,13 +704,13 @@ MenuItem viewMenu[] = {
     {N_("Move History       Alt+Shift+H"),   "Show Move History", NothingProc}, 
     {N_("Evaluation Graph  Alt+Shift+E"),    "Show Evaluation Graph", EvalGraphProc},
     {N_("Game List            Alt+Shift+G"), "Show Game List", ShowGameListProc},
-    {N_("ICS text menu"), "ICStex", IcsTextProc},
+    {N_("ICS text menu"), "ICStex", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Tags"),             "Show Tags", EditTagsProc},
     {N_("Comments"),         "Show Comments", EditCommentProc},
     {N_("ICS Input Box"),    "ICS Input Box", IcsInputBoxProc},
     {"----", NULL, NothingProc},
-    {N_("Board..."),          "Board Options", BoardOptionsProc},
+    {N_("Board..."),          "Board Options", NothingProc},
     {N_("Game List Tags..."), "Game List", GameListOptionsPopUp},
     {NULL, NULL, NULL}
 };
@@ -770,10 +753,10 @@ MenuItem actionMenu[] = {
 };
 
 MenuItem engineMenu[] = {
-    {N_("Load New Engine ..."), "Load Engine", LoadEngineProc},
+    {N_("Load New Engine ..."), "Load Engine", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Engine #1 Settings ..."), "Engine #1 Settings", FirstSettingsProc},
-    {N_("Engine #2 Settings ..."), "Engine #2 Settings", SecondSettingsProc},
+    {N_("Engine #1 Settings ..."), "Engine #1 Settings", NothingProc},
+    {N_("Engine #2 Settings ..."), "Engine #2 Settings", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Hint"), "Hint", HintProc},
     {N_("Book"), "Book", BookProc},
@@ -786,18 +769,17 @@ MenuItem engineMenu[] = {
 MenuItem optionsMenu[] = {
 #define OPTIONSDIALOG
 #ifdef OPTIONSDIALOG
-    {N_("General ..."), "General", OptionsProc},
+    {N_("General ..."), "General", NothingProc},
 #endif
-    {N_("Time Control ...       Alt+Shift+T"), "Time Control", TimeControlProc},
-    {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", UciMenuProc},
-    {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", EngineMenuProc},
-    {N_("ICS ..."),    "ICS", IcsOptionsProc},
-    {N_("Match ..."), "Match", MatchOptionsProc},
-    {N_("Load Game ..."),    "Load Game", LoadOptionsProc},
-    {N_("Save Game ..."),    "Save Game", SaveOptionsProc},
-//    {N_(" ..."),    "", OptionsProc},
+    {N_("Time Control ...       Alt+Shift+T"), "Time Control", NothingProc},
+    {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", NothingProc},
+    {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", NothingProc},
+    {N_("ICS ..."),    "ICS", NothingProc},
+    {N_("Match ..."), "Match", NothingProc},
+    {N_("Load Game ..."),    "Load Game", NothingProc},
+    {N_("Save Game ..."),    "Save Game", NothingProc},
     {N_("Game List ..."),    "Game List", GameListOptionsPopUp},
-    {N_("Sounds ..."),    "Sounds", SoundOptionsProc},
+    {N_("Sounds ..."),    "Sounds", NothingProc},
     {"----", NULL, NothingProc},
 #ifndef OPTIONSDIALOG
     {N_("Always Queen        Ctrl+Shift+Q"),   "Always Queen", AlwaysQueenProc},
@@ -976,7 +958,6 @@ XtActionsRec boardActions[] = {
     { "BlackClock", BlackClock },
     { "Iconify", Iconify },
     { "ResetProc", ResetProc },
-    { "NewVariantProc", NewVariantProc },
     { "LoadGameProc", LoadGameProc },
     { "LoadNextGameProc", LoadNextGameProc },
     { "LoadPrevGameProc", LoadPrevGameProc },
@@ -1011,7 +992,6 @@ XtActionsRec boardActions[] = {
     { "ShowGameListProc", ShowGameListProc },
     { "ShowMoveListProc", NothingProc},
     { "EditTagsProc", EditCommentProc },
-    { "EditBookProc", EditBookProc },
     { "EditCommentProc", EditCommentProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
     { "PauseProc", PauseProc },
@@ -1042,9 +1022,6 @@ XtActionsRec boardActions[] = {
     { "TruncateGameProc", TruncateGameProc },
     { "MoveNowProc", MoveNowProc },
     { "RetractMoveProc", RetractMoveProc },
-    { "EngineMenuProc", (XtActionProc) EngineMenuProc },
-    { "UciMenuProc", (XtActionProc) UciMenuProc },
-    { "TimeControlProc", (XtActionProc) TimeControlProc },
     { "FlipViewProc", FlipViewProc },
     { "PonderNextMoveProc", PonderNextMoveProc },
 #ifndef OPTIONSDIALOG
@@ -1099,7 +1076,6 @@ XtActionsRec boardActions[] = {
 char globalTranslations[] =
   ":<Key>F9: ResignProc() \n \
    :Ctrl<Key>n: ResetProc() \n \
-   :Meta<Key>V: NewVariantProc() \n \
    :Ctrl<Key>o: LoadGameProc() \n \
    :Meta<Key>Next: LoadNextGameProc() \n \
    :Meta<Key>Prior: LoadPrevGameProc() \n \
@@ -1147,9 +1123,6 @@ char globalTranslations[] =
    :<Key>End: TruncateGameProc() \n \
    :Ctrl<Key>m: MoveNowProc() \n \
    :Ctrl<Key>x: RetractMoveProc() \n \
-   :Meta<Key>J: EngineMenuProc() \n \
-   :Meta<Key>U: UciMenuProc() \n \
-   :Meta<Key>T: TimeControlProc() \n \
    :Ctrl<Key>P: PonderNextMoveProc() \n "
 #ifndef OPTIONSDIALOG
     "\

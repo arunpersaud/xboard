@@ -222,7 +222,6 @@ void DoClearMemo(int which)
 Boolean SendPositionSelection(Widget w, Atom *selection, Atom *target,
 		 Atom *type_return, XtPointer *value_return,
 		 unsigned long *length_return, int *format_return); // from xboard.c
-void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b); // from xoptions.c
 
 char memoTranslations[] =
 ":Ctrl<Key>c: CopyMemoProc() \n \
@@ -394,7 +393,7 @@ void PositionControlSet(which, shell, form, bw_width)
       XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
 
     XtOverrideTranslations(edit, XtParseTranslationTable(memoTranslations));
-    XtAddEventHandler(edit, ButtonPressMask, False, SetFocus, (XtPointer) shell);
+    //    XtAddEventHandler(edit, ButtonPressMask, False, SetFocus, (XtPointer) shell);
 
     j = 0;
     XtSetArg(args[j], XtNfromVert, ColorWidget); j++;

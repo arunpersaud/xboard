@@ -49,7 +49,6 @@ void FindMoveByCharIndex P(( int char_index ));
 int AppendText P((Option *opt, char *s));
 int GenericPopUp P((Option *option, char *title, int dlgNr));
 void MarkMenu P((char *item, int dlgNr));
-void GetWidgetText P((Option *opt, char **buf));
 GtkWidget *GetTextView P((GtkWidget *dialog));
 
 extern Option historyOptions[];

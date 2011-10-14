@@ -30,6 +30,26 @@
 #include <errno.h>
 #include <sys/types.h>
 
+#include <X11/Intrinsic.h>
+#include <X11/StringDefs.h>
+#include <X11/Shell.h>
+#include <X11/Xaw/Dialog.h>
+#include <X11/Xaw/Form.h>
+#include <X11/Xaw/List.h>
+#include <X11/Xaw/Label.h>
+#include <X11/Xaw/SimpleMenu.h>
+#include <X11/Xaw/SmeBSB.h>
+#include <X11/Xaw/SmeLine.h>
+#include <X11/Xaw/Box.h>
+#include <X11/Xaw/Paned.h>
+#include <X11/Xaw/MenuButton.h>
+#include <X11/cursorfont.h>
+#include <X11/Xaw/Text.h>
+#include <X11/Xaw/AsciiText.h>
+#include <X11/Xaw/Viewport.h>
+#include <X11/Xatom.h>
+#include <X11/Xmu/Atoms.h>
+
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>  
 
@@ -50,26 +70,6 @@ extern char *getenv();
 #endif
 #include <stdint.h>
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xatom.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#include <X11/Xaw/Toggle.h>
-
 #include "common.h"
 #include "backend.h"
 #include "xboard.h"
@@ -88,26 +88,6 @@ extern GtkBuilder *builder;
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
 static Widget previous = NULL;
-
-void SetFocus(Widget w, XtPointer data, XEvent *event, Boolean *b)
-{
-    Arg args[2];
-    char *s;
-    int j;
-
-    if(previous) {
-	XtSetArg(args[0], XtNdisplayCaret, False);
-	XtSetValues(previous, args, 1);
-    }
-    XtSetArg(args[0], XtNstring, &s);
-    XtGetValues(w, args, 1);
-    j = 1;
-    XtSetArg(args[0], XtNdisplayCaret, True);
-    if(!strchr(s, '\n') && strlen(s) < 80) XtSetArg(args[1], XtNinsertPosition, strlen(s)), j++;
-    XtSetValues(w, args, j);
-    XtSetKeyboardFocus((Widget) data, w);
-    previous = w;
-}
 
 //--------------------------- Engine-specific options menu ----------------------------------
 
@@ -136,13 +116,6 @@ void GetWidgetTextGTK(GtkWidget *w, char **buf)
     }
 }
 
-void GetWidgetText(Option *opt, char **buf)
-{
-    Arg arg;
-    XtSetArg(arg, XtNstring, buf);
-    XtGetValues(opt->handle, &arg, 1);
-}
-
 void SetSpinValue(Option *opt, int val, int n)
 {    
     if (opt->type == Spin)
@@ -156,42 +129,16 @@ void SetSpinValue(Option *opt, int val, int n)
           }
       }
     else
-      printf("error in SetWidgetText, unknown type %d\n", opt->type);    
+      printf("error in SetSpinValue, unknown type %d\n", opt->type);    
 }
 
 void SetWidgetTextGTK(GtkWidget *w, char *text)
 {
     if (!GTK_IS_TEXT_BUFFER(w)) {
-        printf("error: SetWidgetText arg is not a GtkTextBuffer\n");
+        printf("error: SetWidgetTextGTK arg is not a GtkTextBuffer\n");
         return;
     }    
     gtk_text_buffer_set_text(GTK_TEXT_BUFFER(w), text, -1);
-}
-
-void SetWidgetText(Option *opt, char *buf, int n)
-{
-    Arg arg;
-    XtSetArg(arg, XtNstring, buf);
-    XtSetValues(opt->handle, &arg, 1);
-    SetFocus(opt->handle, shells[n], NULL, False);
-}
-
-void SetWidgetState(Option *opt, int state)
-{
-    Arg arg;
-    XtSetArg(arg, XtNstate, state);
-    XtSetValues(opt->handle, &arg, 1);
-}
-
-void CheckCallback(Widget ww, XtPointer data, XEvent *event, Boolean *b)
-{
-    Widget w = currentOption[(int)(intptr_t)data].handle;
-    Boolean s;
-    Arg args[16];
-
-    XtSetArg(args[0], XtNstate, &s);
-    XtGetValues(w, args, 1);
-    SetWidgetState(&currentOption[(int)(intptr_t)data], !s);
 }
 
 void ComboSelect(GtkWidget *widget, gpointer gptr)
@@ -1326,30 +1273,12 @@ void IcsOptionsProcGTK(object, user_data)
     GenericPopUp(icsOptions, _("ICS Options"), 0);
 }
 
-void IcsOptionsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{   
-   GenericPopUp(icsOptions, _("ICS Options"), 0);
-}
-
 void LoadOptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
+    ASSIGN(searchMode, modeValues[appData.searchMode-1]);
     GenericPopUp(loadOptions, _("Load Game Options"), 0);
-}
-
-void LoadOptionsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-   ASSIGN(searchMode, modeValues[appData.searchMode-1]);
-   GenericPopUp(loadOptions, _("Load Game Options"), 0);
 }
 
 void SaveOptionsProcGTK(object, user_data)
@@ -1359,28 +1288,9 @@ void SaveOptionsProcGTK(object, user_data)
     GenericPopUp(saveOptions, _("Save Game Options"), 0);
 }
 
-void SaveOptionsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{   
-   GenericPopUp(saveOptions, _("Save Game Options"), 0);
-}
-
 void SoundOptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-   soundFiles[2] = "*";   
-   GenericPopUp(soundOptions, _("Sound Options"), 0);
-}
-
-void SoundOptionsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
    soundFiles[2] = "*";   
    GenericPopUp(soundOptions, _("Sound Options"), 0);
@@ -1393,15 +1303,6 @@ void BoardOptionsProcGTK(object, user_data)
     GenericPopUp(boardOptions, _("Board Options"), 0);
 }
 
-void BoardOptionsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{   
-   GenericPopUp(boardOptions, _("Board Options"), 0);
-}
-
 void EngineMenuProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -1409,29 +1310,9 @@ void EngineMenuProcGTK(object, user_data)
     GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
 }
 
-void EngineMenuProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{   
-   GenericPopUp(adjudicationOptions, "Adjudicate non-ICS Games", 0);
-}
-
 void UciMenuProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-   oldCores = appData.smpCores;
-   oldPonder = appData.ponderNextMove;   
-   GenericPopUp(commonEngineOptions, _("Common Engine Settings"), 0);
-}
-
-void UciMenuProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
    oldCores = appData.smpCores;
    oldPonder = appData.ponderNextMove;   
@@ -1445,28 +1326,9 @@ void NewVariantProcGTK(object, user_data)
     GenericPopUp(variantDescriptors, _("New Variant"), 0);
 }
 
-void NewVariantProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{  
-   GenericPopUp(variantDescriptors, _("New Variant"), 0);
-}
-
 void OptionsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-   oldPonder = appData.ponderNextMove;   
-   GenericPopUp(generalOptions, _("General Options"), 0);   
-}
-
-void OptionsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
    oldPonder = appData.ponderNextMove;   
    GenericPopUp(generalOptions, _("General Options"), 0);   
@@ -1480,19 +1342,6 @@ void MatchOptionsProcGTK(object, user_data)
    comboCallback = &AddToTourney;
    matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
    ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));   
-   GenericPopUp(matchOptions, _("Match Options"), 0);
-}
-
-void MatchOptionsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic);
-   comboCallback = &AddToTourney;
-   matchOptions[5].min = -(appData.pairingEngine[0] != NULLCHAR); // with pairing engine, allow Swiss
-   ASSIGN(tfName, appData.tourneyFile[0] ? appData.tourneyFile : MakeName(appData.defName));
    ASSIGN(engineName, appData.participants);
    GenericPopUp(matchOptions, _("Match Options"), 0);
 }
@@ -1573,41 +1422,6 @@ void IcsTextProcGTK(object, user_data)
    textOptions[i].min = 2;
    MarkMenu("menuView.ICStex", 3);
    SetCheckMenuItemActive(NULL, 3, True); // set GTK menu item to checked   
-   GenericPopUp(textOptions, _("ICS text menu"), 3);
-}
-
-void IcsTextProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-   int i=0, j;
-   char *p, *q, *r;
-   if((p = icsTextMenuString) == NULL) return;
-   do {
-	q = r = p; while(*p && *p != ';') p++;
-	for(j=0; j<p-q; j++) textOptions[i].name[j] = *r++;
-	textOptions[i].name[j++] = 0;
-	if(!*p) break;
-	if(*++p == '\n') p++; // optional linefeed after button-text terminating semicolon
-	q = p;
-	textOptions[i].choice = (char**) (r = textOptions[i].name + j);
-	while(*p && (*p != ';' || p[1] != '\n')) textOptions[i].name[j++] = *p++;
-	textOptions[i].name[j++] = 0;
-	if(*p) p += 2;
-	textOptions[i].max = 135;
-	textOptions[i].min = i&1;
-	textOptions[i].handle = NULL;
-	textOptions[i].target = &SendText;
-	textOptions[i].textValue = strstr(r, "$input") ? "#80FF80" : strstr(r, "$name") ? "#FF8080" : "#FFFFFF";
-	textOptions[i].type = Button;
-   } while(++i < 99 && *p);
-   if(i == 0) return;
-   textOptions[i].type = EndMark;
-   textOptions[i].target = NULL;
-   textOptions[i].min = 2;
-   MarkMenu("menuView.ICStex", 3);   
    GenericPopUp(textOptions, _("ICS text menu"), 3);
 }
 
@@ -1802,11 +1616,11 @@ void PutText(char *text, int pos)
     char buf[MSG_SIZ], *p;
 
     if(strstr(text, "$add ") == text) {
-	GetWidgetText(&boxOptions[0], &p);
+      //	GetWidgetText(&boxOptions[0], &p);
 	snprintf(buf, MSG_SIZ, "%s%s", p, text+5); text = buf;
 	pos += strlen(p) - 5;
     }
-    SetWidgetText(&boxOptions[0], text, 4);
+//    SetWidgetText(&boxOptions[0], text, 4);
     XtSetArg(args[0], XtNinsertPosition, pos);
     XtSetValues(boxOptions[0].handle, args, 1);
 //    SetFocus(boxOptions[0].handle, shells[4], NULL, False); // No idea why this does not work, and the following is needed:
@@ -1932,28 +1746,9 @@ void FirstSettingsProcGTK(object, user_data)
     SettingsPopUp(&first);
 }
 
-void FirstSettingsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    SettingsPopUp(&first);
-}
-
 void SecondSettingsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-   if(WaitForEngine(&second, SettingsMenuIfReady)) return;
-   SettingsPopUp(&second);
-}
-
-void SecondSettingsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
    if(WaitForEngine(&second, SettingsMenuIfReady)) return;
    SettingsPopUp(&second);
@@ -1997,34 +1792,9 @@ void LoadEngineProcGTK(object, user_data)
    GenericPopUp(installOptions, _("Load engine"), 0);
 }
 
-void LoadEngineProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-   isUCI = storeVariant = v1 = useNick = False; addToList = hasBook = True; // defaults
-   if(engineChoice) free(engineChoice); engineChoice = strdup(engineNr[0]);
-   if(engineLine)   free(engineLine);   engineLine = strdup("");
-   if(engineDir)    free(engineDir);    engineDir = strdup("");
-   if(nickName)     free(nickName);     nickName = strdup("");
-   if(params)       free(params);       params = strdup("");
-   NamesToList(firstChessProgramNames, engineList, engineMnemonic);   
-   GenericPopUp(installOptions, _("Load engine"), 0);
-}
-
 void EditBookProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    EditBookEvent();
-}
-
-void EditBookProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     EditBookEvent();
 }
@@ -2057,15 +1827,6 @@ void ShuffleMenuProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
-}
-
-void ShuffleMenuProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{    
     GenericPopUp(shuffleOptions, _("New Shuffle Game"), 0);
 }
 
@@ -2153,19 +1914,6 @@ void SetTcType(int n)
 void TimeControlProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-   tmpMoves = appData.movesPerSession;
-   tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;
-   tmpOdds1 = tmpOdds2 = 1; tcType = 0;
-   tmpTc = atoi(appData.timeControl);   
-   GenericPopUp(tcOptions, _("Time Control"), 0);
-}
-
-void TimeControlProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
    tmpMoves = appData.movesPerSession;
    tmpInc = appData.timeIncrement; if(tmpInc < 0) tmpInc = 0;

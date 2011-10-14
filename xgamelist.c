@@ -95,9 +95,6 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-
-void SetFocus P((Widget w, XtPointer data, XEvent *event, Boolean *b));
-
 static Widget filterText;
 static char filterString[MSG_SIZ];
 static int listLength, wins, losses, draws, page;
