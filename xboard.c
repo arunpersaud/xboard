@@ -718,7 +718,7 @@ MenuItem viewMenu[] = {
     {N_("Flip View             F2"),         "Flip View", FlipViewProc},
     {"----", NULL, NothingProc},
     {N_("Engine Output      Alt+Shift+O"),   "Show Engine Output", EngineOutputProc},
-    {N_("Move History       Alt+Shift+H"),   "Show Move History", HistoryShowProc}, // [HGM] hist: activate 4.2.7 code
+    {N_("Move History       Alt+Shift+H"),   "Show Move History", NothingProc}, 
     {N_("Evaluation Graph  Alt+Shift+E"),    "Show Evaluation Graph", EvalGraphProc},
     {N_("Game List            Alt+Shift+G"), "Show Game List", ShowGameListProc},
     {N_("ICS text menu"), "ICStex", IcsTextProc},
@@ -1009,7 +1009,7 @@ XtActionsRec boardActions[] = {
     { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
     { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
-    { "ShowMoveListProc", HistoryShowProc},
+    { "ShowMoveListProc", NothingProc},
     { "EditTagsProc", EditCommentProc },
     { "EditBookProc", EditBookProc },
     { "EditCommentProc", EditCommentProc },

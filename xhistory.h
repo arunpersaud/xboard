@@ -23,8 +23,7 @@
 #ifndef _XHISTL_H
 #define _XHISTL_H 1
 
-void HistoryShowProc P((Widget w, XEvent *event,
-			String *prms, Cardinal *nprms));
+void HistoryShowProcGTK P((GtkObject *object, gpointer user_data));
 Boolean MoveHistoryIsUp P((void));
 
 extern Widget historyShell;
