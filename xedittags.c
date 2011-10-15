@@ -28,54 +28,6 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <string.h>
-#else /* not STDC_HEADERS */
-extern char *getenv();
-# if HAVE_STRING_H
-#  include <string.h>
-# else /* not HAVE_STRING_H */
-#  include <strings.h>
-# endif /* not HAVE_STRING_H */
-#endif /* not STDC_HEADERS */
-
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/cursorfont.h>
-#if USE_XAW3D
-#include <X11/Xaw3d/Dialog.h>
-#include <X11/Xaw3d/Form.h>
-#include <X11/Xaw3d/List.h>
-#include <X11/Xaw3d/Label.h>
-#include <X11/Xaw3d/SimpleMenu.h>
-#include <X11/Xaw3d/SmeBSB.h>
-#include <X11/Xaw3d/SmeLine.h>
-#include <X11/Xaw3d/Box.h>
-#include <X11/Xaw3d/MenuButton.h>
-#include <X11/Xaw3d/Text.h>
-#include <X11/Xaw3d/AsciiText.h>
-#include <X11/Xaw3d/Viewport.h>
-#else
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#endif
-
 #include <gtk/gtk.h>
 
 #include "common.h"
@@ -85,14 +37,6 @@ extern char *getenv();
 #include "xedittags.h"
 #include "gettext.h"
 
-
-#ifdef ENABLE_NLS
-# define  _(s) gettext (s)
-# define N_(s) gettext_noop (s)
-#else
-# define  _(s) (s)
-# define N_(s)  s
-#endif
 
 Position tagsX = -1, tagsY = -1;
 
@@ -120,30 +64,9 @@ void EditTagsProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    Arg args[5];
-    int j;
     if (!bookUp && PopDown(2)) {
-	j = 0;
-	XtSetArg(args[j], XtNleftBitmap, None); j++;
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"), args, j);
-    } else {
-	EditTagsEvent();
-    }
-}
-
-void
-EditTagsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[5];
-    int j;
-    if (!bookUp && PopDown(2)) {
-	j = 0;
-	XtSetArg(args[j], XtNleftBitmap, None); j++;
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Tags"), args, j);
+      /* GTK-TODO: do we need to unset flag in menu that EditTags is up? 
+         testing it: seems to be ok without? does this handle a special case?*/
     } else {
 	EditTagsEvent();
     }

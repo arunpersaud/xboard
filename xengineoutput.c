@@ -625,17 +625,3 @@ void EngineOutputProcGTK(object, user_data)
     EngineOutputPopUp();
   }
 }
-
-void
-EngineOutputProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-  if (engineOutputDialogUp) {
-    EngineOutputPopDown();
-  } else {
-    EngineOutputPopUp();
-  }
-}

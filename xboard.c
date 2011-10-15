@@ -212,9 +212,6 @@ extern char *getenv();
 #include "gtk_helper.h"
 
 // must be moved to xengineoutput.h
-
-void EngineOutputProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
 void EvalGraphProc P((Widget w, XEvent *event,
 		      String *prms, Cardinal *nprms));
 
@@ -461,7 +458,6 @@ static void CreateAnimVars P((void));
 static void DragPieceMove P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
-void GameListOptionsPopUp P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
 //void GenericPopDown P(());
@@ -682,7 +678,7 @@ MenuItem editMenu[] = {
     {"----", NULL, NothingProc},
     {N_("Edit Game      Ctrl+E"),        "Edit Game", EditGameProc},
     {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", EditPositionProc},
-    {N_("Edit Tags"),                    "Edit Tags", EditTagsProc},
+    {N_("Edit Tags"),                    "Edit Tags", NothingProc},
     {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
     {N_("Edit Book"),                    "Edit Book", NothingProc},
     {"----", NULL, NothingProc},
@@ -700,18 +696,18 @@ MenuItem editMenu[] = {
 MenuItem viewMenu[] = {
     {N_("Flip View             F2"),         "Flip View", FlipViewProc},
     {"----", NULL, NothingProc},
-    {N_("Engine Output      Alt+Shift+O"),   "Show Engine Output", EngineOutputProc},
+    {N_("Engine Output      Alt+Shift+O"),   "Show Engine Output", NothingProc},
     {N_("Move History       Alt+Shift+H"),   "Show Move History", NothingProc}, 
     {N_("Evaluation Graph  Alt+Shift+E"),    "Show Evaluation Graph", EvalGraphProc},
     {N_("Game List            Alt+Shift+G"), "Show Game List", ShowGameListProc},
     {N_("ICS text menu"), "ICStex", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Tags"),             "Show Tags", EditTagsProc},
+    {N_("Tags"),             "Show Tags", NothingProc},
     {N_("Comments"),         "Show Comments", EditCommentProc},
     {N_("ICS Input Box"),    "ICS Input Box", IcsInputBoxProc},
     {"----", NULL, NothingProc},
     {N_("Board..."),          "Board Options", NothingProc},
-    {N_("Game List Tags..."), "Game List", GameListOptionsPopUp},
+    {N_("Game List Tags..."), "Game List", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -778,7 +774,7 @@ MenuItem optionsMenu[] = {
     {N_("Match ..."), "Match", NothingProc},
     {N_("Load Game ..."),    "Load Game", NothingProc},
     {N_("Save Game ..."),    "Save Game", NothingProc},
-    {N_("Game List ..."),    "Game List", GameListOptionsPopUp},
+    {N_("Game List ..."),    "Game List", NothingProc},
     {N_("Sounds ..."),    "Sounds", NothingProc},
     {"----", NULL, NothingProc},
 #ifndef OPTIONSDIALOG
@@ -987,11 +983,9 @@ XtActionsRec boardActions[] = {
     { "EditGameProc", EditGameProc },
     { "EditPositionProc", EditPositionProc },
     { "TrainingProc", EditPositionProc },
-    { "EngineOutputProc", EngineOutputProc}, // [HGM] Winboard_x engine-output window
     { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
     { "ShowMoveListProc", NothingProc},
-    { "EditTagsProc", EditCommentProc },
     { "EditCommentProc", EditCommentProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
     { "PauseProc", PauseProc },
@@ -1064,7 +1058,7 @@ XtActionsRec boardActions[] = {
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
     { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
-    { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
+    //    { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
    // { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
@@ -1098,7 +1092,6 @@ char globalTranslations[] =
    :Ctrl<Key>g: AnalyzeFileProc() \n \
    :Ctrl<Key>e: EditGameProc() \n \
    :Ctrl<Key>E: EditPositionProc() \n \
-   :Meta<Key>O: EngineOutputProc() \n \
    :Meta<Key>E: EvalGraphProc() \n \
    :Meta<Key>G: ShowGameListProc() \n \
    :Meta<Key>H: ShowMoveListProc() \n \

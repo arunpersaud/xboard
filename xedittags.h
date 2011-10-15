@@ -24,8 +24,8 @@
 #ifndef _XEDITTAGS_H
 #define _XEDITTAGS_H 1
 
-void EditTagsProc P((Widget w, XEvent *event,
-		     String *prms, Cardinal *nprms));
+void EditTagsProcGTK P(( GtkObject *object,
+			 gpointer user_data));
 
 extern Widget editTagsShell, tagsShell;
 #endif

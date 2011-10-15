@@ -683,13 +683,4 @@ void GameListOptionsPopUpGTK(object, user_data)
   XtPopup(gameListOptShell, XtGrabNone); 
 }
 
-void
-GameListOptionsPopUp(Widget w, XEvent *event, String *prms, Cardinal *nprms)
-{
-  if (gameListOptShell == NULL)
-    gameListOptShell = GameListOptionsCreate();
-
-  XtPopup(gameListOptShell, XtGrabNone);
-}
-
 
