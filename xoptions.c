@@ -1650,8 +1650,8 @@ gboolean keypressicsCB(w, eventkey, data)
         edit = boxOptions[0].handle;
         val = (String)gtk_entry_get_text (GTK_ENTRY (edit));        
         val = PrevInHistory(val);        
-        /* clear the text in the GTKEntry */
-        gtk_entry_buffer_delete_text ( (gtk_entry_get_buffer (GTK_ENTRY(edit))), 0, -1);    
+        /* clear the text in the GTKEntry */        
+        gtk_entry_set_text(edit, "");    
         if(val) {
             gtk_entry_set_text (GTK_ENTRY (edit), val);
         }
@@ -1659,8 +1659,8 @@ gboolean keypressicsCB(w, eventkey, data)
       case GDK_Down:        
         edit = boxOptions[0].handle;
         val = NextInHistory();
-        /* clear the text in the GTKEntry */
-        gtk_entry_buffer_delete_text ( (gtk_entry_get_buffer (GTK_ENTRY(edit))), 0, -1);    
+        /* clear the text in the GTKEntry */        
+        gtk_entry_set_text(edit, "");    
         if(val) {
             gtk_entry_set_text (GTK_ENTRY (edit), val);
         }

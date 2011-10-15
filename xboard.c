@@ -5998,8 +5998,8 @@ void ICSInputSendText()
     SaveInHistory(val);
     SendMultiLineToICS(val);
 
-    /* clear the text in the GTKEntry */
-    gtk_entry_buffer_delete_text ( (gtk_entry_get_buffer (GTK_ENTRY(edit))), 0, -1);    
+    /* clear the text in the GTKEntry */    
+    gtk_entry_set_text(GTK_ENTRY(edit), "");    
 }
 
 void ICSInputBoxPopDown()
