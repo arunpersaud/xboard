@@ -1958,9 +1958,13 @@ void SetPieceColor(GdkPixbuf *pb)
     int width, height, rowstride, n_channels;
     guchar *pixels, *p;
     int x, y;    
-    int col, r, g, b;
-    guchar blackRGB[3] = {0, 0, 0};          /* RGB for black as used in the pieces in SVG folder */
-    guchar whiteRGB[3] = {0xff, 0xff, 0xcc}; /* RGB for white as used in the pieces in SVG folder */
+    int col, r, g, b, i;
+
+    /* RGB for black as used in the pieces in SVG folder */
+    guchar blackRGB[2][3] = { {0, 0, 0}, {3, 3, 2} };          
+    
+    /* RGB for white as used in the pieces in SVG folder */
+    guchar whiteRGB[2][3] = { {0xff, 0xff, 0xcc}, {0xfc, 0xfc, 0xca} };     
 
     /* RGB of new colour held in appData.blackPieceColor */
     guchar newBlackR;  
@@ -2003,15 +2007,20 @@ void SetPieceColor(GdkPixbuf *pb)
     for (x=0;x<width;x++) {
         for (y=0;y<height;y++) {
             p = pixels + y * rowstride + x * n_channels;
-            if (p[0] == blackRGB[0] && p[1] == blackRGB[1] && p[2] == blackRGB[2]) {                   
-                p[0] = newBlackR;
-                p[1] = newBlackG;
-                p[2] = newBlackB;
-            } else if (p[0] == whiteRGB[0] && p[1] == whiteRGB[1] && p[2] == whiteRGB[2]) {
-                p[0] = newWhiteR;
-                p[1] = newWhiteG;
-                p[2] = newWhiteB;
-            }           
+            for (i=0;i<2;i++) {
+                if (p[0] == blackRGB[i][0] && p[1] == blackRGB[i][1] && p[2] == blackRGB[i][2]) {
+                    p[0] = newBlackR;
+                    p[1] = newBlackG;
+                    p[2] = newBlackB;
+                    break;       
+                }
+                else if (p[0] == whiteRGB[i][0] && p[1] == whiteRGB[i][1] && p[2] == whiteRGB[i][2]) {
+                    p[0] = newWhiteR;
+                    p[1] = newWhiteG;
+                    p[2] = newWhiteB;
+                    break;
+                }
+            }
         }
     }
 }
