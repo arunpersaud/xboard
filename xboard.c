@@ -344,22 +344,10 @@ void SavePositionProc P((Widget w, XEvent *event,
 void MailMoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
 			    Cardinal *nprms));
-void QuitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PauseProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void MachineBlackProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void MachineWhiteProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
 void AnalyzeModeProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void AnalyzeFileProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
-void TwoMachinesProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void MatchProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void IcsClientProc P((Widget w, XEvent *event, String *prms,
-		      Cardinal *nprms));
-void EditGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EditPositionProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
 void TrainingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -441,9 +429,7 @@ void SaveOnExitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void InfoProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ManProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void HintProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BookProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AboutProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void Iconify P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -664,7 +650,7 @@ MenuItem fileMenu[] = {
     {N_("Mail Move"),            "Mail Move", MailMoveProc},
     {N_("Reload CMail Message"), "Reload CMail Message", ReloadCmailMsgProc},
     {"----", NULL, NothingProc},
-    {N_("Quit                 Ctr+Q"), "Exit", QuitProc},
+    {N_("Quit                 Ctr+Q"), "Exit", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -676,7 +662,7 @@ MenuItem editMenu[] = {
     {N_("Paste Game    Ctrl+V"),        "Paste Game", PasteGameProc},
     {N_("Paste Position Ctrl+Shift+V"), "Paste Position", PastePositionProc},
     {"----", NULL, NothingProc},
-    {N_("Edit Game      Ctrl+E"),        "Edit Game", EditGameProc},
+    {N_("Edit Game      Ctrl+E"),        "Edit Game", NothingProc},
     {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", EditPositionProc},
     {N_("Edit Tags"),                    "Edit Tags", NothingProc},
     {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
@@ -712,18 +698,18 @@ MenuItem viewMenu[] = {
 };
 
 MenuItem modeMenu[] = {
-    {N_("Machine White  Ctrl+W"), "Machine White", MachineWhiteProc},
-    {N_("Machine Black  Ctrl+B"), "Machine Black", MachineBlackProc},
-    {N_("Two Machines   Ctrl+T"), "Two Machines", TwoMachinesProc},
+    {N_("Machine White  Ctrl+W"), "Machine White", NothingProc},
+    {N_("Machine Black  Ctrl+B"), "Machine Black", NothingProc},
+    {N_("Two Machines   Ctrl+T"), "Two Machines", NothingProc},
     {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", AnalyzeModeProc},
     {N_("Analyze Game   Ctrl+G"), "Analyze File", AnalyzeFileProc },
-    {N_("Edit Game         Ctrl+E"), "Edit Game", EditGameProc},
+    {N_("Edit Game         Ctrl+E"), "Edit Game", NothingProc},
     {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", EditPositionProc},
     {N_("Training"),      "Training", TrainingProc},
-    {N_("ICS Client"),    "ICS Client", IcsClientProc},
+    {N_("ICS Client"),    "ICS Client", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Machine Match"),         "Machine Match", MatchProc},
-    {N_("Pause               Pause"),         "Pause", PauseProc},
+    {N_("Machine Match"),         "Machine Match", NothingProc},
+    {N_("Pause               Pause"),         "Pause", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -755,7 +741,7 @@ MenuItem engineMenu[] = {
     {N_("Engine #2 Settings ..."), "Engine #2 Settings", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Hint"), "Hint", HintProc},
-    {N_("Book"), "Book", BookProc},
+    {N_("Book"), "Book", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Move Now     Ctrl+M"),     "Move Now", MoveNowProc},
     {N_("Retract Move  Ctrl+X"), "Retract Move", RetractMoveProc},
@@ -812,7 +798,7 @@ MenuItem helpMenu[] = {
     {N_("Info XBoard"),     "Info XBoard", InfoProc},
     {N_("Man XBoard   F1"), "Man XBoard", ManProc},
     {"----", NULL, NothingProc},
-    {N_("About XBoard"), "About XBoard", AboutProc},
+    {N_("About XBoard"), "About XBoard", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -832,7 +818,7 @@ Menu menuBar[] = {
 MenuItem buttonBar[] = {
     {"<<", "<<", ToStartProc},
     {"<", "<", BackwardProc},
-    {PAUSE_BUTTON, PAUSE_BUTTON, PauseProc},
+    {PAUSE_BUTTON, PAUSE_BUTTON, NothingProc},
     {">", ">", ForwardProc},
     {">>", ">>", ToEndProc},
     {NULL, NULL, NULL}
@@ -973,22 +959,14 @@ XtActionsRec boardActions[] = {
     { "SavePositionProc", SavePositionProc },
     { "MailMoveProc", MailMoveProc },
     { "ReloadCmailMsgProc", ReloadCmailMsgProc },
-    { "QuitProc", QuitProc },
-    { "MachineWhiteProc", MachineWhiteProc },
-    { "MachineBlackProc", MachineBlackProc },
     { "AnalysisModeProc", AnalyzeModeProc },
     { "AnalyzeFileProc", AnalyzeFileProc },
-    { "TwoMachinesProc", TwoMachinesProc },
-    { "IcsClientProc", IcsClientProc },
-    { "EditGameProc", EditGameProc },
     { "EditPositionProc", EditPositionProc },
     { "TrainingProc", EditPositionProc },
     { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
-    { "ShowMoveListProc", NothingProc},
     { "EditCommentProc", EditCommentProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
-    { "PauseProc", PauseProc },
     { "AcceptProc", AcceptProc },
     { "DeclineProc", DeclineProc },
     { "RematchProc", RematchProc },
@@ -1046,9 +1024,7 @@ XtActionsRec boardActions[] = {
     { "InfoProc", InfoProc },
     { "ManProc", ManProc },
     { "HintProc", HintProc },
-    { "BookProc", BookProc },
     { "AboutGameProc", AboutGameProc },
-    { "AboutProc", AboutProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
     //{ "CommentClick", (XtActionProc) CommentClick },
@@ -1073,8 +1049,6 @@ char globalTranslations[] =
    :Ctrl<Key>o: LoadGameProc() \n \
    :Meta<Key>Next: LoadNextGameProc() \n \
    :Meta<Key>Prior: LoadPrevGameProc() \n \
-   :Ctrl<Key>Down: LoadSelectedProc(3) \n \
-   :Ctrl<Key>Up: LoadSelectedProc(-3) \n \
    :Ctrl<Key>s: SaveGameProc() \n \
    :Ctrl<Key>c: CopyGameProc() \n \
    :Ctrl<Key>v: PasteGameProc() \n \
@@ -1084,18 +1058,11 @@ char globalTranslations[] =
    :Ctrl<Key>S: SavePositionProc() \n \
    :Ctrl<Key>C: CopyPositionProc() \n \
    :Ctrl<Key>V: PastePositionProc() \n \
-   :Ctrl<Key>q: QuitProc() \n \
-   :Ctrl<Key>w: MachineWhiteProc() \n \
-   :Ctrl<Key>b: MachineBlackProc() \n \
-   :Ctrl<Key>t: TwoMachinesProc() \n \
    :Ctrl<Key>a: AnalysisModeProc() \n \
    :Ctrl<Key>g: AnalyzeFileProc() \n \
-   :Ctrl<Key>e: EditGameProc() \n \
    :Ctrl<Key>E: EditPositionProc() \n \
    :Meta<Key>E: EvalGraphProc() \n \
    :Meta<Key>G: ShowGameListProc() \n \
-   :Meta<Key>H: ShowMoveListProc() \n \
-   :<Key>Pause: PauseProc() \n \
    :<Key>F3: AcceptProc() \n \
    :<Key>F4: DeclineProc() \n \
    :<Key>F12: RematchProc() \n \
@@ -2885,8 +2852,6 @@ XBoard square size (hint): %d\n\
     XtSetValues(shellWidget, &shellArgs[2], 4);
     marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
     marginH =  h - boardHeight;
-
-    CatchDeleteWindow(shellWidget, "QuitProc");
 
     CreateGCs(False);
     CreateGrid();
@@ -7009,27 +6974,9 @@ QuitProcGTK(GtkObject *object, gpointer user_data)
     gtk_main_quit();
 }
 
-void QuitProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ExitEvent(0);
-}
-
 void PauseProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    PauseEvent();
-}
-
-void PauseProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     PauseEvent();
 }
@@ -7041,27 +6988,9 @@ void MachineBlackProcGTK(object, user_data)
     MachineBlackEvent();
 }
 
-void MachineBlackProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    MachineBlackEvent();
-}
-
 void MachineWhiteProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    MachineWhiteEvent();
-}
-
-void MachineWhiteProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     MachineWhiteEvent();
 }
@@ -7203,27 +7132,9 @@ void TwoMachinesProcGTK(object, user_data)
     TwoMachinesEvent();
 }
 
-void TwoMachinesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    TwoMachinesEvent();
-}
-
 void MatchProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    MatchEvent(2);
-}
-
-void MatchProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     MatchEvent(2);
 }
@@ -7235,27 +7146,9 @@ void IcsClientProcGTK(object, user_data)
     IcsClientEvent();
 }
 
-void IcsClientProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    IcsClientEvent();
-}
-
 void EditGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    EditGameEvent();
-}
-
-void EditGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     EditGameEvent();
 }
@@ -8342,15 +8235,6 @@ void BookProcGTK(object, user_data)
     BookEvent();
 }
 
-void BookProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    BookEvent();
-}
-
 void AboutProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -8393,64 +8277,6 @@ void AboutProcGTK(object, user_data)
   gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about),
                                  "Copyright 1991 Digital Equipment Corporation\n"
                                  "Enhancements Copyright 1992-2011 Free Software Foundation\n"
-                                 "Enhancements Copyright 2005 Alessandro Scotti");
-  gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),"http://www.gnu.org/software/xboard/");
-  gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about),authors);
-  gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(about),
-					  " Translation project (http://translationproject.org)\n");
-
-  /* show widget, destroy on close */
-  gtk_widget_show_all( about );
-  gtk_dialog_run(GTK_DIALOG (about));
-  gtk_widget_destroy(about);
-
-  return;
-}
-
-void AboutProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-  GtkWidget *about;
-  char buf[MSG_SIZ];
-
-  const gchar *authors[] = {
-    "Wayne Christopher",
-    "Chris Sears",
-    "Dan Sears",
-    "Tim Mann <tim@tim-mann.org>",
-    "John Chanak",
-    "Evan Welsh <Evan.Welsh@msdw.com>",
-    "Elmar Bartel <bartel@informatik.tu-muenchen.de>",
-    "Jochen Wiedmann",
-    "Frank McIngvale",
-    "Hugh Fisher <Hugh.Fisher@cs.anu.edu.au>",
-    "Allessandro Scotti",
-    "H.G. Muller <h.g.muller AT hccnet DOT nl>",
-    "Arun Persaud <arun@nubati.net>",
-    "Eric Mullins <emwine AT earthlink DOT net>",
-    "John Cheetham <developer AT johncheetham DOT com>",
-    NULL};
-
-  /* create about window */
-  about = gtk_about_dialog_new();
-
-  /* fill in some information */
-#if ZIPPY
-  char *zippy = " (with Zippy code)";
-#else
-  char *zippy = "";
-#endif
-
-  sprintf(buf, "%s%s",  programVersion, zippy);
-
-  gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),buf);
-
-  gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about),
-                                 "Copyright 1991 Digital Equipment Corporation\n"
-                                 "Enhancements Copyright 1992-2009 Free Software Foundation\n"
                                  "Enhancements Copyright 2005 Alessandro Scotti");
   gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),"http://www.gnu.org/software/xboard/");
   gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about),authors);
