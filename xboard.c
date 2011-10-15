@@ -315,7 +315,6 @@ void PromotionPopDown P((void));
 void PromotionCallback P((GtkWidget *w, GtkResponseType resptype,
                           gpointer gdata));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
-void ResetProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadNextGameProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
@@ -344,45 +343,17 @@ void SavePositionProc P((Widget w, XEvent *event,
 void MailMoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
 			    Cardinal *nprms));
-void AnalyzeModeProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
 void AnalyzeFileProc P((Widget w, XEvent *event,
 			 String *prms, Cardinal *nprms));
-void EditPositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void TrainingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EditCommentProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
 void IcsInputBoxProc P((Widget w, XEvent *event,
 			String *prms, Cardinal *nprms));
-void AcceptProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DeclineProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void RematchProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void CallFlagProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AbortProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjournProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ResignProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjuWhiteProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjuBlackProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AdjuDrawProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void StopObservingProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
-void StopExaminingProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
-void UploadProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BackwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ForwardProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ToStartProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ToEndProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void RevertProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AnnotateProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void TruncateGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
 void RetractMoveProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void MoveNowProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -631,7 +602,7 @@ static Pixmap xpmMask[BlackKing + 1];
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
 MenuItem fileMenu[] = {
-    {N_("New Game        Ctrl+N"),        "New Game", ResetProc},
+    {N_("New Game        Ctrl+N"),        "New Game", NothingProc},
     {N_("New Shuffle Game ..."),          "New Shuffle Game", NothingProc},
     {N_("New Variant ...   Alt+Shift+V"), "New Variant", NothingProc},
     {"----", NULL, NothingProc},
@@ -663,19 +634,19 @@ MenuItem editMenu[] = {
     {N_("Paste Position Ctrl+Shift+V"), "Paste Position", PastePositionProc},
     {"----", NULL, NothingProc},
     {N_("Edit Game      Ctrl+E"),        "Edit Game", NothingProc},
-    {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", EditPositionProc},
+    {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", NothingProc},
     {N_("Edit Tags"),                    "Edit Tags", NothingProc},
     {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
     {N_("Edit Book"),                    "Edit Book", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Revert              Home"), "Revert", RevertProc},
-    {N_("Annotate"),                 "Annotate", AnnotateProc},
-    {N_("Truncate Game  End"),       "Truncate Game", TruncateGameProc},
+    {N_("Revert              Home"), "Revert", NothingProc},
+    {N_("Annotate"),                 "Annotate", NothingProc},
+    {N_("Truncate Game  End"),       "Truncate Game", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Backward         Alt+Left"),   "Backward", BackwardProc},
-    {N_("Forward           Alt+Right"), "Forward", ForwardProc},
-    {N_("Back to Start     Alt+Home"),  "Back to Start", ToStartProc},
-    {N_("Forward to End Alt+End"),      "Forward to End", ToEndProc},
+    {N_("Backward         Alt+Left"),   "Backward", NothingProc},
+    {N_("Forward           Alt+Right"), "Forward", NothingProc},
+    {N_("Back to Start     Alt+Home"),  "Back to Start", NothingProc},
+    {N_("Forward to End Alt+End"),      "Forward to End", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -701,11 +672,11 @@ MenuItem modeMenu[] = {
     {N_("Machine White  Ctrl+W"), "Machine White", NothingProc},
     {N_("Machine Black  Ctrl+B"), "Machine Black", NothingProc},
     {N_("Two Machines   Ctrl+T"), "Two Machines", NothingProc},
-    {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", AnalyzeModeProc},
+    {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", NothingProc},
     {N_("Analyze Game   Ctrl+G"), "Analyze File", AnalyzeFileProc },
     {N_("Edit Game         Ctrl+E"), "Edit Game", NothingProc},
-    {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", EditPositionProc},
-    {N_("Training"),      "Training", TrainingProc},
+    {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", NothingProc},
+    {N_("Training"),      "Training", NothingProc},
     {N_("ICS Client"),    "ICS Client", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Machine Match"),         "Machine Match", NothingProc},
@@ -714,23 +685,23 @@ MenuItem modeMenu[] = {
 };
 
 MenuItem actionMenu[] = {
-    {N_("Accept             F3"), "Accept", AcceptProc},
-    {N_("Decline            F4"), "Decline", DeclineProc},
-    {N_("Rematch           F12"), "Rematch", RematchProc},
+    {N_("Accept             F3"), "Accept", NothingProc},
+    {N_("Decline            F4"), "Decline", NothingProc},
+    {N_("Rematch           F12"), "Rematch", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Call Flag          F5"), "Call Flag", CallFlagProc},
-    {N_("Draw                F6"), "Draw", DrawProc},
-    {N_("Adjourn            F7"),  "Adjourn", AdjournProc},
+    {N_("Call Flag          F5"), "Call Flag", NothingProc},
+    {N_("Draw                F6"), "Draw", NothingProc},
+    {N_("Adjourn            F7"),  "Adjourn", NothingProc},
     {N_("Abort                F8"),"Abort", AbortProc},
-    {N_("Resign              F9"), "Resign", ResignProc},
+    {N_("Resign              F9"), "Resign", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Stop Observing  F10"), "Stop Observing", StopObservingProc},
-    {N_("Stop Examining  F11"), "Stop Examining", StopExaminingProc},
-    {N_("Upload to Examine"),   "Upload to Examine", UploadProc},
+    {N_("Stop Observing  F10"), "Stop Observing", NothingProc},
+    {N_("Stop Examining  F11"), "Stop Examining", NothingProc},
+    {N_("Upload to Examine"),   "Upload to Examine", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Adjudicate to White"), "Adjudicate to White", AdjuWhiteProc},
-    {N_("Adjudicate to Black"), "Adjudicate to Black", AdjuBlackProc},
-    {N_("Adjudicate Draw"),     "Adjudicate Draw", AdjuDrawProc},
+    {N_("Adjudicate to White"), "Adjudicate to White", NothingProc},
+    {N_("Adjudicate to Black"), "Adjudicate to Black", NothingProc},
+    {N_("Adjudicate Draw"),     "Adjudicate Draw", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -816,11 +787,11 @@ Menu menuBar[] = {
 
 #define PAUSE_BUTTON "P"
 MenuItem buttonBar[] = {
-    {"<<", "<<", ToStartProc},
-    {"<", "<", BackwardProc},
+    {"<<", "<<", NothingProc},
+    {"<", "<", NothingProc},
     {PAUSE_BUTTON, PAUSE_BUTTON, NothingProc},
-    {">", ">", ForwardProc},
-    {">>", ">>", ToEndProc},
+    {">", ">", NothingProc},
+    {">>", ">>", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -939,7 +910,6 @@ XtActionsRec boardActions[] = {
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
     { "Iconify", Iconify },
-    { "ResetProc", ResetProc },
     { "LoadGameProc", LoadGameProc },
     { "LoadNextGameProc", LoadNextGameProc },
     { "LoadPrevGameProc", LoadPrevGameProc },
@@ -959,39 +929,15 @@ XtActionsRec boardActions[] = {
     { "SavePositionProc", SavePositionProc },
     { "MailMoveProc", MailMoveProc },
     { "ReloadCmailMsgProc", ReloadCmailMsgProc },
-    { "AnalysisModeProc", AnalyzeModeProc },
     { "AnalyzeFileProc", AnalyzeFileProc },
-    { "EditPositionProc", EditPositionProc },
-    { "TrainingProc", EditPositionProc },
     { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
     { "EditCommentProc", EditCommentProc },
     { "IcsInputBoxProc", IcsInputBoxProc },
-    { "AcceptProc", AcceptProc },
-    { "DeclineProc", DeclineProc },
-    { "RematchProc", RematchProc },
-    { "CallFlagProc", CallFlagProc },
-    { "DrawProc", DrawProc },
-    { "AdjournProc", AdjournProc },
     { "AbortProc", AbortProc },
-    { "ResignProc", ResignProc },
-    { "AdjuWhiteProc", AdjuWhiteProc },
-    { "AdjuBlackProc", AdjuBlackProc },
-    { "AdjuDrawProc", AdjuDrawProc },
-   // { "TypeInProc", TypeInProc },
     { "EnterKeyProc", EnterKeyProc },
     { "UpKeyProc", UpKeyProc },
     { "DownKeyProc", DownKeyProc },
-    { "StopObservingProc", StopObservingProc },
-    { "StopExaminingProc", StopExaminingProc },
-    { "UploadProc", UploadProc },
-    { "BackwardProc", BackwardProc },
-    { "ForwardProc", ForwardProc },
-    { "ToStartProc", ToStartProc },
-    { "ToEndProc", ToEndProc },
-    { "RevertProc", RevertProc },
-    { "AnnotateProc", AnnotateProc },
-    { "TruncateGameProc", TruncateGameProc },
     { "MoveNowProc", MoveNowProc },
     { "RetractMoveProc", RetractMoveProc },
     { "FlipViewProc", FlipViewProc },
@@ -1044,9 +990,7 @@ XtActionsRec boardActions[] = {
 };
 
 char globalTranslations[] =
-  ":<Key>F9: ResignProc() \n \
-   :Ctrl<Key>n: ResetProc() \n \
-   :Ctrl<Key>o: LoadGameProc() \n \
+  ":Ctrl<Key>o: LoadGameProc() \n \
    :Meta<Key>Next: LoadNextGameProc() \n \
    :Meta<Key>Prior: LoadPrevGameProc() \n \
    :Ctrl<Key>s: SaveGameProc() \n \
@@ -1060,27 +1004,10 @@ char globalTranslations[] =
    :Ctrl<Key>V: PastePositionProc() \n \
    :Ctrl<Key>a: AnalysisModeProc() \n \
    :Ctrl<Key>g: AnalyzeFileProc() \n \
-   :Ctrl<Key>E: EditPositionProc() \n \
    :Meta<Key>E: EvalGraphProc() \n \
    :Meta<Key>G: ShowGameListProc() \n \
-   :<Key>F3: AcceptProc() \n \
-   :<Key>F4: DeclineProc() \n \
-   :<Key>F12: RematchProc() \n \
-   :<Key>F5: CallFlagProc() \n \
-   :<Key>F6: DrawProc() \n \
-   :<Key>F7: AdjournProc() \n \
    :<Key>F8: AbortProc() \n \
-   :<Key>F10: StopObservingProc() \n \
-   :<Key>F11: StopExaminingProc() \n \
    :Meta Ctrl<Key>F12: DebugProc() \n \
-   :Meta<Key>End: ToEndProc() \n \
-   :Meta<Key>Right: ForwardProc() \n \
-   :Meta<Key>Home: ToStartProc() \n \
-   :Meta<Key>Left: BackwardProc() \n \
-   :<Key>Left: BackwardProc() \n \
-   :<Key>Right: ForwardProc() \n \
-   :<Key>Home: RevertProc() \n \
-   :<Key>End: TruncateGameProc() \n \
    :Ctrl<Key>m: MoveNowProc() \n \
    :Ctrl<Key>x: RetractMoveProc() \n \
    :Ctrl<Key>P: PonderNextMoveProc() \n "
@@ -1096,8 +1023,6 @@ char globalTranslations[] =
    :<Key>-: Iconify() \n \
    :<Key>F1: ManProc() \n \
    :<Key>F2: FlipViewProc() \n \
-   <KeyDown>.: BackwardProc() \n \
-   <KeyUp>.: ForwardProc() \n \
    Shift<Key>1: AskQuestionProc(\"Direct command\",\
                                 \"Send to chess program:\",,1) \n \
    Shift<Key>2: AskQuestionProc(\"Direct command\",\
@@ -6432,15 +6357,6 @@ void ResetProcGTK(object, user_data)
     ResetGameEvent();
 }
 
-void ResetProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ResetGameEvent();
-}
-
 int LoadGamePopUp(f, gameNumber, title)
      FILE *f;
      int gameNumber;
@@ -7047,51 +6963,6 @@ void AnalyzeModeProcGTK(object, user_data)
     AnalyzeModeEvent();
 }
 
-void AnalyzeModeProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-
-    if (!first.analysisSupport) {
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-    /* [DM] icsEngineAnalyze [HGM] This is horrible code; reverse the gameMode and isEngineAnalyze tests! */
-    if (appData.icsActive) {
-        if (gameMode != IcsObserving) {
-	  snprintf(buf, MSG_SIZ, _("You are not observing a game"));
-            DisplayError(buf, 0);
-            /* secure check */
-            if (appData.icsEngineAnalyze) {
-                if (appData.debugMode)
-                    fprintf(debugFP, _("Found unexpected active ICS engine analyze \n"));
-                ExitAnalyzeMode();
-                ModeHighlight();
-            }
-            return;
-        }
-        /* if enable, use want disable icsEngineAnalyze */
-        if (appData.icsEngineAnalyze) {
-                ExitAnalyzeMode();
-                ModeHighlight();
-                return;
-        }
-        appData.icsEngineAnalyze = TRUE;
-        if (appData.debugMode)
-            fprintf(debugFP, _("ICS engine analyze starting... \n"));
-    }
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc(w,event,prms,nprms);
-#endif
-
-    AnalyzeModeEvent();
-}
-
 void AnalyzeFileProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -7169,27 +7040,9 @@ void EditPositionProcGTK(object, user_data)
     EditPositionEvent();
 }
 
-void EditPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    EditPositionEvent();
-}
-
 void TrainingProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    TrainingEvent();
-}
-
-void TrainingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     TrainingEvent();
 }
@@ -7249,27 +7102,9 @@ void AcceptProcGTK(object, user_data)
     AcceptEvent();
 }
 
-void AcceptProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    AcceptEvent();
-}
-
 void DeclineProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    DeclineEvent();
-}
-
-void DeclineProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     DeclineEvent();
 }
@@ -7281,15 +7116,6 @@ void RematchProcGTK(object, user_data)
     RematchEvent();
 }
 
-void RematchProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    RematchEvent();
-}
-
 void CallFlagProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -7297,27 +7123,9 @@ void CallFlagProcGTK(object, user_data)
     CallFlagEvent();
 }
 
-void CallFlagProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    CallFlagEvent();
-}
-
 void DrawProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    DrawEvent();
-}
-
-void DrawProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     DrawEvent();
 }
@@ -7345,27 +7153,9 @@ void AdjournProcGTK(object, user_data)
     AdjournEvent();
 }
 
-void AdjournProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    AdjournEvent();
-}
-
 void ResignProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    ResignEvent();
-}
-
-void ResignProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     ResignEvent();
 }
@@ -7377,15 +7167,6 @@ void AdjuWhiteProcGTK(object, user_data)
     UserAdjudicationEvent(+1);
 }
 
-void AdjuWhiteProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    UserAdjudicationEvent(+1);
-}
-
 void AdjuBlackProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -7393,27 +7174,9 @@ void AdjuBlackProcGTK(object, user_data)
     UserAdjudicationEvent(-1);
 }
 
-void AdjuBlackProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    UserAdjudicationEvent(-1);
-}
-
 void AdjuDrawProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    UserAdjudicationEvent(0);
-}
-
-void AdjuDrawProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     UserAdjudicationEvent(0);
 }
@@ -7484,27 +7247,9 @@ void StopObservingProcGTK(object, user_data)
     StopObservingEvent();
 }
 
-void StopObservingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    StopObservingEvent();
-}
-
 void StopExaminingProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    StopExaminingEvent();
-}
-
-void StopExaminingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     StopExaminingEvent();
 }
@@ -7516,27 +7261,9 @@ void UploadProcGTK(object, user_data)
     UploadGameEvent();
 }
 
-void UploadProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    UploadGameEvent();
-}
-
 void ForwardProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    ForwardEvent();
-}
-
-void ForwardProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     ForwardEvent();
 }
@@ -7548,27 +7275,9 @@ void BackwardProcGTK(object, user_data)
     BackwardEvent();
 }
 
-void BackwardProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    BackwardEvent();
-}
-
 void ToStartProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    ToStartEvent();
-}
-
-void ToStartProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     ToStartEvent();
 }
@@ -7580,27 +7289,9 @@ void ToEndProcGTK(object, user_data)
     ToEndEvent();
 }
 
-void ToEndProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ToEndEvent();
-}
-
 void RevertProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    RevertEvent(False);
-}
-
-void RevertProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     RevertEvent(False);
 }
@@ -7612,27 +7303,9 @@ void AnnotateProcGTK(object, user_data)
     RevertEvent(True);
 }
 
-void AnnotateProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    RevertEvent(True);
-}
-
 void TruncateGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    TruncateGameEvent();
-}
-
-void TruncateGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     TruncateGameEvent();
 }
