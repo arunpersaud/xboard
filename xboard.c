@@ -8392,7 +8392,7 @@ void AboutProcGTK(object, user_data)
 
   gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about),
                                  "Copyright 1991 Digital Equipment Corporation\n"
-                                 "Enhancements Copyright 1992-2009 Free Software Foundation\n"
+                                 "Enhancements Copyright 1992-2011 Free Software Foundation\n"
                                  "Enhancements Copyright 2005 Alessandro Scotti");
   gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),"http://www.gnu.org/software/xboard/");
   gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about),authors);
