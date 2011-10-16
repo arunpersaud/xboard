@@ -5558,31 +5558,111 @@ static int check_castle_draw(newb, oldb, rrow, rcol)
 // [HGM] seekgraph: some low-level drawing routines cloned from xevalgraph
 void DrawSeekAxis( int x, int y, int xTo, int yTo )
 {
-      XDrawLine(xDisplay, xBoardWindow, lineGC, x, y, xTo, yTo);
+    cairo_t *cr;
+
+    /* get a cairo_t */
+    cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
+    cairo_move_to (cr, x, y);
+    cairo_line_to(cr, xTo, yTo );
+
+    /* GTK-TODO: use user colors */
+    cairo_set_line_width(cr, 2);
+    cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
+    cairo_stroke(cr);
+
+    /* free memory */
+    cairo_destroy (cr);
 }
 
 void DrawSeekBackground( int left, int top, int right, int bottom )
 {
-    XFillRectangle(xDisplay, xBoardWindow, lightSquareGC, left, top, right-left, bottom-top);
+    cairo_t *cr;
+
+    /* get a cairo_t */
+    cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
+    cairo_rectangle (cr, left, top, right-left, bottom-top);
+
+    cairo_set_line_width(cr, 2);
+    cairo_set_source_rgba (cr, 1.0, 1.0, 0.8, 1.0);
+    cairo_stroke_preserve(cr);
+    cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+    cairo_fill(cr);
+
+    /* free memory */
+    cairo_destroy (cr);
 }
 
 void DrawSeekText(char *buf, int x, int y)
 {
-    XDrawString(xDisplay, xBoardWindow, coordGC, x, y+4, buf, strlen(buf));
+    cairo_t *cr;
+    /* get a cairo_t */
+    cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
+    /* GTK-TODO: use user font */
+    cairo_select_font_face (cr, "Sans",
+			    CAIRO_FONT_SLANT_NORMAL,
+			    CAIRO_FONT_WEIGHT_NORMAL);
+    
+    cairo_set_font_size (cr, 12.0);
+
+    cairo_move_to (cr, x, y+4);
+    cairo_show_text( cr, buf);
+    
+    cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+    cairo_stroke(cr);
+
+    /* free memory */
+    cairo_destroy (cr);
 }
 
 void DrawSeekDot(int x, int y, int colorNr)
 {
     int square = colorNr & 0x80;
-    GC color;
     colorNr &= 0x7F;
-    color = colorNr == 0 ? prelineGC : colorNr == 1 ? darkSquareGC : highlineGC;
+
+    cairo_t *cr;
+
+    /* get a cairo_t */
+    cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
     if(square)
-	XFillRectangle(xDisplay, xBoardWindow, color,
-		x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
+      {
+	cairo_rectangle (cr, x-squareSize/9, y-squareSize/9, 2*squareSize/9, 2*squareSize/9);
+      }
     else
-	XFillArc(xDisplay, xBoardWindow, color,
-		x-squareSize/8, y-squareSize/8, squareSize/4, squareSize/4, 0, 64*360);
+      {
+	cairo_arc(cr, x-squareSize/8, y-squareSize/8, squareSize/4, 0.0, 2*M_PI);
+      }
+
+    cairo_set_line_width(cr, 2);
+
+    /* GTK-TODO: use user colors */
+    switch (colorNr) 
+      {
+      case 0: /* preline */
+	cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+	cairo_stroke_preserve(cr);
+	cairo_set_source_rgba(cr, 1.0, 0, 0,1.0);
+	cairo_fill(cr);
+	break;
+      case 1: /* darkSquare */
+	cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+	cairo_stroke_preserve(cr);
+	cairo_set_source_rgba (cr, 0.5, 0.5, 0.8, 1.0);
+	cairo_fill(cr);
+	break;
+      default: /* lightSquare */
+	cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+	cairo_stroke_preserve(cr);
+	cairo_set_source_rgba (cr, 1.0, 1.0, 0.8, 1.0);
+	cairo_fill(cr);
+	break;
+      }
+
+    /* free memory */
+    cairo_destroy (cr);
 }
 
 static int damageGTK[2][BOARD_RANKS][BOARD_FILES];
