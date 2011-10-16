@@ -8512,33 +8512,38 @@ char *HostName()
 #endif /* not HAVE_GETHOSTNAME */
 }
 
-XtIntervalId delayedEventTimerXID = 0;
+guint delayedEventTimerTag = 0;
 DelayedEventCallback delayedEventCallback = 0;
 
 void
-FireDelayedEvent()
+FireDelayedEvent(gpointer data)
 {
-    delayedEventTimerXID = 0;
-    delayedEventCallback();
+  /* remove timer */
+  g_source_remove(delayedEventTimerTag);
+  delayedEventTimerTag = 0;
+
+  /* call function */
+  delayedEventCallback();
+
+  return;
 }
 
 void
 ScheduleDelayedEvent(cb, millisec)
-     DelayedEventCallback cb; long millisec;
+     DelayedEventCallback cb; guint millisec;
 {
-    if(delayedEventTimerXID && delayedEventCallback == cb)
-	// [HGM] alive: replace, rather than add or flush identical event
-	XtRemoveTimeOut(delayedEventTimerXID);
-    delayedEventCallback = cb;
-    delayedEventTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) FireDelayedEvent, (XtPointer) 0);
+  if(delayedEventTimerTag && delayedEventCallback == cb)
+    // [HGM] alive: replace, rather than add or flush identical event
+    g_source_remove(delayedEventTimerTag);
+  delayedEventCallback = cb;
+  delayedEventTimerTag = g_timeout_add(millisec,(GSourceFunc) FireDelayedEvent, NULL);
+  return;
 }
 
 DelayedEventCallback
 GetDelayedEvent()
 {
-  if (delayedEventTimerXID) {
+  if (delayedEventTimerTag) {
     return delayedEventCallback;
   } else {
     return NULL;
@@ -8548,107 +8553,113 @@ GetDelayedEvent()
 void
 CancelDelayedEvent()
 {
-  if (delayedEventTimerXID) {
-    XtRemoveTimeOut(delayedEventTimerXID);
-    delayedEventTimerXID = 0;
-  }
+  if (delayedEventTimerTag)
+    {
+      g_source_remove(delayedEventTimerTag);
+      delayedEventTimerTag = 0;
+    }
+  
+  return;
 }
 
-XtIntervalId loadGameTimerXID = 0;
+guint loadGameTimerTag = 0;
 
 int LoadGameTimerRunning()
 {
-    return loadGameTimerXID != 0;
+    return loadGameTimerTag != 0;
 }
 
 int StopLoadGameTimer()
 {
-    if (loadGameTimerXID != 0) {
-	XtRemoveTimeOut(loadGameTimerXID);
-	loadGameTimerXID = 0;
-	return TRUE;
-    } else {
-	return FALSE;
-    }
+  if (loadGameTimerTag != 0) {
+    g_source_remove(loadGameTimerTag);
+    loadGameTimerTag = 0;
+    return TRUE;
+  } else {
+    return FALSE;
+  }
 }
 
 void
-LoadGameTimerCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+LoadGameTimerCallback(gpointer data)
 {
-    loadGameTimerXID = 0;
-    AutoPlayGameLoop();
+  /* remove timer */
+  g_source_remove(loadGameTimerTag);
+  loadGameTimerTag = 0;
+  
+  AutoPlayGameLoop();
+  return;
 }
 
 void
 StartLoadGameTimer(millisec)
      long millisec;
 {
-    loadGameTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) LoadGameTimerCallback,
-		      (XtPointer) 0);
+  loadGameTimerTag =
+    g_timeout_add( millisec, (GSourceFunc) LoadGameTimerCallback, NULL);
+  return;
 }
 
-XtIntervalId analysisClockXID = 0;
+guint analysisClockTag = 0;
 
-void
-AnalysisClockCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+gboolean
+AnalysisClockCallback(gpointer data)
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile
-         || appData.icsEngineAnalyze) { // [DM]
-	AnalysisPeriodicEvent(0);
-	StartAnalysisClock();
-    }
+         || appData.icsEngineAnalyze)
+      {
+        AnalysisPeriodicEvent(0);
+        return 1; /* keep on going */
+      }
+    return 0; /* stop timer */
 }
 
 void
 StartAnalysisClock()
 {
-    analysisClockXID =
-      XtAppAddTimeOut(appContext, 2000,
-		      (XtTimerCallbackProc) AnalysisClockCallback,
-		      (XtPointer) 0);
+  analysisClockTag =
+    g_timeout_add( 2000,(GSourceFunc) AnalysisClockCallback, NULL);
+  return;
 }
 
-XtIntervalId clockTimerXID = 0;
+guint clockTimerTag = 0;
 
 int ClockTimerRunning()
 {
-    return clockTimerXID != 0;
+    return clockTimerTag != 0;
 }
 
 int StopClockTimer()
 {
-    if (clockTimerXID != 0) {
-	XtRemoveTimeOut(clockTimerXID);
-	clockTimerXID = 0;
-	return TRUE;
-    } else {
-	return FALSE;
+  if (clockTimerTag != 0)
+    {
+      g_source_remove(clockTimerTag);
+      clockTimerTag = 0;
+      return TRUE;
+    }
+  else
+    {
+      return FALSE;
     }
 }
 
 void
-ClockTimerCallback(arg, id)
-     XtPointer arg;
-     XtIntervalId *id;
+ClockTimerCallback(gpointer data)
 {
-    clockTimerXID = 0;
-    DecrementClocks();
+  /* remove timer */
+  g_source_remove(clockTimerTag);
+  clockTimerTag = 0;
+
+  DecrementClocks();
+  return;
 }
 
 void
 StartClockTimer(millisec)
      long millisec;
 {
-    clockTimerXID =
-      XtAppAddTimeOut(appContext, millisec,
-		      (XtTimerCallbackProc) ClockTimerCallback,
-		      (XtPointer) 0);
+  clockTimerTag = g_timeout_add(millisec,(GSourceFunc) ClockTimerCallback,NULL);
+  return;
 }
 
 void

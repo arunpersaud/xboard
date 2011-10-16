@@ -55,6 +55,7 @@
 #define _FRONTEND
 
 #include <stdio.h>
+#include <gtk/gtk.h>
 
 typedef VOIDSTAR ProcRef;
 #define NoProc ((ProcRef) 0)
@@ -129,7 +130,7 @@ void StartLoadGameTimer P((long millisec));
 void AutoSaveGame P((void));
 
 typedef void (*DelayedEventCallback) P((void));
-void ScheduleDelayedEvent P((DelayedEventCallback cb, long millisec));
+void ScheduleDelayedEvent P((DelayedEventCallback cb, guint millisec));
 DelayedEventCallback GetDelayedEvent P((void));
 void CancelDelayedEvent P((void));
 // [HGM] mouse: next six used by mouse handler, which was moved to backend
