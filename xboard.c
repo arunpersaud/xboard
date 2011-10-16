@@ -278,7 +278,6 @@ int EventToSquare P((int x, int limit));
 void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
 gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data));
-void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
 gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
@@ -295,11 +294,7 @@ void WhiteClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void BlackClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
-void DrawPositionProc P((Widget w, XEvent *event,
-		     String *prms, Cardinal *nprms));
 void GTKDrawPosition P((GtkWidget *w, /*Boolean*/int repaint,
-		     Board board));
-void XDrawPosition P((Widget w, /*Boolean*/int repaint,
 		     Board board));
 void CommentPopUp P((char *title, char *label));
 void CommentPopDown P((void));
@@ -355,9 +350,6 @@ void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void RetractMoveProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void MoveNowProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AlwaysQueenProc P((Widget w, XEvent *event, String *prms,
 			Cardinal *nprms));
 void AnimateDraggingProc P((Widget w, XEvent *event, String *prms,
@@ -369,7 +361,6 @@ void AutoflipProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void BlindfoldProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void FlashMovesProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
-void FlipViewProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void HighlightDraggingProc P((Widget w, XEvent *event, String *prms,
 			      Cardinal *nprms));
 void HighlightLastMoveProc P((Widget w, XEvent *event, String *prms,
@@ -398,9 +389,6 @@ void TestLegalityProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
 void SaveSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void SaveOnExitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void InfoProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ManProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void HintProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -652,7 +640,7 @@ MenuItem editMenu[] = {
 };
 
 MenuItem viewMenu[] = {
-    {N_("Flip View             F2"),         "Flip View", FlipViewProc},
+    {N_("Flip View             F2"),         "Flip View", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Engine Output      Alt+Shift+O"),   "Show Engine Output", NothingProc},
     {N_("Move History       Alt+Shift+H"),   "Show Move History", NothingProc}, 
@@ -712,11 +700,11 @@ MenuItem engineMenu[] = {
     {N_("Engine #1 Settings ..."), "Engine #1 Settings", NothingProc},
     {N_("Engine #2 Settings ..."), "Engine #2 Settings", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Hint"), "Hint", HintProc},
+    {N_("Hint"), "Hint", NothingProc},
     {N_("Book"), "Book", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Move Now     Ctrl+M"),     "Move Now", MoveNowProc},
-    {N_("Retract Move  Ctrl+X"), "Retract Move", RetractMoveProc},
+    {N_("Move Now     Ctrl+M"),     "Move Now", NothingProc},
+    {N_("Retract Move  Ctrl+X"), "Retract Move", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -767,8 +755,8 @@ MenuItem optionsMenu[] = {
 };
 
 MenuItem helpMenu[] = {
-    {N_("Info XBoard"),     "Info XBoard", InfoProc},
-    {N_("Man XBoard   F1"), "Man XBoard", ManProc},
+    {N_("Info XBoard"),     "Info XBoard", NothingProc},
+    {N_("Man XBoard   F1"), "Man XBoard", NothingProc},
     {"----", NULL, NothingProc},
     {N_("About XBoard"), "About XBoard", NothingProc},
     {NULL, NULL, NULL}
@@ -899,7 +887,6 @@ XrmOptionDescRec shellOptions[] = {
 };
 
 XtActionsRec boardActions[] = {
-    { "DrawPosition", DrawPositionProc },
     { "HandleUserMove", HandleUserMove },
     //{ "AnimateUserMove", AnimateUserMove },
     { "HandlePV", HandlePV },
@@ -939,9 +926,6 @@ XtActionsRec boardActions[] = {
     { "EnterKeyProc", EnterKeyProc },
     { "UpKeyProc", UpKeyProc },
     { "DownKeyProc", DownKeyProc },
-    { "MoveNowProc", MoveNowProc },
-    { "RetractMoveProc", RetractMoveProc },
-    { "FlipViewProc", FlipViewProc },
     { "PonderNextMoveProc", PonderNextMoveProc },
 #ifndef OPTIONSDIALOG
     { "AlwaysQueenProc", AlwaysQueenProc },
@@ -968,9 +952,6 @@ XtActionsRec boardActions[] = {
 #endif
     { "SaveSettingsProc", SaveSettingsProc },
     { "SaveOnExitProc", SaveOnExitProc },
-    { "InfoProc", InfoProc },
-    { "ManProc", ManProc },
-    { "HintProc", HintProc },
     { "AboutGameProc", AboutGameProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
@@ -1003,14 +984,11 @@ char globalTranslations[] =
    :Ctrl<Key>S: SavePositionProc() \n \
    :Ctrl<Key>C: CopyPositionProc() \n \
    :Ctrl<Key>V: PastePositionProc() \n \
-   :Ctrl<Key>a: AnalysisModeProc() \n \
    :Ctrl<Key>g: AnalyzeFileProc() \n \
    :Meta<Key>E: EvalGraphProc() \n \
    :Meta<Key>G: ShowGameListProc() \n \
    :<Key>F8: AbortProc() \n \
    :Meta Ctrl<Key>F12: DebugProc() \n \
-   :Ctrl<Key>m: MoveNowProc() \n \
-   :Ctrl<Key>x: RetractMoveProc() \n \
    :Ctrl<Key>P: PonderNextMoveProc() \n "
 #ifndef OPTIONSDIALOG
     "\
@@ -1022,8 +1000,6 @@ char globalTranslations[] =
 #endif
    "\
    :<Key>-: Iconify() \n \
-   :<Key>F1: ManProc() \n \
-   :<Key>F2: FlipViewProc() \n \
    Shift<Key>1: AskQuestionProc(\"Direct command\",\
                                 \"Send to chess program:\",,1) \n \
    Shift<Key>2: AskQuestionProc(\"Direct command\",\
@@ -2806,11 +2782,6 @@ XBoard square size (hint): %d\n\
     XtAugmentTranslations(blackTimerWidget,
 			  XtParseTranslationTable(blackTranslations));
 
-    /* Why is the following needed on some versions of X instead
-     * of a translation? */
-    XtAddEventHandler(boardWidget, ExposureMask|PointerMotionMask, False,
-		      (XtEventHandler) EventProc, NULL);
-    /* end why */
     XtAddEventHandler(formWidget, KeyPressMask, False,
 		      (XtEventHandler) MoveTypeInProc, NULL);
 
@@ -5497,46 +5468,25 @@ gboolean EventProcGTK(widget, event, data)
       case GDK_EXPOSE:
 	//if (event->expose.count > 0) return;  // no clipping is done 
 	GTKDrawPosition(widget, True, NULL);
+//	if(twoBoards) { // [HGM] dual: draw other board in other orientation
+//	    flipView = !flipView; partnerUp = !partnerUp;
+//	    XDrawPosition(widget, True, NULL);
+//	    flipView = !flipView; partnerUp = !partnerUp;
+//	}
 	break;
+//      case MotionNotify:
+//        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, 1)) break;
       default:
 	return False;
     }
     return False;
 }
 
-/* Why is this needed on some versions of X? */
-void EventProc(widget, unused, event)
-     Widget widget;
-     caddr_t unused;
-     XEvent *event;
-{
-    if (!XtIsRealized(widget))
-      return;
-
-    switch (event->type) {
-      case Expose:
-	if (event->xexpose.count > 0) return;  /* no clipping is done */
-	XDrawPosition(widget, True, NULL);
-	if(twoBoards) { // [HGM] dual: draw other board in other orientation
-	    flipView = !flipView; partnerUp = !partnerUp;
-	    XDrawPosition(widget, True, NULL);
-	    flipView = !flipView; partnerUp = !partnerUp;
-	}
-	break;
-      case MotionNotify:
-        if(SeekGraphClick(Press, event->xbutton.x, event->xbutton.y, 1)) break;
-      default:
-	return;
-    }
-}
-/* end why */
-
 void DrawPosition(fullRedraw, board)
      /*Boolean*/int fullRedraw;
      Board board;
 {
     GTKDrawPosition(boardwidgetGTK, fullRedraw, board);
-    XDrawPosition(boardWidget, fullRedraw, board);        
 }
 
 /* Returns 1 if there are "too many" differences between b1 and b2
@@ -5757,128 +5707,6 @@ void GTKDrawPosition(w, repaint, board)
 
     //XSync(xDisplay, False);    
 
-}
-
-/*
- * event handler for redrawing the board
- */
-void XDrawPosition(w, repaint, board)
-     Widget w;
-     /*Boolean*/int repaint;
-     Board board;
-{
-    int i, j, do_flash;
-    static int lastFlipView = 0;
-    static int lastBoardValid[2] = {0, 0};
-    static Board lastBoard[2];
-    Arg args[16];
-    int rrow, rcol;
-    int nr = twoBoards*partnerUp;
-
-    if(DrawSeekGraph()) return; // [HGM] seekgraph: suppress any drawing if seek graph up
-
-    if (board == NULL) {
-	if (!lastBoardValid[nr]) return;
-	board = lastBoard[nr];
-    }
-    if (!lastBoardValid[nr] || (nr == 0 && lastFlipView != flipView)) {
-	XtSetArg(args[0], XtNleftBitmap, (flipView ? xMarkPixmap : None));
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Flip View"),
-		    args, 1);
-    }
-
-    /*
-     * It would be simpler to clear the window with XClearWindow()
-     * but this causes a very distracting flicker.
-     */
-
-    if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
-
-	if ( lineGap && IsDrawArrowEnabled())
-	    XDrawSegments(xDisplay, xBoardWindow, lineGC,
-			gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
-
-	/* If too much changes (begin observing new game, etc.), don't
-	   do flashing */
-	do_flash = too_many_diffs(board, lastBoard[nr]) ? 0 : 1;
-
-	/* Special check for castling so we don't flash both the king
-	   and the rook (just flash the king). */
-	if (do_flash) {
-	    if (check_castle_draw(board, lastBoard[nr], &rrow, &rcol)) {
-		/* Draw rook with NO flashing. King will be drawn flashing later */
-		DrawSquare(rrow, rcol, board[rrow][rcol], 0);
-		lastBoard[nr][rrow][rcol] = board[rrow][rcol];
-	    }
-	}
-
-	/* First pass -- Draw (newly) empty squares and repair damage.
-	   This prevents you from having a piece show up twice while it
-	   is flashing on its new square */
-	for (i = 0; i < BOARD_HEIGHT; i++)
-	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if ((board[i][j] != lastBoard[nr][i][j] && board[i][j] == EmptySquare)
-		|| damage[nr][i][j]) {
-		DrawSquare(i, j, board[i][j], 0);
-		damage[nr][i][j] = False;
-	    }
-
-	/* Second pass -- Draw piece(s) in new position and flash them */
-	for (i = 0; i < BOARD_HEIGHT; i++)
-	  for (j = 0; j < BOARD_WIDTH; j++)
-	    if (board[i][j] != lastBoard[nr][i][j]) {
-		DrawSquare(i, j, board[i][j], do_flash);
-	    }
-    } else {
-	if (lineGap > 0)
-	  XDrawSegments(xDisplay, xBoardWindow, lineGC,
-			twoBoards & partnerUp ? secondSegments : // [HGM] dual
-			gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
-
-	for (i = 0; i < BOARD_HEIGHT; i++)
-	  for (j = 0; j < BOARD_WIDTH; j++) {
-	      DrawSquare(i, j, board[i][j], 0);
-	      damage[nr][i][j] = False;
-	  }
-    }
-
-    CopyBoard(lastBoard[nr], board);
-    lastBoardValid[nr] = 1;
-  if(nr == 0) { // [HGM] dual: no highlights on second board yet
-    lastFlipView = flipView;
-
-    /* Draw highlights */
-    if (pm1X >= 0 && pm1Y >= 0) {
-      drawHighlight(pm1X, pm1Y, prelineGC);
-    }
-    if (pm2X >= 0 && pm2Y >= 0) {
-      drawHighlight(pm2X, pm2Y, prelineGC);
-    }
-    if (hi1X >= 0 && hi1Y >= 0) {
-      drawHighlight(hi1X, hi1Y, highlineGC);
-    }
-    if (hi2X >= 0 && hi2Y >= 0) {
-      drawHighlight(hi2X, hi2Y, highlineGC);
-    }
-    DrawArrowHighlight(hi1X, hi1Y, hi2X, hi2Y);
-  }
-    /* If piece being dragged around board, must redraw that too */
-    DrawDragPiece();
-
-    XSync(xDisplay, False);
-}
-
-
-/*
- * event handler for redrawing the board
- */
-void DrawPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    XDrawPosition(w, True, NULL);
 }
 
 gboolean ButtonPressProc(window, eventbutton, data)
@@ -7439,15 +7267,6 @@ void RetractMoveProcGTK(object, user_data)
     RetractMoveEvent();
 }
 
-void RetractMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    RetractMoveEvent();
-}
-
 void MoveNowProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -7455,28 +7274,9 @@ void MoveNowProcGTK(object, user_data)
     MoveNowEvent();
 }
 
-void MoveNowProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    MoveNowEvent();
-}
-
 void FlipViewProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    flipView = !flipView;
-    DrawPosition(True, NULL);
-}
-
-void FlipViewProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     flipView = !flipView;
     DrawPosition(True, NULL);
@@ -7974,18 +7774,6 @@ void InfoProcGTK(object, user_data)
     system(buf);
 }
 
-void InfoProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-    snprintf(buf, sizeof(buf), "xterm -e info --directory %s --directory . -f %s &",
-	    INFODIR, INFOFILE);
-    system(buf);
-}
-
 void ManProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -8000,34 +7788,9 @@ void ManProcGTK(object, user_data)
     system(buf);
 }
 
-void ManProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-    String name;
-    if (nprms && *nprms > 0)
-      name = prms[0];
-    else
-      name = "xboard";
-    snprintf(buf, sizeof(buf), "xterm -e man %s &", name);
-    system(buf);
-}
-
 void HintProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    HintEvent();
-}
-
-void HintProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     HintEvent();
 }
