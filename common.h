@@ -533,7 +533,6 @@ typedef struct {
     Boolean scoreIsAbsolute[ENGINES];  /* If true, engine score is always from white side */
     Boolean saveExtendedInfoInPGN; /* If true, saved PGN games contain extended info */
     Boolean hideThinkingFromHuman; /* If true, program thinking is generated but not displayed in human/computer matches */
-    Boolean useBitmaps;
     Boolean useFont;
     char * liteBackTextureFile; /* Name of texture bitmap for lite squares */
     char * darkBackTextureFile; /* Name of texture bitmap for dark squares */

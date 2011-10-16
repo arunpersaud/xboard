@@ -87,16 +87,15 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-#include <X11/xpm.h>
 
 // [HGM] pixmaps of some ICONS used in the engine-outut window
-#include "pixmaps/WHITE_14.xpm"
-#include "pixmaps/BLACK_14.xpm"
-#include "pixmaps/CLEAR_14.xpm"
-#include "pixmaps/UNKNOWN_14.xpm"
-#include "pixmaps/THINKING_14.xpm"
-#include "pixmaps/PONDER_14.xpm"
-#include "pixmaps/ANALYZING_14.xpm"
+//#include "pixmaps/WHITE_14.xpm"
+//#include "pixmaps/BLACK_14.xpm"
+//#include "pixmaps/CLEAR_14.xpm"
+//#include "pixmaps/UNKNOWN_14.xpm"
+//#include "pixmaps/THINKING_14.xpm"
+//#include "pixmaps/PONDER_14.xpm"
+//#include "pixmaps/ANALYZING_14.xpm"
 
 #ifdef SNAP
 #include "wsnap.h"
@@ -153,14 +152,14 @@ void ReadIcon(char *pixData[], int iconNr)
 
 static void InitializeEngineOutput()
 {
-        ReadIcon(WHITE_14,   nColorWhite);
-        ReadIcon(BLACK_14,   nColorBlack);
-        ReadIcon(UNKNOWN_14, nColorUnknown);
-
-        ReadIcon(CLEAR_14,   nClear);
-        ReadIcon(PONDER_14,  nPondering);
-        ReadIcon(THINK_14,   nThinking);
-        ReadIcon(ANALYZE_14, nAnalyzing);
+//        ReadIcon(WHITE_14,   nColorWhite);
+//        ReadIcon(BLACK_14,   nColorBlack);
+//        ReadIcon(UNKNOWN_14, nColorUnknown);
+//
+//        ReadIcon(CLEAR_14,   nClear);
+//        ReadIcon(PONDER_14,  nPondering);
+//        ReadIcon(THINK_14,   nThinking);
+//        ReadIcon(ANALYZE_14, nAnalyzing);
 }
 
 void DoSetWindowText(int which, int field, char *s_label)
@@ -202,8 +201,8 @@ void SetIcon( int which, int field, int nIcon )
     Arg arg;
 
     if( nIcon != 0 ) {
-	XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);
-	XtSetValues(outputField[which][field], &arg, 1);
+//	XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);
+//	XtSetValues(outputField[which][field], &arg, 1);
     }
 }
 
@@ -213,8 +212,8 @@ void DoClearMemo(int which)
     Arg arg;
 //    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
 //    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
-    XtSetArg(arg, XtNstring, ""); // clear without disturbing selection!
-    XtSetValues(edit, &arg, 1);
+//    XtSetArg(arg, XtNstring, ""); // clear without disturbing selection!
+//    XtSetValues(edit, &arg, 1);
 }
 
 // cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
@@ -566,11 +565,11 @@ EngineOutputPopUp()
     XtPopup(engineOutputShell, XtGrabNone);
     XSync(xDisplay, False);
 
-    j=0;
-    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
-		args, j);
-
+//    j=0;
+//    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
+//		args, j);
+//
     SetCheckMenuItemActive(NULL, 100, True); // set GTK menu item to checked
 
     engineOutputDialogUp = True;

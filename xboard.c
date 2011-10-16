@@ -186,19 +186,6 @@ extern char *getenv();
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
 
-#if HAVE_LIBXPM
-#include <X11/xpm.h>
-#include "pixmaps/pixmaps.h"
-#define IMAGE_EXT "xpm"
-#else
-#define IMAGE_EXT "xim"
-#include "bitmaps/bitmaps.h"
-#endif
-
-#include "bitmaps/icon_white.bm"
-#include "bitmaps/icon_black.bm"
-#include "bitmaps/checkmark.bm"
-
 #include "frontend.h"
 #include "backend.h"
 #include "backendz.h"
@@ -253,10 +240,6 @@ RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
 void CreateGCs P((int redo));
-void CreateAnyPieces P((void));
-void CreateXIMPieces P((void));
-void CreateXPMPieces P((void));
-void CreateXPMBoard P((char *s, int n));
 void CreatePieces P((void));
 void CreatePieceMenus P((void));
 Widget CreateMenuBar P((Menu *mb));
@@ -271,8 +254,6 @@ void PieceMenuPopup P((Widget w, XEvent *event,
 		       String *params, Cardinal *num_params));
 static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
-void ReadBitmap P((Pixmap *pm, String name, unsigned char bits[],
-		   u_int wreq, u_int hreq));
 void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
 void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
@@ -430,7 +411,6 @@ Pixel lowTimeWarningColor;
 GC lightSquareGC, darkSquareGC, jailSquareGC, lineGC, wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
   wjPieceGC, bjPieceGC, prelineGC, countGC;
-Pixmap  xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
@@ -545,21 +525,6 @@ extern Boolean shellUp[];
 
 #define SOLID 0
 #define OUTLINE 1
-Pixmap pieceBitmap[2][(int)BlackPawn];
-Pixmap pieceBitmap2[2][(int)BlackPawn+4];       /* [HGM] pieces */
-Pixmap xpmPieceBitmap[4][(int)BlackPawn];	/* LL, LD, DL, DD actually used*/
-Pixmap xpmPieceBitmap2[4][(int)BlackPawn+4];	/* LL, LD, DL, DD set to select from */
-Pixmap xpmLightSquare, xpmDarkSquare, xpmJailSquare;
-Pixmap xpmBoardBitmap[2];
-int useImages, useImageSqs, useTexture, textureW[2], textureH[2];
-XImage *ximPieceBitmap[4][(int)BlackPawn+4];	/* LL, LD, DL, DD */
-Pixmap ximMaskPm[(int)BlackPawn];               /* clipmasks, used for XIM pieces */
-Pixmap ximMaskPm2[(int)BlackPawn+4];            /* clipmasks, used for XIM pieces */
-XImage *ximLightSquare, *ximDarkSquare;
-XImage *xim_Cross;
-
-#define pieceToSolid(piece) &pieceBitmap[SOLID][(piece) % (int)BlackPawn]
-#define pieceToOutline(piece) &pieceBitmap[OUTLINE][(piece) % (int)BlackPawn]
 
 #define White(piece) ((int)(piece) < (int)BlackPawn)
 
@@ -582,10 +547,6 @@ typedef struct {
    can begin dragging a piece before the remote opponent has moved. */
 
 static AnimState game, player;
-
-/* Bitmaps for use as masks when drawing XPM pieces.
-   Need one for each black and white piece.		*/
-static Pixmap xpmMask[BlackKing + 1];
 
 /* This magic number is the number of intermediate frames used
    in each half of the animation. For short moves it's reduced
@@ -1045,140 +1006,6 @@ String xboardResources[] = {
 
 /* Max possible square size */
 #define MAXSQSIZE 256
-
-static int xpm_avail[MAXSQSIZE];
-
-#ifdef HAVE_DIR_STRUCT
-
-/* Extract piece size from filename */
-static int
-xpm_getsize(name, len, ext)
-     char *name;
-     int len;
-     char *ext;
-{
-    char *p, *d;
-    char buf[10];
-
-    if (len < 4)
-      return 0;
-
-    if ((p=strchr(name, '.')) == NULL ||
-	StrCaseCmp(p+1, ext) != 0)
-      return 0;
-
-    p = name + 3;
-    d = buf;
-
-    while (*p && isdigit(*p))
-      *(d++) = *(p++);
-
-    *d = 0;
-    return atoi(buf);
-}
-
-/* Setup xpm_avail */
-static int
-xpm_getavail(dirname, ext)
-     char *dirname;
-     char *ext;
-{
-    DIR *dir;
-    struct dirent *ent;
-    int  i;
-
-    for (i=0; i<MAXSQSIZE; ++i)
-      xpm_avail[i] = 0;
-
-    if (appData.debugMode)
-      fprintf(stderr, "XPM dir:%s:ext:%s:\n", dirname, ext);
-
-    dir = opendir(dirname);
-    if (!dir)
-      {
-	  fprintf(stderr, _("%s: Can't access XPM directory %s\n"),
-		  programName, dirname);
-	  exit(1);
-      }
-
-    while ((ent=readdir(dir)) != NULL) {
-	i = xpm_getsize(ent->d_name, NAMLEN(ent), ext);
-	if (i > 0 && i < MAXSQSIZE)
-	  xpm_avail[i] = 1;
-    }
-
-    closedir(dir);
-
-    return 0;
-}
-
-void
-xpm_print_avail(fp, ext)
-     FILE *fp;
-     char *ext;
-{
-    int i;
-
-    fprintf(fp, _("Available `%s' sizes:\n"), ext);
-    for (i=1; i<MAXSQSIZE; ++i) {
-	if (xpm_avail[i])
-	  printf("%d\n", i);
-    }
-}
-
-/* Return XPM piecesize closest to size */
-int
-xpm_closest_to(dirname, size, ext)
-     char *dirname;
-     int size;
-     char *ext;
-{
-    int i;
-    int sm_diff = MAXSQSIZE;
-    int sm_index = 0;
-    int diff;
-
-    xpm_getavail(dirname, ext);
-
-    if (appData.debugMode)
-      xpm_print_avail(stderr, ext);
-
-    for (i=1; i<MAXSQSIZE; ++i) {
-	if (xpm_avail[i]) {
-	    diff = size - i;
-	    diff = (diff<0) ? -diff : diff;
-	    if (diff < sm_diff) {
-		sm_diff = diff;
-		sm_index = i;
-	    }
-	}
-    }
-
-    if (!sm_index) {
-	fprintf(stderr, _("Error: No `%s' files!\n"), ext);
-	exit(1);
-    }
-
-    return sm_index;
-}
-#else	/* !HAVE_DIR_STRUCT */
-/* If we are on a system without a DIR struct, we can't
-   read the directory, so we can't collect a list of
-   filenames, etc., so we can't do any size-fitting. */
-int
-xpm_closest_to(dirname, size, ext)
-     char *dirname;
-     int size;
-     char *ext;
-{
-    fprintf(stderr, _("\
-Warning: No DIR structure found on this system --\n\
-         Unable to autosize for XPM/XIM pieces.\n\
-   Please report this error to %s.\n\
-   Include system type & operating system in message.\n"), PACKAGE_BUGREPORT););
-    return size;
-}
-#endif /* HAVE_DIR_STRUCT */
 
 static char *cnames[9] = { "black", "red", "green", "yellow", "blue",
 			     "magenta", "cyan", "white" };
@@ -1643,77 +1470,10 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     shellArgs[5].value = shellArgs[3].value = h;
     XtSetValues(shellWidget, &shellArgs[0], 6);
 
-    // [HGM] pieces: tailor piece bitmaps to needs of specific variant
-    // (only for xpm)
-    if(useImages) {
-      for(i=0; i<4; i++) {
-	int p;
-	for(p=0; p<=(int)WhiteKing; p++)
-	   xpmPieceBitmap[i][p] = xpmPieceBitmap2[i][p]; // defaults
-	if(gameInfo.variant == VariantShogi) {
-	   xpmPieceBitmap[i][(int)WhiteCannon] = xpmPieceBitmap2[i][(int)WhiteKing+1];
-	   xpmPieceBitmap[i][(int)WhiteNightrider] = xpmPieceBitmap2[i][(int)WhiteKing+2];
-	   xpmPieceBitmap[i][(int)WhiteSilver] = xpmPieceBitmap2[i][(int)WhiteKing+3];
-	   xpmPieceBitmap[i][(int)WhiteGrasshopper] = xpmPieceBitmap2[i][(int)WhiteKing+4];
-	   xpmPieceBitmap[i][(int)WhiteQueen] = xpmPieceBitmap2[i][(int)WhiteLance];
-	}
-#ifdef GOTHIC
-	if(gameInfo.variant == VariantGothic) {
-	   xpmPieceBitmap[i][(int)WhiteMarshall] = xpmPieceBitmap2[i][(int)WhiteSilver];
-	}
-#endif
-	if(gameInfo.variant == VariantSChess && (squareSize == 49 || squareSize == 72)) {
-	   xpmPieceBitmap[i][(int)WhiteAngel]    = xpmPieceBitmap2[i][(int)WhiteFalcon];
-	   xpmPieceBitmap[i][(int)WhiteMarshall] = xpmPieceBitmap2[i][(int)WhiteAlfil];
-	}
-#if !HAVE_LIBXPM
-	// [HGM] why are thee ximMasks used at all? the ximPieceBitmaps seem to be never used!
-	for(p=0; p<=(int)WhiteKing; p++)
-	   ximMaskPm[p] = ximMaskPm2[p]; // defaults
-	if(gameInfo.variant == VariantShogi) {
-	   ximMaskPm[(int)WhiteCannon] = ximMaskPm2[(int)WhiteKing+1];
-	   ximMaskPm[(int)WhiteNightrider] = ximMaskPm2[(int)WhiteKing+2];
-	   ximMaskPm[(int)WhiteSilver] = ximMaskPm2[(int)WhiteKing+3];
-	   ximMaskPm[(int)WhiteGrasshopper] = ximMaskPm2[(int)WhiteKing+4];
-	   ximMaskPm[(int)WhiteQueen] = ximMaskPm2[(int)WhiteLance];
-	}
-#ifdef GOTHIC
-	if(gameInfo.variant == VariantGothic) {
-           ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[(int)WhiteSilver];
-	}
-#endif
-	if(gameInfo.variant == VariantSChess && (squareSize == 49 || squareSize == 72)) {
-           ximMaskPm[(int)WhiteAngel]    = ximMaskPm2[(int)WhiteFalcon];
-           ximMaskPm[(int)WhiteMarshall] = ximMaskPm2[(int)WhiteAlfil];
-	}
-#endif
-      }
-    } else {
-      for(i=0; i<2; i++) {
-	int p;
-	for(p=0; p<=(int)WhiteKing; p++)
-	   pieceBitmap[i][p] = pieceBitmap2[i][p]; // defaults
-	if(gameInfo.variant == VariantShogi) {
-	   pieceBitmap[i][(int)WhiteCannon] = pieceBitmap2[i][(int)WhiteKing+1];
-	   pieceBitmap[i][(int)WhiteNightrider] = pieceBitmap2[i][(int)WhiteKing+2];
-	   pieceBitmap[i][(int)WhiteSilver] = pieceBitmap2[i][(int)WhiteKing+3];
-	   pieceBitmap[i][(int)WhiteGrasshopper] = pieceBitmap2[i][(int)WhiteKing+4];
-	   pieceBitmap[i][(int)WhiteQueen] = pieceBitmap2[i][(int)WhiteLance];
-	}
-#ifdef GOTHIC
-	if(gameInfo.variant == VariantGothic) {
-	   pieceBitmap[i][(int)WhiteMarshall] = pieceBitmap2[i][(int)WhiteSilver];
-	}
-#endif
-	if(gameInfo.variant == VariantSChess && (squareSize == 49 || squareSize == 72)) {
-	   pieceBitmap[i][(int)WhiteAngel]    = pieceBitmap2[i][(int)WhiteFalcon];
-	   pieceBitmap[i][(int)WhiteMarshall] = pieceBitmap2[i][(int)WhiteAlfil];
-	}
-      }
-    }
 #if HAVE_LIBXPM
     CreateAnimVars();
 #endif
+
 }
 #endif
 
@@ -1815,49 +1575,6 @@ int MakeColors()
     return forceMono;
 }
 
-void
-CreateAnyPieces()
-{   // [HGM] taken out of main
-#if HAVE_LIBXPM
-    if (appData.monoMode && // [HGM] no sense to go on to certain doom
-       (appData.bitmapDirectory == NULL || appData.bitmapDirectory[0] == NULLCHAR))
-	    appData.bitmapDirectory = DEF_BITMAP_DIR;
-
-    if (appData.bitmapDirectory[0] != NULLCHAR) {
-      CreatePieces();
-    } else {
-      CreateXPMPieces();
-
-      char xpmstr[200];
-      void *ptr;
-
-      /* get path to xpm pixmap wood texture files */
-      /* can't use appData.liteBackTextureFileanymore  because that is now */
-      /* used by GTK version to contain path to svg background file */
-      /* this is a temp fix to stop the Xt code segfaulting */
-
-      /* light square xpm texture file */
-      strcpy(xpmstr, SVGDIR);                       //   SVGDIR=/usr/local/share/games/xboard/svg
-      ptr=strstr(xpmstr, "svg");
-      strcpy(ptr, "pixmaps/textures/wood_l.xpm");   //   /usr/local/share/games/xboard/pixmaps/textures/wood_l.xpm
-
-      CreateXPMBoard(xpmstr, 1);
-
-      /* dark square xpm texture file */
-      strcpy(xpmstr, SVGDIR);
-      ptr=strstr(xpmstr, "svg");
-      strcpy(ptr, "pixmaps/textures/wood_d.xpm");  //    /usr/local/share/games/xboardgit/pixmaps/textures/wood_d.xpm
-      
-      CreateXPMBoard(xpmstr, 0);
-      
-    }
-#else
-    CreateXIMPieces();
-    /* Create regular pieces */
-    if (!useImages) CreatePieces();
-#endif
-}
-
 void SetPieceColor(GdkPixbuf *pb)
 {
 
@@ -1937,58 +1654,39 @@ void LoadSvgFiles()
     
     SVGNeutralSquare = load_pixbuf("NeutralSquare.svg", 0);    
 
-    if (appData.useBitmaps) {       
-        
-        /* Load background squares from texture files */
-        /* At the moment these have to be svg files. It will work with other files */
-        /* including xpm files but board resizing will be slow */ 
-
-        /* set up dark square from texture file */ 
-        if (appData.darkBackTextureFile == NULL) {
-            SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not set - use default
-        }
-        else if (strstr(appData.darkBackTextureFile, ".svg") == NULL) {  
-            SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not svg - use default
-        }
-        else {
-            // texture file is an svg file - try and load it
-            SVGDarkSquare = gdk_pixbuf_new_from_file(appData.darkBackTextureFile, NULL);
-            if (SVGDarkSquare == NULL) {             
-                SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); // texture file failed to load - use default            
-            }
-        } 
-
-        /* set up light square from texture file */ 
-        if (appData.liteBackTextureFile == NULL) {          
-            SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not set - use default
-        }
-        else if (strstr(appData.liteBackTextureFile, ".svg") == NULL) {             
-            SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not svg - use default
-        }
-        else {
-            // texture file is an svg file - try and load it            
-            SVGLightSquare = gdk_pixbuf_new_from_file(appData.liteBackTextureFile, NULL);
-            if (SVGLightSquare == NULL) {                                  
-                SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file failed to load - use default
-            }
-        }         
+    /* Load background squares from texture files */
+    /* At the moment these have to be svg files. It will work with other files */
+    /* including xpm files but board resizing will be slow */ 
+    
+    /* set up dark square from texture file */ 
+    if (appData.darkBackTextureFile == NULL) {
+      SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not set - use default
     }
-    else {        
-        int col;
-
-        SVGLightSquare   = load_pixbuf("LightSquare.svg", 0);
-        SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); 
-
-        sscanf(appData.darkSquareColor, "#%x", &col);
-        col = col << 8;
-        col = col | 0xff; /* add 0xff to the end as alpha to set to opaque */
-        gdk_pixbuf_fill(SVGDarkSquare, col);
-
-        sscanf(appData.lightSquareColor, "#%x", &col);
-        col = col << 8;
-        col = col | 0xff; /* add 0xff to the end as alpha to set to opaque */
-        gdk_pixbuf_fill(SVGLightSquare, col);         
+    else if (strstr(appData.darkBackTextureFile, ".svg") == NULL) {  
+      SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not svg - use default
     }
+    else {
+      // texture file is an svg file - try and load it
+      SVGDarkSquare = gdk_pixbuf_new_from_file(appData.darkBackTextureFile, NULL);
+      if (SVGDarkSquare == NULL) {             
+	SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); // texture file failed to load - use default            
+      }
+    } 
+    
+    /* set up light square from texture file */ 
+    if (appData.liteBackTextureFile == NULL) {          
+      SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not set - use default
+    }
+    else if (strstr(appData.liteBackTextureFile, ".svg") == NULL) {             
+      SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not svg - use default
+    }
+    else {
+      // texture file is an svg file - try and load it            
+      SVGLightSquare = gdk_pixbuf_new_from_file(appData.liteBackTextureFile, NULL);
+      if (SVGLightSquare == NULL) {                                  
+	SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file failed to load - use default
+      }
+    }         
 
     SVGWhitePawn     = load_pixbuf("WhitePawn.svg", 0);
     SVGWhiteKnight   = load_pixbuf("WhiteKnight.svg", 0);
@@ -2209,24 +1907,6 @@ main(argc, argv)
     if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
 	appData.coordFont = fontTable[COORD_FONT][squareSize];   
 
-    /* Now, using squareSize as a hint, find a good XPM/XIM set size */
-    if (strlen(appData.pixmapDirectory) > 0) {
-	p = ExpandPathName(appData.pixmapDirectory);
-	if (!p) {
-	    fprintf(stderr, _("Error expanding path name \"%s\"\n"),
-		   appData.pixmapDirectory);
-	    exit(1);
-	}
-	if (appData.debugMode) {
-          fprintf(stderr, _("\
-XBoard square size (hint): %d\n\
-%s fulldir:%s:\n"), squareSize, IMAGE_EXT, p);
-	}
-	squareSize = xpm_closest_to(p, squareSize, IMAGE_EXT);
-	if (appData.debugMode) {
-	    fprintf(stderr, _("Closest %s size: %d\n"), IMAGE_EXT, squareSize);
-	}
-    }
     defaultLineGap = lineGap;
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
 
@@ -2644,9 +2324,6 @@ XBoard square size (hint): %d\n\
     /*
      * Create X checkmark bitmap and initialize option menu checks.
      */
-    ReadBitmap(&xMarkPixmap, "checkmark.bm",
-	       checkmark_bits, checkmark_width, checkmark_height);
-    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
 #ifndef OPTIONSDIALOG
     if (appData.alwaysPromoteToQueen) {
 	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
@@ -2766,7 +2443,6 @@ XBoard square size (hint): %d\n\
 
     CreateGCs(False);
     CreateGrid();
-    CreateAnyPieces();
 
     CreatePieceMenus();
 
@@ -3569,452 +3245,7 @@ void CreateGCs(int redo)
     }
 }
 
-void loadXIM(xim, xmask, filename, dest, mask)
-     XImage *xim;
-     XImage *xmask;
-     char *filename;
-     Pixmap *dest;
-     Pixmap *mask;
-{
-    int x, y, w, h, p;
-    FILE *fp;
-    Pixmap temp;
-    XGCValues	values;
-    GC maskGC;
-
-    fp = fopen(filename, "rb");
-    if (!fp) {
-	fprintf(stderr, _("%s: error loading XIM!\n"), programName);
-	exit(1);
-    }
-
-    w = fgetc(fp);
-    h = fgetc(fp);
-
-    for (y=0; y<h; ++y) {
-	for (x=0; x<h; ++x) {
-	    p = fgetc(fp);
-
-	    switch (p) {
-	      case 0:
-		XPutPixel(xim, x, y, blackPieceColor);
-		if (xmask)
-		  XPutPixel(xmask, x, y, WhitePixel(xDisplay,xScreen));
-		break;
-	      case 1:
-		XPutPixel(xim, x, y, darkSquareColor);
-		if (xmask)
-		  XPutPixel(xmask, x, y, BlackPixel(xDisplay,xScreen));
-		break;
-	      case 2:
-		XPutPixel(xim, x, y, whitePieceColor);
-		if (xmask)
-		  XPutPixel(xmask, x, y, WhitePixel(xDisplay,xScreen));
-		break;
-	      case 3:
-		XPutPixel(xim, x, y, lightSquareColor);
-		if (xmask)
-		  XPutPixel(xmask, x, y, BlackPixel(xDisplay,xScreen));
-		break;
-	    }
-	}
-    }
-
-    fclose(fp);
-
-    /* create Pixmap of piece */
-    *dest = XCreatePixmap(xDisplay, DefaultRootWindow(xDisplay),
-			  w, h, xim->depth);
-    XPutImage(xDisplay, *dest, lightSquareGC, xim,
-	      0, 0, 0, 0, w, h);
-
-    /* create Pixmap of clipmask
-       Note: We assume the white/black pieces have the same
-             outline, so we make only 6 masks. This is okay
-             since the XPM clipmask routines do the same. */
-    if (xmask) {
-      temp = XCreatePixmap(xDisplay, DefaultRootWindow(xDisplay),
-			    w, h, xim->depth);
-      XPutImage(xDisplay, temp, lightSquareGC, xmask,
-	      0, 0, 0, 0, w, h);
-
-      /* now create the 1-bit version */
-      *mask = XCreatePixmap(xDisplay, DefaultRootWindow(xDisplay),
-			  w, h, 1);
-
-      values.foreground = 1;
-      values.background = 0;
-
-      /* Don't use XtGetGC, not read only */
-      maskGC = XCreateGC(xDisplay, *mask,
-		    GCForeground | GCBackground, &values);
-      XCopyPlane(xDisplay, temp, *mask, maskGC,
-		  0, 0, squareSize, squareSize, 0, 0, 1);
-      XFreePixmap(xDisplay, temp);
-    }
-}
-
-
-char pieceBitmapNames[] = "pnbrqfeacwmohijgdvlsukpnsl";
-
-void CreateXIMPieces()
-{
-    int piece, kind;
-    char buf[MSG_SIZ];
-    u_int ss;
-    static char *ximkind[] = { "ll", "ld", "dl", "dd" };
-    XImage *ximtemp;
-
-    ss = squareSize;
-
-    /* The XSynchronize calls were copied from CreatePieces.
-       Not sure if needed, but can't hurt */
-    XSynchronize(xDisplay, True); /* Work-around for xlib/xt
-				     buffering bug */
-
-    /* temp needed by loadXIM() */
-    ximtemp = XGetImage(xDisplay, DefaultRootWindow(xDisplay),
-		 0, 0, ss, ss, AllPlanes, XYPixmap);
-
-    if (strlen(appData.pixmapDirectory) == 0) {
-      useImages = 0;
-    } else {
-	useImages = 1;
-	if (appData.monoMode) {
-	  DisplayFatalError(_("XIM pieces cannot be used in monochrome mode"),
-			    0, 2);
-	  ExitEvent(2);
-	}
-	fprintf(stderr, _("\nLoading XIMs...\n"));
-	/* Load pieces */
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    fprintf(stderr, "%d", piece+1);
-	    for (kind=0; kind<4; kind++) {
-		fprintf(stderr, ".");
-		snprintf(buf, sizeof(buf), "%s/%s%c%s%u.xim",
-			ExpandPathName(appData.pixmapDirectory),
-			piece <= (int) WhiteKing ? "" : "w",
-			pieceBitmapNames[piece],
-			ximkind[kind], ss);
-		ximPieceBitmap[kind][piece] =
-		  XGetImage(xDisplay, DefaultRootWindow(xDisplay),
-			    0, 0, ss, ss, AllPlanes, XYPixmap);
-		if (appData.debugMode)
-		  fprintf(stderr, _("(File:%s:) "), buf);
-		loadXIM(ximPieceBitmap[kind][piece],
-			ximtemp, buf,
-			&(xpmPieceBitmap2[kind][piece]),
-			&(ximMaskPm2[piece]));
-		if(piece <= (int)WhiteKing)
-		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
-	    }
-	    fprintf(stderr," ");
-	}
-	/* Load light and dark squares */
-	/* If the LSQ and DSQ pieces don't exist, we will
-	   draw them with solid squares. */
-	snprintf(buf,sizeof(buf), "%s/lsq%u.xim", ExpandPathName(appData.pixmapDirectory), ss);
-	if (access(buf, 0) != 0) {
-	    useImageSqs = 0;
-	} else {
-	    useImageSqs = 1;
-	    fprintf(stderr, _("light square "));
-	    ximLightSquare=
-	      XGetImage(xDisplay, DefaultRootWindow(xDisplay),
-			0, 0, ss, ss, AllPlanes, XYPixmap);
-	    if (appData.debugMode)
-	      fprintf(stderr, _("(File:%s:) "), buf);
-
-	    loadXIM(ximLightSquare, NULL, buf, &xpmLightSquare, NULL);
-	    fprintf(stderr, _("dark square "));
-	    snprintf(buf,sizeof(buf), "%s/dsq%u.xim",
-		    ExpandPathName(appData.pixmapDirectory), ss);
-	    if (appData.debugMode)
-	      fprintf(stderr, _("(File:%s:) "), buf);
-	    ximDarkSquare=
-	      XGetImage(xDisplay, DefaultRootWindow(xDisplay),
-			0, 0, ss, ss, AllPlanes, XYPixmap);
-	    loadXIM(ximDarkSquare, NULL, buf, &xpmDarkSquare, NULL);
-	    xpmJailSquare = xpmLightSquare;
-	}
-	fprintf(stderr, _("Done.\n"));
-    }
-    XSynchronize(xDisplay, False); /* Work-around for xlib/xt buffering bug */
-}
-
 static VariantClass oldVariant = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
-
-#if HAVE_LIBXPM
-void CreateXPMBoard(char *s, int kind)
-{
-    XpmAttributes attr;
-    attr.valuemask = 0;
-    if(s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
-    //if(!appData.useBitmaps || s == NULL || *s == 0 || *s == '*') { useTexture &= ~(kind+1); return; }
-    if (XpmReadFileToPixmap(xDisplay, xBoardWindow, s, &(xpmBoardBitmap[kind]), NULL, &attr) == 0) {
-	useTexture |= kind + 1; textureW[kind] = attr.width; textureH[kind] = attr.height;
-    }
-}
-
-void FreeXPMPieces()
-{   // [HGM] to prevent resoucre leak on calling CreaeXPMPieces() a second time,
-    // thisroutine has to be called t free the old piece pixmaps
-    int piece, kind;
-    for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++)
-	for (kind=0; kind<4; kind++) XFreePixmap(xDisplay, xpmPieceBitmap2[kind][piece]);
-    if(useImageSqs) {
-	XFreePixmap(xDisplay, xpmLightSquare);
-	XFreePixmap(xDisplay, xpmDarkSquare);
-    }
-}
-
-void CreateXPMPieces()
-{
-    int piece, kind, r;
-    char buf[MSG_SIZ];
-    u_int ss = squareSize;
-    XpmAttributes attr;
-    static char *xpmkind[] = { "ll", "ld", "dl", "dd" };
-    XpmColorSymbol symbols[4];
-    static int redo = False;
-
-    if(redo) FreeXPMPieces(); else redo = 1;
-
-    /* The XSynchronize calls were copied from CreatePieces.
-       Not sure if needed, but can't hurt */
-    XSynchronize(xDisplay, True); /* Work-around for xlib/xt buffering bug */
-
-    /* Setup translations so piece colors match square colors */
-    symbols[0].name = "light_piece";
-    symbols[0].value = appData.whitePieceColor;
-    symbols[1].name = "dark_piece";
-    symbols[1].value = appData.blackPieceColor;
-    symbols[2].name = "light_square";
-    symbols[2].value = appData.lightSquareColor;
-    symbols[3].name = "dark_square";
-    symbols[3].value = appData.darkSquareColor;
-
-    attr.valuemask = XpmColorSymbols;
-    attr.colorsymbols = symbols;
-    attr.numsymbols = 4;
-
-    if (appData.monoMode) {
-      DisplayFatalError(_("XPM pieces cannot be used in monochrome mode"),
-			0, 2);
-      ExitEvent(2);
-    }
-    if (strlen(appData.pixmapDirectory) == 0) {
-	XpmPieces* pieces = builtInXpms;
-	useImages = 1;
-	/* Load pieces */
-	while (pieces->size != squareSize && pieces->size) pieces++;
-	if (!pieces->size) {
-	  fprintf(stderr, _("No builtin XPM pieces of size %d\n"), squareSize);
-	  exit(1);
-	}
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    for (kind=0; kind<4; kind++) {
-
-		if ((r=XpmCreatePixmapFromData(xDisplay, xBoardWindow,
-					       pieces->xpm[piece][kind],
-					       &(xpmPieceBitmap2[kind][piece]),
-					       NULL, &attr)) != 0) {
-		  fprintf(stderr, _("Error %d loading XPM image \"%s\"\n"),
-			  r, buf);
-		  exit(1);
-		}
-		if(piece <= (int) WhiteKing)
-		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
-	    }
-	}
-	useImageSqs = 0;
-	xpmJailSquare = xpmLightSquare;
-    } else {
-	useImages = 1;
-
-	fprintf(stderr, _("\nLoading XPMs...\n"));
-
-	/* Load pieces */
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	    fprintf(stderr, "%d ", piece+1);
-	    for (kind=0; kind<4; kind++) {
-	      snprintf(buf, sizeof(buf), "%s/%s%c%s%u.xpm",
-			ExpandPathName(appData.pixmapDirectory),
-			piece > (int) WhiteKing ? "w" : "",
-			pieceBitmapNames[piece],
-			xpmkind[kind], ss);
-		if (appData.debugMode) {
-		    fprintf(stderr, _("(File:%s:) "), buf);
-		}
-		if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
-					   &(xpmPieceBitmap2[kind][piece]),
-					   NULL, &attr)) != 0) {
-		    if(piece != (int)WhiteKing && piece > (int)WhiteQueen) {
-		      // [HGM] missing: read of unorthodox piece failed; substitute King.
-		      snprintf(buf, sizeof(buf), "%s/k%s%u.xpm",
-				ExpandPathName(appData.pixmapDirectory),
-				xpmkind[kind], ss);
-			if (appData.debugMode) {
-			    fprintf(stderr, _("(Replace by File:%s:) "), buf);
-			}
-			r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
-						&(xpmPieceBitmap2[kind][piece]),
-						NULL, &attr);
-		    }
-		    if (r != 0) {
-			fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"),
-				r, buf);
-			exit(1);
-		    }
-		}
-		if(piece <= (int) WhiteKing)
-		    xpmPieceBitmap[kind][piece] = xpmPieceBitmap2[kind][piece];
-	    }
-	}
-	/* Load light and dark squares */
-	/* If the LSQ and DSQ pieces don't exist, we will
-	   draw them with solid squares. */
-	fprintf(stderr, _("light square "));
-	snprintf(buf, sizeof(buf), "%s/lsq%u.xpm", ExpandPathName(appData.pixmapDirectory), ss);
-	if (access(buf, 0) != 0) {
-	    useImageSqs = 0;
-	} else {
-	    useImageSqs = 1;
-	    if (appData.debugMode)
-	      fprintf(stderr, _("(File:%s:) "), buf);
-
-	    if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
-				       &xpmLightSquare, NULL, &attr)) != 0) {
-		fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"), r, buf);
-		exit(1);
-	    }
-	    fprintf(stderr, _("dark square "));
-	    snprintf(buf, sizeof(buf), "%s/dsq%u.xpm",
-		    ExpandPathName(appData.pixmapDirectory), ss);
-	    if (appData.debugMode) {
-		fprintf(stderr, _("(File:%s:) "), buf);
-	    }
-	    if ((r=XpmReadFileToPixmap(xDisplay, xBoardWindow, buf,
-				       &xpmDarkSquare, NULL, &attr)) != 0) {
-		fprintf(stderr, _("Error %d loading XPM file \"%s\"\n"), r, buf);
-		exit(1);
-	    }
-	}
-	xpmJailSquare = xpmLightSquare;
-	fprintf(stderr, _("Done.\n"));
-    }
-    oldVariant = -1; // kludge to force re-makig of animation masks
-    XSynchronize(xDisplay, False); /* Work-around for xlib/xt
-				      buffering bug */
-}
-#endif /* HAVE_LIBXPM */
-
-#if HAVE_LIBXPM
-/* No built-in bitmaps */
-void CreatePieces()
-{
-    int piece, kind;
-    char buf[MSG_SIZ];
-    u_int ss = squareSize;
-
-    XSynchronize(xDisplay, True); /* Work-around for xlib/xt
-				     buffering bug */
-
-    for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	  snprintf(buf, MSG_SIZ, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
-		   pieceBitmapNames[piece],
-		   ss, kind == SOLID ? 's' : 'o');
-	  ReadBitmap(&pieceBitmap2[kind][piece], buf, NULL, ss, ss);
-	  if(piece <= (int)WhiteKing)
-	    pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
-	}
-    }
-
-    XSynchronize(xDisplay, False); /* Work-around for xlib/xt
-				      buffering bug */
-}
-#else
-/* With built-in bitmaps */
-void CreatePieces()
-{
-    BuiltInBits* bib = builtInBits;
-    int piece, kind;
-    char buf[MSG_SIZ];
-    u_int ss = squareSize;
-
-    XSynchronize(xDisplay, True); /* Work-around for xlib/xt
-				     buffering bug */
-
-    while (bib->squareSize != ss && bib->squareSize != 0) bib++;
-
-    for (kind = SOLID; kind <= (appData.monoMode ? OUTLINE : SOLID); kind++) {
-	for (piece = (int) WhitePawn; piece <= (int) WhiteKing + 4; piece++) {
-	  snprintf(buf, MSG_SIZ, "%s%c%u%c.bm", piece > (int)WhiteKing ? "w" : "",
-		   pieceBitmapNames[piece],
-		   ss, kind == SOLID ? 's' : 'o');
-	  ReadBitmap(&pieceBitmap2[kind][piece], buf,
-		     bib->bits[kind][piece], ss, ss);
-	  if(piece <= (int)WhiteKing)
-	    pieceBitmap[kind][piece] = pieceBitmap2[kind][piece];
-	}
-    }
-
-    XSynchronize(xDisplay, False); /* Work-around for xlib/xt
-				      buffering bug */
-}
-#endif
-
-void ReadBitmap(pm, name, bits, wreq, hreq)
-     Pixmap *pm;
-     String name;
-     unsigned char bits[];
-     u_int wreq, hreq;
-{
-    int x_hot, y_hot;
-    u_int w, h;
-    int errcode;
-    char msg[MSG_SIZ], fullname[MSG_SIZ];
-
-    if (*appData.bitmapDirectory != NULLCHAR) {
-      safeStrCpy(fullname, appData.bitmapDirectory, sizeof(fullname)/sizeof(fullname[0]) );
-      strncat(fullname, "/", MSG_SIZ - strlen(fullname) - 1);
-      strncat(fullname, name, MSG_SIZ - strlen(fullname) - 1);
-      errcode = XReadBitmapFile(xDisplay, xBoardWindow, fullname,
-				&w, &h, pm, &x_hot, &y_hot);
-      fprintf(stderr, "load %s\n", name);
-	if (errcode != BitmapSuccess) {
-	    switch (errcode) {
-	      case BitmapOpenFailed:
-		snprintf(msg, sizeof(msg), _("Can't open bitmap file %s"), fullname);
-		break;
-	      case BitmapFileInvalid:
-		snprintf(msg, sizeof(msg), _("Invalid bitmap in file %s"), fullname);
-		break;
-	      case BitmapNoMemory:
-		snprintf(msg, sizeof(msg), _("Ran out of memory reading bitmap file %s"),
-			fullname);
-		break;
-	      default:
-		snprintf(msg, sizeof(msg), _("Unknown XReadBitmapFile error %d on file %s"),
-			errcode, fullname);
-		break;
-	    }
-	    fprintf(stderr, _("%s: %s...using built-in\n"),
-		    programName, msg);
-	} else if (w != wreq || h != hreq) {
-	    fprintf(stderr,
-		    _("%s: Bitmap %s is %dx%d, not %dx%d...using built-in\n"),
-		    programName, fullname, w, h, wreq, hreq);
-	} else {
-	    return;
-	}
-    }
-    if (bits != NULL) {
-	*pm = XCreateBitmapFromData(xDisplay, xBoardWindow, (char *) bits,
-				    wreq, hreq);
-    }
-}
 
 void
 DrawGrid(int x, int y, int Nx, int Ny)
@@ -4766,24 +3997,6 @@ ClearPremoveHighlights()
   SetPremoveHighlights(-1, -1, -1, -1);
 }
 
-static int CutOutSquare(x, y, x0, y0, kind)
-     int x, y, *x0, *y0, kind;
-{
-    int W = BOARD_WIDTH, H = BOARD_HEIGHT;
-    int nx = x/(squareSize + lineGap), ny = y/(squareSize + lineGap);
-    *x0 = 0; *y0 = 0;
-    if(textureW[kind] < squareSize || textureH[kind] < squareSize) return 0;
-    if(textureW[kind] < W*squareSize)
-	*x0 = (textureW[kind] - squareSize) * nx/(W-1);
-    else
-	*x0 = textureW[kind]*nx / W + (textureW[kind] - W*squareSize) / (2*W);
-    if(textureH[kind] < H*squareSize)
-	*y0 = (textureH[kind] - squareSize) * ny/(H-1);
-    else
-	*y0 = textureH[kind]*ny / H + (textureH[kind] - H*squareSize) / (2*H);
-    return 1;
-}
-
 static void BlankSquareGTK(x, y, color, piece, dest, fac)
      int x, y, color, fac;
      ChessSquare piece;
@@ -4809,193 +4022,15 @@ static void BlankSquareGTK(x, y, color, piece, dest, fac)
        //gc = jailSquareGC;
        break;
     }
-    //XFillRectangle(xDisplay, dest, gc, x*fac, y*fac, squareSize, squareSize);
-    
-    //cr = gdk_cairo_create(GDK_WINDOW(boardwidgetGTK->window));
-    //cairo_set_source_rgb(cr, 0, 0, 0);
+
     if (!GTK_IS_WIDGET(boardwidgetGTK)) {
         printf("boardwidgetGTK not valid\n"); 
         return;
     }    
 
     gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSizeGTK, squareSizeGTK, GDK_RGB_DITHER_NORMAL, 0, 0);
-    //gdk_draw_pixbuf(cr, NULL, pb, 0, 0, x, y, squareSize, squareSize, GDK_RGB_DITHER_NORMAL, 0, 0);
     
     return;
-
-
-    if (useImages && color != 2 && (useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
-	XCopyArea(xDisplay, xpmBoardBitmap[color], dest, wlPieceGC, x0, y0,
-		  squareSize, squareSize, x*fac, y*fac);
-        printf("111\n");
-    } else
-    if (useImages && useImageSqs) {
-	Pixmap pm;
-        printf("222\n");
-	switch (color) {
-	  case 1: /* light */
-	    pm = xpmLightSquare;
-	    break;
-	  case 0: /* dark */
-	    pm = xpmDarkSquare;
-	    break;
-	  case 2: /* neutral */
-	  default:
-	    pm = xpmJailSquare;
-	    break;
-	}
-	XCopyArea(xDisplay, pm, dest, wlPieceGC, 0, 0,
-		  squareSize, squareSize, x*fac, y*fac);
-    } else {
-        printf("333\n");
-	//GC gc;
-        GdkPixbuf *pb;
-	switch (color) {
-	  case 1: /* light */
-	    //gc = lightSquareGC;
-            pb = SVGLightSquare;
-	    break;
-	  case 0: /* dark */
-            pb = SVGDarkSquare;
-	    //gc = darkSquareGC;
-	    break;
-	  case 2: /* neutral */
-	  default:
-            pb = SVGNeutralSquare;
-	    //gc = jailSquareGC;
-	    break;
-	}
-	//XFillRectangle(xDisplay, dest, gc, x*fac, y*fac, squareSize, squareSize);
-        gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSizeGTK, squareSizeGTK, GDK_RGB_DITHER_NORMAL, 0, 0);
-    }
-}
-
-static void BlankSquare(x, y, color, piece, dest, fac)
-     int x, y, color, fac;
-     ChessSquare piece;
-     Drawable dest;
-{   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
-    int x0, y0;
-    if (useImages && color != 2 && (useTexture & color+1) && CutOutSquare(x, y, &x0, &y0, color)) {
-	XCopyArea(xDisplay, xpmBoardBitmap[color], dest, wlPieceGC, x0, y0,
-		  squareSize, squareSize, x*fac, y*fac);
-    } else
-    if (useImages && useImageSqs) {
-	Pixmap pm;
-	switch (color) {
-	  case 1: /* light */
-	    pm = xpmLightSquare;
-	    break;
-	  case 0: /* dark */
-	    pm = xpmDarkSquare;
-	    break;
-	  case 2: /* neutral */
-	  default:
-	    pm = xpmJailSquare;
-	    break;
-	}
-	XCopyArea(xDisplay, pm, dest, wlPieceGC, 0, 0,
-		  squareSize, squareSize, x*fac, y*fac);
-    } else {
-	GC gc;
-	switch (color) {
-	  case 1: /* light */
-	    gc = lightSquareGC;
-	    break;
-	  case 0: /* dark */
-	    gc = darkSquareGC;
-	    break;
-	  case 2: /* neutral */
-	  default:
-	    gc = jailSquareGC;
-	    break;
-	}
-	XFillRectangle(xDisplay, dest, gc, x*fac, y*fac, squareSize, squareSize);
-    }
-}
-
-/*
-   I split out the routines to draw a piece so that I could
-   make a generic flash routine.
-*/
-static void monoDrawPiece_1bit(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
-{
-    /* Avoid XCopyPlane on 1-bit screens to work around Sun bug */
-    switch (square_color) {
-      case 1: /* light */
-      case 2: /* neutral */
-      default:
-	XCopyArea(xDisplay, (int) piece < (int) BlackPawn
-		  ? *pieceToOutline(piece)
-		  : *pieceToSolid(piece),
-		  dest, bwPieceGC, 0, 0,
-		  squareSize, squareSize, x, y);
-	break;
-      case 0: /* dark */
-	XCopyArea(xDisplay, (int) piece < (int) BlackPawn
-		  ? *pieceToSolid(piece)
-		  : *pieceToOutline(piece),
-		  dest, wbPieceGC, 0, 0,
-		  squareSize, squareSize, x, y);
-	break;
-    }
-}
-
-static void monoDrawPiece(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
-{
-    switch (square_color) {
-      case 1: /* light */
-      case 2: /* neutral */
-      default:
-	XCopyPlane(xDisplay, (int) piece < (int) BlackPawn
-		   ? *pieceToOutline(piece)
-		   : *pieceToSolid(piece),
-		   dest, bwPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-      case 0: /* dark */
-	XCopyPlane(xDisplay, (int) piece < (int) BlackPawn
-		   ? *pieceToSolid(piece)
-		   : *pieceToOutline(piece),
-		   dest, wbPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-    }
-}
-
-static void colorDrawPiece(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
-{
-    if(pieceToSolid(piece) == NULL) return; // [HGM] bitmaps: make it non-fatal if we have no bitmap;
-    switch (square_color) {
-      case 1: /* light */
-	XCopyPlane(xDisplay, *pieceToSolid(piece),
-		   dest, (int) piece < (int) BlackPawn
-		   ? wlPieceGC : blPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-      case 0: /* dark */
-	XCopyPlane(xDisplay, *pieceToSolid(piece),
-		   dest, (int) piece < (int) BlackPawn
-		   ? wdPieceGC : bdPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-      case 2: /* neutral */
-      default:
-	XCopyPlane(xDisplay, *pieceToSolid(piece),
-		   dest, (int) piece < (int) BlackPawn
-		   ? wjPieceGC : bjPieceGC, 0, 0,
-		   squareSize, squareSize, x, y, 1);
-	break;
-    }
 }
 
 static void colorDrawPieceImageGTK(piece, square_color, x, y, dest)
@@ -5027,7 +4062,7 @@ static void colorDrawPieceImageGTK(piece, square_color, x, y, dest)
 	break;
     }
     if(appData.upsideDown && flipView) { kind ^= 2; p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
-    if(useTexture & square_color+1) {        
+    if(square_color+1) {        
         BlankSquareGTK(x, y, square_color, piece, dest, 1); // erase previous contents with background        
 
         pb = getPixbuf(p);
@@ -5035,94 +4070,19 @@ static void colorDrawPieceImageGTK(piece, square_color, x, y, dest)
         //pb = SVGPawn;        
         if (boardwidgetGTK == NULL) return;  
         gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSizeGTK, squareSizeGTK, GDK_RGB_DITHER_NORMAL, 0, 0);        
-	//XSetClipMask(xDisplay, wlPieceGC, xpmMask[p]);
+	//XSetClipMask(xDisplay, wlPieceGC, xpmMa.0sk[p]);
 	//XSetClipOrigin(xDisplay, wlPieceGC, x, y);
 	//XCopyArea(xDisplay, xpmPieceBitmap[kind][piece], dest, wlPieceGC, 0, 0, squareSize, squareSize, x, y);
 	//XSetClipMask(xDisplay, wlPieceGC, None);
 	//XSetClipOrigin(xDisplay, wlPieceGC, 0, 0);
-    } else {
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
-	      dest, wlPieceGC, 0, 0,
-	      squareSize, squareSize, x, y);
     }
-}
-
-static void colorDrawPieceImage(piece, square_color, x, y, dest)
-     ChessSquare piece;
-     int square_color, x, y;
-     Drawable dest;
-{
-    int kind, p = piece;
-
-    switch (square_color) {
-      case 1: /* light */
-      case 2: /* neutral */
-      default:
-	if ((int)piece < (int) BlackPawn) {
-	    kind = 0;
-	} else {
-	    kind = 2;
-	    piece -= BlackPawn;
-	}
-	break;
-      case 0: /* dark */
-	if ((int)piece < (int) BlackPawn) {
-	    kind = 1;
-	} else {
-	    kind = 3;
-	    piece -= BlackPawn;
-	}
-	break;
-    }
-    if(appData.upsideDown && flipView) { kind ^= 2; p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
-    if(useTexture & square_color+1) {
-        BlankSquare(x, y, square_color, piece, dest, 1); // erase previous contents with background
-	XSetClipMask(xDisplay, wlPieceGC, xpmMask[p]);
-	XSetClipOrigin(xDisplay, wlPieceGC, x, y);
-	XCopyArea(xDisplay, xpmPieceBitmap[kind][piece], dest, wlPieceGC, 0, 0, squareSize, squareSize, x, y);
-	XSetClipMask(xDisplay, wlPieceGC, None);
-	XSetClipOrigin(xDisplay, wlPieceGC, 0, 0);
-    } else
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
-	      dest, wlPieceGC, 0, 0,
-	      squareSize, squareSize, x, y);
 }
 
 typedef void (*DrawFunc)();
 
-DrawFunc ChooseDrawFunc()
-{
-    if (appData.monoMode) {
-	if (DefaultDepth(xDisplay, xScreen) == 1) {
-	    return monoDrawPiece_1bit;
-	} else {
-	    return monoDrawPiece;
-	}
-    } else {
-	if (useImages)
-	  return colorDrawPieceImage;
-	else
-	  return colorDrawPiece;
-    }
-}
-
 DrawFunc ChooseDrawFuncGTK()
 {
     return colorDrawPieceImageGTK;
-/*
-    if (appData.monoMode) {
-	if (DefaultDepth(xDisplay, xScreen) == 1) {
-	    return monoDrawPiece_1bit;
-	} else {
-	    return monoDrawPiece;
-	}
-    } else {
-	if (useImages)
-	  return colorDrawPieceImage;
-	else
-	  return colorDrawPiece;
-    }
-*/
 }
 
 /* [HR] determine square color depending on chess variant. */
@@ -5226,123 +4186,6 @@ void DrawSquareGTK(row, column, piece, do_flash)
 					do_flash_delay(flash_delay);
 
 					BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
-					XSync(xDisplay, False);
-					do_flash_delay(flash_delay);
-			    }
-			}
-			drawfunc(piece, square_color, x, y, xBoardWindow);
-    	}
-	}
-
-    string[1] = NULLCHAR;
-    if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
-		&& column >= BOARD_LEFT && column < BOARD_RGHT) {
-	string[0] = 'a' + column - BOARD_LEFT;
-	XTextExtents(coordFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode) {
-	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			     x + squareSize - overall.width - 2,
-			     y + squareSize - font_descent - 1, string, 1);
-	} else {
-	    XDrawString(xDisplay, xBoardWindow, coordGC,
-			x + squareSize - overall.width - 2,
-			y + squareSize - font_descent - 1, string, 1);
-	}
-    }
-    if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT)) {
-	string[0] = ONE + row;
-	XTextExtents(coordFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode) {
-	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			     x + 2, y + font_ascent + 1, string, 1);
-	} else {
-	    XDrawString(xDisplay, xBoardWindow, coordGC,
-			x + 2, y + font_ascent + 1, string, 1);
-	}
-    }
-    if(!partnerUp && marker[row][column]) {
-	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC,
-		x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
-    }
-}
-
-void DrawSquare(row, column, piece, do_flash)
-     int row, column, do_flash;
-     ChessSquare piece;
-{
-    int square_color, x, y, direction, font_ascent, font_descent;
-    int i;
-    char string[2];
-    XCharStruct overall;
-    DrawFunc drawfunc;
-    int flash_delay;
-
-    /* Calculate delay in milliseconds (2-delays per complete flash) */
-    flash_delay = 500 / appData.flashRate;
-
-    if (flipView) {
-	x = lineGap + ((BOARD_WIDTH-1)-column) *
-	  (squareSize + lineGap);
-	y = lineGap + row * (squareSize + lineGap);
-    } else {
-	x = lineGap + column * (squareSize + lineGap);
-	y = lineGap + ((BOARD_HEIGHT-1)-row) *
-	  (squareSize + lineGap);
-    }
-
-    if(twoBoards && partnerUp) x += hOffset; // [HGM] dual: draw second board
-
-    square_color = SquareColor(row, column);
-
-    if ( // [HGM] holdings: blank out area between board and holdings
-                 column == BOARD_LEFT-1 ||  column == BOARD_RGHT
-              || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
-	          || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
-			BlankSquare(x, y, 2, EmptySquare, xBoardWindow, 1);
-
-			// [HGM] print piece counts next to holdings
-			string[1] = NULLCHAR;
-			if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
-			    string[0] = '0' + piece;
-			    XTextExtents(countFontStruct, string, 1, &direction,
-				 &font_ascent, &font_descent, &overall);
-			    if (appData.monoMode) {
-				XDrawImageString(xDisplay, xBoardWindow, countGC,
-						 x + squareSize - overall.width - 2,
-						 y + font_ascent + 1, string, 1);
-			    } else {
-				XDrawString(xDisplay, xBoardWindow, countGC,
-					    x + squareSize - overall.width - 2,
-					    y + font_ascent + 1, string, 1);
-			    }
-			}
-			if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
-			    string[0] = '0' + piece;
-			    XTextExtents(countFontStruct, string, 1, &direction,
-					 &font_ascent, &font_descent, &overall);
-			    if (appData.monoMode) {
-				XDrawImageString(xDisplay, xBoardWindow, countGC,
-						 x + 2, y + font_ascent + 1, string, 1);
-			    } else {
-				XDrawString(xDisplay, xBoardWindow, countGC,
-					    x + 2, y + font_ascent + 1, string, 1);
-			    }
-			}
-    } else {
-	    if (piece == EmptySquare || appData.blindfold) {
-			BlankSquare(x, y, square_color, piece, xBoardWindow, 1);
-	    } else {
-			drawfunc = ChooseDrawFunc();
-
-			if (do_flash && appData.flashCount > 0) {
-			    for (i=0; i<appData.flashCount; ++i) {
-					drawfunc(piece, square_color, x, y, xBoardWindow);
-					XSync(xDisplay, False);
-					do_flash_delay(flash_delay);
-
-					BlankSquare(x, y, square_color, piece, xBoardWindow, 1);
 					XSync(xDisplay, False);
 					do_flash_delay(flash_delay);
 			    }
@@ -6333,12 +5176,12 @@ void ModeHighlight()
     if (pausing != oldPausing) {
 	oldPausing = pausing;
 	if (pausing) {
-	    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+	  //	    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
 	} else {
-	    XtSetArg(args[0], XtNleftBitmap, None);
+	  //	    XtSetArg(args[0], XtNleftBitmap, None);
 	}
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Pause"),
-		    args, 1);
+	//	XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Pause"),
+	//	    args, 1);
 
 	if (appData.showButtonBar) {
 	  /* Always toggle, don't set.  Previous code messes up when
@@ -6364,12 +5207,12 @@ void ModeHighlight()
     }
     wname = ModeToWidgetName(gameMode);
     if (wname != NULL) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
     }
     oldmode = gameMode;
-    XtSetArg(args[0], XtNleftBitmap, matchMode && matchGame < appData.matchGames ? xMarkPixmap : None);
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Machine Match"), args, 1);
+    //    XtSetArg(args[0], XtNleftBitmap, matchMode && matchGame < appData.matchGames ? xMarkPixmap : None);
+    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Machine Match"), args, 1);
 
     /* Maybe all the enables should be handled here, not just this one */
     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Training"),
@@ -7373,7 +6216,7 @@ void PonderNextMoveProc(w, event, prms, nprms)
     PonderNextMoveEvent(!appData.ponderNextMove);
 #ifndef OPTIONSDIALOG
     if (appData.ponderNextMove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7394,7 +6237,7 @@ void AlwaysQueenProc(w, event, prms, nprms)
     appData.alwaysPromoteToQueen = !appData.alwaysPromoteToQueen;
 
     if (appData.alwaysPromoteToQueen) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7413,7 +6256,7 @@ void AnimateDraggingProc(w, event, prms, nprms)
     appData.animateDragging = !appData.animateDragging;
 
     if (appData.animateDragging) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
         CreateAnimVars();
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
@@ -7433,7 +6276,7 @@ void AnimateMovingProc(w, event, prms, nprms)
     appData.animate = !appData.animate;
 
     if (appData.animate) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
         CreateAnimVars();
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
@@ -7453,7 +6296,7 @@ void AutoflagProc(w, event, prms, nprms)
     appData.autoCallFlag = !appData.autoCallFlag;
 
     if (appData.autoCallFlag) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7472,7 +6315,7 @@ void AutoflipProc(w, event, prms, nprms)
     appData.autoFlipView = !appData.autoFlipView;
 
     if (appData.autoFlipView) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7491,7 +6334,7 @@ void BlindfoldProc(w, event, prms, nprms)
     appData.blindfold = !appData.blindfold;
 
     if (appData.blindfold) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7512,7 +6355,7 @@ void TestLegalityProc(w, event, prms, nprms)
     appData.testLegality = !appData.testLegality;
 
     if (appData.testLegality) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7536,7 +6379,7 @@ void FlashMovesProc(w, event, prms, nprms)
     }
 
     if (appData.flashCount > 0) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7556,7 +6399,7 @@ void HighlightDraggingProc(w, event, prms, nprms)
     appData.highlightDragging = !appData.highlightDragging;
 
     if (appData.highlightDragging) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7576,7 +6419,7 @@ void HighlightLastMoveProc(w, event, prms, nprms)
     appData.highlightLastMove = !appData.highlightLastMove;
 
     if (appData.highlightLastMove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7595,7 +6438,7 @@ void HighlightArrowProc(w, event, prms, nprms)
     appData.highlightMoveWithArrow = !appData.highlightMoveWithArrow;
 
     if (appData.highlightMoveWithArrow) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7615,7 +6458,7 @@ void IcsAlarmProc(w, event, prms, nprms)
     appData.icsAlarm = !appData.icsAlarm;
 
     if (appData.icsAlarm) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7635,7 +6478,7 @@ void MoveSoundProc(w, event, prms, nprms)
     appData.ringBellAfterMoves = !appData.ringBellAfterMoves;
 
     if (appData.ringBellAfterMoves) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7654,7 +6497,7 @@ void OneClickProc(w, event, prms, nprms)
     appData.oneClick = !appData.oneClick;
 
     if (appData.oneClick) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7673,7 +6516,7 @@ void PeriodicUpdatesProc(w, event, prms, nprms)
     PeriodicUpdatesEvent(!appData.periodicUpdates);
 
     if (appData.periodicUpdates) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7692,7 +6535,7 @@ void PopupExitMessageProc(w, event, prms, nprms)
     appData.popupExitMessage = !appData.popupExitMessage;
 
     if (appData.popupExitMessage) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7711,7 +6554,7 @@ void PopupMoveErrorsProc(w, event, prms, nprms)
     appData.popupMoveErrors = !appData.popupMoveErrors;
 
     if (appData.popupMoveErrors) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7731,7 +6574,7 @@ void PremoveProc(w, event, prms, nprms)
     appData.premove = !appData.premove;
 
     if (appData.premove) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7751,7 +6594,7 @@ void ShowCoordsProc(w, event, prms, nprms)
     appData.showCoords = !appData.showCoords;
 
     if (appData.showCoords) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7783,7 +6626,7 @@ void HideThinkingProc(w, event, prms, nprms)
     ShowThinkingEvent();
 
     if (appData.hideThinkingFromHuman) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7801,7 +6644,7 @@ void SaveOnExitProcGTK(object, user_data)
     saveSettingsOnExit = !saveSettingsOnExit;
 
     if (saveSettingsOnExit) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -7820,7 +6663,7 @@ void SaveOnExitProc(w, event, prms, nprms)
     saveSettingsOnExit = !saveSettingsOnExit;
 
     if (saveSettingsOnExit) {
-	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
+      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
 	XtSetArg(args[0], XtNleftBitmap, None);
     }
@@ -9151,93 +7994,6 @@ int OutputToProcessDelayed(pr, message, count, outError, msdelay)
 	this would be a major complication for minimal return.
 ****/
 
-/*	Masks for XPM pieces. Black and white pieces can have
-	different shapes, but in the interest of retaining my
-	sanity pieces must have the same outline on both light
-	and dark squares, and all pieces must use the same
-	background square colors/images.		*/
-
-static int xpmDone = 0;
-
-static void
-CreateAnimMasks (pieceDepth)
-     int pieceDepth;
-{
-  ChessSquare   piece;
-  Pixmap	buf;
-  GC		bufGC, maskGC;
-  int		kind, n;
-  unsigned long	plane;
-  XGCValues	values;
-
-  /* Need a bitmap just to get a GC with right depth */
-  buf = XCreatePixmap(xDisplay, xBoardWindow,
-			8, 8, 1);
-  values.foreground = 1;
-  values.background = 0;
-  /* Don't use XtGetGC, not read only */
-  maskGC = XCreateGC(xDisplay, buf,
-		    GCForeground | GCBackground, &values);
-  XFreePixmap(xDisplay, buf);
-
-  buf = XCreatePixmap(xDisplay, xBoardWindow,
-		      squareSize, squareSize, pieceDepth);
-  values.foreground = XBlackPixel(xDisplay, xScreen);
-  values.background = XWhitePixel(xDisplay, xScreen);
-  bufGC = XCreateGC(xDisplay, buf,
-		    GCForeground | GCBackground, &values);
-
-  for (piece = WhitePawn; piece <= BlackKing; piece++) {
-    /* Begin with empty mask */
-    if(!xpmDone) // [HGM] pieces: keep using existing
-    xpmMask[piece] = XCreatePixmap(xDisplay, xBoardWindow,
-				 squareSize, squareSize, 1);
-    XSetFunction(xDisplay, maskGC, GXclear);
-    XFillRectangle(xDisplay, xpmMask[piece], maskGC,
-		   0, 0, squareSize, squareSize);
-
-    /* Take a copy of the piece */
-    if (White(piece))
-      kind = 0;
-    else
-      kind = 2;
-    XSetFunction(xDisplay, bufGC, GXcopy);
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][((int)piece) % (int)BlackPawn],
-	      buf, bufGC,
-	      0, 0, squareSize, squareSize, 0, 0);
-
-    /* XOR the background (light) over the piece */
-    XSetFunction(xDisplay, bufGC, GXxor);
-    if (useImageSqs)
-      XCopyArea(xDisplay, xpmLightSquare, buf, bufGC,
-		0, 0, squareSize, squareSize, 0, 0);
-    else {
-      XSetForeground(xDisplay, bufGC, lightSquareColor);
-      XFillRectangle(xDisplay, buf, bufGC, 0, 0, squareSize, squareSize);
-    }
-
-    /* We now have an inverted piece image with the background
-       erased. Construct mask by just selecting all the non-zero
-       pixels - no need to reconstruct the original image.	*/
-    XSetFunction(xDisplay, maskGC, GXor);
-    plane = 1;
-    /* Might be quicker to download an XImage and create bitmap
-       data from it rather than this N copies per piece, but it
-       only takes a fraction of a second and there is a much
-       longer delay for loading the pieces.	   	*/
-    for (n = 0; n < pieceDepth; n ++) {
-      XCopyPlane(xDisplay, buf, xpmMask[piece], maskGC,
-		 0, 0, squareSize, squareSize,
-		 0, 0, plane);
-      plane = plane << 1;
-    }
-  }
-  /* Clean up */
-  XFreePixmap(xDisplay, buf);
-  XFreeGC(xDisplay, bufGC);
-  XFreeGC(xDisplay, maskGC);
-}
-
 static void
 InitAnimState (anim, info)
   AnimState * anim;
@@ -9270,6 +8026,8 @@ InitAnimState (anim, info)
   anim->outlineGC = None;
 }
 
+static int xpmDone=0;
+
 static void
 CreateAnimVars ()
 {
@@ -9282,9 +8040,6 @@ CreateAnimVars ()
   InitAnimState(&game, &info);
   InitAnimState(&player, &info);
 
-  /* For XPM pieces, we need bitmaps to use as masks. */
-  if (useImages)
-    CreateAnimMasks(info.depth), xpmDone = 1;
 }
 
 #ifndef HAVE_USLEEP
@@ -9510,19 +8265,6 @@ SelectGCMask(piece, clip, outline, mask)
 {
   GC source;
 
-  /* Bitmap for piece being moved. */
-  if (appData.monoMode) {
-      *mask = *pieceToSolid(piece);
-  } else if (useImages) {
-#if HAVE_LIBXPM
-      *mask = xpmMask[piece];
-#else
-      *mask = ximMaskPm[piece];
-#endif
-  } else {
-      *mask = *pieceToSolid(piece);
-  }
-
   /* GC for piece being moved. Square color doesn't matter, but
      since it gets modified we make a copy of the original. */
   if (White(piece)) {
@@ -9627,35 +8369,6 @@ OverlayPiece(piece, position, dest)
   return;
 }
 
-static void
-OverlayPiece2(piece, clip, outline,  dest)
-     ChessSquare piece; GC clip; GC outline; Drawable dest;
-{
-  int	kind;
-
-  if (!useImages) {
-    /* Draw solid rectangle which will be clipped to shape of piece */
-    XFillRectangle(xDisplay, dest, clip,
-		   0, 0, squareSize, squareSize);
-    if (appData.monoMode)
-      /* Also draw outline in contrasting color for black
-	 on black / white on white cases		*/
-      XCopyPlane(xDisplay, *pieceToOutline(piece), dest, outline,
-		 0, 0, squareSize, squareSize, 0, 0, 1);
-  } else {
-    /* Copy the piece */
-    if (White(piece))
-      kind = 0;
-    else
-      kind = 2;
-    if(appData.upsideDown && flipView) kind ^= 2;
-    XCopyArea(xDisplay, xpmPieceBitmap[kind][piece],
-	      dest, clip,
-	      0, 0, squareSize, squareSize,
-	      0, 0);
-  }
-}
-
 /* Animate the movement of a single piece */
 
 static void
@@ -9668,8 +8381,6 @@ BeginAnimation(anim, piece, startColor, start)
   Pixmap mask;
 
   if(appData.upsideDown && flipView) piece += piece < BlackPawn ? BlackPawn : -BlackPawn;
-  /* The old buffer is initialised with the start square (empty) */
-  BlankSquare(start->x, start->y, startColor, EmptySquare, anim->saveBuf, 0);
   /* not converted to GTK - causes the clicked on piece to flicker */
   //BlankSquareGTK(start->x, start->y, startColor, EmptySquare, anim->saveBuf, 0);
   anim->prevFrame = *start;

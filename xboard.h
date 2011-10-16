@@ -163,7 +163,7 @@ extern Arg layoutArgs[2], formArgs[2], messageArgs[4];
 extern Pixel timerForegroundPixel, timerBackgroundPixel;
 extern int searchTime;
 extern Atom wm_delete_window;
-extern int squareSize, lineGap, lineGapGTK, defaultLineGap, useImages, useImageSqs;
+extern int squareSize, lineGap, lineGapGTK, defaultLineGap;
 extern int startedFromPositionFile;
 extern char *icsTextMenuString;
 extern char ICSInputTranslations[];
