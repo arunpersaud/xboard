@@ -1114,10 +1114,10 @@
               <object class="GtkDrawingArea" id="boardwidgetGTK">
                 <property name="visible">True</property>
                 <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
-                <signal name="button_press_event" handler="HandleUserMoveGTK"/>
+                <signal name="button_press_event" handler="ButtonPressProc"/>
                 <signal name="configure_event" handler="ConfigureProc"/>
                 <signal name="expose_event" handler="EventProcGTK"/>
-                <signal name="button_release_event" handler="HandleUserMoveGTK"/>
+                <signal name="button_release_event" handler="ButtonPressProc"/>
                 <signal name="motion_notify_event" handler="AnimateUserMove"/>
               </object>
             </child>

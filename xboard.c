@@ -280,7 +280,8 @@ void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
 gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data));
 void EventProc P((Widget widget, caddr_t unused, XEvent *event));
 void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
-gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEvent *event, gpointer data));
+gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
+gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
 void HandleUserMove P((Widget w, XEvent *event,
 		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
@@ -2365,7 +2366,7 @@ XBoard square size (hint): %d\n\
 
     mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));         
     boardwidgetGTK  = GTK_WIDGET(gtk_builder_get_object (builder, "boardwidgetGTK"));
-    if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");    
+    if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");     
 
     /* set board bg color to black */
     GdkColor color;  
@@ -4372,6 +4373,110 @@ void SetupDropMenu()
     }
 }
 
+
+/* callback when user clicks on an edit position popup menu item */
+gboolean PieceMenuSelectGTK(w, eventkey, gdata)
+     GtkWidget *w;
+     GdkEventKey  *eventkey;
+     gpointer  gdata;
+{
+    int piece = (intptr_t) gdata;
+
+    if (pmFromX < 0 || pmFromY < 0) return;
+    EditPositionMenuEvent(piece, pmFromX, pmFromY);
+}
+
+gboolean PieceMenuPopupGTK(window, eventbutton, data)
+     GtkWindow *window;
+     GdkEventButton *eventbutton;
+     gpointer data;
+{
+    String whichMenu; int menuNr = -2;
+    int black = -1, white = 0;
+    ChessSquare selection;
+
+    switch(eventbutton->button) {      
+      case 2:                                           // button press on button 2 (middle button)
+        if (eventbutton->state & GDK_SHIFT_MASK) {
+            shiftKey = black;            
+        } else {
+            shiftKey = white;            
+        }       
+        break;
+      case 3:                                           // button press on button 3 (right button) 
+        if (eventbutton->state & GDK_SHIFT_MASK) {            
+            shiftKey = white;            
+        } else {                      
+            shiftKey = black;
+        }        
+        break;
+      default:        
+        break;             
+    }
+    
+    if (eventbutton->type == GDK_BUTTON_RELEASE)     
+        menuNr = RightClick(Release, eventbutton->x, eventbutton->y, &pmFromX, &pmFromY);
+    else if (eventbutton->type == GDK_BUTTON_PRESS)
+        menuNr = RightClick(Press,   eventbutton->x, eventbutton->y, &pmFromX, &pmFromY);
+
+    switch(menuNr) {
+      case 0:
+        if (shiftKey == white) {
+            whichMenu = "menuW";
+        } else {
+            whichMenu = "menuB";
+        } 
+        break;
+      case 1: SetupDropMenu(); whichMenu = "menuD"; break;
+      case 2:
+      case -1: if (errorUp) ErrorPopDown();
+      default: return;
+    }
+
+    GtkWidget *menu;    
+    menu = gtk_menu_new();
+
+    int i;
+    for (i = 0; i < PIECE_MENU_SIZE; i++) {
+        int color;
+        GtkWidget *mi; // menuitem
+
+        if (shiftKey == white) {
+            color = 0;  // white
+        } else {
+            color = 1;  // black          
+        }
+
+        String item = pieceMenuStrings[color][i];        
+
+        if (strcmp(item, "----") == 0) {
+            mi = gtk_separator_menu_item_new();      // separator           
+        } else {
+            mi = gtk_menu_item_new_with_label(item); // menuitem           
+        }
+
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(mi));
+        gtk_widget_show(mi);
+
+        selection = pieceMenuTranslation[color][i];
+
+        g_signal_connect(mi, "button-press-event",
+                      G_CALLBACK(PieceMenuSelectGTK),
+                      (gpointer)(intptr_t) selection);         
+    }
+
+    gtk_menu_popup(GTK_MENU(menu),
+                   NULL,
+                   NULL,
+                   NULL,
+                   NULL,
+                   eventbutton->button,
+                   eventbutton->time);
+
+    gtk_widget_show(menu); 
+
+}
+
 void PieceMenuPopup(w, event, params, num_params)
      Widget w;
      XEvent *event;
@@ -5776,6 +5881,23 @@ void DrawPositionProc(w, event, prms, nprms)
     XDrawPosition(w, True, NULL);
 }
 
+gboolean ButtonPressProc(window, eventbutton, data)
+     GtkWindow *window;
+     GdkEventButton  *eventbutton;
+     gpointer data;
+{
+    switch(eventbutton->button) {
+      case 1:
+        HandleUserMoveGTK(window, eventbutton, data);   // button press or release on button 1 (left button)      
+        break;
+      case 2:
+      case 3:
+        PieceMenuPopupGTK(window, eventbutton, data);   // button press or release on button 2/3 (middle/right buton)      
+        break;
+      default:        
+        break;             
+    }    
+}
 
 /*
  * event handler for parsing user moves
@@ -5788,9 +5910,9 @@ void DrawPositionProc(w, event, prms, nprms)
 //       and at the end FinishMove() to perform the move after optional promotion popups.
 //       For now I patched it to allow self-capture with King, and suppress clicks between board and holdings.
 
-gboolean HandleUserMoveGTK(window, event, data)
+gboolean HandleUserMoveGTK(window, eventbutton, data)
      GtkWindow *window;
-     GdkEvent *event;
+     GdkEventButton *eventbutton;
      gpointer data;
 {
     //if (w != boardWidget || errorExitStatus != -1) return;
@@ -5798,7 +5920,7 @@ gboolean HandleUserMoveGTK(window, event, data)
     //if(nprms) shiftKey = !strcmp(prms[0], "1");
 
     if (promotionUp) {	
-        if (event->type == GDK_BUTTON_PRESS) {
+        if (eventbutton->type == GDK_BUTTON_PRESS) {
 	    //XtPopdown(promotionShell);
 	    //XtDestroyWidget(promotionShell);
 	    //promotionUp = False;
@@ -5811,8 +5933,8 @@ gboolean HandleUserMoveGTK(window, event, data)
     }
 
     // [HGM] mouse: the rest of the mouse handler is moved to the backend, and called here
-    if(event->type == GDK_BUTTON_PRESS)   LeftClick(Press,   (int)event->button.x, (int)event->button.y);
-    if(event->type == GDK_BUTTON_RELEASE) LeftClick(Release, (int)event->button.x, (int)event->button.y);
+    if(eventbutton->type == GDK_BUTTON_PRESS)   LeftClick(Press,   (int)eventbutton->x, (int)eventbutton->y);
+    if(eventbutton->type == GDK_BUTTON_RELEASE) LeftClick(Release, (int)eventbutton->x, (int)eventbutton->y);
 
     //if(event->type == ButtonPress)   LeftClick(Press,   event->xbutton.x, event->xbutton.y);
     //if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
