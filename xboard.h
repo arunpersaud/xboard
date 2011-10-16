@@ -157,7 +157,7 @@ extern Widget formWidget, shellWidget, boardWidget, menuBarWidget, gameListShell
 extern Display *xDisplay;
 extern Window xBoardWindow;
 extern int squareSize;
-extern Pixmap xMarkPixmap, wIconPixmap, bIconPixmap;
+extern Pixmap xMarkPixmap;
 extern char *layoutName;
 extern Arg layoutArgs[2], formArgs[2], messageArgs[4];
 extern Pixel timerForegroundPixel, timerBackgroundPixel;

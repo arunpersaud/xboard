@@ -430,7 +430,7 @@ Pixel lowTimeWarningColor;
 GC lightSquareGC, darkSquareGC, jailSquareGC, lineGC, wdPieceGC, wlPieceGC,
   bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
   wjPieceGC, bjPieceGC, prelineGC, countGC;
-Pixmap iconPixmap, wIconPixmap, bIconPixmap, xMarkPixmap;
+Pixmap  xMarkPixmap;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
@@ -465,6 +465,10 @@ GtkWidget       *messageWidgetGTK=NULL;
 GtkWidget       *menubarGTK=NULL;
 
 /* pixbufs */
+GdkPixbuf       *mainwindowIcon=NULL;
+GdkPixbuf       *WhiteIcon=NULL;
+GdkPixbuf       *BlackIcon=NULL;
+
 GdkPixbuf       *SVGLightSquare=NULL;
 GdkPixbuf       *SVGDarkSquare=NULL;
 GdkPixbuf       *SVGNeutralSquare=NULL;
@@ -2366,6 +2370,14 @@ XBoard square size (hint): %d\n\
     gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), boardWidth, boardHeight);
     gtk_builder_connect_signals(builder, NULL);
     //g_object_unref (G_OBJECT(builder));
+
+
+    /* use two icons to indicate if it is white's or black's turn */
+    WhiteIcon  = load_pixbuf("icon_white.svg",0);
+    BlackIcon  = load_pixbuf("icon_black.svg",0);
+    mainwindowIcon = WhiteIcon;
+    gtk_window_set_icon(GTK_WINDOW(mainwindow),mainwindowIcon);
+
     gtk_widget_show(mainwindow);    
 
     /* set the minimum size the user can resize the main window to */
@@ -2732,18 +2744,6 @@ XBoard square size (hint): %d\n\
 	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
 		    args, 1);
     }
-
-    /*
-     * Create an icon.
-     */
-    ReadBitmap(&wIconPixmap, "icon_white.bm",
-	       icon_white_bits, icon_white_width, icon_white_height);
-    ReadBitmap(&bIconPixmap, "icon_black.bm",
-	       icon_black_bits, icon_black_width, icon_black_height);
-    iconPixmap = wIconPixmap;
-    i = 0;
-    XtSetArg(args[i], XtNiconPixmap, iconPixmap);  i++;
-    XtSetValues(shellWidget, args, i);
 
     /*
      * Create a cursor for the board widget.
@@ -8680,76 +8680,17 @@ DisplayTimerLabelGTK(w, color, timer, highlight)
 }
 
 void
-DisplayTimerLabel(w, color, timer, highlight)
-     Widget w;
-     char *color;
-     long timer;
-     int highlight;
-{
-    char buf[MSG_SIZ];
-    Arg args[16];
-
-    /* check for low time warning */
-    Pixel foregroundOrWarningColor = timerForegroundPixel;
-
-    if (timer > 0 &&
-        appData.lowTimeWarning &&
-        (timer / 1000) < appData.icsAlarmTime)
-      foregroundOrWarningColor = lowTimeWarningColor;
-
-    if (appData.clockMode) {
-      snprintf(buf, MSG_SIZ, "%s: %s", color, TimeString(timer));
-      XtSetArg(args[0], XtNlabel, buf);
-    } else {
-      snprintf(buf, MSG_SIZ, "%s  ", color);
-      XtSetArg(args[0], XtNlabel, buf);
-    }
-
-    if (highlight) {
-
-	XtSetArg(args[1], XtNbackground, foregroundOrWarningColor);
-	XtSetArg(args[2], XtNforeground, timerBackgroundPixel);
-    } else {
-	XtSetArg(args[1], XtNbackground, timerBackgroundPixel);
-	XtSetArg(args[2], XtNforeground, foregroundOrWarningColor);
-    }
-
-    XtSetValues(w, args, 3);
-}
-
-void
-DisplayWhiteClockGTK(timeRemaining, highlight)
+DisplayWhiteClock(timeRemaining, highlight)
      long timeRemaining;
      int highlight;
 {
     if(appData.noGUI) return;
     DisplayTimerLabelGTK(whiteTimerWidgetGTK, _("White"), timeRemaining, highlight);
-}
-
-void
-DisplayWhiteClock(timeRemaining, highlight)
-     long timeRemaining;
-     int highlight;
-{
-    Arg args[16];
-
-    if(appData.noGUI) return;
-    DisplayWhiteClockGTK(timeRemaining, highlight);
-    DisplayTimerLabel(whiteTimerWidget, _("White"), timeRemaining, highlight);
-    if (highlight && iconPixmap == bIconPixmap) {
-	iconPixmap = wIconPixmap;
-	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
-	XtSetValues(shellWidget, args, 1);
-    }
-}
-
-void
-DisplayBlackClockGTK(timeRemaining, highlight)
-     long timeRemaining;
-     int highlight;
-{
-    if(appData.noGUI) return;
-    DisplayTimerLabelGTK(blackTimerWidgetGTK, _("Black"), timeRemaining, highlight);
+    if (highlight && mainwindowIcon == BlackIcon)
+      {
+	mainwindowIcon = WhiteIcon;
+	gtk_window_set_icon(GTK_WINDOW(mainwindow),mainwindowIcon);
+      }
 }
 
 void
@@ -8757,16 +8698,14 @@ DisplayBlackClock(timeRemaining, highlight)
      long timeRemaining;
      int highlight;
 {
-    Arg args[16];
-
     if(appData.noGUI) return;
-    DisplayBlackClockGTK(timeRemaining, highlight);
-    DisplayTimerLabel(blackTimerWidget, _("Black"), timeRemaining, highlight);
-    if (highlight && iconPixmap == wIconPixmap) {
-	iconPixmap = bIconPixmap;
-	XtSetArg(args[0], XtNiconPixmap, iconPixmap);
-	XtSetValues(shellWidget, args, 1);
-    }
+    DisplayTimerLabelGTK(blackTimerWidgetGTK, _("Black"), timeRemaining, highlight);
+
+    if (highlight && mainwindowIcon == WhiteIcon)
+      {
+        mainwindowIcon = BlackIcon;
+        gtk_window_set_icon(GTK_WINDOW(mainwindow),mainwindowIcon);
+      }
 }
 
 #define CPNone 0
