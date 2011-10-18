@@ -254,7 +254,6 @@ void PieceMenuPopup P((Widget w, XEvent *event,
 		       String *params, Cardinal *num_params));
 static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
-void CreateGrid P((void));
 int EventToSquare P((int x, int limit));
 void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
 void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
@@ -418,9 +417,6 @@ Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
 GtkWidget *errorShell = NULL, *promotionShellGTK;
 Widget historyShell, evalGraphShell, gameListShell;
 int hOffset; // [HGM] dual
-XSegment secondSegments[BOARD_RANKS + BOARD_FILES + 2];
-XSegment gridSegments[BOARD_RANKS + BOARD_FILES + 2];
-XSegment jailGridSegments[BOARD_RANKS + BOARD_FILES + 6];
 #if ENABLE_NLS
 XFontSet fontSet, clockFontSet;
 #else
@@ -434,7 +430,7 @@ char *layoutName;
 char *oldICSInteractionTitle;
 
 /* GTK stuff */
-GtkBuilder      *builder; 
+GtkBuilder      *builder;
 GtkWidget       *mainwindow;
 GtkWidget       *boardwidgetGTK=NULL;
 GtkWidget       *boardaspect=NULL;
@@ -607,7 +603,7 @@ MenuItem viewMenu[] = {
     {N_("Flip View             F2"),         "Flip View", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Engine Output      Alt+Shift+O"),   "Show Engine Output", NothingProc},
-    {N_("Move History       Alt+Shift+H"),   "Show Move History", NothingProc}, 
+    {N_("Move History       Alt+Shift+H"),   "Show Move History", NothingProc},
     {N_("Evaluation Graph  Alt+Shift+E"),    "Show Evaluation Graph", EvalGraphProc},
     {N_("Game List            Alt+Shift+G"), "Show Game List", ShowGameListProc},
     {N_("ICS text menu"), "ICStex", NothingProc},
@@ -1380,7 +1376,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
     Arg args[16];
     XtGeometryResult gres;
-    int i;    
+    int i;
 
     if(!formWidget) return;
 
@@ -1388,8 +1384,8 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     gtk_window_resize(GTK_WINDOW(mainwindow), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK + xMargin,
                                               BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK + yMargin);
     gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK,
-                                              BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK);   
-    
+                                              BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK);
+
     /*
      * Enable shell resizing.
      */
@@ -1406,13 +1402,7 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    CreateGrid();
-    hOffset = boardWidth + 10;
-    for(i=0; i<BOARD_WIDTH+BOARD_HEIGHT+2; i++) { // [HGM] dual: grid for second board
-	secondSegments[i] = gridSegments[i];
-	secondSegments[i].x1 += hOffset;
-	secondSegments[i].x2 += hOffset;
-    }
+    hOffset = boardWidth + 10; /* used for second board */
 
     XtSetArg(args[0], XtNwidth, boardWidth);
     XtSetArg(args[1], XtNheight, boardHeight);
@@ -1567,24 +1557,24 @@ void SetPieceColor(GdkPixbuf *pb)
 
     int width, height, rowstride, n_channels;
     guchar *pixels, *p;
-    int x, y;    
+    int x, y;
     int col, r, g, b, i;
 
     /* RGB for black as used in the pieces in SVG folder */
-    guchar blackRGB[2][3] = { {0, 0, 0}, {3, 3, 2} };          
-    
+    guchar blackRGB[2][3] = { {0, 0, 0}, {3, 3, 2} };
+
     /* RGB for white as used in the pieces in SVG folder */
-    guchar whiteRGB[2][3] = { {0xff, 0xff, 0xcc}, {0xfc, 0xfc, 0xca} };     
+    guchar whiteRGB[2][3] = { {0xff, 0xff, 0xcc}, {0xfc, 0xfc, 0xca} };
 
     /* RGB of new colour held in appData.blackPieceColor */
-    guchar newBlackR;  
+    guchar newBlackR;
     guchar newBlackG;
     guchar newBlackB;
 
     /* RGB of new colour held in appData.whitePieceColor */
-    guchar newWhiteR;  
+    guchar newWhiteR;
     guchar newWhiteG;
-    guchar newWhiteB;   
+    guchar newWhiteB;
 
     n_channels = gdk_pixbuf_get_n_channels(pb);
     width = gdk_pixbuf_get_width(pb);
@@ -1596,9 +1586,9 @@ void SetPieceColor(GdkPixbuf *pb)
     g_assert(n_channels == 4);
 
     rowstride = gdk_pixbuf_get_rowstride(pb);
-    pixels = gdk_pixbuf_get_pixels(pb);    
+    pixels = gdk_pixbuf_get_pixels(pb);
 
-    /* get RGB of new white colour */ 
+    /* get RGB of new white colour */
     sscanf(appData.whitePieceColor, "#%x", &col);
     b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
     newWhiteB = b;
@@ -1610,8 +1600,8 @@ void SetPieceColor(GdkPixbuf *pb)
     b = col & 0xFF; g = col & 0xFF00; r = col & 0xFF0000;
     newBlackB = b;
     newBlackG = g >> 8;
-    newBlackR = r >> 16;   
-        
+    newBlackR = r >> 16;
+
     /* change the colors to the new values in the pixbuf */
     x = y = 0;
     for (x=0;x<width;x++) {
@@ -1622,7 +1612,7 @@ void SetPieceColor(GdkPixbuf *pb)
                     p[0] = newBlackR;
                     p[1] = newBlackG;
                     p[2] = newBlackB;
-                    break;       
+                    break;
                 }
                 else if (p[0] == whiteRGB[i][0] && p[1] == whiteRGB[i][1] && p[2] == whiteRGB[i][2]) {
                     p[0] = newWhiteR;
@@ -1637,50 +1627,50 @@ void SetPieceColor(GdkPixbuf *pb)
 
 void LoadSvgFiles()
 {
-    guint32 pixel;    
-    
-    SVGNeutralSquare = load_pixbuf("NeutralSquare.svg", 0);    
+    guint32 pixel;
+
+    SVGNeutralSquare = load_pixbuf("NeutralSquare.svg", 0);
 
     /* Load background squares from texture files */
     /* At the moment these have to be svg files. It will work with other files */
-    /* including xpm files but board resizing will be slow */ 
-    
-    /* set up dark square from texture file */ 
+    /* including xpm files but board resizing will be slow */
+
+    /* set up dark square from texture file */
     if (appData.darkBackTextureFile == NULL) {
       SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not set - use default
     }
-    else if (strstr(appData.darkBackTextureFile, ".svg") == NULL) {  
+    else if (strstr(appData.darkBackTextureFile, ".svg") == NULL) {
       SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not svg - use default
     }
     else {
       // texture file is an svg file - try and load it
       SVGDarkSquare = gdk_pixbuf_new_from_file(appData.darkBackTextureFile, NULL);
-      if (SVGDarkSquare == NULL) {             
-	SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); // texture file failed to load - use default            
+      if (SVGDarkSquare == NULL) {
+	SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); // texture file failed to load - use default
       }
-    } 
-    
-    /* set up light square from texture file */ 
-    if (appData.liteBackTextureFile == NULL) {          
+    }
+
+    /* set up light square from texture file */
+    if (appData.liteBackTextureFile == NULL) {
       SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not set - use default
     }
-    else if (strstr(appData.liteBackTextureFile, ".svg") == NULL) {             
+    else if (strstr(appData.liteBackTextureFile, ".svg") == NULL) {
       SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not svg - use default
     }
     else {
-      // texture file is an svg file - try and load it            
+      // texture file is an svg file - try and load it
       SVGLightSquare = gdk_pixbuf_new_from_file(appData.liteBackTextureFile, NULL);
-      if (SVGLightSquare == NULL) {                                  
+      if (SVGLightSquare == NULL) {
 	SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file failed to load - use default
       }
-    }         
+    }
 
     SVGWhitePawn     = load_pixbuf("WhitePawn.svg", 0);
     SVGWhiteKnight   = load_pixbuf("WhiteKnight.svg", 0);
     SVGWhiteBishop   = load_pixbuf("WhiteBishop.svg", 0);
     SVGWhiteRook     = load_pixbuf("WhiteRook.svg", 0);
-    SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg", 0);    
-    SVGWhiteKing     = load_pixbuf("WhiteKing.svg", 0);    
+    SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg", 0);
+    SVGWhiteKing     = load_pixbuf("WhiteKing.svg", 0);
 
     //LoadBlackPieces
     SVGBlackPawn     = load_pixbuf("BlackPawn.svg", 0);
@@ -1723,9 +1713,9 @@ main(argc, argv)
     XrmDatabase xdb;
     int forceMono = False;
     char *filename;
-    GError *gtkerror=NULL;    
-    
-    gfloat ar; /* board aspect ratio */ 
+    GError *gtkerror=NULL;
+
+    gfloat ar; /* board aspect ratio */
 
     srandom(time(0)); // [HGM] book: make random truly random
 
@@ -1891,13 +1881,13 @@ main(argc, argv)
     if(!fontIsSet[MESSAGE_FONT] && fontValid[MESSAGE_FONT][squareSize])
 	appData.font = fontTable[MESSAGE_FONT][squareSize];
     if(!fontIsSet[COORD_FONT] && fontValid[COORD_FONT][squareSize])
-	appData.coordFont = fontTable[COORD_FONT][squareSize];   
+	appData.coordFont = fontTable[COORD_FONT][squareSize];
 
     defaultLineGap = lineGap;
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
 
     squareSizeGTK = squareSize;
-    lineGapGTK = lineGap;    
+    lineGapGTK = lineGap;
 
     /* [HR] height treated separately (hacked) */
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
@@ -2010,12 +2000,12 @@ main(argc, argv)
     /* load square colors and pieces */
     LoadSvgFiles();
 
-    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));         
+    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));
     boardwidgetGTK  = GTK_WIDGET(gtk_builder_get_object (builder, "boardwidgetGTK"));
-    if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");     
+    if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");
 
     /* set board bg color to black */
-    GdkColor color;  
+    GdkColor color;
     //gdk_color_parse( "#000000", &color );
     //gdk_color_parse ("black", &color);
     gdk_color_parse ("white", &color);
@@ -2030,7 +2020,7 @@ main(argc, argv)
     menubarGTK  = GTK_WIDGET (gtk_builder_get_object (builder, "MenuBar"));
 
     boardaspect = GTK_WIDGET(gtk_builder_get_object (builder, "boardaspect"));
-    ar = (float) BOARD_WIDTH / BOARD_HEIGHT;   
+    ar = (float) BOARD_WIDTH / BOARD_HEIGHT;
     gtk_aspect_frame_set(GTK_ASPECT_FRAME(boardaspect), 0.5, 0.5, ar, TRUE);
 
     gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), boardWidth, boardHeight);
@@ -2044,13 +2034,13 @@ main(argc, argv)
     mainwindowIcon = WhiteIcon;
     gtk_window_set_icon(GTK_WINDOW(mainwindow),mainwindowIcon);
 
-    gtk_widget_show(mainwindow);    
+    gtk_widget_show(mainwindow);
 
     /* set the minimum size the user can resize the main window to */
     gtk_widget_set_size_request(mainwindow, 402, 314);
-  { gint wx, hx, wb, hb;    
+  { gint wx, hx, wb, hb;
     gtk_window_get_size(GTK_WINDOW(mainwindow), &wx, &hx);
-    gdk_drawable_get_size(boardwidgetGTK->window, &wb, &hb);    
+    gdk_drawable_get_size(boardwidgetGTK->window, &wb, &hb);
     xMargin = wx - wb; yMargin = hx - hb;
   }
     /*
@@ -2428,7 +2418,6 @@ main(argc, argv)
     marginH =  h - boardHeight;
 
     CreateGCs(False);
-    CreateGrid();
 
     CreatePieceMenus();
 
@@ -2493,7 +2482,7 @@ main(argc, argv)
 	  XEvent event;
 	  XtInputMask mask;
 	  int i;
-	  
+
 	  while (!(mask = XtAppPending(appContext)) && !gtk_events_pending())
 	    poll(NULL,0,100);
 	  if (mask & XtIMXEvent) {
@@ -3306,7 +3295,7 @@ void CreateGridGTK()
         y1 = y2 = lineGapGTK / 2 + (i * (squareSizeGTK + lineGapGTK));
         cairo_move_to(cr, x1, y1);
         cairo_line_to(cr, x2, y2);
-        cairo_stroke(cr);        
+        cairo_stroke(cr);
     }
 
     for (j = 0; j < BOARD_WIDTH + 1; j++) {
@@ -3315,7 +3304,7 @@ void CreateGridGTK()
         x1 = x2 = lineGapGTK / 2 + (j * (squareSizeGTK + lineGapGTK));;
         cairo_move_to(cr, x1, y1);
         cairo_line_to(cr, x2, y2);
-        cairo_stroke(cr);       
+        cairo_stroke(cr);
     }
 
     /* free memory */
@@ -3324,29 +3313,48 @@ void CreateGridGTK()
     return;
 }
 
-void CreateGrid()
+void CreateSecondGridGTK()
 {
-    int i, j;   
+    /* draws a grid starting around Nx, Ny squares starting at x,y */
+    int i,j;
 
-    if (lineGap == 0) return;
+    int x1,x2,y1,y2;
+    cairo_t *cr;
+
+    if (lineGapGTK == 0) return;
+
+    /* get a cairo_t */
+    cr = gdk_cairo_create(GDK_WINDOW(boardwidgetGTK->window));
+
+    cairo_set_line_width (cr, lineGapGTK);
+
+    /* TODO: use appdata colors */
+    cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
 
     /* [HR] Split this into 2 loops for non-square boards. */
 
     for (i = 0; i < BOARD_HEIGHT + 1; i++) {
-        gridSegments[i].x1 = 0;
-        gridSegments[i].x2 =
-          lineGap + BOARD_WIDTH * (squareSize + lineGap);
-        gridSegments[i].y1 = gridSegments[i].y2
-          = lineGap / 2 + (i * (squareSize + lineGap));
+        x1 = hOffset;
+        x2 = hOffset + lineGapGTK + BOARD_WIDTH * (squareSizeGTK + lineGapGTK);
+        y1 = y2 = lineGapGTK / 2 + (i * (squareSizeGTK + lineGapGTK));
+        cairo_move_to(cr, x1, y1);
+        cairo_line_to(cr, x2, y2);
+        cairo_stroke(cr);
     }
 
     for (j = 0; j < BOARD_WIDTH + 1; j++) {
-        gridSegments[j + i].y1 = 0;
-        gridSegments[j + i].y2 =
-          lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-        gridSegments[j + i].x1 = gridSegments[j + i].x2
-          = lineGap / 2 + (j * (squareSize + lineGap));
+        y1 = 0;
+        y2 = lineGapGTK + BOARD_HEIGHT * (squareSizeGTK + lineGapGTK);
+        x1 = x2 = hOffset + lineGapGTK / 2 + (j * (squareSizeGTK + lineGapGTK));;
+        cairo_move_to(cr, x1, y1);
+        cairo_line_to(cr, x2, y2);
+        cairo_stroke(cr);
     }
+
+    /* free memory */
+    cairo_destroy (cr);
+
+    return;
 }
 
 static void MenuBarSelect(w, addr, index)
@@ -3582,26 +3590,26 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
     int black = -1, white = 0;
     ChessSquare selection;
 
-    switch(eventbutton->button) {      
+    switch(eventbutton->button) {
       case 2:                                           // button press on button 2 (middle button)
         if (eventbutton->state & GDK_SHIFT_MASK) {
-            shiftKey = black;            
-        } else {
-            shiftKey = white;            
-        }       
-        break;
-      case 3:                                           // button press on button 3 (right button) 
-        if (eventbutton->state & GDK_SHIFT_MASK) {            
-            shiftKey = white;            
-        } else {                      
             shiftKey = black;
-        }        
+        } else {
+            shiftKey = white;
+        }
         break;
-      default:        
-        break;             
+      case 3:                                           // button press on button 3 (right button)
+        if (eventbutton->state & GDK_SHIFT_MASK) {
+            shiftKey = white;
+        } else {
+            shiftKey = black;
+        }
+        break;
+      default:
+        break;
     }
-    
-    if (eventbutton->type == GDK_BUTTON_RELEASE)     
+
+    if (eventbutton->type == GDK_BUTTON_RELEASE)
         menuNr = RightClick(Release, eventbutton->x, eventbutton->y, &pmFromX, &pmFromY);
     else if (eventbutton->type == GDK_BUTTON_PRESS)
         menuNr = RightClick(Press,   eventbutton->x, eventbutton->y, &pmFromX, &pmFromY);
@@ -3612,7 +3620,7 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
             whichMenu = "menuW";
         } else {
             whichMenu = "menuB";
-        } 
+        }
         break;
       case 1: SetupDropMenu(); whichMenu = "menuD"; break;
       case 2:
@@ -3620,7 +3628,7 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
       default: return;
     }
 
-    GtkWidget *menu;    
+    GtkWidget *menu;
     menu = gtk_menu_new();
 
     int i;
@@ -3631,15 +3639,15 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
         if (shiftKey == white) {
             color = 0;  // white
         } else {
-            color = 1;  // black          
+            color = 1;  // black
         }
 
-        String item = pieceMenuStrings[color][i];        
+        String item = pieceMenuStrings[color][i];
 
         if (strcmp(item, "----") == 0) {
-            mi = gtk_separator_menu_item_new();      // separator           
+            mi = gtk_separator_menu_item_new();      // separator
         } else {
-            mi = gtk_menu_item_new_with_label(item); // menuitem           
+            mi = gtk_menu_item_new_with_label(item); // menuitem
         }
 
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(mi));
@@ -3649,7 +3657,7 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
 
         g_signal_connect(mi, "button-press-event",
                       G_CALLBACK(PieceMenuSelectGTK),
-                      (gpointer)(intptr_t) selection);         
+                      (gpointer)(intptr_t) selection);
     }
 
     gtk_menu_popup(GTK_MENU(menu),
@@ -3660,7 +3668,7 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
                    eventbutton->button,
                    eventbutton->time);
 
-    gtk_widget_show(menu); 
+    gtk_widget_show(menu);
 
 }
 
@@ -3791,9 +3799,9 @@ drawHighlightGTK(file, rank, line_type)
 
   cairo_set_line_width (cr, lineGapGTK);
   switch(line_type)
-    {      
-    case LINE_TYPE_HIGHLIGHT:           
-      sscanf(appData.highlightSquareColor, "#%x", &col);     
+    {
+    case LINE_TYPE_HIGHLIGHT:
+      sscanf(appData.highlightSquareColor, "#%x", &col);
 
       tmp = (col & 0x00ff0000) >> 16;
       r = (gdouble)tmp;
@@ -3805,12 +3813,12 @@ drawHighlightGTK(file, rank, line_type)
 
       tmp = (col & 0x000000ff);
       b = (gdouble)tmp;
-      b = b / 255;     
-   
-      cairo_set_source_rgba (cr, r, g, b, 1.0);      
+      b = b / 255;
+
+      cairo_set_source_rgba (cr, r, g, b, 1.0);
       break;
     case LINE_TYPE_PRE:
-      sscanf(appData.premoveHighlightColor, "#%x", &col);     
+      sscanf(appData.premoveHighlightColor, "#%x", &col);
 
       tmp = (col & 0x00ff0000) >> 16;
       r = (gdouble)tmp;
@@ -3822,8 +3830,8 @@ drawHighlightGTK(file, rank, line_type)
 
       tmp = (col & 0x000000ff);
       b = (gdouble)tmp;
-      b = b / 255;     
-      cairo_set_source_rgba (cr, r, g, b, 1.0);      
+      b = b / 255;
+      cairo_set_source_rgba (cr, r, g, b, 1.0);
       break;
     case LINE_TYPE_NORMAL:
     default:
@@ -3947,12 +3955,12 @@ static void BlankSquareGTK(x, y, color, piece, dest, fac)
     }
 
     if (!GTK_IS_WIDGET(boardwidgetGTK)) {
-        printf("boardwidgetGTK not valid\n"); 
+        printf("boardwidgetGTK not valid\n");
         return;
-    }    
+    }
 
     gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSizeGTK, squareSizeGTK, GDK_RGB_DITHER_NORMAL, 0, 0);
-    
+
     return;
 }
 
@@ -3985,14 +3993,14 @@ static void colorDrawPieceImageGTK(piece, square_color, x, y, dest)
 	break;
     }
     if(appData.upsideDown && flipView) { kind ^= 2; p += p < BlackPawn ? BlackPawn : -BlackPawn; }// swap white and black pieces
-    if(square_color+1) {        
-        BlankSquareGTK(x, y, square_color, piece, dest, 1); // erase previous contents with background        
+    if(square_color+1) {
+        BlankSquareGTK(x, y, square_color, piece, dest, 1); // erase previous contents with background
 
         pb = getPixbuf(p);
 
-        //pb = SVGPawn;        
-        if (boardwidgetGTK == NULL) return;  
-        gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSizeGTK, squareSizeGTK, GDK_RGB_DITHER_NORMAL, 0, 0);        
+        //pb = SVGPawn;
+        if (boardwidgetGTK == NULL) return;
+        gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window), NULL, pb, 0, 0, x, y, squareSizeGTK, squareSizeGTK, GDK_RGB_DITHER_NORMAL, 0, 0);
 	//XSetClipMask(xDisplay, wlPieceGC, xpmMa.0sk[p]);
 	//XSetClipOrigin(xDisplay, wlPieceGC, x, y);
 	//XCopyArea(xDisplay, xpmPieceBitmap[kind][piece], dest, wlPieceGC, 0, 0, squareSize, squareSize, x, y);
@@ -4037,7 +4045,7 @@ static int SquareColor(row, column)
 void DrawSquareGTK(row, column, piece, do_flash)
      int row, column, do_flash;
      ChessSquare piece;
-{    
+{
     int square_color, x, y, direction, font_ascent, font_descent;
     int i;
     char string[2];
@@ -4186,7 +4194,7 @@ gboolean ConfigureProc(widget, event, data)
      GtkWidget *widget;
      GdkEvent *event;
      gpointer data;
-{   
+{
     gint width, height, calcwidth, calcheight;;
     int w, h;
 
@@ -4198,7 +4206,7 @@ gboolean ConfigureProc(widget, event, data)
     h = ( (height - lineGapGTK * (BOARD_HEIGHT + 1)) / BOARD_HEIGHT);
     //w = (width - 4) / BOARD_WIDTH;
     //h = (height - 4) / BOARD_HEIGHT;
-    squareSizeGTK = w < h ? w : h;   
+    squareSizeGTK = w < h ? w : h;
 
     /* calc linegap */
     if(appData.overrideLineGap >= 0)
@@ -4207,15 +4215,15 @@ gboolean ConfigureProc(widget, event, data)
         lineGapGTK = GetLineGap();
 
     /* recalc squaresize */
-    squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);   
+    squareSizeGTK = ( (width - lineGapGTK * (BOARD_WIDTH + 1)) / BOARD_WIDTH);
 
     calcwidth = BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK;
-    calcheight = BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK;    
+    calcheight = BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK;
 
-    /* set the size of boardwidgetGTK GdkWindow to exactly the same as the size of the board */   
+    /* set the size of boardwidgetGTK GdkWindow to exactly the same as the size of the board */
     /* (it may be a few pixels larger since after user resize of main window) */
     if (calcwidth != width || calcheight != height) {
-        gdk_window_resize(boardwidgetGTK->window, calcwidth,calcheight);        
+        gdk_window_resize(boardwidgetGTK->window, calcwidth,calcheight);
     }
 
     ScalePixbufs(); /* scale pixbufs to correct size */
@@ -4232,7 +4240,7 @@ gboolean EventProcGTK(widget, event, data)
 {
     switch (event->type) {
       case GDK_EXPOSE:
-	//if (event->expose.count > 0) return;  // no clipping is done 
+	//if (event->expose.count > 0) return;  // no clipping is done
 	GTKDrawPosition(widget, True, NULL);
 //	if(twoBoards) { // [HGM] dual: draw other board in other orientation
 //	    flipView = !flipView; partnerUp = !partnerUp;
@@ -4370,12 +4378,12 @@ void DrawSeekText(char *buf, int x, int y)
     cairo_select_font_face (cr, "Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
-    
+
     cairo_set_font_size (cr, 12.0);
 
     cairo_move_to (cr, x, y+4);
     cairo_show_text( cr, buf);
-    
+
     cairo_set_source_rgba(cr, 0, 0, 0,1.0);
     cairo_stroke(cr);
 
@@ -4405,7 +4413,7 @@ void DrawSeekDot(int x, int y, int colorNr)
     cairo_set_line_width(cr, 2);
 
     /* GTK-TODO: use user colors */
-    switch (colorNr) 
+    switch (colorNr)
       {
       case 0: /* preline */
 	cairo_set_source_rgba(cr, 0, 0, 0,1.0);
@@ -4463,11 +4471,10 @@ void GTKDrawPosition(w, repaint, board)
      * but this causes a very distracting flicker.
      */
 
-    if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView)) {
-
-	//if ( lineGap && IsDrawArrowEnabled())
-	    //XDrawSegments(xDisplay, xBoardWindow, lineGC,
-		//	gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
+    if (!repaint && lastBoardValid[nr] && (nr == 1 || lastFlipView == flipView))
+      {
+	if ( lineGap && IsDrawArrowEnabled())
+	  CreateGridGTK();
 
 	/* If too much changes (begin observing new game, etc.), don't
 	   do flashing */
@@ -4475,13 +4482,14 @@ void GTKDrawPosition(w, repaint, board)
 
 	/* Special check for castling so we don't flash both the king
 	   and the rook (just flash the king). */
-	if (do_flash) {
+	if (do_flash)
+	  {
 	    if (check_castle_draw(board, lastBoard[nr], &rrow, &rcol)) {
-		/* Draw rook with NO flashing. King will be drawn flashing later */
-		DrawSquareGTK(rrow, rcol, board[rrow][rcol], 0);
-		lastBoard[nr][rrow][rcol] = board[rrow][rcol];
+	      /* Draw rook with NO flashing. King will be drawn flashing later */
+	      DrawSquareGTK(rrow, rcol, board[rrow][rcol], 0);
+	      lastBoard[nr][rrow][rcol] = board[rrow][rcol];
 	    }
-	}
+	  }
 
 	/* First pass -- Draw (newly) empty squares and repair damage.
 	   This prevents you from having a piece show up twice while it
@@ -4490,8 +4498,8 @@ void GTKDrawPosition(w, repaint, board)
 	  for (j = 0; j < BOARD_WIDTH; j++) {
 	    if ((board[i][j] != lastBoard[nr][i][j] && board[i][j] == EmptySquare)
 		|| damageGTK[nr][i][j]) {
-		DrawSquareGTK(i, j, board[i][j], 0);
-		damageGTK[nr][i][j] = False;
+	      DrawSquareGTK(i, j, board[i][j], 0);
+	      damageGTK[nr][i][j] = False;
 	    }
           }
         }
@@ -4500,14 +4508,18 @@ void GTKDrawPosition(w, repaint, board)
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++)
 	    if (board[i][j] != lastBoard[nr][i][j]) {
-		DrawSquareGTK(i, j, board[i][j], do_flash);
+	      DrawSquareGTK(i, j, board[i][j], do_flash);
 	    }
-    } else {
-	if (lineGap > 0) {
-	  //XDrawSegments(xDisplay, xBoardWindow, lineGC,
-	//		twoBoards & partnerUp ? secondSegments : // [HGM] dual
-	//		gridSegments, BOARD_HEIGHT + BOARD_WIDTH + 2);
-        }
+      }
+    else
+      {
+	if (lineGap > 0)
+	  {
+	    if(twoBoards & partnerUp)
+	      CreateSecondGridGTK();
+	    else
+	      CreateGridGTK();
+	  }
 
 	for (i = 0; i < BOARD_HEIGHT; i++)
 	  for (j = 0; j < BOARD_WIDTH; j++) {
@@ -4550,7 +4562,7 @@ void GTKDrawPosition(w, repaint, board)
     /* If piece being dragged around board, must redraw that too */
     DrawDragPiece();
 
-    //XSync(xDisplay, False);    
+    //XSync(xDisplay, False);
 
 }
 
@@ -4561,15 +4573,15 @@ gboolean ButtonPressProc(window, eventbutton, data)
 {
     switch(eventbutton->button) {
       case 1:
-        HandleUserMoveGTK(window, eventbutton, data);   // button press or release on button 1 (left button)      
+        HandleUserMoveGTK(window, eventbutton, data);   // button press or release on button 1 (left button)
         break;
       case 2:
       case 3:
-        PieceMenuPopupGTK(window, eventbutton, data);   // button press or release on button 2/3 (middle/right buton)      
+        PieceMenuPopupGTK(window, eventbutton, data);   // button press or release on button 2/3 (middle/right buton)
         break;
-      default:        
-        break;             
-    }    
+      default:
+        break;
+    }
 }
 
 /*
@@ -4592,7 +4604,7 @@ gboolean HandleUserMoveGTK(window, eventbutton, data)
     if (errorExitStatus != -1) return;
     //if(nprms) shiftKey = !strcmp(prms[0], "1");
 
-    if (promotionUp) {	
+    if (promotionUp) {
         if (eventbutton->type == GDK_BUTTON_PRESS) {
 	    //XtPopdown(promotionShell);
 	    //XtDestroyWidget(promotionShell);
@@ -4685,7 +4697,7 @@ void CommentClick(tb)
     String val;
     gint index;
     GtkTextIter start;
-    GtkTextIter end;	
+    GtkTextIter end;
 
     /* get cursor position into index */
     g_object_get(tb, "cursor-position", &index, NULL);
@@ -4693,8 +4705,8 @@ void CommentClick(tb)
     /* get text from textbuffer */
     gtk_text_buffer_get_start_iter (tb, &start);
     gtk_text_buffer_get_end_iter (tb, &end);
-    val = gtk_text_buffer_get_text (tb, &start, &end, FALSE); 
-          
+    val = gtk_text_buffer_get_text (tb, &start, &end, FALSE);
+
     ReplaceComment(savedIndex, val);
     if(savedIndex != currentMove) ToNrEvent(savedIndex);
     LoadVariation( index, val ); // [HGM] also does the actual moving to it, now
@@ -4717,7 +4729,7 @@ void ICSInputBoxPopUp()
 extern Option boxOptions[];
 
 void ICSInputSendText()
-{    
+{
     GtkWidget *edit;
     String val;
 
@@ -4727,8 +4739,8 @@ void ICSInputSendText()
     SaveInHistory(val);
     SendMultiLineToICS(val);
 
-    /* clear the text in the GTKEntry */    
-    gtk_entry_set_text(GTK_ENTRY(edit), "");    
+    /* clear the text in the GTKEntry */
+    gtk_entry_set_text(GTK_ENTRY(edit), "");
 }
 
 void ICSInputBoxPopDown()
@@ -4846,10 +4858,10 @@ void FileNamePopUp(label, def, filter, proc, openMode, action)
 }
 
 void PromotionPopUp()
-{    
+{
     GtkWidget *label;
-    GtkWidget *content_area;    
-    
+    GtkWidget *content_area;
+
     promotionShellGTK = gtk_dialog_new();
     gtk_window_set_title(GTK_WINDOW(promotionShellGTK), "Promotion");
 
@@ -4863,47 +4875,47 @@ void PromotionPopUp()
                            _("Warlord"),  1,
                            _("General"),   2,
                            _("Lieutenant"), 3,
-                           _("Captain"), 4,                                                 
-                           NULL);           
+                           _("Captain"), 4,
+                           NULL);
         } else {
             gtk_dialog_add_buttons(GTK_DIALOG(promotionShellGTK),
                            _("Queen"),  5,
                            _("Rook"),   6,
                            _("Bishop"), 7,
-                           _("Knight"), 8,                                                 
-                           NULL);           
+                           _("Knight"), 8,
+                           NULL);
         }
         if (!appData.testLegality || gameInfo.variant == VariantSuicide ||
             gameInfo.variant == VariantSpartan && !WhiteOnMove(currentMove) ||
             gameInfo.variant == VariantGiveaway) {
-            gtk_dialog_add_button(GTK_DIALOG(promotionShellGTK), _("King"), 9);         
+            gtk_dialog_add_button(GTK_DIALOG(promotionShellGTK), _("King"), 9);
         }
         if(gameInfo.variant == VariantCapablanca ||
             gameInfo.variant == VariantGothic ||
             gameInfo.variant == VariantCapaRandom) {
             gtk_dialog_add_buttons(GTK_DIALOG(promotionShellGTK),
                            _("Archbishop"),  10,
-                           _("Chancellor"),  11,                                                                    
-                           NULL);          
+                           _("Chancellor"),  11,
+                           NULL);
         }
-    } else { // [HGM] shogi    
+    } else { // [HGM] shogi
         gtk_dialog_add_buttons(GTK_DIALOG(promotionShellGTK),
                            _("Promote"),  12,
-                            _("Defer"),   13,                                                                    
-                           NULL);        
+                            _("Defer"),   13,
+                           NULL);
     }
 
-    gtk_dialog_add_button(GTK_DIALOG(promotionShellGTK), _("cancel"), 14);    
-   
+    gtk_dialog_add_button(GTK_DIALOG(promotionShellGTK), _("cancel"), 14);
+
     gtk_widget_show_all(promotionShellGTK);
 
     g_signal_connect (promotionShellGTK, "response",
                       G_CALLBACK (PromotionCallback), NULL);
-                     
+
     g_signal_connect (promotionShellGTK, "delete-event",
                       G_CALLBACK (PromotionPopDown), NULL);
 
-    promotionUp = True;               
+    promotionUp = True;
 }
 
 void PromotionPopDown()
@@ -4922,7 +4934,7 @@ void PromotionCallback(w, resptype, gdata)
     GtkWidget *button;
     GList *gl, *g;
     gint respid;
-    gchar *name;         
+    gchar *name;
 
     /* get list of buttons in the dialog action area */
     gl = gtk_container_get_children(GTK_CONTAINER(GTK_CONTAINER(gtk_dialog_get_action_area(GTK_DIALOG(w)))));
@@ -4930,16 +4942,16 @@ void PromotionCallback(w, resptype, gdata)
     /* find the button that was clicked */
     /* cannot use 'gtk_dialog_get_widget_for_response()' since that requires gtk 2.20
        and we are targeting 2.16 */
-    while (gl) {  
+    while (gl) {
         button = GTK_WIDGET(gl->data);
-        respid = gtk_dialog_get_response_for_widget(GTK_DIALOG(w), GTK_WIDGET(button));    
-        if (respid == resptype) {      
+        respid = gtk_dialog_get_response_for_widget(GTK_DIALOG(w), GTK_WIDGET(button));
+        if (respid == resptype) {
             name = g_strdup(gtk_button_get_label(GTK_BUTTON(button)));
             break;
-        }           
+        }
         gl = gl->next;
     }
-    g_list_free(gl);    
+    g_list_free(gl);
 
     PromotionPopDown();
 
@@ -4959,8 +4971,8 @@ void PromotionCallback(w, resptype, gdata)
 	promoChar = ToLower(name[0]);
     }
 
-    g_free(name);    
-    
+    g_free(name);
+
     UserMoveEvent(fromX, fromY, toX, toY, promoChar);
 
     if (!appData.highlightLastMove || gotPremove) ClearHighlights();
@@ -5181,8 +5193,8 @@ void LoadGameProcGTK(object, user_data)
 {
     if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
 	Reset(FALSE, TRUE);
-    }  
-    FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb", OPEN);  
+    }
+    FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb", OPEN);
 }
 
 void LoadGameProc(w, event, prms, nprms)
@@ -5687,7 +5699,7 @@ void AutoSaveGame()
 
 /* exit the application */
 
-void 
+void
 QuitProcGTK(GtkObject *object, gpointer user_data)
 {
     ExitEvent(0);
@@ -6777,7 +6789,7 @@ void DisplayMessage(message, extMessage)
 
   if(messageWidgetGTK)
     {
-      gtk_label_set_text(GTK_LABEL(messageWidgetGTK), message);      
+      gtk_label_set_text(GTK_LABEL(messageWidgetGTK), message);
     }
 
   return;
@@ -7322,7 +7334,7 @@ CancelDelayedEvent()
       g_source_remove(delayedEventTimerTag);
       delayedEventTimerTag = 0;
     }
-  
+
   return;
 }
 
@@ -7350,7 +7362,7 @@ LoadGameTimerCallback(gpointer data)
   /* remove timer */
   g_source_remove(loadGameTimerTag);
   loadGameTimerTag = 0;
-  
+
   AutoPlayGameLoop();
   return;
 }
@@ -7442,7 +7454,7 @@ DisplayTimerLabelGTK(w, color, timer, highlight)
         strcpy(fgcolor, "white");
     } else {
         strcpy(bgcolor, "white");
-        strcpy(fgcolor, "black");		
+        strcpy(fgcolor, "black");
     }
 
     if (appData.clockMode) {
@@ -7451,7 +7463,7 @@ DisplayTimerLabelGTK(w, color, timer, highlight)
         markup = g_markup_printf_escaped("<span size=\"xx-large\" weight=\"heavy\" background=\"%s\" foreground=\"%s\">%s  </span>", bgcolor, fgcolor, color);
     }
     gtk_label_set_markup(GTK_LABEL(w), markup);
-    g_free(markup);    
+    g_free(markup);
 }
 
 void
@@ -8212,58 +8224,58 @@ GdkPixbuf *getPixbuf(int piece) {
     GdkPixbuf *pb=NULL;
 
 /*
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, 
-    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan, 
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen,
+    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan,
     WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
     WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
     BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
-    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan, 
+    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan,
     BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
     BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
-    EmptySquare, 
+    EmptySquare,
 */
 
     switch (piece) {
-      case WhitePawn: 
+      case WhitePawn:
         pb = SVGscWhitePawn;
         break;
-      case WhiteKnight: 
+      case WhiteKnight:
         pb = SVGscWhiteKnight;
         break;
-      case WhiteBishop: 
+      case WhiteBishop:
         pb = SVGscWhiteBishop;
         break;
-      case WhiteRook: 
+      case WhiteRook:
         pb = SVGscWhiteRook;
         break;
-      case WhiteQueen: 
+      case WhiteQueen:
         pb = SVGscWhiteQueen;
         break;
-      case WhiteKing: 
+      case WhiteKing:
         pb = SVGscWhiteKing;
         break;
 
-      case BlackPawn: 
+      case BlackPawn:
         pb = SVGscBlackPawn;
         break;
-      case BlackKnight: 
+      case BlackKnight:
         pb = SVGscBlackKnight;
         break;
-      case BlackBishop: 
+      case BlackBishop:
         pb = SVGscBlackBishop;
         break;
-      case BlackRook: 
+      case BlackRook:
         pb = SVGscBlackRook;
         break;
-      case BlackQueen: 
+      case BlackQueen:
         pb = SVGscBlackQueen;
         break;
-      case BlackKing: 
+      case BlackKing:
         pb = SVGscBlackKing;
         break;
 
       default:
-        if ((int)piece < (int) BlackPawn) // white piece 
+        if ((int)piece < (int) BlackPawn) // white piece
             pb = SVGscWhiteKing;
         else
             pb = SVGscBlackKing;
@@ -8283,7 +8295,7 @@ OverlayPiece(piece, position, dest)
     pb = getPixbuf(piece);
 
   /* draw piece */
-  gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window),NULL,		  
+  gdk_draw_pixbuf(GDK_WINDOW(boardwidgetGTK->window),NULL,
                   GDK_PIXBUF(pb),0,0,
 		  position->x,position->y,-1,-1,
 		  GDK_RGB_DITHER_NORMAL, 0, 0);
@@ -8398,13 +8410,13 @@ EndAnimation (anim, finish)
   GdkPoint     pt;
   int	     count, i, j;
 
-  /* kludge to force redraw of all squares on the board */  
+  /* kludge to force redraw of all squares on the board */
   for (i=0; i < BOARD_WIDTH ; i++) {
-      for (j=0; j < BOARD_HEIGHT ; j++) {                            
-          damageGTK[0][j][i] = True;                            
+      for (j=0; j < BOARD_HEIGHT ; j++) {
+          damageGTK[0][j][i] = True;
       }
   }
-    
+
   /* The main code will redraw the final square, so we
      only need to erase the bits that don't overlap.	*/
 
@@ -8491,7 +8503,7 @@ AnimateMove(board, fromX, fromY, toX, toY)
 
   if(board[toY][toX] == WhiteRook && board[fromY][fromX] == WhiteKing ||
      board[toY][toX] == BlackRook && board[fromY][fromX] == BlackKing)
-	return; // [HGM] FRC: no animtion of FRC castlings, as to-square is not true to-square  
+	return; // [HGM] FRC: no animtion of FRC castlings, as to-square is not true to-square
 
   if (fromY < 0 || fromX < 0 || toX < 0 || toY < 0) return;
   piece = board[fromY][fromX];
@@ -8588,7 +8600,7 @@ DragPieceBegin(x, y, instantly)
            //    XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
 	   //          corner.x, corner.y, squareSize, squareSize, 0, 0);
            //    DrawSquare(boardY, boardX, piece, 0);
-           //}	
+           //}
 	damageGTK[0][boardY][boardX] = True;
     } else {
 	player.dragActive = False;
@@ -8653,7 +8665,7 @@ DragPieceEnd(x, y)
     ScreenSquare(boardX, boardY, &corner, &color);
     EndAnimation(&player, &corner);
 
-    /* Be sure end square is redrawn */    
+    /* Be sure end square is redrawn */
     damageGTK[0][boardY][boardX] = True;
 
     /* This prevents weird things happening with fast successive
@@ -8762,7 +8774,7 @@ void FillPolygon(GdkPoint *arrow)
     cairo_line_to(cr, arrow[0].x, arrow[0].y);
 
     cairo_set_line_width(cr, 2);
-    cairo_set_source_rgba(cr, 1, 1, 0, 1.0);   
+    cairo_set_source_rgba(cr, 1, 1, 0, 1.0);
     cairo_fill(cr);
 
     /* free memory */
@@ -8772,7 +8784,7 @@ void FillPolygon(GdkPoint *arrow)
 /* Draw an arrow between two points using current settings */
 void DrawArrowBetweenPointsGTK( int s_x, int s_y, int d_x, int d_y )
 {
-    GdkPoint arrow[7];    
+    GdkPoint arrow[7];
     double dx, dy, j, k, x, y;
 
     if( d_x == s_x ) {
@@ -8910,7 +8922,7 @@ void DrawArrowBetweenSquaresGTK( int s_col, int s_row, int d_col, int d_row )
     /* Adjust width */
     A_WIDTH = squareSizeGTK / 14.; //[HGM] make float
 
-    DrawArrowBetweenPointsGTK( s_x, s_y, d_x, d_y );    
+    DrawArrowBetweenPointsGTK( s_x, s_y, d_x, d_y );
 
     hor = 64*s_col + 32; vert = 64*s_row + 32;
     for(i=0; i<= 64; i++) {
@@ -8930,7 +8942,7 @@ Boolean IsDrawArrowEnabled()
 void DrawArrowHighlightGTK(int fromX, int fromY, int toX,int toY)
 {
     if( IsDrawArrowEnabled() && fromX >= 0 && fromY >= 0 && toX >= 0 && toY >= 0)
-        DrawArrowBetweenSquaresGTK(fromX, fromY, toX, toY);    
+        DrawArrowBetweenSquaresGTK(fromX, fromY, toX, toY);
 }
 
 void UpdateLogos(int displ)
