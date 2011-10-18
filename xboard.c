@@ -1078,11 +1078,7 @@ parse_cpair(cc, str)
 void
 BoardToTop()
 {
-  Arg args[16];
-  XtSetArg(args[0], XtNiconic, False);
-  XtSetValues(shellWidget, args, 1);
-
-  XtPopup(shellWidget, XtGrabNone); /* Raise if lowered  */
+  gtk_window_present(GTK_WINDOW(mainwindow));
 }
 
 //---------------------------------------------------------------------------------------------------------
