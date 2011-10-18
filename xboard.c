@@ -1081,18 +1081,6 @@ parse_cpair(cc, str)
     return 0;
 }
 
-
-/* Arrange to catch delete-window events */
-Atom wm_delete_window;
-void
-CatchDeleteWindow(Widget w, String procname)
-{
-  char buf[MSG_SIZ];
-  XSetWMProtocols(xDisplay, XtWindow(w), &wm_delete_window, 1);
-  snprintf(buf, sizeof(buf), "<Message>WM_PROTOCOLS: %s() \n", procname);
-  XtAugmentTranslations(w, XtParseTranslationTable(buf));
-}
-
 void
 BoardToTop()
 {
@@ -1835,7 +1823,6 @@ main(argc, argv)
 
     xDisplay = XtDisplay(shellWidget);
     xScreen = DefaultScreen(xDisplay);
-    wm_delete_window = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
 
 	gameInfo.variant = StringToVariant(appData.variant);
 	InitPosition(FALSE);
@@ -7061,7 +7048,6 @@ void AskQuestion(title, question, replyPrefix, pr)
 		       (XtPointer) dialog);
 
     XtRealizeWidget(popup);
-    CatchDeleteWindow(popup, "AskQuestionPopDown");
 
     XQueryPointer(xDisplay, xBoardWindow, &root, &child,
 		  &x, &y, &win_x, &win_y, &mask);

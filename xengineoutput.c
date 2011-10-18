@@ -542,7 +542,6 @@ EngineOutputPopUp()
 	engineOutputShell =
 	  EngineOutputCreate(_(title), _(text));
 	XtRealizeWidget(engineOutputShell);
-	CatchDeleteWindow(engineOutputShell, "EngineOutputPopDown");
 	if( needInit ) {
 	    InitializeEngineOutput();
 	    needInit = FALSE;

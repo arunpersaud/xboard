@@ -668,7 +668,6 @@ GameListOptionsCreate()
     GLT_TagsToList(lpUserGLT);
 
     XtRealizeWidget(shell);
-    CatchDeleteWindow(shell, "GameListOptionsPopDown");
 
     return shell;
 }
