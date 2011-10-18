@@ -147,8 +147,6 @@ void ParseIcsTextColors P((void));
 void InitDrawingSizes P((int i, int j));
 void SendToICS P((char *buf));
 void SendToProgram P((char *message, ChessProgramState *cps));
-FILE * XsraSelFile P((Widget w, char *prompt, char *ok, char *cancel, char *failed,
-		char *init_path, char *filter, char *mode, int (*show_entry)(), char **name_return));
 
 extern Widget shells[];
 extern Boolean shellUp[];
