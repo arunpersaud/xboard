@@ -370,7 +370,6 @@ void SaveOnExitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void Iconify P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
 void DisplayTitle P((char *title));
 void ICSInitScript P((void));
@@ -855,7 +854,6 @@ XtActionsRec boardActions[] = {
     { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
-    { "Iconify", Iconify },
     { "LoadGameProc", LoadGameProc },
     { "LoadNextGameProc", LoadNextGameProc },
     { "LoadPrevGameProc", LoadPrevGameProc },
@@ -957,7 +955,6 @@ char globalTranslations[] =
    :Ctrl<Key>H: HideThinkingProc() \n "
 #endif
    "\
-   :<Key>-: Iconify() \n \
    Shift<Key>1: AskQuestionProc(\"Direct command\",\
                                 \"Send to chess program:\",,1) \n \
    Shift<Key>2: AskQuestionProc(\"Direct command\",\
@@ -6732,19 +6729,6 @@ void NothingProc(w, event, prms, nprms)
      Cardinal *nprms;
 {
     return;
-}
-
-void Iconify(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    fromX = fromY = -1;
-    XtSetArg(args[0], XtNiconic, True);
-    XtSetValues(shellWidget, args, 1);
 }
 
 void DisplayMessage(message, extMessage)
