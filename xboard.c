@@ -392,7 +392,6 @@ void update_ics_width P(());
 int get_term_width P(());
 int CopyMemoProc P(());
 void DrawArrowHighlightGTK P((int fromX, int fromY, int toX,int toY));
-void DrawArrowHighlight P((int fromX, int fromY, int toX,int toY));
 Boolean IsDrawArrowEnabled P(());
 GdkPixbuf *getPixbuf P((int piece));
 void ScalePixbufs P((void));
@@ -2502,24 +2501,23 @@ main(argc, argv)
     XtUnmapWidget(shellWidget);
 
     //    XtAppMainLoop(appContext);
-    do {
-      XEvent event;
-      XtInputMask mask;
-      int i;
-
-      while (!(mask = XtAppPending(appContext)) && !gtk_events_pending())
-	poll(NULL,0,100);
-      if (mask & XtIMXEvent) {
-        XtAppNextEvent(appContext, &event); /* no blocking */
-        XtDispatchEvent(&event); /* Process it */
-      }
-      else /* not an XEvent, process it */
-        XtAppProcessEvent(appContext, mask); /* non blocking */
-
-      /* check for GTK events and process them */
-      for (i=0;i<10;i++)
-	gtk_main_iteration_do(FALSE);
-    } while(XtAppGetExitFlag(appContext) == FALSE);
+    for (i=0;i<200;i++)
+	{
+	  XEvent event;
+	  XtInputMask mask;
+	  int i;
+	  
+	  while (!(mask = XtAppPending(appContext)) && !gtk_events_pending())
+	    poll(NULL,0,100);
+	  if (mask & XtIMXEvent) {
+	    XtAppNextEvent(appContext, &event); /* no blocking */
+	    XtDispatchEvent(&event); /* Process it */
+	  }
+	  else /* not an XEvent, process it */
+	    XtAppProcessEvent(appContext, mask); /* non blocking */
+	}
+    /* check for GTK events and process them */
+    gtk_main();
 
     if (appData.debugMode) fclose(debugFP); // [DM] debug
     return 0;
@@ -3853,35 +3851,13 @@ drawHighlightGTK(file, rank, line_type)
   return;
 }
 
-static void drawHighlight(file, rank, gc)
-     int file, rank;
-     GC gc;
-{
-    int x, y;
-
-    if (lineGap == 0) return;
-
-    if (flipView) {
-	x = lineGap/2 + ((BOARD_WIDTH-1)-file) *
-	  (squareSize + lineGap);
-	y = lineGap/2 + rank * (squareSize + lineGap);
-    } else {
-	x = lineGap/2 + file * (squareSize + lineGap);
-	y = lineGap/2 + ((BOARD_HEIGHT-1)-rank) *
-	  (squareSize + lineGap);
-    }
-
-    XDrawRectangle(xDisplay, xBoardWindow, gc, x, y,
-		   squareSize+lineGap, squareSize+lineGap);
-}
-
 int hi1X = -1, hi1Y = -1, hi2X = -1, hi2Y = -1;
 int pm1X = -1, pm1Y = -1, pm2X = -1, pm2Y = -1;
 
 void
-SetHighlightsGTK(fromX, fromY, toX, toY)
+SetHighlights(fromX, fromY, toX, toY)
      int fromX, fromY, toX, toY;
-{ 
+{
   if (hi1X != fromX || hi1Y != fromY)
     {
       if (hi1X >= 0 && hi1Y >= 0)
@@ -3919,48 +3895,8 @@ SetHighlightsGTK(fromX, fromY, toX, toY)
 }
 
 void
-SetHighlights(fromX, fromY, toX, toY)
-     int fromX, fromY, toX, toY;
-{
-
-    SetHighlightsGTK(fromX, fromY, toX, toY);
-
-    if (hi1X != fromX || hi1Y != fromY) {
-	if (hi1X >= 0 && hi1Y >= 0) {
-	    drawHighlight(hi1X, hi1Y, lineGC);
-	}
-    } // [HGM] first erase both, then draw new!
-    if (hi2X != toX || hi2Y != toY) {
-	if (hi2X >= 0 && hi2Y >= 0) {
-	    drawHighlight(hi2X, hi2Y, lineGC);
-	}
-    }
-    if (hi1X != fromX || hi1Y != fromY) {
-	if (fromX >= 0 && fromY >= 0) {
-	    drawHighlight(fromX, fromY, highlineGC);
-	}
-    }
-    if (hi2X != toX || hi2Y != toY) {
-	if (toX >= 0 && toY >= 0) {
-	    drawHighlight(toX, toY, highlineGC);
-	}
-    }
-    hi1X = fromX;
-    hi1Y = fromY;
-    hi2X = toX;
-    hi2Y = toY;
-}
-
-void
-ClearHighlightsGTK()
-{    
-    SetHighlightsGTK(-1, -1, -1, -1);
-}
-
-void
 ClearHighlights()
 {
-    ClearHighlightsGTK();
     SetHighlights(-1, -1, -1, -1);
 }
 
@@ -3971,18 +3907,18 @@ SetPremoveHighlights(fromX, fromY, toX, toY)
 {
     if (pm1X != fromX || pm1Y != fromY) {
 	if (pm1X >= 0 && pm1Y >= 0) {
-	    drawHighlight(pm1X, pm1Y, lineGC);
+	    drawHighlightGTK(pm1X, pm1Y, LINE_TYPE_NORMAL);
 	}
 	if (fromX >= 0 && fromY >= 0) {
-	    drawHighlight(fromX, fromY, prelineGC);
+	    drawHighlightGTK(fromX, fromY, LINE_TYPE_PRE);
 	}
     }
     if (pm2X != toX || pm2Y != toY) {
 	if (pm2X >= 0 && pm2Y >= 0) {
-	    drawHighlight(pm2X, pm2Y, lineGC);
+	    drawHighlightGTK(pm2X, pm2Y, LINE_TYPE_NORMAL);
 	}
 	if (toX >= 0 && toY >= 0) {
-	    drawHighlight(toX, toY, prelineGC);
+	    drawHighlightGTK(toX, toY, LINE_TYPE_PRE);
 	}
     }
     pm1X = fromX;
@@ -4149,28 +4085,28 @@ void DrawSquareGTK(row, column, piece, do_flash)
 			string[1] = NULLCHAR;
 			if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
 			    string[0] = '0' + piece;
-			    XTextExtents(countFontStruct, string, 1, &direction,
-				 &font_ascent, &font_descent, &overall);
+			    //XTextExtents(countFontStruct, string, 1, &direction,
+			    //	 &font_ascent, &font_descent, &overall);
 			    if (appData.monoMode) {
-				XDrawImageString(xDisplay, xBoardWindow, countGC,
-						 x + squareSize - overall.width - 2,
-						 y + font_ascent + 1, string, 1);
+			      //	XDrawImageString(xDisplay, xBoardWindow, countGC,
+			      //		 x + squareSize - overall.width - 2,
+			      //		 y + font_ascent + 1, string, 1);
 			    } else {
-				XDrawString(xDisplay, xBoardWindow, countGC,
-					    x + squareSize - overall.width - 2,
-					    y + font_ascent + 1, string, 1);
+			      //		XDrawString(xDisplay, xBoardWindow, countGC,
+			      //	    x + squareSize - overall.width - 2,
+			      //	    y + font_ascent + 1, string, 1);
 			    }
 			}
 			if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
 			    string[0] = '0' + piece;
-			    XTextExtents(countFontStruct, string, 1, &direction,
-					 &font_ascent, &font_descent, &overall);
+			    //XTextExtents(countFontStruct, string, 1, &direction,
+			    //		 &font_ascent, &font_descent, &overall);
 			    if (appData.monoMode) {
-				XDrawImageString(xDisplay, xBoardWindow, countGC,
-						 x + 2, y + font_ascent + 1, string, 1);
+			      //	XDrawImageString(xDisplay, xBoardWindow, countGC,
+			      //		 x + 2, y + font_ascent + 1, string, 1);
 			    } else {
-				XDrawString(xDisplay, xBoardWindow, countGC,
-					    x + 2, y + font_ascent + 1, string, 1);
+			      //		XDrawString(xDisplay, xBoardWindow, countGC,
+			      //	    x + 2, y + font_ascent + 1, string, 1);
 			    }
 			}
     } else {
@@ -4182,49 +4118,49 @@ void DrawSquareGTK(row, column, piece, do_flash)
 			if (do_flash && appData.flashCount > 0) {
 			    for (i=0; i<appData.flashCount; ++i) {
 					drawfunc(piece, square_color, x, y, xBoardWindow);
-					XSync(xDisplay, False);
+					//XSync(xDisplay, False);
 					do_flash_delay(flash_delay);
 
 					BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
-					XSync(xDisplay, False);
+					//XSync(xDisplay, False);
 					do_flash_delay(flash_delay);
 			    }
 			}
 			drawfunc(piece, square_color, x, y, xBoardWindow);
-    	}
+	    }
 	}
 
     string[1] = NULLCHAR;
     if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
 		&& column >= BOARD_LEFT && column < BOARD_RGHT) {
 	string[0] = 'a' + column - BOARD_LEFT;
-	XTextExtents(coordFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
+	//XTextExtents(coordFontStruct, string, 1, &direction,
+	//		     &font_ascent, &font_descent, &overall);
 	if (appData.monoMode) {
-	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			     x + squareSize - overall.width - 2,
-			     y + squareSize - font_descent - 1, string, 1);
+	  //  XDrawImageString(xDisplay, xBoardWindow, coordGC,
+	  //		     x + squareSize - overall.width - 2,
+	  //		     y + squareSize - font_descent - 1, string, 1);
 	} else {
-	    XDrawString(xDisplay, xBoardWindow, coordGC,
-			x + squareSize - overall.width - 2,
-			y + squareSize - font_descent - 1, string, 1);
+	  //XDrawString(xDisplay, xBoardWindow, coordGC,
+	  //		x + squareSize - overall.width - 2,
+	  //		y + squareSize - font_descent - 1, string, 1);
 	}
     }
     if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT)) {
 	string[0] = ONE + row;
-	XTextExtents(coordFontStruct, string, 1, &direction,
-		     &font_ascent, &font_descent, &overall);
+	//	XTextExtents(coordFontStruct, string, 1, &direction,
+	//	     &font_ascent, &font_descent, &overall);
 	if (appData.monoMode) {
-	    XDrawImageString(xDisplay, xBoardWindow, coordGC,
-			     x + 2, y + font_ascent + 1, string, 1);
+	  //  XDrawImageString(xDisplay, xBoardWindow, coordGC,
+	  //		     x + 2, y + font_ascent + 1, string, 1);
 	} else {
-	    XDrawString(xDisplay, xBoardWindow, coordGC,
-			x + 2, y + font_ascent + 1, string, 1);
+	  //XDrawString(xDisplay, xBoardWindow, coordGC,
+	  //		x + 2, y + font_ascent + 1, string, 1);
 	}
     }
     if(!partnerUp && marker[row][column]) {
-	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC,
-		x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
+      //	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC,
+      //	x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
     }
 }
 
@@ -4509,7 +4445,6 @@ void DrawSeekDot(int x, int y, int colorNr)
 }
 
 static int damageGTK[2][BOARD_RANKS][BOARD_FILES];
-static int damage[2][BOARD_RANKS][BOARD_FILES];
 
 void GTKDrawPosition(w, repaint, board)
      GtkWidget *w;
@@ -5110,7 +5045,7 @@ void FreezeUI()
 {
   if (frozen) return;
   /* Grab by a widget that doesn't accept input */
-  XtAddGrab(messageWidget, TRUE, FALSE);
+  //  XtAddGrab(messageWidget, TRUE, FALSE);
   frozen = 1;
 }
 
@@ -5118,7 +5053,7 @@ void FreezeUI()
 void ThawUI()
 {
   if (!frozen) return;
-  XtRemoveGrab(messageWidget);
+  //XtRemoveGrab(messageWidget);
   frozen = 0;
 }
 
@@ -5188,22 +5123,22 @@ void ModeHighlight()
 	     invoked while the button is pressed, as releasing it
 	     toggles the state again. */
 	  {
-	    Pixel oldbg, oldfg;
-	    XtSetArg(args[0], XtNbackground, &oldbg);
-	    XtSetArg(args[1], XtNforeground, &oldfg);
-	    XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON),
-			args, 2);
-	    XtSetArg(args[0], XtNbackground, oldfg);
-	    XtSetArg(args[1], XtNforeground, oldbg);
+//	    Pixel oldbg, oldfg;
+//	    XtSetArg(args[0], XtNbackground, &oldbg);
+//	    XtSetArg(args[1], XtNforeground, &oldfg);
+//	    XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON),
+//			args, 2);
+//	    XtSetArg(args[0], XtNbackground, oldfg);
+//	    XtSetArg(args[1], XtNforeground, oldbg);
 	  }
-	  XtSetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
+//	  XtSetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
 	}
     }
 
     wname = ModeToWidgetName(oldmode);
     if (wname != NULL) {
-	XtSetArg(args[0], XtNleftBitmap, None);
-	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetValues(XtNameToWidget(menuBarWidget, wname), args, 1);
     }
     wname = ModeToWidgetName(gameMode);
     if (wname != NULL) {
@@ -5215,8 +5150,8 @@ void ModeHighlight()
     //    XtSetValues(XtNameToWidget(menuBarWidget, "menuMode.Machine Match"), args, 1);
 
     /* Maybe all the enables should be handled here, not just this one */
-    XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Training"),
-		   gameMode == Training || gameMode == PlayFromGameFile);
+    //    XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Training"),
+    //		   gameMode == Training || gameMode == PlayFromGameFile);
 }
 
 
@@ -5495,16 +5430,16 @@ void CopyPositionProcGTK(object, user_data)
     if (selected_fen_position) free(selected_fen_position);
     selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
     if (!selected_fen_position) return;
-    XtOwnSelection(menuBarWidget, XA_PRIMARY,
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
-    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
+//    XtOwnSelection(menuBarWidget, XA_PRIMARY,
+//		   CurrentTime,
+//		   SendPositionSelection,
+//		   NULL/* lose_ownership_proc */ ,
+//		   NULL/* transfer_done_proc */);
+//    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+//		   CurrentTime,
+//		   SendPositionSelection,
+//		   NULL/* lose_ownership_proc */ ,
+//		   NULL/* transfer_done_proc */);
 }
 
 /* note: when called from menu all parameters are NULL, so no clue what the
@@ -5525,16 +5460,16 @@ void CopyPositionProc(w, event, prms, nprms)
     if (selected_fen_position) free(selected_fen_position);
     selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
     if (!selected_fen_position) return;
-    XtOwnSelection(menuBarWidget, XA_PRIMARY,
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
-    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
+//    XtOwnSelection(menuBarWidget, XA_PRIMARY,
+//		   CurrentTime,
+//		   SendPositionSelection,
+//		   NULL/* lose_ownership_proc */ ,
+//		   NULL/* transfer_done_proc */);
+//    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+//		   CurrentTime,
+//		   SendPositionSelection,
+//		   NULL/* lose_ownership_proc */ ,
+//		   NULL/* transfer_done_proc */);
   }
 
 /* function called when the data to Paste is ready */
@@ -5546,23 +5481,23 @@ PastePositionCB(Widget w, XtPointer client_data, Atom *selection,
   if (value==NULL || *len==0) return; /* nothing had been selected to copy */
   fenstr[*len]='\0'; /* normally this string is terminated, but be safe */
   EditPositionPasteFEN(fenstr);
-  XtFree(value);
+  //  XtFree(value);
 }
 
 void PastePositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    XtGetSelectionValue(menuBarWidget,
-      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-      /* (XtSelectionCallbackProc) */ PastePositionCB,
-      NULL, /* client_data passed to PastePositionCB */
-
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
+//    XtGetSelectionValue(menuBarWidget,
+//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
+//      /* (XtSelectionCallbackProc) */ PastePositionCB,
+//      NULL, /* client_data passed to PastePositionCB */
+//
+//      /* better to use the time field from the event that triggered the
+//       * call to this function, but that isn't trivial to get
+//       */
+//      CurrentTime
+//    );
     return;
 }
 
@@ -5574,17 +5509,17 @@ void PastePositionProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
 {
-    XtGetSelectionValue(menuBarWidget,
-      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-      /* (XtSelectionCallbackProc) */ PastePositionCB,
-      NULL, /* client_data passed to PastePositionCB */
-
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
-    return;
+//    XtGetSelectionValue(menuBarWidget,
+//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
+//      /* (XtSelectionCallbackProc) */ PastePositionCB,
+//      NULL, /* client_data passed to PastePositionCB */
+//
+//      /* better to use the time field from the event that triggered the
+//       * call to this function, but that isn't trivial to get
+//       */
+//      CurrentTime
+//    );
+//    return;
 }
 
 static Boolean
@@ -5640,16 +5575,16 @@ void CopySomething()
    * have a notion of a game that is selected but not copied.
    * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
    */
-  XtOwnSelection(menuBarWidget, XA_PRIMARY,
-		 CurrentTime,
-		 SendGameSelection,
-		 NULL/* lose_ownership_proc */ ,
-		 NULL/* transfer_done_proc */);
-  XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		 CurrentTime,
-		 SendGameSelection,
-		 NULL/* lose_ownership_proc */ ,
-		 NULL/* transfer_done_proc */);
+//  XtOwnSelection(menuBarWidget, XA_PRIMARY,
+//		 CurrentTime,
+//		 SendGameSelection,
+//		 NULL/* lose_ownership_proc */ ,
+//		 NULL/* transfer_done_proc */);
+//  XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
+//		 CurrentTime,
+//		 SendGameSelection,
+//		 NULL/* lose_ownership_proc */ ,
+//		 NULL/* transfer_done_proc */);
 }
 
 void CopyGameProcGTK(object, user_data)
@@ -5715,7 +5650,7 @@ PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
   }
   fwrite(value, 1, *len, f);
   fclose(f);
-  XtFree(value);
+  //  XtFree(value);
   LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
 }
 
@@ -5723,16 +5658,16 @@ void PasteGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    XtGetSelectionValue(menuBarWidget,
-      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-      /* (XtSelectionCallbackProc) */ PasteGameCB,
-      NULL, /* client_data passed to PasteGameCB */
-
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
+//    XtGetSelectionValue(menuBarWidget,
+//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
+//      /* (XtSelectionCallbackProc) */ PasteGameCB,
+//      NULL, /* client_data passed to PasteGameCB */
+//
+//      /* better to use the time field from the event that triggered the
+//       * call to this function, but that isn't trivial to get
+//       */
+//      CurrentTime
+//    );
     return;
 }
 
@@ -5744,16 +5679,16 @@ void PasteGameProc(w, event, prms, nprms)
   String *prms;
   Cardinal *nprms;
 {
-    XtGetSelectionValue(menuBarWidget,
-      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-      /* (XtSelectionCallbackProc) */ PasteGameCB,
-      NULL, /* client_data passed to PasteGameCB */
-
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
+//    XtGetSelectionValue(menuBarWidget,
+//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
+//      /* (XtSelectionCallbackProc) */ PasteGameCB,
+//      NULL, /* client_data passed to PasteGameCB */
+//
+//      /* better to use the time field from the event that triggered the
+//       * call to this function, but that isn't trivial to get
+//       */
+//      CurrentTime
+//    );
     return;
 }
 
@@ -6218,10 +6153,10 @@ void PonderNextMoveProc(w, event, prms, nprms)
     if (appData.ponderNextMove) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Ponder Next Move"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Ponder Next Move"),
+//		args, 1);
 #endif
 }
 
@@ -6239,10 +6174,10 @@ void AlwaysQueenProc(w, event, prms, nprms)
     if (appData.alwaysPromoteToQueen) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
+//		args, 1);
 }
 
 void AnimateDraggingProc(w, event, prms, nprms)
@@ -6259,10 +6194,10 @@ void AnimateDraggingProc(w, event, prms, nprms)
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
         CreateAnimVars();
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Dragging"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Dragging"),
+//		args, 1);
 }
 
 void AnimateMovingProc(w, event, prms, nprms)
@@ -6279,10 +6214,10 @@ void AnimateMovingProc(w, event, prms, nprms)
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
         CreateAnimVars();
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
+//		args, 1);
 }
 
 void AutoflagProc(w, event, prms, nprms)
@@ -6298,10 +6233,10 @@ void AutoflagProc(w, event, prms, nprms)
     if (appData.autoCallFlag) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
+//		args, 1);
 }
 
 void AutoflipProc(w, event, prms, nprms)
@@ -6317,10 +6252,10 @@ void AutoflipProc(w, event, prms, nprms)
     if (appData.autoFlipView) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flip View"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flip View"),
+//		args, 1);
 }
 
 void BlindfoldProc(w, event, prms, nprms)
@@ -6336,10 +6271,10 @@ void BlindfoldProc(w, event, prms, nprms)
     if (appData.blindfold) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Blindfold"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Blindfold"),
+//		args, 1);
 
     DrawPosition(True, NULL);
 }
@@ -6357,10 +6292,10 @@ void TestLegalityProc(w, event, prms, nprms)
     if (appData.testLegality) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Test Legality"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Test Legality"),
+//		args, 1);
 }
 
 
@@ -6381,10 +6316,10 @@ void FlashMovesProc(w, event, prms, nprms)
     if (appData.flashCount > 0) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flash Moves"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flash Moves"),
+//		args, 1);
 }
 
 #if HIGHDRAG
@@ -6401,10 +6336,10 @@ void HighlightDraggingProc(w, event, prms, nprms)
     if (appData.highlightDragging) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Highlight Dragging"), args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget,
+//			       "menuOptions.Highlight Dragging"), args, 1);
 }
 #endif
 
@@ -6421,10 +6356,10 @@ void HighlightLastMoveProc(w, event, prms, nprms)
     if (appData.highlightLastMove) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Highlight Last Move"), args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget,
+//			       "menuOptions.Highlight Last Move"), args, 1);
 }
 
 void HighlightArrowProc(w, event, prms, nprms)
@@ -6440,10 +6375,10 @@ void HighlightArrowProc(w, event, prms, nprms)
     if (appData.highlightMoveWithArrow) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Arrow"), args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget,
+//			       "menuOptions.Arrow"), args, 1);
 }
 
 #if 0
@@ -6460,10 +6395,10 @@ void IcsAlarmProc(w, event, prms, nprms)
     if (appData.icsAlarm) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.ICS Alarm"), args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget,
+//			       "menuOptions.ICS Alarm"), args, 1);
 }
 #endif
 
@@ -6480,10 +6415,10 @@ void MoveSoundProc(w, event, prms, nprms)
     if (appData.ringBellAfterMoves) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
+//		args, 1);
 }
 
 void OneClickProc(w, event, prms, nprms)
@@ -6499,10 +6434,10 @@ void OneClickProc(w, event, prms, nprms)
     if (appData.oneClick) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.OneClick"),
-		args, 1);
+    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.OneClick"),
+    //		args, 1);
 }
 
 void PeriodicUpdatesProc(w, event, prms, nprms)
@@ -6518,10 +6453,10 @@ void PeriodicUpdatesProc(w, event, prms, nprms)
     if (appData.periodicUpdates) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Periodic Updates"),
-		args, 1);
+    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Periodic Updates"),
+    //		args, 1);
 }
 
 void PopupExitMessageProc(w, event, prms, nprms)
@@ -6537,10 +6472,10 @@ void PopupExitMessageProc(w, event, prms, nprms)
     if (appData.popupExitMessage) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Popup Exit Message"), args, 1);
+    //    XtSetValues(XtNameToWidget(menuBarWidget,
+    //			       "menuOptions.Popup Exit Message"), args, 1);
 }
 
 void PopupMoveErrorsProc(w, event, prms, nprms)
@@ -6556,10 +6491,10 @@ void PopupMoveErrorsProc(w, event, prms, nprms)
     if (appData.popupMoveErrors) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Popup Move Errors"),
-		args, 1);
+    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Popup Move Errors"),
+    //		args, 1);
 }
 
 #if 0
@@ -6576,10 +6511,10 @@ void PremoveProc(w, event, prms, nprms)
     if (appData.premove) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget,
-			       "menuOptions.Premove"), args, 1);
+    //    XtSetValues(XtNameToWidget(menuBarWidget,
+    //			       "menuOptions.Premove"), args, 1);
 }
 #endif
 
@@ -6596,10 +6531,10 @@ void ShowCoordsProc(w, event, prms, nprms)
     if (appData.showCoords) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
-		args, 1);
+    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
+    //		args, 1);
 
     DrawPosition(True, NULL);
 }
@@ -6628,10 +6563,10 @@ void HideThinkingProc(w, event, prms, nprms)
     if (appData.hideThinkingFromHuman) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
+//		args, 1);
 }
 #endif
 
@@ -6646,10 +6581,10 @@ void SaveOnExitProcGTK(object, user_data)
     if (saveSettingsOnExit) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
+//		args, 1);
 }
 
 void SaveOnExitProc(w, event, prms, nprms)
@@ -6665,10 +6600,10 @@ void SaveOnExitProc(w, event, prms, nprms)
     if (saveSettingsOnExit) {
       //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
     } else {
-	XtSetArg(args[0], XtNleftBitmap, None);
+      //	XtSetArg(args[0], XtNleftBitmap, None);
     }
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
-		args, 1);
+//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
+//		args, 1);
 }
 
 void SaveSettingsProcGTK(object, user_data)
@@ -6908,7 +6843,7 @@ void DisplayTitle(text)
     XtSetArg(args[i], XtNiconName, (XtArgVal) icon);    i++;
     XtSetArg(args[i], XtNtitle, (XtArgVal) title);      i++;
     XtSetValues(shellWidget, args, i);
-    XSync(xDisplay, False);
+    //XSync(xDisplay, False);
 }
 
 
@@ -8060,7 +7995,7 @@ FrameDelay (time)
 {
   struct itimerval delay;
 
-  XSync(xDisplay, False);
+  //XSync(xDisplay, False);
 
   if (time > 0) {
     frameWaiting = True;
@@ -8083,7 +8018,7 @@ static void
 FrameDelay (time)
      int time;
 {
-  XSync(xDisplay, False);
+  //XSync(xDisplay, False);
   if (time > 0)
     usleep(time * 1000);
 }
@@ -8680,8 +8615,8 @@ ChangeDragPiece(ChessSquare piece)
   Pixmap mask;
   player.dragPiece = piece;
   /* The piece will be drawn using its own bitmap as a matte	*/
-  SelectGCMask(piece, &player.pieceGC, &player.outlineGC, &mask);
-  XSetClipMask(xDisplay, player.pieceGC, mask);
+//  SelectGCMask(piece, &player.pieceGC, &player.outlineGC, &mask);
+//  XSetClipMask(xDisplay, player.pieceGC, mask);
 }
 
 static void
@@ -8825,17 +8760,6 @@ void SquareToPosGTK(int rank, int file, int *x, int *y)
     }
 }
 
-void SquareToPos(int rank, int file, int *x, int *y)
-{
-    if (flipView) {
-	*x = lineGap + ((BOARD_WIDTH-1)-file) * (squareSize + lineGap);
-	*y = lineGap + rank * (squareSize + lineGap);
-    } else {
-	*x = lineGap + file * (squareSize + lineGap);
-	*y = lineGap + ((BOARD_HEIGHT-1)-rank) * (squareSize + lineGap);
-    }
-}
-
 /* Draw and fill arrow for GTK board */
 void FillPolygon(GdkPoint *arrow)
 {
@@ -8864,7 +8788,6 @@ void DrawArrowBetweenPointsGTK( int s_x, int s_y, int d_x, int d_y )
 {
     GdkPoint arrow[7];    
     double dx, dy, j, k, x, y;
-    int i;
 
     if( d_x == s_x ) {
         int h = (d_y > s_y) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
@@ -8962,109 +8885,6 @@ void DrawArrowBetweenPointsGTK( int s_x, int s_y, int d_x, int d_y )
     FillPolygon(arrow);
 }
 
-/* Draw an arrow between two points using current settings */
-void DrawArrowBetweenPoints( int s_x, int s_y, int d_x, int d_y )
-{
-    XPoint arrow[7];
-    double dx, dy, j, k, x, y;
-
-    if( d_x == s_x ) {
-        int h = (d_y > s_y) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
-
-        arrow[0].x = s_x + A_WIDTH + 0.5;
-        arrow[0].y = s_y;
-
-        arrow[1].x = s_x + A_WIDTH + 0.5;
-        arrow[1].y = d_y - h;
-
-        arrow[2].x = arrow[1].x + A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
-        arrow[2].y = d_y - h;
-
-        arrow[3].x = d_x;
-        arrow[3].y = d_y;
-
-        arrow[5].x = arrow[1].x - 2*A_WIDTH + 0.5;
-        arrow[5].y = d_y - h;
-
-        arrow[4].x = arrow[5].x - A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
-        arrow[4].y = d_y - h;
-
-        arrow[6].x = arrow[1].x - 2*A_WIDTH + 0.5;
-        arrow[6].y = s_y;
-    }
-    else if( d_y == s_y ) {
-        int w = (d_x > s_x) ? +A_WIDTH*A_HEIGHT_FACTOR : -A_WIDTH*A_HEIGHT_FACTOR;
-
-        arrow[0].x = s_x;
-        arrow[0].y = s_y + A_WIDTH + 0.5;
-
-        arrow[1].x = d_x - w;
-        arrow[1].y = s_y + A_WIDTH + 0.5;
-
-        arrow[2].x = d_x - w;
-        arrow[2].y = arrow[1].y + A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
-
-        arrow[3].x = d_x;
-        arrow[3].y = d_y;
-
-        arrow[5].x = d_x - w;
-        arrow[5].y = arrow[1].y - 2*A_WIDTH + 0.5;
-
-        arrow[4].x = d_x - w;
-        arrow[4].y = arrow[5].y - A_WIDTH*(A_WIDTH_FACTOR-1) + 0.5;
-
-        arrow[6].x = s_x;
-        arrow[6].y = arrow[1].y - 2*A_WIDTH + 0.5;
-    }
-    else {
-        /* [AS] Needed a lot of paper for this! :-) */
-        dy = (double) (d_y - s_y) / (double) (d_x - s_x);
-        dx = (double) (s_x - d_x) / (double) (s_y - d_y);
-
-        j = sqrt( Sqr(A_WIDTH) / (1.0 + Sqr(dx)) );
-
-        k = sqrt( Sqr(A_WIDTH*A_HEIGHT_FACTOR) / (1.0 + Sqr(dy)) );
-
-        x = s_x;
-        y = s_y;
-
-        arrow[0].x = Round(x - j);
-        arrow[0].y = Round(y + j*dx);
-
-        arrow[1].x = Round(arrow[0].x + 2*j);   // [HGM] prevent width to be affected by rounding twice
-        arrow[1].y = Round(arrow[0].y - 2*j*dx);
-
-        if( d_x > s_x ) {
-            x = (double) d_x - k;
-            y = (double) d_y - k*dy;
-        }
-        else {
-            x = (double) d_x + k;
-            y = (double) d_y + k*dy;
-        }
-
-        x = Round(x); y = Round(y); // [HGM] make sure width of shaft is rounded the same way on both ends
-
-        arrow[6].x = Round(x - j);
-        arrow[6].y = Round(y + j*dx);
-
-        arrow[2].x = Round(arrow[6].x + 2*j);
-        arrow[2].y = Round(arrow[6].y - 2*j*dx);
-
-        arrow[3].x = Round(arrow[2].x + j*(A_WIDTH_FACTOR-1));
-        arrow[3].y = Round(arrow[2].y - j*(A_WIDTH_FACTOR-1)*dx);
-
-        arrow[4].x = d_x;
-        arrow[4].y = d_y;
-
-        arrow[5].x = Round(arrow[6].x - j*(A_WIDTH_FACTOR-1));
-        arrow[5].y = Round(arrow[6].y + j*(A_WIDTH_FACTOR-1)*dx);
-    }
-
-    XFillPolygon(xDisplay, xBoardWindow, highlineGC, arrow, 7, Nonconvex, CoordModeOrigin);
-//    Polygon( hdc, arrow, 7 );
-}
-
 /* [AS] Draw an arrow between two squares */
 void DrawArrowBetweenSquaresGTK( int s_col, int s_row, int d_col, int d_row )
 {
@@ -9116,57 +8936,6 @@ void DrawArrowBetweenSquaresGTK( int s_col, int s_row, int d_col, int d_row )
     }
 }
 
-/* [AS] Draw an arrow between two squares */
-void DrawArrowBetweenSquares( int s_col, int s_row, int d_col, int d_row )
-{
-    int s_x, s_y, d_x, d_y, hor, vert, i;
-
-    if( s_col == d_col && s_row == d_row ) {
-        return;
-    }
-
-    /* Get source and destination points */
-    SquareToPos( s_row, s_col, &s_x, &s_y);
-    SquareToPos( d_row, d_col, &d_x, &d_y);
-
-    if( d_y > s_y ) {
-        d_y += squareSize / 2 - squareSize / 4; // [HGM] round towards same centers on all sides!
-    }
-    else if( d_y < s_y ) {
-        d_y += squareSize / 2 + squareSize / 4;
-    }
-    else {
-        d_y += squareSize / 2;
-    }
-
-    if( d_x > s_x ) {
-        d_x += squareSize / 2 - squareSize / 4;
-    }
-    else if( d_x < s_x ) {
-        d_x += squareSize / 2 + squareSize / 4;
-    }
-    else {
-        d_x += squareSize / 2;
-    }
-
-    s_x += squareSize / 2;
-    s_y += squareSize / 2;
-
-    /* Adjust width */
-    A_WIDTH = squareSize / 14.; //[HGM] make float
-    
-    DrawArrowBetweenPoints( s_x, s_y, d_x, d_y );
-
-    hor = 64*s_col + 32; vert = 64*s_row + 32;
-    for(i=0; i<= 64; i++) {
-            damage[0][vert+6>>6][hor+6>>6] = True;
-            damage[0][vert-6>>6][hor+6>>6] = True;
-            damage[0][vert+6>>6][hor-6>>6] = True;
-            damage[0][vert-6>>6][hor-6>>6] = True;
-            hor += d_col - s_col; vert += d_row - s_row;
-    }
-}
-
 Boolean IsDrawArrowEnabled()
 {
     return appData.highlightMoveWithArrow && squareSize >= 32;
@@ -9176,12 +8945,6 @@ void DrawArrowHighlightGTK(int fromX, int fromY, int toX,int toY)
 {
     if( IsDrawArrowEnabled() && fromX >= 0 && fromY >= 0 && toX >= 0 && toY >= 0)
         DrawArrowBetweenSquaresGTK(fromX, fromY, toX, toY);    
-}
-
-void DrawArrowHighlight(int fromX, int fromY, int toX,int toY)
-{
-    if( IsDrawArrowEnabled() && fromX >= 0 && fromY >= 0 && toX >= 0 && toY >= 0)        
-        DrawArrowBetweenSquares(fromX, fromY, toX, toY);    
 }
 
 void UpdateLogos(int displ)

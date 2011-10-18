@@ -141,13 +141,13 @@ void ReadIcon(char *pixData[], int iconNr)
 {
     int r;
 
-	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(outputField[0][nColorIcon]),
-				       pixData,
-				       &(icons[iconNr]),
-				       NULL, NULL /*&attr*/)) != 0) {
-	  fprintf(stderr, _("Error %d loading icon image\n"), r);
-	  exit(1);
-	}
+//	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(outputField[0][nColorIcon]),
+//				       pixData,
+//				       &(icons[iconNr]),
+//				       NULL, NULL /*&attr*/)) != 0) {
+//	  fprintf(stderr, _("Error %d loading icon image\n"), r);
+//	  exit(1);
+//	}
 }
 
 static void InitializeEngineOutput()
@@ -166,15 +166,15 @@ void DoSetWindowText(int which, int field, char *s_label)
 {
 	Arg arg;
 
-	XtSetArg(arg, XtNlabel, (XtArgVal) s_label);
-	XtSetValues(outputField[which][field], &arg, 1);
+//	XtSetArg(arg, XtNlabel, (XtArgVal) s_label);
+//	XtSetValues(outputField[which][field], &arg, 1);
 }
 
 void SetEngineOutputTitle(char *title)
 {
 	Arg arg;
-	XtSetArg(arg, XtNtitle, (XtArgVal) title);
-	XtSetValues(engineOutputShell, &arg, 1);
+//	XtSetArg(arg, XtNtitle, (XtArgVal) title);
+//	XtSetValues(engineOutputShell, &arg, 1);
 }
 
 void InsertIntoMemo( int which, char * text, int where )
@@ -184,16 +184,16 @@ void InsertIntoMemo( int which, char * text, int where )
 
 	/* the backend adds \r\n, which is needed for winboard,
 	 * for xboard we delete them again over here */
-	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
-
-	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
-	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
-	XawTextReplace(edit, where, where, &t);
-	if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
-	    int len = strlen(text);
-	    highTextStart[which] += len; highTextEnd[which] += len;
-	    XawTextSetSelection( outputField[which][nMemo], highTextStart[which], highTextEnd[which] );
-	}
+//	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
+//
+//	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
+//	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
+//	XawTextReplace(edit, where, where, &t);
+//	if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
+//	    int len = strlen(text);
+//	    highTextStart[which] += len; highTextEnd[which] += len;
+//	    XawTextSetSelection( outputField[which][nMemo], highTextStart[which], highTextEnd[which] );
+//	}
 }
 
 void SetIcon( int which, int field, int nIcon )
