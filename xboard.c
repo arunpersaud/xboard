@@ -403,9 +403,9 @@ Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   jailSquareColor, highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
-GC lightSquareGC, darkSquareGC, jailSquareGC, lineGC, wdPieceGC, wlPieceGC,
-  bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, highlineGC,
-  wjPieceGC, bjPieceGC, prelineGC, countGC;
+GC lightSquareGC, darkSquareGC,  lineGC,  wlPieceGC,
+   blPieceGC, wbPieceGC, bwPieceGC, highlineGC,
+   prelineGC, countGC;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
@@ -3095,13 +3095,8 @@ void DeleteGCs()
 	}
     } else {
 	XtReleaseGC(shellWidget, prelineGC);
-	XtReleaseGC(shellWidget, jailSquareGC);
-	XtReleaseGC(shellWidget, wdPieceGC);
 	XtReleaseGC(shellWidget, wlPieceGC);
-	XtReleaseGC(shellWidget, wjPieceGC);
-	XtReleaseGC(shellWidget, bdPieceGC);
 	XtReleaseGC(shellWidget, blPieceGC);
-	XtReleaseGC(shellWidget, bjPieceGC);
     }
 }
 
@@ -3176,33 +3171,13 @@ void CreateGCs(int redo)
 	gc_values.background = lightSquareColor;
 	darkSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
 
-	gc_values.foreground = jailSquareColor;
-	gc_values.background = jailSquareColor;
-	jailSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = darkSquareColor;
-	wdPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
 	gc_values.foreground = whitePieceColor;
 	gc_values.background = lightSquareColor;
 	wlPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
 
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = jailSquareColor;
-	wjPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = darkSquareColor;
-	bdPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
 	gc_values.foreground = blackPieceColor;
 	gc_values.background = lightSquareColor;
 	blPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = jailSquareColor;
-	bjPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
     }
 }
 
@@ -3927,17 +3902,14 @@ static void BlankSquareGTK(x, y, color, piece, dest, fac)
 
     switch (color) {
       case 1: /* light */
-        //gc = lightSquareGC;
         pb = SVGLightSquare;
         break;
       case 0: /* dark */
         pb = SVGDarkSquare;
-        //gc = darkSquareGC;
         break;
       case 2: /* neutral */
         default:
         pb = SVGNeutralSquare;
-       //gc = jailSquareGC;
        break;
     }
 
