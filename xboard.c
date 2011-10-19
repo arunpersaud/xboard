@@ -1,5 +1,5 @@
 /*
- * xboard.c -- X front end for XBoard
+ * xboard.c -- Gtk front end for XBoard
  *
  * Copyright 1991 by Digital Equipment Corporation, Maynard,
  * Massachusetts.
@@ -404,7 +404,7 @@ Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   jailSquareColor, highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
 GC lightSquareGC, darkSquareGC, jailSquareGC, lineGC, wdPieceGC, wlPieceGC,
-  bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, coordGC, highlineGC,
+  bdPieceGC, blPieceGC, wbPieceGC, bwPieceGC, highlineGC,
   wjPieceGC, bjPieceGC, prelineGC, countGC;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
@@ -3120,10 +3120,6 @@ void CreateGCs(int redo)
   if(redo) {
     DeleteGCs(); // called a second time; clean up old GCs first
   } else { // [HGM] grid and font GCs created on first call only
-    gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-    gc_values.background = XWhitePixel(xDisplay, xScreen);
-    coordGC = XtGetGC(shellWidget, value_mask, &gc_values);
-    XSetFont(xDisplay, coordGC, coordFontID);
 
     // [HGM] make font for holdings counts (white on black)
     gc_values.foreground = XWhitePixel(xDisplay, xScreen);
@@ -4117,33 +4113,63 @@ void DrawSquareGTK(row, column, piece, do_flash)
 	}
 
     string[1] = NULLCHAR;
-    if (appData.showCoords && row == (flipView ? BOARD_HEIGHT-1 : 0)
-		&& column >= BOARD_LEFT && column < BOARD_RGHT) {
-	string[0] = 'a' + column - BOARD_LEFT;
-	//XTextExtents(coordFontStruct, string, 1, &direction,
-	//		     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode) {
-	  //  XDrawImageString(xDisplay, xBoardWindow, coordGC,
-	  //		     x + squareSize - overall.width - 2,
-	  //		     y + squareSize - font_descent - 1, string, 1);
-	} else {
-	  //XDrawString(xDisplay, xBoardWindow, coordGC,
-	  //		x + squareSize - overall.width - 2,
-	  //		y + squareSize - font_descent - 1, string, 1);
-	}
-    }
-    if (appData.showCoords && column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT)) {
-	string[0] = ONE + row;
-	//	XTextExtents(coordFontStruct, string, 1, &direction,
-	//	     &font_ascent, &font_descent, &overall);
-	if (appData.monoMode) {
-	  //  XDrawImageString(xDisplay, xBoardWindow, coordGC,
-	  //		     x + 2, y + font_ascent + 1, string, 1);
-	} else {
-	  //XDrawString(xDisplay, xBoardWindow, coordGC,
-	  //		x + 2, y + font_ascent + 1, string, 1);
-	}
-    }
+    if (appData.showCoords)
+      {
+	cairo_text_extents_t extents;
+	cairo_font_extents_t fe;
+        cairo_t *cr;
+        int  xpos, ypos;
+
+	/* get a cairo_t */
+        cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
+        /* GTK-TODO this has to go into the font-selection */
+        cairo_select_font_face (cr, "Sans",
+                                CAIRO_FONT_SLANT_NORMAL,
+                                CAIRO_FONT_WEIGHT_NORMAL);
+        cairo_set_font_size (cr, 12.0);
+
+	/* get offset for font */
+	cairo_font_extents (cr, &fe);
+
+	if( row == (flipView ? BOARD_HEIGHT-1 : 0)
+	    && column >= BOARD_LEFT && column < BOARD_RGHT)
+	  {
+	    string[0] = 'a' + column - BOARD_LEFT;
+	    cairo_text_extents (cr, string, &extents);
+
+	    xpos = x + squareSizeGTK - extents.width - 2;
+            ypos = y + squareSizeGTK - fe.descent - 1;
+
+	    cairo_move_to (cr, xpos, ypos);
+	    cairo_text_path (cr, string);
+	    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+	    cairo_fill_preserve (cr);
+	    cairo_set_source_rgb (cr, 0, 0, 1.0);
+	    cairo_set_line_width (cr, 0.1);
+	    cairo_stroke (cr);
+	  }
+	if (column == (flipView ? BOARD_RGHT-1 : BOARD_LEFT))
+	  {
+	    string[0] = ONE + row;
+	    cairo_text_extents (cr, string, &extents);
+
+	    xpos = x + 2;
+            ypos = y + extents.height + 1;
+
+	    cairo_move_to (cr, xpos, ypos);
+	    cairo_text_path (cr, string);
+	    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+	    cairo_fill_preserve (cr);
+	    cairo_set_source_rgb (cr, 0, 0, 1.0);
+	    cairo_set_line_width (cr, 0.1);
+	    cairo_stroke (cr);
+	  }
+
+        /* free memory */
+        cairo_destroy (cr);
+
+      }
     if(!partnerUp && marker[row][column]) {
       //	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC,
       //	x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
@@ -7742,7 +7768,7 @@ DoInputCallback(io, cond, data)
   /* read input from one of the input source (for example a chess program, ICS, etc).
    * and call a function that will handle the input
    */
-  
+
     int count;
     int error;
     char *p, *q;
@@ -7777,7 +7803,7 @@ DoInputCallback(io, cond, data)
 	    *q++ = *p++;
 	}
 	is->unused = q;
-    } else {  
+    } else {
       /* read maximum length of input buffer and send the whole buffer
        * to the callback function
        */
@@ -7810,7 +7836,7 @@ InputSourceRef AddInputSource(pr, lineByLine, func, closure)
 	is->kind = cp->kind;
 	is->fd = cp->fdFrom;
     }
-    if (lineByLine) 
+    if (lineByLine)
       is->unused = is->buf;
     else
       is->unused = NULL;

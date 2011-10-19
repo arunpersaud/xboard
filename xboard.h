@@ -164,7 +164,6 @@ extern int startedFromPositionFile;
 extern char *icsTextMenuString;
 extern char ICSInputTranslations[];
 extern char *selected_fen_position;
-extern GC coordGC;
 
 
 #define TOPLEVEL 1 /* preference item; 1 = make popup windows toplevel */
