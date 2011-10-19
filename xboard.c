@@ -405,7 +405,7 @@ Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
 Pixel lowTimeWarningColor;
 GC lightSquareGC, darkSquareGC,  lineGC,  wlPieceGC,
    blPieceGC, wbPieceGC, bwPieceGC, highlineGC,
-   prelineGC, countGC;
+   prelineGC;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
@@ -3114,14 +3114,7 @@ void CreateGCs(int redo)
 
   if(redo) {
     DeleteGCs(); // called a second time; clean up old GCs first
-  } else { // [HGM] grid and font GCs created on first call only
-
-    // [HGM] make font for holdings counts (white on black)
-    gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-    gc_values.background = XBlackPixel(xDisplay, xScreen);
-    countGC = XtGetGC(shellWidget, value_mask, &gc_values);
-    XSetFont(xDisplay, countGC, countFontID);
-  }
+  } 
     gc_values.foreground = XBlackPixel(xDisplay, xScreen);
     gc_values.background = XBlackPixel(xDisplay, xScreen);
     lineGC = XtGetGC(shellWidget, value_mask, &gc_values);
@@ -4030,39 +4023,63 @@ void DrawSquareGTK(row, column, piece, do_flash)
     square_color = SquareColor(row, column);
 
     if ( // [HGM] holdings: blank out area between board and holdings
-                 column == BOARD_LEFT-1 ||  column == BOARD_RGHT
-              || (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
-	          || (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) {
-			BlankSquareGTK(x, y, 2, EmptySquare, xBoardWindow, 1);
+	column == BOARD_LEFT-1 ||  column == BOARD_RGHT
+	|| (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
+	|| (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) 
+      {
+	cairo_text_extents_t extents;
+	cairo_font_extents_t fe;
+        cairo_t *cr;
+        int  xpos, ypos;
+	
+	/* get a cairo_t */
+        cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
 
-			// [HGM] print piece counts next to holdings
-			string[1] = NULLCHAR;
-			if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) {
-			    string[0] = '0' + piece;
-			    //XTextExtents(countFontStruct, string, 1, &direction,
-			    //	 &font_ascent, &font_descent, &overall);
-			    if (appData.monoMode) {
-			      //	XDrawImageString(xDisplay, xBoardWindow, countGC,
-			      //		 x + squareSize - overall.width - 2,
-			      //		 y + font_ascent + 1, string, 1);
-			    } else {
-			      //		XDrawString(xDisplay, xBoardWindow, countGC,
-			      //	    x + squareSize - overall.width - 2,
-			      //	    y + font_ascent + 1, string, 1);
-			    }
-			}
-			if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) {
-			    string[0] = '0' + piece;
-			    //XTextExtents(countFontStruct, string, 1, &direction,
-			    //		 &font_ascent, &font_descent, &overall);
-			    if (appData.monoMode) {
-			      //	XDrawImageString(xDisplay, xBoardWindow, countGC,
-			      //		 x + 2, y + font_ascent + 1, string, 1);
-			    } else {
-			      //		XDrawString(xDisplay, xBoardWindow, countGC,
-			      //	    x + 2, y + font_ascent + 1, string, 1);
-			    }
-			}
+        /* GTK-TODO this has to go into the font-selection */
+        cairo_select_font_face (cr, "Sans",
+                                CAIRO_FONT_SLANT_NORMAL,
+                                CAIRO_FONT_WEIGHT_NORMAL);
+        cairo_set_font_size (cr, 12.0);
+
+	/* get offset for font */
+	cairo_font_extents (cr, &fe);
+
+	BlankSquareGTK(x, y, 2, EmptySquare, xBoardWindow, 1);
+	
+	// [HGM] print piece counts next to holdings
+	string[1] = NULLCHAR;
+	if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) 
+	  {
+	    string[0] = '0' + piece;
+	    cairo_text_extents (cr, string, &extents);
+
+	    xpos = x + squareSizeGTK - extents.width - 2;
+            ypos = y + fe.ascent + 1;
+
+	    cairo_move_to (cr, xpos, ypos);
+	    cairo_text_path (cr, string);
+	    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+	    cairo_fill_preserve (cr);
+	    cairo_set_source_rgb (cr, 0, 0, 1.0);
+	    cairo_set_line_width (cr, 0.1);
+	    cairo_stroke (cr);
+	  }
+	if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) 
+	  {
+	    string[0] = '0' + piece;
+	    cairo_text_extents (cr, string, &extents);
+
+	    xpos = x + 2;
+            ypos = y + fe.ascent + 1;
+
+	    cairo_move_to (cr, xpos, ypos);
+	    cairo_text_path (cr, string);
+	    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+	    cairo_fill_preserve (cr);
+	    cairo_set_source_rgb (cr, 0, 0, 1.0);
+	    cairo_set_line_width (cr, 0.1);
+	    cairo_stroke (cr);
+	}
     } else {
 	    if (piece == EmptySquare || appData.blindfold) {
 			BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
