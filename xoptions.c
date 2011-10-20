@@ -161,7 +161,6 @@ extern WindowPlacement wpComment, wpTags, wpMoveHistory;
 char *trialSound;
 static int oldCores, oldPonder;
 int MakeColors P((void));
-void CreateGCs P((int redo));
 int GenericReadout P((int selected));
 Widget shells[10];
 GtkWidget *shellsGTK[10];
@@ -724,7 +723,7 @@ int BoardOptionsOK(int n)
         lineGapGTK = GetLineGap();
 
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
-    MakeColors(); CreateGCs(True);
+    MakeColors();
     LoadSvgFiles();
     InitDrawingSizes(-1, 0);
     DrawPosition(True, NULL);

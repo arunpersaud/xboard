@@ -237,7 +237,6 @@ int main P((int argc, char **argv));
 RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
-void CreateGCs P((int redo));
 void CreatePieces P((void));
 void CreatePieceMenus P((void));
 Widget CreateMenuBar P((Menu *mb));
@@ -376,8 +375,6 @@ Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   jailSquareColor, highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
-GC lightSquareGC, darkSquareGC,  lineGC,  wlPieceGC,
-   blPieceGC, wbPieceGC, bwPieceGC, prelineGC;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
@@ -2371,8 +2368,6 @@ main(argc, argv)
     marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
     marginH =  h - boardHeight;
 
-    CreateGCs(False);
-
     CreatePieceMenus();
 
     if (appData.animate || appData.animateDragging)
@@ -3042,91 +3037,6 @@ FindFont(pattern, targetPxlSize)
     return p;
 }
 #endif
-
-void DeleteGCs()
-{   // [HGM] deletes GCs that are to be remade, to prevent resource leak;
-    // must be called before all non-first callse to CreateGCs()
-    XtReleaseGC(shellWidget, lightSquareGC);
-    XtReleaseGC(shellWidget, darkSquareGC);
-    XtReleaseGC(shellWidget, lineGC);
-    if (appData.monoMode) {
-	if (DefaultDepth(xDisplay, xScreen) == 1) {
-	    XtReleaseGC(shellWidget, wbPieceGC);
-	} else {
-	    XtReleaseGC(shellWidget, bwPieceGC);
-	}
-    } else {
-	XtReleaseGC(shellWidget, prelineGC);
-	XtReleaseGC(shellWidget, wlPieceGC);
-	XtReleaseGC(shellWidget, blPieceGC);
-    }
-}
-
-void CreateGCs(int redo)
-{
-    XtGCMask value_mask = GCLineWidth | GCLineStyle | GCForeground
-      | GCBackground | GCFunction | GCPlaneMask;
-    XGCValues gc_values;
-    GC copyInvertedGC;
-
-    gc_values.plane_mask = AllPlanes;
-    gc_values.line_width = lineGap;
-    gc_values.line_style = LineSolid;
-    gc_values.function = GXcopy;
-
-  if(redo) {
-    DeleteGCs(); // called a second time; clean up old GCs first
-  }
-    gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-    gc_values.background = XBlackPixel(xDisplay, xScreen);
-    lineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-    if (appData.monoMode) {
-	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-	gc_values.background = XBlackPixel(xDisplay, xScreen);
-	lightSquareGC = wbPieceGC
-	  = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = XBlackPixel(xDisplay, xScreen);
-	gc_values.background = XWhitePixel(xDisplay, xScreen);
-	darkSquareGC = bwPieceGC
-	  = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	if (DefaultDepth(xDisplay, xScreen) == 1) {
-	    /* Avoid XCopyPlane on 1-bit screens to work around Sun bug */
-	    gc_values.function = GXcopyInverted;
-	    copyInvertedGC = XtGetGC(shellWidget, value_mask, &gc_values);
-	    gc_values.function = GXcopy;
-	    if (XBlackPixel(xDisplay, xScreen) == 1) {
-		bwPieceGC = darkSquareGC;
-		wbPieceGC = copyInvertedGC;
-	    } else {
-		bwPieceGC = copyInvertedGC;
-		wbPieceGC = lightSquareGC;
-	    }
-	}
-    } else {
-	gc_values.foreground = premoveHighlightColor;
-	gc_values.background = premoveHighlightColor;
-	prelineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = lightSquareColor;
-	gc_values.background = darkSquareColor;
-	lightSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = darkSquareColor;
-	gc_values.background = lightSquareColor;
-	darkSquareGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = whitePieceColor;
-	gc_values.background = lightSquareColor;
-	wlPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
-	gc_values.foreground = blackPieceColor;
-	gc_values.background = lightSquareColor;
-	blPieceGC = XtGetGC(shellWidget, value_mask, &gc_values);
-    }
-}
 
 static VariantClass oldVariant = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
 
@@ -7969,36 +7879,6 @@ Tween(start, mid, finish, factor, frames, nFrames)
   return;
 }
 
-/*	Draw a piece on the screen without disturbing what's there	*/
-
-static void
-SelectGCMask(piece, clip, outline, mask)
-     ChessSquare piece; GC * clip; GC * outline; Pixmap * mask;
-{
-  GC source;
-
-  /* GC for piece being moved. Square color doesn't matter, but
-     since it gets modified we make a copy of the original. */
-  if (White(piece)) {
-    if (appData.monoMode)
-      source = bwPieceGC;
-    else
-      source = wlPieceGC;
-  } else {
-    if (appData.monoMode)
-      source = wbPieceGC;
-    else
-      source = blPieceGC;
-  }
-  XCopyGC(xDisplay, source, 0xFFFFFFFF, *clip);
-
-  /* Outline only used in mono mode and is not modified */
-  if (White(piece))
-    *outline = bwPieceGC;
-  else
-    *outline = wbPieceGC;
-}
-
 GdkPixbuf *getPixbuf(int piece) {
     GdkPixbuf *pb=NULL;
 
@@ -8110,7 +7990,7 @@ BeginAnimation(anim, piece, startColor, start)
   anim->prevFrame = *start;
 
   /* The piece will be drawn using its own bitmap as a matte	*/
-  SelectGCMask(piece, &anim->pieceGC, &anim->outlineGC, &mask);
+  //  SelectGCMask(piece, &anim->pieceGC, &anim->outlineGC, &mask);
   XSetClipMask(xDisplay, anim->pieceGC, mask);
 }
 
