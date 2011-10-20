@@ -289,41 +289,14 @@ void PromotionPopDown P((void));
 void PromotionCallback P((GtkWidget *w, GtkResponseType resptype,
                           gpointer gdata));
 void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
-void LoadGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void LoadNextGameProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void LoadPrevGameProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void ReloadGameProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
-void LoadPositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void LoadNextPositionProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void LoadPrevPositionProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
 void ReloadPositionProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
-void CopyPositionProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void PastePositionProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
-void CopyGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void CopyGameListProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PasteGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SaveGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SavePositionProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void MailMoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ReloadCmailMsgProc P((Widget w, XEvent *event, String *prms,
-			    Cardinal *nprms));
-void AnalyzeFileProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
-void EditCommentProc P((Widget w, XEvent *event,
-			String *prms, Cardinal *nprms));
-void IcsInputBoxProc P((Widget w, XEvent *event,
-			String *prms, Cardinal *nprms));
-void AbortProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -563,37 +536,37 @@ MenuItem fileMenu[] = {
     {N_("New Shuffle Game ..."),          "New Shuffle Game", NothingProc},
     {N_("New Variant ...   Alt+Shift+V"), "New Variant", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Load Game       Ctrl+O"),        "Load Game", LoadGameProc},
-    {N_("Load Position    Ctrl+Shift+O"), "Load Position", LoadPositionProc},
+    {N_("Load Game       Ctrl+O"),        "Load Game", NothingProc},
+    {N_("Load Position    Ctrl+Shift+O"), "Load Position", NothingProc},
 //    {N_("Load Next Game"), "Load Next Game", LoadNextGameProc},
 //    {N_("Load Previous Game"), "Load Previous Game", LoadPrevGameProc},
 //    {N_("Reload Same Game"), "Reload Same Game", ReloadGameProc},
-    {N_("Next Position     Shift+PgDn"), "Load Next Position", LoadNextPositionProc},
-    {N_("Prev Position     Shift+PgUp"), "Load Previous Position", LoadPrevPositionProc},
+    {N_("Next Position     Shift+PgDn"), "Load Next Position", NothingProc},
+    {N_("Prev Position     Shift+PgUp"), "Load Previous Position", NothingProc},
     {"----", NULL, NothingProc},
 //    {N_("Reload Same Position"), "Reload Same Position", ReloadPositionProc},
-    {N_("Save Game       Ctrl+S"),        "Save Game", SaveGameProc},
-    {N_("Save Position    Ctrl+Shift+S"), "Save Position", SavePositionProc},
+    {N_("Save Game       Ctrl+S"),        "Save Game", NothingProc},
+    {N_("Save Position    Ctrl+Shift+S"), "Save Position", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Mail Move"),            "Mail Move", MailMoveProc},
-    {N_("Reload CMail Message"), "Reload CMail Message", ReloadCmailMsgProc},
+    {N_("Mail Move"),            "Mail Move", NothingProc},
+    {N_("Reload CMail Message"), "Reload CMail Message", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Quit                 Ctr+Q"), "Exit", NothingProc},
     {NULL, NULL, NULL}
 };
 
 MenuItem editMenu[] = {
-    {N_("Copy Game    Ctrl+C"),        "Copy Game", CopyGameProc},
-    {N_("Copy Position Ctrl+Shift+C"), "Copy Position", CopyPositionProc},
-    {N_("Copy Game List"),        "Copy Game List", CopyGameListProc},
+    {N_("Copy Game    Ctrl+C"),        "Copy Game", NothingProc},
+    {N_("Copy Position Ctrl+Shift+C"), "Copy Position", NothingProc},
+    {N_("Copy Game List"),        "Copy Game List", NothingProc},
     {"----", NULL, NothingProc},
-    {N_("Paste Game    Ctrl+V"),        "Paste Game", PasteGameProc},
-    {N_("Paste Position Ctrl+Shift+V"), "Paste Position", PastePositionProc},
+    {N_("Paste Game    Ctrl+V"),        "Paste Game", NothingProc},
+    {N_("Paste Position Ctrl+Shift+V"), "Paste Position", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Edit Game      Ctrl+E"),        "Edit Game", NothingProc},
     {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", NothingProc},
     {N_("Edit Tags"),                    "Edit Tags", NothingProc},
-    {N_("Edit Comment"),                 "Edit Comment", EditCommentProc},
+    {N_("Edit Comment"),                 "Edit Comment", NothingProc},
     {N_("Edit Book"),                    "Edit Book", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Revert              Home"), "Revert", NothingProc},
@@ -617,8 +590,8 @@ MenuItem viewMenu[] = {
     {N_("ICS text menu"), "ICStex", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Tags"),             "Show Tags", NothingProc},
-    {N_("Comments"),         "Show Comments", EditCommentProc},
-    {N_("ICS Input Box"),    "ICS Input Box", IcsInputBoxProc},
+    {N_("Comments"),         "Show Comments", NothingProc},
+    {N_("ICS Input Box"),    "ICS Input Box", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Board..."),          "Board Options", NothingProc},
     {N_("Game List Tags..."), "Game List", NothingProc},
@@ -630,7 +603,7 @@ MenuItem modeMenu[] = {
     {N_("Machine Black  Ctrl+B"), "Machine Black", NothingProc},
     {N_("Two Machines   Ctrl+T"), "Two Machines", NothingProc},
     {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", NothingProc},
-    {N_("Analyze Game   Ctrl+G"), "Analyze File", AnalyzeFileProc },
+    {N_("Analyze Game   Ctrl+G"), "Analyze File", NothingProc },
     {N_("Edit Game         Ctrl+E"), "Edit Game", NothingProc},
     {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", NothingProc},
     {N_("Training"),      "Training", NothingProc},
@@ -649,7 +622,7 @@ MenuItem actionMenu[] = {
     {N_("Call Flag          F5"), "Call Flag", NothingProc},
     {N_("Draw                F6"), "Draw", NothingProc},
     {N_("Adjourn            F7"),  "Adjourn", NothingProc},
-    {N_("Abort                F8"),"Abort", AbortProc},
+    {N_("Abort                F8"),"Abort", NothingProc},
     {N_("Resign              F9"), "Resign", NothingProc},
     {"----", NULL, NothingProc},
     {N_("Stop Observing  F10"), "Stop Observing", NothingProc},
@@ -865,31 +838,14 @@ XtActionsRec boardActions[] = {
     { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
-    { "LoadGameProc", LoadGameProc },
     { "LoadNextGameProc", LoadNextGameProc },
     { "LoadPrevGameProc", LoadPrevGameProc },
 //    { "LoadSelectedProc", LoadSelectedProc },
     { "SetFilterProc", SetFilterProc },
     { "ReloadGameProc", ReloadGameProc },
-    { "LoadPositionProc", LoadPositionProc },
-    { "LoadNextPositionProc", LoadNextPositionProc },
-    { "LoadPrevPositionProc", LoadPrevPositionProc },
     { "ReloadPositionProc", ReloadPositionProc },
-    { "CopyPositionProc", CopyPositionProc },
-    { "PastePositionProc", PastePositionProc },
-    { "CopyGameProc", CopyGameProc },
-    { "CopyGameListProc", CopyGameListProc },
-    { "PasteGameProc", PasteGameProc },
-    { "SaveGameProc", SaveGameProc },
-    { "SavePositionProc", SavePositionProc },
-    { "MailMoveProc", MailMoveProc },
-    { "ReloadCmailMsgProc", ReloadCmailMsgProc },
-    { "AnalyzeFileProc", AnalyzeFileProc },
     { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
-    { "EditCommentProc", EditCommentProc },
-    { "IcsInputBoxProc", IcsInputBoxProc },
-    { "AbortProc", AbortProc },
     { "EnterKeyProc", EnterKeyProc },
     { "UpKeyProc", UpKeyProc },
     { "DownKeyProc", DownKeyProc },
@@ -939,22 +895,10 @@ XtActionsRec boardActions[] = {
 };
 
 char globalTranslations[] =
-  ":Ctrl<Key>o: LoadGameProc() \n \
-   :Meta<Key>Next: LoadNextGameProc() \n \
+  ":Meta<Key>Next: LoadNextGameProc() \n \
    :Meta<Key>Prior: LoadPrevGameProc() \n \
-   :Ctrl<Key>s: SaveGameProc() \n \
-   :Ctrl<Key>c: CopyGameProc() \n \
-   :Ctrl<Key>v: PasteGameProc() \n \
-   :Ctrl<Key>O: LoadPositionProc() \n \
-   :Shift<Key>Next: LoadNextPositionProc() \n \
-   :Shift<Key>Prior: LoadPrevPositionProc() \n \
-   :Ctrl<Key>S: SavePositionProc() \n \
-   :Ctrl<Key>C: CopyPositionProc() \n \
-   :Ctrl<Key>V: PastePositionProc() \n \
-   :Ctrl<Key>g: AnalyzeFileProc() \n \
    :Meta<Key>E: EvalGraphProc() \n \
    :Meta<Key>G: ShowGameListProc() \n \
-   :<Key>F8: AbortProc() \n \
    :Meta Ctrl<Key>F12: DebugProc() \n \
    :Ctrl<Key>P: PonderNextMoveProc() \n "
 #ifndef OPTIONSDIALOG
@@ -5267,18 +5211,6 @@ void LoadGameProcGTK(object, user_data)
     FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb", OPEN);
 }
 
-void LoadGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
-	Reset(FALSE, TRUE);
-    }
-    FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb", OPEN);
-}
-
 void LoadNextGameProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -5313,27 +5245,9 @@ void LoadNextPositionProcGTK(object, user_data)
     ReloadPosition(1);
 }
 
-void LoadNextPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ReloadPosition(1);
-}
-
 void LoadPrevPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    ReloadPosition(-1);
-}
-
-void LoadPrevPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     ReloadPosition(-1);
 }
@@ -5357,33 +5271,9 @@ void LoadPositionProcGTK(object, user_data)
     FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb", OPEN);
 }
 
-void LoadPositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (gameMode == AnalyzeMode || gameMode == AnalyzeFile) {
-	Reset(FALSE, TRUE);
-    }
-    FileNamePopUp(_("Load position file name?"), "", ".fen .epd .pos", LoadPosition, "rb", OPEN);
-}
-
 void SaveGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    FileNamePopUp(_("Save game file name?"),
-		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
-		  appData.oldSaveStyle ? ".game" : ".pgn",
-		  SaveGame, "a",SAVE);
-}
-
-void SaveGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     FileNamePopUp(_("Save game file name?"),
 		  DefaultFileName(appData.oldSaveStyle ? "game" : "pgn"),
@@ -5401,18 +5291,6 @@ void SavePositionProcGTK(object, user_data)
 		  SavePosition, "a",SAVE);
 }
 
-void SavePositionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    FileNamePopUp(_("Save position file name?"),
-		  DefaultFileName(appData.oldSaveStyle ? "pos" : "fen"),
-		  appData.oldSaveStyle ? ".pos" : ".fen",
-		  SavePosition, "a",SAVE);
-}
-
 void ReloadCmailMsgProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -5420,27 +5298,9 @@ void ReloadCmailMsgProcGTK(object, user_data)
     ReloadCmailMsgEvent(FALSE);
 }
 
-void ReloadCmailMsgProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    ReloadCmailMsgEvent(FALSE);
-}
-
 void MailMoveProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    MailMoveEvent();
-}
-
-void MailMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     MailMoveEvent();
 }
@@ -5511,35 +5371,6 @@ void CopyPositionProcGTK(object, user_data)
 //		   NULL/* transfer_done_proc */);
 }
 
-/* note: when called from menu all parameters are NULL, so no clue what the
- * Widget which was clicked on was, or what the click event was
- */
-void CopyPositionProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
-  {
-    /*
-     * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
-     * have a notion of a position that is selected but not copied.
-     * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
-     */
-    if(gameMode == EditPosition) EditPositionDone(TRUE);
-    if (selected_fen_position) free(selected_fen_position);
-    selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
-    if (!selected_fen_position) return;
-//    XtOwnSelection(menuBarWidget, XA_PRIMARY,
-//		   CurrentTime,
-//		   SendPositionSelection,
-//		   NULL/* lose_ownership_proc */ ,
-//		   NULL/* transfer_done_proc */);
-//    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-//		   CurrentTime,
-//		   SendPositionSelection,
-//		   NULL/* lose_ownership_proc */ ,
-//		   NULL/* transfer_done_proc */);
-  }
 
 /* function called when the data to Paste is ready */
 static void
@@ -5568,27 +5399,6 @@ void PastePositionProcGTK(object, user_data)
 //      CurrentTime
 //    );
     return;
-}
-
-/* called when Paste Position button is pressed,
- * all parameters will be NULL */
-void PastePositionProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
-{
-//    XtGetSelectionValue(menuBarWidget,
-//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-//      /* (XtSelectionCallbackProc) */ PastePositionCB,
-//      NULL, /* client_data passed to PastePositionCB */
-//
-//      /* better to use the time field from the event that triggered the
-//       * call to this function, but that isn't trivial to get
-//       */
-//      CurrentTime
-//    );
-//    return;
 }
 
 static Boolean
@@ -5668,36 +5478,9 @@ void CopyGameProcGTK(object, user_data)
   CopySomething();
 }
 
-/* note: when called from menu all parameters are NULL, so no clue what the
- * Widget which was clicked on was, or what the click event was
- */
-void CopyGameProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
-{
-  int ret;
-
-  ret = SaveGameToFile(gameCopyFilename, FALSE);
-  if (!ret) return;
-
-  CopySomething();
-}
-
 void CopyGameListProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-  if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
-  CopySomething();
-}
-
-void CopyGameListProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
 {
   if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
   CopySomething();
@@ -5740,31 +5523,9 @@ void PasteGameProcGTK(object, user_data)
     return;
 }
 
-/* called when Paste Game button is pressed,
- * all parameters will be NULL */
-void PasteGameProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
-{
-//    XtGetSelectionValue(menuBarWidget,
-//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-//      /* (XtSelectionCallbackProc) */ PasteGameCB,
-//      NULL, /* client_data passed to PasteGameCB */
-//
-//      /* better to use the time field from the event that triggered the
-//       * call to this function, but that isn't trivial to get
-//       */
-//      CurrentTime
-//    );
-    return;
-}
-
-
 void AutoSaveGame()
 {
-    SaveGameProc(NULL, NULL, NULL, NULL);
+    SaveGameProcGTK(NULL, NULL);
 }
 
 /* exit the application */
@@ -5860,28 +5621,6 @@ void AnalyzeFileProcGTK(object, user_data)
     AnalysisPeriodicEvent(1);
 }
 
-void AnalyzeFileProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (!first.analysisSupport) {
-      char buf[MSG_SIZ];
-      snprintf(buf, sizeof(buf), _("%s does not support analysis"), first.tidy);
-      DisplayError(buf, 0);
-      return;
-    }
-//    Reset(FALSE, TRUE);
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc(w,event,prms,nprms);
-#endif
-    AnalyzeFileEvent();
-//    FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb");
-    AnalysisPeriodicEvent(1);
-}
-
 void TwoMachinesProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -5939,35 +5678,9 @@ void EditCommentProcGTK(object, user_data)
 	EditCommentEvent();
 }
 
-void EditCommentProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[5];
-    int j;
-    if (PopDown(1)) { // popdown succesful
-	j = 0;
-	XtSetArg(args[j], XtNleftBitmap, None); j++;
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"), args, j);
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"), args, j);
-    } else // was not up
-	EditCommentEvent();
-}
-
 void IcsInputBoxProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    if (!PopDown(4)) ICSInputBoxPopUp();
-}
-
-void IcsInputBoxProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     if (!PopDown(4)) ICSInputBoxPopUp();
 }
@@ -6010,15 +5723,6 @@ void DrawProcGTK(object, user_data)
 void AbortProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    AbortEvent();
-}
-
-void AbortProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
     AbortEvent();
 }
