@@ -451,6 +451,9 @@ GdkPixbuf       *SVGWhiteBishop=NULL;
 GdkPixbuf       *SVGWhiteRook=NULL;
 GdkPixbuf       *SVGWhiteKing=NULL;
 GdkPixbuf       *SVGWhiteQueen=NULL;
+GdkPixbuf       *SVGWhiteCardinal=NULL;
+GdkPixbuf       *SVGWhiteMarshall=NULL;
+GdkPixbuf       *SVGWhite=NULL;
 
 GdkPixbuf       *SVGBlackPawn=NULL;
 GdkPixbuf       *SVGBlackKnight=NULL;
@@ -458,6 +461,9 @@ GdkPixbuf       *SVGBlackBishop=NULL;
 GdkPixbuf       *SVGBlackRook=NULL;
 GdkPixbuf       *SVGBlackKing=NULL;
 GdkPixbuf       *SVGBlackQueen=NULL;
+GdkPixbuf       *SVGBlackCardinal=NULL;
+GdkPixbuf       *SVGBlackMarshall=NULL;
+GdkPixbuf       *SVGBlack=NULL;
 
 /* scaled pixbufs */
 GdkPixbuf       *SVGscWhitePawn=NULL;
@@ -466,6 +472,9 @@ GdkPixbuf       *SVGscWhiteBishop=NULL;
 GdkPixbuf       *SVGscWhiteRook=NULL;
 GdkPixbuf       *SVGscWhiteKing=NULL;
 GdkPixbuf       *SVGscWhiteQueen=NULL;
+GdkPixbuf       *SVGscWhiteCardinal=NULL;
+GdkPixbuf       *SVGscWhiteMarshall=NULL;
+GdkPixbuf       *SVGscWhite=NULL;
 
 GdkPixbuf       *SVGscBlackPawn=NULL;
 GdkPixbuf       *SVGscBlackKnight=NULL;
@@ -473,6 +482,9 @@ GdkPixbuf       *SVGscBlackBishop=NULL;
 GdkPixbuf       *SVGscBlackRook=NULL;
 GdkPixbuf       *SVGscBlackKing=NULL;
 GdkPixbuf       *SVGscBlackQueen=NULL;
+GdkPixbuf       *SVGscBlackCardinal=NULL;
+GdkPixbuf       *SVGscBlackMarshall=NULL;
+GdkPixbuf       *SVGscBlack=NULL;
 
 FileProc fileProc;
 char *fileOpenMode;
@@ -1661,6 +1673,8 @@ void LoadSvgFiles()
     SVGWhiteBishop   = load_pixbuf("WhiteBishop.svg", 0);
     SVGWhiteRook     = load_pixbuf("WhiteRook.svg", 0);
     SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg", 0);
+    SVGWhiteCardinal = load_pixbuf("WhiteCrownedBishop.svg", 0);
+    SVGWhiteMarshall = load_pixbuf("WhiteChancellor.svg", 0);
     SVGWhiteKing     = load_pixbuf("WhiteKing.svg", 0);
 
     //LoadBlackPieces
@@ -1669,6 +1683,8 @@ void LoadSvgFiles()
     SVGBlackBishop   = load_pixbuf("BlackBishop.svg", 0);
     SVGBlackRook     = load_pixbuf("BlackRook.svg", 0);
     SVGBlackQueen    = load_pixbuf("BlackQueen.svg", 0);
+    SVGBlackCardinal = load_pixbuf("BlackCrownedBishop.svg", 0);
+    SVGBlackMarshall = load_pixbuf("BlackChancellor.svg", 0);
     SVGBlackKing     = load_pixbuf("BlackKing.svg", 0);
 
     SetPieceColor(SVGWhitePawn);
@@ -1676,6 +1692,8 @@ void LoadSvgFiles()
     SetPieceColor(SVGWhiteBishop);
     SetPieceColor(SVGWhiteRook);
     SetPieceColor(SVGWhiteQueen);
+    SetPieceColor(SVGWhiteCardinal);
+    SetPieceColor(SVGWhiteMarshall);
     SetPieceColor(SVGWhiteKing);
 
     SetPieceColor(SVGBlackPawn);
@@ -1683,6 +1701,8 @@ void LoadSvgFiles()
     SetPieceColor(SVGBlackBishop);
     SetPieceColor(SVGBlackRook);
     SetPieceColor(SVGBlackQueen);
+    SetPieceColor(SVGBlackCardinal);
+    SetPieceColor(SVGBlackMarshall);
     SetPieceColor(SVGBlackKing);
 
     ScalePixbufs();
@@ -4185,6 +4205,8 @@ void ScalePixbufs() {
     SVGscWhiteBishop   = gdk_pixbuf_scale_simple(SVGWhiteBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscWhiteRook     = gdk_pixbuf_scale_simple(SVGWhiteRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscWhiteQueen    = gdk_pixbuf_scale_simple(SVGWhiteQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscWhiteCardinal = gdk_pixbuf_scale_simple(SVGWhiteCardinal, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscWhiteMarshall = gdk_pixbuf_scale_simple(SVGWhiteMarshall, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscWhiteKing     = gdk_pixbuf_scale_simple(SVGWhiteKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
 
     SVGscBlackPawn     = gdk_pixbuf_scale_simple(SVGBlackPawn, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
@@ -4192,6 +4214,8 @@ void ScalePixbufs() {
     SVGscBlackBishop   = gdk_pixbuf_scale_simple(SVGBlackBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscBlackRook     = gdk_pixbuf_scale_simple(SVGBlackRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscBlackQueen    = gdk_pixbuf_scale_simple(SVGBlackQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscBlackCardinal = gdk_pixbuf_scale_simple(SVGBlackCardinal, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    SVGscBlackMarshall = gdk_pixbuf_scale_simple(SVGBlackMarshall, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
     SVGscBlackKing     = gdk_pixbuf_scale_simple(SVGBlackKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
 }
 
@@ -8262,6 +8286,12 @@ GdkPixbuf *getPixbuf(int piece) {
       case WhiteQueen:
         pb = SVGscWhiteQueen;
         break;
+      case WhiteAngel:
+        pb = SVGscWhiteCardinal;
+        break;
+      case WhiteMarshall:
+        pb = SVGscWhiteMarshall;
+        break;
       case WhiteKing:
         pb = SVGscWhiteKing;
         break;
@@ -8280,6 +8310,12 @@ GdkPixbuf *getPixbuf(int piece) {
         break;
       case BlackQueen:
         pb = SVGscBlackQueen;
+        break;
+      case BlackAngel:
+        pb = SVGscBlackCardinal;
+        break;
+      case BlackMarshall:
+        pb = SVGscBlackMarshall;
         break;
       case BlackKing:
         pb = SVGscBlackKing;
