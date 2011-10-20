@@ -404,8 +404,7 @@ Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
   jailSquareColor, highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
 GC lightSquareGC, darkSquareGC,  lineGC,  wlPieceGC,
-   blPieceGC, wbPieceGC, bwPieceGC, highlineGC,
-   prelineGC;
+   blPieceGC, wbPieceGC, bwPieceGC, prelineGC;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
@@ -3103,7 +3102,6 @@ FindFont(pattern, targetPxlSize)
 void DeleteGCs()
 {   // [HGM] deletes GCs that are to be remade, to prevent resource leak;
     // must be called before all non-first callse to CreateGCs()
-    XtReleaseGC(shellWidget, highlineGC);
     XtReleaseGC(shellWidget, lightSquareGC);
     XtReleaseGC(shellWidget, darkSquareGC);
     XtReleaseGC(shellWidget, lineGC);
@@ -3134,16 +3132,12 @@ void CreateGCs(int redo)
 
   if(redo) {
     DeleteGCs(); // called a second time; clean up old GCs first
-  } 
+  }
     gc_values.foreground = XBlackPixel(xDisplay, xScreen);
     gc_values.background = XBlackPixel(xDisplay, xScreen);
     lineGC = XtGetGC(shellWidget, value_mask, &gc_values);
 
     if (appData.monoMode) {
-	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
-	gc_values.background = XWhitePixel(xDisplay, xScreen);
-	highlineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
 	gc_values.foreground = XWhitePixel(xDisplay, xScreen);
 	gc_values.background = XBlackPixel(xDisplay, xScreen);
 	lightSquareGC = wbPieceGC
@@ -3168,10 +3162,6 @@ void CreateGCs(int redo)
 	    }
 	}
     } else {
-	gc_values.foreground = highlightSquareColor;
-	gc_values.background = highlightSquareColor;
-	highlineGC = XtGetGC(shellWidget, value_mask, &gc_values);
-
 	gc_values.foreground = premoveHighlightColor;
 	gc_values.background = premoveHighlightColor;
 	prelineGC = XtGetGC(shellWidget, value_mask, &gc_values);
@@ -4045,13 +4035,13 @@ void DrawSquareGTK(row, column, piece, do_flash)
     if ( // [HGM] holdings: blank out area between board and holdings
 	column == BOARD_LEFT-1 ||  column == BOARD_RGHT
 	|| (column == BOARD_LEFT-2 && row < BOARD_HEIGHT-gameInfo.holdingsSize)
-	|| (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) ) 
+	|| (column == BOARD_RGHT+1 && row >= gameInfo.holdingsSize) )
       {
 	cairo_text_extents_t extents;
 	cairo_font_extents_t fe;
         cairo_t *cr;
         int  xpos, ypos;
-	
+
 	/* get a cairo_t */
         cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
 
@@ -4065,10 +4055,10 @@ void DrawSquareGTK(row, column, piece, do_flash)
 	cairo_font_extents (cr, &fe);
 
 	BlankSquareGTK(x, y, 2, EmptySquare, xBoardWindow, 1);
-	
+
 	// [HGM] print piece counts next to holdings
 	string[1] = NULLCHAR;
-	if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 ) 
+	if (column == (flipView ? BOARD_LEFT-1 : BOARD_RGHT) && piece > 1 )
 	  {
 	    string[0] = '0' + piece;
 	    cairo_text_extents (cr, string, &extents);
@@ -4084,7 +4074,7 @@ void DrawSquareGTK(row, column, piece, do_flash)
 	    cairo_set_line_width (cr, 0.1);
 	    cairo_stroke (cr);
 	  }
-	if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1) 
+	if (column == (flipView ? BOARD_RGHT : BOARD_LEFT-1) && piece > 1)
 	  {
 	    string[0] = '0' + piece;
 	    cairo_text_extents (cr, string, &extents);
@@ -4100,26 +4090,33 @@ void DrawSquareGTK(row, column, piece, do_flash)
 	    cairo_set_line_width (cr, 0.1);
 	    cairo_stroke (cr);
 	}
-    } else {
-	    if (piece == EmptySquare || appData.blindfold) {
-			BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
-	    } else {
-			drawfunc = ChooseDrawFuncGTK();
 
-			if (do_flash && appData.flashCount > 0) {
-			    for (i=0; i<appData.flashCount; ++i) {
-					drawfunc(piece, square_color, x, y, xBoardWindow);
-					//XSync(xDisplay, False);
-					do_flash_delay(flash_delay);
+	/* free memory */
+        cairo_destroy (cr);
 
-					BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
-					//XSync(xDisplay, False);
-					do_flash_delay(flash_delay);
-			    }
-			}
-			drawfunc(piece, square_color, x, y, xBoardWindow);
+      }
+    else
+      {
+	if (piece == EmptySquare || appData.blindfold)
+	  {
+	    BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
+	  }
+	else
+	  {
+	    drawfunc = ChooseDrawFuncGTK();
+
+	    if (do_flash && appData.flashCount > 0) {
+	      for (i=0; i<appData.flashCount; ++i) {
+		drawfunc(piece, square_color, x, y, xBoardWindow);
+		do_flash_delay(flash_delay);
+
+		BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
+		do_flash_delay(flash_delay);
+	      }
 	    }
-	}
+	    drawfunc(piece, square_color, x, y, xBoardWindow);
+	  }
+      }
 
     string[1] = NULLCHAR;
     if (appData.showCoords)
@@ -4179,9 +4176,52 @@ void DrawSquareGTK(row, column, piece, do_flash)
         cairo_destroy (cr);
 
       }
-    if(!partnerUp && marker[row][column]) {
-      //	XFillArc(xDisplay, xBoardWindow, marker[row][column] == 2 ? prelineGC : highlineGC,
-      //	x + squareSize/4, y+squareSize/4, squareSize/2, squareSize/2, 0, 64*360);
+    if(!partnerUp && marker[row][column])
+      {
+        cairo_t *cr;
+
+	/* get a cairo_t */
+        cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
+     	cairo_arc(cr, x + squareSize/4,y+squareSize/4, squareSize/2, 0.0, 2*M_PI);
+
+	cairo_set_line_width (cr, 0.1);
+
+	if (marker[row][column] == 2 )
+	  {
+	    /* preline */
+	    cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+	    cairo_stroke_preserve(cr);
+	    cairo_set_source_rgba(cr, 1.0, 0, 0,1.0);
+	    cairo_fill(cr);
+	  }
+	else
+	  {
+	    guint32 col, tmp;
+	    gdouble r, g, b = 0.0;
+
+	    /* highline */
+	    sscanf(appData.highlightSquareColor, "#%x", &col);
+
+	    tmp = (col & 0x00ff0000) >> 16;
+	    r = (gdouble)tmp;
+	    r = r / 255;
+
+	    tmp = (col & 0x0000ff00) >> 8;
+	    g = (gdouble)tmp;
+	    g = g / 255;
+
+	    tmp = (col & 0x000000ff);
+	    b = (gdouble)tmp;
+	    b = b / 255;
+
+	    cairo_set_source_rgba (cr, r, g, b, 1.0);
+
+	    cairo_stroke_preserve(cr);
+	    cairo_fill(cr);
+	  }
+	/* free memory */
+        cairo_destroy (cr);
     }
 }
 
@@ -8519,9 +8559,42 @@ AnimateAtomicCapture(Board board, int fromX, int fromY, int toX, int toY)
 	y = lineGap + ((BOARD_HEIGHT-1)-toY) * (squareSize + lineGap);
     }
     for(i=1; i<4*kFactor; i++) {
-	int r = squareSize * 9 * i/(20*kFactor - 5);
-	XFillArc(xDisplay, xBoardWindow, highlineGC,
-		x + squareSize/2 - r, y+squareSize/2 - r, 2*r, 2*r, 0, 64*360);
+	int rad = squareSize * 9 * i/(20*kFactor - 5);
+
+	guint32 col, tmp;
+	gdouble r, g, b = 0.0;
+
+	cairo_t *cr;
+	int i;
+
+	/* get a cairo_t */
+	cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
+
+	/* highline */
+	sscanf(appData.highlightSquareColor, "#%x", &col);
+
+	tmp = (col & 0x00ff0000) >> 16;
+	r = (gdouble)tmp;
+	r = r / 255;
+
+	tmp = (col & 0x0000ff00) >> 8;
+	g = (gdouble)tmp;
+	g = g / 255;
+
+	tmp = (col & 0x000000ff);
+	b = (gdouble)tmp;
+	b = b / 255;
+
+	cairo_set_source_rgba (cr, r, g, b, 1.0);
+
+	cairo_arc(cr, x + squareSize/2 - rad, y+squareSize/2 - rad, 2*rad, 0.0, 2*M_PI);
+
+	cairo_stroke_preserve(cr);
+	cairo_fill(cr);
+
+	/* free memory */
+	cairo_destroy (cr);
+
 	FrameDelay(appData.animSpeed);
     }
     board[fromY][toY] = piece;
