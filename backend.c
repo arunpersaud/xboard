@@ -465,6 +465,7 @@ int have_sent_ICS_logon = 0;
 int movesPerSession;
 int suddenDeath, whiteStartMove, blackStartMove; /* [HGM] for implementation of 'any per time' sessions, as in first part of byoyomi TC */
 long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement, lastWhite, lastBlack;
+Boolean adjustedClock;
 long timeControl_2; /* [AS] Allow separate time controls */
 char *fullTimeControlString = NULL, *nextSession, *whiteTC, *blackTC; /* [HGM] secondary TC: merge of MPS, TC and inc */
 long timeRemaining[2][MAX_MOVES];
@@ -9438,6 +9439,7 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
     SwitchClocks(forwardMostMove+1); // [HGM] race: incrementing move nr inside
     timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
     timeRemaining[1][forwardMostMove] = blackTimeRemaining;
+    adjustedClock = FALSE;
     gameInfo.result = GameUnfinished;
     if (gameInfo.resultDetails != NULL) {
 	free(gameInfo.resultDetails);
@@ -13415,9 +13417,11 @@ EditGameEvent()
 	    SendToProgram("undo\n", &first);
 	    i--;
 	}
+	if(!adjustedClock) {
 	whiteTimeRemaining = timeRemaining[0][currentMove];
 	blackTimeRemaining = timeRemaining[1][currentMove];
 	DisplayBothClocks();
+	}
 	if (whiteFlag || blackFlag) {
 	    whiteFlag = blackFlag = 0;
 	}
@@ -15739,9 +15743,11 @@ NextTickLength(timeRemaining)
 void
 AdjustClock(Boolean which, int dir)
 {
+    if(appData.autoCallFlag) { DisplayError(_("Clock adjustment not allowed in auto-flag mode"), 0); return; }
     if(which) blackTimeRemaining += 60000*dir;
     else      whiteTimeRemaining += 60000*dir;
     DisplayBothClocks();
+    adjustedClock = TRUE;
 }
 
 /* Stop clocks and reset to a fresh time control */
@@ -15765,6 +15771,7 @@ ResetClocks()
     }
     lastWhite = lastBlack = whiteStartMove = blackStartMove = 0;
     DisplayBothClocks();
+    adjustedClock = FALSE;
 }
 
 #define FUDGE 25 /* 25ms = 1/40 sec; should be plenty even for 50 Hz clocks */
