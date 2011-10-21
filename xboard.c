@@ -279,11 +279,6 @@ void ICSInputBoxPopUp P((void));
 void ICSInputBoxPopDown P((void));
 void FileNamePopUp P((char *label, char *def, char *filter,
 		      FileProc proc, char *openMode, FileAction action));
-void AskQuestionReplyAction P((Widget w, XEvent *event,
-			  String *prms, Cardinal *nprms));
-void AskQuestionProc P((Widget w, XEvent *event,
-			  String *prms, Cardinal *nprms));
-void AskQuestionPopDown P((void));
 void PromotionPopDown P((void));
 void PromotionCallback P((GtkWidget *w, GtkResponseType resptype,
                           gpointer gdata));
@@ -404,6 +399,8 @@ GtkWidget       *whiteTimerWidgetGTK;
 GtkWidget       *blackTimerWidgetGTK;
 GtkWidget       *messageWidgetGTK=NULL;
 GtkWidget       *menubarGTK=NULL;
+
+GtkEntryBuffer  *AskQuestionBuffer;
 
 /* pixbufs */
 GdkPixbuf       *mainwindowIcon=NULL;
@@ -830,8 +827,6 @@ XtActionsRec boardActions[] = {
     { "HandlePV", HandlePV },
     { "SelectPV", SelectPV },
     { "StopPV", StopPV },
-    { "AskQuestionProc", AskQuestionProc },
-    { "AskQuestionReplyAction", AskQuestionReplyAction },
     { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
@@ -880,7 +875,6 @@ XtActionsRec boardActions[] = {
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
     { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
-    { "AskQuestionPopDown", (XtActionProc) AskQuestionPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     //    { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
    // { "PromotionPopDown", (XtActionProc) PromotionPopDown },
@@ -897,20 +891,21 @@ char globalTranslations[] =
    :Meta<Key>E: EvalGraphProc() \n \
    :Meta<Key>G: ShowGameListProc() \n \
    :Meta Ctrl<Key>F12: DebugProc() \n \
-   :Ctrl<Key>P: PonderNextMoveProc() \n "
-#ifndef OPTIONSDIALOG
-    "\
-   :Ctrl<Key>Q: AlwaysQueenProc() \n \
-   :Ctrl<Key>F: AutoflagProc() \n \
-   :Ctrl<Key>A: AnimateMovingProc() \n \
-   :Ctrl<Key>L: TestLegalityProc() \n \
-   :Ctrl<Key>H: HideThinkingProc() \n "
-#endif
-   "\
-   Shift<Key>1: AskQuestionProc(\"Direct command\",\
-                                \"Send to chess program:\",,1) \n \
-   Shift<Key>2: AskQuestionProc(\"Direct command\",\
-                                \"Send to second chess program:\",,2) \n";
+   :Ctrl<Key>P: PonderNextMoveProc() \n ";
+//#ifndef OPTIONSDIALOG
+//    "\
+//   :Ctrl<Key>Q: AlwaysQueenProc() \n \
+//   :Ctrl<Key>F: AutoflagProc() \n \
+//   :Ctrl<Key>A: AnimateMovingProc() \n \
+//   :Ctrl<Key>L: TestLegalityProc() \n \
+//   :Ctrl<Key>H: HideThinkingProc() \n "
+//#endif
+
+// GTK_TODO how to assign to keys
+//   Shift<Key>1: AskQuestionProc(\"Direct command\",\
+//                                \"Send to chess program:\",,1) \n \
+//   Shift<Key>2: AskQuestionProc(\"Direct command\",\
+//                                \"Send to second chess program:\",,2)
 
 char boardTranslations[] =
    "<Btn1Down>: HandleUserMove(0) \n \
@@ -940,7 +935,6 @@ char ICSInputTranslations[] =
     "<Key>Return: EnterKeyProc() \n";
 
 String xboardResources[] = {
-    "*question*value.translations: #override\\n <Key>Return: AskQuestionReplyAction()",
     "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
     NULL
   };
@@ -1984,6 +1978,9 @@ main(argc, argv)
     gtk_window_set_icon(GTK_WINDOW(mainwindow),mainwindowIcon);
 
     gtk_widget_show(mainwindow);
+
+    /* create a text buffer for AskQuestion */
+    AskQuestionBuffer = gtk_entry_buffer_new (NULL,-1);
 
     /* set the minimum size the user can resize the main window to */
     gtk_widget_set_size_request(mainwindow, 402, 314);
@@ -4932,8 +4929,6 @@ void ErrorPopUp(title, label, modal)
     else
       msgtype = GTK_MESSAGE_INFO;    /* Informational message */
 
-    /* set main_application_window to null since we don't have a main
-       GtkWindow yet (main window is still Xt). */
     errorShell = gtk_message_dialog_new(GTK_WINDOW(mainwindow),
             GTK_DIALOG_DESTROY_WITH_PARENT,
             msgtype,
@@ -6637,103 +6632,54 @@ void AskQuestionProc(w, event, prms, nprms)
     AskQuestionEvent(prms[0], prms[1], prms[2], prms[3]);
 }
 
-void AskQuestionPopDown()
-{
-    if (!askQuestionUp) return;
-    XtPopdown(askQuestionShell);
-    XtDestroyWidget(askQuestionShell);
-    askQuestionUp = False;
-}
-
-void AskQuestionReplyAction(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    char buf[MSG_SIZ];
-    int err;
-    String reply;
-
-    reply = XawDialogGetValueString(w = XtParent(w));
-    safeStrCpy(buf, pendingReplyPrefix, sizeof(buf)/sizeof(buf[0]) );
-    if (*buf) strncat(buf, " ", MSG_SIZ - strlen(buf) - 1);
-    strncat(buf, reply, MSG_SIZ - strlen(buf) - 1);
-    strncat(buf, "\n",  MSG_SIZ - strlen(buf) - 1);
-    OutputToProcess(pendingReplyPR, buf, strlen(buf), &err);
-    AskQuestionPopDown();
-
-    if (err) DisplayFatalError(_("Error writing to chess program"), err, 0);
-}
-
-void AskQuestionCallback(w, client_data, call_data)
-     Widget w;
-     XtPointer client_data, call_data;
-{
-    String name;
-    Arg args[16];
-
-    XtSetArg(args[0], XtNlabel, &name);
-    XtGetValues(w, args, 1);
-
-    if (strcmp(name, _("cancel")) == 0) {
-        AskQuestionPopDown();
-    } else {
-	AskQuestionReplyAction(w, NULL, NULL, NULL);
-    }
-}
-
 void AskQuestion(title, question, replyPrefix, pr)
      char *title, *question, *replyPrefix;
      ProcRef pr;
 {
-    Arg args[16];
-    Widget popup, layout, dialog, edit;
-    Window root, child;
-    int x, y, i;
-    int win_x, win_y;
-    unsigned int mask;
+    GtkWidget *askquestion, *label, *inputarea, *input;
+    gint result;
+    const gchar *reply;
 
     safeStrCpy(pendingReplyPrefix, replyPrefix, sizeof(pendingReplyPrefix)/sizeof(pendingReplyPrefix[0]) );
     pendingReplyPR = pr;
 
-    i = 0;
-    XtSetArg(args[i], XtNresizable, True); i++;
-    XtSetArg(args[i], XtNwidth, DIALOG_SIZE); i++;
-    askQuestionShell = popup =
-      XtCreatePopupShell(title, transientShellWidgetClass,
-			 shellWidget, args, i);
+    askquestion = gtk_dialog_new_with_buttons (title,
+					       GTK_WINDOW(mainwindow),
+					       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+					       GTK_STOCK_EXECUTE,
+					       GTK_STOCK_CANCEL,
+					       NULL);
 
-    layout =
-      XtCreateManagedWidget(layoutName, formWidgetClass, popup,
-			    layoutArgs, XtNumber(layoutArgs));
+    /* add a label and a text input area to the dialog */
+    inputarea = gtk_dialog_get_content_area (GTK_DIALOG (askquestion));
+    label = gtk_label_new (question);
+    input = gtk_entry_new_with_buffer (AskQuestionBuffer);
 
-    i = 0;
-    XtSetArg(args[i], XtNlabel, question); i++;
-    XtSetArg(args[i], XtNvalue, ""); i++;
-    XtSetArg(args[i], XtNborderWidth, 0); i++;
-    dialog = XtCreateManagedWidget("question", dialogWidgetClass,
-				   layout, args, i);
+    gtk_container_add (GTK_CONTAINER (inputarea), label);
+    gtk_container_add (GTK_CONTAINER (inputarea), input);
 
-    XawDialogAddButton(dialog, _("enter"), AskQuestionCallback,
-		       (XtPointer) dialog);
-    XawDialogAddButton(dialog, _("cancel"), AskQuestionCallback,
-		       (XtPointer) dialog);
+    /* GTK-TODO: how can we add focus to the input...probably not via gtk_dialog_run */
+    result  = gtk_dialog_run (GTK_DIALOG(askquestion));
 
-    XtRealizeWidget(popup);
+    /* check for output; GTK-TODO is GTK_RESPONSE_ACCEPT correct? */
+    if (result ==  GTK_RESPONSE_ACCEPT )
+      {
+	char buf[MSG_SIZ];
+	int err;
+	String replyPrefix;
 
-    XQueryPointer(xDisplay, xBoardWindow, &root, &child,
-		  &x, &y, &win_x, &win_y, &mask);
+	reply = gtk_entry_get_text (GTK_ENTRY(input));
 
-    XtSetArg(args[0], XtNx, x - 10);
-    XtSetArg(args[1], XtNy, y - 30);
-    XtSetValues(popup, args, 2);
+	safeStrCpy(buf, pendingReplyPrefix, sizeof(buf)/sizeof(buf[0]) );
+	if (*buf) strncat(buf, " ", MSG_SIZ - strlen(buf) - 1);
+	strncat(buf, reply, MSG_SIZ - strlen(buf) - 1);
+	strncat(buf, "\n",  MSG_SIZ - strlen(buf) - 1);
+	OutputToProcess(pendingReplyPR, buf, strlen(buf), &err);
 
-    XtPopup(popup, XtGrabExclusive);
-    askQuestionUp = True;
+	if (err) DisplayFatalError(_("Error writing to chess program"), err, 0);
+      }
 
-    edit = XtNameToWidget(dialog, "*value");
-    XtSetKeyboardFocus(popup, edit);
+    gtk_widget_destroy (askquestion);
 }
 
 
@@ -7673,8 +7619,6 @@ FrameDelay (time)
      int time;
 {
   struct itimerval delay;
-
-  //XSync(xDisplay, False);
 
   if (time > 0) {
     frameWaiting = True;
