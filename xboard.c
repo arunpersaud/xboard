@@ -373,13 +373,13 @@ int xScreen;
 Display *xDisplay;
 Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
-  jailSquareColor, highlightSquareColor, premoveHighlightColor;
+   highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
 Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
   whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
   commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
   menuBarWidget, buttonBarWidget, editShell, analysisShell,
-  ICSInputShell, fileNameShell, askQuestionShell;
+  ICSInputShell,  askQuestionShell;
 GtkWidget *errorShell = NULL, *promotionShellGTK;
 Widget historyShell, evalGraphShell, gameListShell;
 int hOffset; // [HGM] dual
@@ -1570,8 +1570,6 @@ void SetPieceColor(GdkPixbuf *pb)
 
 void LoadSvgFiles()
 {
-    guint32 pixel;
-
     SVGNeutralSquare = load_pixbuf("NeutralSquare.svg", 0);
 
     /* Load background squares from texture files */
@@ -2430,7 +2428,6 @@ main(argc, argv)
 	{
 	  XEvent event;
 	  XtInputMask mask;
-	  int i;
 
 	  while (!(mask = XtAppPending(appContext)) && !gtk_events_pending())
 	    poll(NULL,0,100);
@@ -3752,10 +3749,7 @@ static void BlankSquareGTK(x, y, color, piece, dest, fac)
      ChessSquare piece;
      Drawable dest;
 {   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
-    int x0, y0;
-
     GdkPixbuf *pb=NULL;
-    cairo_t *cr;
 
     switch (color) {
       case 1: /* light */
@@ -3862,10 +3856,9 @@ void DrawSquareGTK(row, column, piece, do_flash)
      int row, column, do_flash;
      ChessSquare piece;
 {
-    int square_color, x, y, direction, font_ascent, font_descent;
+    int square_color, x, y;
     int i;
     char string[2];
-    XCharStruct overall;
     DrawFunc drawfunc;
     int flash_delay;
 
@@ -4856,7 +4849,7 @@ void PromotionCallback(w, resptype, gdata)
 {
     int promoChar;
     GtkWidget *button;
-    GList *gl, *g;
+    GList *gl;
     gint respid;
     gchar *name;
 
@@ -5024,7 +5017,6 @@ char *ModeToWidgetName(mode)
 
 void ModeHighlight()
 {
-    Arg args[16];
     static int oldPausing = FALSE;
     static GameMode oldmode = (GameMode) -1;
     char *wname;
@@ -8000,10 +7992,7 @@ AnimationFrame(anim, frame, piece)
      GdkPoint *frame;
      ChessSquare piece;
 {
-  GdkPoint *pt;
-  GdkRectangle updates[4];
-  GdkRectangle overlap;
-  int  count, i,x,y;
+  int x,y;
   int xb,yb, xoffset,yoffset,sx,sy;
 
 
@@ -8314,7 +8303,6 @@ DragPieceBegin(x, y, instantly)
 void
 ChangeDragPiece(ChessSquare piece)
 {
-  Pixmap mask;
   player.dragPiece = piece;
   /* The piece will be drawn using its own bitmap as a matte	*/
 //  SelectGCMask(piece, &player.pieceGC, &player.outlineGC, &mask);
@@ -8353,7 +8341,6 @@ DragPieceEnd(x, y)
      int x; int y;
 {
     int boardX, boardY, color;
-    int i, j;
     GdkPoint corner;
 
     /* Are we animating? */
