@@ -257,8 +257,6 @@ gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data
 void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
 gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
-void HandleUserMove P((Widget w, XEvent *event,
-		     String *prms, Cardinal *nprms));
 void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
 void HandlePV P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
@@ -819,8 +817,6 @@ XrmOptionDescRec shellOptions[] = {
 };
 
 XtActionsRec boardActions[] = {
-    { "HandleUserMove", HandleUserMove },
-    //{ "AnimateUserMove", AnimateUserMove },
     { "HandlePV", HandlePV },
     { "SelectPV", SelectPV },
     { "StopPV", StopPV },
@@ -903,10 +899,7 @@ char globalTranslations[] =
 //                                \"Send to second chess program:\",,2)
 
 char boardTranslations[] =
-   "<Btn1Down>: HandleUserMove(0) \n \
-   Shift<Btn1Up>: HandleUserMove(1) \n \
-   <Btn1Up>: HandleUserMove(0) \n \
-   <Btn3Motion>: HandlePV() \n \
+   "<Btn3Motion>: HandlePV() \n \
    <Btn3Up>: PieceMenuPopup(menuB) \n \
    Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
                  PieceMenuPopup(menuB) \n \
@@ -4506,15 +4499,13 @@ gboolean HandleUserMoveGTK(window, eventbutton, data)
      GdkEventButton *eventbutton;
      gpointer data;
 {
-    //if (w != boardWidget || errorExitStatus != -1) return;
+  // GTK-TODO do we need to check for the correct window or is the callback set to this window anyway?
+  //if (window != GDK_WINDOW(boardwidgetGTK->window) || errorExitStatus != -1) return;
     if (errorExitStatus != -1) return;
-    //if(nprms) shiftKey = !strcmp(prms[0], "1");
+    shiftKey = eventbutton->state & GDK_BUTTON1_MASK;
 
     if (promotionUp) {
         if (eventbutton->type == GDK_BUTTON_PRESS) {
-	    //XtPopdown(promotionShell);
-	    //XtDestroyWidget(promotionShell);
-	    //promotionUp = False;
 	    PromotionPopDown();
 	    ClearHighlights();
 	    fromX = fromY = -1;
@@ -4527,36 +4518,7 @@ gboolean HandleUserMoveGTK(window, eventbutton, data)
     if(eventbutton->type == GDK_BUTTON_PRESS)   LeftClick(Press,   (int)eventbutton->x, (int)eventbutton->y);
     if(eventbutton->type == GDK_BUTTON_RELEASE) LeftClick(Release, (int)eventbutton->x, (int)eventbutton->y);
 
-    //if(event->type == ButtonPress)   LeftClick(Press,   event->xbutton.x, event->xbutton.y);
-    //if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
     return False;
-}
-
-void HandleUserMove(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (w != boardWidget || errorExitStatus != -1) return;
-    if(nprms) shiftKey = !strcmp(prms[0], "1");
-
-    if (promotionUp) {
-	if (event->type == ButtonPress) {
-	    //XtPopdown(promotionShell);
-	    //XtDestroyWidget(promotionShell);
-	    //promotionUp = False;
-	    PromotionPopDown();
-	    ClearHighlights();
-	    fromX = fromY = -1;
-	} else {
-	    return;
-	}
-    }
-
-    // [HGM] mouse: the rest of the mouse handler is moved to the backend, and called here
-    if(event->type == ButtonPress)   LeftClick(Press,   event->xbutton.x, event->xbutton.y);
-    if(event->type == ButtonRelease) LeftClick(Release, event->xbutton.x, event->xbutton.y);
 }
 
 void
