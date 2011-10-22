@@ -4475,9 +4475,6 @@ void GTKDrawPosition(w, repaint, board)
   }
     /* If piece being dragged around board, must redraw that too */
     DrawDragPiece();
-
-    //XSync(xDisplay, False);
-
 }
 
 gboolean ButtonPressProc(window, eventbutton, data)
@@ -5016,7 +5013,7 @@ void ModeHighlight()
     static GameMode oldmode = (GameMode) -1;
     char *wname;
 
-    if (!boardWidget || !XtIsRealized(boardWidget)) return;
+    if (!boardwidgetGTK || !gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK))) return;
 
     if (pausing != oldPausing) {
 	oldPausing = pausing;
@@ -6498,7 +6495,6 @@ void DisplayTitle(text)
     XtSetArg(args[i], XtNiconName, (XtArgVal) icon);    i++;
     XtSetArg(args[i], XtNtitle, (XtArgVal) title);      i++;
     XtSetValues(shellWidget, args, i);
-    //XSync(xDisplay, False);
 }
 
 
@@ -6557,7 +6553,7 @@ void DisplayFatalError(message, error, status)
 	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
 	message = buf;
     }
-    if (appData.popupExitMessage && boardWidget && XtIsRealized(boardWidget)) {
+    if (appData.popupExitMessage && boardwidgetGTK && gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK)) ) {
       ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
     } else {
       ExitEvent(status);
@@ -7641,7 +7637,6 @@ static void
 FrameDelay (time)
      int time;
 {
-  //XSync(xDisplay, False);
   if (time > 0)
     usleep(time * 1000);
 }
