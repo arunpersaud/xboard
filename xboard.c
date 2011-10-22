@@ -253,7 +253,6 @@ static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 int EventToSquare P((int x, int limit));
 void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
-void DrawSquare P((int row, int column, ChessSquare piece, int do_flash));
 gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data));
 void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
@@ -332,8 +331,6 @@ void HideThinkingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void TestLegalityProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
-void SaveSettingsProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void SaveOnExitProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
@@ -684,8 +681,8 @@ MenuItem optionsMenu[] = {
     {N_("Test Legality          Ctrl+Shift+L"), "Test Legality", TestLegalityProc},
     {"----", NULL, NothingProc},
 #endif
-    {N_("Save Settings Now"),     "Save Settings Now", SaveSettingsProc},
-    {N_("Save Settings on Exit"), "Save Settings on Exit", SaveOnExitProc},
+    {N_("Save Settings Now"),     "Save Settings Now", NothingProc},
+    {N_("Save Settings on Exit"), "Save Settings on Exit", NothingProc},
     {NULL, NULL, NULL}
 };
 
@@ -865,8 +862,6 @@ XtActionsRec boardActions[] = {
     { "HideThinkingProc", HideThinkingProc },
     { "TestLegalityProc", TestLegalityProc },
 #endif
-    { "SaveSettingsProc", SaveSettingsProc },
-    { "SaveOnExitProc", SaveOnExitProc },
     { "AboutGameProc", AboutGameProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
@@ -5813,18 +5808,7 @@ void PonderNextMoveProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     PonderNextMoveEvent(!appData.ponderNextMove);
-#ifndef OPTIONSDIALOG
-    if (appData.ponderNextMove) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Ponder Next Move"),
-//		args, 1);
-#endif
 }
 
 #ifndef OPTIONSDIALOG
@@ -5834,17 +5818,7 @@ void AlwaysQueenProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.alwaysPromoteToQueen = !appData.alwaysPromoteToQueen;
-
-    if (appData.alwaysPromoteToQueen) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
-//		args, 1);
 }
 
 void AnimateDraggingProc(w, event, prms, nprms)
@@ -5853,18 +5827,7 @@ void AnimateDraggingProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.animateDragging = !appData.animateDragging;
-
-    if (appData.animateDragging) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-        CreateAnimVars();
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Dragging"),
-//		args, 1);
 }
 
 void AnimateMovingProc(w, event, prms, nprms)
@@ -5873,18 +5836,7 @@ void AnimateMovingProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.animate = !appData.animate;
-
-    if (appData.animate) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-        CreateAnimVars();
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
-//		args, 1);
 }
 
 void AutoflagProc(w, event, prms, nprms)
@@ -5893,17 +5845,7 @@ void AutoflagProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.autoCallFlag = !appData.autoCallFlag;
-
-    if (appData.autoCallFlag) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
-//		args, 1);
 }
 
 void AutoflipProc(w, event, prms, nprms)
@@ -5912,17 +5854,7 @@ void AutoflipProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.autoFlipView = !appData.autoFlipView;
-
-    if (appData.autoFlipView) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flip View"),
-//		args, 1);
 }
 
 void BlindfoldProc(w, event, prms, nprms)
@@ -5931,17 +5863,7 @@ void BlindfoldProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.blindfold = !appData.blindfold;
-
-    if (appData.blindfold) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Blindfold"),
-//		args, 1);
 
     DrawPosition(True, NULL);
 }
@@ -5952,17 +5874,7 @@ void TestLegalityProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.testLegality = !appData.testLegality;
-
-    if (appData.testLegality) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Test Legality"),
-//		args, 1);
 }
 
 
@@ -5996,17 +5908,7 @@ void HighlightDraggingProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.highlightDragging = !appData.highlightDragging;
-
-    if (appData.highlightDragging) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget,
-//			       "menuOptions.Highlight Dragging"), args, 1);
 }
 #endif
 
@@ -6016,17 +5918,7 @@ void HighlightLastMoveProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.highlightLastMove = !appData.highlightLastMove;
-
-    if (appData.highlightLastMove) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget,
-//			       "menuOptions.Highlight Last Move"), args, 1);
 }
 
 void HighlightArrowProc(w, event, prms, nprms)
@@ -6035,17 +5927,7 @@ void HighlightArrowProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.highlightMoveWithArrow = !appData.highlightMoveWithArrow;
-
-    if (appData.highlightMoveWithArrow) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget,
-//			       "menuOptions.Arrow"), args, 1);
 }
 
 #if 0
@@ -6055,17 +5937,7 @@ void IcsAlarmProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.icsAlarm = !appData.icsAlarm;
-
-    if (appData.icsAlarm) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget,
-//			       "menuOptions.ICS Alarm"), args, 1);
 }
 #endif
 
@@ -6075,17 +5947,7 @@ void MoveSoundProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.ringBellAfterMoves = !appData.ringBellAfterMoves;
-
-    if (appData.ringBellAfterMoves) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
-//		args, 1);
 }
 
 void OneClickProc(w, event, prms, nprms)
@@ -6094,17 +5956,7 @@ void OneClickProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.oneClick = !appData.oneClick;
-
-    if (appData.oneClick) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.OneClick"),
-    //		args, 1);
 }
 
 void PeriodicUpdatesProc(w, event, prms, nprms)
@@ -6113,17 +5965,7 @@ void PeriodicUpdatesProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     PeriodicUpdatesEvent(!appData.periodicUpdates);
-
-    if (appData.periodicUpdates) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Periodic Updates"),
-    //		args, 1);
 }
 
 void PopupExitMessageProc(w, event, prms, nprms)
@@ -6132,17 +5974,7 @@ void PopupExitMessageProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.popupExitMessage = !appData.popupExitMessage;
-
-    if (appData.popupExitMessage) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    //    XtSetValues(XtNameToWidget(menuBarWidget,
-    //			       "menuOptions.Popup Exit Message"), args, 1);
 }
 
 void PopupMoveErrorsProc(w, event, prms, nprms)
@@ -6151,17 +5983,7 @@ void PopupMoveErrorsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.popupMoveErrors = !appData.popupMoveErrors;
-
-    if (appData.popupMoveErrors) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Popup Move Errors"),
-    //		args, 1);
 }
 
 #if 0
@@ -6171,17 +5993,7 @@ void PremoveProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.premove = !appData.premove;
-
-    if (appData.premove) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    //    XtSetValues(XtNameToWidget(menuBarWidget,
-    //			       "menuOptions.Premove"), args, 1);
 }
 #endif
 
@@ -6191,18 +6003,7 @@ void ShowCoordsProc(w, event, prms, nprms)
      String *prms;
      Cardinal *nprms;
 {
-    Arg args[16];
-
     appData.showCoords = !appData.showCoords;
-
-    if (appData.showCoords) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-    //    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
-    //		args, 1);
-
     DrawPosition(True, NULL);
 }
 
@@ -6226,14 +6027,6 @@ void HideThinkingProc(w, event, prms, nprms)
 
     appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: tken out of ShowThinkingEvent
     ShowThinkingEvent();
-
-    if (appData.hideThinkingFromHuman) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
-//		args, 1);
 }
 #endif
 
@@ -6241,36 +6034,7 @@ void SaveOnExitProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    Arg args[16];
-
     saveSettingsOnExit = !saveSettingsOnExit;
-
-    if (saveSettingsOnExit) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
-//		args, 1);
-}
-
-void SaveOnExitProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    saveSettingsOnExit = !saveSettingsOnExit;
-
-    if (saveSettingsOnExit) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Save Settings on Exit"),
-//		args, 1);
 }
 
 void SaveSettingsProcGTK(object, user_data)
@@ -6278,15 +6042,6 @@ void SaveSettingsProcGTK(object, user_data)
      gpointer user_data;
 {
     SaveSettings(settingsFileName);
-}
-
-void SaveSettingsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-     SaveSettings(settingsFileName);
 }
 
 void InfoProcGTK(object, user_data)
@@ -6434,12 +6189,6 @@ void DisplayMessage(message, extMessage)
   /* need to test if messageWidget already exists, since this function
      can also be called during the startup, if for example a Xresource
      is not set up correctly */
-  if(messageWidget)
-    {
-      XtSetArg(arg, XtNlabel, message);
-      XtSetValues(messageWidget, &arg, 1);
-    };
-
   if(messageWidgetGTK)
     {
       gtk_label_set_text(GTK_LABEL(messageWidgetGTK), message);
@@ -6451,17 +6200,13 @@ void DisplayMessage(message, extMessage)
 void DisplayTitle(text)
      char *text;
 {
-    Arg args[16];
-    int i;
     char title[MSG_SIZ];
     char icon[MSG_SIZ];
 
     if (text == NULL) text = "";
 
     if (appData.titleInWindow) {
-	i = 0;
-	XtSetArg(args[i], XtNlabel, text);   i++;
-	XtSetValues(titleWidget, args, i);
+	/* GTK TODO set label for title in window */
     }
 
     if (*text != NULLCHAR) {
@@ -6491,10 +6236,9 @@ void DisplayTitle(text)
       safeStrCpy(icon, first.tidy, sizeof(icon)/sizeof(icon[0]) );
 	snprintf(title,sizeof(title), "%s: %s", programName, first.tidy);
     }
-    i = 0;
-    XtSetArg(args[i], XtNiconName, (XtArgVal) icon);    i++;
-    XtSetArg(args[i], XtNtitle, (XtArgVal) title);      i++;
-    XtSetValues(shellWidget, args, i);
+
+    gtk_window_set_title (GTK_WINDOW(mainwindow), title);
+    /*  GTK-TODO can we also set the icon name? */
 }
 
 
