@@ -65,6 +65,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gdk/gdkkeysyms.h>
 
 
 #if !OMIT_SOCKETS
@@ -256,6 +257,7 @@ void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
 gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data));
 void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
 gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
+gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
 gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
 void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
 void HandlePV P((Widget w, XEvent * event,
@@ -891,12 +893,6 @@ char globalTranslations[] =
 //   :Ctrl<Key>L: TestLegalityProc() \n \
 //   :Ctrl<Key>H: HideThinkingProc() \n "
 //#endif
-
-// GTK_TODO how to assign to keys
-//   Shift<Key>1: AskQuestionProc(\"Direct command\",\
-//                                \"Send to chess program:\",,1) \n \
-//   Shift<Key>2: AskQuestionProc(\"Direct command\",\
-//                                \"Send to second chess program:\",,2)
 
 char boardTranslations[] =
    "<Btn3Motion>: HandlePV() \n \
@@ -4484,6 +4480,32 @@ void GTKDrawPosition(w, repaint, board)
     DrawDragPiece();
 }
 
+gboolean KeyPressProc(window, eventkey, data)
+     GtkWindow *window;
+     GdkEventKey  *eventkey;
+     gpointer data;
+{
+    // if shift-1 or shift-2 entered then popup the askquestion dialog to send a command to the engine
+    if (eventkey->state & GDK_SHIFT_MASK) {
+        guint keyval;
+
+        gdk_keymap_translate_keyboard_state(NULL, eventkey->hardware_keycode,
+                                         0, eventkey->group,
+                                        &keyval, NULL, NULL, NULL);
+        switch(keyval) {
+            case GDK_1:                        
+                AskQuestionEvent("Direct command", "Send to chess program:", "", "1"); 
+                break;
+            case GDK_2:               
+                AskQuestionEvent("Direct command", "Send to second chess program:", "", "2");
+                break;
+            default:            
+                break;        
+        }
+        return False;
+    }
+}
+
 gboolean ButtonPressProc(window, eventbutton, data)
      GtkWindow *window;
      GdkEventButton  *eventbutton;
@@ -6339,20 +6361,6 @@ void DisplayIcsInteractionTitle(message)
 char pendingReplyPrefix[MSG_SIZ];
 ProcRef pendingReplyPR;
 
-void AskQuestionProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (*nprms != 4) {
-	fprintf(stderr, _("AskQuestionProc needed 4 parameters, got %d\n"),
-		*nprms);
-	return;
-    }
-    AskQuestionEvent(prms[0], prms[1], prms[2], prms[3]);
-}
-
 void AskQuestion(title, question, replyPrefix, pr)
      char *title, *question, *replyPrefix;
      ProcRef pr;
@@ -6367,8 +6375,8 @@ void AskQuestion(title, question, replyPrefix, pr)
     askquestion = gtk_dialog_new_with_buttons (title,
 					       GTK_WINDOW(mainwindow),
 					       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-					       GTK_STOCK_EXECUTE,
-					       GTK_STOCK_CANCEL,
+					       GTK_STOCK_EXECUTE, GTK_RESPONSE_ACCEPT,
+					       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					       NULL);
 
     /* add a label and a text input area to the dialog */
@@ -6378,11 +6386,11 @@ void AskQuestion(title, question, replyPrefix, pr)
 
     gtk_container_add (GTK_CONTAINER (inputarea), label);
     gtk_container_add (GTK_CONTAINER (inputarea), input);
-
-    /* GTK-TODO: how can we add focus to the input...probably not via gtk_dialog_run */
+    gtk_widget_show_all(askquestion);
+    
     result  = gtk_dialog_run (GTK_DIALOG(askquestion));
 
-    /* check for output; GTK-TODO is GTK_RESPONSE_ACCEPT correct? */
+    /* check for output */
     if (result ==  GTK_RESPONSE_ACCEPT )
       {
 	char buf[MSG_SIZ];

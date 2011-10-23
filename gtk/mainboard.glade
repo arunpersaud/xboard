@@ -4,6 +4,7 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="mainwindow">
     <signal name="destroy" handler="QuitProcGTK"/>
+    <signal name="key_press_event" handler="KeyPressProc"/>
     <child>
       <object class="GtkVBox" id="mainvbox">
         <property name="visible">True</property>
