@@ -1868,7 +1868,7 @@ SendToICS(s)
 {
     int count, outCount, outError;
 
-    if (icsPR == NULL) return;
+    if (icsPR == NoProc) return;
 
     count = strlen(s);
     outCount = OutputMaybeTelnet(icsPR, s, count, &outError);
@@ -1887,7 +1887,7 @@ SendToICSDelayed(s,msdelay)
 {
     int count, outCount, outError;
 
-    if (icsPR == NULL) return;
+    if (icsPR == NoProc) return;
 
     count = strlen(s);
     if (appData.debugMode) {
@@ -3900,7 +3900,7 @@ read_from_ics(isr, closure, data, count, error)
 #if ZIPPY
 		if (appData.zippyPlay && first.initDone) {
 		    ZippyGameEnd(endtype, why);
-		    if (first.pr == NULL) {
+		    if (first.pr == NoProc) {
 		      /* Start the next process early so that we'll
 			 be ready for the next challenge */
 		      StartChessProgram(&first);
@@ -10040,7 +10040,7 @@ NextTourneyGame(int nr, int *swapColors)
 	matchGame = 1; roundNr = nr / syncInterval + 1;
     }
 
-    if(first.pr != NoProc) return 1; // engines already loaded
+    if(first.pr != NoProc || second.pr != NoProc) return 1; // engines already loaded
 
     // redefine engines, engine dir, etc.
     NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
@@ -10648,7 +10648,7 @@ Reset(redraw, init)
     timeRemaining[0][0] = whiteTimeRemaining;
     timeRemaining[1][0] = blackTimeRemaining;
 
-    if (first.pr == NULL) {
+    if (first.pr == NoProc) {
 	StartChessProgram(&first);
     }
     if (init) {
@@ -13132,7 +13132,7 @@ int
 WaitForEngine(ChessProgramState *cps, DelayedEventCallback retry)
 {
     char buf[MSG_SIZ];
-    if (cps->pr == NULL) {
+    if (cps->pr == NoProc) {
 	StartChessProgram(cps);
 	if (cps->protocolVersion == 1) {
 	  retry();
@@ -14813,7 +14813,7 @@ SendToProgram(message, cps)
     int count, outCount, error;
     char buf[MSG_SIZ];
 
-    if (cps->pr == NULL) return;
+    if (cps->pr == NoProc) return;
     Attention(cps);
 
     if (appData.debugMode) {
