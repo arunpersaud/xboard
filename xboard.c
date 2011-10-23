@@ -294,43 +294,9 @@ void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AlwaysQueenProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void AnimateDraggingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void AnimateMovingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void AutoflagProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void AutoflipProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void BlindfoldProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void FlashMovesProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void HighlightDraggingProc P((Widget w, XEvent *event, String *prms,
-			      Cardinal *nprms));
-void HighlightLastMoveProc P((Widget w, XEvent *event, String *prms,
-			      Cardinal *nprms));
-void HighlightArrowProc P((Widget w, XEvent *event, String *prms,
-			      Cardinal *nprms));
-void MoveSoundProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-//void IcsAlarmProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void OneClickProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PeriodicUpdatesProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
 void PonderNextMoveProc P((Widget w, XEvent *event, String *prms,
 			   Cardinal *nprms));
-void PopupMoveErrorsProc P((Widget w, XEvent *event, String *prms,
-			Cardinal *nprms));
-void PopupExitMessageProc P((Widget w, XEvent *event, String *prms,
-			     Cardinal *nprms));
-//void PremoveProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void ShowCoordsProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void ShowThinkingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void HideThinkingProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void TestLegalityProc P((Widget w, XEvent *event, String *prms,
-			  Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
@@ -346,7 +312,6 @@ static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
 void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
-//void GenericPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
 int CopyMemoProc P(());
@@ -640,10 +605,6 @@ MenuItem engineMenu[] = {
 };
 
 MenuItem optionsMenu[] = {
-#define OPTIONSDIALOG
-#ifdef OPTIONSDIALOG
-    {N_("General ..."), "General", NothingProc},
-#endif
     {N_("Time Control ...       Alt+Shift+T"), "Time Control", NothingProc},
     {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", NothingProc},
     {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", NothingProc},
@@ -654,32 +615,6 @@ MenuItem optionsMenu[] = {
     {N_("Game List ..."),    "Game List", NothingProc},
     {N_("Sounds ..."),    "Sounds", NothingProc},
     {"----", NULL, NothingProc},
-#ifndef OPTIONSDIALOG
-    {N_("Always Queen        Ctrl+Shift+Q"),   "Always Queen", AlwaysQueenProc},
-    {N_("Animate Dragging"), "Animate Dragging", AnimateDraggingProc},
-    {N_("Animate Moving      Ctrl+Shift+A"),   "Animate Moving", AnimateMovingProc},
-    {N_("Auto Flag               Ctrl+Shift+F"), "Auto Flag", AutoflagProc},
-    {N_("Auto Flip View"),   "Auto Flip View", AutoflipProc},
-    {N_("Blindfold"),        "Blindfold", BlindfoldProc},
-    {N_("Flash Moves"),      "Flash Moves", FlashMovesProc},
-#if HIGHDRAG
-    {N_("Highlight Dragging"),    "Highlight Dragging", HighlightDraggingProc},
-#endif
-    {N_("Highlight Last Move"),   "Highlight Last Move", HighlightLastMoveProc},
-    {N_("Highlight With Arrow"),  "Arrow", HighlightArrowProc},
-    {N_("Move Sound"),            "Move Sound", MoveSoundProc},
-//    {N_("ICS Alarm"),             "ICS Alarm", IcsAlarmProc},
-    {N_("One-Click Moving"),      "OneClick", OneClickProc},
-    {N_("Periodic Updates"),      "Periodic Updates", PeriodicUpdatesProc},
-    {N_("Ponder Next Move  Ctrl+Shift+P"), "Ponder Next Move", PonderNextMoveProc},
-    {N_("Popup Exit Message"),    "Popup Exit Message", PopupExitMessageProc},
-    {N_("Popup Move Errors"),     "Popup Move Errors", PopupMoveErrorsProc},
-//    {N_("Premove"),               "Premove", PremoveProc},
-    {N_("Show Coords"),           "Show Coords", ShowCoordsProc},
-    {N_("Hide Thinking        Ctrl+Shift+H"),   "Hide Thinking", HideThinkingProc},
-    {N_("Test Legality          Ctrl+Shift+L"), "Test Legality", TestLegalityProc},
-    {"----", NULL, NothingProc},
-#endif
     {N_("Save Settings Now"),     "Save Settings Now", NothingProc},
     {N_("Save Settings on Exit"), "Save Settings on Exit", NothingProc},
     {NULL, NULL, NULL}
@@ -836,29 +771,6 @@ XtActionsRec boardActions[] = {
     { "UpKeyProc", UpKeyProc },
     { "DownKeyProc", DownKeyProc },
     { "PonderNextMoveProc", PonderNextMoveProc },
-#ifndef OPTIONSDIALOG
-    { "AlwaysQueenProc", AlwaysQueenProc },
-    { "AnimateDraggingProc", AnimateDraggingProc },
-    { "AnimateMovingProc", AnimateMovingProc },
-    { "AutoflagProc", AutoflagProc },
-    { "AutoflipProc", AutoflipProc },
-    { "BlindfoldProc", BlindfoldProc },
-    { "FlashMovesProc", FlashMovesProc },
-#if HIGHDRAG
-    { "HighlightDraggingProc", HighlightDraggingProc },
-#endif
-    { "HighlightLastMoveProc", HighlightLastMoveProc },
-//    { "IcsAlarmProc", IcsAlarmProc },
-    { "MoveSoundProc", MoveSoundProc },
-    { "PeriodicUpdatesProc", PeriodicUpdatesProc },
-    { "PopupExitMessageProc", PopupExitMessageProc },
-    { "PopupMoveErrorsProc", PopupMoveErrorsProc },
-//    { "PremoveProc", PremoveProc },
-    { "ShowCoordsProc", ShowCoordsProc },
-    { "ShowThinkingProc", ShowThinkingProc },
-    { "HideThinkingProc", HideThinkingProc },
-    { "TestLegalityProc", TestLegalityProc },
-#endif
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
     //{ "CommentClick", (XtActionProc) CommentClick },
@@ -871,7 +783,6 @@ XtActionsRec boardActions[] = {
    // { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
-   // { "GenericPopDown", (XtActionProc) GenericPopDown },
     { "CopyMemoProc", (XtActionProc) CopyMemoProc },
     { "SelectMove", (XtActionProc) SelectMove },
 };
@@ -2247,99 +2158,6 @@ main(argc, argv)
     /*
      * Create X checkmark bitmap and initialize option menu checks.
      */
-#ifndef OPTIONSDIALOG
-    if (appData.alwaysPromoteToQueen) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Always Queen"),
-		    args, 1);
-    }
-    if (appData.animateDragging) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Animate Dragging"),
-		    args, 1);
-    }
-    if (appData.animate) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Animate Moving"),
-		    args, 1);
-    }
-    if (appData.autoCallFlag) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Auto Flag"),
-		    args, 1);
-    }
-    if (appData.autoFlipView) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Auto Flip View"),
-		    args, 1);
-    }
-    if (appData.blindfold) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Blindfold"), args, 1);
-    }
-    if (appData.flashCount > 0) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Flash Moves"),
-		    args, 1);
-    }
-#if HIGHDRAG
-    if (appData.highlightDragging) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Highlight Dragging"),
-		    args, 1);
-    }
-#endif
-    if (appData.highlightLastMove) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Highlight Last Move"),
-		    args, 1);
-    }
-    if (appData.highlightMoveWithArrow) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Arrow"),
-		    args, 1);
-    }
-//    if (appData.icsAlarm) {
-//	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.ICS Alarm"),
-//		    args, 1);
-//    }
-    if (appData.ringBellAfterMoves) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Move Sound"),
-		    args, 1);
-    }
-    if (appData.oneClick) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.OneClick"), args, 1);
-    }
-    if (appData.periodicUpdates) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Periodic Updates"), args, 1);
-    }
-    if (appData.ponderNextMove) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Ponder Next Move"), args, 1);
-    }
-    if (appData.popupExitMessage) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Popup Exit Message"), args, 1);
-    }
-    if (appData.popupMoveErrors) {
-	XtSetValues(XtNameToWidget(menuBarWidget,
-				   "menuOptions.Popup Move Errors"), args, 1);
-    }
-//    if (appData.premove) {
-//	XtSetValues(XtNameToWidget(menuBarWidget,
-//				   "menuOptions.Premove"), args, 1);
-//    }
-    if (appData.showCoords) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Show Coords"),
-		    args, 1);
-    }
-    if (appData.hideThinkingFromHuman) {
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Hide Thinking"),
-		    args, 1);
-    }
-    if (appData.testLegality) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Test Legality"),
-		    args, 1);
-    }
-#endif
     if (saveSettingsOnExit) {
 	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
 		    args, 1);
@@ -2593,11 +2411,6 @@ Enables icsEnables[] = {
     { "menuEngine.Hint", False },
     { "menuEngine.Book", False },
     { "menuEngine.Move Now", False },
-#ifndef OPTIONSDIALOG
-    { "menuOptions.Periodic Updates", False },
-    { "menuOptions.Hide Thinking", False },
-    { "menuOptions.Ponder Next Move", False },
-#endif
 #endif
     { "menuEngine.Engine #1 Settings", False },
     { "menuEngine.Engine #2 Settings", False },
@@ -2627,15 +2440,6 @@ Enables ncpEnables[] = {
     { "menuEngine.Move Now", False },
     { "menuEngine.Retract Move", False },
     { "menuOptions.ICS", False },
-#ifndef OPTIONSDIALOG
-    { "menuOptions.Auto Flag", False },
-    { "menuOptions.Auto Flip View", False },
-//    { "menuOptions.ICS Alarm", False },
-    { "menuOptions.Move Sound", False },
-    { "menuOptions.Hide Thinking", False },
-    { "menuOptions.Periodic Updates", False },
-    { "menuOptions.Ponder Next Move", False },
-#endif
     { "menuEngine.Hint", False },
     { "menuEngine.Book", False },
     { NULL, False }
@@ -5492,10 +5296,6 @@ void AnalyzeModeProcGTK(object, user_data)
         if (appData.debugMode)
             fprintf(debugFP, _("ICS engine analyze starting... \n"));
     }
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc(w,event,prms,nprms);
-#endif
 
     AnalyzeModeEvent();
 }
@@ -5511,10 +5311,6 @@ void AnalyzeFileProcGTK(object, user_data)
       return;
     }
     Reset(FALSE, TRUE);
-#ifndef OPTIONSDIALOG
-    if (!appData.showThinking)
-      ShowThinkingProc(w,event,prms,nprms);
-#endif
     AnalyzeFileEvent();
     FileNamePopUp(_("File to analyze"), "", ".pgn .game", LoadGamePopUp, "rb",OPEN);
     AnalysisPeriodicEvent(1);
@@ -5820,225 +5616,6 @@ void PonderNextMoveProc(w, event, prms, nprms)
 {
     PonderNextMoveEvent(!appData.ponderNextMove);
 }
-
-#ifndef OPTIONSDIALOG
-void AlwaysQueenProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.alwaysPromoteToQueen = !appData.alwaysPromoteToQueen;
-}
-
-void AnimateDraggingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.animateDragging = !appData.animateDragging;
-}
-
-void AnimateMovingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.animate = !appData.animate;
-}
-
-void AutoflagProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.autoCallFlag = !appData.autoCallFlag;
-}
-
-void AutoflipProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.autoFlipView = !appData.autoFlipView;
-}
-
-void BlindfoldProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.blindfold = !appData.blindfold;
-
-    DrawPosition(True, NULL);
-}
-
-void TestLegalityProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.testLegality = !appData.testLegality;
-}
-
-
-void FlashMovesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    if (appData.flashCount == 0) {
-	appData.flashCount = 3;
-    } else {
-	appData.flashCount = -appData.flashCount;
-    }
-
-    if (appData.flashCount > 0) {
-      //	XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    } else {
-      //	XtSetArg(args[0], XtNleftBitmap, None);
-    }
-//    XtSetValues(XtNameToWidget(menuBarWidget, "menuOptions.Flash Moves"),
-//		args, 1);
-}
-
-#if HIGHDRAG
-void HighlightDraggingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.highlightDragging = !appData.highlightDragging;
-}
-#endif
-
-void HighlightLastMoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.highlightLastMove = !appData.highlightLastMove;
-}
-
-void HighlightArrowProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.highlightMoveWithArrow = !appData.highlightMoveWithArrow;
-}
-
-#if 0
-void IcsAlarmProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.icsAlarm = !appData.icsAlarm;
-}
-#endif
-
-void MoveSoundProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.ringBellAfterMoves = !appData.ringBellAfterMoves;
-}
-
-void OneClickProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.oneClick = !appData.oneClick;
-}
-
-void PeriodicUpdatesProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    PeriodicUpdatesEvent(!appData.periodicUpdates);
-}
-
-void PopupExitMessageProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.popupExitMessage = !appData.popupExitMessage;
-}
-
-void PopupMoveErrorsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.popupMoveErrors = !appData.popupMoveErrors;
-}
-
-#if 0
-void PremoveProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.premove = !appData.premove;
-}
-#endif
-
-void ShowCoordsProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.showCoords = !appData.showCoords;
-    DrawPosition(True, NULL);
-}
-
-void ShowThinkingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    appData.showThinking = !appData.showThinking; // [HGM] thinking: tken out of ShowThinkingEvent
-    ShowThinkingEvent();
-}
-
-void HideThinkingProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    Arg args[16];
-
-    appData.hideThinkingFromHuman = !appData.hideThinkingFromHuman; // [HGM] thinking: tken out of ShowThinkingEvent
-    ShowThinkingEvent();
-}
-#endif
 
 void SaveOnExitProcGTK(object, user_data)
      GtkObject *object;
