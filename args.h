@@ -565,6 +565,7 @@ ArgDescriptor argDescriptors[] = {
   { "language", ArgFilename, (void *) &appData.language, TRUE, (ArgIniType) "" },
   { "userFileDirectory", ArgFilename, (void *) &homeDir, FALSE, (ArgIniType) installDir },
   { "usePieceFont", ArgBoolean, (void *) &appData.useFont, TRUE, (ArgIniType) FALSE },
+  { "useBoardTexture", ArgBoolean, (void *) &appData.useBoardTexture, TRUE, (ArgIniType) TRUE },
 
   // [HGM] tournament options
   { "tourneyFile", ArgFilename, (void *) &appData.tourneyFile, FALSE, (ArgIniType) "" },

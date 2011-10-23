@@ -1554,38 +1554,57 @@ void LoadSvgFiles()
 {
     SVGNeutralSquare = load_pixbuf("NeutralSquare.svg", 0);
 
-    /* Load background squares from texture files */
-    /* At the moment these have to be svg files. It will work with other files */
-    /* including xpm files but board resizing will be slow */
+    if (appData.useBoardTexture) {
 
-    /* set up dark square from texture file */
-    if (appData.darkBackTextureFile == NULL) {
-      SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not set - use default
-    }
-    else if (strstr(appData.darkBackTextureFile, ".svg") == NULL) {
-      SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not svg - use default
-    }
-    else {
-      // texture file is an svg file - try and load it
-      SVGDarkSquare = gdk_pixbuf_new_from_file(appData.darkBackTextureFile, NULL);
-      if (SVGDarkSquare == NULL) {
-	SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); // texture file failed to load - use default
-      }
-    }
+        /* Load background squares from texture files */
+        /* At the moment these have to be svg files. It will work with other files */
+        /* including xpm files but board resizing will be slow */
 
-    /* set up light square from texture file */
-    if (appData.liteBackTextureFile == NULL) {
-      SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not set - use default
+        /* set up dark square from texture file */
+        if (appData.darkBackTextureFile == NULL) {
+          SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not set - use default
+        }
+        else if (strstr(appData.darkBackTextureFile, ".svg") == NULL) {
+          SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);  // texture file not svg - use default
+        }
+        else {
+          // texture file is an svg file - try and load it
+          SVGDarkSquare = gdk_pixbuf_new_from_file(appData.darkBackTextureFile, NULL);
+          if (SVGDarkSquare == NULL) {
+	    SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); // texture file failed to load - use default
+          }
+        }
+
+        /* set up light square from texture file */
+        if (appData.liteBackTextureFile == NULL) {
+          SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not set - use default
+        }
+        else if (strstr(appData.liteBackTextureFile, ".svg") == NULL) {
+          SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not svg - use default
+        }
+        else {
+          // texture file is an svg file - try and load it
+          SVGLightSquare = gdk_pixbuf_new_from_file(appData.liteBackTextureFile, NULL);
+          if (SVGLightSquare == NULL) {
+	    SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file failed to load - use default
+          }
+        }
     }
-    else if (strstr(appData.liteBackTextureFile, ".svg") == NULL) {
-      SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file not svg - use default
-    }
-    else {
-      // texture file is an svg file - try and load it
-      SVGLightSquare = gdk_pixbuf_new_from_file(appData.liteBackTextureFile, NULL);
-      if (SVGLightSquare == NULL) {
-	SVGLightSquare    = load_pixbuf("LightSquare.svg", 0); // texture file failed to load - use default
-      }
+    else {        
+        int col;
+
+        SVGLightSquare   = load_pixbuf("LightSquare.svg", 0);
+        SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); 
+
+        sscanf(appData.darkSquareColor, "#%x", &col);
+        col = col << 8;
+        col = col | 0xff; /* add 0xff to the end as alpha to set to opaque */
+        gdk_pixbuf_fill(SVGDarkSquare, col);
+
+        sscanf(appData.lightSquareColor, "#%x", &col);
+        col = col << 8;
+        col = col | 0xff; /* add 0xff to the end as alpha to set to opaque */
+        gdk_pixbuf_fill(SVGLightSquare, col);         
     }
 
     SVGWhitePawn     = load_pixbuf("WhitePawn.svg", 0);
