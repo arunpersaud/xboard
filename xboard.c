@@ -331,7 +331,6 @@ void HideThinkingProc P((Widget w, XEvent *event, String *prms,
 			 Cardinal *nprms));
 void TestLegalityProc P((Widget w, XEvent *event, String *prms,
 			  Cardinal *nprms));
-void AboutGameProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
@@ -860,7 +859,6 @@ XtActionsRec boardActions[] = {
     { "HideThinkingProc", HideThinkingProc },
     { "TestLegalityProc", TestLegalityProc },
 #endif
-    { "AboutGameProc", AboutGameProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
     //{ "CommentClick", (XtActionProc) CommentClick },
@@ -1586,11 +1584,11 @@ void LoadSvgFiles()
           }
         }
     }
-    else {        
+    else {
         int col;
 
         SVGLightSquare   = load_pixbuf("LightSquare.svg", 0);
-        SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0); 
+        SVGDarkSquare    = load_pixbuf("DarkSquare.svg", 0);
 
         sscanf(appData.darkSquareColor, "#%x", &col);
         col = col << 8;
@@ -1600,7 +1598,7 @@ void LoadSvgFiles()
         sscanf(appData.lightSquareColor, "#%x", &col);
         col = col << 8;
         col = col | 0xff; /* add 0xff to the end as alpha to set to opaque */
-        gdk_pixbuf_fill(SVGLightSquare, col);         
+        gdk_pixbuf_fill(SVGLightSquare, col);
     }
 
     SVGWhitePawn     = load_pixbuf("WhitePawn.svg", 0);
@@ -4485,25 +4483,34 @@ gboolean KeyPressProc(window, eventkey, data)
      GdkEventKey  *eventkey;
      gpointer data;
 {
-    // if shift-1 or shift-2 entered then popup the askquestion dialog to send a command to the engine
+    // handle shift+<number> cases
     if (eventkey->state & GDK_SHIFT_MASK) {
         guint keyval;
 
         gdk_keymap_translate_keyboard_state(NULL, eventkey->hardware_keycode,
-                                         0, eventkey->group,
-                                        &keyval, NULL, NULL, NULL);
+					    0, eventkey->group,
+					    &keyval, NULL, NULL, NULL);
         switch(keyval) {
-            case GDK_1:                        
-                AskQuestionEvent("Direct command", "Send to chess program:", "", "1"); 
+            case GDK_1:
+                AskQuestionEvent("Direct command", "Send to chess program:", "", "1");
                 break;
-            case GDK_2:               
+            case GDK_2:
                 AskQuestionEvent("Direct command", "Send to second chess program:", "", "2");
                 break;
-            default:            
-                break;        
+            default:
+                break;
         }
-        return False;
     }
+
+    /* check for other key values */
+    switch(eventkey->keyval) {
+        case GDK_question:
+	  AboutGameEvent();
+	  break;
+        default:
+	  break;
+    }
+    return False;
 }
 
 gboolean ButtonPressProc(window, eventbutton, data)
@@ -6148,15 +6155,6 @@ void DebugProc(w, event, prms, nprms)
     appData.debugMode = !appData.debugMode;
 }
 
-void AboutGameProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    AboutGameEvent();
-}
-
 void NothingProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -6387,7 +6385,7 @@ void AskQuestion(title, question, replyPrefix, pr)
     gtk_container_add (GTK_CONTAINER (inputarea), label);
     gtk_container_add (GTK_CONTAINER (inputarea), input);
     gtk_widget_show_all(askquestion);
-    
+
     result  = gtk_dialog_run (GTK_DIALOG(askquestion));
 
     /* check for output */
