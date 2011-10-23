@@ -5426,7 +5426,7 @@ char *
 PvToSAN(char *pv)
 {
 	static char buf[10*MSG_SIZ];
-	int i, k=0, savedEnd=endPV;
+	int i, k=0, savedEnd=endPV, saveFMM = forwardMostMove;
 	*buf = NULLCHAR;
 	if(forwardMostMove < endPV) PushInner(forwardMostMove, endPV);
 	ParsePV(pv, FALSE, 2); // this appends PV to game, suppressing any display of it
@@ -5436,7 +5436,7 @@ PvToSAN(char *pv)
 	    k += strlen(buf+k);
 	}
 	snprintf(buf+k, 10*MSG_SIZ-k, "%s", lastParseAttempt); // if we ran into stuff that could not be parsed, print it verbatim
-	if(forwardMostMove < savedEnd) PopInner(0);
+	if(forwardMostMove < savedEnd) { PopInner(0); forwardMostMove = saveFMM; } // PopInner would set fmm to endPV!
 	endPV = savedEnd;
 	return buf;
 }
