@@ -334,7 +334,7 @@ int dialogItems[][41	] = {
 { 0 }
 };
 
-static char languageBuf[50000], *foreign[1000], *english[1000], *languageFile[MSG_SIZ];
+static char languageBuf[70000], *foreign[1000], *english[1000], *languageFile[MSG_SIZ];
 static int lastChecked;
 static char oldLanguage[MSG_SIZ], *menuText[10][30];
 extern int tinyLayout;
@@ -388,11 +388,16 @@ T_(char *s)
 {   // return the translation of the given string
     // efficiency can be improved a lot...
     int i=0;
+    static char buf[MSG_SIZ];
 //if(appData.debugMode) fprintf(debugFP, "T_(%s)\n", s);
     if(!barbaric) return s;
     if(!s) return ""; // sanity
     while(english[i]) {
         if(!strcmp(s, english[i])) return foreign[i];
+	if(english[i][0] == '%' && strstr(s, english[i]+1) == s) { // allow translation of strings with variable ending
+	    snprintf(buf, MSG_SIZ, "%s%s", foreign[i], s + strlen(english[i]+1)); // keep unmatched portion
+	    return buf;
+	}
         i++;
     }
     return s;
