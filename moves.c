@@ -717,6 +717,7 @@ typedef struct {
 } GenLegalClosure;
 
 int rFilter, fFilter; // [HGM] speed: sorry, but I get a bit tired of this closure madness
+Board xqCheckers, nullBoard;
 
 extern void GenLegalCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
@@ -785,14 +786,15 @@ int GenLegal(board, flags, callback, closure, filter)
     int ff, ft, k, left, right, swap;
     int ignoreCheck = (flags & F_IGNORE_CHECK) != 0;
     ChessSquare wKing = WhiteKing, bKing = BlackKing, *castlingRights = board[CASTLING];
+    int inCheck = !ignoreCheck && CheckTest(board, flags, -1, -1, -1, -1, FALSE); // kludge alert: this would mark pre-existing checkers if status==1
 
     cl.cb = callback;
     cl.cl = closure;
+    xqCheckers[EP_STATUS] *= 2; // quasi: if previous CheckTest has been marking, we now set flag for suspending same checkers
     if(filter == EmptySquare) rFilter = fFilter = -1; // [HGM] speed: do not filter on square if we do not filter on piece
     GenPseudoLegal(board, flags, GenLegalCallback, (VOIDSTAR) &cl, filter);
 
-    if (!ignoreCheck &&
-	CheckTest(board, flags, -1, -1, -1, -1, FALSE)) return TRUE;
+    if (inCheck) return TRUE;
 
     /* Generate castling moves */
     if(gameInfo.variant == VariantKnightmate) { /* [HGM] Knightmate */
@@ -971,7 +973,11 @@ void CheckTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
 {
     register CheckTestClosure *cl = (CheckTestClosure *) closure;
 
-    if (rt == cl->rking && ft == cl->fking) cl->check++;
+    if (rt == cl->rking && ft == cl->fking) {
+	if(xqCheckers[EP_STATUS] >= 2 && xqCheckers[rf][ff]) return; // checker is piece with suspended checking power
+	cl->check++;
+	xqCheckers[rf][ff] = xqCheckers[EP_STATUS] & 1; // remember who is checking (if status == 1)
+    }
 }
 
 
@@ -1841,7 +1847,9 @@ int PerpetualChase(int first, int last)
 	cl.ff = moveList[i][0]-AAA+BOARD_LEFT;
 	cl.rt = moveList[i][3]-ONE;
 	cl.ft = moveList[i][2]-AAA+BOARD_LEFT;
+	CopyBoard(xqCheckers, nullBoard); xqCheckers[EP_STATUS] = 1; // giant kludge to make GenLegal ignore pre-existing checks
 	GenLegal(boards[i],   PosFlags(i), ExistingAttacksCallback, &cl, EmptySquare);
+	xqCheckers[EP_STATUS] = 0; // disable the generation of quasi-legal moves again
 	if(appData.debugMode) { int n;
 	    for(n=0; n<chaseStackPointer; n++)
                 fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE,
@@ -1870,6 +1878,8 @@ int PerpetualChase(int first, int last)
 	    }
 
 	    // the attack is on a lower piece, or on a pinned or blocked equal one
+	    CopyBoard(xqCheckers, nullBoard); xqCheckers[EP_STATUS] = 1;
+	    CheckTest(boards[i+1], PosFlags(i+1), -1, -1, -1, -1, FALSE); // if we deliver check with our move, the checkers get marked
             // test if the victim is protected by a true protector. First make the capture.
 	    captured = boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
 	    boards[i+1][chaseStack[j].rt][chaseStack[j].ft] = boards[i+1][chaseStack[j].rf][chaseStack[j].ff];
@@ -1881,7 +1891,9 @@ int PerpetualChase(int first, int last)
 	    if(appData.debugMode) {
             	fprintf(debugFP, "test if we can recapture %c%c\n", cl.ft+AAA, cl.rt+ONE);
 	    }
+	    xqCheckers[EP_STATUS] = 2; // causes GenLegal to ignore the checks we delivered with the move, in real life evaded before we captured
             GenLegal(boards[i+1], PosFlags(i+1), ProtectedCallback, &cl, EmptySquare); // try all moves
+	    xqCheckers[EP_STATUS] = 0; // disable quasi-legal moves again
 	    // unmake the capture
 	    boards[i+1][chaseStack[j].rf][chaseStack[j].ff] = boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
             boards[i+1][chaseStack[j].rt][chaseStack[j].ft] = captured;
