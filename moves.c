@@ -1947,5 +1947,6 @@ int PerpetualChase(int first, int last)
             }
         }
     }
-    return preyStackPointer; // if any piece was left on preyStack, it has been perpetually chased
+    return preyStackPointer ? 256*(preyStack[preyStackPointer].file - BOARD_LEFT + AAA) + (preyStack[preyStackPointer].rank + ONE)
+				: 0; // if any piece was left on preyStack, it has been perpetually chased,and we return the
 }

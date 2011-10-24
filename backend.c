@@ -7626,8 +7626,10 @@ Adjudicate(ChessProgramState *cps)
 				    hisPerpetual = PerpetualChase(k, forwardMostMove);
 				    ourPerpetual = PerpetualChase(k+1, forwardMostMove);
 				    if(ourPerpetual && !hisPerpetual) { // we are actively chasing him: forfeit
+					static char resdet[MSG_SIZ];
 					result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins;
-		 			details = "Xboard adjudication: perpetual chasing";
+		 			details = resdet;
+					snprintf(resdet, MSG_SIZ, "Xboard adjudication: perpetual chasing of %c%c", ourPerpetual>>8, ourPerpetual&255);
 				    } else
 				    if(hisPerpetual && !ourPerpetual)   // he is chasing us, but did not repeat yet
 					break; // Abort repetition-checking loop.
