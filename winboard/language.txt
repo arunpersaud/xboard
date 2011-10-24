@@ -976,6 +976,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "XBoard adjudication: repetition draw" === ""
 "Xboard adjudication: perpetual checking" === ""
 "Xboard adjudication: perpetual chasing" === ""
+"%Xboard adjudication: perpetual chasing of" === ""
 "Xboard adjudication: 50-move rule" === ""
 "Draw claim: 50-move rule" === ""
 "Draw claim: 3-fold repetition" === ""

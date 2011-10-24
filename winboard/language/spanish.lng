@@ -934,6 +934,7 @@ END-OF-GAME MESSAGES
 "XBoard adjudication: repetition draw" === "XBoard adjudica: Tablas por repetición"
 "Xboard adjudication: perpetual checking" === "XBoard adjudica: Jaque perpetuo"
 "Xboard adjudication: perpetual chasing" === "XBoard adjudica: Persecución perpetua"
+"%Xboard adjudication: perpetual chasing of" === "XBoard adjudica: Persecución perpetua"
 "Xboard adjudication: 50-move rule" === "XBoard adjudica: regla de las 50 jugadas"
 "Draw claim: 50-move rule" === "Pide tablas: regla de las 50 jugadas"
 "Draw claim: 3-fold repetition" === "Pide tablas: 3 repeticiones de posición"

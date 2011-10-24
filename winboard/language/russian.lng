@@ -977,6 +977,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "XBoard adjudication: repetition draw" === "Присуждено Xboard: ничья из-за повторения"
 "Xboard adjudication: perpetual checking" === "Присуждено Xboard: вечный шах"
 "Xboard adjudication: perpetual chasing" === "Присуждено Xboard: вечное преследование"
+"%Xboard adjudication: perpetual chasing of" === "Присуждено Xboard: вечное преследование"
 "Xboard adjudication: 50-move rule" === "Присуждено Xboard: правило 50 ходов"
 "Draw claim: 50-move rule" === "Требование ничьей: правило 50 ходов"
 "Draw claim: 3-fold repetition" === "Требование ничьей: трехкратное повторение"

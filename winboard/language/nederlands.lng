@@ -942,6 +942,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "XBoard adjudication: repetition draw" === "XBoard arbitrage: zettenherhaling"
 "Xboard adjudication: perpetual checking" === "XBoard arbitrage: eeuwig schaak"
 "Xboard adjudication: perpetual chasing" === "XBoard arbitrage: eeuwig najagen"
+"%Xboard adjudication: perpetual chasing of" === "XBoard arbitrage: eeuwig najagen van"
 "Xboard adjudication: 50-move rule" === "XBoard arbitrage: 50-zettenregel"
 "Draw claim: 50-move rule" === "Remise opgeëist: 50-zettenregel"
 "Draw claim: 3-fold repetition" === "Remise opgeëist: 3x zelfde stelling"

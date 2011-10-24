@@ -964,6 +964,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "XBoard adjudication: repetition draw" === "Adjudecare Xboard: remiza prin repetitie"
 "Xboard adjudication: perpetual checking" === "Adjudecare Xboard: sah etern"
 "Xboard adjudication: perpetual chasing" === "Adjudecare Xboard: alungare continua"
+"%Xboard adjudication: perpetual chasing of" === "Adjudecare Xboard: alungare continua"
 "Xboard adjudication: 50-move rule" === "Adjudecare Xboard: regula celor 50 de mutari"
 "Draw claim: 50-move rule" === "Cerere de remiza: regula celor 50 de mutari"
 "Draw claim: 3-fold repetition" === "Cerere de remiza: a treia repetitie"

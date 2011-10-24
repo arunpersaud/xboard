@@ -770,6 +770,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "XBoard adjudication: repetition draw" === "Xboard 判决：循环和棋"
 "Xboard adjudication: perpetual checking" === "Xboard 判决：长将"
 "Xboard adjudication: perpetual chasing" === "Xboard 判决：长捉"
+"%Xboard adjudication: perpetual chasing of" === "Xboard 判决：长捉"
 "Xboard adjudication: 50-move rule" === "Xboard 判决：50回合判和规则"
 "Draw claim: 50-move rule" === "和棋声明：50回合判和规则"
 "Draw claim: 3-fold repetition" === "和棋声明：3次循环"
