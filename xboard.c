@@ -2385,176 +2385,176 @@ void
 SetMenuEnables(enab)
      Enables *enab;
 {
-  Widget w;
-  if (!menuBarWidget) return;
+  GtkWidget *w;
+  //if (!menuBarWidget) return;
   while (enab->name != NULL) {
-    w = XtNameToWidget(menuBarWidget, enab->name);
+    w = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), enab->name));
     if (w == NULL) {
       DisplayError(enab->name, 0);
     } else {
-      XtSetSensitive(w, enab->value);
+      gtk_widget_set_sensitive(w, enab->value);
     }
     enab++;
   }
 }
 
 Enables icsEnables[] = {
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
-    { "menuMode.Machine Black", False },
-    { "menuMode.Machine White", False },
-    { "menuMode.Analysis Mode", False },
-    { "menuMode.Analyze File", False },
-    { "menuMode.Two Machines", False },
-    { "menuMode.Machine Match", False },
+    { "FileMailmove", False },
+    { "FileReloadcmailmessage", False },
+    { "ModeMachineblack", False },
+    { "ModeMachinewhite", False },
+    { "ModeAnalysismode", False },
+    { "ModeAnalyzefile", False },
+    { "ModeTwomachines", False },
+    { "ModeMachinematch", False },
 #ifndef ZIPPY
-    { "menuEngine.Hint", False },
-    { "menuEngine.Book", False },
-    { "menuEngine.Move Now", False },
+    { "EngineHint", False },
+    { "EngineBook", False },
+    { "EngineMovenow", False },
 #endif
-    { "menuEngine.Engine #1 Settings", False },
-    { "menuEngine.Engine #2 Settings", False },
-    { "menuEngine.Load Engine", False },
-    { "menuEdit.Annotate", False },
-    { "menuOptions.Match", False },
+    { "EngineEngine1settings", False },
+    { "EngineEngine2settings", False },
+    { "EngineLoadengine", False },
+    { "EditAnnotate", False },
+    { "OptionsMatch", False },
     { NULL, False }
 };
 
 Enables ncpEnables[] = {
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
-    { "menuMode.Machine White", False },
-    { "menuMode.Machine Black", False },
-    { "menuMode.Analysis Mode", False },
-    { "menuMode.Analyze File", False },
-    { "menuMode.Two Machines", False },
-    { "menuMode.Machine Match", False },
-    { "menuMode.ICS Client", False },
-    { "menuView.ICStex", False },
-    { "menuView.ICS Input Box", False },
+    { "FileMailmove", False },
+    { "FileReloadcmailmessage", False },
+    { "ModeMachinewhite", False },
+    { "ModeMachineblack", False },
+    { "ModeAnalysismode", False },
+    { "ModeAnalyzefile", False },
+    { "ModeTwomachines", False },
+    { "ModeMachinematch", False },
+    { "ModeICSclient", False },
+    { "ViewICStextmenu", False },
+    { "ViewICSinputbox", False },
     { "Action", False },
-    { "menuEdit.Revert", False },
-    { "menuEdit.Annotate", False },
-    { "menuEngine.Engine #1 Settings", False },
-    { "menuEngine.Engine #2 Settings", False },
-    { "menuEngine.Move Now", False },
-    { "menuEngine.Retract Move", False },
-    { "menuOptions.ICS", False },
-    { "menuEngine.Hint", False },
-    { "menuEngine.Book", False },
+    { "EditRevert", False },
+    { "EditAnnotate", False },
+    { "EngineEngine1settings", False },
+    { "EngineEngine2settings", False },
+    { "EngineMovenow", False },
+    { "EngineRetractmove", False },
+    { "OptionsICS", False },
+    { "EngineHint", False },
+    { "EngineBook", False },
     { NULL, False }
 };
 
 Enables gnuEnables[] = {
-    { "menuMode.ICS Client", False },
-    { "menuView.ICStex", False },
-    { "menuView.ICS Input Box", False },
-    { "menuAction.Accept", False },
-    { "menuAction.Decline", False },
-    { "menuAction.Rematch", False },
-    { "menuAction.Adjourn", False },
-    { "menuAction.Stop Examining", False },
-    { "menuAction.Stop Observing", False },
-    { "menuAction.Upload to Examine", False },
-    { "menuEdit.Revert", False },
-    { "menuEdit.Annotate", False },
-    { "menuOptions.ICS", False },
+    { "ModeICSclient", False },
+    { "ViewICStextmenu", False },
+    { "ViewICSinputbox", False },
+    { "ActionAccept", False },
+    { "ActionDecline", False },
+    { "ActionRematch", False },
+    { "ActionAdjourn", False },
+    { "ActionStopexamining", False },
+    { "ActionStopobserving", False },
+    { "ActionUploadtoexamine", False },
+    { "EditRevert", False },
+    { "EditAnnotate", False },
+    { "OptionsICS", False },
 
     /* The next two options rely on SetCmailMode being called *after*    */
     /* SetGNUMode so that when GNU is being used to give hints these     */
     /* menu options are still available                                  */
 
-    { "menuFile.Mail Move", False },
-    { "menuFile.Reload CMail Message", False },
+    { "FileMailmove", False },
+    { "FileReloadcmailmessage", False },
     // [HGM] The following have been added to make a switch from ncp to GNU mode possible
-    { "menuMode.Machine White", True },
-    { "menuMode.Machine Black", True },
-    { "menuMode.Analysis Mode", True },
-    { "menuMode.Analyze File", True },
-    { "menuMode.Two Machines", True },
-    { "menuMode.Machine Match", True },
-    { "menuEngine.Engine #1 Settings", True },
-    { "menuEngine.Engine #2 Settings", True },
-    { "menuEngine.Hint", True },
-    { "menuEngine.Book", True },
-    { "menuEngine.Move Now", True },
-    { "menuEngine.Retract Move", True },
+    { "ModeMachinewhite", True },
+    { "ModeMachineblack", True },
+    { "ModeAnalysismode", True },
+    { "ModeAnalyzefile", True },
+    { "ModeTwomachines", True },
+    { "ModeMachinematch", True },
+    { "EngineEngine1settings", True },
+    { "EngineEngine2settings", True },
+    { "EngineHint", True },
+    { "EngineBook", True },
+    { "EngineMovenow", True },
+    { "EngineRetractmove", True },
     { "Action", True },
     { NULL, False }
 };
 
 Enables cmailEnables[] = {
     { "Action", True },
-    { "menuAction.Call Flag", False },
-    { "menuAction.Draw", True },
-    { "menuAction.Adjourn", False },
-    { "menuAction.Abort", False },
-    { "menuAction.Stop Observing", False },
-    { "menuAction.Stop Examining", False },
-    { "menuFile.Mail Move", True },
-    { "menuFile.Reload CMail Message", True },
+    { "ActionCallflag", False },
+    { "ActionDraw", True },
+    { "ActionAdjourn", False },
+    { "ActionAbort", False },
+    { "ActionStopobserving", False },
+    { "ActionStopexamining", False },
+    { "FileMailmove", True },
+    { "FileReloadcmailmessage", True },
     { NULL, False }
 };
 
 Enables trainingOnEnables[] = {
-  { "menuMode.Edit Comment", False },
-  { "menuMode.Pause", False },
-  { "menuEdit.Forward", False },
-  { "menuEdit.Backward", False },
-  { "menuEdit.Forward to End", False },
-  { "menuEdit.Back to Start", False },
-  { "menuEngine.Move Now", False },
-  { "menuEdit.Truncate Game", False },
+  //{ "ModeEditcomment", False }, 
+  { "ModePause", False },
+  { "EditForward", False },
+  { "EditBackward", False },
+  { "EditForwardtoend", False },
+  { "EditBacktostart", False },
+  { "EngineMovenow", False },
+  { "EditTruncategame", False },
   { NULL, False }
 };
 
 Enables trainingOffEnables[] = {
-  { "menuMode.Edit Comment", True },
-  { "menuMode.Pause", True },
-  { "menuEdit.Forward", True },
-  { "menuEdit.Backward", True },
-  { "menuEdit.Forward to End", True },
-  { "menuEdit.Back to Start", True },
-  { "menuEngine.Move Now", True },
-  { "menuEdit.Truncate Game", True },
+  //{ "ModeEditcomment", True },   
+  { "ModePause", True },
+  { "EditForward", True },
+  { "EditBackward", True },
+  { "EditForwardtoend", True },
+  { "EditBacktostart", True },
+  { "EngineMovenow", True },
+  { "EditTruncategame", True },
   { NULL, False }
 };
 
 Enables machineThinkingEnables[] = {
-  { "menuFile.Load Game", False },
+  { "FileLoadgame", False },
 //  { "menuFile.Load Next Game", False },
 //  { "menuFile.Load Previous Game", False },
 //  { "menuFile.Reload Same Game", False },
-  { "menuEdit.Paste Game", False },
-  { "menuFile.Load Position", False },
+  { "EditPastegame", False },
+  { "FileLoadposition", False },
 //  { "menuFile.Load Next Position", False },
 //  { "menuFile.Load Previous Position", False },
 //  { "menuFile.Reload Same Position", False },
-  { "menuEdit.Paste Position", False },
-  { "menuMode.Machine White", False },
-  { "menuMode.Machine Black", False },
-  { "menuMode.Two Machines", False },
+  { "EditPasteposition", False },
+  { "ModeMachinewhite", False },
+  { "ModeMachineblack", False },
+  { "ModeTwomachines", False },
 //  { "menuMode.Machine Match", False },
-  { "menuEngine.Retract Move", False },
+  { "EngineRetractmove", False },
   { NULL, False }
 };
 
 Enables userThinkingEnables[] = {
-  { "menuFile.Load Game", True },
+  { "FileLoadgame", True },
 //  { "menuFile.Load Next Game", True },
 //  { "menuFile.Load Previous Game", True },
 //  { "menuFile.Reload Same Game", True },
-  { "menuEdit.Paste Game", True },
-  { "menuFile.Load Position", True },
+  { "EditPastegame", True },
+  { "FileLoadposition", True },
 //  { "menuFile.Load Next Position", True },
 //  { "menuFile.Load Previous Position", True },
 //  { "menuFile.Reload Same Position", True },
-  { "menuEdit.Paste Position", True },
-  { "menuMode.Machine White", True },
-  { "menuMode.Machine Black", True },
-  { "menuMode.Two Machines", True },
+  { "EditPasteposition", True },
+  { "ModeMachinewhite", True },
+  { "ModeMachineblack", True },
+  { "ModeTwomachines", True },
 //  { "menuMode.Machine Match", True },
-  { "menuEngine.Retract Move", True },
+  { "EngineRetractmove", True },
   { NULL, False }
 };
 
@@ -2564,8 +2564,20 @@ void SetICSMode()
 
 #if ZIPPY
   if (appData.zippyPlay && !appData.noChessProgram) { /* [DM] icsEngineAnalyze */
-     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuMode.Analysis Mode"), True);
-     XtSetSensitive(XtNameToWidget(menuBarWidget, "menuEngine.Engine #1 Settings"), True);
+     GtkWidget *w;     
+     w = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "ModeAnalysismode"));
+     if (w == NULL) {
+         DisplayError("ModeAnalysismode", 0);
+     } else {
+         gtk_widget_set_sensitive(w, True);
+     }
+
+     w = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "EngineEngine1settings"));
+     if (w == NULL) {
+         DisplayError("EngineEngine1settings", 0);
+     } else {
+         gtk_widget_set_sensitive(w, True);
+     }     
   }
 #endif
 }

@@ -51,7 +51,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="loadgame">
+                      <object class="GtkMenuItem" id="FileLoadgame">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Load Game</property>
                         <property name="use_underline">True</property>
@@ -60,7 +60,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="loadposition">
+                      <object class="GtkMenuItem" id="FileLoadposition">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Load Position</property>
                         <property name="use_underline">True</property>
@@ -115,7 +115,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="mailmove">
+                      <object class="GtkMenuItem" id="FileMailmove">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Mail Move</property>
@@ -124,7 +124,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="reloadcmailmessage">
+                      <object class="GtkMenuItem" id="FileReloadcmailmessage">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Reload CMail Message</property>
@@ -190,7 +190,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="pastegame">
+                      <object class="GtkMenuItem" id="EditPastegame">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Paste Game</property>
                         <property name="use_underline">True</property>
@@ -199,7 +199,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="pasteposition">
+                      <object class="GtkMenuItem" id="EditPasteposition">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Paste Position</property>
                         <property name="use_underline">True</property>
@@ -260,7 +260,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="revert">
+                      <object class="GtkMenuItem" id="EditRevert">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Revert</property>
@@ -270,7 +270,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="annotate">
+                      <object class="GtkMenuItem" id="EditAnnotate">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Annotate</property>
@@ -279,7 +279,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="truncategame">
+                      <object class="GtkMenuItem" id="EditTruncategame">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Truncate Game</property>
                         <property name="use_underline">True</property>
@@ -293,7 +293,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="backward">
+                      <object class="GtkMenuItem" id="EditBackward">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Backward</property>
                         <property name="use_underline">True</property>
@@ -302,7 +302,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="forward">
+                      <object class="GtkMenuItem" id="EditForward">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Forward</property>
                         <property name="use_underline">True</property>
@@ -311,7 +311,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="backtostart">
+                      <object class="GtkMenuItem" id="EditBacktostart">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Back to Start</property>
                         <property name="use_underline">True</property>
@@ -320,7 +320,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="forwardtoend">
+                      <object class="GtkMenuItem" id="EditForwardtoend">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Forward to End</property>
                         <property name="use_underline">True</property>
@@ -391,7 +391,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="icstextmenu">
+                      <object class="GtkCheckMenuItem" id="ViewICStextmenu">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">ICS text menu</property>
@@ -421,7 +421,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="icsinputbox">
+                      <object class="GtkCheckMenuItem" id="ViewICSinputbox">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">ICS Input Box</property>
@@ -455,7 +455,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="mode">
+              <object class="GtkMenuItem" id="Mode">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Mode</property>
                 <property name="use_underline">True</property>
@@ -463,7 +463,7 @@
                   <object class="GtkMenu" id="menu5">
                     <property name="visible">True</property>
                     <child>
-                      <object class="GtkMenuItem" id="machinewhite">
+                      <object class="GtkMenuItem" id="ModeMachinewhite">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Machine White</property>
                         <property name="use_underline">True</property>
@@ -472,7 +472,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="machineblack">
+                      <object class="GtkMenuItem" id="ModeMachineblack">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Machine Black</property>
                         <property name="use_underline">True</property>
@@ -481,7 +481,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="twomachines">
+                      <object class="GtkMenuItem" id="ModeTwomachines">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Two Machines</property>
                         <property name="use_underline">True</property>
@@ -490,7 +490,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="analysismode">
+                      <object class="GtkMenuItem" id="ModeAnalysismode">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Analysis Mode</property>
                         <property name="use_underline">True</property>
@@ -499,7 +499,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="analyzefile">
+                      <object class="GtkMenuItem" id="ModeAnalyzefile">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Analyze File</property>
                         <property name="use_underline">True</property>
@@ -535,7 +535,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="icsclient">
+                      <object class="GtkMenuItem" id="ModeICSclient">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">ICS Client</property>
@@ -549,7 +549,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="machinematch">
+                      <object class="GtkMenuItem" id="ModeMachinematch">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Machine Match</property>
                         <property name="use_underline">True</property>
@@ -557,7 +557,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="pause">
+                      <object class="GtkMenuItem" id="ModePause">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Pause</property>
                         <property name="use_underline">True</property>
@@ -570,7 +570,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="action">
+              <object class="GtkMenuItem" id="Action">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Action</property>
                 <property name="use_underline">True</property>
@@ -578,7 +578,7 @@
                   <object class="GtkMenu" id="menu6">
                     <property name="visible">True</property>
                     <child>
-                      <object class="GtkMenuItem" id="accept">
+                      <object class="GtkMenuItem" id="ActionAccept">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Accept</property>
@@ -588,7 +588,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="decline">
+                      <object class="GtkMenuItem" id="ActionDecline">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Decline</property>
@@ -598,7 +598,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="rematch">
+                      <object class="GtkMenuItem" id="ActionRematch">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Rematch</property>
@@ -613,7 +613,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="callflag">
+                      <object class="GtkMenuItem" id="ActionCallflag">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Call Flag</property>
                         <property name="use_underline">True</property>
@@ -622,7 +622,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="draw">
+                      <object class="GtkMenuItem" id="ActionDraw">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Draw</property>
                         <property name="use_underline">True</property>
@@ -631,7 +631,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="adjourn">
+                      <object class="GtkMenuItem" id="ActionAdjourn">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Adjourn</property>
@@ -641,7 +641,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="abort">
+                      <object class="GtkMenuItem" id="ActionAbort">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Abort</property>
                         <property name="use_underline">True</property>
@@ -664,7 +664,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="stopobserving">
+                      <object class="GtkMenuItem" id="ActionStopobserving">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Stop Observing</property>
@@ -674,7 +674,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="stopexamining">
+                      <object class="GtkMenuItem" id="ActionStopexamining">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Stop Examining</property>
@@ -684,7 +684,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="uploadtoexamine">
+                      <object class="GtkMenuItem" id="ActionUploadtoexamine">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Upload to Examine</property>
@@ -726,7 +726,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="engine">
+              <object class="GtkMenuItem" id="Engine">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Engine</property>
                 <property name="use_underline">True</property>
@@ -734,7 +734,7 @@
                   <object class="GtkMenu" id="menu7">
                     <property name="visible">True</property>
                     <child>
-                      <object class="GtkMenuItem" id="loadnewengine">
+                      <object class="GtkMenuItem" id="EngineLoadengine">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Load New Engine ...</property>
                         <property name="use_underline">True</property>
@@ -747,7 +747,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="engine1settings">
+                      <object class="GtkMenuItem" id="EngineEngine1settings">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Engine #1 Settings ...</property>
                         <property name="use_underline">True</property>
@@ -755,7 +755,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="engine2settings">
+                      <object class="GtkMenuItem" id="EngineEngine2settings">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Engine #2 Settings ...</property>
                         <property name="use_underline">True</property>
@@ -768,7 +768,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="hint">
+                      <object class="GtkMenuItem" id="EngineHint">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Hint</property>
                         <property name="use_underline">True</property>
@@ -776,7 +776,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="book">
+                      <object class="GtkMenuItem" id="EngineBook">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Book</property>
                         <property name="use_underline">True</property>
@@ -789,7 +789,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="movenow">
+                      <object class="GtkMenuItem" id="EngineMovenow">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Move Now</property>
                         <property name="use_underline">True</property>
@@ -798,7 +798,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="retractmove">
+                      <object class="GtkMenuItem" id="EngineRetractmove">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Retract Move</property>
                         <property name="use_underline">True</property>
@@ -811,7 +811,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="options">
+              <object class="GtkMenuItem" id="Options">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Options</property>
                 <property name="use_underline">True</property>
@@ -854,7 +854,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="ics">
+                      <object class="GtkMenuItem" id="OptionsICS">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">ICS ...</property>
@@ -863,7 +863,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="match">
+                      <object class="GtkMenuItem" id="OptionsMatch">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Match ...</property>
                         <property name="use_underline">True</property>
