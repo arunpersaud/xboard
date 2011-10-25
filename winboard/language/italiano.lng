@@ -960,6 +960,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "XBoard adjudication: repetition draw" === "Aggiudicazione di Xboard: Patta per ripetizione"
 "Xboard adjudication: perpetual checking" === "Aggiudicazione di Xboard: Scacco perpetuo"
 "Xboard adjudication: perpetual chasing" === "Aggiudicazione di Xboard: Minaccia perpetua"
+"%Xboard adjudication: perpetual chasing of" === "Aggiudicazione di Xboard: Minaccia perpetua"
 "Xboard adjudication: 50-move rule" === "Aggiudicazione di Xboard: Regola delle 50 mosse"
 "Draw claim: 50-move rule" === "Patta dichiarata: Regola delle 50 mosse"
 "Draw claim: 3-fold repetition" === "Patta dichiarata: Terza ripetizione"

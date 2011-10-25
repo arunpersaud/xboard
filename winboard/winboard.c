@@ -253,8 +253,8 @@ int dialogItems[][41	] = {
 { ABOUTBOX, IDOK, OPT_MESS, 400 }, 
 { DLG_TimeControl, IDC_Babble, OPT_TCUseMoves, OPT_TCUseInc, OPT_TCUseFixed, 
   OPT_TCtext1, OPT_TCtext2, OPT_TCitext1, OPT_TCitext2, OPT_TCftext, GPB_Factors,   IDC_Factor1, IDC_Factor2, IDOK, IDCANCEL }, 
-{ DLG_LoadOptions, OPT_Autostep, OPT_AStext1, 
-  OPT_elo1, OPT_elo2, OPT_date, IDOK, IDCANCEL }, 
+{ DLG_LoadOptions, OPT_Autostep, OPT_AStext1, OPT_Exact, OPT_Subset, OPT_Struct, OPT_Material, OPT_Range, OPT_Difference,
+  OPT_elo1t, OPT_elo2t, OPT_datet, OPT_Stretch, OPT_Stretcht, OPT_Reversed, OPT_SearchMode, OPT_Mirror, OPT_thresholds, IDOK, IDCANCEL }, 
 { DLG_SaveOptions, OPT_Autosave, OPT_AVPrompt, OPT_AVToFile, OPT_AVBrowse,
   801, OPT_PGN, OPT_Old, OPT_OutOfBookInfo, IDOK, IDCANCEL }, 
 { 1536, 1090, IDC_Directories, 1089, 1091, IDOK, IDCANCEL, 1038, IDC_IndexNr, 1037 }, 
@@ -334,7 +334,7 @@ int dialogItems[][41	] = {
 { 0 }
 };
 
-static char languageBuf[50000], *foreign[1000], *english[1000], *languageFile[MSG_SIZ];
+static char languageBuf[70000], *foreign[1000], *english[1000], *languageFile[MSG_SIZ];
 static int lastChecked;
 static char oldLanguage[MSG_SIZ], *menuText[10][30];
 extern int tinyLayout;
@@ -388,11 +388,16 @@ T_(char *s)
 {   // return the translation of the given string
     // efficiency can be improved a lot...
     int i=0;
+    static char buf[MSG_SIZ];
 //if(appData.debugMode) fprintf(debugFP, "T_(%s)\n", s);
     if(!barbaric) return s;
     if(!s) return ""; // sanity
     while(english[i]) {
         if(!strcmp(s, english[i])) return foreign[i];
+	if(english[i][0] == '%' && strstr(s, english[i]+1) == s) { // allow translation of strings with variable ending
+	    snprintf(buf, MSG_SIZ, "%s%s", foreign[i], s + strlen(english[i]+1)); // keep unmatched portion
+	    return buf;
+	}
         i++;
     }
     return s;
@@ -4222,9 +4227,9 @@ MouseEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     if(y == -2) {
       /* [HGM] right mouse button in clock area edit-game mode ups clock */
       if (PtInRect((LPRECT) &whiteRect, pt)) {
-          if (gameMode == EditGame || GetKeyState(VK_SHIFT) < 0) AdjustClock(flipClock, 1);
+          if (GetKeyState(VK_SHIFT) < 0) AdjustClock(flipClock, 1);
       } else if (PtInRect((LPRECT) &blackRect, pt)) {
-          if (gameMode == EditGame || GetKeyState(VK_SHIFT) < 0) AdjustClock(!flipClock, 1);
+          if (GetKeyState(VK_SHIFT) < 0) AdjustClock(!flipClock, 1);
       }
       break;
     }
@@ -5061,6 +5066,11 @@ WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case IDM_ToEnd:
       ToEndEvent();
       SetFocus(hwndMain);
+      break;
+
+    case OPT_GameListNext: // [HGM] forward these two accelerators to Game List
+    case OPT_GameListPrev:
+      if(gameListDialog) SendMessage(gameListDialog, WM_COMMAND, wmId, 0);
       break;
 
     case IDM_Revert:

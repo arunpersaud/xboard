@@ -47,7 +47,9 @@
 /* Variables
  */
 List gameList;
-
+extern Board initialPosition;
+extern int quickFlag;
+extern int movePtr;
 
 /* Local function prototypes
  */
@@ -212,19 +214,24 @@ int GameListBuild(f)
     ChessMove cm, lastStart;
     int gameNumber;
     ListGame *currentListGame = NULL;
-    int error;
+    int error, scratch=100, plyNr=0, fromX, fromY, toX, toY;
     int offset;
     char lastComment[MSG_SIZ], buf[MSG_SIZ];
-
+struct {
+    long sec;  /* Assuming this is >= 32 bits */
+    int ms;    /* Assuming this is >= 16 bits */
+} t,t2; GetTimeMark(&t);
     GameListFree(&gameList);
     yynewfile(f);
     gameNumber = 0;
+    movePtr = 0;
 
     lastStart = (ChessMove) 0;
     yyskipmoves = FALSE;
     do {
-        yyboardindex = 0;
+        yyboardindex = scratch;
 	offset = yyoffset();
+	quickFlag = plyNr + 1;
 	cm = (ChessMove) Myylex();
 	switch (cm) {
 	  case GNUChessGame:
@@ -235,6 +242,7 @@ int GameListBuild(f)
 	    }
 	    currentListGame->number = ++gameNumber;
 	    currentListGame->offset = offset;
+	    if(1) { CopyBoard(boards[scratch], initialPosition); plyNr = 0; currentListGame->moves = PackGame(boards[scratch]); }
 	    if (currentListGame->gameInfo.event != NULL) {
 		free(currentListGame->gameInfo.event);
 	    }
@@ -261,6 +269,7 @@ int GameListBuild(f)
 		}
 		currentListGame->number = ++gameNumber;
 		currentListGame->offset = offset;
+		if(1) { CopyBoard(boards[scratch], initialPosition); plyNr = 0; currentListGame->moves = PackGame(boards[scratch]); }
 		lastStart = cm;
 		break;
 	      default:
@@ -285,10 +294,19 @@ int GameListBuild(f)
 		    ParsePGNTag(yy_text, &currentListGame->gameInfo);
 		}
 	    } while (cm == PGNTag || cm == Comment);
-	    break;
+	    if(1) {
+		int btm=0;
+		if(currentListGame->gameInfo.fen) ParseFEN(boards[scratch], &btm, currentListGame->gameInfo.fen);
+		else CopyBoard(boards[scratch], initialPosition);
+		plyNr = (btm != 0);
+		currentListGame->moves = PackGame(boards[scratch]);
+	    }
+	    if(cm != NormalMove) break;
+	  case IllegalMove:
+		if(appData.testLegality) break;
 	  case NormalMove:
 	    /* Allow the first game to start with an unnumbered move */
-	    yyskipmoves = TRUE;
+	    yyskipmoves = FALSE;
 	    if (lastStart == (ChessMove) 0) {
 	      if ((error = GameListNewGame(&currentListGame))) {
 		rewind(f);
@@ -297,8 +315,34 @@ int GameListBuild(f)
 	      }
 	      currentListGame->number = ++gameNumber;
 	      currentListGame->offset = offset;
+	      if(1) { CopyBoard(boards[scratch], initialPosition); plyNr = 0; currentListGame->moves = PackGame(boards[scratch]); }
 	      lastStart = MoveNumberOne;
 	    }
+	  case WhiteCapturesEnPassant:
+	  case BlackCapturesEnPassant:
+	  case WhitePromotion:
+	  case BlackPromotion:
+	  case WhiteNonPromotion:
+	  case BlackNonPromotion:
+	  case WhiteKingSideCastle:
+	  case WhiteQueenSideCastle:
+	  case BlackKingSideCastle:
+	  case BlackQueenSideCastle:
+	  case WhiteKingSideCastleWild:
+	  case WhiteQueenSideCastleWild:
+	  case BlackKingSideCastleWild:
+	  case BlackQueenSideCastleWild:
+	  case WhiteHSideCastleFR:
+	  case WhiteASideCastleFR:
+	  case BlackHSideCastleFR:
+	  case BlackASideCastleFR:
+		fromX = currentMoveString[0] - AAA;
+		fromY = currentMoveString[1] - ONE;
+		toX = currentMoveString[2] - AAA;
+		toY = currentMoveString[3] - ONE;
+		plyNr++;
+		ApplyMove(fromX, fromY, toX, toY, currentMoveString[4], boards[scratch]);
+		if(currentListGame && currentListGame->moves) PackMove(fromX, fromY, toX, toY, boards[scratch][toY][toX]);
 	    break;
         case WhiteWins: // [HGM] rescom: save last comment as result details
         case BlackWins:
@@ -324,6 +368,9 @@ int GameListBuild(f)
     }
     while (cm != (ChessMove) 0);
 
+ if(currentListGame) {
+    if(!currentListGame->moves) DisplayError("Game cache overflowed\nPosition-searching might not work properly", 0);
+
     if (appData.debugMode) {
 	for (currentListGame = (ListGame *) gameList.head;
 	     currentListGame->node.succ;
@@ -334,7 +381,10 @@ int GameListBuild(f)
 	    PrintPGNTags(debugFP, &currentListGame->gameInfo);
 	}
     }
-
+  }
+GetTimeMark(&t2);printf("GameListBuild %d msec\n", SubtractTimeMarks(&t2,&t));
+    quickFlag = 0;
+    PackGame(boards[scratch]); // for appending end-of-game marker.
     DisplayTitle("WinBoard");
     rewind(f);
     yyskipmoves = FALSE;

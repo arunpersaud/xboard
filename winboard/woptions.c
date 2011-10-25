@@ -2441,7 +2441,9 @@ LoadOptionsWhichRadio(HWND hDlg)
   return (IsDlgButtonChecked(hDlg, OPT_Exact) ? 1 :
          (IsDlgButtonChecked(hDlg, OPT_Subset) ? 2 :
          (IsDlgButtonChecked(hDlg, OPT_Struct) ? 3 :
-         (IsDlgButtonChecked(hDlg, OPT_Material) ? 4 : -1))));
+         (IsDlgButtonChecked(hDlg, OPT_Material) ? 4 :
+         (IsDlgButtonChecked(hDlg, OPT_Range) ? 5 :
+         (IsDlgButtonChecked(hDlg, OPT_Difference) ? 6 : -1))))));
 }
 
 VOID
@@ -2478,6 +2480,9 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     SetDlgItemInt(hDlg, OPT_elo1, appData.eloThreshold1, FALSE);
     SetDlgItemInt(hDlg, OPT_elo2, appData.eloThreshold2, FALSE);
     SetDlgItemInt(hDlg, OPT_date, appData.dateThreshold, FALSE);
+    SetDlgItemInt(hDlg, OPT_Stretch, appData.stretch, FALSE);
+    CheckDlgButton(hDlg, OPT_Reversed, appData.ignoreColors);
+    CheckDlgButton(hDlg, OPT_Mirror, appData.findMirror);
     switch (appData.searchMode) {
     case 1:
       CheckDlgButton(hDlg, OPT_Exact, TRUE);
@@ -2490,6 +2495,12 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     case 4:
       CheckDlgButton(hDlg, OPT_Material, TRUE);
+      break;
+    case 5:
+      CheckDlgButton(hDlg, OPT_Range, TRUE);
+      break;
+    case 6:
+      CheckDlgButton(hDlg, OPT_Difference, TRUE);
       break;
     }
     return TRUE;
@@ -2512,7 +2523,10 @@ LoadOptions(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
       appData.eloThreshold1 = GetDlgItemInt(hDlg, OPT_elo1, &ok, FALSE);
       appData.eloThreshold2 = GetDlgItemInt(hDlg, OPT_elo2, &ok, FALSE);
       appData.dateThreshold = GetDlgItemInt(hDlg, OPT_date, &ok, FALSE);
+      appData.stretch = GetDlgItemInt(hDlg, OPT_Stretch, &ok, FALSE);
       appData.searchMode = LoadOptionsWhichRadio(hDlg);
+      appData.ignoreColors = IsDlgButtonChecked(hDlg, OPT_Reversed);
+      appData.findMirror   = IsDlgButtonChecked(hDlg, OPT_Mirror);
       EndDialog(hDlg, TRUE);
       return TRUE;
 

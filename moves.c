@@ -84,6 +84,7 @@ int BlackPiece(piece)
     return (int) piece >= (int) BlackPawn && (int) piece < (int) EmptySquare;
 }
 
+#if 0
 int SameColor(piece1, piece2)
      ChessSquare piece1, piece2;
 {
@@ -96,6 +97,9 @@ int SameColor(piece1, piece2)
 	    (int) piece2 >= (int) BlackPawn &&
             (int) piece2 <  (int) EmptySquare);
 }
+#else
+#define SameColor(piece1, piece2) (piece1 < EmptySquare && piece2 < EmptySquare && (piece1 < BlackPawn) == (piece2 < BlackPawn))
+#endif
 
 char pieceToChar[] = {
                         'P', 'N', 'B', 'R', 'Q', 'F', 'E', 'A', 'C', 'W', 'M',
@@ -184,13 +188,11 @@ void GenPseudoLegal(board, flags, callback, closure, filter)
     for (rf = 0; rf < BOARD_HEIGHT; rf++)
       for (ff = BOARD_LEFT; ff < BOARD_RGHT; ff++) {
           ChessSquare piece;
-          int rookRange = 1000;
+          int rookRange;
 
-	  if (flags & F_WHITE_ON_MOVE) {
-	      if (!WhitePiece(board[rf][ff])) continue;
-	  } else {
-	      if (!BlackPiece(board[rf][ff])) continue;
-	  }
+	  if(board[rf][ff] == EmptySquare) continue;
+	  if ((flags & F_WHITE_ON_MOVE) != (board[rf][ff] < BlackPawn)) continue; // [HGM] speed: wrong color
+	  rookRange = 1000;
           m = 0; piece = board[rf][ff];
           if(PieceToChar(piece) == '~')
                  piece = (ChessSquare) ( DEMOTED piece );
@@ -715,6 +717,7 @@ typedef struct {
 } GenLegalClosure;
 
 int rFilter, fFilter; // [HGM] speed: sorry, but I get a bit tired of this closure madness
+Board xqCheckers, nullBoard;
 
 extern void GenLegalCallback P((Board board, int flags, ChessMove kind,
 				int rf, int ff, int rt, int ft,
@@ -783,14 +786,15 @@ int GenLegal(board, flags, callback, closure, filter)
     int ff, ft, k, left, right, swap;
     int ignoreCheck = (flags & F_IGNORE_CHECK) != 0;
     ChessSquare wKing = WhiteKing, bKing = BlackKing, *castlingRights = board[CASTLING];
+    int inCheck = !ignoreCheck && CheckTest(board, flags, -1, -1, -1, -1, FALSE); // kludge alert: this would mark pre-existing checkers if status==1
 
     cl.cb = callback;
     cl.cl = closure;
+    xqCheckers[EP_STATUS] *= 2; // quasi: if previous CheckTest has been marking, we now set flag for suspending same checkers
     if(filter == EmptySquare) rFilter = fFilter = -1; // [HGM] speed: do not filter on square if we do not filter on piece
     GenPseudoLegal(board, flags, GenLegalCallback, (VOIDSTAR) &cl, filter);
 
-    if (!ignoreCheck &&
-	CheckTest(board, flags, -1, -1, -1, -1, FALSE)) return TRUE;
+    if (inCheck) return TRUE;
 
     /* Generate castling moves */
     if(gameInfo.variant == VariantKnightmate) { /* [HGM] Knightmate */
@@ -969,7 +973,11 @@ void CheckTestCallback(board, flags, kind, rf, ff, rt, ft, closure)
 {
     register CheckTestClosure *cl = (CheckTestClosure *) closure;
 
-    if (rt == cl->rking && ft == cl->fking) cl->check++;
+    if (rt == cl->rking && ft == cl->fking) {
+	if(xqCheckers[EP_STATUS] >= 2 && xqCheckers[rf][ff]) return; // checker is piece with suspended checking power
+	cl->check++;
+	xqCheckers[rf][ff] = xqCheckers[EP_STATUS] & 1; // remember who is checking (if status == 1)
+    }
 }
 
 
@@ -1109,6 +1117,7 @@ ChessMove LegalityTest(board, flags, rf, ff, rt, ft, promoChar)
 {
     LegalityTestClosure cl; ChessSquare piece, filterPiece, *castlingRights = board[CASTLING];
 
+    if(quickFlag) flags = flags & ~1 | quickFlag & 1; // [HGM] speed: in quick mode quickFlag specifies side-to-move.
     if(rf == DROP_RANK) return LegalDrop(board, flags, ff, rt, ft);
     piece = filterPiece = board[rf][ff];
     if(PieceToChar(piece) == '~') filterPiece = DEMOTED piece; 
@@ -1335,6 +1344,7 @@ void Disambiguate(board, flags, closure)
 {
     int illegal = 0; char c = closure->promoCharIn;
 
+    if(quickFlag) flags = flags & ~1 | quickFlag & 1; // [HGM] speed: in quick mode quickFlag specifies side-to-move.
     closure->count = closure->captures = 0;
     closure->rf = closure->ff = closure->rt = closure->ft = 0;
     closure->kind = ImpossibleMove;
@@ -1837,7 +1847,9 @@ int PerpetualChase(int first, int last)
 	cl.ff = moveList[i][0]-AAA+BOARD_LEFT;
 	cl.rt = moveList[i][3]-ONE;
 	cl.ft = moveList[i][2]-AAA+BOARD_LEFT;
+	CopyBoard(xqCheckers, nullBoard); xqCheckers[EP_STATUS] = 1; // giant kludge to make GenLegal ignore pre-existing checks
 	GenLegal(boards[i],   PosFlags(i), ExistingAttacksCallback, &cl, EmptySquare);
+	xqCheckers[EP_STATUS] = 0; // disable the generation of quasi-legal moves again
 	if(appData.debugMode) { int n;
 	    for(n=0; n<chaseStackPointer; n++)
                 fprintf(debugFP, "%c%c%c%c ", chaseStack[n].ff+AAA, chaseStack[n].rf+ONE,
@@ -1866,6 +1878,8 @@ int PerpetualChase(int first, int last)
 	    }
 
 	    // the attack is on a lower piece, or on a pinned or blocked equal one
+	    CopyBoard(xqCheckers, nullBoard); xqCheckers[EP_STATUS] = 1;
+	    CheckTest(boards[i+1], PosFlags(i+1), -1, -1, -1, -1, FALSE); // if we deliver check with our move, the checkers get marked
             // test if the victim is protected by a true protector. First make the capture.
 	    captured = boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
 	    boards[i+1][chaseStack[j].rt][chaseStack[j].ft] = boards[i+1][chaseStack[j].rf][chaseStack[j].ff];
@@ -1877,7 +1891,9 @@ int PerpetualChase(int first, int last)
 	    if(appData.debugMode) {
             	fprintf(debugFP, "test if we can recapture %c%c\n", cl.ft+AAA, cl.rt+ONE);
 	    }
+	    xqCheckers[EP_STATUS] = 2; // causes GenLegal to ignore the checks we delivered with the move, in real life evaded before we captured
             GenLegal(boards[i+1], PosFlags(i+1), ProtectedCallback, &cl, EmptySquare); // try all moves
+	    xqCheckers[EP_STATUS] = 0; // disable quasi-legal moves again
 	    // unmake the capture
 	    boards[i+1][chaseStack[j].rf][chaseStack[j].ff] = boards[i+1][chaseStack[j].rt][chaseStack[j].ft];
             boards[i+1][chaseStack[j].rt][chaseStack[j].ft] = captured;
@@ -1931,5 +1947,6 @@ int PerpetualChase(int first, int last)
             }
         }
     }
-    return preyStackPointer; // if any piece was left on preyStack, it has been perpetually chased
+    return preyStackPointer ? 256*(preyStack[preyStackPointer].file - BOARD_LEFT + AAA) + (preyStack[preyStackPointer].rank + ONE)
+				: 0; // if any piece was left on preyStack, it has been perpetually chased,and we return the
 }

@@ -1,12 +1,13 @@
 ## WinBoard language file
 ##
 ## Dutch / Nederlands
-## v1.0
+## v1.1
 ##
 ## Translation by H.G.Muller (July 19, 2011)
 ## Vertaald door H.G.Muller (19 juli 2011)
 ## http://www.open-aurec.com/wbforum
 ##    3-oct-2011. H.G.Muller. Added a few missing translations.
+##    7-oct-2011. H.G.Muller. Redid Load Options dialog, new Tournament dialog strings
 ##
 ## If you revise this, please insert your date, name and description.
 ## AUB uw naam en datum hierboven bijschrijven als u dit bestand bijwerkt
@@ -207,8 +208,22 @@ TIME CONTROL DIALOG
 LOAD OPTIONS DIALOG
 
 "Load Game Options" === "Opties voor Inlezen Partijen"
-"Load games with automatic stepping" === "Stap automatisch door partij"
-"seconds per move" === "seconden per zet"
+"Load games with &automatic stepping" === "Stap &automatisch door partij"
+"&seconds per move" === "&seconden per zet"
+"when filtering game list on position, use thresholds:" === "Gebruikte drempels bij zoeken stelling:"
+"Search Mode: " === "Zoekmethode:"
+"Match exact &position" === "Alleen e&xacte stelling"
+"Match if position is s&ubset" === "M&ogelijk met extra materiaal"
+"Match material with e&xact pawn structure" === "Zelfde materiaal, met exacte &pion opstelling"
+"Match &material" === "Zelfde &materiaal"
+"Material &range (upper board-half is optional)" === "Materiaal&interval (bovenste bordhelft optioneel)"
+"Material &difference (optional material balanced)" === "Materiaal&verschil (optioneel deel evenwichtig)"
+"Also match reversed &colors" === "Accepteer ook verwisselde &kleuren"
+"Also match &left-right mirror image" === "Accepteer &links-rechts spiegeling"
+"minimum Elo for &best player" === "minimum Elo &beste speler"
+"minimum Elo for &weakest players" === "minimum Elo &zwakste speler"
+"or later &year" === "of een later &jaar"
+"co&nsecutive positions" === "opee&nvolgende stellingen"
 
 SAVE OPTIONS DIALOG
 
@@ -927,6 +942,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "XBoard adjudication: repetition draw" === "XBoard arbitrage: zettenherhaling"
 "Xboard adjudication: perpetual checking" === "XBoard arbitrage: eeuwig schaak"
 "Xboard adjudication: perpetual chasing" === "XBoard arbitrage: eeuwig najagen"
+"%Xboard adjudication: perpetual chasing of" === "XBoard arbitrage: eeuwig najagen van"
 "Xboard adjudication: 50-move rule" === "XBoard arbitrage: 50-zettenregel"
 "Draw claim: 50-move rule" === "Remise opgeëist: 50-zettenregel"
 "Draw claim: 3-fold repetition" === "Remise opgeëist: 3x zelfde stelling"
@@ -995,10 +1011,12 @@ END-OF-GAME MESSAGES (should they be translated?)
 "Use each line/position twice" === "Gebruik elke opening/stelling 2x"
 "Pause between Games (ms):" === "Pauze tussen partijen (ms):"
 "Tournament and Match Options" === "Toernooi en Tweekamp Instellingen"
-
-"Edit Engine List..." === "Lijst met Schaakprogs Bewerken..."
-"Load Engine..." === "Schaakprogramma Wisselen..."
-"Tournament..." === "Toernooi..."
+"Tourney participants:" === "Deelnemers:"
+"Replace Engine" === "Vervang Speler"
+"Upgrade Engine" === "Invaller"
+"Time Control..." === "Speelduur..."
+"Common Engine..." === "Glob. Instellingen..."
+"Clone Tourney" === "Kloon Toernooi"
 
 JAWS strings
 
@@ -1187,4 +1205,4 @@ JAWS strings
 "legality testing" === "weiger onreglementaire zetten"
 "hide thinking" === "verberg gedachten"
 "extended P G N info" === "scores in P G N"
-"extra info in move histoty" === "scores in zettenlijst"
+"extra info in move history" === "scores in zettenlijst"

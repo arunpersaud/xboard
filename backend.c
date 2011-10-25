@@ -168,8 +168,6 @@ int LoadGameOneMove P((ChessMove readAhead));
 int LoadGameFromFile P((char *filename, int n, char *title, int useList));
 int LoadPositionFromFile P((char *filename, int n, char *title));
 int SavePositionToFile P((char *filename));
-void ApplyMove P((int fromX, int fromY, int toX, int toY, int promoChar,
-										Board board));
 void MakeMove P((int fromX, int fromY, int toX, int toY, int promoChar));
 void ShowMove P((int fromX, int fromY, int toX, int toY));
 int FinishMove P((ChessMove moveType, int fromX, int fromY, int toX, int toY,
@@ -204,7 +202,6 @@ void StopClocks P((void));
 void ResetClocks P((void));
 char *PGNDate P((void));
 void SetGameInfo P((void));
-Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
 int RegisterMove P((void));
 void MakeRegisteredMove P((void));
 void TruncateGame P((void));
@@ -465,6 +462,7 @@ int have_sent_ICS_logon = 0;
 int movesPerSession;
 int suddenDeath, whiteStartMove, blackStartMove; /* [HGM] for implementation of 'any per time' sessions, as in first part of byoyomi TC */
 long whiteTimeRemaining, blackTimeRemaining, timeControl, timeIncrement, lastWhite, lastBlack;
+Boolean adjustedClock;
 long timeControl_2; /* [AS] Allow separate time controls */
 char *fullTimeControlString = NULL, *nextSession, *whiteTC, *blackTC; /* [HGM] secondary TC: merge of MPS, TC and inc */
 long timeRemaining[2][MAX_MOVES];
@@ -1867,7 +1865,7 @@ SendToICS(s)
 {
     int count, outCount, outError;
 
-    if (icsPR == NULL) return;
+    if (icsPR == NoProc) return;
 
     count = strlen(s);
     outCount = OutputMaybeTelnet(icsPR, s, count, &outError);
@@ -1886,7 +1884,7 @@ SendToICSDelayed(s,msdelay)
 {
     int count, outCount, outError;
 
-    if (icsPR == NULL) return;
+    if (icsPR == NoProc) return;
 
     count = strlen(s);
     if (appData.debugMode) {
@@ -3899,7 +3897,7 @@ read_from_ics(isr, closure, data, count, error)
 #if ZIPPY
 		if (appData.zippyPlay && first.initDone) {
 		    ZippyGameEnd(endtype, why);
-		    if (first.pr == NULL) {
+		    if (first.pr == NoProc) {
 		      /* Start the next process early so that we'll
 			 be ready for the next challenge */
 		      StartChessProgram(&first);
@@ -5425,7 +5423,7 @@ char *
 PvToSAN(char *pv)
 {
 	static char buf[10*MSG_SIZ];
-	int i, k=0, savedEnd=endPV;
+	int i, k=0, savedEnd=endPV, saveFMM = forwardMostMove;
 	*buf = NULLCHAR;
 	if(forwardMostMove < endPV) PushInner(forwardMostMove, endPV);
 	ParsePV(pv, FALSE, 2); // this appends PV to game, suppressing any display of it
@@ -5435,7 +5433,7 @@ PvToSAN(char *pv)
 	    k += strlen(buf+k);
 	}
 	snprintf(buf+k, 10*MSG_SIZ-k, "%s", lastParseAttempt); // if we ran into stuff that could not be parsed, print it verbatim
-	if(forwardMostMove < savedEnd) PopInner(0);
+	if(forwardMostMove < savedEnd) { PopInner(0); forwardMostMove = saveFMM; } // PopInner would set fmm to endPV!
 	endPV = savedEnd;
 	return buf;
 }
@@ -7628,8 +7626,10 @@ Adjudicate(ChessProgramState *cps)
 				    hisPerpetual = PerpetualChase(k, forwardMostMove);
 				    ourPerpetual = PerpetualChase(k+1, forwardMostMove);
 				    if(ourPerpetual && !hisPerpetual) { // we are actively chasing him: forfeit
+					static char resdet[MSG_SIZ];
 					result = WhiteOnMove(forwardMostMove) ? WhiteWins : BlackWins;
-		 			details = "Xboard adjudication: perpetual chasing";
+		 			details = resdet;
+					snprintf(resdet, MSG_SIZ, "Xboard adjudication: perpetual chasing of %c%c", ourPerpetual>>8, ourPerpetual&255);
 				    } else
 				    if(hisPerpetual && !ourPerpetual)   // he is chasing us, but did not repeat yet
 					break; // Abort repetition-checking loop.
@@ -9438,6 +9438,7 @@ MakeMove(fromX, fromY, toX, toY, promoChar)
     SwitchClocks(forwardMostMove+1); // [HGM] race: incrementing move nr inside
     timeRemaining[0][forwardMostMove] = whiteTimeRemaining;
     timeRemaining[1][forwardMostMove] = blackTimeRemaining;
+    adjustedClock = FALSE;
     gameInfo.result = GameUnfinished;
     if (gameInfo.resultDetails != NULL) {
 	free(gameInfo.resultDetails);
@@ -10038,7 +10039,7 @@ NextTourneyGame(int nr, int *swapColors)
 	matchGame = 1; roundNr = nr / syncInterval + 1;
     }
 
-    if(first.pr != NoProc) return 1; // engines already loaded
+    if(first.pr != NoProc || second.pr != NoProc) return 1; // engines already loaded
 
     // redefine engines, engine dir, etc.
     NamesToList(firstChessProgramNames, command, mnemonic); // get mnemonics of installed engines
@@ -10646,7 +10647,7 @@ Reset(redraw, init)
     timeRemaining[0][0] = whiteTimeRemaining;
     timeRemaining[1][0] = blackTimeRemaining;
 
-    if (first.pr == NULL) {
+    if (first.pr == NoProc) {
 	StartChessProgram(&first);
     }
     if (init) {
@@ -11171,6 +11172,231 @@ PositionMatches(Board b1, Board b2)
     return TRUE;
 }
 
+#define Q_PROMO  4
+#define Q_EP     3
+#define Q_BCASTL 2
+#define Q_WCASTL 1
+
+int pieceList[256], quickBoard[256];
+ChessSquare pieceType[256] = { EmptySquare };
+Board soughtBoard, reverseBoard, flipBoard, rotateBoard;
+int counts[EmptySquare], minSought[EmptySquare], minReverse[EmptySquare], maxSought[EmptySquare], maxReverse[EmptySquare];
+int soughtTotal, turn;
+Boolean epOK, flipSearch;
+
+typedef struct {
+    unsigned char piece, to;
+} Move;
+
+#define DSIZE (250000)
+
+Move initialSpace[DSIZE+1000]; // gamble on that game will not be more than 500 moves
+Move *moveDatabase = initialSpace;
+unsigned int movePtr, dataSize = DSIZE;
+
+int MakePieceList(Board board, int *counts)
+{
+    int r, f, n=Q_PROMO, total=0;
+    for(r=0;r<EmptySquare;r++) counts[r] = 0; // piece-type counts
+    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	int sq = f + (r<<4);
+        if(board[r][f] == EmptySquare) quickBoard[sq] = 0; else {
+	    quickBoard[sq] = ++n;
+	    pieceList[n] = sq;
+	    pieceType[n] = board[r][f];
+	    counts[board[r][f]]++;
+	    if(board[r][f] == WhiteKing) pieceList[1] = n; else
+	    if(board[r][f] == BlackKing) pieceList[2] = n; // remember which are Kings, for castling
+	    total++;
+	}
+    }
+    epOK = gameInfo.variant != VariantXiangqi && gameInfo.variant != VariantBerolina;
+    return total;
+}
+
+void PackMove(int fromX, int fromY, int toX, int toY, ChessSquare promoPiece)
+{
+    int sq = fromX + (fromY<<4);
+    int piece = quickBoard[sq];
+    quickBoard[sq] = 0;
+    moveDatabase[movePtr].to = pieceList[piece] = sq = toX + (toY<<4);
+    if(piece == pieceList[1] && fromY == toY && (toX > fromX+1 || toX < fromX-1) && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1) {
+	int from = toX>fromX ? BOARD_RGHT-1 : BOARD_LEFT;
+	moveDatabase[movePtr++].piece = Q_WCASTL;
+	quickBoard[sq] = piece;
+	piece = quickBoard[from]; quickBoard[from] = 0;
+	moveDatabase[movePtr].to = pieceList[piece] = sq = toX>fromX ? sq-1 : sq+1;
+    } else
+    if(piece == pieceList[2] && fromY == toY && (toX > fromX+1 || toX < fromX-1) && fromX != BOARD_LEFT && fromX != BOARD_RGHT-1) {
+	int from = (toX>fromX ? BOARD_RGHT-1 : BOARD_LEFT) + (BOARD_HEIGHT-1 <<4);
+	moveDatabase[movePtr++].piece = Q_BCASTL;
+	quickBoard[sq] = piece;
+	piece = quickBoard[from]; quickBoard[from] = 0;
+	moveDatabase[movePtr].to = pieceList[piece] = sq = toX>fromX ? sq-1 : sq+1;
+    } else
+    if(epOK && (pieceType[piece] == WhitePawn || pieceType[piece] == BlackPawn) && fromX != toX && quickBoard[sq] == 0) {
+	quickBoard[(fromY<<4)+toX] = 0;
+	moveDatabase[movePtr].piece = Q_EP;
+	moveDatabase[movePtr++].to = (fromY<<4)+toX;
+	moveDatabase[movePtr].to = sq;
+    } else
+    if(promoPiece != pieceType[piece]) {
+	moveDatabase[movePtr++].piece = Q_PROMO;
+	moveDatabase[movePtr].to = pieceType[piece] = (int) promoPiece;
+    }
+    moveDatabase[movePtr].piece = piece;
+    quickBoard[sq] = piece;
+    movePtr++;
+}
+
+int PackGame(Board board)
+{
+    Move *newSpace = NULL;
+    moveDatabase[movePtr].piece = 0; // terminate previous game
+    if(movePtr > dataSize) {
+	if(appData.debugMode) fprintf(debugFP, "move-cache overflow, enlarge to %d MB\n", dataSize/128);
+	dataSize *= 8; // increase size by factor 8 (512KB -> 4MB -> 32MB -> 256MB -> 2GB)
+	if(dataSize) newSpace = (Move*) calloc(8*dataSize + 1000, sizeof(Move));
+	if(newSpace) {
+	    int i;
+	    Move *p = moveDatabase, *q = newSpace;
+	    for(i=0; i<movePtr; i++) *q++ = *p++;    // copy to newly allocated space
+	    if(dataSize > 8*DSIZE) free(moveDatabase); // and free old space (if it was allocated)
+	    moveDatabase = newSpace;
+	} else { // calloc failed, we must be out of memory. Too bad...
+	    dataSize = 0; // prevent calloc events for all subsequent games
+	    return 0;     // and signal this one isn't cached
+	}
+    }
+    movePtr++;
+    MakePieceList(board, counts);
+    return movePtr;
+}
+
+int QuickCompare(Board board, int *minCounts, int *maxCounts)
+{   // compare according to search mode
+    int r, f;
+    switch(appData.searchMode)
+    {
+      case 1: // exact position match
+	if(!(turn & board[EP_STATUS-1])) return FALSE; // wrong side to move
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
+	}
+	return TRUE;
+      case 2: // can have extra material on empty squares
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	    if(board[r][f] == EmptySquare) continue;
+	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
+	}
+	return TRUE;
+      case 3: // material with exact Pawn structure
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	    if(board[r][f] != WhitePawn && board[r][f] != BlackPawn) continue;
+	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
+	} // fall through to material comparison
+      case 4: // exact material
+	for(r=0; r<EmptySquare; r++) if(counts[r] != maxCounts[r]) return FALSE;
+	return TRUE;
+      case 6: // material range with given imbalance
+	for(r=0; r<BlackPawn; r++) if(counts[r] - minCounts[r] != counts[r+BlackPawn] - minCounts[r+BlackPawn]) return FALSE;
+	// fall through to range comparison
+      case 5: // material range
+	for(r=0; r<EmptySquare; r++) if(counts[r] < minCounts[r] || counts[r] > maxCounts[r]) return FALSE;
+	return TRUE;
+    }
+}
+
+int QuickScan(Board board, Move *move)
+{   // reconstruct game,and compare all positions in it
+    int cnt=0, stretch=0, total = MakePieceList(board, counts);
+    do {
+	int piece = move->piece;
+	int to = move->to, from = pieceList[piece];
+	if(piece <= Q_PROMO) { // special moves encoded by otherwise invalid piece numbers 1-4
+	  if(!piece) return -1;
+	  if(piece == Q_PROMO) { // promotion, encoded as (Q_PROMO, to) + (piece, promoType)
+	    piece = (++move)->piece;
+	    from = pieceList[piece];
+	    counts[pieceType[piece]]--;
+	    pieceType[piece] = (ChessSquare) move->to;
+	    counts[move->to]++;
+	  } else if(piece == Q_EP) { // e.p. capture, encoded as (Q_EP, ep-sqr) + (piece, to)
+	    counts[pieceType[quickBoard[to]]]--;
+	    quickBoard[to] = 0; total--;
+	    move++;
+	    continue;
+	  } else if(piece <= Q_BCASTL) { // castling, encoded as (Q_XCASTL, king-to) + (rook, rook-to)
+	    piece = pieceList[piece]; // first two elements of pieceList contain King numbers
+	    from  = pieceList[piece]; // so this must be King
+	    quickBoard[from] = 0;
+	    quickBoard[to] = piece;
+	    pieceList[piece] = to;
+	    move++;
+	    continue;
+	  }
+	}
+	if(appData.searchMode > 2) counts[pieceType[quickBoard[to]]]--; // account capture
+	if((total -= (quickBoard[to] != 0)) < soughtTotal) return -1; // piece count dropped below what we search for
+	quickBoard[from] = 0;
+	quickBoard[to] = piece;
+	pieceList[piece] = to;
+	cnt++; turn ^= 3;
+	if(QuickCompare(soughtBoard, minSought, maxSought) ||
+	   appData.ignoreColors && QuickCompare(reverseBoard, minReverse, maxReverse) ||
+	   flipSearch && (QuickCompare(flipBoard, minSought, maxSought) ||
+				appData.ignoreColors && QuickCompare(rotateBoard, minReverse, maxReverse))
+	  ) {
+	    static int lastCounts[EmptySquare+1];
+	    int i;
+	    if(stretch) for(i=0; i<EmptySquare; i++) if(lastCounts[i] != counts[i]) { stretch = 0; break; } // reset if material changes
+	    if(stretch++ == 0) for(i=0; i<EmptySquare; i++) lastCounts[i] = counts[i]; // remember actual material
+	} else stretch = 0;
+	if(stretch && (appData.searchMode == 1 || stretch >= appData.stretch)) return cnt + 1 - stretch;
+	move++;
+    } while(1);
+}
+
+void InitSearch()
+{
+    int r, f;
+    flipSearch = FALSE;
+    CopyBoard(soughtBoard, boards[currentMove]);
+    soughtTotal = MakePieceList(soughtBoard, maxSought);
+    soughtBoard[EP_STATUS-1] = (currentMove & 1) + 1;
+    if(currentMove == 0 && gameMode == EditPosition) soughtBoard[EP_STATUS-1] = blackPlaysFirst + 1; // (!)
+    CopyBoard(reverseBoard, boards[currentMove]);
+    for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	int piece = boards[currentMove][BOARD_HEIGHT-1-r][f];
+	if(piece < BlackPawn) piece += BlackPawn; else if(piece < EmptySquare) piece -= BlackPawn; // color-flip
+	reverseBoard[r][f] = piece;
+    }
+    reverseBoard[EP_STATUS-1] = soughtBoard[EP_STATUS-1] ^ 3; 
+    for(r=0; r<6; r++) reverseBoard[CASTLING][r] = boards[currentMove][CASTLING][(r+3)%6];
+    if(appData.findMirror && appData.searchMode <= 3 && (!nrCastlingRights
+		 || (boards[currentMove][CASTLING][2] == NoRights || 
+		     boards[currentMove][CASTLING][0] == NoRights && boards[currentMove][CASTLING][1] == NoRights )
+		 && (boards[currentMove][CASTLING][5] == NoRights || 
+		     boards[currentMove][CASTLING][3] == NoRights && boards[currentMove][CASTLING][4] == NoRights ) )
+      ) {
+	flipSearch = TRUE;
+	CopyBoard(flipBoard, soughtBoard);
+	CopyBoard(rotateBoard, reverseBoard);
+	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
+	    flipBoard[r][f]    = soughtBoard[r][BOARD_WIDTH-1-f];
+	    rotateBoard[r][f] = reverseBoard[r][BOARD_WIDTH-1-f];
+	}
+    }
+    for(r=0; r<BlackPawn; r++) maxReverse[r] = maxSought[r+BlackPawn], maxReverse[r+BlackPawn] = maxSought[r];
+    if(appData.searchMode >= 5) {
+	for(r=BOARD_HEIGHT/2; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) soughtBoard[r][f] = EmptySquare;
+	MakePieceList(soughtBoard, minSought);
+	for(r=0; r<BlackPawn; r++) minReverse[r] = minSought[r+BlackPawn], minReverse[r+BlackPawn] = minSought[r];
+    }
+    if(gameInfo.variant == VariantCrazyhouse || gameInfo.variant == VariantShogi || gameInfo.variant == VariantBughouse)
+	soughtTotal = 0; // in drop games nr of pieces does not fall monotonously
+}
+
 GameInfo dummyInfo;
 
 int GameContainsPosition(FILE *f, ListGame *lg)
@@ -11180,44 +11406,34 @@ int GameContainsPosition(FILE *f, ListGame *lg)
     char promoChar;
     static int initDone=FALSE;
 
+    // weed out games based on numerical tag comparison
+    if(lg->gameInfo.variant != gameInfo.variant) return -1; // wrong variant
+    if(appData.eloThreshold1 && (lg->gameInfo.whiteRating < appData.eloThreshold1 && lg->gameInfo.blackRating < appData.eloThreshold1)) return -1;
+    if(appData.eloThreshold2 && (lg->gameInfo.whiteRating < appData.eloThreshold2 || lg->gameInfo.blackRating < appData.eloThreshold2)) return -1;
+    if(appData.dateThreshold && (!lg->gameInfo.date || atoi(lg->gameInfo.date) < appData.dateThreshold)) return -1;
     if(!initDone) {
 	for(next = WhitePawn; next<EmptySquare; next++) keys[next] = random()>>8 ^ random()<<6 ^random()<<20;
 	initDone = TRUE;
     }
-    dummyInfo.variant = VariantNormal;
-    FREE(dummyInfo.fen); dummyInfo.fen = NULL;
-    dummyInfo.whiteRating = 0;
-    dummyInfo.blackRating = 0;
-    FREE(dummyInfo.date); dummyInfo.date = NULL;
+    if(lg->gameInfo.fen) ParseFEN(boards[scratch], &btm, lg->gameInfo.fen);
+    else CopyBoard(boards[scratch], initialPosition); // default start position
+    if(lg->moves) {
+	turn = btm + 1;
+	if((next = QuickScan( boards[scratch], &moveDatabase[lg->moves] )) < 0) return -1; // quick scan rules out it is there
+	if(appData.searchMode >= 4) return next; // for material searches, trust QuickScan.
+    }
+    if(btm) plyNr++;
+    if(PositionMatches(boards[scratch], boards[currentMove])) return plyNr;
     fseek(f, lg->offset, 0);
     yynewfile(f);
-    CopyBoard(boards[scratch], initialPosition); // default start position
     while(1) {
-	yyboardindex = scratch + (plyNr&1);
-      quickFlag = 1;
+	yyboardindex = scratch;
+	quickFlag = plyNr+1;
 	next = Myylex();
-      quickFlag = 0;
+	quickFlag = 0;
 	switch(next) {
 	    case PGNTag:
 		if(plyNr) return -1; // after we have seen moves, any tags will be start of next game
-#if 0
-		ParsePGNTag(yy_text, &dummyInfo); // this has a bad memory leak...
-		if(dummyInfo.fen) ParseFEN(boards[scratch], &btm, dummyInfo.fen), free(dummyInfo.fen), dummyInfo.fen = NULL;
-#else
-		// do it ourselves avoiding malloc
-		{ char *p = yy_text+1, *q;
-		  while(!isdigit(*p) && !isalpha(*p)) p++;
-		  q  = p; while(*p != ' ' && *p != '\t' && *p != '\n') p++;
-		  *p = NULLCHAR;
-		  if(!StrCaseCmp(q, "Date") && (p = strchr(p+1, '"'))) { if(atoi(p+1) < appData.dateThreshold) return -1; } else
-		  if(!StrCaseCmp(q, "Variant")  &&  (p = strchr(p+1, '"'))) dummyInfo.variant = StringToVariant(p+1); else
-		  if(!StrCaseCmp(q, "WhiteElo")  && (p = strchr(p+1, '"'))) dummyInfo.whiteRating = atoi(p+1); else
-		  if(!StrCaseCmp(q, "BlackElo")  && (p = strchr(p+1, '"'))) dummyInfo.blackRating = atoi(p+1); else
-		  if(!StrCaseCmp(q, "WhiteUSCF") && (p = strchr(p+1, '"'))) dummyInfo.whiteRating = atoi(p+1); else
-		  if(!StrCaseCmp(q, "BlackUSCF") && (p = strchr(p+1, '"'))) dummyInfo.blackRating = atoi(p+1); else
-		  if(!StrCaseCmp(q, "FEN")  && (p = strchr(p+1, '"'))) ParseFEN(boards[scratch], &btm, p+1);
-		}
-#endif
 	    default:
 		continue;
 
@@ -11272,18 +11488,14 @@ int GameContainsPosition(FILE *f, ListGame *lg)
 		break;
 	}
 	// Move encountered; peform it. We need to shuttle between two boards, as even/odd index determines side to move
-	if(plyNr == 0) { // but first figure out variant and initial position
-	    if(dummyInfo.variant != gameInfo.variant) return -1; // wrong variant
-	    if(appData.eloThreshold1 && (dummyInfo.whiteRating < appData.eloThreshold1 && dummyInfo.blackRating < appData.eloThreshold1)) return -1;
-	    if(appData.eloThreshold2 && (dummyInfo.whiteRating < appData.eloThreshold2 || dummyInfo.blackRating < appData.eloThreshold2)) return -1;
-	    if(appData.dateThreshold && (!dummyInfo.date || atoi(dummyInfo.date) < appData.dateThreshold)) return -1;
-	    if(btm) CopyBoard(boards[scratch+1], boards[scratch]), plyNr++;
-	    if(PositionMatches(boards[scratch + plyNr], boards[currentMove])) return plyNr;
-	}
-	CopyBoard(boards[scratch + (plyNr+1&1)], boards[scratch + (plyNr&1)]);
 	plyNr++;
-	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch + (plyNr&1)]);
-	if(PositionMatches(boards[scratch + (plyNr&1)], boards[currentMove])) return plyNr;
+	ApplyMove(fromX, fromY, toX, toY, promoChar, boards[scratch]);
+	if(PositionMatches(boards[scratch], boards[currentMove])) return plyNr;
+	if(appData.ignoreColors && PositionMatches(boards[scratch], reverseBoard)) return plyNr;
+	if(appData.findMirror) {
+	    if(PositionMatches(boards[scratch], flipBoard)) return plyNr;
+	    if(appData.ignoreColors && PositionMatches(boards[scratch], rotateBoard)) return plyNr;
+	}
     }
 }
 
@@ -13130,7 +13342,7 @@ int
 WaitForEngine(ChessProgramState *cps, DelayedEventCallback retry)
 {
     char buf[MSG_SIZ];
-    if (cps->pr == NULL) {
+    if (cps->pr == NoProc) {
 	StartChessProgram(cps);
 	if (cps->protocolVersion == 1) {
 	  retry();
@@ -13415,9 +13627,11 @@ EditGameEvent()
 	    SendToProgram("undo\n", &first);
 	    i--;
 	}
+	if(!adjustedClock) {
 	whiteTimeRemaining = timeRemaining[0][currentMove];
 	blackTimeRemaining = timeRemaining[1][currentMove];
 	DisplayBothClocks();
+	}
 	if (whiteFlag || blackFlag) {
 	    whiteFlag = blackFlag = 0;
 	}
@@ -14809,7 +15023,7 @@ SendToProgram(message, cps)
     int count, outCount, error;
     char buf[MSG_SIZ];
 
-    if (cps->pr == NULL) return;
+    if (cps->pr == NoProc) return;
     Attention(cps);
 
     if (appData.debugMode) {
@@ -15739,9 +15953,11 @@ NextTickLength(timeRemaining)
 void
 AdjustClock(Boolean which, int dir)
 {
+    if(appData.autoCallFlag) { DisplayError(_("Clock adjustment not allowed in auto-flag mode"), 0); return; }
     if(which) blackTimeRemaining += 60000*dir;
     else      whiteTimeRemaining += 60000*dir;
     DisplayBothClocks();
+    adjustedClock = TRUE;
 }
 
 /* Stop clocks and reset to a fresh time control */
@@ -15765,6 +15981,7 @@ ResetClocks()
     }
     lastWhite = lastBlack = whiteStartMove = blackStartMove = 0;
     DisplayBothClocks();
+    adjustedClock = FALSE;
 }
 
 #define FUDGE 25 /* 25ms = 1/40 sec; should be plenty even for 50 Hz clocks */

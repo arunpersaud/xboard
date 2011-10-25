@@ -634,6 +634,9 @@ typedef struct {
     int eloThreshold2;
     int dateThreshold;
     int searchMode;
+    int stretch;
+    Boolean ignoreColors;
+    Boolean findMirror;
     char *userName;
     int rewindIndex;    /* [HGM] autoinc   */
     int sameColorGames; /* [HGM] alternate */

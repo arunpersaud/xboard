@@ -70,7 +70,7 @@ MENUS:
 "&Edit Game\tCtrl+E" === ""
 "E&dit Position\tCtrl+Shift+E" === ""
 "Edit Ta&gs..." === ""
-"Edit &Comment..." === ""
+"Edit Co&mment..." === ""
 "Enter &Username..." === ""
 "&Revert\tHome" === ""
 "&Annotate" === ""
@@ -231,8 +231,22 @@ TIME CONTROL DIALOG
 LOAD OPTIONS DIALOG
 
 "Load Game Options" === ""
-"Load games with automatic stepping" === ""
-"seconds per move" === ""
+"Load games with &automatic stepping" === ""
+"&seconds per move" === ""
+"when filtering game list on position, use thresholds:" === ""
+"Search Mode: " === ""
+"Match exact &position" === ""
+"Match if position is s&ubset" === ""
+"Match material with e&xact pawn structure" === ""
+"Match &material" === ""
+"Material &range (upper board-half is optional)" === ""
+"Material &difference (optional material balanced)" === ""
+"Also match reversed &colors" === ""
+"Also match &left-right mirror image" === ""
+"minimum Elo for &best player" === ""
+"minimum Elo for &weakest players" === ""
+"or later &year" === ""
+"co&nsecutive positions" === ""
 
 SAVE OPTIONS DIALOG
 
@@ -636,6 +650,7 @@ winboard.c
 "Load Game from File" === ""
 "Load Position from File" === ""
 "Save Game to File" === ""
+"Save Diagram to File" === ""
 "Save Position to File" === ""
 "%s does not support analysis" === ""
 "Analyze Game from File" === ""
@@ -782,11 +797,11 @@ wsettings.c
 
 "%s Engine Settings (%s)" === ""
 "OK" === ""
-"Cancel" === """Chat Window %s"
+"Cancel" === ""
 
 wchat.c
 
-"Cancel" === """Chat Window %s"
+"Chat Window %s" === ""
 
 backend.c
 
@@ -961,6 +976,7 @@ END-OF-GAME MESSAGES (should they be translated?)
 "XBoard adjudication: repetition draw" === ""
 "Xboard adjudication: perpetual checking" === ""
 "Xboard adjudication: perpetual chasing" === ""
+"%Xboard adjudication: perpetual chasing of" === ""
 "Xboard adjudication: 50-move rule" === ""
 "Draw claim: 50-move rule" === ""
 "Draw claim: 3-fold repetition" === ""
@@ -975,3 +991,63 @@ END-OF-GAME MESSAGES (should they be translated?)
 "xboard exit" === ""
 
 
+# NEW STRINGS FOR EXPERIMENTAL TM VERSION:
+
+# MENU
+
+"Edit Boo&k..." === ""
+"Edit Engine List..." === ""
+"Load Engine..." === ""
+"Tournament..." === ""
+
+# LOAD ENGINE DIALOG
+
+"First" === ""
+"Second" === ""
+"Choose File" === ""
+"Choose Folder:" === ""
+"Select engine from list:" === ""
+"or specify one below:" === ""
+"Nickname (optional):" === ""
+"Use nickname in PGN tag" === ""
+"Engine (*.exe):" === ""
+"command-line parameters:" === ""
+"directory:" === ""
+"(Directory will be derived from engine path when left empty)" === ""
+"Add this engine to the list" === ""
+"Must not use GUI book" === ""
+"UCI" === ""
+"WB protocol v1 (skip waiting for features)" === ""
+"UCCI / USI (uses specified /uxiAdapter)" === ""
+"Force current variant with this engine" === ""
+"Load mentioned engine as" === ""
+"Load Engine" === ""
+
+# TOURNAMENT OPTIONS DIALOG
+
+"Tournament file:" === ""
+"If you specify an existing file, the rest of this dialog will be ignored." === ""
+"Otherwise, the file will be created, with the settings you specify below:" === ""
+"Select Engine:" === ""
+"Use Swiss pairing engine (cycles = rounds)" === ""
+"Tourney type (0=RR, 1=gauntlet):" === ""
+"Sync after cycle" === ""
+"Number of tourney cycles:" === ""
+"Sync after round" === ""
+"Games per Match / Pairing:" === ""
+"File for saving tourney games:" === ""
+"Game File with Opening Lines:" === ""
+"Game Number:" === ""
+"File with Start Positions:" === ""
+"Position Number:" === ""
+"Step through lines/positions in file" === ""
+"Rewind after (0 = never):" === ""
+"Use each line/position twice" === ""
+"Pause between Games (ms):" === ""
+"Tournament and Match Options" === ""
+"Tourney participants:" === ""
+"Replace Engine" === ""
+"Upgrade Engine" === ""
+"Time Control..." === ""
+"Common Engine..." === ""
+"Clone Tourney" === ""

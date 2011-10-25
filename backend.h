@@ -236,6 +236,10 @@ int PromoScroll P((int x, int y));
 void EditBookEvent P((void));
 Boolean DisplayBook P((int moveNr));
 void SaveToBook P((char *text));
+int PackGame P((Board board));
+Boolean ParseFEN P((Board board, int *blackPlaysFirst, char *fen));
+void ApplyMove P((int fromX, int fromY, int toX, int toY, int promoChar, Board board));
+void PackMove P((int fromX, int fromY, int toX, int toY, ChessSquare promoPiece));
 
 char *StrStr P((char *string, char *match));
 char *StrCaseStr P((char *string, char *match));
@@ -280,6 +284,7 @@ typedef struct _ListGame {
     ListNode node;
     int number;
     int position;
+    int moves;
     unsigned long offset;   /*  Byte offset of game within file.     */
     GameInfo gameInfo;      /*  Note that some entries may be NULL. */
 } ListGame;
@@ -294,6 +299,8 @@ int GameListBuild P((FILE *));
 void GameListInitGameInfo P((GameInfo *));
 char *GameListLine P((int, GameInfo *));
 char * GameListLineFull P(( int, GameInfo *));
+void InitSearch P((void));
+int GameContainsPosition P((FILE *f, ListGame *lg));
 void GLT_TagsToList P(( char * tags ));
 void GLT_ParseList P((void));
 void NamesToList P((char *name, char **engines, char **mnemonics));

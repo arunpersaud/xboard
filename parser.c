@@ -144,7 +144,7 @@ int NextUnit(char **p)
 {	// Main parser routine
 	int coord[4], n, result, piece, i;
 	char type[4], promoted, separator, slash, *oldp, *commentEnd, c;
-        int wom = WhiteOnMove(yyboardindex);
+        int wom = quickFlag ? quickFlag&1 : WhiteOnMove(yyboardindex);
 
 	// ********* try white first, because it is so common **************************
 	if(**p == ' ' || **p == '\n' || **p == '\t') { parseStart = (*p)++; return Nothing; }
