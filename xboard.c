@@ -2407,6 +2407,9 @@ Enables icsEnables[] = {
     { "ModeAnalyzefile", False },
     { "ModeTwomachines", False },
     { "ModeMachinematch", False },
+    { "ModeICSclient", True },
+    { "ViewICStextmenu", True },
+    { "ViewICSinputbox", True },
 #ifndef ZIPPY
     { "EngineHint", False },
     { "EngineBook", False },
