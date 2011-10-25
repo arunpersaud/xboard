@@ -255,7 +255,7 @@ static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 int EventToSquare P((int x, int limit));
 void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
 gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data));
-void MoveTypeInProc P((Widget widget, caddr_t unused, XEvent *event));
+void MoveTypeInProc P((GdkEventKey *eventkey));
 gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
 gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
 gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
@@ -4290,6 +4290,9 @@ gboolean KeyPressProc(window, eventkey, data)
      GdkEventKey  *eventkey;
      gpointer data;
 {
+
+    MoveTypeInProc(eventkey); // pop up for typed in moves
+
     // handle shift+<number> cases
     if (eventkey->state & GDK_SHIFT_MASK) {
         guint keyval;

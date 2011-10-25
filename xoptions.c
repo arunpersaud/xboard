@@ -1702,8 +1702,16 @@ void PopUpMoveDialog(char firstchar)
                       G_CALLBACK (activateCB), NULL);                     
 }
 
-void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
+void MoveTypeInProc(eventkey)
+    GdkEventKey  *eventkey;
 {
+    char buf[10];
+    buf[0]=eventkey->keyval;
+    buf[1]='\0';
+    if (*buf > 32)        
+        PopUpMoveDialog(*buf);
+    
+/* old Xt version
     char buf[10], keys[32];
     KeySym sym;
     KeyCode metaL, metaR;
@@ -1713,6 +1721,7 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
     metaR = XKeysymToKeycode(xDisplay, XK_Meta_R);
     if ( n == 1 && *buf > 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) // printable, no alt        
         PopUpMoveDialog(*buf);
+
 
 //    if ( n == 1 && *buf >= 32 && !(keys[metaL>>3]&1<<(metaL&7)) && !(keys[metaR>>3]&1<<(metaR&7))) { // printable, no alt
 //	if(appData.icsActive) { // text typed to board in ICS mode: divert to ICS input box
@@ -1726,6 +1735,7 @@ void MoveTypeInProc(Widget widget, caddr_t unused, XEvent *event)
 //	    InputBoxPopup();
 //	} else PopUpMoveDialog(*buf);
 //    }
+*/
 }
 
 void
