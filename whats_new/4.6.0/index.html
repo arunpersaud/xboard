@@ -16,6 +16,8 @@
 <a href="#tag-D10">Replacing a tourney participant</a>
 </li><li>
 <a href="#tag-D9">Playing openings in color-reversed pairs</a>
+</li><li>
+<a href="#tag-D17">Perpetual chasing in Xiangqi</a>
 </li></ul>
 
 <h3>Interface Improvements</h3>
@@ -610,6 +612,17 @@ but now on the game that is already stored, starting from the currently shown po
 As you can stop the auto-stepping at any time, by switching to another mode,
 this means you can now limit the annotation to any selected part of the game,
 starting where it gets interesting.
+</p>
+
+<h2><a name="tag-D17">Another interpretation of Asia rules</a></h2>
+<p>
+For perpetual-chase detection in Xiangqi XBoard had been relying on the legal-moves-only interpretation of Asia rules,
+where attacks or protectors are considered not to exist when you are in check,
+because you cannot legally capture or recapture in that case.
+It turns out this interpretation is not the one most commonly used.
+So we have switched to an interpretation where one does consider captures that leave the King in an already existing check,
+or recaptures that leave the King in a check that already existed before the capture
+(provided these are the only checks it is left in).
 </p>
 
 </td></tr></tbody></table>
