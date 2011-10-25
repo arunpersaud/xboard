@@ -291,9 +291,6 @@ void ReloadGameProc P((Widget w, XEvent *event, String *prms,
 void ReloadPositionProc P((Widget w, XEvent *event, String *prms,
 		       Cardinal *nprms));
 void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void EnterKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void UpKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void DownKeyProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void OneClickProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void PonderNextMoveProc P((Widget w, XEvent *event, String *prms,
 			   Cardinal *nprms));
@@ -767,9 +764,6 @@ XtActionsRec boardActions[] = {
     { "ReloadPositionProc", ReloadPositionProc },
     { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
     { "ShowGameListProc", ShowGameListProc },
-    { "EnterKeyProc", EnterKeyProc },
-    { "UpKeyProc", UpKeyProc },
-    { "DownKeyProc", DownKeyProc },
     { "PonderNextMoveProc", PonderNextMoveProc },
     { "DebugProc", DebugProc },
     { "NothingProc", NothingProc },
@@ -777,7 +771,6 @@ XtActionsRec boardActions[] = {
     { "CommentPopDown", (XtActionProc) CommentPopDown },
     { "TagsPopDown", (XtActionProc) TagsPopDown },
     { "ErrorPopDown", (XtActionProc) ErrorPopDown },
-    { "ICSInputBoxPopDown", (XtActionProc) ICSInputBoxPopDown },
     { "GameListPopDown", (XtActionProc) GameListPopDown },
     //    { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
    // { "PromotionPopDown", (XtActionProc) PromotionPopDown },
@@ -821,11 +814,6 @@ char whiteTranslations[] =
 char blackTranslations[] =
    "Shift<BtnDown>: BlackClock(1)\n \
    <BtnDown>: BlackClock(0)\n";
-
-char ICSInputTranslations[] =
-    "<Key>Up: UpKeyProc() \n "
-    "<Key>Down: DownKeyProc() \n "
-    "<Key>Return: EnterKeyProc() \n";
 
 String xboardResources[] = {
     "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
@@ -5470,65 +5458,6 @@ void AdjuDrawProcGTK(object, user_data)
      gpointer user_data;
 {
     UserAdjudicationEvent(0);
-}
-
-void EnterKeyProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if (shellUp[4] == True)
-      ICSInputSendText();
-}
-
-void UpKeyProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{   // [HGM] input: let up-arrow recall previous line from history
-    Widget edit;
-    int j;
-    Arg args[16];
-    String val;
-    XawTextBlock t;
-
-    if (!shellUp[4]) return;
-    edit = boxOptions[0].handle;
-    j = 0;
-    XtSetArg(args[j], XtNstring, &val); j++;
-    XtGetValues(edit, args, j);
-    val = PrevInHistory(val);
-    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
-    if(val) {
-	t.ptr = val; t.firstPos = 0; t.length = strlen(val); t.format = XawFmt8Bit;
-	XawTextReplace(edit, 0, 0, &t);
-	XawTextSetInsertionPoint(edit, 9999);
-    }
-}
-
-void DownKeyProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{   // [HGM] input: let down-arrow recall next line from history
-    Widget edit;
-    String val;
-    XawTextBlock t;
-
-    if (!shellUp[4]) return;
-    edit = boxOptions[0].handle;
-    val = NextInHistory();
-    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
-    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
-    if(val) {
-	t.ptr = val; t.firstPos = 0; t.length = strlen(val); t.format = XawFmt8Bit;
-	XawTextReplace(edit, 0, 0, &t);
-	XawTextSetInsertionPoint(edit, 9999);
-    }
 }
 
 void StopObservingProcGTK(object, user_data)
