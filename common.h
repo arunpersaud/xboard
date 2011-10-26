@@ -154,7 +154,6 @@ int pclose(FILE *);
 #define FIRST_HOST		"localhost"
 #define SECOND_HOST		"localhost"
 #define TELNET_PROGRAM          "telnet"
-#define DEF_BITMAP_DIR          BITMAPDIR
 #define MATCH_MODE		"False"
 #define INIT_STRING		"new\nrandom\n"
 #define WHITE_STRING		"white\ngo\n"

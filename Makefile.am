@@ -33,6 +33,29 @@ SUBDIRS = po
 xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@
 
 svgdir = $(datadir)/games/xboard/svg
+svg_DATA = svg/icon_white.svg svg/icon_black.svg \
+           svg/DarkSquare.svg svg/LightSquare.svg svg/NeutralSquare.svg \
+           svg/BlackArchbishop.svg  svg/WhiteArchbishop.svg	   \
+           svg/BlackBishop.svg	    svg/WhiteBishop.svg         \
+           svg/BlackCanon.svg	    svg/WhiteCanon.svg	      \
+           svg/BlackChancellor.svg   svg/WhiteChancellor.svg    \
+           svg/BlackCrownedBishop.svg  svg/WhiteCrownedBishop.svg  \
+           svg/BlackCrownedRook.svg   svg/WhiteCrownedRook.svg    \
+           svg/BlackGoldKnight.svg   svg/WhiteGoldKnight.svg    \
+           svg/BlackGoldLance.svg   svg/WhiteGoldLance.svg    \
+           svg/BlackGoldPawn.svg    svg/WhiteGoldPawn.svg     \
+           svg/BlackGoldSilver.svg  svg/WhiteGoldSilver.svg   \
+           svg/BlackGold.svg	    svg/WhiteGold.svg	      \
+           svg/BlackKing.svg	    svg/WhiteKing.svg	      \
+           svg/BlackKnight.svg	    svg/WhiteKnight.svg	      \
+           svg/BlackLance.svg	    svg/WhiteLance.svg	      \
+           svg/BlackMarshall.svg    svg/WhiteMarshall.svg     \
+           svg/BlackNightrider.svg  svg/WhiteNightrider.svg   \
+           svg/BlackPawn.svg	    svg/WhitePawn.svg	      \
+           svg/BlackPrincess.svg    svg/WhitePrincess.svg     \
+           svg/BlackQueen.svg	    svg/WhiteQueen.svg	      \
+           svg/BlackRook.svg	    svg/WhiteRook.svg	      \
+           svg/BlackUnicorn.svg	    svg/WhiteUnicorn.svg
 
 gladedir = $(datadir)/games/xboard/ui
 glade_DATA = gtk/evalgraph.glade \
@@ -47,7 +70,6 @@ EXTRA_DIST = svg sounds winboard  \
 DISTCLEANFILES = stamp-h
 
 AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
-	    -DBITMAPDIR='"$(datadir)/games/xboard/bitmaps/default"' \
 	    -DGLADEDIR='"$(gladedir)"' \
 	    -DSVGDIR='"$(svgdir)"' \
 	    -DLOCALEDIR='"$(localedir)"'  @GTK_CFLAGS@
