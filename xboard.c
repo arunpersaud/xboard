@@ -262,10 +262,10 @@ gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpoi
 void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
 void HandlePV P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
-void SelectPV P((Widget w, XEvent * event,
-		     String * params, Cardinal * nParams));
-void StopPV P((Widget w, XEvent * event,
-		     String * params, Cardinal * nParams));
+//void SelectPV P((Widget w, XEvent * event,
+//		     String * params, Cardinal * nParams));
+//void StopPV P((Widget w, XEvent * event,
+//		     String * params, Cardinal * nParams));
 void WhiteClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void BlackClock P((Widget w, XEvent *event,
@@ -751,8 +751,8 @@ XrmOptionDescRec shellOptions[] = {
 
 XtActionsRec boardActions[] = {
     { "HandlePV", HandlePV },
-    { "SelectPV", SelectPV },
-    { "StopPV", StopPV },
+//  { "SelectPV", SelectPV },
+//  { "StopPV", StopPV },
     { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
