@@ -77,6 +77,7 @@ extern char *getenv();
 #include "xboard.h"
 #include "engineoutput.h"
 #include "gettext.h"
+#include "gtk_helper.h"
 
 
 #ifdef ENABLE_NLS
@@ -105,6 +106,11 @@ extern char *getenv();
 
 Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
 Widget outputField[2][7]; // [HGM] front-end array to translate output field to window handle
+GtkWidget *outputFieldGTK[2][7]; // [HGM] front-end array to translate output field to window handle
+
+static GtkBuilder *builder=NULL;
+static GError *gtkerror=NULL; 
+GtkWidget *engineOutputShellGTK=NULL;
 
 void EngineOutputPopDown();
 void engineOutputPopUp();
@@ -164,23 +170,33 @@ static void InitializeEngineOutput()
 
 void DoSetWindowText(int which, int field, char *s_label)
 {
-	Arg arg;
-
-//	XtSetArg(arg, XtNlabel, (XtArgVal) s_label);
-//	XtSetValues(outputField[which][field], &arg, 1);
+    // which = 0 for 1st engine, 1 for second
+    // field = 3 for engine name, 5 for NPS     
+    if (field != 3 && field != 5) return;
+    if (!GTK_IS_LABEL(outputFieldGTK[which][field])) return;    
+    gtk_label_set_text(GTK_LABEL(outputFieldGTK[which][field]), s_label);
 }
 
 void SetEngineOutputTitle(char *title)
 {
-	Arg arg;
-//	XtSetArg(arg, XtNtitle, (XtArgVal) title);
-//	XtSetValues(engineOutputShell, &arg, 1);
+    gtk_window_set_title(GTK_WINDOW(engineOutputShellGTK), title);
 }
 
 void InsertIntoMemo( int which, char * text, int where )
 {
-	XawTextBlock t;
-	Widget edit;
+	//XawTextBlock t;
+	//Widget edit;
+
+    gchar widgetname[50];
+    GtkTextIter start;    
+    
+    strcpy(widgetname, which == 0 ? "Engine1EditText" : "Engine2EditText");
+    GtkWidget *editGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!editGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);    
+ 
+    GtkTextBuffer *tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(editGTK));            
+    gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(tb), &start);
+    gtk_text_buffer_insert(tb, &start, text, -1);
 
 	/* the backend adds \r\n, which is needed for winboard,
 	 * for xboard we delete them again over here */
@@ -208,8 +224,17 @@ void SetIcon( int which, int field, int nIcon )
 
 void DoClearMemo(int which)
 {
-    Widget edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
-    Arg arg;
+    //Widget edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
+    //Arg arg;
+
+    gchar widgetname[50];   
+    
+    strcpy(widgetname, which == 0 ? "Engine1EditText" : "Engine2EditText");
+    GtkWidget *editGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!editGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);     
+ 
+    GtkTextBuffer *tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(editGTK));        
+    gtk_text_buffer_set_text(tb, "", -1);
 //    XtCallActionProc(edit, "select-all", NULL, NULL, 0);
 //    XtCallActionProc(edit, "kill-selection", NULL, NULL, 0);
 //    XtSetArg(arg, XtNstring, ""); // clear without disturbing selection!
@@ -293,6 +318,45 @@ void CopyMemoProc(w, event, prms, nprms)
 }
 
 // The following routines are mutated clones of the commentPopUp routines
+void PositionControlSetGTK(which)
+    int which;
+{
+    //Arg args[16];
+    //Widget edit, NameWidget, ColorWidget, ModeWidget, MoveWidget, NodesWidget;
+    int j, mutable=1;
+
+    gchar widgetname[50];
+    strcpy(widgetname, which == 0 ? "Engine1Colorlabel" : "Engine2Colorlabel");    
+    GtkWidget *ColorWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!ColorWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nColorIcon] = ColorWidgetGTK;
+
+    strcpy(widgetname, which == 0 ? "Engine1Namelabel" : "Engine2Namelabel"); 
+    GtkWidget *NameWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!NameWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nLabel] = NameWidgetGTK;
+
+    strcpy(widgetname, which == 0 ? "Engine1Modelabel" : "Engine2Modelabel"); 
+    GtkWidget *ModeWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!ModeWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nStateIcon] = ModeWidgetGTK;
+
+    strcpy(widgetname, which == 0 ? "Engine1Movelabel" : "Engine2Movelabel");
+    GtkWidget *MoveWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!ModeWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nStateData] = MoveWidgetGTK;
+
+    strcpy(widgetname, which == 0 ? "Engine1Nodeslabel" : "Engine2Nodeslabel");
+    GtkWidget *NodesWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!NodesWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nLabelNPS] = NodesWidgetGTK;
+
+    strcpy(widgetname, which == 0 ? "Engine1EditText" : "Engine2EditText");
+    GtkWidget *editGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!editGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nMemo] = editGTK;
+
+}
 
 void PositionControlSet(which, shell, form, bw_width)
      int which;
@@ -302,6 +366,8 @@ void PositionControlSet(which, shell, form, bw_width)
     Arg args[16];
     Widget edit, NameWidget, ColorWidget, ModeWidget, MoveWidget, NodesWidget;
     int j, mutable=1;
+
+/*
     j = 0;
     XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
     XtSetArg(args[j], XtNlabel,     (XtArgVal) ""); j++;
@@ -314,7 +380,15 @@ void PositionControlSet(which, shell, form, bw_width)
     outputField[which][nColorIcon] = ColorWidget =
       XtCreateManagedWidget("Color", labelWidgetClass,
 		     form, args, j);
+*/
 
+    gchar widgetname[50];
+    strcpy(widgetname, which == 0 ? "Engine1Colorlabel" : "Engine2Colorlabel");    
+    GtkWidget *ColorWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!ColorWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nColorIcon] = ColorWidgetGTK;
+
+/*
     j = 0;
     XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
     XtSetArg(args[j], XtNjustify,   (XtArgVal) XtJustifyLeft); j++;
@@ -327,7 +401,14 @@ void PositionControlSet(which, shell, form, bw_width)
     outputField[which][nLabel] = NameWidget =
       XtCreateManagedWidget("Engine", labelWidgetClass,
 		     form, args, j);
+*/
 
+    strcpy(widgetname, which == 0 ? "Engine1Namelabel" : "Engine2Namelabel"); 
+    GtkWidget *NameWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!NameWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nLabel] = NameWidgetGTK;
+
+/*
     j = 0;
     XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
     XtSetArg(args[j], XtNlabel,     (XtArgVal) ""); j++;
@@ -339,7 +420,14 @@ void PositionControlSet(which, shell, form, bw_width)
     outputField[which][nStateIcon] = ModeWidget =
       XtCreateManagedWidget("Mode", labelWidgetClass,
 		     form, args, j);
+*/
 
+    strcpy(widgetname, which == 0 ? "Engine1Modelabel" : "Engine2Modelabel"); 
+    GtkWidget *ModeWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!ModeWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nStateIcon] = ModeWidgetGTK;
+
+/*
     j = 0;
     XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
     XtSetArg(args[j], XtNjustify,   (XtArgVal) XtJustifyLeft); j++;
@@ -353,7 +441,12 @@ void PositionControlSet(which, shell, form, bw_width)
     outputField[which][nStateData] = MoveWidget =
       XtCreateManagedWidget("Move", labelWidgetClass,
 		     form, args, j);
-
+*/
+    strcpy(widgetname, which == 0 ? "Engine1Movelabel" : "Engine2Movelabel");
+    GtkWidget *MoveWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!ModeWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nStateData] = MoveWidgetGTK;
+/*
     j = 0;
     XtSetArg(args[j], XtNborderWidth, (XtArgVal) 0); j++;
     XtSetArg(args[j], XtNjustify,   (XtArgVal) XtJustifyRight); j++;
@@ -368,37 +461,72 @@ void PositionControlSet(which, shell, form, bw_width)
     outputField[which][nLabelNPS] = NodesWidget =
       XtCreateManagedWidget("Nodes", labelWidgetClass,
 		     form, args, j);
+*/
+    strcpy(widgetname, which == 0 ? "Engine1Nodeslabel" : "Engine2Nodeslabel");
+    GtkWidget *NodesWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!NodesWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nLabelNPS] = NodesWidgetGTK;
 
     // create "text" within "form"
-    j = 0;
-    if (mutable) {
-	XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
-	XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
-    }
-    XtSetArg(args[j], XtNstring, "");  j++;
-    XtSetArg(args[j], XtNdisplayCaret, False);  j++;
-    XtSetArg(args[j], XtNtop, XtChainTop);  j++;
-    XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
-    XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
-    XtSetArg(args[j], XtNright, XtChainRight);  j++;
-    XtSetArg(args[j], XtNresizable, True);  j++;
-    XtSetArg(args[j], XtNwidth, bw_width);  j++; /*force wider than buttons*/
+
+ // j = 0;
+ // if (mutable) {
+ //     XtSetArg(args[j], XtNeditType, XawtextEdit);  j++;
+ //     XtSetArg(args[j], XtNuseStringInPlace, False);  j++;
+ // }
+ // XtSetArg(args[j], XtNstring, "");  j++;
+ // XtSetArg(args[j], XtNdisplayCaret, False);  j++;
+ // XtSetArg(args[j], XtNtop, XtChainTop);  j++;
+ // XtSetArg(args[j], XtNbottom, XtChainBottom);  j++;
+ // XtSetArg(args[j], XtNleft, XtChainLeft);  j++;
+ // XtSetArg(args[j], XtNright, XtChainRight);  j++;
+ // XtSetArg(args[j], XtNresizable, True);  j++;
+ // XtSetArg(args[j], XtNwidth, bw_width);  j++; /*force wider than buttons*/
     /* !!Work around an apparent bug in XFree86 4.0.1 (X11R6.4.3) */
-    XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
-    XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollWhenNeeded);  j++;
+ // XtSetArg(args[j], XtNscrollVertical, XawtextScrollAlways);  j++;
+ // XtSetArg(args[j], XtNscrollHorizontal, XawtextScrollWhenNeeded);  j++;
 //    XtSetArg(args[j], XtNautoFill, True);  j++;
 //    XtSetArg(args[j], XtNwrap, XawtextWrapWord); j++;
-    outputField[which][nMemo] = edit =
-      XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
+ // outputField[which][nMemo] = edit =
+ //   XtCreateManagedWidget("text", asciiTextWidgetClass, form, args, j);
 
-    XtOverrideTranslations(edit, XtParseTranslationTable(memoTranslations));
+ // XtOverrideTranslations(edit, XtParseTranslationTable(memoTranslations));
     //    XtAddEventHandler(edit, ButtonPressMask, False, SetFocus, (XtPointer) shell);
 
+/*
     j = 0;
     XtSetArg(args[j], XtNfromVert, ColorWidget); j++;
 //    XtSetArg(args[j], XtNresizable, (XtArgVal) True); j++;
     XtSetValues(edit, args, j);
+*/
+
+    strcpy(widgetname, which == 0 ? "Engine1EditText" : "Engine2EditText");
+    GtkWidget *editGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+    if(!editGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+    outputFieldGTK[which][nMemo] = editGTK;
+
 }
+
+GtkWidget *EngineOutputCreateGTK(name, text)
+     char *name, *text;
+{
+    GtkWidget *shell=NULL;
+
+    builder = gtk_builder_new();
+    gchar *filename = get_glade_filename ("engineoutput.glade");
+    if(!gtk_builder_add_from_file (builder, filename, &gtkerror)) {      
+      if(gtkerror)
+        printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
+    }
+    shell = GTK_WIDGET(gtk_builder_get_object(builder, "EngineOutput"));
+    if(!shell) printf("Error: Failed to get engineoutput object with gtk_builder\n");
+    
+    PositionControlSetGTK(0);
+    PositionControlSetGTK(1);
+    
+    return shell;
+}
+
 
 Widget EngineOutputCreate(name, text)
      char *name, *text;
@@ -536,8 +664,36 @@ EngineOutputPopUp()
     int j;
     Widget edit;
     static int  needInit = TRUE;
-    static char *title = N_("Engine output"), *text = N_("This feature is experimental");
+    static char *title = N_("Engine output"), *text = N_("This feature is experimental");    
 
+    if (engineOutputShellGTK == NULL) {
+        engineOutputShellGTK = EngineOutputCreateGTK(_(title), _(text));
+        g_signal_connect(engineOutputShellGTK, "destroy",
+                          G_CALLBACK(EngineOutputPopDown),
+                          engineOutputShellGTK);
+        gtk_widget_show_all(engineOutputShellGTK);
+if (engineOutputShell == NULL) {
+	engineOutputShell =
+	  EngineOutputCreate(_(title), _(text));
+}
+    }
+ /* else {
+        gchar widgetname[50];
+        int which=0;
+        strcpy(widgetname, which == 0 ? "Engine1EditText" : "Engine2EditText");
+        GtkWidget *editGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
+        if(!editGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
+        //outputFieldGTK[which][nMemo] = editGTK;
+        
+        printf("text=%s\n", text);
+ 
+        GtkTextBuffer *tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(editGTK));        
+        gtk_text_buffer_set_text(tb, text, -1);
+    }
+*/
+    
+    
+/*
     if (engineOutputShell == NULL) {
 	engineOutputShell =
 	  EngineOutputCreate(_(title), _(text));
@@ -560,9 +716,10 @@ EngineOutputPopUp()
 	XtSetArg(args[j], XtNtitle, (XtArgVal) _(title));      j++;
 	XtSetValues(engineOutputShell, args, j);
     }
+*/
 
-    XtPopup(engineOutputShell, XtGrabNone);
-    XSync(xDisplay, False);
+    //XtPopup(engineOutputShell, XtGrabNone);
+    //XSync(xDisplay, False);
 
 //    j=0;
 //    XtSetArg(args[j], XtNleftBitmap, xMarkPixmap); j++;
@@ -582,6 +739,7 @@ void EngineOutputPopDown()
 
     if (!engineOutputDialogUp) return;
     DoClearMemo(1);
+/*
     j = 0;
     XtSetArg(args[j], XtNx, &engineOutputX); j++;
     XtSetArg(args[j], XtNy, &engineOutputY); j++;
@@ -593,11 +751,19 @@ void EngineOutputPopDown()
     wpEngineOutput.width = engineOutputW;
     wpEngineOutput.height = engineOutputH;
     XtPopdown(engineOutputShell);
+*/
+
+    gtk_widget_destroy(engineOutputShellGTK);
+    engineOutputShellGTK = NULL;
+
+/*
     XSync(xDisplay, False);
     j=0;
     XtSetArg(args[j], XtNleftBitmap, None); j++;
     XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
 		args, j);
+*/
+
     SetCheckMenuItemActive(NULL, 100, False); // set GTK menu item to unchecked
     engineOutputDialogUp = False;
     ShowThinkingEvent(); // [HGM] thinking: might need to shut off thinking output
