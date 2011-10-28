@@ -311,7 +311,7 @@ void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams
 void GameListOptionsPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
-int CopyMemoProc P(());
+//int CopyMemoProc P(());
 void DrawArrowHighlightGTK P((int fromX, int fromY, int toX,int toY));
 Boolean IsDrawArrowEnabled P(());
 GdkPixbuf *getPixbuf P((int piece));
@@ -776,7 +776,7 @@ XtActionsRec boardActions[] = {
    // { "PromotionPopDown", (XtActionProc) PromotionPopDown },
     { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
     { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
-    { "CopyMemoProc", (XtActionProc) CopyMemoProc },
+  //{ "CopyMemoProc", (XtActionProc) CopyMemoProc },
     { "SelectMove", (XtActionProc) SelectMove },
 };
 
@@ -7834,4 +7834,15 @@ void UpdateLogos(int displ)
 {
     return; // no logos in XBoard yet
 }
+
+int GetSquareSize()
+{
+    return squareSizeGTK;
+}
+
+int GetLineGapGTK()
+{
+    return lineGapGTK;
+}
+
 

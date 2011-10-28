@@ -116,6 +116,7 @@ void EngineOutputPopDown();
 void engineOutputPopUp();
 int  EngineOutputIsUp();
 void SetEngineColorIcon( int which );
+gboolean HandlePVGTK P((GtkWidget *widget, GdkEventMotion *eventmotion, gpointer data));
 
 //extern WindowPlacement wpEngineOutput;
 
@@ -231,45 +232,14 @@ void DoClearMemo(int which)
     gtk_text_buffer_set_text(tb, "", -1);
 }
 
-// cloned from CopyPositionProc. Abuse selected_fen_position to hold selection
 
-Boolean SendPositionSelection(Widget w, Atom *selection, Atom *target,
-		 Atom *type_return, XtPointer *value_return,
-		 unsigned long *length_return, int *format_return); // from xboard.c
+// Key/Mouse Button Actions
 
-static void
-MemoCB(Widget w, XtPointer client_data, Atom *selection,
-	   Atom *type, XtPointer value, unsigned long *len, int *format)
-{
-  if (value==NULL || *len==0) return; /* nothing had been selected to copy */
-  selected_fen_position = value;
-  selected_fen_position[*len]='\0'; /* normally this string is terminated, but be safe */
-    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-		   CurrentTime,
-		   SendPositionSelection,
-		   NULL/* lose_ownership_proc */ ,
-		   NULL/* transfer_done_proc */);
-}
-
-void CopyMemoProc(w, event, prms, nprms)
-  Widget w;
-  XEvent *event;
-  String *prms;
-  Cardinal *nprms;
-{
-    if(appData.pasteSelection) return;
-    if (selected_fen_position) free(selected_fen_position);
-    XtGetSelectionValue(menuBarWidget,
-      XA_PRIMARY, XA_STRING,
-      /* (XtSelectionCallbackProc) */ MemoCB,
-      NULL, /* client_data passed to PastePositionCB */
-
-      /* better to use the time field from the event that triggered the
-       * call to this function, but that isn't trivial to get
-       */
-      CurrentTime
-    );
-}
+// Ctrl<Key>c                     - copy selected text to clipboard
+// Right Button down+mouse motion - Walk thru the PV on the board
+// Shift+right button click       - Select the PV and show it on the board
+// Right button down              - Select the PV and show it on the board
+// Right button release           - unselect the PV, revert board to normal
 
 gboolean EngineOutputCB2(w, eventbutton, gptr)
      GtkWidget *w;
@@ -343,6 +313,17 @@ gboolean EngineOutputCB(w, eventbutton, gptr)
     return True; /* don't propagate right click to default handler */   
 }
 
+gboolean HandlePVGTK(w, eventmotion, gptr)
+     GtkWidget *w;
+     GdkEventMotion  *eventmotion;
+     gpointer  gptr;
+{   // [HGM] pv: walk PV
+    int squareSize = GetSquareSize();
+    int lineGap = GetLineGapGTK();
+    if (!eventmotion->state & GDK_BUTTON2_MASK) return;
+    MovePV(eventmotion->x, eventmotion->y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
+}
+
 // The following routines are mutated clones of the commentPopUp routines
 void PositionControlSetGTK(which)
     int which;
@@ -384,6 +365,10 @@ void PositionControlSetGTK(which)
 
     g_signal_connect(GTK_TEXT_VIEW(editGTK), "button-release-event",
                      G_CALLBACK(EngineOutputCB2),
+                     NULL);
+
+    g_signal_connect(GTK_TEXT_VIEW(editGTK), "motion-notify-event",
+                     G_CALLBACK(HandlePVGTK),
                      NULL);
 
 }
