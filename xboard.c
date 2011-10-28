@@ -358,7 +358,7 @@ GtkWidget       *blackTimerWidgetGTK;
 GtkWidget       *messageWidgetGTK=NULL;
 GtkWidget       *menubarGTK=NULL;
 
-GtkEntryBuffer  *AskQuestionBuffer;
+//GtkEntryBuffer  *AskQuestionBuffer;
 
 /* pixbufs */
 GdkPixbuf       *mainwindowIcon=NULL;
@@ -1880,7 +1880,7 @@ main(argc, argv)
     gtk_widget_show(mainwindow);
 
     /* create a text buffer for AskQuestion */
-    AskQuestionBuffer = gtk_entry_buffer_new (NULL,-1);
+    //AskQuestionBuffer = gtk_entry_buffer_new (NULL,-1);
 
     /* set the minimum size the user can resize the main window to */
     gtk_widget_set_size_request(mainwindow, 402, 314);
@@ -3200,6 +3200,7 @@ gboolean PieceMenuSelectGTK(w, eventkey, gdata)
 
     if (pmFromX < 0 || pmFromY < 0) return;
     EditPositionMenuEvent(piece, pmFromX, pmFromY);
+    return True;
 }
 
 gboolean PieceMenuPopupGTK(window, eventbutton, data)
@@ -3290,7 +3291,7 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
                    eventbutton->time);
 
     gtk_widget_show(menu);
-
+    return True;
 }
 
 void PieceMenuPopup(w, event, params, num_params)
@@ -4339,6 +4340,7 @@ gboolean ButtonPressProc(window, eventbutton, data)
       default:
         break;
     }
+    return True;
 }
 
 /*
@@ -4828,7 +4830,8 @@ void ModeHighlight()
     static GameMode oldmode = (GameMode) -1;
     char *wname;
 
-    if (!boardwidgetGTK || !gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK))) return;
+    //if (!boardwidgetGTK || !gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK))) return;
+    if (!boardwidgetGTK || !GTK_WIDGET_REALIZED(GTK_WIDGET(boardwidgetGTK))) return;
 
     if (pausing != oldPausing) {
 	oldPausing = pausing;
@@ -5822,7 +5825,8 @@ void DisplayFatalError(message, error, status)
 	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
 	message = buf;
     }
-    if (appData.popupExitMessage && boardwidgetGTK && gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK)) ) {
+    //if (appData.popupExitMessage && boardwidgetGTK && gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK)) ) {
+    if (appData.popupExitMessage && boardwidgetGTK && GTK_WIDGET_REALIZED(GTK_WIDGET(boardwidgetGTK)) ) {
       ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
     } else {
       ExitEvent(status);
@@ -5904,7 +5908,8 @@ void AskQuestion(title, question, replyPrefix, pr)
     /* add a label and a text input area to the dialog */
     inputarea = gtk_dialog_get_content_area (GTK_DIALOG (askquestion));
     label = gtk_label_new (question);
-    input = gtk_entry_new_with_buffer (AskQuestionBuffer);
+    //input = gtk_entry_new_with_buffer (AskQuestionBuffer);
+    input = gtk_entry_new();
 
     gtk_container_add (GTK_CONTAINER (inputarea), label);
     gtk_container_add (GTK_CONTAINER (inputarea), input);

@@ -259,7 +259,7 @@ gboolean GenericPopDown(w, event, gdata)
 {
     int data = (intptr_t) gdata; /* dialog number dlgnr */
     
-    if(browserUp) return; // prevent closing dialog when it has an open file-browse daughter
+    if(browserUp) return True; // prevent closing dialog when it has an open file-browse daughter
     PopDown(data);
     return True; /* don't propagate to default handler */
 }

@@ -260,6 +260,7 @@ gboolean EngineOutputCB2(w, eventbutton, gptr)
 
     highTextStart[currentPV] = highTextEnd[currentPV] = 0;
     UnLoadPV();
+    return True;
 }
 
 gboolean EngineOutputCB(w, eventbutton, gptr)
@@ -320,8 +321,9 @@ gboolean HandlePVGTK(w, eventmotion, gptr)
 {   // [HGM] pv: walk PV
     int squareSize = GetSquareSize();
     int lineGap = GetLineGapGTK();
-    if (!eventmotion->state & GDK_BUTTON2_MASK) return;
+    if ( ! (eventmotion->state & GDK_BUTTON3_MASK) ) return True;
     MovePV(eventmotion->x, eventmotion->y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
+    return True;
 }
 
 // The following routines are mutated clones of the commentPopUp routines
