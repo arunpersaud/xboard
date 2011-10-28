@@ -369,46 +369,10 @@ GdkPixbuf       *SVGLightSquare=NULL;
 GdkPixbuf       *SVGDarkSquare=NULL;
 GdkPixbuf       *SVGNeutralSquare=NULL;
 
-GdkPixbuf       *SVGWhitePawn=NULL;
-GdkPixbuf       *SVGWhiteKnight=NULL;
-GdkPixbuf       *SVGWhiteBishop=NULL;
-GdkPixbuf       *SVGWhiteRook=NULL;
-GdkPixbuf       *SVGWhiteKing=NULL;
-GdkPixbuf       *SVGWhiteQueen=NULL;
-GdkPixbuf       *SVGWhiteCardinal=NULL;
-GdkPixbuf       *SVGWhiteMarshall=NULL;
-GdkPixbuf       *SVGWhite=NULL;
-
-GdkPixbuf       *SVGBlackPawn=NULL;
-GdkPixbuf       *SVGBlackKnight=NULL;
-GdkPixbuf       *SVGBlackBishop=NULL;
-GdkPixbuf       *SVGBlackRook=NULL;
-GdkPixbuf       *SVGBlackKing=NULL;
-GdkPixbuf       *SVGBlackQueen=NULL;
-GdkPixbuf       *SVGBlackCardinal=NULL;
-GdkPixbuf       *SVGBlackMarshall=NULL;
-GdkPixbuf       *SVGBlack=NULL;
+GdkPixbuf       *SVGPieces[EmptySquare];
 
 /* scaled pixbufs */
-GdkPixbuf       *SVGscWhitePawn=NULL;
-GdkPixbuf       *SVGscWhiteKnight=NULL;
-GdkPixbuf       *SVGscWhiteBishop=NULL;
-GdkPixbuf       *SVGscWhiteRook=NULL;
-GdkPixbuf       *SVGscWhiteKing=NULL;
-GdkPixbuf       *SVGscWhiteQueen=NULL;
-GdkPixbuf       *SVGscWhiteCardinal=NULL;
-GdkPixbuf       *SVGscWhiteMarshall=NULL;
-GdkPixbuf       *SVGscWhite=NULL;
-
-GdkPixbuf       *SVGscBlackPawn=NULL;
-GdkPixbuf       *SVGscBlackKnight=NULL;
-GdkPixbuf       *SVGscBlackBishop=NULL;
-GdkPixbuf       *SVGscBlackRook=NULL;
-GdkPixbuf       *SVGscBlackKing=NULL;
-GdkPixbuf       *SVGscBlackQueen=NULL;
-GdkPixbuf       *SVGscBlackCardinal=NULL;
-GdkPixbuf       *SVGscBlackMarshall=NULL;
-GdkPixbuf       *SVGscBlack=NULL;
+GdkPixbuf       *SVGscPieces[EmptySquare];
 
 FileProc fileProc;
 char *fileOpenMode;
@@ -1500,42 +1464,54 @@ void LoadSvgFiles()
         gdk_pixbuf_fill(SVGLightSquare, col);
     }
 
-    SVGWhitePawn     = load_pixbuf("WhitePawn.svg", 0);
-    SVGWhiteKnight   = load_pixbuf("WhiteKnight.svg", 0);
-    SVGWhiteBishop   = load_pixbuf("WhiteBishop.svg", 0);
-    SVGWhiteRook     = load_pixbuf("WhiteRook.svg", 0);
-    SVGWhiteQueen    = load_pixbuf("WhiteQueen.svg", 0);
-    SVGWhiteCardinal = load_pixbuf("WhiteCrownedBishop.svg", 0);
-    SVGWhiteMarshall = load_pixbuf("WhiteChancellor.svg", 0);
-    SVGWhiteKing     = load_pixbuf("WhiteKing.svg", 0);
+    SVGPieces[WhitePawn]     = load_pixbuf("WhitePawn.svg", 0);
+    SVGPieces[WhiteKnight]   = load_pixbuf("WhiteKnight.svg", 0);
+    SVGPieces[WhiteBishop]   = load_pixbuf("WhiteBishop.svg", 0);
+    SVGPieces[WhiteRook]     = load_pixbuf("WhiteRook.svg", 0);
+    SVGPieces[WhiteQueen]    = load_pixbuf("WhiteQueen.svg", 0);
+    SVGPieces[WhiteCardinal] = load_pixbuf("WhiteCrownedBishop.svg", 0);
+    SVGPieces[WhiteMarshall] = load_pixbuf("WhiteMarshall.svg", 0);
+    SVGPieces[WhiteFerz]     = load_pixbuf("WhiteAdvisor.svg", 0);
+    SVGPieces[WhiteAlfil]    = load_pixbuf("WhiteElephant.svg", 0);
+    SVGPieces[WhiteWazir]    = load_pixbuf("WhiteGold.svg", 0);
+    SVGPieces[WhiteCannon]   = load_pixbuf("WhiteCanon.svg", 0);
+    SVGPieces[WhiteMan]      = load_pixbuf("WhiteCommoner.svg", 0);
+    SVGPieces[WhiteNightrider] = load_pixbuf("WhiteNightrider.svg", 0);
+    SVGPieces[WhiteAngel]    = load_pixbuf("WhiteArchbishop.svg", 0);
+    SVGPieces[WhiteDragon]   = load_pixbuf("WhiteCrownedRook.svg", 0);
+    SVGPieces[WhiteGrasshopper] = load_pixbuf("WhitePrincess.svg", 0);
+    SVGPieces[WhiteSilver]   = load_pixbuf("WhiteChancellor.svg", 0);
+    SVGPieces[WhiteFalcon]   = load_pixbuf("WhiteHawk.svg", 0);
+    SVGPieces[WhiteLance]    = load_pixbuf("WhiteLance.svg", 0);
+    SVGPieces[WhiteCobra]    = load_pixbuf("WhiteCobra.svg", 0);
+    SVGPieces[WhiteUnicorn]  = load_pixbuf("WhiteUnicorn.svg", 0);
+    SVGPieces[WhiteKing]     = load_pixbuf("WhiteKing.svg", 0);
 
     //LoadBlackPieces
-    SVGBlackPawn     = load_pixbuf("BlackPawn.svg", 0);
-    SVGBlackKnight   = load_pixbuf("BlackKnight.svg", 0);
-    SVGBlackBishop   = load_pixbuf("BlackBishop.svg", 0);
-    SVGBlackRook     = load_pixbuf("BlackRook.svg", 0);
-    SVGBlackQueen    = load_pixbuf("BlackQueen.svg", 0);
-    SVGBlackCardinal = load_pixbuf("BlackCrownedBishop.svg", 0);
-    SVGBlackMarshall = load_pixbuf("BlackChancellor.svg", 0);
-    SVGBlackKing     = load_pixbuf("BlackKing.svg", 0);
+    SVGPieces[BlackPawn]     = load_pixbuf("BlackPawn.svg", 0);
+    SVGPieces[BlackKnight]   = load_pixbuf("BlackKnight.svg", 0);
+    SVGPieces[BlackBishop]   = load_pixbuf("BlackBishop.svg", 0);
+    SVGPieces[BlackRook]     = load_pixbuf("BlackRook.svg", 0);
+    SVGPieces[BlackQueen]    = load_pixbuf("BlackQueen.svg", 0);
+    SVGPieces[BlackCardinal] = load_pixbuf("BlackCrownedBishop.svg", 0);
+    SVGPieces[BlackMarshall] = load_pixbuf("BlackMarshall.svg", 0);
+    SVGPieces[BlackFerz]     = load_pixbuf("BlackAdvisor.svg", 0);
+    SVGPieces[BlackAlfil]    = load_pixbuf("BlackElephant.svg", 0);
+    SVGPieces[BlackWazir]    = load_pixbuf("BlackGold.svg", 0);
+    SVGPieces[BlackCannon]   = load_pixbuf("BlackCanon.svg", 0);
+    SVGPieces[BlackMan]      = load_pixbuf("BlackCommoner.svg", 0);
+    SVGPieces[BlackNightrider] = load_pixbuf("BlackNightrider.svg", 0);
+    SVGPieces[BlackAngel]    = load_pixbuf("BlackArchbishop.svg", 0);
+    SVGPieces[BlackDragon]   = load_pixbuf("BlackCrownedRook.svg", 0);
+    SVGPieces[BlackGrasshopper] = load_pixbuf("BlackPrincess.svg", 0);
+    SVGPieces[BlackSilver]   = load_pixbuf("BlackChancellor.svg", 0);
+    SVGPieces[BlackFalcon]   = load_pixbuf("BlackHawk.svg", 0);
+    SVGPieces[BlackLance]    = load_pixbuf("BlackLance.svg", 0);
+    SVGPieces[BlackCobra]    = load_pixbuf("BlackCobra.svg", 0);
+    SVGPieces[BlackUnicorn]  = load_pixbuf("BlackUnicorn.svg", 0);
+    SVGPieces[BlackKing]     = load_pixbuf("BlackKing.svg", 0);
 
-    SetPieceColor(SVGWhitePawn);
-    SetPieceColor(SVGWhiteKnight);
-    SetPieceColor(SVGWhiteBishop);
-    SetPieceColor(SVGWhiteRook);
-    SetPieceColor(SVGWhiteQueen);
-    SetPieceColor(SVGWhiteCardinal);
-    SetPieceColor(SVGWhiteMarshall);
-    SetPieceColor(SVGWhiteKing);
-
-    SetPieceColor(SVGBlackPawn);
-    SetPieceColor(SVGBlackKnight);
-    SetPieceColor(SVGBlackBishop);
-    SetPieceColor(SVGBlackRook);
-    SetPieceColor(SVGBlackQueen);
-    SetPieceColor(SVGBlackCardinal);
-    SetPieceColor(SVGBlackMarshall);
-    SetPieceColor(SVGBlackKing);
+    { ChessSquare p; for(p=WhitePawn; p<EmptySquare; p++) SetPieceColor(SVGPieces[p]); }
 
     ScalePixbufs();
 }
@@ -3893,23 +3869,9 @@ int GetLineGap()
 }
 
 void ScalePixbufs() {
-    SVGscWhitePawn     = gdk_pixbuf_scale_simple(SVGWhitePawn, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteKnight   = gdk_pixbuf_scale_simple(SVGWhiteKnight, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteBishop   = gdk_pixbuf_scale_simple(SVGWhiteBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteRook     = gdk_pixbuf_scale_simple(SVGWhiteRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteQueen    = gdk_pixbuf_scale_simple(SVGWhiteQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteCardinal = gdk_pixbuf_scale_simple(SVGWhiteCardinal, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteMarshall = gdk_pixbuf_scale_simple(SVGWhiteMarshall, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscWhiteKing     = gdk_pixbuf_scale_simple(SVGWhiteKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-
-    SVGscBlackPawn     = gdk_pixbuf_scale_simple(SVGBlackPawn, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackKnight   = gdk_pixbuf_scale_simple(SVGBlackKnight, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackBishop   = gdk_pixbuf_scale_simple(SVGBlackBishop, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackRook     = gdk_pixbuf_scale_simple(SVGBlackRook, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackQueen    = gdk_pixbuf_scale_simple(SVGBlackQueen, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackCardinal = gdk_pixbuf_scale_simple(SVGBlackCardinal, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackMarshall = gdk_pixbuf_scale_simple(SVGBlackMarshall, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
-    SVGscBlackKing     = gdk_pixbuf_scale_simple(SVGBlackKing, squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
+    ChessSquare p;
+    for(p=WhitePawn; p<EmptySquare; p++)
+	SVGscPieces[p] = gdk_pixbuf_scale_simple(SVGPieces[p], squareSizeGTK, squareSizeGTK, GDK_INTERP_HYPER);
 }
 
 /* The user has resized the main window so redraw the board with the correct size */
@@ -7071,79 +7033,8 @@ Tween(start, mid, finish, factor, frames, nFrames)
 }
 
 GdkPixbuf *getPixbuf(int piece) {
-    GdkPixbuf *pb=NULL;
 
-/*
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen,
-    WhiteFerz, WhiteAlfil, WhiteAngel, WhiteMarshall, WhiteWazir, WhiteMan,
-    WhiteCannon, WhiteNightrider, WhiteCardinal, WhiteDragon, WhiteGrasshopper,
-    WhiteSilver, WhiteFalcon, WhiteLance, WhiteCobra, WhiteUnicorn, WhiteKing,
-    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen,
-    BlackFerz, BlackAlfil, BlackAngel, BlackMarshall, BlackWazir, BlackMan,
-    BlackCannon, BlackNightrider, BlackCardinal, BlackDragon, BlackGrasshopper,
-    BlackSilver, BlackFalcon, BlackLance, BlackCobra, BlackUnicorn, BlackKing,
-    EmptySquare,
-*/
-
-    switch (piece) {
-      case WhitePawn:
-        pb = SVGscWhitePawn;
-        break;
-      case WhiteKnight:
-        pb = SVGscWhiteKnight;
-        break;
-      case WhiteBishop:
-        pb = SVGscWhiteBishop;
-        break;
-      case WhiteRook:
-        pb = SVGscWhiteRook;
-        break;
-      case WhiteQueen:
-        pb = SVGscWhiteQueen;
-        break;
-      case WhiteAngel:
-        pb = SVGscWhiteCardinal;
-        break;
-      case WhiteMarshall:
-        pb = SVGscWhiteMarshall;
-        break;
-      case WhiteKing:
-        pb = SVGscWhiteKing;
-        break;
-
-      case BlackPawn:
-        pb = SVGscBlackPawn;
-        break;
-      case BlackKnight:
-        pb = SVGscBlackKnight;
-        break;
-      case BlackBishop:
-        pb = SVGscBlackBishop;
-        break;
-      case BlackRook:
-        pb = SVGscBlackRook;
-        break;
-      case BlackQueen:
-        pb = SVGscBlackQueen;
-        break;
-      case BlackAngel:
-        pb = SVGscBlackCardinal;
-        break;
-      case BlackMarshall:
-        pb = SVGscBlackMarshall;
-        break;
-      case BlackKing:
-        pb = SVGscBlackKing;
-        break;
-
-      default:
-        if ((int)piece < (int) BlackPawn) // white piece
-            pb = SVGscWhiteKing;
-        else
-            pb = SVGscBlackKing;
-        break;
-    }
-    return pb;
+    return SVGscPieces[piece];
 }
 
 static void
