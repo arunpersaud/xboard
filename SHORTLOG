@@ -1,3 +1,11 @@
+** Version 4.5.3a **
+
+(git shortlog --no-merges v4.5.3..HEAD)
+
+H.G. Muller (2):
+      Fix compile errors WinBoard
+      Let WB Makefile build non-JAWS version by default
+
 ** Version 4.5.3 **
 
 (git shortlog --no-merges v4.5.2a..HEAD)

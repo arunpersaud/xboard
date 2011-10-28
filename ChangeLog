@@ -3,6 +3,23 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2011-10-02 22:25:04 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let WB Makefile build non-JAWS version by default
+
+Accidentally the JAWS=2 setting had slipped in with the latest change.
+
+2011-10-02 19:42:20 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix compile errors WinBoard
+
+Unfortunately the patch that made unknown options in settings files
+non-fatal forgot to commit the changes in the winboard files for this.
+
+2011-10-01 15:02:30 -0700 Arun Persaud <arun@nubati.net>:
+release of version 4.5.3
+
+2011-10-01 14:58:14 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
 2011-09-29 20:31:23 -0700 Arun Persaud <arun@nubati.net>:
 better contrast for XBoard icon on a dark background
 

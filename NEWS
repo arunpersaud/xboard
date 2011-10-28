@@ -1,3 +1,9 @@
+** Version 4.5.3a **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.5.3a/ )
+
+  * only changes to Winboard : build non JAW by default, fix compile errors
+
 ** Version 4.5.3 **
 
    (see http://www.gnu.org/software/xboard/whats_new/4.5.3/ )
