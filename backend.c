@@ -11283,13 +11283,13 @@ int QuickCompare(Board board, int *minCounts, int *maxCounts)
 	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
 	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
 	}
-	return TRUE;
+	break;
       case 2: // can have extra material on empty squares
 	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
 	    if(board[r][f] == EmptySquare) continue;
 	    if(board[r][f] != pieceType[quickBoard[(r<<4)+f]]) return FALSE;
 	}
-	return TRUE;
+	break;
       case 3: // material with exact Pawn structure
 	for(r=0; r<BOARD_HEIGHT; r++) for(f=BOARD_LEFT; f<BOARD_RGHT; f++) {
 	    if(board[r][f] != WhitePawn && board[r][f] != BlackPawn) continue;
@@ -11297,14 +11297,14 @@ int QuickCompare(Board board, int *minCounts, int *maxCounts)
 	} // fall through to material comparison
       case 4: // exact material
 	for(r=0; r<EmptySquare; r++) if(counts[r] != maxCounts[r]) return FALSE;
-	return TRUE;
+	break;
       case 6: // material range with given imbalance
 	for(r=0; r<BlackPawn; r++) if(counts[r] - minCounts[r] != counts[r+BlackPawn] - minCounts[r+BlackPawn]) return FALSE;
 	// fall through to range comparison
       case 5: // material range
 	for(r=0; r<EmptySquare; r++) if(counts[r] < minCounts[r] || counts[r] > maxCounts[r]) return FALSE;
-	return TRUE;
     }
+    return TRUE;
 }
 
 int QuickScan(Board board, Move *move)
@@ -11485,6 +11485,7 @@ int GameContainsPosition(FILE *f, ListGame *lg)
 		fromY = DROP_RANK;
 		toX = currentMoveString[2] - AAA;
 		toY = currentMoveString[3] - ONE;
+		promoChar = 0;
 		break;
 	}
 	// Move encountered; peform it. We need to shuttle between two boards, as even/odd index determines side to move
