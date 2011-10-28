@@ -1,0 +1,80 @@
+<!--#include virtual="/server/header.html" -->
+<title>XBoard - GNU Project - Free Software Foundation - NEWS</title>
+<!--#include virtual="/server/banner.html" -->
+<h2>What is new in WinBoard / XBoard 4.5.3?</h2>
+
+<table cellpadding="10"><tr><td>
+<img src="Paging.png">
+</td><td valign="top">
+ <p> This version fixes some bugs found in 4.5.2. Below is a quick list of the changes.
+Note that the paging of the XBoard Game List (illustrated by the screenshot on the left)
+is a change that is really a bit more involved than what we would like to do in a stable version. 
+But the bug was so severe that we decided to chance it.
+ </p>
+</td></tr></table>
+
+   <ul>
+   <li> fixes of major bugs:
+    <ul>
+        <li>In the file-browse dialog . and .. no longer mask other files if they are non-first in the directory</li>
+        <li>Fix XBoard crash on showing an empty Engine Settings dialog, printing a message in stead</li>
+        <li>The XBoard Game List can now handle files with more than 1900 games, by paging through them</li>
+        <li>The state of the Move-History window is now remembered by XBoard even when the Engine-Output window is up</li>
+        <li>Fix crash on switching sounds in WinBoard under Windows Vista</li>
+        <li>Fix empty-string option values on XBoard command line (which were ignored)</li>
+        <li>Fix spurious vertical scrolling in XBoard Engine-Output window on clicking in it</li>
+        <li>Obey an engine's san feature when sending book moves to it</li>
+        <li>Fix XBoard crash when 'filtering' made Game List empty</li>
+        <li>Suppress clearing of Engine-Output window on automatic updates in analyze mode</li>
+        <li>Force Move-History refresh after loading/reverting variation</li>
+        <li>Fix closing brace, when joining two comments to same move</li>
+     </ul>
+   </li>
+   <li> fixes of minor bugs:
+    <ul>
+        <li>Suppress playing sounds when no -soundProgram is set</li>
+        <li>Fix display of last move of last match game</li>
+        <li>Update window title after last game of match</li>
+        <li>Never one-click move when legality testing is off</li>
+        <li>Suppress playing book move when total weigth of all moves is zero</li>
+        <li>Restore echo after ^C killed XBoard during ICS password</li>
+        <li>Fix default of -remoteUser, which could cause crash when playing remote engines</li>
+        <li>Fix recognition of separators between options in -adapterCommand command line</li>
+        <li>Fix button sizing in generic popup</li>
+        <li>Fix translatability of 'Spartan Chess' menu item WB</li>
+        <li>Remove some duplicats from WB language template file</li>
+        <li>Fix spurious 'Unfinished' sounds during ICS examining</li>
+        <li>Fix bug in handling of partner command in zippy-mode bughouse games</li>
+        <li>Create more space in some WB dialogs to accomodate translations</li>
+     </ul>
+   </li>
+   <li> Improvements benefitting the speaking version for the visually impaired (WB):
+     <ul>
+        <li>Implement NVDA support in JAWS version</li>
+        <li>Fix translation of spoken composite messages</li>
+        <li>Fix JAWS reading of Engine-Settings dialog by removing group-boxes</li>
+        <li>Add tab stops in WB generic popup</li>
+        <li>Reorder controls in Engine-Setings dialog WB, so they are tabbed through in logical order</li>
+     </ul>
+   </li>
+   <li> fixed compiler warnings/errors and portability:
+     <ul>
+        <li>Fix use of random function in XBoard shuffle dialog callback</li>
+        <li>Fix inconsistent type of the variable 'shuffleOpenings'</li>
+        <li>Silence warnings during rpm build</li>
+        <li>Fix warnings XBoard file browser</li>
+        <li>Fix some warnings and header-file improvement</li>
+     </ul>
+   </li>
+   <li> misc:
+     <ul>
+        <li>Add -at and -opt options as alternative for @, as work-around for Windows shortcut bug</li>
+        <li>Make occurrence of unknown option in settings file non-fatal</li>
+        <li>Stale output no longer lingers in the engine-output window when a new game starts</li>
+        <li>Popdown (stale) Comment window on new game</li>
+	<li>Improved contrast of icon for dark backgrounds</li>
+     </ul>
+   </li>
+   </ul>
+
+<!--#include virtual="/server/footer.html" -->
