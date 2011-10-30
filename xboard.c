@@ -7759,4 +7759,8 @@ int GetLineGapGTK()
     return lineGapGTK;
 }
 
+GtkWidget *GetBoardWidget()
+{
+    return boardwidgetGTK;
+}
 

@@ -173,7 +173,7 @@ void MarkMenu(char *item, int dlgNr)
 {
     Arg args[2];
     //    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    XtSetValues(marked[dlgNr] = XtNameToWidget(menuBarWidget, item), args, 1);
+    //XtSetValues(marked[dlgNr] = XtNameToWidget(menuBarWidget, item), args, 1);
 }
 
 void GetMenuItemName(int dlgNr, gchar *name)
@@ -186,10 +186,10 @@ void GetMenuItemName(int dlgNr, gchar *name)
         strcpy(name, "viewtags");	
         break;
       case 3: // ics text menu
-        strcpy(name, "icstextmenu");	
+        strcpy(name, "ViewICStextmenu");	
         break;
       case 4: // ics input box
-        strcpy(name, "icsinputbox");	
+        strcpy(name, "ViewICSinputbox");	
         break;
       case 7: // move history
         strcpy(name, "viewmovehistory");
@@ -223,6 +223,10 @@ void SetCheckMenuItemActive(gchar *name, int menuDlgNr, gboolean active)
 
     GtkCheckMenuItem *chk;
     chk = GTK_CHECK_MENU_ITEM(gtk_builder_get_object(GTK_BUILDER(builder), menuItemName));
+    if (chk == NULL) {
+        printf("Error: failed to get check menu item %s from builder\n", menuItemName);
+        return;        
+    }
     chk->active = active;   // set the check box without emitting any signals
 }
 

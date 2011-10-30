@@ -48,28 +48,7 @@ extern char *getenv();
 # include <unistd.h>
 #endif
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#include <X11/Xatom.h>
-#include <X11/Xmu/Atoms.h>
-
 #include <gtk/gtk.h>
-
 
 #include "common.h"
 #include "frontend.h"
@@ -117,6 +96,7 @@ void engineOutputPopUp();
 int  EngineOutputIsUp();
 void SetEngineColorIcon( int which );
 gboolean HandlePVGTK P((GtkWidget *widget, GdkEventMotion *eventmotion, gpointer data));
+GtkWidget *GetBoardWidget P((void));
 
 //extern WindowPlacement wpEngineOutput;
 
@@ -241,7 +221,8 @@ void DoClearMemo(int which)
 // Right button down              - Select the PV and show it on the board
 // Right button release           - unselect the PV, revert board to normal
 
-gboolean EngineOutputCB2(w, eventbutton, gptr)
+static
+gboolean ButtonReleaseCB(w, eventbutton, gptr)
      GtkWidget *w;
      GdkEventButton  *eventbutton;
      gpointer  gptr;
@@ -263,7 +244,8 @@ gboolean EngineOutputCB2(w, eventbutton, gptr)
     return True;
 }
 
-gboolean EngineOutputCB(w, eventbutton, gptr)
+static
+gboolean ButtonPressCB(w, eventbutton, gptr)
      GtkWidget *w;
      GdkEventButton  *eventbutton;
      gpointer  gptr;
@@ -362,11 +344,11 @@ void PositionControlSetGTK(which)
     outputFieldGTK[which][nMemo] = editGTK;
 
     g_signal_connect(GTK_TEXT_VIEW(editGTK), "button-press-event",
-                     G_CALLBACK(EngineOutputCB),
+                     G_CALLBACK(ButtonPressCB),
                      NULL);
 
     g_signal_connect(GTK_TEXT_VIEW(editGTK), "button-release-event",
-                     G_CALLBACK(EngineOutputCB2),
+                     G_CALLBACK(ButtonReleaseCB),
                      NULL);
 
     g_signal_connect(GTK_TEXT_VIEW(editGTK), "motion-notify-event",
@@ -379,6 +361,8 @@ GtkWidget *EngineOutputCreateGTK(name, text)
      char *name, *text;
 {
     GtkWidget *shell=NULL;
+    gint bw_width, bw_height;
+    GtkWidget *boardwidget;
 
     builder = gtk_builder_new();
     gchar *filename = get_glade_filename ("engineoutput.glade");
@@ -389,8 +373,17 @@ GtkWidget *EngineOutputCreateGTK(name, text)
     shell = GTK_WIDGET(gtk_builder_get_object(builder, "EngineOutput"));
     if(!shell) printf("Error: Failed to get engineoutput object with gtk_builder\n");    
     PositionControlSetGTK(0);
-    PositionControlSetGTK(1);
-    
+    PositionControlSetGTK(1);        
+
+    // get boardwidget width, height
+    boardwidget = GetBoardWidget();    
+    gdk_drawable_get_size(boardwidget->window, &bw_width, &bw_height);
+
+    // set width, height of engine output window based on board size
+    engineOutputW = bw_width-16;
+    engineOutputH = bw_height/2;    
+    gtk_window_resize(GTK_WINDOW(shell), engineOutputW, engineOutputH);
+
     return shell;
 }
 
@@ -401,6 +394,18 @@ void ResizeWindowControls(mode)
     Arg args[16];
     int j;
     Dimension ew_height, tmp;
+    GtkWidget *vpaned=NULL;
+
+    vpaned = GTK_WIDGET(gtk_builder_get_object(builder, "EngineOutputVPaned"));
+    if(!vpaned) printf("Error: Failed to get vpaned object with gtk_builder\n");
+
+    // 1 engine so let it have the whole window
+    if(mode==0) {
+        gtk_paned_set_position(GTK_PANED(vpaned), vpaned->allocation.height);
+    } else { // two engines so split the engine output window 50/50
+        gtk_paned_set_position(GTK_PANED(vpaned), vpaned->allocation.height / 2);
+    }
+
 /*
     Widget shell = engineOutputShell;
 
