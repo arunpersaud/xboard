@@ -7034,6 +7034,15 @@ Tween(start, mid, finish, factor, frames, nFrames)
 
 GdkPixbuf *getPixbuf(int piece) {
 
+    /*
+       if piece is out of range then return the Black King
+       This is needed because AnimationFrame can pass in invalid
+       pieces from squares ouside the board.
+    */
+    if (! (piece < EmptySquare) ) {        
+        return SVGscPieces[BlackKing];
+    }
+
     return SVGscPieces[piece];
 }
 
@@ -7103,6 +7112,15 @@ AnimationFrame(anim, frame, piece)
   BoardSquare(anim->prevFrame.x,anim->prevFrame.y,&xb,&yb);
   BoardSquare(anim->startSquare.x,anim->startSquare.y,&sx,&sy);
 
+  /* TODO: This routine is passing invalid pieces into DrawSquare which
+     [JC]  results in getPixbuf trying to return a piece for a piece which
+           is out of range. A fix has been put into getPixbuf to stop segfaults.
+         
+           This routine needs fixing to check that adjacent squares are on the
+           board before passing them to DrawSquare. After this is done the fix
+           in getPixbuf can be removed.
+  */
+    
   /* override the 4 squares that can be affected by a moving piece */
   if(x>=0 && y>=0 )
     {
