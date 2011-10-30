@@ -2384,6 +2384,7 @@ Enables icsEnables[] = {
     { "EngineLoadengine", False },
     { "EditAnnotate", False },
     { "OptionsMatch", False },
+    { "OptionsICS", True },
     { NULL, False }
 };
 
