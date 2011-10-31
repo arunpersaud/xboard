@@ -175,19 +175,6 @@ void InsertIntoMemo( int which, char * text, int where )
     GtkTextBuffer *tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(editGTK));            
     gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(tb), &start);
     gtk_text_buffer_insert(tb, &start, text, -1);
-
-	/* the backend adds \r\n, which is needed for winboard,
-	 * for xboard we delete them again over here */
-//	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
-//
-//	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
-//	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
-//	XawTextReplace(edit, where, where, &t);
-//	if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
-//	    int len = strlen(text);
-//	    highTextStart[which] += len; highTextEnd[which] += len;
-//	    XawTextSetSelection( outputField[which][nMemo], highTextStart[which], highTextEnd[which] );
-//	}
 }
 
 void SetIcon( int which, int field, int nIcon )
@@ -373,16 +360,18 @@ GtkWidget *EngineOutputCreateGTK(name, text)
     shell = GTK_WIDGET(gtk_builder_get_object(builder, "EngineOutput"));
     if(!shell) printf("Error: Failed to get engineoutput object with gtk_builder\n");    
     PositionControlSetGTK(0);
-    PositionControlSetGTK(1);        
-
-    // get boardwidget width, height
-    boardwidget = GetBoardWidget();    
-    gdk_drawable_get_size(boardwidget->window, &bw_width, &bw_height);
-
-    // set width, height of engine output window based on board size
-    engineOutputW = bw_width-16;
-    engineOutputH = bw_height/2;    
-    gtk_window_resize(GTK_WINDOW(shell), engineOutputW, engineOutputH);
+    PositionControlSetGTK(1);
+    
+    /* set old window size and position if available */
+    if(wpEngineOutput.width > 0) {
+        restore_window_placement(GTK_WINDOW(shell), &wpEngineOutput);
+    } else { // set width, height of engine output window based on board size
+        boardwidget = GetBoardWidget();   // get boardwidget width, height   
+        gdk_drawable_get_size(boardwidget->window, &bw_width, &bw_height);
+        engineOutputW = bw_width-16;
+        engineOutputH = bw_height/2;
+        gtk_window_resize(GTK_WINDOW(shell), engineOutputW, engineOutputH);    
+    }    
 
     return shell;
 }
@@ -405,37 +394,16 @@ void ResizeWindowControls(mode)
     } else { // two engines so split the engine output window 50/50
         gtk_paned_set_position(GTK_PANED(vpaned), vpaned->allocation.height / 2);
     }
+}
 
-/*
-    Widget shell = engineOutputShell;
-
-    form1 = XtNameToWidget(shell, "*form");
-    form2 = XtNameToWidget(shell, "*form2");
-
-    j = 0;
-    XtSetArg(args[j], XtNheight, (XtArgVal) &ew_height); j++;
-    XtGetValues(form1, args, j);
-    j = 0;
-    XtSetArg(args[j], XtNheight, (XtArgVal) &tmp); j++;
-    XtGetValues(form2, args, j);
-    ew_height += tmp; // total height
-
-    if(mode==0) {
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) 5); j++;
-	XtSetValues(form2, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height-5)); j++;
-	XtSetValues(form1, args, j);
-    } else {
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height/2)); j++;
-	XtSetValues(form1, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height/2)); j++;
-	XtSetValues(form2, args, j);
-    }
-*/
+static
+gboolean DeleteCB(w, event, gdata)
+     GtkWidget *w;
+     GdkEvent  *event;
+     gpointer  gdata;
+{
+    EngineOutputPopDown();
+    return True;
 }
 
 void
@@ -449,9 +417,11 @@ EngineOutputPopUp()
 
     if (engineOutputShellGTK == NULL) {
         engineOutputShellGTK = EngineOutputCreateGTK(_(title), _(text));
-        g_signal_connect(engineOutputShellGTK, "destroy",
-                          G_CALLBACK(EngineOutputPopDown),
-                          engineOutputShellGTK);
+
+        g_signal_connect(engineOutputShellGTK, "delete-event",
+                          G_CALLBACK(DeleteCB),
+                          NULL);
+
         gtk_widget_show_all(engineOutputShellGTK);
     } 
     
@@ -468,30 +438,12 @@ void EngineOutputPopDown()
 
     if (!engineOutputDialogUp) return;
     DoClearMemo(1);
-/*
-    j = 0;
-    XtSetArg(args[j], XtNx, &engineOutputX); j++;
-    XtSetArg(args[j], XtNy, &engineOutputY); j++;
-    XtSetArg(args[j], XtNwidth, &engineOutputW); j++;
-    XtSetArg(args[j], XtNheight, &engineOutputH); j++;
-    XtGetValues(engineOutputShell, args, j);
-    wpEngineOutput.x = engineOutputX - 4;
-    wpEngineOutput.y = engineOutputY - 23;
-    wpEngineOutput.width = engineOutputW;
-    wpEngineOutput.height = engineOutputH;
-    XtPopdown(engineOutputShell);
-*/
+
+    /* lets save the position and size*/
+    save_window_placement(GTK_WINDOW(engineOutputShellGTK), &wpEngineOutput);    
 
     gtk_widget_destroy(engineOutputShellGTK);
     engineOutputShellGTK = NULL;
-
-/*
-    XSync(xDisplay, False);
-    j=0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
-		args, j);
-*/
 
     SetCheckMenuItemActive(NULL, 100, False); // set GTK menu item to unchecked
     engineOutputDialogUp = False;

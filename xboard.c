@@ -1045,7 +1045,7 @@ ParseCommPortSettings(char *s)
 { // no such option in XBoard (yet)
 }
 
-extern Widget engineOutputShell;
+extern Widget engineOutputShellGTK;
 
 void
 GetActualPlacement(Widget wg, WindowPlacement *wp)
@@ -1073,8 +1073,8 @@ void
 GetWindowCoords()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
-  GetActualPlacement(shellWidget, &wpMain);
-  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput);
+  GetActualPlacement(shellWidget, &wpMain);  
+  if(EngineOutputIsUp()) save_window_placement(GTK_WINDOW(engineOutputShellGTK), &wpEngineOutput);
   if(MoveHistoryIsUp()) GetActualPlacement(shells[7], &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);

@@ -31,7 +31,7 @@
                 <child>
                   <object class="GtkLabel" id="Engine1Namelabel">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">name</property>
+                    <property name="label" translatable="yes">Engine</property>
                   </object>
                   <packing>
                     <property name="position">1</property>
@@ -64,7 +64,7 @@
                 <child>
                   <object class="GtkLabel" id="Engine1Nodeslabel">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">nodes</property>
+                    <property name="label" translatable="yes">NPS</property>
                   </object>
                   <packing>
                     <property name="position">5</property>
@@ -118,7 +118,7 @@
                 <child>
                   <object class="GtkLabel" id="Engine2Namelabel">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">name</property>
+                    <property name="label" translatable="yes">Engine</property>
                   </object>
                   <packing>
                     <property name="position">1</property>
@@ -151,7 +151,7 @@
                 <child>
                   <object class="GtkLabel" id="Engine2Nodeslabel">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">nodes</property>
+                    <property name="label" translatable="yes">NPS</property>
                   </object>
                   <packing>
                     <property name="position">5</property>
