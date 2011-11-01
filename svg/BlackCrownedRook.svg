@@ -15,7 +15,7 @@
    sodipodi:version="0.32"
    inkscape:version="0.48+devel r10321 custom"
    version="1.0"
-   sodipodi:docname="WhiteRookwithRoof.svg"
+   sodipodi:docname="BlackCrownedRook.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs2835">
@@ -119,7 +119,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.7085158"
-     inkscape:cx="104.29913"
+     inkscape:cx="31.428864"
      inkscape:cy="84.891421"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -137,7 +137,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -147,15 +147,16 @@
      id="layer1"
      transform="translate(-67.582896,-53.165653)">
     <g
-       id="g1682">
+       id="g1682"
+       transform="matrix(0.97664778,0,0,0.97664778,2.7458231,2.385801)">
       <path
          sodipodi:nodetypes="cccccccccccccccccccc"
          inkscape:connector-curvature="0"
-         style="color:#000000;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.04782128;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="m 86.8536,76.000249 0,14.538335 8.412418,6.465256 0,24.94422 -6.974025,6.54761 0,8.46257 -6.974024,0 0,6.16383 72.529851,0 0,-6.16383 -6.97402,0 0,-9.64927 -6.97403,-6.50644 0,-23.83987 8.36883,-6.424076 0,-14.538335 -5.03471,0 -25.50254,-12.791026 -26.156447,12.791026 z"
          id="path1402" />
       <rect
-         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1.02391064;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect1406"
          width="54.419579"
          height="1.3153983"
@@ -167,9 +168,9 @@
          height="1.3153983"
          width="40.432858"
          id="rect1408"
-         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:0.99999994000000003;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1.02391052;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
       <rect
-         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1.02391064;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect1410"
          width="40.500755"
          height="1.3153983"
@@ -181,9 +182,9 @@
          height="1.3153983"
          width="54.419579"
          id="rect1412"
-         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1.02391064;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
       <rect
-         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ffffcc;fill-opacity:1;stroke:#ffffcc;stroke-width:1.02391064;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect1414"
          width="51.635815"
          height="1.3153983"
@@ -192,7 +193,7 @@
       <path
          id="path1482"
          d="m 98.008274,74.730285 4.183156,0 0,6.547616 6.94048,0 0,-6.547616 16.71878,0 0,6.547616 6.98406,0 0,-6.547616 4.25384,0"
-         style="color:#000000;fill:none;stroke:#ffffcc;stroke-width:2;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;fill-opacity:1"
+         style="color:#000000;fill:none;stroke:#ffffcc;stroke-width:2.04782128;stroke-opacity:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="cccccccccc" />
     </g>
