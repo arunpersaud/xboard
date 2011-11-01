@@ -20,8 +20,9 @@
               <object class="GtkHBox" id="Engine1Infobar">
                 <property name="visible">True</property>
                 <child>
-                  <object class="GtkLabel" id="Engine1Colorlabel">
+                  <object class="GtkImage" id="Engine1Colorimage">
                     <property name="visible">True</property>
+                    <property name="stock">gtk-missing-image</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -38,10 +39,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="Engine1Modelabel">
+                  <object class="GtkImage" id="Engine1Modeimage">
                     <property name="visible">True</property>
+                    <property name="stock">gtk-missing-image</property>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -50,6 +53,7 @@
                     <property name="visible">True</property>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">3</property>
                   </packing>
                 </child>
@@ -107,8 +111,9 @@
               <object class="GtkHBox" id="Engine2Infobar">
                 <property name="visible">True</property>
                 <child>
-                  <object class="GtkLabel" id="Engine2Colorlabel">
+                  <object class="GtkImage" id="Engine2Colorimage">
                     <property name="visible">True</property>
+                    <property name="stock">gtk-missing-image</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -125,10 +130,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="Engine2Modelabel">
+                  <object class="GtkImage" id="Engine2Modeimage">
                     <property name="visible">True</property>
+                    <property name="stock">gtk-missing-image</property>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -137,6 +144,7 @@
                     <property name="visible">True</property>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">3</property>
                   </packing>
                 </child>

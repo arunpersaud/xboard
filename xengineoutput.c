@@ -67,24 +67,13 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-
-// [HGM] pixmaps of some ICONS used in the engine-outut window
-//#include "pixmaps/WHITE_14.xpm"
-//#include "pixmaps/BLACK_14.xpm"
-//#include "pixmaps/CLEAR_14.xpm"
-//#include "pixmaps/UNKNOWN_14.xpm"
-//#include "pixmaps/THINKING_14.xpm"
-//#include "pixmaps/PONDER_14.xpm"
-//#include "pixmaps/ANALYZING_14.xpm"
-
 #ifdef SNAP
 #include "wsnap.h"
 #endif
 
 #define _LL_ 100
 
-Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
-Widget outputField[2][7]; // [HGM] front-end array to translate output field to window handle
+GdkPixbuf *iconsGTK[8];
 GtkWidget *outputFieldGTK[2][7]; // [HGM] front-end array to translate output field to window handle
 
 static GtkBuilder *builder=NULL;
@@ -124,36 +113,30 @@ typedef struct {
 
 //static void UpdateControls( EngineOutputData * ed );
 
-void ReadIcon(char *pixData[], int iconNr)
+void ReadIcon(gchar *svgFilename, int iconNr)
 {
-    int r;
-
-//	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(outputField[0][nColorIcon]),
-//				       pixData,
-//				       &(icons[iconNr]),
-//				       NULL, NULL /*&attr*/)) != 0) {
-//	  fprintf(stderr, _("Error %d loading icon image\n"), r);
-//	  exit(1);
-//	}
+    iconsGTK[iconNr] = load_pixbuf(svgFilename, 0);
 }
 
 static void InitializeEngineOutput()
 {
-//        ReadIcon(WHITE_14,   nColorWhite);
-//        ReadIcon(BLACK_14,   nColorBlack);
-//        ReadIcon(UNKNOWN_14, nColorUnknown);
-//
-//        ReadIcon(CLEAR_14,   nClear);
-//        ReadIcon(PONDER_14,  nPondering);
-//        ReadIcon(THINK_14,   nThinking);
-//        ReadIcon(ANALYZE_14, nAnalyzing);
+    ReadIcon("eo_White.svg", nColorWhite);
+    ReadIcon("eo_Black.svg", nColorBlack);
+    ReadIcon("eo_Unknown.svg", nColorUnknown);
+
+    ReadIcon("eo_Clear.svg", nClear);
+    ReadIcon("eo_Ponder.svg", nPondering);
+    ReadIcon("eo_Thinking.svg", nThinking);
+    ReadIcon("eo_Analyzing.svg", nAnalyzing);
 }
 
 void DoSetWindowText(int which, int field, char *s_label)
 {
     // which = 0 for 1st engine, 1 for second
-    // field = 3 for engine name, 5 for NPS     
-    if (field != 3 && field != 5) return;
+    // field = 3 for engine name (nLabel), 4 for pondered move (nStateData), 5 for NPS (nLabelNPS)     
+    if (field != nLabel && field != nStateData && field != nLabelNPS) {        
+        return;
+    }
     if (!GTK_IS_LABEL(outputFieldGTK[which][field])) return;    
     gtk_label_set_text(GTK_LABEL(outputFieldGTK[which][field]), s_label);
 }
@@ -179,11 +162,10 @@ void InsertIntoMemo( int which, char * text, int where )
 
 void SetIcon( int which, int field, int nIcon )
 {
-    Arg arg;
+    gchar widgetname[50];
 
     if( nIcon != 0 ) {
-//	XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);
-//	XtSetValues(outputField[which][field], &arg, 1);
+        gtk_image_set_from_pixbuf(GTK_IMAGE(outputFieldGTK[which][field]), GDK_PIXBUF(iconsGTK[nIcon]));
     }
 }
 
@@ -300,7 +282,7 @@ void PositionControlSetGTK(which)
     int which;
 {
     gchar widgetname[50];
-    strcpy(widgetname, which == 0 ? "Engine1Colorlabel" : "Engine2Colorlabel");    
+    strcpy(widgetname, which == 0 ? "Engine1Colorimage" : "Engine2Colorimage");    
     GtkWidget *ColorWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
     if(!ColorWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
     outputFieldGTK[which][nColorIcon] = ColorWidgetGTK;
@@ -310,7 +292,7 @@ void PositionControlSetGTK(which)
     if(!NameWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
     outputFieldGTK[which][nLabel] = NameWidgetGTK;
 
-    strcpy(widgetname, which == 0 ? "Engine1Modelabel" : "Engine2Modelabel"); 
+    strcpy(widgetname, which == 0 ? "Engine1Modeimage" : "Engine2Modeimage"); 
     GtkWidget *ModeWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
     if(!ModeWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
     outputFieldGTK[which][nStateIcon] = ModeWidgetGTK;
@@ -427,6 +409,14 @@ EngineOutputPopUp()
 
         gtk_widget_show_all(engineOutputShellGTK);
         ResizeWindowControls(1); // ensure pane separator is halfway down window
+	if( needInit ) {
+	    InitializeEngineOutput();
+	    needInit = FALSE;
+	}
+        SetIcon(0, nColorIcon, nClear);
+        SetIcon(1, nColorIcon, nClear);
+        SetIcon(0, nStateIcon, nClear);
+        SetIcon(1, nStateIcon, nClear);
     } 
     
     SetCheckMenuItemActive(NULL, 100, True); // set GTK menu item to checked
