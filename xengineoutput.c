@@ -342,6 +342,13 @@ void PositionControlSetGTK(which)
                      G_CALLBACK(HandlePVGTK),
                      NULL);
 
+    PangoTabArray *tabs = pango_tab_array_new_with_positions(4, True,
+                            PANGO_TAB_LEFT, 60,
+                            PANGO_TAB_LEFT, 120,
+                            PANGO_TAB_LEFT, 190,
+                            PANGO_TAB_LEFT, 260); 
+    gtk_text_view_set_tabs(GTK_TEXT_VIEW(editGTK), tabs);
+
 }
 
 GtkWidget *EngineOutputCreateGTK(name, text)
@@ -371,7 +378,7 @@ GtkWidget *EngineOutputCreateGTK(name, text)
         engineOutputW = bw_width-16;
         engineOutputH = bw_height/2;
         gtk_window_resize(GTK_WINDOW(shell), engineOutputW, engineOutputH);    
-    }    
+    }       
 
     return shell;
 }
@@ -379,10 +386,6 @@ GtkWidget *EngineOutputCreateGTK(name, text)
 void ResizeWindowControls(mode)
 	int mode;
 {
-    Widget form1, form2;
-    Arg args[16];
-    int j;
-    Dimension ew_height, tmp;
     GtkWidget *vpaned=NULL;
 
     vpaned = GTK_WIDGET(gtk_builder_get_object(builder, "EngineOutputVPaned"));
@@ -423,6 +426,7 @@ EngineOutputPopUp()
                           NULL);
 
         gtk_widget_show_all(engineOutputShellGTK);
+        ResizeWindowControls(1); // ensure pane separator is halfway down window
     } 
     
     SetCheckMenuItemActive(NULL, 100, True); // set GTK menu item to checked
