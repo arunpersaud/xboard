@@ -55,7 +55,11 @@ svg_DATA = svg/icon_white.svg svg/icon_black.svg \
            svg/BlackPrincess.svg    svg/WhitePrincess.svg     \
            svg/BlackQueen.svg	    svg/WhiteQueen.svg	      \
            svg/BlackRook.svg	    svg/WhiteRook.svg	      \
-           svg/BlackUnicorn.svg	    svg/WhiteUnicorn.svg
+           svg/BlackUnicorn.svg	    svg/WhiteUnicorn.svg      \
+           svg/eo_Analyzing.svg     svg/eo_Black.svg          \
+           svg/eo_Clear.svg         svg/eo_Ponder.svg         \
+           svg/eo_Thinking.svg      svg/eo_Unknown.svg        \
+           svg/eo_White.svg
 
 gladedir = $(datadir)/games/xboard/ui
 glade_DATA = gtk/evalgraph.glade \
