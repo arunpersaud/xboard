@@ -48,28 +48,7 @@ extern char *getenv();
 # include <unistd.h>
 #endif
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#include <X11/Xatom.h>
-#include <X11/Xmu/Atoms.h>
-
 #include <gtk/gtk.h>
-
 
 #include "common.h"
 #include "frontend.h"
@@ -88,24 +67,13 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-
-// [HGM] pixmaps of some ICONS used in the engine-outut window
-//#include "pixmaps/WHITE_14.xpm"
-//#include "pixmaps/BLACK_14.xpm"
-//#include "pixmaps/CLEAR_14.xpm"
-//#include "pixmaps/UNKNOWN_14.xpm"
-//#include "pixmaps/THINKING_14.xpm"
-//#include "pixmaps/PONDER_14.xpm"
-//#include "pixmaps/ANALYZING_14.xpm"
-
 #ifdef SNAP
 #include "wsnap.h"
 #endif
 
 #define _LL_ 100
 
-Pixmap icons[8]; // [HGM] this front-end array translates back-end icon indicator to handle
-Widget outputField[2][7]; // [HGM] front-end array to translate output field to window handle
+GdkPixbuf *iconsGTK[8];
 GtkWidget *outputFieldGTK[2][7]; // [HGM] front-end array to translate output field to window handle
 
 static GtkBuilder *builder=NULL;
@@ -117,6 +85,7 @@ void engineOutputPopUp();
 int  EngineOutputIsUp();
 void SetEngineColorIcon( int which );
 gboolean HandlePVGTK P((GtkWidget *widget, GdkEventMotion *eventmotion, gpointer data));
+GtkWidget *GetBoardWidget P((void));
 
 //extern WindowPlacement wpEngineOutput;
 
@@ -144,36 +113,30 @@ typedef struct {
 
 //static void UpdateControls( EngineOutputData * ed );
 
-void ReadIcon(char *pixData[], int iconNr)
+void ReadIcon(gchar *svgFilename, int iconNr)
 {
-    int r;
-
-//	if ((r=XpmCreatePixmapFromData(xDisplay, XtWindow(outputField[0][nColorIcon]),
-//				       pixData,
-//				       &(icons[iconNr]),
-//				       NULL, NULL /*&attr*/)) != 0) {
-//	  fprintf(stderr, _("Error %d loading icon image\n"), r);
-//	  exit(1);
-//	}
+    iconsGTK[iconNr] = load_pixbuf(svgFilename, 0);
 }
 
 static void InitializeEngineOutput()
 {
-//        ReadIcon(WHITE_14,   nColorWhite);
-//        ReadIcon(BLACK_14,   nColorBlack);
-//        ReadIcon(UNKNOWN_14, nColorUnknown);
-//
-//        ReadIcon(CLEAR_14,   nClear);
-//        ReadIcon(PONDER_14,  nPondering);
-//        ReadIcon(THINK_14,   nThinking);
-//        ReadIcon(ANALYZE_14, nAnalyzing);
+    ReadIcon("eo_White.svg", nColorWhite);
+    ReadIcon("eo_Black.svg", nColorBlack);
+    ReadIcon("eo_Unknown.svg", nColorUnknown);
+
+    ReadIcon("eo_Clear.svg", nClear);
+    ReadIcon("eo_Ponder.svg", nPondering);
+    ReadIcon("eo_Thinking.svg", nThinking);
+    ReadIcon("eo_Analyzing.svg", nAnalyzing);
 }
 
 void DoSetWindowText(int which, int field, char *s_label)
 {
     // which = 0 for 1st engine, 1 for second
-    // field = 3 for engine name, 5 for NPS     
-    if (field != 3 && field != 5) return;
+    // field = 3 for engine name (nLabel), 4 for pondered move (nStateData), 5 for NPS (nLabelNPS)     
+    if (field != nLabel && field != nStateData && field != nLabelNPS) {        
+        return;
+    }
     if (!GTK_IS_LABEL(outputFieldGTK[which][field])) return;    
     gtk_label_set_text(GTK_LABEL(outputFieldGTK[which][field]), s_label);
 }
@@ -195,28 +158,14 @@ void InsertIntoMemo( int which, char * text, int where )
     GtkTextBuffer *tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(editGTK));            
     gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(tb), &start);
     gtk_text_buffer_insert(tb, &start, text, -1);
-
-	/* the backend adds \r\n, which is needed for winboard,
-	 * for xboard we delete them again over here */
-//	if(t.ptr = strchr(text, '\r')) *t.ptr = ' ';
-//
-//	t.ptr = text; t.firstPos = 0; t.length = strlen(text); t.format = XawFmt8Bit;
-//	edit = XtNameToWidget(engineOutputShell, which ? "*form2.text" : "*form.text");
-//	XawTextReplace(edit, where, where, &t);
-//	if(where < highTextStart[which]) { // [HGM] multiPVdisplay: move highlighting
-//	    int len = strlen(text);
-//	    highTextStart[which] += len; highTextEnd[which] += len;
-//	    XawTextSetSelection( outputField[which][nMemo], highTextStart[which], highTextEnd[which] );
-//	}
 }
 
 void SetIcon( int which, int field, int nIcon )
 {
-    Arg arg;
+    gchar widgetname[50];
 
     if( nIcon != 0 ) {
-//	XtSetArg(arg, XtNleftBitmap, (XtArgVal) icons[nIcon]);
-//	XtSetValues(outputField[which][field], &arg, 1);
+        gtk_image_set_from_pixbuf(GTK_IMAGE(outputFieldGTK[which][field]), GDK_PIXBUF(iconsGTK[nIcon]));
     }
 }
 
@@ -241,7 +190,8 @@ void DoClearMemo(int which)
 // Right button down              - Select the PV and show it on the board
 // Right button release           - unselect the PV, revert board to normal
 
-gboolean EngineOutputCB2(w, eventbutton, gptr)
+static
+gboolean ButtonReleaseCB(w, eventbutton, gptr)
      GtkWidget *w;
      GdkEventButton  *eventbutton;
      gpointer  gptr;
@@ -260,9 +210,11 @@ gboolean EngineOutputCB2(w, eventbutton, gptr)
 
     highTextStart[currentPV] = highTextEnd[currentPV] = 0;
     UnLoadPV();
+    return True;
 }
 
-gboolean EngineOutputCB(w, eventbutton, gptr)
+static
+gboolean ButtonPressCB(w, eventbutton, gptr)
      GtkWidget *w;
      GdkEventButton  *eventbutton;
      gpointer  gptr;
@@ -320,8 +272,9 @@ gboolean HandlePVGTK(w, eventmotion, gptr)
 {   // [HGM] pv: walk PV
     int squareSize = GetSquareSize();
     int lineGap = GetLineGapGTK();
-    if (!eventmotion->state & GDK_BUTTON2_MASK) return;
+    if ( ! (eventmotion->state & GDK_BUTTON3_MASK) ) return True;
     MovePV(eventmotion->x, eventmotion->y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
+    return True;
 }
 
 // The following routines are mutated clones of the commentPopUp routines
@@ -329,7 +282,7 @@ void PositionControlSetGTK(which)
     int which;
 {
     gchar widgetname[50];
-    strcpy(widgetname, which == 0 ? "Engine1Colorlabel" : "Engine2Colorlabel");    
+    strcpy(widgetname, which == 0 ? "Engine1Colorimage" : "Engine2Colorimage");    
     GtkWidget *ColorWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
     if(!ColorWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
     outputFieldGTK[which][nColorIcon] = ColorWidgetGTK;
@@ -339,7 +292,7 @@ void PositionControlSetGTK(which)
     if(!NameWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
     outputFieldGTK[which][nLabel] = NameWidgetGTK;
 
-    strcpy(widgetname, which == 0 ? "Engine1Modelabel" : "Engine2Modelabel"); 
+    strcpy(widgetname, which == 0 ? "Engine1Modeimage" : "Engine2Modeimage"); 
     GtkWidget *ModeWidgetGTK = GTK_WIDGET(gtk_builder_get_object(builder, widgetname));
     if(!ModeWidgetGTK) printf("Error: Failed to get %s object with gtk_builder\n", widgetname);
     outputFieldGTK[which][nStateIcon] = ModeWidgetGTK;
@@ -360,16 +313,23 @@ void PositionControlSetGTK(which)
     outputFieldGTK[which][nMemo] = editGTK;
 
     g_signal_connect(GTK_TEXT_VIEW(editGTK), "button-press-event",
-                     G_CALLBACK(EngineOutputCB),
+                     G_CALLBACK(ButtonPressCB),
                      NULL);
 
     g_signal_connect(GTK_TEXT_VIEW(editGTK), "button-release-event",
-                     G_CALLBACK(EngineOutputCB2),
+                     G_CALLBACK(ButtonReleaseCB),
                      NULL);
 
     g_signal_connect(GTK_TEXT_VIEW(editGTK), "motion-notify-event",
                      G_CALLBACK(HandlePVGTK),
                      NULL);
+
+    PangoTabArray *tabs = pango_tab_array_new_with_positions(4, True,
+                            PANGO_TAB_LEFT, 60,
+                            PANGO_TAB_LEFT, 120,
+                            PANGO_TAB_LEFT, 190,
+                            PANGO_TAB_LEFT, 260); 
+    gtk_text_view_set_tabs(GTK_TEXT_VIEW(editGTK), tabs);
 
 }
 
@@ -377,6 +337,8 @@ GtkWidget *EngineOutputCreateGTK(name, text)
      char *name, *text;
 {
     GtkWidget *shell=NULL;
+    gint bw_width, bw_height;
+    GtkWidget *boardwidget;
 
     builder = gtk_builder_new();
     gchar *filename = get_glade_filename ("engineoutput.glade");
@@ -389,46 +351,44 @@ GtkWidget *EngineOutputCreateGTK(name, text)
     PositionControlSetGTK(0);
     PositionControlSetGTK(1);
     
+    /* set old window size and position if available */
+    if(wpEngineOutput.width > 0) {
+        restore_window_placement(GTK_WINDOW(shell), &wpEngineOutput);
+    } else { // set width, height of engine output window based on board size
+        boardwidget = GetBoardWidget();   // get boardwidget width, height   
+        gdk_drawable_get_size(boardwidget->window, &bw_width, &bw_height);
+        engineOutputW = bw_width-16;
+        engineOutputH = bw_height/2;
+        gtk_window_resize(GTK_WINDOW(shell), engineOutputW, engineOutputH);    
+    }       
+
     return shell;
 }
 
 void ResizeWindowControls(mode)
 	int mode;
 {
-    Widget form1, form2;
-    Arg args[16];
-    int j;
-    Dimension ew_height, tmp;
-/*
-    Widget shell = engineOutputShell;
+    GtkWidget *vpaned=NULL;
 
-    form1 = XtNameToWidget(shell, "*form");
-    form2 = XtNameToWidget(shell, "*form2");
+    vpaned = GTK_WIDGET(gtk_builder_get_object(builder, "EngineOutputVPaned"));
+    if(!vpaned) printf("Error: Failed to get vpaned object with gtk_builder\n");
 
-    j = 0;
-    XtSetArg(args[j], XtNheight, (XtArgVal) &ew_height); j++;
-    XtGetValues(form1, args, j);
-    j = 0;
-    XtSetArg(args[j], XtNheight, (XtArgVal) &tmp); j++;
-    XtGetValues(form2, args, j);
-    ew_height += tmp; // total height
-
+    // 1 engine so let it have the whole window
     if(mode==0) {
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) 5); j++;
-	XtSetValues(form2, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height-5)); j++;
-	XtSetValues(form1, args, j);
-    } else {
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height/2)); j++;
-	XtSetValues(form1, args, j);
-	j = 0;
-	XtSetArg(args[j], XtNheight, (XtArgVal) (ew_height/2)); j++;
-	XtSetValues(form2, args, j);
+        gtk_paned_set_position(GTK_PANED(vpaned), vpaned->allocation.height);
+    } else { // two engines so split the engine output window 50/50
+        gtk_paned_set_position(GTK_PANED(vpaned), vpaned->allocation.height / 2);
     }
-*/
+}
+
+static
+gboolean DeleteCB(w, event, gdata)
+     GtkWidget *w;
+     GdkEvent  *event;
+     gpointer  gdata;
+{
+    EngineOutputPopDown();
+    return True;
 }
 
 void
@@ -442,10 +402,21 @@ EngineOutputPopUp()
 
     if (engineOutputShellGTK == NULL) {
         engineOutputShellGTK = EngineOutputCreateGTK(_(title), _(text));
-        g_signal_connect(engineOutputShellGTK, "destroy",
-                          G_CALLBACK(EngineOutputPopDown),
-                          engineOutputShellGTK);
+
+        g_signal_connect(engineOutputShellGTK, "delete-event",
+                          G_CALLBACK(DeleteCB),
+                          NULL);
+
         gtk_widget_show_all(engineOutputShellGTK);
+        ResizeWindowControls(1); // ensure pane separator is halfway down window
+	if( needInit ) {
+	    InitializeEngineOutput();
+	    needInit = FALSE;
+	}
+        SetIcon(0, nColorIcon, nClear);
+        SetIcon(1, nColorIcon, nClear);
+        SetIcon(0, nStateIcon, nClear);
+        SetIcon(1, nStateIcon, nClear);
     } 
     
     SetCheckMenuItemActive(NULL, 100, True); // set GTK menu item to checked
@@ -461,30 +432,12 @@ void EngineOutputPopDown()
 
     if (!engineOutputDialogUp) return;
     DoClearMemo(1);
-/*
-    j = 0;
-    XtSetArg(args[j], XtNx, &engineOutputX); j++;
-    XtSetArg(args[j], XtNy, &engineOutputY); j++;
-    XtSetArg(args[j], XtNwidth, &engineOutputW); j++;
-    XtSetArg(args[j], XtNheight, &engineOutputH); j++;
-    XtGetValues(engineOutputShell, args, j);
-    wpEngineOutput.x = engineOutputX - 4;
-    wpEngineOutput.y = engineOutputY - 23;
-    wpEngineOutput.width = engineOutputW;
-    wpEngineOutput.height = engineOutputH;
-    XtPopdown(engineOutputShell);
-*/
+
+    /* lets save the position and size*/
+    save_window_placement(GTK_WINDOW(engineOutputShellGTK), &wpEngineOutput);    
 
     gtk_widget_destroy(engineOutputShellGTK);
     engineOutputShellGTK = NULL;
-
-/*
-    XSync(xDisplay, False);
-    j=0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Engine Output"),
-		args, j);
-*/
 
     SetCheckMenuItemActive(NULL, 100, False); // set GTK menu item to unchecked
     engineOutputDialogUp = False;

@@ -90,9 +90,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.7756169"
-     inkscape:cx="32.635979"
-     inkscape:cy="47.64849"
+     inkscape:zoom="3.1587016"
+     inkscape:cx="31.149282"
+     inkscape:cy="33.646062"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -122,7 +122,7 @@
        sodipodi:nodetypes="sscscsccscscss"
        inkscape:connector-curvature="0"
        id="path3789"
-       d="m 117.55967,61.794997 c -5.67269,0 -10.23913,4.33031 -10.23913,9.696729 0,3.05424 1.487,5.791391 3.8164,7.57269 -6.86837,2.26666 -11.728461,8.03655 -11.728461,14.82214 0,5.955961 3.743711,11.139794 9.308301,13.852484 -13.081664,4.51316 -22.619176,17.95956 -22.619176,34.85792 0,0.65702 0.01802,1.2907 0.04647,1.93935 l 62.877616,0 c 0.0286,-0.64865 0.0465,-1.28233 0.0465,-1.93935 0,-16.89836 -9.53748,-30.34476 -22.6192,-34.85792 5.56461,-2.71269 9.30832,-7.896524 9.30832,-13.852484 0,-6.78559 -4.86009,-12.55548 -11.72847,-14.82214 2.3294,-1.7813 3.8164,-4.51845 3.8164,-7.57269 0,-5.36642 -4.61297,-9.69673 -10.28568,-9.69673 z"
-       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       d="m 117.56242,69.165658 c -4.99989,0 -9.02473,3.820493 -9.02473,8.555112 0,2.694657 1.31064,5.109558 3.36376,6.681141 -6.05375,1.999801 -10.33741,7.090392 -10.33741,13.077102 0,5.254737 3.29969,9.828267 8.20429,12.221587 -11.530117,3.98182 -19.936436,15.84515 -19.936436,30.75402 0,0.57967 0.01588,1.13875 0.04096,1.71103 l 55.420046,0 c 0.0252,-0.57228 0.041,-1.13136 0.041,-1.71103 0,-14.90887 -8.40629,-26.7722 -19.93646,-30.75402 4.90462,-2.39332 8.20431,-6.96685 8.20431,-12.221587 0,-5.98671 -4.28366,-11.077301 -10.33742,-13.077102 2.05313,-1.571584 3.36376,-3.986484 3.36376,-6.681141 0,-4.73462 -4.06585,-8.555113 -9.06575,-8.555113 z"
+       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.99999988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   </g>
 </svg>

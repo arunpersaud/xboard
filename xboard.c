@@ -358,7 +358,7 @@ GtkWidget       *blackTimerWidgetGTK;
 GtkWidget       *messageWidgetGTK=NULL;
 GtkWidget       *menubarGTK=NULL;
 
-GtkEntryBuffer  *AskQuestionBuffer;
+//GtkEntryBuffer  *AskQuestionBuffer;
 
 /* pixbufs */
 GdkPixbuf       *mainwindowIcon=NULL;
@@ -1045,7 +1045,7 @@ ParseCommPortSettings(char *s)
 { // no such option in XBoard (yet)
 }
 
-extern Widget engineOutputShell;
+extern Widget engineOutputShellGTK;
 
 void
 GetActualPlacement(Widget wg, WindowPlacement *wp)
@@ -1073,8 +1073,8 @@ void
 GetWindowCoords()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
-  GetActualPlacement(shellWidget, &wpMain);
-  if(EngineOutputIsUp()) GetActualPlacement(engineOutputShell, &wpEngineOutput);
+  GetActualPlacement(shellWidget, &wpMain);  
+  if(EngineOutputIsUp()) save_window_placement(GTK_WINDOW(engineOutputShellGTK), &wpEngineOutput);
   if(MoveHistoryIsUp()) GetActualPlacement(shells[7], &wpMoveHistory);
   if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
   if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
@@ -1856,7 +1856,7 @@ main(argc, argv)
     gtk_widget_show(mainwindow);
 
     /* create a text buffer for AskQuestion */
-    AskQuestionBuffer = gtk_entry_buffer_new (NULL,-1);
+    //AskQuestionBuffer = gtk_entry_buffer_new (NULL,-1);
 
     /* set the minimum size the user can resize the main window to */
     gtk_widget_set_size_request(mainwindow, 402, 314);
@@ -2384,6 +2384,7 @@ Enables icsEnables[] = {
     { "EngineLoadengine", False },
     { "EditAnnotate", False },
     { "OptionsMatch", False },
+    { "OptionsICS", True },
     { NULL, False }
 };
 
@@ -3176,6 +3177,7 @@ gboolean PieceMenuSelectGTK(w, eventkey, gdata)
 
     if (pmFromX < 0 || pmFromY < 0) return;
     EditPositionMenuEvent(piece, pmFromX, pmFromY);
+    return True;
 }
 
 gboolean PieceMenuPopupGTK(window, eventbutton, data)
@@ -3266,7 +3268,7 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
                    eventbutton->time);
 
     gtk_widget_show(menu);
-
+    return True;
 }
 
 void PieceMenuPopup(w, event, params, num_params)
@@ -4301,6 +4303,7 @@ gboolean ButtonPressProc(window, eventbutton, data)
       default:
         break;
     }
+    return True;
 }
 
 /*
@@ -4790,7 +4793,8 @@ void ModeHighlight()
     static GameMode oldmode = (GameMode) -1;
     char *wname;
 
-    if (!boardwidgetGTK || !gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK))) return;
+    //if (!boardwidgetGTK || !gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK))) return;
+    if (!boardwidgetGTK || !GTK_WIDGET_REALIZED(GTK_WIDGET(boardwidgetGTK))) return;
 
     if (pausing != oldPausing) {
 	oldPausing = pausing;
@@ -5784,7 +5788,8 @@ void DisplayFatalError(message, error, status)
 	snprintf(buf, sizeof(buf), "%s: %s", message, strerror(error));
 	message = buf;
     }
-    if (appData.popupExitMessage && boardwidgetGTK && gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK)) ) {
+    //if (appData.popupExitMessage && boardwidgetGTK && gtk_widget_get_realized(GTK_WIDGET(boardwidgetGTK)) ) {
+    if (appData.popupExitMessage && boardwidgetGTK && GTK_WIDGET_REALIZED(GTK_WIDGET(boardwidgetGTK)) ) {
       ErrorPopUp(status ? _("Fatal Error") : _("Exiting"), message, TRUE);
     } else {
       ExitEvent(status);
@@ -5866,7 +5871,8 @@ void AskQuestion(title, question, replyPrefix, pr)
     /* add a label and a text input area to the dialog */
     inputarea = gtk_dialog_get_content_area (GTK_DIALOG (askquestion));
     label = gtk_label_new (question);
-    input = gtk_entry_new_with_buffer (AskQuestionBuffer);
+    //input = gtk_entry_new_with_buffer (AskQuestionBuffer);
+    input = gtk_entry_new();
 
     gtk_container_add (GTK_CONTAINER (inputarea), label);
     gtk_container_add (GTK_CONTAINER (inputarea), input);
@@ -7029,6 +7035,15 @@ Tween(start, mid, finish, factor, frames, nFrames)
 
 GdkPixbuf *getPixbuf(int piece) {
 
+    /*
+       if piece is out of range then return the Black King
+       This is needed because AnimationFrame can pass in invalid
+       pieces from squares ouside the board.
+    */
+    if (! (piece < EmptySquare) ) {        
+        return SVGscPieces[BlackKing];
+    }
+
     return SVGscPieces[piece];
 }
 
@@ -7098,6 +7113,15 @@ AnimationFrame(anim, frame, piece)
   BoardSquare(anim->prevFrame.x,anim->prevFrame.y,&xb,&yb);
   BoardSquare(anim->startSquare.x,anim->startSquare.y,&sx,&sy);
 
+  /* TODO: This routine is passing invalid pieces into DrawSquare which
+     [JC]  results in getPixbuf trying to return a piece for a piece which
+           is out of range. A fix has been put into getPixbuf to stop segfaults.
+         
+           This routine needs fixing to check that adjacent squares are on the
+           board before passing them to DrawSquare. After this is done the fix
+           in getPixbuf can be removed.
+  */
+    
   /* override the 4 squares that can be affected by a moving piece */
   if(x>=0 && y>=0 )
     {
@@ -7736,4 +7760,8 @@ int GetLineGapGTK()
     return lineGapGTK;
 }
 
+GtkWidget *GetBoardWidget()
+{
+    return boardwidgetGTK;
+}
 

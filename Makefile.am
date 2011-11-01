@@ -35,17 +35,22 @@ xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@
 svgdir = $(datadir)/games/xboard/svg
 svg_DATA = svg/icon_white.svg svg/icon_black.svg \
            svg/DarkSquare.svg svg/LightSquare.svg svg/NeutralSquare.svg \
+           svg/BlackAdvisor.svg     svg/WhiteAdvisor.svg      \
            svg/BlackArchbishop.svg  svg/WhiteArchbishop.svg	   \
            svg/BlackBishop.svg	    svg/WhiteBishop.svg         \
            svg/BlackCanon.svg	    svg/WhiteCanon.svg	      \
            svg/BlackChancellor.svg   svg/WhiteChancellor.svg    \
+           svg/BlackCobra.svg       svg/WhiteCobra.svg        \
+           svg/BlackCommoner.svg     svg/WhiteCommoner.svg     \
            svg/BlackCrownedBishop.svg  svg/WhiteCrownedBishop.svg  \
            svg/BlackCrownedRook.svg   svg/WhiteCrownedRook.svg    \
+           svg/BlackElephant.svg     svg/WhiteElephant.svg    \
            svg/BlackGoldKnight.svg   svg/WhiteGoldKnight.svg    \
            svg/BlackGoldLance.svg   svg/WhiteGoldLance.svg    \
            svg/BlackGoldPawn.svg    svg/WhiteGoldPawn.svg     \
            svg/BlackGoldSilver.svg  svg/WhiteGoldSilver.svg   \
            svg/BlackGold.svg	    svg/WhiteGold.svg	      \
+           svg/BlackHawk.svg        svg/WhiteHawk.svg         \
            svg/BlackKing.svg	    svg/WhiteKing.svg	      \
            svg/BlackKnight.svg	    svg/WhiteKnight.svg	      \
            svg/BlackLance.svg	    svg/WhiteLance.svg	      \
@@ -55,12 +60,17 @@ svg_DATA = svg/icon_white.svg svg/icon_black.svg \
            svg/BlackPrincess.svg    svg/WhitePrincess.svg     \
            svg/BlackQueen.svg	    svg/WhiteQueen.svg	      \
            svg/BlackRook.svg	    svg/WhiteRook.svg	      \
-           svg/BlackUnicorn.svg	    svg/WhiteUnicorn.svg
+           svg/BlackUnicorn.svg	    svg/WhiteUnicorn.svg      \
+           svg/eo_Analyzing.svg     svg/eo_Black.svg          \
+           svg/eo_Clear.svg         svg/eo_Ponder.svg         \
+           svg/eo_Thinking.svg      svg/eo_Unknown.svg        \
+           svg/eo_White.svg
 
 gladedir = $(datadir)/games/xboard/ui
 glade_DATA = gtk/evalgraph.glade \
 	     gtk/gamelist.glade \
-	     gtk/mainboard.glade
+	     gtk/mainboard.glade \
+	     gtk/engineoutput.glade
 
 EXTRA_DIST = svg sounds winboard  \
 	xboard.texi gpl.texinfo texi2man texinfo.tex xboard.man xboard.desktop \
