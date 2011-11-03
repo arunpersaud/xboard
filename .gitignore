@@ -1,5 +1,9 @@
 *~
 *.o
+po/*.gmo
+po/POTFILES
+po/remove-potcdate.sed
+po/stamp-po
 .deps/
 Makefile
 Makefile.in
