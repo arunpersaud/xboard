@@ -14225,6 +14225,8 @@ ForwardInner(target)
     if (gameMode == EditPosition)
       return;
 
+    MarkTargetSquares(1);
+
     if (gameMode == PlayFromGameFile && !pausing)
       PauseEvent();
 
@@ -14330,6 +14332,7 @@ BackwardInner(target)
 		target, currentMove, forwardMostMove);
 
     if (gameMode == EditPosition) return;
+    MarkTargetSquares(1);
     if (currentMove <= backwardMostMove) {
 	ClearHighlights();
 	DrawPosition(full_redraw, boards[currentMove]);
