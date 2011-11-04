@@ -9925,6 +9925,7 @@ void SwapEngines(int n)
     SWAP(logo, p)
     SWAP(pgnName, p)
     SWAP(pvSAN, h)
+    SWAP(engOptions, p)
 }
 
 void
