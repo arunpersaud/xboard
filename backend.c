@@ -5136,7 +5136,7 @@ Sweep(int step)
 	else if((int)promoSweep == -1) promoSweep = WhiteKing;
 	else if(promoSweep == BlackPawn && step < 0) promoSweep = WhitePawn;
 	else if(promoSweep == WhiteKing && step > 0) promoSweep = BlackKing;
-	if(!step) step = 1;
+	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
 	    appData.testLegality && (promoSweep == king ||
 	    gameInfo.variant == VariantShogi && promoSweep != PROMOTED last && last != PROMOTED promoSweep && last != promoSweep));
