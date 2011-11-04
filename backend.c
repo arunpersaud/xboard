@@ -8118,7 +8118,8 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
       return; // [HGM] This return was missing, causing option features to be recognized as non-compliant commands!
     }
 
-    if (!appData.testLegality && !strncmp(message, "setup ", 6)) { // [HGM] allow first engine to define opening position
+    if ((!appData.testLegality || gameInfo.variant == VariantFairy) && 
+					!strncmp(message, "setup ", 6)) { // [HGM] allow first engine to define opening position
       int dummy, s=6; char buf[MSG_SIZ];
       if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
       if(sscanf(message, "setup (%s", buf) == 1) s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
