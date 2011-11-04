@@ -6583,7 +6583,7 @@ typedef struct {
     VOIDSTAR closure;
 } InputSource;
 
-void
+gboolean
 DoInputCallback(io, cond, data)
      GIOChannel  *io;
      GIOCondition cond;
@@ -6607,7 +6607,7 @@ DoInputCallback(io, cond, data)
 		     INPUT_SOURCE_BUF_SIZE - (is->unused - is->buf));
 	if (count <= 0) {
 	    (is->func)(is, is->closure, is->buf, count, count ? errno : 0);
-	    return;
+	    return True;
 	}
 	is->unused += count;
 	p = is->buf;
@@ -6638,6 +6638,7 @@ DoInputCallback(io, cond, data)
 	  error = 0;
 	(is->func)(is, is->closure, is->buf, count, error);
     }
+    return True; // Must return true or the watch will be removed
 }
 
 InputSourceRef AddInputSource(pr, lineByLine, func, closure)
