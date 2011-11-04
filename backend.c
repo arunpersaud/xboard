@@ -8120,8 +8120,9 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
 
     if (!appData.testLegality && !strncmp(message, "setup ", 6)) { // [HGM] allow first engine to define opening position
       int dummy, s=6; char buf[MSG_SIZ];
-      if(appData.icsActive || forwardMostMove != 0 || cps != &first || startedFromSetupPosition) return;
+      if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
       if(sscanf(message, "setup (%s", buf) == 1) s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
+      if(startedFromSetupPosition) return;
       ParseFEN(boards[0], &dummy, message+s);
       DrawPosition(TRUE, boards[0]);
       startedFromSetupPosition = TRUE;
