@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xboard 4.5.2.20110822\n"
+"Project-Id-Version: GNU xboard 4.6.0.20111101\n"
 "Report-Msgid-Bugs-To: bug-xboard@gnu.org\n"
 "POT-Creation-Date: 2011-11-01 18:38-0700\n"
-"PO-Revision-Date: 2011-10-01 18:37+0300\n"
+"PO-Revision-Date: 2011-11-03 14:56+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -96,43 +96,43 @@ msgstr "Невідоме значення initialMode %s"
 
 #: backend.c:1574
 msgid "AnalyzeFile mode requires a game file"
-msgstr ""
+msgstr "У режимі аналізу файла потрібен файл гри"
 
 #: backend.c:1601
 msgid "Analysis mode requires a chess engine"
-msgstr ""
+msgstr "У режимі аналізу потрібен шаховий рушій"
 
 #: backend.c:1605
 msgid "Analysis mode does not work with ICS mode"
-msgstr ""
+msgstr "Робота режиму разом з режимом ICS неможлива"
 
 #: backend.c:1616
 msgid "MachineWhite mode requires a chess engine"
-msgstr ""
+msgstr "У режимі гри комп’ютера білими потрібен шаховий рушій"
 
 #: backend.c:1621
 msgid "MachineWhite mode does not work with ICS mode"
-msgstr ""
+msgstr "Робота режиму гри комп’ютером білими разом з режимом ICS неможлива"
 
 #: backend.c:1628
 msgid "MachineBlack mode requires a chess engine"
-msgstr ""
+msgstr "У режимі гри комп’ютера чорними потрібен шаховий рушій"
 
 #: backend.c:1633
 msgid "MachineBlack mode does not work with ICS mode"
-msgstr ""
+msgstr "Робота режиму гри комп’ютером білими разом з режимом ICS неможлива"
 
 #: backend.c:1640
 msgid "TwoMachines mode requires a chess engine"
-msgstr ""
+msgstr "Режимом гри між двома комп’ютерами можна скористатися, лише якщо встановлено шаховий рушій"
 
 #: backend.c:1645
 msgid "TwoMachines mode does not work with ICS mode"
-msgstr ""
+msgstr "Робота режиму гри між двома комп’ютерами разом з режимом ICS неможлива"
 
 #: backend.c:1656
 msgid "Training mode requires a game file"
-msgstr ""
+msgstr "У режимі тренування потрібен файл гри"
 
 #: backend.c:1829 backend.c:1873 backend.c:1898 backend.c:2309
 msgid "Error writing to ICS"
@@ -172,7 +172,7 @@ msgstr ""
 #: backend.c:3502
 #, c-format
 msgid "Ratings from header: W %d, B %d\n"
-msgstr ""
+msgstr "Рейтинги з заголовка: Б %d, Ч %d\n"
 
 #: backend.c:3535
 msgid "Error gathering move list: nested"
@@ -188,12 +188,12 @@ msgstr "З’єднання розірвано з боку ICS"
 
 #: backend.c:4106
 msgid "Error reading from ICS"
-msgstr ""
+msgstr "Помилка під час спроби читання з ICS"
 
 #: backend.c:4157
 #, c-format
 msgid "Parsing board: %s\n"
-msgstr ""
+msgstr "Обробка дошки: %s\n"
 
 #: backend.c:4181
 #, c-format
@@ -201,19 +201,21 @@ msgid ""
 "Failed to parse board string:\n"
 "\"%s\""
 msgstr ""
+"Не вдалося обробити рядок дошки:\n"
+"\"%s\""
 
 #: backend.c:4190 backend.c:9427
 msgid "Game too long; increase MAX_MOVES and recompile"
-msgstr ""
+msgstr "Гра є занадто довгою. Збільшіть значення MAX_MOVES і перезберіть програму."
 
 #: backend.c:4284
 msgid "Error gathering move list: extra board"
-msgstr ""
+msgstr "Помилка під час збирання списку ходів: вихід за межі дошки"
 
 #: backend.c:4704 backend.c:4726
 #, c-format
 msgid "Couldn't parse move \"%s\" from ICS"
-msgstr ""
+msgstr "Не вдалося обробити хід «%s» з ICS"
 
 #: backend.c:4956
 #, c-format
@@ -226,25 +228,25 @@ msgstr ""
 
 #: backend.c:6256
 msgid "You are playing Black"
-msgstr ""
+msgstr "Ви граєте чорними"
 
 #: backend.c:6265 backend.c:6292
 msgid "You are playing White"
-msgstr ""
+msgstr "Ви граєте білими"
 
 #: backend.c:6274 backend.c:6300 backend.c:6419 backend.c:6444 backend.c:6460
 #: backend.c:13945
 msgid "It is White's turn"
-msgstr ""
+msgstr "Хід білих"
 
 #: backend.c:6278 backend.c:6304 backend.c:6427 backend.c:6450 backend.c:6481
 #: backend.c:13937
 msgid "It is Black's turn"
-msgstr ""
+msgstr "Хід чорних"
 
 #: backend.c:6317
 msgid "Displayed position is not current"
-msgstr ""
+msgstr "Показана позиція не є поточною"
 
 #: backend.c:6555
 msgid "Illegal move"
@@ -256,7 +258,7 @@ msgstr "Кінець гри"
 
 #: backend.c:6621
 msgid "Incorrect move"
-msgstr ""
+msgstr "Некоректний хід"
 
 #: backend.c:6914 backend.c:7030
 msgid "Pull pawn backwards to under-promote"
@@ -264,11 +266,11 @@ msgstr ""
 
 #: backend.c:7252
 msgid "Swiss tourney finished"
-msgstr ""
+msgstr "Турнір за швейцарською системою завершено"
 
 #: backend.c:7794
 msgid "Invalid pairing from pairing engine"
-msgstr ""
+msgstr "Рушієм визначення пар повернуто некоректне значення пари"
 
 #: backend.c:7916
 #, c-format
@@ -282,12 +284,12 @@ msgstr ""
 #: backend.c:8283 xboard.c:5894 xboard.c:5938
 #, c-format
 msgid "%s does not support analysis"
-msgstr ""
+msgstr "У %s не передбачено аналізу"
 
 #: backend.c:8349
 #, c-format
 msgid "Illegal move \"%s\" (rejected by %s chess program)"
-msgstr ""
+msgstr "Недозволений хід «%s» (у реєстрації ходу відмовлено шаховою програмою %s)"
 
 #: backend.c:8374
 #, c-format
@@ -297,7 +299,7 @@ msgstr ""
 #: backend.c:8395
 #, c-format
 msgid "Hint: %s"
-msgstr ""
+msgstr "Підказка: %s"
 
 #: backend.c:8400
 #, c-format
@@ -308,7 +310,7 @@ msgstr ""
 
 #: backend.c:8575
 msgid "Machine accepts your draw offer"
-msgstr ""
+msgstr "Ком’ютер погодився з вашою пропозицією нічиєї"
 
 #: backend.c:8578
 msgid ""
@@ -328,7 +330,7 @@ msgstr ""
 
 #: backend.c:8977
 msgid "Gap in move list"
-msgstr ""
+msgstr "Пропущено хід у списку ходів"
 
 #: backend.c:9561 xoptions.c:418
 #, c-format
@@ -342,15 +344,15 @@ msgstr ""
 
 #: backend.c:9706
 msgid "Waiting for first chess program"
-msgstr ""
+msgstr "Очікування на запуск першої шахової програми"
 
 #: backend.c:9711 backend.c:13333
 msgid "Waiting for second chess program"
-msgstr ""
+msgstr "Очікування на запуск другої шахової програми"
 
 #: backend.c:9761
 msgid "Could not write on tourney file"
-msgstr ""
+msgstr "Не вдалося виконати запис до файла турніру"
 
 #: backend.c:9827
 msgid ""
@@ -360,7 +362,7 @@ msgstr ""
 
 #: backend.c:9841
 msgid "No engine with the name you gave is installed"
-msgstr ""
+msgstr "Рушія з вказаною вами назвою не встановлено"
 
 #: backend.c:9843
 msgid ""
@@ -370,29 +372,31 @@ msgstr ""
 
 #: backend.c:9844
 msgid "You can only change one engine at the time"
-msgstr ""
+msgstr "Одночасно змінювати можна лише один рушій"
 
 #: backend.c:9858
 msgid ""
 "You must supply a tournament file,\n"
 "for storing the tourney progress"
 msgstr ""
+"Для запису результатів турніру\n"
+"вам слід вказати файл турніру."
 
 #: backend.c:9868
 msgid "Not enough participants"
-msgstr ""
+msgstr "Недостатньо учасників"
 
 #: backend.c:9999
 msgid "Bad tournament file"
-msgstr ""
+msgstr "Помилковий файл турніру"
 
 #: backend.c:10011
 msgid "Waiting for other game(s)"
-msgstr ""
+msgstr "Очікування на результати інших ігор"
 
 #: backend.c:10024
 msgid "No pairing engine specified"
-msgstr ""
+msgstr "Не вказано рушія визначення пар"
 
 #: backend.c:10467
 #, c-format
@@ -402,12 +406,12 @@ msgstr ""
 #: backend.c:10912 backend.c:10943
 #, c-format
 msgid "Illegal move: %d.%s%s"
-msgstr ""
+msgstr "Недозволений хід: %d.%s%s"
 
 #: backend.c:10932
 #, c-format
 msgid "Ambiguous move: %d.%s%s"
-msgstr ""
+msgstr "Неоднозначний хід: %d.%s%s"
 
 #: backend.c:10989 backend.c:11991 backend.c:12190 backend.c:12559
 #, c-format
@@ -416,51 +420,51 @@ msgstr "Не вдалося відкрити «%s»"
 
 #: backend.c:11001 xboard.c:5472
 msgid "Cannot build game list"
-msgstr ""
+msgstr "Не вдалося побудувати список ігор"
 
 #: backend.c:11090
 msgid "No more games in this message"
-msgstr ""
+msgstr "У цьому повідомленні більше немає результатів ігор"
 
 #: backend.c:11131
 msgid "No game has been loaded yet"
-msgstr ""
+msgstr "Ще не завантажено жодної гри"
 
 #: backend.c:11135 backend.c:11969 xgamelist.c:445
 msgid "Can't back up any further"
-msgstr ""
+msgstr "Подальше створення резервних копій неможливе"
 
 #: backend.c:11546
 msgid "Game number out of range"
-msgstr ""
+msgstr "Номер гри поза доступним діапазоном"
 
 #: backend.c:11557
 msgid "Can't seek on game file"
-msgstr ""
+msgstr "Пошук у файлі гри неможливий"
 
 #: backend.c:11615
 msgid "Game not found in file"
-msgstr ""
+msgstr "У файлі немає даних щодо гри"
 
 #: backend.c:11743 backend.c:12071
 msgid "Bad FEN position in file"
-msgstr ""
+msgstr "Помилкова позиція FEN у файлі"
 
 #: backend.c:11893
 msgid "No moves in game"
-msgstr ""
+msgstr "У записі гри немає жодного ходу"
 
 #: backend.c:11965
 msgid "No position has been loaded yet"
-msgstr ""
+msgstr "Жодної з позицій ще не завантажено"
 
 #: backend.c:12032 backend.c:12043
 msgid "Can't seek on position file"
-msgstr ""
+msgstr "Пошук у файлі позицій неможливий"
 
 #: backend.c:12050 backend.c:12062
 msgid "Position not found in file"
-msgstr ""
+msgstr "У файлі не знайдено позиції"
 
 #: backend.c:12102
 msgid "Black to play"
@@ -472,15 +476,15 @@ msgstr ""
 
 #: backend.c:12195 backend.c:12564
 msgid "Waiting for access to save file"
-msgstr ""
+msgstr "Очікування на доступ до можливості збереження файла"
 
 #: backend.c:12197
 msgid "Saving game"
-msgstr ""
+msgstr "Збереження гри"
 
 #: backend.c:12566
 msgid "Saving position"
-msgstr ""
+msgstr "Збереження позиції"
 
 #: backend.c:12696
 msgid ""
@@ -502,7 +506,7 @@ msgstr ""
 
 #: backend.c:12753
 msgid "You have not made a move yet"
-msgstr ""
+msgstr "Вами ще не зроблено жодного ходу"
 
 #: backend.c:12774
 msgid ""
@@ -512,7 +516,7 @@ msgstr ""
 
 #: backend.c:12779
 msgid "No unfinished games"
-msgstr ""
+msgstr "Немає незавершених ігор"
 
 #: backend.c:12785
 #, c-format
@@ -526,12 +530,12 @@ msgstr ""
 
 #: backend.c:12800
 msgid "Failed to invoke cmail"
-msgstr ""
+msgstr "Не вдалося викликати cmail"
 
 #: backend.c:12862
 #, c-format
 msgid "Waiting for reply from opponent\n"
-msgstr ""
+msgstr "Очікування на відповідь від суперника\n"
 
 #: backend.c:12884
 #, c-format
@@ -556,12 +560,12 @@ msgstr ""
 #: backend.c:12905
 #, c-format
 msgid "No unfinished games\n"
-msgstr ""
+msgstr "Немає незавершених ігор\n"
 
 #: backend.c:12907
 #, c-format
 msgid "Ready to send mail\n"
-msgstr ""
+msgstr "Програма готова до надсилання пошти\n"
 
 #: backend.c:12912
 #, c-format
@@ -575,50 +579,52 @@ msgstr "Редагувати коментар"
 #: backend.c:13071
 #, c-format
 msgid "Edit comment on %d.%s%s"
-msgstr ""
+msgstr "Змінити коментар щодо %d.%s%s"
 
 #: backend.c:13165
 msgid "It is not White's turn"
-msgstr ""
+msgstr "Зараз хід чорних"
 
 #: backend.c:13246
 msgid "It is not Black's turn"
-msgstr ""
+msgstr "Зараз хід білих"
 
 #: backend.c:13353
 #, c-format
 msgid "Starting %s chess program"
-msgstr ""
+msgstr "Запуск шахової програми %s"
 
 #: backend.c:13381 backend.c:14470
 msgid ""
 "Wait until your turn,\n"
 "or select Move Now"
 msgstr ""
+"Зачекайте на ваш хід або\n"
+"виберіть пункт «Ходити»"
 
 #: backend.c:13505
 msgid "Training mode off"
-msgstr ""
+msgstr "Режим тренування вимкнено"
 
 #: backend.c:13513
 msgid "Training mode on"
-msgstr ""
+msgstr "Режим тренування увімкнено"
 
 #: backend.c:13516
 msgid "Already at end of game"
-msgstr ""
+msgstr "Гру вже завершено"
 
 #: backend.c:13597
 msgid "Warning: You are still playing a game"
-msgstr ""
+msgstr "Попередження: гра ще триває"
 
 #: backend.c:13600
 msgid "Warning: You are still observing a game"
-msgstr ""
+msgstr "Попередження: ви ще продовжуєте спостерігати за грою"
 
 #: backend.c:13603
 msgid "Warning: You are still examining a game"
-msgstr ""
+msgstr "Попередження: ви ще вивчаєте гру"
 
 #: backend.c:13679
 msgid "Close ICS engine analyze..."
@@ -626,7 +632,7 @@ msgstr ""
 
 #: backend.c:13962
 msgid "That square is occupied"
-msgstr ""
+msgstr "Цю клітинку зайнято"
 
 #: backend.c:13986 backend.c:14012
 msgid "There is no pending offer on this move"
@@ -638,11 +644,11 @@ msgstr ""
 
 #: backend.c:14125
 msgid "You must make your move before offering a draw"
-msgstr ""
+msgstr "Перш ніж запропонувати нічию, вам слід зробити хід"
 
 #: backend.c:14452
 msgid "You are not examining a game"
-msgstr ""
+msgstr "Ви не вивчаєте гру"
 
 #: backend.c:14456
 msgid "You can't revert while pausing"
@@ -654,7 +660,7 @@ msgstr "Ваш хід"
 
 #: backend.c:14568 backend.c:14575 backend.c:14594 backend.c:14601
 msgid "Wait until your turn"
-msgstr ""
+msgstr "Очікувати на ваш хід"
 
 #: backend.c:14580
 msgid "No hint available"
@@ -687,11 +693,11 @@ msgstr ""
 
 #: backend.c:15661
 msgid "Displayed move is not current"
-msgstr ""
+msgstr "Показаний хід не є поточним"
 
 #: backend.c:15670
 msgid "Could not parse move"
-msgstr ""
+msgstr "Не вдалося обробити хід"
 
 #: backend.c:15799 backend.c:15821
 msgid "Both flags fell"
@@ -831,7 +837,7 @@ msgstr "Вперед до кінця Alt+End"
 
 #: xboard.c:664
 msgid "Flip View             F2"
-msgstr ""
+msgstr "Розвернути       F2"
 
 #: xboard.c:666
 msgid "Engine Output      Alt+Shift+O"
@@ -911,7 +917,7 @@ msgstr "Клієнт ICS"
 
 #: xboard.c:692
 msgid "Machine Match"
-msgstr ""
+msgstr "Матч ком’ютерів"
 
 #: xboard.c:693
 msgid "Pause               Pause"
@@ -1063,7 +1069,7 @@ msgstr ""
 
 #: xboard.c:754 xoptions.c:388
 msgid "Blindfold"
-msgstr ""
+msgstr "Наосліп"
 
 #: xboard.c:755
 msgid "Flash Moves"
@@ -1099,7 +1105,7 @@ msgstr ""
 
 #: xboard.c:766
 msgid "Popup Exit Message"
-msgstr ""
+msgstr "Показувати повідомлення щодо виходу"
 
 #: xboard.c:767 xoptions.c:399
 msgid "Popup Move Errors"
@@ -1936,9 +1942,8 @@ msgid "atomic"
 msgstr ""
 
 #: xoptions.c:463
-#, fuzzy
 msgid "falcon (10x8)"
-msgstr "Капабланка (10x8)"
+msgstr "сокіл (10x8)"
 
 #: xoptions.c:464
 msgid "two kings"
@@ -2199,16 +2204,15 @@ msgstr ""
 
 #: xoptions.c:568
 msgid "Seek Text Colors:"
-msgstr ""
+msgstr "Кольори тексту під час пошуку:"
 
 #: xoptions.c:572
-#, fuzzy
 msgid "Exact position match"
-msgstr "Точний збіг"
+msgstr "Точний збіг позицій"
 
 #: xoptions.c:572
 msgid "Shown position is subset"
-msgstr ""
+msgstr "Показана позиція є підмножиною"
 
 #: xoptions.c:572
 msgid "Same material with exactly same Pawn chain"
