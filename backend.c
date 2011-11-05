@@ -5136,7 +5136,7 @@ Sweep(int step)
 	else if((int)promoSweep == -1) promoSweep = WhiteKing;
 	else if(promoSweep == BlackPawn && step < 0) promoSweep = WhitePawn;
 	else if(promoSweep == WhiteKing && step > 0) promoSweep = BlackKing;
-	if(!step) step = 1;
+	if(!step) step = -1;
     } while(PieceToChar(promoSweep) == '.' || PieceToChar(promoSweep) == '~' || promoSweep == pawn ||
 	    appData.testLegality && (promoSweep == king ||
 	    gameInfo.variant == VariantShogi && promoSweep != PROMOTED last && last != PROMOTED promoSweep && last != promoSweep));
@@ -8118,10 +8118,12 @@ if(appData.debugMode) fprintf(debugFP, "nodes = %d, %lld\n", (int) programStats.
       return; // [HGM] This return was missing, causing option features to be recognized as non-compliant commands!
     }
 
-    if (!appData.testLegality && !strncmp(message, "setup ", 6)) { // [HGM] allow first engine to define opening position
+    if ((!appData.testLegality || gameInfo.variant == VariantFairy) && 
+					!strncmp(message, "setup ", 6)) { // [HGM] allow first engine to define opening position
       int dummy, s=6; char buf[MSG_SIZ];
-      if(appData.icsActive || forwardMostMove != 0 || cps != &first || startedFromSetupPosition) return;
+      if(appData.icsActive || forwardMostMove != 0 || cps != &first) return;
       if(sscanf(message, "setup (%s", buf) == 1) s = 8 + strlen(buf), buf[s-9] = NULLCHAR, SetCharTable(pieceToChar, buf);
+      if(startedFromSetupPosition) return;
       ParseFEN(boards[0], &dummy, message+s);
       DrawPosition(TRUE, boards[0]);
       startedFromSetupPosition = TRUE;
@@ -9923,6 +9925,7 @@ void SwapEngines(int n)
     SWAP(logo, p)
     SWAP(pgnName, p)
     SWAP(pvSAN, h)
+    SWAP(engOptions, p)
 }
 
 void
@@ -14225,6 +14228,8 @@ ForwardInner(target)
     if (gameMode == EditPosition)
       return;
 
+    MarkTargetSquares(1);
+
     if (gameMode == PlayFromGameFile && !pausing)
       PauseEvent();
 
@@ -14330,6 +14335,7 @@ BackwardInner(target)
 		target, currentMove, forwardMostMove);
 
     if (gameMode == EditPosition) return;
+    MarkTargetSquares(1);
     if (currentMove <= backwardMostMove) {
 	ClearHighlights();
 	DrawPosition(full_redraw, boards[currentMove]);

@@ -1,13 +1,10 @@
-** Version master 20110822 (not an official release, includes changes from 4.5.2)
+** Version 4.6.0 **
 
-(git log --pretty=short --cherry-pick master...v4.5.x^   |git shortlog --no-merges)
+(git log --pretty=short --cherry-pick --left-only v4.6.x...v4.5.x^   |git shortlog --no-merges)
 
-Arun Persaud (32):
+Arun Persaud (31):
       removed parser.l from build process, also removed flex dependency from configure
       updated Changelog, NEWS, etc.
-      new developer release
-      updated Changelog, NEWS, etc.
-      new developer release
       new developer release
       added/fixed i18n support via gettext to xboard
       updated translation files
@@ -16,10 +13,6 @@ Arun Persaud (32):
       updated po-files; updated german translation
       replaced hardcoded email address with generic PACKAGE_BUGREPORT
       updated German translation
-      updated Changelog, NEWS, etc.
-      release of version 4.5.2
-      updated Changelog, NEWS, etc.
-      release of version 4.5.2a
       fixed access rights to winboard language files (644 instead of 655)
       lng2po.sh: added command line options, GPL header
       added translations generated via lng2po from all winboard languages
@@ -34,9 +27,15 @@ Arun Persaud (32):
       fixed segfault in xengineoutput
       Revert "fixed segfault in xengineoutput", fixed in the backend now (from HGM)
       malloc.h is not needed
+      updated Changelog, NEWS, etc.
+      update po files
       new developer release
+      updated pot file and send to translation project
+      translationproject.org: updated Ukrainian translation
+      added NEWS for release of 4.5.3
+      only require 0.17 of gettext
 
-H.G. Muller (210):
+H.G. Muller (243):
       New parser, written in C
       Implement yynewstr entry point in new parser
       Fix o-o castling in new parser
@@ -60,7 +59,6 @@ H.G. Muller (210):
       Describe -sweepPromotions in texi file
       Describe Copy Game List menu item in texi file
       Describe move type-in in texi file
-      Update texi file
       Fix chaining of bottom-row dialog buttons
       Fix gettext macros in option dialogs
       Bring structure in appData engine options
@@ -69,11 +67,7 @@ H.G. Muller (210):
       Generalize WaitForSecond to WaitForEngine
       Make engine loadable during session
       Make engine startup error non-fatal
-      Fix gettext macros in option dialogs
-      Fix some warnings and header-file improvement
       Put gettext markers in generic dialog creator
-      Fix zippy-partner bug
-      Silence more rpm warnings
       Create conversion tools for language files
       Fix some warnings and header-file improvement
       Silence more rpm warnings
@@ -182,10 +176,6 @@ H.G. Muller (210):
       Implement Grand Chess
       Add tab stops in WB generic popup
       Reorder controls in Engine Setings dialog WB
-      Add tab stops in WB generic popup
-      Reorder controls in Engine Setings dialog WB
-      Fix Unfinished sound during ICS examining
-      Fix JAWS reading of Engine Settings dialog
       Fix drop moves on boards with more than 10 ranks
       Fix crash on making too-long FEN
       Fix coords display on large boards
@@ -205,12 +195,7 @@ H.G. Muller (210):
       Put grab on sweep-selecting in Edit Position
       Disable -showTargetSquares in ICS mode
       Suppress some XBoard warnings
-      Create some space in WB dialogs for translations
-      Remove some duplicats from WB language template file
-      Fix translatability of Spartan Chess menu item WB
-      Fix translation of spoken composite messages
       Fix crash on OK after Save Changes in Tags and Comment popup.
-      Force Move History refresh after loading/reverting variation
       Give WinBoard Game List its own font
       Allow null move in analysis and edit-game mode
       Force Move History refresh after loading/reverting variation
@@ -232,21 +217,71 @@ H.G. Muller (210):
       Fix crash on start without settings file
       Add -useBoardTexture and -usePieceFont options
       Translate search texts
-      Fix crash on empty Engine Settings dialog
-      Display note in stead of empty engine-settings dialog XB
-      Fix generic-popup failure after empty engine-settings dialog
-      Fix button sizing in generic popup
-      Fix display of last move of last match game
-      Fix default of -remoteUser
-      Make non-existing option in settings file non-fatal
-      Remove stray else
-      Update window title after last game of match
-      Fix use of random in XBoard shuffle dialog
       Fix use of random
       Allow two-games-per-opening to work with book
-      Better fix of crash on empty game list
-      Implement paging in XBoard Game List
       Fix ICS move-list header mistaken for null moves
+      Replace Analyze File by Analyz Game function
+      Fix quoting in Load Engine dialog
+      Fix treatment of PGN score/depth info with linefeeds in them
+      Fix display state after failed analysis attempt
+      Fix crash on typing non-existent enginein Load Engine dialog
+      Extra buttons in WB Tournament dialog
+      Slightly decrease sensitivity of sweep actions
+      Auto-popup ICS Input Box
+      Upgrade -serverMoves option
+      Add -afterGame option
+      Make DoSleep front-end wrapper for msec sleep
+      Move HistorySet to back-end
+      Fix write failures in concurrency
+      Fix some warnings (prototypes)
+      Clear fSAN option before new engine load
+      Fix LoadGameOrPosition starting up engine
+      Keep book file open
+      Make too-long game non-fatal
+      Fix resetting -fSAN on engine change
+      Fix position loading in tourneys
+      Make book-window update part of HistorySet
+      Prevent Edit Book window from stealing focus (WB)
+      Add Dutch WinBoard translation
+      Remove paragraph about .Xresources from texi file
+      Update texi file for position search
+      Update texi file for new features
+      Reactivate Falcon Chess
+      Add Romanian lng file
+      Reset initString and computerString on engine load
+      Add option -discourageOwnBooks
+      Add control to set -discourageOwnBooks WB
+      Fix crash on loading garbage game file
+      Fix invalid combobox entry WB
+      Print message on wrong use of Clone Tourney
+      Fix crash on adding items near book end
+      Refine clock adjusting
+      Fix PV walking with -fSAN
+      Fix duplicate loading of second engine in tourneys
+      Quickscan
+      Translate search-mode strings
+      profile
+      Debug position search cache
+      Implement flipped search
+      Translate search strings
+      Dynamically allocate move cache
+      Speed up position search and consider side to move
+      Put 'Load Next' button back in WB Game List
+      Fix some warnings
+      Fix Load Options dialog WB
+      Update Dutch lng file
+      Update language.txt file
+      Incorporate variant type in book hash key
+      Fix crash on loading garbage game file
+      Use other interpretation of Asia rules for chase detection
+      Add mechanism to translate variable messages in WinBoard
+      Let perpetual-chase message mention square
+      Change chase message in .lng files
+      Don't adjust clock on right-click in EditGame mode WB
+      Fix two warnings
+
+Thomas Adam (1):
+      (tiny change) Clarify "-name" option is Xt-only
 
 Tim Mann (9):
       Use getaddrinfo instead of gethostbyname.  Hopefully this makes us compatible with IPv6 and with hosts that have more than one IP address.  However, I don't know of any chess servers that have either of those properties, so I couldn't test that.  I did test that xboard still works with freechess.org and chessclub.com and that it gives an error message for invalid host names.
@@ -259,7 +294,73 @@ Tim Mann (9):
       Fixed small bugs in several .po files, enabling these translations to
       Internationalize the file browser.
 
+** Version 4.5.3a **
 
+(git shortlog --no-merges v4.5.3..HEAD)
+
+H.G. Muller (2):
+      Fix compile errors WinBoard
+      Let WB Makefile build non-JAWS version by default
+
+** Version 4.5.3 **
+
+(git shortlog --no-merges v4.5.2a..HEAD)
+
+Arun Persaud (2):
+      new developer release
+      better contrast for XBoard icon on a dark background
+
+H.G. Muller (43):
+      Fix some warnings and header-file improvement
+      Fix warnings XBoard file browser
+      Fix zippy-partner bug
+      Silence more rpm warnings
+      Add tab stops in WB generic popup
+      Reorder controls in Engine Setings dialog WB
+      Fix Unfinished sound during ICS examining
+      Fix JAWS reading of Engine Settings dialog
+      Create some space in WB dialogs for translations
+      Remove some duplicats from WB language template file
+      Fix translatability of Spartan Chess menu item WB
+      Fix translation of spoken composite messages
+      Popdown Comment window on new game
+      Force Move History refresh after loading/reverting variation
+      Fix crash on empty Engine Settings dialog
+      Display note in stead of empty engine-settings dialog XB
+      Fix generic-popup failure after empty engine-settings dialog
+      No clearing of Engine-Output memos on stat01
+      Fix button sizing in generic popup
+      Fix vscrolling in XBoard Engine-Output window
+      Obey san feature when sending book moves
+      Fix display of last move of last match game
+      Fix parameter handling in adapter command
+      Fix type of shuffleOpenings
+      Fix crash on switching sound in Vista
+      Fix empty-string option values in XBoard
+      Add -at and -opt options as alternative for @
+      Fix default of -remoteUser
+      Make non-existing option in settings file non-fatal
+      Remove stray else
+      Restore echo after ^C in ICS password
+      Don't one-click move when legality testing is off
+      Update window title after last game of match
+      Fix missing files in file browser
+      Fix use of random in XBoard shuffle dialog
+      Better fix of crash on empty game list
+      Implement paging in XBoard Game List
+      Clear Engine-Output pane when initializing engine
+      Fix AppendComment
+      Fix playing sounds when -soundProgram is empty
+      Implement NVDA support in JAWS version
+      Suppress playing of book moves with weight 0
+      Limit width of menu bar in XBoard
+
+** Version 4.5.2a (Winboard only) **
+
+(git shortlog --no-merges v4.5.2..HEAD)
+
+H.G. Muller (1):
+      Fix Engine Settings button options in WinBoard
 
 ** Version 4.5.2 **
 

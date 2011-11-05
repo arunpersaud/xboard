@@ -1,18 +1,43 @@
-** Version master 20110822 (not an official release)
+** Version 4.6.0 **
 
-  * Main new features
-   * i18n support via gettext in XBoard, more languages in Winboard
-   * implement new promotion dialog/method (experimental)
-   * implement move type-in for XBoard
-   * engines can be loaded/switch while running
-   * new tag dialog
-   * copy game list menu item for XBoard
-   * added tournament manager
-  * bugfixes
-   * lots of them
-  * code changes
-   * fixed compiler warnings
-   * removed flex generated parser
+   (see http://www.gnu.org/software/xboard/whats_new/4.6.0/ )
+
+   * Engine vs. Engine
+    * Loading and installing engines through the menu
+    * Running tournaments with more than two partipants
+    * Stopping a match between two engines
+    * Replacing a tourney participant
+    * Playing openings in color-reversed pairs
+    * Perpetual chasing in Xiangqi 
+
+   * Interface Improvements
+    * Auto-Queen, and still under-promote?
+    * Piece fonts and figurine fonts
+    * Displaying PVs as SAN
+    * Small scores in the Eval Graph
+    * How close is the 50-move draw?
+    * Sign of the engine scores 
+
+   * Interactive Analysis
+    * Playing moves from the PV
+    * Rapidly changing the number of PVs
+    * Setting the other side to move in analysis
+    * Annotating a game with an engine 
+
+   * Other New Functionality
+    * Searching a position in a PGN file
+    * Editing the opening book 
+
+   * XBoard -> WinBoard Convergence
+    * Exporting the game list (XB)
+    * A move type-in box (XB)
+    * New-style Move History window (XB) 
+
+** Version 4.5.3a **
+
+   (see http://www.gnu.org/software/xboard/whats_new/4.5.3a/ )
+
+  * only changes to Winboard : build non JAW by default, fix compile errors
 
 ** Version 4.5.3 **
 
