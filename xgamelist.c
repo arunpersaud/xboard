@@ -415,10 +415,10 @@ GameListPopDown()
     gtk_widget_hide (GUI_GameList);
 
     /* GTK-TODO mark as down in menu bar */
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
-		args, j);
+    //j = 0;
+    //XtSetArg(args[j], XtNleftBitmap, None); j++;
+    //XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
+//		args, j);
 
     return;
 }

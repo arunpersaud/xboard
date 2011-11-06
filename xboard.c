@@ -238,8 +238,8 @@ XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
 #endif
-void PieceMenuPopup P((Widget w, XEvent *event,
-		       String *params, Cardinal *num_params));
+//void PieceMenuPopup P((Widget w, XEvent *event,
+//		       String *params, Cardinal *num_params));
 static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 int EventToSquare P((int x, int limit));
@@ -318,11 +318,9 @@ Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
    highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
-Widget shellWidget, layoutWidget, formWidget, boardWidget, messageWidget,
-  whiteTimerWidget, blackTimerWidget, titleWidget, widgetList[16],
-  commentShell, promotionShell, whitePieceMenu, blackPieceMenu, dropMenu,
-  menuBarWidget, buttonBarWidget, editShell, analysisShell,
-  ICSInputShell,  askQuestionShell;
+Widget shellWidget, layoutWidget, formWidget, boardWidget, 
+  widgetList[16],  
+  menuBarWidget, buttonBarWidget; 
 GtkWidget *errorShell = NULL, *promotionShellGTK;
 Widget historyShell, evalGraphShell, gameListShell;
 int hOffset; // [HGM] dual
@@ -567,7 +565,7 @@ XtActionsRec boardActions[] = {
     { "HandlePV", HandlePV },
 //  { "SelectPV", SelectPV },
 //  { "StopPV", StopPV },
-    { "PieceMenuPopup", PieceMenuPopup },
+//  { "PieceMenuPopup", PieceMenuPopup },
     { "WhiteClock", WhiteClock },
     { "BlackClock", BlackClock },
     { "LoadNextGameProc", LoadNextGameProc },
@@ -1693,9 +1691,11 @@ main(argc, argv)
     XtSetArg(args[2], XtNright,  XtChainLeft);
     XtSetValues(menuBarWidget, args, 3);
 
-    widgetList[j++] = whiteTimerWidget =
-      XtCreateWidget("whiteTime", labelWidgetClass,
-		     formWidget, timerArgs, XtNumber(timerArgs));
+  //widgetList[j++] = whiteTimerWidget =
+  //  XtCreateWidget("whiteTime", labelWidgetClass,
+	//	     formWidget, timerArgs, XtNumber(timerArgs));
+
+/*
 #if ENABLE_NLS
     XtSetArg(args[0], XtNfontSet, clockFontSet);
 #else
@@ -1716,6 +1716,7 @@ main(argc, argv)
     XtSetArg(args[1], XtNtop,    XtChainTop);
     XtSetArg(args[2], XtNbottom, XtChainTop);
     XtSetValues(blackTimerWidget, args, 3);
+*/
 
     if (appData.showButtonBar) {
       widgetList[j++] = buttonBarWidget = CreateButtonBar(buttonBar);
@@ -1726,12 +1727,12 @@ main(argc, argv)
       XtSetValues(buttonBarWidget, args, 4);
     }
 
-    widgetList[j++] = messageWidget =
-      XtCreateWidget("message", labelWidgetClass, formWidget,
-		     messageArgs, XtNumber(messageArgs));
-    XtSetArg(args[0], XtNtop,    XtChainTop);
-    XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetValues(messageWidget, args, 2);
+   // widgetList[j++] = messageWidget =
+   //   XtCreateWidget("message", labelWidgetClass, formWidget,
+//		     messageArgs, XtNumber(messageArgs));
+ //   XtSetArg(args[0], XtNtop,    XtChainTop);
+  //  XtSetArg(args[1], XtNbottom, XtChainTop);
+  //  XtSetValues(messageWidget, args, 2);
 
     widgetList[j++] = boardWidget =
       XtCreateWidget("board", widgetClass, formWidget, boardArgs,
@@ -1739,14 +1740,17 @@ main(argc, argv)
 
     XtManageChildren(widgetList, j);
 
+/*
     timerWidth = (boardWidth - sep) / 2;
     XtSetArg(args[0], XtNwidth, timerWidth);
     XtSetValues(whiteTimerWidget, args, 1);
     XtSetValues(blackTimerWidget, args, 1);
-
+*/
+/*
     XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
     XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
     XtGetValues(whiteTimerWidget, args, 2);
+*/
 
     if (appData.showButtonBar) {
       XtSetArg(args[0], XtNbackground, &buttonBackgroundPixel);
@@ -1762,24 +1766,25 @@ main(argc, argv)
     XtSetArg(args[i], XtNfromHoriz, 0); i++;
     XtSetValues(menuBarWidget, args, i);
   
-    i = 0;
-    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-    XtSetValues(whiteTimerWidget, args, i);
-    i = 0;
-    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-    XtSetValues(blackTimerWidget, args, i);
-    i = 0;
-    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-    XtSetValues(messageWidget, args, i);
+  //  i = 0;
+  //  XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
+  //  XtSetValues(whiteTimerWidget, args, i);
+  //i = 0;
+  //XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
+   //XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
+  //XtSetValues(blackTimerWidget, args, i);
+ //  i = 0;
+  // XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+ //  XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
+//   XtSetValues(messageWidget, args, i);
     if (appData.showButtonBar) {
-        i = 0;
-        XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-        XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-        XtSetValues(buttonBarWidget, args, i);
+  //    i = 0;
+    //  XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+    //  XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
+    //  XtSetValues(buttonBarWidget, args, i);
     }
-    
+
+    /*
     i = 0;
     XtSetArg(args[0], XtNfromVert, messageWidget);
     XtSetArg(args[1], XtNtop,    XtChainTop);
@@ -1787,6 +1792,7 @@ main(argc, argv)
     XtSetArg(args[3], XtNleft,   XtChainLeft);
     XtSetArg(args[4], XtNright,  XtChainRight);
     XtSetValues(boardWidget, args, 5);
+*/
 
     XtRealizeWidget(shellWidget);
 
@@ -1804,24 +1810,26 @@ main(argc, argv)
     XawFormDoLayout(formWidget, False);
 
 #define WIDTH_FUDGE 2
-    i = 0;
-    XtSetArg(args[i], XtNborderWidth, &bor);  i++;
-    XtSetArg(args[i], XtNheight, &h);  i++;
-    XtGetValues(messageWidget, args, i);
-    if (appData.showButtonBar) {
-      i = 0;
-      XtSetArg(args[i], XtNwidth, &w);  i++;
-      XtGetValues(buttonBarWidget, args, i);
-      w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
-    } else {
-      w = boardWidth - 2*bor + 1; /*!! +1 compensates for kludge below */
-    }
 
-    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
-    if (gres != XtGeometryYes && appData.debugMode) {
-      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
-	      programName, gres, w, h, wr, hr);
-    }
+//    i = 0;
+//    XtSetArg(args[i], XtNborderWidth, &bor);  i++;
+//    XtSetArg(args[i], XtNheight, &h);  i++;
+//    XtGetValues(messageWidget, args, i);
+//    if (appData.showButtonBar) {
+//      i = 0;
+//      XtSetArg(args[i], XtNwidth, &w);  i++;
+//      XtGetValues(buttonBarWidget, args, i);
+//      w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
+//    } else {
+//      w = boardWidth - 2*bor + 1; /*!! +1 compensates for kludge below */
+//    }
+//
+//    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
+//    if (gres != XtGeometryYes && appData.debugMode) {
+//      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
+//	      programName, gres, w, h, wr, hr);
+//    }
+
 
     /* !! Horrible hack to work around bug in XFree86 4.0.1 (X11R6.4.3) */
     /* The size used for the child widget in layout lags one resize behind
@@ -1835,9 +1843,9 @@ main(argc, argv)
     }
 */
     /* !! end hack */
-    XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
-    XtSetArg(args[1], XtNright, XtChainRight);
-    XtSetValues(messageWidget, args, 2);
+   // XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
+   // XtSetArg(args[1], XtNright, XtChainRight);
+   // XtSetValues(messageWidget, args, 2);
 
     XawFormDoLayout(formWidget, True);
 
@@ -2888,24 +2896,27 @@ void SetupDropMenu()
 {
     int i, j, count;
     char label[32];
-    Arg args[16];
-    Widget entry;
+    //Arg args[16];
+    //Widget entry;
     char* p;
 
-    for (i=0; i<sizeof(dmEnables)/sizeof(DropMenuEnables); i++) {
-	entry = XtNameToWidget(dropMenu, dmEnables[i].widget);
-	p = strchr(gameMode == IcsPlayingWhite ? white_holding : black_holding,
-		   dmEnables[i].piece);
-	XtSetSensitive(entry, p != NULL || !appData.testLegality
-		       /*!!temp:*/ || (gameInfo.variant == VariantCrazyhouse
-				       && !appData.icsActive));
-	count = 0;
-	while (p && *p++ == dmEnables[i].piece) count++;
-	snprintf(label, sizeof(label), "%s  %d", dmEnables[i].widget, count);
-	j = 0;
-	XtSetArg(args[j], XtNlabel, label); j++;
-	XtSetValues(entry, args, j);
-    }
+    /* TODO: implement drop menu on GTK */   
+
+//  for (i=0; i<sizeof(dmEnables)/sizeof(DropMenuEnables); i++) {
+//	entry = XtNameToWidget(dropMenu, dmEnables[i].widget);
+//	p = strchr(gameMode == IcsPlayingWhite ? white_holding : black_holding,
+//		   dmEnables[i].piece);
+//	XtSetSensitive(entry, p != NULL || !appData.testLegality
+//		       /*!!temp:*/ || (gameInfo.variant == VariantCrazyhouse
+//				       && !appData.icsActive));
+//	count = 0;
+//	while (p && *p++ == dmEnables[i].piece) count++;
+//	snprintf(label, sizeof(label), "%s  %d", dmEnables[i].widget, count);
+//	j = 0;
+//	XtSetArg(args[j], XtNlabel, label); j++;
+//	XtSetValues(entry, args, j);
+//  }
+
 }
 
 
@@ -3011,28 +3022,6 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
 
     gtk_widget_show(menu);
     return True;
-}
-
-void PieceMenuPopup(w, event, params, num_params)
-     Widget w;
-     XEvent *event;
-     String *params;
-     Cardinal *num_params;
-{
-    String whichMenu; int menuNr = -2;
-    shiftKey = strcmp(params[0], "menuW"); // used to indicate black
-    if (event->type == ButtonRelease)
-        menuNr = RightClick(Release, event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
-    else if (event->type == ButtonPress)
-        menuNr = RightClick(Press,   event->xbutton.x, event->xbutton.y, &pmFromX, &pmFromY);
-    switch(menuNr) {
-      case 0: whichMenu = params[0]; break;
-      case 1: SetupDropMenu(); whichMenu = "menuD"; break;
-      case 2:
-      case -1: if (errorUp) ErrorPopDown();
-      default: return;
-    }
-    XtPopupSpringLoaded(XtNameToWidget(boardWidget, whichMenu));
 }
 
 static void PieceMenuSelect(w, piece, junk)
@@ -5078,13 +5067,11 @@ void EditCommentProcGTK(object, user_data)
 {
     Arg args[5];
     int j;
-    if (PopDown(1)) { // popdown succesful
-	j = 0;
-	XtSetArg(args[j], XtNleftBitmap, None); j++;
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuEdit.Edit Comment"), args, j);
-	XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Comments"), args, j);
-    } else // was not up
+    if (PopDown(1)) {
+       // popdown succesful
+    } else {// was not up
 	EditCommentEvent();
+    }
 }
 
 void IcsInputBoxProcGTK(object, user_data)

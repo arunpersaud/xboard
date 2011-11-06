@@ -70,6 +70,8 @@ char *crBlack = "#AD5D3D";
 GtkWidget *GUI_EvalGraph=NULL;
 GtkWidget *GUI_EvalGraphDrawingArea=NULL;
 
+GtkWidget *GetBoardWidget P((void));
+
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)
 # define N_(s) gettext_noop (s)
@@ -284,9 +286,10 @@ void EvalGraphCreate()
 {
   GtkBuilder *builder=NULL;
   char *filename;
+  GtkWidget *boardwidget;
 
   Arg args[16];
-  Dimension bw_width, bw_height;
+  gint bw_width, bw_height;
   int j;
 
   builder = gtk_builder_new ();
@@ -311,11 +314,9 @@ void EvalGraphCreate()
   gtk_builder_connect_signals (builder, NULL);
   g_object_unref (G_OBJECT (builder));
 
-  //GTK-TODO: get board width, this is still Xt code
-  j = 0;
-  XtSetArg(args[j], XtNwidth,  &bw_width);  j++;
-  XtSetArg(args[j], XtNheight, &bw_height);  j++;
-  XtGetValues(boardWidget, args, j);
+  // get board width
+  boardwidget = GetBoardWidget();   // get boardwidget width, height   
+  gdk_drawable_get_size(boardwidget->window, &bw_width, &bw_height);
 
   /* GTK-TODO the position should be set relativ to the main window.
    * This will be easier once the main window is a GTK widget, since we
