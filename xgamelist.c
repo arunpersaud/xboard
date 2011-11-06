@@ -572,6 +572,7 @@ GameListOptionsCallback(w, client_data, call_data)
     XawListHighlight(listwidg, index);
 }
 
+/*
 Widget
 GameListOptionsCreate()
 {
@@ -671,15 +672,16 @@ GameListOptionsCreate()
 
     return shell;
 }
+*/
 
 void GameListOptionsPopUpGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-  if (gameListOptShell == NULL)
-    gameListOptShell = GameListOptionsCreate();
+//  if (gameListOptShell == NULL)
+ //   gameListOptShell = GameListOptionsCreate();
 
-  XtPopup(gameListOptShell, XtGrabNone); 
+ // XtPopup(gameListOptShell, XtGrabNone); 
 }
 
 

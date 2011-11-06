@@ -152,27 +152,9 @@ extern char *getenv();
 #include <locale.h>
 #endif
 
-//#include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
-//#include <X11/Shell.h>
-#include <X11/cursorfont.h>
 #include <X11/Xatom.h>
 #include <X11/Xmu/Atoms.h>
-#if USE_XAW3D
-#include <X11/Xaw3d/Form.h>
-#include <X11/Xaw3d/SimpleMenu.h>
-#include <X11/Xaw3d/SmeBSB.h>
-#include <X11/Xaw3d/SmeLine.h>
-#include <X11/Xaw3d/Box.h>
-#include <X11/Xaw3d/MenuButton.h>
-#else
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/MenuButton.h>
-#endif
 
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
@@ -229,9 +211,6 @@ RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
 void CreatePieces P((void));
-//void CreatePieceMenus P((void));
-Widget CreateMenuBar P((Menu *mb));
-Widget CreateButtonBar P ((MenuItem *mi));
 #if ENABLE_NLS
 char *InsertPxlSize P((char *pattern, int targetPxlSize));
 XFontSet CreateFontSet P((char *base_fnt_lst));
@@ -318,9 +297,8 @@ Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
    highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor;
-Widget shellWidget, layoutWidget, formWidget, boardWidget, 
-  widgetList[16],  
-  menuBarWidget, buttonBarWidget; 
+Widget shellWidget, layoutWidget, formWidget, 
+  widgetList[16];  
 GtkWidget *errorShell = NULL, *promotionShellGTK;
 Widget historyShell, evalGraphShell, gameListShell;
 int hOffset; // [HGM] dual
@@ -436,14 +414,6 @@ static AnimState game, player;
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
 Menu menuBar[] = {
-   /// {N_("File"),    "File", fileMenu},
-   // {N_("Edit"),    "Edit", editMenu},
-   // {N_("View"),    "View", viewMenu},
-   // {N_("Mode"),    "Mode", modeMenu},
-   // {N_("Action"),  "Action", actionMenu},
-   // {N_("Engine"),  "Engine", engineMenu},
-    //{N_("Options"), "Options", optionsMenu},
-   // {N_("Help"),    "Help", helpMenu},
     {NULL, NULL, NULL}
 };
 
@@ -503,50 +473,10 @@ DropMenuEnables dmEnables[] = {
     { 'Q', "Queen" }
 };
 
-Arg shellArgs[] = {
-    { XtNwidth, 0 },
-    { XtNheight, 0 },
-    { XtNminWidth, 0 },
-    { XtNminHeight, 0 },
-    { XtNmaxWidth, 0 },
-    { XtNmaxHeight, 0 }
-};
-
-Arg layoutArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNdefaultDistance, 0 },
-};
-
-Arg formArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNresizable, (XtArgVal) True },
-};
-
 Arg boardArgs[] = {
     { XtNborderWidth, 0 },
     { XtNwidth, 0 },
     { XtNheight, 0 }
-};
-
-/*
-Arg titleArgs[] = {
-    { XtNjustify, (XtArgVal) XtJustifyRight },
-    { XtNlabel, (XtArgVal) "..." },
-    { XtNresizable, (XtArgVal) True },
-    { XtNresize, (XtArgVal) False }
-};
-*/
-
-Arg messageArgs[] = {
-    { XtNjustify, (XtArgVal) XtJustifyLeft },
-    { XtNlabel, (XtArgVal) "..." },
-    { XtNresizable, (XtArgVal) True },
-    { XtNresize, (XtArgVal) False }
-};
-
-Arg timerArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNjustify, (XtArgVal) XtJustifyLeft }
 };
 
 XtResource clientResources[] = {
@@ -971,7 +901,8 @@ EnsureOnScreen(int *x, int *y, int minX, int minY)
 int
 MainWindowUp()
 { // [HGM] args: allows testing if main window is realized from back-end
-  return xBoardWindow != 0;
+  //return xBoardWindow != 0;
+  return mainwindow != NULL;
 }
 
 void
@@ -1010,12 +941,8 @@ extern Boolean twoBoards, partnerUp;
 #define BoardSize int
 void InitDrawingSizes(BoardSize boardSize, int flags)
 {   // [HGM] resize is functional now, but for board format changes only (nr of ranks, files)
-    Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
-    Arg args[16];
-    XtGeometryResult gres;
-    int i;
-
-    if(!formWidget) return;
+  
+    if (mainwindow == NULL) return;
 
     /* resizes for GTK */
     gtk_window_resize(GTK_WINDOW(mainwindow), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK + xMargin,
@@ -1051,84 +978,6 @@ void ParseIcsTextColors()
 	  appData.colorize = FALSE;
       }
 }
-
-/*
-int MakeColors()
-{   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
-    XrmValue vFrom, vTo;
-    int forceMono = False;
-
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.lightSquareColor;
-	vFrom.size = strlen(appData.lightSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  lightSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.darkSquareColor;
-	vFrom.size = strlen(appData.darkSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  darkSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.whitePieceColor;
-	vFrom.size = strlen(appData.whitePieceColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  whitePieceColor = *(Pixel *) vTo.addr;
-	}
-    }
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.blackPieceColor;
-	vFrom.size = strlen(appData.blackPieceColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  blackPieceColor = *(Pixel *) vTo.addr;
-	}
-    }
-
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.highlightSquareColor;
-	vFrom.size = strlen(appData.highlightSquareColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  highlightSquareColor = *(Pixel *) vTo.addr;
-	}
-    }
-
-    if (!appData.monoMode) {
-	vFrom.addr = (caddr_t) appData.premoveHighlightColor;
-	vFrom.size = strlen(appData.premoveHighlightColor);
-	XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	if (vTo.addr == NULL) {
-	  appData.monoMode = True;
-	  forceMono = True;
-	} else {
-	  premoveHighlightColor = *(Pixel *) vTo.addr;
-	}
-    }
-    return forceMono;
-}
-*/
 
 void SetPieceColor(GdkPixbuf *pb)
 {
@@ -1318,14 +1167,11 @@ main(argc, argv)
      int argc;
      char **argv;
 {
-    int i, j, clockFontPxlSize, coordFontPxlSize, fontPxlSize;
-    XSetWindowAttributes window_attributes;
+    int i, j, clockFontPxlSize, coordFontPxlSize, fontPxlSize;    
     Arg args[16];
-    Dimension timerWidth, boardWidth, boardHeight, w, h, sep, bor, wr, hr;
-    XrmValue vFrom, vTo;
-    XtGeometryResult gres;
-    char *p;
-    XrmDatabase xdb;
+    Dimension boardWidth, boardHeight, w, h, sep, bor, wr, hr;
+    XrmValue vFrom, vTo;   
+    char *p;    
     int forceMono = False;
     char *filename;
     GError *gtkerror=NULL;
@@ -1346,8 +1192,6 @@ main(argc, argv)
     /* set up GTK */
     gtk_init (&argc, &argv);
 
-
-
     programName = strrchr(argv[0], '/');
     if (programName == NULL)
       programName = argv[0];
@@ -1360,10 +1204,6 @@ main(argc, argv)
     textdomain(PACKAGE);
 #endif
 
-    shellWidget =
-      XtAppInitialize(&appContext, "XBoard", shellOptions,
-		      XtNumber(shellOptions),
-		      &argc, argv, xboardResources, NULL, 0);
     appData.boardSize = "";
     InitAppData(ConvertToLine(argc, argv));
     p = getenv("HOME");
@@ -1373,10 +1213,6 @@ main(argc, argv)
     gamePasteFilename = (char*) malloc(i);
     snprintf(gameCopyFilename,i, "%s/.xboard%05uc.pgn", p, getpid());
     snprintf(gamePasteFilename,i, "%s/.xboard%05up.pgn", p, getpid());
-
-    XtGetApplicationResources(shellWidget, (XtPointer) &appData,
-			      clientResources, XtNumber(clientResources),
-			      NULL, 0);
 
     { // [HGM] initstring: kludge to fix bad bug. expand '\n' characters in init string and computer string.
 	static char buf[MSG_SIZ];
@@ -1425,9 +1261,6 @@ main(argc, argv)
     appData.highlightDragging = FALSE;
 #endif
     InitBackEnd1();
-
-    xDisplay = XtDisplay(shellWidget);
-    xScreen = DefaultScreen(xDisplay);
 
 	gameInfo.variant = StringToVariant(appData.variant);
 	InitPosition(FALSE);
@@ -1507,21 +1340,6 @@ main(argc, argv)
     /* [HR] height treated separately (hacked) */
     boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
     boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    if (appData.showJail == 1) {
-	/* Jail on top and bottom */
-	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
-	XtSetArg(boardArgs[2], XtNheight,
-		 boardHeight + 2*(lineGap + squareSize));
-    } else if (appData.showJail == 2) {
-	/* Jail on sides */
-	XtSetArg(boardArgs[1], XtNwidth,
-		 boardWidth + 2*(lineGap + squareSize));
-	XtSetArg(boardArgs[2], XtNheight, boardHeight);
-    } else {
-	/* No jail */
-	XtSetArg(boardArgs[1], XtNwidth, boardWidth);
-	XtSetArg(boardArgs[2], XtNheight, boardHeight);
-    }
 
     /*
      * Determine what fonts to use.
@@ -1530,79 +1348,15 @@ main(argc, argv)
     appData.font = InsertPxlSize(appData.font, fontPxlSize);
     appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
     appData.coordFont = InsertPxlSize(appData.coordFont, coordFontPxlSize);
-    fontSet = CreateFontSet(appData.font);
-    clockFontSet = CreateFontSet(appData.clockFont);
-    {
-      /* For the coordFont, use the 0th font of the fontset. */
-      XFontSet coordFontSet = CreateFontSet(appData.coordFont);
-      XFontStruct **font_struct_list;
-      char **font_name_list;
-      XFontsOfFontSet(coordFontSet, &font_struct_list, &font_name_list);
-      coordFontID = XLoadFont(xDisplay, font_name_list[0]);
-      coordFontStruct = XQueryFont(xDisplay, coordFontID);
-    }
 #else
     appData.font = FindFont(appData.font, fontPxlSize);
     appData.clockFont = FindFont(appData.clockFont, clockFontPxlSize);
     appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
-    clockFontID = XLoadFont(xDisplay, appData.clockFont);
-    clockFontStruct = XQueryFont(xDisplay, clockFontID);
-    coordFontID = XLoadFont(xDisplay, appData.coordFont);
-    coordFontStruct = XQueryFont(xDisplay, coordFontID);
 #endif
-    countFontID = coordFontID;  // [HGM] holdings
-    countFontStruct = coordFontStruct;
-
-    xdb = XtDatabase(xDisplay);
-#if ENABLE_NLS
-    XrmPutLineResource(&xdb, "*international: True");
-    vTo.size = sizeof(XFontSet);
-    vTo.addr = (XtPointer) &fontSet;
-    XrmPutResource(&xdb, "*fontSet", XtRFontSet, &vTo);
-#else
-    XrmPutStringResource(&xdb, "*font", appData.font);
-#endif
-
-    /*
-     * Detect if there are not enough colors available and adapt.
-     */
-/*
-    if (DefaultDepth(xDisplay, xScreen) <= 2) {
-      appData.monoMode = True;
-    }
-
-    //forceMono = MakeColors();
-
-    if (forceMono) {
-      fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
-	      programName);
-	appData.monoMode = True;
-    }
-*/
-
-    if (appData.lowTimeWarning && !appData.monoMode) {
-      vFrom.addr = (caddr_t) appData.lowTimeWarningColor;
-      vFrom.size = strlen(appData.lowTimeWarningColor);
-      XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-      if (vTo.addr == NULL)
-		appData.monoMode = True;
-      else
-		lowTimeWarningColor = *(Pixel *) vTo.addr;
-    }
-
-    if (appData.monoMode && appData.debugMode) {
-	fprintf(stderr, _("white pixel = 0x%lx, black pixel = 0x%lx\n"),
-		(unsigned long) XWhitePixel(xDisplay, xScreen),
-		(unsigned long) XBlackPixel(xDisplay, xScreen));
-    }
 
     ParseIcsTextColors();
     textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
     textColors[ColorNone].attr = 0;
-
-    //XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
-
-
 
     /* GTK */
     builder = gtk_builder_new();
@@ -1673,236 +1427,16 @@ main(argc, argv)
     } else {
 	layoutName = "normalLayout";
     }
-    /* Outer layoutWidget is there only to provide a name for use in
-       resources that depend on the layout style */
-    layoutWidget =
-      XtCreateManagedWidget(layoutName, formWidgetClass, shellWidget,
-			    layoutArgs, XtNumber(layoutArgs));
-    formWidget =
-      XtCreateManagedWidget("form", formWidgetClass, layoutWidget,
-			    formArgs, XtNumber(formArgs));
-    XtSetArg(args[0], XtNdefaultDistance, &sep);
-    XtGetValues(formWidget, args, 1);
 
-    j = 0;
-    widgetList[j++] = menuBarWidget = CreateMenuBar(menuBar);
-    XtSetArg(args[0], XtNtop,    XtChainTop);
-    XtSetArg(args[1], XtNbottom, XtChainTop);
-    XtSetArg(args[2], XtNright,  XtChainLeft);
-    XtSetValues(menuBarWidget, args, 3);
-
-  //widgetList[j++] = whiteTimerWidget =
-  //  XtCreateWidget("whiteTime", labelWidgetClass,
-	//	     formWidget, timerArgs, XtNumber(timerArgs));
-
-/*
-#if ENABLE_NLS
-    XtSetArg(args[0], XtNfontSet, clockFontSet);
-#else
-    XtSetArg(args[0], XtNfont, clockFontStruct);
-#endif
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainTop);
-    XtSetValues(whiteTimerWidget, args, 3);
-
-    widgetList[j++] = blackTimerWidget =
-      XtCreateWidget("blackTime", labelWidgetClass,
-		     formWidget, timerArgs, XtNumber(timerArgs));
-#if ENABLE_NLS
-    XtSetArg(args[0], XtNfontSet, clockFontSet);
-#else
-    XtSetArg(args[0], XtNfont, clockFontStruct);
-#endif
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainTop);
-    XtSetValues(blackTimerWidget, args, 3);
-*/
-
-    if (appData.showButtonBar) {
-      widgetList[j++] = buttonBarWidget = CreateButtonBar(buttonBar);
-      XtSetArg(args[0], XtNleft,  XtChainRight); // [HGM] glue to right window edge
-      XtSetArg(args[1], XtNright, XtChainRight); //       for good run-time sizing
-      XtSetArg(args[2], XtNtop,    XtChainTop);
-      XtSetArg(args[3], XtNbottom, XtChainTop);
-      XtSetValues(buttonBarWidget, args, 4);
-    }
-
-   // widgetList[j++] = messageWidget =
-   //   XtCreateWidget("message", labelWidgetClass, formWidget,
-//		     messageArgs, XtNumber(messageArgs));
- //   XtSetArg(args[0], XtNtop,    XtChainTop);
-  //  XtSetArg(args[1], XtNbottom, XtChainTop);
-  //  XtSetValues(messageWidget, args, 2);
-
-    widgetList[j++] = boardWidget =
-      XtCreateWidget("board", widgetClass, formWidget, boardArgs,
-		     XtNumber(boardArgs));
-
-    XtManageChildren(widgetList, j);
-
-/*
-    timerWidth = (boardWidth - sep) / 2;
-    XtSetArg(args[0], XtNwidth, timerWidth);
-    XtSetValues(whiteTimerWidget, args, 1);
-    XtSetValues(blackTimerWidget, args, 1);
-*/
-/*
-    XtSetArg(args[0], XtNbackground, &timerBackgroundPixel);
-    XtSetArg(args[1], XtNforeground, &timerForegroundPixel);
-    XtGetValues(whiteTimerWidget, args, 2);
-*/
-
-    if (appData.showButtonBar) {
-      XtSetArg(args[0], XtNbackground, &buttonBackgroundPixel);
-      XtSetArg(args[1], XtNforeground, &buttonForegroundPixel);
-      XtGetValues(XtNameToWidget(buttonBarWidget, PAUSE_BUTTON), args, 2);
-    }
-
-    /*
-     * formWidget uses these constraints but they are stored
-     * in the children.
-     */
-    i = 0;
-    XtSetArg(args[i], XtNfromHoriz, 0); i++;
-    XtSetValues(menuBarWidget, args, i);
-  
-  //  i = 0;
-  //  XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-  //  XtSetValues(whiteTimerWidget, args, i);
-  //i = 0;
-  //XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-   //XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-  //XtSetValues(blackTimerWidget, args, i);
- //  i = 0;
-  // XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
- //  XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-//   XtSetValues(messageWidget, args, i);
-    if (appData.showButtonBar) {
-  //    i = 0;
-    //  XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-    //  XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-    //  XtSetValues(buttonBarWidget, args, i);
-    }
-
-    /*
-    i = 0;
-    XtSetArg(args[0], XtNfromVert, messageWidget);
-    XtSetArg(args[1], XtNtop,    XtChainTop);
-    XtSetArg(args[2], XtNbottom, XtChainBottom);
-    XtSetArg(args[3], XtNleft,   XtChainLeft);
-    XtSetArg(args[4], XtNright,  XtChainRight);
-    XtSetValues(boardWidget, args, 5);
-*/
-
-    XtRealizeWidget(shellWidget);
-
-    if(wpMain.x > 0) {
-      XtSetArg(args[0], XtNx, wpMain.x);
-      XtSetArg(args[1], XtNy, wpMain.y);
-      XtSetValues(shellWidget, args, 2);
-    }
-
-    /*
-     * Correct the width of the message and title widgets.
-     * It is not known why some systems need the extra fudge term.
-     * The value "2" is probably larger than needed.
-     */
-    XawFormDoLayout(formWidget, False);
-
-#define WIDTH_FUDGE 2
-
-//    i = 0;
-//    XtSetArg(args[i], XtNborderWidth, &bor);  i++;
-//    XtSetArg(args[i], XtNheight, &h);  i++;
-//    XtGetValues(messageWidget, args, i);
-//    if (appData.showButtonBar) {
-//      i = 0;
-//      XtSetArg(args[i], XtNwidth, &w);  i++;
-//      XtGetValues(buttonBarWidget, args, i);
-//      w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
-//    } else {
-//      w = boardWidth - 2*bor + 1; /*!! +1 compensates for kludge below */
-//    }
-//
-//    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
-//    if (gres != XtGeometryYes && appData.debugMode) {
-//      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
-//	      programName, gres, w, h, wr, hr);
-//    }
-
-
-    /* !! Horrible hack to work around bug in XFree86 4.0.1 (X11R6.4.3) */
-    /* The size used for the child widget in layout lags one resize behind
-       its true size, so we resize a second time, 1 pixel smaller.  Yeech! */
-/*
-    w--;
-    gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
-    if (gres != XtGeometryYes && appData.debugMode) {
-      fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
-	      programName, gres, w, h, wr, hr);
-    }
-*/
-    /* !! end hack */
-   // XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
-   // XtSetArg(args[1], XtNright, XtChainRight);
-   // XtSetValues(messageWidget, args, 2);
-
-    XawFormDoLayout(formWidget, True);
-
-    xBoardWindow = XtWindow(boardWidget);
+    xBoardWindow = 0;
 
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
     //       not need to go into InitDrawingSizes().
 #endif
 
-    /*
-     * Create X checkmark bitmap and initialize option menu checks.
-     */
-    if (saveSettingsOnExit) {
-	//XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
-	//	    args, 1);
-    }
-
-    /*
-     * Create a cursor for the board widget.
-     */
-    window_attributes.cursor = XCreateFontCursor(xDisplay, XC_hand2);
-    XChangeWindowAttributes(xDisplay, xBoardWindow,
-			    CWCursor, &window_attributes);
-
-    /*
-     * Inhibit shell resizing.
-     */
-/*
-    shellArgs[0].value = (XtArgVal) &w;
-    shellArgs[1].value = (XtArgVal) &h;
-    XtGetValues(shellWidget, shellArgs, 2);
-    shellArgs[4].value = shellArgs[2].value = w;
-    shellArgs[5].value = shellArgs[3].value = h;
-    XtSetValues(shellWidget, &shellArgs[2], 4);
-    marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
-    marginH =  h - boardHeight;
-*/
-
-    //CreatePieceMenus();
 /*
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
-*/
-
-/*
-    XtAugmentTranslations(formWidget,
-			  XtParseTranslationTable(globalTranslations));
-    XtAugmentTranslations(boardWidget,
-			  XtParseTranslationTable(boardTranslations));
-    XtAugmentTranslations(whiteTimerWidget,
-			  XtParseTranslationTable(whiteTranslations));
-    XtAugmentTranslations(blackTimerWidget,
-			  XtParseTranslationTable(blackTranslations));
-*/
-/*
-    XtAddEventHandler(formWidget, KeyPressMask, False,
-		      (XtEventHandler) MoveTypeInProc, NULL);
 */
 
     /* [AS] Restore layout */
@@ -1940,26 +1474,7 @@ main(argc, argv)
     }
     gameInfo.boardWidth = 0; // [HGM] pieces: kludge to ensure InitPosition() calls InitDrawingSizes()
     InitPosition(TRUE);
-//    XtSetKeyboardFocus(shellWidget, formWidget);
-    XSetInputFocus(xDisplay, XtWindow(formWidget), RevertToPointerRoot, CurrentTime);
 
-    XtUnmapWidget(shellWidget);
-
-    //    XtAppMainLoop(appContext);
-    for (i=0;i<700;i++)
-	{
-	  XEvent event;
-	  XtInputMask mask;
-
-	  while (!(mask = XtAppPending(appContext)) && !gtk_events_pending())
-	    poll(NULL,0,100);
-	  if (mask & XtIMXEvent) {
-	    XtAppNextEvent(appContext, &event); /* no blocking */
-	    XtDispatchEvent(&event); /* Process it */
-	  }
-	  else /* not an XEvent, process it */
-	    XtAppProcessEvent(appContext, mask); /* non blocking */
-	}
     /* check for GTK events and process them */
     gtk_main();
 
@@ -2071,6 +1586,9 @@ void
 GreyRevert(grey)
      Boolean grey;
 {
+
+/* TODO: convert this to GTK
+
     Widget w;
     if (!menuBarWidget) return;
     w = XtNameToWidget(menuBarWidget, "menuEdit.Revert");
@@ -2085,6 +1603,7 @@ GreyRevert(grey)
     } else {
       XtSetSensitive(w, !grey);
     }
+*/
 }
 
 void
@@ -2315,7 +1834,7 @@ SetTrainingModeOn()
 {
   SetMenuEnables(trainingOnEnables);
   if (appData.showButtonBar) {
-    XtSetSensitive(buttonBarWidget, False);
+    //XtSetSensitive(buttonBarWidget, False);
   }
   CommentPopDown();
 }
@@ -2325,7 +1844,7 @@ SetTrainingModeOff()
 {
   SetMenuEnables(trainingOffEnables);
   if (appData.showButtonBar) {
-    XtSetSensitive(buttonBarWidget, True);
+    //XtSetSensitive(buttonBarWidget, True);
   }
 }
 
@@ -2461,41 +1980,6 @@ InsertPxlSize(pattern, targetPxlSize)
     return base_fnt_lst;
 }
 
-XFontSet
-CreateFontSet(base_fnt_lst)
-     char *base_fnt_lst;
-{
-    XFontSet fntSet;
-    char **missing_list;
-    int missing_count;
-    char *def_string;
-
-    fntSet = XCreateFontSet(xDisplay, base_fnt_lst,
-			    &missing_list, &missing_count, &def_string);
-    if (appData.debugMode) {
-      int i, count;
-      XFontStruct **font_struct_list;
-      char **font_name_list;
-      fprintf(debugFP, "Requested font set for list %s\n", base_fnt_lst);
-      if (fntSet) {
-	fprintf(debugFP, " got list %s, locale %s\n",
-		XBaseFontNameListOfFontSet(fntSet),
-		XLocaleOfFontSet(fntSet));
-	count = XFontsOfFontSet(fntSet, &font_struct_list, &font_name_list);
-	for (i = 0; i < count; i++) {
-	  fprintf(debugFP, " got charset %s\n", font_name_list[i]);
-	}
-      }
-      for (i = 0; i < missing_count; i++) {
-	fprintf(debugFP, " missing charset %s\n", missing_list[i]);
-      }
-    }
-    if (fntSet == NULL) {
-      fprintf(stderr, _("Unable to create font set for %s.\n"), base_fnt_lst);
-      exit(2);
-    }
-    return fntSet;
-}
 #else // not ENABLE_NLS
 /*
  * Find a font that matches "pattern" that is as close as
@@ -2714,184 +2198,6 @@ static void MenuBarSelect(w, addr, index)
     (proc)(NULL, NULL, NULL, NULL);
 }
 
-void CreateMenuBarPopup(parent, name, mb)
-     Widget parent;
-     String name;
-     Menu *mb;
-{
-    int j;
-    Widget menu, entry;
-    MenuItem *mi;
-    Arg args[16];
-
-    menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
-			      parent, NULL, 0);
-    j = 0;
-    XtSetArg(args[j], XtNleftMargin, 20);   j++;
-    XtSetArg(args[j], XtNrightMargin, 20);  j++;
-    mi = mb->mi;
-    while (mi->string != NULL) {
-	if (strcmp(mi->string, "----") == 0) {
-	  entry = XtCreateManagedWidget(_(mi->string), smeLineObjectClass,
-					  menu, args, j);
-	} else {
-          XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string)));
-	    entry = XtCreateManagedWidget(mi->ref, smeBSBObjectClass,
-					  menu, args, j+1);
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) MenuBarSelect,
-			  (caddr_t) mi->proc);
-	}
-	mi++;
-    }
-}
-
-Widget CreateMenuBar(mb)
-     Menu *mb;
-{
-    int j;
-    Widget anchor, menuBar;
-    Arg args[16];
-    char menuName[MSG_SIZ];
-
-    j = 0;
-    XtSetArg(args[j], XtNorientation, XtorientHorizontal);  j++;
-    XtSetArg(args[j], XtNvSpace, 0);                        j++;
-    XtSetArg(args[j], XtNborderWidth, 0);                   j++;
-    menuBar = XtCreateWidget("menuBar", boxWidgetClass,
-			     formWidget, args, j);
-
-    while (mb->name != NULL) {
-        safeStrCpy(menuName, "menu", sizeof(menuName)/sizeof(menuName[0]) );
-	strncat(menuName, mb->ref, MSG_SIZ - strlen(menuName) - 1);
-	j = 0;
-	XtSetArg(args[j], XtNmenuName, XtNewString(menuName));  j++;
-	if (tinyLayout) {
-	    char shortName[2];
-            shortName[0] = mb->name[0];
-	    shortName[1] = NULLCHAR;
-	    XtSetArg(args[j], XtNlabel, XtNewString(shortName)); j++;
-	}
-      else {
-	XtSetArg(args[j], XtNlabel, XtNewString(_(mb->name))); j++;
-      }
-
-	XtSetArg(args[j], XtNborderWidth, 0);                   j++;
-	anchor = XtCreateManagedWidget(mb->name, menuButtonWidgetClass,
-				       menuBar, args, j);
-	CreateMenuBarPopup(menuBar, menuName, mb);
-	mb++;
-    }
-    return menuBar;
-}
-
-Widget CreateButtonBar(mi)
-     MenuItem *mi;
-{
-    int j;
-    Widget button, buttonBar;
-    Arg args[16];
-
-    j = 0;
-    XtSetArg(args[j], XtNorientation, XtorientHorizontal); j++;
-    if (tinyLayout) {
-	XtSetArg(args[j], XtNhSpace, 0); j++;
-    }
-    XtSetArg(args[j], XtNborderWidth, 0); j++;
-    XtSetArg(args[j], XtNvSpace, 0);                        j++;
-    buttonBar = XtCreateWidget("buttonBar", boxWidgetClass,
-			       formWidget, args, j);
-
-    while (mi->string != NULL) {
-	j = 0;
-	if (tinyLayout) {
-	    XtSetArg(args[j], XtNinternalWidth, 2); j++;
-	    XtSetArg(args[j], XtNborderWidth, 0); j++;
-	}
-      XtSetArg(args[j], XtNlabel, XtNewString(_(mi->string))); j++;
-	button = XtCreateManagedWidget(mi->string, commandWidgetClass,
-				       buttonBar, args, j);
-	XtAddCallback(button, XtNcallback,
-		      (XtCallbackProc) MenuBarSelect,
-		      (caddr_t) mi->proc);
-	mi++;
-    }
-    return buttonBar;
-}
-/*
-Widget
-CreatePieceMenu(name, color)
-     char *name;
-     int color;
-{
-    int i;
-    Widget entry, menu;
-    Arg args[16];
-    ChessSquare selection;
-
-    menu = XtCreatePopupShell(name, simpleMenuWidgetClass,
-			      boardWidget, args, 0);
-
-    for (i = 0; i < PIECE_MENU_SIZE; i++) {
-	String item = pieceMenuStrings[color][i];
-
-	if (strcmp(item, "----") == 0) {
-	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
-					  menu, NULL, 0);
-	} else {
-          XtSetArg(args[0], XtNlabel, XtNewString(_(item)));
-	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-                                menu, args, 1);
-	    selection = pieceMenuTranslation[color][i];
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) PieceMenuSelect,
-			  (caddr_t) selection);
-	    if (selection == WhitePawn || selection == BlackPawn) {
-		XtSetArg(args[0], XtNpopupOnEntry, entry);
-		XtSetValues(menu, args, 1);
-	    }
-	}
-    }
-    return menu;
-}
-*/
-/*
-void
-CreatePieceMenus()
-{
-    int i;
-    Widget entry;
-    Arg args[16];
-    ChessSquare selection;
-
-    whitePieceMenu = CreatePieceMenu("menuW", 0);
-    blackPieceMenu = CreatePieceMenu("menuB", 1);
-
-    XtRegisterGrabAction(PieceMenuPopup, True,
-			 (unsigned)(ButtonPressMask|ButtonReleaseMask),
-			 GrabModeAsync, GrabModeAsync);
-
-    XtSetArg(args[0], XtNlabel, _("Drop"));
-    dropMenu = XtCreatePopupShell("menuD", simpleMenuWidgetClass,
-				  boardWidget, args, 1);
-    for (i = 0; i < DROP_MENU_SIZE; i++) {
-	String item = dropMenuStrings[i];
-
-	if (strcmp(item, "----") == 0) {
-	    entry = XtCreateManagedWidget(item, smeLineObjectClass,
-					  dropMenu, NULL, 0);
-	} else {
-          XtSetArg(args[0], XtNlabel, XtNewString(_(item)));
-	    entry = XtCreateManagedWidget(item, smeBSBObjectClass,
-                                dropMenu, args, 1);
-	    selection = dropMenuTranslation[i];
-	    XtAddCallback(entry, XtNcallback,
-			  (XtCallbackProc) DropMenuSelect,
-			  (caddr_t) selection);
-	}
-    }
-}
-*/
 void SetupDropMenu()
 {
     int i, j, count;
