@@ -152,36 +152,26 @@ extern char *getenv();
 #include <locale.h>
 #endif
 
-#include <X11/Intrinsic.h>
+//#include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
-#include <X11/Shell.h>
+//#include <X11/Shell.h>
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
 #include <X11/Xmu/Atoms.h>
 #if USE_XAW3D
-#include <X11/Xaw3d/Dialog.h>
 #include <X11/Xaw3d/Form.h>
-#include <X11/Xaw3d/List.h>
-#include <X11/Xaw3d/Label.h>
 #include <X11/Xaw3d/SimpleMenu.h>
 #include <X11/Xaw3d/SmeBSB.h>
 #include <X11/Xaw3d/SmeLine.h>
 #include <X11/Xaw3d/Box.h>
 #include <X11/Xaw3d/MenuButton.h>
-#include <X11/Xaw3d/Text.h>
-#include <X11/Xaw3d/AsciiText.h>
 #else
-#include <X11/Xaw/Dialog.h>
 #include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
 #include <X11/Xaw/SimpleMenu.h>
 #include <X11/Xaw/SmeBSB.h>
 #include <X11/Xaw/SmeLine.h>
 #include <X11/Xaw/Box.h>
 #include <X11/Xaw/MenuButton.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
 #endif
 
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
@@ -239,7 +229,7 @@ RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
 void CreatePieces P((void));
-void CreatePieceMenus P((void));
+//void CreatePieceMenus P((void));
 Widget CreateMenuBar P((Menu *mb));
 Widget CreateButtonBar P ((MenuItem *mi));
 #if ENABLE_NLS
@@ -386,7 +376,7 @@ Boolean chessProgram;
 
 int  minX, minY; // [HGM] placement: volatile limits on upper-left corner
 int squareSize, squareSizeGTK, smallLayout = 0, tinyLayout = 0,
-  marginW, marginH, xMargin, yMargin, // [HGM] for run-time resizing
+  xMargin, yMargin, // [HGM] for run-time resizing
   fromX = -1, fromY = -1, toX, toY, commentUp = False, analysisUp = False,
   ICSInputBoxUp = False, askQuestionUp = False,
   filenameUp = False, promotionUp = False, pmFromX = -1, pmFromY = -1,
@@ -447,157 +437,15 @@ static AnimState game, player;
 
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
 
-MenuItem fileMenu[] = {
-    {N_("New Game        Ctrl+N"),        "New Game", NothingProc},
-    {N_("New Shuffle Game ..."),          "New Shuffle Game", NothingProc},
-    {N_("New Variant ...   Alt+Shift+V"), "New Variant", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Load Game       Ctrl+O"),        "Load Game", NothingProc},
-    {N_("Load Position    Ctrl+Shift+O"), "Load Position", NothingProc},
-//    {N_("Load Next Game"), "Load Next Game", LoadNextGameProc},
-//    {N_("Load Previous Game"), "Load Previous Game", LoadPrevGameProc},
-//    {N_("Reload Same Game"), "Reload Same Game", ReloadGameProc},
-    {N_("Next Position     Shift+PgDn"), "Load Next Position", NothingProc},
-    {N_("Prev Position     Shift+PgUp"), "Load Previous Position", NothingProc},
-    {"----", NULL, NothingProc},
-//    {N_("Reload Same Position"), "Reload Same Position", ReloadPositionProc},
-    {N_("Save Game       Ctrl+S"),        "Save Game", NothingProc},
-    {N_("Save Position    Ctrl+Shift+S"), "Save Position", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Mail Move"),            "Mail Move", NothingProc},
-    {N_("Reload CMail Message"), "Reload CMail Message", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Quit                 Ctr+Q"), "Exit", NothingProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem editMenu[] = {
-    {N_("Copy Game    Ctrl+C"),        "Copy Game", NothingProc},
-    {N_("Copy Position Ctrl+Shift+C"), "Copy Position", NothingProc},
-    {N_("Copy Game List"),        "Copy Game List", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Paste Game    Ctrl+V"),        "Paste Game", NothingProc},
-    {N_("Paste Position Ctrl+Shift+V"), "Paste Position", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Edit Game      Ctrl+E"),        "Edit Game", NothingProc},
-    {N_("Edit Position   Ctrl+Shift+E"), "Edit Position", NothingProc},
-    {N_("Edit Tags"),                    "Edit Tags", NothingProc},
-    {N_("Edit Comment"),                 "Edit Comment", NothingProc},
-    {N_("Edit Book"),                    "Edit Book", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Revert              Home"), "Revert", NothingProc},
-    {N_("Annotate"),                 "Annotate", NothingProc},
-    {N_("Truncate Game  End"),       "Truncate Game", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Backward         Alt+Left"),   "Backward", NothingProc},
-    {N_("Forward           Alt+Right"), "Forward", NothingProc},
-    {N_("Back to Start     Alt+Home"),  "Back to Start", NothingProc},
-    {N_("Forward to End Alt+End"),      "Forward to End", NothingProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem viewMenu[] = {
-    {N_("Flip View             F2"),         "Flip View", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Engine Output      Alt+Shift+O"),   "Show Engine Output", NothingProc},
-    {N_("Move History       Alt+Shift+H"),   "Show Move History", NothingProc},
-    {N_("Evaluation Graph  Alt+Shift+E"),    "Show Evaluation Graph", EvalGraphProc},
-    {N_("Game List            Alt+Shift+G"), "Show Game List", ShowGameListProc},
-    {N_("ICS text menu"), "ICStex", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Tags"),             "Show Tags", NothingProc},
-    {N_("Comments"),         "Show Comments", NothingProc},
-    {N_("ICS Input Box"),    "ICS Input Box", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Board..."),          "Board Options", NothingProc},
-    {N_("Game List Tags..."), "Game List", NothingProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem modeMenu[] = {
-    {N_("Machine White  Ctrl+W"), "Machine White", NothingProc},
-    {N_("Machine Black  Ctrl+B"), "Machine Black", NothingProc},
-    {N_("Two Machines   Ctrl+T"), "Two Machines", NothingProc},
-    {N_("Analysis Mode  Ctrl+A"), "Analysis Mode", NothingProc},
-    {N_("Analyze Game   Ctrl+G"), "Analyze File", NothingProc },
-    {N_("Edit Game         Ctrl+E"), "Edit Game", NothingProc},
-    {N_("Edit Position      Ctrl+Shift+E"), "Edit Position", NothingProc},
-    {N_("Training"),      "Training", NothingProc},
-    {N_("ICS Client"),    "ICS Client", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Machine Match"),         "Machine Match", NothingProc},
-    {N_("Pause               Pause"),         "Pause", NothingProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem actionMenu[] = {
-    {N_("Accept             F3"), "Accept", NothingProc},
-    {N_("Decline            F4"), "Decline", NothingProc},
-    {N_("Rematch           F12"), "Rematch", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Call Flag          F5"), "Call Flag", NothingProc},
-    {N_("Draw                F6"), "Draw", NothingProc},
-    {N_("Adjourn            F7"),  "Adjourn", NothingProc},
-    {N_("Abort                F8"),"Abort", NothingProc},
-    {N_("Resign              F9"), "Resign", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Stop Observing  F10"), "Stop Observing", NothingProc},
-    {N_("Stop Examining  F11"), "Stop Examining", NothingProc},
-    {N_("Upload to Examine"),   "Upload to Examine", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Adjudicate to White"), "Adjudicate to White", NothingProc},
-    {N_("Adjudicate to Black"), "Adjudicate to Black", NothingProc},
-    {N_("Adjudicate Draw"),     "Adjudicate Draw", NothingProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem engineMenu[] = {
-    {N_("Load New Engine ..."), "Load Engine", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Engine #1 Settings ..."), "Engine #1 Settings", NothingProc},
-    {N_("Engine #2 Settings ..."), "Engine #2 Settings", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Hint"), "Hint", NothingProc},
-    {N_("Book"), "Book", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Move Now     Ctrl+M"),     "Move Now", NothingProc},
-    {N_("Retract Move  Ctrl+X"), "Retract Move", NothingProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem optionsMenu[] = {
-    {N_("Time Control ...       Alt+Shift+T"), "Time Control", NothingProc},
-    {N_("Common Engine ...  Alt+Shift+U"),     "Common Engine", NothingProc},
-    {N_("Adjudications ...      Alt+Shift+J"), "Adjudications", NothingProc},
-    {N_("ICS ..."),    "ICS", NothingProc},
-    {N_("Match ..."), "Match", NothingProc},
-    {N_("Load Game ..."),    "Load Game", NothingProc},
-    {N_("Save Game ..."),    "Save Game", NothingProc},
-    {N_("Game List ..."),    "Game List", NothingProc},
-    {N_("Sounds ..."),    "Sounds", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("Save Settings Now"),     "Save Settings Now", NothingProc},
-    {N_("Save Settings on Exit"), "Save Settings on Exit", NothingProc},
-    {NULL, NULL, NULL}
-};
-
-MenuItem helpMenu[] = {
-    {N_("Info XBoard"),     "Info XBoard", NothingProc},
-    {N_("Man XBoard   F1"), "Man XBoard", NothingProc},
-    {"----", NULL, NothingProc},
-    {N_("About XBoard"), "About XBoard", NothingProc},
-    {NULL, NULL, NULL}
-};
-
 Menu menuBar[] = {
-    {N_("File"),    "File", fileMenu},
-    {N_("Edit"),    "Edit", editMenu},
-    {N_("View"),    "View", viewMenu},
-    {N_("Mode"),    "Mode", modeMenu},
-    {N_("Action"),  "Action", actionMenu},
-    {N_("Engine"),  "Engine", engineMenu},
-    {N_("Options"), "Options", optionsMenu},
-    {N_("Help"),    "Help", helpMenu},
+   /// {N_("File"),    "File", fileMenu},
+   // {N_("Edit"),    "Edit", editMenu},
+   // {N_("View"),    "View", viewMenu},
+   // {N_("Mode"),    "Mode", modeMenu},
+   // {N_("Action"),  "Action", actionMenu},
+   // {N_("Engine"),  "Engine", engineMenu},
+    //{N_("Options"), "Options", optionsMenu},
+   // {N_("Help"),    "Help", helpMenu},
     {NULL, NULL, NULL}
 };
 
@@ -682,12 +530,14 @@ Arg boardArgs[] = {
     { XtNheight, 0 }
 };
 
+/*
 Arg titleArgs[] = {
     { XtNjustify, (XtArgVal) XtJustifyRight },
     { XtNlabel, (XtArgVal) "..." },
     { XtNresizable, (XtArgVal) True },
     { XtNresize, (XtArgVal) False }
 };
+*/
 
 Arg messageArgs[] = {
     { XtNjustify, (XtArgVal) XtJustifyLeft },
@@ -744,6 +594,7 @@ XtActionsRec boardActions[] = {
     { "SelectMove", (XtActionProc) SelectMove },
 };
 
+/*
 char globalTranslations[] =
   ":Meta<Key>Next: LoadNextGameProc() \n \
    :Meta<Key>Prior: LoadPrevGameProc() \n \
@@ -751,6 +602,8 @@ char globalTranslations[] =
    :Meta<Key>G: ShowGameListProc() \n \
    :Meta Ctrl<Key>F12: DebugProc() \n \
    :Ctrl<Key>P: PonderNextMoveProc() \n ";
+*/
+
 //#ifndef OPTIONSDIALOG
 //    "\
 //   :Ctrl<Key>Q: AlwaysQueenProc() \n \
@@ -760,6 +613,7 @@ char globalTranslations[] =
 //   :Ctrl<Key>H: HideThinkingProc() \n "
 //#endif
 
+/*
 char boardTranslations[] =
    "<Btn3Motion>: HandlePV() \n \
    <Btn3Up>: PieceMenuPopup(menuB) \n \
@@ -771,13 +625,16 @@ char boardTranslations[] =
                  PieceMenuPopup(menuW) \n \
    Any<Btn3Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD) \
                  PieceMenuPopup(menuB) \n";
+*/
 
+/*
 char whiteTranslations[] =
    "Shift<BtnDown>: WhiteClock(1)\n \
    <BtnDown>: WhiteClock(0)\n";
 char blackTranslations[] =
    "Shift<BtnDown>: BlackClock(1)\n \
    <BtnDown>: BlackClock(0)\n";
+*/
 
 String xboardResources[] = {
     "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
@@ -1167,72 +1024,11 @@ void InitDrawingSizes(BoardSize boardSize, int flags)
                                               BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK + yMargin);
     gtk_widget_set_size_request(GTK_WIDGET(boardwidgetGTK), BOARD_WIDTH * (squareSizeGTK + lineGapGTK) + lineGapGTK,
                                               BOARD_HEIGHT * (squareSizeGTK + lineGapGTK) + lineGapGTK);
-
-    /*
-     * Enable shell resizing.
-     */
-    shellArgs[0].value = (XtArgVal) &w;
-    shellArgs[1].value = (XtArgVal) &h;
-    XtGetValues(shellWidget, shellArgs, 2);
-    shellArgs[4].value = 3*w; shellArgs[2].value = 10;
-    shellArgs[5].value = 2*h; shellArgs[3].value = 10;
-    XtSetValues(shellWidget, &shellArgs[2], 4);
-
-    XtSetArg(args[0], XtNdefaultDistance, &sep);
-    XtGetValues(formWidget, args, 1);
-
-    if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap;
-    boardWidth = lineGap + BOARD_WIDTH * (squareSize + lineGap);
-    boardHeight = lineGap + BOARD_HEIGHT * (squareSize + lineGap);
-    hOffset = boardWidth + 10; /* used for second board */
-
-    XtSetArg(args[0], XtNwidth, boardWidth);
-    XtSetArg(args[1], XtNheight, boardHeight);
-    XtSetValues(boardWidget, args, 2);
-
-    timerWidth = (boardWidth - sep) / 2;
-    XtSetArg(args[0], XtNwidth, timerWidth);
-    XtSetValues(whiteTimerWidget, args, 1);
-    XtSetValues(blackTimerWidget, args, 1);
-
-    XawFormDoLayout(formWidget, False);
-
-    if (appData.titleInWindow) {
-	i = 0;
-	XtSetArg(args[i], XtNborderWidth, &bor); i++;
-	XtSetArg(args[i], XtNheight, &h);  i++;
-	XtGetValues(titleWidget, args, i);
-	if (smallLayout) {
-	    w = boardWidth - 2*bor;
-	} else {
-	    XtSetArg(args[0], XtNwidth, &w);
-	    XtGetValues(menuBarWidget, args, 1);
-	    w = boardWidth - w - sep - 2*bor - 2; // WIDTH_FUDGE
-	}
-
-	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
-	if (gres != XtGeometryYes && appData.debugMode) {
-	    fprintf(stderr,
-		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
-		    programName, gres, w, h, wr, hr);
-	}
-    }
-
-    XawFormDoLayout(formWidget, True);
-
-    /*
-     * Inhibit shell resizing.
-     */
-    shellArgs[0].value = w = (XtArgVal) boardWidth + marginW + twoBoards*hOffset; // [HGM] dual
-    shellArgs[1].value = h = (XtArgVal) boardHeight + marginH;
-    shellArgs[4].value = shellArgs[2].value = w;
-    shellArgs[5].value = shellArgs[3].value = h;
-    XtSetValues(shellWidget, &shellArgs[0], 6);
-
+/*
 #if HAVE_LIBXPM
     CreateAnimVars();
 #endif
-
+*/
 }
 #endif
 
@@ -1258,6 +1054,7 @@ void ParseIcsTextColors()
       }
 }
 
+/*
 int MakeColors()
 {   // [HGM] taken out of main(), so it can be called from BoardOptions dialog
     XrmValue vFrom, vTo;
@@ -1333,6 +1130,7 @@ int MakeColors()
     }
     return forceMono;
 }
+*/
 
 void SetPieceColor(GdkPixbuf *pb)
 {
@@ -1770,17 +1568,19 @@ main(argc, argv)
     /*
      * Detect if there are not enough colors available and adapt.
      */
+/*
     if (DefaultDepth(xDisplay, xScreen) <= 2) {
       appData.monoMode = True;
     }
 
-    forceMono = MakeColors();
+    //forceMono = MakeColors();
 
     if (forceMono) {
       fprintf(stderr, _("%s: too few colors available; trying monochrome mode\n"),
 	      programName);
 	appData.monoMode = True;
     }
+*/
 
     if (appData.lowTimeWarning && !appData.monoMode) {
       vFrom.addr = (caddr_t) appData.lowTimeWarningColor;
@@ -1802,7 +1602,7 @@ main(argc, argv)
     textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
     textColors[ColorNone].attr = 0;
 
-    XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
+    //XtAppAddActions(appContext, boardActions, XtNumber(boardActions));
 
 
 
@@ -1917,15 +1717,6 @@ main(argc, argv)
     XtSetArg(args[2], XtNbottom, XtChainTop);
     XtSetValues(blackTimerWidget, args, 3);
 
-    if (appData.titleInWindow) {
-	widgetList[j++] = titleWidget =
-	  XtCreateWidget("title", labelWidgetClass, formWidget,
-			 titleArgs, XtNumber(titleArgs));
-	XtSetArg(args[0], XtNtop,    XtChainTop);
-	XtSetArg(args[1], XtNbottom, XtChainTop);
-	XtSetValues(titleWidget, args, 2);
-    }
-
     if (appData.showButtonBar) {
       widgetList[j++] = buttonBarWidget = CreateButtonBar(buttonBar);
       XtSetArg(args[0], XtNleft,  XtChainRight); // [HGM] glue to right window edge
@@ -1970,70 +1761,25 @@ main(argc, argv)
     i = 0;
     XtSetArg(args[i], XtNfromHoriz, 0); i++;
     XtSetValues(menuBarWidget, args, i);
-    if (appData.titleInWindow) {
-	if (smallLayout) {
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	    XtSetValues(whiteTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	    XtSetValues(blackTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-            XtSetArg(args[i], XtNjustify, XtJustifyLeft); i++;
-	    XtSetValues(titleWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	    XtSetValues(messageWidget, args, i);
-	    if (appData.showButtonBar) {
-	      i = 0;
-	      XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	      XtSetValues(buttonBarWidget, args, i);
-	    }
-	} else {
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetValues(whiteTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, titleWidget); i++;
-	    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	    XtSetValues(blackTimerWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromHoriz, menuBarWidget); i++;
-	    XtSetValues(titleWidget, args, i);
-	    i = 0;
-	    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	    XtSetValues(messageWidget, args, i);
-	    if (appData.showButtonBar) {
-	      i = 0;
-	      XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	      XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	      XtSetValues(buttonBarWidget, args, i);
-	    }
-	}
-    } else {
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	XtSetValues(whiteTimerWidget, args, i);
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
-	XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
-	XtSetValues(blackTimerWidget, args, i);
-	i = 0;
-	XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
-	XtSetValues(messageWidget, args, i);
-	if (appData.showButtonBar) {
-	  i = 0;
-	  XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
-	  XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
-	  XtSetValues(buttonBarWidget, args, i);
-	}
+  
+    i = 0;
+    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
+    XtSetValues(whiteTimerWidget, args, i);
+    i = 0;
+    XtSetArg(args[i], XtNfromVert, menuBarWidget); i++;
+    XtSetArg(args[i], XtNfromHoriz, whiteTimerWidget); i++;
+    XtSetValues(blackTimerWidget, args, i);
+    i = 0;
+    XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+    XtSetArg(args[i], XtNresizable, (XtArgVal) True); i++;
+    XtSetValues(messageWidget, args, i);
+    if (appData.showButtonBar) {
+        i = 0;
+        XtSetArg(args[i], XtNfromVert, whiteTimerWidget); i++;
+        XtSetArg(args[i], XtNfromHoriz, messageWidget); i++;
+        XtSetValues(buttonBarWidget, args, i);
     }
+    
     i = 0;
     XtSetArg(args[0], XtNfromVert, messageWidget);
     XtSetArg(args[1], XtNtop,    XtChainTop);
@@ -2080,37 +1826,19 @@ main(argc, argv)
     /* !! Horrible hack to work around bug in XFree86 4.0.1 (X11R6.4.3) */
     /* The size used for the child widget in layout lags one resize behind
        its true size, so we resize a second time, 1 pixel smaller.  Yeech! */
+/*
     w--;
     gres = XtMakeResizeRequest(messageWidget, w, h, &wr, &hr);
     if (gres != XtGeometryYes && appData.debugMode) {
       fprintf(stderr, _("%s: messageWidget geometry error %d %d %d %d %d\n"),
 	      programName, gres, w, h, wr, hr);
     }
+*/
     /* !! end hack */
     XtSetArg(args[0], XtNleft,  XtChainLeft);  // [HGM] glue ends for good run-time sizing
     XtSetArg(args[1], XtNright, XtChainRight);
     XtSetValues(messageWidget, args, 2);
 
-    if (appData.titleInWindow) {
-	i = 0;
-	XtSetArg(args[i], XtNborderWidth, &bor); i++;
-	XtSetArg(args[i], XtNheight, &h);  i++;
-	XtGetValues(titleWidget, args, i);
-	if (smallLayout) {
-	    w = boardWidth - 2*bor;
-	} else {
-	    XtSetArg(args[0], XtNwidth, &w);
-	    XtGetValues(menuBarWidget, args, 1);
-	    w = boardWidth - w - sep - 2*bor - WIDTH_FUDGE;
-	}
-
-	gres = XtMakeResizeRequest(titleWidget, w, h, &wr, &hr);
-	if (gres != XtGeometryYes && appData.debugMode) {
-	    fprintf(stderr,
-		    _("%s: titleWidget geometry error %d %d %d %d %d\n"),
-		    programName, gres, w, h, wr, hr);
-	}
-    }
     XawFormDoLayout(formWidget, True);
 
     xBoardWindow = XtWindow(boardWidget);
@@ -2123,8 +1851,8 @@ main(argc, argv)
      * Create X checkmark bitmap and initialize option menu checks.
      */
     if (saveSettingsOnExit) {
-	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
-		    args, 1);
+	//XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
+	//	    args, 1);
     }
 
     /*
@@ -2137,6 +1865,7 @@ main(argc, argv)
     /*
      * Inhibit shell resizing.
      */
+/*
     shellArgs[0].value = (XtArgVal) &w;
     shellArgs[1].value = (XtArgVal) &h;
     XtGetValues(shellWidget, shellArgs, 2);
@@ -2145,12 +1874,15 @@ main(argc, argv)
     XtSetValues(shellWidget, &shellArgs[2], 4);
     marginW =  w - boardWidth; // [HGM] needed to set new shellWidget size when we resize board
     marginH =  h - boardHeight;
+*/
 
-    CreatePieceMenus();
-
+    //CreatePieceMenus();
+/*
     if (appData.animate || appData.animateDragging)
       CreateAnimVars();
+*/
 
+/*
     XtAugmentTranslations(formWidget,
 			  XtParseTranslationTable(globalTranslations));
     XtAugmentTranslations(boardWidget,
@@ -2159,9 +1891,11 @@ main(argc, argv)
 			  XtParseTranslationTable(whiteTranslations));
     XtAugmentTranslations(blackTimerWidget,
 			  XtParseTranslationTable(blackTranslations));
-
+*/
+/*
     XtAddEventHandler(formWidget, KeyPressMask, False,
 		      (XtEventHandler) MoveTypeInProc, NULL);
+*/
 
     /* [AS] Restore layout */
     if( wpMoveHistory.visible ) {
@@ -2597,14 +2331,21 @@ SetUserThinkingEnables()
 void
 SetMachineThinkingEnables()
 {
+  GtkWidget *w;
+
   if (appData.noChessProgram) return;
   SetMenuEnables(machineThinkingEnables);
   switch (gameMode) {
   case MachinePlaysBlack:
   case MachinePlaysWhite:
-  case TwoMachinesPlay:
-    XtSetSensitive(XtNameToWidget(menuBarWidget,
-				  ModeToWidgetName(gameMode)), True);
+  case TwoMachinesPlay:    
+    w = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), ModeToWidgetName(gameMode)));
+    if (w == NULL) {
+      printf("Error getting builder object %s\n",ModeToWidgetName(gameMode));
+      DisplayError("Error getting builder object in SetMachineThinkingEnables", 0);
+    } else {
+      gtk_widget_set_sensitive(w, True);
+    }
     break;
   default:
     break;
@@ -3069,7 +2810,7 @@ Widget CreateButtonBar(mi)
     }
     return buttonBar;
 }
-
+/*
 Widget
 CreatePieceMenu(name, color)
      char *name;
@@ -3105,7 +2846,8 @@ CreatePieceMenu(name, color)
     }
     return menu;
 }
-
+*/
+/*
 void
 CreatePieceMenus()
 {
@@ -3141,7 +2883,7 @@ CreatePieceMenus()
 	}
     }
 }
-
+*/
 void SetupDropMenu()
 {
     int i, j, count;
@@ -4751,36 +4493,36 @@ char *ModeToWidgetName(mode)
     switch (mode) {
       case BeginningOfGame:
 	if (appData.icsActive)
-	  return "menuMode.ICS Client";
+	  return "ModeICSclient";
 	else if (appData.noChessProgram ||
 		 *appData.cmailGameName != NULLCHAR)
-	  return "menuMode.Edit Game";
+	  return "ModeEditgame";
 	else
-	  return "menuMode.Machine Black";
+	  return "ModeMachineblack";
       case MachinePlaysBlack:
-	return "menuMode.Machine Black";
+	return "ModeMachineblack";
       case MachinePlaysWhite:
-	return "menuMode.Machine White";
+	return "ModeMachinewhite";
       case AnalyzeMode:
-	return "menuMode.Analysis Mode";
+	return "ModeAnalysismode";
       case AnalyzeFile:
-	return "menuMode.Analyze File";
+	return "ModeAnalyzefile";
       case TwoMachinesPlay:
-	return "menuMode.Two Machines";
+	return "ModeTwomachines";
       case EditGame:
-	return "menuMode.Edit Game";
+	return "ModeEditgame";
       case PlayFromGameFile:
-	return "menuFile.Load Game";
+	return "FileLoadgame";
       case EditPosition:
-	return "menuMode.Edit Position";
+	return "ModeEditposition";
       case Training:
-	return "menuMode.Training";
+	return "ModeTraining";
       case IcsPlayingWhite:
       case IcsPlayingBlack:
       case IcsObserving:
       case IcsIdle:
       case IcsExamining:
-	return "menuMode.ICS Client";
+	return "ModeICSclient";
       default:
       case EndOfGame:
 	return NULL;
@@ -5696,9 +5438,9 @@ void DisplayTitle(text)
 
     if (text == NULL) text = "";
 
-    if (appData.titleInWindow) {
-	/* GTK TODO set label for title in window */
-    }
+    //if (appData.titleInWindow) {
+    //	/* GTK TODO set label for title in window */
+    //}
 
     if (*text != NULLCHAR) {
       safeStrCpy(icon, text, sizeof(icon)/sizeof(icon[0]) );
@@ -6774,40 +6516,41 @@ int OutputToProcessDelayed(pr, message, count, outError, msdelay)
 	this would be a major complication for minimal return.
 ****/
 
-static void
-InitAnimState (anim, info)
-  AnimState * anim;
-  XWindowAttributes * info;
-{
-  XtGCMask  mask;
-  XGCValues values;
-
-  /* Each buffer is square size, same depth as window */
-  anim->saveBuf = XCreatePixmap(xDisplay, xBoardWindow,
-			squareSize, squareSize, info->depth);
-  anim->newBuf = XCreatePixmap(xDisplay, xBoardWindow,
-			squareSize, squareSize, info->depth);
-
-  /* Create a plain GC for blitting */
-  mask = GCForeground | GCBackground | GCFunction |
-         GCPlaneMask | GCGraphicsExposures;
-  values.foreground = XBlackPixel(xDisplay, xScreen);
-  values.background = XWhitePixel(xDisplay, xScreen);
-  values.function   = GXcopy;
-  values.plane_mask = AllPlanes;
-  values.graphics_exposures = False;
-  anim->blitGC = XCreateGC(xDisplay, xBoardWindow, mask, &values);
-
-  /* Piece will be copied from an existing context at
-     the start of each new animation/drag. */
-  anim->pieceGC = XCreateGC(xDisplay, xBoardWindow, 0, &values);
-
-  /* Outline will be a read-only copy of an existing */
-  anim->outlineGC = None;
-}
+//static void
+//InitAnimState (anim, info)
+//  AnimState * anim;
+//  XWindowAttributes * info;
+//{
+//  XtGCMask  mask;
+//  XGCValues values;
+//
+//  /* Each buffer is square size, same depth as window */
+//  anim->saveBuf = XCreatePixmap(xDisplay, xBoardWindow,
+//			squareSize, squareSize, info->depth);
+//  anim->newBuf = XCreatePixmap(xDisplay, xBoardWindow,
+//			squareSize, squareSize, info->depth);
+//
+//  /* Create a plain GC for blitting */
+//  mask = GCForeground | GCBackground | GCFunction |
+//         GCPlaneMask | GCGraphicsExposures;
+//  values.foreground = XBlackPixel(xDisplay, xScreen);
+//  values.background = XWhitePixel(xDisplay, xScreen);
+//  values.function   = GXcopy;
+//  values.plane_mask = AllPlanes;
+//  values.graphics_exposures = False;
+//  anim->blitGC = XCreateGC(xDisplay, xBoardWindow, mask, &values);
+//
+//  /* Piece will be copied from an existing context at
+//     the start of each new animation/drag. */
+//  anim->pieceGC = XCreateGC(xDisplay, xBoardWindow, 0, &values);
+//
+//  /* Outline will be a read-only copy of an existing */
+//  anim->outlineGC = None;
+//}
 
 static int xpmDone=0;
 
+/*
 static void
 CreateAnimVars ()
 {
@@ -6821,6 +6564,7 @@ CreateAnimVars ()
   InitAnimState(&player, &info);
 
 }
+*/
 
 #ifndef HAVE_USLEEP
 
@@ -7084,7 +6828,7 @@ BeginAnimation(anim, piece, startColor, start)
 
   /* The piece will be drawn using its own bitmap as a matte	*/
   //  SelectGCMask(piece, &anim->pieceGC, &anim->outlineGC, &mask);
-  XSetClipMask(xDisplay, anim->pieceGC, mask);
+  //XSetClipMask(xDisplay, anim->pieceGC, mask);
 }
 
 static void

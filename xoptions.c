@@ -676,7 +676,7 @@ int BoardOptionsOK(int n)
         lineGapGTK = GetLineGap();
 
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
-    MakeColors();
+    //MakeColors();
     LoadSvgFiles();
     InitDrawingSizes(-1, 0);
     DrawPosition(True, NULL);
