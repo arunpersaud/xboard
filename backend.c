@@ -834,6 +834,7 @@ InitEngine(ChessProgramState *cps, int n)
       }
 
     InitEngineUCI( installDir, cps );  // [HGM] moved here from winboard.c, to make available in xboard
+    ParseFeatures(appData.featureDefaults, cps);
 }
 
 ChessProgramState *savCps;
@@ -9539,6 +9540,7 @@ InitChessProgram(cps, setup)
     hintRequested = FALSE;
     bookRequested = FALSE;
 
+    ParseFeatures(appData.features[cps == &second], cps); // [HGM] allow user to overrule features
     /* [HGM] some new WB protocol commands to configure engine are sent now, if engine supports them */
     /*       moved to before sending initstring in 4.3.15, so Polyglot can delay UCI 'isready' to recepton of 'new' */
     if(cps->memSize) { /* [HGM] memory */

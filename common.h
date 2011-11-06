@@ -649,6 +649,8 @@ typedef struct {
     Boolean noGUI;      /* [HGM] fast: suppress all display updates */
     char *engOptions[ENGINES]; /* [HGM] options   */
     char *fenOverride[ENGINES];
+    char *features[ENGINES];
+    char *featureDefaults;
     Boolean keepAlive;  /* [HGM] alive     */
     Boolean forceIllegal;/*[HGM] illegal   */
     Boolean noJoin;     /* [HGM] join      */
