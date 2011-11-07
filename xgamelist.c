@@ -47,38 +47,6 @@ extern char *getenv();
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/cursorfont.h>
-#if USE_XAW3D
-#include <X11/Xaw3d/Dialog.h>
-#include <X11/Xaw3d/Form.h>
-#include <X11/Xaw3d/List.h>
-#include <X11/Xaw3d/Label.h>
-#include <X11/Xaw3d/SimpleMenu.h>
-#include <X11/Xaw3d/SmeBSB.h>
-#include <X11/Xaw3d/SmeLine.h>
-#include <X11/Xaw3d/Box.h>
-#include <X11/Xaw3d/MenuButton.h>
-#include <X11/Xaw3d/Text.h>
-#include <X11/Xaw3d/AsciiText.h>
-#include <X11/Xaw3d/Viewport.h>
-#else
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#endif
-
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
@@ -183,7 +151,7 @@ GameListCallback(w, client_data, call_data)
     Arg args[16];
     int j;
     Widget listwidg;
-    XawListReturnStruct *rs;
+    //XawListReturnStruct *rs;
     int index;
 
 }
@@ -511,14 +479,17 @@ void GLT_DeSelectList()
 void
 GameListOptionsPopDown()
 {
+/*
   if (gameListOptShell == NULL) return;
 
   XtPopdown(gameListOptShell);
   XtDestroyWidget(gameListOptShell);
   gameListOptShell = 0;
   XtSetKeyboardFocus(shellWidget, formWidget);
+*/
 }
 
+/*
 void
 GameListOptionsCallback(w, client_data, call_data)
      Widget w;
@@ -571,6 +542,7 @@ GameListOptionsCallback(w, client_data, call_data)
     }
     XawListHighlight(listwidg, index);
 }
+*/
 
 /*
 Widget

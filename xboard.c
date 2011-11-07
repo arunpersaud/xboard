@@ -152,10 +152,6 @@ extern char *getenv();
 #include <locale.h>
 #endif
 
-#include <X11/StringDefs.h>
-#include <X11/Xatom.h>
-#include <X11/Xmu/Atoms.h>
-
 // [HGM] bitmaps: put before incuding the bitmaps / pixmaps, to know how many piece types there are.
 #include "common.h"
 
@@ -217,8 +213,6 @@ XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
 #endif
-//void PieceMenuPopup P((Widget w, XEvent *event,
-//		       String *params, Cardinal *num_params));
 static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 int EventToSquare P((int x, int limit));
@@ -231,10 +225,6 @@ gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpoi
 void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
 void HandlePV P((Widget w, XEvent * event,
 		     String * params, Cardinal * nParams));
-//void SelectPV P((Widget w, XEvent * event,
-//		     String * params, Cardinal * nParams));
-//void StopPV P((Widget w, XEvent * event,
-//		     String * params, Cardinal * nParams));
 void WhiteClock P((Widget w, XEvent *event,
 		   String *prms, Cardinal *nprms));
 void BlackClock P((Widget w, XEvent *event,
@@ -296,22 +286,9 @@ Display *xDisplay;
 Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
    highlightSquareColor, premoveHighlightColor;
-Pixel lowTimeWarningColor;
-Widget shellWidget, layoutWidget, formWidget, 
-  widgetList[16];  
+Pixel lowTimeWarningColor; 
 GtkWidget *errorShell = NULL, *promotionShellGTK;
-Widget historyShell, evalGraphShell, gameListShell;
 int hOffset; // [HGM] dual
-#if ENABLE_NLS
-XFontSet fontSet, clockFontSet;
-#else
-Font clockFontID;
-XFontStruct *clockFontStruct;
-#endif
-Font coordFontID, countFontID;
-XFontStruct *coordFontStruct, *countFontStruct;
-XtAppContext appContext;
-char *layoutName;
 char *oldICSInteractionTitle;
 
 /* GTK stuff */
@@ -378,7 +355,7 @@ WindowPlacement wpEngineOutput;
 WindowPlacement wpGameList;
 WindowPlacement wpTags;
 
-extern Widget shells[];
+extern GtkWidget *shellsGTK[];
 extern Boolean shellUp[];
 
 #define SOLID 0
@@ -472,102 +449,6 @@ DropMenuEnables dmEnables[] = {
     { 'R', "Rook" },
     { 'Q', "Queen" }
 };
-
-Arg boardArgs[] = {
-    { XtNborderWidth, 0 },
-    { XtNwidth, 0 },
-    { XtNheight, 0 }
-};
-
-XtResource clientResources[] = {
-    { "flashCount", "flashCount", XtRInt, sizeof(int),
-	XtOffset(AppDataPtr, flashCount), XtRImmediate,
-	(XtPointer) FLASH_COUNT  },
-};
-
-XrmOptionDescRec shellOptions[] = {
-    { "-flashCount", "flashCount", XrmoptionSepArg, NULL },
-    { "-flash", "flashCount", XrmoptionNoArg, "3" },
-    { "-xflash", "flashCount", XrmoptionNoArg, "0" },
-};
-
-XtActionsRec boardActions[] = {
-    { "HandlePV", HandlePV },
-//  { "SelectPV", SelectPV },
-//  { "StopPV", StopPV },
-//  { "PieceMenuPopup", PieceMenuPopup },
-    { "WhiteClock", WhiteClock },
-    { "BlackClock", BlackClock },
-    { "LoadNextGameProc", LoadNextGameProc },
-    { "LoadPrevGameProc", LoadPrevGameProc },
-//    { "LoadSelectedProc", LoadSelectedProc },
-    { "SetFilterProc", SetFilterProc },
-    { "ReloadGameProc", ReloadGameProc },
-    { "ReloadPositionProc", ReloadPositionProc },
-    { "EvalGraphProc", EvalGraphProc},       // [HGM] Winboard_x avaluation graph window
-    { "ShowGameListProc", ShowGameListProc },
-    { "PonderNextMoveProc", PonderNextMoveProc },
-    { "DebugProc", DebugProc },
-    { "NothingProc", NothingProc },
-    //{ "CommentClick", (XtActionProc) CommentClick },
-    { "CommentPopDown", (XtActionProc) CommentPopDown },
-    { "TagsPopDown", (XtActionProc) TagsPopDown },
-    { "ErrorPopDown", (XtActionProc) ErrorPopDown },
-    { "GameListPopDown", (XtActionProc) GameListPopDown },
-    //    { "GameListOptionsPopDown", (XtActionProc) GameListOptionsPopDown },
-   // { "PromotionPopDown", (XtActionProc) PromotionPopDown },
-    { "EngineOutputPopDown", (XtActionProc) EngineOutputPopDown },
-    { "EvalGraphPopDown", (XtActionProc) EvalGraphPopDown },
-  //{ "CopyMemoProc", (XtActionProc) CopyMemoProc },
-    { "SelectMove", (XtActionProc) SelectMove },
-};
-
-/*
-char globalTranslations[] =
-  ":Meta<Key>Next: LoadNextGameProc() \n \
-   :Meta<Key>Prior: LoadPrevGameProc() \n \
-   :Meta<Key>E: EvalGraphProc() \n \
-   :Meta<Key>G: ShowGameListProc() \n \
-   :Meta Ctrl<Key>F12: DebugProc() \n \
-   :Ctrl<Key>P: PonderNextMoveProc() \n ";
-*/
-
-//#ifndef OPTIONSDIALOG
-//    "\
-//   :Ctrl<Key>Q: AlwaysQueenProc() \n \
-//   :Ctrl<Key>F: AutoflagProc() \n \
-//   :Ctrl<Key>A: AnimateMovingProc() \n \
-//   :Ctrl<Key>L: TestLegalityProc() \n \
-//   :Ctrl<Key>H: HideThinkingProc() \n "
-//#endif
-
-/*
-char boardTranslations[] =
-   "<Btn3Motion>: HandlePV() \n \
-   <Btn3Up>: PieceMenuPopup(menuB) \n \
-   Shift<Btn2Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD)\
-                 PieceMenuPopup(menuB) \n \
-   Any<Btn2Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD) \
-                 PieceMenuPopup(menuW) \n \
-   Shift<Btn3Down>: XawPositionSimpleMenu(menuW) XawPositionSimpleMenu(menuD)\
-                 PieceMenuPopup(menuW) \n \
-   Any<Btn3Down>: XawPositionSimpleMenu(menuB) XawPositionSimpleMenu(menuD) \
-                 PieceMenuPopup(menuB) \n";
-*/
-
-/*
-char whiteTranslations[] =
-   "Shift<BtnDown>: WhiteClock(1)\n \
-   <BtnDown>: WhiteClock(0)\n";
-char blackTranslations[] =
-   "Shift<BtnDown>: BlackClock(1)\n \
-   <BtnDown>: BlackClock(0)\n";
-*/
-
-String xboardResources[] = {
-    "*errorpopup*translations: #override\\n <Key>Return: ErrorPopDown()",
-    NULL
-  };
 
 
 /* Max possible square size */
@@ -830,11 +711,13 @@ ParseCommPortSettings(char *s)
 { // no such option in XBoard (yet)
 }
 
-extern Widget engineOutputShellGTK;
+extern GtkWidget *engineOutputShellGTK;
 
 void
-GetActualPlacement(Widget wg, WindowPlacement *wp)
+GetActualPlacement(GtkWidget *wg, WindowPlacement *wp)
 {
+/* TODO: convert to GTK
+
   Arg args[16];
   Dimension w, h;
   Position x, y;
@@ -852,19 +735,20 @@ GetActualPlacement(Widget wg, WindowPlacement *wp)
     wp->y = y - 23;
     wp->height = h;
     wp->width = w;
+*/
 }
 
 void
 GetWindowCoords()
 { // wrapper to shield use of window handles from back-end (make addressible by number?)
   // In XBoard this will have to wait until awareness of window parameters is implemented
-  GetActualPlacement(shellWidget, &wpMain);  
+  //GetActualPlacement(shellWidget, &wpMain);  
   if(EngineOutputIsUp()) save_window_placement(GTK_WINDOW(engineOutputShellGTK), &wpEngineOutput);
-  if(MoveHistoryIsUp()) GetActualPlacement(shells[7], &wpMoveHistory);
-  if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
-  if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
-  if(shellUp[1]) GetActualPlacement(shells[1], &wpComment);
-  if(shellUp[2]) GetActualPlacement(shells[2], &wpTags);
+  if(MoveHistoryIsUp()) GetActualPlacement(shellsGTK[7], &wpMoveHistory);
+  //if(EvalGraphIsUp()) GetActualPlacement(evalGraphShell, &wpEvalGraph);
+  //if(GameListIsUp()) GetActualPlacement(gameListShell, &wpGameList);
+  if(shellUp[1]) GetActualPlacement(shellsGTK[1], &wpComment);
+  if(shellUp[2]) GetActualPlacement(shellsGTK[2], &wpTags);
 }
 
 void
@@ -1268,6 +1152,15 @@ main(argc, argv)
 #ifdef IDSIZE
     InitDrawingSizes(-1, 0); // [HGM] initsize: make this into a subroutine
 #else
+    /* GTK */
+    builder = gtk_builder_new();
+    filename = get_glade_filename ("mainboard.glade");
+    if(! gtk_builder_add_from_file (builder, filename, &gtkerror) )
+      {
+      if(gtkerror)
+        printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
+      }
+    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));
     if (isdigit(appData.boardSize[0])) {
         i = sscanf(appData.boardSize, "%d,%d,%d,%d,%d,%d,%d", &squareSize,
 		   &lineGap, &clockFontPxlSize, &coordFontPxlSize,
@@ -1300,8 +1193,11 @@ main(argc, argv)
     } else {
         SizeDefaults *szd = sizeDefaults;
         if (*appData.boardSize == NULLCHAR) {
-	    while (DisplayWidth(xDisplay, xScreen) < szd->minScreenSize ||
-		   DisplayHeight(xDisplay, xScreen) < szd->minScreenSize) {
+            GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(mainwindow));
+            guint screenwidth = gdk_screen_get_width(screen);
+            guint screenheight = gdk_screen_get_height(screen);
+	    while (screenwidth < szd->minScreenSize ||
+		   screenheight < szd->minScreenSize) {
 	      szd++;
 	    }
 	    if (szd->name == NULL) szd--;
@@ -1358,20 +1254,13 @@ main(argc, argv)
     textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
     textColors[ColorNone].attr = 0;
 
-    /* GTK */
-    builder = gtk_builder_new();
-    filename = get_glade_filename ("mainboard.glade");
-    if(! gtk_builder_add_from_file (builder, filename, &gtkerror) )
-      {
-      if(gtkerror)
-        printf ("Error: %d %s\n",gtkerror->code,gtkerror->message);
-      }
+
 
     //gtk_builder_add_from_file(builder, "mainboard.glade", NULL);
     /* load square colors and pieces */
     LoadSvgFiles();
 
-    mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));
+    //mainwindow = GTK_WIDGET(gtk_builder_get_object (builder, "mainwindow"));
     boardwidgetGTK  = GTK_WIDGET(gtk_builder_get_object (builder, "boardwidgetGTK"));
     if(!boardwidgetGTK) printf("Error: gtk_builder didn't work (boardwidgetGTK)!\n");
 
@@ -1417,16 +1306,6 @@ main(argc, argv)
     gdk_drawable_get_size(boardwidgetGTK->window, &wb, &hb);
     xMargin = wx - wb; yMargin = hx - hb;
   }
-    /*
-     * widget hierarchy
-     */
-    if (tinyLayout) {
-	layoutName = "tinyLayout";
-    } else if (smallLayout) {
-	layoutName = "smallLayout";
-    } else {
-	layoutName = "normalLayout";
-    }
 
     xBoardWindow = 0;
 
@@ -4020,43 +3899,43 @@ void MailMoveProcGTK(object, user_data)
 /* this variable is shared between CopyPositionProc and SendPositionSelection */
 char *selected_fen_position=NULL;
 
-Boolean
-SendPositionSelection(Widget w, Atom *selection, Atom *target,
-		 Atom *type_return, XtPointer *value_return,
-		 unsigned long *length_return, int *format_return)
-{
-  char *selection_tmp;
-
-  if (!selected_fen_position) return False; /* should never happen */
-  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
-    /* note: since no XtSelectionDoneProc was registered, Xt will
-     * automatically call XtFree on the value returned.  So have to
-     * make a copy of it allocated with XtMalloc */
-    selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
-    safeStrCpy(selection_tmp, selected_fen_position, strlen(selected_fen_position)+16 );
-
-    *value_return=selection_tmp;
-    *length_return=strlen(selection_tmp);
-    *type_return=*target;
-    *format_return = 8; /* bits per byte */
-    return True;
-  } else if (*target == XA_TARGETS(xDisplay)) {
-    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
-    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
-    targets_tmp[1] = XA_STRING;
-    *value_return = targets_tmp;
-    *type_return = XA_ATOM;
-    *length_return = 2;
-    *format_return = 8 * sizeof(Atom);
-    if (*format_return > 32) {
-      *length_return *= *format_return / 32;
-      *format_return = 32;
-    }
-    return True;
-  } else {
-    return False;
-  }
-}
+//Boolean
+//SendPositionSelection(Widget w, Atom *selection, Atom *target,
+//		 Atom *type_return, XtPointer *value_return,
+//		 unsigned long *length_return, int *format_return)
+//{
+//char *selection_tmp;
+//
+//if (!selected_fen_position) return False; /* should never happen */
+//if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
+//  /* note: since no XtSelectionDoneProc was registered, Xt will
+//   * automatically call XtFree on the value returned.  So have to
+//   * make a copy of it allocated with XtMalloc */
+//  selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
+//  safeStrCpy(selection_tmp, selected_fen_position, strlen(selected_fen_position)+16 );
+//
+//  *value_return=selection_tmp;
+//  *length_return=strlen(selection_tmp);
+//  *type_return=*target;
+//  *format_return = 8; /* bits per byte */
+//  return True;
+//} else if (*target == XA_TARGETS(xDisplay)) {
+//  Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
+//  targets_tmp[0] = XA_UTF8_STRING(xDisplay);
+//  targets_tmp[1] = XA_STRING;
+//  *value_return = targets_tmp;
+//  *type_return = XA_ATOM;
+//  *length_return = 2;
+//  *format_return = 8 * sizeof(Atom);
+//  if (*format_return > 32) {
+//    *length_return *= *format_return / 32;
+//    *format_return = 32;
+//  }
+//  return True;
+//} else {
+//  return False;
+//}
+//}
 
 void CopyPositionProcGTK(object, user_data)
      GtkObject *object;
@@ -4113,6 +3992,7 @@ void PastePositionProcGTK(object, user_data)
     return;
 }
 
+/*
 static Boolean
 SendGameSelection(Widget w, Atom *selection, Atom *target,
 		  Atom *type_return, XtPointer *value_return,
@@ -4139,7 +4019,7 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
     *value_return = selection_tmp;
     *length_return = len;
     *type_return = *target;
-    *format_return = 8; /* bits per byte */
+    *format_return = 8; // bits per byte 
     return True;
   } else if (*target == XA_TARGETS(xDisplay)) {
     Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
@@ -4158,6 +4038,7 @@ SendGameSelection(Widget w, Atom *selection, Atom *target,
     return False;
   }
 }
+*/
 
 void CopySomething()
 {
