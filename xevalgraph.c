@@ -253,9 +253,9 @@ gboolean EvalGraphEventProc(widget, event)
 	ToNrEvent( index + 1 );
       }
       break;
-    case GDK_DELETE:
-      SetCheckMenuItemActive(NULL, 101, False); // set GTK menu item to unchecked      
-      break;
+    case GDK_DELETE:     
+      EvalGraphPopDown();
+      return True; // don't propagate to default handler     
     default:
       break;
     };
@@ -365,21 +365,6 @@ void EvalGraphProcGTK(object, user_data)
   else
     EvalGraphPopUp();
 }
-
-/*
-void
-EvalGraphProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-  if (evalGraphDialogUp)
-    EvalGraphPopDown();
-  else
-    EvalGraphPopUp();
-}
-*/
 
 // This function is the interface to the back-end. It is currently called through the front-end,
 // though, where it shares the HistorySet() wrapper with MoveHistorySet(). Once all front-ends
