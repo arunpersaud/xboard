@@ -916,7 +916,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="savesettingsonexit">
+                      <object class="GtkCheckMenuItem" id="OptionsSaveSettingsOnExit">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Save Settings on Exit</property>
                         <property name="use_underline">True</property>

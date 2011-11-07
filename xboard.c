@@ -1313,6 +1313,12 @@ main(argc, argv)
       CreateAnimVars();
 */
 
+    if (saveSettingsOnExit) {
+        SetCheckMenuItemActive("OptionsSaveSettingsOnExit", 0, True);
+//	XtSetValues(XtNameToWidget(menuBarWidget,"menuOptions.Save Settings on Exit"),
+//		    args, 1);
+    }
+
     /* [AS] Restore layout */
     if( wpMoveHistory.visible ) {
       HistoryPopUp();
@@ -4079,7 +4085,7 @@ void AutoSaveGame()
 void
 QuitProcGTK(GtkObject *object, gpointer user_data)
 {
-    //ExitEvent(0);
+    ExitEvent(0);
     gtk_main_quit();
 }
 
