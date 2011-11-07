@@ -26,6 +26,6 @@
 void HistoryShowProcGTK P((GtkObject *object, gpointer user_data));
 Boolean MoveHistoryIsUp P((void));
 
-extern Widget historyShell;
+//extern Widget historyShell;
 #endif /* _XHISTL_H */
  

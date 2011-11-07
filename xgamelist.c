@@ -63,7 +63,7 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-static Widget filterText;
+//static Widget filterText;
 static char filterString[MSG_SIZ];
 static int listLength, wins, losses, draws, page;
 
@@ -84,8 +84,8 @@ static char *GameListFilename=NULL;
 //   <Key>Left: LoadSelectedProc(-1) \n \
 //   <Key>Right: LoadSelectedProc(1) \n \
 //   <Key>Return: LoadSelectedProc(0) \n";
-char filterTranslations[] =
-  "<Key>Return: SetFilterProc() \n";
+//char filterTranslations[] =
+//  "<Key>Return: SetFilterProc() \n";
 
 static int
 GameListPrepare()
@@ -142,6 +142,7 @@ GameListPrepare()
   return i;
 }
 
+/*
 void
 GameListCallback(w, client_data, call_data)
      Widget w;
@@ -155,6 +156,7 @@ GameListCallback(w, client_data, call_data)
     int index;
 
 }
+*/
 
 void
 GameListPopUp(fp, filename)
@@ -268,28 +270,6 @@ void ShowGameListProcGTK(object, user_data)
 }
 
 void
-ShowGameListProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if(GUI_GameList)
-      {
-        if(((GTK_WIDGET_FLAGS(GUI_GameList) & GTK_MAPPED) != 0)) 	
-	  gtk_widget_hide(GUI_GameList);
-	else
-	  gtk_widget_show(GUI_GameList);
-      }
-
-    if(lastLoadGameNumber)
-      GameListHighlight(lastLoadGameNumber);
-
-    /* GTK-TODO mark gamelist in menu as active */
-    return;
-}
-
-void
 LoadSelectedProc (GtkTreeView        *treeview,
 		  GtkTreePath        *path,
 		  GtkTreeViewColumn  *col,
@@ -347,6 +327,7 @@ LoadSelectedProc (GtkTreeView        *treeview,
 //    }
 //}
 
+/*
 void
 SetFilterProc(w, event, prms, nprms)
      Widget w;
@@ -369,11 +350,12 @@ SetFilterProc(w, event, prms, nprms)
 //	XtSetValues(filterText, args, j);
 //	XtSetKeyboardFocus(glc->shell, list);
 }
+*/
 
 void
 GameListPopDown()
 {
-    Arg args[16];
+    //Arg args[16];
     int j;
 
     if(GUI_GameList == NULL) return;
@@ -444,7 +426,7 @@ int SaveGameListAsText(FILE *f)
 }
 //--------------------------------- Game-List options dialog ------------------------------------------
 
-Widget gameListOptShell, listwidg;
+//Widget gameListOptShell, listwidg;
 
 char *strings[20];
 int stringPtr;
@@ -467,11 +449,13 @@ Boolean GLT_GetFromList(int index, char *name)
   return TRUE;
 }
 
+
 void GLT_DeSelectList()
 {
-    XawListChange(listwidg, strings, 0, 0, True);
-    XawListHighlight(listwidg, 0);
+//    XawListChange(listwidg, strings, 0, 0, True);
+//    XawListHighlight(listwidg, 0);
 }
+
 
 
 /***********************game list option */

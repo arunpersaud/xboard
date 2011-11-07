@@ -51,7 +51,7 @@ int GenericPopUp P((Option *option, char *title, int dlgNr));
 GtkWidget *GetTextView P((GtkWidget *dialog));
 
 extern Option historyOptions[];
-extern Widget shells[10];
+//extern Widget shells[10];
 extern GtkWidget *shellsGTK[10];
 extern Boolean shellUp[10];
 
@@ -87,7 +87,7 @@ int AppendToHistoryMemo( char * text, int bold, int colorNr )
 
 void ScrollToCurrent(int caretPos)
 {
-    Arg args[10];
+    //Arg args[10];
     char *s;
     int len;
     GtkTextIter iter;

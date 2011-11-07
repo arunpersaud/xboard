@@ -269,7 +269,7 @@ void EvalGraphCreate()
   char *filename;
   GtkWidget *boardwidget;
 
-  Arg args[16];
+  //Arg args[16];
   gint bw_width, bw_height;
   int j;
 
@@ -366,6 +366,7 @@ void EvalGraphProcGTK(object, user_data)
     EvalGraphPopUp();
 }
 
+/*
 void
 EvalGraphProc(w, event, prms, nprms)
      Widget w;
@@ -378,6 +379,7 @@ EvalGraphProc(w, event, prms, nprms)
   else
     EvalGraphPopUp();
 }
+*/
 
 // This function is the interface to the back-end. It is currently called through the front-end,
 // though, where it shares the HistorySet() wrapper with MoveHistorySet(). Once all front-ends

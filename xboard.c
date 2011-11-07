@@ -168,8 +168,8 @@ extern char *getenv();
 #include "gtk_helper.h"
 
 // must be moved to xengineoutput.h
-void EvalGraphProc P((Widget w, XEvent *event,
-		      String *prms, Cardinal *nprms));
+//void EvalGraphProc P((Widget w, XEvent *event,
+//		      String *prms, Cardinal *nprms));
 
 
 #ifdef __EMX__
@@ -186,18 +186,21 @@ void EvalGraphProc P((Widget w, XEvent *event,
 # define  _(s) (s)
 # define N_(s)  s
 #endif
-
+/*
 typedef struct {
     String string;
     String ref;
     XtActionProc proc;
 } MenuItem;
+*/
+/*
 
 typedef struct {
     String name;
     String ref;
     MenuItem *mi;
 } Menu;
+*/
 
 /* will the file chooser dialog be used for opening or saving? */
 typedef enum {OPEN, SAVE} FileAction;
@@ -207,14 +210,16 @@ RETSIGTYPE CmailSigHandler P((int sig));
 RETSIGTYPE IntSigHandler P((int sig));
 RETSIGTYPE TermSizeSigHandler P((int sig));
 void CreatePieces P((void));
+/*
 #if ENABLE_NLS
 char *InsertPxlSize P((char *pattern, int targetPxlSize));
 XFontSet CreateFontSet P((char *base_fnt_lst));
 #else
 char *FindFont P((char *pattern, int targetPxlSize));
 #endif
-static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
-static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
+*/
+//static void PieceMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
+//static void DropMenuSelect P((Widget w, ChessSquare piece, caddr_t junk));
 int EventToSquare P((int x, int limit));
 void DrawSquareGTK P((int row, int column, ChessSquare piece, int do_flash));
 gboolean EventProcGTK P((GtkWidget *widget, GdkEventExpose *event, gpointer data));
@@ -223,12 +228,12 @@ gboolean HandleUserMoveGTK P((GtkWindow *window, GdkEventButton *eventbutton, gp
 gboolean KeyPressProc P((GtkWindow *window, GdkEventKey *eventkey, gpointer data));
 gboolean ButtonPressProc P((GtkWindow *window, GdkEventButton *eventbutton, gpointer data));
 void AnimateUserMove P((GtkWidget *w, GdkEventMotion *event));
-void HandlePV P((Widget w, XEvent * event,
-		     String * params, Cardinal * nParams));
-void WhiteClock P((Widget w, XEvent *event,
-		   String *prms, Cardinal *nprms));
-void BlackClock P((Widget w, XEvent *event,
-		   String *prms, Cardinal *nprms));
+//void HandlePV P((Widget w, XEvent * event,
+//		     String * params, Cardinal * nParams));
+//void WhiteClock P((Widget w, XEvent *event,
+//		   String *prms, Cardinal *nprms));
+//void BlackClock P((Widget w, XEvent *event,
+//		   String *prms, Cardinal *nprms));
 void GTKDrawPosition P((GtkWidget *w, /*Boolean*/int repaint,
 		     Board board));
 void CommentPopUp P((char *title, char *label));
@@ -240,21 +245,21 @@ void FileNamePopUp P((char *label, char *def, char *filter,
 void PromotionPopDown P((void));
 void PromotionCallback P((GtkWidget *w, GtkResponseType resptype,
                           gpointer gdata));
-void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
-void LoadNextGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void LoadPrevGameProc P((Widget w, XEvent *event, String *prms,
-			 Cardinal *nprms));
-void ReloadGameProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void ReloadPositionProc P((Widget w, XEvent *event, String *prms,
-		       Cardinal *nprms));
-void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void OneClickProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void PonderNextMoveProc P((Widget w, XEvent *event, String *prms,
-			   Cardinal *nprms));
-void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
-void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+//void SelectCommand P((Widget w, XtPointer client_data, XtPointer call_data));
+//void LoadNextGameProc P((Widget w, XEvent *event, String *prms,
+//			 Cardinal *nprms));
+//void LoadPrevGameProc P((Widget w, XEvent *event, String *prms,
+//			 Cardinal *nprms));
+//void ReloadGameProc P((Widget w, XEvent *event, String *prms,
+//		       Cardinal *nprms));
+//void ReloadPositionProc P((Widget w, XEvent *event, String *prms,
+//		       Cardinal *nprms));
+//void TypeInProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+//void OneClickProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+//void PonderNextMoveProc P((Widget w, XEvent *event, String *prms,
+//			   Cardinal *nprms));
+//void DebugProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
+//void NothingProc P((Widget w, XEvent *event, String *prms, Cardinal *nprms));
 void DisplayMove P((int moveNumber));
 void DisplayTitle P((char *title));
 void ICSInitScript P((void));
@@ -266,7 +271,7 @@ static void CreateAnimVars P((void));
 static void DragPieceMove P((int x, int y));
 static void DrawDragPiece P((void));
 char *ModeToWidgetName P((GameMode mode));
-void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
+//void SelectMove P((Widget w, XEvent * event, String * params, Cardinal * nParams));
 void GameListOptionsPopDown P(());
 void update_ics_width P(());
 int get_term_width P(());
@@ -279,11 +284,11 @@ void ScalePixbufs P((void));
 /*
 * XBoard depends on Xt R4 or higher
 */
-int xtVersion = XtSpecificationRelease;
+//int xtVersion = XtSpecificationRelease;
 
 int xScreen;
-Display *xDisplay;
-Window xBoardWindow;
+//Display *xDisplay;
+//Window xBoardWindow;
 Pixel lightSquareColor, darkSquareColor, whitePieceColor, blackPieceColor,
    highlightSquareColor, premoveHighlightColor;
 Pixel lowTimeWarningColor; 
@@ -368,9 +373,9 @@ extern Boolean shellUp[];
    but that would require a fairly major rewrite.	*/
 
 typedef struct {
-	Pixmap  saveBuf;
-	Pixmap	newBuf;
-	GC	blitGC, pieceGC, outlineGC;
+	GdkPixmap saveBuf;
+	GdkPixmap newBuf;
+	GdkGC	blitGC, pieceGC, outlineGC;
 	GdkPoint startSquare, prevFrame, mouseDelta;
 	int	startColor;
 	int	dragPiece;
@@ -389,20 +394,6 @@ static AnimState game, player;
 #define kFactor	   4
 
 SizeDefaults sizeDefaults[] = SIZE_DEFAULTS;
-
-Menu menuBar[] = {
-    {NULL, NULL, NULL}
-};
-
-#define PAUSE_BUTTON "P"
-MenuItem buttonBar[] = {
-    {"<<", "<<", NothingProc},
-    {"<", "<", NothingProc},
-    {PAUSE_BUTTON, PAUSE_BUTTON, NothingProc},
-    {">", ">", NothingProc},
-    {">>", ">>", NothingProc},
-    {NULL, NULL, NULL}
-};
 
 #define PIECE_MENU_SIZE 18
 String pieceMenuStrings[2][PIECE_MENU_SIZE] = {
@@ -437,6 +428,7 @@ ChessSquare dropMenuTranslation[DROP_MENU_SIZE] = {
     WhiteRook, WhiteQueen
 };
 
+/*
 typedef struct {
     char piece;
     char* widget;
@@ -449,6 +441,7 @@ DropMenuEnables dmEnables[] = {
     { 'R', "Rook" },
     { 'Q', "Queen" }
 };
+*/
 
 
 /* Max possible square size */
@@ -1052,9 +1045,9 @@ main(argc, argv)
      char **argv;
 {
     int i, j, clockFontPxlSize, coordFontPxlSize, fontPxlSize;    
-    Arg args[16];
+    //Arg args[16];
     Dimension boardWidth, boardHeight, w, h, sep, bor, wr, hr;
-    XrmValue vFrom, vTo;   
+    //XrmValue vFrom, vTo;   
     char *p;    
     int forceMono = False;
     char *filename;
@@ -1240,6 +1233,7 @@ main(argc, argv)
     /*
      * Determine what fonts to use.
      */
+/*
 #if ENABLE_NLS
     appData.font = InsertPxlSize(appData.font, fontPxlSize);
     appData.clockFont = InsertPxlSize(appData.clockFont, clockFontPxlSize);
@@ -1249,6 +1243,7 @@ main(argc, argv)
     appData.clockFont = FindFont(appData.clockFont, clockFontPxlSize);
     appData.coordFont = FindFont(appData.coordFont, coordFontPxlSize);
 #endif
+*/
 
     ParseIcsTextColors();
     textColors[ColorNone].fg = textColors[ColorNone].bg = -1;
@@ -1307,7 +1302,7 @@ main(argc, argv)
     xMargin = wx - wb; yMargin = hx - hb;
   }
 
-    xBoardWindow = 0;
+    //xBoardWindow = 0;
 
     // [HGM] it seems the layout code ends here, but perhaps the color stuff is size independent and would
     //       not need to go into InitDrawingSizes().
@@ -1869,6 +1864,7 @@ InsertPxlSize(pattern, targetPxlSize)
  * The return value should be freed with XtFree when no
  * longer needed.
  */
+/*
 char *
 FindFont(pattern, targetPxlSize)
      char *pattern;
@@ -1910,8 +1906,8 @@ FindFont(pattern, targetPxlSize)
 	}
     }
     if (scalable && Abs(minerr) > appData.fontSizeTolerance) {
-        /* If the error is too big and there is a scalable font,
-	   use the scalable font. */
+        // If the error is too big and there is a scalable font,
+	// use the scalable font. 
         int headlen = scalableTail - scalable;
         p = (char *) XtMalloc(strlen(scalable) + 10);
 	while (isdigit(*scalableTail)) scalableTail++;
@@ -1927,6 +1923,7 @@ FindFont(pattern, targetPxlSize)
     XFreeFontNames(fonts);
     return p;
 }
+*/
 #endif
 
 static VariantClass oldVariant = (VariantClass) -1; // [HGM] pieces: redo every time variant changes
@@ -2067,16 +2064,6 @@ void CreateSecondGridGTK()
     return;
 }
 
-static void MenuBarSelect(w, addr, index)
-     Widget w;
-     caddr_t addr;
-     caddr_t index;
-{
-    XtActionProc proc = (XtActionProc) addr;
-
-    (proc)(NULL, NULL, NULL, NULL);
-}
-
 void SetupDropMenu()
 {
     int i, j, count;
@@ -2208,45 +2195,6 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
     gtk_widget_show(menu);
     return True;
 }
-
-static void PieceMenuSelect(w, piece, junk)
-     Widget w;
-     ChessSquare piece;
-     caddr_t junk;
-{
-    if (pmFromX < 0 || pmFromY < 0) return;
-    EditPositionMenuEvent(piece, pmFromX, pmFromY);
-}
-
-static void DropMenuSelect(w, piece, junk)
-     Widget w;
-     ChessSquare piece;
-     caddr_t junk;
-{
-    if (pmFromX < 0 || pmFromY < 0) return;
-    DropMenuEvent(piece, pmFromX, pmFromY);
-}
-
-void WhiteClock(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    shiftKey = prms[0][0] & 1;
-    ClockClick(0);
-}
-
-void BlackClock(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    shiftKey = prms[0][0] & 1;
-    ClockClick(1);
-}
-
 
 /*
  * If the user selects on a border boundary, return -1; if off the board,
@@ -2446,7 +2394,7 @@ ClearPremoveHighlights()
 static void BlankSquareGTK(x, y, color, piece, dest, fac)
      int x, y, color, fac;
      ChessSquare piece;
-     Drawable dest;
+     GdkDrawable dest;
 {   // [HGM] extra param 'fac' for forcing destination to (0,0) for copying to animation buffer
     GdkPixbuf *pb=NULL;
 
@@ -2476,7 +2424,7 @@ static void BlankSquareGTK(x, y, color, piece, dest, fac)
 static void colorDrawPieceImageGTK(piece, square_color, x, y, dest)
      ChessSquare piece;
      int square_color, x, y;
-     Drawable dest;
+     GdkDrawable dest;
 {
     int kind, p = piece;
     GdkPixbuf *pb=NULL;
@@ -2600,7 +2548,7 @@ void DrawSquareGTK(row, column, piece, do_flash)
 	/* get offset for font */
 	cairo_font_extents (cr, &fe);
 
-	BlankSquareGTK(x, y, 2, EmptySquare, xBoardWindow, 1);
+	BlankSquareGTK(x, y, 2, EmptySquare, NULL, 1);
 
 	// [HGM] print piece counts next to holdings
 	string[1] = NULLCHAR;
@@ -2645,7 +2593,7 @@ void DrawSquareGTK(row, column, piece, do_flash)
       {
 	if (piece == EmptySquare || appData.blindfold)
 	  {
-	    BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
+	    BlankSquareGTK(x, y, square_color, piece, NULL, 1);
 	  }
 	else
 	  {
@@ -2653,14 +2601,14 @@ void DrawSquareGTK(row, column, piece, do_flash)
 
 	    if (do_flash && appData.flashCount > 0) {
 	      for (i=0; i<appData.flashCount; ++i) {
-		drawfunc(piece, square_color, x, y, xBoardWindow);
+		drawfunc(piece, square_color, x, y, NULL);
 		do_flash_delay(flash_delay);
 
-		BlankSquareGTK(x, y, square_color, piece, xBoardWindow, 1);
+		BlankSquareGTK(x, y, square_color, piece, NULL, 1);
 		do_flash_delay(flash_delay);
 	      }
 	    }
-	    drawfunc(piece, square_color, x, y, xBoardWindow);
+	    drawfunc(piece, square_color, x, y, NULL);
 	  }
       }
 
@@ -3289,12 +3237,13 @@ void AnimateUserMove (Widget w, XEvent * event,
     DragPieceMove(event->xmotion.x, event->xmotion.y);
 }
 */
-
+/*
 void HandlePV (Widget w, XEvent * event,
 		      String * params, Cardinal * nParams)
 {   // [HGM] pv: walk PV
     MovePV(event->xmotion.x, event->xmotion.y, lineGap + BOARD_HEIGHT * (squareSize + lineGap));
 }
+*/
 
 static int savedIndex;  /* gross that this is global */
 
@@ -3801,7 +3750,7 @@ void LoadGameProcGTK(object, user_data)
     }
     FileNamePopUp(_("Load game file name?"), "", ".pgn .game", LoadGamePopUp, "rb", OPEN);
 }
-
+/*
 void LoadNextGameProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -3828,7 +3777,7 @@ void ReloadGameProc(w, event, prms, nprms)
 {
     ReloadGame(0);
 }
-
+*/
 void LoadNextPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -3842,7 +3791,7 @@ void LoadPrevPositionProcGTK(object, user_data)
 {
     ReloadPosition(-1);
 }
-
+/*
 void ReloadPositionProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -3851,7 +3800,7 @@ void ReloadPositionProc(w, event, prms, nprms)
 {
     ReloadPosition(0);
 }
-
+*/
 void LoadPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -3964,16 +3913,18 @@ void CopyPositionProcGTK(object, user_data)
 
 
 /* function called when the data to Paste is ready */
+/*
 static void
 PastePositionCB(Widget w, XtPointer client_data, Atom *selection,
 	   Atom *type, XtPointer value, unsigned long *len, int *format)
 {
   char *fenstr=value;
-  if (value==NULL || *len==0) return; /* nothing had been selected to copy */
-  fenstr[*len]='\0'; /* normally this string is terminated, but be safe */
+  if (value==NULL || *len==0) return; // nothing had been selected to copy 
+  fenstr[*len]='\0'; // normally this string is terminated, but be safe 
   EditPositionPasteFEN(fenstr);
   //  XtFree(value);
 }
+*/
 
 void PastePositionProcGTK(object, user_data)
      GtkObject *object;
@@ -4080,13 +4031,14 @@ void CopyGameListProcGTK(object, user_data)
 }
 
 /* function called when the data to Paste is ready */
+/*
 static void
 PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
 	    Atom *type, XtPointer value, unsigned long *len, int *format)
 {
   FILE* f;
   if (value == NULL || *len == 0) {
-    return; /* nothing had been selected to copy */
+    return; //nothing had been selected to copy 
   }
   f = fopen(gamePasteFilename, "w");
   if (f == NULL) {
@@ -4098,6 +4050,7 @@ PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
   //  XtFree(value);
   LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
 }
+*/
 
 void PasteGameProcGTK(object, user_data)
      GtkObject *object;
@@ -4126,7 +4079,7 @@ void AutoSaveGame()
 void
 QuitProcGTK(GtkObject *object, gpointer user_data)
 {
-    ExitEvent(0);
+    //ExitEvent(0);
     gtk_main_quit();
 }
 
@@ -4251,8 +4204,7 @@ void TrainingProcGTK(object, user_data)
 void EditCommentProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-    Arg args[5];
+{    
     int j;
     if (PopDown(1)) {
        // popdown succesful
@@ -4436,7 +4388,7 @@ void FlipViewProcGTK(object, user_data)
     flipView = !flipView;
     DrawPosition(True, NULL);
 }
-
+/*
 void PonderNextMoveProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -4445,7 +4397,7 @@ void PonderNextMoveProc(w, event, prms, nprms)
 {
     PonderNextMoveEvent(!appData.ponderNextMove);
 }
-
+*/
 void SaveOnExitProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
@@ -4551,7 +4503,7 @@ void AboutProcGTK(object, user_data)
 
   return;
 }
-
+/*
 void DebugProc(w, event, prms, nprms)
      Widget w;
      XEvent *event;
@@ -4569,14 +4521,13 @@ void NothingProc(w, event, prms, nprms)
 {
     return;
 }
-
+*/
 void DisplayMessage(message, extMessage)
      char *message, *extMessage;
 {
   /* display a message in the message widget */
 
-  char buf[MSG_SIZ];
-  Arg arg;
+  char buf[MSG_SIZ];  
 
   if (extMessage)
     {
@@ -4726,6 +4677,7 @@ void DisplayNote(message)
     ErrorPopUp(_("Note"), message, FALSE);
 }
 
+/*
 static int
 NullXErrorCheck(dpy, error_event)
      Display *dpy;
@@ -4733,6 +4685,7 @@ NullXErrorCheck(dpy, error_event)
 {
     return 0;
 }
+*/
 
 void DisplayIcsInteractionTitle(message)
      String message;
@@ -4740,6 +4693,7 @@ void DisplayIcsInteractionTitle(message)
   if (oldICSInteractionTitle == NULL) {
     /* Magic to find the old window title, adapted from vim */
     char *wina = getenv("WINDOWID");
+/*
     if (wina != NULL) {
       Window win = (Window) atoi(wina);
       Window root, parent, *children;
@@ -4755,6 +4709,7 @@ void DisplayIcsInteractionTitle(message)
       }
       XSetErrorHandler(oldHandler);
     }
+*/
     if (oldICSInteractionTitle == NULL) {
       oldICSInteractionTitle = "xterm";
     }
@@ -5830,7 +5785,7 @@ BoardSquare(x, y, column, row)
 #undef Min
 #define Max(a, b) ((a) > (b) ? (a) : (b))
 #define Min(a, b) ((a) < (b) ? (a) : (b))
-
+/*
 static void
 SetRect(rect, x, y, width, height)
      XRectangle * rect; int x; int y; int width; int height;
@@ -5840,11 +5795,12 @@ SetRect(rect, x, y, width, height)
   rect->width  = width;
   rect->height = height;
 }
+*/
 
 /*	Test if two frames overlap. If they do, return
 	intersection rect within old and location of
 	that rect within new. */
-
+/*
 static Boolean
 Intersect(old, new, size, area, pt)
      GdkPoint *old; GdkPoint *new;
@@ -5862,47 +5818,48 @@ Intersect(old, new, size, area, pt)
     return True;
   }
 }
+*/
 
 /*	For two overlapping frames, return the rect(s)
 	in the old that do not intersect with the new.   */
 
-static void
-CalcUpdateRects(old, new, size, update, nUpdates)
-     GdkPoint *old; GdkPoint *new; int size;
-     GdkRectangle update[]; int *nUpdates;
-{
-  int	     count;
-
-  /* If old = new (shouldn't happen) then nothing to draw */
-  if (old->x == new->x && old->y == new->y) {
-    *nUpdates = 0;
-    return;
-  }
-  /* Work out what bits overlap. Since we know the rects
-     are the same size we don't need a full intersect calc. */
-  count = 0;
-  /* Top or bottom edge? */
-  if (new->y > old->y) {
-    SetRect(&(update[count]), old->x, old->y, size, new->y - old->y);
-    count ++;
-  } else if (old->y > new->y) {
-    SetRect(&(update[count]), old->x, old->y + size - (old->y - new->y),
-			      size, old->y - new->y);
-    count ++;
-  }
-  /* Left or right edge - don't overlap any update calculated above. */
-  if (new->x > old->x) {
-    SetRect(&(update[count]), old->x, Max(new->y, old->y),
-			      new->x - old->x, size - abs(new->y - old->y));
-    count ++;
-  } else if (old->x > new->x) {
-    SetRect(&(update[count]), new->x + size, Max(new->y, old->y),
-			      old->x - new->x, size - abs(new->y - old->y));
-    count ++;
-  }
-  /* Done */
-  *nUpdates = count;
-}
+//static void
+//CalcUpdateRects(old, new, size, update, nUpdates)
+//     GdkPoint *old; GdkPoint *new; int size;
+//     GdkRectangle update[]; int *nUpdates;
+//{
+//  int	     count;
+//
+//  /* If old = new (shouldn't happen) then nothing to draw */
+//  if (old->x == new->x && old->y == new->y) {
+//    *nUpdates = 0;
+//    return;
+//  }
+//  /* Work out what bits overlap. Since we know the rects
+//     are the same size we don't need a full intersect calc. */
+//  count = 0;
+//  /* Top or bottom edge? */
+//  if (new->y > old->y) {
+//    SetRect(&(update[count]), old->x, old->y, size, new->y - old->y);
+//    count ++;
+//  } else if (old->y > new->y) {
+//    SetRect(&(update[count]), old->x, old->y + size - (old->y - new->y),
+//			      size, old->y - new->y);
+//    count ++;
+//  }
+//  /* Left or right edge - don't overlap any update calculated above. */
+//  if (new->x > old->x) {
+//    SetRect(&(update[count]), old->x, Max(new->y, old->y),
+//			      new->x - old->x, size - abs(new->y - old->y));
+//    count ++;
+//  } else if (old->x > new->x) {
+//    SetRect(&(update[count]), new->x + size, Max(new->y, old->y),
+//			      old->x - new->x, size - abs(new->y - old->y));
+//    count ++;
+//  }
+//  /* Done */
+//  *nUpdates = count;
+//}
 
 /*	Generate a series of frame coords from start->mid->finish.
 	The movement rate doubles until the half way point is
@@ -5970,7 +5927,7 @@ static void
 OverlayPiece(piece, position, dest)
      ChessSquare piece;
      GdkPoint *position;
-     Drawable dest;
+     GdkDrawable dest;
 {
     GdkPixbuf *pb=NULL;
 
@@ -5993,7 +5950,7 @@ BeginAnimation(anim, piece, startColor, start)
      int startColor;
      GdkPoint * start;
 {
-  Pixmap mask;
+  //Pixmap mask;
 
   if(appData.upsideDown && flipView) piece += piece < BlackPawn ? BlackPawn : -BlackPawn;
   /* not converted to GTK - causes the clicked on piece to flicker */
@@ -6081,7 +6038,7 @@ AnimationFrame(anim, frame, piece)
     }
 
   /* Draw moving piece  */
-  OverlayPiece(piece, frame, xBoardWindow);
+  OverlayPiece(piece, frame, NULL);
 
   /* remember this position */
   anim->prevFrame = *frame;
@@ -6408,7 +6365,7 @@ DrawDragPiece ()
      it's being dragged around the board. So we erase the square
      that the piece is on and draw it at the last known drag point. */
   BlankSquareGTK(player.startSquare.x, player.startSquare.y,
-		player.startColor, EmptySquare, xBoardWindow, 1);
+		player.startColor, EmptySquare, NULL, 1);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
   damageGTK[0][player.startBoardY][player.startBoardX] = TRUE;
 }

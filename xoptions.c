@@ -141,7 +141,7 @@ char *trialSound;
 static int oldCores, oldPonder;
 int MakeColors P((void));
 int GenericReadout P((int selected));
-Widget shells[10]; // This is still referenced in xboard.c - needs removing
+//Widget shells[10]; // This is still referenced in xboard.c - needs removing
 GtkWidget *shellsGTK[10];
 Boolean shellUp[10];
 WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory };
@@ -203,7 +203,7 @@ void SetCheckMenuItemActive(gchar *name, int menuDlgNr, gboolean active)
 
 int PopDown(int n)
 {
-    Arg args[10];    
+    //Arg args[10];    
     
     if (!shellUp[n]) return 0;    
     
@@ -1532,7 +1532,7 @@ Option tagsOptions[] = {
 
 void NewTagsPopup(char *text, char *msg)
 {    
-    Arg args[16];
+    //Arg args[16];
     char *title = bookUp ? _("Edit book") : _("Tags");
 
     if(shellsGTK[2]) { // if already exists, alter title and content

@@ -91,7 +91,7 @@ GtkWidget *GetBoardWidget P((void));
 
 Position engineOutputX = -1, engineOutputY = -1;
 Dimension engineOutputW, engineOutputH;
-Widget engineOutputShell;
+//Widget engineOutputShell;
 static int engineOutputDialogUp;
 
 /* Module variables */
@@ -394,9 +394,9 @@ gboolean DeleteCB(w, event, gdata)
 void
 EngineOutputPopUp()
 {
-    Arg args[16];
+    //Arg args[16];
     int j;
-    Widget edit;
+    //Widget edit;
     static int  needInit = TRUE;
     static char *title = N_("Engine output"), *text = N_("This feature is experimental");    
 
@@ -427,7 +427,7 @@ EngineOutputPopUp()
 
 void EngineOutputPopDown()
 {
-    Arg args[16];
+    //Arg args[16];
     int j;
 
     if (!engineOutputDialogUp) return;
