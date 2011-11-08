@@ -1076,10 +1076,11 @@ main(argc, argv)
       programName++;
 
 #ifdef ENABLE_NLS
-    XtSetLanguageProc(NULL, NULL, NULL);
+//  XtSetLanguageProc(NULL, NULL, NULL);
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
 #endif
+
 
     appData.boardSize = "";
     InitAppData(ConvertToLine(argc, argv));
