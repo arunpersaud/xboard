@@ -30,7 +30,7 @@ xboard_SOURCES = backend.c backend.h backendz.h \
 		 xoptions.c \
 		 $(ZPY)
 SUBDIRS = po
-xboard_LDADD = -lm @XAW_LIBS@ @X_LIBS@ @LIBINTL@ @GTK_LIBS@
+xboard_LDADD = -lm @LIBINTL@ @GTK_LIBS@
 
 svgdir = $(datadir)/games/xboard/svg
 svg_DATA = svg/icon_white.svg svg/icon_black.svg \
@@ -79,7 +79,7 @@ EXTRA_DIST = svg sounds winboard  \
 
 DISTCLEANFILES = stamp-h
 
-AM_CPPFLAGS=-DINFODIR='"$(infodir)"' @X_CFLAGS@  -DSYSCONFDIR='"$(sysconfdir)"' \
+AM_CPPFLAGS=-DINFODIR='"$(infodir)"'  -DSYSCONFDIR='"$(sysconfdir)"' \
 	    -DGLADEDIR='"$(gladedir)"' \
 	    -DSVGDIR='"$(svgdir)"' \
 	    -DLOCALEDIR='"$(localedir)"'  @GTK_CFLAGS@

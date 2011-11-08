@@ -508,7 +508,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="editgam">
+                      <object class="GtkMenuItem" id="ModeEditgame">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Edit Game</property>
                         <property name="use_underline">True</property>
@@ -517,7 +517,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="editpositio">
+                      <object class="GtkMenuItem" id="ModeEditposition">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Edit Position</property>
                         <property name="use_underline">True</property>
@@ -526,7 +526,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="training">
+                      <object class="GtkMenuItem" id="ModeTraining">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">Training</property>
@@ -916,7 +916,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="savesettingsonexit">
+                      <object class="GtkCheckMenuItem" id="OptionsSaveSettingsOnExit">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Save Settings on Exit</property>
                         <property name="use_underline">True</property>

@@ -30,26 +30,6 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#include <X11/Xatom.h>
-#include <X11/Xmu/Atoms.h>
-
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>  
 
@@ -87,7 +67,6 @@ extern GtkBuilder *builder;
 
 // [HGM] the following code for makng menu popups was cloned from the FileNamePopUp routines
 
-static Widget previous = NULL;
 
 //--------------------------- Engine-specific options menu ----------------------------------
 
@@ -162,19 +141,11 @@ char *trialSound;
 static int oldCores, oldPonder;
 int MakeColors P((void));
 int GenericReadout P((int selected));
-Widget shells[10];
+//Widget shells[10]; // This is still referenced in xboard.c - needs removing
 GtkWidget *shellsGTK[10];
-Widget marked[10];
 Boolean shellUp[10];
 WindowPlacement *wp[10] = { NULL, &wpComment, &wpTags, NULL, NULL, NULL, NULL, &wpMoveHistory };
 Option *dialogOptions[10];
-
-void MarkMenu(char *item, int dlgNr)
-{
-    Arg args[2];
-    //    XtSetArg(args[0], XtNleftBitmap, xMarkPixmap);
-    //XtSetValues(marked[dlgNr] = XtNameToWidget(menuBarWidget, item), args, 1);
-}
 
 void GetMenuItemName(int dlgNr, gchar *name)
 {
@@ -232,11 +203,9 @@ void SetCheckMenuItemActive(gchar *name, int menuDlgNr, gboolean active)
 
 int PopDown(int n)
 {
-    Arg args[10];    
+    //Arg args[10];    
     
-    if (!shellUp[n]) return 0;
-
-    previous = NULL;
+    if (!shellUp[n]) return 0;    
     
     // when popping down uncheck the check box of the menu item
     SetCheckMenuItemActive(NULL, n, False);    
@@ -247,11 +216,6 @@ int PopDown(int n)
         shellsGTK[n] = NULL;
     }    
     shellUp[n] = False;
-    /* remove the mark against item in Xt menu */
-    if(marked[n]) {        
-        XtSetArg(args[0], XtNleftBitmap, None);
-        XtSetValues(marked[n], args, 1);
-    }
     if(!n) currentCps = NULL; // if an Engine Settings dialog was up, we must be popping it down now
     return 1;
 }
@@ -658,25 +622,6 @@ Option soundOptions[] = {
 { 0, 1, 0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
-void SetColor(char *colorName, Option *box)
-{
-	Arg args[5];
-	Pixel buttonColor;
-	XrmValue vFrom, vTo;
-	if (!appData.monoMode) {
-	    vFrom.addr = (caddr_t) colorName;
-	    vFrom.size = strlen(colorName);
-	    XtConvert(shellWidget, XtRString, &vFrom, XtRPixel, &vTo);
-	    if (vTo.addr == NULL) {
-	  	buttonColor = (Pixel) -1;
-	    } else {
-		buttonColor = *(Pixel *) vTo.addr;
-	    }
-	} else buttonColor = (Pixel) 0;
-	XtSetArg(args[0], XtNbackground, buttonColor);;
-	XtSetValues(box->handle, args, 1);
-}
-
 void SetColorText(int n, char *buf)
 {
     GdkColor color;
@@ -731,7 +676,7 @@ int BoardOptionsOK(int n)
         lineGapGTK = GetLineGap();
 
     if(appData.overrideLineGap >= 0) lineGap = appData.overrideLineGap; else lineGap = defaultLineGap;
-    MakeColors();
+    //MakeColors();
     LoadSvgFiles();
     InitDrawingSizes(-1, 0);
     DrawPosition(True, NULL);
@@ -1265,8 +1210,7 @@ GenericPopUp(Option *option, char *title, int dlgNr)
                       G_CALLBACK (GenericPopDown),
                       (gpointer)(intptr_t) dlgNr);
     shellUp[dlgNr] = True;
-    previous = NULL;    
- 
+
     return 1;
 }
 
@@ -1356,6 +1300,7 @@ void PutText P((char *text, int pos));
 void SendString(char *p)
 {
     char buf[MSG_SIZ], *q;
+
     if((q = strstr(p, "$input"))) {
 	if(!shellUp[4]) return;
 	strncpy(buf, p, MSG_SIZ);
@@ -1367,32 +1312,28 @@ void SendString(char *p)
     SendToICS(buf);
 }
 
-/* function called when the data to Paste is ready */
-static void
-SendTextCB(Widget w, XtPointer client_data, Atom *selection,
-	   Atom *type, XtPointer value, unsigned long *len, int *format)
-{
-  char buf[MSG_SIZ], *p = (char*) textOptions[(int)(intptr_t) client_data].choice, *name = (char*) value, *q;
-  if (value==NULL || *len==0) return; /* nothing selected, abort */
-  name[*len]='\0';
-  strncpy(buf, p, MSG_SIZ);
-  q = strstr(p, "$name");
-  snprintf(buf + (q-p), MSG_SIZ -(q-p), "%s%s", name, q+5);
-  SendString(buf);
-  XtFree(value);
-}
-
 void SendText(int n)
 {
     char *p = (char*) textOptions[n].choice;
+    gchar *name, *q;
+    char buf[MSG_SIZ];
+
     if(strstr(p, "$name")) {
-	XtGetSelectionValue(menuBarWidget,
-	  XA_PRIMARY, XA_STRING,
-	  /* (XtSelectionCallbackProc) */ SendTextCB,
-	  (XtPointer) (intptr_t) n, /* client_data passed to PastePositionCB */
-	  CurrentTime
-	);
-    } else SendString(p);
+        // get the text selected in the terminal window and substitute it for $name        
+        GtkClipboard *cb;
+        GdkDisplay *gdisp = gdk_display_get_default();
+        if (gdisp == NULL) return;
+        cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_PRIMARY);
+        name = gtk_clipboard_wait_for_text(cb);
+        if (name == NULL) return;        
+        strncpy(buf, p, MSG_SIZ);
+        q = strstr(p, "$name");
+        snprintf(buf + (q-p), MSG_SIZ -(q-p), "%s%s", name, q+5);
+        g_free(name);
+        SendString(buf);
+    } else{
+        SendString(p);
+    }
 }
 
 void IcsTextProcGTK(object, user_data)
@@ -1401,6 +1342,7 @@ void IcsTextProcGTK(object, user_data)
 {
    int i=0, j;
    char *p, *q, *r;
+
    if((p = icsTextMenuString) == NULL) return;
    do {
 	q = r = p; while(*p && *p != ';') p++;
@@ -1423,8 +1365,7 @@ void IcsTextProcGTK(object, user_data)
    if(i == 0) return;
    textOptions[i].type = EndMark;
    textOptions[i].target = NULL;
-   textOptions[i].min = 2;
-   MarkMenu("menuView.ICStex", 3);
+   textOptions[i].min = 2;   
    SetCheckMenuItemActive(NULL, 3, True); // set GTK menu item to checked   
    GenericPopUp(textOptions, _("ICS text menu"), 3);
 }
@@ -1552,8 +1493,7 @@ void NewCommentPopup(char *title, char *text, int index)
     }
 
     if(commentText) free(commentText); commentText = strdup(text);
-    commentIndex = index;
-    MarkMenu("menuView.Show Comments", 1);
+    commentIndex = index;    
     SetCheckMenuItemActive(NULL, 1, True); // ensure check box is checked on GTK menu item
 
     if(!GenericPopUp(commentOptions, title, 1)) return;   
@@ -1592,7 +1532,7 @@ Option tagsOptions[] = {
 
 void NewTagsPopup(char *text, char *msg)
 {    
-    Arg args[16];
+    //Arg args[16];
     char *title = bookUp ? _("Edit book") : _("Tags");
 
     if(shellsGTK[2]) { // if already exists, alter title and content
@@ -1601,8 +1541,7 @@ void NewTagsPopup(char *text, char *msg)
 	//XtSetValues(shells[2], args, 1);
     }
     if(tagsText) free(tagsText); tagsText = strdup(text);
-    tagsOptions[0].textValue = msg;
-    MarkMenu("menuView.Show Tags", 2);
+    tagsOptions[0].textValue = msg;   
     SetCheckMenuItemActive(NULL, 2, True); // ensure check box is checked on GTK menu item
     GenericPopUp(tagsOptions, title, 2);
 }
@@ -1614,21 +1553,22 @@ Option boxOptions[] = {
 {   0,  3,    0, NULL, NULL, "", NULL, EndMark , "" }
 };
 
-void PutText(char *text, int pos)
-{
-    Arg args[16];
-    char buf[MSG_SIZ], *p;
 
-    if(strstr(text, "$add ") == text) {
-      //	GetWidgetText(&boxOptions[0], &p);
+void PutText(char *text, int pos)
+{   
+    char buf[MSG_SIZ]; 
+    const gchar *p;
+    GtkEntry *edit; 
+
+    edit = boxOptions[0].handle;
+    if (!GTK_IS_ENTRY(edit)) return;
+
+    if(strstr(text, "$add ") == text) {        
+        p = gtk_entry_get_text(GTK_ENTRY(edit));    
 	snprintf(buf, MSG_SIZ, "%s%s", p, text+5); text = buf;
 	pos += strlen(p) - 5;
     }
-//    SetWidgetText(&boxOptions[0], text, 4);
-    XtSetArg(args[0], XtNinsertPosition, pos);
-    XtSetValues(boxOptions[0].handle, args, 1);
-//    SetFocus(boxOptions[0].handle, shells[4], NULL, False); // No idea why this does not work, and the following is needed:
-    XSetInputFocus(xDisplay, XtWindow(boxOptions[0].handle), RevertToPointerRoot, CurrentTime);
+    gtk_entry_set_text(GTK_ENTRY(edit), text);
 }
 
 void ICSInputSendText P((void));
@@ -1679,8 +1619,7 @@ gboolean keypressicsCB(w, eventkey, data)
 }
 
 void InputBoxPopup()
-{
-    MarkMenu("menuView.ICS Input Box", 4);
+{   
     if(!GenericPopUp(boxOptions, _("ICS input box"), 4)) return;   
     g_signal_connect (boxOptions[0].handle, "key-press-event",
                       G_CALLBACK (keypressicsCB),
@@ -1714,6 +1653,12 @@ void MoveTypeInProc(eventkey)
     GdkEventKey  *eventkey;
 {
     char buf[10];
+
+    // ingnore if ctrl or alt is pressed
+    if (eventkey->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) {
+        return;
+    }
+
     buf[0]=eventkey->keyval;
     buf[1]='\0';
     if (*buf > 32)        

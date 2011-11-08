@@ -37,25 +37,6 @@
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/cursorfont.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-
-
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
@@ -69,6 +50,8 @@ char *crBlack = "#AD5D3D";
 
 GtkWidget *GUI_EvalGraph=NULL;
 GtkWidget *GUI_EvalGraphDrawingArea=NULL;
+
+GtkWidget *GetBoardWidget P((void));
 
 #ifdef ENABLE_NLS
 # define  _(s) gettext (s)
@@ -270,9 +253,9 @@ gboolean EvalGraphEventProc(widget, event)
 	ToNrEvent( index + 1 );
       }
       break;
-    case GDK_DELETE:
-      SetCheckMenuItemActive(NULL, 101, False); // set GTK menu item to unchecked      
-      break;
+    case GDK_DELETE:     
+      EvalGraphPopDown();
+      return True; // don't propagate to default handler     
     default:
       break;
     };
@@ -284,9 +267,10 @@ void EvalGraphCreate()
 {
   GtkBuilder *builder=NULL;
   char *filename;
+  GtkWidget *boardwidget;
 
-  Arg args[16];
-  Dimension bw_width, bw_height;
+  //Arg args[16];
+  gint bw_width, bw_height;
   int j;
 
   builder = gtk_builder_new ();
@@ -311,11 +295,9 @@ void EvalGraphCreate()
   gtk_builder_connect_signals (builder, NULL);
   g_object_unref (G_OBJECT (builder));
 
-  //GTK-TODO: get board width, this is still Xt code
-  j = 0;
-  XtSetArg(args[j], XtNwidth,  &bw_width);  j++;
-  XtSetArg(args[j], XtNheight, &bw_height);  j++;
-  XtGetValues(boardWidget, args, j);
+  // get board width
+  boardwidget = GetBoardWidget();   // get boardwidget width, height   
+  gdk_drawable_get_size(boardwidget->window, &bw_width, &bw_height);
 
   /* GTK-TODO the position should be set relativ to the main window.
    * This will be easier once the main window is a GTK widget, since we
@@ -377,19 +359,6 @@ int EvalGraphDialogExists()
 void EvalGraphProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
-{
-  if (evalGraphDialogUp)
-    EvalGraphPopDown();
-  else
-    EvalGraphPopUp();
-}
-
-void
-EvalGraphProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
 {
   if (evalGraphDialogUp)
     EvalGraphPopDown();

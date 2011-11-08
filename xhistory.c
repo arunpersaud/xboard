@@ -48,11 +48,10 @@ void FindMoveByCharIndex P(( int char_index ));
 
 int AppendText P((Option *opt, char *s));
 int GenericPopUp P((Option *option, char *title, int dlgNr));
-void MarkMenu P((char *item, int dlgNr));
 GtkWidget *GetTextView P((GtkWidget *dialog));
 
 extern Option historyOptions[];
-extern Widget shells[10];
+//extern Widget shells[10];
 extern GtkWidget *shellsGTK[10];
 extern Boolean shellUp[10];
 
@@ -88,7 +87,7 @@ int AppendToHistoryMemo( char * text, int bold, int colorNr )
 
 void ScrollToCurrent(int caretPos)
 {
-    Arg args[10];
+    //Arg args[10];
     char *s;
     int len;
     GtkTextIter iter;
@@ -175,8 +174,7 @@ void HistoryPopUp()
     g_signal_connect(GTK_TEXT_VIEW(textview), "button-press-event",
                      G_CALLBACK(HistoryPopUpCB),
                      (gpointer)historyOptions[0].handle);
-
-    MarkMenu("menuView.Show Move History", 7);
+    
     SetCheckMenuItemActive(NULL, 7, True); // set GTK menu item to checked     
 }
 

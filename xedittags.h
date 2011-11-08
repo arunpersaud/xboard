@@ -27,5 +27,5 @@
 void EditTagsProcGTK P(( GtkObject *object,
 			 gpointer user_data));
 
-extern Widget editTagsShell, tagsShell;
+//extern Widget editTagsShell, tagsShell;
 #endif

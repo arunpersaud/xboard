@@ -3,12 +3,453 @@ ChangeLog for XBoard/WinBoard
 
 (latest entries created by git log --no-merges --pretty="%ai %an <%ae>:%n%s%n%n%b" vlast.. )
 
+2011-10-25 15:32:27 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix two warnings
+
+2011-10-24 20:00:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Don't adjust clock on right-click in EditGame mode WB
+
+This was a change that was already done for the left-clicks, but somehow
+never made it togit for the right-clicks
+
+2011-10-24 19:50:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Change chase message in .lng files
+
+2011-10-24 19:31:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Let perpetual-chase message mention square
+
+In stead of a boolean, PerpetualChase now returns the square the chased
+piece ends on (encoded as an int), and on adjudication it will be printed.
+
+2011-10-24 19:26:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add mechanism to translate variable messages in WinBoard
+
+A message prefixed with % in the lng file will be considered a match
+if it matches the start of the text to be printed, and the remaining
+part of the latter will remain untranslated. This was needed to allow
+translation of the perpetual change message, now it indicates the square
+of the chased piece.
+
+2011-10-24 19:20:13 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Use other interpretation of Asia rules for chase detection
+
+The detection of perpetual chases now ignores pre-existing checks.
+
+2011-10-12 17:28:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on loading garbage game file
+
+The code to cache games was not resistant to moves before a valid
+game start, or a game filewithout any games at all.
+
+2011-10-08 20:43:52 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Incorporate variant type in book hash key
+
+This prevents booksforone variant being used for another, and allows
+multi-variant books.
+
+2011-10-07 15:41:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update language.txt file
+
+
+2011-10-07 15:34:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update Dutch lng file
+
+
+2011-10-07 15:21:53 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix Load Options dialog WB
+
+Defined fastkeys; reordered elements so that fastkeys focus edit they
+are intended for. Changed some of the more obscure texts. Corrected
+list of transatble dialog items, adding a few missing ones.
+
+2011-09-13 20:01:42 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix some warnings
+
+Prototypes were added, ormoved from backend.c to backend.h.
+
+2011-08-26 12:44:08 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Put 'Load Next' button back in WB Game List
+
+The '>' button for loading the next (filtered) game is re-instated in the
+WinBoard GameList. The main window has now accelerator keys Ctrl+Up and
+Ctrl+Down for loading the previous and next filtered game.
+
+2011-08-26 12:31:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Speed up position search and consider side to move
+
+The position search is made to pay attention to the side to move,
+which produces a speedup, because we only have to compare half the
+game positions when looking for an exact position match. An addition
+we now keep track of the total number of pieces, and abandon a game when
+it drops below the number of pieces in the position we seek.
+
+2011-08-21 23:16:15 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Dynamically allocate move cache
+
+A small statically declared cache good for 250k moves (~3200 games)
+will be expanded in steps of a factor 8 when it overflows.
+
+2011-08-18 18:40:38 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Translate search strings
+
+
+2011-08-17 22:55:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Implement flipped search
+
+
+2011-08-16 15:29:03 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Debug position search cache
+
+
+2011-08-15 18:44:37 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+profile
+
+
+2011-08-18 18:01:54 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Translate search-mode strings
+
+
+2011-08-15 16:59:39 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Quickscan
+
+
+2011-10-23 16:04:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix duplicate loading of second engine in tourneys
+
+To decide if new engines should be loaded, it was tested if first.pr
+equalled NoProc, assuming that ReserveGame would have left the engine
+loaded if the next game would need the same engines. But a reuse=0 engine
+could have caused termination of the first engine process anyway, while
+the second would still be alive. So unconditionally starting of the second
+engine would cause redundant engine processes to abound.
+  Now we only start new engine processes if both engine processes are dead.
+
+2011-10-23 15:53:32 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix PV walking with -fSAN
+
+The SAN options had broken the PV walking, because the shelving of the
+walked PV to create space for the conversion to SAN of an incoming PV
+would not be properly undone, but would add the walked PV to the game.
+
+2011-10-20 12:39:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Refine clock adjusting
+
+Adjusting the clocks by shift-clicking them is now only allowed with
+autoCallFlag off, and an error-popup results when you do it otherwise.
+Also, swtching to Edit Game mode won't reset the clocks to the stored
+value anymore when you have just adjusted it.
+
+2011-10-12 17:43:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on adding items near book end
+
+When Edit Book would add so many entries near the end of an opening
+book that the end of the added info would surpass the old end of the
+file, the copying of the tail got stuck in an infinite loop, extending
+the file without limit with repeating info.
+
+2011-10-12 17:41:18 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Print message on wrong use of Clone Tourney
+
+The user is urged to first provide the name of an existing tourney file
+when he presses the button without one. The button is also renamed.
+
+2011-10-12 17:38:33 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix invalid combobox entry WB
+
+A combobox label that was not in the list (because the user typed
+it, rather than selecting one) would cause a crash.
+
+2011-10-12 17:23:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on loading garbage game file
+
+XBoard crashed when a game file contained a PGN game result before
+any valid game start, because data would be written in a game-list
+node that did not exist yet. This would occur frequently when garage
+was read; basically any asterisk in the data would do it.
+
+2011-10-11 23:31:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add control to set -discourageOwnBooks WB
+
+
+2011-10-11 20:53:52 -0700 Arun Persaud <arun@nubati.net>:
+only require 0.17 of gettext
+
+This seems to solve many build issues with older distrubtions and doesn't seem to be a problem with newer ones.
+
+2011-10-11 23:31:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add option -discourageOwnBooks
+
+This boolean option determines the default setting of the hasOwnBook
+option before a tourney game starts. By setting it, the hasOwnBook
+option is cleared, which would enable use of the GUI book, like the
+engine was installedwith the /firstXBook option. An explicit option
+on the engine install line can still overrule this, though.
+ A control to set this option has been added in the XBoard Match dialog,
+and it is saved in the tourney file to force consistency.
+
+2011-10-11 22:58:01 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Reset initString and computerString on engine load
+
+These options are typically engine specific, and must thus be
+reset to their default value before loading a new engine.
+
+2011-10-11 22:43:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Romanian lng file
+
+
+2011-10-07 16:55:45 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Reactivate Falcon Chess
+
+Now the patent for this has expired, Fairy-Max plays it again.
+So the XBoard support for it is now switched on, and an item for it is
+added to the XBoard New Variant menu dialog. (WinBoard still had that.)
+In the array the Lance was changed for the Falcon as a wild-card piece.
+
+2011-10-03 09:59:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file for new features
+
+
+2011-10-03 10:30:30 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Update texi file for position search
+
+The new items in the Load Game Options dialog are described, as well
+as the command-line options used to store them in the settings file.
+
+2011-10-03 09:28:50 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Remove paragraph about .Xresources from texi file
+
+Command-line options can no longer be set through .Xresources already
+since version 4.5.0.
+
+2011-10-03 09:13:05 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add Dutch WinBoard translation
+
+
+2011-09-28 20:46:21 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Prevent Edit Book window from stealing focus (WB)
+
+In WinBoard updating the book window would give it focus. Now the
+focus is given back to the main window, except when the Edit Book
+window is first created.
+
+2011-09-28 20:42:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make book-window update part of HistorySet
+
+
+2011-09-26 16:01:28 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix position loading in tourneys
+
+In a tourney a position must be loaded when the engine is not yet
+started, and the old version of LoadPosition could not handle that:
+It would start up the engine, and send it commands unconditionally.
+
+2011-09-26 15:58:07 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix resetting -fSAN on engine change
+
+There were two places for loading another engine, Load (from menu) and
+SetPlayer (in tourneys), and the previous patch for this missed the
+second one.
+
+2011-09-26 15:51:49 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make too-long game non-fatal
+
+GameEnds is now called when the maximum number of moves is exceeded,
+rather than DisplayFatalError. Not sure if this properly terminates the
+game in all situations, but DisplayFatalError (after calling GameEnds)
+would also wait for the user to confirm the error popup before really
+exiting, so that in an unattended automatically running tourney there
+was not much fatal, and the entire tourney would in fact be finished.
+
+2011-09-26 15:46:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Keep book file open
+
+Rather than opening and closing the book file on every probe, it is
+now only closed and opened when the name of it changed.
+
+2011-09-26 15:44:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Suppress playing of book moves with weight 0
+
+Bookmoves with weight 0 could be played when the sum of the weights
+of all moves from the position was 0. So it was not possible to suppress
+the only move by giving it weight 0. This is now corrected.
+
+2011-10-01 15:00:47 -0700 Arun Persaud <arun@nubati.net>:
+added NEWS for release of 4.5.3
+
+
+2011-09-29 20:31:23 -0700 Arun Persaud <arun@nubati.net>:
+better contrast for XBoard icon on a dark background
+
+
+2011-10-01 13:09:59 -0700 Arun Persaud <arun@nubati.net>:
+translationproject.org: updated Ukrainian translation
+
+
+2011-09-29 20:49:42 -0700 Arun Persaud <arun@nubati.net>:
+updated pot file and send to translation project
+
+
+2011-09-22 12:09:39 +0100 Thomas Adam <thomas@fvwm.org>:
+(tiny change) Clarify "-name" option is Xt-only
+
+There's a set of standard options with will get used by Xt, before Xboard
+itself will use them.  "-name" is an Xt-only option which will set the name
+and resource of the window to the value requested.  It has nothing to do
+with setting opponent/player names.
+
+Signed-off-by: Thomas Adam <thomas@fvwm.org>
+
+modified slightly by Arun Persaud (renamed itemx to item and fixed option name for CMAIL)
+
+2011-09-22 17:17:16 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix LoadGameOrPosition starting up engine
+
+When LoadGameOrPosition() is called from NextMatchGame(), the Reset() that
+is called in LoadPosition() when you are running from a position file
+would prematurely start up the engine (without waiting for features).
+The kludge to suppress this behavior for the explicit call to Reset()
+is now extended to encompass LoadGameOrPosition.
+
+2011-09-22 17:14:34 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Clear fSAN option before new engine load
+
+This to prevent the new engine will inherit it from the previous one.
+As the command-line options an only set it, this has to be done by
+explicit assignment.
+
+2011-09-13 23:02:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix some warnings (prototypes)
+
+
+2011-09-13 19:55:44 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix write failures in concurrency
+
+In WinBoard a flood of writes by differentprocesses to the same PGN can
+cause a "permission denied" error in fopen. This patch causes retries after
+a random (5-15 msec) wait, in such cases.
+
+2011-09-13 19:52:19 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Move HistorySet to back-end
+
+This existed in exact duplicates in both front-ends.
+
+2011-09-13 19:46:36 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Make DoSleep front-end wrapper for msec sleep
+
+DoSleep was #defined as a macro for Sleep/ sleep, with an argument
+indicating msec in WinBoard, but seconds in XBoard. Nuw it universally
+uses msec, by defining it as a wrapperin the respective front-ends.
+(For XBoard itwraps FrameDelay.)
+
+2011-09-10 22:35:14 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix playing sounds when -soundProgram is empty
+
+It made no sense to just send the names of the sound files to the shell.
+So the soundProgram isnow tested for being an empty string, and if so,
+PlaySound() is aborted.
+
+2011-09-10 14:01:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Add -afterGame option
+
+This option specifies a command line to be executed after each game of
+a tournament. To execute the line, the function RunCommand() was added
+in the front-end. For XBoard this was a simple call to system(); for
+WinBoard part of the StartChildProcess code was cloned (without the pipe
+stuff).
+
+2011-09-10 13:52:12 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Upgrade -serverMoves option
+
+The (undocumented) -serverMoves option was upgraded to conform to the
+ChessLive! protocol extension for sending SAN tags. A bug that allowed
+upper-case promoChar to leak through was also fixed, and code was added
+to write engine PVs to file. Flushing of the game result to the -serverMoves
+file was also fixed.
+
+2011-09-10 13:50:25 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix AppendComment
+
+The joining of two comments was not performed correctly if the second
+one had the braces yet to be added: the closing brace was not added in
+that case.
+
+2011-08-30 19:39:59 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Auto-popup ICS Input Box
+
+Typing to the board made the move type-in pop up, but in ICS mode
+this is of course undesirable. Like in WinBoard, the ICS Input Box
+should pop up in stead, and accept the typed character. This is now
+realized. If the box already exists and has text in it, the typed
+character is appended to that text, and the box is given focus.
+Spaces now also are considered as printable.
+
+2011-08-30 18:27:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Slightly decrease sensitivity of sweep actions
+
+The sweep-selection of promotion and drop pieces, or step through the PV
+was so sensitive that it was difficult to reliably make the intended choice.
+It has now been reduced by a factor 1.5-2, and the sweep selection and
+PV walk now also use a different value.
+
+2011-08-27 21:16:58 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Extra buttons in WB Tournament dialog
+
+A button to copy contents of the tournament fileto the dialog is added.
+Buttons to invoke the Common Engine and Time Control dialogs are also added.
+
+2011-08-27 21:15:00 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix crash on typing non-existent enginein Load Engine dialog
+
+
+2011-08-24 10:30:46 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix display state after failed analysis attempt
+
+When an engine responded to the "analyze" command with an "unknown command"
+message, a Reset was done without altering the display, causing a
+discrepancy between display and internal state, which caused confusion
+when it finally corrected itself. I replaced the Reset call by an
+EditGameEvent call, to preserve the loaded game. The Reset was presumably
+used to allow for the case where the engine would be so upset by the
+analyze command that it needed to be reset by a "new" command, but this
+seems overly paranoic for an engine that just recognized the command
+as an unknown one.
+
+2011-08-24 09:58:35 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix treatment of PGN score/depth info with linefeeds in them
+
+This is needed to make the PGN more Arena-proof.
+
+2011-08-24 09:51:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Fix quoting in Load Engine dialog
+
+A (space-contaning)  engine name only needs quoting when there are parameters,
+because the over-all engine command will be quoted anyway. For UCI engines
+duplicate quoting is fatal, because when passed as the -ec argument of
+Polyglot, it will be quoted yet another time, also with double quotes.
+
+2011-08-23 21:24:23 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
+Replace Analyze File by Analyz Game function
+
+
+2011-08-22 22:16:58 -0700 Arun Persaud <arun@nubati.net>:
+new developer release
+
+
+2011-08-22 22:26:56 -0700 Arun Persaud <arun@nubati.net>:
+update po files
+
+
+2011-08-22 22:24:23 -0700 Arun Persaud <arun@nubati.net>:
+updated Changelog, NEWS, etc.
+
 
 2011-08-22 22:09:19 -0700 Arun Persaud <arun@nubati.net>:
 malloc.h is not needed
 
+
 2011-08-20 22:21:40 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix ICS move-list header mistaken for null moves
+
 
 2011-08-18 18:53:09 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Allow two-games-per-opening to work with book
@@ -522,8 +963,10 @@ no longer a no-op in XBoard.
 2011-06-18 12:42:41 -0700 Arun Persaud <arun@nubati.net>:
 new developer release
 
+
 2011-06-18 12:38:32 -0700 Arun Persaud <arun@nubati.net>:
 updated Changelog, NEWS, etc.
+
 
 2011-06-18 12:51:10 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Update window itle after last game of match
@@ -1018,6 +1461,7 @@ po files need some cleanup, probably better to wait until the translation-projec
 2011-05-07 18:44:24 -0700 Arun Persaud <arun@nubati.net>:
 added translations generated via lng2po from all winboard languages
 
+
 2011-05-07 18:40:23 -0700 Arun Persaud <arun@nubati.net>:
 lng2po.sh: added command line options, GPL header
 
@@ -1026,11 +1470,14 @@ also use a temporary file generated with mktemp instead of a hard coded one
 2011-05-07 17:53:10 -0700 Arun Persaud <arun@nubati.net>:
 fixed access rights to winboard language files (644 instead of 655)
 
+
 2011-05-07 14:55:55 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Import WinBoard language files into git
 
+
 2011-05-06 23:14:02 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Let Shift+RightClick on PV actually play the PV moves
+
 
 2011-05-06 18:06:48 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Make book-edit function WB
@@ -1688,6 +2135,7 @@ The Changelog is just the one from master.
 
 2011-04-10 22:47:59 -0700 Arun Persaud <apersaud@lbl.gov>:
 updated Changelog, NEWS, etc.
+
 
 2011-04-10 20:32:57 +0200 H.G. Muller <h.g.muller@hccnet.nl>:
 Fix use of game/position file in first match game

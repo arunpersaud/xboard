@@ -47,38 +47,6 @@ extern char *getenv();
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/cursorfont.h>
-#if USE_XAW3D
-#include <X11/Xaw3d/Dialog.h>
-#include <X11/Xaw3d/Form.h>
-#include <X11/Xaw3d/List.h>
-#include <X11/Xaw3d/Label.h>
-#include <X11/Xaw3d/SimpleMenu.h>
-#include <X11/Xaw3d/SmeBSB.h>
-#include <X11/Xaw3d/SmeLine.h>
-#include <X11/Xaw3d/Box.h>
-#include <X11/Xaw3d/MenuButton.h>
-#include <X11/Xaw3d/Text.h>
-#include <X11/Xaw3d/AsciiText.h>
-#include <X11/Xaw3d/Viewport.h>
-#else
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Form.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/SmeLine.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/Xaw/Text.h>
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/Viewport.h>
-#endif
-
 #include "common.h"
 #include "frontend.h"
 #include "backend.h"
@@ -95,7 +63,7 @@ extern char *getenv();
 # define N_(s)  s
 #endif
 
-static Widget filterText;
+//static Widget filterText;
 static char filterString[MSG_SIZ];
 static int listLength, wins, losses, draws, page;
 
@@ -116,8 +84,8 @@ static char *GameListFilename=NULL;
 //   <Key>Left: LoadSelectedProc(-1) \n \
 //   <Key>Right: LoadSelectedProc(1) \n \
 //   <Key>Return: LoadSelectedProc(0) \n";
-char filterTranslations[] =
-  "<Key>Return: SetFilterProc() \n";
+//char filterTranslations[] =
+//  "<Key>Return: SetFilterProc() \n";
 
 static int
 GameListPrepare()
@@ -174,6 +142,7 @@ GameListPrepare()
   return i;
 }
 
+/*
 void
 GameListCallback(w, client_data, call_data)
      Widget w;
@@ -183,10 +152,11 @@ GameListCallback(w, client_data, call_data)
     Arg args[16];
     int j;
     Widget listwidg;
-    XawListReturnStruct *rs;
+    //XawListReturnStruct *rs;
     int index;
 
 }
+*/
 
 void
 GameListPopUp(fp, filename)
@@ -300,28 +270,6 @@ void ShowGameListProcGTK(object, user_data)
 }
 
 void
-ShowGameListProc(w, event, prms, nprms)
-     Widget w;
-     XEvent *event;
-     String *prms;
-     Cardinal *nprms;
-{
-    if(GUI_GameList)
-      {
-        if(((GTK_WIDGET_FLAGS(GUI_GameList) & GTK_MAPPED) != 0)) 	
-	  gtk_widget_hide(GUI_GameList);
-	else
-	  gtk_widget_show(GUI_GameList);
-      }
-
-    if(lastLoadGameNumber)
-      GameListHighlight(lastLoadGameNumber);
-
-    /* GTK-TODO mark gamelist in menu as active */
-    return;
-}
-
-void
 LoadSelectedProc (GtkTreeView        *treeview,
 		  GtkTreePath        *path,
 		  GtkTreeViewColumn  *col,
@@ -379,6 +327,7 @@ LoadSelectedProc (GtkTreeView        *treeview,
 //    }
 //}
 
+/*
 void
 SetFilterProc(w, event, prms, nprms)
      Widget w;
@@ -401,11 +350,12 @@ SetFilterProc(w, event, prms, nprms)
 //	XtSetValues(filterText, args, j);
 //	XtSetKeyboardFocus(glc->shell, list);
 }
+*/
 
 void
 GameListPopDown()
 {
-    Arg args[16];
+    //Arg args[16];
     int j;
 
     if(GUI_GameList == NULL) return;
@@ -415,10 +365,10 @@ GameListPopDown()
     gtk_widget_hide (GUI_GameList);
 
     /* GTK-TODO mark as down in menu bar */
-    j = 0;
-    XtSetArg(args[j], XtNleftBitmap, None); j++;
-    XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
-		args, j);
+    //j = 0;
+    //XtSetArg(args[j], XtNleftBitmap, None); j++;
+    //XtSetValues(XtNameToWidget(menuBarWidget, "menuView.Show Game List"),
+//		args, j);
 
     return;
 }
@@ -451,7 +401,7 @@ int SaveGameListAsText(FILE *f)
     ListGame * lg = (ListGame *) gameList.head;
     int nItem;
 
-    if( ((ListGame *) gameList.tailPred)->number <= 0 ) {
+    if( (LIST_GameListStore == NULL) || (((ListGame *) gameList.tailPred)->number <= 0 )) {
       DisplayError("Game list not loaded or empty", 0);
       return False;
     }
@@ -476,7 +426,7 @@ int SaveGameListAsText(FILE *f)
 }
 //--------------------------------- Game-List options dialog ------------------------------------------
 
-Widget gameListOptShell, listwidg;
+//Widget gameListOptShell, listwidg;
 
 char *strings[20];
 int stringPtr;
@@ -499,11 +449,13 @@ Boolean GLT_GetFromList(int index, char *name)
   return TRUE;
 }
 
+
 void GLT_DeSelectList()
 {
-    XawListChange(listwidg, strings, 0, 0, True);
-    XawListHighlight(listwidg, 0);
+//    XawListChange(listwidg, strings, 0, 0, True);
+//    XawListHighlight(listwidg, 0);
 }
+
 
 
 /***********************game list option */
@@ -511,14 +463,17 @@ void GLT_DeSelectList()
 void
 GameListOptionsPopDown()
 {
+/*
   if (gameListOptShell == NULL) return;
 
   XtPopdown(gameListOptShell);
   XtDestroyWidget(gameListOptShell);
   gameListOptShell = 0;
   XtSetKeyboardFocus(shellWidget, formWidget);
+*/
 }
 
+/*
 void
 GameListOptionsCallback(w, client_data, call_data)
      Widget w;
@@ -571,7 +526,9 @@ GameListOptionsCallback(w, client_data, call_data)
     }
     XawListHighlight(listwidg, index);
 }
+*/
 
+/*
 Widget
 GameListOptionsCreate()
 {
@@ -671,15 +628,16 @@ GameListOptionsCreate()
 
     return shell;
 }
+*/
 
 void GameListOptionsPopUpGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-  if (gameListOptShell == NULL)
-    gameListOptShell = GameListOptionsCreate();
+//  if (gameListOptShell == NULL)
+ //   gameListOptShell = GameListOptionsCreate();
 
-  XtPopup(gameListOptShell, XtGrabNone); 
+ // XtPopup(gameListOptShell, XtGrabNone); 
 }
 
 

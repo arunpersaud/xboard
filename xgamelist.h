@@ -23,13 +23,13 @@
 #ifndef _XGAMEL_H
 #define _XGAMEL_H 1
 
-void ShowGameListProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
+//void ShowGameListProc P((Widget w, XEvent *event,
+//			 String *prms, Cardinal *nprms));
 void LoadSelectedProc P((GtkTreeView *treeview, GtkTreePath *path,
 			 GtkTreeViewColumn *col, gpointer userdata));
-void SetFilterProc P((Widget w, XEvent *event,
-			 String *prms, Cardinal *nprms));
+//void SetFilterProc P((Widget w, XEvent *event,
+//			 String *prms, Cardinal *nprms));
 int SaveGameListAsText P((FILE *f));
 
-extern Widget gameListShell;
+//extern Widget gameListShell;
 #endif /* _XGAMEL_H */
