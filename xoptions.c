@@ -1653,6 +1653,12 @@ void MoveTypeInProc(eventkey)
     GdkEventKey  *eventkey;
 {
     char buf[10];
+
+    // ingnore if ctrl or alt is pressed
+    if (eventkey->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) {
+        return;
+    }
+
     buf[0]=eventkey->keyval;
     buf[1]='\0';
     if (*buf > 32)        

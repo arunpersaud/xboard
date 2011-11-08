@@ -3852,101 +3852,37 @@ void MailMoveProcGTK(object, user_data)
     MailMoveEvent();
 }
 
-/* this variable is shared between CopyPositionProc and SendPositionSelection */
-char *selected_fen_position=NULL;
-
-//Boolean
-//SendPositionSelection(Widget w, Atom *selection, Atom *target,
-//		 Atom *type_return, XtPointer *value_return,
-//		 unsigned long *length_return, int *format_return)
-//{
-//char *selection_tmp;
-//
-//if (!selected_fen_position) return False; /* should never happen */
-//if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
-//  /* note: since no XtSelectionDoneProc was registered, Xt will
-//   * automatically call XtFree on the value returned.  So have to
-//   * make a copy of it allocated with XtMalloc */
-//  selection_tmp= XtMalloc(strlen(selected_fen_position)+16);
-//  safeStrCpy(selection_tmp, selected_fen_position, strlen(selected_fen_position)+16 );
-//
-//  *value_return=selection_tmp;
-//  *length_return=strlen(selection_tmp);
-//  *type_return=*target;
-//  *format_return = 8; /* bits per byte */
-//  return True;
-//} else if (*target == XA_TARGETS(xDisplay)) {
-//  Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
-//  targets_tmp[0] = XA_UTF8_STRING(xDisplay);
-//  targets_tmp[1] = XA_STRING;
-//  *value_return = targets_tmp;
-//  *type_return = XA_ATOM;
-//  *length_return = 2;
-//  *format_return = 8 * sizeof(Atom);
-//  if (*format_return > 32) {
-//    *length_return *= *format_return / 32;
-//    *format_return = 32;
-//  }
-//  return True;
-//} else {
-//  return False;
-//}
-//}
 
 void CopyPositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-    /*
-     * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
-     * have a notion of a position that is selected but not copied.
-     * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
-     */
-    if(gameMode == EditPosition) EditPositionDone(TRUE);
-    if (selected_fen_position) free(selected_fen_position);
+    GtkClipboard *cb;
+    char *selected_fen_position=NULL;
+
+    if(gameMode == EditPosition) EditPositionDone(TRUE);    
     selected_fen_position = (char *)PositionToFEN(currentMove, NULL);
     if (!selected_fen_position) return;
-//    XtOwnSelection(menuBarWidget, XA_PRIMARY,
-//		   CurrentTime,
-//		   SendPositionSelection,
-//		   NULL/* lose_ownership_proc */ ,
-//		   NULL/* transfer_done_proc */);
-//    XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-//		   CurrentTime,
-//		   SendPositionSelection,
-//		   NULL/* lose_ownership_proc */ ,
-//		   NULL/* transfer_done_proc */);
+    
+    GdkDisplay *gdisp = gdk_display_get_default();
+    if (gdisp == NULL) return;
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text(cb, selected_fen_position, -1);
 }
-
-
-/* function called when the data to Paste is ready */
-/*
-static void
-PastePositionCB(Widget w, XtPointer client_data, Atom *selection,
-	   Atom *type, XtPointer value, unsigned long *len, int *format)
-{
-  char *fenstr=value;
-  if (value==NULL || *len==0) return; // nothing had been selected to copy 
-  fenstr[*len]='\0'; // normally this string is terminated, but be safe 
-  EditPositionPasteFEN(fenstr);
-  //  XtFree(value);
-}
-*/
 
 void PastePositionProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-//    XtGetSelectionValue(menuBarWidget,
-//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-//      /* (XtSelectionCallbackProc) */ PastePositionCB,
-//      NULL, /* client_data passed to PastePositionCB */
-//
-//      /* better to use the time field from the event that triggered the
-//       * call to this function, but that isn't trivial to get
-//       */
-//      CurrentTime
-//    );
+    gchar *fenstr;
+    GtkClipboard *cb;
+
+    GdkDisplay *gdisp = gdk_display_get_default();
+    if (gdisp == NULL) return;
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);    
+    fenstr = gtk_clipboard_wait_for_text(cb);
+    if (fenstr==NULL) return; // nothing had been selected to copy  
+    EditPositionPasteFEN(fenstr);
     return;
 }
 
