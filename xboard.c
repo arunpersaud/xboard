@@ -3886,83 +3886,61 @@ void PastePositionProcGTK(object, user_data)
     return;
 }
 
-/*
-static Boolean
-SendGameSelection(Widget w, Atom *selection, Atom *target,
-		  Atom *type_return, XtPointer *value_return,
-		  unsigned long *length_return, int *format_return)
+void CopySomething(gchar * text)
 {
-  char *selection_tmp;
+    GtkClipboard *cb;
+    char *selected_fen_position=NULL;
 
-  if (*target == XA_STRING || *target == XA_UTF8_STRING(xDisplay)){
-    FILE* f = fopen(gameCopyFilename, "r");
-    long len;
-    size_t count;
-    if (f == NULL) return False;
-    fseek(f, 0, 2);
-    len = ftell(f);
-    rewind(f);
-    selection_tmp = XtMalloc(len + 1);
-    count = fread(selection_tmp, 1, len, f);
-    fclose(f);
-    if (len != count) {
-      XtFree(selection_tmp);
-      return False;
-    }
-    selection_tmp[len] = NULLCHAR;
-    *value_return = selection_tmp;
-    *length_return = len;
-    *type_return = *target;
-    *format_return = 8; // bits per byte 
-    return True;
-  } else if (*target == XA_TARGETS(xDisplay)) {
-    Atom *targets_tmp = (Atom *) XtMalloc(2 * sizeof(Atom));
-    targets_tmp[0] = XA_UTF8_STRING(xDisplay);
-    targets_tmp[1] = XA_STRING;
-    *value_return = targets_tmp;
-    *type_return = XA_ATOM;
-    *length_return = 2;
-    *format_return = 8 * sizeof(Atom);
-    if (*format_return > 32) {
-      *length_return *= *format_return / 32;
-      *format_return = 32;
-    }
-    return True;
-  } else {
-    return False;
-  }
+    if (!text) return;
+    
+    GdkDisplay *gdisp = gdk_display_get_default();
+    if (!gdisp) return;
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text(cb, text, -1);
 }
-*/
 
-void CopySomething()
-{
-  /*
-   * Set both PRIMARY (the selection) and CLIPBOARD, since we don't
-   * have a notion of a game that is selected but not copied.
-   * See http://www.freedesktop.org/wiki/Specifications/ClipboardsWiki
-   */
-//  XtOwnSelection(menuBarWidget, XA_PRIMARY,
-//		 CurrentTime,
-//		 SendGameSelection,
-//		 NULL/* lose_ownership_proc */ ,
-//		 NULL/* transfer_done_proc */);
-//  XtOwnSelection(menuBarWidget, XA_CLIPBOARD(xDisplay),
-//		 CurrentTime,
-//		 SendGameSelection,
-//		 NULL/* lose_ownership_proc */ ,
-//		 NULL/* transfer_done_proc */);
-}
 
 void CopyGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-  int ret;
+    int ret;
+    gchar *selection_tmp;
+    GtkClipboard *cb;
 
-  ret = SaveGameToFile(gameCopyFilename, FALSE);
-  if (!ret) return;
+    // copy game to file
+    ret = SaveGameToFile(gameCopyFilename, FALSE);
+    if (!ret) return;
 
-  CopySomething();
+    // copy to clipboard
+    FILE* f = fopen(gameCopyFilename, "r");
+    long len;
+    size_t count;
+    if (f == NULL) return;
+    fseek(f, 0, 2);
+    len = ftell(f);
+    rewind(f);
+    selection_tmp = g_try_malloc(len + 1);
+    if (selection_tmp == NULL) {
+        printf("Malloc failed in CopyGameProcGTK\n");
+        return;
+    }
+    count = fread(selection_tmp, 1, len, f);
+    fclose(f);
+    if (len != count) {
+      g_free(selection_tmp);
+      return;
+    }
+    selection_tmp[len] = NULLCHAR;
+    
+    GdkDisplay *gdisp = gdk_display_get_default();
+    if (!gdisp) {
+        g_free(selection_tmp);
+        return;
+    }
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text(cb, selection_tmp, -1);
+    g_free(selection_tmp);    
 }
 
 void CopyGameListProcGTK(object, user_data)
@@ -3970,45 +3948,40 @@ void CopyGameListProcGTK(object, user_data)
      gpointer user_data;
 {
   if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
-  CopySomething();
+  CopySomething("copygamelist");
 }
-
-/* function called when the data to Paste is ready */
-/*
-static void
-PasteGameCB(Widget w, XtPointer client_data, Atom *selection,
-	    Atom *type, XtPointer value, unsigned long *len, int *format)
-{
-  FILE* f;
-  if (value == NULL || *len == 0) {
-    return; //nothing had been selected to copy 
-  }
-  f = fopen(gamePasteFilename, "w");
-  if (f == NULL) {
-    DisplayError(_("Can't open temp file"), errno);
-    return;
-  }
-  fwrite(value, 1, *len, f);
-  fclose(f);
-  //  XtFree(value);
-  LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
-}
-*/
 
 void PasteGameProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-//    XtGetSelectionValue(menuBarWidget,
-//      appData.pasteSelection ? XA_PRIMARY: XA_CLIPBOARD(xDisplay), XA_STRING,
-//      /* (XtSelectionCallbackProc) */ PasteGameCB,
-//      NULL, /* client_data passed to PasteGameCB */
-//
-//      /* better to use the time field from the event that triggered the
-//       * call to this function, but that isn't trivial to get
-//       */
-//      CurrentTime
-//    );
+    gchar *text=NULL;
+    GtkClipboard *cb;
+    guint len=0;
+
+    // get game from clipboard
+    GdkDisplay *gdisp = gdk_display_get_default();
+    if (gdisp == NULL) return;
+    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);    
+    text = gtk_clipboard_wait_for_text(cb);
+    if (text == NULL) return; // nothing to paste  
+    len = strlen(text);
+
+    // write to temp file
+    FILE* f;
+    if (text == NULL || len == 0) {
+      return; //nothing to paste 
+    }
+    f = fopen(gamePasteFilename, "w");
+    if (f == NULL) {
+      DisplayError(_("Can't open temp file"), errno);
+      return;
+    }
+    fwrite(text, 1, len, f);
+    fclose(f);
+
+    // load from file 
+    LoadGameFromFile(gamePasteFilename, 0, gamePasteFilename, TRUE);
     return;
 }
 
