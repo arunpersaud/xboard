@@ -3886,34 +3886,13 @@ void PastePositionProcGTK(object, user_data)
     return;
 }
 
-void CopySomething(gchar * text)
+void CopyFileToClipboard(gchar *filename)
 {
-    GtkClipboard *cb;
-    char *selected_fen_position=NULL;
-
-    if (!text) return;
-    
-    GdkDisplay *gdisp = gdk_display_get_default();
-    if (!gdisp) return;
-    cb = gtk_clipboard_get_for_display(gdisp, GDK_SELECTION_CLIPBOARD);
-    gtk_clipboard_set_text(cb, text, -1);
-}
-
-
-void CopyGameProcGTK(object, user_data)
-     GtkObject *object;
-     gpointer user_data;
-{
-    int ret;
     gchar *selection_tmp;
     GtkClipboard *cb;
 
-    // copy game to file
-    ret = SaveGameToFile(gameCopyFilename, FALSE);
-    if (!ret) return;
-
-    // copy to clipboard
-    FILE* f = fopen(gameCopyFilename, "r");
+    // read the file
+    FILE* f = fopen(filename, "r");
     long len;
     size_t count;
     if (f == NULL) return;
@@ -3922,7 +3901,7 @@ void CopyGameProcGTK(object, user_data)
     rewind(f);
     selection_tmp = g_try_malloc(len + 1);
     if (selection_tmp == NULL) {
-        printf("Malloc failed in CopyGameProcGTK\n");
+        printf("Malloc failed in CopyFileToClipboard\n");
         return;
     }
     count = fread(selection_tmp, 1, len, f);
@@ -3931,8 +3910,9 @@ void CopyGameProcGTK(object, user_data)
       g_free(selection_tmp);
       return;
     }
-    selection_tmp[len] = NULLCHAR;
+    selection_tmp[len] = NULLCHAR; // file is now in selection_tmp
     
+    // copy selection_tmp to clipboard
     GdkDisplay *gdisp = gdk_display_get_default();
     if (!gdisp) {
         g_free(selection_tmp);
@@ -3943,12 +3923,23 @@ void CopyGameProcGTK(object, user_data)
     g_free(selection_tmp);    
 }
 
+void CopyGameProcGTK(object, user_data)
+     GtkObject *object;
+     gpointer user_data;
+{
+    int ret;
+    
+    ret = SaveGameToFile(gameCopyFilename, FALSE);
+    if (!ret) return;
+    CopyFileToClipboard(gameCopyFilename);
+}
+
 void CopyGameListProcGTK(object, user_data)
      GtkObject *object;
      gpointer user_data;
 {
-  if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
-  CopySomething("copygamelist");
+    if(!SaveGameListAsText(fopen(gameCopyFilename, "w"))) return;
+    CopyFileToClipboard(gameCopyFilename);
 }
 
 void PasteGameProcGTK(object, user_data)
