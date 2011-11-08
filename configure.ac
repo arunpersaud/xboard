@@ -55,11 +55,7 @@ AH_TEMPLATE([USE_PTYS],[template])
 AH_TEMPLATE([X_WCHAR],[template])
 AH_TEMPLATE([ATTENTION],[template])
 AH_TEMPLATE([DEFINED_SYS_ERRLIST],[template])
-AH_TEMPLATE([HAVE_LIBXPM],[template])
-AH_TEMPLATE([USE_XAW3D],[template])
 AH_TEMPLATE([X_LOCALE],[template])
-
-
 
 if test -z "$CFLAGS" ; then
 dnl| Prevent the next macro from setting CFLAGS to -g
@@ -94,7 +90,6 @@ PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.16.0 gmodule-export-2.0 ])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-
 AC_HEADER_STDC
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
@@ -110,57 +105,11 @@ AC_CHECK_FUNCS(gettimeofday ftime, break)
 AC_CHECK_FUNCS(random rand48, break)
 AC_CHECK_FUNCS(gethostname sysinfo, break)
 AC_CHECK_FUNC(setlocale, [],
-  AC_CHECK_LIB(i, setlocale, [], AC_DEFINE(X_LOCALE, 1)))
+AC_CHECK_LIB(i, setlocale, [], AC_DEFINE(X_LOCALE, 1)))
 
 AC_CHECK_LIB(seq, getpseudotty)
 
-
-dnl | check for X-libraries
-AC_PATH_XTRA
-if test -n "$no_x" ; then
-  echo $PACKAGE requires the X Window System header files and libraries!
-  echo They were not found on your system.  See FAQ topic C.2.
-  echo configure failed
-  exit 1
-fi
-
-AC_CHECK_HEADER(X11/Intrinsic.h,xt="yes",xt="no")
-
-if test "$xt" = "no" ; then
-   echo Xt headers not found
-   exit 1
-fi
-
 dnl | test if user wants ot use Xaw3d or Xaw
-
-dnl | add configure option for Xaw3d
-AC_ARG_WITH([Xaw3d],
-            [AS_HELP_STRING([--with-Xaw3d],[use Xaw3d instead of Xaw])],
-            [],
-            [with_Xaw3d=no])
-
-dnl | check availability of Xaw3d
-XAW_LIBS=
-AS_IF([test x"$with_Xaw3d" != x"no"],
-      [AC_CHECK_LIB([Xaw3d], 
-                    [XawTextReplace],
-                    [AC_SUBST([XAW_LIBS],["-lXaw3d"])
-                     AC_DEFINE([USE_XAW3D], [1],
-                               [Define if you want to use Xaw3d])],
-                    [AC_MSG_ERROR([--with-Xaw3d was given, but test for Xaw3d failed. Make sure that you have Xaw3d installed, else you might want to try the configure option --without-Xaw3d])],
-			       [-lXaw])])
-dnl | no Xaw3d, check for Xaw
-if test x"$with_Xaw3d" = x"no" ; then
-   AC_CHECK_HEADER(X11/Xaw/Dialog.h,xaw_headers="yes", xaw_headers="no")
-   if test x"$xaw_headers" = x"no" ; then
-      AC_MSG_ERROR([Xaw headers not found. Please install the Xaw package and headers.])
-   fi
-   XAW_LIBS="-lXaw"
-fi
-AC_SUBST(XAW_LIBS)
-
-dnl | end Xaw/Xaw3d test
-
 
 AC_CANONICAL_HOST
 
@@ -205,29 +154,6 @@ dnl| since folks who install the missing bits often configure their
 dnl| imake to find them, but I don't want to delve into autoconf and
 dnl| hack on its internals.
 
-    if test -d /opt/hppd/include/X11; then
-      X_CFLAGS="$X_CFLAGS -I/opt/hppd/include"
-      X_LIBS="$X_LIBS -L/opt/hppd/lib"
-    elif test -d /usr/contrib/X11R5/include; then
-      X_CFLAGS="$X_CFLAGS -I/usr/contrib/X11R5/include"
-      X_LIBS="$X_LIBS -L/usr/contrib/X11R5/lib"
-    elif test -d /usr/contrib/mitX11R5/include; then
-      X_CFLAGS="$X_CFLAGS -I/usr/contrib/mitX11R5/include"
-      X_LIBS="$X_LIBS -L/usr/contrib/mitX11R5/lib"
-    elif test -d /MIT/X11R5/include; then
-      X_CFLAGS="$X_CFLAGS -I/MIT/X11R5/include"
-      X_LIBS="$X_LIBS -L/MIT/X11R5/lib"
-    elif test -d /usr/local/include/X11R5; then
-      X_CFLAGS="$X_CFLAGS -I/usr/local/include/X11R5"
-      X_LIBS="$X_LIBS -L/usr/local/lib/X11R5"
-    fi
-    if test -d /usr/include/X11R5; then
-      X_CFLAGS="$X_CFLAGS -I/usr/include/X11R5"
-      X_LIBS="$X_LIBS -L/usr/lib/X11R5 -L/usr/lib/X11R4"
-    elif test -d /usr/include/X11R4; then
-      X_CFLAGS="$X_CFLAGS -I/usr/include/X11R4"
-      X_LIBS="$X_LIBS -L/usr/lib/X11R4"
-    fi
   ;;
 
   romp-ibm-aix* )
@@ -297,16 +223,6 @@ dnl|  "overkill," but doesn't explain what should be done instead.
     fi
   ;;
 
-  *-*-sunos5* | *-*-solaris2* )
-dnl| USE_PTYS=1
-
-dnl| I'm not sure -lelf is needed, but it was in the old Imakefile.
-dnl| The other libraries should all be found by Ac_PATH_XTRA or other
-dnl| code above.
-
-    X_LIBS="$X_LIBS -lelf"
-  ;;
-
   *-*-sco* )
     AC_DEFINE(PTY_ITERATION, [for (i = 0; ; i++)])
     AC_DEFINE(PTY_NAME_SPRINTF, [sprintf (pty_name, "/dev/ptyp%d", i);])
@@ -340,27 +256,6 @@ dnl| add some libs for OS X
   *-apple-* )
   ;;
 esac
-
-AC_ARG_ENABLE(	[xpm],
-		[AS_HELP_STRING([--enable-xpm],[libXpm will be used if found (default)])],
-		[enable_xpm="$enableval"],
-		[enable_xpm="yes"])
-
-if test x"$enable_xpm" != "xno"; then
-  save_cflags="$CFLAGS"
-  CFLAGS="$CFLAGS $X_CFLAGS"
-  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-  AC_CHECK_HEADERS(X11/xpm.h)
-  CFLAGS="$save_cflags"
-  if test "$ac_cv_header_X11_xpm_h" = "yes"; then
-    save_ldflags="$LDFLAGS"
-    LDFLAGS="$LDFLAGS $X_LIBS"
-    AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
-                 [X_PRE_LIBS="-lXpm $X_PRE_LIBS"; AC_DEFINE(HAVE_LIBXPM)], [],
-                 [$X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
-    LDFLAGS="$save_ldflags"
-  fi
-fi
 
 AC_SUBST(PRE_XMULIB)
 AC_SUBST(POST_XMULIB)
@@ -427,15 +322,6 @@ if test "$enable_warnings" = "yes"; then
 fi
 
 
-
-
-dnl | save all information for X in X_LIBS, also add the libraries themself
-dnl | since AC_PATH_XTRA only adds the paths
-X_LIBS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS -lXmu -lX11 -lXt "    
-AC_SUBST(X_CFLAGS)
-AC_SUBST(X_LIBS)
-
-
 AC_CONFIG_FILES([Makefile cmail po/Makefile.in])
 AC_CONFIG_COMMANDS([test-stamp-h],[test -z "$CONFIG_HEADERS" || date > stamp-h])
 AC_CONFIG_COMMANDS([chmod-cmail],[chmod 755 cmail])
@@ -456,9 +342,6 @@ echo "        sysconfdir:      $sysconfdir   (xboard.conf will go here)"
 echo ""
 echo "        NLS support:     $USE_NLS"
 echo ""
-echo "        Xaw3d:           $with_Xaw3d"
-echo ""
-echo "        xpm:             $enable_xpm"
 echo "        ptys:            $enable_ptys"
 echo "        zippy:           $enable_zippy"
 echo "        sigint:          $enable_sigint"
