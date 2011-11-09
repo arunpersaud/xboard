@@ -3239,6 +3239,7 @@ AnimateUserMove (GtkWidget *w, GdkEventMotion *event)
     {
       MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSizeGTK + lineGapGTK));
     }
+  else SeekGraphClick(Press, x, y, 1);
 }
 
 /*
