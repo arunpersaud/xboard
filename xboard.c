@@ -5931,22 +5931,22 @@ AnimationFrame(anim, frame, piece)
       if(! (xb==sx && yb==sy) )
 	DrawSquareGTK(yb  ,xb,    boards[currentMove][yb  ][xb  ], 0);
       else
-	DrawSquareGTK(yb  ,xb,    EmptySquare, 0);
+	DrawSquareGTK(yb  ,xb,    gatingPiece, 0);
 
       if(! (xb==sx && yb+yoffset==sy) )
 	DrawSquareGTK(yb+yoffset,xb,    boards[currentMove][yb+yoffset][xb  ], 0);
       else
-	DrawSquareGTK(yb+yoffset  ,xb,    EmptySquare, 0);
+	DrawSquareGTK(yb+yoffset  ,xb,    gatingPiece, 0);
 
       if(! (xb+xoffset==sx && yb==sy) )
 	DrawSquareGTK(yb  ,xb+xoffset,  boards[currentMove][yb  ][xb+xoffset], 0);
       else
-	DrawSquareGTK(yb  ,xb+xoffset,  EmptySquare, 0);
+	DrawSquareGTK(yb  ,xb+xoffset,  gatingPiece, 0);
 
       if(! (xb+xoffset==sx && yb+yoffset==sy) )
 	DrawSquareGTK(yb+yoffset,xb+xoffset,  boards[currentMove][yb+yoffset][xb+xoffset], 0);
       else
-	DrawSquareGTK(yb+yoffset,xb+xoffset,  EmptySquare, 0);
+	DrawSquareGTK(yb+yoffset,xb+xoffset,  gatingPiece, 0);
 
     }
 
@@ -6176,8 +6176,9 @@ DragPieceBegin(x, y, instantly)
 	/* Mark this square as needing to be redrawn. Note that
 	   we don't remove the piece though, since logically (ie
 	   as seen by opponent) the move hasn't been made yet. */
-           //if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
-           //   boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
+           if(boardX == BOARD_RGHT+1 && PieceForSquare(boardX-1, boardY) > 1 ||
+              boardX == BOARD_LEFT-2 && PieceForSquare(boardX+1, boardY) > 1)
+		gatingPiece = player.dragPiece;
            //XCopyArea(xDisplay, xBoardWindow, player.saveBuf, player.blitGC,
 	   //          corner.x, corner.y, squareSize, squareSize,
 	   //          0, 0); // [HGM] zh: unstack in stead of grab
@@ -6277,8 +6278,9 @@ DrawDragPiece ()
      so the piece is still in it's original square. But visually
      it's being dragged around the board. So we erase the square
      that the piece is on and draw it at the last known drag point. */
-  BlankSquareGTK(player.startSquare.x, player.startSquare.y,
-		player.startColor, EmptySquare, NULL, 1);
+  DrawSquareGTK(player.startBoardY, player.startBoardX, gatingPiece, 0); // [HGM] does this duplicate what AnimationFrame already does?
+//  BlankSquareGTK(player.startSquare.x, player.startSquare.y,
+//		player.startColor, EmptySquare, NULL, 1);
   AnimationFrame(&player, &player.prevFrame, player.dragPiece);
   damageGTK[0][player.startBoardY][player.startBoardX] = TRUE;
 }
