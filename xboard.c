@@ -2684,7 +2684,7 @@ void DrawSquareGTK(row, column, piece, do_flash)
 	/* get a cairo_t */
         cr = gdk_cairo_create (GDK_WINDOW(boardwidgetGTK->window));
 
-     	cairo_arc(cr, x + squareSize/4,y+squareSize/4, squareSize/2, 0.0, 2*M_PI);
+     	cairo_arc(cr, x + squareSize/2,y+squareSize/2, squareSize/4, 0.0, 2*M_PI);
 
 	cairo_set_line_width (cr, 0.1);
 
@@ -2964,7 +2964,7 @@ void DrawSeekDot(int x, int y, int colorNr)
       }
     else
       {
-	cairo_arc(cr, x-squareSize/8, y-squareSize/8, squareSize/4, 0.0, 2*M_PI);
+	cairo_arc(cr, x, y, squareSize/8, 0.0, 2*M_PI);
       }
 
     cairo_set_line_width(cr, 2);
@@ -6058,7 +6058,7 @@ AnimateAtomicCapture(Board board, int fromX, int fromY, int toX, int toY)
 
 	cairo_set_source_rgba (cr, r, g, b, 1.0);
 
-	cairo_arc(cr, x + squareSize/2 - rad, y+squareSize/2 - rad, 2*rad, 0.0, 2*M_PI);
+	cairo_arc(cr, x + squareSize/2, y+squareSize/2, rad, 0.0, 2*M_PI);
 
 	cairo_stroke_preserve(cr);
 	cairo_fill(cr);
