@@ -3232,7 +3232,12 @@ AnimateUserMove (GtkWidget *w, GdkEventMotion *event)
 
   if (state & GDK_BUTTON1_MASK)
     {
+      if(!PromoScroll(x, y))
       DragPieceMove(x, y);
+    }
+  else if (state & (GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))
+    {
+      MovePV(x, y, lineGap + BOARD_HEIGHT * (squareSizeGTK + lineGapGTK));
     }
 }
 
