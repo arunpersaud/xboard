@@ -2918,7 +2918,7 @@ void DrawSeekBackground( int left, int top, int right, int bottom )
     cairo_set_line_width(cr, 2);
     cairo_set_source_rgba (cr, 1.0, 1.0, 0.8, 1.0);
     cairo_stroke_preserve(cr);
-    cairo_set_source_rgba(cr, 0, 0, 0,1.0);
+    cairo_set_source_rgba(cr, 0.8, 0.8, 0.4,1.0);
     cairo_fill(cr);
 
     /* free memory */
