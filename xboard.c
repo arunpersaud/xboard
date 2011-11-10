@@ -2098,19 +2098,40 @@ void SetupDropMenu()
 
 }
 
-
-/* callback when user clicks on an edit position popup menu item */
-gboolean PieceMenuSelectGTK(w, eventkey, gdata)
+// Popdown the piece menu when you get a button release on the GtkMenu
+gboolean PieceMenuPopDown(w, event, gdata)
      GtkWidget *w;
-     GdkEventKey  *eventkey;
+     GdkEvent  *event;
      gpointer  gdata;
 {
+    gtk_menu_popdown(GTK_MENU(w));
+    return False; 
+}
+
+/* callback when user clicks on an edit position popup menu item */
+gboolean PieceMenuSelectGTK(w, eventbutton, gdata)
+     GtkWidget *w;
+     GdkEventButton  *eventbutton;
+     gpointer  gdata;
+{ 
     int piece = (intptr_t) gdata;
 
-    if (pmFromX < 0 || pmFromY < 0) return;
+    if (pmFromX < 0 || pmFromY < 0) return False;
     EditPositionMenuEvent(piece, pmFromX, pmFromY);
-    return True;
+    return False;
 }
+
+// position the edit position popup menu
+void MenuPos(GtkMenu *menu, gint *x, gint *y, gboolean *pushin, gpointer data)
+{
+    *pushin = False;
+   
+    // shift so the pawn selection is centered on the cursor
+    // these should be based on the menu size rather than hard coded
+    *x -= 70;
+    *y -= 50;
+}
+
 
 gboolean PieceMenuPopupGTK(window, eventbutton, data)
      GtkWindow *window;
@@ -2140,10 +2161,13 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
         break;
     }
 
-    if (eventbutton->type == GDK_BUTTON_RELEASE)
+    if (eventbutton->type == GDK_BUTTON_RELEASE) {
+
         menuNr = RightClick(Release, eventbutton->x, eventbutton->y, &pmFromX, &pmFromY);
-    else if (eventbutton->type == GDK_BUTTON_PRESS)
+    }
+    else if (eventbutton->type == GDK_BUTTON_PRESS) {
         menuNr = RightClick(Press,   eventbutton->x, eventbutton->y, &pmFromX, &pmFromY);
+    }
 
     switch(menuNr) {
       case 0:
@@ -2160,7 +2184,11 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
     }
 
     GtkWidget *menu;
-    menu = gtk_menu_new();
+    menu = gtk_menu_new();    
+
+    g_signal_connect(menu, "button-release-event",
+             G_CALLBACK(PieceMenuPopDown),
+             (gpointer)(intptr_t) selection);
 
     int i;
     for (i = 0; i < PIECE_MENU_SIZE; i++) {
@@ -2186,21 +2214,29 @@ gboolean PieceMenuPopupGTK(window, eventbutton, data)
 
         selection = pieceMenuTranslation[color][i];
 
-        g_signal_connect(mi, "button-press-event",
+if (strcmp(item, "Black") == 0 || strcmp(item, "White") == 0) gtk_widget_set_sensitive(GTK_WIDGET(mi), False);
+
+        if (strcmp(item, "----") != 0 ) { // menuitem (not separator)
+            g_signal_connect(mi, "button-press-event",
                       G_CALLBACK(PieceMenuSelectGTK),
                       (gpointer)(intptr_t) selection);
+            g_signal_connect(mi, "button-release-event",
+                      G_CALLBACK(PieceMenuSelectGTK),
+                      (gpointer)(intptr_t) selection);
+        }       
     }
 
     gtk_menu_popup(GTK_MENU(menu),
                    NULL,
                    NULL,
-                   NULL,
+                   MenuPos,
                    NULL,
                    eventbutton->button,
                    eventbutton->time);
 
-    gtk_widget_show(menu);
-    return True;
+    gtk_widget_show(menu);    
+
+    return False;
 }
 
 /*
@@ -3174,7 +3210,7 @@ gboolean ButtonPressProc(window, eventbutton, data)
       default:
         break;
     }
-    return True;
+    return False;
 }
 
 /*
