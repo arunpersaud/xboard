@@ -5887,6 +5887,7 @@ OverlayPiece(piece, position, dest)
                   GDK_PIXBUF(pb),0,0,
 		  position->x,position->y,-1,-1,
 		  GDK_RGB_DITHER_NORMAL, 0, 0);
+  gtk_main_iteration_do(FALSE);
   return;
 }
 
@@ -5905,6 +5906,7 @@ BeginAnimation(anim, piece, startColor, start)
   /* not converted to GTK - causes the clicked on piece to flicker */
   //BlankSquareGTK(start->x, start->y, startColor, EmptySquare, anim->saveBuf, 0);
   anim->prevFrame = *start;
+  anim->startSquare = *start;
 
   /* The piece will be drawn using its own bitmap as a matte	*/
   //  SelectGCMask(piece, &anim->pieceGC, &anim->outlineGC, &mask);
